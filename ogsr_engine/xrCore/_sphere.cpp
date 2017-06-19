@@ -95,10 +95,10 @@ void Miniball::build ()
 	support_end = L.begin();
 
 	// @@ pivotting or not ?
-//	if ( 1 )
+	if ( 1 )
 		pivot_mb	(L.end());
- /*	else
-		mtf_mb		(L.end());    */
+	else
+		mtf_mb		(L.end());
 }
 
 void Miniball::mtf_mb (It i)

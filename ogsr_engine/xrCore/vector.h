@@ -62,12 +62,6 @@ const	float		PI_DIV_8	= 0.3926990816987241548078304229099f;
 #define				PI_DIV_8	0.3926990816987241548078304229099f
 #endif
 
-#ifdef __BORLANDC__
- 	#define fabsf(a) fabs(a)
-	#define sqrtf(a) sqrt(a)
-	#define sinf(a) sin(a)
-	#define cosf(a) cos(a)
-#endif
 
 // Define types and namespaces (CPU & FPU)
 #include	"_types.h"

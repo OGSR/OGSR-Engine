@@ -1,7 +1,7 @@
 //----------------------------------------------------
 // file: FileSystem.cpp
 //----------------------------------------------------
-//#define NO_WIN32_LEAN_AND_MEAN
+
 #include "stdafx.h"
 #pragma hdrstop
 
@@ -64,19 +64,12 @@ xr_string	EFS_Utils::ChangeFileExt(const xr_string& src, LPCSTR ext)
 {
 	return ChangeFileExt(src.c_str(),ext);
 }
-/*
-#include <atlbase.h>
-#include <Shobjidl.h>
-#include <shtypes.h>
-*/
+
 //----------------------------------------------------
-//LPCSTR MakeFilter(string1024& dest, LPCSTR info, LPCSTR ext)
-//void MakeFilter(COMDLG_FILTERSPEC &dest, LPCSTR info, LPCSTR ext)
-void MakeFilter(TFileOpenDialog *dest, LPCSTR info, LPCSTR ext)
+LPCSTR MakeFilter(string1024& dest, LPCSTR info, LPCSTR ext)
 {
-//	USES_CONVERSION;
-//	ZeroMemory(&dest,sizeof(dest));
-/*	if (ext){
+	ZeroMemory(dest,sizeof(dest));
+    if (ext){
         int icnt=_GetItemCount(ext,';');
 		LPSTR dst=dest;
         if (icnt>1)
@@ -95,33 +88,22 @@ void MakeFilter(TFileOpenDialog *dest, LPCSTR info, LPCSTR ext)
             strcpy			(dst, buf);
             dst				+= (xr_strlen(buf)+1);
         }
-	}   */
-//	return dest;
-/*	if (ext)
-	{
-		dest.pszName = L"File Types";
-		dest.pszSpec = PWideChar(ext);
-	} else {
-		dest.pszName = L"All Files";
-		dest.pszSpec = L"*.*";
-	}*/
-	TFileTypeItem *fti = dest->FileTypes->Add();
-	fti->DisplayName = info;
-	fti->FileMask = ext;
+    }
+	return dest;
 }
 
 //------------------------------------------------------------------------------
 // start_flt_ext = -1-all 0..n-indices
 //------------------------------------------------------------------------------
-bool EFS_Utils::GetOpenName(TComponent *frm, LPCSTR initial,  string_path& buffer, int sz_buf, bool bMulti, LPCSTR offset, int start_flt_ext )
+bool EFS_Utils::GetOpenName( LPCSTR initial,  string_path& buffer, int sz_buf, bool bMulti, LPCSTR offset, int start_flt_ext )
 {
 	VERIFY(buffer&&(sz_buf>0));
 	FS_Path& P			= *FS.get_path(initial);
-/*	string1024 flt;
+	string1024 flt;
 	MakeFilter(flt,P.m_FilterCaption?P.m_FilterCaption:"",P.m_DefExt);
 
- 	OPENFILENAME ofn;
-	Memory.mem_fill		( &ofn, 0, sizeof(ofn) );   
+	OPENFILENAME ofn;
+	Memory.mem_fill		( &ofn, 0, sizeof(ofn) );
     if (xr_strlen(buffer)){ 
         string_path		dr;
         if (!(buffer[0]=='\\' && buffer[1]=='\\')){ // if !network
@@ -129,29 +111,28 @@ bool EFS_Utils::GetOpenName(TComponent *frm, LPCSTR initial,  string_path& buffe
             if (0==dr[0])	P._update(buffer,buffer); 
         }
     }
-	ofn.lStructSize		= sizeof(OPENFILENAME);
+    ofn.lStructSize		= sizeof(OPENFILENAME);
 	ofn.hwndOwner 		= GetForegroundWindow();
 	ofn.lpstrDefExt 	= P.m_DefExt;
 	ofn.lpstrFile 		= buffer;
 	ofn.nMaxFile 		= sz_buf;
 	ofn.lpstrFilter 	= flt;
 	ofn.nFilterIndex 	= start_flt_ext+2;
-	ofn.lpstrTitle      = "Open a File";
-	string512 path;
+    ofn.lpstrTitle      = "Open a File";
+    string512 path; 
 	strcpy				(path,(offset&&offset[0])?offset:P.m_Path);
 	ofn.lpstrInitialDir = path;
 	ofn.Flags =
-		OFN_PATHMUSTEXIST|
-		OFN_FILEMUSTEXIST|
+    	OFN_PATHMUSTEXIST|
+    	OFN_FILEMUSTEXIST|
 		OFN_HIDEREADONLY|
 		OFN_FILEMUSTEXIST|
 		OFN_NOCHANGEDIR|(bMulti?OFN_ALLOWMULTISELECT|OFN_EXPLORER:0);
-	ofn.FlagsEx			= OFN_EX_NOPLACESBAR;
-
+    ofn.FlagsEx			= OFN_EX_NOPLACESBAR;
+    
 	bool bRes = !!GetOpenFileName( &ofn );
-
-	if (!bRes){
-		u32 err = CommDlgExtendedError();
+    if (!bRes){
+	    u32 err = CommDlgExtendedError();
 	    switch(err){
         case FNERR_BUFFERTOOSMALL: 	Log("Too many file selected."); break;
         }
@@ -172,43 +153,18 @@ bool EFS_Utils::GetOpenName(TComponent *frm, LPCSTR initial,  string_path& buffe
                 strcat	(fns,"\\");
                 strcat	(fns,_GetItem(buffer,i,buf,0x0));
             }
-			strcpy		(buffer,fns);
+            strcpy		(buffer,fns);
         }
-	}       */
-	Msg("1");
-	TFileOpenDialog *dlg = new TFileOpenDialog (0);
-	Msg("2");
-	dlg->DefaultExtension = P.m_DefExt;
-	string512 path;
-	strcpy				(path,(offset&&offset[0])?offset:P.m_Path);
-	dlg->DefaultFolder = path;
-	dlg->Title = "Open a File";
-	dlg->FileTypeIndex = start_flt_ext+2;
-	dlg->Options << fdoPathMustExist << fdoFileMustExist << fdoNoReadOnlyReturn;
-	if (bMulti) {
-		dlg->Options << fdoAllowMultiSelect;
-	}
-	Msg("3");
-	MakeFilter(dlg,P.m_FilterCaption?P.m_FilterCaption:"",P.m_DefExt);
-	Msg("4");
-	bool bRes = dlg->Execute(/*GetForegroundWindow()*/);
-
-	Msg("5");
-	if ( bRes )
-	{
-		 strcpy		(buffer,PAnsiChar(dlg->FileName.c_str()));
-	}
-	Msg("6");
-	strlwr(buffer);
-	Msg("buffer %s", buffer);
-	return bRes;
+    }
+    strlwr(buffer);
+    return bRes;
 }
 
 bool EFS_Utils::GetSaveName( LPCSTR initial, string_path& buffer, LPCSTR offset, int start_flt_ext )
 {
 	FS_Path& P			= *FS.get_path(initial);
 	string1024 flt;
- //	MakeFilter(flt,P.m_FilterCaption?P.m_FilterCaption:"",P.m_DefExt);
+	MakeFilter(flt,P.m_FilterCaption?P.m_FilterCaption:"",P.m_DefExt);
 	OPENFILENAME ofn;
 	Memory.mem_fill		( &ofn, 0, sizeof(ofn) );
     if (xr_strlen(buffer)){ 

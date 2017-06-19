@@ -30,13 +30,10 @@
 #endif
 
 #ifdef  _EDITOR
-/*KD: поясняю, зачем тут это. В студии есть перегруженные шаблонные функции, которые берут макс. размер
-из рзмера массива dest, переданного первым аргументом. В Билдере такого нет, надо указывать макс размер.
-Хак, конечно... Те функции, что таки в Билдере 2010 есть, я закомментил.*/
-/*IC void strcpy_s(char* strDestination,   size_t sizeInBytes,   const char *strSource)
+IC void strcpy_s(char* strDestination,   size_t sizeInBytes,   const char *strSource)
 {
 	strcpy(strDestination, strSource);
-}   */
+}
 
 IC void strcpy_s(char* strDestination,   const char *strSource)
 {
@@ -47,24 +44,20 @@ IC void _strlwr_s(char* strDestination, size_t sizeInBytes)
 {
     strlwr(strDestination);
 }
-IC void _strlwr(char* strDestination)
-{
-    strlwr(strDestination);
-}
 
 IC void strcat_s(char* strDestination,   size_t sizeInBytes,   const char *strSource)
 {
 	strcat(strDestination, strSource);
 }
 
-/*IC int sprintf_s(char* dest, size_t sizeOfBuffer, const char* format, ...)
+IC int sprintf_s(char* dest, size_t sizeOfBuffer, const char* format, ...)
 {
 	va_list 	mark;
 	va_start	(mark, format );
 	int sz		= _vsnprintf(dest, sizeOfBuffer, format, mark );
     dest		[sizeOfBuffer-1]=0;
     va_end		(mark);
-}   */
+}
 #endif
 
 // token type definition
@@ -278,21 +271,6 @@ IC u32							xr_strlen				( const char* S )
 
 IC char*						xr_strlwr				(char* S)
 {	return strlwr(S);				}
-/*
-IC LPWSTR						strext(LPCWSTR S)
-{
-	return (LPWSTR)wcsrchr(S, '.');
-}
-
-IC u32							xr_strlen(LPCWSTR S)
-{
-	return (u32)wcslen(S);
-}
-
-IC LPWSTR						xr_strlwr(LPWSTR S)
-{
-	return wcslwr(S);
-}*/
 
 #ifdef BREAK_AT_STRCMP
 XRCORE_API	int					xr_strcmp				( const char* S1, const char* S2 );

@@ -115,20 +115,19 @@
 	#define _utimbuf utimbuf
 	#define MODULE_NAME 		"xrCoreB.dll"
 
-	#include <float.h>
 	// function redefinition
-	#define fabsf(a) fabs(a)
-	#define sqrtf(a) sqrt(a)
-	#define sinf(a) sin(a)
-	#define cosf(a) cos(a)
-	#define asinf(a) asin(a)
+    #define fabsf(a) fabs(a)
+    #define sinf(a) sin(a)
+    #define asinf(a) asin(a)
+    #define cosf(a) cos(a)
     #define acosf(a) acos(a)
-	#define tanf(a) tan(a)
-	#define atanf(a) atan(a)
-	#define expf(a) ::exp(a)
- 	#define floorf floor
-/*	#define atan2f atan2
-	#define logf log  */
+    #define tanf(a) tan(a)
+    #define atanf(a) atan(a)
+    #define sqrtf(a) sqrt(a)
+    #define expf(a) ::exp(a)
+    #define floorf floor
+    #define atan2f atan2
+    #define logf log
 	// float redefine
 	#define _PC_24 PC_24
 	#define _PC_53 PC_53

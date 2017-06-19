@@ -103,7 +103,7 @@ void FS_Path::_update(xr_string& dest, LPCSTR src)const
     dest			= xr_string(m_Path)+src;
     xr_strlwr		(dest);
 }*/
-void __stdcall FS_Path::rescan_path_cb	()
+void FS_Path::rescan_path_cb	()
 {
 	m_Flags.set(flNeedRescan,TRUE);
     FS.m_Flags.set(CLocatorAPI::flNeedRescan,TRUE);

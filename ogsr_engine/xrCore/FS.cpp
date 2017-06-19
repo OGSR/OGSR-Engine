@@ -282,11 +282,7 @@ IReader*	IReader::open_chunk(u32 ID)
 	} else return 0;
 };
 void	IReader::close()
-#ifdef __BORLANDC__
-{	xr_delete((IReader*&)this); }
-#else
 {	xr_delete((IReader*)this); }
-#endif
 
 IReader*	IReader::open_chunk_iterator	(u32& ID, IReader* _prev)
 {

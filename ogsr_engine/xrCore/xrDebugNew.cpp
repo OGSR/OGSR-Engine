@@ -680,9 +680,9 @@ LONG WINAPI UnhandledFilter	(_EXCEPTION_POINTERS *pExceptionInfo)
 
 //////////////////////////////////////////////////////////////////////
 #ifdef M_BORLAND
-/*	namespace std{
+	namespace std{
 		extern new_handler _RTLENTRY _EXPFUNC set_new_handler( new_handler new_p );
-	}; */
+	}; 
 
 	static void __cdecl def_new_handler() 
     {

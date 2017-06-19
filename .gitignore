@@ -9,12 +9,14 @@ Release
 Win32
 Debug
 3rd_party
+ipch
 
 # Бинарники #
 ############
 *.exe
 *.dll
 *.lib
+*.exp
 
 # Мусор студии #
 ############

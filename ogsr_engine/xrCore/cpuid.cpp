@@ -2,6 +2,7 @@
 #pragma hdrstop
 
 #include "cpuid.h"
+#include <intrin.h>
 
 //#ifdef _M_AMD64
 
@@ -86,6 +87,10 @@ int _cpuid (_processor_info *pinfo)
 
 #else
 
+#ifdef	M_VISUAL
+#include "mmintrin.h"
+#endif
+
 // These are the bit flags that get set on calling cpuid
 // with register eax set to 1
 #define _MMX_FEATURE_BIT			0x00800000
@@ -110,10 +115,56 @@ int IsCPUID()
     return 1;
 }
 
+
 /***
 * int _os_support(int feature,...)
 *   - Checks if OS Supports the capablity or not
 ****************************************************************/
+
+#ifdef M_VISUAL
+void _os_support(int feature, int& res)
+{
+
+    __try
+    {
+        switch (feature)
+        {
+        case _CPU_FEATURE_SSE:
+            __asm {
+                xorps xmm0, xmm0        // __asm _emit 0x0f __asm _emit 0x57 __asm _emit 0xc0
+                                        // executing SSE instruction
+            }
+            break;
+        case _CPU_FEATURE_SSE2:
+            __asm {
+                __asm _emit 0x66 __asm _emit 0x0f __asm _emit 0x57 __asm _emit 0xc0
+                                        // xorpd xmm0, xmm0
+                                        // executing WNI instruction
+            }
+            break;
+        case _CPU_FEATURE_3DNOW:
+            __asm 
+			{
+                __asm _emit 0x0f __asm _emit 0x0f __asm _emit 0xc0 __asm _emit 0x96 
+                                        // pfrcp mm0, mm0
+                                        // executing 3Dnow instruction
+            }
+            break;
+        case _CPU_FEATURE_MMX:
+            __asm 
+			{
+                pxor mm0, mm0           // executing MMX instruction
+            }
+            break;
+        }
+    } __except (EXCEPTION_EXECUTE_HANDLER) {
+		_mm_empty	();
+        return;
+    }
+	_mm_empty	();
+	res |= feature;
+}
+#endif
 
 #ifdef M_BORLAND
 // borland doesn't understand MMX/3DNow!/SSE/SSE2 asm opcodes
@@ -122,6 +173,7 @@ void _os_support(int feature, int& res)
 	res |= feature;
 }
 #endif
+
 
 /***
 *
@@ -274,7 +326,7 @@ int _cpuid (_processor_info *pinfo)
         return 0;
     }
 
-    __asm
+    _asm
     {
         push ebx
         push ecx

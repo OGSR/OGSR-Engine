@@ -19,8 +19,8 @@ public:
 
 	LPCSTR		GenerateName	(LPCSTR base_path, LPCSTR base_name, LPCSTR def_ext, LPSTR out_name);
 
-	bool 		GetOpenName		(TComponent *frm, LPCSTR initial, string_path& buffer, int sz_buf, bool bMulti=false, LPCSTR offset=0, int start_flt_ext=-1 );
-	bool 		GetOpenName		(TComponent *frm, LPCSTR initial, xr_string& buf, bool bMulti=false, LPCSTR offset=0, int start_flt_ext=-1 );
+	bool 		GetOpenName		(LPCSTR initial, string_path& buffer, int sz_buf, bool bMulti=false, LPCSTR offset=0, int start_flt_ext=-1 );
+	bool 		GetOpenName		(LPCSTR initial, xr_string& buf, bool bMulti=false, LPCSTR offset=0, int start_flt_ext=-1 );
 
 	bool 		GetSaveName		(LPCSTR initial, string_path& buffer, LPCSTR offset=0, int start_flt_ext=-1 );
 	bool 		GetSaveName		(LPCSTR initial, xr_string& buf, LPCSTR offset=0, int start_flt_ext=-1 );

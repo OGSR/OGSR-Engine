@@ -11,11 +11,11 @@
 #include <fcntl.h>
 #include <sys\stat.h>
 
-bool EFS_Utils::GetOpenName(TComponent *frm, LPCSTR initial, xr_string& buffer, bool bMulti, LPCSTR offset, int start_flt_ext )
+bool EFS_Utils::GetOpenName(LPCSTR initial, xr_string& buffer, bool bMulti, LPCSTR offset, int start_flt_ext )
 {
 	string_path		buf;
 	strcpy			(buf,buffer.c_str());
-	bool bRes		= GetOpenName(frm, initial,buf,sizeof(buf),bMulti,offset,start_flt_ext);
+	bool bRes		= GetOpenName(initial,buf,sizeof(buf),bMulti,offset,start_flt_ext);
 
 	if (bRes) 
 		buffer=(char*)buf;
