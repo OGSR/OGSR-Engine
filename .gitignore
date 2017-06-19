@@ -1,0 +1,21 @@
+# Папки #
+############
+ogsr_package
+__history
+Release
+Win32
+Debug
+3rd_party
+
+# Бинарники #
+############
+*.exe
+*.dll
+*.lib
+
+# Мусор студии #
+############
+*.suo
+*.obj
+*.sdf
+*.db

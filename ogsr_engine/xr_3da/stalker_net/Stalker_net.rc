@@ -1,0 +1,572 @@
+// Microsoft Visual C++ generated resource script.
+//
+#include "resource.h"
+
+#define APSTUDIO_READONLY_SYMBOLS
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 2 resource.
+//
+#include "afxres.h"
+
+/////////////////////////////////////////////////////////////////////////////
+#undef APSTUDIO_READONLY_SYMBOLS
+
+/////////////////////////////////////////////////////////////////////////////
+// Russian resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_RUS)
+#ifdef _WIN32
+LANGUAGE LANG_RUSSIAN, SUBLANG_DEFAULT
+#pragma code_page(1251)
+#endif //_WIN32
+
+#ifdef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// TEXTINCLUDE
+//
+
+1 TEXTINCLUDE 
+BEGIN
+    "resource.h\0"
+END
+
+2 TEXTINCLUDE 
+BEGIN
+    "#include ""afxres.h""\r\n"
+    "\0"
+END
+
+3 TEXTINCLUDE 
+BEGIN
+    "#define _AFX_NO_SPLITTER_RESOURCES\r\n"
+    "#define _AFX_NO_OLE_RESOURCES\r\n"
+    "#define _AFX_NO_TRACKER_RESOURCES\r\n"
+    "#define _AFX_NO_PROPERTY_RESOURCES\r\n"
+    "\r\n"
+    "#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)\r\n"
+    "LANGUAGE 9, 1\r\n"
+    "#pragma code_page(1252)\r\n"
+    "#include ""res\\Stalker_net.rc2""  // non-Microsoft Visual C++ edited resources\r\n"
+    "#include ""afxres.rc""         // Standard components\r\n"
+    "#endif\r\n"
+    "\0"
+END
+
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Icon
+//
+
+// Icon with lowest ID value placed first to ensure application icon
+// remains consistent on all systems.
+IDR_MAINFRAME           ICON                    "res\\Stalker_net.ico"
+IDR_MAINFRAME1          ICON                    "res\\idr_main.ico"
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Dialog
+//
+
+IDD_SERVERDLG DIALOGEX 0, 0, 303, 160
+STYLE DS_SETFONT | DS_FIXEDSYS | WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    LISTBOX         IDC_MAPLIST,0,0,135,124,LBS_SORT | LBS_HASSTRINGS | 
+                    LBS_NOINTEGRALHEIGHT | LBS_EXTENDEDSEL | WS_VSCROLL | 
+                    WS_TABSTOP
+    PUSHBUTTON      "Start Server",IDC_STARTSERVER,0,146,303,14,BS_NOTIFY | 
+                    NOT WS_TABSTOP
+    LISTBOX         IDC_MAPLIST2,167,0,135,124,LBS_HASSTRINGS | 
+                    LBS_NOINTEGRALHEIGHT | LBS_EXTENDEDSEL | WS_VSCROLL | 
+                    WS_TABSTOP
+    CONTROL         "Server Options",IDC_SERVEROPTIONS,"Button",
+                    BS_AUTOCHECKBOX | BS_PUSHLIKE | WS_TABSTOP,0,129,303,14
+    PUSHBUTTON      ">>",IDC_2LIST2,142,42,20,14
+    PUSHBUTTON      "<<",IDC_2LIST,142,72,20,14
+END
+
+IDD_CLIENTDLG DIALOGEX 0, 0, 304, 160
+STYLE DS_SETFONT | DS_FIXEDSYS | WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | 
+    WS_CLIPCHILDREN
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    PUSHBUTTON      "Join",IDC_JOIN,0,145,304,14
+    PUSHBUTTON      "DX",IDC_REFRESH,113,41,13,14,BS_NOTIFY | WS_DISABLED
+    CONTROL         "",IDC_SERVERSLIST,"SysListView32",LVS_REPORT | 
+                    LVS_SINGLESEL | LVS_SHOWSELALWAYS | LVS_ALIGNLEFT | 
+                    WS_TABSTOP,0,64,304,77,WS_EX_CLIENTEDGE
+    GROUPBOX        "GameSpy.net",IDC_STATIC,0,0,130,62
+    GROUPBOX        "Show Filters",IDC_STATIC,131,0,172,62
+    RADIOBUTTON     "Internet",IDC_INTERNET,21,9,43,10
+    RADIOBUTTON     "LAN",IDC_LAN,93,10,29,10
+    PUSHBUTTON      "Refresh List",IDC_GSUPDATELIST,3,24,106,14,BS_NOTIFY
+    PUSHBUTTON      "Quick Refresh",IDC_GSREFRESHLIST,3,41,106,14,BS_NOTIFY
+    CONTROL         "Empty",IDC_FEMPTY,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,
+                    141,13,36,10
+    CONTROL         "Full",IDC_FFULL,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,
+                    141,24,27,10
+    CONTROL         "With Password",IDC_FPASSWORD,"Button",BS_AUTOCHECKBOX | 
+                    WS_TABSTOP,141,35,63,10
+    CONTROL         "Without Password",IDC_FNOPASSWORD,"Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP,141,46,74,10
+    CONTROL         "Listen Servers",IDC_FLISTEN,"Button",BS_AUTOCHECKBOX | 
+                    WS_TABSTOP,218,13,61,10
+    CONTROL         "Without PunkBuster",IDC_FNOPUNKBUSTER,"Button",
+                    BS_AUTOCHECKBOX | WS_DISABLED | WS_TABSTOP,218,35,82,10
+    CONTROL         "Without FriendlyFire",IDC_FNOFF,"Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP,218,24,81,10
+END
+
+IDD_GAMETYPE DIALOGEX 0, 0, 145, 54
+STYLE DS_SETFONT | DS_FIXEDSYS | WS_CHILD | WS_CLIPSIBLINGS | WS_SYSMENU
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    RADIOBUTTON     "DeathMatch",IDC_GAMEDM,6,12,55,10
+    RADIOBUTTON     "TeamDeathMatch",IDC_GAMETDM,6,25,72,10
+    RADIOBUTTON     "ArtefactHunt",IDC_GAMEAHUNT,6,38,58,10
+    GROUPBOX        "Game Mode",IDC_STATIC,0,0,145,54
+END
+
+IDD_GAMEOPTIONS DIALOGEX 0, 0, 145, 221
+STYLE DS_SETFONT | DS_FIXEDSYS | WS_CHILD | WS_CLIPSIBLINGS
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    EDITTEXT        IDC_FRAGLIMIT,83,12,39,12,ES_AUTOHSCROLL | ES_NUMBER
+    LTEXT           "Frag Limit :",IDC_FL,11,13,36,8
+    EDITTEXT        IDC_TIMELIMIT,83,28,39,12,ES_AUTOHSCROLL | ES_NUMBER
+    LTEXT           "Time Limit (min) :",IDC_TL,11,29,54,8
+    CONTROL         "",IDC_SLIDER1,"msctls_trackbar32",WS_TABSTOP,75,42,63,
+                    12
+    LTEXT           "Friendly Fire:",IDC_FF,11,44,43,8
+    LTEXT           "",IDC_FFAMOUNT,55,44,22,8
+    COMBOBOX        IDC_ARTEFACTSNUM,83,87,39,102,CBS_DROPDOWN | CBS_SORT | 
+                    WS_VSCROLL | WS_TABSTOP
+    LTEXT           "Artefacts Num :",IDC_AN,11,90,52,8
+    EDITTEXT        IDC_ARTEFACTDELAY,83,104,39,12,ES_AUTOHSCROLL | 
+                    ES_NUMBER
+    LTEXT           "Artefact Delay (sec) :",IDC_ARD,11,105,70,8
+    EDITTEXT        IDC_ARTEFACTSTAY,83,121,39,12,ES_AUTOHSCROLL | ES_NUMBER
+    LTEXT           "Artefact Stay (min) :",IDC_AST,11,122,67,8
+    CONTROL         "No Anomalies",IDC_NOANOMALIES,"Button",BS_AUTOCHECKBOX | 
+                    WS_TABSTOP,12,137,59,10
+    GROUPBOX        "Game Options",IDC_STATIC,0,0,145,220
+    CONTROL         "Auto-Team Balance",IDC_AUTOTEAMBALANCE,"Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP,11,59,78,10
+    CONTROL         "Friendly Indicators",IDC_FRIENDLYINDICATORS,"Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP,12,168,75,10
+    EDITTEXT        IDC_ANMSETLENGTH,83,151,39,12,ES_AUTOHSCROLL | ES_NUMBER
+    LTEXT           "Anomaly Time  (min) :",IDC_AST2,11,152,70,8
+    EDITTEXT        IDC_WARMUPTIME,83,194,39,12,ES_AUTOHSCROLL | ES_NUMBER
+    LTEXT           "WarmUp Time  (sec) :",IDC_WARMUPSTATIC,11,196,70,8
+    CONTROL         "Auto-Team Swap",IDC_AUTOTEAMSWAP,"Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP,11,73,71,10
+    CONTROL         "Friendly Names",IDC_FRIENDLYNAMES,"Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP,12,180,65,10
+END
+
+IDD_RESPAWN DIALOGEX 0, 0, 145, 95
+STYLE DS_SETFONT | DS_FIXEDSYS | WS_CHILD | WS_CLIPSIBLINGS | WS_SYSMENU
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    RADIOBUTTON     "Reinforcement, sec.",IDC_REINFORCEMENT,10,24,81,10
+    RADIOBUTTON     "Artefact Captured",IDC_ARTEFACTCAPTURED,10,37,75,10
+    EDITTEXT        IDC_REINFORCEMENTTIME,93,23,42,12,ES_AUTOHSCROLL | 
+                    ES_NUMBER
+    GROUPBOX        "Respawn Options",IDC_STATIC,0,0,145,94
+    EDITTEXT        IDC_PROINTFREEZETIME,93,51,42,12,ES_AUTOHSCROLL | 
+                    ES_NUMBER
+    LTEXT           "Point Freeze Time, sec. :",IDC_STATIC,11,52,80,8
+    EDITTEXT        IDC_DAMAGEBLOCKLIMIT,93,66,42,12,ES_AUTOHSCROLL | 
+                    ES_NUMBER
+    LTEXT           "Damage Block, sec. :",IDC_STATIC,11,68,72,8
+    CONTROL         "Damage Block Indicators",IDC_DMGBLKIND,"Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP,10,81,94,10
+    RADIOBUTTON     "Force Respawn, sec.",IDC_FORCERESPAWN,10,11,81,10
+    EDITTEXT        IDC_FORCERESPAWNTIME,93,10,42,12,ES_AUTOHSCROLL | 
+                    ES_NUMBER
+END
+
+IDD_SUBDLG DIALOGEX 0, 0, 186, 95
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CLIPSIBLINGS | 
+    WS_CLIPCHILDREN | WS_CAPTION | WS_SYSMENU
+CAPTION "Dialog"
+FONT 8, "MS Sans Serif", 0, 0, 0x0
+BEGIN
+    DEFPUSHBUTTON   "OK",IDOK,129,7,50,16
+    PUSHBUTTON      "Cancel",IDCANCEL,129,26,50,16
+END
+
+IDD_SERVEROPTS2 DIALOGEX 0, 0, 163, 122
+STYLE DS_SETFONT | DS_FIXEDSYS | WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | 
+    WS_CLIPCHILDREN | WS_VSCROLL
+EXSTYLE WS_EX_CLIENTEDGE
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+END
+
+IDD_SERVEROPT DIALOGEX 0, 0, 145, 178
+STYLE DS_SETFONT | DS_FIXEDSYS | WS_CHILD | WS_CLIPSIBLINGS
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    EDITTEXT        IDC_HOSTNAME,51,11,88,12,ES_AUTOHSCROLL
+    EDITTEXT        IDC_PASSWORD,51,28,88,12,ES_PASSWORD | ES_AUTOHSCROLL
+    EDITTEXT        IDC_MAXPLAYERS,57,45,82,12,ES_AUTOHSCROLL | ES_NUMBER
+    CONTROL         "SpectrMode. Auto switch,s.",IDC_SPECTATORONLY,"Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP,5,153,104,10
+    EDITTEXT        IDC_SPECTRTIME,111,153,28,12,ES_AUTOHSCROLL | ES_NUMBER
+    CONTROL         "Dedicated",IDC_DEDICATED,"Button",BS_AUTOCHECKBOX | 
+                    WS_TABSTOP,5,117,48,10
+    CONTROL         "Public",IDC_PUBLIC,"Button",BS_AUTOCHECKBOX | 
+                    WS_TABSTOP,5,129,34,10
+    GROUPBOX        "Server Options",IDC_STATIC,0,0,145,178
+    LTEXT           "Host Name :",IDC_STATIC,5,12,40,8
+    LTEXT           "Password :",IDC_STATIC,5,29,36,8
+    LTEXT           "Max Players :",IDC_STATIC,5,46,44,8
+    CONTROL         "Check CDKey",IDC_CDKEY,"Button",BS_AUTOCHECKBOX | 
+                    WS_TABSTOP,5,141,59,10
+    CONTROL         "Allow Voting",IDC_VOTINGALLOWED,"Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP,5,164,55,10
+    EDITTEXT        IDC_SERVERPORT,74,70,31,12,ES_AUTOHSCROLL | ES_NUMBER
+    LTEXT           "Server:",IDC_STATIC,40,71,25,8
+    EDITTEXT        IDC_GAMESPYPORT,74,96,31,12,ES_AUTOHSCROLL | ES_NUMBER
+    LTEXT           "GameSpy:",IDC_STATIC,40,97,34,8
+    EDITTEXT        IDC_CLIENTPORT,74,83,31,12,ES_AUTOHSCROLL | ES_NUMBER
+    LTEXT           "Client:",IDC_STATIC,40,85,22,8
+    GROUPBOX        "Ports (0 - 65535):",IDC_STATIC,4,60,135,55
+    PUSHBUTTON      "...",IDC_SV_PORTBUTTON,109,70,14,12
+    PUSHBUTTON      "...",IDC_CL_PORTBUTTON,109,83,14,12
+    PUSHBUTTON      "...",IDC_GS_PORTBUTTON,109,96,14,12
+END
+
+IDD_CDKEYDLG DIALOGEX 0, 0, 165, 49
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CLIPSIBLINGS | 
+    WS_CAPTION | WS_SYSMENU
+EXSTYLE WS_EX_TOOLWINDOW
+CAPTION "Enter your CD-Key"
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    EDITTEXT        IDC_CDK1,7,7,37,14,ES_CENTER | ES_AUTOHSCROLL | 
+                    ES_WANTRETURN
+    EDITTEXT        IDC_CDK2,45,7,37,14,ES_CENTER | ES_AUTOHSCROLL | 
+                    ES_WANTRETURN
+    EDITTEXT        IDC_CDK3,83,7,37,14,ES_CENTER | ES_AUTOHSCROLL | 
+                    ES_WANTRETURN
+    EDITTEXT        IDC_CDK4,121,7,37,14,ES_CENTER | ES_AUTOHSCROLL | 
+                    ES_WANTRETURN
+    PUSHBUTTON      "Cancel",IDCANCEL,108,28,50,14
+    DEFPUSHBUTTON   "Ok",IDOK,7,28,50,14
+END
+
+IDD_WEATHEROPTIONS DIALOGEX 0, 0, 145, 48
+STYLE DS_SETFONT | DS_FIXEDSYS | WS_CHILD | WS_CLIPSIBLINGS
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    LTEXT           "Starting Weather:",IDC_STATIC,9,12,59,8
+    GROUPBOX        "Weather Options",IDC_STATIC,0,0,145,48
+    COMBOBOX        IDC_STARTWEATHER,72,11,65,70,CBS_DROPDOWN | WS_VSCROLL | 
+                    WS_TABSTOP
+    LTEXT           "Rate of Change:",IDC_STATIC,9,31,54,8
+    EDITTEXT        IDC_WEATHERSPEED,72,28,40,14,ES_AUTOHSCROLL
+END
+
+IDD_SPECTATOROPTS DIALOGEX 0, 0, 145, 79
+STYLE DS_SETFONT | DS_FIXEDSYS | WS_CHILD | WS_CLIPSIBLINGS
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    GROUPBOX        "Spectator Options",IDC_STATIC,0,0,145,77
+    CONTROL         "Free Fly ",IDC_SP_FFM,"Button",BS_AUTOCHECKBOX | 
+                    WS_TABSTOP,17,37,44,10
+    CONTROL         "First Eye ",IDC_SP_FEM,"Button",BS_AUTOCHECKBOX | 
+                    WS_TABSTOP,17,49,46,10
+    CONTROL         "Look At ",IDC_SP_LAM,"Button",BS_AUTOCHECKBOX | 
+                    WS_TABSTOP,78,38,42,10
+    CONTROL         "Free Look ",IDC_SP_FLM,"Button",BS_AUTOCHECKBOX | 
+                    WS_TABSTOP,78,50,49,10
+    CONTROL         "Team Only",IDC_SP_TEAMONLY,"Button",BS_AUTOCHECKBOX | 
+                    WS_TABSTOP,47,13,50,10
+    GROUPBOX        "Modes",IDC_STATIC,9,26,126,41
+END
+
+IDD_PORTSDLG DIALOGEX 0, 0, 87, 156
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | 
+    WS_SYSMENU
+EXSTYLE WS_EX_TOOLWINDOW
+CAPTION "Select Port"
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    DEFPUSHBUTTON   "Select",IDOK,7,138,31,11
+    PUSHBUTTON      "Cancel",IDCANCEL,49,138,31,11
+    LISTBOX         IDC_PORTS,7,7,73,127,LBS_HASSTRINGS | 
+                    LBS_NOINTEGRALHEIGHT | WS_VSCROLL | WS_TABSTOP,
+                    WS_EX_CLIENTEDGE
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// DESIGNINFO
+//
+
+#ifdef APSTUDIO_INVOKED
+GUIDELINES DESIGNINFO 
+BEGIN
+    IDD_SERVERDLG, DIALOG
+    BEGIN
+        RIGHTMARGIN, 302
+        BOTTOMMARGIN, 153
+    END
+
+    IDD_CLIENTDLG, DIALOG
+    BEGIN
+        BOTTOMMARGIN, 143
+    END
+
+    IDD_GAMEOPTIONS, DIALOG
+    BEGIN
+        BOTTOMMARGIN, 220
+    END
+
+    IDD_SUBDLG, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 179
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 88
+    END
+
+    IDD_SERVEROPTS2, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 145
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 115
+    END
+
+    IDD_SERVEROPT, DIALOG
+    BEGIN
+        BOTTOMMARGIN, 177
+    END
+
+    IDD_CDKEYDLG, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 158
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 42
+    END
+
+    IDD_PORTSDLG, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 80
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 149
+    END
+END
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Bitmap
+//
+
+IDB_BITMAP1             BITMAP                  "res\\IconList16.bmp"
+IDB_PBGS261             BITMAP                  "res\\powered_by_gamespy_web_261x50.bmp"
+IDB_PBGS130             BITMAP                  "res\\powered_by_gamespy_web_130x30.bmp"
+#endif    // Russian resources
+/////////////////////////////////////////////////////////////////////////////
+
+
+/////////////////////////////////////////////////////////////////////////////
+// English (U.S.) resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
+#ifdef _WIN32
+LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
+#pragma code_page(1252)
+#endif //_WIN32
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Dialog
+//
+
+IDD_STALKER_NET_DIALOG DIALOGEX 0, 0, 322, 260
+STYLE DS_SETFONT | DS_MODALFRAME | DS_NOIDLEMSG | DS_3DLOOK | DS_FIXEDSYS | 
+    WS_MINIMIZEBOX | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN | 
+    WS_CAPTION | WS_SYSMENU
+EXSTYLE WS_EX_CONTROLPARENT | WS_EX_APPWINDOW | WS_EX_NOINHERITLAYOUT
+CAPTION "Stalker_net"
+FONT 8, "MS Shell Dlg", 400, 0, 0xCC
+BEGIN
+    CONTROL         "",IDC_TAB1,"SysTabControl32",WS_TABSTOP,7,74,308,179,
+                    WS_EX_ACCEPTFILES
+    CONTROL         "don't catch input",IDC_CATCHINPUT,"Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP,7,25,69,10
+    EDITTEXT        IDC_PLAYERNAME,114,7,87,14,ES_AUTOHSCROLL | 
+                    ES_WANTRETURN | NOT WS_BORDER,WS_EX_CLIENTEDGE
+    LTEXT           "Player :",IDC_STATIC,88,9,25,8
+    CONTROL         "build",IDC_BUILD,"Button",BS_AUTOCHECKBOX | NOT 
+                    WS_VISIBLE | WS_TABSTOP,7,7,31,10
+    CONTROL         156,IDC_STATIC,"Static",SS_BITMAP | SS_CENTERIMAGE,202,7,
+                    113,33,WS_EX_TRANSPARENT
+    PUSHBUTTON      "- No CD Key -",IDC_CDKEYBTN,39,41,125,12,BS_FLAT
+    LTEXT           "CD Key :",IDC_STATIC,7,41,29,12,SS_CENTERIMAGE
+    CONTROL         "prefetch",IDC_NOPREFETCH,"Button",BS_AUTOCHECKBOX | NOT 
+                    WS_VISIBLE | WS_TABSTOP,7,16,43,10
+    CONTROL         " R2 ",IDC_R2,"Button",BS_AUTOCHECKBOX | NOT WS_VISIBLE | 
+                    WS_TABSTOP,53,7,29,10
+    CONTROL         "distort",IDC_DISTORT,"Button",BS_AUTOCHECKBOX | NOT 
+                    WS_VISIBLE | WS_TABSTOP,53,16,37,10
+    PUSHBUTTON      "...",IDC_LOGSPATH,52,55,263,12,BS_LEFT | BS_FLAT
+    LTEXT           "Config Path:",IDC_STATIC,7,55,42,12,SS_CENTERIMAGE
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// DESIGNINFO
+//
+
+#ifdef APSTUDIO_INVOKED
+GUIDELINES DESIGNINFO 
+BEGIN
+    IDD_STALKER_NET_DIALOG, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 315
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 253
+    END
+END
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Version
+//
+
+VS_VERSION_INFO VERSIONINFO
+ FILEVERSION 1,0,0,1
+ PRODUCTVERSION 1,0,0,1
+ FILEFLAGSMASK 0x3fL
+#ifdef _DEBUG
+ FILEFLAGS 0x1L
+#else
+ FILEFLAGS 0x0L
+#endif
+ FILEOS 0x4L
+ FILETYPE 0x1L
+ FILESUBTYPE 0x0L
+BEGIN
+    BLOCK "StringFileInfo"
+    BEGIN
+        BLOCK "040904e4"
+        BEGIN
+            VALUE "CompanyName", "GSC Game World"
+            VALUE "FileDescription", "Win GUI for S.T.A.L.K.E.R. MP"
+            VALUE "FileVersion", "1.0.0.1"
+            VALUE "InternalName", "Stalker_net.exe"
+            VALUE "LegalCopyright", "TODO: (c) <Company name>.  All rights reserved."
+            VALUE "OriginalFilename", "Stalker_net.exe"
+            VALUE "ProductName", "Stalker.NET"
+            VALUE "ProductVersion", "1.0.0.1"
+        END
+    END
+    BLOCK "VarFileInfo"
+    BEGIN
+        VALUE "Translation", 0x409, 1252
+    END
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// String Table
+//
+
+STRINGTABLE 
+BEGIN
+    IDP_SOCKETS_INIT_FAILED "Windows sockets initialization failed."
+END
+
+#endif    // English (U.S.) resources
+/////////////////////////////////////////////////////////////////////////////
+
+
+/////////////////////////////////////////////////////////////////////////////
+// English (U.K.) resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENG)
+#ifdef _WIN32
+LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_UK
+#pragma code_page(1252)
+#endif //_WIN32
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Dialog
+//
+
+IDD_PSWDLG DIALOGEX 0, 0, 134, 50
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CLIPSIBLINGS | 
+    WS_SYSMENU
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    DEFPUSHBUTTON   "OK",IDOK,7,29,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,77,29,50,14
+    EDITTEXT        IDC_EDIT1,45,7,82,14,ES_PASSWORD | ES_AUTOHSCROLL
+    LTEXT           "Password :",IDC_STATIC,7,8,36,8
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// DESIGNINFO
+//
+
+#ifdef APSTUDIO_INVOKED
+GUIDELINES DESIGNINFO 
+BEGIN
+    IDD_PSWDLG, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 127
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 43
+    END
+END
+#endif    // APSTUDIO_INVOKED
+
+#endif    // English (U.K.) resources
+/////////////////////////////////////////////////////////////////////////////
+
+
+
+#ifndef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 3 resource.
+//
+#define _AFX_NO_SPLITTER_RESOURCES
+#define _AFX_NO_OLE_RESOURCES
+#define _AFX_NO_TRACKER_RESOURCES
+#define _AFX_NO_PROPERTY_RESOURCES
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
+LANGUAGE 9, 1
+#pragma code_page(1252)
+#include "res\Stalker_net.rc2"  // non-Microsoft Visual C++ edited resources
+#include "afxres.rc"         // Standard components
+#endif
+
+/////////////////////////////////////////////////////////////////////////////
+#endif    // not APSTUDIO_INVOKED
+

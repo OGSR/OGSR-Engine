@@ -1,0 +1,712 @@
+﻿	<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+		<PropertyGroup>
+			<ProjectGuid>{BABE078F-3A63-4B1B-8170-1E7D7C7BF2B4}</ProjectGuid>
+			<ProjectType>CppDynamicLibrary</ProjectType>
+			<Config Condition="'$(Config)'==''">Release</Config>
+			<ProjectVersion>12.0</ProjectVersion>
+		</PropertyGroup>
+		<PropertyGroup Condition="'$(Config)'=='Base' or '$(Base)'!=''">
+			<Base>true</Base>
+		</PropertyGroup>
+		<PropertyGroup Condition="'$(Config)'=='Debug' or '$(Cfg_1)'!=''">
+			<Cfg_1>true</Cfg_1>
+			<CfgParent>Base</CfgParent>
+			<Base>true</Base>
+		</PropertyGroup>
+		<PropertyGroup Condition="'$(Config)'=='Release' or '$(Cfg_2)'!=''">
+			<Cfg_2>true</Cfg_2>
+			<CfgParent>Base</CfgParent>
+			<Base>true</Base>
+		</PropertyGroup>
+		<PropertyGroup Condition="'$(Base)'!=''">
+			<BCC_PCHCache>true</BCC_PCHCache>
+			<BPILibOutputDir>X:\ogsr_engine\_LIB\SDK\</BPILibOutputDir>
+			<IntermediateOutputDir>X:\ogsr_engine\_TEMP\SDK\core\</IntermediateOutputDir>
+			<LinkPackageStatics>bcbsmp.lib;vclx.lib</LinkPackageStatics>
+			<LinkPackageImports>rtl.bpi;vcl.bpi</LinkPackageImports>
+			<IncludePath>blackbox\;$(IncludePath)</IncludePath>
+			<TASM_Defines>_EDITOR _XRCOREB XRCORE_EXPORTS;$(TASM_Defines)</TASM_Defines>
+			<PackageImports>rtl.bpi;vcl.bpi;editor.bpi</PackageImports>
+			<DCC_ObjOutput>X:\ogsr_engine\_TEMP\SDK\core\</DCC_ObjOutput>
+			<BRCC_Defines>_EDITOR;_XRCOREB;XRCORE_EXPORTS;$(BRCC_Defines)</BRCC_Defines>
+			<DCC_CBuilderOutput>JPHNE</DCC_CBuilderOutput>
+			<BCC_Defines>NO_STRICT;_EDITOR;_XRCOREB;XRCORE_EXPORTS;$(BCC_Defines)</BCC_Defines>
+			<ILINK_AppType>Windows</ILINK_AppType>
+			<DCC_UnitSearchPath>.\;$(BDS)\lib;$(BDS)\lib\obj;$(DCC_UnitSearchPath)</DCC_UnitSearchPath>
+			<DCC_IncludePath>.\;$(BDS)\lib;$(BDS)\lib\obj;$(DCC_IncludePath)</DCC_IncludePath>
+			<BRCC_IncludePath>blackbox;$(ETOOLS_DIR);$(DXSDK_DIR)\Include;$(BDS)\include;$(BDS)\include\vcl;$(BDS)\Include\Mfc;$(BDS)\include\dinkumware;$(BRCC_IncludePath)</BRCC_IncludePath>
+			<BRCC_OutputDir>X:\ogsr_engine\_TEMP\SDK\core\</BRCC_OutputDir>
+			<BCC_OptimizeForSpeed>true</BCC_OptimizeForSpeed>
+			<BCC_SourceDebuggingOn>true</BCC_SourceDebuggingOn>
+			<TASM_IncludePath>blackbox;$(ETOOLS_DIR);$(DXSDK_DIR)\Include;$(BDS)\include;$(BDS)\include\vcl;$(BDS)\Include\Mfc;$(BDS)\include\dinkumware;$(TASM_IncludePath)</TASM_IncludePath>
+			<UsePackages>true</UsePackages>
+			<BCC_IncludePath>$(BDS)\include\dinkumware;$(BDS)\include;$(BDS)\include\vcl;$(BCC_IncludePath)</BCC_IncludePath>
+			<ILINK_GenerateImportLibrary>true</ILINK_GenerateImportLibrary>
+			<BCC_UserSuppliedOptions> -a4 -wpin -wdef -wstl -wamp -wbbf -Q -6 -wcln -wucp -pс -wstv -wnak -ff -Vx -wnod -wamb -wstu -wasm -xp -wprc -Ve -wsig -xf</BCC_UserSuppliedOptions>
+			<AllPackageLibs>rtl.lib;vcl.lib;bcbsmp.lib;vclx.lib</AllPackageLibs>
+			<ILINK_WinAppType>DLL</ILINK_WinAppType>
+			<FinalOutputDir>X:\ogsr_engine\_BIN\SDK\</FinalOutputDir>
+			<BCC_GenerateMultithreaded>true</BCC_GenerateMultithreaded>
+			<TASM_AdditionalSwitches> /mu /w2 X:\ogsr_engine\_TEMP\SDK\core\</TASM_AdditionalSwitches>
+			<TASM_Debugging>None</TASM_Debugging>
+			<ILINK_IntermediateOutputPath>X:\ogsr_engine\_TEMP\SDK\core</ILINK_IntermediateOutputPath>
+			<ILINK_BpiLibOutputDir>X:\ogsr_engine\_LIB\SDK</ILINK_BpiLibOutputDir>
+			<DCC_DcuOutput>X:\ogsr_engine\_TEMP\SDK\core\</DCC_DcuOutput>
+			<BCC_GenerateDLL>true</BCC_GenerateDLL>
+			<BCC_DebugLineNumbers>true</BCC_DebugLineNumbers>
+			<ILINK_LibraryPath>blackbox\;$(BDS)\lib\obj;X:\ogsr_engine\_LIB\SDK;X:\3rd_party\_LIB\SDK\components;$(ILINK_LibraryPath)</ILINK_LibraryPath>
+			<Multithreaded>true</Multithreaded>
+			<OutputExt>dll</OutputExt>
+			<BCC_OutputDir>X:\ogsr_engine\_TEMP\SDK\core\</BCC_OutputDir>
+			<DCC_AdditionalSwitches> -M</DCC_AdditionalSwitches>
+			<DynamicRTL>true</DynamicRTL>
+		</PropertyGroup>
+		<PropertyGroup Condition="'$(Cfg_1)'!=''">
+			<BCC_Defines>_DEBUG;$(BCC_Defines);$(BCC_Defines)</BCC_Defines>
+			<BCC_UserSuppliedOptions> -a4 -wpin -wdef -wstl -wamp -wbbf -Q -6 -wcln -wucp -pc -wstv -wnak -ff -Vx -wnod -wamb -wstu -wasm -xp -wprc -Ve -wsig -xf -k</BCC_UserSuppliedOptions>
+			<ILINK_LibraryPath>$(BDS)\lib\debug;$(ILINK_LibraryPath);$(ILINK_LibraryPath)</ILINK_LibraryPath>
+			<IntermediateOutputDir>Debug_Build</IntermediateOutputDir>
+			<ILINK_FullDebugInfo>true</ILINK_FullDebugInfo>
+			<DCC_Define>DEBUG;$(DCC_Define);$(DCC_Define)</DCC_Define>
+			<TASM_DisplaySourceLines>true</TASM_DisplaySourceLines>
+			<ILINK_DisableIncrementalLinking>true</ILINK_DisableIncrementalLinking>
+			<BCC_DisableOptimizations>true</BCC_DisableOptimizations>
+			<TASM_Debugging>Full</TASM_Debugging>
+			<DCC_DebugInfoInExe>true</DCC_DebugInfoInExe>
+			<BCC_InlineFunctionExpansion>false</BCC_InlineFunctionExpansion>
+			<DCC_AdditionalSwitches> -M -V</DCC_AdditionalSwitches>
+		</PropertyGroup>
+		<PropertyGroup Condition="'$(Cfg_2)'!=''">
+			<BCC_PCHUsage>GenerateAndUse</BCC_PCHUsage>
+			<BCC_Defines>NDEBUG;$(BCC_Defines);$(BCC_Defines)</BCC_Defines>
+			<BCC_UserSuppliedOptions> -a4 -wpin -wdef -wstl -wamp -wbbf -Q -6 -wcln -wucp -pc -wstv -wnak -ff -Vx -wnod -wamb -wstu -wasm -xp -wprc -Ve -wsig -xf -r</BCC_UserSuppliedOptions>
+			<DCC_AdditionalSwitches> -M -$O+</DCC_AdditionalSwitches>
+			<ILINK_LibraryPath>$(BDS)\lib\release;$(ILINK_LibraryPath)</ILINK_LibraryPath>
+		</PropertyGroup>
+		<ItemGroup>
+			<None Include="xr_trims.h">
+				<BuildOrder>215</BuildOrder>
+				<BuildOrder>0</BuildOrder>
+			</None>
+			<None Include="xrCore.h">
+				<BuildOrder>218</BuildOrder>
+				<BuildOrder>1</BuildOrder>
+			</None>
+			<None Include="xrCPU_Pipe.h">
+				<BuildOrder>221</BuildOrder>
+				<BuildOrder>2</BuildOrder>
+			</None>
+			<None Include="stdafx.h">
+				<BuildOrder>3</BuildOrder>
+				<BuildOrder>206</BuildOrder>
+			</None>
+			<None Include="vector.h">
+				<BuildOrder>4</BuildOrder>
+				<BuildOrder>209</BuildOrder>
+			</None>
+			<None Include="Xr_ini.h">
+				<BuildOrder>5</BuildOrder>
+				<BuildOrder>212</BuildOrder>
+			</None>
+			<None Include="xrDebug_macros.h">
+				<BuildOrder>6</BuildOrder>
+				<BuildOrder>224</BuildOrder>
+			</None>
+			<None Include="xrMemory_pso.h">
+				<BuildOrder>7</BuildOrder>
+				<BuildOrder>236</BuildOrder>
+			</None>
+			<None Include="xrMemory_subst_borland.h">
+				<BuildOrder>8</BuildOrder>
+				<BuildOrder>239</BuildOrder>
+			</None>
+			<None Include="xrMemory_subst_msvc.h">
+				<BuildOrder>9</BuildOrder>
+				<BuildOrder>242</BuildOrder>
+			</None>
+			<None Include="xrMemory.h">
+				<BuildOrder>227</BuildOrder>
+				<BuildOrder>10</BuildOrder>
+			</None>
+			<None Include="xrMemory_align.h">
+				<BuildOrder>230</BuildOrder>
+				<BuildOrder>11</BuildOrder>
+			</None>
+			<None Include="xrMemory_POOL.h">
+				<BuildOrder>233</BuildOrder>
+				<BuildOrder>12</BuildOrder>
+			</None>
+			<None Include="FixedVector.h">
+				<BuildOrder>176</BuildOrder>
+				<BuildOrder>13</BuildOrder>
+			</None>
+			<None Include="FS.h">
+				<BuildOrder>179</BuildOrder>
+				<BuildOrder>14</BuildOrder>
+			</None>
+			<None Include="FS_internal.h">
+				<BuildOrder>182</BuildOrder>
+				<BuildOrder>15</BuildOrder>
+			</None>
+			<None Include="FileSystem.h">
+				<BuildOrder>167</BuildOrder>
+				<BuildOrder>16</BuildOrder>
+			</None>
+			<None Include="FixedMap.h">
+				<BuildOrder>170</BuildOrder>
+				<BuildOrder>17</BuildOrder>
+			</None>
+			<None Include="FixedSet.h">
+				<BuildOrder>18</BuildOrder>
+				<BuildOrder>173</BuildOrder>
+			</None>
+			<None Include="FTimer.h">
+				<BuildOrder>19</BuildOrder>
+				<BuildOrder>185</BuildOrder>
+			</None>
+			<None Include="rt_compressor.h">
+				<BuildOrder>20</BuildOrder>
+				<BuildOrder>197</BuildOrder>
+			</None>
+			<None Include="rt_lzo.h">
+				<BuildOrder>21</BuildOrder>
+				<BuildOrder>200</BuildOrder>
+			</None>
+			<None Include="rt_lzo_config.h">
+				<BuildOrder>22</BuildOrder>
+				<BuildOrder>203</BuildOrder>
+			</None>
+			<None Include="log.h">
+				<BuildOrder>23</BuildOrder>
+				<BuildOrder>188</BuildOrder>
+			</None>
+			<None Include="lzhuf.h">
+				<BuildOrder>24</BuildOrder>
+				<BuildOrder>191</BuildOrder>
+			</None>
+			<None Include="resource.h">
+				<BuildOrder>25</BuildOrder>
+				<BuildOrder>194</BuildOrder>
+			</None>
+			<None Include="xrPool.h">
+				<BuildOrder>26</BuildOrder>
+				<BuildOrder>245</BuildOrder>
+			</None>
+			<CppCompile Include="blackbox\IsNT.cpp">
+				<BuildOrder>296</BuildOrder>
+				<BuildOrder>27</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="blackbox\NT4ProcessInfo.cpp">
+				<BuildOrder>299</BuildOrder>
+				<BuildOrder>28</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="blackbox\stdafx_.cpp">
+				<BuildOrder>302</BuildOrder>
+				<BuildOrder>29</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="blackbox\BSUFunctions.cpp">
+				<BuildOrder>30</BuildOrder>
+				<BuildOrder>287</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="blackbox\CrashHandler.cpp">
+				<BuildOrder>31</BuildOrder>
+				<BuildOrder>290</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="blackbox\GetLoadedModules.cpp">
+				<BuildOrder>32</BuildOrder>
+				<BuildOrder>293</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="rt_compressor9.cpp">
+				<BuildOrder>33</BuildOrder>
+				<BuildOrder>305</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="rt_lzo1x_d2.cpp">
+				<BuildOrder>34</BuildOrder>
+				<BuildOrder>317</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="rt_lzo1x_d3.cpp">
+				<BuildOrder>35</BuildOrder>
+				<BuildOrder>320</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="rt_lzo_init.cpp">
+				<BuildOrder>36</BuildOrder>
+				<BuildOrder>323</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="rt_lzo1x_1.cpp">
+				<BuildOrder>37</BuildOrder>
+				<BuildOrder>308</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="rt_lzo1x_9x.cpp">
+				<BuildOrder>38</BuildOrder>
+				<BuildOrder>311</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="rt_lzo1x_d1.cpp">
+				<BuildOrder>39</BuildOrder>
+				<BuildOrder>314</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="crc32.cpp">
+				<BuildOrder>40</BuildOrder>
+				<BuildOrder>257</BuildOrder>
+			</CppCompile>
+			<None Include="fastdelegate.h">
+				<BuildOrder>41</BuildOrder>
+				<BuildOrder>260</BuildOrder>
+			</None>
+			<CppCompile Include="xrSyncronize.cpp">
+				<BuildOrder>42</BuildOrder>
+				<BuildOrder>263</BuildOrder>
+			</CppCompile>
+			<None Include="xrsharedmem.h">
+				<BuildOrder>43</BuildOrder>
+				<BuildOrder>248</BuildOrder>
+			</None>
+			<None Include="xrstring.h">
+				<BuildOrder>44</BuildOrder>
+				<BuildOrder>251</BuildOrder>
+			</None>
+			<CppCompile Include="_std_extensions.cpp">
+				<BuildOrder>45</BuildOrder>
+				<BuildOrder>254</BuildOrder>
+			</CppCompile>
+			<None Include="D3DX_Wrapper.h">
+				<BuildOrder>46</BuildOrder>
+				<BuildOrder>266</BuildOrder>
+			</None>
+			<CppCompile Include="xrDebugNew.cpp">
+				<BuildOrder>47</BuildOrder>
+				<BuildOrder>278</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="blackbox\TLHELPProcessInfo.cpp">
+				<BuildOrder>48</BuildOrder>
+				<BuildOrder>281</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="blackbox\BlackBoxUI.cpp">
+				<BuildOrder>49</BuildOrder>
+				<BuildOrder>284</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="ELocatorAPI.cpp">
+				<BuildOrder>50</BuildOrder>
+				<BuildOrder>269</BuildOrder>
+			</CppCompile>
+			<None Include="LocatorAPI_defs.h">
+				<BuildOrder>51</BuildOrder>
+				<BuildOrder>272</BuildOrder>
+			</None>
+			<CppCompile Include="LocatorAPI_defs.cpp">
+				<BuildOrder>52</BuildOrder>
+				<BuildOrder>275</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="clsid.cpp">
+				<BuildOrder>56</BuildOrder>
+				<BuildOrder>55</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="FileSystem_borland.cpp">
+				<BuildOrder>59</BuildOrder>
+				<BuildOrder>56</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="FileSystem.cpp">
+				<BuildOrder>62</BuildOrder>
+				<BuildOrder>60</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="FS.cpp">
+				<BuildOrder>58</BuildOrder>
+				<BuildOrder>47</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="xr_trims.cpp">
+				<BuildOrder>59</BuildOrder>
+				<BuildOrder>50</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="Xr_ini.cpp">
+				<BuildOrder>54</BuildOrder>
+				<BuildOrder>53</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="xrMemory_subst_msvc.cpp">
+				<BuildOrder>65</BuildOrder>
+				<BuildOrder>64</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="rt_compressor.cpp">
+				<BuildOrder>77</BuildOrder>
+				<BuildOrder>62</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="FTimer.cpp">
+				<BuildOrder>80</BuildOrder>
+				<BuildOrder>63</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="xrstring.cpp">
+				<BuildOrder>83</BuildOrder>
+				<BuildOrder>80</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="xrMemory_POOL.cpp">
+				<BuildOrder>68</BuildOrder>
+				<BuildOrder>65</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="xrMemory_subst_borland.cpp">
+				<BuildOrder>71</BuildOrder>
+				<BuildOrder>66</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="rt_lzo.cpp">
+				<BuildOrder>74</BuildOrder>
+				<BuildOrder>61</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="cpuid.cpp">
+				<BuildOrder>67</BuildOrder>
+				<BuildOrder>14</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="stdafx.cpp">
+				<BuildOrder>68</BuildOrder>
+				<BuildOrder>17</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="xrCore.cpp">
+				<BuildOrder>69</BuildOrder>
+				<BuildOrder>20</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="xrMemory_pso_Fill32.cpp">
+				<BuildOrder>70</BuildOrder>
+				<BuildOrder>5</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="_math.cpp">
+				<BuildOrder>8</BuildOrder>
+				<BuildOrder>71</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="_sphere.cpp">
+				<BuildOrder>72</BuildOrder>
+				<BuildOrder>11</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="xrMemory.cpp">
+				<BuildOrder>73</BuildOrder>
+				<BuildOrder>23</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="xrMemory_align.cpp">
+				<BuildOrder>74</BuildOrder>
+				<BuildOrder>35</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="LzHuf.cpp">
+				<BuildOrder>76</BuildOrder>
+				<BuildOrder>41</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="log.cpp">
+				<BuildOrder>57</BuildOrder>
+				<BuildOrder>44</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="xrMemory_pso_Copy.cpp">
+				<BuildOrder>77</BuildOrder>
+				<BuildOrder>26</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="xrMemory_pso_Fill.cpp">
+				<BuildOrder>78</BuildOrder>
+				<BuildOrder>29</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="_compressed_normal.cpp">
+				<BuildOrder>79</BuildOrder>
+				<BuildOrder>32</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="xrsharedmem.cpp">
+				<BuildOrder>97</BuildOrder>
+				<BuildOrder>86</BuildOrder>
+			</CppCompile>
+			<None Include="_sphere.h">
+				<BuildOrder>82</BuildOrder>
+				<BuildOrder>137</BuildOrder>
+			</None>
+			<None Include="_std_extensions.h">
+				<BuildOrder>83</BuildOrder>
+				<BuildOrder>140</BuildOrder>
+			</None>
+			<None Include="_stl_extensions.h">
+				<BuildOrder>87</BuildOrder>
+				<BuildOrder>143</BuildOrder>
+			</None>
+			<None Include="_quaternion.h">
+				<BuildOrder>85</BuildOrder>
+				<BuildOrder>128</BuildOrder>
+			</None>
+			<None Include="_random.h">
+				<BuildOrder>86</BuildOrder>
+				<BuildOrder>131</BuildOrder>
+			</None>
+			<None Include="_rect.h">
+				<BuildOrder>81</BuildOrder>
+				<BuildOrder>134</BuildOrder>
+			</None>
+			<None Include="_type_traits.h">
+				<BuildOrder>91</BuildOrder>
+				<BuildOrder>146</BuildOrder>
+			</None>
+			<None Include="_vector4.h">
+				<BuildOrder>89</BuildOrder>
+				<BuildOrder>158</BuildOrder>
+			</None>
+			<None Include="clsid.h">
+				<BuildOrder>90</BuildOrder>
+				<BuildOrder>161</BuildOrder>
+			</None>
+			<None Include="cpuid.h">
+				<BuildOrder>53</BuildOrder>
+				<BuildOrder>164</BuildOrder>
+			</None>
+			<None Include="_types.h">
+				<BuildOrder>92</BuildOrder>
+				<BuildOrder>149</BuildOrder>
+			</None>
+			<None Include="_vector2.h">
+				<BuildOrder>93</BuildOrder>
+				<BuildOrder>152</BuildOrder>
+			</None>
+			<None Include="_vector3d.h">
+				<BuildOrder>88</BuildOrder>
+				<BuildOrder>155</BuildOrder>
+			</None>
+			<None Include="_compressed_normal.h">
+				<BuildOrder>98</BuildOrder>
+				<BuildOrder>95</BuildOrder>
+			</None>
+			<None Include="_cylinder.h">
+				<BuildOrder>96</BuildOrder>
+				<BuildOrder>101</BuildOrder>
+			</None>
+			<None Include="_fbox2.h">
+				<BuildOrder>104</BuildOrder>
+				<BuildOrder>100</BuildOrder>
+			</None>
+			<None Include="xrSyncronize.h">
+				<BuildOrder>98</BuildOrder>
+				<BuildOrder>89</BuildOrder>
+			</None>
+			<None Include="_bitwise.h">
+				<BuildOrder>99</BuildOrder>
+				<BuildOrder>92</BuildOrder>
+			</None>
+			<None Include="_color.h">
+				<BuildOrder>95</BuildOrder>
+				<BuildOrder>94</BuildOrder>
+			</None>
+			<None Include="_fbox.h">
+				<BuildOrder>107</BuildOrder>
+				<BuildOrder>104</BuildOrder>
+			</None>
+			<None Include="_matrix.h">
+				<BuildOrder>119</BuildOrder>
+				<BuildOrder>102</BuildOrder>
+			</None>
+			<None Include="_obb.h">
+				<BuildOrder>122</BuildOrder>
+				<BuildOrder>103</BuildOrder>
+			</None>
+			<None Include="_plane.h">
+				<BuildOrder>84</BuildOrder>
+				<BuildOrder>125</BuildOrder>
+			</None>
+			<None Include="_flags.h">
+				<BuildOrder>110</BuildOrder>
+				<BuildOrder>105</BuildOrder>
+			</None>
+			<None Include="_math.h">
+				<BuildOrder>113</BuildOrder>
+				<BuildOrder>106</BuildOrder>
+			</None>
+			<None Include="_matrix33.h">
+				<BuildOrder>116</BuildOrder>
+				<BuildOrder>101</BuildOrder>
+			</None>
+			<BuildConfiguration Include="Base">
+				<Key>Base</Key>
+			</BuildConfiguration>
+			<BuildConfiguration Include="Debug">
+				<Key>Cfg_1</Key>
+				<CfgParent>Base</CfgParent>
+			</BuildConfiguration>
+			<BuildConfiguration Include="Release">
+				<Key>Cfg_2</Key>
+				<CfgParent>Base</CfgParent>
+			</BuildConfiguration>
+		</ItemGroup>
+		<Import Project="$(BDS)\Bin\CodeGear.Cpp.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Cpp.Targets')"/>
+		<ProjectExtensions>
+			<Borland.Personality>CPlusPlusBuilder.Personality.12</Borland.Personality>
+			<Borland.ProjectType>CppDynamicLibrary</Borland.ProjectType>
+			<BorlandProject>
+				<CPlusPlusBuilder.Personality>
+					<VersionInfo>
+						<VersionInfo Name="IncludeVerInfo">False</VersionInfo>
+						<VersionInfo Name="AutoIncBuild">False</VersionInfo>
+						<VersionInfo Name="MajorVer">1</VersionInfo>
+						<VersionInfo Name="MinorVer">0</VersionInfo>
+						<VersionInfo Name="Release">0</VersionInfo>
+						<VersionInfo Name="Build">34</VersionInfo>
+						<VersionInfo Name="Debug">False</VersionInfo>
+						<VersionInfo Name="PreRelease">False</VersionInfo>
+						<VersionInfo Name="Special">False</VersionInfo>
+						<VersionInfo Name="Private">False</VersionInfo>
+						<VersionInfo Name="DLL">False</VersionInfo>
+						<VersionInfo Name="Locale">1058</VersionInfo>
+						<VersionInfo Name="CodePage">1251</VersionInfo>
+					</VersionInfo>
+					<VersionInfoKeys>
+						<VersionInfoKeys Name="CompanyName"/>
+						<VersionInfoKeys Name="FileDescription"/>
+						<VersionInfoKeys Name="FileVersion">1.0.0.34</VersionInfoKeys>
+						<VersionInfoKeys Name="InternalName"/>
+						<VersionInfoKeys Name="LegalCopyright"/>
+						<VersionInfoKeys Name="LegalTrademarks"/>
+						<VersionInfoKeys Name="OriginalFilename"/>
+						<VersionInfoKeys Name="ProductName"/>
+						<VersionInfoKeys Name="ProductVersion">1.0.0.0</VersionInfoKeys>
+						<VersionInfoKeys Name="Comments"/>
+					</VersionInfoKeys>
+					<HistoryLists_hlIncludePath>
+						<HistoryLists_hlIncludePath Name="Count">30</HistoryLists_hlIncludePath>
+						<HistoryLists_hlIncludePath Name="Item0">blackbox;$(ETOOLS_DIR);$(DXSDK_DIR)\Include;$(BCB)\include;$(BCB)\include\vcl;$(BCB)\Include\Mfc</HistoryLists_hlIncludePath>
+						<HistoryLists_hlIncludePath Name="Item1">blackbox;$(ETOOLS_DIR);$(DXSDK_DIR)\Include;$(BCB)\include;$(BCB)\include\vcl;$(BCB)\Include\Mfc;$(BCB)\Include\atl</HistoryLists_hlIncludePath>
+						<HistoryLists_hlIncludePath Name="Item2">C:\Program Files (x86)\Windows Kits\8.1\Include\shared;C:\Program Files (x86)\Windows Kits\8.1\Include\um;blackbox;$(ETOOLS_DIR);$(DXSDK_DIR)\Include;$(BCB)\include;$(BCB)\include\vcl;$(BCB)\Include\Mfc;$(BCB)\Include\atl</HistoryLists_hlIncludePath>
+						<HistoryLists_hlIncludePath Name="Item3">C:\Program Files (x86)\Windows Kits\8.1\Include\um;blackbox;$(ETOOLS_DIR);$(DXSDK_DIR)\Include;$(BCB)\include;$(BCB)\include\vcl;$(BCB)\Include\Mfc;$(BCB)\Include\atl</HistoryLists_hlIncludePath>
+						<HistoryLists_hlIncludePath Name="Item4">$(WindowsSDKDir)\Include\um;$(VC_ATLMFC_IncludePath);blackbox;$(ETOOLS_DIR);$(DXSDK_DIR)\Include;$(BCB)\include;$(BCB)\include\vcl;$(BCB)\Include\Mfc</HistoryLists_hlIncludePath>
+						<HistoryLists_hlIncludePath Name="Item5">$(WindowsSDKDir_81)\Include\um;$(VC_ATLMFC_IncludePath);blackbox;$(ETOOLS_DIR);$(DXSDK_DIR)\Include;$(BCB)\include;$(BCB)\include\vcl;$(BCB)\Include\Mfc</HistoryLists_hlIncludePath>
+						<HistoryLists_hlIncludePath Name="Item6">$(WindowsSDKDir_81)\Include\um;blackbox;$(ETOOLS_DIR);$(DXSDK_DIR)\Include;$(BCB)\include;$(BCB)\include\vcl;$(BCB)\Include\Mfc</HistoryLists_hlIncludePath>
+						<HistoryLists_hlIncludePath Name="Item7">$(ETOOLS_DIR);$(DXSDK_DIR)\Include;$(BCB)\include;$(BCB)\include\vcl;$(BCB)\Include\Mfc</HistoryLists_hlIncludePath>
+						<HistoryLists_hlIncludePath Name="Item8">$(DXSDK_DIR)\Include;$(BCB)\include;$(BCB)\include\vcl;$(BCB)\Include\Mfc</HistoryLists_hlIncludePath>
+						<HistoryLists_hlIncludePath Name="Item9">$(DXSDK)\Include;$(BCB)\include;$(BCB)\include\vcl;$(BCB)\Include\Mfc</HistoryLists_hlIncludePath>
+						<HistoryLists_hlIncludePath Name="Item10">I:\Program Files\Microsoft DirectX SDK (October 2006)\Include;$(BCB)\include;$(BCB)\include\vcl;R:\SDK\MagicFM_Borland\Sdk\Include;R:\Borland\Components6\AlexMX;R:\Borland\Components6\ElPack\Code\Source;$(BCB)\Include\Mfc</HistoryLists_hlIncludePath>
+						<HistoryLists_hlIncludePath Name="Item11">R:\SDK\Microsoft DirectX 9.0 SDK (April 2005)\Include;$(BCB)\include;$(BCB)\include\vcl;R:\SDK\MagicFM_Borland\Sdk\Include;R:\Borland\Components6\AlexMX;R:\Borland\Components6\ElPack\Code\Source;$(BCB)\Include\Mfc</HistoryLists_hlIncludePath>
+						<HistoryLists_hlIncludePath Name="Item12">R:\SDK\Microsoft DirectX 9.0 SDK (April 2005)\Include;$(BCB)\include;$(BCB)\include\vcl;R:\SDK\MagicFM_Borland\Sdk\Include;R:\Borland\Components6\AlexMX;R:\Borland\Components6\ElPack\Code\Source;R:\Borland\CBuilder6\Include\Mfc</HistoryLists_hlIncludePath>
+						<HistoryLists_hlIncludePath Name="Item13">R:\SDK\Microsoft DirectX 9.0 SDK (February 2005)\Include;$(BCB)\include;$(BCB)\include\vcl;R:\SDK\MagicFM_Borland\Sdk\Include;R:\Borland\Components6\AlexMX;R:\Borland\Components6\ElPack\Code\Source;R:\Borland\CBuilder6\Include\Mfc;..\Tools\Etools</HistoryLists_hlIncludePath>
+						<HistoryLists_hlIncludePath Name="Item14">R:\SDK\Microsoft DirectX 9.0 SDK (October 2004)\Include;$(BCB)\include;$(BCB)\include\vcl;R:\SDK\MagicFM_Borland\Sdk\Include;R:\Borland\Components6\AlexMX;R:\Borland\Components6\ElPack\Code\Source;R:\Borland\CBuilder6\Include\Mfc;..\Tools\Etools</HistoryLists_hlIncludePath>
+						<HistoryLists_hlIncludePath Name="Item15">R:\SDK\DirectX9.0_sum_2004\Include;$(BCB)\include;$(BCB)\include\vcl;P:\MagicFM_Borland\Sdk\Include;R:\Borland\Components6\AlexMX;R:\Borland\Components6\ElPack\Code\Source;R:\Borland\CBuilder6\Include\Mfc;..\Tools\Etools</HistoryLists_hlIncludePath>
+						<HistoryLists_hlIncludePath Name="Item16">R:\SDK\DirectX9.0_sum_2004\Include;$(BCB)\include;$(BCB)\include\vcl;P:\MagicFM_Borland\Sdk\Include;R:\Borland\Components6\AlexMX;R:\Borland\Components6\ElPack\Code\Source;R:\Borland\CBuilder6\Include\Mfc</HistoryLists_hlIncludePath>
+						<HistoryLists_hlIncludePath Name="Item17">$(BCB)\include;$(BCB)\include\vcl;P:\MagicFM_Borland\Sdk\Include;R:\Borland\Components6\AlexMX;R:\Borland\Components6\ElPack\Code\Source;R:\Borland\CBuilder6\Include\Mfc</HistoryLists_hlIncludePath>
+						<HistoryLists_hlIncludePath Name="Item18">R:\SDK\DirectX9.0\include;$(BCB)\include;$(BCB)\include\vcl;P:\MagicFM_Borland\Sdk\Include;R:\Borland\Components6\AlexMX;R:\Borland\Components6\ElPack\Code\Source;R:\Borland\CBuilder6\Include\Mfc</HistoryLists_hlIncludePath>
+						<HistoryLists_hlIncludePath Name="Item19">R:\SDK\DirectX9.0\include;$(BCB)\include;$(BCB)\include\vcl;P:\MagicFM_Borland\Sdk\Include;R:\Borland\Components6\AlexMX;R:\Borland\Components6\ElPack\Code\Source;R:\VS7.NET\Vc7\atlmfc\include;R:\Borland\CBuilder6\Include\Mfc</HistoryLists_hlIncludePath>
+						<HistoryLists_hlIncludePath Name="Item20">R:\SDK\DirectX9.0\include;$(BCB)\include;$(BCB)\include\vcl;P:\MagicFM_Borland\Sdk\Include;R:\Borland\Components6\AlexMX;R:\Borland\Components6\ElPack\Code\Source;R:\VS7.NET\Vc7\atlmfc\include</HistoryLists_hlIncludePath>
+						<HistoryLists_hlIncludePath Name="Item21">R:\SDK\DirectX8.1\include;$(BCB)\include;$(BCB)\include\vcl;P:\MagicFM_Borland\Sdk\Include;R:\Borland\Components6\AlexMX;R:\Borland\Components6\ElPack\Code\Source;R:\VS7.NET\Vc7\atlmfc\include</HistoryLists_hlIncludePath>
+						<HistoryLists_hlIncludePath Name="Item22">R:\SDK\DirectX8.0\include;$(BCB)\include;$(BCB)\include\vcl;P:\MagicFM_Borland\Sdk\Include;R:\Borland\Components6\AlexMX;R:\Borland\Components6\ElPack\Code\Source;R:\VS7.NET\Vc7\atlmfc\include</HistoryLists_hlIncludePath>
+						<HistoryLists_hlIncludePath Name="Item23">R:\SDK\DirectX9.0\include;$(BCB)\include;$(BCB)\include\vcl;P:\MagicFM_Borland\Sdk\Include;R:\Borland\Components6\AlexMX;R:\Borland\Components6\ElPack\Code\Source;R:\VS7.NET\Vc7\atlmfc\include;$(BCB)\include\mfc</HistoryLists_hlIncludePath>
+						<HistoryLists_hlIncludePath Name="Item24">R:\SDK\DirectX9.0\include;$(BCB)\include;$(BCB)\include\vcl;P:\MagicFM_Borland\Sdk\Include;R:\Borland\Components6\AlexMX;R:\Borland\Components6\ElPack\Code\Source;$(BCB)\include\mfc</HistoryLists_hlIncludePath>
+						<HistoryLists_hlIncludePath Name="Item25">R:\SDK\DirectX9.0\include;$(BCB)\include;$(BCB)\include\vcl;P:\MagicFM_Borland\Sdk\Include;R:\Borland\Components6\AlexMX;R:\Borland\Components6\ElPack\Code\Source</HistoryLists_hlIncludePath>
+						<HistoryLists_hlIncludePath Name="Item26">R:\DirectX9.0\include;$(BCB)\include;$(BCB)\include\vcl;P:\MagicFM_Borland\Sdk\Include;R:\Borland\Components6\AlexMX;R:\Borland\Components6\ElPack\Code\Source</HistoryLists_hlIncludePath>
+						<HistoryLists_hlIncludePath Name="Item27">R:\DirectX9\include;$(BCB)\include;$(BCB)\include\vcl;P:\MagicFM_Borland\Sdk\Include;R:\Borland\Components6\AlexMX;R:\Borland\Components6\ElPack\Code\Source</HistoryLists_hlIncludePath>
+						<HistoryLists_hlIncludePath Name="Item28">R:\DirectX8.1\include;$(BCB)\include;$(BCB)\include\vcl;P:\MagicFM_Borland\Sdk\Include;R:\Borland\Components6\AlexMX;R:\Borland\Components6\ElPack\Code\Source</HistoryLists_hlIncludePath>
+						<HistoryLists_hlIncludePath Name="Item29">..\LevelOptions\Engine;..\LevelOptions\Editor;..\LevelOptions;Editor;R:\DirectX8.1\include;$(BCB)\include;$(BCB)\include\vcl;engine;P:\MagicFM_Borland\Sdk\Include;R:\Borland\Components6\AlexMX;R:\Borland\Components6\ElPack\Code\Source</HistoryLists_hlIncludePath>
+					</HistoryLists_hlIncludePath>
+					<HistoryLists_hlLibraryPath>
+						<HistoryLists_hlLibraryPath Name="Count">24</HistoryLists_hlLibraryPath>
+						<HistoryLists_hlLibraryPath Name="Item0">X:\trunk\3rd party\components\ElPack\Code;..\..\3rd party\components\AlexMX;blackbox;$(BCB)\lib;$(BCB)\lib\obj;$(BCB)\Projects\Lib;X:\ogsr_engine\_LIB\SDK;$(BCB)\lib\psdk;x:\libraries\Release</HistoryLists_hlLibraryPath>
+						<HistoryLists_hlLibraryPath Name="Item1">..\..\3rd party\components\AlexMX;blackbox;$(BCB)\lib;$(BCB)\lib\obj;$(BCB)\Projects\Lib;X:\ogsr_engine\_LIB\SDK;$(BCB)\lib\psdk;x:\libraries\Release</HistoryLists_hlLibraryPath>
+						<HistoryLists_hlLibraryPath Name="Item2">blackbox;$(BCB)\lib;$(BCB)\lib\obj;$(BCB)\Projects\Lib;X:\ogsr_engine\_LIB\SDK;$(BCB)\lib\psdk;x:\libraries\Release</HistoryLists_hlLibraryPath>
+						<HistoryLists_hlLibraryPath Name="Item3">blackbox;$(BCB)\lib;$(BCB)\lib\obj;$(BCB)\Projects\Lib;x:\libraries;$(BCB)\lib\psdk</HistoryLists_hlLibraryPath>
+						<HistoryLists_hlLibraryPath Name="Item4">blackbox;$(BCB)\lib;$(BCB)\lib\obj;$(BCB)\Projects\Lib;x:\libraries</HistoryLists_hlLibraryPath>
+						<HistoryLists_hlLibraryPath Name="Item5">$(BCB)\lib;$(BCB)\lib\obj;$(BCB)\Projects\Lib;x:\libraries</HistoryLists_hlLibraryPath>
+						<HistoryLists_hlLibraryPath Name="Item6">i:\Projects\editors\components\Alexmx;$(BCB)\lib;$(BCB)\lib\obj;$(BCB)\Projects\Lib;x:\libraries</HistoryLists_hlLibraryPath>
+						<HistoryLists_hlLibraryPath Name="Item7">$(BCB)\lib;$(BCB)\lib\obj;$(BCB)\Projects\Lib;$(COMPONENTS)\AlexMX;$(COMPONENTS)\ElPack\Code;x:\libraries</HistoryLists_hlLibraryPath>
+						<HistoryLists_hlLibraryPath Name="Item8">$(BCB)\lib;$(BCB)\lib\obj;$(BCB)\Projects\Lib;$(COMPONENTS)\AlexMX;R:\Borland\Components6\ElPack\Code;R:\Borland\CBuilder6\Lib\Psdk;..\Editors\lib\dx;..\Editors\lib;x:\</HistoryLists_hlLibraryPath>
+						<HistoryLists_hlLibraryPath Name="Item9">c:\rad\borland\CBuilder5\Projects;$(BCB)\lib;$(BCB)\lib\obj;$(BCB)\Projects\Lib;R:\Borland\Components6\AlexMX;R:\Borland\Components6\ElPack\Code;R:\Borland\CBuilder6\Lib\Psdk;..\Editors\lib\dx;..\Editors\lib;x:\</HistoryLists_hlLibraryPath>
+						<HistoryLists_hlLibraryPath Name="Item10">c:\rad\borland\CBuilder5\Projects;$(BCB)\lib;$(BCB)\lib\obj;$(BCB)\Projects\Lib;R:\Borland\Components6\AlexMX;R:\Borland\Components6\ElPack\Code;R:\Borland\CBuilder6\Lib\Psdk;..\Editors\lib\dx;..\Editors\lib</HistoryLists_hlLibraryPath>
+						<HistoryLists_hlLibraryPath Name="Item11">c:\rad\borland\CBuilder5\Projects;$(BCB)\lib;$(BCB)\lib\obj;$(BCB)\Projects\Lib;R:\Borland\Components6\AlexMX;R:\Borland\Components6\ElPack\Code;R:\Borland\CBuilder6\Lib\Psdk;..\lib\dx;..\lib</HistoryLists_hlLibraryPath>
+						<HistoryLists_hlLibraryPath Name="Item12">c:\rad\borland\CBuilder5\Projects;$(BCB)\lib;$(BCB)\lib\obj;$(BCB)\Projects\Lib;R:\Borland\Components6\AlexMX;R:\Borland\Components6\ElPack\Code;R:\Borland\CBuilder6\Lib\Psdk;lib;lib\dx</HistoryLists_hlLibraryPath>
+						<HistoryLists_hlLibraryPath Name="Item13">c:\rad\borland\CBuilder5\Projects;$(BCB)\lib;$(BCB)\lib\obj;$(BCB)\Projects\Lib;R:\Borland\Components6\AlexMX;R:\Borland\Components6\ElPack\Code;R:\Borland\CBuilder6\Lib\Psdk;lib</HistoryLists_hlLibraryPath>
+						<HistoryLists_hlLibraryPath Name="Item14">c:\rad\borland\CBuilder5\Projects;$(BCB)\lib;$(BCB)\lib\obj;$(BCB)\Projects\Lib;R:\Borland\Components6\AlexMX;R:\Borland\Components6\ElPack\Code;R:\Borland\CBuilder6\Lib\Psdk</HistoryLists_hlLibraryPath>
+						<HistoryLists_hlLibraryPath Name="Item15">c:\rad\borland\CBuilder5\Projects;$(BCB)\lib;$(BCB)\lib\obj;$(BCB)\Projects\Lib;R:\Borland\Components6\AlexMX;R:\Borland\Components6\ElPack\Code;R:\Borland\CBuilder6\Lib\Psdk\</HistoryLists_hlLibraryPath>
+						<HistoryLists_hlLibraryPath Name="Item16">c:\rad\borland\CBuilder5\Projects;$(BCB)\lib;$(BCB)\lib\obj;$(BCB)\Projects\Lib;R:\Borland\Components6\AlexMX;R:\Borland\Components6\ElPack\Code</HistoryLists_hlLibraryPath>
+						<HistoryLists_hlLibraryPath Name="Item17">..\LevelOptions\Engine;..\LevelOptions\Editor;..\LevelOptions;c:\rad\borland\CBuilder5\Projects;engine;editor;$(BCB)\lib;$(BCB)\lib\obj;$(BCB)\Projects\Lib;R:\Borland\Components6\AlexMX;R:\Borland\Components6\ElPack\Code</HistoryLists_hlLibraryPath>
+						<HistoryLists_hlLibraryPath Name="Item18">c:\rad\borland\CBuilder5\Projects\;engine;editor;$(BCB)\lib;$(BCB)\lib\obj;$(BCB)\Projects\Lib;R:\Borland\Components6\AlexMX;R:\Borland\Components6\ElPack\Code</HistoryLists_hlLibraryPath>
+						<HistoryLists_hlLibraryPath Name="Item19">c:\rad\borland\CBuilder5\Projects\;engine;editor;$(BCB)\lib;$(BCB)\lib\obj;$(BCB)\Projects\Lib;r:\borland\components\alexmx\;R:\Borland\Components\Eldos\Code\Source\;R:\Borland\Components\Eldos\Code\</HistoryLists_hlLibraryPath>
+						<HistoryLists_hlLibraryPath Name="Item20">Editor;shared;edit;edit\Shader;Collide;Import\LWO;$(BCB)\lib;$(BCB)\lib\obj;$(BCB)\Projects\Lib;c:\rad\borland\components\renderwindow\;c:\rad\borland\components\extbtn\;c:\rad\borland\components\multi\;C:\RAD\borland\Components\RX\Units\;C:\RAD\borland\Components\ElTree\Code\Source\</HistoryLists_hlLibraryPath>
+						<HistoryLists_hlLibraryPath Name="Item21">shared;edit;edit\Shader;Collide;Import\LWO;$(BCB)\lib;$(BCB)\lib\obj;$(BCB)\Projects\Lib;c:\rad\borland\components\renderwindow\;c:\rad\borland\components\extbtn\;c:\rad\borland\components\multi\;C:\RAD\borland\Components\RX\Units\;C:\RAD\borland\Components\ElTree\Code\Source\</HistoryLists_hlLibraryPath>
+						<HistoryLists_hlLibraryPath Name="Item22">edit;$(BCB)\Projects\Lib;$(BCB)\lib\obj;$(BCB)\lib</HistoryLists_hlLibraryPath>
+						<HistoryLists_hlLibraryPath Name="Item23">$(BCB)\Projects\Lib;$(BCB)\lib\obj;$(BCB)\lib</HistoryLists_hlLibraryPath>
+					</HistoryLists_hlLibraryPath>
+					<HistoryLists_hlDebugSourcePath>
+						<HistoryLists_hlDebugSourcePath Name="Count">1</HistoryLists_hlDebugSourcePath>
+						<HistoryLists_hlDebugSourcePath Name="Item0">$(BCB)\source\vcl</HistoryLists_hlDebugSourcePath>
+					</HistoryLists_hlDebugSourcePath>
+					<HistoryLists_hlConditionals>
+						<HistoryLists_hlConditionals Name="Count">8</HistoryLists_hlConditionals>
+						<HistoryLists_hlConditionals Name="Item0">_EDITOR;_XRCOREB;XRCORE_EXPORTS</HistoryLists_hlConditionals>
+						<HistoryLists_hlConditionals Name="Item1">_EDITOR;_XRCOREB;XRCORE_EXPORTS;_DEBUG</HistoryLists_hlConditionals>
+						<HistoryLists_hlConditionals Name="Item2">_XRCOREB;XRCORE_EXPORTS</HistoryLists_hlConditionals>
+						<HistoryLists_hlConditionals Name="Item3">_XRCOREB;XRCORE_EXPORTS;_DEBUG</HistoryLists_hlConditionals>
+						<HistoryLists_hlConditionals Name="Item4">_XRCOREB</HistoryLists_hlConditionals>
+						<HistoryLists_hlConditionals Name="Item5">_LEVEL_OPTIONS</HistoryLists_hlConditionals>
+						<HistoryLists_hlConditionals Name="Item6">_OPTIONS</HistoryLists_hlConditionals>
+						<HistoryLists_hlConditionals Name="Item7">_DEBUG</HistoryLists_hlConditionals>
+					</HistoryLists_hlConditionals>
+					<HistoryLists_hlIntOutputDir>
+						<HistoryLists_hlIntOutputDir Name="Count">6</HistoryLists_hlIntOutputDir>
+						<HistoryLists_hlIntOutputDir Name="Item0">X:\ogsr_engine\_TEMP\SDK\core</HistoryLists_hlIntOutputDir>
+						<HistoryLists_hlIntOutputDir Name="Item1">x:\intermediate_ed\core</HistoryLists_hlIntOutputDir>
+						<HistoryLists_hlIntOutputDir Name="Item2">x:\intermediate_ed</HistoryLists_hlIntOutputDir>
+						<HistoryLists_hlIntOutputDir Name="Item3">Intermediate</HistoryLists_hlIntOutputDir>
+						<HistoryLists_hlIntOutputDir Name="Item4">XRLC_Intermediate</HistoryLists_hlIntOutputDir>
+						<HistoryLists_hlIntOutputDir Name="Item5">xrLC_Options</HistoryLists_hlIntOutputDir>
+					</HistoryLists_hlIntOutputDir>
+					<HistoryLists_hlFinalOutputDir>
+						<HistoryLists_hlFinalOutputDir Name="Count">17</HistoryLists_hlFinalOutputDir>
+						<HistoryLists_hlFinalOutputDir Name="Item0">X:\ogsr_engine\_BIN\SDK\</HistoryLists_hlFinalOutputDir>
+						<HistoryLists_hlFinalOutputDir Name="Item1">x:\binaries\</HistoryLists_hlFinalOutputDir>
+						<HistoryLists_hlFinalOutputDir Name="Item2">x:\binaries</HistoryLists_hlFinalOutputDir>
+						<HistoryLists_hlFinalOutputDir Name="Item3">C:\Program Files\THQ\S.T.A.L.K.E.R. - Shadow of Chernobyl\</HistoryLists_hlFinalOutputDir>
+						<HistoryLists_hlFinalOutputDir Name="Item4">x:\</HistoryLists_hlFinalOutputDir>
+						<HistoryLists_hlFinalOutputDir Name="Item5">x:\build\</HistoryLists_hlFinalOutputDir>
+						<HistoryLists_hlFinalOutputDir Name="Item6">x:\build</HistoryLists_hlFinalOutputDir>
+						<HistoryLists_hlFinalOutputDir Name="Item7">u:\preliminary\</HistoryLists_hlFinalOutputDir>
+						<HistoryLists_hlFinalOutputDir Name="Item8">u:\preliminary</HistoryLists_hlFinalOutputDir>
+						<HistoryLists_hlFinalOutputDir Name="Item9">s:\bin\</HistoryLists_hlFinalOutputDir>
+						<HistoryLists_hlFinalOutputDir Name="Item10">z:\</HistoryLists_hlFinalOutputDir>
+						<HistoryLists_hlFinalOutputDir Name="Item11">S:\build_zmey\</HistoryLists_hlFinalOutputDir>
+						<HistoryLists_hlFinalOutputDir Name="Item12">S:\build_zmey</HistoryLists_hlFinalOutputDir>
+						<HistoryLists_hlFinalOutputDir Name="Item13">x:\xrCoreB.dll\</HistoryLists_hlFinalOutputDir>
+						<HistoryLists_hlFinalOutputDir Name="Item14">x:\xrCoreB.dll</HistoryLists_hlFinalOutputDir>
+						<HistoryLists_hlFinalOutputDir Name="Item15">!run\</HistoryLists_hlFinalOutputDir>
+						<HistoryLists_hlFinalOutputDir Name="Item16">!run</HistoryLists_hlFinalOutputDir>
+					</HistoryLists_hlFinalOutputDir>
+					<HistoryLists_hIBPIOutputDir>
+						<HistoryLists_hIBPIOutputDir Name="Count">4</HistoryLists_hIBPIOutputDir>
+						<HistoryLists_hIBPIOutputDir Name="Item0">X:\ogsr_engine\_LIB\SDK</HistoryLists_hIBPIOutputDir>
+						<HistoryLists_hIBPIOutputDir Name="Item1">X:\ogsr_engine\_LIB\SDK\</HistoryLists_hIBPIOutputDir>
+						<HistoryLists_hIBPIOutputDir Name="Item2">x:\libraries</HistoryLists_hIBPIOutputDir>
+						<HistoryLists_hIBPIOutputDir Name="Item3">x:\libraries\</HistoryLists_hIBPIOutputDir>
+					</HistoryLists_hIBPIOutputDir>
+					<Debugging>
+						<Debugging Name="DebugSourceDirs">$(BCB)\source\vcl</Debugging>
+					</Debugging>
+					<Parameters>
+						<Parameters Name="RunParams"/>
+						<Parameters Name="Launcher"/>
+						<Parameters Name="UseLauncher">False</Parameters>
+						<Parameters Name="DebugCWD"/>
+						<Parameters Name="HostApplication">x:\binaries\ActorEditor.exe</Parameters>
+						<Parameters Name="RemoteHost"/>
+						<Parameters Name="RemotePath"/>
+						<Parameters Name="RemoteLauncher"/>
+						<Parameters Name="RemoteCWD"/>
+						<Parameters Name="RemoteDebug">False</Parameters>
+						<Parameters Name="RemoteParams"/>
+						<Parameters Name="UseRemoteLauncher">False</Parameters>
+						<Parameters Name="Debug Symbols Search Path"/>
+						<Parameters Name="LoadAllSymbols">True</Parameters>
+						<Parameters Name="LoadUnspecifiedSymbols">False</Parameters>
+					</Parameters>
+					<Compiler>
+						<Compiler Name="ShowInfoMsgs">0</Compiler>
+						<Compiler Name="LinkDebugVcl">0</Compiler>
+						<Compiler Name="LinkCGLIB">0</Compiler>
+					</Compiler>
+					<CORBA>
+						<CORBA Name="AddServerUnit">1</CORBA>
+						<CORBA Name="AddClientUnit">1</CORBA>
+						<CORBA Name="PrecompiledHeaders">1</CORBA>
+					</CORBA>
+					<ProjectProperties>
+						<ProjectProperties Name="AutoShowDeps">False</ProjectProperties>
+						<ProjectProperties Name="ManagePaths">True</ProjectProperties>
+						<ProjectProperties Name="VerifyPackages">True</ProjectProperties>
+					</ProjectProperties>
+					<Excluded_Packages>
+						<Excluded_Packages Name="$(BDS)\bin\bcboffice2k140.bpl">Embarcadero C++Builder Office 2000 Servers Package</Excluded_Packages>
+						<Excluded_Packages Name="$(BDS)\bin\bcbofficexp140.bpl">Embarcadero C++Builder Office XP Servers Package</Excluded_Packages>
+						<Excluded_Packages Name="$(BDS)\bin\dcloffice2k140.bpl">Microsoft Office 2000 Sample Automation Server Wrapper Components</Excluded_Packages>
+						<Excluded_Packages Name="$(BDS)\bin\dclofficexp140.bpl">Microsoft Office XP Sample Automation Server Wrapper Components</Excluded_Packages>
+					</Excluded_Packages>
+				</CPlusPlusBuilder.Personality>
+			</BorlandProject>
+			<ProjectFileVersion>12</ProjectFileVersion>
+		</ProjectExtensions>
+	</Project>

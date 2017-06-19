@@ -1,0 +1,1 @@
+bool GetToken(char** sx, char* e, char* token);

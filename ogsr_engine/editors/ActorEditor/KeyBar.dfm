@@ -1,0 +1,336 @@
+object frmKeyBar: TfrmKeyBar
+  Left = 88
+  Top = 870
+  Align = alTop
+  BorderIcons = []
+  BorderStyle = bsNone
+  ClientHeight = 55
+  ClientWidth = 1057
+  Color = 10528425
+  Font.Charset = DEFAULT_CHARSET
+  Font.Color = clWindowText
+  Font.Height = -11
+  Font.Name = 'MS Sans Serif'
+  Font.Style = []
+  KeyPreview = True
+  OldCreateOrder = False
+  Position = poScreenCenter
+  Scaled = False
+  PixelsPerInch = 96
+  TextHeight = 13
+  object Panel6: TPanel
+    Left = 0
+    Top = 0
+    Width = 1057
+    Height = 25
+    Align = alClient
+    BevelInner = bvLowered
+    Color = 10528425
+    TabOrder = 0
+    object lbCurrentTime: TMxLabel
+      Left = 2
+      Top = 2
+      Width = 24
+      Height = 21
+      Align = alLeft
+      Alignment = taCenter
+      AutoSize = False
+      Caption = '...'
+      Color = 10528425
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clBlack
+      Font.Height = -11
+      Font.Name = 'MS Sans Serif'
+      Font.Style = []
+      ParentColor = False
+      ParentFont = False
+      ShadowColor = 13158600
+      ShadowPos = spRightBottom
+      Transparent = True
+    end
+    object Panel1: TPanel
+      Left = 948
+      Top = 2
+      Width = 107
+      Height = 21
+      Align = alRight
+      BevelOuter = bvNone
+      Color = 10528425
+      TabOrder = 0
+      object Label1: TLabel
+        Left = 5
+        Top = 4
+        Width = 25
+        Height = 13
+        Caption = 'LOD:'
+      end
+      object Bevel1: TBevel
+        Left = 33
+        Top = 3
+        Width = 70
+        Height = 16
+      end
+      object seLOD: TMultiObjSpinEdit
+        Left = 35
+        Top = 4
+        Width = 67
+        Height = 14
+        LWSensitivity = 0.1
+        ButtonKind = bkLightWave
+        Increment = 0.01
+        MaxValue = 1
+        ValueType = vtFloat
+        Value = 1
+        BorderStyle = bsNone
+        Color = 10526880
+        TabOrder = 0
+        OnLWChange = seLODLWChange
+        OnExit = seLODExit
+        OnKeyPress = seLODKeyPress
+      end
+    end
+    object Panel2: TPanel
+      Left = 26
+      Top = 2
+      Width = 922
+      Height = 21
+      Align = alClient
+      BevelOuter = bvNone
+      Color = 10528425
+      TabOrder = 1
+      object Panel3: TPanel
+        Left = 0
+        Top = 0
+        Width = 35
+        Height = 290
+        BevelOuter = bvNone
+        Color = 10528425
+        TabOrder = 0
+        object stStartTime: TStaticText
+          Left = 0
+          Top = 0
+          Width = 35
+          Height = 290
+          Align = alClient
+          AutoSize = False
+          BorderStyle = sbsSunken
+          Color = 10526880
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = 12582911
+          Font.Height = -11
+          Font.Name = 'MS Sans Serif'
+          Font.Style = []
+          ParentColor = False
+          ParentFont = False
+          TabOrder = 0
+        end
+      end
+      object Panel4: TPanel
+        Left = 0
+        Top = 0
+        Width = 887
+        Height = 21
+        Align = alClient
+        BevelOuter = bvNone
+        Color = 10528425
+        TabOrder = 1
+        object Gradient1: TGradient
+          Left = 0
+          Top = 0
+          Width = 887
+          Height = 21
+          BeginColor = 6118749
+          EndColor = 11777977
+          FillDirection = fdUpToBottom
+          NumberOfColors = 32
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clWindowText
+          Font.Height = -11
+          Font.Name = 'MS Sans Serif'
+          Font.Style = [fsBold]
+          Caption = ' '
+          TextTop = 5
+          TextLeft = 12
+          Border = True
+          BorderWidth = 1
+          BorderColor = 8226442
+          Align = alClient
+          object anm_track: TElTrackBar
+            Left = 23
+            Top = 1
+            Width = 863
+            Height = 19
+            Max = 100
+            Page = 50
+            Position = 50
+            TickPosition = tpNone
+            OffsetLeft = 5
+            OffsetRight = 5
+            ThumbType = tstBox
+            SelEnd = 0
+            TrackColor = 10528425
+            SelectionMarkSize = 3
+            ThumbWidth = 5
+            Align = alClient
+            Color = clGray
+            ParentColor = False
+            TabOrder = 0
+            ActiveBorderType = fbtLine
+            InactiveBorderType = fbtFlat
+          end
+          object auto_ch: TElCheckBox
+            Left = 1
+            Top = 1
+            Width = 22
+            Height = 19
+            Cursor = crDefault
+            Checked = True
+            Flat = True
+            FlatAlways = True
+            State = cbChecked
+            LinkColor = clBlue
+            LinkStyle = [fsUnderline]
+            TabOrder = 1
+            Color = clInactiveCaptionText
+            ParentColor = False
+            Align = alLeft
+            DockOrientation = doNoOrient
+            DoubleBuffered = False
+          end
+        end
+      end
+      object Panel5: TPanel
+        Left = 887
+        Top = 0
+        Width = 35
+        Height = 21
+        Align = alRight
+        BevelOuter = bvNone
+        Color = 10528425
+        TabOrder = 2
+        object stEndTime: TStaticText
+          Left = 0
+          Top = 0
+          Width = 35
+          Height = 21
+          Align = alClient
+          AutoSize = False
+          BorderStyle = sbsSunken
+          Color = 10526880
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = 12582911
+          Font.Height = -11
+          Font.Name = 'MS Sans Serif'
+          Font.Style = []
+          ParentColor = False
+          ParentFont = False
+          TabOrder = 0
+        end
+      end
+    end
+  end
+  object PanelCh1: TMxPanel
+    Left = 0
+    Top = 25
+    Width = 1057
+    Height = 15
+    Align = alBottom
+    TabOrder = 1
+    OnPaint = PanelCh1Paint
+    object Label2: TLabel
+      Left = 5
+      Top = 1
+      Width = 18
+      Height = 13
+      Caption = 'Left'
+    end
+    object BtnUpCh1: TElGraphicButton
+      Left = 974
+      Top = 1
+      Width = 41
+      Height = 13
+      NumGlyphs = 1
+      ShadowFollowsColor = True
+      Caption = 'Up'
+      Align = alRight
+      OnClick = BtnUpCh1Click
+      DockOrientation = doNoOrient
+    end
+    object BtnDownCh1: TElGraphicButton
+      Left = 1015
+      Top = 1
+      Width = 41
+      Height = 13
+      NumGlyphs = 1
+      ShadowFollowsColor = True
+      Caption = 'Down'
+      Align = alRight
+      OnClick = BtnDownCh1Click
+      DockOrientation = doNoOrient
+    end
+    object BtnDelCh1: TElGraphicButton
+      Left = 933
+      Top = 1
+      Width = 41
+      Height = 13
+      NumGlyphs = 1
+      ShadowFollowsColor = True
+      Caption = 'Del'
+      Align = alRight
+      OnClick = BtnDelCh1Click
+      DockOrientation = doNoOrient
+    end
+  end
+  object PanelCh2: TMxPanel
+    Left = 0
+    Top = 40
+    Width = 1057
+    Height = 15
+    Align = alBottom
+    TabOrder = 2
+    OnPaint = PanelCh2Paint
+    object Label3: TLabel
+      Left = 5
+      Top = 1
+      Width = 25
+      Height = 13
+      Caption = 'Right'
+    end
+    object BtnUpCh2: TElGraphicButton
+      Left = 974
+      Top = 1
+      Width = 41
+      Height = 13
+      NumGlyphs = 1
+      ShadowFollowsColor = True
+      Caption = 'Up'
+      Align = alRight
+      OnClick = BtnUpCh2Click
+      DockOrientation = doNoOrient
+    end
+    object BtnDownCh2: TElGraphicButton
+      Left = 1015
+      Top = 1
+      Width = 41
+      Height = 13
+      NumGlyphs = 1
+      ShadowFollowsColor = True
+      Caption = 'Down'
+      Align = alRight
+      OnClick = BtnDownCh2Click
+      DockOrientation = doNoOrient
+    end
+    object BtnDelCh2: TElGraphicButton
+      Left = 933
+      Top = 1
+      Width = 41
+      Height = 13
+      NumGlyphs = 1
+      ShadowFollowsColor = True
+      Caption = 'Del'
+      Align = alRight
+      OnClick = BtnDelCh2Click
+      DockOrientation = doNoOrient
+    end
+  end
+end

@@ -1,0 +1,86 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Convert">
+      <UniqueIdentifier>{3720333b-4f24-474d-8631-1b6dc59a8d2d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shared">
+      <UniqueIdentifier>{9d83b1c3-cdaa-4938-a62e-21f175d1b98b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="NormalMap">
+      <UniqueIdentifier>{c9cdc76b-74ac-4133-b5e7-516ac95dd5f3}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="ETextureParams.h">
+      <Filter>Shared</Filter>
+    </ClInclude>
+    <ClInclude Include="Image_DXTC.h">
+      <Filter>NormalMap</Filter>
+    </ClInclude>
+    <ClInclude Include="NV_Common.h">
+      <Filter>NormalMap</Filter>
+    </ClInclude>
+    <ClInclude Include="NVI_Convolution.h">
+      <Filter>NormalMap</Filter>
+    </ClInclude>
+    <ClInclude Include="NVI_Image.h">
+      <Filter>NormalMap</Filter>
+    </ClInclude>
+    <ClInclude Include="tga.h">
+      <Filter>NormalMap</Filter>
+    </ClInclude>
+    <ClInclude Include="StdAfx.h" />
+    <ClInclude Include="dds\ConvertColor.h">
+      <Filter>Convert</Filter>
+    </ClInclude>
+    <ClInclude Include="dds\ddsTypes.h">
+      <Filter>Convert</Filter>
+    </ClInclude>
+    <ClInclude Include="dds\nvdxt_options.h">
+      <Filter>Convert</Filter>
+    </ClInclude>
+    <ClInclude Include="dds\nvErrorCodes.h">
+      <Filter>Convert</Filter>
+    </ClInclude>
+    <ClInclude Include="dds\tPixel.h">
+      <Filter>Convert</Filter>
+    </ClInclude>
+    <ClInclude Include="dds\tVector.h">
+      <Filter>Convert</Filter>
+    </ClInclude>
+    <ClInclude Include="dxtlib.h">
+      <Filter>Convert</Filter>
+    </ClInclude>
+    <ClInclude Include="dds.h">
+      <Filter>Convert</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="DXT.cpp">
+      <Filter>Convert</Filter>
+    </ClCompile>
+    <ClCompile Include="ETextureParams.cpp">
+      <Filter>Shared</Filter>
+    </ClCompile>
+    <ClCompile Include="Image_DXTC.cpp">
+      <Filter>NormalMap</Filter>
+    </ClCompile>
+    <ClCompile Include="NormalMapGen.cpp">
+      <Filter>NormalMap</Filter>
+    </ClCompile>
+    <ClCompile Include="NVI_Convolution.cpp">
+      <Filter>NormalMap</Filter>
+    </ClCompile>
+    <ClCompile Include="NVI_Image.cpp">
+      <Filter>NormalMap</Filter>
+    </ClCompile>
+    <ClCompile Include="tga.cpp">
+      <Filter>NormalMap</Filter>
+    </ClCompile>
+    <ClCompile Include="StdAfx.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="ReadMe.txt" />
+  </ItemGroup>
+</Project>
