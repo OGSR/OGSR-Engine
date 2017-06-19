@@ -1,0 +1,71 @@
+﻿Index	SourceFilename	TimeStamp	Version	SHA1Sum	OriginalSize	FirstSlice	LastSlice	StartOffset	ChunkSuboffset	ChunkCompressedSize	Encrypted
+0	F:\Shell installer\dotNetFx40_Full_x86_x64.exe	2015-09-19 12:19:42.000	4.0.30319.1	58da3d74db353aad03588cbb5cea8234166d8b99	50449456	1	1	12	0	50336930	no
+1	F:\Shell installer\vcredist_x86.exe	2015-09-19 12:01:36.000	6.0.2900.2180	e052789ebad7dc8d6f8505a9295b0576babd125e	2745256	1	1	50336948	0	2701054	no
+2	F:\Shell installer\PackFull\fsgame.ltx	2015-09-19 22:24:20.000		f8de75b5608f7aefed54b4624cdbbab99e2f1d1e	1001	1	1	53038008	0	277	no
+3	F:\Shell installer\PackFull\gamedata.db_base_configs	2016-03-06 23:07:10.000		195ace0c1b708b1bb342247b40803c05a0a28a3f	24485353	1	1	53038291	0	8879133	no
+4	F:\Shell installer\PackFull\gamedata.db_base_levels_1	2016-03-05 19:28:34.000		63a722b345de39c548f88a89d32f6529ff2d683e	2013384737	1	1	61917430	0	501384670	no
+5	F:\Shell installer\PackFull\gamedata.db_base_levels_2	2016-03-05 19:29:52.000		ffe5ab04d221748fba0a2038d2d09d888412ab47	1986801710	1	2	563302106	0	473156613	no
+6	F:\Shell installer\PackFull\gamedata.db_base_meshes	2016-03-06 19:38:22.000		550f03faff5ac080bd69c5a9be78f4089988a57b	773162756	2	2	13198577	0	142547120	no
+7	F:\Shell installer\PackFull\gamedata.db_base_sounds	2016-03-05 19:33:24.000		e9e660d543fa186c3f8c1e9f9914255989dacb23	1340196727	2	3	155745703	0	1245063571	no
+8	F:\Shell installer\PackFull\gamedata.db_base_textures_1	2016-03-05 19:35:12.000		6c29249637e328746c88e6c6259623d40377b170	2013425331	3	4	376809292	0	1357063209	no
+9	F:\Shell installer\PackFull\gamedata.db_base_textures_2	2016-03-05 19:37:02.000		0a3e009b9f4b13f9e539d40bd4883286a2cf361d	2016123449	4	5	709872519	0	836542205	no
+10	F:\Shell installer\PackFull\gamedata.db_base_textures_3	2016-03-05 19:37:10.000		6d43c43f42a489a5c70d9b2beebd40034c2d4cb7	230284946	5	5	522414742	0	56002161	no
+11	F:\Shell installer\PackFull\launch.ltx	2016-03-05 23:22:16.000		a957bf4d7433897642700608833d232043ef4385	102	5	5	578416909	0	99	no
+12	F:\Shell installer\PackFull\OGSE_Configurator.exe	2016-03-06 19:21:56.000	2.0.0.0	da084c6ee5db2059e3021831dcf974eafb27fe61	658944	5	5	578417014	0	369555	no
+13	F:\Shell installer\PackFull\OGSE_Configurator.exe.config	2016-02-10 21:22:08.000		8095e66af3fa012c6d3cd62664440631a7ddfb9e	1936	5	5	578786575	0	558	no
+14	F:\Shell installer\PackFull\bin\BugTrap.dll	2010-05-31 19:37:42.000	1.2.2654.37769	aa2bb30d9050a07687f0bd8d9983aa84cced733d	180224	5	5	578787139	0	83975	no
+15	F:\Shell installer\PackFull\bin\d3dcompiler_47.dll	2013-08-21 21:03:02.000	6.3.9600.16384	35990ab9ff0a46b16e1a2bf653064a4a38653204	3466856	5	5	578871120	0	1103215	no
+16	F:\Shell installer\PackFull\bin\dbghelp.dll	2006-09-27 13:07:48.000	5.1.2600.2180	34dfc72feee446e658a2c168632d216ed90589ca	640000	5	5	579974341	0	235173	no
+17	F:\Shell installer\PackFull\bin\eax.dll	2001-12-11 18:52:24.000	3.0.1.0	88853088c4bea4164dcaefbf14ce01ea6189709e	135168	5	5	580209520	0	46763	no
+18	F:\Shell installer\PackFull\bin\ode.dll	2012-08-28 07:22:30.000		a1d802fc37b7e753d2d5bc41ae0c6f53c427ffbf	196608	5	5	580256289	0	70426	no
+19	F:\Shell installer\PackFull\bin\OpenAL32.dll	2010-05-31 19:37:42.000	6.14.357.21	1e9f7a87ae4c0a4a80487365d41e4a7aa8292a47	49152	5	5	580326721	0	12492	no
+20	F:\Shell installer\PackFull\bin\wrap_oal.dll	2007-01-14 03:59:18.000	0.0.0.0	c2b600053dd5e889fa49b6d555c68490bc88ac21	143360	5	5	580339219	0	62626	no
+21	F:\Shell installer\PackFull\bin\xrCDB.dll	2010-05-31 19:37:44.000		4956738eb1d280ee312711de62dd10256b01b8d6	81920	5	5	580401851	0	22831	no
+22	F:\Shell installer\PackFull\bin\xrCore.dll	2012-04-08 23:26:52.000		9caf9bc46d6cd8702a22487bd505c79499fc8685	109056	5	5	580424688	0	29661	no
+23	F:\Shell installer\PackFull\bin\xrCore_GSC.dll	2012-03-22 21:01:00.000		2d98a44f02f0a563b0e9d532b5b615f0055f9ff7	856064	5	5	580454355	0	100404	no
+24	F:\Shell installer\PackFull\bin\xrCPU_Pipe.dll	2010-05-31 19:37:44.000		5761f611b4391b7579d7b03d2c8df448a72ec575	13824	5	5	580554765	0	5333	no
+25	F:\Shell installer\PackFull\bin\xrD3D9-Null.dll	2010-05-31 19:37:44.000		86d76d4be76b2a2dfb844ef8bbf96e0678b74534	15872	5	5	580560104	0	6595	no
+26	F:\Shell installer\PackFull\bin\xrGame.dll	2016-03-06 19:24:56.000		04baf78122182d81d9f4dad8d423963e4130a5f5	6508544	5	5	580566705	0	1517696	no
+27	F:\Shell installer\PackFull\bin\xrGameSpy.dll	2010-05-31 19:37:44.000		fc8aece50dbcade8934c6e73d30ad8e59812c6aa	102400	5	5	582084407	0	44083	no
+28	F:\Shell installer\PackFull\bin\xrLua.dll	2012-03-30 12:10:08.000		71c25856d7c17fc6bf9c932949c2c499008e46f5	226816	5	5	582128496	0	81523	no
+29	F:\Shell installer\PackFull\bin\xrLUA_GSC.dll	2010-05-31 19:37:44.000		cb2fd57e88054c89b16c68f7f5837011d716cc13	290816	5	5	582210025	0	102076	no
+30	F:\Shell installer\PackFull\bin\xrNetServer.dll	2010-05-31 19:37:44.000		6803c9d59a1862b4f40c7d045525a10f420a21ae	94208	5	5	582312107	0	32541	no
+31	F:\Shell installer\PackFull\bin\xrParticles.dll	2010-05-31 19:37:44.000		8e2e6533dcfe4956782e16fe1a1b086678a438f3	98304	5	5	582344654	0	25861	no
+32	F:\Shell installer\PackFull\bin\xrRender_R2.dll	2015-02-22 23:02:36.000		d6db7fc90a65470fdd15d961fb5c2c8ef023252a	806181	5	5	582370521	0	183137	no
+33	F:\Shell installer\PackFull\bin\xrSound.dll	2010-05-31 19:37:44.000		118faa7ce47686b6981bade75744ff5ab44e3987	229376	5	5	582553664	0	99536	no
+34	F:\Shell installer\PackFull\bin\xrXMLParser.dll	2010-05-31 19:37:44.000		71847f3fad0f171013e3e5055592aebee9063947	57344	5	5	582653206	0	17213	no
+35	F:\Shell installer\PackFull\bin\XR_3DA.exe	2016-02-13 15:45:42.000		7178a864f36d24f3e9fb91ecfbec8b2baece37e5	1897152	5	5	582670425	0	619885	no
+36	F:\Shell installer\PackFull\bin\extensions\LuaXML_lib.dll	2013-11-04 06:01:36.000		43ea8abc7b635e11d257a3c3ed01d858d431871c	12288	5	5	583290316	0	5898	no
+37	F:\Shell installer\PackFull\bin\extensions\ogse.dll	2016-03-06 19:12:02.000		70df5d6d62fb1b709cd690c341942d5bffdc038e	581632	5	5	583296220	0	198430	no
+38	F:\Shell installer\PackFull\bin\extensions\xp\ogse.dll	2016-03-06 19:12:38.000		149adfe48d48ede0a81b1dc8aff22e80c024fd6a	581632	5	5	583494656	0	198572	no
+39	F:\Shell installer\PackFull\gamedata\buc\launch.ltx	2016-03-06 01:21:06.000		a957bf4d7433897642700608833d232043ef4385	102	5	5	583693234	0	99	no
+40	F:\Shell installer\PackFull\gamedata\buc\ogse_config_orig.ltx	2016-03-06 23:03:28.000		2e832a160a205928eba07da0d90e2bc5a54c022b	7481	5	5	583693339	0	3269	no
+41	F:\Shell installer\PackFull\gamedata\config\creatures\actor.ltx	2016-03-05 19:43:30.000		afea381aea016cc4dc4e82979f8e99398e68ac84	19732	5	5	583696614	0	5824	no
+42	F:\Shell installer\PackFull\gamedata\config\tuning\ogse_config.ltx	2016-03-06 23:03:28.000		2e832a160a205928eba07da0d90e2bc5a54c022b	7481	5	5	583702444	0	3269	no
+43	F:\Shell installer\PackFull\gamedata\config\ui\ui_dynamic.xml	2015-12-21 02:52:26.000		da39a3ee5e6b4b0d3255bfef95601890afd80709	0	5	5	583705719	0	2	no
+44	F:\Shell installer\PackFull\gamedata\shaders\r2\configurator_defines.h	2016-03-05 23:26:00.000		facf049493d9dcc0bb1f4123d49ead62c083b8b5	622	5	5	583705727	0	270	no
+45	F:\Shell installer\PackFull\gamedata\shaders\r2\ogse_config.h	2016-02-10 21:52:34.000		89e365e47f14f20bc922c15da2cc8367a6adc5c3	14271	5	5	583706003	0	4582	no
+46	F:\Shell installer\PackFull\localization\en-US\gamedata.db_xlocale	2016-03-06 23:07:14.000		49e1bb3b0204d4a91175c282766f8063a70aa7fd	124302696	5	5	583710591	0	77623308	no
+47	F:\Shell installer\PackFull\localization\en-US\launch.ltx	2016-03-05 23:22:40.000		ad706690af88b9e2ad13e054eef58c38d209e98f	102	5	5	661333905	0	99	no
+48	F:\Shell installer\PackFull\localization\en-US\License_OGSE_ENG.txt	2016-01-05 20:50:56.000		3d07a1208f160b302fa51b20038a818f41b70e75	13912	5	5	661334010	0	5271	no
+49	F:\Shell installer\PackFull\localization\en-US\ogse_about.rtf	2015-12-28 20:54:50.000		a71a7fe5d74ac129a01883b9a5dc84662f4c55f7	37498	5	5	661339287	0	6728	no
+50	F:\Shell installer\PackFull\localization\en-US\ogse_about_mod.rtf	2015-12-28 21:36:32.000		32896b6e6974e4b4d9c3f806b5f16626d2c1cc28	57757	5	5	661346021	0	9551	no
+51	F:\Shell installer\PackFull\localization\en-US\ogse_config.ltx	2016-03-06 23:09:00.000		1b8c1d0e35e7ce4c5407c4aa573d9659a0b9e2d6	7481	5	5	661355578	0	3270	no
+52	F:\Shell installer\PackFull\localization\en-US\OGSE_Configurator.resources.dll	2016-03-06 19:21:56.000	2.0.0.0	4e888f072a9fde4dd9e0d352dea345a463a136ea	358400	5	5	661358854	0	316353	no
+53	F:\Shell installer\PackFull\localization\en-US\ogse_features.rtf	2015-12-28 23:47:26.000		9f8aee0a8dcbf706eded0d4fcafa1a9f85acc5b2	105288	5	5	661675213	0	15171	no
+54	F:\Shell installer\PackFull\localization\en-US\ReadMe_OGSE_ENG.txt	2016-01-05 20:45:22.000		5f78d098bf61eac9ae90f4a14e060b7f506d0c63	18374	5	5	661690390	0	7479	no
+55	F:\Shell installer\PackFull\localization\fr-FR\gamedata.db_xlocale	2016-03-06 23:07:16.000		d0b6a761b855395da6a2946915dbcf4789b98dce	129417673	5	5	661697875	0	75692523	no
+56	F:\Shell installer\PackFull\localization\fr-FR\launch.ltx	2016-03-05 23:22:34.000		da1c96276ca646f1ac0706fe9cd1292da3347196	102	5	5	737390404	0	99	no
+57	F:\Shell installer\PackFull\localization\fr-FR\License_OGSE_FR.txt	2016-01-18 00:43:54.000		df9c55190bdc56cf8e3c056bb29ed3e1d4a4a9ae	10487	5	5	737390509	0	4216	no
+58	F:\Shell installer\PackFull\localization\fr-FR\ogse_about.rtf	2015-12-28 20:54:50.000		a71a7fe5d74ac129a01883b9a5dc84662f4c55f7	37498	5	5	737394731	0	6728	no
+59	F:\Shell installer\PackFull\localization\fr-FR\ogse_about_mod.rtf	2015-12-28 21:36:32.000		32896b6e6974e4b4d9c3f806b5f16626d2c1cc28	57757	5	5	737401465	0	9551	no
+60	F:\Shell installer\PackFull\localization\fr-FR\ogse_config.ltx	2016-03-06 23:09:36.000		2fc27d0101c728c5278f7d51385198c0c1caeed2	7487	5	5	737411022	0	3273	no
+61	F:\Shell installer\PackFull\localization\fr-FR\OGSE_Configurator.resources.dll	2016-03-06 19:21:56.000	2.0.0.0	356f1dbef9712ec3765dcd4c6332523a81796454	358912	5	5	737414301	0	316556	no
+62	F:\Shell installer\PackFull\localization\fr-FR\ogse_features.rtf	2015-12-28 23:47:26.000		9f8aee0a8dcbf706eded0d4fcafa1a9f85acc5b2	105288	5	5	737730863	0	15171	no
+63	F:\Shell installer\PackFull\localization\fr-FR\ReadMe_OGSE_FR.txt	2016-01-05 20:45:22.000		5f78d098bf61eac9ae90f4a14e060b7f506d0c63	18374	5	5	737746040	0	7479	no
+64	F:\Shell installer\PackFull\localization\ru-RU\License_OGSE_RU.txt	2009-05-01 20:29:38.000		66ab7633a6dc4a93785c0dfda9219e906bfc7e5d	6069	5	5	737753525	0	2828	no
+65	F:\Shell installer\PackFull\localization\ru-RU\ogse_about.rtf	2015-09-16 14:51:06.000		db8cad1d0aa36c063a0f24e7e568e4ad09db68ae	37206	5	5	737756359	0	6751	no
+66	F:\Shell installer\PackFull\localization\ru-RU\ogse_about_mod.rtf	2015-09-16 15:07:46.000		ef1fba5c02b115547eb1a0299e4d3c2cc9bcb7a3	78561	5	5	737763116	0	11977	no
+67	F:\Shell installer\PackFull\localization\ru-RU\OGSE_Configurator.resources.dll	2016-03-06 19:21:56.000	2.0.0.0	390cdd1e6bf4e5e72cae66e54d8679e396eb8b06	353280	5	5	737775099	0	314866	no
+68	F:\Shell installer\PackFull\localization\ru-RU\ogse_features.rtf	2015-09-16 15:08:36.000		710d06585825f45dd5e73c15417aec5d1b09130a	101424	5	5	738089971	0	16011	no
+69	F:\Shell installer\PackFull\localization\ru-RU\ReadMe_OGSE_RU.txt	2016-01-05 20:45:26.000		8a60ab19ee8772ee1149c96b03efdd1fc2a988d4	22709	5	5	738105988	0	9553	no

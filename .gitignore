@@ -1,6 +1,9 @@
 # Папки #
 ############
-ogsr_package
+ogsr_package/OUT
+ogsr_package/READY
+ogsr_package/REDIST
+ogsr_package/UNPACKED
 __history
 Release
 Win32
@@ -19,3 +22,5 @@ Debug
 *.obj
 *.sdf
 *.db
+*.db-shm
+*.db-wal
