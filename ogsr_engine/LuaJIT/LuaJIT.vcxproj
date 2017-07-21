@@ -34,23 +34,19 @@
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-    <Import Project="..\COMMON_PROPERTIES.props" />
+    <Import Project="..\Engine_properties.props" />
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-    <Import Project="..\COMMON_PROPERTIES.props" />
+    <Import Project="..\Engine_properties.props" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <OutDir>X:\ogsr_engine\_BIN\$(Configuration)</OutDir>
-    <IntDir>X:\ogsr_engine\_TEMP\$(Configuration)\$(ProjectName)\</IntDir>
-    <TargetName>lua5.1</TargetName>
+    <TargetName>lua51</TargetName>
     <LinkIncremental>false</LinkIncremental>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <OutDir>x:\binaries\$(Configuration)</OutDir>
-    <IntDir>x:\intermediate\$(Configuration)\$(ProjectName)\</IntDir>
-    <TargetName>lua5.1</TargetName>
+    <TargetName>lua51</TargetName>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -60,7 +56,7 @@
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <ImportLibrary>x:\libraries\$(Configuration)\lua5.1.lib</ImportLibrary>
+      <ProgramDatabaseFile>$(OutDir)lua51.pdb</ProgramDatabaseFile>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -86,10 +82,9 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <ProgramDatabaseFile>$(OutDir)lua5.1.pdb</ProgramDatabaseFile>
+      <ProgramDatabaseFile>$(OutDir)lua51.pdb</ProgramDatabaseFile>
       <SubSystem>Windows</SubSystem>
       <LargeAddressAware>true</LargeAddressAware>
-      <ImportLibrary>X:\ogsr_engine\_LIB\$(Configuration)\lua5.1.lib</ImportLibrary>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>

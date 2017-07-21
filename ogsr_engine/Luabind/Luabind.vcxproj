@@ -34,21 +34,17 @@
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-    <Import Project="..\COMMON_PROPERTIES.props" />
+    <Import Project="..\Engine_properties.props" />
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-    <Import Project="..\COMMON_PROPERTIES.props" />
+    <Import Project="..\Engine_properties.props" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <TargetName>luabind</TargetName>
-    <OutDir>X:\ogsr_engine\_BIN\$(Configuration)</OutDir>
-    <IntDir>X:\ogsr_engine\_TEMP\$(Configuration)\$(ProjectName)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <IntDir>x:\intermediate\$(Configuration)\$(ProjectName)\</IntDir>
-    <OutDir>x:\binaries\$(Configuration)</OutDir>
     <TargetName>luabind</TargetName>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -60,7 +56,6 @@
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <ImportLibrary>x:\libraries\$(Configuration)\$(ProjectName).lib</ImportLibrary>
       <AdditionalDependencies>xrCore.lib;lua5.1.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>x:\libraries\$(Configuration);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
@@ -91,7 +86,6 @@
       <OptimizeReferences>true</OptimizeReferences>
       <AdditionalLibraryDirectories>X:\ogsr_engine\_LIB\$(Configuration);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>xrCore.lib;lua5.1.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <ImportLibrary>X:\ogsr_engine\_LIB\$(Configuration)\$(ProjectName).lib</ImportLibrary>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
