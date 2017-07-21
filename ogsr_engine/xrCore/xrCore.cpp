@@ -11,6 +11,7 @@
 
 #ifdef DEBUG
 #	include	<malloc.h>
+int (WINAPIV * __vsnprintf)(char *, size_t, const char*, va_list) = _vsnprintf;
 #endif // DEBUG
 
 XRCORE_API		xrCore	Core;

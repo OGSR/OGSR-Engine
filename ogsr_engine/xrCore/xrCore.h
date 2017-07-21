@@ -170,6 +170,7 @@
 #include <set>
 #include <map>
 #include <string>
+#include <functional>
 #pragma warning (pop)
 #pragma warning (disable : 4100 )		// unreferenced formal parameter
 

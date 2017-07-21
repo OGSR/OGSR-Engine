@@ -2,8 +2,6 @@
 #define _STL_EXT_type_traits
 #pragma once
 
-namespace xrcore
-{
 // 1. class or not class
 template<typename T>
 struct	is_class				{
@@ -49,8 +47,12 @@ struct is_pm_classify<false>	{
 template<typename T>	
 struct	is_polymorphic			{
 	enum						{
+#ifndef __BORLANDC__
+		result	= is_pm_classify<::is_class<T>::result> :: _detail<T> :: result
+#else
 		result	= is_pm_classify<is_class<T>::result> :: _detail<T> :: result
+#endif
 	};
 };
-}
+
 #endif
