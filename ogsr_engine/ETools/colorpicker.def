@@ -1,0 +1,5 @@
+LIBRARY
+ColorPicker.dll
+EXPORTS
+FSColorPickerDoModal@12 = ?FSColorPickerDoModal@@YG_NPAI0H@Z
+

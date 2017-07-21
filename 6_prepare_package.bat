@@ -1,0 +1,2 @@
+call ogsr_package\prepare_configs.bat
+call ogsr_package\compress_all.bat
