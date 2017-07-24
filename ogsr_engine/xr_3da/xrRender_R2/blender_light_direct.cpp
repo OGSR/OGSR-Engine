@@ -27,9 +27,9 @@ void	CBlender_accum_direct::Compile(CBlender_Compile& C)
 		C.r_Sampler_rtf		("s_accumulator",	r2_RT_accum		);
 		C.r_Sampler			("s_lmap",			r2_sunmask		);
 		if (b_HW_smap)		{
-			if (b_HW_PCF)	C.r_Sampler_clf		("s_smap",r2_RT_smap_depth	);
+			if (b_HW_PCF)	C.r_Sampler_clf		("s_smap",r2_RT_smap_depth_near	);
 			else			{
-				C.r_Sampler_rtf		("s_smap",r2_RT_smap_depth	);
+				C.r_Sampler_rtf		("s_smap", r2_RT_smap_depth_near);
 			}
 		}
 		else				C.r_Sampler_rtf		("s_smap",r2_RT_smap_surf	);
@@ -44,8 +44,8 @@ void	CBlender_accum_direct::Compile(CBlender_Compile& C)
 		C.r_Sampler_rtf		("s_accumulator",	r2_RT_accum		);
 		C.r_Sampler			("s_lmap",			r2_sunmask		);
 		if (b_HW_smap)		{
-			if (b_HW_PCF)	C.r_Sampler_clf		("s_smap",r2_RT_smap_depth	);
-			else			C.r_Sampler_rtf		("s_smap",r2_RT_smap_depth	);
+			if (b_HW_PCF)	C.r_Sampler_clf		("s_smap",r2_RT_smap_depth_far	);
+			else			C.r_Sampler_rtf		("s_smap", r2_RT_smap_depth_far);
 		}
 		else				C.r_Sampler_rtf		("s_smap",r2_RT_smap_surf	);
 		jitter				(C);

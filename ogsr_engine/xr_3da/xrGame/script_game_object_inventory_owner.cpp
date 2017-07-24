@@ -805,6 +805,8 @@ int	CScriptGameObject::animation_slot			() const
 
 CScriptGameObject *CScriptGameObject::item_in_slot	(u32 slot_id) const
 {
+	if (slot_id == NO_ACTIVE_SLOT)
+		return NULL;
 	CInventoryOwner	*inventory_owner = smart_cast<CInventoryOwner*>(&object());
 	if (!inventory_owner) {
 		ai().script_engine().script_log			(ScriptStorage::eLuaMessageTypeError,"CInventoryOwner : cannot access class member item_in_slot!");

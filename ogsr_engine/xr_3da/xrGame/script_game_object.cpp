@@ -72,7 +72,7 @@ BIND_FUNCTION10	(&object(),	CScriptGameObject::GetPsyHealth,		CEntityAlive,	cond
 BIND_FUNCTION10	(&object(),	CScriptGameObject::GetPower,			CEntityAlive,	conditions().GetPower,			float,							-1);
 BIND_FUNCTION10	(&object(),	CScriptGameObject::GetSatiety,			CEntityAlive,	conditions().GetSatiety,		float,							-1);
 BIND_FUNCTION10 (&object(), CScriptGameObject::GetAlcohol,			CEntityAlive,	conditions().GetAlcohol,		float,							-1);
-BIND_FUNCTION10 (&object(), CScriptGameObject::GetMaxPower,			CEntityAlive,	conditions().GetAlcohol,		float,							-1);
+BIND_FUNCTION10 (&object(), CScriptGameObject::GetMaxPower,			CEntityAlive,	conditions().GetMaxPower,		float,							-1);
 BIND_FUNCTION10	(&object(),	CScriptGameObject::GetRadiation,		CEntityAlive,	conditions().GetRadiation,		float,							-1);
 BIND_FUNCTION10	(&object(),	CScriptGameObject::GetBleeding,			CEntityAlive,	conditions().BleedingSpeed,		float,							-1);
 BIND_FUNCTION10	(&object(),	CScriptGameObject::GetMorale,			CEntityAlive,	conditions().GetEntityMorale,	float,							-1);

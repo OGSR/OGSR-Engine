@@ -20,9 +20,9 @@ extern bool shared_str_initialized;
     #	pragma comment(lib,"EToolsB.lib")   */
     #	define DEBUG_INVOKE	DebugBreak()
         static BOOL			bException	= TRUE;
-//    #   define USE_BUG_TRAP
+    #   define USE_BUG_TRAP
 #else
-//    #   define USE_BUG_TRAP
+    #   define USE_BUG_TRAP
 #ifdef _WIN64
     #	define DEBUG_INVOKE	DebugBreak()
 #else
@@ -42,7 +42,7 @@ extern bool shared_str_initialized;
 #ifdef USE_BUG_TRAP
 #ifdef _WIN64
 #	include "bugtrap.h"						// for BugTrap functionality
-#	pragma comment(lib,"BugTrap-x64.lib")		// Link to x64 dll
+#	pragma comment(lib,"BugTrap.lib")		// Link to x64 dll
 #else
 #	include "bugtrap.h"						// for BugTrap functionality
     #ifndef __BORLANDC__
@@ -56,7 +56,7 @@ extern bool shared_str_initialized;
 #include <new.h>							// for _set_new_mode
 #include <signal.h>							// for signals
 
-#if 1//def DEBUG
+#if 0//def DEBUG
 #	define USE_OWN_MINI_DUMP
 #	define USE_OWN_ERROR_MESSAGE_WINDOW
 #else // DEBUG

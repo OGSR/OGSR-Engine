@@ -14,7 +14,7 @@
 struct lua_State;
 class CScriptThread;
 
-#ifdef	OGSE_DEBUG
+#ifdef	DEBUG
 //	#ifndef ENGINE_BUILD
 	#	define	USE_DEBUGGER
 //	#endif

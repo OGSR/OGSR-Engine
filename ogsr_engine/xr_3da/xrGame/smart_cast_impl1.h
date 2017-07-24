@@ -477,7 +477,7 @@ namespace SmartDynamicCast {
 		}
 	};
 };
-using namespace xrcore;
+
 template <typename T1, typename T2>
 IC	T1	smart_cast(T2* p)
 {
