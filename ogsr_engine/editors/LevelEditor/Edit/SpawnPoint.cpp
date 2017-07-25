@@ -156,7 +156,7 @@ void CSpawnPoint::SSpawnData::Destroy()
     xr_delete			(m_Visual);
     xr_delete			(m_Motion);
 }
-void __stdcall CSpawnPoint::SSpawnData::get_bone_xform	(LPCSTR name, Fmatrix& xform)
+void CSpawnPoint::SSpawnData::get_bone_xform	(LPCSTR name, Fmatrix& xform)
 {
 	xform.identity		();
 	if (name&&name[0]&&m_Visual&&m_Visual->visual){
@@ -747,7 +747,7 @@ bool CSpawnPoint::ExportGame(SExportStreams* F)
 }
 //----------------------------------------------------
 
-void __stdcall CSpawnPoint::OnFillChooseItems		(ChooseValue* val)
+void CSpawnPoint::OnFillChooseItems		(ChooseValue* val)
 {
     ESceneSpawnTools* st 		= dynamic_cast<ESceneSpawnTools*>(ParentTools); VERIFY(st);
     CLASS_ID cls_id				= m_SpawnData.m_ClassID;
@@ -773,7 +773,7 @@ shared_str CSpawnPoint::EditorToSection(shared_str nm)
     return 0;
 }
 
-void __stdcall CSpawnPoint::OnProfileChange(PropValue* prop)
+void CSpawnPoint::OnProfileChange(PropValue* prop)
 {
 	if (m_SpawnData.m_Profile.size()!=0){
         shared_str s_name		= EditorToSection(m_SpawnData.m_Profile);

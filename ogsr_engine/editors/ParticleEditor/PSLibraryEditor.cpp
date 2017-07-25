@@ -5,7 +5,7 @@
 #include "ParticleEffect.h"
 //------------------------------------------------------------------------------
 
-void __stdcall CPSLibrary::FindByName(LPCSTR new_name, bool& res)
+void __fastcall CPSLibrary::FindByName(LPCSTR new_name, bool& res)
 {
 	res = (FindPED(new_name)||FindPGD(new_name));
 }

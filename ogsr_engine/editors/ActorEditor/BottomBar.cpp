@@ -169,7 +169,7 @@ void __fastcall TfraBottomBar::pmOptionsPopup(TObject *Sender)
     {
         TMenuItem* mi = miWeather->Items[i];
         BOOL bch;
-        bch  = ((EPrefs->sWeather.size()) && (0==stricmp(PAnsiChar(mi->Caption.c_str()), EPrefs->sWeather.c_str()))) ||
+        bch  = ((EPrefs->sWeather.size()) && (0==stricmp(mi->Caption.c_str(), EPrefs->sWeather.c_str()))) ||
                (mi->Caption=="none" && EPrefs->sWeather.size()==0) ;
         mi->Checked                 = bch;
     }
@@ -182,8 +182,8 @@ void __fastcall TfraBottomBar::miWeatherClick(TObject *Sender)
     if (mi){
     	if (mi->Tag==0){
 		    psDeviceFlags.set	(rsEnvironment,TRUE);
-    	    g_pGamePersistent->Environment().SetWeather(PAnsiChar(mi->Caption.c_str()));
-            EPrefs->sWeather = PAnsiChar(mi->Caption.c_str());
+    	    g_pGamePersistent->Environment().SetWeather(mi->Caption.c_str());
+            EPrefs->sWeather = mi->Caption.c_str();
         	mi->Checked = !mi->Checked;
         }else if (mi->Tag==-1){
 		    psDeviceFlags.set	(rsEnvironment,FALSE);

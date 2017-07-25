@@ -139,11 +139,11 @@ bool EDetail::Update	(LPCSTR name)
     // fill vertices
     bv_bb.invalidate();
     u32 idx			= 0;
-	for (u32 f_id=0; f_id<M->GetFCount(); f_id++){
-		const st_Face& F 	= M->GetFaces()[f_id];
+    for (u32 f_id=0; f_id<M->GetFCount(); f_id++){
+        st_Face& F 	= M->GetFaces()[f_id];
     	u16 ind[3];
     	for (int k=0; k<3; k++,idx++){
-            const Fvector& P  = M->GetVerts()[F.pv[k].pindex];
+            Fvector& P  = M->GetVerts()[F.pv[k].pindex];
             st_VMapPt&vm= M->GetVMRefs()[F.pv[k].vmref].pts[0];
             Fvector2& uv= M->GetVMaps()[vm.vmap_index]->getUV(vm.index);
         	ind[k]		= _AddVert	(P,uv.x,uv.y);
@@ -157,7 +157,7 @@ bool EDetail::Update	(LPCSTR name)
     }
 	number_indices 		= inds.size();
 	indices				= (u16*)xr_malloc(number_indices*sizeof(u16));
-    Memory.mem_copy		(indices,&*(inds.begin()),number_indices*sizeof(u16));
+    Memory.mem_copy		(indices,inds.begin(),number_indices*sizeof(u16));
 
 	bv_bb.getsphere		(bv_sphere.P,bv_sphere.R);
 

@@ -198,13 +198,13 @@ void	TUI::ClearCommands ()
 //------------------------------------------------------------------------------
 // UI Commands
 //------------------------------------------------------------------------------
-CCommandVar	__stdcall TUI::CommandRenderFocus(CCommandVar p1, CCommandVar p2)
+CCommandVar	TUI::CommandRenderFocus(CCommandVar p1, CCommandVar p2)
 {
     if (((TForm*)m_D3DWindow->Owner)->Visible&&m_bReady)
         m_D3DWindow->SetFocus();
     return 1;
 }
-CCommandVar	__stdcall TUI::CommandBreakLastOperation(CCommandVar p1, CCommandVar p2)
+CCommandVar	TUI::CommandBreakLastOperation(CCommandVar p1, CCommandVar p2)
 {
     if (mrYes==ELog.DlgMsg(mtConfirmation,TMsgDlgButtons() << mbYes << mbNo,"Are you sure to break current action?")){
         NeedBreak	();
@@ -212,7 +212,7 @@ CCommandVar	__stdcall TUI::CommandBreakLastOperation(CCommandVar p1, CCommandVar
     }
     return 1;
 }
-CCommandVar __stdcall TUI::CommandRenderResize(CCommandVar p1, CCommandVar p2)
+CCommandVar 	TUI::CommandRenderResize(CCommandVar p1, CCommandVar p2)
 {
     if (psDeviceFlags.is(rsDrawSafeRect)){
         int w=m_D3DPanel->Width,h=m_D3DPanel->Height,w_2=w/2,h_2=h/2;
@@ -527,7 +527,7 @@ CCommandVar 	ExecuteCommandList(LPCSTR text)
     return				res;
 }
 
-bool  OnRunExecuteListClick(LPCSTR txt)
+bool 	OnRunExecuteListClick(LPCSTR txt)
 {
 	ExecuteCommandList		(txt);
     return true;
@@ -539,7 +539,7 @@ CCommandVar 	CommandExecuteCommandList(CCommandVar _p1, CCommandVar _p2)
     return  	ExecuteCommandList	(cmds_text.c_str());
 }
 
-bool OnCloseCommandListEditor()
+bool __stdcall OnCloseCommandListEditor()
 {
 	frmEditCommandList	= 0;
     return 		true;
@@ -589,7 +589,7 @@ CCommandVar 	CommandAssignMacro(CCommandVar p1, CCommandVar p2)
 	    ECommands[COMMAND_RUN_MACRO]->sub_commands[p1]->p0 = fn;
 	    return 			TRUE;
     }else{
-    	if (EFS.GetOpenName(0, _import_,fn,false,NULL,2))
+    	if (EFS.GetOpenName(_import_,fn,false,NULL,2))
         	return 		ExecCommand	(COMMAND_ASSIGN_MACRO,p1,fn);
     }
     return FALSE;

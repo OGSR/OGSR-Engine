@@ -3,113 +3,139 @@
 <PROJECT>
   <MACROS>
     <VERSION value="BCB.06.00"/>
-    <PROJECT value="x:\binaries\LevelEditor.exe"/>
-    <OBJFILES value="x:\intermediate_ed\le\LevelEditor.obj x:\intermediate_ed\le\BottomBar.obj 
-      x:\intermediate_ed\le\main.obj x:\intermediate_ed\le\TopBar.obj 
-      x:\intermediate_ed\le\stdafx.obj x:\intermediate_ed\le\DOOneColor.obj 
-      x:\intermediate_ed\le\DOShuffle.obj x:\intermediate_ed\le\EditLibrary.obj 
-      x:\intermediate_ed\le\EditLightAnim.obj 
-      x:\intermediate_ed\le\FrameAIMap.obj x:\intermediate_ed\le\FrameDetObj.obj 
-      x:\intermediate_ed\le\FrameGroup.obj x:\intermediate_ed\le\FrameLight.obj 
-      x:\intermediate_ed\le\FrameObject.obj 
-      x:\intermediate_ed\le\FramePortal.obj x:\intermediate_ed\le\FramePS.obj 
-      x:\intermediate_ed\le\FrameSector.obj x:\intermediate_ed\le\FrameShape.obj 
-      x:\intermediate_ed\le\FrameSpawn.obj 
-      x:\intermediate_ed\le\FrameWayPoint.obj x:\intermediate_ed\le\LeftBar.obj 
-      x:\intermediate_ed\le\ObjectList.obj 
-      x:\intermediate_ed\le\previewimage.obj x:\intermediate_ed\le\PropertiesEObject.obj 
-      x:\intermediate_ed\le\Splash.obj x:\intermediate_ed\le\UI_LevelTools.obj 
-      x:\intermediate_ed\le\UI_LevelMain.obj x:\intermediate_ed\le\WayPoint.obj 
-      x:\intermediate_ed\le\ESceneAIMapTools_Export.obj 
-      x:\intermediate_ed\le\Builder.obj x:\intermediate_ed\le\BuilderCF.obj 
-      x:\intermediate_ed\le\BuilderCore.obj 
-      x:\intermediate_ed\le\BuilderGame.obj x:\intermediate_ed\le\BuilderLTX.obj 
-      x:\intermediate_ed\le\BuilderOGF.obj 
-      x:\intermediate_ed\le\BuilderRemote.obj x:\intermediate_ed\le\Cursor3D.obj 
-      x:\intermediate_ed\le\Custom2DProjector.obj 
-      x:\intermediate_ed\le\ESceneDOTools.obj 
-      x:\intermediate_ed\le\EditObjectExportLWO.obj 
-      x:\intermediate_ed\le\ELight.obj 
-      x:\intermediate_ed\le\EParticlesObject.obj x:\intermediate_ed\le\ESceneAIMapTools.obj 
-      x:\intermediate_ed\le\ESceneAIMapTools_Controls.obj 
-      x:\intermediate_ed\le\ESceneAIMapTools_Generate.obj 
-      x:\intermediate_ed\le\ESceneAIMapTools_MotionSimulator.obj 
-      x:\intermediate_ed\le\ESceneAIMapTools_Pick.obj 
-      x:\intermediate_ed\le\ESceneAIMapTools_Render.obj 
-      x:\intermediate_ed\le\ESceneCustomMTools.obj 
-      x:\intermediate_ed\le\ESceneCustomMToolsControls.obj 
-      x:\intermediate_ed\le\ESceneCustomOTools.obj 
-      x:\intermediate_ed\le\ESceneCustomOToolsIO.obj 
-      x:\intermediate_ed\le\ESceneDummyTools.obj 
-      x:\intermediate_ed\le\ESceneGlowTools.obj 
-      x:\intermediate_ed\le\ESceneGroupTools.obj 
-      x:\intermediate_ed\le\ESceneLightTools.obj 
-      x:\intermediate_ed\le\ESceneLightToolsIO.obj 
-      x:\intermediate_ed\le\ESceneObjectTools.obj 
-      x:\intermediate_ed\le\EScenePortalTools.obj 
-      x:\intermediate_ed\le\EScenePSTools.obj 
-      x:\intermediate_ed\le\ESceneSectorTools.obj 
-      x:\intermediate_ed\le\ESceneShapeTools.obj 
-      x:\intermediate_ed\le\ESceneSoundEnvTools.obj 
-      x:\intermediate_ed\le\ESceneSoundSrcTools.obj 
-      x:\intermediate_ed\le\ESceneSpawnTools.obj 
-      x:\intermediate_ed\le\ESceneWayTools.obj x:\intermediate_ed\le\EShape.obj 
-      x:\intermediate_ed\le\ESound_Environment.obj 
-      x:\intermediate_ed\le\ESound_Source.obj x:\intermediate_ed\le\FS2.obj 
-      x:\intermediate_ed\le\Glow.obj x:\intermediate_ed\le\GroupObject.obj 
-      x:\intermediate_ed\le\portal.obj x:\intermediate_ed\le\portalutils.obj 
-      x:\intermediate_ed\le\scene.obj x:\intermediate_ed\le\Scene_Tools.obj 
-      x:\intermediate_ed\le\SceneIO.obj x:\intermediate_ed\le\SceneObject.obj 
-      x:\intermediate_ed\le\SceneObjectIO.obj 
-      x:\intermediate_ed\le\ScenePick.obj x:\intermediate_ed\le\SceneRender.obj 
-      x:\intermediate_ed\le\SceneSelection.obj 
-      x:\intermediate_ed\le\SceneSnap.obj 
-      x:\intermediate_ed\le\SceneSummaryInfo.obj 
-      x:\intermediate_ed\le\SceneUndo.obj x:\intermediate_ed\le\SceneUtil.obj 
-      x:\intermediate_ed\le\sector.obj x:\intermediate_ed\le\SoundManager_LE.obj 
-      x:\intermediate_ed\le\SpawnPoint.obj 
-      x:\intermediate_ed\le\ESceneAIMapControls.obj 
-      x:\intermediate_ed\le\ESceneControlsCustom.obj 
-      x:\intermediate_ed\le\ESceneObjectControls.obj 
-      x:\intermediate_ed\le\EScenePortalControls.obj 
-      x:\intermediate_ed\le\EScenePSControls.obj 
-      x:\intermediate_ed\le\ESceneSectorControls.obj 
-      x:\intermediate_ed\le\ESceneShapeControls.obj 
-      x:\intermediate_ed\le\ESceneSpawnControls.obj 
-      x:\intermediate_ed\le\ESceneWayControls.obj 
-      x:\intermediate_ed\le\ESceneGlowToolsIO.obj 
-      x:\intermediate_ed\le\EScenePortalToolsIO.obj 
-      x:\intermediate_ed\le\ESceneSectorToolsIO.obj 
-      x:\intermediate_ed\le\ESceneSpawnToolsIO.obj 
-      x:\intermediate_ed\le\ESceneObjectToolsIO.obj 
-      x:\intermediate_ed\le\EScenePSToolsIO.obj 
-      x:\intermediate_ed\le\ESceneShapeToolsIO.obj 
-      x:\intermediate_ed\le\ESceneSoundEnvToolsIO.obj 
-      x:\intermediate_ed\le\ESceneSoundSrcToolsIO.obj 
-      x:\intermediate_ed\le\ESceneWayToolsIO.obj 
-      x:\intermediate_ed\le\ESceneGroupToolsIO.obj 
-      x:\intermediate_ed\le\ESceneDOTools_Pick.obj 
-      x:\intermediate_ed\le\ESceneDOTools_Controls.obj 
-      x:\intermediate_ed\le\ESceneDOTools_Generate.obj 
-      x:\intermediate_ed\le\ObjectAnimator.obj 
-      x:\intermediate_ed\le\DetailManager.obj 
-      x:\intermediate_ed\le\DetailManager_soft.obj 
-      x:\intermediate_ed\le\DetailManager_CACHE.obj 
-      x:\intermediate_ed\le\DetailManager_Decompress.obj 
-      x:\intermediate_ed\le\DetailManager_VS.obj 
-      x:\intermediate_ed\le\ELight_props.obj x:\intermediate_ed\le\ELight_IO.obj 
-      x:\intermediate_ed\le\ESceneObjectToolsExportBreakable.obj 
-      x:\intermediate_ed\le\LevelGameDef.obj 
-      x:\intermediate_ed\le\ESceneWallmarkTools.obj 
-      x:\intermediate_ed\le\ESceneWallmarkControls.obj 
-      x:\intermediate_ed\le\GeometryPartExtractor.obj 
-      x:\intermediate_ed\le\BuilderLODs.obj 
-      x:\intermediate_ed\le\ESceneGroupControls.obj 
-      x:\intermediate_ed\le\CustomObjectLE.obj 
-      x:\intermediate_ed\le\CustomObject.obj 
-      x:\intermediate_ed\le\CustomObjectAnimation.obj 
-      x:\intermediate_ed\le\LevelPreferences.obj 
-      x:\intermediate_ed\le\FrmDBXpacker.obj"/>
+    <PROJECT value="X:\ogsr_engine\_BIN\SDK\Release\Win32\LevelEditor.exe"/>
+    <OBJFILES value="..\..\_TEMP\SDK\Release\Win32\le\LevelEditor.obj 
+      ..\..\_TEMP\SDK\Release\Win32\le\BottomBar.obj 
+      ..\..\_TEMP\SDK\Release\Win32\le\main.obj 
+      ..\..\_TEMP\SDK\Release\Win32\le\TopBar.obj 
+      ..\..\_TEMP\SDK\Release\Win32\le\stdafx.obj 
+      ..\..\_TEMP\SDK\Release\Win32\le\DOOneColor.obj 
+      ..\..\_TEMP\SDK\Release\Win32\le\DOShuffle.obj 
+      ..\..\_TEMP\SDK\Release\Win32\le\EditLibrary.obj 
+      ..\..\_TEMP\SDK\Release\Win32\le\EditLightAnim.obj 
+      ..\..\_TEMP\SDK\Release\Win32\le\FrameAIMap.obj 
+      ..\..\_TEMP\SDK\Release\Win32\le\FrameDetObj.obj 
+      ..\..\_TEMP\SDK\Release\Win32\le\FrameGroup.obj 
+      ..\..\_TEMP\SDK\Release\Win32\le\FrameLight.obj 
+      ..\..\_TEMP\SDK\Release\Win32\le\FrameObject.obj 
+      ..\..\_TEMP\SDK\Release\Win32\le\FramePortal.obj 
+      ..\..\_TEMP\SDK\Release\Win32\le\FramePS.obj 
+      ..\..\_TEMP\SDK\Release\Win32\le\FrameSector.obj 
+      ..\..\_TEMP\SDK\Release\Win32\le\FrameShape.obj 
+      ..\..\_TEMP\SDK\Release\Win32\le\FrameSpawn.obj 
+      ..\..\_TEMP\SDK\Release\Win32\le\FrameWayPoint.obj 
+      ..\..\_TEMP\SDK\Release\Win32\le\LeftBar.obj 
+      ..\..\_TEMP\SDK\Release\Win32\le\ObjectList.obj 
+      ..\..\_TEMP\SDK\Release\Win32\le\previewimage.obj 
+      ..\..\_TEMP\SDK\Release\Win32\le\PropertiesEObject.obj 
+      ..\..\_TEMP\SDK\Release\Win32\le\Splash.obj 
+      ..\..\_TEMP\SDK\Release\Win32\le\UI_LevelTools.obj 
+      ..\..\_TEMP\SDK\Release\Win32\le\UI_LevelMain.obj 
+      ..\..\_TEMP\SDK\Release\Win32\le\WayPoint.obj 
+      ..\..\_TEMP\SDK\Release\Win32\le\ESceneAIMapTools_Export.obj 
+      ..\..\_TEMP\SDK\Release\Win32\le\Builder.obj 
+      ..\..\_TEMP\SDK\Release\Win32\le\BuilderCF.obj 
+      ..\..\_TEMP\SDK\Release\Win32\le\BuilderCore.obj 
+      ..\..\_TEMP\SDK\Release\Win32\le\BuilderGame.obj 
+      ..\..\_TEMP\SDK\Release\Win32\le\BuilderLTX.obj 
+      ..\..\_TEMP\SDK\Release\Win32\le\BuilderOGF.obj 
+      ..\..\_TEMP\SDK\Release\Win32\le\BuilderRemote.obj 
+      ..\..\_TEMP\SDK\Release\Win32\le\Cursor3D.obj 
+      ..\..\_TEMP\SDK\Release\Win32\le\Custom2DProjector.obj 
+      ..\..\_TEMP\SDK\Release\Win32\le\ESceneDOTools.obj 
+      ..\..\_TEMP\SDK\Release\Win32\le\EditObjectExportLWO.obj 
+      ..\..\_TEMP\SDK\Release\Win32\le\ELight.obj 
+      ..\..\_TEMP\SDK\Release\Win32\le\EParticlesObject.obj 
+      ..\..\_TEMP\SDK\Release\Win32\le\ESceneAIMapTools.obj 
+      ..\..\_TEMP\SDK\Release\Win32\le\ESceneAIMapTools_Controls.obj 
+      ..\..\_TEMP\SDK\Release\Win32\le\ESceneAIMapTools_Generate.obj 
+      ..\..\_TEMP\SDK\Release\Win32\le\ESceneAIMapTools_MotionSimulator.obj 
+      ..\..\_TEMP\SDK\Release\Win32\le\ESceneAIMapTools_Pick.obj 
+      ..\..\_TEMP\SDK\Release\Win32\le\ESceneAIMapTools_Render.obj 
+      ..\..\_TEMP\SDK\Release\Win32\le\ESceneCustomMTools.obj 
+      ..\..\_TEMP\SDK\Release\Win32\le\ESceneCustomMToolsControls.obj 
+      ..\..\_TEMP\SDK\Release\Win32\le\ESceneCustomOTools.obj 
+      ..\..\_TEMP\SDK\Release\Win32\le\ESceneCustomOToolsIO.obj 
+      ..\..\_TEMP\SDK\Release\Win32\le\ESceneDummyTools.obj 
+      ..\..\_TEMP\SDK\Release\Win32\le\ESceneGlowTools.obj 
+      ..\..\_TEMP\SDK\Release\Win32\le\ESceneGroupTools.obj 
+      ..\..\_TEMP\SDK\Release\Win32\le\ESceneLightTools.obj 
+      ..\..\_TEMP\SDK\Release\Win32\le\ESceneLightToolsIO.obj 
+      ..\..\_TEMP\SDK\Release\Win32\le\ESceneObjectTools.obj 
+      ..\..\_TEMP\SDK\Release\Win32\le\EScenePortalTools.obj 
+      ..\..\_TEMP\SDK\Release\Win32\le\EScenePSTools.obj 
+      ..\..\_TEMP\SDK\Release\Win32\le\ESceneSectorTools.obj 
+      ..\..\_TEMP\SDK\Release\Win32\le\ESceneShapeTools.obj 
+      ..\..\_TEMP\SDK\Release\Win32\le\ESceneSoundEnvTools.obj 
+      ..\..\_TEMP\SDK\Release\Win32\le\ESceneSoundSrcTools.obj 
+      ..\..\_TEMP\SDK\Release\Win32\le\ESceneSpawnTools.obj 
+      ..\..\_TEMP\SDK\Release\Win32\le\ESceneWayTools.obj 
+      ..\..\_TEMP\SDK\Release\Win32\le\EShape.obj 
+      ..\..\_TEMP\SDK\Release\Win32\le\ESound_Environment.obj 
+      ..\..\_TEMP\SDK\Release\Win32\le\ESound_Source.obj 
+      ..\..\_TEMP\SDK\Release\Win32\le\FS2.obj 
+      ..\..\_TEMP\SDK\Release\Win32\le\Glow.obj 
+      ..\..\_TEMP\SDK\Release\Win32\le\GroupObject.obj 
+      ..\..\_TEMP\SDK\Release\Win32\le\portal.obj 
+      ..\..\_TEMP\SDK\Release\Win32\le\portalutils.obj 
+      ..\..\_TEMP\SDK\Release\Win32\le\scene.obj 
+      ..\..\_TEMP\SDK\Release\Win32\le\Scene_Tools.obj 
+      ..\..\_TEMP\SDK\Release\Win32\le\SceneIO.obj 
+      ..\..\_TEMP\SDK\Release\Win32\le\SceneObject.obj 
+      ..\..\_TEMP\SDK\Release\Win32\le\SceneObjectIO.obj 
+      ..\..\_TEMP\SDK\Release\Win32\le\ScenePick.obj 
+      ..\..\_TEMP\SDK\Release\Win32\le\SceneRender.obj 
+      ..\..\_TEMP\SDK\Release\Win32\le\SceneSelection.obj 
+      ..\..\_TEMP\SDK\Release\Win32\le\SceneSnap.obj 
+      ..\..\_TEMP\SDK\Release\Win32\le\SceneSummaryInfo.obj 
+      ..\..\_TEMP\SDK\Release\Win32\le\SceneUndo.obj 
+      ..\..\_TEMP\SDK\Release\Win32\le\SceneUtil.obj 
+      ..\..\_TEMP\SDK\Release\Win32\le\sector.obj 
+      ..\..\_TEMP\SDK\Release\Win32\le\SoundManager_LE.obj 
+      ..\..\_TEMP\SDK\Release\Win32\le\SpawnPoint.obj 
+      ..\..\_TEMP\SDK\Release\Win32\le\ESceneAIMapControls.obj 
+      ..\..\_TEMP\SDK\Release\Win32\le\ESceneControlsCustom.obj 
+      ..\..\_TEMP\SDK\Release\Win32\le\ESceneObjectControls.obj 
+      ..\..\_TEMP\SDK\Release\Win32\le\EScenePortalControls.obj 
+      ..\..\_TEMP\SDK\Release\Win32\le\EScenePSControls.obj 
+      ..\..\_TEMP\SDK\Release\Win32\le\ESceneSectorControls.obj 
+      ..\..\_TEMP\SDK\Release\Win32\le\ESceneShapeControls.obj 
+      ..\..\_TEMP\SDK\Release\Win32\le\ESceneSpawnControls.obj 
+      ..\..\_TEMP\SDK\Release\Win32\le\ESceneWayControls.obj 
+      ..\..\_TEMP\SDK\Release\Win32\le\ESceneGlowToolsIO.obj 
+      ..\..\_TEMP\SDK\Release\Win32\le\EScenePortalToolsIO.obj 
+      ..\..\_TEMP\SDK\Release\Win32\le\ESceneSectorToolsIO.obj 
+      ..\..\_TEMP\SDK\Release\Win32\le\ESceneSpawnToolsIO.obj 
+      ..\..\_TEMP\SDK\Release\Win32\le\ESceneObjectToolsIO.obj 
+      ..\..\_TEMP\SDK\Release\Win32\le\EScenePSToolsIO.obj 
+      ..\..\_TEMP\SDK\Release\Win32\le\ESceneShapeToolsIO.obj 
+      ..\..\_TEMP\SDK\Release\Win32\le\ESceneSoundEnvToolsIO.obj 
+      ..\..\_TEMP\SDK\Release\Win32\le\ESceneSoundSrcToolsIO.obj 
+      ..\..\_TEMP\SDK\Release\Win32\le\ESceneWayToolsIO.obj 
+      ..\..\_TEMP\SDK\Release\Win32\le\ESceneGroupToolsIO.obj 
+      ..\..\_TEMP\SDK\Release\Win32\le\ESceneDOTools_Pick.obj 
+      ..\..\_TEMP\SDK\Release\Win32\le\ESceneDOTools_Controls.obj 
+      ..\..\_TEMP\SDK\Release\Win32\le\ESceneDOTools_Generate.obj 
+      ..\..\_TEMP\SDK\Release\Win32\le\ObjectAnimator.obj 
+      ..\..\_TEMP\SDK\Release\Win32\le\DetailManager.obj 
+      ..\..\_TEMP\SDK\Release\Win32\le\DetailManager_soft.obj 
+      ..\..\_TEMP\SDK\Release\Win32\le\DetailManager_CACHE.obj 
+      ..\..\_TEMP\SDK\Release\Win32\le\DetailManager_Decompress.obj 
+      ..\..\_TEMP\SDK\Release\Win32\le\DetailManager_VS.obj 
+      ..\..\_TEMP\SDK\Release\Win32\le\ELight_props.obj 
+      ..\..\_TEMP\SDK\Release\Win32\le\ELight_IO.obj 
+      ..\..\_TEMP\SDK\Release\Win32\le\ESceneObjectToolsExportBreakable.obj 
+      ..\..\_TEMP\SDK\Release\Win32\le\LevelGameDef.obj 
+      ..\..\_TEMP\SDK\Release\Win32\le\ESceneWallmarkTools.obj 
+      ..\..\_TEMP\SDK\Release\Win32\le\ESceneWallmarkControls.obj 
+      ..\..\_TEMP\SDK\Release\Win32\le\GeometryPartExtractor.obj 
+      ..\..\_TEMP\SDK\Release\Win32\le\BuilderLODs.obj 
+      ..\..\_TEMP\SDK\Release\Win32\le\ESceneGroupControls.obj 
+      ..\..\_TEMP\SDK\Release\Win32\le\CustomObjectLE.obj 
+      ..\..\_TEMP\SDK\Release\Win32\le\CustomObject.obj 
+      ..\..\_TEMP\SDK\Release\Win32\le\CustomObjectAnimation.obj 
+      ..\..\_TEMP\SDK\Release\Win32\le\LevelPreferences.obj 
+      ..\..\_TEMP\SDK\Release\Win32\le\FrmDBXpacker.obj"/>
     <RESFILES value="LevelEditor.res resource.res"/>
     <IDLFILES value=""/>
     <IDLGENFILES value=""/>
@@ -134,25 +160,28 @@
     <USERDEFINES value="_EDITOR;_LEVEL_EDITOR"/>
     <SYSDEFINES value="NO_STRICT;_RTLDLL;USEPACKAGES"/>
     <MAINSOURCE value="LevelEditor.cpp"/>
-    <INCLUDEPATH value="$(DXSDK_DIR)\Include;Edit;Engine;$(BCB)\Projects;$(BCB)\include\vcl;$(BCB)\include;$(COMPONENTS)\alexmx;$(COMPONENTS)\ElPack\Code;$(COMPONENTS)\ElPack\Code\Source;$(CORE_DIR);../../xr_3da;../../xr_3da/xrRender;$(MAGIC_SW_DIR)"/>
-    <LIBPATH value="..\..\xr_3da\xrRender;..\..\xr_3da;Edit;Engine;$(BCB)\Projects;$(BCB)\lib;$(BCB)\lib\obj;$(BCB)\Projects\Lib;$(COMPONENTS)\alexmx;$(COMPONENTS)\ElPack\Code;$(COMPONENTS)\ElPack\Code\Source;x:\libraries;x:\libraries\SDK"/>
+    <INCLUDEPATH value="$(DSOUND_DIR);$(DINPUT_DIR);$(D3DX_DIR)\Include;Edit;Engine;$(BCB)\Projects;$(BCB)\include\vcl;$(BCB)\include;$(COMPONENTS)\alexmx;$(COMPONENTS)\ElPack\Code;$(COMPONENTS)\ElPack\Code\Source;$(CORE_DIR);../../xr_3da;../../xr_3da/xrRender;$(MAGIC_SW_DIR)"/>
+    <LIBPATH value="..\..\xr_3da\xrRender;..\..\xr_3da;Edit;Engine;$(BCB)\Projects;$(BCB)\lib;$(BCB)\lib\obj;$(BCB)\Projects\Lib;$(COMPONENTS)\alexmx;$(COMPONENTS)\ElPack\Code;$(COMPONENTS)\ElPack\Code\Source;X:\3rd_party\_LIB\Release\Win32;X:\ogsr_engine\_LIB\SDK\Release\Win32"/>
     <WARNINGS value="-w8092 -w8090 -w8089 -w8087 -wprc -wucp -wstv -wstu -wsig -wpin -w-par 
       -wnod -wnak -w-8027 -wdef -wcln -wbbf -wasm -wamp -wamb"/>
     <OTHERFILES value=""/>
   </MACROS>
   <OPTIONS>
-    <IDLCFLAGS value="-I$(DXSDK_DIR)\Include -IEdit -IEngine -I$(BCB)\Projects 
-      -I$(BCB)\include\vcl -I$(BCB)\include -I$(COMPONENTS)\alexmx 
-      -I$(COMPONENTS)\ElPack\Code -I$(COMPONENTS)\ElPack\Code\Source 
-      -I$(CORE_DIR) -I../../xr_3da -I../../xr_3da/xrRender -I$(MAGIC_SW_DIR) 
-      -src_suffix cpp -D_EDITOR -D_LEVEL_EDITOR"/>
-    <CFLAG1 value="-O2 -H=x:\intermediate_ed\le\pch.csm -Hc -Q -Vms -Vx -Ve -xf -xp -VF -ff 
-      -X- -ps -a4 -6 -b- -k- -vi -He -c -tW -tWM"/>
-    <PFLAGS value="-N2x:\intermediate_ed\le -N0x:\intermediate_ed\le -$Y- -$R -$Q -$L- -$D- 
-      -$A8 -v -JPHNE -M"/>
+    <IDLCFLAGS value="-I$(DSOUND_DIR) -I$(DINPUT_DIR) -I$(D3DX_DIR)\Include -IEdit -IEngine 
+      -I$(BCB)\Projects -I$(BCB)\include\vcl -I$(BCB)\include 
+      -I$(COMPONENTS)\alexmx -I$(COMPONENTS)\ElPack\Code 
+      -I$(COMPONENTS)\ElPack\Code\Source -I$(CORE_DIR) -I../../xr_3da 
+      -I../../xr_3da/xrRender -I$(MAGIC_SW_DIR) -src_suffix cpp -D_EDITOR 
+      -D_LEVEL_EDITOR"/>
+    <CFLAG1 value="-O2 -H=X:\ogsr_engine\_TEMP\SDK\Release\Win32\le\pch.csm -Hc -Q -Vms -Vx 
+      -Ve -xf -xp -VF -ff -X- -ps -a4 -6 -b- -k- -y -v -vi -He -c -tW -tWM"/>
+    <PFLAGS value="-N2X:\ogsr_engine\_TEMP\SDK\Release\Win32\le 
+      -N0X:\ogsr_engine\_TEMP\SDK\Release\Win32\le -$Y- -$R -$Q -$L- -$D- -$A8 
+      -v -JPHNE -M"/>
     <RFLAGS value=""/>
     <AFLAGS value="/mx /w2 /zn"/>
-    <LFLAGS value="-lx:\libraries -Ix:\intermediate_ed\le -D&quot;&quot; -aa -Tpe -GD -x -Gn"/>
+    <LFLAGS value="-lX:\ogsr_engine\_LIB\SDK\Release\Win32 
+      -IX:\ogsr_engine\_TEMP\SDK\Release\Win32\le -D&quot;&quot; -aa -Tpe -GD -x -Gn"/>
     <OTHERFILES value=""/>
   </OPTIONS>
   <LINKER>
@@ -311,7 +340,7 @@ AutoIncBuild=1
 MajorVer=1
 MinorVer=0
 Release=2
-Build=135
+Build=136
 Debug=1
 PreRelease=0
 Special=0
@@ -323,7 +352,7 @@ CodePage=1252
 [Version Info Keys]
 CompanyName=
 FileDescription=
-FileVersion=1.0.2.135
+FileVersion=1.0.2.136
 InternalName=
 LegalCopyright=
 LegalTrademarks=
@@ -332,22 +361,27 @@ ProductName=
 ProductVersion=1.0.0.0
 Comments=
 
+[Excluded Packages]
+c:\program files (x86)\borland\cbuilder6\Bin\dclite60.bpl=Borland Integrated Translation Environment
+
 [HistoryLists\hlIncludePath]
-Count=5
-Item0=$(DXSDK_DIR)\Include;Edit;Engine;$(BCB)\Projects;$(BCB)\include\vcl;$(BCB)\include;$(COMPONENTS)\alexmx;$(COMPONENTS)\ElPack\Code;$(COMPONENTS)\ElPack\Code\Source;$(CORE_DIR);../../xr_3da;../../xr_3da/xrRender;$(MAGIC_SW_DIR)
-Item1=$(DXSDK_DIR)\Include;Edit;Engine;$(BCB)\Projects;$(BCB)\include\vcl;$(BCB)\include;$(COMPONENTS)\alexmx;$(COMPONENTS)\ElPack\Code;$(COMPONENTS)\ElPack\Code\Source;$(CORE_DIR);../../xr_3da;../../xr_3da/xrRender
-Item2=Edit;Engine;$(BCB)\Projects;$(BCB)\include\vcl;$(BCB)\include;$(DXSDK_DIR)\Include;$(COMPONENTS)\alexmx;$(COMPONENTS)\ElPack\Code;$(COMPONENTS)\ElPack\Code\Source;$(CORE_DIR);../../xr_3da;../../xr_3da/xrRender
-Item3=Edit;H:\RAD\Borland\CBuilder6\Projects;&quot;R:\SDK\Microsoft DirectX 9.0 SDK (April 2005)\Include&quot;Edit;Engine;r:\borland\components6\alexmx;$(BCB)\include;$(BCB)\include\vcl;R:\SDK\MagicFM_Borland\Sdk\Include;R:\Borland\Components6\ElPack\Code;R:\Borland\Components6\ElPack\Code\Source;P:\xrCore;..\ECore;..\ECore\Editor;..\ECore\Engine;..\ECore\Engine\blenders;..\ECore\Engine\visuals;..\xrEProps;P:\xrSound
-Item4=H:\RAD\Borland\CBuilder6\Projects;R:\SDK\Microsoft DirectX 9.0 SDK (April 2005)\Include;Engine\Game;Edit;Engine;r:\borland\components6\alexmx;$(BCB)\include;$(BCB)\include\vcl;R:\SDK\MagicFM_Borland\Sdk\Include;R:\Borland\Components6\ElPack\Code;R:\Borland\Components6\ElPack\Code\Source;P:\xrCore;..\ECore;..\ECore\Editor;..\ECore\Engine;..\ECore\Engine\blenders;..\ECore\Engine\visuals;..\xrEProps;P:\xrSound
+Count=6
+Item0=$(DSOUND_DIR);$(DINPUT_DIR);$(D3DX_DIR)\Include;Edit;Engine;$(BCB)\Projects;$(BCB)\include\vcl;$(BCB)\include;$(COMPONENTS)\alexmx;$(COMPONENTS)\ElPack\Code;$(COMPONENTS)\ElPack\Code\Source;$(CORE_DIR);../../xr_3da;../../xr_3da/xrRender;$(MAGIC_SW_DIR)
+Item1=$(DXSDK_DIR)\Include;Edit;Engine;$(BCB)\Projects;$(BCB)\include\vcl;$(BCB)\include;$(COMPONENTS)\alexmx;$(COMPONENTS)\ElPack\Code;$(COMPONENTS)\ElPack\Code\Source;$(CORE_DIR);../../xr_3da;../../xr_3da/xrRender;$(MAGIC_SW_DIR)
+Item2=$(DXSDK_DIR)\Include;Edit;Engine;$(BCB)\Projects;$(BCB)\include\vcl;$(BCB)\include;$(COMPONENTS)\alexmx;$(COMPONENTS)\ElPack\Code;$(COMPONENTS)\ElPack\Code\Source;$(CORE_DIR);../../xr_3da;../../xr_3da/xrRender
+Item3=Edit;Engine;$(BCB)\Projects;$(BCB)\include\vcl;$(BCB)\include;$(DXSDK_DIR)\Include;$(COMPONENTS)\alexmx;$(COMPONENTS)\ElPack\Code;$(COMPONENTS)\ElPack\Code\Source;$(CORE_DIR);../../xr_3da;../../xr_3da/xrRender
+Item4=Edit;H:\RAD\Borland\CBuilder6\Projects;&quot;R:\SDK\Microsoft DirectX 9.0 SDK (April 2005)\Include&quot;Edit;Engine;r:\borland\components6\alexmx;$(BCB)\include;$(BCB)\include\vcl;R:\SDK\MagicFM_Borland\Sdk\Include;R:\Borland\Components6\ElPack\Code;R:\Borland\Components6\ElPack\Code\Source;P:\xrCore;..\ECore;..\ECore\Editor;..\ECore\Engine;..\ECore\Engine\blenders;..\ECore\Engine\visuals;..\xrEProps;P:\xrSound
+Item5=H:\RAD\Borland\CBuilder6\Projects;R:\SDK\Microsoft DirectX 9.0 SDK (April 2005)\Include;Engine\Game;Edit;Engine;r:\borland\components6\alexmx;$(BCB)\include;$(BCB)\include\vcl;R:\SDK\MagicFM_Borland\Sdk\Include;R:\Borland\Components6\ElPack\Code;R:\Borland\Components6\ElPack\Code\Source;P:\xrCore;..\ECore;..\ECore\Editor;..\ECore\Engine;..\ECore\Engine\blenders;..\ECore\Engine\visuals;..\xrEProps;P:\xrSound
 
 [HistoryLists\hlLibraryPath]
-Count=6
-Item0=..\..\xr_3da\xrRender;..\..\xr_3da;Edit;Engine;$(BCB)\Projects;$(BCB)\lib;$(BCB)\lib\obj;$(BCB)\Projects\Lib;$(COMPONENTS)\alexmx;$(COMPONENTS)\ElPack\Code;$(COMPONENTS)\ElPack\Code\Source;x:\libraries;x:\libraries\SDK
-Item1=..\..\xr_3da\xrRender;..\..\xr_3da;Edit;Engine;$(BCB)\Projects;$(BCB)\lib;$(BCB)\lib\obj;$(BCB)\Projects\Lib;$(COMPONENTS)\alexmx;$(COMPONENTS)\ElPack\Code;$(COMPONENTS)\ElPack\Code\Source;x:\libraries
-Item2=Edit;Engine;$(BCB)\Projects;$(BCB)\lib;$(BCB)\lib\obj;$(BCB)\Projects\Lib;$(COMPONENTS)\alexmx;$(COMPONENTS)\ElPack\Code;$(COMPONENTS)\ElPack\Code\Source;x:\libraries
-Item3=$(BCB)\Projects;$(BCB)\lib;$(BCB)\lib\obj;$(BCB)\Projects\Lib;$(COMPONENTS)\alexmx;$(COMPONENTS)\ElPack\Code;$(COMPONENTS)\ElPack\Code\Source;x:\libraries
-Item4=H:\RAD\Borland\CBuilder6\Projects;Edit;Engine;C:\Rad\Borland\CBuilder6\Projects;$(BCB)\lib;$(BCB)\lib\obj;$(BCB)\Projects\Lib;r:\borland\components6\alexmx;R:\Borland\Components6\ElPack\Code;R:\Borland\Components6\ElPack\Code\Source;..\lib\dx;..\lib;x:\;..\ECore;..\ECore\Editor
-Item5=H:\RAD\Borland\CBuilder6\Projects;Engine\Game;Edit;Engine;C:\Rad\Borland\CBuilder6\Projects;$(BCB)\lib;$(BCB)\lib\obj;$(BCB)\Projects\Lib;r:\borland\components6\alexmx;R:\Borland\Components6\ElPack\Code;R:\Borland\Components6\ElPack\Code\Source;..\lib\dx;..\lib;x:\;..\ECore;..\ECore\Editor
+Count=7
+Item0=..\..\xr_3da\xrRender;..\..\xr_3da;Edit;Engine;$(BCB)\Projects;$(BCB)\lib;$(BCB)\lib\obj;$(BCB)\Projects\Lib;$(COMPONENTS)\alexmx;$(COMPONENTS)\ElPack\Code;$(COMPONENTS)\ElPack\Code\Source;X:\3rd_party\_LIB\Release\Win32\;X:\ogsr_engine\_LIB\SDK\Release\Win32\
+Item1=..\..\xr_3da\xrRender;..\..\xr_3da;Edit;Engine;$(BCB)\Projects;$(BCB)\lib;$(BCB)\lib\obj;$(BCB)\Projects\Lib;$(COMPONENTS)\alexmx;$(COMPONENTS)\ElPack\Code;$(COMPONENTS)\ElPack\Code\Source;x:\libraries;X:\3rd_party\_LIB\Release\Win32\
+Item2=..\..\xr_3da\xrRender;..\..\xr_3da;Edit;Engine;$(BCB)\Projects;$(BCB)\lib;$(BCB)\lib\obj;$(BCB)\Projects\Lib;$(COMPONENTS)\alexmx;$(COMPONENTS)\ElPack\Code;$(COMPONENTS)\ElPack\Code\Source;x:\libraries
+Item3=Edit;Engine;$(BCB)\Projects;$(BCB)\lib;$(BCB)\lib\obj;$(BCB)\Projects\Lib;$(COMPONENTS)\alexmx;$(COMPONENTS)\ElPack\Code;$(COMPONENTS)\ElPack\Code\Source;x:\libraries
+Item4=$(BCB)\Projects;$(BCB)\lib;$(BCB)\lib\obj;$(BCB)\Projects\Lib;$(COMPONENTS)\alexmx;$(COMPONENTS)\ElPack\Code;$(COMPONENTS)\ElPack\Code\Source;x:\libraries
+Item5=H:\RAD\Borland\CBuilder6\Projects;Edit;Engine;C:\Rad\Borland\CBuilder6\Projects;$(BCB)\lib;$(BCB)\lib\obj;$(BCB)\Projects\Lib;r:\borland\components6\alexmx;R:\Borland\Components6\ElPack\Code;R:\Borland\Components6\ElPack\Code\Source;..\lib\dx;..\lib;x:\;..\ECore;..\ECore\Editor
+Item6=H:\RAD\Borland\CBuilder6\Projects;Engine\Game;Edit;Engine;C:\Rad\Borland\CBuilder6\Projects;$(BCB)\lib;$(BCB)\lib\obj;$(BCB)\Projects\Lib;r:\borland\components6\alexmx;R:\Borland\Components6\ElPack\Code;R:\Borland\Components6\ElPack\Code\Source;..\lib\dx;..\lib;x:\;..\ECore;..\ECore\Editor
 
 [HistoryLists\hlDebugSourcePath]
 Count=1
@@ -359,19 +393,22 @@ Item0=_EDITOR;_LEVEL_EDITOR
 Item1=_EDITOR;_LEVEL_EDITOR;_DEBUG
 
 [HistoryLists\hlIntOutputDir]
-Count=2
-Item0=x:\intermediate_ed\le
-Item1=intermediate
+Count=3
+Item0=X:\ogsr_engine\_TEMP\SDK\Release\Win32\le
+Item1=x:\intermediate_ed\le
+Item2=intermediate
 
 [HistoryLists\hlFinalOutputDir]
-Count=3
-Item0=x:\binaries\
-Item1=x:\binaries
-Item2=x:\
+Count=4
+Item0=X:\ogsr_engine\_BIN\SDK\Release\Win32\
+Item1=x:\binaries\
+Item2=x:\binaries
+Item3=x:\
 
 [HistoryLists\hIBPIOutputDir]
-Count=1
-Item0=x:\libraries
+Count=2
+Item0=X:\ogsr_engine\_LIB\SDK\Release\Win32\
+Item1=x:\libraries
 
 [Debugging]
 DebugSourceDirs=
@@ -397,10 +434,5 @@ LinkCGLIB=0
 AddServerUnit=1
 AddClientUnit=1
 PrecompiledHeaders=1
-
-[Language]
-ActiveLang=
-ProjectLang=
-RootDir=
   </IDEOPTIONS>
 </PROJECT>

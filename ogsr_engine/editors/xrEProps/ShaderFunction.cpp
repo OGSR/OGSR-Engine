@@ -175,7 +175,7 @@ void TfrmShaderFunction::GetFuncData(){
 
 void TfrmShaderFunction::UpdateFuncData(){
 	if (bLoadMode) return;
-	m_CurFunc->F = (WaveForm::EFunction)GetTokenValFromName(PAnsiChar(stFunction->Caption.c_str()), function_token);
+	m_CurFunc->F = (WaveForm::EFunction)GetTokenValFromName(stFunction->Caption.c_str(), function_token);
     m_CurFunc->arg[0] = seArg1->Value;
     m_CurFunc->arg[1] = seArg2->Value;
     m_CurFunc->arg[2] = seArg3->Value;

@@ -116,7 +116,7 @@ void __fastcall TfrmPropertiesEObject::fsStorageSavePlacement(
 }
 //---------------------------------------------------------------------------
 
-void __stdcall TfrmPropertiesEObject::OnSurfaceFocused(TElTreeItem* item)
+void TfrmPropertiesEObject::OnSurfaceFocused(TElTreeItem* item)
 {
 	xr_delete(m_Thumbnail);
 	if (item&&item->Tag){

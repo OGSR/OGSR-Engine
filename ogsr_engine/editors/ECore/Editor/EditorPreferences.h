@@ -61,7 +61,7 @@ public:
     Flags32			object_flags;
     shared_str      sWeather;
 protected:
-	void 	__stdcall  OnKeyboardCommonFileClick	(ButtonValue* value, bool& bModif, bool& bSafe);
+	void 			OnKeyboardCommonFileClick	(ButtonValue* value, bool& bModif, bool& bSafe);
 	void 	__stdcall  OnClose	();
     void			ApplyValues			();
 

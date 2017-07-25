@@ -106,7 +106,7 @@ public:
     }
     SkelVertVec& 	getV_Verts()	{return m_Verts;}
     SkelFaceVec& 	getV_Faces()	{return m_Faces;}
-    SSkelVert*		getVert()		{ return &(*(m_Verts.begin()));	}
+    SSkelVert*		getVert()		{ return m_Verts.begin();	}
     int				getVS()			{ return m_Verts.size();	}
 //    SSkelFace&		getFace(int id)	{ return VERIFY(id<m_Faces.size()); m_Faces[id];	}
     int				getTS() 		{ return m_Faces.size();	}

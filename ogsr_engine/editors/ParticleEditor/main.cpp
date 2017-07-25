@@ -31,7 +31,7 @@ TfrmMain *frmMain;
 #include "PSLibrary.h"
 #include "../ECore/Engine/GameMtlLib.h"
 #include "../../xrSound/soundrender_source.h"
-#include "../ECore/Editor/render.h"
+#include "render.h"
 #include "ResourceManager.h"
 #include "../xrEProps/EditorChooseEvents.h"
 
@@ -203,7 +203,7 @@ void __fastcall TfrmMain::D3DWindowChangeFocus(TObject *Sender)
     }else{
 		UI->OnAppDeactivate();
         UI->IR_Release();
-//        paRender->Color=paRender->Color; // чтобы не было  internal code gen error
+        paRender->Color=paRender->Color; // чтобы не было  internal code gen error
     }
 }
 //---------------------------------------------------------------------------

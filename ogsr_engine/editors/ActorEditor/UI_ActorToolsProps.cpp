@@ -13,7 +13,7 @@
 #include "../xrEProps/ItemList.h"
 //------------------------------------------------------------------------------
 
-void __stdcall CActorTools::OnObjectItemFocused(ListItemsVec& items)
+void CActorTools::OnObjectItemFocused(ListItemsVec& items)
 {
 	PropItemVec props;
 	m_EditMode	= emObject;
@@ -59,7 +59,7 @@ void __stdcall CActorTools::OnObjectItemFocused(ListItemsVec& items)
 }
 //------------------------------------------------------------------------------
 
-void __stdcall CActorTools::PMMotionItemClick(TObject *Sender)
+void CActorTools::PMMotionItemClick(TObject *Sender)
 {
 	R_ASSERT(m_pEditObject);
     TMenuItem* mi = dynamic_cast<TMenuItem*>(Sender);
@@ -70,14 +70,14 @@ void __stdcall CActorTools::PMMotionItemClick(TObject *Sender)
     }
 }
 
-void __stdcall CActorTools::OnChangeTransform(PropValue* sender)
+void CActorTools::OnChangeTransform(PropValue* sender)
 {
     OnMotionKeysModified();
 	UI->RedrawScene();
 }
 //------------------------------------------------------------------------------
 
-void __stdcall CActorTools::OnMotionEditClick(ButtonValue* V, bool& bModif, bool& bSafe)
+void CActorTools::OnMotionEditClick(ButtonValue* V, bool& bModif, bool& bSafe)
 {
 	R_ASSERT(m_pEditObject);
     xr_string fn;
@@ -85,7 +85,7 @@ void __stdcall CActorTools::OnMotionEditClick(ButtonValue* V, bool& bModif, bool
     case 0:{ // append
         AnsiString folder,nm,full_name;
         xr_string fnames;
-        if (EFS.GetOpenName(0, _smotion_,fnames,true)){
+        if (EFS.GetOpenName(_smotion_,fnames,true)){
             AStringVec lst;
             _SequenceToList(lst,fnames.c_str());
             bool bRes = false;
@@ -164,19 +164,19 @@ void CActorTools::RealUpdateProperties()
 }
 //------------------------------------------------------------------------------
                                
-void __stdcall CActorTools::OnMotionTypeChange(PropValue* sender)
+void CActorTools::OnMotionTypeChange(PropValue* sender)
 {
 	RefreshSubProperties();
 }
 //------------------------------------------------------------------------------
                         
-void __stdcall CActorTools::OnMotionNameChange(PropValue* V)
+void CActorTools::OnMotionNameChange(PropValue* V)
 {
     OnMotionKeysModified();
 }
 //------------------------------------------------------------------------------
 
-void __stdcall CActorTools::OnMotionControlClick(ButtonValue* V, bool& bModif, bool& bSafe)
+void CActorTools::OnMotionControlClick(ButtonValue* V, bool& bModif, bool& bSafe)
 {
     switch (V->btn_num){
     case 0: PlayMotion();	break;
@@ -186,7 +186,7 @@ void __stdcall CActorTools::OnMotionControlClick(ButtonValue* V, bool& bModif, b
     bModif = false;
 }
 //------------------------------------------------------------------------------
-void __stdcall CActorTools::OnMarksControlClick(ButtonValue* V, bool& bModif, bool& bSafe)
+void CActorTools::OnMarksControlClick(ButtonValue* V, bool& bModif, bool& bSafe)
 {
     switch (V->btn_num){
     case 0: AddMarksChannel();	break;
@@ -196,13 +196,13 @@ void __stdcall CActorTools::OnMarksControlClick(ButtonValue* V, bool& bModif, bo
 }
 //------------------------------------------------------------------------------
 
-void __stdcall CActorTools::OnMotionRefsChange(PropValue* sender)
+void  CActorTools::OnMotionRefsChange(PropValue* sender)
 {
     OnMotionKeysModified	();
 	ExecCommand				(COMMAND_UPDATE_PROPERTIES);
 }
 
-void __stdcall CActorTools::OnBoxAxisClick(ButtonValue* V, bool& bModif, bool& bSafe)
+void  CActorTools::OnBoxAxisClick(ButtonValue* V, bool& bModif, bool& bSafe)
 {
 	CBone* BONE 			= (CBone*)V->tag;
     switch (V->btn_num){
@@ -214,7 +214,7 @@ void __stdcall CActorTools::OnBoxAxisClick(ButtonValue* V, bool& bModif, bool& b
 	ExecCommand				(COMMAND_UPDATE_PROPERTIES);
 }
 
-void __stdcall CActorTools::OnCylinderAxisClick(ButtonValue* V, bool& bModif, bool& bSafe)
+void  CActorTools::OnCylinderAxisClick(ButtonValue* V, bool& bModif, bool& bSafe)
 {
 	CBone* BONE 			= (CBone*)V->tag;
     switch (V->btn_num){
@@ -324,23 +324,23 @@ xr_token shape_types[]={
 static const LPCSTR axis[3]=
 { "Axis X", "Axis Y", "Axis Z" };
 
-void __stdcall CActorTools::OnJointTypeChange(PropValue* V)
+void  CActorTools::OnJointTypeChange(PropValue* V)
 {
 	ExecCommand(COMMAND_UPDATE_PROPERTIES);
 }
-void __stdcall CActorTools::OnShapeTypeChange(PropValue* V)
+void  CActorTools::OnShapeTypeChange(PropValue* V)
 {
 	UI->RedrawScene();
 	ExecCommand(COMMAND_UPDATE_PROPERTIES);
 }
-void __stdcall CActorTools::OnBindTransformChange(PropValue* V)
+void  CActorTools::OnBindTransformChange(PropValue* V)
 {
 	R_ASSERT(m_pEditObject);
     m_pEditObject->OnBindTransformChange();
 	UI->RedrawScene();
 }
 
-void __stdcall CActorTools::OnBoneShapeClick(ButtonValue* V, bool& bModif, bool& bSafe)
+void  CActorTools::OnBoneShapeClick(ButtonValue* V, bool& bModif, bool& bSafe)
 {
 	R_ASSERT(m_pEditObject);
     switch (V->btn_num){
@@ -349,7 +349,7 @@ void __stdcall CActorTools::OnBoneShapeClick(ButtonValue* V, bool& bModif, bool&
 	}
 }
 
-void __stdcall CActorTools::OnBoneEditClick(ButtonValue* V, bool& bModif, bool& bSafe)
+void  CActorTools::OnBoneEditClick(ButtonValue* V, bool& bModif, bool& bSafe)
 {
 	R_ASSERT(m_pEditObject);
     switch (V->btn_num){
@@ -371,13 +371,13 @@ void __stdcall CActorTools::OnBoneEditClick(ButtonValue* V, bool& bModif, bool& 
 	}
 }
 
-void __stdcall CActorTools::OnBoneFileClick(ButtonValue* V, bool& bModif, bool& bSafe)
+void  CActorTools::OnBoneFileClick(ButtonValue* V, bool& bModif, bool& bSafe)
 {              
 	R_ASSERT(m_pEditObject);
     switch (V->btn_num){
     case 0:{ 
     	xr_string fn;
-    	if (EFS.GetOpenName(0, "$sbones$",fn)){
+    	if (EFS.GetOpenName("$sbones$",fn)){
         	IReader* R = FS.r_open(fn.c_str());
 	    	if (m_pEditObject->LoadBoneData(*R))	ELog.DlgMsg(mtInformation,"Bone data succesfully loaded.");
             else                                    ELog.DlgMsg(mtError,"Failed to load bone data.");
@@ -402,7 +402,7 @@ void __stdcall CActorTools::OnBoneFileClick(ButtonValue* V, bool& bModif, bool& 
 	}
 }
 
-void __stdcall CActorTools::OnBoneLimitsChange(PropValue* sender)
+void  CActorTools::OnBoneLimitsChange(PropValue* sender)
 {
 	m_pEditObject->ClampByLimits(true);
 }

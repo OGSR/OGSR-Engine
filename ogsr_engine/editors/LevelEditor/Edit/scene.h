@@ -97,7 +97,7 @@ protected:
 	void			CreateSceneTools			();
 	void			DestroySceneTools			();
 
-	void __stdcall	FindObjectByNameCB			(LPCSTR new_name, bool& res){res=!!FindObjectByName(new_name,(CCustomObject*)0);}
+    void 			FindObjectByNameCB			(LPCSTR new_name, bool& res){res=!!FindObjectByName(new_name,(CCustomObject*)0);}
 
 	void __stdcall 	OnBuildControlClick			(ButtonValue* sender, bool& bModif, bool& bSafe);
 	void __stdcall 	OnRTFlagsChange				(PropValue* sender);
@@ -207,8 +207,8 @@ public:
 	int 			SpherePick			(const Fvector& center, float radius, ObjClassID classfilter, ObjectList& ol);
 
 	virtual void			GenObjectName		(ObjClassID cls_id, char *buffer, const char* prefix=NULL);
-	virtual CCustomObject* __stdcall	FindObjectByName	(LPCSTR name, ObjClassID classfilter);
-	virtual CCustomObject* __stdcall	FindObjectByName	(LPCSTR name, CCustomObject* pass_object);
+	virtual CCustomObject* 	FindObjectByName	(LPCSTR name, ObjClassID classfilter);
+    virtual CCustomObject* 	FindObjectByName	(LPCSTR name, CCustomObject* pass_object);
     bool 			FindDuplicateName   ();
 
 	void 			UndoClear			();

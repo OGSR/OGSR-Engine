@@ -70,7 +70,7 @@ __published:	// IDE-managed Components
 private:	// User declarations
 	ESceneGroupTools* ParentTools;
 	void 			SelByRefObject		( bool flag );
-	void __fastcall	MultiSelByRefObject ( bool clear_prev );
+	void 			MultiSelByRefObject ( bool clear_prev );
 public:		// User declarations
 	__fastcall TfraGroup(TComponent* Owner, ESceneGroupTools* gt);
 };

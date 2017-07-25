@@ -47,7 +47,7 @@ CLevelMain::~CLevelMain()
 //------------------------------------------------------------------------------
 // Tools commands
 //------------------------------------------------------------------------------
-CCommandVar __stdcall CLevelTools::CommandChangeTarget(CCommandVar p1, CCommandVar p2)
+CCommandVar CLevelTools::CommandChangeTarget(CCommandVar p1, CCommandVar p2)
 {
 	if (Scene->GetMTools(p1)->IsEnabled()){
 	    SetTarget	(p1,p2);
@@ -57,7 +57,7 @@ CCommandVar __stdcall CLevelTools::CommandChangeTarget(CCommandVar p1, CCommandV
     	return 		FALSE;
     }
 }
-CCommandVar __stdcall CLevelTools::CommandShowObjectList(CCommandVar p1, CCommandVar p2)
+CCommandVar CLevelTools::CommandShowObjectList(CCommandVar p1, CCommandVar p2)
 {
     if (LUI->GetEState()==esEditScene) ShowObjectList();
     return TRUE;
@@ -86,7 +86,7 @@ CCommandVar CommandFileMenu(CCommandVar p1, CCommandVar p2)
     FHelper.ShowPPMenu(fraLeftBar->pmSceneFile,0);
     return TRUE;
 }
-CCommandVar __stdcall CLevelTools::CommandEnableTarget(CCommandVar p1, CCommandVar p2)
+CCommandVar CLevelTools::CommandEnableTarget(CCommandVar p1, CCommandVar p2)
 {
 	ESceneCustomMTools* M 	= Scene->GetMTools(p1); VERIFY(M);
     BOOL res				= FALSE; 
@@ -104,7 +104,7 @@ CCommandVar __stdcall CLevelTools::CommandEnableTarget(CCommandVar p1, CCommandV
     ExecCommand				(COMMAND_REFRESH_UI_BAR);
     return res;
 }
-CCommandVar __stdcall CLevelTools::CommandReadonlyTarget(CCommandVar p1, CCommandVar p2)
+CCommandVar CLevelTools::CommandReadonlyTarget(CCommandVar p1, CCommandVar p2)
 {
 	ESceneCustomMTools* M 	= Scene->GetMTools(p1); VERIFY(M);
     BOOL res				= TRUE; 
@@ -127,7 +127,7 @@ CCommandVar __stdcall CLevelTools::CommandReadonlyTarget(CCommandVar p1, CComman
     }
     return res;
 }
-CCommandVar __stdcall CLevelTools::CommandMultiRenameObjects(CCommandVar p1, CCommandVar p2)
+CCommandVar CLevelTools::CommandMultiRenameObjects(CCommandVar p1, CCommandVar p2)
 {
     if( !Scene->locked() ){
         if (mrYes==ELog.DlgMsg(mtConfirmation, TMsgDlgButtons()<<mbYes<<mbNo, "Are you sure to rename selected objects?")){
@@ -875,16 +875,16 @@ void CLevelMain::RegisterCommands()
 
 char* CLevelMain::GetCaption()
 {
-	return PAnsiChar(Tools->m_LastFileName.IsEmpty()?"noname":Tools->m_LastFileName.c_str());
+	return Tools->m_LastFileName.IsEmpty()?"noname":Tools->m_LastFileName.c_str();
 }
 
-bool /*__fastcall*/ CLevelMain::ApplyShortCut(WORD Key, TShiftState Shift)
+bool __fastcall CLevelMain::ApplyShortCut(WORD Key, TShiftState Shift)
 {
     return inherited::ApplyShortCut(Key,Shift);
 }
 //---------------------------------------------------------------------------
 
-bool /*__fastcall*/ CLevelMain::ApplyGlobalShortCut(WORD Key, TShiftState Shift)
+bool __fastcall CLevelMain::ApplyGlobalShortCut(WORD Key, TShiftState Shift)
 {
     return inherited::ApplyGlobalShortCut(Key,Shift);
 }
@@ -983,7 +983,7 @@ bool CLevelMain::SelectionFrustum(CFrustum& frustum)
     if (depth<Device.m_Camera._Znear()) depth = Device.m_Camera._Zfar();
     else depth += EPrefs->bp_depth_tolerance;
 
-    for (int i=0; i<4; i++){
+    for (i=0; i<4; i++){
 	    Device.m_Camera.MouseRayFromPoint(st, d, pt[i]);
         p[i].mad(st,d,depth);
     }

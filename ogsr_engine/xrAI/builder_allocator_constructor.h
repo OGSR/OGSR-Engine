@@ -15,13 +15,13 @@ template <
 struct CBuilderAllocatorConstructor {
 	template <template <typename _T> class _vertex> 
 	class CDataStorage : 
-		public _path_builder::CDataStorage<_vertex>,
-		public _vertex_allocator::CDataStorage<typename _path_builder::CDataStorage<_vertex>::CGraphVertex>
+		public _path_builder::template CDataStorage<_vertex>,
+		public _vertex_allocator::template CDataStorage<typename _path_builder::template CDataStorage<_vertex>::CGraphVertex>
 	{
 	public:
-		typedef typename _path_builder::CDataStorage<_vertex>	CDataStorageBase;
-		typedef typename _vertex_allocator::CDataStorage<
-			typename _path_builder::CDataStorage<
+		typedef typename _path_builder::template CDataStorage<_vertex>	CDataStorageBase;
+		typedef typename _vertex_allocator::template CDataStorage<
+			typename _path_builder::template CDataStorage<
 				_vertex
 			>::CGraphVertex
 		>												CDataStorageAllocator;

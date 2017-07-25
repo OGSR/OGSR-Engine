@@ -240,7 +240,7 @@ void CRenderDevice::_Destroy(BOOL	bKeepTextures)
 }
 
 //---------------------------------------------------------------------------
-void CRenderDevice::Resize(int w, int h)
+void __fastcall CRenderDevice::Resize(int w, int h)
 {
     m_RealWidth 	= w;
     m_RealHeight 	= h;

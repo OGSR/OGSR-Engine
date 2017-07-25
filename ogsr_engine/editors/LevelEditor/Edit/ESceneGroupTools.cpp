@@ -121,7 +121,7 @@ void ESceneGroupTools::CenterToGroup()
 }
 //----------------------------------------------------
 
-void /*__stdcall*/  FillGroupItems(ChooseItemVec& items, void* param)
+void __stdcall  FillGroupItems(ChooseItemVec& items, void* param)
 {
 	CGroupObject* group = (CGroupObject*)param;
     for (ObjectIt it=group->GetObjects().begin(); it!=group->GetObjects().end(); it++){
@@ -255,7 +255,7 @@ void ESceneGroupTools::MakeThumbnail()
             for (ObjectIt it=object->GetObjects().begin(); it!=object->GetObjects().end(); it++)
                 lst.push_back		((*it)->Name);
             EGroupThumbnail 		tex	(tex_name.c_str(),false);
-            tex.CreateFromData		(&*(pixels.begin()),w,h,lst);
+            tex.CreateFromData		(pixels.begin(),w,h,lst);
             string_path fn;
             FS.update_path			(fn,_groups_,object->RefName());
             strcat					(fn,".group");

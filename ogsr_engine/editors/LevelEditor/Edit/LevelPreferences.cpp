@@ -28,13 +28,13 @@ void CLevelPreferences::Save(CInifile* I)
         if (_I->second&&(_I->first!=OBJCLASS_DUMMY))	I->w_u32	("targets",_I->second->ClassName(),_I->second->m_EditFlags.get());
 }
 
-void __stdcall CLevelPreferences::OnEnabledChange(PropValue* prop)
+void CLevelPreferences::OnEnabledChange(PropValue* prop)
 {
 	ESceneCustomMTools* M	= Scene->GetMTools(prop->tag); VERIFY(M);
 	ExecCommand				(COMMAND_ENABLE_TARGET,prop->tag,M->IsEnabled());
 }	
 
-void __stdcall CLevelPreferences::OnReadonlyChange(PropValue* prop)
+void CLevelPreferences::OnReadonlyChange(PropValue* prop)
 {
 	ESceneCustomMTools* M	= Scene->GetMTools(prop->tag); VERIFY(M);
 	ExecCommand				(COMMAND_READONLY_TARGET,prop->tag,M->IsForceReadonly());

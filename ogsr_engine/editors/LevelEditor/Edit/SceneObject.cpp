@@ -252,7 +252,7 @@ void CSceneObject::OnFrame()
     }
 }
 
-void __stdcall CSceneObject::ReferenceChange(PropValue* sender)
+void CSceneObject::ReferenceChange(PropValue* sender)
 {
     Scene->BeforeObjectChange(this);
 	UpdateReference	();
@@ -279,7 +279,7 @@ bool CSceneObject::GetSummaryInfo(SSceneSummary* inf)
             	area			+= (*m)->CalculateSurfaceArea(*s_it,true);
                 pixel_area		+= (*m)->CalculateSurfacePixelArea(*s_it,true);
             }
-            inf->AppendTexture(PAnsiChar(ChangeFileExt(AnsiString(*(*s_it)->m_Texture),"").LowerCase().c_str()),SSceneSummary::sttBase,area,pixel_area,PAnsiChar(E->m_LibName.c_str()));
+            inf->AppendTexture(ChangeFileExt(AnsiString(*(*s_it)->m_Texture),"").LowerCase().c_str(),SSceneSummary::sttBase,area,pixel_area,E->m_LibName.c_str());
         }
         if (m_Flags.is(CEditableObject::eoUsingLOD)){
             inf->AppendTexture(E->GetLODTextureName().c_str(),SSceneSummary::sttLOD,0,0,"$LOD$");

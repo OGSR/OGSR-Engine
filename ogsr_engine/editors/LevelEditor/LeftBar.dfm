@@ -1,8 +1,8 @@
 object fraLeftBar: TfraLeftBar
   Left = 0
   Top = 0
-  Width = 451
-  Height = 304
+  Width = 443
+  Height = 406
   HorzScrollBar.ButtonSize = 1
   HorzScrollBar.ParentColor = False
   HorzScrollBar.Visible = False
@@ -45,7 +45,7 @@ object fraLeftBar: TfraLeftBar
       object APHeadLabel2: TLabel
         Left = 1
         Top = 1
-        Width = 31
+        Width = 216
         Height = 13
         Align = alTop
         Alignment = taCenter
@@ -330,7 +330,7 @@ object fraLeftBar: TfraLeftBar
       object lbTools: TLabel
         Left = 1
         Top = 1
-        Width = 26
+        Width = 216
         Height = 13
         Align = alTop
         Alignment = taCenter
@@ -1113,7 +1113,7 @@ object fraLeftBar: TfraLeftBar
       object lbEditMode: TLabel
         Left = 1
         Top = 1
-        Width = 48
+        Width = 216
         Height = 13
         Align = alTop
         Alignment = taCenter
@@ -1549,7 +1549,7 @@ object fraLeftBar: TfraLeftBar
       object Label1: TLabel
         Left = 1
         Top = 1
-        Width = 44
+        Width = 216
         Height = 13
         Align = alTop
         Alignment = taCenter

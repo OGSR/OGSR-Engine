@@ -14,9 +14,9 @@ struct CDataStorageBinaryHeap {
 		typename _data_storage,
 		template <typename _T> class _vertex = CEmptyClassTemplate
 	>
-	class CDataStorage : public _data_storage::CDataStorage<_vertex> {
+	class CDataStorage : public _data_storage::template CDataStorage<_vertex> {
 	public:
-		typedef typename _data_storage::CDataStorage<_vertex>	inherited;
+		typedef typename _data_storage::template CDataStorage<_vertex>	inherited;
 		typedef typename inherited::CGraphVertex				CGraphVertex;
 		typedef typename CGraphVertex::_dist_type				_dist_type;
 		typedef typename CGraphVertex::_index_type				_index_type;

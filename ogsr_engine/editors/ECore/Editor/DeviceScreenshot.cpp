@@ -48,7 +48,7 @@ bool CRenderDevice::MakeScreenshot(U32Vec& pixels, u32 width, u32 height)
     U32It it 		= pixels.begin();
     for (int h=height-1; h>=0; h--,it+=width){
         LPDWORD dt 	= LPDWORD(u32(pPixel)+u32(D.Pitch*h));
-        CopyMemory	(&*it,&*dt,sizeof(u32)*width);
+        CopyMemory	(it,dt,sizeof(u32)*width);
     }
 
     R_CHK(pFB->UnlockRect());

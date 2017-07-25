@@ -1,13 +1,13 @@
 object ClipMaker: TClipMaker
   Left = 459
   Top = 321
+  Width = 500
+  Height = 299
   HorzScrollBar.Style = ssFlat
   HorzScrollBar.ThumbSize = 12
   BiDiMode = bdRightToLeft
   BorderIcons = [biSystemMenu, biMinimize]
   Caption = 'Clip Maker'
-  ClientHeight = 261
-  ClientWidth = 484
   Color = 6908265
   Constraints.MinHeight = 256
   Constraints.MinWidth = 500
@@ -31,14 +31,12 @@ object ClipMaker: TClipMaker
   object paB: TPanel
     Left = 129
     Top = 0
-    Width = 355
-    Height = 261
+    Width = 363
+    Height = 265
     Align = alClient
     BevelOuter = bvNone
     ParentColor = True
     TabOrder = 0
-    ExplicitWidth = 363
-    ExplicitHeight = 265
     object paBase: TPanel
       Left = 0
       Top = 0
@@ -304,12 +302,11 @@ object ClipMaker: TClipMaker
     Left = 0
     Top = 0
     Width = 129
-    Height = 261
+    Height = 265
     Align = alLeft
     BevelOuter = bvNone
     ParentColor = True
     TabOrder = 1
-    ExplicitHeight = 265
     object Bevel16: TBevel
       Left = 0
       Top = 118

@@ -37,7 +37,7 @@ bool __fastcall TfrmDOShuffle::Run()
 }
 //---------------------------------------------------------------------------
 
-void __stdcall TfrmDOShuffle::OnObjectPropsModified()
+void TfrmDOShuffle::OnObjectPropsModified()
 {
 	bObjectModif = true;
 //	TElTreeItem* N 		= tvItems->Selected;

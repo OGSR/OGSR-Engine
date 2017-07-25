@@ -1,4 +1,4 @@
 LIBRARY
 dxt.dll
 EXPORTS
-_DXTCompress=_DXTCompress@32
+DXTCompress=_DXTCompress@32

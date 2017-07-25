@@ -64,7 +64,7 @@ void __fastcall TfrmEditLightAnim::fsStorageSavePlacement(TObject *Sender)
 }
 //---------------------------------------------------------------------------
 
-void __stdcall TfrmEditLightAnim::OnModified()
+void __fastcall TfrmEditLightAnim::OnModified()
 {
 	ebSave->Enabled = true;
     UpdateView();
@@ -127,7 +127,7 @@ bool TfrmEditLightAnim::FinalClose(){
 }
 //---------------------------------------------------------------------------
 
-void __stdcall TfrmEditLightAnim::OnItemFocused(TElTreeItem* item)
+void __fastcall TfrmEditLightAnim::OnItemFocused(TElTreeItem* item)
 {
     if (item&&FHelper.IsObject(item)){
         ListItem* prop 			= (ListItem*)item->Tag; VERIFY(prop);
@@ -172,7 +172,7 @@ void TfrmEditLightAnim::UpdateView()
     Caption = AnsiString().sprintf("Light Animation Library%s",ebSave->Enabled?"*":"");
 }
 //------------------------------------------------------------------------------
-bool __stdcall TfrmEditLightAnim::OnFrameCountAfterEdit  (PropValue* v, s32& val)
+bool TfrmEditLightAnim::OnFrameCountAfterEdit  (PropValue* v, s32& val)
 {
 	if (val!=m_CurrentItem->iFrameCount) OnModified();
 	m_CurrentItem->Resize(val);
@@ -229,7 +229,7 @@ void __fastcall TfrmEditLightAnim::ebAddAnimClick(TObject *Sender)
 }
 //---------------------------------------------------------------------------
 
-void __stdcall TfrmEditLightAnim::FindItemByName(LPCSTR name, bool& res)
+void TfrmEditLightAnim::FindItemByName(LPCSTR name, bool& res)
 {	
 	res = !!LALib.FindItem(name);
 }

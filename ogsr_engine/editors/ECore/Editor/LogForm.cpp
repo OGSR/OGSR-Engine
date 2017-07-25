@@ -144,9 +144,9 @@ void __fastcall TfrmLog::imCopyClick(TObject *Sender)
     xr_string		tmp;
     for (int i = 0; i < lbLog->Items->Count; i++)
         if (lbLog->Selected[i]){
-			tmp		= tmp+PAnsiChar(lbLog->Items->Strings[i].c_str())+"\r\n";
+            tmp		= tmp+lbLog->Items->Strings[i].c_str()+"\r\n";
         }
-	clp->SetTextBuf	(PWideChar((LPSTR)tmp.c_str()));
+    clp->SetTextBuf	((LPSTR)tmp.c_str());
 }
 //---------------------------------------------------------------------------
 

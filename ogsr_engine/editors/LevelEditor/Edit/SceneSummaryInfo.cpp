@@ -98,7 +98,7 @@ void SSceneSummary::STextureInfo::Prepare	()
     }
 }
 
-void __stdcall SSceneSummary::STextureInfo::OnHighlightClick(ButtonValue* sender, bool& bDataModified, bool& bSafe)
+void SSceneSummary::STextureInfo::OnHighlightClick(ButtonValue* sender, bool& bDataModified, bool& bSafe)
 {
 	ButtonValue* V = dynamic_cast<ButtonValue*>(sender); R_ASSERT(V);
     AnsiString item_name = sender->Owner()->Item()->Text;
@@ -184,7 +184,7 @@ void SSceneSummary::STextureInfo::Export	(IWriter* F, u32& mem_use)
 	F->w_string		(tmp.c_str());
 }
 
-void __stdcall SSceneSummary::OnFileClick(ButtonValue* sender, bool& bModif, bool& bSafe)
+void SSceneSummary::OnFileClick(ButtonValue* sender, bool& bModif, bool& bSafe)
 {
 	ButtonValue* V = dynamic_cast<ButtonValue*>(sender); R_ASSERT(V);
     switch (V->btn_num){
@@ -197,7 +197,7 @@ void __stdcall SSceneSummary::OnFileClick(ButtonValue* sender, bool& bModif, boo
 	}
     bModif = false;
 }
-void __stdcall SSceneSummary::OnHighlightClick(ButtonValue* V, bool& bDataModified, bool& bSafe)
+void SSceneSummary::OnHighlightClick(ButtonValue* V, bool& bDataModified, bool& bSafe)
 {
     AnsiString item_name = V->Owner()->Item()->Text;
     switch (V->btn_num){
@@ -261,7 +261,7 @@ bool SSceneSummary::ExportSummaryInfo(LPCSTR fn)
         return 					false;
     }
 }
-bool __stdcall SSceneSummary::OnWeightAfterEditClick(PropValue* sender, float& edit_val)
+bool SSceneSummary::OnWeightAfterEditClick(PropValue* sender, float& edit_val)
 {
 	if (sender->tag==0){
     	return edit_val<pm_colors[sender->tag+1].pm;

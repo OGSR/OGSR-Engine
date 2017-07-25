@@ -10,16 +10,16 @@
 __fastcall TUI_ControlPortalSelect::TUI_ControlPortalSelect(int st, int act, ESceneCustomMTools* parent):TUI_CustomControl(st,act,parent)
 {
 }
-bool /*__fastcall*/ TUI_ControlPortalSelect::Start(TShiftState Shift)
+bool __fastcall TUI_ControlPortalSelect::Start(TShiftState Shift)
 {
 	return SelectStart(Shift);
 }
-void /*__fastcall*/ TUI_ControlPortalSelect::Move(TShiftState Shift)
+void __fastcall TUI_ControlPortalSelect::Move(TShiftState Shift)
 {
 	SelectProcess(Shift);
 }
 
-bool /*__fastcall*/ TUI_ControlPortalSelect::End(TShiftState Shift)
+bool __fastcall TUI_ControlPortalSelect::End(TShiftState Shift)
 {
 	return SelectEnd(Shift);
 }

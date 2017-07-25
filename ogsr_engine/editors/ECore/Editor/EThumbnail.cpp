@@ -74,9 +74,9 @@ void EImageThumbnail::VFlip()
     u32 sz_ln=sizeof(u32)*THUMB_WIDTH;
     u32 y2 = THUMB_WIDTH-1;
     for (int y=0; y<THUMB_HEIGHT/2; y++,y2--){
-		CopyMemory(line,&*(m_Pixels.begin()+y2*THUMB_WIDTH),sz_ln);
-		CopyMemory(&*(m_Pixels.begin()+y2*THUMB_WIDTH),&*(m_Pixels.begin()+y*THUMB_WIDTH),sz_ln);
-    	CopyMemory(&*(m_Pixels.begin()+y*THUMB_WIDTH),line,sz_ln);
+    	CopyMemory(line,m_Pixels.begin()+y2*THUMB_WIDTH,sz_ln);
+    	CopyMemory(m_Pixels.begin()+y2*THUMB_WIDTH,m_Pixels.begin()+y*THUMB_WIDTH,sz_ln);
+    	CopyMemory(m_Pixels.begin()+y*THUMB_WIDTH,line,sz_ln);
     }
 }
 
@@ -85,7 +85,7 @@ void EImageThumbnail::CreatePixels(u32* p, u32 w, u32 h)
 //	imf_filter	imf_box  imf_triangle  imf_bell  imf_b_spline  imf_lanczos3  imf_mitchell
 	R_ASSERT(p&&(w>0)&&(h>0));
 	m_Pixels.resize(THUMB_SIZE);
-	imf_Process(&*(m_Pixels.begin()),THUMB_WIDTH,THUMB_HEIGHT,p,w,h,imf_box);
+	imf_Process(m_Pixels.begin(),THUMB_WIDTH,THUMB_HEIGHT,p,w,h,imf_box);
 }
 
 void EImageThumbnail::Draw(HDC hdc, const Irect& r)

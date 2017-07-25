@@ -116,7 +116,7 @@ void ESoundThumbnail::Save(int age, LPCSTR path)
 #include "ai_sounds.h"
 #include "PropertiesList.h"
 
-bool __stdcall ESoundThumbnail::OnMaxAIDistAfterEdit(PropValue* sender, float& edit_val)
+bool ESoundThumbnail::OnMaxAIDistAfterEdit(PropValue* sender, float& edit_val)
 {
     TProperties* P	= sender->Owner()->Owner(); 		VERIFY(P);
     PropItem* S 	= P->FindItem("Max Dist"); 			VERIFY(S);
@@ -124,7 +124,7 @@ bool __stdcall ESoundThumbnail::OnMaxAIDistAfterEdit(PropValue* sender, float& e
     float max_val 	= V->GetValue	();
 	return edit_val<max_val;
 }
-void __stdcall ESoundThumbnail::OnMaxDistChange(PropValue* sender)
+void ESoundThumbnail::OnMaxDistChange(PropValue* sender)
 {
     FloatValue* SV 	= dynamic_cast<FloatValue*>(sender);VERIFY(SV);
     TProperties* P	= sender->Owner()->Owner(); 		VERIFY(P);

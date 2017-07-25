@@ -193,7 +193,7 @@ int ELibrary::GetObjects(FS_FileSet& files)
 }
 //---------------------------------------------------------------------------
 
-void __stdcall ELibrary::RemoveObject(LPCSTR _fname, EItemType type, bool& res)
+void ELibrary::RemoveObject(LPCSTR _fname, EItemType type, bool& res)   
 {
 	if (TYPE_FOLDER==type){
     	FS.dir_delete			(_objects_,_fname,FALSE);
@@ -221,7 +221,7 @@ void __stdcall ELibrary::RemoveObject(LPCSTR _fname, EItemType type, bool& res)
 }
 //---------------------------------------------------------------------------
 
-void __stdcall ELibrary::RenameObject(LPCSTR nm0, LPCSTR nm1, EItemType type)
+void ELibrary::RenameObject(LPCSTR nm0, LPCSTR nm1, EItemType type)
 {
 	if (TYPE_FOLDER==type){
     	FS.dir_delete			(_objects_,nm0,FALSE);

@@ -412,7 +412,7 @@ public:
         }
 
         // remove equal
-        qsort(&*(edges.begin()),edges.size(),sizeof(sEdge),sEdge::compare);
+        qsort(edges.begin(),edges.size(),sizeof(sEdge),sEdge::compare);
         sEdgeIt NewEnd = std::unique(edges.begin(),edges.end(),sEdge::c_equal);
         edges.erase(NewEnd,edges.end());
 		//dump_edges();
@@ -516,7 +516,7 @@ int CPortalUtils::CalculateSelectedPortals(ObjectList& sectors){
             Fvector* m_verts=s_it->mesh->m_Verts;
             for (u32 f_id=0; f_id<s_it->mesh->GetFCount(); f_id++){
                 Fvector v0, v1, v2;
-                const st_Face& P=s_it->mesh->GetFaces()[f_id];
+                st_Face& P=s_it->mesh->GetFaces()[f_id];
                 T.transform_tiny(v0,m_verts[P.pv[0].pindex]);
                 T.transform_tiny(v1,m_verts[P.pv[1].pindex]);
                 T.transform_tiny(v2,m_verts[P.pv[2].pindex]);

@@ -174,26 +174,26 @@ void CCustomObject::Scale( Fvector& amount )
     PScale		= s;
 }
 
-bool __stdcall CCustomObject::OnObjectNameAfterEdit(PropValue* sender, shared_str& edit_val)
+bool CCustomObject::OnObjectNameAfterEdit(PropValue* sender, shared_str& edit_val)
 {
 	RTextValue* V = dynamic_cast<RTextValue*>(sender); VERIFY(V);
     edit_val 	= (AnsiString(edit_val.c_str()).LowerCase()).c_str();
 	return !Scene->FindObjectByName(edit_val.c_str(),(CCustomObject*)0);
 }
 
-void __stdcall CCustomObject::OnNumChangePosition(PropValue* sender)
+void CCustomObject::OnNumChangePosition(PropValue* sender)
 {
 	NumSetPosition	(PPosition);
 }
-void __stdcall CCustomObject::OnNumChangeRotation(PropValue* sender)
+void CCustomObject::OnNumChangeRotation(PropValue* sender)
 {
 	NumSetRotation	(PRotation);
 }
-void __stdcall CCustomObject::OnNumChangeScale(PropValue* sender)
+void CCustomObject::OnNumChangeScale(PropValue* sender)
 {
 	NumSetScale		(PScale);
 }
-void __stdcall CCustomObject::OnNameChange(PropValue* sender)
+void CCustomObject::OnNameChange(PropValue* sender)
 {
 	ExecCommand		(COMMAND_UPDATE_PROPERTIES);
 }

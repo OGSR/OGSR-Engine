@@ -482,7 +482,7 @@ xr_token		js_token	[ ]={
 	{ 0,					0 	}
 };
 
-void __stdcall EScene::OnBuildControlClick	(ButtonValue* V, bool& bModif, bool& bSafe)
+void EScene::OnBuildControlClick	(ButtonValue* V, bool& bModif, bool& bSafe)
 {
     switch (V->btn_num){
     case 0: m_LevelOp.SetDraftQuality();	break;
@@ -492,7 +492,7 @@ void __stdcall EScene::OnBuildControlClick	(ButtonValue* V, bool& bModif, bool& 
     ExecCommand(COMMAND_UPDATE_PROPERTIES);
 }
 
-void __stdcall EScene::OnRTFlagsChange	(PropValue* sender)
+void EScene::OnRTFlagsChange	(PropValue* sender)
 {
     ExecCommand(COMMAND_UPDATE_PROPERTIES);
 }
@@ -501,7 +501,7 @@ void EScene::FillProp(LPCSTR pref, PropItemVec& items, ObjClassID cls_id)
 {
 	PHelper().CreateCaption		(items,PrepareKey(pref,"Scene\\Name"),			LTools->m_LastFileName.c_str());
 	PHelper().CreateCaption		(items,PrepareKey(pref,"Scene\\Created by"),	m_OwnerName.size()?m_OwnerName.c_str():"unknown");
-	PHelper().CreateCaption		(items,PrepareKey(pref,"Scene\\Created at"),	(m_CreateTime!=0)?PAnsiChar(Trim(AnsiString(ctime(&m_CreateTime))).c_str()):PAnsiChar("unknown"));
+	PHelper().CreateCaption		(items,PrepareKey(pref,"Scene\\Created at"),	(m_CreateTime!=0)?Trim(AnsiString(ctime(&m_CreateTime))).c_str():"unknown");
     PHelper().CreateRText		(items,PrepareKey(pref,"Scene\\Name prefix"),	&m_LevelOp.m_LevelPrefix);
 
     PropValue* V;
@@ -540,7 +540,7 @@ void EScene::FillProp(LPCSTR pref, PropItemVec& items, ObjClassID cls_id)
 	        ESceneCustomMTools* mt		= _I->second;
             if ((_I->first!=OBJCLASS_DUMMY)&&mt&&mt->IsEditable()){
                 PHelper().CreateCaption	(items,PrepareKey(mt->ClassDesc(),"Last modified by"),	mt->m_ModifName.size()?mt->m_ModifName.c_str():"unknown");
-                PHelper().CreateCaption	(items,PrepareKey(mt->ClassDesc(),"Last modified at"),	(mt->m_ModifTime!=0)?PAnsiChar(Trim(AnsiString(ctime(&mt->m_ModifTime))).c_str()):PAnsiChar("unknown"));
+                PHelper().CreateCaption	(items,PrepareKey(mt->ClassDesc(),"Last modified at"),	(mt->m_ModifTime!=0)?Trim(AnsiString(ctime(&mt->m_ModifTime))).c_str():"unknown");
                 _I->second->FillProp	(mt->ClassDesc(),items);
             }
         }
@@ -548,7 +548,7 @@ void EScene::FillProp(LPCSTR pref, PropItemVec& items, ObjClassID cls_id)
         ESceneCustomMTools* mt			= GetMTools	(cls_id);
         if (mt&&mt->IsEditable()){
             PHelper().CreateCaption		(items,PrepareKey(mt->ClassDesc(),"Last modified by"),	mt->m_ModifName.size()?mt->m_ModifName.c_str():"unknown");
-            PHelper().CreateCaption		(items,PrepareKey(mt->ClassDesc(),"Last modified at"),	(mt->m_ModifTime!=0)?PAnsiChar(Trim(AnsiString(ctime(&mt->m_ModifTime))).c_str()):PAnsiChar("unknown"));
+            PHelper().CreateCaption		(items,PrepareKey(mt->ClassDesc(),"Last modified at"),	(mt->m_ModifTime!=0)?Trim(AnsiString(ctime(&mt->m_ModifTime))).c_str():"unknown");
          	mt->FillProp				(mt->ClassDesc(),items);
         }
     }

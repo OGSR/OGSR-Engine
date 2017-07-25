@@ -7,7 +7,7 @@
 #include "d3dutils.h"
 #include "../ECore/Editor/ui_main.h"
 
-void __stdcall CCustomObject::OnMotionableChange(PropValue* sender)
+void  CCustomObject::OnMotionableChange(PropValue* sender)
 {
 	if (m_CO_Flags.is(flMotion)){
     	m_Motion		= xr_new<COMotion>();
@@ -81,7 +81,7 @@ void CCustomObject::AnimationDrawPath()
 
         Device.SetShader		(Device.m_WireShader);
         RCache.set_xform_world	(Fidentity);
-        if (!path_points.empty())DU.DrawPrimitiveL		(D3DPT_LINESTRIP,path_points.size()-1,&*(path_points.begin()),path_points.size(),clr,true,false);
+        if (!path_points.empty())DU.DrawPrimitiveL		(D3DPT_LINESTRIP,path_points.size()-1,path_points.begin(),path_points.size(),clr,true,false);
         CEnvelope* E 			= m_Motion->Envelope();
         for (KeyIt k_it=E->keys.begin(); k_it!=E->keys.end(); k_it++){
             m_Motion->_Evaluate	((*k_it)->time,T,r);
@@ -94,7 +94,7 @@ void CCustomObject::AnimationDrawPath()
 #endif    
 }
 
-void  __stdcall	CCustomObject::OnMotionControlClick(ButtonValue* value, bool& bModif, bool& bSafe)
+void 	CCustomObject::OnMotionControlClick(ButtonValue* value, bool& bModif, bool& bSafe)
 {
 	ButtonValue* B = dynamic_cast<ButtonValue*>(value); R_ASSERT(B);
 	switch(B->btn_num){
@@ -140,7 +140,7 @@ void  __stdcall	CCustomObject::OnMotionControlClick(ButtonValue* value, bool& bM
     bModif = false;
 }
 
-void  __stdcall	CCustomObject::OnMotionCommandsClick(ButtonValue* value, bool& bModif, bool& bSafe)
+void 	CCustomObject::OnMotionCommandsClick(ButtonValue* value, bool& bModif, bool& bSafe)
 {
 	ButtonValue* B = dynamic_cast<ButtonValue*>(value); R_ASSERT(B);
 	switch(B->btn_num){
@@ -198,7 +198,7 @@ void  __stdcall	CCustomObject::OnMotionCommandsClick(ButtonValue* value, bool& b
 	bModif = true;
 }
 
-void  __stdcall	CCustomObject::OnMotionFilesClick(ButtonValue* value, bool& bModif, bool& bSafe)
+void 	CCustomObject::OnMotionFilesClick(ButtonValue* value, bool& bModif, bool& bSafe)
 {
 	ButtonValue* B = dynamic_cast<ButtonValue*>(value); R_ASSERT(B);
     bModif = false;
@@ -220,13 +220,13 @@ void  __stdcall	CCustomObject::OnMotionFilesClick(ButtonValue* value, bool& bMod
 	}
 }
 
-void  __stdcall	CCustomObject::OnMotionFrameChange(PropValue* value)
+void 	CCustomObject::OnMotionFrameChange(PropValue* value)
 {
 	m_Motion->SetParam	(m_MotionParams->min_t*30.f,m_MotionParams->max_t*30.f,30.f);
     ExecCommand			(COMMAND_UPDATE_PROPERTIES);
 }
 
-void  __stdcall	CCustomObject::OnMotionCurrentFrameChange(PropValue* value)
+void 	CCustomObject::OnMotionCurrentFrameChange(PropValue* value)
 {
 	if (m_MotionParams->t<m_MotionParams->min_t) 		m_MotionParams->min_t = m_MotionParams->t;
     else if (m_MotionParams->t>m_MotionParams->max_t) m_MotionParams->max_t = m_MotionParams->t;
@@ -236,13 +236,13 @@ void  __stdcall	CCustomObject::OnMotionCurrentFrameChange(PropValue* value)
     ExecCommand			(COMMAND_UPDATE_PROPERTIES);
 }
 
-void  __stdcall	CCustomObject::OnMotionCameraViewChange(PropValue* value)
+void 	CCustomObject::OnMotionCameraViewChange(PropValue* value)
 {
 	if (m_CO_Flags.is(flCameraView))
 	    AnimationUpdate	(m_MotionParams->Frame());
 }
 
-void  __stdcall	CCustomObject::OnTransformChange(PropValue* value)
+void 	CCustomObject::OnTransformChange(PropValue* value)
 {
 	UpdateTransform();
 }

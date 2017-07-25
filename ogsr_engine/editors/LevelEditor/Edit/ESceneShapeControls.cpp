@@ -32,7 +32,7 @@ bool __fastcall TUI_ControlShapeAdd::AfterAppendCallback(TShiftState Shift, CCus
     return false;
 }
 
-bool /*__fastcall*/ TUI_ControlShapeAdd::Start(TShiftState Shift)
+bool __fastcall TUI_ControlShapeAdd::Start(TShiftState Shift)
 {
 	TfraShape* F 		= (TfraShape*)parent_tool->pFrame;
     if (F->ebAttachShape->Down){

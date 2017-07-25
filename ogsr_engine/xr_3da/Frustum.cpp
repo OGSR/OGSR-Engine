@@ -249,14 +249,16 @@ void CFrustum::CreateOccluder(Fvector* p, int count, Fvector& vBase, CFrustum& c
 	BOOL	edge[FRUSTUM_SAFE];
 	float	cls	[FRUSTUM_SAFE];
 	ZeroMemory	(edge,sizeof(edge));
-	for (int i=0; i<clip.p_count; i++)
+        int i=0;
+	for (i=0; i<clip.p_count; i++)
 	{
 		// classify all points relative to plane #i
 		fplane &P = clip.planes[i];
-		for (int j=0; j<count; j++) cls[j]=_abs(P.classify(p[j]));
+                int j=0;
+		for (j=0; j<count; j++) cls[j]=_abs(P.classify(p[j]));
 
 		// test edges to see which lies directly on plane
-		for (int j=0; j<count; j++) {
+		for (j=0; j<count; j++) {
 			if (cls[j]<EPS_L)
 			{
 				int next = j+1; if (next>=count) next=0;
@@ -271,7 +273,7 @@ void CFrustum::CreateOccluder(Fvector* p, int count, Fvector& vBase, CFrustum& c
 	// here we have all edges marked accordenly to 'open' / 'closed' classification
 	_clear	();
 	_add	(p[0],p[1],p[2]);		// main plane
-	for (int i=0; i<count; i++)
+	for (i=0; i<count; i++)
 	{
 		if (!edge[i]) {
 			int next = i+1; if (next>=count) next=0;
@@ -293,13 +295,14 @@ sPoly*	CFrustum::ClipPoly(sPoly& S, sPoly& D) const
 
 		// classify all points relative to plane #i
 		float	cls	[FRUSTUM_SAFE];
-		for (u32 j=0; j<src->size(); j++) cls[j]=P.classify((*src)[j]);
+                u32 j=0;
+		for (j=0; j<src->size(); j++) cls[j]=P.classify((*src)[j]);
 
 		// clip everything to this plane
 		cls[src->size()] = cls[0];
 		src->push_back((*src)[0]);
 		Fvector D; float denum,t;
-		for (int j=0; j<src->size()-1; j++)
+		for (j=0; j<src->size()-1; j++)
 		{
 			if ((*src)[j].similar((*src)[j+1],EPS_S)) continue;
 

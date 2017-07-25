@@ -1,8 +1,8 @@
 object fraLeftBar: TfraLeftBar
   Left = 0
   Top = 0
-  Width = 451
-  Height = 304
+  Width = 303
+  Height = 458
   HorzScrollBar.Visible = False
   VertScrollBar.Increment = 34
   VertScrollBar.Size = 13
@@ -22,7 +22,7 @@ object fraLeftBar: TfraLeftBar
     Left = 0
     Top = 0
     Width = 300
-    Height = 304
+    Height = 458
     Align = alLeft
     BevelInner = bvLowered
     BevelOuter = bvNone
@@ -30,7 +30,6 @@ object fraLeftBar: TfraLeftBar
     Constraints.MaxWidth = 300
     Constraints.MinWidth = 300
     TabOrder = 0
-    ExplicitHeight = 458
     object Splitter1: TSplitter
       Left = 1
       Top = 216
@@ -55,7 +54,7 @@ object fraLeftBar: TfraLeftBar
       object APHeadLabel2: TLabel
         Left = 1
         Top = 1
-        Width = 31
+        Width = 296
         Height = 13
         Align = alTop
         Alignment = taCenter
@@ -239,7 +238,7 @@ object fraLeftBar: TfraLeftBar
       object Label4: TLabel
         Left = 1
         Top = 1
-        Width = 29
+        Width = 296
         Height = 13
         Align = alTop
         Alignment = taCenter
@@ -452,7 +451,7 @@ object fraLeftBar: TfraLeftBar
       object Label6: TLabel
         Left = 1
         Top = 1
-        Width = 59
+        Width = 296
         Height = 13
         Align = alTop
         Alignment = taCenter
@@ -493,7 +492,7 @@ object fraLeftBar: TfraLeftBar
       object Label1: TLabel
         Left = 1
         Top = 1
-        Width = 70
+        Width = 296
         Height = 13
         Align = alTop
         Alignment = taCenter

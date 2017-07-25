@@ -2,7 +2,6 @@
 #define PortalUtilsH
 
 #include "ESceneClassList.h"
-#include <iterator>
 
 //refs
 class CEditableMesh;
@@ -21,7 +20,7 @@ struct SVertex: public Fvector{
     	std::sort(link[1].begin(),link[1].end());
         std::set_intersection(	link[0].begin(),link[0].end(),
         						link[1].begin(),link[1].end(),
-                	        	std::inserter(ulink,ulink.begin()));
+                	        	inserter(ulink,ulink.begin()));
         VERIFY(ulink.size()<=2);
     }
 };

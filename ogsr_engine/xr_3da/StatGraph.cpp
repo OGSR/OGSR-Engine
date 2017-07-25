@@ -95,13 +95,14 @@ void CStatGraph::RenderBack	()
 	    pv->set				(int(lt.x + g_x*grid_step.x*elem_factor),lt.y,grid_color); pv++; 	
 	    pv->set				(int(lt.x + g_x*grid_step.x*elem_factor),rb.y,grid_color); pv++; 	
 	}
-	for (int g_y=1; g_y<=Num_H_LinesDwn; g_y++)
+        int g_y=1;
+	for (g_y=1; g_y<=Num_H_LinesDwn; g_y++)
 	{
 		pv->set				(lt.x,int(base_y+g_y*grid_step.y*elem_factor),grid_color); pv++;
 		pv->set				(rb.x,int(base_y+g_y*grid_step.y*elem_factor),grid_color); pv++;
 	};
 
-	for (int g_y=1; g_y<=Num_H_LinesUp; g_y++)
+	for (g_y=1; g_y<=Num_H_LinesUp; g_y++)
 	{									
 		pv->set				(lt.x,int(base_y-g_y*grid_step.y*elem_factor),grid_color); pv++; 	
 		pv->set				(rb.x,int(base_y-g_y*grid_step.y*elem_factor),grid_color); pv++; 	

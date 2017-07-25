@@ -29,15 +29,15 @@ bool __fastcall TUI_ControlGroupAdd::AfterAppendCallback(TShiftState Shift, CCus
     }
     return result;
 }
-bool /*__fastcall*/ TUI_ControlGroupAdd::Start(TShiftState Shift)
+bool __fastcall TUI_ControlGroupAdd::Start(TShiftState Shift)
 {
 	DefaultAddObject	(Shift,0,AfterAppendCallback);
     return false;
 }
-void /*__fastcall*/ TUI_ControlGroupAdd::Move(TShiftState _Shift)
+void __fastcall TUI_ControlGroupAdd::Move(TShiftState _Shift)
 {
 }
-bool /*__fastcall*/ TUI_ControlGroupAdd::End(TShiftState _Shift)
+bool __fastcall TUI_ControlGroupAdd::End(TShiftState _Shift)
 {
     return true;
 }

@@ -16,11 +16,6 @@
     <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
     <LocalDebuggerCommandArguments>-nointro -ltx user.ltx</LocalDebuggerCommandArguments>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release_w_STLPORT|Win32'">
-    <LocalDebuggerWorkingDirectory>G:\OGSE_2</LocalDebuggerWorkingDirectory>
-    <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
-    <LocalDebuggerCommandArguments>-nointro -ltx user.ltx</LocalDebuggerCommandArguments>
-  </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release_Dedicated|Win32'">
     <LocalDebuggerWorkingDirectory>G:\OGSE_2</LocalDebuggerWorkingDirectory>
     <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
@@ -30,11 +25,6 @@
     <LocalDebuggerWorkingDirectory>G:\OGSE_2</LocalDebuggerWorkingDirectory>
     <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
     <LocalDebuggerCommandArguments>-nointro</LocalDebuggerCommandArguments>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Template|Win32'">
-    <LocalDebuggerWorkingDirectory>G:\OGSE_2</LocalDebuggerWorkingDirectory>
-    <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
-    <LocalDebuggerCommandArguments>-nointro -ltx user.ltx</LocalDebuggerCommandArguments>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Mixed_Dedicated|Win32'">
     <LocalDebuggerWorkingDirectory>G:\OGSE_2</LocalDebuggerWorkingDirectory>

@@ -101,7 +101,7 @@ bool __fastcall TUI::KeyPress(WORD Key, TShiftState Shift)
 }
 //----------------------------------------------------
 
-void __fastcall TUI::MousePress(TShiftState Shift, int X, int Y)
+void TUI::MousePress(TShiftState Shift, int X, int Y)
 {
 	if (!m_bReady) return;
     if (m_MouseCaptured) return;
@@ -132,7 +132,7 @@ void __fastcall TUI::MousePress(TShiftState Shift, int X, int Y)
     RedrawScene();
 }
 
-void __fastcall TUI::MouseRelease(TShiftState Shift, int X, int Y)
+void TUI::MouseRelease(TShiftState Shift, int X, int Y)
 {
 	if (!m_bReady) return;
 
@@ -161,7 +161,7 @@ void __fastcall TUI::MouseRelease(TShiftState Shift, int X, int Y)
     RedrawScene		();
 }
 //----------------------------------------------------
-void __fastcall TUI::MouseMove(TShiftState Shift, int X, int Y)
+void TUI::MouseMove(TShiftState Shift, int X, int Y)
 {
 	if (!m_bReady) return;
     m_ShiftState = Shift;
@@ -441,7 +441,7 @@ void TUI::OnFrame()
     // Progress
     ProgressDraw		();
 }
-void __fastcall TUI::Idle()
+void TUI::Idle()         
 {
 	VERIFY(m_bReady);
     Device.b_is_Active  = Application->Active;

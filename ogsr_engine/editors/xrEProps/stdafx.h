@@ -5,7 +5,7 @@
 #define stdafxH
 
 #pragma once   
-
+           
 #include <xrCore.h>
 
 #define smart_cast dynamic_cast
@@ -27,6 +27,6 @@ namespace CDB{
 // libs
 #pragma comment		(lib,"xrCoreB.lib")
 #pragma comment		(lib,"EToolsB.lib")
-
+                    
 #endif //stdafxH
 

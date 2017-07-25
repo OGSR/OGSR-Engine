@@ -16,7 +16,6 @@ TfrmMain *frmMain;
 #include "bottombar.h"
 
 //------------------------------------------------------------------------------
-#include "../xrEProps/ChoseForm.h"
 #include "shader.h"
 #include "shader_xrlc.h"
 #include "../ECore/Engine/texture.h"

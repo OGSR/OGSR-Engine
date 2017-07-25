@@ -1,11 +1,11 @@
 object Properties: TProperties
   Left = 533
   Top = 85
+  Width = 424
+  Height = 329
   BiDiMode = bdRightToLeft
   BorderIcons = [biSystemMenu, biMinimize]
   Caption = 'Properties'
-  ClientHeight = 291
-  ClientWidth = 408
   Color = clGray
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -26,33 +26,33 @@ object Properties: TProperties
   object Bevel1: TBevel
     Left = 0
     Top = 0
-    Width = 408
+    Width = 416
     Height = 1
     Align = alTop
     Shape = bsFrame
-    ExplicitWidth = 416
   end
   object spFolders: TSplitter
     Left = 0
     Top = 1
     Width = 2
-    Height = 271
+    Height = 275
+    Cursor = crHSplit
     Color = 4934475
     ParentColor = False
     Visible = False
-    ExplicitHeight = 275
   end
   object tvProperties: TElTree
     Left = 2
     Top = 1
-    Width = 406
-    Height = 271
+    Width = 414
+    Height = 275
     Cursor = crDefault
     LeftPosition = 0
     HeaderPopupMenu = pmSystem
     DragCursor = crDrag
     Align = alClient
     AlwaysKeepSelection = False
+    AutoCollapse = False
     AutoLineHeight = False
     DockOrientation = doNoOrient
     DefaultSectionWidth = 120
@@ -122,24 +122,25 @@ object Properties: TProperties
     Font.Name = 'MS Sans Serif'
     Font.Style = []
     FullRowSelect = False
+    GradientSteps = 64
     HeaderColor = 7368816
     HeaderHeight = 17
     HeaderHotTrack = False
     HeaderSections.Data = {
-      F4FFFFFF02000000B004020000000000FFFFFFFF0000010001006F007D000000
-      32000000102700000000000014B2950400000000000069000000000000000100
-      0000000000000000000100000000000073005C005F005F006800690073007400
-      6F00720079005C00500072006F0070006500720074006900650073004C006900
-      730074002E006300700070000000F00F70000000040000004B65790004000000
-      006579000000000000000000B004020000000000FFFFFFFF0000010101006F00
-      59000000320000001027000000000000ECB69504010000000000690000000000
-      000001000000000000000000000100000000000073005C005F005F0068006900
-      730074006F00720079005C00500072006F007000650072007400690065007300
-      4C006900730074002E006300700070000000F00F700000000400000056616C75
-      0400000000616C750000000000000000}
+      F4FFFFFF020000002573000000422B0EFFFFFFFF0000010001005C507D000000
+      32000000102700000000005C14B295040000000000006D70000000000000016C
+      0000000000000000000100000000000032000000653A5C50524F4752417E315C
+      626F726C616E645C434255494C447E315C50726F6A656374735C42706C5C7663
+      6C782E627C000000430000000000000032000000040000004B65790001000000
+      0000000000000000002573000000422B0EFFFFFFFF0000010101005C50590000
+      0032000000102700000000005CECB695040100000000006D7000000000000001
+      6C0000000000000000000100000000000032000000653A5C50524F4752417E31
+      5C626F726C616E645C434255494C447E315C50726F6A656374735C42706C5C76
+      636C782E627C0000004300000000000000320000000600000056616C75650001
+      000000000000000000000000}
     HeaderFlat = True
     HeaderFont.Charset = DEFAULT_CHARSET
-    HeaderFont.Color = clBlack
+    HeaderFont.Color = clWindowText
     HeaderFont.Height = -11
     HeaderFont.Name = 'MS Sans Serif'
     HeaderFont.Style = []
@@ -168,6 +169,7 @@ object Properties: TProperties
       E0E0E0E0E0E0E0E0E0808080808080808080808080E0E0E0E0E0E0E0E0E0E0E0
       E0E0E0E0808080808080808080E0E0E0E0E0E0E0E0E0E0E0E0E0E0E080808080
       8080808080808080808080808080808080808080808080808080}
+    MouseFrameSelect = True
     MultiSelect = False
     OwnerDrawMask = '~~@~~'
     ParentFont = False
@@ -216,7 +218,6 @@ object Properties: TProperties
     OnItemFocused = tvPropertiesItemFocused
     OnShowLineHint = tvPropertiesShowLineHint
     OnCompareItems = tvPropertiesCompareItems
-    LinkStyle = [fsUnderline]
     OnClick = tvPropertiesClick
     OnMouseDown = tvPropertiesMouseDown
     OnMouseMove = tvPropertiesMouseMove
@@ -227,7 +228,7 @@ object Properties: TProperties
     Top = 19
     Width = 90
     Height = 17
-    LWSensitivity = 0.010000000000000000
+    LWSensitivity = 0.01
     BtnColor = 12171705
     ButtonKind = bkLightWave
     ButtonWidth = 15
@@ -244,16 +245,14 @@ object Properties: TProperties
   end
   object paButtons: TPanel
     Left = 0
-    Top = 272
-    Width = 408
+    Top = 276
+    Width = 416
     Height = 19
     Align = alBottom
     BevelOuter = bvNone
     Color = 10528425
     TabOrder = 2
     Visible = False
-    ExplicitTop = 276
-    ExplicitWidth = 416
     object Bevel2: TBevel
       Left = 0
       Top = 0

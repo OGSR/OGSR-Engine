@@ -24,7 +24,7 @@ protected:
 	bool 				ExportClimableObjects	(SExportStreams* F);
 
 	TProperties* 		m_Props;
-    void 	__stdcall   OnChangeAppendRandomFlags(PropValue* prop);
+    void 				OnChangeAppendRandomFlags(PropValue* prop);
 //----------------------------------------------------
 public:
     Fvector				m_AppendRandomMinScale;

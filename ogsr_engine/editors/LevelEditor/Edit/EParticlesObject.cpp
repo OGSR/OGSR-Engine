@@ -35,7 +35,7 @@ void EParticlesObject::Construct(LPVOID data)
 
 EParticlesObject::~EParticlesObject()
 {
-	::Render->model_Delete	((IRender_Visual*)m_Particles);
+	::Render->model_Delete	(m_Particles);
 }
 //----------------------------------------------------
 
@@ -206,7 +206,7 @@ bool EParticlesObject::ExportGame(SExportStreams* F)
 
 bool EParticlesObject::Compile(LPCSTR ref_name)
 {
-	::Render->model_Delete	((IRender_Visual*)m_Particles);
+	::Render->model_Delete	(m_Particles);
     if (ref_name){
 		m_Particles 		= (IParticleCustom*)::Render->model_CreateParticles(ref_name);
         if (m_Particles){
@@ -219,7 +219,7 @@ bool EParticlesObject::Compile(LPCSTR ref_name)
     return false;
 }
 
-void __stdcall EParticlesObject::OnRefChange(PropValue* V)
+void EParticlesObject::OnRefChange(PropValue* V)
 {
 	if (!Compile(*m_RefName)){
         ELog.Msg( mtError, "Can't compile particle system '%s'", *m_RefName );
@@ -228,7 +228,7 @@ void __stdcall EParticlesObject::OnRefChange(PropValue* V)
     }
 }
 
-void __stdcall EParticlesObject::OnControlClick(ButtonValue* sender, bool& bModif, bool& bSafe)
+void EParticlesObject::OnControlClick(ButtonValue* sender, bool& bModif, bool& bSafe)
 {
 	ButtonValue* V = dynamic_cast<ButtonValue*>(sender); R_ASSERT(V);
     switch (V->btn_num){

@@ -52,7 +52,7 @@ void PS::CPEDef::Copy(const CPEDef& src)
 	Compile				();
 }
 
-void __stdcall PS::CPEDef::OnControlClick(ButtonValue* B, bool& bDataModified, bool& bSafe)
+void __fastcall PS::CPEDef::OnControlClick(ButtonValue* B, bool& bDataModified, bool& bSafe)
 {
     switch (B->btn_num){
     case 0: 			PTools->PlayCurrent();		break;
@@ -62,20 +62,20 @@ void __stdcall PS::CPEDef::OnControlClick(ButtonValue* B, bool& bDataModified, b
     bDataModified		= false;
 }
 
-void __stdcall PS::CPEDef::FindActionByName(LPCSTR new_name, bool& res)
+void __fastcall PS::CPEDef::FindActionByName(LPCSTR new_name, bool& res)
 {
 	res 				= false;
 	for (EPAVecIt s_it=m_EActionList.begin(); s_it!=m_EActionList.end(); s_it++)
     	if (0==stricmp(new_name,*(*s_it)->actionName)){res=true; break;};
 }
 
-IC __stdcall void PS::CPEDef::FillActionList(ChooseItemVec& items, void* param)
+IC __fastcall void PS::CPEDef::FillActionList(ChooseItemVec& items, void* param)
 {
     for(int i=0; actions_token[i].name; i++)
         items.push_back(SChooseItem(actions_token[i].name,actions_token[i].info));
 }
 
-void __stdcall PS::CPEDef::OnActionsClick(ButtonValue* B, bool& bDataModified, bool& bSafe)
+void __fastcall PS::CPEDef::OnActionsClick(ButtonValue* B, bool& bDataModified, bool& bSafe)
 {
     switch (B->btn_num){
     case 0:{
@@ -99,43 +99,43 @@ void __stdcall PS::CPEDef::OnActionsClick(ButtonValue* B, bool& bDataModified, b
     bDataModified	= false;
 }
 
-void __stdcall PS::CPEDef::OnFlagChange(PropValue* sender)
+void __fastcall PS::CPEDef::OnFlagChange(PropValue* sender)
 {
     ExecCommand			(COMMAND_UPDATE_PROPERTIES);
 }          
 
-void __stdcall PS::CPEDef::OnShaderChange(PropValue* sender)
+void __fastcall PS::CPEDef::OnShaderChange(PropValue* sender)
 {
 	m_CachedShader.destroy	();
 	if (m_ShaderName.size()&&m_TextureName.size())
 		m_CachedShader.create(m_ShaderName.c_str(),m_TextureName.c_str());
 }          
 
-void __stdcall PS::CPEDef::OnFrameResize(PropValue* sender)
+void __fastcall PS::CPEDef::OnFrameResize(PropValue* sender)
 {
 	m_Frame.m_iFrameDimX	= iFloor(1.f/m_Frame.m_fTexSize.x);
 }
 
-void __stdcall PS::CPEDef::CollisionFrictionOnBeforeEdit(PropValue* sender, float& edit_val)
+void PS::CPEDef::CollisionFrictionOnBeforeEdit(PropValue* sender, float& edit_val)
 {    edit_val = 1.f-edit_val;}
-bool __stdcall PS::CPEDef::CollisionFrictionOnAfterEdit(PropValue* sender, float& edit_val)
+bool PS::CPEDef::CollisionFrictionOnAfterEdit(PropValue* sender, float& edit_val)
 {    edit_val = 1.f-edit_val; return true;}
-void __stdcall PS::CPEDef::CollisionFrictionOnDraw(PropValue* sender, xr_string& draw_val)
+void PS::CPEDef::CollisionFrictionOnDraw(PropValue* sender, xr_string& draw_val)
 {    
 	FloatValue* V	= dynamic_cast<FloatValue*>(sender); VERIFY(V);
 	draw_sprintf(draw_val,1.f-V->GetValue(),V->dec);
 }
-void __stdcall PS::CPEDef::CollisionCutoffOnBeforeEdit(PropValue* sender, float& edit_val)
+void PS::CPEDef::CollisionCutoffOnBeforeEdit(PropValue* sender, float& edit_val)
 {    edit_val = _sqrt(edit_val);}
-bool __stdcall PS::CPEDef::CollisionCutoffOnAfterEdit(PropValue* sender, float& edit_val)
+bool PS::CPEDef::CollisionCutoffOnAfterEdit(PropValue* sender, float& edit_val)
 {    edit_val = (edit_val)*(edit_val); return true;}
-void __stdcall PS::CPEDef::CollisionCutoffOnDraw(PropValue* sender, xr_string& draw_val)
+void PS::CPEDef::CollisionCutoffOnDraw(PropValue* sender, xr_string& draw_val)
 {    
 	FloatValue* V	= dynamic_cast<FloatValue*>(sender); VERIFY(V);
 	draw_sprintf(draw_val,_sqrt(V->GetValue()),V->dec);
 }
 
-void __stdcall PS::CPEDef::OnActionEditClick(ButtonValue* B, bool& bDataModified, bool& bSafe)
+void __fastcall PS::CPEDef::OnActionEditClick(ButtonValue* B, bool& bDataModified, bool& bSafe)
 {
     bDataModified	= false;
     int idx			= B->tag;
@@ -169,7 +169,7 @@ void __stdcall PS::CPEDef::OnActionEditClick(ButtonValue* B, bool& bDataModified
     }
 }
 
-bool __stdcall PS::CPEDef::OnAfterActionNameEdit(PropValue* sender, shared_str& edit_val)
+bool PS::CPEDef::OnAfterActionNameEdit(PropValue* sender, shared_str& edit_val)
 {
 	bool found				= false;
 	edit_val				= AnsiString(edit_val.c_str()).LowerCase().c_str();
@@ -180,8 +180,8 @@ void PS::CPEDef::FillProp(LPCSTR pref, ::PropItemVec& items, ::ListItem* owner)
 {
 	PHelper().CreateCaption	(items,PrepareKey(pref,"Version\\Owner Name"),	*m_OwnerName);
 	PHelper().CreateCaption	(items,PrepareKey(pref,"Version\\Modif Name"),	*m_ModifName);
-	PHelper().CreateCaption	(items,PrepareKey(pref,"Version\\Creation Time"),	PAnsiChar(Trim(AnsiString(ctime(&m_CreateTime))).c_str()));
-	PHelper().CreateCaption	(items,PrepareKey(pref,"Version\\Modified Time"),	PAnsiChar(Trim(AnsiString(ctime(&m_ModifTime))).c_str()));
+	PHelper().CreateCaption	(items,PrepareKey(pref,"Version\\Creation Time"),	Trim(AnsiString(ctime(&m_CreateTime))).c_str());
+	PHelper().CreateCaption	(items,PrepareKey(pref,"Version\\Modified Time"),	Trim(AnsiString(ctime(&m_ModifTime))).c_str());
 	ButtonValue* B;
 	B=PHelper().CreateButton(items,PrepareKey(pref,"Control"),"Play(F5),Stop(F6),Stop...(F7)",ButtonValue::flFirstOnly);
     B->OnBtnClickEvent.bind	(this,&PS::CPEDef::OnControlClick);

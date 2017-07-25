@@ -2,10 +2,6 @@
 #define WAVEFORM_H
 #pragma once
 
-#ifdef __BORLANDC__
-#define tanf(a) tan(a)
-#endif
-
 #pragma pack(push,4)
 struct WaveForm
 {

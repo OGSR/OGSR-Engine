@@ -134,7 +134,7 @@ void CParticleTools::Modified()
 }
 //---------------------------------------------------------------------------
 
-void __stdcall CParticleTools::OnItemModified()
+void CParticleTools::OnItemModified()  
 {
 	Modified();
     if (m_LibPED){
@@ -535,7 +535,7 @@ void CParticleTools::OnShowHint(AStringVec& SS)
 {
 }
 
-bool __fastcall CParticleTools::MouseStart(TShiftState Shift)
+bool CParticleTools::MouseStart(TShiftState Shift)
 {
 	inherited::MouseStart(Shift);
 	switch(m_Action){
@@ -573,13 +573,13 @@ bool __fastcall CParticleTools::MouseStart(TShiftState Shift)
 	return m_bHiddenMode;
 }
 
-bool __fastcall CParticleTools::MouseEnd(TShiftState Shift)
+bool CParticleTools::MouseEnd(TShiftState Shift)
 {
 	inherited::MouseEnd(Shift);
 	return true;
 }
 
-void __fastcall CParticleTools::MouseMove(TShiftState Shift)
+void CParticleTools::MouseMove(TShiftState Shift)
 {
 	inherited::MouseMove(Shift);
 	switch(m_Action){
@@ -711,7 +711,7 @@ bool CParticleTools::RayPick(const Fvector& start, const Fvector& dir, float& di
     }
 }
 
-void __stdcall CParticleTools::OnChangeMotion	(PropValue* sender)
+void CParticleTools::OnChangeMotion	(PropValue* sender)
 {
 	ChooseValue* V 			= dynamic_cast<ChooseValue*>(sender);
     if (V){

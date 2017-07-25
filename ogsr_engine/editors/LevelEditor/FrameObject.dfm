@@ -17,8 +17,6 @@ object fraObject: TfraObject
   OnDestroy = FormDestroy
   OnHide = FormHide
   OnShow = FormShow
-  ExplicitWidth = 320
-  ExplicitHeight = 240
   PixelsPerInch = 96
   TextHeight = 13
   object Label5: TLabel
@@ -191,7 +189,6 @@ object fraObject: TfraObject
       Color = clGray
       ParentColor = False
       OnClick = ExpandClick
-      ExplicitWidth = 83
     end
     object ExtBtn5: TExtBtn
       Left = 205
@@ -276,11 +273,11 @@ object fraObject: TfraObject
       Top = 30
       Width = 43
       Height = 13
-      LWSensitivity = 1.000000000000000000
+      LWSensitivity = 1
       ButtonKind = bkLightWave
-      MaxValue = 100.000000000000000000
-      MinValue = 1.000000000000000000
-      Value = 100.000000000000000000
+      MaxValue = 100
+      MinValue = 1
+      Value = 100
       AutoSize = False
       BorderStyle = bsNone
       Color = 12698049
@@ -318,7 +315,7 @@ object fraObject: TfraObject
     object APHeadLabel1: TLabel
       Left = 1
       Top = 1
-      Width = 52
+      Width = 216
       Height = 13
       Align = alTop
       Alignment = taCenter
@@ -450,7 +447,7 @@ object fraObject: TfraObject
     object APHeadLabel2: TLabel
       Left = 1
       Top = 1
-      Width = 68
+      Width = 216
       Height = 13
       Align = alTop
       Alignment = taCenter

@@ -294,7 +294,7 @@ private:	// User declarations
 public:		// User declarations
         __fastcall TfraLeftBar(TComponent* Owner);
 	void ChangeTarget(ObjClassID tgt);
-    void __fastcall UpdateSnapList();
+    void UpdateSnapList();
     void MinimizeAllFrames();
     void MaximizeAllFrames();
     void UpdateBar();

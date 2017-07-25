@@ -20,7 +20,7 @@ __fastcall TfraPS::TfraPS(TComponent* Owner)
     m_Current = 0;
 }
 //---------------------------------------------------------------------------
-void __stdcall TfraPS::OnItemFocused(ListItemsVec& items)
+void TfraPS::OnItemFocused(ListItemsVec& items)
 {
 	VERIFY(items.size()<=1);
     m_Current 			= 0;

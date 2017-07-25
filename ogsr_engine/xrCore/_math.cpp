@@ -179,7 +179,8 @@ namespace CPU
 		// Detect RDTSC Overhead
 		clk_overhead	= 0;
 		u64 dummy		= 0;
-		for (int i=0; i<256; i++)	{
+                int i = 0;
+		for (i=0; i<256; i++)	{
 			start			=	GetCLK();
 			clk_overhead	+=	GetCLK()-start-dummy;
 		}
@@ -188,7 +189,7 @@ namespace CPU
 		// Detect QPC Overhead
 		QueryPerformanceFrequency	((PLARGE_INTEGER)&qpc_freq)	;
 		qpc_overhead	= 0;
-		for (int i=0; i<256; i++)	{
+		for (i=0; i<256; i++)	{
 			start			=	QPC();
 			qpc_overhead	+=	QPC()-start-dummy;
 		}

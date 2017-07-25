@@ -11,7 +11,7 @@
 #include "ui_leveltools.h"
 
 //----------------------------------------------------
-CCustomObject* __stdcall EScene::FindObjectByName( LPCSTR name, ObjClassID classfilter )
+CCustomObject* EScene::FindObjectByName( LPCSTR name, ObjClassID classfilter )
 {
 	CCustomObject* object = 0;
     if (classfilter==OBJCLASS_DUMMY){
@@ -23,12 +23,12 @@ CCustomObject* __stdcall EScene::FindObjectByName( LPCSTR name, ObjClassID class
         }
     }else{
         ESceneCustomOTools* mt = GetOTools(classfilter); VERIFY(mt);
-		if (mt&&(0!=(object=mt->FindObjectByName(name)))) return object;
+        if (mt&&(0!=(object=mt->FindObjectByName(name)))) return object;
     }
     return object;
 }
 
-CCustomObject* __stdcall EScene::FindObjectByName( LPCSTR name, CCustomObject* pass_object )
+CCustomObject* EScene::FindObjectByName( LPCSTR name, CCustomObject* pass_object )
 {
 	CCustomObject* object = 0;
     SceneToolsMapPairIt _I = m_SceneTools.begin();
@@ -66,6 +66,5 @@ void EScene::GenObjectName( ObjClassID cls_id, char *buffer, const char* pref )
     strcpy				(buffer,result.c_str());
 }
 //------------------------------------------------------------------------------
-
 
 

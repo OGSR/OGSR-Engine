@@ -210,7 +210,7 @@ void ETextureThumbnail::Draw(HDC hdc, const Irect& R)
                ELog.Msg(mtError,"Can't make preview for texture '%s'.",m_Name.c_str());
                return;
         }
-        ImageLib.MakeThumbnailImage(this,&*(data.begin()),image_w,image_h,image_a);
+        ImageLib.MakeThumbnailImage(this,data.begin(),image_w,image_h,image_a);
      }
 
 	if (Valid())

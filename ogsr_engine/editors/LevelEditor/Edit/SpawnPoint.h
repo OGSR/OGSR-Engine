@@ -35,7 +35,7 @@ public:
     public:
     	CSE_Motion*		source;
         CObjectAnimator*animator;
-        void 	 __stdcall		OnChangeMotion	();
+        void 			OnChangeMotion	();
         void 			PlayMotion		();
     public:
 						CLE_Motion		(CSE_Motion* src);
@@ -70,7 +70,7 @@ public:
 
 		void    	Render	(bool bSelected, const Fmatrix& parent,int priority, bool strictB2F);
 		void    	OnFrame	();
-		virtual void __stdcall get_bone_xform	(LPCSTR name, Fmatrix& xform);
+		virtual void get_bone_xform	(LPCSTR name, Fmatrix& xform);
 	};
 
 	SSpawnData    	m_SpawnData;

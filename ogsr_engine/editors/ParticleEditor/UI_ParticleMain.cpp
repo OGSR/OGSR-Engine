@@ -29,52 +29,52 @@ CParticleMain::~CParticleMain()
 }
 //---------------------------------------------------------------------------
 
-CCommandVar __stdcall CParticleTools::CommandSelectPreviewObj(CCommandVar p1, CCommandVar p2)
+CCommandVar CParticleTools::CommandSelectPreviewObj(CCommandVar p1, CCommandVar p2)
 {
     SelectPreviewObject(p1);
     return TRUE;
 }
-CCommandVar __stdcall CParticleTools::CommandEditPreviewProps(CCommandVar p1, CCommandVar p2)
+CCommandVar CParticleTools::CommandEditPreviewProps(CCommandVar p1, CCommandVar p2)
 {
     EditPreviewPrefs();
     return TRUE;
 }
-CCommandVar __stdcall CParticleTools::CommandSave(CCommandVar p1, CCommandVar p2)
+CCommandVar CParticleTools::CommandSave(CCommandVar p1, CCommandVar p2)
 {
     Save(0,0);
     ExecCommand(COMMAND_UPDATE_CAPTION);
     return TRUE;
 }
-CCommandVar __stdcall CParticleTools::CommandSaveBackup(CCommandVar p1, CCommandVar p2)
+CCommandVar CParticleTools::CommandSaveBackup(CCommandVar p1, CCommandVar p2)
 {
     ExecCommand(COMMAND_SAVE);
     return TRUE;
 }
-CCommandVar __stdcall CParticleTools::CommandReload(CCommandVar p1, CCommandVar p2)
+CCommandVar CParticleTools::CommandReload(CCommandVar p1, CCommandVar p2)
 {
     if (!IfModified()) 	return FALSE;
     Reload				();
     ExecCommand(COMMAND_UPDATE_CAPTION);
     return TRUE;
 }
-CCommandVar __stdcall CParticleTools::CommandValidate(CCommandVar p1, CCommandVar p2)
+CCommandVar CParticleTools::CommandValidate(CCommandVar p1, CCommandVar p2)
 {
 	Validate(true);
     return TRUE;
 }
-CCommandVar __stdcall CParticleTools::CommandClear(CCommandVar p1, CCommandVar p2)
+CCommandVar CParticleTools::CommandClear(CCommandVar p1, CCommandVar p2)
 {
     Device.m_Camera.Reset();
     ResetPreviewObject();
     ExecCommand(COMMAND_UPDATE_CAPTION);
     return TRUE;
 }
-CCommandVar __stdcall CParticleTools::CommandPlayCurrent(CCommandVar p1, CCommandVar p2)
+CCommandVar CParticleTools::CommandPlayCurrent(CCommandVar p1, CCommandVar p2)
 {
     PlayCurrent();
     return TRUE;
 }
-CCommandVar __stdcall CParticleTools::CommandStopCurrent(CCommandVar p1, CCommandVar p2)
+CCommandVar CParticleTools::CommandStopCurrent(CCommandVar p1, CCommandVar p2)
 {
     StopCurrent(p1);
     return TRUE;
@@ -139,13 +139,13 @@ char* CParticleMain::GetCaption()
 	return "particles";
 }
 
-bool /*__fastcall */CParticleMain::ApplyShortCut(WORD Key, TShiftState Shift)
+bool __fastcall CParticleMain::ApplyShortCut(WORD Key, TShiftState Shift)
 {
     return inherited::ApplyShortCut(Key,Shift);
 }
 //---------------------------------------------------------------------------
 
-bool /*__fastcall*/ CParticleMain::ApplyGlobalShortCut(WORD Key, TShiftState Shift)
+bool __fastcall CParticleMain::ApplyGlobalShortCut(WORD Key, TShiftState Shift)
 {
     return inherited::ApplyGlobalShortCut(Key,Shift);
 }

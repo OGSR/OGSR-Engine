@@ -1,11 +1,11 @@
 object ItemList: TItemList
   Left = 376
   Top = 239
+  Width = 320
+  Height = 526
   BiDiMode = bdRightToLeft
   BorderIcons = [biSystemMenu, biMinimize]
   Caption = 'Item list'
-  ClientHeight = 488
-  ClientWidth = 304
   Color = clGray
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -24,13 +24,14 @@ object ItemList: TItemList
   object tvItems: TElTree
     Left = 0
     Top = 0
-    Width = 304
-    Height = 471
+    Width = 312
+    Height = 482
     Cursor = crDefault
     LeftPosition = 0
     HeaderPopupMenu = pmSystem
     DragCursor = crDrag
     Align = alClient
+    AutoCollapse = False
     AutoLineHeight = False
     DockOrientation = doNoOrient
     DefaultSectionWidth = 120
@@ -101,28 +102,20 @@ object ItemList: TItemList
     Font.Name = 'MS Sans Serif'
     Font.Style = []
     FullRowSelect = False
+    GradientSteps = 64
     HeaderColor = 7368816
     HeaderHeight = 17
     HeaderHotTrack = False
     HeaderSections.Data = {
-      F4FFFFFF0100000010DC055000DC0550FFFFFFFF0000010100002750C3000000
-      0000000010270000000101504014FF040000000001003A0FFFFFFFFF00000150
-      00000000000000000001000000000000C2B43A0FEBB43A0F0DB53A0F30B53A0F
-      57B53A0F7BB53A0F9FB53A0FC3B53A0FE8B53A0F10B63A0F30B63A0F9EB63A0F
-      C8B63A0FEDB63A0F14B73A0F3EB73A0F700000009A0000004974656D73003C05
-      480069009155C30D442D8420B01A3C05690073008155C30D88548420001B3C05
-      6E0074003155C30D442D8420001B3C0544006900A155C30D88548420501B3C05
-      09000900D155C30D442D8420501B3C0572007900C155C30D88548420A01B3C05
-      68006C00F156C30D442D8420A01B3C0570007500E155C30D88548420601A3C05
-      61006D001156C30D442D8420601A3C056D009A0000000074656D73003C054800
-      69009155C30D442D8420B01A3C05690073008155C30D88548420001B3C056E00
-      74003155C30D442D8420001B3C0544006900A155C30D88548420501B3C050900
-      0900D155C30D442D8420501B3C0572007900C155C30D88548420A01B3C056800
-      6C00F156C30D442D8420A01B3C0570007500E155C30D88548420601A3C056100
-      6D001156C30D442D8420601A3C056D000000000000000000}
+      F4FFFFFF010000001C225A05002E0000FFFFFFFF0000010100000E40C3000000
+      0000000010270000000101404014FF040000000001000E40FFFFFFFF00000140
+      0000000000000000000100000000000039B00E405CB00E4081B00E40A5B00E40
+      CCB00E40F1B00E4016B10E403BB10E4060B10E4084B10E40ACB10E40CDB10E40
+      EEB10E4012B20E4037B20E4059B20E407FB20E40060000004974656D73000100
+      0000000000000000000000}
     HeaderFlat = True
     HeaderFont.Charset = DEFAULT_CHARSET
-    HeaderFont.Color = clBlack
+    HeaderFont.Color = clWindowText
     HeaderFont.Height = -11
     HeaderFont.Name = 'MS Sans Serif'
     HeaderFont.Style = []
@@ -152,6 +145,7 @@ object ItemList: TItemList
       E0E0E0E0E0E0E0E0E0808080808080808080808080E0E0E0E0E0E0E0E0E0E0E0
       E0E0E0E0808080808080808080E0E0E0E0E0E0E0E0E0E0E0E0E0E0E080808080
       8080808080808080808080808080808080808080808080808080}
+    MouseFrameSelect = True
     OwnerDrawMask = '~~@~~'
     ParentFont = False
     ParentShowHint = False
@@ -198,7 +192,6 @@ object ItemList: TItemList
     OnItemDraw = tvItemsItemDraw
     OnResize = tvItemsResize
     OnCompareItems = tvItemsCompareItems
-    LinkStyle = [fsUnderline]
     OnClick = tvItemsClick
     OnDragDrop = tvItemsDragDrop
     OnMouseDown = tvItemsMouseDown
@@ -208,8 +201,8 @@ object ItemList: TItemList
   end
   object paStatus: TPanel
     Left = 0
-    Top = 471
-    Width = 304
+    Top = 482
+    Width = 312
     Height = 17
     Align = alBottom
     Alignment = taLeftJustify
@@ -217,8 +210,6 @@ object ItemList: TItemList
     Caption = ' Items count: '
     ParentColor = True
     TabOrder = 1
-    ExplicitTop = 482
-    ExplicitWidth = 312
     object Bevel2: TBevel
       Left = 0
       Top = 0

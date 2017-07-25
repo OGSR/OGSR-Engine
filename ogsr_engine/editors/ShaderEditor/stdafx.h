@@ -75,7 +75,7 @@ __inline float expf	(float val)                           	{ return ::exp(val);}
 #define clMsg 			Msg
 
 // core
-#include "../../xrCore/xrCore.h"
+#include <xrCore.h>
 
 #ifdef _EDITOR
 	class PropValue;

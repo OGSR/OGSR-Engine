@@ -15,7 +15,7 @@ static LPCSTR destroy_entity_func 	= "_destroy_entity@4";
 Tcreate_entity 	create_entity;
 Tdestroy_entity destroy_entity;
 
-void /*__stdcall*/__cdecl  FillSpawnItems	(ChooseItemVec& lst, void* param)
+void __stdcall  FillSpawnItems	(ChooseItemVec& lst, void* param)
 {
 	LPCSTR gcs					= (LPCSTR)param;
     ObjectList objects;

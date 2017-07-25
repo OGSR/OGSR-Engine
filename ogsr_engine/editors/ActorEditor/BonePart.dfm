@@ -219,6 +219,7 @@ object frmBonePart: TfrmBonePart
     LeftPosition = 0
     DragCursor = crDrag
     AlwaysKeepFocus = True
+    AutoCollapse = False
     DockOrientation = doNoOrient
     DefaultSectionWidth = 120
     BorderSides = [ebsLeft, ebsRight, ebsTop, ebsBottom]
@@ -233,6 +234,7 @@ object frmBonePart: TfrmBonePart
     Font.Height = -11
     Font.Name = 'MS Sans Serif'
     Font.Style = []
+    GradientSteps = 64
     HeaderHeight = 19
     HeaderHotTrack = False
     HeaderSections.Data = {F4FFFFFF00000000}
@@ -255,8 +257,8 @@ object frmBonePart: TfrmBonePart
     LineBorderActiveColor = clBlack
     LineBorderInactiveColor = clBlack
     LineHeight = 16
+    MouseFrameSelect = True
     OwnerDrawMask = '~~@~~'
-    ParentFont = False
     ScrollbarOpposite = False
     ScrollTracking = True
     ShowButtons = False
@@ -279,7 +281,6 @@ object frmBonePart: TfrmBonePart
     VirtualityLevel = vlNone
     UseXPThemes = False
     BkColor = clGray
-    LinkStyle = [fsUnderline]
     OnDragDrop = tvPartDragDrop
     OnDragOver = tvPartDragOver
     OnStartDrag = tvPartStartDrag
@@ -302,6 +303,7 @@ object frmBonePart: TfrmBonePart
     LeftPosition = 0
     DragCursor = crDrag
     AlwaysKeepFocus = True
+    AutoCollapse = False
     DockOrientation = doNoOrient
     DefaultSectionWidth = 120
     BorderSides = [ebsLeft, ebsRight, ebsTop, ebsBottom]
@@ -316,6 +318,7 @@ object frmBonePart: TfrmBonePart
     Font.Height = -11
     Font.Name = 'MS Sans Serif'
     Font.Style = []
+    GradientSteps = 64
     HeaderHeight = 19
     HeaderHotTrack = False
     HeaderSections.Data = {F4FFFFFF00000000}
@@ -338,8 +341,8 @@ object frmBonePart: TfrmBonePart
     LineBorderActiveColor = clBlack
     LineBorderInactiveColor = clBlack
     LineHeight = 16
+    MouseFrameSelect = True
     OwnerDrawMask = '~~@~~'
-    ParentFont = False
     ScrollbarOpposite = False
     ScrollTracking = True
     ShowButtons = False
@@ -362,7 +365,6 @@ object frmBonePart: TfrmBonePart
     VirtualityLevel = vlNone
     UseXPThemes = False
     BkColor = clGray
-    LinkStyle = [fsUnderline]
     OnDragDrop = tvPartDragDrop
     OnDragOver = tvPartDragOver
     OnStartDrag = tvPartStartDrag
@@ -385,6 +387,7 @@ object frmBonePart: TfrmBonePart
     LeftPosition = 0
     DragCursor = crDrag
     AlwaysKeepFocus = True
+    AutoCollapse = False
     DockOrientation = doNoOrient
     DefaultSectionWidth = 120
     BorderSides = [ebsLeft, ebsRight, ebsTop, ebsBottom]
@@ -399,6 +402,7 @@ object frmBonePart: TfrmBonePart
     Font.Height = -11
     Font.Name = 'MS Sans Serif'
     Font.Style = []
+    GradientSteps = 64
     HeaderHeight = 19
     HeaderHotTrack = False
     HeaderSections.Data = {F4FFFFFF00000000}
@@ -421,8 +425,8 @@ object frmBonePart: TfrmBonePart
     LineBorderActiveColor = clBlack
     LineBorderInactiveColor = clBlack
     LineHeight = 16
+    MouseFrameSelect = True
     OwnerDrawMask = '~~@~~'
-    ParentFont = False
     ScrollbarOpposite = False
     ScrollTracking = True
     ShowButtons = False
@@ -445,7 +449,6 @@ object frmBonePart: TfrmBonePart
     VirtualityLevel = vlNone
     UseXPThemes = False
     BkColor = clGray
-    LinkStyle = [fsUnderline]
     OnDragDrop = tvPartDragDrop
     OnDragOver = tvPartDragOver
     OnStartDrag = tvPartStartDrag
@@ -468,6 +471,7 @@ object frmBonePart: TfrmBonePart
     LeftPosition = 0
     DragCursor = crDrag
     AlwaysKeepFocus = True
+    AutoCollapse = False
     DockOrientation = doNoOrient
     DefaultSectionWidth = 120
     BorderSides = [ebsLeft, ebsRight, ebsTop, ebsBottom]
@@ -482,6 +486,7 @@ object frmBonePart: TfrmBonePart
     Font.Height = -11
     Font.Name = 'MS Sans Serif'
     Font.Style = []
+    GradientSteps = 64
     HeaderHeight = 19
     HeaderHotTrack = False
     HeaderSections.Data = {F4FFFFFF00000000}
@@ -504,8 +509,8 @@ object frmBonePart: TfrmBonePart
     LineBorderActiveColor = clBlack
     LineBorderInactiveColor = clBlack
     LineHeight = 16
+    MouseFrameSelect = True
     OwnerDrawMask = '~~@~~'
-    ParentFont = False
     ScrollbarOpposite = False
     ScrollTracking = True
     ShowButtons = False
@@ -528,7 +533,6 @@ object frmBonePart: TfrmBonePart
     VirtualityLevel = vlNone
     UseXPThemes = False
     BkColor = clGray
-    LinkStyle = [fsUnderline]
     OnDragDrop = tvPartDragDrop
     OnDragOver = tvPartDragOver
     OnStartDrag = tvPartStartDrag

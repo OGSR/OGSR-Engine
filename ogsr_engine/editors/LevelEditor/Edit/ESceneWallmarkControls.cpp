@@ -16,7 +16,7 @@
 TUI_ControlWallmarkAdd::TUI_ControlWallmarkAdd(int st, int act, ESceneCustomMTools* parent):TUI_CustomControl(st,act,parent){
 }
 
-bool TUI_ControlWallmarkAdd::Start(TShiftState Shift)
+bool __fastcall TUI_ControlWallmarkAdd::Start(TShiftState Shift)
 {
     ESceneWallmarkTools* S 	= (ESceneWallmarkTools*)parent_tool;
     
@@ -58,11 +58,11 @@ bool TUI_ControlWallmarkMove::Start(TShiftState Shift)
     return false;
 }
 
-void TUI_ControlWallmarkMove::Move(TShiftState _Shift)
+void __fastcall TUI_ControlWallmarkMove::Move(TShiftState _Shift)
 {
 }
 
-bool TUI_ControlWallmarkMove::End(TShiftState _Shift)
+bool __fastcall TUI_ControlWallmarkMove::End(TShiftState _Shift)
 {
 	return false;
 }

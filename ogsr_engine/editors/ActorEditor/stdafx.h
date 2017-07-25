@@ -1,8 +1,8 @@
 //----------------------------------------------------
 // file: stdafx.h
 //----------------------------------------------------
-#ifndef stdafxAEH
-#define stdafxAEH
+#ifndef stdafxH
+#define stdafxH
 
 #pragma once
 

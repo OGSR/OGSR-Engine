@@ -23,7 +23,7 @@ SInit init;
 
 WINAPI WinMain(HINSTANCE hInst, HINSTANCE, LPSTR, int)
 {
-    try{
+//    try{
         if (!Application->Handle){ 
             Application->CreateHandle	(); 
             Application->Icon->Handle 	= LoadIcon(MainInstance, "MAINICON"); 
@@ -62,11 +62,11 @@ WINAPI WinMain(HINSTANCE hInst, HINSTANCE, LPSTR, int)
         xr_delete				(UI);
 
     	Core._destroy			();
-    }
-    catch (Exception &exception)
-    {
-           Application->ShowException(&exception);
-    }
+//    }
+//    catch (Exception &exception)
+//    {
+//           Application->ShowException(&exception);
+//    }
     return 0;
 }
 //---------------------------------------------------------------------------

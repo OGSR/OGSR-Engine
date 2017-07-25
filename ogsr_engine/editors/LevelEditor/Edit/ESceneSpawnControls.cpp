@@ -25,7 +25,7 @@ bool __fastcall TUI_ControlSpawnAdd::AppendCallback(SBeforeAppendCallbackParams*
     return (0!=p->name_prefix.length());
 }
 
-bool /*__fastcall*/ TUI_ControlSpawnAdd::Start(TShiftState Shift)
+bool __fastcall TUI_ControlSpawnAdd::Start(TShiftState Shift)
 {
     TfraSpawn* F = (TfraSpawn*)parent_tool->pFrame;
 	if (F->ebAttachObject->Down){

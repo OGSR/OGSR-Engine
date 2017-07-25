@@ -105,7 +105,7 @@ public:
     }
     IC OGFVertVec& 	getV_Verts	()	{return m_Verts;}
    	IC OGFFaceVec& 	getV_Faces	()	{return m_Faces;}
-    IC SOGFVert*	getVert		() 	{return &(*(m_Verts.begin()));}
+    IC SOGFVert*	getVert		() 	{return m_Verts.begin();}
     IC int			getVS		() 	{return m_Verts.size();}
     IC int			getTS		() 	{return m_Faces.size();}
 };

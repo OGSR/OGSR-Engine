@@ -7,7 +7,7 @@
 class TUI_ControlGroupAdd: public TUI_CustomControl{
 	bool __fastcall 	AfterAppendCallback(TShiftState Shift, CCustomObject* obj);
 public:
-    __fastcall TUI_ControlGroupAdd(int st, int act, ESceneCustomMTools* parent);
+    TUI_ControlGroupAdd(int st, int act, ESceneCustomMTools* parent);
     virtual ~TUI_ControlGroupAdd(){}
 	virtual bool Start  (TShiftState _Shift);
 	virtual bool End    (TShiftState _Shift);

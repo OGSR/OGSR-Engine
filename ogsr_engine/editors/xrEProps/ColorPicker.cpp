@@ -18,7 +18,7 @@ public:
 };
 static CTCD TCD;
 
-extern "C" DLL_API bool FSColorPickerExecute(u32* currentColor, u32* originalColor, const int initialExpansionState);
+extern "C" DLL_API bool FSColorPickerExecute(u32* currentColor, LPDWORD originalColor, const int initialExpansionState);
 bool SelectColor(u32* currentcolor, bool bDefaultPicker){
 	VERIFY(currentcolor);
 	if (bDefaultPicker){

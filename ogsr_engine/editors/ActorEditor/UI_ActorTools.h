@@ -288,21 +288,21 @@ public:
     bool				BatchConvert		(LPCSTR fn);
 
     // commands
-	CCommandVar		__stdcall	CommandClear		(CCommandVar p1, CCommandVar p2);
-	CCommandVar 	__stdcall	CommandLoad			(CCommandVar p1, CCommandVar p2);
-	CCommandVar     __stdcall    CommandSaveBackup	(CCommandVar p1, CCommandVar p2);
-	CCommandVar     __stdcall    CommandSave			(CCommandVar p1, CCommandVar p2);
-	CCommandVar     __stdcall    CommandImport		(CCommandVar p1, CCommandVar p2);
-	CCommandVar     __stdcall    CommandExportDM		(CCommandVar p1, CCommandVar p2);
-	CCommandVar     __stdcall    CommandExportOBJ	(CCommandVar p1, CCommandVar p2);
-	CCommandVar     __stdcall    CommandExportOGF	(CCommandVar p1, CCommandVar p2);
-	CCommandVar     __stdcall    CommandExportOMF	(CCommandVar p1, CCommandVar p2);
-	CCommandVar 	__stdcall	CommandExportCPP	(CCommandVar p1, CCommandVar p2);
-	CCommandVar 	__stdcall	CommandUndo			(CCommandVar p1, CCommandVar p2);
-	CCommandVar 	__stdcall	CommandRedo			(CCommandVar p1, CCommandVar p2);
-	CCommandVar 	__stdcall	CommandOptimizeMotions(CCommandVar p1, CCommandVar p2);
-	CCommandVar 	__stdcall	CommandMakeThumbnail(CCommandVar p1, CCommandVar p2);
-	CCommandVar		__stdcall	CommandBatchConvert	(CCommandVar p1, CCommandVar p2);
+	CCommandVar			CommandClear		(CCommandVar p1, CCommandVar p2);
+	CCommandVar 		CommandLoad			(CCommandVar p1, CCommandVar p2);
+    CCommandVar         CommandSaveBackup	(CCommandVar p1, CCommandVar p2);
+    CCommandVar         CommandSave			(CCommandVar p1, CCommandVar p2);
+    CCommandVar         CommandImport		(CCommandVar p1, CCommandVar p2);
+    CCommandVar         CommandExportDM		(CCommandVar p1, CCommandVar p2);
+    CCommandVar         CommandExportOBJ	(CCommandVar p1, CCommandVar p2);
+    CCommandVar         CommandExportOGF	(CCommandVar p1, CCommandVar p2);
+    CCommandVar         CommandExportOMF	(CCommandVar p1, CCommandVar p2);
+    CCommandVar 		CommandExportCPP	(CCommandVar p1, CCommandVar p2);
+	CCommandVar 		CommandUndo			(CCommandVar p1, CCommandVar p2);
+	CCommandVar 		CommandRedo			(CCommandVar p1, CCommandVar p2);
+	CCommandVar 		CommandOptimizeMotions(CCommandVar p1, CCommandVar p2);
+    CCommandVar 		CommandMakeThumbnail(CCommandVar p1, CCommandVar p2);
+    CCommandVar			CommandBatchConvert	(CCommandVar p1, CCommandVar p2);
 };
 
 extern CActorTools*&	ATools;

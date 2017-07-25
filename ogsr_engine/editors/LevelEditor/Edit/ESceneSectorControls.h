@@ -21,7 +21,7 @@ class TUI_ControlSectorAdd: public TUI_CustomControl{
 	void 			AddMesh();
 	void 			DelMesh();
 public:
-    __fastcall TUI_ControlSectorAdd(int st, int act, ESceneCustomMTools* parent);
+    TUI_ControlSectorAdd(int st, int act, ESceneCustomMTools* parent);
     virtual ~TUI_ControlSectorAdd(){;}
 	virtual bool Start  (TShiftState _Shift);
 	virtual bool End    (TShiftState _Shift);
@@ -33,7 +33,7 @@ public:
 class TUI_ControlSectorSelect: public TUI_CustomControl{
     TfraSector*   	pFrame;
 public:
-    __fastcall TUI_ControlSectorSelect(int st, int act, ESceneCustomMTools* parent);
+    TUI_ControlSectorSelect(int st, int act, ESceneCustomMTools* parent);
 	virtual bool Start  (TShiftState _Shift);
 	virtual bool End    (TShiftState _Shift);
 	virtual void Move   (TShiftState _Shift);

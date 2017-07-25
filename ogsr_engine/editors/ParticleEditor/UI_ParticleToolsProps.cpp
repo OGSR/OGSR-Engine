@@ -7,26 +7,26 @@
 #include "../xrEProps/TextForm.h"
 #include "../xrEProps/ItemList.h"
 
-void __stdcall CParticleTools::OnParticleItemRename(LPCSTR old_name, LPCSTR new_name, EItemType type)
+void CParticleTools::OnParticleItemRename(LPCSTR old_name, LPCSTR new_name, EItemType type)
 {              
 	Rename			(old_name,new_name);
 	Modified		();
 }
 
-void __stdcall CParticleTools::OnParticleItemRemove(LPCSTR name, EItemType type, bool& res)
+void CParticleTools::OnParticleItemRemove(LPCSTR name, EItemType type, bool& res)
 {
 	Remove			(name);
     Modified		();
     res				= true;
 }
 
-void __stdcall CParticleTools::OnControlClick(ButtonValue* sender, bool& bDataModified, bool& bSafe)
+void  CParticleTools::OnControlClick(ButtonValue* sender, bool& bDataModified, bool& bSafe)
 {
 	m_Transform.identity();
     bDataModified	= false;
 }
 
-void __stdcall CParticleTools::OnParticleItemFocused(ListItemsVec& items)
+void CParticleTools::OnParticleItemFocused(ListItemsVec& items)
 {
 	PropItemVec props;
 	m_EditMode	= emEffect;

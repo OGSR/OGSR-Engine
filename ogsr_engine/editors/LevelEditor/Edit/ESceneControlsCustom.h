@@ -25,35 +25,35 @@ protected:
     int action;
 // select
     bool bBoxSelection;
-	bool __fastcall SelectStart	(TShiftState _Shift);
-	void __fastcall SelectProcess	(TShiftState _Shift);
-    bool __fastcall SelectEnd		(TShiftState _Shift);
+    bool SelectStart	(TShiftState _Shift);
+    void SelectProcess	(TShiftState _Shift);
+    bool SelectEnd		(TShiftState _Shift);
 // add
-    bool __fastcall AddStart		(TShiftState _Shift);
-	void __fastcall AddProcess		(TShiftState _Shift);
-    bool __fastcall AddEnd			(TShiftState _Shift);
+    bool AddStart		(TShiftState _Shift);
+    void AddProcess		(TShiftState _Shift);
+    bool AddEnd			(TShiftState _Shift);
 // move
 	Fvector m_MovingXVector;
 	Fvector m_MovingYVector;
 	Fvector m_MovingReminder;
-	bool   __fastcall				MovingStart		(TShiftState _Shift);
-	void   __fastcall				MovingProcess	(TShiftState _Shift);
-    bool   __fastcall				MovingEnd		(TShiftState _Shift);
+    bool 				MovingStart		(TShiftState _Shift);
+    void 				MovingProcess	(TShiftState _Shift);
+    bool 				MovingEnd		(TShiftState _Shift);
 // scale
-	bool   __fastcall				ScaleStart		(TShiftState _Shift);
-	void   __fastcall				ScaleProcess	(TShiftState _Shift);
-    bool   __fastcall				ScaleEnd		(TShiftState _Shift);
+    bool 				ScaleStart		(TShiftState _Shift);
+    void				ScaleProcess	(TShiftState _Shift);
+    bool 				ScaleEnd		(TShiftState _Shift);
 // rotate
 	Fvector m_RotateVector;
     float m_fRotateSnapAngle;
-	bool 	  __fastcall			RotateStart		(TShiftState _Shift);
-	void 	  __fastcall			RotateProcess	(TShiftState _Shift);
-	bool 	  __fastcall			RotateEnd		(TShiftState _Shift);
+    bool 				RotateStart		(TShiftState _Shift);
+    void 				RotateProcess	(TShiftState _Shift);
+    bool 				RotateEnd		(TShiftState _Shift);
 protected:
 	bool				CheckSnapList 	(TShiftState Shift);
 
-	CCustomObject*	 __fastcall	DefaultAddObject(TShiftState Shift, TBeforeAppendCallback before=0, TAfterAppendCallback after=0);
-    bool			 __fastcall	DefaultMovingProcess(TShiftState Shift, Fvector& amount);
+    CCustomObject*		DefaultAddObject(TShiftState Shift, TBeforeAppendCallback before=0, TAfterAppendCallback after=0);
+    bool				DefaultMovingProcess(TShiftState Shift, Fvector& amount);
 public:
     ESceneCustomMTools*	parent_tool;
 public:

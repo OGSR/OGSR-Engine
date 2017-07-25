@@ -211,7 +211,7 @@ void __fastcall TProperties::HideProperties()
 	Hide();
 }
 
-int TProperties::EditPropertiesModal(PropItemVec& values, LPCSTR title, bool bShowButtonsBar, TOnModifiedEvent modif, TOnItemFocused focused, TOnCloseEvent close, u32 flags)
+int __fastcall TProperties::EditPropertiesModal(PropItemVec& values, LPCSTR title, bool bShowButtonsBar, TOnModifiedEvent modif, TOnItemFocused focused, TOnCloseEvent close, u32 flags)
 {
 	TProperties* P 	= CreateModalForm(title,bShowButtonsBar,modif,focused,close,flags);
     P->AssignItems	(values);
@@ -384,7 +384,7 @@ void TProperties::FolderRestore()
         }
     }
 }
-void _stdcall TProperties::OnFolderFocused(TElTreeItem* item)
+void __fastcall TProperties::OnFolderFocused(TElTreeItem* item)
 {
 	AnsiString s, lfsi;
     if (tvProperties->Selected) FHelper.MakeFullName(tvProperties->Selected,0,lfsi);
@@ -1071,7 +1071,8 @@ void __fastcall TProperties::WaveFormClick(TElTreeItem* item)
     }
 }
 //---------------------------------------------------------------------------
-extern "C" DLL_API bool FSColorPickerExecute(u32* currentColor, u32* originalColor, const int initialExpansionState);
+extern "C" DLL_API bool FSColorPickerExecute(u32* currentColor, LPDWORD originalColor, const int initialExpansionState);
+
 void __fastcall TProperties::ColorClick(TElTreeItem* item)
 {
 	PropItem* prop = (PropItem*)item->Tag;
@@ -1382,7 +1383,7 @@ void TProperties::ApplyLWText()
         }break;
         case PROP_TIME:{
 			FloatValue* V		= dynamic_cast<FloatValue*>(prop->GetFrontValue()); R_ASSERT(V);
-			float new_val		= StrTimeToFloatTime(PAnsiChar(edText->Text.c_str()));
+			float new_val		= StrTimeToFloatTime(edText->Text.c_str());
             if (prop->AfterEdit<FloatValue,float>(new_val))
                 if (prop->ApplyValue<FloatValue,float>(new_val)){
                     Modified		();
@@ -1708,7 +1709,7 @@ void __fastcall TProperties::ebCancelClick(TObject *Sender)
 //---------------------------------------------------------------------------
 
 void __fastcall TProperties::tvPropertiesShowLineHint(TObject *Sender,
-      TElTreeItem *Item, TElHeaderSection *Section, ::TElFString &Text,
+      TElTreeItem *Item, TElHeaderSection *Section, TElFString &Text,
       THintWindow *HintWindow, TPoint &MousePos, bool &DoShowHint)
 {
     PropItem* prop 				= (PropItem*)Item->Tag;

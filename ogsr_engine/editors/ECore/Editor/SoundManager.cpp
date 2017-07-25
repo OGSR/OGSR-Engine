@@ -60,7 +60,7 @@ void CSoundManager::MuteSounds(BOOL bVal)
     else		::psSoundVEffects = psDeviceFlags.is(rsMuteSounds)?0.f:1.f;
 }
 
-void __stdcall CSoundManager::RenameSound(LPCSTR nm0, LPCSTR nm1, EItemType type)
+void CSoundManager::RenameSound(LPCSTR nm0, LPCSTR nm1, EItemType type)
 {
 	if (TYPE_FOLDER==type){
     	FS.dir_delete			(_sounds_,nm0,FALSE);
@@ -86,7 +86,7 @@ void __stdcall CSoundManager::RenameSound(LPCSTR nm0, LPCSTR nm1, EItemType type
 	}
 }
 
-BOOL __stdcall CSoundManager::RemoveSound(LPCSTR fname, EItemType type)
+BOOL CSoundManager::RemoveSound(LPCSTR fname, EItemType type)
 {
 	if (TYPE_FOLDER==type){
     	FS.dir_delete			(_sounds_,fname,FALSE);

@@ -28,9 +28,9 @@ struct CDataStorageSingleLinkedList {
 		typename _data_storage,
 		template <typename _T> class _vertex = CEmptyClassTemplate
 	>
-	class CDataStorage : public _data_storage::CDataStorage<SingleLinkedList<_vertex>::_vertex> {
+	class CDataStorage : public _data_storage::template CDataStorage<SingleLinkedList<_vertex>::_vertex> {
 	public:
-		typedef typename _data_storage::CDataStorage<
+		typedef typename _data_storage::template CDataStorage<
 			SingleLinkedList<_vertex>::_vertex
 		>											inherited;
 		typedef typename inherited::CGraphVertex	CGraphVertex;

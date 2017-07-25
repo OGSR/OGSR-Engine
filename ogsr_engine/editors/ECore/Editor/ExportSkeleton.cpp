@@ -293,7 +293,7 @@ void CExportSkeleton::SSplit::Save(IWriter& F)
     // Faces
     F.open_chunk		(OGF_INDICES);
     F.w_u32				(m_Faces.size()*3);
-    F.w					(&*(m_Faces.begin()),m_Faces.size()*3*sizeof(WORD));
+    F.w					(m_Faces.begin(),m_Faces.size()*3*sizeof(WORD));
     F.close_chunk		();
 
     // PMap
@@ -450,14 +450,14 @@ void CExportSkeleton::SSplit::CalculateTB()
 
     // retriving data
     u32 o_idx		= 0;
-	for (SkelFaceIt face_it=m_Faces.begin(); face_it!=m_Faces.end(); face_it++){
+    for (face_it=m_Faces.begin(); face_it!=m_Faces.end(); face_it++){
         SSkelFace	&iF = *face_it;
         iF.v[0]		= (u16)o_indices[o_idx++];
         iF.v[1]		= (u16)o_indices[o_idx++];
         iF.v[2]		= (u16)o_indices[o_idx++];
     }
     m_Verts.clear	(); m_Verts.resize(v_cnt);
-	for (u32 v_idx=0; v_idx!=v_cnt; v_idx++){
+    for (u32 v_idx=0; v_idx!=v_cnt; v_idx++){
         SSkelVert	&oV = m_Verts[v_idx];
         oV.offs.set	(o_position[v_idx*3+0],	o_position[v_idx*3+1],	o_position[v_idx*3+2]);
         oV.norm.set	(o_normal[v_idx*3+0],	o_normal[v_idx*3+1],	o_normal[v_idx*3+2]);
@@ -486,7 +486,7 @@ void CExportSkeleton::SSplit::CalculateTB()
     Fvector2 	Tmin,Tmax;
     Tmin.set	(flt_max,flt_max);
     Tmax.set	(flt_min,flt_min);
-    for (u32 v_idx=0; v_idx!=v_cnt; v_idx++){
+    for (v_idx=0; v_idx!=v_cnt; v_idx++){
         SSkelVert	&iV = m_Verts[v_idx];
         Tmin.min	(iV.uv);
         Tmax.max	(iV.uv);
@@ -500,7 +500,7 @@ void CExportSkeleton::SSplit::CalculateTB()
     	Msg		("#!Surface [T:'%s', S:'%s'] has UV tiled more than 32 times.",*m_Texture,*m_Shader);
     
     // 2. Recalc UV mapping
-    for (u32 v_idx=0; v_idx!=v_cnt; v_idx++){
+    for (v_idx=0; v_idx!=v_cnt; v_idx++){
         SSkelVert	&iV = m_Verts[v_idx];
         iV.uv.sub	(Tdelta);
     }
@@ -617,7 +617,7 @@ void ComputeOBB_RAPID	(Fobb &B, FvectorVec& V, u32 t_cnt)
 {
 	VERIFY	(t_cnt==(V.size()/3));
     if ((t_cnt<1)||(V.size()<3)) { B.invalidate(); return; }
-    RAPIDMinBox			(B,&*(V.begin()),V.size());
+    RAPIDMinBox			(B,V.begin(),V.size());
 
     // Normalize rotation matrix (???? ???????? ContOrientedBox - ?????? ????? ???????)
     B.m_rotate.i.crossproduct(B.m_rotate.j,B.m_rotate.k);
@@ -632,7 +632,7 @@ void ComputeOBB_WML		(Fobb &B, FvectorVec& V)
     float 	HV				= flt_max;
     {
         Wml::Box3<float> 	BOX;
-        Wml::MinBox3<float> mb(V.size(), (const Wml::Vector3<float>*) &*(V.begin()), BOX);
+        Wml::MinBox3<float> mb(V.size(), (const Wml::Vector3<float>*) V.begin(), BOX);
         float hv			= BOX.Extents()[0]*BOX.Extents()[1]*BOX.Extents()[2];
         if (hv<HV){
         	HV 				= hv;
@@ -721,7 +721,7 @@ bool CExportSkeleton::PrepareGeometry(u8 influence)
      	return false;
     }
 
-    if (m_Source->BoneCount()>100){
+    if (m_Source->BoneCount()>64){
     	ELog.Msg(mtError,"Object cannot handle more than 64 bones.");
      	return false;
     }
@@ -937,7 +937,7 @@ bool CExportSkeleton::ExportGeometry(IWriter& F, u8 infl)
     // OGF_CHILDREN
     F.open_chunk	(OGF_CHILDREN);
     int chield=0;
-	for (SplitIt split_it=m_Splits.begin(); split_it!=m_Splits.end(); split_it++){
+    for (split_it=m_Splits.begin(); split_it!=m_Splits.end(); split_it++){
 	    F.open_chunk(chield++);
         split_it->Save(F);
 	    F.close_chunk();
@@ -950,7 +950,7 @@ bool CExportSkeleton::ExportGeometry(IWriter& F, u8 infl)
     F.open_chunk(OGF_S_BONE_NAMES);
     F.w_u32(m_Source->BoneCount());
     int bone_idx=0;
-	for (BoneIt bone_it=m_Source->FirstBone(); bone_it!=m_Source->LastBone(); bone_it++,bone_idx++){
+    for (BoneIt bone_it=m_Source->FirstBone(); bone_it!=m_Source->LastBone(); bone_it++,bone_idx++){
         F.w_stringZ	((*bone_it)->Name());
 		F.w_stringZ	((*bone_it)->Parent()?(*bone_it)->ParentName().c_str():"");
         Fobb	obb;
@@ -962,7 +962,7 @@ bool CExportSkeleton::ExportGeometry(IWriter& F, u8 infl)
     bool bRes = true;
                     
     F.open_chunk(OGF_S_IKDATA);
-    for (BoneIt bone_it=m_Source->FirstBone(); bone_it!=m_Source->LastBone(); bone_it++,bone_idx++)
+    for (bone_it=m_Source->FirstBone(); bone_it!=m_Source->LastBone(); bone_it++,bone_idx++)
         if (!(*bone_it)->ExportOGF(F)) bRes=false; 
     F.close_chunk();
 
@@ -1066,7 +1066,7 @@ bool CExportSkeleton::ExportMotionKeys(IWriter& F)
         BoneVec& b_lst 		= m_Source->Bones();
 
         bm_item* items	 	= xr_alloc<bm_item>(b_lst.size());
-		for (u32 itm_idx=0; itm_idx<b_lst.size(); itm_idx++)
+        for (u32 itm_idx=0; itm_idx<b_lst.size(); itm_idx++) 
         	items[itm_idx].create(dwLen);
         
         for (int frm=motion->FrameStart(); frm<motion->FrameEnd(); frm++){
@@ -1079,7 +1079,7 @@ bool CExportSkeleton::ExportMotionKeys(IWriter& F)
             }
             m_Source->CalculateAnimation(motion);
 	        bone_id 		= 0;
-			for(BoneIt b_it=b_lst.begin(); b_it!=b_lst.end(); b_it++, bone_id++){
+            for(b_it=b_lst.begin(); b_it!=b_lst.end(); b_it++, bone_id++){
                 CBone* B 	= *b_it;
                 Fmatrix mat	= B->_MTransform();
 //.	            VERIFY		(!motion->GetMotionFlags(bone_id).is(st_BoneMotion::flWorldOrient));
@@ -1097,7 +1097,7 @@ bool CExportSkeleton::ExportMotionKeys(IWriter& F)
             }
         }
         // free temp storage
-		for (u32 itm_idx=0; itm_idx<b_lst.size(); itm_idx++){
+        for (itm_idx=0; itm_idx<b_lst.size(); itm_idx++){
         	bm_item& BM 	= items[itm_idx];
             // check T
             R_ASSERT		(dwLen);
@@ -1124,7 +1124,7 @@ bool CExportSkeleton::ExportMotionKeys(IWriter& F)
             St.sub			(Bt,At);
             St.mul			(0.5f);
             CKeyQR& R		= BM._keysQR[0];
-            for (u32 t_idx=0; t_idx<dwLen; t_idx++){
+            for (t_idx=0; t_idx<dwLen; t_idx++){
             	Fvector& t	= BM._keysT[t_idx];
             	CKeyQR& r	= BM._keysQR[t_idx];
                 if (!Mt.similar(t,EPS_L))							t_present = TRUE;
@@ -1194,7 +1194,7 @@ bool CExportSkeleton::ExportMotionDefs(IWriter& F)
             if (m_Source->VerifyBoneParts()){
                 F.w_u16((u16)bp_lst.size());
                 for (BPIt bp_it=bp_lst.begin(); bp_it!=bp_lst.end(); bp_it++){
-                    F.w_stringZ	(PAnsiChar(LowerCase(bp_it->alias.c_str()).c_str()));
+                    F.w_stringZ	(LowerCase(bp_it->alias.c_str()).c_str());
                     F.w_u16		((u16)bp_it->bones.size());
                     for (int i=0; i<int(bp_it->bones.size()); i++){
                         F.w_stringZ	(bp_it->bones[i].c_str());

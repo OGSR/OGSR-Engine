@@ -56,7 +56,7 @@ void CGlow::OnDeviceDestroy()
 	m_GShader.destroy();
 }
 
-void __stdcall CGlow::ShaderChange(PropValue* value)
+void CGlow::ShaderChange(PropValue* value)
 {
 	OnDeviceDestroy();
 }
@@ -81,7 +81,7 @@ void CGlow::Render(int priority, bool strictB2F)
             if (!Scene->RayPickObject(dist,PPosition,D,OBJCLASS_SCENEOBJECT,0,0)){
                 if (m_GShader){	Device.SetShader(m_GShader);
                 }else{			Device.SetShader(Device.m_WireShader);}
-				m_RenderSprite.Render(*&PPosition,m_fRadius,!!m_Flags.is(gfFixedSize));
+                m_RenderSprite.Render(PPosition,m_fRadius,m_Flags.is(gfFixedSize));
                 DU.DrawRomboid(PPosition, VIS_RADIUS, 0x00FF8507);
             }else{
                 // рендерим bounding sphere
@@ -91,7 +91,7 @@ void CGlow::Render(int priority, bool strictB2F)
         }else{
             if (m_GShader){	Device.SetShader(m_GShader);
             }else{			Device.SetShader(Device.m_WireShader);}
-			m_RenderSprite.Render(*&PPosition,m_fRadius,!!m_Flags.is(gfFixedSize));
+            m_RenderSprite.Render(PPosition,m_fRadius,m_Flags.is(gfFixedSize));
         }
         if( Selected() ){
             Fbox bb; GetBox(bb);
@@ -200,7 +200,7 @@ void CGlow::FillProp(LPCSTR pref, PropItemVec& items)
 bool CGlow::GetSummaryInfo(SSceneSummary* inf)
 {
 	inherited::GetSummaryInfo	(inf);
-	if (m_TexName.size()) 	inf->AppendTexture(PAnsiChar(ChangeFileExt(*m_TexName,"").LowerCase().c_str()),SSceneSummary::sttGlow,0,0,"$GLOW$");
+	if (m_TexName.size()) 	inf->AppendTexture(ChangeFileExt(*m_TexName,"").LowerCase().c_str(),SSceneSummary::sttGlow,0,0,"$GLOW$");
 	inf->glow_cnt++;
 	return true;
 }

@@ -89,7 +89,7 @@ bool ESceneObjectTools::Validate(bool full_test)
 }
 //----------------------------------------------------
 
-void __stdcall ESceneObjectTools::OnChangeAppendRandomFlags(PropValue* prop)
+void ESceneObjectTools::OnChangeAppendRandomFlags(PropValue* prop)
 {
     m_Flags.set					(flAppendRandomUpdateProps,TRUE);
 	_SequenceToList				(m_AppendRandomObjects,*m_AppendRandomObjectsStr);

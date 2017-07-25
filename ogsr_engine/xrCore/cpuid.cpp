@@ -2,7 +2,9 @@
 #pragma hdrstop
 
 #include "cpuid.h"
+#ifndef __BORLANDC__
 #include <intrin.h>
+#endif
 
 //#ifdef _M_AMD64
 

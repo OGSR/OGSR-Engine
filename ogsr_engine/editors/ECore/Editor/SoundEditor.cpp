@@ -35,14 +35,14 @@ void __fastcall TfrmSoundLib::FormCreate(TObject *Sender)
 {
 	m_ItemProps = TProperties::CreateForm	("SoundED",paProperties,alClient);
     m_ItemProps->SetModifiedEvent			(fastdelegate::bind<TOnModifiedEvent>(this,&TfrmSoundLib::OnModified));
-	m_ItemList	= TItemList::CreateForm		("Items",paItems,alClient,TItemList::ilMultiSelect/*|TItemList::ilEditMenu|TItemList::ilDragAllowed*/);
-	m_ItemList->SetOnItemsFocusedEvent		(fastdelegate::bind<TOnILItemsFocused>(this,&TfrmSoundLib::OnItemsFocused));
+    m_ItemList	= TItemList::CreateForm		("Items",paItems,alClient,TItemList::ilMultiSelect/*|TItemList::ilEditMenu|TItemList::ilDragAllowed*/);
+    m_ItemList->SetOnItemsFocusedEvent		(fastdelegate::bind<TOnILItemsFocused>(this,&TfrmSoundLib::OnItemsFocused));
     TOnItemRemove on_remove; on_remove.bind	(this,&TfrmSoundLib::RemoveSound);
     TOnItemRename on_rename; on_rename.bind	(this,&TfrmSoundLib::RenameSound);
     m_ItemList->SetOnItemRemoveEvent		(on_remove);
 	m_ItemList->SetOnItemRenameEvent		(on_rename);
-	m_ItemList->SetImages					(ImageList);
-	bAutoPlay 								= FALSE;
+    m_ItemList->SetImages					(ImageList);
+    bAutoPlay 								= FALSE;
 }
 //---------------------------------------------------------------------------
 
@@ -76,7 +76,7 @@ void __fastcall TfrmSoundLib::EditLib(AnsiString& title)
 }
 //---------------------------------------------------------------------------
 
-void __stdcall TfrmSoundLib::OnModified()
+void TfrmSoundLib::OnModified()
 {
 	m_ItemProps->RefreshForm();
 }
@@ -112,13 +112,13 @@ void TfrmSoundLib::AppendModif(LPCSTR nm)
 {
     FS_File 		dest;
     string_path		fname;
-    FS.update_path	(fname,_sounds_,PAnsiChar(ChangeFileExt(nm,".wav").c_str()));
+    FS.update_path	(fname,_sounds_,ChangeFileExt(nm,".wav").c_str());
 	BOOL bFind		= FS.file_find(fname,dest); R_ASSERT(bFind);
     modif_map.insert(dest);
 }
 //---------------------------------------------------------------------------
 
-void __stdcall TfrmSoundLib::RemoveSound(LPCSTR fname, EItemType type, bool& res)
+void TfrmSoundLib::RemoveSound(LPCSTR fname, EItemType type, bool& res)
 {
 	// delete it from modif map
     FS_FileSetIt it=modif_map.find(FS_File(fname));
@@ -128,7 +128,7 @@ void __stdcall TfrmSoundLib::RemoveSound(LPCSTR fname, EItemType type, bool& res
 }
 //---------------------------------------------------------------------------
 
-void __stdcall TfrmSoundLib::RenameSound(LPCSTR p0, LPCSTR p1, EItemType type)
+void TfrmSoundLib::RenameSound(LPCSTR p0, LPCSTR p1, EItemType type)
 {
     // rename sound source
 	SndLib->RenameSound(p0,p1,type);
@@ -255,7 +255,7 @@ void __fastcall TfrmSoundLib::fsStorageSavePlacement(TObject *Sender)
 }
 //---------------------------------------------------------------------------
 
-void __stdcall TfrmSoundLib::OnControlClick(ButtonValue* V, bool& bModif, bool& bSafe)
+void __fastcall TfrmSoundLib::OnControlClick(ButtonValue* V, bool& bModif, bool& bSafe)
 {
     switch (V->btn_num){
     case 0: m_Snd.play(0,sm_2D); 	break;
@@ -269,7 +269,7 @@ void __stdcall TfrmSoundLib::OnControlClick(ButtonValue* V, bool& bModif, bool& 
 }
 //------------------------------------------------------------------------------
 
-void __stdcall TfrmSoundLib::OnControl2Click(ButtonValue* V, bool& bModif, bool& bSafe)
+void __fastcall TfrmSoundLib::OnControl2Click(ButtonValue* V, bool& bModif, bool& bSafe)
 {
     switch (V->btn_num){
     case 0:{
@@ -291,7 +291,7 @@ void TfrmSoundLib::DestroyUsedTHM()
 
 #define X_GRID 10
 #define Y_GRID 5
-void  __stdcall TfrmSoundLib::OnAttenuationDraw(CanvasValue* sender, void* _canvas, const Irect& _rect)
+void  TfrmSoundLib::OnAttenuationDraw(CanvasValue* sender, void* _canvas, const Irect& _rect)
 {
 	TCanvas* canvas 	= (TCanvas*)_canvas;
     const TRect& rect	= *((TRect*)&_rect);
@@ -351,7 +351,7 @@ void __stdcall TfrmSoundLib::OnAttClick(ButtonValue* V, bool& bModif, bool& bSaf
 	}
 }
 
-void __stdcall TfrmSoundLib::OnItemsFocused(ListItemsVec& items)
+void __fastcall TfrmSoundLib::OnItemsFocused(ListItemsVec& items)
 {
 	PropItemVec props;
 
@@ -406,7 +406,7 @@ void __stdcall TfrmSoundLib::OnItemsFocused(ListItemsVec& items)
 void TfrmSoundLib::PlaySound(LPCSTR name, u32& size, u32& time)
 {
 	string_path fname;
-    FS.update_path			(fname,_game_sounds_,PAnsiChar(ChangeFileExt(name,".ogg").c_str()));
+    FS.update_path			(fname,_game_sounds_,ChangeFileExt(name,".ogg").c_str());
     FS_File F;
     if (FS.file_find(fname,F))
     {

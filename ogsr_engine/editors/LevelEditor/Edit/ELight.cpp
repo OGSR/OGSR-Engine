@@ -198,7 +198,7 @@ LPCSTR CLight::GetLControlName()
 }
 //----------------------------------------------------
 
-void __stdcall CLight::OnNeedUpdate(PropValue* value)
+void CLight::OnNeedUpdate(PropValue* value)
 {
 	Update();
 }

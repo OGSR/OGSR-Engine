@@ -125,12 +125,12 @@ void TItemList::ClearParams(TElTreeItem* node)
     }
 }
 //---------------------------------------------------------------------------
-void TItemList::ClearList()
+void __fastcall TItemList::ClearList()
 {
     ClearParams			();
 }
 //---------------------------------------------------------------------------
-void TItemList::DeselectAll()
+void __fastcall TItemList::DeselectAll()
 {
     if (tvItems->MultiSelect) 	tvItems->DeselectAll();
     else 						tvItems->Selected   = 0;
@@ -177,12 +177,12 @@ void TItemList::ShowList()
 	Show();
 }
 
-void TItemList::ShowListModal()
+void __fastcall TItemList::ShowListModal()
 {
 	ShowModal();
 }
 
-void TItemList::HideList()
+void __fastcall TItemList::HideList()
 {
 	Hide();
 }
@@ -196,7 +196,7 @@ void __fastcall TItemList::FormClose(TObject *Sender,
 }
 //---------------------------------------------------------------------------
 
-void TItemList::AssignItems(ListItemsVec& items, bool full_expand, bool full_sort)
+void __fastcall TItemList::AssignItems(ListItemsVec& items, bool full_expand, bool full_sort)
 {
 	// begin fill mode
 	LockUpdating			();
@@ -279,7 +279,7 @@ void TItemList::AssignItems(ListItemsVec& items, bool full_expand, bool full_sor
 
     // restore selection
     tvItems->DeselectAll	();
-    for (RStringVecIt s_it=last_selected_items.begin(); s_it!=last_selected_items.end(); s_it++)
+    for (s_it=last_selected_items.begin(); s_it!=last_selected_items.end(); s_it++)
 	    FHelper.RestoreSelection(tvItems,**s_it,true);
 
     // check size
@@ -336,7 +336,7 @@ void __fastcall TItemList::tvItemsMouseUp(TObject *Sender,
 }
 //---------------------------------------------------------------------------
 
-int TItemList::GetSelected(RStringVec& items)
+int __fastcall TItemList::GetSelected(RStringVec& items)
 {
     for (TElTreeItem* item = tvItems->GetNextSelected(0); item; item = tvItems->GetNextSelected(item)){
         if (item->Hidden)	continue;
@@ -347,7 +347,7 @@ int TItemList::GetSelected(RStringVec& items)
     return items.size();
 }
 
-int TItemList::GetSelected(LPCSTR pref, ListItemsVec& items, bool bOnlyObject)
+int __fastcall TItemList::GetSelected(LPCSTR pref, ListItemsVec& items, bool bOnlyObject)
 {
     for (TElTreeItem* item = tvItems->GetNextSelected(0); item; item = tvItems->GetNextSelected(item)){
         ListItem* prop 		= (ListItem*)item->Tag;
@@ -429,7 +429,7 @@ void __fastcall TItemList::miDrawThumbnailsClick(TObject *Sender)
 }
 //---------------------------------------------------------------------------
 
-void TItemList::RefreshForm()
+void __fastcall TItemList::RefreshForm()
 {
     LockUpdating					();
     for (TElTreeItem* item=tvItems->Items->GetFirstNode(); item; item=item->GetNext()){
@@ -443,7 +443,7 @@ void TItemList::RefreshForm()
             }
         }
     }
-    for (TElTreeItem* item=tvItems->Items->GetFirstNode(); item; item=item->GetNext()){
+    for (item=tvItems->Items->GetFirstNode(); item; item=item->GetNext()){
         ListItem* prop				= (ListItem*)item->Tag;
         if (!prop) item->Hidden		= !item->HasVisibleChildren;
     }
@@ -515,7 +515,7 @@ void __fastcall TItemList::InplaceEditAfterOperation(TObject *Sender,
 }
 //---------------------------------------------------------------------------
 
-void __stdcall TItemList::RenameItem(LPCSTR fn0, LPCSTR fn1, EItemType type)
+void TItemList::RenameItem(LPCSTR fn0, LPCSTR fn1, EItemType type)
 {
 	if (!OnItemRenameEvent.empty())	OnItemRenameEvent(fn0,fn1,type);
     if (type==TYPE_OBJECT){

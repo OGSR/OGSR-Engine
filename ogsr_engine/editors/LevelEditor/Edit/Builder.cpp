@@ -17,7 +17,7 @@
 SceneBuilder Builder;
 //----------------------------------------------------
 
-ICF static void __stdcall simple_hemi_callback(float x, float y, float z, float E, LPVOID P)
+ICF static void simple_hemi_callback(float x, float y, float z, float E, LPVOID P)
 {
     SceneBuilder::BLVec* dst 	= (SceneBuilder::BLVec*)P;
     SceneBuilder::SBuildLight 	T;

@@ -30,16 +30,16 @@ bool __fastcall TUI_ControlPSAdd::AfterAppendCallback(TShiftState Shift, CCustom
     return true;
 }
 
-bool /*__fastcall*/ TUI_ControlPSAdd::Start(TShiftState Shift)
+bool __fastcall TUI_ControlPSAdd::Start(TShiftState Shift)
 {
     DefaultAddObject(Shift,0,AfterAppendCallback);
     return false;
 }
 
-void /*__fastcall*/ TUI_ControlPSAdd::Move(TShiftState _Shift)
+void __fastcall TUI_ControlPSAdd::Move(TShiftState _Shift)
 {
 }
-bool /*__fastcall*/ TUI_ControlPSAdd::End(TShiftState _Shift)
+bool __fastcall TUI_ControlPSAdd::End(TShiftState _Shift)
 {
     return true;
 }

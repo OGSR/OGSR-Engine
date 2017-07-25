@@ -423,7 +423,7 @@ bool CGroupObject::ExportGame(SExportStreams* data)
 }
 //----------------------------------------------------
 
-void __stdcall CGroupObject::ReferenceChange(PropValue* sender)
+void CGroupObject::ReferenceChange(PropValue* sender)
 {
 	UpdateReference		();
 }

@@ -295,7 +295,7 @@ int DXTCompressImage	(LPCSTR out_name, u8* raw_data, u32 w, u32 h, u32 pitch,
 		rgba_t* pixels		= pImage.pixels();
 		u8* pixel			= raw_data;
 		for (u32 k=0; k<w*h; k++,pixel+=4)
-			pixels[k].set	(pixel[2],pixel[1],pixel[0],pixel[3]);
+			pixels[k].set	(pixel[0],pixel[1],pixel[2],pixel[3]);
 		in_opts.setMipmapData(pixels, w, h);
 		result = Compressor().process(in_opts, comp_opts, out_opts);
 	}

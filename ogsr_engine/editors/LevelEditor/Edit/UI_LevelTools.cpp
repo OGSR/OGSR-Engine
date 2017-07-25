@@ -133,7 +133,7 @@ bool __fastcall CLevelTools::KeyPress  (WORD Key, TShiftState Shift)
 }
 //---------------------------------------------------------------------------
 
-void __fastcall CLevelTools::RealSetAction   (ETAction act)
+void CLevelTools::RealSetAction   (ETAction act)
 {
 	inherited::SetAction(act);
     if (pCurTools) pCurTools->SetAction(act);
@@ -141,7 +141,7 @@ void __fastcall CLevelTools::RealSetAction   (ETAction act)
     m_Flags.set	(flChangeAction,FALSE);
 }
 
-void /*__fastcall*/ CLevelTools::SetAction(ETAction act)
+void __fastcall CLevelTools::SetAction(ETAction act)
 {
 	// если мышь захвачена - изменим action после того как она освободится
 	if (UI->IsMouseCaptured()||UI->IsMouseInUse()||!false){
@@ -247,13 +247,13 @@ void CLevelTools::RealUpdateProperties()
 }
 //---------------------------------------------------------------------------
 
-void __stdcall CLevelTools::OnPropsClose()
+void CLevelTools::OnPropsClose()
 {
 	if (m_Props->IsModified()) Scene->UndoSave();
 }
 //---------------------------------------------------------------------------
 
-void __stdcall CLevelTools::OnPropsModified()
+void __fastcall CLevelTools::OnPropsModified()
 {
 	Scene->Modified();
 //	Scene->UndoSave();
@@ -316,7 +316,7 @@ LPCSTR CLevelTools::GetInfo()
 }
 //---------------------------------------------------------------------------
 
-void /*__fastcall*/ CLevelTools::OnFrame()
+void __fastcall CLevelTools::OnFrame()
 {
 	Scene->OnFrame		(Device.fTimeDelta);
     EEditorState est 	= UI->GetEState();
@@ -334,7 +334,7 @@ void /*__fastcall*/ CLevelTools::OnFrame()
 }
 //---------------------------------------------------------------------------
 #include "d3dutils.h"
-void /*__fastcall*/ CLevelTools::RenderEnvironment()
+void __fastcall CLevelTools::RenderEnvironment()
 {
     // draw sky
     EEditorState est 		= UI->GetEState();
@@ -348,7 +348,7 @@ void /*__fastcall*/ CLevelTools::RenderEnvironment()
     }
 }
 
-void /*__fastcall*/ CLevelTools::Render()
+void __fastcall CLevelTools::Render()
 {
 	// Render update
     ::Render->Calculate		();

@@ -27,7 +27,7 @@
 	// multithreading disabled
 	#error Please enable multi-threaded library...
 #endif
-
+                
 #	include "xrCore_platform.h"
 
 /*
@@ -49,7 +49,7 @@
 	#define _STLP_USE_DECLSPEC		1	// no exceptions, import allocator and common stuff
 	#endif
 #endif
-
+                  
 // #include <exception>
 // using std::exception;
 
@@ -72,7 +72,7 @@
     	#define DEBUG
     #endif
 #endif
-
+                
 #ifdef XRCORE_STATIC
 #	define NO_FS_SCAN
 #endif
@@ -104,7 +104,7 @@
 		#pragma intrinsic	(abs, fabs, fmod, sin, cos, tan, asin, acos, atan, sqrt, exp, log, log10, strcpy, strcat)
 	#endif
 #endif
-
+                  
 #include <time.h>
 // work-around dumb borland compiler
 #ifdef __BORLANDC__
@@ -187,12 +187,11 @@
 
 #include "xrDebug.h"
 #include "vector.h"
-
+                        
 #include "clsid.h"
 #include "xrSyncronize.h"
 #include "xrMemory.h"
-#include "xrDebug.h"
-
+                        
 #include "_stl_extensions.h"
 #include "xrsharedmem.h"
 #include "xrstring.h"
@@ -233,16 +232,18 @@ struct XRCORE_API xr_shortcut{
 DEFINE_VECTOR	(shared_str,RStringVec,RStringVecIt);
 DEFINE_SET		(shared_str,RStringSet,RStringSetIt);
 DEFINE_VECTOR	(xr_rtoken,RTokenVec,RTokenVecIt);
-
+                        
 #include "FS.h"
 #include "log.h"
 #include "xr_trims.h"
 #include "xr_ini.h"
+                             
 #ifdef NO_FS_SCAN
 #	include "ELocatorAPI.h"
 #else
 #	include "LocatorAPI.h"
 #endif
+                  
 #include "FileSystem.h"
 #include "FTimer.h"
 #include "fastdelegate.h"
@@ -276,5 +277,5 @@ public:
 	void		_destroy	();
 };
 extern XRCORE_API xrCore Core;
-
+                              
 #endif

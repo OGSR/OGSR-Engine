@@ -393,6 +393,8 @@ SERVER_ENTITY_DECLARE_BEGIN2(CSE_ALifeObjectHangingLamp,CSE_ALifeDynamicObjectVi
 		flR2						= (1<<3),
 		flTypeSpot					= (1<<4),
         flPointAmbient				= (1<<5),
+		flVolumetricLight			= (1<<6),
+		flUseFlare					= (1<<7),
     };
 
     Flags16							flags;
@@ -420,6 +422,11 @@ SERVER_ENTITY_DECLARE_BEGIN2(CSE_ALifeObjectHangingLamp,CSE_ALifeDynamicObjectVi
 	float							glow_radius;
 // game
     float							m_health;
+
+//lsf
+	float							m_speed;
+	float							m_amount;
+	float							m_smap_jitter;
 	
                                     CSE_ALifeObjectHangingLamp	(LPCSTR caSection);
     virtual							~CSE_ALifeObjectHangingLamp	();

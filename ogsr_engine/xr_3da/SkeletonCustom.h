@@ -170,25 +170,6 @@ DEFINE_VECTOR(intrusive_ptr<CSkeletonWallmark>,SkeletonWMVec,SkeletonWMVecIt);
 #	define _DBG_SINGLE_USE_MARKER
 #endif
 
-struct ENGINE_API VisMask
-{
-	Flags64						_visimask;
-	Flags64						_visimask_ex;
-	VisMask() { _visimask.zero();  _visimask_ex.zero(); }
-	VisMask(const VisMask& _second) { _visimask.flags = _second._visimask.flags;  _visimask_ex.flags = _second._visimask_ex.flags; }
-	VisMask(u64 _low, u64 _high) { _visimask.assign(_low); _visimask_ex.assign(_high);	};
-
-	bool						operator!=	(const VisMask& _second) const;
-	VisMask&					operator=	(const VisMask& _second);
-	void						set(u16 _digit, bool _set);
-	void						set(u64 _low, u64 _high);
-	bool						is(u16 _digit);
-	void						zero();
-	u16							count();
-	void						set_all();
-	void						and(const VisMask &_second);
-	void						invert();
-};
 
 class ENGINE_API	CKinematics: public FHierrarhyVisual
 {

@@ -77,7 +77,7 @@ void __fastcall TfraGroup::ebAlignToObjectClick(TObject *Sender)
 void __fastcall TfraGroup::ebSelectClick(TObject *Sender)
 {
 	LPCSTR 		nm;
-    xr_string N	= PAnsiChar(lbCurrent->Caption.c_str());
+    xr_string N	= lbCurrent->Caption.c_str();
     if (TfrmChoseItem::SelectItem(smGroup,nm,1,N.c_str()))
         ParentTools->SetCurrentObject(nm);	
 }
@@ -163,7 +163,7 @@ void __fastcall TfraGroup::MultiSelByRefObject ( bool clear_prev )
 void TfraGroup::SelByRefObject( bool flag )
 {
     ObjectList objlist;
-	LPCSTR N=PAnsiChar(lbCurrent->Caption.c_str());
+	LPCSTR N=lbCurrent->Caption.c_str();
 	if (N){
         ObjectIt _F = Scene->FirstObj(OBJCLASS_GROUP);
         ObjectIt _E = Scene->LastObj(OBJCLASS_GROUP);

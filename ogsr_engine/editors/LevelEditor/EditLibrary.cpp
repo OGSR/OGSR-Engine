@@ -184,7 +184,7 @@ bool TfrmEditLibrary::FinalClose()
     return bExitResult;
 }
 //---------------------------------------------------------------------------
-void __stdcall TfrmEditLibrary::OnModified()
+void TfrmEditLibrary::OnModified()
 {
 	if (!form) return;
     form->ebSave->Enabled = true;
@@ -198,7 +198,7 @@ void __stdcall TfrmEditLibrary::OnModified()
 }
 //---------------------------------------------------------------------------
 
-void __stdcall TfrmEditLibrary::OnItemFocused(TElTreeItem* item)
+void __fastcall TfrmEditLibrary::OnItemFocused(TElTreeItem* item)
 {
 	xr_delete(m_Thm);
     bool mt=false;
@@ -208,7 +208,7 @@ void __stdcall TfrmEditLibrary::OnItemFocused(TElTreeItem* item)
         AnsiString nm	= prop->Key();
         string_path 	obj_fn,thm_fn;
 
-        FS.update_path			(obj_fn,_objects_,PAnsiChar(ChangeFileExt(nm,".object").c_str()));
+        FS.update_path			(obj_fn,_objects_,ChangeFileExt(nm,".object").c_str());
         bReadOnly				= !FS.can_modify_file(obj_fn);
         if (bReadOnly)
         	ELog.Msg			(mtError,"You don't have permisions to modify object: '%s'",nm.c_str());
@@ -216,7 +216,7 @@ void __stdcall TfrmEditLibrary::OnItemFocused(TElTreeItem* item)
         ebRemoveObject->Enabled = !bReadOnly;
 //		ebExportLWO->Enabled 	= !bReadOnly;
 
-        FS.update_path			(thm_fn,_objects_,PAnsiChar(ChangeFileExt(nm,".thm").c_str()));
+        FS.update_path			(thm_fn,_objects_,ChangeFileExt(nm,".thm").c_str());
         if (FS.exist(thm_fn))
         {
         	// если версии совпадают
@@ -544,7 +544,7 @@ void __fastcall TfrmEditLibrary::ebImportClick(TObject *Sender)
 //		AnsiString path; // нужен при multi-open для сохранения последнего пути
 		xr_string m_LastSelection;
         for (AStringIt it=lst.begin(); it!=lst.end(); it++){
-        	nm = PAnsiChar(ChangeFileExt(ExtractFileName(*it),"").c_str());
+        	nm = ChangeFileExt(ExtractFileName(*it),"").c_str();
             CEditableObject* O = xr_new<CEditableObject>(nm.c_str());
             if (O->Load(it->c_str())){
                 save_nm = xr_string(FS.get_path(_objects_)->m_Path)+folder.c_str()+EFS.ChangeFileExt(nm,".object");

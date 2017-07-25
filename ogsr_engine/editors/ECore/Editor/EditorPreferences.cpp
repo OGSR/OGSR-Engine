@@ -94,13 +94,13 @@ void CheckValidate(ShortcutValue*, const xr_shortcut& new_val, bool& result)
     }
 }
 
-void __stdcall CCustomPreferences::OnKeyboardCommonFileClick(ButtonValue* B, bool& bModif, bool&)
+void CCustomPreferences::OnKeyboardCommonFileClick(ButtonValue* B, bool& bModif, bool&)
 {
     bModif = false;
     xr_string fn;
 	switch(B->btn_num){
     case 0:
-        if(EFS.GetOpenName(0, "$import$", fn, false, NULL, 6)){
+        if(EFS.GetOpenName("$import$", fn, false, NULL, 6)){
             CInifile* 	I 	= xr_new<CInifile>(fn.c_str(), TRUE, TRUE, TRUE);
 		    LoadShortcuts	(I);
             xr_delete		(I);

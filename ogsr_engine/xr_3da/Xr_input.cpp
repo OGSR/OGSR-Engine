@@ -163,8 +163,8 @@ void CInput::KeyUpdate	( )
 		hr = pKeyboard->GetDeviceData( sizeof(DIDEVICEOBJECTDATA), &od[0], &dwElements, 0 );
 		if ( hr != S_OK ) return;
 	}
-
-	for (u32 i = 0; i < dwElements; i++)
+        u32 i = 0;
+	for (i = 0; i < dwElements; i++)
 	{
 		key					= od[i].dwOfs;
 		KBState[key]		= od[i].dwData & 0x80;
@@ -173,7 +173,7 @@ void CInput::KeyUpdate	( )
 		if (!KBState[key])	
 			cbStack.back()->IR_OnKeyboardRelease	( key );
 	}
-	for (u32 i = 0; i < COUNT_KB_BUTTONS; i++ )
+	for (i = 0; i < COUNT_KB_BUTTONS; i++ )
 		if (KBState[i]) 
 			cbStack.back()->IR_OnKeyboardHold( i );
 

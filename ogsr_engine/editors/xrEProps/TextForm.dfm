@@ -1,9 +1,9 @@
 object frmText: TfrmText
   Left = -643
   Top = 485
+  Width = 443
+  Height = 283
   Caption = 'Text'
-  ClientHeight = 245
-  ClientWidth = 427
   Color = 10528425
   Constraints.MinHeight = 205
   Constraints.MinWidth = 302
@@ -28,13 +28,12 @@ object frmText: TfrmText
   object paBottomBar: TPanel
     Left = 0
     Top = 0
-    Width = 427
+    Width = 435
     Height = 20
     Align = alTop
     BevelOuter = bvNone
     Color = 10528425
     TabOrder = 0
-    ExplicitWidth = 435
     object ebOk: TExtBtn
       Left = 2
       Top = 1
@@ -140,15 +139,17 @@ object frmText: TfrmText
   end
   object sbStatusPanel: TElStatusBar
     Left = 0
-    Top = 226
-    Width = 427
+    Top = 237
+    Width = 435
     Height = 19
     Panels = <
       item
+        Alignment = taLeftJustify
         Width = 55
         IsHTML = False
       end
       item
+        Alignment = taLeftJustify
         IsHTML = False
       end>
     SimplePanel = False
@@ -163,12 +164,13 @@ object frmText: TfrmText
     ParentShowHint = False
     ShowHint = True
     DockOrientation = doNoOrient
+    DoubleBuffered = False
   end
   object mmText: TMemo
     Left = 0
     Top = 20
-    Width = 427
-    Height = 206
+    Width = 435
+    Height = 217
     Align = alClient
     Color = 10526880
     Font.Charset = RUSSIAN_CHARSET
@@ -181,8 +183,6 @@ object frmText: TfrmText
     TabOrder = 2
     OnChange = mmTextChange
     OnKeyUp = mmTextKeyUp
-    ExplicitWidth = 435
-    ExplicitHeight = 217
   end
   object fsStorage: TFormStorage
     IniSection = 'Text Form'

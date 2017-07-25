@@ -60,7 +60,7 @@ public:
     IC ObjClassID		GetTarget   		(){return target;}
     IC int          	GetSubTarget   		(){return sub_target;}
     virtual void		SetAction			(ETAction act);
-    void 	 __fastcall		 	SetTarget			(ObjClassID tgt, int sub_tgt);
+    void 			 	SetTarget			(ObjClassID tgt, int sub_tgt);
 
     virtual void		SetFog				(u32 fog_color, float fogness){dwFogColor=fog_color;fFogness=fogness;}
     virtual void		GetCurrentFog		(u32& fog_color, float& s_fog, float& e_fog);
@@ -120,11 +120,11 @@ public:
     void				ShowObjectList		();
 
     // commands
-	CCommandVar	   __stdcall		CommandChangeTarget		(CCommandVar p1, CCommandVar p2);
-	CCommandVar	   __stdcall		CommandShowObjectList	(CCommandVar p1, CCommandVar p2);
-	CCommandVar	   __stdcall		CommandEnableTarget		(CCommandVar p1, CCommandVar p2);
-	CCommandVar	   __stdcall		CommandReadonlyTarget	(CCommandVar p1, CCommandVar p2);
-    CCommandVar	   __stdcall		CommandMultiRenameObjects(CCommandVar p1,CCommandVar p2);
+    CCommandVar			CommandChangeTarget		(CCommandVar p1, CCommandVar p2);
+	CCommandVar			CommandShowObjectList	(CCommandVar p1, CCommandVar p2);
+    CCommandVar			CommandEnableTarget		(CCommandVar p1, CCommandVar p2);
+    CCommandVar			CommandReadonlyTarget	(CCommandVar p1, CCommandVar p2);
+    CCommandVar			CommandMultiRenameObjects(CCommandVar p1,CCommandVar p2);
 };
 extern CLevelTools*&	LTools;
 

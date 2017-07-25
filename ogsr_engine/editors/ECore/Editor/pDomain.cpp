@@ -166,7 +166,7 @@ xr_token					domain_token	[ ]={
 	{ 0,					0		   	}
 };
 
-void __stdcall PDomain::OnTypeChange(PropValue* sender)
+void PDomain::OnTypeChange(PropValue* sender)
 {               
 	ExecCommand				(COMMAND_UPDATE_PROPERTIES);
 }

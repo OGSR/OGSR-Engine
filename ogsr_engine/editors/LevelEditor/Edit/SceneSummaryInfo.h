@@ -32,7 +32,7 @@ private:
         objinf_map			objects;
         float				effective_area;
         float				pixel_area;
-		void 	__stdcall 	OnHighlightClick		(ButtonValue* sender, bool& bDataModified, bool& bSafe);
+		void 				OnHighlightClick		(ButtonValue* sender, bool& bDataModified, bool& bSafe);
     public:
     	STextureInfo(const shared_str& fn, ESummaryTextureType t)
         {
@@ -102,8 +102,8 @@ public:
     int 		pe_static_cnt;
     Fbox		bbox;
 private:
-	void __stdcall 	OnFileClick			(ButtonValue* sender, bool& bModif, bool& bSafe);
-	void __stdcall 	OnHighlightClick	(ButtonValue* sender, bool& bDataModified, bool& bSafe);
+	void 		OnFileClick			(ButtonValue* sender, bool& bModif, bool& bSafe);
+	void 		OnHighlightClick	(ButtonValue* sender, bool& bDataModified, bool& bSafe);
 public:
     void		Prepare				();
 protected:
@@ -115,7 +115,7 @@ protected:
     };
     DEFINE_VECTOR(SPixelDensityPair,PDVec,PDVecIt);
     PDVec		pm_colors;
-	bool __stdcall 	OnWeightAfterEditClick(PropValue* sender, float& edit_val);
+	bool 		OnWeightAfterEditClick(PropValue* sender, float& edit_val);
 public:
     static u32	SelectPMColor		(float pm);
 public:

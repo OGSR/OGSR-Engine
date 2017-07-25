@@ -3,19 +3,22 @@
 <PROJECT>
   <MACROS>
     <VERSION value="BCB.06.00"/>
-    <PROJECT value="x:\binaries\SDK\xrEPropsB.dll"/>
-    <OBJFILES value="x:\intermediate\eprops\stdafx.obj 
-      x:\intermediate\eprops\PropertiesListTypes.obj 
-      x:\intermediate\eprops\ItemList.obj 
-      x:\intermediate\eprops\ItemListHelper.obj 
-      x:\intermediate\eprops\ItemListTypes.obj 
-      x:\intermediate\eprops\PropertiesList.obj 
-      x:\intermediate\eprops\PropertiesListHelper.obj 
-      x:\intermediate\eprops\FolderLib.obj 
-      x:\intermediate\eprops\ColorPicker.obj x:\intermediate\eprops\NumericVector.obj 
-      x:\intermediate\eprops\ShaderFunction.obj 
-      x:\intermediate\eprops\TextForm.obj x:\intermediate\eprops\xrEProps.obj 
-      x:\intermediate\eprops\ChoseForm.obj x:\intermediate\eprops\ItemDialog.obj"/>
+    <PROJECT value="X:\ogsr_engine\_BIN\SDK\Release\Win32\xrEPropsB.dll"/>
+    <OBJFILES value="..\..\_TEMP\SDK\Release\Win32\eprops\stdafx.obj 
+      ..\..\_TEMP\SDK\Release\Win32\eprops\PropertiesListTypes.obj 
+      ..\..\_TEMP\SDK\Release\Win32\eprops\ItemList.obj 
+      ..\..\_TEMP\SDK\Release\Win32\eprops\ItemListHelper.obj 
+      ..\..\_TEMP\SDK\Release\Win32\eprops\ItemListTypes.obj 
+      ..\..\_TEMP\SDK\Release\Win32\eprops\PropertiesList.obj 
+      ..\..\_TEMP\SDK\Release\Win32\eprops\PropertiesListHelper.obj 
+      ..\..\_TEMP\SDK\Release\Win32\eprops\FolderLib.obj 
+      ..\..\_TEMP\SDK\Release\Win32\eprops\ColorPicker.obj 
+      ..\..\_TEMP\SDK\Release\Win32\eprops\NumericVector.obj 
+      ..\..\_TEMP\SDK\Release\Win32\eprops\ShaderFunction.obj 
+      ..\..\_TEMP\SDK\Release\Win32\eprops\TextForm.obj 
+      ..\..\_TEMP\SDK\Release\Win32\eprops\xrEProps.obj 
+      ..\..\_TEMP\SDK\Release\Win32\eprops\ChoseForm.obj 
+      ..\..\_TEMP\SDK\Release\Win32\eprops\ItemDialog.obj"/>
     <RESFILES value="xrEPropsB.res resource.res"/>
     <IDLFILES value=""/>
     <IDLGENFILES value=""/>
@@ -23,9 +26,10 @@
     <RESDEPEN value="$(RESFILES) ItemList.dfm PropertiesList.dfm NumericVector.dfm 
       ShaderFunction.dfm TextForm.dfm ChoseForm.dfm ItemDialog.dfm"/>
     <LIBFILES value=""/>
-    <LIBRARIES value="editor.lib elpackB6.lib"/>
+    <LIBRARIES value=""/>
     <SPARELIBS value="rtl.lib vcl.lib elpackB6.lib editor.lib bcbsmp.lib vclx.lib"/>
-    <PACKAGES value="vcl.bpi rtl.bpi vclx.bpi bcbsmp.bpi"/>
+    <PACKAGES value="vcl.bpi rtl.bpi vclx.bpi bcbsmp.bpi elpkdbB6.bpi elpproB6.bpi elpackB6.bpi 
+      editor.bpi"/>
     <PATHCPP value=".;"/>
     <PATHPAS value=".;"/>
     <PATHRC value=".;"/>
@@ -33,25 +37,27 @@
     <DEBUGLIBPATH value="$(BCB)\lib\debug"/>
     <RELEASELIBPATH value="$(BCB)\lib\release"/>
     <LINKER value="ilink32"/>
-    <USERDEFINES value="_EDITOR;XR_EPROPS_EXPORTS;_DEBUG"/>
+    <USERDEFINES value="_EDITOR;XR_EPROPS_EXPORTS"/>
     <SYSDEFINES value="NO_STRICT;_RTLDLL;USEPACKAGES"/>
     <MAINSOURCE value="xrEPropsB.bpf"/>
     <INCLUDEPATH value="$(BCB)\include;$(BCB)\include\vcl;$(BCB)\Include\Mfc;$(CORE_DIR);$(COMPONENTS)\alexmx;$(COMPONENTS)\elpack\code\source"/>
-    <LIBPATH value="$(COMPONENTS)\ElPack\Code;$(BCB)\lib;$(BCB)\lib\obj;$(BCB)\Projects\Lib;$(BCB)\Lib\Psdk;x:\libraries\SDK;$(COMPONENTS)\alexmx"/>
+    <LIBPATH value="$(COMPONENTS)\ElPack\Code;$(BCB)\lib;$(BCB)\lib\obj;$(BCB)\Projects\Lib;$(BCB)\Lib\Psdk;X:\3rd_party\_LIB\Release\Win32;$(COMPONENTS)\alexmx;X:\ogsr_engine\_LIB\SDK\Release\Win32"/>
     <WARNINGS value="-w-par"/>
     <OTHERFILES value=""/>
   </MACROS>
   <OPTIONS>
     <IDLCFLAGS value="-I$(BCB)\include -I$(BCB)\include\vcl -I$(BCB)\Include\Mfc -I$(CORE_DIR) 
       -I$(COMPONENTS)\alexmx -I$(COMPONENTS)\elpack\code\source -src_suffix cpp 
-      -D_EDITOR -DXR_EPROPS_EXPORTS -D_DEBUG -boa"/>
-    <CFLAG1 value="-WD -Od -H=x:\intermediate_ed\eprops\pch.csm -Hc -Q -Vms -Vx -Ve -xf -xp 
-      -VF -ff -X- -r- -ps -a4 -6 -b- -k -y -v -vi- -tWD -tWM -c"/>
-    <PFLAGS value="-N2x:\intermediate\eprops -N0x:\intermediate\eprops -$Y+ -$W -$O- -$A8 -v 
+      -D_EDITOR -DXR_EPROPS_EXPORTS -boa"/>
+    <CFLAG1 value="-WD -O2 -H=X:\ogsr_engine\_TEMP\SDK\Release\Win32\eprops\pch.csm -Q -Vms 
+      -Vx -Ve -xf -xp -VF -ff -X- -ps -a4 -6 -b- -k- -y -v -vi -tWD -tWM -c"/>
+    <PFLAGS value="-N2X:\ogsr_engine\_TEMP\SDK\Release\Win32\eprops 
+      -N0X:\ogsr_engine\_TEMP\SDK\Release\Win32\eprops -$Y- -$L- -$D- -$A8 -v 
       -JPHNE -M"/>
     <RFLAGS value=""/>
-    <AFLAGS value="/mu /w2 /zi"/>
-    <LFLAGS value="-lx:\libraries\SDK -Ix:\intermediate\eprops -D&quot;&quot; -aa -Tpd -x -Gn -Gi -v"/>
+    <AFLAGS value="/mu /w2 /zn"/>
+    <LFLAGS value="-lX:\ogsr_engine\_LIB\SDK\Release\Win32 
+      -IX:\ogsr_engine\_TEMP\SDK\Release\Win32\eprops -D&quot;&quot; -aa -Tpd -x -Gn -Gi"/>
     <OTHERFILES value=""/>
   </OPTIONS>
   <LINKER>
@@ -112,6 +118,9 @@ ProductName=
 ProductVersion=1.0.0.0
 Comments=
 
+[Excluded Packages]
+c:\program files (x86)\borland\cbuilder6\Bin\dclite60.bpl=Borland Integrated Translation Environment
+
 [HistoryLists\hlIncludePath]
 Count=10
 Item0=$(BCB)\include;$(BCB)\include\vcl;$(BCB)\Include\Mfc;$(CORE_DIR);$(COMPONENTS)\alexmx;$(COMPONENTS)\elpack\code\source
@@ -126,15 +135,17 @@ Item8=R:\SDK\DirectX9.0\include;$(BCB)\include;$(BCB)\include\vcl;P:\MagicFM_Bor
 Item9=R:\SDK\DirectX9.0\include;$(BCB)\include;$(BCB)\include\vcl;P:\MagicFM_Borland\Sdk\Include;R:\Borland\Components6\AlexMX;R:\Borland\Components6\ElPack\Code\Source;R:\VS7.NET\Vc7\atlmfc\include;R:\Borland\CBuilder6\Include\Mfc
 
 [HistoryLists\hlLibraryPath]
-Count=8
-Item0=$(COMPONENTS)\ElPack\Code;$(BCB)\lib;$(BCB)\lib\obj;$(BCB)\Projects\Lib;$(BCB)\Lib\Psdk;x:\libraries\SDK;$(COMPONENTS)\alexmx
-Item1=$(COMPONENTS)\ElPack\Code;$(BCB)\lib;$(BCB)\lib\obj;$(BCB)\Projects\Lib;$(BCB)\Lib\Psdk;x:\libraries;$(COMPONENTS)\alexmx
-Item2=I:\Projects\editors\components\ElPack\Code;$(BCB)\lib;$(BCB)\lib\obj;$(BCB)\Projects\Lib;$(BCB)\Lib\Psdk;x:\libraries;$(COMPONENTS)\alexmx
-Item3=$(BCB)\lib;$(BCB)\lib\obj;$(BCB)\Projects\Lib;$(BCB)\Lib\Psdk;x:\libraries;$(COMPONENTS)\alexmx
-Item4=$(BCB)\lib;$(BCB)\lib\obj;$(BCB)\Projects\Lib;$(BCB)\Lib\Psdk;x:\;x:\libraries
-Item5=C:\Rad\Borland\CBuilder6\Projects;$(BCB)\lib;$(BCB)\lib\obj;$(BCB)\Projects\Lib;R:\Borland\Components6\AlexMX;R:\Borland\Components6\ElPack\Code;R:\Borland\CBuilder6\Lib\Psdk;x:\
-Item6=$(BCB)\lib;$(BCB)\lib\obj;$(BCB)\Projects\Lib;R:\Borland\Components6\AlexMX;R:\Borland\Components6\ElPack\Code;R:\Borland\CBuilder6\Lib\Psdk;x:\
-Item7=c:\rad\borland\CBuilder5\Projects;$(BCB)\lib;$(BCB)\lib\obj;$(BCB)\Projects\Lib;R:\Borland\Components6\AlexMX;R:\Borland\Components6\ElPack\Code;R:\Borland\CBuilder6\Lib\Psdk;..\Editors\lib\dx;..\Editors\lib;x:\
+Count=10
+Item0=$(COMPONENTS)\ElPack\Code;$(BCB)\lib;$(BCB)\lib\obj;$(BCB)\Projects\Lib;$(BCB)\Lib\Psdk;X:\3rd_party\_LIB\Release\Win32;$(COMPONENTS)\alexmx;X:\ogsr_engine\_LIB\SDK\Release\Win32
+Item1=$(COMPONENTS)\ElPack\Code;$(BCB)\lib;$(BCB)\lib\obj;$(BCB)\Projects\Lib;$(BCB)\Lib\Psdk;X:\3rd_party\_LIB\Release\Win32\;$(COMPONENTS)\alexmx;X:\ogsr_engine\_LIB\SDK\Release\Win32\
+Item2=$(COMPONENTS)\ElPack\Code;$(BCB)\lib;$(BCB)\lib\obj;$(BCB)\Projects\Lib;$(BCB)\Lib\Psdk;X:\3rd_party\_LIB\Release\Win32\;$(COMPONENTS)\alexmx
+Item3=$(COMPONENTS)\ElPack\Code;$(BCB)\lib;$(BCB)\lib\obj;$(BCB)\Projects\Lib;$(BCB)\Lib\Psdk;x:\libraries;$(COMPONENTS)\alexmx
+Item4=I:\Projects\editors\components\ElPack\Code;$(BCB)\lib;$(BCB)\lib\obj;$(BCB)\Projects\Lib;$(BCB)\Lib\Psdk;x:\libraries;$(COMPONENTS)\alexmx
+Item5=$(BCB)\lib;$(BCB)\lib\obj;$(BCB)\Projects\Lib;$(BCB)\Lib\Psdk;x:\libraries;$(COMPONENTS)\alexmx
+Item6=$(BCB)\lib;$(BCB)\lib\obj;$(BCB)\Projects\Lib;$(BCB)\Lib\Psdk;x:\;x:\libraries
+Item7=C:\Rad\Borland\CBuilder6\Projects;$(BCB)\lib;$(BCB)\lib\obj;$(BCB)\Projects\Lib;R:\Borland\Components6\AlexMX;R:\Borland\Components6\ElPack\Code;R:\Borland\CBuilder6\Lib\Psdk;x:\
+Item8=$(BCB)\lib;$(BCB)\lib\obj;$(BCB)\Projects\Lib;R:\Borland\Components6\AlexMX;R:\Borland\Components6\ElPack\Code;R:\Borland\CBuilder6\Lib\Psdk;x:\
+Item9=c:\rad\borland\CBuilder5\Projects;$(BCB)\lib;$(BCB)\lib\obj;$(BCB)\Projects\Lib;R:\Borland\Components6\AlexMX;R:\Borland\Components6\ElPack\Code;R:\Borland\CBuilder6\Lib\Psdk;..\Editors\lib\dx;..\Editors\lib;x:\
 
 [HistoryLists\hlDebugSourcePath]
 Count=1
@@ -142,21 +153,21 @@ Item0=$(BCB)\source\vcl
 
 [HistoryLists\hlConditionals]
 Count=5
-Item0=_EDITOR;XR_EPROPS_EXPORTS;_DEBUG
-Item1=_EDITOR;XR_EPROPS_EXPORTS
+Item0=_EDITOR;XR_EPROPS_EXPORTS
+Item1=_EDITOR;XR_EPROPS_EXPORTS;_DEBUG
 Item2=_EDITOR;_XR_EPROPSB;_DEBUG
 Item3=_EDITOR;_EPROPSB;_DEBUG
 Item4=_DEBUG
 
 [HistoryLists\hlIntOutputDir]
 Count=3
-Item0=x:\intermediate\eprops
+Item0=X:\ogsr_engine\_TEMP\SDK\Release\Win32\eprops
 Item1=x:\intermediate_ed\eprops
 Item2=intermediate
 
 [HistoryLists\hlFinalOutputDir]
 Count=7
-Item0=x:\binaries\SDK\
+Item0=X:\ogsr_engine\_BIN\SDK\Release\Win32\
 Item1=x:\binaries\SDK
 Item2=x:\binaries\
 Item3=x:\binaries
@@ -165,9 +176,11 @@ Item5=x:\build\
 Item6=x:\build
 
 [HistoryLists\hIBPIOutputDir]
-Count=2
-Item0=x:\libraries\SDK
-Item1=x:\libraries
+Count=4
+Item0=X:\ogsr_engine\_LIB\SDK\Release\Win32
+Item1=X:\ogsr_engine\_LIB\SDK\Release\Win32\
+Item2=X:\3rd_party\_LIB\Release\Win32\
+Item3=x:\libraries
 
 [Debugging]
 DebugSourceDirs=$(BCB)\source\vcl
@@ -193,11 +206,6 @@ LinkCGLIB=0
 AddServerUnit=1
 AddClientUnit=1
 PrecompiledHeaders=1
-
-[Language]
-ActiveLang=
-ProjectLang=
-RootDir=
 
 [Linker]
 LibPrefix=

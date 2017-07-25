@@ -219,19 +219,19 @@ void ESoundSource::Save(IWriter& F)
 
 //----------------------------------------------------
 
-void __stdcall ESoundSource::OnChangeWAV	(PropValue* prop)
+void ESoundSource::OnChangeWAV	(PropValue* prop)
 {
 	BOOL bPlay 		= !!m_Source._feedback();
 	ResetSource		();
 	if (bPlay) 		Play();
 }
 
-void __stdcall ESoundSource::OnChangeSource	(PropValue* prop)
+void ESoundSource::OnChangeSource	(PropValue* prop)
 {
 	m_Source.set_params			(&m_Params);
 }
 
-void __stdcall ESoundSource::OnControlClick(ButtonValue* V, bool& bModif, bool& bSafe)
+void ESoundSource::OnControlClick(ButtonValue* V, bool& bModif, bool& bSafe)
 {
     switch (V->btn_num){
     case 0: Play();		break;
@@ -315,10 +315,10 @@ void ESoundSource::OnFrame()
                         m_Source.set_params	(&m_Params);
                         if (bFullPlay){
                             m_StopTime		= 0xFFFFFFFF;
-							m_NextTime		= Device.dwTimeGlobal+m_Source._handle()->length_ms()+::Random.randF(m_RandomPause.x,m_RandomPause.y)*1000;
+                            m_NextTime		= Device.dwTimeGlobal+m_Source._handle()->length_ms()+Random.randF(m_RandomPause.x,m_RandomPause.y)*1000;
                         }else{
-							m_StopTime		= bFullPlay?0:Device.dwTimeGlobal+::Random.randF(m_PlayTime.x,m_PlayTime.y)*1000;
-                            m_NextTime		= m_StopTime+::Random.randF(m_RandomPause.x,m_RandomPause.y)*1000;
+                            m_StopTime		= bFullPlay?0:Device.dwTimeGlobal+Random.randF(m_PlayTime.x,m_PlayTime.y)*1000;
+                            m_NextTime		= m_StopTime+Random.randF(m_RandomPause.x,m_RandomPause.y)*1000;
                         }
                     }
                 }

@@ -7,10 +7,23 @@
 #include	"dxerr.h"
 // misc
 
-extern "C" __declspec( dllimport ) bool WINAPI FSColorPickerDoModal(unsigned int * currentColor, unsigned int * originalColor, const int initialExpansionState);
+#include	<Commdlg.h>
+
+//extern "C" __declspec( dllimport ) bool WINAPI FSColorPickerDoModal(unsigned int * currentColor, unsigned int * originalColor, const int initialExpansionState);
 extern "C" __declspec(dllexport) bool  __stdcall FSColorPickerExecute(unsigned int * currentColor, unsigned int * originalColor, const int initialExpansionState)
 {
-	return FSColorPickerDoModal(currentColor, originalColor, initialExpansionState);
+	//return FSColorPickerDoModal(currentColor, originalColor, initialExpansionState);
+	CHOOSECOLOR col;
+	ZeroMemory(&col, sizeof(col));
+	col.hwndOwner = NULL;
+	col.Flags = CC_RGBINIT | CC_ANYCOLOR;
+	col.rgbResult = *originalColor;
+	if (TRUE == ChooseColor(&col))
+	{
+		*currentColor = col.rgbResult;
+		return true;
+	}
+	return false;
 }
 
 extern "C"{ 

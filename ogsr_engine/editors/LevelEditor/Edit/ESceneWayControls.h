@@ -13,7 +13,7 @@ enum{
 //---------------------------------------------------------------------------
 class TUI_ControlWayPointAdd: public TUI_CustomControl{
 public:
-    __fastcall TUI_ControlWayPointAdd(int st, int act, ESceneCustomMTools* parent);
+    TUI_ControlWayPointAdd(int st, int act, ESceneCustomMTools* parent);
     virtual ~TUI_ControlWayPointAdd(){;}
 	virtual bool Start  (TShiftState _Shift);
     virtual void OnEnter();

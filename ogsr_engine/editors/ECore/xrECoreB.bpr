@@ -3,164 +3,179 @@
 <PROJECT>
   <MACROS>
     <VERSION value="BCB.06.00"/>
-    <PROJECT value="x:\binaries\SDK\xrECoreB.dll"/>
-    <OBJFILES value="x:\intermediate_ed\ecore\guid.obj x:\intermediate_ed\ecore\bone.obj 
-      x:\intermediate_ed\ecore\cl_collector.obj 
-      x:\intermediate_ed\ecore\defines.obj 
-      x:\intermediate_ed\ecore\DetailModel.obj 
-      x:\intermediate_ed\ecore\Envelope.obj 
-      x:\intermediate_ed\ecore\Environment.obj 
-      x:\intermediate_ed\ecore\fmesh.obj x:\intermediate_ed\ecore\Frustum.obj 
-      x:\intermediate_ed\ecore\GameFont.obj 
-      x:\intermediate_ed\ecore\GameMtlLib.obj x:\intermediate_ed\ecore\HW.obj 
-      x:\intermediate_ed\ecore\HWCaps.obj 
-      x:\intermediate_ed\ecore\IGame_Persistent.obj 
-      x:\intermediate_ed\ecore\IInputReceiver.obj 
-      x:\intermediate_ed\ecore\interp.obj x:\intermediate_ed\ecore\ModelPool.obj 
-      x:\intermediate_ed\ecore\motion.obj 
-      x:\intermediate_ed\ecore\ParticleEffect.obj 
-      x:\intermediate_ed\ecore\ParticleGroup.obj 
-      x:\intermediate_ed\ecore\PSLibrary.obj x:\intermediate_ed\ecore\pure.obj 
-      x:\intermediate_ed\ecore\R_Backend.obj 
-      x:\intermediate_ed\ecore\R_Backend_DBG.obj 
-      x:\intermediate_ed\ecore\R_Backend_Runtime.obj 
-      x:\intermediate_ed\ecore\R_Backend_xform.obj 
-      x:\intermediate_ed\ecore\r_constants.obj 
-      x:\intermediate_ed\ecore\r_constants_cache.obj 
-      x:\intermediate_ed\ecore\R_DStreams.obj x:\intermediate_ed\ecore\Rain.obj 
-      x:\intermediate_ed\ecore\ResourceManager.obj 
-      x:\intermediate_ed\ecore\ResourceManager_Loader.obj 
-      x:\intermediate_ed\ecore\ResourceManager_Resources.obj 
-      x:\intermediate_ed\ecore\SH_Atomic.obj 
-      x:\intermediate_ed\ecore\SH_Constant.obj 
-      x:\intermediate_ed\ecore\SH_Matrix.obj x:\intermediate_ed\ecore\SH_RT.obj 
-      x:\intermediate_ed\ecore\SH_Texture.obj 
-      x:\intermediate_ed\ecore\Shader.obj x:\intermediate_ed\ecore\Texture.obj 
-      x:\intermediate_ed\ecore\thunderbolt.obj 
-      x:\intermediate_ed\ecore\tss_def.obj 
-      x:\intermediate_ed\ecore\xr_efflensflare.obj 
-      x:\intermediate_ed\ecore\Xr_input.obj 
-      x:\intermediate_ed\ecore\xrImage_Resampler.obj 
-      x:\intermediate_ed\ecore\xrRender_console.obj 
-      x:\intermediate_ed\ecore\FBasicVisual.obj 
-      x:\intermediate_ed\ecore\FHierrarhyVisual.obj 
-      x:\intermediate_ed\ecore\FVisual.obj 
-      x:\intermediate_ed\ecore\SkeletonAnimated.obj 
-      x:\intermediate_ed\ecore\SkeletonCustom.obj 
-      x:\intermediate_ed\ecore\SkeletonRigid.obj 
-      x:\intermediate_ed\ecore\SkeletonX.obj 
-      x:\intermediate_ed\ecore\xrSkin2W.obj 
-      x:\intermediate_ed\ecore\xrSkin1W.obj x:\intermediate_ed\ecore\ResourceManager_Reset.obj 
-      x:\intermediate_ed\ecore\ParticleEffectDef.obj 
-      x:\intermediate_ed\ecore\ai_sounds.obj 
-      x:\intermediate_ed\ecore\NVMeshMender.obj 
-      x:\intermediate_ed\ecore\nv_algebra.obj 
-      x:\intermediate_ed\ecore\FProgressive.obj 
-      x:\intermediate_ed\ecore\SkeletonMotions.obj 
-      x:\intermediate_ed\ecore\tntQAVI.obj 
-      x:\intermediate_ed\ecore\xrCDB_Collector.obj 
-      x:\intermediate_ed\ecore\perlin.obj 
-      x:\intermediate_ed\ecore\xrTheora_Surface.obj 
-      x:\intermediate_ed\ecore\xrTheora_Stream.obj 
-      x:\intermediate_ed\ecore\Environment_render.obj 
-      x:\intermediate_ed\ecore\Environment_misc.obj 
-      x:\intermediate_ed\ecore\LightAnimLibrary.obj 
-      x:\intermediate_ed\ecore\xrHemisphere.obj 
-      x:\intermediate_ed\ecore\FSkinned.obj 
-      x:\intermediate_ed\ecore\Blender_Recorder.obj 
-      x:\intermediate_ed\ecore\Blender_Recorder_R2.obj 
-      x:\intermediate_ed\ecore\Blender.obj 
-      x:\intermediate_ed\ecore\Blender_Palette.obj 
-      x:\intermediate_ed\ecore\BlenderDefault.obj 
-      x:\intermediate_ed\ecore\Blender_default_aref.obj 
-      x:\intermediate_ed\ecore\Blender_vertex.obj 
-      x:\intermediate_ed\ecore\Blender_vertex_aref.obj 
-      x:\intermediate_ed\ecore\Blender_screen_gray.obj 
-      x:\intermediate_ed\ecore\Blender_Editor_Selection.obj 
-      x:\intermediate_ed\ecore\Blender_Screen_SET.obj 
-      x:\intermediate_ed\ecore\blender_light.obj 
-      x:\intermediate_ed\ecore\blender_b.obj 
-      x:\intermediate_ed\ecore\Blender_Lm(EbB).obj 
-      x:\intermediate_ed\ecore\Blender_Blur.obj 
-      x:\intermediate_ed\ecore\Blender_Recorder_StandartBinding.obj 
-      x:\intermediate_ed\ecore\Blender_Editor_Wire.obj 
-      x:\intermediate_ed\ecore\Blender_LaEmB.obj 
-      x:\intermediate_ed\ecore\Blender_BmmD.obj 
-      x:\intermediate_ed\ecore\Blender_Shadow_World.obj 
-      x:\intermediate_ed\ecore\Blender_Model.obj 
-      x:\intermediate_ed\ecore\Blender_Model_EbB.obj 
-      x:\intermediate_ed\ecore\Blender_detail_still.obj 
-      x:\intermediate_ed\ecore\Blender_tree.obj 
-      x:\intermediate_ed\ecore\Blender_Particle.obj 
-      x:\intermediate_ed\ecore\guid_generator.obj 
-      x:\intermediate_ed\ecore\UI_MainMail.obj 
-      x:\intermediate_ed\ecore\BoneEditor.obj 
-      x:\intermediate_ed\ecore\c_dinput.obj 
-      x:\intermediate_ed\ecore\ColorPicker.obj 
-      x:\intermediate_ed\ecore\D3DUtils.obj x:\intermediate_ed\ecore\Device.obj 
-      x:\intermediate_ed\ecore\du_box.obj x:\intermediate_ed\ecore\du_cone.obj 
-      x:\intermediate_ed\ecore\du_cylinder.obj 
-      x:\intermediate_ed\ecore\du_sphere.obj 
-      x:\intermediate_ed\ecore\EDetailModel.obj 
-      x:\intermediate_ed\ecore\EditMesh.obj 
-      x:\intermediate_ed\ecore\EditMeshIO.obj 
-      x:\intermediate_ed\ecore\EditMeshModify.obj 
-      x:\intermediate_ed\ecore\EditMeshPick.obj 
-      x:\intermediate_ed\ecore\EditMeshRender.obj 
-      x:\intermediate_ed\ecore\EditObject.obj 
-      x:\intermediate_ed\ecore\EditObjectEditor.obj 
-      x:\intermediate_ed\ecore\EditObjectImport.obj 
-      x:\intermediate_ed\ecore\EditObjectIO.obj 
-      x:\intermediate_ed\ecore\EditObjectMotions.obj 
-      x:\intermediate_ed\ecore\EditObjectProps.obj 
-      x:\intermediate_ed\ecore\EditObjectSkin.obj 
-      x:\intermediate_ed\ecore\EditorPreferences.obj 
-      x:\intermediate_ed\ecore\ELog.obj x:\intermediate_ed\ecore\Engine.obj 
-      x:\intermediate_ed\ecore\EStats.obj 
-      x:\intermediate_ed\ecore\ExportObjectOGF.obj 
-      x:\intermediate_ed\ecore\ExportSkeleton.obj 
-      x:\intermediate_ed\ecore\ImageEditor.obj 
-      x:\intermediate_ed\ecore\ImageManager.obj 
-      x:\intermediate_ed\ecore\library.obj x:\intermediate_ed\ecore\LogForm.obj 
-      x:\intermediate_ed\ecore\render.obj 
-      x:\intermediate_ed\ecore\SoundEditor.obj 
-      x:\intermediate_ed\ecore\SoundManager.obj 
-      x:\intermediate_ed\ecore\TLSPRITE.obj 
-      x:\intermediate_ed\ecore\UI_Camera.obj 
-      x:\intermediate_ed\ecore\UI_MainCommand.obj 
-      x:\intermediate_ed\ecore\ui_main.obj x:\intermediate_ed\ecore\stdafx.obj 
-      x:\intermediate_ed\ecore\UI_ToolsCustom.obj 
-      x:\intermediate_ed\ecore\ImageManagerDO.obj 
-      x:\intermediate_ed\ecore\GeometryCollector.obj 
-      x:\intermediate_ed\ecore\ParticleEffectActions.obj 
-      x:\intermediate_ed\ecore\EThumbnailTexture.obj 
-      x:\intermediate_ed\ecore\EThumbnail.obj 
-      x:\intermediate_ed\ecore\EThumbnailObject.obj 
-      x:\intermediate_ed\ecore\EThumbnailSound.obj 
-      x:\intermediate_ed\ecore\du_sphere_part.obj 
-      x:\intermediate_ed\ecore\ImageManagerLOD.obj 
-      x:\intermediate_ed\ecore\DeviceScreenshot.obj 
-      x:\intermediate_ed\ecore\pDomain.obj 
-      x:\intermediate_ed\ecore\EThumbnailGroup.obj 
-      x:\intermediate_ed\ecore\xrLoadSurface.obj 
-      x:\intermediate_ed\ecore\WmlContMinBox3.obj 
-      x:\intermediate_ed\ecore\WmlBox3.obj 
-      x:\intermediate_ed\ecore\WmlMinimizeN.obj 
-      x:\intermediate_ed\ecore\WmlMinimize1.obj 
-      x:\intermediate_ed\ecore\WmlMath.obj 
-      x:\intermediate_ed\ecore\WmlVector3.obj 
-      x:\intermediate_ed\ecore\WmlMatrix3.obj 
-      x:\intermediate_ed\ecore\WmlSystem.obj 
-      x:\intermediate_ed\ecore\WmlWinSystem.obj 
-      x:\intermediate_ed\ecore\WmlContBox3.obj 
-      x:\intermediate_ed\ecore\WmlQuaternion.obj 
-      x:\intermediate_ed\ecore\WmlApprGaussPointsFit3.obj 
-      x:\intermediate_ed\ecore\WmlEigen.obj 
-      x:\intermediate_ed\ecore\RAPIDMinBox.obj 
-      x:\intermediate_ed\ecore\Image.obj x:\intermediate_ed\ecore\MinimapEditor.obj 
-      x:\intermediate_ed\ecore\tga.obj 
-      x:\intermediate_ed\ecore\TextureDescrManager.obj 
-      x:\intermediate_ed\ecore\ETextureParams.obj"/>
+    <PROJECT value="X:\ogsr_engine\_BIN\SDK\Release\Win32\xrECoreB.dll"/>
+    <OBJFILES value="..\..\_TEMP\SDK\Release\Win32\ecore\guid.obj 
+      ..\..\_TEMP\SDK\Release\Win32\ecore\bone.obj 
+      ..\..\_TEMP\SDK\Release\Win32\ecore\cl_collector.obj 
+      ..\..\_TEMP\SDK\Release\Win32\ecore\defines.obj 
+      ..\..\_TEMP\SDK\Release\Win32\ecore\DetailModel.obj 
+      ..\..\_TEMP\SDK\Release\Win32\ecore\Envelope.obj 
+      ..\..\_TEMP\SDK\Release\Win32\ecore\Environment.obj 
+      ..\..\_TEMP\SDK\Release\Win32\ecore\fmesh.obj 
+      ..\..\_TEMP\SDK\Release\Win32\ecore\Frustum.obj 
+      ..\..\_TEMP\SDK\Release\Win32\ecore\GameFont.obj 
+      ..\..\_TEMP\SDK\Release\Win32\ecore\GameMtlLib.obj 
+      ..\..\_TEMP\SDK\Release\Win32\ecore\HW.obj 
+      ..\..\_TEMP\SDK\Release\Win32\ecore\HWCaps.obj 
+      ..\..\_TEMP\SDK\Release\Win32\ecore\IGame_Persistent.obj 
+      ..\..\_TEMP\SDK\Release\Win32\ecore\IInputReceiver.obj 
+      ..\..\_TEMP\SDK\Release\Win32\ecore\interp.obj 
+      ..\..\_TEMP\SDK\Release\Win32\ecore\ModelPool.obj 
+      ..\..\_TEMP\SDK\Release\Win32\ecore\motion.obj 
+      ..\..\_TEMP\SDK\Release\Win32\ecore\ParticleEffect.obj 
+      ..\..\_TEMP\SDK\Release\Win32\ecore\ParticleGroup.obj 
+      ..\..\_TEMP\SDK\Release\Win32\ecore\PSLibrary.obj 
+      ..\..\_TEMP\SDK\Release\Win32\ecore\pure.obj 
+      ..\..\_TEMP\SDK\Release\Win32\ecore\R_Backend.obj 
+      ..\..\_TEMP\SDK\Release\Win32\ecore\R_Backend_DBG.obj 
+      ..\..\_TEMP\SDK\Release\Win32\ecore\R_Backend_Runtime.obj 
+      ..\..\_TEMP\SDK\Release\Win32\ecore\R_Backend_xform.obj 
+      ..\..\_TEMP\SDK\Release\Win32\ecore\r_constants.obj 
+      ..\..\_TEMP\SDK\Release\Win32\ecore\r_constants_cache.obj 
+      ..\..\_TEMP\SDK\Release\Win32\ecore\R_DStreams.obj 
+      ..\..\_TEMP\SDK\Release\Win32\ecore\Rain.obj 
+      ..\..\_TEMP\SDK\Release\Win32\ecore\ResourceManager.obj 
+      ..\..\_TEMP\SDK\Release\Win32\ecore\ResourceManager_Loader.obj 
+      ..\..\_TEMP\SDK\Release\Win32\ecore\ResourceManager_Resources.obj 
+      ..\..\_TEMP\SDK\Release\Win32\ecore\SH_Atomic.obj 
+      ..\..\_TEMP\SDK\Release\Win32\ecore\SH_Constant.obj 
+      ..\..\_TEMP\SDK\Release\Win32\ecore\SH_Matrix.obj 
+      ..\..\_TEMP\SDK\Release\Win32\ecore\SH_RT.obj 
+      ..\..\_TEMP\SDK\Release\Win32\ecore\SH_Texture.obj 
+      ..\..\_TEMP\SDK\Release\Win32\ecore\Shader.obj 
+      ..\..\_TEMP\SDK\Release\Win32\ecore\Texture.obj 
+      ..\..\_TEMP\SDK\Release\Win32\ecore\thunderbolt.obj 
+      ..\..\_TEMP\SDK\Release\Win32\ecore\tss_def.obj 
+      ..\..\_TEMP\SDK\Release\Win32\ecore\xr_efflensflare.obj 
+      ..\..\_TEMP\SDK\Release\Win32\ecore\Xr_input.obj 
+      ..\..\_TEMP\SDK\Release\Win32\ecore\xrImage_Resampler.obj 
+      ..\..\_TEMP\SDK\Release\Win32\ecore\xrRender_console.obj 
+      ..\..\_TEMP\SDK\Release\Win32\ecore\FBasicVisual.obj 
+      ..\..\_TEMP\SDK\Release\Win32\ecore\FHierrarhyVisual.obj 
+      ..\..\_TEMP\SDK\Release\Win32\ecore\FVisual.obj 
+      ..\..\_TEMP\SDK\Release\Win32\ecore\SkeletonAnimated.obj 
+      ..\..\_TEMP\SDK\Release\Win32\ecore\SkeletonCustom.obj 
+      ..\..\_TEMP\SDK\Release\Win32\ecore\SkeletonRigid.obj 
+      ..\..\_TEMP\SDK\Release\Win32\ecore\SkeletonX.obj 
+      ..\..\_TEMP\SDK\Release\Win32\ecore\xrSkin2W.obj 
+      ..\..\_TEMP\SDK\Release\Win32\ecore\xrSkin1W.obj 
+      ..\..\_TEMP\SDK\Release\Win32\ecore\ResourceManager_Reset.obj 
+      ..\..\_TEMP\SDK\Release\Win32\ecore\ParticleEffectDef.obj 
+      ..\..\_TEMP\SDK\Release\Win32\ecore\ai_sounds.obj 
+      ..\..\_TEMP\SDK\Release\Win32\ecore\NVMeshMender.obj 
+      ..\..\_TEMP\SDK\Release\Win32\ecore\nv_algebra.obj 
+      ..\..\_TEMP\SDK\Release\Win32\ecore\FProgressive.obj 
+      ..\..\_TEMP\SDK\Release\Win32\ecore\SkeletonMotions.obj 
+      ..\..\_TEMP\SDK\Release\Win32\ecore\tntQAVI.obj 
+      ..\..\_TEMP\SDK\Release\Win32\ecore\xrCDB_Collector.obj 
+      ..\..\_TEMP\SDK\Release\Win32\ecore\perlin.obj 
+      ..\..\_TEMP\SDK\Release\Win32\ecore\xrTheora_Surface.obj 
+      ..\..\_TEMP\SDK\Release\Win32\ecore\xrTheora_Stream.obj 
+      ..\..\_TEMP\SDK\Release\Win32\ecore\Environment_render.obj 
+      ..\..\_TEMP\SDK\Release\Win32\ecore\Environment_misc.obj 
+      ..\..\_TEMP\SDK\Release\Win32\ecore\LightAnimLibrary.obj 
+      ..\..\_TEMP\SDK\Release\Win32\ecore\xrHemisphere.obj 
+      ..\..\_TEMP\SDK\Release\Win32\ecore\FSkinned.obj 
+      ..\..\_TEMP\SDK\Release\Win32\ecore\Blender_Recorder.obj 
+      ..\..\_TEMP\SDK\Release\Win32\ecore\Blender_Recorder_R2.obj 
+      ..\..\_TEMP\SDK\Release\Win32\ecore\Blender.obj 
+      ..\..\_TEMP\SDK\Release\Win32\ecore\Blender_Palette.obj 
+      ..\..\_TEMP\SDK\Release\Win32\ecore\BlenderDefault.obj 
+      ..\..\_TEMP\SDK\Release\Win32\ecore\Blender_default_aref.obj 
+      ..\..\_TEMP\SDK\Release\Win32\ecore\Blender_vertex.obj 
+      ..\..\_TEMP\SDK\Release\Win32\ecore\Blender_vertex_aref.obj 
+      ..\..\_TEMP\SDK\Release\Win32\ecore\Blender_screen_gray.obj 
+      ..\..\_TEMP\SDK\Release\Win32\ecore\Blender_Editor_Selection.obj 
+      ..\..\_TEMP\SDK\Release\Win32\ecore\Blender_Screen_SET.obj 
+      ..\..\_TEMP\SDK\Release\Win32\ecore\blender_light.obj 
+      ..\..\_TEMP\SDK\Release\Win32\ecore\blender_b.obj 
+      ..\..\_TEMP\SDK\Release\Win32\ecore\Blender_Lm(EbB).obj 
+      ..\..\_TEMP\SDK\Release\Win32\ecore\Blender_Blur.obj 
+      ..\..\_TEMP\SDK\Release\Win32\ecore\Blender_Recorder_StandartBinding.obj 
+      ..\..\_TEMP\SDK\Release\Win32\ecore\Blender_Editor_Wire.obj 
+      ..\..\_TEMP\SDK\Release\Win32\ecore\Blender_LaEmB.obj 
+      ..\..\_TEMP\SDK\Release\Win32\ecore\Blender_BmmD.obj 
+      ..\..\_TEMP\SDK\Release\Win32\ecore\Blender_Shadow_World.obj 
+      ..\..\_TEMP\SDK\Release\Win32\ecore\Blender_Model.obj 
+      ..\..\_TEMP\SDK\Release\Win32\ecore\Blender_Model_EbB.obj 
+      ..\..\_TEMP\SDK\Release\Win32\ecore\Blender_detail_still.obj 
+      ..\..\_TEMP\SDK\Release\Win32\ecore\Blender_tree.obj 
+      ..\..\_TEMP\SDK\Release\Win32\ecore\Blender_Particle.obj 
+      ..\..\_TEMP\SDK\Release\Win32\ecore\guid_generator.obj 
+      ..\..\_TEMP\SDK\Release\Win32\ecore\UI_MainMail.obj 
+      ..\..\_TEMP\SDK\Release\Win32\ecore\BoneEditor.obj 
+      ..\..\_TEMP\SDK\Release\Win32\ecore\c_dinput.obj 
+      ..\..\_TEMP\SDK\Release\Win32\ecore\ColorPicker.obj 
+      ..\..\_TEMP\SDK\Release\Win32\ecore\D3DUtils.obj 
+      ..\..\_TEMP\SDK\Release\Win32\ecore\Device.obj 
+      ..\..\_TEMP\SDK\Release\Win32\ecore\du_box.obj 
+      ..\..\_TEMP\SDK\Release\Win32\ecore\du_cone.obj 
+      ..\..\_TEMP\SDK\Release\Win32\ecore\du_cylinder.obj 
+      ..\..\_TEMP\SDK\Release\Win32\ecore\du_sphere.obj 
+      ..\..\_TEMP\SDK\Release\Win32\ecore\EDetailModel.obj 
+      ..\..\_TEMP\SDK\Release\Win32\ecore\EditMesh.obj 
+      ..\..\_TEMP\SDK\Release\Win32\ecore\EditMeshIO.obj 
+      ..\..\_TEMP\SDK\Release\Win32\ecore\EditMeshModify.obj 
+      ..\..\_TEMP\SDK\Release\Win32\ecore\EditMeshPick.obj 
+      ..\..\_TEMP\SDK\Release\Win32\ecore\EditMeshRender.obj 
+      ..\..\_TEMP\SDK\Release\Win32\ecore\EditObject.obj 
+      ..\..\_TEMP\SDK\Release\Win32\ecore\EditObjectEditor.obj 
+      ..\..\_TEMP\SDK\Release\Win32\ecore\EditObjectImport.obj 
+      ..\..\_TEMP\SDK\Release\Win32\ecore\EditObjectIO.obj 
+      ..\..\_TEMP\SDK\Release\Win32\ecore\EditObjectMotions.obj 
+      ..\..\_TEMP\SDK\Release\Win32\ecore\EditObjectProps.obj 
+      ..\..\_TEMP\SDK\Release\Win32\ecore\EditObjectSkin.obj 
+      ..\..\_TEMP\SDK\Release\Win32\ecore\EditorPreferences.obj 
+      ..\..\_TEMP\SDK\Release\Win32\ecore\ELog.obj 
+      ..\..\_TEMP\SDK\Release\Win32\ecore\Engine.obj 
+      ..\..\_TEMP\SDK\Release\Win32\ecore\EStats.obj 
+      ..\..\_TEMP\SDK\Release\Win32\ecore\ExportObjectOGF.obj 
+      ..\..\_TEMP\SDK\Release\Win32\ecore\ExportSkeleton.obj 
+      ..\..\_TEMP\SDK\Release\Win32\ecore\ImageEditor.obj 
+      ..\..\_TEMP\SDK\Release\Win32\ecore\ImageManager.obj 
+      ..\..\_TEMP\SDK\Release\Win32\ecore\library.obj 
+      ..\..\_TEMP\SDK\Release\Win32\ecore\LogForm.obj 
+      ..\..\_TEMP\SDK\Release\Win32\ecore\render.obj 
+      ..\..\_TEMP\SDK\Release\Win32\ecore\SoundEditor.obj 
+      ..\..\_TEMP\SDK\Release\Win32\ecore\SoundManager.obj 
+      ..\..\_TEMP\SDK\Release\Win32\ecore\TLSPRITE.obj 
+      ..\..\_TEMP\SDK\Release\Win32\ecore\UI_Camera.obj 
+      ..\..\_TEMP\SDK\Release\Win32\ecore\UI_MainCommand.obj 
+      ..\..\_TEMP\SDK\Release\Win32\ecore\ui_main.obj 
+      ..\..\_TEMP\SDK\Release\Win32\ecore\stdafx.obj 
+      ..\..\_TEMP\SDK\Release\Win32\ecore\UI_ToolsCustom.obj 
+      ..\..\_TEMP\SDK\Release\Win32\ecore\ImageManagerDO.obj 
+      ..\..\_TEMP\SDK\Release\Win32\ecore\GeometryCollector.obj 
+      ..\..\_TEMP\SDK\Release\Win32\ecore\ParticleEffectActions.obj 
+      ..\..\_TEMP\SDK\Release\Win32\ecore\EThumbnailTexture.obj 
+      ..\..\_TEMP\SDK\Release\Win32\ecore\EThumbnail.obj 
+      ..\..\_TEMP\SDK\Release\Win32\ecore\EThumbnailObject.obj 
+      ..\..\_TEMP\SDK\Release\Win32\ecore\EThumbnailSound.obj 
+      ..\..\_TEMP\SDK\Release\Win32\ecore\du_sphere_part.obj 
+      ..\..\_TEMP\SDK\Release\Win32\ecore\ImageManagerLOD.obj 
+      ..\..\_TEMP\SDK\Release\Win32\ecore\DeviceScreenshot.obj 
+      ..\..\_TEMP\SDK\Release\Win32\ecore\pDomain.obj 
+      ..\..\_TEMP\SDK\Release\Win32\ecore\EThumbnailGroup.obj 
+      ..\..\_TEMP\SDK\Release\Win32\ecore\xrLoadSurface.obj 
+      ..\..\_TEMP\SDK\Release\Win32\ecore\WmlContMinBox3.obj 
+      ..\..\_TEMP\SDK\Release\Win32\ecore\WmlBox3.obj 
+      ..\..\_TEMP\SDK\Release\Win32\ecore\WmlMinimizeN.obj 
+      ..\..\_TEMP\SDK\Release\Win32\ecore\WmlMinimize1.obj 
+      ..\..\_TEMP\SDK\Release\Win32\ecore\WmlMath.obj 
+      ..\..\_TEMP\SDK\Release\Win32\ecore\WmlVector3.obj 
+      ..\..\_TEMP\SDK\Release\Win32\ecore\WmlMatrix3.obj 
+      ..\..\_TEMP\SDK\Release\Win32\ecore\WmlSystem.obj 
+      ..\..\_TEMP\SDK\Release\Win32\ecore\WmlWinSystem.obj 
+      ..\..\_TEMP\SDK\Release\Win32\ecore\WmlContBox3.obj 
+      ..\..\_TEMP\SDK\Release\Win32\ecore\WmlQuaternion.obj 
+      ..\..\_TEMP\SDK\Release\Win32\ecore\WmlApprGaussPointsFit3.obj 
+      ..\..\_TEMP\SDK\Release\Win32\ecore\WmlEigen.obj 
+      ..\..\_TEMP\SDK\Release\Win32\ecore\RAPIDMinBox.obj 
+      ..\..\_TEMP\SDK\Release\Win32\ecore\Image.obj 
+      ..\..\_TEMP\SDK\Release\Win32\ecore\MinimapEditor.obj 
+      ..\..\_TEMP\SDK\Release\Win32\ecore\tga.obj 
+      ..\..\_TEMP\SDK\Release\Win32\ecore\TextureDescrManager.obj 
+      ..\..\_TEMP\SDK\Release\Win32\ecore\ETextureParams.obj"/>
     <RESFILES value="resource.res"/>
     <IDLFILES value=""/>
     <IDLGENFILES value=""/>
@@ -178,32 +193,35 @@
     <DEBUGLIBPATH value="$(BCB)\lib\debug"/>
     <RELEASELIBPATH value="$(BCB)\lib\release"/>
     <LINKER value="ilink32"/>
-    <USERDEFINES value="_EDITOR;_ECOREB;_DEBUG;XRCDB_EXPORTS"/>
+    <USERDEFINES value="_EDITOR;_ECOREB;XRCDB_EXPORTS"/>
     <SYSDEFINES value="NO_STRICT;_RTLDLL;USEPACKAGES"/>
     <MAINSOURCE value="xrECoreB.bpf"/>
-    <INCLUDEPATH value="..\..\xr_3da\xrRender_R1;..\..\xr_3da\blenders;..\..\xrCDB;..\..\xr_3da\xrCPU_Pipe;Engine\Blenders;..\..\xr_3da\xrRender;..\..\xr_3da;$(DXSDK_DIR)\Include;WildMagic;Editor;Engine;$(BCB)\include;$(BCB)\include\vcl;$(COMPONENTS)\AlexMX;$(COMPONENTS)\ElPack\Code\Source;$(BCB)\Include\Mfc;$(CORE_DIR);..\xrEProps;$(XIPH_DIR)\libtheora\include;$(MAGIC_SW_DIR);$(SDK_DIR)\freeimage;$(XIPH_DIR)\libogg\include;$(XIPH_DIR)\libvorbis\include"/>
-    <LIBPATH value="&quot;e:\xray_sources\soc\trunk\3rd party\components\elpack\code&quot;;..\..\xr_3da\xrRender_R1;..\..\xr_3da\blenders;WildMagic;Editor;..\..\xrCDB;..\..\xr_3da\xrCPU_Pipe;Engine\Blenders;..\..\xr_3da\xrRender;..\..\xr_3da;Engine;$(BCB)\lib;$(BCB)\lib\obj;$(BCB)\Projects\Lib;$(COMPONENTS)\AlexMX;$(COMPONENTS)\ElPack\Code\Source;$(BCB)\Lib\Psdk;x:\libraries\SDK"/>
+    <INCLUDEPATH value="$(DINPUT_DIR);$(DSOUND_DIR);..\..\xr_3da\xrRender_R1;..\..\xr_3da\blenders;..\..\xrCDB;..\..\xr_3da\xrCPU_Pipe;Engine\Blenders;..\..\xr_3da\xrRender;..\..\xr_3da;$(D3DX_DIR)\Include;WildMagic;Editor;Engine;$(BCB)\include;$(BCB)\include\vcl;$(COMPONENTS)\AlexMX;$(COMPONENTS)\ElPack\Code\Source;$(BCB)\Include\Mfc;$(CORE_DIR);..\xrEProps;$(XIPH_DIR)\libtheora\include;$(MAGIC_SW_DIR);X:\3rd_party\Src;$(XIPH_DIR)\libogg\include;$(XIPH_DIR)\libvorbis\include"/>
+    <LIBPATH value="$(COMPONENTS)\elpack\code;..\..\xr_3da\xrRender_R1;..\..\xr_3da\blenders;WildMagic;Editor;..\..\xrCDB;..\..\xr_3da\xrCPU_Pipe;Engine\Blenders;..\..\xr_3da\xrRender;..\..\xr_3da;Engine;$(BCB)\lib;$(BCB)\lib\obj;$(BCB)\Projects\Lib;$(COMPONENTS)\AlexMX;$(COMPONENTS)\ElPack\Code\Source;$(BCB)\Lib\Psdk;X:\3rd_party\_LIB\Release\Win32;X:\ogsr_engine\_LIB\SDK\Release\Win32"/>
     <WARNINGS value="-w8092 -w8090 -w8089 -w8087 -wprc -wucp -wstv -wstu -wsig -wpin -w-par 
-      -wnod -wnak -wdef -wcln -wbbf -wasm -wamp -wamb"/>
+      -wnod -wnak -w-8027 -wdef -w-com -wcln -wbbf -wasm -wamp -wamb"/>
     <OTHERFILES value=""/>
   </MACROS>
   <OPTIONS>
-    <IDLCFLAGS value="-I..\..\xr_3da\xrRender_R1 -I..\..\xr_3da\blenders -I..\..\xrCDB 
-      -I..\..\xr_3da\xrCPU_Pipe -IEngine\Blenders -I..\..\xr_3da\xrRender 
-      -I..\..\xr_3da -I$(DXSDK_DIR)\Include -IWildMagic -IEditor -IEngine 
-      -I$(BCB)\include -I$(BCB)\include\vcl -I$(COMPONENTS)\AlexMX 
+    <IDLCFLAGS value="-I$(DINPUT_DIR) -I$(DSOUND_DIR) -I..\..\xr_3da\xrRender_R1 
+      -I..\..\xr_3da\blenders -I..\..\xrCDB -I..\..\xr_3da\xrCPU_Pipe 
+      -IEngine\Blenders -I..\..\xr_3da\xrRender -I..\..\xr_3da 
+      -I$(D3DX_DIR)\Include -IWildMagic -IEditor -IEngine -I$(BCB)\include 
+      -I$(BCB)\include\vcl -I$(COMPONENTS)\AlexMX 
       -I$(COMPONENTS)\ElPack\Code\Source -I$(BCB)\Include\Mfc -I$(CORE_DIR) 
       -I..\xrEProps -I$(XIPH_DIR)\libtheora\include -I$(MAGIC_SW_DIR) 
-      -I$(SDK_DIR)\freeimage -I$(XIPH_DIR)\libogg\include 
+      -IX:\3rd_party\Src -I$(XIPH_DIR)\libogg\include 
       -I$(XIPH_DIR)\libvorbis\include -src_suffix cpp -D_EDITOR -D_ECOREB 
-      -D_DEBUG -DXRCDB_EXPORTS -boa"/>
-    <CFLAG1 value="-WD -Od -H=x:\intermediate_ed\ecore\pch.csm -Hc -Q -Vms -Vx -Ve -xf -xp 
-      -VF -ff -X- -r- -ps -a4 -6 -b- -k -y -v -vi- -tWD -tWM -c"/>
-    <PFLAGS value="-N2x:\intermediate_ed\ecore -N0x:\intermediate_ed\ecore -$Y+ -$W -$O- -$A8 
-      -v -JPHNE -M"/>
+      -DXRCDB_EXPORTS -boa"/>
+    <CFLAG1 value="-WD -O2 -H=X:\ogsr_engine\_TEMP\SDK\Release\Win32\ecore\pch.csm -Hc -Q 
+      -Vms -Vx -Ve -xf -xp -VF -ff -X- -ps -a4 -6 -b- -k- -y -v -vi -tWD -tWM -c"/>
+    <PFLAGS value="-N2X:\ogsr_engine\_TEMP\SDK\Release\Win32\ecore 
+      -N0X:\ogsr_engine\_TEMP\SDK\Release\Win32\ecore -$Y- -$L- -$D- -$A8 -v 
+      -JPHNE -M"/>
     <RFLAGS value=""/>
-    <AFLAGS value="/mu /w2 /zi"/>
-    <LFLAGS value="-lx:\libraries\SDK -Ix:\intermediate_ed\ecore -D&quot;&quot; -aa -Tpd -x -Gn -Gi -v"/>
+    <AFLAGS value="/mu /w2 /zn"/>
+    <LFLAGS value="-lX:\ogsr_engine\_LIB\SDK\Release\Win32 
+      -IX:\ogsr_engine\_TEMP\SDK\Release\Win32\ecore -D&quot;&quot; -aa -Tpd -x -Gn -Gi"/>
     <OTHERFILES value=""/>
   </OPTIONS>
   <LINKER>
@@ -427,55 +445,72 @@ ProductName=
 ProductVersion=1.0.0.0
 Comments=
 
+[Excluded Packages]
+c:\program files (x86)\borland\cbuilder6\Bin\dclite60.bpl=Borland Integrated Translation Environment
+
 [HistoryLists\hlIncludePath]
-Count=10
-Item0=..\..\xr_3da\xrRender_R1;..\..\xr_3da\blenders;..\..\xrCDB;..\..\xr_3da\xrCPU_Pipe;Engine\Blenders;..\..\xr_3da\xrRender;..\..\xr_3da;$(DXSDK_DIR)\Include;WildMagic;Editor;Engine;$(BCB)\include;$(BCB)\include\vcl;$(COMPONENTS)\AlexMX;$(COMPONENTS)\ElPack\Code\Source;$(BCB)\Include\Mfc;$(CORE_DIR);..\xrEProps;$(XIPH_DIR)\libtheora\include;$(MAGIC_SW_DIR);$(SDK_DIR)\freeimage;$(XIPH_DIR)\libogg\include;$(XIPH_DIR)\libvorbis\include
-Item1=I:\Program Files\Borland\CBuilder6\Projects;..\..\xr_3da\xrRender_R1;..\..\xr_3da\blenders;..\..\xrCDB;..\..\xr_3da\xrCPU_Pipe;Engine\Blenders;..\..\xr_3da\xrRender;..\..\xr_3da;$(DXSDK_DIR)\Include;WildMagic;Editor;Engine;$(BCB)\include;$(BCB)\include\vcl;$(COMPONENTS)\AlexMX;$(COMPONENTS)\ElPack\Code\Source;$(BCB)\Include\Mfc;$(CORE_DIR);..\xrEProps;$(XIPH_DIR)\libtheora\include;$(MAGIC_SW_DIR);$(SDK_DIR)\freeimage;$(XIPH_DIR)\libogg\include;$(XIPH_DIR)\libvorbis\include
-Item2=I:\Program Files\Borland\CBuilder6\Projects;..\..\xr_3da\xrRender_R1;..\..\xr_3da\blenders;..\..\xrCDB;..\..\xr_3da\xrCPU_Pipe;Engine\Blenders;..\..\xr_3da\xrRender;..\..\xr_3da;$(DXSDK_DIR)\Include;WildMagic;Editor;Engine;$(BCB)\include;$(BCB)\include\vcl;$(COMPONENTS)\AlexMX;$(COMPONENTS)\ElPack\Code\Source;$(BCB)\Include\Mfc;$(CORE_DIR);..\xrEProps;$(XIPH_DIR);$(MAGIC_SW_DIR);$(SDK_DIR)\freeimage
-Item3=I:\Program Files\Borland\CBuilder6\Projects;blenders;..\..\xr_3da\xrRender_R1;..\..\xr_3da\blenders;..\..\xrCDB;..\..\xr_3da\xrCPU_Pipe;Engine\Blenders;..\..\xr_3da\xrRender;..\..\xr_3da;$(DXSDK_DIR)\Include;WildMagic;Editor;Engine;$(BCB)\include;$(BCB)\include\vcl;$(COMPONENTS)\AlexMX;$(COMPONENTS)\ElPack\Code\Source;$(BCB)\Include\Mfc;$(CORE_DIR);..\xrEProps;$(XIPH_DIR);$(MAGIC_SW_DIR);$(SDK_DIR)\freeimage
-Item4=blenders;..\..\xr_3da\xrRender_R1;..\..\xr_3da\blenders;..\..\xrCDB;..\..\xr_3da\xrCPU_Pipe;Engine\Blenders;..\..\xr_3da\xrRender;..\..\xr_3da;$(DXSDK_DIR)\Include;WildMagic;Editor;Engine;$(BCB)\include;$(BCB)\include\vcl;$(COMPONENTS)\AlexMX;$(COMPONENTS)\ElPack\Code\Source;$(BCB)\Include\Mfc;$(CORE_DIR);..\xrEProps;$(XIPH_DIR);$(MAGIC_SW_DIR);$(SDK_DIR)\freeimage
-Item5=blenders;..\..\xr_3da\xrRender_R1;..\..\xr_3da\blenders;..\..\xrCDB;..\..\xr_3da\xrCPU_Pipe;Engine\Blenders;..\..\xr_3da\xrRender;..\..\xr_3da;$(DXSDK_DIR)\Include;WildMagic;Editor;Engine;$(BCB)\include;$(BCB)\include\vcl;$(COMPONENTS)\AlexMX;$(COMPONENTS)\ElPack\Code\Source;$(BCB)\Include\Mfc;$(CORE_DIR);..\xrEProps;$(XIPH_DIR);$(MAGIC_SW_DIR)
-Item6=..\..\xrCDB;..\..\xr_3da\xrCPU_Pipe;Engine\Blenders;..\..\xr_3da\xrRender;..\..\xr_3da;$(DXSDK_DIR)\Include;WildMagic;Editor;Engine;$(BCB)\include;$(BCB)\include\vcl;$(COMPONENTS)\AlexMX;$(COMPONENTS)\ElPack\Code\Source;$(BCB)\Include\Mfc;$(CORE_DIR);..\xrEProps;$(XIPH_DIR);$(MAGIC_SW_DIR)
-Item7=..\..\xrCDB;..\..\xr_3da\xrCPU_Pipe;Engine\Blenders;..\..\xr_3da\xrRender;..\..\xr_3da;$(DXSDK_DIR)\Include;WildMagic;Editor;Engine;$(BCB)\include;$(BCB)\include\vcl;$(COMPONENTS)\AlexMX;$(COMPONENTS)\ElPack\Code\Source;$(BCB)\Include\Mfc;$(CORE_DIR);..\xrEProps;$(XIPH_DIR)
-Item8=..\..\xrCDB;..\..\xr_3da\xrCPU_Pipe;Engine\Blenders;..\..\xr_3da\xrRender;..\..\xr_3da;$(DXSDK_DIR)\Include;WildMagic;Editor;Engine;$(BCB)\include;$(BCB)\include\vcl;$(COMPONENTS)\AlexMX;$(COMPONENTS)\ElPack\Code\Source;$(BCB)\Include\Mfc;$(CORE_DIR);..\xrEProps;$(XIPH_DIR)\include
-Item9=$(DXSDK_DIR)\Include;WildMagic;Editor;Engine;$(BCB)\include;$(BCB)\include\vcl;$(COMPONENTS)\AlexMX;$(COMPONENTS)\ElPack\Code\Source;$(BCB)\Include\Mfc;$(CORE_DIR);..\xrEProps;$(XIPH_DIR)\include
+Count=16
+Item0=$(DINPUT_DIR);$(DSOUND_DIR);..\..\xr_3da\xrRender_R1;..\..\xr_3da\blenders;..\..\xrCDB;..\..\xr_3da\xrCPU_Pipe;Engine\Blenders;..\..\xr_3da\xrRender;..\..\xr_3da;$(D3DX_DIR)\Include;WildMagic;Editor;Engine;$(BCB)\include;$(BCB)\include\vcl;$(COMPONENTS)\AlexMX;$(COMPONENTS)\ElPack\Code\Source;$(BCB)\Include\Mfc;$(CORE_DIR);..\xrEProps;$(XIPH_DIR)\libtheora\include;$(MAGIC_SW_DIR);X:\3rd_party\Src;$(XIPH_DIR)\libogg\include;$(XIPH_DIR)\libvorbis\include
+Item1=$(DINPUT_DIR);$(DSOUND_DIR);..\..\xr_3da\xrRender_R1;..\..\xr_3da\blenders;..\..\xrCDB;..\..\xr_3da\xrCPU_Pipe;Engine\Blenders;..\..\xr_3da\xrRender;..\..\xr_3da;$(D3DX_DIR)\Include;WildMagic;Editor;Engine;$(BCB)\include;$(BCB)\include\vcl;$(COMPONENTS)\AlexMX;$(COMPONENTS)\ElPack\Code\Source;$(BCB)\Include\Mfc;$(CORE_DIR);..\xrEProps;$(XIPH_DIR)\libtheora\include;$(MAGIC_SW_DIR);X:\3rd_party\Src\;$(XIPH_DIR)\libogg\include;$(XIPH_DIR)\libvorbis\include
+Item2=$(DINPUT_DIR);$(DSOUND_DIR);..\..\xr_3da\xrRender_R1;..\..\xr_3da\blenders;..\..\xrCDB;..\..\xr_3da\xrCPU_Pipe;Engine\Blenders;..\..\xr_3da\xrRender;..\..\xr_3da;$(D3DX_DIR)\Include;WildMagic;Editor;Engine;$(BCB)\include;$(BCB)\include\vcl;$(COMPONENTS)\AlexMX;$(COMPONENTS)\ElPack\Code\Source;$(BCB)\Include\Mfc;$(CORE_DIR);..\xrEProps;$(XIPH_DIR)\libtheora\include;$(MAGIC_SW_DIR);X:\3rd_party\Src\FreeImage\Source;$(XIPH_DIR)\libogg\include;$(XIPH_DIR)\libvorbis\include
+Item3=$(DSOUND_DIR);$(DINPUT_DIR);..\..\xr_3da\xrRender_R1;..\..\xr_3da\blenders;..\..\xrCDB;..\..\xr_3da\xrCPU_Pipe;Engine\Blenders;..\..\xr_3da\xrRender;..\..\xr_3da;$(D3DX_DIR)\Include;WildMagic;Editor;Engine;$(BCB)\include;$(BCB)\include\vcl;$(COMPONENTS)\AlexMX;$(COMPONENTS)\ElPack\Code\Source;$(BCB)\Include\Mfc;$(CORE_DIR);..\xrEProps;$(XIPH_DIR)\libtheora\include;$(MAGIC_SW_DIR);X:\3rd_party\Src\FreeImage\Source;$(XIPH_DIR)\libogg\include;$(XIPH_DIR)\libvorbis\include
+Item4=$(DSOUND_DIR);..\..\xr_3da\xrRender_R1;..\..\xr_3da\blenders;..\..\xrCDB;..\..\xr_3da\xrCPU_Pipe;Engine\Blenders;..\..\xr_3da\xrRender;..\..\xr_3da;$(D3DX_DIR)\Include;WildMagic;Editor;Engine;$(BCB)\include;$(BCB)\include\vcl;$(COMPONENTS)\AlexMX;$(COMPONENTS)\ElPack\Code\Source;$(BCB)\Include\Mfc;$(CORE_DIR);..\xrEProps;$(XIPH_DIR)\libtheora\include;$(MAGIC_SW_DIR);X:\3rd_party\Src\FreeImage\Source;$(XIPH_DIR)\libogg\include;$(XIPH_DIR)\libvorbis\include
+Item5=..\..\xr_3da\xrRender_R1;..\..\xr_3da\blenders;..\..\xrCDB;..\..\xr_3da\xrCPU_Pipe;Engine\Blenders;..\..\xr_3da\xrRender;..\..\xr_3da;$(DXSDK_DIR)\Include;WildMagic;Editor;Engine;$(BCB)\include;$(BCB)\include\vcl;$(COMPONENTS)\AlexMX;$(COMPONENTS)\ElPack\Code\Source;$(BCB)\Include\Mfc;$(CORE_DIR);..\xrEProps;$(XIPH_DIR)\libtheora\include;$(MAGIC_SW_DIR);X:\3rd_party\Src\FreeImage\Source;$(XIPH_DIR)\libogg\include;$(XIPH_DIR)\libvorbis\include
+Item6=..\..\xr_3da\xrRender_R1;..\..\xr_3da\blenders;..\..\xrCDB;..\..\xr_3da\xrCPU_Pipe;Engine\Blenders;..\..\xr_3da\xrRender;..\..\xr_3da;$(DXSDK_DIR)\Include;WildMagic;Editor;Engine;$(BCB)\include;$(BCB)\include\vcl;$(COMPONENTS)\AlexMX;$(COMPONENTS)\ElPack\Code\Source;$(BCB)\Include\Mfc;$(CORE_DIR);..\xrEProps;$(XIPH_DIR)\libtheora\include;$(MAGIC_SW_DIR);$(SDK_DIR)\freeimage;$(XIPH_DIR)\libogg\include;$(XIPH_DIR)\libvorbis\include
+Item7=I:\Program Files\Borland\CBuilder6\Projects;..\..\xr_3da\xrRender_R1;..\..\xr_3da\blenders;..\..\xrCDB;..\..\xr_3da\xrCPU_Pipe;Engine\Blenders;..\..\xr_3da\xrRender;..\..\xr_3da;$(DXSDK_DIR)\Include;WildMagic;Editor;Engine;$(BCB)\include;$(BCB)\include\vcl;$(COMPONENTS)\AlexMX;$(COMPONENTS)\ElPack\Code\Source;$(BCB)\Include\Mfc;$(CORE_DIR);..\xrEProps;$(XIPH_DIR)\libtheora\include;$(MAGIC_SW_DIR);$(SDK_DIR)\freeimage;$(XIPH_DIR)\libogg\include;$(XIPH_DIR)\libvorbis\include
+Item8=I:\Program Files\Borland\CBuilder6\Projects;..\..\xr_3da\xrRender_R1;..\..\xr_3da\blenders;..\..\xrCDB;..\..\xr_3da\xrCPU_Pipe;Engine\Blenders;..\..\xr_3da\xrRender;..\..\xr_3da;$(DXSDK_DIR)\Include;WildMagic;Editor;Engine;$(BCB)\include;$(BCB)\include\vcl;$(COMPONENTS)\AlexMX;$(COMPONENTS)\ElPack\Code\Source;$(BCB)\Include\Mfc;$(CORE_DIR);..\xrEProps;$(XIPH_DIR);$(MAGIC_SW_DIR);$(SDK_DIR)\freeimage
+Item9=I:\Program Files\Borland\CBuilder6\Projects;blenders;..\..\xr_3da\xrRender_R1;..\..\xr_3da\blenders;..\..\xrCDB;..\..\xr_3da\xrCPU_Pipe;Engine\Blenders;..\..\xr_3da\xrRender;..\..\xr_3da;$(DXSDK_DIR)\Include;WildMagic;Editor;Engine;$(BCB)\include;$(BCB)\include\vcl;$(COMPONENTS)\AlexMX;$(COMPONENTS)\ElPack\Code\Source;$(BCB)\Include\Mfc;$(CORE_DIR);..\xrEProps;$(XIPH_DIR);$(MAGIC_SW_DIR);$(SDK_DIR)\freeimage
+Item10=blenders;..\..\xr_3da\xrRender_R1;..\..\xr_3da\blenders;..\..\xrCDB;..\..\xr_3da\xrCPU_Pipe;Engine\Blenders;..\..\xr_3da\xrRender;..\..\xr_3da;$(DXSDK_DIR)\Include;WildMagic;Editor;Engine;$(BCB)\include;$(BCB)\include\vcl;$(COMPONENTS)\AlexMX;$(COMPONENTS)\ElPack\Code\Source;$(BCB)\Include\Mfc;$(CORE_DIR);..\xrEProps;$(XIPH_DIR);$(MAGIC_SW_DIR);$(SDK_DIR)\freeimage
+Item11=blenders;..\..\xr_3da\xrRender_R1;..\..\xr_3da\blenders;..\..\xrCDB;..\..\xr_3da\xrCPU_Pipe;Engine\Blenders;..\..\xr_3da\xrRender;..\..\xr_3da;$(DXSDK_DIR)\Include;WildMagic;Editor;Engine;$(BCB)\include;$(BCB)\include\vcl;$(COMPONENTS)\AlexMX;$(COMPONENTS)\ElPack\Code\Source;$(BCB)\Include\Mfc;$(CORE_DIR);..\xrEProps;$(XIPH_DIR);$(MAGIC_SW_DIR)
+Item12=..\..\xrCDB;..\..\xr_3da\xrCPU_Pipe;Engine\Blenders;..\..\xr_3da\xrRender;..\..\xr_3da;$(DXSDK_DIR)\Include;WildMagic;Editor;Engine;$(BCB)\include;$(BCB)\include\vcl;$(COMPONENTS)\AlexMX;$(COMPONENTS)\ElPack\Code\Source;$(BCB)\Include\Mfc;$(CORE_DIR);..\xrEProps;$(XIPH_DIR);$(MAGIC_SW_DIR)
+Item13=..\..\xrCDB;..\..\xr_3da\xrCPU_Pipe;Engine\Blenders;..\..\xr_3da\xrRender;..\..\xr_3da;$(DXSDK_DIR)\Include;WildMagic;Editor;Engine;$(BCB)\include;$(BCB)\include\vcl;$(COMPONENTS)\AlexMX;$(COMPONENTS)\ElPack\Code\Source;$(BCB)\Include\Mfc;$(CORE_DIR);..\xrEProps;$(XIPH_DIR)
+Item14=..\..\xrCDB;..\..\xr_3da\xrCPU_Pipe;Engine\Blenders;..\..\xr_3da\xrRender;..\..\xr_3da;$(DXSDK_DIR)\Include;WildMagic;Editor;Engine;$(BCB)\include;$(BCB)\include\vcl;$(COMPONENTS)\AlexMX;$(COMPONENTS)\ElPack\Code\Source;$(BCB)\Include\Mfc;$(CORE_DIR);..\xrEProps;$(XIPH_DIR)\include
+Item15=$(DXSDK_DIR)\Include;WildMagic;Editor;Engine;$(BCB)\include;$(BCB)\include\vcl;$(COMPONENTS)\AlexMX;$(COMPONENTS)\ElPack\Code\Source;$(BCB)\Include\Mfc;$(CORE_DIR);..\xrEProps;$(XIPH_DIR)\include
 
 [HistoryLists\hlLibraryPath]
-Count=7
-Item0=..\..\xr_3da\xrRender_R1;..\..\xr_3da\blenders;WildMagic;Editor;..\..\xrCDB;..\..\xr_3da\xrCPU_Pipe;Engine\Blenders;..\..\xr_3da\xrRender;..\..\xr_3da;Engine;$(BCB)\lib;$(BCB)\lib\obj;$(BCB)\Projects\Lib;$(COMPONENTS)\AlexMX;$(COMPONENTS)\ElPack\Code\Source;$(BCB)\Lib\Psdk;x:\libraries\SDK
-Item1=..\..\xr_3da\xrRender_R1;..\..\xr_3da\blenders;WildMagic;Editor;..\..\xrCDB;..\..\xr_3da\xrCPU_Pipe;Engine\Blenders;..\..\xr_3da\xrRender;..\..\xr_3da;Engine;$(BCB)\lib;$(BCB)\lib\obj;$(BCB)\Projects\Lib;$(COMPONENTS)\AlexMX;$(COMPONENTS)\ElPack\Code\Source;$(BCB)\Lib\Psdk;x:\libraries
-Item2=..\..\xr_3da\xrRender_R1;..\..\xr_3da\blenders;WildMagic;Editor;..\..\xrCDB;..\..\xr_3da\xrCPU_Pipe;Engine\Blenders;..\..\xr_3da\xrRender;..\..\xr_3da;Engine;$(BCB)\lib;$(BCB)\lib\obj;$(BCB)\Projects\Lib;$(COMPONENTS)\AlexMX;$(COMPONENTS)\ElPack\Code;$(BCB)\Lib\Psdk;x:\libraries
-Item3=I:\Program Files\Borland\CBuilder6\Projects;blenders;..\..\xr_3da\xrRender_R1;..\..\xr_3da\blenders;WildMagic;Editor;..\..\xrCDB;..\..\xr_3da\xrCPU_Pipe;Engine\Blenders;..\..\xr_3da\xrRender;..\..\xr_3da;Engine;$(BCB)\lib;$(BCB)\lib\obj;$(BCB)\Projects\Lib;$(COMPONENTS)\AlexMX;$(COMPONENTS)\ElPack\Code;$(BCB)\Lib\Psdk;x:\libraries
-Item4=blenders;..\..\xr_3da\xrRender_R1;..\..\xr_3da\blenders;WildMagic;Editor;..\..\xrCDB;..\..\xr_3da\xrCPU_Pipe;Engine\Blenders;..\..\xr_3da\xrRender;..\..\xr_3da;Engine;$(BCB)\lib;$(BCB)\lib\obj;$(BCB)\Projects\Lib;$(COMPONENTS)\AlexMX;$(COMPONENTS)\ElPack\Code;$(BCB)\Lib\Psdk;x:\libraries
-Item5=WildMagic;Editor;..\..\xrCDB;..\..\xr_3da\xrCPU_Pipe;Engine\Blenders;..\..\xr_3da\xrRender;..\..\xr_3da;Engine;$(BCB)\lib;$(BCB)\lib\obj;$(BCB)\Projects\Lib;$(COMPONENTS)\AlexMX;$(COMPONENTS)\ElPack\Code;$(BCB)\Lib\Psdk;x:\libraries
-Item6=Editor;WildMagic;Engine;$(BCB)\lib;$(BCB)\lib\obj;$(BCB)\Projects\Lib;$(COMPONENTS)\AlexMX;$(COMPONENTS)\ElPack\Code;$(BCB)\Lib\Psdk;x:\libraries
+Count=11
+Item0=$(COMPONENTS)\elpack\code;..\..\xr_3da\xrRender_R1;..\..\xr_3da\blenders;WildMagic;Editor;..\..\xrCDB;..\..\xr_3da\xrCPU_Pipe;Engine\Blenders;..\..\xr_3da\xrRender;..\..\xr_3da;Engine;$(BCB)\lib;$(BCB)\lib\obj;$(BCB)\Projects\Lib;$(COMPONENTS)\AlexMX;$(COMPONENTS)\ElPack\Code\Source;$(BCB)\Lib\Psdk;X:\3rd_party\_LIB\Release\Win32;X:\ogsr_engine\_LIB\SDK\Release\Win32
+Item1=$(COMPONENTS)\elpack\code;..\..\xr_3da\xrRender_R1;..\..\xr_3da\blenders;WildMagic;Editor;..\..\xrCDB;..\..\xr_3da\xrCPU_Pipe;Engine\Blenders;..\..\xr_3da\xrRender;..\..\xr_3da;Engine;$(BCB)\lib;$(BCB)\lib\obj;$(BCB)\Projects\Lib;$(COMPONENTS)\AlexMX;$(COMPONENTS)\ElPack\Code\Source;$(BCB)\Lib\Psdk;X:\3rd_party\_LIB\Release\Win32
+Item2=$(COMPONENTS)\elpack\code;..\..\xr_3da\xrRender_R1;..\..\xr_3da\blenders;WildMagic;Editor;..\..\xrCDB;..\..\xr_3da\xrCPU_Pipe;Engine\Blenders;..\..\xr_3da\xrRender;..\..\xr_3da;Engine;$(BCB)\lib;$(BCB)\lib\obj;$(BCB)\Projects\Lib;$(COMPONENTS)\AlexMX;$(COMPONENTS)\ElPack\Code\Source;$(BCB)\Lib\Psdk;X:\3rd_party\_LIB\Release\Win32\
+Item3=e:\xray_sources\soc\trunk\3rd party\components\elpack\code;..\..\xr_3da\xrRender_R1;..\..\xr_3da\blenders;WildMagic;Editor;..\..\xrCDB;..\..\xr_3da\xrCPU_Pipe;Engine\Blenders;..\..\xr_3da\xrRender;..\..\xr_3da;Engine;$(BCB)\lib;$(BCB)\lib\obj;$(BCB)\Projects\Lib;$(COMPONENTS)\AlexMX;$(COMPONENTS)\ElPack\Code\Source;$(BCB)\Lib\Psdk;X:\3rd_party\_LIB\Release\Win32\
+Item4=..\..\xr_3da\xrRender_R1;..\..\xr_3da\blenders;WildMagic;Editor;..\..\xrCDB;..\..\xr_3da\xrCPU_Pipe;Engine\Blenders;..\..\xr_3da\xrRender;..\..\xr_3da;Engine;$(BCB)\lib;$(BCB)\lib\obj;$(BCB)\Projects\Lib;$(COMPONENTS)\AlexMX;$(COMPONENTS)\ElPack\Code\Source;$(BCB)\Lib\Psdk;X:\3rd_party\_LIB\Release\Win32\
+Item5=..\..\xr_3da\xrRender_R1;..\..\xr_3da\blenders;WildMagic;Editor;..\..\xrCDB;..\..\xr_3da\xrCPU_Pipe;Engine\Blenders;..\..\xr_3da\xrRender;..\..\xr_3da;Engine;$(BCB)\lib;$(BCB)\lib\obj;$(BCB)\Projects\Lib;$(COMPONENTS)\AlexMX;$(COMPONENTS)\ElPack\Code\Source;$(BCB)\Lib\Psdk;x:\libraries
+Item6=..\..\xr_3da\xrRender_R1;..\..\xr_3da\blenders;WildMagic;Editor;..\..\xrCDB;..\..\xr_3da\xrCPU_Pipe;Engine\Blenders;..\..\xr_3da\xrRender;..\..\xr_3da;Engine;$(BCB)\lib;$(BCB)\lib\obj;$(BCB)\Projects\Lib;$(COMPONENTS)\AlexMX;$(COMPONENTS)\ElPack\Code;$(BCB)\Lib\Psdk;x:\libraries
+Item7=I:\Program Files\Borland\CBuilder6\Projects;blenders;..\..\xr_3da\xrRender_R1;..\..\xr_3da\blenders;WildMagic;Editor;..\..\xrCDB;..\..\xr_3da\xrCPU_Pipe;Engine\Blenders;..\..\xr_3da\xrRender;..\..\xr_3da;Engine;$(BCB)\lib;$(BCB)\lib\obj;$(BCB)\Projects\Lib;$(COMPONENTS)\AlexMX;$(COMPONENTS)\ElPack\Code;$(BCB)\Lib\Psdk;x:\libraries
+Item8=blenders;..\..\xr_3da\xrRender_R1;..\..\xr_3da\blenders;WildMagic;Editor;..\..\xrCDB;..\..\xr_3da\xrCPU_Pipe;Engine\Blenders;..\..\xr_3da\xrRender;..\..\xr_3da;Engine;$(BCB)\lib;$(BCB)\lib\obj;$(BCB)\Projects\Lib;$(COMPONENTS)\AlexMX;$(COMPONENTS)\ElPack\Code;$(BCB)\Lib\Psdk;x:\libraries
+Item9=WildMagic;Editor;..\..\xrCDB;..\..\xr_3da\xrCPU_Pipe;Engine\Blenders;..\..\xr_3da\xrRender;..\..\xr_3da;Engine;$(BCB)\lib;$(BCB)\lib\obj;$(BCB)\Projects\Lib;$(COMPONENTS)\AlexMX;$(COMPONENTS)\ElPack\Code;$(BCB)\Lib\Psdk;x:\libraries
+Item10=Editor;WildMagic;Engine;$(BCB)\lib;$(BCB)\lib\obj;$(BCB)\Projects\Lib;$(COMPONENTS)\AlexMX;$(COMPONENTS)\ElPack\Code;$(BCB)\Lib\Psdk;x:\libraries
 
 [HistoryLists\hlDebugSourcePath]
 Count=1
 Item0=$(BCB)\source\vcl
 
 [HistoryLists\hlConditionals]
-Count=2
-Item0=_EDITOR;_ECOREB;_DEBUG;XRCDB_EXPORTS
-Item1=_EDITOR;_ECOREB;_DEBUG
+Count=3
+Item0=_EDITOR;_ECOREB;XRCDB_EXPORTS
+Item1=_EDITOR;_ECOREB;_DEBUG;XRCDB_EXPORTS
+Item2=_EDITOR;_ECOREB;_DEBUG
 
 [HistoryLists\hlIntOutputDir]
-Count=4
-Item0=x:\intermediate_ed\ecore
-Item1=Intermediate
-Item2=XRLC_Intermediate
-Item3=xrLC_Options
+Count=5
+Item0=X:\ogsr_engine\_TEMP\SDK\Release\Win32\ecore
+Item1=x:\intermediate_ed\ecore
+Item2=Intermediate
+Item3=XRLC_Intermediate
+Item4=xrLC_Options
 
 [HistoryLists\hlFinalOutputDir]
 Count=3
-Item0=x:\binaries\SDK\
+Item0=X:\ogsr_engine\_BIN\SDK\Release\Win32\
 Item1=x:\binaries\SDK
 Item2=x:\binaries\
 
 [HistoryLists\hIBPIOutputDir]
-Count=2
-Item0=x:\libraries\SDK
-Item1=x:\libraries
+Count=4
+Item0=X:\ogsr_engine\_LIB\SDK\Release\Win32
+Item1=X:\ogsr_engine\_LIB\SDK\Release\Win32\
+Item2=X:\3rd_party\_LIB\Release\Win32\
+Item3=x:\libraries
 
 [Debugging]
 DebugSourceDirs=$(BCB)\source\vcl
@@ -485,7 +520,7 @@ RunParams=-dsound
 Launcher=
 UseLauncher=0
 DebugCWD=
-HostApplication=x:\binaries\SDK\ActorEditor.exe
+HostApplication=X:\ogsr_engine\_BIN\SDK\Release\Win32\ActorEditor.exe
 RemoteHost=
 RemotePath=
 RemoteLauncher=
@@ -501,11 +536,6 @@ LinkCGLIB=0
 AddServerUnit=1
 AddClientUnit=1
 PrecompiledHeaders=1
-
-[Language]
-ActiveLang=
-ProjectLang=
-RootDir=
 
 [Linker]
 LibPrefix=

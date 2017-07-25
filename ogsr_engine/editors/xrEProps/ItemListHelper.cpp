@@ -10,14 +10,14 @@ CListHelper 	LHelper_impl;
 IListHelper& 	LHelper		(){return LHelper_impl;}
 //---------------------------------------------------------------------------
 
-ListItem* __stdcall CListHelper::FindItem		(ListItemsVec& items,	LPCSTR key)
+ListItem* CListHelper::FindItem		(ListItemsVec& items,	LPCSTR key)
 {
     for (ListItemsIt it=items.begin(); it!=items.end(); it++)
         if ((*it)->key==key) return *it;
     return 0;
 }
     
-ListItem* __stdcall CListHelper::CreateItem	(ListItemsVec& items, LPCSTR key, int type, u32 item_flags, void* object)
+ListItem* CListHelper::CreateItem	(ListItemsVec& items, LPCSTR key, int type, u32 item_flags, void* object)
 {
     ListItem* item	= xr_new<ListItem>	(type);
     item->SetName	(key);
@@ -27,7 +27,7 @@ ListItem* __stdcall CListHelper::CreateItem	(ListItemsVec& items, LPCSTR key, in
     return			item;
 }
 
-bool __stdcall CListHelper::NameAfterEdit(ListItem* sender, LPCSTR value, shared_str& N)
+bool CListHelper::NameAfterEdit(ListItem* sender, LPCSTR value, shared_str& N)
 {
     if (0!=AnsiString(N.c_str()).Pos("\\"))	{ N=value; return false; }
 	N	= AnsiString(N.c_str()).LowerCase().c_str();

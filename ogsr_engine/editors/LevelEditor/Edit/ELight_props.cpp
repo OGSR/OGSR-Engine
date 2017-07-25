@@ -10,7 +10,7 @@
 #include "../ECore/Editor/ui_main.h"
 
 //----------------------------------------------------
-void  __stdcall	CLight::OnAutoClick(ButtonValue* value, bool& bModif, bool& bSafe)
+void 	CLight::OnAutoClick(ButtonValue* value, bool& bModif, bool& bSafe)
 {
 	ButtonValue* B = dynamic_cast<ButtonValue*>(value); R_ASSERT(B);
 	switch(B->btn_num){
@@ -31,7 +31,7 @@ void  __stdcall	CLight::OnAutoClick(ButtonValue* value, bool& bModif, bool& bSaf
 	OnPointDataChange(value);
 }
 
-void  __stdcall	CLight::OnFuzzyGenerateClick(ButtonValue* value, bool& bModif, bool& bSafe)
+void 	CLight::OnFuzzyGenerateClick(ButtonValue* value, bool& bModif, bool& bSafe)
 {
 	ButtonValue* B = dynamic_cast<ButtonValue*>(value); R_ASSERT(B);
 	switch(B->btn_num){
@@ -42,7 +42,7 @@ void  __stdcall	CLight::OnFuzzyGenerateClick(ButtonValue* value, bool& bModif, b
     bModif = true;
 }
 
-void  __stdcall	CLight::OnFuzzyFlagChange(PropValue* value)
+void 	CLight::OnFuzzyFlagChange(PropValue* value)
 {
 	if (m_Flags.is(ELight::flPointFuzzy)){ 
     	m_FuzzyData		= xr_new<SFuzzyData>();
@@ -53,13 +53,13 @@ void  __stdcall	CLight::OnFuzzyFlagChange(PropValue* value)
     }
 }
 
-void  __stdcall	CLight::OnFuzzyTypeChange(PropValue* value)
+void 	CLight::OnFuzzyTypeChange(PropValue* value)
 {
 	OnTypeChange		(value);
     OnFuzzyDataChange   (value);
 }
 
-void  __stdcall	CLight::OnFuzzyDataChange(PropValue* value)
+void 	CLight::OnFuzzyDataChange(PropValue* value)
 {
     VERIFY(m_FuzzyData);
 	m_FuzzyData->m_Positions.resize	(m_FuzzyData->m_PointCount);
@@ -70,7 +70,7 @@ void  __stdcall	CLight::OnFuzzyDataChange(PropValue* value)
 #define X_GRID 14
 #define Y_GRID 6
 
-void __stdcall CLight::OnAttenuationDraw(CanvasValue* sender, void* _canvas, const Irect& _rect)
+void  CLight::OnAttenuationDraw(CanvasValue* sender, void* _canvas, const Irect& _rect)
 {
 	TCanvas* canvas 	= (TCanvas*)_canvas;
     const TRect& rect	= *((TRect*)&_rect);
@@ -114,12 +114,12 @@ void __stdcall CLight::OnAttenuationDraw(CanvasValue* sender, void* _canvas, con
     }
 }
 
-void  __stdcall	CLight::OnPointDataChange(PropValue* value)
+void 	CLight::OnPointDataChange(PropValue* value)
 {
 	ExecCommand(COMMAND_UPDATE_PROPERTIES);
 }
 
-void  __stdcall	CLight::OnPointDataTestEqual(CanvasValue* a, CanvasValue* b, bool& res)
+void 	CLight::OnPointDataTestEqual(CanvasValue* a, CanvasValue* b, bool& res)
 {
 	CLight* A = (CLight*)(a->tag); VERIFY(A);
 	CLight* B = (CLight*)(b->tag); VERIFY(B);
@@ -235,7 +235,7 @@ void CLight::FillProp(LPCSTR pref, PropItemVec& items)
     PHelper().CreateBOOL		(items,	PrepareKey(pref,"Use In D3D"),		&m_UseInD3D);
 }
 
-void  __stdcall	CLight::OnTypeChange(PropValue* value)
+void 	CLight::OnTypeChange(PropValue* value)
 {
 	ExecCommand		(COMMAND_UPDATE_PROPERTIES);
 

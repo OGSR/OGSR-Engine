@@ -1,8 +1,8 @@
 object frmMain: TfrmMain
   Left = -795
   Top = 245
-  ClientHeight = 414
-  ClientWidth = 754
+  Width = 770
+  Height = 452
   Color = clBtnFace
   Constraints.MinHeight = 446
   Constraints.MinWidth = 660
@@ -24,16 +24,14 @@ object frmMain: TfrmMain
   PixelsPerInch = 96
   TextHeight = 13
   object paLeftBar: TPanel
-    Left = 516
+    Left = 524
     Top = 0
     Width = 238
-    Height = 397
+    Height = 408
     Align = alRight
     BevelInner = bvLowered
     BevelOuter = bvNone
     TabOrder = 0
-    ExplicitLeft = 524
-    ExplicitHeight = 408
     object paTools: TPanel
       Left = 1
       Top = 1
@@ -44,7 +42,7 @@ object frmMain: TfrmMain
       object APHeadLabel2: TLabel
         Left = 1
         Top = 1
-        Width = 36
+        Width = 234
         Height = 13
         Align = alTop
         Alignment = taCenter
@@ -122,26 +120,22 @@ object frmMain: TfrmMain
   end
   object paBottomBar: TPanel
     Left = 0
-    Top = 397
-    Width = 754
+    Top = 408
+    Width = 762
     Height = 17
     Align = alBottom
     BevelInner = bvLowered
     BevelOuter = bvNone
     TabOrder = 1
-    ExplicitTop = 408
-    ExplicitWidth = 762
   end
   object paMain: TPanel
     Left = 0
     Top = 0
-    Width = 516
-    Height = 397
+    Width = 524
+    Height = 408
     Align = alClient
     BevelOuter = bvNone
     TabOrder = 2
-    ExplicitWidth = 524
-    ExplicitHeight = 408
     object paTopBar: TPanel
       Left = 0
       Top = 0

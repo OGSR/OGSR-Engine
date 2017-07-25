@@ -84,74 +84,6 @@ u16		CKinematics::LL_BoneID		(const shared_str& B)	{
 	if (I->first._get() != B._get() )	return BI_NONE;
 	return				u16(I->second);
 }
-
-void VisMask::set(u16 _digit, bool _set)
-{
-	if (_digit < 64)
-		_visimask.set(u64(1) << _digit, _set);
-	else
-		_visimask_ex.set(u64(1) << (_digit - 64), _set);
-}
-void VisMask:: set (u64 _low, u64 _high)
-{
-	_visimask.assign(_low);
-	_visimask_ex.assign(_high);
-}
-bool VisMask::is(u16 _digit)
-{
-	if (_digit < 64)
-		return _visimask.is(u64(1) << _digit);
-	else
-		return _visimask_ex.is(u64(1) << (_digit - 64));
-}
-void VisMask::zero()
-{
-	_visimask.zero();
-	_visimask_ex.zero();
-}
-u16 VisMask::count()
-{
-	u16 _c = 0;
-	for (u16 i = 0; i < 64; ++i)
-		if (_visimask.is(i))
-			++_c;
-	for (u16 j = 0; j < 64; ++j)
-		if (_visimask_ex.is(j))
-			++_c;
-	return _c;
-}
-void VisMask::set_all()
-{
-	for (u8 i = 0; i < 64; ++i)
-		_visimask.set(0xffffffffffffffffL, true);
-	for (u8 j = 0; j < 64; ++j)
-		_visimask_ex.set(0xffffffffffffffffL, true);
-}
-void VisMask::invert()
-{
-	_visimask.invert();
-	_visimask_ex.invert();
-}
-void VisMask::and(const VisMask& _second)
-{
-	_visimask.and(_second._visimask.flags);
-	_visimask_ex.and(_second._visimask_ex.flags);
-}
-bool VisMask::operator!=	(const VisMask& _second) const
-{
-	if (_visimask.flags != _second._visimask.flags)
-		return true;
-	if (_visimask_ex.flags != _second._visimask_ex.flags)
-		return true;
-	return false;
-}
-VisMask& VisMask::operator=	(const VisMask& _second)
-{
-	_visimask.flags = _second._visimask.flags;  
-	_visimask_ex.flags = _second._visimask_ex.flags;
-	return *this;
-}
-
 //
 LPCSTR CKinematics::LL_BoneName_dbg	(u16 ID)
 {
@@ -674,8 +606,8 @@ void CKinematics::AddWallmark(const Fmatrix* parent_xform, const Fvector3& start
 	DEFINE_VECTOR			(Fobb,OBBVec,OBBVecIt);
 	OBBVec					cache_obb;
 	cache_obb.resize		(LL_BoneCount());
-
-	for (u16 k=0; k<LL_BoneCount(); k++){
+        u16 k=0;
+	for (k=0; k<LL_BoneCount(); k++){
 		CBoneData& BD		= LL_GetData(k);
 		if (LL_GetBoneVisible(k)&&!BD.shape.flags.is(SBoneShape::sfNoPickable)){
 			Fobb& obb		= cache_obb[k];
@@ -695,7 +627,7 @@ void CKinematics::AddWallmark(const Fmatrix* parent_xform, const Fvector3& start
     test_sphere.set			(cp,size); 
 	U16Vec					test_bones;
 	test_bones.reserve		(LL_BoneCount());
-	for (u16 k=0; k<LL_BoneCount(); k++){
+	for (k=0; k<LL_BoneCount(); k++){
 		CBoneData& BD		= LL_GetData(k);  
 		if (LL_GetBoneVisible(k)&&!BD.shape.flags.is(SBoneShape::sfNoPickable)){
 			Fobb& obb		= cache_obb[k];

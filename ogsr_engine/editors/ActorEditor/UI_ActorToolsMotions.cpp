@@ -142,7 +142,7 @@ bool EngineModel::UpdateVisual(CEditableObject* source, bool bUpdGeom, bool bUpd
     IReader R							(F.pointer(), F.size());
     ::Render->model_Delete				(m_pVisual,TRUE);
     g_pMotionsContainer->clean			(false);
-    m_pVisual = ::Render->model_Create	(PAnsiChar(ChangeFileExt(source->GetName(),"").c_str()),&R);
+    m_pVisual = ::Render->model_Create	(ChangeFileExt(source->GetName(),"").c_str(),&R);
     m_pBlend = 0;
     return bRes;
 }
@@ -256,7 +256,7 @@ void CActorTools::OnMotionKeysModified()
     OnMotionDefsModified();
 }
 
-void __stdcall CActorTools::OnMotionDefsModified()
+void CActorTools::OnMotionDefsModified()
 {
 	Modified			();
 	m_Flags.set			(flUpdateMotionDefs,TRUE);

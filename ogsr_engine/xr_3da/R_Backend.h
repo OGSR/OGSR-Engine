@@ -102,10 +102,12 @@ public:
 		u32								calls;
 		u32								vs;
 		u32								ps;
-#ifdef	DEBUG
-		u32								decl;
+#if defined(DEBUG) || defined (_EDITOR) 
 		u32								vb;
 		u32								ib;
+#endif
+#ifdef	DEBUG
+		u32								decl;
 		u32								states;			// Number of times the shader-state changes
 		u32								textures;		// Number of times the shader-tex changes
 		u32								matrices;		// Number of times the shader-xform changes

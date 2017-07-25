@@ -30,10 +30,11 @@ void CPSLibrary::OnCreate()
  
 void CPSLibrary::OnDestroy()
 {
-	for (PS::PEDIt e_it = m_PEDs.begin(); e_it!=m_PEDs.end(); e_it++)
-    	(*e_it)->DestroyShader();
+	PS::PEDIt e_it = m_PEDs.begin();
+	for (e_it = m_PEDs.begin(); e_it!=m_PEDs.end(); e_it++)
+    		(*e_it)->DestroyShader();
 
-	for (PS::PEDIt e_it = m_PEDs.begin(); e_it!=m_PEDs.end(); e_it++)
+	for (e_it = m_PEDs.begin(); e_it!=m_PEDs.end(); e_it++)
 		xr_delete	(*e_it);
 	m_PEDs.clear	();
 

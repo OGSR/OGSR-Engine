@@ -1,11 +1,11 @@
 object frmPropertiesEObject: TfrmPropertiesEObject
   Left = 388
   Top = 383
+  Width = 467
+  Height = 363
   BiDiMode = bdRightToLeft
   BorderIcons = [biSystemMenu, biMinimize]
   Caption = 'Object Properties'
-  ClientHeight = 325
-  ClientWidth = 451
   Color = 10528425
   Constraints.MinHeight = 363
   Constraints.MinWidth = 400
@@ -26,8 +26,8 @@ object frmPropertiesEObject: TfrmPropertiesEObject
   object ElPageControl1: TElPageControl
     Left = 0
     Top = 0
-    Width = 451
-    Height = 325
+    Width = 459
+    Height = 336
     ActiveTabColor = 10528425
     BorderWidth = 0
     Color = 10528425
@@ -49,24 +49,18 @@ object frmPropertiesEObject: TfrmPropertiesEObject
     HotTrackFont.Style = []
     TabBkColor = 10528425
     ActivePage = tsSurfaces
-    ActiveTabFont.Charset = DEFAULT_CHARSET
-    ActiveTabFont.Color = clWindowText
-    ActiveTabFont.Height = -11
-    ActiveTabFont.Name = 'Tahoma'
-    ActiveTabFont.Style = []
+    FlatTabBorderColor = clBtnShadow
     Align = alClient
     ParentColor = False
     TabOrder = 0
     UseXPThemes = False
-    ExplicitWidth = 459
-    ExplicitHeight = 336
     object tsBasic: TElTabSheet
       PageControl = ElPageControl1
+      ImageIndex = -1
+      TabVisible = True
       Caption = 'Main Options'
       Color = 10528425
       Visible = False
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object paBasic: TPanel
         Left = 0
         Top = 0
@@ -80,10 +74,10 @@ object frmPropertiesEObject: TfrmPropertiesEObject
     end
     object tsSurfaces: TElTabSheet
       PageControl = ElPageControl1
+      ImageIndex = -1
+      TabVisible = True
       Caption = 'Surfaces'
       Color = 10528425
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object paSurfaces: TPanel
         Left = 0
         Top = 19

@@ -212,9 +212,9 @@ public:
 	virtual	void	RegisterCommands			()=0; 
 	void			ClearCommands				();
     
-	CCommandVar	 __stdcall 	CommandRenderFocus			(CCommandVar p1, CCommandVar p2);
-	CCommandVar	 __stdcall 	CommandBreakLastOperation	(CCommandVar p1, CCommandVar p2);
-	CCommandVar	 __stdcall 	CommandRenderResize			(CCommandVar p1, CCommandVar p2);
+	CCommandVar		CommandRenderFocus			(CCommandVar p1, CCommandVar p2);
+	CCommandVar		CommandBreakLastOperation	(CCommandVar p1, CCommandVar p2);
+	CCommandVar		CommandRenderResize			(CCommandVar p1, CCommandVar p2);
 
     virtual void	SaveSettings				(CInifile*){}
     virtual void	LoadSettings				(CInifile*){}

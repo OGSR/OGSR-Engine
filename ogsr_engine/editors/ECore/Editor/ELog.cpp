@@ -9,7 +9,7 @@
 #ifdef _EDITOR
 	#include "LogForm.h"
 	#include "ui_main.h"
-	void /*__stdcall*/ ELogCallback(LPCSTR txt)
+	void __stdcall ELogCallback(LPCSTR txt)
 	{
     	if (0==txt[0]) return;
     	bool bDlg 		= ('#'==txt[0])||((0!=txt[1])&&('#'==txt[1]));

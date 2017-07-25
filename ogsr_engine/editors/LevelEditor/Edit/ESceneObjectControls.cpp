@@ -18,7 +18,7 @@ __fastcall TUI_ControlObjectAdd::TUI_ControlObjectAdd(int st, int act, ESceneCus
 {
 }
 
-bool /*__fastcall*/ TUI_ControlObjectAdd::Start(TShiftState Shift)
+bool __fastcall TUI_ControlObjectAdd::Start(TShiftState Shift)
 {
     if (Shift==ssRBOnly){ ExecCommand(COMMAND_SHOWCONTEXTMENU,OBJCLASS_SCENEOBJECT); return false;}
     TfraObject* fraObject = (TfraObject*)parent_tool->pFrame; VERIFY(fraObject);
@@ -28,7 +28,7 @@ bool /*__fastcall*/ TUI_ControlObjectAdd::Start(TShiftState Shift)
 		ESceneObjectTools* ot = dynamic_cast<ESceneObjectTools*>(parent_tool);
     	LPCSTR N;
         if (ot->IsAppendRandomActive()&&ot->m_AppendRandomObjects.size()){
-			N = ot->m_AppendRandomObjects[::Random.randI(ot->m_AppendRandomObjects.size())].c_str();
+        	N = ot->m_AppendRandomObjects[Random.randI(ot->m_AppendRandomObjects.size())].c_str();  
         }else{
             N = ((TfraObject*)parent_tool->pFrame)->Current();
             if(!N){
@@ -56,20 +56,20 @@ bool /*__fastcall*/ TUI_ControlObjectAdd::Start(TShiftState Shift)
             Fvector S;
             if (ot->IsAppendRandomRotationActive()){
             	Fvector p;
-				p.set(	::Random.randF(ot->m_AppendRandomMinRotation.x,ot->m_AppendRandomMaxRotation.x),
-						::Random.randF(ot->m_AppendRandomMinRotation.y,ot->m_AppendRandomMaxRotation.y),
-						::Random.randF(ot->m_AppendRandomMinRotation.z,ot->m_AppendRandomMaxRotation.z));
+                p.set(	Random.randF(ot->m_AppendRandomMinRotation.x,ot->m_AppendRandomMaxRotation.x),
+                 		Random.randF(ot->m_AppendRandomMinRotation.y,ot->m_AppendRandomMaxRotation.y),
+                        Random.randF(ot->m_AppendRandomMinRotation.z,ot->m_AppendRandomMaxRotation.z));
                 obj->PRotation = p;
             }
             if (ot->IsAppendRandomScaleActive()){
             	Fvector s;
                 if (ot->IsAppendRandomScaleProportional()){
-					s.x		= ::Random.randF(ot->m_AppendRandomMinScale.x,ot->m_AppendRandomMaxScale.x);
+                    s.x		= Random.randF(ot->m_AppendRandomMinScale.x,ot->m_AppendRandomMaxScale.x);
                     s.set	(s.x,s.x,s.x);
                 }else{
-					s.set(	::Random.randF(ot->m_AppendRandomMinScale.x,ot->m_AppendRandomMaxScale.x),
-							::Random.randF(ot->m_AppendRandomMinScale.y,ot->m_AppendRandomMaxScale.y),
-                            ::Random.randF(ot->m_AppendRandomMinScale.z,ot->m_AppendRandomMaxScale.z));
+                    s.set(	Random.randF(ot->m_AppendRandomMinScale.x,ot->m_AppendRandomMaxScale.x),
+                            Random.randF(ot->m_AppendRandomMinScale.y,ot->m_AppendRandomMaxScale.y),
+                            Random.randF(ot->m_AppendRandomMinScale.z,ot->m_AppendRandomMaxScale.z));
                 }
                 obj->PScale = s;
             }
@@ -84,10 +84,10 @@ bool /*__fastcall*/ TUI_ControlObjectAdd::Start(TShiftState Shift)
     return false;
 }
 
-void /*__fastcall*/ TUI_ControlObjectAdd::Move(TShiftState _Shift)
+void __fastcall TUI_ControlObjectAdd::Move(TShiftState _Shift)
 {
 }
-bool /*__fastcall*/ TUI_ControlObjectAdd::End(TShiftState _Shift)
+bool __fastcall TUI_ControlObjectAdd::End(TShiftState _Shift)
 {
     return true;
 }

@@ -34,7 +34,7 @@ IC void _rect_register(U8Vec& mask, int dest_width, int dest_height, Irect& R)
         
     // Normal (and fastest way)
     for (u32 y=0; y<s_y; y++){
-        u8* P 	= &*(mask.begin()+(y+R.lt.y)*dest_width+R.lt.x);  // destination scan-line
+        u8* P 	= mask.begin()+(y+R.lt.y)*dest_width+R.lt.x;  // destination scan-line
         for (u32 x=0; x<s_x; x++,P++) *P = 0xff;
     }
 }
@@ -49,7 +49,7 @@ IC bool _rect_test(U8Vec& mask, int dest_width, int dest_height, Irect& R)
     if (R.rb.y>=dest_height)		return false;
     // Normal (and fastest way)
     for (u32 y=0; y<s_y; y++){
-        u8* P 	= &*(mask.begin()+(y+R.lt.y)*dest_width+R.lt.x);  // destination scan-line
+        u8* P 	= mask.begin()+(y+R.lt.y)*dest_width+R.lt.x;  // destination scan-line
         for (u32 x=0; x<s_x; x++,P++) if (*P) return false;
     }
     // It's OK to place it
@@ -128,10 +128,10 @@ int CImageManager::CreateMergedTexture(u32 layer_cnt, SSimpleImageVec& src_image
 
     std::sort			(src_images.begin(),src_images.end(),item_area_sort_pred);
 
-	for (SSimpleImageVecIt s_it=src_images.begin(); s_it!=src_images.end(); s_it++)
+    for (s_it=src_images.begin(); s_it!=src_images.end(); s_it++)
     	dest_remap[s_it->tag]	= s_it-src_images.begin();
 
-	for (SSimpleImageVecIt s_it = src_images.begin(); s_it!=src_images.end(); s_it++){
+    for (s_it = src_images.begin(); s_it!=src_images.end(); s_it++){
 		Irect R;		R.set(0,0, s_it->w-1,s_it->h-1);
         BOOL bRotated;
         if (!_rect_place(dest_mask,dest_width,dest_height,R,bRotated)) return 0;
@@ -146,8 +146,8 @@ int CImageManager::CreateMergedTexture(u32 layer_cnt, SSimpleImageVec& src_image
         // Perform BLIT
         VERIFY			(s_it->layers.size()==layer_cnt);
         for (u32 k=0; k<layer_cnt; k++){
-			if (!bRotated) 	blit	(&*(dest_layers[k].begin()),dest_width,dest_height,&*(s_it->layers[k].begin()),s_it->w,s_it->h,R.lt.x,R.lt.y);
-            else            blit_r  (&*(dest_layers[k].begin()),dest_width,dest_height,&*(s_it->layers[k].begin()),s_it->w,s_it->h,R.lt.x,R.lt.y);
+            if (!bRotated) 	blit	(dest_layers[k].begin(),dest_width,dest_height,s_it->layers[k].begin(),s_it->w,s_it->h,R.lt.x,R.lt.y);
+            else            blit_r  (dest_layers[k].begin(),dest_width,dest_height,s_it->layers[k].begin(),s_it->w,s_it->h,R.lt.x,R.lt.y);
         }
     }
 
@@ -233,8 +233,8 @@ int CImageManager::CreateMergedTexture(const RStringVec& _names, LPCSTR dest_nam
         dest_scale.push_back	(scale);
         dest_rotate.push_back	(bRotated);
         // Perform BLIT
-		if (!bRotated) 	blit	(&*(dest_pixels.begin()),dest_width,dest_height,&*(s_it->layers.back().begin()),s_it->w,s_it->h,R.lt.x,R.lt.y);
-        else            blit_r  (&*(dest_pixels.begin()),dest_width,dest_height,&*(s_it->layers.back().begin()),s_it->w,s_it->h,R.lt.x,R.lt.y);
+        if (!bRotated) 	blit	(dest_pixels.begin(),dest_width,dest_height,s_it->layers.back().begin(),s_it->w,s_it->h,R.lt.x,R.lt.y);
+        else            blit_r  (dest_pixels.begin(),dest_width,dest_height,s_it->layers.back().begin(),s_it->w,s_it->h,R.lt.x,R.lt.y);
     }
 
     // all right. make texture.
@@ -246,7 +246,7 @@ int CImageManager::CreateMergedTexture(const RStringVec& _names, LPCSTR dest_nam
     tp.type				= STextureParams::ttImage;
     tp.mip_filter		= STextureParams::kMIPFilterAdvanced;
     tp.flags.assign		(STextureParams::flDitherColor|STextureParams::flGenerateMipMaps);
-    MakeGameTexture		(fn.c_str(),&*(dest_pixels.begin()),tp);
+    MakeGameTexture		(fn.c_str(),dest_pixels.begin(),tp);
 
     return 1;
 }

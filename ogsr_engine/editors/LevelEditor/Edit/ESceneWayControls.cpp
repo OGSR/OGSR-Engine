@@ -38,7 +38,7 @@ void ESceneWayTools::RemoveControls()
 __fastcall TUI_ControlWayPointAdd::TUI_ControlWayPointAdd(int st, int act, ESceneCustomMTools* parent):TUI_CustomControl(st,act,parent){
 }
 
-bool /*__fastcall*/ TUI_ControlWayPointAdd::Start(TShiftState Shift)
+bool __fastcall TUI_ControlWayPointAdd::Start(TShiftState Shift)
 {
 	ObjectList lst; Scene->GetQueryObjects(lst,OBJCLASS_WAY,1,1,-1);
 	TfraWayPoint* frame=(TfraWayPoint*)parent_tool->pFrame;
@@ -61,6 +61,6 @@ bool /*__fastcall*/ TUI_ControlWayPointAdd::Start(TShiftState Shift)
     return false;
 }
 
-void /*__fastcall*/ TUI_ControlWayPointAdd::OnEnter(){
+void __fastcall TUI_ControlWayPointAdd::OnEnter(){
 }
 

@@ -24,10 +24,10 @@ object frmMain: TfrmMain
   PixelsPerInch = 96
   TextHeight = 13
   object paLeftBar: TPanel
-    Left = 524
+    Left = 516
     Top = 0
     Width = 238
-    Height = 408
+    Height = 397
     Align = alRight
     BevelInner = bvLowered
     BevelOuter = bvNone
@@ -120,8 +120,8 @@ object frmMain: TfrmMain
   end
   object paBottomBar: TPanel
     Left = 0
-    Top = 408
-    Width = 762
+    Top = 397
+    Width = 754
     Height = 17
     Align = alBottom
     BevelInner = bvLowered
@@ -131,15 +131,15 @@ object frmMain: TfrmMain
   object paMain: TPanel
     Left = 0
     Top = 0
-    Width = 524
-    Height = 408
+    Width = 516
+    Height = 397
     Align = alClient
     BevelOuter = bvNone
     TabOrder = 2
     object paTopBar: TPanel
       Left = 0
       Top = 0
-      Width = 524
+      Width = 516
       Height = 18
       Align = alTop
       BevelOuter = bvNone
@@ -148,8 +148,8 @@ object frmMain: TfrmMain
     object paRender: TPanel
       Left = 0
       Top = 18
-      Width = 524
-      Height = 390
+      Width = 516
+      Height = 379
       Align = alClient
       BevelOuter = bvNone
       Color = 4868682

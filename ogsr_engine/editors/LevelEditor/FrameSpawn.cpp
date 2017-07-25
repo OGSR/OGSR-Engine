@@ -18,7 +18,7 @@ __fastcall TfraSpawn::TfraSpawn(TComponent* Owner)
     m_Current = 0;
 }
 //---------------------------------------------------------------------------
-void __stdcall TfraSpawn::OnItemFocused(ListItemsVec& items)
+void TfraSpawn::OnItemFocused(ListItemsVec& items)
 {
 	VERIFY(items.size()<=1);
     m_Current 			= 0;
@@ -68,8 +68,8 @@ void __fastcall TfraSpawn::FormShow(TObject *Sender)
 {
     m_Items->LoadSelection	(fsStorage);
     ListItemsVec items;
-	LHelper().CreateItem	(items,RPOINT_CHOOSE_NAME,0,0,(void*)RPOINT_CHOOSE_NAME);
-    LHelper().CreateItem	(items,ENVMOD_CHOOSE_NAME,0,0,(void*)ENVMOD_CHOOSE_NAME);
+    LHelper().CreateItem	(items,RPOINT_CHOOSE_NAME,0,0,RPOINT_CHOOSE_NAME);
+    LHelper().CreateItem	(items,ENVMOD_CHOOSE_NAME,0,0,ENVMOD_CHOOSE_NAME);
     CInifile::Root& data 	= pSettings->sections();
     for (CInifile::RootIt it=data.begin(); it!=data.end(); it++){
     	LPCSTR val;

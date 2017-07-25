@@ -358,12 +358,12 @@ void TfrmImageLib::DestroyUsedTHM()
     m_THM_Used.clear();
 }
 
-void __stdcall TfrmImageLib::OnTypeChange(PropValue* )
+void TfrmImageLib::OnTypeChange(PropValue* )
 {
 	UpdateProperties();
 }
 
-void __stdcall TfrmImageLib::OnCubeMapBtnClick(ButtonValue* value, bool& bModif, bool& )
+void TfrmImageLib::OnCubeMapBtnClick(ButtonValue* value, bool& bModif, bool& )
 {
 	ButtonValue* B = dynamic_cast<ButtonValue*>(value); R_ASSERT(B);
     bModif = false;
@@ -380,7 +380,7 @@ void __stdcall TfrmImageLib::OnCubeMapBtnClick(ButtonValue* value, bool& bModif,
 	}
 }
 
-void __stdcall TfrmImageLib::OnItemsFocused(ListItemsVec& items)
+void TfrmImageLib::OnItemsFocused(ListItemsVec& items)
 {
 	PropItemVec props;
 

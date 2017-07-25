@@ -326,7 +326,7 @@ void CEditableObject::PrepareBones()
     // sort by name
     std::sort(m_Bones.begin(),m_Bones.end(),pred_sort_B);
     // fill children
-	for (BoneIt b_it=m_Bones.begin(); b_it!=m_Bones.end(); b_it++){
+    for (b_it=m_Bones.begin(); b_it!=m_Bones.end(); b_it++){
         BoneIt parent	= std::find_if(m_Bones.begin(),m_Bones.end(),fBoneNameEQ((*b_it)->ParentName()));
         if (parent!=m_Bones.end()) (*parent)->children.push_back(*b_it);
     }
@@ -336,7 +336,7 @@ void CEditableObject::PrepareBones()
     fill_bones_by_parent(m_Bones,PARENT);
     VERIFY				(b_cnt==m_Bones.size());
     // update SelfID
-    for (BoneIt b_it=m_Bones.begin(); b_it!=m_Bones.end(); b_it++)
+    for (b_it=m_Bones.begin(); b_it!=m_Bones.end(); b_it++)
         (*b_it)->SelfID		= b_it-m_Bones.begin();
     VERIFY(0==m_Bones.front()->parent);
 /*    

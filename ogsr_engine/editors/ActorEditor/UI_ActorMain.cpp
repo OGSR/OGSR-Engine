@@ -31,12 +31,12 @@ CActorMain::~CActorMain()
 //---------------------------------------------------------------------------
 // actor commands
 //---------------------------------------------------------------------------
-CCommandVar __stdcall CActorTools::CommandLoad(CCommandVar p1, CCommandVar p2)
+CCommandVar CActorTools::CommandLoad(CCommandVar p1, CCommandVar p2)
 {
     xr_string temp_fn	= p1.IsString()?xr_string(p1):xr_string(""); 
     if(!p1.IsString()){
-        temp_fn			= PAnsiChar(ChangeFileExt(m_LastFileName,"").c_str());
-        if (!EFS.GetOpenName	(frmMain, _objects_, temp_fn))
+        temp_fn			= ChangeFileExt(m_LastFileName,"").c_str();
+        if (!EFS.GetOpenName	( _objects_, temp_fn ))
         	return  	FALSE;
     }
     if( temp_fn.size() ){
@@ -86,7 +86,7 @@ CCommandVar __stdcall CActorTools::CommandLoad(CCommandVar p1, CCommandVar p2)
     }
     return TRUE;
 }
-CCommandVar __stdcall CActorTools::CommandSaveBackup(CCommandVar p1, CCommandVar p2)
+CCommandVar CActorTools::CommandSaveBackup(CCommandVar p1, CCommandVar p2)
 {
 	string_path 		fn;
     strconcat			(sizeof(fn), fn, Core.UserName, "_backup.object");
@@ -94,7 +94,7 @@ CCommandVar __stdcall CActorTools::CommandSaveBackup(CCommandVar p1, CCommandVar
     ExecCommand			(COMMAND_SAVE,xr_string(fn));
     return TRUE;
 }
-CCommandVar __stdcall CActorTools::CommandSave(CCommandVar p1, CCommandVar p2)
+CCommandVar CActorTools::CommandSave(CCommandVar p1, CCommandVar p2)
 {
 	if (p2==1){
         xr_string temp_fn	= ATools->m_LastFileName.c_str();
@@ -129,10 +129,10 @@ CCommandVar __stdcall CActorTools::CommandSave(CCommandVar p1, CCommandVar p2)
     }
     return 					FALSE;
 }     
-CCommandVar __stdcall CActorTools::CommandImport(CCommandVar p1, CCommandVar p2)
+CCommandVar CActorTools::CommandImport(CCommandVar p1, CCommandVar p2)
 {
     xr_string		temp_fn			= p1.IsString()?xr_string(p1):xr_string("");
-    if(p1.IsString()||EFS.GetOpenName(frmMain, _import_,temp_fn))
+    if(p1.IsString()||EFS.GetOpenName(_import_,temp_fn))
     {
         FS_Path* pp = FS.get_path(_import_);
 
@@ -164,7 +164,7 @@ CCommandVar __stdcall CActorTools::CommandImport(CCommandVar p1, CCommandVar p2)
     }
     return FALSE;
 }
-CCommandVar __stdcall CActorTools::CommandExportDM(CCommandVar p1, CCommandVar p2)
+CCommandVar CActorTools::CommandExportDM(CCommandVar p1, CCommandVar p2)
 {
 	CCommandVar res 				= FALSE;
     xr_string fn=p1.IsString()?xr_string(p1):xr_string("");
@@ -174,7 +174,7 @@ CCommandVar __stdcall CActorTools::CommandExportDM(CCommandVar p1, CCommandVar p
     }
     return res;
 }
-CCommandVar __stdcall CActorTools::CommandExportOBJ(CCommandVar p1, CCommandVar p2)
+CCommandVar CActorTools::CommandExportOBJ(CCommandVar p1, CCommandVar p2)
 {
 	CCommandVar res 				= FALSE;
     xr_string fn=p1.IsString()?xr_string(p1):xr_string("");
@@ -184,7 +184,7 @@ CCommandVar __stdcall CActorTools::CommandExportOBJ(CCommandVar p1, CCommandVar 
     }
     return res;
 }
-CCommandVar __stdcall CActorTools::CommandExportOGF(CCommandVar p1, CCommandVar p2)
+CCommandVar CActorTools::CommandExportOGF(CCommandVar p1, CCommandVar p2)
 {
 	CCommandVar res 				= FALSE;
     xr_string fn=p1.IsString()?xr_string(p1):xr_string("");
@@ -194,7 +194,7 @@ CCommandVar __stdcall CActorTools::CommandExportOGF(CCommandVar p1, CCommandVar 
     }
     return res;
 }
-CCommandVar __stdcall CActorTools::CommandExportOMF(CCommandVar p1, CCommandVar p2)
+CCommandVar CActorTools::CommandExportOMF(CCommandVar p1, CCommandVar p2)
 {
 	CCommandVar res 				= FALSE;
     xr_string fn=p1.IsString()?xr_string(p1):xr_string("");
@@ -204,7 +204,7 @@ CCommandVar __stdcall CActorTools::CommandExportOMF(CCommandVar p1, CCommandVar 
     }
     return res;
 }
-CCommandVar __stdcall CActorTools::CommandExportCPP(CCommandVar p1, CCommandVar p2)
+CCommandVar CActorTools::CommandExportCPP(CCommandVar p1, CCommandVar p2)
 {
 	CCommandVar res 				= FALSE;
     xr_string fn=p1.IsString()?xr_string(p1):xr_string("");
@@ -214,7 +214,7 @@ CCommandVar __stdcall CActorTools::CommandExportCPP(CCommandVar p1, CCommandVar 
     }
     return res;
 }
-CCommandVar __stdcall CActorTools::CommandClear(CCommandVar p1, CCommandVar p2)
+CCommandVar CActorTools::CommandClear(CCommandVar p1, CCommandVar p2)
 {
     if (!IfModified())	return FALSE;
     // unlock
@@ -227,33 +227,33 @@ CCommandVar __stdcall CActorTools::CommandClear(CCommandVar p1, CCommandVar p2)
     UndoClear		();
     return TRUE;
 }
-CCommandVar __stdcall CActorTools::CommandUndo(CCommandVar p1, CCommandVar p2)
+CCommandVar CActorTools::CommandUndo(CCommandVar p1, CCommandVar p2)
 {
     if(!Undo())	ELog.Msg( mtInformation, "Undo buffer empty" );
     else		return ExecCommand(COMMAND_CHANGE_ACTION, etaSelect);
     return FALSE;
 }
-CCommandVar __stdcall CActorTools::CommandRedo(CCommandVar p1, CCommandVar p2)
+CCommandVar CActorTools::CommandRedo(CCommandVar p1, CCommandVar p2)
 {
     if(!Redo())	ELog.Msg( mtInformation, "Redo buffer empty" );
     else		return ExecCommand(COMMAND_CHANGE_ACTION, etaSelect);
     return FALSE;
 }
-CCommandVar __stdcall CActorTools::CommandOptimizeMotions(CCommandVar p1, CCommandVar p2)
+CCommandVar CActorTools::CommandOptimizeMotions(CCommandVar p1, CCommandVar p2)
 {
     OptimizeMotions();
     return TRUE;
 }
-CCommandVar __stdcall CActorTools::CommandMakeThumbnail(CCommandVar p1, CCommandVar p2)
+CCommandVar CActorTools::CommandMakeThumbnail(CCommandVar p1, CCommandVar p2)
 {
 	MakeThumbnail();
     return TRUE;
 }
-CCommandVar __stdcall CActorTools::CommandBatchConvert(CCommandVar p1, CCommandVar p2)
+CCommandVar CActorTools::CommandBatchConvert(CCommandVar p1, CCommandVar p2)
 {
 	CCommandVar res 				= FALSE;
     xr_string fn;
-    if (EFS.GetOpenName(frmMain, "$import$",fn,false,0,6)){
+    if (EFS.GetOpenName("$import$",fn,false,0,6)){
         if (0!=(res=BatchConvert(fn.c_str())))	ELog.Msg(mtInformation,"Convert complete.");
         else		        		    		ELog.Msg(mtError,"Convert failed.");
     }
@@ -385,16 +385,16 @@ void CActorMain::RegisterCommands()
 
 char* CActorMain::GetCaption()
 {
-	return ATools->GetEditFileName().IsEmpty()?PAnsiChar("noname"):ATools->GetEditFileName().c_str();
+	return ATools->GetEditFileName().IsEmpty()?"noname":ATools->GetEditFileName().c_str();
 }
 
-bool CActorMain::ApplyShortCut(WORD Key, TShiftState Shift)
+bool __fastcall CActorMain::ApplyShortCut(WORD Key, TShiftState Shift)
 {
     return inherited::ApplyShortCut(Key,Shift);
 }
 //---------------------------------------------------------------------------
 
-bool CActorMain::ApplyGlobalShortCut(WORD Key, TShiftState Shift)
+bool __fastcall CActorMain::ApplyGlobalShortCut(WORD Key, TShiftState Shift)
 {
     return inherited::ApplyGlobalShortCut(Key,Shift);
 }

@@ -81,7 +81,7 @@ void ESoundEnvironment::Save(IWriter& F)
 }
 //----------------------------------------------------
 
-void __stdcall ESoundEnvironment::OnChangeEnvs	(PropValue* prop)
+void ESoundEnvironment::OnChangeEnvs	(PropValue* prop)
 {
 	ExecCommand		(COMMAND_REFRESH_SOUND_ENV_GEOMETRY);
 }

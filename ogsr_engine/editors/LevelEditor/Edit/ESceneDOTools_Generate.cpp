@@ -374,7 +374,7 @@ bool EDetailManager::UpdateSlotObjects(int x, int z){
         for (U8It b_it=elem.begin(); b_it!=elem.end(); b_it++) *b_it=u8(b_it-elem.begin());
 //        best_rand A(DetailRandom);
         std::random_shuffle(elem.begin(),elem.end());//,A);
-        for (U8It b_it=elem.begin(); b_it!=elem.end(); b_it++){
+        for (b_it=elem.begin(); b_it!=elem.end(); b_it++){
 			bool bNotFound=true;
             slot->w_id	(k, GetObject(CI,*b_it));
             for (u32 j=0; j<k; j++)
@@ -396,7 +396,7 @@ bool EDetailManager::UpdateSlotObjects(int x, int z){
     }
 
     // определим ID незаполненных слотов как пустышки
-    for(u32 k=best.size(); k<4; k++)
+    for(k=best.size(); k<4; k++)
         slot->w_id(k,DetailSlot::ID_Empty);
     return true;
 }

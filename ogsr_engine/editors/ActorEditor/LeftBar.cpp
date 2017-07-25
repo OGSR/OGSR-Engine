@@ -201,7 +201,7 @@ void __fastcall TfraLeftBar::tvMotionsDragOver(TObject *Sender,
 	FHelper.DragOver(Sender,Source,X,Y,State,Accept);
 }
 //---------------------------------------------------------------------------
-void __stdcall TfraLeftBar::RenameItem(LPCSTR p0, LPCSTR p1, EItemType tp)
+void TfraLeftBar::RenameItem(LPCSTR p0, LPCSTR p1, EItemType tp)
 {
     ATools->RenameMotion(p0,p1);
 }

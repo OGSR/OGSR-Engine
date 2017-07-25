@@ -5,7 +5,7 @@
 #include "stdafx.h"
 #pragma hdrstop
 
-//#include "EditMeshVLight.h"
+#include "EditMeshVLight.h"
 #include "EditMesh.h"
 #include "EditObject.h"
 #include "ui_main.h"

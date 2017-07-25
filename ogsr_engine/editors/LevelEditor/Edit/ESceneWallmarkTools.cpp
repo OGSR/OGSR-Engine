@@ -218,7 +218,7 @@ void ESceneWallmarkTools::OnRender(int priority, bool strictB2F)
                                 w_start					= w_verts;
                             }
                             // real fill buffer
-                            FVF::LIT* S		= &*(W->verts.begin())+t_idx*3;
+                            FVF::LIT* S		= W->verts.begin()+t_idx*3;
                         	for (int k=0; k<3; k++,S++,w_verts++){
                                 w_verts->p.set	(S->p);
                                 w_verts->color	= C;
@@ -540,7 +540,7 @@ void ESceneWallmarkTools::RecurseTri(u32 t, Fmatrix &mView, wallmark &W)
 		}
 		
 		// recurse
-		for (u32 i=0; i<3; i++)
+		for (i=0; i<3; i++)
 		{
 			u32 adj					= sml_adjacency[3*t+i];
 			if (0xffffffff==adj)	continue;

@@ -27,7 +27,7 @@ BOOL PS::CPGDef::Equal(const CPGDef* pg)
 	return TRUE;
 }
 
-void __stdcall PS::CPGDef::OnEffectsEditClick(ButtonValue* B, bool& bDataModified, bool& bSafe)
+void  PS::CPGDef::OnEffectsEditClick(ButtonValue* B, bool& bDataModified, bool& bSafe)
 {
     switch (B->btn_num){
     case 0:
@@ -40,13 +40,13 @@ void __stdcall PS::CPGDef::OnEffectsEditClick(ButtonValue* B, bool& bDataModifie
     }
 }
 
-void __stdcall PS::CPGDef::OnEffectTypeChange(PropValue* sender)
+void  PS::CPGDef::OnEffectTypeChange(PropValue* sender)
 {
     ExecCommand			(COMMAND_UPDATE_PROPERTIES);
     OnParamsChange		(sender);
 }
 
-void __stdcall PS::CPGDef::OnControlClick(ButtonValue* B, bool& bDataModified, bool& bSafe)
+void  PS::CPGDef::OnControlClick(ButtonValue* B, bool& bDataModified, bool& bSafe)
 {
     switch (B->btn_num){
     case 0: 			PTools->PlayCurrent();		break;
@@ -56,7 +56,7 @@ void __stdcall PS::CPGDef::OnControlClick(ButtonValue* B, bool& bDataModified, b
     bDataModified		= false;
 }
 
-void __stdcall PS::CPGDef::OnEffectEditClick(ButtonValue* B, bool& bDataModified, bool& bSafe)
+void  PS::CPGDef::OnEffectEditClick(ButtonValue* B, bool& bDataModified, bool& bSafe)
 {
     switch (B->btn_num){
     case 0:		    	
@@ -84,7 +84,7 @@ void __stdcall PS::CPGDef::OnEffectEditClick(ButtonValue* B, bool& bDataModified
     }
 }
 
-void __stdcall PS::CPGDef::OnParamsChange(PropValue* sender)
+void  PS::CPGDef::OnParamsChange(PropValue* sender)
 {
 	PTools->SetCurrentPG	(0);
 	PTools->SetCurrentPG	(this);
@@ -94,8 +94,8 @@ void PS::CPGDef::FillProp(LPCSTR pref, ::PropItemVec& items, ::ListItem* owner)
 {                                   
 	PHelper().CreateCaption	(items,PrepareKey(pref,"Version\\Owner Name"),*m_OwnerName);
 	PHelper().CreateCaption	(items,PrepareKey(pref,"Version\\Modif Name"),*m_ModifName);
-	PHelper().CreateCaption	(items,PrepareKey(pref,"Version\\Creation Time"),PAnsiChar(Trim(AnsiString(ctime(&m_CreateTime))).c_str()));
-	PHelper().CreateCaption	(items,PrepareKey(pref,"Version\\Modified Time"),PAnsiChar(Trim(AnsiString(ctime(&m_ModifTime))).c_str()));
+	PHelper().CreateCaption	(items,PrepareKey(pref,"Version\\Creation Time"),Trim(AnsiString(ctime(&m_CreateTime))).c_str());
+	PHelper().CreateCaption	(items,PrepareKey(pref,"Version\\Modified Time"),Trim(AnsiString(ctime(&m_ModifTime))).c_str());
     ButtonValue* B;
 	B=PHelper().CreateButton	(items,PrepareKey(pref,"Control"),"Play,Stop,Stop...",ButtonValue::flFirstOnly);
     B->OnBtnClickEvent.bind		(this,&PS::CPGDef::OnControlClick);

@@ -6,7 +6,7 @@
 //---------------------------------------------------------------------------
 class TUI_ControlPortalSelect: public TUI_CustomControl{
 public:
-    __fastcall TUI_ControlPortalSelect(int st, int act, ESceneCustomMTools* parent);
+    TUI_ControlPortalSelect(int st, int act, ESceneCustomMTools* parent);
 	virtual bool Start  (TShiftState _Shift);
 	virtual bool End    (TShiftState _Shift);
 	virtual void Move   (TShiftState _Shift);

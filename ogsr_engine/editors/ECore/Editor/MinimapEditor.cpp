@@ -40,7 +40,7 @@ void __fastcall TTMinimapEditor::Hide()
     }
 }
 //---------------------------------------------------------------------------
-#include "freeimage.h"
+#include "freeimage/freeimage.h"
 #include "Image.h"
 
 bool Surface_Load(LPCSTR full_name, U32Vec& data, u32& w, u32& h, u32& a);
@@ -50,7 +50,7 @@ void __fastcall TTMinimapEditor::btnLoadClick(TObject *Sender)
     xr_string                   fn;
     image_data.clear            ();
     
-    if(EFS.GetOpenName(this, "$app_root$", fn, false, NULL, 0))
+    if(EFS.GetOpenName("$app_root$", fn, false, NULL, 0))
     {
         if (Surface_Load(fn.c_str(),image_data,image_w,image_h,image_a))
         {
@@ -60,9 +60,9 @@ void __fastcall TTMinimapEditor::btnLoadClick(TObject *Sender)
           u32 y2 = image_w-1;
           for (int y=0; y<image_h/2; y++,y2--)
           {
-              CopyMemory(line,&*(image_data.begin()+y2*image_w),sz_ln);
-			  CopyMemory(&*(image_data.begin()+y2*image_w),&*(image_data.begin()+y*image_w),sz_ln);
-              CopyMemory(&*(image_data.begin()+y*image_w),line,sz_ln);
+              CopyMemory(line,image_data.begin()+y2*image_w,sz_ln);
+              CopyMemory(image_data.begin()+y2*image_w,image_data.begin()+y*image_w,sz_ln);
+              CopyMemory(image_data.begin()+y*image_w,line,sz_ln);
           }
             xr_free(line);
 

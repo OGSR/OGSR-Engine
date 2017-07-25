@@ -1,5 +1,5 @@
 LIBRARY
 lwo.dll
 EXPORTS
-_LWO_CloseFile=_LWO_CloseFile@4
-_LWO_ImportObject=_LWO_ImportObject@8
+LWO_CloseFile=_LWO_CloseFile@4
+LWO_ImportObject=_LWO_ImportObject@8

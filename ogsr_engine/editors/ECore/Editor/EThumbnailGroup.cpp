@@ -48,7 +48,7 @@ bool EGroupThumbnail::Load(LPCSTR src_name, LPCSTR path)
 
     IReader* D 		= F->open_chunk(THM_CHUNK_DATA); R_ASSERT(D);
     m_Pixels.resize	(THUMB_SIZE);
-    D->r			(&*(m_Pixels.begin()),THUMB_SIZE*sizeof(u32));
+    D->r			(m_Pixels.begin(),THUMB_SIZE*sizeof(u32));
     D->close		();
 
     R_ASSERT		(F->find_chunk(THM_CHUNK_TYPE));
@@ -77,7 +77,7 @@ void EGroupThumbnail::Save(int age, LPCSTR path)
 	F.w_u16			(THM_GROUP_VERSION);
 	F.close_chunk	();
 
-	F.w_chunk		(THM_CHUNK_DATA | CFS_CompressMark,&*(m_Pixels.begin()),m_Pixels.size()*sizeof(u32));
+	F.w_chunk		(THM_CHUNK_DATA | CFS_CompressMark,m_Pixels.begin(),m_Pixels.size()*sizeof(u32));
 
     F.open_chunk	(THM_CHUNK_TYPE);
     F.w_u32			(m_Type);

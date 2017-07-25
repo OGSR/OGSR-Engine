@@ -6,7 +6,7 @@
 //------------------------------------------------------------------------------
 class TUI_ControlObjectAdd: public TUI_CustomControl{
 public:
-    __fastcall TUI_ControlObjectAdd(int st, int act, ESceneCustomMTools* parent);
+    TUI_ControlObjectAdd(int st, int act, ESceneCustomMTools* parent);
     virtual ~TUI_ControlObjectAdd(){;}
 	virtual bool Start  (TShiftState _Shift);
 	virtual bool End    (TShiftState _Shift);

@@ -274,7 +274,7 @@ AnsiString CFolderHelper::ReplacePart(AnsiString old_name, AnsiString ren_part, 
 //---------------------------------------------------------------------------
 // Drag'n'Drop
 //---------------------------------------------------------------------------
-void __fastcall CFolderHelper::DragDrop(TObject *Sender, TObject* Source, int X, int Y, TOnItemRename after_drag)
+void CFolderHelper::DragDrop(TObject *Sender, TObject* Source, int X, int Y, TOnItemRename after_drag)
 {
 	R_ASSERT(after_drag);
 
@@ -352,7 +352,7 @@ void __fastcall CFolderHelper::DragDrop(TObject *Sender, TObject* Source, int X,
  }
 //---------------------------------------------------------------------------
 
-void __fastcall CFolderHelper::DragOver(TObject *Sender, TObject *Source, int X, int Y, TDragState State, bool &Accept)
+void CFolderHelper::DragOver(TObject *Sender, TObject *Source, int X, int Y, TDragState State, bool &Accept)
 {
 	TElTree* tv = dynamic_cast<TElTree*>(Sender); VERIFY(Sender);
 	TElTreeItem* tgt;
@@ -387,7 +387,7 @@ void __fastcall CFolderHelper::DragOver(TObject *Sender, TObject *Source, int X,
 }
 //---------------------------------------------------------------------------
 
-void __fastcall CFolderHelper::StartDrag(TObject *Sender, TDragObject *&DragObject)
+void CFolderHelper::StartDrag(TObject *Sender, TDragObject *&DragObject)
 {
 	TElTree* tv = dynamic_cast<TElTree*>(Sender); VERIFY(Sender);
 	drag_items.clear		();

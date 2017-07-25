@@ -61,7 +61,7 @@ void __fastcall TfrmText::ebCancelClick(TObject *Sender)
 void __fastcall TfrmText::ebApplyClick(TObject *Sender)
 {
     if (!OnApplyClick.empty()){
-    	if (OnApplyClick(PAnsiChar(mmText->Text.c_str())))
+    	if (OnApplyClick(mmText->Text.c_str()))
 			*m_Text 		= mmText->Text;
     }else{
         *m_Text 			= mmText->Text;
@@ -138,7 +138,7 @@ void __fastcall TfrmText::FormClose(TObject *Sender, TCloseAction &Action)
 void __fastcall TfrmText::ebLoadClick(TObject *Sender)
 {               
 	xr_string fn;                   
-	if (EFS.GetOpenName(this, _import_,fn,false,NULL,2)){
+	if (EFS.GetOpenName(_import_,fn,false,NULL,2)){
     	xr_string		buf;
     	IReader* F 		= FS.r_open(fn.c_str());
         F->r_stringZ	(buf);
@@ -154,7 +154,7 @@ void __fastcall TfrmText::ebSaveClick(TObject *Sender)
 	xr_string fn;        
 	if (EFS.GetSaveName(_import_,fn,NULL,2)){
     	CMemoryWriter F;
-        F.w_stringZ	(PAnsiChar(mmText->Text.c_str()));
+        F.w_stringZ	(mmText->Text.c_str());
         if (!F.save_to(fn.c_str()))
 	    	Log		("!Can't save text file:",fn.c_str());
     }

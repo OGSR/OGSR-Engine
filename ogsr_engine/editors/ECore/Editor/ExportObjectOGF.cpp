@@ -161,7 +161,7 @@ void CExportObjectOGF::SSplit::SavePart(IWriter& F, CObjectOGFCollectorPacked* p
     // Faces
     F.open_chunk(OGF_INDICES);
     F.w_u32(part->m_Faces.size()*3);
-    F.w(&*(part->m_Faces.begin()),part->m_Faces.size()*3*sizeof(u16));
+    F.w(part->m_Faces.begin(),part->m_Faces.size()*3*sizeof(u16));
     F.close_chunk();
 
     // PMap
@@ -378,14 +378,14 @@ void CObjectOGFCollectorPacked::CalculateTB()
 
     // retriving data
     u32 o_idx		= 0;
-	for (OGFFaceIt face_it=m_Faces.begin(); face_it!=m_Faces.end(); face_it++){
+    for (face_it=m_Faces.begin(); face_it!=m_Faces.end(); face_it++){
         SOGFFace	&iF = *face_it;
         iF.v[0]		= (u16)o_indices[o_idx++];
         iF.v[1]		= (u16)o_indices[o_idx++];
         iF.v[2]		= (u16)o_indices[o_idx++];
     }
     m_Verts.clear	(); m_Verts.resize(v_cnt);
-	for (u32 v_idx=0; v_idx!=v_cnt; v_idx++){
+    for (u32 v_idx=0; v_idx!=v_cnt; v_idx++){
         SOGFVert	&iV = m_Verts[v_idx];
         iV.P.set	(o_position[v_idx*3+0],	o_position[v_idx*3+1],	o_position[v_idx*3+2]);
         iV.N.set	(o_normal[v_idx*3+0],	o_normal[v_idx*3+1],	o_normal[v_idx*3+2]);
@@ -400,7 +400,7 @@ void CObjectOGFCollectorPacked::CalculateTB()
     Fvector2 	Tmin,Tmax;
     Tmin.set	(flt_max,flt_max);
     Tmax.set	(flt_min,flt_min);
-    for (u32 v_idx=0; v_idx!=v_cnt; v_idx++){
+    for (v_idx=0; v_idx!=v_cnt; v_idx++){
         SOGFVert	&iV = m_Verts[v_idx];
         Tmin.min	(iV.UV);
         Tmax.max	(iV.UV);
@@ -414,7 +414,7 @@ void CObjectOGFCollectorPacked::CalculateTB()
 //    	Msg		("#!Surface [T:'%s', S:'%s'] has UV tiled more than 32 times.",m_Texture.c_str(),m_Shader.c_str());
     
     // 2. Recalc UV mapping
-    for (u32 v_idx=0; v_idx!=v_cnt; v_idx++){
+    for (v_idx=0; v_idx!=v_cnt; v_idx++){
         SOGFVert	&iV = m_Verts[v_idx];
         iV.UV.sub	(Tdelta);
     }
@@ -628,14 +628,14 @@ bool CExportObjectOGF::ExportAsWavefrontOBJ(IWriter& F, LPCSTR fn)
     sprintf					(tmp,"mtllib %s",name);				 				F.w_string	(tmp);
     // write mtl
     u32 v_offs				= 0;
-	for (SplitIt split_it=m_Splits.begin(); split_it!=m_Splits.end(); split_it++){
+    for (split_it=m_Splits.begin(); split_it!=m_Splits.end(); split_it++){
 	    _splitpath			((*split_it)->m_Surf->_Texture(), 0, 0, tex_name, 0 );
         sprintf				(tmp,"g %d",split_it-m_Splits.begin());				F.w_string	(tmp);
         sprintf				(tmp,"usemtl %s",tex_name);							F.w_string	(tmp);
         Fvector 			mV;
         Fmatrix 			mZ;
         mZ.mirrorZ			();
-		for (COGFCPIt it=(*split_it)->m_Parts.begin(); it!=(*split_it)->m_Parts.end(); it++){
+        for (COGFCPIt it=(*split_it)->m_Parts.begin(); it!=(*split_it)->m_Parts.end(); it++){
             CObjectOGFCollectorPacked* part = *it;
             // vertices
             OGFVertVec& VERTS	= part->getV_Verts();

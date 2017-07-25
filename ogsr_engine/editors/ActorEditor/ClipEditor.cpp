@@ -444,7 +444,7 @@ void __fastcall TClipMaker::BPMouseUp(TObject *Sender,
 }
 //---------------------------------------------------------------------------
 
-void __stdcall TClipMaker::OnClipItemFocused(ListItemsVec& items)
+void __fastcall TClipMaker::OnClipItemFocused(ListItemsVec& items)
 {
 	if (!items.empty()){
 	    for (ListItemsIt it=items.begin(); it!=items.end(); it++){
@@ -459,20 +459,20 @@ void __stdcall TClipMaker::OnClipItemFocused(ListItemsVec& items)
 }
 //------------------------------------------------------------------------------
 
-void __stdcall TClipMaker::OnNameChange(PropValue* V)
+void __fastcall TClipMaker::OnNameChange(PropValue* V)
 {
 	VERIFY(sel_clip);
     RepaintClips();
 }
 //------------------------------------------------------------------------------
 
-void __stdcall TClipMaker::OnClipLengthChange(PropValue* V)
+void __fastcall TClipMaker::OnClipLengthChange(PropValue* V)
 {
 	UpdateClips		();
 }
 //------------------------------------------------------------------------------
 
-void __stdcall TClipMaker::OnZoomChange(PropValue* V)
+void __fastcall TClipMaker::OnZoomChange(PropValue* V)
 {
 	UpdateClips		();
 }
@@ -549,7 +549,7 @@ void TClipMaker::AppendClip()
 void TClipMaker::LoadClips()
 {
     bool bRes=true;
-	if (EFS.GetOpenName(this,"$clips$",m_ClipFName)){
+	if (EFS.GetOpenName("$clips$",m_ClipFName)){
     	Clear		();
     	IReader* F	= FS.r_open(m_ClipFName.c_str()); VERIFY(F);
         m_ClipFName	= EFS.ExcludeBasePath(m_ClipFName.c_str(),FS.get_path("$clips$")->m_Path);
@@ -795,7 +795,7 @@ void TClipMaker::RealUpdateClips()
     Stop			();
     // clip list
     ListItemsVec	l_items;
-    for (UIClipIt it=clips.begin(); it!=clips.end(); it++)
+    for (it=clips.begin(); it!=clips.end(); it++)
     	LHelper().CreateItem	(l_items,*(*it)->name,0,0,*it);
 	m_ClipList->AssignItems		(l_items,true);
 	// select default clip

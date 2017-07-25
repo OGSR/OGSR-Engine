@@ -164,7 +164,7 @@ struct SBuildLight{
     float					energy;
 };
 DEFINE_VECTOR				(SBuildLight,BLVec,BLIt);
-ICF static void __stdcall simple_hemi_callback(float x, float y, float z, float E, LPVOID P)
+ICF static void simple_hemi_callback(float x, float y, float z, float E, LPVOID P)
 {
     BLVec* dst 					= (BLVec*)P;
     SBuildLight 				T;
@@ -221,10 +221,10 @@ void CreateLODSamples(const Fbox& bbox, U32Vec& tgt_data, u32 tgt_w, u32 tgt_h)
         Device.mFullTransform.mul(mP,mV);
         Device.MakeScreenshot	(s_pixels,tgt_w*lod_ss_quality,tgt_h*lod_ss_quality);
         d_pixels.resize 		(tgt_w*tgt_h);
-		imf_Process				(&*(d_pixels.begin()),tgt_w,tgt_h,&*(s_pixels.begin()),tgt_w*lod_ss_quality,tgt_h*lod_ss_quality,imf_box);
+		imf_Process				(d_pixels.begin(),tgt_w,tgt_h,s_pixels.begin(),tgt_w*lod_ss_quality,tgt_h*lod_ss_quality,imf_box);
         // copy LOD to final
 		for (u32 y=0; y<tgt_h; y++)
-    		CopyMemory			(&*(tgt_data.begin()+y*pitch+frame*tgt_w),&*(d_pixels.begin()+y*tgt_w),tgt_w*sizeof(u32));
+    		CopyMemory			(tgt_data.begin()+y*pitch+frame*tgt_w,d_pixels.begin()+y*tgt_w,tgt_w*sizeof(u32));
 	}
 
     // flip data
@@ -440,7 +440,7 @@ void CImageManager::CreateLODTexture(CEditableObject* OBJECT, LPCSTR tex_name, u
 
     strcpy						(src_name, EFS.ChangeFileExt(src_name,".tga").c_str());
     FS.update_path				(out_name,_textures_,src_name);
-    I->Create					(tgt_w*samples,tgt_h,&*(lod_pixels.begin()));
+    I->Create					(tgt_w*samples,tgt_h,lod_pixels.begin());
 //	I->Vflip					();
     I->SaveTGA					(out_name);
     FS.set_file_age				(out_name,age);
@@ -453,7 +453,7 @@ void CImageManager::CreateLODTexture(CEditableObject* OBJECT, LPCSTR tex_name, u
 
     strcpy						(src_name, EFS.ChangeFileExt(src_name,".tga").c_str());
     FS.update_path				(out_name,_textures_,src_name);
-    I->Create					(tgt_w*samples,tgt_h,&*(nm_pixels.begin()));
+    I->Create					(tgt_w*samples,tgt_h,nm_pixels.begin());
 //	I->Vflip					();
     I->SaveTGA					(out_name);
     FS.set_file_age				(out_name,age);

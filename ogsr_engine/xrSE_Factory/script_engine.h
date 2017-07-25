@@ -21,7 +21,11 @@ extern "C" {
 //#define DBG_DISABLE_SCRIPTS
 
 namespace ScriptEngine {
-	enum EScriptProcessors;
+	enum EScriptProcessors {
+		eScriptProcessorLevel = u32(0),
+		eScriptProcessorGame,
+		eScriptProcessorDummy = u32(-1),
+	};
 };
 
 class CScriptProcess;
