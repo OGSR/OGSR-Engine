@@ -12,6 +12,18 @@ bool TUI::CreateMailslot()
         0,                             // no maximum message size
         MAILSLOT_WAIT_FOREVER,         // no time-out for operations
         (LPSECURITY_ATTRIBUTES) NULL); // no security attributes
+    int i = 1;
+    while (hMailSlot == INVALID_HANDLE_VALUE)
+    {
+    	char _i;
+        _itoa(i, &_i, 10);
+    	slot_name += _i;
+    	hMailSlot = ::CreateMailslot(slot_name.c_str(),
+        	0,                             // no maximum message size
+        	MAILSLOT_WAIT_FOREVER,         // no time-out for operations
+        	(LPSECURITY_ATTRIBUTES) NULL); // no security attributes
+        if (i > 9) break;
+    }
     return (hMailSlot != INVALID_HANDLE_VALUE);
 }
 //---------------------------------------------------------------------------

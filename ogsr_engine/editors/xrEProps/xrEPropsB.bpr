@@ -57,7 +57,7 @@
     <RFLAGS value=""/>
     <AFLAGS value="/mu /w2 /zn"/>
     <LFLAGS value="-lX:\ogsr_engine\_LIB\SDK\Release\Win32 
-      -IX:\ogsr_engine\_TEMP\SDK\Release\Win32\eprops -D&quot;&quot; -aa -Tpd -x -Gn -Gi"/>
+      -IX:\ogsr_engine\_TEMP\SDK\Release\Win32\eprops -D&quot;&quot; -aa -Tpd -x -Gn -Gi -v"/>
     <OTHERFILES value=""/>
   </OPTIONS>
   <LINKER>

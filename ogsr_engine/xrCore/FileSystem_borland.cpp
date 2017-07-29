@@ -10,7 +10,7 @@
 #include <io.h>
 #include <fcntl.h>
 #include <sys\stat.h>
-
+/*
 bool EFS_Utils::GetOpenName(LPCSTR initial, xr_string& buffer, bool bMulti, LPCSTR offset, int start_flt_ext )
 {
 	string_path		buf;
@@ -32,7 +32,7 @@ bool EFS_Utils::GetSaveName( LPCSTR initial, xr_string& buffer, LPCSTR offset, i
 		buffer				= buf;
 
 	return bRes;
-}
+}*/
 //----------------------------------------------------
 
 void EFS_Utils::MarkFile(LPCSTR fn, bool bDeleteSource)

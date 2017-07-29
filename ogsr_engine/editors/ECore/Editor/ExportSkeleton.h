@@ -9,6 +9,7 @@
 //---------------------------------------------------------------------------
 const int clpSMX = 28, clpSMY=16, clpSMZ=28;
 //---------------------------------------------------------------------------
+extern ECORE_API float g_EpsSkelPositionDelta;
 // refs                                           
 class CEditableObject;
 class CSurface;
@@ -36,15 +37,15 @@ struct ECORE_API SSkelVert: public st_SVert{
     }
 	BOOL	similar_pos(SSkelVert& V)
     {
-        return offs.similar(V.offs,EPS_L);
+        return offs.similar(V.offs,g_EpsSkelPositionDelta);
     }
 	BOOL	similar(SSkelVert& V)
     {
     	if (bones.size()!=V.bones.size())	return FALSE;
         for (u8 k=0; k<(u8)bones.size(); k++)	{ if (!bones[k].similar(V.bones[k])) return FALSE; }
         if (!uv.similar	(V.uv,EPS_S))		return FALSE;
-		if (!offs.similar(V.offs,EPS_L))	return FALSE;
-		if (!norm.similar(V.norm,EPS_L))	return FALSE;
+		if (!offs.similar(V.offs,g_EpsSkelPositionDelta))	return FALSE;
+		if (!norm.similar(V.norm,g_EpsSkelPositionDelta))	return FALSE;
 		return TRUE;
 	}
 };

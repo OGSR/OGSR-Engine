@@ -197,7 +197,7 @@ void 	CCustomObject::OnMotionCommandsClick(ButtonValue* value, bool& bModif, boo
     AnimationUpdate			(m_MotionParams->Frame());
 	bModif = true;
 }
-
+#include "..\..\ETools\ETools.h"
 void 	CCustomObject::OnMotionFilesClick(ButtonValue* value, bool& bModif, bool& bSafe)
 {
 	ButtonValue* B = dynamic_cast<ButtonValue*>(value); R_ASSERT(B);
@@ -205,7 +205,7 @@ void 	CCustomObject::OnMotionFilesClick(ButtonValue* value, bool& bModif, bool& 
     xr_string fn;
 	switch(B->btn_num){
     case 0:
-        if(EFS.GetOpenName("$game_anims$", fn)){
+        if(ETOOLS::GetOpenName("$game_anims$", fn)){
             m_Motion->LoadMotion(fn.c_str());
             m_MotionParams->Set	(m_Motion);
             AnimationUpdate		(m_MotionParams->Frame());
@@ -214,7 +214,7 @@ void 	CCustomObject::OnMotionFilesClick(ButtonValue* value, bool& bModif, bool& 
         }
     break;
     case 1:
-        if(EFS.GetSaveName("$game_anims$", fn))
+        if(ETOOLS::GetSaveName("$game_anims$", fn))
             m_Motion->SaveMotion(fn.c_str());
     break;
 	}

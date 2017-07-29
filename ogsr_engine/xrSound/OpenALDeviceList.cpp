@@ -140,7 +140,8 @@ void ALDeviceList::Enumerate()
 			minorVersion,
 			(GetDeviceName(i)==m_defaultDeviceName)? "(default)":"" );
 	}
-	CoInitializeEx (NULL, COINIT_MULTITHREADED);
+	if (!strstr(GetCommandLine(), "-editor"))
+		CoInitializeEx (NULL, COINIT_MULTITHREADED);
 }
 
 void ALDeviceList::SelectBestDevice()

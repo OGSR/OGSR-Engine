@@ -134,11 +134,11 @@ void __fastcall TfrmText::FormClose(TObject *Sender, TCloseAction &Action)
 //	Action = caFree;
 }
 //---------------------------------------------------------------------------
-
+#include "..\..\ETools\ETools.h"
 void __fastcall TfrmText::ebLoadClick(TObject *Sender)
 {               
 	xr_string fn;                   
-	if (EFS.GetOpenName(_import_,fn,false,NULL,2)){
+	if (ETOOLS::GetOpenName(_import_,fn,false,NULL,2)){
     	xr_string		buf;
     	IReader* F 		= FS.r_open(fn.c_str());
         F->r_stringZ	(buf);
@@ -152,7 +152,7 @@ void __fastcall TfrmText::ebLoadClick(TObject *Sender)
 void __fastcall TfrmText::ebSaveClick(TObject *Sender)
 {
 	xr_string fn;        
-	if (EFS.GetSaveName(_import_,fn,NULL,2)){
+	if (ETOOLS::GetSaveName(_import_,fn,NULL,2)){
     	CMemoryWriter F;
         F.w_stringZ	(mmText->Text.c_str());
         if (!F.save_to(fn.c_str()))

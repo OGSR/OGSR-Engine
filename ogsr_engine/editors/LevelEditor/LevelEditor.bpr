@@ -181,7 +181,7 @@
     <RFLAGS value=""/>
     <AFLAGS value="/mx /w2 /zn"/>
     <LFLAGS value="-lX:\ogsr_engine\_LIB\SDK\Release\Win32 
-      -IX:\ogsr_engine\_TEMP\SDK\Release\Win32\le -D&quot;&quot; -aa -Tpe -GD -x -Gn"/>
+      -IX:\ogsr_engine\_TEMP\SDK\Release\Win32\le -D&quot;&quot; -aa -Tpe -GD -x -Gn -v"/>
     <OTHERFILES value=""/>
   </OPTIONS>
   <LINKER>
@@ -374,14 +374,15 @@ Item4=Edit;H:\RAD\Borland\CBuilder6\Projects;&quot;R:\SDK\Microsoft DirectX 9.0 
 Item5=H:\RAD\Borland\CBuilder6\Projects;R:\SDK\Microsoft DirectX 9.0 SDK (April 2005)\Include;Engine\Game;Edit;Engine;r:\borland\components6\alexmx;$(BCB)\include;$(BCB)\include\vcl;R:\SDK\MagicFM_Borland\Sdk\Include;R:\Borland\Components6\ElPack\Code;R:\Borland\Components6\ElPack\Code\Source;P:\xrCore;..\ECore;..\ECore\Editor;..\ECore\Engine;..\ECore\Engine\blenders;..\ECore\Engine\visuals;..\xrEProps;P:\xrSound
 
 [HistoryLists\hlLibraryPath]
-Count=7
-Item0=..\..\xr_3da\xrRender;..\..\xr_3da;Edit;Engine;$(BCB)\Projects;$(BCB)\lib;$(BCB)\lib\obj;$(BCB)\Projects\Lib;$(COMPONENTS)\alexmx;$(COMPONENTS)\ElPack\Code;$(COMPONENTS)\ElPack\Code\Source;X:\3rd_party\_LIB\Release\Win32\;X:\ogsr_engine\_LIB\SDK\Release\Win32\
-Item1=..\..\xr_3da\xrRender;..\..\xr_3da;Edit;Engine;$(BCB)\Projects;$(BCB)\lib;$(BCB)\lib\obj;$(BCB)\Projects\Lib;$(COMPONENTS)\alexmx;$(COMPONENTS)\ElPack\Code;$(COMPONENTS)\ElPack\Code\Source;x:\libraries;X:\3rd_party\_LIB\Release\Win32\
-Item2=..\..\xr_3da\xrRender;..\..\xr_3da;Edit;Engine;$(BCB)\Projects;$(BCB)\lib;$(BCB)\lib\obj;$(BCB)\Projects\Lib;$(COMPONENTS)\alexmx;$(COMPONENTS)\ElPack\Code;$(COMPONENTS)\ElPack\Code\Source;x:\libraries
-Item3=Edit;Engine;$(BCB)\Projects;$(BCB)\lib;$(BCB)\lib\obj;$(BCB)\Projects\Lib;$(COMPONENTS)\alexmx;$(COMPONENTS)\ElPack\Code;$(COMPONENTS)\ElPack\Code\Source;x:\libraries
-Item4=$(BCB)\Projects;$(BCB)\lib;$(BCB)\lib\obj;$(BCB)\Projects\Lib;$(COMPONENTS)\alexmx;$(COMPONENTS)\ElPack\Code;$(COMPONENTS)\ElPack\Code\Source;x:\libraries
-Item5=H:\RAD\Borland\CBuilder6\Projects;Edit;Engine;C:\Rad\Borland\CBuilder6\Projects;$(BCB)\lib;$(BCB)\lib\obj;$(BCB)\Projects\Lib;r:\borland\components6\alexmx;R:\Borland\Components6\ElPack\Code;R:\Borland\Components6\ElPack\Code\Source;..\lib\dx;..\lib;x:\;..\ECore;..\ECore\Editor
-Item6=H:\RAD\Borland\CBuilder6\Projects;Engine\Game;Edit;Engine;C:\Rad\Borland\CBuilder6\Projects;$(BCB)\lib;$(BCB)\lib\obj;$(BCB)\Projects\Lib;r:\borland\components6\alexmx;R:\Borland\Components6\ElPack\Code;R:\Borland\Components6\ElPack\Code\Source;..\lib\dx;..\lib;x:\;..\ECore;..\ECore\Editor
+Count=8
+Item0=..\..\xr_3da\xrRender;..\..\xr_3da;Edit;Engine;$(BCB)\Projects;$(BCB)\lib;$(BCB)\lib\obj;$(BCB)\Projects\Lib;$(COMPONENTS)\alexmx;$(COMPONENTS)\ElPack\Code;$(COMPONENTS)\ElPack\Code\Source;X:\3rd_party\_LIB\Release\Win32;X:\ogsr_engine\_LIB\SDK\Release\Win32
+Item1=..\..\xr_3da\xrRender;..\..\xr_3da;Edit;Engine;$(BCB)\Projects;$(BCB)\lib;$(BCB)\lib\obj;$(BCB)\Projects\Lib;$(COMPONENTS)\alexmx;$(COMPONENTS)\ElPack\Code;$(COMPONENTS)\ElPack\Code\Source;X:\3rd_party\_LIB\Release\Win32\;X:\ogsr_engine\_LIB\SDK\Release\Win32\
+Item2=..\..\xr_3da\xrRender;..\..\xr_3da;Edit;Engine;$(BCB)\Projects;$(BCB)\lib;$(BCB)\lib\obj;$(BCB)\Projects\Lib;$(COMPONENTS)\alexmx;$(COMPONENTS)\ElPack\Code;$(COMPONENTS)\ElPack\Code\Source;x:\libraries;X:\3rd_party\_LIB\Release\Win32\
+Item3=..\..\xr_3da\xrRender;..\..\xr_3da;Edit;Engine;$(BCB)\Projects;$(BCB)\lib;$(BCB)\lib\obj;$(BCB)\Projects\Lib;$(COMPONENTS)\alexmx;$(COMPONENTS)\ElPack\Code;$(COMPONENTS)\ElPack\Code\Source;x:\libraries
+Item4=Edit;Engine;$(BCB)\Projects;$(BCB)\lib;$(BCB)\lib\obj;$(BCB)\Projects\Lib;$(COMPONENTS)\alexmx;$(COMPONENTS)\ElPack\Code;$(COMPONENTS)\ElPack\Code\Source;x:\libraries
+Item5=$(BCB)\Projects;$(BCB)\lib;$(BCB)\lib\obj;$(BCB)\Projects\Lib;$(COMPONENTS)\alexmx;$(COMPONENTS)\ElPack\Code;$(COMPONENTS)\ElPack\Code\Source;x:\libraries
+Item6=H:\RAD\Borland\CBuilder6\Projects;Edit;Engine;C:\Rad\Borland\CBuilder6\Projects;$(BCB)\lib;$(BCB)\lib\obj;$(BCB)\Projects\Lib;r:\borland\components6\alexmx;R:\Borland\Components6\ElPack\Code;R:\Borland\Components6\ElPack\Code\Source;..\lib\dx;..\lib;x:\;..\ECore;..\ECore\Editor
+Item7=H:\RAD\Borland\CBuilder6\Projects;Engine\Game;Edit;Engine;C:\Rad\Borland\CBuilder6\Projects;$(BCB)\lib;$(BCB)\lib\obj;$(BCB)\Projects\Lib;r:\borland\components6\alexmx;R:\Borland\Components6\ElPack\Code;R:\Borland\Components6\ElPack\Code\Source;..\lib\dx;..\lib;x:\;..\ECore;..\ECore\Editor
 
 [HistoryLists\hlDebugSourcePath]
 Count=1
@@ -406,9 +407,10 @@ Item2=x:\binaries
 Item3=x:\
 
 [HistoryLists\hIBPIOutputDir]
-Count=2
-Item0=X:\ogsr_engine\_LIB\SDK\Release\Win32\
-Item1=x:\libraries
+Count=3
+Item0=X:\ogsr_engine\_LIB\SDK\Release\Win32
+Item1=X:\ogsr_engine\_LIB\SDK\Release\Win32\
+Item2=x:\libraries
 
 [Debugging]
 DebugSourceDirs=

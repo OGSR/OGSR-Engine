@@ -22,6 +22,8 @@
 #include "SkeletonAnimated.h"
 #include "nvMeshMender.h"
 
+ECORE_API float g_EpsSkelPositionDelta = EPS_L;
+
 u16 CSkeletonCollectorPacked::VPack(SSkelVert& V)
 {
     u32 P 	= 0xffffffff;

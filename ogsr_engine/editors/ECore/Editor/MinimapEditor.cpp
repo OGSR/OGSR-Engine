@@ -44,13 +44,13 @@ void __fastcall TTMinimapEditor::Hide()
 #include "Image.h"
 
 bool Surface_Load(LPCSTR full_name, U32Vec& data, u32& w, u32& h, u32& a);
-
+#include "..\..\..\ETools\ETools.h"
 void __fastcall TTMinimapEditor::btnLoadClick(TObject *Sender)
 {
     xr_string                   fn;
     image_data.clear            ();
     
-    if(EFS.GetOpenName("$app_root$", fn, false, NULL, 0))
+    if(ETOOLS::GetOpenName("$app_root$", fn, false, NULL, 0))
     {
         if (Surface_Load(fn.c_str(),image_data,image_w,image_h,image_a))
         {

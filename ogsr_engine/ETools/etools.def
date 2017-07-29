@@ -37,14 +37,12 @@ box_query=_box_query@12
 box_query_m=_box_query_m@12
 collector_add_face_d=_collector_add_face_d@20
 collector_add_face_pd=_collector_add_face_pd@24
-_collectorp_add_face_d@20
-_create_collector@0
 _create_collectorp@12
 create_model=_create_model@16
 create_model_cl=_create_model_cl@4
 _create_model_clp@4
-create_collector=_destroy_collector@4
-destroy_collector=_destroy_collectorp@4
+create_collector=_create_collector@0
+destroy_collector=_destroy_collector@4
 destroy_model=_destroy_model@4
 _get_collider@0
 ogg_enc=_ogg_enc@20
@@ -54,3 +52,5 @@ r_end=_r_end@0
 ray_options=_ray_options@4
 ray_query=_ray_query@16
 ray_query_m=_ray_query_m@20
+GetOpenNameImpl=_GetOpenNameImpl@20
+GetSaveNameImpl=_GetSaveNameImpl@16

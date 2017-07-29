@@ -48,6 +48,56 @@ extern "C" {
 		ETOOLS_API void					__stdcall	box_query_m			(const Fmatrix& inv_parent, const CDB::MODEL *m_def, const Fbox& src);
 
 		ETOOLS_API int					__stdcall	ogg_enc				(const char* in_fn, const char* out_fn, float quality, void* comment, int comment_size);
+
+		ETOOLS_API bool					__stdcall	GetOpenNameImpl(string_path& buffer, FS_Path& path, bool bMulti, LPCSTR offset, int start_flt_ext);
+		ETOOLS_API bool					__stdcall	GetSaveNameImpl(string_path& buffer, FS_Path& path, LPCSTR offset, int start_flt_ext);
+
+		IC		   bool					__stdcall	GetOpenName(LPCSTR initial, xr_string& buffer, bool bMulti = false, LPCSTR offset = 0, int start_flt_ext = -1)
+		{
+			string_path		buf;
+			strcpy(buf, buffer.c_str());
+
+			VERIFY(buf);
+			FS_Path& P = *FS.get_path(initial);
+
+			if (xr_strlen(buf)) {
+				string_path		dr;
+				if (!(buf[0] == '\\' && buf[1] == '\\')) { // if !network
+					_splitpath(buf, dr, 0, 0, 0);
+					if (0 == dr[0])	P._update(buf, buf);
+				}
+			}
+
+			bool bRes = GetOpenNameImpl(buf, P, bMulti, offset, start_flt_ext);
+
+			if (bRes)
+				buffer = (char*)buf;
+
+			return bRes;
+		}
+
+		IC			bool				__stdcall	GetSaveName(LPCSTR initial, xr_string& buffer, LPCSTR offset = 0, int start_flt_ext = -1)
+		{
+			string_path		buf;
+			strcpy(buf, buffer.c_str());
+
+			VERIFY(buf);
+			FS_Path& P = *FS.get_path(initial);
+
+			if (xr_strlen(buf)) {
+				string_path		dr;
+				if (!(buf[0] == '\\' && buf[1] == '\\')) { // if !network
+					_splitpath(buf, dr, 0, 0, 0);
+					if (0 == dr[0])	P._update(buf, buf);
+				}
+			}
+
+			bool bRes = GetSaveNameImpl(buf, P, offset, start_flt_ext);
+			if (bRes)
+				buffer = buf;
+
+			return bRes;
+		}
 	};
 };
 

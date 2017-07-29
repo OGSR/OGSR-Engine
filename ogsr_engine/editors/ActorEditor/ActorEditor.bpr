@@ -59,7 +59,7 @@
     <RFLAGS value=""/>
     <AFLAGS value="/mx /w2 /zn"/>
     <LFLAGS value="-lX:\ogsr_engine\_LIB\SDK\Release\Win32 
-      -IX:\ogsr_engine\_TEMP\SDK\Release\Win32\ae -D&quot;&quot; -aa -Tpe -GD -x -Gn"/>
+      -IX:\ogsr_engine\_TEMP\SDK\Release\Win32\ae -D&quot;&quot; -aa -Tpe -GD -x -Gn -v"/>
     <OTHERFILES value=""/>
   </OPTIONS>
   <LINKER>
@@ -98,7 +98,7 @@ AutoIncBuild=1
 MajorVer=1
 MinorVer=0
 Release=2
-Build=153
+Build=154
 Debug=1
 PreRelease=0
 Special=0
@@ -110,7 +110,7 @@ CodePage=1252
 [Version Info Keys]
 CompanyName=
 FileDescription=
-FileVersion=1.0.2.153
+FileVersion=1.0.2.154
 InternalName=
 LegalCopyright=
 LegalTrademarks=

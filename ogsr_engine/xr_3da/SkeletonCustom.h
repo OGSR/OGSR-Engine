@@ -170,7 +170,7 @@ DEFINE_VECTOR(intrusive_ptr<CSkeletonWallmark>,SkeletonWMVec,SkeletonWMVecIt);
 #	define _DBG_SINGLE_USE_MARKER
 #endif
 
-
+#include "vismask.h"
 class ENGINE_API	CKinematics: public FHierrarhyVisual
 {
 	typedef FHierrarhyVisual	inherited;

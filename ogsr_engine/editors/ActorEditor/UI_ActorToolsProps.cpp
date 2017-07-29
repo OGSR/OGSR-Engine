@@ -76,7 +76,7 @@ void CActorTools::OnChangeTransform(PropValue* sender)
 	UI->RedrawScene();
 }
 //------------------------------------------------------------------------------
-
+#include "..\..\ETools\ETools.h"
 void CActorTools::OnMotionEditClick(ButtonValue* V, bool& bModif, bool& bSafe)
 {
 	R_ASSERT(m_pEditObject);
@@ -85,7 +85,7 @@ void CActorTools::OnMotionEditClick(ButtonValue* V, bool& bModif, bool& bSafe)
     case 0:{ // append
         AnsiString folder,nm,full_name;
         xr_string fnames;
-        if (EFS.GetOpenName(_smotion_,fnames,true)){
+        if (ETOOLS::GetOpenName(_smotion_,fnames,true)){
             AStringVec lst;
             _SequenceToList(lst,fnames.c_str());
             bool bRes = false;
@@ -121,7 +121,7 @@ void CActorTools::OnMotionEditClick(ButtonValue* V, bool& bModif, bool& bSafe)
     case 2:{ // save
         int mr=ELog.DlgMsg(mtConfirmation, "Save selected motions only?");
         if (mr!=mrCancel){
-            if (EFS.GetSaveName(_smotion_,fn,0,1)){
+            if (ETOOLS::GetSaveName(_smotion_,fn,0,1)){
                 switch (mr){
                 case mrYes: SaveMotions(fn.c_str(),true); break;
                 case mrNo: 	SaveMotions(fn.c_str(),false);break;
@@ -377,7 +377,7 @@ void  CActorTools::OnBoneFileClick(ButtonValue* V, bool& bModif, bool& bSafe)
     switch (V->btn_num){
     case 0:{ 
     	xr_string fn;
-    	if (EFS.GetOpenName("$sbones$",fn)){
+    	if (ETOOLS::GetOpenName("$sbones$",fn)){
         	IReader* R = FS.r_open(fn.c_str());
 	    	if (m_pEditObject->LoadBoneData(*R))	ELog.DlgMsg(mtInformation,"Bone data succesfully loaded.");
             else                                    ELog.DlgMsg(mtError,"Failed to load bone data.");
@@ -388,7 +388,7 @@ void  CActorTools::OnBoneFileClick(ButtonValue* V, bool& bModif, bool& bSafe)
     }break;
     case 1:{ 
     	xr_string fn;
-    	if (EFS.GetSaveName("$sbones$",fn)){
+    	if (ETOOLS::GetSaveName("$sbones$",fn)){
         	IWriter* W = FS.w_open(fn.c_str());
             if (W){
 		    	m_pEditObject->SaveBoneData(*W);
@@ -559,6 +559,7 @@ void CActorTools::FillObjectProperties(PropItemVec& items, LPCSTR pref, ListItem
 	R_ASSERT(m_pEditObject);
     PropValue* V=0;
     PHelper().CreateFlag32			(items, "Object\\Flags\\Make Progressive",	&m_pEditObject->m_Flags,		CEditableObject::eoProgressive);
+    PHelper().CreateFlag32			(items, "Object\\Flags\\HQ Geometry",	&m_pEditObject->m_Flags,			CEditableObject::eoHQExport);
     V=PHelper().CreateVector		(items, "Object\\Transform\\Position",		&m_pEditObject->a_vPosition, 	-10000,	10000,0.01,2);
     V->OnChangeEvent.bind			(this,&CActorTools::OnChangeTransform);
     V=PHelper().CreateAngle3		(items, "Object\\Transform\\Rotation",		&m_pEditObject->a_vRotate, 		-10000,	10000,0.1,1);

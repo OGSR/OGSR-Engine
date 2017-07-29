@@ -1,6 +1,7 @@
 #include	"stdafx.h"
 #include	"ETools.h"
 #include	"xrXRC.h"
+#include "Shobjidl.h"
 
 #pragma warning(disable:4267)
 
@@ -217,6 +218,237 @@ namespace ETOOLS{
 	ETOOLS_API void	 __stdcall box_query_m	(const Fmatrix& inv_parent, const CDB::MODEL *m_def, const Fbox& src)
 	{
 		XRC.box_query(inv_parent, m_def, src);
+	}
+	ETOOLS_API bool	__stdcall	GetOpenNameImpl(string_path& buffer, FS_Path& P, bool bMulti, LPCSTR offset, int start_flt_ext)
+	{
+		// а теперь все надо перевести в юникод
+		// 1. дефолтное расширение
+		WCHAR wDefExt[32];
+		MultiByteToWideChar(
+			CP_ACP,
+			MB_PRECOMPOSED | MB_ERR_INVALID_CHARS,
+			P.m_DefExt, -1, wDefExt, 32);
+
+		// 2. начальная папка
+		string_path id;
+		GetCurrentDirectory(520, id);
+		strcat(id, "\\");
+		strcat(id, (offset&&offset[0]) ? offset : P.m_Path);
+
+		WCHAR wInitial[520];
+		MultiByteToWideChar(
+			CP_ACP,
+			MB_PRECOMPOSED | MB_ERR_INVALID_CHARS,
+			id/*(offset&&offset[0]) ? offset : P.m_Path*/, -1, wInitial, 520
+		);
+
+		IFileOpenDialog *pFileOpen;
+
+		// Create the FileOpenDialog object.
+		HRESULT hr = CoCreateInstance(CLSID_FileOpenDialog, NULL, CLSCTX_ALL, IID_IFileOpenDialog, reinterpret_cast<void**>(&pFileOpen));
+		bool bRes = false;
+		if (SUCCEEDED(hr))
+		{
+			pFileOpen->SetDefaultExtension(wDefExt);
+			pFileOpen->SetTitle(L"Open a File");
+			pFileOpen->SetOptions(FOS_PATHMUSTEXIST | FOS_FILEMUSTEXIST | FOS_NOREADONLYRETURN | FOS_NOCHANGEDIR | (bMulti ? FOS_ALLOWMULTISELECT : 0));
+
+			IShellItem *inFolder;
+			hr = SHCreateItemFromParsingName(wInitial, NULL, IID_PPV_ARGS(&inFolder));
+
+			if (SUCCEEDED(hr))
+				pFileOpen->SetDefaultFolder(inFolder);
+
+			//  фильтр			
+			WCHAR wInfo[64];
+			MultiByteToWideChar(
+				CP_ACP,
+				MB_PRECOMPOSED | MB_ERR_INVALID_CHARS,
+				P.m_FilterCaption ? P.m_FilterCaption : "", -1, wInfo, 64);
+
+			if (P.m_DefExt)
+			{
+				COMDLG_FILTERSPEC flt[2];
+				flt[0].pszName = P.m_FilterCaption ? wInfo : L"";
+				flt[0].pszSpec = wDefExt;
+				flt[1] = { L"All files", L"*.*" };
+				pFileOpen->SetFileTypes(2, flt);
+			}
+			else
+			{
+				COMDLG_FILTERSPEC flt[1];
+				flt[0] = { L"All files", L"*.*" };
+				pFileOpen->SetFileTypes(1, flt);
+			}
+
+			// Show the Open dialog box.
+			hr = pFileOpen->Show(GetForegroundWindow());
+
+			// Get the file name from the dialog box.
+			if (SUCCEEDED(hr))
+			{
+				bRes = true;
+				if (bMulti)
+				{
+					IShellItemArray *pItemArray;
+					hr = pFileOpen->GetResults(&pItemArray);
+					if (SUCCEEDED(hr))
+					{
+						DWORD cSelItems;
+						// Get the number of selected files.
+						hr = pItemArray->GetCount(&cSelItems);
+						for (DWORD j = 0; j < cSelItems; j++)
+						{
+							string_path buf;
+							IShellItem *pItem;
+							hr = pItemArray->GetItemAt(j, &pItem);
+
+							PWSTR pszFilePath;
+							hr = pItem->GetDisplayName(SIGDN_FILESYSPATH, &pszFilePath);
+
+							WideCharToMultiByte(
+								CP_ACP, NULL,
+								pszFilePath, -1, buf, 520, NULL, NULL);
+
+							strcat(buffer, buf);
+							if (j != cSelItems)
+								strcat(buffer, ",");
+
+							pItem->Release();
+						}
+
+					}
+				}
+				else
+				{
+					IShellItem *pItem;
+					hr = pFileOpen->GetResult(&pItem);
+					if (SUCCEEDED(hr))
+					{
+						PWSTR pszFilePath;
+						hr = pItem->GetDisplayName(SIGDN_FILESYSPATH, &pszFilePath);
+
+						WideCharToMultiByte(
+							CP_ACP, NULL,
+							pszFilePath, -1, buffer, 520, NULL, NULL);
+
+						pItem->Release();
+					}
+				}
+				strlwr(buffer);
+			}
+			else
+			{
+				switch (hr)
+				{
+				case ERROR_CANCELLED:	Log("The user closed the window by cancelling the operation."); break;
+				}
+			}
+			pFileOpen->Release();
+		}
+		return bRes;
+	}
+	ETOOLS_API bool	__stdcall	GetSaveNameImpl(string_path& buffer, FS_Path& P, LPCSTR offset, int start_flt_ext)
+	{
+		// а теперь все надо перевести в юникод
+		// 1. дефолтное расширение
+		WCHAR wDefExt[32];
+		MultiByteToWideChar(
+			CP_ACP,
+			MB_PRECOMPOSED | MB_ERR_INVALID_CHARS,
+			P.m_DefExt, -1, wDefExt, 32);
+
+		// 2. фильтр
+		COMDLG_FILTERSPEC *flt;
+		int flt_num = 1;
+		WCHAR wInfo[64];
+		MultiByteToWideChar(
+			CP_ACP,
+			MB_PRECOMPOSED | MB_ERR_INVALID_CHARS,
+			P.m_FilterCaption ? P.m_FilterCaption : "", -1, wInfo, 64);
+
+		if (P.m_DefExt)
+		{
+			flt = new COMDLG_FILTERSPEC[2];
+			flt[0].pszName = P.m_FilterCaption ? wInfo : L"";
+			flt[0].pszSpec = wDefExt;
+			flt[1] = { L"All files", L"*.*" };
+			flt_num = 2;
+		}
+		else
+		{
+			flt = new COMDLG_FILTERSPEC[1];
+			flt[0] = { L"All files", L"*.*" };
+		}
+
+		// 3. начальная папка
+		string_path id;
+		GetCurrentDirectory(520, id);
+		strcat(id, "\\");
+		strcat(id, (offset&&offset[0]) ? offset : P.m_Path);
+
+		WCHAR wInitial[520];
+		MultiByteToWideChar(
+			CP_ACP,
+			MB_PRECOMPOSED | MB_ERR_INVALID_CHARS,
+			id/*(offset&&offset[0]) ? offset : P.m_Path*/, -1, wInitial, 520
+		);
+
+		IFileSaveDialog *pFileSave;
+
+		// Create the FileOpenDialog object.
+		HRESULT hr = CoCreateInstance(CLSID_FileSaveDialog, NULL, CLSCTX_ALL, IID_IFileSaveDialog, reinterpret_cast<void**>(&pFileSave));
+		bool bRes = false;
+		if (SUCCEEDED(hr))
+		{
+			pFileSave->SetDefaultExtension(wDefExt);
+			pFileSave->SetTitle(L"Save a File");
+			pFileSave->SetOptions(FOS_PATHMUSTEXIST | FOS_FILEMUSTEXIST | FOS_NOREADONLYRETURN | FOS_NOCHANGEDIR | 0);
+
+			IShellItem *inFolder;
+			hr = SHCreateItemFromParsingName(wInitial, NULL, IID_PPV_ARGS(&inFolder));
+
+			if (SUCCEEDED(hr))
+				pFileSave->SetDefaultFolder(inFolder);
+
+			pFileSave->SetFileTypes(flt_num, flt);
+
+			// Show the Open dialog box.
+			hr = pFileSave->Show(GetForegroundWindow());
+
+			// Get the file name from the dialog box.
+			if (SUCCEEDED(hr))
+			{
+				bRes = true;
+
+				IShellItem *pItem;
+				hr = pFileSave->GetResult(&pItem);
+				if (SUCCEEDED(hr))
+				{
+					PWSTR pszFilePath;
+					hr = pItem->GetDisplayName(SIGDN_FILESYSPATH, &pszFilePath);
+
+					WideCharToMultiByte(
+						CP_ACP,
+						NULL,
+						pszFilePath, -1, buffer, 520, NULL, NULL);
+
+					pItem->Release();
+				}
+				strlwr(buffer);
+			}
+			else
+			{
+				switch (hr)
+				{
+				case ERROR_CANCELLED:	Log("The user closed the window by cancelling the operation."); break;
+				}
+			}
+			pFileSave->Release();
+		}
+
+		delete[] flt;
+		return bRes;
 	}
 }
 

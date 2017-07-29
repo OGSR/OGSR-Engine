@@ -296,13 +296,29 @@ bool CEditableObject::PrepareOGF(IWriter& F, u8 infl, bool gen_tb, CEditableMesh
 bool CEditableObject::PrepareRigidOGF(IWriter& F, bool gen_tb, CEditableMesh* mesh)
 {
     CExportObjectOGF E(this);
-    return E.Export(F,gen_tb,mesh);
+    float prev = g_EpsSkelPositionDelta;
+    if(m_Flags.test(eoHQExport))
+        g_EpsSkelPositionDelta = EPS;
+
+    g_EpsSkelPositionDelta = prev;
+
+    bool res = E.Export(F,gen_tb,mesh);
+    return res;
 }
 
 bool CEditableObject::PrepareSVGeometry(IWriter& F, u8 infl)
 {
     CExportSkeleton E(this);
-    return E.ExportGeometry(F, infl);
+
+    float prev = g_EpsSkelPositionDelta;
+    if(m_Flags.test(eoHQExport))
+        g_EpsSkelPositionDelta = EPS;
+
+    bool res = E.ExportGeometry(F, infl);
+
+    g_EpsSkelPositionDelta = prev;
+
+    return res;
 }
 
 bool CEditableObject::PrepareSVKeys(IWriter& F)
@@ -320,7 +336,14 @@ bool CEditableObject::PrepareSVDefs(IWriter& F)
 bool CEditableObject::PrepareSkeletonOGF(IWriter& F, u8 infl)
 {
     CExportSkeleton E(this);
-    return E.Export(F,infl);
+    float prev = g_EpsSkelPositionDelta;
+    if(m_Flags.test(eoHQExport))
+        g_EpsSkelPositionDelta = EPS;
+
+    bool res = E.Export(F,infl);
+    g_EpsSkelPositionDelta = prev;
+
+    return res;
 }
 
 bool CEditableObject::PrepareOMF(IWriter& F)

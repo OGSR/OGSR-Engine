@@ -157,12 +157,13 @@ CCommandVar CommandUnloadLevelPart(CCommandVar p1, CCommandVar p2)
         return			Scene->UnloadLevelPart(temp_fn.c_str(),p1,p2);
     return				FALSE;
 }
+#include "..\..\ETools\ETools.h"
 CCommandVar CommandLoad(CCommandVar p1, CCommandVar p2)
 {
     if( !Scene->locked() ){
     	if (!p1.IsString()){
         	xr_string temp_fn	= LTools->m_LastFileName.c_str();
-        	if (EFS.GetOpenName	( _maps_, temp_fn ))
+        	if (ETOOLS::GetOpenName	( _maps_, temp_fn ))
             	return 			ExecCommand(COMMAND_LOAD,temp_fn);
         }else{
 	        xr_string temp_fn	= p1; xr_strlwr(temp_fn);
@@ -207,7 +208,7 @@ CCommandVar CommandSave(CCommandVar p1, CCommandVar p2)
     if( !Scene->locked() ){
         if (p2==1){
             xr_string temp_fn	= LTools->m_LastFileName.c_str();
-            if (EFS.GetSaveName	( _maps_, temp_fn ))
+            if (ETOOLS::GetSaveName	( _maps_, temp_fn ))
                 return 			ExecCommand(COMMAND_SAVE,temp_fn,0);
             else
                 return          FALSE;
@@ -280,7 +281,7 @@ CCommandVar CommandClearDebugDraw(CCommandVar p1, CCommandVar p2)
 CCommandVar CommandImportCompilerError(CCommandVar p1, CCommandVar p2)
 {
     xr_string fn;
-    if(EFS.GetOpenName("$logs$", fn, false, NULL, 0)){
+    if(ETOOLS::GetOpenName("$logs$", fn, false, NULL, 0)){
         Scene->LoadCompilerError(fn.c_str());
     }
     UI->RedrawScene		();
@@ -289,7 +290,7 @@ CCommandVar CommandImportCompilerError(CCommandVar p1, CCommandVar p2)
 CCommandVar CommandExportCompilerError(CCommandVar p1, CCommandVar p2)
 {
     xr_string fn;
-    if(EFS.GetSaveName("$logs$", fn, NULL, 0)){
+    if(ETOOLS::GetSaveName("$logs$", fn, NULL, 0)){
         Scene->SaveCompilerError(fn.c_str());
     }
     return TRUE;
@@ -363,7 +364,7 @@ CCommandVar CommandLoadSelection(CCommandVar p1, CCommandVar p2)
 {
     if( !Scene->locked() ){
         xr_string fn			= LTools->m_LastSelectionName;
-        if( EFS.GetOpenName( _maps_, fn ) ){
+        if( ETOOLS::GetOpenName( _maps_, fn ) ){
         	LPCSTR maps_path	= FS.get_path(_maps_)->m_Path;
         	if (fn.c_str()==strstr(fn.c_str(),maps_path))
 		        LTools->m_LastSelectionName = fn.c_str()+xr_strlen(maps_path);
@@ -385,7 +386,7 @@ CCommandVar CommandSaveSelection(CCommandVar p1, CCommandVar p2)
 {
     if( !Scene->locked() ){
         xr_string fn			= LTools->m_LastSelectionName;
-        if( EFS.GetSaveName		( _maps_, fn ) ){
+        if( ETOOLS::GetSaveName		( _maps_, fn ) ){
         	LPCSTR maps_path	= FS.get_path(_maps_)->m_Path;
         	if (fn.c_str()==strstr(fn.c_str(),maps_path))
 		        LTools->m_LastSelectionName = fn.c_str()+xr_strlen(maps_path);

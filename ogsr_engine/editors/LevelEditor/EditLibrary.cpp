@@ -500,14 +500,14 @@ void __fastcall TfrmEditLibrary::paImagePaint(TObject *Sender)
     if (m_Thm) m_Thm->Draw(paImage);
 }
 //---------------------------------------------------------------------------
-
+#include "..\..\ETools\ETools.h"
 void __fastcall TfrmEditLibrary::ebExportLWOClick(TObject *Sender)
 {
     TElTreeItem* node = m_Items->GetSelected();
     if (node&&FHelper.IsObject(node)){
     	AnsiString name; FHelper.MakeName(node,0,name,false);
         xr_string save_nm;
-        if (EFS.GetSaveName(_import_,save_nm,0,1)){
+        if (ETOOLS::GetSaveName(_import_,save_nm,0,1)){
             CEditableObject* obj = Lib.CreateEditObject(name.c_str());
             if (obj){
                 if (!obj->ExportLWO(save_nm.c_str())){
@@ -529,7 +529,7 @@ void __fastcall TfrmEditLibrary::ebExportLWOClick(TObject *Sender)
 void __fastcall TfrmEditLibrary::ebImportClick(TObject *Sender)
 {
     xr_string open_nm, save_nm, nm;
-    if (EFS.GetOpenName(_import_,open_nm,true)){
+    if (ETOOLS::GetOpenName(_import_,open_nm,true)){
     	// remove selected object
         ResetSelected();
 		// load

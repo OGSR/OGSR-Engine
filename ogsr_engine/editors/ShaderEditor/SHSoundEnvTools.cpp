@@ -63,8 +63,11 @@ void CSHSoundEnvTools::OnChangeWAV	(PropValue* prop)
 	if (m_SoundName.size()){
     	m_PreviewSnd.create				(*m_SoundName,st_Effect,sg_Undefined);
         CSoundRender_Source* src= (CSoundRender_Source*)m_PreviewSnd._handle();
-        m_Params.min_distance	= src->m_fMinDist;
-        m_Params.max_distance	= src->m_fMaxDist;
+        if (src)
+        {
+        	m_Params.min_distance	= src->m_fMinDist;
+        	m_Params.max_distance	= src->m_fMaxDist;
+        }
     }
 	if (bPlay) 		m_PreviewSnd.play	(0,sm_Looped);
 }

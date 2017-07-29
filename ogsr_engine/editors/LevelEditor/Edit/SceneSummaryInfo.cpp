@@ -183,14 +183,14 @@ void SSceneSummary::STextureInfo::Export	(IWriter* F, u32& mem_use)
                     *info.detail_name, info.detail_scale, *info.bump_name);
 	F->w_string		(tmp.c_str());
 }
-
+#include "..\..\ETools\ETools.h"
 void SSceneSummary::OnFileClick(ButtonValue* sender, bool& bModif, bool& bSafe)
 {
 	ButtonValue* V = dynamic_cast<ButtonValue*>(sender); R_ASSERT(V);
     switch (V->btn_num){
     case 0:{
     	xr_string fn = Scene->m_LevelOp.m_FNLevelPath.c_str();
-    	if (EFS.GetSaveName(_import_,fn,0,2))
+    	if (ETOOLS::GetSaveName(_import_,fn,0,2))
 	    	if (ExportSummaryInfo(fn.c_str())) 	ELog.DlgMsg(mtInformation,"Export completed.");
             else								ELog.DlgMsg(mtInformation,"Export failed.");
     }break;

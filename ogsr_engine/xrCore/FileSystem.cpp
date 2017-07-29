@@ -64,7 +64,7 @@ xr_string	EFS_Utils::ChangeFileExt(const xr_string& src, LPCSTR ext)
 {
 	return ChangeFileExt(src.c_str(),ext);
 }
-
+/*
 //----------------------------------------------------
 LPCSTR MakeFilter(string1024& dest, LPCSTR info, LPCSTR ext)
 {
@@ -196,7 +196,7 @@ bool EFS_Utils::GetSaveName( LPCSTR initial, string_path& buffer, LPCSTR offset,
 	}
     strlwr(buffer);
 	return bRes;
-}
+}*/
 //----------------------------------------------------
 LPCSTR EFS_Utils::AppendFolderToName(LPSTR tex_name, int depth, BOOL full_name)
 {

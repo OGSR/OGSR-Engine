@@ -106,10 +106,10 @@ void TDB_packer::_load_(const xr_string& fname)
         }
         Caption	=	fname.c_str();
 }
-
+#include "..\..\ETools\ETools.h"
 void __fastcall TDB_packer::btnLoadClick(TObject *Sender)
 {
-    if( EFS.GetOpenName("$fs_root$", m_cfgFileName, false, NULL, 0) )
+    if( ETOOLS::GetOpenName("$fs_root$", m_cfgFileName, false, NULL, 0) )
     {
     	_load_(m_cfgFileName);
     }

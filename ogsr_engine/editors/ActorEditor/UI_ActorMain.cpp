@@ -31,12 +31,13 @@ CActorMain::~CActorMain()
 //---------------------------------------------------------------------------
 // actor commands
 //---------------------------------------------------------------------------
+#include "..\..\ETools\ETools.h"
 CCommandVar CActorTools::CommandLoad(CCommandVar p1, CCommandVar p2)
 {
     xr_string temp_fn	= p1.IsString()?xr_string(p1):xr_string(""); 
     if(!p1.IsString()){
         temp_fn			= ChangeFileExt(m_LastFileName,"").c_str();
-        if (!EFS.GetOpenName	( _objects_, temp_fn ))
+        if (!ETOOLS::GetOpenName	( _objects_, temp_fn ))
         	return  	FALSE;
     }
     if( temp_fn.size() ){
@@ -98,7 +99,7 @@ CCommandVar CActorTools::CommandSave(CCommandVar p1, CCommandVar p2)
 {
 	if (p2==1){
         xr_string temp_fn	= ATools->m_LastFileName.c_str();
-        if (EFS.GetSaveName	( _objects_, temp_fn )){
+        if (ETOOLS::GetSaveName	( _objects_, temp_fn )){
         	temp_fn			= EFS.ChangeFileExt(temp_fn,".object");
             return 			ExecCommand(COMMAND_SAVE,temp_fn,0);
         }
@@ -132,7 +133,7 @@ CCommandVar CActorTools::CommandSave(CCommandVar p1, CCommandVar p2)
 CCommandVar CActorTools::CommandImport(CCommandVar p1, CCommandVar p2)
 {
     xr_string		temp_fn			= p1.IsString()?xr_string(p1):xr_string("");
-    if(p1.IsString()||EFS.GetOpenName(_import_,temp_fn))
+    if(p1.IsString()||ETOOLS::GetOpenName(_import_,temp_fn))
     {
         FS_Path* pp = FS.get_path(_import_);
 
@@ -168,7 +169,7 @@ CCommandVar CActorTools::CommandExportDM(CCommandVar p1, CCommandVar p2)
 {
 	CCommandVar res 				= FALSE;
     xr_string fn=p1.IsString()?xr_string(p1):xr_string("");
-    if (p1.IsString()||EFS.GetSaveName("$game_dm$",fn)){
+    if (p1.IsString()||ETOOLS::GetSaveName("$game_dm$",fn)){
         if (0!=(res=ExportDM(fn.c_str())))	ELog.Msg(mtInformation,"Export complete.");
         else        		    			ELog.Msg(mtError,"Export failed.");
     }
@@ -178,7 +179,7 @@ CCommandVar CActorTools::CommandExportOBJ(CCommandVar p1, CCommandVar p2)
 {
 	CCommandVar res 				= FALSE;
     xr_string fn=p1.IsString()?xr_string(p1):xr_string("");
-    if (p1.IsString()||EFS.GetSaveName("$import$",fn,0,5)){
+    if (p1.IsString()||ETOOLS::GetSaveName("$import$",fn,0,5)){
         if (0!=(res=ExportOBJ(fn.c_str())))	ELog.Msg(mtInformation,"Export complete.");
         else        		    			ELog.Msg(mtError,"Export failed.");
     }
@@ -188,7 +189,7 @@ CCommandVar CActorTools::CommandExportOGF(CCommandVar p1, CCommandVar p2)
 {
 	CCommandVar res 				= FALSE;
     xr_string fn=p1.IsString()?xr_string(p1):xr_string("");
-    if (p1.IsString()||EFS.GetSaveName("$game_meshes$",fn,0,0)){
+    if (p1.IsString()||ETOOLS::GetSaveName("$game_meshes$",fn,0,0)){
         if (0!=(res=ATools->ExportOGF(fn.c_str())))	ELog.Msg(mtInformation,"Export complete.");
         else		        		    			ELog.Msg(mtError,"Export failed.");
     }
@@ -198,7 +199,7 @@ CCommandVar CActorTools::CommandExportOMF(CCommandVar p1, CCommandVar p2)
 {
 	CCommandVar res 				= FALSE;
     xr_string fn=p1.IsString()?xr_string(p1):xr_string("");
-    if (p1.IsString()||EFS.GetSaveName("$game_meshes$",fn,0,1)){
+    if (p1.IsString()||ETOOLS::GetSaveName("$game_meshes$",fn,0,1)){
         if (0!=(res=ExportOMF(fn.c_str())))	ELog.Msg(mtInformation,"Export complete.");
         else        		    			ELog.Msg(mtError,"Export failed.");
     }
@@ -208,7 +209,7 @@ CCommandVar CActorTools::CommandExportCPP(CCommandVar p1, CCommandVar p2)
 {
 	CCommandVar res 				= FALSE;
     xr_string fn=p1.IsString()?xr_string(p1):xr_string("");
-    if (p1.IsString()||EFS.GetSaveName(_import_,fn,0,7)){
+    if (p1.IsString()||ETOOLS::GetSaveName(_import_,fn,0,7)){
         if (0!=(res=ExportCPP(fn.c_str())))	ELog.Msg(mtInformation,"Export complete.");
         else        		    			ELog.Msg(mtError,"Export failed.");
     }
@@ -253,7 +254,7 @@ CCommandVar CActorTools::CommandBatchConvert(CCommandVar p1, CCommandVar p2)
 {
 	CCommandVar res 				= FALSE;
     xr_string fn;
-    if (EFS.GetOpenName("$import$",fn,false,0,6)){
+    if (ETOOLS::GetOpenName("$import$",fn,false,0,6)){
         if (0!=(res=BatchConvert(fn.c_str())))	ELog.Msg(mtInformation,"Convert complete.");
         else		        		    		ELog.Msg(mtError,"Convert failed.");
     }

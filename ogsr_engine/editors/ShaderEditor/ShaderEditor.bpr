@@ -5,7 +5,7 @@
     <VERSION value="BCB.06.00"/>
     <PROJECT value="X:\ogsr_engine\_BIN\SDK\Release\Win32\ShaderEditor.exe"/>
     <OBJFILES value="..\..\_TEMP\SDK\Release\Win32\se\ShaderEditor.obj 
-      ..\..\_TEMP\SDK\Release\Win32\se\UI_ShaderTools.obj 
+      ..\..\_TEMP\SDK\Release\Win32\se\UI_shadertools.obj 
       ..\..\_TEMP\SDK\Release\Win32\se\BottomBar.obj 
       ..\..\_TEMP\SDK\Release\Win32\se\GameMtlLib_Editor.obj 
       ..\..\_TEMP\SDK\Release\Win32\se\LeftBar.obj 
@@ -61,7 +61,7 @@
     <RFLAGS value=""/>
     <AFLAGS value="/mx /w2 /zn"/>
     <LFLAGS value="-lX:\ogsr_engine\_LIB\SDK\Release\Win32 
-      -IX:\ogsr_engine\_TEMP\SDK\Release\Win32\se -D&quot;&quot; -aa -Tpe -GD -x"/>
+      -IX:\ogsr_engine\_TEMP\SDK\Release\Win32\se -D&quot;&quot; -aa -Tpe -GD -x -Gn -v"/>
     <OTHERFILES value=""/>
   </OPTIONS>
   <LINKER>
@@ -73,7 +73,7 @@
   <FILELIST>
       <FILE FILENAME="ShaderEditor.cpp" FORMNAME="" UNITNAME="ShaderEditor" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
       <FILE FILENAME="ShaderEditor.todo" FORMNAME="" UNITNAME="ShaderEditor.todo" CONTAINERID="ToDo" DESIGNCLASS="" LOCALCOMMAND=""/>
-      <FILE FILENAME="UI_ShaderTools.cpp" FORMNAME="" UNITNAME="UI_ShaderTools" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="UI_shadertools.cpp" FORMNAME="" UNITNAME="UI_ShaderTools" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
       <FILE FILENAME="BottomBar.cpp" FORMNAME="fraBottomBar" UNITNAME="BottomBar" CONTAINERID="CCompiler" DESIGNCLASS="TFrame" LOCALCOMMAND=""/>
       <FILE FILENAME="GameMtlLib_Editor.cpp" FORMNAME="" UNITNAME="GameMtlLib_Editor.cpp" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
       <FILE FILENAME="LeftBar.cpp" FORMNAME="fraLeftBar" UNITNAME="LeftBar" CONTAINERID="CCompiler" DESIGNCLASS="TFrame" LOCALCOMMAND=""/>
@@ -103,7 +103,7 @@ AutoIncBuild=1
 MajorVer=1
 MinorVer=0
 Release=2
-Build=120
+Build=121
 Debug=1
 PreRelease=0
 Special=0
@@ -115,7 +115,7 @@ CodePage=1252
 [Version Info Keys]
 CompanyName=
 FileDescription=
-FileVersion=1.0.2.120
+FileVersion=1.0.2.121
 InternalName=
 LegalCopyright=
 LegalTrademarks=

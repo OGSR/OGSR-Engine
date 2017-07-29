@@ -199,7 +199,8 @@ public:
         eoUsingLOD		= (1<<2),			
         eoHOM			= (1<<3),			
         eoMultipleUsage	= (1<<4),			
-        eoSoundOccluder	= (1<<5),           
+        eoSoundOccluder	= (1<<5),
+        eoHQExport      = (1<<6), 
 		eoFORCE32		= u32(-1)           
     };
     IC BOOL			IsDynamic				(){return m_Flags.is(eoDynamic);}

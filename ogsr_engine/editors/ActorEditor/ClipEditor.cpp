@@ -545,11 +545,11 @@ void TClipMaker::AppendClip()
 
 #define	CHUNK_ZOOM	0x9000
 #define	CHUNK_CLIPS	0x9001
-
+#include "..\..\ETools\ETools.h"
 void TClipMaker::LoadClips()
 {
     bool bRes=true;
-	if (EFS.GetOpenName("$clips$",m_ClipFName)){
+	if (ETOOLS::GetOpenName("$clips$",m_ClipFName)){
     	Clear		();
     	IReader* F	= FS.r_open(m_ClipFName.c_str()); VERIFY(F);
         m_ClipFName	= EFS.ExcludeBasePath(m_ClipFName.c_str(),FS.get_path("$clips$")->m_Path);
@@ -582,7 +582,7 @@ void TClipMaker::LoadClips()
 void TClipMaker::SaveClips()
 {
     if (!clips.empty()){
-        if (EFS.GetSaveName("$clips$",m_ClipFName)){
+        if (ETOOLS::GetSaveName("$clips$",m_ClipFName)){
             IWriter* F	= FS.w_open(m_ClipFName.c_str()); VERIFY(F);
 	        m_ClipFName	= EFS.ExcludeBasePath(m_ClipFName.c_str(),FS.get_path("$clips$")->m_Path);
             if (F){

@@ -354,11 +354,11 @@ void __fastcall TfrmDOShuffle::tvItemsStartDrag(TObject *Sender,
     FDragItem = tvItems->ItemFocused;
 }
 //---------------------------------------------------------------------------
-
+#include "..\..\ETools\ETools.h"
 void __fastcall TfrmDOShuffle::ebSaveListClick(TObject *Sender)
 {
 	xr_string fname;
-	if (EFS.GetSaveName(_detail_objects_,fname)){
+	if (ETOOLS::GetSaveName(_detail_objects_,fname)){
 		DM->ExportColorIndices(fname.c_str());
     }
 }
@@ -367,7 +367,7 @@ void __fastcall TfrmDOShuffle::ebSaveListClick(TObject *Sender)
 void __fastcall TfrmDOShuffle::ebLoadListClick(TObject *Sender)
 {
 	xr_string fname;
-	if (EFS.GetOpenName(_detail_objects_,fname)){
+	if (ETOOLS::GetOpenName(_detail_objects_,fname)){
 		if (DM->ImportColorIndices(fname.c_str())){
 			bColorIndModif 		= true;
 	        DM->InvalidateSlots	();

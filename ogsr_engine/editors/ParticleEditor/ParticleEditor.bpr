@@ -61,7 +61,7 @@
     <RFLAGS value=""/>
     <AFLAGS value="/mx /w2 /zn"/>
     <LFLAGS value="-lX:\ogsr_engine\_LIB\SDK\Release\Win32 
-      -IX:\ogsr_engine\_TEMP\SDK\Release\Win32\pe -D&quot;&quot; -aa -Tpe -GD -x"/>
+      -IX:\ogsr_engine\_TEMP\SDK\Release\Win32\pe -D&quot;&quot; -aa -Tpe -GD -x -Gn -v"/>
     <OTHERFILES value=""/>
   </OPTIONS>
   <LINKER>
@@ -103,7 +103,7 @@ AutoIncBuild=1
 MajorVer=1
 MinorVer=0
 Release=2
-Build=125
+Build=126
 Debug=1
 PreRelease=0
 Special=0
@@ -115,7 +115,7 @@ CodePage=1252
 [Version Info Keys]
 CompanyName=GSC Game World
 FileDescription=
-FileVersion=1.0.2.125
+FileVersion=1.0.2.126
 InternalName=
 LegalCopyright=
 LegalTrademarks=

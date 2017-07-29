@@ -179,7 +179,7 @@ void ESceneGroupTools::ReloadRefsSelectedObject()
     if (0==sel_cnt)	ELog.Msg		(mtError,"Nothing selected.");
 }
 //----------------------------------------------------
-
+#include "..\..\ETools\ETools.h"
 void ESceneGroupTools::SaveSelectedObject()
 {
 	CGroupObject* obj	= 0;
@@ -198,7 +198,7 @@ void ESceneGroupTools::SaveSelectedObject()
 	        ELog.DlgMsg(mtError,"Can't save opened group. Close group and retry.");
         }else{
             xr_string fn;
-            if (EFS.GetSaveName(_groups_,fn)){
+            if (ETOOLS::GetSaveName(_groups_,fn)){
                 IWriter* W 		= FS.w_open(fn.c_str());
                 if (W){
 	                obj->Save	(*W);
