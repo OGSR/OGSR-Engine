@@ -26,10 +26,10 @@ object frmEditLibrary: TfrmEditLibrary
   PixelsPerInch = 96
   TextHeight = 13
   object paCommands: TPanel
-    Left = 192
+    Left = 184
     Top = 0
     Width = 132
-    Height = 434
+    Height = 430
     Align = alRight
     BevelOuter = bvNone
     ParentColor = True
@@ -194,7 +194,7 @@ object frmEditLibrary: TfrmEditLibrary
     end
     object paControl: TPanel
       Left = 0
-      Top = 319
+      Top = 315
       Width = 132
       Height = 115
       Align = alBottom
@@ -333,8 +333,8 @@ object frmEditLibrary: TfrmEditLibrary
   object paItems: TPanel
     Left = 0
     Top = 0
-    Width = 192
-    Height = 434
+    Width = 184
+    Height = 430
     Align = alClient
     BevelOuter = bvNone
     ParentColor = True

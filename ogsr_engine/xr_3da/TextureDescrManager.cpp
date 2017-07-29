@@ -125,7 +125,6 @@ void CTextureDescrMngr::LoadTHM()
 	string_path				fn;
 	for(;It!=It_e;++It)
 	{
-		
 		FS.update_path		(fn,"$game_textures$", (*It).name.c_str());
 		IReader* F			= FS.r_open(fn);
 		strcpy_s				(fn,(*It).name.c_str());
@@ -133,7 +132,7 @@ void CTextureDescrMngr::LoadTHM()
 
 		R_ASSERT			(F->find_chunk(THM_CHUNK_TYPE));
 		F->r_u32			();
-		tp.Clear			();
+ 		tp.Clear			();
 		tp.Load				(*F);
 		FS.r_close			(F);
 #ifdef _EDITOR

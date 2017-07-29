@@ -138,13 +138,7 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="_d3d_extensions.h">
-      <Filter>General</Filter>
-    </ClInclude>
     <ClInclude Include="CopyProtection.h">
-      <Filter>General</Filter>
-    </ClInclude>
-    <ClInclude Include="defines.h">
       <Filter>General</Filter>
     </ClInclude>
     <ClInclude Include="stdafx.h">
@@ -193,9 +187,6 @@
       <Filter>Game API</Filter>
     </ClInclude>
     <ClInclude Include="IGame_Persistent.h">
-      <Filter>Game API</Filter>
-    </ClInclude>
-    <ClInclude Include="xrLevel.h">
       <Filter>Game API</Filter>
     </ClInclude>
     <ClInclude Include="IGame_ObjectPool.h">
@@ -381,9 +372,6 @@
     <ClInclude Include="xrTheora_Surface_mmx.h">
       <Filter>Interfaces\Render\Execution &amp; 3D\Shaders\Textures</Filter>
     </ClInclude>
-    <ClInclude Include="ETextureParams.h">
-      <Filter>Interfaces\Render\Execution &amp; 3D\Shaders\ShaderManager</Filter>
-    </ClInclude>
     <ClInclude Include="ResourceManager.h">
       <Filter>Interfaces\Render\Execution &amp; 3D\Shaders\ShaderManager</Filter>
     </ClInclude>
@@ -421,9 +409,6 @@
       <Filter>Interfaces\Render\Execution &amp; 3D\TextConsole</Filter>
     </ClInclude>
     <ClInclude Include="D3DUtils.h">
-      <Filter>Interfaces\Render\Execution &amp; 3D\DebugDraw</Filter>
-    </ClInclude>
-    <ClInclude Include="DrawUtils.h">
       <Filter>Interfaces\Render\Execution &amp; 3D\DebugDraw</Filter>
     </ClInclude>
     <ClInclude Include="du_box.h">
@@ -465,9 +450,6 @@
     <ClInclude Include="std_classes.h">
       <Filter>Engine</Filter>
     </ClInclude>
-    <ClInclude Include="cl_intersect.h">
-      <Filter>Engine\Collision Core</Filter>
-    </ClInclude>
     <ClInclude Include="xrXRC.h">
       <Filter>Engine\Collision Core</Filter>
     </ClInclude>
@@ -503,6 +485,15 @@
     </ClInclude>
     <ClInclude Include="r2_shader_exports.h">
       <Filter>Interfaces\Render\Execution &amp; 3D\Shaders\Blender</Filter>
+    </ClInclude>
+    <ClInclude Include="..\COMMON\cl_intersect.h">
+      <Filter>Engine\Collision Core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\COMMON\DrawUtils.h">
+      <Filter>Interfaces\Render\Execution &amp; 3D\DebugDraw</Filter>
+    </ClInclude>
+    <ClInclude Include="..\COMMON\ETextureParams.h">
+      <Filter>Interfaces\Render\Execution &amp; 3D\Shaders\ShaderManager</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -755,9 +746,6 @@
     <ClCompile Include="xrTheora_Surface_mmx.cpp">
       <Filter>Interfaces\Render\Execution &amp; 3D\Shaders\Textures</Filter>
     </ClCompile>
-    <ClCompile Include="ETextureParams.cpp">
-      <Filter>Interfaces\Render\Execution &amp; 3D\Shaders\ShaderManager</Filter>
-    </ClCompile>
     <ClCompile Include="ResourceManager.cpp">
       <Filter>Interfaces\Render\Execution &amp; 3D\Shaders\ShaderManager</Filter>
     </ClCompile>
@@ -877,6 +865,9 @@
     </ClCompile>
     <ClCompile Include="perlin.cpp">
       <Filter>Engine\Noise</Filter>
+    </ClCompile>
+    <ClCompile Include="..\COMMON\ETextureParams.cpp">
+      <Filter>Interfaces\Render\Execution &amp; 3D\Shaders\ShaderManager</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

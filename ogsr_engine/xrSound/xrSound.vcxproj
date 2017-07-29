@@ -136,7 +136,7 @@
       <WarningLevel>Level4</WarningLevel>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
-      <AdditionalIncludeDirectories>..\..\3rd_party\Src\OpenAL\include;..\..\3rd_party\Src\eax\Include;..\..\3rd_party\Src\Xiph\libogg\include;..\..\3rd_party\Src\Xiph\libvorbis\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\COMMON;..\..\3rd_party\Src\OpenAL\include;..\..\3rd_party\Src\eax\Include;..\..\3rd_party\Src\Xiph\libogg\include;..\..\3rd_party\Src\Xiph\libvorbis\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SuppressStartupBanner>true</SuppressStartupBanner>
@@ -177,7 +177,7 @@
       <WarningLevel>Level4</WarningLevel>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
-      <AdditionalIncludeDirectories>..\..\3rd_party\Src\OpenAL\include;..\..\3rd_party\Src\eax\Include;..\..\3rd_party\Src\Xiph\libogg\include;..\..\3rd_party\Src\Xiph\libvorbis\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\COMMON;..\..\3rd_party\Src\OpenAL\include;..\..\3rd_party\Src\eax\Include;..\..\3rd_party\Src\Xiph\libogg\include;..\..\3rd_party\Src\Xiph\libvorbis\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <AdditionalDependencies>vorbisfile_static_d.lib;ogg_static_d.lib;OpenAL32.lib;%(AdditionalDependencies)</AdditionalDependencies>
@@ -222,7 +222,7 @@
       </BrowseInformation>
       <WarningLevel>Level4</WarningLevel>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
-      <AdditionalIncludeDirectories>..\..\3rd_party\Src\OpenAL\include;..\..\3rd_party\Src\eax\Include;..\..\3rd_party\Src\Xiph\libogg\include;..\..\3rd_party\Src\Xiph\libvorbis\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\COMMON;..\..\3rd_party\Src\OpenAL\include;..\..\3rd_party\Src\eax\Include;..\..\3rd_party\Src\Xiph\libogg\include;..\..\3rd_party\Src\Xiph\libvorbis\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -270,7 +270,7 @@
       </BrowseInformation>
       <WarningLevel>Level4</WarningLevel>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
-      <AdditionalIncludeDirectories>..\..\3rd_party\Src\OpenAL\include;..\..\3rd_party\Src\eax\Include;..\..\3rd_party\Src\Xiph\libogg\include;..\..\3rd_party\Src\Xiph\libvorbis\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\COMMON;..\..\3rd_party\Src\OpenAL\include;..\..\3rd_party\Src\eax\Include;..\..\3rd_party\Src\Xiph\libogg\include;..\..\3rd_party\Src\Xiph\libvorbis\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <AdditionalDependencies>vorbisfile_static.lib;libogg_static.lib;OpenAL32.lib;%(AdditionalDependencies)</AdditionalDependencies>
@@ -313,7 +313,7 @@
       </BrowseInformation>
       <WarningLevel>Level4</WarningLevel>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
-      <AdditionalIncludeDirectories>..\..\3rd_party\Src\OpenAL\include;..\..\3rd_party\Src\eax\Include;..\..\3rd_party\Src\Xiph\libogg\include;..\..\3rd_party\Src\Xiph\libvorbis\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\COMMON;..\..\3rd_party\Src\OpenAL\include;..\..\3rd_party\Src\eax\Include;..\..\3rd_party\Src\Xiph\libogg\include;..\..\3rd_party\Src\Xiph\libvorbis\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <AdditionalDependencies>eax.lib;OpenAL32.lib;libogg_static.lib;libvorbis_static.lib;libvorbisfile_static.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
@@ -352,7 +352,7 @@
       </BrowseInformation>
       <WarningLevel>Level4</WarningLevel>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
-      <AdditionalIncludeDirectories>..\..\3rd_party\Src\OpenAL\include;..\..\3rd_party\Src\eax\Include;..\..\3rd_party\Src\Xiph\libogg\include;..\..\3rd_party\Src\Xiph\libvorbis\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\COMMON;..\..\3rd_party\Src\OpenAL\include;..\..\3rd_party\Src\eax\Include;..\..\3rd_party\Src\Xiph\libogg\include;..\..\3rd_party\Src\Xiph\libvorbis\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <AdditionalDependencies>vorbisfile_static.lib;ogg_static.lib;OpenAL32.lib;%(AdditionalDependencies)</AdditionalDependencies>
@@ -364,7 +364,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="cl_intersect.h" />
+    <ClInclude Include="..\COMMON\cl_intersect.h" />
     <ClInclude Include="Sound.h" />
     <ClInclude Include="SoundRender.h" />
     <ClInclude Include="stdafx.h" />

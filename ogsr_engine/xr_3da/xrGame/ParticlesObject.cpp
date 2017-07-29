@@ -5,7 +5,7 @@
 #pragma hdrstop
 
 #include "ParticlesObject.h"
-#include "../defines.h"
+#include "defines.h"
 #include "../fbasicvisual.h"
 #include "../ParticleCustom.h"
 #include "../render.h"

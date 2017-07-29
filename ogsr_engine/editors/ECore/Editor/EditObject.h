@@ -6,7 +6,7 @@
 #ifdef _EDITOR
 #	include "../xrEProps/PropertiesListTypes.h"
 //	#include "PropertiesListHelper.h"
-#	include "../ECore/Engine/GameMtlLib.h"
+#	include "GameMtlLib.h"
 #	include "pick_defs.h"
 #endif
 //----------------------------------------------------

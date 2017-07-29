@@ -2,7 +2,7 @@
 #include "compiler.h"
 
 //-------------------------------------------------------------------------------------------------------
-#include "resource.h"
+#include "resource_cl.h"
 
 extern HWND logWindow;
 

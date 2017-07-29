@@ -9,7 +9,7 @@
 #include "leftbar.h"
 #include "../xrEProps/PropertiesList.h"
 #include "blenders/Blender.h"
-#include "../ECore/Engine/GameMtlLib.h"
+#include "GameMtlLib.h"
 #include "../xrEProps/ItemList.h"
 
 //------------------------------------------------------------------------------

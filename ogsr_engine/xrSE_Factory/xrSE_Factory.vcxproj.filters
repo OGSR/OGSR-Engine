@@ -165,9 +165,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="DrawUtils.h">
-      <Filter>Core</Filter>
-    </ClInclude>
     <ClInclude Include="stdafx.h">
       <Filter>Core</Filter>
     </ClInclude>
@@ -180,13 +177,7 @@
     <ClInclude Include="xrSE_Factory_import_export.h">
       <Filter>Core</Filter>
     </ClInclude>
-    <ClInclude Include="defines.h">
-      <Filter>Common</Filter>
-    </ClInclude>
     <ClInclude Include="FastDelegate.h">
-      <Filter>Common</Filter>
-    </ClInclude>
-    <ClInclude Include="xrLevel.h">
       <Filter>Common</Filter>
     </ClInclude>
     <ClInclude Include="restriction_space.h">
@@ -477,9 +468,6 @@
     <ClInclude Include="InfoPortionDefs.h">
       <Filter>ServerStuff\ServerEntities</Filter>
     </ClInclude>
-    <ClInclude Include="ShapeData.h">
-      <Filter>ServerStuff\ServerEntities</Filter>
-    </ClInclude>
     <ClInclude Include="xrServer_Objects_Abstract.h">
       <Filter>ServerStuff\ServerEntities</Filter>
     </ClInclude>
@@ -513,18 +501,6 @@
     <ClInclude Include="PropertiesListTypes.h">
       <Filter>ServerStuff\ServerEntities\editor_properties</Filter>
     </ClInclude>
-    <ClInclude Include="Sound.h">
-      <Filter>ServerStuff\ServerEntities\editor_properties</Filter>
-    </ClInclude>
-    <ClInclude Include="WaveForm.h">
-      <Filter>ServerStuff\ServerEntities\editor_properties</Filter>
-    </ClInclude>
-    <ClInclude Include="xrCDB.h">
-      <Filter>ServerStuff\ServerEntities\editor_properties</Filter>
-    </ClInclude>
-    <ClInclude Include="xrEProps.h">
-      <Filter>ServerStuff\ServerEntities\editor_properties</Filter>
-    </ClInclude>
     <ClInclude Include="script_value.h">
       <Filter>ServerStuff\ServerEntities\scripts\script_value</Filter>
     </ClInclude>
@@ -545,6 +521,9 @@
     </ClInclude>
     <ClInclude Include="script_properties_list_helper.h">
       <Filter>ServerStuff\ServerEntities\scripts\script_properties_list_helper</Filter>
+    </ClInclude>
+    <ClInclude Include="..\COMMON\DrawUtils.h">
+      <Filter>Core</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

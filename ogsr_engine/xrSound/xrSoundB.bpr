@@ -41,7 +41,7 @@
       dss.bpi vclie.bpi xmlrtl.bpi inet.bpi inetdbbde.bpi inetdbxpress.bpi 
       webdsnap.bpi bdecds.bpi dbxcds.bpi dclocx.bpi inetdb.bpi websnap.bpi 
       elpproB6.bpi elpackB6.bpi nmfast.bpi qrpt.bpi teeqr.bpi"/>
-    <PATHCPP value=".;"/>
+    <PATHCPP value=".;..\COMMON"/>
     <PATHPAS value=".;"/>
     <PATHRC value=".;"/>
     <PATHASM value=".;"/>
@@ -51,13 +51,13 @@
     <USERDEFINES value="_EDITOR;_XRSOUNDB;XRSOUND_EXPORTS"/>
     <SYSDEFINES value="NO_STRICT;_RTLDLL;USEPACKAGES"/>
     <MAINSOURCE value="xrSoundB.bpf"/>
-    <INCLUDEPATH value="$(DSOUND_DIR);$(DXSDK_DIR)\Include;$(BCB)\include;$(BCB)\include\vcl;$(CORE_DIR);$(XIPH_DIR)\libvorbis\include;$(ETOOLS_DIR);$(EAX_DIR);$(AL_DIR);$(XIPH_DIR)\libogg\include;$(XIPH_DIR)\libtheora\include;..\xrCDB"/>
-    <LIBPATH value="&quot;..\..\3rd party\components\elpack\code&quot;;X:\3rd_party\Src\components\elpack\code;X:\3rd_party\_LIB\Release\Win32;X:\ogsr_engine\_LIB\SDK\Release\Win32;$(BCB)\lib;$(BCB)\lib\obj;$(BCB)\Projects\Lib;$(BCB)\lib\psdk"/>
+    <INCLUDEPATH value="..\COMMON;$(DSOUND_DIR);$(DXSDK_DIR)\Include;$(BCB)\include;$(BCB)\include\vcl;$(CORE_DIR);$(XIPH_DIR)\libvorbis\include;$(ETOOLS_DIR);$(EAX_DIR);$(AL_DIR);$(XIPH_DIR)\libogg\include;$(XIPH_DIR)\libtheora\include;..\xrCDB"/>
+    <LIBPATH value="..\COMMON;&quot;..\..\3rd party\components\elpack\code&quot;;X:\3rd_party\Src\components\elpack\code;X:\3rd_party\_LIB\Release\Win32;X:\ogsr_engine\_LIB\SDK\Release\Win32;$(BCB)\lib;$(BCB)\lib\obj;$(BCB)\Projects\Lib;$(BCB)\lib\psdk"/>
     <WARNINGS value="-w-par -w-8027"/>
     <OTHERFILES value=""/>
   </MACROS>
   <OPTIONS>
-    <IDLCFLAGS value="-I$(DSOUND_DIR) -I$(DXSDK_DIR)\Include -I$(BCB)\include 
+    <IDLCFLAGS value="-I..\COMMON -I$(DSOUND_DIR) -I$(DXSDK_DIR)\Include -I$(BCB)\include 
       -I$(BCB)\include\vcl -I$(CORE_DIR) -I$(XIPH_DIR)\libvorbis\include 
       -I$(ETOOLS_DIR) -I$(EAX_DIR) -I$(AL_DIR) -I$(XIPH_DIR)\libogg\include 
       -I$(XIPH_DIR)\libtheora\include -I..\xrCDB -src_suffix cpp -D_EDITOR 
@@ -94,12 +94,12 @@
       <FILE FILENAME="SoundRender_Source_loader.cpp" FORMNAME="" UNITNAME="SoundRender_Source_loader.cpp" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
       <FILE FILENAME="SoundRender_Target.cpp" FORMNAME="" UNITNAME="SoundRender_Target.cpp" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
       <FILE FILENAME="stdafx.cpp" FORMNAME="" UNITNAME="stdafx.cpp" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
-      <FILE FILENAME="cl_collector.cpp" FORMNAME="" UNITNAME="cl_collector.cpp" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\COMMON\cl_collector.cpp" FORMNAME="" UNITNAME="cl_collector.cpp" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
       <FILE FILENAME="guids.cpp" FORMNAME="" UNITNAME="guids" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
       <FILE FILENAME="SoundRender_Cache.cpp" FORMNAME="" UNITNAME="SoundRender_Cache" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
       <FILE FILENAME="Sound.h" FORMNAME="" UNITNAME="Sound.h" CONTAINERID="" DESIGNCLASS="" LOCALCOMMAND=""/>
       <FILE FILENAME="xrLevel.h" FORMNAME="" UNITNAME="xrLevel.h" CONTAINERID="" DESIGNCLASS="" LOCALCOMMAND=""/>
-      <FILE FILENAME="cl_intersect.h" FORMNAME="" UNITNAME="cl_intersect.h" CONTAINERID="" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\COMMON\cl_intersect.h" FORMNAME="" UNITNAME="cl_intersect.h" CONTAINERID="" DESIGNCLASS="" LOCALCOMMAND=""/>
       <FILE FILENAME="MusicStream.h" FORMNAME="" UNITNAME="MusicStream.h" CONTAINERID="" DESIGNCLASS="" LOCALCOMMAND=""/>
       <FILE FILENAME="SoundRender.h" FORMNAME="" UNITNAME="SoundRender.h" CONTAINERID="" DESIGNCLASS="" LOCALCOMMAND=""/>
       <FILE FILENAME="SoundRender_TargetA.cpp" FORMNAME="" UNITNAME="SoundRender_TargetA" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>

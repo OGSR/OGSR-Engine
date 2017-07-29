@@ -3,7 +3,7 @@
 #define ImageManagerH
 
 #include "../xrEProps/folderlib.h"
-#include "../ECore/Editor/etextureparams.h"
+#include "etextureparams.h"
 #include "../ECore/Editor/EThumbnail.h"
 class CEditableObject;
 

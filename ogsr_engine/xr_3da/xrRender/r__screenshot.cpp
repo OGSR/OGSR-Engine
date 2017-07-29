@@ -1,6 +1,6 @@
 #include "stdafx.h"
 #include "..\xr_effgamma.h"
-#include "..\xrRender\tga.h"
+#include "tga.h"
 #include "..\xrImage_Resampler.h"
 
 #define	GAMESAVE_SIZE	128

@@ -9,7 +9,7 @@
 #include "Scene.h"
 #include "SceneObject.h"
 #include "leftbar.h"
-#include "../ECore/Engine/cl_intersect.h"
+#include "cl_intersect.h"
 #include "../ECore/Editor/Library.h"
 #include "../ECore/Editor/ui_main.h"
 

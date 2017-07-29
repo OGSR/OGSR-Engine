@@ -56,9 +56,6 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="D3DX_Wrapper.h">
-      <Filter>Kernel</Filter>
-    </ClInclude>
     <ClInclude Include="ETools.h">
       <Filter>Kernel</Filter>
     </ClInclude>
@@ -67,9 +64,6 @@
     </ClInclude>
     <ClInclude Include="xrXRC.h">
       <Filter>Kernel</Filter>
-    </ClInclude>
-    <ClInclude Include="ArbitraryList.h">
-      <Filter>VIPM</Filter>
     </ClInclude>
     <ClInclude Include="BinaryHeap.h">
       <Filter>VIPM</Filter>
@@ -103,6 +97,12 @@
     </ClInclude>
     <ClInclude Include="resample.h">
       <Filter>OGG encoder</Filter>
+    </ClInclude>
+    <ClInclude Include="..\COMMON\D3DX_Wrapper.h">
+      <Filter>Kernel</Filter>
+    </ClInclude>
+    <ClInclude Include="..\COMMON\ArbitraryList.h">
+      <Filter>VIPM</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

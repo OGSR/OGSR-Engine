@@ -12,7 +12,7 @@
 #include "../ECore/Editor/SoundManager.h"
 #include "EParticlesObject.h"
 #include "ui_leveltools.h"
-#include "../ECore/Engine/guid_generator.h"
+#include "guid_generator.h"
 
 #include "ESceneAIMapTools.h"
 #include "ESceneDOTools.h"

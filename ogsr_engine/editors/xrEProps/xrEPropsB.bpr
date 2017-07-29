@@ -40,15 +40,15 @@
     <USERDEFINES value="_EDITOR;XR_EPROPS_EXPORTS"/>
     <SYSDEFINES value="NO_STRICT;_RTLDLL;USEPACKAGES"/>
     <MAINSOURCE value="xrEPropsB.bpf"/>
-    <INCLUDEPATH value="$(BCB)\include;$(BCB)\include\vcl;$(BCB)\Include\Mfc;$(CORE_DIR);$(COMPONENTS)\alexmx;$(COMPONENTS)\elpack\code\source"/>
+    <INCLUDEPATH value="$(BCB)\include;$(BCB)\include\vcl;$(BCB)\Include\Mfc;$(CORE_DIR);$(COMPONENTS)\alexmx;$(COMPONENTS)\elpack\code\source;..\..\COMMON"/>
     <LIBPATH value="$(COMPONENTS)\ElPack\Code;$(BCB)\lib;$(BCB)\lib\obj;$(BCB)\Projects\Lib;$(BCB)\Lib\Psdk;X:\3rd_party\_LIB\Release\Win32;$(COMPONENTS)\alexmx;X:\ogsr_engine\_LIB\SDK\Release\Win32"/>
     <WARNINGS value="-w-par"/>
     <OTHERFILES value=""/>
   </MACROS>
   <OPTIONS>
     <IDLCFLAGS value="-I$(BCB)\include -I$(BCB)\include\vcl -I$(BCB)\Include\Mfc -I$(CORE_DIR) 
-      -I$(COMPONENTS)\alexmx -I$(COMPONENTS)\elpack\code\source -src_suffix cpp 
-      -D_EDITOR -DXR_EPROPS_EXPORTS -boa"/>
+      -I$(COMPONENTS)\alexmx -I$(COMPONENTS)\elpack\code\source -I..\..\COMMON 
+      -src_suffix cpp -D_EDITOR -DXR_EPROPS_EXPORTS -boa"/>
     <CFLAG1 value="-WD -O2 -H=X:\ogsr_engine\_TEMP\SDK\Release\Win32\eprops\pch.csm -Q -Vms 
       -Vx -Ve -xf -xp -VF -ff -X- -ps -a4 -6 -b- -k- -y -v -vi -tWD -tWM -c"/>
     <PFLAGS value="-N2X:\ogsr_engine\_TEMP\SDK\Release\Win32\eprops 
@@ -122,17 +122,18 @@ Comments=
 c:\program files (x86)\borland\cbuilder6\Bin\dclite60.bpl=Borland Integrated Translation Environment
 
 [HistoryLists\hlIncludePath]
-Count=10
-Item0=$(BCB)\include;$(BCB)\include\vcl;$(BCB)\Include\Mfc;$(CORE_DIR);$(COMPONENTS)\alexmx;$(COMPONENTS)\elpack\code\source
-Item1=$(BCB)\include;$(BCB)\include\vcl;$(BCB)\Include\Mfc;$(CORE_DIR);$(COMPONENTS)\alexmx;$(COMPONENTS)\elpack
-Item2=$(BCB)\include;$(BCB)\include\vcl;$(BCB)\Include\Mfc;$(CORE_DIR)
-Item3=$(BCB)\include;$(BCB)\include\vcl;R:\Borland\Components6\AlexMX;R:\Borland\Components6\ElPack\Code\Source;R:\Borland\CBuilder6\Include\Mfc;P:\xrCore
-Item4=$(BCB)\include;$(BCB)\include\vcl;R:\Borland\Components6\AlexMX;R:\Borland\Components6\ElPack\Code\Source;R:\Borland\CBuilder6\Include\Mfc;P:\xrCore;R:\SDK\DirectX9.0_sum_2004\Include
-Item5=R:\SDK\DirectX9.0_sum_2004\Include;C:\Rad\Borland\CBuilder6\Projects;$(BCB)\include;$(BCB)\include\vcl;P:\MagicFM_Borland\Sdk\Include;R:\Borland\Components6\AlexMX;R:\Borland\Components6\ElPack\Code\Source;R:\Borland\CBuilder6\Include\Mfc;P:\xrCore
-Item6=C:\Rad\Borland\CBuilder6\Projects;R:\SDK\DirectX9.0\include;$(BCB)\include;$(BCB)\include\vcl;P:\MagicFM_Borland\Sdk\Include;R:\Borland\Components6\AlexMX;R:\Borland\Components6\ElPack\Code\Source;R:\Borland\CBuilder6\Include\Mfc;P:\xrCore
-Item7=R:\SDK\DirectX9.0\include;$(BCB)\include;$(BCB)\include\vcl;P:\MagicFM_Borland\Sdk\Include;R:\Borland\Components6\AlexMX;R:\Borland\Components6\ElPack\Code\Source;R:\Borland\CBuilder6\Include\Mfc;P:\xrCore
-Item8=R:\SDK\DirectX9.0\include;$(BCB)\include;$(BCB)\include\vcl;P:\MagicFM_Borland\Sdk\Include;R:\Borland\Components6\AlexMX;R:\Borland\Components6\ElPack\Code\Source;R:\Borland\CBuilder6\Include\Mfc
-Item9=R:\SDK\DirectX9.0\include;$(BCB)\include;$(BCB)\include\vcl;P:\MagicFM_Borland\Sdk\Include;R:\Borland\Components6\AlexMX;R:\Borland\Components6\ElPack\Code\Source;R:\VS7.NET\Vc7\atlmfc\include;R:\Borland\CBuilder6\Include\Mfc
+Count=11
+Item0=$(BCB)\include;$(BCB)\include\vcl;$(BCB)\Include\Mfc;$(CORE_DIR);$(COMPONENTS)\alexmx;$(COMPONENTS)\elpack\code\source;..\..\COMMON
+Item1=$(BCB)\include;$(BCB)\include\vcl;$(BCB)\Include\Mfc;$(CORE_DIR);$(COMPONENTS)\alexmx;$(COMPONENTS)\elpack\code\source
+Item2=$(BCB)\include;$(BCB)\include\vcl;$(BCB)\Include\Mfc;$(CORE_DIR);$(COMPONENTS)\alexmx;$(COMPONENTS)\elpack
+Item3=$(BCB)\include;$(BCB)\include\vcl;$(BCB)\Include\Mfc;$(CORE_DIR)
+Item4=$(BCB)\include;$(BCB)\include\vcl;R:\Borland\Components6\AlexMX;R:\Borland\Components6\ElPack\Code\Source;R:\Borland\CBuilder6\Include\Mfc;P:\xrCore
+Item5=$(BCB)\include;$(BCB)\include\vcl;R:\Borland\Components6\AlexMX;R:\Borland\Components6\ElPack\Code\Source;R:\Borland\CBuilder6\Include\Mfc;P:\xrCore;R:\SDK\DirectX9.0_sum_2004\Include
+Item6=R:\SDK\DirectX9.0_sum_2004\Include;C:\Rad\Borland\CBuilder6\Projects;$(BCB)\include;$(BCB)\include\vcl;P:\MagicFM_Borland\Sdk\Include;R:\Borland\Components6\AlexMX;R:\Borland\Components6\ElPack\Code\Source;R:\Borland\CBuilder6\Include\Mfc;P:\xrCore
+Item7=C:\Rad\Borland\CBuilder6\Projects;R:\SDK\DirectX9.0\include;$(BCB)\include;$(BCB)\include\vcl;P:\MagicFM_Borland\Sdk\Include;R:\Borland\Components6\AlexMX;R:\Borland\Components6\ElPack\Code\Source;R:\Borland\CBuilder6\Include\Mfc;P:\xrCore
+Item8=R:\SDK\DirectX9.0\include;$(BCB)\include;$(BCB)\include\vcl;P:\MagicFM_Borland\Sdk\Include;R:\Borland\Components6\AlexMX;R:\Borland\Components6\ElPack\Code\Source;R:\Borland\CBuilder6\Include\Mfc;P:\xrCore
+Item9=R:\SDK\DirectX9.0\include;$(BCB)\include;$(BCB)\include\vcl;P:\MagicFM_Borland\Sdk\Include;R:\Borland\Components6\AlexMX;R:\Borland\Components6\ElPack\Code\Source;R:\Borland\CBuilder6\Include\Mfc
+Item10=R:\SDK\DirectX9.0\include;$(BCB)\include;$(BCB)\include\vcl;P:\MagicFM_Borland\Sdk\Include;R:\Borland\Components6\AlexMX;R:\Borland\Components6\ElPack\Code\Source;R:\VS7.NET\Vc7\atlmfc\include;R:\Borland\CBuilder6\Include\Mfc
 
 [HistoryLists\hlLibraryPath]
 Count=10

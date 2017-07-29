@@ -7,7 +7,7 @@
 #include "../../../xr_3da/pure.h"
 #include "../../../xrCore/ftimer.h"
 #include "estats.h"
-#include "../../../xr_3da/shader_xrlc.h"
+#include "shader_xrlc.h"
 #include "../../../xr_3da/shader.h"
 #include "../../../xr_3da/R_Backend.h"
 //---------------------------------------------------------------------------

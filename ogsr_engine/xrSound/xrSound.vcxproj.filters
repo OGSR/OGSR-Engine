@@ -33,9 +33,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="cl_intersect.h">
-      <Filter>Kernel</Filter>
-    </ClInclude>
     <ClInclude Include="Sound.h">
       <Filter>Kernel</Filter>
     </ClInclude>
@@ -86,6 +83,9 @@
     </ClInclude>
     <ClInclude Include="SoundRender_Cache.h">
       <Filter>Cache</Filter>
+    </ClInclude>
+    <ClInclude Include="..\COMMON\cl_intersect.h">
+      <Filter>Kernel</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

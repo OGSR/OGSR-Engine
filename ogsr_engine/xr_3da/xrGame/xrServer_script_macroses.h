@@ -9,7 +9,7 @@
 #pragma once
 
 #include "script_export_macroses.h"
-#include "xrEProps.h"
+#include "../../editors/xrEProps/xrEProps.h"
 #include "../../xrNetServer/net_utils.h"
 #include "ai_space.h"
 #include "script_engine.h"

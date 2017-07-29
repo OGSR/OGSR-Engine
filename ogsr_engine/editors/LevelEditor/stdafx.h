@@ -100,7 +100,7 @@ __inline float expf	(float val)                           	{ return ::exp(val);}
 #include "fmesh.h"
 #include "_d3d_extensions.h"
 
-#include "../ECore/Editor/D3DX_Wrapper.h"
+#include "D3DX_Wrapper.h"
 
 DEFINE_VECTOR		(AnsiString,AStringVec,AStringIt);
 DEFINE_VECTOR		(AnsiString*,LPAStringVec,LPAStringIt);
@@ -142,7 +142,7 @@ struct astr_pred : public std::binary_function<const AnsiString&, const AnsiStri
 	#include "../../xrNetServer/net_utils.h"
 #endif
 
-#define INI_NAME(buf) 		{FS.update_path(buf,"$local_root$",EFS.ChangeFileExt(UI->EditorName(),".ini").c_str());}
+#define INI_NAME(buf) 		{FS.update_path(buf,"$app_data_root$",EFS.ChangeFileExt(UI->EditorName(),".ini").c_str());}
 //#define INI_NAME(buf) 		{buf = buf+xr_string(Core.WorkingPath)+xr_string("\\")+EFS.ChangeFileExt(UI->EditorName(),".ini");}
 #define DEFINE_INI(storage)	{string_path buf; INI_NAME(buf); storage->IniFileName=buf;}
 #define NONE_CAPTION "<none>"

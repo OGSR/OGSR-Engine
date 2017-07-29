@@ -29,7 +29,7 @@ TfrmMain *frmMain;
 #include "../ECore/Editor/SoundManager.h"
 #include "../ECore/Editor/ui_main.h"
 #include "PSLibrary.h"
-#include "../ECore/Engine/GameMtlLib.h"
+#include "GameMtlLib.h"
 #include "../../xrSound/soundrender_source.h"
 #include "ResourceManager.h"
 #include "../xrEProps/EditorChooseEvents.h"

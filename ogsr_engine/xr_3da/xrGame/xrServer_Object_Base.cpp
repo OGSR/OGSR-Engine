@@ -23,7 +23,7 @@
 #endif
 
 #ifndef XRSE_FACTORY_EXPORTS
-#	include "xrEProps.h"
+#	include "..\..\editors\xrEProps\xrEProps.h"
 	
 	IPropHelper &PHelper()
 	{

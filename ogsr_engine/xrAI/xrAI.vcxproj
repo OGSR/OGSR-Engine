@@ -142,7 +142,7 @@
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <ShowIncludes>false</ShowIncludes>
-      <AdditionalIncludeDirectories>..\..\3rd_party\Src\Freeimage;..\xr_3da;..\..\3rd_party\Src\d3dx\include;..\Luabind\src;..\Luabind;..\..\3rd_party\Src\loki;..\..\3rd_party\Src\boost;..\xrCore;..\luajit\src;..\..\3rd_party\Src\MagicSoftware\Freemagic\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\COMMON;..\xrSound;..\..\3rd_party\Src\Freeimage;..\xr_3da;..\..\3rd_party\Src\d3dx\include;..\Luabind\src;..\Luabind;..\..\3rd_party\Src\loki;..\..\3rd_party\Src\boost;..\xrCore;..\xrCDB;..\luajit\src;..\..\3rd_party\Src\MagicSoftware\Freemagic\include;..\editors\xrEProps;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -193,7 +193,7 @@
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <ShowIncludes>false</ShowIncludes>
-      <AdditionalIncludeDirectories>..\..\3rd_party\Src\Freeimage;..\xr_3da;..\..\3rd_party\Src\d3dx\include;..\Luabind\src;..\Luabind;..\..\3rd_party\Src\loki;..\..\3rd_party\Src\boost;..\xrCore;..\luajit\src;..\..\3rd_party\Src\MagicSoftware\Freemagic\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\COMMON;..\xrSound;..\..\3rd_party\Src\Freeimage;..\xr_3da;..\..\3rd_party\Src\d3dx\include;..\Luabind\src;..\Luabind;..\..\3rd_party\Src\loki;..\..\3rd_party\Src\boost;..\xrCore;..\xrCDB;..\luajit\src;..\..\3rd_party\Src\MagicSoftware\Freemagic\include;..\editors\xrEProps;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -253,7 +253,7 @@
       <WarningLevel>Level3</WarningLevel>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
-      <AdditionalIncludeDirectories>..\..\3rd_party\Src\Freeimage;..\xr_3da;..\..\3rd_party\Src\d3dx\include;..\Luabind\src;..\Luabind;..\..\3rd_party\Src\loki;..\..\3rd_party\Src\boost;..\xrCore;..\luajit\src;..\..\3rd_party\Src\MagicSoftware\Freemagic\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\COMMON;..\xrSound;..\..\3rd_party\Src\Freeimage;..\xr_3da;..\..\3rd_party\Src\d3dx\include;..\Luabind\src;..\Luabind;..\..\3rd_party\Src\loki;..\..\3rd_party\Src\boost;..\xrCore;..\xrCDB;..\luajit\src;..\..\3rd_party\Src\MagicSoftware\Freemagic\include;..\editors\xrEProps;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -315,7 +315,7 @@
       <WarningLevel>Level3</WarningLevel>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
-      <AdditionalIncludeDirectories>..\..\3rd_party\Src\Freeimage;..\xr_3da;..\..\3rd_party\Src\d3dx\include;..\Luabind\src;..\Luabind;..\..\3rd_party\Src\loki;..\..\3rd_party\Src\boost;..\xrCore;..\luajit\src;..\..\3rd_party\Src\MagicSoftware\Freemagic\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\COMMON;..\xrSound;..\..\3rd_party\Src\Freeimage;..\xr_3da;..\..\3rd_party\Src\d3dx\include;..\Luabind\src;..\Luabind;..\..\3rd_party\Src\loki;..\..\3rd_party\Src\boost;..\xrCore;..\xrCDB;..\luajit\src;..\..\3rd_party\Src\MagicSoftware\Freemagic\include;..\editors\xrEProps;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -371,7 +371,7 @@
       <WarningLevel>Level3</WarningLevel>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
-      <AdditionalIncludeDirectories>..\..\3rd_party\Src\Freeimage;..\xr_3da;..\..\3rd_party\Src\d3dx\include;..\Luabind\src;..\Luabind;..\..\3rd_party\Src\loki;..\..\3rd_party\Src\boost;..\xrCore;..\luajit\src;..\..\3rd_party\Src\MagicSoftware\Freemagic\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\COMMON;..\xrSound;..\..\3rd_party\Src\Freeimage;..\xr_3da;..\..\3rd_party\Src\d3dx\include;..\Luabind\src;..\Luabind;..\..\3rd_party\Src\loki;..\..\3rd_party\Src\boost;..\xrCore;..\xrCDB;..\luajit\src;..\..\3rd_party\Src\MagicSoftware\Freemagic\include;..\editors\xrEProps;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -427,7 +427,7 @@
       <WarningLevel>Level3</WarningLevel>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
-      <AdditionalIncludeDirectories>..\..\3rd_party\Src\Freeimage;..\xr_3da;..\..\3rd_party\Src\d3dx\include;..\Luabind\src;..\Luabind;..\..\3rd_party\Src\loki;..\..\3rd_party\Src\boost;..\xrCore;..\luajit\src;..\..\3rd_party\Src\MagicSoftware\Freemagic\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\COMMON;..\xrSound;..\..\3rd_party\Src\Freeimage;..\xr_3da;..\..\3rd_party\Src\d3dx\include;..\Luabind\src;..\Luabind;..\..\3rd_party\Src\loki;..\..\3rd_party\Src\boost;..\xrCore;..\xrCDB;..\luajit\src;..\..\3rd_party\Src\MagicSoftware\Freemagic\include;..\editors\xrEProps;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -449,32 +449,34 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="communicate.h" />
-    <ClInclude Include="defines.h" />
+    <ClInclude Include="..\COMMON\cl_collector.h" />
+    <ClInclude Include="..\COMMON\cl_intersect.h" />
+    <ClInclude Include="..\COMMON\cl_log.h" />
+    <ClInclude Include="..\COMMON\communicate.h" />
+    <ClInclude Include="..\COMMON\defines.h" />
+    <ClInclude Include="..\COMMON\ETextureParams.h" />
+    <ClInclude Include="..\COMMON\guid_generator.h" />
+    <ClInclude Include="..\COMMON\light.h" />
+    <ClInclude Include="..\COMMON\resource_cl.h" />
+    <ClInclude Include="..\COMMON\Shader_xrLC.h" />
+    <ClInclude Include="..\COMMON\std_classes.h" />
+    <ClInclude Include="..\COMMON\tga.h" />
+    <ClInclude Include="..\COMMON\xrLevel.h" />
+    <ClInclude Include="..\COMMON\xrShaderTypes.h" />
+    <ClInclude Include="..\COMMON\xrThread.h" />
+    <ClInclude Include="..\COMMON\_d3d_extensions.h" />
+    <ClInclude Include="..\xrCDB\xrCDB.h" />
+    <ClInclude Include="..\xrSound\Sound.h" />
     <ClInclude Include="factory_api.h" />
     <ClInclude Include="FastDelegate.h" />
     <ClInclude Include="StdAfx.h" />
-    <ClInclude Include="tga.h" />
     <ClInclude Include="xrAI.h" />
-    <ClInclude Include="xrShaderTypes.h" />
-    <ClInclude Include="xrThread.h" />
-    <ClInclude Include="resource.h" />
-    <ClInclude Include="cl_log.h" />
-    <ClInclude Include="_d3d_extensions.h" />
     <ClInclude Include="FTimer.h" />
-    <ClInclude Include="light.h" />
-    <ClInclude Include="std_classes.h" />
-    <ClInclude Include="cl_collector.h" />
-    <ClInclude Include="cl_intersect.h" />
-    <ClInclude Include="xrCDB.h" />
     <ClInclude Include="random32.h" />
     <ClInclude Include="AIMapExport.h" />
     <ClInclude Include="compiler.h" />
-    <ClInclude Include="ETextureParams.h" />
     <ClInclude Include="LevelGameDef.h" />
     <ClInclude Include="motion_simulator.h" />
-    <ClInclude Include="Shader_xrLC.h" />
-    <ClInclude Include="xrLevel.h" />
     <ClInclude Include="quadtree.h" />
     <ClInclude Include="quadtree_inline.h" />
     <ClInclude Include="cover_point.h" />
@@ -550,7 +552,6 @@
     <ClInclude Include="game_graph_builder_inline.h" />
     <ClInclude Include="xr_graph_merge.h" />
     <ClInclude Include="restriction_space.h" />
-    <ClInclude Include="Sound.h" />
     <ClInclude Include="alife_artefact_order.h" />
     <ClInclude Include="alife_human_brain.h" />
     <ClInclude Include="alife_human_brain_inline.h" />
@@ -560,7 +561,6 @@
     <ClInclude Include="bone.h" />
     <ClInclude Include="character_info_defs.h" />
     <ClInclude Include="ChooseTypes.h" />
-    <ClInclude Include="DrawUtils.h" />
     <ClInclude Include="InfoPortionDefs.h" />
     <ClInclude Include="inventory_space.h" />
     <ClInclude Include="ItemListTypes.h" />
@@ -569,9 +569,6 @@
     <ClInclude Include="script_export_space.h" />
     <ClInclude Include="script_value_container.h" />
     <ClInclude Include="script_value_container_impl.h" />
-    <ClInclude Include="ShapeData.h" />
-    <ClInclude Include="WaveForm.h" />
-    <ClInclude Include="xrEProps.h" />
     <ClInclude Include="xrServer_Object_Base.h" />
     <ClInclude Include="xrServer_Objects.h" />
     <ClInclude Include="xrServer_Objects_Abstract.h" />
@@ -623,9 +620,13 @@
     <ClInclude Include="patrol_point.h" />
     <ClInclude Include="patrol_point_inline.h" />
     <ClInclude Include="spawn_patcher.h" />
-    <ClInclude Include="guid_generator.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\COMMON\cl_collector.cpp" />
+    <ClCompile Include="..\COMMON\cl_log.cpp" />
+    <ClCompile Include="..\COMMON\guid_generator.cpp" />
+    <ClCompile Include="..\COMMON\tga.cpp" />
+    <ClCompile Include="..\COMMON\xrThread.cpp" />
     <ClCompile Include="StdAfx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
@@ -634,11 +635,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="tga.cpp" />
     <ClCompile Include="xrAI.cpp" />
-    <ClCompile Include="xrThread.cpp" />
-    <ClCompile Include="cl_log.cpp" />
-    <ClCompile Include="cl_collector.cpp" />
     <ClCompile Include="random32.cpp" />
     <ClCompile Include="_buildnodes_view.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
@@ -723,14 +720,6 @@
     <ClCompile Include="patrol_point.cpp" />
     <ClCompile Include="spawn_patcher.cpp" />
     <ClCompile Include="verify_level_graph.cpp" />
-    <ClCompile Include="guid_generator.cpp">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Use</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Use</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Mixed|Win32'">Use</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Mixed|x64'">Use</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Use</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Use</PrecompiledHeader>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="resource.rc" />

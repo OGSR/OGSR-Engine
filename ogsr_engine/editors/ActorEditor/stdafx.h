@@ -99,9 +99,9 @@ __inline float expf	(float val)                           	{ return ::exp(val);}
 
 // some user components
 #include "../../xr_3da/fmesh.h"
-#include "../../xr_3da/_d3d_extensions.h"
+#include "_d3d_extensions.h"
 
-#include "../ECore/editor/D3DX_Wrapper.h"
+#include "D3DX_Wrapper.h"
 
 DEFINE_VECTOR		(AnsiString,AStringVec,AStringIt);
 DEFINE_VECTOR		(AnsiString*,LPAStringVec,LPAStringIt);
@@ -109,7 +109,7 @@ DEFINE_VECTOR		(AnsiString*,LPAStringVec,LPAStringIt);
 #include "../xrEProps/xrEProps.h"
 #include "../../xrCore/Log.h"
 #include "../ECore/editor/engine.h"
-#include "../../xr_3da/defines.h"
+#include "defines.h"
 
 struct str_pred : public std::binary_function<char*, char*, bool>
 {
@@ -138,7 +138,7 @@ struct astr_pred : public std::binary_function<const AnsiString&, const AnsiStri
 	#include "net_utils.h"
 #endif
 
-#define INI_NAME(buf) 		{FS.update_path(buf,"$local_root$",EFS.ChangeFileExt(UI->EditorName(),".ini").c_str());}
+#define INI_NAME(buf) 		{FS.update_path(buf,"$app_data_root$",EFS.ChangeFileExt(UI->EditorName(),".ini").c_str());}
 //#define INI_NAME(buf) 		{buf = buf+xr_string(Core.WorkingPath)+xr_string("\\")+EFS.ChangeFileExt(UI->EditorName(),".ini");}
 #define DEFINE_INI(storage)	{string_path buf; INI_NAME(buf); storage->IniFileName=buf;}
 #define NONE_CAPTION "<none>"

@@ -11,7 +11,7 @@
 #include "EditMesh.h"
 
 extern "C" {
-#include "lwo2.h"
+#include "../../LWO/lwo2.h"
 };
 
 #ifdef _EDITOR

@@ -4,7 +4,7 @@
 
 #include "stdafx.h"
 #include "DynamicHeightMap.h"
-#include "../cl_intersect.h"
+#include "cl_intersect.h"
 
 const int	tasksPerFrame	= 1;
 const float limit_up		= 100.f;

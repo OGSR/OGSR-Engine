@@ -186,7 +186,7 @@
     <LIBRARIES value="editor.lib"/>
     <SPARELIBS value="rtl.lib vcl.lib bcbsmp.lib vclx.lib editor.lib elpackB6.lib"/>
     <PACKAGES value="rtl.bpi vcl.bpi vclx.bpi bcbsmp.bpi elpkdbB6.bpi elpproB6.bpi elpackB6.bpi"/>
-    <PATHCPP value=".;Engine;..\..\xr_3da;..\..\xr_3da\xrRender;..\..\xr_3da\xrCPU_Pipe;..\..\xrCDB;..\..\xr_3da\blenders;..\..\xr_3da\xrRender_R1;Engine\blenders;Editor;WildMagic"/>
+    <PATHCPP value=".;Engine;..\..\COMMON;..\..\xr_3da;..\..\xr_3da\xrRender;..\..\COMMON_AI;..\..\xr_3da\xrCPU_Pipe;..\..\xrCDB;..\..\xr_3da\blenders;..\..\xr_3da\xrRender_R1;Engine\blenders;Editor;WildMagic"/>
     <PATHPAS value=".;"/>
     <PATHRC value=".;"/>
     <PATHASM value=".;"/>
@@ -196,18 +196,18 @@
     <USERDEFINES value="_EDITOR;_ECOREB;XRCDB_EXPORTS"/>
     <SYSDEFINES value="NO_STRICT;_RTLDLL;USEPACKAGES"/>
     <MAINSOURCE value="xrECoreB.bpf"/>
-    <INCLUDEPATH value="$(DINPUT_DIR);$(DSOUND_DIR);..\..\xr_3da\xrRender_R1;..\..\xr_3da\blenders;..\..\xrCDB;..\..\xr_3da\xrCPU_Pipe;Engine\Blenders;..\..\xr_3da\xrRender;..\..\xr_3da;$(D3DX_DIR)\Include;WildMagic;Editor;Engine;$(BCB)\include;$(BCB)\include\vcl;$(COMPONENTS)\AlexMX;$(COMPONENTS)\ElPack\Code\Source;$(BCB)\Include\Mfc;$(CORE_DIR);..\xrEProps;$(XIPH_DIR)\libtheora\include;$(MAGIC_SW_DIR);X:\3rd_party\Src;$(XIPH_DIR)\libogg\include;$(XIPH_DIR)\libvorbis\include"/>
-    <LIBPATH value="$(COMPONENTS)\elpack\code;..\..\xr_3da\xrRender_R1;..\..\xr_3da\blenders;WildMagic;Editor;..\..\xrCDB;..\..\xr_3da\xrCPU_Pipe;Engine\Blenders;..\..\xr_3da\xrRender;..\..\xr_3da;Engine;$(BCB)\lib;$(BCB)\lib\obj;$(BCB)\Projects\Lib;$(COMPONENTS)\AlexMX;$(COMPONENTS)\ElPack\Code\Source;$(BCB)\Lib\Psdk;X:\3rd_party\_LIB\Release\Win32;X:\ogsr_engine\_LIB\SDK\Release\Win32"/>
+    <INCLUDEPATH value="..\..\COMMON_AI;..\..\COMMON;$(DINPUT_DIR);$(DSOUND_DIR);..\..\xr_3da\xrRender_R1;..\..\xr_3da\blenders;..\..\xrCDB;..\..\xr_3da\xrCPU_Pipe;Engine\Blenders;..\..\xr_3da\xrRender;..\..\xr_3da;$(D3DX_DIR)\Include;WildMagic;Editor;Engine;$(BCB)\include;$(BCB)\include\vcl;$(COMPONENTS)\AlexMX;$(COMPONENTS)\ElPack\Code\Source;$(BCB)\Include\Mfc;$(CORE_DIR);..\xrEProps;$(XIPH_DIR)\libtheora\include;$(MAGIC_SW_DIR);X:\3rd_party\Src;$(XIPH_DIR)\libogg\include;$(XIPH_DIR)\libvorbis\include"/>
+    <LIBPATH value="..\..\COMMON_AI;..\..\COMMON;$(COMPONENTS)\elpack\code;..\..\xr_3da\xrRender_R1;..\..\xr_3da\blenders;WildMagic;Editor;..\..\xrCDB;..\..\xr_3da\xrCPU_Pipe;Engine\Blenders;..\..\xr_3da\xrRender;..\..\xr_3da;Engine;$(BCB)\lib;$(BCB)\lib\obj;$(BCB)\Projects\Lib;$(COMPONENTS)\AlexMX;$(COMPONENTS)\ElPack\Code\Source;$(BCB)\Lib\Psdk;X:\3rd_party\_LIB\Release\Win32;X:\ogsr_engine\_LIB\SDK\Release\Win32"/>
     <WARNINGS value="-w8092 -w8090 -w8089 -w8087 -wprc -wucp -wstv -wstu -wsig -wpin -w-par 
       -wnod -wnak -w-8027 -wdef -w-com -wcln -wbbf -wasm -wamp -wamb"/>
     <OTHERFILES value=""/>
   </MACROS>
   <OPTIONS>
-    <IDLCFLAGS value="-I$(DINPUT_DIR) -I$(DSOUND_DIR) -I..\..\xr_3da\xrRender_R1 
-      -I..\..\xr_3da\blenders -I..\..\xrCDB -I..\..\xr_3da\xrCPU_Pipe 
-      -IEngine\Blenders -I..\..\xr_3da\xrRender -I..\..\xr_3da 
-      -I$(D3DX_DIR)\Include -IWildMagic -IEditor -IEngine -I$(BCB)\include 
-      -I$(BCB)\include\vcl -I$(COMPONENTS)\AlexMX 
+    <IDLCFLAGS value="-I..\..\COMMON_AI -I..\..\COMMON -I$(DINPUT_DIR) -I$(DSOUND_DIR) 
+      -I..\..\xr_3da\xrRender_R1 -I..\..\xr_3da\blenders -I..\..\xrCDB 
+      -I..\..\xr_3da\xrCPU_Pipe -IEngine\Blenders -I..\..\xr_3da\xrRender 
+      -I..\..\xr_3da -I$(D3DX_DIR)\Include -IWildMagic -IEditor -IEngine 
+      -I$(BCB)\include -I$(BCB)\include\vcl -I$(COMPONENTS)\AlexMX 
       -I$(COMPONENTS)\ElPack\Code\Source -I$(BCB)\Include\Mfc -I$(CORE_DIR) 
       -I..\xrEProps -I$(XIPH_DIR)\libtheora\include -I$(MAGIC_SW_DIR) 
       -IX:\3rd_party\Src -I$(XIPH_DIR)\libogg\include 
@@ -234,7 +234,7 @@
       <FILE FILENAME="xrECoreB.bpf" FORMNAME="" UNITNAME="xrECoreB" CONTAINERID="BPF" DESIGNCLASS="" LOCALCOMMAND=""/>
       <FILE FILENAME="guid.cpp" FORMNAME="" UNITNAME="guid" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
       <FILE FILENAME="Engine\bone.cpp" FORMNAME="" UNITNAME="bone.cpp" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
-      <FILE FILENAME="Engine\cl_collector.cpp" FORMNAME="" UNITNAME="cl_collector.cpp" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\..\COMMON\cl_collector.cpp" FORMNAME="" UNITNAME="cl_collector.cpp" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
       <FILE FILENAME="..\..\xr_3da\defines.cpp" FORMNAME="" UNITNAME="defines.cpp" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
       <FILE FILENAME="..\..\xr_3da\xrRender\DetailModel.cpp" FORMNAME="" UNITNAME="DetailModel.cpp" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
       <FILE FILENAME="..\..\xr_3da\Envelope.cpp" FORMNAME="" UNITNAME="Envelope.cpp" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
@@ -242,7 +242,7 @@
       <FILE FILENAME="..\..\xr_3da\fmesh.cpp" FORMNAME="" UNITNAME="fmesh.cpp" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
       <FILE FILENAME="..\..\xr_3da\Frustum.cpp" FORMNAME="" UNITNAME="Frustum.cpp" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
       <FILE FILENAME="..\..\xr_3da\GameFont.cpp" FORMNAME="" UNITNAME="GameFont.cpp" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
-      <FILE FILENAME="Engine\GameMtlLib.cpp" FORMNAME="" UNITNAME="GameMtlLib.cpp" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\..\COMMON_AI\GameMtlLib.cpp" FORMNAME="" UNITNAME="GameMtlLib.cpp" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
       <FILE FILENAME="..\..\xr_3da\HW.cpp" FORMNAME="" UNITNAME="HW.cpp" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
       <FILE FILENAME="..\..\xr_3da\HWCaps.cpp" FORMNAME="" UNITNAME="HWCaps.cpp" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
       <FILE FILENAME="..\..\xr_3da\IGame_Persistent.cpp" FORMNAME="" UNITNAME="IGame_Persistent.cpp" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
@@ -289,11 +289,11 @@
       <FILE FILENAME="..\..\xr_3da\xrCPU_Pipe\xrSkin1W.cpp" FORMNAME="" UNITNAME="xrSkin1W.cpp" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
       <FILE FILENAME="..\..\xr_3da\ResourceManager_Reset.cpp" FORMNAME="" UNITNAME="ResourceManager_Reset" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
       <FILE FILENAME="..\..\xr_3da\xrRender\ParticleEffectDef.cpp" FORMNAME="" UNITNAME="ParticleEffectDef" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
-      <FILE FILENAME="Engine\ai_sounds.cpp" FORMNAME="" UNITNAME="ai_sounds" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
-      <FILE FILENAME="Engine\NVMeshMender.cpp" FORMNAME="" UNITNAME="NVMeshMender.cpp" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
-      <FILE FILENAME="Engine\nv_algebra.cpp" FORMNAME="" UNITNAME="nv_algebra.cpp" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
-      <FILE FILENAME="Engine\nv_math.h" FORMNAME="" UNITNAME="nv_math.h" CONTAINERID="" DESIGNCLASS="" LOCALCOMMAND=""/>
-      <FILE FILENAME="Engine\nv_mathdecl.h" FORMNAME="" UNITNAME="nv_mathdecl.h" CONTAINERID="" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\..\COMMON_AI\ai_sounds.cpp" FORMNAME="" UNITNAME="ai_sounds" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\..\COMMON\NVMeshMender.cpp" FORMNAME="" UNITNAME="NVMeshMender.cpp" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\..\COMMON\nv_algebra.cpp" FORMNAME="" UNITNAME="nv_algebra.cpp" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\..\COMMON\nv_math.h" FORMNAME="" UNITNAME="nv_math.h" CONTAINERID="" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\..\COMMON\nv_mathdecl.h" FORMNAME="" UNITNAME="nv_mathdecl.h" CONTAINERID="" DESIGNCLASS="" LOCALCOMMAND=""/>
       <FILE FILENAME="..\..\xr_3da\xrRender\FProgressive.cpp" FORMNAME="" UNITNAME="FProgressive" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
       <FILE FILENAME="..\..\xr_3da\SkeletonMotions.cpp" FORMNAME="" UNITNAME="SkeletonMotions" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
       <FILE FILENAME="..\..\xr_3da\tntQAVI.cpp" FORMNAME="" UNITNAME="tntQAVI" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
@@ -331,17 +331,17 @@
       <FILE FILENAME="..\..\xr_3da\xrRender\Blender_detail_still.cpp" FORMNAME="" UNITNAME="Blender_detail_still" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
       <FILE FILENAME="..\..\xr_3da\xrRender\Blender_tree.cpp" FORMNAME="" UNITNAME="Blender_tree" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
       <FILE FILENAME="..\..\xr_3da\xrRender\Blender_Particle.cpp" FORMNAME="" UNITNAME="Blender_particle" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
-      <FILE FILENAME="Engine\guid_generator.cpp" FORMNAME="" UNITNAME="guid_generator.cpp" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\..\COMMON\guid_generator.cpp" FORMNAME="" UNITNAME="guid_generator.cpp" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
       <FILE FILENAME="Editor\UI_MainMail.cpp" FORMNAME="" UNITNAME="UI_MainMail.cpp" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
       <FILE FILENAME="Editor\BoneEditor.cpp" FORMNAME="" UNITNAME="BoneEditor.cpp" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
       <FILE FILENAME="Editor\c_dinput.cpp" FORMNAME="" UNITNAME="c_dinput.cpp" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
       <FILE FILENAME="Editor\ColorPicker.cpp" FORMNAME="" UNITNAME="ColorPicker.cpp" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
-      <FILE FILENAME="Editor\D3DUtils.cpp" FORMNAME="" UNITNAME="D3DUtils.cpp" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\..\xr_3da\D3DUtils.cpp" FORMNAME="" UNITNAME="D3DUtils.cpp" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
       <FILE FILENAME="Editor\Device.cpp" FORMNAME="" UNITNAME="Device.cpp" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
-      <FILE FILENAME="Editor\du_box.cpp" FORMNAME="" UNITNAME="du_box.cpp" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
-      <FILE FILENAME="Editor\du_cone.cpp" FORMNAME="" UNITNAME="du_cone.cpp" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
-      <FILE FILENAME="Editor\du_cylinder.cpp" FORMNAME="" UNITNAME="du_cylinder.cpp" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
-      <FILE FILENAME="Editor\du_sphere.cpp" FORMNAME="" UNITNAME="du_sphere.cpp" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\..\xr_3da\du_box.cpp" FORMNAME="" UNITNAME="du_box.cpp" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\..\xr_3da\du_cone.cpp" FORMNAME="" UNITNAME="du_cone.cpp" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\..\xr_3da\du_cylinder.cpp" FORMNAME="" UNITNAME="du_cylinder.cpp" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\..\xr_3da\du_sphere.cpp" FORMNAME="" UNITNAME="du_sphere.cpp" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
       <FILE FILENAME="Editor\EDetailModel.cpp" FORMNAME="" UNITNAME="EDetailModel.cpp" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
       <FILE FILENAME="Editor\EditMesh.cpp" FORMNAME="" UNITNAME="EditMesh.cpp" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
       <FILE FILENAME="Editor\EditMeshIO.cpp" FORMNAME="" UNITNAME="EditMeshIO.cpp" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
@@ -386,10 +386,10 @@
       <FILE FILENAME="Editor\EThumbnail.cpp" FORMNAME="" UNITNAME="EThumbnail.cpp" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
       <FILE FILENAME="Editor\EThumbnailObject.cpp" FORMNAME="" UNITNAME="EThumbnailObject.cpp" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
       <FILE FILENAME="Editor\EThumbnailSound.cpp" FORMNAME="" UNITNAME="EThumbnailSound.cpp" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
-      <FILE FILENAME="Editor\du_sphere_part.cpp" FORMNAME="" UNITNAME="du_sphere_part" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\..\xr_3da\du_sphere_part.cpp" FORMNAME="" UNITNAME="du_sphere_part" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
       <FILE FILENAME="Editor\ImageManagerLOD.cpp" FORMNAME="" UNITNAME="ImageManagerLOD" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
       <FILE FILENAME="Editor\DeviceScreenshot.cpp" FORMNAME="" UNITNAME="DeviceScreenshot" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
-      <FILE FILENAME="Editor\D3DX_Wrapper.h" FORMNAME="" UNITNAME="D3DX_Wrapper.h" CONTAINERID="" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\..\COMMON\D3DX_Wrapper.h" FORMNAME="" UNITNAME="D3DX_Wrapper.h" CONTAINERID="" DESIGNCLASS="" LOCALCOMMAND=""/>
       <FILE FILENAME="Editor\PropSlimTools.h" FORMNAME="" UNITNAME="PropSlimTools.h" CONTAINERID="" DESIGNCLASS="" LOCALCOMMAND=""/>
       <FILE FILENAME="Editor\pDomain.cpp" FORMNAME="" UNITNAME="pDomain" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
       <FILE FILENAME="Editor\EThumbnailGroup.cpp" FORMNAME="" UNITNAME="EThumbnailGroup" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
@@ -408,11 +408,11 @@
       <FILE FILENAME="WildMagic\WmlApprGaussPointsFit3.cpp" FORMNAME="" UNITNAME="WmlApprGaussPointsFit3.cpp" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
       <FILE FILENAME="WildMagic\WmlEigen.cpp" FORMNAME="" UNITNAME="WmlEigen" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
       <FILE FILENAME="WildMagic\RAPIDMinBox.cpp" FORMNAME="" UNITNAME="RAPIDMinBox" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
-      <FILE FILENAME="Engine\Image.cpp" FORMNAME="" UNITNAME="Image" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\..\COMMON\Image.cpp" FORMNAME="" UNITNAME="Image" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
       <FILE FILENAME="Editor\MinimapEditor.cpp" FORMNAME="TMinimapEditor" UNITNAME="MinimapEditor" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
-      <FILE FILENAME="..\..\xr_3da\xrRender\tga.cpp" FORMNAME="" UNITNAME="tga" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\..\COMMON\tga.cpp" FORMNAME="" UNITNAME="tga" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
       <FILE FILENAME="..\..\xr_3da\TextureDescrManager.cpp" FORMNAME="" UNITNAME="TextureDescrManager" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
-      <FILE FILENAME="..\..\xr_3da\ETextureParams.cpp" FORMNAME="" UNITNAME="ETextureParams" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\..\COMMON\ETextureParams.cpp" FORMNAME="" UNITNAME="ETextureParams" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
   </FILELIST>
   <BUILDTOOLS>
   </BUILDTOOLS>
@@ -449,37 +449,39 @@ Comments=
 c:\program files (x86)\borland\cbuilder6\Bin\dclite60.bpl=Borland Integrated Translation Environment
 
 [HistoryLists\hlIncludePath]
-Count=16
-Item0=$(DINPUT_DIR);$(DSOUND_DIR);..\..\xr_3da\xrRender_R1;..\..\xr_3da\blenders;..\..\xrCDB;..\..\xr_3da\xrCPU_Pipe;Engine\Blenders;..\..\xr_3da\xrRender;..\..\xr_3da;$(D3DX_DIR)\Include;WildMagic;Editor;Engine;$(BCB)\include;$(BCB)\include\vcl;$(COMPONENTS)\AlexMX;$(COMPONENTS)\ElPack\Code\Source;$(BCB)\Include\Mfc;$(CORE_DIR);..\xrEProps;$(XIPH_DIR)\libtheora\include;$(MAGIC_SW_DIR);X:\3rd_party\Src;$(XIPH_DIR)\libogg\include;$(XIPH_DIR)\libvorbis\include
-Item1=$(DINPUT_DIR);$(DSOUND_DIR);..\..\xr_3da\xrRender_R1;..\..\xr_3da\blenders;..\..\xrCDB;..\..\xr_3da\xrCPU_Pipe;Engine\Blenders;..\..\xr_3da\xrRender;..\..\xr_3da;$(D3DX_DIR)\Include;WildMagic;Editor;Engine;$(BCB)\include;$(BCB)\include\vcl;$(COMPONENTS)\AlexMX;$(COMPONENTS)\ElPack\Code\Source;$(BCB)\Include\Mfc;$(CORE_DIR);..\xrEProps;$(XIPH_DIR)\libtheora\include;$(MAGIC_SW_DIR);X:\3rd_party\Src\;$(XIPH_DIR)\libogg\include;$(XIPH_DIR)\libvorbis\include
-Item2=$(DINPUT_DIR);$(DSOUND_DIR);..\..\xr_3da\xrRender_R1;..\..\xr_3da\blenders;..\..\xrCDB;..\..\xr_3da\xrCPU_Pipe;Engine\Blenders;..\..\xr_3da\xrRender;..\..\xr_3da;$(D3DX_DIR)\Include;WildMagic;Editor;Engine;$(BCB)\include;$(BCB)\include\vcl;$(COMPONENTS)\AlexMX;$(COMPONENTS)\ElPack\Code\Source;$(BCB)\Include\Mfc;$(CORE_DIR);..\xrEProps;$(XIPH_DIR)\libtheora\include;$(MAGIC_SW_DIR);X:\3rd_party\Src\FreeImage\Source;$(XIPH_DIR)\libogg\include;$(XIPH_DIR)\libvorbis\include
-Item3=$(DSOUND_DIR);$(DINPUT_DIR);..\..\xr_3da\xrRender_R1;..\..\xr_3da\blenders;..\..\xrCDB;..\..\xr_3da\xrCPU_Pipe;Engine\Blenders;..\..\xr_3da\xrRender;..\..\xr_3da;$(D3DX_DIR)\Include;WildMagic;Editor;Engine;$(BCB)\include;$(BCB)\include\vcl;$(COMPONENTS)\AlexMX;$(COMPONENTS)\ElPack\Code\Source;$(BCB)\Include\Mfc;$(CORE_DIR);..\xrEProps;$(XIPH_DIR)\libtheora\include;$(MAGIC_SW_DIR);X:\3rd_party\Src\FreeImage\Source;$(XIPH_DIR)\libogg\include;$(XIPH_DIR)\libvorbis\include
-Item4=$(DSOUND_DIR);..\..\xr_3da\xrRender_R1;..\..\xr_3da\blenders;..\..\xrCDB;..\..\xr_3da\xrCPU_Pipe;Engine\Blenders;..\..\xr_3da\xrRender;..\..\xr_3da;$(D3DX_DIR)\Include;WildMagic;Editor;Engine;$(BCB)\include;$(BCB)\include\vcl;$(COMPONENTS)\AlexMX;$(COMPONENTS)\ElPack\Code\Source;$(BCB)\Include\Mfc;$(CORE_DIR);..\xrEProps;$(XIPH_DIR)\libtheora\include;$(MAGIC_SW_DIR);X:\3rd_party\Src\FreeImage\Source;$(XIPH_DIR)\libogg\include;$(XIPH_DIR)\libvorbis\include
-Item5=..\..\xr_3da\xrRender_R1;..\..\xr_3da\blenders;..\..\xrCDB;..\..\xr_3da\xrCPU_Pipe;Engine\Blenders;..\..\xr_3da\xrRender;..\..\xr_3da;$(DXSDK_DIR)\Include;WildMagic;Editor;Engine;$(BCB)\include;$(BCB)\include\vcl;$(COMPONENTS)\AlexMX;$(COMPONENTS)\ElPack\Code\Source;$(BCB)\Include\Mfc;$(CORE_DIR);..\xrEProps;$(XIPH_DIR)\libtheora\include;$(MAGIC_SW_DIR);X:\3rd_party\Src\FreeImage\Source;$(XIPH_DIR)\libogg\include;$(XIPH_DIR)\libvorbis\include
-Item6=..\..\xr_3da\xrRender_R1;..\..\xr_3da\blenders;..\..\xrCDB;..\..\xr_3da\xrCPU_Pipe;Engine\Blenders;..\..\xr_3da\xrRender;..\..\xr_3da;$(DXSDK_DIR)\Include;WildMagic;Editor;Engine;$(BCB)\include;$(BCB)\include\vcl;$(COMPONENTS)\AlexMX;$(COMPONENTS)\ElPack\Code\Source;$(BCB)\Include\Mfc;$(CORE_DIR);..\xrEProps;$(XIPH_DIR)\libtheora\include;$(MAGIC_SW_DIR);$(SDK_DIR)\freeimage;$(XIPH_DIR)\libogg\include;$(XIPH_DIR)\libvorbis\include
-Item7=I:\Program Files\Borland\CBuilder6\Projects;..\..\xr_3da\xrRender_R1;..\..\xr_3da\blenders;..\..\xrCDB;..\..\xr_3da\xrCPU_Pipe;Engine\Blenders;..\..\xr_3da\xrRender;..\..\xr_3da;$(DXSDK_DIR)\Include;WildMagic;Editor;Engine;$(BCB)\include;$(BCB)\include\vcl;$(COMPONENTS)\AlexMX;$(COMPONENTS)\ElPack\Code\Source;$(BCB)\Include\Mfc;$(CORE_DIR);..\xrEProps;$(XIPH_DIR)\libtheora\include;$(MAGIC_SW_DIR);$(SDK_DIR)\freeimage;$(XIPH_DIR)\libogg\include;$(XIPH_DIR)\libvorbis\include
-Item8=I:\Program Files\Borland\CBuilder6\Projects;..\..\xr_3da\xrRender_R1;..\..\xr_3da\blenders;..\..\xrCDB;..\..\xr_3da\xrCPU_Pipe;Engine\Blenders;..\..\xr_3da\xrRender;..\..\xr_3da;$(DXSDK_DIR)\Include;WildMagic;Editor;Engine;$(BCB)\include;$(BCB)\include\vcl;$(COMPONENTS)\AlexMX;$(COMPONENTS)\ElPack\Code\Source;$(BCB)\Include\Mfc;$(CORE_DIR);..\xrEProps;$(XIPH_DIR);$(MAGIC_SW_DIR);$(SDK_DIR)\freeimage
-Item9=I:\Program Files\Borland\CBuilder6\Projects;blenders;..\..\xr_3da\xrRender_R1;..\..\xr_3da\blenders;..\..\xrCDB;..\..\xr_3da\xrCPU_Pipe;Engine\Blenders;..\..\xr_3da\xrRender;..\..\xr_3da;$(DXSDK_DIR)\Include;WildMagic;Editor;Engine;$(BCB)\include;$(BCB)\include\vcl;$(COMPONENTS)\AlexMX;$(COMPONENTS)\ElPack\Code\Source;$(BCB)\Include\Mfc;$(CORE_DIR);..\xrEProps;$(XIPH_DIR);$(MAGIC_SW_DIR);$(SDK_DIR)\freeimage
-Item10=blenders;..\..\xr_3da\xrRender_R1;..\..\xr_3da\blenders;..\..\xrCDB;..\..\xr_3da\xrCPU_Pipe;Engine\Blenders;..\..\xr_3da\xrRender;..\..\xr_3da;$(DXSDK_DIR)\Include;WildMagic;Editor;Engine;$(BCB)\include;$(BCB)\include\vcl;$(COMPONENTS)\AlexMX;$(COMPONENTS)\ElPack\Code\Source;$(BCB)\Include\Mfc;$(CORE_DIR);..\xrEProps;$(XIPH_DIR);$(MAGIC_SW_DIR);$(SDK_DIR)\freeimage
-Item11=blenders;..\..\xr_3da\xrRender_R1;..\..\xr_3da\blenders;..\..\xrCDB;..\..\xr_3da\xrCPU_Pipe;Engine\Blenders;..\..\xr_3da\xrRender;..\..\xr_3da;$(DXSDK_DIR)\Include;WildMagic;Editor;Engine;$(BCB)\include;$(BCB)\include\vcl;$(COMPONENTS)\AlexMX;$(COMPONENTS)\ElPack\Code\Source;$(BCB)\Include\Mfc;$(CORE_DIR);..\xrEProps;$(XIPH_DIR);$(MAGIC_SW_DIR)
-Item12=..\..\xrCDB;..\..\xr_3da\xrCPU_Pipe;Engine\Blenders;..\..\xr_3da\xrRender;..\..\xr_3da;$(DXSDK_DIR)\Include;WildMagic;Editor;Engine;$(BCB)\include;$(BCB)\include\vcl;$(COMPONENTS)\AlexMX;$(COMPONENTS)\ElPack\Code\Source;$(BCB)\Include\Mfc;$(CORE_DIR);..\xrEProps;$(XIPH_DIR);$(MAGIC_SW_DIR)
-Item13=..\..\xrCDB;..\..\xr_3da\xrCPU_Pipe;Engine\Blenders;..\..\xr_3da\xrRender;..\..\xr_3da;$(DXSDK_DIR)\Include;WildMagic;Editor;Engine;$(BCB)\include;$(BCB)\include\vcl;$(COMPONENTS)\AlexMX;$(COMPONENTS)\ElPack\Code\Source;$(BCB)\Include\Mfc;$(CORE_DIR);..\xrEProps;$(XIPH_DIR)
-Item14=..\..\xrCDB;..\..\xr_3da\xrCPU_Pipe;Engine\Blenders;..\..\xr_3da\xrRender;..\..\xr_3da;$(DXSDK_DIR)\Include;WildMagic;Editor;Engine;$(BCB)\include;$(BCB)\include\vcl;$(COMPONENTS)\AlexMX;$(COMPONENTS)\ElPack\Code\Source;$(BCB)\Include\Mfc;$(CORE_DIR);..\xrEProps;$(XIPH_DIR)\include
-Item15=$(DXSDK_DIR)\Include;WildMagic;Editor;Engine;$(BCB)\include;$(BCB)\include\vcl;$(COMPONENTS)\AlexMX;$(COMPONENTS)\ElPack\Code\Source;$(BCB)\Include\Mfc;$(CORE_DIR);..\xrEProps;$(XIPH_DIR)\include
+Count=17
+Item0=..\..\COMMON_AI;..\..\COMMON;$(DINPUT_DIR);$(DSOUND_DIR);..\..\xr_3da\xrRender_R1;..\..\xr_3da\blenders;..\..\xrCDB;..\..\xr_3da\xrCPU_Pipe;Engine\Blenders;..\..\xr_3da\xrRender;..\..\xr_3da;$(D3DX_DIR)\Include;WildMagic;Editor;Engine;$(BCB)\include;$(BCB)\include\vcl;$(COMPONENTS)\AlexMX;$(COMPONENTS)\ElPack\Code\Source;$(BCB)\Include\Mfc;$(CORE_DIR);..\xrEProps;$(XIPH_DIR)\libtheora\include;$(MAGIC_SW_DIR);X:\3rd_party\Src;$(XIPH_DIR)\libogg\include;$(XIPH_DIR)\libvorbis\include
+Item1=$(DINPUT_DIR);$(DSOUND_DIR);..\..\xr_3da\xrRender_R1;..\..\xr_3da\blenders;..\..\xrCDB;..\..\xr_3da\xrCPU_Pipe;Engine\Blenders;..\..\xr_3da\xrRender;..\..\xr_3da;$(D3DX_DIR)\Include;WildMagic;Editor;Engine;$(BCB)\include;$(BCB)\include\vcl;$(COMPONENTS)\AlexMX;$(COMPONENTS)\ElPack\Code\Source;$(BCB)\Include\Mfc;$(CORE_DIR);..\xrEProps;$(XIPH_DIR)\libtheora\include;$(MAGIC_SW_DIR);X:\3rd_party\Src;$(XIPH_DIR)\libogg\include;$(XIPH_DIR)\libvorbis\include
+Item2=$(DINPUT_DIR);$(DSOUND_DIR);..\..\xr_3da\xrRender_R1;..\..\xr_3da\blenders;..\..\xrCDB;..\..\xr_3da\xrCPU_Pipe;Engine\Blenders;..\..\xr_3da\xrRender;..\..\xr_3da;$(D3DX_DIR)\Include;WildMagic;Editor;Engine;$(BCB)\include;$(BCB)\include\vcl;$(COMPONENTS)\AlexMX;$(COMPONENTS)\ElPack\Code\Source;$(BCB)\Include\Mfc;$(CORE_DIR);..\xrEProps;$(XIPH_DIR)\libtheora\include;$(MAGIC_SW_DIR);X:\3rd_party\Src\;$(XIPH_DIR)\libogg\include;$(XIPH_DIR)\libvorbis\include
+Item3=$(DINPUT_DIR);$(DSOUND_DIR);..\..\xr_3da\xrRender_R1;..\..\xr_3da\blenders;..\..\xrCDB;..\..\xr_3da\xrCPU_Pipe;Engine\Blenders;..\..\xr_3da\xrRender;..\..\xr_3da;$(D3DX_DIR)\Include;WildMagic;Editor;Engine;$(BCB)\include;$(BCB)\include\vcl;$(COMPONENTS)\AlexMX;$(COMPONENTS)\ElPack\Code\Source;$(BCB)\Include\Mfc;$(CORE_DIR);..\xrEProps;$(XIPH_DIR)\libtheora\include;$(MAGIC_SW_DIR);X:\3rd_party\Src\FreeImage\Source;$(XIPH_DIR)\libogg\include;$(XIPH_DIR)\libvorbis\include
+Item4=$(DSOUND_DIR);$(DINPUT_DIR);..\..\xr_3da\xrRender_R1;..\..\xr_3da\blenders;..\..\xrCDB;..\..\xr_3da\xrCPU_Pipe;Engine\Blenders;..\..\xr_3da\xrRender;..\..\xr_3da;$(D3DX_DIR)\Include;WildMagic;Editor;Engine;$(BCB)\include;$(BCB)\include\vcl;$(COMPONENTS)\AlexMX;$(COMPONENTS)\ElPack\Code\Source;$(BCB)\Include\Mfc;$(CORE_DIR);..\xrEProps;$(XIPH_DIR)\libtheora\include;$(MAGIC_SW_DIR);X:\3rd_party\Src\FreeImage\Source;$(XIPH_DIR)\libogg\include;$(XIPH_DIR)\libvorbis\include
+Item5=$(DSOUND_DIR);..\..\xr_3da\xrRender_R1;..\..\xr_3da\blenders;..\..\xrCDB;..\..\xr_3da\xrCPU_Pipe;Engine\Blenders;..\..\xr_3da\xrRender;..\..\xr_3da;$(D3DX_DIR)\Include;WildMagic;Editor;Engine;$(BCB)\include;$(BCB)\include\vcl;$(COMPONENTS)\AlexMX;$(COMPONENTS)\ElPack\Code\Source;$(BCB)\Include\Mfc;$(CORE_DIR);..\xrEProps;$(XIPH_DIR)\libtheora\include;$(MAGIC_SW_DIR);X:\3rd_party\Src\FreeImage\Source;$(XIPH_DIR)\libogg\include;$(XIPH_DIR)\libvorbis\include
+Item6=..\..\xr_3da\xrRender_R1;..\..\xr_3da\blenders;..\..\xrCDB;..\..\xr_3da\xrCPU_Pipe;Engine\Blenders;..\..\xr_3da\xrRender;..\..\xr_3da;$(DXSDK_DIR)\Include;WildMagic;Editor;Engine;$(BCB)\include;$(BCB)\include\vcl;$(COMPONENTS)\AlexMX;$(COMPONENTS)\ElPack\Code\Source;$(BCB)\Include\Mfc;$(CORE_DIR);..\xrEProps;$(XIPH_DIR)\libtheora\include;$(MAGIC_SW_DIR);X:\3rd_party\Src\FreeImage\Source;$(XIPH_DIR)\libogg\include;$(XIPH_DIR)\libvorbis\include
+Item7=..\..\xr_3da\xrRender_R1;..\..\xr_3da\blenders;..\..\xrCDB;..\..\xr_3da\xrCPU_Pipe;Engine\Blenders;..\..\xr_3da\xrRender;..\..\xr_3da;$(DXSDK_DIR)\Include;WildMagic;Editor;Engine;$(BCB)\include;$(BCB)\include\vcl;$(COMPONENTS)\AlexMX;$(COMPONENTS)\ElPack\Code\Source;$(BCB)\Include\Mfc;$(CORE_DIR);..\xrEProps;$(XIPH_DIR)\libtheora\include;$(MAGIC_SW_DIR);$(SDK_DIR)\freeimage;$(XIPH_DIR)\libogg\include;$(XIPH_DIR)\libvorbis\include
+Item8=I:\Program Files\Borland\CBuilder6\Projects;..\..\xr_3da\xrRender_R1;..\..\xr_3da\blenders;..\..\xrCDB;..\..\xr_3da\xrCPU_Pipe;Engine\Blenders;..\..\xr_3da\xrRender;..\..\xr_3da;$(DXSDK_DIR)\Include;WildMagic;Editor;Engine;$(BCB)\include;$(BCB)\include\vcl;$(COMPONENTS)\AlexMX;$(COMPONENTS)\ElPack\Code\Source;$(BCB)\Include\Mfc;$(CORE_DIR);..\xrEProps;$(XIPH_DIR)\libtheora\include;$(MAGIC_SW_DIR);$(SDK_DIR)\freeimage;$(XIPH_DIR)\libogg\include;$(XIPH_DIR)\libvorbis\include
+Item9=I:\Program Files\Borland\CBuilder6\Projects;..\..\xr_3da\xrRender_R1;..\..\xr_3da\blenders;..\..\xrCDB;..\..\xr_3da\xrCPU_Pipe;Engine\Blenders;..\..\xr_3da\xrRender;..\..\xr_3da;$(DXSDK_DIR)\Include;WildMagic;Editor;Engine;$(BCB)\include;$(BCB)\include\vcl;$(COMPONENTS)\AlexMX;$(COMPONENTS)\ElPack\Code\Source;$(BCB)\Include\Mfc;$(CORE_DIR);..\xrEProps;$(XIPH_DIR);$(MAGIC_SW_DIR);$(SDK_DIR)\freeimage
+Item10=I:\Program Files\Borland\CBuilder6\Projects;blenders;..\..\xr_3da\xrRender_R1;..\..\xr_3da\blenders;..\..\xrCDB;..\..\xr_3da\xrCPU_Pipe;Engine\Blenders;..\..\xr_3da\xrRender;..\..\xr_3da;$(DXSDK_DIR)\Include;WildMagic;Editor;Engine;$(BCB)\include;$(BCB)\include\vcl;$(COMPONENTS)\AlexMX;$(COMPONENTS)\ElPack\Code\Source;$(BCB)\Include\Mfc;$(CORE_DIR);..\xrEProps;$(XIPH_DIR);$(MAGIC_SW_DIR);$(SDK_DIR)\freeimage
+Item11=blenders;..\..\xr_3da\xrRender_R1;..\..\xr_3da\blenders;..\..\xrCDB;..\..\xr_3da\xrCPU_Pipe;Engine\Blenders;..\..\xr_3da\xrRender;..\..\xr_3da;$(DXSDK_DIR)\Include;WildMagic;Editor;Engine;$(BCB)\include;$(BCB)\include\vcl;$(COMPONENTS)\AlexMX;$(COMPONENTS)\ElPack\Code\Source;$(BCB)\Include\Mfc;$(CORE_DIR);..\xrEProps;$(XIPH_DIR);$(MAGIC_SW_DIR);$(SDK_DIR)\freeimage
+Item12=blenders;..\..\xr_3da\xrRender_R1;..\..\xr_3da\blenders;..\..\xrCDB;..\..\xr_3da\xrCPU_Pipe;Engine\Blenders;..\..\xr_3da\xrRender;..\..\xr_3da;$(DXSDK_DIR)\Include;WildMagic;Editor;Engine;$(BCB)\include;$(BCB)\include\vcl;$(COMPONENTS)\AlexMX;$(COMPONENTS)\ElPack\Code\Source;$(BCB)\Include\Mfc;$(CORE_DIR);..\xrEProps;$(XIPH_DIR);$(MAGIC_SW_DIR)
+Item13=..\..\xrCDB;..\..\xr_3da\xrCPU_Pipe;Engine\Blenders;..\..\xr_3da\xrRender;..\..\xr_3da;$(DXSDK_DIR)\Include;WildMagic;Editor;Engine;$(BCB)\include;$(BCB)\include\vcl;$(COMPONENTS)\AlexMX;$(COMPONENTS)\ElPack\Code\Source;$(BCB)\Include\Mfc;$(CORE_DIR);..\xrEProps;$(XIPH_DIR);$(MAGIC_SW_DIR)
+Item14=..\..\xrCDB;..\..\xr_3da\xrCPU_Pipe;Engine\Blenders;..\..\xr_3da\xrRender;..\..\xr_3da;$(DXSDK_DIR)\Include;WildMagic;Editor;Engine;$(BCB)\include;$(BCB)\include\vcl;$(COMPONENTS)\AlexMX;$(COMPONENTS)\ElPack\Code\Source;$(BCB)\Include\Mfc;$(CORE_DIR);..\xrEProps;$(XIPH_DIR)
+Item15=..\..\xrCDB;..\..\xr_3da\xrCPU_Pipe;Engine\Blenders;..\..\xr_3da\xrRender;..\..\xr_3da;$(DXSDK_DIR)\Include;WildMagic;Editor;Engine;$(BCB)\include;$(BCB)\include\vcl;$(COMPONENTS)\AlexMX;$(COMPONENTS)\ElPack\Code\Source;$(BCB)\Include\Mfc;$(CORE_DIR);..\xrEProps;$(XIPH_DIR)\include
+Item16=$(DXSDK_DIR)\Include;WildMagic;Editor;Engine;$(BCB)\include;$(BCB)\include\vcl;$(COMPONENTS)\AlexMX;$(COMPONENTS)\ElPack\Code\Source;$(BCB)\Include\Mfc;$(CORE_DIR);..\xrEProps;$(XIPH_DIR)\include
 
 [HistoryLists\hlLibraryPath]
-Count=11
-Item0=$(COMPONENTS)\elpack\code;..\..\xr_3da\xrRender_R1;..\..\xr_3da\blenders;WildMagic;Editor;..\..\xrCDB;..\..\xr_3da\xrCPU_Pipe;Engine\Blenders;..\..\xr_3da\xrRender;..\..\xr_3da;Engine;$(BCB)\lib;$(BCB)\lib\obj;$(BCB)\Projects\Lib;$(COMPONENTS)\AlexMX;$(COMPONENTS)\ElPack\Code\Source;$(BCB)\Lib\Psdk;X:\3rd_party\_LIB\Release\Win32;X:\ogsr_engine\_LIB\SDK\Release\Win32
-Item1=$(COMPONENTS)\elpack\code;..\..\xr_3da\xrRender_R1;..\..\xr_3da\blenders;WildMagic;Editor;..\..\xrCDB;..\..\xr_3da\xrCPU_Pipe;Engine\Blenders;..\..\xr_3da\xrRender;..\..\xr_3da;Engine;$(BCB)\lib;$(BCB)\lib\obj;$(BCB)\Projects\Lib;$(COMPONENTS)\AlexMX;$(COMPONENTS)\ElPack\Code\Source;$(BCB)\Lib\Psdk;X:\3rd_party\_LIB\Release\Win32
-Item2=$(COMPONENTS)\elpack\code;..\..\xr_3da\xrRender_R1;..\..\xr_3da\blenders;WildMagic;Editor;..\..\xrCDB;..\..\xr_3da\xrCPU_Pipe;Engine\Blenders;..\..\xr_3da\xrRender;..\..\xr_3da;Engine;$(BCB)\lib;$(BCB)\lib\obj;$(BCB)\Projects\Lib;$(COMPONENTS)\AlexMX;$(COMPONENTS)\ElPack\Code\Source;$(BCB)\Lib\Psdk;X:\3rd_party\_LIB\Release\Win32\
-Item3=e:\xray_sources\soc\trunk\3rd party\components\elpack\code;..\..\xr_3da\xrRender_R1;..\..\xr_3da\blenders;WildMagic;Editor;..\..\xrCDB;..\..\xr_3da\xrCPU_Pipe;Engine\Blenders;..\..\xr_3da\xrRender;..\..\xr_3da;Engine;$(BCB)\lib;$(BCB)\lib\obj;$(BCB)\Projects\Lib;$(COMPONENTS)\AlexMX;$(COMPONENTS)\ElPack\Code\Source;$(BCB)\Lib\Psdk;X:\3rd_party\_LIB\Release\Win32\
-Item4=..\..\xr_3da\xrRender_R1;..\..\xr_3da\blenders;WildMagic;Editor;..\..\xrCDB;..\..\xr_3da\xrCPU_Pipe;Engine\Blenders;..\..\xr_3da\xrRender;..\..\xr_3da;Engine;$(BCB)\lib;$(BCB)\lib\obj;$(BCB)\Projects\Lib;$(COMPONENTS)\AlexMX;$(COMPONENTS)\ElPack\Code\Source;$(BCB)\Lib\Psdk;X:\3rd_party\_LIB\Release\Win32\
-Item5=..\..\xr_3da\xrRender_R1;..\..\xr_3da\blenders;WildMagic;Editor;..\..\xrCDB;..\..\xr_3da\xrCPU_Pipe;Engine\Blenders;..\..\xr_3da\xrRender;..\..\xr_3da;Engine;$(BCB)\lib;$(BCB)\lib\obj;$(BCB)\Projects\Lib;$(COMPONENTS)\AlexMX;$(COMPONENTS)\ElPack\Code\Source;$(BCB)\Lib\Psdk;x:\libraries
-Item6=..\..\xr_3da\xrRender_R1;..\..\xr_3da\blenders;WildMagic;Editor;..\..\xrCDB;..\..\xr_3da\xrCPU_Pipe;Engine\Blenders;..\..\xr_3da\xrRender;..\..\xr_3da;Engine;$(BCB)\lib;$(BCB)\lib\obj;$(BCB)\Projects\Lib;$(COMPONENTS)\AlexMX;$(COMPONENTS)\ElPack\Code;$(BCB)\Lib\Psdk;x:\libraries
-Item7=I:\Program Files\Borland\CBuilder6\Projects;blenders;..\..\xr_3da\xrRender_R1;..\..\xr_3da\blenders;WildMagic;Editor;..\..\xrCDB;..\..\xr_3da\xrCPU_Pipe;Engine\Blenders;..\..\xr_3da\xrRender;..\..\xr_3da;Engine;$(BCB)\lib;$(BCB)\lib\obj;$(BCB)\Projects\Lib;$(COMPONENTS)\AlexMX;$(COMPONENTS)\ElPack\Code;$(BCB)\Lib\Psdk;x:\libraries
-Item8=blenders;..\..\xr_3da\xrRender_R1;..\..\xr_3da\blenders;WildMagic;Editor;..\..\xrCDB;..\..\xr_3da\xrCPU_Pipe;Engine\Blenders;..\..\xr_3da\xrRender;..\..\xr_3da;Engine;$(BCB)\lib;$(BCB)\lib\obj;$(BCB)\Projects\Lib;$(COMPONENTS)\AlexMX;$(COMPONENTS)\ElPack\Code;$(BCB)\Lib\Psdk;x:\libraries
-Item9=WildMagic;Editor;..\..\xrCDB;..\..\xr_3da\xrCPU_Pipe;Engine\Blenders;..\..\xr_3da\xrRender;..\..\xr_3da;Engine;$(BCB)\lib;$(BCB)\lib\obj;$(BCB)\Projects\Lib;$(COMPONENTS)\AlexMX;$(COMPONENTS)\ElPack\Code;$(BCB)\Lib\Psdk;x:\libraries
-Item10=Editor;WildMagic;Engine;$(BCB)\lib;$(BCB)\lib\obj;$(BCB)\Projects\Lib;$(COMPONENTS)\AlexMX;$(COMPONENTS)\ElPack\Code;$(BCB)\Lib\Psdk;x:\libraries
+Count=12
+Item0=..\..\COMMON_AI;..\..\COMMON;$(COMPONENTS)\elpack\code;..\..\xr_3da\xrRender_R1;..\..\xr_3da\blenders;WildMagic;Editor;..\..\xrCDB;..\..\xr_3da\xrCPU_Pipe;Engine\Blenders;..\..\xr_3da\xrRender;..\..\xr_3da;Engine;$(BCB)\lib;$(BCB)\lib\obj;$(BCB)\Projects\Lib;$(COMPONENTS)\AlexMX;$(COMPONENTS)\ElPack\Code\Source;$(BCB)\Lib\Psdk;X:\3rd_party\_LIB\Release\Win32;X:\ogsr_engine\_LIB\SDK\Release\Win32
+Item1=$(COMPONENTS)\elpack\code;..\..\xr_3da\xrRender_R1;..\..\xr_3da\blenders;WildMagic;Editor;..\..\xrCDB;..\..\xr_3da\xrCPU_Pipe;Engine\Blenders;..\..\xr_3da\xrRender;..\..\xr_3da;Engine;$(BCB)\lib;$(BCB)\lib\obj;$(BCB)\Projects\Lib;$(COMPONENTS)\AlexMX;$(COMPONENTS)\ElPack\Code\Source;$(BCB)\Lib\Psdk;X:\3rd_party\_LIB\Release\Win32;X:\ogsr_engine\_LIB\SDK\Release\Win32
+Item2=$(COMPONENTS)\elpack\code;..\..\xr_3da\xrRender_R1;..\..\xr_3da\blenders;WildMagic;Editor;..\..\xrCDB;..\..\xr_3da\xrCPU_Pipe;Engine\Blenders;..\..\xr_3da\xrRender;..\..\xr_3da;Engine;$(BCB)\lib;$(BCB)\lib\obj;$(BCB)\Projects\Lib;$(COMPONENTS)\AlexMX;$(COMPONENTS)\ElPack\Code\Source;$(BCB)\Lib\Psdk;X:\3rd_party\_LIB\Release\Win32
+Item3=$(COMPONENTS)\elpack\code;..\..\xr_3da\xrRender_R1;..\..\xr_3da\blenders;WildMagic;Editor;..\..\xrCDB;..\..\xr_3da\xrCPU_Pipe;Engine\Blenders;..\..\xr_3da\xrRender;..\..\xr_3da;Engine;$(BCB)\lib;$(BCB)\lib\obj;$(BCB)\Projects\Lib;$(COMPONENTS)\AlexMX;$(COMPONENTS)\ElPack\Code\Source;$(BCB)\Lib\Psdk;X:\3rd_party\_LIB\Release\Win32\
+Item4=e:\xray_sources\soc\trunk\3rd party\components\elpack\code;..\..\xr_3da\xrRender_R1;..\..\xr_3da\blenders;WildMagic;Editor;..\..\xrCDB;..\..\xr_3da\xrCPU_Pipe;Engine\Blenders;..\..\xr_3da\xrRender;..\..\xr_3da;Engine;$(BCB)\lib;$(BCB)\lib\obj;$(BCB)\Projects\Lib;$(COMPONENTS)\AlexMX;$(COMPONENTS)\ElPack\Code\Source;$(BCB)\Lib\Psdk;X:\3rd_party\_LIB\Release\Win32\
+Item5=..\..\xr_3da\xrRender_R1;..\..\xr_3da\blenders;WildMagic;Editor;..\..\xrCDB;..\..\xr_3da\xrCPU_Pipe;Engine\Blenders;..\..\xr_3da\xrRender;..\..\xr_3da;Engine;$(BCB)\lib;$(BCB)\lib\obj;$(BCB)\Projects\Lib;$(COMPONENTS)\AlexMX;$(COMPONENTS)\ElPack\Code\Source;$(BCB)\Lib\Psdk;X:\3rd_party\_LIB\Release\Win32\
+Item6=..\..\xr_3da\xrRender_R1;..\..\xr_3da\blenders;WildMagic;Editor;..\..\xrCDB;..\..\xr_3da\xrCPU_Pipe;Engine\Blenders;..\..\xr_3da\xrRender;..\..\xr_3da;Engine;$(BCB)\lib;$(BCB)\lib\obj;$(BCB)\Projects\Lib;$(COMPONENTS)\AlexMX;$(COMPONENTS)\ElPack\Code\Source;$(BCB)\Lib\Psdk;x:\libraries
+Item7=..\..\xr_3da\xrRender_R1;..\..\xr_3da\blenders;WildMagic;Editor;..\..\xrCDB;..\..\xr_3da\xrCPU_Pipe;Engine\Blenders;..\..\xr_3da\xrRender;..\..\xr_3da;Engine;$(BCB)\lib;$(BCB)\lib\obj;$(BCB)\Projects\Lib;$(COMPONENTS)\AlexMX;$(COMPONENTS)\ElPack\Code;$(BCB)\Lib\Psdk;x:\libraries
+Item8=I:\Program Files\Borland\CBuilder6\Projects;blenders;..\..\xr_3da\xrRender_R1;..\..\xr_3da\blenders;WildMagic;Editor;..\..\xrCDB;..\..\xr_3da\xrCPU_Pipe;Engine\Blenders;..\..\xr_3da\xrRender;..\..\xr_3da;Engine;$(BCB)\lib;$(BCB)\lib\obj;$(BCB)\Projects\Lib;$(COMPONENTS)\AlexMX;$(COMPONENTS)\ElPack\Code;$(BCB)\Lib\Psdk;x:\libraries
+Item9=blenders;..\..\xr_3da\xrRender_R1;..\..\xr_3da\blenders;WildMagic;Editor;..\..\xrCDB;..\..\xr_3da\xrCPU_Pipe;Engine\Blenders;..\..\xr_3da\xrRender;..\..\xr_3da;Engine;$(BCB)\lib;$(BCB)\lib\obj;$(BCB)\Projects\Lib;$(COMPONENTS)\AlexMX;$(COMPONENTS)\ElPack\Code;$(BCB)\Lib\Psdk;x:\libraries
+Item10=WildMagic;Editor;..\..\xrCDB;..\..\xr_3da\xrCPU_Pipe;Engine\Blenders;..\..\xr_3da\xrRender;..\..\xr_3da;Engine;$(BCB)\lib;$(BCB)\lib\obj;$(BCB)\Projects\Lib;$(COMPONENTS)\AlexMX;$(COMPONENTS)\ElPack\Code;$(BCB)\Lib\Psdk;x:\libraries
+Item11=Editor;WildMagic;Engine;$(BCB)\lib;$(BCB)\lib\obj;$(BCB)\Projects\Lib;$(COMPONENTS)\AlexMX;$(COMPONENTS)\ElPack\Code;$(BCB)\Lib\Psdk;x:\libraries
 
 [HistoryLists\hlDebugSourcePath]
 Count=1

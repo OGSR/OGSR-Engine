@@ -57,7 +57,7 @@ void __fastcall TfrmLog::AddMessage(TMsgDlgType mt, const AnsiString& msg)
     }
 	form->lbLog->Items->AddObject(M,(TObject*)mt);
     form->lbLog->ItemIndex = form->lbLog->Items->Count-1;
-    if ((mt==mtError)&&!form->Visible) form->Show();
+//    if ((mt==mtError)&&!form->Visible) form->Show();
 }
 //---------------------------------------------------------------------------
 

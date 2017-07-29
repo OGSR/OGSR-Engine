@@ -139,7 +139,7 @@
       <WarningLevel>Level3</WarningLevel>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
-      <AdditionalIncludeDirectories>..\..\xrCore;..\..\..\3rd_party\Src\d3dx\include;..\..\..\3rd_party\Src\Freeimage</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\COMMON;..\..\xrCore;..\..\xrCDB;..\..\..\3rd_party\Src\d3dx\include;..\..\..\3rd_party\Src\Freeimage</AdditionalIncludeDirectories>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -182,7 +182,7 @@
       <WarningLevel>Level3</WarningLevel>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
-      <AdditionalIncludeDirectories>..\..\xrCore;..\..\..\3rd_party\Src\d3dx\include;..\..\..\3rd_party\Src\Freeimage</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\COMMON;..\..\xrCore;..\..\xrCDB;..\..\..\3rd_party\Src\d3dx\include;..\..\..\3rd_party\Src\Freeimage</AdditionalIncludeDirectories>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -236,7 +236,7 @@
       <WarningLevel>Level3</WarningLevel>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
-      <AdditionalIncludeDirectories>..\..\xrCore;..\..\..\3rd_party\Src\d3dx\include;..\..\..\3rd_party\Src\Freeimage</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\COMMON;..\..\xrCore;..\..\xrCDB;..\..\..\3rd_party\Src\d3dx\include;..\..\..\3rd_party\Src\Freeimage</AdditionalIncludeDirectories>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -292,7 +292,7 @@
       <WarningLevel>Level3</WarningLevel>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
-      <AdditionalIncludeDirectories>..\..\xrCore;..\..\..\3rd_party\Src\d3dx\include;..\..\..\3rd_party\Src\Freeimage</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\COMMON;..\..\xrCore;..\..\xrCDB;..\..\..\3rd_party\Src\d3dx\include;..\..\..\3rd_party\Src\Freeimage</AdditionalIncludeDirectories>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -344,7 +344,7 @@
       <WarningLevel>Level3</WarningLevel>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
-      <AdditionalIncludeDirectories>..\..\xrCore;..\..\..\3rd_party\Src\d3dx\include;..\..\..\3rd_party\Src\Freeimage</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\COMMON;..\..\xrCore;..\..\xrCDB;..\..\..\3rd_party\Src\d3dx\include;..\..\..\3rd_party\Src\Freeimage</AdditionalIncludeDirectories>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -395,7 +395,7 @@
       <WarningLevel>Level3</WarningLevel>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
-      <AdditionalIncludeDirectories>..\..\xrCore;..\..\..\3rd_party\Src\d3dx\include;..\..\..\3rd_party\Src\Freeimage</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\COMMON;..\..\xrCore;..\..\xrCDB;..\..\..\3rd_party\Src\d3dx\include;..\..\..\3rd_party\Src\Freeimage</AdditionalIncludeDirectories>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -414,29 +414,32 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\COMMON\cl_intersect.h" />
+    <ClInclude Include="..\..\COMMON\cl_log.h" />
+    <ClInclude Include="..\..\COMMON\communicate.h" />
+    <ClInclude Include="..\..\COMMON\defines.h" />
+    <ClInclude Include="..\..\COMMON\ETextureParams.h" />
+    <ClInclude Include="..\..\COMMON\light.h" />
+    <ClInclude Include="..\..\COMMON\resource_cl.h" />
+    <ClInclude Include="..\..\COMMON\R_light.h" />
+    <ClInclude Include="..\..\COMMON\Shader_xrLC.h" />
+    <ClInclude Include="..\..\COMMON\std_classes.h" />
+    <ClInclude Include="..\..\COMMON\tga.h" />
+    <ClInclude Include="..\..\COMMON\xrLevel.h" />
+    <ClInclude Include="..\..\COMMON\xrShaderTypes.h" />
+    <ClInclude Include="..\..\COMMON\xrThread.h" />
+    <ClInclude Include="..\..\COMMON\_d3d_extensions.h" />
+    <ClInclude Include="..\..\xrCDB\xrCDB.h" />
+    <ClInclude Include="..\..\xrCore\xrSyncronize.h" />
+    <ClInclude Include="..\..\xr_3da\xrRender\DetailFormat.h" />
     <ClInclude Include="global_options.h" />
-    <ClInclude Include="_d3d_extensions.h" />
-    <ClInclude Include="defines.h" />
     <ClInclude Include="StdAfx.h" />
-    <ClInclude Include="tga.h" />
-    <ClInclude Include="xrSyncronize.h" />
-    <ClInclude Include="xrThread.h" />
-    <ClInclude Include="resource.h" />
-    <ClInclude Include="cl_log.h" />
-    <ClInclude Include="std_classes.h" />
-    <ClInclude Include="cl_intersect.h" />
-    <ClInclude Include="xrCDB.h" />
-    <ClInclude Include="communicate.h" />
-    <ClInclude Include="DetailFormat.h" />
-    <ClInclude Include="ETextureParams.h" />
-    <ClInclude Include="light.h" />
-    <ClInclude Include="R_light.h" />
-    <ClInclude Include="Shader_xrLC.h" />
     <ClInclude Include="xrHemisphere.h" />
-    <ClInclude Include="xrLevel.h" />
-    <ClInclude Include="xrShaderTypes.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\COMMON\cl_log.cpp" />
+    <ClCompile Include="..\..\COMMON\tga.cpp" />
+    <ClCompile Include="..\..\COMMON\xrThread.cpp" />
     <ClCompile Include="StdAfx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
@@ -445,9 +448,6 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="tga.cpp" />
-    <ClCompile Include="xrThread.cpp" />
-    <ClCompile Include="cl_log.cpp" />
     <ClCompile Include="compiler.cpp" />
     <ClCompile Include="xrDO_Light.cpp" />
     <ClCompile Include="..\..\xr_3da\xrLoadSurface.cpp" />

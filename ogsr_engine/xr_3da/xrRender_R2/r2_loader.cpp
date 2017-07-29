@@ -3,7 +3,7 @@
 #include "../resourcemanager.h"
 #include "../fbasicvisual.h"
 #include "../fmesh.h"
-#include "../xrLevel.h"
+#include "xrLevel.h"
 #include "../x_ray.h"
 #include "../IGame_Persistent.h"
 #include "../../xrCore/stream_reader.h"

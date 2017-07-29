@@ -12,9 +12,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="ETextureParams.h">
-      <Filter>Shared</Filter>
-    </ClInclude>
     <ClInclude Include="Image_DXTC.h">
       <Filter>NormalMap</Filter>
     </ClInclude>
@@ -25,9 +22,6 @@
       <Filter>NormalMap</Filter>
     </ClInclude>
     <ClInclude Include="NVI_Image.h">
-      <Filter>NormalMap</Filter>
-    </ClInclude>
-    <ClInclude Include="tga.h">
       <Filter>NormalMap</Filter>
     </ClInclude>
     <ClInclude Include="StdAfx.h" />
@@ -55,13 +49,16 @@
     <ClInclude Include="dds.h">
       <Filter>Convert</Filter>
     </ClInclude>
+    <ClInclude Include="..\COMMON\ETextureParams.h">
+      <Filter>Shared</Filter>
+    </ClInclude>
+    <ClInclude Include="..\COMMON\tga.h">
+      <Filter>NormalMap</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="DXT.cpp">
       <Filter>Convert</Filter>
-    </ClCompile>
-    <ClCompile Include="ETextureParams.cpp">
-      <Filter>Shared</Filter>
     </ClCompile>
     <ClCompile Include="Image_DXTC.cpp">
       <Filter>NormalMap</Filter>
@@ -75,10 +72,13 @@
     <ClCompile Include="NVI_Image.cpp">
       <Filter>NormalMap</Filter>
     </ClCompile>
-    <ClCompile Include="tga.cpp">
+    <ClCompile Include="StdAfx.cpp" />
+    <ClCompile Include="..\COMMON\ETextureParams.cpp">
+      <Filter>Shared</Filter>
+    </ClCompile>
+    <ClCompile Include="..\COMMON\tga.cpp">
       <Filter>NormalMap</Filter>
     </ClCompile>
-    <ClCompile Include="StdAfx.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ReadMe.txt" />

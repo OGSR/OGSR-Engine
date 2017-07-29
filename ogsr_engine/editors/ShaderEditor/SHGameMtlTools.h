@@ -3,7 +3,7 @@
 #define SHGameMtlToolsH
 
 #include "SHToolsInterface.h"
-#include "../ECore/Engine/GameMtlLib.h"
+#include "GameMtlLib.h"
 
 // refs
 class PropValue;

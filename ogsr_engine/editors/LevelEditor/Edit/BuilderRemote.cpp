@@ -19,7 +19,7 @@
 #include "xrHemisphere.h"
 #include "ResourceManager.h"
 #include "../ECore/Editor/ImageManager.h"
-#include "../ECore/Engine/Image.h"
+#include "Image.h"
 
 #include "ESceneLightTools.h"
 

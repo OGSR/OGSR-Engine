@@ -17,7 +17,7 @@
 #include "ESceneDOTools.h"
 #include "xr_trims.h"
 #include "SceneObject.h"
-#include "../ECore/Engine/Image.h"
+#include "Image.h"
 #include "../ECore/Editor/ui_main.h"
 //---------------------------------------------------------------------------
 #pragma package(smart_init)

@@ -162,7 +162,7 @@
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <DisableSpecificWarnings>4237;%(DisableSpecificWarnings)</DisableSpecificWarnings>
-      <AdditionalIncludeDirectories>..\..\..\..\..\3rd party\d3dx\Include;..\..\..\..\..\3rd party\DPlay;X:\trunk\xray\Luabind;X:\trunk\xray\LuaJIT\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\COMMON;..\..\COMMON_AI;..\..\xrCore;X:\3rd_party\Src\ode;X:\3rd_party\Src\boost;X:\3rd_party\Src\loki;X:\ogsr_engine\LuaJIT\src;X:\ogsr_engine\Luabind;X:\3rd_party\Src\d3dx\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -217,7 +217,7 @@
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <DisableSpecificWarnings>4237;%(DisableSpecificWarnings)</DisableSpecificWarnings>
-      <AdditionalIncludeDirectories>X:\trunk\xray\Luabind;X:\trunk\xray\LuaJIT\src;$(WindowsSdkDir)include;C:\Program Files %28x86%29\Microsoft DirectX SDK %28June 2007%29\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\COMMON;..\..\COMMON_AI;..\..\xrCore;X:\3rd_party\Src\ode;X:\3rd_party\Src\boost;X:\3rd_party\Src\loki;X:\ogsr_engine\LuaJIT\src;X:\ogsr_engine\Luabind;X:\3rd_party\Src\d3dx\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -272,7 +272,7 @@
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <DisableSpecificWarnings>4237;%(DisableSpecificWarnings)</DisableSpecificWarnings>
-      <AdditionalIncludeDirectories>..\..\..\..\..\3rd party\d3dx\Include;..\..\..\..\..\3rd party\DPlay;X:\trunk\xray\Luabind;X:\trunk\xray\LuaJIT\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\COMMON;..\..\COMMON_AI;..\..\xrCore;X:\3rd_party\Src\ode;X:\3rd_party\Src\boost;X:\3rd_party\Src\loki;X:\ogsr_engine\LuaJIT\src;X:\ogsr_engine\Luabind;X:\3rd_party\Src\d3dx\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -326,6 +326,7 @@
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <DisableSpecificWarnings>4237;%(DisableSpecificWarnings)</DisableSpecificWarnings>
+      <AdditionalIncludeDirectories>..\..\COMMON;..\..\COMMON_AI;..\..\xrCore;X:\3rd_party\Src\ode;X:\3rd_party\Src\boost;X:\3rd_party\Src\loki;X:\ogsr_engine\LuaJIT\src;X:\ogsr_engine\Luabind;X:\3rd_party\Src\d3dx\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -383,7 +384,7 @@
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <DisableSpecificWarnings>4995;4237;4577;4458;%(DisableSpecificWarnings)</DisableSpecificWarnings>
-      <AdditionalIncludeDirectories>..\..\xrCore;X:\3rd_party\Src\ode;X:\3rd_party\Src\boost;X:\3rd_party\Src\loki;X:\ogsr_engine\LuaJIT\src;X:\ogsr_engine\Luabind;X:\3rd_party\Src\d3dx\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\COMMON;..\..\COMMON_AI;..\..\xrCore;X:\3rd_party\Src\ode;X:\3rd_party\Src\boost;X:\3rd_party\Src\loki;X:\ogsr_engine\LuaJIT\src;X:\ogsr_engine\Luabind;X:\3rd_party\Src\d3dx\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <MinimalRebuild>true</MinimalRebuild>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
@@ -448,7 +449,7 @@
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <DisableSpecificWarnings>4237;%(DisableSpecificWarnings)</DisableSpecificWarnings>
-      <AdditionalIncludeDirectories>X:\trunk\xray\Luabind;X:\trunk\xray\LuaJIT\src;$(WindowsSdkDir)include;C:\Program Files %28x86%29\Microsoft DirectX SDK %28June 2007%29\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\COMMON;..\..\COMMON_AI;..\..\xrCore;X:\3rd_party\Src\ode;X:\3rd_party\Src\boost;X:\3rd_party\Src\loki;X:\ogsr_engine\LuaJIT\src;X:\ogsr_engine\Luabind;X:\3rd_party\Src\d3dx\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>

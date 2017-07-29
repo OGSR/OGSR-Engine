@@ -238,12 +238,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="communicate.h">
-      <Filter>Kernel</Filter>
-    </ClInclude>
-    <ClInclude Include="defines.h">
-      <Filter>Kernel</Filter>
-    </ClInclude>
     <ClInclude Include="factory_api.h">
       <Filter>Kernel</Filter>
     </ClInclude>
@@ -253,44 +247,11 @@
     <ClInclude Include="StdAfx.h">
       <Filter>Kernel</Filter>
     </ClInclude>
-    <ClInclude Include="tga.h">
-      <Filter>Kernel</Filter>
-    </ClInclude>
     <ClInclude Include="xrAI.h">
       <Filter>Kernel</Filter>
     </ClInclude>
-    <ClInclude Include="xrShaderTypes.h">
-      <Filter>Kernel</Filter>
-    </ClInclude>
-    <ClInclude Include="xrThread.h">
-      <Filter>Kernel</Filter>
-    </ClInclude>
-    <ClInclude Include="resource.h">
-      <Filter>Kernel\Resource Files</Filter>
-    </ClInclude>
-    <ClInclude Include="cl_log.h">
-      <Filter>Kernel\Log</Filter>
-    </ClInclude>
-    <ClInclude Include="_d3d_extensions.h">
-      <Filter>Kernel\Generic</Filter>
-    </ClInclude>
     <ClInclude Include="FTimer.h">
       <Filter>Kernel\Generic</Filter>
-    </ClInclude>
-    <ClInclude Include="light.h">
-      <Filter>Kernel\Generic</Filter>
-    </ClInclude>
-    <ClInclude Include="std_classes.h">
-      <Filter>Kernel\Generic</Filter>
-    </ClInclude>
-    <ClInclude Include="cl_collector.h">
-      <Filter>Kernel\CDB</Filter>
-    </ClInclude>
-    <ClInclude Include="cl_intersect.h">
-      <Filter>Kernel\CDB</Filter>
-    </ClInclude>
-    <ClInclude Include="xrCDB.h">
-      <Filter>Kernel\CDB</Filter>
     </ClInclude>
     <ClInclude Include="random32.h">
       <Filter>Kernel\Random32</Filter>
@@ -301,19 +262,10 @@
     <ClInclude Include="compiler.h">
       <Filter>Compiler</Filter>
     </ClInclude>
-    <ClInclude Include="ETextureParams.h">
-      <Filter>Compiler</Filter>
-    </ClInclude>
     <ClInclude Include="LevelGameDef.h">
       <Filter>Compiler</Filter>
     </ClInclude>
     <ClInclude Include="motion_simulator.h">
-      <Filter>Compiler</Filter>
-    </ClInclude>
-    <ClInclude Include="Shader_xrLC.h">
-      <Filter>Compiler</Filter>
-    </ClInclude>
-    <ClInclude Include="xrLevel.h">
       <Filter>Compiler</Filter>
     </ClInclude>
     <ClInclude Include="quadtree.h">
@@ -541,9 +493,6 @@
     <ClInclude Include="restriction_space.h">
       <Filter>ALife\Shared</Filter>
     </ClInclude>
-    <ClInclude Include="Sound.h">
-      <Filter>ALife\Shared</Filter>
-    </ClInclude>
     <ClInclude Include="alife_artefact_order.h">
       <Filter>ALife\Shared\ALife\alife_artefact_order</Filter>
     </ClInclude>
@@ -571,9 +520,6 @@
     <ClInclude Include="ChooseTypes.h">
       <Filter>ALife\Shared\ServerEntities</Filter>
     </ClInclude>
-    <ClInclude Include="DrawUtils.h">
-      <Filter>ALife\Shared\ServerEntities</Filter>
-    </ClInclude>
     <ClInclude Include="InfoPortionDefs.h">
       <Filter>ALife\Shared\ServerEntities</Filter>
     </ClInclude>
@@ -596,15 +542,6 @@
       <Filter>ALife\Shared\ServerEntities</Filter>
     </ClInclude>
     <ClInclude Include="script_value_container_impl.h">
-      <Filter>ALife\Shared\ServerEntities</Filter>
-    </ClInclude>
-    <ClInclude Include="ShapeData.h">
-      <Filter>ALife\Shared\ServerEntities</Filter>
-    </ClInclude>
-    <ClInclude Include="WaveForm.h">
-      <Filter>ALife\Shared\ServerEntities</Filter>
-    </ClInclude>
-    <ClInclude Include="xrEProps.h">
       <Filter>ALife\Shared\ServerEntities</Filter>
     </ClInclude>
     <ClInclude Include="xrServer_Object_Base.h">
@@ -760,28 +697,67 @@
     <ClInclude Include="spawn_patcher.h">
       <Filter>ALife\Spawn\spawn_patcher</Filter>
     </ClInclude>
-    <ClInclude Include="guid_generator.h">
+    <ClInclude Include="..\COMMON\guid_generator.h">
       <Filter>ALife\guid_generator</Filter>
+    </ClInclude>
+    <ClInclude Include="..\COMMON\ETextureParams.h">
+      <Filter>Compiler</Filter>
+    </ClInclude>
+    <ClInclude Include="..\COMMON\communicate.h">
+      <Filter>Kernel</Filter>
+    </ClInclude>
+    <ClInclude Include="..\COMMON\cl_collector.h">
+      <Filter>Kernel\CDB</Filter>
+    </ClInclude>
+    <ClInclude Include="..\COMMON\cl_intersect.h">
+      <Filter>Kernel\CDB</Filter>
+    </ClInclude>
+    <ClInclude Include="..\COMMON\tga.h">
+      <Filter>Kernel</Filter>
+    </ClInclude>
+    <ClInclude Include="..\COMMON\cl_log.h">
+      <Filter>Kernel\Log</Filter>
+    </ClInclude>
+    <ClInclude Include="..\COMMON\resource_cl.h">
+      <Filter>Kernel\Resource Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\COMMON\defines.h">
+      <Filter>Kernel</Filter>
+    </ClInclude>
+    <ClInclude Include="..\COMMON\xrShaderTypes.h">
+      <Filter>Kernel</Filter>
+    </ClInclude>
+    <ClInclude Include="..\COMMON\xrThread.h">
+      <Filter>Kernel</Filter>
+    </ClInclude>
+    <ClInclude Include="..\COMMON\_d3d_extensions.h">
+      <Filter>Kernel\Generic</Filter>
+    </ClInclude>
+    <ClInclude Include="..\COMMON\light.h">
+      <Filter>Kernel\Generic</Filter>
+    </ClInclude>
+    <ClInclude Include="..\COMMON\std_classes.h">
+      <Filter>Kernel\Generic</Filter>
+    </ClInclude>
+    <ClInclude Include="..\xrCDB\xrCDB.h">
+      <Filter>Kernel\CDB</Filter>
+    </ClInclude>
+    <ClInclude Include="..\COMMON\Shader_xrLC.h">
+      <Filter>Compiler</Filter>
+    </ClInclude>
+    <ClInclude Include="..\COMMON\xrLevel.h">
+      <Filter>Compiler</Filter>
+    </ClInclude>
+    <ClInclude Include="..\xrSound\Sound.h">
+      <Filter>ALife\Shared</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="StdAfx.cpp">
       <Filter>Kernel</Filter>
     </ClCompile>
-    <ClCompile Include="tga.cpp">
-      <Filter>Kernel</Filter>
-    </ClCompile>
     <ClCompile Include="xrAI.cpp">
       <Filter>Kernel</Filter>
-    </ClCompile>
-    <ClCompile Include="xrThread.cpp">
-      <Filter>Kernel</Filter>
-    </ClCompile>
-    <ClCompile Include="cl_log.cpp">
-      <Filter>Kernel\Log</Filter>
-    </ClCompile>
-    <ClCompile Include="cl_collector.cpp">
-      <Filter>Kernel\CDB</Filter>
     </ClCompile>
     <ClCompile Include="random32.cpp">
       <Filter>Kernel\Random32</Filter>
@@ -912,8 +888,20 @@
     <ClCompile Include="verify_level_graph.cpp">
       <Filter>ALife\Verify</Filter>
     </ClCompile>
-    <ClCompile Include="guid_generator.cpp">
+    <ClCompile Include="..\COMMON\guid_generator.cpp">
       <Filter>ALife\guid_generator</Filter>
+    </ClCompile>
+    <ClCompile Include="..\COMMON\cl_collector.cpp">
+      <Filter>Kernel\CDB</Filter>
+    </ClCompile>
+    <ClCompile Include="..\COMMON\tga.cpp">
+      <Filter>Kernel</Filter>
+    </ClCompile>
+    <ClCompile Include="..\COMMON\cl_log.cpp">
+      <Filter>Kernel\Log</Filter>
+    </ClCompile>
+    <ClCompile Include="..\COMMON\xrThread.cpp">
+      <Filter>Kernel</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

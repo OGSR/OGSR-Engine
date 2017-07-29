@@ -18,66 +18,66 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="_d3d_extensions.h">
-      <Filter>Kernel</Filter>
-    </ClInclude>
-    <ClInclude Include="defines.h">
-      <Filter>Kernel</Filter>
-    </ClInclude>
     <ClInclude Include="StdAfx.h">
       <Filter>Kernel</Filter>
     </ClInclude>
-    <ClInclude Include="tga.h">
+    <ClInclude Include="xrHemisphere.h" />
+    <ClInclude Include="global_options.h" />
+    <ClInclude Include="..\..\COMMON\communicate.h" />
+    <ClInclude Include="..\..\COMMON\ETextureParams.h" />
+    <ClInclude Include="..\..\COMMON\cl_intersect.h">
+      <Filter>Kernel\CDB</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\COMMON\tga.h">
       <Filter>Kernel</Filter>
     </ClInclude>
-    <ClInclude Include="xrSyncronize.h">
-      <Filter>Kernel</Filter>
-    </ClInclude>
-    <ClInclude Include="xrThread.h">
-      <Filter>Kernel</Filter>
-    </ClInclude>
-    <ClInclude Include="resource.h">
-      <Filter>Kernel\Resources</Filter>
-    </ClInclude>
-    <ClInclude Include="cl_log.h">
+    <ClInclude Include="..\..\COMMON\cl_log.h">
       <Filter>Kernel\Log</Filter>
     </ClInclude>
-    <ClInclude Include="std_classes.h">
+    <ClInclude Include="..\..\COMMON\resource_cl.h">
+      <Filter>Kernel\Resources</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\COMMON\xrLevel.h" />
+    <ClInclude Include="..\..\COMMON\xrShaderTypes.h" />
+    <ClInclude Include="..\..\COMMON\Shader_xrLC.h" />
+    <ClInclude Include="..\..\COMMON\light.h" />
+    <ClInclude Include="..\..\COMMON\R_light.h" />
+    <ClInclude Include="..\..\xr_3da\xrRender\DetailFormat.h" />
+    <ClInclude Include="..\..\COMMON\xrThread.h">
+      <Filter>Kernel</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\xrCore\xrSyncronize.h">
+      <Filter>Kernel</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\COMMON\_d3d_extensions.h">
+      <Filter>Kernel</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\COMMON\defines.h">
+      <Filter>Kernel</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\COMMON\std_classes.h">
       <Filter>Kernel\Generic</Filter>
     </ClInclude>
-    <ClInclude Include="cl_intersect.h">
+    <ClInclude Include="..\..\xrCDB\xrCDB.h">
       <Filter>Kernel\CDB</Filter>
     </ClInclude>
-    <ClInclude Include="xrCDB.h">
-      <Filter>Kernel\CDB</Filter>
-    </ClInclude>
-    <ClInclude Include="communicate.h" />
-    <ClInclude Include="DetailFormat.h" />
-    <ClInclude Include="ETextureParams.h" />
-    <ClInclude Include="light.h" />
-    <ClInclude Include="R_light.h" />
-    <ClInclude Include="Shader_xrLC.h" />
-    <ClInclude Include="xrHemisphere.h" />
-    <ClInclude Include="xrLevel.h" />
-    <ClInclude Include="xrShaderTypes.h" />
-    <ClInclude Include="global_options.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="StdAfx.cpp">
       <Filter>Kernel</Filter>
     </ClCompile>
-    <ClCompile Include="tga.cpp">
-      <Filter>Kernel</Filter>
-    </ClCompile>
-    <ClCompile Include="xrThread.cpp">
-      <Filter>Kernel</Filter>
-    </ClCompile>
-    <ClCompile Include="cl_log.cpp">
-      <Filter>Kernel\Log</Filter>
-    </ClCompile>
     <ClCompile Include="compiler.cpp" />
     <ClCompile Include="xrDO_Light.cpp" />
     <ClCompile Include="..\..\xr_3da\xrLoadSurface.cpp" />
+    <ClCompile Include="..\..\COMMON\tga.cpp">
+      <Filter>Kernel</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\COMMON\cl_log.cpp">
+      <Filter>Kernel\Log</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\COMMON\xrThread.cpp">
+      <Filter>Kernel</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="resource.rc">

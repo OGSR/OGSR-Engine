@@ -139,7 +139,7 @@
       <ProgramDataBaseFileName>$(IntDir)</ProgramDataBaseFileName>
       <WarningLevel>Level4</WarningLevel>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
-      <AdditionalIncludeDirectories>$(WindowsSDK_IncludePath);..\..\..\..\..\3rd party\d3dx\Include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\COMMON;$(WindowsSDK_IncludePath);X:\3rd_party\Src\d3dx\include;..\..\xrCore</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SuppressStartupBanner>true</SuppressStartupBanner>
@@ -173,6 +173,7 @@
       <ProgramDataBaseFileName>$(IntDir)</ProgramDataBaseFileName>
       <WarningLevel>Level4</WarningLevel>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <AdditionalIncludeDirectories>..\..\COMMON;$(WindowsSDK_IncludePath);X:\3rd_party\Src\d3dx\include;..\..\xrCore</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SuppressStartupBanner>true</SuppressStartupBanner>
@@ -213,7 +214,7 @@
       <ProgramDataBaseFileName>$(IntDir)</ProgramDataBaseFileName>
       <WarningLevel>Level4</WarningLevel>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
-      <AdditionalIncludeDirectories>$(WindowsSDK_IncludePath);X:\3rd_party\Src\d3dx\include;..\..\xrCore</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\COMMON;$(WindowsSDK_IncludePath);X:\3rd_party\Src\d3dx\include;..\..\xrCore</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <DisableSpecificWarnings>4577</DisableSpecificWarnings>
     </ClCompile>
@@ -261,6 +262,7 @@
       <ProgramDataBaseFileName>$(IntDir)</ProgramDataBaseFileName>
       <WarningLevel>Level4</WarningLevel>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <AdditionalIncludeDirectories>..\..\COMMON;$(WindowsSDK_IncludePath);X:\3rd_party\Src\d3dx\include;..\..\xrCore</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -300,7 +302,7 @@
       <ProgramDataBaseFileName>$(IntDir)</ProgramDataBaseFileName>
       <WarningLevel>Level4</WarningLevel>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
-      <AdditionalIncludeDirectories>$(WindowsSDK_IncludePath);..\..\..\..\..\3rd party\d3dx\Include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\COMMON;$(WindowsSDK_IncludePath);X:\3rd_party\Src\d3dx\include;..\..\xrCore</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -338,6 +340,7 @@
       <ProgramDataBaseFileName>$(IntDir)</ProgramDataBaseFileName>
       <WarningLevel>Level4</WarningLevel>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <AdditionalIncludeDirectories>..\..\COMMON;$(WindowsSDK_IncludePath);X:\3rd_party\Src\d3dx\include;..\..\xrCore</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -430,6 +433,7 @@
     <ClInclude Include="r2_rendertarget_wallmarks.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\COMMON\tga.cpp" />
     <ClCompile Include="blender_aa.cpp" />
     <ClCompile Include="blender_blur.cpp" />
     <ClCompile Include="blender_dof.cpp" />
@@ -487,7 +491,6 @@
     <ClCompile Include="..\xrRender\r__pixel_calculator.cpp" />
     <ClCompile Include="..\xrRender\r__screenshot.cpp" />
     <ClCompile Include="..\xrRender\Texture.cpp" />
-    <ClCompile Include="..\xrRender\tga.cpp" />
     <ClCompile Include="..\xrRender\doug_lea_memory_allocator.c">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
       </PrecompiledHeader>

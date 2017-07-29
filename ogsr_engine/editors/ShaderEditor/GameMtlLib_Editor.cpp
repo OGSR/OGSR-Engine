@@ -2,7 +2,7 @@
 #include "stdafx.h"
 #pragma hdrstop
 
-#include "../ECore/Engine/GameMtlLib.h"
+#include "GameMtlLib.h"
 #include "xr_trims.h"
 #include "../xrEProps/PropertiesListTypes.h"
 #include "../xrEProps/PropertiesListHelper.h"

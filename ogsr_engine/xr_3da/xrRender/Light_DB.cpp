@@ -1,6 +1,6 @@
 #include "StdAfx.h"
-#include "..\_d3d_extensions.h"
-#include "..\xrLevel.h"
+#include "_d3d_extensions.h"
+#include "xrLevel.h"
 #include "..\igame_persistent.h"
 #include "..\environment.h"
 #include "light_db.h"

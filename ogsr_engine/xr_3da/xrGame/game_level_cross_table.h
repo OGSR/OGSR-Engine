@@ -8,12 +8,7 @@
 
 #pragma once
 
-#ifdef AI_COMPILER
-#	include "xrLevel.h"
-#else // AI_COMPILER
-#	include "../xrLevel.h"
-#endif // AI_COMPILER
-
+#include "xrLevel.h"
 #include "alife_space.h"
 #include "game_graph_space.h"
 

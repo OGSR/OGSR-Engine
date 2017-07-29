@@ -1,10 +1,12 @@
 #include "stdafx.h"
 #pragma hdrstop
 
+#ifdef ENGINE_BUILD
 #pragma warning(disable:4995)
 #include <d3dx9.h>
 #pragma warning(default:4995)
 #include "fmesh.h"
+#endif
 
 BOOL ValidateIndices(u32 vCount, u32 iCount, u16* pIndices)
 {

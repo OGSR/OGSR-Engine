@@ -135,7 +135,7 @@
       <OmitFramePointers>true</OmitFramePointers>
       <EnableFiberSafeOptimizations>true</EnableFiberSafeOptimizations>
       <WholeProgramOptimization>true</WholeProgramOptimization>
-      <AdditionalIncludeDirectories>X:\3rd_party\Src\Xiph\libogg\include;X:\3rd_party\Src\d3dx\include;X:\3rd_party\Src\Xiph\libvorbis\include;../xrCore/;../xrQslim/src/;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\COMMON;..\..\3rd_party\Src\Xiph\libogg\include;..\..\3rd_party\Src\d3dx\include;..\..\3rd_party\Src\Xiph\libvorbis\include;../xrCore/;../xrQslim/src/;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;ETOOLS_EXPORTS;_SECURE_SCL=0;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <StringPooling>true</StringPooling>
       <ExceptionHandling>
@@ -199,7 +199,7 @@
       <OmitFramePointers>true</OmitFramePointers>
       <EnableFiberSafeOptimizations>true</EnableFiberSafeOptimizations>
       <WholeProgramOptimization>true</WholeProgramOptimization>
-      <AdditionalIncludeDirectories>X:\3rd_party\Src\Xiph\libogg\include;X:\3rd_party\Src\d3dx\include;X:\3rd_party\Src\Xiph\libvorbis\include;../xrCore/;../xrQslim/src/;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\COMMON;..\..\3rd_party\Src\Xiph\libogg\include;..\..\3rd_party\Src\d3dx\include;..\..\3rd_party\Src\Xiph\libvorbis\include;../xrCore/;../xrQslim/src/;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;ETOOLS_EXPORTS;_SECURE_SCL=0;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <StringPooling>true</StringPooling>
       <ExceptionHandling>
@@ -254,7 +254,7 @@
     <ClCompile>
       <Optimization>Disabled</Optimization>
       <EnableFiberSafeOptimizations>true</EnableFiberSafeOptimizations>
-      <AdditionalIncludeDirectories>X:\3rd_party\Src\Xiph\libogg\include;X:\3rd_party\Src\d3dx\include;X:\3rd_party\Src\Xiph\libvorbis\include;../xrCore/;../xrQslim/src/;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\COMMON;..\..\3rd_party\Src\Xiph\libogg\include;..\..\3rd_party\Src\d3dx\include;..\..\3rd_party\Src\Xiph\libvorbis\include;../xrCore/;../xrQslim/src/;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;DEBUG;_WINDOWS;_USRDLL;ETOOLS_EXPORTS;_SECURE_SCL=0;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ExceptionHandling>Sync</ExceptionHandling>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
@@ -303,7 +303,7 @@
     <ClCompile>
       <Optimization>Disabled</Optimization>
       <EnableFiberSafeOptimizations>true</EnableFiberSafeOptimizations>
-      <AdditionalIncludeDirectories>X:\3rd_party\Src\Xiph\libogg\include;X:\3rd_party\Src\d3dx\include;X:\3rd_party\Src\Xiph\libvorbis\include;../xrCore/;../xrQslim/src/;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\COMMON;..\..\3rd_party\Src\Xiph\libogg\include;..\..\3rd_party\Src\d3dx\include;..\..\3rd_party\Src\Xiph\libvorbis\include;../xrCore/;../xrQslim/src/;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>_AMD64_;_WIN64;DEBUG;_WINDOWS;_USRDLL;ETOOLS_EXPORTS;_SECURE_SCL=0;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ExceptionHandling>Sync</ExceptionHandling>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
@@ -356,7 +356,7 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
       <EnableFiberSafeOptimizations>true</EnableFiberSafeOptimizations>
-      <AdditionalIncludeDirectories>X:\3rd_party\Src\Xiph\libogg\include;X:\3rd_party\Src\d3dx\include;X:\3rd_party\Src\Xiph\libvorbis\include;../xrCore/;../xrQslim/src/;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\COMMON;..\..\3rd_party\Src\Xiph\libogg\include;..\..\3rd_party\Src\d3dx\include;..\..\3rd_party\Src\Xiph\libvorbis\include;../xrCore/;../xrQslim/src/;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;DEBUG;_WINDOWS;ETOOLS_EXPORTS;_SECURE_SCL=0;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <StringPooling>true</StringPooling>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
@@ -407,7 +407,7 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
       <EnableFiberSafeOptimizations>true</EnableFiberSafeOptimizations>
-      <AdditionalIncludeDirectories>X:\3rd_party\Src\Xiph\libogg\include;X:\3rd_party\Src\d3dx\include;X:\3rd_party\Src\Xiph\libvorbis\include;../xrCore/;../xrQslim/src/;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\COMMON;..\..\3rd_party\Src\Xiph\libogg\include;..\..\3rd_party\Src\d3dx\include;..\..\3rd_party\Src\Xiph\libvorbis\include;../xrCore/;../xrQslim/src/;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;DEBUG;_WINDOWS;ETOOLS_EXPORTS;_SECURE_SCL=0;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <StringPooling>true</StringPooling>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
@@ -536,11 +536,11 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="D3DX_Wrapper.h" />
+    <ClInclude Include="..\COMMON\ArbitraryList.h" />
+    <ClInclude Include="..\COMMON\D3DX_Wrapper.h" />
     <ClInclude Include="ETools.h" />
     <ClInclude Include="StdAfx.h" />
     <ClInclude Include="xrXRC.h" />
-    <ClInclude Include="ArbitraryList.h" />
     <ClInclude Include="BinaryHeap.h" />
     <ClInclude Include="DLink.h" />
     <ClInclude Include="mesh.h" />

@@ -3,7 +3,7 @@
 #include "shader_xrlc.h"
 #include "communicate.h"
 #include "xrThread.h"
-#include "detailformat.h"
+#include "..\..\xr_3da\xrRender\DetailFormat.h"
 #include "xrhemisphere.h"
 #include "cl_intersect.h"
 #include "Etextureparams.h"
