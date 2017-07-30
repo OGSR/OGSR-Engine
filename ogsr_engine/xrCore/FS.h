@@ -247,6 +247,10 @@ public:
 		iterpos		= _iterpos		;
 	}
 
+	virtual	~IReader()
+	{
+	}
+
 protected:
 	IC u32			correction					(u32 p)
 	{

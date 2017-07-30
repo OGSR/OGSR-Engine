@@ -219,6 +219,7 @@ int DXTCompressImage	(LPCSTR out_name, u8* raw_data, u32 w, u32 h, u32 pitch,
 		case STextureParams::kMIPFilterBox		:	in_opts.setMipmapFilter(MipmapFilter_Box)		;	break;	
 		case STextureParams::kMIPFilterTriangle	:	in_opts.setMipmapFilter(MipmapFilter_Triangle)	;	break;	
 		case STextureParams::kMIPFilterKaiser	:	in_opts.setMipmapFilter(MipmapFilter_Kaiser)	;	break;	
+		default									:	in_opts.setMipmapFilter(MipmapFilter_Triangle)	;	break;
 	}
 	in_opts.setWrapMode(WrapMode_Clamp);
 	in_opts.setNormalMap(false);
@@ -234,6 +235,7 @@ int DXTCompressImage	(LPCSTR out_name, u8* raw_data, u32 w, u32 h, u32 pitch,
 		case STextureParams::tfDXT5				: 	comp_opts.setFormat(Format_DXT5)	; 	break;
 		case STextureParams::tfRGB				: 	comp_opts.setFormat(Format_RGB)		; 	break;
 		case STextureParams::tfRGBA				: 	comp_opts.setFormat(Format_RGBA)	; 	break;
+		default									:	comp_opts.setFormat(Format_RGBA)	; 	break;
     }
 	comp_opts.setQuality(Quality_Highest);
 	comp_opts.setQuantization(!!(fmt->flags.is(STextureParams::flDitherColor)), false, !!(fmt->flags.is(STextureParams::flBinaryAlpha)));

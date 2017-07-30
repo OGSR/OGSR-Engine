@@ -83,32 +83,35 @@ void CSoundRender_Source::LoadWave	(LPCSTR pName)
 	dwBytesPerMS			= wfxdest.nAvgBytesPerSec/1000;
 //	dwBytesPerSec			= wfxdest.nAvgBytesPerSec;
 	dwTimeTotal				= u32 ( sdef_source_footer + u64( (u64(dwBytesTotal)*u64(1000))/u64(wfxdest.nAvgBytesPerSec) ) );
-
+                                                                
 	vorbis_comment*	ovm		= ov_comment(&ovf,-1);
 	if (ovm->comments){
-		IReader F			(ovm->user_comments[0],ovm->comment_lengths[0]);
-		u32 vers			= F.r_u32	();
+                string32 temp;
+                strcpy(temp,  ovm->user_comments[0]);
+		IReader *F     = xr_new<IReader>  			(temp,ovm->comment_lengths[0]);
+		u32 vers			= F->r_u32	();
         if (vers==0x0001){
-			m_fMinDist		= F.r_float	();
-			m_fMaxDist		= F.r_float	();
+			m_fMinDist		= F->r_float	();
+			m_fMaxDist		= F->r_float	();
 	        m_fBaseVolume	= 1.f;
-			m_uGameType		= F.r_u32	();
+			m_uGameType		= F->r_u32	();
 			m_fMaxAIDist	= m_fMaxDist;
 		}else if (vers==0x0002){
-			m_fMinDist		= F.r_float	();
-			m_fMaxDist		= F.r_float	();
-			m_fBaseVolume	= F.r_float	();
-			m_uGameType		= F.r_u32	();
+			m_fMinDist		= F->r_float	();
+			m_fMaxDist		= F->r_float	();
+			m_fBaseVolume	= F->r_float	();
+			m_uGameType		= F->r_u32	();
 			m_fMaxAIDist	= m_fMaxDist;
 		}else if (vers==OGG_COMMENT_VERSION){
-			m_fMinDist		= F.r_float	();
-			m_fMaxDist		= F.r_float	();
-            m_fBaseVolume	= F.r_float	();
-			m_uGameType		= F.r_u32	();
-			m_fMaxAIDist	= F.r_float	();
+		     	m_fMinDist		= F->r_float	();
+			m_fMaxDist		= F->r_float	();
+            m_fBaseVolume	= F->r_float	();
+	           	m_uGameType		= F->r_u32	();
+			m_fMaxAIDist	= F->r_float	();
 		}else{
 			Log				("! Invalid ogg-comment version, file: ",pName);
 		}
+                xr_delete(F);
 	}else{
 		Log					("! Missing ogg-comment, file: ",pName);
 	}
