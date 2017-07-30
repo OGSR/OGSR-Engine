@@ -116,13 +116,13 @@ CEditableObject* ELibrary::LoadEditObject(LPCSTR name)
 {
 	VERIFY(m_bReady);
     CEditableObject* m_EditObject = xr_new<CEditableObject>(name);
-    string_path fn;
-    FS.update_path(fn,_objects_,EFS.ChangeFileExt(name,".object").c_str());
-    if (FS.exist(fn))
+ //   string_path fn;
+//    FS.update_path(fn,_objects_,EFS.ChangeFileExt(name,".object").c_str());
+    if (FS.exist(name))
     {
-        if (m_EditObject->Load(fn))	return m_EditObject;
+        if (m_EditObject->Load(name))	return m_EditObject;
     }else{
-		ELog.Msg(mtError,"Can't find file '%s'",fn);
+		ELog.Msg(mtError,"Can't find file '%s'",name);
     }
     xr_delete(m_EditObject);
 	return 0;
