@@ -56,5 +56,19 @@ public:
 	virtual	void	RegisterCommands		(); 
 };    
 extern CActorMain*&	AUI;
+
+class CAEPreferences :public CCustomPreferences
+{
+typedef CCustomPreferences inherited;
+public:
+					CAEPreferences():bAlwaysShowKeyBar12(FALSE),bAlwaysShowKeyBar34(FALSE){}
+    BOOL							bAlwaysShowKeyBar12;
+    BOOL							bAlwaysShowKeyBar34;
+
+    virtual void 	Load			(CInifile*);
+    virtual void 	Save			(CInifile*);
+    virtual void	FillProp        (PropItemVec& items);
+
+};
 //---------------------------------------------------------------------------
 #endif

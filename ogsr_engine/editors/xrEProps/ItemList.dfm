@@ -1,6 +1,6 @@
 object ItemList: TItemList
-  Left = 376
-  Top = 239
+  Left = 72
+  Top = 197
   Width = 320
   Height = 526
   BiDiMode = bdRightToLeft
@@ -24,8 +24,8 @@ object ItemList: TItemList
   object tvItems: TElTree
     Left = 0
     Top = 0
-    Width = 312
-    Height = 482
+    Width = 304
+    Height = 473
     Cursor = crDefault
     LeftPosition = 0
     HeaderPopupMenu = pmSystem
@@ -107,11 +107,11 @@ object ItemList: TItemList
     HeaderHeight = 17
     HeaderHotTrack = False
     HeaderSections.Data = {
-      F4FFFFFF010000001C225A05002E0000FFFFFFFF0000010100000E40C3000000
-      0000000010270000000101404014FF040000000001000E40FFFFFFFF00000140
-      0000000000000000000100000000000039B00E405CB00E4081B00E40A5B00E40
-      CCB00E40F1B00E4016B10E403BB10E4060B10E4084B10E40ACB10E40CDB10E40
-      EEB10E4012B20E4037B20E4059B20E407FB20E40060000004974656D73000100
+      F4FFFFFF0100000064671901003B0000FFFFFFFF0000010100001901C3000000
+      0000000010270000000101004014FF040000000001000000FFFFFFFF00000100
+      0000000000000000000100000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000060000004974656D73000100
       0000000000000000000000}
     HeaderFlat = True
     HeaderFont.Charset = DEFAULT_CHARSET
@@ -122,7 +122,7 @@ object ItemList: TItemList
     HorizontalLines = True
     HorzDivLinesColor = 7368816
     HorzScrollBarStyles.ShowTrackHint = False
-    HorzScrollBarStyles.Width = 16
+    HorzScrollBarStyles.Width = 17
     HorzScrollBarStyles.ButtonSize = 16
     HorzScrollBarStyles.UseSystemMetrics = False
     HorzScrollBarStyles.UseXPThemes = False
@@ -178,7 +178,7 @@ object ItemList: TItemList
     TrackColor = 10526880
     VertDivLinesColor = 7368816
     VertScrollBarStyles.ShowTrackHint = True
-    VertScrollBarStyles.Width = 16
+    VertScrollBarStyles.Width = 17
     VertScrollBarStyles.ButtonSize = 16
     VertScrollBarStyles.UseSystemMetrics = False
     VertScrollBarStyles.UseXPThemes = False
@@ -201,8 +201,8 @@ object ItemList: TItemList
   end
   object paStatus: TPanel
     Left = 0
-    Top = 482
-    Width = 312
+    Top = 473
+    Width = 304
     Height = 17
     Align = alBottom
     Alignment = taLeftJustify
@@ -213,7 +213,7 @@ object ItemList: TItemList
     object Bevel2: TBevel
       Left = 0
       Top = 0
-      Width = 312
+      Width = 304
       Height = 2
       Align = alTop
       Shape = bsTopLine

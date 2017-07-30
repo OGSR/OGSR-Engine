@@ -349,13 +349,14 @@ int __fastcall TItemList::GetSelected(RStringVec& items)
 
 int __fastcall TItemList::GetSelected(LPCSTR pref, ListItemsVec& items, bool bOnlyObject)
 {
-    for (TElTreeItem* item = tvItems->GetNextSelected(0); item; item = tvItems->GetNextSelected(item)){
+    for (TElTreeItem* item = tvItems->GetNextSelected(0); item; item = tvItems->GetNextSelected(item))
+    {
         ListItem* prop 		= (ListItem*)item->Tag;
 
         if (item->Hidden) continue;
 
-//.        VERIFY				(!item->Hidden);
-        if (prop&&(!bOnlyObject||(bOnlyObject&&prop->m_Object))){
+        if (prop && (!bOnlyObject || (bOnlyObject && prop->m_Object) ) )
+        {
         	AnsiString key	= *prop->key;
         	if (pref){
             	if (1==key.Pos(pref))

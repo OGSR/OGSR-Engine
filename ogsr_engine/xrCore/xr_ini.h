@@ -41,6 +41,7 @@ public:
 	};
 	typedef	xr_vector<Sect*>		Root;
 	typedef Root::iterator			RootIt;
+	typedef Root::const_iterator	RootCIt;
 
 	// factorisation
 	static CInifile*	Create		( LPCSTR szFileName, BOOL ReadOnly=TRUE);
@@ -70,6 +71,7 @@ public:
 	BOOL		section_exist	( LPCSTR S			);
 	BOOL		section_exist	( const shared_str& S	);
 	Root&		sections		( ){return DATA;}
+	const Root&		sections() const { return DATA; }
 
 	CLASS_ID	r_clsid			( LPCSTR S, LPCSTR L );
 	CLASS_ID	r_clsid			( const shared_str& S, LPCSTR L )				{ return r_clsid(*S,L);			}

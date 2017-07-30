@@ -91,17 +91,19 @@ void __fastcall TfraBottomBar::fsStorageRestorePlacement(TObject *Sender)
     mi				= xr_new<TMenuItem>((TComponent*)0);
     mi->Caption 	= "-";
     miWeather->Add	(mi);
-
+/*
     // append weathers
     CEnvironment::EnvsMapIt _I=g_pGamePersistent->Environment().WeatherCycles.begin();
     CEnvironment::EnvsMapIt _E=g_pGamePersistent->Environment().WeatherCycles.end();
-    for (; _I!=_E; _I++){
+    for (; _I!=_E; _I++)
+    {
         mi				= xr_new<TMenuItem>((TComponent*)0);
         mi->Caption 	= *_I->first;
         mi->OnClick 	= miWeatherClick;
 	    mi->RadioItem	= true;
         miWeather->Add	(mi);
     }
+*/    
     mi				= xr_new<TMenuItem>((TComponent*)0);
     mi->Caption 	= "-";
     miWeather->Add	(mi);
@@ -178,9 +180,11 @@ void __fastcall TfraBottomBar::pmOptionsPopup(TObject *Sender)
 
 void __fastcall TfraBottomBar::miWeatherClick(TObject *Sender)
 {
+/*
     TMenuItem* mi = dynamic_cast<TMenuItem*>(Sender);
     if (mi){
-    	if (mi->Tag==0){
+    	if (mi->Tag==0)
+        {
 		    psDeviceFlags.set	(rsEnvironment,TRUE);
     	    g_pGamePersistent->Environment().SetWeather(mi->Caption.c_str());
             EPrefs->sWeather = mi->Caption.c_str();
@@ -211,6 +215,7 @@ void __fastcall TfraBottomBar::miWeatherClick(TObject *Sender)
             TProperties::DestroyForm(P);
         }
     }
+*/    
 }
 //---------------------------------------------------------------------------
 

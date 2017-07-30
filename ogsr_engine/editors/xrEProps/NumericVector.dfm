@@ -1,6 +1,6 @@
 object frmNumericVector: TfrmNumericVector
-  Left = 295
-  Top = 265
+  Left = 996
+  Top = 298
   BorderIcons = [biSystemMenu]
   BorderStyle = bsToolWindow
   Caption = 'Numeric'

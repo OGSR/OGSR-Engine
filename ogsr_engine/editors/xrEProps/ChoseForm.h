@@ -98,8 +98,8 @@ private:
     SChooseEvents 	E;
 
     ChooseItemVec	m_Items;
-	void __fastcall FillItems	();
-    void __fastcall AppendItem	(SChooseItem* item);
+	void __fastcall FillItems	(u32 choose_id);
+    void __fastcall AppendItem	(SChooseItem* item, bool b_check_duplicate);
     void 			DrawImage	();
 protected:
     static AnsiString 			m_LastSelection; 

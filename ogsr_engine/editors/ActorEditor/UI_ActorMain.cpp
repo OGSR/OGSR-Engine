@@ -18,7 +18,7 @@ CActorMain*&	AUI=(CActorMain*)UI;
 
 CActorMain::CActorMain()
 {               
-    EPrefs			= xr_new<CCustomPreferences>();
+    EPrefs			= xr_new<CAEPreferences>();
 }
 //---------------------------------------------------------------------------
 
@@ -473,4 +473,32 @@ void CActorMain::RealQuit()
 	frmMain->Close();
 }
 //---------------------------------------------------------------------------
+extern ECORE_API BOOL g_force16BitTransformQuant;
+void CAEPreferences::Load(CInifile* I)
+{
+	inherited::Load(I);
 
+/*    bAlwaysShowKeyBar12		= R_BOOL_SAFE	("ae_prefs","always_show_keybar12"		,bAlwaysShowKeyBar12		);
+    bAlwaysShowKeyBar34		= R_BOOL_SAFE	("ae_prefs","always_show_keybar34"		,bAlwaysShowKeyBar34		);*/
+	bAlwaysShowKeyBar34		= R_BOOL_SAFE	("ae_prefs","force_16_bit_motions"		,g_force16BitTransformQuant		);
+}
+
+void CAEPreferences::Save(CInifile* I)
+{
+	inherited::Save(I);
+
+ /*   I->w_bool	("ae_prefs","always_show_keybar12",		bAlwaysShowKeyBar12			);
+    I->w_bool	("ae_prefs","always_show_keybar34",		bAlwaysShowKeyBar34			);*/
+	I->w_bool	("ae_prefs","force_16_bit_motions",		g_force16BitTransformQuant			);
+
+}
+
+void CAEPreferences::FillProp(PropItemVec& props)
+{
+	inherited::FillProp(props);
+
+ /*   PHelper().CreateBOOL	(props,"Keybar\\show footsteps 12",	&bAlwaysShowKeyBar12);
+    PHelper().CreateBOOL	(props,"Keybar\\show footsteps 34",	&bAlwaysShowKeyBar34);*/
+
+    PHelper().CreateBOOL	(props,"Tools\\MotionExport\\Force 16bit MotionT",	&g_force16BitTransformQuant);
+}

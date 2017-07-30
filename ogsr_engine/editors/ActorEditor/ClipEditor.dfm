@@ -1,8 +1,8 @@
 object ClipMaker: TClipMaker
-  Left = 459
-  Top = 321
-  Width = 500
-  Height = 299
+  Left = 381
+  Top = 254
+  Width = 766
+  Height = 534
   HorzScrollBar.Style = ssFlat
   HorzScrollBar.ThumbSize = 12
   BiDiMode = bdRightToLeft
@@ -31,8 +31,8 @@ object ClipMaker: TClipMaker
   object paB: TPanel
     Left = 129
     Top = 0
-    Width = 363
-    Height = 265
+    Width = 629
+    Height = 500
     Align = alClient
     BevelOuter = bvNone
     ParentColor = True
@@ -40,7 +40,7 @@ object ClipMaker: TClipMaker
     object paBase: TPanel
       Left = 0
       Top = 0
-      Width = 363
+      Width = 629
       Height = 137
       Align = alTop
       BevelOuter = bvNone
@@ -49,7 +49,7 @@ object ClipMaker: TClipMaker
       object sbBase: TScrollBox
         Left = 0
         Top = 0
-        Width = 363
+        Width = 629
         Height = 137
         HorzScrollBar.Style = ssFlat
         HorzScrollBar.Tracking = True
@@ -60,7 +60,7 @@ object ClipMaker: TClipMaker
         object paFrame: TMxPanel
           Left = 0
           Top = 0
-          Width = 32
+          Width = 137
           Height = 137
           Align = alLeft
           BevelOuter = bvNone
@@ -69,7 +69,7 @@ object ClipMaker: TClipMaker
           object Bevel6: TBevel
             Left = 0
             Top = 82
-            Width = 32
+            Width = 137
             Height = 1
             Align = alTop
             Shape = bsBottomLine
@@ -78,7 +78,7 @@ object ClipMaker: TClipMaker
           object Bevel7: TBevel
             Left = 0
             Top = 50
-            Width = 32
+            Width = 137
             Height = 1
             Align = alTop
             Shape = bsBottomLine
@@ -87,7 +87,7 @@ object ClipMaker: TClipMaker
           object Bevel8: TBevel
             Left = 0
             Top = 66
-            Width = 32
+            Width = 137
             Height = 1
             Align = alTop
             Shape = bsBottomLine
@@ -96,7 +96,7 @@ object ClipMaker: TClipMaker
           object Bevel1: TBevel
             Left = 0
             Top = 18
-            Width = 32
+            Width = 137
             Height = 1
             Align = alTop
             Shape = bsBottomLine
@@ -105,7 +105,7 @@ object ClipMaker: TClipMaker
           object Bevel3: TBevel
             Left = 0
             Top = 34
-            Width = 32
+            Width = 137
             Height = 1
             Align = alTop
             Shape = bsBottomLine
@@ -114,7 +114,7 @@ object ClipMaker: TClipMaker
           object Bevel18: TBevel
             Left = 0
             Top = 118
-            Width = 32
+            Width = 137
             Height = 1
             Align = alTop
             Shape = bsBottomLine
@@ -123,7 +123,7 @@ object ClipMaker: TClipMaker
           object Bevel21: TBevel
             Left = 0
             Top = 98
-            Width = 32
+            Width = 137
             Height = 1
             Align = alTop
             Shape = bsBottomLine
@@ -133,7 +133,7 @@ object ClipMaker: TClipMaker
             Tag = -1
             Left = 0
             Top = 0
-            Width = 32
+            Width = 137
             Height = 18
             Align = alTop
             BevelOuter = bvNone
@@ -150,7 +150,7 @@ object ClipMaker: TClipMaker
             object Bevel9: TBevel
               Left = 0
               Top = 0
-              Width = 32
+              Width = 137
               Height = 1
               Align = alTop
               Shape = bsBottomLine
@@ -160,7 +160,7 @@ object ClipMaker: TClipMaker
           object gtClip: TMxPanel
             Left = 0
             Top = 99
-            Width = 32
+            Width = 137
             Height = 19
             Align = alTop
             BevelOuter = bvNone
@@ -181,7 +181,7 @@ object ClipMaker: TClipMaker
             Tag = 3
             Left = 0
             Top = 67
-            Width = 32
+            Width = 137
             Height = 15
             Align = alTop
             BevelOuter = bvNone
@@ -199,7 +199,7 @@ object ClipMaker: TClipMaker
             Tag = 2
             Left = 0
             Top = 51
-            Width = 32
+            Width = 137
             Height = 15
             Align = alTop
             BevelOuter = bvNone
@@ -217,7 +217,7 @@ object ClipMaker: TClipMaker
             Tag = 1
             Left = 0
             Top = 35
-            Width = 32
+            Width = 137
             Height = 15
             Align = alTop
             BevelOuter = bvNone
@@ -234,7 +234,7 @@ object ClipMaker: TClipMaker
           object paBP0: TMxPanel
             Left = 0
             Top = 19
-            Width = 32
+            Width = 137
             Height = 15
             Align = alTop
             BevelOuter = bvNone
@@ -252,7 +252,7 @@ object ClipMaker: TClipMaker
             Tag = -2
             Left = 0
             Top = 83
-            Width = 32
+            Width = 137
             Height = 15
             Align = alTop
             BevelOuter = bvNone
@@ -264,7 +264,28 @@ object ClipMaker: TClipMaker
             OnMouseDown = BPMouseDown
             OnMouseUp = BPMouseUp
             OnStartDrag = BPStartDrag
-            OnPaint = BPOnPaint
+            DesignSize = (
+              137
+              15)
+            object timeTrackBar: TElTrackBar
+              Left = 0
+              Top = 8
+              Width = 137
+              Height = 7
+              Page = 0
+              OffsetLeft = 5
+              OffsetRight = 5
+              TickWidth = 0
+              SelEnd = 0
+              TrackWidth = 3
+              SelectionMarkSize = 2
+              Anchors = [akLeft, akTop, akRight, akBottom]
+              Color = 6908265
+              ParentColor = False
+              TabOrder = 0
+              ActiveBorderType = fbtFlat
+              InactiveBorderType = fbtFlat
+            end
           end
         end
       end
@@ -272,17 +293,17 @@ object ClipMaker: TClipMaker
     object paClipProps: TPanel
       Left = 0
       Top = 137
-      Width = 363
-      Height = 128
+      Width = 629
+      Height = 363
       Align = alClient
       BevelOuter = bvNone
       Color = 6908265
       TabOrder = 1
       object Bevel20: TBevel
-        Left = 362
+        Left = 628
         Top = 1
         Width = 1
-        Height = 127
+        Height = 362
         Align = alRight
         Shape = bsRightLine
         Style = bsRaised
@@ -290,7 +311,7 @@ object ClipMaker: TClipMaker
       object Bevel15: TBevel
         Left = 0
         Top = 0
-        Width = 363
+        Width = 629
         Height = 1
         Align = alTop
         Shape = bsBottomLine
@@ -302,7 +323,7 @@ object ClipMaker: TClipMaker
     Left = 0
     Top = 0
     Width = 129
-    Height = 265
+    Height = 500
     Align = alLeft
     BevelOuter = bvNone
     ParentColor = True
@@ -557,7 +578,7 @@ object ClipMaker: TClipMaker
         Style = bsRaised
       end
       object MxLabel5: TMxLabel
-        Left = 38
+        Left = 30
         Top = 83
         Width = 64
         Height = 15
@@ -809,14 +830,14 @@ object ClipMaker: TClipMaker
       Left = 0
       Top = 138
       Width = 128
-      Height = 127
+      Height = 362
       Align = alClient
       BevelOuter = bvNone
       ParentColor = True
       TabOrder = 2
       object Panel4: TPanel
         Left = 0
-        Top = 97
+        Top = 332
         Width = 128
         Height = 30
         Align = alBottom
@@ -955,7 +976,7 @@ object ClipMaker: TClipMaker
       Left = 128
       Top = 138
       Width = 1
-      Height = 127
+      Height = 362
       Align = alRight
       BevelOuter = bvNone
       Color = 5460819

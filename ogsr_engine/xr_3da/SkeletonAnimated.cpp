@@ -701,12 +701,19 @@ IC	void QR2Quat(const CKeyQR &K,Fquaternion &Q)
 	Q.w		= float(K.w)*KEY_QuantI;
 }
 
-IC void QT2T(const CKeyQT& K,const CMotion& M,Fvector &T)
+IC void QT8_2T(const CKeyQT8& K, const CMotion& M, Fvector &T)
 {
-	T.x		= float(K.x)*M._sizeT.x+M._initT.x;
-	T.y		= float(K.y)*M._sizeT.y+M._initT.y;
-	T.z		= float(K.z)*M._sizeT.z+M._initT.z;
+	T.x		= float(K.x1)*M._sizeT.x+M._initT.x;
+	T.y		= float(K.y1)*M._sizeT.y+M._initT.y;
+	T.z		= float(K.z1)*M._sizeT.z+M._initT.z;
 }
+                            
+IC void QT16_2T(const CKeyQT16& K, const CMotion& M, Fvector &T)
+{
+	T.x		= float(K.x1)*M._sizeT.x+M._initT.x;
+	T.y		= float(K.y1)*M._sizeT.y+M._initT.y;
+	T.z		= float(K.z1)*M._sizeT.z+M._initT.z;
+}   
 
 IC void Dequantize(CKey& K,const CBlend& BD,const CMotion& M)
 {
@@ -733,12 +740,28 @@ IC void Dequantize(CKey& K,const CBlend& BD,const CMotion& M)
 	// translate
 	if (M.test_flag(flTKeyPresent))
 	{
-		const CKeyQT*	K1t	= &M._keysT[(frame+0)%count];
+		/*const CKeyQT*	K1t	= &M._keysT[(frame+0)%count];
 		const CKeyQT*	K2t	= &M._keysT[(frame+1)%count];
 
 		Fvector T1,T2;
 		QT2T(*K1t,M,T1);
-		QT2T(*K2t,M,T2);
+		QT2T(*K2t,M,T2);*/
+		Fvector T1,T2;
+       if(M.test_flag(flTKey16IsBit))
+       {
+            const CKeyQT16*	K1t	= &M._keysT16[(frame+0)%count];
+            const CKeyQT16*	K2t	= &M._keysT16[(frame+1)%count];
+
+            QT16_2T(*K1t,M,T1);
+            QT16_2T(*K2t,M,T2);
+        }else
+        {
+            const CKeyQT8*	K1t	= &M._keysT8[(frame+0)%count];
+            const CKeyQT8*	K2t	= &M._keysT8[(frame+1)%count];
+        
+            QT8_2T(*K1t,M,T1);
+            QT8_2T(*K2t,M,T2);
+        }
 		/*
 		T1.x		= float(K1t->x)*M._sizeT.x+M._initT.x;
 		T1.y		= float(K1t->y)*M._sizeT.y+M._initT.y;
@@ -1060,8 +1083,12 @@ void CKinematicsAnimated::CLBone(const CBoneData* bd,CBoneInstance& BONE_INST,co
 				QR2Quat( M._keysR[0], BK[channel][b_count].Q	);
 
 				if(M.test_flag(flTKeyPresent))
-					QT2T(M._keysT[0] ,M ,BK[channel][b_count].T );
-				else
+				{
+					if(M.test_flag(flTKey16IsBit))
+						QT16_2T(M._keysT16[0] ,M ,BK[channel][b_count].T );
+					else
+						QT8_2T(M._keysT8[0] ,M ,BK[channel][b_count].T );
+				} else
 					BK[channel][b_count].T.set(M._initT);
 
 				++b_count;

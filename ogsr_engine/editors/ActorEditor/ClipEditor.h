@@ -17,6 +17,7 @@
 #include "multi_edit.hpp"
 #include "../xrEProps/PropertiesList.h"
 #include "motion.h"
+#include "ElTrackBar.hpp"
 
 // refs
 class CEditableObject;
@@ -86,6 +87,7 @@ __published:	// IDE-managed Components
 	TBevel *Bevel21;
 	TExtBtn *ebSync;
 	TExtBtn *ebClear;
+	TElTrackBar *timeTrackBar;
 	void __fastcall ebInsertClipClick(TObject *Sender);
 	void __fastcall gtClipPaint(TObject *Sender);
 	void __fastcall ebAppendClipClick(TObject *Sender);

@@ -27,6 +27,7 @@
 #pragma link "ElPanel"
 #pragma link "ElSplit"
 #pragma link "multi_edit"
+#pragma link "ElTrackBar"
 #pragma resource "*.dfm"
 
 static const TColor CLIP_INACTIVE_COLOR		= 0x00686868;
@@ -792,6 +793,9 @@ void TClipMaker::RealUpdateClips()
         (*it)->idx	= it-clips.begin();
     }
 	paFrame->Width	= m_TotalLength*m_Zoom;
+    timeTrackBar->Width = paFrame->Width;
+    timeTrackBar->Min = 0;
+    timeTrackBar->Max = m_TotalLength*10000;
     Stop			();
     // clip list
     ListItemsVec	l_items;
@@ -853,6 +857,7 @@ void TClipMaker::OnFrame()
 		// play onframe
     	if (m_CurrentPlayTime>m_TotalLength) m_CurrentPlayTime-=m_TotalLength;
 	    m_CurrentPlayTime+=Device.fTimeDelta;
+        timeTrackBar->Position = m_CurrentPlayTime*10000;
         gtClip->Repaint();
     }
 }

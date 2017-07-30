@@ -9,6 +9,7 @@
 //---------------------------------------------------------------------------
 const int clpSMX = 28, clpSMY=16, clpSMZ=28;
 //---------------------------------------------------------------------------
+extern ECORE_API BOOL g_force16BitTransformQuant;
 extern ECORE_API float g_EpsSkelPositionDelta;
 // refs                                           
 class CEditableObject;

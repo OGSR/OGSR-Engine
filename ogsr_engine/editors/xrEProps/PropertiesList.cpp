@@ -87,6 +87,13 @@ void __fastcall TProperties::ClearProperties()
     ClearParams			();
 }
 //---------------------------------------------------------------------------
+
+void __fastcall TProperties::SelectFolder(const AnsiString& folder_name)
+{
+	m_Folders->SelectItem(folder_name.c_str(),true,true,true);
+//.    tvProperties->se
+}
+
 void __fastcall TProperties::SelectItem(const AnsiString& full_name)
 {
 	m_FirstClickItem	= FHelper.RestoreSelection	(tvProperties,FHelper.ExpandItem(tvProperties,full_name),false);
@@ -257,7 +264,8 @@ void TProperties::FillElItems(PropItemVec& items, LPCSTR startup_pref)
         }
         m_ViewItems.push_back	(prop);
         prop->m_Owner 		= this; 
-        prop->item			= FHelper.AppendObject(tvProperties,key,false,false); R_ASSERT3(prop->item,"Duplicate properties key found:",key.c_str());
+        prop->item			= FHelper.AppendObject(tvProperties,key,false,false); 
+        R_ASSERT3			(prop->item,"Duplicate properties key found:",key.c_str());
         prop->Item()->Hint	= ".";
         prop->Item()->Tag 	= (int)prop;
         prop->Item()->UseStyles=true;

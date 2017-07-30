@@ -79,7 +79,10 @@ int __fastcall TfrmChoseItem::SelectItem(u32 choose_ID, LPCSTR& dest, int sel_cn
     form->Caption					= form->E.caption.c_str();
     if (!form->E.on_fill.empty())	form->E.on_fill(form->m_Items,fill_param);
 
-    form->FillItems					();
+    if (!form->E.on_fill.empty())	
+    	form->E.on_fill(form->m_Items,fill_param);
+    
+    form->FillItems					(choose_ID);
     
 //.	form->paItemsCount->Caption		= AnsiString(" Items in list: ")+AnsiString(form->tvItems->Items->Count);
 
@@ -97,23 +100,31 @@ int __fastcall TfrmChoseItem::SelectItem(u32 choose_ID, LPCSTR& dest, int sel_cn
 // Constructors
 //---------------------------------------------------------------------------
 
-void __fastcall TfrmChoseItem::AppendItem(SChooseItem* item)
+void __fastcall TfrmChoseItem::AppendItem(SChooseItem* item, bool b_check_duplicate)
 {
-    TElTreeItem* node				= FHelper.AppendObject(form->tvItems,item->name.c_str(),false,true);
+    TElTreeItem* node				= FHelper.AppendObject(form->tvItems,item->name.c_str(), !b_check_duplicate/*false*/,true);
     node->Tag						= (int)item;
     node->Hint						= item->hint.size()?item->hint.c_str():"-";
     node->CheckBoxEnabled 			= form->m_Flags.is(cfMultiSelect);
     node->ShowCheckBox 				= form->m_Flags.is(cfMultiSelect);
 }
 
-void __fastcall TfrmChoseItem::FillItems()
+void __fastcall TfrmChoseItem::FillItems(u32 choose_id)
 {
 	form->tvItems->IsUpdating		= true;
     tvItems->Items->Clear			();
-    if (m_Flags.is(cfAllowNone)&&!m_Flags.is(cfMultiSelect))	FHelper.AppendObject(tvItems,NONE_CAPTION,false,true);
+
+    if (m_Flags.is(cfAllowNone)&&!m_Flags.is(cfMultiSelect))	
+    	FHelper.AppendObject(tvItems,NONE_CAPTION,false,true);
+
+	u32 ss = m_Items.size();
     ChooseItemVecIt  it				= m_Items.begin();
     ChooseItemVecIt  _E				= m_Items.end();
-    for (; it!=_E; it++)   			AppendItem(&(*it));
+
+    bool b_check_duplicate = (choose_id!=15);// smSkeletonAnimations is already unique set !!!
+    for (; it!=_E; it++)   			
+    	AppendItem(&(*it), b_check_duplicate);
+        
     form->tvItems->Sort				(true);
 	form->tvItems->IsUpdating 		= false;
     if (m_Flags.is(cfFullExpand))	form->tvItems->FullExpand		();

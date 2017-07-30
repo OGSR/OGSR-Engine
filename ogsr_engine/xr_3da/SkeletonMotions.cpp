@@ -155,8 +155,15 @@ BOOL motions_value::load		(LPCSTR N, IReader *data, vecBones* bones)
             }
             if (M.test_flag(flTKeyPresent))	{
                 u32 crc_t		= MS->r_u32	();
-                M._keysT.create	(crc_t,dwLen,(CKeyQT*)MS->pointer());
-                MS->advance		(dwLen * sizeof(CKeyQT));
+				if(M.test_flag(flTKey16IsBit))
+                {
+                    M._keysT16.create	(crc_t,dwLen,(CKeyQT16*)MS->pointer());
+                    MS->advance			(dwLen * sizeof(CKeyQT16));
+                }else
+                {
+                    M._keysT8.create	(crc_t,dwLen,(CKeyQT8*)MS->pointer());
+                    MS->advance			(dwLen * sizeof(CKeyQT8));
+                };
                 MS->r_fvector3	(M._sizeT);
                 MS->r_fvector3	(M._initT);
             }else{

@@ -1,8 +1,8 @@
 object frmText: TfrmText
-  Left = -643
-  Top = 485
-  Width = 443
-  Height = 283
+  Left = 397
+  Top = 371
+  Width = 512
+  Height = 304
   Caption = 'Text'
   Color = 10528425
   Constraints.MinHeight = 205
@@ -28,7 +28,7 @@ object frmText: TfrmText
   object paBottomBar: TPanel
     Left = 0
     Top = 0
-    Width = 435
+    Width = 504
     Height = 20
     Align = alTop
     BevelOuter = bvNone
@@ -139,8 +139,8 @@ object frmText: TfrmText
   end
   object sbStatusPanel: TElStatusBar
     Left = 0
-    Top = 237
-    Width = 435
+    Top = 251
+    Width = 504
     Height = 19
     Panels = <
       item
@@ -169,8 +169,8 @@ object frmText: TfrmText
   object mmText: TMemo
     Left = 0
     Top = 20
-    Width = 435
-    Height = 217
+    Width = 504
+    Height = 231
     Align = alClient
     Color = 10526880
     Font.Charset = RUSSIAN_CHARSET
@@ -189,8 +189,8 @@ object frmText: TfrmText
     RegistryRoot = prLocalMachine
     Version = 6
     StoredValues = <>
-    Left = 5
-    Top = 6
+    Left = 45
+    Top = 30
   end
   object pmTextMenu: TMxPopupMenu
     Alignment = paCenter

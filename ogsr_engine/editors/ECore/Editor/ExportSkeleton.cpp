@@ -22,6 +22,7 @@
 #include "SkeletonAnimated.h"
 #include "nvMeshMender.h"
 
+ECORE_API BOOL g_force16BitTransformQuant = FALSE;
 ECORE_API float g_EpsSkelPositionDelta = EPS_L;
 
 u16 CSkeletonCollectorPacked::VPack(SSkelVert& V)
@@ -1013,18 +1014,21 @@ bool CExportSkeleton::ExportGeometry(IWriter& F, u8 infl)
 //----------------------------------------------------
 struct bm_item{
     CKeyQR* 		_keysQR; 
-    CKeyQT* 		_keysQT; 
+    CKeyQT8* 		_keysQT8; 
+    CKeyQT16* 		_keysQT16; 
     Fvector* 		_keysT;
     void create(u32 len)
     {
         _keysQR 	= xr_alloc<CKeyQR>(len); 
-        _keysQT 	= xr_alloc<CKeyQT>(len); 
+        _keysQT8 	= xr_alloc<CKeyQT8>(len); 
+        _keysQT16 	= xr_alloc<CKeyQT16>(len); 
         _keysT 		= xr_alloc<Fvector>(len);
     }
     void destroy()
     {
         xr_free		(_keysQR);
-        xr_free		(_keysQT);
+        xr_free		(_keysQT8);
+        xr_free		(_keysQT16);
         xr_free		(_keysT);
     }
 };
@@ -1126,20 +1130,40 @@ bool CExportSkeleton::ExportMotionKeys(IWriter& F)
             St.sub			(Bt,At);
             St.mul			(0.5f);
             CKeyQR& R		= BM._keysQR[0];
+			
+			bool bTransform16Bit = false;
+            if(g_force16BitTransformQuant || St.magnitude()>1.5f)
+            {
+            	bTransform16Bit = true;
+                Msg("animation [%s] is 16bit-transform (%f)m", motion->Name(), St.magnitude());
+            }
+			
             for (t_idx=0; t_idx<dwLen; t_idx++){
             	Fvector& t	= BM._keysT[t_idx];
             	CKeyQR& r	= BM._keysQR[t_idx];
                 if (!Mt.similar(t,EPS_L))							t_present = TRUE;
                 if ((R.x!=r.x)||(R.y!=r.y)||(R.z!=r.z)||(R.w!=r.w))	r_present = TRUE;
                 
-                CKeyQT&	Kt 	= BM._keysQT[t_idx];
-                int	_x 		= int(127.f*(t.x-Ct.x)/St.x); clamp(_x,-128,127); Kt.x =  (s16)_x;
-                int	_y 		= int(127.f*(t.y-Ct.y)/St.y); clamp(_y,-128,127); Kt.y =  (s16)_y;
-                int	_z 		= int(127.f*(t.z-Ct.z)/St.z); clamp(_z,-128,127); Kt.z =  (s16)_z;
+				if(bTransform16Bit)
+                {
+					CKeyQT16&	Kt 	= BM._keysQT16[t_idx];
+					int	_x 		= int(32767.f*(t.x-Ct.x)/St.x); clamp(_x,-32767,32767); Kt.x1 =  (s16)_x;
+					int	_y 		= int(32767.f*(t.y-Ct.y)/St.y); clamp(_y,-32767,32767); Kt.y1 =  (s16)_y;
+					int	_z 		= int(32767.f*(t.z-Ct.z)/St.z); clamp(_z,-32767,32767); Kt.z1 =  (s16)_z;
+				} else {
+					CKeyQT8&	Kt 	= BM._keysQT8[t_idx];
+					int	_x 		= int(127.f*(t.x-Ct.x)/St.x); clamp(_x,-128,127); Kt.x1 =  (s16)_x;
+					int	_y 		= int(127.f*(t.y-Ct.y)/St.y); clamp(_y,-128,127); Kt.y1 =  (s16)_y;
+					int	_z 		= int(127.f*(t.z-Ct.z)/St.z); clamp(_z,-128,127); Kt.z1 =  (s16)_z;
+					
+				}
             }
-            St.div	(127.f);
+            if(bTransform16Bit)
+            	St.div	(32767.f);
+            else
+            	St.div	(127.f);
             // save
-            F.w_u8	(u8((t_present?flTKeyPresent:0)|(r_present?0:flRKeyAbsent)));
+			F.w_u8	(u8((t_present?flTKeyPresent:0)|(r_present?0:flRKeyAbsent)|(bTransform16Bit?flTKey16IsBit:0)));
             if (r_present){	
                 F.w_u32	(crc32(BM._keysQR,dwLen*sizeof(CKeyQR)));
                 F.w		(BM._keysQR,dwLen*sizeof(CKeyQR));
@@ -1147,8 +1171,17 @@ bool CExportSkeleton::ExportMotionKeys(IWriter& F)
                 F.w		(&BM._keysQR[0],sizeof(BM._keysQR[0]));
             }
             if (t_present){	
-	            F.w_u32(crc32(BM._keysQT,u32(dwLen*sizeof(CKeyQT))));
-            	F.w	(BM._keysQT,dwLen*sizeof(CKeyQT));
+				if(bTransform16Bit)
+                {
+                    F.w_u32(crc32(BM._keysQT16,u32(dwLen*sizeof(CKeyQT16))));
+                    F.w	(BM._keysQT16,dwLen*sizeof(CKeyQT16));
+                }else
+                {
+                    F.w_u32(crc32(BM._keysQT8,u32(dwLen*sizeof(CKeyQT8))));
+                    F.w	(BM._keysQT8,dwLen*sizeof(CKeyQT8));
+                }
+//	            F.w_u32(crc32(BM._keysQT,u32(dwLen*sizeof(CKeyQT))));
+//            	F.w	(BM._keysQT,dwLen*sizeof(CKeyQT));
 	            F.w_fvector3(St);
     	        F.w_fvector3(Ct);
             }else{

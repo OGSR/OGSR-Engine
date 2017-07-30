@@ -41,6 +41,8 @@ __published:	// IDE-managed Components
 	TExtBtn *ExtBtn3;
 	TExtBtn *ExtBtn4;
 	TExtBtn *ExtBtn5;
+	TExtBtn *ebSaveTo;
+	TExtBtn *ebLoadFrom;
 	void __fastcall FormShow(TObject *Sender);
 	void __fastcall FormKeyDown(TObject *Sender, WORD &Key,
           TShiftState Shift);
@@ -54,6 +56,8 @@ __published:	// IDE-managed Components
 	void __fastcall ebCancelClick(TObject *Sender);
 	void __fastcall ExtBtn1Click(TObject *Sender);
 	void __fastcall ebClearClick(TObject *Sender);
+	void __fastcall ebSaveToClick(TObject *Sender);
+	void __fastcall ebLoadFromClick(TObject *Sender);
 private:	// User declarations
 	xr_vector<TElTreeItem*> FDragItems;
     CEditableObject* m_EditObject;

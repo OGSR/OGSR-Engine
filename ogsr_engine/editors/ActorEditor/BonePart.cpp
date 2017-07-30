@@ -200,4 +200,55 @@ void __fastcall TfrmBonePart::ebClearClick(TObject *Sender)
     UpdateCount();
 }
 //---------------------------------------------------------------------------
+#include "../../ETools/ETools.h"
+void __fastcall TfrmBonePart::ebSaveToClick(TObject *Sender)
+{
+    xr_string temp_fn;
+    if (ETOOLS::GetSaveName( _import_, temp_fn) )
+    {
+        CInifile ini	(temp_fn.c_str(), FALSE, FALSE, TRUE);
+        string64		buff;
+        for(int i=0; i<4;++i)
+        {
+            sprintf	(buff,"part_%d",i);
+            ini.w_string(buff, "partition_name", E[i]->Text.c_str());
+            if (T[i]->Items->Count)
+            {
+                for ( TElTreeItem* node = T[i]->Items->GetFirstNode(); node; node = node->GetNext())
+                    ini.w_string(buff, AnsiString(node->Text).c_str(), NULL );
+			}
+        }
+        }
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TfrmBonePart::ebLoadFromClick(TObject *Sender)
+{
+//.
+    xr_string temp_fn;
+    if (ETOOLS::GetOpenName	( _import_, temp_fn, false, NULL, 0))
+    {
+        ebClearClick	(Sender);
+        CInifile ini	(temp_fn.c_str(), TRUE, TRUE, FALSE);
+        string64		buff;
+        for(int i=0; i<4;++i)
+        {
+            sprintf	(buff,"part_%d",i);
+            LPCSTR part_name = ini.r_string(buff, "partition_name");
+            E[i]->Text = part_name;
+            CInifile::Sect& S 	= ini.r_section(buff);
+            CInifile::SectCIt it = S.Data.begin();
+            CInifile::SectCIt e = S.Data.end();
+            for (; it!=e; ++it)
+            {
+                if( 0!= stricmp(it->first.c_str(), "partition_name") )
+                {
+                    FHelper.AppendObject(T[i], it->first.c_str(), false, true);
+                }
+            }
+
+        }
+    }
+}
+//---------------------------------------------------------------------------
 

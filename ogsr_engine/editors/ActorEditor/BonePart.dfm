@@ -1,6 +1,6 @@
 object frmBonePart: TfrmBonePart
-  Left = -578
-  Top = 225
+  Left = 276
+  Top = 154
   BorderStyle = bsToolWindow
   Caption = 'Bone Part'
   ClientHeight = 451
@@ -210,6 +210,40 @@ object frmBonePart: TfrmBonePart
     FlatAlwaysEdge = True
     OnClick = ebClearClick
   end
+  object ebSaveTo: TExtBtn
+    Left = 103
+    Top = 434
+    Width = 66
+    Height = 17
+    Align = alNone
+    BevelShow = False
+    Caption = 'Save to'
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clBlack
+    Font.Height = -11
+    Font.Name = 'MS Sans Serif'
+    Font.Style = []
+    ParentFont = False
+    FlatAlwaysEdge = True
+    OnClick = ebSaveToClick
+  end
+  object ebLoadFrom: TExtBtn
+    Left = 167
+    Top = 434
+    Width = 66
+    Height = 17
+    Align = alNone
+    BevelShow = False
+    Caption = 'Load from'
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clBlack
+    Font.Height = -11
+    Font.Name = 'MS Sans Serif'
+    Font.Style = []
+    ParentFont = False
+    FlatAlwaysEdge = True
+    OnClick = ebLoadFromClick
+  end
   object tvPart1: TElTree
     Left = 0
     Top = 38
@@ -246,7 +280,7 @@ object frmBonePart: TfrmBonePart
     HorizontalLines = True
     HorzDivLinesColor = 7368816
     HorzScrollBarStyles.ShowTrackHint = False
-    HorzScrollBarStyles.Width = 16
+    HorzScrollBarStyles.Width = 17
     HorzScrollBarStyles.ButtonSize = 16
     HorzScrollBarStyles.UseSystemMetrics = False
     HorzScrollBarStyles.UseXPThemes = False
@@ -274,7 +308,7 @@ object frmBonePart: TfrmBonePart
     Tracking = False
     TrackColor = clBlack
     VertScrollBarStyles.ShowTrackHint = True
-    VertScrollBarStyles.Width = 16
+    VertScrollBarStyles.Width = 17
     VertScrollBarStyles.ButtonSize = 16
     VertScrollBarStyles.UseSystemMetrics = False
     VertScrollBarStyles.UseXPThemes = False
@@ -330,7 +364,7 @@ object frmBonePart: TfrmBonePart
     HorizontalLines = True
     HorzDivLinesColor = 7368816
     HorzScrollBarStyles.ShowTrackHint = False
-    HorzScrollBarStyles.Width = 16
+    HorzScrollBarStyles.Width = 17
     HorzScrollBarStyles.ButtonSize = 16
     HorzScrollBarStyles.UseSystemMetrics = False
     HorzScrollBarStyles.UseXPThemes = False
@@ -358,7 +392,7 @@ object frmBonePart: TfrmBonePart
     Tracking = False
     TrackColor = clBlack
     VertScrollBarStyles.ShowTrackHint = True
-    VertScrollBarStyles.Width = 16
+    VertScrollBarStyles.Width = 17
     VertScrollBarStyles.ButtonSize = 16
     VertScrollBarStyles.UseSystemMetrics = False
     VertScrollBarStyles.UseXPThemes = False
@@ -414,7 +448,7 @@ object frmBonePart: TfrmBonePart
     HorizontalLines = True
     HorzDivLinesColor = 7368816
     HorzScrollBarStyles.ShowTrackHint = False
-    HorzScrollBarStyles.Width = 16
+    HorzScrollBarStyles.Width = 17
     HorzScrollBarStyles.ButtonSize = 16
     HorzScrollBarStyles.UseSystemMetrics = False
     HorzScrollBarStyles.UseXPThemes = False
@@ -442,7 +476,7 @@ object frmBonePart: TfrmBonePart
     Tracking = False
     TrackColor = clBlack
     VertScrollBarStyles.ShowTrackHint = True
-    VertScrollBarStyles.Width = 16
+    VertScrollBarStyles.Width = 17
     VertScrollBarStyles.ButtonSize = 16
     VertScrollBarStyles.UseSystemMetrics = False
     VertScrollBarStyles.UseXPThemes = False
@@ -498,7 +532,7 @@ object frmBonePart: TfrmBonePart
     HorizontalLines = True
     HorzDivLinesColor = 7368816
     HorzScrollBarStyles.ShowTrackHint = False
-    HorzScrollBarStyles.Width = 16
+    HorzScrollBarStyles.Width = 17
     HorzScrollBarStyles.ButtonSize = 16
     HorzScrollBarStyles.UseSystemMetrics = False
     HorzScrollBarStyles.UseXPThemes = False
@@ -526,7 +560,7 @@ object frmBonePart: TfrmBonePart
     Tracking = False
     TrackColor = clBlack
     VertScrollBarStyles.ShowTrackHint = True
-    VertScrollBarStyles.Width = 16
+    VertScrollBarStyles.Width = 17
     VertScrollBarStyles.ButtonSize = 16
     VertScrollBarStyles.UseSystemMetrics = False
     VertScrollBarStyles.UseXPThemes = False

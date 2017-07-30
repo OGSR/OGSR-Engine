@@ -11,8 +11,8 @@ namespace ChoseEvents{
 void __stdcall  FillEntity(ChooseItemVec& items, void* param)
 {
 //.    AppendItem						(RPOINT_CHOOSE_NAME);
-    CInifile::Root& data 			= pSettings->sections();
-    for (CInifile::RootIt it=data.begin(); it!=data.end(); it++){
+    CInifile::Root const & data 			= pSettings->sections();
+    for (CInifile::RootCIt it=data.begin(); it!=data.end(); it++){
     	LPCSTR val;
     	if ((*it)->line_exist("$spawn",&val))
             items.push_back(SChooseItem(*(*it)->Name,""));
@@ -38,7 +38,8 @@ void __stdcall  CloseSoundSource()
 void __stdcall  FillSoundSource(ChooseItemVec& items, void* param)
 {
     FS_FileSet lst;
-    if (SndLib->GetSounds(lst)){
+    if (SndLib->GetSounds(lst))
+    {
 	    FS_FileSetIt  it			= lst.begin();
     	FS_FileSetIt	_E			= lst.end();
 	    for (; it!=_E; it++)		items.push_back(SChooseItem(it->name.c_str(),""));
@@ -161,9 +162,12 @@ void __stdcall  DrawLAnim(LPCSTR name, HDC hdc, const Irect& r)
 {
     int frame;
 	CLAItem* item 					= LALib.FindItem(name);
-    HBRUSH hbr 						= CreateSolidBrush(item->CalculateBGR(Device.fTimeGlobal,frame));
+    if(item)
+    {
+        HBRUSH hbr 						= CreateSolidBrush(item->CalculateBGR(Device.fTimeGlobal,frame));
     FillRect						(hdc,(RECT*)&r,hbr);
     DeleteObject 					(hbr);
+}
 }
 //---------------------------------------------------------------------------
 void __stdcall  FillEShader(ChooseItemVec& items, void* param)
@@ -184,14 +188,58 @@ void __stdcall  FillCShader(ChooseItemVec& items, void* param)
 //---------------------------------------------------------------------------
 void __stdcall  FillPE(ChooseItemVec& items, void* param)
 {
-    for (PS::PEDIt E=::Render->PSLibrary.FirstPED(); E!=::Render->PSLibrary.LastPED(); E++)items.push_back(SChooseItem(*(*E)->m_Name,""));
+    for (PS::PEDIt E=::Render->PSLibrary.FirstPED(); E!=::Render->PSLibrary.LastPED(); E++)items.push_back(SChooseItem(*(*E)->m_Name,"EFFECT"));
 }
 //---------------------------------------------------------------------------
 void __stdcall  FillParticles(ChooseItemVec& items, void* param)
 {
-    for (PS::PEDIt E=::Render->PSLibrary.FirstPED(); E!=::Render->PSLibrary.LastPED(); E++)items.push_back(SChooseItem(*(*E)->m_Name,""));
-    for (PS::PGDIt G=::Render->PSLibrary.FirstPGD(); G!=::Render->PSLibrary.LastPGD(); G++)items.push_back(SChooseItem(*(*G)->m_Name,""));
+    for (PS::PEDIt E=::Render->PSLibrary.FirstPED(); E!=::Render->PSLibrary.LastPED(); E++)items.push_back(SChooseItem(*(*E)->m_Name,"EFFECT"));
+    for (PS::PGDIt G=::Render->PSLibrary.FirstPGD(); G!=::Render->PSLibrary.LastPGD(); G++)items.push_back(SChooseItem(*(*G)->m_Name,"GROUP"));
 }
+
+void __stdcall  SelectPE(SChooseItem* item, PropItemVec& info_items)
+{
+	string64 	str;
+	u32 		i		= 0;
+   	PHelper().CreateCaption(info_items, "", "used in groups");
+    for (PS::PGDIt G=::Render->PSLibrary.FirstPGD(); G!=::Render->PSLibrary.LastPGD(); ++G)
+    {
+    	PS::CPGDef* def 				= (*G);
+        PS::CPGDef::EffectIt pe_it 		= def->m_Effects.begin();
+        PS::CPGDef::EffectIt pe_it_e 	= def->m_Effects.end();
+        for(;pe_it!=pe_it_e;++pe_it)
+        {
+           if( (*pe_it)->m_EffectName==item->name )
+           {
+           	sprintf_s(str,sizeof(str),"%d",++i);
+    	   	PHelper().CreateCaption(info_items, str, def->m_Name);
+           }
+        }
+    }
+}
+
+void __stdcall  SelectPG(SChooseItem* item, PropItemVec& info_items)
+{
+	string64 	str;
+	u32 		i		= 0;
+   	PHelper().CreateCaption(info_items, "", "using effects");
+    for (PS::PGDIt G=::Render->PSLibrary.FirstPGD(); G!=::Render->PSLibrary.LastPGD(); G++)
+    {
+    	PS::CPGDef* def = (*G);
+        if(def->m_Name == item->name)
+        {
+            PS::CPGDef::EffectIt pe_it 	= def->m_Effects.begin();
+            PS::CPGDef::EffectIt pe_it_e 	= def->m_Effects.end();
+            for(;pe_it!=pe_it_e;++pe_it)
+            {
+            	sprintf_s(str,sizeof(str),"%d",++i);
+            	PHelper().CreateCaption(info_items, str, (*pe_it)->m_EffectName);
+}
+        break;
+        }
+    }
+}
+
 //---------------------------------------------------------------------------
 void __stdcall  FillTexture(ChooseItemVec& items, void* param)
 {
@@ -289,7 +337,22 @@ void __stdcall  FillSkeletonBones(ChooseItemVec& items, void* param)
     }
 	::Render->model_Delete			(V);
 }
+
+void __stdcall  FillSkeletonBonesObject(ChooseItemVec& items, void* param)
+{
+    CEditableObject* eo = 			(CEditableObject*)param;
+
+    BoneIt	_I						= eo->FirstBone();
+    BoneIt	_E						= eo->LastBone();
+    for( ;_I!=_E; ++_I)
+    {
+        items.push_back(SChooseItem((*_I)->Name().c_str(),""));
+    }
+
 }
+
+}//namespace
+
 void FillChooseEvents()
 {
 	TfrmChoseItem::AppendEvents	(smSoundSource,		"Select Sound Source",		ChoseEvents::FillSoundSource,	ChoseEvents::SelectSoundSource,	    0,							ChoseEvents::CloseSoundSource,	0);
@@ -298,8 +361,8 @@ void FillChooseEvents()
 	TfrmChoseItem::AppendEvents	(smGroup,			"Select Group",				ChoseEvents::FillGroup,			ChoseEvents::SelectGroup,		    ChoseEvents::DrawGroupTHM,	0,								0);
 	TfrmChoseItem::AppendEvents	(smEShader,			"Select Engine Shader",		ChoseEvents::FillEShader,		0,								    0,							0,								0);
 	TfrmChoseItem::AppendEvents	(smCShader,			"Select Compiler Shader",	ChoseEvents::FillCShader,		0,					                0,							0,								0);
-	TfrmChoseItem::AppendEvents	(smPE,				"Select Particle Effect",	ChoseEvents::FillPE,			0,					                0,							0,								0);
-	TfrmChoseItem::AppendEvents	(smParticles,		"Select Particle System", 	ChoseEvents::FillParticles,		0,					                0,							0,								0);
+	TfrmChoseItem::AppendEvents	(smPE,			"Select Particle Effect",	ChoseEvents::FillPE,		0/*ChoseEvents::SelectPE*/,				0,				0,				0);
+	TfrmChoseItem::AppendEvents	(smParticles,		"Select Particle System", 	ChoseEvents::FillParticles,	0/*ChoseEvents::SelectPG*/,		0,				0,				0);
 	TfrmChoseItem::AppendEvents	(smTextureRaw,		"Select Source Texture",	ChoseEvents::FillTextureRaw,	ChoseEvents::SelectTextureRaw,	    ChoseEvents::DrawTextureTHMRaw,0,								0);
 	TfrmChoseItem::AppendEvents	(smTexture,			"Select Texture",			ChoseEvents::FillTexture,		ChoseEvents::SelectTexture,		    ChoseEvents::DrawTextureTHM,0,								0);
 	TfrmChoseItem::AppendEvents	(smEntityType,		"Select Entity",			ChoseEvents::FillEntity,		0,					                0,							0,								0);
@@ -307,6 +370,7 @@ void FillChooseEvents()
 	TfrmChoseItem::AppendEvents	(smVisual,			"Select Visual",			ChoseEvents::FillVisual,		ChoseEvents::SelectVisual,		    0,							0,								0);
 	TfrmChoseItem::AppendEvents	(smSkeletonAnims,	"Select Skeleton Animation",ChoseEvents::FillSkeletonAnims,	0,					                0,							0,								0);
 	TfrmChoseItem::AppendEvents	(smSkeletonBones,	"Select Skeleton Bones",	ChoseEvents::FillSkeletonBones,	0,					                0,							0,								0);
+	TfrmChoseItem::AppendEvents	(smSkeletonBonesInObject,"Select Skeleton Bones",	ChoseEvents::FillSkeletonBonesObject,0,				   0,				0,				0);
 	TfrmChoseItem::AppendEvents	(smGameMaterial,	"Select Game Material",		ChoseEvents::FillGameMaterial,	0,					                0,							0,								0);
 	TfrmChoseItem::AppendEvents	(smGameAnim,		"Select Animation",			ChoseEvents::FillGameAnim,		0,					                0,							0,								0);
 	TfrmChoseItem::AppendEvents	(smGameSMotions,	"Select Game Object Motions",ChoseEvents::FillGameObjectMots,ChoseEvents::SelectGameObjectMots,	0,							0,								0);
@@ -320,4 +384,3 @@ void ClearChooseEvents()
 
 //---------------------------------------------------------------------------
 #endif
- 

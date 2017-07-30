@@ -26,11 +26,14 @@ __fastcall TfrmText::TfrmText(TComponent* Owner)
 //---------------------------------------------------------------------------
 void __fastcall TfrmText::FormKeyDown(TObject *Sender, WORD &Key, TShiftState Shift)
 {
-    if (Key==VK_ESCAPE) ebCancel->Click();
-    else if (Shift.Contains(ssCtrl)&&(Key==VK_RETURN)){ ebApply->Click(); Key=0; }
-//.	else{
-//.    	UI->ApplyGlobalShortCut(Key, Shift);
-//.	}
+    if (Key==VK_ESCAPE) 
+    	ebCancel->Click();
+    else 
+    if (Shift.Contains(ssCtrl)&&(Key==VK_RETURN))
+    { 
+        Key=0; 
+		ebOkClick(Sender);
+    }
 }
 
 //----------------------------------------------------
@@ -190,7 +193,13 @@ void __fastcall TfrmText::mmTextKeyUp(TObject *Sender, WORD &Key,
             sbStatusPanel->Hint = hint;
 //        	ELog.DlgMsg(mtInformation,hint);
         }
+    }else
+    if (Shift.Contains(ssCtrl)&&(Key==VK_RETURN))
+    { 
+        Key=0; 
+		ebOkClick(Sender);
     }
+    
 }
 //---------------------------------------------------------------------------
 
