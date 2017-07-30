@@ -556,9 +556,8 @@ void CLocatorAPI::_initialize	(u32 flags, LPCSTR target_folder, LPCSTR fs_name)
 
 			pFSltx							= r_open("$fs_root$",fs_ltx); 
 		}
-		 else
-			append_path					("$fs_root$", "", 0, FALSE);
-			
+		else 
+			append_path("$fs_root$", "", 0, FALSE);
 
 		Log								("using fs-ltx",fs_ltx);
 	}

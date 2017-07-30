@@ -111,11 +111,29 @@ IC BOOL isEqual(U16Vec& ind, u16 v[3])
 
 bool EDetail::Update	(LPCSTR name)
 {
-	m_sRefs				= name;
+	xr_string full = name;
+	FS_Path* object_path = FS.get_path(_objects_);
+	FS_Path* main_path = FS.get_path("$app_root$");
+	
+	string_path tmpAppPath	= "";
+	strcpy_s				(tmpAppPath,sizeof(tmpAppPath), main_path->m_Path);
+	if (xr_strlen(tmpAppPath))
+	{
+		tmpAppPath[xr_strlen(tmpAppPath)-1] = 0;
+		if (strrchr(tmpAppPath, '\\'))
+	*		(strrchr(tmpAppPath, '\\')+1) = 0;
+	}
+	
+	xr_string o_path = object_path->m_Path;
+	xr_string r_path = tmpAppPath;
+	int pos = r_path.size() + o_path.size();
+	int len = full.size() - o_path.size() - r_path.size();
+	xr_string object_name = full.substr(pos, len);
+	m_sRefs				= object_name.c_str();
     // update link
-    CEditableObject* R	= Lib.CreateEditObject(name);
+    CEditableObject* R	= Lib.CreateEditObject(object_name.c_str());
     if (!R){
- 		ELog.Msg		(mtError,"Can't load detail object '%s'.", name);
+ 		ELog.Msg		(mtError,"Can't load detail object '%s'.", object_name.c_str());
         return false;
     }
     if(R->SurfaceCount()!=1){

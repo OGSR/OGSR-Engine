@@ -77,7 +77,6 @@ int __fastcall TfrmChoseItem::SelectItem(u32 choose_ID, LPCSTR& dest, int sel_cn
     }
 	// set & fill
     form->Caption					= form->E.caption.c_str();
-    if (!form->E.on_fill.empty())	form->E.on_fill(form->m_Items,fill_param);
 
     if (!form->E.on_fill.empty())	
     	form->E.on_fill(form->m_Items,fill_param);

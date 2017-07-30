@@ -31,8 +31,8 @@ void __fastcall TfrmText::FormKeyDown(TObject *Sender, WORD &Key, TShiftState Sh
     else 
     if (Shift.Contains(ssCtrl)&&(Key==VK_RETURN))
     { 
+		ebApply->Click();
         Key=0; 
-		ebOkClick(Sender);
     }
 }
 
@@ -196,8 +196,8 @@ void __fastcall TfrmText::mmTextKeyUp(TObject *Sender, WORD &Key,
     }else
     if (Shift.Contains(ssCtrl)&&(Key==VK_RETURN))
     { 
+		ebApply->Click();
         Key=0; 
-		ebOkClick(Sender);
     }
     
 }

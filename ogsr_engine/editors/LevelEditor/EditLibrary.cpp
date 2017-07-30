@@ -201,7 +201,7 @@ void TfrmEditLibrary::OnModified()
 void __fastcall TfrmEditLibrary::OnItemFocused(TElTreeItem* item)
 {
 	xr_delete(m_Thm);
-    bool mt=false;
+//    bool mt=false;
     if (item&&FHelper.IsObject(item)&&UI->ContainEState(esEditLibrary)){
         // change thm
         ListItem* prop 	= (ListItem*)item->Tag; VERIFY(prop);
@@ -229,12 +229,12 @@ void __fastcall TfrmEditLibrary::OnItemFocused(TElTreeItem* item)
             }
         }
 
-        if (cbPreview->Checked||m_Props->Visible){
+/*        if (cbPreview->Checked||m_Props->Visible){
 //.        	if (m_Props->IsModified()&&m_pEditObject->GetReference())
 //.            	modif_map.insert(mk_pair(m_pEditObject->GetRefName(),FS_QueryItem(0,0,0)));
             ChangeReference(nm.c_str());
 		    if (cbPreview->Checked) mt = true;
-        }
+        }*/
     }else{
 		ChangeReference(0);
     }
@@ -248,7 +248,7 @@ void __fastcall TfrmEditLibrary::OnItemFocused(TElTreeItem* item)
     paImage->Repaint	();
     UpdateObjectProperties();
     UI->RedrawScene();
-    ebMakeThm->Enabled	= mt;
+    ebMakeThm->Enabled	= m_pEditObjects.size()>0;//mt;
     ebMakeLOD_high->Enabled	= cbPreview->Checked;
     ebMakeLOD_low->Enabled	= cbPreview->Checked;
 }

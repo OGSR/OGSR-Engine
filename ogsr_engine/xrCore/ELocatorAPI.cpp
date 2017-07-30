@@ -47,7 +47,7 @@ void CLocatorAPI::_initialize	(u32 flags, LPCSTR target_folder, LPCSTR fs_fname)
 	Log				("Initializing File System...");
 	m_Flags.set		(flags,TRUE);
 
-	append_path	("$fs_root$", "", 0, FALSE);
+	append_path("$fs_root$", "", 0, FALSE);
 
 	// append application path
 

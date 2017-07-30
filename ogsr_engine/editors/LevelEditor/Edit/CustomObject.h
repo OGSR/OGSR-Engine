@@ -49,13 +49,14 @@ class ECORE_API CCustomObject {
     void			AnimationCreateKey	(float t);
     void			AnimationDeleteKey	(float t);
     void			AnimationUpdate		(float t);
-protected:
+public:
 	enum{
     	flSelected	= (1<<0),
     	flVisible	= (1<<1),
     	flLocked	= (1<<2),
     	flMotion	= (1<<3),
-
+        flObjectInGroup	= (1<<5),
+        flObjectInGroupUnique	= (1<<6),
     	flAutoKey	= (1<<30),
     	flCameraView= (1<<31),
     };
