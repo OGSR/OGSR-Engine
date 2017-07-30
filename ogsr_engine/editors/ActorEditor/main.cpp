@@ -33,7 +33,7 @@ TfrmMain *frmMain;
 #include "../../xrSound/soundrender_source.h"
 #include "ResourceManager.h"
 #include "../xrEProps/EditorChooseEvents.h"
-
+#include "UI_ActorMain.h"
 
 __fastcall TfrmMain::TfrmMain(TComponent* Owner)
         : TForm(Owner)
@@ -97,6 +97,7 @@ void __fastcall TfrmMain::FormCreate(TObject *Sender)
 {
 	DEFINE_INI(fsStorage);
     Application->OnIdle = IdleHandler;
+    DragAcceptFiles(Handle, true);
 }
 
 //---------------------------------------------------------------------------
@@ -220,6 +221,24 @@ void __fastcall TfrmMain::D3DWindowMouseUp(TObject *Sender,
 {
     UI->MouseRelease(Shift,X,Y);
     UI->RedrawScene();
+}
+//---------------------------------------------------------------------------
+void __fastcall TfrmMain::WMDropFiles(TWMDropFiles message)
+{
+	int filecount, length, i;
+	filecount = DragQueryFile ((HDROP) message.Drop, 0xFFFFFFFF/*-1*/, NULL, 0);
+	AnsiString fn;
+	for (i = 0; i < filecount; i++)
+	{
+		fn.SetLength(MAX_PATH);
+		length = DragQueryFile((HDROP)message.Drop, i, fn.c_str(), fn.Length());
+		fn.SetLength(length);
+                if (fn.Pos(".object"))
+			ExecCommand(COMMAND_LOAD,xr_string(fn.c_str()));
+                else
+                	ExecCommand(COMMAND_IMPORT,xr_string(fn.c_str()));
+	}
+	DragFinish ((HDROP) message.Drop);
 }
 //---------------------------------------------------------------------------
 

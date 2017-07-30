@@ -72,6 +72,12 @@ public:		// User declarations
     void __fastcall UpdateCaption();
     __inline void 	SetHInst(HINSTANCE inst){ m_HInstance=inst; }
     bool            IsFocused(){return D3DWindow->Focused();}
+private:
+	void __fastcall WMDropFiles(TWMDropFiles message);
+public:
+	BEGIN_MESSAGE_MAP
+	MESSAGE_HANDLER(WM_DROPFILES,TWMDropFiles,WMDropFiles)
+	END_MESSAGE_MAP(TForm);
 };
 //---------------------------------------------------------------------------
 extern /*ECORE_API */PACKAGE TfrmMain *frmMain;
