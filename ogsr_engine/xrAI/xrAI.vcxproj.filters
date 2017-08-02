@@ -170,9 +170,6 @@
     <Filter Include="ALife\Shared\ALife">
       <UniqueIdentifier>{eb412623-79ec-4f31-a564-9800191df120}</UniqueIdentifier>
     </Filter>
-    <Filter Include="ALife\Shared\ALife\alife_artefact_order">
-      <UniqueIdentifier>{ef67f229-1743-4546-b79c-df413112bc59}</UniqueIdentifier>
-    </Filter>
     <Filter Include="ALife\Shared\ALife\alife_human_brain">
       <UniqueIdentifier>{cf5f830f-8462-4262-93ec-a5394552983b}</UniqueIdentifier>
     </Filter>
@@ -276,9 +273,6 @@
     </ClInclude>
     <ClInclude Include="xr_graph_merge.h">
       <Filter>ALife\Merge</Filter>
-    </ClInclude>
-    <ClInclude Include="alife_artefact_order.h">
-      <Filter>ALife\Shared\ALife\alife_artefact_order</Filter>
     </ClInclude>
     <ClInclude Include="ChooseTypes.h">
       <Filter>ALife\Shared\ServerEntities</Filter>
@@ -809,9 +803,6 @@
     </ClCompile>
     <ClCompile Include="xr_graph_merge.cpp">
       <Filter>ALife\Merge</Filter>
-    </ClCompile>
-    <ClCompile Include="alife_artefact_order.cpp">
-      <Filter>ALife\Shared\ALife\alife_artefact_order</Filter>
     </ClCompile>
     <ClCompile Include="game_spawn_constructor.cpp">
       <Filter>ALife\Spawn\game_spawn_constructor</Filter>

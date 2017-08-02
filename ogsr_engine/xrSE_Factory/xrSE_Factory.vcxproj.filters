@@ -106,9 +106,6 @@
     <Filter Include="ServerStuff\Common\ALifeStuff">
       <UniqueIdentifier>{25da115e-1656-4870-ab5c-e9648e1f8f39}</UniqueIdentifier>
     </Filter>
-    <Filter Include="ServerStuff\Common\ALifeStuff\artefact_order">
-      <UniqueIdentifier>{3358e9e8-5461-4c1e-9634-cdd0c45b2153}</UniqueIdentifier>
-    </Filter>
     <Filter Include="ServerStuff\Common\ALifeStuff\human_brain">
       <UniqueIdentifier>{f19ae4f6-62d4-412a-b0d8-cdc438e54de7}</UniqueIdentifier>
     </Filter>
@@ -191,9 +188,6 @@
     </ClInclude>
     <ClInclude Include="script_file.h">
       <Filter>Scripts\ScriptDebugger</Filter>
-    </ClInclude>
-    <ClInclude Include="alife_artefact_order.h">
-      <Filter>ServerStuff\Common\ALifeStuff\artefact_order</Filter>
     </ClInclude>
     <ClInclude Include="ChooseTypes.h">
       <Filter>ServerStuff\ServerEntities\editor_properties</Filter>
@@ -548,9 +542,6 @@
     </ClCompile>
     <ClCompile Include="script_file.cpp">
       <Filter>Scripts\ScriptDebugger</Filter>
-    </ClCompile>
-    <ClCompile Include="alife_artefact_order.cpp">
-      <Filter>ServerStuff\Common\ALifeStuff\artefact_order</Filter>
     </ClCompile>
     <ClCompile Include="script_properties_list_helper.cpp">
       <Filter>ServerStuff\ServerEntities\scripts\script_properties_list_helper</Filter>

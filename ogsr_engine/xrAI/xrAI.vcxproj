@@ -610,7 +610,6 @@
     <ClInclude Include="game_graph_builder.h" />
     <ClInclude Include="game_graph_builder_inline.h" />
     <ClInclude Include="xr_graph_merge.h" />
-    <ClInclude Include="alife_artefact_order.h" />
     <ClInclude Include="ChooseTypes.h" />
     <ClInclude Include="spawn_constructor_space.h" />
     <ClInclude Include="game_spawn_constructor.h" />
@@ -714,7 +713,6 @@
     <ClCompile Include="xrCrossTable.cpp" />
     <ClCompile Include="game_graph_builder.cpp" />
     <ClCompile Include="xr_graph_merge.cpp" />
-    <ClCompile Include="alife_artefact_order.cpp" />
     <ClCompile Include="game_spawn_constructor.cpp" />
     <ClCompile Include="level_spawn_constructor.cpp" />
     <ClCompile Include="space_restrictor_wrapper.cpp" />
