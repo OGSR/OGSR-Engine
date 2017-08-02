@@ -10,9 +10,6 @@
     <Filter Include="Interfaces">
       <UniqueIdentifier>{e75ff485-ec3d-4449-b615-3b17cfb19a8f}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Interfaces\Sound">
-      <UniqueIdentifier>{933df6c9-4515-43bd-ba58-f388e802b67c}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Interfaces\Input">
       <UniqueIdentifier>{5d73be10-351d-4419-97b1-456590c05eb6}</UniqueIdentifier>
     </Filter>
@@ -246,9 +243,6 @@
     <ClInclude Include="xr_collide_form.h">
       <Filter>Game API\Collision</Filter>
     </ClInclude>
-    <ClInclude Include="bone.h">
-      <Filter>Game API\Animator</Filter>
-    </ClInclude>
     <ClInclude Include="envelope.h">
       <Filter>Game API\Animator</Filter>
     </ClInclude>
@@ -378,9 +372,6 @@
     <ClInclude Include="TextureDescrManager.h">
       <Filter>Interfaces\Render\Execution &amp; 3D\Shaders\ShaderManager</Filter>
     </ClInclude>
-    <ClInclude Include="doug_lea_memory_allocator.h">
-      <Filter>Interfaces\Render\Execution &amp; 3D\Shaders\ShaderManager\doug_lea_memory_allocator</Filter>
-    </ClInclude>
     <ClInclude Include="r_constants.h">
       <Filter>Interfaces\Render\Execution &amp; 3D\Shaders\Resources</Filter>
     </ClInclude>
@@ -494,6 +485,12 @@
     </ClInclude>
     <ClInclude Include="..\COMMON\ETextureParams.h">
       <Filter>Interfaces\Render\Execution &amp; 3D\Shaders\ShaderManager</Filter>
+    </ClInclude>
+    <ClInclude Include="..\COMMON\doug_lea_memory_allocator.h">
+      <Filter>Interfaces\Render\Execution &amp; 3D\Shaders\ShaderManager\doug_lea_memory_allocator</Filter>
+    </ClInclude>
+    <ClInclude Include="..\COMMON\bone.h">
+      <Filter>Game API\Animator</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -764,9 +761,6 @@
     <ClCompile Include="TextureDescrManager.cpp">
       <Filter>Interfaces\Render\Execution &amp; 3D\Shaders\ShaderManager</Filter>
     </ClCompile>
-    <ClCompile Include="doug_lea_memory_allocator.c">
-      <Filter>Interfaces\Render\Execution &amp; 3D\Shaders\ShaderManager\doug_lea_memory_allocator</Filter>
-    </ClCompile>
     <ClCompile Include="r_constants.cpp">
       <Filter>Interfaces\Render\Execution &amp; 3D\Shaders\Resources</Filter>
     </ClCompile>
@@ -868,6 +862,9 @@
     </ClCompile>
     <ClCompile Include="..\COMMON\ETextureParams.cpp">
       <Filter>Interfaces\Render\Execution &amp; 3D\Shaders\ShaderManager</Filter>
+    </ClCompile>
+    <ClCompile Include="..\COMMON\doug_lea_memory_allocator.c">
+      <Filter>Interfaces\Render\Execution &amp; 3D\Shaders\ShaderManager\doug_lea_memory_allocator</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -20,7 +20,7 @@
 #include "../../../game_object_space.h"
 #include "../../../detail_path_manager.h"
 #include "../../../ai_space.h"
-#include "../../../cover_point.h"
+#include "cover_point.h"
 #include "../../../cover_manager.h"
 
 #include "controller_animation.h"
@@ -30,13 +30,13 @@
 #include "../control_movement_base.h"
 #include "../control_path_builder_base.h"
 
-#include "../../../level_graph.h"
+#include "level_graph.h"
 #include "../../../ai_object_location.h"
 
 #include "../../../monster_community.h"
 #include "../../../character_community.h"
 #include "../../../InventoryOwner.h"
-#include "../../../character_info.h"
+#include "character_info.h"
 
 #include "controller_psy_hit.h"
 #include "../monster_cover_manager.h"

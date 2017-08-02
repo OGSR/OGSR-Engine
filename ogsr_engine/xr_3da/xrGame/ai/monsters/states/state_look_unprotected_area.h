@@ -3,7 +3,7 @@
 #include "state_data.h"
 #include "../../../ai_object_location.h"
 #include "../../../ai_space.h"
-#include "../../../level_graph.h"
+#include "level_graph.h"
 
 template<typename _Object>
 class CStateMonsterLookToUnprotectedArea : public CState<_Object> {

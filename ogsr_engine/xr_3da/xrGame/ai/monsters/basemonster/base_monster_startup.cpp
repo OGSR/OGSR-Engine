@@ -8,7 +8,7 @@
 #include "../ai_monster_squad_manager.h"
 #include "../../../../skeletonanimated.h"
 #include "../../../detail_path_manager.h"
-#include "../../../level_graph.h"
+#include "level_graph.h"
 #include "../corpse_cover.h"
 #include "../../../cover_evaluators.h"
 #include "../../../sound_player.h"
@@ -20,12 +20,12 @@
 #include "../monster_home.h"
 #include "../../../ai_object_location.h"
 #include "../../../level.h"
-#include "../../../xrserver_objects_alife_monsters.h"
+#include "xrserver_objects_alife_monsters.h"
 #include "../../../alife_simulator.h"
 #include "../../../alife_object_registry.h"
 #include "../../../xrServer.h"
 #include "../../../inventory_item.h"
-#include "../../../xrServer_Objects_ALife.h"
+#include "xrServer_Objects_ALife.h"
 
 void CBaseMonster::Load(LPCSTR section)
 {

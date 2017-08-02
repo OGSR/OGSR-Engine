@@ -12,7 +12,7 @@
 #include "../../../ActorEffector.h"
 #include "../ai_monster_effector.h"
 #include "../../../hudmanager.h"
-#include "../../../clsid_game.h"
+#include "clsid_game.h"
 #include "../../../../skeletonanimated.h"
 #include "../../../sound_player.h"
 #include "../../../level.h"
@@ -24,7 +24,7 @@
 #include "../../../UIGameCustom.h"
 #include "../../../UI/UIStatic.h"
 #include "../../../ai_object_location.h"
-#include "../../../profiler.h"
+#include "profiler.h"
 #include "../../../ActorEffector.h"
 #include "../../../../CameraBase.h"
 

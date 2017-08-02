@@ -162,7 +162,7 @@
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <DisableSpecificWarnings>4237;%(DisableSpecificWarnings)</DisableSpecificWarnings>
-      <AdditionalIncludeDirectories>..\..\COMMON;..\..\COMMON_AI;..\..\xrCore;X:\3rd_party\Src\ode;X:\3rd_party\Src\boost;X:\3rd_party\Src\loki;X:\ogsr_engine\LuaJIT\src;X:\ogsr_engine\Luabind;X:\3rd_party\Src\d3dx\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.\;..\..\COMMON;..\..\COMMON_AI;..\..\COMMON_AI\PATH;..\..\COMMON_AI\GRAPH;..\..\COMMON_AI\ALGORITHMS;..\..\xrCore;..\..\xrNetServer;X:\3rd_party\Src\ode;X:\3rd_party\Src\boost;X:\3rd_party\Src\loki;X:\ogsr_engine\LuaJIT\src;X:\ogsr_engine\Luabind;X:\3rd_party\Src\d3dx\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -180,6 +180,7 @@
       <MapExports>false</MapExports>
       <LargeAddressAware>true</LargeAddressAware>
       <AdditionalDependencies>lua51.lib;luabind.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <LinkTimeCodeGeneration>Default</LinkTimeCodeGeneration>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -217,7 +218,7 @@
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <DisableSpecificWarnings>4237;%(DisableSpecificWarnings)</DisableSpecificWarnings>
-      <AdditionalIncludeDirectories>..\..\COMMON;..\..\COMMON_AI;..\..\xrCore;X:\3rd_party\Src\ode;X:\3rd_party\Src\boost;X:\3rd_party\Src\loki;X:\ogsr_engine\LuaJIT\src;X:\ogsr_engine\Luabind;X:\3rd_party\Src\d3dx\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.\;..\..\COMMON;..\..\COMMON_AI;..\..\COMMON_AI\PATH;..\..\COMMON_AI\GRAPH;..\..\COMMON_AI\ALGORITHMS;..\..\xrCore;..\..\xrNetServer;X:\3rd_party\Src\ode;X:\3rd_party\Src\boost;X:\3rd_party\Src\loki;X:\ogsr_engine\LuaJIT\src;X:\ogsr_engine\Luabind;X:\3rd_party\Src\d3dx\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -233,6 +234,7 @@
       </MapFileName>
       <MapExports>false</MapExports>
       <LargeAddressAware>true</LargeAddressAware>
+      <LinkTimeCodeGeneration>Default</LinkTimeCodeGeneration>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Mixed|Win32'">
@@ -272,7 +274,7 @@
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <DisableSpecificWarnings>4237;%(DisableSpecificWarnings)</DisableSpecificWarnings>
-      <AdditionalIncludeDirectories>..\..\COMMON;..\..\COMMON_AI;..\..\xrCore;X:\3rd_party\Src\ode;X:\3rd_party\Src\boost;X:\3rd_party\Src\loki;X:\ogsr_engine\LuaJIT\src;X:\ogsr_engine\Luabind;X:\3rd_party\Src\d3dx\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.\;..\..\COMMON;..\..\COMMON_AI;..\..\COMMON_AI\PATH;..\..\COMMON_AI\GRAPH;..\..\COMMON_AI\ALGORITHMS;..\..\xrCore;..\..\xrNetServer;X:\3rd_party\Src\ode;X:\3rd_party\Src\boost;X:\3rd_party\Src\loki;X:\ogsr_engine\LuaJIT\src;X:\ogsr_engine\Luabind;X:\3rd_party\Src\d3dx\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -288,6 +290,7 @@
       <ImportLibrary>x:\libraries\$(ProjectName).lib</ImportLibrary>
       <TargetMachine>MachineX86</TargetMachine>
       <AdditionalDependencies>lua51.lib;luabind.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <LinkTimeCodeGeneration>Default</LinkTimeCodeGeneration>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Mixed|x64'">
@@ -326,7 +329,7 @@
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <DisableSpecificWarnings>4237;%(DisableSpecificWarnings)</DisableSpecificWarnings>
-      <AdditionalIncludeDirectories>..\..\COMMON;..\..\COMMON_AI;..\..\xrCore;X:\3rd_party\Src\ode;X:\3rd_party\Src\boost;X:\3rd_party\Src\loki;X:\ogsr_engine\LuaJIT\src;X:\ogsr_engine\Luabind;X:\3rd_party\Src\d3dx\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.\;..\..\COMMON;..\..\COMMON_AI;..\..\COMMON_AI\PATH;..\..\COMMON_AI\GRAPH;..\..\COMMON_AI\ALGORITHMS;..\..\xrCore;..\..\xrNetServer;X:\3rd_party\Src\ode;X:\3rd_party\Src\boost;X:\3rd_party\Src\loki;X:\ogsr_engine\LuaJIT\src;X:\ogsr_engine\Luabind;X:\3rd_party\Src\d3dx\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -340,6 +343,7 @@
       <MapFileName>$(OutDir)$(ProjectName).map</MapFileName>
       <LargeAddressAware>true</LargeAddressAware>
       <ImportLibrary>x:\libraries\$(ProjectName).lib</ImportLibrary>
+      <LinkTimeCodeGeneration>Default</LinkTimeCodeGeneration>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -384,7 +388,7 @@
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <DisableSpecificWarnings>4995;4237;4577;4458;%(DisableSpecificWarnings)</DisableSpecificWarnings>
-      <AdditionalIncludeDirectories>..\..\COMMON;..\..\COMMON_AI;..\..\xrCore;X:\3rd_party\Src\ode;X:\3rd_party\Src\boost;X:\3rd_party\Src\loki;X:\ogsr_engine\LuaJIT\src;X:\ogsr_engine\Luabind;X:\3rd_party\Src\d3dx\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.\;..\..\COMMON;..\..\COMMON_AI;..\..\COMMON_AI\PATH;..\..\COMMON_AI\GRAPH;..\..\COMMON_AI\ALGORITHMS;..\..\xrCore;..\..\xrNetServer;X:\3rd_party\Src\ode;X:\3rd_party\Src\boost;X:\3rd_party\Src\loki;X:\ogsr_engine\LuaJIT\src;X:\ogsr_engine\Luabind;X:\3rd_party\Src\d3dx\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <MinimalRebuild>true</MinimalRebuild>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
@@ -404,7 +408,7 @@
       <LargeAddressAware>true</LargeAddressAware>
       <OptimizeReferences>true</OptimizeReferences>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
-      <LinkTimeCodeGeneration>UseLinkTimeCodeGeneration</LinkTimeCodeGeneration>
+      <LinkTimeCodeGeneration>Default</LinkTimeCodeGeneration>
       <AdditionalDependencies>lua51.lib;luabind.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
@@ -449,7 +453,7 @@
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <DisableSpecificWarnings>4237;%(DisableSpecificWarnings)</DisableSpecificWarnings>
-      <AdditionalIncludeDirectories>..\..\COMMON;..\..\COMMON_AI;..\..\xrCore;X:\3rd_party\Src\ode;X:\3rd_party\Src\boost;X:\3rd_party\Src\loki;X:\ogsr_engine\LuaJIT\src;X:\ogsr_engine\Luabind;X:\3rd_party\Src\d3dx\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.\;..\..\COMMON;..\..\COMMON_AI;..\..\COMMON_AI\PATH;..\..\COMMON_AI\GRAPH;..\..\COMMON_AI\ALGORITHMS;..\..\xrCore;..\..\xrNetServer;X:\3rd_party\Src\ode;X:\3rd_party\Src\boost;X:\3rd_party\Src\loki;X:\ogsr_engine\LuaJIT\src;X:\ogsr_engine\Luabind;X:\3rd_party\Src\d3dx\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -467,15 +471,93 @@
       <LargeAddressAware>true</LargeAddressAware>
       <OptimizeReferences>true</OptimizeReferences>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
-      <LinkTimeCodeGeneration>UseLinkTimeCodeGeneration</LinkTimeCodeGeneration>
+      <LinkTimeCodeGeneration>Default</LinkTimeCodeGeneration>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\COMMON_AI\ALGORITHMS\a_star.h" />
+    <ClInclude Include="..\..\COMMON_AI\ALGORITHMS\a_star_inline.h" />
+    <ClInclude Include="..\..\COMMON_AI\ALGORITHMS\builder_allocator_constructor.h" />
+    <ClInclude Include="..\..\COMMON_AI\ALGORITHMS\builder_allocator_constructor_inline.h" />
+    <ClInclude Include="..\..\COMMON_AI\ALGORITHMS\data_storage_binary_heap.h" />
+    <ClInclude Include="..\..\COMMON_AI\ALGORITHMS\data_storage_binary_heap_inline.h" />
+    <ClInclude Include="..\..\COMMON_AI\ALGORITHMS\data_storage_bucket_list.h" />
+    <ClInclude Include="..\..\COMMON_AI\ALGORITHMS\data_storage_bucket_list_inline.h" />
+    <ClInclude Include="..\..\COMMON_AI\ALGORITHMS\data_storage_constructor.h" />
+    <ClInclude Include="..\..\COMMON_AI\ALGORITHMS\data_storage_double_linked_list.h" />
+    <ClInclude Include="..\..\COMMON_AI\ALGORITHMS\data_storage_double_linked_list_inline.h" />
+    <ClInclude Include="..\..\COMMON_AI\ALGORITHMS\data_storage_single_linked_list.h" />
+    <ClInclude Include="..\..\COMMON_AI\ALGORITHMS\data_storage_single_linked_list_inline.h" />
+    <ClInclude Include="..\..\COMMON_AI\ALGORITHMS\dijkstra.h" />
+    <ClInclude Include="..\..\COMMON_AI\ALGORITHMS\dijkstra_inline.h" />
+    <ClInclude Include="..\..\COMMON_AI\ALGORITHMS\edge_path.h" />
+    <ClInclude Include="..\..\COMMON_AI\ALGORITHMS\edge_path_inline.h" />
+    <ClInclude Include="..\..\COMMON_AI\ALGORITHMS\manager_builder_allocator_constructor.h" />
+    <ClInclude Include="..\..\COMMON_AI\ALGORITHMS\manager_builder_allocator_constructor_inline.h" />
+    <ClInclude Include="..\..\COMMON_AI\ALGORITHMS\quadtree.h" />
+    <ClInclude Include="..\..\COMMON_AI\ALGORITHMS\quadtree_inline.h" />
+    <ClInclude Include="..\..\COMMON_AI\ALGORITHMS\vertex_allocator_fixed.h" />
+    <ClInclude Include="..\..\COMMON_AI\ALGORITHMS\vertex_allocator_fixed_inline.h" />
+    <ClInclude Include="..\..\COMMON_AI\ALGORITHMS\vertex_manager_fixed.h" />
+    <ClInclude Include="..\..\COMMON_AI\ALGORITHMS\vertex_manager_fixed_inline.h" />
+    <ClInclude Include="..\..\COMMON_AI\ALGORITHMS\vertex_manager_hash_fixed.h" />
+    <ClInclude Include="..\..\COMMON_AI\ALGORITHMS\vertex_manager_hash_fixed_inline.h" />
+    <ClInclude Include="..\..\COMMON_AI\ALGORITHMS\vertex_path.h" />
+    <ClInclude Include="..\..\COMMON_AI\ALGORITHMS\vertex_path_inline.h" />
+    <ClInclude Include="..\..\COMMON_AI\GRAPH\game_graph.h" />
+    <ClInclude Include="..\..\COMMON_AI\GRAPH\game_graph_inline.h" />
+    <ClInclude Include="..\..\COMMON_AI\GRAPH\game_graph_space.h" />
+    <ClInclude Include="..\..\COMMON_AI\GRAPH\game_level_cross_table.h" />
+    <ClInclude Include="..\..\COMMON_AI\GRAPH\game_level_cross_table_inline.h" />
+    <ClInclude Include="..\..\COMMON_AI\GRAPH\graph_abstract.h" />
+    <ClInclude Include="..\..\COMMON_AI\GRAPH\graph_abstract_inline.h" />
+    <ClInclude Include="..\..\COMMON_AI\GRAPH\graph_edge.h" />
+    <ClInclude Include="..\..\COMMON_AI\GRAPH\graph_edge_inline.h" />
+    <ClInclude Include="..\..\COMMON_AI\GRAPH\graph_engine.h" />
+    <ClInclude Include="..\..\COMMON_AI\GRAPH\graph_engine_inline.h" />
+    <ClInclude Include="..\..\COMMON_AI\GRAPH\graph_engine_space.h" />
+    <ClInclude Include="..\..\COMMON_AI\GRAPH\graph_vertex.h" />
+    <ClInclude Include="..\..\COMMON_AI\GRAPH\graph_vertex_inline.h" />
+    <ClInclude Include="..\..\COMMON_AI\GRAPH\level_graph.h" />
+    <ClInclude Include="..\..\COMMON_AI\GRAPH\level_graph_inline.h" />
+    <ClInclude Include="..\..\COMMON_AI\GRAPH\level_graph_space.h" />
+    <ClInclude Include="..\..\COMMON_AI\GRAPH\level_graph_vertex_inline.h" />
+    <ClInclude Include="..\..\COMMON_AI\LevelGameDef.h" />
+    <ClInclude Include="..\..\COMMON_AI\PATH\cover_point.h" />
+    <ClInclude Include="..\..\COMMON_AI\PATH\cover_point_inline.h" />
+    <ClInclude Include="..\..\COMMON_AI\PATH\path_manager.h" />
+    <ClInclude Include="..\..\COMMON_AI\PATH\path_manager_game.h" />
+    <ClInclude Include="..\..\COMMON_AI\PATH\path_manager_game_inline.h" />
+    <ClInclude Include="..\..\COMMON_AI\PATH\path_manager_game_level.h" />
+    <ClInclude Include="..\..\COMMON_AI\PATH\path_manager_game_level_inline.h" />
+    <ClInclude Include="..\..\COMMON_AI\PATH\path_manager_generic.h" />
+    <ClInclude Include="..\..\COMMON_AI\PATH\path_manager_generic_inline.h" />
+    <ClInclude Include="..\..\COMMON_AI\PATH\path_manager_level.h" />
+    <ClInclude Include="..\..\COMMON_AI\PATH\path_manager_level_flooder.h" />
+    <ClInclude Include="..\..\COMMON_AI\PATH\path_manager_level_flooder_inline.h" />
+    <ClInclude Include="..\..\COMMON_AI\PATH\path_manager_level_inline.h" />
+    <ClInclude Include="..\..\COMMON_AI\PATH\path_manager_level_straight_line.h" />
+    <ClInclude Include="..\..\COMMON_AI\PATH\path_manager_level_straight_line_inline.h" />
+    <ClInclude Include="..\..\COMMON_AI\PATH\path_manager_params.h" />
+    <ClInclude Include="..\..\COMMON_AI\PATH\path_manager_params_flooder.h" />
+    <ClInclude Include="..\..\COMMON_AI\PATH\path_manager_params_game_level.h" />
+    <ClInclude Include="..\..\COMMON_AI\PATH\path_manager_params_straight_line.h" />
+    <ClInclude Include="..\..\COMMON_AI\PATH\patrol_path.h" />
+    <ClInclude Include="..\..\COMMON_AI\PATH\patrol_path_inline.h" />
+    <ClInclude Include="..\..\COMMON_AI\PATH\patrol_path_storage.h" />
+    <ClInclude Include="..\..\COMMON_AI\PATH\patrol_path_storage_inline.h" />
+    <ClInclude Include="..\..\COMMON_AI\PATH\patrol_point.h" />
+    <ClInclude Include="..\..\COMMON_AI\PATH\patrol_point_inline.h" />
+    <ClInclude Include="..\..\COMMON_AI\profiler.h" />
+    <ClInclude Include="..\..\COMMON_AI\PropertiesListHelper.h" />
+    <ClInclude Include="..\..\COMMON_AI\random32.h" />
+    <ClInclude Include="..\..\COMMON_AI\server_entity_wrapper.h" />
+    <ClInclude Include="..\..\COMMON_AI\server_entity_wrapper_inline.h" />
     <ClInclude Include="mt_config.h" />
     <ClInclude Include="damage_manager.h" />
     <ClInclude Include="damage_manager_inline.h" />
     <ClInclude Include="DamageSource.h" />
-    <ClInclude Include="script_additional_libs.h" />
+    <ClInclude Include="..\..\COMMON_AI\script_additional_libs.h" />
     <ClInclude Include="script_rq_result.h" />
     <ClInclude Include="wrapper_abstract.h" />
     <ClInclude Include="wrapper_abstract_inline.h" />
@@ -598,7 +680,7 @@
     <ClInclude Include="sound_player_inline.h" />
     <ClInclude Include="sound_collection_storage.h" />
     <ClInclude Include="sound_collection_storage_inline.h" />
-    <ClInclude Include="restriction_space.h" />
+    <ClInclude Include="..\..\COMMON_AI\restriction_space.h" />
     <ClInclude Include="space_restriction_manager.h" />
     <ClInclude Include="space_restriction_manager_inline.h" />
     <ClInclude Include="space_restriction.h" />
@@ -619,8 +701,6 @@
     <ClInclude Include="step_manager_defs.h" />
     <ClInclude Include="cover_manager.h" />
     <ClInclude Include="cover_manager_inline.h" />
-    <ClInclude Include="cover_point.h" />
-    <ClInclude Include="cover_point_inline.h" />
     <ClInclude Include="ai_debug.h" />
     <ClInclude Include="ef_base.h" />
     <ClInclude Include="ef_primary.h" />
@@ -662,7 +742,7 @@
     <ClInclude Include="agent_manager_properties_inline.h" />
     <ClInclude Include="alife_simulator.h" />
     <ClInclude Include="alife_simulator_inline.h" />
-    <ClInclude Include="alife_space.h" />
+    <ClInclude Include="..\..\COMMON_AI\alife_space.h" />
     <ClInclude Include="alife_interaction_manager.h" />
     <ClInclude Include="alife_interaction_manager_inline.h" />
     <ClInclude Include="alife_communication_manager.h" />
@@ -670,14 +750,14 @@
     <ClInclude Include="alife_communication_space.h" />
     <ClInclude Include="alife_combat_manager.h" />
     <ClInclude Include="alife_combat_manager_inline.h" />
-    <ClInclude Include="alife_human_brain.h" />
-    <ClInclude Include="alife_human_brain_inline.h" />
-    <ClInclude Include="alife_human_brain_save.h" />
+    <ClInclude Include="..\..\COMMON_AI\alife_human_brain.h" />
+    <ClInclude Include="..\..\COMMON_AI\alife_human_brain_inline.h" />
+    <ClInclude Include="..\..\COMMON_AI\alife_human_brain_save.h" />
     <ClInclude Include="alife_human_object_handler.h" />
     <ClInclude Include="alife_human_object_handler_inline.h" />
     <ClInclude Include="alife_human_object_handler_save.h" />
-    <ClInclude Include="alife_monster_brain.h" />
-    <ClInclude Include="alife_monster_brain_inline.h" />
+    <ClInclude Include="..\..\COMMON_AI\alife_monster_brain.h" />
+    <ClInclude Include="..\..\COMMON_AI\alife_monster_brain_inline.h" />
     <ClInclude Include="alife_monster_movement_manager.h" />
     <ClInclude Include="alife_monster_movement_manager_inline.h" />
     <ClInclude Include="alife_monster_detail_path_manager.h" />
@@ -711,8 +791,6 @@
     <ClInclude Include="alife_spawn_registry_inline.h" />
     <ClInclude Include="alife_spawn_registry_header.h" />
     <ClInclude Include="alife_spawn_registry_header_inline.h" />
-    <ClInclude Include="server_entity_wrapper.h" />
-    <ClInclude Include="server_entity_wrapper_inline.h" />
     <ClInclude Include="alife_story_registry.h" />
     <ClInclude Include="alife_story_registry_inline.h" />
     <ClInclude Include="alife_registry_container.h" />
@@ -1094,89 +1172,21 @@
     <ClInclude Include="stalker_sound_data_visitor_inline.h" />
     <ClInclude Include="stalker_sound_data.h" />
     <ClInclude Include="stalker_sound_data_inline.h" />
-    <ClInclude Include="game_graph.h" />
-    <ClInclude Include="game_graph_inline.h" />
-    <ClInclude Include="game_graph_space.h" />
-    <ClInclude Include="game_level_cross_table.h" />
-    <ClInclude Include="game_level_cross_table_inline.h" />
-    <CustomBuildStep Include="graph_abstract.h" />
-    <CustomBuildStep Include="graph_abstract_inline.h" />
-    <ClInclude Include="graph_edge.h" />
-    <ClInclude Include="graph_edge_inline.h" />
-    <ClInclude Include="graph_vertex.h" />
-    <ClInclude Include="graph_vertex_inline.h" />
-    <ClInclude Include="level_graph.h" />
-    <ClInclude Include="level_graph_inline.h" />
-    <ClInclude Include="level_graph_space.h" />
-    <ClInclude Include="level_graph_vertex_inline.h" />
     <ClInclude Include="ai_object_location.h" />
     <ClInclude Include="ai_object_location_impl.h" />
     <ClInclude Include="ai_object_location_inline.h" />
-    <ClInclude Include="a_star.h" />
-    <ClInclude Include="a_star_inline.h" />
-    <ClInclude Include="dijkstra.h" />
-    <ClInclude Include="dijkstra_inline.h" />
-    <ClInclude Include="data_storage_constructor.h" />
-    <ClInclude Include="builder_allocator_constructor.h" />
-    <ClInclude Include="builder_allocator_constructor_inline.h" />
-    <ClInclude Include="manager_builder_allocator_constructor.h" />
-    <ClInclude Include="manager_builder_allocator_constructor_inline.h" />
-    <ClInclude Include="edge_path.h" />
-    <ClInclude Include="edge_path_inline.h" />
-    <ClInclude Include="vertex_path.h" />
-    <ClInclude Include="vertex_path_inline.h" />
-    <ClInclude Include="data_storage_double_linked_list.h" />
-    <ClInclude Include="data_storage_double_linked_list_inline.h" />
-    <ClInclude Include="data_storage_single_linked_list.h" />
-    <ClInclude Include="data_storage_single_linked_list_inline.h" />
-    <ClInclude Include="data_storage_binary_heap.h" />
-    <ClInclude Include="data_storage_binary_heap_inline.h" />
-    <ClInclude Include="data_storage_bucket_list.h" />
-    <ClInclude Include="data_storage_bucket_list_inline.h" />
-    <ClInclude Include="vertex_allocator_fixed.h" />
-    <ClInclude Include="vertex_allocator_fixed_inline.h" />
-    <ClInclude Include="vertex_manager_fixed.h" />
-    <ClInclude Include="vertex_manager_fixed_inline.h" />
-    <ClInclude Include="vertex_manager_hash_fixed.h" />
-    <ClInclude Include="vertex_manager_hash_fixed_inline.h" />
-    <ClInclude Include="graph_engine.h" />
-    <ClInclude Include="graph_engine_inline.h" />
-    <ClInclude Include="graph_engine_space.h" />
-    <ClInclude Include="path_manager.h" />
-    <ClInclude Include="path_manager_game.h" />
-    <ClInclude Include="path_manager_game_inline.h" />
-    <ClInclude Include="path_manager_game_level.h" />
-    <ClInclude Include="path_manager_game_level_inline.h" />
     <ClInclude Include="path_manager_game_vertex.h" />
     <ClInclude Include="path_manager_game_vertex_inline.h" />
-    <ClInclude Include="path_manager_generic.h" />
-    <ClInclude Include="path_manager_generic_inline.h" />
-    <ClInclude Include="path_manager_level.h" />
-    <ClInclude Include="path_manager_level_inline.h" />
     <ClInclude Include="path_manager_level_nearest_vertex.h" />
     <ClInclude Include="path_manager_level_nearest_vertex_inline.h" />
-    <ClInclude Include="path_manager_level_flooder.h" />
-    <ClInclude Include="path_manager_level_flooder_inline.h" />
-    <ClInclude Include="path_manager_level_straight_line.h" />
-    <ClInclude Include="path_manager_level_straight_line_inline.h" />
-    <ClInclude Include="path_manager_params.h" />
-    <ClInclude Include="path_manager_params_flooder.h" />
-    <ClInclude Include="path_manager_params_game_level.h" />
     <ClInclude Include="path_manager_params_game_vertex.h" />
     <ClInclude Include="path_manager_params_nearest_vertex.h" />
-    <ClInclude Include="path_manager_params_straight_line.h" />
     <ClInclude Include="path_manager_solver.h" />
     <ClInclude Include="path_manager_solver_inline.h" />
-    <ClInclude Include="patrol_path.h" />
-    <ClInclude Include="patrol_path_inline.h" />
-    <ClInclude Include="patrol_path_storage.h" />
-    <ClInclude Include="patrol_path_storage_inline.h" />
-    <ClInclude Include="patrol_point.h" />
-    <ClInclude Include="patrol_point_inline.h" />
-    <ClInclude Include="script_export_macroses.h" />
-    <ClInclude Include="script_export_space.h" />
+    <ClInclude Include="..\..\COMMON_AI\script_export_macroses.h" />
+    <ClInclude Include="..\..\COMMON_AI\script_export_space.h" />
     <ClInclude Include="script_space.h" />
-    <ClInclude Include="script_space_forward.h" />
+    <ClInclude Include="..\..\COMMON_AI\script_space_forward.h" />
     <ClInclude Include="script_bind_macroses.h" />
     <ClInclude Include="script_abstract_action.h" />
     <ClInclude Include="script_abstract_action_inline.h" />
@@ -1208,30 +1218,30 @@
     <ClInclude Include="script_effector_inline.h" />
     <ClInclude Include="script_effector_wrapper.h" />
     <ClInclude Include="script_effector_wrapper_inline.h" />
-    <ClInclude Include="script_flags.h" />
-    <ClInclude Include="script_fmatrix.h" />
-    <ClInclude Include="script_fvector.h" />
+    <ClInclude Include="..\..\COMMON_AI\script_flags.h" />
+    <ClInclude Include="..\..\COMMON_AI\script_fmatrix.h" />
+    <ClInclude Include="..\..\COMMON_AI\script_fvector.h" />
     <ClInclude Include="script_game_object.h" />
     <ClInclude Include="script_game_object_impl.h" />
     <ClInclude Include="script_hit.h" />
     <ClInclude Include="script_hit_inline.h" />
-    <ClInclude Include="script_ini_file.h" />
-    <ClInclude Include="script_ini_file_inline.h" />
-    <ClInclude Include="script_token_list.h" />
-    <ClInclude Include="script_token_list_inline.h" />
-    <ClInclude Include="script_rtoken_list.h" />
-    <ClInclude Include="script_rtoken_list_inline.h" />
+    <ClInclude Include="..\..\COMMON_AI\script_ini_file.h" />
+    <ClInclude Include="..\..\COMMON_AI\script_ini_file_inline.h" />
+    <ClInclude Include="..\..\COMMON_AI\script_token_list.h" />
+    <ClInclude Include="..\..\COMMON_AI\script_token_list_inline.h" />
+    <ClInclude Include="..\..\COMMON_AI\script_rtoken_list.h" />
+    <ClInclude Include="..\..\COMMON_AI\script_rtoken_list_inline.h" />
     <ClInclude Include="script_monster_hit_info.h" />
-    <ClInclude Include="script_net_packet.h" />
+    <ClInclude Include="..\..\COMMON_AI\script_net_packet.h" />
     <ClInclude Include="script_render_device.h" />
     <ClInclude Include="script_sound.h" />
     <ClInclude Include="script_sound_inline.h" />
     <ClInclude Include="script_sound_info.h" />
-    <ClInclude Include="script_sound_type.h" />
+    <ClInclude Include="..\..\COMMON_AI\script_sound_type.h" />
     <ClInclude Include="script_ui_registrator.h" />
     <ClInclude Include="ScriptXMLInit.h" />
     <ClInclude Include="key_binding_registrator.h" />
-    <ClInclude Include="script_reader.h" />
+    <ClInclude Include="..\..\COMMON_AI\script_reader.h" />
     <ClInclude Include="fs_registrator.h" />
     <ClInclude Include="console_registrator.h" />
     <ClInclude Include="base_client_classes.h" />
@@ -1242,30 +1252,30 @@
     <ClInclude Include="script_callback_ex_nonvoid.h" />
     <ClInclude Include="script_callback_ex_void.h" />
     <ClInclude Include="script_lanim.h" />
-    <ClInclude Include="script_fcolor.h" />
+    <ClInclude Include="..\..\COMMON_AI\script_fcolor.h" />
     <ClInclude Include="script_particles.h" />
     <ClInclude Include="script_particles_inline.h" />
-    <ClInclude Include="mslotutils.h" />
-    <ClInclude Include="script_callStack.h" />
-    <ClInclude Include="script_debugger.h" />
-    <ClInclude Include="script_debugger_messages.h" />
-    <ClInclude Include="script_debugger_threads.h" />
-    <ClInclude Include="script_lua_helper.h" />
-    <ClInclude Include="script_engine.h" />
-    <ClInclude Include="script_engine_export.h" />
-    <ClInclude Include="script_engine_inline.h" />
-    <ClInclude Include="script_engine_space.h" />
-    <ClInclude Include="script_process.h" />
-    <ClInclude Include="script_process_inline.h" />
-    <ClInclude Include="script_storage.h" />
-    <ClInclude Include="script_storage_inline.h" />
-    <ClInclude Include="script_storage_space.h" />
-    <ClInclude Include="script_thread.h" />
-    <ClInclude Include="script_thread_inline.h" />
-    <ClInclude Include="script_stack_tracker.h" />
-    <ClInclude Include="script_stack_tracker_inline.h" />
-    <ClInclude Include="doug_lea_memory_allocator.h" />
-    <ClInclude Include="ai_sounds.h" />
+    <ClInclude Include="..\..\COMMON_AI\mslotutils.h" />
+    <ClInclude Include="..\..\COMMON_AI\script_callStack.h" />
+    <ClInclude Include="..\..\COMMON_AI\script_debugger.h" />
+    <ClInclude Include="..\..\COMMON_AI\script_debugger_messages.h" />
+    <ClInclude Include="..\..\COMMON_AI\script_debugger_threads.h" />
+    <ClInclude Include="..\..\COMMON_AI\script_lua_helper.h" />
+    <ClInclude Include="..\..\COMMON_AI\script_engine.h" />
+    <ClInclude Include="..\..\COMMON_AI\script_engine_export.h" />
+    <ClInclude Include="..\..\COMMON_AI\script_engine_inline.h" />
+    <ClInclude Include="..\..\COMMON_AI\script_engine_space.h" />
+    <ClInclude Include="..\..\COMMON_AI\script_process.h" />
+    <ClInclude Include="..\..\COMMON_AI\script_process_inline.h" />
+    <ClInclude Include="..\..\COMMON_AI\script_storage.h" />
+    <ClInclude Include="..\..\COMMON_AI\script_storage_inline.h" />
+    <ClInclude Include="..\..\COMMON_AI\script_storage_space.h" />
+    <ClInclude Include="..\..\COMMON_AI\script_thread.h" />
+    <ClInclude Include="..\..\COMMON_AI\script_thread_inline.h" />
+    <ClInclude Include="..\..\COMMON_AI\script_stack_tracker.h" />
+    <ClInclude Include="..\..\COMMON_AI\script_stack_tracker_inline.h" />
+    <ClInclude Include="..\..\COMMON\doug_lea_memory_allocator.h" />
+    <ClInclude Include="..\..\COMMON_AI\ai_sounds.h" />
     <ClInclude Include="ai_space.h" />
     <ClInclude Include="ai_space_inline.h" />
     <ClInclude Include="pch_script.h" />
@@ -1287,11 +1297,10 @@
     <ClInclude Include="EffectorShotX.h" />
     <ClInclude Include="EffectorZoomInertion.h" />
     <ClInclude Include="DynamicHeightMap.h" />
-    <ClInclude Include="GameMtlLib.h" />
+    <ClInclude Include="..\..\COMMON_AI\GameMtlLib.h" />
     <ClInclude Include="GamePersistent.h" />
     <ClInclude Include="Level.h" />
     <ClInclude Include="Level_network_Demo.h" />
-    <ClInclude Include="LevelGameDef.h" />
     <ClInclude Include="LevelFogOfWar.h" />
     <ClInclude Include="Level_Bullet_Manager.h" />
     <ClInclude Include="Tracer.h" />
@@ -1351,8 +1360,8 @@
     <ClInclude Include="PhysicObject.h" />
     <ClInclude Include="HangingLamp.h" />
     <ClInclude Include="InfoPortion.h" />
-    <ClInclude Include="InfoPortionDefs.h" />
-    <ClInclude Include="xml_str_id_loader.h" />
+    <ClInclude Include="..\..\COMMON_AI\InfoPortionDefs.h" />
+    <ClInclude Include="..\..\COMMON_AI\xml_str_id_loader.h" />
     <ClInclude Include="GameTask.h" />
     <ClInclude Include="GameTaskDefs.h" />
     <ClInclude Include="GametaskManager.h" />
@@ -1369,7 +1378,7 @@
     <ClInclude Include="actor_statistic_defs.h" />
     <ClInclude Include="actor_statistic_mgr.h" />
     <ClInclude Include="Inventory.h" />
-    <ClInclude Include="inventory_space.h" />
+    <ClInclude Include="..\..\COMMON_AI\inventory_space.h" />
     <ClInclude Include="attachable_item.h" />
     <ClInclude Include="attachable_item_inline.h" />
     <ClInclude Include="attachment_owner.h" />
@@ -1383,14 +1392,14 @@
     <ClInclude Include="inventory_owner_inline.h" />
     <ClInclude Include="InventoryOwner.h" />
     <ClInclude Include="character_community.h" />
-    <ClInclude Include="character_info.h" />
-    <ClInclude Include="character_info_defs.h" />
+    <ClInclude Include="..\..\COMMON_AI\character_info.h" />
+    <ClInclude Include="..\..\COMMON_AI\character_info_defs.h" />
     <ClInclude Include="character_rank.h" />
     <ClInclude Include="character_reputation.h" />
     <ClInclude Include="ini_id_loader.h" />
     <ClInclude Include="ini_table_loader.h" />
     <ClInclude Include="monster_community.h" />
-    <ClInclude Include="specific_character.h" />
+    <ClInclude Include="..\..\COMMON_AI\specific_character.h" />
     <ClInclude Include="relation_registry.h" />
     <ClInclude Include="relation_registry_defs.h" />
     <ClInclude Include="relation_registry_inline.h" />
@@ -1525,59 +1534,54 @@
     <ClInclude Include="Spectator.h" />
     <ClInclude Include="date_time.h" />
     <ClInclude Include="NET_Queue.h" />
-    <ClInclude Include="xrMessages.h" />
-    <ClInclude Include="object_broker.h" />
-    <ClInclude Include="object_cloner.h" />
-    <ClInclude Include="object_comparer.h" />
-    <ClInclude Include="object_destroyer.h" />
-    <ClInclude Include="object_interfaces.h" />
-    <ClInclude Include="object_loader.h" />
-    <ClInclude Include="object_saver.h" />
-    <ClInclude Include="object_type_traits.h" />
-    <ClInclude Include="clsid_game.h" />
-    <ClInclude Include="object_factory.h" />
-    <ClInclude Include="object_factory_impl.h" />
-    <ClInclude Include="object_factory_inline.h" />
-    <ClInclude Include="object_factory_space.h" />
-    <ClInclude Include="object_item_abstract.h" />
-    <ClInclude Include="object_item_abstract_inline.h" />
-    <ClInclude Include="object_item_client_server.h" />
-    <ClInclude Include="object_item_client_server_inline.h" />
-    <ClInclude Include="object_item_script.h" />
-    <ClInclude Include="object_item_single.h" />
-    <ClInclude Include="object_item_single_inline.h" />
-    <ClInclude Include="profiler.h" />
+    <ClInclude Include="..\..\COMMON_AI\xrMessages.h" />
+    <ClInclude Include="..\..\COMMON_AI\object_broker.h" />
+    <ClInclude Include="..\..\COMMON_AI\object_cloner.h" />
+    <ClInclude Include="..\..\COMMON_AI\object_comparer.h" />
+    <ClInclude Include="..\..\COMMON_AI\object_destroyer.h" />
+    <ClInclude Include="..\..\COMMON_AI\object_interfaces.h" />
+    <ClInclude Include="..\..\COMMON_AI\object_loader.h" />
+    <ClInclude Include="..\..\COMMON_AI\object_saver.h" />
+    <ClInclude Include="..\..\COMMON_AI\object_type_traits.h" />
+    <ClInclude Include="..\..\COMMON_AI\clsid_game.h" />
+    <ClInclude Include="..\..\COMMON_AI\object_factory.h" />
+    <ClInclude Include="..\..\COMMON_AI\object_factory_impl.h" />
+    <ClInclude Include="..\..\COMMON_AI\object_factory_inline.h" />
+    <ClInclude Include="..\..\COMMON_AI\object_factory_space.h" />
+    <ClInclude Include="..\..\COMMON_AI\object_item_abstract.h" />
+    <ClInclude Include="..\..\COMMON_AI\object_item_abstract_inline.h" />
+    <ClInclude Include="..\..\COMMON_AI\object_item_client_server.h" />
+    <ClInclude Include="..\..\COMMON_AI\object_item_client_server_inline.h" />
+    <ClInclude Include="..\..\COMMON_AI\object_item_script.h" />
+    <ClInclude Include="..\..\COMMON_AI\object_item_single.h" />
+    <ClInclude Include="..\..\COMMON_AI\object_item_single_inline.h" />
     <ClInclude Include="profiler_inline.h" />
-    <ClInclude Include="quadtree.h" />
-    <ClInclude Include="quadtree_inline.h" />
-    <ClInclude Include="random32.h" />
-    <ClInclude Include="shared_data.h" />
-    <ClInclude Include="smart_cast.h" />
-    <ClInclude Include="smart_cast_impl0.h" />
-    <ClInclude Include="smart_cast_impl1.h" />
-    <ClInclude Include="smart_cast_impl2.h" />
+    <ClInclude Include="..\..\COMMON_AI\shared_data.h" />
+    <ClInclude Include="..\..\COMMON_AI\smart_cast.h" />
+    <ClInclude Include="..\..\COMMON_AI\smart_cast_impl0.h" />
+    <ClInclude Include="..\..\COMMON_AI\smart_cast_impl1.h" />
+    <ClInclude Include="..\..\COMMON_AI\smart_cast_impl2.h" />
     <ClInclude Include="string_table.h" />
     <ClInclude Include="string_table_defs.h" />
-    <ClInclude Include="associative_vector.h" />
-    <ClInclude Include="associative_vector_inline.h" />
-    <ClInclude Include="associative_vector_compare_predicate.h" />
-    <ClInclude Include="associative_vector_compare_predicate_inline.h" />
+    <ClInclude Include="..\..\COMMON_AI\associative_vector.h" />
+    <ClInclude Include="..\..\COMMON_AI\associative_vector_inline.h" />
+    <ClInclude Include="..\..\COMMON_AI\associative_vector_compare_predicate.h" />
+    <ClInclude Include="..\..\COMMON_AI\associative_vector_compare_predicate_inline.h" />
     <ClInclude Include="RegistryFuncs.h" />
     <ClInclude Include="battleye.h" />
     <ClInclude Include="battleye_system.h" />
     <ClInclude Include="xr_Server_BattlEye.h" />
     <ClInclude Include="xrServer.h" />
-    <ClInclude Include="xrServer_Space.h" />
-    <ClInclude Include="DrawUtils.h" />
-    <ClInclude Include="FastDelegate.h" />
-    <ClInclude Include="ItemListTypes.h" />
-    <ClInclude Include="PropertiesListHelper.h" />
+    <ClInclude Include="..\..\COMMON_AI\xrServer_Space.h" />
+    <ClInclude Include="..\..\COMMON\DrawUtils.h" />
+    <ClInclude Include="..\..\xrCore\FastDelegate.h" />
+    <ClInclude Include="..\..\COMMON_AI\ItemListTypes.h" />
     <ClInclude Include="WaveForm.h" />
     <ClInclude Include="xrEProps.h" />
     <ClInclude Include="game_base.h" />
     <ClInclude Include="game_base_kill_type.h" />
     <ClInclude Include="game_base_menu_events.h" />
-    <ClInclude Include="game_base_space.h" />
+    <ClInclude Include="..\..\COMMON_AI\game_base_space.h" />
     <ClInclude Include="game_cl_artefacthunt.h" />
     <ClInclude Include="game_cl_artefacthunt_snd_msg.h" />
     <ClInclude Include="game_cl_deathmatch.h" />
@@ -1618,18 +1622,18 @@
     <ClInclude Include="gamespy\CdkeyDecode\base32.h" />
     <ClInclude Include="gamespy\CdkeyDecode\cdkeydecode.h" />
     <ClInclude Include="id_generator.h" />
-    <ClInclude Include="PropertiesListTypes.h" />
+    <ClInclude Include="..\..\COMMON_AI\PropertiesListTypes.h" />
     <ClInclude Include="ShapeData.h" />
-    <ClInclude Include="xrServer_Objects_Abstract.h" />
-    <ClInclude Include="xrServer_Objects_ALife_All.h" />
-    <ClInclude Include="xrServer_script_macroses.h" />
-    <ClInclude Include="xrServer_Object_Base.h" />
-    <ClInclude Include="xrServer_Objects.h" />
-    <ClInclude Include="xrServer_Objects_ALife.h" />
-    <ClInclude Include="xrServer_Objects_ALife_Items.h" />
-    <ClInclude Include="xrServer_Objects_ALife_Monsters.h" />
-    <ClInclude Include="script_value_container.h" />
-    <ClInclude Include="script_value_container_impl.h" />
+    <ClInclude Include="..\..\COMMON_AI\xrServer_Objects_Abstract.h" />
+    <ClInclude Include="..\..\COMMON_AI\xrServer_Objects_ALife_All.h" />
+    <ClInclude Include="..\..\COMMON_AI\xrServer_script_macroses.h" />
+    <ClInclude Include="..\..\COMMON_AI\xrServer_Object_Base.h" />
+    <ClInclude Include="..\..\COMMON_AI\xrServer_Objects.h" />
+    <ClInclude Include="..\..\COMMON_AI\xrServer_Objects_ALife.h" />
+    <ClInclude Include="..\..\COMMON_AI\xrServer_Objects_ALife_Items.h" />
+    <ClInclude Include="..\..\COMMON_AI\xrServer_Objects_ALife_Monsters.h" />
+    <ClInclude Include="..\..\COMMON_AI\script_value_container.h" />
+    <ClInclude Include="..\..\COMMON_AI\script_value_container_impl.h" />
     <ClInclude Include="xrGameSpyServer.h" />
     <ClInclude Include="xrGameSpyServer_callbacks.h" />
     <ClInclude Include="CalculateTriangle.h" />
@@ -1656,8 +1660,8 @@
     <ClInclude Include="SpaceUtils.h" />
     <ClInclude Include="PHBaseBodyEffector.h" />
     <ClInclude Include="PHContactBodyEffector.h" />
-    <ClInclude Include="PHNetState.h" />
-    <ClInclude Include="PHSynchronize.h" />
+    <ClInclude Include="..\..\COMMON_AI\PHNetState.h" />
+    <ClInclude Include="..\..\COMMON_AI\PHSynchronize.h" />
     <ClInclude Include="PHMoveStorage.h" />
     <ClInclude Include="DisablingParams.h" />
     <ClInclude Include="PHDisabling.h" />
@@ -1902,7 +1906,8 @@
     <ClInclude Include="UICursor.h" />
     <ClInclude Include="ui\UIGameTutorial.h" />
   </ItemGroup>
-  <ItemGroup>
+  <ItemGroup>   
+    <ClCompile Include="..\..\COMMON_AI\random32.cpp" />
     <ClCompile Include="damage_manager.cpp" />
     <ClCompile Include="action_base_script.cpp">
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">pch_script.h</PrecompiledHeaderFile>
@@ -2016,7 +2021,7 @@
       <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)$(ProjectName)_script.pch</PrecompiledHeaderOutputFile>
       <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(IntDir)$(ProjectName)_script.pch</PrecompiledHeaderOutputFile>
     </ClCompile>
-    <ClCompile Include="script_additional_libs.cpp" />
+    <ClCompile Include="..\..\COMMON_AI\script_additional_libs.cpp" />
     <ClCompile Include="script_property_evaluator_wrapper.cpp">
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">pch_script.h</PrecompiledHeaderFile>
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">pch_script.h</PrecompiledHeaderFile>
@@ -2348,7 +2353,7 @@
       <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)$(ProjectName)_script.pch</PrecompiledHeaderOutputFile>
       <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(IntDir)$(ProjectName)_script.pch</PrecompiledHeaderOutputFile>
     </ClCompile>
-    <ClCompile Include="alife_space.cpp" />
+    <ClCompile Include="..\..\COMMON_AI\alife_space.cpp" />
     <ClCompile Include="alife_interaction_manager.cpp" />
     <ClCompile Include="alife_communication_manager.cpp" />
     <ClCompile Include="alife_combat_manager.cpp" />
@@ -2356,8 +2361,8 @@
     <ClCompile Include="alife_creature_abstract.cpp" />
     <ClCompile Include="alife_dynamic_object.cpp" />
     <ClCompile Include="alife_human_abstract.cpp" />
-    <ClCompile Include="alife_human_brain.cpp" />
-    <ClCompile Include="alife_human_brain_script.cpp">
+    <ClCompile Include="..\..\COMMON_AI\alife_human_brain.cpp" />
+    <ClCompile Include="..\..\COMMON_AI\alife_human_brain_script.cpp">
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">pch_script.h</PrecompiledHeaderFile>
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">pch_script.h</PrecompiledHeaderFile>
       <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)$(ProjectName)_script.pch</PrecompiledHeaderOutputFile>
@@ -2375,8 +2380,8 @@
     <ClCompile Include="alife_group_abstract.cpp" />
     <ClCompile Include="alife_monster_abstract.cpp" />
     <ClCompile Include="alife_monster_base.cpp" />
-    <ClCompile Include="alife_monster_brain.cpp" />
-    <ClCompile Include="alife_monster_brain_script.cpp">
+    <ClCompile Include="..\..\COMMON_AI\alife_monster_brain.cpp" />
+    <ClCompile Include="..\..\COMMON_AI\alife_monster_brain_script.cpp">
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">pch_script.h</PrecompiledHeaderFile>
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">pch_script.h</PrecompiledHeaderFile>
       <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)$(ProjectName)_script.pch</PrecompiledHeaderOutputFile>
@@ -2452,7 +2457,7 @@
     <ClCompile Include="alife_spawn_registry.cpp" />
     <ClCompile Include="alife_spawn_registry_spawn.cpp" />
     <ClCompile Include="alife_spawn_registry_header.cpp" />
-    <ClCompile Include="server_entity_wrapper.cpp" />
+    <ClCompile Include="..\..\COMMON_AI\server_entity_wrapper.cpp" />
     <ClCompile Include="alife_story_registry.cpp" />
     <ClCompile Include="alife_registry_container.cpp" />
     <ClCompile Include="alife_smart_terrain_task.cpp" />
@@ -3260,7 +3265,7 @@
       <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)$(ProjectName)_script.pch</PrecompiledHeaderOutputFile>
       <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(IntDir)$(ProjectName)_script.pch</PrecompiledHeaderOutputFile>
     </ClCompile>
-    <ClCompile Include="level_graph.cpp" />
+	<ClCompile Include="..\..\COMMON_AI\GRAPH\level_graph.cpp" />
     <ClCompile Include="level_graph_debug.cpp" />
     <ClCompile Include="level_graph_debug2.cpp">
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">pch_script.h</PrecompiledHeaderFile>
@@ -3276,10 +3281,10 @@
       <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)$(ProjectName)_script.pch</PrecompiledHeaderOutputFile>
       <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(IntDir)$(ProjectName)_script.pch</PrecompiledHeaderOutputFile>
     </ClCompile>
-    <ClCompile Include="level_graph_vertex.cpp" />
-    <ClCompile Include="patrol_path.cpp" />
-    <ClCompile Include="patrol_path_storage.cpp" />
-    <ClCompile Include="patrol_point.cpp" />
+	<ClCompile Include="..\..\COMMON_AI\GRAPH\level_graph_vertex.cpp" />
+    <ClCompile Include="..\..\COMMON_AI\PATH\patrol_path.cpp" />
+    <ClCompile Include="..\..\COMMON_AI\PATH\patrol_path_storage.cpp" />
+    <ClCompile Include="..\..\COMMON_AI\PATH\patrol_point.cpp" />
     <ClCompile Include="script_abstract_action.cpp" />
     <ClCompile Include="script_movement_action.cpp" />
     <ClCompile Include="script_movement_action_script.cpp">
@@ -3517,7 +3522,7 @@
       <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)$(ProjectName)_script.pch</PrecompiledHeaderOutputFile>
       <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(IntDir)$(ProjectName)_script.pch</PrecompiledHeaderOutputFile>
     </ClCompile>
-    <ClCompile Include="script_flags_script.cpp">
+    <ClCompile Include="..\..\COMMON_AI\script_flags_script.cpp">
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">pch_script.h</PrecompiledHeaderFile>
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">pch_script.h</PrecompiledHeaderFile>
       <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)$(ProjectName)_script.pch</PrecompiledHeaderOutputFile>
@@ -3531,7 +3536,7 @@
       <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)$(ProjectName)_script.pch</PrecompiledHeaderOutputFile>
       <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(IntDir)$(ProjectName)_script.pch</PrecompiledHeaderOutputFile>
     </ClCompile>
-    <ClCompile Include="script_fmatrix_script.cpp">
+    <ClCompile Include="..\..\COMMON_AI\script_fmatrix_script.cpp">
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">pch_script.h</PrecompiledHeaderFile>
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">pch_script.h</PrecompiledHeaderFile>
       <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)$(ProjectName)_script.pch</PrecompiledHeaderOutputFile>
@@ -3545,7 +3550,7 @@
       <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)$(ProjectName)_script.pch</PrecompiledHeaderOutputFile>
       <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(IntDir)$(ProjectName)_script.pch</PrecompiledHeaderOutputFile>
     </ClCompile>
-    <ClCompile Include="script_fvector_script.cpp">
+    <ClCompile Include="..\..\COMMON_AI\script_fvector_script.cpp">
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">pch_script.h</PrecompiledHeaderFile>
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">pch_script.h</PrecompiledHeaderFile>
       <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)$(ProjectName)_script.pch</PrecompiledHeaderOutputFile>
@@ -3734,8 +3739,8 @@
       <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)$(ProjectName)_script.pch</PrecompiledHeaderOutputFile>
       <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(IntDir)$(ProjectName)_script.pch</PrecompiledHeaderOutputFile>
     </ClCompile>
-    <ClCompile Include="script_ini_file.cpp" />
-    <ClCompile Include="script_ini_file_script.cpp">
+    <ClCompile Include="..\..\COMMON_AI\script_ini_file.cpp" />
+    <ClCompile Include="..\..\COMMON_AI\script_ini_file_script.cpp">
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">pch_script.h</PrecompiledHeaderFile>
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">pch_script.h</PrecompiledHeaderFile>
       <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)$(ProjectName)_script.pch</PrecompiledHeaderOutputFile>
@@ -3749,8 +3754,8 @@
       <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)$(ProjectName)_script.pch</PrecompiledHeaderOutputFile>
       <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(IntDir)$(ProjectName)_script.pch</PrecompiledHeaderOutputFile>
     </ClCompile>
-    <ClCompile Include="script_token_list.cpp" />
-    <ClCompile Include="script_token_list_script.cpp">
+    <ClCompile Include="..\..\COMMON_AI\script_token_list.cpp" />
+    <ClCompile Include="..\..\COMMON_AI\script_token_list_script.cpp">
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">pch_script.h</PrecompiledHeaderFile>
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">pch_script.h</PrecompiledHeaderFile>
       <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)$(ProjectName)_script.pch</PrecompiledHeaderOutputFile>
@@ -3764,7 +3769,7 @@
       <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)$(ProjectName)_script.pch</PrecompiledHeaderOutputFile>
       <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(IntDir)$(ProjectName)_script.pch</PrecompiledHeaderOutputFile>
     </ClCompile>
-    <ClCompile Include="script_rtoken_list_script.cpp">
+    <ClCompile Include="..\..\COMMON_AI\script_rtoken_list_script.cpp">
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">pch_script.h</PrecompiledHeaderFile>
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">pch_script.h</PrecompiledHeaderFile>
       <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)$(ProjectName)_script.pch</PrecompiledHeaderOutputFile>
@@ -3792,7 +3797,7 @@
       <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)$(ProjectName)_script.pch</PrecompiledHeaderOutputFile>
       <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(IntDir)$(ProjectName)_script.pch</PrecompiledHeaderOutputFile>
     </ClCompile>
-    <ClCompile Include="script_net_packet_script.cpp">
+    <ClCompile Include="..\..\COMMON_AI\script_net_packet_script.cpp">
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">pch_script.h</PrecompiledHeaderFile>
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">pch_script.h</PrecompiledHeaderFile>
       <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)$(ProjectName)_script.pch</PrecompiledHeaderOutputFile>
@@ -3849,7 +3854,7 @@
       <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)$(ProjectName)_script.pch</PrecompiledHeaderOutputFile>
       <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(IntDir)$(ProjectName)_script.pch</PrecompiledHeaderOutputFile>
     </ClCompile>
-    <ClCompile Include="script_sound_type_script.cpp">
+    <ClCompile Include="..\..\COMMON_AI\script_sound_type_script.cpp">
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">pch_script.h</PrecompiledHeaderFile>
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">pch_script.h</PrecompiledHeaderFile>
       <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)$(ProjectName)_script.pch</PrecompiledHeaderOutputFile>
@@ -3905,7 +3910,7 @@
       <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)$(ProjectName)_script.pch</PrecompiledHeaderOutputFile>
       <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(IntDir)$(ProjectName)_script.pch</PrecompiledHeaderOutputFile>
     </ClCompile>
-    <ClCompile Include="script_reader_script.cpp">
+    <ClCompile Include="..\..\COMMON_AI\script_reader_script.cpp">
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">pch_script.h</PrecompiledHeaderFile>
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">pch_script.h</PrecompiledHeaderFile>
       <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)$(ProjectName)_script.pch</PrecompiledHeaderOutputFile>
@@ -3975,7 +3980,7 @@
       <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)$(ProjectName)_script.pch</PrecompiledHeaderOutputFile>
       <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(IntDir)$(ProjectName)_script.pch</PrecompiledHeaderOutputFile>
     </ClCompile>
-    <ClCompile Include="script_fcolor_script.cpp">
+    <ClCompile Include="..\..\COMMON_AI\script_fcolor_script.cpp">
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">pch_script.h</PrecompiledHeaderFile>
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">pch_script.h</PrecompiledHeaderFile>
       <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)$(ProjectName)_script.pch</PrecompiledHeaderOutputFile>
@@ -4004,10 +4009,10 @@
       <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)$(ProjectName)_script.pch</PrecompiledHeaderOutputFile>
       <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(IntDir)$(ProjectName)_script.pch</PrecompiledHeaderOutputFile>
     </ClCompile>
-    <ClCompile Include="script_callStack.cpp" />
-    <ClCompile Include="script_debugger.cpp" />
-    <ClCompile Include="script_debugger_threads.cpp" />
-    <ClCompile Include="script_lua_helper.cpp">
+    <ClCompile Include="..\..\COMMON_AI\script_callStack.cpp" />
+    <ClCompile Include="..\..\COMMON_AI\script_debugger.cpp" />
+    <ClCompile Include="..\..\COMMON_AI\script_debugger_threads.cpp" />
+    <ClCompile Include="..\..\COMMON_AI\script_lua_helper.cpp">
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">pch_script.h</PrecompiledHeaderFile>
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">pch_script.h</PrecompiledHeaderFile>
       <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)$(ProjectName)_script.pch</PrecompiledHeaderOutputFile>
@@ -4021,7 +4026,7 @@
       <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)$(ProjectName)_script.pch</PrecompiledHeaderOutputFile>
       <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(IntDir)$(ProjectName)_script.pch</PrecompiledHeaderOutputFile>
     </ClCompile>
-    <ClCompile Include="script_engine.cpp">
+    <ClCompile Include="..\..\COMMON_AI\script_engine.cpp">
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">pch_script.h</PrecompiledHeaderFile>
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">pch_script.h</PrecompiledHeaderFile>
       <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)$(ProjectName)_script.pch</PrecompiledHeaderOutputFile>
@@ -4035,7 +4040,7 @@
       <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)$(ProjectName)_script.pch</PrecompiledHeaderOutputFile>
       <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(IntDir)$(ProjectName)_script.pch</PrecompiledHeaderOutputFile>
     </ClCompile>
-    <ClCompile Include="script_engine_export.cpp">
+    <ClCompile Include="..\..\COMMON_AI\script_engine_export.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Use</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Use</PrecompiledHeader>
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">pch_script.h</PrecompiledHeaderFile>
@@ -4075,7 +4080,7 @@
       <DisableSpecificWarnings Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">4996;%(DisableSpecificWarnings)</DisableSpecificWarnings>
       <DisableSpecificWarnings Condition="'$(Configuration)|$(Platform)'=='Release|x64'">4996;%(DisableSpecificWarnings)</DisableSpecificWarnings>
     </ClCompile>
-    <ClCompile Include="script_engine_script.cpp">
+    <ClCompile Include="..\..\COMMON_AI\script_engine_script.cpp">
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">pch_script.h</PrecompiledHeaderFile>
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">pch_script.h</PrecompiledHeaderFile>
       <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)$(ProjectName)_script.pch</PrecompiledHeaderOutputFile>
@@ -4089,7 +4094,7 @@
       <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)$(ProjectName)_script.pch</PrecompiledHeaderOutputFile>
       <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(IntDir)$(ProjectName)_script.pch</PrecompiledHeaderOutputFile>
     </ClCompile>
-    <ClCompile Include="script_process.cpp">
+    <ClCompile Include="..\..\COMMON_AI\script_process.cpp">
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">pch_script.h</PrecompiledHeaderFile>
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">pch_script.h</PrecompiledHeaderFile>
       <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)$(ProjectName)_script.pch</PrecompiledHeaderOutputFile>
@@ -4103,7 +4108,7 @@
       <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)$(ProjectName)_script.pch</PrecompiledHeaderOutputFile>
       <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(IntDir)$(ProjectName)_script.pch</PrecompiledHeaderOutputFile>
     </ClCompile>
-    <ClCompile Include="script_storage.cpp">
+    <ClCompile Include="..\..\COMMON_AI\script_storage.cpp">
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">pch_script.h</PrecompiledHeaderFile>
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">pch_script.h</PrecompiledHeaderFile>
       <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)$(ProjectName)_script.pch</PrecompiledHeaderOutputFile>
@@ -4117,7 +4122,7 @@
       <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)$(ProjectName)_script.pch</PrecompiledHeaderOutputFile>
       <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(IntDir)$(ProjectName)_script.pch</PrecompiledHeaderOutputFile>
     </ClCompile>
-    <ClCompile Include="script_thread.cpp">
+    <ClCompile Include="..\..\COMMON_AI\script_thread.cpp">
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">pch_script.h</PrecompiledHeaderFile>
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">pch_script.h</PrecompiledHeaderFile>
       <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)$(ProjectName)_script.pch</PrecompiledHeaderOutputFile>
@@ -4131,7 +4136,7 @@
       <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)$(ProjectName)_script.pch</PrecompiledHeaderOutputFile>
       <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(IntDir)$(ProjectName)_script.pch</PrecompiledHeaderOutputFile>
     </ClCompile>
-    <ClCompile Include="script_stack_tracker.cpp">
+    <ClCompile Include="..\..\COMMON_AI\script_stack_tracker.cpp">
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">pch_script.h</PrecompiledHeaderFile>
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">pch_script.h</PrecompiledHeaderFile>
       <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)$(ProjectName)_script.pch</PrecompiledHeaderOutputFile>
@@ -4147,7 +4152,7 @@
       <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)$(ProjectName)_script.pch</PrecompiledHeaderOutputFile>
       <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(IntDir)$(ProjectName)_script.pch</PrecompiledHeaderOutputFile>
     </ClCompile>
-    <ClCompile Include="doug_lea_memory_allocator.c">
+    <ClCompile Include="..\..\COMMON\doug_lea_memory_allocator.c">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
       </PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -4171,7 +4176,7 @@
       <WarningLevel Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Level2</WarningLevel>
       <WarningLevel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Level2</WarningLevel>
     </ClCompile>
-    <ClCompile Include="ai_sounds.cpp" />
+    <ClCompile Include="..\..\COMMON_AI\ai_sounds.cpp" />
     <ClCompile Include="ai_space.cpp" />
     <ClCompile Include="pch_script.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
@@ -4246,7 +4251,7 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="GameMtlLib.cpp" />
+    <ClCompile Include="..\..\COMMON_AI\GameMtlLib.cpp" />
     <ClCompile Include="GameMtlLib_Engine.cpp" />
     <ClCompile Include="GamePersistent.cpp">
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">pch_script.h</PrecompiledHeaderFile>
@@ -4760,11 +4765,11 @@
       <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(IntDir)$(ProjectName)_script.pch</PrecompiledHeaderOutputFile>
     </ClCompile>
     <ClCompile Include="character_community.cpp" />
-    <ClCompile Include="character_info.cpp" />
+    <ClCompile Include="..\..\COMMON_AI\character_info.cpp" />
     <ClCompile Include="character_rank.cpp" />
     <ClCompile Include="character_reputation.cpp" />
     <ClCompile Include="monster_community.cpp" />
-    <ClCompile Include="specific_character.cpp" />
+    <ClCompile Include="..\..\COMMON_AI\specific_character.cpp" />
     <ClCompile Include="relation_registry.cpp" />
     <ClCompile Include="relation_registry_actions.cpp">
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">pch_script.h</PrecompiledHeaderFile>
@@ -5543,9 +5548,9 @@
       <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)$(ProjectName)_script.pch</PrecompiledHeaderOutputFile>
       <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(IntDir)$(ProjectName)_script.pch</PrecompiledHeaderOutputFile>
     </ClCompile>
-    <ClCompile Include="object_factory.cpp" />
-    <ClCompile Include="object_factory_register.cpp" />
-    <ClCompile Include="object_factory_script.cpp">
+    <ClCompile Include="..\..\COMMON_AI\object_factory.cpp" />
+    <ClCompile Include="..\..\COMMON_AI\object_factory_register.cpp" />
+    <ClCompile Include="..\..\COMMON_AI\object_factory_script.cpp">
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">pch_script.h</PrecompiledHeaderFile>
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">pch_script.h</PrecompiledHeaderFile>
       <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)$(ProjectName)_script.pch</PrecompiledHeaderOutputFile>
@@ -5559,7 +5564,7 @@
       <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)$(ProjectName)_script.pch</PrecompiledHeaderOutputFile>
       <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(IntDir)$(ProjectName)_script.pch</PrecompiledHeaderOutputFile>
     </ClCompile>
-    <ClCompile Include="object_item_script.cpp">
+    <ClCompile Include="..\..\COMMON_AI\object_item_script.cpp">
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">pch_script.h</PrecompiledHeaderFile>
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">pch_script.h</PrecompiledHeaderFile>
       <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)$(ProjectName)_script.pch</PrecompiledHeaderOutputFile>
@@ -5577,8 +5582,7 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="random32.cpp" />
-    <ClCompile Include="smart_cast.cpp">
+    <ClCompile Include="..\..\COMMON_AI\smart_cast.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Use</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Use</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Mixed|Win32'">Use</PrecompiledHeader>
@@ -5586,7 +5590,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Use</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Use</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="smart_cast_stats.cpp" />
+    <ClCompile Include="..\..\COMMON_AI\smart_cast_stats.cpp" />
     <ClCompile Include="string_table.cpp" />
     <ClCompile Include="RegistryFuncs.cpp" />
     <ClCompile Include="battleye_system.cpp" />
@@ -5794,11 +5798,11 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
       </PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="xrServer_Factory.cpp" />
-    <ClCompile Include="xrServer_Objects_Abstract.cpp" />
-    <ClCompile Include="xrServer_Object_Base.cpp" />
-    <ClCompile Include="xrServer_Objects.cpp" />
-    <ClCompile Include="xrServer_Objects_script.cpp">
+    <ClCompile Include="..\..\COMMON_AI\xrServer_Factory.cpp" />
+    <ClCompile Include="..\..\COMMON_AI\xrServer_Objects_Abstract.cpp" />
+    <ClCompile Include="..\..\COMMON_AI\xrServer_Object_Base.cpp" />
+    <ClCompile Include="..\..\COMMON_AI\xrServer_Objects.cpp" />
+    <ClCompile Include="..\..\COMMON_AI\xrServer_Objects_script.cpp">
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">pch_script.h</PrecompiledHeaderFile>
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">pch_script.h</PrecompiledHeaderFile>
       <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)$(ProjectName)_script.pch</PrecompiledHeaderOutputFile>
@@ -5812,7 +5816,7 @@
       <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)$(ProjectName)_script.pch</PrecompiledHeaderOutputFile>
       <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(IntDir)$(ProjectName)_script.pch</PrecompiledHeaderOutputFile>
     </ClCompile>
-    <ClCompile Include="xrServer_Objects_script2.cpp">
+    <ClCompile Include="..\..\COMMON_AI\xrServer_Objects_script2.cpp">
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">pch_script.h</PrecompiledHeaderFile>
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">pch_script.h</PrecompiledHeaderFile>
       <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)$(ProjectName)_script.pch</PrecompiledHeaderOutputFile>
@@ -5826,8 +5830,8 @@
       <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)$(ProjectName)_script.pch</PrecompiledHeaderOutputFile>
       <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(IntDir)$(ProjectName)_script.pch</PrecompiledHeaderOutputFile>
     </ClCompile>
-    <ClCompile Include="xrServer_Objects_ALife.cpp" />
-    <ClCompile Include="xrServer_Objects_ALife_script.cpp">
+    <ClCompile Include="..\..\COMMON_AI\xrServer_Objects_ALife.cpp" />
+    <ClCompile Include="..\..\COMMON_AI\xrServer_Objects_ALife_script.cpp">
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">pch_script.h</PrecompiledHeaderFile>
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">pch_script.h</PrecompiledHeaderFile>
       <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)$(ProjectName)_script.pch</PrecompiledHeaderOutputFile>
@@ -5841,7 +5845,7 @@
       <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)$(ProjectName)_script.pch</PrecompiledHeaderOutputFile>
       <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(IntDir)$(ProjectName)_script.pch</PrecompiledHeaderOutputFile>
     </ClCompile>
-    <ClCompile Include="xrServer_Objects_ALife_script2.cpp">
+    <ClCompile Include="..\..\COMMON_AI\xrServer_Objects_ALife_script2.cpp">
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">pch_script.h</PrecompiledHeaderFile>
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">pch_script.h</PrecompiledHeaderFile>
       <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)$(ProjectName)_script.pch</PrecompiledHeaderOutputFile>
@@ -5855,7 +5859,7 @@
       <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)$(ProjectName)_script.pch</PrecompiledHeaderOutputFile>
       <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(IntDir)$(ProjectName)_script.pch</PrecompiledHeaderOutputFile>
     </ClCompile>
-    <ClCompile Include="xrServer_Objects_ALife_script3.cpp">
+    <ClCompile Include="..\..\COMMON_AI\xrServer_Objects_ALife_script3.cpp">
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">pch_script.h</PrecompiledHeaderFile>
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">pch_script.h</PrecompiledHeaderFile>
       <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)$(ProjectName)_script.pch</PrecompiledHeaderOutputFile>
@@ -5869,8 +5873,8 @@
       <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)$(ProjectName)_script.pch</PrecompiledHeaderOutputFile>
       <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(IntDir)$(ProjectName)_script.pch</PrecompiledHeaderOutputFile>
     </ClCompile>
-    <ClCompile Include="xrServer_Objects_ALife_Items.cpp" />
-    <ClCompile Include="xrServer_Objects_ALife_Items_script.cpp">
+    <ClCompile Include="..\..\COMMON_AI\xrServer_Objects_ALife_Items.cpp" />
+    <ClCompile Include="..\..\COMMON_AI\xrServer_Objects_ALife_Items_script.cpp">
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">pch_script.h</PrecompiledHeaderFile>
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">pch_script.h</PrecompiledHeaderFile>
       <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)$(ProjectName)_script.pch</PrecompiledHeaderOutputFile>
@@ -5884,7 +5888,7 @@
       <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)$(ProjectName)_script.pch</PrecompiledHeaderOutputFile>
       <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(IntDir)$(ProjectName)_script.pch</PrecompiledHeaderOutputFile>
     </ClCompile>
-    <ClCompile Include="xrServer_Objects_ALife_Items_script2.cpp">
+    <ClCompile Include="..\..\COMMON_AI\xrServer_Objects_ALife_Items_script2.cpp">
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">pch_script.h</PrecompiledHeaderFile>
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">pch_script.h</PrecompiledHeaderFile>
       <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)$(ProjectName)_script.pch</PrecompiledHeaderOutputFile>
@@ -5898,7 +5902,7 @@
       <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)$(ProjectName)_script.pch</PrecompiledHeaderOutputFile>
       <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(IntDir)$(ProjectName)_script.pch</PrecompiledHeaderOutputFile>
     </ClCompile>
-    <ClCompile Include="xrServer_Objects_ALife_Items_script3.cpp">
+    <ClCompile Include="..\..\COMMON_AI\xrServer_Objects_ALife_Items_script3.cpp">
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">pch_script.h</PrecompiledHeaderFile>
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">pch_script.h</PrecompiledHeaderFile>
       <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)$(ProjectName)_script.pch</PrecompiledHeaderOutputFile>
@@ -5912,8 +5916,8 @@
       <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)$(ProjectName)_script.pch</PrecompiledHeaderOutputFile>
       <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(IntDir)$(ProjectName)_script.pch</PrecompiledHeaderOutputFile>
     </ClCompile>
-    <ClCompile Include="xrServer_Objects_ALife_Monsters.cpp" />
-    <ClCompile Include="xrServer_Objects_ALife_Monsters_script.cpp">
+    <ClCompile Include="..\..\COMMON_AI\xrServer_Objects_ALife_Monsters.cpp" />
+    <ClCompile Include="..\..\COMMON_AI\xrServer_Objects_ALife_Monsters_script.cpp">
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">pch_script.h</PrecompiledHeaderFile>
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">pch_script.h</PrecompiledHeaderFile>
       <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)$(ProjectName)_script.pch</PrecompiledHeaderOutputFile>
@@ -5927,7 +5931,7 @@
       <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)$(ProjectName)_script.pch</PrecompiledHeaderOutputFile>
       <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(IntDir)$(ProjectName)_script.pch</PrecompiledHeaderOutputFile>
     </ClCompile>
-    <ClCompile Include="xrServer_Objects_ALife_Monsters_script2.cpp">
+    <ClCompile Include="..\..\COMMON_AI\xrServer_Objects_ALife_Monsters_script2.cpp">
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">pch_script.h</PrecompiledHeaderFile>
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">pch_script.h</PrecompiledHeaderFile>
       <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)$(ProjectName)_script.pch</PrecompiledHeaderOutputFile>
@@ -5941,7 +5945,7 @@
       <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)$(ProjectName)_script.pch</PrecompiledHeaderOutputFile>
       <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(IntDir)$(ProjectName)_script.pch</PrecompiledHeaderOutputFile>
     </ClCompile>
-    <ClCompile Include="xrserver_objects_alife_monsters_script3.cpp">
+    <ClCompile Include="..\..\COMMON_AI\xrserver_objects_alife_monsters_script3.cpp">
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">pch_script.h</PrecompiledHeaderFile>
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">pch_script.h</PrecompiledHeaderFile>
       <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)$(ProjectName)_script.pch</PrecompiledHeaderOutputFile>
@@ -5955,7 +5959,7 @@
       <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)$(ProjectName)_script.pch</PrecompiledHeaderOutputFile>
       <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(IntDir)$(ProjectName)_script.pch</PrecompiledHeaderOutputFile>
     </ClCompile>
-    <ClCompile Include="xrServer_Objects_ALife_Monsters_script4.cpp">
+    <ClCompile Include="..\..\COMMON_AI\xrServer_Objects_ALife_Monsters_script4.cpp">
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">pch_script.h</PrecompiledHeaderFile>
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">pch_script.h</PrecompiledHeaderFile>
       <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)$(ProjectName)_script.pch</PrecompiledHeaderOutputFile>
@@ -6011,8 +6015,8 @@
     <ClCompile Include="PHDynamicData.cpp" />
     <ClCompile Include="PHInterpolation.cpp" />
     <ClCompile Include="PHContactBodyEffector.cpp" />
-    <ClCompile Include="PHNetState.cpp" />
-    <ClCompile Include="PHSynchronize.cpp" />
+    <ClCompile Include="..\..\COMMON_AI\PHNetState.cpp" />
+    <ClCompile Include="..\..\COMMON_AI\PHSynchronize.cpp" />
     <ClCompile Include="PHMoveStorage.cpp" />
     <ClCompile Include="DisablingParams.cpp" />
     <ClCompile Include="PHDisabling.cpp" />

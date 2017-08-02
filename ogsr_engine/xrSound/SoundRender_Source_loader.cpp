@@ -88,7 +88,7 @@ void CSoundRender_Source::LoadWave	(LPCSTR pName)
 	if (ovm->comments){
                 string32 temp;
                 strcpy(temp,  ovm->user_comments[0]);
-		IReader *F     = xr_new<IReader>  			(temp,ovm->comment_lengths[0]);
+		IReader *F     = xr_new<IReader>  			((void*)temp,ovm->comment_lengths[0]);
 		u32 vers			= F->r_u32	();
         if (vers==0x0001){
 			m_fMinDist		= F->r_float	();

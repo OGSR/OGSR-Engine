@@ -3,7 +3,7 @@
 #include "../states/state_move_to_point.h"
 #include "../states/state_look_point.h"
 #include "../states/state_custom_action.h"
-#include "../../../cover_point.h"
+#include "cover_point.h"
 #include "../monster_cover_manager.h"
 #include "../monster_home.h"
 

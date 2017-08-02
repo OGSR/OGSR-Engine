@@ -1,6 +1,6 @@
 #pragma once
 #include "pseudodog.h"
-#include "../../../script_export_space.h"
+#include "script_export_space.h"
 
 class CPsyDogPhantom;
 

@@ -15,7 +15,7 @@
 #include "../../weapon.h"
 #include "../../weaponmagazined.h"
 #include "../../../skeletoncustom.h"
-#include "../../script_engine.h"
+#include "script_engine.h"
 #include "../../sight_manager.h"
 #include "../../stalker_movement_manager.h"
 #include "../../ai_space.h"

@@ -4,7 +4,7 @@
 #include "control_manager.h"
 
 #include "../../detail_path_manager.h"
-#include "../../level_graph.h"
+#include "level_graph.h"
 #include "../../ai_space.h"
 #include "../../ai_object_location.h"
 

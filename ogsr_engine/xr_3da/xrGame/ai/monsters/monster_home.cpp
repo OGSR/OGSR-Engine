@@ -2,16 +2,16 @@
 #include "monster_home.h"
 #include "BaseMonster/base_monster.h"
 #include "../../ai_space.h"
-#include "../../patrol_path_storage.h"
-#include "../../patrol_path.h"
-#include "../../level_graph.h"
-#include "../../cover_point.h"
+#include "patrol_path_storage.h"
+#include "patrol_path.h"
+#include "level_graph.h"
+#include "cover_point.h"
 #include "monster_cover_manager.h"
 #include "../../ai_object_location.h"
 #include "../../restricted_object.h"
 
 #ifdef DEBUG
-#	include "../../game_graph.h"
+#	include "7game_graph.h"
 void check_path	(const CBaseMonster *monster, const CPatrolPath *path)
 {
 	VERIFY2			(

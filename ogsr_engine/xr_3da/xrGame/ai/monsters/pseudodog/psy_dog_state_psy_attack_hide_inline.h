@@ -2,7 +2,7 @@
 
 #include "../../../ai_space.h"
 #include "../monster_cover_manager.h"
-#include "../../../cover_point.h"
+#include "cover_point.h"
 
 #define TEMPLATE_SPECIALIZATION template <\
 	typename _Object\

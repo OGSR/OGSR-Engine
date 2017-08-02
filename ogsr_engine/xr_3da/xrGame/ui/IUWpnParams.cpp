@@ -7,7 +7,7 @@
 #include "../ai_space.h"
 #include "../script_engine.h"
 #include "../PhysicsShellHolder.h"
-#include "../clsid_game.h"
+#include "clsid_game.h"
 
 struct SLuaWpnParams{
 	luabind::functor<float>		m_functorRPM;

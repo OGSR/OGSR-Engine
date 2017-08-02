@@ -67,9 +67,6 @@
     <Filter Include="Compression\lz">
       <UniqueIdentifier>{7497b182-8ea0-4fc8-aef1-7544413b4f18}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Compression\lzo">
-      <UniqueIdentifier>{dda72662-18b0-4e41-b8f8-9084e81f3fc7}</UniqueIdentifier>
-    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="FTimer.cpp">
@@ -230,24 +227,6 @@
     </ClCompile>
     <ClCompile Include="LzHuf.cpp">
       <Filter>Compression\lz</Filter>
-    </ClCompile>
-    <ClCompile Include="rt_lzo1x_1.cpp">
-      <Filter>Compression\lzo</Filter>
-    </ClCompile>
-    <ClCompile Include="rt_lzo1x_9x.cpp">
-      <Filter>Compression\lzo</Filter>
-    </ClCompile>
-    <ClCompile Include="rt_lzo1x_d1.cpp">
-      <Filter>Compression\lzo</Filter>
-    </ClCompile>
-    <ClCompile Include="rt_lzo1x_d2.cpp">
-      <Filter>Compression\lzo</Filter>
-    </ClCompile>
-    <ClCompile Include="rt_lzo1x_d3.cpp">
-      <Filter>Compression\lzo</Filter>
-    </ClCompile>
-    <ClCompile Include="rt_lzo_init.cpp">
-      <Filter>Compression\lzo</Filter>
     </ClCompile>
     <ClCompile Include="xrSyncronize.cpp" />
   </ItemGroup>
@@ -491,33 +470,6 @@
     </ClInclude>
     <ClInclude Include="lzhuf.h">
       <Filter>Compression\lz</Filter>
-    </ClInclude>
-    <ClInclude Include="rt_config1x.h">
-      <Filter>Compression\lzo</Filter>
-    </ClInclude>
-    <ClInclude Include="rt_lzo1x.h">
-      <Filter>Compression\lzo</Filter>
-    </ClInclude>
-    <ClInclude Include="rt_lzo_conf.h">
-      <Filter>Compression\lzo</Filter>
-    </ClInclude>
-    <ClInclude Include="rt_lzo_config.h">
-      <Filter>Compression\lzo</Filter>
-    </ClInclude>
-    <ClInclude Include="rt_lzo_dict.h">
-      <Filter>Compression\lzo</Filter>
-    </ClInclude>
-    <ClInclude Include="rt_lzo_ptr.h">
-      <Filter>Compression\lzo</Filter>
-    </ClInclude>
-    <ClInclude Include="rt_lzoconf.h">
-      <Filter>Compression\lzo</Filter>
-    </ClInclude>
-    <ClInclude Include="rt_lzodefs.h">
-      <Filter>Compression\lzo</Filter>
-    </ClInclude>
-    <ClInclude Include="rt_miniacc.h">
-      <Filter>Compression\lzo</Filter>
     </ClInclude>
     <ClInclude Include="xrSyncronize.h" />
   </ItemGroup>

@@ -3,7 +3,7 @@
 #include "../../entity.h"
 #include "../../ai_object_location.h"
 #include "../../ai_space.h"
-#include "../../level_graph.h"
+#include "level_graph.h"
 #include "../../../skeletoncustom.h"
 
 // проверить, находится ли объект entity на ноде

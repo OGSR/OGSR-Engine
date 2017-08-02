@@ -1,6 +1,6 @@
 #pragma once
 #include "monster_event_manager_defs.h"
-#include "../../fastdelegate.h"
+#include "fastdelegate.h"
 
 typedef fastdelegate::FastDelegate1<IEventData*> typeEvent;
 

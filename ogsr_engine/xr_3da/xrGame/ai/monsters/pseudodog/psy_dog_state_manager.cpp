@@ -8,7 +8,7 @@
 #include "../control_animation_base.h"
 #include "../../../ai_object_location.h"
 #include "../../../sound_player.h"
-#include "../../../level_graph.h"
+#include "level_graph.h"
 
 #include "psy_dog_state_psy_attack.h"
 

@@ -68,7 +68,7 @@ public:
 	IC		float		GetYaw()		const { return yaw; };
 };
 
-#include "xrGame\script_export_space.h"
+#include "..\COMMON_AI\script_export_space.h"
 
 typedef class_exporter<CCameraBase> CCameraScript;
 add_to_type_list(CCameraScript)

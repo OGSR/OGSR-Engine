@@ -1,6 +1,6 @@
 #pragma once
 #include "../BaseMonster/base_monster.h"
-#include "../../../script_export_space.h"
+#include "script_export_space.h"
 
 class CSnork :	public CBaseMonster {
 	typedef		CBaseMonster		inherited;

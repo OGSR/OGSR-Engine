@@ -2,7 +2,7 @@
 
 #include "../../../ai_space.h"
 #include "../monster_cover_manager.h"
-#include "../../../cover_point.h"
+#include "cover_point.h"
 #include "../../../level.h"
 #include "../../../level_debug.h"
 

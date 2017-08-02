@@ -27,7 +27,7 @@
 #include "../../stalker_movement_manager.h"
 #include "../../entitycondition.h"
 #include "../../sound_player.h"
-#include "../../cover_point.h"
+#include "cover_point.h"
 #include "../../agent_member_manager.h"
 #include "../../agent_location_manager.h"
 #include "../../danger_cover_location.h"

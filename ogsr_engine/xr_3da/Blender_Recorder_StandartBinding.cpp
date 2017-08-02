@@ -210,6 +210,7 @@ class cl_hemi_color	: public R_constant_setup {
 	}
 };	static cl_hemi_color		binder_hemi_color;
 
+#ifndef _EDITOR
 // KD binders
 class cl_resolution	: public R_constant_setup {
 	u32			marker;
@@ -268,7 +269,6 @@ class cl_jitter_params	: public R_constant_setup {
 	}
 };	static cl_jitter_params		binder_jitter_params;
 */
-#ifndef _EDITOR
 class cl_rain_params	: public R_constant_setup {
 	u32			marker;
 	Fvector4	result;
@@ -279,7 +279,6 @@ class cl_rain_params	: public R_constant_setup {
 		RCache.set_c	(C,result);
 	}
 };	static cl_rain_params		binder_rain_params;
-#endif
 class cl_inv_v	: public R_constant_setup {
 	u32			marker;
 	Fmatrix		result;
@@ -395,6 +394,7 @@ class cl_detector	: public R_constant_setup {
 		RCache.set_c	(C,result);
 	}
 };	static cl_detector		binder_detector;
+#endif
 
 // Standart constant-binding
 void	CBlender_Compile::SetMapping	()
@@ -434,13 +434,13 @@ void	CBlender_Compile::SetMapping	()
 	r_Constant				("env_color",		&binder_env_color);
 
 	// KD binders
+#ifndef _EDITOR
+
 	r_Constant				("ogse_c_resolution",	&binder_resolution);
 	r_Constant				("ogse_c_screen",		&binder_screen_params);
 //	r_Constant				("ogse_pos_decompression",		&binder_dec_params);
 //	r_Constant				("ogse_c_jitter",		&binder_jitter_params);
-#ifndef _EDITOR
 	r_Constant				("ogse_c_rain",			&binder_rain_params);
-#endif
 	r_Constant				("ogse_c_artefacts",	&binder_artifacts);
 	r_Constant				("ogse_c_anomalys",		&binder_anomalys);
 //	r_Constant				("ogse_c_various",		&binder_various);
@@ -449,6 +449,7 @@ void	CBlender_Compile::SetMapping	()
 /*	r_Constant				("m_shadow_near_ogse",		&binder_sns_matrix);
 	r_Constant				("m_shadow_far_ogse",		&binder_sfs_matrix);
 	r_Constant				("m_shadow_clouds_ogse",	&binder_scs_matrix);*/
+#endif
 
 	// detail
 	if (bDetail	&& detail_scaler)

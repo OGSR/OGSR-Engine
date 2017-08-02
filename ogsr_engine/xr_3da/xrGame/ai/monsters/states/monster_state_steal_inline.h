@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../../../clsid_game.h"
+#include "clsid_game.h"
 
 #define TEMPLATE_SPECIALIZATION template <\
 	typename _Object\

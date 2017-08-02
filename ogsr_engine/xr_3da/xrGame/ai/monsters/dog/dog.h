@@ -2,7 +2,7 @@
 
 #include "../BaseMonster/base_monster.h"
 #include "../controlled_entity.h"
-#include "../../../script_export_space.h"
+#include "script_export_space.h"
 
 class CAI_Dog : public CBaseMonster, 
 				public CControlledEntity<CAI_Dog> {

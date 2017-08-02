@@ -79,13 +79,14 @@ void ALDeviceList::Enumerate()
 		// This makes 3D-sound processing unusable on cheap AC'97 codecs
 		// Also we assume that if "Generic Hardware" exists, than "Generic Software" is also exists
 		// Maybe wrong
-		
+		/*
+		KD: fuck it
 		if(0==stricmp(m_defaultDeviceName.c_str(),AL_GENERIC_HARDWARE))
 		{
 			m_defaultDeviceName			= AL_GENERIC_SOFTWARE;
 			Msg("SOUND: OpenAL: default SndDevice name set to %s", m_defaultDeviceName.c_str());
 		}
-
+		*/
 		index				= 0;
 		// go through device list (each device terminated with a single NULL, list terminated with double NULL)
 		while (*devices != NULL) 

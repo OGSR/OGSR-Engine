@@ -4,7 +4,7 @@
 #include "../states/state_hide_from_point.h"
 #include "bloodsucker_vampire_approach.h"
 #include "bloodsucker_vampire_hide.h"
-#include "../../../clsid_game.h"
+#include "clsid_game.h"
 
 #define TEMPLATE_SPECIALIZATION template <\
 	typename _Object\

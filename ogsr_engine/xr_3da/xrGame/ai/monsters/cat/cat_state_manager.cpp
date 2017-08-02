@@ -14,7 +14,7 @@
 #include "../states/monster_state_hear_int_sound.h"
 #include "../states/monster_state_hear_danger_sound.h"
 #include "../states/monster_state_hitted.h"
-#include "../../../clsid_game.h"
+#include "clsid_game.h"
 #include "../states/state_test_look_actor.h"
 #include "../../../entitycondition.h"
 #include "../states/monster_state_help_sound.h"
