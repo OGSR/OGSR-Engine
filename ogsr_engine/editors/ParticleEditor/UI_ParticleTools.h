@@ -3,8 +3,8 @@
 #define UI_ParticleToolsH
 
 //. ?#include "ParticleSystem.h"
-#include "ParticleEffect.h"
-#include "ParticleGroup.h"
+#include "../../Layers/xrRender/ParticleEffect.h"
+#include "../../Layers/xrRender/ParticleGroup.h"
 #include "pure.h"
 #include "../xrEProps/PropertiesList.h"
 #include "ui_toolscustom.h"

@@ -87,7 +87,7 @@ __inline float expf	(float val)                           	{ return ::exp(val);}
 
 #include "..\..\xrCDB\xrCDB.h"
 #include "..\..\xrSound\Sound.h"
-#include "..\..\xr_3da\PSystem.h"
+#include "..\..\xrParticles\PSystem.h"
 
 // DirectX headers
 #include <d3d9.h>

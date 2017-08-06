@@ -487,10 +487,10 @@
     <ClInclude Include="..\COMMON_AI\xrServer_Object_Base.h" />
     <ClInclude Include="..\COMMON_AI\xrServer_script_macroses.h" />
     <ClInclude Include="..\COMMON_AI\xrServer_Space.h" />
+    <ClInclude Include="..\xrGame\ui\xrUIXmlParser.h" />
     <ClInclude Include="..\xrNetServer\client_id.h" />
     <ClInclude Include="..\xrNetServer\NET_Compressor.h" />
     <ClInclude Include="..\xrNetServer\NET_utils.h" />
-    <ClInclude Include="..\xr_3da\xrGame\ui\xrUIXmlParser.h" />
     <ClInclude Include="pch_script.h" />
     <ClInclude Include="script_space.h" />
     <ClInclude Include="stdafx.h" />
@@ -1031,7 +1031,7 @@
       <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(IntDir)$(ProjectName)_script.pch</PrecompiledHeaderOutputFile>
     </ClCompile>
     <ClCompile Include="..\COMMON_AI\xrServer_Object_Base.cpp" />
-    <ClCompile Include="..\xr_3da\xrGame\ui\xrUIXmlParser.cpp" />
+    <ClCompile Include="..\xrGame\ui\xrUIXmlParser.cpp" />
     <ClCompile Include="pch_script.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Mixed|Win32'">Create</PrecompiledHeader>

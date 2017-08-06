@@ -271,9 +271,6 @@
     <ClInclude Include="..\COMMON_AI\xrServer_Space.h">
       <Filter>ServerStuff\Common\ServerStuff</Filter>
     </ClInclude>
-    <ClInclude Include="..\xr_3da\xrGame\ui\xrUIXmlParser.h">
-      <Filter>ServerStuff\Common\ServerStuff</Filter>
-    </ClInclude>
     <ClInclude Include="..\COMMON_AI\PHNetState.h">
       <Filter>ServerStuff\Common\PhysicsStuff</Filter>
     </ClInclude>
@@ -523,6 +520,9 @@
     <ClInclude Include="..\COMMON_AI\script_additional_libs.h">
       <Filter>Scripts</Filter>
     </ClInclude>
+    <ClInclude Include="..\xrGame\ui\xrUIXmlParser.h">
+      <Filter>ServerStuff\Common\ServerStuff</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -610,9 +610,6 @@
       <Filter>ServerStuff\Common\ServerStuff</Filter>
     </ClCompile>
     <ClCompile Include="..\COMMON_AI\specific_character.cpp">
-      <Filter>ServerStuff\Common\ServerStuff</Filter>
-    </ClCompile>
-    <ClCompile Include="..\xr_3da\xrGame\ui\xrUIXmlParser.cpp">
       <Filter>ServerStuff\Common\ServerStuff</Filter>
     </ClCompile>
     <ClCompile Include="..\COMMON_AI\PHNetState.cpp">
@@ -725,6 +722,9 @@
     </ClCompile>
     <ClCompile Include="..\COMMON_AI\script_additional_libs.cpp">
       <Filter>Scripts</Filter>
+    </ClCompile>
+    <ClCompile Include="..\xrGame\ui\xrUIXmlParser.cpp">
+      <Filter>ServerStuff\Common\ServerStuff</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

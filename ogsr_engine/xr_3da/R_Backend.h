@@ -35,6 +35,8 @@ struct	R_statistics			{
 	R_statistics_element		s_dynamic_inst	;
 	R_statistics_element		s_dynamic_1B	;
 	R_statistics_element		s_dynamic_2B	;
+	R_statistics_element		s_dynamic_3B	;
+	R_statistics_element		s_dynamic_4B	;
 };
 
 

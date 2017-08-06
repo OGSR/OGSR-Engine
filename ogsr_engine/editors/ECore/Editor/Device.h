@@ -185,7 +185,7 @@ enum {
 #define		REQ_CREATE()	if (!Device.bReady)	return;
 #define		REQ_DESTROY()	if (Device.bReady)	return;
 
-#include "xrCPU_Pipe.h"
+#include "../../xrCPU_Pipe/xrCPU_Pipe.h"
 ENGINE_API extern xrDispatchTable	PSGP;
 
 #include "R_Backend_Runtime.h"

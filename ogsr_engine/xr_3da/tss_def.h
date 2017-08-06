@@ -10,7 +10,6 @@ private:
 	{
 		u32	type;		// 0=RS, 1=TSS
 		u32	v1,v2,v3;
-
 		IC void	set_RS	(u32 a, u32 b)
 		{
 			type	= 0;

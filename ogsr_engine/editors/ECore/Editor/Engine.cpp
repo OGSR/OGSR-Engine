@@ -55,10 +55,10 @@ void CEngine::Initialize(void)
 	R_ASSERT2	            (hPSGP,"Can't find 'xrCPU_Pipe.dll'");
 
 	xrBinder* bindCPU	    = (xrBinder*)GetProcAddress(hPSGP,"xrBind_PSGP");	R_ASSERT(bindCPU);
-	bindCPU		            (&PSGP, CPU::ID.feature & CPU::ID.os_support);
+	bindCPU		            (&PSGP, &CPU::ID);
     // for compliance with editor
-    PSGP.skin1W				= xrSkin1W_x86;
-    PSGP.skin2W				= xrSkin2W_x86;
+ /*   PSGP.skin1W				= xrSkin1W_x86;
+    PSGP.skin2W				= xrSkin2W_x86;*/
 #endif
 
 	ReloadSettings			();

@@ -125,8 +125,8 @@ public:
 	struct WMFace{
 		Fvector3		vert	[3];
 		Fvector2		uv		[3];
-		u16				bone_id	[3][2];
-		float			weight	[3];
+		u16				bone_id	[3][4];
+		float			weight	[3][3];
 	};
 	DEFINE_VECTOR		(WMFace,WMFacesVec,WMFacesVecIt);
 	WMFacesVec			m_Faces;		// 16 
@@ -176,7 +176,15 @@ class ENGINE_API	CKinematics: public FHierrarhyVisual
 	typedef FHierrarhyVisual	inherited;
 	friend class				CBoneData;
 	friend class				CSkeletonX;
+
 public: 
+
+	struct	pick_result
+	{
+		Fvector	normal;
+		float	dist;
+		Fvector	tri[3];
+	};
 #ifdef DEBUG
 	BOOL						dbg_single_use_marker;
 #endif
@@ -229,7 +237,7 @@ public:
 	void						ClearWallmarks		();
 public:
 				
-				bool			PickBone			(const Fmatrix &parent_xform, Fvector& normal, float& dist, const Fvector& start, const Fvector& dir, u16 bone_id);
+				bool			PickBone			(const Fmatrix &parent_xform, CKinematics::pick_result& r, float dist, const Fvector& start, const Fvector& dir, u16 bone_id);
 	virtual		void			EnumBoneVertices	(SEnumVerticesCallback &C, u16 bone_id);
 public:
 								CKinematics			();

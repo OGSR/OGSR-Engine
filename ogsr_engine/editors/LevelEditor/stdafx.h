@@ -75,7 +75,7 @@ __inline float expf	(float val)                           	{ return ::exp(val);}
 #define clMsg 			Msg
 
 // core
-#include <xrCore.h>
+#include "../../xrCore/xrCore.h"
 
 #ifdef _EDITOR
 	class PropValue;
@@ -88,7 +88,7 @@ __inline float expf	(float val)                           	{ return ::exp(val);}
 
 #include "../../xrCDB/xrCDB.h"
 #include "../../xrSound/Sound.h"
-#include <PSystem.h>
+#include "../../xrParticles/PSystem.h"
 
 // DirectX headers
 #include <d3d9.h>

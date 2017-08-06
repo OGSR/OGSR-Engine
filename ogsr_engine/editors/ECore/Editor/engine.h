@@ -7,7 +7,7 @@
 #pragma once
 
 #include "ELog.h"
-#include "../../../xr_3da/xrCPU_Pipe/xrCPU_Pipe.h"
+#include "../../../xrCPU_Pipe/xrCPU_Pipe.h"
 
 class ENGINE_API CEngine
 {

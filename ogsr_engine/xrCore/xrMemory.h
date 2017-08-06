@@ -96,6 +96,8 @@ extern XRCORE_API	xrMemory	Memory;
 
 // generic "C"-like allocations/deallocations
 #ifdef DEBUG_MEMORY_NAME
+	#include "typeinfo.h"
+
 	template <class T>
 	IC T*		xr_alloc	(u32 count)				{	return  (T*)Memory.mem_alloc(count*sizeof(T),typeid(T).name());	}
 	template <class T>

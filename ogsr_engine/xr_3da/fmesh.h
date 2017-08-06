@@ -45,13 +45,16 @@ enum OGF_Chuncks {
 	OGF_GCONTAINER			= 21,	// * both VB&IB
 	OGF_FASTPATH			= 22,	// * extended/fast geometry
 	OGF_S_LODS 				= 23,	// * For skeletons only (Ini-file)
+	OGF_S_MOTION_REFS2		= 24,	// * changes in format
     OGF_forcedword			= 0xFFFFFFFF         
 };							
 
 enum OGF_SkeletonVertType	{
 	OGF_VERTEXFORMAT_FVF_1L	= 1*0x12071980,
 	OGF_VERTEXFORMAT_FVF_2L	= 2*0x12071980,
-	OGF_VERTEXFORMAT_FVF_NL	= 3*0x12071980,
+	OGF_VERTEXFORMAT_FVF_3L = 4 * 0x12071980,
+	OGF_VERTEXFORMAT_FVF_4L = 5 * 0x12071980,
+	OGF_VERTEXFORMAT_FVF_NL = 3 * 0x12071980,
 };
 
 const u16	xrOGF_SMParamsVersion	= 4;

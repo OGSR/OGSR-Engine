@@ -17,7 +17,7 @@
 
 // client entities includes
 #ifndef NO_XR_GAME
-#	include "../std_classes.h"
+#	include "../COMMON/std_classes.h"
 #	include "level.h"
 #	include "gamepersistent.h"
 #	include "hudmanager.h"

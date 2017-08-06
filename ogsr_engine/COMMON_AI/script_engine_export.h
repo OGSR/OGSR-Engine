@@ -161,6 +161,6 @@
 #	include "space_restrictor.h"
 #	include "physicobject.h"
 #	include "searchlight.h"
-#	include "../CameraBase.h"
+#	include "../xr_3da/camerabase.h"
 #	include "script_rq_result.h"
 #endif

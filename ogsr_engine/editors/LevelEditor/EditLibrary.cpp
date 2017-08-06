@@ -248,7 +248,7 @@ void __fastcall TfrmEditLibrary::OnItemFocused(TElTreeItem* item)
     paImage->Repaint	();
     UpdateObjectProperties();
     UI->RedrawScene();
-    ebMakeThm->Enabled	= m_pEditObjects.size()>0;//mt;
+    ebMakeThm->Enabled	= !!m_pEditObject;//mt;
     ebMakeLOD_high->Enabled	= cbPreview->Checked;
     ebMakeLOD_low->Enabled	= cbPreview->Checked;
 }

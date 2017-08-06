@@ -2,294 +2,6 @@
 #pragma hdrstop
 
 #include "cpuid.h"
-#ifndef __BORLANDC__
-#include <intrin.h>
-#endif
-
-//#ifdef _M_AMD64
-
-#ifndef M_BORLAND
-
-int _cpuid (_processor_info *pinfo)
-{
-	_processor_info&	P	= *pinfo;
-
-	/*
-	strcpy				(P.v_name,		"AuthenticAMD");
-	strcpy				(P.model_name,	"AMD64 family");
-	P.family			=	8;
-	P.model				=	8;
-	P.stepping			=	0;
-	P.feature			=	_CPU_FEATURE_SSE | _CPU_FEATURE_SSE2;
-	P.os_support		=	_CPU_FEATURE_SSE | _CPU_FEATURE_SSE2;
-	return P.feature;
-	*/
-
-	ZeroMemory(&P, sizeof(_processor_info));
-
-	int cpinfo[4];
-	// detect cpu vendor
-	__cpuid(cpinfo, 0);
-
-	memcpy(P.v_name, &(cpinfo[1]), sizeof(int));
-	memcpy(P.v_name+sizeof(int), &(cpinfo[3]), sizeof(int));
-	memcpy(P.v_name+2*sizeof(int), &(cpinfo[2]), sizeof(int));
-
-	// detect cpu model
-	__cpuid(cpinfo, 0x80000002);
-	memcpy(P.model_name, cpinfo, sizeof(cpinfo));
-	__cpuid(cpinfo, 0x80000003);
-	memcpy(P.model_name+16, cpinfo, sizeof(cpinfo));
-	__cpuid(cpinfo, 0x80000004);
-	memcpy(P.model_name+32, cpinfo, sizeof(cpinfo));
-
-	// detect cpu main features
-	__cpuid(cpinfo, 1);
-
-	P.stepping = cpinfo[0] & 0xf;
-    P.model = (u8)((cpinfo[0] >> 4) & 0xf) | ((u8)((cpinfo[0] >> 16) & 0xf) << 4);
-    P.family = (u8)((cpinfo[0] >> 8) & 0xf) | ((u8)((cpinfo[0] >> 20) & 0xff) << 4);
-
-	if (cpinfo[3] & (1 << 23))
-		P.feature |= _CPU_FEATURE_MMX;
-	if (cpinfo[3] & (1 << 25))
-		P.feature |= _CPU_FEATURE_SSE;
-	if (cpinfo[3] & (1 << 26))
-		P.feature |= _CPU_FEATURE_SSE2;
-	if (cpinfo[2] & 0x1)
-		P.feature |= _CPU_FEATURE_SSE3;
-	if (cpinfo[2] & 0x80000)
-		P.feature |= _CPU_FEATURE_SSE41;
-	if (cpinfo[2] & 0x100000)
-		P.feature |= _CPU_FEATURE_SSE42;
-
-	// and check 3DNow! support
-	__cpuid(cpinfo, 0x80000001);
-	if (cpinfo[3] & (1 << 31))
-		P.feature |= _CPU_FEATURE_3DNOW;
-
-	P.os_support = P.feature;
-
-	// get version of OS
-	DWORD dwMajorVersion = 0;
-	DWORD dwVersion = 0;
-	dwVersion = GetVersion();
-
-	dwMajorVersion = (DWORD)(LOBYTE(LOWORD(dwVersion)));
-
-	if (dwMajorVersion <= 5)		// XP don't support SSE3+ instruction sets
-	{
-		P.os_support	&= ~_CPU_FEATURE_SSE3	;
-		P.os_support	&= ~_CPU_FEATURE_SSE41	;
-		P.os_support	&= ~_CPU_FEATURE_SSE42	;
-	}
-
-	return P.feature;
-}
-
-#else
-
-#ifdef	M_VISUAL
-#include "mmintrin.h"
-#endif
-
-// These are the bit flags that get set on calling cpuid
-// with register eax set to 1
-#define _MMX_FEATURE_BIT			0x00800000
-#define _SSE_FEATURE_BIT			0x02000000
-#define _SSE2_FEATURE_BIT			0x04000000
-
-// This bit is set when cpuid is called with
-// register set to 80000001h (only applicable to AMD)
-#define _3DNOW_FEATURE_BIT			0x80000000
- 
-int IsCPUID()
-{
-    __try {
-        _asm
-        {
-            xor eax, eax
-            cpuid
-        }
-    } __except ( EXCEPTION_EXECUTE_HANDLER) {
-        return 0;
-    }
-    return 1;
-}
-
-
-/***
-* int _os_support(int feature,...)
-*   - Checks if OS Supports the capablity or not
-****************************************************************/
-
-#ifdef M_VISUAL
-void _os_support(int feature, int& res)
-{
-
-    __try
-    {
-        switch (feature)
-        {
-        case _CPU_FEATURE_SSE:
-            __asm {
-                xorps xmm0, xmm0        // __asm _emit 0x0f __asm _emit 0x57 __asm _emit 0xc0
-                                        // executing SSE instruction
-            }
-            break;
-        case _CPU_FEATURE_SSE2:
-            __asm {
-                __asm _emit 0x66 __asm _emit 0x0f __asm _emit 0x57 __asm _emit 0xc0
-                                        // xorpd xmm0, xmm0
-                                        // executing WNI instruction
-            }
-            break;
-        case _CPU_FEATURE_3DNOW:
-            __asm 
-			{
-                __asm _emit 0x0f __asm _emit 0x0f __asm _emit 0xc0 __asm _emit 0x96 
-                                        // pfrcp mm0, mm0
-                                        // executing 3Dnow instruction
-            }
-            break;
-        case _CPU_FEATURE_MMX:
-            __asm 
-			{
-                pxor mm0, mm0           // executing MMX instruction
-            }
-            break;
-        }
-    } __except (EXCEPTION_EXECUTE_HANDLER) {
-		_mm_empty	();
-        return;
-    }
-	_mm_empty	();
-	res |= feature;
-}
-#endif
-
-#ifdef M_BORLAND
-// borland doesn't understand MMX/3DNow!/SSE/SSE2 asm opcodes
-void _os_support(int feature, int& res)
-{
-	res |= feature;
-}
-#endif
-
-
-/***
-*
-* void map_mname(int, int, const char *, char *) maps family and model to processor name
-*
-****************************************************/
-
-void map_mname( int family, int model, const char * v_name, char *m_name)
-{
-    if (!strncmp("AuthenticAMD", v_name, 12))
-    {
-        switch (family) // extract family code
-        {
-        case 4: // Am486/AM5x86
-            strcpy (m_name,"Am486");
-            break;
-
-        case 5: // K6
-            switch (model) // extract model code
-            {
-            case 0:		strcpy (m_name,"K5 Model 0");	break;
-            case 1:		strcpy (m_name,"K5 Model 1");	break;
-            case 2:		strcpy (m_name,"K5 Model 2");	break;
-            case 3:		strcpy (m_name,"K5 Model 3");	break;
-            case 4:     break;	// Not really used
-            case 5:     break;  // Not really used
-            case 6:		strcpy (m_name,"K6 Model 1");	break;
-            case 7:		strcpy (m_name,"K6 Model 2");	break;
-            case 8:		strcpy (m_name,"K6-2");			break;
-            case 9: 
-            case 10:
-            case 11:
-            case 12:
-            case 13:
-            case 14:
-            case 15:	strcpy (m_name,"K6-3");			break;
-            default:	strcpy (m_name,"K6 family");	break;
-            }
-            break;
-
-        case 6: // Athlon
-            switch(model)  // No model numbers are currently defined
-            {
-            case 1:		strcpy (m_name,"ATHLON Model 1");	break;
-			case 2:		strcpy (m_name,"ATHLON Model 2");	break;
-			case 3:		strcpy (m_name,"DURON");			break;
-			case 4:	
-			case 5:		strcpy (m_name,"ATHLON TB");		break;
-			case 6:		strcpy (m_name,"ATHLON XP");		break;
-			case 7:		strcpy (m_name,"DURON XP");			break;
-            default:    strcpy (m_name,"K7 Family");		break;
-			}
-            break;
-        }
-    } else if ( !strncmp("GenuineIntel", v_name, 12))
-    {
-        switch (family) // extract family code
-        {
-        case 4:
-            switch (model) // extract model code
-            {
-            case 0:
-            case 1:		strcpy (m_name,"i486DX");			break;
-            case 2:		strcpy (m_name,"i486SX");			break;
-            case 3:		strcpy (m_name,"i486DX2");			break;
-            case 4:		strcpy (m_name,"i486SL");			break;
-            case 5:		strcpy (m_name,"i486SX2");			break;
-            case 7:		strcpy (m_name,"i486DX2E");			break;
-            case 8:		strcpy (m_name,"i486DX4");			break;
-            default:    strcpy (m_name,"i486 family");		break;
-            }
-            break;
-        case 5:
-            switch (model) // extract model code
-            {
-            case 1:
-            case 2:
-            case 3:		strcpy (m_name,"Pentium");			break;
-            case 4:		strcpy (m_name,"Pentium-MMX");		break;
-            default:	strcpy (m_name,"P5 family");		break;
-            }
-            break;
-        case 6:
-            switch (model) // extract model code
-            {
-            case 1:		strcpy (m_name,"Pentium-Pro");		break;
-            case 3:		strcpy (m_name,"Pentium-II");		break;
-            case 5:		strcpy (m_name,"Pentium-II");		break;  // actual differentiation depends on cache settings
-            case 6:		strcpy (m_name,"Celeron");			break;
-            case 7:		strcpy (m_name,"Pentium-III");		break;  // actual differentiation depends on cache settings
-			case 8:		strcpy (m_name,"P3 Coppermine");	break;
-            default:	strcpy (m_name,"P3 family");		break;
-            }
-            break;
-		case 15:
-			// F15/M2/S4 ???
-			switch (model)
-			{
-			case 2:		strcpy	(m_name,"Pentium 4");		break;
-			default:	strcpy	(m_name,"P4 family");		break;
-			}
-        }
-    } else if ( !strncmp("CyrixInstead", v_name,12))
-    {
-        strcpy (m_name,"Unknown");
-    } else if ( !strncmp("CentaurHauls", v_name,12))
-    {
-        strcpy (m_name,"Unknown");
-    } else 
-    {
-        strcpy (m_name, "Unknown");
-    }
-
-}
 
 /***
 *
@@ -297,106 +9,429 @@ void map_mname( int family, int model, const char * v_name, char *m_name)
 * 
 * Entry:
 *
-*   pinfo: pointer to _p_info.
+*   pinfo: pointer to _p_info, NULL is not allowed!
 *
 * Exit:
 *
-*   Returns int with capablity bit set even if pinfo = NULL
+*   Returns int with capablity bit set.
 *
 ****************************************************/
-
+#ifdef _EDITOR
 int _cpuid (_processor_info *pinfo)
 {
-    u32 dwStandard = 0;
-    u32 dwFeature = 0;
-    u32 dwMax = 0;
-    u32 dwExt = 0;
-    int feature = 0, os_support = 0;
-    union
-    {
-        char cBuf[12+1];
-        struct
-        {
-            u32 dw0;
-            u32 dw1;
-            u32 dw2;
-        };
-    } Ident;
+    ZeroMemory(pinfo, sizeof(_processor_info));
 
-    if (!IsCPUID())
-    {
-        return 0;
-    }
+    pinfo->feature = _CPU_FEATURE_MMX | _CPU_FEATURE_SSE;
+    return pinfo->feature;
+}
+#else
 
-    _asm
-    {
-        push ebx
-        push ecx
-        push edx
+#undef _CPUID_DEBUG
 
-        // get the vendor string
-        xor eax,eax
+int _cpuid ( _processor_info *pinfo )
+	{
+	unsigned int lpid_width , mlpp;
+	#ifdef _CPUID_DEBUG
+		unsigned int mlpc , mcc;
+	#endif // _CPUID_DEBUG
+__asm {
+
+	// set pointers
+	mov			edi , DWORD PTR [pinfo]
+
+	// zero structure
+	xor			eax, eax
+	mov			ecx, TYPE _processor_info
+	mov			esi, edi
+	add			esi, ecx
+	neg			ecx
+NZ:
+	mov			BYTE PTR [esi][ecx], al
+	inc			ecx
+	jnz			NZ
+
+	// zero result mask
+	xor			esi , esi
+
+	// zero bit width
+	mov			DWORD PTR [lpid_width] , esi
+
+	// test for CPUID presence
+	pushfd
+	pop			eax
+	mov			ebx , eax
+	xor			eax , 00200000h
+	push		eax
+	popfd
+	pushfd
+	pop			eax
+	cmp			eax , ebx
+	jz			NO_CPUID
+
+	// function 00h - query standard features
+	xor			eax , eax
+	cpuid
+ 
+	mov			DWORD PTR [edi][_processor_info::v_name][0]  , ebx
+	mov			DWORD PTR [edi][_processor_info::v_name][4]  , edx
+	mov			DWORD PTR [edi][_processor_info::v_name][8]  , ecx
+	mov			BYTE PTR  [edi][_processor_info::v_name][12] , 0
+
+	// check for greater function presence
+	test		eax , eax
+	jz			CHECK_EXT
+
+	// Check for Intel signature
+	cmp			ecx , 0x6C65746E				; "ntel"
+	jnz			NO_HTT
+
+	// Check for HTT bit
+	mov			eax , 01h
+            cpuid
+	test		edx , 010000000h
+	jz			NO_HTT
+
+	// Max logical processors addressed in this package
+	shr			ebx , 16
+	and			ebx , 0FFh
+	mov			DWORD PTR [mlpp] , ebx
+
+	// How many cores we have?
+
+	// Check for 04h leaf
+	xor			eax , eax
+	cpuid
+	cmp			eax , 04h
+	jb			ONE_CORE						; undocumented old P4 ?
+
+	// Max addressable cores we have
+	xor			ecx , ecx
+	mov			eax , 04h
+	cpuid
+
+	shr			eax , 26
+	and			eax , 03Fh
+	jmp short	CALC_WIDTH
+
+ONE_CORE:
+	xor			eax , eax
+
+CALC_WIDTH:
+	inc			eax
+
+#ifdef _CPUID_DEBUG
+	mov			DWORD PTR [mcc] , eax
+#endif // _CPUID_DEBUG
+
+	// Addressable logical processors per core
+	mov			ebx , eax
+	xor			edx , edx
+	mov			eax , DWORD PTR [mlpp]
+	div			ebx
+
+#ifdef _CPUID_DEBUG
+	mov			DWORD PTR [mlpc] , eax
+#endif // _CPUID_DEBUG
+
+	cmp			eax , 01h
+	jbe			NO_HTT
+
+	// Calculate required bit width to address logical procesors
+	xor			ecx , ecx
+	mov			edx , ecx
+	dec			eax
+	bsr			cx , ax
+	jz			BW_READY
+	inc			cx
+	mov			edx , ecx
+BW_READY:
+	mov			DWORD PTR [lpid_width] , edx
+
+	// We have some sort of HT
+	or			esi , _CPU_FEATURE_HTT
+
+NO_HTT:
+	// function 01h - feature sets
+	mov			eax , 01h
+	cpuid
+
+	// stepping ID
+	mov			ebx , eax
+	and			ebx , 0fh
+	mov			BYTE PTR [edi][_processor_info::stepping] , bl
+
+	// Model
+	mov			ebx , eax
+	shr			ebx , 04h
+	and			ebx , 0fh
+	mov			BYTE PTR [edi][_processor_info::model] , bl
+
+	// Family
+	mov			ebx , eax
+	shr			ebx , 08h
+	and			ebx , 0fh
+	mov			BYTE PTR [edi][_processor_info::family] , bl
+
+	// Standard features
+
+	// Against SSE3
+	xor			ebx , ebx
+	mov			eax , _CPU_FEATURE_SSE3
+	test		ecx , 01h
+	cmovnz		ebx , eax
+	or			esi , ebx
+
+	// Against MONITOR/MWAIT
+	xor			ebx , ebx
+	mov			eax , _CPU_FEATURE_MWAIT
+	test		ecx , 08h
+	cmovnz		ebx , eax
+	or			esi , ebx
+
+	// Against SSSE3
+	xor			ebx , ebx
+	mov			eax , _CPU_FEATURE_SSSE3
+	test		ecx , 0200h
+	cmovnz		ebx , eax
+	or			esi , ebx
+
+	// Against SSE4.1
+	xor			ebx , ebx
+	mov			eax , _CPU_FEATURE_SSE4_1
+	test		ecx , 080000h
+	cmovnz		ebx , eax
+	or			esi , ebx
+
+	// Against SSE4.2
+	xor			ebx , ebx
+	mov			eax , _CPU_FEATURE_SSE4_2
+	test		ecx , 0100000h
+	cmovnz		ebx , eax
+	or			esi , ebx
+
+	// Against MMX
+	xor			ebx , ebx
+	mov			eax , _CPU_FEATURE_MMX
+	test		edx , 0800000h
+	cmovnz		ebx , eax
+	or			esi , ebx
+
+	// Against SSE
+	xor			ebx , ebx
+	mov			eax , _CPU_FEATURE_SSE
+	test		edx , 02000000h
+	cmovnz		ebx , eax
+	or			esi , ebx
+
+	// Against SSE2
+	xor			ebx , ebx
+	mov			eax , _CPU_FEATURE_SSE2
+	test		edx , 04000000h
+	cmovnz		ebx , eax
+	or			esi , ebx
+
+CHECK_EXT:
+	// test for extended functions
+	mov			eax , 80000000h
         cpuid
-        mov dwMax,eax
-        mov dword ptr Ident.dw0,ebx
-        mov dword ptr Ident.dw1,edx
-        mov dword ptr Ident.dw2,ecx
+	cmp			eax , 80000004h
+	jb			NO_CPUID
 
-        // get the Standard bits
-        mov eax,1
+	// first 16 bytes
+	mov			eax , 80000002h
         cpuid
-        mov dwStandard,eax
-        mov dwFeature,edx
 
-        // get AMD-specials
-        mov eax,80000000h
+	mov			DWORD PTR [edi][_processor_info::model_name][0]  , eax
+	mov			DWORD PTR [edi][_processor_info::model_name][4]  , ebx
+	mov			DWORD PTR [edi][_processor_info::model_name][8]  , ecx
+	mov			DWORD PTR [edi][_processor_info::model_name][12] , edx
+
+	// second 16 bytes
+	mov			eax , 80000003h
         cpuid
-        cmp eax,80000000h
-        jc notamd
-        mov eax,80000001h
+
+	mov			DWORD PTR [edi][_processor_info::model_name][16] , eax
+	mov			DWORD PTR [edi][_processor_info::model_name][20] , ebx
+	mov			DWORD PTR [edi][_processor_info::model_name][24] , ecx
+	mov			DWORD PTR [edi][_processor_info::model_name][28] , edx
+
+	// third 16 bytes
+	mov			eax , 80000004h
         cpuid
-        mov dwExt,edx
 
-notamd:
-        pop ecx
-        pop ebx
-        pop edx
+	mov			DWORD PTR [edi][_processor_info::model_name][32] , eax
+	mov			DWORD PTR [edi][_processor_info::model_name][36] , ebx
+	mov			DWORD PTR [edi][_processor_info::model_name][40] , ecx
+	mov			DWORD PTR [edi][_processor_info::model_name][44] , edx
+
+	// trailing zero
+	mov			BYTE PTR  [edi][_processor_info::model_name][48] , 0	
+
+	// trimming initials
+	mov			ax , 020h
+
+	// trailing spaces
+	xor			ebx , ebx
+
+TS_FIND_LOOP:
+	cmp			BYTE PTR  [edi][ebx][_processor_info::model_name] , ah
+	jz			TS_FIND_EXIT
+	inc			ebx
+	jmp short	TS_FIND_LOOP
+TS_FIND_EXIT:
+
+	test		ebx , ebx
+	jz			TS_MOVE_EXIT
+
+TS_MOVE_LOOP:
+	dec			ebx
+	cmp			BYTE PTR  [edi][ebx][_processor_info::model_name] , al
+	jnz			TS_MOVE_EXIT
+	mov			BYTE PTR  [edi][ebx][_processor_info::model_name] , ah
+	jmp short	TS_MOVE_LOOP
+
+TS_MOVE_EXIT:
+
+	// heading spaces
+	xor			ebx , ebx
+
+HS_FIND_LOOP:
+	cmp			BYTE PTR  [edi][ebx][_processor_info::model_name] , al
+	jnz			HS_FIND_EXIT
+	inc			ebx
+	jmp short	HS_FIND_LOOP
+HS_FIND_EXIT:
+
+	test		ebx , ebx
+	jz			HS_MOVE_EXIT
+
+	xor			edx , edx
+
+HS_MOVE_LOOP:
+	mov			cl , BYTE PTR  [edi][ebx][_processor_info::model_name]
+	mov			BYTE PTR  [edi][edx][_processor_info::model_name] , cl
+	inc			ebx
+	inc			edx
+	test		cl , cl
+	jnz			HS_MOVE_LOOP
+
+HS_MOVE_EXIT:	
+
+	// many spaces
+	xor			ebx , ebx
+
+MS_FIND_LOOP:
+	// 1st character
+	mov			cl , BYTE PTR  [edi][ebx][_processor_info::model_name]
+	test		cl , cl
+	jz			MS_FIND_EXIT
+	cmp			cl , al
+	jnz			MS_FIND_NEXT
+	// 2nd character
+	mov			edx , ebx
+	inc			ebx
+	mov			cl , BYTE PTR  [edi][ebx][_processor_info::model_name]
+	test		cl , cl
+	jz			MS_FIND_EXIT
+	cmp			cl , al
+	jnz			MS_FIND_NEXT
+	// move
+	jmp short	HS_MOVE_LOOP
+
+MS_FIND_NEXT:
+	inc			ebx
+	jmp short	MS_FIND_LOOP
+MS_FIND_EXIT:
+
+NO_CPUID:
+	
+	mov		DWORD PTR [edi][_processor_info::feature] , esi
+    }
+#ifdef _CPUID_DEBUG
+	printf("mlpp = %u\n" , mlpp );
+	printf("mcc = %u\n" , mcc );
+	printf("mlpc = %u\n" , mlpc );
+	printf("\nlogical_id bit width = %u\n\n" , lpid_width );
+#endif // _CPUID_DEBUG
+
+	// Calculate available processors
+	DWORD pa_mask_save, sa_mask_stub, pa_mask_test, proc_count = 0;
+
+	GetProcessAffinityMask( GetCurrentProcess() , &pa_mask_save , &sa_mask_stub );
+
+	pa_mask_test = pa_mask_save;
+	while ( pa_mask_test ) {
+		if ( pa_mask_test & 0x01 )
+			++proc_count;
+		pa_mask_test >>= 1;
+	}
+
+	// All logical processors
+	pinfo->n_threads = proc_count;
+
+	// easy case, HT is not possible at all
+	if ( lpid_width == 0 ) {
+		pinfo->affinity_mask = pa_mask_save;
+		pinfo->n_cores = proc_count;
+		return pinfo->feature;
+    }
+	
+	// create APIC ID list
+	DWORD dwAPIC_IDS[256], dwNums[256], n_cpu = 0 , n_avail = 0 , dwAPIC_ID , ta_mask;
+
+	pa_mask_test = pa_mask_save;
+	while ( pa_mask_test ) {
+		if ( pa_mask_test & 0x01 ) {
+			// Switch thread to specific CPU
+			ta_mask = ( 1 << n_cpu );
+			SetThreadAffinityMask( GetCurrentThread() , ta_mask );
+			Sleep( 100 );
+			// get APIC ID
+			__asm {
+				mov		eax , 01h
+				cpuid
+				shr		ebx , 24
+				and		ebx , 0FFh
+				mov		DWORD PTR [dwAPIC_ID] , ebx
     }
 
-    if (dwFeature & _MMX_FEATURE_BIT)
-    {
-        feature |= _CPU_FEATURE_MMX;
-        _os_support(_CPU_FEATURE_MMX,os_support);
-    }
-    if (dwExt & _3DNOW_FEATURE_BIT)
-    {
-        feature |= _CPU_FEATURE_3DNOW;
-        _os_support(_CPU_FEATURE_3DNOW,os_support);
-    }
-    if (dwFeature & _SSE_FEATURE_BIT)
-    {
-        feature |= _CPU_FEATURE_SSE;
-        _os_support(_CPU_FEATURE_SSE,os_support);
-    }
-    if (dwFeature & _SSE2_FEATURE_BIT)
-    {
-        feature |= _CPU_FEATURE_SSE2;
-        _os_support(_CPU_FEATURE_SSE2,os_support);
-    }
+			#ifdef _CPUID_DEBUG
+				char mask[255];
+				_itoa_s( dwAPIC_ID , mask , 2 );
+				printf("APID_ID #%2.2u = 0x%2.2X (%08.8sb)\n" , n_avail , dwAPIC_ID , mask );
+			#endif // _CPUID_DEBUG
 
-	if (pinfo)
-    {
-        memset		(pinfo, 0, sizeof(_processor_info));
-        pinfo->os_support = os_support;
-        pinfo->feature = feature;
-        pinfo->family = (dwStandard >> 8)&0xF;  // retriving family
-        pinfo->model = (dwStandard >> 4)&0xF;   // retriving model
-        pinfo->stepping = (dwStandard) & 0xF;   // retriving stepping
-        Ident.cBuf[12] = 0;
-        strcpy		(pinfo->v_name, Ident.cBuf);
-        map_mname	(pinfo->family, pinfo->model, pinfo->v_name, pinfo->model_name);
+			// search for the APIC_ID with the same base
+			BOOL bFound = FALSE;
+			for ( DWORD i = 0 ; i < n_avail ; ++i )
+				if ( ( dwAPIC_ID >> lpid_width ) == ( dwAPIC_IDS[i] >> lpid_width ) ) {
+					bFound = TRUE;
+					break;
     }
-   return feature;
+			if ( ! bFound ) {
+				// add unique core
+				dwNums[n_avail] = n_cpu;
+				dwAPIC_IDS[n_avail] = dwAPIC_ID;
+				++n_avail;
+    }
+    }
+		// pick the next logical processor
+		++n_cpu;
+		pa_mask_test >>= 1;
 }
 
+	// restore original saved affinity mask
+	SetThreadAffinityMask( GetCurrentThread() , pa_mask_save );
+	Sleep( 100 );
+
+	// Create recommended mask
+	DWORD ta_rec_mask = 0;
+	for ( DWORD i = 0 ; i < n_avail ; ++i )
+		ta_rec_mask |= ( 1 << dwNums[i] );
+
+	pinfo->affinity_mask = ta_rec_mask;
+	pinfo->n_cores = n_avail;
+
+	return pinfo->feature;
+}
 #endif

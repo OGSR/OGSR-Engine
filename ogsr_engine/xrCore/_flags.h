@@ -11,7 +11,7 @@ public:
 public:
 	T 	flags;
 
-    IC	TYPE	get		()											{ return flags;}
+    IC	TYPE	get		()									const	{ return flags;}
     IC	SelfRef	zero	()											{ flags=T(0);	return *this;	}
     IC	SelfRef	one		()											{ flags=T(-1);	return *this;	}
     IC	SelfRef	invert	()											{ flags	=	~flags;		return *this;	}
@@ -21,8 +21,8 @@ public:
 	IC	SelfRef	assign	(const T mask)								{ flags	=	mask;		return *this;	}
 	IC	SelfRef	set		(const T mask,	BOOL value)					{ if (value) flags|=mask; else flags&=~mask; return *this; }
 	IC 	BOOL	is		(const T mask)						const	{ return mask==(flags&mask);			}
-	IC 	BOOL	is_any	(const T mask)						const	{ return BOOL(flags&mask);				}
-	IC 	BOOL	test	(const T mask)						const	{ return BOOL(flags&mask);				}
+	IC 	BOOL	is_any	(const T mask)						const	{ return BOOL(!!(flags&mask));			}
+	IC 	BOOL	test	(const T mask)						const	{ return BOOL(!!(flags&mask));			}
 	IC 	SelfRef	or		(const T mask)								{ flags|=mask;			return *this;	}
 	IC 	SelfRef	or		(const Self& f, const T mask) 				{ flags=f.flags|mask;	return *this;	}
 	IC 	SelfRef	and		(const T mask)								{ flags&=mask;			return *this;	}

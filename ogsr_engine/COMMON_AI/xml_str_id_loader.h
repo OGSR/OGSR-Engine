@@ -1,6 +1,6 @@
 #pragma once
 
-#	include "../xr_3da/xrGame/ui/xrUIXmlParser.h"
+#	include "../xrGame/ui/xrUIXmlParser.h"
 #ifndef XRGAME_EXPORTS
 #	include "object_broker.h"
 #endif // XRGAME_EXPORTS

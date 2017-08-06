@@ -576,7 +576,7 @@ void CKinematics::EnumBoneVertices	(SEnumVerticesCallback &C, u16 bone_id)
 
 DEFINE_VECTOR(Fobb,OBBVec,OBBVecIt);
 
-bool	CKinematics::	PickBone			(const Fmatrix &parent_xform,  Fvector& normal, float& dist, const Fvector& start, const Fvector& dir, u16 bone_id)
+bool	CKinematics::	PickBone			(const Fmatrix &parent_xform, CKinematics::pick_result& r, float dist, const Fvector& start, const Fvector& dir, u16 bone_id)
 {
 	Fvector S,D;//normal		= {0,0,0}
 	// transform ray from world to model
@@ -584,11 +584,14 @@ bool	CKinematics::	PickBone			(const Fmatrix &parent_xform,  Fvector& normal, fl
 	P.transform_tiny		(S,start);
 	P.transform_dir			(D,dir);
 	for (u32 i=0; i<children.size(); i++)
-			if (LL_GetChild(i)->PickBone(normal,dist,S,D,bone_id))
-			{
-				parent_xform.transform_dir			(normal);
-				return true;
-			}
+		if (LL_GetChild(i)->PickBone(r,dist,S,D,bone_id))
+		{
+			parent_xform.transform_dir(r.normal);
+			parent_xform.transform_tiny(r.tri[0]);
+			parent_xform.transform_tiny(r.tri[1]);
+			parent_xform.transform_tiny(r.tri[2]);
+			return true;
+		}
 	return false;
 }
 
@@ -606,6 +609,7 @@ void CKinematics::AddWallmark(const Fmatrix* parent_xform, const Fvector3& start
 	DEFINE_VECTOR			(Fobb,OBBVec,OBBVecIt);
 	OBBVec					cache_obb;
 	cache_obb.resize		(LL_BoneCount());
+	CKinematics::pick_result r; r.normal = normal; r.dist = dist;
         u16 k=0;
 	for (k=0; k<LL_BoneCount(); k++){
 		CBoneData& BD		= LL_GetData(k);
@@ -614,7 +618,7 @@ void CKinematics::AddWallmark(const Fmatrix* parent_xform, const Fvector3& start
 			obb.transform	(BD.obb,LL_GetBoneInstance(k).mTransform);
 			if (CDB::TestRayOBB(S,D, obb))
 				for (u32 i=0; i<children.size(); i++)
-					if (LL_GetChild(i)->PickBone(normal,dist,S,D,k)) picked=TRUE;
+					if (LL_GetChild(i)->PickBone(r,dist,S,D,k)) picked=TRUE;
 		}
 	}
 	if (!picked) return; 
@@ -717,19 +721,49 @@ void CKinematics::RenderWallmark(intrusive_ptr<CSkeletonWallmark> wm, FVF::LIT* 
 		float w	= (Device.fTimeGlobal-wm->TimeStart())/LIFE_TIME;
 		for (u32 k=0; k<3; k++){
 			Fvector P;
-			if (F.bone_id[k][0]==F.bone_id[k][1]){
+			if (F.bone_id[k][0]==F.bone_id[k][1])
+			{
 				// 1-link
 				Fmatrix& xform0			= LL_GetBoneInstance(F.bone_id[k][0]).mRenderTransform; 
 				xform0.transform_tiny	(P,F.vert[k]);
-			}else{
+			}
+			else if (F.bone_id[k][0] == F.bone_id[k][2])
+			{
 				// 2-link
 				Fvector P0,P1;
 				Fmatrix& xform0			= LL_GetBoneInstance(F.bone_id[k][0]).mRenderTransform; 
 				Fmatrix& xform1			= LL_GetBoneInstance(F.bone_id[k][1]).mRenderTransform; 
 				xform0.transform_tiny	(P0,F.vert[k]);
 				xform1.transform_tiny	(P1,F.vert[k]);
-				P.lerp					(P0,P1,F.weight[k]);
+				P.lerp					(P0,P1,F.weight[k][0]);
 			}
+			else if (F.bone_id[k][0] == F.bone_id[k][3])
+			{
+				// 3-link
+				Fvector P0, P1, P2;
+				Fmatrix& xform0 = LL_GetBoneInstance(F.bone_id[k][0]).mRenderTransform;
+				Fmatrix& xform1 = LL_GetBoneInstance(F.bone_id[k][1]).mRenderTransform;
+				Fmatrix& xform2 = LL_GetBoneInstance(F.bone_id[k][2]).mRenderTransform;
+				xform0.transform_tiny(P0, F.vert[k]); P0.mul(F.weight[k][0]);
+				xform1.transform_tiny(P1, F.vert[k]); P1.mul(F.weight[k][1]);
+				xform2.transform_tiny(P2, F.vert[k]); P2.mul(1.0f - F.weight[k][0] - F.weight[k][1]);
+				P = P0; P.add(P1); P.add(P2);
+			}
+			else
+			{
+				// 4-link
+				Fvector P0, P1, P2, P3;
+				Fmatrix& xform0 = LL_GetBoneInstance(F.bone_id[k][0]).mRenderTransform;
+				Fmatrix& xform1 = LL_GetBoneInstance(F.bone_id[k][1]).mRenderTransform;
+				Fmatrix& xform2 = LL_GetBoneInstance(F.bone_id[k][2]).mRenderTransform;
+				Fmatrix& xform3 = LL_GetBoneInstance(F.bone_id[k][3]).mRenderTransform;
+				xform0.transform_tiny(P0, F.vert[k]); P0.mul(F.weight[k][0]);
+				xform1.transform_tiny(P1, F.vert[k]); P1.mul(F.weight[k][1]);
+				xform2.transform_tiny(P2, F.vert[k]); P2.mul(F.weight[k][2]);
+				xform3.transform_tiny(P3, F.vert[k]); P3.mul(1.0f - F.weight[k][0] - F.weight[k][1] - F.weight[k][2]);
+				P = P0; P.add(P1); P.add(P2); P.add(P3);
+			}
+
 			wm->XFORM()->transform_tiny	(V->p,P);
 			V->t.set					(F.uv[k]);
 			int			aC				= iFloor	( w * 255.f);	clamp	(aC,0,255);

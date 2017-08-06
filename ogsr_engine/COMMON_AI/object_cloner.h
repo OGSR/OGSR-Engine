@@ -25,19 +25,19 @@ struct CCloner {
 		}
 	};
 
-	IC	static void clone(LPCSTR _1, LPCSTR &_2)
+	IC	static void clone(LPCSTR __1, LPCSTR &__2)
 	{
-		_2							= _1;
+		__2							= __1;
 	}
 
-	IC	static void clone(LPSTR  _1, LPSTR &_2)
+	IC	static void clone(LPSTR  __1, LPSTR &__2)
 	{
-		_2							= xr_strdup(_1);
+		__2							= xr_strdup(__1);
 	}
 
-	IC	static void clone(const shared_str &_1, shared_str &_2)
+	IC	static void clone(const shared_str &__1, shared_str &__2)
 	{
-		_2							= _1;
+		__2							= __1;
 	}
 
 	template <typename T1, typename T2>

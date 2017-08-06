@@ -477,7 +477,7 @@
       <OmitFramePointers>true</OmitFramePointers>
       <EnableFiberSafeOptimizations>true</EnableFiberSafeOptimizations>
       <WholeProgramOptimization>true</WholeProgramOptimization>
-      <AdditionalIncludeDirectories>..\COMMON;..\xrCore\;X:\3rd_party\Src\boost;X:\3rd_party\Src\d3dx\include;X:\ogsr_engine\Luabind;X:\ogsr_engine\LuaJIT\src;X:\3rd_party\Src\Xiph\libogg\include;X:\3rd_party\Src\Xiph\libtheora\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\COMMON;..\xrCore\;..\xrCPU_Pipe\;X:\3rd_party\Src\boost;X:\3rd_party\Src\d3dx\include;X:\ogsr_engine\Luabind;X:\ogsr_engine\LuaJIT\src;X:\3rd_party\Src\Xiph\libogg\include;X:\3rd_party\Src\Xiph\libtheora\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>_OGSE;QUATERNION_SKINNING;NDEBUG;WIN32;_WINDOWS;ENGINE_BUILD;_SECURE_SCL=0;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <StringPooling>true</StringPooling>
       <ExceptionHandling>
@@ -927,13 +927,14 @@
     <ClInclude Include="..\COMMON\doug_lea_memory_allocator.h" />
     <ClInclude Include="..\COMMON\DrawUtils.h" />
     <ClInclude Include="..\COMMON\ETextureParams.h" />
+    <ClInclude Include="..\COMMON\std_classes.h" />
+    <ClInclude Include="..\xrParticles\psystem.h" />
     <ClInclude Include="r2_shader_exports.h" />
     <ClInclude Include="CopyProtection.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="trivial_encryptor.h" />
     <ClInclude Include="x_ray.h" />
     <ClInclude Include="resource.h" />
-    <ClInclude Include="psystem.h" />
     <ClInclude Include="IInputReceiver.h" />
     <ClInclude Include="xr_input.h" />
     <ClInclude Include="ISheduled.h" />
@@ -1029,7 +1030,6 @@
     <ClInclude Include="R_DStreams.h" />
     <ClInclude Include="Properties.h" />
     <ClInclude Include="pure.h" />
-    <ClInclude Include="std_classes.h" />
     <ClInclude Include="xrXRC.h" />
     <ClInclude Include="xr_ioc_cmd.h" />
     <ClInclude Include="XR_IOConsole.h" />

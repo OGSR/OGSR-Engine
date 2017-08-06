@@ -158,6 +158,8 @@ SVS*	CResourceManager::_CreateVS		(LPCSTR _name)
 	if (0 == ::Render->m_skinning)	strcat(name,"_0");
 	if (1 == ::Render->m_skinning)	strcat(name,"_1");
 	if (2 == ::Render->m_skinning)	strcat(name,"_2");
+	if (3 == ::Render->m_skinning)	strcat(name,"_3");
+	if (4 == ::Render->m_skinning)	strcat(name,"_4");
 	LPSTR N				= LPSTR		(name);
 	map_VS::iterator I	= m_vs.find	(N);
 	if (I!=m_vs.end())	return I->second;

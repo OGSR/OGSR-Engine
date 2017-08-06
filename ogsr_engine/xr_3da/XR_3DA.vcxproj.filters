@@ -150,9 +150,6 @@
     <ClInclude Include="resource.h">
       <Filter>General\Resources</Filter>
     </ClInclude>
-    <ClInclude Include="psystem.h">
-      <Filter>Interfaces</Filter>
-    </ClInclude>
     <ClInclude Include="IInputReceiver.h">
       <Filter>Interfaces\Input</Filter>
     </ClInclude>
@@ -438,9 +435,6 @@
     <ClInclude Include="pure.h">
       <Filter>Engine</Filter>
     </ClInclude>
-    <ClInclude Include="std_classes.h">
-      <Filter>Engine</Filter>
-    </ClInclude>
     <ClInclude Include="xrXRC.h">
       <Filter>Engine\Collision Core</Filter>
     </ClInclude>
@@ -491,6 +485,12 @@
     </ClInclude>
     <ClInclude Include="..\COMMON\bone.h">
       <Filter>Game API\Animator</Filter>
+    </ClInclude>
+    <ClInclude Include="..\COMMON\std_classes.h">
+      <Filter>Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="..\xrParticles\psystem.h">
+      <Filter>Interfaces</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
