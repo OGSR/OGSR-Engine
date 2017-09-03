@@ -86,7 +86,7 @@ void CSoundRender_Source::LoadWave	(LPCSTR pName)
                                                                 
 	vorbis_comment*	ovm		= ov_comment(&ovf,-1);
 	if (ovm->comments) {
-        u8 temp[32];
+        u8 *temp = new u8 [32];
         CopyMemory(temp,  ovm->user_comments[0], ovm->comment_lengths[0]);
 		IReader *F     = xr_new<IReader>  			((void*)temp,ovm->comment_lengths[0]);
 		u32 vers			= F->r_u32		();
@@ -112,6 +112,7 @@ void CSoundRender_Source::LoadWave	(LPCSTR pName)
 			Log				("! Invalid ogg-comment version, file: ",pName);
 		}
         xr_delete(F);
+		delete[](temp);
 	} else {
 		Log					("! Missing ogg-comment, file: ",pName);
 	}

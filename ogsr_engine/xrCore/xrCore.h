@@ -73,12 +73,8 @@
     	#define DEBUG
     #endif
 #endif
-                
-#ifdef XRCORE_STATIC
-#	define NO_FS_SCAN
-#endif
 
-#ifdef _EDITOR
+#if defined (_EDITOR) || defined(XRCORE_STATIC)
 #	define NO_FS_SCAN
 #endif
 

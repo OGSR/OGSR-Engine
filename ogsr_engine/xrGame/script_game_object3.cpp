@@ -588,7 +588,7 @@ CScriptGameObject	*CScriptGameObject::GetActiveItem()
 		else
 			return		(0);
 	else {
-		ai().script_engine().script_log			(ScriptStorage::eLuaMessageTypeError,"CScriptGameObject : cannot access class member activge_item!");
+		ai().script_engine().script_log			(ScriptStorage::eLuaMessageTypeError,"CScriptGameObject : cannot access class member active_item!");
 		return			(0);
 	}
 }

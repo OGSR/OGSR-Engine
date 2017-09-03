@@ -383,7 +383,7 @@ void CALLBACK PreErrorHandler	(INT_PTR)
 	if (!xr_FS || !FS.m_Flags.test(CLocatorAPI::flReady))
 		return;
 
-	string_path				log_folder, full_log_name;
+	string_path				log_folder, full_log_name, lua_log_name;
 
 	__try {
 		FS.update_path		(log_folder,"$logs$","");
@@ -395,15 +395,26 @@ void CALLBACK PreErrorHandler	(INT_PTR)
 			strconcat		(sizeof(log_folder),log_folder,current_folder,"\\",relative_path);
 		}
 		strconcat(sizeof(full_log_name), full_log_name, current_folder, "\\", log_name());
+#ifndef _EDITOR
+		strncpy(lua_log_name, full_log_name, xr_strlen(full_log_name) - 4);
+		lua_log_name[xr_strlen(full_log_name) - 4] = '\0';
+//		Msg("logging in %s", lua_log_name);
+		strcat(lua_log_name, "_lua.log");
+#endif
 	}
 	__except(EXCEPTION_EXECUTE_HANDLER) {
 		strcpy				(log_folder,"logs");
 		strcpy				(full_log_name, "$sdk_root$");
+#ifndef _EDITOR
+		strcpy				(lua_log_name, "$sdk_root$");
+#endif
 	}
-//	Msg						("logging in %s", full_log_name);
+	Msg						("logging in %s", full_log_name);
 	BT_AddLogFile			(full_log_name);
 	BT_SetReportFilePath	(log_folder);
 #ifndef _EDITOR
+//	Msg("logging in %s", lua_log_name);
+	BT_AddLogFile			(lua_log_name);
 	BT_SaveSnapshot			(NULL);
 #endif
 #endif // USE_BUG_TRAP
@@ -425,9 +436,9 @@ void SetupExceptionHandler	(const bool &dedicated)
 	BT_SetDialogMessage				(
 		BTDM_INTRO2,
 		"\
-Произошла игровая ошибка, которая привела к падению игры. Это печально. \
-Архив со сведениями об ошибке сохранен в папке _appdata_/logs. Вы также \
-можете сохранить его в другое место, нажав кнопку Save."
+There was an error that led to XRAY crash. That's a pity. \
+Zip file with data about error have been stored in _appdata_/logs. You also can \
+save it in other location by pressing Save button."
 	);
 
 	BT_SetPreErrHandler		(PreErrorHandler,0);
