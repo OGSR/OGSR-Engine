@@ -266,6 +266,20 @@ bool CUICustomEdit::KeyPressed(int dik)
 		out_me = m_bShift ? '_' : '-';	break;
 	case DIK_EQUALS:
 		out_me = m_bShift ? '+' : '=';	break;
+	case DIK_SUBTRACT:
+		out_me = '-';	break;
+	case DIK_ADD:
+		out_me = '+';	break;
+	case DIK_NUMPAD1: out_me = '1'; break;
+	case DIK_NUMPAD2: out_me = '2'; break;
+	case DIK_NUMPAD3: out_me = '3'; break;
+	case DIK_NUMPAD4: out_me = '4'; break;
+	case DIK_NUMPAD5: out_me = '5'; break;
+	case DIK_NUMPAD6: out_me = '6'; break;
+	case DIK_NUMPAD7: out_me = '7'; break;
+	case DIK_NUMPAD8: out_me = '8'; break;
+	case DIK_NUMPAD9: out_me = '9'; break;
+	case DIK_NUMPAD0: out_me = '0'; break;
 	default:
 		it = gs_DIK2CHR.find(dik);
 
