@@ -47,7 +47,7 @@
 #define DEFINE_LUABIND_VIRTUAL_FUNCTION_EXPLICIT_1(a,b,c,d,e,f) \
 	.def(#c, (d (a::*)(e))(&a::c), (d (*)(b*,f))(&b::c##_static))*/
 
-#ifdef DEBUG
+#ifndef LUABIND_NO_EXCEPTIONS
 #	define CAST_FAILED(v_func_name,ret_type) \
 		catch(luabind::cast_failed exception) {										\
 			ai().script_engine().script_log (ScriptStorage::eLuaMessageTypeError,"SCRIPT RUNTIME ERROR : luabind::cast_failed in function %s (%s)!",#v_func_name,#ret_type);\
