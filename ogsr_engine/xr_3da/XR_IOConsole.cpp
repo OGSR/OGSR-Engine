@@ -484,7 +484,7 @@ outloop:
 	// search
 	vecCMD_IT I = Commands.find(first_word);
 	if (I!=Commands.end()) {
-		Log("! Executing command: ", first_word);
+//		Log("! Executing command: ", first_word);
 		IConsole_Command &C = *(I->second);
 		if (C.bEnabled) {
 			if (C.bLowerCaseArgs) strlwr(last_word);

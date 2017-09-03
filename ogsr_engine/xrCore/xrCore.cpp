@@ -15,7 +15,6 @@ int (WINAPIV * __vsnprintf)(char *, size_t, const char*, va_list) = _vsnprintf;
 #endif // DEBUG
 
 XRCORE_API		xrCore	Core;
-XRCORE_API	u32		build_id;
 XRCORE_API	LPCSTR	build_date;
 
 namespace CPU
@@ -112,7 +111,7 @@ void xrCore::_initialize	(LPCSTR _ApplicationName, LogCallback cb, BOOL init_fs,
 	#endif
 #endif
 		FS._initialize		(flags,0,fs_fname);
-		Msg					("'%s' build %d, %s\n","xrCore",build_id, build_date);
+		Msg					("'%s' build %d, %s\n","XRAY Engine (OGSE Edition)",build_id, build_date);
 		EFS._initialize		();
 #ifdef DEBUG
     #ifndef	_EDITOR

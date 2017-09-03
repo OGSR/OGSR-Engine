@@ -34,11 +34,7 @@ XRCORE_API DUMMY_STUFF	*g_temporary_stuff = 0;
 
 CLocatorAPI*		xr_FS = NULL;
 
-#ifdef _EDITOR
-#	define FSLTX	"fs.ltx"
-#else
-#	define FSLTX	"fsgame.ltx"
-#endif
+#define FSLTX	"fs.ltx"
 
 struct _open_file
 {
