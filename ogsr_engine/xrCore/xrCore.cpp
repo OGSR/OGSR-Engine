@@ -15,8 +15,8 @@ int (WINAPIV * __vsnprintf)(char *, size_t, const char*, va_list) = _vsnprintf;
 #endif // DEBUG
 
 XRCORE_API		xrCore	Core;
-XRCORE_API		u32		build_id;
-XRCORE_API		LPCSTR	build_date;
+XRCORE_API	u32		build_id;
+XRCORE_API	LPCSTR	build_date;
 
 namespace CPU
 {

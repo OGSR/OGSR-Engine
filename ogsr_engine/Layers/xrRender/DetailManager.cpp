@@ -12,6 +12,7 @@
 #	include "ESceneClassList.h"
 #	include "Scene.h"
 #	include "SceneObject.h"
+#	include "IGame_Persistent.h"
 #endif
 
 const float dbgOffset			= 0.f;

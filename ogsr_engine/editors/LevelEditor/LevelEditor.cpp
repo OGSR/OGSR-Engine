@@ -45,6 +45,9 @@ WINAPI WinMain(HINSTANCE hInst, HINSTANCE, LPSTR, int)
         frmSplash->Repaint		();
         frmSplash->SetStatus	("Core initializing...");
 
+        Debug._initialize		(false);
+
+        compute_build_id		();
     	Core._initialize		("level",ELogCallback);
 
         Application->Initialize	();

@@ -48,7 +48,7 @@ void AddOne				(const char *split)
 		strftime(buf, 64, "[%x %X]\t", ti);
 
 		char buf_1[1024];
-		sprintf_s(buf_1, "%s%s\r\n", buf, split);
+		sprintf_s(buf_1, 1024, "%s%s\r\n", buf, split);
 		shared_str			temp = shared_str(buf_1);
 		LogFile->push_back	(temp);
 

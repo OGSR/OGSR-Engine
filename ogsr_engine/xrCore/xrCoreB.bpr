@@ -49,7 +49,8 @@
       ..\_TEMP\SDK\Release\Win32\core\lzo1x_1.obj 
       ..\_TEMP\SDK\Release\Win32\core\lzo1x_d1.obj 
       ..\_TEMP\SDK\Release\Win32\core\lzo1x_9x.obj 
-      ..\_TEMP\SDK\Release\Win32\core\lzo1x_d3.obj"/>
+      ..\_TEMP\SDK\Release\Win32\core\lzo1x_d3.obj 
+      ..\_TEMP\SDK\Release\Win32\core\compute_build_id.obj"/>
     <RESFILES value="..\_TEMP\SDK\Release\Win32\core\xrCore.res"/>
     <IDLFILES value=""/>
     <IDLGENFILES value=""/>
@@ -204,6 +205,7 @@
       <FILE FILENAME="X:\3rd_party\Src\lzo\lzo1x_d1.c" FORMNAME="" UNITNAME="lzo1x_d1" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
       <FILE FILENAME="X:\3rd_party\Src\lzo\lzo1x_9x.c" FORMNAME="" UNITNAME="lzo1x_9x" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
       <FILE FILENAME="X:\3rd_party\Src\lzo\lzo1x_d3.c" FORMNAME="" UNITNAME="lzo1x_d3" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="compute_build_id.cpp" FORMNAME="" UNITNAME="compute_build_id" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
   </FILELIST>
   <BUILDTOOLS>
   </BUILDTOOLS>

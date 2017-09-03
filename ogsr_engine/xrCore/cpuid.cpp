@@ -2,8 +2,10 @@
 #pragma hdrstop
 
 #include "cpuid.h"
+#ifndef _EDITOR
 #include <intrin.h>
 #include <VersionHelpers.h>
+#endif
 
 /***
 *
@@ -23,7 +25,7 @@ int _cpuid(_processor_info *pinfo)
 {
 	ZeroMemory(pinfo, sizeof(_processor_info));
 
-	pinfo->feature = _CPU_FEATURE_MMX | _CPU_FEATURE_SSE;
+	pinfo->feature = _CPU_FEATURE_SSE;
 	return pinfo->feature;
 }
 #else

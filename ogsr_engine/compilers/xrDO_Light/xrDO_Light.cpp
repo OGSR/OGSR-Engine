@@ -31,7 +31,7 @@ static const char* h_str =
 
 void Help()
 {	MessageBox(0,h_str,"Command line options",MB_OK|MB_ICONINFORMATION); }
-
+/*
 // computing build id
 XRCORE_API	LPCSTR	build_date;
 XRCORE_API	u32		build_id;
@@ -75,7 +75,7 @@ void compute_build_id	()
 	for (int i=0; i<start_month-1; ++i)
 		build_id		-= days_in_month[i];
 }
-
+*/
 void Startup(LPSTR     lpCmdLine)
 {
 	char cmd[512],name[256];

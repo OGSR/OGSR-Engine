@@ -13,7 +13,7 @@
 #pragma warning(pop)
 
 extern bool shared_str_initialized;
-// KD: we don't need BugTrap since it provides _only_ nice ui window and e-mail sending
+#define USE_BUG_TRAP
 #ifdef __BORLANDC__
 /*    #	include "d3d9.h"
     #	include "d3dx9.h"
@@ -21,9 +21,7 @@ extern bool shared_str_initialized;
     #	pragma comment(lib,"EToolsB.lib")   */
     #	define DEBUG_INVOKE	DebugBreak()
         static BOOL			bException	= TRUE;
-    #   define USE_BUG_TRAP
 #else
-    #   define USE_BUG_TRAP
 #ifdef _WIN64
     #	define DEBUG_INVOKE	DebugBreak()
 #else
@@ -41,17 +39,12 @@ extern bool shared_str_initialized;
 #include <dbghelp.h>						// MiniDump flags
 
 #ifdef USE_BUG_TRAP
-#ifdef _WIN64
-#	include "bugtrap.h"						// for BugTrap functionality
-#	pragma comment(lib,"BugTrap.lib")		// Link to x64 dll
-#else
-#	include "bugtrap.h"						// for BugTrap functionality
+    #include "bugtrap.h"					 // for BugTrap functionality
     #ifndef __BORLANDC__
         #	pragma comment(lib,"BugTrap.lib")		// Link to ANSI DLL
     #else
         #	pragma comment(lib,"BugTrapB.lib")		// Link to ANSI DLL
     #endif
-#endif
 #endif // USE_BUG_TRAP
 
 #include <new.h>							// for _set_new_mode
@@ -410,7 +403,9 @@ void CALLBACK PreErrorHandler	(INT_PTR)
 //	Msg						("logging in %s", full_log_name);
 	BT_AddLogFile			(full_log_name);
 	BT_SetReportFilePath	(log_folder);
-	BT_SaveSnapshot			(0);
+#ifndef _EDITOR
+	BT_SaveSnapshot			(NULL);
+#endif
 #endif // USE_BUG_TRAP
 }
 
@@ -430,9 +425,9 @@ void SetupExceptionHandler	(const bool &dedicated)
 	BT_SetDialogMessage				(
 		BTDM_INTRO2,
 		"\
-� �������� ���� ��������� ������. ���, ���� � �������� ������ ��������� � ������ � ����� �����.\
-����������� ������ ��������� ���, ��� ��� ������, ����� ������ Save. ������� ����� �������������\
-�����, ����� ������ Submit Bug."
+Произошла игровая ошибка, которая привела к падению игры. Это печально. \
+Архив со сведениями об ошибке сохранен в папке _appdata_/logs. Вы также \
+можете сохранить его в другое место, нажав кнопку Save."
 	);
 
 	BT_SetPreErrHandler		(PreErrorHandler,0);
@@ -706,7 +701,11 @@ LONG WINAPI UnhandledFilter	(_EXCEPTION_POINTERS *pExceptionInfo)
 		m_on_dialog						= 0;
         std::set_new_handler			(def_new_handler);	// exception-handler for 'out of memory' condition
 //		::SetUnhandledExceptionFilter	(UnhandledFilter);	// exception handler to all "unhandled" exceptions
-    }
+#ifdef USE_BUG_TRAP
+		SetupExceptionHandler(false);
+#endif // USE_BUG_TRAP
+		previous_filter = ::SetUnhandledExceptionFilter(UnhandledFilter);	// exception handler to all "unhandled" exceptions
+	}
 #else
     typedef int		(__cdecl * _PNH)( size_t );
     _CRTIMP int		__cdecl _set_new_mode( int );

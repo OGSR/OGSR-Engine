@@ -12,7 +12,7 @@
 #include "ui_leveltools.h"
 #include "../ECore/Editor/GeometryCollector.h"
 
-#include "../../xr_3da/xrGame/xrServer_Objects_Abstract.h"
+#include "../../COMMON_AI/xrServer_Objects_Abstract.h"
 #include "ESceneSpawnTools.h"
 #include "GeometryPartExtractor.h"
 #include "ResourceManager.h"

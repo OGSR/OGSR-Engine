@@ -7,7 +7,7 @@
 
 #include "LevelGameDef.h"
 #include <dplay8.h>
-#include "../../xrGame/xrServer_Objects_abstract.h"
+#include "../../COMMON_AI/xrServer_Objects_abstract.h"
 #include "CustomObject.h"
 
 // refs
