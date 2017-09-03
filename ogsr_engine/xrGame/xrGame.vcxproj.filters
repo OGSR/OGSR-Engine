@@ -5337,9 +5337,6 @@
     <ClInclude Include="..\COMMON\DrawUtils.h">
       <Filter>Core\Server\Editor</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\xrCore\FastDelegate.h">
-      <Filter>Core\Server\Editor</Filter>
-    </ClInclude>
     <ClInclude Include="..\COMMON_AI\ItemListTypes.h">
       <Filter>Core\Server\Editor</Filter>
     </ClInclude>
@@ -6567,6 +6564,7 @@
     <ClInclude Include="..\COMMON_AI\server_entity_wrapper_inline.h">
       <Filter>AI\ALife\simulator_base\registries\spawn_registry\server_entity_wrapper</Filter>
     </ClInclude>
+    <ClInclude Include="..\xrCore\FastDelegate.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="damage_manager.cpp">
