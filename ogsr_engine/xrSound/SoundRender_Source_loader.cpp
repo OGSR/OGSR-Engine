@@ -86,8 +86,8 @@ void CSoundRender_Source::LoadWave	(LPCSTR pName)
                                                                 
 	vorbis_comment*	ovm		= ov_comment(&ovf,-1);
 	if (ovm->comments){
-                string32 temp;
-                strcpy(temp,  ovm->user_comments[0]);
+                u8 temp[32];
+                CopyMemory(temp,  ovm->user_comments[0], ovm->comment_lengths[0]);
 		IReader *F     = xr_new<IReader>  			((void*)temp,ovm->comment_lengths[0]);
 		u32 vers			= F->r_u32	();
         if (vers==0x0001){
