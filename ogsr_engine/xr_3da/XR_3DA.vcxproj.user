@@ -8,7 +8,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LocalDebuggerCommandArguments>-nointro -ltx user.ltx</LocalDebuggerCommandArguments>
     <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
-    <LocalDebuggerWorkingDirectory>X:\ogsr_package\READY\bin</LocalDebuggerWorkingDirectory>
+    <LocalDebuggerWorkingDirectory>X:\ogsr_package\READY</LocalDebuggerWorkingDirectory>
     <LocalDebuggerCommand>X:\ogsr_package\READY\bin\XR_3DA.exe</LocalDebuggerCommand>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug_Dedicated|Win32'">

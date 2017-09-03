@@ -148,6 +148,8 @@ void xrCore::_destroy		()
 #endif
 
 		Memory._destroy		();
+		if (!strstr(GetCommandLine(), "-editor"))
+			CoUninitialize();
 	}
 }
 
@@ -173,11 +175,13 @@ void xrCore::_destroy		()
 //.		LogFile.reserve		(256);
 		break;
 	case DLL_THREAD_ATTACH:
-		if (!strstr(GetCommandLine(), "-editor"))
-			CoInitializeEx(NULL, COINIT_MULTITHREADED);
+/*		if (!strstr(GetCommandLine(), "-editor"))
+			CoInitializeEx(NULL, COINIT_MULTITHREADED);*/
 		timeBeginPeriod	(1);
 		break;
 	case DLL_THREAD_DETACH:
+/*		if (!strstr(GetCommandLine(), "-editor"))
+			CoUninitialize();*/
 		break;
 	case DLL_PROCESS_DETACH:
 #ifdef USE_MEMORY_MONITOR

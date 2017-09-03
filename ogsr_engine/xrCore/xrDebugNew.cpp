@@ -9,6 +9,7 @@
 #pragma warning(disable:4995)
 #include <malloc.h>
 #include <direct.h>
+#include <objbase.h>
 #pragma warning(pop)
 
 extern bool shared_str_initialized;
@@ -60,7 +61,7 @@ extern bool shared_str_initialized;
 #	define USE_OWN_MINI_DUMP
 #	define USE_OWN_ERROR_MESSAGE_WINDOW
 #else // DEBUG
-#	define USE_OWN_MINI_DUMP
+//#	define USE_OWN_MINI_DUMP
 #endif // DEBUG
 
 XRCORE_API	xrDebug		Debug;
@@ -389,24 +390,27 @@ void CALLBACK PreErrorHandler	(INT_PTR)
 	if (!xr_FS || !FS.m_Flags.test(CLocatorAPI::flReady))
 		return;
 
-	string_path				log_folder;
+	string_path				log_folder, full_log_name;
 
 	__try {
 		FS.update_path		(log_folder,"$logs$","");
+		string256			current_folder;
+		_getcwd				(current_folder, sizeof(current_folder));
 		if ((log_folder[0] != '\\') && (log_folder[1] != ':')) {
-			string256		current_folder;
-			_getcwd			(current_folder,sizeof(current_folder));
-			
 			string256		relative_path;
 			strcpy			(relative_path,log_folder);
 			strconcat		(sizeof(log_folder),log_folder,current_folder,"\\",relative_path);
 		}
+		strconcat(sizeof(full_log_name), full_log_name, current_folder, "\\", log_name());
 	}
 	__except(EXCEPTION_EXECUTE_HANDLER) {
 		strcpy				(log_folder,"logs");
+		strcpy				(full_log_name, "$sdk_root$");
 	}
-
-	BT_AddLogFile			(log_name());
+//	Msg						("logging in %s", full_log_name);
+	BT_AddLogFile			(full_log_name);
+	BT_SetReportFilePath	(log_folder);
+	BT_SaveSnapshot			(0);
 #endif // USE_BUG_TRAP
 }
 
@@ -426,22 +430,22 @@ void SetupExceptionHandler	(const bool &dedicated)
 	BT_SetDialogMessage				(
 		BTDM_INTRO2,
 		"\
-This is XRay Engine crash reporting client. \
-To help the development process, \
-please Submit Bug or save report and email it manually (button More...).\
-\r\nMany thanks in advance and sorry for the inconvenience."
+� �������� ���� ��������� ������. ���, ���� � �������� ������ ��������� � ������ � ����� �����.\
+����������� ������ ��������� ���, ��� ��� ������, ����� ������ Save. ������� ����� �������������\
+�����, ����� ������ Submit Bug."
 	);
 
 	BT_SetPreErrHandler		(PreErrorHandler,0);
-	BT_SetAppName			("XRay Engine");
+	BT_SetAppName			("OGSE");
 	BT_SetReportFormat		(BTRF_TEXT);
-	BT_SetFlags				(BTF_DETAILEDMODE | /**BTF_EDIETMAIL | /**/BTF_ATTACHREPORT /**| BTF_LISTPROCESSES /**| BTF_SHOWADVANCEDUI /**| BTF_SCREENCAPTURE/**/);
+	BT_SetFlags				(BTF_DETAILEDMODE | /**BTF_EDIETMAIL | /**/BTF_ATTACHREPORT /**| BTF_LISTPROCESSES /**| BTF_SHOWADVANCEDUI /**/|  BTF_SCREENCAPTURE);
 	BT_SetDumpType			(
+		MiniDumpNormal |
 		MiniDumpWithDataSegs |
 //		MiniDumpWithFullMemory |
 //		MiniDumpWithHandleData |
-//		MiniDumpFilterMemory |
-//		MiniDumpScanMemory |
+		MiniDumpFilterMemory |
+		MiniDumpScanMemory |
 //		MiniDumpWithUnloadedModules |
 #ifndef _EDITOR
 		MiniDumpWithIndirectlyReferencedMemory |
@@ -453,6 +457,13 @@ please Submit Bug or save report and email it manually (button More...).\
 //		MiniDumpWithFullMemoryInfo |
 //		MiniDumpWithThreadInfo |
 //		MiniDumpWithCodeSegs |
+//		MiniDumpWithoutAuxiliaryState |
+//		MiniDumpWithFullAuxiliaryState |
+//		MiniDumpWithPrivateWriteCopyMemory |
+//		MiniDumpIgnoreInaccessibleMemory |
+//		MiniDumpWithTokenInformation |
+//		MiniDumpWithModuleHeaders |
+//		MiniDumpFilterTriag |
 		0
 	);
 	BT_SetSupportEMail		("crash-report@stalker-game.com");
@@ -608,7 +619,7 @@ void format_message	(LPSTR buffer, const u32 &buffer_size)
 		NULL
 	);
 
-	sprintf		(buffer,"[error][%8d]    : %s",error_code,message);
+	sprintf		(buffer,"[error][%8d]    : %s",error_code, (LPSTR)&message);
     LocalFree	(message);
 }
 

@@ -39,7 +39,7 @@ DWORD WINAPI ttapiThreadProc( LPVOID lpParameter )
 				// Msg( "0x%8.8X Fast %u" , dwId , i );
 				goto process;
 			}
-			__asm pause;
+			_mm_pause();
 		}
 
 		// Moderate
@@ -91,7 +91,7 @@ void SetThreadName( DWORD dwThreadID , LPCSTR szThreadName )
   }
   __try
   {
-    RaiseException( 0x406D1388, 0, sizeof(info)/sizeof(DWORD), (DWORD*)&info );
+    RaiseException( 0x406D1388, 0, sizeof(info)/sizeof(DWORD), (ULONG_PTR*)&info );
   }
   __except (EXCEPTION_CONTINUE_EXECUTION)
   {
@@ -121,7 +121,7 @@ DWORD ttapi_Init( _processor_info* ID )
 	for ( i = 0 ; i < dwNumIter ; ++i ) {
 		if ( dwDummy == 0 )
 			goto process1;
-		__asm pause;
+		_mm_pause();
 	}
 	process1:
 	QueryPerformanceCounter( &liEnd );
@@ -172,14 +172,21 @@ DWORD ttapi_Init( _processor_info* ID )
 
 	char szThreadName[64];
 	DWORD dwThreadId = 0;
-	DWORD dwAffinitiMask = ID->affinity_mask;
-	DWORD dwCurrentMask = 0x01;
+	DWORD_PTR dwAffinitiMask = ID->affinity_mask;
+	DWORD_PTR dwCurrentMask = 0x01;
 
 	// Setting affinity
 	while ( ! ( dwAffinitiMask & dwCurrentMask ) )
 		dwCurrentMask <<= 1;
 
 	SetThreadAffinityMask( GetCurrentThread() , dwCurrentMask );
+/*	DWORD_PTR dwAffinitiMask = 1;
+	DWORD_PTR dwCurrentMask = 0;
+
+	dwCurrentMask = SetThreadAffinityMask(GetCurrentThread(), dwAffinitiMask);
+	R_ASSERT2(dwCurrentMask, "dwAffinitiMask is 0!");
+	SetThreadAffinityMask(GetCurrentThread(), dwCurrentMask); // restore original*/
+
 	//Msg("Master Thread Affinity Mask : 0x%8.8X" , dwCurrentMask );
 
 	// Creating threads
@@ -244,7 +251,7 @@ VOID ttapi_RunAllWorkers()
 		// Waiting task queue to become empty
 		//Start = __rdtsc();
 		while( ttapi_queue_size.size )
-			__asm pause;
+			_mm_pause();
 		//Stop = __rdtsc();
 		//Msg( "Wait: %u ticks" , Stop - Start );
 

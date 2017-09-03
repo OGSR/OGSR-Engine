@@ -32,7 +32,7 @@ void UIRegistrator::script_register(lua_State *L)
 			.def("GetFlieName",		&Patch_Dawnload_Progress::GetFlieName)
 			.def("GetProgress",		&Patch_Dawnload_Progress::GetProgress),
 
-		class_<CMainMenu>("CMainMenu")
+		class_<CMainMenu, CDialogHolder>("CMainMenu")
 			.def("GetPatchProgress",		&CMainMenu::GetPatchProgress)
 			.def("CancelDownload",			&CMainMenu::CancelDownload)
 			.def("ValidateCDKey",			&CMainMenu::ValidateCDKey)

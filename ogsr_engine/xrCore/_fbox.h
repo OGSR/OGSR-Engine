@@ -28,7 +28,7 @@ public:
 	IC	const T* data		()	const									{ return &min.x;	}	
 
 	IC 	SelfRef	set			(const Tvector &_min, const Tvector &_max)	{ min.set(_min);	max.set(_max);		return *this;	};
-	IC	SelfRef	set			(T x1, T y1, T z1, T x2, T y2, T z2)		{ min.set(x1,y1,z1);max.set(x2,y2,z2);	return *this;	};
+	IC	SelfRef	set			(T _x1, T _y1, T _z1, T _x2, T _y2, T _z2)	{ min.set(_x1,_y1,_z1);max.set(_x2,_y2,_z2);	return *this;	};
 	IC	SelfRef	set			(SelfCRef b)								{ min.set(b.min);	max.set(b.max);		return *this;	};
     IC 	SelfRef	setb		(const Tvector& center, const Tvector& dim)	{ min.sub(center,dim);max.add(center,dim);return *this;	}
 

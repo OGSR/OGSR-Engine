@@ -228,29 +228,31 @@ void _initialize_cpu	(void)
 //	DUMP_PHASE;
 
 	if (strstr(Core.Params,"-x86"))		{
-		CPU::ID.feature	&= ~_CPU_FEATURE_MMX	;
-		CPU::ID.feature	&= ~_CPU_FEATURE_3DNOW	;
+/*		CPU::ID.feature	&= ~_CPU_FEATURE_MMX	;
+		CPU::ID.feature	&= ~_CPU_FEATURE_3DNOW	;*/
 		CPU::ID.feature	&= ~_CPU_FEATURE_SSE	;
 		CPU::ID.feature	&= ~_CPU_FEATURE_SSE2	;
 		CPU::ID.feature	&= ~_CPU_FEATURE_SSE3	;
 		CPU::ID.feature	&= ~_CPU_FEATURE_SSSE3	;
-		CPU::ID.feature	&= ~_CPU_FEATURE_SSE4_1	;
-		CPU::ID.feature	&= ~_CPU_FEATURE_SSE4_2	;
+		CPU::ID.feature	&= ~_CPU_FEATURE_SSE41	;
+		CPU::ID.feature	&= ~_CPU_FEATURE_SSE42	;
+		CPU::ID.feature &= ~_CPU_FEATURE_AVX	;
 	};
 
 	string256	features;	strcpy_s(features,sizeof(features),"RDTSC");
-    if (CPU::ID.feature&_CPU_FEATURE_MMX)	strcat(features,", MMX");
-    if (CPU::ID.feature&_CPU_FEATURE_3DNOW)	strcat(features,", 3DNow!");
+/*    if (CPU::ID.feature&_CPU_FEATURE_MMX)	strcat(features,", MMX");
+    if (CPU::ID.feature&_CPU_FEATURE_3DNOW)	strcat(features,", 3DNow!");*/
     if (CPU::ID.feature&_CPU_FEATURE_SSE)	strcat(features,", SSE");
     if (CPU::ID.feature&_CPU_FEATURE_SSE2)	strcat(features,", SSE2");
     if (CPU::ID.feature&_CPU_FEATURE_SSE3)	strcat(features,", SSE3");
     if (CPU::ID.feature&_CPU_FEATURE_SSSE3)	strcat(features,", SSSE3");
-    if (CPU::ID.feature&_CPU_FEATURE_SSE4_1)strcat(features,", SSE4.1");
-    if (CPU::ID.feature&_CPU_FEATURE_SSE4_2)strcat(features,", SSE4.2");
-    if (CPU::ID.feature&_CPU_FEATURE_HTT)	strcat(features,", HTT");
+    if (CPU::ID.feature&_CPU_FEATURE_SSE41)	strcat(features,", SSE4.1");
+    if (CPU::ID.feature&_CPU_FEATURE_SSE42)	strcat(features,", SSE4.2");
+	if (CPU::ID.feature&_CPU_FEATURE_AVX)	strcat(features,", AVX");
+	if (CPU::ID.feature&_CPU_FEATURE_HTT)	strcat(features,", HTT");
 
 	Msg("* CPU features: %s" , features );
-	Msg("* CPU cores/threads: %d/%d\n" , CPU::ID.n_cores , CPU::ID.n_threads );
+	Msg("* CPU cores/threads: %d/%d\n" , CPU::ID.n_cores, CPU::ID.n_threads );
 
 	Fidentity.identity		();	// Identity matrix
 	Didentity.identity		();	// Identity matrix
@@ -314,11 +316,7 @@ void	thread_name	(const char* name)
 	tn.dwFlags		= 0;
 	__try
 	{
-#ifdef _WIN64
 		RaiseException(0x406D1388,0,sizeof(tn)/sizeof(DWORD),(ULONG_PTR*)&tn);
-#else
-		RaiseException(0x406D1388,0,sizeof(tn)/sizeof(DWORD),(DWORD*)&tn);
-#endif
 	}
 	__except(EXCEPTION_CONTINUE_EXECUTION)
 	{

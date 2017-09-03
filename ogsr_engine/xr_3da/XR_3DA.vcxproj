@@ -478,7 +478,7 @@
       <EnableFiberSafeOptimizations>true</EnableFiberSafeOptimizations>
       <WholeProgramOptimization>true</WholeProgramOptimization>
       <AdditionalIncludeDirectories>..\COMMON;..\xrCore\;..\xrCPU_Pipe\;X:\3rd_party\Src\boost;X:\3rd_party\Src\d3dx\include;X:\ogsr_engine\Luabind;X:\ogsr_engine\LuaJIT\src;X:\3rd_party\Src\Xiph\libogg\include;X:\3rd_party\Src\Xiph\libtheora\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>_OGSE;QUATERNION_SKINNING;NDEBUG;WIN32;_WINDOWS;ENGINE_BUILD;_SECURE_SCL=0;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_OGSE;NDEBUG;WIN32;_WINDOWS;ENGINE_BUILD;_SECURE_SCL=0;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <StringPooling>true</StringPooling>
       <ExceptionHandling>
       </ExceptionHandling>
@@ -1234,7 +1234,6 @@
     <ClCompile Include="EngineAPI.cpp" />
     <ClCompile Include="EventAPI.cpp" />
     <ClCompile Include="mailSlot.cpp" />
-    <ClCompile Include="_scripting.cpp" />
     <ClCompile Include="ai_script_lua_debug.cpp" />
     <ClCompile Include="ai_script_lua_extension.cpp" />
     <ClCompile Include="perlin.cpp" />

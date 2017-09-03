@@ -41,18 +41,20 @@ void AddOne				(const char *split)
 
 //	DUMP_PHASE;
 	{
-		shared_str			temp = shared_str(split);
 //		DUMP_PHASE;
+		time_t t = time(NULL);
+		tm* ti = localtime(&t);
+		char buf[64];
+		strftime(buf, 64, "[%x %X]\t", ti);
+
+		char buf_1[1024];
+		sprintf_s(buf_1, "%s%s\r\n", buf, split);
+		shared_str			temp = shared_str(buf_1);
 		LogFile->push_back	(temp);
 
 		//+RvP
 		if(LogWriter){
-			time_t t = time(NULL);
-			tm* ti = localtime(&t);
-			char buf[64];
-			strftime(buf, 64, "[%x %X]\t", ti);
-			
-			LogWriter->w_printf("%s%s\r\n", buf, split);
+			LogWriter->w(buf_1, xr_strlen(buf_1));
 			LogWriter->flush();
 		}
 		//-RvP
@@ -173,15 +175,11 @@ void CreateLog			(BOOL nl)
         	MessageBox	(NULL,"Can't create log file.","Error",MB_ICONERROR);
         	abort();
         }		
-	
-		time_t t = time(NULL);
-		tm* ti = localtime(&t);
-		char buf[64];
-		strftime(buf, 64, "[%x %X]\t", ti);
 
         for (u32 it=0; it<LogFile->size(); it++)	{
 			LPCSTR		s	= *((*LogFile)[it]);
-			LogWriter->w_printf("%s%s\n", buf, s?s:"");
+			if (s)
+				LogWriter->w(s, xr_strlen(s));
 		}
 		LogWriter->flush();
     }

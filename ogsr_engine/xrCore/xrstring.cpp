@@ -5,7 +5,8 @@
 
 XRCORE_API	extern		str_container*	g_pStringContainer	= NULL;
 
-#define		HEADER		12			// ref + len + crc
+//#define		HEADER		12			// ref + len + crc
+const int HEADER = sizeof(str_value);
 
 str_value*	str_container::dock		(str_c value)
 {

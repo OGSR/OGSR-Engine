@@ -150,7 +150,7 @@
       <SubSystem>Windows</SubSystem>
       <LargeAddressAware>true</LargeAddressAware>
       <TargetMachine>MachineX86</TargetMachine>
-      <AdditionalDependencies>lua51.lib;luabind.lib;XR_3DA.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>XR_3DA.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -230,7 +230,7 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <LinkTimeCodeGeneration>UseLinkTimeCodeGeneration</LinkTimeCodeGeneration>
       <TargetMachine>MachineX86</TargetMachine>
-      <AdditionalDependencies>lua51.lib;luabind.lib;XR_3DA.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>XR_3DA.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -312,7 +312,7 @@
       <LargeAddressAware>true</LargeAddressAware>
       <ImportLibrary>x:\libraries\$(ProjectName).lib</ImportLibrary>
       <TargetMachine>MachineX86</TargetMachine>
-      <AdditionalDependencies>lua51.lib;luabind.lib;XR_3DA.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>XR_3DA.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Mixed|x64'">

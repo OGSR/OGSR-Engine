@@ -595,7 +595,7 @@ void CAI_Stalker::update_object_handler	()
 		try {
 			CObjectHandler::update	();
 		}
-#ifdef DEBUG
+#ifndef LUABIND_NO_EXCEPTIONS
 		catch (luabind::cast_failed &message) {
 			Msg						("! Expression \"%s\" from luabind::object to %s",message.what(),message.info()->name());
 			throw;
@@ -879,7 +879,7 @@ void CAI_Stalker::Think			()
 //		try {
 			brain().update			(update_delta);
 //		}
-#ifdef DEBUG
+#ifndef LUABIND_NO_EXCEPTIONS
 //		catch (luabind::cast_failed &message) {
 //			Msg						("! Expression \"%s\" from luabind::object to %s",message.what(),message.info()->name());
 //			throw;
@@ -910,7 +910,7 @@ void CAI_Stalker::Think			()
 //	try {
 		movement().update		(update_delta);
 //	}
-#if 0//def DEBUG
+#if 0//ndef LUABIND_NO_EXCEPTIONS
 	catch (luabind::cast_failed &message) {
 		Msg						("! Expression \"%s\" from luabind::object to %s",message.what(),message.info()->name());
 		movement().initialize	();

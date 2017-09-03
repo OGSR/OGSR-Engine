@@ -240,7 +240,7 @@ void ShowSubdiv(HWND hw)
 	ReleaseDC		(hw, dc);
 }
 
-static BOOL CALLBACK disp_proc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
+static LRESULT CALLBACK disp_proc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
 	switch( message )
 	{

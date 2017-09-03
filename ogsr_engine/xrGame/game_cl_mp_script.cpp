@@ -113,8 +113,6 @@ void game_cl_mp_script::script_register(lua_State *L)
 			.def("GameEventGen",		&BaseType::GameEventGen)
 			.def("EventSend",			&BaseType::EventSend)
 			.def("StartStopMenu",		&BaseType::StartStopMenu)
-			.def("StartMenu",			&BaseType::StartStopMenu)
-			.def("StopMenu",			&BaseType::StartStopMenu)
 			.def("GetRoundTime",		&BaseType::GetRoundTime)
 
 			.def("CanBeReady",			&BaseType::CanBeReady, &WrapType::CanBeReady_static)

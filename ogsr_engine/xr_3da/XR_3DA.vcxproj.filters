@@ -848,9 +848,6 @@
     <ClCompile Include="mailSlot.cpp">
       <Filter>Engine\Core</Filter>
     </ClCompile>
-    <ClCompile Include="_scripting.cpp">
-      <Filter>Engine\Core\Scripting</Filter>
-    </ClCompile>
     <ClCompile Include="ai_script_lua_debug.cpp">
       <Filter>Engine\Core\Scripting</Filter>
     </ClCompile>

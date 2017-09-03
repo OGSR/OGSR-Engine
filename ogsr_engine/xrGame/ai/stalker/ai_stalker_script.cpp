@@ -20,7 +20,7 @@ void CAI_Stalker::script_register(lua_State *L)
 {
 	module(L)
 	[
-		class_<CStalkerPlanner>("stalker_ids")
+		class_<CStalkerPlanner, CScriptActionPlanner>("stalker_ids")
 			.enum_("properties")
 			[
 				luabind::value("property_alive",							StalkerDecisionSpace::eWorldPropertyAlive),
