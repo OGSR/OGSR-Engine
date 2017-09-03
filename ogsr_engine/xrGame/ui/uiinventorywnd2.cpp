@@ -311,7 +311,7 @@ bool CUIInventoryWnd::OnItemStartDrag(CUICellItem* itm)
 bool CUIInventoryWnd::OnItemSelected(CUICellItem* itm)
 {
 	SetCurrentItem		(itm);
-	ColorizeAmmo		(itm);
+//	ColorizeAmmo		(itm);
 	return				false;
 }
 
