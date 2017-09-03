@@ -1,1 +1,2 @@
-XCOPY X:\ogsr_engine\_BIN\SDK\Release\Win32\ActorEditor.exe X:\ogsr_package\READY\bin\ /Y /R /I /E
+XCOPY X:\ogsr_resources X:\ogsr_package\READY\gamedata /Y /R /I /E
+
