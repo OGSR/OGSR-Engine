@@ -136,6 +136,7 @@ bool CUIMapDesc::OnKeyboard(int dik, EUIMessages keyboard_action){
 			break;
 		case DIK_SPACE:
 		case DIK_RETURN:
+		case DIK_NUMPADENTER:
 			dm->StartStopMenu(this,true);
 			dm->OnMapInfoAccept();
 			return true;

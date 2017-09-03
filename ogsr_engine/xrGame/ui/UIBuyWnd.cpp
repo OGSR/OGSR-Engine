@@ -203,7 +203,7 @@ bool CUIBuyWnd::OnKeyboard(int dik, EUIMessages keyboard_action)
 	if (DIK_ESCAPE == dik)
 	{
 		m_btnCancel.OnClick			();
-	}else if (DIK_SPACE == dik || DIK_RETURN == dik)
+	}else if (DIK_SPACE == dik || DIK_RETURN == dik || DIK_NUMPADENTER == dik)
 	{
 		m_btnOk.OnClick				();
 	}else if (DIK_B == dik)

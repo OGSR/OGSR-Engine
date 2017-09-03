@@ -313,6 +313,7 @@ bool CUIMMShniaga::OnKeyboard(int dik, EUIMessages keyboard_action){
 					SelectBtn(m_selected_btn + 1);
 				return true;
 			case DIK_RETURN:
+			case DIK_NUMPADENTER:
 				OnBtnClick();
 				return true;
 			case DIK_ESCAPE:

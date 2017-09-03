@@ -157,6 +157,7 @@ bool CUISpawnWnd::OnKeyboard(int dik, EUIMessages keyboard_action)
 		dm->OnTeamSelect(-1);
 		return true;
 	case DIK_RETURN:
+	case DIK_NUMPADENTER:
 		dm->StartStopMenu(this,true);
 		if (m_pImage1->GetSelectedState())
 			dm->OnTeamSelect(0);

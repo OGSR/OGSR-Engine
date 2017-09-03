@@ -195,6 +195,7 @@ void CLevel::IR_OnKeyboardPress	(int key)
 #endif // MASTER_GOLD
 #ifdef DEBUG
 	case DIK_RETURN:
+	case DIK_NUMPADENTER:
 			bDebug	= !bDebug;
 		return;
 
