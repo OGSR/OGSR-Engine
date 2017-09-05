@@ -97,6 +97,7 @@
     <ClCompile Include="src\ldebug.c" />
     <ClCompile Include="src\ldo.c" />
     <ClCompile Include="src\ldump.c" />
+    <ClCompile Include="src\lfs.c" />
     <ClCompile Include="src\lfunc.c" />
     <ClCompile Include="src\lgc.c" />
     <ClCompile Include="src\linit.c" />
@@ -132,6 +133,7 @@
     <ClInclude Include="src\lcode.h" />
     <ClInclude Include="src\ldebug.h" />
     <ClInclude Include="src\ldo.h" />
+    <ClInclude Include="src\lfs.h" />
     <ClInclude Include="src\lfunc.h" />
     <ClInclude Include="src\lgc.h" />
     <ClInclude Include="src\ljit.h" />

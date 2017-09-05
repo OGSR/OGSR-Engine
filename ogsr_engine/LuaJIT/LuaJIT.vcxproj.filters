@@ -123,6 +123,9 @@
     <ClCompile Include="src\lzio.c">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\lfs.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\lapi.h">
@@ -210,6 +213,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\lzio.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\lfs.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
