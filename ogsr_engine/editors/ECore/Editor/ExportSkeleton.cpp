@@ -1290,7 +1290,7 @@ bool CExportSkeleton::ExportMotionDefs(IWriter& F)
 
 bool CExportSkeleton::ExportMotions(IWriter& F)
 {
-	if (!ExportMotionKeys(F)) 	return false;
+     	if (!ExportMotionKeys(F)) 	return false;
 	if (!ExportMotionDefs(F)) 	return false;
     return true;
 }

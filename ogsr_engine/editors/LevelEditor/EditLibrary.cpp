@@ -513,7 +513,7 @@ void __fastcall TfrmEditLibrary::ebExportLWOClick(TObject *Sender)
                 if (!obj->ExportLWO(save_nm.c_str())){
                     ELog.DlgMsg(mtInformation, "Can't export object '%s'.", obj->GetName());
                 }else{
-					ELog.DlgMsg(mtInformation, "Export complete.");
+					ELog.DlgMsg(mtInformation, "Export complete,"Export of %s complete.", save_nm.c_str());
                 }
             }else{
             	ELog.DlgMsg(mtError,"Can't load object.");
