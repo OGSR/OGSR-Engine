@@ -3,7 +3,7 @@
 
 [Setup]
 AppName=S.T.A.L.K.E.R OGSR Mod
-AppVerName=S.T.A.L.K.E.R OGS Remastered Beta 1
+AppVerName=S.T.A.L.K.E.R OGS Remastered Build 1
 AppPublisher=GSC Game World & OGSR ModTeam
 AppPublisherURL=http://ogsr-mod.org/portal
 AppSupportURL=http://ogsr-mod.org/
@@ -14,12 +14,12 @@ DirExistsWarning=yes
 InfoBeforeFile=X:\ogsr_package\READY\ReadMe_OGSE_RU.txt
 LicenseFile=X:\ogsr_package\READY\License_OGSE_RU.txt
 OutputDir=X:\ogsr_package\Out
-OutputBaseFilename=STALKER_OGSR_beta_1
+OutputBaseFilename=STALKER_OGSR_build_1
 OutputManifestFile=X:\ogsr_package\Setup-Manifest.txt
 
 VersionInfoCompany=OGS Remastered ModTeam
-VersionInfoCopyright=2016 © OGS Remastered
-VersionInfoDescription=OGSR Mod Beta 1
+VersionInfoCopyright=2017 © OGS Remastered
+VersionInfoDescription=OGSR Mod Build 1
 
 SetupIconFile=stalker.ico
 
@@ -45,6 +45,9 @@ Name: "fra"; MessagesFile: "compiler:Languages\French.isl"; LicenseFile: "READY\
 [CustomMessages]
 rus.LaunchOGSR=Запустить OGSR
 rus.LaunchAE=Запустить Actor Editor
+rus.LaunchLE=Запустить Level Editor
+rus.LaunchPE=Запустить Particle Editor
+rus.LaunchSE=Запустить Shader Editor
 rus.InstallFramework=Установить .Net 4.0 Framework (необходим для работы конфигуратора)
 rus.InstallVCRedist=Установить пакет vc++ (необходим для работы движка)
 rus.InstallOGSRCant=Невозможно установить по причине малого количества оперативной памяти. Требуется 4 Гб и более.
@@ -54,6 +57,9 @@ rus.InstallOGSRAlreadyHave=Обнаружена старая версия мода. Удалите ее, затем начн
 
 eng.LaunchOGSR=Launch OGSR
 eng.LaunchAE=Launch Actor Editor
+eng.LaunchLE=Launch Level Editor
+eng.LaunchPE=Launch Particle Editor
+eng.LaunchSE=Launch Shader Editor
 eng.InstallFramework=Install .Net 4.0 Framework (it's needed for Configurator)
 eng.InstallVCRedist=Install vc++ package (it's needed for engine)
 eng.InstallOGSRCant=Can't install because of low RAM amount. You need 4 Gb or more.
@@ -63,6 +69,9 @@ eng.InstallOGSRAlreadyHave=Old version found. Uninstall it and then start instal
 
 fra.LaunchOGSR=Lancer du OGSR
 fra.LaunchAE=Lancer du Actor Editor
+fra.LaunchLE=Lancer du Level Editor
+fra.LaunchPE=Lancer du Particle Editor
+fra.LaunchSE=Lancer du Shader Editor
 fra.InstallFramework=Installez .Net Framework 4.0 (il est necessaire pour Configurator)
 fra.InstallVCRedist=Installez vc ++ package (il est necessaire pour le moteur)
 fra.InstallOGSRCant=Can't install because of low RAM amount. You need 4 Gb or more.
@@ -120,8 +129,14 @@ Name: "{group}\{cm:LaunchOGSR}"; Filename: "{app}\OGSE_Configurator.exe"; Workin
 Name: "{commondesktop}\{cm:LaunchOGSR}"; Filename: "{app}\OGSE_Configurator.exe"; WorkingDir: "{app}\"; IconFilename: "{app}\OGSE_Configurator.exe"; Tasks: desktopicon
 
 ; SDK
-Name: "{group}\SDK\{cm:LaunchAE}"; Filename: "{app}\bin\ActorEditor.exe"; WorkingDir: "{app}\"; IconFilename: "{app}\bin\ActorEditor.exe"
-Name: "{commondesktop}\{cm:LaunchAE}"; Filename: "{app}\bin\ActorEditor.exe"; WorkingDir: "{app}\"; IconFilename: "{app}\bin\ActorEditor.exe"; Tasks: desktopicon
+Name: "{group}\SDK\{cm:LaunchAE}"; Filename: "{app}\bin\ActorEditor.exe"; Parameters: "-nosound -editor"; WorkingDir: "{app}\"; IconFilename: "{app}\bin\ActorEditor.exe"
+Name: "{commondesktop}\{cm:LaunchAE}"; Filename: "{app}\bin\ActorEditor.exe"; Parameters: "-nosound -editor"; WorkingDir: "{app}\"; IconFilename: "{app}\bin\ActorEditor.exe"; Tasks: desktopicon
+Name: "{group}\SDK\{cm:LaunchLE}"; Filename: "{app}\bin\LevelEditor.exe"; Parameters: "-nosound -editor"; WorkingDir: "{app}\"; IconFilename: "{app}\bin\LevelEditor.exe"
+Name: "{commondesktop}\{cm:LaunchLE}"; Filename: "{app}\bin\LevelEditor.exe"; Parameters: "-nosound -editor"; WorkingDir: "{app}\"; IconFilename: "{app}\bin\LevelEditor.exe"; Tasks: desktopicon
+Name: "{group}\SDK\{cm:LaunchPE}"; Filename: "{app}\bin\ParticleEditor.exe"; Parameters: "-nosound -editor"; WorkingDir: "{app}\"; IconFilename: "{app}\bin\ParticleEditor.exe"
+Name: "{commondesktop}\{cm:LaunchPE}"; Filename: "{app}\bin\ParticleEditor.exe"; Parameters: "-nosound -editor"; WorkingDir: "{app}\"; IconFilename: "{app}\bin\ParticleEditor.exe"; Tasks: desktopicon
+Name: "{group}\SDK\{cm:LaunchSE}"; Filename: "{app}\bin\ShaderEditor.exe"; Parameters: "-nosound -editor"; WorkingDir: "{app}\"; IconFilename: "{app}\bin\ShaderEditor.exe"
+Name: "{commondesktop}\{cm:LaunchSE}"; Filename: "{app}\bin\ShaderEditor.exe"; Parameters: "-nosound -editor"; WorkingDir: "{app}\"; IconFilename: "{app}\bin\ShaderEditor.exe"; Tasks: desktopicon
 
 [Registry]
 Root: HKLM; Subkey: "SOFTWARE\OGSR"; ValueType: string; ValueName: "OGSRVer"; ValueData: "beta_1"

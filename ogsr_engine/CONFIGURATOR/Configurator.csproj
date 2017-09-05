@@ -216,8 +216,13 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>
-    </PostBuildEvent>
+    <PostBuildEvent>if Release == $(ConfigurationName) (
+xcopy "$(TargetPath)" "X:\ogsr_package\READY\" /y/i 
+xcopy "$(TargetPath).config" "X:\ogsr_package\READY\" /y/i
+xcopy "$(TargetDir)\ru-RU\$(TargetName).resources.dll" "X:\ogsr_package\READY\localization\ru-RU\" /y/i
+xcopy "$(TargetDir)\en-US\$(TargetName).resources.dll" "X:\ogsr_package\READY\localization\en-US\" /y/i
+xcopy "$(TargetDir)\fr-FR\$(TargetName).resources.dll" "X:\ogsr_package\READY\localization\fr-FR\" /y/i) 
+</PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it.
        Other similar extension points exist, see Microsoft.Common.targets.

@@ -41,8 +41,8 @@ XCOPY X:\ogsr_package\UNPACKED\base_configs\config\ui\books\book_visual_device_1
 XCOPY X:\ogsr_package\UNPACKED\base_configs\config\ui\books\book_visual_device_11.xml X:\ogsr_package\UNPACKED\fra_package\config\ui\books\book_visual_device_11.xml /Y /R /I /E
 XCOPY X:\ogsr_package\UNPACKED\base_configs\config\ui\books\book_visual_device_12.xml X:\ogsr_package\UNPACKED\fra_package\config\ui\books\book_visual_device_12.xml /Y /R /I /E
 
-MOVE /Y X:\ogsr_package\UNPACKED\base_configs\config\ui\books X:\ogsr_package\UNPACKED\rus_package\config\ui\books
+MOVE /Y X:\ogsr_package\UNPACKED\base_configs\config\ui\books\*.* X:\ogsr_package\UNPACKED\rus_package\config\ui\books
 
-MOVE /Y X:\ogsr_package\UNPACKED\base_configs\config\text\rus X:\ogsr_package\UNPACKED\rus_package\config\text\rus
-MOVE /Y X:\ogsr_package\UNPACKED\base_configs\config\text\eng X:\ogsr_package\UNPACKED\rus_package\config\text\eng
-MOVE /Y X:\ogsr_package\UNPACKED\base_configs\config\text\fra X:\ogsr_package\UNPACKED\rus_package\config\text\fra
+MOVE /Y X:\ogsr_package\UNPACKED\base_configs\config\text\rus\*.* X:\ogsr_package\UNPACKED\rus_package\config\text\rus
+MOVE /Y X:\ogsr_package\UNPACKED\base_configs\config\text\eng\*.* X:\ogsr_package\UNPACKED\rus_package\config\text\eng
+MOVE /Y X:\ogsr_package\UNPACKED\base_configs\config\text\fra\*.* X:\ogsr_package\UNPACKED\rus_package\config\text\fra

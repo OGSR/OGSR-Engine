@@ -207,7 +207,7 @@ namespace Configurator
 			    {"$fs_root$", Environment.CurrentDirectory + Path.DirectorySeparatorChar}
 			};
 
-		    using (var f1 = new StreamReader(@"fsgame.ltx", Encoding.Default))
+		    using (var f1 = new StreamReader(@"fs.ltx", Encoding.Default))
 			{
 				while (!f1.EndOfStream)
 				{
