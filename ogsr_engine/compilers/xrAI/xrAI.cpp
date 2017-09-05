@@ -215,6 +215,7 @@ int APIENTRY WinMain(HINSTANCE hInstance,
                      LPSTR     lpCmdLine,
                      int       nCmdShow)
 {
+	Debug._initialize		(false);
 	Core._initialize		("xrai",0);
 
 	HMODULE					hFactory;

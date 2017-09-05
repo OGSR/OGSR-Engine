@@ -5,17 +5,17 @@
 AppName=S.T.A.L.K.E.R OGSR Mod
 AppVerName=S.T.A.L.K.E.R OGS Remastered Build 1
 AppPublisher=GSC Game World & OGSR ModTeam
-AppPublisherURL=http://ogsr-mod.org/portal
-AppSupportURL=http://ogsr-mod.org/
-AppUpdatesURL=http://forum.ogse.ru/viewtopic.php?f=1&t=2641
+AppPublisherURL=http://www.amk-team.ru/forum/forum/121-ogse/
+AppSupportURL=http://www.amk-team.ru/forum/topic/13130-ogse-tehnicheskie-problemy/
+AppUpdatesURL=http://www.amk-team.ru/forum/topic/13108-ogse-0693-opisanie-i-ssylki/
 DefaultDirName={code:GetPath}
 DefaultGroupName=S.T.A.L.K.E.R OGSR Mod
 DirExistsWarning=yes
-InfoBeforeFile=X:\ogsr_package\READY\ReadMe_OGSE_RU.txt
-LicenseFile=X:\ogsr_package\READY\License_OGSE_RU.txt
+InfoBeforeFile=X:\ogsr_package\READY\ReadMe_OGSR_RU.txt
+LicenseFile=X:\ogsr_package\READY\License_OGSR_RU.txt
 OutputDir=X:\ogsr_package\Out
 OutputBaseFilename=STALKER_OGSR_build_1
-OutputManifestFile=X:\ogsr_package\Setup-Manifest.txt
+;OutputManifestFile=X:\ogsr_package\Setup-Manifest.txt
 
 VersionInfoCompany=OGS Remastered ModTeam
 VersionInfoCopyright=2017 © OGS Remastered
@@ -38,9 +38,9 @@ WizardSmallImageFile=X:\ogsr_package\OGSR_sm.bmp
 WizardImageStretch=yes
 
 [Languages]
-Name: "rus"; MessagesFile: "compiler:Languages\Russian.isl"; LicenseFile: "READY\License_OGSE_RU.txt"; InfoBeforeFile: "READY\ReadMe_OGSE_RU.txt"
-Name: "eng"; MessagesFile: "compiler:Default.isl"; LicenseFile: "READY\License_OGSE_ENG.txt"; InfoBeforeFile: "READY\ReadMe_OGSE_ENG.txt"
-Name: "fra"; MessagesFile: "compiler:Languages\French.isl"; LicenseFile: "READY\License_OGSE_FR.txt"; InfoBeforeFile: "READY\=ReadMe_OGSE_FR.txt"
+Name: "rus"; MessagesFile: "compiler:Languages\Russian.isl"; LicenseFile: "READY\License_OGSR_RU.txt"; InfoBeforeFile: "READY\ReadMe_OGSR_RU.txt"
+Name: "eng"; MessagesFile: "compiler:Default.isl"; LicenseFile: "READY\License_OGSR_ENG.txt"; InfoBeforeFile: "READY\ReadMe_OGSR_ENG.txt"
+Name: "fra"; MessagesFile: "compiler:Languages\French.isl"; LicenseFile: "READY\License_OGSR_FR.txt"; InfoBeforeFile: "READY\ReadMe_OGSR_FR.txt"
 
 [CustomMessages]
 rus.LaunchOGSR=Запустить OGSR
@@ -87,13 +87,13 @@ Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{
 Source: "REDIST\dotNetFx40_Full_x86_x64.exe"; DestDir: "{app}"; Flags: deleteafterinstall
 Source: "REDIST\vcredist_x86.exe"; DestDir: "{app}"; Flags: deleteafterinstall
 ; конфигуратор и ресурсы мода
-Source: "X:\ogsr_package\READY\*"; DestDir: "{app}"; Permissions: users-modify; Flags: createallsubdirs recursesubdirs 
+Source: "X:\ogsr_package\READY\*"; DestDir: "{app}"; Permissions: users-modify;
 ; исполняемые файлы мода
 Source: "X:\ogsr_package\READY\bin\*"; DestDir: "{app}\bin"; Flags: createallsubdirs recursesubdirs
 ; некоторые конфиги мода для работы конфигуратора
-Source: "X:\ogsr_package\READY\gamedata\buc\"; DestDir: "{app}\gamedata\buc"; Permissions: users-modify; Flags: createallsubdirs recursesubdirs 
+Source: "X:\ogsr_package\READY\gamedata\buc\*"; DestDir: "{app}\gamedata\buc"; Permissions: users-modify; Flags: createallsubdirs recursesubdirs 
 Source: "X:\ogsr_package\READY\gamedata\config\creatures\actor.ltx"; DestDir: "{app}\gamedata\config\creatures"; Permissions: users-modify; Flags: createallsubdirs recursesubdirs 
-Source: "X:\ogsr_package\READY\gamedata\config\tuning\ogsr_version.ltx"; DestDir: "{app}\gamedata\config\tuning"; Permissions: users-modify; Flags: createallsubdirs recursesubdirs 
+Source: "X:\ogsr_package\READY\gamedata\config\tuning\ogse_version.ltx"; DestDir: "{app}\gamedata\config\tuning"; Permissions: users-modify; Flags: createallsubdirs recursesubdirs 
 Source: "X:\ogsr_package\READY\gamedata\config\ui\ui_dynamic.xml"; DestDir: "{app}\gamedata\config\ui"; Permissions: users-modify; Flags: createallsubdirs recursesubdirs 
 Source: "X:\ogsr_package\READY\gamedata\config\game_maps_single.mus"; DestDir: "{app}\gamedata\config"; Permissions: users-modify; Flags: createallsubdirs recursesubdirs 
 Source: "X:\ogsr_package\READY\gamedata\shaders\ogsr_config.h"; DestDir: "{app}\gamedata\shaders"; Permissions: users-modify; Flags: createallsubdirs recursesubdirs 
@@ -118,9 +118,9 @@ Source: "X:\ogsr_package\READY\localization\fr-FR\gamedata.db_xlocale"; DestDir:
 Source: "X:\ogsr_package\READY\localization\ru-RU\launch.ltx"; DestDir: "{app}"; DestName: "launch.ltx"; Check: IsRussian; Permissions: users-modify; Flags: createallsubdirs recursesubdirs
 Source: "X:\ogsr_package\READY\localization\en-US\launch.ltx"; DestDir: "{app}"; DestName: "launch.ltx"; Check: IsEnglish; Permissions: users-modify; Flags: createallsubdirs recursesubdirs
 Source: "X:\ogsr_package\READY\localization\fr-FR\launch.ltx"; DestDir: "{app}"; DestName: "launch.ltx"; Check: IsFrench; Permissions: users-modify; Flags: createallsubdirs recursesubdirs
-Source: "X:\ogsr_package\READYlocalization\ru-RU\ogsr_config.ltx"; DestDir: "{app}\gamedata\config\tuning"; DestName: "ogsr_config.ltx"; Check: IsRussian; Permissions: users-modify; Flags: createallsubdirs recursesubdirs
-Source: "X:\ogsr_package\READYlocalization\en-US\ogsr_config.ltx"; DestDir: "{app}\gamedata\config\tuning"; DestName: "ogsr_config.ltx"; Check: IsEnglish; Permissions: users-modify; Flags: createallsubdirs recursesubdirs
-Source: "X:\ogsr_package\READY\localization\fr-FR\ogsr_config.ltx"; DestDir: "{app}\gamedata\config\tuning"; DestName: "ogsr_config.ltx"; Check: IsFrench; Permissions: users-modify; Flags: createallsubdirs recursesubdirs
+Source: "X:\ogsr_package\READY\localization\ru-RU\ogse_config.ltx"; DestDir: "{app}\gamedata\config\tuning"; DestName: "ogsr_config.ltx"; Check: IsRussian; Permissions: users-modify; Flags: createallsubdirs recursesubdirs
+Source: "X:\ogsr_package\READY\localization\en-US\ogse_config.ltx"; DestDir: "{app}\gamedata\config\tuning"; DestName: "ogsr_config.ltx"; Check: IsEnglish; Permissions: users-modify; Flags: createallsubdirs recursesubdirs
+Source: "X:\ogsr_package\READY\localization\fr-FR\ogse_config.ltx"; DestDir: "{app}\gamedata\config\tuning"; DestName: "ogsr_config.ltx"; Check: IsFrench; Permissions: users-modify; Flags: createallsubdirs recursesubdirs
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
 
 [Icons]
