@@ -117,7 +117,7 @@ namespace Configurator
                 // защита от удаления/отсутствия локализации
                 if (!File.Exists(Environment.CurrentDirectory + "\\gamedata.db_xlocale"))
                     File.Copy(Environment.CurrentDirectory + "\\localization\\" + lang + "\\gamedata.db_xlocale", Environment.CurrentDirectory + "\\gamedata.db_xlocale", true);
-
+/*
                 // specific code for first launch after patch 2.07/8
                 if (File.Exists(Environment.CurrentDirectory + "\\patch_2_08_cleanup"))
                 {
@@ -148,7 +148,7 @@ namespace Configurator
 
                     File.Delete(Environment.CurrentDirectory + "\\patch_2_08_cleanup");
                 }
-
+                */
                 ApplyButton.Enabled = false;
                 this.button2.Enabled = false;
                 this.button3.Enabled = false;
@@ -213,6 +213,8 @@ namespace Configurator
 				{
 					string line = f1.ReadLine();
 					string[] str = line.Split(new char[] { '=', '|' });
+                    if (str.Length < 2) // empty lines or comments
+                        continue;
 					string name = str[0].Trim();
 					string value = str[3].Trim();
 					if (str.Length >= 5)

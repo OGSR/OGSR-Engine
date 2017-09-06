@@ -48,8 +48,8 @@ rus.LaunchAE=Запустить Actor Editor
 rus.LaunchLE=Запустить Level Editor
 rus.LaunchPE=Запустить Particle Editor
 rus.LaunchSE=Запустить Shader Editor
-rus.InstallFramework=Установить .Net 4.0 Framework (необходим для работы конфигуратора)
-rus.InstallVCRedist=Установить пакет vc++ (необходим для работы движка)
+rus.InstallFramework=Установка .Net 4.0 Framework (необходим для работы конфигуратора)
+rus.InstallVCRedist=Установка пакет vc++ (необходим для работы движка)
 rus.InstallOGSRCant=Невозможно установить по причине малого количества оперативной памяти. Требуется 4 Гб и более.
 rus.InstallOGSRXP=Windows XP не поддерживается модом.
 rus.InstallOGSRVistaLess3Gb=Невозможно установить на x86 операционную систему.
@@ -60,8 +60,8 @@ eng.LaunchAE=Launch Actor Editor
 eng.LaunchLE=Launch Level Editor
 eng.LaunchPE=Launch Particle Editor
 eng.LaunchSE=Launch Shader Editor
-eng.InstallFramework=Install .Net 4.0 Framework (it's needed for Configurator)
-eng.InstallVCRedist=Install vc++ package (it's needed for engine)
+eng.InstallFramework=Installing .Net 4.0 Framework (it's needed for Configurator)
+eng.InstallVCRedist=Installing vc++ package (it's needed for engine)
 eng.InstallOGSRCant=Can't install because of low RAM amount. You need 4 Gb or more.
 eng.InstallOGSRXP=Windows XP is not supported.
 eng.InstallOGSRVistaLess3Gb=Can't install on x86 OS.
@@ -91,6 +91,7 @@ Source: "X:\ogsr_package\READY\*"; DestDir: "{app}"; Permissions: users-modify;
 ; исполняемые файлы мода
 Source: "X:\ogsr_package\READY\bin\*"; DestDir: "{app}\bin"; Flags: createallsubdirs recursesubdirs
 ; некоторые конфиги мода для работы конфигуратора
+Source: "X:\ogsr_package\READY\gamedata\*"; DestDir: "{app}\gamedata"; Permissions: users-modify; Flags: createallsubdirs recursesubdirs 
 Source: "X:\ogsr_package\READY\gamedata\buc\*"; DestDir: "{app}\gamedata\buc"; Permissions: users-modify; Flags: createallsubdirs recursesubdirs 
 Source: "X:\ogsr_package\READY\gamedata\config\creatures\actor.ltx"; DestDir: "{app}\gamedata\config\creatures"; Permissions: users-modify; Flags: createallsubdirs recursesubdirs 
 Source: "X:\ogsr_package\READY\gamedata\config\tuning\ogse_version.ltx"; DestDir: "{app}\gamedata\config\tuning"; Permissions: users-modify; Flags: createallsubdirs recursesubdirs 
@@ -99,9 +100,11 @@ Source: "X:\ogsr_package\READY\gamedata\config\game_maps_single.mus"; DestDir: "
 Source: "X:\ogsr_package\READY\gamedata\shaders\ogsr_config.h"; DestDir: "{app}\gamedata\shaders"; Permissions: users-modify; Flags: createallsubdirs recursesubdirs 
 Source: "X:\ogsr_package\READY\gamedata\shaders\configurator_defines.h"; DestDir: "{app}\gamedata\shaders"; Permissions: users-modify; Flags: createallsubdirs recursesubdirs 
 ; файлы, необходимые для работы СДК
+Source: "X:\ogsr_package\READY\import\*"; DestDir: "{app}\import"; Permissions: users-modify; Flags: createallsubdirs recursesubdirs 
 Source: "X:\ogsr_package\READY\gamedata\sounds\$no_sound.ogg"; DestDir: "{app}\gamedata\sounds"; Permissions: users-modify; Flags: createallsubdirs recursesubdirs 
 Source: "X:\ogsr_package\READY\gamedata\meshes\dm\*"; DestDir: "{app}\gamedata\meshes\dm"; Permissions: users-modify; Flags: createallsubdirs recursesubdirs 
 Source: "X:\ogsr_package\READY\gamedata\textures\ui\*.ini"; DestDir: "{app}\gamedata\textures\ui"; Permissions: users-modify; Flags: createallsubdirs recursesubdirs 
+Source: "X:\ogsr_package\READY\gamedata\textures\ui\ui_font_hud_01.dds"; DestDir: "{app}\gamedata\textures\ui"; Permissions: users-modify; Flags: createallsubdirs recursesubdirs 
 Source: "X:\ogsr_package\READY\gamedata\textures\textures.ltx"; DestDir: "{app}\gamedata\textures"; Permissions: users-modify; Flags: createallsubdirs recursesubdirs 
 Source: "X:\ogsr_package\READY\gamedata\gamemtl.xr"; DestDir: "{app}\gamedata\"; Permissions: users-modify; Flags: createallsubdirs recursesubdirs 
 Source: "X:\ogsr_package\READY\gamedata\lanims.xr"; DestDir: "{app}\gamedata\"; Permissions: users-modify; Flags: createallsubdirs recursesubdirs 
