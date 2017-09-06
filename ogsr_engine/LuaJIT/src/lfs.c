@@ -40,6 +40,9 @@
 #include <time.h>
 #include <sys/stat.h>
 
+#define llfslib_c
+#define LUA_LIB
+
 #ifdef _WIN32
   #include <direct.h>
   #include <windows.h>
@@ -70,7 +73,7 @@
 #include "lfs.h"
 
 #define LFS_VERSION "1.6.3"
-#define LFS_LIBNAME "lfs"
+//#define LFS_LIBNAME "lfs"
 
 #if LUA_VERSION_NUM >= 503 /* Lua 5.3 */
 
@@ -940,12 +943,12 @@ static const struct luaL_Reg fslib[] = {
         {NULL, NULL},
 };
 
-LFS_EXPORT int luaopen_lfs (lua_State *L) {
+LUALIB_API int luaopen_lfs (lua_State *L) {
         dir_create_meta (L);
         lock_create_meta (L);
         luaL_newlib (L, fslib);
         lua_pushvalue(L, -1);
-        lua_setglobal(L, LFS_LIBNAME);
+        lua_setglobal(L, LUA_LFSLIBNAME);
         set_info (L);
         return 1;
 }

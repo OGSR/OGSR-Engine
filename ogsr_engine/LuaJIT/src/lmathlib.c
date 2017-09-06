@@ -177,7 +177,6 @@ static int math_max (lua_State *L) {
   return 1;
 }
 
-
 static int math_random (lua_State *L) {
   /* the `%' avoids the (rare) case of r==1, and is needed also because on
      some systems (SunOS!) `rand()' may return a value larger than RAND_MAX */
@@ -210,7 +209,6 @@ static int math_randomseed (lua_State *L) {
   srand(luaL_checkint(L, 1));
   return 0;
 }
-
 
 static const luaL_Reg mathlib[] = {
   {"abs",   math_abs},

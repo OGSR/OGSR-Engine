@@ -45,6 +45,9 @@ LUALIB_API int (luaopen_jit) (lua_State *L);
 #define LUA_LFSLIBNAME "lfs"
 LUALIB_API int (luaopen_lfs)(lua_State *L);
 
+#define LUA_XMLLIBNAME "xml"
+LUALIB_API int (luaopen_LuaXML)(lua_State *L);
+
 
 /* open all previous libraries */
 LUALIB_API void (luaL_openlibs) (lua_State *L); 

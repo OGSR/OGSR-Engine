@@ -42,12 +42,12 @@ void FlushLogs()
 	ai().script_engine().flush_log();
 #endif // DEBUG
 }
-
+/*
 void verify_if_thread_is_running()
 {
 	THROW2	(ai().script_engine().current_thread(),"coroutine.yield() is called outside the LUA thread!");
 }
-
+*/
 bool editor()
 {
 #ifdef XRGAME_EXPORTS
@@ -244,7 +244,7 @@ void CScriptEngine::script_register(lua_State *L)
 	function	(L,	"error_log",					ErrorLog);
 	function	(L,	"flush",						FlushLogs);
 	function	(L,	"prefetch",						prefetch_module);
-	function	(L,	"verify_if_thread_is_running",	verify_if_thread_is_running);
+//	function	(L,	"verify_if_thread_is_running",	verify_if_thread_is_running);
 	function	(L,	"editor",						editor);
 	function	(L,	"bit_and",						bit_and);
 	function	(L,	"bit_or",						bit_or);
