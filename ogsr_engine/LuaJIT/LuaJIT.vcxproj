@@ -58,6 +58,16 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <ProgramDatabaseFile>$(OutDir)lua51.pdb</ProgramDatabaseFile>
     </Link>
+    <PostBuildEvent>
+      <Command>
+        if Release == $(ConfigurationName) ( if Win32 == $(Platform) (
+            xcopy "$(TargetPath)" "X:\ogsr_package\READY\bin\" /y/i
+            xcopy "$(TargetDir)$(TargetName).pdb" "X:\ogsr_package\READY\bin\" /y/i ) else ( if x64 == $(Platform) (
+              xcopy "$(TargetPath)" "X:\ogsr_package\READY\bin\x64\" /y/i
+              xcopy "$(TargetDir)$(TargetName).pdb" "X:\ogsr_package\READY\bin\x64\" /y/i ) ) )
+ xcopy "$(ProjectDir)jit" "X:\ogsr_package\READY\bin\" /y/i 
+      </Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
@@ -86,6 +96,16 @@
       <SubSystem>Windows</SubSystem>
       <LargeAddressAware>true</LargeAddressAware>
     </Link>
+    <PostBuildEvent>
+      <Command>
+        if Release == $(ConfigurationName) ( if Win32 == $(Platform) (
+            xcopy "$(TargetPath)" "X:\ogsr_package\READY\bin\" /y/i
+            xcopy "$(TargetDir)$(TargetName).pdb" "X:\ogsr_package\READY\bin\" /y/i ) else ( if x64 == $(Platform) (
+              xcopy "$(TargetPath)" "X:\ogsr_package\READY\bin\x64\" /y/i
+              xcopy "$(TargetDir)$(TargetName).pdb" "X:\ogsr_package\READY\bin\x64\" /y/i ) ) )
+ xcopy "$(ProjectDir)jit" "X:\ogsr_package\READY\bin\" /y/i 
+      </Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="src\lapi.c" />
