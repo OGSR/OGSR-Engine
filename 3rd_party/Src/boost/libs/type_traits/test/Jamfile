@@ -1,0 +1,91 @@
+
+subproject libs/type_traits/test ;
+
+# bring in the rules for testing
+SEARCH on testing.jam = $(BOOST_BUILD_PATH) ;
+include testing.jam ;
+    			
+rule type-traits-run ( sources + )
+{
+        return [ 
+           run
+             # sources
+             $(sources)
+
+             # dependencies
+             <lib>type_traits_init 
+             <lib>../../test/build/boost_unit_test_framework 
+         :  # additional args
+            --report_level=detailed --build_info=yes --log_level=messages
+         :  # test-files
+         :  # requirements
+            <sysinclude>$(BOOST_ROOT)
+         :  # test name
+        ] ;
+}
+
+lib type_traits_init : init.cpp 
+    	: 
+        	<sysinclude>$(BOOST_ROOT)
+    	: 
+;
+    
+        
+test-suite type_traits :
+
+[ type-traits-run add_const_test.cpp ]
+[ type-traits-run add_pointer_test.cpp ]
+[ type-traits-run add_reference_test.cpp ]
+[ type-traits-run add_volatile_test.cpp ]
+[ type-traits-run alignment_of_test.cpp ]
+[ type-traits-run function_traits_test.cpp ]
+[ type-traits-run has_nothrow_assign_test.cpp ]
+[ type-traits-run has_nothrow_constr_test.cpp ]
+[ type-traits-run has_nothrow_copy_test.cpp ]
+[ type-traits-run has_trivial_assign_test.cpp ]
+[ type-traits-run has_trivial_constr_test.cpp ]
+[ type-traits-run has_trivial_copy_test.cpp ]
+[ type-traits-run has_trivial_destructor_test.cpp ]
+[ type-traits-run is_arithmetic_test.cpp ]
+[ type-traits-run is_array_test.cpp ]
+[ type-traits-run is_base_and_derived_test.cpp ]
+[ type-traits-run is_class_test.cpp ]
+[ type-traits-run is_compound_test.cpp ]
+[ type-traits-run is_const_test.cpp ]
+[ type-traits-run is_convertible_test.cpp ]
+[ type-traits-run is_empty_test.cpp ]
+[ type-traits-run is_enum_test.cpp ]
+[ type-traits-run is_float_test.cpp ]
+[ type-traits-run is_function_test.cpp ]
+[ type-traits-run is_fundamental_test.cpp ]
+[ type-traits-run is_integral_test.cpp ]
+[ type-traits-run is_member_func_test.cpp ]
+[ type-traits-run is_member_pointer_test.cpp ]
+[ type-traits-run is_object_test.cpp ]
+[ type-traits-run is_pod_test.cpp ]
+[ type-traits-run is_pointer_test.cpp ]
+[ type-traits-run is_polymorphic_test.cpp ]
+[ type-traits-run is_reference_test.cpp ]
+[ type-traits-run is_same_test.cpp ]
+[ type-traits-run is_scalar_test.cpp ]
+[ type-traits-run is_stateless_test.cpp ]
+[ type-traits-run is_union_test.cpp ]
+[ type-traits-run is_void_test.cpp ]
+[ type-traits-run is_volatile_test.cpp ]
+[ type-traits-run remove_bounds_test.cpp ]
+[ type-traits-run remove_const_test.cpp ]
+[ type-traits-run remove_cv_test.cpp ]
+[ type-traits-run remove_pointer_test.cpp ]
+[ type-traits-run remove_reference_test.cpp ]
+[ type-traits-run remove_volatile_test.cpp ]
+[ type-traits-run tricky_abstract_type_test.cpp ]
+[ type-traits-run tricky_add_pointer_test.cpp ]
+[ type-traits-run tricky_function_type_test.cpp ]
+[ type-traits-run tricky_incomplete_type_test.cpp ]
+[ type-traits-run tricky_partial_spec_test.cpp ]
+[ type-traits-run type_with_alignment_test.cpp ]
+
+; # type traits suite
+
+
+

@@ -1,0 +1,43 @@
+<!doctype html public "-//ietf//dtd html//en">
+<html><head><title>boost::mpl::Integral Constant</title>
+<link rel="stylesheet" href="./mpl_wiki.css">
+</head><body bgcolor="white">
+<h1><a href="./Table_of_Contents.html"><img src="./mpl_logo.jpg" alt="[Home]" border=0 align="right"></a>Integral Constant</h1><h3>Description</h3>
+<p>
+An Integral Constant is a class representing a value of a built-in integral type (<code>bool</code>, <code>int</code>, <code>long</code>, etc.) in compile-time programs. An integral constant directly supports the increment/decrement operations within the range of the built-in integral type it wraps. Other arithmetic operations are supported through the external metafunctions.
+<p>
+<h3>Valid expressions</h3>
+<p>
+<table border="1">
+<tr><th>&nbsp;Expression&nbsp;</th><th>&nbsp;Return type &nbsp;</th></tr>
+<tr><td><code>typename n::value_type</code></td><td>An <em>integral type</em> </td></tr>
+<tr><td><code>typename n::type</code></td><td>A model of <a href="./Integral_Constant.html">Integral Constant</a> </td></tr>
+<tr><td><code>n::value</code></td><td>A compile-time integral constant of <code>n::value_type</code> </td></tr>
+<tr><td><code>typename n::next</code></td><td>A model of <a href="./Integral_Constant.html">Integral Constant</a> </td></tr>
+<tr><td><code>typename n::prior</code></td><td>A model of <a href="./Integral_Constant.html">Integral Constant</a> </td></tr>
+</table>
+<p>
+<h3>Expression semantics</h3>
+<p>
+<table border="1">
+<tr><th>&nbsp;Expression&nbsp;</th><th>&nbsp;Complexity&nbsp;</th><th>&nbsp;Precondition&nbsp;</th><th>&nbsp;Semantics&nbsp;</th><th>&nbsp;Postcondition &nbsp;</th></tr>
+<tr><td><code>typename n::value_type</code></td><td>Amortized constant time</td><td></td><td><code>n::value_type</code> is identical to <code>typeof(n::value)</code></td><td></td></tr>
+<tr><td><code>typename n::type</code></td><td>Amortized constant time</td><td></td><td>Self-reference.</td><td><code>is_same&lt;n::type,n&gt;::value == true</code> </td></tr>
+<tr><td><code>n::value</code></td><td>Amortized constant time</td><td></td><td>Value of <code>n</code>.</td><td></td></tr>
+<tr><td><code>typename n::next</code></td><td>Amortized constant time</td><td><code>n::value_type</code> supports an increment operation; <code>n::value</code> is incrementable</td><td>Increment operation</td><td><code>n::next::value == n::value + 1</code> </td></tr>
+<tr><td><code>typename n::prior</code></td><td>Amortized constant time</td><td><code>n::value_type</code> supports an decrement operation; <code>n::value</code> is decrementable</td><td>Decrement operation</td><td><code>n::prior::value == n::value - 1</code> </td></tr>
+</table>
+<p>
+<h3>Models</h3>
+<p>
+<ul>
+<li><code>integral_c</code>
+<li><code>int_</code>
+<li><code>bool_</code>
+</ul>
+<p>
+<h3>See also</h3>
+<p>
+<code>next</code>, <code>prior</code>
+<p><hr>
+<a href="./Table_of_Contents.html">Table of Contents</a><br>Last edited March 10, 2003 4:21 am</body></html>

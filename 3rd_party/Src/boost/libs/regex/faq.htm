@@ -1,0 +1,205 @@
+<html>
+
+<head>
+<meta http-equiv="Content-Type"
+content="text/html; charset=iso-8859-1">
+<meta name="Template"
+content="C:\PROGRAM FILES\MICROSOFT OFFICE\OFFICE\html.dot">
+<meta name="GENERATOR" content="Microsoft FrontPage Express 2.0">
+<title>Regex++ - FAQ</title>
+</head>
+
+<body bgcolor="#FFFFFF" link="#0000FF" vlink="#800080">
+
+<p>&nbsp; </p>
+
+<table border="0" cellpadding="7" cellspacing="0" width="100%">
+    <tr>
+        <td valign="top"><h3><img src="../../c++boost.gif"
+        alt="C++ Boost" width="276" height="86"></h3>
+        </td>
+        <td valign="top"><h3 align="center">Regex++, FAQ.</h3>
+        <p align="left"><i>Copyright (c) 1998-2001 </i></p>
+        <p align="left"><i>Dr John Maddock</i></p>
+        <p align="left"><i>Permission to use, copy, modify,
+        distribute and sell this software and its documentation
+        for any purpose is hereby granted without fee, provided
+        that the above copyright notice appear in all copies and
+        that both that copyright notice and this permission
+        notice appear in supporting documentation. Dr John
+        Maddock makes no representations about the suitability of
+        this software for any purpose. It is provided &quot;as is&quot;
+        without express or implied warranty.</i></p>
+        </td>
+    </tr>
+</table>
+
+<p><font color="#FF0000">Q. Why does using parenthesis in a
+regular expression change the result of a match?</font></p>
+
+<p>Parentheses don't only mark; they determine what the best
+match is as well. regex++ tries to follow the POSIX standard
+leftmost longest rule for determining what matched. So if there
+is more than one possible match after considering the whole
+expression, it looks next at the first sub-expression and then
+the second sub-expression and so on. So...</p>
+
+<pre>&quot;(0*)([0-9]*)&quot; against &quot;00123&quot; would produce
+$1 = &quot;00&quot;
+$2 = &quot;123&quot;</pre>
+
+<p>where as</p>
+
+<pre>&quot;0*([0-9)*&quot; against &quot;00123&quot; would produce
+$1 = &quot;00123&quot;</pre>
+
+<p>If you think about it, had $1 only matched the &quot;123&quot;,
+this would be &quot;less good&quot; than the match &quot;00123&quot;
+which is both further to the left and longer. If you want $1 to
+match only the &quot;123&quot; part, then you need to use
+something like:</p>
+
+<pre>&quot;0*([1-9][0-9]*)&quot;</pre>
+
+<p>as the expression.</p>
+
+<p><font color="#FF0000">Q. Configure says that my compiler is
+unable to merge template instances, what does this mean?</font> </p>
+
+<p>A. When you compile template code, you can end up with the
+same template instances in multiple translation units - this will
+lead to link time errors unless your compiler/linker is smart
+enough to merge these template instances into a single record in
+the executable file. If you see this warning after running
+configure, then you can still link to libregex++.a if: </p>
+
+<ol>
+    <li>You use only the low-level template classes (reg_expression&lt;&gt;
+        match_results&lt;&gt; etc), from a single translation
+        unit, and use no other part of regex++.</li>
+    <li>You use only the POSIX API functions (regcomp regexec etc),
+        and no other part of regex++.</li>
+    <li>You use only the high level class RegEx, and no other
+        part of regex++. </li>
+</ol>
+
+<p>Another option is to create a master include file, which
+#include's all the regex++ source files, and all the source files
+in which you use regex++. You then compile and link this master
+file as a single translation unit. </p>
+
+<p><font color="#FF0000">Q. Configure says that my compiler is
+unable to merge template instances from archive files, what does
+this mean?</font> </p>
+
+<p>A. When you compile template code, you can end up with the
+same template instances in multiple translation units - this will
+lead to link time errors unless your compiler/linker is smart
+enough to merge these template instances into a single record in
+the executable file. Some compilers are able to do this for
+normal .cpp or .o files, but fail if the object file has been
+placed in a library archive. If you see this warning after
+running configure, then you can still link to libregex++.a if: </p>
+
+<ol>
+    <li>You use only the low-level template classes (reg_expression&lt;&gt;
+        match_results&lt;&gt; etc), and use no other part of
+        regex++.</li>
+    <li>You use only the POSIX API functions (regcomp regexec etc),
+        and no other part of regex++.</li>
+    <li>You use only the high level class RegEx, and no other
+        part of regex++. </li>
+</ol>
+
+<p>Another option is to add the regex++ source files directly to
+your project instead of linking to libregex++.a, generally you
+should do this only if you are getting link time errors with
+libregex++.a. </p>
+
+<p><font color="#FF0000">Q. Configure says that my compiler can't
+merge templates containing switch statements, what does this
+mean?</font> </p>
+
+<p>A. Some compilers can't merge templates that contain static
+data - this includes switch statements which implicitly generate
+static data as well as code. Principally this affects the egcs
+compiler - but note gcc 2.81 also suffers from this problem - the
+compiler will compile and link the code - but the code will not
+run because the code and the static data it uses have become
+separated. The default behaviour of regex++ is to try and fix
+this problem by declaring &quot;problem&quot; templates inside
+unnamed namespaces, so that the templates have internal linkage.
+Note that this can result in a great deal of code bloat. If the
+compiler doesn't support namespaces, or if code bloat becomes a
+problem, then follow the guidelines above for placing all the
+templates used in a single translation unit, and edit boost/regex/config.hpp
+so that BOOST_REGEX_NO_TEMPLATE_SWITCH_MERGE is no longer defined.
+</p>
+
+<p><font color="#FF0000">Q. I can't get regex++ to work with
+escape characters, what's going on?</font> </p>
+
+<p>A. If you embed regular expressions in C++ code, then remember
+that escape characters are processed twice: once by the C++
+compiler, and once by the regex++ expression compiler, so to pass
+the regular expression \d+ to regex++, you need to embed &quot;\\d+&quot;
+in your code. Likewise to match a literal backslash you will need
+to embed &quot;\\\\&quot; in your code. </p>
+
+<p><font color="#FF0000">Q. Why don't character ranges work
+properly?</font> <br>
+A. The POSIX standard specifies that character range expressions
+are locale sensitive - so for example the expression [A-Z] will
+match any collating element that collates between 'A' and 'Z'.
+That means that for most locales other than &quot;C&quot; or
+&quot;POSIX&quot;, [A-Z] would match the single character 't' for
+example, which is not what most people expect - or at least not
+what most people have come to expect from regular expression
+engines. For this reason, the default behaviour of regex++ is to
+turn locale sensitive collation off by setting the regbase::nocollate
+compile time flag (this is set by regbase::normal). However if
+you set a non-default compile time flag - for example regbase::extended
+or regbase::basic, then locale dependent collation will be
+enabled, this also applies to the POSIX API functions which use
+either regbase::extended or regbase::basic internally, in the
+latter case use REG_NOCOLLATE in combination with either
+REG_BASIC or REG_EXTENDED when invoking regcomp if you don't want
+locale sensitive collation. <i>[Note - when regbase::nocollate in
+effect, the library behaves &quot;as if&quot; the LC_COLLATE
+locale category were always &quot;C&quot;, regardless of what its
+actually set to - end note</i>]. </p>
+
+<p><font color="#FF0000">&nbsp;Q. Why can't I use the &quot;convenience&quot;
+versions of query_match/reg_search/reg_grep/reg_format/reg_merge?</font>
+</p>
+
+<p>A. These versions may or may not be available depending upon
+the capabilities of your compiler, the rules determining the
+format of these functions are quite complex - and only the
+versions visible to a standard compliant compiler are given in
+the help. To find out what your compiler supports, run &lt;boost/regex.hpp&gt;
+through your C++ pre-processor, and search the output file for
+the function that you are interested in. </p>
+
+<p><font color="#FF0000">Q. Why are there no throw specifications
+on any of the functions? What exceptions can the library throw?</font>
+</p>
+
+<p>A. Not all compilers support (or honor) throw specifications,
+others support them but with reduced efficiency. Throw
+specifications may be added at a later date as compilers begin to
+handle this better. The library should throw only three types of
+exception: boost::bad_expression can be thrown by reg_expression
+when compiling a regular expression, std::runtime_error can be
+thrown when a call to reg_expression::imbue tries to open a
+message catalogue that doesn't exist or when a call to RegEx::GrepFiles
+or RegEx::FindFiles tries to open a file that cannot be opened,
+finally std::bad_alloc can be thrown by just about any of the
+functions in this library. </p>
+
+<hr>
+
+<p><i>Copyright </i><a href="mailto:John_Maddock@compuserve.com"><i>Dr
+John Maddock</i></a><i> 1998-2000 all rights reserved.</i> </p>
+</body>
+</html>

@@ -1,0 +1,112 @@
+#  (C) Copyright David Abrahams 2001. Permission to copy, use, modify, sell and
+#  distribute this software is granted provided this copyright notice appears in
+#  all copies. This software is provided "as is" without express or implied
+#  warranty, and with no claim as to its suitability for any purpose.
+
+import errors : error-skip-frames lol->list ;
+import modules ;
+
+# assert the equality of A and B 
+rule equal ( a * : b * )
+{
+    if $(a) != $(b)
+    {
+        error-skip-frames 3 assertion failure: \"$(a)\" "!=" \"$(b)\" ;
+    }
+}
+
+# assert that EXPECTED is the result of calling RULE-NAME with the
+# given arguments
+rule result ( expected * : rule-name args * : * )
+{
+    local result ;
+    module [ CALLER_MODULE ]
+    {
+        modules.poke assert : result
+            : [ $(2) : $(3) : $(4) : $(5) : $(6) : $(7) : $(8) : $(9) ] ;
+    }
+
+    if $(result) != $(expected)
+    {
+        error-skip-frames 3 assertion failure: "[" $(rule-name) 
+          [ lol->list $(args) : $(3) : $(4) : $(5) : $(6) : $(7) : $(8) : $(9) ]
+            "]"
+          : expected: \"$(expected)\"
+          : got: \"$(result)\" ;
+    }
+}
+
+# assert that the given variable is nonempty.
+rule nonempty-variable ( name )
+{
+    local value = [ modules.peek [ CALLER_MODULE ] : $(name) ] ;
+
+    if ! $(value)-is-nonempty
+    {
+        error-skip-frames 3 assertion failure: expecting non-empty variable $(variable) ;
+    }
+}
+
+# assert that the result of calling RULE-NAME on the given arguments
+# has a true logical value (is neither an empty list nor all empty
+# strings).
+rule true ( rule-name args * : * )
+{
+    local result ;
+    module [ CALLER_MODULE ]
+    {
+        modules.poke assert : result
+          : [ $(1) : $(2) $(3) : $(4)
+            : $(5) : $(6) : $(7) : $(8) : $(9) ] ;
+    }
+
+    if ! $(result)
+    {
+        error-skip-frames 3 assertion failure: expecting true result from
+          "[" $(rule-name) 
+          [ lol->list $(args) : $(2) : $(3) : $(4) : $(5) : $(6) : $(7) : $(8) : $(9) ]
+            "]" ;
+    }
+}
+
+# assert that the result of calling RULE-NAME on the given arguments
+# has a false logical value (is either an empty list or all empty
+# strings).
+rule false ( rule-name args * : * )
+{
+    local result ;
+    module [ CALLER_MODULE ]
+    {
+        modules.poke assert : result
+          : [ $(1) : $(2) $(3) : $(4)
+            : $(5) : $(6) : $(7) : $(8) : $(9) ] ;
+    }
+
+    if $(result)
+    {
+        error-skip-frames 3 assertion failure: expecting false result from
+          "[" $(rule-name) 
+          [ lol->list $(args) : $(2) : $(3) : $(4) : $(5) : $(6) : $(7) : $(8) : $(9) ]
+            "]" : got [ lol->list $(result) ] instead  ;
+    }
+}
+
+# assert that 'element' is present in 'list'.
+rule "in" ( element : list * )
+{
+    if ! $(element) in $(list)
+    {
+        error-skip-frames 3 assertion failure: expecting $(element) in 
+                          "[" $(list) "]" ;
+    }
+}
+
+# assert that 'element' is not present in 'list'.
+rule not-in ( element : list * )
+{
+    if $(element) in $(list)
+    {
+        error-skip-frames 3 assertion failure: did not expect $(element) in 
+                          "[" $(list) "]" ;
+    }
+}

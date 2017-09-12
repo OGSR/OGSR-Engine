@@ -1,0 +1,1611 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+"http://www.w3.org/TR/html4/strict.dtd">
+
+<html>
+  <head>
+    <meta name="generator" content=
+    "HTML Tidy for Linux/x86 (vers 1st March 2002), see www.w3.org">
+    <!--tidy options: -i -wrap 78 -->
+    <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+    <link rel="stylesheet" type="text/css" href="../../boost.css">
+
+    <title>Boost.Build v2 user manual</title>
+<style type="text/css">
+        hr { color: black }
+        p.revision { text-align: right; font-style: italic }
+        pre.code { margin-left: 2em } 
+        pre.output { margin-left: 2em }
+        img.banner { border: 0; float: left }
+        h1 { text-align: right }
+        br.clear { clear: left }
+        div.alert { color: red }
+        table { align: center; border: thin; }
+        
+</style>
+  </head>
+  <!-- Things yet to document:
+                              - build request, build request expansion and directly requested targets
+                              - conditional properties
+                            -->
+
+  <body>
+    <p><a href="../../index.htm"><img class="banner" height="86" width="277"
+    alt="C++ Boost" src="../../c++boost.gif"></a></p>
+
+    <h1>Boost.Build v2 user manual<br class="clear">
+    </h1>
+    <hr>
+
+    <div class="alert">
+      This preliminary reference is intended to document everything currently
+      implemeneted, but is not yet ready for any practical use.
+    </div>
+    <br>
+     <br>
+     
+    <hr>
+
+    <dl class="page-index">
+      <dt><a href="#sec-tutorial">Tutorial</a></dt>
+
+      <dd>
+        <dl class="page-index">
+          <dt><a href="#hello">Hello, world</a></dt>
+
+          <dt><a href="#properties">Properties</a></dt>
+
+          <dt><a href="#hierarchy">Project hierarchy</a></dt>
+
+          <dt><a href="#using_libraries">Using libraries</a></dt>
+
+          <dt><a href="#static_shared">Static and shared libraries</a></dt>
+
+          <dt><a href="#prebuilt_targets">Prebuilt targets</a></dt>
+        </dl>
+      </dd>
+
+      <dt><a href="#sec-reference">Reference documentation</a></dt>
+
+      <dd>
+        <dl class="page-index">
+          <dt><a href="#overview">Overview</a></dt>
+
+          <dt><a href="#features_properties">Features and properties</a></dt>
+
+          <dd>
+            <dl class="page-index">
+              <dt><a href="#features_defined">Defintions</a></dt>
+
+              <dt><a href="#property_validity">Property Validity</a></dt>
+
+              <dt><a href="#feature_attributes">Feature Attributes</a></dt>
+
+              <dt><a href="#feature_declaration">Feature Declaration</a></dt>
+            </dl>
+          </dd>
+
+          <dt><a href="#variants">Build Variants</a></dt>
+
+          <dt><a href="#subfeatures">Subfeatures</a></dt>
+
+          <dt><a href="#initialization">Initialization</a></dt>
+
+          <dt><a href="#command_line">Command line</a></dt>
+
+          <dt><a href="#projects">Projects</a></dt>
+
+          <dt><a href="#targets">Targets</a></dt>
+
+          <dt><a href="#build_process">Build process</a></dt>
+        </dl>
+      </dd>
+    </dl>
+    <hr>
+
+    <h2 id="installation">Installation</h2>
+    When using package management or installers, Boost.Build is ready to work
+    instantly. In other case, two steps are required: 
+
+    <ol>
+      <li>Place the Boost.Jam binary, called "bjam", somewhere in your
+      <tt>PATH</tt>.</li>
+
+      <li>
+        Specify the location of Boost.Build files. You can either set
+        environmental variable <tt>BOOST_BUILD_PATH</tt>, or create, at the
+        top of your project, a file called <tt>boost-build.jam</tt>, with a
+        single line: 
+<pre>
+boost-build /path/to/boost.build ;
+</pre>
+        The directory "examples" in the distribution already has this file,
+        so you can build projects there and add new without doing anything.
+      </li>
+    </ol>
+
+    <p>To verify your installation, you can use <tt>bjam --version</tt> at
+    the command line.</p>
+
+    <h2><a name="sec-tutorial">Tutorial</a></h2>
+
+    <h3 id="hello">Hello, world</h3>
+    The simplest project that Boost.Build can construct is stored in
+    examples-v2/hello directory. The targets are declared in a file called
+    <tt>Jamfile</tt>, which contains the following: 
+<pre>
+   exe hello : hello.cpp ;
+</pre>
+    Even with this simple setup, you can do some interesting things. First of
+    all, running "bjam" would build binary "hello" from hello.cpp, in debug
+    version. After that, you can run 
+<pre>
+    bjam release 
+</pre>
+    which would create release version of the 'hello' binary. Note that debug
+    and release version would be created in different directories, so if you
+    want to switch from debug to release version and back, no recompilation
+    is needed. Let's extend the example by adding another line to Jamfile: 
+<pre>
+   exe hello2 : hello.cpp ;
+</pre>
+    You can now rebuild both debug and release versions: 
+<pre>
+    bjam debug release
+</pre>
+    You'll see that two versions of "hello2" binary are linked. Of course,
+    hello.cpp won't be recompiled. Now you decide to remove all build
+    products. You do that with the following command 
+<pre>
+   bjam --clean debug release
+</pre>
+    It's also possible to create or clean only specific targets. Both
+    following commands are legal and create or clean only files that
+    belonging the the named binary: 
+<pre>
+   bjam hello2
+   bjam --clean hello2
+</pre>
+
+    <h3 id="properties">Properties</h3>
+
+    <p>Boost.Build attempts to allow building different variants of projects,
+    e.g. for debugging and release, or in single and multithreaded mode. In
+    order to stay portable, it uses the concept of <em>features</em>, which
+    is abstract aspect of build configuration. <em>Property</em> is just a
+    (feature,value) pair. For example, there's a feature "debug-symbols",
+    which can have a value of "on" or "off". When users asks to build project
+    is a particual value, Boost.Build will automatically find the appropriate
+    flags to the used compiler.</p>
+
+    <p>The "release" and "debug" in bjam invocation that we've seen are just
+    are short form of specifying values of feature "variant". There is a lot
+    of builtin features, and it's possible to write something like:</p>
+<pre>
+   bjam release inlining=off debug-symbols=on
+</pre>
+    The first command line element specified the value of feature "variant".
+    The feature is very common and is therefore special &mdash; it's possible
+    to specify only value. Another feature, "inlining" is not special, and
+    you should use 
+<pre>
+   feature-name=feature-value
+</pre>
+    syntax for it. Complete description of features can be found <a href=
+    "#features_properties">here</a>. The set of properties specified in the
+    command line constitute <em>build request</em> &mdash; the desired
+    properties for requested targets, or for the project in the current
+    directory. The actual set of properties used for building is often
+    different. For example, when compiling a program you need some include
+    paths. It's not reasonable to ask the user to specify those paths with
+    each bjam invocation, so must be specified in Jamfile and added to the
+    build request. For another example, certain application can only be
+    linked in multithreaded mode. To support such situations, every target is
+    allowed to specify <em>requirements</em> -- properties that are required
+    to its building. Consider this example: 
+<pre>
+   exe hello 
+       : hello.cpp
+       : &lt;include&gt;/home/ghost/Work/boost &lt;threading&gt;multi
+</pre>
+    In this case, when hello is build, the two specified properties will
+    always be present. This leads to a question: what if user explictly
+    requested single-threading. The answer is that requirement can affect
+    build properties only to a certain degree: the requested and actual
+    properties must be link-compatible. See <a href="#link_compatibility">link
+    compatibility</a> below. If they are not link compatible, the bulding of
+    the target is skipped. Previously, we've added "hello2" target. Seems
+    like we have to specify the same requirements for it, which results in
+    duplication. But there's a better way. Each project (i.e. each Jamfile),
+    can specify a set of attributes, including requirements: 
+<pre>
+   project 
+       : requirements &lt;include&gt;/home/ghost/Work/boost &lt;threading&gt;multi 
+       ;
+
+   exe hello : hello.cpp ;
+   exe hello2 : hello.cpp ;
+</pre>
+    The effect would be as if we specified this requirement for both "hello"
+    and "hello2". 
+
+    <h3 id="hierarchy">Project hierarchy</h3>
+
+    <p>So far we only considered examples with one project (i.e. with one
+    Jamfile). Typically, you'd have a lot of projects organized into a tree.
+    At the top of the tree there's <em>project root</em>. This is a directory
+    which contains, besides Jamfile, a file called "project-root.jam". Each
+    other Jamfile has a single parent, which is the Jamfile in the nearest
+    parent directory. For example, in the following directory layout:</p>
+<pre>
+    [top] 
+      |
+      |-- Jamfile
+      |-- project-root.jam
+      |
+      |-- src
+      |    |
+      |    |-- Jamfile
+      |    \-- app.cpp
+      | 
+      \-- lib
+           |
+           |-- lib1
+           |    |
+           |    |-- Jamfile
+                |-- lib1.cpp
+</pre>
+    project root is at top. Both src/Jamfile and lib/lib1/Jamfile have
+    [top]/Jamfile as parent project. Projects inherit all attributes (such as
+    requirements) from their parents. When the same attributes are specified
+    in the project, they are combined with inherited ones. For example, if
+    [top]/Jamfile has 
+<pre>
+     &lt;include&gt;/home/ghost/local
+</pre>
+    in requirements, then all other projects will have that in their
+    requirements too. Of course, any project can add additional includes.
+    More details can be found in the section on <a href=
+    "#projects">projects</a>. Projects are not automatically built when their
+    parents are built. You should specify this explicitly. In our example,
+    [top]/Jamfile might contain: 
+<pre>
+    build-project src ;
+</pre>
+    It will cause project in src to be built whenever project in [top] is
+    built. However, targets in lib/lib1 will be built only if required. For
+    example, there may be 10 targets, and two of them are used by targets in
+    src/Jamfile. Then, only those two targets will be built. 
+
+    <h3 id="using_libraries">Using libraries</h3>
+    Let's continue the above example and see how src/Jamfile can use
+    libraries from lib/lib1. (TODO: need to make this section consistent with
+    "examples-v2/libraries". Assume lib/lib1/Jamfile contains: 
+<pre>
+     lib lib1 : lib1.cpp ;
+</pre>
+    Then, to use this library in src/Jamfile, we can write: 
+<pre>
+     exe app : app.cpp ../lib/lib1/lib1 ;
+</pre>
+    When linking the "app" binary, the needed library will be used. But what
+    is meant by "needed"? For example, we can request to build "app" with
+    properties 
+<pre>
+    &lt;optimization&gt;full &lt;cxxflags&gt;-w-8080
+</pre>
+    Which properties must be used for "lib1"? The answer is that some
+    properties are <em>propagated</em> &mdash; Boost.Build attemps to use
+    dependencies with the same value of propagated features. The
+    &lt;optimization&gt; feature is propagated, so both "app" and "lib1" will
+    be compiled with full optimization. But &lt;cxxflags&gt; feature is not
+    propagated: its value will be added as-is to compiler flags for "a.cpp",
+    but won't affect "lib1". There is still a couple of problems. First, the
+    library probably has some headers which must be used when compiling
+    "app.cpp". We could use requirements on "app" to add those includes, but
+    then this work will be repeated for all programs which use "lib1". A
+    better solution is to modify lib/lib1/Jamfilie in this way: 
+<pre>
+    project 
+        : usage-requirements &lt;include&gt;.
+        ;
+
+     lib lib1 : lib1.cpp ;
+</pre>
+    Usage requirements are requirements which are applied to dependents. In
+    this case, &lt;include&gt; will be applied to all targets which use
+    "lib1". You'd need to specify usage requirements only once, and programs
+    which use "lib1" don't have to care about include paths any longer. Or
+    course, the path will be interpreted relatively to "lib/lib1" and will be
+    adjusted according to the <tt>bjam</tt>s invocation directory. For
+    example, if building from project root, the final compiler's command line
+    will contain <tt>-Ilib/lib1</tt>. The second problem is that we hardcode
+    the path to library's Jamfile. Imagine it's hardcoded in 20 different
+    places and we change the directory layout. The solution is to use project
+    ids. First, we assign a project id to Jamfile in lib/lib1: 
+<pre>
+    project lib1
+        : usage-requirements &lt;include&gt;.
+        ;
+</pre>
+    Second, we use the project id to refer to the library in src/Jamfile: 
+<pre>
+    exe app : app.cpp @/lib1/lib1 ;
+</pre>
+    This way, users of "lib1" do not depend on its location, only on id,
+    which is supposedly stable. The only thing left, it to make sure that
+    src/Jamfile knows the project id that it uses. We add to [top]/Jamfile
+    the following line: 
+<pre>
+    use-project /lib1 : lib/lib1 ;
+</pre>
+    Now, all projects can refer to "lib1" using the symbolic name. If the
+    library is moved somewhere, only a single line in the top-level Jamfile
+    should be changed. 
+
+    <h3 id="static_shared">Static and shared libaries</h3>
+    While the previous section explained how to create and use libraries, it
+    omitted one important detail. Libraries can be either <em>static</em>,
+    which means they are included in executable files which use them, or
+    <em>shared</em> (a.k.a. <em>dynamic</em>), which are only referred to
+    from executables, and must be available at run time. Boost.Build can work
+    with both types. By default, all libraries are shared. This is much more
+    efficient in build time and space. But the need to install all libraries
+    to some location is not always convenient, especially for debug builds.
+    Also, if the installed shared library changes, all application which use
+    it might start to behave differently. 
+
+    <p>Static libraries do not suffer from these problems, but considerably
+    increase the size of application. Before describing static libraries,
+    it's reasonable to give another, quite simple approach. If your project
+    is built with &lt;hardcode-dll-paths&gt;true property, then the
+    application will include the full paths for all shared libraries,
+    eliminating the above problems. Unfortunately, you no longer can move
+    shared library to a different location, which makes this option suitable
+    only for debug builds. Further, only gcc compiler supports this
+    option.</p>
+
+    <p>Building a library statically is easy. You'd need to change the value
+    of &lt;link&gt; feature from it's deafault value <tt>shared</tt>, to
+    <tt>static</tt>. So, to build everything as static libraries, you'd
+    say</p>
+<pre>
+    bjam link=static
+</pre>
+    on the command line. The linking mode can be fine-tuned on per-target
+    basis. 
+
+    <ol>
+      <li>
+        Suppose your library can be only build statically. This is easily
+        achieved using requirements: 
+<pre>
+    lib l : l.cpp : &lt;link&gt;static ;
+   
+</pre>
+      </li>
+
+      <li>
+        What if library can be both static and shared, but when using it in
+        specific executable, you want it static? <a href=
+        "target_reference">Target references</a> are here to help: 
+<pre>
+    exe important : main.cpp helpers/&lt;link&gt;static ;
+   
+</pre>
+      </li>
+
+      <li>
+        What if the library is defined in some other project, which you
+        cannot change. But still, you want static linking to that library in
+        all cases. You can use target references everywhere: 
+<pre>
+    exe e1 : e1.cpp @/other_project/lib1/&lt;link&gt;static ;
+    exe e10 : e10.cpp @/other_project/lib1/&lt;link&gt;static ;
+   
+</pre>
+        but that's far from being convenient. Another way is to introduce a
+        level of indirection: create a local target, which will refer to
+        static version of <tt>lib1</tt>. Here's the solution: 
+<pre>
+    alias lib1 : @/other_project/lib1/&lt;link&gt;static ;
+    exe e1 : e1.cpp lib1 ;
+    exe e10 : e10.cpp lib1 ;
+   
+</pre>
+        (Note, that the "alias" target type is not yet implemented, but it's
+        quite simple to do. I bet it's waiting for you to do it ;-))
+      </li>
+    </ol>
+
+    <h3 id="prebuilt_targets">Prebuilt targets</h3>
+    We've just learned how to use libraries which are created by Boost.Build.
+    But some libraries are not. At the same time, those libraries can have
+    different versions (release and debug, for example), that we should
+    select depending on build properties. Prebuilt targets provide a
+    mechanism for that. Jamfile in lib/lib2 can contain: 
+<pre>
+    lib lib2
+       : 
+       : &lt;file&gt;lib2_release.a &lt;variant&gt;release
+       ;
+
+    lib lib2
+       : 
+       : &lt;file&gt;lib2_debug.a &lt;variant&gt;debug
+       ;
+</pre>
+    This defines two alternatives for target "lib2", and for each one names a
+    prebuilt file. Naturally, there are no sources. Instead, the &lt;file&gt;
+    feature is used to specify the file name. Which alternative is selected
+    depends on properties of dependents. If "app" binary should use "lib2",
+    we can write: 
+<pre>
+    exe app : app.cpp @/lib/lib1/lib2 ../lib/lib2/lib2 ;
+</pre>
+    If we build release version of "app", then it will be linked with
+    "lib2_release.a", and debug version will use "lib2_debug.a". Another
+    important kind of prebuilt targets are system libraries &mdash; more
+    specifically, libraries which are automatically found by the compiler.
+    E.g. gcc uses "-l" switch for that. Such libraries should be declared
+    almost like regular ones: 
+<pre>
+    lib zlib : : &lt;name&gt;z ;
+</pre>
+    We again don't specify any sources, but give a name which should be
+    passed to the compiler. In this example, and for gcc compiler, the "-lz"
+    option will be added. Paths where library should be searched can also be
+    specified: 
+<pre>
+    lib zlib : : &lt;name&gt;z &lt;search&gt;/opt/lib ;
+</pre>
+    And, of course, two variants can be used: 
+<pre>
+    lib zlib : : &lt;name&gt;z &lt;variant&gt;release ;
+    lib zlib : : &lt;name&gt;z_d &lt;variant&gt;debug ;
+</pre>
+    Of course, you'll probably never in your life need debug version of zlib,
+    but for other libraries this is quite reasonable. 
+
+    <h2><a name="sec-reference">Reference</a></h2>
+    This section will document mostly high-level view of Boost.Build,
+    mentioning appropriate modules and rules. The on-line help system must be
+    used to obtain low-level documentation (see the <a href=
+    "#help_option">help option</a>). 
+
+    <h3 id="overview">Overview</h3>
+
+    <p>The most fundemental entity in Boost.Build is <em>main target</em>.
+    This is object that user want to construct from sources and keep up to
+    date with regard to those sources. Typical examples of main targets are
+    executable files and libraries.</p>
+
+    <p>Main targets are grouped in <em>projects</em>. Their main purpose is
+    organization: related targets placed in one project, can then be built
+    together, or share some definitions.</p>
+
+    <p>Main targets and projects are described mostly in declarative fashion.
+    (TODO: what "declarative fashion" means to a user?) 
+    <!-- &quot;making use&quot; is very vague -->
+     To make some use of them, user issues <a href="#build_request">build
+    request</a>, which specifies what targets user wants to build, and what
+    properties are desirable. Build request is not necessary explicit.
+    Invoking the build system without parameters will build the project in
+    current directory with default properties.</p>
+
+    <p>The <em>properties</em> describe various aspects of constructed
+    objects. For portability, they are specified in a normalized form, for
+    example</p>
+<pre>
+&lt;optimization&gt;full &lt;inlining&gt;off
+</pre>
+    Depending on the compiler used, this will be translated into appropriate
+    flags. 
+
+    <p>Construction of each main target begins with finding properties for
+    <em>this</em> main target. They are found by processing both build
+    request, and <em>target requirements</em>, which give properties needed
+    for the target to build. For example, a given main target might require
+    certian defines, or will not work unless compiled in multithreaded mode.
+    The process of finding properties for main target is described in <a
+    href="#property_refinement">property refinement</a>.</p>
+
+    <p>After that, dependencies (i.e. other main targets) are build
+    recursively. Build request for dependencies is not always equal to those
+    of dependent &mdash; certain properties are dropped and user can
+    explicitly specify desired properties for dependencies. See <a href=
+    "#propagated_features">propagated features</a> and <a href=
+    "#target_reference">target reference</a> for details.</p>
+
+    <p>When dependencies are constructed, the dependency graph for this main
+    target and for this property set is created, which describes which files
+    need to be created, on which other files they depend and what actions are
+    needed to construct those files. There's more that one method, and user
+    can define new ones, but usually, this involves <em>generators</em> and
+    <em>target types</em>.</p>
+
+    <p>Target type is just a way to classify targets. For example, there are
+    builtin types <tt>EXE</tt>, <tt>OBJ</tt> and <tt>CPP</tt>. <a href=
+    "#generators">Generators</a> are objects that know how to convert between
+    different target type. When a target of a given type must be created, all
+    generators for that type, which can handle needed properties, are found.
+    Each is passed the list of sources, and either fails, or returns a
+    dependency graph. If a generator cannot produce desired type from given
+    sources, it may try to recursively construct types that it can handle
+    from the types is was passed. This allows to try all possible
+    transformations. When all generators are tried, a dependency graph is
+    selected.</p>
+
+    <p>Finally, the dependency graph is passed to underlying Boost.Jam
+    program, which runs all actions needed to bring all main targets up-to
+    date. At this step, implicit dependencies are also scanned and accounted
+    for, as described <a href="#dependency_scanning">here</a>.</p>
+
+    <h3><a name="features_properties">Features and properties</a></h3>
+
+    <h4><a name="features_defined">Definitions</a></h4>
+
+    <p>A <em>feature</em> is a normalized (toolset-independent) aspect of a
+    build configuration, such as whether inlining is enabled. Feature names
+    may not contain the '<tt>&gt;</tt>' character.</p>
+
+    <div class="alert">
+      The last two prohibited characters might well be present in defines.
+      And what about dash?
+    </div>
+
+    <p>Each feature in a build configuration has one or more associated
+    <em>value</em>s. Feature values may not contain the '<tt>&lt;</tt>',
+    '<tt>:</tt>', or '<tt>=</tt>' characters.</p>
+
+    <p>A <em>property</em> is a (feature,value) pair, expressed as
+    &lt;feature&gt;value.</p>
+
+    <p>A <em>subfeature</em> is a feature which only exists in the presence
+    of its parent feature, and whose identity can be derived (in the context
+    of its parent) from its value. A subfeature's parent can never be another
+    subfeature. Thus, features and their subfeatures form a two-level
+    hierarchy.</p>
+
+    <p>A <em>value-string</em> for a feature <b>F</b> is a string of the form
+    <tt>value-subvalue1-subvalue2</tt>...<tt>-subvalueN</tt>, where
+    <tt>value</tt> is a legal value for <b>F</b> and
+    <tt>subvalue1</tt>...<tt>subvalueN</tt> are legal values of some of
+    <b>F</b>'s subfeatures. For example, the properties
+    <tt>&lt;toolset&gt;gcc &lt;toolset-version&gt;3.0.1</tt> can be expressed
+    more conscisely using a value-string, as
+    <tt>&lt;toolset&gt;gcc-3.0.1</tt>.</p>
+
+    <p>A <em>property set</em> is a set of properties (i.e. a collection
+    without dublicates), for instance: <tt>&lt;toolset&gt;gcc
+    &lt;runtime-link&gt;static</tt>.</p>
+
+    <p>A <em>property path</em> is a property set whose elements have been
+    joined into a single string separated by slashes. A property path
+    representation of the previous example would be
+    <tt>&lt;toolset&gt;gcc/&lt;runtime-link&gt;static</tt>.</p>
+
+    <p>A <em>build specification</em> is a property set which fully describes
+    the set of features used to build a target.</p>
+
+    <h4><a name="property_validity">Property Validity</a></h4>
+    For <a href="#free">free</a> features, all values are valid. For all
+    other features, the valid values are explicitly specified, and the build
+    system will report an error for the use of an invalid feature-value.
+    Subproperty validity may be restricted so that certain values are valid
+    only in the presence of certain other subproperties. For example, it is
+    possible to specify that the <code>&lt;gcc-target&gt;mingw</code>
+    property is only valid in the presence of
+    <code>&lt;gcc-version&gt;2.95.2</code>. 
+
+    <h4><a name="feature_attributes">Feature Attributes</a></h4>
+
+    <p>Each feature has a collection of zero or more of the following
+    attributes. Feature attributes are low-level descriptions of how the
+    build system should interpret a feature's values when they appear in a
+    build request. We also refer to the attributes of properties, so that a
+    <i>incidental</i> property, for example, is one whose feature is has the
+    <i>incidental</i> attribute.</p>
+
+    <ul>
+      <li>
+        <em>incidental</em> 
+
+        <p>Incidental features are assumed not to affect build products at
+        all. As a consequence, the build system may use the same file for
+        targets whose build specification differs only in incidental
+        features. A feature which controls a compiler's warning level is one
+        example of a likely incidental feature.</p>
+
+        <p>Non-incidental features are assumed to affect build products, so
+        the files for targets whose build specification differs in
+        non-incidental features are placed in different directories as
+        described in <a href="#target_paths">target paths</a> below.</p>
+      </li>
+
+      <li>
+        <em>propagated</em> 
+
+        <p id="propagated_features">Features of this kind are propagated to
+        dependencies. That is, if a <a href="#main_target">main target</a> is
+        built using a propagated property, the build systems attempts to use
+        the same property when building any of its dependencies as part of
+        that main target. For instance, when an optimized exectuable is
+        requested, one usually wants it to be linked with optimized
+        libraries. Thus, the <tt>&lt;optimization&gt;</tt> feature is
+        propagated.</p>
+      </li>
+
+      <li>
+        <em><a name="free">free</a></em> 
+
+        <p>Most features have a finite set of allowed values, and can only
+        take on a single value from that set in a given build specification.
+        Free features, on the other hand, can have several values at a time
+        and each value can be an arbitrary string. For example, it is
+        possible to have several preprocessor symbols defined
+        simultaneously:</p>
+<pre>
+&lt;define&gt;NDEBUG=1 &lt;define&gt;HAS_CONFIG_H=1
+</pre>
+        <br>
+      </li>
+
+      <li>
+        <em>optional</em> 
+
+        <p>An optional feature is a feature which is not required to appear
+        in a build specification. Every non-optional non-free feature has a
+        default value which is used when a value for the feature is not
+        otherwise specified, either in a target's requirements or in the
+        user's build request. [A feature's default value is given by the
+        first value listed in the feature's declaration. -- move this
+        elsewhere - dwa]</p>
+      </li>
+
+      <li>
+        <em>symmetric</em> 
+
+        <p>A symmetric feature's default value is not automatically included
+        in <a href="#variants">build variants</a>. Normally a feature only
+        generates a subvariant directory when its value differs from the
+        value specified by the build variant, leading to an assymmetric
+        subvariant directory structure for certain values of the feature. A
+        symmetric feature, when relevant to the toolset, always generates a
+        corresponding subvariant directory.</p>
+      </li>
+
+      <li>
+        <em>path</em> 
+
+        <p>The value of a path feature specifies a path. The path is treated
+        as relative to the directory of Jamfile where path feature is used
+        and is translated appropriately by the build system when the build is
+        invoked from a different directory</p>
+      </li>
+
+      <li>
+        <em>implicit</em> 
+
+        <p>Values of implicit features alone identify the feature. For
+        example, a user is not required to write "&lt;toolset&gt;gcc", but
+        can simply write "gcc". Implicit feature names also don't appear in
+        variant paths, although the values do. Thus: bin/gcc/... as opposed
+        to bin/toolset-gcc/.... There should typically be only a few such
+        features, to avoid possible name clashes.</p>
+      </li>
+
+      <li>
+        <em>composite</em> 
+
+        <p>Composite features actually correspond to groups of properties.
+        For example, a build variant is a composite feature. When generating
+        targets from a set of build properties, composite features are
+        recursively expanded and <em>added</em> to the build property set, so
+        rules can find them if neccessary. Non-composite non-free features
+        override components of composite features in a build property
+        set.</p>
+      </li>
+
+      <li>
+        <em>link-incompatible</em> 
+
+        <p>See <a href="#link_compatibility">below</a>.</p>
+      </li>
+
+      <li>
+        <em>dependency</em> 
+
+        <p>The value of dependency feature if a target reference. When used
+        for building of a main target, the value of dependency feature is
+        treated as additional dependency.</p>
+
+        <p>For example, dependency features allow to state that library A
+        depends on library B. As the result, whenever an application will
+        link to A, it will also link to B. Specifying B as dependency of A is
+        different from adding B to the sources of A. 
+        <!-- Need to clarify this. -->
+        </p>
+      </li>
+    </ul>
+
+    <p>TODO: document active features..</p>
+
+    <h4><a name="feature_declaration">Feature Declaration</a></h4>
+    The low-level feature declaration interface is the <tt>feature</tt> rule
+    from the <tt>feature</tt> module: 
+<pre>
+rule feature ( name : allowed-values * : attributes * )
+</pre>
+    A feature's allowed-values may be extended wit The build system will
+    provide high-level rules which define features in terms of valid and
+    useful combinations of attributes. 
+
+    <h3><a name="variants">Build Variants</a></h3>
+    A build variant, or (simply variant) is a special kind of composite
+    feature which automatically incorporates the default values of features
+    that . Typically you'll want at least two separate variants: one for
+    debugging, and one for your release code. [ Volodya says: "Yea, we'd need
+    to mention that it's a composite feature and describe how they are
+    declared, in pacticular that default values of non-optional features are
+    incorporated into build variant automagically. Also, do we wan't some
+    variant inheritance/extension/templates. I don't remember how it works in
+    V1, so can't document this for V2.". Will clean up soon -DWA ] 
+
+    <h4 id="link_compatibility">Link compatible and incompatible
+    properties</h4>
+
+    <p>When the build system tries to generate a target (such as library
+    dependency) matching a given build request, it may find that an exact
+    match isn't possible &mdash; for example, the target may impose additonal
+    build requirements. We need to determine whether a buildable version of
+    that target can actually be used.</p>
+
+    <p>The build request can originate in many ways: It may come directly
+    from the user's command-line, from a dependency of a main target upon a
+    library, or from a dependency of a target upon an executable used to
+    build that target, for example. For each way, there are different rules
+    whether we can use a given subvariant or not. However we currently only
+    assume linking and therefore use a simple approach described in the
+    following paragraph.</p>
+
+    <p>In general, there are many possible situations: a libary which is
+    dependency of a main target and should be linked into it, target which is
+    directly requested on the command line, or build executable which is used
+    in the build process itself. At this moment we use a simple approach.</p>
+
+    <p>Two property sets are called <em>link-compatible</em> when targets
+    with those property sets can be used interchangably. In turn, two
+    property sets are link compatible when there's no link-incompatible
+    feature which has different values in those property sets. Whenever
+    requested and actual properties are link-compatible, it's OK. Otherwise,
+    it's an error.</p>
+
+    <h4 id="property_refinement">Definition of property refinement</h4>
+
+    <p>When a target with certain properties is requested, and that target
+    requires some set of properties, it is needed to find the set of
+    properties to use for building. This process is called <em>property
+    refinement</em> and is performed by these rules</p>
+
+    <ol>
+      <li>If original properties and required properties are not
+      link-compatible, refinement fails.</li>
+
+      <li>Each property in the required set is added to the original property
+      set</li>
+
+      <li>If the original property set includes property with a different
+      value of non free feature, that property is removed.</li>
+    </ol>
+
+    <h4 id="conditional_properties">Conditional properties</h4>
+
+    <p>Sometime it's desirable to apply certain requirements only for
+    specific combination of other properties. For example, one of compilers
+    that you use issues a poinless warning that you want to suppress by
+    passing a command line option to it. You would not want to pass that
+    option to other compilers. Condititional properties allow to do that.
+    Their systax is:</p>
+<pre>
+  property ( "," property ) * ":" property
+</pre>
+    For example, the problem above would be solved by: 
+<pre>
+exe hello : hello.cpp : &lt;toolset&gt;yfc:&lt;cxxflags&gt;-disable-pointless-warning ;
+</pre>
+
+    <h3><a name="initialization">Initialization</a></h3>
+
+    <p>bjam's first job upon startup is to load the Jam code which implements
+    the build system. To do this, it searches for a file called
+    "boost-build.jam", first in the invocation directory, then in its parent
+    and so forth up to the filesystem root, and finally in the directories
+    specified by the environment variable BOOST_BUILD_PATH. When found, the
+    file is interpreted, and should specify the build system location by
+    calling the boost-build rule:</p>
+<pre>
+      rule boost-build ( location ? )
+</pre>
+    If location is a relative path, it is treated as relative to the
+    directory of boost-build.jam. The directory specified by location and
+    directories in BOOST_BUILD_PATH are then searched for a file called
+    bootstrap.jam which is interpreted and is expected to bootstrap the build
+    system. This arrangement allows the build system to work without any
+    command-line or environment variable settings. For example, if the build
+    system files were located in a directory "build-system/" at your project
+    root, you might place a boost-build.jam at the project root containing: 
+<pre>
+     boost-build build-system ;
+</pre>
+    In this case, running bjam anywhere in the project tree will
+    automatically find the build system. 
+
+    <p>The default "bootstrap.jam", after loading some standard definitions,
+    loads two files, which can be provided/customised by user:
+    "site-config.jam" and "user-config.jam".</p>
+
+    <p>Locations where those files a search are summarized below:</p>
+
+    <table align="center" summary="search paths for configuration files">
+      <caption>
+        search paths for configuration files
+      </caption>
+
+      <tr>
+        <td>
+        </td>
+
+        <td>site-config.jam</td>
+
+        <td>user-config.jam</td>
+      </tr>
+
+      <tr>
+        <td>Linux</td>
+
+        <td>/etc<br>
+         $HOME<br>
+         $BOOST_BUILD_PATH</td>
+
+        <td>$HOME<br>
+         $BOOST_BUILD_PATH</td>
+      </tr>
+
+      <tr>
+        <td>Windows</td>
+
+        <td>$SystemRoot<br>
+         $HOME<br>
+         $BOOST_BUILD_PATH</td>
+
+        <td>$HOME<br>
+         $BOOST_BUILD_PATH</td>
+      </tr>
+    </table>
+    Boost.Build comes with default versions of those files, which can serve
+    as templates for customized versions. 
+
+    <h3><a name="command_line">Command line</a></h3>
+
+    <p>The comamnd line may contain:</p>
+
+    <ul>
+      <li>Jam options,</li>
+
+      <li>Boost.Build <a href="#command_line_options">options</a>,</li>
+
+      <li>Command line arguments</li>
+    </ul>
+
+    <h4 id="command_line_arguments">Command line arguments</h4>
+    Command line arguments specify targets and build request using the
+    following rules. 
+
+    <ul>
+      <li>An argument which does not contain slashes or the "=" symbol is
+      either a value of an implicit feature, or target to be built. It is
+      taken to be value of a feature if appropriate feature exists.
+      Otherwise, it is considered a <a href="#target_id">target id</a>.
+      Special target name "clean" has the same effect as "--clean"
+      option.</li>
+
+      <li>
+        An argument with either slashes or the "=" symbol specifies a number
+        of <a href="#build_request">build request</a> elements. In the
+        simplest form, it's just a set of properties, separated by slashes,
+        which become a single build request element, for example: 
+<pre>
+borland/&lt;runtime-link&gt;static
+</pre>
+        More complex form is used to save typing. For example, instead of 
+<pre>
+borland/runtime-link=static borland/runtime-link=dynamic
+</pre>
+        one can use 
+<pre>
+borland/runtime-link=static,dynamic
+</pre>
+        Exactly, the conversion from argument to build request elements is
+        performed by (1) splitting the argument at each slash, (2) converting
+        each split part into a set of properties and (3) taking all possible
+        combination of the property sets. Each split part should have the
+        either the form 
+<pre>
+    <em>feature-name</em>=<em>feature-value1</em>[","<em>feature-valueN</em>]*   
+</pre>
+        or, in case of implict feature 
+<pre>
+    <em>feature-value1</em>[","<em>feature-valueN</em>;]*   
+</pre>
+        and will be converted into property set 
+<pre>
+&lt;feature-name&gt;feature-value1 .... &lt;feature-name&gt;feature-valueN
+</pre>
+      </li>
+    </ul>
+    For example, the command line 
+<pre>
+    target1 debug gcc/runtime-link=dynamic,static
+   
+</pre>
+    would cause target called <tt>target1</tt> to be rebuild in debug mode,
+    except that for gcc, both dynamically and statically linked binaries
+    would be created. 
+
+    <h4 id="command_line_options">Command line options</h4>
+
+    <p>All of the Boost.Build options start with the "--" prefix. They are
+    described in the following table.</p>
+
+    <table align="center">
+      <caption>
+        Command line options
+      </caption>
+
+      <thead>
+        <tr>
+          <th>Option</th>
+
+          <th>Description</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        <tr>
+          <td><tt>--version</tt></td>
+
+          <td>Prints information on Boost.Build and Boost.Jam versions.</td>
+        </tr>
+
+        <tr id="help_option">
+          <td><tt>--help</tt></td>
+
+          <td>Access to the online help system. This prints general
+          information on how to use the help system with additional --help*
+          options.</td>
+        </tr>
+
+        <tr>
+          <td><tt>--clean</tt></td>
+
+          <td>Removes everything instead of building. Unlike <tt>clean</tt>
+          target in make, it is possible to clean only some targets.</td>
+        </tr>
+
+        <tr>
+          <td><tt>--debug</tt></td>
+
+          <td>Enables internal checks.</td>
+        </tr>
+
+        <tr>
+          <td><tt>--dump-projects</tt></td>
+
+          <td>Cause the project structure to be output.</td>
+        </tr>
+
+        <tr>
+          <td><tt>--no-error-backtrace</tt></td>
+
+          <td>Don't print backtrace on errors. Primary usefull for
+          testing.</td>
+        </tr>
+
+        <tr>
+          <td><tt>--ignore-config</tt></td>
+
+          <td>Do not load <tt>site-config.jam</tt> and
+          <tt>user-config.jam</tt></td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h3><a name="projects">Projects</a></h3>
+
+    <p>Boost.Build considers every software it build as organized into
+    projects, each of which corresponds to a single Jamfile. Projects are
+    organized in a hierarchical structure, so each project may have a single
+    parent project and a number of subprojects.</p>
+
+    <p>Each project is also associated with <em>project root</em>. That's a
+    root for a tree of projects, which specifies some global properties.</p>
+
+    <h4>Project root</h4>
+    Project root for a projects is the nearest parent directory which
+    contains a file called <tt>project-root.jam</tt>. That file defines
+    certain properties which apply to all projects under project root. It
+    can: 
+
+    <ul>
+      <li>configure toolsets, via call to <tt>toolset.using</tt></li>
+
+      <li>refer to other projects, via the <tt>use-project</tt> rule</li>
+
+      <li>declare constants, via the <tt>constant</tt> and
+      <tt>path-constant</tt> rules.</li>
+    </ul>
+
+    <h4>Project attributes</h4>
+
+    <p>For each project, there are several attributes.</p>
+
+    <p><em>Project id</em> is a short way to denote a project, as opposed to
+    the Jamfile's pathname. It is a hierarchical path, unrelated to
+    filesystem, such as "boost/thread". <a href="#target_id">Target
+    references</a> make use of project ids to specify a target.</p>
+
+    <p><em>Source location</em> specifies the directory where sources for the
+    project are located.</p>
+
+    <p><em>Project requirements</em> are requirements that apply to all the
+    targets in the projects as well as all subprojects.</p>
+
+    <p><em>Default build</em> is the build request that should be used when
+    no build request is specified explicitly.</p>
+
+    <p>The default values for those attributes are given in the table below.
+    In order to affect them, Jamfile may call the <tt>project</tt> rule. The
+    rule has this syntax:</p>
+<pre>
+    project id : &lt;attributes&gt; ;
+   
+</pre>
+    Here, attributes is a sequence of (attribute-name, attribute-value)
+    pairs. The list of attribute names along with its handling is also shown
+    in the table below. For example, it it possible to write: 
+<pre>
+    project tennis 
+        : requirements &lt;threading&gt;multi 
+        : default-build release
+        ;
+   
+</pre>
+
+    <table>
+      <tr>
+        <th>Attribute</th>
+
+        <th>Name for the 'project' rule</th>
+
+        <th>Default value</th>
+
+        <th>Handling by the 'project' rule</th>
+      </tr>
+
+      <tr>
+        <td>Project id</td>
+
+        <td>none</td>
+
+        <td>none</td>
+
+        <td>Assigned from the first parameter of the 'project' rule. It is
+        assumed to denote absolute project id.</td>
+      </tr>
+
+      <tr>
+        <td>Source location</td>
+
+        <td><tt>source-location</tt></td>
+
+        <td>The location of jamfile for the project</td>
+
+        <td>Sets to the passed value</td>
+      </tr>
+
+      <tr>
+        <td>Requirements</td>
+
+        <td><tt>requirements</tt></td>
+
+        <td>The parent's requirements</td>
+
+        <td>The parent's requirements are refined with the passed requirement
+        and the result is used as the project requirements.</td>
+      </tr>
+
+      <tr>
+        <td>Default build</td>
+
+        <td><tt>default-build</tt></td>
+
+        <td>none</td>
+
+        <td>Sets to the passed value</td>
+      </tr>
+
+      <tr>
+        <td>Build directory</td>
+
+        <td><tt>build-dir</tt></td>
+
+        <td>If parent has a build dir set, the value of it, joined with the
+        relative path from parent to the current project. Otherwise,
+        empty</td>
+
+        <td>Sets to the passed value, interpreted as relative to the
+        project's location.</td>
+      </tr>
+    </table>
+
+    <h4>Project relationship</h4>
+
+    <p>There are three kinds of project relationships.</p>
+
+    <p>First is parent-child. This relationship is established implicitly:
+    parent directories of a project are searched, and the first found Jamfile
+    is assumed to define the parent project. The parent-child relationship
+    affects only attribute values for the child project.</p>
+
+    <p>Second is build relationship. Some project may request to recursively
+    build other projects. Those project need not be child projects. The
+    <tt>build-project</tt> rule is used for that:</p>
+<pre>
+    build-project src ;   
+</pre>
+
+    <p>The third kind is the 'use' relationship. In means that one project
+    uses targets from another. It is possible to just refer to target in
+    other projects using target id. However, if target id uses project id, it
+    is required that the project id is known. The <tt>use-project</tt> rule
+    is employed to guarantee that.</p>
+<pre>
+    use-project ( id : location )
+   
+</pre>
+    It loads the project at the specified location, which makes its project
+    id available in the project which invokes the rule. It is required that
+    the <tt>id</tt> parameter passed to the <tt>use-project</tt> rule be
+    equal to the id that the loaded project declared. At this moment, the
+    <tt>id</tt> paremeter should be absolute project id. 
+
+    <h3><a name="targets">Targets</a></h3>
+
+    <p>There are two user-visible kinds of targets in Boost.Build. First are
+    "abstract" &mdash; they correspond to things declared by user, for
+    example, projects and executable files. The primary thing about abstract
+    target is that it's possible to request them to be build with a
+    particular values of some properties. Each combination of properties may
+    possible yield different set of real file, so abstract target do not have
+    a direct correspondence with files.</p>
+
+    <p>File targets, on the contary, are associated with concrete files.
+    Dependency graphs for abstract targets with specific properties are
+    constructed from file targets. User has no was to create file targets,
+    however it can specify rules that detect file type for sources, and also
+    rules for transforming between file targets of different types. That
+    information is used in constructing dependency graph, as desribed in the
+    <a href="#generators">next section</a>. <b>Note:</b>File targets are not
+    the same as targets in Jam sense; the latter are created from file
+    targets at the latest possible moment. <b>Note:</b>"File target" is a
+    proposed name for what we call virtual targets. It it more understandable
+    by users, but has one problem: virtual targets can potentially be
+    "phony", and not correspond to any file.</p>
+
+    <h4>Main targets and main target alternatives</h4>
+
+    <p id="main_target"><em>Main target</em> is a named entity which can be
+    build, for example a named executable file. To declare a main target,
+    user invokes some of the <a href="#main_target_rules">main target
+    rules</a>, passing it things like list of sources and requirements.</p>
+
+    <p>It is possible to have different list of sources for different
+    toolsets, therefore it is possible to invoke main target rules several
+    times for a single main target. For example:</p>
+<pre>
+    exe a : a_gcc.cpp : &lt;toolset&gt; ;
+    exe a : a.cpp ;
+</pre>
+    Each call to the 'exe' rule defines a new <em>main target
+    alternative</em> for the main target <tt>a.exe</tt>. In this case, the
+    first alternative will be used for the <tt>gcc</tt> toolset, while the
+    second alternative will be used in other cases. TODO: document the exact
+    selection method under "Build process" below. 
+
+    <h4 id="target_id">Target identifiers and references</h4>
+
+    <p><em>Target identifier</em> is used to denote a target. It is described
+    by the following grammar:</p>
+<pre>
+    target-id -&gt; project-reference local-target-name
+    project-reference -&gt; [jamfile-location] [ "@" [project-id] ]
+    jamfile-location -&gt; pathname 
+    project-id -&gt; pathname
+    local-target-name -&gt; identifier
+</pre>
+    For example, valid target ids might be: 
+<pre>
+    a
+    lib/b
+    @/boost/thread
+    /home/ghost/build/lr_library@parser/lalr1
+</pre>
+    To map the target id into target, the project where that target is
+    contained is first found: 
+
+    <ol>
+      <li>If <tt>project-reference</tt> is empty, then the current project is
+      used &mdash; i.e. the project there the target id occurs.</li>
+
+      <li>If the project id is absolute, the project with that id is
+      used.</li>
+
+      <li>If the project id is relative, it is treated relatively to
+      project-id of the project at <tt>jamfile-location</tt>. If that project
+      does not declare project id, it is an error.</li>
+    </ol>
+    After that, the target given by <tt>local-target-name</tt> in the found
+    project is used. 
+
+    <p id="target_reference"><em>Target reference</em> is used to specify a
+    source target, and may additionally specify desired properties for that
+    target. It has this syntax:</p>
+<pre>
+    target-reference -&gt; target-id [ "/" requested-properties ]
+    requested-properties -&gt; property-path
+</pre>
+    For example, 
+<pre>
+    exe compiler : compiler.cpp libs/cmdline/&lt;optimization&gt;space ;
+</pre>
+    would cause the version of <tt>cmdline</tt> library, optimized for space,
+    to be linked in even if the <tt>compiler</tt> executable is build with
+    optimization for speed. 
+
+    <h5>Ambiguity resolution</h5>
+
+    <p>Target reference may have the same form as a pathname, for example
+    <tt>lib/a</tt>. In order to determine if this is target reference or
+    pathname, it is checked if there's a jamfile in the specified path. If
+    there is one, it is loaded and if the specified target is declared by
+    that project it is used. Otherwise, we just treat the target reference as
+    a file name.</p>
+
+    <h4>File targets</h4>
+    As described above, file targets corresponds to files that Boost.Build
+    manages. User's may be concerned about file targets in three ways: when
+    declaring file target types, when declaring transformations between
+    types, and when determining where file target will be placed. File
+    targets can also be connected with actions, that determine how the target
+    is created. Both file targets and actions are implemented in the
+    <tt>virtual-target</tt> module. 
+
+    <h5>Types</h5>
+    A file target can be given a file, which determines what transformations
+    can be applied to the file. The <tt>type.register</tt> rule declares new
+    types. File type can also be assigned a scanner, which is used to find
+    implicit dependencies. See <a href="#dependency_scanning">dependency
+    scanning</a> below. 
+
+    <h4>Target paths</h4>
+
+    <p>To distinguish targets build with different properties, they are put
+    in different directories. Rules for determining target paths are given
+    below:</p>
+
+    <ol>
+      <li>All targets are placed under directory corresponding to the project
+      where they are defined.</li>
+
+      <li>Each non free, non incidental property cause an additional element
+      to be added to the target path. That element has the form
+      <tt>&lt;feature-name&gt;-&lt;feature-value&gt;</tt> for ordinary
+      features and <tt>&lt;feature-value&gt;</tt> for implicit ones. [Note
+      about composite features].</li>
+
+      <li>If the set of free, non incidental properties is different from the
+      set of free, non incidental properties for the project in which the
+      main target that uses the target is defined, a part of the form
+      <tt>main_target-&lt;name&gt;</tt> is added to the target path.
+      <b>Note:</b>It would be nice to completely track free features also,
+      but this appears to be complex and not extremely needed.</li>
+    </ol>
+
+    <p>For example, we might have these paths:</p>
+<pre>
+    debug/optimization-off
+    debug/main-target-a
+   
+</pre>
+
+    <h3 id="build_request">Build request</h3>
+
+    <h3><a name="build_process">Build process</a></h3>
+
+    <p>Given a list of targets ids and a build request, building goes this
+    way. First, for each id we obtain the abstract targets corresponding to
+    it. This also loads all necessary projects. If no target id is given,
+    project in the current directory is used. Build request is expanded, and
+    for each resulting property set, the <tt>generate</tt> method of all
+    targets is called, which yields a list of virtual targets. After that all
+    virtual targets are actualized, and target "all" is set to depend on all
+    created actual targets. Lastly, depending on whether <tt>--clean</tt>
+    option was given, either target "all" or target "clean" is updated.
+    Generation of virtual target from abstract one is performed as
+    follows:</p>
+
+    <ul>
+      <li>For project targets, all of main targets are generated with the
+      same properties. Then all projects referred via "build-project" are
+      generated as well. If it's not possible to refine requested properties
+      with project requirements, the project is skipped.</li>
+
+      <li>
+        For main target, steps are: 
+
+        <ol>
+          <li>All main target alternatives which requirements are satisfied
+          by the build request are enumerated.</li>
+
+          <li>If there are several such alternatives, the one which longer
+          requirements list is selected.</li>
+        </ol>
+      </li>
+
+      <li>
+        For each selected alternative 
+
+        <ol>
+          <li>Each target reference in the source list are recursively
+          constructed.</li>
+
+          <li>Properties are refined with alternative's requirements, and
+          active features in the resulting set are executed.</li>
+
+          <li>Conditional properties are evaluated.</li>
+
+          <li>The dependency graph for the target is constructed in a way
+          which depends on the kind of main target, typically using
+          generators.</li>
+        </ol>
+      </li>
+    </ul>
+
+    <h3 id="generators">Generators</h3>
+
+    <p>To construct a main target with given properties from sources, it is
+    required to create a dependency graph for that main target, which will
+    also include actions to be run. The algorithm for creating the dependency
+    graph is described here.</p>
+
+    <p>The fundamental concept is <em>generator</em>. If encapsulates the
+    notion of build tool and is capable to converting a set of input targets
+    into a set of output targets, with some properties. Generator matches a
+    build tool as closely as possible: it works only when the tool can work
+    with requested properties (for example, msvc compiler can't work when
+    requested toolset is gcc), and should produce exactly the same targets as
+    the tool (for example, if Borland's linker produces additional files with
+    debug information, generator should also).</p>
+
+    <p>Given a set of generators, the fundamental operation is to construct a
+    target of a given type, with given properties, from a set of targets.
+    That operation is performed by rule <tt>generators.construct</tt> and the
+    used algorithm is described below.</p>
+
+    <h4>Selecting and ranking viable generators</h4>
+
+    <p>Each generator, in addition to target types that it can produce, have
+    attribute that affects its applicability in particular sitiation. Those
+    attributes are:</p>
+
+    <ol>
+      <li>Required properties, which are properties absolutely necessary for
+      the generator to work. For example, generator encapsulating the gcc
+      compiler would have &lt;toolset&gt;gcc as required property.</li>
+
+      <li>Optional properties, which increase the generators suitability for
+      a particual build.</li>
+    </ol>
+    Generator's required and optional properties may not include either free
+    or incidental properties. (Allowing this would greatly complicate caching
+    targets). 
+
+    <p>When trying to construct a target, the first step is to select all
+    possible generators for the requested target type, which required
+    properties are a subset of requested properties. Generators which were
+    already selected up the call stack are excluded. In addition, if any
+    composing generators were selected up the call stack, all other composing
+    generators are ignored (TODO: define composing generators). The found
+    generators assigned a rank, which is the number of optional properties
+    present in requested properties. Finally, generators with highest rank
+    are selected for futher processing.</p>
+
+    <h4>Running generators</h4>
+
+    <p>When generators are selected, each is run to produce a list of created
+    targets. This list might include targets which are not of requested
+    types, because generators create the same targets as some tool, and
+    tool's behaviour is fixed. (Note: should specify that in some cases we
+    actually want extra targets). If generator fails, it returns an empty
+    list. Generator is free to call 'construct' again, to convert sources to
+    the types it can handle. It also can pass modified properties to
+    'constuct'. However, a generator is not allowed to modify any propagated
+    properties, otherwise when actually consuming properties we might
+    discover that the set of propagated properties is different from what was
+    used for building sources.</p>
+
+    <p>For all targets which are not of requested types, we try to convert
+    them to requested type, using a second call to <tt>construct</tt>. This
+    is done in order to support transformation sequences where single source
+    file expands to several later. See <a href=
+    "http://groups.yahoo.com/group/jamboost/message/1667">this message</a>
+    for details.</p>
+
+    <h4>Selecting dependency graph</h4>
+    After all generators are run, it is necessary to decide which of
+    successfull invocation will be taken as final result. At the moment, this
+    is not done. Instead, it is checked whether all successfull generator
+    invocation returned the same target list. Error is issued otherwise. 
+
+    <h4>Property adjustment</h4>
+
+    <p>Because target location is determined by the build system, it is
+    sometimes necessary to adjust properties, in order to not break actions.
+    For example, if there's an action which generates a header, say
+    "a_parser.h", and a source file "a.cpp" which includes that file, we must
+    make everything work as if a_parser.h is generated in the same directory
+    where it would be generated without any subvariants.</p>
+
+    <p>Correct property adjustment can be done only after all targets are
+    created, so the approach taken is:</p>
+
+    <ol>
+      <li>When dependency graph is constructed, each action can be assigned a
+      rule for property adjustment.</li>
+
+      <li>When virtual target is actualized, that rule is run and return the
+      final set of properties. At this stage it can use information of all
+      created virtual targets.</li>
+    </ol>
+
+    <p>In case of quoted includes, no adjustment can give 100% correct
+    results. If target dirs are not changed by build system, quoted includes
+    are searched in "." and then in include path, while angle includes are
+    searched only in include path. When target dirs are changed, we'd want to
+    make quoted includes to be search in "." then in additional dirs and then
+    in the include path and make angle includes be searched in include path,
+    probably with additional paths added at some position. Unless, include
+    path already has "." as the first element, this is not possible. So,
+    either generated headers should not be included with quotes, or first
+    element of include path should be ".", which essentially erases the
+    difference between quoted and angle includes. <b>Note:</b> there only way
+    to get "." as include path into compiler command line is via verbatim
+    compiler option. In all other case, Boost.Build will convert "." into
+    directory where it occurs.</p>
+
+    <h4>Transformations cache</h4>
+    Under certain conditions, an attempt is made to cache results of
+    transformation search. First, the sources are replaced with targets with
+    special name and the found target list is stored. Later, when properties,
+    requested type, and source type are the same, the store target list is
+    retrieved and cloned, with appropriate change in names. 
+
+    <h4 id="dependency_scanning">Dependency scanning</h4>
+
+    <p>Dependency scanning is the process of finding implicit dependencies
+    due to "include" statements and similar things. It has to take into
+    account two things:</p>
+
+    <ul>
+      <li>Whether includes in a particular file need to be taken into account
+      depends on actions that use that file. For example, if the action is
+      "copy file", then includes should be ignored. Another example is when a
+      file is compiled with two different include paths on different
+      toolsets.</li>
+
+      <li>It is possible to include generated header. In which case, it may
+      not yet exist at the time when we scan dependencies.</li>
+    </ul>
+
+    <p>Dependency scanning is implemented by objects called scanners. See
+    documentation for the "scanner" module to detail.</p>
+
+    <p>Regarding the first problem, we really have no choice. We can't treat
+    the same actual target differently depending on from where it is used.
+    Therefore, when handling of includes differers depending on actions, we
+    have to duplicate targets and assign different properties to it.</p>
+
+    <p>For the reason, when actualizing a virtual target we optionally pass
+    the needed scanner to the "virtual-target.actualize" method. When no
+    scanner is passed, a new actual target is created, with it's dependencies
+    and updating actions set accordingly. When a particular scanner is
+    specified, a new actual target is created. That target will depend on
+    target created without scanner. In effect, this will allow to use
+    different scanners for the same file.</p>
+
+    <h5>Generated headers</h5>
+    Let me explain what I find the right semantic, first without any
+    subvariants. We have a target "a.cpp" which includes "a_parser.h", we
+    have to search through all include directories, checking: 
+
+    <ol>
+      <li>If there's such file there, or</li>
+
+      <li>If there's a target of the same name, bound to that dir via
+      LOCATE_TARGET.</li>
+    </ol>
+    Jam allows to do 1 via SEARCH variable, but that's not enough. Why can't
+    we do simpler: first check if there's target of the same name? I.e.
+    including of "a_parser.h" will already pick generated "a_parser.h",
+    regardless of search paths? Hmm... just because there's no reason to
+    assume that. For example, one can have an action which generated some
+    "dummy" header, for system which don't have the native one. Naturally, we
+    don't want to depend on that generated headers. To implement proposed
+    semantic we'd need a new builtin. We can do this in Jam code, but really,
+    this belongs to core. Using GLOB and jam code would just duplicate
+    existing binding functionality and be inefficient. New builtin will
+    accept a name of new target and a list of directories. It will perform
+    the search as explained above and return either the name of exising
+    target that it found, or create a new target with that name that it was
+    passed. So, we'd write something like 
+
+    <blockquote>
+<pre>
+    INCLUDES $(&lt;) : [ SEARCH_FOR_TARGET $(&gt;) : $(SEARCH_PATH) ] ;
+</pre>
+    </blockquote>
+    What shall we do when using subvariants. For user, subvariants must be
+    more or less transparent. If without subvariant a header was generated to
+    a certain directory, everything must work. Suppose that file a.cpp
+    belongs to a dependency graph of main target a. Include paths are 
+
+    <blockquote>
+<pre>
+     "/usr/include" "/home/t" "."
+</pre>
+    </blockquote>
+    We start by finding all places where headers that are part of a's
+    dependency graph are generated. We insert those places to the include
+    paths, immediately after ".". For example, we might end with: 
+
+    <blockquote>
+<pre>
+     "/usr/include" "/home/t" "." "build"
+</pre>
+    </blockquote>
+    As a result: 
+
+    <ol>
+      <li>File "a.cpp" will be correctly compiled. Note that it's already
+      necessary to adjust paths to ensure this. We'll have to add target
+      paths for all generated headers, because determining the exact set of
+      additional include path for each source -- i.e the set of headers that
+      it uses --- will be hard.</li>
+
+      <li>With the proposed SEARCH_FOR_TARGET rule, dependency on generated
+      header will work magically --- it would find the "a_parser.h" target
+      bound via LOCATE_TARGET to "build" and we'll call INCLUDE on that found
+      target, instread of creating a completely unrelated one.</li>
+    </ol>
+    <hr>
+
+    <p class="revision">Last modified: Oct 10, 2002</p>
+
+    <p>&copy; Copyright Vladimir Prus 2002. Permission to copy, use, modify,
+    sell and distribute this document is granted provided this copyright
+    notice appears in all copies. This document is provided ``as is'' without
+    express or implied warranty, and with no claim as to its suitability for
+    any purpose.</p>
+  </body>
+</html>
+

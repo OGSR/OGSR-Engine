@@ -1,0 +1,45 @@
+# Intel Compiler (on Windows, using the Microsoft Standard Library)
+
+# (C) Copyright David Abrahams 2001. Permission to copy, use,
+# modify, sell and distribute this software is granted provided this
+# copyright notice appears in all copies. This software is provided
+# "as is" without express or implied warranty, and with no claim as
+# to its suitability for any purpose.
+
+# The following #// line will be used by the regression test table generation
+# program as the column heading for HTML tables. Must not include version number.
+#//<a href="http://developer.intel.com/software/products/compilers/">Intel<br>C++</a>
+
+# singleton variables...
+set-as-singleton INTELC ;
+
+# compute INTEL tool path. You can either use the environment variable
+# setup that comes with the Intel compiler, or you can set the
+# INTEL_PATH or INTELC (in order to respect FTJam setup) environment
+# variables to point at the intel-win32 installation directory
+INTEL_PATH ?= $(INTELC) ;
+INTEL_TOOL_PATH ?= "$(INTEL_PATH)"/bin/ ;
+
+# if you have vc6 and vc7 installed, you may want your intel compiler
+# to use the VC7 libraries. In that case, you might set
+#       INTEL_BASE_MSVC_TOOLSET = vc7
+# instead.
+
+INTEL_BASE_MSVC_TOOLSET ?= msvc ;
+
+extends-toolset $(INTEL_BASE_MSVC_TOOLSET) ;
+
+VC_TOOL_PATH = $(INTEL_TOOL_PATH) ;
+VC_STDLIB_PATH = "$(INTEL_PATH)"\\Bin ;
+VC_COMPILER = icl ;
+VC_LINKER = xilink ;
+
+C++FLAGS = 
+  [ difference $(C++FLAGS) : /Zc:wchar_t,forScope ] # remove ms-specific options
+  /Qwn5 /Qwd985 /Qansi_alias
+    ; # reduce number of errors
+
+if $(VC_SETUP)
+{
+    VC_SETUP = "CALL $(INTEL_TOOL_PATH)ICCVARS.BAT > nul" ;
+}

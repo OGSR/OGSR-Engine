@@ -1,0 +1,16 @@
+<?xml version='1.0'?>
+<xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
+                version='1.0'
+                xmlns="http://www.w3.org/TR/xhtml1/transitional"
+                exclude-result-prefixes="#default">
+
+<xsl:import href="/usr/share/sgml/docbook/xsl-stylesheets-1.52.2/html/docbook.xsl"/>
+
+<xsl:variable name="toc.section.depth">3</xsl:variable>
+<xsl:variable name="html.stylesheet">peti.css</xsl:variable>
+
+<xsl:variable name="generate.toc">
+    article   nop
+</xsl:variable>
+
+</xsl:stylesheet>

@@ -1,0 +1,107 @@
+# (C) Copyright David Abrahams 2001. Permission to copy, use,
+# modify, sell and distribute this software is granted provided this
+# copyright notice appears in all copies. This software is provided
+# "as is" without express or implied warranty, and with no claim as
+# to its suitability for any purpose.
+
+#
+# Jam tools information for :
+# Compaq Alpha CXX compiler
+#
+
+
+# No static linking as far as I can tell.
+# flags cxx LINKFLAGS <runtime-link>static : -bstatic ;
+flags cxx CFLAGS <debug-symbols>on : -g ;
+flags tru64cxx LINKFLAGS <debug-symbols>on : -g ;
+flags tru64cxx LINKFLAGS <debug-symbols>off : -s ;
+flags tru64cxx LINKFLAGS <target-type>$(SHARED_TYPES) : -shared ;
+flags tru64cxx CFLAGS <optimization>off : -O0 ;
+flags tru64cxx CFLAGS <optimization>speed/<inlining>on : -O5 -inline speed ;
+flags tru64cxx CFLAGS <optimization>speed : -O5 ;
+
+# Added for threading support
+flags tru64cxx CFLAGS <threading>multi : -pthread ;
+flags tru64cxx LINKFLAGS <threading>multi : -pthread ;
+
+flags tru64cxx CFLAGS <optimization>space/<inlining>on : <inlining>size ;
+flags tru64cxx CFLAGS <optimization>space : -O1 ;
+flags tru64cxx CFLAGS <inlining>off : -inline none ;
+flags tru64cxx CFLAGS <inlining>full : -inline all ;
+
+flags tru64cxx CFLAGS <profiling>on : -pg ;
+flags tru64cxx LINKFLAGS <profiling>on : -pg ;
+
+flags tru64cxx CFLAGS <cflags> ;
+flags tru64cxx C++FLAGS <cxxflags> ;
+flags tru64cxx DEFINES <define> ;
+flags tru64cxx UNDEFS <undef> ;
+flags tru64cxx HDRS <include> ;
+flags tru64cxx STDHDRS <sysinclude> ;
+flags tru64cxx LINKFLAGS <linkflags> ;
+flags tru64cxx ARFLAGS <arflags> ;
+
+if ! $(ARFLAGS)
+{
+    flags tru64cxx ARFLAGS : "" ;
+}
+
+# Vincenzo
+BOOST_COMPATIBILITY ?= $(BOOST_ROOT)$(SLASH)boost$(SLASH)compatibility$(SLASH)cpp_c_headers ;
+flags tru64cxx STDHDRS : $(BOOST_COMPATIBILITY) ;
+
+#### Link ####
+
+rule Link-action ( target : sources + : target-type )
+{
+   tru64cxx-Link-action $(target) : $(sources) ;
+}
+
+# for tru64cxx, we repeat all libraries so that dependencies are always resolved
+actions tru64cxx-Link-action bind NEEDLIBS
+{
+   cxx $(LINKFLAGS) -o "$(<)" -L$(LIBPATH) -L$(STDLIBPATH) "$(>)" "$(NEEDLIBS)" "$(NEEDLIBS)" -l$(FINDLIBS) -lrt
+}
+
+actions tru64cxx-Link-shared bind NEEDLIBS
+{
+    cxx -qrtti $(LINKFLAGS) -o "$(<[1])" -L$(LIBPATH) -L$(STDLIBPATH) "$(>)" "$(NEEDLIBS)" "$(NEEDLIBS)" -l$(FINDLIBS)
+}
+
+#### Cc #####
+
+rule Cc-action
+{
+   cxx-Cc-action $(<) : $(>) ;
+}
+
+actions tru64cxx-Cc-action
+{
+   cc -std1 -msg_display_number -msg-disable 186,450,1115 -c -U$(UNDEFS) -D$(DEFINES) $(CFLAGS) -I"$(HDRS)" -I"$(STDHDRS)" -o "$(<)" "$(>)"
+}
+
+#### C++ ####
+rule C++-action
+{
+   tru64cxx-C++-action $(<) : $(>) ;
+}
+
+actions tru64cxx-C++-action
+{
+   cxx -c -newcxx -x cxx  -msg_display_number -msg_disable 186,450,1115 -U$(UNDEFS) -D$(DEFINES) $(CFLAGS) $(C++FLAGS)  -I"$(HDRS)" -I"$(STDHDRS)" -o "$(<)" "$(>)"
+}
+
+#### Archive ####
+
+rule Archive-action
+{
+  tru64cxx-Archive-action $(<) : $(>) ;
+}
+
+actions updated together piecemeal tru64cxx-Archive-action
+{
+  rm -f $(<)
+  ar r$(ARFLAGS) $(<) $(>) cxx_repository/*
+}
+
+

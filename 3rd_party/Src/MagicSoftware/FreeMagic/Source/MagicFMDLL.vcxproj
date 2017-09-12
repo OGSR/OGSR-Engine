@@ -1,0 +1,790 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{08F2A75F-9374-4112-89A5-334F9D9F0332}</ProjectGuid>
+    <WindowsTargetPlatformVersion>10.0.15063.0</WindowsTargetPlatformVersion>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <PlatformToolset>v141</PlatformToolset>
+    <UseOfMfc>false</UseOfMfc>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <PlatformToolset>v141</PlatformToolset>
+    <UseOfMfc>false</UseOfMfc>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <PlatformToolset>v141</PlatformToolset>
+    <UseOfMfc>false</UseOfMfc>
+    <CharacterSet>MultiByte</CharacterSet>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <PlatformToolset>v141</PlatformToolset>
+    <UseOfMfc>false</UseOfMfc>
+    <CharacterSet>MultiByte</CharacterSet>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="$(VCTargetsPath)Microsoft.CPP.UpgradeFromVC70.props" />
+    <Import Project="..\..\..\FreeImage\FreeImage.props" />
+    <Import Project="..\..\..\3rd_party_properties.props" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="$(VCTargetsPath)Microsoft.CPP.UpgradeFromVC70.props" />
+    <Import Project="..\..\..\FreeImage\FreeImage.props" />
+    <Import Project="..\..\..\3rd_party_properties.props" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="$(VCTargetsPath)Microsoft.CPP.UpgradeFromVC70.props" />
+    <Import Project="..\..\..\FreeImage\FreeImage.props" />
+    <Import Project="..\..\..\3rd_party_properties.props" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="$(VCTargetsPath)Microsoft.CPP.UpgradeFromVC70.props" />
+    <Import Project="..\..\..\FreeImage\FreeImage.props" />
+    <Import Project="..\..\..\3rd_party_properties.props" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <_ProjectFileVersion>14.0.25123.0</_ProjectFileVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <LinkIncremental>false</LinkIncremental>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRules />
+    <CodeAnalysisRuleAssemblies />
+    <TargetName>MagicFM</TargetName>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <LinkIncremental>false</LinkIncremental>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRules />
+    <CodeAnalysisRuleAssemblies />
+    <TargetName>MagicFM</TargetName>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <LinkIncremental>true</LinkIncremental>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRules />
+    <CodeAnalysisRuleAssemblies />
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <LinkIncremental>true</LinkIncremental>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRules />
+    <CodeAnalysisRuleAssemblies />
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Midl>
+      <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MkTypLibCompatible>true</MkTypLibCompatible>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <TargetEnvironment>Win32</TargetEnvironment>
+      <TypeLibraryName>.\ReleaseDLL/MagicFMDLL.tlb</TypeLibraryName>
+    </Midl>
+    <ClCompile>
+      <Optimization>MaxSpeed</Optimization>
+      <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
+      <OmitFramePointers>true</OmitFramePointers>
+      <EnableFiberSafeOptimizations>true</EnableFiberSafeOptimizations>
+      <WholeProgramOptimization>true</WholeProgramOptimization>
+      <AdditionalIncludeDirectories>.\;Approximation2D;Approximation3D;Containment2D;Containment3D;Core;Core2D;Core3D;Curve2D;Curve3D;Distance2D;Distance3D;ImageAnalysis;Interpolation1D;Interpolation2D;Interpolation3D;Intersection2D;Intersection3D;Numerics;Projection;Surface;Tessellation2D;Tessellation3D;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>NDEBUG;WIN32;_WINDOWS;_USRDLL;MAGICFMDLL_EXPORTS;STRICT;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <StringPooling>true</StringPooling>
+      <ExceptionHandling />
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <BufferSecurityCheck>false</BufferSecurityCheck>
+      <FunctionLevelLinking>false</FunctionLevelLinking>
+      <FloatingPointModel>Fast</FloatingPointModel>
+      <PrecompiledHeader />
+      <WarningLevel>Level3</WarningLevel>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <CompileAs>Default</CompileAs>
+      <EnableEnhancedInstructionSet>StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <Culture>0x0409</Culture>
+    </ResourceCompile>
+    <Link>
+      <AdditionalOptions>/MACHINE:I386 %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalDependencies>odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <TargetMachine>MachineX86</TargetMachine>
+    </Link>
+    <PostBuildEvent />
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <Midl>
+      <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MkTypLibCompatible>true</MkTypLibCompatible>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <TypeLibraryName>.\ReleaseDLL/MagicFMDLL.tlb</TypeLibraryName>
+    </Midl>
+    <ClCompile>
+      <Optimization>MaxSpeed</Optimization>
+      <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
+      <OmitFramePointers>true</OmitFramePointers>
+      <EnableFiberSafeOptimizations>true</EnableFiberSafeOptimizations>
+      <WholeProgramOptimization>true</WholeProgramOptimization>
+      <AdditionalIncludeDirectories>.\;Approximation2D;Approximation3D;Containment2D;Containment3D;Core;Core2D;Core3D;Curve2D;Curve3D;Distance2D;Distance3D;ImageAnalysis;Interpolation1D;Interpolation2D;Interpolation3D;Intersection2D;Intersection3D;Numerics;Projection;Surface;Tessellation2D;Tessellation3D;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>NDEBUG;WIN32;_WINDOWS;_USRDLL;MAGICFMDLL_EXPORTS;STRICT;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <StringPooling>true</StringPooling>
+      <ExceptionHandling>
+      </ExceptionHandling>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <BufferSecurityCheck>false</BufferSecurityCheck>
+      <FunctionLevelLinking>false</FunctionLevelLinking>
+      <FloatingPointModel>Fast</FloatingPointModel>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <CompileAs>Default</CompileAs>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <Culture>0x0409</Culture>
+    </ResourceCompile>
+    <Link>
+      <AdditionalOptions>
+      </AdditionalOptions>
+      <AdditionalDependencies>odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+    </Link>
+    <PostBuildEvent />
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Midl>
+      <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MkTypLibCompatible>true</MkTypLibCompatible>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <TargetEnvironment>Win32</TargetEnvironment>
+      <TypeLibraryName>.\DebugDLL/MagicFMDLL.tlb</TypeLibraryName>
+    </Midl>
+    <ClCompile>
+      <Optimization>Disabled</Optimization>
+      <AdditionalIncludeDirectories>.\;Approximation2D;Approximation3D;Containment2D;Containment3D;Core;Core2D;Core3D;Curve2D;Curve3D;Distance2D;Distance3D;ImageAnalysis;Interpolation1D;Interpolation2D;Interpolation3D;Intersection2D;Intersection3D;Numerics;Projection;Surface;Tessellation2D;Tessellation3D;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_DEBUG;WIN32;_WINDOWS;_USRDLL;MAGICFMDLL_EXPORTS;STRICT;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <PrecompiledHeader />
+      <PrecompiledHeaderOutputFile>.\DebugDLL/MagicFMDLL.pch</PrecompiledHeaderOutputFile>
+      <AssemblerListingLocation>.\DebugDLL/</AssemblerListingLocation>
+      <ObjectFileName>.\DebugDLL/</ObjectFileName>
+      <ProgramDataBaseFileName>.\DebugDLL/</ProgramDataBaseFileName>
+      <WarningLevel>Level3</WarningLevel>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
+      <CompileAs>Default</CompileAs>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <Culture>0x0409</Culture>
+    </ResourceCompile>
+    <Link>
+      <AdditionalOptions>/MACHINE:I386 %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalDependencies>odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <OutputFile>..\Library\DebugDLL\MagicFM.dll</OutputFile>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <ProgramDatabaseFile>$(OutDir)$(TargetName).pdb</ProgramDatabaseFile>
+    </Link>
+    <PostBuildEvent />
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Midl>
+      <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MkTypLibCompatible>true</MkTypLibCompatible>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <TypeLibraryName>.\DebugDLL/MagicFMDLL.tlb</TypeLibraryName>
+    </Midl>
+    <ClCompile>
+      <Optimization>Disabled</Optimization>
+      <AdditionalIncludeDirectories>.\;Approximation2D;Approximation3D;Containment2D;Containment3D;Core;Core2D;Core3D;Curve2D;Curve3D;Distance2D;Distance3D;ImageAnalysis;Interpolation1D;Interpolation2D;Interpolation3D;Intersection2D;Intersection3D;Numerics;Projection;Surface;Tessellation2D;Tessellation3D;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_DEBUG;WIN32;_WINDOWS;_USRDLL;MAGICFMDLL_EXPORTS;STRICT;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <PrecompiledHeaderOutputFile>.\DebugDLL/MagicFMDLL.pch</PrecompiledHeaderOutputFile>
+      <AssemblerListingLocation>.\DebugDLL/</AssemblerListingLocation>
+      <ObjectFileName>.\DebugDLL/</ObjectFileName>
+      <ProgramDataBaseFileName>.\DebugDLL/</ProgramDataBaseFileName>
+      <WarningLevel>Level3</WarningLevel>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <CompileAs>Default</CompileAs>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <Culture>0x0409</Culture>
+    </ResourceCompile>
+    <Link>
+      <AdditionalOptions>/MACHINE:I386 %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalDependencies>odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <OutputFile>..\Library\DebugDLL\MagicFM.dll</OutputFile>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <ProgramDatabaseFile>$(OutDir)$(TargetName).pdb</ProgramDatabaseFile>
+    </Link>
+    <PostBuildEvent />
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <None Include="Approximation2D\MgcApproximation2D.pkg" />
+    <None Include="Approximation3D\MgcApproximation3D.pkg" />
+    <None Include="Containment2D\MgcContainment2D.pkg" />
+    <None Include="Containment2D\MgcConvexHull2D.inl" />
+    <None Include="Containment3D\MgcContainment3D.pkg" />
+    <None Include="Containment3D\MgcConvexHull3D.inl" />
+    <None Include="Core2D\MgcArc2.inl" />
+    <None Include="Core2D\MgcBox2.inl" />
+    <None Include="Core2D\MgcCircle2.inl" />
+    <None Include="Core2D\MgcCore2D.pkg" />
+    <None Include="Core2D\MgcDisk2.inl" />
+    <None Include="Core2D\MgcEllipse2.inl" />
+    <None Include="Core2D\MgcLine2.inl" />
+    <None Include="Core2D\MgcMatrix2.inl" />
+    <None Include="Core2D\MgcRay2.inl" />
+    <None Include="Core2D\MgcSegment2.inl" />
+    <None Include="Core2D\MgcTriangle2.inl" />
+    <None Include="Core2D\MgcVector2.inl" />
+    <None Include="Core3D\MgcCore3D.pkg" />
+    <None Include="Core3D\MgcMatrix3.inl" />
+    <None Include="Core3D\MgcTetrahedron.inl" />
+    <None Include="Core\MgcColorRGB.inl" />
+    <None Include="Core\MgcCore.pkg" />
+    <None Include="Core\MgcEdgeMesh.inl" />
+    <None Include="Core\MgcMath.inl" />
+    <None Include="Core\MgcMTEdge.inl" />
+    <None Include="Core\MgcMTIEdge.inl" />
+    <None Include="Core\MgcMTITriangle.inl" />
+    <None Include="Core\MgcMTIVertex.inl" />
+    <None Include="Core\MgcMTMesh.inl" />
+    <None Include="Core\MgcMTTriangle.inl" />
+    <None Include="Core\MgcMTVertex.inl" />
+    <None Include="Core\MgcSmallSet.inl" />
+    <None Include="Core\MgcTriangleMesh.inl" />
+    <None Include="Core\MgcTUnorderedSet.inl" />
+    <None Include="Curve2D\MgcBezierCurve2.inl" />
+    <None Include="Curve2D\MgcCubicPolynomialCurve2.inl" />
+    <None Include="Curve2D\MgcCurve2.inl" />
+    <None Include="Curve2D\MgcCurve2D.pkg" />
+    <None Include="Curve2D\MgcNaturalSpline2.inl" />
+    <None Include="Curve2D\MgcPolynomialCurve2.inl" />
+    <None Include="Curve2D\MgcTCBSpline2.inl" />
+    <None Include="Curve3D\MgcBezierCurve3.inl" />
+    <None Include="Curve3D\MgcCubicPolynomialCurve3.inl" />
+    <None Include="Curve3D\MgcCurve3.inl" />
+    <None Include="Curve3D\MgcCurve3D.pkg" />
+    <None Include="Curve3D\MgcNaturalSpline3.inl" />
+    <None Include="Curve3D\MgcPolynomialCurve3.inl" />
+    <None Include="Curve3D\MgcTCBSpline3.inl" />
+    <None Include="Distance2D\MgcDistance2D.pkg" />
+    <None Include="Distance3D\MgcDistance3D.pkg" />
+    <None Include="ImageAnalysis\MgcElement.inl" />
+    <None Include="ImageAnalysis\MgcImageAnalysis.pkg" />
+    <None Include="ImageAnalysis\MgcLattice.inl" />
+    <None Include="ImageAnalysis\MgcTImage.inl" />
+    <None Include="ImageAnalysis\MgcTImage2D.inl" />
+    <None Include="ImageAnalysis\MgcTImage3D.inl" />
+    <None Include="Interpolation1D\MgcInterp1DAkima.inl" />
+    <None Include="Interpolation1D\MgcInterp1DAkimaNonuniform.inl" />
+    <None Include="Interpolation1D\MgcInterp1DAkimaUniform.inl" />
+    <None Include="Interpolation1D\MgcInterp1DBSplineUniform.inl" />
+    <None Include="Interpolation1D\MgcInterpBSplineUniform.inl" />
+    <None Include="Interpolation1D\MgcInterpolation1D.pkg" />
+    <None Include="Interpolation2D\MgcInterp2DAkimaUniform.inl" />
+    <None Include="Interpolation2D\MgcInterp2DBicubic.inl" />
+    <None Include="Interpolation2D\MgcInterp2DBSplineUniform.inl" />
+    <None Include="Interpolation2D\MgcInterpolation2D.pkg" />
+    <None Include="Interpolation3D\MgcInterp3DAkimaUniform.inl" />
+    <None Include="Interpolation3D\MgcInterp3DBSplineUniform.inl" />
+    <None Include="Interpolation3D\MgcInterp4DBSplineUniform.inl" />
+    <None Include="Interpolation3D\MgcInterpolation3D.pkg" />
+    <None Include="Intersection2D\MgcIntersection2D.pkg" />
+    <None Include="Intersection3D\MgcIntersection3D.pkg" />
+    <None Include="MagicFM.pkg" />
+    <None Include="Numerics\MgcEigen.inl" />
+    <None Include="Numerics\MgcEuler.inl" />
+    <None Include="Numerics\MgcLinearSystem.inl" />
+    <None Include="Numerics\MgcMidpoint.inl" />
+    <None Include="Numerics\MgcMinimize1D.inl" />
+    <None Include="Numerics\MgcMinimizeND.inl" />
+    <None Include="Numerics\MgcNumerics.pkg" />
+    <None Include="Numerics\MgcODE.inl" />
+    <None Include="Numerics\MgcRK4.inl" />
+    <None Include="Numerics\MgcRK4Adapt.inl" />
+    <None Include="Projection\MgcConvexClipper.inl" />
+    <None Include="Projection\MgcConvexPolyhedron.inl" />
+    <None Include="Projection\MgcProjection.pkg" />
+    <None Include="Surface\MgcBezierCylinderG.inl" />
+    <None Include="Surface\MgcBezierPatchG.inl" />
+    <None Include="Surface\MgcSurface.pkg" />
+    <None Include="Surface\MgcTubeSurfaceG.inl" />
+    <None Include="Tessellation2D\MgcDelaunay2D.inl" />
+    <None Include="Tessellation2D\MgcTessellation2D.pkg" />
+    <None Include="Tessellation3D\MgcDelaunay3D.inl" />
+    <None Include="Tessellation3D\MgcTessellation3D.pkg" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Approximation2D\MgcAppr2DCircleFit.cpp" />
+    <ClCompile Include="Approximation2D\MgcAppr2DEllipseByArcs.cpp" />
+    <ClCompile Include="Approximation2D\MgcAppr2DEllipseFit.cpp" />
+    <ClCompile Include="Approximation2D\MgcAppr2DGaussPointsFit.cpp" />
+    <ClCompile Include="Approximation2D\MgcAppr2DLineFit.cpp" />
+    <ClCompile Include="Approximation2D\MgcAppr2DQuadraticFit.cpp" />
+    <ClCompile Include="Approximation3D\MgcAppr3DEllipsoidFit.cpp" />
+    <ClCompile Include="Approximation3D\MgcAppr3DGaussPointsFit.cpp" />
+    <ClCompile Include="Approximation3D\MgcAppr3DLineFit.cpp" />
+    <ClCompile Include="Approximation3D\MgcAppr3DParaboloidFit.cpp" />
+    <ClCompile Include="Approximation3D\MgcAppr3DPlaneFit.cpp" />
+    <ClCompile Include="Approximation3D\MgcAppr3DQuadraticFit.cpp" />
+    <ClCompile Include="Approximation3D\MgcAppr3DSphereFit.cpp" />
+    <ClCompile Include="Containment2D\MgcCont2DBox.cpp" />
+    <ClCompile Include="Containment2D\MgcCont2DCircleScribe.cpp" />
+    <ClCompile Include="Containment2D\MgcCont2DEllipse.cpp" />
+    <ClCompile Include="Containment2D\MgcCont2DMinBox.cpp" />
+    <ClCompile Include="Containment2D\MgcCont2DMinCircle.cpp" />
+    <ClCompile Include="Containment2D\MgcCont2DPointInPolygon.cpp" />
+    <ClCompile Include="Containment2D\MgcConvexHull2D.cpp" />
+    <ClCompile Include="Containment2D\MgcMinAreaEllipseCR.cpp" />
+    <ClCompile Include="Containment2D\MgcSeparatePointSets2D.cpp" />
+    <ClCompile Include="Containment3D\MgcCont3DBox.cpp" />
+    <ClCompile Include="Containment3D\MgcCont3DCapsule.cpp" />
+    <ClCompile Include="Containment3D\MgcCont3DCircleSphereScribe.cpp" />
+    <ClCompile Include="Containment3D\MgcCont3DCylinder.cpp" />
+    <ClCompile Include="Containment3D\MgcCont3DEllipsoid.cpp" />
+    <ClCompile Include="Containment3D\MgcCont3DLozenge.cpp" />
+    <ClCompile Include="Containment3D\MgcCont3DMinBox.cpp" />
+    <ClCompile Include="Containment3D\MgcCont3DMinSphere.cpp" />
+    <ClCompile Include="Containment3D\MgcCont3DSphere.cpp" />
+    <ClCompile Include="Containment3D\MgcConvexHull3D.cpp" />
+    <ClCompile Include="Containment3D\MgcMinVolumeEllipsoidCR.cpp" />
+    <ClCompile Include="Containment3D\MgcSeparatePointSets3D.cpp" />
+    <ClCompile Include="Core2D\MgcBox2.cpp" />
+    <ClCompile Include="Core2D\MgcMatrix2.cpp" />
+    <ClCompile Include="Core2D\MgcVector2.cpp" />
+    <ClCompile Include="Core3D\MgcBox3.cpp" />
+    <ClCompile Include="Core3D\MgcExtraSpin.cpp" />
+    <ClCompile Include="Core3D\MgcFrustum.cpp" />
+    <ClCompile Include="Core3D\MgcMatrix3.cpp" />
+    <ClCompile Include="Core3D\MgcPlane.cpp" />
+    <ClCompile Include="Core3D\MgcQuaternion.cpp" />
+    <ClCompile Include="Core3D\MgcTetrahedron.cpp" />
+    <ClCompile Include="Core3D\MgcTorus.cpp" />
+    <ClCompile Include="Core3D\MgcVector3.cpp" />
+    <ClCompile Include="Core3D\MgcXFormInterp.cpp" />
+    <ClCompile Include="Core\MgcColorRGB.cpp" />
+    <ClCompile Include="Core\MgcCommand.cpp" />
+    <ClCompile Include="Core\MgcEdgeMesh.cpp" />
+    <ClCompile Include="Core\MgcIntervalIntersection.cpp" />
+    <ClCompile Include="Core\MgcMath.cpp" />
+    <ClCompile Include="Core\MgcMTEdge.cpp" />
+    <ClCompile Include="Core\MgcMTMesh.cpp" />
+    <ClCompile Include="Core\MgcMTTriangle.cpp" />
+    <ClCompile Include="Core\MgcMTVertex.cpp" />
+    <ClCompile Include="Core\MgcPolynomial.cpp" />
+    <ClCompile Include="Core\MgcTriangleMesh.cpp" />
+    <ClCompile Include="Curve2D\MgcBezierCurve2.cpp" />
+    <ClCompile Include="Curve2D\MgcCubicPolynomialCurve2.cpp" />
+    <ClCompile Include="Curve2D\MgcCurve2.cpp" />
+    <ClCompile Include="Curve2D\MgcMultipleCurve2.cpp" />
+    <ClCompile Include="Curve2D\MgcNaturalSpline2.cpp" />
+    <ClCompile Include="Curve2D\MgcPolynomialCurve2.cpp" />
+    <ClCompile Include="Curve2D\MgcSingleCurve2.cpp" />
+    <ClCompile Include="Curve2D\MgcTCBSpline2.cpp" />
+    <ClCompile Include="Curve3D\MgcBezierCurve3.cpp" />
+    <ClCompile Include="Curve3D\MgcCubicPolynomialCurve3.cpp" />
+    <ClCompile Include="Curve3D\MgcCurve3.cpp" />
+    <ClCompile Include="Curve3D\MgcMultipleCurve3.cpp" />
+    <ClCompile Include="Curve3D\MgcNaturalSpline3.cpp" />
+    <ClCompile Include="Curve3D\MgcPolynomialCurve3.cpp" />
+    <ClCompile Include="Curve3D\MgcSingleCurve3.cpp" />
+    <ClCompile Include="Curve3D\MgcTCBSpline3.cpp" />
+    <ClCompile Include="Distance2D\MgcDist2DVecElp.cpp" />
+    <ClCompile Include="Distance2D\MgcDist2DVecQdr.cpp" />
+    <ClCompile Include="Distance3D\MgcDist3DCirCir.cpp" />
+    <ClCompile Include="Distance3D\MgcDist3DLinBox.cpp" />
+    <ClCompile Include="Distance3D\MgcDist3DLinCir.cpp" />
+    <ClCompile Include="Distance3D\MgcDist3DLinLin.cpp" />
+    <ClCompile Include="Distance3D\MgcDist3DLinPgm.cpp" />
+    <ClCompile Include="Distance3D\MgcDist3DLinRct.cpp" />
+    <ClCompile Include="Distance3D\MgcDist3DLinTri.cpp" />
+    <ClCompile Include="Distance3D\MgcDist3DPgmPgm.cpp" />
+    <ClCompile Include="Distance3D\MgcDist3DRctRct.cpp" />
+    <ClCompile Include="Distance3D\MgcDist3DTriPgm.cpp" />
+    <ClCompile Include="Distance3D\MgcDist3DTriRct.cpp" />
+    <ClCompile Include="Distance3D\MgcDist3DTriTri.cpp" />
+    <ClCompile Include="Distance3D\MgcDist3DVecBox.cpp" />
+    <ClCompile Include="Distance3D\MgcDist3DVecCir.cpp" />
+    <ClCompile Include="Distance3D\MgcDist3DVecElp.cpp" />
+    <ClCompile Include="Distance3D\MgcDist3DVecFrustum.cpp" />
+    <ClCompile Include="Distance3D\MgcDist3DVecLin.cpp" />
+    <ClCompile Include="Distance3D\MgcDist3DVecPgm.cpp" />
+    <ClCompile Include="Distance3D\MgcDist3DVecPln.cpp" />
+    <ClCompile Include="Distance3D\MgcDist3DVecQdr.cpp" />
+    <ClCompile Include="Distance3D\MgcDist3DVecRct.cpp" />
+    <ClCompile Include="Distance3D\MgcDist3DVecTri.cpp" />
+    <ClCompile Include="Distance3D\MgcEllipsoidGeodesicDist.cpp" />
+    <ClCompile Include="ImageAnalysis\MgcBinary2D.cpp" />
+    <ClCompile Include="ImageAnalysis\MgcElement.cpp" />
+    <ClCompile Include="ImageAnalysis\MgcImageConvert.cpp" />
+    <ClCompile Include="ImageAnalysis\MgcImages.cpp" />
+    <ClCompile Include="ImageAnalysis\MgcLattice.cpp" />
+    <ClCompile Include="Interpolation1D\MgcInterp1DAkima.cpp" />
+    <ClCompile Include="Interpolation1D\MgcInterp1DAkimaNonuniform.cpp" />
+    <ClCompile Include="Interpolation1D\MgcInterp1DAkimaUniform.cpp" />
+    <ClCompile Include="Interpolation1D\MgcInterp1DBSplineUniform.cpp" />
+    <ClCompile Include="Interpolation1D\MgcInterpBSplineUniform.cpp" />
+    <ClCompile Include="Interpolation2D\MgcInterp2DAkimaUniform.cpp" />
+    <ClCompile Include="Interpolation2D\MgcInterp2DBicubic.cpp" />
+    <ClCompile Include="Interpolation2D\MgcInterp2DBSplineUniform.cpp" />
+    <ClCompile Include="Interpolation2D\MgcInterp2DLinearNonuniform.cpp" />
+    <ClCompile Include="Interpolation2D\MgcInterp2DQdrNonuniform.cpp" />
+    <ClCompile Include="Interpolation2D\MgcInterp2DSphere.cpp" />
+    <ClCompile Include="Interpolation2D\MgcInterp2DThinPlateSpline.cpp" />
+    <ClCompile Include="Interpolation2D\MgcInterp2DVectorField.cpp" />
+    <ClCompile Include="Interpolation3D\MgcInterp3DAkimaUniform.cpp" />
+    <ClCompile Include="Interpolation3D\MgcInterp3DBSplineUniform.cpp" />
+    <ClCompile Include="Interpolation3D\MgcInterp3DThinPlateSpline.cpp" />
+    <ClCompile Include="Interpolation3D\MgcInterp4DBSplineUniform.cpp" />
+    <ClCompile Include="Interpolation3D\MgcInterpNDBSplineUniform.cpp" />
+    <ClCompile Include="Intersection2D\MgcIntr2DBoxBox.cpp" />
+    <ClCompile Include="Intersection2D\MgcIntr2DCirBox.cpp" />
+    <ClCompile Include="Intersection2D\MgcIntr2DCirCir.cpp" />
+    <ClCompile Include="Intersection2D\MgcIntr2DElpElp.cpp" />
+    <ClCompile Include="Intersection2D\MgcIntr2DLinCir.cpp" />
+    <ClCompile Include="Intersection2D\MgcIntr2DLinLin.cpp" />
+    <ClCompile Include="Intersection2D\MgcIntr2DTriTri.cpp" />
+    <ClCompile Include="Intersection3D\MgcIntr3DBoxBox.cpp" />
+    <ClCompile Include="Intersection3D\MgcIntr3DBoxFrustum.cpp" />
+    <ClCompile Include="Intersection3D\MgcIntr3DCapCap.cpp" />
+    <ClCompile Include="Intersection3D\MgcIntr3DLinBox.cpp" />
+    <ClCompile Include="Intersection3D\MgcIntr3DLinCap.cpp" />
+    <ClCompile Include="Intersection3D\MgcIntr3DLinCone.cpp" />
+    <ClCompile Include="Intersection3D\MgcIntr3DLinCyln.cpp" />
+    <ClCompile Include="Intersection3D\MgcIntr3DLinElp.cpp" />
+    <ClCompile Include="Intersection3D\MgcIntr3DLinLoz.cpp" />
+    <ClCompile Include="Intersection3D\MgcIntr3DLinSphr.cpp" />
+    <ClCompile Include="Intersection3D\MgcIntr3DLinTorus.cpp" />
+    <ClCompile Include="Intersection3D\MgcIntr3DLinTri.cpp" />
+    <ClCompile Include="Intersection3D\MgcIntr3DLozLoz.cpp" />
+    <ClCompile Include="Intersection3D\MgcIntr3DPlnBox.cpp" />
+    <ClCompile Include="Intersection3D\MgcIntr3DPlnCap.cpp" />
+    <ClCompile Include="Intersection3D\MgcIntr3DPlnCyln.cpp" />
+    <ClCompile Include="Intersection3D\MgcIntr3DPlnElp.cpp" />
+    <ClCompile Include="Intersection3D\MgcIntr3DPlnLoz.cpp" />
+    <ClCompile Include="Intersection3D\MgcIntr3DPlnPln.cpp" />
+    <ClCompile Include="Intersection3D\MgcIntr3DPlnSphr.cpp" />
+    <ClCompile Include="Intersection3D\MgcIntr3DSphrCone.cpp" />
+    <ClCompile Include="Intersection3D\MgcIntr3DSphrFrustum.cpp" />
+    <ClCompile Include="Intersection3D\MgcIntr3DSphrSphr.cpp" />
+    <ClCompile Include="Intersection3D\MgcIntr3DTetrTetr.cpp" />
+    <ClCompile Include="Intersection3D\MgcIntr3DTriBox.cpp" />
+    <ClCompile Include="Intersection3D\MgcIntr3DTriCone.cpp" />
+    <ClCompile Include="Intersection3D\MgcIntr3DTriSphr.cpp" />
+    <ClCompile Include="Intersection3D\MgcIntr3DTriTri.cpp" />
+    <ClCompile Include="Numerics\MgcBisect1.cpp" />
+    <ClCompile Include="Numerics\MgcBisect2.cpp" />
+    <ClCompile Include="Numerics\MgcBisect3.cpp" />
+    <ClCompile Include="Numerics\MgcEigen.cpp" />
+    <ClCompile Include="Numerics\MgcEuler.cpp" />
+    <ClCompile Include="Numerics\MgcFastFunction.cpp" />
+    <ClCompile Include="Numerics\MgcIntegrate.cpp" />
+    <ClCompile Include="Numerics\MgcLinearSystem.cpp" />
+    <ClCompile Include="Numerics\MgcMidpoint.cpp" />
+    <ClCompile Include="Numerics\MgcMinimize1D.cpp" />
+    <ClCompile Include="Numerics\MgcMinimizeND.cpp" />
+    <ClCompile Include="Numerics\MgcODE.cpp" />
+    <ClCompile Include="Numerics\MgcRK4.cpp" />
+    <ClCompile Include="Numerics\MgcRK4Adapt.cpp" />
+    <ClCompile Include="Numerics\MgcSpecialFunction.cpp" />
+    <ClCompile Include="Projection\MgcConvexClipper.cpp" />
+    <ClCompile Include="Projection\MgcConvexPolyhedron.cpp" />
+    <ClCompile Include="Projection\MgcPerspProjEllipsoid.cpp" />
+    <ClCompile Include="Projection\MgcQuadToQuadTransforms.cpp" />
+    <ClCompile Include="Surface\MgcBezierCylinder2G.cpp" />
+    <ClCompile Include="Surface\MgcBezierCylinder3G.cpp" />
+    <ClCompile Include="Surface\MgcBezierCylinderG.cpp" />
+    <ClCompile Include="Surface\MgcBezierPatchG.cpp" />
+    <ClCompile Include="Surface\MgcBezierRectangle2G.cpp" />
+    <ClCompile Include="Surface\MgcBezierRectangle3G.cpp" />
+    <ClCompile Include="Surface\MgcBezierRectangleG.cpp" />
+    <ClCompile Include="Surface\MgcBezierTriangle2G.cpp" />
+    <ClCompile Include="Surface\MgcBezierTriangle3G.cpp" />
+    <ClCompile Include="Surface\MgcBezierTriangleG.cpp" />
+    <ClCompile Include="Surface\MgcImplicitSurface.cpp" />
+    <ClCompile Include="Surface\MgcParametricSurface.cpp" />
+    <ClCompile Include="Surface\MgcQuadricSurface.cpp" />
+    <ClCompile Include="Surface\MgcTubeSurfaceG.cpp" />
+    <ClCompile Include="Tessellation2D\MgcDelaunay2D.cpp" />
+    <ClCompile Include="Tessellation3D\MgcDelaunay3D.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Approximation2D\MgcAppr2DCircleFit.h" />
+    <ClInclude Include="Approximation2D\MgcAppr2DEllipseByArcs.h" />
+    <ClInclude Include="Approximation2D\MgcAppr2DEllipseFit.h" />
+    <ClInclude Include="Approximation2D\MgcAppr2DGaussPointsFit.h" />
+    <ClInclude Include="Approximation2D\MgcAppr2DLineFit.h" />
+    <ClInclude Include="Approximation2D\MgcAppr2DQuadraticFit.h" />
+    <ClInclude Include="Approximation3D\MgcAppr3DEllipsoidFit.h" />
+    <ClInclude Include="Approximation3D\MgcAppr3DGaussPointsFit.h" />
+    <ClInclude Include="Approximation3D\MgcAppr3DLineFit.h" />
+    <ClInclude Include="Approximation3D\MgcAppr3DParaboloidFit.h" />
+    <ClInclude Include="Approximation3D\MgcAppr3DPlaneFit.h" />
+    <ClInclude Include="Approximation3D\MgcAppr3DQuadraticFit.h" />
+    <ClInclude Include="Approximation3D\MgcAppr3DSphereFit.h" />
+    <ClInclude Include="Containment2D\MgcCont2DBox.h" />
+    <ClInclude Include="Containment2D\MgcCont2DCircleScribe.h" />
+    <ClInclude Include="Containment2D\MgcCont2DEllipse.h" />
+    <ClInclude Include="Containment2D\MgcCont2DMinBox.h" />
+    <ClInclude Include="Containment2D\MgcCont2DMinCircle.h" />
+    <ClInclude Include="Containment2D\MgcCont2DPointInPolygon.h" />
+    <ClInclude Include="Containment2D\MgcConvexHull2D.h" />
+    <ClInclude Include="Containment2D\MgcMinAreaEllipseCR.h" />
+    <ClInclude Include="Containment2D\MgcSeparatePointSets2D.h" />
+    <ClInclude Include="Containment3D\MgcCont3DBox.h" />
+    <ClInclude Include="Containment3D\MgcCont3DCapsule.h" />
+    <ClInclude Include="Containment3D\MgcCont3DCircleSphereScribe.h" />
+    <ClInclude Include="Containment3D\MgcCont3DCylinder.h" />
+    <ClInclude Include="Containment3D\MgcCont3DEllipsoid.h" />
+    <ClInclude Include="Containment3D\MgcCont3DLozenge.h" />
+    <ClInclude Include="Containment3D\MgcCont3DMinBox.h" />
+    <ClInclude Include="Containment3D\MgcCont3DMinSphere.h" />
+    <ClInclude Include="Containment3D\MgcCont3DSphere.h" />
+    <ClInclude Include="Containment3D\MgcConvexHull3D.h" />
+    <ClInclude Include="Containment3D\MgcMinVolumeEllipsoidCR.h" />
+    <ClInclude Include="Containment3D\MgcSeparatePointSets3D.h" />
+    <ClInclude Include="Core2D\MgcArc2.h" />
+    <ClInclude Include="Core2D\MgcBox2.h" />
+    <ClInclude Include="Core2D\MgcCircle2.h" />
+    <ClInclude Include="Core2D\MgcDisk2.h" />
+    <ClInclude Include="Core2D\MgcEllipse2.h" />
+    <ClInclude Include="Core2D\MgcLine2.h" />
+    <ClInclude Include="Core2D\MgcMatrix2.h" />
+    <ClInclude Include="Core2D\MgcRay2.h" />
+    <ClInclude Include="Core2D\MgcSegment2.h" />
+    <ClInclude Include="Core2D\MgcTriangle2.h" />
+    <ClInclude Include="Core2D\MgcVector2.h" />
+    <ClInclude Include="Core3D\MgcBox3.h" />
+    <ClInclude Include="Core3D\MgcCapsule.h" />
+    <ClInclude Include="Core3D\MgcCircle3.h" />
+    <ClInclude Include="Core3D\MgcCone3.h" />
+    <ClInclude Include="Core3D\MgcCylinder.h" />
+    <ClInclude Include="Core3D\MgcDisk3.h" />
+    <ClInclude Include="Core3D\MgcEllipsoid.h" />
+    <ClInclude Include="Core3D\MgcExtraSpin.h" />
+    <ClInclude Include="Core3D\MgcFrustum.h" />
+    <ClInclude Include="Core3D\MgcLine3.h" />
+    <ClInclude Include="Core3D\MgcLozenge.h" />
+    <ClInclude Include="Core3D\MgcMatrix3.h" />
+    <ClInclude Include="Core3D\MgcParallelogram3.h" />
+    <ClInclude Include="Core3D\MgcPlane.h" />
+    <ClInclude Include="Core3D\MgcQuaternion.h" />
+    <ClInclude Include="Core3D\MgcRay3.h" />
+    <ClInclude Include="Core3D\MgcRectangle3.h" />
+    <ClInclude Include="Core3D\MgcSegment3.h" />
+    <ClInclude Include="Core3D\MgcSphere.h" />
+    <ClInclude Include="Core3D\MgcTetrahedron.h" />
+    <ClInclude Include="Core3D\MgcTorus.h" />
+    <ClInclude Include="Core3D\MgcTriangle3.h" />
+    <ClInclude Include="Core3D\MgcVector3.h" />
+    <ClInclude Include="Core3D\MgcXFormInterp.h" />
+    <ClInclude Include="Core\MgcColorRGB.h" />
+    <ClInclude Include="Core\MgcCommand.h" />
+    <ClInclude Include="Core\MgcEdgeMesh.h" />
+    <ClInclude Include="Core\MgcIntervalIntersection.h" />
+    <ClInclude Include="Core\MgcMath.h" />
+    <ClInclude Include="Core\MgcMTEdge.h" />
+    <ClInclude Include="Core\MgcMTIEdge.h" />
+    <ClInclude Include="Core\MgcMTITriangle.h" />
+    <ClInclude Include="Core\MgcMTIVertex.h" />
+    <ClInclude Include="Core\MgcMTMesh.h" />
+    <ClInclude Include="Core\MgcMTTriangle.h" />
+    <ClInclude Include="Core\MgcMTVertex.h" />
+    <ClInclude Include="Core\MgcPolynomial.h" />
+    <ClInclude Include="Core\MgcSmallSet.h" />
+    <ClInclude Include="Core\MgcTriangleMesh.h" />
+    <ClInclude Include="Core\MgcTUnorderedSet.h" />
+    <ClInclude Include="Curve2D\MgcBezierCurve2.h" />
+    <ClInclude Include="Curve2D\MgcCubicPolynomialCurve2.h" />
+    <ClInclude Include="Curve2D\MgcCurve2.h" />
+    <ClInclude Include="Curve2D\MgcMultipleCurve2.h" />
+    <ClInclude Include="Curve2D\MgcNaturalSpline2.h" />
+    <ClInclude Include="Curve2D\MgcPolynomialCurve2.h" />
+    <ClInclude Include="Curve2D\MgcSingleCurve2.h" />
+    <ClInclude Include="Curve2D\MgcTCBSpline2.h" />
+    <ClInclude Include="Curve3D\MgcBezierCurve3.h" />
+    <ClInclude Include="Curve3D\MgcCubicPolynomialCurve3.h" />
+    <ClInclude Include="Curve3D\MgcCurve3.h" />
+    <ClInclude Include="Curve3D\MgcMultipleCurve3.h" />
+    <ClInclude Include="Curve3D\MgcNaturalSpline3.h" />
+    <ClInclude Include="Curve3D\MgcPolynomialCurve3.h" />
+    <ClInclude Include="Curve3D\MgcSingleCurve3.h" />
+    <ClInclude Include="Curve3D\MgcTCBSpline3.h" />
+    <ClInclude Include="Distance2D\MgcDist2DVecElp.h" />
+    <ClInclude Include="Distance2D\MgcDist2DVecQdr.h" />
+    <ClInclude Include="Distance3D\MgcDist3DCirCir.h" />
+    <ClInclude Include="Distance3D\MgcDist3DLinBox.h" />
+    <ClInclude Include="Distance3D\MgcDist3DLinCir.h" />
+    <ClInclude Include="Distance3D\MgcDist3DLinLin.h" />
+    <ClInclude Include="Distance3D\MgcDist3DLinPgm.h" />
+    <ClInclude Include="Distance3D\MgcDist3DLinRct.h" />
+    <ClInclude Include="Distance3D\MgcDist3DLinTri.h" />
+    <ClInclude Include="Distance3D\MgcDist3DPgmPgm.h" />
+    <ClInclude Include="Distance3D\MgcDist3DRctRct.h" />
+    <ClInclude Include="Distance3D\MgcDist3DTriPgm.h" />
+    <ClInclude Include="Distance3D\MgcDist3DTriRct.h" />
+    <ClInclude Include="Distance3D\MgcDist3DTriTri.h" />
+    <ClInclude Include="Distance3D\MgcDist3DVecBox.h" />
+    <ClInclude Include="Distance3D\MgcDist3DVecCir.h" />
+    <ClInclude Include="Distance3D\MgcDist3DVecElp.h" />
+    <ClInclude Include="Distance3D\MgcDist3DVecFrustum.h" />
+    <ClInclude Include="Distance3D\MgcDist3DVecLin.h" />
+    <ClInclude Include="Distance3D\MgcDist3DVecPgm.h" />
+    <ClInclude Include="Distance3D\MgcDist3DVecPln.h" />
+    <ClInclude Include="Distance3D\MgcDist3DVecQdr.h" />
+    <ClInclude Include="Distance3D\MgcDist3DVecRct.h" />
+    <ClInclude Include="Distance3D\MgcDist3DVecTri.h" />
+    <ClInclude Include="Distance3D\MgcEllipsoidGeodesicDist.h" />
+    <ClInclude Include="ImageAnalysis\MgcBinary2D.h" />
+    <ClInclude Include="ImageAnalysis\MgcElement.h" />
+    <ClInclude Include="ImageAnalysis\MgcImageConvert.h" />
+    <ClInclude Include="ImageAnalysis\MgcImages.h" />
+    <ClInclude Include="ImageAnalysis\MgcLattice.h" />
+    <ClInclude Include="ImageAnalysis\MgcTImage.h" />
+    <ClInclude Include="ImageAnalysis\MgcTImage2D.h" />
+    <ClInclude Include="ImageAnalysis\MgcTImage3D.h" />
+    <ClInclude Include="Interpolation1D\MgcInterp1DAkima.h" />
+    <ClInclude Include="Interpolation1D\MgcInterp1DAkimaNonuniform.h" />
+    <ClInclude Include="Interpolation1D\MgcInterp1DAkimaUniform.h" />
+    <ClInclude Include="Interpolation1D\MgcInterp1DBSplineUniform.h" />
+    <ClInclude Include="Interpolation1D\MgcInterpBSplineUniform.h" />
+    <ClInclude Include="Interpolation2D\MgcInterp2DAkimaUniform.h" />
+    <ClInclude Include="Interpolation2D\MgcInterp2DBicubic.h" />
+    <ClInclude Include="Interpolation2D\MgcInterp2DBSplineUniform.h" />
+    <ClInclude Include="Interpolation2D\MgcInterp2DLinearNonuniform.h" />
+    <ClInclude Include="Interpolation2D\MgcInterp2DQdrNonuniform.h" />
+    <ClInclude Include="Interpolation2D\MgcInterp2DSphere.h" />
+    <ClInclude Include="Interpolation2D\MgcInterp2DThinPlateSpline.h" />
+    <ClInclude Include="Interpolation2D\MgcInterp2DVectorField.h" />
+    <ClInclude Include="Interpolation3D\MgcInterp3DAkimaUniform.h" />
+    <ClInclude Include="Interpolation3D\MgcInterp3DBSplineUniform.h" />
+    <ClInclude Include="Interpolation3D\MgcInterp3DThinPlateSpline.h" />
+    <ClInclude Include="Interpolation3D\MgcInterp4DBSplineUniform.h" />
+    <ClInclude Include="Interpolation3D\MgcInterpNDBSplineUniform.h" />
+    <ClInclude Include="Intersection2D\MgcIntr2DBoxBox.h" />
+    <ClInclude Include="Intersection2D\MgcIntr2DCirBox.h" />
+    <ClInclude Include="Intersection2D\MgcIntr2DCirCir.h" />
+    <ClInclude Include="Intersection2D\MgcIntr2DElpElp.h" />
+    <ClInclude Include="Intersection2D\MgcIntr2DLinCir.h" />
+    <ClInclude Include="Intersection2D\MgcIntr2DLinLin.h" />
+    <ClInclude Include="Intersection2D\MgcIntr2DTriTri.h" />
+    <ClInclude Include="Intersection3D\MgcIntr3DBoxBox.h" />
+    <ClInclude Include="Intersection3D\MgcIntr3DBoxFrustum.h" />
+    <ClInclude Include="Intersection3D\MgcIntr3DCapCap.h" />
+    <ClInclude Include="Intersection3D\MgcIntr3DLinBox.h" />
+    <ClInclude Include="Intersection3D\MgcIntr3DLinCap.h" />
+    <ClInclude Include="Intersection3D\MgcIntr3DLinCone.h" />
+    <ClInclude Include="Intersection3D\MgcIntr3DLinCyln.h" />
+    <ClInclude Include="Intersection3D\MgcIntr3DLinElp.h" />
+    <ClInclude Include="Intersection3D\MgcIntr3DLinLoz.h" />
+    <ClInclude Include="Intersection3D\MgcIntr3DLinSphr.h" />
+    <ClInclude Include="Intersection3D\MgcIntr3DLinTorus.h" />
+    <ClInclude Include="Intersection3D\MgcIntr3DLinTri.h" />
+    <ClInclude Include="Intersection3D\MgcIntr3DLozLoz.h" />
+    <ClInclude Include="Intersection3D\MgcIntr3DPlnBox.h" />
+    <ClInclude Include="Intersection3D\MgcIntr3DPlnCap.h" />
+    <ClInclude Include="Intersection3D\MgcIntr3DPlnCyln.h" />
+    <ClInclude Include="Intersection3D\MgcIntr3DPlnElp.h" />
+    <ClInclude Include="Intersection3D\MgcIntr3DPlnLoz.h" />
+    <ClInclude Include="Intersection3D\MgcIntr3DPlnPln.h" />
+    <ClInclude Include="Intersection3D\MgcIntr3DPlnSphr.h" />
+    <ClInclude Include="Intersection3D\MgcIntr3DSphrCone.h" />
+    <ClInclude Include="Intersection3D\MgcIntr3DSphrFrustum.h" />
+    <ClInclude Include="Intersection3D\MgcIntr3DSphrSphr.h" />
+    <ClInclude Include="Intersection3D\MgcIntr3DTetrTetr.h" />
+    <ClInclude Include="Intersection3D\MgcIntr3DTriBox.h" />
+    <ClInclude Include="Intersection3D\MgcIntr3DTriCone.h" />
+    <ClInclude Include="Intersection3D\MgcIntr3DTriSphr.h" />
+    <ClInclude Include="Intersection3D\MgcIntr3DTriTri.h" />
+    <ClInclude Include="MagicFMLibType.h" />
+    <ClInclude Include="MgcRTLib.h" />
+    <ClInclude Include="Numerics\MgcBisect1.h" />
+    <ClInclude Include="Numerics\MgcBisect2.h" />
+    <ClInclude Include="Numerics\MgcBisect3.h" />
+    <ClInclude Include="Numerics\MgcEigen.h" />
+    <ClInclude Include="Numerics\MgcEuler.h" />
+    <ClInclude Include="Numerics\MgcFastFunction.h" />
+    <ClInclude Include="Numerics\MgcIntegrate.h" />
+    <ClInclude Include="Numerics\MgcLinearSystem.h" />
+    <ClInclude Include="Numerics\MgcMidpoint.h" />
+    <ClInclude Include="Numerics\MgcMinimize1D.h" />
+    <ClInclude Include="Numerics\MgcMinimizeND.h" />
+    <ClInclude Include="Numerics\MgcODE.h" />
+    <ClInclude Include="Numerics\MgcRK4.h" />
+    <ClInclude Include="Numerics\MgcRK4Adapt.h" />
+    <ClInclude Include="Numerics\MgcSpecialFunction.h" />
+    <ClInclude Include="Projection\MgcConvexClipper.h" />
+    <ClInclude Include="Projection\MgcConvexPolyhedron.h" />
+    <ClInclude Include="Projection\MgcPerspProjEllipsoid.h" />
+    <ClInclude Include="Projection\MgcQuadToQuadTransforms.h" />
+    <ClInclude Include="Surface\MgcBezierCylinder2G.h" />
+    <ClInclude Include="Surface\MgcBezierCylinder3G.h" />
+    <ClInclude Include="Surface\MgcBezierCylinderG.h" />
+    <ClInclude Include="Surface\MgcBezierPatchG.h" />
+    <ClInclude Include="Surface\MgcBezierRectangle2G.h" />
+    <ClInclude Include="Surface\MgcBezierRectangle3G.h" />
+    <ClInclude Include="Surface\MgcBezierRectangleG.h" />
+    <ClInclude Include="Surface\MgcBezierTriangle2G.h" />
+    <ClInclude Include="Surface\MgcBezierTriangle3G.h" />
+    <ClInclude Include="Surface\MgcBezierTriangleG.h" />
+    <ClInclude Include="Surface\MgcImplicitSurface.h" />
+    <ClInclude Include="Surface\MgcParametricSurface.h" />
+    <ClInclude Include="Surface\MgcQuadricSurface.h" />
+    <ClInclude Include="Surface\MgcSurface.h" />
+    <ClInclude Include="Surface\MgcTubeSurfaceG.h" />
+    <ClInclude Include="Tessellation2D\MgcDelaunay2D.h" />
+    <ClInclude Include="Tessellation3D\MgcDelaunay3D.h" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

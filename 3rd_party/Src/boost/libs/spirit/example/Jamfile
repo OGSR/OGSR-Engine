@@ -1,0 +1,329 @@
+#==============================================================================
+#   Spirit v1.6.0
+#   Copyright (c) 2002 Joel de Guzman
+#   http://spirit.sourceforge.net/
+#
+#   Permission to copy, use, modify, sell and distribute this software
+#   is granted provided this copyright notice appears in all copies.
+#   This software is provided "as is" without express or implied
+#   warranty, and with no claim as to its suitability for any purpose.
+#==============================================================================
+#
+#  Spirit examples boost-jam file
+#  Joel de Guzman [Sept 27, 2002]
+#
+
+subproject libs/spirit/example ;
+
+exe boiler_plate
+    : fundamental/boiler_plate.cpp
+	: <sysinclude>$(BOOST_ROOT)
+    : <borland><*><cxxflags>-Ve-
+	:
+	;
+
+exe comments
+    : fundamental/comments.cpp
+	: <sysinclude>$(BOOST_ROOT)
+    : <borland><*><cxxflags>-Ve-
+	:
+	;
+
+exe complex_number
+    : fundamental/complex_number.cpp
+	: <sysinclude>$(BOOST_ROOT)
+    : <borland><*><cxxflags>-Ve-
+	:
+	;
+
+exe dynamic_parser
+    : fundamental/dynamic_parser.cpp
+	: <sysinclude>$(BOOST_ROOT)
+    : <borland><*><cxxflags>-Ve-
+	:
+	;
+
+exe file_parser
+    : fundamental/file_parser.cpp
+	: <sysinclude>$(BOOST_ROOT)
+    : <borland><*><cxxflags>-Ve-
+	:
+	;
+
+exe refactoring
+    : fundamental/refactoring.cpp
+	: <sysinclude>$(BOOST_ROOT)
+    : <borland><*><cxxflags>-Ve-
+	:
+	;
+
+exe functor_parser
+    : fundamental/functor_parser.cpp
+	: <sysinclude>$(BOOST_ROOT)
+    : <borland><*><cxxflags>-Ve-
+	:
+	;
+
+exe list_parser
+    : fundamental/list_parser.cpp
+	: <sysinclude>$(BOOST_ROOT)
+    : <borland><*><cxxflags>-Ve-
+	:
+	;
+
+exe polynomial
+    : fundamental/polynomial.cpp
+	: <sysinclude>$(BOOST_ROOT)
+    : <borland><*><cxxflags>-Ve-
+	:
+	;
+
+exe matching_tags
+    : fundamental/matching_tags.cpp
+	: <sysinclude>$(BOOST_ROOT)
+    : <borland><*><cxxflags>-Ve-
+	:
+	;
+
+exe position_iterator
+    : fundamental/position_iterator/position_iterator.cpp
+	: <sysinclude>$(BOOST_ROOT)
+    : <borland><*><cxxflags>-Ve-
+	:
+	;
+
+exe number_list
+    : fundamental/number_list.cpp
+	: <sysinclude>$(BOOST_ROOT)
+    : <borland><*><cxxflags>-Ve-
+	:
+	;
+
+exe regular_expression
+    : fundamental/regular_expression.cpp
+	: <sysinclude>$(BOOST_ROOT)
+    : <borland><*><cxxflags>-Ve-
+	:
+	;
+
+exe rfc821
+    : fundamental/rfc821.cpp
+	: <sysinclude>$(BOOST_ROOT)
+    : <borland><*><cxxflags>-Ve-
+	:
+	;
+
+exe roman_numerals
+    : fundamental/roman_numerals.cpp
+	: <sysinclude>$(BOOST_ROOT)
+    : <borland><*><cxxflags>-Ve-
+	:
+	;
+
+exe spirit_bind
+    : fundamental/spirit_bind.cpp
+	: <sysinclude>$(BOOST_ROOT)
+    : <borland><*><cxxflags>-Ve-
+	:
+	;
+
+exe sum
+    : fundamental/sum.cpp
+	: <sysinclude>$(BOOST_ROOT)
+    : <borland><*><cxxflags>-Ve-
+	:
+	;
+
+exe ast_calc
+    : fundamental/calc/ast_calc.cpp
+	: <sysinclude>$(BOOST_ROOT)
+    : <borland><*><cxxflags>-Ve-
+	:
+	;
+
+exe ast_calc2
+    : fundamental/calc/ast_calc2.cpp
+	: <sysinclude>$(BOOST_ROOT)
+    : <borland><*><cxxflags>-Ve-
+	:
+	;
+
+exe parse_tree_calc1
+    : fundamental/calc/parse_tree_calc1.cpp
+	: <sysinclude>$(BOOST_ROOT)
+    : <borland><*><cxxflags>-Ve-
+	:
+	;
+
+exe calc_plain
+    : fundamental/calc/calc_plain.cpp
+	: <sysinclude>$(BOOST_ROOT)
+    : <borland><*><cxxflags>-Ve-
+	:
+	;
+
+exe calc_with_variables
+    : fundamental/calc/calc_with_variables.cpp
+	: <sysinclude>$(BOOST_ROOT)
+    : <borland><*><cxxflags>-Ve-
+	:
+	;
+
+exe full_calc
+    : fundamental/calc/full_calc.cpp
+	: <sysinclude>$(BOOST_ROOT)
+    : <borland><*><cxxflags>-Ve-
+	:
+	;
+
+exe phoenix_calc
+    : fundamental/calc/phoenix_calc.cpp
+	: <sysinclude>$(BOOST_ROOT)
+    : <borland><*><cxxflags>-Ve-
+	:
+	;
+
+exe phoenix_subrule_calc
+    : fundamental/calc/phoenix_subrule_calc.cpp
+	: <sysinclude>$(BOOST_ROOT)
+    : <borland><*><cxxflags>-Ve-
+	:
+	;
+
+exe primitive_calc
+    : fundamental/calc/primitive_calc.cpp
+	: <sysinclude>$(BOOST_ROOT)
+    : <borland><*><cxxflags>-Ve-
+	:
+	;
+
+exe rpn_calc
+    : fundamental/calc/rpn_calc.cpp
+	: <sysinclude>$(BOOST_ROOT)
+    : <borland><*><cxxflags>-Ve-
+	:
+	;
+
+exe subrule_calc
+    : fundamental/calc/subrule_calc.cpp
+	: <sysinclude>$(BOOST_ROOT)
+    : <borland><*><cxxflags>-Ve-
+	:
+	;
+
+exe vmachine_calc
+    : fundamental/calc/vmachine_calc.cpp
+	: <sysinclude>$(BOOST_ROOT)
+    : <borland><*><cxxflags>-Ve-
+	:
+	;
+
+exe c_grammar
+    : application/c/c_grammar.cpp
+	: <sysinclude>$(BOOST_ROOT)
+    : <borland><*><cxxflags>-Ve-
+	:
+	;
+
+exe cpp_to_html
+    : application/cpp_to_html/cpp_to_html.cpp
+	: <sysinclude>$(BOOST_ROOT)
+    : <borland><*><cxxflags>-Ve-
+	:
+	;
+
+exe sg_pascal
+    : application/pascal/sg_pascal.cpp
+	: <sysinclude>$(BOOST_ROOT)
+    : <borland><*><cxxflags>-Ve-
+	:
+	;
+
+exe quickdoc
+    : application/quickdoc/quickdoc.cpp
+	: <sysinclude>$(BOOST_ROOT)
+    : <borland><*><cxxflags>-Ve-
+	:
+	;
+
+exe rfcdate-compile-test
+    : application/rfcdate/rfcdate-compile-test.cpp
+	: <sysinclude>$(BOOST_ROOT)
+    : <borland><*><cxxflags>-Ve-
+	:
+	;
+
+exe rfcdate-test
+    : application/rfcdate/rfcdate-test.cpp
+	: <sysinclude>$(BOOST_ROOT)
+    : <borland><*><cxxflags>-Ve-
+	:
+	;
+
+exe rfcskipper-compile-test
+    : application/rfcdate/rfcskipper-compile-test.cpp
+	: <sysinclude>$(BOOST_ROOT)
+    : <borland><*><cxxflags>-Ve-
+	:
+	;
+
+exe skipper-test
+    : application/rfcdate/skipper-test.cpp
+	: <sysinclude>$(BOOST_ROOT)
+    : <borland><*><cxxflags>-Ve-
+	:
+	;
+
+exe timestamp-compile-test
+    : application/rfcdate/timestamp-compile-test.cpp
+	: <sysinclude>$(BOOST_ROOT)
+    : <borland><*><cxxflags>-Ve-
+	:
+	;
+
+exe callback
+    : application/slex/callback.cpp
+	: <sysinclude>$(BOOST_ROOT)
+    : <borland><*><cxxflags>-Ve-
+	:
+	;
+
+exe lexer
+    : application/slex/lexer.cpp
+	: <sysinclude>$(BOOST_ROOT)
+    : <borland><*><cxxflags>-Ve-
+	:
+	;
+
+exe lextest
+    : application/slex/lextest.cpp
+	: <sysinclude>$(BOOST_ROOT)
+    : <borland><*><cxxflags>-Ve-
+	:
+	;
+
+exe xml
+    : application/xml/xml.cpp
+	: <sysinclude>$(BOOST_ROOT)
+    : <borland><*><cxxflags>-Ve-
+	:
+    ;
+
+exe simplexml
+    : application/xml/simplexml.cpp
+	: <sysinclude>$(BOOST_ROOT)
+    : <borland><*><cxxflags>-Ve-
+	:
+    ;
+
+exe ast_xml
+    : application/xml/ast_xml.cpp
+	: <sysinclude>$(BOOST_ROOT)
+    : <borland><*><cxxflags>-Ve-
+	:
+    ;
+
+
+
+
+

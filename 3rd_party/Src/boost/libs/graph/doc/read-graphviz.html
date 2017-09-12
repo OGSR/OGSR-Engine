@@ -1,0 +1,96 @@
+
+<HTML>
+
+<!--
+  -- Copyright (c) Lie-Quan Lee and Jeremy Siek 2000, 2001
+  --
+  -- Permission to use, copy, modify, distribute and sell this software
+  -- and its documentation for any purpose is hereby granted without fee,
+  -- provided that the above copyright notice appears in all copies and
+  -- that both that copyright notice and this permission notice appear
+  -- in supporting documentation.  Silicon Graphics makes no
+  -- representations about the suitability of this software for any
+  -- purpose.  It is provided "as is" without express or implied warranty.
+  -->
+<Head>
+<Title>Boost Graph Library: read graphviz</Title>
+<BODY BGCOLOR="#ffffff" LINK="#0000ee" TEXT="#000000" VLINK="#551a8b" 
+        ALINK="#ff0000"> 
+<IMG SRC="../../../c++boost.gif" 
+     ALT="C++ Boost" width="277" height="86"> 
+
+<BR Clear>
+
+<H1><A NAME="sec:read-graphviz">
+<TT>read_graphviz</TT>
+</H1>
+
+<pre>
+(1)
+void read_graphviz(const std::string& file, GraphvizDigraph& g);
+(2)
+void read_graphviz(FILE* file, GraphvizDigraph& g);
+(3)
+void read_graphviz(const std::string& file, GraphvizGraph& g);
+(4)
+void read_graphviz(FILE* file, GraphvizGraph& g);
+</pre>
+
+This is to read a file in AT&amp;T graphviz  format into a BGL graph. The
+type of the BGL graph has to be either <tt>GraphvizDigraph</tt> or
+<tt>GraphvizGraph</tt>. You need build the <tt>libbglviz.a</tt> library
+and link the library into your program properly.
+
+<h3>How to build library <tt>libbglviz.a</tt></h3>
+set <tt>CXX</tt> to be your compiler command. For example(in tcsh shell):
+<pre>
+setenv CXX "g++ -ftemplate-depth-100 -Wno-long-long"
+</pre>
+or (in bash shell):
+<pre>
+export CXX="g++ -ftemplate-depth-100 -Wno-long-long"
+</pre>
+
+Assume your boost top directory is <tt>boost_X_XX_X</tt>, then
+<pre>
+cd boost_X_XX_X/libs/graph/src
+$CXX -I../../../ -I. -c *.cpp
+ar -rc libbglviz.a *.o
+ranlib libbglviz.a 
+</pre>
+
+Note that for some compilers, the process to build libraries is
+slightly different. You should follow your compiler manual. For example,
+to use Kuck and Associates C++ compiler to build the library:
+<pre>
+KCC +K0 --one_instantiation_per_object -I../../../ -I. -c *.cpp
+KCC +K0 --one_instantiation_per_object -o libbglviz.a *.o
+</pre>
+
+<H3><A NAME="SECTION001330400000000000000">
+Example</A>
+</H3>
+
+<P>
+The example in <a
+href="../example/graphviz.cpp"><TT>example/graphviz.cpp</TT></a>
+demonstrates using the BGL read graphviz facilities.
+</P>
+
+
+<h3>See Also</h3>
+
+<a href="./write-graphviz.html"><tt>write_graphviz</tt></a>
+
+
+<br>
+<HR>
+<TABLE>
+<TR valign=top>
+<TD nowrap>Copyright &copy 2000-2001</TD><TD>
+<A HREF="../../../people/liequan_lee.htm">Lie-Quan Lee</A>, Indiana University (<A HREF="mailto:llee@cs.indiana.edu">llee@cs.indiana.edu</A>)<br>
+<A HREF="../../../people/jeremy_siek.htm">Jeremy Siek</A>, Indiana University (<A HREF="mailto:jsiek@osl.iu.edu">jsiek@osl.iu.edu</A>)
+</TD></TR></TABLE>
+
+</BODY>
+</HTML> 

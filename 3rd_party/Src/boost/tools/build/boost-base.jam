@@ -1,0 +1,2259 @@
+#  (C) Copyright David Abrahams and Carlos Pinto Coelho 2001. Permission to
+#  copy, use, modify, sell and distribute this software is granted provided this
+#  copyright notice appears in all copies. This software is provided "as is"
+#  without express or implied warranty, and with no claim as to its suitability
+#  for any purpose.
+#
+# Jamrules file by David Abrahams (abrahams@mediaone.net) and Carlos Pinto
+# Coelho (cfspc@altrabroadband.com).
+
+# Notes on the design of the system:
+#
+# This system is designed to support building the "same" targets with multiple
+# build tool suites (e.g. msvc, gcc,...)  and build variants (e.g. debug,
+# release...). Although it currently varies across two dimensions, it should
+# trivially support extension to three or more, e.g. in case of cross-platform
+# builds. The word "same" is written in quotes above because internally,
+# separate targets are generated for each unique toolset/build-variant
+# combination.
+#
+# Specifics of build tool suites are specified in files with names of the form
+# "<name>-tools.jam", where <name> is the name used to identify the tool suite.
+
+# Workarounds for Jam limitations:
+#
+# 1. Jam supports something like the setting of attributes on targets using the
+#    syntax:
+#       <name> on <target> = <expression>
+#
+#    This facility is used to control build actions for individual targets
+#    (target-specific variables take precedence over global ones when build
+#    actions # are executed). An obvious approach would be to use target
+#    attributes to hold # properties of build tools (e.g. where to find the
+#    standard includes).  # Unfortunately, although you can write target
+#    attributes, there is no way to # read them. Instead, we take advantage of
+#    two properties of Jam:
+#
+#    a. A variable name can be formed by evaluating an expression. For example,
+#       the following rule, appends FOOBAR to its first argument to form the
+#       name of a new variable, which is given the value "baz"
+#
+#          rule X { $(1)FOOBAR = baz ; }
+#
+#    b. Any character is allowed in a variable name. So, although they are
+#       actually global variables, we can form names like <name>.c++-flags thus:
+#       
+#          C++FLAGS = $($(1).c++-flags) # Get the c++-flags "attribute" from $(1)
+#
+# 2. There is no way to call a rule based on the value of a variable
+#    other than by using a switch statement. Because that approach requires
+#    intrusive changes to rules when the system is extended, we have avoided
+#    it. Instead, we have taken advantage of two "features" of Jam:
+#
+#    a. The name of a file to be included can be computed from an
+#       expression. For example, the following includes a file whose name is
+#       formed by concatenating $(1) and "-tools.jam":
+#
+#           include $(1)-tools.jam 
+#
+#    b. A rule can be redefined any number of times. Its latest definition is
+#       the one invoked. For example, the following prints "#2".
+#
+#           rule X { ECHO #1 ; }
+#           rule X { ECHO #2 ; }
+#           X ;
+#
+#    Together, these facts allow us to select tool-suite-specific actions for
+#    building specific target types by repeatedly redefining the generalized
+#    build actions in the various <build-tools>-tools.jam files
+
+if $(NT)
+{
+    TOOLS ?= borland gcc metrowerks msvc ;
+}
+else
+{
+    TOOLS ?= gcc ;
+}
+
+SHARED_TYPES = DLL ;
+STATIC_TYPES = LIB ;
+
+# detect-build-tools <tools-name> : <detection-command>
+#
+# Declares a pseudotarget for the specified build tools which is built by
+# the given <detection-command>. 
+#
+# Although not currently implemented, the plan is to make compilation of
+# tool-specific targets dependent on this pseudotarget. That way, we will never
+# even attempt to build targets for tools that don't exist.
+rule detect-build-tools
+{
+    detection-command on $(<) = $($(<).bin-directory)$(>) ;
+}
+
+# lib: generator function
+#
+rule library-file
+{
+    LibraryFromObjects $(<) : [ Objects $(>) ] ;
+}
+
+# exe: generator function
+#
+rule executable-file
+{
+    type-DEPENDS exe : $(<) ;
+    main-from-objects $(<) : [ Objects $(>) ] : EXE ;
+}
+
+# dll: generator function
+#
+rule dll-files ( module implib ? : sources * : target-type ? )
+{
+    type-DEPENDS dll : $(<) ;
+    
+    # Set up the import library dependency on Windows
+    if $(<[2])
+    {
+        INCLUDES $(<[1]) : $(<[2-]) ;
+        INCLUDES $(<[2-]) : $(<[1]) ;
+    }
+    
+    target-type ?= DLL ;
+    if [ MATCH ^(CRAY).* : $(JAMUNAME[-1]) ] # no shared libs on cray
+    {
+        NOTFILE $(<) ;
+    }
+    else
+    {
+        main-from-objects $(<) : [ Objects $(>) ] : $(target-type) ;
+    }
+}
+
+# template: modifier function
+#
+# The target specs are modified by adding those previously specified in a template source.
+# Any specs containing paths are rerooted to correctly reference the dependee locations.
+#
+rule template-modifier ( target : source )
+{
+    local source-id ;
+    {
+        local RELATIVE_SUBDIR = [ directory-of $(source:G=) ] ;
+        source-id = [ target-id-of $(source) ] ;
+    }
+    
+    # Make sure it's defined.
+    #
+    if ! $(gTARGET_TYPE($(source-id)))
+    {
+        dependent-include $(source:G=) ;
+    }
+    
+    # Copy the base specs into the target specs, adjust any paths
+    #
+    gTARGET_SOURCES($(target)) +=
+        [ root-paths $(gTARGET_SOURCES($(source-id))) : [ directory-of $(source:G=) ] ] ;
+    gTARGET_DEPS($(target)) +=
+        [ root-paths $(gTARGET_DEPS($(source-id))) : [ directory-of $(source:G=) ] ] ;
+    gTARGET_REQUIREMENTS($(target)) +=
+        [ fixup-path-properties $(gTARGET_REQUIREMENTS($(source-id))) ] ;
+    gTARGET_DEFAULT_BUILD($(target)) +=
+        $(gTARGET_DEFAULT_BUILD($(source-id))) ;
+}
+
+# main-from-objects exe-target : obj-target... : ("EXE"|"DLL")
+#
+# generate instructions to build the given "main" target from the given object
+# files given in the 2nd parameter. The 3rd parameter should be EXE for an
+# executable, or DLL for a shared library.
+rule main-from-objects ( targets * : objects * : type )
+{
+    # make compiled sources a dependency of target
+
+    MakeLocate $(targets) : $(LOCATE_TARGET) ;
+
+    Clean clean : $(targets) ;
+
+    MODE on $(targets) = $($(type)MODE) ;
+    local link-function = Link-$(type) ;
+    local extra-files = [ $(link-function) $(targets) : $(objects) : $(type) ] ;
+    Chmod $(targets[1]) ;
+    DEPENDS $(targets) : $(objects) ;
+    
+    # locate and attach the extra files generated
+    if $(extra-files)
+    {
+        MakeLocate $(extra-files) : $(LOCATE_TARGET) ;
+        DEPENDS $(targets) : $(extra-files) ;
+    }
+    
+    gFILES($(targets[1])) = $(targets) $(extra-files) ;
+}
+
+rule Link-EXE
+{
+    # N.B. By the time this rule is invoked, we had better have gRUN_PATH completely set.
+    local extra-files = [ Link-action $(<) : $(>) : EXE ] ;
+    RUN_PATH on $(<) = [ join [ unique $(gRUN_PATH($(<))) $(gTOOLSET_LIB_PATH) ] : $(SPLITPATH) ] ;
+    if $(UNIX) 
+    {
+        RUN_LD_LIBRARY_PATH on $(<) = [ join $(gRUN_LD_LIBRARY_PATH($(<))) : $(SPLITPATH) ] ;
+    }
+    
+    return $(extra-files) ;
+}
+
+rule Link-DLL
+{
+    gRUN_PATH($(<)) += $(gLOCATE($(<[1]))) $(gTOOLSET_LIB_PATH) ;
+    if $(UNIX) 
+    {
+        RUN_LD_LIBRARY_PATH on $(<) = [ join $(gRUN_LD_LIBRARY_PATH($(<))) : $(SPLITPATH) ] ;
+        gRUN_LD_LIBRARY_PATH($(<)) += $(gLOCATE($(<[1]))) ;
+
+        if $(OS) = AIX
+        {
+            Aix-Implib-Action $(<) : $(>) ;
+        }
+    }
+    
+    return [ Link-action $(<) : $(>) : DLL ] ;
+}
+
+rule Aix-Implib-Action
+{
+    SPACE on $(<) = " " ;
+}
+
+actions Aix-Implib-Action bind import-generator-script
+{
+    "$(BOOST_ROOT)/tools/build/gen_aix_import_file.py" $(<[1]:BD=) $(>:D=) -optldflags="$(LINKFLAGS:J=$(SPACE))" "-directory=$(<[1]:D)" -verbose=1
+}
+
+# store the shell's PATH again, just in case someone uses PATH.
+# This also allows the user to customize the base path for running built
+# products from the command-line
+RUN_PATH ?= $(PATH) ;
+if $(UNIX)
+{
+    RUN_LD_LIBRARY_PATH ?= $($(gSHELL_LIBPATH)) ;
+} 
+if $(NT)
+{
+    # Try some other likely spellings
+    RUN_PATH ?= $(Path) ;
+    RUN_PATH ?= $(path) ;
+}
+# Now set this, just in case someone tries to use it.
+PATH = $(RUN_PATH) ;
+if $(UNIX)
+{
+    $(gSHELL_LIBPATH) = $(RUN_LD_LIBRARY_PATH) ;
+} 
+
+DOLLAR = "$" ;
+  
+# A simple action to run an executable target
+if $(UNIX) 
+{
+    actions Run
+    {
+        $(SHELL_SET)PATH=$(RUN_PATH):$PATH
+        $(SHELL_EXPORT)PATH
+        $(SHELL_SET)$(gSHELL_LIBPATH)=$(RUN_LD_LIBRARY_PATH):$$(gSHELL_LIBPATH)
+        $(SHELL_EXPORT)$(gSHELL_LIBPATH)
+        $(<) $(COMMAND-LINE)
+    }
+}
+else
+{
+    actions Run
+    {
+        $(SHELL_SET)PATH=$(RUN_PATH);%PATH%
+        $(SHELL_EXPORT)PATH
+        $(<) $(COMMAND-LINE)
+    }
+}
+
+# bubble variable-name
+#
+# Helper function for sort, below
+# Removes the greatest element from $(variable-name) and returns it.
+rule bubble # 
+{
+    local result = ;
+    local last = $($(<)[1]) ;
+    for x in $($(<)[2-])
+    {
+        if $(last) <= $(x)
+        {
+            result += $(last) ;
+            last = $(x) ;
+        }
+        else
+        {
+            result += $(x) ;
+        }
+    }
+    $(<) = $(result) ;
+    return $(last) ;
+}
+
+# sort args
+#
+# return args sorted in lexicographic order.
+rule sort
+{
+    local _all = $(<) ;
+    local _result = ;
+    local _count ;
+    for _count in $(<)
+    {
+        _result = [ bubble _all ] $(_result) ;
+    }
+    return $(_result) ;
+}
+
+# min args
+#
+# return the lexicographic minimum element of args
+rule min
+{
+    local result = ;
+    local x ;
+    for x in $(<)
+    {
+        if ! $(result) || ( $(x) < $(result) )
+        {
+            result = $(x) ;
+        }
+    }
+    return $(result) ;
+}
+
+# difference listB : listA
+# returns the elements of B that are not in A
+rule difference
+{
+    local result = ;
+    local element ;
+    for element in $(<)
+    {
+        if ! ( $(element) in $(>) )
+        {
+            result += $(element) ;
+        }
+    }
+    return $(result) ;
+}
+
+# replace list : old-value new-value
+#
+# returns list with occurrences of old-value replaced by new-value
+rule replace
+{
+    local result = ;
+    local x ;
+    for x in $(<)
+    {
+        if $(x) = $(>[1])
+        {
+            result += $(>[2]) ;
+        }
+        else
+        {
+            result += $(x) ;
+        }
+    }
+    return $(result) ;
+}
+
+# select-ungristed list...
+#
+# Returns the elements of list that have no grist
+rule select-ungristed
+{
+    local result x ;
+    for x in $(<)
+    {
+        if ! $(x:G)
+        {
+            result += $(x) ;
+        }
+    }
+    return $(result) ;
+}
+
+rule select-gristed ( list * )
+{
+    local result ;
+    for local x in $(list)
+    {
+        if $(x:G)
+        {
+            result += $(x) ;
+        }
+    }
+    return $(result) ;
+}
+
+# Returns grist without "<"/">" for elements matching "<.*>",
+# and ignores other elements.
+rule ungrist ( names * )
+{
+    local result ;
+    for local name in $(names)
+    {
+        local stripped = [ MATCH ^<(.*)>$ : $(name) ] ;
+        result += $(stripped) ;
+    }
+    return $(result) ;
+}
+
+
+# Split a qualified property into 3 elements. 
+#
+# Grammar description of qualified-property :
+#   [[<toolset>]<variant>]property
+#
+# returns <toolset> <variant> property
+# missing <toolset> or <variant> are treated as <*>
+rule split-qualified-property
+{
+    local grist1 = $(<:G) ;
+    local ungrist1 = $(<:G=) ;
+    local grist2 = $(ungrist1:G) ;
+    local ungrist2 = $(ungrist1:G=) ;
+    local grist3 = $(ungrist2:G) ;
+    local ungrist3 = $(ungrist2:G=) ;
+    if $(grist3)
+    {
+        return $(grist1) $(grist2) $(grist3)$(ungrist3) ;
+    }
+    else if $(grist2)
+    {
+        return <*> $(grist1) $(grist2)$(ungrist2) ;
+    }
+    else
+    {
+        return <*> <*> $(<) ;
+    }
+}
+
+rule unique # list
+{
+    local result = ;
+    local f ;
+    for f in $(<)
+    {
+        if ! $(f) in $(result)
+        {
+            result += $(f) ;
+        }
+    }
+    return $(result) ;
+}
+
+# get-properties features : properties
+#
+# Given a list of gristed features and a list of properties, returns the
+# properties matching the given features.
+rule get-properties 
+{
+    local result = ;
+    local property ;
+    for property in $(>)
+    {
+        if $(property:G) in $(<)
+        {
+            result += $(property) ;
+        }
+    }
+    return $(result) ;
+}
+    
+# get-values features : properties
+#
+# Given a list of gristed feature names and a list of properties, returns the
+# value(s) of the given features.
+rule get-values
+{
+    local _properties = [ get-properties $(<) : $(>) ] ;
+    return $(_properties:G=) ;
+}
+
+# normalize-properties properties
+#
+# Normalizes a set of (possibly qualified) properties by prepending <*> as many
+# times as neccessary to ensure that each property has at least 3 gristed elements.
+rule normalize-properties
+{
+    local property ;
+    local result ;
+    for property in $(<)
+    {
+        switch $(property)
+        {
+            case <*><*><*><*@*>* : result += $(property) ;
+            case <*><*><*@*>* : result += <*>$(property) ;
+            case <*><*@*>* : result += <*><*>$(property) ;
+            case <*@*>* : result += <*><*><*>$(property) ;
+                        
+            case <*><*><*>* : result += $(property) ;
+            case <*><*>* : result += <*>$(property) ;
+            case <*>* : result += <*><*>$(property) ;
+            case * : result += <*><*><*>$(property) ;
+        }
+    }
+    return $(result) ;
+}
+
+# intersection set1 : set2
+#
+# Removes from set1 any items which don't appear in set2 and returns the result.
+rule intersection 
+{
+    local result v ;
+    for v in $(<)
+    {
+        if $(v) in $(>)
+        {
+            result += $(v) ;
+        }
+    }
+    return $(result) ;
+}
+
+# subset sub : super
+#
+# Returns true iff sub is a subset of super, empty otherwise
+rule is-subset
+{
+    if [ intersection $(<) : $(>) ] = $(<)
+    {
+        return true ;
+    }
+}
+
+# distribute-feature <feature>value1[/value2...]
+#
+# Distribute the given feature across the slash-separated set of values, i.e.
+# returns <feature>value1[ <feature>/value2...]
+rule distribute-feature
+{
+    local g = $(<:G) ;
+    local result = [ split-path $(<:G=) ] ;
+    return $(g)$(result) ;
+}
+
+# set-insert variable-name : value... ;
+#
+# Appends the given values to the list designated by variable-name if they are
+# not already present.
+rule set-insert
+{
+    local v ;
+    for v in $(>)
+    {
+        if ! ( $(v) in $($(<)) )
+        {
+            $(<) += $(v) ;
+        }
+    }
+}
+
+# equal-sets set1 : set2
+#
+# Returns true iff set1 contains the same elements as set2.
+# Not sensitive to the same element appearing multiple times
+rule equal-sets
+{
+    if ( ! [ difference $(<) : $(>) ] ) && ( ! [ difference $(>) : $(<) ] )
+    {
+        return true ;
+    }
+}
+
+# feature name : [values...]
+#
+# Declares a feature with the given name, and the given allowed values.
+rule feature
+{
+    if $(<) in $(gFEATURES)
+    {
+        EXIT feature $(<) : $(gFEATURE_VALUES(<$(<)>) redeclared as $(<) : $(>) ;
+    }
+    gFEATURES += <$(<)> ;
+    gUNGRISTED(<$(<)>) = $(<) ;
+    gFEATURE_VALUES(<$(<)>) = $(>) ;
+}
+
+rule free-feature
+{
+    feature $(<) : $(>) ;
+    gFREE_FEATURES += <$(<)> ;
+    if $(>)
+    {
+        gSINGLE_VALUED_FREE_FEATURES += <$(<)> ;
+    }
+}
+
+rule path-feature
+{
+    free-feature $(<) : $(>) ;
+    gPATH_FEATURES += <$(<)> ;
+}
+
+rule dependency-feature
+{
+    path-feature $(<) : $(>) ;
+    gDEPENDENCY_FEATURES += <$(<)> ;
+}
+
+# feature-default <feature>...
+#
+# return the default properties corresponding to the given feature(s)
+rule feature-default
+{
+    local result f ;
+    for f in $(<)
+    {
+        result += $(f)$(gFEATURE_VALUES($(f))[1]) ;
+    }
+    return $(result) ;
+}
+
+# flags tools-name variable-name condition [: value(s)]
+#
+# Declare command-line settings for a given toolset.
+#   toolset:         the name of the toolset
+#   variable-name:   the name of a global variable which can be used to carry
+#                    information to a command-line
+#   condition:       One of the following:
+#                    1. zero or more property-sets of the form:
+#                          <feature>value[/<feature>value...]
+#                    2. one or more <feature>[/<feature>...]
+#
+# This rule appends to the specified variable, depending on a target's build
+# configuration and the form of condition.
+#
+#   1. if any specified property-set is a subset of the target's build properties or if 
+#   condition is empty, the values specified in $(3) will be appended once to
+#   /variable-name/.
+#
+#   2. The value of each specified feature that participates in the target's
+#   build properaties is appended to /variable-name/.
+#
+# The variable will be set "on" the target so it may be  used in its build actions. 
+rule flags
+{
+    local toolset = $(gCURRENT_TOOLSET) ;
+    local variable = $(<[2]) ;
+    local condition = $(<[3-]) ;
+
+    # record the names of all variables used so they can be set on targets
+    if ! ( $(variable) in $(gTARGET_VARIABLES) )
+    {
+        gTARGET_VARIABLES += $(variable) ;
+        $(variable) = ;
+    }
+
+    local found = ;
+    local x ;
+    for x in $(condition)
+    {
+        x = [ split-path $(x) ] ;
+        
+        # Add each feature to the set of features relevant to the toolset
+        gRELEVANT_FEATURES($(toolset)) += $(x:G) ;
+
+        # is it a property set?
+        if $(x:G=)
+        {
+             # if this property_set is a subset of the current build-properties
+             if ( ! $(found) ) && [ is-subset $(x) : $(gBUILD_PROPERTIES) ]
+             {
+                 found = true ;
+                 $(variable) += $(>) ;
+             }
+        }
+        else
+        {
+            $(variable) += [ get-values $(x) : $(gBUILD_PROPERTIES) ] ;
+            if $(x:G) in $(gDEPENDENCY_FEATURES)
+            {
+                gDEPENDENCY_VARIABLES($(toolset)) += $(variable) ;
+            }
+        }
+    }
+    if ! $(condition)
+    {
+        $(variable) += $(>) ;
+    }
+}
+
+# include-tools toolset
+#
+# Unconditionally process the specification file for the given toolset. It is
+# neccessary to do this for each target built with that toolset, since the
+# toolset will invoke the flags rule to set global variables based on the build
+# properties of the target.
+rule include-tools 
+{
+    if ! $(gIN_INCLUDE_TOOLS)
+    {
+        gCURRENT_TOOLSET = $(<) ;
+        gRELEVANT_FEATURES($(<)) = ; # clear relevant feature set
+        gDEPENDENCY_VARIABLES($(<)) = ;
+
+        # clear any lingering target variables that may have been declared
+        $(gTARGET_VARIABLES) = ;
+        gTARGET_VARIABLES = NEEDLIBS NEEDIMPS ; # start over from the beginning
+        gTOOLSET_LIB_PATH = ;
+    }
+    
+    {
+        local gIN_INCLUDE_TOOLS = true ;
+        SEARCH on <jam-module>$(<)-tools.jam = $(BOOST_BUILD_PATH) ;
+        include <jam-module>$(<)-tools.jam ;
+    }
+    
+    # Always maintain the list of relevant features as unique
+    if ! $(gIN_INCLUDE_TOOLS)
+    {
+        gRELEVANT_FEATURES($(<)) = [ 
+          unique $(gRELEVANT_FEATURES($(<))) 
+            $(gALWAYS_RELEVANT)
+        ] ;
+    }
+    
+    gINCLUDED(<jam-module>$(<)-tools.jam) = TRUE ;
+}
+
+# extends-toolset toolset
+#
+# Used in a toolset definition file; Declares that the toolset currently being
+# defined is an extension of the given toolset.
+rule extends-toolset
+{
+    include-tools $(<) ;
+}
+
+# relevant-features toolset
+#
+# Returns the set of unique features relevant to the given toolset; includes the
+# toolset description file as a side-effect if neccessary.
+rule relevant-features # name
+{
+    if ! $(gRELEVANT_FEATURES($(<)))
+    {
+        include-tools $(<) ;
+    }
+    return $(gRELEVANT_FEATURES($(<))) ;
+}
+
+# variant name [ : parents... ] : [<toolset>]<feature>value...
+#
+# Declare a build variant, whose configuration is given by the given (optionally
+# toolset-qualified) properties.
+rule variant ( name : parents-or-properties * : tool-properties * )
+{
+    gALL_VARIANTS += $(name) ;
+    local parents ;
+    if ! $(tool-properties)
+    {
+        if $(parents-or-properties[1]:G)
+        {
+            tool-properties = $(parents-or-properties) ;
+        }
+        else
+        {
+            parents = $(parents-or-properties) ;
+        }
+    }
+    else
+    {
+        parents = $(parents-or-properties) ;
+    }
+    local toolset ;
+    for toolset in $(TOOLS)
+    {
+        # We hijack select-properties to do our dirty work here.
+        # Because properties in a variant declaration are only qualified with
+        # toolset and not variant, we specify the toolset where
+        # select-properties expects a variant name. The first toolset parameter
+        # is neccessary to get the relevant-features correctly set. We supply
+        # the variant name as the target name, so that error messages will look
+        # coherent.
+        local name-properties
+            = [ select-properties $(toolset) $(toolset) $(name) : $(tool-properties) ] ;
+        if $(parents)
+        {
+            local parent ;
+            for parent in $(parents)
+            {
+                local parent-properties
+                    = $(gBASE_PROPERTIES($(toolset),$(parent))) ;
+                local inherited-features
+                    = [ unique
+                        [ difference $(parent-properties:G) : $(name-properties:G) ]
+                        $(gFREE_FEATURES)
+                        $(gPATH_FEATURES)
+                        $(gDEPENDENCY_FEATURES ] ;
+                local inherited-properties
+                    = [ get-properties $(inherited-features) : $(parent-properties) ] ;
+                name-properties
+                    += $(inherited-properties) ;
+            }
+        }
+        gBASE_PROPERTIES($(toolset),$(name)) = [ sort $(name-properties) ] ;
+    }
+}
+
+# select-properties toolset variant target : qualified-properties...
+#
+# Returns
+rule select-properties ( toolset variant target ? : qualified-properties * )
+{
+    local relevant_features = [ relevant-features $(toolset) ] ;
+    local normalized = [ normalize-properties $(>) ] ;
+
+    # Classify properties by the specificity of their qualification.
+    # First, grab those that apply to this toolset, or all toolsets
+    local this_toolset = [ get-values <$(toolset)> : $(normalized) ] ;
+    local all_toolsets = [ get-values <*> : $(normalized) ] ;
+    
+    local 0-stars = [ get-values <$(variant)> : $(this_toolset) ] ;
+    local 1-stars = [ get-values <*> : $(this_toolset) ] [ get-values <$(variant)> : $(all_toolsets) ] ;
+    local 2-stars = [ get-values <*> : $(all_toolsets) ] ;
+
+    # Select feature names from the features relevant to the toolset.
+    local features = [ intersection $(relevant_features)
+        : $(0-stars:G) $(1-stars:G) $(2-stars:G) ] ;
+
+    local result f ;
+    for f in $(features)
+    {
+        local is_free = [ intersection $(f) : $(gFREE_FEATURES) ] ;
+        
+        # Go through the $(n-stars) lists from most- to least- specific;
+        # collect the best set of values of a simple feature, and /all/
+        # values of a free feature.
+        local r n ;
+        for n in 0 1 2
+        {
+            if ! $(r) || $(is_free)
+            {
+                r += [ get-values $(f) : $($(n)-stars) ] ;
+            }
+        }
+
+        r = [ unique $(r) ] ;
+        if $(r[2]) && ! $(is_free) # Check for conflicting simple-feature requests
+        {
+            EXIT "Error: Ambiguous properties requested for"
+            $(target) <$(toolset)><$(variant)> ":" $(f)$(r) ;
+        }
+        result += $(f)$(r) ;
+    }
+    return $(result) ;
+}
+# get toolset features
+SEARCH on <jam-module>features.jam = $(BOOST_BUILD_PATH) ;
+include <jam-module>features.jam ;
+
+# ungrist-properties properties...
+#
+# Transforms a list of properties of the form:
+#       <feature1>value1 [<feature2>value2... ]
+# into a list of the form:
+#       feature1-value1 feature2-value2
+# suitable for use as directory path elements
+#
+rule ungrist-properties
+{
+    local property ;
+    local result = ;
+    for property in $(<)
+    {
+        result += $(gUNGRISTED($(property:G)))-$(property:G=) ;
+    }
+    return $(result) ;
+}
+
+# set-target-variables target
+#
+# attach global build tool settings to the given file-target, so that they can be
+# used in build actions.
+rule set-target-variables ( targets * )
+{
+    local s ;
+    for s in $(gTARGET_VARIABLES)
+    {
+        $(s) on $(targets) = $($(s)) ;
+
+        # set up dependencies if the target is a "top-level" target
+        if ( $(s) in $(gDEPENDENCY_VARIABLES($(gCURRENT_TOOLSET))) ) && $(gTARGET_TYPE($(<)))
+        {
+            DEPENDS $(targets) : $($(s)) ;
+        }
+    }
+    local libpath = [ get-properties <library-path> : $(gBUILD_PROPERTIES) ] ;
+    gRUN_PATH($(targets)) += $(libpath:G=) ;
+    gRUN_LD_LIBRARY_PATH($(targets)) += $(libpath:G=) ;
+}
+
+# fixup-path-properties properties...
+#
+# For path properties, add a relative path prefix to the value as neccessary to
+# locate the path relative to the current subproject.
+rule fixup-path-properties
+{
+    local path-properties = [ get-properties $(gPATH_FEATURES) : $(<) ] ;
+    local non-path = [ difference $(<) : $(path-properties) ] ;    
+    if $(RELATIVE_SUBDIR)
+    {
+        path-properties = [ root-paths $(path-properties) : $(RELATIVE_SUBDIR) ] ;
+    }
+    return $(path-properties) $(non-path) ;
+}
+
+# remove-incompatible-builds requirements... : build-request... : target-name
+#
+# If any element of requirements has the same grist but a different ungristed
+# part as any element of build-request, exits with an error report about target-name
+rule remove-incompatible-builds ( requirements * : build-request * : target-name + )
+{
+    local all-properties = [ unique $(<) $(>) ] ;
+    local all-features = $(all-properties:G) ;
+    local unique-features = [ unique $(all-features) ] ;
+    if $(all-features) != $(unique-features)
+    {
+        local result ;
+        local skip ;
+        for local p in $(build-request)
+        {
+            # if a feature of the build request is also in the
+            # requirements, but with differing value(s)
+            if ( $(p:G) in $(requirements:G) )
+              && ! ( $(p) in $(requirements) )
+            {
+                # decide what to do.
+                local value = [ get-values $(p:G) : $(requirements) ] ;
+                if $(value[2])
+                {
+                    EXIT Unexpectedly found multiple build requests
+                          for feature $(p:G) with values $(values) ;
+                }
+                
+                local requested = [ split-path $(p:G=) ] ;
+                if $(requested[2])
+                {
+                    local skipped = [ difference $(requested) : $(value) ] ;
+                    
+                    ECHO $(target-name) requires $(p:G)$(value),
+                        skipping requested build configuration(s) $(p:G)$(skipped). ;
+                    
+                    result += $(p:G)$(value) ;
+                }
+                else
+                {
+                    ECHO skipping $(target-name) due to incompatible
+                        build requirements $(p:G)$(value). ;
+                    skip = true ;
+                }
+            }
+            else
+            {
+                result += $(p) ;
+            }
+        }
+        
+        if $(skip)
+        {
+            build-request = SKIP ;
+        }
+        else
+        {
+            build-request = $(result) ;
+        }
+    }
+    return $(build-request) ;
+}
+
+# multiply-property-sets [<feature>value1[/value2...] ]...
+#
+# Expands a set of (possibly multi-valued) properties into all the combinations
+# that include every feature in the set. Each combination is given as a path,
+# with the slash separating the properties, sorted in feature order.
+rule multiply-property-sets
+{
+    local result p ;
+    for p in [ sort $(<) ]
+    {
+        # expand any multi-valued simple features from the default build
+        local multiple = [ distribute-feature $(p) ] ;
+
+        # concatenation produces a product, so the tree branches for each
+        # multi-valued simple feature.
+        result = $(result)/$(multiple) ;
+        result ?= $(multiple) ; # this trick allows us to get started 
+    }
+    return $(result) ;
+}
+
+# make-path-property-sets base-path : common-properties : property-sets
+#
+# Returns a list of paths where the initial ungristed part of each element is a
+# relative path to a subvariant directory from a target's build root and the
+# rest of the element is a slash-separated property set describing the
+# properties of the target to be built.
+#
+# Each path returned is base-path extended by one of the ungristed property-sets
+# (or just the base-path if no property-sets are supplied). Each property set
+# returned is formed by extending common-properties with one of the property-sets.
+#
+# For example,
+#
+#   make-path-property-sets gcc/release : <p1>v1 : <p2>v2/<p3>v3
+#
+# returns this single-element list:
+#
+#      gcc/release/p2-v2/p3-v3/<p1>v1/<p2>v2/<p3>v3
+#     |<-- subvariant path -->|<-- property-set -->|
+rule make-path-property-sets
+{
+    local result ;
+    local s ;
+    for s in $(3)
+    {
+        result += [ join
+                    $(<) [ ungrist-properties [ split-path $(s) ] ] # directory components
+                    $(>) $(s) : $(SLASH) ] ; # common properties + property set
+    }
+
+    # if there were no overrides, just add the base variant and properties
+    if ! $(result)
+    {
+        result = [ join $(<) $(>) : $(SLASH) ] ;
+    }
+    return $(result) ;
+}
+
+# segregate-overrides override-var base-var
+#
+# removes elements of $(base-var) from $(override-var), and removes elements
+# whose grist is in $(override-var:G) from $(base-var).
+rule segregate-overrides
+{
+    $(<) = [ difference $($(<)) : $($(>)) ] ;
+
+    # Which features, and thus properties, of the base variant are we keeping?
+    local kept-features = [ difference $($(>):G) : $($(<):G) ] ;
+    $(>) = [ get-properties $(kept-features) : $($(>)) ] ;
+}
+
+# report-free-property-conflicts free-property... : target
+#
+# If any single-valued free-feature appears more than once in free-property...,
+# exit with an appropriate error message.
+rule report-free-property-conflicts
+{
+    local p = [ get-properties $(gSINGLE_VALUED_FREE_FEATURES) $(<) ] ;
+    local f = [ unique $(p:G) ] ;
+    if $(p:G) != $(f)
+    {
+        EXIT $(>): multiple values for single-valued free feature(s)
+            [ difference $(p:G) $(f) ] requested ;
+    }
+}
+
+# expand-build-request
+#      toolset variant target-name : requirements : build-request
+#
+# Returns a list of path-property-sets (see make-path-property-sets above) for
+# all build configurations based on the given toolset, requirements, and
+# build-request. Target-name is just used for error reporting.
+rule expand-build-request 
+{
+    local toolset = $(<[1]) ;
+    local variant = $(<[2]) ;
+
+    # grab the requirements and BUILD-request relevant to this toolset and variant
+    local requirements = [ select-properties $(toolset) $(variant) : $(>) ] ;
+    local build-request = [ select-properties $(toolset) $(variant) : $(3) ] ;
+
+    # Separate the free features (e.g. <define>, <undef>, <include>) from the others
+    local free-properties = [ segregate-free-properties requirements build-request ] ;
+
+    # Check for conflicts
+    report-free-property-conflicts $(free-properties) : $(<[3]) ;
+    build-request = [ remove-incompatible-builds $(requirements)
+      : $(build-request) : $(<[3]) ] ;
+
+    if $(build-request) != SKIP
+    {
+        # Get  the base variant for the toolset. Includes free features
+        local base-properties = $(gBASE_PROPERTIES($(toolset),$(variant))) ;
+
+        # Which properties will override settings in the base variant?
+        local override-properties = [ unique $(requirements) $(build-request) ] ;
+        segregate-overrides override-properties : base-properties ;
+
+        # Which features will pick up a default value because they are not in
+        # the base variant or in the overrides?
+        local relevant-features = [ relevant-features $(toolset) ] ;
+        local override-free-features = [ intersection $(gSINGLE_VALUED_FREE_FEATURES)
+                                        : $(free-properties:G) ] ;
+        local defaulted-features = [ difference $(relevant-features)
+                                    : $(override-properties:G) $(base-properties:G)
+                                      $(override-free-features)
+                                   ] ;
+        
+        local defaulted-properties = [ feature-default $(defaulted-features) ] ;
+        # VP: defaulted-properties have the form <feature>value and there's 1 value.
+        # Hence, each element of defaulted-properties will be part of each
+        # component of override-sets and will be a part of each property-set 
+        # returned. By segregating them, the result is changed in only one
+        # way: free properties does not show up in target path.
+        local defaulted-free-properties = [ segregate-free-properties defaulted-properties ] ;
+
+
+        # form override property sets of the form (property1[/property2...] )+,
+        # sorted in feature order. These represent the properties of subvariants
+        # that differ from the base variant 
+        local override-sets
+            = [ multiply-property-sets $(override-properties) $(defaulted-properties) ] ;
+
+        # return path-property-sets corresponding to each (sub)variant build
+        # described.
+        return [ make-path-property-sets $(toolset)$(SLASH)$(variant)
+                    : [ fixup-path-properties $(base-properties) $(free-properties) 
+                      $(defaulted-free-properties) ]
+                    : $(override-sets) ] ;
+    }
+}
+
+# split-path-at-grist path
+#
+# Breaks path at each $(SLASH) that is followed by grist. This can be used to
+# break apart property sets, particularly where the <include> feature is used,
+# since its value is typically a path.
+rule split-path-at-grist
+{
+    local full-split = [ split-path $(<) ] ;
+    local last ;
+    local result x ;
+    for x in $(full-split)
+    {
+        if $(x:G)
+        {
+            result += $(last) ;
+            last = $(x) ;
+        }
+        else
+        {
+            last = $(last)$(SLASH)$(x) ;
+            last ?= $(x) ;
+        }
+    }
+    return $(result) $(last) ;
+}
+
+#
+# GIVEN:
+#
+# A set of dependency sources with grist to indicate the types
+# (<dll>*, <lib>*, etc)
+#
+# RESULT:
+#
+# Will use the type, basename, and SUF*/PRE* to expand the name
+# of the sources to their fully specific target name.
+#
+# EXAMPLE:
+#
+# [ expand-source-names <lib>test <dll>test <exe>test README.txt <pyd>test ]
+#
+# RETURNS:
+#
+# <lib>libtest.a <dll>libtest.so <exe>test.app README.TXT <pyd>test.so
+#
+rule expand-source-names ( sources * )
+{
+    local x-sources = ;
+    for local source in $(sources)
+    {
+        local grist = [ ungrist $(source:G) ] ;
+        local type = $(gTARGET_TYPE_ID($(grist))) ;
+        if $(type)
+        {
+            local p = "" ; if $(source:B=:S=:G=) { p = "/" ; }
+            local prefix = "" ;
+            local suffix = "" ;
+            if $(PRE$(type)[1]) { prefix = $(PRE$(type)[1]) ; }
+            if $(SUF$(type)[1]) { suffix = $(SUF$(type)[1]) ; }
+            x-sources += $(source:B=:S=)$(p)$(prefix)$(source:B:S=)$(suffix) ;
+        }
+        else
+        {
+            x-sources += $(source) ;
+        }
+    }
+    return $(x-sources) ;
+}
+
+#
+# GIVEN:
+#
+# A set of targets and a single target type for all the targets
+# (DLL, LIB, etc.)
+#
+# RESULT:
+#
+# Will use the type, basename, and SUF*/PRE* to expand the name
+# of the targets to their fully specific target name.
+#
+# EXAMPLE:
+#
+# [ expand-targets-names foo bar : DLL ]
+#
+# RETURNS:
+#
+# libfoo.a libbar.so
+#
+rule expand-target-names ( targets + : target-type )
+{
+    local x-targets = ;
+    for local target in $(targets)
+    {
+        local prefix = "" ;
+        local suffix = "" ;
+        if $(PRE$(target-type)[1]) { prefix = $(PRE$(target-type)[1]) ; }
+        if $(SUF$(target-type)[1]) { suffix = $(SUF$(target-type)[1]) ; }
+        x-targets += $(prefix)$(target)$(suffix) ;
+    }
+    return $(x-targets) ;
+}
+
+# declare-local-target name : sources : requirements : local-BUILD : target-type
+#
+# declares a subproject-local target of the given name and target-type. This is
+# all top-level rules which declare targets should eventually go through here.
+#
+# RETURNS: the a list of target names for the files built by the target.
+rule declare-local-target ( target : sources * : requirements * : default-build * : target-type )
+{
+    # We expand out the name of the target and sources
+    local x-target = [ expand-target-names $(target) : $(target-type) ] ;
+    local x-sources = [ expand-source-names $(sources) ] ;
+
+    # We add SOURCE_GRIST the base target name here because we're referring the
+    # abstract  target which generates all of the actual builds. We need a way to
+    # distinguish targets of the same name from different subprojects. 
+    local target-id = [ FGristFiles $(x-target) ] ;
+
+    if ! $(target-type)
+    {
+        EXIT No target type given for "$(x-target)" ;
+    }
+
+    # Define the specifications of the target, but only if we haven't already.
+    #
+    if ! $(gTARGET_TYPE($(target-id)))
+    {
+        # Save basic information about the target.
+        #
+        gTARGET_TYPE($(target-id)) = $(target-type) ;
+        gTARGET_NAME($(target-id)) = $(target) ;
+
+        # Add the specified requirements to any requirements given by the target
+        # type, and the corresponding <target-type> property.
+        #
+        gTARGET_REQUIREMENTS($(target-id))
+            = $(requirements) $(gTARGET_TYPE_REQUIREMENTS($(target-type))) ;
+        if ! $(gNO_TARGET_TYPE_REQUIREMENT($(target-type)))
+        {
+            gTARGET_REQUIREMENTS($(target-id)) += <target-type>$(target-type) ;
+        }
+
+        # Collect the recognized dependencies to other targets.
+        #
+        local dependencies ;
+        for local source in [ select-gristed $(x-sources) ]
+        {
+            local dependency-type = [ ungrist $(source:G:L) ] ;
+            local dependency-type-id = $(gTARGET_TYPE_ID($(dependency-type))) ;
+            if $(gIS_DEPENDENCY($(dependency-type-id)))
+            {
+                gTARGET_DEPS($(target-id)) += $(source:G=$(dependency-type-id)) ;
+            }
+        }
+
+        # Sources that aren't recognized as targets, are considered raw sources.
+        #
+        gTARGET_SOURCES($(target-id))
+            = [ FGristFiles
+                [ difference $(x-sources:G=) : $(gTARGET_DEPS($(target-id)):G=) ] ] ;
+
+        # Save the default builds.
+        #
+        gTARGET_DEFAULT_BUILD($(target-id)) = $(default-build) ;
+
+        # Apply any modifiers to the target specs.
+        #
+        for local mod in $(gTARGET_DEPS($(target-id)))
+        {
+            local dependency-type-id = [ ungrist $(mod:G) ] ;
+            local modifier-function = $(gMODIFIER_FUNCTION($(dependency-type-id))) ;
+            if $(modifier-function)
+            {
+                # Remove and apply the modifier.
+                gTARGET_DEPS($(target-id)) = [ difference $(gTARGET_DEPS($(target-id))) : $(mod) ] ;
+                local ignored = [ $(modifier-function) $(target-id) : $(mod) ] ;
+            }
+        }
+    }
+    # Trying to define the same specific target with a different type.
+    #
+    else if $(gTARGET_TYPE($(target-id))) != $(target-type)
+    {
+        EXIT conflicting target types for "$(x-target)":
+        "$(gTARGET_TYPE($(target-id)))" "$(target-type)" ;
+    }
+
+    # Generate build instructions, but only if the target has a generator.
+    #
+    if $(gGENERATOR_FUNCTION($(gTARGET_TYPE($(target-id)))))
+    {
+        # Supress the regular build of this target
+        local suppress = [ get-values <suppress> : $(default-build) ] ;
+        local gSUPPRESS_FAKE_TARGETS = $(suppress[1]) ;
+
+        declare-fake-targets $(target) : $(target-id) ;
+
+        # Just gather information if we are including a library's Jamfile for a
+        # dependent target. Don't generate build instructions here.
+        if ! $(gIN_LIB_INCLUDE)
+        {
+            main-target $(target-id) : $(gTARGET_DEFAULT_BUILD($(target-id))) ;
+        }
+    }
+
+    return $(gTARGET_FILES($(target-id))) ;
+}
+
+# directory-of files...
+#
+# Returns a list of the directories containing each element of files
+rule directory-of
+{
+    local result d ;
+    for d in $(<:D)
+    {
+        if $(d) = ""
+        {
+            result += $(DOT) ;
+        }
+        else
+        {
+            result += $(d) ;
+        }
+    }
+    return $(result) ;
+}
+
+# top-relative-tokens path
+#
+# Returns a list of path elements which form the relative path from TOP to path,
+# which is expected to be given relative to the current subproject.
+rule top-relative-tokens
+{
+    return [ simplify-path-tokens $(SUBDIR_TOKENS) [ split-path $(<) ] ] ;
+}
+
+.project-root-tokens = [ split-path $(.boost-build-file:D) ] ;
+
+# try to make a potentially absolute path relative to the project
+# root.  Only works for paths below the project root right now; others
+# will remain absolute.
+rule relative-path ( path )
+{
+    local path-tokens = [ split-path $(path) ] ;
+    
+    # try to strip the project root
+    local r = $(.project-root-tokens) ;
+    local p = $(path-tokens) ;
+    while $(r) && ( $(r[1]) = $(p[1]) )
+    {
+        p = $(p[2-]) ;
+        r = $(r[2-]) ;
+    }
+    
+    # if successful, use the stripped project root
+    if ! $(r)
+    {
+        path-tokens = $(p) ;
+    }
+    
+    return [ tokens-to-simple-path  $(path-tokens) ] ;
+}
+
+# dependent-include target-path...
+#
+# For each target-path, ensure that the appropriate Jamfile has been
+# included. Used when a target declares its dependency on another target.
+rule dependent-include
+{
+    local target ;
+    for target in $(<)
+    {
+        # compute the path to the Jamfile containing target. This path must be
+        # relative to the directory of Jam's invocation in order for the include
+        # rule to find it.
+        
+        local jamfile-path
+            = [ tokens-to-simple-path
+                  $(RELATIVE_SUBDIR_TOKENS) [ split-path [ directory-of $(target) ] ] $(JAMFILE) ] ;
+                  
+        {
+            # protect variables from being permanently set by SubDir invocations
+            # in included files.
+            local [ protect-subdir ] ;
+
+            # load the file as a dependent.
+            local gIN_LIB_INCLUDE = TRUE ;
+            load-jamfiles $(jamfile-path) ;
+        }
+    }
+}
+
+# segregate-free-properties variable1 variable2...
+#
+# returns the and removes the unique list of free properties from
+# $(variable1) $(variable2)... 
+rule segregate-free-properties
+{
+    local free-properties = [ unique [ get-properties $(gFREE_FEATURES) : $($(<)) ] ] ;
+    local v ;
+    for v in $(<)
+    {
+        $(v) = [ difference $($(v)) : $(free-properties) ] ;
+    }
+    return $(free-properties) ;
+}
+
+# is-link-compatible feature : value1 : value2
+#
+# return non-empty iff a library built with <feature>value1 can be linked into a
+# target with <feature>value2, empty otherwise
+rule is-link-compatible ( feature : value1 : value2 )
+{
+    return [ intersection
+        $(feature) $(value1:G=$(feature))
+        $(value1:G=$(feature))$(SLASH)$(value12:G=$(feature))
+        $(value2:G=$(feature))
+        : $(gLINK_COMPATIBLE) ] ;
+}
+
+# find-compatible-subvariant main-target : toolset variant : dependent-simple-properties
+rule find-compatible-subvariant ( main-target : toolset variant : dependent-simple-properties * )
+{
+    # calculate the subvariant only of what is requested
+    # the subvariant requested...
+    local sv-request =
+        [ multiply-property-sets
+            [ get-properties $(BUILD:G) : $(dependent-simple-properties) ] ] ;
+    # the available build requests...
+    local build-requests =
+        [ multiply-property-sets [ select-gristed $(BUILD) ] ] ;
+    # the build requst we want to build...
+    local sv-build =
+        [ intersection $(sv-request) : $(build-requests) ] ;
+        sv-build ?= "" ;
+    local BUILD = $(variant) [ split-path $(sv-build) ] ;
+    # the full subvariant to build...
+    local subvariant = [ expand-target-subvariants $(main-target) : $(variant) : $(toolset) ] ;
+
+    local sv-target = ; local sv-properties = ; local sv-toolset = ; local sv-variant = ;
+    split-target-subvariant sv-target sv-properties sv-toolset sv-variant : $(subvariant) ;
+    local sv-overrides =
+        [ difference $(dependent-simple-properties) : [ select-gristed $(sv-properties) ] ] ;
+
+    if ! $(gTARGET_TYPE($(main-target)))
+    {
+        EXIT unknown dependent target $(main-target) ;
+    }
+    
+    # check to make sure we can link against the subvariant
+    local target-requirements
+        = [ select-gristed $(gTARGET_REQUIREMENTS($(main-target))) ] ;
+    local override-conflicts
+        = [ get-properties $(target-requirements:G) $(gALWAYS_RELEVANT) : $(sv-overrides) ] ;
+    for local sv-override in $(override-conflicts)
+    {
+        local sv-required = [ get-values $(sv-override:G) : $(sv-properties) ] ;
+        if ! [ is-link-compatible $(sv-override:G) : $(sv-override:G=) : $(sv-required) ]
+        {
+            EXIT $(main-target): required property $(sv-override:G)$(sv-required)
+                incompatible with $(sv-override) ;
+        }
+    }
+
+    # now that we have a mostly (or completely) compatible subvariant do the overrides
+    local gTARGET_REQUIREMENTS($(main-target)) =
+        # property rules...
+        [ select-ungristed $(gTARGET_REQUIREMENTS($(main-target))) ]
+        # always relevant properties to target...
+        [ difference
+            $(target-requirements) :
+            [ get-properties [ difference $(sv-overrides:G) : $(gALWAYS_RELEVANT) ] : $(target-requirements) ] ]
+        # link compatible properties, on the target...
+        [ get-properties
+            [ difference $(sv-overrides:G) : $(gALWAYS_RELEVANT) ] : $(target-requirements) ]
+        # overrides from dependent...
+        [ get-properties
+            [ difference $(sv-overrides:G) : $(override-conflicts:G) ] : $(dependent-simple-properties) ]
+        ;
+    subvariant = [ expand-target-subvariants $(sv-target) : $(sv-variant) : $(sv-toolset) ] ;
+    split-target-subvariant sv-target sv-properties sv-toolset sv-variant : $(subvariant) ;
+
+    return $(sv-properties) ;
+}
+
+
+# For each target specified in libs, generate build instructions
+# for a subvariant that can be linked with a dependent target with
+# dependent-properties, returning a list of all generated targets.
+rule link-libraries ( libs * : toolset variant : dependent-simple-properties * )
+{
+  local lib-path result ;
+  for lib-path in $(libs)
+  {
+    local new-subdir = TOP [ top-relative-tokens [ directory-of $(lib-path) ] ] ;
+    
+    # protect global variables from being permanently set by SubDir
+    local [ protect-subdir ] ;
+
+    # Enter the dependee subproject
+    SubDir $(new-subdir) ;
+
+    local lib-target = [ FGristFiles $(lib-path:D=) ] ;
+      
+    local lib-subvariant = [ 
+      find-compatible-subvariant $(lib-target)
+        : $(toolset) $(variant)
+          : $(dependent-simple-properties) ] ;
+
+    # Generate build instructions for the library target
+    result += [ subvariant-target $(lib-target) : $(lib-subvariant) : $(toolset) $(variant) ] ;
+  }
+  return $(result) ;
+}
+
+# Which configuration(s) to build if nothing is explicitly specified
+DEFAULT_BUILD ?= debug ;
+
+# get-BUILD [target-default-build]
+#
+# pick the first of ($(BUILD), $(>), $(DEFAULT_BUILD)) which is set. If it
+# contains no variants, add variants from $(DEFAULT_BUILD).
+rule get-BUILD
+{
+  local build = $(BUILD) ;
+  build ?= $(<) ;
+  build ?= $(DEFAULT_BUILD) ;
+  local variants = [ select-ungristed $(build) ] ;
+  if ! $(variants)
+  {
+    build += [ select-ungristed $(DEFAULT_BUILD) ] ;
+  }
+  return $(build) ;
+}
+
+BIN_DIRECTORY ?= bin ;
+
+# declare-fake-targets abstract-target : target-file
+#
+# 
+rule declare-fake-targets
+{
+    # make a fake target so that it can be built without knowing the suffix
+    # Since executables under *NIX have no suffix, we'd better check
+    if $(>) != $(<)
+    {
+        DEPENDS $(<) : $(>) ;
+        NOTFILE $(<) ;
+    }
+    
+    # The following checks that we're in the subdirectory of Jam's invocation
+    # so that we can arrange for ungristed target names to be built from the
+    # command-line.
+    if $(<:G) && [ in-invocation-subdir ]
+    {
+        DEPENDS $(<:G=) : $(<) ; # allows $(<:G=) to be used to build all variants
+        NOTFILE $(<:G=) ;
+    }
+}
+
+# declare-target-type TYPE : [[<compiler>]<variant>]<feature>value...
+rule declare-target-type
+{
+    gTARGET_TYPE_REQUIREMENTS($(<)) = $(>) ;
+}
+
+declare-target-type DLL : <shared-linkable>true ;
+
+if $(NT)
+{
+  gIMPORT_SUFFIX(DLL) = .lib ;
+  gIMPORT_SUFFIX(LIB) = .lib ;
+  gEXPORT_SUFFIX(DLL) = .lib ;
+}
+else
+{
+  gIMPORT_SUFFIX(DLL) = .so ;
+  gIMPORT_SUFFIX(LIB) = .a ;
+}
+
+# depend-on-libraries target-files : library-targets
+rule depend-on-libraries
+{
+    NEEDLIBS += $(>) ;
+    NEEDLIBS on $(<) += $(>) ;
+    DEPENDS $(<) : $(>) ;
+    # To run these targets, we need everything needed to run the libraries
+    gRUN_PATH($(<)) = [ unique $(gRUN_PATH($(<))) $(gRUN_PATH($(>))) ] ;
+    gRUN_LD_LIBRARY_PATH($(<)) = [ unique $(gRUN_LD_LIBRARY_PATH($(<))) $(gRUN_LD_LIBRARY_PATH($(>))) ] ;
+}
+
+rule depend-on-dlls ( targets + : dlls-and-import-libs * )
+{
+    local linkable ;
+    
+    # collect the linkable elements of the source libs into the appropriate variables
+    for local f in $(dlls-and-import-libs)
+    {
+        local v = $(gLINK_VARIABLE($(f:S))) ;
+        $(v) += $(f) ;
+        $(v) on $(targets) += $(f) ;
+        if $(v)
+        {
+            linkable += $(f) ;
+        }
+    }
+
+    LIBPATH on $(<) += [ unique $(gLOCATE($(>))) ] ;
+    FINDLIBS on $(<) += [ unique $(gTARGET_BASENAME($(gTARGET_SUBVARIANT($(>))))) ] ;
+    DEPENDS $(<) : $(>) ;
+    # To run these targets, we need everything needed to run the libraries
+    gRUN_PATH($(<)) = [ unique $(gRUN_PATH($(<))) $(gRUN_PATH($(>))) ] ;
+    gRUN_LD_LIBRARY_PATH($(<)) = [ unique $(gRUN_LD_LIBRARY_PATH($(<))) $(gRUN_LD_LIBRARY_PATH($(>))) ] ;
+}
+
+# Given build properties, returns the normalised version of the <tag> features for
+# use by rename-targets.
+rule get-tag-features ( variant : build-properties * )
+{
+    local result = ;
+    local tags = [ get-properties <tag> : $(build-properties) ] ;
+    for local tag in $(tags)
+    {
+        tag = $(tag:G=) ;
+        if $(tag:G)
+        {
+            result += <tag>$(tag) ;
+        }
+        else
+        {
+            result += <tag><$(variant)>$(tag) ;
+        }
+    }
+    return $(result) ;
+}
+
+# Given target, a main target name gristed with $(SOURCE_GRIST), generate build
+# instructions for a subvariant target using the given toolset, variant, etc.
+#
+# RETURNS: the a list of target names for the files built by the subvariant. If
+# the target is a library, the first filename is the one that should be linked
+# into a dependent target.
+rule subvariant-target ( target : subvariant-id build-properties * : toolset variant )
+{
+  # SOURCE_GRIST identifies the subproject directory; TARGET_GRIST will identify
+  # the target and subvariant, since unique versions of files will be built for
+  # that combination.
+  local property-tags = [ get-tag-features $(variant) : $(build-properties) ] ;
+  local tags = [ get-properties <tag> : $(gIMPOSED_REQUIREMENTS($(target))) ] $(property-tags) ;
+  local TARGET_GRIST = [ join-path $(SOURCE_GRIST) $(target:G=) $(subvariant-id) ] ;
+  local subvariant = $(target:G=$(TARGET_GRIST)) ;
+
+  # Keep track of the generated targets.
+  if ! $(TARGET_GRIST) in $(gDECLARED_TARGETS)
+  {
+    gDECLARED_TARGETS += $(TARGET_GRIST) ;
+  }
+
+  # Make sure we know how to generate these types of targets.
+  local target-type = $(gTARGET_TYPE($(target))) ;
+  if ! $(target-type)
+  {
+      EXIT unknown target type for $(target) ;
+  }
+  
+  gTARGET_TYPE($(subvariant)) = $(target-type) ;
+  
+  # LOCATE_TARGET affects where built targets are generated. We move it
+  # relative to the default location based on the subvariant 
+  local LOCATE_TARGET
+    = [ join-path $(LOCATE_TARGET) $(BIN_DIRECTORY) $(target:G=) $(subvariant-id) ] ;
+
+  # The renamed base name of the target. Only considers the tags defined directly
+  # on the target.
+  gTARGET_BASENAME($(target)) =
+    [ rename-target $(gTARGET_NAME($(target))) : [ split-path [ ungrist $(subvariant:G) ] ] : $(property-tags) ] ;
+
+  # First order names have the suffix, if any according to the platform.
+  local target-files = [ FAppendSuffix $(subvariant) : $(SUF$(target-type)) ] ;
+  # Second order names have any tags as imposed from stage target contexts.
+  target-files = [ rename-target $(target-files) : [ split-path [ ungrist $(subvariant:G) ] ] : $(tags) ] ;
+  # Third order names are customized as determined by a rename rule on the target type.
+  if $(gNAME_ADJUST($(target-type)))
+  {
+    target-files = [
+      $(gNAME_ADJUST($(target-type))) $(target-files)
+      : $(subvariant-id) $(build-properties)
+      : $(toolset) $(variant) ] ;
+  }
+
+  # Do nothing if we already have the build instructions for the specific
+  # target files of this subvariant target.
+  if ! $(target-files) in $(gTARGET_FILES($(target)))
+  {
+    gTARGET_SUBVARIANT($(target-files)) = $(target) ;
+    
+    ###gTARGET_FILES($(subvariant)) = $(target-files) ;
+    gTARGET_FILES($(target)) += $(target-files) ;
+
+    # Remember the path from the build root to the subvariant directory
+    gSUBVARIANT_PATH($(subvariant)) = $(subvariant-id) ;
+    
+    # Add target suppression if <suppress> was in the requirements
+    local gSUPPRESS_FAKE_TARGETS = [ get-values <suppress> : $(gTARGET_REQUIREMENTS($(target))) ] $(gSUPPRESS_FAKE_TARGETS) ;
+
+    declare-fake-targets $(target) : $(target-files) ;
+
+    # set up gBUILD_PROPERTIES for include-tools (below)
+    local gBUILD_PROPERTIES = $(build-properties) ;
+
+    # Include the toolset specification. This will set up the global flags
+    # variables in a way appropriate to this build. 
+    
+    include-tools $(toolset) ;
+
+    # headers should be identified specific to the target, since search paths
+    # may differ for different subvariants. The same header name or relative
+    # path may refer to different files.
+    local HDRGRIST = [ join $(SOURCE_GRIST) $(HDRS) $(STDHDRS) : "#" ] ;
+    
+    # transfer target variables to the target file.
+    set-target-variables $(target-files) ;
+
+    if [ get-values <$(STATIC_TYPES)> <$(SHARED_TYPES)> : $(gTARGET_DEPS($(target))) ]
+    {
+        # include each jamfile describing a dependee target.
+        dependent-include [ get-values <$(STATIC_TYPES)> <$(SHARED_TYPES)> : $(gTARGET_DEPS($(target))) ] ;
+
+        local libs dlls ;
+        {
+            # Protect target variables against modification while lib dependencies
+            # are built. They will be made empty here, and restored when this scope exits
+            local $(gTARGET_VARIABLES) ;
+
+            # extract the simple properties from dependent-properties
+            local simple-properties = $(gBUILD_PROPERTIES) ;
+            segregate-free-properties simple-properties ;
+
+            # generate library build instructions
+            local BUILD = $(BUILD) ;
+            BUILD ?= $(gTARGET_DEFAULT_BUILD($(target))) ;
+            libs = [ link-libraries [ get-values <$(STATIC_TYPES)> : $(gTARGET_DEPS($(target))) ]
+                    : $(toolset) $(variant) : $(simple-properties) ] ;
+            dlls = [ link-libraries [ get-values <$(SHARED_TYPES)> : $(gTARGET_DEPS($(target))) ]
+                    : $(toolset) $(variant) : $(simple-properties) ] ;
+        }
+        depend-on-libraries $(target-files) : $(libs) ;
+        depend-on-dlls $(target-files) : $(dlls) ;
+    }
+    
+    # dispatch to the appropriate declaration function. Here we are using an
+    # FTJam-only feature (thanks, David Turner!)
+    local ignored = [ $(gGENERATOR_FUNCTION($(target-type))) $(target-files)
+                        : $(gTARGET_SOURCES($(target))) ] ;
+                        
+    $(gTARGET_VARIABLES) = ; # Be sure that we don't mask bugs with lingering target variables
+  }
+  return $(target-files) ;
+}
+
+# Generate the expanded subvariants of a target.
+#
+rule expand-target-subvariants ( target : local-build * : tools + : )
+{
+    local BUILD = [ get-BUILD $(local-build) ] ;
+    local variants = [ select-ungristed $(BUILD) ] ;
+    local build-request = [ difference $(BUILD) : $(variants) ] ;
+
+    local subvariants = ;
+    for local toolset in $(tools)
+    {
+        for local variant in $(variants)
+        {
+            local rules = [ select-ungristed
+                $(gTARGET_REQUIREMENTS($(target)))
+                $(gIMPOSED_REQUIREMENTS($(target))) ] ;
+            local requirements = [ select-gristed
+                $(gTARGET_REQUIREMENTS($(target)))
+                $(gIMPOSED_REQUIREMENTS($(target))) ] ;
+            
+            local expanded
+                = [ expand-build-request $(toolset) $(variant) $(target)
+                    : $(requirements) : $(build-request) ] ;
+            
+            for local instance in $(expanded)
+            {
+                local properties = [ split-path-at-grist $(instance) ] ;
+                for local r in $(rules)
+                {
+                    properties = [ $(r) $(toolset) $(variant) : $(properties) ] ;
+                }
+                properties = [ join $(properties) : $(SLASH) ] ;
+                
+                subvariants += $(target)|$(properties)|$(toolset)|$(variant) ;
+            }
+        }
+    }
+    return $(subvariants) ;
+}
+
+# Given an expanded subvariant of a terget, sets the various variables accordingly.
+#
+rule split-target-subvariant ( target-var properties-var toolset-var variant-var : subvariant )
+{
+    local subvariant-items = [ MATCH (.*)[|](.*)[|](.*)[|](.*) : $(subvariant) ] ;
+    $(target-var) = $(subvariant-items[1]) ;
+    $(properties-var) = [ split-path-at-grist $(subvariant-items[2]) ] ;
+    $(toolset-var) = $(subvariant-items[3]) ;
+    $(variant-var) = $(subvariant-items[4]) ;
+    return $((target-var)) ;
+}
+
+# main-target target : local-build
+#
+# Generates requested subvariant build instructions for the given main target
+rule main-target
+{
+    local subvariants = [ expand-target-subvariants $(<) : $(>) : $(TOOLS) ] ;
+
+    # include each jamfile describing a dependee target.
+    dependent-include [ get-values <$(STATIC_TYPES)> <$(SHARED_TYPES)> : $(gTARGET_DEPS($(<))) ] ;
+
+    for local subvariant in $(subvariants)
+    {
+        local target = ;
+        local properties = ;
+        local toolset = ;
+        local variant = ;
+        split-target-subvariant target properties toolset variant : $(subvariant) ;
+        subvariant-target $(target) : $(properties) : $(toolset) $(variant) ;
+    }
+}
+
+# Declare an executable target.
+#
+gTARGET_TYPE_ID(exe) = EXE ;
+gGENERATOR_FUNCTION(EXE) = executable-file ;
+rule exe ( target : sources + : requirements * : default-build * )
+{
+    declare-local-target $(target) : $(sources) : $(requirements) : $(default-build) : EXE ;
+}
+
+# Declare a shared library target.
+#
+gTARGET_TYPE_ID(dll) = DLL ;
+gGENERATOR_FUNCTION(DLL) = dll-files ;
+gIS_DEPENDENCY(DLL) = TRUE ;
+rule dll ( target : sources + : requirements * : default-build * )
+{
+    if $(JAMUNAME[1]) = OpenBSD
+    {
+        if ! [ get-values <dllversion> : $(requirements) ]
+        {
+            requirements += <dllversion>0.0 ;
+        }
+    }
+    declare-local-target $(target) : $(sources) : $(requirements) : $(default-build) : DLL ;
+}
+
+# Declare a statically-linked library target.
+#
+gTARGET_TYPE_ID(lib) = LIB ;
+gGENERATOR_FUNCTION(LIB) = library-file ;
+gIS_DEPENDENCY(LIB) = TRUE ;
+rule lib ( target : sources + : requirements * : default-build * )
+{
+    declare-local-target $(target) : $(sources) : $(requirements) : $(default-build) : LIB ;
+}
+
+# Declare a template target for other targets. This is a modifier only. It
+# Adds the specs specified here to any other target it's a dependee of.
+#
+gTARGET_TYPE_ID(template) = TEMPLATE ;
+gMODIFIER_FUNCTION(TEMPLATE) = template-modifier ;
+gIS_DEPENDENCY(TEMPLATE) = TRUE ;
+gNO_TARGET_TYPE_REQUIREMENT(TEMPLATE) = TRUE ;
+rule template ( target : sources * : requirements * : default-build * )
+{
+    declare-local-target $(target) : $(sources) : $(requirements) : $(default-build) : TEMPLATE ;
+}
+
+# Declare an executable target, to be run by tests.
+rule unit-test ( target +  : sources + : requirements * : default-build * : cmd-line * )
+{
+    if ! $(.testing.jam-included)
+    {
+        SEARCH on testing.jam = $(BOOST_BUILD_PATH) ;
+        include testing.jam ;
+    }
+    
+    DEPENDS all
+      : [ run $(sources)
+          : $(cmd-line)
+          : # input-files
+          : $(requirements)
+          : $(target)
+          : $(default-build)
+        ]
+      ;
+}
+
+# Used to build command files from a list of sources.
+rule build-command-file ( command : sources * )
+{
+    # Clean up after ourselves
+    Clean clean : $(command) ;
+    
+    DEPENDS $(command) : $(sources) ;
+    
+    # Check whether there's anything to dump, so that we don't end up
+    # executing a line of the form:
+    #
+    #    echo > file.CMD
+    #
+    # on Windows this writes "echo is on." into the command-file,
+    # which then breaks the link.
+    
+    if $(sources[1])
+    {
+        # Handle the first target specially, so that the first source file
+        # will clear the command file
+        command-file-dump-1st $(command) : $(sources[1]) ;
+    }    
+    
+    if $(sources[2])
+    {
+        # Then fill the rest up piecemeal
+        command-file-dump-rest $(command) : $(sources[2-]) ;
+    }
+}
+
+# command-file-dump-1st: dump the first source path into the target
+actions quietly command-file-dump-1st
+{
+    echo "$(>)" > "$(<)"
+}
+
+# command-file-dump: dump the remaining source paths into the target
+actions quietly piecemeal command-file-dump-rest
+{
+    echo "$(>)" >> "$(<)"
+}
+
+# Clean up the temporary COMMAND-FILE used to build TARGETS.
+rule remove-command-file ( targets + : command-file )
+{
+    TEMPORARY $(command-file) ;
+    Clean clean : $(command-file) ; # Mark the file for removal via clean
+}
+actions ignore quietly piecemeal together remove-command-file
+{
+    $(RM) $(>)
+}
+
+# build TARGETS from SOURCES using a command-file, where RULE-NAME is
+# used to generate the build instructions from the command-file to
+# TARGETS
+rule with-command-file ( rule-name targets * : sources * )
+{
+    # create a command-file target and place it where the first target
+    # will be built
+    local command-file = $(targets[1]:S=.CMD) ;
+    LOCATE on $(command-file) = $(gLOCATE($(targets[1]))) ;
+    build-command-file $(command-file) : $(sources) ;
+
+    # Build the targets from the command-file instead of the sources
+    DEPENDS $(targets) : $(command-file) ;
+    local result = [ $(rule-name) $(targets) : $(command-file) ] ;
+
+    # clean up afterwards
+    # Can't really do this until <find-library> arguments are accounted for.
+    # remove-command-file $(targets) : $(command-file) ;
+    return $(result) ;
+}
+
+TAG(prefix) = "" ;
+TAG(postfix) = "" ;
+
+# GIVEN:
+#
+# A target subvariant, the subvariant info, and a set of rename tags.
+#
+# RESULT:
+#
+# Uses the rename tags, and the global TAG map, to append a tag to the
+# target basename. The new subvariant target is returned. The tag for
+# the target is composed from the subvariant info and the corresponding
+# entry in the tags. This creates the tag in the order as given by the
+# subvariant info.
+#
+# EXAMPLE:
+#
+# [ rename-target <gcc/debug>libtest.so : gcc debug : <tag><gcc>_gcc <tag><debug>_debug ]
+#
+# RETURNS:
+#
+# <gcc/debug>libtest_gcc_debug.so
+#
+rule rename-target ( target + : subvariant * : tags * )
+{
+    local tag-values = ;
+    for local tag in $(tags)
+    {
+        local tag-tokens = [ MATCH (<)(.*)(>)(.*) : $(tag:G=) ] ;
+        tag-tokens = $(tag-tokens[2]) $(tag-tokens[4]) ;
+        tag-values += $(tag-tokens[2]:G=$(tag-tokens[1])) ;
+    }
+
+    local tag-text = "" ;
+
+    # the prefix of the tag...
+    #
+    local prefix-tag = [ get-values <prefix> : $(tag-values) $(TAG(prefix):G=prefix) ] ;
+    tag-text = $(prefix-tag[1]) ;
+
+    # the subvariant tags...
+    #
+    for local sv in $(subvariant)
+    {
+        local sv-tag = [ get-values <$(sv)> : $(tag-values) $(TAG($(sv)):G=$(sv)) ] ;
+        if $(sv-tag)
+        {
+            tag-text = $(tag-text)$(sv-tag[1]) ;
+        }
+    }
+
+    # the postfix of the tag...
+    #
+    local postfix-tag = [ get-values <postfix> : $(tag-values) $(TAG(postfix):G=postfix) ] ;
+    tag-text = $(tag-text)$(postfix-tag[1]) ;
+
+    local renamed-target = ;
+    for t in $(target)
+    {
+        local B-S = [ MATCH ([^\\.]*)(.*) : $(t:G=) ] ;
+        local B = $(B-S[1]) ; B ?= "" ;
+        local S = $(B-S[2]) ; S ?= "" ;
+        local new-name = $(B)$(tag-text)$(S) ; new-name = $(new-name:G=$(t:G)) ;
+        renamed-target += $(new-name) ;
+    }
+    return $(renamed-target) ;
+}
+
+rule grist-targets ( targets + : subdir-tokens * )
+{
+    local subdir-grist = "" ;
+    if $(subdir-tokens)
+    {
+        subdir-grist = [ FGrist $(subdir-tokens) ] ;
+        if $(SOURCE_GRIST)
+        {
+            subdir-grist = "!$(subdir-grist)" ;
+        }
+    }
+    if ! $(SOURCE_GRIST)
+    {
+        return $(targets:G=!$(subdir-grist)) ;
+    }
+    else
+    {
+        return $(targets:G=!$(SOURCE_GRIST)$(subdir-grist)) ;
+    }
+}
+
+# EXAMPLE:
+#
+# stage test-stage
+#   : <exe>foo/bar/test1 <dll>qwerty/keys docs/README
+#   : <tag><prefix>"_" <tag><debug>"D" <tag><profile>"P" <tag><gcc>"GCC"
+#   : debug profile <suppress>true
+#   ;
+#
+# PRODUCES:
+#
+# test-stage/libkeys_GCCD.so
+# test-stage/libkeys_GCCP.so
+# test-stage/test1_GCCD
+# test-stage/test1_GCCP
+# test-stage/README
+#
+# IFF:
+#
+# $shell> jam test-stage
+#
+rule stage ( name : sources + : requirements * : local-build * )
+{
+    if ! $(gIN_LIB_INCLUDE)
+    {
+
+    local stage-id =
+        [ grist-targets $(name) ] ;
+    local tags =
+        [ get-properties <tag> : $(requirements) ] ;
+
+    # Supress the regular build of this target
+    local gSUPPRESS_FAKE_TARGETS =  [ get-values <suppress> : $(local-build) ] ;
+
+    local stage-dir = $(name:G=) ;
+    local files = [ select-ungristed $(sources) ] ;
+    local file-mode ;
+    local file-tagged ;
+
+    # Prevent built object from getting deleted so that when targets are linked
+    # multiple times they are available.
+    local KEEPOBJS = true ;
+
+    # For each source, collect its information, and possibly generate it.
+    #
+    for local source in $(sources)
+    {
+        source = [ split-qualified-property $(source) ] ;
+        local source-build = [ MATCH "^<([^>]*)>" : $(source[1-2]) ] ;
+        source = [ expand-source-names $(source[3]) ] ;
+
+        if $(source:G)
+        {
+            local gIN_LIB_INCLUDE = TRUE ;
+
+            local target = $(source:D=:G=) ;
+            local target-id = [ target-id-of $(source) ] ;
+            local target-subdir = [ simplify-path-tokens [ top-relative-tokens [ directory-of $(source) ] ] ] ;
+
+            dependent-include $(source:G=) ;
+            local gIMPOSED_REQUIREMENTS($(target-id)) = $(tags) ;
+            local subvariants = [ expand-target-subvariants $(target-id) : $(local-build) : $(TOOLS) ] ;
+
+            for local subvariant in $(subvariants)
+            {
+                local s-target = ;
+                local s-properties = ;
+                local s-toolset = ;
+                local s-variant = ;
+                split-target-subvariant s-target s-properties s-toolset s-variant : $(subvariant) ;
+
+                if  ( $(s-toolset) = $(source-build[1]) || $(source-build[1]) = * ) &&
+                    ( $(s-variant) = $(source-build[2]) || $(source-build[2]) = * )
+                {
+
+                    local target-subvariant = ;
+                    {
+                        local [ protect-subdir ] ;
+                        SubDir TOP $(target-subdir) ;
+                        target-subvariant =
+                            [ subvariant-target $(s-target) : $(s-properties) : $(s-toolset) $(s-variant) ] ;
+                    }
+
+                    local sv-files = ;
+                    for local sv in $(target-subvariant)
+                    {
+                        local files = $(gFILES($(target-subvariant))) ;
+                        files ?= $(target-subvariant) ;
+                        sv-files += $(files) ;
+                    }
+                    for local sv in $(sv-files)
+                    {
+                        local renamed-target =
+                            [ rename-target $(sv) : [ split-path $(s-properties[1]) ] : ] ; ## $(tags) ] ;
+
+                        files += $(sv) ;
+                        file-mode($(sv)) = $($(gTARGET_TYPE($(s-target)))MODE) ;
+                        file-tagged($(sv)) = $(renamed-target) ;
+                    }
+
+                }
+            }
+        }
+    }
+
+    # Generate and collect the file copy build instructions. If we
+    # are getting defined in the dependent phase skip the actual instructions.
+    #
+    local destination-files = ;
+    for local file in $(files)
+    {
+        local destination-file = $(file:D=) ;
+        if $(file:G) { destination-file = $(file-tagged($(file)):G=:D=) ; }
+        destination-file =
+            [ grist-targets $(destination-file) : [ split-path $(stage-dir) ] ] ;
+        destination-files += $(destination-file) ;
+        {
+            local FILEMODE = $(FILEMODE) ;
+            if $(file-mode($(file))) { FILEMODE = $(file-mode($(file))) ; }
+            MakeLocate $(destination-file) :
+                [ FDirName [ split-path $(LOCATE_TARGET)/$(stage-dir) ] ] ;
+            FileClone $(destination-file) : $(file) ;
+            declare-fake-targets $(stage-id)/$(destination-file:G=) : $(destination-file) ;
+        }
+    }
+    declare-fake-targets $(stage-id) : $(destination-files) ;
+
+    Clean clean : $(destination-files) ;
+
+    }
+}
+
+# GIVEN:
+#
+# A bare target, either with or without grist.
+#
+# RETURNS:
+#
+# The fully qualified and gristed target ID.
+#
+# EXAMPLE:
+#
+# [ target-id-of <lib>../../sub1/sub2/test.dll ]
+#
+# RETURNS:
+#
+# <sub1!sub2>test.dll
+#
+rule target-id-of ( target )
+{
+    local SOURCE_GRIST =
+        [ FGrist [ simplify-path-tokens [ top-relative-tokens [ directory-of $(target:G=) ] ] ] ] ;
+    local target-id =
+        [ FGristFiles $(target:D=:G=) ] ;
+    return $(target-id) ;
+}

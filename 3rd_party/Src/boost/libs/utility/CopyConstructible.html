@@ -1,0 +1,210 @@
+<HTML>
+<!--
+  -- Copyright (c) Jeremy Siek 2000
+  --
+  -- Permission to use, copy, modify, distribute and sell this software
+  -- and its documentation for any purpose is hereby granted without fee,
+  -- provided that the above copyright notice appears in all copies and
+  -- that both that copyright notice and this permission notice appear
+  -- in supporting documentation.  Silicon Graphics makes no
+  -- representations about the suitability of this software for any
+  -- purpose.  It is provided "as is" without express or implied warranty.
+  -->
+<Head>
+<Title>Copy Constructible</Title>
+</HEAD>
+<BODY BGCOLOR="#ffffff" LINK="#0000ee" TEXT="#000000" VLINK="#551a8b" 
+        ALINK="#ff0000"> 
+<IMG SRC="../../c++boost.gif" 
+     ALT="C++ Boost" width="277" height="86"> 
+<!--end header-->
+<BR Clear>
+<H1>Copy Constructible</H1>
+
+<h3>Description</h3>
+A type is Copy Constructible if it is possible to copy objects of that
+type.
+
+<h3>Notation</h3>
+<Table>
+<TR>
+<TD VAlign=top>
+<tt>T</tt>
+</TD>
+<TD VAlign=top>
+is type that is a model of Copy Constructible
+</TD>
+</TR>
+
+<TR>
+<TD VAlign=top>
+<tt>t</tt>
+</TD>
+<TD VAlign=top>
+is an object of type <tt>T</tt>
+</TD>
+</tr>
+
+<TR>
+<TD VAlign=top>
+<tt>u</tt>
+</TD>
+<TD VAlign=top>
+is an object of type <tt>const T</tt>
+</TD>
+</tr>
+
+</table>
+<h3>Definitions</h3>
+<h3>Valid expressions</h3>
+<Table border>
+<TR>
+<TH>
+Name
+</TH>
+<TH>
+Expression
+</TH>
+<TH>
+Return type
+</TH>
+<TH>
+Semantics
+</TH>
+</TR>
+<TR>
+<TD VAlign=top>
+Copy constructor
+</TD>
+<TD VAlign=top>
+<tt>T(t)</tt>
+</TD>
+<TD VAlign=top>
+<tt>T</tt>
+</TD>
+<TD VAlign=top>
+<tt>t</tt> is equivalent to <tt>T(t)</tt>
+</TD>
+</TR>
+
+
+<TR>
+<TD VAlign=top>
+Copy constructor
+</TD>
+<TD VAlign=top>
+<pre>
+T(u)
+</pre>
+</TD>
+<TD VAlign=top>
+<tt>T</tt>
+</TD>
+<TD VAlign=top>
+<tt>u</tt> is equivalent to <tt>T(u)</tt>
+</TD>
+</TR>
+
+
+<TR>
+<TD VAlign=top>
+Destructor
+</TD>
+<TD VAlign=top>
+<pre>
+t.~T()
+</pre>
+</TD>
+<TD VAlign=top>
+<tt>T</tt>
+</TD>
+<TD VAlign=top>
+&nbsp;
+</TD>
+</TR>
+
+<TR>
+<TD VAlign=top>
+Address Operator
+</TD>
+<TD VAlign=top>
+<pre>
+&amp;t
+</pre>
+</TD>
+<TD VAlign=top>
+<tt>T*</tt>
+</TD>
+<TD VAlign=top>
+denotes the address of <tt>t</tt>
+</TD>
+</TR>
+
+<TR>
+<TD VAlign=top>
+Address Operator
+</TD>
+<TD VAlign=top>
+<pre>
+&amp;u
+</pre>
+</TD>
+<TD VAlign=top>
+<tt>T*</tt>
+</TD>
+<TD VAlign=top>
+denotes the address of <tt>u</tt>
+</TD>
+</TR>
+
+
+
+</table>
+
+
+</table>
+<h3>Models</h3>
+
+<UL>
+<LI><tt>int</tt>
+<LI><tt>std::pair</tt>
+</UL>
+
+<h3>Concept Checking Class</h3>
+
+<pre>
+  template &lt;class T&gt;
+  struct CopyConstructibleConcept
+  {
+    void constraints() {
+      T a(b);            // require copy constructor
+      T* ptr = &amp;a;       // require address of operator
+      const_constraints(a);
+      ignore_unused_variable_warning(ptr);
+    }
+    void const_constraints(const T&amp; a) {
+      T c(a);            // require const copy constructor
+      const T* ptr = &amp;a; // require const address of operator
+      ignore_unused_variable_warning(c);
+      ignore_unused_variable_warning(ptr);
+    }
+    T b;
+  };
+</pre>
+
+<h3>See also</h3>
+<A
+href="http://www.sgi.com/tech/stl/DefaultConstructible.html">Default Constructible</A>
+and 
+<A hrefa="./Assignable.html">Assignable</A>
+
+<br>
+<HR>
+<TABLE>
+<TR valign=top>
+<TD nowrap>Copyright &copy 2000</TD><TD>
+<A HREF=http://www.lsc.nd.edu/~jsiek>Jeremy Siek</A>, Univ.of Notre Dame (<A HREF="mailto:jsiek@lsc.nd.edu">jsiek@lsc.nd.edu</A>)
+</TD></TR></TABLE>
+
+</BODY>
+</HTML> 

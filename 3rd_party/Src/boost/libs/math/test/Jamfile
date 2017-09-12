@@ -1,0 +1,22 @@
+subproject libs/math/test ;
+
+# bring in the rules for testing
+SEARCH on testing.jam = $(BOOST_BUILD_PATH) ;
+include testing.jam ;
+
+run ../test/common_factor_test.cpp
+    <lib>../../test/build/boost_test_exec_monitor ;
+
+run ../octonion/octonion_test.cpp
+    <lib>../../test/build/boost_unit_test_framework ;
+
+run ../quaternion/quaternion_test.cpp
+    <lib>../../test/build/boost_unit_test_framework ;
+
+run ../special_functions/special_functions_test.cpp
+    <lib>../../test/build/boost_unit_test_framework ;
+
+run ../quaternion/quaternion_mult_incl_test.cpp 
+    ../quaternion/quaternion_mi1.cpp
+    ../quaternion/quaternion_mi2.cpp
+    <lib>../../test/build/boost_unit_test_framework ;

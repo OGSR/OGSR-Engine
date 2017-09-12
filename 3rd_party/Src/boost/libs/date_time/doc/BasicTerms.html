@@ -1,0 +1,91 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html><head><meta http-equiv="Content-Type" content="text/html;charset=iso-8859-1">
+<title>Date-Time Terminology</title>
+<link href="doxygen.css" rel="stylesheet" type="text/css">
+</head>
+
+<body>
+<a href="../../../index.htm">
+<img align="left" src="../../../c++boost.gif" alt="C++ Boost">
+</a>  
+
+<h1>Date-Time Terminology</h1>
+<p>&nbsp;<p>
+<hr>
+<a href="index.html">Overall Index</a> --
+<a href="gregorian.html">Gregorian Index</a> --
+<a href="posix_time.html">Posix Time Index</a>
+<p>
+<p>
+The following are a number of terms relevant to the date-time domain. 
+<P>
+<P>A taxonomy of temporal types: 
+<UL>
+  <LI><B>Timepoint</B> -- Specifier for a location in the time continuum. 
+  Similar to a number on a ruler. 
+  <LI><B>Timelength</B> -- A duration of time unattached to any point on the 
+  time continuum. 
+  <LI><B>Timeinterval</B> -- A duration of time attached to a specific point in 
+  the time continuum. </LI></UL>
+<P>And some other terms: 
+<UL>
+  <LI><B>Accuracy</B> -- A measure of error, the difference between the reading 
+  of a clock and the true time. 
+  <LI><B>Calendar System</B> -- A system for labeling time points with day level 
+  resolution. 
+  <LI><B>Clock Device</B> -- A software component (tied to some hardware) that 
+  provides the current date or time with respect to a calendar or clock system. 
+  <LI><B>Precision</B> -- A measure of repeatability of a clock. 
+  <LI><B>Resolution</B> -- A specification of the smallest representable 
+  duration (eg: 1 second, 1 century) for a clock/calendar system or temporal 
+  type. 
+  <LI><B>Stability</B> -- The property of a class which says that the underlying 
+  representation (implementation) associated with a particular (abstract) value 
+  will never change. 
+  <LI><B>Time System</B> -- A system for labeling time points with higher 
+  resolution than day-level. </LI></UL>
+<P>Some standard date-time terminology: 
+<UL>
+  <LI><B>Epoch</B> -- Starting time point of a calendar or clock system. 
+  <LI><B>DST -- Daylight savings time</B> - a local time adjustment made in some regions during the summer to shift the clock time of the daylight hours
+  <LI><B>Time zone</B> -- A region of the earth that provides for a 'local time' 
+  defined by DST rules and UT offset. 
+  <LI><B>UTC Time</B> -- Coordinated Universal Time - Civil time system as 
+  measured at longitude zero. Kept adjusted to earth rotation by use of leap 
+  seconds. Also known as Zulu Time. Replaced the similar system known as 
+  Greenwich Mean Time. For more see <A 
+  href="http://aa.usno.navy.mil/faq/docs/UT.html">http://aa.usno.navy.mil/faq/docs/UT.html</A> 
+
+  <LI><B>TAI Time</B> -- A high-accuracy monotonic (need better term) time 
+  system measured to .1 microsecond resolution by atomic clocks around the 
+  world. Not adjusted to earth rotation. For more see <A 
+  href="http://www.bipm.fr/enus/5_Scientific/c_time/time_server.html">http://www.bipm.fr/enus/5_Scientific/c_time/time_server.html</A> 
+  </LI></UL>
+<P>Some more experimental ones: 
+<UL>
+  <LI><B>Local Time</B> -- A time measured in a specific location of the 
+  universe. 
+  <LI><B>Time Label</B> -- A tuple that either completely or partially specifies 
+  a specific date-time with respect to a calendar or clock system. This is the 
+  year-month-day representation. 
+  <LI><B>Adjusting Time Length</B> -- A duration that represents varying 
+  physical durations depending on the moment in time. For example, a 1 month 
+  duration is typically not a fixed number of days and it depends on the date it 
+  is measured from to determine the actual length. </LI></UL>
+<P>These are design sorts of terms: 
+<UL>
+  <LI><B>Generation function</B> -- A function that generates a specific set of 
+  time points, lengths, or intervals based on one or more parameters. </LI></UL>
+
+
+
+<hr>
+<address><small>
+<!-- hhmts start -->
+Last modified: Sat Oct 26 08:37:53 MST 2002
+<!-- hhmts end -->
+ by <a href="mailto:jeff&#64;crystalclearsoftware.com">Jeff Garland</a> &copy; 2000-2002
+</small></address>
+</body>
+</html>
+

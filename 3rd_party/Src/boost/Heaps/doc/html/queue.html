@@ -1,0 +1,101 @@
+<HTML><HEAD>
+<!!---------------------------------------------------------------------->
+<!! Copyright (C) 1999 Dietmar Kuehl, Claas Solutions GmbH >
+<!!>
+<!! Permission to use, copy, modify, distribute and sell this >
+<!! software for any purpose is hereby granted without fee, provided >
+<!! that the above copyright notice appears in all copies and that >
+<!! both that copyright notice and this permission notice appear in >
+<!! supporting documentation. Dietmar Kuehl and Claas Solutions make no >
+<!! representations about the suitability of this software for any >
+<!! purpose. It is provided "as is" without express or implied warranty. >
+<!!---------------------------------------------------------------------->
+<TITLE>mfd/queue.3</TITLE>
+</HEAD>
+<BODY BGCOLOR=white LINK="0000FF" VLINK="800080">
+<IMG SRC=c++boost.jpg ALIGN=TOP WIDTH=277 HEIGHT=86><BR>
+<TABLE BORDER=0 CELLSPACING=0 CELLPADDING=0 COLS=2>
+<TR><TD WIDTH=109 VALIGN=TOP><IMG SRC=sidebar.jpg WIDTH=109 HEIGHT=494>
+</TD><TD>
+<SPACER TYPE=VERTICAL SIZE=40>
+<H1>Template Class <nobr><tt>queue&lt;T, Cont&gt;</tt></nobr></H1>
+
+  <A NAME="Synopsis"><H1>Synopsis</H1></A>
+
+    <TABLE BORDER=0 CELLSPACING=0 CELLPADDING=0 COLS=2>
+<TR><TD WIDTH=30 VALIGN=TOP></TD><TD>
+<PRE>
+#include "boost/queue.hpp"
+
+template &lt;class T, class Cont = std::deque&lt;T&gt; &gt;
+class boost::queue
+{
+public:
+  typedef typename Cont::value_type      <A HREF="heap-common.html#value_type">value_type</A>;
+  typedef typename Cont::reference       reference;
+  typedef typename Cont::const_reference <A HREF="heap-common.html#const_reference">const_reference</A>;
+  typedef typename Cont::size_type       <A HREF="heap-common.html#size_type">size_type</A>;
+  typedef Cont                           container_type;
+  typedef typename Cont::iterator        iterator;
+  typedef typename Cont::const_iterator  <A HREF="heap-common.html#const_iterator">const_iterator</A>;
+
+  explicit <A HREF="heap-common.html#default-ctor">queue</A>(Cont const& cont = Cont());
+
+  bool              <A HREF="heap-common.html#empty">empty</A>() const;
+  size_type         <A HREF="heap-common.html#size">size</A>() const;
+  void              <A HREF="heap-common.html#push">push</A>(value_type const& val);
+  void              <A HREF="heap-common.html#pop">pop</A>();
+  value_type const& <A HREF="heap-common.html#top">top</A>() const;
+  value_type&       <A HREF="heap-common.html#top">top</A>();
+  value_type const& front() const;
+  value_type&       front();
+  value_type const& back() const;
+  value_type&       back();
+
+  iterator       <A HREF="heap-common.html#begin">begin</A>();
+  iterator       <A HREF="heap-common.html#end">end</A>();
+  const_iterator <A HREF="heap-common.html#begin">begin</A>();
+  const_iterator <A HREF="heap-common.html#end">end</A>();
+};
+    </PRE></TD></TABLE>
+
+  
+  <A NAME="Description"><H1>Description</H1></A>
+
+    The class <nobr><tt>queue</tt></nobr> is actually not really a priority queue in
+    the normal sense. However, if you assume that the element which
+    is stored the longest time in the <nobr><tt>queue</tt></nobr> has the largest
+    priority, you can view this class as a priority queue: It provides
+    access to the element which is stored the longest time in the
+    <nobr><tt>queue</tt></nobr> (ie. <nobr><tt>queue</tt></nobr> has "first in, first out" semantics).
+
+    <P>
+
+
+    The class <nobr><tt>queue</tt></nobr> is a replacement for the standard class
+    <nobr><tt>std::queue</tt></nobr> which provides an interface which is consistent
+    with the other priority queue classes plus the interface of the
+    standard class. If you only need functionality provided by the
+    standard class and it doesn't matter that there is no <nobr><tt>top()</tt></nobr>
+    function, then you can use the standard class as well.
+
+    <P>
+
+
+    For a description of the methods of <nobr><tt>queue&lt;T, Cont&gt;</tt></nobr> see the
+    description of <A HREF="heap-common.html">common methods</A> or the
+    documentation of the standard class <nobr><tt>std::queue</tt></nobr>.
+  
+  <A NAME="See Also"><H1>See Also</H1></A>
+
+    <A HREF="heap.html">heap(3)</A>,
+    <A HREF="heap-common.html">heap-common(3)</A>
+  
+<HR>
+
+Copyright &copy 1999 <A HREF=http://www.claas-solutions.de/kuehl>Dietmar K&uuml;hl</A> (<A HREF="mailto:dietmar.kuehl@claas-solutions.de">dietmar.kuehl@claas-solutions.de</A>)<BR>
+<a href="http://www.claas-solutions.de/">Claas Solutions GmbH</a>
+</FONT></FONT>
+</TD></TR></TABLE>
+</BODY></HTML>
+

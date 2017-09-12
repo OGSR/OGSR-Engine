@@ -1,0 +1,29 @@
+#  Copyright (C) Vladimir Prus 2002. Permission to copy, use, modify, sell and
+#  distribute this software is granted provided this copyright notice appears in
+#  all copies. This software is provided "as is" without express or implied
+#  warranty, and with no claim as to its suitability for any purpose.
+
+import type ;
+import generators ;
+import feature ;
+import property ;
+
+feature.feature flex.prefix : : free ;
+
+type.register LEX : l ;
+
+generators.register-standard lex.lex : LEX : C ;
+
+rule lex ( target : source : properties * )
+{   
+    local r = [ property.select flex.prefix : $(properties) ] ;
+    if $(r)
+    {
+        PREFIX on $(<) = $(r:G=) ;
+    }
+}
+
+actions lex 
+{
+    flex -P$(PREFIX) -o$(<) $(>)    
+}

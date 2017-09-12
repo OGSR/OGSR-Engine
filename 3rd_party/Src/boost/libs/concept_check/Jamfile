@@ -1,0 +1,10 @@
+subproject libs/concept_check ;
+
+SEARCH on testing.jam = $(BOOST_BUILD_PATH) ;
+include testing.jam ;
+
+compile stl_concept_covering.cpp ;
+compile concept_check_test.cpp ;
+compile class_concept_check_test.cpp ;
+link-fail concept_check_fail_expected.cpp ;
+link-fail class_concept_fail_expected.cpp ;

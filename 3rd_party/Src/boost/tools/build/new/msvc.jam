@@ -1,0 +1,191 @@
+# Copyright David Abrahams 2003. Permission to copy, use,
+# modify, sell and distribute this software is granted provided this
+# copyright notice appears in all copies. This software is provided
+# "as is" without express or implied warranty, and with no claim as
+# to its suitability for any purpose.
+import property ;
+import generators ;
+import os ;
+import type ;
+import toolset : flags ;
+import errors : error ;
+
+feature.extend toolset : msvc ;
+
+feature.subfeature toolset msvc : vendor
+  : intel
+  : propagated optional
+  # intel and msvc supposedly have link-compatible objects... remains
+  # to be seen, though ;-)
+  ;
+
+ feature.subfeature toolset msvc : version
+    : # 6 7 7.1 # known subvalues
+    : propagated implicit
+    
+    # versions of msvc are link-compatible
+    # link-incompatible  
+    ;
+  
+.version-configured =  ;
+.versionless-configured =  ;
+
+# Initialize the toolset
+rule init ( version ? : path ? : vendor ? : setup ? compiler ? linker ? )
+{
+    version ?= unspecified ;
+    feature.extend-subfeature toolset msvc : version : $(version) ;
+    
+    if $(vendor) && ( $(vendor) != intel )
+    {
+        feature.extend-subfeature toolset msvc : vendor : $(vendor) ;
+    }
+    vendor = $(vendor)- ;
+    vendor ?= "" ;
+    
+    local condition  = -$(vendor)$(version) ;
+    condition ?= "" ;
+    condition = <toolset>msvc$(condition) ;
+    
+    # setup will be used iff a path has been specified.  If setup is
+    # not specified, vcvars32.bat will be used instead.
+    setup ?= vcvars32.bat ;
+    
+    if ! $(path) && ! $(vendor)
+    {
+        local v = [ MATCH ^(6|[^6].*) : $(version) ] ;
+        local version-6-path = "c:\\Program Files\\Microsoft Visual Studio\\VC98" ;
+        local version-7-path = "c:\\Program Files\\Microsoft Visual Studio .NET\\VC7" ;
+        local version-7.0-path = $(version-7-path) ;
+        local version-7.1-path = "c:\\Program Files\\Microsoft Visual Studio .NET 2003\\VC7" ;
+        local default-path = $(version-$(v)-path) ;
+        
+        # look for the setup program in both the system PATH and in
+        # its default installation location based on version
+        local env-PATH = [ modules.peek : PATH Path path ] ;
+        local PATH-setup =  [ GLOB $(env-PATH) : $(setup) ] ;
+        local default-setup =  [ GLOB $(default-path)\\bin : $(setup) ] ;
+        
+        if $(default-setup) && $(PATH-setup) != $(default-setup)
+        {
+            path = $(default-path) ;
+        }
+        
+        compiler = $(compiler) ;
+        if ! [ GLOB $(path)\\bin $(env-PATH) : $(compiler:E=CL).exe ]
+        {
+            error toolset msvc $(vendor) $(version) initialization: :
+              couldn't find compiler \"$(compiler:E=CL)\" in PATH or "known default"
+                installation location \"$(default-path)\\BIN\" 
+                  : PATH= \"$(env-PATH)\" ;
+        }
+    }
+    
+    setup = "call \""$(path)\\bin\\$(setup)"\" > nul
+" ;
+    flags msvc SETUP $(condition) : $(setup:E="") ;
+
+    # prefix with setup, or quoted path if any
+    local prefix = $(setup) ;
+    prefix ?= \"$(path)\\BIN\\\" ;
+    prefix ?= "" ;
+    compiler ?= cl ;
+    linker ?= link ;
+    
+    flags msvc.compile .CC $(condition) : $(prefix)$(compiler) ;
+    flags msvc.link .LD $(condition) : $(prefix)$(linker) ;
+    flags msvc.archive .LD $(condition) : $(prefix)$(linker) ;
+}
+
+.CC = cl ;
+.LD = LINK ;
+
+# Declare generators
+
+# is it possible to combine these?
+# make the generators non-composing, so that they don't convert each source
+# into separate rsp file.
+generators.register-linker msvc.link "" : RSP : EXE : <toolset>msvc ;
+generators.register-linker msvc.link "" : RSP : SHARED_LIB IMPORT_LIB : <toolset>msvc ;
+
+generators.register-standard msvc.archive : RSP : STATIC_LIB : <toolset>msvc ;
+generators.register-c-compiler msvc.compile : CPP : OBJ : <toolset>msvc ;
+generators.register-c-compiler msvc.compile : C : OBJ : <toolset>msvc ;
+
+#
+# Declare flags and action for compilation
+#
+feature.feature debug-store : object database : propagated ;
+flags msvc.compile CFLAGS <debug-symbols>on/<debug-store>object : /Z7 ;
+flags msvc.compile CFLAGS <debug-symbols>on/<debug-store>database : /Zi ;
+flags msvc.compile CFLAGS <optimization>off : /Od ;
+flags msvc.compile CFLAGS <optimization>speed : /Ogity /O2 /Gs ;
+flags msvc.compile CFLAGS <optimization>space : /Ogisy /O1 /Gs ;
+flags msvc.compile CFLAGS <inlining>off : /Ob0 ;
+flags msvc.compile CFLAGS <inlining>on : /Ob1 ;
+flags msvc.compile CFLAGS <inlining>full : /Ob2 ;
+flags msvc.compile CFLAGS <exception-handling>on : /GX ;
+flags msvc.compile CFLAGS <rtti>on : /GR ;
+flags msvc.compile CFLAGS <runtime-debugging>off/<link-runtime>shared : /MD ;
+flags msvc.compile CFLAGS <runtime-debugging>on/<link-runtime>shared : /MDd ;
+
+flags msvc.compile CFLAGS <runtime-debugging>off/<link-runtime>static/<threading>single : /ML ;
+flags msvc.compile CFLAGS <runtime-debugging>on/<link-runtime>static/<threading>single : /MLd ;
+flags msvc.compile CFLAGS <runtime-debugging>off/<link-runtime>static/<threading>multi : /MT ;
+flags msvc.compile CFLAGS <runtime-debugging>on/<link-runtime>static/<threading>multi : /MTd ;
+flags msvc.compile CFLAGS <base-target-type>CPP : /GX ;
+
+flags msvc.compile USER_CFLAGS <cflags> : ;
+
+flags msvc.compile PDB_CFLAG <debug-symbols>on/<debug-store>database : /Fd ;  # not used yet
+
+flags msvc.compile DEFINES <define> ;
+flags msvc.compile UNDEFS <undef> ;
+flags msvc.compile INCLUDES <include> ;
+
+flags msvc WHATEVER <toolset-msvc:version> ;
+
+actions compile
+{
+    $(.CC) /Zm800 -nologo -U$(UNDEFS) -D$(DEFINES) $(CFLAGS) $(USER_CFLAGS) -I"$(INCLUDES)" -c -Fo"$(<)" "$(>)"
+}
+
+# Declare flags and action for linking
+flags msvc.link PDB_LINKFLAG <debug-symbols>on/<debug-store>database : /PDB: ; # not used yet
+flags msvc.link LINKFLAGS <debug-symbols>on : /DEBUG ;
+# The linker disables the default optimizations when using /DEBUG. Whe have
+# to enable them manually for release builds with debug symbols.
+flags msvc LINKFLAGS <debug-symbols>on/<runtime-debugging>off : /OPT:REF,ICF ;
+
+# flags msvc LINKFLAGS <user-interface>console : /subsystem:console ;
+# flags msvc LINKFLAGS <user-interface>gui : /subsystem:windows ;
+# flags msvc LINKFLAGS <user-interface>wince : /subsystem:windowsce ;
+# flags msvc LINKFLAGS <user-interface>native : /subsystem:native ;
+# flags msvc LINKFLAGS <user-interface>auto : /subsystem:posix ;
+
+flags msvc NEEDLIBS <library-file> ;
+flags msvc LINKFLAGS <main-target-type>LIB/<link>shared : /DLL ;
+
+toolset.flags msvc.link USER_LINKFLAGS <linkflags> ;
+toolset.flags msvc.link LINKPATH <library-path> ;
+toolset.flags msvc.link FINDLIBS <find-static-library> <find-shared-library> ;
+
+# incremental linking a DLL causes no end of problems: if the
+# actual exports don't change, the import .lib file is never
+# updated. Therefore, the .lib is always out-of-date and gets
+# rebuilt every time. I'm not sure that incremental linking is
+# such a great idea in general, but in this case I'm sure we
+# don't want it.
+.implib = "/INCREMENTAL:NO /IMPLIB:" ;
+
+actions link
+{
+    $(.LD) $(LINKFLAGS) /out:"$(<[1])" $(.implib)"$(<[2])" /LIBPATH:"$(LINKPATH)" "$(FINDLIBS:S=.lib)" $(USER_LINKFLAGS) @"$(>)"
+}
+
+# Declare action for creating static libraries
+actions archive 
+{
+    if exist "$(<)" set _$(<:B)_="$(<)"
+    $(.LD) /lib /out:"$(<)" %_$(<:B)_% @"$(>)"
+}

@@ -1,0 +1,6 @@
+LIBRARY
+eax.dll
+EXPORTS
+EAXDirectSoundCreate
+EAXDirectSoundCreate8
+GetCurrentVersion

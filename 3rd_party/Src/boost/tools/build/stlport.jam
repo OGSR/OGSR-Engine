@@ -1,0 +1,98 @@
+# (C) Copyright Gennadiy Rozental 2002. Permission to copy, use,
+# modify, sell and distribute this software is granted provided this
+# copyright notice appears in all copies. This software is provided
+# "as is" without express or implied warranty, and with no claim as
+# to its suitability for any purpose.
+
+# Use this toolset to add STLport flavor for any base toolset
+# define STLPORT_LIB_BASE_NAME to the shared between debug and release 
+# versions prefix for stlport library name for example stlport_sunpro
+
+# STLport iostreams or native iostreams
+feature stlport-iostream : on off;
+
+# STLport extensions
+feature stlport-extensions : on off ;
+
+# STLport anachronisms
+feature stlport-anachronisms : on off ;
+
+# STLport debug allocation
+feature stlport-debug-alloc : off on ;
+
+# ?
+feature stlport-cstd-namespace : std global ;
+
+CURR_TOOLSET = $(gCURRENT_TOOLSET) ;
+
+STLPORT_VERSION = 4.5.3 ;
+STLPORT_VERSIONS = 4.5 ;
+feature stlport-version : $(STLPORT_VERSION) $(STLPORT_VERSIONS) ;
+flags $(CURR_TOOLSET) STLPORT_VERSION <stlport-version> ;
+
+# singleton variables...
+set-as-singleton STLPORT_INCLUDE_DIRECTORY STLPORT_LIB_DIRECTORY STLPORT_PATH STLPORT_ROOT ;
+
+#############################################################################
+
+# Returns a path which is assumed to be the root of the STLport installation.
+#
+# The result depends on the current version X.Y of STLport.
+# 1. If global STLPORT_<X.Y>_PATH is set, return it.
+# 2. If global STLPORT_PATH is set, return $(STLPORT_PATH)/STLport-<X.Y>
+#
+rule get-stlport-root
+{
+    local version = [ get-values <stlport-version> : $(gBUILD_PROPERTIES) ] ;
+
+    local path ;
+    path ?= $(STLPORT_$(version)_PATH) ;
+    path ?= $(STLPORT_PATH)$(SLASH)STLport-$(version) ;
+    path ?= $(STLPORT_ROOT) ; #<< For backward compatability.
+    
+    if $(version) && ! $(path)
+    {
+        local dollar = "$" ;
+        ECHO **** No STLPORT_PATH configured. *** ;
+        ECHO To configure STLport for use with the $(CURR_TOOLSET) toolset, the following variables can be set: ;
+        ECHO ;
+        ECHO STLPORT_PATH - A directory containing at least one subdirectory of the form /STLport-<version> ;
+        ECHO "        where STLport installations can be found." ;
+        ECHO ;
+        ECHO STLPORT_<version>_PATH - The directory where the specific STLport <version> installation can be ;
+        ECHO "        found, in case there is no central location appropriate for STLPORT_PATH, above, or a" ;
+        ECHO  "        particular version's installation is not located in the usual place." ;
+        ECHO ;
+        ECHO STLPORT_VERSION - The version of STLport in use by default. Defaults to \"4.5.3\". Other ;
+        ECHO "       values can be selected in parallel setting the build property <stlport-version> to" ;
+        ECHO "       values from the list of $(dollar)(STLPORT_VERSIONS)" ;
+        ECHO ;
+        ECHO STLPORT_VERSIONS - Alternate versions of STLport available on this machine. Defaults to \"4.5\". ;
+        ECHO ;
+        ECHO "Note that STLport iostreams are /not/ in use by default. To enable them, you must place" ;
+        ECHO "        <stlport-iostream>on in your BUILD variable or in target requirements." ;
+        EXIT ;
+    }
+
+    return $(path) ;
+}
+
+#############################################################################
+
+STLPORT_INCLUDE_DIRECTORY ?= stlport ;
+STLPORT_LIB_DIRECTORY ?= lib ;
+
+flags $(CURR_TOOLSET) STDHDRS : [ join [ get-stlport-root ] $(SLASH)$(STLPORT_INCLUDE_DIRECTORY) ] ;
+flags $(CURR_TOOLSET) STDLIBPATH <stlport-iostream>on : [ join [ get-stlport-root ] $(SLASH)$(STLPORT_LIB_DIRECTORY) ] ;
+
+flags $(CURR_TOOLSET) DEFINES <stlport-iostream>off : _STLP_NO_OWN_IOSTREAMS=1 _STLP_HAS_NO_NEW_IOSTREAMS=1 ;
+flags $(CURR_TOOLSET) DEFINES <stlport-extensions>off : _STLP_NO_EXTENSIONS=1 ;
+flags $(CURR_TOOLSET) DEFINES <stlport-anachronisms>off : _STLP_NO_ANACHRONISMS=1 ;
+flags $(CURR_TOOLSET) DEFINES <stlport-cstd-namespace>global : _STLP_VENDOR_GLOBAL_CSTD=1 ;
+flags $(CURR_TOOLSET) DEFINES <exception-handling>off : _STLP_NO_EXCEPTIONS=1 ;
+flags $(CURR_TOOLSET) DEFINES <stlport-debug-alloc>on : _STLP_DEBUG_ALLOC=1 ;
+flags $(CURR_TOOLSET) DEFINES <runtime-build>debug : _STLP_DEBUG=1 _STLP_DEBUG_UNINITIALIZED=1 ;
+flags $(CURR_TOOLSET) DEFINES <runtime-link>dynamic : _STLP_USE_DYNAMIC_LIB=1 ;
+
+flags $(CURR_TOOLSET) FINDLIBS <stlport-iostream>on/<runtime-build>debug    : $(STLPORT_LIB_BASE_NAME)_stldebug ;
+flags $(CURR_TOOLSET) FINDLIBS <stlport-iostream>on/<runtime-build>release  : $(STLPORT_LIB_BASE_NAME) ;

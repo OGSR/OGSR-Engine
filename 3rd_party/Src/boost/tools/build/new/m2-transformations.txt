@@ -1,0 +1,96 @@
+
+
+(Transformations which include some parser/lexer generators)
+EXE <------- OBJ* <--------- foo.cpp
+              ^
+              |                             asm_parser.lr0
+              |                                ^
+              |                                |
+              ---------  asm_parser.{cpp,h} <------ parser.whl -O
+              |    |                                            |
+              |    |                                            |---- asm.wd
+              |    |                                            |
+              |    O---  asm_lexer.{cpp,h}  <------ lexer.dlp  -O
+              |
+              |
+              |
+              O--------  g.cpp, g.h ----- g.y
+
+
+(QT transformation sequence)
+EXE <------- OBJ* <-------- foo.cpp
+              ^
+              |
+              |
+              |
+              O------ dialog_ui.cpp <---------------------O
+              |                 ^                         |---- dialog.ui
+              |                  \------- dialog_ui.h <---O
+              |
+              O------ foo_moc.cpp <------- foo.h
+
+(Transofrmation sequence I need)
+
+EST.EXE <---- OBJ* <----- TARGET.CPP <------ MARKED.CPP <----- foo.cpp
+               ^            
+               |
+EST.DATA, EST.CPP <------ {EST.DATA, EST.POSITION}*     
+                            ^              ^
+                            |              |
+                            |              O---------------------O
+                            |                                    |-- foo.cpp
+                           NM.ASM <-- TARGET.CPP <--- MARKED.CPP-O
+                           
+
+(MSVC transformation seqeuence, thanks to Markus Schöpflin)
+
+The project consists of a static library (build with cl and not using
+precompiled headers), ressources and more source files (compiled using
+precompiled headers) and results in a dll, the import library for the
+dll and the program database file (for debugging). Source code browser
+information are build as well. A debug build is assumed.
+
+The picture gets a little more complicated if you're doing COM. :-)
+
+                                                     bscmake
+stdafx.cpp              stdafx.sbr ---------+-----+------------> project.bsc
+*.h        \    cl                          ^     ^    (7)
+            >-------->  stdafx.obj----+     |     |
+           /   (1)      project.pch   +----------------+
+stdafx.h                      |             |     |    |
+           \            cl    v          *.sbr    |    |
+*.cpp, *.h  >-----------------+-------->          |    |
+           /           (2)               *.obj --------+
+ressource.h                                       |    | link    project.dll
+           \    rc                                |    +------>  project.lib
+project.rc  >--------> project.res --------------------+  (6)    project.pdb
+*.rc2      /    (5)                               |    |
+...       /               +-----------------------+    |
+                          |                            |
+*.cpp     \    cl      *.sbr                           |
+           >--------->          lib                    |
+*.h       /    (3)     *.obj ---------> *.lib ---------+
+                                (4)
+
+Notes:
+
+(1) The precompiled header file (project.pch) is created using cl with
+some special command line options. The names stdafx.h and stdafx.cpp can
+be changed of course but are pretty common.
+
+(2) The sources are compiled using the precompiled header file created
+in step 1. cl needs another command line option for this.
+
+(3) Some more sources are compiled not using precompiled headers at all.
+Yet another command line for cl.
+
+(4) The object files create in step 3 are combined into a static library.
+
+(5) Various ressource files are compiled using rc.
+
+(6) The whole project is linked with stdafx.obj, the object files created
+in step 2, project.res, the libs creates in step 4 and any other external
+libraries needed.
+
+(7) Source code browser information is compiled from all sbr files into
+the single bsc file needed by the IDE.

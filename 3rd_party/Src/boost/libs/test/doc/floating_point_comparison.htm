@@ -1,0 +1,176 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+
+<HTML>
+<HEAD>
+<TITLE>Floating point comparison</TITLE>
+<LINK rel="stylesheet" type="text/css" href="style/btl-white.css" media="screen">
+<LINK rel="stylesheet" type="text/css" href="style/btl-print.css" media="print">
+<META http-equiv="Content-Language" content="en-us">
+<META http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+</HEAD>
+<BODY>
+<DIV class="centered">
+  <TABLE class="body-table" cellspacing="3" >
+  <TR>
+  <TD id="body"> <A name='TOP'><IMG src='../../../c++boost.gif' width='277' height='86' alt="Boost logo"></A>
+  <H1>Floating-point comparison algorithms</H1>
+  <P class="page-toc"> <A href="index.htm">Home</A><BR>
+    <A href="#Introduction">Introduction</A><BR>
+    <A href="#tolerance">How to choose a tolerance</A><BR>
+    <A href="#Specification">The close_at_tolerance algorithm</A><BR>
+    <A href="#Compilation">Compilation</A><BR>
+    <A href="#Acknowledgements">Acknowledgements</A><BR>
+    <A href="#References">References</A> </P>
+  <H2><A name="Introduction">Introduction</A></H2>
+  <P class="1-line-indented">In most cases it is unreasonable to use an operator=(...)
+    for a floating-point values equality check The simple solution like abs(f1-f2)
+    &lt;= e does not work for very small or very big values. This floating-point comparison
+    algorithm is based on the more confident solution presented by Knuth in [1]. For
+    a given floating point values <I>u</I> and <I>v</I> and a tolerance <I>e</I>:</P>
+  <TABLE class="2fields">
+  <TR>
+  <TD>
+  <P style="text-indent: -20"> |<I> u </I>-<I> v </I>| &lt;= <I>e * |u|</I> and |<I>
+    u </I>-<I> v </I>| &lt;= <I>e * |v|<BR>
+    </I>defines a &quot;very close with tolerance <I>e</I>&quot; relationship between
+    <I>u</I> and <I>v</I>
+  </TD>
+  <TD valign="top"> (<B><A name="F.1">1</A></B>)</TD>
+  </TR>
+  <TR>
+  <TD>
+  <P style="text-indent: -20"> |<I> u </I>-<I> v </I>| &lt;= <I>e * |u|</I> or&nbsp;&nbsp;
+    |<I> u </I>-<I> v </I>| &lt;= <I>e * |v|<BR>
+    </I>defines a &quot;close enough with tolerance <I>e</I>&quot; relationship between
+    <I>u</I> and <I>v</I>
+  </TD>
+  <TD valign="top"> (<A name="F.2"><B>2</B></A>) </TD>
+  </TR>
+  </TABLE>
+  <P class="1-line-indented">Both relationships are commutative but are not transitive.
+    The relationship defined by inequations (<B>1</B>) is stronger that the relationship
+    defined by inequations (<B>2</B>) (i.e. (<B>1</B>) =&gt; (<B>2</B>) ). Because
+    of the multiplication in the right side of inequations, that could cause an unwanted
+    underflow condition, the implementation is using modified version of the inequations
+    (<B>1</B>) and (<B>2</B>) where all underflow, overflow conditions could be guarded
+    safely:</P>
+  <TABLE class="2fields">
+  <TR>
+  <TD>
+  <P style="margin-left: -20"> |<I> u </I>-<I> v </I>| / <I> |u| </I>&lt;= <I>e</I>
+    and |<I> u </I>-<I> v </I>| / <I> |v| </I>&lt;= <I>e<BR>
+    </I>|<I> u </I>-<I> v </I>| / <I> |u| </I> &lt;= <I>e</I> or&nbsp;&nbsp; |<I> u
+    </I>-<I> v </I>| / <I> |v| </I> &lt;= <I>e</I>
+  </TD>
+  <TD> (<B>1`</B>)<BR>
+  (<B>2`</B>) </TD>
+  </TR>
+  </TABLE>
+  <SPAN class="ref-to-top"><A href="#TOP"><IMG src="imgs/uarrow.gif" alt="reference to the top"></A></SPAN>
+  <H2><A name="tolerance">How to choose a tolerance</A></H2>
+  <P class="1-line-indented">In case of absence of a domain specific requirements the
+    value of tolerance could be chosen as a sum of the predicted upper limits for &quot;relative
+    rounding errors&quot; of compared values. The &quot;rounding&quot; is the operation
+    by which a real value 'x' is represented in a floating-point format with 'p' binary
+    digits (bits) as the floating-point value 'X'. The &quot;relative rounding error&quot;
+    is the difference between the real and the floating point values in relation to
+    real value: |x-X|/|x|. The discrepancy between real and floating point value may
+    be caused by several reasons:</P>
+  <UL>
+    <LI>Type promotion</LI>
+    <LI>Arithmetic operations</LI>
+    <LI>Conversion from a decimal presentation to a binary presentation</LI>
+    <LI>Non-arithmetic operation</LI>
+  </UL>
+  <P class="1-line-indented">The first two operations proved to have a relative rounding
+    error that does not exceed 1/2 * &quot;machine epsilon value&quot; for the appropriate
+    floating point type (represented by std::numeric_limits&lt;FPT&gt;::epsilon()).
+    conversion to binary presentation, sadly, does not have such requirement. So we
+    can't assume that float 1.1 is close to real 1.1 with tolerance 1/2 * &quot;machine
+    epsilon value&quot; for float (though for 11./10 we can). Non arithmetic operations
+    either do not have a predicted upper limit relative rounding errors. Note that
+    both arithmetic and non arithmetic operations might also produce others &quot;non-rounding&quot;
+    errors, such as underflow/overflow, division-by-zero or 'operation errors'. </P>
+  <P class="1-line-indented">All theorems about the upper limit of a rounding error,
+    including that of 1/2*epsilon, refers <SPAN style="text-decoration: underline">only</SPAN>
+    to the 'rounding' operation, nothing more. This means that the 'operation error',
+    that is, the error incurred by the operation itself, besides rounding, isn't considered.
+    In order for numerical software to be able to actually predict error bounds, the
+    IEEE754 standard requires arithmetic operations to be 'correctly or exactly rounded'.
+    That is, it is required that the internal computation of a given operation be such
+    that the floating point result is the <SPAN style="text-decoration: underline">exact</SPAN>
+    result rounded to the number of working bits. In other words, it is required that
+    the computation used by the operation itself doesn't introduce any additional errors.
+    The IEEE754 standard does not require same behavior from most non-arithmetic operation.
+    The underflow/overflow and division-by-zero errors may cause rounding errors with
+    unpredictable upper limits.</P>
+  <P class="1-line-indented">For a given number of rounding error (in a simple case
+    it's just a number of floating point constants and arithmetic involved) it is proposed
+    to calculate a tolerance as follows:</P>
+  <TABLE class="2fields">
+  <TR>
+  <TD> <I>n</I>*std::numeric_limits&lt;T&gt;::epsilon()/2</TD>
+            <TD> <b><a name="F.3"></a></b>(<B>3</B>) </TD>
+  </TR>
+  </TABLE>
+  <P>where n is number of floating-point rounding errors.</P>
+  <P class="1-line-indented">For more reading about floating-point comparison see references
+    at the end.</P>
+  <H2>The <A name="Specification">close_at_tolerance</A> algorithm</H2>
+  <P>The <SPAN class="new-term"> close_at_tolerance</SPAN>
+    algorithm allows to check the relationship defines by inequations (<B><A href="#F.1">1</A></B>)
+    or (<B><A href="#F.2">2</A></B>). It is implemented as binary predicate.</P>
+  <PRE class="code"><SPAN class="reserv-word">template</SPAN><<SPAN class="reserv-word">typename</SPAN> FPT>
+<SPAN class="reserv-word">class</SPAN> <SPAN class="new-term">close_at_tolerance</SPAN>
+{
+<SPAN class="reserv-word">public</SPAN>:
+    close_at_tolerance( FPT tolerance, <SPAN class="cpp-type">bool</SPAN> strong_or_weak = <SPAN class="reserv-word">true</SPAN> );
+    close_at_tolerance( <SPAN class="cpp-type">int</SPAN> number_of_rounding_errors,
+                        <SPAN class="cpp-type">bool</SPAN> strong_or_weak = <SPAN class="reserv-word">true</SPAN> );
+
+    <SPAN class="cpp-type">bool</SPAN> <SPAN class="reserv-word">operator</SPAN>()( FPT left, FPT right ) <SPAN class="reserv-word">const</SPAN>;
+};</PRE>
+  <P class="1-line-indented">The first constructor allows to specify a tolerance value
+    to compare against. The first constructor allows to specify a number of rounding
+    errors, in which case a tolerance is computed using expression (<B><A href="#F.3">3</A></B>).
+    The strong_or_weak switch allows to which relationship is checked. The default
+    behavior is to check strong relationship defined by inequations (<B><A href="#F.1">1</A></B>).
+    <SPAN class="ref-to-top"><A href="#TOP"><IMG src="imgs/uarrow.gif" alt="reference to the top"></A></SPAN>
+  </P>
+  <H2><A name="Compilation">Compilation</A></H2>
+  <P class="1-line-indented">The close_at_tolerance algorithm
+    is implemented in the header file <A href="../../../boost/test/floating_point_comparison.hpp">
+    floating_point_comparison.hpp</A>. It is recommended to use test tools wrappers
+    located on <A href="../../../boost/test/test_tools.hpp">test_tools.hpp</A>. Note
+    that you still need to include <A href="../../../boost/test/floating_point_comparison.hpp">
+    floating_point_comparison.hpp</A> yourself since it does not get included automatically.</P>
+        <H2><A name="Acknowledgements">Acknowledgement</A>s</H2>
+  <P class="1-line-indented">Fernando Cacciola for very helpful discussion of floating
+    point arithmetic in the boost forum.</P>
+  <H2><A name="References">References</A></H2>
+  <P>[1] Knuth D.E. <I>The art of computer programming</I> (vol II).<BR>
+    [2] David Goldberg <A href="http://citeseer.nj.nec.com/goldberg91what.html">
+    What Every Computer Scientist Should Know About Floating-Point Arithmetic</A> <BR>
+    [3] Kulisch U. <A href="http://www.eyrolles.com/php.sciences/Ouvrages/9783211838709.php3?xd=ed1884aaa411937c861a27010830ff23">
+    Rounding near zero</A>.<BR>
+    [4] Philippe Langlois <A href="http://www.inria.fr/rrrt/rr-3967.html">From
+    Rounding Error Estimation to Automatic Correction with Automatic Differentiation</A><BR>
+    [5] Lots of information on William Kahan <A href="http://www.cs.berkeley.edu/~wkahan/">home
+    page</A><BR>
+    [4] Alberto Squassabia <A href="http://www.adtmag.com/joop/crarticle.asp?ID=396">Comparing
+    Floats: How To Determine if Floating Quantities Are Close Enough Once a Tolerance
+    Has Been Reached</A> C++ Report March 2000.<BR>
+    [5] Pete Becker The Journeyman's Shop: Trap Handlers, Sticky Bits, and Floating-Point
+    Comparisons C/C++ Users Journal December 2000. <SPAN class="ref-to-top"><A href="#TOP"><IMG src="imgs/uarrow.gif" alt="reference to the top"></A></SPAN>
+  </P>
+  <DIV class="footer">
+    <P>&copy <A href='mailto:rogeeff@emailaccount.com'>Gennadiy Rozental</A> 2001-2002
+    </P>
+    <P>Revised: 12 February, 2003</P>
+  </DIV>
+  </TD>
+  </TR>
+  </TABLE>
+</DIV>
+</BODY>
+</HTML>

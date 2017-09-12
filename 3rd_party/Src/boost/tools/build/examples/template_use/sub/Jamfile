@@ -1,0 +1,44 @@
+# Copyright (C) 2002, Rene Rivera. Permission to copy, use, modify, sell and
+# distribute this software is granted provided this copyright notice appears in
+# all copies. This software is provided "as is" without express or implied
+# warranty, and with no claim as to its suitability for any purpose.
+
+# Example of how to use a template target declared in another project.
+# This is for Boost.Build-V1
+
+subproject tools/build/examples/template_use/sub ;
+
+# Declare a library target. This 'inherits' the attributes of
+# the template which in this case adds the needed include
+# directory. Because templates are "special" targets they
+# appear in the source dependencies section and must be
+# a relative reference to the template target in it's declared
+# location.
+#
+lib simple
+    :
+        # SOURCES
+        <template>../t-common
+        simple_lib.cpp
+    :
+        # REQUIREMENTS
+    :
+        # DEFAULT BUILDS
+        debug <threading>single/multi
+    ;
+
+# Declare an executable target that also uses the template,
+# and the above library target.
+#
+exe simple
+    :
+        # SOURCES
+        <template>../t-common
+        simple.cpp
+        <lib>simple
+    :
+        # REQUIREMENTS
+        <threading>multi
+    :
+        # DEFAULT BUILDS
+    ;

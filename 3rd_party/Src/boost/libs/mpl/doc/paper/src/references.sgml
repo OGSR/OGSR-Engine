@@ -1,0 +1,247 @@
+<bibliography id="refs">
+<title>References</>
+
+<biblioentry id="ref.Abr01">
+    <abbrev>Abr01</>
+    <authorgroup>
+        <author><firstname>David</><surname>Abrahams</></>
+        <author><firstname>Carlos Pinto</><surname>Coelho</></>
+    </>
+    <title><ulink url="http://users.rcn.com/abrahams/instantiation_speed/index.html">Effects of Metaprogramming Style on Compilation Time</></>
+    <date>2001</>
+</biblioentry>
+
+<biblioentry id="ref.Ale01">
+    <abbrev>Ale01</>
+    <author><firstname>Andrei</><surname>Alexandrescu</></>
+    <title>Modern C++ Design: Generic Programming and Design Patterns Applied</>
+    <publishername>Addison-Wesley</>
+    <isbn>0-201-70431-5</>
+    <date>2001</>
+</biblioentry>
+
+<biblioentry id="ref.CE98">
+    <abbrev>CE98</>
+    <authorgroup>
+        <author><firstname>Krzysztof</><surname>Czarnecki</></>
+        <author><firstname>Ulrich</><surname>Eisenecker</></>
+    </>
+    <title>Metalisp</>
+    <bibliomisc><ulink url="http://home.t-online.de/home/Ulrich.Eisenecker/meta.htm"></></>
+</biblioentry>
+
+<biblioentry id="ref.CE00">
+    <abbrev>CE00</>
+    <authorgroup>
+        <author><firstname>Krzysztof</><surname>Czarnecki</></>
+        <author><firstname>Ulrich</><surname>Eisenecker</></>
+    </>
+    <title>Generative Programming: Methods, Tools, and Applications</>
+    <publishername>Addison-Wesley</>
+    <isbn>0-201-30977-7</>
+    <date>2000</>
+</biblioentry>
+
+<biblioentry id="ref.EBNF">
+    <abbrev>EBNF</>
+    <title>ISO/IEC 14977:1996(E), Information technology — Syntactic metalanguage — Extended BNF</>
+    <orgname>ISO/IEC</>
+    <date>1996</>
+</biblioentry>
+
+<biblioentry id="ref.GHJ95">
+    <abbrev>GHJ+95</>
+    <authorgroup>
+        <author><firstname>Erich</><surname>Gamma</></>
+        <author><firstname>Richard</><surname>Helm</></>
+        <author><firstname>Ralph</><surname>Johnson</></>
+        <author><firstname>John</><surname>Vlissides</></>
+    </>
+    <title>Design Patterns, Elements of Reusable Object-Oriented Software</>
+    <publishername>Addison-Wesley</>
+    <isbn>0-201-63361-2</>
+    <date>1995</>
+</biblioentry>
+    
+<biblioentry id="ref.HU79">
+    <abbrev>HU79</>
+    <authorgroup>
+        <author><surname>Hopcroft</></>
+        <author><surname>Ullman</></>
+    </>
+    <title>Introduction to automata theory, languages and computations</>
+    <publishername>Addison-Wesley</>
+    <date>1979</>
+</biblioentry>
+
+<biblioentry id="ref.Hud89">
+    <abbrev>Hud89</>
+    <author><firstname>Paul</><surname>Hudak</></>
+    <title>Conception, Evolution, and Application of Functional Programming Languages</>
+    <biblioset relation='journal'>
+        <title>ACM Computing Surveys</>
+        <publishername>Association for Computing Machinery (ACM)</>
+        <issn>0360-0300</>
+    </>
+    <volumenum>21</>
+    <issuenum>3</>
+    <pagenums>359-411</>
+    <date>September, 1989</>
+</biblioentry>
+
+<biblioentry id="ref.Hun91">
+    <abbrev>Hun91</>
+    <author><firstname>Immo</><surname>Huneke</></>
+    <title>Finite State Machines: A Model of Behavior for C++</>
+    <biblioset relation='journal'>
+        <title>C++ Report</>
+        <publishername>SIGS Publications Inc.</>
+        <issn>1040-6042</>
+    </>
+    <date>1991</>
+</biblioentry>
+
+<biblioentry id="ref.ISO98">
+    <abbrev>ISO98</>
+    <title>ISO/IEC 14882:1998(E), Programming languages — C++</>
+    <orgname>ISO/IEC</>
+    <date>1998</>
+</biblioentry>
+
+<biblioentry id="ref.Joh79">
+    <abbrev>Joh79</>
+    <author><firstname>Stephen C.</><surname>Johnson</></>
+    <title><ulink url="http://dinosaur.compilertools.net/yacc/index.html">Yacc: Yet Another Compiler Compiler</></>
+    <publishername>UNIX Programmer's Manual</>
+    <volumenum>2b</>
+    <pagenums>353-387</>
+    <date>1979</>
+</biblioentry>
+
+<biblioentry id="ref.Laf00">
+    <abbrev>Laf00</>
+    <author><firstname>David</><surname>Lafreniere</></>
+    <title><ulink url="http://www.cuj.com/articles/2000/0005/0005f/0005f.htm?topic=articles">State Machine Design in C++</></>
+    <biblioset relation='journal'>
+        <title>C/C++ User Journal</>
+        <publishername>CMP Media LCC</>
+        <issn>1075-2838</>
+    </>
+    <volumenum>18</>
+    <issuenum>5</>
+    <date>May 1998</>
+</biblioentry>
+
+<biblioentry id="ref.Loki">
+    <abbrev>Loki</>
+    <title>The Loki library</>
+    <bibliomisc><ulink url="http://sourceforge.net/projects/loki-lib/"></></>
+</biblioentry>
+
+<biblioentry id="ref.Mar98">
+    <abbrev>Mar98</>
+    <author><firstname>Robert C.</><surname>Martin</></>
+    <title><ulink url="http://www.objectmentor.com/resources/articles/umlfsm.pdf">UML Tutorial: Finite State Machines</></>
+    <biblioset relation='journal'>
+        <title>C++ Report</>
+        <publishername>SIGS Publications Inc.</>
+        <issn>1040-6042</>
+    </>
+    <date>June 1998</>
+</biblioentry>
+
+<biblioentry id="ref.MPLR">
+    <abbrev>MPLR</>
+    <title>Boost MPL Library Reference Documentation</>
+    <bibliomisc><ulink url="http://www.mywikinet.com/mpl/ref/Table_of_Content.html"></></>
+</biblioentry>
+
+<biblioentry id="ref.PRE">
+    <abbrev>PRE</>
+    <author><firstname>Vesa</><surname>Karvonen</></>
+    <title>Boost Preprocessor Metaprogramming library</>
+    <bibliomisc><ulink url="http://www.boost.org/libs/preprocessor/doc/"></></>
+</biblioentry>
+
+<biblioentry id="ref.SMC">
+    <abbrev>SMC</>
+    <author><firstname>Robert C.</><surname>Martin</></>
+    <title>SMC - Finite State Machine Compiler (C++)</>
+    <bibliomisc><ulink url="http://www.objectmentor.com/resources/downloads/index"></></>
+</biblioentry>
+
+<biblioentry id="ref.STL94">
+    <abbrev>STL94</>
+    <authorgroup>
+        <author><surname>A. A. Stepanov</></>
+        <author><surname>M. Lee</></>
+    </authorgroup>
+    <title>The Standard Template Library</>
+    <orgname>Hewlett-Packard Laboratories</>
+    <date>1994</>
+</biblioentry>
+
+<biblioentry id="ref.SPL">
+    <abbrev>SPL</>
+    <title>Boost Smart Pointer library</>
+    <bibliomisc><ulink url="http://www.boost.org/libs/smart_ptr/"></></>
+</biblioentry>
+
+<biblioentry id="ref.SS75">
+    <abbrev>SS75</>
+    <authorgroup>
+        <author><firstname>Gerald J.</><surname>Sussman</></>
+        <author><firstname>Guy L.</><surname>Steele Jr.</></>
+    </>
+    <title>Scheme: An interpreter for extended lambda calculus</>
+    <biblioset relation='journal'>
+        <title>MIT AI Memo 349</>
+        <publishername>Massachusetts Institute of Technology</>
+    </>
+    <date>May 1975</>
+</biblioentry>
+
+<biblioentry id="ref.TTL">
+    <abbrev>TTL</>
+    <title>Boost Type Traits library</>
+    <bibliomisc><ulink url="http://www.boost.org/libs/type_traits/"></></>
+</biblioentry>
+
+<biblioentry id="ref.vel95a">
+    <abbrev>Vel95a</>
+    <author><firstname>Todd</><surname>Veldhuizen</></>
+    <title><ulink url="http://osl.iu.edu/~tveldhui/papers/Template-Metaprograms/meta-art.html">Using C++ template metaprograms</></>
+    <biblioset relation='journal'>
+        <title>C++ Report</>
+        <publishername>SIGS Publications Inc.</>
+        <issn>1040-6042</>
+    </>
+    <volumenum>7</>
+    <issuenum>4</>
+    <pagenums>36-43</>
+    <date>May 1995</>
+</biblioentry>
+
+<biblioentry id="ref.Vel95b">
+    <abbrev>Vel95b</>
+    <author><firstname>Todd</><surname>Veldhuizen</></>
+    <title><ulink url="http://osl.iu.edu/~tveldhui/papers/Expression-Templates/exprtmpl.html">Expression templates</></>
+    <biblioset relation='journal'>
+        <title>C++ Report</>
+        <publishername>SIGS Publications Inc.</>
+        <issn>1040-6042</>
+    </>
+    <volumenum>7</>
+    <issuenum>5</>
+    <pagenums>26-31</>
+    <date>Jun 1995</>
+</biblioentry>
+
+<biblioentry id="ref.Unr">
+    <abbrev>Unr</>
+    <author><firstname>Erwin</><surname>Unruh</></>
+    <title>Prime number computation</>
+    <publishername>ANSI X3J16-94-0075/ISO WG21-462</>
+</biblioentry>
+
+</bibliography>

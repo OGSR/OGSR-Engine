@@ -1,0 +1,40 @@
+// Magic Software, Inc.
+// http://www.magic-software.com
+// Copyright (c) 2000-2002.  All Rights Reserved
+//
+// Source code from Magic Software is supplied under the terms of a license
+// agreement and may not be copied or disclosed except in accordance with the
+// terms of that agreement.  The various license agreements may be found at
+// the Magic Software web site.  This file is subject to the license
+//
+// FREE SOURCE CODE
+// http://www.magic-software.com/License/free.pdf
+
+#ifndef MAGICFM_PKG
+#define MAGICFM_PKG
+
+#include "MgcApproximation2D.pkg"
+#include "MgcApproximation3D.pkg"
+#include "MgcContainment2D.pkg"
+#include "MgcContainment3D.pkg"
+#include "MgcCore.pkg"
+#include "MgcCore2D.pkg"
+#include "MgcCore3D.pkg"
+#include "MgcCurve2D.pkg"
+#include "MgcCurve3D.pkg"
+#include "MgcDistance2D.pkg"
+#include "MgcDistance3D.pkg"
+#include "MgcImageAnalysis.pkg"
+#include "MgcInterpolation1D.pkg"
+#include "MgcInterpolation2D.pkg"
+#include "MgcInterpolation3D.pkg"
+#include "MgcIntersection2D.pkg"
+#include "MgcIntersection3D.pkg"
+#include "MgcNumerics.pkg"
+#include "MgcProjection.pkg"
+#include "MgcSurface.pkg"
+#include "MgcTessellation2D.pkg"
+#include "MgcTessellation3D.pkg"
+
+#endif
+

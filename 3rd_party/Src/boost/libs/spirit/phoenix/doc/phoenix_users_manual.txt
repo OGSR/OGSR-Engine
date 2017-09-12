@@ -1,0 +1,1731 @@
+[doc Phoenix v1.0]
+[/ QuickDoc Document version 0.5 ]
+
+[/  Images   ]
+
+[def __note__       [$theme/note.gif]]
+[def __alert__      [$theme/alert.gif]]
+[def __detail__     [$theme/lens.gif]]
+[def __tip__        [$theme/bulb.gif]]
+[def :-)            [$theme/smiley.gif]]
+
+[/  Links   ]
+
+[def Spirit         [@http://spirit.sourceforge.net Spirit]]
+[def Haskell        [@http://www.haskell.org Haskell]]
+[def boost_lambda   [@http://www.boost.org/libs/lambda/doc/index.html BLL]]
+[def FC++           [@http://www.cc.gatech.edu/~yannis/fc++/ FC++]]
+[def spirit_docs    [@../../spirit/index.html '''Spirit''' v1.6]]
+[def spirit_mlist   [@https://lists.sourceforge.net/lists/listinfo/spirit-general '''Spirit''' Mailing List]]
+[def Boost          [@http://www.boost.org Boost]]
+
+[page Preface]
+
+[:['Functional programming is so called because a program consists entirely of functions. The main program itself is written as a function which receives the program's input as its argument and delivers the program's output as its result. Typically the main function is defined in terms of other functions, which in turn are defined in terms of still more functions until at the bottom level the functions are language primitives.]]
+[:[*['John Hughes]]-- ['Why Functional Programming Matters]]
+
+[h2 Influences and Related Work]
+
+The design and implementation of Phoenix is highly influenced by FC++ by Yannis Smaragdakis and Brian McNamara and the (Boost Lambda Library) boost_lambda by Jaakko Järvi and Gary Powell. Phoenix is a blend of FC++ and boost_lambda using the implementation techniques used in the Spirit inline parser.
+
+Is Phoenix better than FC++ or boost_lambda? Well, there are concepts found in Phoenix that are not found in either library. FC++ has rank-2 polymorphic functions (FC++ jargon) which Phoenix also has, boost_lambda has syntactic sugared operators which FC++ lack, that Phoenix also has.
+
+Phoenix inherits FC++'s rank-2 polymorphic functions. Rank-2 polymorphic functions are higher order functions that can accept polymorphic arguments. FC++ is the first library to enable higher order polymorphic functions. Before FC++, polymorphic functions couldn't be used as arguments to other functions.
+
+What really motivated the author to write Phoenix is the lack of access to a true stack-frame with local variables (closures) in all C++ FP libraries in existence so far. When emulating functions in the form of functors, the most basic ingredient is missing: local variables and a stack. Current FP libraries emulate closures using state variables in functors. In more evolved FP applications, this "poor man's closure" is simply inadequate.
+
+Perhaps boost_lambda does not need this at all since unnamed lambda functions cannot call itself anyway; at least not directly. FC++ arguably does not need this since it is purely functional without side-effects, thus there is no need to destructively write to a variable. The highly recursive nature of the Spirit framework from which Phoenix is a derivative work necessitated true reentrant closures. Later on, Phoenix will inherit the Spirit framework's true closures which implement access to true hardware stack based local variables.
+
+Phoenix is also extremely modular by design. One can extract and use only a small subset of the full framework, literally tearing the framework into small pieces, without fear that the pieces won't work anymore. For instance, one can use only the FC++ style programming layer with rank-2 polymorphic functions without the sugared operators.
+
+Emphasis is given to make Phoenix much more portable to current generation C++ compilers such as Borland and MSVC. Borland for example chokes on both boost_lambda and FC++ code. Forget MSVC support in FC++ and boost_lambda. On the other hand, although Phoenix is not yet ported to MSVC, Phoenix uses the same tried and true implementation techniques used by the Spirit framework. Since Spirit has been ported to MSVC by Bruce Florman (v1.1) and by Raghav Satish (v1.3), it is very likely that Phoenix will also be ported to MSVC.
+
+Finally, and most importantly though, Phoenix is intended, hopefully, to be much more easier to use. The focus of Phoenix (and Spirit for that matter), is the typical practicing programmer in the field rather than the gurus and high priests. Think of Phoenix as the C++ FP library for the rest of us :-)
+
+[h2 How to use this manual]
+
+The Phoenix framework is organized in logical modules. This documentation provides a user's guide and reference for each module in the framework. A simple and clear code example is worth a hundred lines of documentation; therefore, the user's guide is presented with abundant examples annotated and explained in step-wise manner. The user's guide is based on examples. Lots of them.
+
+As much as possible, forward information (i.e. citing a specific piece of information that has not yet been discussed) is avoided in the user's manual portion of each module. In many cases, though, it is unavoidable that advanced but related topics not be interspersed with the normal flow of discussion. To alleviate this problem, topics categorized as "advanced" may be skipped at first reading.
+
+Some icons are used to mark certain topics indicative of their relevance. These icons precede some text to indicate:
+
+[table Icons
+
+    [__note__]  [[*Note]]   [Information provided is moderately important and should be noted by the reader.]
+    [__alert__] [[*Alert]]  [Information provided is of utmost importance.]
+    [__detail__][[*Detail]] [Information provided is auxiliary but will give the reader a deeper insight into a specific topic. May be skipped.]
+
+    [__tip__]   [[*Tip]]    [ A potentially useful and helpful piece of information.]
+]
+
+This documentation is automatically generated by Spirit QuickDoc documentation tool. QuickDoc is part of the Spirit distribution [ See libs/spirit/example/application/quickdoc/ ].
+
+[h2 Support]
+
+Please direct all questions to Spirit's mailing list. You can subscribe to the spirit_mlist. The mailing list has a searchable archive. A search link to this archive is provided in Spirit's home page. You may also read and post messages to the mailing list through an [@news://news.gmane.org/gmane.comp.spirit.general NNTP news portal] (thanks to www.gmane.org). The news group mirrors the mailing list. Here are two links to the archives: via [@http://news.gmane.org/thread.php?group=gmane.comp.spirit.general gmane], via [@http://www.geocrawler.com/lists/3/SourceForge/12837/0/ geocrawler].
+
+[*['To my dear daughter Phoenix]][br][*Joel de Guzman][br]September 2002[br]
+
+[page Introduction]
+
+[h1 The Phoenix Framework v1.0]
+[h4 Preliminary Draft]
+February 2001, Joel de Guzman
+
+Functional programming (or FP) is gaining momentum as more programmers discover its power. In its purest form, the paradigms set forth seem to be too detached from what most programmers are already accustomed to. In the point of view of the C or Pascal imperative programmer, for instance, FP techniques and concepts are quite esoteric at first glance. Learning a pure FP language such as Haskell for example requires a significant quantum leap.
+
+FP can be taken as a methodology that is not at all tied to a specific language. FP as a programming discipline can be applied to many programming languages. In the realm of C++ for instance, we are seeing more FP techniques being applied. C++ is sufficiently rich to support at least some of the most important facets of FP such as higher order functions. C++ deservedly regards itself as a multiparadigm programming language. It is not only procedural; it is not only object oriented; stealthily beneath the core of the standard C++ library, a closer look into STL gives us a glimpse of a truly FP paradigm already in place. It is obvious that the authors of STL knows and practices FP. In the near future, we shall see more FP trickle down into the mainstream. Surely.
+
+The truth is, although FP is rich in concepts new and alien to the typical C++ programmer, we need not shift the paradigm in its entirety wholesale; but rather in small pieces at a time. In fact, most of the FP techniques can coexist quite well with the standard object oriented and imperative programming paradigms. When we are using STL algorithms and functors for example, we are already doing FP.
+
+Phoenix extends the concepts of FP to C++ much further. In a nutshell, the framework opens up FP techniques such as Lambda (unnamed functions) and Currying (partial function evaluation).
+
+[page Quick start]
+
+To get a first glimpse on what the Phoenix framework offers, let us start with an example. We want to find the first odd number in an STL container.
+
+1)  Normally we use a functor or a function pointer and pass that in to STL's find_if generic function (sample1.cpp):
+
+Write a function:
+
+    bool
+    is_odd(int arg1)
+    {
+        return arg1 % 2 == 1;
+    }
+
+Pass a pointer to the function to STL's find_if generic function:
+
+    find_if(c.begin(), c.end(), &is_odd)
+
+2)  Using Phoenix, the same can be achieved directly with a one- liner (sample2.cpp):
+
+    find_if(c.begin(), c.end(), arg1 % 2 == 1)
+
+The expression "arg1 % 2 == 1" automagically creates a functor with the expected behavior. In FP, this unnamed function is called a lambda function. Unlike 1, the function pointer version, which is monomorphic (expects and works only with a fixed type int argument), the Phoenix version is completely polymorphic and works with any container (of ints, of doubles, of complex, etc.) as long as its elements can handle the "arg1 % 2 == 1" expression.
+
+3) Write a polymorphic functor using Phoenix (sample3.cpp)
+
+    struct is_odd_ {
+
+        template <typename ArgT>
+        struct result { typedef bool type; };
+
+        template <typename ArgT>
+        bool operator()(ArgT arg1) const
+        { return arg1 % 2 == 1; }
+    };
+
+    function<is_odd_> is_odd;
+
+Call the lazy is_odd function:
+
+    find_if(c.begin(), c.end(), is_odd(arg1))
+
+is_odd_ is the actual functor. It has been proxied in function<is_odd_> by is_odd (note no trailing underscore) which makes it a lazy function. is_odd_::operator() is the main function body. is_odd_::result is a type computer that answers the question "What should be our return type given an argument of type ArgT?".
+
+Like 2, and unlike 1, function pointers or plain C++ functors, is_odd is a true lazy, polymorphic functor (rank-2 polymorphic functoid, in FC++ jargon). The Phoenix functor version is fully polymorphic and works with any container (of ints, of doubles, of complex, etc.) as long as its elements can handle the "arg1 % 2 == 1" expression. However, unlike 2, this is more efficient and has less overhead especially when dealing with much more complex functions.
+
+This is just the tip of the iceberg. There are more nifty things you can do with the framework. There are quite interesting concepts such as rank-2 polymorphic lazy functions, lazy statements, binders etc; enough to whet the appetite of anyone wishing to squeeze more power from C++.
+
+[page Basic Concepts]
+
+Everything is a function (class actor) in the Phoenix framework that can be evaluated as f(a..n), where n is the function's arity, or number of arguments that the function expects. Operators are also functions. For example, a + b is just a function with arity == 2 (or binary). a + b is the same as plus(a, b), a + b + c is the same as plus(a, plus(b, c)). plus(a, plus(b, c)) is a ternary function (arity == 3).
+
+Amusingly, even functions return functions. We shall see what this means in a short while.
+
+Currying, named after the famous Logician Haskell Curry, is one of the important mechanisms in the programming discipline known as functional programming (or FP). There's much theory surrounding the concepts behind it, however, in the most simplest term, it is safe to assume that "currying" a function is more or less like partially evaluating a function. Take a simple pseudo C++ function:
+
+    plus(x, y) { return x + y; }
+
+for example. Fully evaluating the function 'plus' above is done by supplying the arguments for x and y. For example:
+
+    plus(3, 2)
+
+will give us 5. On the other hand, partial evaluation can be thought of as calling the function without supplying all the arguments. Here's an imaginary (non-C++) example:
+
+    plus(?, 6)
+
+What does this mean and what is the function's result? First, the question mark proclaims that we don't have this argument yet, let this be supplied later. We have the second argument though, which is 6. Now, while the fully evaluated function plus(3, 2) results to the actual computed value 5, the partially evaluated function plus(?, 6) results to another (unnamed) function (A higher order function. In FP, the unnamed function is called a lambda function), this time, the lambda function expects one less argument:
+
+    plus(3, 2) --> 5
+    plus(?, 6) --> unnamed_f_x_plus_6(x)
+
+now, we can use unnamed_f_x_plus_6, which is the result of the expression plus(?, 6) just like a function with one argument. Thus:
+
+    plus(?, 6)(3) --> 9
+
+This can be understood as:
+
+    | plus(?, 6) | (3) |
+    |_____f1_____|     |
+    |_____f2___________|
+
+* f1 is the result of partially evaluating plus(?, 6)
+* f2 is the result of the fully evaluated function passing 3 where f1 has the ? placeholder, thus plus(3, 6)
+
+The same can be done with operators. For instance, the above example is equivalent to:
+
+        3 + 2 --> 5
+        ? + 6 --> unnamed_f_x_plus_6(x)
+
+Obviously, partially evaluating the plus function as we see above cannot be done directly in C++ where we are expected to supply all the arguments that a function expects. Simply, currying the function plus is not possible in straight C++. That's where the Phoenix framework comes in. The framework provides the facilities to do partial function evaluation.
+
+[page Architecture]
+
+Care and attention to detail was given, painstakingly, to the design and implementation of Phoenix. The overall design of the framework is well structured and clean. In this chapter, we shall see the main concepts behind the framework and gain introductory insights regarding its design.
+
+[blurb __detail__ [*Macros][br][br]Implementation wise, not a single macro was used. Macros cause more trouble than its worth, regardless if they are used only in the implementation. A very early version of the framework did use macros to generate redundant code. The experience was to say the least, painful. 1) The code is so much more difficult to read 2) Compile errors take you in the middle of nowhere in a meaningless macro invocation without the slightest clue whatsoever what went wrong. The bottom line is: Macros are plain ugly. Exclamation point! No to macros. Period.]
+
+[page:1 Lazy functions]
+
+When currying or partial function evaluation takes place, supplying N actual arguments to a function that expects M arguments where N < M will result in a higher order function with M-N arguments. Technically, when N == M, the function has all the arguments needed to do a full evaluation:
+
+    plus(3, 2)  full evaluation
+    plus(?, 6)  partial evaluation
+
+[blurb __note__ Lazy functions are subsets of partial function evaluation or currying]
+
+Now, we shall revisit the concept of lazy functions introduced before in passing. That is, the first function invocation will not really "fully evaluate" the function regardless if all or some of the arguments are supplied. A second function invocation will always be needed to perform the actual evaluation. At the point in the second call, the caller is expected to supply all arguments that are still missing. Still vague? To clarify, a partially evaluated function:
+
+        f(1, ?, ?)
+
+results to an unnamed function unnamed_f(a, b) that expects the two (2) more arguments that are still missing when the first function, f, is invoked. Since unnamed_f(a, b) is already a second level evaluation, all arguments must be supplied when it is called and the result is finally evaluated. Example:
+
+    f(1, ?, ?) ---> unnamed_f(a, b)
+
+then
+
+    unnamed_f(2, 3) ---> evaluate_and_return_value_for f(1, 2, 3)
+
+This function call sequence can be concatenated:
+
+    f(1, ?, ?)(2, 3)
+
+The second level function unnamed_f is not curryable. All of its still missing arguments must be supplied when it is called.
+
+As mentioned, even though we have all the arguments in the first call, the function is not yet evaluated (thus lazy). For example, a function call:
+
+    f(1, 2, 3)
+
+remember that the first function invocation will not really evaluate the function even if all the arguments are fully supplied. Thus:
+
+    f(1, 2, 3) ---> unnamed_f()
+
+[blurb __note__ [*Generators][br][br]In FP, unnamed_f() is a generator; a function that has no arguments but returns a result. Not to be confused with Phoenix generators to be discussed later.]
+
+Then:
+
+    unnamed_f() ---> evaluate_and_return_value_for f(1, 2, 3)
+
+This function call sequence can be concatenated as:
+
+    f(1, 2, 3)()
+
+Lambda (unnamed) functions and currying (partial function evaluation) can also be applied to operators. However, unlike lazy functions, operators are fully evaluated once all the arguments are known and supplied, unless some sort of intervention is applied to coerce the operator expression to be lazily evaluated. We shall see more details on this and how this is done later.
+
+[page:1 Place holders]
+
+So far, apart from the quick start appetizer, we presented some examples of lazy functions using the ? symbol to act as a placeholder for yet unsupplied arguments. While this is understandable and simple, it is not adequate when we are dealing with complex composition of functions in addition to binary infix, unary prefix and postfix operators.
+
+When an arbitrarily complex function composition has M-N = U unsupplied arguments, the ? symbol maps this onto the actual non- lazy function taking U arguments. For example:
+
+    f1(f2(?, 2), f3(?, f4(?))) --> unnamed_f(a, b, c)
+
+Since there is only 1 supplied argument (N) and we are expecting 4 arguments (M), hence U = 3.
+
+It might not be immediately apparent how mapping takes place. It can naively be read from left to right; the first ? in our example maps to a, the second to b, and the last ? maps to c. Yet for even more complex compositions possibly with operators added in the mix, this becomes rather confusing. Also, this is not so flexible: in many occassions, we want to map two or more unknown arguments to a single place-holder.
+
+To avoid confusion, rather than using the ? as a symbol for unsupplied arguments, we use a more meaningful and precise representation. This is realized by supplying a numeric representation of the actual argument position (1 to N) in the resulting (right hand) function. Here's our revised example using this scheme:
+
+    f1(f2(arg1, 2), f3(arg2, f4(arg3))) --> unnamed_f(arg1, arg2, arg3)
+
+Now, arg1, arg2 and arg3 are used as placeholders instead of ?. Take note that with this revised scheme, we can now map two or more unsupplied arguments to a single actual argument. Example:
+
+    f1(f2(arg1, 2), f3(arg2, f4(arg1))) --> unnamed_f(arg1, arg2)
+
+Notice how we mapped the leftmost and the rightmost unnamed argument to arg1. Consequently, the resulting (right hand) function now expects only two arguments (arg1 and arg2) instead of three. Here are some interesting snippets where this might be useful:
+
+    plus(arg1, arg1)                -->     mult_2(x)
+    mult(arg1, arg1)                -->     square(x)
+    mult(arg1, mult(arg1, arg1))    -->     cube(x)
+
+[h2 Extra arguments]
+
+In C and C++, a function can have extra arguments that are not at all used by the function body itself. For instance, call-back functions may provide much more information than is actually needed at once. These extra arguments are just ignored.
+
+Phoenix also allows extra arguments to be passed. For example, recall our original add function:
+
+    add(arg1, arg2)
+
+We know now that partially evaluating this function results to a function that expects 2 arguments. However, the framework is a bit more lenient and allows the caller to supply more arguments than is actually required. Thus, our partially evaluated plus(arg1, arg2) function actually allows 2 *or more* arguments to be passed in. For instance, with:
+
+    add(arg1, arg2)(1, 2, 3)
+
+    the third argument '3' is merely ignored.
+
+Taking this further, in-between arguments may even be ignored. Example:
+
+    add(arg1, arg5)(1, 2, 3, 4, 5)
+
+Here, arguments 2, 3, and 4 are ignored. The function add just takes in the first argument (arg1) and the fifth argument (arg5). The result is of course six (6).
+
+[blurb __detail__ [*Strict Arity][br][br]There are a few reasons why enforcing strict arity is not desireable. A case in point is the callback function. Typical callback functions provide more information than is actually needed. Lambda functions are often used as callbacks.]
+
+[page:1 Polymorphic functions]
+
+We've seen the examples and we are already aware that lazy functions are polymorphic. This is important and is reiterated over and over again. Monomorphic functions are passe and simply lacks the horse power in this day and age of generic programming.
+
+The framework provides facilities for defining truly polymorphic functions (in FC++ jargon, these are called rank-2 polymorphic functoids). For instance, the plus example above can apply to integers, floating points, user defined complex numbers or even strings. Example:
+
+        add(arg1, arg2)(std::string("Hello"), " World")
+
+evaluates to std::string("Hello World"). The observant reader might notice that this function call in fact takes in heterogeneous arguments of types arg1 = std::string and arg2 = char const*. add still works in this context precisely because the C++ standard library allows the expression a + b where a is a std::string and b is a char const*.
+
+[page:1 Organization]
+
+The framework is organized in five (5) layers.
+
+                 +-----------+
+                 |  binders  |
+                 +-----------+-----------+------------+
+                 | functions | operators | statements |
+    +------------+-----------+-----------+------------+
+    | primitives |             composite              |
+    +------------+------------------------------------+
+    |                     actor                       |
+    +-------------------------------------------------+
+    |                     tuples                      |
+    +-------------------------------------------------+
+
+The lowest level is the tuples library. Knowledge of tuples is not at all required in order to use the framework. In a nutshell, this small sub-library provides a mechanism for bundling heterogeneous types together. This is an implementation detail. Yet, in itself, it is quite useful in other applications as well. A more detailed explanation will be given later.
+
+Actors are the main concept behind the framework. Lazy functions are abstracted as actors which are actually polymorphic functors. There are only 2 kinds of actors:
+
+# primitives
+# composites.
+
+Composites are composed of zero or more actors. Each actor in a composite can again be another composite. Primitives are atomic units and are not decomposable.
+
+(lazy) functions, (lazy) operators and (lazy) statements are built on top of composites. To put it more accurately, a lazy function (lazy operators and statements are just specialized forms of lazy functions) has two stages:
+
+# (lazy) partial evaluation [ front-end ]
+# final evaluation [ back-end ]
+
+The first stage is handled by a set of generator functions, generator functors and generator operator overloads. These are your front ends (in the client's perspective). These generators create the actors that can be passed on just like any other function pointer or functor object. The second stage, the actual function call, can be invoked or executed anytime just like any other function. These are the back-ends (often, the final invocation is never actually seen by the client).
+
+Binders, built on top of functions, create lazy functions from simple monomorphic (STL like) functors, function pointers, member function pointers or member variable pointers for deferred evaluation (variables are accessed through a function call that returns a reference to the data. These binders are built on top of (lazy) functions.
+
+The framework's architecture is completely orthogonal. The relationship between the layers is totally acyclic. Lower layers do not depend nor know the existence of higher layers. Modules in a layer do not depend on other modules in the same layer. This means for example that the client can completely discard binders if she does not need it; or perhaps take out lazy-operators and lazy-statements and just use lazy-functions, which is desireable in a pure FP application.
+
+[page Actors]
+
+Actors are functors. Actors are the main driving force behind the framework. An actor can accept 0 to N arguments (where N is a predefined maximum). In an abstract point of view, an actor is the metaphor of a function declaration. The actor has no function body at all, which means that it does not know how to perform any function at all.
+
+[blurb __note__ an actor is the metaphor of a function declaration]
+
+The actor is a template class though, and its sole template parameter fills in the missing function body and does the actual function evaluation. The actor class derives from its template argument. Here's the simplified actor class declaration:
+
+    template <typename BaseT>
+    struct actor : public BaseT { /*...*/ };
+
+To avoid being overwhelmed in details, the following is a brief overview of what an actor is. First, imagine an actor as a non- lazy function that accepts 0..N arguments:
+
+    actor(a0, a1, ... aN)
+
+Not knowing what to do with the arguments passed in, the actor forwards the arguments received from the client (caller) onto its base class BaseT. It is the base class that does the actual operation, finally returning a result. In essence, the actor's base class is the metaphor of the function body. The sequence of events that transpire is outlined informally as follows:
+
+1)  actor is called, passing in N arguments:
+
+client --> actor(a0, a1, ... aN)
+
+2)  actor forwards the arguments to its base:
+
+--> actor's base(a0, a1, ... aN)
+
+3)  actor's base does some computation and returns a result back to the actor, and finally, the actor returns this back to the client:
+
+actor's base operation --> return result --> actor --> client
+
+[blurb __note__ In essence, the actor's base class is the metaphor of the function body]
+
+For further details, we shall see more in-depth information later as we move on to the more technical side of the framework.
+
+[page Primitives]
+
+Actors are composed to create more complex actors in a tree-like hierarchy. The primitives are atomic entities that are like the leaves in the tree. Phoenix is extensible. New primitives can be put into action anytime. Right out of the box, there are only a few primitives. This chapter shall deal with these preset primitives.
+
+[page:1 Arguments]
+
+The most basic primitive is the argument placeholder. For the sake of explanation, we used the '?' in our introductory examples to represent unknown arguments or argument place holders. Later on, we introduced the notion of positional argument place holders.
+
+We use an object of a special class argument<N> to represent the Nth function argument. The argument placeholder acts as an imaginary data-bin where a function argument will be placed.
+
+There are a couple of predefined instances of argument<N> named arg1..argN (where N is a predefined maximum). When appropriate, we can of course define our own argument<N> names. For example:
+
+    actor<argument<0> > first_param;    // note zero based index
+
+Take note that it should be wrapped inside an actor to be useful. first_param can now be used as a parameter to a lazy function:
+
+    plus(first_param, 6)
+
+which is equivalent to:
+
+    plus(arg1, 6)
+
+Here are some sample preset definitions of arg1..N
+
+    actor<argument<0> > const arg1 = argument<0>();
+    actor<argument<1> > const arg2 = argument<1>();
+    actor<argument<2> > const arg3 = argument<2>();
+    ...
+    actor<argument<N> > const argN = argument<N>();
+
+An argument is in itself an actor base class. As such, arguments can be evaluated through the actor's operator(). An argument as an actor base class selects the Nth argument from the arguments passed in by the client (see actor).
+
+For example:
+
+    char        c = 'A';
+    int         i = 123;
+    const char* s = "Hello World";
+
+    cout << arg1(c) << ' ';     //  Get the 1st argument of unnamed_f(c)
+    cout << arg1(i, s) << ' ';  //  Get the 1st argument of unnamed_f(i, s)
+    cout << arg2(i, s) << ' ';  //  Get the 2nd argument of unnamed_f(i, s)
+
+will print out "A 123 Hello World"
+
+[page:1 Values]
+
+Whenever we see a constant in a curryable-function such as the plus above, an actor<value<T> > (where T is the type of the constant) is, by default, automatically created for us. For instance, the example plus above is actually equivalent to:
+
+    plus(arg1, actor<value<int> >(value<int>(6)))
+
+A nifty shortcut is the val(v) utility function. The expression above is also equivalent to:
+
+    plus(arg1, val(6))
+
+actor<value<int> >(value<int>(6)) is implicitly created behind the scenes, so there's really no need to explicitly type everything but:
+
+    plus(arg1, 6)
+
+There are situations though, as we'll see later on, where we might want to explicily write val(x).
+
+Like arguments, values are also actors. As such, values can be evaluated through the actor's operator(). Such invocation gives the value's identity. Example:
+
+    cout << val(3)() << val("Hello World")();
+
+    prints out "3 Hello World".
+
+[page:1 Variables]
+
+Values are immutable constants which cannot be modified at all. Attempting to do so will result in a compile time error. When we want the function to modify the parameter, we use a variable instead. For instance, imagine a curryable (lazy) function plus_assign:
+
+    plus_assign(x, y) { x += y; }
+
+Here, we want the first function argument x to be mutable. Obviously, we cannot write:
+
+    plus_assign(1, 2) // error first argument is immutable
+
+In C++, we can pass in a reference to a variable as the first argument in our example above. Yet, by default, the Phoenix framework forces arguments passed to curryable functions to be constant immutable values. To achive our intent, we use the variable<T> class. This is similar to the value<T> class above but instead holds a reference to a variable instead. For example:
+
+    int i_;
+    actor<variable<int> > i = i_;
+
+now, we can use our actor<variable<int> > 'i' as argument to the plus_assign lazy function:
+
+    plus_assign(i, 2)
+
+A shortcut is the var(v) utility function. The expression above is also equivalent to:
+
+    plus_assign(var(i_), 2)
+
+Lazy variables are actors. As such, variables can be evaluated through the actor's operator(). Such invocation gives the variables's identity. Example:
+
+    int i = 3;
+    char const* s = "Hello World";
+    cout << var(i)() << var(s)();
+
+prints out "3 Hello World"
+
+Finally, another free function const_ref(cv) may also be used. const_ref(cv) creates an actor<variable<T const&> > object where the data is referenced using a constant reference. This is similar to value<T> but when the data to be passed as argument to a function is heavy and expensive to copy by value, the const_ref(cv) offers a low overhead alternative.
+
+[page Composites]
+
+Actors may be combined in a multitude of ways to form composites. Composites are actors that are composed of zero or more actors. Composition is hierarchical. An element of the composite can be a primitive or again another composite. The flexibility to arbitrarily compose hierarchical structures allows us to form intricate constructions that model complex functions, statements and expressions.
+
+A composite is more or less a tuple of 0..N actors plus an operation object (some specialized composites have implied operations, i.e. the composite itself implies the operation). The composite class is declared informally as:
+
+    template <
+        typename OperationT,
+        typename A0 = nil_t,
+        typename A1 = nil_t,
+        typename A2 = nil_t,
+         ...
+        typename AN = nil_t
+    >
+    struct composite {
+
+        OperationT op;              //  operation
+        A0 a0; A1 a1; ... AN an;    //  actors
+    };
+
+This can be recursive. As mentioned, each of the actors A0..AN can in turn be another composite since a composite is itself an actor superclass and conforms to its expected conceptual interface. Composite specializations are provided to handle different numbers of actors from zero (0) to a predefined maximum.
+
+Except for specialized composites, like the actor and unlike the primitives, the composite is a protocol class. A composite does not really know how to perform anything. The actual operation is handled by its actors and finally its operation 'op'. After it has received the arguments passed in by the actor (see actor), all of the arguments are broadcasted to all of the composite's actors for preprocessing. Each of the composite's actors in turn returns a result. These results are then transfered to the composite's operation 'op'.
+
+If this may seem confusing at first, don't fret. Further details will be provided later for those who are inclined to learn more about the framework inside out. However, such information is not at all required to use the framework. After all, composites are not created directly. Instead, some facilities are provided for the generation of composites. These generators are the front-ends. We have seen the var(x), the val(x) and the const_ref(x). These are really generators that create primitives. Likewise, we also have generators that create composites.
+
+Just think of composites as your backbone. You don't really have to scrutinize it to use it; it simply works. The composite is indeed the backbone of the Phoenix framework.
+
+[page:1 Functions]
+
+[h2 Lazy functions]
+
+This class provides a mechanism for lazily evaluating functions. Syntactically, a lazy function looks like an ordinary C/C++ function. The function call looks familiar and feels the same as ordinary C++ functions. However, unlike ordinary functions, the actual function execution is deferred. For example here are sample factorial function calls:
+
+    factorial(4)
+    factorial(arg1)
+    factorial(arg1 * 6 / factorial(var(i)))
+
+These functions are automatically lazily bound unlike ordinary function pointers or functor objects that need to be explicitly bound through the bind function (see binders).
+
+A lazy function works in conjunction with a user defined functor (as usual with a member operator()). Only special forms of functor objects are allowed. This is required to enable true polymorphism (STL style monomorphic functors and function pointers can still be used through the bind facility (see binders)).
+
+This special functor is expected to have a nested template class result<T0...TN> (where N is the number of arguments of its member operator()). The nested template class result should have a typedef 'type' that reflects the return type of its member operator(). This is essentially a type computer that answers the metaprogramming question "Given arguments of type T0...TN, what will be the functor operator()'s return type?".
+
+There is a special case for functors that accept no arguments. Such nullary functors are only required to define a typedef result_type that reflects the return type of its operator().
+
+Here's an example of a simple functor that computes the factorial of a number:
+
+    struct factorial_impl {
+
+        template <typename Arg>
+        struct result { typedef Arg type; };
+
+        template <typename Arg>
+        Arg operator()(Arg n) const
+        { return (n <= 0) ? 1 : n * this->operator()(n-1); }
+    };
+
+As can be seen, the functor is polymorphic. Its arguments and return type are not fixed to a particular type. The example above for example, can handle any type as long as it can carry out the required operations (i.e. <=, * and -).
+
+We can now declare and instantiate a lazy 'factorial' function:
+
+    function<factorial_impl> factorial;
+
+Invoking a lazy function 'factorial' does not immediately execute the functor factorial_impl. Instead, a composite object is created and returned to the caller. Example:
+
+    factorial(arg1)
+
+does nothing more than return a composite. A second function call will invoke the actual factorial function. Example:
+
+    int i = 4;
+    cout << factorial(arg1)(i);
+
+will print out "24".
+
+Take note that in certain cases (e.g. for functors with state), an instance of the functor may be passed on to the constructor. Example:
+
+    function<factorial_impl> factorial(ftor);
+
+where ftor is an instance of factorial_impl (this is not necessary in this case since factorial is a simple stateless functor). Take care though when using functors with state because the functors are taken in by value. It is best to keep the data manipulated by a functor outside the functor itself and keep a reference to this data inside the functor. Also, it is best to keep functors as small as possible.
+
+[page:1 Operators]
+
+[h2 Lazy operators]
+
+This facility provides a mechanism for lazily evaluating operators. Syntactically, a lazy operator looks and feels like an ordinary C/C++ infix, prefix or postfix operator. The operator application looks the same. However, unlike ordinary operators, the actual operator execution is deferred. Samples:
+
+    arg1 + arg2
+    1 + arg1 * arg2
+    1 / -arg1
+    arg1 < 150
+
+We have seen the lazy operators in action (see sample2.cpp) above. Let's go back and examine it a little bit further:
+
+    find_if(c.begin(), c.end(), arg1 % 2 == 1)
+
+Through operator overloading, the expression "arg1 % 2 == 1" actually generates a composite. This composite object is passed on to STL's find_if function. In the viewpoint of STL, the composite is simply a functor expecting a single argument, the container's element. For each element in the container 'c', the element is passed on as an argument (arg1) to the composite (functor). The composite (functor) checks if this is an odd value based on the expression "arg1 % 2 == 1" where arg1 is iteratively replaced by the container's element.
+
+A set of classes implement all the C++ free operators. Like lazy functions (see functions), lazy operators are not immediately executed when invoked. Instead, a composite (see composite) object is created and returned to the caller. Example:
+
+    (arg1 + arg2) * arg3
+
+does nothing more than return a composite. A second function call will evaluate the actual operators. Example:
+
+    int i = 4, j = 5, k = 6;
+    cout << ((arg1 + arg2) * arg3)(i, j, k);
+
+will print out "54".
+
+Arbitrarily complex expressions can be lazily evaluated following three simple rules:
+
+# Lazy evaluated binary operators apply when *at least* one of the operands is an actor object (see actor, primitives and composite). Consequently, if one of the operands is not an actor object, it is implicitly converted, by default, to an object of type actor<value<T> > (where T is the original type of the operand).
+
+# Lazy evaluated unary operators apply only to operands which are actor objects.
+
+# The result of a lazy operator is a composite actor object that can in turn apply to rule 1.
+
+Example:
+
+    -(arg1 + 3 + 6)
+
+# Following rule 1, lazy evaluation is triggered since arg1 is an instance of an actor<argument<N> > class (see primitives).
+
+# The immediate right operand <3> is implicitly converted to an actor<value<int> >. Still following rule 1.
+
+# The result of this "arg1 + 3" expression is a composite object, following rule 3.
+
+# Now since "arg1 + 3" is a composite, following rule 1 again, its right operand <6> is implicitly converted to an actor<value<int> >.
+
+# Continuing, the result of "arg1 + 3" ... "+ 6" is again another composite. Rule 3.
+
+# The expression "arg1 + 3 + 6" being a composite, is the operand of the unary operator -. Following rule 2, the result is an actor object.
+
+# Folowing rule 3, the whole thing "-(arg1 + 3 + 6)" is a composite.
+
+Lazy-operator application is highly contagious. In most cases, a single argN actor infects all its immediate neighbors within a group (first level or parenthesized expression).
+
+Take note that although at least one of the operands must be a valid actor class in order for lazy evaluation to take effect, if this is not the case and we still want to lazily evaluate an expression, we can use var(x), val(x) or const_ref(x) to transform the operand into a valid action object (see primitives). Example:
+
+    val(1) << 3;
+
+Supported operators:
+
+Unary operators:
+
+    prefix:   ~, !, -, +, ++, --, & (reference), * (dereference)
+    postfix:  ++, --
+
+Binary operators:
+
+    =, [], +=, -=, *=, /=, %=, &=, |=, ^=, <<=, >>=
+    +, -, *, /, %, &, |, ^, <<, >>
+    ==, !=, <, >, <=, >=
+    &&, ||
+
+[page:1 Statements]
+
+[h2 Lazy statements]
+
+The primitives and composite building blocks presented before are sufficiently powerful to construct quite elaborate structures and facilities. We have presented lazy-functions and lazy-operators. How about lazy-statements? First, an appetizer:
+
+Print all odd-numbered contents of an STL container using std::for_each (sample4.cpp):
+
+    for_each(c.begin(), c.end(),
+        if_(arg1 % 2 == 1)
+        [
+            cout << arg1 << ' '
+        ]
+    );
+
+Huh? Is that valid C++? Read on...
+
+Yes, it is valid C++. The sample code above is as close as you can get to the syntax of C++. This stylized C++ syntax differs from actual C++ code. First, the if has a trailing underscore. Second, the block uses square brackets [] instead of the familiar curly braces {}.
+
+Here are more examples with annotations. The code almost speaks for itself.
+
+[*1) block statement:]
+
+    statement,
+    statement,
+    ....
+    statement
+
+Basically, these are comma separated statements. Take note that unlike the C/C++ semicolon, the comma is a separator put *in-between* statements. This is like Pascal's semicolon separator, rather than C/C++'s semicolon terminator. For example:
+
+    statement,
+    statement,
+    statement,     //  ERROR!
+
+Is an error. The last statement should not have a comma. Block statements can be grouped using the parentheses. Again, the last statement in a group should not have a trailing comma.
+
+    statement,
+    statement,
+    (
+        statement,
+        statement
+    ),
+    statement
+
+Outside the square brackets, block statements should be grouped. For example:
+
+    for_each(c.begin(), c.end(),
+        (
+            do_this(arg1),
+            do_that(arg1)
+        )
+    );
+
+[*2) if_ statement:]
+
+We have seen the if_ statement. The syntax is:
+
+    if_(conditional_expression)
+    [
+        sequenced_statements
+    ]
+
+[*3) if_ else_ statement:]
+
+The syntax is
+
+    if_(conditional_expression)
+    [
+        sequenced_statements
+    ]
+    .else_
+    [
+        sequenced_statements
+    ]
+
+Take note that else has a prefix dot and a trailing underscore: .else_
+
+Example: This code prints out all the elements and appends " > 5", " == 5" or " < 5" depending on the element's actual value:
+
+    for_each(c.begin(), c.end(),
+        if_(arg1 > 5)
+        [
+            cout << arg1 << " > 5\n"
+        ]
+        .else_
+        [
+            if_(arg1 == 5)
+            [
+                cout << arg1 << " == 5\n"
+            ]
+            .else_
+            [
+                cout << arg1 << " < 5\n"
+            ]
+        ]
+    );
+
+Notice how the if_ else_ statement is nested.
+
+[*4) while_ statement:]
+
+The syntax is:
+
+    while_(conditional_expression)
+    [
+        sequenced_statements
+    ]
+
+Example: This code decrements each element until it reaches zero and prints out the number at each step. A newline terminates the printout of each value.
+
+    for_each(c.begin(), c.end(),
+        (
+            while_(arg1--)
+            [
+                cout << arg1 << ", "
+            ],
+            cout << val("\n")
+        )
+    );
+
+[*5) do_ while_ statement:]
+
+The syntax is:
+
+    do_
+    [
+        sequenced_statements
+    ]
+    .while_(conditional_expression)
+
+Again, take note that while has a prefix dot and a trailing underscore: .while_
+
+Example: This code is almost the same as the previous example above with a slight twist in logic.
+
+    for_each(c.begin(), c.end(),
+        (
+            do_
+            [
+                cout << arg1 << ", "
+            ]
+            .while_(arg1--),
+            cout << val("\n")
+        )
+    );
+
+[*6) for_ statement:]
+
+The syntax is:
+
+    for_(init_statement, conditional_expression, step_statement)
+    [
+        sequenced_statements
+    ]
+
+It is again almost similar to C++ for statement. Take note that the init_statement, conditional_expression and step_statement are separated by the comma instead of the semi- colon and each must be present (i.e. for_(,,) is invalid).
+
+Example: This code prints each element N times where N is the element's value. A newline terminates the printout of each value.
+
+    int iii;
+    for_each(c.begin(), c.end(),
+        (
+            for_(var(iii) = 0, var(iii) < arg1, ++var(iii))
+            [
+                cout << arg1 << ", "
+            ],
+            cout << val("\n")
+        )
+    );
+
+As before, all these are lazily evaluated. The result of such statements are in fact composites that are passed on to STL's for_each function. In the viewpoint of for_each, what was passed is just a functor, no more, no less.
+
+[blurb __note__ Unlike lazy functions and lazy operators, lazy statements always return void.]
+
+[page:1 Binders]
+
+There are times when it is desireable to bind a simple functor, function, member function or member variable for deferred evaluation. This can be done through the binding facilities provided below. There are template classes:
+
+# function_ptr ( function pointer binder )
+# functor ( functor pointer binder )
+# member_function_ptr ( member function pointer binder )
+# member_var_ptr ( member variable pointer binder )
+
+These template classes are specialized lazy function classes for functors, function pointers, member function pointers and member variable pointers, respectively. These are subclasses of the lazy- function class (see functions). Each of these has a corresponding overloaded bind(x) function. Each bind(x) function generates a suitable binder object.
+
+Example, given a function foo:
+
+    void foo_(int n) { std::cout << n << std::endl; }
+
+Here's how the function foo is bound:
+
+    bind(&foo_)
+
+This bind expression results to a lazy-function (see functions) that is lazily evaluated. This bind expression is also equivalent to:
+
+    function_ptr<void, int> foo = &foo_;
+
+The template parameter of the function_ptr is the return and argument types of actual signature of the function to be bound read from left to right. Examples:
+
+    void foo_(int);         ---> function_ptr<void, int>
+    int bar_(double, int);  ---> function_ptr<int, double, int>
+
+Either bind(&foo_) and its equivalent foo can now be used in the same way a lazy function (see functions) is used:
+
+    bind(&foo_)(arg1)
+
+or
+
+    foo(arg1)
+
+The latter, of course, follows C/C++ function call syntax and is much easier to understand. This is now a full-fledged lazy function that can finally be evaluated by another function call invocation. A second function call will invoke the actual foo function:
+
+    int i = 4;
+    foo(arg1)(i);
+
+will print out "4".
+
+Binding functors and member functions can be done similarly. Here's how to bind a functor (e.g. std::plus<int>):
+
+    bind(std::plus<int>())
+
+or
+
+    functor<std::plus<int> > plus;
+
+Again, these are full-fledged lazy functions. In this case, unlike the first example, expect 2 arguments (std::plus<int> needs two arguments lhs and rhs). Either or both of which can be lazily bound:
+
+    plus(arg1, arg2)        // arg1 + arg2
+    plus(100, arg1)         // 100 + arg1
+    plus(100, 200)          // 300
+
+A bound member function takes in a pointer or reference to an object as the first argument. For instance, given:
+
+    struct xyz { void foo(int) const; };
+
+xyz's foo member function can be bound as:
+
+    bind(&xyz::foo)
+
+or
+
+member_function_ptr<void, xyz, int> xyz_foo = &xyz::foo;
+
+The template parameter of the member_function_ptr is the return, class and argument types of actual signature of the function to be bound, read from left to right:
+
+    void xyz::foo_(int);            ---> member_function_ptr<void, xyz, int>
+    int abc::bar_(double, char);    ---> member_function_ptr<int, abc, int, double, char>
+
+Take note that a member_function_ptr lazy-function expects the first argument to be a pointer or reference to an object. Both the object (reference or pointer) and the arguments can be lazily bound. Examples:
+
+    xyz obj;
+    xyz_foo(arg1, arg2)     // arg1.foo(arg2)
+    xyz_foo(obj, arg1)      // obj.foo(arg1)
+    xyz_foo(obj, 100)       // obj.foo(100)
+
+Be reminded that var(obj) must be used to call non-const member functions. For example, if xyz was declared as:
+
+    struct xyz { void foo(int); };  //  note non-const member function
+
+the pointer or reference to the object must also be non-const since lazily bound arguments are stored as const value by default (see variable class in primitives).
+
+    xyz_foo(var(obj), 100)      // obj.foo(100)
+
+arg1..argN are already implicitly mutable. There is no need to wrap arg1..argN in a var. It is an error to do so:
+
+    var(arg1)   //  ERROR! arg1 is already mutable
+    var(arg2)   //  ERROR! arg2 is already mutable
+
+Finally, member variables can be bound much like member functions. For instance, given:
+
+    struct xyz { int v; };
+
+xyz::v can be bound as:
+
+    bind(&xyz::v)
+
+or
+
+    member_var_ptr<int, xyz> xyz_v = &xyz::v;
+
+The template parameter of the member_var_ptr is the type of the variable followed by the class:
+
+    int xyz::v; ---> member_var_ptr<int, xyz>
+
+Just like the member_function_ptr, member_var_ptr also expects the first argument to be a pointer or reference to an object. Both the object (reference or pointer) and the arguments can be lazily bound. Like member function binders, var(obj) must be used to access non-const member variables. Examples:
+
+    xyz obj;
+    xyz_v(arg1)             // arg1.v (const& access)
+    xyz_v(obj)              // obj.v  (const& access)
+
+    xyz_v(var(obj))() = 3   // obj.v = 3 (non-const& access)
+    xyz_v(arg1)(obj) = 4    // obj.v = 4 (non-const& access)
+
+Be reminded once more that binders are monomorphic. This layer is provided only for compatibility with existing code such as prewritten STL functors and legacy APIs. Rather than binding functions or functors, the preferred method is to write true generic and polymorphic lazy-functions (see functions). However, since most of the time we are dealing with adaptation of exisiting code, binders are indeed indespensible.
+
+[page:1 Adaptable closures]
+
+The framework will not be complete without some form of closures support. Closures encapsulate a stack frame where local variables are created upon entering a function and destructed upon exiting. Closures provide an environment for local variables to reside. Closures can hold heterogeneous types.
+
+Phoenix closures are true hardware stack based. Closures enable true reentrancy in lambda functions. A closure provides access to a function stack frame where local variables reside. Modeled after Pascal nested stack frames, closures can be nested just like nested functions where code in inner closures may access local variables from in-scope outer closures (accessing inner scopes from outer scopes is an error and will cause a run-time assertion failure).
+
+[blurb __detail__ [*'''Spirit''' Closures][br][br]Spirit uses Phoenix closures to allow parameter passing (inherited and synthetic attributes, in parsing parlance) upstream and downstream in a parse traversal (see spirit_docs documentation).]
+
+There are three (3) interacting classes:
+
+[*1) closure:]
+
+At the point of declaration, a closure does not yet create a stack frame nor instantiate any variables. A closure declaration declares the types and names of the local variables. The closure class is meant to be subclassed. It is the responsibility of a closure subclass to supply the names for each of the local variable in the closure. Example:
+
+    struct my_closure : closure<int, string, double> {
+
+        member1 num;        // names the 1st (int) local variable
+        member2 message;    // names the 2nd (string) local variable
+        member3 real;       // names the 3rd (double) local variable
+    };
+
+    my_closure clos;
+
+Now that we have a closure 'clos', its local variables can be accessed lazily using the dot notation. Each qualified local variable can be used just like any primitive actor (see primitives). Examples:
+
+    clos.num = 30
+    clos.message = arg1
+    clos.real = clos.num * 1e6
+
+The examples above are lazily evaluated. As usual, these expressions return composite actors that will be evaluated through a second function call invocation (see operators). Each of the members (clos.xxx) is an actor. As such, applying the operator() will reveal its identity:
+
+    clos.num() // will return the current value of clos.num
+
+[blurb __note__ [*Acknowledgement:][br][br][*Juan Carlos Arevalo-Baeza] (JCAB) introduced and initilally implemented the closure member names that uses the dot notation and [*Martin Wille] who improved multi thread safety using Boost Threads.]
+
+[*2) closure_member]
+
+The named local variables of closure 'clos' above are actually closure members. The closure_member class is an actor and conforms to its conceptual interface. member1..memberN are predefined typedefs that correspond to each of the listed types in the closure template parameters.
+
+[*3) closure_frame]
+
+When a closure member is finally evaluated, it should refer to an actual instance of the variable in the hardware stack. Without doing so, the process is not complete and the evaluated member will result to an assertion failure. Remember that the closure is just a declaration. The local variables that a closure refers to must still be instantiated.
+
+The closure_frame class does the actual instantiation of the local variables and links these variables with the closure and all its members. There can be multiple instances of closure_frames typically situated in the stack inside a function. Each closure_frame instance initiates a stack frame with a new set of closure local variables. Example:
+
+    void foo()
+    {
+        closure_frame<my_closure> frame(clos);
+        /* do something */
+    }
+
+where 'clos' is an instance of our closure 'my_closure' above. Take note that the usage above precludes locally declared classes. If my_closure is a locally declared type, we can still use its self_type as a paramater to closure_frame:
+
+    closure_frame<my_closure::self_type> frame(clos);
+
+Upon instantiation, the closure_frame links the local variables to the closure. The previous link to another closure_frame instance created before is saved. Upon destruction, the closure_frame unlinks itself from the closure and relinks the preceding closure_frame prior to this instance.
+
+The local variables in the closure 'clos' above is default constructed in the stack inside function 'foo'. Once 'foo' is exited, all of these local variables are destructed. In some cases, default construction is not desirable and we need to initialize the local closure variables with some values. This can be done by passing in the initializers in a compatible tuple. A compatible tuple is one with the same number of elements as the destination and where each element from the destination can be constructed from each corresponding element in the source. Example:
+
+    tuple<int, char const*, int> init(123, "Hello", 1000);
+    closure_frame<my_closure> frame(clos, init);
+
+Here now, our closure_frame's variables are initialized with int: 123, char const*: "Hello" and int: 1000.
+
+[page:1 Lazy Construction and Conversions]
+
+[h2 Lazy C++ Casts]
+
+The set of lazy C++ cast template classes and functions provide a way of lazily casting certain type to another during parsing. The lazy C++ templates are (syntactically) used very much like the well known C++ casts:
+
+    A *a = static_cast_<A *>(_a_lambda_expression_);
+
+These casts parallel the ones in the C++ language. Take note however that the ['lazy] versions have a trailing underscore.
+
+*static_cast_<T>(lambda_expression)
+*dynamic_cast_<T>(lambda_expression)
+*const_cast_<T>(lambda_expression)
+*reinterpret_cast_<T>(lambda_expression)
+
+[blurb __note__ [*Acknowledgement:][br][br][*Hartmut Kaiser] implemented the lazy casts and constructors based on his original work on Spirit SE "semantic expressions" (the precursor of Phoenix).]
+
+[h2 Lazy object construction]
+
+A set of lazy constructor template classes and functions provide a way of lazily constructing an object of a type from an arbitrary set of lazy arguments in the form of lambda expressions. The construct_ templates are (syntactically) used very much like the well known C++ casts:
+
+    A a = construct_<A>(lambda_arg1, lambda_arg2, ..., lambda_argN);
+
+where the given parameters are become the parameters to the contructor of the object of type A. (This implies, that type A is expected to have a constructor with a corresponsing set of parameter types.)
+
+[blurb __tip__ The ultimate maximum number of actual parameters is limited by the preprocessor constant PHOENIX_CONSTRUCT_LIMIT. Note though, that this limit should not be greater than PHOENIX_LIMIT.]
+
+[page Efficiency]
+
+Now this is important. Operators that form expressions and statements, while truly expressive, should be used judiciously and sparingly. While aggressive compiler optimizations and inline code helps a lot to produce tighter and faster code, lazy operators and statements will always have more overhead compared to lazy- functions and bound simple functors especially when the logic gets to be quite complex. It is not only run-time code that hits a penalty, complex expressions involving lazy-operators and lazy- functions are also much more difficult to parse and compile by the host C++ compiler and results in much longer compile times.
+
+[blurb __tip__ [*Lambda vs. Offline Functions][br][br]The best way to use the framework is to write generic off-line lazy functions (see functions) then call these functions lazily using straight-forward inline lazy-operators and lazy-statements.]
+
+While it is indeed satisfying to impress others with quite esoteric uses of operator overloading and generative programming as can be done by lazy-operators and lazy-statements, these tools are meant to be used for the right job. That said, caveat-emptor.
+
+[blurb __note__ need benchmarks, benchmarks, and more benchmarks]
+
+[page Inside Phoenix]
+
+This chapter explains in more detail how the framework operates. The information henceforth should not be necessary to those who are interested in just using the framework. However, a microscopic view might prove to be beneficial to more advanced programmers. But then again, it is really hard to classify what it means to be an "advanced programmer". Is knowledge of the C++ language as a language lawyer a prerequisite? Perhaps, but also perhaps not. As always, the information presented will always assume a friendly tone. Perhaps the prerequisite here is that the reader should have an "advanced imagination" :-) and a decent knowledge of C++ language rules.
+
+[page:1 Tuples]
+
+Tuples are the most basic infrastructure that the framework builds with. This sub-library provides a mechanism to bundle objects of arbitrary types in a single structure. Tuples hold heterogeneous types up to a predefined maximum.
+
+Only the most basic functionality needed are provided. This is a straight-forward and extremely lean and mean library. Unlike other recursive list-like tuple implementations, this tuple library implementation uses simple structs similar to std::pair with specialization for 0 to N tuple elements, where N is a predefined constant. There are only 4 tuple operations to learn:
+
+1)  Construction
+
+Here are examples on how to construct tuples:
+
+    typedef tuple<int, char> t1_t;
+    typedef tuple<int, std::string, double> t2_t;
+
+    //  this tuple has an int and char members
+    t1_t t1(3, 'c');
+
+    //  this tuple has an int, std::string and double members
+    t2_t t2(3, "hello", 3.14);
+
+2)  Member access
+
+A member in a tuple can be accessed using the tuple's [] operator by specifying the Nth tuple_index. Here are some examples:
+
+    tuple_index<0> ix0; // 0th index == 1st item
+    tuple_index<1> ix1; // 1st index == 2nd item
+    tuple_index<2> ix2; // 2nd index == 3rd item
+
+    //  Note zero based indexing. 0 = 1st item, 1 = 2nd item
+
+    t1[ix0] = 33;       // sets the int member of the tuple t1
+    t2[ix2] = 6e6;      // sets the double member of the tuple t2
+    t1[ix1] = 'a';      // sets the char member of the tuple t1
+
+Access to out of bound indexes returns a nil_t value.
+
+3)  Member type inquiry
+
+The type of an individual member can be queried. Example:
+
+    tuple_element<1, t2_t>::type
+
+Refers to the type of the second member (again note zero based indexing, hence 0 = 1st item, 1 = 2nd item) of the tuple.
+
+Access to out of bound indexes returns a nil_t type.
+
+4)  Tuple length
+
+The number of elements in a tuple can be queried. Example:
+
+    int n = t1.length;
+
+gets the number of elements in tuple t1.
+
+length is a static constant. Thus, TupleT::length also works. Example:
+
+    int n = t1_t::length;
+
+[page:1 Actors revisited]
+
+This class is a protocol class for all actors. This class is essentially an interface contract. The actor class does not really know how how to act on anything but instead relies on the template parameter BaseT (from which the actor will derive from) to do the actual action. The template class actor is declared as:
+
+    template <typename BaseT>
+    struct actor : public BaseT {
+
+        actor();
+        actor(BaseT const& base);
+
+        /*...member functions...*/
+    };
+
+[blurb __detail__ [*Curiously Recurring Template Pattern Inverse][br][br]Notice that actor derives from its template argument BaseT. This is the inverse of the curiously recurring template pattern (CRTP). With the CRTP, the actor is an abstract class with a DerivedT template parameter that is assumed to be its parametric subclass. This pattern however, "parametric base class pattern" (PBCP) for lack of a name, inverses the inheritance and makes actor a concrete class. Anyway, be it CRTP or PBCP, actor is a protocol class and either BaseT or DerivedT will have to conform to its protocol. Both CRTP and PBCP techniques has its pros and cons, of which is outside the scope of this document. CRTP should really be renamed "parametric subclass pattern (PSCP), but again, that's another story.]
+
+An actor is a functor that is capable of accepting arguments up to a predefined maximum. It is up to the base class to do the actual processing or possibly to limit the arity (no. of arguments) passed in. Upon invocation of the functor through a supplied operator(), the actor funnels the arguments passed in by the client into a tuple and calls the base class' eval member function.
+
+Schematically:
+
+    arg0 ---------|
+    arg1 ---------|
+    arg3 ---------|---> tupled_args ---> base.eval
+    ...           |
+    argN ---------|
+
+    actor::operator()(arg0, arg1... argN)
+      ---> BaseT::eval(tupled_args);
+
+Actor base classes from which this class inherits from are expected to have a corresponding member function eval compatible with the conceptual Interface:
+
+    template <typename TupleT>
+    actor_return_type
+    eval(TupleT const& args) const;
+
+where args are the actual arguments passed in by the client funneled into a tuple (see tuple for details).
+
+The actor_return_type can be anything. Base classes are free to return any type, even argument dependent types (types that are deduced from the types of the arguments). After evaluating the parameters and doing some computations or actions, the eval member function concludes by returning something back to the client. To do this, the forwarding function (the actor's operator()) needs to know the return type of the eval member function that it is calling. For this purpose, actor base classes are required to provide a nested template class:
+
+    template <typename TupleT>
+    struct result;
+
+This auxiliary class provides the result type information returned by the eval member function of a base actor class. The nested template class result should have a typedef 'type' that reflects the return type of its member function eval. It is basically a type computer that answers the question "given arguments packed into a TupleT type, what will be the result type of the eval member function of ActorT?".
+
+There is a global template class actor_result declared in namespace phoenix scope that queries the actor's result type given a tuple. Here is the class actor_result's declaration:
+
+    template <typename ActorT, typename TupleT>
+    struct actor_result {
+
+        typedef typename ActorT::template result<TupleT>::type type;
+        typedef typename remove_reference<type>::type plain_type;
+    };
+
+* type is the actual return type
+* plain_type is the return type stripped from references.
+
+Given an actor type ActorT and a TupleT, we can get the actor's return type this way:
+
+    typedef typename actor_result<ActorT, TupleT>::type
+        actor_return_type;
+
+where actor_return_type is the actual type returned by ActorT's eval member function given some arguments packed in a TupleT.
+
+For reference, here's a typical actor::operator() that accepts two (2) arguments:
+
+    template <typename BaseT>
+    template <typename T0, typename T1>
+    inline typename actor_result<BaseT, tuple<T0&, T1&> >::type
+    actor<BaseT>::operator()(T0& _0, T1& _1) const
+    {
+        return BaseT::eval(tuple<T0&, T1&>(_0, _1));
+    }
+
+[blurb __detail__ [*Forwarding Function Problem][br][br]_0 and _1 are references. Hence the arguments cannot accept non-const temporaries and literal constants. This is a current C++ language issue known as the "forwarding function problem" that is currently being discussed. The problem is that given an arbitrary function f, using current C++ language rules, one cannot create a forwarding function f' that transparently assumes the arguments of f.]
+
+[page:1 Composites revisited]
+
+A composite is an actor base class composed of zero or more actors (see actor) and an operation. A composite is itself an actor superclass and conforms to its expected conceptual interface. Its eval member function un-funnels the tupled actual arguments by invoking each of the actors' eval member function. The results of each are then passed on as arguments to the operation. Specializations are provided for composites that handle different numbers of actors from zero to N, where N is a predefined maximum.
+
+Schematically:
+
+    actor0.eval(tupled_args) --> arg0 --> |
+    actor1.eval(tupled_args) --> arg1 --> |
+    actor2.eval(tupled_args) --> arg3 --> | --> operation(arg0...argN)
+    ...                                   |
+    actorN.eval(tupled_args) --> argN --> |
+
+Here's a typical example of the composite's eval member function for a 2-actor composite:
+
+    template <typename TupleT>
+    typename actor_result<self_t, TupleT>::type
+    eval(TupleT const& args) const
+    {
+        typename actor_result<A0, TupleT>::type r0 = a0.eval(args);
+        typename actor_result<A1, TupleT>::type r1 = a1.eval(args);
+        return op(r0, r1);
+    }
+
+where self_t is the composite's 'self' type, TupleT 'args' is the tuple-packed arguments passed to the actor (see actor) and op is the operation associated with the composite. r0 and r1 are the actual arguments un-funneled from 'args' and pre-processed by the composite's actors which are then passed on to the operation 'op'.
+
+The operation can be any suitable functor that can accept the arguments passed in by the composite. The operation is expected to have a member operator() that carries out the actual operation. There should be a one to one correspondence between actors of the composite and the arguments of the operation's member operator().
+
+The operation is also expected to have a nested template class result<T0...TN>. The nested template class result should have a typedef 'type' that reflects the return type of its member operator(). This is essentially a type computer that answers the metaprogramming question "Given arguments of type T0...TN, what will be your operator()'s return type?". There is a special case for operations that accept no arguments. Such nullary operations are only required to define a typedef result_type that reflects the return type of its operator().
+
+Here's a view on what happens when the eval function is called:
+
+
+    tupled arguments:                 args
+                                       |
+                       +-------+-------+-------+-------+
+                       |       |       |       |       |
+                       |       |       |       |       |
+    actors:         actor0  actor1  actor2  actor3..actorN
+                       |       |       |       |       |
+                       |       |       |       |       |
+    operation:   op( arg0,   arg1,   arg2,   arg3,...argN )
+                  |
+                  |
+    returns:      +---> operation::result<T0...TN>::type
+
+Here's an example of a simple operation that squares a number:
+
+    struct square {
+
+        template <typename ArgT>
+        struct result { typedef ArgT type; };
+
+        template <typename ArgT>
+        ArgT operator()(ArgT n) const { return n * n; }
+    };
+
+This is a perfect example of a polymorphic functor discussed before in the section on functions. As we can see, operations are polymorphic. Its arguments and return type are not fixed to a particular type. The example above for example, can handle any ArgT type as long as it has a multiplication operator.
+
+Composites are not created directly. Instead, there are meta- programs provided that indirectly create composites. See operators, binders and functions for examples.
+
+[page:1 Operators revisited]
+
+Each C++ operator has a special tag type associated with it. For example the binary + operator has a plus_op tag type associated with it. This operator tag is used to specialize either:
+
+# unary_operator<TagT, T0>
+# binary_operator<TagT, T0, T1>
+
+template classes (see unary_operator and binary_operator below). Specializations of these unary_operator and binary_operator are the actual workhorses that implement the operations. The behavior of each lazy operator depends on these unary_operator and binary_operator specializations.
+
+Preset specializations conform to the canonical operator rules modeled by the behavior of integers and pointers:
+
+* Prefix -, + and ~ accept constant arguments and return an object by value.
+* The ! accept constant arguments and returns a boolean result.
+* The & (address-of), * (dereference) both return a reference to an object.
+* Prefix ++ returns a reference to its mutable argument after it is incremented.
+* Postfix ++ returns the mutable argument by value before it is incremented.
+* The += and its family accept mutable right hand side (rhs) operand and return a reference to the rhs operand.
+* Infix + and its family accept constant arguments and return an object by value.
+* The == and its family accept constant arguments and return a boolean result.
+* Operators && and || accept constant arguments and return a boolean result and are short circuit evaluated as expected.
+
+[h2 Special operators and extensibility]
+
+It is of course possible to override the standard operator behavior when appropriate. For example, the behavior of std::cout does not conform to the canonocal shift left operator << (i.e. the rhs std::cout is a mutable reference). Odd balls such as this are placed in special_ops.hpp. There you will find specializations for various classes found in the standard lib.
+
+The library is meant to be extensible. Users may implement their own specializations to allow other libraries to be adapted to be partial-function-evaluation savvy. Later on, in the section "Interfacing (to applications, libraries and frameworks)", discussion will be focused on interfacing and extending the framework.
+
+[h2 Operator tags]
+
+Each C++ operator has a corresponding tag type. This is used as a means for specializing the unary_operator and binary_operator (see below). The tag also serves as the lazy operator type compatible with a composite as an operation (see composite). Here are two examples of operator tags:
+
+Unary example:
+
+    struct negative_op {
+
+        template <typename T0>
+        struct result {
+
+            typedef typename unary_operator<negative_op, T0>
+                ::result_type type;
+        };
+
+        template <typename T0>
+        typename unary_operator<negative_op, T0>::result_type
+        operator()(T0& _0) const
+        { return unary_operator<negative_op, T0>::eval(_0); }
+    };
+
+Binary example:
+
+    struct plus_op {
+
+        template <typename T0, typename T1>
+        struct result {
+
+            typedef typename binary_operator<plus_op, T0, T1>
+                ::result_type type;
+        };
+
+        template <typename T0, typename T1>
+        typename binary_operator<plus_op, T0, T1>::result_type
+        operator()(T0& _0, T1& _1) const
+        { return binary_operator<plus_op, T0, T1>::eval(_0, _1); }
+    };
+
+Notice that these are again perfect examples of a composite operation. This style of specialized function is ubiquitous in the framework. We shall see how the unary_operator<negative_op, T0> and the binary_operator<plus_op, T0, T1> template classes, work in a short while.
+
+Here are the complete list of operator tags:
+
+    //  Unary operator tags
+
+    struct negative_op;         struct positive_op;
+    struct logical_not_op;      struct invert_op;
+    struct reference_op;        struct dereference_op;
+    struct pre_incr_op;         struct pre_decr_op;
+    struct post_incr_op;        struct post_decr_op;
+
+    //  Binary operator tags
+
+    struct assign_op;           struct index_op;
+    struct plus_assign_op;      struct minus_assign_op;
+    struct times_assign_op;     struct divide_assign_op;    struct mod_assign_op;
+    struct and_assign_op;       struct or_assign_op;        struct xor_assign_op;
+    struct shift_l_assign_op;   struct shift_r_assign_op;
+
+    struct plus_op;             struct minus_op;
+    struct times_op;            struct divide_op;           struct mod_op;
+    struct and_op;              struct or_op;               struct xor_op;
+    struct shift_l_op;          struct shift_r_op;
+
+    struct eq_op;               struct not_eq_op;
+    struct lt_op;               struct lt_eq_op;
+    struct gt_op;               struct gt_eq_op;
+    struct logical_and_op;      struct logical_or_op;
+
+[h3 unary_operator]
+
+The unary_operator class implements most of the C++ unary operators. Each specialization is basically a simple static eval function plus a result_type typedef that determines the return type of the eval function.
+
+TagT is one of the unary operator tags above and T is the data type (argument) involved in the operation. Here is an example:
+
+    template <typename T>
+    struct unary_operator<negative_op, T> {
+
+        typedef T const result_type;
+        static result_type eval(T const& v)
+        { return -v; }
+    };
+
+This example is exactly what was being referred to by the first example we saw in the section on operator tags.
+
+Only the behavior of C/C++ built-in types are taken into account in the specializations provided in operator.hpp. For user-defined types, these specializations may still be used provided that the operator overloads of such types adhere to the standard behavior of built-in types.
+
+A separate special_ops.hpp file implements more STL savvy specializations. Other more specialized unary_operator implementations may be defined by the client for specific unary operator tags/data types.
+
+[h3 binary_operator]
+
+The binary_operator class implements most of the C++ binary operators. Each specialization is basically a simple static eval function plus a result_type typedef that determines the return type of the eval function.
+
+TagT is one of the binary operator tags above T0 and T1 are the (arguments') data types involved in the operation. Here is an example:
+
+    template <typename T0, typename T1>
+    struct binary_operator<plus_op, T0, T1> {
+
+        typedef typename higher_rank<T0, T1>::type const result_type;
+        static result_type eval(T0 const& lhs, T1 const& rhs)
+        { return lhs + rhs; }
+    };
+
+This example is exactly what was being referred to by the second example we saw in the section on operator tags. higher_rank<T0, T1> is a type computer. We shall see how this works in a short while, pardon the forward information.
+
+Only the behavior of C/C++ built-in types are taken into account in the specializations provided in operator.hpp. For user-defined types, these specializations may still be used provided that the operator overloads of such types adhere to the standard behavior of built-in types.
+
+A separate special_ops.hpp file implements more STL savvy specializations. Other more specialized unary_operator implementations may be defined by the client for specific unary operator tags/data types.
+
+All binary_operator except the logical_and_op and logical_or_op have an eval static function that carries out the actual operation. The logical_and_op and logical_or_op d are special because these two operators are short-circuit evaluated.
+
+[blurb __detail__ [*Short Circuiting || and &&][br][br]The logical_and_op and logical_or_op are special due to the C/C++ short circuiting rule, i.e. a || b and a && b are short circuit evaluated. A forwarding operation cannot be used because all function arguments are evaluated before a function is called. logical_and_op and logical_or_op are specialized composites with implied operations.]
+
+[h2 rank]
+
+rank<T> class has a static int constant 'value' that defines the absolute rank of a type. rank<T> is used to choose the result type of binary operators such as +. The type with the higher rank wins and is used as the operator's return type. A generic user defined type has a very high rank and always wins when compared against a user defined type. If this is not desireable, one can write a rank specialization for the type. Here are some predefined examples:
+
+    template <> struct rank<char>           { static int const value = 20; };
+    template <> struct rank<signed char>    { static int const value = 20; };
+    template <> struct rank<unsigned char>  { static int const value = 30; };
+    template <> struct rank<wchar_t>        { static int const value = 40; };
+
+Take note that ranks 0..9999 are reserved by the framework.
+
+A template type computer higher_rank<T0, T1> chooses the type (T0 or T1) with the higher rank. We saw in the binary_operator for plus_op how it was used. Specifically:
+
+    higher_rank<T0, T1>::type
+
+returns either T0 or T1 depending on which has a higher rank. In some operator applications such as a + b, the result is actually the one with the higher rank. For example if a is of type int and b is of type double, the result will be of type double. This facility can also be quite useful for evaluating some functions. For instance if we have a sum(a, b, c, d, e) function, we can call this type computer to get the type with the highest rank:
+
+    higher_rank<TA,
+        higher_rank<TB,
+            higher_rank<TC,
+                higher_rank<TD, TE>::type
+            >::type
+        >::type
+    >::type
+
+[blurb __alert__ When used within templates, be sure to use 'typename' appropriately. See binary_operator<plus_op, T0, T1> above.]
+
+[page:1 Interfacing]
+
+The modular design of Phoenix makes it extremely extensible. We have seen that layer upon layer, the whole framework is built on solid foundation. There are only a few simple well designed concepts that are laid out like bricks. Overall the framework is designed to be extended. Everything above the composite and primitives can in fact be considered just as extensions to the framework. This modular design was inherited from the Spirit inline parser framework.
+
+Extension is non-intrusive. And, whenever a component or module is extended, the new extension automatically becomes a first class citizen and is automatically recognized by all modules and components in the framework. There are a multitude of ways in which a module is extended.
+
+1)  Write and deploy a new primitive:
+
+So far we have presented only a few primitives 1) arguments 2) values and 3) variables. For the sake of illustration, let us write a simple primitive extension. Let us call it static_int. It shall be parameterized by an integer value. It is like a static version of the the value<int> class, but since it is static, holds no data at all. The integer is encoded in its type. Here is the complete class (sample5.cpp):
+
+    template <int N>
+    struct static_int {
+
+        template <typename TupleT>
+        struct result { typedef int type; };
+
+        template <typename TupleT>
+        int eval(TupleT const&) const { return N; }
+    };
+
+That's it. Done! Now we can use this as it is already a full- fledged Phoenix citizen due to interface conformance. Let us write a suitable generator to make it easier to use our static_int. Remember that it should be wrapped as an actor before it can be used. Let us call our generator int_const:
+
+    template <int N>
+    phoenix::actor<static_int<N> >
+    int_const()
+    {
+        return static_int<N>();
+    }
+
+Now we are done. Let's use it:
+
+    cout << (int_const<5>() + int_const<6>())() << endl;
+
+Prints out "11". There are lots of things you can do with this form of extension. For instance, data type casts come to mind. Example:
+
+    lazy_cast<T>(some_lazy_expression)
+
+2)  Write and deploy a new composite:
+
+This is more complicated than our first example (writing a primitive). Nevertheless, once you get the basics, writing a composite is almost mechanical and boring (read: easy :-). Check out statements.hpp. All the lazy statements are written in terms of the composite interface.
+
+Ok, let's get on with it. Recall that the if_ else_ lazy statement (and all statements for that matter) return void. What's missing, and will surely be useful, is something like C/C++'s "cond ? a : b" expression. It is really unfortunate that C++ fell short of allowing this to be overloaded. Sigh. Anyway here's the code (sample6.cpp):
+
+    template <typename CondT, typename TrueT, typename FalseT>
+    struct if_else_composite {
+
+        typedef if_else_composite<CondT, TrueT, FalseT> self_t;
+
+        template <typename TupleT>
+        struct result {
+
+            typedef typename higher_rank<
+                typename actor_result<TrueT, TupleT>::plain_type,
+                typename actor_result<FalseT, TupleT>::plain_type
+            >::type type;
+        };
+
+        if_else_composite(
+            CondT const& cond_, TrueT const& true__, FalseT const& false__)
+        :   cond(cond_), true_(true__), false_(false__) {}
+
+        template <typename TupleT>
+        typename actor_result<self_t, TupleT>::type
+        eval(TupleT const& args) const
+        {
+            return cond.eval(args) ? true_.eval(args) : false_.eval(args);
+        }
+
+        CondT cond; TrueT true_; FalseT false_; //  actors
+    };
+
+Ok, this is quite a mouthfull. Let's digest this piecemeal.
+
+    template <typename CondT, typename TrueT, typename FalseT>
+    struct if_else_composite {
+
+This is basically a specialized composite that has 3 actors. It has no operation since it is implied. The 3 actors are cond (condition of type CondT) true_ (the true branch of type TrueT), false_ the (false branch or type FalseT).
+
+    typedef if_else_composite<CondT, TrueT, FalseT> self_t;
+
+self_t is a typedef that declares its own type: "What am I?"
+
+    template <typename TupleT>
+    struct result {
+
+        typedef typename higher_rank<
+            typename actor_result<TrueT, TupleT>::plain_type,
+            typename actor_result<FalseT, TupleT>::plain_type
+        >::type type;
+    };
+
+We have seen result before. For actor base-classes such as composites and primitives, the parameter is a TupleT, i.e. the tupled arguments passed in from the actor.
+
+So given some arguments, what will be our return type? TrueT and FalseT are also actors remember? So first, we should ask them "What are your *plain* (stripped from references) return types?"
+
+Knowing that, our task is then to know which type has a higher rank (recall rank<T> and higher_rank<T0, T1>). Why do we have to do this? We are emulating the behavior of the "cond ? a : b" expression. In C/C++, the type of this expression is the one (a or b) with the higher rank. For example, if a is an int and b is a double, the result should be a double.
+
+Following this, finally, we have a return type typedef'd by result<TupleT>::type.
+
+    if_else_composite(
+        CondT const& cond_, TrueT const& true__, FalseT const& false__)
+    :   cond(cond_), true_(true__), false_(false__) {}
+
+This is our constructor. We just stuff the constructor arguments into our member variables.
+
+    template <typename TupleT>
+    typename actor_result<self_t, TupleT>::type
+    eval(TupleT const& args) const
+
+Now, here is our main eval member function. Given a self_t, our type, and the TupleT, the return type deduction is almost canonical. Just ask actor_result, it'll surely know.
+
+    {
+        return cond.eval(args) ? true_.eval(args) : false_.eval(args);
+    }
+
+We pass the tupled args to all of our actors: cond, args and args appropriately. Notice how this expression reflects the C/C++ version almost to the letter.
+
+Well that's it. Now let's write a generator for this composite:
+
+    template <typename CondT, typename TrueT, typename FalseT>
+    actor<if_else_composite<
+        typename as_actor<CondT>::type,
+        typename as_actor<TrueT>::type,
+        typename as_actor<FalseT>::type> >
+    if_else_(CondT const& cond, TrueT const& true_, FalseT const& false_)
+    {
+        typedef if_else_composite<
+            typename as_actor<CondT>::type,
+            typename as_actor<TrueT>::type,
+            typename as_actor<FalseT>::type>
+        result;
+
+        return result(
+            as_actor<CondT>::convert(cond),
+            as_actor<TrueT>::convert(true_),
+            as_actor<FalseT>::convert(false_));
+    }
+
+Now this should be trivial to explain. I hope. Again, let's digest this piecemeal.
+
+    template <typename CondT, typename TrueT, typename FalseT>
+
+Again, there are three elements involved: The CondT condition 'cond', the TrueT true branch 'true_, and the FalseT false branch 'false_'.
+
+    actor<if_else_composite<
+        typename as_actor<CondT>::type,
+        typename as_actor<TrueT>::type,
+        typename as_actor<FalseT>::type> >
+
+This is our target. We want to generate this actor. Now, given our arguments (cond, true_ and false_), we are not really sure if they are really actors. What if the user passes the boolean true as the cond? Surely, that has to be converted to an actor<value<bool> >, otherwise Phoenix will go berzerk and will not be able to accommodate this alien.
+
+    as_actor<T>::type
+
+is just what we need. This type computer converts from an arbitrary type T to a full-fledged actor citizen.
+
+    if_else_(CondT const& cond, TrueT const& true_, FalseT const& false_)
+
+These are the arguments to our generator 'if_else_'.
+
+    typedef if_else_composite<
+        typename as_actor<CondT>::type,
+        typename as_actor<TrueT>::type,
+        typename as_actor<FalseT>::type>
+    result;
+
+Same as before, this is our target return type, this time stripped off the actor. That's OK because the actor<T> has a constructor that takes in a BaseT object: 'result' in this case.
+
+    return result(
+        as_actor<CondT>::convert(cond),
+        as_actor<TrueT>::convert(true_),
+        as_actor<FalseT>::convert(false_));
+
+Finally, we construct and return our result. Notice how we called the as_actor<T>::convert static function to do the conversion from T to a full-fledged actor for each of the arguments.
+
+At last. Now we can use our brand new composite and its generator:
+
+    //  Print all contents of an STL container c and
+    //  prefix " is odd" or " is even" appropriately.
+
+    for_each(c.begin(), c.end(),
+        cout
+            << arg1
+            << if_else_(arg1 % 2 == 1, " is odd", " is even")
+            << val('\n')
+    );
+
+3)  Write an as_actor<T> converter for a specific type:
+
+By default, an unknown type T is converted to an actor<value<T> >. Say we just wrote a special primitive my_lazy_class following example 1. Whenever we have an object of type my_class, we want to convert this to a my_lazy_class automatically.
+
+as_actor<T> is Phoenix's type converter. All facilities that need to convert from an unknown type to an actor passes through this class. Specializing as_actor<T> for my_class is just what we need. For example:
+
+    template <>
+    struct as_actor<my_class> {
+
+        typedef actor<my_lazy_class> type;
+        static type convert(my_class const& x)
+        { return my_lazy_class(x); }
+    };
+
+For reference, here is the main is_actor<T> interface:
+
+    template <typename T>
+    struct as_actor {
+
+        typedef ??? type;
+        static type convert(T const& x);
+    };
+
+where ??? is the actor type returned by the static convert function. By default, this is:
+
+    typedef value<T> type;
+
+4)  Write a specialized overloaded operator for a specific type:
+
+Consider the handling of operator << std::ostream such as cout. When we see an expression such as:
+
+    cout << "Hello World\n"
+
+the operator overload actually takes in cout by reference, modifies it and returns the same cout again by reference. This does not conform to the standard behavior of the shift left operator for built-in ints.
+
+In such cases, we can provide a specialized overload for this to work as a lazy-operator in expressions such as "cout << arg1 << arg2;" where the operatior behavior deviates from the standard operator:
+
+# std::ostream is taken as the LHS by reference
+# std::ostream is converted to an actor<variable<std::ostream> > instead of the default actor<value<std::ostream> >.
+
+We supply a special overload then (see special_ops.hpp):
+
+    template <typename BaseT>
+    actor<composite<
+        shift_l_op,                     //  an operator tag
+        variable<std::ostream>,         //  an actor LHS
+        actor<BaseT>,                   //  an actor RHS
+    > >
+    operator<<(
+        std::ostream& _0,               //  LHS argument
+        actor<BaseT> const& _1)         //  RHS argument
+    {
+        return actor<composite<
+            shift_l_op,                 //  an operator tag
+            variable<std::ostream>,     //  an actor LHS
+            actor<BaseT>,               //  an actor RHS
+        > >(var(_0), _1);               //  construct 'em
+    }
+
+Take note that the std::ostream reference is converted to a actor<variable<std::ostream> > instead of the default actor<value<std::ostream> > which is not appropriate in this case.
+
+This is not yet complete. Take note also that a specialization for binary_operator also needs to be written (see no. 6).
+
+5)  Specialize a rank<T> for a specific type or group of types:
+
+Scenario: We have a set of more specialized numeric classes with higher precision than the built-in types. We have integer, floating and rational classes. All of the classes allow type promotions from the built-ins. These classes have all the pertinent operators implemented along with a couple of mixed type operators whenever appropriate. The operators conform to the canonical behavior of the built-in types. We want to enable Phoenix support for our numeric classes.
+
+Solution: Write rank specializations for our numeric types. This is trivial and straightforward:
+
+    template <> struct rank<integer>    { static int const value = 10000; };
+    template <> struct rank<floating>   { static int const value = 10020; };
+    template <> struct rank<rational>   { static int const value = 10030; };
+
+Now, whenever there are mixed-type operations such as a + b where a is a primitive built-in int and b is our rational class, the correct promotion will be applied, and the result will be a rational. The type with the higher rank will win.
+
+6)  Specialize a unary_operator<TagT, T> or binary_operator<TagT, T0, T1> for a specific type:
+
+Scenario: We have a non-STL conforming iterator named my_iterator. Fortunately, its ++ operator works as expected. Unfortunately, when applying the dereference operator *p, it returns an object of type my_class but does not follow STL's convention that iterator classes have a typedef named reference.
+
+Solution, write a unary_operator specialization for our non- standard class:
+
+    template <>
+    struct unary_operator<dereference_op, my_iterator> {
+
+        typedef my_class result_type;
+        static result_type eval(my_iterator const& iter)
+        { return *iter; }
+    };
+
+Scenario: We have a legacy bigint implementation that we use for cryptography. The class design is totally brain-dead and disobeys all the rules. For example, its + operator is destructive and actually applies the += semantics for efficiency (yes, there are such brain-dead beasts!).
+
+Solution: write a binary_operator specialization for our non- standard class:
+
+    template <>
+    struct binary_operator<plus_op, bigint, bigint> {
+
+        typedef bigint& result_type;
+        static result_type eval(bigint& lhs, bigint const& rhs)
+        { return lhs + rhs; }
+    };
+
+Going back to our example in no. 4, we also need to write a binary_operator<TagT, T0, T1> specialization for ostreams because the << operator for ostreams deviate from the normal behavior.
+
+    template <typename T1>
+    struct binary_operator<shift_l_op, std::ostream, T1> {
+
+        typedef std::ostream& result_type;
+        static result_type eval(std::ostream& out, T1 const& rhs)
+        { return out << rhs; }
+    };
+
+7) Simply write a lazy-function.
+
+Consider this:
+
+    struct if_else_func {
+
+        template <typename CondT, typename TrueT, typename FalseT>
+        struct result {
+
+            typedef typename higher_rank<TrueT, FalseT>::type type;
+        };
+
+        template <typename CondT, typename TrueT, typename FalseT>
+        typename higher_rank<TrueT, FalseT>::type
+        operator()(CondT cond, TrueT const& t, FalseT const& f) const
+        { return cond ? t : f; }
+    };
+
+    function<if_else_func> if_else_;
+
+And this corresponding usage:
+
+    //  Print all contents of an STL container c and
+    //  prefix " is odd" or " is even" appropriately.
+
+    for_each(c.begin(), c.end(),
+        cout
+            << arg1
+            << if_else_(arg1 % 2 == 1, " is odd", " is even")
+            << val('\n')
+    );
+
+What the $%^!? If we can do this, why on earth did we go to all the trouble twisting our brains inside out with the if_else_ composite in no. 2? Hey, not so fast, there's a slight difference that justifies the if_else_ composite: It is not apparent in the example, but the composite version of the if_else_ evaluates either the true or the false branch, **but not both**. The lazy-function version above always eagerly evaluates all its arguments before the function is called. Thus, if we are to adhere strongly to C/C++ semantics, we need the composite version.
+
+Besides, I need to show an example... Hmmm, so what's the point of no. 7 then? Well, in most cases, a lazy-function will suffice. These beasts are quite powerful, you know.
+
+[page Wrap up]
+
+Sooner or later more FP techniques become standard practice as people find the true value of this programming discipline outside the academe and into the mainstream. In as much as the structured programming of the 70s and object oriented programming in the 80s and generic programming in the 90s shaped our thoughts towards a more robust sense of software engineering, FP will certainly be a paradigm that will catapult us towards more powerful software design and engineering onward into the new millenium.
+
+Let me quote Doug Gregor of Boost.org. About functional style programming libraries:
+
+[:['They're gaining acceptance, but are somewhat stunted by the ubiquitousness of broken compilers. The C++ community is moving deeper into the so-called "STL-style" programming paradigm, which brings many aspects of functional programming into the fold. Look at, for instance, the Spirit parser to see how such function objects can be used to build Yacc-like grammars with semantic actions that can build abstract syntax trees on the fly. This type of functional composition is gaining momentum.]]
+
+Indeed. Phoenix is another attempt to introduce more FP techniques into the mainstream. Not only is it a tool that will make life easier for the programmer. In its own right, the actual design of the framework itself is a model of true C++ FP in action. The framework is designed and structured in a strict but clear and well mannered FP sense. By all means, use the framework as a tool. But for those who want to learn more about FP in C++, don't stop there, I invite you to take a closer look at the design of the framework itself.
+
+The whole framework is rather small and comprises of only a couple of header files. There are no object files to link against. Unlike most FP libraries in C++, Phoenix is portable to more C++ compilers in existence. Currently it works on Borland 5.5.1, Comeau 4.24, G++ 2.95.2, G++ 3.03, G++ 3.1, Intel 5.0, Intel 6.0, Code Warrior 7.2 and perhaps soon, to MSVC.
+
+So there you have it. Have fun! See you in the FP world.
+
+[page References]
+
+Why Functional Programming Matters, John Hughes, 1989.[br] Available online at [@http://www.math.chalmers.se/~rjmh/Papers/whyfp.html http://www.math.chalmers.se/~rjmh/Papers/whyfp.html].
+
+Boost.Lambda library, Jaakko Jarvi, 1999-2002 Jaakko Järvi, Gary Powell.[br] Available online at [@http://www.boost.org/libs/lambda/ http://www.boost.org/libs/lambda/].
+
+Functional Programming in C++ using the FC++ Library: a short article introducing FC++, Brian McNamara and Yannis Smaragdakis, April 2001. Available online at [@http://www.cc.gatech.edu/~yannis/fc++/ http://www.cc.gatech.edu/~yannis/fc++/].
+
+Side-effects and partial function application in C++, Jaakko Jarvi and Gary Powell, 2001.[br] Available online at [@http://osl.iu.edu/~jajarvi/publications/papers/mpool01.pdf http://osl.iu.edu/~jajarvi/publications/papers/mpool01.pdf].
+
+Spirit Version 1.2, Joel de Guzman, Nov 2001.[br] Available online at [@http://spirit.sourceforge.net/index.php?doc=docs/v1_2/index.html http://spirit.sourceforge.net/index.php?doc=docs/v1_2/index.html].
+
+Generic Programming Redesign of Patterns, Proceedings of the 5th European Conference on Pattern Languages of Programs, (EuroPLoP'2000) Irsee, Germany, July 2000.[br] Available online at [@http://www.coldewey.com/europlop2000/papers/geraud%2Bduret.zip http://www.coldewey.com/europlop2000/papers/geraud%2Bduret.zip].
+
+A Gentle Introduction to Haskell, Paul Hudak, John Peterson and Joseph Fasel, 1999.[br] Available online at [@http://www.haskell.org/tutorial/ http://www.haskell.org/tutorial/]
+
+Large scale software design, John Lackos, ISBN 0201633620, Addison-Wesley, July 1996.
+
+Design Patterns, Elements of Reusable Object-Oriented Software, Erich Gamma, Richard Helm, Ralph Jhonson, and John Vlissides, Addison-Wesley, 1995.
+

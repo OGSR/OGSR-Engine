@@ -1,0 +1,96 @@
+.\" <!!---------------------------------------------------------------------->
+.\" <!! Copyright (C) 1999 Dietmar Kuehl, Claas Solutions GmbH >
+.\" <!!>
+.\" <!! Permission to use, copy, modify, distribute and sell this >
+.\" <!! software for any purpose is hereby granted without fee, provided >
+.\" <!! that the above copyright notice appears in all copies and that >
+.\" <!! both that copyright notice and this permission notice appear in >
+.\" <!! supporting documentation. Dietmar Kuehl and Claas Solutions make no >
+.\" <!! representations about the suitability of this software for any >
+.\" <!! purpose. It is provided "as is" without express or implied warranty. >
+.\" <!!---------------------------------------------------------------------->
+.TH mfd/f_heap 3 "09.Juli 1999" "Claas Solutions" "boost"
+.SH NAME
+mfd/f_heap - Template Class \fBf_heap<T, Comp>\fP
+
+.SH SYNOPSIS
+
+
+.nf
+#include "boost/f_heap.hpp"
+
+template <class T>
+class boost::fibonacci_heap_base
+{
+public:
+  class iterator
+  {
+  public:
+    iterator();
+
+    bool operator== (iterator const& it) const;
+    bool operator!= (iterator const& it) const;
+    T const& operator* () const;
+    T const* operator-> () const;
+
+    iterator &operator++ ();
+    iterator operator++ (int);
+  };
+
+public:
+  bool      empty() const;
+  size_type size() const;
+
+  iterator begin() const;
+  iterator end() const;
+
+private:
+  fibonacci_heap_base(fibonacci_heap_base const&); // deliberately not implemented
+  void operator=(fibonacci_heap_base const&);      // deliberately not implemented
+};
+
+template <class T, class Comp = std::less<T> >
+class boost::fibonacci_heap: public boost::fibonacci_heap_base<T>
+{
+public:
+  typedef \fIunsigned integral type\fP                    size_type;
+  typedef \fIpointer type\fP                              pointer;
+  typedef T                                         value_type;
+  typedef T const&                                  const_reference;
+  typedef typename fibonacci_heap_base<T>::iterator const_iterator;
+  typedef Comp                                      compare_type;
+
+  explicit fibonacci_heap(Comp const& comp = Comp());
+
+  pointer  push(T const& val);
+  void     pop();
+  T const& top() const;
+  void     remove(pointer ptr);
+
+  template <typename K> void change_top(K const& val);
+  template <typename K> void change(pointer ptr, K const& val);
+  template <typename K> void decrease(pointer ptr, K const& val);
+  template <typename K> void increase(pointer ptr, K const& val);
+};
+.fi 0 
+.SH DESCRIPTION
+Fibonacci heaps are asymptotically the best priority queues known: They perform all heap operations in O(log n) time, some even in amortized constant time. However, in practise they are "known" (by the theoreticians) to be inferior eg. to d-heaps because their internal maintaince is relatively involved. Performance tests (with random data) indicated that they are indeed a bit slower but not too much (at least for many elements). 
+
+Fibonacci heaps are organized as a collection of trees which are somewhat similar to Binomial trees. Here is what is basically done: If a node becomes a root (this happens eg. if new node is pushed on the heap or during certain heap operations) it is checked if there is already a root with the same degree. If this is the case, the two nodes are linked to combine a new tree by making the smaller node a child of the larger node. Thereby a tree with a larger degree is formed which is potentially linked again with a corresponding tree. Thus, the degrees of the roots of all trees differs. If a node has to be removed from its parent, eg. because it became larger due to a \fBincrease\fP() operation or because the parent node is removed from the priority queue, it becomes a new root which is, of course, potentially linked. This approach could yield to degenerated trees and thus there is an additional rule: if a node lost more than one child, it is cut and made a new root. This process may lead to cascading cuts. 
+
+The similarity to Binomial trees is due to their construction: In a Binomial tree, each tree of degree \fIn\fP has \fIn\fP children with degrees \fI0\fP to \fIn-1\fP. This also applies to the trees in Fibonacci heaps since they are basically constructed the same way as Binomial trees are constructed, namely by using two trees of degree \fIn\fP to form a tree of degree \fIn+1\fP. However, due to the cuts applies in Fibonacci heaps the trees in a Fibonacci heap are normally not Binomial heaps. 
+
+For more information on Fibonacci heaps see eg. \fIIntroduction to Algorithms\fP, Corman, Leiserson, Rivest, MIT Press, or \fINetwork Flow\fP, Ahuja, Magnanti, Orlin, Prentice Hall. I used the latter to create this implementation (I like their descriptions in general because they often map quite directly to an implementation). However, the implementation looks quite different from this description to get the implementation fast... 
+
+For a description of the methods of \fBfibonacci_heap<T, Comp>\fP see the description of common methods. 
+.SH SEE ALSO
+heap(3), heap-common(3) 
+.SH AUTHOR
+Dietmar Kühl (Claas Solutions)
+.br
+e-mail: dietmar.kuehl@claas-solutions.de
+.br
+http://www.claas-solutions.de/kuehl
+.br
+
+

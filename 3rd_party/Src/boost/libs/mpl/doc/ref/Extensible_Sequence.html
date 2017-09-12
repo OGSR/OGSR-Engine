@@ -1,0 +1,40 @@
+<!doctype html public "-//ietf//dtd html//en">
+<html><head><title>boost::mpl::Extensible Sequence</title>
+<link rel="stylesheet" href="./mpl_wiki.css">
+</head><body bgcolor="white">
+<h1><a href="./Table_of_Contents.html"><img src="./mpl_logo.jpg" alt="[Home]" border=0 align="right"></a>Extensible Sequence</h1><h3>Description</h3>
+<p>
+An Extensible Sequence is either a <a href="./Forward_Sequence.html">Forward Sequence</a>, a <a href="./Bidirectional_Sequence.html">Bidirectional Sequence</a> or a <a href="./Random_Access_Sequence.html">Random Access Sequence</a> that supports insertion and removal operations.
+<p>
+<h3>Refinement of</h3>
+<p>
+<a href="./Forward_Sequence.html">Forward Sequence</a>, <a href="./Bidirectional_Sequence.html">Bidirectional Sequence</a> or <a href="./Random_Access_Sequence.html">Random Access Sequence</a>
+<p>
+<h3>Valid expressions</h3>
+<p>
+<table border="1">
+<tr><th>&nbsp;Expression&nbsp;</th><th>&nbsp;Expression type &nbsp;</th></tr>
+<tr><td><code>typename clear&lt;s&gt;::type</code></td><td>A model of concept of <code>s</code> </td></tr>
+<tr><td><code>typename insert&lt;s,pos,T&gt;::type</code></td><td>A model of concept of <code>s</code> </td></tr>
+<tr><td><code>typename erase&lt;s,pos&gt;::type</code></td><td>A model of concept of <code>s</code> </td></tr>
+<tr><td><code>typename erase&lt;s,first,last&gt;::type</code></td><td>A model of concept of <code>s</code> </td></tr>
+</table>
+<p>
+<h3>Expression semantics</h3>
+<p>
+See the description of <a href="./Reference/clear.html">clear</a>, <a href="./Reference/insert.html">insert</a>, and <a href="./Reference/erase.html">erase</a> algorithms.
+<p>
+<h3>Models</h3>
+<p>
+<ul>
+<li><code><a href="./Reference/vector.html">vector</a></code>
+<li><code><a href="./Reference/vector_c.html">vector_c</a></code>
+<li><code><a href="./Reference/list.html">list</a></code>
+<li><code><a href="./Reference/list_c.html">list_c</a></code>
+</ul>
+<p>
+<h3>See also</h3>
+<p>
+<a href="./Sequences.html">Sequences</a>, <code><a href="./Reference/clear.html">clear</a></code>, <code><a href="./Reference/insert.html">insert</a></code>, <code><a href="./Reference/erase.html">erase</a></code>
+<p><hr>
+<a href="./Table_of_Contents.html">Table of Contents</a><br>Last edited July 16, 2002 6:27 pm</body></html>

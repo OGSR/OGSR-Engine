@@ -1,0 +1,495 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+<title>THE BOOST MPL LIBRARY</title>
+<link rel="stylesheet" href="article.css" type="text/css">
+<meta name="generator" content="DocBook XSL Stylesheets V1.50.0">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<div class="article">
+<div class="titlepage">
+<div>
+<img src="../../../c++boost.gif" align="middle" width="277" height="86">
+<div class="articletitle">
+<h1 class="title"><a name="idafawr"></a>THE BOOST MPL LIBRARY</h1>
+</div>
+</div>
+</div>
+
+<div class="toc">
+<p><b>Table of Contents</b></p>
+
+<dl>
+<dt>1. <a href="#preface">Preface</a></dt>
+
+<dt>2. <a href="#source">Sources</a></dt>
+
+<dt>3. <a href="#tutorial">Mini-tutorial</a></dt>
+
+<dd>
+<dl>
+<dt>3.1. <a href="#tutorial.conventions">Conventions used</a></dt>
+
+<dt>3.2. <a href="#metafunctions">Metafunctions</a></dt>
+
+<dt>3.3. <a href="#if">Compile-time if</a></dt>
+
+<dt>3.4. <a href="#applyif">apply_if</a></dt>
+
+<dt>3.5. <a href="#applyif2">apply_if, part 2</a></dt>
+</dl>
+</dd>
+
+<dt>4. <a href="#technical">Technical details</a></dt>
+
+<dd>
+<dl>
+<dt>4.1. <a href="#details.headers">Physical structure</a></dt>
+
+<dt>4.2. <a href="#details.depend">Dependencies</a></dt>
+
+<dt>4.3. <a href="#details.portability">Portability</a></dt>
+</dl>
+</dd>
+
+<dt>5. <a href="#acknw">Acknowledgements</a></dt>
+
+<dt><a href="#bibliography">Bibliography</a></dt>
+</dl>
+</div>
+
+<div class="section">
+<div class="titlepage">
+<div>
+<h2 class="title" style="clear: both"><a name="preface"></a>1. Preface</h2>
+</div>
+</div>
+
+<p>The MPL library is a C++ template metaprogramming framework of compile-time algorithms, sequences and metafunction classes. The two main documentation sources for the library is &ldquo;the MPL paper&rdquo;, and the library's reference documentation. If you haven't heard about the MPL before, we suggest you to start with the paper, and then move on to the reference documentation and the information in this document.</p>
+
+<div class="itemizedlist">
+<ul type="box">
+<li style="list-style-type: square">A. Gurtovoy, D. Abrahams, <a href="./paper/html/index.html" target="_top">The Boost C++ Metaprogramming Library</a>, March 2002 | [<a href="./paper/mpl_paper.pdf" target="_top">as .pdf</a>] [<a href="./paper/mpl_paper.html" target="_top">as single .html</a>]</li>
+
+<li style="list-style-type: square"><a href="./ref/Table_of_Contents.html" target="_top">Reference documentation</a>
+<div class="orderedlist">
+<ol type="1">
+<li><a href="./ref/Sequences.html" target="_top">Sequences</a></li>
+
+<li><a href="./ref/Iterators.html" target="_top">Iterators</a></li>
+
+<li><a href="./ref/Algorithms.html" target="_top">Algorithms</a></li>
+
+<li><a href="./ref/Metafunctions.html" target="_top">Metafunctions</a></li>
+
+<li><a href="./ref/Integral_constant_classes.html" target="_top">Integral constant classes</a></li>
+
+<li><a href="./ref/Categorized_index.html" target="_top">Categorized index</a></li>
+</ol>
+</div>
+</li>
+</ul>
+</div>
+</div>
+
+<div class="section">
+<div class="titlepage">
+<div>
+<h2 class="title" style="clear: both"><a name="source"></a>2. Sources</h2>
+</div>
+</div>
+
+<p>The latest library sources are available from the main trunk of the <a href="http://www.boost.org/more/download.html#CVS" target="_top">Boost CVS</a>. <a href="http://boost.sourceforge.net/release/">Boost 1.30.0 distribution</a> contains a stable version of the library as per March 12, 2003.</p>
+</div>
+
+<div class="section">
+<div class="titlepage">
+<div>
+<h2 class="title" style="clear: both"><a name="tutorial"></a>3. Mini-tutorial</h2>
+</div>
+</div>
+
+<div class="section">
+<div class="titlepage">
+<div>
+<h3 class="title"><a name="tutorial.conventions"></a>3.1. Conventions used</h3>
+</div>
+</div>
+
+<p>The examples used through this tutorial use fully qualified names, e.g. <tt>std::vector</tt> instead of plain <tt>vector</tt>. Any unqualified name refers to a local entity defined in the example itself. The names from <tt>boost::mpl</tt> namespace are referred to using <tt>mpl</tt> namespace alias (e.g. <tt>mpl::apply</tt> instead of <tt>boost::mpl::apply</tt>), as if the following namespace alias definition were in effect:</p>
+
+<pre class="programlisting">
+namespace mpl = boost::mpl;
+</pre>
+
+<p>Note that the library offers a special header, <tt>boost/mpl/alias.hpp</tt>, including which gives you a rough equivalent of the above. Alternatively, you can always spell the namespace alias definition manually in each translation unit as needed (if you choose to use the shorter namespace notation at all).</p>
+</div>
+
+<div class="section">
+<div class="titlepage">
+<div>
+<h3 class="title"><a name="metafunctions"></a>3.2. Metafunctions</h3>
+</div>
+</div>
+
+<p>In MPL, the metaprogramming equivalent of a function is a <i>class template</i> containing a nested <tt>typedef</tt> member aptly named &ldquo;type&rdquo;:</p>
+
+<pre class="programlisting">
+// on the face of it, not very useful
+template&lt; typename T &gt;
+struct identity 
+{
+    typedef T type;
+};
+
+// perhaps more useful
+template&lt; typename T &gt;
+struct result_type 
+{
+    typedef typename T::result_type type;
+};
+</pre>
+
+<p>&ldquo;Invoking&rdquo; a metafunction is as simple as instantiating the class template with particular template parameters (metafunction &ldquo;arguments&rdquo;) and accessing the result through the nested <tt>type</tt> member:</p>
+
+<pre class="programlisting">
+typedef identity&lt;int&gt;::type t1; // t1 == int
+typedef result_type&lt; std::unary_function&lt;int,bool&gt; &gt;::type t2; // t2 == bool
+</pre>
+</div>
+
+<div class="section">
+<div class="titlepage">
+<div>
+<h3 class="title"><a name="if"></a>3.3. Compile-time if</h3>
+</div>
+</div>
+
+<p>The most interesting template metaprograms often contain a lot of decision-making code. Some of conditional decisions/behavior can be handled directly by (partial) class template specialization or function overloading <span class="citation">[<a class="interlink" href="#ref.vel95a" title="[vel95a]">Vel95a</a>]</span>, <span class="citation">[<a class="interlink" href="#ref.ale00" title="[ale00]">Ale00</a>]</span>, but in general there is a need for a standalone library primitive that would allow one to choose between two types basing on a compile-time expression. In <tt>boost::mpl</tt> such primitive is called <tt>if_</tt>:</p>
+
+<pre class="programlisting">
+template&lt; typename T &gt;
+struct heap_holder
+{
+ // ... 
+ private:
+    boost::scoped_ptr&lt;T&gt; m_object;
+};
+
+template&lt; typename T &gt;
+struct stack_holder
+{
+ // ... 
+ private:
+    T m_object;
+};
+
+template&lt; typename T &gt;
+struct can_be_on_stack
+    : mpl::bool_c&lt; (sizeof(T) &lt;= sizeof(double)) &gt;
+{
+};
+
+// use 'if_' to choose where to store 'T' member
+template&lt; typename T &gt;
+struct lightweight
+   : private mpl::if_&lt;
+          can_be_on_stack&lt;T&gt;
+        , stack_holder&lt;T&gt;
+        , heap_holder&lt;T&gt;
+        &gt;::type
+{
+   // ...
+};
+</pre>
+
+<p>Note that the first template parameter of the <tt>if_</tt> template is a type that should be a model of Integral Constant concept. The library also provides a less generic but sometimes more convenient form that accepts a condition in form of non-type <tt>bool</tt> template parameter:</p>
+
+<pre class="programlisting">
+template&lt; typename T &gt;
+struct lightweight
+   : private mpl::if_c&lt;
+          (sizeof(T) &lt;= sizeof(double))
+        , stack_holder&lt;T&gt;
+        , heap_holder&lt;T&gt;
+        &gt;::type
+{
+   // ...
+};
+</pre>
+</div>
+
+<div class="section">
+<div class="titlepage">
+<div>
+<h3 class="title"><a name="applyif"></a>3.4. apply_if</h3>
+</div>
+</div>
+
+<p>In run-time C++, it is guaranteed that when we reach an <tt>if</tt> statement, only one branch will be executed. Executing the branch for which the result is not required would be unnecessary and inefficient. More importantly, frequently the non-required branch is invalid, and executing it would cause an error. For instance, the following code would be badly broken if both branches of the statement were evaluated:</p>
+
+<pre class="programlisting">
+void fun(giraffe* g)
+{
+    if (g)
+        cout &lt;&lt; g-&gt;name();
+    else
+        cout &lt;&lt; "no giraffe";
+}
+</pre>
+
+<p>In compile-time world, things are different. Which parameters to <tt>if_</tt> template are instantiated is determined by the form of each template parameter and the corresponding language rules (<span class="citation">[<a class="interlink" href="#ref.iso98" title="[iso98]">ISO98</a>]</span>, section 14.7.1), not by the value of the compile-time expression being switched on. That means that if, in attempt to process a particular <tt>if_</tt> construct, the compiler determines that one of its &ldquo;branch&rdquo; template parameters is ill-formed, it will issue a diagnostics even if the value of compile-time expression would lead to &ldquo;choosing&rdquo; the other, valid parameter type.</p>
+
+<p>To clarify what we just said, here is a broken first attempt at writing a <tt>pointed_type</tt> metafunction, that when instantiated for a <tt>T</tt> that is either a plain pointer or a smart pointer, &ldquo;returns&rdquo; the pointed type:</p>
+
+<pre class="programlisting">
+template&lt; typename T &gt;
+struct pointed_type
+{
+    typedef typename mpl::if_&lt;
+          boost::is_pointer&lt;T&gt;
+        , typename boost::remove_pointer&lt;T&gt;::type
+        , typename T::element_type // #1
+        &gt;::type type;
+};
+
+typedef pointed_type&lt; std::auto_ptr&lt;int&gt; &gt;::type int_ptr; // ok
+typedef pointed_type&lt;char*&gt;::type char_ptr; // error in line #1!
+</pre>
+
+<p>If we try to compile the above, we will get something like this:</p>
+
+<pre class="programlisting">
+Error: name followed by "::" must be a class or namespace name
+</pre>
+
+<p>because the expression <tt>typename T::element_type</tt> is not valid in case of <tt>T == char*</tt>.</p>
+
+<p>Here's what we need to do to make <tt>pointed_type</tt> work for plain pointers: <sup><a name="idakqwr" href="#ftn.IDAKQWR">1</a></sup> instead of instantiating our two potential results before passing them to <tt>if_</tt>, we need to write metafunctions that can be used to instantiate the results; then we can use <tt>if_</tt> to choose a metafunction, and only then should we use that function to get the result.</p>
+
+<p><tt>boost::remove_pointer</tt> already is a metafunction. We just need to write an auxiliary function to return the <tt>element_type</tt> of a pointer type:</p>
+
+<pre class="programlisting">
+namespace aux {
+template&lt; typename T &gt;
+struct element_type
+{
+     typedef typename T::element_type type;
+};
+}
+</pre>
+
+<p>Now we can select the metafunction to call based on the result of <tt>boost::is_pointer</tt>, and then <span class="emphasis"><em>apply</em></span> it to form the result:</p>
+
+<pre class="programlisting">
+template&lt; typename T &gt;
+struct pointed_type
+{
+ private:
+    // pick a metafunction
+    typedef typename mpl::if_&lt;
+          boost::is_pointer&lt;T&gt;
+        , boost::remove_pointer&lt;T&gt;
+        , aux::element_type&lt;T&gt;
+        &gt;::type func_; // #1
+
+ public:
+    // apply the metafunction
+    typedef typename func_::type type;
+};
+</pre>
+
+<p>The key knowledge that makes the above viable is that in line #1 the compiler is <span class="emphasis"><em>guaranteed</em></span> not to instantiate <tt>boost::remove_pointer&lt;T&gt;</tt> and <tt>aux::element_type&lt;T&gt;</tt> templates, - even although they are passed as actual arguments to the <tt>if_</tt>.</p>
+
+<p>The described technique is so common in template metaprograms, that it makes sense to facilitate the selection of the nested <tt>type</tt> member by introducing a high level equivalent to <tt>if_</tt> that will do <tt>func_::type</tt> operation as a part of its invocation. The MPL provides such a template - it's called <tt>apply_if</tt>. Using it, we can re-write the above code as simply as:</p>
+
+<pre class="programlisting">
+[
+template&lt; typename T &gt;
+struct pointed_type
+{
+    typedef typename mpl::apply_if&lt;
+          boost::is_pointer&lt;T&gt;
+        , boost::remove_pointer&lt;T&gt;
+        , aux::element_type&lt;T&gt;
+        &gt;::type type;
+};
+</pre>
+</div>
+
+<div class="section">
+<div class="titlepage">
+<div>
+<h3 class="title"><a name="applyif2"></a>3.5. apply_if, part 2</h3>
+</div>
+</div>
+
+<p>Besides solving the &ldquo;making the code compile&rdquo; problem, the <tt>apply_if</tt> technique we've just learned can be also used to improve metaprogram efficiency.</p>
+
+<p>Suppose we want to define a high-level wrapper around <tt>boost::remove_pointer</tt> traits template, which will strip the pointer qualification conditionally. We will call it <tt>remove_pointer_if</tt>:</p>
+
+<pre class="programlisting">
+template&lt;
+      typename Condition
+    , typename T
+    &gt;
+struct remove_pointer_if
+{
+    typedef typename mpl::if_&lt;
+          Condition
+        , typename boost::remove_pointer&lt;T&gt;::type
+        , T
+        &gt;::type type;
+};
+</pre>
+
+<p>The above works the first time, but it's not the most optimal implementation. Similar to our previous examples, <tt>boost::remove_pointer&lt;T&gt;</tt> gets instantiated even if its result is never used. In the metaprogramming world compilation time is an important resource <span class="citation">[<a class="interlink" href="#ref.abr01" title="[abr01]">Abr01</a>]</span>, and it is wasted by unnecessary template instantiations.</p>
+
+<p>Let's see what we need to substitute <tt>if_</tt> by <tt>apply_if</tt> here. We already have one metafunction to pass to <tt>apply_if</tt> - <tt>boost::remove_pointer&lt;T&gt;</tt>, but we need a second one, - let's call it <tt>f</tt>, - such as <tt>f&lt;T&gt;::type == T</tt>. We could write this one ourselves, but fortunately MPL already provides us with a template that matches this exact definition - it's called <tt>identity</tt>. Applying this knowledge, we get:</p>
+
+<pre class="programlisting">
+template&lt;
+      typename Condition
+    , typename T
+    &gt;
+struct remove_pointer_if
+{
+    typedef typename mpl::apply_if&lt;
+          Condition
+        , boost::remove_pointer&lt;T&gt;
+        , mpl::identity&lt;T&gt;
+        &gt;::type type;
+};
+</pre>
+</div>
+</div>
+
+<div class="section">
+<div class="titlepage">
+<div>
+<h2 class="title" style="clear: both"><a name="technical"></a>4. Technical details</h2>
+</div>
+</div>
+
+<div class="section">
+<div class="titlepage">
+<div>
+<h3 class="title"><a name="details.headers"></a>4.1. Physical structure</h3>
+</div>
+</div>
+
+<p>The library provides you with a fine-grained header structure with one header per public component (class/function template), with the header named after the component; for example, <tt>boost::mpl::apply&lt;&gt;</tt> template is defined in the header <tt>boost/mpl/apply.hpp</tt>. This scheme both ensures that you don't pay for what you don't use in terms of compilation time/header dependencies, and frees you from memorizing/looking up header/component correspondence. Several composite headers for the entities that are likely to be used together (e.g. logical operations - <tt>logical_or</tt>, <tt>logical_and</tt>, etc.) are also provided. It allows one to avoid the burden of spelling many <tt>#include</tt> directives in programs that make an intensive use of the library facilities. <sup><a name="note.headers" href="#ftn.note.headers">2</a></sup></p>
+</div>
+
+<div class="section">
+<div class="titlepage">
+<div>
+<h3 class="title"><a name="details.depend"></a>4.2. Dependencies</h3>
+</div>
+</div>
+
+<p>Besides <tt>boost/config.hpp</tt> header, the MPL heavily depends on two other Boost libraries - the Boost Preprocessor library <span class="citation">[<a class="interlink" href="#ref.pre" title="[pre]">PRE</a>]</span>, and the Type Traits library <span class="citation">[<a class="interlink" href="#ref.ttl" title="[ttl]">TTL</a>]</span>. These dependencies are essential and cannot be eliminated. In addition to those, the <tt>boost/mpl/assert_is_same.hpp</tt> header depends on Boost Static Assert library <span class="citation">[<a class="interlink" href="#ref.sal" title="[sal]">SAL</a>]</span>. The library tests and examples may depend on some additional Boost libraries, e.g. Boost Bind <span class="citation">[<a class="interlink" href="#ref.bbl" title="[bbl]">BBL</a>]</span>; you don't have to have those unless you are interested in actually compiling the tests/examples (probably you are, though).</p>
+</div>
+
+<div class="section">
+<div class="titlepage">
+<div>
+<h3 class="title"><a name="details.portability"></a>4.3. Portability</h3>
+</div>
+</div>
+
+<p>Below is the list of compilers the library has been tested with:</p>
+
+<div class="itemizedlist">
+<ul type="box">
+<li style="list-style-type: square">Microsoft Visual C++ 6.0, SP 5</li>
+
+<li style="list-style-type: square">Microsoft Visual C++ .NET (7.0)</li>
+
+<li style="list-style-type: square">Metrowerks CodeWariror 7.2/8.1</li>
+
+<li style="list-style-type: square">Intel C++ Compiler 5.0, 6.0</li>
+
+<li style="list-style-type: square">GCC 2.95.3-5</li>
+
+<li style="list-style-type: square">GCC 3.1</li>
+
+<li style="list-style-type: square">Comeau C/C++ 4.2.45/4.3.0</li>
+
+<li style="list-style-type: square">Borland C++ 5.5.1</li>
+</ul>
+</div>
+
+<p>An incomplete matrix of recent test compilation results is available from here - <a href="http://www.mywikinet.com/mpl/log.html" target="_top">http://www.mywikinet.com/mpl/log.html</a>.</p>
+</div>
+</div>
+
+<div class="section">
+<div class="titlepage">
+<div>
+<h2 class="title" style="clear: both"><a name="acknw"></a>5. Acknowledgements</h2>
+</div>
+</div>
+
+<p>Following is a list of people who in one or another way contributed to the library development. The list is work in progress!</p>
+
+<p>David Abrahams, Emily Winch, Eric Friedman, Vesa Karvonen, Peter Dimov, Mat Marcus, Fernando Cacciola, Paul Mensonides, David B. Held, John Bandela, Arnaldur Gylfason, Hamish Mackenzie.</p>
+
+<p><b>Copyright on this document.&nbsp;</b>Copyright &copy; 2002 Aleksey Gurtovoy, David Abrahams and Emily Winch.</p>
+</div>
+
+<div class="bibliography">
+<div class="titlepage">
+<div>
+<h1 class="title"><a name="bibliography"></a>Bibliography</h1>
+</div>
+</div>
+
+<div class="biblioentry"><a name="ref.abr01"></a>
+<p>[Abr01] <span class="authorgroup">David Abrahams and Carlos Pinto Coelho,</span> <span class="title"><i><a href="http://users.rcn.com/abrahams/instantiation_speed/index.html" target="_top">Effects of Metaprogramming Style on Compilation Time</a></i>,</span> <span class="date">2001</span></p>
+</div>
+
+<div class="biblioentry"><a name="ref.ale00"></a>
+<p>[Ale00] <span class="author">Andrei Alexandrescu,</span> <span class="title"><i><a href="http://www.cuj.com/experts/1810/alexandr.htm" target="_top">On Conversions between Types and Values</a></i>,</span> <span class="publishername">C/C++ Users Journal,</span> <span class="date">October 2000</span></p>
+</div>
+
+<div class="biblioentry"><a name="ref.bbl"></a>
+<p>[BBL] <span class="title"><i>Boost Bind library</i>,</span> <span class="bibliomisc"><a href="http://www.boost.org/libs/bind/bind.html" target="_top">http://www.boost.org/libs/bind/bind.html</a></span></p>
+</div>
+
+<div class="biblioentry"><a name="ref.iso98"></a>
+<p>[ISO98] <span class="title"><i>ISO/IEC 14882:1998(E), Programming languages &mdash; C++</i>,</span> <span class="orgname">ISO/IEC,</span> <span class="date">1998</span></p>
+</div>
+
+<div class="biblioentry"><a name="ref.pre"></a>
+<p>[PRE] <span class="author">Vesa Karvonen,</span> <span class="title"><i>Boost Preprocessor Metaprogramming library</i>,</span> <span class="bibliomisc"><a href="http://www.boost.org/libs/preprocessor/doc/" target="_top">http://www.boost.org/libs/preprocessor/doc/</a></span></p>
+</div>
+
+<div class="biblioentry"><a name="ref.ttl"></a>
+<p>[TTL] <span class="title"><i>Boost Type Traits library</i>,</span> <span class="bibliomisc"><a href="http://www.boost.org/libs/type_traits/" target="_top">http://www.boost.org/libs/type_traits/</a></span></p>
+</div>
+
+<div class="biblioentry"><a name="ref.sal"></a>
+<p>[SAL] <span class="title"><i>Boost Static Assert library</i>,</span> <span class="bibliomisc"><a href="http://www.boost.org/libs/static_assert/static_assert.htm" target="_top">http://www.boost.org/libs/static_assert/static_assert.htm</a></span></p>
+</div>
+
+<div class="biblioentry"><a name="ref.vel95a"></a>
+<p>[Vel95a] <span class="author">Todd Veldhuizen,</span> <span class="title"><i><a href="http://osl.iu.edu/~tveldhui/papers/Template-Metaprograms/meta-art.html" target="_top">Using C++ template metaprograms</a></i>,</span> <span class="biblioset"><i>C++ Report</i>, <span class="publishername">SIGS Publications Inc.,</span> <span class="issn">ISSN 1040-6042,</span></span> <span class="volumenum">Vol. 7,</span> <span class="issuenum">No. 4,</span> <span class="pagenums">pp. 36-43,</span> <span class="date">May 1995</span></p>
+</div>
+</div>
+
+<div class="footnotes"><br>
+<hr width="100" align="left">
+<div class="footnote">
+<p><sup><a name="ftn.idakqwr" href="#IDAKQWR">1</a></sup> It would be easy to implement <tt>pointed_type</tt> using partial specialization to distinguish the case where <tt>T</tt> is a pointer. <tt>if_</tt> is used here to avoid creating a complicated example.</p>
+</div>
+
+<div class="footnote">
+<p><sup><a name="ftn.note.headers" href="#note.headers">2</a></sup> The Boost Preprocessor library <span class="citation">[<a class="interlink" href="#ref.pre" title="[pre]">PRE</a>]</span> exposes a very similar physical organization; in fact, the libraries even share the common subdirectory naming (<tt>mpl/arithmetic</tt> &lt;-&gt; <tt>preprocessor/arithmetic</tt>, <tt>mpl/comparison</tt> &lt;-&gt; <tt>preprocessor/comparison</tt>, etc.).</p>
+</div>
+</div>
+</div>
+</body>
+</html>
+

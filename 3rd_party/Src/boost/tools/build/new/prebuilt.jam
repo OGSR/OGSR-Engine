@@ -1,0 +1,53 @@
+#  Copyright (C) Vladimir Prus 2002. Permission to copy, use, modify, sell and
+#  distribute this software is granted provided this copyright notice appears in
+#  all copies. This software is provided "as is" without express or implied
+#  warranty, and with no claim as to its suitability for any purpose.
+
+#  This module defines a special generator, which handles targets with
+#  <file> property. It allows to use prebuilt targets.
+
+import targets ;
+import class : class new ;
+import property ;
+import errors : error ;
+import type : type ;
+import regex ;
+import feature ;
+import generators ; 
+
+feature.feature file : : free ;
+
+rule prebuilt-file-generator 
+{
+    generator.__init__ prebuilt-file-generator : : * : <file> ;    
+
+    rule run ( project name ? : property-set : sources * )
+    {
+        local properties = [ $(property-set).raw ] ;
+        local name = [ feature.get-values <file> : $(properties) ] ;
+        local type = [ type.type $(name:S) ] ;
+        if ! $(type) 
+        {
+            errors.error "Unknown type for prebuilt target " $(name) in $(project) ;
+        }
+        
+        local pl = [ project.attribute $(project) location ] ;
+        local path = [ path.root [ path.native $(name:D) ] $(pl) ] ;
+        
+        local t = [ new file-target $(name:S=:D=) : $(type) : $(project) ] ;
+        $(t).set-path $(path) ;
+                               
+        $(t).action [ new null-action $(t) : $(property-set) ] ;
+        
+        $(t).suffix [ MATCH .(.*) : $(name:S) ] ;
+        return $(t) ;            
+        
+    }
+}
+
+class prebuilt-file-generator : generator ;
+
+generators.register [ new prebuilt-file-generator ] ;
+
+
+

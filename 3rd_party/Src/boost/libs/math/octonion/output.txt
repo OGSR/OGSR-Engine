@@ -1,0 +1,1 @@
+Running 6 test cases...Testing multiplication for float.Testing exp for float.Testing multiplication for double.Testing exp for double.Testing multiplication for long double.Testing exp for long double.*** No errors detected

@@ -1,0 +1,89 @@
+<html>
+
+<head>
+<meta http-equiv="Content-Type"
+content="text/html; charset=iso-8859-1">
+<meta name="GENERATOR" content="Microsoft FrontPage 4.0">
+<title>Boost Tokenizer Overview</title>
+<!--
+  -- Copyright (c) Jeremy Siek 2000
+  --
+  -- Permission to use, copy, modify, distribute and sell this software
+  -- and its documentation for any purpose is hereby granted without fee,
+  -- provided that the above copyright notice appears in all copies and
+  -- that both that copyright notice and this permission notice appear
+  -- in supporting documentation.  Jeremy Siek makes no
+  -- representations about the suitability of this software for any
+  -- purpose.  It is provided "as is" without express or implied warranty.
+  -->
+</head>
+
+<body bgcolor="#FFFFFF" text="#000000" link="#0000EE"
+vlink="#551A8B" alink="#FF0000">
+
+<p><img src="../../c++boost.gif" alt="C++ Boost" width="277"
+height="86"> <br>
+</p>
+
+<h1 align="center">Table Of Contents</h1>
+
+<p align="left">&nbsp;</p>
+
+<h2 align="left"><a href="introduc.htm">Introduction</a></h2>
+
+<h2 align="left">Containers and Iterators</h2>
+
+<ul>
+    <li><h3 align="left"><a href="tokenizer.htm">tokenizer</a></h3>
+    </li>
+    <li><h3 align="left"><a href="token_iterator.htm">token
+        iterator</a></h3>
+    </li>
+</ul>
+
+<h2><a href="tokenizerfunction.htm">TokenizerFunction Concept</a></h2>
+
+<h2>TokenizerFunction Models</h2>
+
+<ul>
+    <li><h3><a href="char_separator.htm">char_separator</a></h3>
+    </li>
+    <li><h3><a href="escaped_list_separator.htm">escaped_list_separator</a></h3>
+    </li>
+    <li><h3><a href="offset_separator.htm">offset_separator</a></h3>
+    </li>
+    <li><font color="red">Deprecated:</font> <a href="char_delimiters_separator.htm">char_delimiters_separator</a></a>
+    </li>
+</ul>
+
+<h2>&nbsp;</h2>
+<h2>Acknowledgements</h2>
+<p>I wish to thank the members of the boost mailing list, whose comments,
+compliments, and criticisms during both the development and formal review helped
+make the Tokenizer library what it is. I especially wish to thank Aleksey
+Gurtovoy for the idea of using a pair of iterators to specify the input, instead
+of a string. I also wish to thank Jeremy Siek for his idea of providing a
+container interface for the token iterators and for simplifying the template
+parameters for the TokenizerFunctions. He and Daryle Walker also emphasized the
+need to separate interface and implementation. Gary Powell sparked the idea of
+using the isspace and ispunct as the defaults for char_delimiters_separator.
+Jeff Garland provided ideas on how to change to order of the template parameters
+in order to make tokenizer easier to declare. Thanks to Douglas Gregor who
+served as review manager and provided many insights both on the boost list and
+in e-mail on how to polish up the implementation and presentation of Tokenizer.
+Finally, thanks to Beman Dawes who integrated the final version into the boost
+distribution.</p>
+
+<hr>
+
+<p>© Copyright John R. Bandela 2001. Permission to copy, use,
+modify, sell and distribute this document is granted provided
+this copyright notice appears in all copies. This document is
+provided &quot;as is&quot; without express or implied warranty,
+and with no claim as to its suitability for any purpose.</p>
+
+<p>&nbsp;</p>
+
+<p>&nbsp;</p>
+</body>
+</html>

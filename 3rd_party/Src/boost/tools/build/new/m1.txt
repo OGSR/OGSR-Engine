@@ -1,0 +1,167 @@
+                                                                         -*- outline -*-
+
+Milestone 1: Explicit transformations, subvariants and projects
+
+* User visibile features *
+
+** The 'make' rule **
+
+Prototype:
+
+    rule make ( target : sources * : generating-rule : requirements * )
+
+Semantics:
+
+    Specifies that whenever build request of 'target' is compatible with
+    'requirements', the build actions can be generating by calling
+    'generating-rule', which should agree with this signature:
+
+        rule generating-rule ( target : sources * : property-set )
+
+    Target and source names passed to the generating rule will be
+    actual jam target names, with their dependencies and locations
+    already set.
+
+    [I would like to retain the same interface for all rules that
+    actually generate build actions. The current "flags" rule is nice and
+    should be carried over, but passing properties as well would make
+    sure everything is possible.
+
+    It would be nice if closure could be specified as generating-rule.
+    For example:
+        make dummy.txt : : write_file "fobar" ;
+    Maybe, this is too fancy.
+    ]
+
+
+    Names used in 'target' and 'sources' should strictly correspond to
+    actual file names. (E.g. no guessing of ".exe")
+
+    Make rule would create main target, which can be referred from other
+    jamfiles. Main targets defined in the Jamfile in jam invocation
+    dir will also be available as actual jam targets with plain names.
+
+    It is possible to use the 'make' rule several times with the same
+    target. When deciding which path should be used when satisfying a build
+    request, preference is given to 'make' invocations with longer list
+    of requrements.
+
+    [if we want to allow mutually exclusive requirements, we might want
+    in addition to <optimization>off allow <optimization>!off. For more conrtived
+    requirements, it probably makes sense to use executed features.
+    All this is a way too complicated for the first milestone.
+    ]
+
+    All properties will be considered relevant for the generating rule for
+    the purpose of computing subvariant identifier.
+
+    Subvariant targets will be located under:
+        $(jamfile-dir)/bin/main_target_name/$(subvariant-path)
+
+    Make rule does not care for project requirements.
+
+    Other targets may be referred using "@"-notation:
+        [project-id] "@" path-in-project / target / [additional-properties]
+
+    [should we allow to refer to targets in the same jamfile using
+    simple name?]
+
+    When selecting which subvariant should be used when building main target with
+    some properties, the following mechanism is used:
+
+        additional-properties are added to build properties for the main
+        target. Propagated targets are added to the result.
+        The used main target is asked to produce an subvariant
+        target with the resulting properties.
+
+        [propagated and exported features are not handled for now]
+
+    It should be possible to use targets from other projects (bad word!) --
+    i.e. which has other project-root.
+
+* Tasks *
+
+** Finish initialization and its intraction with the 'project' module **
+
+    - The initialization code should use 'site.jam' and 'user.jam'
+        (This would allow us to easily define toolsets for testing)
+    - It should also take BUILD/TOOLSET and perform build request
+        expansion.
+    - It should call 'generate' on the abstract target which corresponds
+        to the project in Jam invocation dir.
+
+** Implement notion of compatible and incompatible property sets **
+
+    - Rountine apply-requirements ( build-request : requirements )
+        Returns the property set that should be used for building
+            a target with 'requirements' given the 'build-request'.
+        Return empty string when 'requirements' cannot be satisfied.
+        (Should some explanation be returned in this case?)
+
+    - Rountine compose-requirements ( requirements1 : requirements2 )
+        Returns a requirements set which is satisfied iff both
+            'requirements1' and 'requirements2' are satisfied. Returns
+        an empty string otherwise.
+        (Seems like does exactly the same as apply-requirements. However,
+         it's better to have another name, to avoid confusion)
+
+    - A mechanism for specifying incompatible property sets.
+        - at first stage it would suffice to declare some features as
+            'stict' -- targets with different values of such features
+            cannot be linked together under no circumstances.
+            Addition for feature.jam?
+
+        - later we might want to implement something more elaborate
+
+        Notes:
+            1. I don't see any possibility of link-incompatibility which
+                involves two features.
+            2. Another possibility is to specify which features are compatible.
+                But I belive that number of truly incompatible features is
+                low, and explicitly writing down all compatible combinations
+                will be harder.
+            3. Can we need different 'link-compatibilities'? IOW, is it
+                possible to have some different relation between ingridients
+                for a target than 'linked-in'?
+
+** Some property utilities **
+
+    - Routine add-properties ( property1 : property2 )
+        Returns a property set where value for each feature is looked up
+        first in property2 and only then in property1.
+        It is assumed that property{1,2} do not contain composite properties.
+
+    - Routine subvariant-dir ( property-set )
+        Returns a subvariant-dir. Elements of the dir should correspond
+        to feature description if feature.jam.
+
+
+** Project-id enhancement **
+
+    It should be possible to use the 'project' rule to forward-declare project,
+    i.e. to associate project id with location, but give no information.
+    This is needed to that project-root.jam could declare all project-id,
+    and client won't be required to include all the Jamfiles.
+
+** Full implementation of abstract-target.generate **
+
+It should
+    - filter build request with requirements
+    - select appropriate variants of used targets
+    - construct a dependecy graph for target
+    - return it.
+
+    The depencency graph construction at this stage will be implemented using
+    call to construct.construct
+        rule construct ( target : target-type : sources * : properties )
+    Main targets creates by the "make" rule will have target type which
+    processing will be hardcoded -- build dependency graph of depth 2 and
+    return it.
+
+    [it is possible that we generate more than one target because
+    build actions create more than one. Handling of this is specified
+    in architecture.html and should be implemented.]
+
+** Other enhancements for abstract-target **
+
+Path features should be supported somehow.

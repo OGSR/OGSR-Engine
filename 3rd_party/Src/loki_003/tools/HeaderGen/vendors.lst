@@ -1,0 +1,17 @@
+(__INTEL_COMPILER)
+Reference
+
+(__MWERKS__)
+Reference
+
+(__BORLANDC__ >= 0x560)
+Borland
+
+(_MSC_VER >= 1301)
+Reference
+
+(_MSC_VER >= 1300)
+MSVC/1300
+
+(_MSC_VER >= 1200)
+MSVC/1200

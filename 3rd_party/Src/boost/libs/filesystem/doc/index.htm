@@ -1,0 +1,439 @@
+<html>
+
+<head>
+<meta http-equiv="Content-Language" content="en-us">
+<meta name="GENERATOR" content="Microsoft FrontPage 5.0">
+<meta name="ProgId" content="FrontPage.Editor.Document">
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+<title>Boost Filesystem Library</title>
+</head>
+
+<body bgcolor="#FFFFFF">
+
+<h1>
+<img border="0" src="../../../c++boost.gif" align="center" width="277" height="86">Boost 
+Filesystem Library</h1>
+<table border="0" cellpadding="0" width="100%">
+  <tr>
+    <td width="50%" valign="top"><font size="4">This Document</font><br>
+&nbsp;&nbsp;&nbsp; <a href="#Introduction">Introduction</a><br>
+&nbsp;&nbsp;&nbsp; <a href="#tutorial">Two-minute tutorial</a><br>
+&nbsp;&nbsp;&nbsp; <a href="#Examples">Examples</a><br>
+&nbsp;&nbsp;&nbsp;
+<a href="#Definitions">Definitions</a><br>
+&nbsp;&nbsp;&nbsp; <a href="#Common_Specifications">Common Specifications</a><br>
+&nbsp;&nbsp;&nbsp; <a href="#Race-condition">Race-condition danger</a><br>
+&nbsp;&nbsp;&nbsp; <a href="#Acknowledgements">Acknowledgements</a></td>
+    <td width="50%"><font size="4">Other Documents</font><br>
+&nbsp;&nbsp;&nbsp; <a href="design.htm">Library Design</a><br>
+&nbsp;&nbsp;&nbsp; <a href="faq.htm">FAQ</a><br>
+&nbsp;&nbsp;&nbsp; <a href="portability_guide.htm">Portability Guide</a><br>
+&nbsp;&nbsp;&nbsp; <a href="path.htm"><b><i>path.hpp</i></b> documentation</a><br>
+&nbsp;&nbsp;&nbsp; <a href="operations.htm"><b><i>operations.hpp</i></b> documentation</a><br>
+&nbsp;&nbsp;&nbsp; <a href="fstream.htm"><b><i>fstream.hpp</i></b> documentation</a><br>
+&nbsp;&nbsp;&nbsp; <a href="exception.htm"><b><i>exception.hpp</i></b> documentation</a><br>
+&nbsp;&nbsp;&nbsp; <a href="convenience.htm"><b><i>convenience.hpp</i></b> 
+    documentation</a><br>
+&nbsp;&nbsp;&nbsp; <a href="do-list.htm">Do-list</a></td>
+  </tr>
+</table>
+<h2><a name="Introduction">Introduction</a></h2>
+<p>The Boost Filesystem Library provides portable facilities to query and 
+manipulate paths, files, and directories.</p>
+
+<p>The motivation for the library is the need to be able to perform portable script-like operations from within C++ programs. The intent is not to 
+compete with Python, Perl, or shell languages, but rather to provide portable filesystem 
+operations when C++ is already the language of choice. The <a href="design.htm">
+design</a> encourages, but does not require, safe and portable filesystem usage.</p>
+
+<p>The Filesystem Library supplies several&nbsp; headers, all in 
+directory boost/filesystem:</p>
+
+<ul>
+  <li>Header <i><a href="../../../boost/filesystem/path.hpp">path.hpp</a></i> provides class <i>path, </i>a portable mechanism for representing
+      <a href="#path">paths</a> in C++ programs. Validity checking 
+      functions are also provided. See <a href="path.htm">path.hpp documentation</a>.<br>
+&nbsp;</li>
+  <li>Header <i><a href="../../../boost/filesystem/operations.hpp">operations.hpp</a></i> provides functions operating on files and directories, 
+  and includes class <i>directory_iterator</i>. See <a href="operations.htm">
+  operations.hpp documentation</a>.<br>
+&nbsp;</li>
+  <li>Header <i><a href="../../../boost/filesystem/fstream.hpp">fstream.hpp</a></i> provides the same components as the C++ Standard 
+  Library's <i>fstream</i> header, except 
+      that files are identified by <i>path</i> objects rather that <i>char *</i>'s. 
+  See <a href="fstream.htm">fstream.hpp documentation</a>.<br>
+&nbsp;</li>
+  <li>Header <i><a href="../../../boost/filesystem/exception.hpp">exception.hpp</a></i> provides class <i>filesystem_error</i>. See
+  <a href="exception.htm">exception.hpp documentation</a>.<br>
+&nbsp;</li>
+  <li>Header <a href="../../../boost/filesystem/convenience.hpp">convenience.hpp</a> 
+  provides convenience functions that combine lower-level functions in useful 
+  ways. See <a href="convenience.htm">convenience.hpp documentation</a>.</li>
+</ul>
+<p>The object-library source files (<a href="../src/convenience.cpp">convenience.cpp</a>,
+<a href="../src/exception.cpp">exception.cpp</a>,
+<a href="../src/operations_posix_windows.cpp">operations_posix_windows.cpp</a>, 
+and <a href="../src/path_posix_windows.cpp">path_posix_windows.cpp</a>) are 
+supplied in directory libs/filesystem/src. These source files implement the 
+library for POSIX or Windows compatible operating systems; no implementation is 
+supplied for other operating systems. Note that many operating systems not 
+normally thought of as POSIX or Windows systems, such as mainframe legacy 
+operating systems or embedded operating systems, support POSIX compatible file 
+systems which will work with the Filesystem Library.</p>
+<p>The object-library can be built with a <a href="../build/Jamfile">Jamfile</a> 
+supplied in directory libs/filesystem/build.</p>
+<h2>Two-minute <a name="tutorial">tutorial</a></h2>
+<p>First some preliminaries:</p>
+<blockquote>
+  <pre>#include &quot;boost/filesystem/operations.hpp&quot; // includes boost/filesystem/path.hpp
+#include &quot;boost/filesystem/fstream.hpp&quot;    // ditto
+#include &lt;iostream&gt;                        // for std::cout
+namespace fs = boost::filesystem;</pre>
+</blockquote>
+<p>A <a href="path.htm#synopsis">class <i>path</i></a> object can be created:</p>
+<blockquote>
+  <pre>fs::path my_path( &quot;some_dir/file.txt&quot; );</pre>
+</blockquote>
+<p>The string passed to the <i>path</i> constructor is in a
+<a href="path.htm#Grammar">portable generic path format</a>. Access functions 
+make <i>my_path</i> contents available in an operating system dependent format, 
+such as <code>&quot;some_dir:file.txt&quot;</code>, <code>&quot;[some_dir]file.txt&quot;</code>,
+<code>&quot;some_dir/file.txt&quot;</code>, or whatever is appropriate for the  
+operating system.</p>
+<p>Class <i>path</i> has conversion constructors from <i>const char*</i> and <i>
+const std:: string&amp;</i>, so that even though the Filesystem Library functions in 
+the following code snippet take <i>const path&amp;</i> arguments, the user can just 
+code C-style strings:</p>
+<blockquote>
+  <pre>fs::remove_all( &quot;foobar&quot; );
+fs::create_directory( &quot;foobar&quot; );
+fs::ofstream file( &quot;foobar/cheeze&quot; );
+file &lt;&lt; &quot;tastes good!\n&quot;;
+file.close();
+if ( !fs::exists( &quot;foobar/cheeze&quot; ) )
+  std::cout &lt;&lt; &quot;Something is rotten in foobar\n&quot;;</pre>
+</blockquote>
+<p>Additional class path constructors provide for an operating system dependent 
+format, useful for user provided input:</p>
+<blockquote>
+  <pre>int main( int argc, char * argv[] ) {
+fs::path arg_path( argv[1], fs::native ); // native means use O/S path format</pre>
+</blockquote>
+<p>To make class <i>path</i> objects easy to use in expressions, <i>operator/</i> 
+appends paths:</p>
+<blockquote>
+  <pre>fs::ifstream file1( arg_path / &quot;foo/bar&quot; );
+fs::ifstream file2( arg_path / &quot;foo&quot; / &quot;bar&quot; );</pre>
+</blockquote>
+<p>Note that expressions <i>arg_path / &quot;foo/bar&quot;</i> and <i>arg_path / &quot;foo&quot; 
+/ &quot;bar&quot;</i> yield identical results.</p>
+<p><a href="operations.htm#directory_iterator">Class <i>directory_iterator</i></a> 
+is an important component of the library. It provides input iterators over the 
+contents of a directory, with the value type being class <i>path</i>.</p>
+<p>The following function, given a directory path and a file name, recursively 
+searches the directory and its sub-directories for the file name, returning a 
+bool, and if successful, the path to the file that was found.&nbsp; The code 
+below is extracted from a real program, slightly modified for clarity:</p>
+<blockquote>
+  <pre>bool find_file( const fs::path &amp; dir_path,     // in this directory,
+                const std::string &amp; file_name, // search for this name,
+                fs::path &amp; path_found )        // placing path here if found
+{
+  if ( !fs::exists( dir_path ) ) return false;
+  fs::directory_iterator end_itr; // default construction yields past-the-end
+  for ( fs::directory_iterator itr( dir_path );
+        itr != end_itr;
+        ++itr )
+  {
+    if ( fs::is_directory( *itr ) )
+    {
+      if ( find_file( *itr, file_name, path_found ) ) return true;
+    }
+    else if ( itr-&gt;leaf() == file_name ) // see below
+    {
+      path_found = *itr;
+      return true;
+    }
+  }
+  return false;
+}</pre>
+</blockquote>
+<p>The expression <i>itr-&gt;leaf() == file_name</i>, in the line commented <i>// 
+see below</i>, calls the <i>leaf()</i> function on the <i>path</i> object 
+returned by the iterator. <i>leaf()</i> returns a string which is a copy of the 
+last (closest to the leaf, farthest from the root) file or directory name in the
+<i>path</i> object.</p>
+<p>Notice that <i>find_file()</i> does not do explicit error checking, such as 
+verifying that the <i>dir_path</i> argument really represents a directory. All 
+Filesystem Library functions throw <a href="exception.htm">filesystem_error</a> 
+exceptions if they do not complete successfully, so there is enough implicit 
+error checking that this application doesn't need to include additional error 
+checking code.</p>
+<p>The tutorial is now over; hopefully you now are ready to write simple, 
+script-like, programs using the Filesystem Library!</p>
+<h2><a name="Examples">Examples</a></h2>
+<h3>simple_ls.cpp</h3>
+<p>The example program <a href="../example/simple_ls.cpp">simple_ls.cpp</a> is 
+given a path as a command line argument. Since the command line argument may be 
+a relative path, the complete path is determined so that messages displayed 
+can be more precise.</p>
+<p>The program checks to see if the path exists; if not a message is printed.</p>
+<p>If the path identifies a directory, the directory is iterated through, 
+printing the name of the entries found, and an indication if they are 
+directories. A count of directories and files is updated, and then printed after 
+the iteration is complete.</p>
+<p>If the path is for a file, a message indicating that is printed.</p>
+<p>Try compiling and executing <a href="../example/simple_ls.cpp">simple_ls.cpp</a> 
+to see how it works on your system. Try various path arguments to see what 
+happens.</p>
+<h3>Other examples</h3>
+<p>The programs used to generate the Boost regression test status tables use the 
+Filesystem Library extensively.&nbsp; See:</p>
+<ul>
+  <li><a href="../../../tools/regression/process_jam_log.cpp">
+  process_jam_log.cpp</a></li>
+  <li><a href="../../../tools/regression/compiler_status.cpp">
+  compiler_status.cpp</a></li>
+</ul>
+<p>Test programs are sometimes useful in understanding a library, as they 
+illustrate what the developer expected to work and not work. See:</p>
+<ul>
+  <li><a href="../test/path_test.cpp">path_test.cpp</a></li>
+  <li><a href="../test/operations_test.cpp">operations_test.cpp</a></li>
+  <li><a href="../test/fstream_test.cpp">fstream_test.cpp</a></li>
+</ul>
+<h2><a name="Definitions">Definitions</a></h2>
+<p><b><a name="directory">directory</a> </b>- A container provided by the operating system, 
+containing the names of files, other directories, or both. Directories are identified 
+by <a href="#directory path">directory path</a>.</p>
+<p><b><a name="directory_tree">directory tree</a></b> - A directory and file 
+hierarchy viewed as an acyclic graph.</p>
+<p><b><a name="path">path</a> </b>- A possibly empty sequence of <a href="#name">names</a>. Each 
+element in the sequence, except the last, names a <a href="#directory">directory</a> 
+which contains the 
+next element. The last element may name either a directory or file. The first 
+element is closest to the <a href="#root">root</a> of the directory tree, the last element is 
+farthest from the root.</p>
+<p>It is traditional to represent a path as a string, where each element in the 
+path is represented by a <a href="#name">name</a>, and some operating system 
+defined syntax distinguishes between the name elements. Other representations of 
+a path are possible, such as each name being an element in a <code>std::vector&lt;std::string&gt;</code>.</p>
+<p><b><a name="file path">file path</a></b> - A <a href="#path">path</a> whose 
+last element is a file.</p>
+<p><b><a name="directory_path">directory path</a></b> - A <a href="#path">path</a> 
+whose last element is a directory.</p>
+<p><b><a name="name">name</a></b> - A file or directory name, without any
+<a href="#directory path">directory path</a> information to indicate the file or 
+directory's actual location within a directory tree. For some 
+operating systems, files and directories may have more than one valid name, such 
+as a short-form name and a long-form name.</p>
+<p><b><a name="root">root</a></b> - The initial node in the acyclic graph which 
+represents the <a href="#directory_path">directory tree</a> for a filesystem.</p>
+<p><b><a name="multi-root_filesystem">multi-root operating system</a></b> - An 
+operating system which has multiple <a href="#root">roots</a>. Some operating systems 
+have different <a href="#directory_tree">directory trees</a> for each different 
+disk, drive, device, volume, share, or other entity managed the system, with each having its 
+own root-name.</p>
+<p><b><a name="link">link</a></b> - A&nbsp;name in a <a href="#directory">
+directory</a> can be viewed as a pointer to the underlying directory or file 
+content. Modern operating systems permit multiple directory elements to point to 
+the same underlying directory or file content. Such a pointer is often called a 
+link. Not all operating systems support the 
+concept of links. Links may be referenced counted or non-reference counted. 
+Non-reference counted links are sometimes called symbolic links or shortcuts.</p>
+<h2><a name="Common_Specifications">Common Specifications</a></h2>
+<p>Unless otherwise specified, all Filesystem Library member and non-member 
+functions have the following common specifications:</p>
+<p><b>May throw exceptions</b> - Filesystem Library functions may throw <i><a href="exception.htm">filesystem_error</a></i> 
+exceptions if they cannot successfully complete their operational 
+specifications. Function implementations may use C++ Standard Library functions, 
+which may throw <i>std::bad_alloc</i>. These exceptions may be thrown even 
+though the error condition leading to the exception is not explicitly specified 
+in the function's &quot;Throws&quot; paragraph.</p>
+<p><b>Exceptions thrown via <a href="../../utility/throw_exception.html">
+boost::throw_exception()</a></b> - All exceptions thrown by the Filesystem 
+Library are implemented by calling <a href="../../utility/throw_exception.html">
+boost::throw_exception()</a>. Thus exact behavior may differ depending on 
+BOOST_NO_EXCEPTIONS at the time the filesystem source files are compiled.</p>
+<p><b>Links follow operating system rules</b>- <a href="#link">Links</a> are 
+transparent in that Filesystem Library functions simply follow operating system 
+rules. That implies that some functions may throw <i><a href="exception.htm">filesystem_error</a></i> 
+exceptions if a link is cyclic or has other problems.</p>
+<p>Typical operating systems rules call for deep operations on all links except 
+that destructive operations on non-reference counted links are either shallow, 
+or fail altogether in the case of trying to remove a non-reference counted link 
+to a directory.</p>
+<p>Rationale: Follows existing practice (POSIX, Windows, etc.).</p>
+<p><b>No atomic-operation or rollback guarantee</b> - Filesystem Library 
+functions which throw exceptions may leave the external file system in an 
+altered state. It is suggested that implementations provide stronger guarantees 
+when possible.</p>
+<p>Rationale: Implementors shouldn't be required to provide guarantees which are 
+impossible to meet on some operating systems. Implementors should be given 
+normative encouragement to provide those guarantees when possible.</p>
+<p><b>Graceful degradation</b> -&nbsp; Filesystem Library functions which cannot 
+be fully supported on a particular operating system will be partially supported 
+if possible. Implementations must document such partial support. Functions which 
+are requested to provide some operation which they cannot support should report 
+an error at compile time or throw an exception at runtime.</p>
+<p>Rationale: Implementations on less-powerful operating systems should provide 
+useful functionality if possible, but should not be required to simulate 
+features not present in the underlying operating system.</p>
+<h2><a name="Race-condition">Race-condition</a> d<a name="Dangers">anger</a></h2>
+<p>The state of files and directories is often
+globally shared, and thus may be changed unexpectedly by other threads, 
+processes, or even other computers having network access to the filesystem. As an 
+example of the difficulties this can cause, note that the following asserts 
+may fail:</p>
+<blockquote>
+<p><code>assert( exists( &quot;foo&quot; ) == exists( &quot;foo&quot; ) );&nbsp; // 
+(1)<br>
+<br>
+remove_all( &quot;foo&quot; );<br>
+assert( !exists( &quot;foo&quot; ) );&nbsp; // (2)<br>
+<br>
+assert( is_directory( &quot;foo&quot; ) == is_directory( &quot;foo&quot; ) ); // 
+(3)</code></p>
+</blockquote>
+<p>(1) will fail if a non-existent &quot;foo&quot; comes into existence, or an 
+existent &quot;foo&quot; is removed, between the first and second call to <i>exists()</i>. 
+This could happen if, during the execution of the example code, another thread, 
+process, or computer is also performing operations in the same directory.</p>
+<p>(2) will fail if between the call to <i>remove_all()</i> and the call to
+<i>exists()</i> a new file or directory named &quot;foo&quot; is created by another 
+thread, process, or computer.</p>
+<p>(3) will fail if another thread, process, or computer removes an 
+existing file &quot;foo&quot; and then creates a directory named &quot;foo&quot;, between the 
+example code's two calls to <i>is_directory()</i>.</p>
+<p>A program which needs to be robust when operating on potentially-shared file 
+or directory resources should be prepared for <i>filesystem_error</i> exceptions 
+to be thrown from any filesystem function except those explicitly specified as 
+not throwing exceptions.</p>
+<h2><a name="Implementation">Implementation</a></h2>
+<p>The current implementation (September, 2002) supports operating systems that have 
+either the POSIX or Windows API's available.</p>
+<p>The following tests are provided:</p>
+<ul>
+  <li><a href="../test/path_test.cpp">path_test.cpp</a></li>
+  <li><a href="../test/operations_test.cpp">operations_test.cpp</a></li>
+  <li><a href="../test/fstream_test.cpp">fstream_test.cpp</a></li>
+</ul>
+<p>As of December, 2002, these tests succeed for the following compilers on Windows:</p>
+<ul>
+  <li>Borland 5.6</li>
+  <li>GCC 3.1 (using POSIX implementation, but excluding wide-character fstream tests)</li>
+  <li>Intel 6.0</li>
+  <li>Metrowerks 8.3</li>
+  <li>Microsoft 7.0</li>
+  <li>Microsoft 6.0 except fstream_test failed.</li>
+</ul>
+<p>As of December, 2002, limited use has been successful on Linux using GCC and IBM/AIX using Visual Age C++.</p>
+<h2><a name="Acknowledgements">Acknowledgements</a></h2>
+<p>The Filesystem Library was designed and implemented by Beman Dawes. The <i>directory_iterator</i> and <i>filesystem_error</i> classes were 
+based on prior work from Dietmar Kühl, as modified by Jan Langer. Thomas Witt 
+was a particular help in later stages of development.</p>
+
+<p>Key <a href="design.htm#Requirements">design requirements</a> and
+<a href="design.htm#Realities">design realities</a> were developed during 
+extensive discussions on the Boost mailing list, followed by comments on the 
+initial implementation. Numerous helpful comments were then received during the 
+Formal Review.<p>Participants included 
+Aaron Brashears,
+Alan Bellingham,
+Aleksey Gurtovoy,
+Alex Rosenberg,
+Alisdair Meredith,
+Andy Glew,
+Anthony Williams,
+Baptiste Lepilleur, 
+Beman Dawes,
+Bill Kempf,
+Bill Seymour, 
+Carl Daniel,
+Chris Little,
+Chuck Allison,
+Craig Henderson, 
+Dan Nuffer,
+Dan'l Miller,
+Daniel Frey, 
+Darin Adler, 
+David Abrahams,
+David Held, 
+Davlet Panech,
+Dietmar Kuehl,
+Douglas Gregor, 
+Dylan Nicholson,
+Ed Brey, 
+Eric Jensen,
+Eric Woodruff,
+Fedder Skovgaard,
+Gary Powell,
+Gennaro Prota,
+Geoff Leyland, 
+George Heintzelman, 
+Giovanni Bajo,
+Glen Knowles,
+Hillel Sims,
+Howard Hinnant,
+Jaap Suter,
+James Dennett, 
+Jan Langer, 
+Jani Kajala, 
+Jason Stewart, 
+Jeff Garland,
+Jens Maurer,
+Jesse Jones,
+Jim Hyslop,
+Joel de Guzman,
+Joel Young,
+John Levon, 
+John Maddock,
+John Williston,
+Jonathan Caves,
+Jonathan Biggar,
+Jurko,
+Justus Schwartz,
+Keith Burton, 
+Ken Hagen,
+Kostya Altukhov, 
+Mark Rodgers,
+Martin Schuerch, 
+Matt Austern,
+Matthias Troyer, 
+Mattias Flodin, 
+Michiel Salters,
+Mickael Pointier,
+Misha Bergal,
+Neal Becker,
+Noel Yap,
+Parksie,
+Patrick Hartling, Pavel Vozenilek,
+Pete Becker, 
+Peter Dimov,
+Rainer Deyke,
+Rene Rivera,
+Rob Lievaart,
+Rob Stewart,
+Ron Garcia,
+Ross Smith,
+Sashan,
+Steve Robbins, 
+Thomas Witt, 
+Tom Harris, 
+Toon Knapen,
+Victor Wagner,
+Vincent Finn,
+Vladimir Prus, and
+Yitzhak Sapir
+ 
+<p>A lengthy discussion on the C++ committee's library reflector illuminated the &quot;illusion 
+of portability&quot; problem, particularly in postings by JP Plauger and Pete Becker.</p>
+
+<hr>
+<p>© Copyright Beman Dawes, 2002</p>
+<p>Revised
+<!--webbot bot="Timestamp" S-Type="EDITED" S-Format="%d %B, %Y" startspan -->16 March, 2003<!--webbot bot="Timestamp" endspan i-checksum="28841" --></p>
+
+</body>
+
+</html>

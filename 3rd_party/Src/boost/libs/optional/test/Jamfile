@@ -1,0 +1,37 @@
+#  Boost.Optional Library test Jamfile
+#
+#  Copyright (C) 2003, Fernando Luis Cacciola Carballal.
+#
+#  This material is provided "as is", with absolutely no warranty expressed
+#  or implied. Any use is at your own risk.
+#
+#  Permission to use or copy this software for any purpose is hereby granted
+#  without fee, provided the above notices are retained on all copies.
+#  Permission to modify the code and to distribute modified code is granted,
+#  provided the above notices are retained, and a notice that the code was
+#  modified is included with the above copyright notice.
+#
+
+subproject libs/optional/test ;
+
+# bring in rules for testing
+SEARCH on testing.jam = $(BOOST_BUILD_PATH) ;
+include testing.jam ;
+
+# Make tests run by default.
+DEPENDS all : test ;
+
+{
+  # look in BOOST_ROOT for sources first, just in this Jamfile
+  local SEARCH_SOURCE = $(BOOST_ROOT) $(SEARCH_SOURCE) ;
+
+  test-suite optional :
+    [ run libs/optional/test/optional_test.cpp ]
+    [ compile-fail libs/optional/test/optional_test_fail1.cpp ]
+    [ compile-fail libs/optional/test/optional_test_fail2.cpp ]
+    [ compile-fail libs/optional/test/optional_test_fail3.cpp ]
+    [ compile-fail libs/optional/test/optional_test_fail4.cpp ]
+    [ compile-fail libs/optional/test/optional_test_fail5a.cpp ]
+    [ compile-fail libs/optional/test/optional_test_fail5b.cpp ]
+  ;
+}

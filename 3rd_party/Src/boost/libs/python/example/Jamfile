@@ -1,0 +1,61 @@
+# Specify our location in the boost project hierarchy
+subproject libs/python/example ;
+
+# Declares the following targets:
+#    
+#  1. an extension module called "getting_started1", which is
+#     built from "getting_started1.cpp". Built by default
+#
+#  2. A test target called my-test.test which runs
+#     test_getting_started1.py with the extension module above. Built
+#     when out-of date, but only if invoked by name or if the global
+#     "test" target is invoked.
+#
+#  3. A test target called my-test.run wihch runs the above test
+#     unconditionally. Built only when invoked by name.
+#
+# To see verbose test output, add "-sPYTHON_TEST_ARGS=-v" to the bjam
+# command-line before the first target.
+#
+
+# Include definitions needed for Python modules
+SEARCH on python.jam = $(BOOST_BUILD_PATH) ;
+include python.jam ;
+
+# ----- getting_started1 -------
+
+# Declare a Python extension called getting_started1
+extension getting_started1
+:  # sources
+   getting_started1.cpp
+  
+   # dependencies
+   <dll>../build/boost_python
+  ;
+
+# Declare a test for the extension module
+boost-python-runtest test1
+    :  # Python test driver
+    test_getting_started1.py
+    # extension modules to use
+    <pyd>getting_started1 ;
+    
+
+    
+# ----- getting_started2 -------
+    
+# Declare a Python extension called getting_started2
+extension getting_started2
+:  # sources
+   getting_started2.cpp
+  
+   # dependencies
+   <dll>../build/boost_python
+  ;
+
+# Declare a test for the extension module
+boost-python-runtest test2
+    :  # Python test driver
+    test_getting_started2.py
+    # extension modules to use
+    <pyd>getting_started2 ;    

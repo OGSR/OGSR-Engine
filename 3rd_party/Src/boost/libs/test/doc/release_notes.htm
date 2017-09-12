@@ -1,0 +1,159 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+
+<HTML>
+<HEAD>
+<TITLE>Boost Test Release Notes</TITLE>
+<LINK rel="stylesheet" type="text/css" href="style/btl-white.css" media="screen">
+<LINK rel="stylesheet" type="text/css" href="style/btl-print.css" media="print">
+<META http-equiv="Content-Language" content="en-us">
+<META http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+</HEAD>
+<BODY>
+<DIV class="centered">
+  <TABLE class="body-table" cellspacing="3" >
+  <TR>
+  <TD id="body"> <A name='TOP'><IMG src='../../../c++boost.gif' width='277' height='86' alt="Boost logo"></A> 
+
+  <H1>Boost Test Library Release Notes</H1>
+  <P class="page-toc"> 
+  <A href="#v1_30_0">Boost release 1.30.0</A><BR>
+  <A href="#Migration">Migration guide from Boost Test v1</A> </P>
+
+  <H2><A name="v1_30_0">Boost release 1.30.0</A></H2>
+
+  <ul>
+
+    <li>Facility for automatic registration of unit tests is introduced<br>
+      It was requested during original Boost Test review and now it supports automatic 
+      registration for free function based test cases. Here an example:<br>
+<PRE class="code">#<SPAN class="reserv-word">include</SPAN> &lt;boost/test/auto_unit_test.hpp&gt;
+
+BOOST_AUTO_UNIT_TEST( test1 )
+{
+  BOOST_CHECK( true );
+}
+
+BOOST_AUTO_UNIT_TEST( test2 )
+{
+  BOOST_CHECK( true );
+}</PRE></li>
+
+    <li>XML log format is introduced<br>
+      Now user willing to automate errors processing could get a log in 
+      XML format. Command line switch is introduced that manage log format:<br>
+      --log_format=[XML|HRF] will force XML or human readable format respectively</li>
+      
+    <li>XML report format is introduced<br>
+      Now user willing to automate results analysis could get a result report in XML format. 
+      Command line switch is introduced that manage report format:<br>
+      --report_format=[XML|HRF] will force XML or human readable format respectively</li>
+    
+    <li>BOOST_CHECK_NO_THROW test tool is introduced</li>
+    
+    <li>BOOST_BITWISE_CHECK test tool is introduced</li>
+
+    <li>libraries file names changed to:<br>
+      boost_prg_exec_monitor<br>
+      boost_test_exec_monitor<br>
+      boost_unit_test_framework</li>
+    
+    <li>Components examples and test documentation page is introduced.<BR>
+      Now all test/examples links lead to this page that has summary information about all of them, 
+      that include expected output, type of test and so on</li>
+
+    <li>Catch system errors switch introduced<br>
+      This will work among the lines described in <a href="http://lists.boost.org/MailArchives/boost/msg40028.php">
+      http://lists.boost.org/MailArchives/boost/msg40028.php</a><br>
+      Environment variable name: BOOST_TEST_CATCH_SYSTEM_ERRORS[=&quot;no&quot;]<br>
+      Unit test framework command line argument: --catch_system_errors[=&quot;no&quot;]</li>
+
+    <li>Added building dynamic libraries into Jamfile</li>
+      
+    <li>MS C runtime debug hooks introduced<br>
+      It allows to catch _ASSERT bases assertion for MSVC</li>
+
+    <li>SIGABRT catch added</li>
+
+    <li>Eliminated NULLs all over the place<br>
+      I switched to use typedef c_string literal instead of char const* and to c_string literal() instead of NULL. 
+      Different definition of NULL symbol causing small problems for some compilers</li>
+
+    <li>class wrapstrstream separated in standalone file and renamed to wrap_stringstream<br>
+      For now it will be located in test/detail. Once I prepare doc page for it I will present it for adding into utility</li>
+
+    <li>unit_test_result_saver introduced to properly managed reset_current_test_set calls in case of exceptions</li>
+
+    <li>switch back to use scoped_ptr instead of raw test_suite pointer in unit_test_main.cpp</li>
+
+    <li>BOOST_CPP_MAIN_CONFIRMATION renamed to BOOST_PRG_MON_CONFIRM and changed it's logic a bit<BR>
+      It now should have value &quot;no&quot; to turn off pass confirmation</li>
+
+    <li>added tests for auto unit test facility and catching assert statements</li>
+
+    <li>Jamfile added info examples directory</li>
+
+    <li>Added example input for the unit_test_example5</li>
+     
+    <li>Command line option --output_format is introduced that both log/report format simultaneously</li>
+    
+    <li>Allows to perform bitwise comparisons of the two arguments provided. Will report as many 
+      errors as many bits mismatch. Mismatch position is reported.</li>
+      
+    <li>Documentation default palette changed to white</li>
+      
+    <li>Signal handling selection algorithm fixed<br>
+      BOOST_HAS_SIGACTION is used to select sigaction based signal handling alternative. 
+      It allowed use of signal handling with gcc on win32 platform.</li>
+      
+    <li>C strings usage in minimized as much as possible</li>
+    
+    <li>class_properties header modified to use Boost.Preprocessor for friends declaration</li>
+    
+    <li>other minor code/doc changes and bug fixes</li>
+  </ul>
+
+  <H2><A name="Migration">Boost Test migration guide</A></H2>
+  <P class="1-line-indented">This version of Boost.Test library substitute
+  the original testing library used in a Boost. These are several simple
+  steps you need to follow to smoothly migrate to the latest software.</P>
+  <P class="1-line-indented">If your code were using the original version
+  of cpp_main facility, to migrate you will need to delete the inclusion
+  of the &lt;boost/test/cpp_main.cpp&gt;, since this file is not present
+  any more. After that you have following choices:</P>
+  <UL>
+    <LI>Link with Program Execution Monitor (exact library name depends
+        on compiler you are using, but most probably it will be libboost_prg_exec_monitor.lib).
+    </LI>
+    <LI>Include &lt;boost/test/included/prg_exec_monitor.hpp&gt;, in which
+        case you need not link with precompiled component but it may incur
+        probably some compile time overhead.</LI>
+  </UL>
+  <P class="1-line-indented">If your code were using the original version
+  of test_main and test tools facilitates of Boost.Test library, to migrate
+  to use of latest one you have following choices:</P>
+  <UL>
+    <LI>Without changing of the code that were using Boost.Test facilities
+        link with Test Execution Monitor (exact library name depends on compiler
+        you are using, but most probably it will be libtest_exec_monitor.lib).</LI>
+    <LI>Include &lt;boost/test/included/test_exec_monitor.hpp&gt;, in which
+        case you need not link with precompiled component but it may incur
+        probably some compile time overhead. Definition of BOOST_INCLUDE_MAIN
+        could be deleted either.</LI>
+    <LI>Include &lt;boost/test/minimal.hpp&gt;, in which case you need not link
+        with precompiled component and it most probably does not incur a compile
+        time overhead, but you will be limited ti the set of features defined
+        in the original test library. Definition of BOOST_INCLUDE_MAIN could
+        be deleted either. Would you decide in a future to use any of newer
+        Boost Test features you will be enforced to snitch to one the two
+        chaises above. </LI>
+  </UL>
+  <DIV class="footer">
+    <P>&copy <A href='mailto:rogeeff@emailaccount.com'>Gennadiy Rozental</A> 2001-2002 </P>
+    <P>Revised: 17 February, 2003</P>
+  </DIV>
+  </TD>
+  </TR>
+  </TABLE>
+</DIV>
+</BODY>
+</HTML>

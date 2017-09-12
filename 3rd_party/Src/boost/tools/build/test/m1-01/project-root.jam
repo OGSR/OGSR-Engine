@@ -1,0 +1,31 @@
+
+empty = ;
+
+module $(empty) {
+
+rule yfc-compile ( target : sources + : properties ) 
+{
+    ECHO "A rule " ;
+    DEPENDS $(target) : $(sources) ;
+}
+
+rule yfc-link ( target : sources + : properties ) 
+{
+    ECHO "A rule " ;
+    DEPENDS $(target) : $(sources) ;
+}
+
+
+}
+
+actions yfc-compile
+{
+    echo $(>) > $(<)
+}
+
+actions yfc-link
+{
+    echo $(>) > $(<)
+}
+
+

@@ -1,0 +1,216 @@
+.\" <!!---------------------------------------------------------------------->
+.\" <!! Copyright (C) 1999 Dietmar Kuehl, Claas Solutions GmbH >
+.\" <!!>
+.\" <!! Permission to use, copy, modify, distribute and sell this >
+.\" <!! software for any purpose is hereby granted without fee, provided >
+.\" <!! that the above copyright notice appears in all copies and that >
+.\" <!! both that copyright notice and this permission notice appear in >
+.\" <!! supporting documentation. Dietmar Kuehl and Claas Solutions make no >
+.\" <!! representations about the suitability of this software for any >
+.\" <!! purpose. It is provided "as is" without express or implied warranty. >
+.\" <!!---------------------------------------------------------------------->
+.TH heap 3 "8.July 1999" "Claas Solutions" "boost"
+.SH NAME
+heap - Priority Queues
+.SH ABSTRACT
+The standard C++ library provides an adaptor to turn a container into a priority queue. However, this priority queue misses two important features, namely the possibility to change or remove an arbitrary element and logical inspectability. This component implements a collection of priority queues, all with different trade offs. 
+.SH SYNOPSIS
+
+
+.nf
+#include "boost/heap.hpp"
+.br
+namespace boost
+.br
+{
+.br
+  template <typename T, typename Comp = std::less<T>, int d = 2>
+.br
+  class d_heap;
+.br
+  
+.br
+  template <typename T, typename Comp = std::less<T> >
+.br
+  class fibonacci_heap;
+.br
+
+.br
+  template <typename T, typename Comp = std::less<T> >
+.br
+  class lazy_fibonacci_heap;
+.br
+
+.br
+  template <typename T, typename Comp = std::less<T> >
+.br
+  class pairing_heap;
+.br
+  
+.br
+  template <typename T, typename Cont = std::vector<T>,
+.br
+          typename Comp = std::less<typename Cont::value_type> >
+.br
+  class priority_queue;
+.br
+
+.br
+  template <typename T, typename Cont = std::deque<T> >
+.br
+  class queue;
+.br
+
+.br
+  template <typename T, typename traits>
+.br
+  class radix_heap;
+.br
+
+.br
+  template <typename T, typename Comp = std::less<T> >
+.br
+  class splay_heap;
+.br
+
+.br
+  template <typename T, typename Cont = std::vector<T> >
+.br
+  class stack;
+.br
+}
+.fi 0 
+.SH DESCRIPTION
+The priority heaps provide efficient access to the "largest" element where the definition of what is considered to be the largest elements depends on the type of the priority queue: 
+.IP -
+For the class template \fBboost::queue\fP the largest elements is the the element which is stored the longest time in the queue (similar to \fBboost::stack\fP this is normally not considered a priority queue). 
+.IP -
+For the class template \fBboost::stack\fP the largest element is the most recently added element (it is kind of stretching the definition of "priority queue" to consider this a priority queue but this component is a reasonable home for this template...). 
+.IP -
+For the class template \fBboost::radix_heap\fP the element type is assumed to provide access to a non-negative integral value describing relative order of the element. This value is used to sort elements in ascending order. 
+.IP -
+For all other types, a template argument is used to specify a binary predicate which is used to determine an ordering on the elements of the heap. 
+.RE
+
+All types of priority queues provide a common interface which is made up of a few operations and typedefs: 
+.TP .5i
+\fBvalue_type\fP
+The type of the elements stored in the priority queue. 
+.TP .5i
+\fBsize_type\fP
+The type used to maintain the number of elements in the 		 priority queue. 
+.TP .5i
+\fBconst_reference\fP
+The type returned from \fBtop()\fP. 
+.TP .5i
+\fBconst_iterator\fP
+The type of the iterator used to iterate over all elements 			 in the priority queue (it is called \fBconst_iterator\fP rather than \fBiterator\fP because the elements are immutable). 
+.TP .5i
+Default Constructor
+Construct an empty priority queue (however, this constructor is only available if the comparator type provides a default constructor). 
+.TP .5i
+\fBpush()\fP
+Add an element to the priority queue. 
+.TP .5i
+\fBtop()\fP
+Provides access the current largest element. 
+.TP .5i
+\fBpop()\fP
+Remove the current largest element from the priority queue. 
+.TP .5i
+\fBsize()\fP
+Returns the number of elements in the priority queue. 
+.TP .5i
+\fBempty()\fP
+Returns whether there are elements in the priority queue. 
+.TP .5i
+\fBbegin()\fP
+Returns an iterator to the first element of the priority queue. 
+.TP .5i
+\fBend()\fP
+Returns a past the end iterator for the priority queue. 
+.RE
+
+Note, that \fBall\fP classes have this common interface. This is unfortunately not the case with the standard version of the adaptor \fBstd::queue\fP which does not provide the function \fBtop()\fP: Instead, this adaptor provides the functions \fBfront()\fP and \fBback()\fP (which are, of course, also provided for the Boost version). 
+
+The description will always assume that there is efficient access to the "largest" element of a priority queue (this is in contrast to all literature I have which always uses the "smallest" element but consistent to the behavior of the default for the standard adaptor \fBstd::priority_queue\fP). Of course, for all priority queue templates which take a comparator as template argument, this can be changed easily. For example to provide access to the smallest element just use \fBstd::greater<T>\fP instead of \fBstd::less<T>\fP (both templates are defined in the header \fB<utility>\fP) as the type of the comparator. For the templates \fBboost::queue\fP and \fBboost::stack\fP the largest element is determined by the insertion order (the first element added and the last element added, respectively). Only Radix heaps somewhat rely on the fact that efficient access is indeed to the smallest integer in the priority queue. To make this class consistent with the other types, an ugly hack is used (see the documentation of Radix heap for details). 
+
+In any case, if the documentation mentions the largest element, it is to be viewed with this intention in mind: Using the default parameters for the priority queue templates will provide efficient access to the largest element at least for the built-in types. For other types than built-in types, you have to provide an appropriate comparator (or define \fBoperator<()\fP) which defines an order on the values. Note that I omitted the details on what kind of order: I'm currently not sure about the exact kind of order required for the various priority queues to work. It definitely works for total orders... 
+
+Several priority queue implementions use some sort of tree internally where a simple invariant is maintained: The data stored with a nodes is larger than the data of all child nodes. This way the root of every subtree always stores the largest element in this subtree. The different implementations either differ in the details how this invariant is maintained or what kind of accesses are allowed (the template \fBboost::priority_queue\fP basically implements a 2-heap but unlike the template \fBboost::d_heap\fP no methods for manipulation of elements different than the top element are provided). This basically applies to all implementations except for Radix heaps, although \fBboost::queue\fP and \fBboost::stack\fP maintain degenerate trees: In both cases it is just a sequence. 
+.SH PROPERTIES OF THE DIFFERENT CLASSES
+This section is intended to give you an overview of all available priority queues to determine which is the best suitable for your situations. The table lists the supported operations, support for arbitrary comparators, and the efficiency of the implementation. The operations are put into groups: 
+.TP .5i
+Basic
+Represents basic the operations 	 \fBpush()\fP, 	 \fBtop()\fP, 	 \fBpop()\fP, 	 \fBsize()\fP, 	 \fBempty()\fP 
+.TP .5i
+\fBbegin()\fP
+Represents support for logical inspectability, i.e. an iterator type and the methods 	 \fBbegin()\fP, 	 \fBend()\fP 
+.TP .5i
+\fBchange_top()\fP
+Represents self, that is support for the method 	 \fBchange_top()\fP 
+.TP .5i
+\fBchange()\fP
+Represents the methods changing the priority of an arbitrary element, i.e. the methods 	 \fBchange()\fP, 	 \fBdecrease()\fP, 	 \fBincrease()\fP 
+.RE
+
+The efficiency mentioned tries to describe the efficiency of the implementation. However, until now I have only made some very simple performance tests using only \fBrandom data\fP. For a really good estimate on the performance of the various implementations, it is necessary to measure the performance on real problem data. 
+.br
+Type
+Comp
+Basic
+\fBbegin()\fP
+\fBchange_top()\fP
+\fBchange()\fP
+Efficiency
+
+.br
+std::stack No Yes No No No fast
+.br
+boost::stack No Yes Yes No No fast
+.br
+std::queue No No No No No fast
+.br
+boost::queue No Yes Yes No No fast
+.br
+std::priority_queue Yes Yes No No No fast
+.br
+boost::priority_queue Yes Yes Yes Yes No fast
+.br
+boost::splay_heap Yes Yes Yes Yes Yes slow
+.br
+boost::d_heap Yes Yes Yes Yes Yes slow
+.br
+boost::radix_heap No Yes Yes Yes Yes slow
+.br
+boost::fibonacci_heap Yes Yes Yes Yes Yes slow
+.br
+boost::lazy_fibonacci_heap Yes Yes Yes Yes Yes slow
+.br
+boost::pairing_heap Yes Yes Yes Yes Yes slow
+.br
+
+.br
+The last six classes differ in their asymptotical behavior (which is important to theoreticians but probably completely pointless for the practioneer as they are all theoretical quite close). However, measuring different scenarios (using random data...) indicated that each of the classes has its strength depending on the number of elements and the mix of operations used. If your application normally uses a common mix of operations you might be able to enhance the performance by just testing which of the priority queues works best for your application. 
+.SH BUGS
+There are currently some known bugs which mainly stem from the fact that I want to get this stuff at least temporarily off my desk: 
+.IP -
+The implementation of the Radix heap is not yet complete. I'm pretty sure that it can be done but I haven't figured out some of the details yet and the literature I have is a little bit terse on some of the more intersting parts. However, it seems that this priority is relatively fast where it is applicable. Thus, it might be interesting to use it. 
+.IP -
+I haven't cared much about exception safety. I think it should be doable to add exception safety since most classes are "node based": after construction of an element, only built-in types are manipulated (notably \fBboost::priority_queue\fP seems to be the biggest problem with respect to exception safety). However, the compare function might throw exceptions and it is not always obvious how to restore the data structure if the comparison of objects is unreliable. 
+.IP -
+This documentation is probably full of typos, grammatical errors, and, hopefully to a much lesser degree, technical inconsistencies... 
+.RE
+
+
+.SH SEE ALSO
+d_heap(3), f_heap(3), l_heap(3), p_heap(3), p_queue(3), queue(3), r_heap(3), s_heap(3) stack(3) 
+.SH AUTHOR
+Dietmar Kühl (Claas Solutions)
+.br
+e-mail: dietmar.kuehl@claas-solutions.de
+.br
+http://www.claas-solutions.de/~kuehl
+.br
+
+

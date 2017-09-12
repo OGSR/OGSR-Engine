@@ -1,0 +1,8 @@
+subproject libs/dynamic_bitset ;
+
+unit-test disjoint_set_test
+    : disjoint_set_test.cpp
+      <lib>../test/build/test_exec_monitor
+    : <include>$(BOOST_ROOT)
+    ;
+

@@ -1,0 +1,2 @@
+
+exe t7 : main.cpp lcdrange.cpp lcdrange.h : <uses>qt ;

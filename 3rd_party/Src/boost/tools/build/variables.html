@@ -1,0 +1,449 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+ 
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+ 
+  <link rel="stylesheet" type="text/css" href="boost.css">
+  <title>Boost.Build - variables</title>
+  <meta name="author" content="Rene Rivera">
+</head>
+ <body link="#0000ff" vlink="#800080">
+ 
+<table border="0" cellpadding="7" cellspacing="0" width="100%" summary="header">
+   <tbody>
+    <tr>
+      <td valign="top" width="300">        
+      <h3><a href="http://www.boost.org/"><img height="86" width="277" alt="C++ Boost" src="../../c++boost.gif" border="0">
+      </a></h3>
+     </td>
+     <td valign="top">        
+      <h1 align="center">Boost.Build</h1>
+      <h2 align="center">variables</h2>
+     </td>
+   </tr>
+ 
+  </tbody>
+</table>
+ 
+<hr>  
+<h2>Introduction</h2>
+  
+<p>Boost.Build's behaviour can be controlled by setting of variables either
+from the shell environment or using the "<code>-s<i>VARIABLE_NAME</i>=</code><i>
+value</i>" Jam command line option. Most of these variables are used internally
+and don't need to be manipulated by the user.  </p>
+<h2>Variables</h2>
+  &nbsp;  
+<table border="1">
+  <tbody>
+    <tr>
+      <th>Variable Name </th>
+      <th>Semantics </th>
+      <th valign="top">Notes<br>
+      </th>
+    </tr>
+    <tr>
+      <td valign="top"><code>AS</code><br>
+      </td>
+      <td valign="top">Command to compile assermbler source files.<br>
+      </td>
+      <td valign="top"><br>
+      </td>
+    </tr>
+    <tr>
+      <td valign="top"><code>ASFLAGS</code><br>
+      </td>
+      <td valign="top">Flags to pass to As command.<br>
+      </td>
+      <td valign="top"><br>
+      </td>
+    </tr>
+    <tr>
+      <td valign="top"><code>AWK</code><br>
+      </td>
+      <td valign="top">Command to process awk commands.<br>
+      </td>
+      <td valign="top"><br>
+      </td>
+    </tr>
+    <tr>
+      <td valign="top"><code>CHMOD</code><br>
+      </td>
+      <td valign="top">Command to set the permissions of files.<br>
+      </td>
+      <td valign="top"><br>
+      </td>
+    </tr>
+    <tr>
+     <td><code>CP</code>     </td>
+      <td>Command used to copy files.      </td>
+      <td valign="top"><br>
+      </td>
+    </tr>
+    <tr>
+      <td valign="top"><code>CRELIB</code><br>
+      </td>
+      <td valign="top">?<br>
+      </td>
+      <td valign="top"><br>
+      </td>
+    </tr>
+    <tr>
+      <td valign="top"><code>DLLMODE</code><br>
+      </td>
+      <td valign="top">Permissions to set for generated shared library files.<br>
+      </td>
+      <td valign="top"><br>
+      </td>
+    </tr>
+    <tr>
+      <td valign="top"><code>DLL_AS_LIB</code><br>
+      </td>
+      <td valign="top">Platform flag indicating that when linking the platform
+ treats shared libraries as link libraries when linking. Notably Win32 type
+platforms.<br>
+      </td>
+      <td valign="top"><br>
+      </td>
+    </tr>
+    <tr>
+      <td valign="top"><code>DOT</code><br>
+      </td>
+      <td valign="top">Representation of current directory in a path.<br>
+      </td>
+      <td valign="top"><br>
+      </td>
+    </tr>
+    <tr>
+      <td valign="top"><code>DOTDOT</code><br>
+      </td>
+      <td valign="top">Represetation of parent directory in a path.<br>
+      </td>
+      <td valign="top"><br>
+      </td>
+    </tr>
+    <tr>
+      <td valign="top"><code>EXEMODE</code><br>
+      </td>
+      <td valign="top">Permissions to set for generated executable files.<br>
+      </td>
+      <td valign="top"><br>
+      </td>
+    </tr>
+    <tr>
+      <td valign="top"><code>FILEMODE</code><br>
+      </td>
+      <td valign="top">Permissions to set for generated regular files.<br>
+      </td>
+      <td valign="top"><br>
+      </td>
+    </tr>
+    <tr>
+      <td valign="top"><code>FORTRAN</code><br>
+      </td>
+      <td valign="top">Command to compile Fortran source files.<br>
+      </td>
+      <td valign="top"><br>
+      </td>
+    </tr>
+    <tr>
+      <td valign="top"><code>FORTRANFLAGS</code><br>
+      </td>
+      <td valign="top">Flags to pass to FORTRAN command.<br>
+      </td>
+      <td valign="top"><br>
+      </td>
+    </tr>
+    <tr>
+      <td valign="top"><code>HDRS</code><br>
+      </td>
+      <td valign="top">Default list of directories of platform headers.<br>
+      </td>
+      <td valign="top"><br>
+      </td>
+    </tr>
+    <tr>
+      <td valign="top"><code>HDRPATTERN</code><br>
+      </td>
+      <td valign="top">Regex pattern used to match the file part of CPP include
+directives.<br>
+      </td>
+      <td valign="top"><br>
+      </td>
+    </tr>
+    <tr>
+      <td valign="top"><code>JAMFILE</code><br>
+      </td>
+      <td valign="top">File to read build instructions/descriptions from.<br>
+      </td>
+      <td valign="top">Default is "Jamfile".<br>
+      </td>
+    </tr>
+    <tr>
+      <td valign="top"><code>JAMRULES</code><br>
+      </td>
+      <td valign="top">File to read for global rules and variable.<br>
+      </td>
+      <td valign="top">Default is "Jamrules".<br>
+      </td>
+    </tr>
+    <tr>
+      <td valign="top"><code>JAMSHELL</code><br>
+      </td>
+      <td valign="top">See Perforce/Jam documentation.<br>
+      </td>
+      <td valign="top"><br>
+      </td>
+    </tr>
+    <tr>
+      <td valign="top"><code>LEX</code><br>
+      </td>
+      <td valign="top">Command for processing Lex compatible parsers.<br>
+      </td>
+      <td valign="top"><br>
+      </td>
+    </tr>
+    <tr>
+      <td valign="top"><code>LEX_OUTPUT</code><br>
+      </td>
+      <td valign="top">LEX option to directly specify the output files to
+generate.<br>
+      </td>
+      <td valign="top"><br>
+      </td>
+    </tr>
+    <tr>
+      <td valign="top"><code>LN</code><br>
+      </td>
+      <td valign="top">Command to create a hard-link to a file.<br>
+      </td>
+      <td valign="top"><br>
+      </td>
+    </tr>
+    <tr>
+      <td valign="top"><code>MANDIR</code><br>
+      </td>
+      <td valign="top">Directory to install MAN documentation files.<br>
+      </td>
+      <td valign="top"><br>
+      </td>
+    </tr>
+    <tr>
+      <td valign="top"><code>MKDIR</code><br>
+      </td>
+      <td valign="top">Command to create a directory.<br>
+      </td>
+      <td valign="top"><br>
+      </td>
+    </tr>
+    <tr>
+      <td valign="top"><code>MV</code></td>
+      <td valign="top">Command to rename files.<br>
+      </td>
+      <td valign="top"><br>
+      </td>
+    </tr>
+    <tr>
+      <td valign="top"><code>NOARSCAN</code></td>
+      <td valign="top">Platforms archive format does not support scanning.</td>
+      <td valign="top"><br>
+      </td>
+    </tr>
+    <tr>
+      <td valign="top"><code>OSFULL</code><br>
+      </td>
+      <td valign="top">List of all the variations of the OS platform name
+and version.<br>
+      </td>
+      <td valign="top"><br>
+      </td>
+    </tr>
+    <tr>
+      <td valign="top"><code>PREDLL</code></td>
+      <td valign="top">Prefix for generated shared library files.<br>
+      </td>
+      <td valign="top"><br>
+      </td>
+    </tr>
+    <tr>
+      <td valign="top"><code>PRELIB</code><br>
+      </td>
+      <td valign="top">Prefix for generated link library files.<br>
+      </td>
+      <td valign="top"><br>
+      </td>
+    </tr>
+    <tr>
+      <td valign="top"><code>RANLIB</code><br>
+      </td>
+      <td valign="top">Command to post-process archives or link libraries.<br>
+      </td>
+      <td valign="top">Set to empty ("") if there is no command.<br>
+      </td>
+    </tr>
+    <tr>
+      <td valign="top"><code>RELOCATE</code><br>
+      </td>
+      <td valign="top">Flag to indicate that the platform compiler does not
+support placing generated object files, so we must move them.<br>
+      </td>
+      <td valign="top"><br>
+      </td>
+    </tr>
+    <tr>
+      <td valign="top"><code>RM</code></td>
+      <td valign="top">Command used to delete files.<br>
+      </td>
+      <td valign="top"><br>
+      </td>
+    </tr>
+    <tr>
+      <td valign="top"><code>SED</code><br>
+      </td>
+      <td valign="top">Command to execute sed scripts.<br>
+      </td>
+      <td valign="top"><br>
+      </td>
+    </tr>
+    <tr>
+      <td valign="top"><code>SHELLHEADER</code><br>
+      </td>
+      <td valign="top">Header to prepend in generated shell scripts.<br>
+      </td>
+      <td valign="top"><br>
+      </td>
+    </tr>
+    <tr>
+      <td valign="top"><code>SHELLMODE</code><br>
+      </td>
+      <td valign="top">Permissions to set for generated shell script files.<br>
+      </td>
+      <td valign="top"><br>
+      </td>
+    </tr>
+    <tr>
+      <td valign="top"><code>SHELL_EXPORT</code><br>
+      </td>
+      <td valign="top">Command for exporting variables set by Boost.Build
+ to the shell. Not set if there is no command.<br>
+      </td>
+      <td valign="top"><br>
+      </td>
+    </tr>
+    <tr>
+      <td valign="top"><code>SHELL_SET</code><br>
+      </td>
+      <td valign="top">Comamnd for setting variables in the shell. Includes
+ trailing " " as needed. Set to empty ("") if there is no command.<br>
+      </td>
+      <td valign="top"><br>
+      </td>
+    </tr>
+    <tr>
+      <td valign="top"><code>SLASH</code><br>
+      </td>
+      <td valign="top">Directory and file separator of the platform.</td>
+      <td valign="top"><br>
+      </td>
+    </tr>
+    <tr>
+      <td valign="top"><code>SOURCE_GENERATING_EXTENSIONS</code><br>
+      </td>
+      <td valign="top">A list of all file extensions which generate source
+files when built.<br>
+      </td>
+      <td valign="top"><br>
+      </td>
+    </tr>
+    <tr>
+      <td valign="top"><code>SPLITPATH</code><br>
+      </td>
+      <td valign="top">Separator of the platform for variables that hold
+a list of paths.</td>
+      <td valign="top"><br>
+      </td>
+    </tr>
+    <tr>
+      <td valign="top"><code>STDHDRS</code><br>
+      </td>
+      <td valign="top">Directory location of standard C/C++ headers.<br>
+      </td>
+      <td valign="top"><br>
+      </td>
+    </tr>
+    <tr>
+      <td valign="top"><code>SUFDLL</code></td>
+      <td valign="top">Suffix for generated shared library files.<br>
+      </td>
+      <td valign="top">Includes any "." as needed.</td>
+    </tr>
+    <tr>
+      <td valign="top"><code>SUFFEXE</code><br>
+      </td>
+      <td valign="top">Suffix for generated executable files.<br>
+      </td>
+      <td valign="top">Includes any "." as needed.<br>
+      </td>
+    </tr>
+    <tr>
+      <td valign="top"><code>SUFLIB</code><br>
+      </td>
+      <td valign="top">Suffix for generated link library files.<br>
+      </td>
+      <td valign="top">Includes any "." as needed.</td>
+    </tr>
+    <tr>
+      <td valign="top"><code>SUFOBJ</code><br>
+      </td>
+      <td valign="top">Suffix for generated compiled object files.<br>
+      </td>
+      <td valign="top">Includes any "." as needed.<br>
+      </td>
+    </tr>
+    <tr>
+      <td valign="top"><code>YACC</code><br>
+      </td>
+      <td valign="top">Command for processing Yacc compatible grammars.<br>
+      </td>
+      <td valign="top"><br>
+      </td>
+    </tr>
+    <tr>
+      <td valign="top"><code>YACCFILES</code><br>
+      </td>
+      <td valign="top">The filenames that the YACC command produces.<br>
+      </td>
+      <td valign="top"><br>
+      </td>
+    </tr>
+    <tr>
+      <td valign="top"><code>YACCFLAGS</code><br>
+      </td>
+      <td valign="top">Extra flags to pass to the YACC command.<br>
+      </td>
+      <td valign="top"><br>
+      </td>
+    </tr>
+    <tr>
+      <td valign="top"><code>YACC_OUTPUT</code><br>
+      </td>
+      <td valign="top">YACC option to directly specify the output files to
+generate.<br>
+      </td>
+      <td valign="top"><br>
+      </td>
+    </tr>
+  </tbody>
+</table>
+  
+<hr> 
+<p>Revised    <!--webbot bot="Timestamp" S-Type="EDITED" S-Format="%d %B, %Y" startspan -->
+   14 May, 2002    <!--webbot bot="Timestamp" endspan i-checksum="39359" -->
+ </p>
+ 
+<p><i>&copy; Copyright <a href="../../people/dave_abrahams.htm">
+Dave Abrahams</a>    2002. All Rights Reserved.</i></p>
+ 
+</body>
+</html>

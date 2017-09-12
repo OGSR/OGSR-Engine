@@ -1,0 +1,245 @@
+#
+# Regression test Jamfile for boost configuration setup.
+# This file was automatically generated on Thu Feb 13 12:10:01 GMTST 2003,
+# do not edit by hand...
+#
+subproject libs/config/test ;
+# bring in the rules for testing
+SEARCH on testing.jam = $(BOOST_BUILD_PATH) ;
+include testing.jam ;
+
+run config_info.cpp ;
+run config_test.cpp <lib>../../test/build/boost_test_exec_monitor ;
+run limits_test.cpp <lib>../../test/build/boost_test_exec_monitor ;
+
+test-suite "BOOST_NO_ARGUMENT_DEPENDENT_LOOKUP" : 
+[ run no_arg_dep_lookup_pass.cpp <lib>../../test/build/boost_prg_exec_monitor ]
+[ compile-fail no_arg_dep_lookup_fail.cpp <lib>../../test/build/boost_prg_exec_monitor ] ;
+test-suite "BOOST_NO_AUTO_PTR" : 
+[ run no_auto_ptr_pass.cpp <lib>../../test/build/boost_prg_exec_monitor ]
+[ compile-fail no_auto_ptr_fail.cpp <lib>../../test/build/boost_prg_exec_monitor ] ;
+test-suite "BOOST_BCB_PARTIAL_SPECIALIZATION_BUG" : 
+[ run no_bcb_partial_spec_pass.cpp <lib>../../test/build/boost_prg_exec_monitor ]
+[ compile-fail no_bcb_partial_spec_fail.cpp <lib>../../test/build/boost_prg_exec_monitor ] ;
+test-suite "BOOST_NO_CTYPE_FUNCTIONS" : 
+[ run no_ctype_functions_pass.cpp <lib>../../test/build/boost_prg_exec_monitor ]
+[ compile-fail no_ctype_functions_fail.cpp <lib>../../test/build/boost_prg_exec_monitor ] ;
+test-suite "BOOST_NO_CV_SPECIALIZATIONS" : 
+[ run no_cv_spec_pass.cpp <lib>../../test/build/boost_prg_exec_monitor ]
+[ compile-fail no_cv_spec_fail.cpp <lib>../../test/build/boost_prg_exec_monitor ] ;
+test-suite "BOOST_NO_CV_VOID_SPECIALIZATIONS" : 
+[ run no_cv_void_spec_pass.cpp <lib>../../test/build/boost_prg_exec_monitor ]
+[ compile-fail no_cv_void_spec_fail.cpp <lib>../../test/build/boost_prg_exec_monitor ] ;
+test-suite "BOOST_NO_CWCHAR" : 
+[ run no_cwchar_pass.cpp <lib>../../test/build/boost_prg_exec_monitor ]
+[ compile-fail no_cwchar_fail.cpp <lib>../../test/build/boost_prg_exec_monitor ] ;
+test-suite "BOOST_NO_CWCTYPE" : 
+[ run no_cwctype_pass.cpp <lib>../../test/build/boost_prg_exec_monitor ]
+[ compile-fail no_cwctype_fail.cpp <lib>../../test/build/boost_prg_exec_monitor ] ;
+test-suite "BOOST_DEDUCED_TYPENAME" : 
+[ run no_ded_typename_pass.cpp <lib>../../test/build/boost_prg_exec_monitor ]
+[ compile-fail no_ded_typename_fail.cpp <lib>../../test/build/boost_prg_exec_monitor ] ;
+test-suite "BOOST_NO_DEPENDENT_NESTED_DERIVATIONS" : 
+[ run no_dep_nested_class_pass.cpp <lib>../../test/build/boost_prg_exec_monitor ]
+[ compile-fail no_dep_nested_class_fail.cpp <lib>../../test/build/boost_prg_exec_monitor ] ;
+test-suite "BOOST_NO_DEPENDENT_TYPES_IN_TEMPLATE_VALUE_PARAMETERS" : 
+[ run no_dep_val_param_pass.cpp <lib>../../test/build/boost_prg_exec_monitor ]
+[ compile-fail no_dep_val_param_fail.cpp <lib>../../test/build/boost_prg_exec_monitor ] ;
+test-suite "BOOST_NO_EXCEPTION_STD_NAMESPACE" : 
+[ run no_excep_std_pass.cpp <lib>../../test/build/boost_prg_exec_monitor ]
+[ compile-fail no_excep_std_fail.cpp <lib>../../test/build/boost_prg_exec_monitor ] ;
+test-suite "BOOST_NO_EXCEPTIONS" : 
+[ run no_exceptions_pass.cpp <lib>../../test/build/boost_prg_exec_monitor ]
+[ compile-fail no_exceptions_fail.cpp <lib>../../test/build/boost_prg_exec_monitor ] ;
+test-suite "BOOST_NO_EXPLICIT_FUNCTION_TEMPLATE_ARGUMENTS" : 
+[ run no_exp_func_tem_arg_pass.cpp <lib>../../test/build/boost_prg_exec_monitor ]
+[ compile-fail no_exp_func_tem_arg_fail.cpp <lib>../../test/build/boost_prg_exec_monitor ] ;
+test-suite "BOOST_NO_FUNCTION_TEMPLATE_ORDERING" : 
+[ run no_func_tmp_order_pass.cpp <lib>../../test/build/boost_prg_exec_monitor ]
+[ compile-fail no_func_tmp_order_fail.cpp <lib>../../test/build/boost_prg_exec_monitor ] ;
+test-suite "BOOST_NO_MS_INT64_NUMERIC_LIMITS" : 
+[ run no_i64_limits_pass.cpp <lib>../../test/build/boost_prg_exec_monitor ]
+[ compile-fail no_i64_limits_fail.cpp <lib>../../test/build/boost_prg_exec_monitor ] ;
+test-suite "BOOST_NO_INCLASS_MEMBER_INITIALIZATION" : 
+[ run no_inline_memb_init_pass.cpp <lib>../../test/build/boost_prg_exec_monitor ]
+[ compile-fail no_inline_memb_init_fail.cpp <lib>../../test/build/boost_prg_exec_monitor ] ;
+test-suite "BOOST_NO_INTEGRAL_INT64_T" : 
+[ run no_integral_int64_t_pass.cpp <lib>../../test/build/boost_prg_exec_monitor ]
+[ compile-fail no_integral_int64_t_fail.cpp <lib>../../test/build/boost_prg_exec_monitor ] ;
+test-suite "BOOST_NO_TEMPLATED_ITERATOR_CONSTRUCTORS" : 
+[ run no_iter_construct_pass.cpp <lib>../../test/build/boost_prg_exec_monitor ]
+[ compile-fail no_iter_construct_fail.cpp <lib>../../test/build/boost_prg_exec_monitor ] ;
+test-suite "BOOST_NO_LIMITS" : 
+[ run no_limits_pass.cpp <lib>../../test/build/boost_prg_exec_monitor ]
+[ compile-fail no_limits_fail.cpp <lib>../../test/build/boost_prg_exec_monitor ] ;
+test-suite "BOOST_NO_LIMITS_COMPILE_TIME_CONSTANTS" : 
+[ run no_limits_const_exp_pass.cpp <lib>../../test/build/boost_prg_exec_monitor ]
+[ compile-fail no_limits_const_exp_fail.cpp <lib>../../test/build/boost_prg_exec_monitor ] ;
+test-suite "BOOST_NO_LONG_LONG_NUMERIC_LIMITS" : 
+[ run no_ll_limits_pass.cpp <lib>../../test/build/boost_prg_exec_monitor ]
+[ compile-fail no_ll_limits_fail.cpp <lib>../../test/build/boost_prg_exec_monitor ] ;
+test-suite "BOOST_NO_MEMBER_FUNCTION_SPECIALIZATIONS" : 
+[ run no_mem_func_spec_pass.cpp <lib>../../test/build/boost_prg_exec_monitor ]
+[ compile-fail no_mem_func_spec_fail.cpp <lib>../../test/build/boost_prg_exec_monitor ] ;
+test-suite "BOOST_NO_MEMBER_TEMPLATE_KEYWORD" : 
+[ run no_mem_tem_keyword_pass.cpp <lib>../../test/build/boost_prg_exec_monitor ]
+[ compile-fail no_mem_tem_keyword_fail.cpp <lib>../../test/build/boost_prg_exec_monitor ] ;
+test-suite "BOOST_NO_MEMBER_TEMPLATE_FRIENDS" : 
+[ run no_mem_templ_frnds_pass.cpp <lib>../../test/build/boost_prg_exec_monitor ]
+[ compile-fail no_mem_templ_frnds_fail.cpp <lib>../../test/build/boost_prg_exec_monitor ] ;
+test-suite "BOOST_NO_MEMBER_TEMPLATES" : 
+[ run no_mem_templates_pass.cpp <lib>../../test/build/boost_prg_exec_monitor ]
+[ compile-fail no_mem_templates_fail.cpp <lib>../../test/build/boost_prg_exec_monitor ] ;
+test-suite "BOOST_NO_OPERATORS_IN_NAMESPACE" : 
+[ run no_ops_in_namespace_pass.cpp <lib>../../test/build/boost_prg_exec_monitor ]
+[ compile-fail no_ops_in_namespace_fail.cpp <lib>../../test/build/boost_prg_exec_monitor ] ;
+test-suite "BOOST_NO_TEMPLATE_PARTIAL_SPECIALIZATION" : 
+[ run no_partial_spec_pass.cpp <lib>../../test/build/boost_prg_exec_monitor ]
+[ compile-fail no_partial_spec_fail.cpp <lib>../../test/build/boost_prg_exec_monitor ] ;
+test-suite "BOOST_NO_PRIVATE_IN_AGGREGATE" : 
+[ run no_priv_aggregate_pass.cpp <lib>../../test/build/boost_prg_exec_monitor ]
+[ compile-fail no_priv_aggregate_fail.cpp <lib>../../test/build/boost_prg_exec_monitor ] ;
+test-suite "BOOST_NO_POINTER_TO_MEMBER_CONST" : 
+[ run no_ptr_mem_const_pass.cpp <lib>../../test/build/boost_prg_exec_monitor ]
+[ compile-fail no_ptr_mem_const_fail.cpp <lib>../../test/build/boost_prg_exec_monitor ] ;
+test-suite "BOOST_NO_UNREACHABLE_RETURN_DETECTION" : 
+[ run no_ret_det_pass.cpp <lib>../../test/build/boost_prg_exec_monitor ]
+[ compile-fail no_ret_det_fail.cpp <lib>../../test/build/boost_prg_exec_monitor ] ;
+test-suite "BOOST_NO_STRINGSTREAM" : 
+[ run no_sstream_pass.cpp <lib>../../test/build/boost_prg_exec_monitor ]
+[ compile-fail no_sstream_fail.cpp <lib>../../test/build/boost_prg_exec_monitor ] ;
+test-suite "BOOST_NO_STD_ALLOCATOR" : 
+[ run no_std_allocator_pass.cpp <lib>../../test/build/boost_prg_exec_monitor ]
+[ compile-fail no_std_allocator_fail.cpp <lib>../../test/build/boost_prg_exec_monitor ] ;
+test-suite "BOOST_NO_STD_DISTANCE" : 
+[ run no_std_distance_pass.cpp <lib>../../test/build/boost_prg_exec_monitor ]
+[ compile-fail no_std_distance_fail.cpp <lib>../../test/build/boost_prg_exec_monitor ] ;
+test-suite "BOOST_NO_STD_ITERATOR_TRAITS" : 
+[ run no_std_iter_traits_pass.cpp <lib>../../test/build/boost_prg_exec_monitor ]
+[ compile-fail no_std_iter_traits_fail.cpp <lib>../../test/build/boost_prg_exec_monitor ] ;
+test-suite "BOOST_NO_STD_ITERATOR" : 
+[ run no_std_iterator_pass.cpp <lib>../../test/build/boost_prg_exec_monitor ]
+[ compile-fail no_std_iterator_fail.cpp <lib>../../test/build/boost_prg_exec_monitor ] ;
+test-suite "BOOST_NO_STD_LOCALE" : 
+[ run no_std_locale_pass.cpp <lib>../../test/build/boost_prg_exec_monitor ]
+[ compile-fail no_std_locale_fail.cpp <lib>../../test/build/boost_prg_exec_monitor ] ;
+test-suite "BOOST_NO_STD_MESSAGES" : 
+[ run no_std_messages_pass.cpp <lib>../../test/build/boost_prg_exec_monitor ]
+[ compile-fail no_std_messages_fail.cpp <lib>../../test/build/boost_prg_exec_monitor ] ;
+test-suite "BOOST_NO_STD_MIN_MAX" : 
+[ run no_std_min_max_pass.cpp <lib>../../test/build/boost_prg_exec_monitor ]
+[ compile-fail no_std_min_max_fail.cpp <lib>../../test/build/boost_prg_exec_monitor ] ;
+test-suite "BOOST_NO_STD_OUTPUT_ITERATOR_ASSIGN" : 
+[ run no_std_oi_assign_pass.cpp <lib>../../test/build/boost_prg_exec_monitor ]
+[ compile-fail no_std_oi_assign_fail.cpp <lib>../../test/build/boost_prg_exec_monitor ] ;
+test-suite "BOOST_NO_STD_USE_FACET" : 
+[ run no_std_use_facet_pass.cpp <lib>../../test/build/boost_prg_exec_monitor ]
+[ compile-fail no_std_use_facet_fail.cpp <lib>../../test/build/boost_prg_exec_monitor ] ;
+test-suite "BOOST_NO_STD_WSTREAMBUF" : 
+[ run no_std_wstreambuf_pass.cpp <lib>../../test/build/boost_prg_exec_monitor ]
+[ compile-fail no_std_wstreambuf_fail.cpp <lib>../../test/build/boost_prg_exec_monitor ] ;
+test-suite "BOOST_NO_STD_WSTRING" : 
+[ run no_std_wstring_pass.cpp <lib>../../test/build/boost_prg_exec_monitor ]
+[ compile-fail no_std_wstring_fail.cpp <lib>../../test/build/boost_prg_exec_monitor ] ;
+test-suite "BOOST_NO_STDC_NAMESPACE" : 
+[ run no_stdc_namespace_pass.cpp <lib>../../test/build/boost_prg_exec_monitor ]
+[ compile-fail no_stdc_namespace_fail.cpp <lib>../../test/build/boost_prg_exec_monitor ] ;
+test-suite "BOOST_NO_SWPRINTF" : 
+[ run no_swprintf_pass.cpp <lib>../../test/build/boost_prg_exec_monitor ]
+[ compile-fail no_swprintf_fail.cpp <lib>../../test/build/boost_prg_exec_monitor ] ;
+test-suite "BOOST_NO_TEMPLATE_TEMPLATES" : 
+[ run no_template_template_pass.cpp <lib>../../test/build/boost_prg_exec_monitor ]
+[ compile-fail no_template_template_fail.cpp <lib>../../test/build/boost_prg_exec_monitor ] ;
+test-suite "BOOST_NO_USING_TEMPLATE" : 
+[ run no_using_template_pass.cpp <lib>../../test/build/boost_prg_exec_monitor ]
+[ compile-fail no_using_template_fail.cpp <lib>../../test/build/boost_prg_exec_monitor ] ;
+test-suite "BOOST_NO_VOID_RETURNS" : 
+[ run no_void_returns_pass.cpp <lib>../../test/build/boost_prg_exec_monitor ]
+[ compile-fail no_void_returns_fail.cpp <lib>../../test/build/boost_prg_exec_monitor ] ;
+test-suite "BOOST_NO_INTRINSIC_WCHAR_T" : 
+[ run no_wchar_t_pass.cpp <lib>../../test/build/boost_prg_exec_monitor ]
+[ compile-fail no_wchar_t_fail.cpp <lib>../../test/build/boost_prg_exec_monitor ] ;
+test-suite "BOOST_HAS_TWO_ARG_USE_FACET" : 
+[ run has_2arg_use_facet_pass.cpp <lib>../../test/build/boost_prg_exec_monitor ]
+[ compile-fail has_2arg_use_facet_fail.cpp <lib>../../test/build/boost_prg_exec_monitor ] ;
+test-suite "BOOST_HAS_BETHREADS" : 
+[ run has_bethreads_pass.cpp <lib>../../test/build/boost_prg_exec_monitor ]
+[ compile-fail has_bethreads_fail.cpp <lib>../../test/build/boost_prg_exec_monitor ] ;
+test-suite "BOOST_HAS_CLOCK_GETTIME" : 
+[ run has_clock_gettime_pass.cpp <lib>../../test/build/boost_prg_exec_monitor ]
+[ compile-fail has_clock_gettime_fail.cpp <lib>../../test/build/boost_prg_exec_monitor ] ;
+test-suite "BOOST_HAS_DIRENT_H" : 
+[ run has_dirent_h_pass.cpp <lib>../../test/build/boost_prg_exec_monitor ]
+[ compile-fail has_dirent_h_fail.cpp <lib>../../test/build/boost_prg_exec_monitor ] ;
+test-suite "BOOST_HAS_FTIME" : 
+[ run has_ftime_pass.cpp <lib>../../test/build/boost_prg_exec_monitor ]
+[ compile-fail has_ftime_fail.cpp <lib>../../test/build/boost_prg_exec_monitor ] ;
+test-suite "BOOST_HAS_GETTIMEOFDAY" : 
+[ run has_gettimeofday_pass.cpp <lib>../../test/build/boost_prg_exec_monitor ]
+[ compile-fail has_gettimeofday_fail.cpp <lib>../../test/build/boost_prg_exec_monitor ] ;
+test-suite "BOOST_HAS_HASH" : 
+[ run has_hash_pass.cpp <lib>../../test/build/boost_prg_exec_monitor ]
+[ compile-fail has_hash_fail.cpp <lib>../../test/build/boost_prg_exec_monitor ] ;
+test-suite "BOOST_HAS_LONG_LONG" : 
+[ run has_long_long_pass.cpp <lib>../../test/build/boost_prg_exec_monitor ]
+[ compile-fail has_long_long_fail.cpp <lib>../../test/build/boost_prg_exec_monitor ] ;
+test-suite "BOOST_HAS_MACRO_USE_FACET" : 
+[ run has_macro_use_facet_pass.cpp <lib>../../test/build/boost_prg_exec_monitor ]
+[ compile-fail has_macro_use_facet_fail.cpp <lib>../../test/build/boost_prg_exec_monitor ] ;
+test-suite "BOOST_HAS_MS_INT64" : 
+[ run has_ms_int64_pass.cpp <lib>../../test/build/boost_prg_exec_monitor ]
+[ compile-fail has_ms_int64_fail.cpp <lib>../../test/build/boost_prg_exec_monitor ] ;
+test-suite "BOOST_HAS_NANOSLEEP" : 
+[ run has_nanosleep_pass.cpp <lib>../../test/build/boost_prg_exec_monitor ]
+[ compile-fail has_nanosleep_fail.cpp <lib>../../test/build/boost_prg_exec_monitor ] ;
+test-suite "BOOST_HAS_NL_TYPES_H" : 
+[ run has_nl_types_h_pass.cpp <lib>../../test/build/boost_prg_exec_monitor ]
+[ compile-fail has_nl_types_h_fail.cpp <lib>../../test/build/boost_prg_exec_monitor ] ;
+test-suite "BOOST_HAS_NRVO" : 
+[ run has_nrvo_pass.cpp <lib>../../test/build/boost_prg_exec_monitor ]
+[ compile-fail has_nrvo_fail.cpp <lib>../../test/build/boost_prg_exec_monitor ] ;
+test-suite "BOOST_HAS_PARTIAL_STD_ALLOCATOR" : 
+[ run has_part_alloc_pass.cpp <lib>../../test/build/boost_prg_exec_monitor ]
+[ compile-fail has_part_alloc_fail.cpp <lib>../../test/build/boost_prg_exec_monitor ] ;
+test-suite "BOOST_HAS_PTHREAD_DELAY_NP" : 
+[ run has_pthread_delay_np_pass.cpp <lib>../../test/build/boost_prg_exec_monitor ]
+[ compile-fail has_pthread_delay_np_fail.cpp <lib>../../test/build/boost_prg_exec_monitor ] ;
+test-suite "BOOST_HAS_PTHREAD_MUTEXATTR_SETTYPE" : 
+[ run has_pthread_ma_st_pass.cpp <lib>../../test/build/boost_prg_exec_monitor ]
+[ compile-fail has_pthread_ma_st_fail.cpp <lib>../../test/build/boost_prg_exec_monitor ] ;
+test-suite "BOOST_HAS_PTHREAD_YIELD" : 
+[ run has_pthread_yield_pass.cpp <lib>../../test/build/boost_prg_exec_monitor ]
+[ compile-fail has_pthread_yield_fail.cpp <lib>../../test/build/boost_prg_exec_monitor ] ;
+test-suite "BOOST_HAS_PTHREADS" : 
+[ run has_pthreads_pass.cpp <lib>../../test/build/boost_prg_exec_monitor ]
+[ compile-fail has_pthreads_fail.cpp <lib>../../test/build/boost_prg_exec_monitor ] ;
+test-suite "BOOST_HAS_SCHED_YIELD" : 
+[ run has_sched_yield_pass.cpp <lib>../../test/build/boost_prg_exec_monitor ]
+[ compile-fail has_sched_yield_fail.cpp <lib>../../test/build/boost_prg_exec_monitor ] ;
+test-suite "BOOST_HAS_SGI_TYPE_TRAITS" : 
+[ run has_sgi_type_traits_pass.cpp <lib>../../test/build/boost_prg_exec_monitor ]
+[ compile-fail has_sgi_type_traits_fail.cpp <lib>../../test/build/boost_prg_exec_monitor ] ;
+test-suite "BOOST_HAS_SIGACTION" : 
+[ run has_sigaction_pass.cpp <lib>../../test/build/boost_prg_exec_monitor ]
+[ compile-fail has_sigaction_fail.cpp <lib>../../test/build/boost_prg_exec_monitor ] ;
+test-suite "BOOST_HAS_SLIST" : 
+[ run has_slist_pass.cpp <lib>../../test/build/boost_prg_exec_monitor ]
+[ compile-fail has_slist_fail.cpp <lib>../../test/build/boost_prg_exec_monitor ] ;
+test-suite "BOOST_HAS_STDINT_H" : 
+[ run has_stdint_h_pass.cpp <lib>../../test/build/boost_prg_exec_monitor ]
+[ compile-fail has_stdint_h_fail.cpp <lib>../../test/build/boost_prg_exec_monitor ] ;
+test-suite "BOOST_HAS_STLP_USE_FACET" : 
+[ run has_stlp_use_facet_pass.cpp <lib>../../test/build/boost_prg_exec_monitor ]
+[ compile-fail has_stlp_use_facet_fail.cpp <lib>../../test/build/boost_prg_exec_monitor ] ;
+test-suite "BOOST_HAS_UNISTD_H" : 
+[ run has_unistd_h_pass.cpp <lib>../../test/build/boost_prg_exec_monitor ]
+[ compile-fail has_unistd_h_fail.cpp <lib>../../test/build/boost_prg_exec_monitor ] ;
+test-suite "BOOST_MSVC6_MEMBER_TEMPLATES" : 
+[ run has_vc6_mem_templ_pass.cpp <lib>../../test/build/boost_prg_exec_monitor ]
+[ compile-fail has_vc6_mem_templ_fail.cpp <lib>../../test/build/boost_prg_exec_monitor ] ;
+test-suite "BOOST_MSVC_STD_ITERATOR" : 
+[ run has_vc_iterator_pass.cpp <lib>../../test/build/boost_prg_exec_monitor ]
+[ compile-fail has_vc_iterator_fail.cpp <lib>../../test/build/boost_prg_exec_monitor ] ;
+test-suite "BOOST_HAS_WINTHREADS" : 
+[ run has_winthreads_pass.cpp <lib>../../test/build/boost_prg_exec_monitor ]
+[ compile-fail has_winthreads_fail.cpp <lib>../../test/build/boost_prg_exec_monitor ] ;

@@ -1,0 +1,49 @@
+<!doctype html public "-//ietf//dtd html//en">
+<html><head><title>boost::mpl::Sequence</title>
+<link rel="stylesheet" href="./mpl_wiki.css">
+</head><body bgcolor="white">
+<h1><a href="./Table_of_Contents.html"><img src="./mpl_logo.jpg" alt="[Home]" border=0 align="right"></a>Sequence</h1><h3>Description</h3>
+<p>
+A Sequence (or, more precisely, an Input Sequence) is a compile-time entity to which you can apply <code><a href="./Reference/begin.html">begin</a></code>/<code><a href="./Reference/end.html">end</a></code> operations in order to get iterators for accessing the range of its elements. In general, a sequence does not guarantee that its content doesn't change from one iteration to another, or between different compilation sessions [<a href="#1">1</a>]. See <a href="./Forward_Sequence.html">Forward Sequence</a> for the definition of the concept that imposes such additional requirements.
+<p>
+<h3>Valid expressions</h3>
+<p>
+<table border="1">
+<tr><th>&nbsp;Expression&nbsp;</th><th>&nbsp;Expression type &nbsp;</th></tr>
+<tr><td><code>typename begin&lt;s&gt;::type</code></td><td>A model of <a href="./Input_Iterator.html">Input Iterator</a> </td></tr>
+<tr><td><code>typename end&lt;s&gt;::type</code></td><td>A model of <a href="./Input_Iterator.html">Input Iterator</a> </td></tr>
+</table>
+<p>
+<h3>Expression semantics</h3>
+<p>
+See the description of <a href="./Reference/begin.html">begin</a>/<a href="./Reference/end.html">end</a> operations.
+<p>
+<h3>Invariants</h3>
+<p>
+For any sequence <code>s</code> the following invariants always hold:
+<ul>
+<li><code>[begin&lt;s&gt;::type, end&lt;s&gt;::type)</code> is always a valid range;
+<li>an algorithm that iterates through the range <code>[begin&lt;s&gt;::type, end&lt;s&gt;::type)</code> will pass through every element of <code>s</code> (once);
+<li><code>begin&lt;s&gt;::type</code> is identical to <code>end&lt;s&gt;::type</code> if and only if the sequence <code>s</code> is empty.
+</ul>
+<p>
+<h3>Models</h3>
+<p>
+<ul>
+<li><code><a href="./Reference/vector.html">vector</a></code>
+<li><code><a href="./Reference/vector_c.html">vector_c</a></code>
+<li><code><a href="./Reference/list.html">list</a></code>
+<li><code><a href="./Reference/list_c.html">list_c</a></code>
+<li><code><a href="./Reference/range_c.html">range_c</a></code>
+<li><code>iterator_range</code>
+</ul>
+<p>
+<h3>Notes</h3>
+<p>
+[<a name="1">1</a>]  For example, a sequence might implement an interface to a compile-time random-number generator; for such sequence the <code>begin/end</code> invocation might return different iterators on every subsequent compilation of the code.<br>
+<p>
+<h3>See also</h3>
+<p>
+<a href="./Sequences.html">Sequences</a>, <a href="./Forward_Sequence.html">Forward Sequence</a>, <a href="./Input_Iterator.html">Input Iterator</a>, <code><a href="./Reference/begin.html">begin</a></code>, <code><a href="./Reference/end.html">end</a></code>
+<p><hr>
+<a href="./Table_of_Contents.html">Table of Contents</a><br>Last edited July 21, 2002 5:55 pm</body></html>

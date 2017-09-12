@@ -1,0 +1,391 @@
+<html>
+
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+<meta name="GENERATOR" content="Microsoft FrontPage 4.0">
+<meta name="ProgId" content="FrontPage.Editor.Document">
+<title>Projection Iterator Adaptor Documentation</title>
+</head>
+
+<body bgcolor="#FFFFFF" text="#000000">
+
+<img src="../../c++boost.gif" alt="c++boost.gif (8819 bytes)"
+align="center" width="277" height="86">
+
+<h1>Projection Iterator Adaptor</h1>
+
+Defined in header
+<a href="../../boost/iterator_adaptors.hpp">boost/iterator_adaptors.hpp</a>
+
+<p>
+The projection iterator adaptor is similar to the <a
+href="./transform_iterator.htm">transform iterator adaptor</a> in that
+its <tt>operator*()</tt> applies some function to the result of
+dereferencing the base iterator and then returns the result. The
+difference is that the function must return a reference to some
+existing object (for example, a data member within the
+<tt>value_type</tt> of the base iterator). The following
+<b>pseudo-code</b> gives the basic idea. The data member <tt>p</tt> is
+the function object.
+
+<pre>
+  reference projection_iterator::operator*() const {
+    return this->p(*this->base_iterator);
+  }
+</pre>
+
+<h2>Synopsis</h2>
+
+<pre>
+namespace boost {
+  template &lt;class <a href="http://www.sgi.com/tech/stl/AdaptableUnaryFunction.html">AdaptableUnaryFunction</a>, class BaseIterator&gt;
+  struct projection_iterator_generator;
+  
+  template &lt;class <a href="http://www.sgi.com/tech/stl/AdaptableUnaryFunction.html">AdaptableUnaryFunction</a>, 
+            class BaseIterator, class ConstBaseIterator&gt;
+  struct projection_iterator_pair_generator;
+
+  template &lt;class <a href="http://www.sgi.com/tech/stl/AdaptableUnaryFunction.html">AdaptableUnaryFunction</a>, class BaseIterator&gt;
+  typename projection_iterator_generator&lt;AdaptableUnaryFunction, BaseIterator&gt;::type
+  make_projection_iterator(BaseIterator base,
+			   const AdaptableUnaryFunction& p = AdaptableUnaryFunction())
+
+  template &lt;class <a href="http://www.sgi.com/tech/stl/AdaptableUnaryFunction.html">AdaptableUnaryFunction</a>, class ConstBaseIterator&gt;
+  typename projection_iterator_generator&lt;AdaptableUnaryFunction, ConstBaseIterator&gt;::type
+  make_const_projection_iterator(ConstBaseIterator base,
+                                 const AdaptableUnaryFunction& p = AdaptableUnaryFunction())  
+}
+</pre>
+
+<hr>
+
+<h2><a name="projection_iterator_generator">The Projection Iterator Type
+Generator</a></h2>
+
+The class <tt>projection_iterator_generator</tt> is a helper class
+whose purpose is to construct an projection iterator type.  The main
+template parameter for this class is the <a
+href="http://www.sgi.com/tech/stl/AdaptableUnaryFunction.html"><tt>AdaptableUnaryFunction</tt></a>
+function object type and the <tt>BaseIterator</tt> type that is being
+wrapped.
+
+<pre>
+template &lt;class <a href="http://www.sgi.com/tech/stl/AdaptableUnaryFunction.html">AdaptableUnaryFunction</a>, class BaseIterator&gt;
+class projection_iterator_generator
+{
+public:
+  typedef <tt><a href="./iterator_adaptors.htm#iterator_adaptor">iterator_adaptor</a>&lt...&gt;</tt> type; // the resulting projection iterator type 
+};
+</pre>
+
+<h3>Example</h3>
+
+In the following example we have a list of personnel records. Each
+record has an employee's name and ID number. We want to be able to
+traverse through the list accessing either the name or the ID numbers
+of the employees using the projection iterator so we create the
+function object classes <tt>select_name</tt> and
+<tt>select_ID</tt>. We then use the
+<tt>projection_iterator_generator</tt> class to create a projection
+iterator and use it to print out the names of the employees.
+
+<pre>
+#include &lt;boost/config.hpp&gt;
+#include &lt;list&gt;
+#include &lt;iostream&gt;
+#include &lt;iterator&gt;
+#include &lt;algorithm&gt;
+#include &lt;string&gt;
+#include &lt;boost/iterator_adaptors.hpp&gt;
+
+struct personnel_record {
+  personnel_record(std::string n, int id) : m_name(n), m_ID(id) { }
+  std::string m_name;
+  int m_ID;
+};
+
+struct select_name {
+  typedef personnel_record argument_type;
+  typedef std::string result_type;
+  const std::string&amp; operator()(const personnel_record&amp; r) const {
+    return r.m_name;
+  }
+  std::string&amp; operator()(personnel_record&amp; r) const {
+    return r.m_name;
+  }
+};
+
+struct select_ID {
+  typedef personnel_record argument_type;
+  typedef int result_type;
+  const int&amp; operator()(const personnel_record&amp; r) const {
+    return r.m_ID;
+  }
+  int&amp; operator()(personnel_record&amp; r) const {
+    return r.m_ID;
+  }
+};
+
+int main(int, char*[])
+{
+  std::list&lt;personnel_record&gt; personnel_list;
+
+  personnel_list.push_back(personnel_record("Barney", 13423));
+  personnel_list.push_back(personnel_record("Fred", 12343));
+  personnel_list.push_back(personnel_record("Wilma", 62454));
+  personnel_list.push_back(personnel_record("Betty", 20490));
+
+  // Example of using projection_iterator_generator
+  // to print out the names in the personnel list.
+
+  boost::projection_iterator_generator&lt;select_name,
+    std::list&lt;personnel_record&gt;::iterator&gt;::type
+    personnel_first(personnel_list.begin()),
+    personnel_last(personnel_list.end());
+
+  std::copy(personnel_first, personnel_last,
+            std::ostream_iterator&lt;std::string&gt;(std::cout, "\n"));
+  std::cout &lt;&lt; std::endl;
+
+  // to be continued...
+</pre>
+The output for this part is:
+<pre>
+Barney
+Fred
+Wilma
+Betty
+</pre>
+
+<h3>Template Parameters</h3>
+
+<Table border>
+<TR>
+<TH>Parameter</TH><TH>Description</TH>
+</TR>
+
+<TR>
+<TD><a href="http://www.sgi.com/tech/stl/AdaptableUnaryFunction.html"><tt>AdaptableUnaryFunction</tt></a></TD>
+<TD>The type of the function object. The <tt>argument_type</tt> of the
+function must match the value type of the base iterator. The function
+should return a reference to the function's <tt>result_type</tt>.
+The <tt>result_type</tt> will be the resulting iterator's <tt>value_type</tt>.
+</TD>
+</TD>
+
+<TR>
+<TD><tt>BaseIterator</tt></TD>
+<TD>The iterator type being wrapped.</TD>
+</TD>
+</TR>
+
+</Table>
+
+<h3>Model of</h3>
+
+If the base iterator is a model of <a
+href="http://www.sgi.com/tech/stl/RandomAccessIterator.html">Random
+Access Iterator</a> then so is the resulting projection iterator.  If
+the base iterator supports less functionality than this the resulting
+projection iterator will also support less functionality.
+
+<h3>Members</h3>
+
+The projection iterator type implements the member functions and
+operators required of the <a
+href="http://www.sgi.com/tech/stl/RandomAccessIterator.html">Random
+Access Iterator</a> concept.
+In addition it has the following constructor:
+
+<pre>
+projection_iterator_generator::type(const BaseIterator&amp; it,
+                                    const AdaptableUnaryFunction&amp; p = AdaptableUnaryFunction())
+</pre>
+
+<p>
+<hr>
+<p>
+
+<h2><a name="projection_iterator_pair_generator">The Projection Iterator Pair
+Generator</a></h2>
+
+Sometimes a mutable/const pair of iterator types is needed, such as
+when implementing a container type. The
+<tt>projection_iterator_pair_generator</tt> class makes it more
+convenient to create this pair of iterator types.
+
+<pre>
+template &lt;class <a href="http://www.sgi.com/tech/stl/AdaptableUnaryFunction.html">AdaptableUnaryFunction</a>, class BaseIterator, class ConstBaseIterator&gt;
+class projection_iterator_pair_generator
+{
+public:
+  typedef <tt><a href="./iterator_adaptors.htm#iterator_adaptor">iterator_adaptor</a>&lt...&gt;</tt> iterator;       // the mutable projection iterator type 
+  typedef <tt><a href="./iterator_adaptors.htm#iterator_adaptor">iterator_adaptor</a>&lt...&gt;</tt> const_iterator; // the immutable projection iterator type 
+};
+</pre>
+
+<h3>Example</h3>
+
+In this part of the example we use the
+<tt>projection_iterator_pair_generator</tt> to create a mutable/const
+pair of projection iterators that access the ID numbers of the
+personnel. We use the mutable iterator to re-index the ID numbers from
+zero. We then use the constant iterator to print the ID numbers out.
+
+<pre>
+  // continuing from the last example...
+
+  typedef boost::projection_iterator_pair_generator&lt;select_ID,
+    std::list&lt;personnel_record&gt;::iterator,
+    std::list&lt;personnel_record&gt;::const_iterator&gt; PairGen;
+
+  PairGen::iterator ID_first(personnel_list.begin()),
+    ID_last(personnel_list.end());
+
+  int new_id = 0;
+  while (ID_first != ID_last) {
+    *ID_first = new_id++;
+    ++ID_first;
+  }
+
+  PairGen::const_iterator const_ID_first(personnel_list.begin()),
+    const_ID_last(personnel_list.end());
+
+  std::copy(const_ID_first, const_ID_last,
+            std::ostream_iterator&lt;int&gt;(std::cout, " "));
+  std::cout &lt;&lt; std::endl;
+  std::cout &lt;&lt; std::endl;
+  
+  // to be continued...
+</pre&gt;
+The output is:
+<pre>
+0 1 2 3 
+</pre>
+
+<h3>Template Parameters</h3>
+
+<Table border>
+<TR>
+<TH>Parameter</TH><TH>Description</TH>
+</TR>
+
+<TR>
+<TD><a href="http://www.sgi.com/tech/stl/AdaptableUnaryFunction.html"><tt>AdaptableUnaryFunction</tt></a></TD>
+<TD>The type of the function object. The <tt>argument_type</tt> of the
+function must match the value type of the base iterator. The function
+should return a true reference to the function's <tt>result_type</tt>.
+The <tt>result_type</tt> will be the resulting iterator's <tt>value_type</tt>.
+</TD>
+</TD>
+
+<TR>
+<TD><tt>BaseIterator</tt></TD>
+<TD>The mutable iterator type being wrapped.</TD>
+</TD>
+</TR>
+
+<TR>
+<TD><tt>ConstBaseIterator</tt></TD>
+<TD>The constant iterator type being wrapped.</TD>
+</TD>
+</TR>
+
+</Table>
+
+<h3>Model of</h3>
+
+If the base iterator types model the <a
+href="http://www.sgi.com/tech/stl/RandomAccessIterator.html">Random
+Access Iterator</a> then so do the resulting projection iterator
+types.  If the base iterators support less functionality the
+resulting projection iterator types will also support less
+functionality.  The resulting <tt>iterator</tt> type is mutable, and
+the resulting <tt>const_iterator</tt> type is constant.
+
+<h3>Members</h3>
+
+The resulting <tt>iterator</tt> and <tt>const_iterator</tt> types
+implements the member functions and operators required of the <a
+href="http://www.sgi.com/tech/stl/RandomAccessIterator.html">Random
+Access Iterator</a> concept.  In addition they support the following
+constructors:
+
+<pre>
+projection_iterator_pair_generator::iterator(const BaseIterator&amp; it,
+                                             const AdaptableUnaryFunction&amp; p = AdaptableUnaryFunction())</pre>
+
+<pre>
+projection_iterator_pair_generator::const_iterator(const BaseIterator&amp; it,
+                                                   const AdaptableUnaryFunction&amp; p = AdaptableUnaryFunction())
+</pre>
+
+<p>
+<hr>
+<p>
+
+<h2><a name="make_projection_iterator">The Projection Iterator Object Generators</a></h2>
+
+The <tt>make_projection_iterator()</tt> and
+<tt>make_const_projection_iterator()</tt> functions provide a more
+convenient way to create projection iterator objects. The functions
+save the user the trouble of explicitly writing out the iterator
+types.
+
+<pre>
+template &lt;class <a href="http://www.sgi.com/tech/stl/AdaptableUnaryFunction.html">AdaptableUnaryFunction</a>, class BaseIterator&gt;
+typename projection_iterator_generator&lt;AdaptableUnaryFunction, BaseIterator&gt;::type
+make_projection_iterator(BaseIterator base,
+			 const AdaptableUnaryFunction& p = AdaptableUnaryFunction())  
+
+template &lt;class <a href="http://www.sgi.com/tech/stl/AdaptableUnaryFunction.html">AdaptableUnaryFunction</a>, class ConstBaseIterator&gt;
+typename projection_iterator_generator&lt;AdaptableUnaryFunction, ConstBaseIterator&gt;::type
+make_const_projection_iterator(ConstBaseIterator base,
+			       const AdaptableUnaryFunction& p = AdaptableUnaryFunction())  
+</pre>
+
+
+<h3>Example</h3>
+
+In this part of the example, we again print out the names of the
+personnel, but this time we use the
+<tt>make_const_projection_iterator()</tt> function to save some typing.
+
+<pre>
+  // continuing from the last example...
+
+  std::copy
+    (boost::make_const_projection_iterator&lt;select_name&gt;(personnel_list.begin()),
+     boost::make_const_projection_iterator&lt;select_name&gt;(personnel_list.end()),
+     std::ostream_iterator<std::string>(std::cout, "\n"));
+
+  return 0;
+}
+</pre>
+The output is:
+<pre>
+Barney
+Fred
+Wilma
+Betty
+</pre>
+
+<hr>
+<p>Revised <!--webbot bot="Timestamp" s-type="EDITED" s-format="%d %b %Y" startspan -->19 Aug 2001<!--webbot bot="Timestamp" endspan i-checksum="14767" --></p>
+<p>© Copyright Jeremy Siek 2000. Permission to copy, use,
+modify, sell and distribute this document is granted provided this copyright
+notice appears in all copies. This document is provided &quot;as is&quot;
+without express or implied warranty, and with no claim as to its suitability for
+any purpose.</p>
+
+</body>
+
+</html>
+<!--  LocalWords:  html charset alt gif hpp BaseIterator const namespace struct
+ -->
+<!--  LocalWords:  ConstPointer ConstReference typename iostream int abcdefg
+ -->
+<!--  LocalWords:  sizeof  PairGen pre Siek htm AdaptableUnaryFunction
+ -->
+<!--  LocalWords:  ConstBaseIterator
+ -->

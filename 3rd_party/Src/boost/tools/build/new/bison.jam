@@ -1,0 +1,24 @@
+#  Copyright (C) Vladimir Prus 2002. Permission to copy, use, modify, sell and
+#  distribute this software is granted provided this copyright notice appears in
+#  all copies. This software is provided "as is" without express or implied
+#  warranty, and with no claim as to its suitability for any purpose.
+
+import generators ;
+
+feature.feature bison.prefix : : free ;
+type.register Y : y ;
+generators.register-standard bison.bison : Y : C H ;
+
+rule bison ( dst dst_header : src : properties * )
+{
+    local r = [ property.select bison.prefix : $(properties) ] ;
+    if $(r)
+    {
+        PREFIX_OPT on $(<) = -p $(r:G=) ;
+    }
+}
+
+actions bison 
+{
+    bison $(PREFIX_OPT) -d -o $(<[1]) $(>)
+}

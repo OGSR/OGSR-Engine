@@ -1,0 +1,74 @@
+#  (C) Copyright David Abrahams 2002. Permission to copy, use, modify, sell and
+#  distribute this software is granted provided this copyright notice appears in
+#  all copies. This software is provided "as is" without express or implied
+#  warranty, and with no claim as to its suitability for any purpose.
+
+import regex ;
+rule chars ( string )
+{
+    local result ;
+    while $(string)
+    {
+        local s = [ MATCH (.?)(.?)(.?)(.?)(.?)(.?)(.?)(.?)(.*) : $(string) ] ;
+        string = $(s[9]) ;
+        result += $(s[1-8]) ;
+    }
+    
+    # trim off empty strings
+    while $(result[1]) && ! $(result[-1])
+    {
+        result = $(result[1--2]) ;
+    }
+    
+    return $(result) ;
+}
+
+rule join ( strings * : separator ? )
+{
+    separator ?= "" ;
+    local result = $(strings[1]) ;
+    for local x in $(strings[2-])
+    {
+        result = $(result)$(separator)$(x) ;
+    }
+    return $(result) ;
+}
+
+# Split a string into whitespace separated words.
+rule words (
+    string # The string to split.
+    : whitespace * # Optional, characters to consider as whitespace.
+    )
+{
+    whitespace = $(whitespace:J="") ;
+    whitespace ?= " 	
+" ;
+    local w = ;
+    while $(string)
+    {
+        string = [ MATCH "^[$(whitespace)]*([^$(whitespace)]*)(.*)" : $(string) ] ;
+        if $(string[1]) && $(string[1]) != ""
+        {
+            w += $(string[1]) ;
+        }
+        string = $(string[2]) ;
+    }
+    return $(w) ;
+}
+
+rule __test__ ( )
+{
+    import assert ;
+    assert.result a b c : chars abc ;
+    
+    # check boundary cases
+    assert.result a : chars a ;
+    assert.result : chars "" ;
+    assert.result a b c d e f g h : chars abcdefgh ;
+    assert.result a b c d e f g h i : chars abcdefghi ;
+    assert.result a b c d e f g h i j : chars abcdefghij ;
+    assert.result a b c d e f g h i j k : chars abcdefghijk ;
+    
+    assert.result a//b/c/d : join a "" b c d : / ;
+    assert.result abcd : join  a "" b c d ;
+}

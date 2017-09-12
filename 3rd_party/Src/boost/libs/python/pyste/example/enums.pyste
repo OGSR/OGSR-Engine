@@ -1,0 +1,8 @@
+color = Enum('enums::color', 'enums.h')
+rename(color.red, 'Red')
+rename(color.blue, 'Blue')
+X = Class('enums::X', 'enums.h')
+rename(X.choices.bad, 'Bad')
+rename(X.choices.good, 'Good')
+rename(X.choices, 'Choices')
+

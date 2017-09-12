@@ -1,0 +1,61 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html><head><meta content="text/html; charset=ISO-8859-1" http-equiv="Content-Type"><title>A. Rationale for some of the design decisions</title><meta name="generator" content="DocBook XSL Stylesheets V1.48"><link rel="home" href="index.html" title="
+      C++ BOOST
+
+      The Boost Lambda Library"><link rel="up" href="index.html" title="
+      C++ BOOST
+
+      The Boost Lambda Library"><link rel="previous" href="ar01s09.html" title="9. Contributors"><link rel="next" href="bi01.html" title="Bibliography"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="navheader"><table width="100%" summary="Navigation header"><tr><th colspan="3" align="center">A. Rationale for some of the design decisions</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="ar01s09.html">Prev</a> </td><th width="60%" align="center"> </th><td width="20%" align="right"> <a accesskey="n" href="bi01.html">Next</a></td></tr></table><hr></div><div class="appendix"><h2 class="title" style="clear: both"><a name="id2808823"></a>A. Rationale for some of the design decisions</h2><div class="section"><div class="titlepage"><div><h3 class="title"><a name="sect:why_weak_arity"></a>1. 
+Lambda functor arity
+</h3></div></div><p>
+The highest placeholder index in a lambda expression determines the arity of the resulting function object.
+However, this is just the minimal arity, as the function object can take arbitrarily many arguments; those not needed are discarded.
+Consider the two bind expressions and their invocations below:
+
+<pre class="programlisting">
+bind(g, _3, _3, _3)(x, y, z); 
+bind(g, _1, _1, _1)(x, y, z); 
+</pre>
+
+This first line discards arguments <tt>x</tt> and
+<tt>y</tt>, and makes the call:
+<pre class="programlisting">
+g(z, z, z) 
+</pre>
+whereas the second line discards arguments <tt>y</tt> and
+<tt>z</tt>, and calls:
+<pre class="programlisting">
+g(x, x, x)
+</pre>
+In earlier versions of the library, the latter line resulted in a compile 
+time error.
+
+This is basically a tradeoff between safety and flexibility, and the issue
+was extensively discussed during the Boost review period of the library.
+The main points for the <span class="emphasis"><i>strict arity</i></span> checking
+was that it might
+catch a programming error at an earlier time and that a lambda expression that
+explicitly discards its arguments is easy to write:
+<pre class="programlisting">
+(_3, bind(g, _1, _1, _1))(x, y, z);
+</pre>
+This lambda expression takes three arguments.
+The left-hand argument of the comma operator does nothing, and as comma 
+returns the result of evaluating the right-hand argument we end up with 
+the call
+<tt>g(x, x, x)</tt>
+even with the strict arity.
+</p><p>
+The main points against the strict arity checking were that the need to 
+discard arguments is commonplace, and should therefore be straightforward, 
+and that strict arity checking does not really buy that much more safety, 
+particularly as it is not symmetric.
+For example, if the programmer wanted to write the expression 
+<tt>_1 + _2</tt> but mistakenly wrote <tt>_1 + 2</tt>, 
+with strict arity checking, the complier would spot the error.
+However, if the erroneous expression was <tt>1 + _2</tt> instead,
+the error would go unnoticed.
+Furthermore, weak arity checking simplifies the implementation a bit.
+Following the recommendation of the Boost review, strict arity checking 
+was dropped.
+</p></div></div><div class="navfooter"><hr><table width="100%" summary="Navigation footer"><tr><td width="40%" align="left"><a accesskey="p" href="ar01s09.html">Prev</a> </td><td width="20%" align="center"><a accesskey="u" href="index.html">Up</a></td><td width="40%" align="right"> <a accesskey="n" href="bi01.html">Next</a></td></tr><tr><td width="40%" align="left" valign="top">9. Contributors </td><td width="20%" align="center"><a accesskey="h" href="index.html">Home</a></td><td width="40%" align="right" valign="top"> Bibliography</td></tr></table></div></body></html>

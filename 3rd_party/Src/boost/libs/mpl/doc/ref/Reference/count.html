@@ -1,0 +1,60 @@
+<!doctype html public "-//ietf//dtd html//en">
+<html><head><title>boost::mpl::count</title>
+<link rel="stylesheet" href="../mpl_wiki.css">
+</head><body bgcolor="white">
+<h1><a href="../Table_of_Contents.html"><img src="../mpl_logo.jpg" alt="[Home]" border=0 align="right"></a>count</h1><h3>Synopsis</h3>
+<p>
+<pre>
+template&lt;
+      typename Sequence
+    , typename T
+    &gt;
+struct count
+{
+    typedef <em>unspecified</em> type;
+};
+</pre>
+<p>
+<h3>Description</h3>
+<p>
+Returns the number of elements in a <code>Sequence</code> that are identical to <code>T</code>.
+<p>
+<h3>Definition</h3>
+<p>
+<pre>
+#include "<a href="../../../../../boost/mpl/count.hpp">boost/mpl/count.hpp</a>"
+</pre>
+<p>
+<h3>Parameters</h3>
+<table border="1">
+<tr><th>&nbsp;Parameter&nbsp;</th><th>&nbsp;Requirement&nbsp;</th><th>&nbsp;Description &nbsp;</th></tr>
+<tr><td><code>Sequence</code></td><td>A model of <a href="../Forward_Sequence.html">Forward Sequence</a></td><td>A sequence to be examined. </td></tr>
+<tr><td><code>T</code></td><td>A type</td><td>The type to be searched for. </td></tr>
+</table>
+<p>
+<h3>Expression semantics</h3>
+<p>
+<table border="1">
+<tr><th>&nbsp;Expression&nbsp;</th><th>&nbsp;Expression&nbsp;type&nbsp;</th><th>&nbsp;Precondition&nbsp;</th><th>&nbsp;Semantics&nbsp;</th><th>&nbsp;Postcondition&nbsp;</th></tr>
+<tr><td><code>typedef count&lt;Sequence,T&gt;::type n;</code></td><td>A model of <a href="../Integral_Constant.html">Integral Constant</a></td><td></td><td>Equivalent to <code>typedef <a href="../Reference/count_if.html">count_if</a>&lt; Sequence,is_same&lt;_,T&gt; &gt;::type n;</code></td><td></td></tr>
+</table>
+<p>
+<p>
+<h3>Complexity</h3>
+<p>
+Linear. Exactly <code><a href="../Reference/size.html">size</a>&lt;Sequence&gt;::value</code> comparisons for identity. 
+<p>
+<h3>Example</h3>
+<p>
+<pre>
+typedef <a href="../Reference/list.html">list</a>&lt;int,char,long,short,char,short,double,long&gt; types;
+typedef find&lt;types, short&gt;::type iter;
+BOOST_STATIC_ASSERT((is_same&lt;iter::type,short&gt;::type::value));
+BOOST_STATIC_ASSERT((<a href="../Reference/distance.html">distance</a>&lt; begin&lt;types&gt;::type,iter &gt;::type::value == 3));
+</pre>
+<p>
+<h3>See also</h3>
+<p>
+<a href="../Algorithms.html">Algorithms</a>, <code><a href="../Reference/count_if.html">count_if</a></code>, <code><a href="../Reference/find.html">find</a></code>, <code><a href="../Reference/find_if.html">find_if</a></code>, <code><a href="../Reference/contains.html">contains</a></code>
+<p><hr>
+<a href="../Table_of_Contents.html">Table of Contents</a><br>Last edited December 12, 2002 2:05 am</body></html>

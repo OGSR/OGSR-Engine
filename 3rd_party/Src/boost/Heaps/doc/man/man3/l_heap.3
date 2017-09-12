@@ -1,0 +1,90 @@
+.\" <!!---------------------------------------------------------------------->
+.\" <!! Copyright (C) 1999 Dietmar Kuehl, Claas Solutions GmbH >
+.\" <!!>
+.\" <!! Permission to use, copy, modify, distribute and sell this >
+.\" <!! software for any purpose is hereby granted without fee, provided >
+.\" <!! that the above copyright notice appears in all copies and that >
+.\" <!! both that copyright notice and this permission notice appear in >
+.\" <!! supporting documentation. Dietmar Kuehl and Claas Solutions make no >
+.\" <!! representations about the suitability of this software for any >
+.\" <!! purpose. It is provided "as is" without express or implied warranty. >
+.\" <!!---------------------------------------------------------------------->
+.TH mfd/l_heap 3 "09.Juli 1999" "Claas Solutions" "boost"
+.SH NAME
+mfd/l_heap - Template Class \fBlazy_fibonacci_heap<T, Comp>\fP
+
+.SH SYNOPSIS
+
+
+.nf
+#include "boost/l_heap.hpp"
+
+template <class T>
+class boost::lazy_fibonacci_heap_base
+{
+public:
+  class iterator
+  {
+  public:
+    iterator();
+
+    bool operator== (iterator const& it) const;
+    bool operator!= (iterator const& it) const;
+    T const& operator* () const;
+    T const* operator-> () const;
+
+    iterator &operator++ ();
+    iterator operator++ (int);
+  };
+
+public:
+  bool      empty() const;
+  size_type size() const;
+
+  iterator begin() const;
+  iterator end() const;
+
+private:
+  lazy_fibonacci_heap_base(lazy_fibonacci_heap_base const&); // deliberately not implemented
+  void operator= (lazy_fibonacci_heap_base const&);          // deliberately not implemented
+};
+
+template <class T, class Comp = std::less<T> >
+class boost::lazy_fibonacci_heap: public boost::lazy_fibonacci_heap_base<T>
+{
+public:
+  typedef \fIunsigned integral type\fP                         size_type;
+  typedef \fIpointer type\fP                                   pointer;
+  typedef T                                              value_type;
+  typedef T const&                                       const_reference;
+  typedef typename lazy_fibonacci_heap_base<T>::iterator const_iterator;
+  typedef Comp                                           compare_type;
+
+  explicit lazy_fibonacci_heap(Comp const& comp = Comp());
+
+  pointer  push(T const& val);
+  void     pop();
+  T const& top() const;
+  void remove(pointer ptr);
+
+  template <typename K> void change_top(K const& val);
+  template <typename K> void change(pointer ptr, K const& val);
+  template <typename K> void decrease(pointer ptr, K const& val);
+  template <typename K> void increase(pointer ptr, K const& val);
+};
+.fi 0 
+.SH DESCRIPTION
+This class is a variation on Fibonacci heaps which seems to provide better performance if there are a lot operations changing the priority of the elements. The idea of this class is to avoid work as long as it is not necessary to do the work (a very obvious approach which I also apply in real life). This way, some work can be avoided all together. The work which can be avoided are the necessary link operations when a node is made a root until the maximum element is to be accessed. Thus, whenever a node is made a root, it is actually stored in a list of pending roots. This list is processed and made real roots when the maximum element of the priority queue is accessed (eg. using \fBtop\fP()). I have no clue whether the asymptotical behavior of Fibonacci heaps is messed up with this approach but my feeling is that it is not messed up (but I have no formal proof). 
+
+For a description of the methods of \fBlazy_fibonacci_heap<T, Comp>\fP see the description of common methods. 
+.SH SEE ALSO
+f_heap(3), heap(3), heap-common(3) 
+.SH AUTHOR
+Dietmar Kühl (Claas Solutions)
+.br
+e-mail: dietmar.kuehl@claas-solutions.de
+.br
+http://www.claas-solutions.de/kuehl
+.br
+
+

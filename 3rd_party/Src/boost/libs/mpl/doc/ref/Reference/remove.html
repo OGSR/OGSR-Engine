@@ -1,0 +1,59 @@
+<!doctype html public "-//ietf//dtd html//en">
+<html><head><title>boost::mpl::remove</title>
+<link rel="stylesheet" href="../mpl_wiki.css">
+</head><body bgcolor="white">
+<h1><a href="../Table_of_Contents.html"><img src="../mpl_logo.jpg" alt="[Home]" border=0 align="right"></a>remove</h1><h3>Synopsis</h3>
+<p>
+<pre>
+template&lt;
+      typename Sequence
+    , typename T
+    &gt;
+struct remove
+{
+    typedef <em>unspecified</em> type;
+};
+</pre>
+<p>
+<h3>Description</h3>
+<p>
+Returns a new sequence which contains all the elements from <code>[begin&lt;Sequence&gt;::type, end&lt;Sequence&gt;::type)</code> range except those that are identical to <code>T</code>. The result sequence preserves all the functional and performance characteristics of the original <code>Sequence</code>, except its size and identity. 
+<p>
+<h3>Definition</h3>
+<p>
+<pre>
+#include "<a href="../../../../../boost/mpl/remove.hpp">boost/mpl/remove.hpp</a>"
+</pre>
+<p>
+<h3>Parameters</h3>
+<table border="1">
+<tr><th>&nbsp;Parameter&nbsp;</th><th>&nbsp;Requirement&nbsp;</th><th>&nbsp;Description &nbsp;</th></tr>
+<tr><td><code>Sequence</code></td><td>A model of <a href="../Extensible_Sequence.html">Extensible Sequence</a></td><td>The original sequence.  </td></tr>
+<tr><td><code>T</code></td><td>A type</td><td>A type to be removed. </td></tr>
+</table>
+<p>
+<h3>Expression semantics</h3>
+<p>
+<table border="1">
+<tr><th>&nbsp;Expression&nbsp;</th><th>&nbsp;Expression&nbsp;type&nbsp;</th><th>&nbsp;Precondition&nbsp;</th><th>&nbsp;Semantics&nbsp;</th><th>&nbsp;Postcondition&nbsp;</th></tr>
+<tr><td><code>typedef remove&lt;Sequence,T&gt;::type s;</code></td><td>A model of <a href="../Extensible_Sequence.html">Extensible Sequence</a></td><td></td><td>Equivalent to <code>typedef remove_if&lt; Sequence,is_same&lt;_,T&gt; &gt;::type t;</code>.</td><td></td></tr>
+</table>
+<p>
+<h3>Complexity</h3>
+<p>
+Linear. Performs exactly <code><a href="../Reference/size.html">size</a>&lt;Sequence&gt;::type::value</code> comparisons for equality.
+<p>
+<h3>Example</h3>
+<p>
+<pre>
+typedef <a href="../Reference/list.html">list</a>&lt;int,float,char,float,float,double&gt;::type types;
+typedef remove&lt; types,float &gt;::type result;
+typedef <a href="../Reference/list.html">list</a>&lt;int,char,double&gt;::type answer;
+BOOST_STATIC_ASSERT((<a href="../Reference/equal.html">equal</a>&lt; result,answer &gt;::type::value));
+</pre>
+<p>
+<h3>See also</h3>
+<p>
+<a href="../Algorithms.html">Algorithms</a>, <code><a href="../Reference/remove_if.html">remove_if</a></code>, <code><a href="../Reference/replace.html">replace</a></code>, <code><a href="../Reference/replace_if.html">replace_if</a></code>, <code><a href="../Reference/transform.html">transform</a></code>
+<p><hr>
+<a href="../Table_of_Contents.html">Table of Contents</a><br>Last edited July 17, 2002 8:43 am</body></html>

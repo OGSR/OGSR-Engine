@@ -1,0 +1,174 @@
+.\" <!!---------------------------------------------------------------------->
+.\" <!! Copyright (C) 1999 Dietmar Kuehl, Claas Solutions GmbH >
+.\" <!!>
+.\" <!! Permission to use, copy, modify, distribute and sell this >
+.\" <!! software for any purpose is hereby granted without fee, provided >
+.\" <!! that the above copyright notice appears in all copies and that >
+.\" <!! both that copyright notice and this permission notice appear in >
+.\" <!! supporting documentation. Dietmar Kuehl and Claas Solutions make no >
+.\" <!! representations about the suitability of this software for any >
+.\" <!! purpose. It is provided "as is" without express or implied warranty. >
+.\" <!!---------------------------------------------------------------------->
+.TH mfd/r_heap 3 "09.Juli 1999" "Claas Solutions" "boost"
+.SH NAME
+mfd/r_heap - Template class \fBradix_heap<T, traits>\fP
+
+.SH SYNOPSIS
+
+
+.nf
+#include "boost/r_heap.hpp"
+.br
+
+.br
+template <typename T, int b = 32>
+.br
+class boost::radix_traits
+.br
+{
+.br
+  static int const bits = b;
+.br
+  static unsigned long value(T val);
+.br
+  static int radix(T val, unsigned long offset);
+.br
+};
+.br
+
+.br
+template <typename T, typename traits = boost::radix_traits<T> >
+.br
+class boost::radix_heap
+.br
+{
+.br
+public:
+.br
+  class iterator
+.br
+  {
+.br
+  public:
+.br
+    iterator();
+.br
+    
+.br
+    T const& operator* () const;
+.br
+    T const* operator->() const;
+.br
+
+.br
+    iterator& operator++();
+.br
+    iterator  operator++(int);
+.br
+
+.br
+    bool operator== (iterator const& it);
+.br
+    bool operator!= (iterator const& it);
+.br
+  };
+.br
+
+.br
+  typedef T        value_type;
+.br
+  typedef T&       reference;
+.br
+  typedef T const& const_reference;
+.br
+  typedef iterator const_iterator;
+.br
+  typedef int      size_type;
+.br
+  typedef node*    pointer;
+.br
+
+.br
+  radix_heap();
+.br
+  ~radix_heap();
+.br
+
+.br
+  void      remove(pointer);             // sorry, not yet implemented
+.br
+  void      change(pointer, T const&);   // sorry, not yet implemented
+.br
+  void      change_top(T const&);        // sorry, not yet implemented
+.br
+  void      decrease(pointer, T const&); // sorry, not yet implemented
+.br
+  void      increase(pointer, T const&); // sorry, not yet implemented
+.br
+
+.br
+  bool      empty() const;
+.br
+  size_type size() const;
+.br
+  pointer   push(T const&);
+.br
+  T const&  top() const;
+.br
+  void      pop();
+.br
+
+.br
+  iterator begin() const;
+.br
+  iterator end() const;
+.br
+
+.br
+private:
+.br
+  radix_heap(radix_heap const&);      // deliberately not implemented
+.br
+  void operator= (radix_heap const&); // deliberately not implemented
+.br
+};
+.fi 0 
+.SH NOTE
+The current implementation is basically \fBuseless\fP because the interesting operations are not implemented at all and some of the implemented operations, notably \fBpush()\fP make unrealistic assumptions! In the case of \fBpush()\fP it is assumed that no element was removed from the heap making this heap only useful for cases where \fBstd::sort()\fP could be used as well (and sorting is much faster). However, I'm sure that the interface can be kept when the code is corrected. 
+.SH DESCRIPTION
+The Radix heap cannot be used for general elements because as part of its approach it is restricted to integral types. Also, it is hard to understand the behavior of this approach when using fast access to the largest element. Although the default behavior of this implementation will provide access to the element with the largest priority, the smallest priority is used for the following description... 
+
+Apart from the restriction on integral types, there is another restriction for the Radix heap, namely that elements cannot be decreased beyond the minimum value currently stored in the heap. A priority queue like this is suitable only in very specific cases but eg. Dijkstra's algorithm to find the shortest paths in a graph is one such application. In turn a radix heap seems to be significantly faster (however, I can't really tell because the current implementation has to be changed to implement the missing operations). 
+
+The Radix heap maintains a set of buckets and objects with different priority can end up in different buckets. To avoid excessive search for the minimum element, elements are redistributed into unused buckets. Each bucket is assigned a range of elements stored in the bucket where the smaller elements end up in buckets with narrow ranges: Initially, the ranges for the buckets are \fI0..0\fP, \fI1..1\fP, \fI2..3\fP, \fI4..7\fP, \fI8..15\fP, and so on. Thus, the correct bucket can be found by determining the radix of the integral value. Now, when elements are removed from the heap, the first buckets become unused and the heap has to search larger buckets for the minium element. If it has found a bucket with multiple different elements, the heap knows that the smaller buckets are not used. Thus, the elements in the found bucket are redistributed into the unused buckets. 
+
+The only description of the Radix heap I have currently available (from \fINetwork Flows\fP, Ahuja, Magnanti, Orlin, Prentice Hall) is somewhat silent about the details of the operation. Thus, I haven't implemented some of the operations. Also, it probably does not work to insert an element after there are elements extracted from the heap... 
+
+This class does not use a comparator function. Instead, it uses a traits class which is used to determine the radix of the elements. Actually, the traits class has three members: 
+.TP .5i
+\fBbits\fP
+This is used as constant expression to determine the number of buckets to be used. This is the maximum value which can be returned from 		 \fBradix()\fP plus \fI1\fP.
+.TP .5i
+\fBvalue(val)\fP
+This function returns an unsigned integral value representing the priority of \fBval\fP. This value is used as an offset passed to the \fBradix()\fP function. This value could in principle be used to determine the radix but I think that it might be possible provide better function determining the 			 radix than the default one... 
+.TP .5i
+\fBradix(val, offset)\fP
+This function returns the radix 		 of the priority of \fBval\fP minus the offset 		 \fBoffset\fP. 
+.RE
+
+The default traits use a static cast to \fBunsigned long\fP to determine the priority of \fBval\fP. To cope with the problem that the other priority queues access the largest element first, the value actually used is (well, should be...) \fBstd::numeric_limits<unsigned long>::max() - val\fP. 
+
+For a description of the methods of \fBradix_heap<T, traits>\fP see the description of common methods. However, keep in mind that the current implementation does not implement all methods and some methods are probably unstable. 
+.SH BUGS
+Some of the methods are not yet implemented and other methods are probably buggy. However, I have to work on other stuff and need to get the priority queue off my desk. If you really want to use this class or if you have an idea how to implement the missing methods please contact me. Maybe we can work out how to implement the missing stuff. A paper describing Radix heaps would probably also help... 
+.SH SEE ALSO
+heap(3), heap-common(3) 
+.SH AUTHOR
+Dietmar Kühl (Claas Solutions)
+.br
+e-mail: dietmar.kuehl@claas-solutions.de
+.br
+http://www.claas-solutions.de/kuehl
+.br
+
+

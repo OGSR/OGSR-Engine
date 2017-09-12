@@ -1,0 +1,741 @@
+<html>
+
+<head>
+<meta http-equiv="Content-Language" content="en-us">
+<meta name="GENERATOR" content="Microsoft FrontPage 5.0">
+<meta name="ProgId" content="FrontPage.Editor.Document">
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+<title>Boost Filesystem path.hpp Header</title>
+</head>
+
+<body bgcolor="#FFFFFF">
+
+<h1>
+<img border="0" src="../../../c++boost.gif" align="center" width="277" height="86"><a href="../../../boost/filesystem/path.hpp">boost/filesystem/path.hpp</a></h1>
+
+<p>
+<a href="#Introduction">Introduction</a><br>
+<a href="#Grammar">Grammar for generic path strings</a><br>
+<a href="#Canonical">Canonical form</a><br>
+<a href="#synopsis">Header synopsis</a><br>
+<a href="#Class path">Class path</a><br>
+<a href="#Member">Member functions</a><br>
+<a href="#Non-member_functions">Non-member functions</a><br>
+<a href="#Validity_checking">Validity checking functions</a><br>
+<a href="#Rationale">Rationale</a><br>
+<a href="#decomposition">Path decomposition examples</a></p>
+<h2><a name="Introduction">Introduction</a></h2>
+
+<p>Filesystem Library functions traffic in objects of class <i>path</i>, 
+provided by this header.&nbsp;The header also supplies non-member functions for error checking.</p>
+
+<p>For actual operations on files and directories, see <a href="operations.htm">
+boost/filesystem/operations.hpp documentation</a>.</p>
+
+<p>For file I/O stream operations, see <a href="fstream.htm">boost/filesystem/fstream.hpp 
+documentation</a>.</p>
+
+<p>The Filesystem Library's <a href="index.htm#Common_Specifications">Common 
+Specifications</a> apply to all member and non-member functions supplied by this 
+header. </p>
+<h2><a name="Class_path">Class path</a></h2>
+<p>Class <i>path</i> provides for portable mechanism for representing
+<a href="index.htm#path">paths</a> in C++ programs, using a portable generic 
+path string <a href="#Grammar">grammar</a>.&nbsp;Class <i>path</i> 
+is concerned with the lexical and syntactic aspects of a path. The path does not 
+have to exist in the operating system's 
+filesystem, and may contain names which are not even valid for the current 
+operating system. </p>
+<p><b>Rationale:</b> If Filesystem functions trafficked in <i>std::strings</i> or C-style strings, the 
+functions 
+would provide only an illusion of portability since the function calls would be 
+portable but the strings they operate on would not be portable.</p>
+<h2>Conceptual <a name="model">model</a> of a path</h2>
+<p>An object of class <i>path</i> can be conceptualized as containing a sequence 
+of strings, where each string contains the name of a directory, or, in the case 
+of the string representing the element farthest from the root in the directory 
+hierarchy, the name of a directory or file. Such a path representation is 
+ 
+independent of any particular representation of the path as a single 
+string.</p>
+<p>There is no requirement that an implementation of class <i>path</i> actually 
+contain a sequence of strings, but conceptualizing the contents as a sequence of 
+strings provides 
+a completely portable way to reason about paths.</p>
+<p>So that programs can portably express paths as a single string, class <i>path</i> 
+defines a <a href="#Grammar">grammar</a> for a portable generic path string 
+format, and supplies constructor and append operations taking such strings as 
+arguments. Because user input or third-party library functions may supply path 
+strings formatted according to operating system specific rules, an additional 
+constructor is provided which takes a system-specific format as an argument.</p>
+<p>Access functions are provided to retrieve the contents of a object of class
+<i>path</i> formatted as a portable path string, a directory path string using 
+the operating system's format, and a file path string using the operating 
+system's format.&nbsp; Additional access functions retrieve specific portions of 
+the contained path.</p>
+<h2><a name="Grammar">Grammar</a> for portable generic path strings</h2>
+<p>The grammar is specified in extended BNF, with terminal symbols in quotes:
+</p>
+<blockquote>
+  <pre>path ::= [root] [relative-path]  // an empty path is valid</pre>
+  <pre>root ::= [root-name] [root-directory]</pre>
+  <pre>root-directory ::= &quot;/&quot;</pre>
+  <pre>relative-path ::= path-element { &quot;/&quot; path-element } [&quot;/&quot;]</pre>
+  <pre>path-element ::= name | parent-directory </pre>
+  <pre>parent-directory ::= &quot;..&quot; </pre>
+  <pre>name ::= char { char }</pre>
+</blockquote>
+<p>The following are not valid name <i>char</i>'s: <code>x01-x1F, &lt;, &gt;, :, &quot;, /, 
+\, |, *, ?</code>. Although these characters are supported by some operating 
+systems, they are disallowed by so many operating systems that they are banned 
+altogether.</p>
+<p><i>root-name</i> grammar is implementation-defined. <i>
+root-name</i> must not be present in generic input (the undecorated
+<i>path</i> constructors); it may be part of the strings returned by <i>path</i> 
+member functions, and may be present in the argument to <i>path</i> constructors 
+with the <i><a href="#native">native</a></i> decorator.</p>
+<p>Although implementation-defined, it is desirable that <i>
+root-name</i> have a grammar which is distinguishable from other grammar elements, 
+and follow the conventions of the operating system.</p>
+<p>The optional trailing &quot;/&quot; in a <i>relative-path</i> is allowed as a 
+notational convenience. It has no semantic meaning and is discarded in 
+conversions to <a href="#Canonical">canonical form</a>.</p>
+<p>Whether or not a generic path string is actually portable to a particular 
+operating system will depend on the 
+names used.&nbsp; See the <a href="portability_guide.htm">Portability Guide</a>.</p>
+<h2><a name="Canonical">Canonical</a> form</h2>
+<p>Adjacent <i>name, parent-directory</i> elements in <code>m_name</code> are recursively removed.</p>
+<p> <i>relative-path</i> does not have a trailing 
+&quot;/&quot;.</p>
+<h2>Header <a href="../../../boost/filesystem/path.hpp">
+boost/filesystem/path.hpp</a> <a name="synopsis">synopsis</a></h2>
+<pre>namespace boost
+{
+  namespace filesystem
+  {
+    enum path_format { <a name="native">native</a> };
+
+    class path
+    {
+    public:
+      // compiler generates copy constructor,
+      // copy assignment, and destructor
+
+      // constructors:
+      <a href="#constructors">path</a>();
+      <a href="#constructors">path</a>( const std::string &amp; src );
+      <a href="#constructors">path</a>( const char * src );
+      <a href="#constructors">path</a>( const std::string &amp; src, path_format );
+      <a href="#constructors">path</a>( const char * src, path_format );
+
+      // append operations:
+      path &amp; <a href="#operator_slash_equal">operator /=</a> ( const path &amp; rhs );
+      path   <a href="#operator_slash">operator /</a>  ( const path &amp; rhs ) const;
+
+      // conversion functions:
+      const std::string & <a href="#string">string</a>() const;
+      std::string <a href="#native_file_string">native_file_string</a>() const;
+      std::string <a href="#native_directory_string">native_directory_string</a>() const;
+      
+      // decomposition functions:
+      path        <a href="#root_path">root_path</a>() const;
+      std::string <a href="#root_name">root_name</a>() const;
+      std::string <a href="#root_directory">root_directory</a>() const;
+      path        <a href="#relative_path">relative_path</a>() const;
+      std::string <a href="#leaf">leaf</a>() const;
+      path        <a href="#branch_path">branch_path</a>() const;
+      
+      // query functions: 
+      bool empty() const;
+      bool is_complete() const;
+      bool has_root_path() const;
+      bool has_root_name() const;
+      bool has_root_directory() const;
+      bool has_relative_path() const;
+      bool has_leaf() const;
+      bool has_branch_path() const;
+      
+      // iteration:
+      typedef <i>implementation-defined</i> <a href="#iterator">iterator</a>;
+      iterator <a href="#begin">begin</a>() const;
+      iterator <a href="#end">end</a>() const;
+
+    private:
+      std::vector&lt;std::string&gt; m_name;  // for exposition only
+    };
+
+    path <a href="#non-member_operator_shift">operator /</a> ( const char * lhs, const path &amp; rhs );
+    path <a href="#non-member_operator_shift">operator /</a> ( const std::string &amp; lhs, const path &amp; rhs );
+
+    <i>// Also see </i><a href="#Undocumented non-member functions">Undocumented non-member functions</a><i> below</i>
+
+  }
+}</pre>
+<p>For the sake of exposition, class <i>path</i> member functions are described 
+as if the class contains a private member <i>std::vector&lt;std::string&gt; m_name</i>. 
+Actual implementations may differ.</p>
+<p>Class path member, or non-member operator/, functions may throw a
+<a href="exception.htm">filesystem_error</a> exception if the path is not in the 
+syntax specified for the <a href="#Grammar">grammar</a>.</p>
+<p><b>Note:</b> There is no guarantee that a <i>path</i> object represents a 
+path which is considered valid by the current operating system. A path might be 
+invalid to the operating system because it contains invalid names (too long, 
+invalid characters, and so on), or because it is a partial path still as yet 
+unfinished by the program. An invalid path will normally be detected at time of 
+use, such as by one of the Filesystem Library's <a href="operations.htm">
+operations</a> or <a href="fstream.htm">fstream</a> functions.</p>
+<p><b>Portability Warning:</b> There is no guarantee that a <i>path</i> object 
+represents a path which would be portable to another operating system. A path 
+might be non-portable because it contains names which the operating systems 
+considers too long or contains invalid characters. <a href="#Validity_checking">Validity checking functions</a> are supplied to 
+ensure names in paths are as portable as desired, but they must be explicitly 
+called by the user.</p>
+<h3><a name="System-specific_Representation">System-specific Representation</a></h3>
+<p>Several <i>path</i> member functions return representations of <i>m_name</i> 
+in formats specific to the operating system. These formats are implementation 
+defined. If an <i>m_name</i> 
+element contains characters which are invalid under the operating system's 
+rules, and there is an unambiguous translation between the invalid character and 
+a valid character, the implementation is required to perform that translation. 
+For example, if an operating system does not permit lowercase letters in file or 
+directory names, these letters will be translated to uppercase if unambiguous. 
+Such translation does not apply to generic path string format representations.</p>
+<h3><a name="Representation­_example">Representation example</a></h3>
+<p>The rule-of-thumb is to use <i>string()</i> when a generic string representation of 
+the path is required, and use either
+<i>native_directory_string()</i> or
+<i>native_file_string()</i> when a string representation formatted for 
+the particular operating system is required.</p>
+<p>The difference between the representations returned by <i>string()</i>,
+<i>native_directory_string()</i>, and
+<i>native_file_string()</i> are illustrated by the following 
+code:</p>
+<blockquote>
+  <pre>path my_path( &quot;foo/bar/data.txt&quot; );
+std::cout
+  &lt;&lt; &quot;string------------------: &quot; &lt;&lt; my_path.string() &lt;&lt; '\n'
+  &lt;&lt; &quot;native_directory_string-: &quot; &lt;&lt; my_path.native_directory_string() &lt;&lt; '\n'
+  &lt;&lt; &quot;native_file_string------: &quot; &lt;&lt; my_path.native_file_string() &lt;&lt; '\n';</pre>
+</blockquote>
+<p>On POSIX systems, the output  would be:</p>
+<blockquote>
+  <pre>string------------------: foo/bar/data.txt
+native_directory_string-: foo/bar/data.txt
+native_file_string------: foo/bar/data.txt</pre>
+</blockquote>
+<p>On Windows, the output  would be:</p>
+<blockquote>
+  <pre>string------------------: foo/bar/data.txt
+native_directory_string-: foo\bar\data.txt
+native_file_string------: foo\bar\data.txt</pre>
+</blockquote>
+<p>On classic Mac OS, the output would be:</p>
+<blockquote>
+  <pre>string------------------: foo/bar/data.txt
+native_directory_string-: foo:bar:data.txt
+native_file_string------: foo:bar:data.txt</pre>
+</blockquote>
+<p>On a hypothetical operating system using OpenVMS format representations, it would be:</p>
+<blockquote>
+  <pre>string------------------: foo/bar/data.txt
+native_directory_string-: [foo.bar.data.txt]
+native_file_string------: [foo.bar]data.txt</pre>
+</blockquote>
+<p>Note that that because OpenVMS uses period as both a directory separator 
+character and as a separator between filename and extension, <i>
+native_directory_string()</i> 
+in the example produces a useless result. On this operating system, the 
+programmer should only use this path as a file path. (There is a
+<a href="portability_guide.htm#recommendations">portability recommendation</a> 
+to not use periods in directory names.)</p>
+<h3>Caution for POSIX and UNIX programmers</h3>
+<p>POSIX and other UNIX-like operating systems have a single root, while most other 
+operating systems have multiple roots. Multi-root operating systems require a 
+root-name 
+such as a drive, device, disk, volume, or share name for a path to be resolved 
+to an actual specific file or directory.&nbsp; 
+Because of this, the <i>root()</i> and <i>root_directory()</i> functions return 
+identical results on UNIX and other single-root operating systems, but different 
+results on multi-root operating systems. Thus use of the wrong function will not be 
+apparent on UNIX-like systems, but will result in non-portable code which will 
+fail when used on multi-root systems. UNIX programmers are cautioned to use 
+particular care in choosing between <i>root()</i> and <i>root_directory()</i>. If 
+undecided, use <i>root()</i>.</p>
+<p>The same warning applies to <i>has_root()</i> and <i>has_root_directory()</i>.</p>
+<h2><a name="Member">Member</a> functions</h2>
+<h3><a name="constructors">constructors</a></h3>
+<blockquote>
+  <pre>path();</pre>
+  <p><b>Effects:</b> Default constructs an object of class <i>path</i>.</p>
+  <pre>path( const std::string &amp; src );
+path( const char * src );</pre>
+  <p><b>Precondition:</b> <i>src</i> conforms to the <a href="#Grammar">generic 
+  path string grammar</a> <i>relative-path</i> syntax with optional <i>
+  root-directory</i> prefix, and contains no embedded 
+  '\0' characters.</p>
+  <p><b>Effects:</b> For each <i>src</i> <i>element</i>,&nbsp; <code>m_name.push_back( <i>element</i> )</code>.</p>
+  <p><b>Postcondition:</b> <code>m_name</code> is in
+  <a href="#Canonical">canonical form</a>.</p>
+  <p><b>Rationale:</b> These constructors are not explicit because an intended 
+  use is automatic conversion of strings to paths. </p>
+  <pre>path( const std::string &amp; src, path_format );
+path( const char * src, path_format );</pre>
+  <p><b>Precondition:</b> <i>src</i> conforms to the operating system's grammar 
+  for path strings, and contains no embedded '\0' characters.</p>
+  <p><b>Effects:</b> For each <i>src</i> element,&nbsp; <code>m_name.push_back( <i>element</i> )</code>.</p>
+  <p><b>Postcondition:</b> <code>m_name</code> is in
+  <a href="#Canonical">canonical form</a>.</p>
+</blockquote>
+<h3><a name="operator_slash_equal">operator /=</a></h3>
+<blockquote>
+  <pre>path &amp; operator/=( const path &amp; rhs );</pre>
+  <p><b>Effects:</b> If any of the following conditions are met, then 
+  m_name.push_back(&quot;/&quot;).</p>
+  <ul>
+    <li>has_relative_path().</li>
+    <li>!is_absolute() &amp;&amp; has_root_name(), and the operating system 
+    requires the system-specific root be absolute</li>
+  </ul>
+  <p>&nbsp;Then append <code>rhs.m_name</code> to <code>m_name</code>.</p>
+  <p>(Footnote: Thus on Windows, (path(&quot;//share&quot;) /= &quot;foo&quot;).string() is 
+  &quot;//share/foo&quot;)</p>
+  <p><b>Returns:</b> <code>*this</code></p>
+  <p><b>Postcondition:</b> <code>m_name</code> is in
+  <a href="#Canonical">canonical form</a>.</p>
+  <p><b>Rationale:</b> It is not considered an error for <code>rhs</code> to 
+  include a <code>root-name</code> because it might relative, and 
+  thus valid.&nbsp; For example, on Windows, the follow must succeed:</p>
+  <blockquote>
+    <pre>path p( &quot;c:&quot;, native );
+p /= &quot;/foo&quot;;
+assert( p.string() == &quot;c:/foo&quot; );</pre>
+  </blockquote>
+  </blockquote>
+<h3><a name="operator_slash">operator /</a></h3>
+<blockquote>
+  <pre>const path operator/ ( const path &amp; rhs ) const;</pre>
+  <p><b>Returns:</b> <code>path( *this ) /= rhs</code></p>
+  <p><b>Rationale:</b> Operator / is supplied because together with operator /=, 
+  it provides a 
+  convenient way for users to supply paths with a variable number of elements.&nbsp; 
+  For example, <code>initial_directory() / &quot;src&quot; / test_name</code>. 
+  Operator+ and operator+= were considered as alternatives, but deemed too 
+  easy to confuse with those operators for std::string. Operator&lt;&lt; and 
+  operator=&lt;&lt; were until during public review it was pointed out that / and /= 
+  matched the generic path syntax.</p>
+  <p><b>Note:</b> Also see <a href="#non-member_operator_shift">non-member <i>
+  operator/</i></a> functions.</p>
+  </blockquote>
+<h3><a name="string">string</a></h3>
+<blockquote>
+  <pre>const std::string &amp; string() const;</pre>
+<p><b>Returns:</b> The contents of <code>m_name</code>, formatted according to 
+the rules of the <a href="#Grammar">generic path string grammar</a>.</p>
+<p><b>Note:</b> If any m_name elements originated from the system specific 
+constructors, there is no guarantee that the returned string is unambiguous 
+according to the grammar. A root-name indistinguishable from a 
+relative-path name, a name containing &quot;/&quot;, a name &quot;..&quot;, and a 
+root-name beyond the first element all could cause ambiguities. Such 
+an ambiguous representation might still be useful for some purposes, such as 
+display. If no m_name elements originated from the system specific constructors, 
+the returned string is always unambiguous.</p>
+<p><b>See:</b> <a href="#Representation_example">Representation example</a> 
+above.</p>
+</blockquote>
+<h3><a name="native_file_string">native_file_string</a></h3>
+<blockquote>
+  <pre>std::string native_file_string() const;</pre>
+<p><b>Returns:</b> The contents of <code>m_name</code>, formatted in the
+<a href="#System-specific Representation">system-specific representation</a> of 
+a file path.</p>
+<p><b>See:</b> <a href="#Representation_example">Representation example</a> 
+above.</p>
+<p><b>Naming rationale</b>: The name is deliberately ugly to warn users that 
+this function yields non-portable results.</p>
+</blockquote>
+<h3><a name="native_directory_string">native_directory_string</a></h3>
+<blockquote>
+  <pre>const std::string native_file_string() const;</pre>
+<p><b>Returns:</b> The contents of <code>m_name</code>, formatted in the
+<a href="#System-specific Representation">system-specific representation</a> of 
+a directory path.</p>
+<p><b>See:</b> <a href="#Representation_example">Representation example</a> 
+above.</p>
+<p><b>Naming rationale</b>: The name is deliberately ugly to warn users that 
+this function yields non-portable results.</p>
+</blockquote>
+<h3><a name="root_path">root_path</a></h3>
+<blockquote>
+  <pre>path root_path() const;</pre>
+  <p><b>Returns:</b> <code>root_name() / root_directory()</code></p>
+<p>Portably provides a copy of a path's full root path, if any. See
+<a href="#decomposition">Path decomposition examples</a>.</p>
+</blockquote>
+<h3><a name="root_name">root_name</a></h3>
+<blockquote>
+  <pre>std::string root_name() const;</pre>
+  <p><b>Returns:</b> If <code>!m_name.empty() &amp;&amp; m_name[0]</code> is a
+  <a href="#Grammar">root-name</a>, returns m_name[0], else returns a 
+  null string.</p>
+<p>Portably provides a copy of a path's <a href="#Grammar">root-name</a>, 
+if any. See <a href="#decomposition">Path decomposition examples</a>.</p>
+</blockquote>
+<h3><a name="root_directory">root_directory</a></h3>
+<blockquote>
+  <pre>std::string root_directory() const;</pre>
+  <p><b>Returns:</b> If the path contains <a href="#Grammar">root-directory</a>, 
+  then <code>string(&quot;/&quot;)</code>, else <code>string()</code>.</p>
+  <p>Portably provides a copy of a path's <a href="#Grammar">root-directory</a>, 
+  if any. The only possible results are &quot;/&quot; or &quot;&quot;. See <a href="#decomposition">
+  Path decomposition examples</a>.</p>
+</blockquote>
+<h3><a name="relative_path">relative_path</a></h3>
+<blockquote>
+  <pre>path relative_path() const;</pre>
+  <p><b>Returns:</b> A new path containing only the <a href="#Grammar">
+  relative-path</a> portion of the source path.</p>
+  <p>Portably provides a copy of a path's relative portion, if any. See
+  <a href="#decomposition">Path decomposition examples</a>.</p>
+</blockquote>
+<h3><a name="leaf">leaf</a></h3>
+<blockquote>
+  <pre>std::string leaf() const;</pre>
+<p><b>Returns:</b> <code>empty() ? std::string() : m_name.back()</code></p>
+<p>A typical use is to obtain the undecorated name of a directory entry from the 
+path returned by a <a href="operations.htm#directory_iterator">
+directory_iterator</a>. See <a href="#decomposition">Path decomposition examples</a>.</p>
+</blockquote>
+<h3><a name="branch_path">branch_path</a></h3>
+<blockquote>
+  <pre>path branch_path() const;</pre>
+<p><b>Returns:</b> <code>m_name.size() &lt;= 1 ? path(&quot;&quot;) : x</code>, where <code>x</code> 
+is a path constructed from all the elements of <code>m_name</code> except the 
+last.</p>
+<p>A typical use is to obtain the parent path for a path supplied by the user. 
+See <a href="#decomposition">Path decomposition examples</a>.</p>
+</blockquote>
+<h3><a name="empty">empty</a></h3>
+<blockquote>
+  <pre>bool empty() const;</pre>
+<p><b>Returns:</b> <code>m_name.empty()</code>.</p>
+  <p><b>Naming rationale:</b> Because the equivalent function for standard 
+  library container is named empty(), prior versions with other names caused 
+  numerous typos. The problem was acerbated because tests for path emptyness are 
+  often used near, or in the same expression, with tests for string emptyness,
+  </p>
+</blockquote>
+<h3>is_complete</h3>
+<blockquote>
+  <pre>bool is_complete() const;</pre>
+  <p><b>Returns:</b> For single-root operating systems, <code>has_root_directory()</code>. 
+  For multi-root operating systems, <code>has_root_directory() &amp;&amp; 
+  has_root_name()</code>.</p>
+  <p><b>Naming rationale:</b> The alternate name, is_absolute(), causes 
+  confusion and controversy because on multi-root operating systems some people 
+  believe root_name() should participate in is_absolute(), and some 
+  don't.</p>
+</blockquote>
+<h3>has_root_path</h3>
+<blockquote>
+  <pre>bool has_root_path() const;</pre>
+  <p><b>Returns:</b> <code>has_root_name() || has_root_directory()</code></p>
+</blockquote>
+<h3>has_root_name</h3>
+<blockquote>
+  <pre>bool has_root_name() const;</pre>
+  <p><b>Returns:</b> <code>!root_name().empty()</code></p>
+</blockquote>
+<h3>has_root_directory</h3>
+<blockquote>
+  <pre>bool has_root_directory() const;</pre>
+  <p><b>Returns:</b> <code>!root_directory().empty()</code></p>
+</blockquote>
+<h3>has_relative_path</h3>
+<blockquote>
+  <pre>bool has_relative_path() const;</pre>
+  <p><b>Returns:</b> <code>!relative_path().empty()</code></p>
+</blockquote>
+<h3>has_leaf</h3>
+<blockquote>
+  <pre>bool has_leaf() const;</pre>
+  <p><b>Returns:</b> <code>!leaf().empty()</code></p>
+</blockquote>
+<h3>has_branch_path</h3>
+<blockquote>
+  <pre>bool has_branch_path() const;</pre>
+  <p><b>Returns:</b> <code>!branch_path().empty()</code></p>
+</blockquote>
+<h3><a name="iterator">iterator</a></h3>
+<blockquote>
+<p><code>typedef <i>implementation-defined</i> iterator;</code></p>
+<p>A const iterator meeting the C++ Standard Library requirements for bidirectional 
+iterators (24.1). The iterator is a class type (so that operator++ and -- will 
+work on temporaries). The value, reference, and pointer types are <i>std::string</i>,
+<i>const std::string &amp;</i>, and <i>const std::string *</i>, respectively.</p>
+</blockquote>
+<h3><a name="begin">begin</a></h3>
+<blockquote>
+<p><code>iterator begin() const;</code></p>
+<p><b>Returns:</b> <code>m_path.begin()</code></p>
+</blockquote>
+<h3><a name="end">end</a></h3>
+<blockquote>
+<p><code>iterator end() const;</code></p>
+<p><b>Returns:</b> <code>m_path.end()</code></p>
+</blockquote>
+<h2><a name="Non-member_functions">Non-member functions</a></h2>
+<h3><a name="non-member_operator_shift">Non-member operator /</a></h3>
+<blockquote>
+<p><code>path operator / ( const char * lhs, const path &amp; rhs );<br>
+path operator / ( const std::string &amp; lhs, const path &amp; rhs );</code></p>
+<p><b>Returns:</b> <code>path( lhs ) /= rhs</code></p>
+</blockquote>
+<h2><a name="Validity_checking">Validity checking functions</a></h2>
+<h3>Undocumented non-member 
+functions</h3>
+<p>The header <a href="../../../boost/filesystem/path.hpp">boost/filesystem/path.hpp</a> 
+also supplies several non-member functions which can be used to verify that a 
+path meets certain requirements. These subsidiary functions are undocumented 
+pending more research and discussion, and should not be relied upon as they are 
+likely to change.</p>
+<h2><a name="Rationale">Rationale</a></h2>
+<p><b>Function <a name="Naming_Rationale">naming</a>:</b> Class <i>path</i> 
+member function names and <a href="operations.htm">operations.hpp</a> non-member 
+function names were chosen to be somewhat distinct from one another. The 
+objective was to avoid cases like <i>foo.empty()</i> and <i>empty( foo )</i> both being 
+valid, but with completely different semantics. At one point <i>path::empty()</i> 
+was renamed <i>path::is_null()</i>, but that caused many coding typos because <i>
+std::string::empty()</i> is often used nearby.</p>
+<p><b>Decomposition functions:</b> Decomposition functions are provided because without them it is impossible to write portable path 
+manipulations. Convenience is also a factor.</p>
+  <p><b>Const vs non-const returns:</b> In some earlier versions of the library, 
+  member functions returned values as const rather than non-const. 
+  See Scott Myers, <i>Effective C++</i>, Item 21. The const qualifiers were 
+  eliminated (1) to conform with C++ Standard Library practice, (2) because 
+  non-const returns allow occasionally useful expressions, and (3) because the 
+  number of coding errors eliminated were deemed rare. A requirement that path::iterator not be a non-class type was added to eliminate errors non-const 
+  iterator errors.</p>
+<h2>Path <a name="decomposition">decomposition</a> examples</h2>
+<p>It is often useful to extract specific elements from a path object.&nbsp; 
+While any decomposition can be achieved by iterating over the elements of a 
+path, convenience functions are provided which are easier to use, more 
+efficient, and less error prone.</p>
+<p>The first column of the table gives the example path, formatted by the 
+string() function. The second column shows the values which would be returned by 
+dereferencing each element iterator. The remaining columns show the results of 
+various expressions.</p>
+<table border="1" cellpadding="5" cellspacing="0">
+  <tr>
+    <td><b>p.string()</b></td>
+    <td><b>Elements</b></td>
+    <td><b>p.root_<br>
+    path()<br>
+&nbsp;</b></td>
+    <td><b>p.root_<br>
+    name()</b></td>
+    <td><b>p.root_<br>
+    directory()</b></td>
+    <td><b>p.relative_<br>
+    path()</b></td>
+    <td><b>p.root_<br>
+    directory()<br>
+    / p.relative_<br>
+    path()</b></td>
+    <td><b>p.root_<br>
+    name() /<br>
+    p.relative_<br>
+    path()</b></td>
+    <td><b>p.branch_<br>
+    path()</b></td>
+    <td><b>p.leaf()</b></td>
+  </tr>
+  <tr>
+    <td><b>All systems</b></td>
+    <td>&nbsp;</td>
+    <td>&nbsp;</td>
+    <td>&nbsp;</td>
+    <td>&nbsp;</td>
+    <td>&nbsp;</td>
+    <td>&nbsp;</td>
+    <td>&nbsp;</td>
+    <td>&nbsp;</td>
+    <td>&nbsp;</td>
+  </tr>
+  <tr>
+    <td><code>/</code></td>
+    <td><code>/</code></td>
+    <td><code>/</code></td>
+    <td><code>&quot;&quot;</code></td>
+    <td><code>/</code></td>
+    <td><code>&quot;&quot;</code></td>
+    <td><code>/</code></td>
+    <td><code>&quot;&quot;</code></td>
+    <td><code>&quot;&quot;</code></td>
+    <td><code>/</code></td>
+  </tr>
+  <tr>
+    <td><code>foo</code></td>
+    <td><code>foo</code></td>
+    <td><code>&quot;&quot;</code></td>
+    <td><code>&quot;&quot;</code></td>
+    <td><code>&quot;&quot;</code></td>
+    <td><code>foo</code></td>
+    <td><code>foo</code></td>
+    <td><code>foo</code></td>
+    <td><code>&quot;&quot;</code></td>
+    <td><code>foo</code></td>
+  </tr>
+  <tr>
+    <td><code>/foo</code></td>
+    <td><code>/,foo</code></td>
+    <td><code>/</code></td>
+    <td><code>&quot;&quot;</code></td>
+    <td><code>/</code></td>
+    <td><code>foo</code></td>
+    <td><code>/foo</code></td>
+    <td><code>foo</code></td>
+    <td><code>/</code></td>
+    <td><code>foo</code></td>
+  </tr>
+  <tr>
+    <td><code>foo/bar</code></td>
+    <td><code>foo,bar</code></td>
+    <td><code>&quot;&quot;</code></td>
+    <td><code>&quot;&quot;</code></td>
+    <td><code>&quot;&quot;</code></td>
+    <td><code>foo/bar</code></td>
+    <td><code>foo/bar</code></td>
+    <td><code>foo/bar</code></td>
+    <td><code>foo</code></td>
+    <td><code>bar</code></td>
+  </tr>
+  <tr>
+    <td><code>/foo/bar</code></td>
+    <td><code>/,foo,bar</code></td>
+    <td><code>/</code></td>
+    <td><code>&quot;&quot;</code></td>
+    <td><code>/</code></td>
+    <td><code>foo/bar</code></td>
+    <td><code>/foo/bar</code></td>
+    <td><code>foo/bar</code></td>
+    <td><code>/foo</code></td>
+    <td><code>bar</code></td>
+  </tr>
+  <tr>
+    <td><b>Windows</b></td>
+    <td>&nbsp;</td>
+    <td>&nbsp;</td>
+    <td>&nbsp;</td>
+    <td>&nbsp;</td>
+    <td>&nbsp;</td>
+    <td>&nbsp;</td>
+    <td>&nbsp;</td>
+    <td>&nbsp;</td>
+    <td>&nbsp;</td>
+  </tr>
+  <tr>
+    <td><code>c:</code></td>
+    <td><code>c:</code></td>
+    <td><code>c:</code></td>
+    <td><code>c:</code></td>
+    <td><code>&quot;&quot;</code></td>
+    <td><code>&quot;&quot;</code></td>
+    <td><code>&quot;&quot;</code></td>
+    <td><code>c:</code></td>
+    <td><code>&quot;&quot;</code></td>
+    <td><code>c:</code></td>
+  </tr>
+  <tr>
+    <td><code>c:foo</code></td>
+    <td><code>c:,foo</code></td>
+    <td><code>c:</code></td>
+    <td><code>c:</code></td>
+    <td><code>&quot;&quot;</code></td>
+    <td><code>foo</code></td>
+    <td><code>foo</code></td>
+    <td><code>c:foo</code></td>
+    <td><code>c:</code></td>
+    <td><code>foo</code></td>
+  </tr>
+  <tr>
+    <td><code>c:/</code></td>
+    <td><code>c:,/</code></td>
+    <td><code>c:/</code></td>
+    <td><code>c:</code></td>
+    <td><code>/</code></td>
+    <td><code>&quot;&quot;</code></td>
+    <td><code>/</code></td>
+    <td><code>c:</code></td>
+    <td><code>c:</code></td>
+    <td><code>/</code></td>
+  </tr>
+  <tr>
+    <td><code>c:/foo</code></td>
+    <td><code>c:,/,foo</code></td>
+    <td><code>c:/</code></td>
+    <td><code>c:</code></td>
+    <td><code>/</code></td>
+    <td><code>foo</code></td>
+    <td><code>/foo</code></td>
+    <td><code>c:foo</code></td>
+    <td><code>c:/</code></td>
+    <td><code>foo</code></td>
+  </tr>
+  <tr>
+    <td><code>//shr</code></td>
+    <td><code>//shr</code></td>
+    <td><code>//shr</code></td>
+    <td><code>//shr</code></td>
+    <td><code>&quot;&quot;</code></td>
+    <td><code>&quot;&quot;</code></td>
+    <td><code>&quot;&quot;</code></td>
+    <td><code>//shr</code></td>
+    <td><code>&quot;&quot;</code></td>
+    <td><code>//shr</code></td>
+  </tr>
+  <tr>
+    <td><code>//shr/</code></td>
+    <td><code>//shr,/</code></td>
+    <td><code>//shr/</code></td>
+    <td><code>//shr</code></td>
+    <td><code>/</code></td>
+    <td><code>&quot;&quot;</code></td>
+    <td><code>/</code></td>
+    <td><code>//shr</code></td>
+    <td><code>//shr</code></td>
+    <td><code>/</code></td>
+  </tr>
+  <tr>
+    <td><code>//shr/foo</code></td>
+    <td><code>//shr,<br>
+    /,foo</code></td>
+    <td><code>//shr/</code></td>
+    <td><code>//shr</code></td>
+    <td><code>/</code></td>
+    <td><code>foo</code></td>
+    <td><code>/foo</code></td>
+    <td><code>//shr/foo</code></td>
+    <td><code>//shr/</code></td>
+    <td><code>foo</code></td>
+  </tr>
+  <tr>
+    <td><code>prn:</code></td>
+    <td><code>prn:</code></td>
+    <td><code>prn:</code></td>
+    <td><code>prn:</code></td>
+    <td><code>&quot;&quot;</code></td>
+    <td><code>&quot;&quot;</code></td>
+    <td><code>&quot;&quot;</code></td>
+    <td><code>prn:</code></td>
+    <td><code>&quot;&quot;</code></td>
+    <td><code>prn:</code></td>
+  </tr>
+</table>
+<hr>
+<p>© Copyright Beman Dawes, 2002</p>
+<p>Revised
+<!--webbot bot="Timestamp" S-Type="EDITED" S-Format="%d %B, %Y" startspan -->11 March, 2003<!--webbot bot="Timestamp" endspan i-checksum="28831" --></p>
+
+</body>
+
+</html>

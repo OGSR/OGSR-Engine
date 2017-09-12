@@ -1,0 +1,451 @@
+<HTML><HEAD>
+<!!---------------------------------------------------------------------->
+<!! Copyright (C) 1999 Dietmar Kuehl, Claas Solutions GmbH >
+<!!>
+<!! Permission to use, copy, modify, distribute and sell this >
+<!! software for any purpose is hereby granted without fee, provided >
+<!! that the above copyright notice appears in all copies and that >
+<!! both that copyright notice and this permission notice appear in >
+<!! supporting documentation. Dietmar Kuehl and Claas Solutions make no >
+<!! representations about the suitability of this software for any >
+<!! purpose. It is provided "as is" without express or implied warranty. >
+<!!---------------------------------------------------------------------->
+<TITLE>doc/heap-sample.html.3</TITLE>
+</HEAD>
+<BODY BGCOLOR=white LINK="0000FF" VLINK="800080">
+<IMG SRC=c++boost.jpg ALIGN=TOP WIDTH=277 HEIGHT=86><BR>
+<TABLE BORDER=0 CELLSPACING=0 CELLPADDING=0 COLS=2>
+<TR><TD WIDTH=109 VALIGN=TOP><IMG SRC=sidebar.jpg WIDTH=109 HEIGHT=494>
+</TD><TD>
+<SPACER TYPE=VERTICAL SIZE=40>
+<H1>Priority Queue sample</H1>
+
+  <A NAME="Introduction"><H1>Introduction</H1></A>
+
+    Well, a sample for priority queues is somewhat hard if it goes beyond
+    something like heap sort which is not at all interesting because it
+    only uses features already present in the template class
+    <nobr><tt>std::priority_queue</tt></nobr>. OK, for starters, there is an implementation
+    of heap sort below. A more realistic application of heap sort, namely
+    Dijkstra's algorithm for shortest paths, is demonstrated below.
+  
+  <A NAME="Heap Sort"><H1>Heap Sort</H1></A>
+
+    Here is a template implementation of heap sort taking the priority
+    queue class to be used as template argument and sorting a range
+    passed to the function:
+   
+    <P>
+
+    <TABLE BORDER=0 CELLSPACING=0 CELLPADDING=0 COLS=2>
+<TR><TD WIDTH=30 VALIGN=TOP></TD><TD>
+<PRE>
+template &lt;typename Heap, typename ForwardIterator&gt;
+void heap_sort(ForwardIterator begin, ForwardIterator end)
+{
+  Heap heap; // use <A HREF="heap-common.html#default-ctor">default constructor</A> for construction
+
+  // insert all elements into the heap:
+  for (ForwardIterator it = begin; it != end; ++it)
+    heap.<A HREF="heap-common.html#push">push</A>(*it); 
+
+  // finally, extract them again:
+  for (ForwardIterator it = begin; !heap.<A HREF="heap-common.html#empty">empty</A>(); ++it)
+    {
+      *it = heap.<A HREF="heap-common.html#top">top</A>();
+      heap.<A HREF="heap-common.html#pop">pop</A>();
+    }
+}
+    </PRE></TD></TABLE>
+
+
+    Doesn't look to complicate, does it? First, all elements are inserted into
+    the heap constructed by this function. This builds up some data structure
+    internal to the heap which will allow efficient extraction of the maximum
+    element (by default, the maximum is used; of course, this can be changed
+    easily by just inverting the comparison). Thus, after all elements are
+    inserted are stored in the priority queue, they are simply extracted after
+    recording the current top element.
+
+    <P>
+
+
+    To complete this first example, here is a simple program which sorts
+    a bunch of random numbers (to get reproducible results, always the
+    same seed is used) using the algorithm selected by a program argument.
+    Finally, the sorted numbers are printed.
+
+    <P>
+
+    <TABLE BORDER=0 CELLSPACING=0 CELLPADDING=0 COLS=2>
+<TR><TD WIDTH=30 VALIGN=TOP></TD><TD>
+<PRE>
+#include "boost/heap.hpp"
+#include &lt;algorithm&gt;
+#include &lt;cstdlib&gt;
+#include &lt;iostream&gt;
+#include &lt;iterator&gt;
+#include &lt;vector&gt;
+
+int main(int ac, char* av[])
+{
+  if (ac != 2)
+  {
+    std::cerr &lt;&lt; "usage: " &lt;&lt; av[0] &lt;&lt; " &lt;heap-no.&gt;\n";
+    std::cerr &lt;&lt; "  0: <A HREF="p_queue.html">boost::priority_queue</A>&lt;int, ..., std::less&lt;int&gt; &gt;\n";
+    std::cerr &lt;&lt; "  1: <A HREF="p_queue.html">boost::priority_queue</A>&lt;int, ..., std::greater&lt;int&gt; &gt;\n";
+    std::cerr &lt;&lt; "  2: <A HREF="d_heap.html">boost::d_heap</A>&lt;int, std::less&lt;int&gt; &gt;\n";
+    std::cerr &lt;&lt; "  3: <A HREF="d_heap.html">boost::d_heap</A>&lt;int, std::greater&lt;int&gt; &gt;\n";
+    std::cerr &lt;&lt; "  4: <A HREF="f_heap.html">boost::fibonacci_heap</A>&lt;int, std::less&lt;int&gt; &gt;\n";
+    std::cerr &lt;&lt; "  5: <A HREF="f_heap.html">boost::fibonacci_heap</A>&lt;int, std::greater&lt;int&gt; &gt;\n";
+    std::cerr &lt;&lt; "  6: <A HREF="p_heap.html">boost::pairing_heap</A>&lt;int, std::less&lt;int&gt; &gt;\n";
+    std::cerr &lt;&lt; "  7: <A HREF="p_heap.html">boost::pairing_heap</A>&lt;int, std::greater&lt;int&gt; &gt;\n";
+    std::cerr &lt;&lt; "  8: <A HREF="s_heap.html">boost::splay_heap</A>&lt;int, std::less&lt;int&gt; &gt;\n";
+    std::cerr &lt;&lt; "  9: <A HREF="s_heap.html">boost::splay_heap</A>&lt;int, std::greater&lt;int&gt; &gt;\n";
+
+    return EXIT_FAILURE;
+  }
+
+  int const no_elements = 20;
+  std::vector&lt;int&gt; vec;
+  std::generate_n(std::back_inserter(vec), no_elements, std::rand);
+
+  std::vector&lt;int&gt;::iterator beg = vec.begin();
+  std::vector&lt;int&gt;::iterator end = vec.end();
+
+  switch (std::strtol(av[1], 0, 10))
+  {
+    case 0:
+      heap_sort&lt;boost::<A HREF="p_queue.html">priority_queue</A>&lt;int, std::vector&lt;int&gt;, std::less&lt;int&gt; &gt; &gt;(beg, end);
+      break;
+    case 1:
+      heap_sort&lt;boost::<A HREF="p_queue.html">priority_queue</A>&lt;int, std::vector&lt;int&gt;, std::greater&lt;int&gt; &gt; &gt;(beg, end);
+      break;
+    case 2:
+      heap_sort&lt;boost::<A HREF="d_heap.html">d_heap</A>&lt;int, std::less&lt;int&gt; &gt; &gt;(beg, end);
+      break;
+    case 3:
+      heap_sort&lt;boost::<A HREF="d_heap.html">d_heap</A>&lt;int, std::greater&lt;int&gt; &gt; &gt;(beg, end);
+      break;
+    case 4:
+      heap_sort&lt;boost::<A HREF="f_heap.html">fibonacci_heap</A>&lt;int, std::less&lt;int&gt; &gt; &gt;(beg, end);
+      break;
+    case 5:
+      heap_sort&lt;boost::<A HREF="f_heap.html">fibonacci_heap</A>&lt;int, std::greater&lt;int&gt; &gt; &gt;(beg, end);
+      break;
+    case 6:
+      heap_sort&lt;boost::<A HREF="p_heap.html">pairing_heap</A>&lt;int, std::less&lt;int&gt; &gt; &gt;(beg, end);
+      break;
+    case 7:
+      heap_sort&lt;boost::<A HREF="p_heap.html">pairing_heap</A>&lt;int, std::greater&lt;int&gt; &gt; &gt;(beg, end);
+      break;
+    case 8:
+      heap_sort&lt;boost::<A HREF="s_heap.html">splay_heap</A>&lt;int, std::less&lt;int&gt; &gt; &gt;(beg, end);
+      break;
+    case 9:
+      heap_sort&lt;boost::<A HREF="s_heap.html">splay_heap</A>&lt;int, std::greater&lt;int&gt; &gt; &gt;(beg, end);
+      break;
+  }
+
+  std::copy(beg, end, std::ostream_iterator&lt;int&gt;(std::cout, "\n"));
+}
+    </PRE></TD></TABLE>
+
+
+    This program looks huge but only because there are some things repeated
+    several times: It would be absolutely sufficient to have just one
+    call to <nobr><tt>heap_sort()</tt></nobr> which uses an appropriate priority queue.
+    Using this program, you can select which priority queue is to be used
+    for sorting. If you change the constant determining the number of elements
+    (current 20) and remove the output statement at the end of the program,
+    you can use this program to profile the heaps for the use in heap sort.
+    Of course, this is not really interesting since <nobr><tt>std::sort()</tt></nobr> does
+    the same job much faster than any of those attempts (if it does not, you
+    should complain at your library vendor...). On the other, it can give
+    you a first feeling how the priority queues differ in their performance.
+
+    <P>
+
+
+    In this example, the comparator type was spelled out explicitly although
+    this is not always necessary: By default, <nobr><tt>std::less&lt;T&gt;</tt></nobr> is used
+    where <nobr><tt>T</tt></nobr> is the elment type of the priority queue. This default
+    will result in extracting the largest value from the priority queue.
+    In the example above, the type <nobr><tt>std::greater&lt;int&gt;</tt></nobr> was used for
+    in some cases which has the effect that the smalllest value is obtained
+    with the <nobr><tt><A HREF="heap-common.html#top">top</A>()</tt></nobr> method. Thus, the
+    program should print the values in decending order for an even argument
+    and in ascending order for an odd argument.
+
+    <P>
+
+
+    This example can be found in the file sample/heapsort.cc.
+  
+  <A NAME="Dijkstra's Algorithm"><H1>Dijkstra's Algorithm</H1></A>
+
+    It was already mentioned in the previous section, a use like heap sort
+    is quite unlike like for priority queues. It is more likely that they
+    are used in setting where elements are extracted before all elements
+    are known like eg. in certain scheduling applications where tasks are
+    added to the priority queue and the most urgent one is extracted if
+    there is time to start a new task. This would, however, not present
+    any new methods compared to the heap sort example. Only the order
+    in which the operations occur would be different.
+
+    <P>
+
+
+    When thinking of an application of priority queues, Dijkstra's algorithm
+    to find shortest paths in graphs come immediately to my mind, probably
+    due to my background. This algorithm works very simple: Initially, all
+    nodes get an infinite distance except the start node (or the start nodes)
+    which gets a zero distance, of course. All nodes are initially put
+    into a priority queue. Then the algorithm executes a simple loop until
+    the priority queue is empty:
+    <UL>
+<LI>
+
+      Extract the node with the minimum distance from the priority queue.
+      This node is the current node for this iteration.
+      
+<LI>
+
+      For each adjacent node determine whether it's current distance is
+      bigger than the distance of the current node plus the length of
+      the edge to this node. If it is not, update the adjacent node to
+      the distance of the current node plus the length of the edge. This
+      decreases this node's priority.
+    
+</UL>
+
+
+    That's all. It is relatively simple to see why this algorithm works
+    but I'm not going into such details here (see eg. <I>Network
+    Flows</I>, R.K.Ahuja, T.L.Magnanti, J.B.Orlin, Prentice Hall, for
+    details). It would also some inappropriate to present this example
+    on some graph class since this would require some graph class...
+    Instead, I will use some sort of implicit graph for this example:
+    You probably know this game where two words of the same length are
+    given and the objective is to find the shortest sequence of one
+    letter changes to reach one word from the other. Of course, the
+    intermediate words have to be from some appropriate language, eg.
+    the English language. Since it does not need a priority queue to
+    solve this problem (a queue to implement Breadth First Search is
+    sufficient), I will present a program which solves a variation on
+    this game: It is allowed to change more than one letter at a
+    time but the edge costs grows quadratic with the number of letters
+    changed. The point of this is that the corresponding graph
+    structure and the distance between nodes can easily be represented:
+    The graph representation consists of words for the nodes and the
+    edge distance is the number of letters differing between the two
+    words squared.
+    
+    <P>
+
+
+    For the use in Dijkstra's algorithm, each word is associated with two
+    numbers, namely it's current distance (initially <nobr><tt>INT_MAX</tt></nobr>)
+    and the index of the word from which it received it's minimal
+    distance. The function <nobr><tt>dijkstra()</tt></nobr> which determines the
+    shortest path gets two random access iterators are argument which
+    provide access to a sequence of strings describing the dictionary
+    to be used. In additino the indices of the start and the destintion
+    nodes are passed as argument.  For simplicity, this function just
+    prints the found path. Like in the heap sort example, the priority
+    queue to be used is a template argument for this function.
+
+    <P>
+
+
+    The first part is a function which determines the distance between
+    two nodes, that is the square of the number of characters
+    differing in the corresponding two strings. Since the nodes are
+    not represented by a special struct, this function just takes
+   two strings are argument:
+
+    <P>
+
+    <TABLE BORDER=0 CELLSPACING=0 CELLPADDING=0 COLS=2>
+<TR><TD WIDTH=30 VALIGN=TOP></TD><TD>
+<PRE>
+int node_distance(std::string const& s1, std::string const& s2)
+{
+  int count = 0;
+  for (std::string::size_type i = 0; i &lt; s1.size(); ++i)
+    if (s1[i] != s2[i])
+      ++count;
+
+  return count * count;
+}
+    </PRE></TD></TABLE>
+
+
+    Since it is not possible to determine which node is detected from
+    the distance of the node, it is necessary to store the distance
+    and an identification which node corresponds to the element in
+    the elements put into the node. Thus, the priority queue stores
+    a struct made up of two elements, the index of the node and
+    the distance. For this struct, <nobr><tt>operator&lt;()</tt></nobr> is overloaded
+    to return <nobr><tt>true</tt></nobr> if the distance of the first argument is
+    <B>larger</B> than the distance of the second argument. This
+    operator is defined this way because the priority queue provides
+    access to the largest element but the smallest element is needed.
+
+    <P>
+
+
+    There is another important aspect to be noted about this struct:
+    It has an overloaded assignment operator which only assigns the
+    distance but does not touch the index. This is done such that it
+    is possible to change the priority without having to provide an
+    where the index is set to the correct index. Although this would
+    be easily possible in this case, it is not always possible in
+    applications of priority queues. This approach can be used because
+    the methods changing the priority of a node are member templates
+    of the priority classes. These are guaranteed to use the assignment
+    operator to change the value of an element.
+
+    <P>
+
+    <TABLE BORDER=0 CELLSPACING=0 CELLPADDING=0 COLS=2>
+<TR><TD WIDTH=30 VALIGN=TOP></TD><TD>
+<PRE>
+struct node_ptr
+{
+  int index;    // index of the string
+  int distance; // current distance
+
+  explicit node_ptr(int idx): index(idx), distance(INT_MAX) {}
+  void operator= (int dist) { distance = dist; }
+
+  bool operator&lt; (node_ptr const& np) const { return distance &gt; np.distance; }
+};
+    </PRE></TD></TABLE>
+
+
+    It is likely that structures like this are used as the element type
+    of priority queues if it necessary to change the priorities and to
+    identify objects using the elements stored in a priority queue.
+ 
+    <P>
+
+
+    Now everything is prepared for the actual implementation of the
+    algorithm. The function <nobr><tt>dijkstra()</tt></nobr> maintains three <nobr><tt>std::vector</tt></nobr>s
+    to keep track of some node information, name an array for the current distances
+    which records a copy of the distance given as priority to the elements in the
+    priority queue, an array recording the [current] predecessors of nodes,
+    and an array storing "pointers" into the priority queue. These "pointer"
+    are used as opaque values by the user of a priority queue. However, the
+    priority queue uses these values to efficiently find the corresponding
+    objects in the priority queue when the priority of an object is to be modified.
+    <P>
+
+    <TABLE BORDER=0 CELLSPACING=0 CELLPADDING=0 COLS=2>
+<TR><TD WIDTH=30 VALIGN=TOP></TD><TD>
+<PRE>
+template &lt;template &lt;typename T&gt; class Heap, typename RandomAccessIt&gt;
+void dijkstra(RandomAccessIt begin, RandomAccessIt end, int start, int destination)
+{
+  Heap&lt;node_ptr&gt;                                heap;
+  std::vector&lt;typename Heap&lt;node_ptr&gt;::<A HREF="heap-common.html#pointer">pointer</A>&gt; references;
+  std::vector&lt;int&gt;                              distance;
+  std::vector&lt;int&gt;                              predecessor;
+
+  for (ptrdiff_t i = 0; i &lt; end - begin; ++i)
+    {
+      references.push_back(heap.<A HREF="heap-common.html#push">push</A>(node_ptr(i)));
+      distance.push_back(INT_MAX);
+      predecessor.push_back(INT_MAX);
+    }
+
+  heap.<A HREF="heap-common.html#change">change</A>(references[start], 0);
+  distance[start] = 0;
+  predecessor[start] = 0;
+
+  while (!heap.<A HREF="heap-common.html#empty">empty</A>())
+    {
+      int dist;
+
+      node_ptr np = heap.<A HREF="heap-common.html#top">top</A>();
+      heap.<A HREF="heap-common.html#pop">pop</A>();
+
+      if (np.index == destination)
+	break;
+
+      for (ptrdiff_t i = 0; i &lt; end - begin; ++i)
+	{
+	  dist = node_distance(begin[i], begin[np.index]) + np.distance;
+	  if (dist &lt; distance[i])
+	    {
+	      heap.<A HREF="heap-common.html#change">change</A>(references[i], dist);
+	      distance[i] = dist;
+	      predecessor[i] = np.index;
+	    }
+	}
+    }
+
+  for(int i = destination; i != start; i = predecessor[i])
+    std::cout &lt;&lt; begin[i] &lt;&lt; " - ";
+  std::cout &lt;&lt; "
+";
+}
+    </PRE></TD></TABLE>
+
+
+    What is missing to complete the example is a <nobr><tt>main()</tt></nobr> which calls this
+    function. Here is an example:
+
+    <P>
+
+    <TABLE BORDER=0 CELLSPACING=0 CELLPADDING=0 COLS=2>
+<TR><TD WIDTH=30 VALIGN=TOP></TD><TD>
+<PRE>
+template &lt;typename T, int sz&gt; inline int size(T (&)[sz]) { return sz; }
+template &lt;typename T, int sz&gt; inline T* begin(T (&array)[sz]) { return array; }
+template &lt;typename T, int sz&gt; inline T* end(T (&array)[sz]) { return array + sz; }
+
+int main()
+{
+  std::string nodes = { "heap", "help", "hold", "cold", "bold", "bolt", "boot" };
+
+  dijkstra&lt;<A HREF="s_heap.html">boost::splay_heap</A>&gt;(begin(nodes), end(nodes), 0, size(nodes) - 1);
+  dijkstra&lt;<A HREF="d_heap.html">boost::d_heap</A>&gt;(begin(nodes), end(nodes), 0, size(nodes) - 1);
+  dijkstra&lt;<A HREF="f_heap.html">boost::fibonacci_heap</A>&gt;(begin(nodes), end(nodes), 0, size(nodes) - 1);
+  dijkstra&lt;<A HREF="l_heap.html">boost::lazy_fibonacci_heap</A>&gt;(begin(nodes), end(nodes), 0, size(nodes) - 1);
+  dijkstra&lt;<A HREF="p_heap.html">boost::pairing_heap</A>&gt;(begin(nodes), end(nodes), 0, size(nodes) - 1);
+}
+    </PRE></TD></TABLE>
+
+
+    Since the function <nobr><tt>dijkstra()</tt></nobr> gets the type of the priority to be used
+    as template template argument it is not necessary and actually also not possible
+    to specify any of the template arguments. Just the name of the template class
+    is passed in. To deal with the size of the array containing the strings for
+    the nodes, a little trick is used: There are template functions <nobr><tt>begin()</tt></nobr>,
+    <nobr><tt>end()</tt></nobr>, and <nobr><tt>size()</tt></nobr> which provide iterator like access to the
+    statically sized array <nobr><tt>nodes</tt></nobr>.
+
+    <P>
+
+
+    The complete example can be found in sample/dijkstra.cc.
+  
+  <A NAME="See Also"><H1>See Also</H1></A>
+
+    <A HREF="d_heap.html">d_heap(3)</A>,
+    <A HREF="f_heap.html">f_heap(3)</A>,
+    <A HREF="heap-common.html">heap-common(3)</A>,
+    <A HREF="p_heap.html">p_heap(3)</A>,
+    <A HREF="p_queue.html">p_queue(3)</A>,
+    <A HREF="s_heap.html">s_heap(3)</A>
+  
+<HR>
+
+Copyright &copy 1999 <A HREF=http://www.claas-solutions.de/kuehl>Dietmar K&uuml;hl</A> (<A HREF="mailto:dietmar.kuehl@claas-solutions.de">dietmar.kuehl@claas-solutions.de</A>)<BR>
+<a href="http://www.claas-solutions.de/">Claas Solutions GmbH</a>
+</FONT></FONT>
+</TD></TR></TABLE>
+</BODY></HTML>
+

@@ -1,0 +1,24 @@
+#  (C) Copyright Douglas Gregor 2001-2.
+#  Permission to copy, use, modify, sell and
+#  distribute this software is granted provided this copyright notice appears
+#  in all copies. This software is provided "as is" without express or implied
+#  warranty, and with no claim as to its suitability for any purpose.
+#
+# Boost.Signals build and test Jamfile
+
+# declare the location of this subproject relative to the root
+subproject libs/signals/build ;
+
+# Base names of the source files for libboost_signals
+CPP_SOURCES =
+    trackable connection signal_base slot ;
+
+dll boost_signals : ../src/$(CPP_SOURCES).cpp
+    : <sysinclude>$(BOOST_ROOT)
+    : debug release 
+    ;
+
+lib boost_signals : ../src/$(CPP_SOURCES).cpp
+    : <sysinclude>$(BOOST_ROOT) <define>BOOST_SIGNALS_STATIC_LINK
+    : debug release 
+    ;

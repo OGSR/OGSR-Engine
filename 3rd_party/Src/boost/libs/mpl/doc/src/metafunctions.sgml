@@ -1,0 +1,37 @@
+<section id="metafunctions">
+<title>Metafunctions</>
+
+<para>
+In &MPL;, the metaprogramming equivalent of a function is a <firstterm>class template</> containing a nested <literal>typedef</> member aptly named <quote>type</>:
+</>
+
+<programlisting>
+<![CDATA[
+// on the face of it, not very useful
+template< typename T >
+struct identity 
+{
+    typedef T type;
+};
+
+// perhaps more useful
+template< typename T >
+struct result_type 
+{
+    typedef typename T::result_type type;
+};
+]]>
+</>
+
+<para>
+<quote>Invoking</> a metafunction is as simple as instantiating the class template with particular template parameters (metafunction <quote>arguments</>) and accessing the result through the nested <literal>type</> member:
+</>
+
+<programlisting>
+<![CDATA[
+typedef identity<int>::type t1; // t1 == int
+typedef result_type< std::unary_function<int,bool> >::type t2; // t2 == bool
+]]>
+</>
+
+</section>

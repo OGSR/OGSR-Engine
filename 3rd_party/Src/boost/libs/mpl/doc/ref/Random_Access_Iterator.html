@@ -1,0 +1,48 @@
+<!doctype html public "-//ietf//dtd html//en">
+<html><head><title>boost::mpl::Random Access Iterator</title>
+<link rel="stylesheet" href="./mpl_wiki.css">
+</head><body bgcolor="white">
+<h1><a href="./Table_of_Contents.html"><img src="./mpl_logo.jpg" alt="[Home]" border=0 align="right"></a>Random Access Iterator</h1><h3>Description</h3>
+<p>
+A Random Access Iterator is a <a href="./Bidirectional_Iterator.html">Bidirectional Iterator</a> that provides constant-time methods for moving forward and backward on a sequence in arbitrary-sized steps.
+<p>
+<p>
+<h3>Refinement of</h3>
+<p>
+<a href="./Bidirectional_Iterator.html">Bidirectional Iterator</a>
+<p>
+<h3>Valid expressions</h3>
+<p>
+Random Access Iterator defines two new expressions and refines the ones described in <a href="./Bidirectional_Iterator.html">Bidirectional Iterator</a>. 
+<p>
+<table border="1">
+<tr><th>&nbsp;Expression&nbsp;</th><th>&nbsp;Expression type &nbsp;</th></tr>
+<tr><td><code>typename i::next</code></td><td>A model of <a href="./Random_Access_Iterator.html">Random Access Iterator</a> </td></tr>
+<tr><td><code>typename i::prior</code></td><td>A model of <a href="./Random_Access_Iterator.html">Random Access Iterator</a> </td></tr>
+<tr><td><code>typename i::template advance&lt;n&gt;::type</code></td><td>A model of <a href="./Random_Access_Iterator.html">Random Access Iterator</a> </td></tr>
+<tr><td><code>typename i::template distance&lt;j&gt;::type</code></td><td>A model of <a href="./Integral_Constant.html">Integral Constant</a> </td></tr>
+</table>
+<p>
+<h3>Expression semantics</h3>
+<p>
+Semantics of an expression is defined only where it is not defined in <a href="./Bidirectional_Iterator.html">Bidirectional Iterator</a>. 
+<p>
+<table border="1">
+<tr><th>&nbsp;Expression&nbsp;</th><th>&nbsp;Complexity&nbsp;</th><th>&nbsp;Precondition&nbsp;</th><th>&nbsp;Semantics&nbsp;</th><th>&nbsp;Postcondition &nbsp;</th></tr>
+<tr><td><code>typename i::template advance&lt;n&gt;::type</code></td><td>Amortized constant time</td><td>Including <code>i</code> itself, there must be <code>n::value</code> dereferenceable or past-the-end iterators following or preceding <code>i</code>, depending on whether <code>n</code> is positive or negative.</td><td>If <code>n::value &gt; 0</code>, equivalent to executing <code>i::next</code> <code>n::value</code> times; if <code>n::value &lt; 0</code>, equivalent to executing <code>i::prior</code> <code>n::value</code> times; if <code>n::value == 0</code>, this is a null operation [<a href="#1">1</a>].</td><td>The resulting iterator is dereferenceable or past-the-end.  </td></tr>
+<tr><td><code>typename i::template distance&lt;j&gt;::type</code></td><td>Amortized constant time</td><td>Either <code>i</code> is reachable from <code>j</code> or <code>j</code> is reachable from <code>i</code>, or both.</td><td>Returns an integral constant <code>n</code> such that <code>i::template advance&lt;n&gt;::type</code> is identical to <code>j</code>. </td></tr>
+</table>
+<p>
+<h3>Invariants</h3>
+<p>
+For any random access iterators <code>i</code> and <code>j</code> the following invariants always hold: 
+<p>
+<ul>
+<li>if <code>i::advance&lt;n&gt;::type</code> is well-defined, then <code>i::advance&lt;n&gt;::type::advance&lt; <a href="./Reference/negate.html">negate</a>&lt;n&gt;::type &gt;::type</code> is a null operation.
+</ul>
+<p>
+<h3>See also</h3>
+<p>
+<a href="./Random_Access_Sequence.html">Random Access Sequence</a>, <a href="./Bidirectional_Iterator.html">Bidirectional Iterator</a>
+<p><hr>
+<a href="./Table_of_Contents.html">Table of Contents</a><br>Last edited July 15, 2002 11:35 am</body></html>

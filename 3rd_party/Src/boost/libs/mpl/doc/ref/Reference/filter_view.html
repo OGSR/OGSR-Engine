@@ -1,0 +1,63 @@
+<!doctype html public "-//ietf//dtd html//en">
+<html><head><title>boost::mpl::filter_view</title>
+<link rel="stylesheet" href="../mpl_wiki.css">
+</head><body bgcolor="white">
+<h1><a href="../Table_of_Contents.html"><img src="../mpl_logo.jpg" alt="[Home]" border=0 align="right"></a>filter_view</h1><h3>Synopsis</h3>
+<p>
+<pre>
+template&lt;
+      typename Sequence
+    , typename Pred
+    &gt;
+struct filter_view
+{
+    <span class="cxx-comment">// unspecified</span>
+};
+</pre>
+<p>
+<h3>Description</h3>
+<p>
+<code>filter_view</code> is a sequence wrapper that allows one to operate on the filtered sequence without actually creating one. 
+<p>
+<h3>Definition</h3>
+<p>
+<pre>
+#include "<a href="../../../../../boost/mpl/filter_view.hpp">boost/mpl/filter_view.hpp</a>"
+</pre>
+<p>
+<h3>Parameters</h3>
+<table border="1">
+<tr><th>&nbsp;Parameter&nbsp;</th><th>&nbsp;Requirement&nbsp;</th><th>&nbsp;Description &nbsp;</th></tr>
+<tr><td><code>Sequence</code></td><td>A model of <a href="../Sequence.html">Sequence</a></td><td>A sequence to wrap. </td></tr>
+<tr><td><code>Pred</code></td><td>A model of unary Predicate [Lambda Expression]</td><td>A filtering predicate. </td></tr>
+</table>
+<p>
+<h3>Expression semantics</h3>
+<p>
+<table border="1">
+<tr><th>&nbsp;Expression&nbsp;</th><th>&nbsp;Expression&nbsp;type&nbsp;</th><th>&nbsp;Precondition&nbsp;</th><th>&nbsp;Semantics&nbsp;</th><th>&nbsp;Postcondition&nbsp;</th></tr>
+<tr><td><code>typedef filter_view&lt;Sequence,Pred&gt; s;</code></td><td>A model of <a href="../Sequence.html">Sequence</a></td><td></td><td><code>s</code> prodives iterators to all the elements in the range <code>[<a href="../Reference/begin.html">begin</a>&lt;Sequence&gt;::type,<a href="../Reference/end.html">end</a>&lt;Sequence&gt;::type)</code> that satisfy the predicate <code>Pred</code>.</td><td><code><a href="../Reference/size.html">size</a>&lt;s&gt;::type::value == <a href="../Reference/count_if.html">count_if</a>&lt; Sequence,Pred &gt;::type::value</code>. </td></tr>
+</table>
+<p>
+<h3>Complexity</h3>
+<p>
+Amortized constant time.
+<p>
+<h3>Example</h3>
+<p>
+Finds the largest floating type in a sequence.
+<p>
+<pre>
+typedef <a href="../Reference/list.html">list</a>&lt;int,float,long,float,char[50],long double,char&gt; types;
+typedef <a href="../Reference/max_element.html">max_element</a>&lt;
+      <a href="../Reference/transform_view.html">transform_view</a>&lt; filter_view&lt; types,boost::is_float&lt;_&gt; &gt;, size_of&lt;_&gt; &gt;
+    &gt;::type iter;
+<p>
+BOOST_STATIC_ASSERT((is_same&lt;iter::base::type,long double&gt;::value));
+</pre>
+<p>
+<h3>See also</h3>
+<p>
+<a href="../Sequences.html">Sequences</a>, <code><a href="../Reference/transform_view.html">transform_view</a></code>, <code><a href="../Reference/joint_view.html">joint_view</a></code>, <code><a href="../Reference/zip_view.html">zip_view</a></code>, <code><a href="../Reference/max_element.html">max_element</a></code>
+<p><hr>
+<a href="../Table_of_Contents.html">Table of Contents</a><br>Last edited March 10, 2003 4:42 am</body></html>

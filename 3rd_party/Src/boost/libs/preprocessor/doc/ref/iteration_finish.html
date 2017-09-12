@@ -1,0 +1,46 @@
+<html>
+<head>
+	<title>BOOST_PP_ITERATION_FINISH</title>
+	<link rel="stylesheet" type="text/css" href="../styles.css">
+</head>
+<body>
+	<div style="margin-left:  0px;">
+		The <b>BOOST_PP_ITERATION_FINISH</b> macro expands to the upper bound of the current <i>file-iteration</i> depth.
+	</div>
+	<h4>Usage</h4>
+		<div class="code">
+			<b>BOOST_PP_ITERATION_FINISH</b>()
+		</div>
+	<h4>Remarks</h4>
+		<div>
+			This macro is only valid when a <i>file-iteration</i> is in progress.
+		</div>
+	<h4>Requirements</h4>
+		<div>
+			<b>Header:</b> &nbsp;<a href="../headers/iteration/iterate.hpp.html">&lt;boost/preprocessor/iteration/iterate.hpp&gt;</a>
+		</div>
+	<h4>Sample Code</h4>
+<div><pre>
+// file.h
+#if !<a href="is_iterating.html">BOOST_PP_IS_ITERATING</a>
+
+   #ifndef FILE_H_
+   #define FILE_H_
+
+   #include &lt;<a href="../headers/iteration/iterate.hpp.html">boost/preprocessor/iteration/iterate.hpp</a>&gt;
+
+   #define <a href="iteration_params_x.html">BOOST_PP_ITERATION_PARAMS_1</a> (3, (1, 10, "file.h"))
+   #include <a href="iterate.html">BOOST_PP_ITERATE</a>()
+
+   #endif
+
+#elif <a href="iteration_depth.html">BOOST_PP_ITERATION_DEPTH</a>() == 1
+
+   start -> <a href="iteration_start.html">BOOST_PP_ITERATION_START</a>()
+   iteration -> <a href="iteration.html">BOOST_PP_ITERATION</a>()
+   finish -> <a href="iteration_finish.html">BOOST_PP_ITERATION_FINISH</a>()
+
+#endif
+</pre></div>
+</body>
+</html>

@@ -1,0 +1,37 @@
+<!doctype article public "-//OASIS//DTD DocBook V4.1//EN"
+[
+<!-- abbreviations -->
+<!entity Boost  "<literal>Boost</>">
+<!entity Cxx    "C++">
+<!entity C      "C">
+<!entity MPL    "MPL">
+<!entity BMPL   "Boost Metaprogramming Library">
+<!entity mdat   "metadata">
+<!entity mping  "metaprogramming">
+<!entity mfn    "metafunction">
+<!entity unspec "/*unspecified*/">
+
+<!-- physical entities -->
+<!entity articleinfo    SYSTEM "articleinfo.sgml">
+<!entity preface        SYSTEM "preface.sgml">
+<!entity tutorial       SYSTEM "tutorial.sgml">
+<!entity metafunctions  SYSTEM "metafunctions.sgml">
+<!entity if             SYSTEM "if.sgml">
+<!entity applyif        SYSTEM "apply_if.sgml">
+<!entity applyif2       SYSTEM "apply_if2.sgml">
+<!entity technical      SYSTEM "technical.sgml">
+<!entity acknw          SYSTEM "acknw.sgml">
+<!entity bibliography   SYSTEM "bibliography.sgml">
+]>
+
+<article>
+<title>The Boost &MPL; Library</>
+
+&articleinfo;
+&preface;
+&tutorial;
+&technical;
+&acknw;
+&bibliography;
+
+</article>

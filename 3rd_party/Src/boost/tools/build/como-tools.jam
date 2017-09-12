@@ -1,0 +1,146 @@
+# (C) Copyright David Abrahams 2001. Permission to copy, use,
+# modify, sell and distribute this software is granted provided this
+# copyright notice appears in all copies. This software is provided
+# "as is" without express or implied warranty, and with no claim as
+# to its suitability for any purpose.
+
+# The following #// line will be used by the regression test table generation
+# program as the column heading for HTML tables. Must not include version number.
+#//<a href="http://www.comeaucomputing.com/">Comeau<br>C++</a>
+
+# variables used to configure como-tools.jam
+#
+# COMO_PATH - path to installation
+# COMO_BIN_PATH - path to como executable, defaults to $(COMO_PATH)/bin/
+# COMO_INCLUDE_PATH - path to libcomo headers, defaults to $(COMO_PATH)/libcomo
+# COMO_STDLIB_PATH - path to built libcomo object, defaults to $(COMO_PATH)/libcomo
+
+# Keep using COMO_BASE for backward compatibility
+set-as-singleton COMO_BASE ;
+COMO_BASE ?= $(COMO_PATH) ;
+
+# compute directories for invoking como
+if ! $(COMO_PATH_SETUP) # do this once
+{
+    # Keep using COMO_BIN_DIRECTORY for backward compatibility.
+    COMO_BIN_DIRECTORY ?= $(COMO_BIN_PATH) ;
+    COMO_BIN_DIRECTORY ?= $(COMO_BASE)$(SLASH)bin$(SLASH) ;
+    COMO_BIN_DIRECTORY ?= "" ; # Don't clobber tool names if COMO_ROOT_DIRECTORY not
+                               # set
+
+    COMO_INCLUDE_PATH ?= $(COMO_BASE)$(SLASH)libcomo ;
+    COMO_INCLUDE_PATH += $(COMO_INCLUDE_PATH)$(SLASH)cnames ;
+
+    COMO_STDLIB_PATH ?= $(COMO_BASE)$(SLASH)libcomo ;
+
+    COMO_BACKEND_SETUP = $(COMO_BACKEND_SETUP) ;
+    newline = "
+" ;
+    if $(NT)
+    {
+        COMO_BACKEND_INCLUDE_SETUP ?= "set \"COMO_MS_INCLUDE="$(VISUALC)"/include\"" ;
+        COMO_BACKEND_LIB_SETUP ?= "set \"LIB="$(COMO_STDLIB_PATH)";%LIB%\"" ;
+        COMO_PATH_SETUP ?= "set \"PATH="$(COMO_BIN_DIRECTORY)";%PATH%\"" ;
+        COMO_BACKEND_SETUP ?= "call "\"$(VISUALC)$(SLASH)bin$(SLASH)vcvars32"\"" ;
+        COMO_BACKEND_SETUP ?= REM set VISUALC or COMO_BACKEND_SETUP to set up the back end ;
+        COMO_BASE_SETUP ?= "set \"COMO_BASE=$(COMO_BASE)\"" ;
+        COMO_PATH_SETUP ?= REM set COMO_PATH to set up the path for Comeau ;
+    }
+    COMO_PATH_SETUP ?= "" ;
+}
+
+flags como C++FLAGS <exception-handling>off : --no_exceptions ;
+flags como C++FLAGS <exception-handling>on : --exceptions ;
+
+flags como CFLAGS <inlining>off : --no_inlining ;
+flags como CFLAGS <inlining>on <inlining>full : --inlining ;
+
+flags como CFLAGS <cflags> ;
+flags como C++FLAGS <cxxflags> ;
+flags como DEFINES <define> ;
+flags como UNDEFS <undef> ;
+flags como HDRS <include> ;
+flags como STDHDRS <sysinclude> ;
+flags como LINKFLAGS <linkflags> ;
+flags como ARFLAGS <arflags> ;
+
+flags como STDHDRS : $(COMO_INCLUDE_PATH) ;
+flags como STDLIB_PATH : $(COMO_STDLIB_PATH)$(SLASH) ;
+
+flags como LIBPATH <library-path> ;
+flags como NEEDLIBS <library-file> ;
+flags como FINDLIBS <find-library> ;
+
+#### Link ####
+
+rule Link-action
+{
+    como-Link-action $(<) : $(>) ;
+}
+
+# for como, we repeat all libraries so that dependencies are always resolved
+actions como-Link-action bind NEEDLIBS
+{
+    $(COMO_BACKEND_SETUP)
+    $(COMO_BACKEND_INCLUDE_SETUP)
+    $(COMO_BACKEND_LIB_SETUP)
+    $(COMO_PATH_SETUP)
+    $(COMO_BASE_SETUP)
+    $(COMO_BIN_DIRECTORY)como $(LINKFLAGS) -o "$(<[1])" "$(>)" "$(NEEDLIBS)" "$(FINDLIBS:S=.lib)" "$(STDLIB_PATH)libcomo.lib"
+}
+
+
+#### Cc #####
+
+rule Cc-action
+{
+    como-Cc-action $(<) : $(>) ;
+}
+
+actions como-Cc-action
+{
+    $(COMO_BACKEND_SETUP)
+    $(COMO_BACKEND_INCLUDE_SETUP)
+    $(COMO_BACKEND_LIB_SETUP)
+    $(COMO_PATH_SETUP)
+    $(COMO_BASE_SETUP)
+    $(COMO_BIN_DIRECTORY)como -c -e10 --wchar_t -D__cdecl=  --no_microsoft_bugs -D_WCHAR_T_DEFINED -m -c -U$(UNDEFS) -D$(DEFINES) $(CFLAGS) -I"$(HDRS)" -I"$(STDHDRS)" -o "$(<:D=)" "$(>)"
+    $(MV) $(<:D=) $(<)
+}
+
+#### C++ ####
+rule C++-action
+{
+    como-C++-action $(<) : $(>) ;
+}
+
+actions como-C++-action
+{
+    $(COMO_BACKEND_SETUP)
+    $(COMO_BACKEND_INCLUDE_SETUP)
+    $(COMO_BACKEND_LIB_SETUP)
+    $(COMO_PATH_SETUP)
+    $(COMO_BASE_SETUP)
+    $(COMO_BIN_DIRECTORY)como -c -e10 --wchar_t -D__cdecl= --no_microsoft_bugs --no_anachronisms -D__cdecl= --new_for_init -D_WCHAR_T_DEFINED -U$(UNDEFS) -D$(DEFINES) $(CFLAGS) $(C++FLAGS) -I"$(HDRS)" -I"$(STDHDRS)"  -o "$(<:D=)" "$(>)"
+    $(MV) $(<:D=) $(<)
+}
+
+#### Archive ####
+
+rule Archive-action
+{
+    como-Archive-action $(<) : $(>) ;
+}
+
+actions updated together piecemeal como-Archive-action
+{
+    $(COMO_BACKEND_SETUP)
+    $(COMO_BACKEND_INCLUDE_SETUP)
+    $(COMO_BACKEND_LIB_SETUP)
+    $(COMO_PATH_SETUP)
+    $(COMO_BASE_SETUP)
+    $(COMO_BIN_DIRECTORY)como $(ARFLAGS) -o "$(<:S=)" $(>)
+    REM if exist "$(<)" set _$(<:B)_="$(<)"
+    REM $(MSVC_TOOL_PATH)link /lib /out:"$(<)" %_$(<:B)_% "$(>)"
+}
+

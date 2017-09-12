@@ -1,0 +1,58 @@
+<!doctype html public "-//ietf//dtd html//en">
+<html><head><title>boost::mpl::list_c</title>
+<link rel="stylesheet" href="../mpl_wiki.css">
+</head><body bgcolor="white">
+<h1><a href="../Table_of_Contents.html"><img src="../mpl_logo.jpg" alt="[Home]" border=0 align="right"></a>list_c</h1><h3>Synopsis</h3>
+<p>
+<pre>
+template&lt;
+      typename T
+    , T C1 = <em>implementation-defined</em>
+    , T C2 = <em>implementation-defined</em>
+    , ...
+    , T CN = <em>implementation-defined</em>
+    &gt;
+struct list_c
+{
+};
+</pre>
+<p>
+<h3>Description</h3>
+<p>
+Similary to <code><a href="../Reference/vector_c.html">vector_c</a></code>, <code>list_c</code> is a shorcut interface whose whole purpose is to make the creation of a <code>list</code> of <a href="../Integral_Constant.html">Integral Constant</a>s less verbose:
+<p>
+<pre>
+typedef list_c&lt;unsigned long,-1,0,1,1,-1,0,0,1,-1&gt; data;
+</pre>
+<p>
+If <code>list_c</code> didn't exist, instead of the above line you would have to write this:
+<p>
+<pre>
+typedef list&lt;
+      integral_c&lt;unsigned long,-1&gt;
+    , integral_c&lt;unsigned long,0&gt;
+    , integral_c&lt;unsigned long,1&gt;
+    , integral_c&lt;unsigned long,1&gt;
+    , integral_c&lt;unsigned long,-1&gt;
+    , integral_c&lt;unsigned long,0&gt;
+    , integral_c&lt;unsigned long,0&gt;
+    , integral_c&lt;unsigned long,1&gt;
+    , integral_c&lt;unsigned long,-1&gt;
+    &gt; data;
+</pre>
+<p>
+<h3>Definition</h3>
+<p>
+<pre>
+#include "<a href="../../../../../boost/mpl/list_c.hpp">boost/mpl/list_c.hpp</a>"
+#include "<a href="../../../../../boost/mpl/list/list0_c.hpp">boost/mpl/list/list0_c.hpp</a>"
+#include "<a href="../../../../../boost/mpl/list/list10_c.hpp">boost/mpl/list/list10_c.hpp</a>"
+...
+#include "<a href="../../../../../boost/mpl/list/list50_c.hpp">boost/mpl/list/list50_c.hpp</a>"
+</pre>
+<p>
+<h3>See also</h3>
+<p>
+<a href="../Random_Access_Sequence.html">Random Access Sequence</a>, <code><a href="../Reference/list.html">list</a></code>, <code><a href="../Reference/vector.html">vector</a></code>, <code><a href="../Reference/vector_c.html">vector_c</a></code>, <code><a href="../Reference/range_c.html">range_c</a></code>
+<p><hr>
+<a href="../Table_of_Contents.html">Table of Contents</a><br>Last edited July 17, 2002 8:04 am</body></html>

@@ -1,0 +1,982 @@
+<!DOCTYPE HTML PUBLIC "-//SoftQuad Software//DTD HoTMetaL PRO 5.0::19981217::extensions to HTML 4.0//EN" "hmpro5.dtd">
+
+<HTML>
+
+<HEAD>
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-1">
+<LINK REL="stylesheet" TYPE="text/css" HREF="../../../boost.css">
+<TITLE>Header </TITLE>
+</HEAD>
+
+<BODY BGCOLOR="#FFFFFF" TEXT="#000000" LINK="#0000FF" VLINK="#800080">
+<H2><IMG SRC="../../../c++boost.gif" WIDTH="276" HEIGHT="86">Header &lt;<A
+HREF="../../../boost/optional.hpp">boost/optional.hpp</A>&gt; </H2>
+
+<H2>Contents</H2>
+<DL CLASS="page-index">
+  <DT><A HREF="#mot">Motivation</A></DT>
+  <DT><A HREF="#dev">Development</A></DT>
+  <DT><A HREF="#synopsis">Synopsis</A></DT>
+  <DT><A HREF="#semantics">Semantics</A></DT>
+  <DT><A HREF="#examples">Examples</A></DT>
+  <DT><A HREF="#bool">A note about optional&lt;bool&gt;</A></DT>
+  <DT><A HREF="#exsafety">Exception Safety Guarantees</A></DT>
+  <DT><A HREF="#requirements">Type requirements</A></DT>
+  <DT><A HREF="#impl">Implementation Notes</A></DT>
+  <DT><A HREF="#porta">Dependencies and Portability</A></DT>
+  <DT><A HREF="#credits">Acknowledgment</A></DT>
+</DL>
+
+<HR>
+
+<H2><A NAME="mot"></A>Motivation</H2>
+
+<P>Consider these functions which should return a value but which might not have 
+  a value to return:</P>
+<pre>(A) double sqrt(double n );
+(B) char get_async_input();
+(C) point polygon::get_any_point_effectively_inside();</pre>
+<P>There are different approaches to the issue of not having a value to return.</P>
+<P>A typical approach is to consider the existence of a valid return value as 
+  a postcondition, so that if the function cannot compute the value to return, 
+  it has either undefined behavior (and can use asssert in a debug build) 
+  or uses a runtime check and throws an exception if the postcondition is violated. 
+  This is a reasonable choice for example, for function (A), because the 
+  lack of a proper return value is directly related to an invalid parameter (out 
+  of domain argument), so it is appropriate to require the callee to supply only 
+  parameters in a valid domain for execution to continue normally.</P>
+<P>However, function (B), because of its asynchronous nature, does not fail just 
+  because it can't find a value to return; so it is incorrect to consider
+  such a situation an error and assert or throw an exception. This function must 
+  return, and somehow, must tell the callee that it is not returning a meaningful 
+  value.</P>
+<P>A similar situation occurs with function (C): it is conceptually an error to 
+  ask a <i>null-area</i> polygon to return a point inside itself, but in many 
+  applications, it is just impractical for performance reasons to treat this as 
+  an error (because detecting that the polygon has no area might be too expensive
+  to be required to be tested previously), and either an arbitrary point (typically
+  at infinity) is returned, or some efficient way to tell the callee that there
+  is no such point is used.</P>
+<P>There are various mechanisms to let functions communicate that the returned
+  value is not valid. One such mechanism, which is quite common since it has zero
+  or negligible overhead, is to use a special value which is reserved to communicate
+  this. Classical examples of such special values are EOF, string::npos, points
+  at infinity, etc...</P>
+<P>When those values exist, i.e. the return type can hold all meaningful values
+  <i>plus</i> the <i>signal</i> value, this mechanism is quite appropriate and
+  well known. Unfortunately, there are cases when such values do not exist. In
+  these cases, the usual alternative is either to use a wider type, such as 'int'
+  in place of 'char'; or a compound type, such as std::pair&lt;point,bool&gt;.
+</P>
+<P>Returning a std::pair&lt;T,bool&gt;, thus attaching a boolean flag to the result
+  which indicates if the result is meaningful, has the advantage that can be turned
+  into a consistent idiom since the first element of the pair can be whatever
+  the function would conceptually return. For example, the last two functions
+  could have the following interface:</P>
+<pre>std::pair&lt;char,bool&gt; get_async_input();
+std::pair&lt;point,bool&gt; polygon::get_any_point_effectively_inside();</pre>
+<p>These functions use a consistent interface for dealing with possibly inexistent
+  results:</p>
+<pre>std::pair&lt;point,bool&gt; p = poly.get_any_point_effectively_inside();
+if ( p.second )
+  flood_fill(p.first);
+</pre>
+
+<P>However, not only is this quite a burden syntactically, it is also error
+  prone since the user can easily use the function result (first element of the
+  pair) without ever checking if it has a valid value.</P>
+<P>Clearly, we need a better idiom.</P>
+
+<H2><A NAME="dev"></A>Development</H2>
+
+<h3>The model</h3>
+<P>In C++, we can <i>declare</i> an object (a variable) of type T, and we can give this variable
+  an <i>initial value</i> (through an <i>initializer</i>. (c.f. 8.5)).<br>
+  When a declaration includes a non-empty initializer (an initial value is given), it is said that
+  the object has been <i><b>initialized</b></i>.<br>
+  If the declaration uses an empty initializer (no initial value is given),
+  and neither default nor value initialization applies, it is said that the object is
+  <i><b>uninitialized</b></i>. Its actual value exist but has an
+  <i>indeterminate inital value</i> (c.f. 8.5.9).<br>
+  <code>optional&lt;T&gt;</code> intends to formalize the notion of initialization/no-initialization
+  allowing a program to test whether an object has been initialized and stating that access to
+  the value of an uninitialized object is undefined behaviour. That is,
+  when a variable is declared as optional&lt;T&gt; and no initial value is given,
+  the variable is formally uninitialized. A formally uninitialized optional object has conceptually
+  no value at all and this situation can be tested at runtime. It is formally <i>undefined behaviour</i>
+  to try to access the value of an uninitialized optional. An uninitialized optional can be <i>assigned</i> a value, in which case its
+  initialization state changes to initialized. And given the formal treatment of initialization
+  states in optional objects, it is even possible to
+  reset an optional to <i>uninitialized</i>.</P>
+<P>In C++ there is no formal notion of uninitialized objects, which
+  means that objects always have an initial value even if indeterminate.<br>
+  As discussed on the previous section, this has a drawback because you need additional
+  information to tell if an object has been effectively initialized.<br>
+  One of the typical ways in which this has been historically
+  dealt with is via a special value: EOF,npos,-1, etc... This is equivalent to adding
+  the special value to the set of possible values of a given type.
+  On modern languages, this can be modeled with a <b>discriminated
+  union</b> of T and something else such as a trivial POD or enum.
+  Discriminated unions are often called <i>variants</i>.
+  A variant has a <i>current type</i>, which in our case is either T or something else. In C++,
+  such a variant would be typically implemented as a template class of the form: <code>variant&lt;T,nil_t&gt;</code>
+</P>
+<P>There is precedence for a discriminated union as a model for an optional
+  value: the <a href="http://www.haskell.org/"><u>Haskell</u></a> <b>Maybe</b> builtin type constructor.</p>
+<p>A discriminated union, which can be seen as a <b>container</b> which has an object of either
+  type T or something else, has <i>exactly</i> the semantics required for a wrapper of optional values:</p>
+<li><b>deep-copy</b> semantics:  copies of the variant implies copies of the contained value.</li>
+<li><b>deep-relational</b> semantics: comparisons between variants matches both current types and values</li>
+<li>If the variant's current type is T, it is modeling an <i>initialized</i> optional.</li>
+<li>If the variant's current type is not T, it is modeling an <i>uninitialized</i> optional.</li>
+<li>Testing if the variant's current type is T models testing if the optional is initialized</li>
+<li>Trying to extract a T from a variant when its current type is not T, models the undefined behaviour
+of trying to access the value of an uninitialized optional</li>
+<P>Because of the way a discriminated union is used for this purpose, it only matters
+  whether its current type is T or not. We can put a layer on top of the variant hidding the other type
+  transforming a container of fixed size 1 into a variable size container which either has
+  a T or has nothing. Thus, the variant&lt;T,nil_t&gt; can be seen as if it were a variable-size
+  fixed-capacity stack-based container with the following optional-oriented interface:</P>
+
+
+<pre>// Uninitialized (internally, current type is nil_t)
+optional&lt;T&gt;::optional();
+
+// Initialized with 'v' (internally, current type is T)
+optional&lt;T&gt;::optional( T const&amp; v ) ;
+
+// Back to uninitialized (current type is set to nil_t)
+void optional&lt;T&gt;::reset();
+
+// Assigns 'v' whether previously initialized or not (current type is set to T)
+void optional&lt;T&gt;::reset( T const&amp; v ) ;
+
+// Returns 'true' if the optional is initialized, 'false' otherwise.
+bool optional&lt;T&gt;::initialized() ;
+
+// If the optional is initialized (current type is T), returns a reference to its value.
+// Otherwise (current type is nil_t), the result is undefined.
+T const&amp; optional&lt;T&gt;::ref() const ;
+T&amp;       optional&lt;T&gt;::ref() ;
+
+// If both are initialized, calls swap(T&amp;,T&amp;);
+// If only one is initialized, calls reset(T const&amp;) and reset().
+// If both are uninitalized, do nothing.
+void swap ( optional&lt;T&gt;&amp; lhs, optional&lt;T&gt;&amp; rhs ) ;
+
+// If both are initialized, compare values.
+// If only one is initialized, they are not equal.
+// If both are uninitalized, they are equal.
+bool operator == ( optional&lt;T&gt; const&amp; lhs, optional&lt;T&gt; const&amp; rhs ) ;
+bool operator != ( optional&lt;T&gt; const&amp; lhs, optional&lt;T&gt; const&amp; rhs ) ;
+</pre>
+
+<h3>Pointers and optional objects</h3>
+<P>In C++, unlike many other languages, objects can be referenced <i>indirectly</i>
+  by means of a <b>pointer</b> (or a reference). Pointers have several nice features,
+  two of which are relevant to this development.</p>
+<p>One is that a pointer has its own <i>pointer value</i>, which in effect
+  references the object being pointed to: the <b>pointee</b>. Consequently,
+  copies of pointers do not involve copies of pointees. This effect results in <i>aliasing</i>:
+  different pointers can refer to the same object.
+  The particular semantic that a copy of a pointer does not involve
+  a copy of the pointee is called <b>shallow-copy</b>, which is oppossed to <b>deep-copy</b> were
+  a copy of a wrapper involves a copy of the wrapped object (as with optional&lt;&gt;)<br>
+  Since this is the semantic followed by pointers (and references), shallow-copy
+  (and therefore aliasing) is implied in <b>pointer semantics</b>.</p>
+<p>The other relevant feature of a pointer is that a pointer can have a <b>null
+  pointer value</b>. This is a <i>special</i> value which is used to indicate that the
+  pointer is not referring to any object at all. In other words, null pointer
+  values convey the notion of inexistent objects.</P>
+<P>This meaning of the null pointer value allowed pointers to became a defacto standard
+  for handling optional objects because all you have to do to refer to a value which you
+  don't really have is to use a null pointer value of the appropriate type.
+  Pointers have been used for decades&mdash;from the days of C APIs to modern C++ libraries&mdash;to
+  <i>refer</i> to optional (that is, possibly inexistent) objects; particularly 
+  as optional arguments to a function, but also quite often as optional data members.</P>
+<P>The possible presence of a null pointer value makes the operations that access the
+  pointee's value possibly undefined, therefore, expressions which use dereference
+  and access operators, such as: <code>( *p = 2 )</code> and <code>( p-&gt;foo())</code>,
+  implicitly convey the notion of optionality, and this information is tied to
+  the <i>syntax</i> of the expressions. That is, the presence of operators * and -&gt; tell by
+  themselves&mdash;without any additional context&mdash;that the expression will be undefined unless
+  the implied pointee actually exist.<br>
+  Furthermore, the existence of the pointee can be tested by a comparison against
+  the null pointer value or via a conversion to bool, which allows expressions of
+  the form: if ( p != 0 ), or if ( p ) to be used to test for the existence of the pointee.</P>
+<p>Such a defacto idiom for referring to optional objects can be formalized in the form of a
+concept: the <a href="../../utility/OptionalPointee.html">OptionalPointee</a> concept.<br>
+This concept captures the syntactic usage of operatos *, -> and conversion to bool to convey
+the notion of optionality.</p>
+<P>However, pointers are good to <u>refer</u> to optional objects, but not particularly good
+to handle the optional objects in all other respects, such as initializing or moving/copying
+them. The problem resides in the shallow-copy of pointer semantics: if you need to
+  effectively move or copy the object, pointers alone are not enough. The problem
+  is that copies of pointers do not imply copies of pointees. For example, as
+  was discussed in the motivation, pointers alone cannot be used to return optional
+  objects from a function because the object must move outside from the function and
+  into the caller's context.<br>
+  A solution to the shallow-copy problem that is often used is to resort to dynamic
+  allocation and use a smart pointer to automatically handle the details of this.
+  For example, if a function is to optionally return an object X, it can use shared_ptr&lt;X&gt;
+  as the return value. However, this requires dynamic allocation of X. If X is
+  a builtin or small POD, this technique is very poor in terms of required resources.
+  Optional objects are essentially values so it is very convenient to be able to use automatic
+  storage and deep-copy semantics to manipulate optional values just as we do with ordinary
+  values. Pointers do not have this semantics, so are unappropriate for the initialization and
+  transport of optional values, yet are quite convenient for handling the access to the
+  possible undefined value because of the idiomatic aid present in the OptionalPointee
+  concept incarnated by pointers. <br>
+  Therefore, the final solution which is presented in this library is to shape the
+  previously discussed optional&mdash;which is a value-based container&mdash;as a model
+  of the OptionalPointee concept.
+</p>
+<h3>Optional&lt;T&gt; as a model of OptionalPointee</h3>
+<P>The optional&lt;&gt; template class presented with this library is a variation of the
+  sketch shown before (as a layer on top of a variant). It features <b>deep-copy</b> and
+  <b>deep relational operators</b>, but also models the OptionalPointee concept.
+  Instead of the member function 'initialized()' it has a safe conversion to bool,
+  and instead of the 'ref()' member function, it has operators*() and ->().<br>
+  However, it is particularly important that optional<> objects are not mistaken by pointers,
+  they are not. <u><b>optional&lt;&gt; does not model a pointer</b></u>.
+  For instance, optional&lt;&gt; has not shallow-copy so does not alias: two different optionals
+  never refer to the <i>same</i> value (but my have <i>equivalent</i> values).<br>
+  The difference between an optional&lt;T&gt; and a pointer must be kept in mind, particularly
+  because the semantics of relational operators are different: since optional&lt;T&gt;
+  is a value-wrapper, relational operators are deep: they compare optional values;
+  but relational operators for pointers are shallow:  they do not compare pointee values.<br>
+  As a result, you might be able to replace optional&lt;T&gt; by T* on some situations but
+  not always. Specifically, on generic code written for both, you cannot use relational
+  operators directly, and must use the template function
+  <a href="../../utility/OptionalPointee.html#equal">equal_pointees()</a> instead.
+<HR>
+
+<H2><A NAME="synopsis">Synopsis</A></H2>
+
+<PRE>namespace boost {
+
+template&lt;class T>
+class optional
+{
+  public :
+
+    optional () ;
+
+    explicit optional ( T const&amp; v ) ;
+
+    optional ( optional const&amp; rhs ) ;
+
+    template&lt;class U&gt; explicit optional ( optional&lt;U&gt; const&amp; rhs ) ;
+
+    optional&amp; operator = ( optional const&amp; rhs ) ;
+
+    template&lt;class U&gt; optional&amp; operator = ( optional&lt;U&gt; const&amp rhs ) ;
+
+    T const* get() const ;
+    T*       get() ;
+
+    T const* operator -&gt;() const ;
+    T*       operator -&gt;() ;
+
+    T const&amp; operator *() const ;
+    T&amp;       operator *() ;
+
+    void reset();
+
+    void reset ( T const&amp; ) ;
+
+    operator <i>unspecified-bool-type</i>() const ;
+
+    bool operator!() const ;
+
+} ;
+
+template&lt;class T&gt; inline bool operator == ( optional&lt;T&gt; const& x, optional&lt;T&gt; const& y ) ;
+
+template&lt;class T&gt; inline bool operator != ( optional&lt;T&gt; const& x, optional&lt;T&gt; const& y ) ;
+
+template&lt;class T&gt; inline T* get_pointer ( optional&lt;T&gt; const& opt ) ;
+
+template&lt;class T&gt; inline void swap( optional&lt;T&gt;& x, optional&lt;T&gt;&amp; y ) ;
+
+} // namespace boost
+</PRE>
+
+<HR>
+
+<h2><A NAME="semantics">Semantics</a></h2>
+
+<p><i>Note: the following section contains various assert() which are used only to
+  show the postconditions as sample code.
+  It is not implied that the type T must support each particular expression
+  but that if the expression is supported, the implied condition holds.</i></p>
+<hr>
+
+<pre>optional&lt;T&gt;::optional();</pre>
+<blockquote>
+<p><b>Effect:</b> Default-Constructs an <b>optional</b>.</p>
+<p><b>Postconditions:</b> <b>*this</b> is <u>uninitialized</u>.</p>
+<p><b>Throws:</b> Nothing.</p>
+<p><b>Notes:</b> T's default constructor <u><i>is not</i></u> called.</p>
+<p><b>Example:</b></p>
+  <blockquote>
+    <pre>optional&lt;T&gt; def ;
+assert ( !def ) ;</pre>
+</blockquote>
+</blockquote>
+
+<HR>
+
+<pre>explicit optional&lt;T&gt;::optional( T const&amp; v )</pre>
+<blockquote>
+<p><b>Effect:</b> Directly-Constructs an <b>optional</b>.</p>
+<p><b>Postconditions:</b> <b>*this</b> is <u>initialized</u> and its value is a <i>copy</i> of 'v'.</p>
+<p><b>Throws:</b> Whatever T::T( T const&amp; ) throws.</p>
+<p><b>Notes:</b> T::T( T const&amp; ) is called.</p>
+<p><b>Exception Safety:</b> Exceptions can only be thrown during T::T( T const&amp; );
+in that case, this constructor has no effect.
+</p>
+<p><b>Example:</b></p>
+<blockquote>
+<pre>
+T v;
+optional&lt;T&gt; opt(v);
+assert ( *opt == v ) ;
+</pre>
+</blockquote>
+</blockquote>
+
+<HR>
+
+<pre>optional&lt;T&gt;::optional( optional const&amp; rhs );</pre>
+<blockquote>
+<p><b>Effect:</b> Copy-Constructs an <b>optional</b>.</p>
+<p><b>Postconditions:</b> If <b>rhs</b> is initialized, <b>*this</b> is initialized
+and its value is a <i>copy</i> of the value of <b>rhs</b>; else <b>*this</b>
+is uninitialized.</p>
+<p><b>Throws:</b> Whatever T::T( T const& ) throws.</p>
+<p><b>Notes:</b> T::T( T const& ) is called if <b>rhs</b> is initialized.</p>
+<p><b>Exception Safety:</b> Exceptions can only be thrown during T::T( T const& );
+in that case, this constructor has no effect.
+</p>
+<p><b>Example:</b></p>
+<blockquote>
+        <pre>optional&lt;T&gt; uninit ;
+assert (!uninit);
+
+optional&lt;T&gt; uinit2 ( uninit ) ;
+assert ( uninit2 == uninit );
+
+optional&lt;T&gt; init( T(2) );
+assert ( *init == T(2) ) ;
+
+optional&lt;T&gt; init2 ( init ) ;
+assert ( init2 == init ) ;
+</pre>
+
+</blockquote>
+</blockquote>
+
+<HR>
+
+<pre>explicit template&lt;U&gt; optional&lt;T&gt;::optional( optional&lt;U&gt; const&amp; rhs );</pre>
+<blockquote>
+<p><b>Effect:</b> Copy-Constructs an <b>optional</b>.</p>
+<p><b>Postconditions:</b> If <b>rhs</b> is initialized, <b>*this</b> is initialized
+    and its value is a <i>copy</i> of the value of <b>rhs</b> <i>converted</i>
+    to type T; else <b>*this</b> is uninitialized.
+</p>
+<p><b>Throws:</b> Whatever T::T( U const& ) throws.</p>
+<p><b>Notes:</b> T::T( U const& ) is called if <b>rhs</b> is initialized, which requires
+a valid conversion from U to T.
+</p>
+<p><b>Exception Safety:</b> Exceptions can only be thrown during T::T( U const& );
+in that case, this constructor has no effect.
+</p>
+<p><b>Example:</b></p>
+<blockquote>
+
+<pre>optional&lt;double&gt; x(123.4);
+assert ( *x == 123.4 ) ;
+
+optional&lt;int&gt; y(x) ;
+assert( *y == 123 ) ;
+</pre>
+</blockquote>
+</blockquote>
+
+<HR>
+
+<pre>optional&amp; optional&lt;T&gt;::operator= ( optional const&amp; rhs ) ;</pre>
+<blockquote>
+<p><b>Effect:</b> Assigns another <b>optional</b> to an <b>optional</b>.</p>
+<p><b>Postconditions:</b> If <b>rhs</b> is initialized, <b>*this</b> is initialized
+and its value is a <i>copy</i> of the value of <b>rhs</b>; else <b>*this</b>
+is uninitialized.
+</p>
+<p><b>Throws:</b> Whatever T::T( T const& ) throws.</p>
+<p><b>Notes:</b> If <b>*this</b> was initialized, it is first reset to uninitialized
+using T::~T(), then T::T( T const& ) is called if <b>rhs</b> is initialized.
+</p>
+<p><b>Exception Safety:</b> <u>Basic:</u> Exceptions can only be thrown during T::T( T const& );
+in that case, <b>*this</b> is left <u>uninitialized</u>.
+</p>
+<p><b>Example:</b></p>
+<blockquote>
+    <pre>
+T v;
+optional&lt;T&gt; opt(v);
+optional&lt;T&gt; uninit ;
+
+opt = uninit ;
+assert ( !opt ) ;
+// previous value (copy of 'v') destroyed from within 'opt'.
+
+</pre>
+</blockquote>
+</blockquote>
+
+<HR>
+
+<pre>template&ltU&gt; optional&amp; optional&lt;T&gt;::operator= ( optional&lt;U&gt; const&amp; rhs ) ;</pre>
+<blockquote>
+<p><b>Effect:</b> Assigns another <i>convertible</i> <b>optional</b> to an <b>optional</b>.</p>
+<p><b>Postconditions:</b> If <b>rhs</b> is initialized, <b>*this</b> is initialized
+and its value is a <i>copy</i> of the value of <b>rhs</b> <i>converted</i>
+to type T; else <b>*this</b> is uninitialized.
+</p>
+<p><b>Throws:</b> Whatever T::T( U const& ) throws.</p>
+<p><b>Notes:</b> If <b>*this</b> was initialized, it is first reset to uninitialized
+using T::~T(), then T::T( U const& ) is called if <b>rhs</b> is initialized,
+which requires a valid conversion from U to T.
+</p>
+<p><b>Exception Safety:</b> <u>Basic:</u> Exceptions can only be thrown during T::T( U const& );
+in that case, <b>*this</b> is left <u>uninitialized</u>.
+</p>
+<p><b>Example:</b></p>
+<blockquote>
+    <pre>
+T v;
+optional&lt;T&gt; opt0(v);
+optional&lt;U&gt; opt1;
+
+opt1 = opt0 ;
+assert ( *opt1 == static_cast&lt;U&gt;(v) ) ;
+</pre>
+</blockquote>
+</blockquote>
+
+<HR>
+<pre>void optional&lt;T&gt;::reset( T const&amp v ) ;</pre>
+<blockquote>
+<p><b>Effect:</b> Resets the current value.</p>
+<p><b>Postconditions: </b><b>*this</b> is <u>initialized</u> and its value is
+a <i>copy</i> of 'v'.
+</p>
+<p><b>Throws:</b> Whatever T::T( T const& ) throws.</p>
+<p><b>Notes:</b> If <b>*this</b> was initialized, it is first reset to uninitialized
+using T::~T(), then T::T( T const& ) is called.
+</p>
+<p><b>Exception Safety:</b> <u>Basic:</u> Exceptions can only be thrown during T::T( T const& );
+in that case, <b>*this</b> is left <u>uninitialized</u>.
+</p>
+<p><b>Example:</b></p>
+<blockquote>
+    <pre>optional&lt;T&gt; opt ( some_T ) ;
+assert( *opt == some_T );
+opt.reset ( some_other_T ) ;
+assert( *opt == some_other_T );
+</pre>
+</blockquote>
+</blockquote>
+
+<HR>
+<pre>void optional&lt;T&gt;::reset() ;</pre>
+<blockquote>
+<p><b>Effect:</b> Destroys the current value.</p>
+<p><b>Postconditions: *this</b> is uninitialized.</p>
+<p><b>Throws:</b> Nothing.</p>
+<p><b>Notes:</b> T::~T() is called.</p>
+<p><b>Example:</b></p>
+<blockquote>
+    <pre>optional&lt;T&gt; opt ( some_T ) ;
+assert( *opt == some_T );
+opt.reset();
+assert( !opt );
+</pre>
+</blockquote>
+</blockquote>
+
+<HR>
+
+<pre>
+T const* optional&lt;T&gt;::get() const ;
+T*       optional&lt;T&gt;::get() ;
+
+inline T const* get_pointer ( optional&lt;T&gt; const&amp; ) ;
+inline T*       get_pointer ( optional&lt;T&gt;&amp;) ;
+</pre>
+<blockquote>
+<p><b>Returns:</b> If <b>*this</b> is initialized, a pointer to the contained
+value; else 0 (<i>null</i>).
+</p>
+<p><b>Throws:</b> Nothing.</p>
+<p><b>Notes:</b> The contained value is permanently stored within *this, so
+you should not hold nor delete this pointer
+</p>
+<p><b>Example:</b></p>
+<blockquote>
+    <pre>
+T v;
+optional&lt;T&gt; opt(v);
+optional&lt;T&gt; const copt(v);
+T* p = opt.get() ;
+T const* cp = copt.get();
+assert ( p == get_pointer(opt) );
+assert ( cp == get_pointer(copt) ) ;
+</pre>
+</blockquote>
+</blockquote>
+
+
+<HR>
+
+
+<pre>
+T const* optional&lt;T&gt;::operator -&gt;() const ;
+T*       optional&lt;T&gt;::operator -&gt;()       ;
+</pre>
+<blockquote>
+<p><b>Requirements: *this</b> is initialized.</p>
+<p><b>Returns:</b> A pointer to the contained value.</p>
+<p><b>Throws:</b> Nothing.</p>
+<p><b>Notes:</b> The requirement is asserted via BOOST_ASSERT().</p>
+<p><b>Example:</b></p>
+<blockquote>
+<pre>
+struct X { int mdata ; } ;
+X x ;
+optional&lt;X&gt; opt (x);
+opt-&gt;mdata = 2 ;
+</pre>
+</blockquote>
+</blockquote>
+
+
+<HR>
+
+
+<pre>T const&amp; optional&lt;T&gt;::operator*() const ;
+T&amp;       optional&lt;T&gt;::operator*();</pre>
+<blockquote>
+<p><b>Requirements: *this</b> is initialized</p>
+<p><b>Returns:</b> A reference to the contained value</p>
+<p><b>Throws:</b> Nothing.</p>
+<p><b>Notes:</b> The requirement is asserted via BOOST_ASSERT().</p>
+<p><b>Example:</b></p>
+<blockquote>
+    <pre>T v ;
+optional&lt;T&gt; opt ( v );
+T const&amp; u = *opt;
+assert ( u == v ) ;
+T w ;
+*opt = w ;
+assert ( *opt == w ) ;
+</pre>
+  </blockquote>
+</blockquote>
+
+<HR>
+<pre>optional&lt;T&gt;::operator <i>unspecified-bool-type</i>() const ;</pre>
+<blockquote>
+<p><b>Returns:</b> An unspecified value which if used on a boolean context is equivalent to (get() != 0)</p>
+<p><b>Throws:</b> Nothing.</p>
+<blockquote>
+    <pre>optional&lt;T&gt; def ;
+assert ( def == 0 );
+optional&lt;T&gt; opt ( v ) ;
+assert ( opt );
+assert ( opt != 0 );
+</pre>
+</blockquote>
+</blockquote>
+
+<HR>
+
+
+<pre> bool optional&lt;T&gt;::operator!() ;</pre>
+<blockquote>
+<p><b>Returns:</b> If <b>*this</b> is uninitialized, <code>true</code>; else <code>false.</code></p>
+<p><b>Throws:</b> Nothing.</p>
+<p><b>Notes:</b> This operator is provided for those compilers which can't use
+the <i>unspecified-bool-type</i> operator in certain boolean contexts.
+</p>
+<p><b>Example:</b></p>
+<blockquote>
+    <pre>optional&lt;T&gt; opt ;
+assert ( !opt );
+*opt = some_T ;
+
+// Notice the &quot;double-bang&quot; idiom here.
+assert ( !!opt ) ;
+</pre>
+</blockquote>
+</blockquote>
+
+<HR>
+
+
+<pre>bool operator == ( optional&lt;T&gt; const&amp x, optional&lt;T&gt const&amp y );</pre>
+<blockquote>
+<p><b>Returns:</b> If both <b>x</b> and <b>y</b> are initialied, <code>(*x == *y)</code>.
+If only x or y is initialized, <code>false</code>. If both are uninitialized, <code>true</code>.
+</p>
+<p><b>Throws:</b> Nothing.</p>
+<p><b>Notes:</b> Pointers have shallow relational operators while <b>optional</b> has
+deep relational operators. Do not use operator == directly in generic code
+which expect to be given either an optional&lt;T&gt; or a pointer;
+use <a href="../../utility/OptionalPointee.html#equal">equal_pointees()</a> instead
+</p>
+<p><b>Example:</b></p>
+<blockquote>
+    <pre>
+T x(12);
+T y(12);
+T z(21);
+optional&lt;T&gt; def0 ;
+optional&lt;T&gt; def1 ;
+optional&lt;T&gt; optX(x);
+optional&lt;T&gt; optY(y);
+optional&lt;T&gt; optZ(z);
+
+// Identity always hold
+assert ( def0 == def0 );
+assert ( optX == optX );
+
+// Both uninitialized compare equal
+assert ( def0 == def1 );
+
+// Only one initialized compare unequal.
+assert ( def0 != optX );
+
+// Both initialized compare as (*lhs == *rhs)
+assert ( optX == optY ) ;
+assert ( optX != optZ ) ;
+</pre>
+</blockquote>
+</blockquote>
+
+<HR>
+<pre>bool operator != ( optional&lt;T&gt; const&amp x, optional&lt;T&gt const&amp y );
+</pre>
+<blockquote>
+  <p><b>Returns:</b> !( x == y );</p>
+  <p><b>Throws:</b> Nothing.</p>
+</blockquote>
+
+<HR>
+
+<pre>void swap ( optional&lt;T&gt;&amp x, optional&lt;T&gt&amp y );</pre>
+  
+<blockquote> 
+<p><b>Effect:</b> If both <b>x</b> and <b>y</b> are initialized, calls <code>swap(*x,*y)</code>
+using std::swap.<br>
+If only one is initialized, say x, calls: <code>y.reset(*x); x.reset();</code><br>
+If none is initialized, does nothing.
+</p>
+<p><b>Postconditions:</b> The states of x and y interchanged.</p>
+<p><b>Throws:</b> If both are initialized, whatever swap(T&amp;,T&amp;) throws.
+If only one is initialized, whatever T::T ( T const&amp; ) throws.
+</p>
+<p><b>Notes:</b> If both are initialized, swap(T&amp;,T&amp;) is used <i>unqualified</i>
+but with std::swap introduced in scope.<br>
+If only one is initialized, T::~T() and T::T( T const& ) is called.
+</p>
+<p><b>Exception Safety:</b> If both are initialized, this operation has the exception
+safety guarantees of swap(T&,T&).<br>
+If only one is initialized, it has the same <b>basic</b> guarantee as optional&lt;T&gt;::reset( T const& ).
+</p>
+<p><b>Example:</b></p>
+<blockquote>
+      <pre>
+T x(12);
+T y(21);
+optional&lt;T&gt; def0 ;
+optional&lt;T&gt; def1 ;
+optional&lt;T&gt; optX(x);
+optional&lt;T&gt; optY(y);
+
+boost::swap(def0,def1); // no-op
+
+boost::swap(def0,optX);
+assert ( *def0 == x );
+assert ( !optX );
+
+boost::swap(def0,optX); // Get back to original values
+
+boost::swap(optX,optY);
+assert ( *optX == y );
+assert ( *optY == x );
+
+</pre>
+</blockquote>
+</blockquote>
+<HR>
+
+<H2><A NAME="examples">Examples</A></H2>
+
+<h3>Optional return values</h3>
+<PRE>optional&lt;char&gt; get_async_input()
+{
+  if ( !queue.empty() )
+       return optional&lt;char&gt;(queue.top());
+  else return optional&lt;char&gt;(); // uninitialized
+}
+
+void recieve_async_message()
+{
+  optional&lt;char&gt; rcv ;
+  // The safe boolean conversion from 'rcv' is used here.
+  while ( (rcv = get_async_input()) &amp;&amp; !timeout() )
+    output(*rcv);
+}
+</pre>
+
+<h3>Optional local variables</h3>
+<pre>optional&lt;string&gt; name ;
+if ( database.open() )
+{
+  name.reset ( database.lookup(employer_name) ) ;
+}
+else
+{
+  if ( can_ask_user )
+    name.reset ( user.ask(employer_name) ) ;
+}
+
+if ( name )
+     print(*name);
+else print(&quot;employer's name not found!&quot;);
+</pre>
+
+<h3>Optional data members</h3>
+<pre>class figure
+{
+  public:
+
+    figure()
+    {
+      // data member 'm_clipping_rect' is uninitialized at this point.
+    }
+
+    void clip_in_rect ( rect const&amp; rect )
+      {
+         ....
+         m_clipping_rect.reset ( rect ) ; // initialized here.
+      }
+
+    void draw ( canvas& cvs )
+      {
+        if ( m_clipping_rect )
+          do_clipping(*m_clipping_rect);
+
+        cvs.drawXXX(..);
+      }
+
+    // this can return NULL.
+    rect const* get_clipping_rect() { return get_pointer(m_clipping_rect); }
+
+  private :
+
+    optional&lt;rect&gt; m_clipping_rect ;
+
+};
+</pre>
+<h3>Bypassing expensive unnecesary default construction</h3> 
+<pre>class ExpensiveCtor { ... } ;
+class Fred
+{
+  Fred() : mLargeVector(10000) {}
+
+  std::vector< optional&lt;ExpensiveCtor&gt; > mLargeVector ;
+} ;
+</pre>
+
+<HR>
+
+<H2><A NAME="bool">A note about optional&lt;bool&gt;</A></H2>
+<p><code>optional&lt;bool&gt;</code> should be used with special caution and consideration.</p>
+<p>First, it is functionally similar to a tristate boolean (false,maybe,true) &mdash;such as
+<u>boost::tribool</u> (not yet formally in boost)&mdash;except that in a tristate boolean,
+the <i>maybe</i> state <u>represents a valid value</u>, unlike the corresponding state
+of an uninitialized optional&lt;bool&gt;.<br>
+It should be carefully considered if an optional bool instead of a tribool is really needed</p>
+<p>Second, optional&lt;&gt; provides an implicit conversion to bool. This conversion 
+  refers to the initialization state and not to the contained value.<br>
+Using optional&lt;bool&gt; can lead to subtle errors due to the implicit bool conversion:</p>
+<pre>
+void foo ( bool v ) ;
+void bar()
+{
+  optional&lt;bool&gt; v = try();
+
+  // The following intended to pass the <b>value</b> of 'v' to foo():
+  foo(v);
+  // But instead, the <i>initialization state</i> is passed
+  // due to a typo: it should have been foo(<b>*</b>v).
+}
+</pre>
+<p>The only implicit conversion is to bool, and it is <i>safe</i> in the sense that typical
+integral promotions don't apply (i.e. if foo() takes an 'int' instead, it won't compile).
+<HR>
+
+<H2><A NAME="exsafety">Exception Safety Guarantees</A></H2>
+<H3><u>Assignment and Reset:</u></H3>
+<p>Because of the current implementation (see <A HREF="#impl">Implementation Notes</A>),
+<code> optional&lt;T&gt;::operator=( optional&lt;T&gt; const&amp; )
+and optional&lt;T&gt;::reset( T const&amp; )</code>
+can only <i>guarantee</i> the <u>basic exception safety</u>: The lvalue optional is left
+<u>uninitialized</u> if an exception is thrown (any previous value is <i>first</i>
+destroyed using T::~T())</p>
+<p><code>optional&lt;T&gt;::reset()</code> provides the no-throw guarantee (assuming a no-throw T::~T())</p>
+<p>However, since <code>optional&lt&gt</code> itself doesn't throw any exceptions,
+the only source for exceptions here is T's copy constructor, so if you know the exception guarantees
+for T::T ( T const&amp; ), you know that optional's assignment and reset has the same guarantees.</p>
+<pre>//
+// Case 1: Exception thrown during assignment.
+//
+T v0(123);
+optional&ltT&gt opt0(v0);
+try
+{
+  T v1(456);
+  optional&ltT&gt opt1(v1);
+  opt0 = opt1 ;
+
+  // If no exception was thrown, assignment succeeded.
+  assert( *opt0 == v1 ) ;
+}
+catch(...)
+{
+  // If any exception was thrown, 'opt0' is reset to uninitialized.
+  assert( !opt0 ) ;
+}
+
+//
+// Case 2: Exception thrown during reset(v)
+//
+T v0(123);
+optional&ltT&gt opt(v0);
+try
+{
+  T v1(456);
+  opt.reset ( v1 ) ;
+
+  // If no exception was thrown, reset succeeded.
+  assert( *opt == v1 ) ;
+}
+catch(...)
+{
+  // If any exception was thrown, 'opt' is reset to uninitialized.
+  assert( !opt ) ;
+}
+</pre>
+<H3><u>Swap:</u></H3>
+<p><code>void swap( optional&lt;T&gt;&amp;, optional&lt;T&gt;&amp; )</code>
+has the same exception guarantee as <code>swap(T&amp;,T&amp;)</code> when both optionals are initialized.<br>
+If only one of the optionals is initialized, it gives the same
+<i>basic</i> exception guarantee as <code>optional&lt;T&gt;::reset( T const&amp; )</code>
+(since <code>optional&lt;T&gt;::reset()</code> doesn't throw).<br>
+If none of the optionals is initialized, it has no-throw guarantee since it is a no-op.
+</p>
+
+<HR>
+
+<H2><A NAME="requirements">Type requirements</A></H2>
+<p>T must be <a href="../../utility/CopyConstructible.html">Copy Constructible</a>
+and have a no-throw destructor.<br>
+T <u>is not</u> required to be
+<a href="http://www.sgi.com/tech/stl/DefaultConstructible.html">Default Constructible</a>
+</p>
+
+<HR>
+
+<H2><A NAME="impl">Implementation Notes</A></H2>
+<p>optional&lt;T&gt; is currently implemented
+  using a custom aligned storage facility built from <code>alignment_of</code> and
+  <code>type_with_alignment</code> (both from Type Traits).
+  It uses a separate boolean flag to indicate the initialization state.<br>
+  Placement new with T's copy constructor and T's destructor
+  are explicitly used to initialize,copy and destroy optional values.<br>
+  As a result, T's default constructor is effectively by-passed, but the exception
+  guarantees are basic.<br>
+  It is planned to replace the current implementation with another with
+  stronger exception safety, such as a future boost::variant<T,nil_t>.
+</p>
+
+<HR>
+
+<H2><A NAME="porta">Dependencies and Portability</A></H2>
+
+<p>The implementation uses <code>type_traits/alignment_of.hpp</code>
+and <code>type_traits/type_with_alignment.hpp</code></p>
+<p>It has been tested on bcc5.5.1, vc6.0 and gcc2.95.2</p>
+
+<HR>
+
+<H2><A NAME="credits">Acknowledgments</A></H2>
+<p>Pre-formal review:</p>
+<blockquote>
+<p>Peter Dimov suggested the name 'optional', and was the first to point out the
+  need for aligned storage<br>
+  Douglas Gregor developed 'type_with_alignment', and later Eric Friedman coded
+  'aligned_storage', which are the core of the optional class implementation.<br>
+  Andrei Alexandrescu and Brian Parker also worked with aligned storage techniques
+  and their work influenced the current implementation.<br>
+  Gennadiy Rozental made extensive and important comments which shaped the design.<br>
+  Vesa Karvonen and Douglas Gregor made quite useful comparisons between optional,
+  variant and any; and made other relevant comments. Douglas Gregor and Peter
+  Dimov commented on comparisons and evaluation in boolean contexts.<br>
+  Eric Friedman helped understand the issues involved with aligned storage, move/copy
+  operations and exception safety.<br>
+  Many others have participated with useful comments: Aleksey Gurotov, Kevlin
+  Henney, David Abrahams, and others I can't recall.
+</p>
+</blockquote>
+<p>Post-formal review:</p>
+<blockquote>
+<p>William Kempf carefully considered the originally proposed interface
+and suggested the new interface which is currently used. He also started
+and fueled the discussion about the analogy optional&lt;&gt;/smart pointer
+and about relational operators.<br>
+Peter Dimov, Joel de Guzman, David Abrahams, Tanton Gibbs and Ian Hanson
+focused on the relational semantics of optional (originally undefined);
+concluding with the fact that the pointer-like interface doesn't make it
+a pointer so it shall have deep relational operators.<br>
+Augustus Saunders also explored the different relational
+semantics between optional&lt;&gt; and a pointer and developed the
+OptionalPointee concept as an aid against potential conflicts on generic code.<br>
+Joel de Guzman noticed that optional&lt;&gt; can be seen as an
+API on top of variant&lt;T,nil_t&gt;.<br>
+Dave Gomboc explained the meaning and usage of the Haskell analog to optional&lt;&gt;:
+the Maybe type constructor (analogy originally pointed out by David Sankel).<br>
+Other comments were posted by Vincent Finn, Anthony Williams, Ed Brey, Rob Stewart,
+and others.
+</p>
+</blockquote>
+<HR>
+
+<P>Revised January 20, 2003</P>
+<P>&copy; Copyright boost.org 2003. Permission to copy, use, modify, sell and
+distribute this document is granted provided this copyright notice appears in
+all copies. This document is provided &quot;as is&quot; without express or
+implied warranty, and with no claim as to its suitability for any purpose.</P>
+<P>Developed by <A HREF="mailto:fernando_cacciola@hotmail.com">Fernando Cacciola</A>,
+the latest version of this file can be found at <A
+HREF="http://www.boost.org">www.boost.org</A>, and the boost discussion list at
+<A
+ HREF="http://www.yahoogroups.com/list/boost">www.yahoogroups.com/list/boost</A>.
+</P>
+</BODY>
+</HTML>
+

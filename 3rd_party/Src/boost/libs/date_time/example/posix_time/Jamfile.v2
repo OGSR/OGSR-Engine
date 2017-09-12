@@ -1,0 +1,9 @@
+
+project
+    : requirements <library>../../build/boost_date_time
+    ;
+
+exe time_math : time_math.cpp ;
+exe local_utc_conversion : local_utc_conversion.cpp ;
+exe print_hours : print_hours.cpp ;
+exe time_periods : time_periods.cpp ;

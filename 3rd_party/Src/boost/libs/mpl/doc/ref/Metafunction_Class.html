@@ -1,0 +1,67 @@
+<!doctype html public "-//ietf//dtd html//en">
+<html><head><title>boost::mpl::Metafunction Class</title>
+<link rel="stylesheet" href="./mpl_wiki.css">
+</head><body bgcolor="white">
+<h1><a href="./Table_of_Contents.html"><img src="./mpl_logo.jpg" alt="[Home]" border=0 align="right"></a>Metafunction Class</h1><h3>Description</h3>
+<p>
+A <em>metafunction class</em> is a certain form of metafunction representation that enables higher-order metaprogramming. In particular, a non-nullary metafunction class is a type with a nested class template member <code>apply</code>. A nullary metafunction class has the form of a <a href="./Metafunction.html">nullary metafunction</a>. A metafunction class invocation is defined as invocation of its nested <code>apply</code> <a href="./Metafunction.html">metafunction</a>.
+<p>
+<h3>Valid expressions</h3>
+<p>
+<table border="1">
+<tr><th>&nbsp;Expression&nbsp;</th><th>&nbsp;Expression type &nbsp;</th></tr>
+<tr><td><code>typename f::type</code></td><td>A type </td></tr>
+<tr><td><code>typename f::template apply&lt;a1,..,an&gt;::type</code></td><td>A type </td></tr>
+</table>
+<p>
+<h3>Expression semantics</h3>
+<p>
+<table border="1">
+<tr><th>&nbsp;Expression&nbsp;</th><th>&nbsp;Complexity&nbsp;</th><th>&nbsp;Precondition&nbsp;</th><th>&nbsp;Semantics&nbsp;</th><th>&nbsp;Postcondition&nbsp;</th></tr>
+<tr><td><code>typename f::type</code></td><td>unspecified</td><td><code>f</code> is a nullary metafunction class; <code>f::type</code> is a <em>type-name</em></td><td><code>f::type</code> is the result of the metafunction class invocation</td><td></td></tr>
+<tr><td><code>typename f::template apply&lt;a1,..,an&gt;::type</code></td><td>unspecified</td><td><code>f</code> is an <code>n</code>-ary metafunction class; <code>apply</code> is a <a href="./Metafunction.html">metafunction</a></td><td><code>typename f::template apply&lt;a1,..,an&gt;::type</code> is the result of the metafunction class invocation with the actual arguments <code>a1,..,an</code></td><td></td></tr>
+</table>
+<p>
+<p>
+<h3>Example</h3>
+<p>
+<pre>
+<span class="cxx-comment">// nullary metafunction class</span>
+struct always_true { typedef true_ type; };
+<p>
+template&lt; long N &gt; struct le
+{
+    template&lt; typename M &gt; struct apply
+    {
+        typedef bool_&lt; (M::value &lt; N) &gt; type;
+    };
+};
+<p>
+<span class="cxx-comment">// unary metafunction class</span>
+typedef le&lt;5&gt; less_than_5;
+<p>
+<span class="cxx-comment">// binary metafunction class</span>
+struct less_than
+{
+    template&lt; typename N1, typename N2 &gt; struct apply
+    {
+        typedef bool_&lt; (N1::value &lt; N2::value) &gt; type;
+    };
+};
+<p>
+<span class="cxx-comment">// invocations</span>
+typedef always_true::type t1;
+typedef less_than_5::apply&lt; int_&lt;7&gt; &gt;::type t2;
+typedef less_than::apply&lt; int_&lt;5&gt;,int_&lt;7&gt; &gt;::type t3;
+<p>
+<span class="cxx-comment">// results checks</span>
+BOOST_STATIC_ASSERT(t1::value);
+BOOST_STATIC_ASSERT(!t2::value);
+BOOST_STATIC_ASSERT(t3::value);
+</pre>
+<p>
+<h3>See also</h3>
+<p>
+<a href="./Metafunctions.html">Metafunctions</a>, <a href="./Metafunction.html">Metafunction</a>
+<p><hr>
+<a href="./Table_of_Contents.html">Table of Contents</a><br>Last edited March 10, 2003 4:16 am</body></html>

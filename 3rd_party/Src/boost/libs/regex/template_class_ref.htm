@@ -1,0 +1,2479 @@
+<html>
+
+<head>
+<meta http-equiv="Content-Type"
+content="text/html; charset=iso-8859-1">
+<meta name="Template"
+content="C:\PROGRAM FILES\MICROSOFT OFFICE\OFFICE\html.dot">
+<meta name="GENERATOR" content="Microsoft FrontPage Express 2.0">
+<title>Regex++, template class and algorithm reference</title>
+</head>
+
+<body bgcolor="#FFFFFF" link="#0000FF" vlink="#800080">
+
+<p>&nbsp; </p>
+
+<table border="0" cellpadding="7" cellspacing="0" width="100%">
+    <tr>
+        <td valign="top"><h3 align="right"><img
+        src="../../c++boost.gif" alt="C++ Boost" width="276"
+        height="86"></h3>
+        </td>
+        <td valign="top"><h3 align="center"><i>Regex++ template
+        class reference.</i></h3>
+        <p align="left"><i>Copyright (c) 1998-2001 </i></p>
+        <p align="left"><i>Dr John Maddock</i></p>
+        <p align="left"><i>Permission to use, copy, modify,
+        distribute and sell this software and its documentation
+        for any purpose is hereby granted without fee, provided
+        that the above copyright notice appear in all copies and
+        that both that copyright notice and this permission
+        notice appear in supporting documentation. Dr John
+        Maddock makes no representations about the suitability of
+        this software for any purpose. It is provided &quot;as is&quot;
+        without express or implied warranty.</i></p>
+        </td>
+    </tr>
+</table>
+
+<hr>
+
+<h3><a name="regbase"></a>class regbase</h3>
+
+<p>#include &lt;<a href="../../boost/regex.hpp">boost/regex.hpp</a>&gt;
+</p>
+
+<p>Class regbase is the template argument independent base class
+for reg_expression, the only public members are the <i>flag_type</i>
+enumerated values that determine how regular expressions are
+interpreted. </p>
+
+<pre><b>class</b> regbase
+{
+<b>public</b>:
+&nbsp;&nbsp; <b>enum</b> flag_type_
+&nbsp;&nbsp; {
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; escape_in_lists = 1,&nbsp;                         <font
+color="#000080">// '\\' special inside [...] 
+</font>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; char_classes = escape_in_lists &lt;&lt; 1,&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <font
+color="#000080"><i>// [[:CLASS:]] allowed 
+</i></font>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; intervals = char_classes &lt;&lt; 1,&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <font
+color="#000080"><i>// {x,y} allowed 
+</i></font>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; limited_ops = intervals &lt;&lt; 1,&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <font
+color="#000080"><i>// all of + ? and | are normal characters 
+</i></font>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; newline_alt = limited_ops &lt;&lt; 1,&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <font
+color="#000080"><i>// \n is the same as | 
+</i></font>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; bk_plus_qm = newline_alt &lt;&lt; 1,&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <font
+color="#000080"><i>// uses \+ and \? 
+</i></font>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; bk_braces = bk_plus_qm &lt;&lt; 1,&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <font
+color="#000080"><i>// uses \{ and \} 
+</i></font>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; bk_parens = bk_braces &lt;&lt; 1,&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <font
+color="#000080"><i>// uses \( and \) 
+</i></font>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; bk_refs = bk_parens &lt;&lt; 1,&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <font
+color="#000080"><i>// \d allowed 
+</i></font>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; bk_vbar = bk_refs &lt;&lt; 1,&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <font
+color="#000080"><i>// uses \| 
+</i></font>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; use_except = bk_vbar &lt;&lt; 1,&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <font
+color="#000080"><i>// exception on error 
+</i></font>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; failbit = use_except &lt;&lt; 1,&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <font
+color="#000080"><i>// error flag 
+</i></font>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; literal = failbit &lt;&lt; 1,&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <font
+color="#000080"><i>// all characters are literals 
+</i></font>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; icase = literal &lt;&lt; 1,&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <font
+color="#000080"><i>// characters are matched regardless of case 
+</i></font>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; nocollate = icase &lt;&lt; 1,&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <font
+color="#000080"><i>// don't use locale specific collation 
+</i></font>
+      basic = char_classes | intervals | limited_ops | bk_braces | bk_parens | bk_refs,
+      extended = char_classes | intervals | bk_refs,
+      normal = escape_in_lists | char_classes | intervals | bk_refs | nocollate,
+      emacs = bk_braces | bk_parens | bk_refs | bk_vbar,
+      awk = extended | escape_in_lists,
+      grep = basic | newline_alt,
+      egrep = extended | newline_alt,
+      sed = basic,
+      perl = normal
+   }; 
+   <b>typedef</b> <b>unsigned</b> <b>int</b> flag_type;
+}; &nbsp; </pre>
+
+<p>&nbsp; <br>
+&nbsp; <br>
+&nbsp; </p>
+
+<p>The enumerated type <i>regbase::flag_type</i> determines the
+syntax rules for regular expression compilation, the various
+flags have the following effects: <br>
+&nbsp; </p>
+
+<table border="0" cellpadding="7" cellspacing="0" width="100%">
+    <tr>
+        <td width="5%">&nbsp;</td>
+        <td valign="top" width="45%">regbase::escape_in_lists</td>
+        <td valign="top" width="45%">Allows the use of the escape
+        &quot;\&quot; character in sets of characters, for
+        example [\]] represents the set of characters containing
+        only &quot;]&quot;. If this flag is not set then &quot;\&quot;
+        is an ordinary character inside sets.</td>
+        <td width="5%">&nbsp;</td>
+    </tr>
+    <tr>
+        <td width="5%">&nbsp;</td>
+        <td valign="top" width="45%">regbase::char_classes</td>
+        <td valign="top" width="45%">When this bit is set,
+        character classes [:classname:] are allowed inside
+        character set declarations, for example &quot;[[:word:]]&quot;
+        represents the set of all characters that belong to the
+        character class &quot;word&quot;.</td>
+        <td width="5%">&nbsp;</td>
+    </tr>
+    <tr>
+        <td width="5%">&nbsp;</td>
+        <td valign="top" width="45%">regbase:: intervals</td>
+        <td valign="top" width="45%">When this bit is set,
+        repetition intervals are allowed, for example &quot;a{2,4}&quot;
+        represents a repeat of between 2 and 4 letter a's.</td>
+        <td width="5%">&nbsp;</td>
+    </tr>
+    <tr>
+        <td width="5%">&nbsp;</td>
+        <td valign="top" width="45%">regbase:: limited_ops</td>
+        <td valign="top" width="45%">When this bit is set all of
+        &quot;+&quot;, &quot;?&quot; and &quot;|&quot; are
+        ordinary characters in all situations.</td>
+        <td width="5%">&nbsp;</td>
+    </tr>
+    <tr>
+        <td width="5%">&nbsp;</td>
+        <td valign="top" width="45%">regbase:: newline_alt</td>
+        <td valign="top" width="45%">When this bit is set, then
+        the newline character &quot;\n&quot; has the same effect
+        as the alternation operator &quot;|&quot;.</td>
+        <td width="5%">&nbsp;</td>
+    </tr>
+    <tr>
+        <td width="5%">&nbsp;</td>
+        <td valign="top" width="45%">regbase:: bk_plus_qm</td>
+        <td valign="top" width="45%">When this bit is set then
+        &quot;\+&quot; represents the one or more repetition
+        operator and &quot;\?&quot; represents the zero or one
+        repetition operator. When this bit is not set then
+        &quot;+&quot; and &quot;?&quot; are used instead.</td>
+        <td width="5%">&nbsp;</td>
+    </tr>
+    <tr>
+        <td width="5%">&nbsp;</td>
+        <td valign="top" width="45%">regbase:: bk_braces</td>
+        <td valign="top" width="45%">When this bit is set then
+        &quot;\{&quot; and &quot;\}&quot; are used for bounded
+        repetitions and &quot;{&quot; and &quot;}&quot; are
+        normal characters. This is the opposite of default
+        behavior.</td>
+        <td width="5%">&nbsp;</td>
+    </tr>
+    <tr>
+        <td width="5%">&nbsp;</td>
+        <td valign="top" width="45%">regbase:: bk_parens</td>
+        <td valign="top" width="45%">When this bit is set then
+        &quot;\(&quot; and &quot;\)&quot; are used to group sub-expressions
+        and &quot;(&quot; and &quot;)&quot; are ordinary
+        characters, this is the opposite of default behaviour.</td>
+        <td width="5%">&nbsp;</td>
+    </tr>
+    <tr>
+        <td width="5%">&nbsp;</td>
+        <td valign="top" width="45%">regbase:: bk_refs</td>
+        <td valign="top" width="45%">When this bit is set then
+        back references are allowed.</td>
+        <td width="5%">&nbsp;</td>
+    </tr>
+    <tr>
+        <td width="5%">&nbsp;</td>
+        <td valign="top" width="45%">regbase:: bk_vbar</td>
+        <td valign="top" width="45%">When this bit is set then
+        &quot;\|&quot; represents the alternation operator and
+        &quot;|&quot; is an ordinary character. This is the
+        opposite of default behaviour.</td>
+        <td width="5%">&nbsp;</td>
+    </tr>
+    <tr>
+        <td width="5%">&nbsp;</td>
+        <td valign="top" width="45%">regbase:: use_except</td>
+        <td valign="top" width="45%">When this bit is set then a <a
+        href="#bad_expression">bad_expression</a> exception will
+        be thrown on error.&nbsp; Use of this flag is deprecated
+        - reg_expression will always throw on error.</td>
+        <td width="5%">&nbsp;</td>
+    </tr>
+    <tr>
+        <td width="5%">&nbsp;</td>
+        <td valign="top" width="45%">regbase:: failbit</td>
+        <td valign="top" width="45%">This bit is set on error, if
+        regbase::use_except is not set, then this bit should be
+        checked to see if a regular expression is valid before
+        usage.</td>
+        <td width="5%">&nbsp;</td>
+    </tr>
+    <tr>
+        <td width="5%">&nbsp;</td>
+        <td valign="top" width="45%">regbase::literal</td>
+        <td valign="top" width="45%">All characters in the string
+        are treated as literals, there are no special characters
+        or escape sequences.</td>
+        <td width="5%">&nbsp;</td>
+    </tr>
+    <tr>
+        <td width="5%">&nbsp;</td>
+        <td valign="top" width="45%">regbase::icase</td>
+        <td valign="top" width="45%">All characters in the string
+        are matched regardless of case.</td>
+        <td width="5%">&nbsp;</td>
+    </tr>
+    <tr>
+        <td valign="top" width="5%">&nbsp;</td>
+        <td valign="top" width="45%">regbase::nocollate</td>
+        <td valign="top" width="45%">Locale specific collation is
+        disabled when dealing with ranges in character set
+        declarations.&nbsp; For example when this bit is set the
+        expression [a-c] would match the characters a, b and c
+        only regardless of locale, where as when this is not set
+        , then [a-c] matches any character which collates in the
+        range a to c.</td>
+        <td valign="top" width="5%">&nbsp;</td>
+    </tr>
+    <tr>
+        <td valign="top" width="5%">&nbsp;</td>
+        <td valign="top" width="45%">regbase::basic</td>
+        <td valign="top" width="45%">Equivalent to the POSIX
+        basic regular expression syntax: char_classes | intervals
+        | limited_ops | bk_braces | bk_parens | bk_refs.</td>
+        <td valign="top" width="5%">&nbsp;</td>
+    </tr>
+    <tr>
+        <td valign="top" width="5%">&nbsp;</td>
+        <td valign="top" width="45%">Regbase::extended</td>
+        <td valign="top" width="45%">Equivalent to the POSIX
+        extended regular expression syntax: char_classes |
+        intervals | bk_refs.</td>
+        <td valign="top" width="5%">&nbsp;</td>
+    </tr>
+    <tr>
+        <td valign="top" width="5%" height="24">&nbsp;</td>
+        <td valign="top" width="45%" height="24">regbase::normal</td>
+        <td valign="top" width="45%" height="24">This is the
+        default setting, and represents how most people expect
+        the library to behave. Equivalent to the POSIX extended
+        syntax, but with locale specific collation disabled, and
+        escape characters inside set declarations enabled:
+        regbase::escape_in_lists | regbase::char_classes |
+        regbase::intervals | regbase::bk_refs | regbase::nocollate.</td>
+        <td valign="top" width="5%" height="24">&nbsp;</td>
+    </tr>
+    <tr>
+        <td valign="top" width="5%" height="24">&nbsp;</td>
+        <td valign="top" width="45%" height="24">regbase::emacs</td>
+        <td valign="top" width="45%" height="24">Provides
+        compatability with the emacs editor, eqivalent to:
+        bk_braces | bk_parens | bk_refs | bk_vbar.</td>
+        <td valign="top" width="5%" height="24">&nbsp;</td>
+    </tr>
+    <tr>
+        <td valign="top" width="5%" height="24">&nbsp;</td>
+        <td valign="top" width="45%" height="24">regbase::awk </td>
+        <td valign="top" width="45%" height="24">Provides
+        compatabilty with the Unix utility Awk, the same as POSIX
+        extended regular expressions, but allows escapes inside
+        bracket-expressions (character sets). Equivalent to
+        extended | escape_in_lists.</td>
+        <td valign="top" width="5%" height="24">&nbsp;</td>
+    </tr>
+    <tr>
+        <td valign="top" width="5%" height="24">&nbsp;</td>
+        <td valign="top" width="45%" height="24">regbase::grep</td>
+        <td valign="top" width="45%" height="24">Provides
+        compatabilty with the Unix grep utility, the same as
+        POSIX basic regular expressions, but with the newline
+        character equivalent to the alternation operator. the
+        same as basic | newline_alt.</td>
+        <td valign="top" width="5%" height="24">&nbsp;</td>
+    </tr>
+    <tr>
+        <td valign="top" width="5%" height="24">&nbsp;</td>
+        <td valign="top" width="45%" height="24">regbase::egrep</td>
+        <td valign="top" width="45%" height="24">Provides
+        compatabilty with the Unix egrep utility, the same as
+        POSIX extended regular expressions, but with the newline
+        character equivalent to the alternation operator. the
+        same as extended | newline_alt.</td>
+        <td valign="top" width="5%" height="24">&nbsp;</td>
+    </tr>
+    <tr>
+        <td valign="top" width="5%" height="24">&nbsp;</td>
+        <td valign="top" width="45%" height="24">regbase::sed</td>
+        <td valign="top" width="45%" height="24">Provides
+        compatabilty with the Unix sed utility, the same as POSIX
+        basic regular expressions.</td>
+        <td valign="top" width="5%" height="24">&nbsp;</td>
+    </tr>
+    <tr>
+        <td valign="top" width="5%" height="24">&nbsp;</td>
+        <td valign="top" width="45%" height="24">regbase::perl</td>
+        <td valign="top" width="45%" height="24">Provides
+        compatibility with the perl programming language, the
+        same as regbase::normal.</td>
+        <td valign="top" width="5%" height="24">&nbsp;</td>
+    </tr>
+</table>
+
+<hr>
+
+<h3><a name="bad_expression"></a>Exception classes.</h3>
+
+<p>#include &lt;<a href="../../boost/regex/pattern_except.hpp">boost/pat_except.hpp</a>&gt;
+</p>
+
+<p>An instance of <i>bad_expression</i> is thrown whenever a bad
+regular expression is encountered. </p>
+
+<pre><b>namespace</b> boost{
+
+<b>class</b> bad_pattern : <b>public</b> std::runtime_error
+{
+<b>public</b>:
+&nbsp;&nbsp; <b>explicit</b> bad_pattern(<b>const</b> std::string&amp; s) : std::runtime_error(s){};
+};
+
+<b>class</b> bad_expression : <b>public</b> bad_pattern
+{
+<b>public</b>:
+&nbsp;&nbsp; bad_expression(<b>const</b> std::string&amp; s) : bad_pattern(s) {}
+};
+
+
+} // namespace boost</pre>
+
+<p>Footnotes: the class <i>bad_pattern </i>forms the base class
+for all pattern-matching exceptions, of which <i>bad_expression</i>
+is one. The choice of <i>std::runtime_error </i>as the base class
+for <i>bad_pattern</i> is moot, depending upon how the library is
+used exceptions may be either logic errors (programmer supplied
+expressions) or run time errors (user supplied expressions). </p>
+
+<hr>
+
+<h3><a name="reg_expression"></a>Class reg_expression</h3>
+
+<p>#include &lt;<a href="../../boost/regex.hpp">boost/regex.hpp</a>&gt;
+</p>
+
+<p>The template class <i>reg_expression </i>encapsulates regular
+expression parsing and compilation. The class derives from class <a
+href="#regbase"><i>regbase</i></a> and takes three template
+parameters: </p>
+
+<p><b><i>charT</i></b>: determines the character type, i.e.
+either char or wchar_t. </p>
+
+<p><b><i>traits</i></b>: determines the behaviour of the
+character type, for example whether character matching is case
+sensitive or not, and which character class names are recognized.
+A default traits class is provided: <a href="#regex_char_traits">regex_traits&lt;charT&gt;</a>.
+</p>
+
+<p><b><i>Allocator</i></b>: the allocator class used to allocate
+memory by the class. </p>
+
+<p>For ease of use there are two typedefs that define the two
+standard <i>reg_expression</i> instances, unless you want to use
+custom allocators, you won't need to use anything other than
+these: </p>
+
+<pre><b>namespace</b> boost{
+<b>template</b> &lt;<b>class</b> charT, <b>class</b> traits = regex_traits&lt;charT&gt;, <b>class</b> Allocator = std::allocator&lt;charT&gt;&nbsp; &gt;
+<b>class</b> reg_expression;
+<b>typedef</b> reg_expression&lt;<b>char</b>&gt; regex;
+<b>typedef</b> reg_expression&lt;<b>wchar_t&gt; </b>wregex;
+}</pre>
+
+<p>The definition of <i>reg_expression</i> follows: it is based
+very closely on class basic_string, and fulfils the requirements
+for a container of <i>charT</i>. </p>
+
+<pre><b>namespace</b> boost{
+<b>template</b> &lt;<b>class</b> charT, <b>class</b> traits = regex_traits&lt;charT&gt;, <b>class</b> Allocator = std::allocator&lt;charT&gt;&nbsp; &gt;
+<b>class</b> reg_expression : <b>public</b> regbase
+{
+<b>public</b>: 
+<font color="#000080"><i>   // typedefs: </i></font>&nbsp;
+&nbsp; <b> typedef</b> charT char_type; 
+&nbsp;&nbsp; <b>typedef</b> traits traits_type; 
+<font color="#000080">&nbsp;&nbsp; <i>// locale_type 
+</i>&nbsp;&nbsp; <i>// placeholder for actual locale type used by the 
+</i>&nbsp;&nbsp; <i>// traits class to localise *this. 
+</i></font>&nbsp;&nbsp; <b>typedef</b> typename traits::locale_type locale_type; 
+<font color="#000080">&nbsp;&nbsp; <i>// value_type 
+</i></font>&nbsp;&nbsp; <b>typedef</b> charT value_type; 
+<font color="#000080">&nbsp;&nbsp; <i>// reference, const_reference 
+</i></font>&nbsp;&nbsp; <b>typedef</b> charT&amp; reference; 
+&nbsp;&nbsp; <b>typedef</b> <b>const</b> charT&amp; const_reference; 
+<font color="#000080">&nbsp;&nbsp; <i>// iterator, const_iterator 
+</i></font>&nbsp;&nbsp; <b>typedef</b> <b>const</b> charT* const_iterator; 
+&nbsp;&nbsp; <b>typedef</b> const_iterator iterator; 
+<font color="#000080">&nbsp;&nbsp; <i>// difference_type 
+</i></font>&nbsp;&nbsp; <b>typedef</b> <b>typename</b> Allocator::difference_type difference_type; 
+<font color="#000080">&nbsp;&nbsp; <i>// size_type 
+</i></font>&nbsp;&nbsp; <b>typedef</b> <b>typename</b> Allocator::size_type size_type;&nbsp;
+&nbsp;&nbsp; <font color="#000080"><i>// allocator_type 
+</i></font> <b>  typedef</b> Allocator allocator_type; 
+&nbsp;&nbsp; <b>typedef</b> Allocator alloc_type; 
+<font color="#000080">&nbsp;&nbsp; <i>// flag_type 
+</i></font>&nbsp;&nbsp; <b>typedef</b> boost::int_fast32_t flag_type; 
+<b>public</b>: 
+&nbsp;  <font color="#000080"><em>// constructors</em></font> 
+&nbsp;  <strong>explicit</strong> reg_expression(<b>const</b> Allocator&amp; a = Allocator()); 
+&nbsp;&nbsp; <strong>explicit</strong> reg_expression(<b>const</b> charT* p, flag_type f = regbase::normal, <b>const</b> Allocator&amp; a = Allocator()); 
+&nbsp;&nbsp; reg_expression(<b>const</b> charT* p1, <b>const</b> charT* p2, flag_type f = regbase::normal, <b>const</b> Allocator&amp; a = Allocator()); 
+&nbsp;&nbsp; reg_expression(<b>const</b> charT* p, size_type len, flag_type f, <b>const</b> Allocator&amp; a = Allocator()); 
+&nbsp;&nbsp; reg_expression(<b>const</b> reg_expression&amp;); 
+<b>&nbsp;&nbsp; template</b> &lt;<b>class</b> ST, <b>class</b> SA&gt; 
+&nbsp;&nbsp; <strong>explicit</strong> reg_expression(<b>const</b> std::basic_string&lt;charT, ST, SA&gt;&amp; p, flag_type f = regbase::normal, <b>const</b> Allocator&amp; a = Allocator()); 
+<b>&nbsp;&nbsp; template</b> &lt;<b>class</b> I&gt; 
+&nbsp;&nbsp; reg_expression(I first, I last, flag_type f = regbase::normal, <b>const</b> Allocator&amp; a = Allocator()); 
+&nbsp;&nbsp; ~reg_expression(); 
+&nbsp;&nbsp; reg_expression&amp; <b>operator</b>=(<b>const</b> reg_expression&amp;); 
+&nbsp;&nbsp; reg_expression&amp; <b>operator</b>=(<b>const</b> charT* ptr); 
+<b>&nbsp;&nbsp; template</b> &lt;<b>class</b> ST, <b>class</b> SA&gt; 
+&nbsp;&nbsp; reg_expression&amp; <b>operator</b>=(<b>const</b> std::basic_string&lt;charT, ST, SA&gt;&amp; p); 
+<font color="#000080">&nbsp;&nbsp; <i>// 
+</i>&nbsp;&nbsp; <i>// assign: 
+</i></font>&nbsp;&nbsp; reg_expression&amp; assign(<b>const</b> reg_expression&amp; that); 
+&nbsp;&nbsp; reg_expression&amp; assign(<b>const</b> charT* ptr, flag_type f = regbase::normal); 
+&nbsp;&nbsp; reg_expression&amp; assign(<b>const</b> charT* first, <b>const</b> charT* last, flag_type f = regbase::normal); 
+<b>&nbsp;&nbsp; template</b> &lt;<b>class</b> string_traits, <b>class</b> A&gt; 
+&nbsp;&nbsp;&nbsp;reg_expression&amp; assign( 
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <b>const</b> std::basic_string&lt;charT, string_traits, A&gt;&amp; s, 
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; flag_type f = regbase::normal); 
+&nbsp;&nbsp; <b>template</b> &lt;<b>class</b> iterator&gt; 
+&nbsp;&nbsp; reg_expression&amp; assign(iterator first, 
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; iterator last, 
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; flag_type f = regbase::normal); 
+<font color="#000080">&nbsp;&nbsp; <i>// 
+</i>&nbsp;&nbsp; <i>// allocator access: 
+</i></font>&nbsp;&nbsp; Allocator get_allocator()<b>const</b>; 
+<font color="#000080">&nbsp;&nbsp; <i>// 
+</i>&nbsp;&nbsp; <i>// locale: 
+</i></font>&nbsp;&nbsp; locale_type imbue(locale_type l); 
+&nbsp;&nbsp; locale_type getloc()<b>const</b>; 
+<font color="#000080"><i>&nbsp;&nbsp; // 
+</i>&nbsp;&nbsp; <i>// flags: 
+</i></font>&nbsp;&nbsp; flag_type getflags()<b>const</b>; 
+<font color="#000080">&nbsp;&nbsp; <i>// 
+</i>&nbsp;&nbsp; <i>// str: 
+</i></font>&nbsp;&nbsp; std::basic_string&lt;charT&gt; str()<b>const</b>; 
+<font color="#000080">&nbsp;&nbsp; <i>// 
+</i>&nbsp;&nbsp; <i>// begin, end: 
+</i></font>&nbsp;&nbsp; const_iterator begin()<b>const</b>; 
+&nbsp;&nbsp; const_iterator end()<b>const</b>; 
+<font color="#000080">&nbsp;&nbsp; <i>// 
+</i>&nbsp;&nbsp; <i>// swap: 
+</i></font>&nbsp;&nbsp; <b>void</b> swap(reg_expression&amp;)<b>throw</b>(); 
+<font color="#000080">&nbsp;&nbsp; <i>// 
+</i>&nbsp;&nbsp; <i>// size: 
+</i></font>&nbsp;&nbsp; size_type size()<b>const</b>; 
+<font color="#000080">&nbsp;&nbsp; <i>// 
+</i>&nbsp;&nbsp; <i>// max_size: 
+</i></font>&nbsp;&nbsp; size_type max_size()<b>const</b>; 
+<font color="#000080">&nbsp;&nbsp; <i>// 
+</i>&nbsp;&nbsp; <i>// empty: 
+</i></font>&nbsp;&nbsp; <b>bool</b> empty()<b>const</b>; 
+&nbsp;&nbsp; <b>unsigned</b> mark_count()<b>const</b>; 
+&nbsp;&nbsp; <b>bool</b> <b>operator</b>==(<b>const</b> reg_expression&amp;)<b>const</b>; 
+&nbsp;&nbsp; <b>bool</b> <b>operator</b>&lt;(<b>const</b> reg_expression&amp;)<b>const</b>; 
+};
+} <font color="#000080"><i>// namespace boost </i></font></pre>
+
+<p>Class reg_expression has the following public member functions:
+<br>
+&nbsp; </p>
+
+<table border="0" cellpadding="7" cellspacing="0" width="100%">
+    <tr>
+        <td width="5%">&nbsp;</td>
+        <td valign="top" width="45%">reg_expression(Allocator a =
+        Allocator());</td>
+        <td valign="top" width="45%">&nbsp;Constructs a default
+        instance of reg_expression without any expression.</td>
+        <td width="5%">&nbsp;</td>
+    </tr>
+    <tr>
+        <td width="5%">&nbsp;</td>
+        <td valign="top" width="45%">reg_expression(charT* p, <b>unsigned</b>
+        f = regbase::normal, Allocator a = Allocator());</td>
+        <td valign="top" width="45%">&nbsp;Constructs an instance
+        of reg_expression from the expression denoted by the null
+        terminated string <b>p</b>, using the flags <b>f</b> to
+        determine regular expression syntax. See class <a
+        href="#regbase">regbase</a> for allowable flag values.</td>
+        <td width="5%">&nbsp;</td>
+    </tr>
+    <tr>
+        <td width="5%">&nbsp;</td>
+        <td valign="top" width="45%">reg_expression(charT* p1,
+        charT* p2, <b>unsigned</b> f = regbase::normal, Allocator
+        a = Allocator());</td>
+        <td valign="top" width="45%">&nbsp;Constructs an instance
+        of reg_expression from the expression denoted by pair of
+        input-iterators <b>p1</b> and <b>p2</b>, using the flags <b>f</b>
+        to determine regular expression syntax. See class <a
+        href="#regbase">regbase</a> for allowable flag values.</td>
+        <td width="5%">&nbsp;</td>
+    </tr>
+    <tr>
+        <td width="5%">&nbsp;</td>
+        <td valign="top" width="45%">reg_expression(charT* p,
+        size_type len, <b>unsigned</b> f, Allocator a = Allocator());</td>
+        <td valign="top" width="45%">&nbsp;Constructs an instance
+        of reg_expression from the expression denoted by the
+        string <b>p</b> of length <b>len</b>, using the flags <b>f</b>
+        to determine regular expression syntax. See class <a
+        href="#regbase">regbase</a> for allowable flag values.</td>
+        <td width="5%">&nbsp;</td>
+    </tr>
+    <tr>
+        <td width="5%">&nbsp;</td>
+        <td valign="top" width="45%"><b>template</b> &lt;class
+        ST, class SA&gt; <br>
+        reg_expression(<b>const</b> std::basic_string&lt;charT,
+        ST, SA&gt;&amp; p, boost::int_fast32_t f = regbase::normal,
+        <b>const</b> Allocator&amp; a = Allocator());</td>
+        <td valign="top" width="45%">&nbsp;Constructs an instance
+        of reg_expression from the expression denoted by the
+        string <b>p</b>, using the flags <b>f</b> to determine
+        regular expression syntax. See class <a href="#regbase">regbase</a>
+        for allowable flag values. <p>Note - this member may not
+        be available depending upon your compiler capabilities.</p>
+        </td>
+        <td width="5%">&nbsp;</td>
+    </tr>
+    <tr>
+        <td width="5%">&nbsp;</td>
+        <td valign="top" width="45%">template &lt;class I&gt; <br>
+        reg_expression(I first, I last, flag_type f = regbase::normal,
+        const Allocator&amp; a = Allocator());</td>
+        <td valign="top" width="45%">&nbsp;Constructs an instance
+        of reg_expression from the expression denoted by pair of
+        input-iterators <b>p1</b> and <b>p2</b>, using the flags <b>f</b>
+        to determine regular expression syntax. See class <a
+        href="#regbase">regbase</a> for allowable flag values.</td>
+        <td width="5%">&nbsp;</td>
+    </tr>
+    <tr>
+        <td width="5%">&nbsp;</td>
+        <td valign="top" width="45%">reg_expression(<b>const</b>
+        reg_expression&amp;);</td>
+        <td valign="top" width="45%">Copy constructor - copies an
+        existing regular expression.</td>
+        <td width="5%">&nbsp;</td>
+    </tr>
+    <tr>
+        <td width="5%">&nbsp;</td>
+        <td valign="top" width="45%">reg_expression&amp; <b>operator</b>=(<b>const</b>
+        reg_expression&amp;);</td>
+        <td valign="top" width="45%">Copies an existing regular
+        expression.</td>
+        <td width="5%">&nbsp;</td>
+    </tr>
+    <tr>
+        <td width="5%">&nbsp;</td>
+        <td valign="top" width="45%">reg_expression&amp; <b>operator</b>=(<b>const</b>
+        charT* ptr);</td>
+        <td valign="top" width="45%">Equivalent to assign(ptr);</td>
+        <td width="5%">&nbsp;</td>
+    </tr>
+    <tr>
+        <td width="5%">&nbsp;</td>
+        <td valign="top" width="45%">template &lt;class ST, class
+        SA&gt; <p>reg_expression&amp; operator=(const std::basic_string&lt;charT,
+        ST, SA&gt;&amp; p);</p>
+        </td>
+        <td valign="top" width="45%">Equivalent to assign(p);</td>
+        <td width="5%">&nbsp;</td>
+    </tr>
+    <tr>
+        <td width="5%">&nbsp;</td>
+        <td valign="top" width="45%">reg_expression&amp; assign(<b>const</b>
+        reg_expression&amp; that);</td>
+        <td valign="top" width="45%">Copies the regular
+        expression contained by <b>that</b>, throws <a
+        href="#bad_expression">bad_expression</a> if <b>that</b>
+        does not contain a valid expression. Returns *this.</td>
+        <td width="5%">&nbsp;</td>
+    </tr>
+    <tr>
+        <td width="5%">&nbsp;</td>
+        <td valign="top" width="45%">reg_expression&amp; assign(<b>const</b>
+        charT* p, flag_type f = regbase::normal);</td>
+        <td valign="top" width="45%">Compiles a regular
+        expression from the expression denoted by the null
+        terminated string <b>p</b>, using the flags <b>f</b> to
+        determine regular expression syntax. See class <a
+        href="#regbase">regbase</a> for allowable flag values.
+        Throws <a href="#bad_expression">bad_expression</a> if <b>p</b>
+        does not contain a valid expression. Returns *this.</td>
+        <td width="5%">&nbsp;</td>
+    </tr>
+    <tr>
+        <td width="5%">&nbsp;</td>
+        <td valign="top" width="45%">reg_expression&amp; assign(<b>const</b>
+        charT* first, <b>const</b> charT* last, flag_type f =
+        regbase::normal);</td>
+        <td valign="top" width="45%">Compiles a regular
+        expression from the expression denoted by the pair of
+        input-iterators <b>first-last</b>, using the flags <b>f</b>
+        to determine regular expression syntax. See class <a
+        href="#regbase">regbase</a> for allowable flag values.
+        Throws <a href="#bad_expression">bad_expression</a> if <b>first-last</b>
+        does not contain a valid expression. Returns *this.</td>
+        <td width="5%">&nbsp;</td>
+    </tr>
+    <tr>
+        <td width="5%">&nbsp;</td>
+        <td valign="top" width="45%"><b>template</b> &lt;<b>class</b>
+        string_traits, <b>class</b> A&gt; <br>
+        reg_expression&amp; assign(<b>const</b> std::basic_string&lt;charT,
+        string_traits, A&gt;&amp; s, flag_type f = regbase::normal);</td>
+        <td valign="top" width="45%">Compiles a regular
+        expression from the expression denoted by the string <b>s</b>,
+        using the flags <b>f</b> to determine regular expression
+        syntax. See class <a href="#regbase">regbase</a> for
+        allowable flag values. Throws <a href="#bad_expression">bad_expression</a>
+        if <b>s</b> does not contain a valid expression. Returns
+        *this.</td>
+        <td width="5%">&nbsp;</td>
+    </tr>
+    <tr>
+        <td width="5%">&nbsp;</td>
+        <td valign="top" width="45%">template &lt;class
+        iterator&gt; <br>
+        reg_expression&amp; assign(iterator first, iterator last,
+        flag_type f = regbase::normal);</td>
+        <td valign="top" width="45%">Compiles a regular
+        expression from the expression denoted by the pair of
+        input-iterators <b>first-last</b>, using the flags <b>f</b>
+        to determine regular expression syntax. See class <a
+        href="#regbase">regbase</a> for allowable flag values.
+        Throws <a href="#bad_expression">bad_expression</a> if <b>first-last</b>
+        does not contain a valid expression. Returns *this.</td>
+        <td width="5%">&nbsp;</td>
+    </tr>
+    <tr>
+        <td width="5%">&nbsp;</td>
+        <td valign="top" width="45%">Allocator get_allocator()<b>const</b>;</td>
+        <td valign="top" width="45%">Returns the allocator used
+        by the expression.</td>
+        <td width="5%">&nbsp;</td>
+    </tr>
+    <tr>
+        <td width="5%">&nbsp;</td>
+        <td valign="top" width="45%">locale_type imbue(<b>const</b>
+        locale_type&amp; l);</td>
+        <td valign="top" width="45%">Imbues the expression with
+        the specified locale, and invalidates the current
+        expression. May throw std::runtime_error if the call
+        results in an attempt to open a non-existent message
+        catalogue.</td>
+        <td width="5%">&nbsp;</td>
+    </tr>
+    <tr>
+        <td width="5%">&nbsp;</td>
+        <td valign="top" width="45%">locale_type getloc()<b>const</b>;</td>
+        <td valign="top" width="45%">Returns the locale used by
+        the expression.</td>
+        <td width="5%">&nbsp;</td>
+    </tr>
+    <tr>
+        <td width="5%">&nbsp;</td>
+        <td valign="top" width="45%">flag_type getflags()<b>const</b>;</td>
+        <td valign="top" width="45%">Returns the flags used to
+        compile the current expression.</td>
+        <td width="5%">&nbsp;</td>
+    </tr>
+    <tr>
+        <td width="5%">&nbsp;</td>
+        <td valign="top" width="45%">std::basic_string&lt;charT&gt;
+        str()<b>const</b>;</td>
+        <td valign="top" width="45%">Returns the current
+        expression as a string.</td>
+        <td width="5%">&nbsp;</td>
+    </tr>
+    <tr>
+        <td width="5%">&nbsp;</td>
+        <td valign="top" width="45%">const_iterator begin()<b>const</b>;</td>
+        <td valign="top" width="45%">Returns a pointer to the
+        first character of the current expression.</td>
+        <td width="5%">&nbsp;</td>
+    </tr>
+    <tr>
+        <td width="5%">&nbsp;</td>
+        <td valign="top" width="45%">const_iterator end()<b>const</b>;</td>
+        <td valign="top" width="45%">Returns a pointer to the end
+        of the current expression.</td>
+        <td width="5%">&nbsp;</td>
+    </tr>
+    <tr>
+        <td width="5%">&nbsp;</td>
+        <td valign="top" width="45%">size_type size()<b>const</b>;</td>
+        <td valign="top" width="45%">Returns the length of the
+        current expression.</td>
+        <td width="5%">&nbsp;</td>
+    </tr>
+    <tr>
+        <td width="5%">&nbsp;</td>
+        <td valign="top" width="45%">size_type max_size()<b>const</b>;</td>
+        <td valign="top" width="45%">Returns the maximum length
+        of a regular expression text.</td>
+        <td width="5%">&nbsp;</td>
+    </tr>
+    <tr>
+        <td width="5%">&nbsp;</td>
+        <td valign="top" width="45%"><b>bool</b> empty()<b>const</b>;</td>
+        <td valign="top" width="45%">Returns true if the object
+        contains no valid expression.</td>
+        <td width="5%">&nbsp;</td>
+    </tr>
+    <tr>
+        <td width="5%">&nbsp;</td>
+        <td valign="top" width="45%"><b>unsigned</b> mark_count()<b>const</b>
+        ;</td>
+        <td valign="top" width="45%">Returns the number of sub-expressions
+        in the compiled regular expression. Note that this
+        includes the whole match (subexpression zero), so the
+        value returned is always &gt;= 1.</td>
+        <td width="5%">&nbsp;</td>
+    </tr>
+</table>
+
+<hr>
+
+<h3><a name="regex_char_traits"></a><i>Class regex_traits</i></h3>
+
+<p>#include &lt;<a href="../../boost/regex/regex_traits.hpp">boost/regex/regex_traits.hpp</a>&gt;
+</p>
+
+<p><i>This is a preliminary version of the regular expression
+traits class, and is subject to change</i>. </p>
+
+<p>The purpose of the traits class is to make it easier to
+customise the behaviour of <i>reg_expression </i>and the
+associated matching algorithms. Custom traits classes can handle
+special character sets or define additional character classes,
+for example one could define [[:kanji:]] as the set of all (Unicode)
+kanji characters. This library provides three traits classes and
+a wrapper class <i>regex_traits</i>, which inherits from one of
+these depending upon the default localisation model in use, class
+<i>c_regex_traits</i> encapsulates the global C locale, class <i>w32_regex_traits</i>
+encapsulates the global Win32 locale (only available on Win32
+systems), and class <i>cpp_regex_traits</i> encapsulates the C++
+locale (only provided if std::locale is supported): </p>
+
+<pre>template &lt;class charT&gt; class c_regex_traits;
+template&lt;&gt; class c_regex_traits&lt;char&gt; { /*details*/ };
+template&lt;&gt; class c_regex_traits&lt;wchar_t&gt; { /*details*/ };
+
+template &lt;class charT&gt; class w32_regex_traits;
+template&lt;&gt; class w32_regex_traits&lt;char&gt; { /*details*/ };
+template&lt;&gt; class w32_regex_traits&lt;wchar_t&gt; { /*details*/ };
+
+template &lt;class charT&gt; class cpp_regex_traits;
+template&lt;&gt; class cpp_regex_traits&lt;char&gt; { /*details*/ };
+template&lt;&gt; class cpp_regex_traits&lt;wchar_t&gt; { /*details*/ };
+
+template &lt;class charT&gt; class regex_traits : public base_type { /*detailts*/ };</pre>
+
+<p>Where &quot;<i>base_type</i>&quot; defaults to <i>w32_regex_traits</i>
+on Win32 systems, and <i>c_regex_traits</i> otherwise. The
+default behaviour can be changed by defining one of
+BOOST_REGEX_USE_C_LOCALE (forces use of <i>c_regex_traits</i> by
+default), or BOOST_REGEX_USE_CPP_LOCALE (forces use of <i>cpp_regex_traits</i>
+by default). Alternatively a specific traits class can be passed
+to the <i>reg_expression</i> template. </p>
+
+<p>The requirements for custom traits classes are <a
+href="traits_class_ref.htm">documented separately here....</a> </p>
+
+<p>There is also an example of a custom traits class supplied by <a
+href="mailto:christian.engstrom@glindra.org">Christian Engström</a>,
+see <a
+href="example/iso8859_1_regex_traits/iso8859_1_regex_traits.cpp">iso8859_1_regex_traits.cpp</a>
+and <a
+href="example/iso8859_1_regex_traits/iso8859_1_regex_traits.hpp">iso8859_1_regex_traits.hpp</a>,
+see <a href="example/iso8859_1_regex_traits/readme.txt">the
+readme file</a> for more details.</p>
+
+<hr>
+
+<h3><a name="reg_match"></a><i>Class match_results</i></h3>
+
+<p>#include &lt;<a href="../../boost/regex.hpp">boost/regex.hpp</a>&gt;
+</p>
+
+<p>Regular expressions are different from many simple pattern-matching
+algorithms in that as well as finding an overall match they can
+also produce sub-expression matches: each sub-expression being
+delimited in the pattern by a pair of parenthesis (...). There
+has to be some method for reporting sub-expression matches back
+to the user: this is achieved this by defining a class <i>match_results</i>
+that acts as an indexed collection of sub-expression matches,
+each sub-expression match being contained in an object of type <i>sub_match</i>.
+</p>
+
+<pre><font color="#000080"><i>// 
+// class sub_match: 
+// denotes one sub-expression match. 
+//&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</i></font><b>template</b> &lt;<b>class</b> iterator&gt;
+<b>struct</b> sub_match
+{
+&nbsp;&nbsp; <b>typedef</b> <b>typename</b> std::iterator_traits&lt;iterator&gt;::value_type&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; value_type;
+&nbsp;&nbsp; <b>typedef</b> <b>typename</b> std::iterator_traits&lt;iterator&gt;::difference_type&nbsp; difference_type;
+&nbsp;&nbsp; <b>typedef</b> iterator&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; iterator_type;
+&nbsp;&nbsp;&nbsp;
+&nbsp;&nbsp; iterator first;
+&nbsp;&nbsp; iterator second;
+&nbsp;&nbsp; <b>bool</b> matched;
+
+&nbsp;&nbsp; <b>operator</b> std::basic_string&lt;value_type&gt;()<b>const</b>;
+
+&nbsp;&nbsp; <b>bool</b> <b>operator</b>==(<b>const</b> sub_match&amp; that)<b>const</b>;
+&nbsp;&nbsp; <b>bool</b> <b>operator</b> !=(<b>const</b> sub_match&amp; that)<b>const</b>;
+&nbsp;&nbsp; difference_type length()<b>const</b>;
+};
+
+<font color="#000080">// 
+// class match_results: 
+// contains an indexed collection of matched sub-expressions. 
+// 
+</font><b>template</b> &lt;<b>class</b> iterator, <b>class</b> Allocator = std::allocator&lt;<strong>typename</strong> std::iterator_traits&lt;iterator&gt;::value_type &gt; &gt; 
+<b>class</b> match_results 
+{ 
+<b>public</b>: 
+&nbsp;&nbsp; <b>typedef</b> Allocator&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; alloc_type; 
+&nbsp;&nbsp; <b>typedef</b> <b>typename</b> Allocator::<b>template</b> Rebind&lt;iterator&gt;::size_type&nbsp; size_type; 
+&nbsp;&nbsp; <b>typedef</b> <b>typename</b> std::iterator_traits&lt;iterator&gt;::value_type&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; char_type; 
+&nbsp;&nbsp; <b>typedef</b> sub_match&lt;iterator&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; value_type; 
+&nbsp;&nbsp; <b>typedef</b> <b>typename</b> std::iterator_traits&lt;iterator&gt;::difference_type&nbsp; difference_type; 
+&nbsp;&nbsp; <b>typedef</b> iterator&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; iterator_type; 
+&nbsp;&nbsp; <strong>explicit</strong> match_results(<b>const</b> Allocator&amp; a = Allocator()); 
+&nbsp;&nbsp; match_results(<b>const</b> match_results&amp; m); 
+&nbsp;&nbsp; match_results&amp; <b>operator</b>=(<b>const</b> match_results&amp; m); 
+&nbsp;&nbsp; ~match_results(); 
+&nbsp;&nbsp; size_type size()<b>const</b>; 
+&nbsp;&nbsp; <b>const</b> sub_match&lt;iterator&gt;&amp; <b>operator</b>[](<b>int</b> n) <b>const</b>; 
+&nbsp;&nbsp; Allocator allocator()<b>const</b>; 
+&nbsp;&nbsp; difference_type length(<b>int</b> sub = 0)<b>const</b>; 
+&nbsp;&nbsp; difference_type position(<b>unsigned</b> <b>int</b> sub = 0)<b>const</b>; 
+&nbsp;&nbsp; <b>unsigned</b> <b>int</b> line()<b>const</b>; 
+&nbsp;&nbsp; iterator line_start()<b>const</b>; 
+&nbsp;&nbsp; std::basic_string&lt;char_type&gt; str(<b>int</b> sub = 0)<b>const</b>; 
+&nbsp;&nbsp; <b>void</b> swap(match_results&amp; that); 
+&nbsp;&nbsp; <b>bool</b> <b>operator</b>==(<b>const</b> match_results&amp; that)<b>const</b>; 
+&nbsp;&nbsp; <b>bool</b> <b>operator</b>&lt;(<b>const</b> match_results&amp; that)<b>const</b>; 
+};
+<strong>typedef</strong> match_results&lt;<strong>const</strong> <strong>char</strong>*&gt; cmatch;
+<strong>typedef</strong> match_results&lt;<strong>const</strong> <strong>wchar_t</strong>*&gt; wcmatch; 
+<strong>typedef</strong> match_results&lt;std::string::const_iterator&gt; smatch;
+<strong>typedef</strong> match_results&lt;std::wstring::const_iterator&gt; wsmatch; </pre>
+
+<p>Class match_results is used for reporting what matched a
+regular expression, it is passed to the matching algorithms <a
+href="#query_match">regex_match</a> and <a href="#reg_search">regex_search</a>,
+and is used by <a href="#reg_grep">regex_grep</a> to notify the
+callback function (or function object) what matched. Note that
+the default allocator parameter has been chosen to match the
+default allocator parameter to reg_expression. match_results has
+the following public member functions: <br>
+&nbsp; </p>
+
+<table border="0" cellpadding="7" cellspacing="0" width="100%">
+    <tr>
+        <td width="5%">&nbsp;</td>
+        <td valign="top" width="45%">match_results(Allocator a =
+        Allocator());</td>
+        <td valign="top" width="45%">Constructs an instance of
+        match_results, using allocator instance a.</td>
+        <td width="5%">&nbsp;</td>
+    </tr>
+    <tr>
+        <td width="5%">&nbsp;</td>
+        <td valign="top" width="45%">match_results(const
+        match_results&amp; m);</td>
+        <td valign="top" width="45%">Copy constructor.</td>
+        <td width="5%">&nbsp;</td>
+    </tr>
+    <tr>
+        <td width="5%">&nbsp;</td>
+        <td valign="top" width="45%">match_results&amp; operator=(const
+        match_results&amp; m);</td>
+        <td valign="top" width="45%">Assignment operator.</td>
+        <td width="5%">&nbsp;</td>
+    </tr>
+    <tr>
+        <td width="5%">&nbsp;</td>
+        <td valign="top" width="45%"><b>const</b>
+        sub_match&lt;iterator&gt;&amp; <b>operator</b>[](size_type
+        n) const;</td>
+        <td valign="top" width="45%">Returns what matched, item 0
+        represents the whole string, item 1 the first sub-expression
+        and so on.</td>
+        <td width="5%">&nbsp;</td>
+    </tr>
+    <tr>
+        <td width="5%">&nbsp;</td>
+        <td valign="top" width="45%">Allocator&amp; allocator()const;</td>
+        <td valign="top" width="45%">Returns the allocator used
+        by the class.</td>
+        <td width="5%">&nbsp;</td>
+    </tr>
+    <tr>
+        <td width="5%">&nbsp;</td>
+        <td valign="top" width="45%">difference_type length(<b>unsigned
+        int</b> sub = 0);</td>
+        <td valign="top" width="45%">Returns the length of the
+        matched subexpression, defaults to the length of the
+        whole match, in effect this is equivalent to operator[](sub).second
+        - operator[](sub).first.</td>
+        <td width="5%">&nbsp;</td>
+    </tr>
+    <tr>
+        <td width="5%">&nbsp;</td>
+        <td valign="top" width="45%">difference_type position(<b>unsigned
+        int</b> sub = 0);</td>
+        <td valign="top" width="45%">Returns the position of the
+        matched sub-expression, defaults to the position of the
+        whole match. The returned value is the position of the
+        match relative to the start of the string.</td>
+        <td width="5%">&nbsp;</td>
+    </tr>
+    <tr>
+        <td width="5%">&nbsp;</td>
+        <td valign="top" width="45%"><b>unsigned</b> <b>int</b>
+        line()<b>const</b>;</td>
+        <td valign="top" width="45%">Returns the index of the
+        line on which the match occurred, indices start with 1,
+        not zero. Equivalent to the number of newline characters
+        prior to operator[](0).first plus one.</td>
+        <td width="5%">&nbsp;</td>
+    </tr>
+    <tr>
+        <td width="5%">&nbsp;</td>
+        <td valign="top" width="45%">iterator line_start()<b>const;</b></td>
+        <td valign="top" width="45%">Returns an iterator denoting
+        the start of the line on which the match occurred.</td>
+        <td width="5%">&nbsp;</td>
+    </tr>
+    <tr>
+        <td width="5%">&nbsp;</td>
+        <td valign="top" width="45%">size_type size()<b>const;</b></td>
+        <td valign="top" width="45%">Returns how many sub-expressions
+        are present in the match, including sub-expression zero (the
+        whole match). This is the case even if no matches were
+        found in the search operation - you must use the returned
+        value from <a href="#reg_search">regex_search</a> / <a
+        href="#query_match">regex_match</a> to determine whether
+        any match occured.</td>
+        <td width="5%">&nbsp;</td>
+    </tr>
+</table>
+
+<p><br>
+&nbsp; </p>
+
+<p>The operator[] member function needs further explanation: it
+returns a const reference to a structure of type
+sub_match&lt;iterator&gt;, which has the following public members:
+<br>
+&nbsp; </p>
+
+<table border="0" cellpadding="7" cellspacing="0" width="100%">
+    <tr>
+        <td valign="top" width="6%">&nbsp;</td>
+        <td valign="top" width="44%"><b>typedef</b> <b>typename</b>
+        std::iterator_traits&lt;iterator&gt;::value_type
+        value_type;</td>
+        <td valign="top" width="44%">The type pointed to by the
+        iterators.</td>
+        <td valign="top" width="5%">&nbsp;</td>
+    </tr>
+    <tr>
+        <td valign="top" width="6%">&nbsp;</td>
+        <td valign="top" width="44%"><b>typedef</b> <b>typename</b>
+        std::iterator_traits&lt;iterator&gt;::difference_type
+        difference_type;</td>
+        <td valign="top" width="44%">A type that represents the
+        difference between two iterators.</td>
+        <td valign="top" width="5%">&nbsp;</td>
+    </tr>
+    <tr>
+        <td valign="top" width="6%">&nbsp;</td>
+        <td valign="top" width="44%"><b>typedef</b> iterator
+        iterator_type;</td>
+        <td valign="top" width="44%">The iterator type.</td>
+        <td valign="top" width="5%">&nbsp;</td>
+    </tr>
+    <tr>
+        <td valign="top" width="6%">&nbsp;</td>
+        <td valign="top" width="44%">iterator first</td>
+        <td valign="top" width="44%">An iterator denoting the
+        position of the start of the match.</td>
+        <td valign="top" width="5%">&nbsp;</td>
+    </tr>
+    <tr>
+        <td valign="top" width="6%">&nbsp;</td>
+        <td valign="top" width="44%">iterator second</td>
+        <td valign="top" width="44%">An iterator denoting the
+        position of the end of the match.</td>
+        <td valign="top" width="5%">&nbsp;</td>
+    </tr>
+    <tr>
+        <td valign="top" width="6%">&nbsp;</td>
+        <td valign="top" width="44%"><b>bool</b> matched</td>
+        <td valign="top" width="44%">A Boolean value denoting
+        whether this sub-expression participated in the match.</td>
+        <td valign="top" width="5%">&nbsp;</td>
+    </tr>
+    <tr>
+        <td valign="top" width="6%">&nbsp;</td>
+        <td valign="top" width="44%">difference_type length()<b>const;</b></td>
+        <td valign="top" width="44%">Returns the length of the
+        sub-expression match.</td>
+        <td valign="top" width="5%">&nbsp;</td>
+    </tr>
+    <tr>
+        <td valign="top" width="6%">&nbsp;</td>
+        <td valign="top" width="44%"><b>operator</b> std::basic_string&lt;value_type&gt;
+        ()<b>const</b>;</td>
+        <td valign="top" width="44%">Converts the sub-expression
+        match into an instance of std::basic_string&lt;&gt;. Note
+        that this member may be either absent, or present to a
+        more limited degree depending upon your compiler
+        capabilities.</td>
+        <td valign="top" width="5%">&nbsp;</td>
+    </tr>
+</table>
+
+<p>Operator[] takes an integer as an argument that denotes the
+sub-expression for which to return information, the argument can
+take the following special values: <br>
+&nbsp; </p>
+
+<table border="0" cellpadding="7" cellspacing="0" width="100%">
+    <tr>
+        <td valign="top" width="6%">&nbsp;</td>
+        <td valign="top" width="44%">-2</td>
+        <td valign="top" width="44%">Returns everything from the
+        end of the match, to the end of the input string,
+        equivalent to $' in perl. If this is a null string, then:
+        <p>first == second </p>
+        <p>And </p>
+        <p>matched == false.</p>
+        </td>
+        <td valign="top" width="5%">&nbsp;</td>
+    </tr>
+    <tr>
+        <td valign="top" width="6%">&nbsp;</td>
+        <td valign="top" width="44%">-1</td>
+        <td valign="top" width="44%">Returns everything from the
+        start of the input string (or the end of the last match
+        if this is a grep operation), to the start of this match.
+        Equivalent to $` in perl. If this is a null string, then:
+        <p>first == second </p>
+        <p>And </p>
+        <p>matched == false.</p>
+        </td>
+        <td valign="top" width="5%">&nbsp;</td>
+    </tr>
+    <tr>
+        <td valign="top" width="6%">&nbsp;</td>
+        <td valign="top" width="44%">0</td>
+        <td valign="top" width="44%">Returns the whole of what
+        matched, equivalent to $&amp; in perl. The matched
+        parameter is always true.</td>
+        <td valign="top" width="5%">&nbsp;</td>
+    </tr>
+    <tr>
+        <td valign="top" width="6%">&nbsp;</td>
+        <td valign="top" width="44%">0 &lt; N &lt; size()</td>
+        <td valign="top" width="44%">Returns what matched sub-expression
+        N, if this sub-expression did not participate in the
+        match then&nbsp; <p>matched == false </p>
+        <p>otherwise: </p>
+        <p>matched == true.</p>
+        </td>
+        <td valign="top" width="5%">&nbsp;</td>
+    </tr>
+    <tr>
+        <td valign="top" width="6%">&nbsp;</td>
+        <td valign="top" width="44%">N &lt; -2 or N &gt;= size()</td>
+        <td valign="top" width="44%">Represents an out-of range
+        non-existent sub-expression. Returns a &quot;null&quot;
+        match in which <p>first == last </p>
+        <p>And </p>
+        <p>matched == false.</p>
+        </td>
+        <td valign="top" width="5%">&nbsp;</td>
+    </tr>
+</table>
+
+<p>Note that as well as being parameterised for an allocator,
+match_results&lt;&gt; also takes an iterator type, this allows
+any pair of iterators to be searched for a given regular
+expression, provided the iterators have at least bi-directional
+properties. </p>
+
+<hr>
+
+<h3><a name="query_match"></a>Algorithm regex_match</h3>
+
+<p>#include &lt;<a href="../../boost/regex.hpp">boost/regex.hpp</a>&gt;
+</p>
+
+<p>The algorithm regex _match determines whether a given regular
+expression matches a given sequence denoted by a pair of
+bidirectional-iterators, the algorithm is defined as follows, <em>note
+that the result is true only if the expression matches the whole
+of the input sequence</em>, the main use of this function is data
+input validation: </p>
+
+<pre><b>template</b> &lt;<b>class</b> iterator, <b>class</b> Allocator, <b>class</b> charT, <b>class</b> traits, <b>class</b> Allocator2&gt;
+<b>bool</b> regex_match(iterator first,&nbsp;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; iterator last,&nbsp;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; match_results&lt;iterator, Allocator&gt;&amp; m,&nbsp;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <b>const</b> reg_expression&lt;charT, traits, Allocator2&gt;&amp; e,&nbsp;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <b>unsigned</b> flags = match_default);</pre>
+
+<p>The library also defines the following convenience versions,
+which take either a const charT*, or a const std::basic_string&lt;&gt;&amp;
+in place of a pair of iterators [note - these versions may not be
+available, or may be available in a more limited form, depending
+upon your compilers capabilities]: </p>
+
+<pre><b>template</b> &lt;<b>class</b> charT, <b>class</b> Allocator, <b>class</b> traits, <b>class</b> Allocator2&gt;
+<b>bool</b> regex_match(<b>const</b> charT* str,&nbsp;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; match_results&lt;<b>const</b> charT*, Allocator&gt;&amp; m,&nbsp;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <b>const</b> reg_expression&lt;charT, traits, Allocator2&gt;&amp; e,&nbsp;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <b>unsigned</b> flags = match_default)
+
+<b>template</b> &lt;<b>class</b> ST, <b>class</b> SA, <b>class</b> Allocator, <b>class</b> charT, <b>class</b> traits, <b>class</b> Allocator2&gt;
+<b>bool</b> regex_match(<b>const</b> std::basic_string&lt;charT, ST, SA&gt;&amp; s,&nbsp;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; match_results&lt;<b>typename</b> std::basic_string&lt;charT, ST, SA&gt;::const_iterator, Allocator&gt;&amp; m,&nbsp;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <b>const</b> reg_expression&lt;charT, traits, Allocator2&gt;&amp; e,&nbsp;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <b>unsigned</b> flags = match_default);</pre>
+
+<p>Finally there is a set of convenience versions that simply
+return true or false and do not indicate what matched: </p>
+
+<pre><b>template</b> &lt;<b>class</b> iterator, <b>class</b> Allocator, <b>class</b> charT, <b>class</b> traits, <b>class</b> Allocator2&gt;
+<b>bool</b> regex_match(iterator first,&nbsp;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; iterator last,&nbsp;
+<b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; const</b> reg_expression&lt;charT, traits, Allocator2&gt;&amp; e,&nbsp;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <b>unsigned</b> flags = match_default);
+
+<b>template</b> &lt;<b>class</b> charT, <b>class</b> Allocator, <b>class</b> traits, <b>class</b> Allocator2&gt;
+<b>bool</b> regex_match(<b>const</b> charT* str,&nbsp;
+<b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; const</b> reg_expression&lt;charT, traits, Allocator2&gt;&amp; e,&nbsp;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <b>unsigned</b> flags = match_default)
+
+<b>template</b> &lt;<b>class</b> ST, <b>class</b> SA, <b>class</b> Allocator, <b>class</b> charT, <b>class</b> traits, <b>class</b> Allocator2&gt;
+<b>bool</b> regex_match(<b>const</b> std::basic_string&lt;charT, ST, SA&gt;&amp; s,&nbsp;
+<b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; const</b> reg_expression&lt;charT, traits, Allocator2&gt;&amp; e,&nbsp;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <b>unsigned</b> flags = match_default);</pre>
+
+<p>The parameters for the main function version are as follows: <br>
+&nbsp; </p>
+
+<table border="0" cellpadding="7" cellspacing="0" width="100%">
+    <tr>
+        <td width="5%">&nbsp;</td>
+        <td width="51%">iterator first</td>
+        <td>Denotes the start of the range to be matched.</td>
+        <td width="5%">&nbsp;</td>
+    </tr>
+    <tr>
+        <td>&nbsp;</td>
+        <td valign="top" width="51%">iterator last</td>
+        <td valign="top" width="51%">Denotes the end of the range
+        to be matched.</td>
+        <td>&nbsp;</td>
+    </tr>
+    <tr>
+        <td>&nbsp;</td>
+        <td valign="top" width="51%">match_results&lt;iterator,
+        Allocator&gt;&amp; m</td>
+        <td valign="top" width="51%">An instance of match_results
+        in which what matched will be reported. On exit if a
+        match occurred then m[0] denotes the whole of the string
+        that matched, m[0].first must be equal to first, m[0].second
+        will be less than or equal to last. m[1] denotes the
+        first subexpression m[2] the second subexpression and so
+        on. If no match occurred then m[0].first = m[0].second =
+        last.<p>Note that since the match_results structure
+        stores only iterators, and not strings, the iterators/strings
+        passed to regex_match must be valid for as long as the
+        result is to be used. For that reason never pass
+        temporary string objects to regex_match.</p>
+        </td>
+        <td>&nbsp;</td>
+    </tr>
+    <tr>
+        <td>&nbsp;</td>
+        <td valign="top" width="51%">const
+        reg_expression&lt;charT, traits, Allocator2&gt;&amp; e</td>
+        <td valign="top" width="51%">Contains the regular
+        expression to be matched.</td>
+        <td>&nbsp;</td>
+    </tr>
+    <tr>
+        <td>&nbsp;</td>
+        <td valign="top" width="51%">unsigned flags =
+        match_default</td>
+        <td valign="top" width="51%">Determines the semantics
+        used for matching, a combination of one or more <a
+        href="#match_type">match_flags</a> enumerators.</td>
+        <td>&nbsp;</td>
+    </tr>
+</table>
+
+<p>regex_match returns false if no match occurs or true if it
+does. A match only occurs if it starts at <b>first</b> and
+finishes at <b>last</b>. Example: the following <a
+href="example/snippets/regex_match_example.cpp">example</a>
+processes an ftp response: </p>
+
+<pre><font color="#008000">#include &lt;stdlib.h&gt; 
+#include &lt;boost/regex.hpp&gt; 
+#include &lt;string&gt; 
+#include &lt;iostream&gt; 
+
+</font><b>using namespace</b> boost; 
+
+regex expression(<font color="#000080">&quot;([0-9]+)(\\-| |$)(.*)&quot;</font>); 
+
+<font color="#000080"><i>// process_ftp: 
+// on success returns the ftp response code, and fills 
+// msg with the ftp response message. 
+</i></font><b>int</b> process_ftp(<b>const</b> <b>char</b>* response, std::string* msg) 
+{ 
+&nbsp;&nbsp; cmatch what; 
+&nbsp;&nbsp; <b>if</b>(regex_match(response, what, expression)) 
+&nbsp;&nbsp; { 
+<font color="#000080">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <i>// what[0] contains the whole string 
+</i>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <i>// what[1] contains the response code 
+</i>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <i>// what[2] contains the separator character 
+</i>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <i>// what[3] contains the text message. 
+</i></font>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <b>if</b>(msg) 
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; msg-&gt;assign(what[3].first, what[3].second); 
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <b>return</b> std::atoi(what[1].first); 
+&nbsp;&nbsp; } 
+<font color="#000080">&nbsp;&nbsp; <i>// failure did not match 
+</i></font>&nbsp;&nbsp; <b>if</b>(msg) 
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; msg-&gt;erase(); 
+&nbsp;&nbsp; <b>return</b> -1; 
+}</pre>
+
+<p><a name="match_type"></a>The value of the flags parameter
+passed to the algorithm must be a combination of one or more of
+the following values: <br>
+&nbsp; </p>
+
+<table border="0" cellpadding="7" cellspacing="0" width="100%">
+    <tr>
+        <td width="5%">&nbsp;</td>
+        <td valign="top" width="45%">match_default</td>
+        <td valign="top" width="45%">The default value, indicates
+        that <b>first</b> represents the start of a line, the
+        start of a buffer, and (possibly) the start of a word.
+        Also implies that <b>last</b> represents the end of a
+        line, the end of the buffer and (possibly) the end of a
+        word. Implies that a dot sub-expression &quot;.&quot;
+        will match both the newline character and a null.</td>
+        <td width="5%">&nbsp;</td>
+    </tr>
+    <tr>
+        <td width="5%">&nbsp;</td>
+        <td valign="top" width="45%">match_not_bol</td>
+        <td valign="top" width="45%">When this flag is set then <b>first</b>
+        does not represent the start of a new line.</td>
+        <td width="5%">&nbsp;</td>
+    </tr>
+    <tr>
+        <td width="5%">&nbsp;</td>
+        <td valign="top" width="45%">match_not_eol</td>
+        <td valign="top" width="45%">When this flag is set then <b>last</b>
+        does not represent the end of a line.</td>
+        <td width="5%">&nbsp;</td>
+    </tr>
+    <tr>
+        <td width="5%">&nbsp;</td>
+        <td valign="top" width="45%">match_not_bob</td>
+        <td valign="top" width="45%">When this flag is set then <b>first</b>
+        is not the beginning of a buffer.</td>
+        <td width="5%">&nbsp;</td>
+    </tr>
+    <tr>
+        <td width="5%">&nbsp;</td>
+        <td valign="top" width="45%">match_not_eob</td>
+        <td valign="top" width="45%">When this flag is set then <b>last</b>
+        does not represent the end of a buffer.</td>
+        <td width="5%">&nbsp;</td>
+    </tr>
+    <tr>
+        <td width="5%">&nbsp;</td>
+        <td valign="top" width="45%">match_not_bow</td>
+        <td valign="top" width="45%">When this flag is set then <b>first</b>
+        can never match the start of a word.</td>
+        <td width="5%">&nbsp;</td>
+    </tr>
+    <tr>
+        <td width="5%">&nbsp;</td>
+        <td valign="top" width="45%">match_not_eow</td>
+        <td valign="top" width="45%">When this flag is set then <b>last</b>
+        can never match the end of a word.</td>
+        <td width="5%">&nbsp;</td>
+    </tr>
+    <tr>
+        <td width="5%">&nbsp;</td>
+        <td valign="top" width="45%">match_not_dot_newline</td>
+        <td valign="top" width="45%">When this flag is set then a
+        dot expression &quot;.&quot; can not match the newline
+        character.</td>
+        <td width="5%">&nbsp;</td>
+    </tr>
+    <tr>
+        <td width="5%">&nbsp;</td>
+        <td valign="top" width="45%">match_not_dot_null</td>
+        <td valign="top" width="45%">When this flag is set then a
+        dot expression &quot;.&quot; can not match a null
+        character.</td>
+        <td width="5%">&nbsp;</td>
+    </tr>
+    <tr>
+        <td width="5%" height="75">&nbsp;</td>
+        <td valign="top" width="45%" height="75">match_prev_avail</td>
+        <td valign="top" width="45%" height="75">When this flag
+        is set, then *--<b>first</b> is a valid expression and
+        the flags match_not_bol and match_not_bow have no effect,
+        since the value of the previous character can be used to
+        check these.</td>
+        <td width="5%" height="75">&nbsp;</td>
+    </tr>
+    <tr>
+        <td width="5%" height="15">&nbsp;</td>
+        <td valign="top" width="45%" height="15">match_any</td>
+        <td valign="top" width="45%" height="15">When this flag
+        is set, then the first string matched is returned, rather
+        than the longest possible match. This flag can
+        significantly reduce the time taken to find a match, but
+        what matches is undefined.</td>
+        <td width="5%" height="15">&nbsp;</td>
+    </tr>
+    <tr>
+        <td width="5%" height="15">&nbsp;</td>
+        <td valign="top" width="45%" height="15">match_not_null</td>
+        <td valign="top" width="45%" height="15">When this flag
+        is set, then the expression will never match a null
+        string.</td>
+        <td width="5%" height="15">&nbsp;</td>
+    </tr>
+    <tr>
+        <td width="5%" height="15">&nbsp;</td>
+        <td valign="top" width="45%" height="15">match_continuous</td>
+        <td valign="top" width="45%" height="15">When this flags
+        is set, then during a grep operation, each successive
+        match must start from where the previous match finished.</td>
+        <td width="5%" height="15">&nbsp;</td>
+    </tr>
+    <tr>
+        <td width="5%" height="15">&nbsp;</td>
+        <td valign="top" width="45%" height="15">match_partial</td>
+        <td valign="top" width="45%" height="15">When this flag
+        is set, the regex algorithms will report <a
+        href="#partial_matches">partial matches</a> - that is
+        where one or more characters at the end of the text input
+        matched some prefix of the regular expression.</td>
+        <td width="5%" height="15">&nbsp;</td>
+    </tr>
+</table>
+
+<p>&nbsp;</p>
+
+<hr align="right">
+
+<h3><a name="reg_search"></a>Algorithm regex_search</h3>
+
+<p>&nbsp;#include &lt;<a href="../../boost/regex.hpp">boost/regex.hpp</a>&gt;
+</p>
+
+<p>The algorithm regex_search will search a range denoted by a
+pair of bidirectional-iterators for a given regular expression.
+The algorithm uses various heuristics to reduce the search time
+by only checking for a match if a match could conceivably start
+at that position. The algorithm is defined as follows: </p>
+
+<pre><b>template</b> &lt;<b>class</b> iterator, <b>class</b> Allocator, <b>class</b> charT, <b>class</b> traits, <b>class</b> Allocator2&gt;
+<b>bool</b> regex_search(iterator first,&nbsp;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; iterator last,&nbsp;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; match_results&lt;iterator, Allocator&gt;&amp; m,&nbsp;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <b>const</b> reg_expression&lt;charT, traits, Allocator2&gt;&amp; e,&nbsp;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <b>unsigned</b> flags = match_default);</pre>
+
+<p>The library also defines the following convenience versions,
+which take either a const charT*, or a const std::basic_string&lt;&gt;&amp;
+in place of a pair of iterators [note - these versions may not be
+available, or may be available in a more limited form, depending
+upon your compilers capabilities]: </p>
+
+<pre><b>template</b> &lt;<b>class</b> charT, <b>class</b> Allocator, <b>class</b> traits, <b>class</b> Allocator2&gt;
+<b>bool</b> regex_search(<b>const</b> charT* str,&nbsp;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; match_results&lt;<b>const</b> charT*, Allocator&gt;&amp; m,&nbsp;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <b>const</b> reg_expression&lt;charT, traits, Allocator2&gt;&amp; e,&nbsp;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <b>unsigned</b> flags = match_default);
+
+<b>template</b> &lt;<b>class</b> ST, <b>class</b> SA, <b>class</b> Allocator, <b>class</b> charT, <b>class</b> traits, <b>class</b> Allocator2&gt;
+<b>bool</b> regex_search(<b>const</b> std::basic_string&lt;charT, ST, SA&gt;&amp; s,&nbsp;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; match_results&lt;<b>typename</b> std::basic_string&lt;charT, ST, SA&gt;::const_iterator, Allocator&gt;&amp; m,&nbsp;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <b>const</b> reg_expression&lt;charT, traits, Allocator2&gt;&amp; e,&nbsp;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <b>unsigned</b> flags = match_default);</pre>
+
+<p>The parameters for the main function version are as follows: <br>
+&nbsp; </p>
+
+<table border="0" cellpadding="7" cellspacing="0" width="100%">
+    <tr>
+        <td width="5%">&nbsp;</td>
+        <td valign="top" width="50%">iterator first</td>
+        <td valign="top" width="50%">The starting position of the
+        range to search.</td>
+        <td width="5%">&nbsp;</td>
+    </tr>
+    <tr>
+        <td>&nbsp;</td>
+        <td valign="top" width="50%">iterator last</td>
+        <td valign="top" width="50%">The ending position of the
+        range to search.</td>
+        <td>&nbsp;</td>
+    </tr>
+    <tr>
+        <td>&nbsp;</td>
+        <td valign="top" width="50%">match_results&lt;iterator,
+        Allocator&gt;&amp; m</td>
+        <td valign="top" width="50%">An instance of match_results
+        in which what matched will be reported. On exit if a
+        match occurred then m[0] denotes the whole of the string
+        that matched, m[0].first and m[0].second will be less
+        than or equal to last. m[1] denotes the first sub-expression
+        m[2] the second sub-expression and so on. If no match
+        occurred then m[0].first = m[0].second = last.<p>Note
+        that since the match_results structure stores only
+        iterators, and not strings, the iterators/strings passed
+        to regex_search must be valid for as long as the result
+        is to be used. For that reason never pass temporary
+        string objects to regex_search.</p>
+        </td>
+        <td>&nbsp;</td>
+    </tr>
+    <tr>
+        <td>&nbsp;</td>
+        <td valign="top" width="50%">const
+        reg_expression&lt;charT, traits, Allocator2&gt;&amp; e</td>
+        <td valign="top" width="50%">The regular expression to
+        search for.</td>
+        <td>&nbsp;</td>
+    </tr>
+    <tr>
+        <td>&nbsp;</td>
+        <td valign="top" width="50%">unsigned flags =
+        match_default</td>
+        <td valign="top" width="50%">The flags that determine
+        what gets matched, a combination of one or more <a
+        href="#match_type">match_flags</a> enumerators.</td>
+        <td>&nbsp;</td>
+    </tr>
+</table>
+
+<p><br>
+&nbsp; </p>
+
+<p>Example: the following <a
+href="example/snippets/regex_search_example.cpp">example</a>,
+takes the contents of a file in the form of a string, and
+searches for all the C++ class declarations in the file. The code
+will work regardless of the way that std::string is implemented,
+for example it could easily be modified to work with the SGI rope
+class, which uses a non-contiguous storage strategy. </p>
+
+<pre><font color="#008000">#include &lt;string&gt; 
+#include &lt;map&gt; 
+#include &lt;boost/regex.hpp&gt; 
+</font><font color="#000080"><i>
+// purpose: 
+// takes the contents of a file in the form of a string 
+// and searches for all the C++ class definitions, storing 
+// their locations in a map of strings/int's 
+</i></font><b>typedef</b> std::map&lt;std::string, <b>int</b>, std::less&lt;std::string&gt; &gt; map_type; 
+
+boost::regex expression(&quot;^(template[[:space:]]*&lt;[^;:{]+&gt;[[:space:]]*)?(class|struct)[[:space:]]*(\\&lt;\\w+\\&gt;([[:blank:]]*\\([^)]*\\))?[[:space:]]*)*(\\&lt;\\w*\\&gt;)[[:space:]]*(&lt;[^;:{]+&gt;[[:space:]]*)?(\\{|:[^;\\{()]*\\{)&quot;); 
+<b>
+void</b> IndexClasses(map_type&amp; m, <b>const</b> std::string&amp; file) 
+{ 
+&nbsp;&nbsp; std::string::const_iterator start, end; 
+&nbsp;&nbsp; start = file.begin(); 
+&nbsp;&nbsp; end = file.end();&nbsp;
+&nbsp;&nbsp; &nbsp;&nbsp; boost::match_results&lt;std::string::const_iterator&gt; what; 
+&nbsp;&nbsp; <b>unsigned</b> <b>int</b> flags = boost::match_default; 
+&nbsp;&nbsp; <b>while</b>(regex_search(start, end, what, expression, flags))&nbsp;
+&nbsp;&nbsp; { 
+<font color="#000080">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <i>// what[0] contains the whole string 
+</i>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <i>// what[5] contains the class name. 
+</i>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <i>// what[6] contains the template specialisation if any. 
+</i>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <i>// add class name and position to map: 
+</i></font>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; m[std::string(what[5].first, what[5].second) + std::string(what[6].first, what[6].second)] =&nbsp;
+ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; what[5].first - file.begin();&nbsp;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <font color="#000080"><i>// update search position: 
+</i></font>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; start = what[0].second;&nbsp;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <font color="#000080"><i>// update flags: 
+</i></font>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; flags |= boost::match_prev_avail;&nbsp;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; flags |= boost::match_not_bob;&nbsp;
+&nbsp;&nbsp; } 
+}
+ </pre>
+
+<hr>
+
+<h3><a name="reg_grep"></a>Algorithm regex_grep</h3>
+
+<p>#include &lt;<a href="../../boost/regex.hpp">boost/regex.hpp</a>&gt;
+</p>
+
+<p>&nbsp;Regex_grep allows you to search through a bidirectional-iterator
+range and locate all the (non-overlapping) matches with a given
+regular expression. The function is declared as: </p>
+
+<pre><b>template</b> &lt;<b>class</b> Predicate, <b>class</b> iterator, <b>class</b> charT, <b>class</b> traits, <b>class</b> Allocator&gt;
+<b>unsigned</b> <b>int</b> regex_grep(Predicate foo,&nbsp;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; iterator first,&nbsp;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; iterator last,&nbsp;
+<b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; const</b> reg_expression&lt;charT, traits, Allocator&gt;&amp; e,&nbsp;
+<b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; unsigned</b> flags = match_default)</pre>
+
+<p>The library also defines the following convenience versions,
+which take either a const charT*, or a const std::basic_string&lt;&gt;&amp;
+in place of a pair of iterators [note - these versions may not be
+available, or may be available in a more limited form, depending
+upon your compilers capabilities]: </p>
+
+<pre><b>template</b> &lt;<b>class</b> Predicate, <b>class</b> charT, <b>class</b> Allocator, <b>class</b> traits&gt;
+<b>unsigned</b> <b>int</b> regex_grep(Predicate foo,&nbsp;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <b>const</b> charT* str,&nbsp;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <b>const</b> reg_expression&lt;charT, traits, Allocator&gt;&amp; e,&nbsp;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <b>unsigned</b> flags = match_default);
+
+<b>template</b> &lt;<b>class</b> Predicate, <b>class</b> ST, <b>class</b> SA, <b>class</b> Allocator, <b>class</b> charT, <b>class</b> traits&gt;
+<b>unsigned</b> <b>int</b> regex_grep(Predicate foo,&nbsp;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <b>const</b> std::basic_string&lt;charT, ST, SA&gt;&amp; s,&nbsp;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <b>const</b> reg_expression&lt;charT, traits, Allocator&gt;&amp; e,&nbsp;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <b>unsigned</b> flags = match_default);</pre>
+
+<p>The parameters for the primary version of regex_grep have the
+following meanings: <br>
+&nbsp; </p>
+
+<table border="0" cellpadding="7" cellspacing="0" width="624">
+    <tr>
+        <td width="5%">&nbsp;</td>
+        <td valign="top" width="50%">foo</td>
+        <td valign="top" width="50%">A predicate function object
+        or function pointer, see below for more information.</td>
+        <td width="5%">&nbsp;</td>
+    </tr>
+    <tr>
+        <td>&nbsp;</td>
+        <td valign="top" width="50%">first</td>
+        <td valign="top" width="50%">The start of the range to
+        search.</td>
+        <td>&nbsp;</td>
+    </tr>
+    <tr>
+        <td>&nbsp;</td>
+        <td valign="top" width="50%">last</td>
+        <td valign="top" width="50%">The end of the range to
+        search.</td>
+        <td>&nbsp;</td>
+    </tr>
+    <tr>
+        <td>&nbsp;</td>
+        <td valign="top" width="50%">e</td>
+        <td valign="top" width="50%">The regular expression to
+        search for.</td>
+        <td>&nbsp;</td>
+    </tr>
+    <tr>
+        <td>&nbsp;</td>
+        <td valign="top" width="50%">flags</td>
+        <td valign="top" width="50%">The flags that determine how
+        matching is carried out, one of the <a href="#match_type">match_flags</a>
+        enumerators.</td>
+        <td>&nbsp;</td>
+    </tr>
+</table>
+
+<p>&nbsp;The algorithm finds all of the non-overlapping matches
+of the expression e, for each match it fills a <a
+href="#reg_match">match_results</a>&lt;iterator, Allocator&gt;
+structure, which contains information on what matched, and calls
+the predicate foo, passing the match_results&lt;iterator,
+Allocator&gt; as a single argument. If the predicate returns
+true, then the grep operation continues, otherwise it terminates
+without searching for further matches. The function returns the
+number of matches found.</p>
+
+<p>The general form of the predicate is: </p>
+
+<pre><b>struct</b> grep_predicate
+{
+<b>&nbsp;&nbsp; bool</b> <b>operator</b>()(<b>const</b> match_results&lt;iterator_type, expression_type::alloc_type&gt;&amp; m);
+};</pre>
+
+<p>For example the regular expression &quot;a*b&quot; would find
+one match in the string &quot;aaaaab&quot; and two in the string
+&quot;aaabb&quot;. </p>
+
+<p>Remember this algorithm can be used for a lot more than
+implementing a version of grep, the predicate can be and do
+anything that you want, grep utilities would output the results
+to the screen, another program could index a file based on a
+regular expression and store a set of bookmarks in a list, or a
+text file conversion utility would output to file. The results of
+one regex_grep can even be chained into another regex_grep to
+create recursive parsers. </p>
+
+<p><a href="example/snippets/regex_grep_example_1.cpp">Example</a>:
+convert the example from <i>regex_search</i> to use <i>regex_grep</i>
+instead: </p>
+
+<pre><font color="#008000">#include &lt;string&gt; 
+#include &lt;map&gt; 
+#include &lt;boost/regex.hpp&gt; 
+
+</font><font color="#000080"><i>// IndexClasses: 
+// takes the contents of a file in the form of a string 
+// and searches for all the C++ class definitions, storing 
+// their locations in a map of strings/int's 
+</i></font><b>
+typedef</b> std::map&lt;std::string, <b>int</b>, std::less&lt;std::string&gt; &gt; map_type; 
+
+boost::regex expression(<font color="#000080">&quot;^(template[[:space:]]*&lt;[^;:{]+&gt;[[:space:]]*)?&quot; 
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &quot;(class|struct)[[:space:]]*(\\&lt;\\w+\\&gt;([[:blank:]]*\\([^)]*\\))?[[:space:]]*)*(\\&lt;\\w*\\&gt;)&quot; 
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &quot;[[:space:]]*(&lt;[^;:{]+&gt;[[:space:]]*)?(\\{|:[^;\\{()]*\\{)&quot;</font>); 
+<b>
+class</b> IndexClassesPred 
+{ 
+&nbsp;&nbsp; map_type&amp; m; 
+&nbsp;&nbsp; std::string::const_iterator base; 
+<b>public</b>: 
+&nbsp;&nbsp; IndexClassesPred(map_type&amp; a, std::string::const_iterator b) : m(a), base(b) {} 
+&nbsp;&nbsp; <b>bool</b> <b>operator</b>()(<b>const</b> match_results&lt;std::string::const_iterator, regex::alloc_type&gt;&amp; what) 
+&nbsp;&nbsp; { 
+<font color="#000080">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <i>// what[0] contains the whole string 
+</i>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <i>// what[5] contains the class name. 
+</i>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <i>// what[6] contains the template specialisation if any. 
+</i>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <i>// add class name and position to map: 
+</i></font>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; m[std::string(what[5].first, what[5].second) + std::string(what[6].first, what[6].second)] =&nbsp;
+ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; what[5].first - base; 
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <b>return</b> <b>true</b>; 
+&nbsp;&nbsp; } 
+}; 
+<b>
+void</b> IndexClasses(map_type&amp; m, <b>const</b> std::string&amp; file) 
+{ 
+&nbsp;&nbsp; std::string::const_iterator start, end; 
+&nbsp;&nbsp; start = file.begin(); 
+&nbsp;&nbsp; end = file.end(); 
+&nbsp;&nbsp; regex_grep(IndexClassesPred(m, start), start, end, expression); 
+} </pre>
+
+<p><a href="example/snippets/regex_grep_example_2.cpp">Example</a>:
+Use regex_grep to call a global callback function: </p>
+
+<pre><font color="#008000">#include &lt;string&gt; 
+#include &lt;map&gt; 
+#include &lt;boost/regex.hpp&gt; 
+
+</font><font color="#000080"><i>// purpose: 
+// takes the contents of a file in the form of a string 
+// and searches for all the C++ class definitions, storing 
+// their locations in a map of strings/int's 
+</i></font><b>
+typedef</b> std::map&lt;std::string, <b>int</b>, std::less&lt;std::string&gt; &gt; map_type; 
+
+boost::regex expression(<font color="#000080">&quot;^(template[[:space:]]*&lt;[^;:{]+&gt;[[:space:]]*)?(class|struct)[[:space:]]*(\\&lt;\\w+\\&gt;([[:blank:]]*\\([^)]*\\))?[[:space:]]*)*(\\&lt;\\w*\\&gt;)[[:space:]]*(&lt;[^;:{]+&gt;[[:space:]]*)?(\\{|:[^;\\{()]*\\{)&quot;</font>); 
+
+map_type class_index; 
+std::string::const_iterator base; 
+
+<b>bool</b> grep_callback(<b>const</b> boost::match_results&lt;std::string::const_iterator, boost::regex::alloc_type&gt;&amp; what) 
+{ 
+<font color="#000080">&nbsp;&nbsp; <i>// what[0] contains the whole string 
+</i>&nbsp;&nbsp; <i>// what[5] contains the class name. 
+</i>&nbsp;&nbsp; <i>// what[6] contains the template specialisation if any. 
+</i>&nbsp;&nbsp; <i>// add class name and position to map: 
+</i></font>&nbsp;&nbsp; class_index[std::string(what[5].first, what[5].second) + std::string(what[6].first, what[6].second)] =&nbsp;
+ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; what[5].first - base; 
+&nbsp;&nbsp; <b>return</b> <b>true</b>; 
+} 
+<b>
+void</b> IndexClasses(<b>const</b> std::string&amp; file) 
+{ 
+&nbsp;&nbsp; std::string::const_iterator start, end; 
+&nbsp;&nbsp; start = file.begin(); 
+&nbsp;&nbsp; end = file.end(); 
+&nbsp;&nbsp; base = start; 
+&nbsp;&nbsp; regex_grep(grep_callback, start, end, expression, match_default); 
+}
+&nbsp; </pre>
+
+<p><a href="example/snippets/regex_grep_example_3.cpp">Example</a>:
+use regex_grep to call a class member function, use the standard
+library adapters <i>std::mem_fun</i> and <i>std::bind1st</i> to
+convert the member function into a predicate: </p>
+
+<pre><font color="#008000">#include &lt;string&gt; 
+#include &lt;map&gt; 
+#include &lt;boost/regex.hpp&gt; 
+#include &lt;functional&gt; 
+</font><font color="#000080"><i>
+// purpose: 
+// takes the contents of a file in the form of a string 
+// and searches for all the C++ class definitions, storing 
+// their locations in a map of strings/int's 
+
+</i></font><b>typedef</b> std::map&lt;std::string, <b>int</b>, std::less&lt;std::string&gt; &gt; map_type; 
+<b>
+class</b> class_index 
+{ 
+&nbsp;&nbsp; boost::regex expression; 
+&nbsp;&nbsp; map_type index; 
+&nbsp;&nbsp; std::string::const_iterator base; 
+&nbsp;&nbsp; <b>bool</b> grep_callback(boost::match_results&lt;std::string::const_iterator, boost::regex::alloc_type&gt; what); 
+<b>public</b>: 
+<b>&nbsp;&nbsp; void</b> IndexClasses(<b>const</b> std::string&amp; file); 
+&nbsp;&nbsp; class_index() 
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; : index(), 
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; expression(<font
+color="#000080">&quot;^(template[[:space:]]*&lt;[^;:{]+&gt;[[:space:]]*)?&quot; 
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &quot;(class|struct)[[:space:]]*(\\&lt;\\w+\\&gt;([[:blank:]]*\\([^)]*\\))?&quot; 
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &quot;[[:space:]]*)*(\\&lt;\\w*\\&gt;)[[:space:]]*(&lt;[^;:{]+&gt;[[:space:]]*)?&quot; 
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &quot;(\\{|:[^;\\{()]*\\{)&quot; 
+</font>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ){} 
+}; 
+<b>
+bool</b> class_index::grep_callback(boost::match_results&lt;std::string::const_iterator, boost::regex::alloc_type&gt; what) 
+{ 
+<font color="#000080">&nbsp;&nbsp; <i>// what[0] contains the whole string 
+</i>&nbsp;&nbsp; <i>// what[5] contains the class name. 
+</i>&nbsp;&nbsp; <i>// what[6] contains the template specialisation if any. 
+</i>&nbsp;&nbsp; <i>// add class name and position to map: 
+</i></font>&nbsp;&nbsp; index[std::string(what[5].first, what[5].second) + std::string(what[6].first, what[6].second)] = 
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; what[5].first - base; 
+&nbsp;&nbsp; <b>return</b> <b>true</b>; 
+} 
+
+<b>void</b> class_index::IndexClasses(<b>const</b> std::string&amp; file) 
+{ 
+&nbsp;&nbsp; std::string::const_iterator start, end; 
+&nbsp;&nbsp; start = file.begin(); 
+&nbsp;&nbsp; end = file.end(); 
+&nbsp;&nbsp; base = start; 
+&nbsp;&nbsp; regex_grep(std::bind1st(std::mem_fun(&amp;class_index::grep_callback), <b>this</b>), 
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;   start, 
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;   end, 
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;   expression); 
+} 
+&nbsp; </pre>
+
+<p><a href="example/snippets/regex_grep_example_4.cpp">Finally</a>,
+C++ Builder users can use C++ Builder's closure type as a
+callback argument: </p>
+
+<pre><font color="#008000">#include &lt;string&gt; 
+#include &lt;map&gt; 
+#include &lt;boost/regex.hpp&gt; 
+#include &lt;functional&gt; 
+</font><font color="#000080"><i>
+// purpose: 
+// takes the contents of a file in the form of a string 
+// and searches for all the C++ class definitions, storing 
+// their locations in a map of strings/int's 
+
+</i></font><b>typedef</b> std::map&lt;std::string, <b>int</b>, std::less&lt;std::string&gt; &gt; map_type; 
+<b>class</b> class_index 
+{ 
+&nbsp;&nbsp; boost::regex expression; 
+&nbsp;&nbsp; map_type index; 
+&nbsp;&nbsp; std::string::const_iterator base; 
+&nbsp;&nbsp; <b>typedef</b> boost::match_results&lt;std::string::const_iterator, boost::regex::alloc_type&gt; arg_type; 
+&nbsp;&nbsp; <b>bool</b> grep_callback(<b>const</b> arg_type&amp; what); 
+<b>public</b>: 
+&nbsp;&nbsp; <b>typedef</b> <b>bool</b> (<b>__closure</b>* grep_callback_type)(<b>const</b> arg_type&amp;); 
+&nbsp;&nbsp; <b>void</b> IndexClasses(<b>const</b> std::string&amp; file); 
+&nbsp;&nbsp; class_index() 
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; : index(), 
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; expression(<font
+color="#000080">&quot;^(template[[:space:]]*&lt;[^;:{]+&gt;[[:space:]]*)?&quot; 
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &quot;(class|struct)[[:space:]]*(\\&lt;\\w+\\&gt;([[:blank:]]*\\([^)]*\\))?&quot; 
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &quot;[[:space:]]*)*(\\&lt;\\w*\\&gt;)[[:space:]]*(&lt;[^;:{]+&gt;[[:space:]]*)?&quot; 
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &quot;(\\{|:[^;\\{()]*\\{)&quot; 
+</font>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ){} 
+}; 
+
+<b>bool</b> class_index::grep_callback(<b>const</b> arg_type&amp; what) 
+{ 
+<font color="#000080">&nbsp;&nbsp; <i>// what[0] contains the whole string </i>&nbsp;&nbsp; 
+<i>// what[5] contains the class name. </i>&nbsp;&nbsp; 
+<i>// what[6] contains the template specialisation if any. </i>&nbsp;&nbsp; 
+<i>// add class name and position to map: </i></font>&nbsp;&nbsp; 
+index[std::string(what[5].first, what[5].second) + std::string(what[6].first, what[6].second)] = 
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; what[5].first - base; 
+&nbsp;&nbsp; <b>return</b> <b>true</b>; 
+} 
+
+<b>void</b> class_index::IndexClasses(<b>const</b> std::string&amp; file) 
+{ 
+&nbsp;&nbsp; std::string::const_iterator start, end; 
+&nbsp;&nbsp; start = file.begin(); 
+&nbsp;&nbsp; end = file.end(); 
+&nbsp;&nbsp; base = start; 
+&nbsp;&nbsp; class_index::grep_callback_type cl = &amp;(<b>this</b>-&gt;grep_callback); 
+&nbsp;&nbsp; regex_grep(cl, 
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; start, 
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; end, 
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; expression); 
+} </pre>
+
+<hr>
+
+<h3>&nbsp;<a name="reg_format"></a>Algorithm regex_format</h3>
+
+<p>#include &lt;<a href="../../boost/regex.hpp">boost/regex.hpp</a>&gt;
+</p>
+
+<p>The algorithm regex_format takes the results of a match and
+creates a new string based upon a <a
+href="format_string.htm#format_string">format string</a>,
+regex_format can be used for search and replace operations: </p>
+
+<pre><b>template</b> &lt;<b>class</b> OutputIterator, <b>class</b> iterator, <b>class</b> Allocator, <b>class</b> charT&gt;
+OutputIterator regex_format(OutputIterator out,
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <b>const</b> match_results&lt;iterator, Allocator&gt;&amp; m,
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <b>const</b> charT* fmt,
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <b>unsigned</b> flags = 0);
+<b>
+template</b> &lt;<b>class</b> OutputIterator, <b>class</b> iterator, <b>class</b> Allocator, <b>class</b> charT&gt;
+OutputIterator regex_format(OutputIterator out,
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <b>const</b> match_results&lt;iterator, Allocator&gt;&amp; m,
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <b>const</b> std::basic_string&lt;charT&gt;&amp; fmt,
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <b>unsigned</b> flags = 0);</pre>
+
+<p>The library also defines the following convenience variation
+of regex_format, which returns the result directly as a string,
+rather than outputting to an iterator [note - this version may
+not be available, or may be available in a more limited form,
+depending upon your compilers capabilities]: </p>
+
+<pre><b>template</b> &lt;<b>class</b> iterator, <b>class</b> Allocator, <b>class</b> charT&gt;
+std::basic_string&lt;charT&gt; regex_format
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; (<b>const</b> match_results&lt;iterator, Allocator&gt;&amp; m,&nbsp;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <b>const</b> charT* fmt,
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <b>unsigned</b> flags = 0);
+
+<b>template</b> &lt;<b>class</b> iterator, <b>class</b> Allocator, <b>class</b> charT&gt;
+std::basic_string&lt;charT&gt; regex_format
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; (<b>const</b> match_results&lt;iterator, Allocator&gt;&amp; m,&nbsp;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <b>const</b> std::basic_string&lt;charT&gt;&amp; fmt,
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <b>unsigned</b> flags = 0);</pre>
+
+<p>Parameters to the main version of the function are passed as
+follows: <br>
+&nbsp; </p>
+
+<table border="0" cellpadding="7" cellspacing="0" width="100%">
+    <tr>
+        <td valign="top" width="9%">&nbsp;</td>
+        <td valign="top" width="39%">OutputIterator out</td>
+        <td valign="top" width="44%">An output iterator type, the
+        output string is sent to this iterator. Typically this
+        would be a std::ostream_iterator.</td>
+        <td valign="top" width="9%">&nbsp;</td>
+    </tr>
+    <tr>
+        <td valign="top" width="9%">&nbsp;</td>
+        <td valign="top" width="39%"><b>const</b>
+        match_results&lt;iterator, Allocator&gt;&amp; m</td>
+        <td valign="top" width="44%">An instance of
+        match_results&lt;&gt; obtained from one of the matching
+        algorithms above, and denoting what matched.</td>
+        <td valign="top" width="9%">&nbsp;</td>
+    </tr>
+    <tr>
+        <td valign="top" width="9%">&nbsp;</td>
+        <td valign="top" width="39%"><b>const</b> charT* fmt</td>
+        <td valign="top" width="44%">A format string that
+        determines how the match is transformed into the new
+        string.</td>
+        <td valign="top" width="9%">&nbsp;</td>
+    </tr>
+    <tr>
+        <td valign="top" width="9%">&nbsp;</td>
+        <td valign="top" width="39%"><b>unsigned</b> flags</td>
+        <td valign="top" width="44%">Optional flags which
+        describe how the format string is to be interpreted.</td>
+        <td valign="top" width="9%">&nbsp;</td>
+    </tr>
+</table>
+
+<p><a name="format_flags"></a>Format flags are defined as follows:
+<br>
+&nbsp; </p>
+
+<table border="0" cellpadding="7" cellspacing="0" width="100%">
+    <tr>
+        <td valign="top" width="9%">&nbsp;</td>
+        <td valign="top" width="39%">format_all</td>
+        <td valign="top" width="43%">Enables all syntax options (perl-like
+        plus extentions).</td>
+        <td valign="top" width="9%">&nbsp;</td>
+    </tr>
+    <tr>
+        <td valign="top" width="9%">&nbsp;</td>
+        <td valign="top" width="39%">format_sed</td>
+        <td valign="top" width="43%">Allows only a sed-like
+        syntax.</td>
+        <td valign="top" width="9%">&nbsp;</td>
+    </tr>
+    <tr>
+        <td valign="top" width="9%">&nbsp;</td>
+        <td valign="top" width="39%">format_perl</td>
+        <td valign="top" width="43%">Allows only a perl-like
+        syntax.</td>
+        <td valign="top" width="9%">&nbsp;</td>
+    </tr>
+    <tr>
+        <td valign="top" width="9%">&nbsp;</td>
+        <td valign="top" width="39%">format_no_copy</td>
+        <td valign="top" width="43%">Disables copying of
+        unmatched sections to the output string during <a
+        href="#reg_merge">regex_merge</a> operations.</td>
+        <td valign="top" width="9%">&nbsp;</td>
+    </tr>
+    <tr>
+        <td>&nbsp;</td>
+        <td>format_first_only</td>
+        <td>When this flag is set only the first occurance will
+        be replaced (applies to regex_merge only).</td>
+        <td>&nbsp;</td>
+    </tr>
+</table>
+
+<p><br>
+&nbsp; </p>
+
+<p>The format string syntax (and available options) is described
+more fully under <a href="format_string.htm#format_string">format
+strings</a>. </p>
+
+<hr>
+
+<h3><a name="reg_merge"></a>Algorithm regex_merge</h3>
+
+<p>#include &lt;<a href="../../boost/regex.hpp">boost/regex.hpp</a>&gt;
+</p>
+
+<p>The algorithm regex_merge is a combination of <a
+href="#reg_grep">regex_grep</a> and <a href="#reg_format">regex_format</a>.
+That is, it greps through the string finding all the matches to
+the regular expression, for each match it then calls <a
+href="#reg_format">regex_format</a> to format the string and
+sends the result to the output iterator. Sections of text that do
+not match are copied to the output unchanged only if the flags
+parameter does not have the flag <a href="#format_flags">format_no_copy</a>
+set. If the flag <a href="#format_flags">format_first_only</a> is
+set then only the first occurance is replaced rather than all
+occurrences.</p>
+
+<pre><b>template</b> &lt;<b>class</b> OutputIterator, <b>class</b> iterator, <b>class</b> traits, <b>class</b> Allocator, <b>class</b> charT&gt;
+OutputIterator regex_merge(OutputIterator out,&nbsp;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;iterator first,
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; iterator last,
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>const</b> reg_expression&lt;charT, traits, Allocator&gt;&amp; e,&nbsp;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <b>const</b> charT* fmt,&nbsp;
+<b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;unsigned</b> <b>int</b> flags = match_default);
+
+<b>template</b> &lt;<b>class</b> OutputIterator, <b>class</b> iterator, <b>class</b> traits, <b>class</b> Allocator, <b>class</b> charT&gt;
+OutputIterator regex_merge(OutputIterator out,&nbsp;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;iterator first,
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;iterator last,
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>const</b> reg_expression&lt;charT, traits, Allocator&gt;&amp; e,&nbsp;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;std::basic_string&lt;charT&gt;&amp; fmt,&nbsp;
+<b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;unsigned</b> <b>int</b> flags = match_default);</pre>
+
+<p>The library also defines the following convenience variation
+of regex_merge, which returns the result directly as a string,
+rather than outputting to an iterator [note - this version may
+not be available, or may be available in a more limited form,
+depending upon your compilers capabilities]: </p>
+
+<pre><b>template</b> &lt;<b>class</b> traits, <b>class</b> Allocator, <b>class</b> charT&gt;
+std::basic_string&lt;charT&gt; regex_merge(<b>const</b> std::basic_string&lt;charT&gt;&amp; text,
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>const</b> reg_expression&lt;charT, traits, Allocator&gt;&amp; e,&nbsp;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>const</b> charT* fmt,&nbsp;
+<b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;unsigned</b> <b>int</b> flags = match_default);
+
+<b>template</b> &lt;<b>class</b> traits, <b>class</b> Allocator, <b>class</b> charT&gt;
+std::basic_string&lt;charT&gt; regex_merge(<b>const</b> std::basic_string&lt;charT&gt;&amp; text,
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>const</b> reg_expression&lt;charT, traits, Allocator&gt;&amp; e,&nbsp;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>const</b> std::basic_string&lt;charT&gt;&amp; fmt,&nbsp;
+<b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;unsigned</b> <b>int</b> flags = match_default);</pre>
+
+<p>Parameters to the main version of the function are passed as
+follows: <br>
+&nbsp; </p>
+
+<table border="0" cellpadding="7" cellspacing="0" width="100%">
+    <tr>
+        <td valign="top" width="7%">&nbsp;</td>
+        <td valign="top" width="40%">OutputIterator out</td>
+        <td valign="top" width="45%">An output iterator type, the
+        output string is sent to this iterator. Typically this
+        would be a std::ostream_iterator.</td>
+        <td valign="top" width="8%">&nbsp;</td>
+    </tr>
+    <tr>
+        <td valign="top" width="7%">&nbsp;</td>
+        <td valign="top" width="40%">iterator first</td>
+        <td valign="top" width="45%">The start of the range of
+        text to grep (bidirectional-iterator).</td>
+        <td valign="top" width="8%">&nbsp;</td>
+    </tr>
+    <tr>
+        <td valign="top" width="7%">&nbsp;</td>
+        <td valign="top" width="40%">iterator last</td>
+        <td valign="top" width="45%">The end of the range of text
+        to grep (bidirectional-iterator).</td>
+        <td valign="top" width="8%">&nbsp;</td>
+    </tr>
+    <tr>
+        <td valign="top" width="7%">&nbsp;</td>
+        <td valign="top" width="40%"><b>const</b>
+        reg_expression&lt;charT, traits, Allocator&gt;&amp; e</td>
+        <td valign="top" width="45%">The expression to search for.</td>
+        <td valign="top" width="8%">&nbsp;</td>
+    </tr>
+    <tr>
+        <td valign="top" width="7%">&nbsp;</td>
+        <td valign="top" width="40%"><b>const</b> charT* fmt</td>
+        <td valign="top" width="45%">The format string to be
+        applied to sections of text that match.</td>
+        <td valign="top" width="8%">&nbsp;</td>
+    </tr>
+    <tr>
+        <td valign="top" width="7%">&nbsp;</td>
+        <td valign="top" width="40%"><b>unsigned</b> <b>int</b>
+        flags = match_default</td>
+        <td valign="top" width="45%">Flags which determine how
+        the expression is matched - see <a href="#match_type">match_flags</a>,
+        and how the format string is interpreted - see <a
+        href="#format_flags">format_flags</a>.</td>
+        <td valign="top" width="8%">&nbsp;</td>
+    </tr>
+</table>
+
+<p>Example: the following <a
+href="example/snippets/regex_merge_example.cpp">example</a> takes
+C/C++ source code as input, and outputs syntax highlighted HTML
+code. </p>
+
+<pre>
+<font color="#008080">#include &lt;fstream&gt;
+#include &lt;sstream&gt;
+#include &lt;string&gt;
+#include &lt;iterator&gt;
+#include &lt;boost/regex.hpp&gt;
+#include &lt;fstream&gt;
+#include &lt;iostream&gt;
+</font>
+<font color="#000080"><i>// purpose:
+// takes the contents of a file and transform to
+// syntax highlighted code in html format
+</i></font>
+boost::regex e1, e2;
+<b>extern</b> <b>const</b> <b>char</b>* expression_text;
+<b>extern</b> <b>const</b> <b>char</b>* format_string;
+<b>extern</b> <b>const</b> <b>char</b>* pre_expression;
+<b>extern</b> <b>const</b> <b>char</b>* pre_format;
+<b>extern</b> <b>const</b> <b>char</b>* header_text;
+<b>extern</b> <b>const</b> <b>char</b>* footer_text;
+
+<b>void</b> load_file(std::string&amp; s, std::istream&amp; is)
+{
+   s.erase();
+   s.reserve(is.rdbuf()-&gt;in_avail());
+   <b>char</b> c;
+   <b>while</b>(is.get(c))
+   {
+      <b>if</b>(s.capacity() == s.size())
+         s.reserve(s.capacity() * <font color="#000080">3</font>);
+      s.append(<font color="#000080">1</font>, c);
+   }
+}
+
+<b>int</b> main(<b>int</b> argc, <b>const</b> <b>char</b>** argv)
+{
+   try{
+   e1.assign(expression_text);
+   e2.assign(pre_expression);
+   <b>for</b>(<b>int</b> i = <font color="#000080">1</font>; i &lt; argc; ++i)
+   {
+      std::cout &lt;&lt; <font color="#0000FF">&quot;Processing file &quot;</font> &lt;&lt; argv[i] &lt;&lt; std::endl;
+      std::ifstream fs(argv[i]);
+      std::string in;
+      load_file(in, fs);
+      std::string out_name(std::string(argv[i]) + std::string(<font
+color="#0000FF">&quot;.htm&quot;</font>));
+      std::ofstream os(out_name.c_str());
+      os &lt;&lt; header_text;
+      <font color="#000080"><i>// strip '&lt;' and '&gt;' first by outputting to a
+</i></font>      <font color="#000080"><i>// temporary string stream
+</i></font>      std::ostringstream t(std::ios::out | std::ios::binary);
+      std::ostream_iterator&lt;<b>char</b>, <b>char</b>&gt; oi(t);
+      boost::regex_merge(oi, in.begin(), in.end(), e2, pre_format);
+      <font color="#000080"><i>// then output to final output stream
+</i></font>      <font color="#000080"><i>// adding syntax highlighting:
+</i></font>      std::string s(t.str());
+      std::ostream_iterator&lt;<b>char</b>, <b>char</b>&gt; out(os);
+      boost::regex_merge(out, s.begin(), s.end(), e1, format_string);
+      os &lt;&lt; footer_text;
+   }
+   }
+   <strong>catch</strong>(...)
+   { <strong>return</strong> -1; }
+   <b>return</b> <font color="#000080">0</font>;
+}
+
+<b>extern</b> <b>const</b> <b>char</b>* pre_expression = <font
+color="#0000FF">&quot;(&lt;)|(&gt;)|\\r&quot;</font>;
+<b>extern</b> <b>const</b> <b>char</b>* pre_format = <font
+color="#0000FF">&quot;(?1&lt;)(?2&gt;)&quot;</font>;
+
+
+<b>const</b> <b>char</b>* expression_text = <font color="#000080"><i>// preprocessor directives: index 1
+</i></font>                              <font color="#0000FF">&quot;(^[[:blank:]]*#(?:[^\\\\\\n]|\\\\[^\\n[:punct:][:word:]]*[\\n[:punct:][:word:]])*)|&quot;
+</font>                              <font color="#000080"><i>// comment: index 2
+</i></font>                              <font color="#0000FF">&quot;(//[^\\n]*|/\\*.*?\\*/)|&quot;
+</font>                              <font color="#000080"><i>// literals: index 3
+</i></font>                              <font color="#0000FF">&quot;\\&lt;([+-]?(?:(?:0x[[:xdigit:]]+)|(?:(?:[[:digit:]]*\\.)?[[:digit:]]+(?:[eE][+-]?[[:digit:]]+)?))u?(?:(?:int(?:8|16|32|64))|L)?)\\&gt;|&quot;
+</font>                              <font color="#000080"><i>// string literals: index 4
+</i></font>                              <font color="#0000FF">&quot;('(?:[^\\\\']|\\\\.)*'|\&quot;(?:[^\\\\\&quot;]|\\\\.)*\&quot;)|&quot;
+</font>                              <font color="#000080"><i>// keywords: index 5
+</i></font>                              <font color="#0000FF">&quot;\\&lt;(__asm|__cdecl|__declspec|__export|__far16|__fastcall|__fortran|__import&quot;
+</font>                              <font color="#0000FF">&quot;|__pascal|__rtti|__stdcall|_asm|_cdecl|__except|_export|_far16|_fastcall&quot;
+</font>                              <font color="#0000FF">&quot;|__finally|_fortran|_import|_pascal|_stdcall|__thread|__try|asm|auto|bool&quot;
+</font>                              <font color="#0000FF">&quot;|break|case|catch|cdecl|char|class|const|const_cast|continue|default|delete&quot;
+</font>                              <font color="#0000FF">&quot;|do|double|dynamic_cast|else|enum|explicit|extern|false|float|for|friend|goto&quot;
+</font>                              <font color="#0000FF">&quot;|if|inline|int|long|mutable|namespace|new|operator|pascal|private|protected&quot;
+</font>                              <font color="#0000FF">&quot;|public|register|reinterpret_cast|return|short|signed|sizeof|static|static_cast&quot;
+</font>                              <font color="#0000FF">&quot;|struct|switch|template|this|throw|true|try|typedef|typeid|typename|union|unsigned&quot;
+</font>                              <font color="#0000FF">&quot;|using|virtual|void|volatile|wchar_t|while)\\&gt;&quot;
+</font>                              ;
+
+<b>const</b> <b>char</b>* format_string = <font color="#0000FF">&quot;(?1&lt;font color=\&quot;#008040\&quot;&gt;$&amp;&lt;/font&gt;)&quot;
+</font>                            <font color="#0000FF">&quot;(?2&lt;I&gt;&lt;font color=\&quot;#000080\&quot;&gt;$&amp;&lt;/font&gt;&lt;/I&gt;)&quot;
+</font>                            <font color="#0000FF">&quot;(?3&lt;font color=\&quot;#0000A0\&quot;&gt;$&amp;&lt;/font&gt;)&quot;
+</font>                            <font color="#0000FF">&quot;(?4&lt;font color=\&quot;#0000FF\&quot;&gt;$&amp;&lt;/font&gt;)&quot;
+</font>                            <font color="#0000FF">&quot;(?5&lt;B&gt;$&amp;&lt;/B&gt;)&quot;</font>;
+
+<b>const</b> <b>char</b>* header_text = <font color="#0000FF">&quot;&lt;HTML&gt;\n&lt;HEAD&gt;\n&quot;
+</font>                          <font color="#0000FF">&quot;&lt;TITLE&gt;Auto-generated html formated source&lt;/TITLE&gt;\n&quot;
+</font>                          <font color="#0000FF">&quot;&lt;META HTTP-EQUIV=\&quot;Content-Type\&quot; CONTENT=\&quot;text/html; charset=windows-1252\&quot;&gt;\n&quot;
+</font>                          <font color="#0000FF">&quot;&lt;/HEAD&gt;\n&quot;
+</font>                          <font color="#0000FF">&quot;&lt;BODY LINK=\&quot;#0000ff\&quot; VLINK=\&quot;#800080\&quot; BGCOLOR=\&quot;#ffffff\&quot;&gt;\n&quot;
+</font>                          <font color="#0000FF">&quot;&lt;P&gt; &lt;/P&gt;\n&lt;PRE&gt;&quot;</font>;
+
+<b>const</b> <b>char</b>* footer_text = <font color="#0000FF">&quot;&lt;/PRE&gt;\n&lt;/BODY&gt;\n\n&quot;</font>;</pre>
+
+<hr>
+
+<h3><a name="regex_split"></a>Algorithm regex_split</h3>
+
+<p>#include &lt;<a href="../../boost/regex.hpp">boost/regex.hpp</a>&gt;
+</p>
+
+<p>Algorithm regex_split performs a similar operation to the perl
+split operation, and comes in three overloaded forms: </p>
+
+<pre><b>template</b> &lt;<b>class</b> OutputIterator, <b>class</b> charT, <b>class</b> Traits1, <b>class</b> Alloc1, <b>class</b> Traits2, <b>class</b> Alloc2&gt;
+std::size_t regex_split(OutputIterator out,&nbsp;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; std::basic_string&lt;charT, Traits1, Alloc1&gt;&amp; s,&nbsp;
+&nbsp;<b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; const</b> reg_expression&lt;charT, Traits2, Alloc2&gt;&amp; e,
+&nbsp;<b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; unsigned</b> flags,
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; std::size_t max_split);
+
+<b>template</b> &lt;<b>class</b> OutputIterator, <b>class</b> charT, <b>class</b> Traits1, <b>class</b> Alloc1, <b>class</b> Traits2, <b>class</b> Alloc2&gt;
+std::size_t regex_split(OutputIterator out,&nbsp;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; std::basic_string&lt;charT, Traits1, Alloc1&gt;&amp; s,&nbsp;
+&nbsp;<b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; const</b> reg_expression&lt;charT, Traits2, Alloc2&gt;&amp; e,
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <b>unsigned</b> flags = match_default);
+
+<b>template</b> &lt;<b>class</b> OutputIterator, <b>class</b> charT, <b>class</b> Traits1, <b>class</b> Alloc1&gt;
+std::size_t regex_split(OutputIterator out, 
+                        std::basic_string&lt;charT, Traits1, Alloc1&gt;&amp; s);</pre>
+
+<p>Each version takes an output-iterator for output, and a string
+for input. If the expression contains no marked sub-expressions,
+then the algorithm writes one string onto the output-iterator for
+each section of input that does not match the expression. If the
+expression does contain marked sub-expressions, then each time a
+match is found, one string for each marked sub-expression will be
+written to the output-iterator. No more than <i>max_split </i>strings
+will be written to the output-iterator. Before returning, all the
+input processed will be deleted from the string <i>s</i> (if <i>max_split
+</i>is not reached then all of <i>s</i> will be deleted). Returns
+the number of strings written to the output-iterator. If the
+parameter <i>max_split</i> is not specified then it defaults to
+UINT_MAX. If no expression is specified, then it defaults to
+&quot;\s+&quot;, and splitting occurs on whitespace. </p>
+
+<p><a href="example/snippets/regex_split_example_1.cpp">Example</a>:
+the following function will split the input string into a series
+of tokens, and remove each token from the string <i>s</i>: </p>
+
+<pre><b>unsigned</b> tokenise(std::list&lt;std::string&gt;&amp; l, std::string&amp; s)
+{
+<b>&nbsp;&nbsp; return</b> boost::regex_split(std::back_inserter(l), s);
+}</pre>
+
+<p><a href="example/snippets/regex_split_example_2.cpp">Example</a>:
+the following short program will extract all of the URL's from a
+html file, and print them out to <i>cout</i>: </p>
+
+<pre><font color="#008000">#include &lt;list&gt;
+#include &lt;fstream&gt;
+#include &lt;iostream&gt;
+#include &lt;boost/regex.hpp&gt;
+</font>
+boost::regex e(<font color="#000080">&quot;&lt;\\s*A\\s+[^&gt;]*href\\s*=\\s*\&quot;([^\&quot;]*)\&quot;&quot;</font>,
+               boost::regbase::normal | boost::regbase::icase);
+
+<b>void</b> load_file(std::string&amp; s, std::istream&amp; is)
+{
+   s.erase();
+   <font color="#000080">//
+   // attempt to grow string buffer to match file size,
+   // this doesn't always work...
+</font>   s.reserve(is.rdbuf()-&amp;gtin_avail());
+   <b>char</b> c;
+   <b>while</b>(is.get(c))
+   {
+      <font color="#000080">// use logarithmic growth stategy, in case
+      // in_avail (above) returned zero:
+</font>      <b>if</b>(s.capacity() == s.size())
+         s.reserve(s.capacity() * 3);
+      s.append(1, c);
+   }
+}
+
+
+<b>int</b> main(<b>int</b> argc, <b>char</b>** argv)
+{
+   std::string s;
+   std::list&lt;std::string&gt; l;
+
+   <b>for</b>(<b>int</b> i = 1; i &lt; argc; ++i)
+   {
+      std::cout &lt;&lt; <font color="#000080">&quot;Findings URL's in &quot;</font> &lt;&lt; argv[i] &lt;&lt; <font
+color="#000080">&quot;:&quot;</font> &lt;&lt; std::endl;
+      s.erase();
+      std::ifstream is(argv[i]);
+      load_file(s, is);
+      boost::regex_split(std::back_inserter(l), s, e);
+      <b>while</b>(l.size())
+      {
+         s = *(l.begin());
+         l.pop_front();
+         std::cout &lt;&lt; s &lt;&lt; std::endl;
+      }
+   }
+   <b>return</b> 0;
+}</pre>
+
+<hr>
+
+<h3><a name="partial_matches"></a>Partial Matches</h3>
+
+<p>The match-flag <code>match_partial</code> can be passed to the
+following algorithms: <a href="#reg_match">regex_match</a>, <a
+href="#reg_search">regex_search</a>, and <a href="#reg_grep">regex_grep</a>.
+When used it indicates that partial as well as full matches
+should be found. A partial match is one that matched one or more
+characters at the end of the text input, but did not match all of
+the regular expression (although it may have done so had more
+input been available). Partial matches are typically used when
+either validating data input (checking each character as it is
+entered on the keyboard), or when searching texts that are either
+too long to load into memory (or even into a memory mapped file),
+or are of indeterminate length (for example the source may be a
+socket or similar). Partial and full matches can be
+differentiated as shown in the following table (the variable M
+represents an instance of match_results&lt;&gt; as filled in by
+regex_match, regex_search or regex_grep):<br>
+</p>
+
+<table border="0" cellpadding="7" cellspacing="0" width="638">
+    <tr>
+        <td valign="top" width="20%">&nbsp;</td>
+        <td valign="top" width="20%">Result</td>
+        <td valign="top" width="20%">M[0].matched</td>
+        <td valign="top" width="20%">M[0].first</td>
+        <td valign="top" width="20%">M[0].second</td>
+    </tr>
+    <tr>
+        <td valign="top" width="20%">No match</td>
+        <td valign="top" width="20%">False</td>
+        <td valign="top" width="20%">Undefined</td>
+        <td valign="top" width="20%">Undefined</td>
+        <td valign="top" width="20%">Undefined</td>
+    </tr>
+    <tr>
+        <td valign="top" width="20%">Partial match</td>
+        <td valign="top" width="20%">True</td>
+        <td valign="top" width="20%">False</td>
+        <td valign="top" width="20%">Start of partial match.</td>
+        <td valign="top" width="20%">End of partial match (end of
+        text).</td>
+    </tr>
+    <tr>
+        <td valign="top" width="20%">Full match</td>
+        <td valign="top" width="20%">True</td>
+        <td valign="top" width="20%">True</td>
+        <td valign="top" width="20%">Start of full match.</td>
+        <td valign="top" width="20%">End of full match.</td>
+    </tr>
+</table>
+
+<p>The following <a
+href="example/snippets/partial_regex_match.cpp">example</a> tests
+to see whether the text could be a valid credit card number, as
+the user presses a key, the character entered would be added to
+the string being built up, and passed to <code>is_possible_card_number</code>.
+If this returns true then the text could be a valid card number,
+so the user interface's OK button would be enabled. If it returns
+false, then this is not yet a valid card number, but could be
+with more input, so the user interface would disable the OK
+button. Finally, if the procedure throws an exception the input
+could never become a valid number, and the inputted character
+must be discarded, and a suitable error indication displayed to
+the user.</p>
+
+<pre>#include &lt;string&gt;
+#include &lt;iostream&gt;
+#include &lt;boost/regex.hpp&gt;
+
+boost::regex e(&quot;(\\d{3,4})[- ]?(\\d{4})[- ]?(\\d{4})[- ]?(\\d{4})&quot;);
+
+bool is_possible_card_number(const std::string&amp; input)
+{
+   //
+   // return false for partial match, true for full match, or throw for
+   // impossible match based on what we have so far...
+   boost::match_results&lt;std::string::const_iterator&gt; what;
+   if(0 == boost::regex_match(input, what, e, boost::match_default | boost::match_partial))
+   {
+      // the input so far could not possibly be valid so reject it:
+      throw std::runtime_error(&quot;Invalid data entered - this could not possibly be a valid card number&quot;);
+   }
+   // OK so far so good, but have we finished?
+   if(what[0].matched)
+   {
+      // excellent, we have a result:
+      return true;
+   }
+   // what we have so far is only a partial match...
+   return false;
+}</pre>
+
+<p>In the following <a
+href="example/snippets/partial_regex_match.cpp">example</a>, text
+input is taken from a stream containing an unknown amount of
+text; this example simply counts the number of html tags
+encountered in the stream. The text is loaded into a buffer and
+searched a part at a time, if a partial match was encountered,
+then the partial match gets searched a second time as the start
+of the next batch of text:</p>
+
+<pre>#include &lt;iostream&gt;
+#include &lt;fstream&gt;
+#include &lt;sstream&gt;
+#include &lt;string&gt;
+#include &lt;boost/regex.hpp&gt;
+
+// match some kind of html tag:
+boost::regex e(&quot;&lt;[^&gt;]*&gt;&quot;);
+// count how many:
+unsigned int tags = 0;
+// saved position of partial match:
+char* next_pos = 0;
+
+bool grep_callback(const boost::match_results&lt;char*&gt;&amp; m)
+{
+   if(m[0].matched == false)
+   {
+      // save position and return:
+      next_pos = m[0].first;
+   }
+   else
+      ++tags;
+   return true;
+}
+
+void search(std::istream&amp; is)
+{
+   char buf[4096];
+   next_pos = buf + sizeof(buf);
+   bool have_more = true;
+   while(have_more)
+   {
+      // how much do we copy forward from last try:
+      unsigned leftover = (buf + sizeof(buf)) - next_pos;
+      // and how much is left to fill:
+      unsigned size = next_pos - buf;
+      // copy forward whatever we have left:
+      memcpy(buf, next_pos, leftover);
+      // fill the rest from the stream:
+      unsigned read = is.readsome(buf + leftover, size);
+      // check to see if we've run out of text:
+      have_more = read == size;
+      // reset next_pos:
+      next_pos = buf + sizeof(buf);
+      // and then grep:
+      boost::regex_grep(grep_callback,
+                        buf,
+                        buf + read + leftover,
+                        e,
+                        boost::match_default | boost::match_partial);
+   }
+}</pre>
+
+<hr align="left">
+
+<p><i>Copyright </i><a href="mailto:John_Maddock@compuserve.com"><i>Dr
+John Maddock</i></a><i> 1998-2001 all rights reserved.</i> </p>
+</body>
+</html>

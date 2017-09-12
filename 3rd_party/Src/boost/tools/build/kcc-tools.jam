@@ -1,0 +1,83 @@
+# (C) Copyright Jeremy Siek 2001. Permission to copy, use, modify, sell
+# and distribute this software is granted provided this copyright notice
+# appears in all copies. This software is provided "as is" without
+# express or implied warranty, and with no claim as to its suitability
+# for any purpose.
+
+
+flags kcc CFLAGS <debug-symbols>on : -g ;
+flags kcc LINKFLAGS <debug-symbols>on : -g ;
+flags kcc LINKFLAGS <debug-symbols>off : -s ;
+flags kcc CFLAGS <optimization>off : +K0 ;
+flags kcc CFLAGS <optimization>speed : +K2 ;
+
+flags kcc CFLAGS <optimization>space : ;
+flags kcc CFLAGS <inlining>off : ;
+flags kcc CFLAGS <inlining>on : --inline_generated_space_time=10000 --inline_implicit_space_time=10000 --inline_keyword_space_time=10000 ;
+flags kcc CFLAGS <inlining>full :  --inline_auto_space_time=10000 --inline_generated_space_time=10000 --inline_implicit_space_time=10000 --inline_keyword_space_time=10000 ;
+
+flags kcc CFLAGS <cflags> ;
+flags kcc C++FLAGS <cxxflags> ;
+flags kcc DEFINES <define> ;
+flags kcc UNDEFS <undef> ;
+flags kcc HDRS <include> ;
+flags kcc STDHDRS <sysinclude> ;
+flags kcc LINKFLAGS <linkflags> ;
+flags kcc ARFLAGS <arflags> ;
+
+flags kcc LIBPATH <library-path> ;
+flags kcc NEEDLIBS <library-file> ;
+flags kcc FINDLIBS <find-library> ;
+
+
+set-as-singleton kcc.root-directory ;
+kcc.bin-directory = $(kcc.root-directory)$(SLASH)bin$(SLASH) ;
+kcc.bin-directory ?= " " ;
+
+#### Link ####
+
+rule Link-action
+{
+    kcc-Link-action $(<) : $(>) ;
+}
+
+actions kcc-Link-action bind NEEDLIBS NEEDIMPS
+{
+    $(kcc.bin-directory)KCC $(LINKFLAGS) -o "$(<[1])" -L$(STDLIBPATH) "$(>)" "$(NEEDLIBS)" "$(IMPLIB_FLAGS)$(NEEDIMPS)" -lm
+}
+
+#### Cc #####
+
+rule Cc-action
+{
+    kcc-Cc-action $(<) : $(>) ;
+}
+
+actions kcc-Cc-action
+{
+    $(kcc.bin-directory)KCC -c $(CFLAGS) -I"$(HDRS)" -I"$(STDHDRS)" -o "$(<)" "$(>)"
+}
+
+#### C++ ####
+rule C++-action
+{
+    kcc-C++-action $(<) : $(>) ;
+}
+
+actions kcc-C++-action
+{
+    $(kcc.bin-directory)KCC -c -U$(UNDEFS) -D$(DEFINES) $(CFLAGS) $(C++FLAGS) -I"$(HDRS)" -I"$(STDHDRS)" -o "$(<)" "$(>)"
+}
+
+
+#### Archive ####
+rule Archive-action
+{
+    kcc-Archive-action $(<) : $(>) ;
+}
+
+actions updated together piecemeal kcc-Archive-action
+{
+    $(kcc.bin-directory)KCC -g $(ARFLAGS) -o "$(<)" "$(>)"
+}
+

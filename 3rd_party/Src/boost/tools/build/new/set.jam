@@ -1,0 +1,60 @@
+#  (C) Copyright David Abrahams 2001. Permission to copy, use, modify, sell and
+#  distribute this software is granted provided this copyright notice appears in
+#  all copies. This software is provided "as is" without express or implied
+#  warranty, and with no claim as to its suitability for any purpose.
+
+# difference
+# returns the elements of B that are not in A
+rule difference ( B * : A * )
+{
+    local result = ;
+    local element ;
+    for element in $(B)
+    {
+        if ! ( $(element) in $(A) )
+        {
+            result += $(element) ;
+        }
+    }
+    return $(result) ;
+}
+
+# intersection set1 : set2
+#
+# Removes from set1 any items which don't appear in set2 and returns the result.
+rule intersection ( set1 * : set2 * )
+{
+    local result ;
+    for local v in $(set1)
+    {
+        if $(v) in $(set2)
+        {
+            result += $(v) ;
+        }
+    }
+    return $(result) ;
+}
+
+rule equal ( set1 * : set2 * )
+{
+    if $(set1) in $(set2) && ( $(set2) in $(set1) )
+    {
+        return true ;
+    }
+}
+
+rule __test__ ( )
+{
+    import assert ;
+    
+    assert.result 0 1 4 6 8 9
+        : difference 0 1 2 3 4 5 6 7 8 9 : 2 3 5 7 ;
+        
+    assert.result 2 5 7 : intersection 0 1 2 4 5 6 7 8 9 : 2 3 5 7 ;
+    
+    assert.true equal 1 1 2 3 : 3 2 2 1 ;
+    
+    assert.false equal 2 3 : 3 2 2 1 ;
+}
+
+

@@ -1,0 +1,68 @@
+
+import type ;
+import generators ;
+
+type.register WHL : whl ;
+type.register DLP : dlp ;
+type.register WHL_LR0 : lr0 ;
+type.register WD : wd ;
+
+generators.register-standard extra.whale : WHL : CPP WHL_LR0 ;
+generators.register-standard extra.dolphin : DLP : CPP ;
+generators.register-standard extra.wd : WD : WHL(%_parser) DLP(%_lexer) ;
+
+rule whale ( targets * : sources * : properties * )
+{
+}
+
+actions whale 
+{
+    echo "Whale consuming " $(>)
+    touch $(<)
+}
+
+rule dolphin ( targets * : source * : properties * )
+{
+}
+
+actions dolphin
+{    
+    echo "Dolphin consuming" $(>)
+    touch $(<)        
+}
+
+rule wd ( targets * : source * : properties * )
+{
+}
+
+actions wd
+{    
+    echo "WD consuming" $(>)
+    touch $(<)        
+}
+
+rule x ( target * : source * : properties * )
+{
+}
+
+
+actions x 
+{
+    echo "X: source is " $(>)
+    touch $(<)
+}
+
+rule x_pro ( target * : source * : properties * )
+{
+}
+
+
+actions x_pro
+{
+    echo "X_PRO: source is " $(>)
+    touch $(<)
+}
+
+
+
+

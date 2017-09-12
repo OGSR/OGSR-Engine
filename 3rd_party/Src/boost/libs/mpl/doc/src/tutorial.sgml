@@ -1,0 +1,29 @@
+<!-- ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||| section -->
+<section id="tutorial">
+<title>Mini-tutorial</>
+
+<!-- ||||||||||||||||||||||||||||| subsection -->
+<section id="tutorial.conventions">
+<title>Conventions used</>
+
+<para>
+The examples used through this tutorial use fully qualified names, e.g. <literal>std::vector</> instead of plain <literal>vector</>. Any unqualified name refers to a local entity defined in the example itself. The names from <literal>boost::mpl</> namespace are referred to using <literal>mpl</> namespace alias (e.g. <literal>mpl::apply</> instead of <literal>boost::mpl::apply</>), as if the following namespace alias definition were in effect:
+</>
+
+<programlisting>
+<![CDATA[
+namespace mpl = boost::mpl;
+]]>
+</>
+
+<para>Note that the library offers a special header, <literal>boost/mpl/alias.hpp</>, including which gives you a rough equivalent of the above. Alternatively, you can always spell the namespace alias definition manually in each translation unit as needed (if you choose to use the shorter namespace notation at all).
+</>
+
+</section>
+
+&metafunctions;
+&if;
+&applyif;
+&applyif2;
+
+</section>

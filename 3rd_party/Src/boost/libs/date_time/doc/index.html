@@ -1,0 +1,223 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html><head><meta http-equiv="Content-Type" content="text/html;charset=iso-8859-1">
+<title>Boost Date-Time Library Documentation</title>
+<link href="doxygen.css" rel="stylesheet" type="text/css">
+</head>
+
+<body>
+<a href="../../../index.htm">
+<img align="left" src="../../../c++boost.gif" alt="C++ Boost">
+</a>  
+
+<h1>Boost Date-Time Library Documentation</h1>
+<p>
+<h3 align="center">Version 1.01</h3>
+<hr>
+
+<h2><a name="contents">Contents</a></h2>
+<p>
+<font class="bold">Overview</font><br><br>
+
+<p>
+<a href="#intro">Introduction</a>  -- 
+<a href="#motivation">Motivation</a> -- 
+<a href="#usage">Usage Examples</a>  -- 
+<a href="#domain">Domain Concepts</a> -- 
+<a href="#design">Design and Extensions</a> -- 
+<a href="#acknowledge">Acknowledgements</a> --
+<a href="#more">More Info</a>
+<p>
+<a href="BuildInfo.html">Build-Compiler Information</a> --
+<a href="Changes.html">Change History</a> --
+<a href="#test">Tests</a> --
+<a href="license.html">License</a> --
+<a href="BasicTerms.html">Basic Terminology Reference</a> --
+<a href="References.html">References</a>
+
+<p>
+<font class="bold">Date Programming</font><br><br>
+<a href="gregorian.html">Gregorian Date System</a><br>
+<ul>
+    <li><a href="class_date.html">Class date</a>
+    <li><a href="class_date_duration.html">Class date_duration</a> 
+    <li><a href="class_date_period.html">Class date_period</a>
+    <li><a href="date_iterators.html">Date Iterators</a> 
+    <li><a href="date_algorithms.html">Date Generators / Algorithms</a> 
+    <li><a href="class_gregorian_calendar.html">Class gregorian_calendar</a>
+    <li><a href="class_date.html#constructfromclock">Class day_clock</a>
+</ul>
+
+<p>
+<font class="bold">Time Programming</font><br><br>
+<a href="posix_time.html">Posix Time System</a><br>
+
+<ul>
+    <li><a href="class_ptime.html">Class ptime</a>
+    <li><a href="class_time_duration.html">Class time_duration</a>
+    <li><a href="class_time_period.html">Class time_period</a>
+    <li><a href="time_iterators.html">Time Iterators</a> 
+    <li><a href="local_time_adjust.html">UTC / Local Time Adjustments</a>
+</ul>
+
+
+
+<h2><a name="intro">Introduction</a></h2>
+
+<p>
+A set of date-time libraries based on generic programming concepts.
+<p>
+<h2><a name="motivation">Motivation</a></h2>
+
+<p>
+The motivation for this library comes from working with and helping build several date-time libraries on several projects. Date-time libraries provide fundamental infrastructure for most development projects. However, most of them have limitations in their ability to calculate, format, convert, or perform some other functionality. For example, most libraries  do not correctly handle leap seconds, provide concepts such as infinity, or provide the ability to use high resolution or network time sources.  These libraries also tend to be rigid in their representation of dates and times. Thus customized policies for a project or subproject are not possible.
+<p>
+Programming with dates and times should be almost as simple and natural as programming with strings and integers.  Applications with lots of temporal logic can be radically  simplified by having a robust set of operators and calculation capabilities. Classes should provide the ability to compare dates and times, add lengths or time durations, retrieve dates and times from  clocks, and work naturally with date and time intervals.
+<p>
+<h2><a name="usage">Usage Examples</a></h2>
+
+<p>
+The following shows examples of the sorts of code that can be written using the gregorian date system.  See  <a href="gregorian.html">Date Programming</a> for more details.
+<p>
+<div class="fragment"><pre>     <font class="keyword">using</font> <font class="keyword">namespace </font>boost::gregorian; 
+     date weekstart(2002,Feb,1);
+     date weekend  (2002,Feb,7);
+     date_duration fiveDays(5); 
+     date d3 = d1 + fiveDays;
+     date today = day_clock::local_day();
+     <font class="keywordflow">if</font> (d3 &gt;= today) {} <font class="comment">//date comparison operators</font>
+     
+     date_period thisWeek(d1,d2);
+     <font class="keywordflow">if</font> (thisWeek.contains(today)) {}<font class="comment">//do something</font>
+    
+     <font class="comment">//iterate and print the week</font>
+     day_iterator itr(weekstart);
+     <font class="keywordflow">for</font> (; itr &lt;= weekend; ++itr) {
+       std::cout &lt;&lt; to_iso_extended_string(*itr) &lt;&lt; std::endl;
+     }     </pre></div> 
+
+And some time examples using the posix_time system. See <a href="posix_time.html">Time Programming</a> for more details.
+
+<div class="fragment"><pre>     <font class="keyword">using</font> <font class="keyword">namespace </font>boost::posix_time; 
+     date d(2002,Feb,1); <font class="comment">//an arbitrary date</font>
+     ptime t1(d, hours(5)+nanosec(100));<font class="comment">//date + time of day offset</font>
+     ptime t2 = t1 - minutes(4)+seconds(2);
+     ptime now = second_clock::local_time(); <font class="comment">//use the clock</font>
+     <font class="comment">//Get the date part out of the time</font>
+     date today = now.date();
+     date tommorrow = today + date_duration(1);
+     ptime tommorrow_start(tommorrow); <font class="comment">//midnight </font>
+
+     <font class="comment">//starting at current time iterator adds by one hour</font>
+     time_iterator titr(now,hours(1)); 
+     <font class="keywordflow">for</font> (; titr &lt; tommorrow_start; ++titr) {
+       std::cout &lt;&lt; to_simple_string(*titr) &lt;&lt; std::endl;
+     }</pre></div>
+<p>
+
+<p>
+<h2><a name="domain">Domain Concepts</a></h2>
+<p>
+The date time domain is rich in terminology and problems.  The following is a brief introduction to the concepts you will find reflected in the library.
+<p>
+
+The library supports 3 basic temporal types:
+<UL>
+<li> <font class="bold">Time Point</font>     -- Specifier for a location in the time continuum.
+<li> <font class="bold">Time Duration</font>  -- A length of time unattached to any point on the time continuum.
+<li> <font class="bold">Time Interval</font>  -- A duration of time attached to a specific point in the time continuum.  Also known as a time period.
+</UL>
+
+Each of these temporal types has a <font class="bold">Resolution</font> which is defined by the smallest representable duration.  A <font class="bold">Time system</font> provides all these categories of temporal types as well as the rules for labeling and calculating with time points.  <font class="bold">Calendar Systems</font> are simply time systems with a maximum resolution of one day.  The <font class="bold">Gregorian</font> system is the most widely used calendar system today (the ISO system is basically a derivative of this).  However, there are many other calendar systems as well.  <font class="bold">UTC (Coordinated Universal Time)</font> is a widely used civil time system.  UTC is adjusted for earth rotation at longitude 0 by the use of leap seconds (This is not predictable, only as necessary).  Most <font class="bold">local time</font> systems are based on UTC but are also adjusted for earth rotation so that daylight hours are similar everywhere.  In addition, some local times include <font class="bold">daylight savings time (DST)</font> adjustments to shift the daylight hours during the summer.
+
+<p>
+A <font class="bold">Clock Device</font> is software component (tied to some hardware) that provides the current date or time with respect to a time system.  A clock can measure the current time to a known resolution which may be higher or lower than a particular time representation.
+
+<p>
+The library provides support for calculating with dates and times.  However, time calculations are not quite the same as calculating with integers.  If you are serious about the accuracy of your time calculations need to read about <a href="Tradeoffs.html">Stability, Predictability, and Approximations</a>. 
+<p>
+Additional reference materials can be found in the following:
+
+<ul>
+<li><a href="BasicTerms.html">Basic Terminology</a> 
+<li><a href="Calculations.html">Calculations</a>
+<li><a href="Tradeoffs.html">Stability, Predictability, and Approximations</a>
+<li><a href="References.html">References</a>
+</ul>
+
+<p>
+
+<p>
+<h2><a name="test">Tests</a></h2>
+
+<p>
+The library provides a large number of tests in the 
+<pre>
+   libs/date_time/test 
+   libs/date_time/test/gregorian
+   libs/date_time/test/posix_time
+</pre> 
+<p>
+directories.  Building and executing these tests  assures that the installation is correct and that the library is functioning correctly. In addition, these tests facilitate the porting to new compilers. Finally, the tests provide examples of many functions not explicitly described in the usage examples.
+<p>
+
+<h2><a name="design">Design and Extensions</a></h2>
+<p>
+A large part of the genesis of this library has been the observation that
+few date-time libraries are built in a fashion that allows customization
+and extension.  A typical example, the calendar logic is built directly
+into the date class.  Or the clock retrieval functions are built directly
+into the time class.  These design decisions usually make it impossible to
+extend or change the library behavior.  At a more fundamental level, 
+there are usually assumptions about the resolution of time representation 
+or the gregorian calendar.  
+<p>
+Often times, the result is that a project must settle for a less
+than complete library because of a requirement for high resolution
+time representation or other assumptions that do not match the
+implementation of the library.  This is extremely unfortunate because
+development of a library of this sort is far from a trivial task.
+<p>
+While the design is far from perfect the current design is far
+more flexible than any date-time library the author is aware of.  It
+is expected that the various aspects of extensibility will be better
+documented in future versions.  Information about the design goals 
+of the library is <a href="DesignGoals.html">summarized here.</a>
+<p>
+
+<h2><a name="acknowledge">Acknowledgements</a></h2>
+
+<p>
+Many people have contributed to the development of this library.
+In particular Hugo Duncan and Joel de Guzman for help with porting to 
+various compilers.  For initial development of concepts and
+design Corwin Joy and Michael Kenniston deserve special thanks.
+Also extra thanks to Michael for writing up the theory and tradeoffs 
+part of the documentation. Dave Zumbro for initial inspiration 
+and sage thoughts.  Many thanks
+to boost reviewers and users including: 
+William Seymour, Kjell Elster, Beman Dawes, Gary Powell,
+Andrew Maclean, William Kempf, Peter Dimov, Chris Little,
+David Moore, Darin Adler, Gennadiy Rozental, Joachim Achtzehnter,
+Paul Bristow, Jan Langer, Mark Rodgers, Glen Knowles, Matthew Denman,
+and George Heintzelman.
+
+<p>
+<h2><a name="more">More Info</a></h2>
+
+<p>
+The design of the library is currently being evolved using Wiki and email  discussions. You can find more information at:
+<p>
+<ul>
+<li><a href="http://www.crystalclearsoftware.com/cgi-bin/boost_wiki/wiki.pl?GDTL">Boost Wiki GDTL Start Page</a>
+<li><a href="http://www.crystalclearsoftware.com/libraries/gdtl/gdtl_ref_guide/index.html">Full Doxygen Reference Manual</a></ul>
+
+<hr>
+<address><small>
+<!-- hhmts start -->
+Last modified: Sun Jan 19 15:49:46 MST 2003
+<!-- hhmts end -->
+ by <a href="mailto:jeff&#64;crystalclearsoftware.com">Jeff Garland</a> &copy; 2000-2002
+</small></address>
+</body>
+</html>
+

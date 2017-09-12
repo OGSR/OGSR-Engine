@@ -1,0 +1,53 @@
+token #0: [0-9]{4,6}
+token #1: [0-9]*
+token #2: \n
+testing string: 123
+1234
+12345
+123456
+1234567
+0
+
+matched token #1 :123
+matched token #2 :
+
+matched token #0 :1234
+matched token #2 :
+
+matched token #0 :12345
+matched token #2 :
+
+matched token #0 :123456
+matched token #2 :
+
+matched token #1 :1234567
+matched token #2 :
+
+matched token #1 :0
+matched token #2 :
+
+testing string: 123
+1234
+12345
+123456
+1234567
+0
+
+matched token #1 :123
+matched token #2 :
+
+matched token #0 :1234
+matched token #2 :
+
+matched token #0 :12345
+matched token #2 :
+
+matched token #0 :123456
+matched token #2 :
+
+matched token #1 :1234567
+matched token #2 :
+
+matched token #1 :0
+matched token #2 :
+

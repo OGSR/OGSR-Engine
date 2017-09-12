@@ -1,0 +1,63 @@
+#  Copyright (C) Vladimir Prus 2002. Permission to copy, use, modify, sell and
+#  distribute this software is granted provided this copyright notice appears in
+#  all copies. This software is provided "as is" without express or implied
+#  warranty, and with no claim as to its suitability for any purpose.
+
+#  This module defines the 'make' rule and associated class, derived from
+#  'basic-target'.  
+
+import targets ;
+import class : class new ;
+import property ;
+import errors : error ;
+import type : type ;
+import regex ;
+import property-set ;
+
+rule make-target-class ( name : project : sources * : requirements * 
+                         : make-rule + : default-build * )
+{
+    basic-target.__init__ $(name) : $(project) : $(sources) : $(requirements) 
+                          : $(default-build) ;
+       
+    self.make-rule = $(make-rule) ;    
+    
+    rule construct ( source-targets * : property-set )
+    {
+        local t = [ new file-target $(self.name:S=) : [ type.type $(self.name:S) ]
+                    : $(self.project) ] ;
+        $(t).suffix [ regex.match .(.*) : $(self.name:S) ] ;
+        local a = [ new action $(t) : $(source-targets) : $(self.make-rule) 
+                    : $(property-set) ] ;
+        $(t).action $(a) ;
+        return $(t) ;    
+    }   
+}
+
+class make-target-class : basic-target ;
+
+rule make ( target-name : sources * : generating-rule + : requirements * )
+{
+    local caller = [ CALLER_MODULE ] ;
+    local rules = [ RULENAMES $(caller) ] ;
+    if $(generating-rule[1]) in $(rules)
+    {
+        # This is local rule, make it global
+        local n = $(caller).$(generating-rule[1]) ;
+        IMPORT $(caller) : $(generating-rule[1]) : : $(n) ;
+        generating-rule = $(n) $(generating-rule[2-]) ;
+    }
+    
+   targets.main-target-alternative
+     [ new make-target-class $(target-name) : $(caller) : $(sources) :
+         [ targets.main-target-requirements $(requirements) : $(caller) ] :
+          $(generating-rule) :
+          :
+         [ targets.main-target-default-build : $(caller) ] 
+     ] ;
+         
+}
+
+IMPORT $(__name__) : make : : make ;
+
+

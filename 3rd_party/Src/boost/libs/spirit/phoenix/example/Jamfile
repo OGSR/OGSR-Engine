@@ -1,0 +1,83 @@
+#==============================================================================
+#   Spirit v1.6.0
+#   Copyright (c) 2002 Joel de Guzman
+#   http://spirit.sourceforge.net/
+#
+#   Permission to copy, use, modify, sell and distribute this software
+#   is granted provided this copyright notice appears in all copies.
+#   This software is provided "as is" without express or implied
+#   warranty, and with no claim as to its suitability for any purpose.
+#==============================================================================
+#
+#  Phoenix examples boost-jam file
+#  Joel de Guzman [Sept 27, 2002]
+#
+
+subproject libs/phoenix/example ;
+
+unit-test sample1
+    : fundamental/sample1.cpp
+	: <sysinclude>$(BOOST_ROOT)
+	:
+	;
+
+unit-test sample2
+    : fundamental/sample2.cpp
+	: <sysinclude>$(BOOST_ROOT)
+	:
+	;
+
+unit-test sample3
+    : fundamental/sample3.cpp
+	: <sysinclude>$(BOOST_ROOT)
+	:
+	;
+
+unit-test sample4
+    : fundamental/sample4.cpp
+	: <sysinclude>$(BOOST_ROOT)
+	:
+	;
+
+unit-test sample5
+    : fundamental/sample5.cpp
+	: <sysinclude>$(BOOST_ROOT)
+	:
+	;
+
+unit-test sample6
+    : fundamental/sample6.cpp
+	: <sysinclude>$(BOOST_ROOT)
+	:
+	;
+
+unit-test sample7
+    : fundamental/sample7.cpp
+	: <sysinclude>$(BOOST_ROOT)
+	:
+	;
+
+unit-test sample8
+    : fundamental/sample8.cpp
+	: <sysinclude>$(BOOST_ROOT)
+	:
+	;
+
+unit-test sample9
+    : fundamental/sample9.cpp
+	: <sysinclude>$(BOOST_ROOT)
+	:
+	;
+
+unit-test sample10
+    : fundamental/sample10.cpp
+	: <sysinclude>$(BOOST_ROOT)
+	:
+	;
+
+unit-test closures
+    : fundamental/closures.cpp
+	: <sysinclude>$(BOOST_ROOT)
+	:
+	;
+

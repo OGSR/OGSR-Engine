@@ -1,0 +1,20 @@
+{
+    local METROWERKS_ROOT = $(CWPRO8_ROOT) ;
+    extends-toolset metrowerks ;
+    flags cwpro8 C++FLAGS : -iso_templates on ;
+    STDLIBS = ; # Kill explicit stdlib setting from pro7 toolset
+    
+    flags cwpro8 CFLAGS <runtime-link>static/<threading>single/<runtime-build>release : -runtime ss ;
+    flags cwpro8 CFLAGS <runtime-link>static/<threading>single/<runtime-build>debug : -runtime ssd ;
+
+    flags cwpro8 CFLAGS <runtime-link>static/<threading>multi/<runtime-build>release : -runtime sm ;
+    flags cwpro8 CFLAGS <runtime-link>static/<threading>multi/<runtime-build>debug : -runtime smd ;
+    
+    flags cwpro8 CFLAGS <runtime-link>dynamic/<runtime-build>release : -runtime dm ;
+    flags cwpro8 CFLAGS <runtime-link>dynamic/<runtime-build>debug : -runtime dmd ;
+}
+
+# The following #// line will be used by the regression test table generation
+# program as the column heading for HTML tables. Must not include version number.
+#//<a href="http://www.metrowerks.com/MW/Develop/Desktop/default.htm">Metro-<br>werks<br>Code-<br>Warrior</a>
+

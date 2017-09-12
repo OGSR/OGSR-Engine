@@ -1,0 +1,38 @@
+<articleinfo>
+
+<authorgroup>
+    <author>
+    <firstname>Aleksey</><surname>Gurtovoy</>
+    <affiliation>
+        <orgname>MetaCommunications</>
+        <address><email>agurtovoy@meta-comm.com</></>
+    </affiliation>
+    </author>
+
+    <author>
+    <firstname>David</><surname>Abrahams</>
+    <affiliation>
+        <orgname>Boost Consulting</>
+        <address><email>david.abrahams@rcn.com</></>
+    </affiliation>
+    </author>
+</authorgroup>
+
+<abstract>
+<para>
+This paper describes the &Boost; &Cxx; template metaprogramming library (&MPL;), an extensible compile-time framework of algorithms, sequences and metafunction classes. The library brings together important abstractions from the generic and functional programming worlds to build a powerful and easy-to-use toolset which makes template metaprogramming practical enough for the real-world environments. The &MPL; is heavily influenced by its run-time equivalent - the Standard Template Library (STL), a part of the C++ standard library <citation><xref linkend="ref.STL94"></>, <citation><xref linkend="ref.ISO98"></>. Like the STL, it defines an open conceptual and implementation framework which can serve as a foundation for future contributions in the domain. The library's fundamental concepts and idioms enable the user to focus on solutions without navigating the universe of possible ad-hoc approaches to a given metaprogramming problem, even if no actual &MPL; code is used. The library also provides a compile-time lambda expression facility enabling arbitrary currying and composition of class templates, a feature whose runtime counterpart is often cited as missing from the STL. This paper explains the motivation, usage, design, and implementation of the &MPL; with examples of its real-life applications, and offers some lessons learned about &Cxx; template metaprogramming.
+</>
+</abstract>
+
+<keywordset>
+<keyword>template metaprogramming</>
+<keyword>generic programming</>
+<keyword>programming languages</>
+<keyword>C++</>
+<keyword>STL</>
+<keyword>type systems</>
+<keyword>polymorphism</>
+<keyword>compile-time</>
+</keywordset>
+
+</articleinfo>

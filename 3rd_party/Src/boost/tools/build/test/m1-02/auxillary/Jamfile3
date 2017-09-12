@@ -1,0 +1,6 @@
+
+make b.obj
+    : b.cpp 
+    : <optimization>speed
+    ;
+    

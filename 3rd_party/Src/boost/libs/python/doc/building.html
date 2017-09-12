@@ -1,0 +1,402 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html>
+  <head>
+    <meta name="generator" content=
+    "HTML Tidy for Windows (vers 1st August 2002), see www.w3.org">
+    <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+    <link rel="stylesheet" type="text/css" href="boost.css">
+
+    <title>Boost.Python - Building and Testing</title>
+  </head>
+
+  <body link="#0000ff" vlink="#800080">
+    <table border="0" cellpadding="7" cellspacing="0" width="100%" summary=
+    "header">
+      <tr>
+        <td valign="top" width="300">
+          <h3><a href="../../../index.htm"><img height="86" width="277" alt=
+          "C++ Boost" src="../../../c++boost.gif" border="0"></a></h3>
+        </td>
+
+        <td valign="top">
+          <h1 align="center"><a href="index.html">Boost.Python</a></h1>
+
+          <h2 align="center">Building and Testing</h2>
+        </td>
+      </tr>
+    </table>
+    <hr>
+
+    <h2>Contents</h2>
+
+    <dl class="Reference">
+      <dt><a href="#requirements">Requirements</a></dt>
+
+      <dt><a href="#building">Building Boost.Python</a></dt>
+
+      <dd>
+        <dl class="index">
+          <dt><a href="#configuration">Configuration</a></dt>
+
+          <dt><a href="#results">Results</a></dt>
+
+          <dt><a href="#cygwin">Notes for Cygwin GCC Users</a></dt>
+
+          <dt><a href="#testing">Testing</a></dt>
+        </dl>
+      </dd>
+
+      <dt><a href="#building_ext">Building your Extension Module</a></dt>
+
+      <dd>
+        <dl>
+          <dt><a href="#easy">The Easy Way</a></dt>
+
+          <dt><a href="#outside">Building your module outside the Boost
+          project tree</a></dt>
+        </dl>
+      </dd>
+
+      <dt><a href="#variants">Build Variants</a></dt>
+
+      <dt><a href="#VisualStudio">Building Using the Microsoft Visual Studio
+      IDE</a></dt>
+    </dl>
+    <hr>
+
+    <h2><a name="requirements">Requirements</a></h2>
+    <b>Boost.Python</b> version 2 requires <a href=
+    "http://www.python.org/2.2">Python 2.2</a> <i>or <a href=
+    "http://www.python.org">newer</a></i>. An unsupported archive of
+    Boost.Python version 1, which works with versions of Python since 1.5.2,
+    is available <a href="../build/python_v1.zip">here</a>. 
+
+    <h2><a name="building">Building Boost.Python</a></h2>
+
+    <p>Normally, Boost.Python extension modules must be linked with the
+    <code>boost_python</code> shared library. In special circumstances you
+    may want to link to a static version of the <code>boost_python</code>
+    library, but if multiple Boost.Pythone extension modules are used
+    together, it will prevent sharing of types across extension modules, and
+    consume extra code space. To build <code>boost_python</code>, use <a
+    href="../../../tools/build/index.html">Boost.Build</a> in the usual way
+    from the <code>libs/python/build</code> subdirectory of your boost
+    installation (if you have already built boost from the top level this may
+    have no effect, since the work is already done).</p>
+
+    <h3><a name="configuration">Configuration</a></h3>
+    You may need to configure the following variables to point Boost.Build at
+    your Python installation: 
+
+    <table border="1" summary="build configuration variables">
+      <tr>
+        <th>Variable Name</th>
+
+        <th>Semantics</th>
+
+        <th>Default</th>
+
+        <th>Notes</th>
+      </tr>
+
+      <tr>
+        <td><code>PYTHON_ROOT</code></td>
+
+        <td>The root directory of your Python installation</td>
+
+        <td>Windows:&nbsp;<code>c:/tools/python</code>
+        Unix:&nbsp;<code>/usr/local</code></td>
+
+        <td>On Unix, this is the <code>--with-prefix=</code> directory used
+        to configure Python</td>
+      </tr>
+
+      <tr>
+        <td><code>PYTHON_VERSION</code></td>
+
+        <td>The The 2-part python Major.Minor version number</td>
+
+        <td><code>2.2</code></td>
+
+        <td>Be sure not to include a third number, e.g. <b>not</b>
+        "<code>2.2.1</code>", even if that's the version you have.</td>
+      </tr>
+
+      <tr>
+        <td><code>PYTHON_INCLUDES</code></td>
+
+        <td>path to Python <code>#include</code> directories</td>
+
+        <td>Autoconfigured from <code>PYTHON_ROOT</code></td>
+      </tr>
+
+      <tr>
+        <td><code>PYTHON_LIB_PATH</code></td>
+
+        <td>path to Python library object.</td>
+
+        <td>Autoconfigured from <code>PYTHON_ROOT</code></td>
+      </tr>
+
+      <tr>
+        <td><code>CYGWIN_PYTHON_[DEBUG_]VERSION</code></td>
+
+        <td>The version of python being used under Cygwin. </td>
+
+        <td>$(PYTHON_VERSION)
+
+        </td>
+
+        <td>Use only when building with <a href=
+        "http://www.cygwin.com">Cygwin</a> GCC. This and the following
+        settings are useful when building with multiple toolsets on
+        Windows, since Cygwin GCC requires a different build of
+        Python.</td> </tr>
+
+      <tr>
+        <td><code>CYGWIN_PYTHON_[DEBUG_]ROOT</code></td>
+
+        <td>unix-style path containing the <code>include/</code>
+        directory containing
+        <code>python$(CYGWIN_PYTHON_[DEBUG_]VERSION)/python.h</code>. </td>
+
+        <td>$(PYTHON_ROOT)
+
+        </td>
+
+        <td>Use only when building with <a href=
+        "http://www.cygwin.com">Cygwin</a> GCC.</td> </tr>
+
+      <tr>
+        <td><code>CYGWIN_PYTHON_[DEBUG_]LIB_PATH</code></td>
+
+        <td>path containing the user's Cygwin Python import lib
+        <code>libpython$(CYGWIN_PYTHON_[DEBUG_]VERSION).dll.a</code></td>
+
+        <td>Autoconfigured from <code>CYGWIN_PYTHON_ROOT</code></td>
+
+        <td>Use only when building with <a href=
+        "http://www.cygwin.com">Cygwin</a> GCC.</td> </tr>
+
+      <tr>
+        <td><code>CYGWIN_PYTHON_[DEBUG_]DLL_PATH</code></td>
+
+        <td>path containing the user's Cygwin Python dll
+        (<code>libpython$(CYGWIN_PYTHON_[DEBUG_]VERSION).dll</code>)</td>
+
+        <td><code>/bin</code></td>
+
+        <td>Use only when building with <a href=
+        "http://www.cygwin.com">Cygwin</a> GCC.</td> </tr>
+
+      </tr>
+    </table>
+
+    <h3><a name="cygwin">Notes for Cygwin GCC Users</a></h3>
+
+    <p>If you are using Cygwin GCC to build extension modules, you must use a
+    Cygwin build of Python. The regular Win32 Python installation that you
+    can download from <a href="http://www.python.org">python.org</a> will not
+    work with your compiler because the dynamic linking conventions are
+    different (you can use <a href="http://www.mingw.org/">MinGW</a> GCC if
+    you want to build extension modules which are compatible with a stock
+    Win32 Python). The Cygwin installer may be able to install an appropriate
+    version of Python, or you can follow the traditional <a href=
+    "http://www.python.org/download/download_source.html">Unix installation
+    process</a> to build Python from source.</p>
+
+    <p>The special build configuration variables listed above as "Cygwin
+    only" make it possible to use a regular Win32 build of bjam to build and
+    test Boost.Python and Boost.Python extensions using Cygwin GCC and
+    targeting a Cygwin build of Python.</p>
+
+    <h3><a name="results">Results</a></h3>
+
+    <p>The build process will create a
+    <code>libs/python/build/bin-stage</code> subdirectory of the boost root
+    (or of <code>$(ALL_LOCATE_TARGET)</code>, if you have set that variable),
+    containing the built libraries. The libraries are actually built to
+    unique directories for each toolset and variant elsewhere in the
+    filesystem, and copied to the <code>bin-stage</code> directory as a
+    convenience, so if you build with multiple toolsets at once, the product
+    of later toolsets will overwrite that of earlier toolsets in
+    <code>bin-stage</code>.</p>
+
+    <h3><a name="testing">Testing</a></h3>
+
+    <p>To build and test Boost.Python, start from the
+    <code>libs/python/test</code> directory and invoke</p>
+
+    <blockquote>
+<pre>
+bjam -sTOOLS=<i><a href=
+"../../../tools/build/index.html#Tools">toolset</a></i> test
+</pre>
+    </blockquote>
+    This will update all of the Boost.Python v1 test and example targets. The
+    tests are relatively quiet by default. To get more-verbose output, you
+    might try 
+
+    <blockquote>
+<pre>
+bjam -sTOOLS=<i><a href=
+"../../../tools/build/index.html#Tools">toolset</a></i> -sPYTHON_TEST_ARGS=-v test
+</pre>
+    </blockquote>
+    which will print each test's Python code with the expected output as it
+    passes. 
+
+    <h2><a name="building_ext">Building your Extension Module</a></h2>
+    Though there are other approaches, the best way to build an extension
+    module using Boost.Python is with Boost.Build. If you have to use another
+    build system, you should use Boost.Build at least once with the
+    "<code><b>-n</b></code>" option so you can see the command-lines it uses,
+    and replicate them. You are likely to run into compilation or linking
+    problems otherwise. 
+
+    <h3><a name="easy">The Easy Way</a></h3>
+    Until Boost.Build v2 is released, cross-project build dependencies are
+    not supported, so it works most smoothly if you add a new subproject to
+    your boost installation. The <code>libs/python/example</code>
+    subdirectory of your boost installation contains a minimal example (along
+    with many extra sources). To copy the example subproject: 
+
+    <ol>
+      <li>Create a new subdirectory in, <code>libs/python</code>, say
+      <code>libs/python/my_project</code>.</li>
+
+      <li>Copy <code><a href=
+      "../example/Jamfile">libs/python/example/Jamfile</a></code> to your new
+      directory.</li>
+
+      <li>Edit the Jamfile as appropriate for your project. You'll want to
+      change the "<code>subproject</code>" rule invocation at the top, and
+      the names of some of the source files and/or targets.</li>
+    </ol>
+    The instructions <a href="#testing">above</a> for testing Boost.Python
+    apply equally to your new extension modules in this subproject. 
+
+    <h3><a name="outside">Building your module outside the Boost project
+    tree</a></h3>
+    If you can't (or don't wish to) modify your boost installation, the
+    alternative is to create your own Boost.Build project. A similar example
+    you can use as a starting point is available in <code><a href=
+    "../example/project.zip">this archive</a></code>. You'll need to edit the
+    Jamfile and Jamrules files, depending on the relative location of your
+    Boost installation and the new project. Note that automatic testing of
+    extension modules is not available in this configuration. 
+
+    <h2><a name="variants">Build Variants</a></h2>
+    Three <a href=
+    "../../../tools/build/build_system.htm#variants">variant</a>
+    configurations of all python-related targets are supported, and can be
+    selected by setting the <code><a href=
+    "../../../tools/build/build_system.htm#user_globals">BUILD</a></code>
+    variable: 
+
+    <ul>
+      <li><code>release</code> (optimization, <tt>-DNDEBUG</tt>)</li>
+
+      <li><code>debug</code> (no optimization <tt>-D_DEBUG</tt>)</li>
+
+      <li><code>debug-python</code> (no optimization, <tt>-D_DEBUG
+      -DBOOST_DEBUG_PYTHON</tt>)</li>
+    </ul>
+
+    <p>The first two variants of the <code>boost_python</code> library are
+    built by default, and are compatible with the default Python
+    distribution. The <code>debug-python</code> variant corresponds to a
+    specially-built debugging version of Python. On Unix platforms, this
+    python is built by adding <code>--with-pydebug</code> when configuring
+    the Python build. On Windows, the debugging version of Python is
+    generated by the "Win32 Debug" target of the <code>PCBuild.dsw</code>
+    Visual C++ 6.0 project in the <code>PCBuild</code> subdirectory of your
+    Python distribution. Extension modules built with Python debugging
+    enabled are <b>not link-compatible</b> with a non-debug build of Python.
+    Since few people actually have a debug build of Python (it doesn't come
+    with the standard distribution), the normal <code>debug</code> variant
+    builds modules which are compatible with ordinary Python.</p>
+
+    <p>On many windows compilers, when extension modules are built with
+    <tt>-D_DEBUG</tt>, Python defaults to <i>force</i> linking with a special
+    debugging version of the Python DLL. Since this debug DLL isn't supplied
+    with the default Python installation for Windows, Boost.Python uses
+    <tt><a href=
+    "../../../boost/python/detail/wrap_python.hpp">boost/python/detail/wrap_python.hpp</a></tt>
+    to temporarily undefine <tt>_DEBUG</tt> when <tt>Python.h</tt> is
+    <tt>#include</tt>d - unless <code>BOOST_DEBUG_PYTHON</code> is
+    defined.</p>
+
+    <p>If you want the extra runtime checks available with the debugging
+    version of the library, <tt>#define BOOST_DEBUG_PYTHON</tt> to re-enable
+    python debuggin, and link with the <code>debug-python</code> variant of
+    <tt>boost_python</tt>.</p>
+
+    <p>If you do not <tt>#define BOOST_DEBUG_PYTHON</tt>, be sure that any
+    source files in your extension module <tt>#include&nbsp;&lt;<a href=
+    "../../../boost/python/detail/wrap_python.hpp">boost/python/detail/wrap_python.hpp</a>&gt;</tt>
+    instead of the usual <tt>Python.h</tt>, or you will have link
+    incompatibilities.<br>
+    </p>
+
+    <h2><a name="VisualStudio">Building Using the Microsoft Visual Studio
+    IDE</a></h2>
+
+    <p>For the those of you who feel more comfortable in the IDE world, a
+    workspace and project file have been included in the <a href=
+    "../build/VisualStudio">libs/python/build/VisualStudio</a> subdirectory.
+    It builds release and debug versions of the Boost.Python libraries and
+    places them and the same directory as Jamfile build does, though the
+    intermediate object files are placed in a different directory. The files
+    have been created using Microsoft Visual C++ version 6, but they should
+    work for later versions as well. You will need to tell the IDE where to
+    find the Python <code>Include/</code> and <code>Libs/</code> directories.
+    Under <b>Tools&gt;Options&gt;Directories</b>, add an entry for the Python
+    include dir (i.e. <code>c:/Python22/Include</code>), and one for the Lib
+    (i.e. <code>c:/Python/Libs</code>. Make sure it is <code>Libs</code> with
+    an "<code>s</code>" and not just <code>Lib</code>).</p>
+
+    <h3>Using the IDE for your own projects</h3>
+
+    <p>Building your own projects using the IDE is slightly more complicated.
+    Firstly, you need to make sure that the project you create as the right
+    kind. It should be a "Win32 Dynamic-Link Library". The default one that
+    Visual Studio 6 creates needs some modifications: turn on RTTI, and
+    change the debug and release builds to use the respective debug and
+    release Multithreaded DLL versions. You should probably turn off
+    incremental linking too -- I believe it a bit flaky. If you do this, then
+    change the "Debug Info" to "Program Database" to get rid of the Edit and
+    Continue warning.</p>
+
+    <p>You'll need to add the Boost root directory under
+    <b>Tools&gt;Options&gt;Directories</b> to get your code compiling. To
+    make it link, add the above <code>boost_python.dsp</code> file to your
+    workspace, and make your project depend upon it (under
+    <b>Project&gt;Dependencies</b>). You should be able to build now.</p>
+
+    <p>Lastly, go to the <b>Project Settings&gt;Debug</b> Page and add the
+    <code>Python.exe</code> as the executable for the project. Set a startup
+    directory, and make sure that your current project's output dll, the
+    <code>boost_python.dll</code> and the <code>python22.dll</code> are on
+    the current <code>PATH</code>. If you have a python script that tests
+    your dll, then add it in the "Program Arguments". Now, if all went well,
+    you should be able to hit the Run (F5) button, and debug your code.</p>
+
+    <blockquote>
+      <em>The Visual Studio project files are graciously contributed and
+      maintained by <a href="mailto:brett.calcott@paradise.net.nz">Brett
+      Calcott</a></em>.
+    </blockquote>
+    <hr>
+
+    <p>&copy; Copyright David Abrahams 2002. Permission to copy, use, modify,
+    sell and distribute this document is granted provided this copyright
+    notice appears in all copies. This document is provided ``as is'' without
+    express or implied warranty, and with no claim as to its suitability for
+    any purpose.</p>
+
+    <p>Updated: 29 December, 2002 (David Abrahams)</p>
+  </body>
+</html>
+

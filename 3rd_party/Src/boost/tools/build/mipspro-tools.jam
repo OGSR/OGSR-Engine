@@ -1,0 +1,238 @@
+# This file was originally based on gcc-tools.jam by David Abrahams.
+#
+# It has been written for and tested with MIPSpro 7.3 on IRIX 6.5 
+# with a variety of setups.
+#
+# TODO list (in no particular order):
+#
+# - Add support for the dllversion free-feature using MIPSpro's
+#   soname support.
+# - Factor out repetitive code.
+# - Decide if `$(<[1])' is better than `$(<)'.
+# - Make further use of the `architecture' free feature by using
+#   `-TARG' and others.
+# - A free feature `mipspro-woff' so users can specify woff
+#   values at the command-line.
+# - Figure out what to do with the so_locations file.
+# - Figure out what to do with the ii_files directory.
+
+# compute directories for invoking MIPSpro: first try ROOT and
+# TOOLROOT, which are traditionally used for this purpose.
+MIPSPRO_ROOT_DIRECTORY ?= "$(ROOT)/usr" ;
+MIPSPRO_TOOLROOT_DIRECTORY ?= "$(TOOLROOT)/usr" ;
+
+# Either ROOT or TOOLROOT missing? Fall back to the default.
+MIPSPRO_ROOT_DIRECTORY ?= "/usr" ;
+MIPSPRO_TOOLROOT_DIRECTORY ?= "/usr" ;
+
+# For most users, either ROOT/TOOLROOT or
+# MIPSPRO_ROOT_DIRECTORY/MIPSPRO_TOOLROOT_DIRECTORY should be
+# sufficient. Users needing to further customize the executable
+# directory or include directory can use MIPSPRO_BIN_DIRECTORY,
+# MIPSPRO_INCLUDE_DIRECTORY, and MIPSPRO_C++INCLUDE_DIRECTORY.
+
+MIPSPRO_BIN_DIRECTORY ?= "$(MIPSPRO_TOOLROOT_DIRECTORY)/bin" ;
+
+MIPSPRO_INCLUDE_DIRECTORY ?= "$(MIPSPRO_TOOLROOT_DIRECTORY)/include"
+                             "$(MIPSPRO_ROOT_DIRECTORY)/include" ;
+
+MIPSPRO_C++INCLUDE_DIRECTORY ?= "$(MIPSPRO_INCLUDE_DIRECTORY)/CC" ;
+
+# Because we have special logic for finding directories based on
+# the ABI and ISA, it is difficult to have a separate user-definable
+# variable to specify the library paths. As mentioned above, 
+# MIPSPRO_ROOT_DIRECTORY should be good enough for most users.
+
+local MIPSPRO_STDLIB_ROOTS = "$(MIPSPRO_TOOLROOT_DIRECTORY)"
+                             "$(MIPSPRO_ROOT_DIRECTORY)"
+                           ;
+local MIPSPRO_STDLIB_MIPS3_SUBDIRECTORIES = "mips3" "" ;
+local MIPSPRO_STDLIB_MIPS4_SUBDIRECTORIES = "mips4" "" ;
+
+flags mipspro LINKFLAGS : -nostdlib ;
+flags mipspro LINKFLAGS <target-type>$(SHARED_TYPES) : -shared ;
+flags mipspro LINKFLAGS <debug-symbols>off : -s ;
+
+flags mipspro DEFINES <threading>multi : _SGI_MP_SOURCE ;
+
+flags mipspro CFLAGS : -nostdinc
+                       -LANG:std -OPT:Olimit=0 -OPT:IEEE_NaN_inf=ON -no_auto_include
+                     ;
+
+flags mipspro CFLAGS <address-model>default : -n32 ;
+flags mipspro CFLAGS <address-model>32 : -n32 ;
+flags mipspro CFLAGS <address-model>64 : -64 ;
+flags mipspro CFLAGS <architecture>native : -mips3 ;
+flags mipspro CFLAGS <architecture>mips3 : -mips3 ;
+flags mipspro CFLAGS <architecture>mips4 : -mips4 ;
+
+flags mipspro CFLAGS <optimization>off   : -O0 ;
+flags mipspro CFLAGS <optimization>speed : -O3 ;
+flags mipspro CFLAGS <optimization>space : -O2 ;
+
+flags mipspro CFLAGS <debug-symbols>off : -g0 ;
+flags mipspro CFLAGS <debug-symbols>on/<optimization>off   : -g  ;
+flags mipspro CFLAGS <debug-symbols>on/<optimization>speed : -g3 ;
+flags mipspro CFLAGS <debug-symbols>on/<optimization>space : -g3 ;
+
+# Uncomment the following to enable various SGI extensions.
+
+#flags mipspro DEFINES : _SGI_SOURCE ;
+
+# If you want more warnings, uncomment the following lines. These are
+# a few warning numbers that you'll probably want to disable.
+# 1375: The destructor for base class is not virtual.
+# 1424: Template parameter not used in declaring the argument types of function template.
+# 1234: Access control is not specified.
+
+#flags mipspro CFLAGS : -fullwarn -woff 1375,1424,1234 ;
+
+# For some C++ apps, adding -IPA can make a big difference. However, because
+# it does global optimizations such as inlining code between compilation
+# units, it introduces a lot of dependancies that this build system is
+# unable to track. When using -IPA here, be sure to run the `clean' target
+# before each build to ensure that everything is rebuilt properly.
+
+#flags mipspro CFLAGS <optimization>speed : -IPA ;
+#flags mipspro LINKFLAGS <optimization>speed : -IPA ;
+
+# An option for <inlining>full is -INLINE:all, however that may cause
+# too much to be inlined. I don't think that level of inlining is what
+# is meant by <inlining>full.
+
+flags mipspro CFLAGS <inlining>off : -INLINE:none ;
+flags mipspro CFLAGS <inlining>on : -INLINE ;
+flags mipspro CFLAGS <inlining>full : -INLINE ;
+
+flags mipspro C++FLAGS <exception-handling>off : -LANG:exceptions=OFF ;
+
+flags mipspro STDHDRS : "$(MIPSPRO_INCLUDE_DIRECTORY)" ;
+flags mipspro STDC++HDRS : "$(MIPSPRO_C++INCLUDE_DIRECTORY)"
+                           "$(BOOST_ROOT)/boost/compatibility/cpp_c_headers"
+                         ;
+
+flags mipspro STDLIBPATH <address-model>default/<architecture>mips3 <architecture>native :
+     "$(MIPSPRO_STDLIB_ROOTS)/lib32/$(MIPSPRO_STDLIB_MIPS3_SUBDIRECTORIES)"
+      ;
+flags mipspro STDLIBPATH <address-model>default/<architecture>mips4 :
+     "$(MIPSPRO_STDLIB_ROOTS)/lib32/$(MIPSPRO_STDLIB_MIPS4_SUBDIRECTORIES)"
+      ;
+flags mipspro STDLIBPATH <address-model>32/<architecture>mips3 <architecture>native :
+     "$(MIPSPRO_STDLIB_ROOTS)/lib32/$(MIPSPRO_STDLIB_MIPS3_SUBDIRECTORIES)"
+      ;
+flags mipspro STDLIBPATH <address-model>32/<architecture>mips4 :
+     "$(MIPSPRO_STDLIB_ROOTS)/lib32/$(MIPSPRO_STDLIB_MIPS4_SUBDIRECTORIES)"
+      ;
+flags mipspro STDLIBPATH <address-model>64/<architecture>mips3 <architecture>native :
+     "$(MIPSPRO_STDLIB_ROOTS)/lib64/$(MIPSPRO_STDLIB_MIPS3_SUBDIRECTORIES)"
+      ;
+flags mipspro STDLIBPATH <address-model>64/<architecture>mips4 :
+     "$(MIPSPRO_STDLIB_ROOTS)/lib64/$(MIPSPRO_STDLIB_MIPS4_SUBDIRECTORIES)"
+      ;
+
+flags mipspro HDRS <include> ;
+flags mipspro UNDEFS <undef> ;
+flags mipspro DEFINES <define> ;
+flags mipspro CFLAGS <cflags> ;
+flags mipspro C++FLAGS <cxxflags> ;
+flags mipspro LIBPATH <library-path> ;
+flags mipspro NEEDLIBS <library-file> ;
+flags mipspro FINDLIBS <find-library> ;
+flags mipspro STDHDRS <sysinclude> ;
+flags mipspro LINKFLAGS <linkflags> ;
+flags mipspro ARFLAGS <arflags> ;
+
+#### Link (for C++) ####
+
+rule Link-action
+{
+    mipspro-Link-action "$(<)" : "$(>)" ;
+}
+
+# for mipspro, we repeat all libraries so that dependencies are always resolved
+actions mipspro-Link-action bind NEEDLIBS
+{
+    "$(MIPSPRO_BIN_DIRECTORY)/CC" \
+        -o "$(<)" \
+        "$(>)" \
+        "-U$(UNDEFS)" \
+        "-D$(DEFINES)" \
+        "$(CFLAGS)" \
+        "$(C++FLAGS)" \
+        "-I$(HDRS)" \
+        "-I$(STDC++HDRS)" \
+        "-I$(STDHDRS)" \
+        "$(LINKFLAGS)" \
+        "$(NEEDLIBS)" \
+        "$(NEEDLIBS)" \
+        "-L$(LIBPATH)" \
+        "-L$(STDLIBPATH)" \
+        "-l$(FINDLIBS)"
+}
+
+#### Cc #####
+
+rule Cc-action
+{
+    mipspro-Cc-action "$(<)" : "$(>)" ;
+}
+
+actions mipspro-Cc-action
+{
+    "$(MIPSPRO_BIN_DIRECTORY)/cc" -c \
+        "-U$(UNDEFS)" \
+        "-D$(DEFINES)" \
+        "$(CFLAGS)" \
+        "-I$(HDRS)" \
+        "-I$(STDHDRS)" \
+        -o "$(<)" \
+        "$(>)"
+}
+
+#### C++ ####
+
+rule C++-action
+{
+    mipspro-C++-action "$(<)" : "$(>)" ;
+}
+
+actions mipspro-C++-action
+{
+    "$(MIPSPRO_BIN_DIRECTORY)/CC" -c \
+        "-U$(UNDEFS)" \
+        "-D$(DEFINES)" \
+        "$(CFLAGS)" \
+        "$(C++FLAGS)" \
+        "-I$(HDRS)" \
+        "-I$(STDC++HDRS)" \
+        "-I$(STDHDRS)" \
+        -o "$(<)" \
+        "$(>)"
+}
+
+#### Archive ####
+
+rule Archive-action
+{
+    mipspro-Archive-action "$(<)" : "$(>)" ;
+}
+
+# For MIPSpro, we don't use update piecemeal together because we're
+# not using the command `ar' directly. We use `CC -ar' so that the
+# prelinker gets run, however when we do this, we loose the ability
+# to update individual compilation units in an archive.
+
+actions mipspro-Archive-action
+{
+    "$(MIPSPRO_BIN_DIRECTORY)/CC" -ar \
+        "-U$(UNDEFS)" \
+        "-D$(DEFINES)" \
+        "$(CFLAGS)" \
+        "$(C++FLAGS)" \
+        "-I$(HDRS)" \
+        "-I$(STDC++HDRS)" \
+        "-I$(STDHDRS)" \
+        "-WR,$(ARFLAGS)" \
+        -o "$(<)" \
+        "$(>)"
+}

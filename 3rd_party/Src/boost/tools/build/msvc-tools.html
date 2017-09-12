@@ -1,0 +1,69 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="boost.css">
+<title>Boost.Build - msvc toolset</title>
+</head>
+<body link="#0000ff" vlink="#800080">
+<table border="0" cellpadding="7" cellspacing="0" width="100%" summary=
+    "header">
+  <tr> 
+    <td valign="top" width="300"> 
+      <h3><a href="http://www.boost.org"><img height="86" width="277" alt="C++ Boost" src="../../c++boost.gif" border="0"></a></h3>
+    </td>
+    <td valign="top"> 
+      <h1 align="center">Boost.Build</h1>
+      <h2 align="center">msvc toolset</h2>
+    </td>
+  </tr>
+</table>
+<hr>
+
+<h2>Introduction</h2>
+
+<p>Boost.Build's <a href="http://msdn.microsoft.com/visualc/">msvc</a>
+toolset supports the Microsoft Visual C++ command-line tools on
+Microsoft Windows. It supports any version of Visual C++, but in case
+you have more than one version of Visual C++ installed, and you want
+to use both, the additional <a href="vc7-tools.html">vc7</a> toolset
+can be used for Visual C++ 7.0.
+
+<h2><a name="configuration">Configuration Variables</a></h2>
+
+The <code>msvc</code> toolset responds to the following variables, which can be set in the
+environment or configured on the jam command-line using
+<code>-s<i>VARIABLE_NAME</i>=</code><i>value</i>:
+
+<table border="1">
+
+<tr><th>Variable Name <th>Semantics <th>Default <th>Notes
+
+<tr>
+    <td><code>MSVC_ROOT</code>
+    <td>The path to the MSVC installation directory
+    <td><code>c:\Program&nbsp;Files\Microsoft&nbsp;Visual&nbsp;Studio\VC98</code>
+    <td>If <code>MSVCDir</code> is set in the environment, the toolset
+    will assume <code>VCVARS32.BAT</code>has already been called, and
+    will ignore this variable.
+
+<tr>
+    <td><code>VISUALC</code>
+    <td>The path to the MSVC installation directory
+    <td><code>c:\Program&nbsp;Files\Microsoft&nbsp;Visual&nbsp;C++\VC98</code>
+    <td>If <code>MSVCDir</code> or <code>MSVC_ROOT</code> is set in
+    the environment, the toolset will assume
+    <code>VCVARS32.BAT</code>has already been called, and will ignore
+    this variable.
+
+</table>
+
+<hr>
+<p>Revised 
+  <!--webbot bot="Timestamp" S-Type="EDITED" S-Format="%d %B, %Y" startspan -->
+  14 May, 2002 
+  <!--webbot bot="Timestamp" endspan i-checksum="39359" -->
+</p>
+<p><i>&copy; Copyright <a href="../../people/dave_abrahams.htm">Dave Abrahams</a> 
+  2002. All Rights Reserved.</i></p>
+</body>
+</html>

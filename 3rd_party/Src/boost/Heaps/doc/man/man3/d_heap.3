@@ -1,0 +1,90 @@
+.\" <!!---------------------------------------------------------------------->
+.\" <!! Copyright (C) 1999 Dietmar Kuehl, Claas Solutions GmbH >
+.\" <!!>
+.\" <!! Permission to use, copy, modify, distribute and sell this >
+.\" <!! software for any purpose is hereby granted without fee, provided >
+.\" <!! that the above copyright notice appears in all copies and that >
+.\" <!! both that copyright notice and this permission notice appear in >
+.\" <!! supporting documentation. Dietmar Kuehl and Claas Solutions make no >
+.\" <!! representations about the suitability of this software for any >
+.\" <!! purpose. It is provided "as is" without express or implied warranty. >
+.\" <!!---------------------------------------------------------------------->
+.TH d_heap 3 "09.Juli 1999" "Claas Solutions" "boost"
+.SH NAME
+d_heap - d_heap
+
+.SH SYNOPSIS
+
+
+.nf
+#include "boost/d_heap.hpp"
+
+template <typename T>
+class boost::d_heap_base
+{
+public:
+  class const_iterator
+  {
+  public:
+    const_iterator();
+
+    T const&        operator* () const;
+    T const*        operator-> () const;
+    const_iterator& operator++ ();
+    const_iterator  operator++ (int);
+
+    bool operator== (const_iterator const& it) const;
+    bool operator!= (const_iterator const& it) const;
+  };
+
+  d_heap_base();
+  const_reference top() const;
+  bool            empty() const;
+  size_type       size() const;
+  const_iterator  begin() const;
+  const_iterator  end() const;
+
+protected:
+  ~d_heap_base();
+};
+
+template <typename T, typename Comp = std::less<T>, int d = 2>
+class boost::d_heap: public boost::d_heap_base<T>
+{
+public:
+  typedef T                                   value_type;
+  typedef T&                                  reference;
+  typedef T const&                            const_reference;
+  typedef typename d_heap<T>::const_iterator  const_iterator;
+  typedef typename std::list<node>::size_type size_type;
+  typedef Comp                                compare_type;
+
+  explicit d_heap(Comp const& comp = Comp());
+
+  pointer push(const_reference val);
+  void    pop();
+  void    remove(pointer ptr);
+
+  template <typename K> void change_top(K const& val);
+  template <typename K> void change(pointer ptr, K const& val
+  template <typename K> void decrease(pointer ptr, K const& val);
+  template <typename K> void increase(pointer ptr, K const& val);
+};
+.fi 0 
+.SH DESCRIPTION
+The class \fBd_heap<T, Comp, d>\fP represents the heap as a balanced d-ary tree. Normally \fBd == 2\fP is used in which case a binary tree is used to represent the heap. Internally, the tree is represented as an array and the navigation in the tree is made using simple index calculations. The type of objects stored in the heap is \fBT\fP which are compared using the comparator type \fBComp\fP. During the heap manipulations the invariant is temporarily violated and then restored by swapping the violating node appropriately with its parent or its largest child depending on the whether the node has to travel up or down, respectively. Note, that the swapped objects are just pointers to the actual elements. Thus, even if copying and/or assigning objects of type \fBT\fP is a relatively expensive operation, the swaps performed to maintain the invariant are not. 
+
+The class \fBd_heap_base<T>\fP is used to factor out all portions of the code which are independent from the compare type and the number of child nodes. This class is intended to be used only by \fBd_heap<T, Comp, d>\fP and is not intended to be used as generally useful base class. Of course, you can use all public members defined for \fBd_heap_base<T>\fP on \fBd_heap<T, Comp, d>\fP objects. 	 
+
+For a description of the methods of \fBd_heap<T, Comp, d>\fP please refer to the general description on the page describing heaps and the page describing the common methods. 
+.SH SEE ALSO
+heap(3) heap-common(3) 
+.SH AUTHOR
+Dietmar Kühl (Claas Solutions)
+.br
+e-mail: dietmar.kuehl@claas-solutions.de
+.br
+http://www.claas-solutions.de/kuehl
+.br
+
+

@@ -1,0 +1,100 @@
+.\" <!!---------------------------------------------------------------------->
+.\" <!! Copyright (C) 1999 Dietmar Kuehl, Claas Solutions GmbH >
+.\" <!!>
+.\" <!! Permission to use, copy, modify, distribute and sell this >
+.\" <!! software for any purpose is hereby granted without fee, provided >
+.\" <!! that the above copyright notice appears in all copies and that >
+.\" <!! both that copyright notice and this permission notice appear in >
+.\" <!! supporting documentation. Dietmar Kuehl and Claas Solutions make no >
+.\" <!! representations about the suitability of this software for any >
+.\" <!! purpose. It is provided "as is" without express or implied warranty. >
+.\" <!!---------------------------------------------------------------------->
+.TH mfd/queue 3 "09.Juli 1999" "Claas Solutions" "boost"
+.SH NAME
+mfd/queue - Template Class \fBqueue<T, Cont>\fP
+
+.SH SYNOPSIS
+
+
+.nf
+#include "boost/queue.hpp"
+.br
+
+.br
+template <class T, class Cont = std::deque<T> >
+.br
+class boost::queue
+.br
+{
+.br
+public:
+.br
+  typedef typename Cont::value_type      value_type;
+.br
+  typedef typename Cont::reference       reference;
+.br
+  typedef typename Cont::const_reference const_reference;
+.br
+  typedef typename Cont::size_type       size_type;
+.br
+  typedef Cont                           container_type;
+.br
+  typedef typename Cont::iterator        iterator;
+.br
+  typedef typename Cont::const_iterator  const_iterator;
+.br
+
+.br
+  explicit queue(Cont const& cont = Cont());
+.br
+
+.br
+  bool              empty() const;
+.br
+  size_type         size() const;
+.br
+  void              push(value_type const& val);
+.br
+  void              pop();
+.br
+  value_type const& top() const;
+.br
+  value_type&       top();
+.br
+  value_type const& front() const;
+.br
+  value_type&       front();
+.br
+  value_type const& back() const;
+.br
+  value_type&       back();
+.br
+
+.br
+  iterator       begin();
+.br
+  iterator       end();
+.br
+  const_iterator begin();
+.br
+  const_iterator end();
+.br
+};
+.fi 0 
+.SH DESCRIPTION
+The class \fBqueue\fP is actually not really a priority queue in the normal sense. However, if you assume that the element which is stored the longest time in the \fBqueue\fP has the largest priority, you can view this class as a priority queue: It provides access to the element which is stored the longest time in the \fBqueue\fP (ie. \fBqueue\fP has "first in, first out" semantics). 
+
+The class \fBqueue\fP is a replacement for the standard class \fBstd::queue\fP which provides an interface which is consistent with the other priority queue classes plus the interface of the standard class. If you only need functionality provided by the standard class and it doesn't matter that there is no \fBtop()\fP function, then you can use the standard class as well. 
+
+For a description of the methods of \fBqueue<T, Cont>\fP see the description of common methods or the documentation of the standard class \fBstd::queue\fP. 
+.SH SEE ALSO
+heap(3), heap-common(3) 
+.SH AUTHOR
+Dietmar Kühl (Claas Solutions)
+.br
+e-mail: dietmar.kuehl@claas-solutions.de
+.br
+http://www.claas-solutions.de/kuehl
+.br
+
+

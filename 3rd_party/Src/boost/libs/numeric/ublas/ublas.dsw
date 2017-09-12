@@ -1,0 +1,181 @@
+Microsoft Developer Studio Workspace File, Format Version 6.00
+# WARNING: DO NOT EDIT OR DELETE THIS WORKSPACE FILE!
+
+###############################################################################
+
+Project: "bench1"=.\bench1\bench1.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+    begin source code control
+    "$/boost/libs/numeric/ublas/bench1", DDCAAAAA
+    .\bench1
+    end source code control
+}}}
+
+Package=<4>
+{{{
+}}}
+
+###############################################################################
+
+Project: "bench2"=.\bench2\bench2.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+    begin source code control
+    "$/boost/libs/numeric/ublas/bench2", LDCAAAAA
+    .\bench2
+    end source code control
+}}}
+
+Package=<4>
+{{{
+}}}
+
+###############################################################################
+
+Project: "bench3"=.\bench3\bench3.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+    begin source code control
+    "$/boost/libs/numeric/ublas/bench3", SDCAAAAA
+    .\bench3
+    end source code control
+}}}
+
+Package=<4>
+{{{
+}}}
+
+###############################################################################
+
+Project: "concepts"=.\concepts.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+    begin source code control
+    "$/boost/libs/numeric/ublas", ECCAAAAA
+    .
+    end source code control
+}}}
+
+Package=<4>
+{{{
+}}}
+
+###############################################################################
+
+Project: "test1"=.\test1\test1.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+    begin source code control
+    "$/boost/libs/numeric/ublas/test1", TDCAAAAA
+    .\test1
+    end source code control
+}}}
+
+Package=<4>
+{{{
+}}}
+
+###############################################################################
+
+Project: "test2"=.\test2\test2.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+    begin source code control
+    "$/boost/libs/numeric/ublas/test2", VDCAAAAA
+    .\test2
+    end source code control
+}}}
+
+Package=<4>
+{{{
+}}}
+
+###############################################################################
+
+Project: "test3"=.\test3\test3.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+    begin source code control
+    "$/boost/libs/numeric/ublas/test3", WDCAAAAA
+    .\test3
+    end source code control
+}}}
+
+Package=<4>
+{{{
+}}}
+
+###############################################################################
+
+Project: "test4"=.\test4\test4.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+    begin source code control
+    "$/boost/libs/numeric/ublas/test4", XDCAAAAA
+    .\test4
+    end source code control
+}}}
+
+Package=<4>
+{{{
+}}}
+
+###############################################################################
+
+Project: "test5"=.\test5\test5.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+    begin source code control
+    "$/boost/libs/numeric/ublas/test5", YDCAAAAA
+    .\test5
+    end source code control
+}}}
+
+Package=<4>
+{{{
+}}}
+
+###############################################################################
+
+Project: "test6"=.\test6\test6.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+    begin source code control
+    "$/boost/libs/numeric/ublas/test6", ZDCAAAAA
+    .\test6
+    end source code control
+}}}
+
+Package=<4>
+{{{
+}}}
+
+###############################################################################
+
+Global:
+
+Package=<5>
+{{{
+    begin source code control
+    "$/boost/libs/numeric/ublas", ECCAAAAA
+    .
+    end source code control
+}}}
+
+Package=<3>
+{{{
+}}}
+
+###############################################################################
+

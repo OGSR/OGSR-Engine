@@ -1,0 +1,121 @@
+<html>
+<head>
+<title>Functor Parser</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" href="theme/style.css" type="text/css">
+</head>
+
+<body>
+<table width="100%" border="0" background="theme/bkd2.gif" cellspacing="2">
+  <tr> 
+    <td width="10"> 
+    </td>
+    <td width="85%"> <font size="6" face="Verdana, Arial, Helvetica, sans-serif"><b>Rationale</b></font></td>
+    <td width="112"><a href="http://spirit.sf.net"><img src="theme/spirit.gif" width="112" height="48" align="right" border="0"></a></td>
+  </tr>
+</table>
+<br>
+<table border="0">
+  <tr>
+    <td width="10"></td>
+    <td width="30"><a href="../index.html"><img src="theme/u_arr.gif" border="0"></a></td>
+    <td width="30"><a href="faq.html"><img src="theme/l_arr.gif" border="0"></a></td>
+    <td width="20"><a href="acknowledgments.html"><img src="theme/r_arr.gif" border="0"></a></td>
+   </tr>
+</table>
+<p><img src="theme/lens.gif" width="15" height="16"> <strong>Virtual functions: 
+  From static to dynamic C++</strong></p>
+<p>Rules straddle the border between static and dynamic C++. In effect, a rule 
+  transforms compile-time polymorphism (using templates) into run-time polymorphism 
+  (using virtual functions). This is necessary due to C++'s inability to automatically 
+  declare a variable of a type deduced from an arbitrarily complex expression 
+  in the right-hand side (rhs) of an assignment. Basically, we want to do something 
+  like:</p>
+<pre><code><font color="#000000">    <span class=identifier>T </span><span class=identifier>rule </span><span class=special>= </span><span class=identifier>an_arbitrarily_complex_expression</span><span class=special>;</span></font></code></pre>
+<p>without having to know or care about the resulting type of the right-hand side 
+  (rhs) of the assignment expression. Apart from this, we also need a facility 
+  to forward declare an unknown type:</p>
+<pre><code><font color="#000000"><span class=special>    </span><span class=identifier>T </span><span class=identifier>rule</span><span class=special>;
+    </span><span class=special>...
+    </span><span class=identifier>rule </span><span class=special>= </span><span class=identifier>a </span><span class=special>| </span><span class=identifier>b</span><span class=special>;</span></font></code></pre>
+<p>These limitations lead us to this implementation of rules. This comes at the 
+  expense of the overhead of a virtual function call, once through each invocation 
+  of a rule.</p>
+<p><img src="theme/lens.gif" width="15" height="16"> <strong>Multiple declaration 
+  </strong> </p>
+<p>Some BNF variants allow multiple declarations of a <tt>rule</tt>. The declarations 
+  are taken as alternatives. Example:</p>
+<pre>
+   <span class=identifier><code>r </code></span><code><span class=special>= </span><span class=identifier>a</span><span class=special>;    </span><span class=identifier>
+   r </span><span class=special>= </span><span class=identifier>b</span><span class=special>;</span></code></pre>
+<p> is equivalent to: </p>
+<pre>
+   <span class=identifier><code>r </code></span><code><span class=special>= </span><span class=identifier>a </span><span class=special>| </span><span class=identifier>b</span><span class=special>;</span></code></pre>
+<p>Spirit v1.3 allowed this behavior. However, the current version of Spirit <b>no 
+  longer</b> allows this because experience shows that this behavior leads to 
+  unwanted gotchas (for instance, it does not allow rules to be held in containers). 
+  In the current release of Spirit, a second assignment to a rule will simply 
+  redefine it. The old definition is destructed. This follows more closely C++ 
+  semantics and is more in line with what the user expects the rule to behave.</p>
+<p><img src="theme/lens.gif" width="15" height="16"> <b>Sequencing Syntax</b> 
+  <br>
+  <br>
+  The comma operator as in a, b seems to be a better candidate, syntax-wise. But 
+  then the problem is with its precedence. It has the lowest precedence in C/C++, 
+  which makes it virtually useless. <br>
+  <br>
+  Bjarne Stroustrup, in his article <a href="references.html#generalized_overloading">&quot;Generalizing 
+  Overloading for C++2000&quot;</a> talks about overloading whitespace. Such a 
+  feature would allow juxtapositioning of parser objects exactly as we do in (E)BNF 
+  (e.g. a b | c instead of a &gt;&gt; b | c). Unfortunately, the article was dated 
+  April 1, 1998. Oh well.</p>
+<p><img src="theme/lens.gif" width="15" height="16"> <b>Forward iterators</b><br>
+  <br>
+  In general, the scanner expects at least a standard conforming forward iterator. 
+  Forward iterators are needed for backtracking where the iterator needs to be 
+  saved and restored later. Generally speaking, Spirit is a backtracking parser. 
+  The implication of this is that at some point, the iterator position will have 
+  to be saved to allow the parser to backtrack to a previous point. Thus, for 
+  backtracking to work, the framework requires at least a forward iterator.<br>
+  <br>
+  Some parsers might require more specialized iterators (bi-directional or even 
+  random access). Perhaps in the future, deterministic parsers when added to the 
+  framework, will perform no backtracking and will need just a single token lookahead, 
+  hence will require input iterators only.</p>
+<p><img src="theme/lens.gif" width="15" height="16"><b> Why are subrules important?</b><br>
+  <br>
+  Subrules open up the oportunity to do aggressive meta programming as well because 
+  they do not rely on virtual functions. The virtual function is the meta-programmer's 
+  hell. Not only does it slow down the program due to the virtual function indirect 
+  call, it is also an opaque wall where no metaprogram can get past. It kills 
+  all meta-information beyond the virtual function call. Worse, the virtual function 
+  cannot be templated. Which means that its arguments have to be tied to a actual 
+  types. Many problems stem from this limitation. <br>
+  <br>
+  While Spirit is a currently classified as a non-deterministic recursive-descent 
+  parser, Doug Gregor first noted that other parsing techniques apart from top-down 
+  recursive descent may be applied. For instance, apart from non-deterministic 
+  recursive descent, deterministic LL(1) and LR(1) can theoretically be implemented 
+  using the same expression template front end. Spirit rules use virtual functions 
+  to encode the RHS parser expression in an opaque abstract parser type. While 
+  it serves its purpose well, the rule's virtual functions are the stumbling blocks 
+  to more advanced metaprogramming. Subrules are free from virtual functions.</p>
+<table border="0">
+  <tr> 
+    <td width="10"></td>
+    <td width="30"><a href="../index.html"><img src="theme/u_arr.gif" border="0"></a></td>
+    <td width="30"><a href="faq.html"><img src="theme/l_arr.gif" border="0"></a></td>
+    <td width="20"><a href="acknowledgments.html"><img src="theme/r_arr.gif" border="0"></a></td>
+  </tr>
+</table>
+<br>
+<hr size="1">
+<p class="copyright">Copyright &copy; 1998-2003 Joel de Guzman<br>
+  <br>
+  <font size="2">Permission to copy, use, modify, sell and distribute this document 
+  is granted provided this copyright notice appears in all copies. This document 
+  is provided &quot;as is&quot; without express or implied warranty, and with 
+  no claim as to its suitability for any purpose.</font></p>
+<p class="copyright">&nbsp;</p>
+</body>
+</html>

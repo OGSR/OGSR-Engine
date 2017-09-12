@@ -1,0 +1,339 @@
+# Copyright (C) Rene Rivera 2002. Permission to copy, use, modify, sell and
+# distribute this software is granted provided this copyright notice appears in
+# all copies. This software is provided "as is" without express or implied
+# warranty, and with no claim as to its suitability for any purpose.
+
+# Represents the projet-root of a collection of projects. This maintains
+# information about the root, and pointers to the project defined within
+# the root. Each project-root gets it's own module to put things into. For
+# instance declared constants which also get interned into each loaded project.
+
+import modules ;
+import path ;
+import class ;
+import set ;
+import regex ;
+
+# Load the project-root file for the given directory. The directory can
+# be either the project-root itself, or any subdirectory. Fails if it can't
+# find the project-root. We return the project-root module.
+#
+rule load (
+    dir # The directory to obtain the project-root for.
+    )
+{
+    # Find the project-root.jam corresponding to this directory.
+    #
+    local location = [ path.glob $(dir) : project-root.jam ] ;
+    if ! $(location)
+    {
+        location = [ path.glob-in-parents $(dir) : project-root.jam ] ;
+    }
+
+    # No project-root file found.
+    #
+    if ! $(location)
+    {
+        ECHO "Failed to find the project root for directory '$(dir)'." ;
+        ECHO "Did not find a project-root.jam file there or in any of its parent"
+            "directories." ;
+        EXIT "Please consult the documentation at 'http://www.boost.org'." ;
+    }
+    location = [ path.parent [ path.make $(location) ] ] ;
+
+    local module-name = project-root<$(location)> ;
+
+    # Only bother with the rest if the project-root isn't loaded yet.
+    #
+    if ! [ modules.peek $(module-name) : .project-root ]
+    {
+        # Create the project-root, and remember it.
+        #
+        local root = [ class.new project-root-object $(location) ] ;
+        modules.poke $(module-name) : .project-root : $(root) ;
+        .roots += $(root) ;
+        
+        # Let the project root initialize and load the contents.
+        #
+        $(root).initialize ;
+    }
+
+    # Return the module for the project.
+    #
+    return $(module-name) ;
+}
+
+# Print out all the project-roots.
+#
+rule print ( )
+{
+    import sequence ;
+    import print ;
+    
+    local rule compare-project-roots ( r1 r2 )
+    {
+        if [ $(r1).get-module ] < [ $(r2).get-module ]
+        {
+            return true ;
+        }
+    }
+
+    print.section "Project Roots" ;
+    local roots = [ sequence.insertion-sort $(.roots) : compare-project-roots ] ;
+    for local root in $(roots)
+    {
+        $(root).print ;
+    }
+}
+
+# Class encapsulating settings for a single project root.
+#
+rule project-root-object (
+    location # The root location.
+    )
+{
+    # The module name of the project-root.
+    self.module = project-root<$(location)> ;
+    
+    # The location of the project-root, as a path.
+    self.location = $(location) ;
+    
+    # The set of projects registered in this project-root.
+    self.projects = ;
+    
+    # The set of interned constants for this project-root.
+    self.constants = ;
+    
+    # Accessor, the module of the project root.
+    rule get-module ( )
+    {
+        return $(self.module) ;
+    }
+    
+    # Accessor, the location of the porject root.
+    rule get-location ( )
+    {
+        return $(self.location) ;
+    }
+    
+    # Accessor, the project modules under this project root.
+    rule get-projects ( )
+    {
+        return $(self.projects) ;
+    }
+    
+    # Accessor, the constants to intern into the project root.
+    rule get-constants ( )
+    {
+        return $(self.constants) ;
+    }
+    
+    # Initialize the project root, also loads the project root file.
+    rule initialize ( )
+    {
+        # Give the new module all the rules from project-root-context
+        #
+        modules.clone-rules project-root-context $(self.module) ;
+
+        # Load it within a module specifically for the project root.
+        # The module system handles checking for multiple includes.
+        #
+        modules.load $(self.module)
+            : project-root.jam : [ path.native $(self.location) ] ;
+    }
+    
+    # Accessor, add a constant.
+    rule add-constant (
+        name # Variable name of the constant.
+        : value # Value of the constant.
+        : type ? # Optional type of value.
+        )
+    {
+        switch $(type)
+        {
+            case path :
+                value = [ path.root [ path.native $(value) ] $(self.location) ] ;
+        }
+        if ! $(name) in $(self.constants)
+        {
+            self.constants += $(name) ;
+        }
+        self.constant.$(name) = $(value) ;
+    }
+    
+    # Register a project under this project-root. This does any setup
+    # in the module of the project, including interning the project-root
+    # constants. Multiple calls on the same project are allowed and will
+    # not disturb the previous calls.
+    #
+    rule register-project (
+        project-module # The module of the project to register.
+        )
+    {
+        if ! $(project-module) in $(self.projects)
+        {
+            self.projects += $(project-module) ;
+            intern-constants $(project-module) ;
+            modules.clone-rules project-context $(project-module) ;
+            
+            # Import project-root rules declared by teh user into each project.
+            #
+            local user-rules = [ set.difference
+                [ RULENAMES $(self.module) ] :
+                [ RULENAMES project-root-context ] ] ;
+            IMPORT $(self.module) : $(user-rules) : $(project-module) : $(user-rules) ;
+        }
+    }
+    
+    # Intern the constants from this project-root into the calling context.
+    #
+    rule intern-constants (
+        context ? # The module to intern into the current module.
+        )
+    {
+        local intern-module = $(context) ;
+        intern-module ?= [ CALLER_MODULE ] ;
+        for local c in $(self.constants)
+        {
+            modules.poke $(intern-module) : $(c) : $(self.constant.$(c)) ;
+        }
+    }
+    
+    # Print out info about this project root. Calls print on the
+    # individual projects in this project-root.
+    #
+    rule print ( )
+    {
+        import sequence ;
+        import print ;
+        import project ;
+    
+        # Needed to get deterministic order of output, which makes testing simpler
+        local rule compare-projects ( p1 p2 )
+        {
+            local id1 = [ project.attribute $(p1) id ] ;
+            local id2 = [ project.attribute $(p2) id ] ;
+            if $(id1) < $(id2)
+            {
+                return true ;
+            }
+            else
+            {
+                if $(id1) = $(id2) && $(p1) < $(p2)
+                {
+                    return true ;
+                }
+            }
+        }
+    
+        print.section "'"$(self.location)"'" Module for project-root is "'"$(self.module)"'" ;
+        if $(self.constants)
+        {
+            print.section Constants ;
+            print.list-start ;
+            local constants = [ sequence.insertion-sort $(self.constants) ] ;
+            for local c in $(constants)
+            {
+                print.list-item $(c) "=" $(self.constant.$(c)) ;
+            }
+            print.list-end ;
+        }
+        if $(self.projects)
+        {
+            print.section Projects ;
+            local projects = [ sequence.insertion-sort $(self.projects) : compare-projects ] ;
+            for local p in $(projects)
+            {
+                local attributes = [ project.attributes $(p) ] ;
+                $(attributes).print ;
+            }
+        }
+    }
+}
+class.class project-root-object ;
+
+# Rules callable by the user in the context of the project-root.jam of a project.
+#
+module project-root-context
+{
+    # Access to project root object and shortcut for it's methods. The
+    # optional argument is a shortcut to execute the given method on the
+    # object. This saves the hasle of creating local vars to call on the
+    # singleton.
+    #
+    rule project-root (
+        method ? # The optional method.
+        args * # The arguments.
+        : * # The rest.
+        )
+    {
+        if $(method)
+        {
+            return [ $(.project-root).$(method) $(args) : $(2) : $(3) : $(4) : $(5) : $(6) : $(7) : $(8) : $(9) ] ;
+        }
+        else
+        {
+            return $(.project-root) ;
+        }
+    }
+    
+    # Declare and set a project global constant. Project global constants are
+    # normal variables but should not be changed. They are applied to each
+    # Jamfile that is loaded under it's corresponding project-root.
+    #
+    rule constant (
+        name # Variable name of the constant.
+        : value # Value of the constant.
+        )
+    {
+        project-root add-constant $(name) : $(value) ;
+    }
+    
+    # Declare and set a project global constant, whose value is a path. The
+    # path is adjusted to be relative to the invocation directory. The given
+    # value path is taken to be either absolute, or relative to this project root.
+    #
+    rule path-constant (
+        name # Variable name of the constant.
+        : value # Value of the constant.
+        )
+    {
+        project-root add-constant $(name) : $(value) : path ;
+    }
+    
+    # Load and use a project in this project root.
+    #
+    rule use-project (
+        id # The ID of the project.
+        : location # The location of the project.
+        )
+    {
+        import project ;
+        import path ;
+        project.use $(id) : [ path.root $(location) [ project-root get-location ] ] ;
+    }
+}
+
+# Project root specific rules callable in the context of a project file. These
+# get imported into each project.
+#
+module project-context
+{
+    # Access to project root object and shortcut for it's methods. The
+    # optional argument is a shortcut to execute the given method on the
+    # object. This saves the hasle of creating local vars to call on the
+    # singleton.
+    #
+    rule project-root (
+        method ? # The optional method.
+        args * # The arguments.
+        : * # The rest.
+        )
+    {
+        import project ;
+        local attributes = [ project.attributes $(__name__) ] ;
+        local project-root-module = [ $(attributes).get project-root-module ] ;
+        return [ $(project-root-module).project-root
+            $(method) $(args) : $(2) : $(3) : $(4) : $(5) : $(6) : $(7) : $(8) : $(9) ] ;
+    }
+}

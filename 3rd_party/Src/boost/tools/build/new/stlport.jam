@@ -1,0 +1,79 @@
+# (C) Copyright Gennadiy Rozental 2002. 
+# (C) Copyright Vladimir Prus 2002. 
+# Permission to copy, use,
+# modify, sell and distribute this software is granted provided this
+# copyright notice appears in all copies. This software is provided
+# "as is" without express or implied warranty, and with no claim as
+# to its suitability for any purpose.
+
+import feature : feature subfeature ;
+
+feature.extend stdlib : stlport ;
+
+# STLport iostreams or native iostreams
+subfeature stdlib stlport : iostream : hostios : optional propagated ;
+
+# STLport extensions
+#subfeature stdlib stlport : extensions : on off ;
+
+# STLport anachronisms
+#subfeature stdlib stlport : anachronisms : on off ;
+
+# STLport debug allocation
+#subfeature stdlib stlport : debug-alloc : off on ;
+
+# Initialize stlport support. 
+rule init ( headers       # Location of header files
+            : libraries ? # Location of libraries
+	  )
+{
+    .headers = $(headers) ;
+    .libraries = $(libraries) ;
+    
+    feature.action <stdlib>stlport : adjust-properties ;    
+}
+
+rule adjust-properties ( property : properties * )
+{
+    local result = <include>$(.headers) ;
+    
+    local need-library ;
+    if <stdlib-iostream>hostios in $(properties)
+    {
+        result += <define>_STLP_NO_OWN_IOSTREAMS ;
+    }
+    else
+    {
+        result += <library-path>$(.libraries) ;
+        need-library = true ;
+    }
+
+    # Commented out until I find out why stlport won't link
+    # with debugging on, using Boost.Build or otherwise.    
+    if $(0) {
+        
+    local library ;
+    if <variant>debug in $(properties)
+    {
+        result += <define>_STLP_DEBUG ;
+        library = <find-static-library>stlport_gcc_debug <find-static-library>pthread ;
+    }
+    else
+    {
+        library = <find-shared-library>stlport_gcc ;
+    }
+    }
+    
+    library = <find-shared-library>stlport_gcc ;
+    
+    
+    if $(need-library)
+    {
+        result += $(library) ;
+    }
+    
+    
+    return $(result) ;
+}
+
+

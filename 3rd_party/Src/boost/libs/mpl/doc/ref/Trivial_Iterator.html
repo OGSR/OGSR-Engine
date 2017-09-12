@@ -1,0 +1,46 @@
+<!doctype html public "-//ietf//dtd html//en">
+<html><head><title>boost::mpl::Trivial Iterator</title>
+<link rel="stylesheet" href="./mpl_wiki.css">
+</head><body bgcolor="white">
+<h1><a href="./Table_of_Contents.html"><img src="./mpl_logo.jpg" alt="[Home]" border=0 align="right"></a>Trivial Iterator</h1><h3>Description</h3>
+<p>
+A Trivial Iterator <code>i</code> is a type that represents a reference to an element of some <a href="./Sequence.html">Sequence</a>, and allows to access the element through its nested <code>type</code> member [<a href="#1">1</a>]. A trivial iterator does not define any traversal operations.
+<p>
+<h3>Definitions</h3>
+<p>
+<ul>
+<li>a trivial iterator can be <em>dereferenceable</em>, meaning that accessing its nested <code>type</code> member is a well-defined operation. 
+</ul>
+<p>
+<h3>Valid expressions</h3>
+<p>
+<table border="1">
+<tr><th>&nbsp;Expression&nbsp;</th><th>&nbsp;Expression type &nbsp;</th></tr>
+<tr><td><code>typename i::type</code></td><td>A type </td></tr>
+</table>
+<p>
+<h3>Expression semantics</h3>
+<p>
+<table border="1">
+<tr><th>&nbsp;Expression&nbsp;</th><th>&nbsp;Complexity&nbsp;</th><th>&nbsp;Precondition&nbsp;</th><th>&nbsp;Semantics&nbsp;</th><th>&nbsp;Postcondition &nbsp;</th></tr>
+<tr><td><code>typename i::type</code></td><td>Amortized constant time</td><td><code>i</code> is dereferenceable</td><td><code>i::type</code> is identical to the type of the pointed element</td><td></td></tr>
+</table>
+<p>
+<h3>Invariants</h3>
+<p>
+For any trivial iterators <code>i</code> and <code>j</code> the following invariants always hold: 
+<p>
+<ul>
+<li><code>i</code> and <code>j</code> are identical if and only if they are pointing to the same element;
+<li>if <code>i</code> is dereferenceable, and <code>j</code> is identical to <code>i</code>, then <code>j</code> is dereferenceable as well;
+<li>if <code>i</code> and <code>j</code> are identical and dereferenceable, then <code>i::type</code> and <code>j::type</code> are identical.
+</ul>
+<p>
+<h3>Notes</h3>
+[<a name="1">1</a>]  Any trivial iterator is a model of [Nullary Metafunction Class] concept. <br>
+<p>
+<h3>See also</h3>
+<p>
+<a href="./Sequence.html">Sequence</a>, <a href="./Input_Iterator.html">Input Iterator</a>
+<p><hr>
+<a href="./Table_of_Contents.html">Table of Contents</a><br>Last edited July 15, 2002 10:46 am</body></html>

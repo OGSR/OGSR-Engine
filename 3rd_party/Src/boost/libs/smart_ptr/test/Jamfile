@@ -1,0 +1,42 @@
+#  Boost.SmartPtr Library test Jamfile
+#
+#  Copyright (c) 2003 Peter Dimov
+#  Copyright (c) 2003 Dave Abrahams
+#
+#  Permission to copy, use, modify, sell and distribute this software
+#  is granted provided this copyright notice appears in all copies.
+#  This software is provided "as is" without express or implied
+#  warranty, and with no claim as to its suitability for any purpose.
+
+subproject libs/smart_ptr/test ;
+
+# bring in rules for testing
+SEARCH on testing.jam = $(BOOST_BUILD_PATH) ;
+include testing.jam ;
+
+# Make tests run by default.
+DEPENDS all : smart_ptr ;
+
+{
+    test-suite "smart_ptr"
+        : [ run smart_ptr_test.cpp ]
+          [ run shared_ptr_basic_test.cpp : : : <gcc><*><cxxflags>-Wno-non-virtual-dtor ]
+          [ run shared_ptr_test.cpp : : : <gcc><*><cxxflags>-Wno-non-virtual-dtor ]
+          [ run weak_ptr_test.cpp ]
+          [ run shared_from_this_test.cpp : : : <gcc><*><cxxflags>-Wno-non-virtual-dtor ]
+          [ run get_deleter_test.cpp ]
+          [ run intrusive_ptr_test.cpp ]
+          [ run intrusive_ptr_test.cpp ]
+          [ compile-fail shared_ptr_assign_fail.cpp ]
+        ;
+    
+    # this one is too slow to run unless explicitly requested, and ALL
+    # tests are run by default when this file is subincluded from
+    # boost/status, so it's guarded from that case.  It will only be
+    # built from this directory when the targets "test" (all tests) or
+    # "shared_ptr_alloc_test" are requested.
+    if [ in-invocation-subdir ]
+    {
+        run shared_ptr_alloc_test.cpp ;
+    }
+}

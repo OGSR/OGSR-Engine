@@ -1,0 +1,87 @@
+The following should fail parsing:
+/////////////////////////////////////////////////////////
+
+		<!-- declarations for <head> & <body> --> Fails Parsing
+		                                         ^--Here
+
+
+/////////////////////////////////////////////////////////
+
+		<?xml version="1.0" encoding="UTF-8" ?><!DOCTYPE greeting [<!ELEMENT greeting (#PCDATA)>]><greeting>Hello, world!</greeting><!-- B+, B, or B---> Fails Parsing
+		                                                                                                                            ^--Here
+
+
+/////////////////////////////////////////////////////////
+
+		<?xml version="1.0" encoding="UTF-8" ?><!DOCTYPE greeting [<!ELEMENT greeting (#PCDATA)>]><greetingHello, world!</greeting> Fails Parsing
+		                                                                                                        ^--Here
+
+
+/////////////////////////////////////////////////////////
+
+		<?xml version="1.0"? > <greeting>Hello, world!</greeting> Fails Parsing
+		 ^--Here
+
+
+/////////////////////////////////////////////////////////
+
+		<?xml version="1.0" encoding="UTF-8" ?><!DOCTYPE greeting [<!ELEMENT greeting (#PCDATA)>]><![CDATA[<greeting>Hello, world!</greeting>]]> Fails Parsing
+		                                                                                           ^--Here
+
+
+The following should parse OK:
+/////////////////////////////////////////////////////////
+
+		<?xml version="1.0" encoding="UTF-8" ?><!DOCTYPE greeting [<!ELEMENT greeting (#PCDATA)>]><greeting>Hello, world!</greeting> Parses OK
+
+
+/////////////////////////////////////////////////////////
+
+		<?xml version="1.0" encoding="UTF-8" ?><!DOCTYPE greeting [<!ELEMENT greeting (#PCDATA)>]><greeting>Hello, world!</greeting><!-- declarations for <head> & <body> --> Parses OK
+
+
+/////////////////////////////////////////////////////////
+
+		<![CDATA[<greeting>Hello, world!</greeting>]]> Parses OK
+
+
+/////////////////////////////////////////////////////////
+
+		<?xml version="1.0" encoding="UTF-8" ?><!DOCTYPE greeting [<!ELEMENT greeting (#PCDATA)>]><greeting>Hello, world!<![CDATA[<greeting>Hello, world!</greeting>]]></greeting> Parses OK
+
+
+/////////////////////////////////////////////////////////
+
+		<?xml version="1.0"?> <greeting>Hello, world!</greeting> Parses OK
+
+
+/////////////////////////////////////////////////////////
+
+		<greeting>Hello, world!</greeting> Parses OK
+
+
+/////////////////////////////////////////////////////////
+
+		<?xml version="1.0"?> <!DOCTYPE greeting SYSTEM "hello.dtd"> <greeting>Hello, world!</greeting> Parses OK
+
+
+/////////////////////////////////////////////////////////
+
+		<?xml version="1.0" standalone='yes'?> <greeting>Hello, world!</greeting> Parses OK
+
+
+/////////////////////////////////////////////////////////
+
+		<?xml version="1.0" standalone='yes'?> <!DOCTYPE greeting SYSTEM "hello.dtd"> <greeting>Hello, world!</greeting> Parses OK
+
+
+/////////////////////////////////////////////////////////
+
+		<?xml version="1.0" encoding="ISO8859-1" ?><note><to>Tove</to><from>Jani</from><heading>Reminder</heading><body>Don't forget me this weekend!</body></note> Parses OK
+
+
+/////////////////////////////////////////////////////////
+
+		<?xml version="1.0"?><!DOCTYPE note [<!ELEMENT note    (to,from,heading,body)><!ELEMENT to      (#PCDATA)><!ELEMENT from    (#PCDATA)><!ELEMENT heading (#PCDATA)><!ELEMENT body    (#PCDATA)>]><note><to>Tove</to><from>Jani</from><heading>Reminder</heading><body>Don't forget me this weekend!</body></note> Parses OK
+
+

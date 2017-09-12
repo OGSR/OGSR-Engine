@@ -1,0 +1,62 @@
+<!doctype html public "-//ietf//dtd html//en">
+<html><head><title>boost::mpl::advance</title>
+<link rel="stylesheet" href="../mpl_wiki.css">
+</head><body bgcolor="white">
+<h1><a href="../Table_of_Contents.html"><img src="../mpl_logo.jpg" alt="[Home]" border=0 align="right"></a>advance</h1><h3>Synopsis</h3>
+<p>
+<pre>
+template&lt;
+      typename Iterator
+    , typename N
+    &gt;
+struct advance
+{
+    typedef <em>unspecified</em> type;
+};
+</pre>
+<p>
+<h3>Description</h3>
+<p>
+Returns an new iterator <code>i</code> such as <code>distance&lt; Iterator,i &gt;::type::value == N::value</code>.
+<p>
+<h3>Definition</h3>
+<p>
+<pre>
+#include "<a href="../../../../../boost/mpl/advance.hpp">boost/mpl/advance.hpp</a>"
+</pre>
+<p>
+<h3>Parameters</h3>
+<table border="1">
+<tr><th>&nbsp;Parameter&nbsp;</th><th>&nbsp;Requirement&nbsp;</th><th>&nbsp;Description &nbsp;</th></tr>
+<tr><td><code>Iterator</code></td><td>A model of <a href="../Input_Iterator.html">Input Iterator</a></td><td></td></tr>
+<tr><td><code>N</code></td><td>A model of <a href="../Integral_Constant.html">Integral Constant</a></td><td></td></tr>
+</table>
+<p>
+<h3>Expression semantics</h3>
+<p>
+<table border="1">
+<tr><th>&nbsp;Expression&nbsp;</th><th>&nbsp;Expression&nbsp;type&nbsp;</th><th>&nbsp;Precondition&nbsp;</th><th>&nbsp;Semantics&nbsp;</th><th>&nbsp;Postcondition&nbsp;</th></tr>
+<tr><td><code>typedef advance&lt;Iterator,N&gt;::type i;</code></td><td>A model of <a href="../Input_Iterator.html">Input Iterator</a></td><td><code>Iterator</code> and every iterator between <code>Iterator</code> and <code>i</code> (inclusive) is nonsingular; <code>N::value</code> must be nonnegative if <code>Iterator</code> is a model of <a href="../Input_Iterator.html">Input Iterator</a> or <a href="../Forward_Iterator.html">Forward Iterator</a></td><td>Equivalent to <code>typedef Iterator::next i1; typedef i1::next i2; .. typedef in-1::next i;</code> if <code>N::value &gt; 0</code>, and <code>typedef Iterator::prior i1; typedef i1::prior i2; .. typedef in-1::prior i;</code> otherwise; if <code>N::value == 0</code>, the algorithm has no effect.</td><td><code>distance&lt; Iterator,i &gt;::type::value == N::value</code> </td></tr>
+</table>
+<p>
+<h3>Complexity</h3>
+<p>
+Amortized constant time if <code>Iterator</code> is a model of <a href="../Random_Access_Iterator.html">Random Access Iterator</a>, otherwise linear time. 
+<p>
+<h3>Example</h3>
+<p>
+<pre>
+typedef vector_c&lt;int,0,1,2,3,4,5,6,7,8,9&gt; numbers;
+typedef begin&lt;numbers&gt;::type first;
+typedef end&lt;numbers&gt;::type last;
+typedef advance_c&lt;first,10&gt;::type iter1;
+typedef advance_c&lt;last,-10&gt;::type iter2;
+BOOST_MPL_ASSERT_IS_SAME(iter1, last);
+BOOST_MPL_ASSERT_IS_SAME(iter2, first);
+</pre>
+<p>
+<h3>See also</h3>
+<p>
+<a href="../Iterators.html">Iterators</a>, <a href="../Sequence.html">Sequence</a>, <code><a href="../Reference/distance.html">distance</a></code>, <code><a href="../Reference/begin.html">begin</a></code>, <code><a href="../Reference/end.html">end</a></code>
+<p><hr>
+<a href="../Table_of_Contents.html">Table of Contents</a><br>Last edited July 17, 2002 6:38 am</body></html>

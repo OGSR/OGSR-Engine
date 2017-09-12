@@ -1,0 +1,72 @@
+<html>
+
+<head>
+<meta http-equiv="Content-Type"
+content="text/html; charset=iso-8859-1">
+<meta name="GENERATOR" content="Microsoft FrontPage Express 2.0">
+<title>Boost.Build - borland toolset</title>
+<link rel="stylesheet" type="text/css" href="boost.css">
+</head>
+
+<body link="#0000FF" vlink="#800080">
+
+<table border="0" cellpadding="7" cellspacing="0" width="100%"
+summary="header">
+<tbody>    <tr>
+        <td valign="top" width="300"><h3><a
+        href="http://www.boost.org/"><img
+        src="../../c++boost.gif" alt="C++ Boost" border="0"
+        width="277" height="86"> </a></h3>
+        </td>
+        <td valign="top"><h1 align="center">Boost.Build</h1>
+        <h2 align="center">Kylix toolset</h2>
+        </td>
+    </tr>
+</tbody></table>
+
+<hr>
+
+<h2>Introduction</h2>
+
+<p>Boost.Build's <a href="http://www.borland.com/kylix">Kylix</a>
+toolset supports the <a href="http://www.borland.com/">Borland</a>
+C++ linux compiler. </p>
+
+<h2>Configuration Variables</h2>
+
+<p>The kylix toolset responds to the following variables which
+can be set in the environment or configured on the jam command-line
+using <code>-s</code><code><i>VARIABLE_NAME</i></code><code>=</code><i>value</i>:
+</p>
+
+<table border="1">
+<tbody>    <tr>
+        <th>Variable Name </th>
+        <th>Semantics </th>
+        <th>Default </th>
+        <th>Notes </th>
+    </tr>
+    <tr>
+        <td><code>KYLIX_ROOT</code> </td>
+        <td>The directory in which kylix was installed. Normally
+        this will be either /usr/local/kylix3 or ~/kylix3.</td>
+        <td>(none) </td>
+        <td>If not set the user must ensure that the environment
+        variables required by Kylix are correctly set, normally
+        this is achieved by sourcing the &quot;kylixpath&quot;
+        shell script in the Kylix bin/ directory.</td>
+    </tr>
+</tbody></table>
+
+<hr>
+
+<p>Revised <!--webbot bot="Timestamp" startspan s-type="EDITED"
+s-format="%d %B, %Y" -->16 December, 2002<!--webbot bot="Timestamp"
+i-checksum="38515" endspan --> </p>
+
+<p><i>© Copyright </i><a
+href="mailto:john_maddock@compuserve.com"><i>John Maddock</i></a><i>
+2002. All Rights Reserved.</i></p>
+</body>
+</html>
+

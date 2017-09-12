@@ -1,0 +1,142 @@
+#  Copyright (C) Vladimir Prus 2002. Permission to copy, use, modify, sell and
+#  distribute this software is granted provided this copyright notice appears in
+#  all copies. This software is provided "as is" without express or implied
+#  warranty, and with no claim as to its suitability for any purpose.
+
+#  This module defines the 'stage' rule, used to copy a set of targets to
+#  a single location
+#
+#  Typical usage:
+#
+#  stage dist : hello_world : <location>/usr/bin ;
+#
+#  The source target will be copied to the specified location. Some targets will
+#  we specially processed. In particular, binaries will be relinked. Free properties
+#  from stage dist will be included to properties used for relinking. For example
+#
+#  stage dist : hello_world : <location>/usr/bin <dll-path>/opt/lib ;
+# 
+#  will cause 'hello_world' to be relinked to the new location, and <dll-path>
+#  property will be added when relinking.
+
+import targets ;
+import class : class new ;
+import property ;
+import errors : error ;
+import type : type ;
+import regex ;
+
+rule stage-target-class ( name-and-dir : project : sources * : requirements * : default-build * )
+{
+    basic-target.__init__ $(name-and-dir) : $(project) : $(sources) : $(requirements) 
+                          : $(default-build) ;
+    
+    rule construct ( source-targets * : property-set )
+    {
+        local location = [ feature.get-values <location> : 
+            [ $(property-set).raw ] ] ;
+        if ! $(location)
+        {
+            location = [ project.path-relative-to-project-location $(self.name)
+              $(self.project) ] ;
+        }
+                
+        local result ;
+        for local i in $(source-targets)
+        {
+            local i2 ; # Staged target(s)
+            
+            local t = [ $(i).type ] ;           
+            
+            # See if something special should be done when staging this
+            # type. It is indicated by presense of special "staged" type            
+            if $(t) && [ type.registered STAGED_$(t) ]
+            {
+                i2 = [ generators.construct $(self.project) : STAGED_$(t) :
+                      $(property-set) : $(i) ] ;
+                if ! $(i2)
+                {                    
+                    errors.error "Unable to generate staged version of " [ $(i).str ] ;
+                }                
+            }
+            else             
+            {                
+              local n = [ $(i).name ] ;
+                i2 = [ new file-target $(n:D=) : [ $(i).type ] 
+                  : $(self.project) ] ;
+                local a = [ new action $(i2) : $(i) : common.copy ] ;
+                $(i2).action $(a) ;
+            }
+            
+            # FIXME: Since we can have <location> property, it might be better
+            # to use it to distinguish staged copies with different locations.
+            $(i2).set-path $(location) ;
+            result += $(i2) ;
+        }
+        return $(result) ;
+    }   
+}
+
+class stage-target-class : basic-target ;
+
+# Declare staged version of the EXE type. Generator for this type will
+# cause relinking to the new location.
+type.register STAGED_EXE : : EXE ;
+
+rule stage-exe-generator
+{
+    generator.__init__ stage-exe : EXE : STAGED_EXE ;
+    
+    rule run ( project name ? : property-set : source : multiple ? )
+    {
+        # FIXME: this must become some rule in virtual-target module
+        # we're cloning the target and action.        
+        local n = [ $(source).name ] ;
+        local cloned-target = [ new file-target $(n:D=) : [ $(source).type ] 
+                  : $(project) ] ;
+        $(cloned-target).depends [ $(source).dependencies ] ;
+        $(cloned-target).root [ $(source).root ] ;
+        $(cloned-target).dg [ $(source).dg ] ;
+        
+          
+        local action = [ $(source).action ] ;        
+        local action-class = [ modules.peek $(action) : __class__ ] ;
+
+        # Add our free properties to the property set, so that 
+        # stage can affect the relinking details.
+        local ps = [ $(action).properties-ps ] ;
+        local new-ps = [ $(ps).add [ property-set.create [ $(property-set).free ] ] ] ;
+        local cloned-action = [ new $(action-class) $(cloned-target) : 
+          [ $(action).sources ] : [ $(action).action-name ] : $(new-ps) ] ;
+        
+        $(cloned-target).action $(cloned-action) ;
+        
+        return $(cloned-target) ;
+    }    
+}
+
+class stage-exe-generator : generator ;
+generators.register [ new stage-exe-generator ] ;
+
+
+
+# Declares a stage target. When build, it will construct all sources
+# and place in one directory. The directory can be specified in requirements
+# with 'location' property. If not specified, the directory name will be
+# the same as target name, relative to the project where the target 
+# is declared.
+rule stage ( name : sources * : requirements * : default-build * )
+{
+    local project = [ CALLER_MODULE ] ;
+    
+    targets.main-target-alternative
+      [ new stage-target-class $(name) : $(project) : $(sources)
+        : [ targets.main-target-requirements $(requirements) : $(project) ] 
+        : [ targets.main-target-default-build $(default-build) : $(project) ] 
+      ] ;
+}
+
+IMPORT $(__name__) : stage : : stage ;
+
+
+

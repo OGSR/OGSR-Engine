@@ -1,0 +1,85 @@
+import os ;
+
+# Use a very crude way to sense there python is locatted
+
+local PYTHON_PATH ;
+
+if [ GLOB /usr/local/include/python2.2 : * ]
+{
+    PYTHON_PATH = /usr/local ;
+}
+else if [ GLOB /usr/include/python2.2 : * ] 
+{
+    PYTHON_PATH = /usr ;
+}
+
+if [ os.name ] in CYGWIN NT
+{
+    lib_condition = <link>shared: ;
+    defines = USE_DL_IMPORT ;
+   
+    # Declare a target for the python interpreter library
+    lib python : : <name>python2.2.dll ;
+    PYTHON_LIB = python ;    
+} 
+else 
+{
+   lib python : : <name>python2.2 ;
+   PYTHON_LIB = python ;    
+}
+
+
+
+if $(PYTHON_PATH) {
+    
+
+project boost/python
+    : source-location ../src
+        : requirements <include>$(PYTHON_PATH)/include/python2.2  
+          $(lib_condition)<library-path>$(PYTHON_PATH)/lib/python2.2/config
+            <link>shared:<library>$(PYTHON_LIB)
+            <define>$(defines)
+        : usage-requirements # requirement that will be propageted to *users* of this library
+          <include>$(PYTHON_PATH)/include/python2.2       
+
+# We have a bug which causes us to conclude that conditionalized
+# properties in this section are not free.
+#          $(lib_condition)<library-path>$(PYTHON_PATH)/lib/python2.2/config
+#            <shared>true:<find-library>$(PYTHON_LIB)
+            
+          <library-path>$(PYTHON_PATH)/lib/python2.2/config
+            <library>$(PYTHON_LIB)
+    ;
+
+lib boost_python
+    : 
+    numeric.cpp
+
+    list.cpp
+    long.cpp
+    dict.cpp
+    tuple.cpp
+    str.cpp
+
+    aix_init_module.cpp
+    converter/from_python.cpp
+    converter/registry.cpp
+    converter/type_id.cpp
+    object/enum.cpp
+    object/class.cpp
+    object/function.cpp
+    object/inheritance.cpp
+    object/life_support.cpp
+    object/pickle_support.cpp
+    errors.cpp
+    module.cpp
+    converter/builtin_converters.cpp
+    converter/arg_to_python_base.cpp
+    object/iterator.cpp
+    object_protocol.cpp
+    object_operators.cpp
+    :   <link>static:<define>BOOST_PYTHON_STATIC_LIB 
+        <define>BOOST_PYTHON_SOURCE
+    : <link>shared
+      ;
+}

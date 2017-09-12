@@ -1,0 +1,72 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="boost.css">
+<title>Boost.Build - gcc-stlport toolset</title>
+</head>
+<body link="#0000ff" vlink="#800080">
+<table border="0" cellpadding="7" cellspacing="0" width="100%" summary=
+    "header">
+  <tr> 
+    <td valign="top" width="300"> 
+      <h3><a href="http://www.boost.org"><img height="86" width="277" alt="C++ Boost" src="../../c++boost.gif" border="0"></a></h3>
+    </td>
+    <td valign="top"> 
+      <h1 align="center">Boost.Build</h1>
+      <h2 align="center">gcc-stlport toolset</h2>
+    </td>
+  </tr>
+</table>
+<hr>
+
+<h2>Introduction</h2>
+
+<p>Boost.Build's <a href="http://gcc.gnu.org">gcc-stlport</a> toolset supports the
+GNU GCC compiler using <a href="http://www.stlport.org">STLport</a> as a replacement
+to the GNU libg++. 
+
+<h2><a name="configuration">Configuration Variables</a></h2>
+
+The gcc-stlport toolset responds to the following variables which can be set in the
+environment or configured on the jam command-line using
+<code>-s<i>VARIABLE_NAME</i>=</code><i>value</i>. This toolset is an extension to the
+<a href="gcc-tools.html">gcc toolset</a> and therefore responds to all
+of the GCC <a href="gcc-tools.html#configuration">configuration
+variables</a> in addition to those listed below.
+
+<table border="1">
+
+<tr><th>Variable Name <th>Semantics <th>Default <th>Notes
+
+<tr>
+    <td><code>STLPORT_ROOT</code>
+    <td>Path to installation of STLport.
+    <td>(none)
+    <td>It is customary to set this in your "Jamrules" file.
+
+<tr>
+    <td><code>STLPORT_INCLUDE_DIRECTORY</code>
+    <td>The name of the directory within the STLport installation containing
+    the header files.
+    <td><code>stlport</code>
+    <td>&nbsp;
+
+<tr>
+    <td><code>STLPORT_LIB_DIRECTORY</code>
+    <td>The name of the directory withint the STLport installation containing
+    the built libraries.
+    <td><code>lib</code>
+    <td>&nbsp;
+
+</table>
+
+<hr>
+<p>Revised 
+  <!--webbot bot="Timestamp" S-Type="EDITED" S-Format="%d %B, %Y" startspan -->
+  09 May, 2002 
+  <!--webbot bot="Timestamp" endspan i-checksum="39359" -->
+</p>
+<p><i>&copy; Copyright <a href="../../people/dave_abrahams.htm">Dave Abrahams</a> 
+  2002. All Rights Reserved.</i></p>
+</body>
+</html>

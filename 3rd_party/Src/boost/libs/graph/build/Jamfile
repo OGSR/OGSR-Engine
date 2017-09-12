@@ -1,0 +1,10 @@
+subproject libs/graph/build ;
+
+SOURCES = graphviz_graph_lex graphviz_digraph_lex
+	 graphviz_graph_parser graphviz_digraph_parser ;
+
+
+lib libbgl-viz : ../src/$(SOURCES).cpp 
+	: <sysinclude>$(BOOST_ROOT)
+	: debug <inlining>on #inlining prevents linker name clashes due to truncation! 
+	;

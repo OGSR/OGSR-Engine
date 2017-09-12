@@ -1,0 +1,9 @@
+LIBRARY
+magicfm
+EXPORTS
+@Mgc@MinSphere$qqsipx11Mgc@Vector3=Mgc_MinSphere
+@Mgc@OrthogonalPlaneFit$qqsip11Mgc@Vector3r11Mgc@Vector3t3=Mgc_OrthogonalPlaneFit
+CreateConvexHull2D
+DestroyConvexHull2D
+ConvexHull2D_ByIncremental
+ConvexHull2D_RemoveCollinear

@@ -1,0 +1,1426 @@
+[doc Boost Python Tutorial]
+
+[def __note__       [$theme/note.gif]]
+[def __alert__      [$theme/alert.gif]]
+[def __detail__     [$theme/lens.gif]]
+[def __tip__        [$theme/bulb.gif]]
+[def :-)            [$theme/smiley.gif]]
+
+[page QuickStart]
+
+The Boost Python Library is a framework for interfacing Python and
+C++. It allows you to quickly and seamlessly expose C++ classes
+functions and objects to Python, and vice-versa, using no special
+tools -- just your C++ compiler. It is designed to wrap C++ interfaces
+non-intrusively, so that you should not have to change the C++ code at
+all in order to wrap it, making Boost.Python ideal for exposing
+3rd-party libraries to Python. The library's use of advanced
+metaprogramming techniques simplifies its syntax for users, so that
+wrapping code takes on the look of a kind of declarative interface
+definition language (IDL).
+
+[h2 Hello World]
+
+Following C/C++ tradition, let's start with the "hello, world". A C++
+Function:
+
+    char const* greet()
+    {
+       return "hello, world";
+    }
+
+can be exposed to Python by writing a Boost.Python wrapper:
+
+    #include <boost/python.hpp>
+    using namespace boost::python;
+
+    BOOST_PYTHON_MODULE(hello)
+    {
+        def("greet", greet);
+    }
+
+That's it. We're done. We can now build this as a shared library. The
+resulting DLL is now visible to Python. Here's a sample Python session:
+
+    >>> import hello
+    >>> print hello.greet()
+    hello, world
+
+[:['[*Next stop... Building your Hello World module from start to finish...]]]
+
+[page Building Hello World]
+
+[h2 From Start To Finish]
+
+Now the first thing you'd want to do is to build the Hello World module and
+try it for yourself in Python. In this section, we shall outline the steps
+necessary to achieve that. We shall use the build tool that comes bundled
+with every boost distribution: [*bjam].
+
+[blurb __detail__ [*Building without bjam][br][br]
+
+Besides bjam, there are of course other ways to get your module built.
+What's written here should not be taken as "the one and only way".
+There are of course other build tools apart from [^bjam].
+]
+
+We shall skip over the details. Our objective will be to simply create the
+hello world module and run it in Python. For a complete reference to
+building Boost.Python, check out: [@../../building.html building.html].
+After this brief ['bjam] tutorial, we should have built two DLLs:
+
+* boost_python.dll
+* hello.pyd
+
+if you are on Windows, and
+
+* libboost_python.so
+* hello.so
+
+if you are on Unix.
+
+The tutorial example can be found in the directory:
+[^libs/python/example/tutorial]. There, you can find:
+
+* hello.cpp
+* Jamfile
+
+The [^hello.cpp] file is our C++ hello world example. The [^Jamfile] is a
+minimalist ['bjam] script that builds the DLLs for us.
+
+Before anything else, you should have the bjam executable in your boost
+directory or somewhere in your path such that [^bjam] can be executed in
+the command line. Pre-built Boost.Jam executables are available for most
+platforms. For example, a pre-built Microsoft Windows bjam executable can
+be downloaded [@http://boost.sourceforge.net/jam-executables/bin.ntx86/bjam.zip here].
+The complete list of bjam pre-built
+executables can be found [@../../../../../tools/build/index.html#Jam here].
+
+[h2 Lets Jam!]
+[$theme/jam.png]
+
+Here is our minimalist Jamfile:
+
+[pre
+    subproject libs/python/example/tutorial ;
+
+    SEARCH on python.jam = $(BOOST_BUILD_PATH) ;
+    include python.jam ;
+
+    extension hello                     # Declare a Python extension called hello
+    :   hello.cpp                       # source
+        <dll>../../build/boost_python   # dependencies
+        ;
+]
+
+First, we need to specify our location in the boost project hierarchy.
+It so happens that the tutorial example is located in [^/libs/python/example/tutorial].
+Thus:
+
+[pre
+    subproject libs/python/example/tutorial ;
+]
+
+Then we will include the definitions needed by Python modules:
+
+[pre
+    SEARCH on python.jam = $(BOOST_BUILD_PATH) ;
+    include python.jam ;
+]
+
+Finally we declare our [^hello] extension:
+
+[pre
+    extension hello                     # Declare a Python extension called hello
+    :   hello.cpp                       # source
+        <dll>../../build/boost_python   # dependencies
+        ;
+]
+
+[h2 Running bjam]
+
+['bjam] is run using your operating system's command line interpreter.
+
+[:Start it up.]
+
+Make sure that the environment is set so that we can invoke the C++
+compiler. With MSVC, that would mean running the [^Vcvars32.bat] batch
+file. For instance:
+
+    C:\Program Files\Microsoft Visual Studio\VC98\bin\Vcvars32.bat
+
+Some environment variables will have to be setup for proper building of our
+Python modules. Example:
+
+    set PYTHON_ROOT=c:/dev/tools/python
+    set PYTHON_VERSION=2.2
+
+The above assumes that the Python installation is in [^c:/dev/tools/python]
+and that we are using Python version 2.2. You'll have to tweak this path
+appropriately. __note__ Be sure not to include a third number, e.g. [*not]  "2.2.1",
+even if that's the version you have.
+
+Now we are ready... Be sure to [^cd] to [^libs/python/example/tutorial]
+where the tutorial [^"hello.cpp"] and the [^"Jamfile"] is situated.
+
+Finally:
+
+    bjam -sTOOLS=msvc
+
+We are again assuming that we are using Microsoft Visual C++ version 6. If
+not, then you will have to specify the appropriate tool. See
+[@../../../../../tools/build/index.html Building Boost Libraries] for
+further details.
+
+It should be building now:
+
+[pre
+    cd C:\dev\boost\libs\python\example\tutorial
+    bjam -sTOOLS=msvc
+    ...patience...
+    ...found 1703 targets...
+    ...updating 40 targets...
+]
+
+And so on... Finally:
+
+[pre
+    vc-C++ ..\..\..\..\libs\python\example\tutorial\bin\hello.pyd\msvc\debug\
+    runtime-link-dynamic\hello.obj
+    hello.cpp
+    vc-Link ..\..\..\..\libs\python\example\tutorial\bin\hello.pyd\msvc\debug\
+    runtime-link-dynamic\hello.pyd ..\..\..\..\libs\python\example\tutorial\bin\
+    hello.pyd\msvc\debug\runtime-link-dynamic\hello.lib
+       Creating library ..\..\..\..\libs\python\example\tutorial\bin\hello.pyd\
+       msvc\debug\runtime-link-dynamic\hello.lib and object ..\..\..\..\libs\python\
+       example\tutorial\bin\hello.pyd\msvc\debug\runtime-link-dynamic\hello.exp
+    ...updated 40 targets...
+]
+
+If all is well, you should now have:
+
+* boost_python.dll
+* hello.pyd
+
+if you are on Windows, and
+
+* libboost_python.so
+* hello.so
+
+if you are on Unix.
+
+[^boost_python.dll] can be found somewhere in [^libs\python\build\bin]
+while [^hello.pyd] can be found somewhere in
+[^libs\python\example\tutorial\bin]. After a successful build, you can just
+link in these DLLs with the Python interpreter. In Windows for example, you
+can simply put these libraries inside the directory where the Python
+executable is.
+
+You may now fire up Python and run our hello module:
+
+    >>> import hello
+    >>> print hello.greet()
+    hello, world
+
+[:[*There you go... Have fun!]]
+
+[page Exposing Classes]
+
+Now let's expose a C++ class to Python.
+
+Consider a C++ class/struct that we want to expose to Python:
+
+    struct World
+    {
+        void set(std::string msg) { this->msg = msg; }
+        std::string greet() { return msg; }
+        std::string msg;
+    };
+
+We can expose this to Python by writing a corresponding Boost.Python
+C++ Wrapper:
+
+    #include <boost/python.hpp>
+    using namespace boost::python;
+
+    BOOST_PYTHON_MODULE(hello)
+    {
+        class_<World>("World")
+            .def("greet", &World::greet)
+            .def("set", &World::set)
+        ;
+    }
+
+Here, we wrote a C++ class wrapper that exposes the member functions
+[^greet] and [^set]. Now, after building our module as a shared library, we
+may use our class [^World] in Python. Here's a sample Python session:
+
+    >>> import hello
+    >>> planet = hello.World()
+    >>> planet.set('howdy')
+    >>> planet.greet()
+    'howdy'
+
+[page:1 Constructors]
+
+Our previous example didn't have any explicit constructors.
+Since [^World] is declared as a plain struct, it has an implicit default
+constructor. Boost.Python exposes the default constructor by default,
+which is why we were able to write
+
+    >>> planet = hello.World()
+
+We may wish to wrap a class with a non-default constructor. Let us
+build on our previous example:
+
+    struct World
+    {
+        World(std::string msg): msg(msg) {} // added constructor
+        void set(std::string msg) { this->msg = msg; }
+        std::string greet() { return msg; }
+        std::string msg;
+    };
+
+This time [^World] has no default constructor; our previous
+wrapping code would fail to compile when the library tried to expose
+it. We have to tell [^class_<World>] about the constructor we want to
+expose instead.
+
+    #include <boost/python.hpp>
+    using namespace boost::python;
+
+    BOOST_PYTHON_MODULE(hello)
+    {
+        class_<World>("World", init<std::string>())
+            .def("greet", &World::greet)
+            .def("set", &World::set)
+        ;
+    }
+
+[^init<std::string>()] exposes the constructor taking in a
+[^std::string] (in Python, constructors are spelled
+"[^"__init__"]").
+
+We can expose additional constructors by passing more [^init<...>]s to
+the [^def()] member function. Say for example we have another World
+constructor taking in two doubles:
+
+    class_<World>("World", init<std::string>())
+        .def(init<double, double>())
+        .def("greet", &World::greet)
+        .def("set", &World::set)
+    ;
+
+On the other hand, if we do not wish to expose any constructors at
+all, we may use [^no_init] instead:
+
+    class_<Abstract>("Abstract", no_init)
+
+This actually adds an [^__init__] method which always raises a
+Python RuntimeError exception.
+
+[page:1 Class Data Members]
+
+Data members may also be exposed to Python so that they can be
+accessed as attributes of the corresponding Python class. Each data
+member that we wish to be exposed may be regarded as [*read-only] or
+[*read-write].  Consider this class [^Var]:
+
+    struct Var
+    {
+        Var(std::string name) : name(name), value() {}
+        std::string const name;
+        float value;
+    };
+
+Our C++ [^Var] class and its data members can be exposed to Python:
+
+    class_<Var>("Var", init<std::string>())
+        .def_readonly("name", &Var::name)
+        .def_readwrite("value", &Var::value);
+
+Then, in Python, assuming we have placed our Var class inside the namespace
+hello as we did before:
+
+    >>> x = hello.Var('pi')
+    >>> x.value = 3.14
+    >>> print x.name, 'is around', x.value
+    pi is around 3.14
+
+Note that [^name] is exposed as [*read-only] while [^value] is exposed
+as [*read-write].
+
+[pre
+    >>> x.name = 'e' # can't change name
+    Traceback (most recent call last):
+      File "<stdin>", line 1, in ?
+    AttributeError: can't set attribute
+]
+
+[page:1 Class Properties]
+
+In C++, classes with public data members are usually frowned
+upon. Well designed classes that take advantage of encapsulation hide
+the class' data members. The only way to access the class' data is
+through access (getter/setter) functions. Access functions expose class
+properties. Here's an example:
+
+    struct Num
+    {
+        Num();
+        float get() const;
+        void set(float value);
+        ...
+    };
+
+However, in Python attribute access is fine; it doesn't neccessarily break
+encapsulation to let users handle attributes directly, because the
+attributes can just be a different syntax for a method call. Wrapping our
+[^Num] class using Boost.Python:
+
+    class_<Num>("Num")
+        .add_property("rovalue", &Num::get)
+        .add_property("value", &Num::get, &Num::set);
+
+And at last, in Python:
+
+    >>> x = Num()
+    >>> x.value = 3.14
+    >>> x.value, x.rovalue
+    (3.14, 3.14)
+    >>> x.rovalue = 2.17 # error!
+
+Take note that the class property [^rovalue] is exposed as [*read-only]
+since the [^rovalue] setter member function is not passed in:
+
+    .add_property("rovalue", &Num::get)
+
+[page:1 Inheritance]
+
+In the previous examples, we dealt with classes that are not polymorphic.
+This is not often the case. Much of the time, we will be wrapping
+polymorphic classes and class hierarchies related by inheritance. We will
+often have to write Boost.Python wrappers for classes that are derived from
+abstract base classes.
+
+Consider this trivial inheritance structure:
+
+    struct Base { virtual ~Base(); };
+    struct Derived : Base {};
+
+And a set of C++ functions operating on [^Base] and [^Derived] object
+instances:
+
+    void b(Base*);
+    void d(Derived*);
+    Base* factory() { return new Derived; }
+
+We've seen how we can wrap the base class [^Base]:
+
+    class_<Base>("Base")
+        /*...*/
+        ;
+
+Now we can inform Boost.Python of the inheritance relationship between
+[^Derived] and its base class [^Base].  Thus:
+
+    class_<Derived, bases<Base> >("Derived")
+        /*...*/
+        ;
+
+Doing so, we get some things for free:
+
+# Derived automatically inherits all of Base's Python methods (wrapped C++ member functions)
+# [*If] Base is polymorphic, [^Derived] objects which have been passed to Python via a pointer or reference to [^Base] can be passed where a pointer or reference to [^Derived] is expected.
+
+Now, we shall expose the C++ free functions [^b] and [^d] and [^factory]:
+
+    def("b", b);
+    def("d", d);
+    def("factory", factory);
+
+Note that free function [^factory] is being used to generate new
+instances of class [^Derived]. In such cases, we use
+[^return_value_policy<manage_new_object>] to instruct Python to adopt
+the pointer to [^Base] and hold the instance in a new Python [^Base]
+object until the the Python object is destroyed. We shall see more of
+Boost.Python [@call_policies.html call policies] later.
+
+    // Tell Python to take ownership of factory's result
+    def("factory", factory,
+        return_value_policy<manage_new_object>());
+
+[page:1 Class Virtual Functions]
+
+In this section, we shall learn how to make functions behave
+polymorphically through virtual functions. Continuing our example, let us
+add a virtual function to our [^Base] class:
+
+    struct Base
+    {
+        virtual int f() = 0;
+    };
+
+Since [^f] is a pure virtual function, [^Base] is now an abstract
+class. Given an instance of our class, the free function [^call_f]
+calls some implementation of this virtual function in a concrete
+derived class:
+
+    int call_f(Base& b) { return b.f(); }
+
+To allow this function to be implemented in a Python derived class, we
+need to create a class wrapper:
+
+    struct BaseWrap : Base
+    {
+        BaseWrap(PyObject* self_)
+            : self(self_) {}
+        int f() { return call_method<int>(self, "f"); }
+        PyObject* self;
+    };
+
+[blurb __detail__ [*member function and methods][br][br] Python, like
+many object oriented languages uses the term [*methods].  Methods
+correspond roughly to C++'s [*member functions]]
+
+Our class wrapper [^BaseWrap] is derived from [^Base]. Its overridden
+virtual member function [^f] in effect calls the corresponding method
+of the Python object [^self], which is a pointer back to the Python
+[^Base] object holding our [^BaseWrap] instance.
+
+[blurb __note__ [*Why do we need BaseWrap?][br][br]
+
+['You may ask], "Why do we need the [^BaseWrap] derived class? This could
+have been designed so that everything gets done right inside of
+Base."[br][br]
+
+One of the goals of Boost.Python is to be minimally intrusive on an
+existing C++ design. In principle, it should be possible to expose the
+interface for a 3rd party library without changing it. To unintrusively
+hook into the virtual functions so that a Python override may be called, we
+must use a derived class.[br][br]
+
+Note however that you don't need to do this to get methods overridden
+in Python to behave virtually when called ['from] [*Python]. The only
+time you need to do the [^BaseWrap] dance is when you have a virtual
+function that's going to be overridden in Python and called
+polymorphically ['from] [*C++].]
+
+Wrapping [^Base] and the free function [^call_f]:
+
+    class_<Base, BaseWrap, boost::noncopyable>("Base", no_init)
+        ;
+    def("call_f", call_f);
+
+Notice that we parameterized the [^class_] template with [^BaseWrap] as the
+second parameter. What is [^noncopyable]? Without it, the library will try
+to create code for converting Base return values of wrapped functions to
+Python. To do that, it needs Base's copy constructor... which isn't
+available, since Base is an abstract class.
+
+In Python, let us try to instantiate our [^Base] class:
+
+    >>> base = Base()
+    RuntimeError: This class cannot be instantiated from Python
+
+Why is it an error? [^Base] is an abstract class. As such it is advisable
+to define the Python wrapper with [^no_init] as we have done above. Doing
+so will disallow abstract base classes such as [^Base] to be instantiated.
+
+[page:1 Deriving a Python Class]
+
+Continuing, we can derive from our base class Base in Python and override
+the virtual function in Python. Before we can do that, we have to set up
+our [^class_] wrapper as:
+
+    class_<Base, BaseWrap, boost::noncopyable>("Base")
+        ;
+
+Otherwise, we have to suppress the Base class' [^no_init] by adding an
+[^__init__()] method to all our derived classes. [^no_init] actually adds
+an [^__init__] method that raises a Python RuntimeError exception.
+
+    >>> class Derived(Base):
+    ...     def f(self):
+    ...         return 42
+    ...
+
+Cool eh? A Python class deriving from a C++ class!
+
+Let's now make an instance of our Python class [^Derived]:
+
+    >>> derived = Derived()
+
+Calling [^derived.f()]:
+
+    >>> derived.f()
+    42
+
+Will yield the expected result. Finally, calling calling the free function
+[^call_f] with [^derived] as argument:
+
+    >>> call_f(derived)
+    42
+
+Will also yield the expected result.
+
+Here's what's happening:
+
+# [^call_f(derived)] is called in Python
+# This corresponds to [^def("call_f", call_f);]. Boost.Python dispatches this call.
+# [^int call_f(Base& b) { return b.f(); }] accepts the call.
+# The overridden virtual function [^f] of [^BaseWrap] is called.
+# [^call_method<int>(self, "f");] dispatches the call back to Python.
+# [^def f(self): return 42] is finally called.
+
+[page:1 Virtual Functions with Default Implementations]
+
+Recall that in the [@class_virtual_functions.html previous section], we
+wrapped a class with a pure virtual function that we then implemented in
+C++ or Python classes derived from it. Our base class:
+
+    struct Base
+    {
+        virtual int f() = 0;
+    };
+
+had a pure virtual function [^f]. If, however, its member function [^f] was
+not declared as pure virtual:
+
+    struct Base
+    {
+        virtual int f() { return 0; }
+    };
+
+and instead had a default implementation that returns [^0], as shown above,
+we need to add a forwarding function that calls the [^Base] default virtual
+function [^f] implementation:
+
+    struct BaseWrap : Base
+    {
+        BaseWrap(PyObject* self_)
+            : self(self_) {}
+        int f() { return call_method<int>(self, "f"); }
+        int default_f() { return Base::f(); } // <<=== ***ADDED***
+        PyObject* self;
+    };
+
+Then, Boost.Python needs to keep track of 1) the dispatch function [^f] and
+2) the forwarding function to its default implementation [^default_f].
+There's a special [^def] function for this purpose. Here's how it is
+applied to our example above:
+
+    class_<Base, BaseWrap>("Base")
+        .def("f", &Base::f, &BaseWrap::default_f)
+
+Note that we are allowing [^Base] objects to be instantiated this time,
+unlike before where we specifically defined the [^class_<Base>] with
+[^no_init].
+
+In Python, the results would be as expected:
+
+    >>> base = Base()
+    >>> class Derived(Base):
+    ...     def f(self):
+    ...         return 42
+    ...
+    >>> derived = Derived()
+
+Calling [^base.f()]:
+
+    >>> base.f()
+    0
+
+Calling [^derived.f()]:
+
+    >>> derived.f()
+    42
+
+Calling [^call_f], passing in a [^base] object:
+
+    >>> call_f(base)
+    0
+
+Calling [^call_f], passing in a [^derived] object:
+
+    >>> call_f(derived)
+    42
+
+[page:1 Class Operators/Special Functions]
+
+[h2 Python Operators]
+
+C is well known for the abundance of operators. C++ extends this to the
+extremes by allowing operator overloading. Boost.Python takes advantage of
+this and makes it easy to wrap C++ operator-powered classes.
+
+Consider a file position class [^FilePos] and a set of operators that take
+on FilePos instances:
+
+    class FilePos { /*...*/ };
+
+    FilePos     operator+(FilePos, int);
+    FilePos     operator+(int, FilePos);
+    int         operator-(FilePos, FilePos);
+    FilePos     operator-(FilePos, int);
+    FilePos&    operator+=(FilePos&, int);
+    FilePos&    operator-=(FilePos&, int);
+    bool        operator<(FilePos, FilePos);
+
+The class and the various operators can be mapped to Python rather easily
+and intuitively:
+
+    class_<FilePos>("FilePos")
+        .def(self + int())          // __add__
+        .def(int() + self)          // __radd__
+        .def(self - self)           // __sub__
+        .def(self - int())          // __sub__
+        .def(self += int())         // __iadd__
+        .def(self -= other<int>())
+        .def(self < self);          // __lt__
+
+The code snippet above is very clear and needs almost no explanation at
+all. It is virtually the same as the operators' signatures. Just take
+note that [^self] refers to FilePos object. Also, not every class [^T] that
+you might need to interact with in an operator expression is (cheaply)
+default-constructible. You can use [^other<T>()] in place of an actual
+[^T] instance when writing "self expressions".
+
+[h2 Special Methods]
+
+Python has a few more ['Special Methods]. Boost.Python supports all of the
+standard special method names supported by real Python class instances. A
+similar set of intuitive interfaces can also be used to wrap C++ functions
+that correspond to these Python ['special functions]. Example:
+
+    class Rational
+    { operator double() const; };
+
+    Rational pow(Rational, Rational);
+    Rational abs(Rational);
+    ostream& operator<<(ostream&,Rational);
+
+    class_<Rational>()
+        .def(float_(self))                  // __float__
+        .def(pow(self, other<Rational>))    // __pow__
+        .def(abs(self))                     // __abs__
+        .def(str(self))                     // __str__
+        ;
+
+Need we say more?
+
+[blurb __detail__ What is the business of [^operator<<] [^.def(str(self))]?
+Well, the method [^str] requires the [^operator<<] to do its work (i.e.
+[^operator<<] is used by the method defined by def(str(self)).]
+
+[page Functions]
+
+In this chapter, we'll look at Boost.Python powered functions in closer
+detail. We shall see some facilities to make exposing C++ functions to
+Python safe from potential pifalls such as dangling pointers and
+references. We shall also see facilities that will make it even easier for
+us to expose C++ functions that take advantage of C++ features such as
+overloading and default arguments.
+
+[:['Read on...]]
+
+But before you do, you might want to fire up Python 2.2 or later and type
+[^>>> import this].
+
+[pre
+    >>> import this
+    The Zen of Python, by Tim Peters
+    Beautiful is better than ugly.
+    Explicit is better than implicit.
+    Simple is better than complex.
+    Complex is better than complicated.
+    Flat is better than nested.
+    Sparse is better than dense.
+    Readability counts.
+    Special cases aren't special enough to break the rules.
+    Although practicality beats purity.
+    Errors should never pass silently.
+    Unless explicitly silenced.
+    In the face of ambiguity, refuse the temptation to guess.
+    There should be one-- and preferably only one --obvious way to do it
+    Although that way may not be obvious at first unless you're Dutch.
+    Now is better than never.
+    Although never is often better than *right* now.
+    If the implementation is hard to explain, it's a bad idea.
+    If the implementation is easy to explain, it may be a good idea.
+    Namespaces are one honking great idea -- let's do more of those!
+]
+
+[page:1 Call Policies]
+
+In C++, we often deal with arguments and return types such as pointers
+and references. Such primitive types are rather, ummmm, low level and
+they really don't tell us much. At the very least, we don't know the
+owner of the pointer or the referenced object. No wonder languages
+such as Java and Python never deal with such low level entities. In
+C++, it's usually considered a good practice to use smart pointers
+which exactly describe ownership semantics. Still, even good C++
+interfaces use raw references and pointers sometimes, so Boost.Python
+must deal with them. To do this, it may need your help. Consider the
+following C++ function:
+
+    X& f(Y& y, Z* z);
+
+How should the library wrap this function? A naive approach builds a
+Python X object around result reference. This strategy might or might
+not work out. Here's an example where it didn't
+
+    >>> x = f(y, z) # x refers to some C++ X
+    >>> del y
+    >>> x.some_method() # CRASH!
+
+What's the problem?
+
+Well, what if f() was implemented as shown below:
+
+    X& f(Y& y, Z* z)
+    {
+        y.z = z;
+        return y.x;
+    }
+
+The problem is that the lifetime of result X& is tied to the lifetime
+of y, because the f() returns a reference to a member of the y
+object. This idiom is is not uncommon and perfectly acceptable in the
+context of C++. However, Python users should not be able to crash the
+system just by using our C++ interface. In this case deleting y will
+invalidate the reference to X. We have a dangling reference.
+
+Here's what's happening:
+
+# [^f] is called passing in a reference to [^y] and a pointer to [^z]
+# A reference to [^y.x] is returned
+# [^y] is deleted. [^x] is a dangling reference
+# [^x.some_method()] is called
+# [*BOOM!]
+
+We could copy result into a new object:
+
+    >>> f(y, z).set(42) # Result disappears
+    >>> y.x.get()       # No crash, but still bad
+    3.14
+
+This is not really our intent of our C++ interface. We've broken our
+promise that the Python interface should reflect the C++ interface as
+closely as possible.
+
+Our problems do not end there. Suppose Y is implemented as follows:
+
+    struct Y
+    {
+        X x; Z* z;
+        int z_value() { return z->value(); }
+    };
+
+Notice that the data member [^z] is held by class Y using a raw
+pointer. Now we have a potential dangling pointer problem inside Y:
+
+    >>> x = f(y, z) # y refers to z
+    >>> del z       # Kill the z object
+    >>> y.z_value() # CRASH!
+
+For reference, here's the implementation of [^f] again:
+
+    X& f(Y& y, Z* z)
+    {
+        y.z = z;
+        return y.x;
+    }
+
+Here's what's happening:
+
+# [^f] is called passing in a reference to [^y] and a pointer to [^z]
+# A pointer to [^z] is held by [^y]
+# A reference to [^y.x] is returned
+# [^z] is deleted. [^y.z] is a dangling pointer
+# [^y.z_value()] is called
+# [^z->value()] is called
+# [*BOOM!]
+
+[h2 Call Policies]
+
+Call Policies may be used in situations such as the example detailed above.
+In our example, [^return_internal_reference] and [^with_custodian_and_ward]
+are our friends:
+
+    def("f", f,
+        return_internal_reference<1,
+            with_custodian_and_ward<1, 2> >());
+
+What are the [^1] and [^2] parameters, you ask?
+
+    return_internal_reference<1
+
+Informs Boost.Python that the first argument, in our case [^Y& y], is the
+owner of the returned reference: [^X&]. The "[^1]" simply specifies the
+first argument. In short: "return an internal reference [^X&] owned by the
+1st argument [^Y& y]".
+
+    with_custodian_and_ward<1, 2>
+
+Informs Boost.Python that the lifetime of the argument indicated by ward
+(i.e. the 2nd argument: [^Z* z]) is dependent on the lifetime of the
+argument indicated by custodian (i.e. the 1st argument: [^Y& y]).
+
+It is also important to note that we have defined two policies above. Two
+or more policies can be composed by chaining. Here's the general syntax:
+
+    policy1<args...,
+        policy2<args...,
+            policy3<args...> > >
+
+Here is the list of predefined call policies. A complete reference detailing
+these can be found [@../../v2/reference.html#models_of_call_policies here].
+
+* [*with_custodian_and_ward][br] Ties lifetimes of the arguments
+* [*with_custodian_and_ward_postcall][br] Ties lifetimes of the arguments and results
+* [*return_internal_reference][br] Ties lifetime of one argument to that of result
+* [*return_value_policy<T> with T one of:][br]
+* [*reference_existing_object][br]naïve (dangerous) approach
+* [*copy_const_reference][br]Boost.Python v1 approach
+* [*copy_non_const_reference][br]
+* [*manage_new_object][br] Adopt a pointer and hold the instance
+
+[blurb :-) [*Remember the Zen, Luke:][br][br]
+"Explicit is better than implicit"[br]
+"In the face of ambiguity, refuse the temptation to guess"[br]]
+
+[page:1 Overloading]
+
+The following illustrates a scheme for manually wrapping an overloaded
+member functions. Of course, the same technique can be applied to wrapping
+overloaded non-member functions.
+
+We have here our C++ class:
+
+    struct X
+    {
+        bool f(int a)
+        {
+            return true;
+        }
+
+        bool f(int a, double b)
+        {
+            return true;
+        }
+
+        bool f(int a, double b, char c)
+        {
+            return true;
+        }
+
+        int f(int a, int b, int c)
+        {
+            return a + b + c;
+        };
+    };
+
+Class X has 4 overloaded functions. We shall start by introducing some
+member function pointer variables:
+
+    bool    (X::*fx1)(int)              = &X::f;
+    bool    (X::*fx2)(int, double)      = &X::f;
+    bool    (X::*fx3)(int, double, char)= &X::f;
+    int     (X::*fx4)(int, int, int)    = &X::f;
+
+With these in hand, we can proceed to define and wrap this for Python:
+
+    .def("f", fx1)
+    .def("f", fx2)
+    .def("f", fx3)
+    .def("f", fx4)
+
+[page:1 Default Arguments]
+
+Boost.Python wraps (member) function pointers. Unfortunately, C++ function
+pointers carry no default argument info. Take a function [^f] with default
+arguments:
+
+    int f(int, double = 3.14, char const* = "hello");
+
+But the type of a pointer to the function [^f] has no information
+about its default arguments:
+
+    int(*g)(int,double,char const*) = f;    // defaults lost!
+
+When we pass this function pointer to the [^def] function, there is no way
+to retrieve the default arguments:
+
+    def("f", f);                            // defaults lost!
+
+Because of this, when wrapping C++ code, we had to resort to manual
+wrapping as outlined in the [@overloading.html previous section], or
+writing thin wrappers:
+
+    // write "thin wrappers"
+    int f1(int x) { f(x); }
+    int f2(int x, double y) { f(x,y); }
+
+    /*...*/
+
+        // in module init
+        def("f", f);  // all arguments
+        def("f", f2); // two arguments
+        def("f", f1); // one argument
+
+When you want to wrap functions (or member functions) that either:
+
+* have default arguments, or
+* are overloaded with a common sequence of initial arguments
+
+[h2 BOOST_PYTHON_FUNCTION_OVERLOADS]
+
+Boost.Python now has a way to make it easier. For instance, given a function:
+
+    int foo(int a, char b = 1, unsigned c = 2, double d = 3)
+    {
+        /*...*/
+    }
+
+The macro invocation:
+
+    BOOST_PYTHON_FUNCTION_OVERLOADS(foo_overloads, foo, 1, 4)
+
+will automatically create the thin wrappers for us. This macro will create
+a class [^foo_overloads] that can be passed on to [^def(...)]. The third
+and fourth macro argument are the minimum arguments and maximum arguments,
+respectively. In our [^foo] function the minimum number of arguments is 1
+and the maximum number of arguments is 4. The [^def(...)] function will
+automatically add all the foo variants for us:
+
+    .def("foo", foo, foo_overloads());
+
+[h2 BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS]
+
+Objects here, objects there, objects here there everywhere. More frequently
+than anything else, we need to expose member functions of our classes to
+Python. Then again, we have the same inconveniences as before when default
+arguments or overloads with a common sequence of initial arguments come
+into play. Another macro is provided to make this a breeze.
+
+Like [^BOOST_PYTHON_FUNCTION_OVERLOADS],
+[^BOOST_PYTHON_FUNCTION_OVERLOADS] may be used to automatically create
+the thin wrappers for wrapping member functions. Let's have an example:
+
+    struct george
+    {
+        void
+        wack_em(int a, int b = 0, char c = 'x')
+        {
+            /*...*/
+        }
+    };
+
+The macro invocation:
+
+    BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(george_overloads, wack_em, 1, 3)
+
+will generate a set of thin wrappers for george's [^wack_em] member function
+accepting a minimum of 1 and a maximum of 3 arguments (i.e. the third and
+fourth macro argument). The thin wrappers are all enclosed in a class named
+[^george_overloads] that can then be used as an argument to [^def(...)]:
+
+    .def("wack_em", &george::wack_em, george_overloads());
+
+See the [@../../v2/overloads.html#BOOST_PYTHON_FUNCTION_OVERLOADS-spec overloads reference]
+for details.
+
+[h2 init and optional]
+
+A similar facility is provided for class constructors, again, with
+default arguments or a sequence of overloads. Remember [^init<...>]? For example,
+given a class X with a constructor:
+
+    struct X
+    {
+        X(int a, char b = 'D', std::string c = "constructor", double d = 0.0);
+        /*...*/
+    }
+
+You can easily add this constructor to Boost.Python in one shot:
+
+    .def(init<int, optional<char, std::string, double> >())
+
+Notice the use of [^init<...>] and [^optional<...>] to signify the default
+(optional arguments).
+
+[page:1 Auto-Overloading]
+
+It was mentioned in passing in the previous section that
+[^BOOST_PYTHON_FUNCTION_OVERLOADS] and [^BOOST_PYTHON_FUNCTION_OVERLOADS]
+can also be used for overloaded functions and member functions with a
+common sequence of initial arguments. Here is an example:
+
+     void foo()
+     {
+        /*...*/
+     }
+
+     void foo(bool a)
+     {
+        /*...*/
+     }
+
+     void foo(bool a, int b)
+     {
+        /*...*/
+     }
+
+     void foo(bool a, int b, char c)
+     {
+        /*...*/
+     }
+
+Like in the previous section, we can generate thin wrappers for these
+overloaded functions in one-shot:
+
+    BOOST_PYTHON_FUNCTION_OVERLOADS(foo_overloads, foo, 0, 3)
+
+Then...
+
+    .def("foo", foo, foo_overloads());
+
+Notice though that we have a situation now where we have a minimum of zero
+(0) arguments and a maximum of 3 arguments.
+
+[h2 Manual Wrapping]
+
+It is important to emphasize however that [*the overloaded functions must
+have a common sequence of initial arguments]. Otherwise, our scheme above
+will not work. If this is not the case, we have to wrap our functions
+[@overloading.html manually].
+
+Actually, we can mix and match manual wrapping of overloaded functions and
+automatic wrapping through [^BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS] and
+its sister, [^BOOST_PYTHON_FUNCTION_OVERLOADS]. Following up on our example
+presented in the section [@overloading.html on overloading], since the
+first 4 overload functins have a common sequence of initial arguments, we
+can use [^BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS] to automatically wrap the
+first three of the [^def]s and manually wrap just the last. Here's
+how we'll do this:
+
+    BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(xf_overloads, f, 1, 4)
+
+Create a member function pointers as above for both X::f overloads:
+
+    bool    (X::*fx1)(int, double, char)    = &X::f;
+    int     (X::*fx2)(int, int, int)        = &X::f;
+
+Then...
+
+    .def("f", fx1, xf_overloads());
+    .def("f", fx2)
+
+[page Object Interface]
+
+Python is dynamically typed, unlike C++ which is statically typed. Python
+variables may hold an integer, a float, list, dict, tuple, str, long etc.,
+among other things. In the viewpoint of Boost.Python and C++, these
+Pythonic variables are just instances of class [^object]. We shall see in
+this chapter how to deal with Python objects.
+
+As mentioned, one of the goals of Boost.Python is to provide a
+bidirectional mapping between C++ and Python while maintaining the Python
+feel. Boost.Python C++ [^object]s are as close as possible to Python. This
+should minimize the learning curve significantly.
+
+[$theme/python.png]
+
+[page:1 Basic Interface]
+
+Class [^object] wraps [^PyObject*]. All the intricacies of dealing with
+[^PyObject]s such as managing reference counting are handled by the
+[^object] class. C++ object interoperability is seamless. Boost.Python C++
+[^object]s can in fact be explicitly constructed from any C++ object.
+
+To illustrate, this Python code snippet:
+
+    def f(x, y):
+         if (y == 'foo'):
+             x[3:7] = 'bar'
+         else:
+             x.items += y(3, x)
+         return x
+
+    def getfunc():
+       return f;
+
+Can be rewritten in C++ using Boost.Python facilities this way:
+
+    object f(object x, object y) {
+         if (y == "foo")
+             x.slice(3,7) = "bar";
+         else
+             x.attr("items") += y(3, x);
+         return x;
+    }
+    object getfunc() {
+        return object(f);
+    }
+
+Apart from cosmetic differences due to the fact that we are writing the
+code in C++, the look and feel should be immediately apparent to the Python
+coder.
+
+[page:1 Derived Object types]
+
+Boost.Python comes with a set of derived [^object] types corresponding to
+that of Python's:
+
+* list
+* dict
+* tuple
+* str
+* long_
+* enum
+
+These derived [^object] types act like real Python types. For instance:
+
+    str(1) ==> "1"
+
+Wherever appropriate, a particular derived [^object] has corresponding
+Python type's methods. For instance, [^dict] has a [^keys()] method:
+
+    d.keys()
+
+[^make_tuple] is provided for declaring ['tuple literals]. Example:
+
+    make_tuple(123, 'D', "Hello, World", 0.0);
+
+In C++, when Boost.Python [^object]s are used as arguments to functions,
+subtype matching is required. For example, when a function [^f], as
+declared below, is wrapped, it will only accept instances of Python's
+[^str] type and subtypes.
+
+    void f(str name)
+    {
+        object n2 = name.attr("upper")();   // NAME = name.upper()
+        str NAME = name.upper();            // better
+        object msg = "%s is bigger than %s" % make_tuple(NAME,name);
+    }
+
+In finer detail:
+
+    str NAME = name.upper();
+
+Illustrates that we provide versions of the str type's methods as C++
+member functions.
+
+    object msg = "%s is bigger than %s" % make_tuple(NAME,name);
+
+Demonstrates that you can write the C++ equivalent of [^"format" % x,y,z]
+in Python, which is useful since there's no easy way to do that in std C++.
+
+__alert__ [*Beware] the common pitfall of forgetting that the constructors
+of most of Python's mutable types make copies, just as in Python.
+
+Python:
+
+    >>> d = dict(x.__dict__)     # copies x.__dict__
+    >>> d['whatever']            # modifies the copy
+
+C++:
+
+    dict d(x.attr("__dict__"));  # copies x.__dict__
+    d['whatever'] = 3;           # modifies the copy
+
+[h2 class_<T> as objects]
+
+Due to the dynamic nature of Boost.Python objects, any [^class_<T>] may
+also be one of these types! The following code snippet wraps the class
+(type) object.
+
+We can use this to create wrapped instances. Example:
+
+    object vec345 = (
+        class_<Vec2>("Vec2", init<double, double>())
+            .def_readonly("length", &Point::length)
+            .def_readonly("angle", &Point::angle)
+        )(3.0, 4.0);
+
+    assert(vec345.attr("length") == 5.0);
+
+[page:1 Extracting C++ objects]
+
+At some point, we will need to get C++ values out of object instances. This
+can be achieved with the [^extract<T>] function. Consider the following:
+
+    double x = o.attr("length"); // compile error
+
+In the code above, we got a compiler error because Boost.Python
+[^object] can't be implicitly converted to [^double]s. Instead, what
+we wanted to do above can be achieved by writing:
+
+    double l = extract<double>(o.attr("length"));
+    Vec2& v = extract<Vec2&>(o);
+    assert(l == v.length());
+
+The first line attempts to extract the "length" attribute of the
+Boost.Python [^object] [^o]. The second line attempts to ['extract] the
+[^Vec2] object from held by the Boost.Python [^object] [^o].
+
+Take note that we said "attempt to" above. What if the Boost.Python
+[^object] [^o] does not really hold a [^Vec2] type? This is certainly
+a possibility considering the dynamic nature of Python [^object]s. To
+be on the safe side, if the C++ type can't be extracted, an
+appropriate exception is thrown. To avoid an exception, we need to
+test for extractibility:
+
+    extract<Vec2&> x(o);
+    if (x.check()) {
+        Vec2& v = x(); ...
+
+__tip__ The astute reader might have noticed that the [^extract<T>]
+facility in fact solves the mutable copying problem:
+
+    dict d = extract<dict>(x.attr("__dict__"));
+    d['whatever'] = 3;          # modifies x.__dict__ !
+
+
+[page:1 Enums]
+
+Boost.Python has a nifty facility to capture and wrap C++ enums. While
+Python has no [^enum] type, we'll often want to expose our C++ enums to
+Python as an [^int]. Boost.Python's enum facility makes this easy while
+taking care of the proper conversions from Python's dynamic typing to C++'s
+strong static typing (in C++, ints cannot be implicitly converted to
+enums). To illustrate, given a C++ enum:
+
+    enum choice { red, blue };
+
+the construct:
+
+    enum_<choice>("choice")
+        .value("red", red)
+        .value("blue", blue)
+        ;
+
+can be used to expose to Python. The new enum type is created in the
+current [^scope()], which is usually the current module. The snippet above
+creates a Python class derived from Python's [^int] type which is
+associated with the C++ type passed as its first parameter.
+
+[blurb __detail__ [*what is a scope?][br][br] The scope is a class that has an
+associated global Python object which controls the Python namespace in
+which new extension classes and wrapped functions will be defined as
+attributes. Details can be found [@../../v2/scope.html here].]
+
+You can access those values in Python as
+
+    >>> my_module.choice.red
+    my_module.choice.red
+
+where my_module is the module where the enum is declared. You can also
+create a new scope around a class:
+
+    scope in_X = class_<X>("X")
+                    .def( ... )
+                    .def( ... )
+                ;
+
+    // Expose X::nested as X.nested
+    enum_<X::nested>("nested")
+        .value("red", red)
+        .value("blue", blue)
+        ;
+
+[page Iterators]
+
+In C++, and STL in particular, we see iterators everywhere. Python also has
+iterators, but these are two very different beasts.
+
+[*C++ iterators:]
+
+* C++ has 5 type categories (random-access, bidirectional, forward, input, output)
+* There are 2 Operation categories: reposition, access
+* A pair of iterators is needed to represent a (first/last) range.
+
+[*Python Iterators:]
+
+* 1 category (forward)
+* 1 operation category (next())
+* Raises StopIteration exception at end
+
+The typical Python iteration protocol: [^[*for y in x...]] is as follows:
+
+    iter = x.__iter__()         # get iterator
+    try:
+        while 1:
+        y = iter.next()         # get each item
+        ...                     # process y
+    except StopIteration: pass  # iterator exhausted
+
+Boost.Python provides some mechanisms to make C++ iterators play along
+nicely as Python iterators. What we need to do is to produce
+appropriate __iter__ function from C++ iterators that is compatible
+with the Python iteration protocol. For example:
+
+    object get_iterator = iterator<vector<int> >();
+    object iter = get_iterator(v);
+    object first = iter.next();
+
+Or for use in class_<>:
+
+    .def("__iter__", iterator<vector<int> >())
+
+[*range]
+
+We can create a Python savvy iterator using the range function:
+
+* range(start, finish)
+* range<Policies,Target>(start, finish)
+
+Here, start/finish may be one of:
+
+* member data pointers
+* member function pointers
+* adaptable function object (use Target parameter)
+
+[*iterator]
+
+* iterator<T, Policies>()
+
+Given a container [^T], iterator is a shortcut that simply calls [^range]
+with &T::begin, &T::end.
+
+Let's put this into action... Here's an example from some hypothetical
+bogon Particle accelerator code:
+
+    f = Field()
+    for x in f.pions:
+        smash(x)
+    for y in f.bogons:
+        count(y)
+
+Now, our C++ Wrapper:
+
+    class_<F>("Field")
+        .property("pions", range(&F::p_begin, &F::p_end))
+        .property("bogons", range(&F::b_begin, &F::b_end));
+
+[page Exception Translation]
+
+All C++ exceptions must be caught at the boundary with Python code. This
+boundary is the point where C++ meets Python. Boost.Python provides a
+default exception handler that translates selected standard exceptions,
+then gives up:
+
+    raise RuntimeError, 'unidentifiable C++ Exception'
+
+Users may provide custom translation. Here's an example:
+
+    struct PodBayDoorException;
+    void translator(PodBayDoorException const& x) {
+        PyErr_SetString(PyExc_UserWarning, "I'm sorry Dave...");
+    }
+    BOOST_PYTHON_MODULE(kubrick) {
+         register_exception_translator<
+              PodBayDoorException>(translator);
+         ...
+

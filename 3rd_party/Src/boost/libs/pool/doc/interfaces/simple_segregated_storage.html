@@ -1,0 +1,150 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd"> 
+<HTML>
+<HEAD>
+<TITLE>Simple Segregated Storage</TITLE>
+<LINK HREF="../pool.css" REL="stylesheet" TYPE="text/css">
+</HEAD>
+<BODY>
+
+<IMG SRC="../../../../c++boost.gif" WIDTH=276 HEIGHT=86 ALT="C++ Boost">
+
+<H1 ALIGN=CENTER>Simple Segregated Storage</H1>
+
+<P>
+<H2>Introduction</H2>
+
+<P>
+simple_segregated_storage.hpp provides a template class <SPAN CLASS="code">simple_segregated_storage</SPAN> that controls access to a <EM>free list</EM> of memory chunks.  Please note that this is a <STRONG>very</STRONG> simple class, with preconditions on almost all its functions.  It is intended to be the fastest and smallest possible quick memory allocator &mdash; e.g., something to use in embedded systems.  This class delegates many difficult preconditions to the user (i.e., alignment issues).  For more general usage, see <A HREF="../interfaces.html">the other pool interfaces</A>.
+
+<P>
+<H2>Synopsis</H2>
+
+<PRE CLASS="code">template &lt;typename SizeType = std::size_t&gt;
+class simple_segregated_storage
+{
+  private:
+    simple_segregated_storage(const simple_segregated_storage &amp;);
+    void operator=(const simple_segregated_storage &amp;);
+
+  public:
+    typedef SizeType size_type;
+
+    simple_segregated_storage();
+    ~simple_segregated_storage();
+
+    static void * segregate(void * block,
+        size_type nsz, size_type npartition_sz,
+        void * end = 0);
+    void add_block(void * block,
+        size_type nsz, size_type npartition_sz);
+    void add_ordered_block(void * block,
+        size_type nsz, size_type npartition_sz);
+
+    bool empty() const;
+
+    void * malloc();
+    void free(void * chunk);
+    void ordered_free(void * chunk);
+    void * malloc_n(size_type n, size_type partition_sz);
+    void free_n(void * chunks, size_type n,
+        size_type partition_sz);
+    void ordered_free_n(void * chunks, size_type n,
+        size_type partition_sz);
+};</PRE>
+
+<P>
+<H2>Semantics</H2>
+
+<P>
+An object of type <SPAN CLASS="code">simple_segregated_storage&lt;SizeType&gt;</SPAN> is <EM>empty</EM> if its free list is empty.  If it is not empty, then it is <EM>ordered</EM> if its free list is ordered.  A free list is ordered if repeated calls to <SPAN CLASS="code">malloc()</SPAN> will result in a constantly-increasing sequence of values, as determined by <SPAN CLASS="code">std::less&lt;void *&gt;</SPAN>.  A member function is <EM>order-preserving</EM> if the free list maintains its order orientation (that is, an ordered free list is still ordered after the member function call).
+
+<P>
+<TABLE BORDER ALIGN=CENTER>
+<CAPTION><EM>Symbol Table</EM></CAPTION>
+<TR><TH>Symbol<TH>Meaning
+<TR><TD CLASS="code">Store<TD CLASS="code">simple_segregated_storage&lt;SizeType&gt;
+<TR><TD CLASS="code">t<TD>value of type <SPAN CLASS="code">Store</SPAN>
+<TR><TD CLASS="code">u<TD>value of type <SPAN CLASS="code">const Store</SPAN>
+<TR><TD CLASS="code">block, chunk, end<TD>values of type <SPAN CLASS="code">void *</SPAN>
+<TR><TD CLASS="code">partition_sz, sz, n<TD>values of type <SPAN CLASS="code">Store::size_type</SPAN>
+</TABLE>
+
+<P>
+<TABLE BORDER ALIGN=CENTER>
+<CAPTION><EM>Template Parameters</EM></CAPTION>
+<TR><TH>Parameter<TH>Default<TH>Requirements
+<TR><TD CLASS="code">SizeType<TD CLASS="code">std::size_t<TD>An unsigned integral type
+</TABLE>
+
+<P>
+<TABLE BORDER ALIGN=CENTER>
+<CAPTION><EM>Typedefs</EM></CAPTION>
+<TR><TH>Symbol<TH>Type
+<TR><TD CLASS="code">size_type<TD CLASS="code">SizeType
+</TABLE>
+
+<P>
+<TABLE BORDER ALIGN=CENTER>
+<CAPTION><EM>Constructors, Destructors, and State</EM></CAPTION>
+<TR><TH>Expression<TH>Return Type<TH>Post-Condition<TH>Notes
+<TR><TD CLASS="code">Store()<TD>not used<TD CLASS="code">empty()<TD>Constructs a new <SPAN CLASS="code">Store</SPAN>
+<TR><TD CLASS="code">(&amp;t)->~Store()<TD>not used<TD><TD>Destructs the <SPAN CLASS="code">Store</SPAN>
+<TR><TD CLASS="code">u.empty()<TD CLASS="code">bool<TD><TD>Returns <SPAN CLASS="code">true</SPAN> if <SPAN CLASS="code">u</SPAN> is empty.  Order-preserving.
+</TABLE>
+
+<P>
+<TABLE BORDER ALIGN=CENTER>
+<CAPTION><EM>Segregation</EM></CAPTION>
+<TR><TH>Expression<TH>Return Type<TH>Pre-Condition<TH>Post-Condition<TH>Semantic Equivalence<TH>Notes
+
+<TR><TD CLASS="code">Store::segregate(block, sz, partition_sz, end)<TD CLASS="code">void *<TD><SPAN CLASS="code">partition_sz &gt;= sizeof(void *)</SPAN><BR><SPAN CLASS="code">partition_sz = sizeof(void *) * i</SPAN>, for some integer <SPAN CLASS="code">i</SPAN><BR><SPAN CLASS="code">sz &gt;= partition_sz</SPAN><BR><SPAN CLASS="code">block</SPAN> is properly aligned for an array of objects of size <SPAN CLASS="code">partition_sz</SPAN><BR><SPAN CLASS="code">block</SPAN> is properly aligned for an array of <SPAN CLASS="code">void *</SPAN><TD><TD><TD>Interleaves a free list through the memory block specified by <SPAN CLASS="code">block</SPAN> of size <SPAN CLASS="code">sz</SPAN> bytes, partitioning it into as many <SPAN CLASS="code">partition_sz</SPAN>-sized chunks as possible.  The last chunk is set to point to <SPAN CLASS="code">end</SPAN>, and a pointer to the first chunck is returned (this is always equal to <SPAN CLASS="code">block</SPAN>).  This interleaved free list is ordered.  O(sz).
+
+<TR><TD CLASS="code">Store::segregate(block, sz, partition_sz)<TD CLASS="code">void *<TD>Same as above<TD><TD CLASS="code">Store::segregate(block, sz, partition_sz, 0)<TD>
+
+<TR><TD CLASS="code">t.add_block(block, sz, partition_sz)<TD CLASS="code">void<TD>Same as above<TD CLASS="code">!t.empty()<TD><TD>Segregates the memory block specified by <SPAN CLASS="code">block</SPAN> of size <SPAN CLASS="code">sz</SPAN> bytes into <SPAN CLASS="code">partition_sz</SPAN>-sized chunks, and adds that free list to its own.  If <SPAN CLASS="code">t</SPAN> was empty before this call, then it is ordered after this call.  O(sz).
+
+<TR><TD CLASS="code">t.add_ordered_block(block, sz, partition_sz)<TD CLASS="code">void<TD>Same as above<TD CLASS="code">!t.empty()<TD><TD>Segregates the memory block specified by <SPAN CLASS="code">block</SPAN> of size <SPAN CLASS="code">sz</SPAN> bytes into <SPAN CLASS="code">partition_sz</SPAN>-sized chunks, and merges that free list into its own.  Order-preserving.  O(sz).
+</TABLE>
+
+<P>
+<TABLE BORDER ALIGN=CENTER>
+<CAPTION><EM>Allocation and Deallocation</EM></CAPTION>
+<TR><TH>Expression<TH>Return Type<TH>Pre-Condition<TH>Post-Condition<TH>Semantic Equivalence<TH>Notes
+<TR><TD CLASS="code">t.malloc()<TD CLASS="code">void *<TD CLASS="code">!t.empty()<TD><TD><TD>Takes the first available chunk from the free list and returns it.  Order-preserving.  O(1).
+
+<TR><TD CLASS="code">t.free(chunk)<TD CLASS="code">void<TD><SPAN CLASS="code">chunk</SPAN> was previously returned from a call to <SPAN CLASS="code">t.malloc()</SPAN><TD CLASS="code">!t.empty()<TD><TD>Places <SPAN CLASS="code">chunk</SPAN> back on the free list.  Note that <SPAN CLASS="code">chunk</SPAN> may not be <SPAN CLASS="code">0</SPAN>.  O(1).
+
+<TR><TD CLASS="code">t.ordered_free(chunk)<TD CLASS="code">void<TD>Same as above<TD CLASS="code">!t.empty()<TD><TD>Places <SPAN CLASS="code">chunk</SPAN> back on the free list.    Note that <SPAN CLASS="code">chunk</SPAN> may not be <SPAN CLASS="code">0</SPAN>.  Order-preserving.  O(N) with respect to the size of the free list.
+
+<TR><TD CLASS="code">t.malloc_n(n, partition_sz)<TD CLASS="code">void *<TD><TD><TD><TD>Attempts to find a contiguous sequence of <SPAN CLASS="code">n</SPAN> <SPAN CLASS="code">partition_sz</SPAN>-sized chunks.  If found, removes them all from the free list and returns a pointer to the first.  If not found, returns <SPAN CLASS="code">0</SPAN>.  It is strongly recommended (but not required) that the free list be ordered, as this algorithm will fail to find a contiguous sequence unless it is contiguous in the free list as well.  Order-preserving.  O(N) with respect to the size of the free list.
+
+<TR><TD CLASS="code">t.free_n(chunk, n, partition_sz)<TD CLASS="code">void<TD><SPAN CLASS="code">chunk</SPAN> was previously returned from a call to <SPAN CLASS="code">t.malloc_n(n, partition_sz)</SPAN><TD CLASS="code">!t.empty()<TD CLASS="code">t.add_block(chunk, n * partition_sz, partition_sz)<TD>Assumes that <SPAN CLASS="code">chunk</SPAN> actually refers to a block of chunks spanning <SPAN CLASS="code">n * partition_sz</SPAN> bytes; segregates and adds in that block.  Note that <SPAN CLASS="code">chunk</SPAN> may not be <SPAN CLASS="code">0</SPAN>.  O(n).
+
+<TR><TD CLASS="code">t.ordered_free_n(chunk, n, partition_sz)<TD CLASS="code">void<TD>same as above<TD>same as above<TD CLASS="code">t.add_ordered_block(chunk, n * partition_sz, partition_sz)<TD>Same as above, except it merges in the free list.  Order-preserving.  O(N + n) where N is the size of the free list.
+</TABLE>
+
+<P>
+<H2>Symbols</H2>
+
+<P>
+<UL>
+<LI>boost::simple_segregated_storage</LI>
+</UL>
+
+<P>
+<H2><A HREF="../implementation/simple_segregated_storage.html">Implementation Details</A></H2>
+
+<P>
+<HR>
+
+<P>
+Copyright &copy; 2000, 2001 Stephen Cleary (<A HREF="mailto:shammah@voyager.net">shammah@voyager.net</A>)
+
+<P>
+This file can be redistributed and/or modified under the terms found in <A HREF="../copyright.html">copyright.html</A>
+
+<P>
+This software and its documentation is provided &quot;as is&quot; without express or implied warranty, and with no claim as to its suitability for any purpose.
+
+</BODY>
+</HTML>

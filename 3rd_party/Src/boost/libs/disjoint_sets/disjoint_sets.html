@@ -1,0 +1,368 @@
+<HTML>
+<!--
+  -- Copyright (c) Jeremy Siek, Lie-Quan Lee, and Andrew Lumsdaine 2000
+  --
+  -- Permission to use, copy, modify, distribute and sell this software
+  -- and its documentation for any purpose is hereby granted without fee,
+  -- provided that the above copyright notice appears in all copies and
+  -- that both that copyright notice and this permission notice appear
+  -- in supporting documentation.  We make no
+  -- representations about the suitability of this software for any
+  -- purpose.  It is provided "as is" without express or implied warranty.
+  -->
+<Head>
+<Title>Boost Disjoint Sets</Title>
+<BODY BGCOLOR="#ffffff" LINK="#0000ee" TEXT="#000000" VLINK="#551a8b" 
+	ALINK="#ff0000"> 
+<IMG SRC="../../c++boost.gif" 
+     ALT="C++ Boost" width="277" height="86"> 
+
+<BR Clear>
+
+
+<H1><A NAME="sec:disjoint-sets"></A>
+Distjoint Sets
+</H1>
+
+<P>
+
+<H2>
+</h2>
+<PRE>
+disjoint_sets&lt;Rank, Parent, FindCompress&gt;
+</PRE>
+
+<P>
+This is class that provides disjoint sets operations with <I>union by
+rank</I> and <I>path compression</I>. A disjoint-sets data structure
+maintains a collection <i>S = {S<sub>1</sub>, S<sub>2</sub>, ...,
+S<sub>k</sub>}</i> of disjoint sets. Each set is identified by a
+<I>representative</I> which is some member of of the set. Sets are
+represented by rooted trees which are encoded in the <TT>Parent</TT>
+property map. Two heuristics: &quot;union by rank&quot; and
+&quot;path compression&quot; are used to speed up the
+operations&nbsp;[<a
+href="./bibliography.html#tarjan83:_data_struct_network_algo">1</a>, <a
+href="./bibliography.html#clr90">2</a>].
+
+<P>
+
+<h3>Where Defined</h3>
+
+<a href="../../boost/pending/disjoint_sets.hpp"><tt>boost/disjoint_sets.hpp</tt></a>
+
+<H3>Template Parameters</H3>
+
+<P>
+<TABLE border>
+<TR><TD><TT>Rank</TT></TD> <TD>must be a model of <a
+href="../property_map/ReadWritePropertyMap.html">ReadWritePropertyMap</a>
+with an integer value type and a key type equal to the set's element
+type.</TD>
+</TR>
+<TR><TD><TT>Parent</TT></TD> <TD>must be a model of <a
+href="../property_map/ReadWritePropertyMap.html">ReadWritePropertyMap</a>
+and the key and value type the same as the set's element type.</TD>
+</TR>
+<TR><TD><TT>FindCompress</TT></TD>
+<TD>should be one of the find representative and
+   path compress function objects.</TD>
+</TR>
+</TABLE>
+<P>
+
+<H3>Example</H3>
+
+<P>
+A typical usage pattern for <TT>disjoint_sets</TT> can be seen in the
+<a
+href="../graph/doc/kruskal_min_spanning_tree.html"><TT>kruskal_minimum_spanning_tree()</TT></a>
+algorithm.  In this example, we call <TT>link()</TT> instead of
+<TT>union_set()</TT> because <TT>u</TT> and <TT>v</TT> were obtained
+from <TT>find_set()</TT> and therefore are already the representatives
+for their sets.
+
+<P>
+<PRE>
+  ...
+  disjoint_sets&lt;Rank, Parent, FindCompress&gt; dsets(rank, p);
+  
+  for (ui  = vertices(G).first; ui != vertices(G).second; ++ui)
+    dsets.make_set(*ui);
+  ...
+  while ( !Q.empty() ) {
+    e = Q.front();
+    Q.pop();
+    u = dsets.find_set(source(e));
+    v = dsets.find_set(target(e));
+    if ( u != v ) {
+      *out++ = e;
+      dsets.link(u, v);
+    }
+  }
+</PRE>
+
+<P>
+
+<H3>Members</H3>
+
+<P>
+
+<table border>
+<tr>
+<th>Member</th><th>Description</th>
+</tr>
+
+<tr> 
+<td><tt>
+disjoint_sets(Rank r, Parent p)
+</tt></td>
+<td>
+Constructor.
+</td>
+</tr>
+
+<tr>
+<td><tt>
+disjoint_sets(const disjoint_sets&amp; x)
+</tt></td>
+<td>
+Copy constructor.
+</td>
+</tr>
+
+<tr>
+<td><tt>
+template &lt;class Element&gt;<br>
+void make_set(Element x)
+</tt></td>
+<td>
+Creates a singleton set containing Element <TT>x</TT>.
+</td>
+</tr>
+
+<tr>
+<td><tt>
+template &lt;class Element&gt;<br>
+void link(Element x, Element y)
+</tt></td>
+<td>
+Union the two sets <I>represented</I> by element <TT>x</TT> and <TT>y</TT>.
+</td>
+</tr>
+
+<tr>
+<td><tt>
+template &lt;class Element&gt;<br>
+void union_set(Element x, Element y)
+</tt></td>
+<td>
+Union the two sets that <I>contain</I> elements <TT>x</TT> and <TT>y</TT>.
+This is equivalent to <TT>link(find_set(x),find_set(y))</TT>.
+</td>
+</tr>
+
+<tr>
+<td><tt>
+template &lt;class Element&gt;<br>
+Element find_set(Element x)
+</tt></td>
+<td>
+Return the representative for the set containing element <TT>x</TT>.
+</td>
+</tr>
+
+<tr>
+<td><tt>
+template &lt;class ElementIterator&gt;<br>
+std::size_t count_sets(ElementIterator first, ElementIterator last)
+</tt></td>
+<td>
+Returns the number of disjoint sets.
+</td>
+</tr>
+
+<tr>
+<td><tt>
+template &lt;class ElementIterator&gt;<br>
+void compress_sets(ElementIterator first, ElementIterator last)
+</tt></td>
+<td>
+Flatten the parents tree so that the parent of every element is
+its representative.
+</td>
+</tr>
+
+</table>
+
+<p>
+
+<H3>Complexity</H3>
+
+<P>
+The time complexity is <i>O(m alpha(m,n))</i>, where <i>alpha</i> is
+the inverse Ackermann's function, <i>m</i> is the number of
+disjoint-set operations (<TT>make_set()</TT>, <TT>find_set()</TT>, and
+<TT>link()</TT> and <i>n</i> is the number of elements. The
+<i>alpha</i> function grows very slowly, much more slowly than the
+<i>log</i> function.
+
+<P>
+
+<h3>See Also</h3>
+
+<a href="../graph/doc/incremental_components.html"><tt>incremental_connected_components()</tt></a>
+
+
+<hr>
+
+<H2>
+</h2>
+<PRE>
+disjoint_sets_with_storage&lt;ID,InverseID,FindCompress&gt;
+</PRE>
+
+<P>
+This class manages the storage for the rank and parent properties
+internally. The storage is in arrays, which are indexed by element ID,
+hence the requirement for the <TT>ID</TT> and <TT>InverseID</TT>
+functors.  The rank and parent properties are initialized during
+construction so the each element is in a set by itself (so it is not
+necessary to initialize objects of this class with the <a
+href="../graph/doc/incremental_components.html#sec:initialize-incremental-components"><TT>initialize_incremental_components()</TT></a>
+function). This class is especially useful when computing the
+(dynamic) connected components of an <TT>edge_list</TT> graph which
+does not provide a place to store vertex properties.
+
+<P>
+
+<H3>Template Parameters</H3>
+
+<TABLE border>
+<TR>
+<th>Parameter</th><th>Description</th><th>Default</th>
+</tr>
+
+<TR>
+<TD><TT>ID</TT></TD>
+<TD>must be a model of <a href="../property_map/ReadablePropertyMap.html">ReadablePropertyMap</a>
+ that maps elements to integers between zero 0 and N, the total
+ number of elements in the sets.</TD>
+<TD><TT>boost::identity_property_map</TT></TD>
+</TR>
+
+<TR>
+<TD><TT>InverseID</TT></TD>
+<TD>must be a model of <a href="../property_map/ReadablePropertyMap.html">ReadablePropertyMap</a> that maps integers to elements.</TD>
+<TD><TT>boost::identity_property_map</TT></TD>
+</TR>
+
+<TR><TD><TT>FindCompress</TT></TD>
+<TD>should be one of the find representative and
+   path compress function objects.</TD>
+<TD><TT>representative_with_full_path_compression</TT></TD>
+</TR>
+
+</TABLE>
+<P>
+
+<H3>Members</H3>
+
+<P>
+This class has all of the members in <TT>disjoint_sets</TT> as well as
+the following members.
+
+<P>
+ 
+<P> <P>
+ <PRE>
+disjoint_sets_with_storage(size_type n = 0,
+                           ID id = ID(),
+                           InverseID inv = InverseID())
+</PRE>
+Constructor.
+<P>
+
+<P> <P>
+ <PRE>
+template &lt;class ElementIterator&gt;
+void disjoint_sets_with_storage::
+  normalize_sets(ElementIterator first, ElementIterator last)
+</PRE>
+This rearranges the representatives such that the representative
+of each set is the element with the smallest ID.  
+<BR>
+Postcondition: <TT>v &gt;= parent[v]</TT> 
+<BR>
+Precondition: the disjoint sets structure must be compressed. 
+<BR>
+<P>
+ 
+<P>
+
+
+
+
+<hr>
+
+<H2><A NAME="sec:representative-with-path-halving"></A>
+</h2>
+<PRE>
+representative_with_path_halving&lt;Parent&gt;
+</PRE>
+
+<P>
+This is a functor which finds the representative vertex for the same
+component as the element <TT>x</TT>. While traversing up the
+representative tree, the functor also applies the path halving
+technique to shorten the height of the tree.
+
+<P>
+ 
+<P> <PRE>
+Element operator()(Parent p, Element x)
+</PRE> 
+<P>
+
+
+
+<hr>
+
+<H2>
+<A NAME="sec:representative-with-full-path-compression"></A>
+<BR>
+</h2>
+<PRE>
+representative_with_full_path_compression&lt;Parent&gt;
+</PRE>
+
+<P>
+This is a functor which finds the representative element for the set
+that element <TT>x</TT> belongs to.
+
+<P>
+ 
+<P> <PRE>
+Element operator()(Parent p, Element x)
+</PRE> 
+<P>
+
+<P>
+
+
+<br>
+<HR>
+<TABLE>
+<TR valign=top>
+<TD nowrap>Copyright &copy 2000</TD><TD>
+<a HREF="../../people/jeremy_siek.htm">Jeremy Siek</a>,
+Univ.of Notre Dame (<A
+HREF="mailto:jsiek@lsc.nd.edu">jsiek@lsc.nd.edu</A>)<br>
+<A HREF=http://www.lsc.nd.edu/~llee1>Lie-Quan Lee</A>, Univ.of Notre Dame (<A HREF="mailto:llee1@lsc.nd.edu">llee1@lsc.nd.edu</A>)<br>
+<A HREF=http://www.lsc.nd.edu/~lums>Andrew Lumsdaine</A>,
+Univ.of Notre Dame (<A
+HREF="mailto:lums@lsc.nd.edu">lums@lsc.nd.edu</A>)
+</TD></TR></TABLE>
+
+</BODY>
+</HTML> 

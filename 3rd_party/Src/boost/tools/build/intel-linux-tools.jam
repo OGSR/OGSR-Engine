@@ -1,0 +1,154 @@
+# (C) Copyright David Abrahams 2001. Permission to copy, use
+# modify, sell and distribute this software is granted provided this
+# copyright notice appears in all copies. This software is provided
+# "as is" without express or implied warranty, and with no claim as
+# to its suitability for any purpose.
+
+# Adapted from gcc-tools.jam by Joerg Walter
+
+# Intel root directory set?
+if ! $(IA32ROOT)
+{
+    # Compiler version
+    INTEL_LINUX_VERSION ?= "60" ;
+}
+
+flags intel-linux INTEL_LINUX_VERSION : $(INTEL_LINUX_VERSION) ;
+
+# Root directory
+flags intel-linux INTEL_LINUX_ROOT : "/opt/intel/compiler"$(INTEL_LINUX_VERSION) ;
+# Setup script
+flags intel-linux INTEL_LINUX_SETUP : ". "$(INTEL_LINUX_ROOT)"/ia32/bin/iccvars.sh" ;
+# Additional DLL directory
+flags intel-linux INTEL_LINUX_RUN_LD_LIBRARY_PATH : $(INTEL_LINUX_ROOT)"/ia32/lib" ;
+
+#### compiler and linker switches ####
+
+# debugging
+flags intel-linux CFLAGS <debug-symbols>on : -g ;
+flags intel-linux LINKFLAGS <debug-symbols>on : -g ;
+flags intel-linux LINKFLAGS <debug-symbols>off : -Xlinker -s ;
+
+# optimizations
+flags intel-linux CFLAGS <optimization>off : -O0 ;
+flags intel-linux CFLAGS <optimization>space : -O2 ;
+flags intel-linux CFLAGS <optimization>speed : -O3 ;
+
+# inlining
+# results using -ip are worse than without?
+# flags intel-linux CFLAGS <inlining>full : -ip ;
+
+# threading
+flags intel-linux CFLAGS <threading>multi : -openmp ;
+flags intel-linux LINKFLAGS <threading>multi : -openmp ;
+
+# profiling
+flags intel-linux CFLAGS <profiling>on : -p ;
+flags intel-linux LINKFLAGS <profiling>on : -p ;
+
+# position independent code
+flags intel-linux CFLAGS <shared-linkable>true : -KPIC ;
+flags intel-linux LINKFLAGS <shared-linkable>true : -KPIC ;
+
+# dynamic link library
+flags intel-linux LINKFLAGS <target-type>$(SHARED_TYPES) : -shared ;
+
+# library linking
+flags intel-linux LINKFLAGS <runtime-link>static : -static ;
+
+#### standard settings ####
+
+flags intel-linux UNDEFS <undef> ;
+flags intel-linux DEFINES <define> ;
+flags intel-linux CFLAGS <cflags> ;
+flags intel-linux C++FLAGS <cxxflags> ;
+
+flags intel-linux HDRS <include> ;
+flags intel-linux LIBPATH <library-path> ;
+
+flags intel-linux NEEDLIBS <library-file> ;
+flags intel-linux FINDLIBS <find-library> ;
+
+flags intel-linux STDHDRS <sysinclude> ;
+flags intel-linux LINKFLAGS <linkflags> ;
+
+flags intel-linux ARFLAGS <arflags> ;
+
+if ! $(ARFLAGS)
+{
+    flags intel-linux ARFLAGS : "" ;
+}
+
+flags intel-linux DLLVERSION <dllversion> ;
+DLLVERSION = $(DLLVERSION[1]) ;
+DLLVERSION ?= $(BOOST_VERSION) ;
+
+flags intel-linux TARGET_TYPE <target-type> ;
+
+#### Cc ####
+
+rule Cc-action
+{
+    intel-linux-Cc-action $(<) : $(>) ;
+}
+
+actions intel-linux-Cc-action
+{
+    $(INTEL_LINUX_SETUP)
+    icc -c -w1 -U$(UNDEFS) -D$(DEFINES) $(CFLAGS) -I"$(HDRS)" -I"$(STDHDRS)" -o "$(<)" "$(>)"
+}
+
+#### C++ ####
+
+rule C++-action
+{
+    intel-linux-C++-action $(<) : $(>) ;
+}
+
+actions intel-linux-C++-action
+{
+    $(INTEL_LINUX_SETUP)
+    icc -c -w1 -U$(UNDEFS) -D$(DEFINES) $(CFLAGS) $(C++FLAGS) -I"$(HDRS)" -I"$(STDHDRS)" -o "$(<)" "$(>)"
+}
+
+#### Archive ####
+
+rule Archive-action
+{
+    intel-linux-Archive-action $(<) : $(>) ;
+}
+
+actions updated together piecemeal intel-linux-Archive-action
+{
+    ar ru$(ARFLAGS) "$(<)" "$(>)"
+}
+
+#### Link ####
+
+rule Link-action
+{
+    gRUN_LD_LIBRARY_PATH($(<)) += $(INTEL_LINUX_RUN_LD_LIBRARY_PATH) ;
+    SPACE on $(<) = " " ;
+    if $(DLLVERSION) && $(TARGET_TYPE) in $(SHARED_TYPES)
+    {
+        OUTTAG on $(<) = ".$(DLLVERSION)" ;
+        SOTAG on $(<) = ".$(DLLVERSION)" ;
+        ACTION_1 on $(<) = "" ;
+    }
+    else
+    {
+        OUTTAG on $(<) = "" ;
+        SOTAG on $(<) = ;
+        ACTION_1 on $(<) = ;
+    }
+    intel-linux-Link-action $(<) : $(>) ;
+}
+
+# for icc, we repeat all libraries so that dependencies are always resolved
+actions intel-linux-Link-action bind NEEDLIBS NEEDIMPS
+{
+    $(INTEL_LINUX_SETUP)
+    icc $(LINKFLAGS) -o "$(<[1])$(OUTTAG)" -L$(LIBPATH) -L$(STDLIBPATH) "$(>)" $(NEEDLIBS) $(NEEDLIBS) -l$(FINDLIBS) "$(IMPLIB_FLAGS)$(NEEDIMPS)" "-Qoption,link,-soname,$(<[1]:D=)$(SOTAG)"
+    $(ACTION_1)$(LN)$(SPACE)-fs$(SPACE)"$(<[1]:D=)$(OUTTAG)"$(SPACE)"$(<[1])"
+}
+

@@ -1,0 +1,96 @@
+.\" <!!---------------------------------------------------------------------->
+.\" <!! Copyright (C) 1999 Dietmar Kuehl, Claas Solutions GmbH >
+.\" <!!>
+.\" <!! Permission to use, copy, modify, distribute and sell this >
+.\" <!! software for any purpose is hereby granted without fee, provided >
+.\" <!! that the above copyright notice appears in all copies and that >
+.\" <!! both that copyright notice and this permission notice appear in >
+.\" <!! supporting documentation. Dietmar Kuehl and Claas Solutions make no >
+.\" <!! representations about the suitability of this software for any >
+.\" <!! purpose. It is provided "as is" without express or implied warranty. >
+.\" <!!---------------------------------------------------------------------->
+.TH mfd/p_queue 3 "09.Juli 1999" "Claas Solutions" "boost"
+.SH NAME
+mfd/p_queue - Template Class \fBpriority_queue<T, Cont, Comp>\fP
+
+.SH SYNOPSIS
+
+
+.nf
+#include "boost/p_queue.hpp"
+.br
+
+.br
+template <class T,
+.br
+          class Cont = std::vector<T>,
+.br
+          class Comp = std::less<typename Cont::value_type> >
+.br
+class boost::priority_queue
+.br
+{
+.br
+public:
+.br
+  typedef typename Cont::value_type      value_type;
+.br
+  typedef typename Cont::size_type       size_type;
+.br
+  typedef          Cont                  container_type;
+.br
+  typedef typename Cont::reference       reference;
+.br
+  typedef typename Cont::const_reference const_reference;
+.br
+
+.br
+  typedef typename Cont::iterator        iterator;
+.br
+  typedef typename Cont::const_iterator  const_iterator;
+.br
+
+.br
+  explicit priority_queue(Comp const& comp = Comp());
+.br
+
+.br
+  bool            empty() const;
+.br
+  size_type       size() const;
+.br
+  const_reference top() const;
+.br
+
+.br
+  void push(const_reference val);
+.br
+  void pop();
+.br
+  void change_top(const_reference val);
+.br
+
+.br
+  const_iterator begin() const;
+.br
+  const_iterator end() const;
+.br
+};
+.fi 0 
+.SH DESCRIPTION
+The template class \fBpriority_queue\fP is a replacement for the standard template class \fBstd::priority_queue\fP. It has a slightly extended interface, namely the methods \fBbegin()\fP and \fBend()\fP to get access to all elements currenty stored in the priority queue and the method \fBchange_top()\fP which is used for efficient modification of the largest element's priority. 
+
+The basic method to maintain the internal data structure is identical to that of d-heaps but for \fBpriority_queue\fP the elements inserted into the priority queue are kept in the array. Thus, these are swapped. However, this removes the need to maintain a mapping between the elements in the heap and their position resulting a huge performance boost. On the other hand, this remove the possibility to change the priority of an arbitrary element because the elements cannot be found efficiently in the priority queue. If you never need to change the priority of an element except for the largest element this class is probably suitable. If you need only the methods also present for \fBstd::priority_queue\fP you should probably stick to the standard class... 
+
+For a description of the methods of \fBpriority_queue<T, Cont, Comp>\fP see the description of common methods. 
+.SH SEE ALSO
+heap(3), heap-common(3) 
+.SH AUTHOR
+Dietmar Kühl (Claas Solutions)
+.br
+e-mail: dietmar.kuehl@claas-solutions.de
+.br
+http://www.claas-solutions.de/kuehl
+.br
+
+

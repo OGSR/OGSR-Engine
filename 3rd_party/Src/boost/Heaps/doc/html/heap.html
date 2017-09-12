@@ -1,0 +1,445 @@
+<HTML><HEAD>
+<!!---------------------------------------------------------------------->
+<!! Copyright (C) 1999 Dietmar Kuehl, Claas Solutions GmbH >
+<!!>
+<!! Permission to use, copy, modify, distribute and sell this >
+<!! software for any purpose is hereby granted without fee, provided >
+<!! that the above copyright notice appears in all copies and that >
+<!! both that copyright notice and this permission notice appear in >
+<!! supporting documentation. Dietmar Kuehl and Claas Solutions make no >
+<!! representations about the suitability of this software for any >
+<!! purpose. It is provided "as is" without express or implied warranty. >
+<!!---------------------------------------------------------------------->
+<TITLE>heap.3</TITLE>
+</HEAD>
+<BODY BGCOLOR=white LINK="0000FF" VLINK="800080">
+<IMG SRC=c++boost.jpg ALIGN=TOP WIDTH=277 HEIGHT=86><BR>
+<TABLE BORDER=0 CELLSPACING=0 CELLPADDING=0 COLS=2>
+<TR><TD WIDTH=109 VALIGN=TOP><IMG SRC=sidebar.jpg WIDTH=109 HEIGHT=494>
+</TD><TD>
+<SPACER TYPE=VERTICAL SIZE=40>
+<H1>Priority Queues</H1>
+<H1>Abstract</H1>
+
+  The standard C++ library provides an adaptor to turn a container into
+  a priority queue. However, this priority queue misses two important
+  features, namely the possibility to change or remove an arbitrary
+  element and <A HREF="logical-inspectability.html">logical inspectability</A>.
+  This component implements a collection of priority queues, all with
+  different trade offs. 
+
+
+  <A NAME="Synopsis"><H1>Synopsis</H1></A>
+
+    <TABLE BORDER=0 CELLSPACING=0 CELLPADDING=0 COLS=2>
+<TR><TD WIDTH=30 VALIGN=TOP></TD><TD>
+<PRE>
+#include "boost/heap.hpp"
+namespace boost
+{
+  template &lt;typename T, typename Comp = std::less&lt;T&gt;, int d = 2&gt;
+  class <A HREF="d_heap.html">d_heap</A>;
+  
+  template &lt;typename T, typename Comp = std::less&lt;T&gt; &gt;
+  class <A HREF="f_heap.html">fibonacci_heap</A>;
+
+  template &lt;typename T, typename Comp = std::less&lt;T&gt; &gt;
+  class <A HREF="l_heap.html">lazy_fibonacci_heap</A>;
+
+  template &lt;typename T, typename Comp = std::less&lt;T&gt; &gt;
+  class <A HREF="p_heap.html">pairing_heap</A>;
+  
+  template &lt;typename T, typename Cont = std::vector&lt;T&gt;,
+          typename Comp = std::less&lt;typename Cont::value_type&gt; &gt;
+  class <A HREF="p_queue.html">priority_queue</A>;
+
+  template &lt;typename T, typename Cont = std::deque&lt;T&gt; &gt;
+  class <A HREF="queue.html">queue</A>;
+
+  template &lt;typename T, typename traits&gt;
+  class <A HREF="r_heap.html">radix_heap</A>;
+
+  template &lt;typename T, typename Comp = std::less&lt;T&gt; &gt;
+  class <A HREF="s_heap.html">splay_heap</A>;
+
+  template &lt;typename T, typename Cont = std::vector&lt;T&gt; &gt;
+  class <A HREF="stack.html">stack</A>;
+}
+    </PRE></TD></TABLE>
+
+  
+  <A NAME="Description"><H1>Description</H1></A>
+
+    The priority heaps provide efficient access to the "largest"
+    element where the definition of what is considered to be the largest
+    elements depends on the type of the priority queue:
+
+    <UL>
+<LI>
+
+      For the class template <nobr><tt>boost::queue</tt></nobr> the largest elements is the
+      the element which is stored the longest time in the queue (similar
+      to <nobr><tt>boost::stack</tt></nobr> this is normally not considered a priority
+      queue).
+      
+<LI>
+
+      For the class template <nobr><tt>boost::stack</tt></nobr> the largest element is the
+      most recently added element (it is kind of stretching the definition
+      of "priority queue" to consider this a priority queue but
+      this component is a reasonable home for this template...).
+      
+<LI>
+
+      For the class template <nobr><tt>boost::radix_heap</tt></nobr> the element type is
+      assumed to provide access to a non-negative integral value describing
+      relative order of the element. This value is used to sort elements in
+      ascending order.
+      
+<LI>
+
+      For all other types, a template argument is used to specify a
+      binary predicate which is used to determine an ordering on the
+      elements of the heap.
+    
+</UL>
+
+
+    All types of priority queues provide a common interface which is made
+    up of a few operations and typedefs:
+    <DL>
+<DT>
+<nobr><tt><A HREF="heap-common.html#value_type">value_type</A></tt></nobr>
+<DD>
+ The type of the elements stored in the priority queue. 
+<DT>
+<nobr><tt><A HREF="heap-common.html#size_type">size_type</A></tt></nobr>
+<DD>
+ The type used to maintain the number of elements in the
+		  priority queue. 
+<DT>
+<nobr><tt><A HREF="heap-common.html#const_reference">const_reference</A></tt></nobr>
+<DD>
+ The type returned from <nobr><tt>top()</tt></nobr>. 
+<DT>
+<nobr><tt><A HREF="heap-common.html#const_iterator">const_iterator</A></tt></nobr>
+<DD>
+ The type of the iterator used to iterate over all elements
+			  in the priority queue (it is called <nobr><tt>const_iterator</tt></nobr> rather
+                          than <nobr><tt>iterator</tt></nobr> because the elements are immutable). 
+<DT>
+<A HREF="heap-common.html#default-ctor">Default Constructor</A>
+<DD>
+ Construct an empty priority queue (however, this
+                              constructor is only available if the comparator
+                              type provides a default constructor). 
+<DT>
+<nobr><tt><A HREF="heap-common.html#push">push</A>()</tt></nobr>
+<DD>
+ Add an element to the priority queue. 
+<DT>
+<nobr><tt><A HREF="heap-common.html#top">top</A>()</tt></nobr>
+<DD>
+ Provides access the current largest element. 
+<DT>
+<nobr><tt><A HREF="heap-common.html#pop">pop</A>()</tt></nobr>
+<DD>
+ Remove the current largest element from the priority queue. 
+<DT>
+<nobr><tt><A HREF="heap-common.html#size">size</A>()</tt></nobr>
+<DD>
+ Returns the number of elements in the priority queue. 
+<DT>
+<nobr><tt><A HREF="heap-common.html#empty">empty</A>()</tt></nobr>
+<DD>
+ Returns whether there are elements in the priority queue. 
+<DT>
+<nobr><tt><A HREF="heap-common.html#begin">begin</A>()</tt></nobr>
+<DD>
+ Returns an iterator to the first element of the priority queue. 
+<DT>
+<nobr><tt><A HREF="heap-common.html#end">end</A>()</tt></nobr>
+<DD>
+ Returns a past the end iterator for the priority queue. 
+</DL>
+
+ 
+    Note, that <B>all</B> classes have this common interface. This is
+    unfortunately not the case with the standard version of the adaptor
+    <nobr><tt>std::queue</tt></nobr> which does not provide the function <nobr><tt>top()</tt></nobr>:
+    Instead, this adaptor provides the functions <nobr><tt>front()</tt></nobr> and
+    <nobr><tt>back()</tt></nobr> (which are, of course, also provided for the Boost
+    version).
+
+    <P>
+
+
+    The description will always assume that there is efficient access to
+    the "largest" element of a priority queue (this is in contrast to
+    all literature I have which always uses the "smallest" element but
+    consistent to the behavior of the default for the standard adaptor
+    <nobr><tt>std::priority_queue</tt></nobr>). Of course, for all priority queue
+    templates which take a comparator as template argument, this can be
+    changed easily. For example to provide access to the smallest element
+    just use <nobr><tt>std::greater&lt;T&gt;</tt></nobr> instead of <nobr><tt>std::less&lt;T&gt;</tt></nobr> (both
+    templates are defined in the header <nobr><tt>&lt;utility&gt;</tt></nobr>) as the
+    type of the comparator.  For the templates <nobr><tt>boost::queue</tt></nobr>
+    and <nobr><tt>boost::stack</tt></nobr> the largest element is determined by the
+    insertion order (the first element added and the last element added,
+    respectively). Only Radix heaps somewhat rely on the fact that
+    efficient access is indeed to the smallest integer in the priority
+    queue. To make this class consistent with the other types, an ugly
+    hack is used (see the documentation of
+    <A HREF="r_heap.html">Radix heap</A> for details).
+
+    <P>
+
+
+    In any case, if the documentation mentions the largest element, it is
+    to be viewed with this intention in mind: Using the default parameters
+    for the priority queue templates will provide efficient access to the
+    largest element at least for the built-in types. For other types than
+    built-in types, you have to provide an appropriate comparator (or
+    define <nobr><tt>operator&lt;()</tt></nobr>) which defines an order on the values.
+    Note that I omitted the details on what kind of order: I'm currently
+    not sure about the exact kind of order required for the various
+    priority queues to work. It definitely works for total orders...
+
+    <P>
+
+
+    Several priority queue implementions use some sort of tree internally
+    where a simple invariant is maintained: The data stored with a nodes
+    is larger than the data of all child nodes. This way the root of every
+    subtree always stores the largest element in this subtree. The
+    different implementations either differ in the details how this
+    invariant is maintained or what kind of accesses are allowed
+    (the template <nobr><tt>boost::priority_queue</tt></nobr> basically implements
+    a 2-heap but unlike the template <nobr><tt>boost::d_heap</tt></nobr> no methods
+    for manipulation of elements different than the top element are
+    provided).  This basically applies to all implementations except for
+    Radix heaps, although <nobr><tt>boost::queue</tt></nobr> and <nobr><tt>boost::stack</tt></nobr>
+    maintain degenerate trees: In both cases it is just a sequence.
+  
+  <A NAME="Properties of the Different Classes"><H1>Properties of the Different Classes</H1></A>
+
+    This section is intended to give you an overview of all available
+    priority queues to determine which is the best suitable for your
+    situations. The table lists the supported operations, support for
+    arbitrary comparators, and the efficiency of the implementation. The
+    operations are put into groups:
+    <DL>
+<DT>
+Basic
+<DD>
+ Represents basic the operations
+	  <nobr><tt><A HREF="heap-common.html#push">push</A>()</tt></nobr>,
+	  <nobr><tt><A HREF="heap-common.html#top">top</A>()</tt></nobr>,
+	  <nobr><tt><A HREF="heap-common.html#pop">pop</A>()</tt></nobr>,
+	  <nobr><tt><A HREF="heap-common.html#size">size</A>()</tt></nobr>,
+	  <nobr><tt><A HREF="heap-common.html#empty">empty</A>()</tt></nobr>
+        
+<DT>
+<nobr><tt>begin()</tt></nobr>
+<DD>
+ Represents support for
+          <A HREF="logical-inspectability.html">logical inspectability</A>, i.e.
+          an iterator type and the methods
+	  <nobr><tt><A HREF="heap-common.html#begin">begin</A>()</tt></nobr>,
+	  <nobr><tt><A HREF="heap-common.html#end">end</A>()</tt></nobr>
+        
+<DT>
+<nobr><tt>change_top()</tt></nobr>
+<DD>
+ Represents self, that is support for the method
+	  <nobr><tt><A HREF="heap-common.html#change_top">change_top</A>()</tt></nobr>
+        
+<DT>
+<nobr><tt>change()</tt></nobr>
+<DD>
+ Represents the methods changing the priority of an
+          arbitrary element, i.e. the methods
+	  <nobr><tt><A HREF="heap-common.html#change">change</A>()</tt></nobr>,
+	  <nobr><tt><A HREF="heap-common.html#decrease">decrease</A>()</tt></nobr>,
+	  <nobr><tt><A HREF="heap-common.html#increase">increase</A>()</tt></nobr>
+        
+</DL>
+
+
+    The efficiency mentioned tries to describe the efficiency of the implementation.
+    However, until now I have only made some very simple performance tests using
+    only <B>random data</B>. For a really good estimate on the performance of
+    the various implementations, it is necessary to measure the performance on
+    real problem data.
+
+    <P><CENTER><TABLE border=2 cellspacing=3 cellpadding=5>
+      <TH>Type</TH>
+<TH>Comp</TH>
+<TH>Basic</TH>
+<TH><nobr><tt>begin()</tt></nobr></TH>
+<TH><nobr><tt>change_top()</tt></nobr></TH>
+<TH><nobr><tt>change()</tt></nobr></TH>
+<TH>Efficiency</TH>
+
+      <TR>
+<TD>std::stack</TD>
+<TD>No</TD>
+<TD>Yes</TD>
+<TD>No</TD>
+<TD>No</TD>
+<TD>No</TD>
+<TD>fast</TD></TR>
+      <TR>
+<TD><A HREF="stack.html">boost::stack</A></TD>
+<TD>No</TD>
+<TD>Yes</TD>
+<TD>Yes</TD>
+<TD>No</TD>
+<TD>No</TD>
+<TD>fast</TD></TR>
+      <TR>
+<TD>std::queue</TD>
+<TD>No</TD>
+<TD>No</TD>
+<TD>No</TD>
+<TD>No</TD>
+<TD>No</TD>
+<TD>fast</TD></TR>
+      <TR>
+<TD><A HREF="queue.html">boost::queue</A></TD>
+<TD>No</TD>
+<TD>Yes</TD>
+<TD>Yes</TD>
+<TD>No</TD>
+<TD>No</TD>
+<TD>fast</TD></TR>
+      <TR>
+<TD>std::priority_queue</TD>
+<TD>Yes</TD>
+<TD>Yes</TD>
+<TD>No</TD>
+<TD>No</TD>
+<TD>No</TD>
+<TD>fast</TD></TR> 
+      <TR>
+<TD><A HREF="p_queue.html">boost::priority_queue</A></TD>
+<TD>Yes</TD>
+<TD>Yes</TD>
+<TD>Yes</TD>
+<TD>Yes</TD>
+<TD>No</TD>
+<TD>fast</TD></TR>
+      <TR>
+<TD><A HREF="s_heap.html">boost::splay_heap</A></TD>
+<TD>Yes</TD>
+<TD>Yes</TD>
+<TD>Yes</TD>
+<TD>Yes</TD>
+<TD>Yes</TD>
+<TD>slow</TD></TR>
+      <TR>
+<TD><A HREF="d_heap.html">boost::d_heap</A></TD>
+<TD>Yes</TD>
+<TD>Yes</TD>
+<TD>Yes</TD>
+<TD>Yes</TD>
+<TD>Yes</TD>
+<TD>slow</TD></TR>
+      <TR>
+<TD><A HREF="r_heap.html">boost::radix_heap</A></TD>
+<TD>No</TD>
+<TD>Yes</TD>
+<TD>Yes</TD>
+<TD>Yes</TD>
+<TD>Yes</TD>
+<TD>slow</TD></TR>
+      <TR>
+<TD><A HREF="f_heap.html">boost::fibonacci_heap</A></TD>
+<TD>Yes</TD>
+<TD>Yes</TD>
+<TD>Yes</TD>
+<TD>Yes</TD>
+<TD>Yes</TD>
+<TD>slow</TD></TR>
+      <TR>
+<TD><A HREF="l_heap.html">boost::lazy_fibonacci_heap</A></TD>
+<TD>Yes</TD>
+<TD>Yes</TD>
+<TD>Yes</TD>
+<TD>Yes</TD>
+<TD>Yes</TD>
+<TD>slow</TD></TR>
+      <TR>
+<TD><A HREF="p_heap.html">boost::pairing_heap</A></TD>
+<TD>Yes</TD>
+<TD>Yes</TD>
+<TD>Yes</TD>
+<TD>Yes</TD>
+<TD>Yes</TD>
+<TD>slow</TD></TR>
+    
+</TABLE></CENTER><P>
+
+    The last six classes differ in their asymptotical behavior (which is important
+    to theoreticians but probably completely pointless for the practioneer as they
+    are all theoretical quite close). However, measuring different scenarios
+    (using random data...) indicated that each of the classes has its strength
+    depending on the number of elements and the mix of operations used. If your
+    application normally uses a common mix of operations you might be able to
+    enhance the performance by just testing which of the priority queues works
+    best for your application.
+
+  
+  <A NAME="Bugs"><H1>Bugs</H1></A>
+
+    There are currently some known bugs which mainly stem from the fact that I
+    want to get this stuff at least temporarily off my desk:
+    <UL>
+<LI>
+
+      The implementation of the <A HREF="r_heap.html">Radix heap</A> is not
+      yet complete. I'm pretty sure that it can be done but I haven't figured
+      out some of the details yet and the literature I have is a little bit
+      terse on some of the more intersting parts. However, it seems that this
+      priority is relatively fast where it is applicable. Thus, it might be
+      interesting to use it.
+    
+<LI>
+
+      I haven't cared much about exception safety. I think it should be doable
+      to add exception safety since most classes are "node based": after
+      construction of an element, only built-in types are manipulated (notably
+      <A HREF="p_queue.html"><nobr><tt>boost::priority_queue</tt></nobr></A> seems to be
+      the biggest problem with respect to exception safety). However, the
+      compare function might throw exceptions
+      and it is not always obvious how to restore the data structure if
+      the comparison of objects is unreliable.
+    
+<LI>
+
+      This documentation is probably full of typos, grammatical errors,
+      and, hopefully to a much lesser degree, technical inconsistencies...
+    
+</UL>
+
+  
+  <A NAME="See Also"><H1>See Also</H1></A>
+
+    <A HREF="d_heap.html">d_heap(3)</A>,
+    <A HREF="f_heap.html">f_heap(3)</A>,
+    <A HREF="l_heap.html">l_heap(3)</A>,
+    <A HREF="p_heap.html">p_heap(3)</A>,
+    <A HREF="p_queue.html">p_queue(3)</A>,
+    <A HREF="queue.html">queue(3)</A>,
+    <A HREF="r_heap.html">r_heap(3)</A>,
+    <A HREF="s_heap.html">s_heap(3)</A>
+    <A HREF="stack.html">stack(3)</A>
+  
+<HR>
+
+Copyright &copy 1999 <A HREF=http://www.claas-solutions.de/~kuehl>Dietmar K&uuml;hl</A> (<A HREF="mailto:dietmar.kuehl@claas-solutions.de">dietmar.kuehl@claas-solutions.de</A>)<BR>
+<a href="http://www.claas-solutions.de/">Claas Solutions GmbH</a>
+</FONT></FONT>
+</TD></TR></TABLE>
+</BODY></HTML>
+

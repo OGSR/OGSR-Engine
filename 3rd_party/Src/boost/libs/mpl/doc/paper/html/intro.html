@@ -1,0 +1,359 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta content="text/html; charset=ISO-8859-1" http-equiv="Content-Type">
+<title>1. Introduction</title>
+<link rel="stylesheet" href="article.css" type="text/css">
+<meta name="generator" content="DocBook XSL Stylesheets V1.50.0">
+<meta name="keywords" content="template metaprogramming, generic programming, programming languages, C++, STL, type systems, polymorphism, compile-time">
+<link rel="home" href="index.html" title="the boost c++ metaprogramming library">
+<link rel="up" href="index.html" title="the boost c++ metaprogramming library">
+<link rel="previous" href="index.html" title="the boost c++ metaprogramming library">
+<link rel="next" href="usage.html" title="2. basic usage">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<div class="navheader">
+<table width="100%" summary="Navigation header">
+<tr>
+<th colspan="3" align="center">1. Introduction</th>
+</tr>
+
+<tr>
+<td width="20%" align="left"><a accesskey="p" href="index.html">Prev</a>&nbsp;</td>
+<th width="60%" align="center">&nbsp;</th>
+<td width="20%" align="right">&nbsp;<a accesskey="n" href="usage.html">Next</a></td>
+</tr>
+</table>
+
+<hr>
+</div>
+
+<div class="section">
+<div class="titlepage">
+<div>
+<h2 class="title" style="clear: both"><a name="intro"></a>1. Introduction</h2>
+</div>
+</div>
+
+<p>Metaprogramming is usually defined as the creation of programs which generate other programs. Parser generators such as YACC <span class="citation">[<a class="interlink" href="refs.html#ref.joh79" title="[joh79]">Joh79</a>]</span> are examples of one kind of program-generating program. The input language to YACC is a context-free grammar in Extended Backus-Naur Form <span class="citation">[<a class="interlink" href="refs.html#ref.ebnf" title="[ebnf]">EBNF</a>]</span>, and its output is a program which parses that grammar. Note that in this case the metaprogram (YACC) is written in a language (C) which does not directly support the description of generated programs. These specifications, which we'll call <span class="emphasis"><em>metadata</em></span>, are not written in C, but in a <span class="emphasis"><em>meta-language</em></span>. Because the the rest of the user's program typically requires a general-purpose programming system and must interact with the generated parser, the metadata is translated into C, which is then compiled and linked together with the rest of the system. The metadata thus undergoes two translation steps, and the user is always very conscious of the boundary between her metadata and the rest of her program.</p>
+
+<div class="section">
+<div class="titlepage">
+<div>
+<h3 class="title"><a name="intro.native"></a>1.1. Native language metaprogramming</h3>
+</div>
+</div>
+
+<p>A more interesting form of metaprogramming is available in languages such as Scheme <span class="citation">[<a class="interlink" href="refs.html#ref.ss75" title="[ss75]">SS75</a>]</span>, where the generated program specification is given in the same language as the metaprogram itself. The metaprogrammer defines her meta-language as a subset of the expressible forms of the underlying language, and program generation can take place in the same translation step used to process the rest of the user's program. This allows users to switch transparently between ordinary programming, generated program specification, and metaprogramming, often without being aware of the transition.</p>
+</div>
+
+<div class="section">
+<div class="titlepage">
+<div>
+<h3 class="title"><a name="intro.cxx"></a>1.2. Metaprogramming in C++</h3>
+</div>
+</div>
+
+<p>In C++, it was discovered almost by accident <span class="citation">[<a class="interlink" href="refs.html#ref.unr" title="[unr]">Unr</a>]</span>, <span class="citation">[<a class="interlink" href="refs.html#ref.vel95a" title="[vel95a]">Vel95a</a>]</span> that the template mechanism provides a rich facility for computation at compile-time. In this section, we'll explore the basic mechanisms and some common idioms used for metaprogramming in C++.</p>
+
+<div class="section">
+<div class="titlepage">
+<div>
+<h4 class="title"><a name="intro.cxx.numeric"></a>1.2.1. Numeric computations</h4>
+</div>
+</div>
+
+<p>The availability of <span class="emphasis"><em>non-type template parameters</em></span> makes it possible to perform integer computations at compile-time. For example, the following template computes the factorial of its argument:</p>
+
+<pre class="programlisting">
+template&lt; unsigned n &gt;
+struct factorial
+{
+    static const unsigned value = n * factorial&lt;n-1&gt;::value;
+};
+
+template&lt;&gt;
+struct factorial&lt;0&gt;
+{
+    static const unsigned value = 1;
+};
+</pre>
+
+<p>The program fragment above is called a <span class="emphasis"><em>metafunction</em></span>, and it is easy to see its relationship to a function designed to be evaluated at runtime: the &lsquo;metafunction argument&rsquo; is passed as a template parameter, and its &lsquo;return value&rsquo; is defined as a nested static constant. Because of the hard line between the expression of compile-time and runtime computation in C++, metaprograms look different from their runtime counterparts. Thus, although as in Scheme the C++ metaprogrammer writes her code in the same language as the ordinary program, only a subset of the full C++ language is available to her: those expressions which can be evaluated at compile-time. Compare the above with a straightforward runtime definition of the factorial function:</p>
+
+<pre class="programlisting">
+unsigned factorial(unsigned N)
+{
+    return N == 0 ? 1 : N * factorial(N - 1);
+}
+</pre>
+
+<p>While it is easy to see the analogy between the two recursive definitions, recursion is in general more important to C++ metaprograms than it is to runtime C++. In contrast to languages such as Lisp where recursion is idiomatic, C++ programmers will typically avoid recursion when possible. This is done not only for efficiency reasons, but also because of &lsquo;cultural momentum&rsquo;: recursive programs are simply harder (for C++ programmers) to think about. Like pure Lisp, though, the C++ template mechanism is a <span class="emphasis"><em>functional</em></span> programming language: as such it rules out the use of data mutation required to maintain loop variables.</p>
+
+<p>A key difference between the runtime and compile-time factorial functions is the expression of the termination condition: our meta-factorial uses template specialization as a kind of <span class="emphasis"><em>pattern-matching</em></span> mechanism to describe the behavior when <tt>N</tt> is zero. The syntactic analogue in the runtime world would require two separate definitions of the same function. In this case the impact of the second definition is minimal, but in large metaprograms the cost of maintaining and understanding the terminating definitions can become significant.</p>
+
+<p>Note also that a C++ metafunction's return value must be <span class="emphasis"><em>named</em></span>. The name chosen here, <tt>value</tt>, is the same one used for all numeric returns in the MPL. As we'll see, establishing a consistent naming convention for metafunction returns is crucial to the power of the library.</p>
+</div>
+
+<div class="section">
+<div class="titlepage">
+<div>
+<h4 class="title"><a name="intro.cxx.type"></a>1.2.2. Type computations</h4>
+</div>
+</div>
+
+<p>How could we apply our <tt>factorial</tt> metafunction? We might, for example, produce an array type of an appropriate size to hold all permutations of instances of another type:</p>
+
+<pre class="programlisting">
+// permutation_holder&lt;T&gt;::type is an array type which can contain 
+// all permutations of a given T.
+
+// unspecialized template for scalars
+template&lt; typename T &gt;
+struct permutation_holder
+{
+    typedef T type[1][1];
+};
+
+// specialization for array types
+template&lt; typename T, unsigned N &gt;
+struct permutation_holder&lt;T[N]&gt;
+{
+    typedef T type[factorial&lt;N&gt;::value][N];
+};
+</pre>
+
+<p>Here we have introduced the notion of a <span class="emphasis"><em>type computation</em></span>. Like <tt>factorial</tt> above, <tt>permutation_holder</tt> template is a metafunction. However, where <tt>factorial</tt> manipulates unsigned integer values, <tt>permutation_holder</tt> accepts and &lsquo;returns&rsquo; a type (as the nested typedef <tt>type</tt>). Because the C++ type system provides a much richer set of expressions than anything we can use as a nontype template argument (e.g. the integers), C++ metaprograms tend to be composed mostly of type computations.</p>
+</div>
+
+<div class="section">
+<div class="titlepage">
+<div>
+<h4 class="title"><a name="intro.cxx.seq"></a>1.2.3. Type sequences</h4>
+</div>
+</div>
+
+<p>The ability to programmatically manipulate collections of types is a central tool of most interesting C++ metaprograms. Because this capability is so well-supported by the MPL, we'll provide just a brief introduction to the basics here. Later on, we'll revisit the example below to show how it can be implemented using MPL.</p>
+
+<p>First, we'd need a way to represent the collection. One idea might be to store the types in a structure:</p>
+
+<pre class="programlisting">
+struct types
+{
+    int t1;
+    long t2;
+    std::vector&lt;double&gt; t3;
+};
+</pre>
+
+<p>Unfortunately, this arrangement is not susceptible to the compile-time type introspection power that C++ gives us: there's no way to find out what the names of the members are, and even if we assume that they're named according to some convention as above, there's no way to know how many members there are. The key to solving this problem is to increase the uniformity of the representation. If we have a consistent way to get the first type of any sequence and the rest of the sequence, we can easily access all members:</p>
+
+<pre class="programlisting">
+template&lt; typename First, typename Rest &gt;
+struct cons
+{
+    typedef First first;
+    typedef Rest rest;
+};
+
+struct nil {};
+
+typedef
+      cons&lt;int
+    , cons&lt;long
+    , cons&lt;std::vector&lt;double&gt;
+    , nil
+    &gt; &gt; &gt; my_types;
+</pre>
+
+<p>The structure described by <tt>types</tt> above is the compile-time analogue of a singly-linked list; it has been first introduced by Czarnecki and Eisenecker in <span class="citation">[<a class="interlink" href="refs.html#ref.ce98" title="[ce98]">CE98</a>]</span>. Now that we've adjusted the structure so that the C++ template machinery can &lsquo;peel it apart&rsquo;, let's examine a simple metafunction which does so. Suppose a user wished to find the largest of an arbitrary collection of types. We can apply the recursive metafunction formula which should by now be familiar:</p>
+
+<div class="example"><a name="example.largest"></a>
+<p class="title"><b>Example 1. 'largest' metafunction</b></p>
+
+<pre class="programlisting">
+// choose the larger of two types
+template&lt;
+      typename T1
+    , typename T2
+    , bool choose1 = (sizeof(T1) &gt; sizeof(T2)) // hands off!
+    &gt;
+struct choose_larger
+{
+    typedef T1 type;
+};
+
+// specialization for the case where sizeof(T2) &gt;= sizeof(T1)
+template&lt; typename T1, typename T2 &gt;
+struct choose_larger&lt; T1,T2,false &gt;
+{
+    typedef T2 type;
+};
+
+// get the largest of a cons-list
+template&lt; typename T &gt; struct largest;
+
+// specialization to peel apart the cons list
+template&lt; typename First, typename Rest &gt;
+struct largest&lt; cons&lt;First,Rest&gt; &gt;
+    : choose_larger&lt; First, typename largest&lt;Rest&gt;::type &gt;
+{
+    // type inherited from base
+};
+
+// specialization for loop termination
+template&lt; typename First &gt;
+struct largest&lt; cons&lt;First,nil&gt; &gt;
+{
+    typedef First type;
+};
+
+int main()
+{
+    // print the name of the largest of my_types
+    std::cout
+        &lt;&lt; typeid(largest&lt;my_types&gt;::type).name()
+        &lt;&lt; std::endl
+        ;
+}
+</pre>
+</div>
+
+<p>There are several things worth noticing about this code:</p>
+
+<div class="itemizedlist">
+<ul type="box">
+<li style="list-style-type: square">
+<p>It uses a few ad-hoc, esoteric techniques, or &lsquo;hacks&rsquo;. The default template argument <tt>choose1</tt> (labeled &lsquo;hands off!&rsquo;) is one example. Without it, we would have needed yet another template to provide the implementation of <tt>choose_larger</tt>, or we would have had to provide the computation explicitly as a parameter to the template - perhaps not bad for this example, but it would make <tt>choose_larger</tt> much less useful and more error-prone. The other hack is the derivation of a specialization of <tt>largest</tt> from <tt>choose_larger</tt>. This is a code-saving device which allows the programmer to avoid writing &lsquo;<tt>typedef typename</tt> ...<tt>::type type</tt>&rsquo; in the template body.</p>
+</li>
+
+<li style="list-style-type: square">
+<p>Even this simple metaprogram uses three separate partial specializations. The <tt>largest</tt> metafunction uses <span class="emphasis"><em>two</em></span> specializations. One might expect that this indicates there are two termination conditions, but there are not: one specialization is needed simply to deal with access to the sequence elements. These specializations make the code difficult to read by spreading the definition of a single metafunction over several C++ template definitions. Also, because they are <span class="emphasis"><em>partial</em></span> specializations, they make the code unusable for a large community of C++ programmers whose compilers don't support that feature.</p>
+</li>
+</ul>
+</div>
+
+<p>While these techniques are, of course, a valuable part of the arsenal of any good C++ metaprogrammer, their use tends to make programs written in what is already an unusual style harder-to-read and harder-to-write. By encapsulating commonly-used structures and dealing with loop terminations internally, the MPL reduces the need for both tricky hacks and for template specializations.</p>
+</div>
+</div>
+
+<div class="section">
+<div class="titlepage">
+<div>
+<h3 class="title"><a name="intro.whymetaprog"></a>1.3. Why metaprogramming?</h3>
+</div>
+</div>
+
+<p>It's worth asking why anyone would want to do this. After all, even a simple toy example like the factorial metafunction is somewhat esoteric. To show how the type computation can be put to work, let's examine a simple example. The following code produces an array containing all possible permutations of another array:</p>
+
+<pre class="programlisting">
+// can't return an array in C++, so we need this wrapper
+template&lt; typename T &gt;
+struct wrapper
+{
+    T x;
+};
+
+// return an array of the N! permutations of 'in'
+template&lt; typename T &gt;
+wrapper&lt; typename permutation_holder&lt;T&gt;::type &gt;
+all_permutations(T const&amp; in)
+{
+    wrapper&lt;typename permutation_holder&lt;T&gt;::type&gt; result;
+
+    // copy the unpermutated array to the first result element
+    unsigned const N = sizeof(T) / sizeof(**result.x);
+    std::copy(&amp;*in, &amp;*in + N, result.x[0]);
+
+    // enumerate the permutations
+    unsigned const result_size = sizeof(result.x) / sizeof(T);
+    for (T* dst = result.x + 1; dst != result.x + result_size; ++dst)
+    {
+        T* src = dst - 1;
+        std::copy(*src, *src + N, *dst);
+        std::next_permutation(*dst, *dst + N);
+    }
+    return result;
+}
+</pre>
+
+<p>The runtime definition of <tt>factorial</tt> would be useless in <tt>all_permutations</tt> above, since in C++ the sizes of array members must be computed at compile-time. However, there are alternative approaches; how could we avoid metaprogramming, and what would the consequences be?</p>
+
+<div class="orderedlist">
+<ol type="1">
+<li>
+<p>We could write programs to interpret the metadata directly. In our factorial example, the array size could have been a runtime quantity; then we'd have been able to use the straightforward factorial function. However, that would imply the use of dynamic allocation, which is often expensive.</p>
+
+<p>To carry this further, YACC might be rewritten to accept a pointer-to-function returning tokens from the stream to be parsed, and a string containing the grammar description. This approach, however, would impose unacceptable runtime costs for most applications: either the parser would have to treat the grammar nondeterministically, exploring the grammar for each parse, or it would have to begin by replicating at runtime the substantial table-generation and optimization work of the existing YACC for each input grammar.</p>
+</li>
+
+<li>
+<p>We could replace the compile-time computation with our own analysis. After all, the size of arrays passed to <tt>all_permutations</tt> are always known at compile-time, and thus can be known to its user. We could ask the user to supply the result type explicitly:</p>
+
+<pre class="programlisting">
+template&lt; typename Result, typename T &gt;
+Result all_permutations(T const&amp; input);
+</pre>
+
+<p>The costs to this approach are obvious: we give up expressivity (by requiring the user to explicitly specify implementation details), and correctness (by allowing the user to specify them incorrectly). Anyone who has had to write parser tables by hand will tell you that the impracticality of this approach is the very reason of YACC's existence.</p>
+
+<p>In a language such as C++, where the metadata can be expressed in the same language as the rest of the user's program, expressivity is further enhanced: the user can invoke metaprograms directly, without learning a foreign syntax or interrupting the flow of her code.</p>
+</li>
+</ol>
+</div>
+
+<p>So, the motivation for metaprogramming comes down to the combination of three factors: efficiency, expressivity, and correctness. While in classical programming there is always a tension between expressivity and correctness on one hand and efficiency on the other, in the metaprogramming world we wield new power: we can move the computation required for expressivity from runtime to compile-time.</p>
+</div>
+
+<div class="section">
+<div class="titlepage">
+<div>
+<h3 class="title"><a name="intro.whylibrary"></a>1.4. Why a metaprogramming <span class="emphasis"><em>library</em></span>?</h3>
+</div>
+</div>
+
+<p>One might just as well ask why we need any generic library:</p>
+
+<div class="itemizedlist">
+<ul type="box">
+<li style="list-style-type: square">
+<p>Quality. Code that is appropriate for a general-purpose library is usually incidental to the purpose of its users. To a library developer, it is the central mission. On average, the containers and algorithms provided by any given C++ standard library implementation are more-flexible and better-implemented than the project-specific implementations which abound, because library development was treated as an end in itself rather than a task incidental to the development of some other application. With a centralized implementation for any given function, optimizations and improvements are more likely to have been applied.</p>
+</li>
+
+<li style="list-style-type: square">
+<p>Re-use. More important even than the re-use of code which all libraries provide, a well-designed generic library establishes a <span class="emphasis"><em>framework of concepts and idioms</em></span> which establishes a reusable mental model for approaching problems. Just as the C++ Standard Template Library gave us iterator concepts and a function object protocol, the Boost Metaprogramming Library provides type-iterators and metafunction class protocol. A well-considered framework of idioms saves the metaprogrammer from considering irrelevant implementation details and allows her to concentrate on the problem at hand.</p>
+</li>
+
+<li style="list-style-type: square">
+<p>Portability. A good library can smooth over the ugly realities of platform differences. While in theory a metaprogramming library is fully generic and shouldn't be concerned with these issues, in practice support for templates remains inconsistent even four years after standardization. This should perhaps not be surprising: C++ templates are the language's furthest-reaching and most complicated feature, which largely accounts for the power of metaprogramming in C++.</p>
+</li>
+
+<li style="list-style-type: square">
+<p>Fun. Repeating the same idioms over and over is <span class="emphasis"><em>tedious</em></span>. It makes programmers tired and reduces productivity. Furthermore, when programmers get bored they get sloppy, and buggy code is even more costly than slowly-written code. Often the most useful libraries are simply patterns that have been &ldquo;plucked&rdquo; by an astute programmer from a sea of repetition. The MPL helps to reduce boredom by eliminating the need for the most commonly-repeated boilerplate coding patterns.</p>
+</li>
+</ul>
+</div>
+
+<p>As one can see, the MPL's development is motivated primarily by the same practical, real-world considerations that justify the development of any other library. Perhaps this is an indication that template metaprogramming is finally ready to leave the realm of the esoteric and enter the lingua franca of every day programmers.</p>
+</div>
+</div>
+
+<div class="navfooter">
+<hr>
+<table width="100%" summary="Navigation footer">
+<tr>
+<td width="40%" align="left"><a accesskey="p" href="index.html">Prev</a>&nbsp;</td>
+<td width="20%" align="center"><a accesskey="u" href="index.html">Up</a></td>
+<td width="40%" align="right">&nbsp;<a accesskey="n" href="usage.html">Next</a></td>
+</tr>
+
+<tr>
+<td width="40%" align="left" valign="top">The Boost C++ Metaprogramming Library&nbsp;</td>
+<td width="20%" align="center"><a accesskey="h" href="index.html">Home</a></td>
+<td width="40%" align="right" valign="top">&nbsp;2. Basic usage</td>
+</tr>
+</table>
+</div>
+</body>
+</html>
+

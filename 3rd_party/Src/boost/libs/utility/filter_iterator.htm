@@ -1,0 +1,273 @@
+<html>
+
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+<meta name="GENERATOR" content="Microsoft FrontPage 4.0">
+<meta name="ProgId" content="FrontPage.Editor.Document">
+<title>Filter Iterator Adaptor Documentation</title>
+</head>
+
+<body bgcolor="#FFFFFF" text="#000000">
+
+<img src="../../c++boost.gif" alt="c++boost.gif (8819 bytes)"
+align="center" width="277" height="86">
+
+<h1>Filter Iterator Adaptor</h1>
+
+Defined in header
+<a href="../../boost/iterator_adaptors.hpp">boost/iterator_adaptors.hpp</a>
+
+
+<p>
+The filter iterator adaptor creates a view of an iterator range in
+which some elements of the range are skipped over. A <a
+href="http://www.sgi.com/tech/stl/Predicate.html">Predicate</a>
+function object controls which elements are skipped. When the
+predicate is applied to an element, if it returns <tt>true</tt> then
+the element is retained and if it returns <tt>false</tt> then the
+element is skipped over.
+
+
+<h2>Synopsis</h2>
+
+<pre>
+namespace boost {
+  template &lt;class Predicate, class BaseIterator, ...&gt;
+  class filter_iterator_generator;
+
+  template &lt;class Predicate, class BaseIterator&gt;
+  typename filter_iterator_generator&lt;Predicate, BaseIterator&gt;::type
+  make_filter_iterator(BaseIterator first, BaseIterator last, const Predicate& p = Predicate());
+}
+</pre>
+
+<hr>
+
+<h2><a name="filter_iterator_generator">The Filter Iterator Type
+Generator</a></h2>
+
+The class <tt>filter_iterator_generator</tt> is a helper class whose
+purpose is to construct a filter iterator type.  The template
+parameters for this class are the <tt>Predicate</tt> function object
+type and the <tt>BaseIterator</tt> type that is being wrapped.  In
+most cases the associated types for the wrapped iterator can be
+deduced from <tt>std::iterator_traits</tt>, but in some situations the
+user may want to override these types, so there are also template
+parameters for each of the iterator's associated types.
+
+<pre>
+template &lt;class Predicate, class BaseIterator,
+          class Value, class Reference, class Pointer, class Category, class Distance>
+class filter_iterator_generator
+{
+public:
+  typedef <tt><a href="./iterator_adaptors.htm#iterator_adaptor">iterator_adaptor</a>&lt...&gt;</tt> type; // the resulting filter iterator type 
+}
+</pre>
+
+
+<h3>Example</h3>
+
+The following example uses filter iterator to print out all the
+positive integers in an array. 
+
+<pre>
+struct is_positive_number {
+  bool operator()(int x) { return 0 &lt; x; }
+};
+int main() {
+  int numbers[] = { 0, -1, 4, -3, 5, 8, -2 };
+  const int N = sizeof(numbers)/sizeof(int);
+
+  typedef boost::filter_iterator_generator&lt;is_positive_number, int*, int&gt;::type FilterIter;
+  is_positive_number predicate;
+  FilterIter::policies_type policies(predicate, numbers + N);
+  FilterIter filter_iter_first(numbers, policies);
+  FilterIter filter_iter_last(numbers + N, policies);
+
+  std::copy(filter_iter_first, filter_iter_last, std::ostream_iterator&lt;int&gt;(std::cout, " "));
+  std::cout &lt;&lt; std::endl;
+  return 0;
+}
+</pre>
+The output is:
+<pre>
+4 5 8
+</pre>
+
+
+<h3>Template Parameters</h3>
+
+<Table border>
+<TR>
+<TH>Parameter</TH><TH>Description</TH>
+</TR>
+
+<TR>
+<TD><a href="http://www.sgi.com/tech/stl/Predicate.html"><tt>Predicate</tt></a></TD>
+<TD>The function object that determines which elements are retained and which elements are skipped.
+</TR>
+
+<TR>
+<TD><tt>BaseIterator</tt></TD>
+<TD>The iterator type being wrapped. This type must at least be a model
+ of the <a href="http://www.sgi.com/tech/stl/InputIterator">InputIterator</a> concept.</TD>
+</TR>
+
+<TR>
+<TD><tt>Value</tt></TD>
+<TD>The <tt>value_type</tt> of the resulting iterator,
+unless const. If const, a conforming compiler strips constness for the
+<tt>value_type</tt>. Typically the default for this parameter is the
+appropriate type<a href="#1">[1]</a>.<br> <b>Default:</b>
+<tt>std::iterator_traits&lt;BaseIterator&gt;::value_type</TD>
+</TR>
+
+<TR>
+<TD><tt>Reference</tt></TD>
+<TD>The <tt>reference</tt> type of the resulting iterator, and in
+particular, the result type of <tt>operator*()</tt>. Typically the default for
+this parameter is the appropriate type.<br> <b>Default:</b> If
+<tt>Value</tt> is supplied, <tt>Value&amp;</tt> is used. Otherwise
+<tt>std::iterator_traits&lt;BaseIterator&gt;::reference</tt> is
+used.</TD>
+</TR>
+
+<TR>
+<TD><tt>Pointer</tt></TD>
+<TD>The <tt>pointer</tt> type of the resulting iterator, and in
+ particular, the result type of <tt>operator->()</tt>. 
+ Typically the default for
+this parameter is the appropriate type.<br>
+<b>Default:</b> If <tt>Value</tt> was supplied, then <tt>Value*</tt>,
+otherwise <tt>std::iterator_traits&lt;BaseIterator&gt;::pointer</tt>.</TD>
+</TR>
+
+
+<TR>
+<TD><tt>Category</tt></TD>
+<TD>The <tt>iterator_category</tt> type for the resulting iterator.
+Typically the
+default for this parameter is the appropriate type. If you override
+this parameter, do not use <tt>bidirectional_iterator_tag</tt>
+because filter iterators can not go in reverse.<br>
+<b>Default:</b> <tt>std::iterator_traits&lt;BaseIterator&gt;::iterator_category</tt></TD>
+</TR>
+
+<TR>
+<TD><tt>Distance</tt></TD>
+<TD>The <tt>difference_type</tt> for the resulting iterator. Typically the default for
+this parameter is the appropriate type.<br>
+<b>Default:</b> <tt>std::iterator_traits&lt;BaseIterator&gt;::difference_type</TD>
+</TR>
+
+</table>
+
+
+<h3>Model of</h3>
+
+The filter iterator adaptor (the type
+<tt>filter_iterator_generator<...>::type</tt>) may be a model of <a
+href="http://www.sgi.com/tech/stl/InputIterator.html">InputIterator</a> or <a
+href="http://www.sgi.com/tech/stl/ForwardIterator.html">ForwardIterator</a>
+depending on the adapted iterator type.
+
+
+<h3>Members</h3>
+
+The filter iterator type implements all of the member functions and
+operators required of the <a
+href="http://www.sgi.com/tech/stl/ForwardIterator.html">ForwardIterator</a>
+concept.  In addition it has the following constructor:
+
+<pre>filter_iterator_generator::type(const BaseIterator& it, const Policies& p = Policies())</pre>
+
+<p>
+The policies type has only one public function, which is its constructor:
+
+<pre>filter_iterator_generator::policies_type(const Predicate& p, const BaseIterator& end)</pre>
+
+<p>
+<hr>
+<p>
+
+<h2><a name="make_filter_iterator">The Make Filter Iterator Function</a></h2>
+
+<pre>
+template &lt;class Predicate, class BaseIterator&gt;
+typename filter_generator&lt;Predicate, BaseIterator&gt;::type
+make_filter_iterator(BaseIterator first, BaseIterator last, const Predicate& p = Predicate())
+</pre>
+
+This function provides a convenient way to create filter iterators.
+
+<h3>Example</h3>
+
+In this example we print out all numbers in the array that are
+greater than negative two.
+
+<pre>
+int main()
+{
+  int numbers[] = { 0, -1, 4, -3, 5, 8, -2 };
+  const int N = sizeof(numbers)/sizeof(int);
+
+  std::copy(boost::make_filter_iterator(numbers, numbers + N, 
+					std::bind2nd(std::greater<int>(), -2)),
+	    boost::make_filter_iterator(numbers + N, numbers + N, 
+					std::bind2nd(std::greater<int>(), -2)),
+	    std::ostream_iterator<int>(std::cout, " "));
+  std::cout << std::endl;
+
+}
+</pre>
+The output is:
+<pre>
+0 -1 4 5 8 
+</pre>
+
+<p>
+In the next example we print the positive numbers using the
+<tt>make_filter_iterator()</tt> function.
+
+<pre>
+struct is_positive_number {
+  bool operator()(int x) { return 0 &lt; x; }
+};
+int main()
+{
+  int numbers[] = { 0, -1, 4, -3, 5, 8, -2 };
+  const int N = sizeof(numbers)/sizeof(int);
+
+  std::copy(boost::make_filter_iterator&lt;is_positive_number&gt;(numbers, numbers + N),
+	    boost::make_filter_iterator&lt;is_positive_number&gt;(numbers + N, numbers + N),
+	    std::ostream_iterator&lt;int&gt;(std::cout, " "));
+  std::cout &lt;&lt; std::endl;
+  return 0;
+}
+</pre>
+The output is:
+<pre>
+4 5 8
+</pre>
+
+
+<h3>Notes</h3>
+
+<a name="1">[1]</a> If the compiler does not support partial
+specialization and the wrapped iterator type is a builtin pointer then
+the <tt>Value</tt> type must be explicitly specified (don't use the
+default).
+
+
+<hr>
+<p>Revised <!--webbot bot="Timestamp" s-type="EDITED" s-format="%d %b %Y" startspan -->09 Mar 2001<!--webbot bot="Timestamp" endspan i-checksum="14894" --></p>
+<p>© Copyright Jeremy Siek 2000. Permission to copy, use,
+modify, sell and distribute this document is granted provided this copyright
+notice appears in all copies. This document is provided &quot;as is&quot;
+without express or implied warranty, and with no claim as to its suitability for
+any purpose.</p>
+
+</body>
+
+</html>

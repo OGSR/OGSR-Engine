@@ -1,0 +1,85 @@
+.\" <!!---------------------------------------------------------------------->
+.\" <!! Copyright (C) 1999 Dietmar Kuehl, Claas Solutions GmbH >
+.\" <!!>
+.\" <!! Permission to use, copy, modify, distribute and sell this >
+.\" <!! software for any purpose is hereby granted without fee, provided >
+.\" <!! that the above copyright notice appears in all copies and that >
+.\" <!! both that copyright notice and this permission notice appear in >
+.\" <!! supporting documentation. Dietmar Kuehl and Claas Solutions make no >
+.\" <!! representations about the suitability of this software for any >
+.\" <!! purpose. It is provided "as is" without express or implied warranty. >
+.\" <!!---------------------------------------------------------------------->
+.TH mfd/p_heap 3 "09.Juli 1999" "Claas Solutions" "boost"
+.SH NAME
+mfd/p_heap - Template Class \fBpairing_heap<T, Comp>\fP
+
+.SH SYNOPSIS
+
+
+.nf
+#include "boost/p_heap.hpp"
+
+template <class T, class Comp = std::less<T> >
+class boost::pairing_heap
+{
+public:
+  class iterator
+  {
+  public:
+    iterator();
+
+    T const& operator* () const;
+    T const* operator->() const;
+
+    iterator& operator++();
+    iterator  operator++(int);
+
+    bool operator== (iterator const& it) const;
+    bool operator!= (iterator const& it) const;
+  };
+
+  typedef T             value_type;
+  typedef T&            reference;
+  typedef T const&      const_reference;
+  typedef iterator      const_iterator;
+  typedef unsigned long size_type;
+  typedef node*         pointer;
+
+  explicit pairing_heap(Comp const& comp = Comp());
+  ~pairing_heap();
+
+  bool      empty() const;
+  size_type size() const;
+  pointer   push(T const& val);
+  T const&  top() const;
+  void      pop();
+  void      remove(pointer ptr);
+
+  template <typename K> void change_top(K const& val);
+  template <typename K> void change(pointer ptr, K const& val);
+  template <typename K> void increase(pointer ptr, K const& val);
+  template <typename K> void decrease(pointer ptr, K const& val);
+
+  iterator  begin() const;
+  iterator  end() const;
+
+private:
+  pairing_heap(pairing_heap const&); // deliberately not implemented
+  void operator= (pairing_heap const&); // deliberately not implemented
+};
+.fi 0 
+.SH DESCRIPTION
+The pairing heap is just a general tree with the invariant that the root of a subtree is always the largest element in this subtree. To guarantee that the tree does not degenerate, a certain ordering of necessary links is used. I have no idea why it works and actually I'm not sure at all that my implementation uses the correct method. However, the performance of the pairing heap is often better than the one of d-heaps. 
+
+For a description of the methods of \fBpairing_heap<T, Comp>\fP see the description of common methods. 
+.SH SEE ALSO
+heap(3), heap-common(3) 
+.SH AUTHOR
+Dietmar Kühl (Claas Solutions)
+.br
+e-mail: dietmar.kuehl@claas-solutions.de
+.br
+http://www.claas-solutions.de/kuehl
+.br
+
+

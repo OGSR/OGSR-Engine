@@ -1,0 +1,165 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta content="text/html; charset=ISO-8859-1" http-equiv="Content-Type">
+<title>3. Lambda facility</title>
+<link rel="stylesheet" href="article.css" type="text/css">
+<meta name="generator" content="DocBook XSL Stylesheets V1.50.0">
+<meta name="keywords" content="template metaprogramming, generic programming, programming languages, C++, STL, type systems, polymorphism, compile-time">
+<link rel="home" href="index.html" title="the boost c++ metaprogramming library">
+<link rel="up" href="index.html" title="the boost c++ metaprogramming library">
+<link rel="previous" href="usage.html" title="2. basic usage">
+<link rel="next" href="codegeneration.html" title="4. code generation facilities">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<div class="navheader">
+<table width="100%" summary="Navigation header">
+<tr>
+<th colspan="3" align="center">3. Lambda facility</th>
+</tr>
+
+<tr>
+<td width="20%" align="left"><a accesskey="p" href="usage.html">Prev</a>&nbsp;</td>
+<th width="60%" align="center">&nbsp;</th>
+<td width="20%" align="right">&nbsp;<a accesskey="n" href="codegeneration.html">Next</a></td>
+</tr>
+</table>
+
+<hr>
+</div>
+
+<div class="section">
+<div class="titlepage">
+<div>
+<h2 class="title" style="clear: both"><a name="lambda"></a>3. Lambda facility</h2>
+</div>
+</div>
+
+<p>The MPL's lambda facility allows the <i>inline composition</i> of class templates into &lsquo;lambda expressions&rsquo;, which are classes and can therefore be passed around as ordinary metafunction classes, or transformed into metafunction classes before application using the expression:</p>
+
+<pre class="programlisting">
+typedef mpl::lambda&lt;expr&gt;::type func;
+</pre>
+
+<p>For example, <tt>boost::remove_const</tt> traits template from Boost <tt>type_traits</tt> library <span class="citation">[<a class="interlink" href="refs.html#ref.ttl" title="[ttl]">TTL</a>]</span> is a class template (obviously), or a <a class="interlink" href="usage.html#metafunctions" title="2.2. metafunctions">metafunction</a> in MPL terminology. The simplest example of an &lsquo;inline composition&rsquo; of it would be something like:</p>
+
+<pre class="programlisting">
+typedef boost::remove_const&lt;_1&gt; expr;
+</pre>
+
+<p>This forms a so called &lsquo;lambda expression&rsquo;, which is neither a metafunction class, nor a metafunction, yet can be passed around everywhere because it's an ordinary C++ class, because all MPL facilities are polymorphic with respect to their arguments. Now, that lambda expression can be <span class="emphasis"><em>transformed</em></span> into a metafunction class using the MPL's <tt>lambda</tt> facility:</p>
+
+<pre class="programlisting">
+typedef boost::remove_const&lt;_1&gt; expr;
+typedef mpl::lambda&lt;expr&gt;::type func;
+</pre>
+
+<p>The <tt>func</tt> is a unary metafunction class and can be used as such. In particular, it can be pass around or invoked (applied):</p>
+
+<pre class="programlisting">
+typedef mpl::apply&lt;func,int const&gt;::type res;
+BOOST_MPL_ASSERT_IS_SAME(res, int);
+</pre>
+
+<p>or even</p>
+
+<pre class="programlisting">
+typedef func::apply&lt;int const&gt;::type res;
+BOOST_MPL_ASSERT_IS_SAME(res, int);
+</pre>
+
+<p>Inline composition is very appealing syntactically when one deals with metafunctions, because it makes the expression obvious:</p>
+
+<pre class="programlisting">
+typedef mpl::logical_or&lt;
+      mpl::less&lt; mpl::size_of&lt;_1&gt;, mpl::int_c&lt;16&gt; &gt;
+    , boost::is_same&lt;_1,_2&gt;
+    &gt; expr;
+
+typedef mpl::lambda&lt;expr&gt;::type func;
+</pre>
+
+<p>And one does not have to specify the last part (<tt>typedef lambda&lt;expr&gt;::type func</tt>), because all the algorithms do this to any of their metafunction class operands internally (a <tt>lambda&lt;T&gt;::type</tt> expression applied to a metafunction class gives back the same metafunction class, so it's safe to apply the expression unconditionally).</p>
+
+<p>The alternative way to write an equivalent of the above metafunction class would be:</p>
+
+<pre class="programlisting">
+typedef bind&lt;
+      mpl::meta_fun2&lt;mpl::logical_or&gt;
+    , mpl::bind&lt; mpl::meta_fun2&lt;mpl::less&gt;
+        , mpl::bind&lt; mpl::meta_fun1&lt;mpl::size_of&gt;,_1 &gt;
+        , mpl::int_c&lt;16&gt;
+        &gt;
+    , mpl::bind&lt; mpl::meta_fun2&lt;boost::is_same&gt;,_1,_2 &gt;
+    &gt; func;
+</pre>
+
+<p>Or to use <tt>mpl::compose_</tt> family of templates in a similar way. Here, we use <tt>mpl::meta_fun</tt> templates to convert metafunctions into metafunction classes and then combine them using <tt>mpl::bind</tt>. The transformation from this form to the above inline lambda expression and vice-versa is mechanical, and that is essentially what the <tt>typedef mpl::lambda&lt;expr&gt;::type</tt> expression does.</p>
+
+<p>For its own metafunctions (algorithms, primitives, etc.), MPL enables one to write the above in a less cumbersome way:</p>
+
+<pre class="programlisting">
+typedef mpl::bind&lt;
+      mpl::logical_or&lt;&gt;
+    , mpl::bind&lt; mpl::less&lt;&gt;, mpl::bind&lt;mpl::size_of&lt;&gt;,_1&gt;, mpl::int_c&lt;16&gt; &gt;
+    , mpl::bind&lt; mpl::make_f2&lt;boost::is_same&gt;, _1,_2 &gt;
+    &gt; func;
+</pre>
+
+<p>Note that we still have to wrap <tt>is_same</tt> into <tt>make_f2</tt>, because it's a foreign template.</p>
+
+<p>Now, about combining class template metafunctions and metafunction classes in the single lambda expression - it can be done like this:</p>
+
+<pre class="programlisting">
+struct my_predicate
+{
+    template&lt; typename T1, typename T2 &gt; struct apply
+    {
+        //...
+    };
+};
+
+typedef mpl::logical_or&lt;
+      mpl::less&lt; mpl::size_of&lt;_&gt;,mpl::int_c&lt;16&gt; &gt;
+    , mpl::bind&lt; my_predicate,_,_ &gt; // here
+    &gt; expr;
+</pre>
+
+<p>To bind something to one of its arguments (or change the order of parameters), then use either:</p>
+
+<pre class="programlisting">
+typedef mpl::logical_or&lt;
+      mpl::less&lt; mpl::size_of&lt;_&gt;,mpl::int_c&lt;16&gt; &gt;
+    , mpl::bind&lt;my_predicate,int,_&gt;::type // here
+    &gt; expr;
+</pre>
+
+<p>or</p>
+
+<pre class="programlisting">
+typedef mpl::logical_or&lt;
+      mpl::less&lt; mpl::size_of&lt;_&gt;,mpl::int_c&lt;16&gt; &gt;
+    , my_predicate::apply&lt;int,_&gt; // here
+    &gt; expr;
+</pre>
+</div>
+
+<div class="navfooter">
+<hr>
+<table width="100%" summary="Navigation footer">
+<tr>
+<td width="40%" align="left"><a accesskey="p" href="usage.html">Prev</a>&nbsp;</td>
+<td width="20%" align="center"><a accesskey="u" href="index.html">Up</a></td>
+<td width="40%" align="right">&nbsp;<a accesskey="n" href="codegeneration.html">Next</a></td>
+</tr>
+
+<tr>
+<td width="40%" align="left" valign="top">2. Basic usage&nbsp;</td>
+<td width="20%" align="center"><a accesskey="h" href="index.html">Home</a></td>
+<td width="40%" align="right" valign="top">&nbsp;4. Code generation facilities</td>
+</tr>
+</table>
+</div>
+</body>
+</html>
+

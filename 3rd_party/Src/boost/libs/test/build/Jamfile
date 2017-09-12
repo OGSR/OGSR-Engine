@@ -1,0 +1,55 @@
+subproject libs/test/build ;
+
+PRG_EXEC_MON_SOURCES =
+  execution_monitor
+  cpp_main
+  ;
+
+TEST_EXEC_MON_SOURCES =
+  execution_monitor
+  test_tools
+  unit_test_parameters
+  unit_test_log
+  unit_test_monitor
+  unit_test_result
+  unit_test_suite
+  test_main
+  ;
+
+UTF_SOURCES =
+  execution_monitor
+  test_tools
+  unit_test_parameters
+  unit_test_log
+  unit_test_monitor
+  unit_test_result
+  unit_test_suite
+  unit_test_main
+  ;
+
+template boost_test_lib 
+     ## sources ##
+     : 
+     ## requirements ##
+     : <sysinclude>$(BOOST_ROOT) <borland><*><cxxflags>-w-8080
+     ## default build ##
+     : <threading>single/multi <runtime-link>static/dynamic
+     ;
+
+lib boost_prg_exec_monitor    : <template>boost_test_lib
+                                ../src/$(PRG_EXEC_MON_SOURCES).cpp ;
+
+dll boost_prg_exec_monitor    : <template>boost_test_lib
+                                ../src/$(PRG_EXEC_MON_SOURCES).cpp ;
+
+lib boost_test_exec_monitor   : <template>boost_test_lib
+                                ../src/$(TEST_EXEC_MON_SOURCES).cpp ; 
+
+dll boost_test_exec_monitor   : <template>boost_test_lib
+                                ../src/$(TEST_EXEC_MON_SOURCES).cpp ; 
+
+lib boost_unit_test_framework : <template>boost_test_lib
+                                ../src/$(UTF_SOURCES).cpp ; 
+
+dll boost_unit_test_framework : <template>boost_test_lib
+                                ../src/$(UTF_SOURCES).cpp ; 

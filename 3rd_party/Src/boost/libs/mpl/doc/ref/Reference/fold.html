@@ -1,0 +1,65 @@
+<!doctype html public "-//ietf//dtd html//en">
+<html><head><title>boost::mpl::fold</title>
+<link rel="stylesheet" href="../mpl_wiki.css">
+</head><body bgcolor="white">
+<h1><a href="../Table_of_Contents.html"><img src="../mpl_logo.jpg" alt="[Home]" border=0 align="right"></a>fold</h1><h3>Synopsis</h3>
+<p>
+<pre>
+template&lt;
+      typename Sequence
+    , typename State
+    , typename ForwardOp
+    &gt;
+struct fold
+{
+    typedef <em>unspecified</em> type;
+};
+</pre>
+<p>
+<h3>Description</h3>
+<p>
+Returns the result of the successive application of binary <code>ForwardOp</code> to the result of the previous <code>ForwardOp</code> invocation (<code>State</code> if it's the first call) and every element of the sequence in the range <code>[begin&lt;Sequence&gt;::type,end&lt;Sequence&gt;::type)</code> in the linear order.
+<p>
+<h3>Definition</h3>
+<p>
+<pre>
+#include "<a href="../../../../../boost/mpl/fold.hpp">boost/mpl/fold.hpp</a>"
+</pre>
+<p>
+<h3>Parameters</h3>
+<table border="1">
+<tr><th>&nbsp;Parameter&nbsp;</th><th>&nbsp;Requirement&nbsp;</th><th>&nbsp;Description &nbsp;</th></tr>
+<tr><td><code>Sequence</code></td><td>A model of <a href="../Sequence.html">Sequence</a></td><td>A sequence to iterate. </td></tr>
+<tr><td><code>State</code></td><td>A type</td><td>The initial state for the first <code>ForwardOp</code> application. </td></tr>
+<tr><td><code>ForwardOp</code></td><td>A model of [Lambda Function]</td><td>The operation to be executed on forward traversal. </td></tr>
+</table>
+<p>
+<h3>Expression semantics</h3>
+<p>
+<table border="1">
+<tr><th>&nbsp;Expression&nbsp;</th><th>&nbsp;Expression&nbsp;type&nbsp;</th><th>&nbsp;Precondition&nbsp;</th><th>&nbsp;Semantics&nbsp;</th><th>&nbsp;Postcondition&nbsp;</th></tr>
+<tr><td><code>typedef fold&lt;Sequence,T,Op&gt;::type t;</code></td><td>A type</td><td></td><td>Equivalent to <code>typedef lambda&lt;Op&gt;::type op; typedef iter_fold&lt; Sequence,T,apply&lt;op,_1,deref&lt;_2&gt; &gt; &gt;::type t;</code>.</td><td></td></tr>
+</table>
+<p>
+<h3>Complexity</h3>
+<p>
+Linear. Exactly <code><a href="../Reference/size.html">size</a>&lt;Sequence&gt;::type::value</code> applications of <code>ForwardOp</code>. 
+<p>
+<h3>Example</h3>
+<p>
+<pre>
+typedef <a href="../Reference/vector.html">vector</a>&lt;long,float,short,double,float,long,long double&gt; types;
+typedef typename fold&lt;
+      types
+    , integral_c&lt;long, 0&gt;
+    , if_&lt; is_float&lt;_2&gt;,next&lt;_1&gt;,_1 &gt;
+    &gt;::type number_of_floats;
+<p>
+BOOST_STATIC_ASSERT(number_of_floats::value == 4);
+</pre>
+<p>
+<h3>See also</h3>
+<p>
+<a href="../Algorithms.html">Algorithms</a>, <code><a href="../Reference/fold_backward.html">fold_backward</a></code>, <code><a href="../Reference/iter_fold.html">iter_fold</a></code>, <code><a href="../Reference/iter_fold_backward.html">iter_fold_backward</a></code>, <code><a href="../Reference/copy.html">copy</a></code>, <code><a href="../Reference/copy_if.html">copy_if</a></code>
+<p><hr>
+<a href="../Table_of_Contents.html">Table of Contents</a><br>Last edited December 12, 2002 4:42 pm</body></html>

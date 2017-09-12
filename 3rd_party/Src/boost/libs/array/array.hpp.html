@@ -1,0 +1,175 @@
+<HTML>
+<HEAD>
+<TITLE>array.hpp</TITLE>
+</HEAD>
+
+<BODY TEXT="#000000" BGCOLOR="#FFFFFF">
+&nbsp;
+<TABLE HEIGHT=40 WIDTH="100%">
+<TR> <TD ALIGN=LEFT WIDTH="100%" BGCOLOR="#DDDDDD">
+<FONT face="Arial,Helvetica" size=+2><B>
+&nbsp;array.hpp
+</B></FONT>
+</TD></TR></TABLE><BR>
+
+<BR><BR>
+<TT>
+<SPAN class="Source">
+<Font color="0000FF" >/</FONT><I><FONT face="Arial,Helvetica,sans-serif" color="0000FF" >*&nbsp;The&nbsp;following&nbsp;code&nbsp;declares&nbsp;class&nbsp;array,</FONT></I><BR>
+&nbsp;<I><FONT face="Arial,Helvetica,sans-serif" color="0000FF" >*&nbsp;an&nbsp;STL&nbsp;container&nbsp;(as&nbsp;wrapper)&nbsp;for&nbsp;arrays&nbsp;of&nbsp;constant&nbsp;size.</FONT></I><BR>
+&nbsp;<I><FONT face="Arial,Helvetica,sans-serif" color="0000FF" >*</FONT></I><BR>
+&nbsp;<I><FONT face="Arial,Helvetica,sans-serif" color="0000FF" >*&nbsp;See</FONT></I><BR>
+&nbsp;<I><FONT face="Arial,Helvetica,sans-serif" color="0000FF" >*&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="http://www.josuttis.com/cppcode">http://www.josuttis.com/cppcode</a></FONT></I><BR>
+&nbsp;<I><FONT face="Arial,Helvetica,sans-serif" color="0000FF" >*&nbsp;for&nbsp;details&nbsp;and&nbsp;the&nbsp;latest&nbsp;version.</FONT></I><BR>
+&nbsp;<I><FONT face="Arial,Helvetica,sans-serif" color="0000FF" >*</FONT></I><BR>
+&nbsp;<I><FONT face="Arial,Helvetica,sans-serif" color="0000FF" >*&nbsp;(C)&nbsp;Copyright&nbsp;Nicolai&nbsp;M.&nbsp;Josuttis&nbsp;2001.</FONT></I><BR>
+&nbsp;<I><FONT face="Arial,Helvetica,sans-serif" color="0000FF" >*&nbsp;Permission&nbsp;to&nbsp;copy,&nbsp;use,&nbsp;modify,&nbsp;sell&nbsp;and&nbsp;distribute&nbsp;this&nbsp;software</FONT></I><BR>
+&nbsp;<I><FONT face="Arial,Helvetica,sans-serif" color="0000FF" >*&nbsp;is&nbsp;granted&nbsp;provided&nbsp;this&nbsp;copyright&nbsp;notice&nbsp;appears&nbsp;in&nbsp;all&nbsp;copies.</FONT></I><BR>
+&nbsp;<I><FONT face="Arial,Helvetica,sans-serif" color="0000FF" >*&nbsp;This&nbsp;software&nbsp;is&nbsp;provided&nbsp;"as&nbsp;is"&nbsp;without&nbsp;express&nbsp;or&nbsp;implied</FONT></I><BR>
+&nbsp;<I><FONT face="Arial,Helvetica,sans-serif" color="0000FF" >*&nbsp;warranty,&nbsp;and&nbsp;with&nbsp;no&nbsp;claim&nbsp;as&nbsp;to&nbsp;its&nbsp;suitability&nbsp;for&nbsp;any&nbsp;purpose.</FONT></I><BR>
+&nbsp;<I><FONT face="Arial,Helvetica,sans-serif" color="0000FF" >*</FONT></I><BR>
+&nbsp;<I><FONT face="Arial,Helvetica,sans-serif" color="0000FF" >*&nbsp;Aug&nbsp;05,&nbsp;2001</FONT></I><BR>
+&nbsp;<I><FONT face="Arial,Helvetica,sans-serif" color="0000FF" >*/</FONT></I><BR>
+#ifndef&nbsp;BOOST_ARRAY_HPP<BR>
+#define&nbsp;BOOST_ARRAY_HPP<BR>
+<BR>
+#include&nbsp;&lt;cstddef&gt;<BR>
+#include&nbsp;&lt;stdexcept&gt;<BR>
+#include&nbsp;&lt;iterator&gt;<BR>
+#include&nbsp;&lt;algorithm&gt;<BR>
+<BR>
+<I><FONT face="Arial,Helvetica,sans-serif" color="0000FF" >//&nbsp;FIXES&nbsp;for&nbsp;broken&nbsp;compilers</FONT></I><BR>
+#include&nbsp;&lt;<A href="../../boost/config.hpp">boost/config.hpp</A>&gt;<BR>
+<BR>
+namespace&nbsp;boost&nbsp;{<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;template&lt;class&nbsp;T,&nbsp;std::size_t&nbsp;N&gt;<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;class&nbsp;array&nbsp;{<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;public:<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;T&nbsp;elems[N];&nbsp;&nbsp;&nbsp;&nbsp;<I><FONT face="Arial,Helvetica,sans-serif" color="0000FF" >//&nbsp;fixed-size&nbsp;array&nbsp;of&nbsp;elements&nbsp;of&nbsp;type&nbsp;T</FONT></I><BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;public:<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<I><FONT face="Arial,Helvetica,sans-serif" color="0000FF" >//&nbsp;type&nbsp;definitions</FONT></I><BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;typedef&nbsp;T&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;value_type;<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;typedef&nbsp;T*&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;iterator;<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;typedef&nbsp;const&nbsp;T*&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;const_iterator;<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;typedef&nbsp;T&&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;reference;<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;typedef&nbsp;const&nbsp;T&&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;const_reference;<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;typedef&nbsp;std::size_t&nbsp;&nbsp;&nbsp;&nbsp;size_type;<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;typedef&nbsp;std::ptrdiff_t&nbsp;difference_type;<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<I><FONT face="Arial,Helvetica,sans-serif" color="0000FF" >//&nbsp;iterator&nbsp;support</FONT></I><BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;iterator&nbsp;begin()&nbsp;{&nbsp;return&nbsp;elems;&nbsp;}<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;const_iterator&nbsp;begin()&nbsp;const&nbsp;{&nbsp;return&nbsp;elems;&nbsp;}<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;iterator&nbsp;end()&nbsp;{&nbsp;return&nbsp;elems+N;&nbsp;}<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;const_iterator&nbsp;end()&nbsp;const&nbsp;{&nbsp;return&nbsp;elems+N;&nbsp;}<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<I><FONT face="Arial,Helvetica,sans-serif" color="0000FF" >//&nbsp;reverse&nbsp;iterator&nbsp;support</FONT></I><BR>
+#if&nbsp;!defined(BOOST_NO_TEMPLATE_PARTIAL_SPECIALIZATION)&nbsp;&&&nbsp;!defined(BOOST_MSVC_STD_ITERATOR)<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;typedef&nbsp;std::reverse_iterator&lt;iterator&gt;&nbsp;reverse_iterator;<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;typedef&nbsp;std::reverse_iterator&lt;const_iterator&gt;&nbsp;const_reverse_iterator;<BR>
+#else<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<I><FONT face="Arial,Helvetica,sans-serif" color="0000FF" >//&nbsp;workaround&nbsp;for&nbsp;broken&nbsp;reverse_iterator&nbsp;implementations</FONT></I><BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;typedef&nbsp;std::reverse_iterator&lt;iterator,T&gt;&nbsp;reverse_iterator;<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;typedef&nbsp;std::reverse_iterator&lt;const_iterator,T&gt;&nbsp;const_reverse_iterator;<BR>
+#endif<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;reverse_iterator&nbsp;rbegin()&nbsp;{&nbsp;return&nbsp;reverse_iterator(end());&nbsp;}<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;const_reverse_iterator&nbsp;rbegin()&nbsp;const&nbsp;{<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return&nbsp;const_reverse_iterator(end());<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;reverse_iterator&nbsp;rend()&nbsp;{&nbsp;return&nbsp;reverse_iterator(begin());&nbsp;}<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;const_reverse_iterator&nbsp;rend()&nbsp;const&nbsp;{<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return&nbsp;const_reverse_iterator(begin());<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<I><FONT face="Arial,Helvetica,sans-serif" color="0000FF" >//&nbsp;operator[]</FONT></I><BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;reference&nbsp;operator[](size_type&nbsp;i)&nbsp;{&nbsp;return&nbsp;elems[i];&nbsp;}<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;const_reference&nbsp;operator[](size_type&nbsp;i)&nbsp;const&nbsp;{&nbsp;return&nbsp;elems[i];&nbsp;}<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<I><FONT face="Arial,Helvetica,sans-serif" color="0000FF" >//&nbsp;at()&nbsp;with&nbsp;range&nbsp;check</FONT></I><BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;reference&nbsp;at(size_type&nbsp;i)&nbsp;{&nbsp;rangecheck(i);&nbsp;return&nbsp;elems[i];&nbsp;}<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;const_reference&nbsp;at(size_type&nbsp;i)&nbsp;const&nbsp;{&nbsp;rangecheck(i);&nbsp;return&nbsp;elems[i];&nbsp;}<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<I><FONT face="Arial,Helvetica,sans-serif" color="0000FF" >//&nbsp;front()&nbsp;and&nbsp;back()</FONT></I><BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;reference&nbsp;front()&nbsp;{&nbsp;return&nbsp;elems[0];&nbsp;}<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;const_reference&nbsp;front()&nbsp;const&nbsp;{&nbsp;return&nbsp;elems[0];&nbsp;}<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;reference&nbsp;back()&nbsp;{&nbsp;return&nbsp;elems[N-1];&nbsp;}<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;const_reference&nbsp;back()&nbsp;const&nbsp;{&nbsp;return&nbsp;elems[N-1];&nbsp;}<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<I><FONT face="Arial,Helvetica,sans-serif" color="0000FF" >//&nbsp;size&nbsp;is&nbsp;constant</FONT></I><BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;static&nbsp;size_type&nbsp;size()&nbsp;{&nbsp;return&nbsp;N;&nbsp;}<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;static&nbsp;bool&nbsp;empty()&nbsp;{&nbsp;return&nbsp;false;&nbsp;}<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;static&nbsp;size_type&nbsp;max_size()&nbsp;{&nbsp;return&nbsp;N;&nbsp;}<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;enum&nbsp;{&nbsp;static_size&nbsp;=&nbsp;N&nbsp;};<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<I><FONT face="Arial,Helvetica,sans-serif" color="0000FF" >//&nbsp;swap&nbsp;(note:&nbsp;linear&nbsp;complexity)</FONT></I><BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;void&nbsp;swap&nbsp;(array&lt;T,N&gt;&&nbsp;y)&nbsp;{<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;std::swap_ranges(begin(),end(),y.begin());<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<I><FONT face="Arial,Helvetica,sans-serif" color="0000FF" >//&nbsp;direct&nbsp;access&nbsp;to&nbsp;data</FONT></I><BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;const&nbsp;T*&nbsp;data()&nbsp;const&nbsp;{&nbsp;return&nbsp;elems;&nbsp;}<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<I><FONT face="Arial,Helvetica,sans-serif" color="0000FF" >//&nbsp;assignment&nbsp;with&nbsp;type&nbsp;conversion</FONT></I><BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;template&nbsp;&lt;typename&nbsp;T2&gt;<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;array&lt;T,N&gt;&&nbsp;operator=&nbsp;(const&nbsp;array&lt;T2,N&gt;&&nbsp;rhs)&nbsp;{<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;std::copy(rhs.begin(),rhs.end(),&nbsp;begin());<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return&nbsp;*this;<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<I><FONT face="Arial,Helvetica,sans-serif" color="0000FF" >//&nbsp;assign&nbsp;one&nbsp;value&nbsp;to&nbsp;all&nbsp;elements</FONT></I><BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;void&nbsp;assign&nbsp;(const&nbsp;T&&nbsp;value)<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;std::fill_n(begin(),size(),value);<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}<BR>
+<BR>
+#ifndef&nbsp;BOOST_NO_PRIVATE_IN_AGGREGATE<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;private:<BR>
+#endif<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<I><FONT face="Arial,Helvetica,sans-serif" color="0000FF" >//&nbsp;check&nbsp;range&nbsp;(may&nbsp;be&nbsp;private&nbsp;because&nbsp;it&nbsp;is&nbsp;static)</FONT></I><BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;static&nbsp;void&nbsp;rangecheck&nbsp;(size_type&nbsp;i)&nbsp;{<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if&nbsp;(i&nbsp;&gt;=&nbsp;size())&nbsp;{&nbsp;throw&nbsp;std::range_error("array");&nbsp;}<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;};<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;<I><FONT face="Arial,Helvetica,sans-serif" color="0000FF" >//&nbsp;comparisons</FONT></I><BR>
+&nbsp;&nbsp;&nbsp;&nbsp;template&lt;class&nbsp;T,&nbsp;std::size_t&nbsp;N&gt;<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;bool&nbsp;operator==&nbsp;(const&nbsp;array&lt;T,N&gt;&&nbsp;x,&nbsp;const&nbsp;array&lt;T,N&gt;&&nbsp;y)&nbsp;{<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return&nbsp;std::equal(x.begin(),&nbsp;x.end(),&nbsp;y.begin());<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;}<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;template&lt;class&nbsp;T,&nbsp;std::size_t&nbsp;N&gt;<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;bool&nbsp;operator&lt;&nbsp;(const&nbsp;array&lt;T,N&gt;&&nbsp;x,&nbsp;const&nbsp;array&lt;T,N&gt;&&nbsp;y)&nbsp;{<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return&nbsp;std::lexicographical_compare(x.begin(),x.end(),y.begin(),y.end());<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;}<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;template&lt;class&nbsp;T,&nbsp;std::size_t&nbsp;N&gt;<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;bool&nbsp;operator!=&nbsp;(const&nbsp;array&lt;T,N&gt;&&nbsp;x,&nbsp;const&nbsp;array&lt;T,N&gt;&&nbsp;y)&nbsp;{<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return&nbsp;!(x==y);<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;}<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;template&lt;class&nbsp;T,&nbsp;std::size_t&nbsp;N&gt;<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;bool&nbsp;operator&gt;&nbsp;(const&nbsp;array&lt;T,N&gt;&&nbsp;x,&nbsp;const&nbsp;array&lt;T,N&gt;&&nbsp;y)&nbsp;{<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return&nbsp;y&lt;x;<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;}<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;template&lt;class&nbsp;T,&nbsp;std::size_t&nbsp;N&gt;<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;bool&nbsp;operator&lt;=&nbsp;(const&nbsp;array&lt;T,N&gt;&&nbsp;x,&nbsp;const&nbsp;array&lt;T,N&gt;&&nbsp;y)&nbsp;{<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return&nbsp;!(y&lt;x);<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;}<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;template&lt;class&nbsp;T,&nbsp;std::size_t&nbsp;N&gt;<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;bool&nbsp;operator&gt;=&nbsp;(const&nbsp;array&lt;T,N&gt;&&nbsp;x,&nbsp;const&nbsp;array&lt;T,N&gt;&&nbsp;y)&nbsp;{<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return&nbsp;!(x&lt;y);<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;}<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;<I><FONT face="Arial,Helvetica,sans-serif" color="0000FF" >//&nbsp;global&nbsp;swap()</FONT></I><BR>
+&nbsp;&nbsp;&nbsp;&nbsp;template&lt;class&nbsp;T,&nbsp;std::size_t&nbsp;N&gt;<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;inline&nbsp;void&nbsp;swap&nbsp;(array&lt;T,N&gt;&&nbsp;x,&nbsp;array&lt;T,N&gt;&&nbsp;y)&nbsp;{<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;x.swap(y);<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;}<BR>
+<BR>
+}&nbsp;<I><FONT face="Arial,Helvetica,sans-serif" color="0000FF" >/*&nbsp;namespace&nbsp;boost&nbsp;*/</FONT></I><BR>
+<BR>
+#endif&nbsp;<I><FONT face="Arial,Helvetica,sans-serif" color="0000FF" >/*BOOST_ARRAY_HPP*/</FONT></I><BR>
+</SPAN>
+</TT>
+</BODY>
+</HTML>

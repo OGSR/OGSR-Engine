@@ -1,0 +1,54 @@
+<HTML>
+<HEAD>
+<TITLE>compose1.cpp</TITLE>
+</HEAD>
+
+<BODY TEXT="#000000" BGCOLOR="#FFFFFF">
+&nbsp;
+<TABLE HEIGHT=40 WIDTH="100%">
+<TR> <TD ALIGN=LEFT WIDTH="100%" BGCOLOR="#DDDDDD">
+<FONT face="Arial,Helvetica" size=+2><B>
+&nbsp;compose1.cpp
+</B></FONT>
+</TD></TR></TABLE><BR>
+
+<FONT face="Arial,Helvetica"><B>
+ The following code example is taken from the book<BR>
+ <A HREF="http://www.josuttis.com/libbook/" TARGET="_top">
+  The C++ Standard Library - A Tutorial and Reference</A><BR>
+ by Nicolai M. Josuttis, Addison-Wesley, 1999<BR>
+ <A HREF="http://www.josuttis.com/libbook/copyright.html">
+  &copy; Copyright</A> Nicolai M. Josuttis 1999<BR>
+</B></FONT>
+
+<BR><BR><TT>
+#include&nbsp;&lt;iostream&gt;<BR>
+#include&nbsp;&lt;vector&gt;<BR>
+#include&nbsp;&lt;algorithm&gt;<BR>
+#include&nbsp;&lt;functional&gt;<BR>
+#include&nbsp;&lt;iterator&gt;<BR>
+#include&nbsp;"<A href="print.hpp.html">print.hpp</A>"<BR>
+#include&nbsp;"<A href="compose.hpp.html">compose.hpp</A>"<BR>
+using&nbsp;namespace&nbsp;std;<BR>
+using&nbsp;namespace&nbsp;boost;<BR>
+<BR>
+int&nbsp;main()<BR>
+{<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;vector&lt;int&gt;&nbsp;coll;<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;<I><FONT face="Arial,Helvetica" color="0000FF" size=-1>//&nbsp;insert&nbsp;elements&nbsp;from&nbsp;1&nbsp;to&nbsp;9</I></FONT><BR>
+&nbsp;&nbsp;&nbsp;&nbsp;for&nbsp;(int&nbsp;i=1;&nbsp;i&lt;=9;&nbsp;++i)&nbsp;{<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;coll.push_back(i);<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;}<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;PRINT_ELEMENTS(coll);<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;<I><FONT face="Arial,Helvetica" color="0000FF" size=-1>//&nbsp;for&nbsp;each&nbsp;element&nbsp;add&nbsp;10&nbsp;and&nbsp;multiply&nbsp;by&nbsp;5</I></FONT><BR>
+&nbsp;&nbsp;&nbsp;&nbsp;transform&nbsp;(coll.begin(),coll.end(),<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ostream_iterator&lt;int&gt;(cout,"&nbsp;"),<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;compose_f_gx(bind2nd(multiplies&lt;int&gt;(),5),<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;bind2nd(plus&lt;int&gt;(),10)));<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;cout&nbsp;&lt;&lt;&nbsp;endl;<BR>
+}<BR>
+</TT>
+</BODY>
+</HTML>

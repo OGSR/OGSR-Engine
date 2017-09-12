@@ -1,0 +1,217 @@
+<html>
+
+<head>
+<meta http-equiv="Content-Language" content="en-us">
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="boost.css">
+<title>Boost.Build - gcc-nocygwin toolset</title>
+</head>
+
+<body bgcolor="#FFFFFF" text="#000000">
+
+<table border="0" cellpadding="7" cellspacing="0" width="100%" summary=
+    "header">
+  <tr> 
+    <td valign="top" width="300"> 
+      <h3><a href="http://www.boost.org"><img height="86" width="277" alt="C++ Boost" src="../../c++boost.gif" border="0"></a></h3>
+    </td>
+    <td valign="top"> 
+      <h1 align="center">Boost.Build</h1>
+      <h2 align="center">gcc-nocygwin toolset</h2>
+    </td>
+  </tr>
+</table>
+
+<hr>
+
+<h2>Introduction</h2>
+
+<p>
+This page describes the gcc-nocygwin toolset, which builds Boost using
+the -mno-cygwin option of the <a
+href="http://sources.redhat.com/cygwin/">Cygwin</a> gcc compiler. This
+avoids introducing dependencies on the Cygwin Unix-emulation layer,
+allowing you to build Windows executables which are not dependant on
+cygwin1.dll. If you're not worried about having the dependencies, you
+should probably be using the plain <a href="gcc-tools.html">gcc
+toolset</a>.
+</p>
+
+<p>
+The other option for producing windows-native executables with gcc is
+the <a href="http://www.mingw.org/">mingw</a> version of gcc with the
+<a href="mingw-tools.html">mingw toolset</a>. However, if you're
+already using Cygwin, this toolset could save you having to install an
+additional compiler.
+
+</p>
+
+<h2><a name="configuration">Configuration Variables</a></h2>
+
+<p>
+This toolset operates in one of two modes - the default mode (which is
+recommended) just extends the gcc toolset <a
+href="gcc-tools.html#configuration">(configuration details
+here)</a>. You can force the gcc-nocygwin toolset to extend
+gcc-stlport instead by setting <code>NOCYGWIN_STLPORT_LIB_ID</code>.
+</p>
+<p>
+You can set any of the configuration variables in your environment or
+on the bjam command line using options of the form
+<code>-s<i>VARIABLE_NAME</i>=</code><i>value</i>. The following table
+lists the additional configuration variables introduced by
+gcc-nocygwin.
+
+</p>
+<p>
+<table border="1">
+  <tr>
+    <th>Variable Name</th>
+    <th>Semantics</th>
+    <th>Default</th>
+    <th width="50%">Notes</th>
+  </tr>
+  <tr>
+    <td><code>
+      GCC_NO_<br>EXPORT_ALL
+    </code></td>
+    <td>
+      Suppress the <nobr>--export-all-symbols</nobr> linker flag.
+    </td>
+    <td><code>
+      true
+    </code></td>
+    <td>
+      The gcc toolset usually forces the linker to export all symbols
+      from the DLLs it builds. There are some hacks in ld to prevent
+      any symbols from the run-time library being exported, but old
+      versions of ld don't have this support. If necessary, you can
+      re-enable exporting all symbols by setting this variable to the
+      empty string <nobr>(-sGCC_NO_EXPORT_ALL="")</nobr>
+    </td>
+  </tr>
+  <tr>
+    <td><code>
+      NOCYGWIN_<br>STLPORT_LIB_ID
+    </code></td>
+    <td>
+      Use the <a href="http://www.stlport.org">STLport</a> standard
+      library instead of gcc's own library.
+    </td>
+    <td><i>
+      empty
+    </i></td>
+    <td>
+      This option is provided for backwards compatability with the
+      original gcc-nocygwin toolset, which used to rely on the STLport
+      standard library. Setting a value for this variable forces
+      gcc-nocygwin to extend the gcc-stlport toolset <a
+      href="gcc-stlport-tools.html#configuration">(configuration
+      details here)</a>. The value you set is irrelevant, unless you
+      want to use the <a href="#stlport">STLport iostream
+      implementation</a>
+    </td>
+  </tr>
+</table>
+
+</p>
+
+
+<h2>Prerequisites</h2>
+
+<p>
+The easiest way to use this toolset is with a recent Cygwin gcc
+installation (roughly speaking, installed since October 2002). The
+Cygwin setup utility should add all necessary components of gcc
+automatically when you install or upgrade gcc. Basically, if an
+iostream-based "hello world" program compiles and links using
+<code>g++ -mno-cygwin</code>, you should be OK.
+</p>
+<p>
+It is also possible to add support manually to older Cygwin compilers
+if you won't upgrade for some reason. See for instance <a
+href="http://www.nanotech.wisc.edu/~khan/software/gnu-win32/mno-cygwin-howto.txt">these
+details</a>, or search for "mno-cygwin" and "c++" on the web or the <a
+href="http://cygwin.com/lists.html">Cygwin mailing lists</a>.
+</p>
+<p>
+Another, probably more difficult option, is to install the STLport
+standard library and build it with the -mno-cygwin option. Some
+details are provided in the next section.
+</p>
+
+<h2><a name="stlport">STLport iostream support</a></h2>
+
+<p>
+Here's the procedure for using the STLport iostream libraries with
+gcc-nocygwin:
+
+<p>
+<ol type="1" start="1">
+  <li>
+    Build the iostream libraries with no cygwin1.dll dependencies.
+  </li>
+  <li>
+    Set the <code>NOCYGWIN_STLPORT_LIB_ID</code> variable to the
+    library base name (e.g. stlport_cygwin)
+  </li>
+  <li>
+    Configure necessary variables for the <a
+    href="gcc-stlport-tools.html#configuration">gcc-stlport
+    toolset</a>
+  </li>
+</ol>
+</p>
+
+<p>
+Point 1 above is a little tricky using the Cygwin compiler because the
+current release of STLport (4.5.3) does not provide a suitable
+makefile.  Here's a command line to make it work (run from the stlport
+src directory):
+
+<p>
+<code>
+make
+<nobr>-f gcc-cygwin.mak</nobr>
+<nobr>CC="gcc -mno-cygwin"</nobr>
+<nobr>CXX="g++ -mno-cygwin"</nobr>
+<nobr>DYN_LINK="g++ -shared -mno-cygwin -o"</nobr>
+</code>
+</p>
+
+<p>
+You may get some errors for missing include files like
+<code><nobr>../include/time.h</nobr></code>. This is most easily fixed
+by creating a symbolic link to the mingw include directory so that
+STLport can find it under the expected name. The mingw directory is
+probably in <code>/usr/include</code>, so you would do <code><nobr>ln
+-s mingw include</nobr></code> in that directory. Note that this link
+may cause problems when building a regular Cygwin version of STLport.
+</p>
+<p>
+If you have a recent version of gcc (e.g. 3.2), you might get a heap
+of errors for include files like
+<code><nobr>../g++-v3/ctime</nobr></code>. The libstdc++ directory is
+probably something like
+<code><nobr>/usr/include/c++/3.2</nobr></code>, in which case you
+would use <code><nobr>ln -s 3.2 g++-v3</nobr></code> in the
+<code><nobr>/usr/include/c++</nobr></code> directory.
+</p>
+
+<h2>Toolset limitations</h2>
+
+<p>
+As of 2002/01/24, some of the Boost test library DLLs don't link
+because of unresolved externals. This problem is shared by the mingw
+toolset.
+</p>
+
+
+<p>
+<i>
+Written May 2002 and revised January 2003 by <a
+href="mailto:RaoulGough@yahoo.co.uk">Raoul Gough</a>
+</i>
+</p>
+</body>
+</html>

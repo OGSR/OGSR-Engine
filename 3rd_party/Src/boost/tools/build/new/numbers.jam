@@ -1,0 +1,276 @@
+#  (C) Copyright David Abrahams 2001. Permission to copy, use, modify, sell and
+#  distribute this software is granted provided this copyright notice appears in
+#  all copies. This software is provided "as is" without express or implied
+#  warranty, and with no claim as to its suitability for any purpose.
+
+digits = 0 1 2 3 4 5 6 7 8 9 ;
+powers = 1 ;
+zeros = "" ;
+natural = $(digits) ;
+positive = $(digits[2-]) ;
+incr = $(positive[2-]) ;
+znatural = $(digits) ;
+zero-test = is zero ; # if $(zero-test[$(n)]) == "is" "zero", n == 0
+
+import errors : * ;
+
+local rule extend ( )
+{
+    local next = $(digits[2-])$(znatural) ;
+    natural += $(next) ;
+    positive += $(next) ;
+    incr += $(next) ;
+    znatural = $(digits)$(znatural) ;
+}
+
+rule check ( numbers * )
+{
+    for local n in $(numbers)
+    {
+        switch $(n)
+        {
+            case *[^0-9]* :
+              error $(n) "in" $(numbers) : is not a number ;
+        }
+    }
+}
+
+rule increment ( number )
+{
+    switch $(number)
+    {
+        # error check right here for speed, since we need zero detection anyway
+        case *[^0-9]* : 
+              error $(n) "in" $(numbers) : is not a number ;
+        
+        case *[1-9]* : 
+        {
+            local x = $(incr[$(number)]) ;
+            if $(x)
+            {
+                return $(x) ;
+            }
+            else
+            {
+                extend ;
+                # this recursion would be expensive, but it happens so rarely...
+                return [ increment $(number) ] ;
+            }
+        }
+        
+        # Handle zeros
+        case * :
+          return 1 ;
+    }
+}
+
+rule decrement ( number )
+{
+
+    switch $(number)
+    {
+        # error check right here for speed, since we need zero detection anyway
+        case *[^0-9]* : 
+              error $(n) "in" $(numbers) : is not a number ;
+        
+        case *[1-9]* : 
+        {
+            local x = $(natural[$(number)]) ;
+            if $(x)
+            {
+                return $(x) ;
+            }
+            else
+            {
+                # this recursion would be expensive, but it happens so rarely...
+                extend ;
+                return [ decrement $(number) ] ;
+            }
+        }
+        
+        case * :
+          error can't decrement zero! ;
+    }
+}
+
+rule range ( start finish ? : step ? )
+{
+    if ! $(finish)
+    {
+        finish = $(start) ;
+        start = 1 ;
+    }
+    step ?= 1 ;
+    
+    check $(start) $(finish) $(step) ;
+
+    if $(finish) != 0
+    {
+        while ! $(positive[$(finish)])
+        {
+            extend ;
+        }
+        
+        if $(step) = 1
+        {
+            return $(positive[$(start)-$(finish)]) ;
+        }
+        else
+        {
+            local index = [ increment $(step) ] ;
+            local by1 = $(positive[$(start)-$(finish)]) ;
+            local result ;
+            while $(by1)
+            {
+                result += $(by1[1]) ;
+                by1 = $(by1[$(index)-]) ;
+            }
+            return $(result) ;
+        }
+    }
+}
+
+rule less ( n1 n2 )
+{
+    check $(n1) $(n2) ;
+    # avoid messy 0 case by appending 1
+    local l1 = [ range 2 [ log10 $(n1)1 ] ] ;
+    local l2 = [ range 2 [ log10 $(n2)1 ] ] ;
+    
+    # number of digits mismatch?
+    if ( $(l1) < $(l2) ) || ( ( $(l1) = $(l2) ) && $(n1) < $(n2) )
+    {
+        return true ;
+    }
+}
+
+rule log10 ( number )
+{
+    switch $(number)
+    {
+        case *[^0-9]* : error $(number) is not a number ;
+        case 0 : error can't take log of zero ;
+        case [1-9] : return 0 ;
+        case [1-9]? : return 1 ;
+        case [1-9]?? : return 2 ;
+        case [1-9]??? : return 3 ;
+        case [1-9]???? : return 4 ;
+        case [1-9]????? : return 5 ;
+        case [1-9]?????? : return 6 ;
+        case [1-9]??????? : return 7 ;
+        case [1-9]???????? : return 8 ;
+        case [1-9]????????? : return 9 ;
+        case * :
+        {
+            import sequence ;
+            import string ;
+            local chars = [ string.chars $(number) ] ;
+            while $(chars[1]) = 0
+            {
+                chars = $(chars[2-]) ;
+            }
+            
+            if ! $(chars)
+            {
+                error can't take log of zero ;
+            }
+            else
+            {
+                return [ sequence.length $(chars) ] ;
+            }
+        }
+    }
+}
+
+rule __test__ ( )
+{
+    import assert ;
+    
+    assert.result 1 : increment 0 ;
+    assert.result 2 : increment 1 ;
+    assert.result 1 : decrement 2 ;
+    assert.result 0 : decrement 1 ;
+    assert.result 50 : increment 49 ;
+    assert.result 49 : decrement 50 ;
+    assert.result 99 : increment 98 ;
+    assert.result 99 : decrement 100 ;
+    assert.result 100 : increment 99 ;
+    # This just makes debugging output too large
+    # assert.result 1000 : increment 999 ;
+    # assert.result 999 : decrement 1000 ;
+    
+    assert.result 1 2 3 : range 3 ;
+    assert.result 1 2 3 4 5 6 7 8 9 10 11 12 : range 12 ;
+    assert.result 3 4 5 6 7 8 9 10 11 : range 3 11 ;
+    assert.result : range 0 ;
+    assert.result 1 4 7 10 : range 10 : 3 ;
+    assert.result 2 4 6 8 10 : range 2 10 : 2 ;
+    assert.result 25 50 75 100 : range 25 100 : 25 ;
+    
+    assert.true less 1 2 ;
+    assert.true less 1 12 ;
+    assert.true less 1 21 ;
+    assert.false less 0 0 ;
+      
+    # TEMPORARY disabled, because nested "try"/"catch" do not work, I don't the
+    # time to fix that right now.
+    if $(0) 
+    {        
+    try ;
+    {
+        decrement 0 ;
+    }
+    catch can't decrement zero! ;
+    
+    try ;
+    {
+        check foo ;
+    }
+    catch : not a number ;
+    
+    try ;
+    {
+        increment foo ;
+    }
+    catch : not a number ;
+        
+    try ;
+    {
+        log10 0 ;
+    }
+    catch can't take log of zero ;
+    
+    try ;
+    {
+        log10 000 ;
+    }
+    catch can't take log of zero ;
+
+    }
+        
+    assert.result 0 : log10 1 ;
+    assert.result 0 : log10 9 ;
+    assert.result 1 : log10 10 ;
+    assert.result 1 : log10 99 ;
+    assert.result 2 : log10 125 ;
+    assert.result 11 : log10 12345678901 ;
+    
+    for local x in [ range 75 110 : 5 ]
+    {
+        for local y in [ range $(x) 111 : 3 ]
+        {
+            if $(x) != $(y)
+            {
+                assert.true less $(x) $(y) ;
+            }
+        }
+    }
+    
+    for local x in [ range 90 110 : 2 ]
+    {
+        for local y in [ range 80 $(x) : 4 ]
+        {
+            assert.false less $(x) $(y) ;
+        }
+    }
+}

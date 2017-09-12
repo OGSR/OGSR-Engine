@@ -1,0 +1,70 @@
+<!doctype html public "-//ietf//dtd html//en">
+<html><head><title>boost::mpl::copy_backward</title>
+<link rel="stylesheet" href="../mpl_wiki.css">
+</head><body bgcolor="white">
+<h1><a href="../Table_of_Contents.html"><img src="../mpl_logo.jpg" alt="[Home]" border=0 align="right"></a>copy_backward</h1><h3>Synopsis</h3>
+<p>
+<pre>
+template&lt;
+      typename Sequence
+    , typename State
+    , typename BinaryOp
+    &gt;
+struct copy_backward
+{
+    typedef <em>unspecified</em> type;
+};
+</pre>
+<p>
+<h3>Description</h3>
+<p>
+<code>copy_backward</code> is, in fact, just another name for <code><a href="../Reference/fold_backward.html">fold_backward</a></code>. It was introduced for symmetry with <code><a href="../Reference/copy_backward_if.html">copy_backward_if</a></code> [<a href="#1">1</a>], and because it's a nice name for one of the typical <code>fold_backward</code> applications, that is, copying the content of one sequence into another - see the example below.
+<p>
+<h3>Definition</h3>
+<p>
+<pre>
+#include "<a href="../../../../../boost/mpl/copy_backward.hpp">boost/mpl/copy_backward.hpp</a>"
+</pre>
+<p>
+<h3>Parameters</h3>
+<table border="1">
+<tr><th>&nbsp;Parameter&nbsp;</th><th>&nbsp;Requirement&nbsp;</th><th>&nbsp;Description &nbsp;</th></tr>
+<tr><td><code>Sequence</code></td><td>A model of <a href="../Sequence.html">Sequence</a></td><td>A sequence to iterate. </td></tr>
+<tr><td><code>State</code></td><td>A type</td><td>The initial state for the first <code>BinaryOp</code> application. </td></tr>
+<tr><td><code>BinaryOp</code></td><td>A model of [Lambda Function]</td><td>The operation to be executed on backward traversal. </td></tr>
+</table>
+<p>
+<h3>Expression semantics</h3>
+<p>
+<table border="1">
+<tr><th>&nbsp;Expression&nbsp;</th><th>&nbsp;Expression&nbsp;type&nbsp;</th><th>&nbsp;Precondition&nbsp;</th><th>&nbsp;Semantics&nbsp;</th><th>&nbsp;Postcondition&nbsp;</th></tr>
+<tr><td><code>typedef copy_backward&lt;Sequence,T,Op&gt;::type s;</code></td><td>A type</td><td></td><td>Equivalent to <code>typedef fold_backward&lt; Sequence,T,Op &gt;::type s;</code>.</td><td></td></tr>
+</table>
+<p>
+<h3>Complexity</h3>
+<p>
+Linear. Exactly <code><a href="../Reference/size.html">size</a>&lt;Sequence&gt;::type::value</code> applications of <code>BinaryOp</code>. 
+<p>
+<h3>Example</h3>
+<p>
+<pre>
+typedef <a href="../Reference/list_c.html">list_c</a>&lt;int,10,11,12,13,14,15,16,17,18,19&gt;::type numbers;
+typedef copy_backward&lt;
+      <a href="../Reference/range_c.html">range_c</a>&lt;int,0,10&gt;
+    , <a href="../Reference/push_front.html">push_front</a>&lt;_,_&gt;
+    , numbers
+    &gt;::type result;
+<p>
+BOOST_STATIC_ASSERT(<a href="../Reference/size.html">size</a>&lt;result&gt;::value == 20);
+BOOST_STATIC_ASSERT((<a href="../Reference/equal.html">equal</a>&lt; result,<a href="../Reference/range_c.html">range_c</a>&lt;int,0,20&gt; &gt;::type::value));
+</pre>
+<p>
+<h3>Notes</h3>
+<p>
+[<a name="1">1</a>]  In case if you wonder why <code><a href="../Reference/copy_backward_if.html">copy_backward_if</a></code>, in its turn, wasn't just called <code>fold_backward_if</code>, - something that would allow to eliminate the family of <code>copy_backward</code> algorithms completely - these two have quite different semantics.<br>
+<p>
+<h3>See also</h3>
+<p>
+<a href="../Algorithms.html">Algorithms</a>, <code><a href="../Reference/copy_backward_if.html">copy_backward_if</a></code>, <code><a href="../Reference/copy.html">copy</a></code>, <code><a href="../Reference/copy_if.html">copy_if</a></code>, <code><a href="../Reference/fold.html">fold</a></code>, <code><a href="../Reference/fold_backward.html">fold_backward</a></code>
+<p><hr>
+<a href="../Table_of_Contents.html">Table of Contents</a><br>Last edited July 19, 2002 2:11 am</body></html>

@@ -1,0 +1,72 @@
+<html>
+
+	<head>
+		<title>Special Functions Documentation</title>
+		<meta http-equiv="generator" content="Adobe GoLive 5">
+		<meta http-equiv="content-type" content="text/html;charset=ISO-8859-1">
+	</head>
+
+	<body bgcolor="#FFFFFF" text="#000000">
+		<h1><img src="../../../c++boost.gif" alt="c++boost.gif (8819 bytes)" align="center" width="277" height="86">Special Functions library</h1>
+		<ul>
+			<li><a href="#Acknowledgements">Acknowledgements</a>
+			<li><a href="#Header File">Header Files</a>
+			<li><a href="#Test Program">Test Program</a>
+			<li><a href="#Synopsis">Synopsis</a>
+			<li><a href="#Functions">Functions</a>
+			<li><a href="#History">History</a>			<li><a href="#ToDo">To Do</a>		</ul>
+		<p>The Special Functions library currently provides five templated special functions, in namespace boost. Two of these (<a href="sinc_sinhc.html"><code>sinc_pi</code> and <code>sinhc_pi</code></a>) are needed by our implementation of quaternions and octonions.</p>		<p>The functions <a href="inverse_hyperbolic.html"><code>acosh</code>, <code>asinh</code> and <code>atanh</code></a> are entirely classical, the function <code>sinc_pi</code> sees heavy use in signal processing tasks, and the function <code>sinhc_pi</code> is an <cite>ad'hoc</cite> function whose naming is modelled on <code>sinc_pi</code> and hyperbolic functions.</p>		<h2><a name="Acknowledgements"></a>Acknowledgements</h2>		<p>The mathematical text has been typeset with <a href="http://www.nisus-soft.com/">Nisus Writer</a>, and the illustrations have been made with <a href="http://www.pacifict.com/">Graphing Calculator</a>. Jens Maurer  was the Review Manager for this library. More acknowledgements in the History section. Thank you to all who contributed to the discution about this library.</p>
+		<h2><a name="Header File"></a>Header Files</h2>
+		<p>The interface and implementation for each function (or forms of a function) are both supplied by one header file:</p>
+		<ul>
+			<li type="disc"><a href="../../../boost/math/special_functions/acosh.hpp">acosh.hpp</a>			<li type="disc"><a href="../../../boost/math/special_functions/asinh.hpp">asinh.hpp</a>			<li type="disc"><a href="../../../boost/math/special_functions/atanh.hpp">atahn.hpp</a>			<li type="disc"><a href="../../../boost/math/special_functions/sinc.hpp">sinc.hpp</a>
+			<li type="disc"><a href="../../../boost/math/special_functions/sinhc.hpp">sinhc.hpp</a>
+		</ul>
+		<h2><a name="Test Program"></a>Test Program</h2>
+		<p>The <a href="special_functions_test.cpp">special_functions_test.cpp</a> test program tests the functions for float, double and long double arguments (<a href="output.txt">sample output</a>, with message output enabled).</p>		<p>If you define the symbol BOOST_SPECIAL_FUNCTIONS_TEST_VERBOSE, you will get additional output (<a href="output_more.txt">verbose output</a>), which may prove useful for tuning on your platform (the library use &quot;reasonable&quot; tolerances, which may prove to be too strict for your platform); this will only be helpfull if you enable message output at the same time, of course (by uncommenting the relevant line in the test or by adding --log_level=messages to your command line,...).</p>		<h2><a name="Synopsis"></a>Synopsis</h2>		<pre><code>namespace boost
+{
+	
+	namespace math
+	{
+		
+		template&lt;typename T&gt; inline T																																<a href="#acosh">acosh</a>(const T x);
+		
+		template&lt;typename T&gt; inline T																																<a href="#asinh">asinh</a>(const T x);
+		
+		template&lt;typename T&gt; inline T																																<a href="#atanh">atanh</a>(const T x);
+		
+		template&lt;typename T&gt; inline T																																<a href="#sinc_pi">sinc_pi</a>(const T x);
+		
+		template&lt;typename T, template&lt;typename&gt; class U&gt;	inline U&lt;T&gt;	<a href="#sinc_pi">sinc_pi</a>(const U&lt;T&gt; x);
+		
+		template&lt;typename T&gt; inline T																																<a href="#sinhc_pi">sinhc_pi</a>(const T x);
+		
+		template&lt;typename T, template&lt;typename&gt; class U&gt;	inline U&lt;T&gt;	<a href="#sinhc_pi">sinhc_pi</a>(const U&lt;T&gt; x);
+		
+
+	}
+
+	
+
+}</code></pre>
+		<h2><a name="Functions"></a>Functions</h2>
+		<p>The functions implemented here can throw standard exceptions, but no exception specification has been made.</p>		<h3><a name="acosh"></a>acosh</h3>		<pre><code>template&lt;typename T&gt; inline T <strong>acosh</strong>(const T x);</code></pre>		<blockquote>			<p>Computes the reciprocal of (the restriction to the range <IMG SRC="graphics/special_functions_blurb29.jpeg" WIDTH="35" HEIGHT="15" NATURALSIZEFLAG="3" ALIGN=absmiddle> of) the hyperbolic cosine function, at <code>x</code>. Values returned are positive. Generalised Taylor series are used near 1 and Laurent series are used near the infinity to ensure accuracy.</p>			<p>If <code>x</code> is in the range <IMG SRC="graphics/special_functions_blurb27.jpeg" WIDTH="41" HEIGHT="15" NATURALSIZEFLAG="3" ALIGN=absmiddle> a quiet NaN is returned (if the system allows, otherwise a <code>domain_error</code> exception is generated).</p>		</blockquote>		<h3><a name="asinh"></a>asinh</h3>		<pre><code>template&lt;typename T&gt; inline T <strong>asinh</strong>(const T x);</code></pre>		<blockquote>			<p>Computes the reciprocal of the hyperbolic sine function. Taylor series are used at the origin and Laurent series are used near the infinity to ensure accuracy.</p>		</blockquote>		<h3><a name="atanh"></a>atanh</h3>
+		<pre><code>template&lt;typename T&gt; inline T <strong>atanh</strong>(const T x);</code></pre>
+		<blockquote>
+			<p>Computes the reciprocal of the hyperbolic tangent function, at <code>x</code>. Taylor series are used at the origin to ensure accuracy.</p>			<p>If <code>x</code> is in the range <IMG SRC="graphics/special_functions_blurb25.jpeg" WIDTH="41" HEIGHT="15" NATURALSIZEFLAG="3" ALIGN=absmiddle> or in the range <IMG SRC="graphics/special_functions_blurb26.jpeg" WIDTH="41" HEIGHT="15" NATURALSIZEFLAG="3" ALIGN=absmiddle> a quiet NaN is returned (if the system allows, otherwise a <code>domain_error</code> exception is generated).</p>			<p>If <code>x</code> is in the range <IMG SRC="graphics/special_functions_blurb23.jpeg" WIDTH="55" HEIGHT="15" NATURALSIZEFLAG="3" ALIGN=absmiddle> , minus infinity is returned (if the system allows, otherwise an <code>out_of_range</code> exception is generated), with <img src="graphics/special_functions_blurb28.jpeg" width="9" height="9" naturalsizeflag="3" align=absmiddle> denoting <code>numeric_limits&lt;T&gt;::epsilon()</code>.</p>			<p>If <code>x</code> is in the range <IMG SRC="graphics/special_functions_blurb24.jpeg" WIDTH="55" HEIGHT="15" NATURALSIZEFLAG="3" ALIGN=absmiddle> , plus infinity is returned (if the system allows, otherwise an <code>out_of_range</code> exception is generated), with <img src="graphics/special_functions_blurb28.jpeg" width="9" height="9" naturalsizeflag="3" align=absmiddle> denoting <code>numeric_limits&lt;T&gt;::epsilon()</code>.</p>		</blockquote>
+		<h3><a name="sinc_pi"></a>sinc_pi</h3>
+		<pre><code>template&lt;typename T&gt; inline T 																															<strong>sinc_pi</strong>(const T x);</code></pre>
+		<pre><code>template&lt;typename T, template&lt;typename&gt; class U&gt; inline U&lt;T&gt; <strong>sinc_pi</strong>(const U&lt;T&gt; x);</code></pre>
+		<blockquote>
+			<p>Computes the Sinus Cardinal of <code>x</code>. The second form is for complexes, quaternions, octonions... Taylor series are used at the origin to ensure accuracy.</p>
+		</blockquote>
+		<h3><a name="sinhc_pi"></a>sinhc_pi</h3>
+		<pre><code>template&lt;typename T&gt; inline T																								 							<strong>sinhc_pi</strong>(const T x);</code></pre>
+		<pre><code>template&lt;typename T, template&lt;typename&gt; class U&gt; inline U&lt;T&gt; <strong>sinhc_pi</strong>(const U&lt;T&gt; x);</code></pre>
+		<blockquote>
+			<p>Computes the Hyperbolic Sinus Cardinal of <code>x</code>. The second form is for complexes, quaternions, octonions... Taylor series are used at the origin to ensure accuracy.</p>
+		</blockquote>		<h2><a name="History"></a>History</h2>		<ul>			<li>1.4.2 - 03/02/2003: transitionned to the unit test framework; &lt;boost/config.hpp&gt; now included by the library headers (rather than the test files).			<li>1.4.1 - 18/09/2002: improved compatibility with Microsoft compilers.			<li>1.4.0 - 14/09/2001: added (after rewrite) <code>acosh</code> and <code>asinh</code>, which were submited by Eric Ford; applied changes for Gcc 2.9.x suggested by John Maddock; improved accuracy; sanity check for test file, related to accuracy.			<li>1.3.2 - 07/07/2001: introduced <code>namespace math</code>.			<li>1.3.1 - 07/06/2001:(end of Boost review) split <code>special_functions.hpp</code> into <code>atanh.hpp</code>, <code>sinc.hpp</code> and <code>sinhc.hpp</code>; improved efficiency of <code>atanh</code> with compile-time technique (Daryle Walker); improved accuracy of all functions near zero (Peter Schmitteckert).			<li>1.3.0 - 26/03/2001: support for complexes &amp; all, for cardinal functions.			<li>1.2.0 - 31/01/2001: minor modifications for Koenig lookup.			<li>1.1.0 - 23/01/2001: boostification.			<li>1.0.0 - 10/08/1999: first public version.		</ul>		<h2><a name="ToDo"></a>To Do</h2>		<ul>			<li>Add more functions.			<li>Improve test of each function.		</ul>		<hr>		<p>Revised <!--webbot bot="Timestamp" S-Type="EDITED" S-Format="%d %B %Y" startspan -->06 Feb 2003<!--webbot bot="Timestamp" endspan i-checksum="18765" --></p>
+		<p>&copy; Copyright Hubert Holin 2001-2003. Permission to copy, use, modify, sell and distribute this document is granted provided this copyright notice appears in all copies. This software is provided &quot;as is&quot; without express or implied&nbsp; warranty, and with no claim as to its suitability for any purpose.</p>
+	</body>
+
+</html>

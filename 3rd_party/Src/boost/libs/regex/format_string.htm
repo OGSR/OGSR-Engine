@@ -1,0 +1,243 @@
+<html>
+
+<head>
+<meta http-equiv="Content-Type"
+content="text/html; charset=iso-8859-1">
+<meta name="Template"
+content="C:\PROGRAM FILES\MICROSOFT OFFICE\OFFICE\html.dot">
+<meta name="GENERATOR" content="Microsoft FrontPage Express 2.0">
+<title>Regex++, Format String Reference</title>
+</head>
+
+<body bgcolor="#FFFFFF" link="#0000FF" vlink="#800080">
+
+<p>&nbsp; </p>
+
+<table border="0" cellpadding="7" cellspacing="0" width="100%">
+    <tr>
+        <td valign="top"><h3><img src="../../c++boost.gif"
+        alt="C++ Boost" width="276" height="86"></h3>
+        </td>
+        <td valign="top"><h3 align="center">Regex++, Format
+        String Reference.</h3>
+        <p align="left"><i>Copyright (c) 1998-2001 </i></p>
+        <p align="left"><i>Dr John Maddock</i></p>
+        <p align="left"><i>Permission to use, copy, modify,
+        distribute and sell this software and its documentation
+        for any purpose is hereby granted without fee, provided
+        that the above copyright notice appear in all copies and
+        that both that copyright notice and this permission
+        notice appear in supporting documentation. Dr John
+        Maddock makes no representations about the suitability of
+        this software for any purpose. It is provided &quot;as is&quot;
+        without express or implied warranty.</i></p>
+        </td>
+    </tr>
+</table>
+
+<hr>
+
+<h3><a name="format_string"></a>Format String Syntax</h3>
+
+<p>Format strings are used by the algorithms <a
+href="template_class_ref.htm#reg_format">regex_format</a> and <a
+href="template_class_ref.htm#reg_merge">regex_merge</a>, and are
+used to transform one string into another. </p>
+
+<p>There are three kind of format string: sed, perl and extended,
+the extended syntax is the default so this is covered first. </p>
+
+<p><b><i>Extended format syntax</i></b> </p>
+
+<p>In format strings, all characters are treated as literals
+except: ()$\?: </p>
+
+<p>To use any of these as literals you must prefix them with the
+escape character \ </p>
+
+<p>The following special sequences are recognized: <br>
+&nbsp; <br>
+&nbsp; </p>
+
+<p><i>Grouping:</i> </p>
+
+<p>Use the parenthesis characters ( and ) to group sub-expressions
+within the format string, use \( and \) to represent literal '('
+and ')'. <br>
+&nbsp; <br>
+&nbsp; </p>
+
+<p><i>Sub-expression expansions:</i> </p>
+
+<p>The following perl like expressions expand to a particular
+matched sub-expression: <br>
+&nbsp; </p>
+
+<table border="0" cellpadding="7" cellspacing="0" width="100%">
+    <tr>
+        <td valign="top" width="8%">&nbsp;</td>
+        <td valign="top" width="40%">$`</td>
+        <td valign="top" width="43%">Expands to all the text from
+        the end of the previous match to the start of the current
+        match, if there was no previous match in the current
+        operation, then everything from the start of the input
+        string to the start of the match.</td>
+        <td valign="top" width="9%">&nbsp;</td>
+    </tr>
+    <tr>
+        <td valign="top" width="8%">&nbsp;</td>
+        <td valign="top" width="40%">$'</td>
+        <td valign="top" width="43%">Expands to all the text from
+        the end of the match to the end of the input string.</td>
+        <td valign="top" width="9%">&nbsp;</td>
+    </tr>
+    <tr>
+        <td valign="top" width="8%">&nbsp;</td>
+        <td valign="top" width="40%">$&amp;</td>
+        <td valign="top" width="43%">Expands to all of the
+        current match.</td>
+        <td valign="top" width="9%">&nbsp;</td>
+    </tr>
+    <tr>
+        <td valign="top" width="8%">&nbsp;</td>
+        <td valign="top" width="40%">$0</td>
+        <td valign="top" width="43%">Expands to all of the
+        current match.</td>
+        <td valign="top" width="9%">&nbsp;</td>
+    </tr>
+    <tr>
+        <td valign="top" width="8%">&nbsp;</td>
+        <td valign="top" width="40%">$N</td>
+        <td valign="top" width="43%">Expands to the text that
+        matched sub-expression <i>N</i>.</td>
+        <td valign="top" width="9%">&nbsp;</td>
+    </tr>
+</table>
+
+<p><br>
+&nbsp; </p>
+
+<p><i>Conditional expressions:</i> </p>
+
+<p>Conditional expressions allow two different format strings to
+be selected dependent upon whether a sub-expression participated
+in the match or not: </p>
+
+<p>?Ntrue_expression:false_expression </p>
+
+<p>Executes true_expression if sub-expression <i>N</i>
+participated in the match, otherwise executes false_expression. </p>
+
+<p>Example: suppose we search for &quot;(while)|(for)&quot; then
+the format string &quot;?1WHILE:FOR&quot; would output what
+matched, but in upper case. <br>
+&nbsp; <br>
+&nbsp; </p>
+
+<p><i>Escape sequences:</i> </p>
+
+<p>The following escape sequences are also allowed: <br>
+&nbsp; </p>
+
+<table border="0" cellpadding="7" cellspacing="0" width="100%">
+    <tr>
+        <td valign="top" width="8%">&nbsp;</td>
+        <td valign="top" width="40%">\a</td>
+        <td valign="top" width="43%">The bell character.</td>
+        <td valign="top" width="9%">&nbsp;</td>
+    </tr>
+    <tr>
+        <td valign="top" width="8%">&nbsp;</td>
+        <td valign="top" width="40%">\f</td>
+        <td valign="top" width="43%">The form feed character.</td>
+        <td valign="top" width="9%">&nbsp;</td>
+    </tr>
+    <tr>
+        <td valign="top" width="8%">&nbsp;</td>
+        <td valign="top" width="40%">\n</td>
+        <td valign="top" width="43%">The newline character.</td>
+        <td valign="top" width="9%">&nbsp;</td>
+    </tr>
+    <tr>
+        <td valign="top" width="8%">&nbsp;</td>
+        <td valign="top" width="40%">\r</td>
+        <td valign="top" width="43%">The carriage return
+        character.</td>
+        <td valign="top" width="9%">&nbsp;</td>
+    </tr>
+    <tr>
+        <td valign="top" width="8%">&nbsp;</td>
+        <td valign="top" width="40%">\t</td>
+        <td valign="top" width="43%">The tab character.</td>
+        <td valign="top" width="9%">&nbsp;</td>
+    </tr>
+    <tr>
+        <td valign="top" width="8%">&nbsp;</td>
+        <td valign="top" width="40%">\v</td>
+        <td valign="top" width="43%">A vertical tab character.</td>
+        <td valign="top" width="9%">&nbsp;</td>
+    </tr>
+    <tr>
+        <td valign="top" width="8%">&nbsp;</td>
+        <td valign="top" width="40%">\x</td>
+        <td valign="top" width="43%">A hexadecimal character -
+        for example \x0D.</td>
+        <td valign="top" width="9%">&nbsp;</td>
+    </tr>
+    <tr>
+        <td valign="top" width="8%">&nbsp;</td>
+        <td valign="top" width="40%">\x{}</td>
+        <td valign="top" width="43%">A possible unicode
+        hexadecimal character - for example \x{1A0}</td>
+        <td valign="top" width="9%">&nbsp;</td>
+    </tr>
+    <tr>
+        <td valign="top" width="8%">&nbsp;</td>
+        <td valign="top" width="40%">\cx</td>
+        <td valign="top" width="43%">The ASCII escape character
+        x, for example \c@ is equivalent to escape-@.</td>
+        <td valign="top" width="9%">&nbsp;</td>
+    </tr>
+    <tr>
+        <td valign="top" width="8%">&nbsp;</td>
+        <td valign="top" width="40%">\e</td>
+        <td valign="top" width="43%">The ASCII escape character.</td>
+        <td valign="top" width="9%">&nbsp;</td>
+    </tr>
+    <tr>
+        <td valign="top" width="8%">&nbsp;</td>
+        <td valign="top" width="40%">\dd</td>
+        <td valign="top" width="43%">An octal character constant,
+        for example \10.</td>
+        <td valign="top" width="9%">&nbsp;</td>
+    </tr>
+</table>
+
+<p><br>
+&nbsp; </p>
+
+<p><b><i>Perl format strings</i></b> </p>
+
+<p>Perl format strings are the same as the default syntax except
+that the characters ()?: have no special meaning. </p>
+
+<p><b><i>Sed format strings</i></b> </p>
+
+<p>Sed format strings use only the characters \ and &amp; as
+special characters. </p>
+
+<p>\n where n is a digit, is expanded to the nth sub-expression. </p>
+
+<p>&amp; is expanded to the whole of the match (equivalent to \0).
+</p>
+
+<p>Other escape sequences are expanded as per the default syntax.
+<br>
+</p>
+
+<hr>
+
+<p><i>Copyright </i><a href="mailto:John_Maddock@compuserve.com"><i>Dr
+John Maddock</i></a><i> 1998-2000 all rights reserved.</i> </p>
+</body>
+</html>

@@ -1,0 +1,177 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 3.2//EN">
+
+<html>
+<head>
+<title>Permutation Iterator Adaptor Documentation</title>
+</head>
+
+<body bgcolor="#FFFFFF" text="#000000">
+        
+<h1>Permutation Iterator Adaptor</h1>
+<p>Defined in header <a href="../../boost/permutation_iterator.hpp">boost/permutation_iterator.hpp</a></p>
+<p>The permutation iterator adaptor provides an iterator to a permutation of a given range.
+(<a href="http://www.cut-the-knot.com/do_you_know/permutation.html">see definition of permutation</a>).
+The adaptor takes two arguments
+<ul>
+<li>an iterator to the range V on which the <a href="http://www.cut-the-knot.com/do_you_know/permutation.html">permutation</a> will be applied</li>
+<li>the reindexing scheme that defines how the elements of V will be permuted.</li>
+</ul>
+
+<p>Note that the permutation iterator is not limited to strict permutations of the given range V. 
+The distance between begin and end of the reindexing iterators is allowed to be smaller compared to the 
+size of the range V, in which case the permutation iterator only provides a permutation of a subrange of V. 
+The indexes neither need to be unique. In this same context, it must be noted that the past the end permutation iterator is 
+completely defined by means of the past-the-end iterator to the indices</p> 
+
+<h2>Synopsis</h2>
+
+<blockquote>
+<pre>
+namespace boost {
+  template &lt;class IndexIterator&gt;
+  class permutation_iterator_policies;
+
+  template &lt;class ElementIterator, class IndexIterator&gt;
+  class permutation_iterator_generator;
+
+  template &lt;class ElementIterator, class IndexIterator&gt;
+  typename permutation_iterator_generator&lt;ElementIterator, IndexIterator&gt;::type
+  make_permutation_iterator(ElementIterator&amp; base, IndexIterator&amp; indexing);
+}
+</pre>
+</blockquote>
+
+
+<h2>The Permutation Iterator Generator Class Template</h2>
+
+<p>The <code>permutation_iterator_generator</code> is a helper class whose purpose
+is to construct a permutation iterator <strong>type</strong>. This class has
+two template arguments, the first being the iterator type over the range V, the
+second being the type of the iterator over the indices.
+
+<blockquote>
+<pre>
+template &lt;class ElementIterator, class IndexIterator&gt;
+class permutation_iterator_generator
+{
+public:
+  typedef <a href="iterator_adaptors.htm#iterator_adaptor">iterator_adaptor</a>&lt...&gt; type; // the resulting permutation iterator type 
+}
+</pre>
+</blockquote>
+
+
+<h3>Template Parameters</h3>
+
+<table border>
+<tr>
+<th>Parameter</th>
+<th>Description</th>
+</tr>
+
+<tr>
+<td><tt>ElementIterator</tt></td>
+<td>The iterator over the elements to be permuted. This type must be a model
+of <a href="http://www.sgi.com/tech/stl/RandomAccessIterator.html">RandomAccessIterator</a></td>
+</td>
+
+<tr>
+<td><tt>IndexIterator</tt></td>
+<td>The iterator over the new indexing scheme. This type must at least be a model
+of <a href="http://www.sgi.com/tech/stl/ForwardIterator.html">ForwardIterator</a>.
+The <code>IndexIterator::value_type</code> must be convertible to the 
+<code>ElementIterator::difference_type</code>.</td>
+</table>
+
+<h3>Concept Model</h3>
+The permutation iterator is always a model of the same concept as the IndexIterator.
+
+<h3>Members</h3>
+The permutation iterator implements the member functions
+and operators required for the 
+<a href="http://www.sgi.com/tech/stl/RandomAccessIterator.html">Random Access Iterator</a>
+concept. However, the permutation iterator can only meet the complexity guarantees 
+of the same concept as the IndexIterator. Thus for instance, although the permutation
+iterator provides <code>operator+=(distance)</code>, this operation will take linear time
+in case the IndexIterator is a model of ForwardIterator instead of amortized constant time.
+
+<br>
+
+<h2><a name="make_generator_iterator">The Permutation Iterator Object Generator</a></h2>
+
+The <code>make_permutation_iterator()</code> function provides a
+convenient way to create permutation iterator objects. The function
+saves the user the trouble of explicitly writing out the iterator
+types.
+
+<blockquote>
+<pre>
+template &lt;class ElementIterator, class IndexIterator &gt;
+typename permutation_iterator_generator&lt;ElementIterator, IndexIterator&gt;::type
+make_permutation_iterator(ElementIterator&amp; base, IndexIterator&amp; indices);
+</pre>
+</blockquote>
+
+<h2>Example</h2>
+<blockquote>
+<pre>
+  using namespace boost;
+  int i = 0;
+
+  typedef std::vector< int > element_range_type;
+  typedef std::list< int > index_type;
+
+  static const int element_range_size = 10;
+  static const int index_size = 4;
+
+  element_range_type elements( element_range_size );
+  for(element_range_type::iterator el_it = elements.begin() ; el_it != elements.end() ; ++el_it) *el_it = std::distance(elements.begin(), el_it);
+
+  index_type indices( index_size );
+  for(index_type::iterator i_it = indices.begin() ; i_it != indices.end() ; ++i_it ) *i_it = element_range_size - index_size + std::distance(indices.begin(), i_it);
+  std::reverse( indices.begin(), indices.end() );
+
+  typedef permutation_iterator_generator< element_range_type::iterator, index_type::iterator >::type permutation_type;
+  permutation_type begin = make_permutation_iterator( elements.begin(), indices.begin() );
+  permutation_type it = begin;
+  permutation_type end = make_permutation_iterator( elements.begin(), indices.end() );
+
+  std::cout << "The original range is : ";
+  std::copy( elements.begin(), elements.end(), std::ostream_iterator< int >( std::cout, " " ) );
+  std::cout << "\n";
+
+  std::cout << "The reindexing scheme is : ";
+  std::copy( indices.begin(), indices.end(), std::ostream_iterator< int >( std::cout, " " ) );
+  std::cout << "\n";
+
+  std::cout << "The permutated range is : ";
+  std::copy( begin, end, std::ostream_iterator< int >( std::cout, " " ) );
+  std::cout << "\n";
+
+  std::cout << "Elements at even indices in the permutation : ";
+  it = begin;
+  for(i = 0; i < index_size / 2 ; ++i, it+=2 ) std::cout << *it << " ";
+  std::cout << "\n";
+
+  std::cout << "Permutation backwards : ";
+  it = begin + (index_size);
+  assert( it != begin );
+  for( ; it-- != begin ; ) std::cout << *it << " ";
+  std::cout << "\n";
+
+  std::cout << "Iterate backward with stride 2 : ";
+  it = begin + (index_size - 1);
+  for(i = 0 ; i < index_size / 2 ; ++i, it-=2 ) std::cout << *it << " ";
+  std::cout << "\n";
+</pre>
+</blockquote>
+
+<br><br><br><hr>
+Thanks: The permutation iterator is only a small addition to the superb iterator adaptors
+library of David Abrahams and Jeremy Siek.
+<br><br>
+
+Copyright 2001 Toon Knapen.
+
+</body>
+</html>

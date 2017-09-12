@@ -1,0 +1,314 @@
+<html>
+
+<head>
+<meta http-equiv="Content-Type"
+content="text/html; charset=iso-8859-1">
+<meta name="Template"
+content="C:\PROGRAM FILES\MICROSOFT OFFICE\OFFICE\html.dot">
+<meta name="GENERATOR" content="Microsoft FrontPage Express 2.0">
+<title>Regex++, POSIX API Reference</title>
+</head>
+
+<body bgcolor="#FFFFFF" link="#0000FF" vlink="#800080">
+
+<p>&nbsp; </p>
+
+<table border="0" cellpadding="7" cellspacing="0" width="100%">
+    <tr>
+        <td valign="top"><h3><img src="../../c++boost.gif"
+        alt="C++ Boost" width="276" height="86"></h3>
+        </td>
+        <td valign="top"><h3 align="center">Regex++, POSIX API
+        Reference. </h3>
+        <p align="left"><i>Copyright (c) 1998-2001 </i></p>
+        <p align="left"><i>Dr John Maddock</i></p>
+        <p align="left"><i>Permission to use, copy, modify,
+        distribute and sell this software and its documentation
+        for any purpose is hereby granted without fee, provided
+        that the above copyright notice appear in all copies and
+        that both that copyright notice and this permission
+        notice appear in supporting documentation. Dr John
+        Maddock makes no representations about the suitability of
+        this software for any purpose. It is provided &quot;as is&quot;
+        without express or implied warranty.</i></p>
+        </td>
+    </tr>
+</table>
+
+<hr>
+
+<h3><a name="posix"></a><i>POSIX compatibility library</i></h3>
+
+<pre>#include &lt;boost/cregex.hpp&gt;
+<i>or</i>:
+#include &lt;boost/regex.h&gt;</pre>
+
+<p>The following functions are available for users who need a
+POSIX compatible C library, they are available in both Unicode
+and narrow character versions, the standard POSIX API names are
+macros that expand to one version or the other depending upon
+whether UNICODE is defined or not. </p>
+
+<p><b>Important</b>: Note that all the symbols defined here are
+enclosed inside namespace <i>boost</i> when used in C++ programs,
+unless you use #include &lt;boost/regex.h&gt; instead - in which
+case the symbols are still defined in namespace boost, but are
+made available in the global namespace as well.</p>
+
+<p>The functions are defined as: </p>
+
+<pre>extern &quot;C&quot; {
+<b>int</b> regcompA(regex_tA*, <b>const</b> <b>char</b>*, <b>int</b>);
+<b>unsigned</b> <b>int</b> regerrorA(<b>int</b>, <b>const</b> regex_tA*, <b>char</b>*, <b>unsigned</b> <b>int</b>);
+<b>int</b> regexecA(<b>const</b> regex_tA*, <b>const</b> <b>char</b>*, <b>unsigned</b> <b>int</b>, regmatch_t*, <b>int</b>);
+<b>void</b> regfreeA(regex_tA*);
+
+<b>int</b> regcompW(regex_tW*, <b>const</b> <b>wchar_t</b>*, <b>int</b>);
+<b>unsigned</b> <b>int</b> regerrorW(<b>int</b>, <b>const</b> regex_tW*, <b>wchar_t</b>*, <b>unsigned</b> <b>int</b>);
+<b>int</b> regexecW(<b>const</b> regex_tW*, <b>const</b> <b>wchar_t</b>*, <b>unsigned</b> <b>int</b>, regmatch_t*, <b>int</b>);
+<b>void</b> regfreeW(regex_tW*);
+
+#ifdef UNICODE
+#define regcomp regcompW
+#define regerror regerrorW
+#define regexec regexecW
+#define regfree regfreeW
+#define regex_t regex_tW
+#else
+#define regcomp regcompA
+#define regerror regerrorA
+#define regexec regexecA
+#define regfree regfreeA
+#define regex_t regex_tA
+#endif
+}</pre>
+
+<p>All the functions operate on structure <b>regex_t</b>, which
+exposes two public members: </p>
+
+<p><b>unsigned int re_nsub</b> this is filled in by <b>regcomp</b>
+and indicates the number of sub-expressions contained in the
+regular expression. </p>
+
+<p><b>const TCHAR* re_endp</b> points to the end of the
+expression to compile when the flag REG_PEND is set. </p>
+
+<p><i>Footnote: regex_t is actually a #define - it is either
+regex_tA or regex_tW depending upon whether UNICODE is defined or
+not, TCHAR is either char or wchar_t again depending upon the
+macro UNICODE.</i> </p>
+
+<p><b>regcomp</b> takes a pointer to a <b>regex_t</b>, a pointer
+to the expression to compile and a flags parameter which can be a
+combination of: <br>
+&nbsp; </p>
+
+<table border="0" cellpadding="7" cellspacing="0" width="100%">
+    <tr>
+        <td width="5%">&nbsp;</td>
+        <td valign="top" width="45%">REG_EXTENDED</td>
+        <td valign="top" width="45%">Compiles modern regular
+        expressions. Equivalent to regbase::char_classes |
+        regbase::intervals | regbase::bk_refs.</td>
+        <td width="5%">&nbsp;</td>
+    </tr>
+    <tr>
+        <td width="5%">&nbsp;</td>
+        <td valign="top" width="45%">REG_BASIC</td>
+        <td valign="top" width="45%">Compiles basic (obsolete)
+        regular expression syntax. Equivalent to regbase::char_classes
+        | regbase::intervals | regbase::limited_ops | regbase::bk_braces
+        | regbase::bk_parens | regbase::bk_refs.</td>
+        <td width="5%">&nbsp;</td>
+    </tr>
+    <tr>
+        <td width="5%">&nbsp;</td>
+        <td valign="top" width="45%">REG_NOSPEC</td>
+        <td valign="top" width="45%">All characters are ordinary,
+        the expression is a literal string.</td>
+        <td width="5%">&nbsp;</td>
+    </tr>
+    <tr>
+        <td width="5%">&nbsp;</td>
+        <td valign="top" width="45%">REG_ICASE</td>
+        <td valign="top" width="45%">Compiles for matching that
+        ignores character case.</td>
+        <td width="5%">&nbsp;</td>
+    </tr>
+    <tr>
+        <td width="5%">&nbsp;</td>
+        <td valign="top" width="45%">REG_NOSUB</td>
+        <td valign="top" width="45%">Has no effect in this
+        library.</td>
+        <td width="5%">&nbsp;</td>
+    </tr>
+    <tr>
+        <td width="5%">&nbsp;</td>
+        <td valign="top" width="45%">REG_NEWLINE</td>
+        <td valign="top" width="45%">When this flag is set a dot
+        does not match the newline character.</td>
+        <td width="5%">&nbsp;</td>
+    </tr>
+    <tr>
+        <td width="5%">&nbsp;</td>
+        <td valign="top" width="45%">REG_PEND</td>
+        <td valign="top" width="45%">When this flag is set the
+        re_endp parameter of the regex_t structure must point to
+        the end of the regular expression to compile.</td>
+        <td width="5%">&nbsp;</td>
+    </tr>
+    <tr>
+        <td width="5%">&nbsp;</td>
+        <td valign="top" width="45%">REG_NOCOLLATE</td>
+        <td valign="top" width="45%">When this flag is set then
+        locale dependent collation for character ranges is turned
+        off.</td>
+        <td width="5%">&nbsp;</td>
+    </tr>
+    <tr>
+        <td width="5%">&nbsp;</td>
+        <td valign="top" width="45%">REG_ESCAPE_IN_LISTS<br>
+        , , , </td>
+        <td valign="top" width="45%">When this flag is set, then
+        escape sequences are permitted in bracket expressions (character
+        sets).</td>
+        <td width="5%">&nbsp;</td>
+    </tr>
+    <tr>
+        <td width="5%">&nbsp;</td>
+        <td valign="top" width="45%">REG_NEWLINE_ALT&nbsp;</td>
+        <td valign="top" width="45%">When this flag is set then
+        the newline character is equivalent to the alternation
+        operator |.</td>
+        <td width="5%">&nbsp;</td>
+    </tr>
+    <tr>
+        <td width="5%">&nbsp;</td>
+        <td valign="top" width="45%">REG_PERL&nbsp;</td>
+        <td valign="top" width="45%">&nbsp;A shortcut for perl-like
+        behavior: REG_EXTENDED | REG_NOCOLLATE |
+        REG_ESCAPE_IN_LISTS</td>
+        <td width="5%">&nbsp;</td>
+    </tr>
+    <tr>
+        <td width="5%">&nbsp;</td>
+        <td valign="top" width="45%">REG_AWK</td>
+        <td valign="top" width="45%">A shortcut for awk-like
+        behavior: REG_EXTENDED | REG_ESCAPE_IN_LISTS</td>
+        <td width="5%">&nbsp;</td>
+    </tr>
+    <tr>
+        <td width="5%">&nbsp;</td>
+        <td valign="top" width="45%">REG_GREP</td>
+        <td valign="top" width="45%">A shortcut for grep like
+        behavior: REG_BASIC | REG_NEWLINE_ALT</td>
+        <td width="5%">&nbsp;</td>
+    </tr>
+    <tr>
+        <td width="5%">&nbsp;</td>
+        <td valign="top" width="45%">REG_EGREP</td>
+        <td valign="top" width="45%">&nbsp;A shortcut for egrep
+        like behavior: REG_EXTENDED | REG_NEWLINE_ALT</td>
+        <td width="5%">&nbsp;</td>
+    </tr>
+</table>
+
+<p><br>
+&nbsp; </p>
+
+<p><b>regerror</b> takes the following parameters, it maps an
+error code to a human readable string: <br>
+&nbsp; </p>
+
+<table border="0" cellpadding="7" cellspacing="0" width="100%">
+    <tr>
+        <td width="5%">&nbsp;</td>
+        <td valign="top" width="50%">int code</td>
+        <td valign="top" width="50%">The error code.</td>
+        <td width="5%">&nbsp;</td>
+    </tr>
+    <tr>
+        <td>&nbsp;</td>
+        <td valign="top" width="50%">const regex_t* e</td>
+        <td valign="top" width="50%">The regular expression (can
+        be null).</td>
+        <td>&nbsp;</td>
+    </tr>
+    <tr>
+        <td>&nbsp;</td>
+        <td valign="top" width="50%">char* buf</td>
+        <td valign="top" width="50%">The buffer to fill in with
+        the error message.</td>
+        <td>&nbsp;</td>
+    </tr>
+    <tr>
+        <td>&nbsp;</td>
+        <td valign="top" width="50%">unsigned int buf_size</td>
+        <td valign="top" width="50%">The length of buf.</td>
+        <td>&nbsp;</td>
+    </tr>
+</table>
+
+<p>If the error code is OR'ed with REG_ITOA then the message that
+results is the printable name of the code rather than a message,
+for example &quot;REG_BADPAT&quot;. If the code is REG_ATIO then <b>e</b>
+must not be null and <b>e-&gt;re_pend</b> must point to the
+printable name of an error code, the return value is then the
+value of the error code. For any other value of <b>code</b>, the
+return value is the number of characters in the error message, if
+the return value is greater than or equal to <b>buf_size</b> then
+<b>regerror</b> will have to be called again with a larger buffer.</p>
+
+<p><b>regexec</b> finds the first occurrence of expression <b>e</b>
+within string <b>buf</b>. If <b>len</b> is non-zero then *<b>m</b>
+is filled in with what matched the regular expression, <b>m[0]</b>
+contains what matched the whole string, <b>m[1] </b>the first sub-expression
+etc, see <b>regmatch_t</b> in the header file declaration for
+more details. The <b>eflags</b> parameter can be a combination of:
+<br>
+&nbsp; </p>
+
+<table border="0" cellpadding="7" cellspacing="0" width="100%">
+    <tr>
+        <td width="5%">&nbsp;</td>
+        <td valign="top" width="50%">REG_NOTBOL</td>
+        <td valign="top" width="50%">Parameter <b>buf </b>does
+        not represent the start of a line.</td>
+        <td width="5%">&nbsp;</td>
+    </tr>
+    <tr>
+        <td>&nbsp;</td>
+        <td valign="top" width="50%">REG_NOTEOL</td>
+        <td valign="top" width="50%">Parameter <b>buf</b> does
+        not terminate at the end of a line.</td>
+        <td>&nbsp;</td>
+    </tr>
+    <tr>
+        <td>&nbsp;</td>
+        <td valign="top" width="50%">REG_STARTEND</td>
+        <td valign="top" width="50%">The string searched starts
+        at buf + pmatch[0].rm_so and ends at buf + pmatch[0].rm_eo.</td>
+        <td>&nbsp;</td>
+    </tr>
+</table>
+
+<p><br>
+&nbsp; </p>
+
+<p>Finally <b>regfree</b> frees all the memory that was allocated
+by regcomp. </p>
+
+<p><i>Footnote: this is an abridged reference to the POSIX API
+functions, it is provided for compatibility with other libraries,
+rather than an API to be used in new code (unless you need access
+from a language other than C++). This version of these functions
+should also happily coexist with other versions, as the names
+used are macros that expand to the actual function names.</i> <br>
+</p>
+
+<hr>
+
+<p><i>Copyright </i><a href="mailto:John_Maddock@compuserve.com"><i>Dr
+John Maddock</i></a><i> 1998-2000 all rights reserved.</i> </p>
+</body>
+</html>

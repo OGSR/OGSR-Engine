@@ -1,0 +1,65 @@
+.\" <!!---------------------------------------------------------------------->
+.\" <!! Copyright (C) 1999 Dietmar Kuehl, Claas Solutions GmbH >
+.\" <!!>
+.\" <!! Permission to use, copy, modify, distribute and sell this >
+.\" <!! software for any purpose is hereby granted without fee, provided >
+.\" <!! that the above copyright notice appears in all copies and that >
+.\" <!! both that copyright notice and this permission notice appear in >
+.\" <!! supporting documentation. Dietmar Kuehl and Claas Solutions make no >
+.\" <!! representations about the suitability of this software for any >
+.\" <!! purpose. It is provided "as is" without express or implied warranty. >
+.\" <!!---------------------------------------------------------------------->
+.TH mfd/stack 3 "09.Juli 1999" "Claas Solutions" "boost"
+.SH NAME
+mfd/stack - Template Class \fBstack<T, Cont>\fP
+
+.SH SYNOPSIS
+
+
+.nf
+#include "boost/stack.hpp"
+    
+template <class T, class Cont = std::vector<T> >
+class boost::stack
+{
+public:
+  typedef typename Cont::value_type      value_type;
+  typedef typename Cont::reference       reference;
+  typedef typename Cont::const_reference const_reference;
+  typedef typename Cont::size_type       size_type;
+  typedef Cont                           container_type;
+  typedef typename Cont::iterator        iterator;
+  typedef typename Cont::const_iterator  const_iterator;
+
+  explicit stack(Cont const& cont = Cont());
+
+  bool              empty() const;
+  size_type         size() const;
+  void              push(value_type const& val);
+  void              pop();
+  value_type const& top() const;
+  value_type&       top();
+
+  iterator       begin();
+  iterator       end();
+  const_iterator begin() const;
+  const_iterator end() const;
+};
+.fi 0 
+.SH DESCRIPTION
+The class \fBstack\fP is actually not really a priority queue in the normal sense. However, if you assume that the element which is stored the shortest time in the \fBstack\fP has the largest priority, you can view this class as a priority queue: It provides access to the element which is stored the shortest time in the \fBstack\fP (ie. \fBstack\fP has "last in, first out" semantics). 
+
+The class \fBstack\fP is a replacement for the standard class \fBstd::stack\fP which provides logical inspectabiliy in addition to the methods provided by the standard version. If you only need functionality provided by the standard class then you can use the standard class as well. 
+
+For a description of the methods of \fBstack<T, Cont>\fP see the description of common methods or the documentation of the standard class \fBstd::stack\fP. 
+.SH SEE ALSO
+heap(3), heap-common(3) 
+.SH AUTHOR
+Dietmar Kühl (Claas Solutions)
+.br
+e-mail: dietmar.kuehl@claas-solutions.de
+.br
+http://www.claas-solutions.de/kuehl
+.br
+
+

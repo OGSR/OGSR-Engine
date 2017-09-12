@@ -1,0 +1,476 @@
+<html>
+
+<head>
+<meta http-equiv="Content-Type"
+content="text/html; charset=iso-8859-1">
+<meta name="keywords"
+content="regex++, regular expressions, regular expression library, C++">
+<meta name="Template"
+content="C:\PROGRAM FILES\MICROSOFT OFFICE\OFFICE\html.dot">
+<meta name="GENERATOR" content="Microsoft FrontPage Express 2.0">
+<title>regex++, Introduction</title>
+</head>
+
+<body bgcolor="#FFFFFF" link="#0000FF" vlink="#800080">
+
+<p>&nbsp; </p>
+
+<table border="0" cellpadding="7" cellspacing="0" width="100%">
+    <tr>
+        <td valign="top"><h3><img src="../../c++boost.gif"
+        alt="C++ Boost" width="276" height="86"></h3>
+        </td>
+        <td valign="top"><h3 align="center">Regex++, Introduction.</h3>
+        <p align="left"><i>Copyright (c) 1998-2001 </i></p>
+        <p align="left"><i>Dr John Maddock</i></p>
+        <p align="left"><i>Permission to use, copy, modify,
+        distribute and sell this software and its documentation
+        for any purpose is hereby granted without fee, provided
+        that the above copyright notice appear in all copies and
+        that both that copyright notice and this permission
+        notice appear in supporting documentation. Dr John
+        Maddock makes no representations about the suitability of
+        this software for any purpose. It is provided &quot;as is&quot;
+        without express or implied warranty.</i></p>
+        </td>
+    </tr>
+</table>
+
+<hr>
+
+<h3><a name="intro"></a><i>Introduction</i></h3>
+
+<p>Regular expressions are a form of pattern-matching that are
+often used in text processing; many users will be familiar with
+the Unix utilities <i>grep</i>, <i>sed</i> and <i>awk</i>, and
+the programming language <i>perl</i>, each of which make
+extensive use of regular expressions. Traditionally C++ users
+have been limited to the POSIX C API's for manipulating regular
+expressions, and while regex++ does provide these API's, they do
+not represent the best way to use the library. For example regex++
+can cope with wide character strings, or search and replace
+operations (in a manner analogous to either sed or perl),
+something that traditional C libraries can not do.</p>
+
+<p>The class <a href="template_class_ref.htm#reg_expression">boost::reg_expression</a>
+is the key class in this library; it represents a &quot;machine
+readable&quot; regular expression, and is very closely modelled
+on std::basic_string, think of it as a string plus the actual
+state-machine required by the regular expression algorithms. Like
+std::basic_string there are two typedefs that are almost always
+the means by which this class is referenced:</p>
+
+<pre><b>namespace </b>boost{
+
+<b>template</b> &lt;<b>class</b> charT, 
+<b>          class</b> traits = regex_traits&lt;charT&gt;, 
+          <b>class</b> Allocator = std::allocator&lt;charT&gt; &gt;
+<b>class</b> reg_expression;
+
+<b>typedef</b> reg_expression&lt;<b>char</b>&gt; regex;
+<b>typedef</b> reg_expression&lt;<b>wchar_t&gt;</b> wregex;
+
+}</pre>
+
+<p>To see how this library can be used, imagine that we are
+writing a credit card processing application. Credit card numbers
+generally come as a string of 16-digits, separated into groups of
+4-digits, and separated by either a space or a hyphen. Before
+storing a credit card number in a database (not necessarily
+something your customers will appreciate!), we may want to verify
+that the number is in the correct format. To match any digit we
+could use the regular expression [0-9], however ranges of
+characters like this are actually locale dependent. Instead we
+should use the POSIX standard form [[:digit:]], or the regex++
+and perl shorthand for this \d (note that many older libraries
+tended to be hard-coded to the C-locale, consequently this was
+not an issue for them). That leaves us with the following regular
+expression to validate credit card number formats:</p>
+
+<p>(\d{4}[- ]){3}\d{4}</p>
+
+<p>Here the parenthesis act to group (and mark for future
+reference) sub-expressions, and the {4} means &quot;repeat
+exactly 4 times&quot;. This is an example of the extended regular
+expression syntax used by perl, awk and egrep. Regex++ also
+supports the older &quot;basic&quot; syntax used by sed and grep,
+but this is generally less useful, unless you already have some
+basic regular expressions that you need to reuse.</p>
+
+<p>Now lets take that expression and place it in some C++ code to
+validate the format of a credit card number:</p>
+
+<pre><b>bool</b> validate_card_format(<b>const</b> std::string s)
+{
+   <b>static</b> <b>const</b> <a
+href="template_class_ref.htm#reg_expression">boost::regex</a> e(&quot;(\\d{4}[- ]){3}\\d{4}&quot;);
+   <b>return</b> <a href="template_class_ref.htm#query_match">regex_match</a>(s, e);
+}</pre>
+
+<p>Note how we had to add some extra escapes to the expression:
+remember that the escape is seen once by the C++ compiler, before
+it gets to be seen by the regular expression engine, consequently
+escapes in regular expressions have to be doubled up when
+embedding them in C/C++ code. Also note that all the examples
+assume that your compiler supports Koenig lookup, if yours
+doesn't (for example VC6), then you will have to add some boost::
+prefixes to some of the function calls in the examples.</p>
+
+<p>Those of you who are familiar with credit card processing,
+will have realised that while the format used above is suitable
+for human readable card numbers, it does not represent the format
+required by online credit card systems; these require the number
+as a string of 16 (or possibly 15) digits, without any
+intervening spaces. What we need is a means to convert easily
+between the two formats, and this is where search and replace
+comes in. Those who are familiar with the utilities <i>sed</i>
+and <i>perl</i> will already be ahead here; we need two strings -
+one a regular expression - the other a &quot;<a
+href="format_string.htm">format string</a>&quot; that provides a
+description of the text to replace the match with. In regex++
+this search and replace operation is performed with the algorithm
+regex_merge, for our credit card example we can write two
+algorithms like this to provide the format conversions:</p>
+
+<pre>
+<i>// match any format with the regular expression:
+</i><b>const</b> boost::regex e(&quot;\\A(\\d{3,4})[- ]?(\\d{4})[- ]?(\\d{4})[- ]?(\\d{4})\\z&quot;);
+<b>const</b> std::string machine_format(&quot;\\1\\2\\3\\4&quot;);
+<b>const</b> std::string human_format(&quot;\\1-\\2-\\3-\\4&quot;);
+
+std::string machine_readable_card_number(<b>const</b> std::string s)
+{
+   <b>return</b> <a href="template_class_ref.htm#reg_merge">regex_merge</a>(s, e, machine_format, boost::match_default | boost::format_sed);
+}
+
+std::string human_readable_card_number(<b>const</b> std::string s)
+{
+   <b>return</b> <a href="template_class_ref.htm#reg_merge">regex_merge</a>(s, e, human_format, boost::match_default | boost::format_sed);
+}</pre>
+
+<p>Here we've used marked sub-expressions in the regular
+expression to split out the four parts of the card number as
+separate fields, the format string then uses the sed-like syntax
+to replace the matched text with the reformatted version.</p>
+
+<p>In the examples above, we haven't directly manipulated the
+results of a regular expression match, however in general the
+result of a match contains a number of sub-expression matches in
+addition to the overall match. When the library needs to report a
+regular expression match it does so using an instance of the
+class <a href="template_class_ref.htm#reg_match">match_results</a>,
+as before there are typedefs of this class for the most common
+cases: </p>
+
+<pre><b>namespace </b>boost{
+<b>typedef</b> match_results&lt;<b>const</b> <b>char</b>*&gt; cmatch;
+<b>typedef</b> match_results&lt;<b>const</b> <b>wchar_t</b>*&gt; wcmatch;
+<strong>typedef</strong> match_results&lt;std::string::const_iterator&gt; smatch;
+<strong>typedef</strong> match_results&lt;std::wstring::const_iterator&gt; wsmatch; 
+}</pre>
+
+<p>The algorithms <a href="template_class_ref.htm#reg_search">regex_search</a>
+and <a href="template_class_ref.htm#reg_grep">regex_grep</a> (i.e.
+finding all matches in a string) make use of match_results to
+report what matched.</p>
+
+<p>Note that these algorithms are not restricted to searching
+regular C-strings, any bidirectional iterator type can be
+searched, allowing for the possibility of seamlessly searching
+almost any kind of data. </p>
+
+<p>For search and replace operations in addition to the algorithm
+<a href="template_class_ref.htm#reg_merge">regex_merge</a> that
+we have already seen, the algorithm <a
+href="template_class_ref.htm#reg_format">regex_format</a> takes
+the result of a match and a format string, and produces a new
+string by merging the two.</p>
+
+<p>For those that dislike templates, there is a high level
+wrapper class RegEx that is an encapsulation of the lower level
+template code - it provides a simplified interface for those that
+don't need the full power of the library, and supports only
+narrow characters, and the &quot;extended&quot; regular
+expression syntax. </p>
+
+<p>The <a href="posix_ref.htm#posix">POSIX API</a> functions:
+regcomp, regexec, regfree and regerror, are available in both
+narrow character and Unicode versions, and are provided for those
+who need compatibility with these API's. </p>
+
+<p>Finally, note that the library now has run-time <a
+href="appendix.htm#localisation">localization</a> support, and
+recognizes the full POSIX regular expression syntax - including
+advanced features like multi-character collating elements and
+equivalence classes - as well as providing compatibility with
+other regular expression libraries including GNU and BSD4 regex
+packages, and to a more limited extent perl 5. </p>
+
+<h3><a name="Installation"></a><i>Installation and Configuration
+Options</i> </h3>
+
+<p><em>[ </em><strong><i>Important</i></strong><em>: If you are
+upgrading from the 2.x version of this library then you will find
+a number of changes to the documented header names and library
+interfaces, existing code should still compile unchanged however
+- see </em><a href="appendix.htm#upgrade"><font color="#0000FF"><em>Note
+for Upgraders</em></font></a><em>. ]</em></p>
+
+<p>When you extract the library from its zip file, you must
+preserve its internal directory structure (for example by using
+the -d option when extracting). If you didn't do that when
+extracting, then you'd better stop reading this, delete the files
+you just extracted, and try again! </p>
+
+<p>This library should not need configuring before use; most
+popular compilers/standard libraries/platforms are already
+supported &quot;as is&quot;. If you do experience configuration
+problems, or just want to test the configuration with your
+compiler, then the process is the same as for all of boost; see
+the <a href="../config/config.htm">configuration library
+documentation</a>.</p>
+
+<p>The library will encase all code inside namespace boost. </p>
+
+<p>Unlike some other template libraries, this library consists of
+a mixture of template code (in the headers) and static code and
+data (in cpp files). Consequently it is necessary to build the
+library's support code into a library or archive file before you
+can use it, instructions for specific platforms are as follows: </p>
+
+<p><b>Borland C++ Builder:</b> </p>
+
+<ul>
+    <li>Open up a console window and change to the
+        &lt;boost&gt;\libs\regex\build directory. </li>
+    <li>Select the appropriate makefile (bcb4.mak for C++ Builder
+        4, bcb5.mak for C++ Builder 5, and bcb6.mak for C++
+        Builder 6). </li>
+    <li>Invoke the makefile (pass the full path to your version
+        of make if you have more than one version installed, the
+        makefile relies on the path to make to obtain your C++
+        Builder installation directory and tools) for example: </li>
+</ul>
+
+<pre>make -fbcb5.mak</pre>
+
+<p>The build process will build a variety of .lib and .dll files
+(the exact number depends upon the version of Borland's tools you
+are using) the .lib and dll files will be in a sub-directory
+called bcb4 or bcb5 depending upon the makefile used. To install
+the libraries into your development system use:</p>
+
+<p>make -fbcb5.mak install</p>
+
+<p>library files will be copied to &lt;BCROOT&gt;/lib and the
+dll's to &lt;BCROOT&gt;/bin, where &lt;BCROOT&gt; corresponds to
+the install path of your Borland C++ tools. </p>
+
+<p>You may also remove temporary files created during the build
+process (excluding lib and dll files) by using:</p>
+
+<p>make -fbcb5.mak clean</p>
+
+<p>Finally when you use regex++ it is only necessary for you to
+add the &lt;boost&gt; root director to your list of include
+directories for that project. It is not necessary for you to
+manually add a .lib file to the project; the headers will
+automatically select the correct .lib file for your build mode
+and tell the linker to include it. There is one caveat however:
+the library can not tell the difference between VCL and non-VCL
+enabled builds when building a GUI application from the command
+line, if you build from the command line with the 5.5 command
+line tools then you must define the pre-processor symbol _NO_VCL
+in order to ensure that the correct link libraries are selected:
+the C++ Builder IDE normally sets this automatically. Hint, users
+of the 5.5 command line tools may want to add a -D_NO_VCL to bcc32.cfg
+in order to set this option permanently. </p>
+
+<p>If you would prefer to do a static link to the regex libraries
+even when using the dll runtime then define
+BOOST_REGEX_STATIC_LINK, and if you want to suppress automatic
+linking altogether (and supply your own custom build of the lib)
+then define BOOST_REGEX_NO_LIB.</p>
+
+<p>If you are building with C++ Builder 6, you will find that
+&lt;boost/regex.hpp&gt; can not be used in a pre-compiled header
+(the actual problem is in &lt;locale&gt; which gets included by
+&lt;boost/regex.hpp&gt;), if this causes problems for you, then
+try defining BOOST_NO_STD_LOCALE when building, this will disable
+some features throughout boost, but may save you a lot in compile
+times!</p>
+
+<p><b>Microsoft Visual C++ 6</b><strong> and 7</strong></p>
+
+<p>You need version 6 of MSVC to build this library. If you are
+using VC5 then you may want to look at one of the previous
+releases of this <a
+href="http://ourworld.compuserve.com/homepages/john_maddock/regexpp.htm">library</a>
+</p>
+
+<p>Open up a command prompt, which has the necessary MSVC
+environment variables defined (for example by using the batch
+file Vcvars32.bat installed by the Visual Studio installation),
+and change to the &lt;boost&gt;\libs\regex\build directory. </p>
+
+<p>Select the correct makefile - vc6.mak for &quot;vanilla&quot;
+Visual C++ 6 or vc6-stlport.mak if you are using STLPort.</p>
+
+<p>Invoke the makefile like this:</p>
+
+<p>nmake -fvc6.mak</p>
+
+<p>You will now have a collection of lib and dll files in a
+&quot;vc6&quot; subdirectory, to install these into your
+development system use:</p>
+
+<p>nmake -fvc6.mak install</p>
+
+<p>The lib files will be copied to your &lt;VC6&gt;\lib directory
+and the dll files to &lt;VC6&gt;\bin, where &lt;VC6&gt; is the
+root of your Visual C++ 6 installation.</p>
+
+<p>You can delete all the temporary files created during the
+build (excluding lib and dll files) using:</p>
+
+<p>nmake -fvc6.mak clean </p>
+
+<p>Finally when you use regex++ it is only necessary for you to
+add the &lt;boost&gt; root directory to your list of include
+directories for that project. It is not necessary for you to
+manually add a .lib file to the project; the headers will
+automatically select the correct .lib file for your build mode
+and tell the linker to include it. </p>
+
+<p>Note that if you want to statically link to the regex library
+when using the dynamic C++ runtime, define
+BOOST_REGEX_STATIC_LINK when building your project (this only has
+an effect for release builds). If you want to add the source
+directly to your project then define BOOST_REGEX_NO_LIB to
+disable automatic library selection.</p>
+
+<p><strong><i>Important</i></strong><em>: there have been some
+reports of compiler-optimisation bugs affecting this library, (particularly
+with VC6 versions prior to service patch 5) the workaround is to
+build the library using /Oityb1 rather than /O2. That is to use
+all optimisation settings except /Oa. This problem is reported to
+affect some standard library code as well (in fact I'm not sure
+if the problem is with the regex code or the underlying standard
+library), so it's probably worthwhile applying this workaround in
+normal practice in any case.</em></p>
+
+<p>Note: if you have replaced the C++ standard library that comes
+with VC6, then when you build the library you must ensure that
+the environment variables &quot;INCLUDE&quot; and &quot;LIB&quot;
+have been updated to reflect the include and library paths for
+the new library - see vcvars32.bat (part of your Visual Studio
+installation) for more details. Alternatively if STLPort is in c:/stlport
+then you could use:</p>
+
+<p>nmake INCLUDES=&quot;-Ic:/stlport/stlport&quot; XLFLAGS=&quot;/LIBPATH:c:/stlport/lib&quot;
+-fvc6-stlport.mak</p>
+
+<p>If you are building with the full STLPort v4.x, then use the
+vc6-stlport.mak file provided and set the environment variable
+STLPORT_PATH to point to the location of your STLport
+installation (Note that the full STLPort libraries appear not to
+support single-thread static builds). <br>
+&nbsp; <br>
+&nbsp; </p>
+
+<p><b>GCC(2.95)</b> </p>
+
+<p>There is a conservative makefile for the g++ compiler. From
+the command prompt change to the &lt;boost&gt;/libs/regex/build
+directory and type: </p>
+
+<p>make -fgcc.mak </p>
+
+<p>At the end of the build process you should have a gcc sub-directory
+containing release and debug versions of the library (libboost_regex.a
+and libboost_regex_debug.a). When you build projects that use
+regex++, you will need to add the boost install directory to your
+list of include paths and add &lt;boost&gt;/libs/regex/build/gcc/libboost_regex.a
+to your list of library files. </p>
+
+<p>There is also a makefile to build the library as a shared
+library:</p>
+
+<p>make -fgcc-shared.mak</p>
+
+<p>which will build libboost_regex.so and libboost_regex_debug.so.</p>
+
+<p>Both of the these makefiles support the following environment
+variables:</p>
+
+<p>CXXFLAGS: extra compiler options - note that this applies to
+both the debug and release builds.</p>
+
+<p>INCLUDES: additional include directories.</p>
+
+<p>LDFLAGS: additional linker options.</p>
+
+<p>LIBS: additional library files.</p>
+
+<p>For the more adventurous there is a configure script in
+&lt;boost&gt;/libs/config; see the <a href="../config/config.htm">config
+library documentation</a>.</p>
+
+<p><b>Sun Workshop 6.1</b></p>
+
+<p>There is a makefile for the sun (6.1) compiler (C++ version 3.12).
+From the command prompt change to the &lt;boost&gt;/libs/regex/build
+directory and type: </p>
+
+<p>dmake -f sunpro.mak </p>
+
+<p>At the end of the build process you should have a sunpro sub-directory
+containing single and multithread versions of the library (libboost_regex.a,
+libboost_regex.so, libboost_regex_mt.a and libboost_regex_mt.so).
+When you build projects that use regex++, you will need to add
+the boost install directory to your list of include paths and add
+&lt;boost&gt;/libs/regex/build/sunpro/ to your library search
+path. </p>
+
+<p>Both of the these makefiles support the following environment
+variables:</p>
+
+<p>CXXFLAGS: extra compiler options - note that this applies to
+both the single and multithreaded builds.</p>
+
+<p>INCLUDES: additional include directories.</p>
+
+<p>LDFLAGS: additional linker options.</p>
+
+<p>LIBS: additional library files.</p>
+
+<p>LIBSUFFIX: a suffix to mangle the library name with (defaults
+to nothing).</p>
+
+<p>This makefile does not set any architecture specific options
+like -xarch=v9, you can set these by defining the appropriate
+macros, for example:</p>
+
+<p>dmake CXXFLAGS=&quot;-xarch=v9&quot; LDFLAGS=&quot;-xarch=v9&quot;
+LIBSUFFIX=&quot;_v9&quot; -f sunpro.mak</p>
+
+<p>will build v9 variants of the regex library named
+libboost_regex_v9.a etc.</p>
+
+<p><b>Other compilers:</b> </p>
+
+<p>There is a generic makefile (<a href="build/generic.mak">generic.mak</a>)
+provided in &lt;boost-root&gt;/libs/regex/build - see that
+makefile for details of environment variables that need to be set
+before use. Alternatively you can using the <a
+href="../../tools/build/index.html">Jam based build system</a>.
+If you need to configure the library for your platform, then
+refer to the <a href="../config/config.htm">config library
+documentation</a>.</p>
+
+<hr>
+
+<p><i>Copyright </i><a href="mailto:John_Maddock@compuserve.com"><i>Dr
+John Maddock</i></a><i> 1998-2001 all rights reserved.</i> </p>
+</body>
+</html>

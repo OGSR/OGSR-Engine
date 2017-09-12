@@ -1,0 +1,63 @@
+<!doctype html public "-//ietf//dtd html//en">
+<html><head><title>boost::mpl::push_back</title>
+<link rel="stylesheet" href="../mpl_wiki.css">
+</head><body bgcolor="white">
+<h1><a href="../Table_of_Contents.html"><img src="../mpl_logo.jpg" alt="[Home]" border=0 align="right"></a>push_back</h1><h3>Synopsis</h3>
+<p>
+<pre>
+template&lt;
+      typename Sequence
+    , typename T
+    &gt;
+struct push_back
+{
+    typedef <em>unspecified</em> type;
+};
+</pre>
+<p>
+<h3>Description</h3>
+<p>
+<code>push_back</code> performs an insertion at the end of the sequence. The algorithm returns a new sequence which contains type <code>T</code> as its last element. The result sequence preserves all the functional and performance characteristics of the original <code>Sequence</code>, except its size and identity.
+<p>
+<h3>Definition</h3>
+<p>
+<pre>
+#include "<a href="../../../../../boost/mpl/push_back.hpp">boost/mpl/push_back.hpp</a>"
+</pre>
+<p>
+<h3>Parameters</h3>
+<table border="1">
+<tr><th>&nbsp;Parameter&nbsp;</th><th>&nbsp;Requirement&nbsp;</th><th>&nbsp;Description &nbsp;</th></tr>
+<tr><td><code>Sequence</code></td><td>A model of <a href="../Extensible_Sequence.html">Extensible Sequence</a></td><td>A sequence to handle the insert operation. </td></tr>
+<tr><td><code>T</code></td><td>A type</td><td>The element to be inserted. </td></tr>
+</table>
+<p>
+<h3>Expression semantics</h3>
+<p>
+<table border="1">
+<tr><th>&nbsp;Expression&nbsp;</th><th>&nbsp;Expression&nbsp;type&nbsp;</th><th>&nbsp;Precondition&nbsp;</th><th>&nbsp;Semantics&nbsp;</th><th>&nbsp;Postcondition&nbsp;</th></tr>
+<tr><td><code>typedef push_back&lt;Sequence,T&gt;::type s;</code></td><td>A model of <a href="../Extensible_Sequence.html">Extensible Sequence</a></td><td>Equivalent to <code>typedef insert&lt; Sequence,end&lt;Sequence&gt;::type,T &gt;::type s;</code></td><td><code>size&lt;s&gt;::type::value == size&lt;Sequence&gt;::type::value + 1</code>; <code>back&lt;s&gt;::type</code> is identical to <code>T</code> </td></tr>
+</table>
+<p>
+<h3>Complexity</h3>
+<p>
+Amortized constant time [<a href="#1">1</a>].
+<p>
+<h3>Example</h3>
+<p>
+<pre>
+typedef <a href="../Reference/vector_c.html">vector_c</a>&lt;bool,false,false,false,true,true,true,false,false&gt; bools;
+typedef push_back&lt;bools,false_&gt;::type message;
+BOOST_STATIC_ASSERT(<a href="../Reference/back.html">back</a>&lt;message&gt;::type::value == false);
+BOOST_STATIC_ASSERT((<a href="../Reference/count_if.html">count_if</a>&lt;message, <a href="../Reference/equal_to.html">equal_to</a>&lt;_1,false_&gt; &gt;::type::value == 6));
+</pre>
+<p>
+<h3>Notes</h3>
+<p>
+[<a name="1">1</a>]  The algorithm can be viewed as a notational shorcut to more verbose <code>insert&lt; Sequence,end&lt;Sequence&gt;::type,T &gt;::type</code>, and is provided only if the sequence can meet the stated complexity requirements.<br>
+<p>
+<h3>See also</h3>
+<p>
+<a href="../Extensible_Sequence.html">Extensible Sequence</a>, <code><a href="../Reference/insert.html">insert</a></code>, <code><a href="../Reference/back.html">back</a></code>, <code><a href="../Reference/pop_back.html">pop_back</a></code>, <code><a href="../Reference/push_front.html">push_front</a></code>
+<p><hr>
+<a href="../Table_of_Contents.html">Table of Contents</a><br>Last edited March 12, 2003 6:34 am</body></html>

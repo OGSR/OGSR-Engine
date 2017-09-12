@@ -1,0 +1,49 @@
+#  (C) Copyright William E. Kempf 2001. Permission to copy, use, modify, sell
+#  and distribute this software is granted provided this copyright notice
+#  appears in all copies. This software is provided "as is" without express or
+#  implied warranty, and with no claim as to its suitability for any purpose.
+#
+# Boost.Threads example Jamfile
+#
+# Additional configuration variables used:
+#   1. PTW32 may be used on Win32 platforms to specify that the pthreads-win32
+#      library should be used instead of "native" threads. This feature is
+#      mostly used for testing and it's generally recommended you use the
+#      native threading libraries instead. PTW32 should be set to be a list
+#      of two strings, the first specifying the installation path of the
+#      pthreads-win32 library and the second specifying which library
+#      variant to link against (see the pthreads-win32 documentation).
+#      Example: jam -sPTW32="c:\pthreads-win32 pthreadVCE.lib"
+
+# Declare the location of this subproject relative to the root.
+
+subproject libs/thread/tutorial ;
+
+# Include threads.jam for Boost.Threads global build information.
+# This greatly simplifies the Jam code needed to configure the build
+# for the various Win32 build types.
+SEARCH on <module@>threads.jam = $(BOOST_ROOT)/libs/thread/build ;
+include <module@>threads.jam ;
+
+{
+    template tutorial
+        ## sources ##
+        : <template>thread_base
+          <dll>../build/boost_thread
+        ## requirements ##
+        :
+        ## default build ##
+        :
+    ;
+
+    exe helloworld : <template>tutorial helloworld.cpp ;
+    exe helloworld2 : <template>tutorial helloworld2.cpp ;
+    exe helloworld3 : <template>tutorial helloworld3.cpp ;
+    exe helloworld4 : <template>tutorial helloworld4.cpp ;
+    exe factorial : <template>tutorial factorial.cpp ;
+    exe factorial2 : <template>tutorial factorial2.cpp ;
+    exe factorial3 : <template>tutorial factorial3.cpp ;
+    exe counter : <template>tutorial counter.cpp ;
+    exe bounded_buffer : <template>tutorial bounded_buffer.cpp ;
+    exe once : <template>tutorial once.cpp ;
+}

@@ -1,0 +1,2 @@
+# The presence of this file emulates the Boost 1.27.0 release
+include $(BOOST_ROOT)/tools/build/bootstrap.jam ;

@@ -1,0 +1,120 @@
+I. Compiling FT Jam:
+--------------------
+
+  1. With a previous version of Jam:
+  ----------------------------------
+  
+  The easiest way to compile Jam is to use a previous version of the
+  program. If you already have one installed on your system, simply
+  type "jam" in this directory.
+  
+  This will create a new executable named "jam" or "jam.exe", located
+  in a new system-dependent directory, whose name can be:
+  
+     bin.ntx86\jam.exe
+     bin.linux86\jam
+     etc..
+     
+
+  2. Without jam:
+  ---------------
+  
+  If you don't have a jam binary installed, you can still compile the
+  program using one of these methods:
+  
+    - on Unix systems, simply type "make" to use the "Makefile" provided
+      in this directory. This should work flawlessly
+      
+    - on other systems, you can also modify the content of "Makefile"
+      to adapt it to your OS. Simply uncomment the lines specific to
+      your system, and invoke your make tool
+
+
+  Note that the Makefile is used to build a boot-strap version of jam,
+  called "jam0". Once it is built, the "jam0" executable is called to
+  re-build itself.
+  
+  If this second pass doesn't work, this is probably because you didn't
+  set some environment variable that indicates which compiler to use to
+  Jam. Read the Jam documentation for more information on this.. 
+
+
+  
+  3. With toolset-specific makefiles:
+  -----------------------------------
+  
+  You can also use one of the Makefiles located in the "builds"
+  directory. Here's what you need to type on the command line,
+  depending on your system and compiler:
+  
+  
+  a. Windows + Visual C++:
+  
+       set VISUALC=""/install/path/to/visual/compiler""
+       set JAM_TOOLSET=VISUALC
+       nmake -f builds\win32-visualc.mk
+                           
+                           
+  b. Windows + Borland C++: (be sure to use the Borland "make" tool)
+
+        set BORLANDC=""/install/path/to/borland/compiler""
+        set JAM_TOOLSET=BORLANDC
+        make -f builds\win32-borlandc.mk   
+
+
+  c. Windows + Mingw (gcc):
+
+        set MINGW=""/install/path/to/gcc/compiler""
+        set JAM_TOOLSET=MINGW
+        make -f builds\win32-gcc.mk   
+
+
+  WE DO NOT PROVIDE PROJECT FILES FOR ANY SPECIFIC COMPILER/TOOLSET
+ 
+      
+
+
+II. Installation:
+-----------------
+
+  For now, we do not provide any sophisticated
+  installation pass. Simply copy the new jam executable
+  to any directory in your current path.. and start
+  using it !!
+  
+
+III. Default files:
+-------------------
+
+  All default files for Jam are compiled within the
+  executable itself.
+  
+  There are no special configuration directory to
+  place global or user preferences. Until further
+  notice, all defaults can only be changed by using
+  command line switches and setting environment
+  variables..
+
+
+IV. Windows and OS/2 Binary packages:
+-------------------------------------
+
+  It's possible to create zip files of the binaries
+  on Windows and OS/2 system by following these simple
+  steps (you need to have the "zip" utility in your
+  path !!):
+  
+    1. build jam
+    2. strip the jam.exe executable in bin.ntx86 when
+       possible
+    3. call "jam package"
+    
+  you should see a file named "ftjam-xxxxx-win32.zip"
+  or "ftjam-xxxxx-os2.zip" in the current directory,
+  as well as "ftjam-xxxxx.zip" (containing the sources)
+
+
+Good luck,
+
+
+- David Turner,  28 Jul 2001

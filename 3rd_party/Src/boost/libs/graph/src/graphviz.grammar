@@ -1,0 +1,13 @@
+GRAPH     : [strict] <digraph|graph> ID { STMT-LIST }
+STMT-LIST : [STMT [;] [STMT-LIST]] 
+STMT      : ATTR-STMT | NODE-STMT | EDGE-STMT | SUBGRAPH | ID=ID
+ATTR-STMT : <graph|node|edge>[ \[ATTR-LIST\] ]
+ATTR-LIST : ID=ID [ATTR-LIST]
+NODE-STMT : NODE-ID [OPT-ATTRS]
+NODE-ID   : ID[:ID]
+OPT-ATTRS : \[ATTR-LIST\]
+EDGE-STMT : <NODE-ID | SUBGRAPH> EDGERHS [OPT-ATTRS]
+EDGERHS   : EDGEOP <NODE-ID | SUBGRAPH> [EDGERHS]
+SUBGRAPH  : [subgraph ID] {STMT-LIST} | subgraph ID
+
+edgeop is "->" in directed graphs and "--" in undirected graphs

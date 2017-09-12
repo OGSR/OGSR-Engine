@@ -1,0 +1,723 @@
+#  Copyright (C) Vladimir Prus 2002. Permission to copy, use, modify, sell and
+#  distribute this software is granted provided this copyright notice appears in
+#  all copies. This software is provided "as is" without express or implied
+#  warranty, and with no claim as to its suitability for any purpose.
+
+
+#   Supports 'abstract' targets, which are targets explicitly defined in Jamfile.
+#
+#   Abstract targets are represented by classes derived from 'abstract-target' class. 
+#   The first abstract target is 'project-target', which is created for each
+#   Jamfile, and can be obtained by the 'target' rule in the Jamfile's module.
+#   (see project.jam). 
+#
+#   Project targets keep a list of 'main-target' instances.
+#   A main target is what the user explicitly defines in a Jamfile. It is
+#   possible to have several definitions for a main target, for example to have
+#   different lists of sources for different platforms. So, main targets
+#   keep a list of alternatives.
+#
+#   Each alternative is an instance of 'abstract-target'. When a main target
+#   subvariant is defined by some rule, that rule will decide what class to
+#   use, create an instance of that class and add it to the list of alternatives
+#   for the main target.
+#
+#   Rules supplied by the build system will use only targets derived
+#   from 'basic-target' class, which will provide some default behaviour.
+#   There will be two classes derived from it, 'make-target', created by the
+#   'make' rule, and 'typed-target', created by rules such as 'exe' and 'dll'.
+
+#
+#                         +------------------------+
+#                         |abstract-target         |
+#                         +========================+
+#                         |name                    |
+#                         |project                 |                                   
+#                         |                        |                                   
+#                         |generate(properties) = 0|                                   
+#                         +-----------+------------+                                   
+#                                     |                                                
+#                                     ^                                                
+#                                    / \                                               
+#                                   +-+-+                                              
+#                                     |                                                
+#                                     |                                                
+#            +------------------------+------+------------------------------+          
+#            |                               |                              |          
+#            |                               |                              |          
+# +----------+-----------+            +------+------+                +------+-------+  
+# | project-target       |            | main-target |                | basic-target |  
+# +======================+ 1        * +=============+  alternatives  +==============+  
+# | generate(properties) |o-----------+ generate    |<>------------->| generate     |  
+# | main-target          |            +-------------+                | construct = 0|
+# | reference-properties |                                           +--------------+  
+# +----------------------+                                                  |          
+#                                                                           ^          
+#                                                                          / \         
+#                                                                         +-+-+        
+#                                                                           |          
+#                                                                           |          
+#                 ...--+----------------+------------------+----------------+---+      
+#                      |                |                  |                    |      
+#                      |                |                  |                    |      
+#               ... ---+-----+   +------+-------+   +------+------+    +--------+-----+
+#                            |   | typed-target |   | make-target |    | stage-target |
+#                            .   +==============+   +=============+    +==============+
+#                            .   | construct    |   | construct   |    | construct    |
+#                                +--------------+   +-------------+    +--------------+
+
+import sequence ;
+import class : class new ;
+import regex ;
+import property ;
+import errors ;
+import common ;
+import property-set ;
+
+
+# Base class for all abstract targets.
+rule abstract-target ( name      # name of the target in Jamfile
+                       : project # the project module where the target is declared
+                     )
+{
+    # Note: it might seem that we don't need either name or project at all.
+    # However, there are places where we really need it. One example is error
+    # messages which should name problematic targets. Another is setting correct
+    # paths for sources and generated files.
+
+    self.name = $(name) ;
+    self.project = $(project) ;
+    
+    # Returns the name of this target.
+    rule name ( )
+    {
+        return $(self.name) ;
+    }
+    
+    # Returns the project for this target.
+    rule project ( )
+    {
+        return $(self.project) ;
+    }
+        
+    # Returns a user-readable name for this target.
+    rule full-name ( )
+    {
+        local location = [ project.attribute $(self.project) location ] ;
+        return $(location)/$(self.name) ;
+    }
+
+    # Adds one more direct build request for this target. If later generate
+    # is called with the same non-free non-incidental properties as in one
+    # of direct build requests, then that build request is used instead.
+    rule direct-build-request ( property-set )
+    {
+    }
+    
+    # Takes properties in split form ("<feature1>foo <feature2>bar").
+    # Generates virtual targets for this abstract target, using the specified properties,
+    # unless a different value of some feature is required by the target. The properties
+    # on returned virtual targets should be link-compatible with the requested ones.
+    # On success, returns a list of virtual targets. If it not possible to build anything, 
+    # issues a warning and returns empty list, or issues an error.
+    #
+    # If 'properties' are empty, performs default build of this target, in a way specific
+    # to derived class.
+    rule generate ( property-set )
+    {
+        errors.error "method should be defined in derived classes" ;
+    }
+}
+class abstract-target ;
+
+#  Project target class (derived from 'abstract-target')
+rule project-target ( name : project : requirements * : default-build * )
+{
+    abstract-target.__init__ $(name) : $(project) ;
+
+    self.requirements = $(requirements) ;
+    self.default-build = $(default-build) ;
+
+    rule direct-build-request ( property-set )
+    {
+        for local name in $(self.main-targets)
+        {
+            local t = [ main-target $(name) ] ;
+            result += [ $(t).direct-build-request $(property-set) ] ;
+        }
+        local self-location = [ project.attribute $(self.project) location ] ;
+        for local pn in [ project.attribute $(self.project) projects-to-build ]
+        {
+            local p = [ project.module-name [ path.join $(self-location) $(pn) ] ] ;
+            local t = [ project.target [ project.attribute $(p) location ] ] ;
+            result += [ $(t).direct-build-request $(property-set) ] ;
+        }            
+    }
+    
+    # Generates all possible targets contained in this project.
+    rule generate ( property-set * )
+    {
+        # Project properties are directly imposed on all main targets.
+        # However, we'd need to check if this project can be build at
+        # all.
+        
+        local xproperties = [ $(property-set).refine $(self.requirements) ] ;
+
+        if $(xproperties[1]) = "@error"
+        {
+            local id = [ project.attribute $(self.project) id ] ;
+            print.wrapped-text "warning: skipping build of project $(id:E=) at"
+              [ project.attribute $(self.project) location ] 
+               "due to unsatisfied requirements." ;
+            print.wrapped-text "warning: explanation: " $(xproperties[2-]) ;
+            print.wrapped-text "warning: build-request: " $(properties) ;
+            print.wrapped-text "warning: requirements: " [ $(self.requirements).raw ] ;
+        }
+        else 
+        {            
+            local result ;
+            for local name in $(self.main-targets)
+            {
+                local t = [ main-target $(name) ] ;
+                result += [ $(t).generate $(property-set) ] ;
+            }
+            local self-location = [ project.attribute $(self.project) location ] ;
+            for local pn in [ project.attribute $(self.project) projects-to-build ]
+            {
+                local p = [ project.module-name [ path.join $(self-location) $(pn) ] ] ;
+                local t = [ project.target [ project.attribute $(p) location ] ] ;
+                result += [ $(t).generate $(property-set) ] ;
+            }
+            return $(result) ;
+        }        
+    }
+
+    # Returns a 'main-target' class instance corresponding to the 'name'.
+    # Creates the instance if needed.
+    rule main-target ( name )
+    {
+        if ! $(self.main-target.$(name))
+        {
+            self.main-targets += $(name) ;
+            self.main-target.$(name) =
+                [ new main-target $(name) : $(self.project) ] ;
+        }
+        return $(self.main-target.$(name)) ;
+    }
+
+    # Tells if a main target with the specified name exists.
+    rule has-main-target ( name )
+    {
+        if $(self.main-target.$(name)) 
+        {
+            return true ;
+        } 
+    }
+    
+    # Returns the properties which would be used for a main
+    # target in this project, if generation with
+    # 'properties' is requested, and that main target 
+    # does not have any requirements of its own.
+    rule reference-properties ( property-set )
+    {
+        if ! $(self.ref-props.$(property-set))
+        {            
+            local ref = [ project.attribute $(self.project) requirements ] ;
+            local ps = [ $(property-set).refine $(ref) ] ;
+            ps = [ $(ps).evaluate-conditionals ] ;
+            
+            ps = [ targets.generate-dependencies $(ps) : $(self.project) : $(ps) ] ;
+            self.ref-props.$(property-set) = $(ps) ;
+        }
+        return $(self.ref-props.$(property-set)) ;        
+    }    
+    
+}
+class project-target : abstract-target ;
+
+# A named top-level target in Jamfile
+rule main-target ( name : project )
+{
+    import errors : error ;
+    import numbers : range ;
+
+    abstract-target.__init__ $(name) : $(project) ;
+
+    # Add a new alternative for this target
+    rule add-alternative ( target )
+    {
+        local d = [ $(target).default-build ] ;
+        if $(self.alternatives) && $(d)
+        {
+            errors.error "default build can be specified only in first alternative" 
+              : "main target is " [ full-name ] ;
+        }        
+        else
+        {
+            self.default-build = $(d) ;
+        }        
+        self.alternatives += $(target) ;
+    }
+
+    rule direct-build-request ( property-set )
+    {
+        local base = [ $(property-set).base ] ;
+        local ep = $(self.direct-request.$(base:J=-)) ;
+        if $(ep) && $(ep) != $(properties) 
+        {
+            error "Conflicting direct build requests" $(ep) "and" $(properties) ;
+        }
+        else
+        {
+            self.direct-request.$(base:J=-) = $(property-set) ;
+        }                
+    }
+
+    local rule select-alternatives ( property-set )
+    {
+        local viable ; # alternatives that may be used
+        local ranks ;  # ranks for viable alternatives
+        for local v in $(self.alternatives)
+        {
+            # For now, alternative should be derived from 'basic-target'.
+            # We'll see if this restriction if reasonable.
+            assert.equal [ is-a $(v) : basic-target ] : true ;                            
+            local m = [ $(v).match-rank $(property-set) ] ;
+            
+            if $(m)
+            {
+                viable += $(v) ;
+                ranks += $(m) ;
+            }
+        }
+                                                                    
+        local best = [ sequence.select-highest-ranked $(viable) : $(ranks) ] ;
+        return $(best) ;
+    }
+    
+
+    # Select an alternative for this main target, by finding all alternatives
+    # which requirements are satisfied by 'properties' and picking the one with
+    # longest requirements set.
+    # Returns the result of calling 'generate' on that alternative.
+    rule generate ( property-set )
+    {
+        local base = [ $(property-set).base ] ;
+        local ep = $(self.direct-request.$(base:J=-)) ;
+        if $(ep) 
+        {
+            property-set = $(ep) ;
+        }
+        
+        if ! [ $(property-set).raw ] 
+        {
+            properties = [ build-request.expand $(self.default-build) ] ;
+            
+            local result = ;
+            for local p in $(properties)
+            {
+                result += [ generate-really [ property-set.create [ feature.split $(p) ] ] ] ;
+            }
+            return $(result) ;
+        }
+        else
+        {
+            generate-really $(property-set) ;
+        }
+    }
+        
+    local rule generate-really ( property-set )
+    {        
+        local best-alternatives = [ select-alternatives $(property-set) ] ;
+        if ! $(best-alternatives)
+        {
+            # TODO: probably, should explain, for each alternative, 
+            # why it can't be build.
+            print.wrapped-text 
+                "warning: skipped build of" [ full-name ]
+                "with properties" [ $(property-set).raw ]  ;            
+        }
+        else if $(best-alternatives[2])
+        {
+            # TODO: again, a better error message in in order.
+            errors.error "Ambiguous alternatives for main target" [ full-name ]  ;            
+        }        
+        else
+        {
+            local result = [ $(best-alternatives).generate $(property-set) ] ;
+                                       
+            # Mark all targets in result as roots
+            for local t in $(result)
+            {
+                $(t).root true ;
+            }
+        
+            # Process all vtargets that will be created if this main target
+            # is created.
+            local all-targets = 
+              [ sequence.transform virtual-target.traverse : $(result) ] ; 
+            local dg = [ new subvariant-dg $(__name__) : $(property-set) : $(all-targets) ] ;
+            for local v in $(all-targets)          
+            {
+                $(v).dg $(dg) ;            
+            }                
+
+            # Now return virtual targets for the only alternative
+            return $(result) ;
+        }        
+    }
+}
+
+class main-target : abstract-target ;
+
+# Attempts to generate the target given by target
+# reference.
+rule generate ( target-reference # Target reference
+    : project                    # Project where the reference is made
+    : property-set               # Properties of the main target that 
+                                 # makes the reference
+   )
+{
+    # Separate target name from properties override
+    local split = [ MATCH "^([^<]*)(/(<.*))?$" : $(target-reference) ] ;
+    local id = $(split[1]) ;
+    local sproperties = ;
+    if $(split[3])
+    {
+        sproperties = [ property.make [ feature.split $(split[3]) ] ] ;
+        sproperties = [ feature.expand-composites $(sproperties) ] ;
+    }
+
+    # Check if such target exists
+    local main-target = 
+      [ project.find-target $(id) : [ project.attribute $(project) location ] ] ;
+        
+    if $(main-target) {
+        # Take properties which should be propagated and refine them
+        # with source-specific requirements.
+        local propagated = [ $(property-set).propagated ] ;
+        local rproperties = [ $(propagated).refine 
+          [ property-set.create $(sproperties) ] ] ;
+        if $(rproperties[1]) = "@error"
+        {
+            errors.error
+              "When building" [ full-name ] " with properties " $(properties) :
+                "Invalid properties specified for " $(source) ":"
+                  $(rproperties[2-]) ;
+        }
+        return [ $(main-target).generate $(rproperties) ] ;        
+    }    
+}
+
+# Returns new property set which inclues all properties from
+# 'property-set', except that all dependency properties are
+# generated with 'generation-ps', and the obtained virtual targets
+# are added as the values of original features.
+#
+# For example, <library>a/b might become <library>object(virtual-target)@1
+# In addition, usage requirements for all created virtual targets
+# are added to the created property set.
+rule generate-dependencies ( property-set : project : generation-ps )
+{
+    local xproperties ;    
+    for local p in [ $(property-set).dependency ] 
+    {
+        local g = [ targets.generate $(p:TG=) : $(project) : $(generation-ps) ] ;
+        if ! $(g) 
+        {
+            errors.error "cannot generate dependency " $(p) ;
+        }
+        xproperties += $(p:G)$(g) ;
+        for local gi in $(g)
+        {            
+            xproperties += [ $(gi).usage-requirements ] ;
+        }        
+    }
+    local r = [ property-set.create 
+        [ $(property-set).base ] 
+        [ $(property-set).free ] 
+          $(xproperties)
+        [ $(property-set).incidental ] ] ;
+    return $(r) ;
+}
+
+
+
+# Implements the most standard way of constructing main target
+# alternative from sources. Allows sources to be either file or
+# other main target and handles generation of those dependency
+# targets.
+rule basic-target ( name : project
+                    : sources * : requirements * : default-build * : usage-requirements * )
+{        
+    import build-request ;
+    import virtual-target ;
+
+    abstract-target.__init__ $(name) : $(project) ;
+
+    self.sources = $(sources) ;
+    if ! $(requirements) {
+        requirements = [ property-set.empty ] ;
+    }    
+    self.requirements = $(requirements) ;
+    self.default-build = $(default-build) ;
+    if ! $(usage-requirements)
+    {
+        usage-requirements = [ property-set.empty ] ;
+    }    
+    self.usage-requirements = $(usage-requirements) ;
+
+    if $(sources:G)
+    {
+        errors.error "gristed element in sources for" [ full-name ] ;
+    }
+    
+    
+    
+    rule default-build ( )
+    {
+        return $(self.default-build) ;
+    }
+    
+    # Returns a number which estimates this targets's suitability for
+    # building with the given 'property-set'. Among several alternatives
+    # for a main target, the one with greatest match-rank will be used
+    # to do actual generation
+    rule match-rank ( property-set )
+    {    
+        # First check if our requirements can be satisfied.
+        local rproperties = [ $(property-set).refine $(self.requirements) ] ;        
+        if $(rproperties[1]) != "@error"
+        {            
+            # Returns the number of properties common to requirements
+            # and build request.
+            return [ sequence.length [ set.intersection 
+                [ $(self.requirements).base ] :
+                  [ $(property-set).raw ] ] ] ;
+        }        
+    }
+
+    # Determine and return properties which should be used for
+    # building when given 'build-request'. This includes refining
+    # build request with requirements, evaluating conditionals,
+    # generating depenendecies and running actions for features.
+    local rule final-properties ( build-request )
+    {
+        local rproperties = [ $(build-request).refine $(self.requirements) ] ;
+            
+        if $(rproperties[1]) != "@error"                    
+        {
+            # TODO: issue a warning when requirements change properties, but
+            # link-compatibility is still not broken.
+            
+            # Generate dependency requirements. Here, we generate only 
+            # denepdency requirements specified for this targets. Dependency
+            # requirements may also code from dependencies. However, when they
+            # come from dependencies, the value is not target id, but rather
+            # virtual target names, so generators.construct can use them.
+            
+            rproperties = [ $(rproperties).evaluate-conditionals ] ;
+            
+            rproperties = 
+              [ targets.generate-dependencies $(rproperties) : $(self.project) 
+                : $(rproperties) ] ;
+            
+            # TODO: this line might cause target's properties to be
+            # unqual to project's reference properties. As the
+            # result, we create per-target bin directory while
+            # it's not really needed.
+            
+            rproperties = [ $(rproperties).run-actions ] ;                
+        }
+        return $(rproperties) ;
+    }
+
+    # Generate all sources for this target
+    local rule generate-sources ( property-set )
+    {      
+        local source-targets ;
+        for local s in $(self.sources)
+        {
+            # Try treating this source as reference to main target
+            local more-targets = 
+              [ targets.generate $(s) : $(self.project) 
+                : $(property-set) ] ;
+            if $(more-targets)
+            {
+                source-targets += $(more-targets) ;
+            }
+            else 
+            {
+                # Just a source file
+                source-targets += 
+                  [ virtual-target.from-file $(s) : $(self.project) ] ;                            
+            }
+        } 
+        return $(source-targets) ;
+    }
+
+    # Determines final build properties, generates sources,
+    # and calls 'construct'. This method should not be
+    # overridden.
+    rule generate ( property-set )
+    {
+        if ! $(self.generated.$(property-set)) 
+        { 
+            local rproperties = [ final-properties $(property-set) ] ;
+            if $(rproperties[1]) != "@error"                    
+            {                                
+                local source-targets = [ generate-sources $(rproperties) ] ;                
+                
+                self.generated.$(property-set) = 
+                  [ construct $(source-targets) : $(rproperties) ] ;
+                check-for-unused-sources 
+                  $(self.generated.$(property-set)) : $(source-targets) ;
+                
+                # Apply use requirement of this target to all generated
+                # virtual targets.
+                local xusage-requirements = 
+                  [ targets.generate-dependencies 
+                      $(self.usage-requirements) 
+                        : $(self.project) : $(rproperties) ] ;
+                xusage-requirements = [ $(xusage-requirements).raw ] ;
+                
+                for local e in $(self.generated.$(property-set))                    
+                {
+                    $(e).set-usage-requirements $(xusage-requirements) ;
+                }                    
+            } 
+            else
+            {
+                self.generated.$(property-set) = $(rproperties) ;
+            }       
+        }                
+        return $(self.generated.$(property-set)) ;
+    }
+    
+    # Check that 'result' makes use of all the 'sources'. If not,
+    # issues a warning.
+    local rule check-for-unused-sources ( result + : sources * )
+    {
+        local used-sources ;
+        for local r in $(result)
+        {
+            used-sources += [ virtual-target.traverse $(r) : include-roots : 1 ] ; #: includes-sources ] ;
+        }
+               
+        for local s in $(sources)
+        {
+            if ! $(s) in $(used-sources)
+            {
+                errors.warning "Unused source target" [ $(s).str ] 
+                  : "Main target is " [ full-name ] ;
+            }
+        }        
+    }
+    
+        
+    # Constructs the virtual targets for this abstract targets and
+    # the dependecy graph. Returns the list of virtual targets.
+    # Should be overrided in derived classes.
+    rule construct ( source-targets * : properties * )
+    {
+        errors.error "method should be defined in derived classes" ;
+    }
+}
+
+class basic-target : abstract-target ;
+
+rule typed-target ( name : project : type 
+    : sources * : requirements * : default-build * : usage-requirements * )
+{
+    basic-target.__init__ $(name) : $(project) 
+      : $(sources) : $(requirements) : $(default-build) : $(usage-requirements) ;
+    
+    self.type = $(type) ;
+    
+    rule construct ( source-targets * : property-set )
+    {
+        local r = [ generators.construct $(self.project) $(self.name) : $(self.type) 
+          : [ property-set.create [ $(property-set).raw ] # [ feature.expand
+              <main-target-type>$(self.type) ]
+          # ]
+            : $(source-targets) ] ;
+        if ! $(r)
+        {
+            errors.error "unable to construct" [ full-name ] ;
+        }
+        
+        return $(r) ;
+    }            
+}
+                    
+class typed-target : basic-target ;
+
+# Returns the requirement to use when declaring a main target,
+# which are obtained by
+# - translating all specified property paths, and
+# - refining project requirements with the one specified for the target
+rule main-target-requirements ( 
+  specification * # Properties explicitly specified for a main target
+  : project       # Project where the main target is to be declared
+      )
+{
+    local loc = [ project.attribute $(project) location ] ;
+    local requirements = [ property.translate-paths $(specification) : $(loc) ] ; 
+    local requirements = [ property-set.create $(requirements) ] ;
+    local project-requirements = [ project.attribute $(project) requirements ] ;
+    requirements = [ $(project-requirements).refine $(requirements) ] ;    
+    if $(requirements[1]) = "@error" 
+    {
+        errors.error "Conflicting requirements for target:" $(requirements) ;
+    }
+    return $(requirements) ;
+}
+
+# Returns the use requirement to use when declaraing a main target,
+# which are obtained by
+# - translating all specified property paths, and
+# - adding project's usage requirements
+rule main-target-usage-requirements (
+  specification * # Use-properties explicitly specified for a main target
+  : project       # Project where the main target is to be declared
+     )
+{
+    local loc = [ project.attribute $(project) location ] ;         
+    local project-usage-requirements = [ project.attribute $(project) usage-requirements ] ;
+        
+    local usage-requirements = [ property-set.create 
+        [ property.translate-paths $(specification) : $(loc) ] ] ;
+    
+    return [ $(project-usage-requirements).add $(usage-requirements) ] ;
+}
+
+# Return the default build value to use when declaring a main target,
+# which is obtained by using specified value if not empty and parent's
+# default build attribute otherwise.
+rule main-target-default-build (
+  specification * # Default build explicitly specified for a main target
+  : project       # Project where the main target is to be declared
+     )
+{
+    if $(specification)
+    {
+        return $(specification) ;
+    }
+    else
+    {
+        return [ project.attribute $(project) default-build ] ;        
+    }    
+}         
+
+# Registers the specified target as a main target alternatives.
+# Gets project and name for 'target', obtains main target
+# from them, and adds targets to the list of alternatives for
+# the main target.
+rule main-target-alternative ( target ) 
+{               
+    local location = [ project.attribute [ $(target).project ] location ] ;
+    local ptarget = [ project.target $(location) ] ;
+    local mtarget = [ $(ptarget).main-target [ $(target).name ] ] ;
+
+    $(mtarget).add-alternative $(target) ;
+}

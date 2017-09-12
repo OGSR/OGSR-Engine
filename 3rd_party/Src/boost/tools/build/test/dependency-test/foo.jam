@@ -1,0 +1,27 @@
+import type ;
+import generators ;
+import os ;
+
+type.register FOO : foo ;
+
+generators.register-standard foo.foo : FOO : CPP H ;
+
+rule foo ( targets * : sources * : properties * )
+{
+    # On NT, you may need an exported symbol in order to have an import lib generated
+    if [ os.name ] = NT
+    {
+        .decl =  "echo void __declspec(dllexport) foo(){}" ;
+    }
+    .decl1 on $(<) = $(.decl:E="echo //") ;
+    
+    # Further files must be touched also; NT doesn't have a touch command
+    .decl2 on $(<) = "
+    echo // > " ;
+}
+
+actions foo
+{
+    $(.decl1) > $(<[1]) $(.decl2)$(<[2-])
+}
+

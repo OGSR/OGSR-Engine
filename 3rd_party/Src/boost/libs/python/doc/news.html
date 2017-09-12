@@ -1,0 +1,109 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html>
+  <head>
+    <meta name="generator" content=
+    "HTML Tidy for Windows (vers 1st August 2002), see www.w3.org">
+    <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+    <link rel="stylesheet" type="text/css" href="boost.css">
+
+    <title>Boost.Python - News/Change Log</title>
+  </head>
+
+  <body link="#0000ff" vlink="#800080">
+    <table border="0" cellpadding="7" cellspacing="0" width="100%" summary=
+    "header">
+      <tr>
+        <td valign="top" width="300">
+          <h3><a href="../../../index.htm"><img height="86" width="277" alt=
+          "C++ Boost" src="../../../c++boost.gif" border="0"></a></h3>
+        </td>
+
+        <td valign="top">
+          <h1 align="center"><a href="index.html">Boost.Python</a></h1>
+
+          <h2 align="center">News/Change Log</h2>
+        </td>
+      </tr>
+    </table>
+    <hr>
+
+    <dl class="page-index">
+      <dt>24 February 2003</dt>
+
+      <dd>Finished improved support
+      for <code>boost::shared_ptr</code>.  Now any wrapped object of
+      C++ class <code>X</code> can be converted automatically
+      to <code>shared_ptr&lt;X&gt;</code>, regardless of how it was
+      wrapped.  The <code>shared_ptr</code> will manage the lifetime
+      of the Python object which supplied the <code>X</code>, rather
+      than just the <code>X</code> object itself, and when such
+      a <code>shared_ptr</code> is converted back to Python, the
+      original Python object will be returned.</dd>
+      
+      <dt>19 January 2003</dt>
+
+      <dd>Integrated <code>staticmethod</code> support from <a href=
+      "mailto:nickm-at-sitius.com">Nikolay Mladenov</a>. Thanks,
+      Nikolay!</dd>
+
+      <dt>29 December 2002</dt>
+
+      <dd>Added Visual Studio project file and instructions from Brett
+      Calcott. Thanks, Brett!</dd>
+
+      <dt>20 December 2002</dt>
+
+      <dd>Added automatic downcasting for pointers, references, and smart
+      pointers to polymorphic class types upon conversion to python</dd>
+
+      <dt>18 December 2002</dt>
+
+      <dd>Optimized from_python conversions for wrapped classes by putting
+      the conversion logic in the shared library instead of registering
+      separate converters for each class in each extension module</dd>
+
+      <dt>19 November 2002</dt>
+
+      <dd>Removed the need for users to cast base class member function
+      pointers when used as arguments to <a href=
+      "v2/class.html#class_-spec-modifiers">add_property</a></dd>
+
+      <dt>13 December 2002</dt>
+
+      <dd>Allow exporting of <a href=
+      "v2/enum.html#enum_-spec"><code>enum_</code></a> values into enclosing
+      <a href="v2/scope.html#scope-spec"><code>scope</code></a>.<br>
+       Fixed unsigned integer conversions to deal correctly with numbers that
+      are out-of-range of <code>signed long</code>.</dd>
+
+      <dt>14 November 2002</dt>
+
+      <dd>Auto-detection of class data members wrapped with <a href=
+      "v2/data_members.html#make_getter-spec"><code>make_getter</code></a></dd>
+
+      <dt>13 November 2002</dt>
+
+      <dd>Full Support for <code>std::auto_ptr&lt;&gt;</code> added.</dd>
+
+      <dt>October 2002</dt>
+
+      <dd>Ongoing updates and improvements to tutorial documentation</dd>
+
+      <dt>10 October 2002</dt>
+
+      <dd>Boost.Python V2 is released!</dd>
+    </dl>
+    <hr>
+
+    <p>Revised 
+    <!--webbot bot="Timestamp" S-Type="EDITED" S-Format="%d %B, %Y" startspan -->
+     20 December, 2002 
+    <!--webbot bot="Timestamp" endspan i-checksum="39359" -->
+    </p>
+
+    <p><i>&copy; Copyright <a href="../../../people/dave_abrahams.htm">Dave
+    Abrahams</a> 2002. All Rights Reserved.</i></p>
+  </body>
+</html>
+

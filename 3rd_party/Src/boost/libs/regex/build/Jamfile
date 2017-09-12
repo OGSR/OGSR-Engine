@@ -1,0 +1,34 @@
+subproject libs/regex/build ;
+
+SOURCES = c_regex_traits c_regex_traits_common cpp_regex_traits
+       cregex fileiter posix_api regex regex_debug
+       regex_synch w32_regex_traits wide_posix_api instances winstances ;
+       
+lib boost_regex : ../src/$(SOURCES).cpp 
+    : 
+        <sysinclude>$(BOOST_ROOT)
+        <define>BOOST_REGEX_NO_LIB=1
+        <define>BOOST_REGEX_STATIC_LINK=1
+    : 
+        debug release
+    ;
+
+
+dll boost_regex : ../src/$(SOURCES).cpp 
+    : 
+        <sysinclude>$(BOOST_ROOT)
+        <define>BOOST_RE_BUILD_DLL=1
+    : 
+        debug release
+    ;
+
+
+stage bin-stage : <lib>boost_regex <dll>boost_regex
+    :
+        <tag><debug>"_debug"
+    :
+        debug release
+    ;
+
+
+

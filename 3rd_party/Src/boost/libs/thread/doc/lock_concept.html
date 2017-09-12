@@ -1,0 +1,194 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../../boost.css">
+<title>Boost.Threads - ScopedLock Concept</title>
+</head>
+<body link="#0000ff" vlink="#800080">
+<table border="0" cellpadding="7" cellspacing="0" width="100%" summary=
+    "header">
+  <tr>
+    <td valign="top" width="300">
+      <h3><a href="../../../index.htm"><img height="86" width="277" alt="C++ Boost" src="../../../c++boost.gif" border="0"></a></h3>
+    </td>
+    <td valign="top">
+      <h1 align="center">Boost.Threads</h1>
+      <h2 align="center">ScopedLock Concept</h2>
+    </td>
+  </tr>
+</table>
+<hr>
+<dl class="page-index">
+  <dt><a href="#introduction">Introduction</a></dt>
+  <dt><a href="#concept-requirements">Concept Requirements</a></dt>
+  <dl class="page-index">
+    <dt><a href="#Lock-concept">Lock Concept</a></dt>
+    <dt><a href="#ScopedLock-concept">ScopedLock Concept</a></dt>
+    <dt><a href="#ScopedTryLock-concept">ScopedTryLock Concept</a></dt>
+    <dt><a href="#ScopedTimedLock-concept">ScopedTimedLock Concept</a></dt>
+  </dl>
+</dl>
+<h2><a name="introduction"></a>Introduction</h2>
+<p>A lock object provides a safe means for locking and unlocking a mutex object
+  (an object whose type is a model of <a href="mutex_concept.html">Mutex</a> or
+  one of its refinements). In other words they are an implementation of the <i>Scoped
+  Locking</i> <a href="bibliography.html#Schmidt-00">[Schmidt 00]</a> pattern.
+  The <a href="#ScopedLock-concept">ScopedLock</a> concept, with <a href="#ScopedTryLock-concept">ScopedTryLock</a>
+  and <a href="#ScopedTimedLock-concept">ScopedTimedLock</a> refinements, formalize
+  the requirements.</p>
+<p>Lock objects are constructed with a reference to a mutex object and typically
+  acquire ownership of the mutex object by setting its state to locked. They also
+  ensure ownership is relinquished in the destructor. Lock objects also expose
+  functions to query the lock status and to manually lock and unlock the mutex
+  object.</p>
+<p>Lock objects are meant to be short lived, expected to be used at block scope
+  only. The lock objects are not <a href="definitions.html#definition-thread-safe">thread-safe</a>.
+  Lock objects must maintain state to indicate whether or not they&#39;ve been
+  locked and this state is not protected by any synchronization concepts. For
+  this reason a lock object should never be shared between multiple threads.</p>
+<h2><a name="concept-requirements"></a>Concept Requirements</h2>
+<h3><a name="Lock-concept"></a>Lock Concept</h3>
+<p>For a Lock type <code>L</code> and an object <code>lk</code> and const object
+  <code>clk</code> of that type, the following expressions must be well-formed
+  and have the indicated effects.</p>
+<table summary="Lock expressions" border="1" cellpadding="5">
+  <tr>
+    <td><b>Expression</b></td>
+    <td><b>Effects</b></td>
+  </tr>
+  <tr>
+    <td valign="top"><code>(&amp;lk)-&gt;~L();</code></td>
+    <td><code>if (locked()) unlock();</code></td>
+  </tr>
+  <tr>
+    <td valign="top"><code>(&amp;clk)-&gt;operator const void*()</code></td>
+    <td>Returns type void*, non-zero if if the associated mutex object has been
+      locked by <code>clk</code>, otherwise 0.</td>
+  </tr>
+  <tr>
+    <td valign="top"><code>clk.locked()</code></td>
+    <td>Returns a <code>bool</code>, <code>(&amp;clk)-&gt;operator const void*()
+      != 0</code></td>
+  </tr>
+  <tr>
+    <td valign="top"><code>lk.lock()</code></td>
+    <td>Throws <code>lock_error</code> if <code>locked()</code>. If the associated
+      mutex object is already locked by some other thread, places the current
+      thread in the <a href="definitions.html#State">Blocked</a> state until the
+      associated mutex is unlocked, after which the current thread is placed in
+      the <a href="definitions.html#State"> Ready</a> state, eventually to be
+      returned to the <a href="definitions.html#State">Running</a> state. If the
+      associated mutex object is already locked by the same thread the behavior
+      is dependent on the <a href="mutex_concept.html#locking-strategies">locking
+      strategy</a> of the associated mutex object.<br>
+      Postcondition: <code>locked() == true</code></td>
+  </tr>
+  <tr>
+    <td valign="top"><code>lk.unlock()</code></td>
+    <td>If <code>!locked()</code>, throws <code>lock_error</code>, otherwise unlocks
+      the associated mutex.<br>
+      Postcondition: <code>!locked()</code></td>
+  </tr>
+</table>
+<h3><a name="ScopedLock-concept"></a>ScopedLock Concept</h3>
+<p>A ScopedLock is a refinement of <a href="#Lock">Lock</a>. For a ScopedLock
+  type <code>L</code> and an object <code>lk</code> of that type, and an object
+  <code>m</code> of a type meeting the <a href="mutex_concept.html#Mutex-concept">Mutex</a>
+  requirements, and an object <code>b</code> of type <code>bool</code>, the following
+  expressions must be well-formed and have the indicated effects.</p>
+<table summary="ScopedLock expressions" border="1" cellpadding="5">
+  <tr>
+    <td><b>Expression</b></td>
+    <td><b>Effects</b></td>
+  </tr>
+  <tr>
+    <td valign="top"><code>L lk(m);</code></td>
+    <td>Constructs an object <code>lk</code>, and associates mutex object <code>m</code>
+      with it, then calls <code>lock()</code></td>
+  </tr>
+  <tr>
+    <td valign="top"><code>L lk(m,b);</code></td>
+    <td>Constructs an object <code>lk</code>, and associates mutex object <code>m</code>
+      with it, then if <code>b</code>, calls <code>lock()</code></td>
+  </tr>
+</table>
+<h3><a name="ScopedTryLock-concept"></a>ScopedTryLock Concept</h3>
+<p>A ScopedTryLock is a refinement of <a href="#Lock-concept">Lock</a>. For a
+  ScopedTryLock type <code>L</code> and an object <code>lk</code> of that type,
+  and an object <code>m</code> of a type meeting the <a href="mutex_concept.html#TryMutex-concept">TryMutex</a>
+  requirements, and an object <code>b</code> of type <code>bool</code>, the following
+  expressions must be well-formed and have the indicated effects.</p>
+<table summary="ScopedTryLock expressions" border="1" cellpadding="5">
+  <tr>
+    <td><b>Expression</b></td>
+    <td><b>Effects</b></td>
+  </tr>
+  <tr>
+    <td valign="top"><code>L lk(m);</code></td>
+    <td>Constructs an object <code>lk</code>, and associates mutex object <code>m</code>
+      with it, then calls <code>try_lock()</code></td>
+  </tr>
+  <tr>
+    <td valign="top"><code>L lk(m,b);</code></td>
+    <td>Constructs an object <code>lk</code>, and associates mutex object <code>m</code>
+      with it, then if <code>b</code>, calls <code> lock()</code></td>
+  </tr>
+  <tr>
+    <td valign="top"><code>lk.try_lock()</code></td>
+    <td>If locked(), throws <code>lock_error</code>. Makes a non-blocking attempt
+      to lock the associated mutex object, returning <code>true</code> if the
+      lock attempt is successful, otherwise <code>false</code>. If the associated
+      mutex object is already locked by the same thread the behavior is dependent
+      on the <a href="mutex_concept.html#locking-strategies">locking strategy</a>
+      of the associated mutex object.</td>
+  </tr>
+</table>
+<h3><a name="ScopedTimedLock-concept"></a>ScopedTimedLock Concept</h3>
+<p>A ScopedTimedLock is a refinement of <a href="#Lock">Lock</a>. For a ScopedTimedLock
+  type <code>L</code> and an object <code>lk</code> of that type, and an object
+  <code>m</code> of a type meeting the <a href="mutex_concept.html#TimedMutex">TimedMutex</a>
+  requirements, and an object <code>b</code> of type <code>bool</code>, and an
+  object <code>t</code> of type <code><a href="xtime.html"> xtime</a></code>,
+  the following expressions must be well-formed and have the indicated effects.</p>
+<table summary="ScopedTimedLock expressions" border="1" cellpadding=
+        "5">
+  <tr>
+    <td><b>Expression</b></td>
+    <td><b>Effects</b></td>
+  </tr>
+  <tr>
+    <td valign="top"><code>L lk(m,t);</code></td>
+    <td>Constructs an object <code>lk</code>, and associates mutex object <code>m</code>
+      with it, then calls <code> timed_lock(t)</code></td>
+  </tr>
+  <tr>
+    <td valign="top"><code>L lk(m,b);</code></td>
+    <td>Constructs an object <code>lk</code>, and associates mutex object <code>m</code>
+      with it, then if <code>b</code>, calls <code> lock()</code></td>
+  </tr>
+  <tr>
+    <td valign="top"><code>lk.timed_lock(t)</code></td>
+    <td>If locked(), throws lock_error. Makes a blocking attempt to lock the associated
+      mutex object, and returns <code>true</code> if successful within the specified
+      time <code>t</code>, otherwise <code>false</code>. If the associated mutex
+      object is already locked by the same thread the behavior is dependent on
+      the <a href="mutex_concept.html#locking-strategies">locking strategy</a>
+      of the associated mutex object.</td>
+  </tr>
+</table>
+<hr>
+<p>Revised
+  <!--webbot bot="Timestamp" S-Type="EDITED" S-Format="%d %B, %Y" startspan -->
+  05 November, 2001
+  <!--webbot bot="Timestamp" endspan i-checksum="39359" -->
+</p>
+<p><i>&copy; Copyright <a href="mailto:wekempf@cox.net">William E. Kempf</a> 2001-2002.
+  All Rights Reserved.</i></p>
+<p>Permission to use, copy, modify, distribute and sell this software and its
+  documentation for any purpose is hereby granted without fee, provided that the
+  above copyright notice appear in all copies and that both that copyright notice
+  and this permission notice appear in supporting documentation. William E. Kempf
+  makes no representations about the suitability of this software for any purpose.
+  It is provided &quot;as is&quot; without express or implied warranty.</p>
+</body>
+</html>

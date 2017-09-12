@@ -1,0 +1,80 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="boost.css">
+<title>Boost.Build - intel-win32 toolset</title>
+</head>
+<body link="#0000ff" vlink="#800080">
+<table border="0" cellpadding="7" cellspacing="0" width="100%" summary=
+    "header">
+  <tr> 
+    <td valign="top" width="300"> 
+      <h3><a href="http://www.boost.org"><img height="86" width="277" alt="C++ Boost" src="../../c++boost.gif" border="0"></a></h3>
+    </td>
+    <td valign="top"> 
+      <h1 align="center">Boost.Build</h1>
+      <h2 align="center">intel-win32 toolset</h2>
+    </td>
+  </tr>
+</table>
+<hr>
+
+<h2>Introduction</h2>
+
+<p>Boost.Build's <a href="http://www.intel.com/software/products/compilers/c60/">intel-win32</a> toolset supports the
+Intel C++ Compiler for Windows. This compiler is compatible with the
+<a href="msvc-tools.html">msvc</a> tools.
+
+<h2>Configuration Variables</h2>
+
+The intel-win32 toolset responds to the following variables which can be set in the
+environment or configured on the jam command-line using
+<code>-s<i>VARIABLE_NAME</i>=</code><i>value</i>. This toolset is by default an extension to the
+<a href="msvc-tools.html">msvc toolset</a> and therefore responds to all
+of the MSVC <a href="msvc-tools.html#configuration">configuration
+variables</a> in addition to those listed below. The toolset can be configure to extend
+the <a href="vc7-tools.html">vc7</a> instead.
+
+<table border="1">
+
+<tr><th>Variable Name <th>Semantics <th>Default <th>Notes
+
+<tr>
+    <td><code>INTELC</code>
+    <td>Path to installation of the compiler tools.
+    <td>(none)
+    <td>This is the FTJam compatability version of <code>INTEL_PATH</code>.
+
+<tr>
+    <td><code>INTEL_PATH</code>
+    <td>The path of the compiler installation.
+    <td><code>$(INTELC)</code>
+    <td>&nbsp;
+
+<tr>
+    <td><code>INTEL_TOOL_PATH</code>
+    <td>Path to the directory of the compiler tool executables.
+    <td><code>$(INTEL_PATH)/bin/</code>
+    <td>&nbsp;
+
+<tr>
+    <td><code>INTEL_BASE_MSVC_TOOLSET</code>
+    <td>The base toolset to extend this toolset from. This can specify either
+    to extend the <code>msvc toolset</code>, or the <code>vc7 toolset</code>.
+    <td><code>msvc</code>
+    <td>If you have both vc6 and vc7, you may want your Intel compiler to
+    use the VC7 libarries instead of the default vc6 libraries. In which case
+    set this to <code>vc7</code>.
+
+</table>
+
+<hr>
+<p>Revised 
+  <!--webbot bot="Timestamp" S-Type="EDITED" S-Format="%d %B, %Y" startspan -->
+  14 May, 2002 
+  <!--webbot bot="Timestamp" endspan i-checksum="39359" -->
+</p>
+<p><i>&copy; Copyright <a href="../../people/dave_abrahams.htm">Dave Abrahams</a> 
+  2002. All Rights Reserved.</i></p>
+</body>
+</html>

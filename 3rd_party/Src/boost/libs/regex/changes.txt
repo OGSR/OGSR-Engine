@@ -1,0 +1,284 @@
+Version 331:
+
+FIXED:    All known current bugs.
+ADDED:    Support for default SGI allocator when available (even if it's not
+          standard conformant).
+
+Version 330:
+BUG:      Broken STLport-4.5 support.
+BUG:      Not all occurances of BOOST_RE_THREADS changed to use BOOST_HAS_THREADS
+
+CHANGED:  Completely redesigned config support (now fully integrated with boost).
+FIXED:    Support for building with _UNICODE defined.
+FIXED:    Bug when running on Windows XP (character classification bitmaps wrong).
+
+Version 311:
+FIXED:    Support for STLPort 4.1b6.
+FIXED:    Library calling convention for VC6 debug builds.
+FIXED:    Borland compiler support when using non-default calling convention.
+CHANGED:  Reorganised and simplified config setup.
+ADDED:    Support for replacing only the first occurance during a regex_merge 
+          using the format_first_only flag.
+CHANGED:  Removed use of deprecated api set_expression in one of the examples.
+
+Version 310:
+ADDED:    Support for static linking with VC6 + dynamic runtime.
+CHANGED:  Library directory structure.
+
+Version 305:
+FIXED:    VC6.sp5 fix.
+ADDED:    Support for mixed static/dynamic linking with vc6.
+ADDED:    Sunpro makefiles
+FIXED:    SunPro 6.1 support
+FIXED:    Spurious extra matches at the end of input when grepping with .*
+
+Version 304:
+FIXED:    Missing this-> prefix to some symbols in cpp_regex_traits.cpp
+CHANGED:  Error reporting for wide character tests.
+FIXED:    Win2K problem with [[:unicode:]]
+FIXED:    Signed/unsigned conversions in regex_compile.hpp and regex_format.hpp
+ADDED:    Forwarder functions to match_results.
+FIXED:    More errors from Como in strict mode.
+
+Version 303:
+FIXED:    Code glitches for Como compiler in strict mode.
+FIXED:    Missing fixes for cstdio header.
+FIXED:    memory leak in underlying w32 traits classes
+FIXED:    vc6 clean option to remove *.pch files.
+CHANGED:  Build options for VC6 to avoid compiler optimisation bug.
+FIXED:    Missing BOOST_RE_NO_WCSTRING guard around using declaration in regex.h
+FIXED:    Pathological regular expressions in snip4.cpp and in docs.
+FIXED:    Missing std:: prefixes in some headers.
+
+Version 302:
+FIXED:    STLPort debug problems.
+FIXED:    Compatibility with updated Dinkum libraries and VC6.
+ADDED:    Tentative support for partial matches (not yet documented).
+
+Version 301:
+First boost release version,
+CHANGED:  reg_match to match_results
+CHANGED:  Documentation updated to reflect changes, provided links to sources from docs.
+CHANGED:  RegEx(const char*) constructor to explicit.
+CHANGED:  Return type of RegEx::Split to unsigned int.
+ADDED:    Exception documentation for OS errors.
+REMOVED:  BOOST_RE_NO_EXCEPTIONS macro.
+FIXED:    mapfile::open/close to check for OS errors.
+FIXED:    Non-exception safe code in cpp_regex_traits.
+FIXED:    Removed undefined symbol INFINITE from re_thrd.hpp
+FIXED:    Bug in configure script thread detection code.
+CHANGED:  "depreciated" to "deprecated"
+FIXED:    Documentation error for bad_expression.
+CHANGED:  regbase::flag_type to unsigned int
+ADDED:    explicit constructors to reg_expression/match_results
+ADDED:    extra signatures for regex_format/regex_merge for std::string arguments.
+REMOVED:  bad_pattern/bad_expression::what from regex.cpp
+REMOVED:  Implicit conversion operators from sub_match (except for conversion to basic_string).
+
+Version 300:
+Candidate release boost version,
+ADDED:    Support for non-greedy repeats.
+ADDED:    Support for non-marking grouping.
+ADDED:    Auto-detection of STLPort STL versions.
+CHANGED:  Re-written and re-organised traits classes.
+CHANGED:  Regression test make files for more rigorous testing of all build versions.
+
+Version 249:
+Pre-release boost version,
+CHANGED:  All macro prefixes to BOOST_RE_
+CHANGED:  namespaces to boost
+CHANGED:  Header file extentions to .hpp
+DEPRECIATED: Old style algorithms, replaced with more consistant naming style.
+DEPRECIATED: Standard library independant compiles no longer possible, bespoke
+             classes replaced with standard library/boost equivalents where available.
+
+Version 221:
+ADDED:    C++ Builder 3 workaround in boost/detail/jgrep.hpp
+
+Version 220:
+ADDED:    Merge functions to class RegEx
+
+
+Version 218:
+FIXED:    All known bugs prior to this version.
+FIXED:    Added workaround for gcc optimisation bug to jm/regmatch.h
+ADDED:    Cygwin mount point support.
+
+Version 217:
+BUG:      configure script did not correctly identify template 
+          friend support, or template function partial ordering support.
+          
+FIXED:    All known bugs prior to this version.
+
+Version 216:
+BUG:      Some RegEx::Grep variants buggy.
+BUG:      FileIterator leaked memory.
+BUG:      Memory alignment problems with gcc/sparc platform
+
+CHANGED:  RegEx callback declarations to cope with VC6 builds using 
+          non-default calling conventions.
+CHANGED:  Some configuration options to try and keep Mingwin32 port
+          of gcc 2.95 happy.
+FIXED:    Bug in RegEx::What introduced in version 214 fix :-(
+
+Version 215:
+CHANGED:  Added #pragma push/pop to fix C++ Builder 3 problems.
+CHANGED:  Wide to narrow character conversions, to be more conformant with standard.
+CHANGED:  Minor documentation updates.
+
+Version 214:
+FIXED     All known bugs rpior to this point.
+CHANGED:  Minor changes to keep VC5 and GCC 2.95 happy.
+
+Version 213:
+BUG:      Far eastern versions of Win32 could not compile
+          re_nlsw.cpp due to string literal - code page
+          interactions.
+          
+ADDED:    Convenience conversion operators to sub_match<>.
+CHANGED:  Removed REG_E_MEMORY as it duplicates REG_ESPACE.
+ADDED:    Additional tests to regress.
+CHANGED:  RegEx::GrepFiles and RegEx::FindFiles previously had undefined
+          behaviour if the callback returned false, changed to abort
+          the whole search if the callback returns false.
+
+FIXED:    All known bugs prior to this release.
+
+Version 212:
+BUG:      Use of catopen in re_mss.cpp causes problems on some systems.
+BUG:      Comparison operators for reg_expression and reg_match should be const.
+BUG:      Missing output iterator increment in regfmt.h.
+
+ADDED:    REG_NOCOLLATE, so that locale dependent collation can be turned off for
+          the POSIX C API's as well as the underlying templates.
+CHANGED:  Misc. documentation updates.
+FIXED:    Linking problem for some egcs ports.
+CHANGED:  Tightened up exception safety.
+ADDED:    Convenience interfaces to query_match, reg_search, reg_grep, reg_format and reg_merge.
+ADDED:    Convenience std::string overloads of reg_expression members.
+FIXED:    All bugs found prior to this release.
+
+
+Version 211:
+BUG:      RegEx::GrepFiles fails to log sub-expression matches correctly.
+BUG:      file_iterator/directory_iterator fail to find all files when using '*'.
+
+CHANGED:  Changes required to make the code compile with HP's aCC compiler.
+CHANGED:  Using declarations, to hide implimentation details.
+CHANGED:  Behavior of ^ and $ to follow Unicode newline guidelines and account
+          for \r\n sequences.
+
+Version 210:
+FIXED:    All known bugs prior to this point.
+ADDED:    configure shell script for porting to Unix style systems.
+CHANGED:  jm::reg_match_base::pair to jm::sub_match, for easier porting.
+
+Version 200:
+BUG:      RegEx::GrepFiles buggy
+BUG:      RegEx::FindFiles buggy
+BUG:      non-portable header file usage in fileiter.h
+BUG:      non-portable enum declarations in headers.
+BUG:      non-portable use of isspace in regfacet.cpp
+BUG:      Missing regfac.obj from bcb makefiles.
+BUG:      non-portable declaration of type jm::reg_match_base::reference.
+BUG:      missing <wchar.h> declaration required by some systems.
+BUG:      Use of JM_NO_WCSTRING incomplete.
+BUG:      Misspelled JM_NO_EXCEPTIONS in places.
+BUG:      regfmt.h has typo on line 538.
+BUG:      reg_format and reg_merge not portable to all output iterator types.
+BUG:      non-portable use of typedefs.
+BUG:      non-portable use of friend declarations.
+
+CHANGED:  Allocator usage, to improve efficiency with instance based allocators.
+CHANGED:  regress.h, various fixes for various Borland C++ versions, allocators cleaned up.
+ADDED:    Win32 specific localisation code.
+ADDED:    C and C++ specific localisation code.
+ADDED:    collating element and equivalence class support.
+CHANGED:  Character class declarations.
+CHANGED:  Behaviour of ranges to deal with locales.
+ADDED:    Support for some perl escape sequences (but not yet (?...) ).
+CHANGED:  regbase::icase flag now turns on case insensitivity,
+          traits class char_regex_traits_i is now deprecated.
+CHANGED:  reg_grep now takes a predicate not an output iterator,
+          allows user code to terminate search midway through,
+          and to use regular callback function with grep.
+CHANGED:  Modified search heuristics to improve certain expression
+          types, especially expressions which start with a literal
+          string, or a single character repeat.  The latter are much
+          less likely to become pathological now.
+ADDED:    High level C++ class RegEx.
+
+Version 111:
+BUG:      Wouldn't compile directly on C++ Builder 4 when it was released
+          (not really a bug - more an incompatibility)
+          
+FIXED:    All bugs discovered prior to this version (below).
+
+Version 110:
+BUG:      reg_match::maybe_assign could lead to pointer 
+          overrun in certain (rare) circumstances.
+
+FIXED:    All bugs discovered prior to this version (below).
+FIXED:    Support for VC++, GCC, EGCS.
+CHANGED:  Regress.h to work around various compiler bugs.
+
+Version 100:
+BUG:      Literal "," not recognised as a literal.
+
+FIXED:    All bugs discovered prior to this version (below).
+ADDED:    Regress.exe, regression test application.
+
+Version 095
+BUG:      wide character sets that start with ^ not recognised,
+          for example [^[:space:]] will not find anything.
+BUG:      reg_grep fails if match occurs at first character.
+BUG:      If regcomp fails, internal data not freed.
+BUG:      reg_grep fails to reinitialise match after assignment
+          to output iterator.  Line start optimised search restarts
+          from the wrong location if the match is longer than one line.
+BUG:      POSIX API functions can propagate C++ exceptions if the
+          default allocator can throw exceptions.
+BUG:      character sets don't function correctly when regbase::char_classes
+          is not set.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

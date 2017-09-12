@@ -1,0 +1,71 @@
+<!doctype html public "-//ietf//dtd html//en">
+<html><head><title>boost::mpl::range_c</title>
+<link rel="stylesheet" href="../mpl_wiki.css">
+</head><body bgcolor="white">
+<h1><a href="../Table_of_Contents.html"><img src="../mpl_logo.jpg" alt="[Home]" border=0 align="right"></a>range_c</h1><h3>Synopsis</h3>
+<p>
+<pre>
+template&lt;
+      typename T
+    , T Start
+    , T Finish
+    &gt;
+struct range_c
+{
+    typedef integral_c&lt;T,Start&gt; start;
+    typedef integral_c&lt;T,Finish&gt; finish;
+};
+</pre>
+<p>
+<h3>Description</h3>
+<p>
+<code>range_c</code> is a sorted <a href="../Random_Access_Sequence.html">Random Access Sequence</a> of <a href="../Integral_Constant.html">Integral Constant</a>s. It is <em>not</em> an <a href="../Extensible_Sequence.html">Extensible Sequence</a>, meaning that transformation algorithms, such as <code><a href="../Reference/push_front.html">push_front</a></code> or <code><a href="../Reference/replace.html">replace</a></code>, are not applicable to it, at least directly - you need to copy the content of the range into a more suitable sequence, when needed [<a href="#1">1</a>].
+<p>
+<h3>Definition</h3>
+<p>
+<pre>
+#include "<a href="../../../../../boost/mpl/range_c.hpp">boost/mpl/range_c.hpp</a>"
+</pre>
+<p>
+<h3>Example</h3>
+<p>
+<pre>
+typedef range_c&lt;int,0,0&gt; range0;
+typedef range_c&lt;int,0,1&gt; range1;
+typedef range_c&lt;int,0,10&gt; range10;
+<p>
+BOOST_STATIC_ASSERT(size&lt;range0&gt;::type::value == 0);
+BOOST_STATIC_ASSERT(size&lt;range1&gt;::type::value == 1);
+BOOST_STATIC_ASSERT(size&lt;range10&gt;::type::value == 10);
+<p>
+BOOST_STATIC_ASSERT(empty&lt;range0&gt;::type::value);
+BOOST_STATIC_ASSERT(!empty&lt;range1&gt;::type::value);
+BOOST_STATIC_ASSERT(!empty&lt;range10&gt;::type::value);
+<p>
+BOOST_MPL_ASSERT_IS_SAME(begin&lt;range0&gt;::type, end&lt;range0&gt;::type);
+BOOST_MPL_ASSERT_NOT_SAME(begin&lt;range1&gt;::type, end&lt;range1&gt;::type);
+BOOST_MPL_ASSERT_NOT_SAME(begin&lt;range10&gt;::type, end&lt;range10&gt;::type);
+<p>
+BOOST_STATIC_ASSERT(front&lt;range1&gt;::type::value == 0);
+BOOST_STATIC_ASSERT(back&lt;range1&gt;::type::value == 0);
+BOOST_STATIC_ASSERT(front&lt;range10&gt;::type::value == 0);
+BOOST_STATIC_ASSERT(back&lt;range10&gt;::type::value == 9);
+</pre>
+<p>
+<h3>Notes</h3>
+<p>
+[<a name="1">1</a>]  In fact, the most common application of <code>range_c</code> class is to simplify the creation of sorted <code>list</code> or <code>vector</code>:
+<p>
+<pre>
+typedef copy&lt;
+      range_c&lt;int,0,50&gt;
+    , <a href="../Reference/push_back.html">push_back</a>&lt;_,_&gt;
+    , vector&lt;&gt;
+    &gt;::type numbers;
+</pre><br>
+<p>
+<h3>See also</h3>
+<p>
+<a href="../Random_Access_Sequence.html">Random Access Sequence</a>, <code><a href="../Reference/vector.html">vector</a></code>, <code><a href="../Reference/vector_c.html">vector_c</a></code>, <code><a href="../Reference/list.html">list</a></code>, <code><a href="../Reference/list_c.html">list_c</a></code>
+<p><hr>
+<a href="../Table_of_Contents.html">Table of Contents</a><br>Last edited July 17, 2002 8:31 am</body></html>

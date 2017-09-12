@@ -1,0 +1,1 @@
+This file is only here so that cvs update -P won't fail to create a directory

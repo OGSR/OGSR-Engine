@@ -1,0 +1,537 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+ 
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+ 
+  <meta name="GENERATOR" content="Microsoft FrontPage Express 2.0">
+  <title>Vector</title>
+</head>
+  <body bgcolor="#ffffff">
+  
+<h1><img src="c++boost.gif" alt="c++boost.gif" align="Center">
+Vector</h1>
+  
+<h2><a name="vector"></a>
+Vector</h2>
+  
+<h4>Description</h4>
+  
+<p>The templated class <code>vector&lt;T, A&gt; </code>is the base container
+adaptor for dense vectors. For a <em>n</em>-dimensional vector and <em>0
+&lt;= i &lt; n </em>every element <em>v</em><sub><em>i</em></sub> is mapped
+to the <em>i-</em>th element of the container.</p>
+  
+<h4>Example</h4>
+  
+<pre>#include &lt;boost/numeric/ublas/vector.hpp&gt;<br>#include &lt;boost/numeric/ublas/io.hpp&gt;<br><br>int main () {<br>    using namespace boost::numeric::ublas;<br>    vector&lt;double&gt; v (3);<br>    for (unsigned i = 0; i &lt; v.size (); ++ i)<br>        v (i) = i;<br>    std::cout &lt;&lt; v &lt;&lt; std::endl;<br>}<br></pre>
+<h4>Definition</h4>
+  
+<p>Defined in the header vector.hpp.</p>
+  
+<h4>Template parameters</h4>
+  
+<table border="1">
+     <tbody>
+    <tr>
+         <th>Parameter </th>
+         <th>Description </th>
+         <th>Default </th>
+     </tr>
+     <tr>
+         <td><code>T</code> </td>
+         <td>The type of object stored in the vector. </td>
+         <td>&nbsp;</td>
+     </tr>
+     <tr>
+         <td><code>A</code></td>
+         <td>The type of the adapted array. <a href="#vector_1">[1]</a>
+      </td>
+         <td><code>unbounded_array&lt;T&gt;</code></td>
+     </tr>
+ 
+  </tbody>
+</table>
+  
+<h4>Model of</h4>
+  
+<p><a href="container.htm#vector">Vector</a>
+. </p>
+  
+<h4>Type requirements</h4>
+  
+<p>None, except for those imposed by the requirements of <a href="container.htm#vector">
+Vector</a>
+.</p>
+  
+<h4>Public base classes</h4>
+  
+<p><code>vector_expression&lt;vector&lt;T, A&gt; &gt;</code> </p>
+  
+<h4>Members</h4>
+  
+<table border="1">
+     <tbody>
+    <tr>
+         <th>Member </th>
+         <th>Description </th>
+     </tr>
+     <tr>
+         <td><code>vector ()</code> </td>
+         <td>Allocates an uninitialized <code>vector</code> that        
+holds zero elements.</td>
+     </tr>
+     <tr>
+         <td><code>vector (size_type size)</code></td>
+         <td>Allocates an uninitialized <code>vector</code> that        
+holds <code>size</code> elements.</td>
+     </tr>
+     <tr>
+         <td><code>vector (const vector &amp;v)</code></td>
+         <td>The copy constructor.</td>
+     </tr>
+     <tr>
+         <td><code>template&lt;class AE&gt;<br>
+         vector (const vector_expression&lt;AE&gt; &amp;ae)</code></td>
+         <td>The extended copy constructor.</td>
+     </tr>
+     <tr>
+         <td><code>void resize (size_type size)</code></td>
+         <td>Reallocates a <code>vector</code> to hold <code>size</code> 
+       elements. The content of the <code>vector</code> is not         preserved.</td>
+     </tr>
+     <tr>
+         <td><code>size_type size () const</code></td>
+         <td>Returns the size of the <code>vector</code>. </td>
+     </tr>
+     <tr>
+         <td><code>const_reference operator () (size_type i) const</code></td>
+         <td>Returns a <code>const </code>reference of the <code>i</code>
+-th         element. </td>
+     </tr>
+     <tr>
+         <td><code>reference operator () (size_type i)</code></td>
+         <td>Returns a reference of the <code>i</code>-th element.      
+  </td>
+     </tr>
+     <tr>
+         <td><code>const_reference operator [] (size_type i) const</code></td>
+         <td>Returns a <code>const </code>reference of the <code>i</code>
+-th         element. </td>
+     </tr>
+     <tr>
+         <td><code>reference operator [] (size_type i)</code></td>
+         <td>Returns a reference of the <code>i</code>-th element.      
+  </td>
+     </tr>
+     <tr>
+         <td><code>vector &amp;operator = (const vector &amp;v)</code></td>
+         <td>The assignment operator.</td>
+     </tr>
+     <tr>
+         <td><code>vector &amp;assign_temporary (vector &amp;v)</code></td>
+         <td>Assigns a temporary. May change the vector <code>v</code>.</td>
+     </tr>
+     <tr>
+         <td><code>template&lt;class AE&gt;<br>
+         vector &amp;operator = (const vector_expression&lt;AE&gt;      
+  &amp;ae)</code></td>
+         <td>The extended assignment operator.</td>
+     </tr>
+     <tr>
+         <td><code>template&lt;class AE&gt;<br>
+         vector &amp;assign (const vector_expression&lt;AE&gt;         &amp;ae)</code></td>
+         <td>Assigns a vector expression to the vector. Left and        
+right hand side of the assignment should be independent.</td>
+     </tr>
+     <tr>
+         <td><code>template&lt;class AE&gt;<br>
+         vector &amp;operator += (const         vector_expression&lt;AE&gt;
+&amp;ae)</code></td>
+         <td>A computed assignment operator. Adds the vector         expression
+to the vector.</td>
+     </tr>
+     <tr>
+         <td><code>template&lt;class AE&gt;<br>
+         vector &amp;plus_assign (const         vector_expression&lt;AE&gt;
+&amp;ae)</code></td>
+         <td>Adds a vector expression to the vector. Left and         right
+hand side of the assignment should be independent.</td>
+     </tr>
+     <tr>
+         <td><code>template&lt;class AE&gt;<br>
+         vector &amp;operator -= (const         vector_expression&lt;AE&gt;
+&amp;ae)</code></td>
+         <td>A computed assignment operator. Subtracts the vector       
+ expression from the vector.</td>
+     </tr>
+     <tr>
+         <td><code>template&lt;class AE&gt;<br>
+         vector &amp;minus_assign (const         vector_expression&lt;AE&gt;
+&amp;ae)</code></td>
+         <td>Subtracts a vector expression from the vector. Left        
+and right hand side of the assignment should be         independent.</td>
+     </tr>
+     <tr>
+         <td><code>template&lt;class AT&gt;<br>
+         vector &amp;operator *= (const AT &amp;at)</code></td>
+         <td>A computed assignment operator. Multiplies the vector      
+  with a scalar.</td>
+     </tr>
+     <tr>
+         <td><code>template&lt;class AT&gt;<br>
+         vector &amp;operator /= (const AT &amp;at)</code></td>
+         <td>A computed assignment operator. Divides the vector         through
+a scalar.</td>
+     </tr>
+     <tr>
+         <td><code>void swap (vector &amp;v)</code></td>
+         <td>Swaps the contents of the vectors. </td>
+     </tr>
+     <tr>
+         <td><code>void insert (size_type i, const_reference t)</code></td>
+         <td>Inserts the value <code>t</code> at the <code>i</code>-th  
+      element.</td>
+     </tr>
+     <tr>
+         <td><code>void erase (size_type i)</code></td>
+         <td>Erases the value at the <code>i</code>-th element.</td>
+     </tr>
+     <tr>
+         <td><code>void clear ()</code></td>
+         <td>Clears the vector.</td>
+     </tr>
+     <tr>
+         <td><code>const_iterator begin () const</code></td>
+         <td>Returns a <code>const_iterator</code> pointing to the      
+  beginning of the <code>vector</code>. </td>
+     </tr>
+     <tr>
+         <td><code>const_iterator end () const</code></td>
+         <td>Returns a <code>const_iterator</code> pointing to the      
+  end of the <code>vector</code>. </td>
+     </tr>
+     <tr>
+         <td><code>iterator begin () </code></td>
+         <td>Returns a <code>iterator</code> pointing to the         beginning
+of the <code>vector</code>. </td>
+     </tr>
+     <tr>
+         <td><code>iterator end () </code></td>
+         <td>Returns a <code>iterator</code> pointing to the end        
+of the <code>vector</code>. </td>
+     </tr>
+     <tr>
+         <td><code>const_reverse_iterator rbegin () const</code></td>
+         <td>Returns a <code>const_reverse_iterator</code>         pointing
+to the beginning of the reversed <code>vector</code>.         </td>
+     </tr>
+     <tr>
+         <td><code>const_reverse_iterator rend () const</code></td>
+         <td>Returns a <code>const_reverse_iterator</code>         pointing
+to the end of the reversed <code>vector</code>. </td>
+     </tr>
+     <tr>
+         <td><code>reverse_iterator rbegin () </code></td>
+         <td>Returns a <code>reverse_iterator</code> pointing to        
+the beginning of the reversed <code>vector</code>. </td>
+     </tr>
+     <tr>
+         <td><code>reverse_iterator rend () </code></td>
+         <td>Returns a <code>reverse_iterator</code> pointing to        
+the end of the reversed <code>vector</code>. </td>
+     </tr>
+ 
+  </tbody>
+</table>
+  
+<h4>Notes</h4>
+  
+<p><a name="#vector_1">[1]</a>
+ Supported parameters for the adapted array are <code>unbounded_array&lt;T&gt;</code>
+, <code>bounded_array&lt;T&gt;</code> and <code>std::vector&lt;T&gt;</code>
+. </p>
+  
+<h4>Interface</h4>
+  
+<pre><code>    // Array based vector class<br>    template&lt;class T, class A&gt;<br>    class vector:<br>        public vector_expression&lt;vector&lt;T, A&gt; &gt; {<br>    public:<br>        typedef std::size_t size_type;<br>        typedef std::ptrdiff_t difference_type;<br>        typedef T value_type;<br>        typedef const T &amp;const_reference;<br>        typedef T &amp;reference;<br>        typedef const T *const_pointer;<br>        typedef T *pointer;<br>        typedef F functor_type;<br>        typedef A array_type;<br>        typedef const A const_array_type;<br>        typedef const vector&lt;T, A&gt; const_self_type;<br>        typedef vector&lt;T, A&gt; self_type;<br>        typedef const vector_const_reference&lt;const_self_type&gt; const_closure_type;<br>        typedef vector_reference&lt;self_type&gt; closure_type;<br>        typedef typename A::const_iterator const_iterator_type;<br>        typedef typename A::iterator iterator_type;<br>        typedef dense_tag storage_category;<br><br>        // Construction and destruction<br>        vector ();<br>        vector (size_type size);<br>        vector (const vector &amp;v);<br>        template&lt;class AE&gt;<br>        vector (const vector_expression&lt;AE&gt; &amp;ae);<br><br>        // Accessors<br>        size_type size () const;<br>        const_array_type &amp;data () const;<br>        array_type &amp;data ();<br><br>        // Resizing<br>        void resize (size_type size);<br><br>        // Element access<br>        const_reference operator () (size_type i) const;<br>        reference operator () (size_type i);<br><br>        const_reference operator [] (size_type i) const;<br>        reference operator [] (size_type i);<br><br>        // Assignment<br>        vector &amp;operator = (const vector &amp;v);<br>        vector &amp;assign_temporary (vector &amp;v);<br>        template&lt;class AE&gt;<br>        vector &amp;operator = (const vector_expression&lt;AE&gt; &amp;ae);<br>        template&lt;class AE&gt;<br>        vector &amp;reset (const vector_expression&lt;AE&gt; &amp;ae);<br>        template&lt;class AE&gt;<br>        vector &amp;assign (const vector_expression&lt;AE&gt; &amp;ae);<br>        template&lt;class AE&gt;<br>        vector &amp;operator += (const vector_expression&lt;AE&gt; &amp;ae);<br>        template&lt;class AE&gt;<br>        vector &amp;plus_assign (const vector_expression&lt;AE&gt; &amp;ae);<br>        template&lt;class AE&gt;<br>        vector &amp;operator -= (const vector_expression&lt;AE&gt; &amp;ae);<br>        template&lt;class AE&gt;<br>        vector &amp;minus_assign (const vector_expression&lt;AE&gt; &amp;ae);<br>        template&lt;class AT&gt;<br>        vector &amp;operator *= (const AT &amp;at);<br>        template&lt;class AT&gt;<br>        vector &amp;operator /= (const AT &amp;at);<br><br>        // Swapping<br>        void swap (vector &amp;v);<br>        friend void swap (vector &amp;v1, vector &amp;v2);<br><br>        // Element insertion and erasure<br>        void insert (size_type i, const_reference t);<br>        void erase (size_type i);<br>        void clear ();<br><br>        class const_iterator;<br>        class iterator;<br><br>        // Element lookup<br>        const_iterator find (size_type i) const;<br>        iterator find (size_type i);<br>        const_iterator find_first (size_type i) const;<br>        iterator find_first (size_type i);<br>        const_iterator find_last (size_type i) const;<br>        iterator find_last (size_type i);<br><br>        // Iterators simply are pointers.<br><br>        class const_iterator:<br>            public container_const_reference&lt;vector&gt;,<br>            public random_access_iterator_base&lt;const_iterator, value_type&gt; {<br>        public:<br>            typedef dense_random_access_iterator_tag iterator_category;<br>            typedef typename vector::difference_type difference_type;<br>            typedef typename vector::value_type value_type;<br>            typedef typename vector::const_reference reference;<br>            typedef typename vector::const_pointer pointer;<br><br>            // Construction and destruction<br>            const_iterator ();<br>            const_iterator (const vector &amp;v, const const_iterator_type &amp;it);<br>            const_iterator (const iterator &amp;it):<br><br>            // Arithmetic<br>            const_iterator &amp;operator ++ ();<br>            const_iterator &amp;operator -- ();<br>            const_iterator &amp;operator += (difference_type n);<br>            const_iterator &amp;operator -= (difference_type n);<br>            difference_type operator - (const const_iterator &amp;it) const;<br><br>            // Dereference<br>            reference operator * () const;<br><br>            // Index<br>            size_type index () const;<br><br>            // Assignment<br>            const_iterator &amp;operator = (const const_iterator &amp;it);<br><br>            // Comparison<br>            bool operator == (const const_iterator &amp;it) const;<br>            bool operator &lt; (const const_iterator &amp;it) const;<br>        };<br><br>        const_iterator begin () const;<br>        const_iterator end () const;<br><br>        class iterator:<br>            public container_reference&lt;vector&gt;,<br>            public random_access_iterator_base&lt;iterator, value_type&gt; {<br>        public:<br>            typedef dense_random_access_iterator_tag iterator_category;<br>            typedef typename vector::difference_type difference_type;<br>            typedef typename vector::value_type value_type;<br>            typedef typename vector::reference reference;<br>            typedef typename vector::pointer pointer;<br><br>            // Construction and destruction<br>            iterator ();<br>            iterator (vector &amp;v, const iterator_type &amp;it);<br><br>            // Arithmetic<br>            iterator &amp;operator ++ ();<br>            iterator &amp;operator -- ();<br>            iterator &amp;operator += (difference_type n);<br>            iterator &amp;operator -= (difference_type n);<br>            difference_type operator - (const iterator &amp;it) const;<br><br>            // Dereference<br>            reference operator * () const;<br><br>            // Index<br>            size_type index () const;<br><br>            // Assignment<br>            iterator &amp;operator = (const iterator &amp;it);<br><br>            // Comparison<br>            bool operator == (const iterator &amp;it) const;<br>            bool operator &lt; (const const_iterator &amp;it) const;<br>        };<br><br>        iterator begin ();<br>        iterator end ();<br><br>        // Reverse iterator<br><br>        typedef reverse_iterator_base&lt;const_iterator&gt; const_reverse_iterator;<br><br>        const_reverse_iterator rbegin () const;<br>        const_reverse_iterator rend () const;<br><br>        typedef reverse_iterator_base&lt;iterator&gt; reverse_iterator;<br><br>        reverse_iterator rbegin ();<br>        reverse_iterator rend ();<br>    }; </code></pre>
+  
+<h2><a name="unit_vector"></a>
+Unit Vector</h2>
+  
+<h4>Description</h4>
+  
+<p>The templated class <code>unit_vector&lt;T&gt; </code>represents canonical
+unit vectors. For the <em>k</em>-th <em>n</em>-dimensional canonical unit
+vector and <em>0 &lt;= i &lt; n </em>holds <em>u</em><sup><em>k</em></sup><sub><em>
+i</em></sub><em> = 0</em>, if <em>i &lt;&gt; k</em>, and <em>u</em><sup><em>
+k</em></sup><sub><em>i</em></sub><em> = 1</em>. </p>
+  
+<h4>Example</h4>
+  
+<pre>#include &lt;boost/numeric/ublas/vector.hpp&gt;<br>#include &lt;boost/numeric/ublas/io.hpp&gt;<br><br>int main () {<br>    using namespace boost::numeric::ublas;<br>    for (int i = 0; i &lt; 3; ++ i) {<br>        unit_vector&lt;double&gt; v (3, i);<br>        std::cout &lt;&lt; v &lt;&lt; std::endl;<br>    }<br>}<br></pre>
+<h4>Definition</h4>
+  
+<p>Defined in the header vector.hpp.</p>
+  
+<h4>Template parameters</h4>
+  
+<table border="1">
+     <tbody>
+    <tr>
+         <th>Parameter </th>
+         <th>Description </th>
+         <th>Default </th>
+     </tr>
+     <tr>
+         <td><code>T</code> </td>
+         <td>The type of object stored in the vector. </td>
+         <td>&nbsp;</td>
+     </tr>
+ 
+  </tbody>
+</table>
+  
+<h4>Model of</h4>
+  
+<p><a href="expression.htm#vector_expression">Vector Expression</a>
+. </p>
+  
+<h4>Type requirements</h4>
+  
+<p>None, except for those imposed by the requirements of <a href="expression.htm#vector_expression">
+Vector Expression</a>
+.</p>
+  
+<h4>Public base classes</h4>
+  
+<p><code>vector_expression&lt;unit_vector&lt;T&gt; &gt;</code> </p>
+  
+<h4>Members</h4>
+  
+<table border="1">
+     <tbody>
+    <tr>
+         <th>Member </th>
+         <th>Description </th>
+     </tr>
+     <tr>
+         <td><code>unit_vector ()</code> </td>
+         <td>Constructs an <code>unit_vector</code> that holds         zero
+elements.</td>
+     </tr>
+     <tr>
+         <td><code>unit_vector (size_type size, size_type index)</code></td>
+         <td>Constructs the <code>index</code>-th <code>unit_vector</code>
+         that holds <code>size</code> elements.</td>
+     </tr>
+     <tr>
+         <td><code>unit_vector (const unit_vector &amp;v)</code></td>
+         <td>The copy constructor.</td>
+     </tr>
+     <tr>
+         <td><code>void resize (size_type size)</code></td>
+         <td>Resizes a <code>unit_vector</code> to hold <code>size</code>
+         elements. </td>
+     </tr>
+     <tr>
+         <td><code>size_type size () const</code></td>
+         <td>Returns the size of the <code>unit_vector</code>. </td>
+     </tr>
+     <tr>
+         <td><code>size_type index () const</code></td>
+         <td>Returns the index of the <code>unit_vector</code>. </td>
+     </tr>
+     <tr>
+         <td><code>const_reference operator () (size_type i) const</code></td>
+         <td>Returns the value of the <code>i</code>-th element. </td>
+     </tr>
+     <tr>
+         <td><code>const_reference operator [] (size_type i) const</code></td>
+         <td>Returns the value of the <code>i</code>-th element. </td>
+     </tr>
+     <tr>
+         <td><code>unit_vector &amp;operator = (const unit_vector       
+ &amp;v)</code></td>
+         <td>The assignment operator.</td>
+     </tr>
+     <tr>
+         <td><code>unit_vector &amp;assign_temporary (unit_vector       
+ &amp;v)</code></td>
+         <td>Assigns a temporary. May change the unit vector <code>v</code>
+.</td>
+     </tr>
+     <tr>
+         <td><code>void swap (unit_vector &amp;v)</code></td>
+         <td>Swaps the contents of the unit vectors. </td>
+     </tr>
+     <tr>
+         <td><code>const_iterator begin () const</code></td>
+         <td>Returns a <code>const_iterator</code> pointing to the      
+  beginning of the <code>unit_vector</code>. </td>
+     </tr>
+     <tr>
+         <td><code>const_iterator end () const</code></td>
+         <td>Returns a <code>const_iterator</code> pointing to the      
+  end of the <code>unit_vector</code>. </td>
+     </tr>
+     <tr>
+         <td><code>const_reverse_iterator rbegin () const</code></td>
+         <td>Returns a <code>const_reverse_iterator</code>         pointing
+to the beginning of the reversed <code>unit_vector</code>.         </td>
+     </tr>
+     <tr>
+         <td><code>const_reverse_iterator rend () const</code></td>
+         <td>Returns a <code>const_reverse_iterator</code>         pointing
+to the end of the reversed <code>unit_vector</code>.         </td>
+     </tr>
+ 
+  </tbody>
+</table>
+  
+<h4>Interface</h4>
+  
+<pre><code>    // Unit vector class<br>    template&lt;class T&gt;<br>    class unit_vector:<br>        public vector_expression&lt;unit_vector&lt;T&gt; &gt; {<br>    public:<br>        typedef std::size_t size_type;<br>        typedef std::ptrdiff_t difference_type;<br>        typedef T value_type;<br>        typedef const T &amp;const_reference;<br>        typedef T &amp;reference;<br>        typedef const T *const_pointer;<br>        typedef T *pointer;<br>        typedef const unit_vector&lt;T&gt; const_self_type;<br>        typedef unit_vector&lt;T&gt; self_type;<br>        typedef const vector_const_reference&lt;const_self_type&gt; const_closure_type;<br>        typedef size_type const_iterator_type;<br>        typedef packed_tag storage_category;<br><br>        // Construction and destruction<br>        unit_vector ();<br>        unit_vector (size_type size, size_type index);<br>        unit_vector (const unit_vector &amp;v);<br><br>        // Accessors<br>        size_type size () const;<br>        size_type index () const;<br><br>        // Resizing<br>        void resize (size_type size);<br><br>        // Element access<br>        const_reference operator () (size_type i) const;<br><br>        const_reference operator [] (size_type i) const;<br><br>        // Assignment<br>        unit_vector &amp;operator = (const unit_vector &amp;v);<br>        unit_vector &amp;assign_temporary (unit_vector &amp;v);<br><br>        // Swapping<br>        void swap (unit_vector &amp;v);<br>        friend void swap (unit_vector &amp;v1, unit_vector &amp;v2);<br><br>        class const_iterator;<br><br>        // Element lookup<br>        const_iterator find_first (size_type i) const;<br>        const_iterator find_last (size_type i) const;<br><br>        // Iterator simply is an index.<br><br>        class const_iterator:<br>            public container_const_reference&lt;unit_vector&gt;,<br>            public random_access_iterator_base&lt;const_iterator, value_type&gt; {<br>        public:<br>            typedef packed_random_access_iterator_tag iterator_category;<br>            typedef typename unit_vector::difference_type difference_type;<br>            typedef typename unit_vector::value_type value_type;<br>            typedef typename unit_vector::const_reference reference;<br>            typedef typename unit_vector::const_pointer pointer;<br><br>            // Construction and destruction<br>            const_iterator ();<br>            const_iterator (const unit_vector &amp;v, const const_iterator_type &amp;it);<br><br>            // Arithmetic<br>            const_iterator &amp;operator ++ ();<br>            const_iterator &amp;operator -- ();<br>            const_iterator &amp;operator += (difference_type n);<br>            const_iterator &amp;operator -= (difference_type n);<br>            difference_type operator - (const const_iterator &amp;it) const;<br><br>            // Dereference<br>            reference operator * () const;<br><br>            // Index<br>            size_type index () const;<br><br>            // Assignment<br>            const_iterator &amp;operator = (const const_iterator &amp;it);<br><br>            // Comparison<br>            bool operator == (const const_iterator &amp;it) const;<br>            bool operator &lt; (const const_iterator &amp;it) const;<br>        };<br><br>        typedef const_iterator iterator;<br><br>        const_iterator begin () const;<br>        const_iterator end () const;<br><br>        // Reverse iterator<br><br>        typedef reverse_iterator_base&lt;const_iterator&gt; const_reverse_iterator;<br><br>        const_reverse_iterator rbegin () const;<br>        const_reverse_iterator rend () const;<br>    };</code></pre>
+  
+<h2><a name="zero_vector"></a>
+Zero Vector</h2>
+  
+<h4>Description</h4>
+  
+<p>The templated class <code>zero_vector&lt;T&gt; </code>represents zero
+vectors. For a <em>n</em>-dimensional zero vector and <em>0 &lt;= i &lt;
+n </em>holds <em>z</em><sub><em>i</em></sub><em> = 0</em>. </p>
+  
+<h4>Example</h4>
+  
+<pre>#include &lt;boost/numeric/ublas/vector.hpp&gt;<br>#include &lt;boost/numeric/ublas/io.hpp&gt;<br><br>int main () {<br>    using namespace boost::numeric::ublas;<br>    zero_vector&lt;double&gt; v (3);<br>    std::cout &lt;&lt; v &lt;&lt; std::endl;<br>}<br></pre>
+<h4>Definition</h4>
+  
+<p>Defined in the header vector.hpp.</p>
+  
+<h4>Template parameters</h4>
+  
+<table border="1">
+     <tbody>
+    <tr>
+         <th>Parameter </th>
+         <th>Description </th>
+         <th>Default </th>
+     </tr>
+     <tr>
+         <td><code>T</code> </td>
+         <td>The type of object stored in the vector. </td>
+         <td>&nbsp;</td>
+     </tr>
+ 
+  </tbody>
+</table>
+  
+<h4>Model of</h4>
+  
+<p><a href="expression.htm#vector_expression">Vector Expression</a>
+. </p>
+  
+<h4>Type requirements</h4>
+  
+<p>None, except for those imposed by the requirements of <a href="expression.htm#vector_expression">
+Vector Expression</a>
+.</p>
+  
+<h4>Public base classes</h4>
+  
+<p><code>vector_expression&lt;zero_vector&lt;T&gt; &gt;</code> </p>
+  
+<h4>Members</h4>
+  
+<table border="1">
+     <tbody>
+    <tr>
+         <th>Member </th>
+         <th>Description </th>
+     </tr>
+     <tr>
+         <td><code>zero_vector ()</code> </td>
+         <td>Constructs a <code>zero_vector</code> that holds zero      
+  elements.</td>
+     </tr>
+     <tr>
+         <td><code>zero_vector (size_type size)</code></td>
+         <td>Constructs a <code>zero_vector</code> that holds <code>size</code>
+         elements.</td>
+     </tr>
+     <tr>
+         <td><code>zero_vector (const zero_vector &amp;v)</code></td>
+         <td>The copy constructor.</td>
+     </tr>
+     <tr>
+         <td><code>void resize (size_type size)</code></td>
+         <td>Resizes a <code>zero_vector</code> to hold <code>size</code>
+         elements. </td>
+     </tr>
+     <tr>
+         <td><code>size_type size () const</code></td>
+         <td>Returns the size of the <code>zero_vector</code>. </td>
+     </tr>
+     <tr>
+         <td><code>const_reference operator () (size_type i) const</code></td>
+         <td>Returns the value of the <code>i</code>-th element. </td>
+     </tr>
+     <tr>
+         <td><code>const_reference operator [] (size_type i) const</code></td>
+         <td>Returns the value of the <code>i</code>-th element. </td>
+     </tr>
+     <tr>
+         <td><code>zero_vector &amp;operator = (const zero_vector       
+ &amp;v)</code></td>
+         <td>The assignment operator.</td>
+     </tr>
+     <tr>
+         <td><code>zero_vector &amp;assign_temporary (zero_vector       
+ &amp;v)</code></td>
+         <td>Assigns a temporary. May change the zero vector <code>v</code>
+.</td>
+     </tr>
+     <tr>
+         <td><code>void swap (zero_vector &amp;v)</code></td>
+         <td>Swaps the contents of the zero vectors. </td>
+     </tr>
+     <tr>
+         <td><code>const_iterator begin () const</code></td>
+         <td>Returns a <code>const_iterator</code> pointing to the      
+  beginning of the <code>zero_vector</code>. </td>
+     </tr>
+     <tr>
+         <td><code>const_iterator end () const</code></td>
+         <td>Returns a <code>const_iterator</code> pointing to the      
+  end of the <code>zero_vector</code>. </td>
+     </tr>
+     <tr>
+         <td><code>const_reverse_iterator rbegin () const</code></td>
+         <td>Returns a <code>const_reverse_iterator</code>         pointing
+to the beginning of the reversed <code>zero_vector</code>.         </td>
+     </tr>
+     <tr>
+         <td><code>const_reverse_iterator rend () const</code></td>
+         <td>Returns a <code>const_reverse_iterator</code>         pointing
+to the end of the reversed <code>zero_vector</code>.         </td>
+     </tr>
+ 
+  </tbody>
+</table>
+  
+<h4>Interface</h4>
+  
+<pre><code>    // Zero vector class<br>    template&lt;class T&gt;<br>    class zero_vector:<br>        public vector_expression&lt;zero_vector&lt;T&gt; &gt; {<br>    public:<br>        typedef std::size_t size_type;<br>        typedef std::ptrdiff_t difference_type;<br>        typedef T value_type;<br>        typedef const T &amp;const_reference;<br>        typedef T &amp;reference;<br>        typedef const T *const_pointer;<br>        typedef T *pointer;<br>        typedef const zero_vector&lt;T&gt; const_self_type;<br>        typedef zero_vector&lt;T&gt; self_type;<br>        typedef const vector_const_reference&lt;const_self_type&gt; const_closure_type;<br>        typedef size_type const_iterator_type;<br>        typedef sparse_tag storage_category;<br><br>        // Construction and destruction<br>        zero_vector ();<br>        zero_vector (size_type size);<br>        zero_vector (const zero_vector &amp;v);<br><br>        // Accessors<br>        size_type size () const;<br>        size_type index () const;<br><br>        // Resizing<br>        void resize (size_type size);<br><br>        // Element access<br>        const_reference operator () (size_type i) const;<br><br>        const_reference operator [] (size_type i) const;<br><br>        // Assignment<br>        zero_vector &amp;operator = (const zero_vector &amp;v);<br>        zero_vector &amp;assign_temporary (zero_vector &amp;v);<br><br>        // Swapping<br>        void swap (zero_vector &amp;v);<br>        friend void swap (zero_vector &amp;v1, zero_vector &amp;v2);<br><br>        class const_iterator;<br><br>        // Element lookup<br>        const_iterator find_first (size_type i) const;<br>        const_iterator find_last (size_type i) const;<br><br>        // Iterator simply is an index.<br><br>        class const_iterator:<br>            public container_const_reference&lt;zero_vector&gt;,<br>            public bidirectional_iterator_base&lt;const_iterator, value_type&gt; {<br>        public:<br>            typedef sparse_bidirectional_iterator_tag iterator_category;<br>            typedef typename zero_vector::difference_type difference_type;<br>            typedef typename zero_vector::value_type value_type;<br>            typedef typename zero_vector::const_reference reference;<br>            typedef typename zero_vector::const_pointer pointer;<br><br>            // Construction and destruction<br>            const_iterator ();<br>            const_iterator (const zero_vector &amp;v, const const_iterator_type &amp;it);<br><br>            // Arithmetic<br>            const_iterator &amp;operator ++ ();<br>            const_iterator &amp;operator -- ();<br><br>            // Dereference<br>            reference operator * () const;<br><br>            // Index<br>            size_type index () const;<br><br>            // Assignment<br>            const_iterator &amp;operator = (const const_iterator &amp;it);<br><br>            // Comparison<br>            bool operator == (const const_iterator &amp;it) const;<br>        };<br><br>        typedef const_iterator iterator;<br><br>        const_iterator begin () const;<br>        const_iterator end () const;<br><br>        // Reverse iterator<br><br>        typedef reverse_iterator_base&lt;const_iterator&gt; const_reverse_iterator;<br><br>        const_reverse_iterator rbegin () const;<br>        const_reverse_iterator rend () const;<br>    };</code></pre>
+  
+<hr>  
+<p>Copyright (&copy;) 2000-2002 Joerg Walter, Mathias Koch <br>
+ Permission to copy, use, modify, sell and distribute this document is granted
+provided this copyright notice appears in all copies. This document is provided
+``as is'' without express or implied warranty, and with no claim as to its
+suitability for any purpose.</p>
+  
+<p>Last revised: 1/15/2003</p>
+
+</body>
+</html>

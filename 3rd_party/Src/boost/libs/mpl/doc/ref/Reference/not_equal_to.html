@@ -1,0 +1,61 @@
+<!doctype html public "-//ietf//dtd html//en">
+<html><head><title>boost::mpl::not_equal_to</title>
+<link rel="stylesheet" href="../mpl_wiki.css">
+</head><body bgcolor="white">
+<h1><a href="../Table_of_Contents.html"><img src="../mpl_logo.jpg" alt="[Home]" border=0 align="right"></a>not_equal_to</h1><h3>Synopsis</h3>
+<p>
+<pre>
+template&lt;
+      typename T1
+    , typename T2
+    &gt;
+struct not_equal_to
+{
+    typedef <em>unspecified</em> type;
+};
+</pre>
+<p>
+<h3>Description</h3>
+<p>
+Returns <code>true_</code> if <code>T1::value != T2::value</code> and <code>false_</code> otherwise [<a href="#1">1</a>].
+<p>
+<h3>Definition</h3>
+<p>
+<pre>
+#include "<a href="../../../../../boost/mpl/not_equal_to.hpp">boost/mpl/not_equal_to.hpp</a>"
+</pre>
+<p>
+<h3>Parameters</h3>
+<table border="1">
+<tr><th>&nbsp;Parameter&nbsp;</th><th>&nbsp;Requirement&nbsp;</th><th>&nbsp;Description &nbsp;</th></tr>
+<tr><td><code>T1, T2</code></td><td>A model of <a href="../Integral_Constant.html">Integral Constant</a></td><td></td></tr>
+</table>
+<p>
+<h3>Expression semantics</h3>
+<p>
+<table border="1">
+<tr><th>&nbsp;Expression&nbsp;</th><th>&nbsp;Expression&nbsp;type&nbsp;</th><th>&nbsp;Precondition&nbsp;</th><th>&nbsp;Semantics&nbsp;</th><th>&nbsp;Postcondition&nbsp;</th></tr>
+<tr><td><code>typedef not_equal_to&lt;t1,t2&gt;::type c;</code></td><td>A model of <code>bool</code> <a href="../Integral_Constant.html">Integral Constant</a></td><td></td><td>Equivalent to <code>typedef bool_&lt;(t1::value != t2::value)&gt; c;</code></td><td></td></tr>
+</table>
+<p>
+<h3>Complexity</h3>
+<p>
+Amortized constant time.
+<p>
+<h3>Example</h3>
+<p>
+<pre>
+typedef <a href="../Reference/list_c.html">list_c</a>&lt;int,1,5,0,7,5,-1,2,4,5&gt; numbers;
+typedef <a href="../Reference/remove_if.html">remove_if</a>&lt; numbers, not_equal_to&lt;_1,int_&lt;5&gt; &gt; &gt;::type fives;
+BOOST_STATIC_ASSERT(<a href="../Reference/equal_to.html">equal_to</a>&lt; <a href="../Reference/count_if.html">count_if</a>&lt; fives, <a href="../Reference/equal_to.html">equal_to</a>&lt;_1,int_&lt;5&gt; &gt; &gt;::type, <a href="../Reference/size.html">size</a>&lt;fives&gt;::type &gt;::type::value));
+</pre>
+<p>
+<h3>Notes</h3>
+<p>
+[<a name="1">1</a>]  The <code>not_equal_to</code> metafunction can be (and is expected to be) specialized by user to work on user-defined types that do not satisfy the <a href="../Integral_Constant.html">Integral Constant</a> requirements. The requirements listed here are the ones imposed by the default implementation.<br>
+<p>
+<h3>See also</h3>
+<p>
+<a href="../Metafunctions.html">Metafunctions</a>, <code><a href="../Reference/equal_to.html">equal_to</a></code>, <code><a href="../Reference/less.html">less</a></code>, <code><a href="../Reference/less_equal.html">less_equal</a></code>, <code><a href="../Reference/greater.html">greater</a></code>, <code><a href="../Reference/greater_equal.html">greater_equal</a></code>
+<p><hr>
+<a href="../Table_of_Contents.html">Table of Contents</a><br>Last edited March 10, 2003 6:20 am</body></html>

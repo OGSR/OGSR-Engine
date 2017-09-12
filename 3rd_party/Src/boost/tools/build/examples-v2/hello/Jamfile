@@ -1,0 +1,5 @@
+
+exe hello : hello.cpp ;
+
+symlink hello_debug hello_release : hello/<variant>debug hello/<variant>release ;
+symlink links/hello_release : hello/<variant>release ;

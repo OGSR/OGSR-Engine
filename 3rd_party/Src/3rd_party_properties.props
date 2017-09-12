@@ -1,0 +1,32 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ImportGroup Label="PropertySheets" />
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <OutDir>X:\3rd_party\_BIN\$(Configuration)\$(Platform)</OutDir>
+    <IntDir>X:\3rd_party\_TEMP\$(Configuration)\$(Platform)\$(ProjectName)\</IntDir>
+  </PropertyGroup>
+  <ItemDefinitionGroup>
+    <PostBuildEvent>
+      <Command>
+        if Release == $(ConfigurationName) ( if Win32 == $(Platform) ( 
+        xcopy "$(TargetPath)" "X:\ogsr_package\READY\bin\" /y/i 
+        xcopy "$(TargetDir)$(TargetName).pdb" "X:\ogsr_package\READY\bin\" /y/i ) else ( if x64 == $(Platform) (
+        xcopy "$(TargetPath)" "X:\ogsr_package\READY\bin\x64\" /y/i
+        xcopy "$(TargetDir)$(TargetName).pdb" "X:\ogsr_package\READY\bin\x64\" /y/i ) ) )
+      </Command>
+    </PostBuildEvent>
+    <ClCompile>
+        <EnableEnhancedInstructionSet>StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
+      <AssemblerListingLocation>X:\3rd_party\_TEMP\$(Configuration)\$(Platform)\$(ProjectName)\</AssemblerListingLocation>
+      <ObjectFileName>X:\3rd_party\_TEMP\$(Configuration)\$(Platform)\$(ProjectName)\</ObjectFileName>
+      <ProgramDataBaseFileName>X:\3rd_party\_TEMP\$(Configuration)\$(Platform)\$(ProjectName)\</ProgramDataBaseFileName>
+    </ClCompile>
+    <Link>
+      <ImportLibrary>X:\3rd_party\_LIB\$(Configuration)\$(Platform)\$(TargetName).lib</ImportLibrary>
+      <AdditionalLibraryDirectories>X:\3rd_party\_LIB\$(Configuration)\$(Platform)</AdditionalLibraryDirectories>
+      <LargeAddressAware>true</LargeAddressAware>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup />
+</Project>

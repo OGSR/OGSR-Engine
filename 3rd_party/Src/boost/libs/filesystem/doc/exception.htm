@@ -1,0 +1,166 @@
+<html>
+
+<head>
+<meta http-equiv="Content-Language" content="en-us">
+<meta name="GENERATOR" content="Microsoft FrontPage 5.0">
+<meta name="ProgId" content="FrontPage.Editor.Document">
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+<title>Boost Filesystem exception.hpp Header</title>
+</head>
+
+<body bgcolor="#FFFFFF">
+
+<h1>
+<img border="0" src="../../../c++boost.gif" align="center" width="277" height="86"><a href="../../../boost/filesystem/exception.hpp">boost/filesystem/exception.hpp</a></h1>
+
+<p><a href="#Introduction">Introduction</a><br>
+<a href="#Synopsis">Synopsis</a><br>
+<a href="#Members">Member functions</a><br>
+<a href="#Acknowledgements">Acknowledgements</a></p>
+
+<h2><a name="Introduction">Introduction</a></h2>
+
+<p>The header provides class <i>filesystem_error</i>, publicly derived from <i>
+std::runtime_error</i>, which is used by functions in the Filesystem Library to 
+report operational errors.</p>
+
+<p>The design evolved based on user requests to ease portability and 
+internationalization.</p>
+
+<h2><a name="Synopsis">Synopsis</a></h2>
+<pre>namespace boost
+{
+  namespace filesystem
+  {
+    enum <a name="error_code">error_code</a>
+    {
+      no_error = 0,
+      system_error,     // system generated error; if possible, is translated
+                        // to one of the more specific errors below.
+      other_error,      // library generated error
+      security_error,   // includes access rights, permissions failures
+      read_only_error,
+      io_error,
+      path_error,
+      not_found_error,
+      not_directory_error,
+      busy_error,       // implies trying again might succeed
+      already_exists_error,
+      not_empty_error,
+      is_directory_error,
+      out_of_space_error,
+      out_of_memory_error,
+      out_of_resource_error
+    };
+
+    class filesystem_error : public std::runtime_error
+    {
+    public:
+
+      <a href="#Constructors">filesystem_error</a>( const std::string &amp; who,
+        const std::string &amp; message );
+
+      <a href="#Constructors">filesystem_error</a>( const std::string &amp; who,
+        const path &amp; path1, const std::string &amp; message );
+
+      <a href="#Constructors">filesystem_error</a>( const std::string &amp; who,
+        const path &amp; path1, <i>sys_err</i> sys_err_code );
+
+      <a href="#Constructors">filesystem_error</a>( const std::string &amp; who,
+        const path &amp; path1, const path &amp; path2,
+        <i>sys_err</i> sys_err_code );
+
+      ~filesystem_error() throw();
+
+      <i>sys_err</i> <a href="#native_error">native_error</a>() const;
+      error_code <a href="#error">error</a>() const;
+      const std::string &amp; <a href="#who">who</a>() const;
+      const path &amp; <a href="#path1">path1</a>() const;
+      const path &amp; <a href="#path2">path2</a>() const;
+    };
+  } // namespace filesystem
+} // namespace boost
+</pre>
+
+<p>For POSIX and Windows, <i><code>sys_err</code></i> is <code>int</code>. For 
+other operating systems, it is implementation defined.</p>
+
+<h2><a name="Members">Member functions</a></h2>
+
+<h3><a name="Constructors">Constructors</a></h3>
+<blockquote>
+  <pre>filesystem_error( const std::string &amp; who,
+  const std::string &amp; message );
+
+filesystem_error( const std::string &amp; who,
+  const path &amp; path1, const std::string &amp; message );
+
+filesystem_error( const std::string &amp; who,
+  const path &amp; path1, int sys_err_code );
+
+filesystem_error( const std::string &amp; who,
+  const path &amp; path1, const path &amp; path2,
+  int sys_err_code );</pre>
+  <p><b>Precondition:</b> The <code>who</code> argument is in the form, as 
+  appropriate:</p>
+  <ul>
+    <li>boost::filesystem::class-name::function-name for errors from public 
+    member functions</li>
+    <li>boost::filesystem::class-name for errors not identified with a 
+    particular member function.</li>
+    <li>boost::filesystem::function-name for errors from non-member functions.</li>
+  </ul>
+  <p>These forms are explicitly specified to ensure portability of user programs 
+  between library implementations. </p>
+  <p><b>Effects:</b> Constructs a <i>filesystem_error</i> object.</p>
+</blockquote>
+<h3><a name="native_error">native_error</a></h3>
+<blockquote>
+  <p><i><code>sys_err</code></i><code> native_error() const;</code></p>
+  <p><b>Returns:</b> The <code>sys_err_code</code> argument to the constructor, 
+  if any. Otherwise, 0.</p>
+</blockquote>
+<h3><a name="error">error</a></h3>
+<blockquote>
+  <pre>error_code error() const;</pre>
+  <p><b>Returns:</b> <code>native_error()</code> translated to <code>
+  <a href="#error_code">error_code</a></code>. The translation is 
+  implementation-defined. For the POSIX and Windows implementations, see
+  <a href="../src/exception.cpp">libs/filesystem/src/exception.cpp</a>.</p>
+</blockquote>
+
+<h3><a name="who">who</a></h3>
+<blockquote>
+  <pre>const std::string &amp; who() const;</pre>
+
+<p><b>Returns:</b> The <code>who</code> argument to the constructor.</p>
+</blockquote>
+
+<h3><a name="path1">path1</a></h3>
+<blockquote>
+  <pre>const path &amp; path1() const;</pre>
+
+<p><b>Returns:</b> The <code>path1</code> argument to the constructor, if any, 
+otherwise <code>path()</code>.</p>
+</blockquote>
+
+<h3><a name="path2">path2</a></h3>
+<blockquote>
+  <pre>const path &amp; path2() const;</pre>
+
+<p><b>Returns:</b> The <code>path2</code> argument to the constructor, if any, 
+otherwise <code>path()</code>.</p>
+</blockquote>
+
+<h2><a name="Acknowledgements">Acknowledgements</a></h2>
+
+<p>Peter Dimov patently identified requirements for portability and 
+internationalization of error messages. </p>
+<hr>
+<p>© Copyright Beman Dawes, 2002</p>
+<p>Revised
+<!--webbot bot="Timestamp" S-Type="EDITED" S-Format="%d %B, %Y" startspan -->02 January, 2003<!--webbot bot="Timestamp" endspan i-checksum="38568" --></p>
+
+</body>
+
+</html>

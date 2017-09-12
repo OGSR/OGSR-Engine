@@ -1,0 +1,44 @@
+
+import property ;
+
+rule compile ( target : sources * : property-set * )
+{
+    local options ;
+    for local p in $(property-set)
+    {
+        if $(p) = <optimization>on 
+        {
+            options += -O2 ;
+        }
+        else if $(p) = <debug-symbols>on 
+        {
+            options += -g ;
+        }
+        else if $(p:G) = <define>
+        {
+            options += -D$(p:G=) ;
+        }        
+    }
+    OPTIONS on $(target) = $(options) ;
+}
+
+actions compile
+{
+    g++ $(OPTIONS) -c -o $(<) $(>) 
+}
+
+rule link ( target : sources * : property-set * )
+{
+    local options ;
+    if <debug-symbols>on in $(property-set)
+    {
+        options += -g ;
+    }
+    OPTIONS on $(target) = $(options) ;
+}
+
+actions link
+{
+    g++ $(OPTIONS) -o $(<) $(>)
+}
+

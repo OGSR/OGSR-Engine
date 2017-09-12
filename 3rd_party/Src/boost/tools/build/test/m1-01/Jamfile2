@@ -1,0 +1,12 @@
+
+make a
+    : @a.obj
+    : yfc-link
+    : <optimization>speed
+    ;
+
+make a.obj
+    : a.cpp
+    : yfc-compile
+    ;
+   

@@ -1,0 +1,307 @@
+#  Copyright (C) Vladimir Prus 2002. Permission to copy, use, modify, sell and
+#  distribute this software is granted provided this copyright notice appears in
+#  all copies. This software is provided "as is" without express or implied
+#  warranty, and with no claim as to its suitability for any purpose.
+
+#  Support for toolset definition.
+
+import feature ;
+import numbers ;
+import errors : error ;
+import property ;
+
+.flag-no = 1 ;
+
+# Initializes an additional toolset-like module.
+# First load 'toolset-module' and then calls it's 'init'
+# rule with trailing arguments
+rule using ( toolset-module : * )
+{
+    import $(toolset-module) ;
+    $(toolset-module).init $(2) : $(3) : $(4) : $(5) : $(6) : $(7) : $(8) : $(9) ;
+}
+
+# Expands subfeatures in each property sets.
+# e.g
+# <toolset>gcc-3.2
+# will be converted to
+# <toolset>gcc/<toolset-version>3.2
+local rule normalize-condition ( property-sets * )
+{
+    local result ;
+    for local p in $(property-sets)
+    {
+        local split = [ feature.split $(p) ] ;
+        local expanded = [ feature.expand-subfeatures [ feature.split $(p) ] ] ;
+        result += $(expanded:J=/) ;
+    }
+    return $(result) ;
+}
+
+
+# Specifies the flags (variables) that must be set on targets under certain
+# conditions, described by arguments.
+rule flags ( rule-or-module   # If contains dot, should be a rule name.
+                              # The flags will be applied when that rule is
+                              # used to set up build actions.
+                              #
+                              # If does not contain dot, should be a module name.
+                              # The flags will be applied for all rules in that
+                              # module.
+                              # If module for rule is different from the calling
+                              # module, an error is issued.
+    
+             variable-name    # Variable that should be set on target
+             condition * :    # Can specify either
+                              #
+                              # - a set of feature names. Values of all mentioned
+                              #   feature that are present in build property set
+                              #   will be appended to the variable. The 'actualize'
+                              #   method will be called on values of all dependency
+                              #   features. The next argument will be unused.
+                              #
+                              # - a set of property sets. If one of those property 
+                              #   sets is contained in build properties, 'values'
+                              #   will be added to the variable.
+                              #   Implied values are not allowed: "<toolset>gcc" should
+                              #   be used, not just "gcc". Subfeatures, like in
+                              #   "<toolset>gcc-3.2" are allowed.
+                              #
+                              # - empty. 'values' will be added to the variable 
+                              #   unconditionally
+             values * )
+{
+    local module_ = [ MATCH "([^.]*).*" : $(rule-or-module) ] ;
+    local caller = [ CALLER_MODULE ] ;
+    if $(module_) != $(caller)
+    {
+        errors.error "Module $(caller) attempted to set flags for module $(module_)" ;
+    }
+        
+    local match-type ;   
+    if $(condition[1]:G=)
+    {
+        match-type = property-set ;
+        property.validate-property-sets $(condition) ;
+        if ! $(values)
+        {
+            # I don't think I like this test anymore.
+#             error empty value set used with property-set match criterion:
+#               : \"$(condition)\" ;
+        }
+        condition = [ normalize-condition $(condition) ] ;
+    }
+    else if $(condition)
+    {
+        match-type += feature ;
+        if $(values)
+        {
+            error non-empty value set used with feature match criterion ;
+        }
+    }
+    else
+    {
+        match-type += unconditional ;
+        
+        # I don't like this condition anymore
+        if ! $(values)-is-nonempty
+        {
+            error empty value set used with unconditional match criterion ;
+        }
+    }    
+    add-flag $(rule-or-module) : $(match-type) : $(variable-name)
+      : $(condition) : $(values) ;
+}
+
+# Adds new flag setting with the specified values
+# Does no checking
+local rule add-flag ( rule-or-module : match-type : 
+    variable-name : condition * : values * )
+{
+    .$(rule-or-module).flags += $(.flag-no) ;
+
+    # Store all flags for a module
+    local module_ = [ MATCH "([^.]*).*" : $(rule-or-module) ] ;    
+    .module-flags.$(module_) += $(.flag-no) ;
+    # Store flag-no -> rule-or-module mapping
+    .rule-or-module.$(.flag-no) = $(rule-or-module) ;
+
+    .$(rule-or-module).match-type.$(.flag-no) = $(match-type) ;
+    .$(rule-or-module).variable.$(.flag-no) += $(variable-name) ;
+    .$(rule-or-module).values.$(.flag-no) += $(values) ;
+    .$(rule-or-module).condition.$(.flag-no) += $(condition) ;            
+                   
+    .flag-no = [ numbers.increment $(.flag-no) ] ;
+}
+    
+
+# Returns the first element of 'property-sets' which is a subset of
+# 'properties', or an empty list if no such element exists.
+local rule find-property-subset ( property-sets * : properties * )
+{
+    local result ;
+    for local s in $(property-sets)
+    {
+        if ! $(result)
+        {
+            if [ feature.split $(s) ] in $(properties)
+            {
+                result = $(s) ;
+            }
+        }
+    }
+    return $(result) ;
+}
+
+rule set-target-variables ( rule-or-module target : properties * )
+{ 
+    for local f in $(.$(rule-or-module).flags) 
+    {
+        local variable = $(.$(rule-or-module).variable.$(f)) ;
+        local condition = $(.$(rule-or-module).condition.$(f)) ;
+        local values = $(.$(rule-or-module).values.$(f)) ;
+        local result ;
+        
+        switch $(.$(rule-or-module).match-type.$(f))
+        {
+         case unconditional :
+              result += $(values) ;
+              
+         case property-set : 
+            if [ find-property-subset $(condition) : $(properties) ]
+            {
+                result += $(values) ;
+            }
+            
+         case feature : # add the values of all specified features to the variable
+            local matches = [ property.select $(condition) : $(properties) ] ;
+            for local p in $(matches)
+            {
+                if dependency in [ feature.attributes $(p:G) ]
+                {
+                    # the value of a dependency feature is a target
+                    # and must be actualized
+                    result += [ $(p:G=).actualize ] ;
+                }
+                else
+                {
+                    result += $(p:G=) ;
+                }
+            }
+        }
+
+        # Without this test, the assignment below would create a
+        # target variable even if $(result) is empty.  That is
+        # undesirable because the empty target variable would mask
+        # module globals intended to be used as defaults.
+        if $(result)-is-nonempty
+        {
+            $(variable) on $(target) += $(result) ;
+        }
+    }
+    
+    # recurse for any module-specific flags
+    local module_ = [ MATCH ^(.+)\\..* : $(rule-or-module) ] ;
+    if $(module_)
+    {
+        set-target-variables $(module_) $(target) : $(properties) ;
+        
+        # Allow a rule-based hook for more-sophisticated setting
+        # of build options than flags allows.
+        if prepare-target in [ RULENAMES $(module_) ]
+        {
+            module $(module_)
+            {
+                prepare-target [ modules.peek toolset : target ] : [ modules.peek toolset : properties ] ;
+            }
+        }
+    }
+}
+
+.toolsets += $(toolset) ;
+
+# Registers a new toolset
+rule register ( toolset )
+{
+    feature.extend toolset : $(toolset) ;
+    .toolsets += $(toolset) ;
+}
+
+# Make toolset 'toolset', defined in a module of the same name,
+# inherit from 'base'
+# 1. The 'init' rule from 'base' is imported into 'toolset' with full
+#    name. Another 'init' is called, which forwards to the base one.
+# 2. All generators from 'base' are cloned. The ids are adjusted and 
+#    <toolset> property in requires is adjusted too
+# 3. All flags are inherited
+# 4. All rules are imported.
+rule inherit ( toolset : base )
+{
+    import $(base) ;
+    
+    inherit-generators $(toolset) : $(base) ;
+    inherit-flags $(toolset) : $(base) ;
+    inherit-rules $(toolset) : $(base) ;
+}
+
+rule inherit-generators ( toolset : base )
+{
+    local base-generators = [ generators.generators-for-toolset $(base) ] ;
+    for local g in $(base-generators)
+    {
+        local id = [ $(g).id ] ;
+        local new-id = $(id:B=$(toolset)) ;
+        generators.register [ $(g).clone $(new-id) : $(toolset) ] ;
+    }    
+}
+
+rule inherit-flags ( toolset : base )
+{
+    for local f in $(.module-flags.$(base))
+    {        
+        local rule-or-module = $(.rule-or-module.$(f)) ; 
+        local rule_ = [ MATCH "[^.]*\.(.*)" : $(rule-or-module) ] ;
+        local new-rule-or-module ;
+        if $(rule_)
+        {
+            new-rule-or-module = $(toolset).$(rule_) ;
+        }
+        else
+        {
+            new-rule-or-module = $(toolset) ;
+        }
+                                        
+        add-flag
+           $(new-rule-or-module)
+           : $(.$(rule-or-module).match-type.$(f))
+           : $(.$(rule-or-module).variable.$(f)) 
+           : $(.$(rule-or-module).condition.$(f))              
+           : $(.$(rule-or-module).values.$(f))
+           ;
+    }            
+}
+
+rule inherit-rules ( toolset : base )
+{
+    # It appears that "action" creates local rule... 
+    local base-generators = [ generators.generators-for-toolset $(base) ] ;
+    local rules ;
+    for local g in $(base-generators)
+    {
+        local id = [ MATCH "[^.]*\.(.*)" : [ $(g).id ] ] ;
+        rules += $(id) ;
+    }    
+    IMPORT $(base) : $(rules) : $(toolset) : $(rules) : localized ;
+    # Import the rules to the global scope
+    IMPORT $(toolset) : $(rules) : : $(toolset).$(rules) ;
+}
+
+
+
+local rule __test__ ( )
+{
+    import assert ;
+    local p = <b>0 <c>1 <d>2 <e>3 <f>4 ;
+    assert.result <c>1/<d>2/<e>3 : find-property-subset <c>1/<d>2/<e>3 <a>0/<b>0/<c>1 <d>2/<e>5 <a>9 : $(p) ;
+    assert.result : find-property-subset <a>0/<b>0/<c>9/<d>9/<e>5 <a>9 : $(p) ;
+}

@@ -1,0 +1,1016 @@
+<html>
+
+<head>
+<meta http-equiv="Content-Type"
+content="text/html; charset=iso-8859-1">
+<meta name="keywords"
+content="regex++, regular expressions, regular expression library, C++">
+<meta name="Template"
+content="C:\PROGRAM FILES\MICROSOFT OFFICE\OFFICE\html.dot">
+<meta name="GENERATOR" content="Microsoft FrontPage Express 2.0">
+<title> regex++ traits-class reference </title>
+</head>
+
+<body bgcolor="#FFFFFF" link="#0000FF" vlink="#800080">
+
+<table border="0" cellpadding="7" cellspacing="0" width="100%">
+    <tr>
+        <td valign="top"><h3><img src="../../c++boost.gif"
+        alt="C++ Boost" width="276" height="86"> </h3>
+        </td>
+        <td valign="top"><h3 align="center">Regex++, Traits Class
+        Reference. </h3>
+        <p align="left"><i>Copyright (c) 1998-2001 </i></p>
+        <p align="left"><i>Dr John Maddock</i></p>
+        <p align="left"><i>Permission to use, copy, modify,
+        distribute and sell this software and its documentation
+        for any purpose is hereby granted without fee, provided
+        that the above copyright notice appear in all copies and
+        that both that copyright notice and this permission
+        notice appear in supporting documentation. Dr John
+        Maddock makes no representations about the suitability of
+        this software for any purpose. It is provided &quot;as is&quot;
+        without express or implied warranty.</i></p>
+        </td>
+    </tr>
+</table>
+
+<hr>
+
+<p>This section describes the traits class requirements of the
+reg_expression template class, these requirements are somewhat
+complex (sorry), and subject to change as uses ask for new
+features, however I will try to keep them stable for a while, and
+ideally the requirements should lessen rather than increase. </p>
+
+<p>The <i>reg_expression</i> traits classes encapsulate both the
+properties of a character type, and the properties of the locale
+associated with that type. The associated locale may be defined
+at run-time (via std::locale), or hard-coded into the traits
+class and determined at compile time. </p>
+
+<p>The following example class illustrates the interface required
+by a &quot;typical&quot; traits class for use with class
+reg_expression: </p>
+
+<pre>
+class mytraits
+{
+   typedef implementation_defined char_type;
+   typedef implementation_defined uchar_type;
+   typedef implementation_defined size_type;
+   typedef implementation_defined string_type;
+   typedef implementation_defined locale_type;
+   typedef implementation_defined uint32_t;
+   struct sentry
+   {
+      sentry(const mytraits&amp;);
+      operator void*() { return this; }
+   };
+
+   enum char_syntax_type
+   {
+      syntax_char = 0,
+      syntax_open_bracket = 1,                  // (
+      syntax_close_bracket = 2,                 // )
+      syntax_dollar = 3,                        // $
+      syntax_caret = 4,                         // ^
+      syntax_dot = 5,                           // .
+      syntax_star = 6,                          // *
+      syntax_plus = 7,                          // +
+      syntax_question = 8,                      // ?
+      syntax_open_set = 9,                      // [
+      syntax_close_set = 10,                    // ]
+      syntax_or = 11,                           // |
+      syntax_slash = 12,                        //
+      syntax_hash = 13,                         // #
+      syntax_dash = 14,                         // -
+      syntax_open_brace = 15,                   // {
+      syntax_close_brace = 16,                  // }
+      syntax_digit = 17,                        // 0-9
+      syntax_b = 18,                            // for \b
+      syntax_B = 19,                            // for \B
+      syntax_left_word = 20,                    // for \&lt;
+      syntax_right_word = 21,                   // for \
+      syntax_w = 22,                            // for \w
+      syntax_W = 23,                            // for \W
+      syntax_start_buffer = 24,                 // for \`
+      syntax_end_buffer = 25,                   // for \'
+      syntax_newline = 26,                      // for newline alt
+      syntax_comma = 27,                        // for {x,y}
+
+      syntax_a = 28,                            // for \a
+      syntax_f = 29,                            // for \f
+      syntax_n = 30,                            // for \n
+      syntax_r = 31,                            // for \r
+      syntax_t = 32,                            // for \t
+      syntax_v = 33,                            // for \v
+      syntax_x = 34,                            // for \xdd
+      syntax_c = 35,                            // for \cx
+      syntax_colon = 36,                        // for [:...:]
+      syntax_equal = 37,                        // for [=...=]
+   
+      // perl ops:
+      syntax_e = 38,                            // for \e
+      syntax_l = 39,                            // for \l
+      syntax_L = 40,                            // for \L
+      syntax_u = 41,                            // for \u
+      syntax_U = 42,                            // for \U
+      syntax_s = 43,                            // for \s
+      syntax_S = 44,                            // for \S
+      syntax_d = 45,                            // for \d
+      syntax_D = 46,                            // for \D
+      syntax_E = 47,                            // for \Q\E
+      syntax_Q = 48,                            // for \Q\E
+      syntax_X = 49,                            // for \X
+      syntax_C = 50,                            // for \C
+      syntax_Z = 51,                            // for \Z
+      syntax_G = 52,                            // for \G
+      syntax_bang = 53,                         // reserved for future use '!'
+      syntax_and = 54,                          // reserve for future use '&amp;'
+   };
+
+   enum{
+      char_class_none = 0,
+      char_class_alpha,
+      char_class_cntrl,
+      char_class_digit,
+      char_class_lower,
+      char_class_punct,
+      char_class_space,
+      char_class_upper,
+      char_class_xdigit,
+      char_class_blank,
+      char_class_unicode,
+      char_class_alnum,
+      char_class_graph,
+      char_class_print,
+      char_class_word
+   };
+
+   static size_t length(const char_type* p);
+   unsigned int syntax_type(size_type c)const;
+   char_type translate(char_type c, bool icase)const;
+   void transform(string_type&amp; out, const string_type&amp; in)const;
+   void transform_primary(string_type&amp; out, const string_type&amp; in)const;
+   bool is_separator(char_type c)const;
+   bool is_combining(char_type)const;
+   bool is_class(char_type c, uint32_t f)const;
+   int toi(char_type c)const;
+   int toi(const char_type*&amp; first, const char_type* last, int radix)const;
+   uint32_t lookup_classname(const char_type* first, const char_type* last)const;
+   bool lookup_collatename(string_type&amp; buf, const char_type* first, const char_type* last)const;
+   locale_type imbue(locale_type l);
+   locale_type getloc()const;
+   std::string error_string(unsigned id)const;
+
+   mytraits();
+   ~mytraits();
+};
+</pre>
+
+<p>The member types required by a traits class are defined as
+follows:<br>
+&nbsp;&nbsp; </p>
+
+<table border="0" cellpadding="7" width="100%">
+    <tr>
+        <td valign="top" width="4%" bgcolor="#FFFFFF">&nbsp; </td>
+        <td valign="top" width="26%" bgcolor="#008080">Member
+        name </td>
+        <td valign="top" width="63%" bgcolor="#008080">Description
+        </td>
+        <td valign="top" width="6%" bgcolor="#FFFFFF">&nbsp; </td>
+    </tr>
+    <tr>
+        <td valign="top" width="4%" bgcolor="#FFFFFF">&nbsp; </td>
+        <td valign="top" width="26%" bgcolor="#C0C0C0">char_type </td>
+        <td valign="top" width="63%" bgcolor="#C0C0C0">The
+        character type encapsulated by this traits class, must be
+        a POD type, and be convertible to uchar_type. </td>
+        <td valign="top" width="6%" bgcolor="#FFFFFF">&nbsp; </td>
+    </tr>
+    <tr>
+        <td valign="top" width="4%" bgcolor="#FFFFFF">&nbsp; </td>
+        <td valign="top" width="26%" bgcolor="#C0C0C0">uchar_type
+        </td>
+        <td valign="top" width="63%" bgcolor="#C0C0C0">The
+        unsigned type corresponding to char_type, must be
+        convertible to size_type. </td>
+        <td valign="top" width="6%" bgcolor="#FFFFFF">&nbsp; </td>
+    </tr>
+    <tr>
+        <td valign="top" width="4%" bgcolor="#FFFFFF">&nbsp; </td>
+        <td valign="top" width="26%" bgcolor="#C0C0C0">size_type </td>
+        <td valign="top" width="63%" bgcolor="#C0C0C0">An
+        unsigned integral type, with at least as much precision
+        as uchar_type. </td>
+        <td valign="top" width="6%" bgcolor="#FFFFFF">&nbsp; </td>
+    </tr>
+    <tr>
+        <td valign="top" width="4%" bgcolor="#FFFFFF">&nbsp; </td>
+        <td valign="top" width="26%" bgcolor="#C0C0C0">string_type
+        </td>
+        <td valign="top" width="63%" bgcolor="#C0C0C0">A type
+        that offers the same facilities as std::basic_string&lt;char_type.
+        This is used for collating elements, and sort strings, if
+        char_type has no locale dependent collation (it is not a
+        &quot;character&quot;), then it could be something
+        simpler than std::basic_string. </td>
+        <td valign="top" width="6%" bgcolor="#FFFFFF">&nbsp; </td>
+    </tr>
+    <tr>
+        <td valign="top" width="4%" bgcolor="#FFFFFF">&nbsp; </td>
+        <td valign="top" width="26%" bgcolor="#C0C0C0">locale_type
+        </td>
+        <td valign="top" width="63%" bgcolor="#C0C0C0">A type
+        that encapsulates the locale used by the traits class,
+        probably std::locale but could be a platform specific
+        type, or a dummy type if per-instance locales are not
+        supported by the traits class. </td>
+        <td valign="top" width="6%" bgcolor="#FFFFFF">&nbsp; </td>
+    </tr>
+    <tr>
+        <td valign="top" width="4%" bgcolor="#FFFFFF">&nbsp; </td>
+        <td valign="top" width="26%" bgcolor="#C0C0C0">uint32_t </td>
+        <td valign="top" width="63%" bgcolor="#C0C0C0">An
+        unsigned integral type with at least 32-bits of
+        precision, used as a bitmask type for character
+        classification. </td>
+        <td valign="top" width="6%" bgcolor="#FFFFFF">&nbsp; </td>
+    </tr>
+    <tr>
+        <td valign="top" width="4%" bgcolor="#FFFFFF">&nbsp; </td>
+        <td valign="top" width="26%" bgcolor="#C0C0C0">sentry </td>
+        <td valign="top" width="63%" bgcolor="#C0C0C0">A class or
+        struct type which is constructible from an instance of
+        the traits class, and is convertible to void*. An
+        instance of type sentry will be constructed before
+        compiling each regular expression, it provides an
+        opportunity to carry out prefix/suffix operations on the
+        traits class.&nbsp; <p>For example a traits class that
+        encapsulates the global locale, can use this as an
+        opportunity to synchronize with the global locale (by
+        updating any cached data). </p>
+        </td>
+        <td valign="top" width="6%" bgcolor="#FFFFFF">&nbsp; </td>
+    </tr>
+</table>
+
+<p><br>
+&nbsp;The following member constants are used to represent the
+locale independent syntax of a regular expression; the member
+function <i>syntax_type</i> returns one of these values, and is
+used to convert a locale dependent regular expression, into a
+locale-independent sequence of tokens.<br>
+&nbsp;</p>
+
+<table border="0" cellpadding="7" width="100%">
+    <tr>
+        <td valign="top" width="5%" bgcolor="#FFFFFF">&nbsp; </td>
+        <td valign="top" width="40%" bgcolor="#008080">Member
+        constant&nbsp; </td>
+        <td valign="top" width="50%" bgcolor="#008080">English
+        language representation&nbsp; </td>
+        <td valign="top" width="5%" bgcolor="#FFFFFF">&nbsp; </td>
+    </tr>
+    <tr>
+        <td valign="top" width="5%" bgcolor="#FFFFFF">&nbsp; </td>
+        <td valign="top" width="40%" bgcolor="#C0C0C0">syntax_char&nbsp;
+        </td>
+        <td valign="top" width="50%" bgcolor="#C0C0C0">All non-special
+        characters.&nbsp; </td>
+        <td valign="top" width="5%" bgcolor="#FFFFFF">&nbsp; </td>
+    </tr>
+    <tr>
+        <td valign="top" width="5%" bgcolor="#FFFFFF">&nbsp; </td>
+        <td valign="top" width="40%" bgcolor="#C0C0C0">syntax_open_bracket&nbsp;
+        </td>
+        <td valign="top" width="50%" bgcolor="#C0C0C0">(&nbsp; </td>
+        <td valign="top" width="5%" bgcolor="#FFFFFF">&nbsp; </td>
+    </tr>
+    <tr>
+        <td valign="top" width="5%" bgcolor="#FFFFFF">&nbsp; </td>
+        <td valign="top" width="40%" bgcolor="#C0C0C0">syntax_close_bracket&nbsp;
+        </td>
+        <td valign="top" width="50%" bgcolor="#C0C0C0">)&nbsp; </td>
+        <td valign="top" width="5%" bgcolor="#FFFFFF">&nbsp; </td>
+    </tr>
+    <tr>
+        <td valign="top" width="5%" bgcolor="#FFFFFF">&nbsp; </td>
+        <td valign="top" width="40%" bgcolor="#C0C0C0">syntax_dollar&nbsp;
+        </td>
+        <td valign="top" width="50%" bgcolor="#C0C0C0">$&nbsp; </td>
+        <td valign="top" width="5%" bgcolor="#FFFFFF">&nbsp; </td>
+    </tr>
+    <tr>
+        <td valign="top" width="5%" bgcolor="#FFFFFF">&nbsp; </td>
+        <td valign="top" width="40%" bgcolor="#C0C0C0">syntax_caret&nbsp;
+        </td>
+        <td valign="top" width="50%" bgcolor="#C0C0C0">^&nbsp; </td>
+        <td valign="top" width="5%" bgcolor="#FFFFFF">&nbsp; </td>
+    </tr>
+    <tr>
+        <td valign="top" width="5%" bgcolor="#FFFFFF">&nbsp; </td>
+        <td valign="top" width="40%" bgcolor="#C0C0C0">syntax_dot&nbsp;
+        </td>
+        <td valign="top" width="50%" bgcolor="#C0C0C0">.&nbsp; </td>
+        <td valign="top" width="5%" bgcolor="#FFFFFF">&nbsp; </td>
+    </tr>
+    <tr>
+        <td valign="top" width="5%" bgcolor="#FFFFFF">&nbsp; </td>
+        <td valign="top" width="40%" bgcolor="#C0C0C0">syntax_star&nbsp;
+        </td>
+        <td valign="top" width="50%" bgcolor="#C0C0C0">*&nbsp; </td>
+        <td valign="top" width="5%" bgcolor="#FFFFFF">&nbsp; </td>
+    </tr>
+    <tr>
+        <td valign="top" width="5%" bgcolor="#FFFFFF">&nbsp; </td>
+        <td valign="top" width="40%" bgcolor="#C0C0C0">syntax_plus&nbsp;
+        </td>
+        <td valign="top" width="50%" bgcolor="#C0C0C0">+&nbsp; </td>
+        <td valign="top" width="5%" bgcolor="#FFFFFF">&nbsp; </td>
+    </tr>
+    <tr>
+        <td valign="top" width="5%" bgcolor="#FFFFFF">&nbsp; </td>
+        <td valign="top" width="40%" bgcolor="#C0C0C0">syntax_question&nbsp;
+        </td>
+        <td valign="top" width="50%" bgcolor="#C0C0C0">?&nbsp; </td>
+        <td valign="top" width="5%" bgcolor="#FFFFFF">&nbsp; </td>
+    </tr>
+    <tr>
+        <td valign="top" width="5%" bgcolor="#FFFFFF">&nbsp; </td>
+        <td valign="top" width="40%" bgcolor="#C0C0C0">syntax_open_set&nbsp;
+        </td>
+        <td valign="top" width="50%" bgcolor="#C0C0C0">[&nbsp; </td>
+        <td valign="top" width="5%" bgcolor="#FFFFFF">&nbsp; </td>
+    </tr>
+    <tr>
+        <td valign="top" width="5%" bgcolor="#FFFFFF">&nbsp; </td>
+        <td valign="top" width="40%" bgcolor="#C0C0C0">syntax_close_set&nbsp;
+        </td>
+        <td valign="top" width="50%" bgcolor="#C0C0C0">]&nbsp; </td>
+        <td valign="top" width="5%" bgcolor="#FFFFFF">&nbsp; </td>
+    </tr>
+    <tr>
+        <td valign="top" width="5%" bgcolor="#FFFFFF">&nbsp; </td>
+        <td valign="top" width="40%" bgcolor="#C0C0C0">syntax_or&nbsp;
+        </td>
+        <td valign="top" width="50%" bgcolor="#C0C0C0">|&nbsp; </td>
+        <td valign="top" width="5%" bgcolor="#FFFFFF">&nbsp; </td>
+    </tr>
+    <tr>
+        <td valign="top" width="5%" bgcolor="#FFFFFF">&nbsp; </td>
+        <td valign="top" width="40%" bgcolor="#C0C0C0">syntax_slash&nbsp;
+        </td>
+        <td valign="top" width="50%" bgcolor="#C0C0C0">\&nbsp; </td>
+        <td valign="top" width="5%" bgcolor="#FFFFFF">&nbsp; </td>
+    </tr>
+    <tr>
+        <td valign="top" width="5%" bgcolor="#FFFFFF">&nbsp; </td>
+        <td valign="top" width="40%" bgcolor="#C0C0C0">syntax_hash&nbsp;
+        </td>
+        <td valign="top" width="50%" bgcolor="#C0C0C0">#&nbsp; </td>
+        <td valign="top" width="5%" bgcolor="#FFFFFF">&nbsp; </td>
+    </tr>
+    <tr>
+        <td valign="top" width="5%" bgcolor="#FFFFFF">&nbsp; </td>
+        <td valign="top" width="40%" bgcolor="#C0C0C0">syntax_dash&nbsp;
+        </td>
+        <td valign="top" width="50%" bgcolor="#C0C0C0">-&nbsp; </td>
+        <td valign="top" width="5%" bgcolor="#FFFFFF">&nbsp; </td>
+    </tr>
+    <tr>
+        <td valign="top" width="5%" bgcolor="#FFFFFF">&nbsp; </td>
+        <td valign="top" width="40%" bgcolor="#C0C0C0">syntax_open_brace&nbsp;
+        </td>
+        <td valign="top" width="50%" bgcolor="#C0C0C0">{&nbsp; </td>
+        <td valign="top" width="5%" bgcolor="#FFFFFF">&nbsp; </td>
+    </tr>
+    <tr>
+        <td valign="top" width="5%" bgcolor="#FFFFFF">&nbsp; </td>
+        <td valign="top" width="40%" bgcolor="#C0C0C0">syntax_close_brace&nbsp;
+        </td>
+        <td valign="top" width="50%" bgcolor="#C0C0C0">}&nbsp; </td>
+        <td valign="top" width="5%" bgcolor="#FFFFFF">&nbsp; </td>
+    </tr>
+    <tr>
+        <td valign="top" width="5%" bgcolor="#FFFFFF">&nbsp; </td>
+        <td valign="top" width="40%" bgcolor="#C0C0C0">syntax_digit&nbsp;
+        </td>
+        <td valign="top" width="50%" bgcolor="#C0C0C0">0123456789&nbsp;
+        </td>
+        <td valign="top" width="5%" bgcolor="#FFFFFF">&nbsp; </td>
+    </tr>
+    <tr>
+        <td valign="top" width="5%" bgcolor="#FFFFFF">&nbsp; </td>
+        <td valign="top" width="40%" bgcolor="#C0C0C0">syntax_b&nbsp;
+        </td>
+        <td valign="top" width="50%" bgcolor="#C0C0C0">b&nbsp; </td>
+        <td valign="top" width="5%" bgcolor="#FFFFFF">&nbsp; </td>
+    </tr>
+    <tr>
+        <td valign="top" width="5%" bgcolor="#FFFFFF">&nbsp; </td>
+        <td valign="top" width="40%" bgcolor="#C0C0C0">syntax_B&nbsp;
+        </td>
+        <td valign="top" width="50%" bgcolor="#C0C0C0">B&nbsp; </td>
+        <td valign="top" width="5%" bgcolor="#FFFFFF">&nbsp; </td>
+    </tr>
+    <tr>
+        <td valign="top" width="5%" bgcolor="#FFFFFF">&nbsp; </td>
+        <td valign="top" width="40%" bgcolor="#C0C0C0">syntax_left_word&nbsp;
+        </td>
+        <td valign="top" width="50%" bgcolor="#C0C0C0">&lt;&nbsp;
+        </td>
+        <td valign="top" width="5%" bgcolor="#FFFFFF">&nbsp; </td>
+    </tr>
+    <tr>
+        <td valign="top" width="5%" bgcolor="#FFFFFF">&nbsp; </td>
+        <td valign="top" width="40%" bgcolor="#C0C0C0">syntax_right_word&nbsp;
+        </td>
+        <td valign="top" width="50%" bgcolor="#C0C0C0">&nbsp; </td>
+        <td valign="top" width="5%" bgcolor="#FFFFFF">&nbsp; </td>
+    </tr>
+    <tr>
+        <td valign="top" width="5%" bgcolor="#FFFFFF">&nbsp; </td>
+        <td valign="top" width="40%" bgcolor="#C0C0C0">syntax_w&nbsp;
+        </td>
+        <td valign="top" width="50%" bgcolor="#C0C0C0">w&nbsp; </td>
+        <td valign="top" width="5%" bgcolor="#FFFFFF">&nbsp; </td>
+    </tr>
+    <tr>
+        <td valign="top" width="5%" bgcolor="#FFFFFF">&nbsp; </td>
+        <td valign="top" width="40%" bgcolor="#C0C0C0">syntax_W&nbsp;
+        </td>
+        <td valign="top" width="50%" bgcolor="#C0C0C0">W&nbsp; </td>
+        <td valign="top" width="5%" bgcolor="#FFFFFF">&nbsp; </td>
+    </tr>
+    <tr>
+        <td valign="top" width="5%" bgcolor="#FFFFFF">&nbsp; </td>
+        <td valign="top" width="40%" bgcolor="#C0C0C0">syntax_start_buffer&nbsp;
+        </td>
+        <td valign="top" width="50%" bgcolor="#C0C0C0">`&nbsp; </td>
+        <td valign="top" width="5%" bgcolor="#FFFFFF">&nbsp; </td>
+    </tr>
+    <tr>
+        <td valign="top" width="5%" bgcolor="#FFFFFF">&nbsp; </td>
+        <td valign="top" width="40%" bgcolor="#C0C0C0">syntax_end_buffer&nbsp;
+        </td>
+        <td valign="top" width="50%" bgcolor="#C0C0C0">'&nbsp; </td>
+        <td valign="top" width="5%" bgcolor="#FFFFFF">&nbsp; </td>
+    </tr>
+    <tr>
+        <td valign="top" width="5%" bgcolor="#FFFFFF">&nbsp; </td>
+        <td valign="top" width="40%" bgcolor="#C0C0C0">syntax_newline&nbsp;
+        </td>
+        <td valign="top" width="50%" bgcolor="#C0C0C0">\n&nbsp; </td>
+        <td valign="top" width="5%" bgcolor="#FFFFFF">&nbsp; </td>
+    </tr>
+    <tr>
+        <td valign="top" width="5%" bgcolor="#FFFFFF">&nbsp; </td>
+        <td valign="top" width="40%" bgcolor="#C0C0C0">syntax_comma&nbsp;
+        </td>
+        <td valign="top" width="50%" bgcolor="#C0C0C0">,&nbsp; </td>
+        <td valign="top" width="5%" bgcolor="#FFFFFF">&nbsp; </td>
+    </tr>
+    <tr>
+        <td valign="top" width="5%" bgcolor="#FFFFFF">&nbsp; </td>
+        <td valign="top" width="40%" bgcolor="#C0C0C0">syntax_a&nbsp;
+        </td>
+        <td valign="top" width="50%" bgcolor="#C0C0C0">a&nbsp; </td>
+        <td valign="top" width="5%" bgcolor="#FFFFFF">&nbsp; </td>
+    </tr>
+    <tr>
+        <td valign="top" width="5%" bgcolor="#FFFFFF">&nbsp; </td>
+        <td valign="top" width="40%" bgcolor="#C0C0C0">syntax_f&nbsp;
+        </td>
+        <td valign="top" width="50%" bgcolor="#C0C0C0">f&nbsp; </td>
+        <td valign="top" width="5%" bgcolor="#FFFFFF">&nbsp; </td>
+    </tr>
+    <tr>
+        <td valign="top" width="5%" bgcolor="#FFFFFF">&nbsp; </td>
+        <td valign="top" width="40%" bgcolor="#C0C0C0">syntax_n&nbsp;
+        </td>
+        <td valign="top" width="50%" bgcolor="#C0C0C0">n&nbsp; </td>
+        <td valign="top" width="5%" bgcolor="#FFFFFF">&nbsp; </td>
+    </tr>
+    <tr>
+        <td valign="top" width="5%" bgcolor="#FFFFFF">&nbsp; </td>
+        <td valign="top" width="40%" bgcolor="#C0C0C0">syntax_r&nbsp;
+        </td>
+        <td valign="top" width="50%" bgcolor="#C0C0C0">r&nbsp; </td>
+        <td valign="top" width="5%" bgcolor="#FFFFFF">&nbsp; </td>
+    </tr>
+    <tr>
+        <td valign="top" width="5%" bgcolor="#FFFFFF">&nbsp; </td>
+        <td valign="top" width="40%" bgcolor="#C0C0C0">syntax_t&nbsp;
+        </td>
+        <td valign="top" width="50%" bgcolor="#C0C0C0">t&nbsp; </td>
+        <td valign="top" width="5%" bgcolor="#FFFFFF">&nbsp; </td>
+    </tr>
+    <tr>
+        <td valign="top" width="5%" bgcolor="#FFFFFF">&nbsp; </td>
+        <td valign="top" width="40%" bgcolor="#C0C0C0">syntax_v&nbsp;
+        </td>
+        <td valign="top" width="50%" bgcolor="#C0C0C0">v&nbsp; </td>
+        <td valign="top" width="5%" bgcolor="#FFFFFF">&nbsp; </td>
+    </tr>
+    <tr>
+        <td valign="top" width="5%" bgcolor="#FFFFFF">&nbsp; </td>
+        <td valign="top" width="40%" bgcolor="#C0C0C0">syntax_x&nbsp;
+        </td>
+        <td valign="top" width="50%" bgcolor="#C0C0C0">x&nbsp; </td>
+        <td valign="top" width="5%" bgcolor="#FFFFFF">&nbsp; </td>
+    </tr>
+    <tr>
+        <td valign="top" width="5%" bgcolor="#FFFFFF">&nbsp; </td>
+        <td valign="top" width="40%" bgcolor="#C0C0C0">syntax_c&nbsp;
+        </td>
+        <td valign="top" width="50%" bgcolor="#C0C0C0">c&nbsp; </td>
+        <td valign="top" width="5%" bgcolor="#FFFFFF">&nbsp; </td>
+    </tr>
+    <tr>
+        <td valign="top" width="5%" bgcolor="#FFFFFF">&nbsp; </td>
+        <td valign="top" width="40%" bgcolor="#C0C0C0">syntax_colon&nbsp;
+        </td>
+        <td valign="top" width="50%" bgcolor="#C0C0C0">:&nbsp; </td>
+        <td valign="top" width="5%" bgcolor="#FFFFFF">&nbsp; </td>
+    </tr>
+    <tr>
+        <td valign="top" width="5%" bgcolor="#FFFFFF">&nbsp; </td>
+        <td valign="top" width="40%" bgcolor="#C0C0C0">syntax_equal&nbsp;
+        </td>
+        <td valign="top" width="50%" bgcolor="#C0C0C0">=&nbsp; </td>
+        <td valign="top" width="5%" bgcolor="#FFFFFF">&nbsp; </td>
+    </tr>
+    <tr>
+        <td valign="top" width="5%" bgcolor="#FFFFFF">&nbsp; </td>
+        <td valign="top" width="40%" bgcolor="#C0C0C0">syntax_e&nbsp;
+        </td>
+        <td valign="top" width="50%" bgcolor="#C0C0C0">e&nbsp; </td>
+        <td valign="top" width="5%" bgcolor="#FFFFFF">&nbsp; </td>
+    </tr>
+    <tr>
+        <td valign="top" width="5%" bgcolor="#FFFFFF">&nbsp; </td>
+        <td valign="top" width="40%" bgcolor="#C0C0C0">syntax_l&nbsp;
+        </td>
+        <td valign="top" width="50%" bgcolor="#C0C0C0">l&nbsp; </td>
+        <td valign="top" width="5%" bgcolor="#FFFFFF">&nbsp; </td>
+    </tr>
+    <tr>
+        <td valign="top" width="5%" bgcolor="#FFFFFF">&nbsp; </td>
+        <td valign="top" width="40%" bgcolor="#C0C0C0">syntax_L&nbsp;
+        </td>
+        <td valign="top" width="50%" bgcolor="#C0C0C0">L&nbsp; </td>
+        <td valign="top" width="5%" bgcolor="#FFFFFF">&nbsp; </td>
+    </tr>
+    <tr>
+        <td valign="top" width="5%" bgcolor="#FFFFFF">&nbsp; </td>
+        <td valign="top" width="40%" bgcolor="#C0C0C0">syntax_u&nbsp;
+        </td>
+        <td valign="top" width="50%" bgcolor="#C0C0C0">u&nbsp; </td>
+        <td valign="top" width="5%" bgcolor="#FFFFFF">&nbsp; </td>
+    </tr>
+    <tr>
+        <td valign="top" width="5%" bgcolor="#FFFFFF">&nbsp; </td>
+        <td valign="top" width="40%" bgcolor="#C0C0C0">syntax_U&nbsp;
+        </td>
+        <td valign="top" width="50%" bgcolor="#C0C0C0">U&nbsp; </td>
+        <td valign="top" width="5%" bgcolor="#FFFFFF">&nbsp; </td>
+    </tr>
+    <tr>
+        <td valign="top" width="5%" bgcolor="#FFFFFF">&nbsp; </td>
+        <td valign="top" width="40%" bgcolor="#C0C0C0">syntax_s&nbsp;
+        </td>
+        <td valign="top" width="50%" bgcolor="#C0C0C0">s&nbsp; </td>
+        <td valign="top" width="5%" bgcolor="#FFFFFF">&nbsp; </td>
+    </tr>
+    <tr>
+        <td valign="top" width="5%" bgcolor="#FFFFFF">&nbsp; </td>
+        <td valign="top" width="40%" bgcolor="#C0C0C0">syntax_S&nbsp;
+        </td>
+        <td valign="top" width="50%" bgcolor="#C0C0C0">S&nbsp; </td>
+        <td valign="top" width="5%" bgcolor="#FFFFFF">&nbsp; </td>
+    </tr>
+    <tr>
+        <td valign="top" width="5%" bgcolor="#FFFFFF">&nbsp; </td>
+        <td valign="top" width="40%" bgcolor="#C0C0C0">syntax_d&nbsp;
+        </td>
+        <td valign="top" width="50%" bgcolor="#C0C0C0">d&nbsp; </td>
+        <td valign="top" width="5%" bgcolor="#FFFFFF">&nbsp; </td>
+    </tr>
+    <tr>
+        <td valign="top" width="5%" bgcolor="#FFFFFF">&nbsp; </td>
+        <td valign="top" width="40%" bgcolor="#C0C0C0">syntax_D&nbsp;
+        </td>
+        <td valign="top" width="50%" bgcolor="#C0C0C0">D&nbsp; </td>
+        <td valign="top" width="5%" bgcolor="#FFFFFF">&nbsp; </td>
+    </tr>
+    <tr>
+        <td valign="top" width="5%" bgcolor="#FFFFFF">&nbsp; </td>
+        <td valign="top" width="40%" bgcolor="#C0C0C0">syntax_E&nbsp;
+        </td>
+        <td valign="top" width="50%" bgcolor="#C0C0C0">E&nbsp; </td>
+        <td valign="top" width="5%" bgcolor="#FFFFFF">&nbsp; </td>
+    </tr>
+    <tr>
+        <td valign="top" width="5%" bgcolor="#FFFFFF">&nbsp; </td>
+        <td valign="top" width="40%" bgcolor="#C0C0C0">syntax_Q&nbsp;
+        </td>
+        <td valign="top" width="50%" bgcolor="#C0C0C0">Q&nbsp; </td>
+        <td valign="top" width="5%" bgcolor="#FFFFFF">&nbsp; </td>
+    </tr>
+    <tr>
+        <td valign="top" width="5%" bgcolor="#FFFFFF">&nbsp; </td>
+        <td valign="top" width="40%" bgcolor="#C0C0C0">syntax_X&nbsp;
+        </td>
+        <td valign="top" width="50%" bgcolor="#C0C0C0">X&nbsp; </td>
+        <td valign="top" width="5%" bgcolor="#FFFFFF">&nbsp; </td>
+    </tr>
+    <tr>
+        <td valign="top" width="5%" bgcolor="#FFFFFF">&nbsp; </td>
+        <td valign="top" width="40%" bgcolor="#C0C0C0">syntax_C&nbsp;
+        </td>
+        <td valign="top" width="50%" bgcolor="#C0C0C0">C&nbsp; </td>
+        <td valign="top" width="5%" bgcolor="#FFFFFF">&nbsp; </td>
+    </tr>
+    <tr>
+        <td valign="top" width="5%" bgcolor="#FFFFFF">&nbsp; </td>
+        <td valign="top" width="40%" bgcolor="#C0C0C0">syntax_Z&nbsp;
+        </td>
+        <td valign="top" width="50%" bgcolor="#C0C0C0">Z&nbsp; </td>
+        <td valign="top" width="5%" bgcolor="#FFFFFF">&nbsp; </td>
+    </tr>
+    <tr>
+        <td valign="top" width="5%" bgcolor="#FFFFFF">&nbsp; </td>
+        <td valign="top" width="40%" bgcolor="#C0C0C0">syntax_G&nbsp;
+        </td>
+        <td valign="top" width="50%" bgcolor="#C0C0C0">G&nbsp; </td>
+        <td valign="top" width="5%" bgcolor="#FFFFFF">&nbsp; </td>
+    </tr>
+    <tr>
+        <td valign="top" width="5%" bgcolor="#FFFFFF">&nbsp; </td>
+        <td valign="top" width="40%" bgcolor="#C0C0C0">syntax_bang&nbsp;
+        </td>
+        <td valign="top" width="50%" bgcolor="#C0C0C0">!&nbsp; </td>
+        <td valign="top" width="5%" bgcolor="#FFFFFF">&nbsp; </td>
+    </tr>
+    <tr>
+        <td valign="top" width="5%" bgcolor="#FFFFFF">&nbsp; </td>
+        <td valign="top" width="40%" bgcolor="#C0C0C0">syntax_and&nbsp;
+        </td>
+        <td valign="top" width="50%" bgcolor="#C0C0C0">&amp;&nbsp;
+        </td>
+        <td valign="top" width="5%" bgcolor="#FFFFFF">&nbsp; </td>
+    </tr>
+</table>
+
+<p>The following member constants are used to represent
+particular character classifications:<br>
+&nbsp; </p>
+
+<table border="0" cellpadding="7" width="100%">
+    <tr>
+        <td valign="top" width="6%" bgcolor="#FFFFFF">&nbsp; </td>
+        <td valign="top" width="33%" bgcolor="#008080">Member
+        constant&nbsp; </td>
+        <td valign="top" width="56%" bgcolor="#008080">Description
+        </td>
+        <td valign="top" width="5%" bgcolor="#FFFFFF">&nbsp; </td>
+    </tr>
+    <tr>
+        <td valign="top" width="6%" bgcolor="#FFFFFF">&nbsp; </td>
+        <td valign="top" width="33%" bgcolor="#C0C0C0">char_class_none&nbsp;
+        </td>
+        <td valign="top" width="56%" bgcolor="#C0C0C0">No
+        classification, must be zero. </td>
+        <td valign="top" width="5%" bgcolor="#FFFFFF">&nbsp; </td>
+    </tr>
+    <tr>
+        <td valign="top" width="6%" bgcolor="#FFFFFF">&nbsp; </td>
+        <td valign="top" width="33%" bgcolor="#C0C0C0">char_class_alpha&nbsp;
+        </td>
+        <td valign="top" width="56%" bgcolor="#C0C0C0">All
+        alphabetic characters. </td>
+        <td valign="top" width="5%" bgcolor="#FFFFFF">&nbsp; </td>
+    </tr>
+    <tr>
+        <td valign="top" width="6%" bgcolor="#FFFFFF">&nbsp; </td>
+        <td valign="top" width="33%" bgcolor="#C0C0C0">char_class_cntrl&nbsp;
+        </td>
+        <td valign="top" width="56%" bgcolor="#C0C0C0">All
+        control characters. </td>
+        <td valign="top" width="5%" bgcolor="#FFFFFF">&nbsp; </td>
+    </tr>
+    <tr>
+        <td valign="top" width="6%" bgcolor="#FFFFFF">&nbsp; </td>
+        <td valign="top" width="33%" bgcolor="#C0C0C0">char_class_digit&nbsp;
+        </td>
+        <td valign="top" width="56%" bgcolor="#C0C0C0">All
+        decimal digits. </td>
+        <td valign="top" width="5%" bgcolor="#FFFFFF">&nbsp; </td>
+    </tr>
+    <tr>
+        <td valign="top" width="6%" bgcolor="#FFFFFF">&nbsp; </td>
+        <td valign="top" width="33%" bgcolor="#C0C0C0">char_class_lower&nbsp;
+        </td>
+        <td valign="top" width="56%" bgcolor="#C0C0C0">All lower
+        case characters. </td>
+        <td valign="top" width="5%" bgcolor="#FFFFFF">&nbsp; </td>
+    </tr>
+    <tr>
+        <td valign="top" width="6%" bgcolor="#FFFFFF">&nbsp; </td>
+        <td valign="top" width="33%" bgcolor="#C0C0C0">char_class_punct&nbsp;
+        </td>
+        <td valign="top" width="56%" bgcolor="#C0C0C0">All
+        punctuation characters. </td>
+        <td valign="top" width="5%" bgcolor="#FFFFFF">&nbsp; </td>
+    </tr>
+    <tr>
+        <td valign="top" width="6%" bgcolor="#FFFFFF">&nbsp; </td>
+        <td valign="top" width="33%" bgcolor="#C0C0C0">char_class_space&nbsp;
+        </td>
+        <td valign="top" width="56%" bgcolor="#C0C0C0">All white-space
+        characters. </td>
+        <td valign="top" width="5%" bgcolor="#FFFFFF">&nbsp; </td>
+    </tr>
+    <tr>
+        <td valign="top" width="6%" bgcolor="#FFFFFF">&nbsp; </td>
+        <td valign="top" width="33%" bgcolor="#C0C0C0">char_class_upper&nbsp;
+        </td>
+        <td valign="top" width="56%" bgcolor="#C0C0C0">All upper
+        case characters. </td>
+        <td valign="top" width="5%" bgcolor="#FFFFFF">&nbsp; </td>
+    </tr>
+    <tr>
+        <td valign="top" width="6%" bgcolor="#FFFFFF">&nbsp; </td>
+        <td valign="top" width="33%" bgcolor="#C0C0C0">char_class_xdigit&nbsp;
+        </td>
+        <td valign="top" width="56%" bgcolor="#C0C0C0">All
+        hexadecimal digit characters. </td>
+        <td valign="top" width="5%" bgcolor="#FFFFFF">&nbsp; </td>
+    </tr>
+    <tr>
+        <td valign="top" width="6%" bgcolor="#FFFFFF">&nbsp; </td>
+        <td valign="top" width="33%" bgcolor="#C0C0C0">char_class_blank&nbsp;
+        </td>
+        <td valign="top" width="56%" bgcolor="#C0C0C0">All blank
+        characters (space + tab). </td>
+        <td valign="top" width="5%" bgcolor="#FFFFFF">&nbsp; </td>
+    </tr>
+    <tr>
+        <td valign="top" width="6%" bgcolor="#FFFFFF">&nbsp; </td>
+        <td valign="top" width="33%" bgcolor="#C0C0C0">char_class_unicode&nbsp;
+        </td>
+        <td valign="top" width="56%" bgcolor="#C0C0C0">All
+        extended unicode characters - those that can not be
+        represented as a single narrow character. </td>
+        <td valign="top" width="5%" bgcolor="#FFFFFF">&nbsp; </td>
+    </tr>
+    <tr>
+        <td valign="top" width="6%" bgcolor="#FFFFFF">&nbsp; </td>
+        <td valign="top" width="33%" bgcolor="#C0C0C0">char_class_alnum&nbsp;
+        </td>
+        <td valign="top" width="56%" bgcolor="#C0C0C0">All alpha-numeric
+        characters. </td>
+        <td valign="top" width="5%" bgcolor="#FFFFFF">&nbsp; </td>
+    </tr>
+    <tr>
+        <td valign="top" width="6%" bgcolor="#FFFFFF">&nbsp; </td>
+        <td valign="top" width="33%" bgcolor="#C0C0C0">char_class_graph&nbsp;
+        </td>
+        <td valign="top" width="56%" bgcolor="#C0C0C0">All
+        graphic characters. </td>
+        <td valign="top" width="5%" bgcolor="#FFFFFF">&nbsp; </td>
+    </tr>
+    <tr>
+        <td valign="top" width="6%" bgcolor="#FFFFFF">&nbsp; </td>
+        <td valign="top" width="33%" bgcolor="#C0C0C0">char_class_print&nbsp;
+        </td>
+        <td valign="top" width="56%" bgcolor="#C0C0C0">All
+        printable characters. </td>
+        <td valign="top" width="5%" bgcolor="#FFFFFF">&nbsp; </td>
+    </tr>
+    <tr>
+        <td valign="top" width="6%" bgcolor="#FFFFFF">&nbsp; </td>
+        <td valign="top" width="33%" bgcolor="#C0C0C0">char_class_word&nbsp;
+        </td>
+        <td valign="top" width="56%" bgcolor="#C0C0C0">All word
+        characters (alphanumeric characters + the underscore). </td>
+        <td valign="top" width="5%" bgcolor="#FFFFFF">&nbsp; </td>
+    </tr>
+</table>
+
+<p>The following member functions are required by all regular
+expression traits classes, those members that are declared here
+as <i>const</i>, could be declared <i>static</i> instead if the
+class does not contain instance data:<br>
+&nbsp; </p>
+
+<table border="0" cellpadding="7" width="100%">
+    <tr>
+        <td valign="top" width="7%" bgcolor="#FFFFFF">&nbsp; </td>
+        <td valign="top" width="36%" bgcolor="#008080">Member
+        function </td>
+        <td valign="top" width="51%" bgcolor="#008080">Description
+        </td>
+        <td valign="top" width="6%" bgcolor="#FFFFFF">&nbsp; </td>
+    </tr>
+    <tr>
+        <td valign="top" width="7%" bgcolor="#FFFFFF">&nbsp; </td>
+        <td valign="top" width="36%" bgcolor="#C0C0C0">static
+        size_t length(const char_type* p); </td>
+        <td valign="top" width="51%" bgcolor="#C0C0C0">Returns
+        the length of the null-terminated string p. </td>
+        <td valign="top" width="6%" bgcolor="#FFFFFF">&nbsp; </td>
+    </tr>
+    <tr>
+        <td valign="top" width="7%" bgcolor="#FFFFFF">&nbsp; </td>
+        <td valign="top" width="36%" bgcolor="#C0C0C0">unsigned
+        int syntax_type(size_type c)const; </td>
+        <td valign="top" width="51%" bgcolor="#C0C0C0">&nbsp;Converts
+        an input character into a locale independent token (one
+        of the syntax_xxx member constants). Called when parsing
+        the regular expression into a locale-independent parse
+        tree.&nbsp; <p>Example: in English language regular
+        expressions we would use &quot;[[:word:]]&quot; to
+        represent the character class of all word characters, and
+        &quot;\w&quot; as a shortcut for this. Consequently
+        syntax_type('w') returns syntax_w. In French language
+        regular expressions, we would use &quot;[[:mot:]]&quot;
+        in place of &quot;[[:word:]]&quot; and therefore &quot;\m&quot;
+        in place of &quot;\w&quot;, therefore it is syntax_type('m')
+        that returns syntax_w. </p>
+        </td>
+        <td valign="top" width="6%" bgcolor="#FFFFFF">&nbsp; </td>
+    </tr>
+    <tr>
+        <td valign="top" width="7%" bgcolor="#FFFFFF">&nbsp; </td>
+        <td valign="top" width="36%" bgcolor="#C0C0C0">char_type
+        translate(char_type c, bool icase)const; </td>
+        <td valign="top" width="51%" bgcolor="#C0C0C0">&nbsp;Translates
+        an input character into a unique identifier that
+        represents the equivalence class that that character
+        belongs to. If icase is true, then the returned value is
+        insensitive to case.&nbsp; <p>[An equivalence class is
+        the set of all characters that must be treated as being
+        equivalent to each other.] </p>
+        </td>
+        <td valign="top" width="6%" bgcolor="#FFFFFF">&nbsp; </td>
+    </tr>
+    <tr>
+        <td valign="top" width="7%" bgcolor="#FFFFFF">&nbsp; </td>
+        <td valign="top" width="36%" bgcolor="#C0C0C0">void
+        transform(string_type&amp; out, const string_type&amp; in)const;
+        </td>
+        <td valign="top" width="51%" bgcolor="#C0C0C0">&nbsp;Transforms
+        the string <i>in</i>, into a locale-dependent sort key,
+        and stores the result in <i>out</i>. </td>
+        <td valign="top" width="6%" bgcolor="#FFFFFF">&nbsp; </td>
+    </tr>
+    <tr>
+        <td valign="top" width="7%" bgcolor="#FFFFFF">&nbsp; </td>
+        <td valign="top" width="36%" bgcolor="#C0C0C0">void
+        transform_primary(string_type&amp; out, const
+        string_type&amp; in)const; </td>
+        <td valign="top" width="51%" bgcolor="#C0C0C0">&nbsp;Transforms
+        the string <i>in,</i> into a locale-dependent primary
+        sort key, and stores the result in <i>out</i>. </td>
+        <td valign="top" width="6%" bgcolor="#FFFFFF">&nbsp; </td>
+    </tr>
+    <tr>
+        <td valign="top" width="7%" bgcolor="#FFFFFF">&nbsp; </td>
+        <td valign="top" width="36%" bgcolor="#C0C0C0">bool
+        is_separator(char_type c)const; </td>
+        <td valign="top" width="51%" bgcolor="#C0C0C0">&nbsp;Returns
+        true only if <i>c</i> is a line separator. </td>
+        <td valign="top" width="6%" bgcolor="#FFFFFF">&nbsp; </td>
+    </tr>
+    <tr>
+        <td valign="top" width="7%" bgcolor="#FFFFFF">&nbsp; </td>
+        <td valign="top" width="36%" bgcolor="#C0C0C0">bool
+        is_combining(char_type c)const; </td>
+        <td valign="top" width="51%" bgcolor="#C0C0C0">&nbsp;Returns
+        true only if <i>c</i> is a unicode combining character. </td>
+        <td valign="top" width="6%" bgcolor="#FFFFFF">&nbsp; </td>
+    </tr>
+    <tr>
+        <td valign="top" width="7%" bgcolor="#FFFFFF">&nbsp; </td>
+        <td valign="top" width="36%" bgcolor="#C0C0C0">bool
+        is_class(char_type c, uint32_t f)const; </td>
+        <td valign="top" width="51%" bgcolor="#C0C0C0">&nbsp;Returns
+        true only if <i>c</i> is a member of one of the character
+        classes represented by the bitmap <i>f</i>. </td>
+        <td valign="top" width="6%" bgcolor="#FFFFFF">&nbsp; </td>
+    </tr>
+    <tr>
+        <td valign="top" width="7%" bgcolor="#FFFFFF">&nbsp; </td>
+        <td valign="top" width="36%" bgcolor="#C0C0C0">int toi(char_type
+        c)const; </td>
+        <td valign="top" width="51%" bgcolor="#C0C0C0">&nbsp;Converts
+        the character <i>c</i> to a decimal integer.&nbsp; <p>[Precondition:
+        is_class(c,char_class_digit)==true] </p>
+        </td>
+        <td valign="top" width="6%" bgcolor="#FFFFFF">&nbsp; </td>
+    </tr>
+    <tr>
+        <td valign="top" width="7%" bgcolor="#FFFFFF">&nbsp; </td>
+        <td valign="top" width="36%" bgcolor="#C0C0C0">int toi(const
+        char_type*&amp; first, const char_type* last, int radix)const;
+        </td>
+        <td valign="top" width="51%" bgcolor="#C0C0C0">&nbsp;Converts
+        the string [first-last) into an integral value using base
+        <i>radix.</i> Stops when it finds the first non-digit
+        character, and sets <i>first</i> to point to that
+        character.&nbsp; <p>[Precondition: is_class(*first,char_class_digit)==true]
+        </p>
+        </td>
+        <td valign="top" width="6%" bgcolor="#FFFFFF">&nbsp; </td>
+    </tr>
+    <tr>
+        <td valign="top" width="7%" bgcolor="#FFFFFF">&nbsp; </td>
+        <td valign="top" width="36%" bgcolor="#C0C0C0">uint32_t
+        lookup_classname(const char_type* first, const char_type*
+        last)const; </td>
+        <td valign="top" width="51%" bgcolor="#C0C0C0">&nbsp;Returns
+        the bitmap representing the character class [first-last),
+        or char_class_none if [first-last) is not recognized as a
+        character class name. </td>
+        <td valign="top" width="6%" bgcolor="#FFFFFF">&nbsp; </td>
+    </tr>
+    <tr>
+        <td valign="top" width="7%" bgcolor="#FFFFFF">&nbsp; </td>
+        <td valign="top" width="36%" bgcolor="#C0C0C0">bool
+        lookup_collatename(string_type&amp; buf, const char_type*
+        first, const char_type* last)const; </td>
+        <td valign="top" width="51%" bgcolor="#C0C0C0">If the
+        sequence [first-last) is the name of a known collating
+        element, then stores the collating element in buf, and
+        returns true, otherwise returns false. </td>
+        <td valign="top" width="6%" bgcolor="#FFFFFF">&nbsp; </td>
+    </tr>
+    <tr>
+        <td valign="top" width="7%" bgcolor="#FFFFFF">&nbsp; </td>
+        <td valign="top" width="36%" bgcolor="#C0C0C0">locale_type
+        imbue(locale_type l); </td>
+        <td valign="top" width="51%" bgcolor="#C0C0C0">&nbsp;Imbues
+        the class with the locale <i>l</i>. </td>
+        <td valign="top" width="6%" bgcolor="#FFFFFF">&nbsp; </td>
+    </tr>
+    <tr>
+        <td valign="top" width="7%" bgcolor="#FFFFFF">&nbsp; </td>
+        <td valign="top" width="36%" bgcolor="#C0C0C0">locale_type
+        getloc()const; </td>
+        <td valign="top" width="51%" bgcolor="#C0C0C0">&nbsp;Returns
+        the traits-class locale. </td>
+        <td valign="top" width="6%" bgcolor="#FFFFFF">&nbsp; </td>
+    </tr>
+    <tr>
+        <td valign="top" width="7%" bgcolor="#FFFFFF">&nbsp; </td>
+        <td valign="top" width="36%" bgcolor="#C0C0C0">std::string
+        error_string(unsigned id)const; </td>
+        <td valign="top" width="51%" bgcolor="#C0C0C0">&nbsp;Returns
+        the locale-dependent error-string associated with the
+        error-number <i>id</i>. The parameter <i>id</i> is one of
+        the REG_XXX error codes described by the POSIX standard,
+        and defined in &lt;boost/cregex.hpp. </td>
+        <td valign="top" width="6%" bgcolor="#FFFFFF">&nbsp; </td>
+    </tr>
+    <tr>
+        <td valign="top" width="7%" bgcolor="#FFFFFF">&nbsp; </td>
+        <td valign="top" width="36%" bgcolor="#C0C0C0">mytraits();
+        </td>
+        <td valign="top" width="51%" bgcolor="#C0C0C0">&nbsp;Constructor.
+        </td>
+        <td valign="top" width="6%" bgcolor="#FFFFFF">&nbsp; </td>
+    </tr>
+    <tr>
+        <td valign="top" width="7%" bgcolor="#FFFFFF">&nbsp; </td>
+        <td valign="top" width="36%" bgcolor="#C0C0C0">~ mytraits();
+        </td>
+        <td valign="top" width="51%" bgcolor="#C0C0C0">&nbsp;Destructor.
+        </td>
+        <td valign="top" width="6%" bgcolor="#FFFFFF">&nbsp; </td>
+    </tr>
+</table>
+
+<p>There is also an example of a custom traits class supplied by <a
+href="mailto:christian.engstrom@glindra.org">Christian Engström</a>,
+see <a
+href="example/iso8859_1_regex_traits/iso8859_1_regex_traits.cpp">iso8859_1_regex_traits.cpp</a>
+and <a
+href="example/iso8859_1_regex_traits/iso8859_1_regex_traits.hpp">iso8859_1_regex_traits.hpp</a>.
+This example inherits from c_regex_traits and provides it's own
+implementations of two locale specific functions. This ensures
+that the class gives consistent behaviour (albeit tied to one
+locale) on all platforms. A fuller desciption by the author is
+available in the <a
+href="example/iso8859_1_regex_traits/readme.txt">readme file</a>.<br>
+</p>
+
+<hr>
+
+<p><i>Copyright</i> <a href="mailto:John_Maddock@compuserve.com"><i>Dr
+John Maddock</i></a> <i>1998-2001 all rights reserved.</i> </p>
+</body>
+</html>

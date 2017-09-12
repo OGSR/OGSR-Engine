@@ -1,0 +1,181 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+
+<HTML>
+<HEAD>
+<TITLE>Boost Test Libraries</TITLE>
+<LINK rel="stylesheet" type="text/css" href="style/btl-white.css" media="screen">
+<LINK rel="stylesheet" type="text/css" href="style/btl-print.css" media="print">
+<META http-equiv="Content-Language" content="en-us">
+<META http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+</HEAD>
+<BODY>
+<DIV class="centered">
+  <TABLE class="body-table" cellspacing="3" >
+    <TR>
+      <TD id="body"> <A name='TOP'><IMG src='../../../c++boost.gif' width='277' height='86' alt="Boost logo"></A> 
+        <H1>Boost Test Library</H1>
+        <P class=epigraph>&quot;Test everything that could possibly break&quot;</P>
+        <P class=epigraph>XP maxim</P>
+        <P class="page-toc"> 
+        <A href="#Introduction">Introduction</A><BR>
+        <A href="#Components">Components</A> </P>
+        <P class="page-toc-indented"> <A href="execution_monitor.htm">Execution monitor</A><BR>
+          <A href="prg_exec_monitor.htm">Program Execution Monitor</A><BR>
+          <A href="test_tools.htm">Test Tools</A><BR>
+          <A href="test_exec_monitor.htm">Test Execution Monitor</A><BR>
+          <A href="unit_test_framework.htm">Unit Test Framework</A><BR>
+          <A href="minimal.htm">Minimal Test</A></P>
+        <P class="page-toc"> <A href="#FAQ">FAQ</A><BR>
+          <A href="#Design">Design</A></P>
+        <P class="page-toc"> <a href="#ReleaseNotes">Release notes</a><BR>
+          <A href="#OpenIssues">Open Issues</A><BR>
+          <A href="#Portability">Portability</A><BR>
+          <A href="#Acknowledgements">Acknowledgements</A> </P>
+        <H2><A name="Introduction">Introduction</A></H2>
+        <P class="1-line-indented">The Boost Test Library provides a matched set
+          of components for writing test programs, organizing tests in to simple
+          test cases and test suites, and controlling their runtime execution.
+          The <A href="prg_exec_monitor.htm"> Program Execution Monitor</A> is
+          also useful in some production (non-test) environments. </P>
+        <SPAN class="ref-to-top"><A href="#TOP">
+      <IMG src="imgs/uarrow.gif" alt="reference to the top" width="45" height="43"></A></SPAN>
+        <H2><A name="Components">Components</A></H2>
+        <UL>
+          <LI><A href="execution_monitor.htm">Execution Monitor</A> - a basic
+            exception and error detection and reporting facility for use in both
+            production and test programs. The Execution Monitor calls a user-supplied
+            function and reports all caught runtime exceptions. It is used internally
+            by other Boost Test Library components. It also could be used in some
+            production environment to make controlled calls of functions which
+            might otherwise crash the program.</LI>
+        </UL>
+        <UL>
+          <LI><A href="prg_exec_monitor.htm">Program Execution Monitor</A> - a
+            simple helper facility to be used to monitor a program execution.
+            The Program Execution Monitor provides the main() function and uses
+            the Execution Monitor to control a program execution. It should be
+            used in production environment to produce uniform error reports. To
+            control programs working in test environment, use the <A href="test_exec_monitor.htm">Test
+            Execution Monitor</A> instead.</LI>
+        </UL>
+        <UL>
+          <LI><A href="test_tools.htm">Test Tools</A> - a toolbox for various
+            testing needs. Test Tools are used by test programs working under
+            control of the <A href="test_exec_monitor.htm">Test Execution Monitor</A>
+            or the <A href="unit_test_framework.htm">Unit Test Framework</A>.
+          </LI>
+        </UL>
+        <UL>
+          <LI><A href="test_exec_monitor.htm">Test Execution Monitor</A> - causes
+            a test program to run in a monitored environment. The Test Execution
+            Monitor provides the main() function to control a simple test program
+            execution and allows to use the <A href="test_tools.htm">Test Tools</A>
+            to implement test logic. It is intended to be used in test environment.
+            To control production code execution use the <A href="prg_exec_monitor.htm">Program
+            Execution Monitor</A>.</LI>
+        </UL>
+        <UL>
+          <LI><A href="unit_test_framework.htm">Unit Test Framework</A> - a framework
+            that simplifies writing and organizing test cases. The framework supports
+            test cases written as simple free functions or member functions and
+            organizes them into a tree of test suites. The framework allows to
+            use the <A href="test_tools.htm">Test Tools</A> to implement a test
+            cases and provides a facility to manage a log report level and a result
+            report level.</LI>
+          <LI><A href="minimal.htm">Minimal testing</A> - simple facility designed
+            to provide the functionality provided before by the original version
+            of Boost Test. The same as the <A href="test_exec_monitor.htm">Test
+            Execution Monitor</A> it causes the test program to run in a monitored
+            environment. In addition it defines several simple test tools that
+            behave similarly to ones defined in <A href="test_tools.htm">Test
+            Tools</A>. Minimal testing facility does not require linking with
+            external components, so could be a component of choice for simple
+            and quick testing needs.</LI>
+        </UL>
+        <SPAN class="ref-to-top"><A href="#TOP">
+      <IMG src="imgs/uarrow.gif" alt="reference to the top" width="45" height="43"></A></SPAN>
+        <H2><A name="FAQ">FAQ</A></H2>
+        <P class="1-line-indented">See <A href="faq.htm">Boost Test Library FAQ</A>.</P>
+        <H2><A name="Design">Design</A></H2>
+        <P class="1-line-indented">See <A href="test_lib_design.htm">Boost Test
+          Library Design</A>.</P>
+        <H2><a name="ReleaseNotes">Release notes</a></H2>
+
+  <ul>
+
+    <li>Facility for automatic registration of unit tests is introduced</li>
+
+    <li>XML log format is introduced</li>
+      
+    <li>XML report format is introduced</li>
+    
+    <li>BOOST_CHECK_NO_THROW test tool is introduced</li>
+    
+    <li>BOOST_BITWISE_CHECK test tool is introduced</li>
+
+    <li>libraries file names changed</li>
+    
+    <li>Components examples and test documentation page is introduced</li>
+
+    <li>Catch system errors switch introduced</li>
+      
+    <li>MS C runtime debug hooks introduced</li>
+  </ul>
+
+
+  <p>For more details see complete <a href="release_notes.htm#v1_30_0">release notes</a></p>
+
+  <SPAN class="ref-to-top"><A href="#TOP">
+    <IMG src="imgs/uarrow.gif" alt="reference to the top" width="45" height="40"></A></SPAN>
+
+  <H2><A name="OpenIssues">Open Issues</A></H2>
+  <UL>
+    <LI>What dependencies will we tolerate in Boost Test Library? Also we need means to overcome
+        this restriction for extensions.</LI>
+    <LI>Memory usage test tools.</LI>
+    <LI>Performance test tools.</LI>
+    <LI>Facilities to allow testing of template function for the provided type list.</LI>
+    <LI>How to implement compilability checks.</LI>
+    <LI>Selective test cases run: ways to define by user and notify the framework.</LI>
+    <LI>Support for the testing of multithreaded programs.</LI>
+    <LI>Make BOOST_TEST_CLOSE print values properly</LI>
+    <LI>Timeout implementation on Win32 platform.</LI>
+    <LI>Need to separate reference and tutorial material</LI>
+    <LI>Unit Test Framework extension should be documented</LI>
+  </UL>
+  
+  <SPAN class="ref-to-top"><A href="#TOP">
+      <IMG src="imgs/uarrow.gif" alt="reference to the top" width="45" height="43"></A></SPAN>
+        <H2><A name="Portability">Portability</A></H2>
+        <P class="1-line-indented">Because the Boost Test Library is critical
+          for porting and testing Boost libraries, it has been written to be extremely
+          conservative in its use of C++ features, and to keep dependencies to
+          a bare minimum.</P>
+        <P class="1-line-indented">Tests have been run (and work) under numerous
+          compilers.</P>
+        <H2><A name="Acknowledgements">Acknowledgements</A></H2>
+        <P>Original Test Library:</P>
+        <P class="1-line-indented">Ed Brey, Kevlin Henney, Ullrich Koethe, and
+          Thomas Matelich provided very helpful comments during development. Dave
+          Abrahams, Ed Brey, William Kempf, Jens Maurer, and Wilka suggested numerous
+          improvements during the Formal Review. Jens Maurer was the review manager.
+          Beman Dawes is the developer and maintainer.</P>
+        <P>Second Release:</P>
+        <P class="1-line-indented">Beman Dawes and Ullrich Koethe started the
+          library. Fernando Cacciola, Jeremy Siek, Beman Dawes, Ullrich Koethe,
+          Dave Abrahams suggested numerous improvements during the Formal Review.
+          Jeremy Siek was the review manager. Dave <SPAN class="ref-to-top"><A href="#TOP">
+        <IMG src="imgs/uarrow.gif" alt="reference to the top" width="45" height="43"></A></SPAN>
+          Abrahams edited this documentation. Beman Dawes was a great help in
+          both final testing and merging library with rest of the boost. Gennadiy
+          Rozental is the developer and maintainer. </P>
+        <DIV class="footer">
+          <P>&copy Beman Dawes 2000, <A href='mailto:rogeeff@emailaccount.com'>Gennadiy Rozental</A> 2001-2002 </P>
+          <P>Revised: 17 February, 2003</P>
+        </DIV>
+      </TD>
+  </TR>
+  </TABLE>
+</DIV>
+</BODY>
+</HTML>

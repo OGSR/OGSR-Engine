@@ -1,0 +1,70 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd"> 
+<HTML>
+<HEAD>
+<TITLE>Object Pool Implementation</TITLE>
+<LINK HREF="../pool.css" REL="stylesheet" TYPE="text/css">
+</HEAD>
+<BODY>
+
+<IMG SRC="../../../../c++boost.gif" WIDTH=276 HEIGHT=86 ALT="C++ Boost">
+
+<H1 ALIGN=CENTER>Object Pool Implementation</H1>
+
+<P>
+<H2>Dependencies</H2>
+
+<P>
+Includes the Boost header <SPAN CLASS="code">&quot;pool.hpp&quot;</SPAN> (see <A HREF="pool.html">pool.html</A>).
+
+<P>
+<H2>Extensions to Public Interface</H2>
+
+<P>
+Whenever an object of type <SPAN CLASS="code">ObjectPool</SPAN> needs memory from the system, it will request it from its <SPAN CLASS="code">UserAllocator</SPAN> template parameter.  The amount requested is determined using a doubling algorithm; that is, each time more system memory is allocated, the amount of system memory requested is doubled.  Users may control the doubling algorithm by using the following extensions.
+
+<P>
+<H3>Additional constructor parameter</H3>
+
+<P>
+Users may pass an additional constructor parameter to <SPAN CLASS="code">ObjectPool</SPAN>.  This parameter is of type <SPAN CLASS="code">size_type</SPAN>, and is the number of chunks to request from the system the first time that object needs to allocate system memory.  The default is 32.  This parameter may not be 0.
+
+<P>
+<H3><SPAN CLASS="code">next_size</SPAN> accessor functions</H3>
+
+<P>
+The pair of functions <SPAN CLASS="code">size_type get_next_size() const;</SPAN> and <SPAN CLASS="code">void set_next_size(size_type);</SPAN> allow users to explicitly read and write the <SPAN CLASS="code">next_size</SPAN> value.  This value is the number of chunks to request from the system the next time that object needs to allocate system memory.  This value should never be set to 0.
+
+<P>
+<H2>Protected Interface</H2>
+
+<P>
+<H3>Synopsis</H3>
+
+<PRE CLASS="code">template &lt;typename ElementType, typename UserAllocator = default_user_allocator_new_delete&gt;
+class object_pool: protected pool&lt;UserAllocator&gt;
+{
+  ... // public interface
+};</PRE>
+
+<P>
+<H3>Protected Derivation</H3>
+
+ObjectPool derives from a simple segregated storage via protected derivation; this exposes all the <A HREF="pool.html">Pool implementation details</A> to all classes derived from ObjectPool as well.
+
+<P>
+<H2><A HREF="../interfaces/object_pool.html">Interface Description</A></H2>
+
+<P>
+<HR>
+
+<P>
+Copyright &copy; 2000, 2001 Stephen Cleary (<A HREF="mailto:shammah@voyager.net">shammah@voyager.net</A>)
+
+<P>
+This file can be redistributed and/or modified under the terms found in <A HREF="../copyright.html">copyright.html</A>
+
+<P>
+This software and its documentation is provided &quot;as is&quot; without express or implied warranty, and with no claim as to its suitability for any purpose.
+
+</BODY>
+</HTML>

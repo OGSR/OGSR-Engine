@@ -1,0 +1,158 @@
+<html>
+<head>
+<title>In-depth: The Parser Context</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" href="theme/style.css" type="text/css">
+</head>
+
+<body>
+<table width="100%" border="0" background="theme/bkd2.gif" cellspacing="2">
+  <tr> 
+    <td width="10"> 
+    </td>
+    <td width="85%"> <font size="6" face="Verdana, Arial, Helvetica, sans-serif"><b>In-depth: 
+      The Parser Context</b></font></td>
+    <td width="112"><a href="http://spirit.sf.net"><img src="theme/spirit.gif" width="112" height="48" align="right" border="0"></a></td>
+  </tr>
+</table>
+<br>
+<table border="0">
+  <tr>
+    <td width="10"></td>
+    <td width="30"><a href="../index.html"><img src="theme/u_arr.gif" border="0"></a></td>
+    <td width="30"><a href="indepth_the_scanner.html"><img src="theme/l_arr.gif" border="0"></a></td>
+    <td width="20"><a href="parametric_parsers.html"><img src="theme/r_arr.gif" border="0"></a></td>
+   </tr>
+</table>
+<p>The parser's <b>context</b> is yet another concept. An instance (object) of 
+  the <tt>context</tt> class is created before a non-terminal starts parsing and 
+  is destructed after parsing has concluded. A non-terminal is either a <tt>rule</tt>, 
+  a <tt>subrule</tt>, or a <tt>grammar</tt>. Non-terminals have a <tt>ContextT</tt> 
+  template parameter. The following pseudo code depicts what's happening when 
+  a non-terminal is invoked:</p>
+<pre><code><font color="#000000"><span class=special>    </span><span class=identifier>return_type
+    </span><span class=identifier>a_non_terminal</span><span class=special>::</span><span class=identifier>parse</span><span class=special>(</span><span class=identifier>ScannerT </span><span class=keyword>const</span><span class=special>& </span><span class=identifier>scan</span><span class=special>)
+    {
+        </span><span class=identifier>context_t ctx</span><span class=special>(/**/);
+        </span><span class=identifier>ctx</span><span class=special>.</span><span class=identifier>pre_parse</span><span class=special>(/**/);
+
+        </span><span class=comment>//  main parse code of the non-terminal here...
+
+        </span><span class=keyword>return </span><span class=identifier>ctx</span><span class=special>.</span><span class=identifier>post_parse</span><span class=special>(/**/);
+    }</span></font></code></pre>
+<p>The context is provided for extensibility. Its main purpose is to expose the 
+  start and end of the non-terminal's parse member function to accomodate external 
+  hooks. We can extend the non-terminal in a multitude of ways by writing specialized 
+  context classes, without modifying the class itself. For example, we can make 
+  the non-terminal emit debug diagnostics information by writing a context class 
+  that prints out the current state of the scanner at each point in the parse 
+  traversal where the non-terminal is invoked.</p>
+<p>Example of a parser context that prints out debug information:</p>
+<pre><code><font color="#000000">    pre_parse</font>:<font color="#000000">      non-terminal XXX is entered<font color="#0000ff">.</font> The current state of the input
+                    is <font color="#616161"><i>&quot;hello world, this is a test&quot;</i></font>
+
+    post_parse</font>:<font color="#000000">     non-terminal XXX has concluded<font color="#0000ff">,</font> the non-terminal matched <font color="#616161"><i>&quot;hello world&quot;</i></font><font color="#0000ff">.</font>
+                    The current state of the input is <font color="#616161"><i>&quot;, this is a test&quot;</i></font></font></code></pre>
+<p>Most of the time, the context will be invisible from the user's view. In general, 
+  clients of the framework need not deal directly nor even know about contexts. 
+  Power users might find some use of contexts though, thus, this is part of the 
+  public API. Other parts of the framework in other layers above the core take 
+  advantage of the context to extend non-terminals. </p>
+<p>The <tt>parser_context</tt> class is the default context class that the non-terminal 
+  uses. </p>
+<pre><span class=keyword>    struct </span><span class=identifier>parser_context
+</span><span class=special>    {
+        </span><span class=keyword>typedef </span><span class=identifier>implementation_defined</span> <span class=identifier>attr_t</span><span class=special>;
+        </span><span class=keyword>typedef </span><span class=identifier>implementation_defined base_t</span><span class=special>;
+        </span><span class="keyword">typedef</span><span class=special> </span>parser_context_linker<span class="special">&lt;</span>parser_context<span class="special">&gt;</span> <span class="identifier">context_linker_t</span><span class=special>;
+
+        </span><span class=keyword>template </span><span class=special>&lt;</span><span class=keyword>typename </span><span class=identifier>ParserT</span><span class=special>&gt;
+        </span><span class=identifier>parser_context</span><span class=special>(</span><span class=identifier>ParserT </span><span class=keyword>const</span><span class=special>&amp; </span><span class=identifier>p</span><span class=special>) {}
+
+    </span><span class=keyword>    template </span><span class=special>&lt;</span><span class=keyword>typename </span><span class=identifier>ParserT</span><span class=special>, </span><span class=keyword>typename </span><span class=identifier>ScannerT</span><span class=special>&gt;
+    </span><span class=keyword>    void
+    </span><span class=identifier>    pre_parse</span><span class=special>(</span><span class=identifier>ParserT </span><span class=keyword>const</span><span class=special>&amp; </span><span class=identifier>p</span><span class=special>, </span><span class=identifier>ScannerT </span><span class=keyword>const</span><span class=special>&amp; </span><span class=identifier>scan</span><span class=special>) {}
+
+        </span><span class=keyword>template </span><span class=special>&lt;</span><span class=keyword>typename </span><span class=identifier>ResultT</span><span class=special>, </span><span class=keyword>typename </span><span class=identifier>ParserT</span><span class=special>, </span><span class=keyword>typename </span><span class=identifier>ScannerT</span><span class=special>&gt;
+        </span><span class=identifier>ResultT</span><span class=special>&amp;
+    </span><span class=identifier>    post_parse</span><span class=special>(</span><span class=identifier>ResultT</span><span class=special>&amp; </span><span class=identifier>hit</span><span class=special>, </span><span class=identifier>ParserT </span><span class=keyword>const</span><span class=special>&amp; </span><span class=identifier>p</span><span class=special>, </span><span class=identifier>ScannerT </span><span class=keyword>const</span><span class=special>&amp; </span><span class=identifier>scan</span><span class=special>)
+        { </span><span class=keyword>return </span><span class=identifier>hit</span><span class=special>; }
+    };</span></pre>
+<p>The non-terminal's <tt>ContextT</tt> template parameter is a concept. The <tt>parser_context</tt> 
+  class above is the simplest model of this concept. The default <tt>parser_context</tt>'s<tt> 
+  pre_parse</tt> and <tt>post_parse</tt> member functions are simply no-ops. You 
+  can think of the non-terminal's <tt>ContextT</tt> template parameter as the 
+  policy that governs how the non-terminal will behave before and after parsing. 
+  The client can supply her own context policy by passing a user defined context 
+  template parameter to a particular non-terminal.</p>
+<table width="90%" border="0" align="center">
+  <tr> 
+    <td class="table_title" colspan="8"> Parser Context Policies </td>
+  </tr>
+  <tr> 
+  <tr> 
+    <td class="table_cells"><strong><span class=identifier>attr_t</span></strong></td>
+    <td class="table_cells">typedef: the attribute type of the non-terminal. See 
+      the <a href="indepth_the_parser.html#match">match</a>.</td>
+  </tr>
+  <td class="table_cells"><strong><span class=identifier>base_t</span></strong></td>
+  <td class="table_cells">typedef: the base class of the non-terminal. The non-terminal 
+    inherits from this class.</td>
+  </tr>
+  <tr> 
+    <td class="table_cells"><strong><span class="identifier">context_linker_t</span></strong></td>
+    <td class="table_cells">typedef: this class type opens up the possibility 
+      for Spirit to plug in additional functionality into the non-terminal parse 
+      function or even bypass the given context. This should simply be typedefed 
+      to <tt>parser_context_linker&lt;T&gt;</tt> where T is the type of the user 
+      defined context class.</td>
+  </tr>
+  <td class="table_cells"><strong>constructor</strong></td>
+  <td class="table_cells">Construct the context. The non-terminal is passed as 
+    an argument to the constructor.</td>
+  </tr>
+  <tr> 
+    <td class="table_cells"><strong>pre_parse</strong></td>
+    <td class="table_cells">Do something prior to parsing. The non-terminal and 
+      the current scanner are passed as arguments.</td>
+  </tr>
+  <tr> 
+    <td class="table_cells"><strong>post_parse</strong></td>
+    <td class="table_cells">Do something after parsing. This is called regardless 
+      of the parse result. A reference to the parser's result is passed in. The 
+      context has the power to modify this. The non-terminal and the current scanner 
+      are also passed as arguments.</td>
+  </tr>
+</table>
+<p>The <tt>base_t</tt> deserves further explanation. Here goes... The context 
+  is strictly a stack based class. It is created before parsing and destructed 
+  after the non-terminal's parse member function exits. Sometimes, we need auxilliary 
+  data that that exists throughout the full lifetime of the non-terminal host. 
+  Since the non-terminal inherits from the context's <tt>base_t</tt>, the context 
+  itself, when created, gets access to this upon construction when the non-terminal 
+  is passed as an argument to the constructor. Ditto on <tt>pre_parse</tt> and 
+  <tt>post_parse</tt>.</p>
+<p>The non-terminal inherits from the context's <tt>base_t</tt> typedef. The sole 
+  requirement is that it is a class that is default constructible. The copy-construction 
+  and assignment requirements depends on the host. If the host requires it, so 
+  does the context's <tt>base_t</tt>. In general, it wouldn't hurt to provide 
+  these basic requirements. </p>
+<table border="0">
+  <tr> 
+    <td width="10"></td>
+    <td width="30"><a href="../index.html"><img src="theme/u_arr.gif" border="0"></a></td>
+    <td width="30"><a href="indepth_the_scanner.html"><img src="theme/l_arr.gif" border="0"></a></td>
+    <td width="20"><a href="parametric_parsers.html"><img src="theme/r_arr.gif" border="0"></a></td>
+  </tr>
+</table>
+<br>
+<hr size="1">
+<p class="copyright">Copyright &copy; 1998-2003 Joel de Guzman<br>
+  <br>
+  <font size="2">Permission to copy, use, modify, sell and distribute this document 
+  is granted provided this copyright notice appears in all copies. This document 
+  is provided &quot;as is&quot; without express or implied warranty, and with 
+  no claim as to its suitability for any purpose.</font></p>
+<p class="copyright">&nbsp;</p>
+</body>
+</html>

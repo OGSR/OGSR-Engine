@@ -1,0 +1,111 @@
+<html>
+<head>
+<title>number_list.cpp</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" href="theme/style.css" type="text/css">
+</head>
+
+<body>
+<table width="100%" border="0" background="theme/bkd2.gif" cellspacing="2">
+  <tr> 
+    <td width="10"> 
+    </td>
+    <td width="85%"> 
+      <font size="6" face="Verdana, Arial, Helvetica, sans-serif"><b>number_list.cpp</b></font>
+    </td>
+    <td width="112"><a href="http://spirit.sf.net"><img src="theme/spirit.gif" width="112" height="48" align="right" border="0"></a></td>
+  </tr>
+</table>
+<br>
+<pre>
+<span class=comment>///////////////////////////////////////////////////////////////////////////////
+</span><span class=comment>//
+</span><span class=comment>//  A parser for a comma separated list of numbers
+</span><span class=comment>//
+</span><span class=comment>//  [ JDG 5/10/2002 ]
+</span><span class=comment>//
+</span><span class=comment>///////////////////////////////////////////////////////////////////////////////
+</span><span class=preprocessor>#include </span><span class=special>&lt;</span><span class=identifier>boost</span><span class=special>/</span><span class=identifier>spirit</span><span class=special>/</span><span class=identifier>core</span><span class=special>.</span><span class=identifier>hpp</span><span class=special>&gt;
+</span><span class=preprocessor>#include </span><span class=special>&lt;</span><span class=identifier>iostream</span><span class=special>&gt;
+</span><span class=preprocessor>#include </span><span class=special>&lt;</span><span class=identifier>vector</span><span class=special>&gt;
+
+</span><span class=comment>///////////////////////////////////////////////////////////////////////////////
+</span><span class=keyword>using </span><span class=keyword>namespace </span><span class=identifier>std</span><span class=special>;
+</span><span class=keyword>using </span><span class=keyword>namespace </span><span class=identifier>spirit</span><span class=special>;
+
+</span><span class=comment>///////////////////////////////////////////////////////////////////////////////
+</span><span class=comment>//
+</span><span class=comment>//  Our comma separated list parser
+</span><span class=comment>//
+</span><span class=comment>///////////////////////////////////////////////////////////////////////////////
+</span><span class=keyword>bool
+</span><span class=identifier>parse_numbers</span><span class=special>(</span><span class=keyword>char </span><span class=keyword>const</span><span class=special>* </span><span class=identifier>str</span><span class=special>, </span><span class=identifier>vector</span><span class=special>&lt;</span><span class=keyword>double</span><span class=special>&gt;&amp; </span><span class=identifier>v</span><span class=special>)
+</span><span class=special>{
+    </span><span class=keyword>return </span><span class=identifier>parse</span><span class=special>(</span><span class=identifier>str</span><span class=special>,
+
+        </span><span class=comment>//  Begin grammar
+        </span><span class=special>(
+            </span><span class=identifier>real_p</span><span class=special>[</span><span class=identifier>append</span><span class=special>(</span><span class=identifier>v</span><span class=special>)] </span><span class=special>&gt;&gt; </span><span class=special>*(</span><span class=literal>',' </span><span class=special>&gt;&gt; </span><span class=identifier>real_p</span><span class=special>[</span><span class=identifier>append</span><span class=special>(</span><span class=identifier>v</span><span class=special>)])
+        </span><span class=special>)
+        </span><span class=special>,
+        </span><span class=comment>//  End grammar
+
+        </span><span class=identifier>space_p</span><span class=special>).</span><span class=identifier>full</span><span class=special>;
+</span><span class=special>}
+
+</span><span class=comment>////////////////////////////////////////////////////////////////////////////
+</span><span class=comment>//
+</span><span class=comment>//  Main program
+</span><span class=comment>//
+</span><span class=comment>////////////////////////////////////////////////////////////////////////////
+</span><span class=keyword>int
+</span><span class=identifier>main</span><span class=special>()
+</span><span class=special>{
+    </span><span class=identifier>cout </span><span class=special>&lt;&lt; </span><span class=string>&quot;/////////////////////////////////////////////////////////\n\n&quot;</span><span class=special>;
+    </span><span class=identifier>cout </span><span class=special>&lt;&lt; </span><span class=string>&quot;\t\tA comma separated list parser for Spirit...\n\n&quot;</span><span class=special>;
+    </span><span class=identifier>cout </span><span class=special>&lt;&lt; </span><span class=string>&quot;/////////////////////////////////////////////////////////\n\n&quot;</span><span class=special>;
+
+    </span><span class=identifier>cout </span><span class=special>&lt;&lt; </span><span class=string>&quot;Give me a comma separated list of numbers.\n&quot;</span><span class=special>;
+    </span><span class=identifier>cout </span><span class=special>&lt;&lt; </span><span class=string>&quot;The numbers will be inserted in a vector of numbers\n&quot;</span><span class=special>;
+    </span><span class=identifier>cout </span><span class=special>&lt;&lt; </span><span class=string>&quot;Type [q or Q] to quit\n\n&quot;</span><span class=special>;
+
+    </span><span class=keyword>for </span><span class=special>(;;)
+    </span><span class=special>{
+        </span><span class=keyword>char </span><span class=identifier>str</span><span class=special>[</span><span class=number>256</span><span class=special>];
+        </span><span class=identifier>cin</span><span class=special>.</span><span class=identifier>getline</span><span class=special>(</span><span class=identifier>str</span><span class=special>, </span><span class=number>256</span><span class=special>);
+        </span><span class=keyword>if </span><span class=special>(</span><span class=identifier>str</span><span class=special>[</span><span class=number>0</span><span class=special>] </span><span class=special>== </span><span class=literal>'q' </span><span class=special>|| </span><span class=identifier>str</span><span class=special>[</span><span class=number>0</span><span class=special>] </span><span class=special>== </span><span class=literal>'Q'</span><span class=special>)
+            </span><span class=keyword>break</span><span class=special>;
+
+        </span><span class=identifier>vector</span><span class=special>&lt;</span><span class=keyword>double</span><span class=special>&gt; </span><span class=identifier>v</span><span class=special>;
+        </span><span class=keyword>if </span><span class=special>(</span><span class=identifier>parse_numbers</span><span class=special>(</span><span class=identifier>str</span><span class=special>, </span><span class=identifier>v</span><span class=special>))
+        </span><span class=special>{
+            </span><span class=identifier>cout </span><span class=special>&lt;&lt; </span><span class=string>&quot;-------------------------\n&quot;</span><span class=special>;
+            </span><span class=identifier>cout </span><span class=special>&lt;&lt; </span><span class=string>&quot;Parsing succeeded\n&quot;</span><span class=special>;
+            </span><span class=identifier>cout </span><span class=special>&lt;&lt; </span><span class=identifier>str </span><span class=special>&lt;&lt; </span><span class=string>&quot; Parses OK: &quot; </span><span class=special>&lt;&lt; </span><span class=identifier>endl</span><span class=special>;
+
+            </span><span class=keyword>for </span><span class=special>(</span><span class=keyword>int </span><span class=identifier>i </span><span class=special>= </span><span class=number>0</span><span class=special>; </span><span class=identifier>i </span><span class=special>&lt; </span><span class=identifier>v</span><span class=special>.</span><span class=identifier>size</span><span class=special>(); </span><span class=special>++</span><span class=identifier>i</span><span class=special>)
+                </span><span class=identifier>cout </span><span class=special>&lt;&lt; </span><span class=identifier>i </span><span class=special>&lt;&lt; </span><span class=string>&quot;: &quot; </span><span class=special>&lt;&lt; </span><span class=identifier>v</span><span class=special>[</span><span class=identifier>i</span><span class=special>] </span><span class=special>&lt;&lt; </span><span class=identifier>endl</span><span class=special>;
+
+            </span><span class=identifier>cout </span><span class=special>&lt;&lt; </span><span class=string>&quot;-------------------------\n&quot;</span><span class=special>;
+        </span><span class=special>}
+        </span><span class=keyword>else
+        </span><span class=special>{
+            </span><span class=identifier>cout </span><span class=special>&lt;&lt; </span><span class=string>&quot;-------------------------\n&quot;</span><span class=special>;
+            </span><span class=identifier>cout </span><span class=special>&lt;&lt; </span><span class=string>&quot;Parsing failed\n&quot;</span><span class=special>;
+            </span><span class=identifier>cout </span><span class=special>&lt;&lt; </span><span class=string>&quot;-------------------------\n&quot;</span><span class=special>;
+        </span><span class=special>}
+    </span><span class=special>}
+
+    </span><span class=identifier>cout </span><span class=special>&lt;&lt; </span><span class=string>&quot;Bye... :-) \n\n&quot;</span><span class=special>;
+    </span><span class=keyword>return </span><span class=number>0</span><span class=special>;
+</span><span class=special>}</span></pre>
+<hr size="1">
+<p class="copyright">Copyright &copy; 1998-2003 Joel de Guzman<br>
+  <br>
+  <font size="2">Permission to copy, use, modify, sell and distribute this document 
+  is granted provided this copyright notice appears in all copies. This document 
+  is provided &quot;as is&quot; without express or implied warranty, and with 
+  no claim as to its suitability for any purpose. </font> </p>
+<p>&nbsp;</p>
+</body>
+</html>

@@ -1,0 +1,920 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta content="text/html; charset=ISO-8859-1" http-equiv="Content-Type">
+<title>2. Basic usage</title>
+<link rel="stylesheet" href="article.css" type="text/css">
+<meta name="generator" content="DocBook XSL Stylesheets V1.50.0">
+<meta name="keywords" content="template metaprogramming, generic programming, programming languages, C++, STL, type systems, polymorphism, compile-time">
+<link rel="home" href="index.html" title="the boost c++ metaprogramming library">
+<link rel="up" href="index.html" title="the boost c++ metaprogramming library">
+<link rel="previous" href="intro.html" title="1. introduction">
+<link rel="next" href="lambda.html" title="3. lambda facility">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<div class="navheader">
+<table width="100%" summary="Navigation header">
+<tr>
+<th colspan="3" align="center">2. Basic usage</th>
+</tr>
+
+<tr>
+<td width="20%" align="left"><a accesskey="p" href="intro.html">Prev</a>&nbsp;</td>
+<th width="60%" align="center">&nbsp;</th>
+<td width="20%" align="right">&nbsp;<a accesskey="n" href="lambda.html">Next</a></td>
+</tr>
+</table>
+
+<hr>
+</div>
+
+<div class="section">
+<div class="titlepage">
+<div>
+<h2 class="title" style="clear: both"><a name="usage"></a>2. Basic usage</h2>
+</div>
+</div>
+
+<div class="section">
+<div class="titlepage">
+<div>
+<h3 class="title"><a name="typeselection"></a>2.1. Conditional type selection</h3>
+</div>
+</div>
+
+<p>Conditional type selection is the simplest basic construct of C++ template metaprogramming. Veldhuizen <span class="citation">[<a class="interlink" href="refs.html#ref.vel95a" title="[vel95a]">Vel95a</a>]</span> was the first to show how to implement it, and Czarnecki and Eisenecker <span class="citation">[<a class="interlink" href="refs.html#ref.ce00" title="[ce00]">CE00</a>]</span> first presented it as a standalone library primitive. The MPL defines the corresponding facility as follows:</p>
+
+<pre class="programlisting">
+template&lt;
+      typename Condition
+    , typename T1
+    , typename T2
+    &gt;
+struct if_
+{
+    typedef /*unspecified*/ type;
+};
+</pre>
+
+<p>Note that the first template parameter of the template is a type.</p>
+
+<pre class="programlisting">
+// usage/semantics
+typedef mpl::if_&lt;mpl::true_c,char,long&gt;::type t1;
+typedef mpl::if_&lt;mpl::false_c,char,long&gt;::type t2;
+
+BOOST_MPL_ASSERT_IS_SAME(t1, char);
+BOOST_MPL_ASSERT_IS_SAME(t2, long);
+</pre>
+
+<p>The construct is important because template metaprograms often contain a lot of decision-making code, and, as we will show, spelling it manually every time via (partial) class template specialization quickly becomes impractical. The template is also important from the point of encapsulating the compiler workarounds.</p>
+
+<div class="section">
+<div class="titlepage">
+<div>
+<h4 class="title"><a name="delayedeval"></a>2.1.1. Delayed evaluation</h4>
+</div>
+</div>
+
+<p>The way the C++ template instantiation mechanism works imposes some subtle limitations on applicability of the type selection primitive (<tt>if_</tt>), compared to a manually implemented equivalent of the selection code. For example, suppose we are implementing a <tt>pointed_type</tt> traits template such that <tt>pointed_type&lt;T&gt;::type</tt> instantiated for a <tt>T</tt> that is either a plain pointer (<tt>U*</tt>), <tt>std::auto_ptr&lt;U&gt;</tt>, or any of the Boost smart pointers <span class="citation">[<a class="interlink" href="refs.html#ref.spl" title="[spl]">SPL</a>]</span>, e.g. <tt>boost::scoped_ptr&lt;U&gt;</tt>, will give us the pointed type (<tt>U</tt>):</p>
+
+<pre class="programlisting">
+BOOST_MPL_ASSERT_IS_SAME(pointed_type&lt;my*&gt;::type, my);
+BOOST_MPL_ASSERT_IS_SAME(pointed_type&lt; std::auto_ptr&lt;my&gt; &gt;::type, my);
+BOOST_MPL_ASSERT_IS_SAME(pointed_type&lt; boost::scoped_ptr&lt;my&gt; &gt;::type, my);
+</pre>
+
+<p>Unfortunately, the straightforward application of <tt>if_</tt> to this problem does not work: <sup><a name="note.pointedtype" href="#ftn.note.pointedtype">1</a></sup></p>
+
+<pre class="programlisting">
+template&lt; typename T &gt;
+struct pointed_type
+    : mpl::if_&lt;
+          boost::is_pointer&lt;T&gt;
+        , typename boost::remove_pointer&lt;T&gt;::type
+        , typename T::element_type // #1
+        &gt;
+{
+};
+
+// the following code causes compilation error in line #1:
+// name followed by "::" must be a class or namespace name
+typedef pointed_type&lt;char*&gt;::type result;
+</pre>
+
+<p>Clearly, the expression <tt>typename T::element_type</tt> is not valid in the case of <tt>T == char*</tt>, and that's what the compiler is complaining about. Implementing the selection code manually solves the problem:</p>
+
+<pre class="programlisting">
+namespace aux {
+// general case
+template&lt; typename T, bool is_pointer = false &gt;
+struct select_pointed_type
+{
+    typedef typename T::element_type type;
+};
+
+// specialization for plain pointers
+template&lt; typename  T &gt;
+struct select_pointed_type&lt;T,true&gt;
+{
+    typedef typename boost::remove_pointer&lt;T&gt;::type type;
+};
+}
+
+template&lt; typename T &gt;
+struct pointed_type
+   : aux::select_pointed_type&lt;
+          T, boost::is_pointer&lt;T&gt;::value
+        &gt;
+{
+};
+</pre>
+
+<p>But this quickly becomes awkward if needs to be done repeatedly, and this awkwardness is compounded when partial specialization is not available. We can try to work around the problem as follows:</p>
+
+<pre class="programlisting">
+namespace aux {
+template&lt; typename T &gt;
+struct element_type
+{
+     typedef typename T::element_type type;
+};
+}
+
+template&lt; typename T &gt;
+struct pointed_type
+{
+    typedef typename mpl::if_&lt;
+          boost::is_pointer&lt;T&gt;
+        , typename boost::remove_pointer&lt;T&gt;::type
+        , typename aux::element_type&lt;T&gt;::type
+        &gt;::type type;
+};
+</pre>
+
+<p>but this doesn't work either - the access to the <tt>aux::element_type&lt;T&gt;</tt>'s nested <tt>type</tt> member still forces the compiler to instantiate <tt>element_type&lt;T&gt;</tt> with <tt>T == char*</tt>, and that instantiation is, of course, invalid. Also, although in our case this does not lead to a compile error, the <tt>boost::remove_pointer&lt;T&gt;</tt> template always gets instantiated as well, and for the same reason (because we are accessing its nested <tt>type</tt> member). Unnecessary instantiation that is not fatal may or may be not a problem, depending on the &lsquo;weight&rsquo; of the template (how much the instantiation taxes the compiler), but a general rule of thumb would be to avoid such code.</p>
+
+<p>Returning to our error, to make the above code compile, we need to factor the act of &lsquo;asking&rsquo; <tt>aux::element_type&lt;T&gt;</tt> for its nested <tt>type</tt> out of the <tt>if_</tt> invocation. The fact that both the <tt>boost::remove_pointer&lt;T&gt;</tt> trait template and <tt>aux::element_type&lt;T&gt;</tt> use the same naming convention for their result types makes the refactoring easier:</p>
+
+<pre class="programlisting">
+template&lt; typename T &gt;
+struct pointed_type
+{
+ private:
+    typedef typename mpl::if_&lt;
+          boost::is_pointer&lt;T&gt;
+        , boost::remove_pointer&lt;T&gt;
+        , aux::element_type&lt;T&gt;
+        &gt;::type func_;
+
+ public:
+    typedef typename func_::type type;
+};
+</pre>
+
+<p>Now the compiler is guaranteed not to instantiate both <tt>boost::remove_pointer&lt;T&gt;</tt> and <tt>aux::element_type&lt;T&gt;</tt>, even although they are used as actual parameters to the <tt>if_</tt> template, so we are allowed to get away with <tt>aux::element_type&lt;char*&gt;</tt> so long as it won't end up being selected as <tt>func_</tt>.</p>
+
+<p>The above technique is so common in template metaprograms, that it even makes sense to facilitate the selection of a nested <tt>type</tt> member by introducing a high-level equivalent to <tt>if_</tt> - the one that will do the <tt>func_::type</tt> operation (that is called [nullary] metafunction class application) as a part of its invocation. The MPL provides such template - it's called <tt>apply_if</tt>. Using it, we can re-write the above code as simple as:</p>
+
+<pre class="programlisting">
+template&lt; typename T &gt;
+struct pointed_type
+{
+    typedef typename mpl::apply_if&lt;
+          boost::is_pointer&lt;T&gt;
+        , boost::remove_pointer&lt;T&gt;
+        , aux::element_type&lt;T&gt;
+        &gt;::type type;
+};
+</pre>
+
+<p>To make our techniques review complete, let's consider a slightly different example - suppose we want to define a high-level wrapper around <tt>boost::remove_pointer</tt> traits template <span class="citation">[<a class="interlink" href="refs.html#ref.ttl" title="[ttl]">TTL</a>]</span>, which will strip the pointer qualification conditionally. We will call it <tt>remove_pointer_if</tt>:</p>
+
+<pre class="programlisting">
+template&lt;
+      typename Condition
+    , typename T
+    &gt;
+struct remove_pointer_if
+{
+    typedef typename mpl::if_&lt;
+          Condition
+        , typename boost::remove_pointer&lt;T&gt;::type
+        , T
+        &gt;::type type;
+};
+</pre>
+
+<p>Now the above works the first time, but it suffers from the problem we mentioned earlier - <tt>boost::remove_pointer&lt;T&gt;</tt> gets instantiated even if its result is never used. In the metaprogramming world compilation time is an important resource <span class="citation">[<a class="interlink" href="refs.html#ref.abr01" title="[abr01]">Abr01</a>]</span>, and it is wasted by unnecessary template instantiations. We've just seen how to deal with the problem when both arguments to <tt>if_</tt> are the results of nullary metafunction class applications, but in this example one of the arguments (<tt>T</tt>) is just a simple type, so the refactoring just doesn't seem possible.</p>
+
+<p>The easiest way out of this situation would be to pass to <tt>if_</tt> a real nullary metafunction instead of <tt>T</tt> - the one that returns <tt>T</tt> on its invocation. The MPL provides a simple way to do it - we just substitute <tt>identity&lt;T&gt;</tt> and <tt>apply_if</tt> for <tt>T</tt> and <tt>if_</tt>:</p>
+
+<pre class="programlisting">
+template&lt;
+      typename Condition
+    , typename T
+    &gt;
+struct remove_pointer_if
+{
+    typedef typename mpl::apply_if&lt;
+          Condition
+        , boost::remove_pointer&lt;T&gt;
+        , mpl::identity&lt;T&gt;
+        &gt;::type type;
+};
+</pre>
+
+<p>which gives us exactly what we wanted.</p>
+</div>
+</div>
+
+<div class="section">
+<div class="titlepage">
+<div>
+<h3 class="title"><a name="metafunctions"></a>2.2. Metafunctions</h3>
+</div>
+</div>
+
+<div class="section">
+<div class="titlepage">
+<div>
+<h4 class="title"><a name="metafunctions.simple"></a>2.2.1. The simple form</h4>
+</div>
+</div>
+
+<p>In C++, the basic underlying language construct which allows parameterized compile-time computation is the <i>class template</i> (<span class="citation">[<a class="interlink" href="refs.html#ref.iso98" title="[iso98]">ISO98</a>]</span>, section 14.5.1 [temp.class]). A bare class template is the simplest possible model we could choose for metafunctions: it can take types and/or non-type arguments as actual template parameters, and instantiation &lsquo;returns&rsquo; a new type. For example, the following produces a type derived from its arguments:</p>
+
+<pre class="programlisting">
+template&lt; typename T1, typename T2 &gt;
+struct derive : T1, T2
+{
+};
+</pre>
+
+<p>However, this model is far too limiting: it restricts the metafunction result not only to class types, but to instantiations of a given class template, to say nothing of the fact that every metafunction invocation introduces an additional level of template nesting. While that might be acceptable for this particular metafunction, any model which prevented us from &lsquo;returning&rsquo;, say, <tt>int</tt> is obviously not general enough. To meet this basic requirement, we must rely on a nested type to provide our return value:</p>
+
+<pre class="programlisting">
+template&lt; typename T1, typename T2 &gt;
+struct derive
+{
+    struct type : N1, N2 {};
+};
+
+// silly specialization, but demonstrates "returning" int
+template&lt;&gt;
+struct derive&lt;void,void&gt;
+{
+    typedef int type;
+};
+</pre>
+
+<p>Veldhuizen <span class="citation">[<a class="interlink" href="refs.html#ref.vel95a" title="[vel95a]">Vel95a</a>]</span> was first to talk about class templates of this form as &lsquo;compile-time functions&rsquo;, and Czarnecki and Eisenecker <span class="citation">[<a class="interlink" href="refs.html#ref.ce00" title="[ce00]">CE00</a>]</span> have introduced &lsquo;template metafunction&rsquo; as an equivalent term (they also use the simpler term &lsquo;metafunction&rsquo;, as do we). Czarnecki and Eisenecker have also recognized the limitations of the simple metafunction representation and suggested the form that we discuss in <a class="interlink" href="usage.html#metafunctions.classes" title="2.2.3. metafunction classes">Section 2.2.3</a>.</p>
+</div>
+
+<div class="section">
+<div class="titlepage">
+<div>
+<h4 class="title"><a name="metafunctions.higherorder"></a>2.2.2. Higher-order metafunctions</h4>
+</div>
+</div>
+
+<p>While syntactically simple, the simple template metafunction form does not always interact optimally with the rest of C++. In particular, the simple metafunction form makes it unnecessarily awkward and tedious to define and work with higher-order metafunctions (metafunctions that operate on other metafunctions). In order to pass a simple metafunction to another template, we need to use <i>template template parameters</i>:</p>
+
+<pre class="programlisting">
+// returns F(T1,F(T2,T3))
+template&lt;
+      template&lt;typename&gt; class F
+    , typename T1
+    , typename T2
+    , typename T3
+    &gt;
+struct apply_twice
+{
+  typedef typename F&lt;
+        T1
+      , typename F&lt;T2,T3&gt;::type
+      &gt;::type type;
+};
+
+// a new metafunction returning a type derived from T1, T2, and T3
+template&lt;
+      typename T1
+    , typename T2
+    , typename T3
+    &gt;
+struct derive3
+    : apply_twice&lt;derive,T1,T2,T3&gt;
+{
+};
+</pre>
+
+<p>This looks different, but it seems to work. <sup><a name="note.higherorder" href="#ftn.note.higherorder">2</a></sup> However, things begin to break down noticeably when we want to &lsquo;return&rsquo; a metafunction from our metafunction:</p>
+
+<pre class="programlisting">
+// returns G s.t. G(T1,T2,T3) == F(T1,F(T2,T3))
+template&lt; template&lt;typename&gt; class F &gt;
+struct compose_self
+{
+    template&lt;
+          typename T1
+        , typename T2
+        , typename T3
+        &gt; 
+    struct type
+        : apply_twice&lt;F,T1,T2,T3&gt;
+    {
+    };
+};
+</pre>
+
+<p>The first and most obvious problem is that the result of applying <tt>compose_self</tt> is not itself a type, but a template, so it can't be passed in the usual ways to other metafunctions. A more subtle issue, however, is that the metafunction &lsquo;returned&rsquo; is not exactly what we intended. Although it acts just like <tt>apply_twice</tt>, it differs in one important respect: its identity. In the C++ type system, <tt>compose_self&lt;F&gt;::template type&lt;T,U,V&gt;</tt> is not a synonym for <tt>apply_twice&lt;F,T,U,V&gt;</tt>, and any metaprogram which compared metafunctions would discover that fact.</p>
+
+<p>Because C++ makes a strict distinction between type and class template template parameters, reliance on simple metafunctions creates a &lsquo;wall&rsquo; between metafunctions and metadata, relegating metafunctions to the status of second-class citizens. For example, recalling our introduction to type sequences, there's no way to make a <tt>cons</tt> list of metafunctions:</p>
+
+<pre class="programlisting">
+typedef cons&lt;derive, cons&lt;derive3, nil&gt; &gt; derive_functions; // error!
+</pre>
+
+<p>We might consider redefining our <tt>cons</tt> cell so we can pass <tt>derive</tt> as the head element:</p>
+
+<pre class="programlisting">
+template &lt;
+      template&lt; template&lt;typename T, typename U&gt; class F
+    , typename Tail
+    &gt;
+struct cons;
+</pre>
+
+<p>However, now we have another problem: C++ templates are polymorphic with respect to their type arguments, but not with respect to template template parameters. The arity (number of parameters) of any template template parameter is strictly enforced, so we <span class="emphasis"><em>still</em></span> can't embed <tt>derive3</tt> in a <tt>cons</tt> list. Moreover, polymorphism <span class="emphasis"><em>between</em></span> types and metafunctions is not supported (the compiler expects one or the other), and as we've seen, the syntax and semantics of &lsquo;returned&rsquo; metafunctions is different from that of returned types. Trying to accomplish everything with the simple template metafunction form would seriously limit the applicability of higher-order metafunctions and would have an overall negative effect on the both conceptual and implementation clarity, simplicity and size of the library.</p>
+</div>
+
+<div class="section">
+<div class="titlepage">
+<div>
+<h4 class="title"><a name="metafunctions.classes"></a>2.2.3. Metafunction classes</h4>
+</div>
+</div>
+
+<p>Fortunately, the truism that &lsquo;there is no problem in software which can't be solved by adding yet another level of indirection&rsquo; applies here. To elevate metafunctions to the status of first-class objects, the MPL introduces the concept of a &lsquo;metafunction class&rsquo;:</p>
+
+<pre class="programlisting">
+// metafunction class form of derive
+struct derive
+{
+    template&lt; typename N1, typename N2 &gt;
+    struct apply
+    {
+        struct type : N1, N2 {};
+    };
+};
+</pre>
+
+<p>This form should look familiar to anyone acquainted with function objects in STL, with the nested <tt>apply</tt> template taking the same role as the runtime function-call operator. In fact, compile-time metafunction classes have the same relationship to metafunctions that runtime function objects have to functions:</p>
+
+<pre class="programlisting">
+// function form of add
+template&lt; typename T &gt; T add(T x, T y) { return x + y; }
+
+// function object form of add
+struct add
+{
+    template&lt; typename T &gt;
+    T operator()(T x, T y) { return x + y; }
+};
+</pre>
+</div>
+
+<div class="section">
+<div class="titlepage">
+<div>
+<h4 class="title"><a name="metafunctions.onesize"></a>2.2.4. One size fits all?</h4>
+</div>
+</div>
+
+<p>The metafunction class form solves all the problems with ordinary template metafunction mentioned earlier: since it is a regular class, it can be placed in compile-time metadata sequences and manipulated by other metafunctions using the same protocols as for any other metadata. We thereby avoid the code-duplication needed to provide versions of each library component to operate on ordinary metadata and on metafunctions with each distinct supported arity.</p>
+
+<p>On the other hand, it seems that accepting metafunction classes as <span class="emphasis"><em>the</em></span> representation for compile-time function entities imposes code duplication danger as well: if the library's own primitives, algorithms, etc. are represented as class templates, that means that one either cannot reuse these algorithms in the context of higher-order functions, or she have to duplicate all algorithms in the second form, so, for instance, there would be two versions of <tt>find</tt>:</p>
+
+<pre class="programlisting">
+// user-friendly form
+template&lt;
+      typename Sequence
+    , typename T
+    &gt;
+struct find
+{
+    typedef /* ... */ type;
+};
+
+// "metafunction class" form
+struct find_func
+{
+    template&lt; typename Sequence, typename T &gt;
+    struct apply
+    {
+        typedef /* ... */ type;
+    };
+};
+</pre>
+
+<p>Of course, the third option is to eliminate &lsquo;user-friendly form&rsquo; completely so one would always have to write:</p>
+
+<pre class="programlisting">
+typedef mpl::find::apply&lt;list,long&gt;::type iter;
+// or, if one prefers,
+// typedef mpl::apply&lt; mpl::find,list,long &gt;::type iter;
+</pre>
+
+<p>instead of</p>
+
+<pre class="programlisting">
+typedef mpl::find&lt;list,long&gt;::type iter;
+</pre>
+
+<p>That too would hurt usability, considering that the direct invocations of library's algorithms are far more often-used than passing algorithms as arguments to other algorithms/metafunctions.</p>
+</div>
+
+<div class="section">
+<div class="titlepage">
+<div>
+<h4 class="title"><a name="metafunctions.lambda"></a>2.2.5. From metafunction to metafunction class</h4>
+</div>
+</div>
+
+<p>The MPL's answer to this dilemma is <i>lambda expressions</i>. Lambda is the mechanism that enables the library to curry metafunctions and convert them into metafunction classes, so when one wants to pass the <tt>find</tt> algorithm as an argument to a higher-order metafunction, she just write:</p>
+
+<pre class="programlisting">
+using namespace mpl::placeholder;
+typedef mpl::apply&lt; my_f, mpl::find&lt;_1,_2&gt; &gt;::type result;
+</pre>
+
+<p>where <tt>_1</tt> and <tt>_2</tt> are placeholders for the first and second arguments to the resulting metafunction class. This preserves the intuitive syntax below for when the user wants to use <tt>find</tt> directly in her code:</p>
+
+<pre class="programlisting">
+typedef mpl::find&lt;list,long&gt;::type iter;
+</pre>
+
+<p>Lambda facility is described in more details in <a class="interlink" href="lambda.html#lambda" title="3. lambda facility">Section 3</a>.</p>
+</div>
+</div>
+
+<div class="section">
+<div class="titlepage">
+<div>
+<h3 class="title"><a name="sequences"></a>2.3. Sequences, algorithms, and iterators</h3>
+</div>
+</div>
+
+<div class="section">
+<div class="titlepage">
+<div>
+<h4 class="title"><a name="sequences.intro"></a>2.3.1. Introduction</h4>
+</div>
+</div>
+
+<p>Compile-time iteration over a sequence (of types) is one of the basic concepts of template metaprogramming. Differences in types of objects being manipulated is the most common point of variability of similar but not identical code/design, and such designs are the direct target for some metaprogramming. Templates were originally designed to solve this exact problem (e.g. <tt>std::vector</tt>). However, without predefined abstractions/constructs for manipulating/iterating over <span class="emphasis"><em>sequences</em></span> of types (as opposed to standalone types), and without known techniques for emulating these constructs using the current language facilities, their effect on helping high-level metaprogramming happen has been limited.</p>
+
+<p>Czarnecki and Eisenecker <span class="citation">[<a class="interlink" href="refs.html#ref.ce98" title="[ce98]">CE98</a>]</span>, <span class="citation">[<a class="interlink" href="refs.html#ref.ce00" title="[ce00]">CE00</a>]</span> were the first to introduce compile-time sequences of types and some simple algorithms on them, although the idea of representing common data structures like trees, lists, etc. at compile time, using class template composition has been around for a while (e.g. most of the expression template libraries build such trees as a part of their expression "parsing" process <span class="citation">[<a class="interlink" href="refs.html#ref.vel95b" title="[vel95b]">Vel95b</a>]</span>). Alexandrescu <span class="citation">[<a class="interlink" href="refs.html#ref.ale01" title="[ale01]">Ale01</a>]</span> used lists of types and some algorithms on them to implement several design patterns; the accompanying code is known as the Loki library <span class="citation">[<a class="interlink" href="refs.html#ref.loki" title="[loki]">Loki</a>]</span>.</p>
+</div>
+
+<div class="section">
+<div class="titlepage">
+<div>
+<h4 class="title"><a name="sequences.algo"></a>2.3.2. Algorithms and sequences</h4>
+</div>
+</div>
+
+<p>Most of the algorithms in the Boost Metaprogramming Library operate on sequences. For example, searching for a type in a list looks like this:</p>
+
+<pre class="programlisting">
+typedef mpl::list&lt;char,short,int,long,float,double&gt; types;
+typedef mpl::find&lt;types,long&gt;::type iter;
+</pre>
+
+<p>Here, <tt>find</tt> accepts two parameters - a sequence to search (<tt>types</tt>) and the type to search for (<tt>long</tt>) - and returns an iterator <tt>iter</tt> pointing to the first element of the sequence such that <tt>iter::type</tt> is identical to <tt>long</tt>. If no such element exists, <tt>iter</tt> is identical to <tt>end&lt;types&gt;::type</tt>. Basically, this is how one would search for a value in a <tt>std::list</tt> or <tt>std::vector</tt>, except that <tt>mpl::find</tt> accepts the sequence as a single parameter, while <tt>std::find</tt> takes two iterators. Everything else is pretty much the same - the names are the same, the semantics are very close, there are iterators, and one can search not only by type, but also by using a predicate:</p>
+
+<pre class="programlisting">
+typedef mpl::find_if&lt; types,boost::is_float&lt;_&gt; &gt;::type iter;
+</pre>
+
+<p>This conceptual/syntactical similarity with the STL is not coincidental. Reusing the conceptual framework of the STL in the compile-time world allows us to apply familiar and sound approaches for dealing with sequential data structures. The algorithms and idioms which programmers already know from the STL can be applied again at compile-time. We consider this to be one of MPL's greatest strengths, distinguishing it from earlier attempts to build a template metaprogramming library.</p>
+</div>
+
+<div class="section">
+<div class="titlepage">
+<div>
+<h4 class="title"><a name="sequences.concepts"></a>2.3.3. Sequence concepts</h4>
+</div>
+</div>
+
+<p>In the <tt>find</tt> example above, we searched for the type in a sequence built using the <tt>mpl::list</tt> template; but <tt>list</tt> is not the only sequence that the library provides. Neither is <tt>mpl::find</tt> or any other algorithm hard-coded to work only with <tt>list</tt> sequences. <tt>list</tt> is just one model of MPL's <span class="concept">Forward Sequence</span> concept, and <tt>find</tt> works with anything that satisfies this concept's requirements. The hierarchy of sequence concepts in MPL is quite simple - a <span class="concept">Sequence</span> is any compile-time entity for which <tt>begin&lt;&gt;</tt> and <tt>end&lt;&gt;</tt> produce iterators to the range of its elements; a <span class="concept">Forward Sequence</span> is a Sequence whose iterators satisfy <span class="concept">Forward Iterator</span> requirements; a <span class="concept">Bidirectional Sequence</span> is a Forward Sequence whose iterators satisfy <span class="concept">Bidirectional Iterator</span> requirements; finally, a <span class="concept">Random Access Sequence</span> is a Bidirectional Sequence whose iterators satisfy <span class="concept">Random Access Iterator</span> requirements. <sup><a name="note.seqconcepts" href="#ftn.note.seqconcepts">3</a></sup></p>
+
+<p>Decoupling algorithms from particular sequence implementations (through iterators) allows a metaprogrammer to create her own sequence types and to retain the rest of the library at her disposal. For example, one can define a <tt>tiny_list</tt> for dealing with sequences of three types as follows:</p>
+
+<pre class="programlisting">
+template&lt; typename TinyList, long Pos &gt;
+struct tiny_list_item;
+
+template&lt; typename TinyList, long Pos &gt;
+struct tiny_list_iterator
+{
+    typedef typename tiny_list_item&lt;TinyList,Pos&gt;::type type;
+    typedef tiny_list_iterator&lt;TinyList, Pos-1&gt; prior;
+    typedef tiny_list_iterator&lt;TinyList, Pos+1&gt; next;
+};
+
+template&lt; typename T0, typename T1, typename T2 &gt;
+struct tiny_list
+{
+    typedef tiny_list_iterator&lt;tiny_list, 0&gt; begin;
+    typedef tiny_list_iterator&lt;tiny_list, 3&gt; end;
+    typedef T0 type0;
+    typedef T1 type1;
+    typedef T2 type2;
+};
+
+template&lt; typename TinyList &gt;
+struct tiny_list_item&lt;TinyList,0&gt;
+{
+    typedef typename TinyList::type0 type;
+};
+
+template&lt; typename TinyList &gt;
+struct tiny_list_item&lt;TinyList,1&gt;
+{
+    typedef typename TinyList::type1 type;
+};
+
+template&lt; typename TinyList &gt;
+struct tiny_list_item&lt;TinyList,2&gt;
+{
+    typedef typename TinyList::type2 type;
+};
+</pre>
+
+<p>and then use it with any of the library algorithms as if it were <tt>mpl::list</tt>:</p>
+
+<pre class="programlisting">
+typedef tiny_list&lt; char,short,int &gt; types;
+typedef mpl::transform&lt;
+      types
+    , boost::add_pointer&lt;_1&gt;
+    &gt;::type pointers;
+</pre>
+
+<p>Note that <tt>tiny_list</tt> is a model of Bidirectional Sequence; it would be a Random Access Sequence if we added <tt>advance</tt> and <tt>distance</tt> members to <tt>tiny_list_iterator</tt>:</p>
+
+<pre class="programlisting">
+template&lt; typename TinyList, long Pos &gt;
+struct tiny_list_iterator
+{
+    static long const position = Pos;
+
+    typedef typename tiny_list_item&lt;TinyList,Pos&gt;::type type;
+    typedef tiny_list_iterator&lt;TinyList, Pos-1&gt; prior;
+    typedef tiny_list_iterator&lt;TinyList, Pos+1&gt; next;
+
+    template&lt; typename N &gt; struct advance
+    {
+        typedef tiny_list_iterator&lt;
+              TinyList
+            , Pos + N::value
+            &gt; type;
+    };
+
+    template&lt; typename Other &gt; struct distance
+    {
+        typedef mpl::integral_c&lt;
+              long
+            , Other::position - position
+            &gt; type;
+    };
+};
+</pre>
+
+<p>While the <tt>tiny_list</tt> itself might be not that interesting (after all, it can hold only three elements), if the technique above could be automated so we would be able to define not-so-tiny sequences (with five, ten, twenty, etc. elements), it would be very valuable. <sup><a name="note.tinylist" href="#ftn.note.tinylist">4</a></sup></p>
+
+<p>External code generation is an option, but there exists a solution within the language. However, it is not a template metaprogramming, but rather <span class="emphasis"><em>preprocessor metaprogramming</em></span>. In fact, MPL's <tt>vector</tt> - a fixed-size type sequence that provides random-access iterators - is implemented very much like the above <tt>tiny_list</tt> - using the Boost Preprocessor library <span class="citation">[<a class="interlink" href="refs.html#ref.pre" title="[pre]">PRE</a>]</span>.</p>
+</div>
+
+<div class="section">
+<div class="titlepage">
+<div>
+<h4 class="title"><a name="sequences.revisited"></a>2.3.4. Ad hoc example revisited</h4>
+</div>
+</div>
+
+<p>So, the library provides its users with almost complete compile-time equivalent of the STL framework. Does it help them to solve their metaprogramming tasks? Let's return to our earlier <a class="interlink" href="intro.html#example.largest" title="example 1. 'largest' metafunction"><tt>largest</tt></a> example to see if we can rewrite it in a better way with what MPL has to offer. Well, actually, there is not much to look at, because the MPL implementation is a one-liner (we'll spread it out here for readability) <sup><a name="note.maxelement" href="#ftn.note.maxelement">5</a></sup> :</p>
+
+<pre class="programlisting">
+template&lt; typename Sequence &gt;
+struct largest
+{
+    typedef typename mpl::max_element&lt;
+          Sequence
+          mpl::less&lt;
+              mpl::size_of&lt;_1&gt;
+            , mpl::size_of&lt;_2&gt;
+            &gt;
+        &gt;::type iter;
+
+    typedef typename iter::type type;
+};
+</pre>
+
+<p>There are no more termination conditions with tricky pattern matching, no more partial specializations; and even more importantly, it's <span class="emphasis"><em>obvious</em></span> what the above code does - even although it's all templates - something that one could not say about the original version.</p>
+</div>
+
+<div class="section">
+<div class="titlepage">
+<div>
+<h4 class="title"><a name="sequences.iterfold"></a>2.3.5. iter_fold as the main iteration algorithm</h4>
+</div>
+</div>
+
+<p>For the purpose of examining a little bit more of the library's internal structure, let's look at how <tt>max_element</tt> from the above example is implemented. One might expect that <span class="emphasis"><em>now</em></span> we will again see all these awkward partial specializations, esoteric pattern matching, etc. Well, let's see:</p>
+
+<pre class="programlisting">
+template&lt;
+      typename Sequence
+    , typename Predicate
+    &gt;
+struct max_element
+{
+    typedef typename mpl::iter_fold&lt;    
+          Sequence
+        , typename mpl::begin&lt;Sequence&gt;::type
+        , if_&lt; less&lt; deref&lt;_1&gt;,deref&lt;_2&gt; &gt;, _2, _1 &gt;
+        &gt;::type type;
+};
+</pre>
+
+<p>The first thing to notice here is that this algorithm is implemented in terms of another one: <tt>iter_fold</tt>. In fact, this is probably the most important point of the example, because nearly all other generic sequence algorithms in the library are implemented in terms of <tt>iter_fold</tt>. If a user should ever need to implement her own sequence algorithm, she'll almost certainly be able to do so using this primitive, which means she won't have to resort to implementing hand-crafted iteration, pattern matching of special cases for loop termination, or workarounds for lack of partial specialization. It also means that her algorithm will automatically benefit from any optimizations the library has implemented, (e.g. recursion unrolling), and that it will work with any sequence that is a model of ForwardSequence, because <tt>iter_fold</tt> does not require anything more of its sequence argument.</p>
+
+<p><tt>iter_fold</tt> algorithm is basically a compile-time equivalent of the <tt>fold</tt> or <tt>reduce</tt> functions that comprise the basic and well-known primitives of many functional programming languages. An analogy more familiar to a C++ programmer would be the <tt>std::accumulate</tt> algorithm from the C++ standard library (<span class="citation">[<a class="interlink" href="refs.html#ref.iso98" title="[iso98]">ISO98</a>]</span>, section 26.4.1 [lib.accumulate]). However, <tt>iter_fold</tt> is designed to take advantage of the natural characteristics of recursive traversal: it accepts <span class="emphasis"><em>two</em></span> metafunction class arguments, the first of which is applied to the state "on the way in" and the second of which is applied "on the way out".</p>
+
+<p>The interface to <tt>iter_fold</tt> is defined in MPL as follows:</p>
+
+<pre class="programlisting">
+template&lt;
+      typename Sequence
+    , typename InitialState
+    , typename ForwardOp
+    , typename BackwardOp = _1
+    &gt;
+struct iter_fold
+{
+    typedef /*unspecified*/ type;
+};
+</pre>
+
+<p>The algorithm &lsquo;returns&rsquo; the result of two-way successive applications of binary <tt>ForwardOp</tt> and <tt>BackwardOp</tt> operations to iterators in range [<tt>begin&lt;Sequence&gt;::type</tt>, <tt>end&lt;Sequence&gt;::type</tt>) and previous result of an operation; the <tt>InitialState</tt> is logically placed before the sequence and included in the forward traversal. The result <tt>type</tt> is identical to <tt>InitialState</tt> if the sequence is empty.</p>
+
+<p>The library also provides <tt>iter_fold_backward</tt>, <tt>fold</tt>, and <tt>fold_backward</tt> algorithms which wrap <tt>iter_fold</tt> to accommodate its most common usage patterns.</p>
+</div>
+
+<div class="section">
+<div class="titlepage">
+<div>
+<h4 class="title"><a name="sequences.numbers"></a>2.3.6. Sequences of numbers</h4>
+</div>
+</div>
+
+<p>What we've seen so far were sequences (and algorithms on sequences) of types. It is both possible and easy to manipulate compile-time <span class="emphasis"><em>values</em></span> using the library as well. The only thing to remember is that in C++, class template non-type template parameters give us one more example of non-polymorphic behavior. In other words, if one declared a metafunction to take a non-type template parameter (e.g. <tt>long</tt>) it's not possible to pass anything besides compile-time integral constants to it:</p>
+
+<pre class="programlisting">
+template&lt; long N1, long N2 &gt;
+struct equal_to
+{
+    static bool const value = (N1 == N2);
+};
+
+equal_to&lt;5,5&gt;::value; // ok
+equal_to&lt;int,int&gt;::value; // error!
+</pre>
+
+<p>And of course this doesn't work the other way around either:</p>
+
+<pre class="programlisting">
+typedef mpl::list&lt;1,2,3,4,5&gt; numbers; // error!
+</pre>
+
+<p>While this may be an obvious limitation, it imposes yet another dilemma on the library design: on the one hand, we don't want to restrict users to type manipulations only, and on the other hand, full support for integral manipulations would require at least duplication of most of the library facilities <sup><a name="note.nontype" href="#ftn.note.nontype">6</a></sup> - the same situation as we would have if we had chosen to represent metafunctions as ordinary class templates. The solution for this issue is the same as well: we represent integral values by wrapping them in types <sup><a name="note.valuewrapping" href="#ftn.note.valuewrapping">7</a></sup> . For example, to create a list of numbers one can write:</p>
+
+<pre class="programlisting">
+typedef mpl::list&lt;
+      mpl::int_c&lt;1&gt;
+    , mpl::int_c&lt;2&gt;
+    , mpl::int_c&lt;3&gt;
+    , mpl::int_c&lt;4&gt;
+    , mpl::int_c&lt;5&gt;
+    &gt; numbers;
+</pre>
+
+<p>Wrapping integral constants into types to make them first-class citizens is important well inside metaprograms, where one often doesn't know (and doesn't care) if the metafunctions she is using operate on types, integral values, other metafunctions, or something else, like fixed-point or rational numbers (<tt>mpl::fixed_c</tt> and <tt>mpl::rational_c</tt>).</p>
+
+<p>But, from the user's perspective, the above example is much more verbose than the shorter, incorrect one. Thus, for the purpose of convenience, the library does provide users with a template that takes non-type template parameters, but offers a more compact notation:</p>
+
+<pre class="programlisting">
+typedef mpl::list_c&lt;long,1,2,3,4,5&gt; numbers;
+</pre>
+
+<p>There is a similar <tt>vector</tt> counterpart as well:</p>
+
+<pre class="programlisting">
+typedef mpl::vector_c&lt;long,1,2,3,4,5&gt; numbers;
+</pre>
+</div>
+
+<div class="section">
+<div class="titlepage">
+<div>
+<h4 class="title"><a name="sequences.variety"></a>2.3.7. A variety of sequences</h4>
+</div>
+</div>
+
+<p>Previous efforts to provide generalized metaprogramming facilities for C++ have always concentrated on <tt>cons</tt>-style type lists and a few core algorithms like <tt>size</tt> and <tt>at</tt>, which are tied to the specific sequence implementation. Such systems have an elegant simplicity reminiscent of the analogous functionality in pure functional Lisp. It is much more time-consuming to implement even a basic set of the sequence algorithms provided by equivalent run-time libraries (the STL in particular), but if we have learned anything from the STL, it is that tying those algorithms' implementations to a specific sequence implementation is a misguided effort!</p>
+
+<p>The truth is that there is no single &lsquo;best&rsquo; type sequence implementation for the same reasons that there will never be a single &lsquo;best&rsquo; runtime sequence implementation. Furthermore, there are <span class="emphasis"><em>already</em></span> quite a number of type list implementations in use today; and just as the STL algorithms can operate on sequences which don't come from STL containers, so the MPL algorithms are designed to work with foreign type sequences.</p>
+
+<p>It may be an eye-opening fact for some that type lists are not the only useful compile-time sequence. Again, the need for a variety of compile-time containers arises for the same reasons that we have lists, vectors, deques, and sets in the C++ standard library - different containers have different functional and performance characteristics which determine not only applicability and efficiency of particular algorithms, but also the expressiveness or verbosity of the code that uses them. While runtime performance is not an issue for C++ metaprograms, compilation speed is often a significant bottleneck to advanced C++ software development <span class="citation">[<a class="interlink" href="refs.html#ref.abr01" title="[abr01]">Abr01</a>]</span>.</p>
+
+<p>The MPL provides five built-in sequences: <tt>list</tt>, <tt>list_c</tt> (really just a <tt>list</tt> of value wrappers), <tt>vector</tt>, a randomly-accessible sequence of fixed maximum size, <tt>vector_c</tt>, and <tt>range_c</tt>, a randomly-accessible sequence of consecutive integral values. More important, however, is its ability to adapt to arbitrary sequence types. The only core operations that a sequence is required to provide in order to be used with the library algorithms are <tt>begin&lt;&gt;</tt> and <tt>end&lt;&gt;</tt> metafunctions which "return" iterators into the sequence. As with the STL, it is the iterators which are used to implement most of the general-purpose sequence algorithms the library provides. Also, as with the STL, algorithm specialization is used to take advantage of implementation knowledge about particular sequences: many of the "basic" sequence operations such as <tt>back&lt;&gt;</tt>, <tt>front&lt;&gt;</tt>, <tt>size&lt;&gt;</tt>, and <tt>at&lt;&gt;</tt> are specialized on sequence type to provide a more efficient implementation than the fully generic version.</p>
+</div>
+
+<div class="section">
+<div class="titlepage">
+<div>
+<h4 class="title"><a name="sequences.unrolling"></a>2.3.8. Loop/recursion unrolling</h4>
+</div>
+</div>
+
+<p>Almost coincidentally, loop unrolling can be as important to compile-time iterative algorithms as it is to runtime algorithms. To see why, one must first remember that all "loops" in C++ metaprograms, are in fact, implemented with recursion, and that the template instantiation depth can be a valuable resource in a compiler implementation. In fact, Annex B of the C++ standard (<span class="citation">[<a class="interlink" href="refs.html#ref.iso98" title="[iso98]">ISO98</a>]</span>, annex B [limits]) <span class="emphasis"><em>recommends</em></span> a minimum depth of 17 recursively nested template instantiations; but this is far too low for many serious metaprograms, some of which easily exceed the hard-coded instantiation limits of some otherwise excellent compilers. To see how this works in action, let's examine a straightforward implementation of the <tt>fold</tt> metafunction, which combines some algorithm state with each element of a sequence:</p>
+
+<pre class="programlisting">
+namespace aux {
+
+// unspecialized version combines the initial state and first element
+// and recurses to process the rest
+template&lt;
+      typename Start
+    , typename Finish
+    , typename State
+    , typename BinaryFunction
+    &gt;
+struct fold_impl
+  : fold_impl&lt;
+        typename Start::next
+      , Finish
+      , typename apply&lt;
+              BinaryFunction
+            , State
+            , typename Start::type
+            &gt;::type
+      , BinaryFunction
+      &gt;
+{
+};
+
+// specialization for loop termination
+template&lt;
+      typename Finish
+    , typename State
+    , typename BinaryFunction
+    &gt;
+struct fold_impl&lt;Finish,Finish,State,BinaryFunction&gt;
+{
+    typedef State type;
+};
+
+} // namespace aux
+
+// public interface
+template&lt;
+      typename Sequence
+    , typename State
+    , typename ForwardOp
+    &gt;
+struct fold
+    : aux::fold_impl&lt;
+        , typename begin&lt;Sequence&gt;::type
+        , typename end&lt;Sequence&gt;::type
+        , State
+        , typename lambda&lt;ForwardOp&gt;::type
+        &gt;
+{
+};
+</pre>
+
+<p>Although simple and elegant, this implementation will always incur at least as many levels of recursive template instantiation as there are elements in the input sequence. <sup><a name="note.unrolling1" href="#ftn.note.unrolling1">8</a></sup> The library addresses this problem by explicitly "unrolling" the recursion. To apply the technique to our <tt>fold</tt> example, we begin by factoring out a single step of the algorithm. Our <tt>fold_impl_step</tt> metafunction has two results: <tt>type</tt> (the next state), and <tt>iterator</tt> (the next sequence position).</p>
+
+<pre class="programlisting">
+template&lt;
+      typename BinaryFunction
+    , typename State
+    , typename Start
+    , typename Finish
+    &gt;
+struct fold_impl_step
+{
+    typedef typename apply&lt;
+          BinaryFunction
+        , State
+        , typename Start::type
+        &gt;::type type;
+
+    typedef typename Start::next iterator;
+};
+</pre>
+
+<p>As with our main algorithm implementation, we specialize for the loop termination condition so that the step becomes a no-op:</p>
+
+<pre class="programlisting">
+template&lt;
+      typename BinaryFunction
+    , typename State
+    , typename Finish
+    &gt;
+struct fold_impl_step&lt;BinaryFunction,State,Finish,Finish&gt;
+{
+    typedef State type;
+    typedef Finish iterator;
+};
+</pre>
+
+<p>Now we can now reduce <tt>fold</tt>'s instantiation depth by any constant factor N simply by inserting N invocations of <tt>fold_impl_step</tt>. Here we've chosen a factor of 4:</p>
+
+<pre class="programlisting">
+template&lt;
+      typename Start
+    , typename Finish
+    , typename State
+    , typename BinaryFunction
+    &gt;
+struct fold_impl
+{
+ private:
+    typedef fold_impl_step&lt;
+        BinaryFunction
+      , State
+      , Start
+      , Finish
+      &gt; next1;
+    
+    typedef fold_impl_step&lt;
+        BinaryFunction
+      , typename next1::type
+      , typename next1::iterator
+      , Finish
+      &gt; next2;
+    
+    typedef fold_impl_step&lt;
+        BinaryFunction
+      , typename next2::type
+      , typename next2::iterator
+      , Finish
+      &gt; next3;
+    
+    typedef fold_impl_step&lt;
+        BinaryFunction
+      , typename next3::type
+      , typename next3::iterator
+      , Finish
+      &gt; next4;
+    
+    typedef fold_impl_step&lt;
+          typename next4::iterator
+        , Finish
+        , typename next4::type
+        , BinaryFunction
+        &gt; recursion;
+
+ public:
+    typedef typename recursion::type type;
+};
+</pre>
+
+<p>The MPL applies this unrolling technique across all algorithms with an unrolling factor tuned according to the demands of the C++ implementation in use, and with an option for the user to override the value. <sup><a name="note.unrolling2" href="#ftn.note.unrolling2">9</a></sup> This fact enables users to push beyond the metaprogramming limits they would usually encounter with more naive algorithm implementations. Experiments also show a small (up to 10%) increase in metaprogram instantiation speed on some compilers when loop unrolling is used.</p>
+</div>
+</div>
+</div>
+
+<div class="navfooter">
+<hr>
+<table width="100%" summary="Navigation footer">
+<tr>
+<td width="40%" align="left"><a accesskey="p" href="intro.html">Prev</a>&nbsp;</td>
+<td width="20%" align="center"><a accesskey="u" href="index.html">Up</a></td>
+<td width="40%" align="right">&nbsp;<a accesskey="n" href="lambda.html">Next</a></td>
+</tr>
+
+<tr>
+<td width="40%" align="left" valign="top">1. Introduction&nbsp;</td>
+<td width="20%" align="center"><a accesskey="h" href="index.html">Home</a></td>
+<td width="40%" align="right" valign="top">&nbsp;3. Lambda facility</td>
+</tr>
+</table>
+</div>
+</body>
+</html>
+

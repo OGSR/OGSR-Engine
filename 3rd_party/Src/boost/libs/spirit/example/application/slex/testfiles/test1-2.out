@@ -1,0 +1,24 @@
+token #0: (a|b)*abb+c?(ab(c|d)*)?
+token #1: [\a-zA-\x5a][a-zA-Z0-9_]*
+token #2: [0-9]*
+token #3: "xyz*.|+{}\t"
+token #4: .
+token #5: \n
+testing string: aaaaabbbbbaabbbbcabcdcdddc
+aaaaabbbbbaabbbbcabcdcdddca
+
+matched token #0 :aaaaabbbbbaabbbbcabcdcdddc
+matched token #5 :
+
+matched token #1 :aaaaabbbbbaabbbbcabcdcdddca
+matched token #5 :
+
+testing string: aaaaabbbbbaabbbbcabcdcdddc
+aaaaabbbbbaabbbbcabcdcdddca
+
+matched token #0 :aaaaabbbbbaabbbbcabcdcdddc
+matched token #5 :
+
+matched token #1 :aaaaabbbbbaabbbbcabcdcdddca
+matched token #5 :
+

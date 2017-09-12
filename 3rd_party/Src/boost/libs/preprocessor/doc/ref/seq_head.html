@@ -1,0 +1,52 @@
+<html>
+	<head>
+		<title>BOOST_PP_SEQ_HEAD</title>
+		<link rel="stylesheet" type="text/css" href="../styles.css">
+	</head>
+	<body>
+		<div style="margin-left:  0px;">
+			The <b>BOOST_PP_SEQ_HEAD</b> macro expands to the first element in a <i>seq</i>.
+		</div>
+		<h4>
+			Usage
+		</h4>
+		<div class="code">
+			<b>BOOST_PP_SEQ_HEAD</b>(<i>seq</i>)
+		</div>
+		<h4>
+			Arguments
+		</h4>
+		<dl>
+			<dt>seq</dt>
+			<dd>
+				The <i>seq</i> from which the first element is extracted.
+			</dd>
+		</dl>
+		<h4>
+			See Also
+		</h4>
+		<ul>
+			<li>
+				<a href="seq_tail.html">BOOST_PP_SEQ_TAIL</a></li>
+		</ul>
+		<h4>
+			Requirements
+		</h4>
+		<div>
+			<b>Header:</b> &nbsp;<a href="../headers/seq/seq.hpp.html">&lt;boost/preprocessor/seq/seq.hpp&gt;</a>
+		</div>
+		<h4>
+			Sample Code
+		</h4>
+		<div>
+			<pre>
+#include &lt;<a href="../headers/seq/seq.hpp.html">boost/preprocessor/seq/seq.hpp</a>&gt;
+
+#define SEQ (a)(b)(c)
+
+<a href="seq_head.html">BOOST_PP_SEQ_HEAD</a>(SEQ) // expands to a
+<a href="seq_tail.html">BOOST_PP_SEQ_TAIL</a>(SEQ) // expands to (b)(c)
+</pre>
+		</div>
+	</body>
+</html>

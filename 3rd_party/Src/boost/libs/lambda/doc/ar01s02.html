@@ -1,0 +1,57 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html><head><meta content="text/html; charset=ISO-8859-1" http-equiv="Content-Type"><title>2. Getting Started</title><meta name="generator" content="DocBook XSL Stylesheets V1.48"><link rel="home" href="index.html" title="
+      C++ BOOST
+
+      The Boost Lambda Library"><link rel="up" href="index.html" title="
+      C++ BOOST
+
+      The Boost Lambda Library"><link rel="previous" href="index.html" title="
+      C++ BOOST
+
+      The Boost Lambda Library"><link rel="next" href="ar01s03.html" title="3. Introduction"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="navheader"><table width="100%" summary="Navigation header"><tr><th colspan="3" align="center">2. Getting Started</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="index.html">Prev</a> </td><th width="60%" align="center"> </th><td width="20%" align="right"> <a accesskey="n" href="ar01s03.html">Next</a></td></tr></table><hr></div><div class="section"><div class="titlepage"><div><h2 class="title" style="clear: both"><a name="sect:getting_started"></a>2. Getting Started</h2></div></div><div class="section"><div class="titlepage"><div><h3 class="title"><a name="id2790118"></a>2.1. Installing the library</h3></div></div><p>
+	The library consists of include files only, hence there is no
+	installation procedure. The <tt>boost</tt> include directory
+	must be on the include path.
+	There are a number of include files that give different functionality:
+
+	
+	<div class="itemizedlist"><ul type="disc"><li><p>
+	      <tt>lambda/lambda.hpp</tt> defines lambda expressions for different C++
+	      operators, see <a href="ar01s05.html#sect:operator_expressions" title="5.2. Operator expressions">Section 5.2</a>.
+	    </p></li><li><p>
+	      <tt>lambda/bind.hpp</tt> defines <tt>bind</tt> functions for up to 9 arguments, see <a href="ar01s05.html#sect:bind_expressions" title="5.3. Bind expressions">Section 5.3</a>.</p></li><li><p>
+	      <tt>lambda/if.hpp</tt> defines lambda function equivalents for if statements and the conditional operator, see <a href="ar01s05.html#sect:lambda_expressions_for_control_structures" title="5.6. Lambda expressions for control structures">Section 5.6</a> (includes <tt>lambda.hpp</tt>).
+	    </p></li><li><p>
+	      <tt>lambda/loops.hpp</tt> defines lambda function equivalent for looping constructs, see <a href="ar01s05.html#sect:lambda_expressions_for_control_structures" title="5.6. Lambda expressions for control structures">Section 5.6</a>.
+	    </p></li><li><p>
+	      <tt>lambda/switch.hpp</tt> defines lambda function equivalent for the switch statement, see <a href="ar01s05.html#sect:lambda_expressions_for_control_structures" title="5.6. Lambda expressions for control structures">Section 5.6</a>.
+	    </p></li><li><p>
+	      <tt>lambda/construct.hpp</tt> provides tools for writing lambda expressions with constructor, destructor, new and delete invocations, see <a href="ar01s05.html#sect:construction_and_destruction" title="5.8. Construction and destruction">Section 5.8</a> (includes <tt>lambda.hpp</tt>).
+	    </p></li><li><p>
+	      <tt>lambda/casts.hpp</tt> provides lambda versions of different casts, as well as <tt>sizeof</tt> and <tt>typeid</tt>, see <a href="ar01s05.html#sect:cast_expressions" title="5.10.1. 
+Cast expressions
+">Section 5.10.1</a>.
+	    </p></li><li><p>
+	      <tt>lambda/exceptions.hpp</tt> gives tools for throwing and catching
+	      exceptions within lambda functions, <a href="ar01s05.html#sect:exceptions" title="5.7. Exceptions">Section 5.7</a> (includes
+	      <tt>lambda.hpp</tt>).
+	    </p></li><li><p>
+	      <tt>lambda/algorithm.hpp</tt> and <tt>lambda/numeric.hpp</tt> (cf. standard <tt>algortihm</tt> and <tt>numeric</tt> headers) allow nested STL algorithm invocations, see <a href="ar01s05.html#sect:nested_stl_algorithms" title="5.11. Nesting STL algorithm invocations">Section 5.11</a>.
+	    </p></li></ul></div>
+
+	Any other header files in the package are for internal use.
+	Additionally, the library depends on two other Boost Libraries, the
+	<span class="emphasis"><i>Tuple</i></span> [<a href="bi01.html#cit:boost::tuple" title="[tuple]">tuple</a>] and the <span class="emphasis"><i>type_traits</i></span> [<a href="bi01.html#cit:boost::type_traits" title="[type_traits]">type_traits</a>] libraries, and on the <tt>boost/ref.hpp</tt> header.
+      </p><p>
+	All definitions are placed in the namespace <tt>boost::lambda</tt> and its subnamespaces.
+      </p></div><div class="section"><div class="titlepage"><div><h3 class="title"><a name="id2741945"></a>2.2. Conventions used in this document</h3></div></div><p>In most code examples, we omit the namespace prefixes for names in the <tt>std</tt> and <tt>boost::lambda</tt> namespaces.
+Implicit using declarations
+<pre class="programlisting">
+using namespace std;
+using namespace boost::lambda;
+</pre>
+are assumed to be in effect.
+</p></div></div><div class="navfooter"><hr><table width="100%" summary="Navigation footer"><tr><td width="40%" align="left"><a accesskey="p" href="index.html">Prev</a> </td><td width="20%" align="center"><a accesskey="u" href="index.html">Up</a></td><td width="40%" align="right"> <a accesskey="n" href="ar01s03.html">Next</a></td></tr><tr><td width="40%" align="left" valign="top">
+      C++ BOOST
+
+      The Boost Lambda Library </td><td width="20%" align="center"><a accesskey="h" href="index.html">Home</a></td><td width="40%" align="right" valign="top"> 3. Introduction</td></tr></table></div></body></html>

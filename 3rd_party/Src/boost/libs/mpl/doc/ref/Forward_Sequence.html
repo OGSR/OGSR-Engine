@@ -1,0 +1,48 @@
+<!doctype html public "-//ietf//dtd html//en">
+<html><head><title>boost::mpl::Forward Sequence</title>
+<link rel="stylesheet" href="./mpl_wiki.css">
+</head><body bgcolor="white">
+<h1><a href="./Table_of_Contents.html"><img src="./mpl_logo.jpg" alt="[Home]" border=0 align="right"></a>Forward Sequence</h1><h3>Description</h3>
+<p>
+A Forward Sequence is a <a href="./Sequence.html">Sequence</a> which guarantees that its elements are arranged in a definite order, and that the ordering will not change spontaneously [<a href="#1">1</a>]. Iterators into a forward sequence satisfy the <a href="./Forward_Iterator.html">Forward Iterator</a> requirements.
+<p>
+<h3>Refinement of</h3>
+<p>
+<a href="./Sequence.html">Sequence</a>
+<p>
+<h3>Valid expressions</h3>
+<p>
+Forward Sequence  does not define any new expressions beyond those defined in <a href="./Sequence.html">Sequence</a>. However, it refines the expression requirements. 
+<p>
+<table border="1">
+<tr><th>&nbsp;Expression&nbsp;</th><th>&nbsp;Expression type &nbsp;</th></tr>
+<tr><td><code>typename begin&lt;s&gt;::type</code></td><td>A model of <a href="./Forward_Iterator.html">Forward Iterator</a> </td></tr>
+<tr><td><code>typename end&lt;s&gt;::type</code></td><td>A model of <a href="./Forward_Iterator.html">Forward Iterator</a> </td></tr>
+</table>
+<p>
+<h3>Invariants</h3>
+<p>
+For any forward sequence <code>s</code> the following invariants always hold: 
+<ul>
+<li>Two different iterations through <code>s</code> will access its elements in the same order.
+</ul>
+<p>
+<h3>Models</h3>
+<p>
+<ul>
+<li><code><a href="./Reference/vector.html">vector</a></code>
+<li><code><a href="./Reference/vector_c.html">vector_c</a></code>
+<li><code><a href="./Reference/list.html">list</a></code>
+<li><code><a href="./Reference/list_c.html">list_c</a></code>
+<li><code><a href="./Reference/range_c.html">range_c</a></code>
+</ul>
+<p>
+<h3>Notes</h3>
+<p>
+[<a name="1">1</a>]  Both between compilation sessions and from iteration to iteration.<br>
+<p>
+<h3>See also</h3>
+<p>
+<a href="./Sequence.html">Sequence</a>, <a href="./Bidirectional_Sequence.html">Bidirectional Sequence</a>, <a href="./Forward_Iterator.html">Forward Iterator</a>
+<p><hr>
+<a href="./Table_of_Contents.html">Table of Contents</a><br>Last edited July 15, 2002 2:34 pm</body></html>

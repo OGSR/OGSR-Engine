@@ -1,0 +1,36 @@
+#  (C) Copyright  2002. Permission to copy, use, modify, sell and
+#  distribute this software is granted provided this copyright notice appears
+#  in all copies. This software is provided "as is" without express or implied
+#  warranty, and with no claim as to its suitability for any purpose.
+#
+#
+# Boost.date_time build and test Jamfile
+#
+#  Based on boost.python Jamfile
+#
+# To run all tests quietly: jam test
+#
+# Declares the following targets:
+#   1. libboost_date_time, a static link library to be linked with all
+#      Boost.date_time modules
+#
+
+project boost/date_time
+    : requirements
+        <define>DATE_TIME_INLINE <define>BOOST_DATE_TIME_POSIX_TIME_STD_CONFIG 
+    : usage-requirements 	
+        <define>DATE_TIME_INLINE <define>BOOST_DATE_TIME_POSIX_TIME_STD_CONFIG     
+    ;
+
+#######################
+
+#
+# Declare the boost date_time static link library
+#
+
+# Base names of the source files for libboost_date_time
+local GREGORIAN_CPP_SOURCES = gregorian_types greg_month greg_weekday ;
+
+lib boost_date_time : ../src/gregorian/$(GREGORIAN_CPP_SOURCES).cpp ;
+    
+#time examples

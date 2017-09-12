@@ -1,0 +1,20 @@
+TOOLS = $(TOOLS[1]) ;
+project-root ;
+
+# bring in rules for testing
+SEARCH on testing.jam = $(BOOST_BUILD_PATH) ;
+include testing.jam ;
+
+lib mylib : lib.cpp ;
+
+compile foo.cpp : : compile ;
+compile-fail foo.cpp : <define>NOCOMPILE : nocompile ;
+
+link foo.cpp <lib>mylib : : link ;
+link-fail foo.cpp  <lib>mylib : <define>NOLINK : nolink ;
+
+run foo.cpp  <lib>mylib
+  : # args
+  : # input-files
+  : <define>RUN
+  : run ;

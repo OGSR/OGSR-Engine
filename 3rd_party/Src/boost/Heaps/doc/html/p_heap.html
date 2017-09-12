@@ -1,0 +1,109 @@
+<HTML><HEAD>
+<!!---------------------------------------------------------------------->
+<!! Copyright (C) 1999 Dietmar Kuehl, Claas Solutions GmbH >
+<!!>
+<!! Permission to use, copy, modify, distribute and sell this >
+<!! software for any purpose is hereby granted without fee, provided >
+<!! that the above copyright notice appears in all copies and that >
+<!! both that copyright notice and this permission notice appear in >
+<!! supporting documentation. Dietmar Kuehl and Claas Solutions make no >
+<!! representations about the suitability of this software for any >
+<!! purpose. It is provided "as is" without express or implied warranty. >
+<!!---------------------------------------------------------------------->
+<TITLE>mfd/p_heap.3</TITLE>
+</HEAD>
+<BODY BGCOLOR=white LINK="0000FF" VLINK="800080">
+<IMG SRC=c++boost.jpg ALIGN=TOP WIDTH=277 HEIGHT=86><BR>
+<TABLE BORDER=0 CELLSPACING=0 CELLPADDING=0 COLS=2>
+<TR><TD WIDTH=109 VALIGN=TOP><IMG SRC=sidebar.jpg WIDTH=109 HEIGHT=494>
+</TD><TD>
+<SPACER TYPE=VERTICAL SIZE=40>
+<H1>Template Class <nobr><tt>pairing_heap&lt;T, Comp&gt;</tt></nobr></H1>
+
+  <A NAME="Synopsis"><H1>Synopsis</H1></A>
+
+    <TABLE BORDER=0 CELLSPACING=0 CELLPADDING=0 COLS=2>
+<TR><TD WIDTH=30 VALIGN=TOP></TD><TD>
+<PRE>
+#include "boost/p_heap.hpp"
+
+template &lt;class T, class Comp = std::less&lt;T&gt; &gt;
+class boost::pairing_heap
+{
+public:
+  class iterator
+  {
+  public:
+    iterator();
+
+    T const& operator* () const;
+    T const* operator-&gt;() const;
+
+    iterator& operator++();
+    iterator  operator++(int);
+
+    bool operator== (iterator const& it) const;
+    bool operator!= (iterator const& it) const;
+  };
+
+  typedef T             <A HREF="heap-common.html#value_type">value_type</A>;
+  typedef T&            reference;
+  typedef T const&      <A HREF="heap-common.html#const_reference">const_reference</A>;
+  typedef iterator      <A HREF="heap-common.html#const_iterator">const_iterator</A>;
+  typedef unsigned long <A HREF="heap-common.html#size_type">size_type</A>;
+  typedef node*         <A HREF="heap-common.html#pointer">pointer</A>;
+
+  explicit <A HREF="heap-common.html#default-ctor">pairing_heap</A>(Comp const& comp = Comp());
+  ~pairing_heap();
+
+  bool      <A HREF="heap-common.html#empty">empty</A>() const;
+  size_type <A HREF="heap-common.html#size">size</A>() const;
+  pointer   <A HREF="heap-common.html#push">push</A>(T const& val);
+  T const&  <A HREF="heap-common.html#top">top</A>() const;
+  void      <A HREF="heap-common.html#pop">pop</A>();
+  void      <A HREF="heap-common.html#remove">remove</A>(pointer ptr);
+
+  template &lt;typename K&gt; void <A HREF="heap-common.html#change_top">change_top</A>(K const& val);
+  template &lt;typename K&gt; void <A HREF="heap-common.html#change">change</A>(pointer ptr, K const& val);
+  template &lt;typename K&gt; void <A HREF="heap-common.html#increase">increase</A>(pointer ptr, K const& val);
+  template &lt;typename K&gt; void <A HREF="heap-common.html#decrease">decrease</A>(pointer ptr, K const& val);
+
+  iterator  <A HREF="heap-common.html#begin">begin</A>() const;
+  iterator  <A HREF="heap-common.html#end">end</A>() const;
+
+private:
+  pairing_heap(pairing_heap const&); // deliberately not implemented
+  void operator= (pairing_heap const&); // deliberately not implemented
+};
+    </PRE></TD></TABLE>
+
+  
+  <A NAME="Description"><H1>Description</H1></A>
+
+    The pairing heap is just a general tree with the invariant that the
+    root of a subtree is always the largest element in this subtree. To
+    guarantee that the tree does not degenerate, a certain ordering of
+    necessary links is used. I have no idea why it works and actually
+    I'm not sure at all that my implementation uses the correct method.
+    However, the performance of the pairing heap is often better than
+    the one of <A HREF="d_heap.html">d-heaps</A>.
+
+    <P>
+
+
+    For a description of the methods of <nobr><tt>pairing_heap&lt;T, Comp&gt;</tt></nobr> see the
+    description of <A HREF="heap-common.html">common methods</A>.
+  
+  <A NAME="See Also"><H1>See Also</H1></A>
+
+    <A HREF="heap.html">heap(3)</A>,
+    <A HREF="heap-common.html">heap-common(3)</A>
+  
+<HR>
+
+Copyright &copy 1999 <A HREF=http://www.claas-solutions.de/kuehl>Dietmar K&uuml;hl</A> (<A HREF="mailto:dietmar.kuehl@claas-solutions.de">dietmar.kuehl@claas-solutions.de</A>)<BR>
+<a href="http://www.claas-solutions.de/">Claas Solutions GmbH</a>
+</FONT></FONT>
+</TD></TR></TABLE>
+</BODY></HTML>
+

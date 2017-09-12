@@ -1,0 +1,196 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html><head><meta http-equiv="Content-Type" content="text/html;charset=iso-8859-1">
+<title>posix_time::time_period Documentation</title>
+<link href="doxygen.css" rel="stylesheet" type="text/css">
+</head>
+
+<body>
+<a href="../../../index.htm">
+<img align="left" src="../../../c++boost.gif" alt="C++ Boost">
+</a>  
+
+<h1>posix_time::time_period</h1>
+<p>&nbsp;<p>
+<hr>
+<p>
+<a href="index.html">Overall Index</a> -- 
+<a href="gregorian.html">Gregorian Index</a> --
+<a href="posix_time.html">Posix Time Index</a>
+<p>
+<font class="bold">Time Period Documentation</font> 
+<p>
+<a href="#header">Header</a> -- 
+<a href="#construct">Construction</a> -- 
+<a href="#accessors">Accessors</a> -- 
+<a href="#conversiontostring">Conversion To String</a> -- 
+<a href="#operators">Operators</a> -- 
+
+<p>
+<h2><a name="intro">Introduction</a></h2>
+
+<p>
+The class boost::posix_time::time_period provides direct representation for ranges between two times.  Periods provide the ability to simplify some types of calculations by simplifing the conditional logic of the program.  
+
+<p>
+The <a href="exp-time_periods.html">time periods example</a> provides an example of using time periods.
+<p>
+<p>
+<p>
+<h2><a name="header">Header</a></h2>
+<pre>
+#include "boost/date_time/posix_time/posix_time.hpp" //include all types plus i/o
+or
+#include "boost/date_time/posix_time/posix_time_types.hpp" //no i/o just types
+</pre>
+
+<p>
+<h2><a name="construct">Construction</a></h2>
+<p>
+<table border=1 cellspacing=3 cellpadding=3>
+<tr><td><b>Syntax</b></td><td><b>Description</b></td><td><b>Example</b></td></tr>
+<tr><td>time_period(ptime begin, ptime last)</td>
+        <td>
+	  Create a period as [begin, last).  If last is <= begin then
+          the period will be defined as null.
+        </td>
+	<td>date d(2002,Jan,01);<br>
+            ptime t(d, seconds(10)); //10 sec after midnight<br>
+	    time_period tp(t, hours(3));</td></tr>
+<tr><td>time_period(ptime start, ptime end)</td>
+        <td>
+	  Create a period as [begin, begin+len).  If len is <= zero then
+          the period will be defined as null.
+        </td>
+	<td>date d(2002,Jan,01);<br>
+            ptime t1(d, seconds(10)); //10 sec after midnight<br>
+            ptime t2(d, hours(10)); //10 hours after midnight<br>
+	    time_period tp(t1, t2);</td></tr>
+<tr><td>time_period(time_period rhs)</td>
+        <td>Copy constructor</td>
+	<td>time_period tp1(tp)</td></tr>
+</table>
+
+<p>
+
+<p>
+
+<h2><a name="accessors">Accessors</a></h2>
+
+<p>
+<table border=1 cellspacing=3 cellpadding=3>
+<tr><td><b>Syntax</b></td><td><b>Description</b></td><td><b>Example</b></td></tr>
+<tr><td>ptime <font class="func">begin</font>() const</td>
+        <td>Return first time of period.</td>
+	<td>date d(2002,Jan,01);<br>
+            ptime t1(d, seconds(10)); //10 sec after midnight<br>
+            ptime t2(d, hours(10)); //10 hours after midnight<br>
+	    time_period tp(t1, t2);
+            tp.begin() --> 2002-Jan-01 00:00:10 </td></tr>
+<tr><td>ptime <font class="func">last</font>() const</td>
+        <td>Return last time in the period</td>
+	<td>date d(2002,Jan,01);<br>
+            ptime t1(d, seconds(10)); //10 sec after midnight<br>
+            ptime t2(d, hours(10)); //10 hours after midnight<br>
+	    time_period tp(t1, t2);
+            tp.last() --> 2002-Jan-01 09:59:59.999999999 </td></tr>
+<tr><td>ptime <font class="func">end</font>() const</td>
+        <td>Return one past the last in period</td>
+	<td>date d(2002,Jan,01);<br>
+            ptime t1(d, seconds(10)); //10 sec after midnight<br>
+            ptime t2(d, hours(10)); //10 hours after midnight<br>
+	    time_period tp(t1, t2);
+            tp.last() --> 2002-Jan-01 10:00:00 </td></tr>
+<tr><td>time_duration <font class="func">length</font>() const</td>
+        <td>Return the length of the time period.</td>
+	<td>date d(2002,Jan,01);<br>
+            ptime t1(d); //midnight<br>
+	    time_period tp(t1, hours(1));<br>
+            tp.length() --> 1 hour </td></tr>
+<tr><td>bool <font class="func">is_null</font>() const</td>
+        <td>True if period is not well formed.  eg: start less than end </td>
+	<td></td></tr>
+<tr><td>bool <font class="func">contains</font>(ptime) const</td>
+        <td>True if ptime is within the period</td>
+	<td>date d(2002,Jan,01);<br>
+            ptime t1(d, seconds(10)); //10 sec after midnight<br>
+            ptime t2(d, hours(10)); //10 hours after midnight<br>
+            ptime t3(d, hours(2)); //2 hours after midnight<br>
+	    time_period tp(t1, t2);
+            tp.contains(t3) --> true </td></tr>
+<tr><td>bool <font class="func">contains</font>(time_period) const</td>
+        <td>True if period is within the period</td>
+	<td>time_period tp1(ptime(d,hours(1)), ptime(d,hours(12)));<br>
+	    time_period tp2(ptime(d,hours(2)), ptime(d,hours(4)));<br>
+            tp1.contains(tp2) --> true<br>
+            tp2.contains(tp1) --> false</td></tr>
+<tr><td>bool <font class="func">intersects</font>(time_period) const</td>
+        <td>True if periods overlap</td>
+	<td>time_period tp1(ptime(d,hours(1)), ptime(d,hours(12)));<br>
+	    time_period tp2(ptime(d,hours(2)), ptime(d,hours(4)));<br>
+            tp2.intersects(tp1) --> true</td></tr>
+<tr><td>time_period <font class="func">intersection</font>(time_period) const</td>
+        <td>Calculate the intersection of 2 periods.  Null if no intersection.</td>
+	<td></td></tr>
+<tr><td>time_period <font class="func">merge</font>(time_period) const</td>
+        <td>Returns union of two periods. Null if no intersection.</td>
+	<td></td></tr>
+<tr><td>time_period <font class="func">shift</font>(date_duration)</td>
+        <td>Add duration to both start and end.</td>
+	<td></td></tr>
+
+</table>
+<p>
+<h2><a name="conversiontostring">Conversion To String</a></h2>
+
+<p>
+<table border=1 cellspacing=3 cellpadding=3>
+<tr><td><b>Syntax</b></td><td><b>Description</b></td><td><b>Example</b></td></tr>
+<tr><td>std::string <font class="func">to_simple_string</font>(time_period dp)</td>
+        <td>To [YYYY-mmm-DD hh:mm:ss.fffffffff/YYYY-mmm-DD hh:mm:ss.fffffffff] string where mmm is 3 char month name.</td>
+        <td>[2002-Jan-01 01:25:10.000000001/2002-Jan-31 01:25:10.123456789]</td></tr>
+
+</table>
+<p>
+
+
+<h2><a name="operators">Operators</a></h2>
+
+
+<p>
+<table border=1 cellspacing=3 cellpadding=3>
+<tr><td><b>Syntax</b></td><td><b>Description</b></td><td><b>Example</b></td></tr>
+<tr><td>operator&lt;&lt;</td>
+        <td>Output streaming operator for time duration.  Uses facet to output
+         [date time_of_day/date time_of_day].  The default is format is
+         [YYYY-mmm-DD hh:mm:ss.fffffffff/YYYY-mmm-DD hh:mm:ss.fffffffff] string where 
+          mmm is 3 char month name.
+        </td>
+	<td>[2002-Jan-01 01:25:10.000000001/2002-Jan-31 01:25:10.123456789]</td></tr>
+<tr><td>operator==, operator!=
+        <td>Equality operators. Periods are equal if 
+            p1.begin == p2.begin &amp;&amp; p1.last == p2.last</td>
+	<td>if (tp1 == tp2) {...</td></tr>
+<tr><td>operator&lt;</td>
+        <td>Ordering with no overlap.  True if tp1.end() less than tp2.begin()</td>
+	<td>if (tp1 &lt; tp2) {...</td></tr>
+<tr><td>operator&gt;</td>
+        <td>Ordering with no overlap. True if tp1.begin() greater than tp2.end()</td>
+	<td>if (tp1 &gt; tp2) {... etc</td></tr>
+<tr><td>operator&lt;=, operator&gt;=</td>
+        <td>Defined in terms of the other operators.</td>
+	<td> </tr>
+</table>
+
+<p>
+
+
+<hr>
+<address><small>
+<!-- hhmts start -->
+Last modified: Sat Nov  2 16:01:32 MST 2002
+<!-- hhmts end -->
+ by <a href="mailto:jeff&#64;crystalclearsoftware.com">Jeff Garland</a> &copy; 2000-2002
+</small></address>
+</body>
+</html>
+

@@ -1,0 +1,15 @@
+
+project boost/regex
+    : source-location ../src
+    ;
+SOURCES = c_regex_traits c_regex_traits_common cpp_regex_traits
+       cregex fileiter posix_api regex regex_debug
+       regex_synch w32_regex_traits wide_posix_api instances winstances ;
+
+
+lib boost_regex : $(SOURCES).cpp 
+    :         
+        <link>static:<define>BOOST_REGEX_NO_LIB=1
+        <link>static:<define>BOOST_REGEX_STATIC_LINK=1
+	<link>shared:<define>BOOST_RE_BUILD_DLL=1
+    ;

@@ -1,0 +1,105 @@
+# (C) Copyright David Abrahams 2001. Permission to copy, use,
+# modify, sell and distribute this software is granted provided this
+# copyright notice appears in all copies. This software is provided
+# "as is" without express or implied warranty, and with no claim as
+# to its suitability for any purpose.
+
+#
+# Jam tools information for :
+# Compaq Alpha CXX compiler
+#
+
+
+# No static linking as far as I can tell.
+# flags cxx LINKFLAGS <runtime-link>static : -bstatic ;
+flags cxx CFLAGS <debug-symbols>on : -g ;
+flags tru64cxx65 LINKFLAGS <debug-symbols>on : -g ;
+flags tru64cxx65 LINKFLAGS <debug-symbols>off : -s ;
+flags tru64cxx65 LINKFLAGS <target-type>$(SHARED_TYPES) : -shared -expect_unresolved 'Py*' -expect_unresolved '_Py*' ;
+flags tru64cxx65 CFLAGS <optimization>off : -O0 ;
+flags tru64cxx65 CFLAGS <optimization>speed/<inlining>on : -O2 ;
+flags tru64cxx65 CFLAGS <optimization>speed : -O2 ;
+
+# Added for threading support
+flags tru64cxx65 CFLAGS <threading>multi : -pthread ;
+flags tru64cxx65 LINKFLAGS <threading>multi : -pthread ;
+
+flags tru64cxx65 CFLAGS <optimization>space/<inlining>on : <inlining>size ;
+flags tru64cxx65 CFLAGS <optimization>space : -O1 ;
+flags tru64cxx65 CFLAGS <inlining>off : -inline none ;
+flags tru64cxx65 CFLAGS <inlining>full : -inline all ;
+
+flags tru64cxx65 CFLAGS <profiling>on : -pg ;
+flags tru64cxx65 LINKFLAGS <profiling>on : -pg ;
+
+flags tru64cxx65 CFLAGS <cflags> ;
+flags tru64cxx65 C++FLAGS <cxxflags> ;
+flags tru64cxx65 DEFINES <define> ;
+flags tru64cxx65 UNDEFS <undef> ;
+flags tru64cxx65 HDRS <include> ;
+flags tru64cxx65 STDHDRS <sysinclude> ;
+flags tru64cxx65 LINKFLAGS <linkflags> ;
+flags tru64cxx65 ARFLAGS <arflags> ;
+
+if ! $(ARFLAGS)
+{
+    flags tru64cxx65 ARFLAGS : "" ;
+}
+
+#### Link ####
+
+rule Link-action ( target : sources + : target-type )
+{
+   tru64cxx65-Link-action $(target) : $(sources) ;
+}
+
+# for tru64cxx, we repeat all libraries so that dependencies are always resolved
+actions tru64cxx65-Link-action bind NEEDLIBS
+{
+   cxx -ptr "$(<[1]:D)"/cxx_repository -noimplicit_include $(LINKFLAGS) -o "$(<)" -L$(LIBPATH) -L$(STDLIBPATH) "$(>)" "$(NEEDLIBS)" "$(NEEDLIBS)" -l$(FINDLIBS) -lrt -lm
+}
+
+actions tru64cxx65-Link-shared bind NEEDLIBS
+{
+    cxx -ptr "$(<[1]:D)"/cxx_repository -qrtti  -noimplicit_include $(LINKFLAGS) -o "$(<[1])" -L$(LIBPATH) -L$(STDLIBPATH) "$(>)" "$(NEEDLIBS)" "$(NEEDLIBS)" -l$(FINDLIBS) -lm
+}
+
+#### Cc #####
+
+rule Cc-action
+{
+   cxx-Cc-action $(<) : $(>) ;
+}
+
+actions tru64cxx65-Cc-action
+{
+   cc -std1 -msg_display_number -msg-disable 186,450,1115 -c -U$(UNDEFS) -D$(DEFINES) $(CFLAGS) -I"$(HDRS)" -I"$(STDHDRS)" -o "$(<)" "$(>)"
+}
+
+#### C++ ####
+rule C++-action
+{
+   tru64cxx65-C++-action $(<) : $(>) ;
+}
+
+# Note: DON'T disable warning 1133 -- the compiler is buggy and you
+# really can't ignore this one!
+actions tru64cxx65-C++-action
+{
+   cxx -ptr "$(<[1]:D)"/cxx_repository -noimplicit_include -c -std strict_ansi -nopure_cname -msg_display_number -msg_disable 186,450,1115 -U$(UNDEFS) -D$(DEFINES) $(CFLAGS) $(C++FLAGS)  -I"$(HDRS)" -I"$(STDHDRS)" -o "$(<)" "$(>)"
+}
+
+#### Archive ####
+
+rule Archive-action
+{
+  tru64cxx65-Archive-action $(<) : $(>) ;
+}
+
+actions updated together piecemeal tru64cxx65-Archive-action
+{
+  rm -f $(<)
+  ar r$(ARFLAGS) $(<) $(>) "$(<[1]:D)"/cxx_repository/*
+}
+
+

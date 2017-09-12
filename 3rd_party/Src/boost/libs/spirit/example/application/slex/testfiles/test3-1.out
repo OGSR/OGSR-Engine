@@ -1,0 +1,2223 @@
+token #0: &
+token #1: &&
+token #2: =
+token #3: &=
+token #4: \|
+token #5: \|=
+token #6: ^
+token #7: ^=
+token #8: ,
+token #9: :
+token #10: \/
+token #11: \/=
+token #12: \.
+token #13: \.\*
+token #14: \.\.\.
+token #15: ==
+token #16: >
+token #17: >=
+token #18: \{
+token #19: <
+token #20: <=
+token #21: \(
+token #22: \[
+token #23: \-
+token #24: \-=
+token #25: \-\-
+token #26: \%
+token #27: \%=
+token #28: !
+token #29: !=
+token #30: \|\|
+token #31: \+
+token #32: \+=
+token #33: \+\+
+token #34: \->
+token #35: \->\*
+token #36: \?
+token #37: \}
+token #38: \)
+token #39: \]
+token #40: ::
+token #41: ;
+token #42: \<\<
+token #43: \<\<=
+token #44: \>\>
+token #45: \>\>=
+token #46: \*
+token #47: \~
+token #48: \*=
+token #49: asm
+token #50: auto
+token #51: bool
+token #52: false
+token #53: true
+token #54: break
+token #55: case
+token #56: catch
+token #57: char
+token #58: class
+token #59: const
+token #60: const_cast
+token #61: continue
+token #62: default
+token #63: defined
+token #64: delete
+token #65: do
+token #66: double
+token #67: dynamic_cast
+token #68: else
+token #69: enum
+token #70: explicit
+token #71: extern
+token #72: float
+token #73: for
+token #74: friend
+token #75: goto
+token #76: if
+token #77: inline
+token #78: int
+token #79: long
+token #80: mutable
+token #81: namespace
+token #82: new
+token #83: operator
+token #84: private
+token #85: protected
+token #86: public
+token #87: register
+token #88: reinterpret_cast
+token #89: return
+token #90: short
+token #91: signed
+token #92: sizeof
+token #93: static
+token #94: static_cast
+token #95: struct
+token #96: switch
+token #97: template
+token #98: this
+token #99: throw
+token #100: try
+token #101: typedef
+token #102: typeid
+token #103: typename
+token #104: union
+token #105: unsigned
+token #106: using
+token #107: virtual
+token #108: void
+token #109: volatile
+token #110: wchar_t
+token #111: while
+token #112: define
+token #113: ifdef
+token #114: ifndef
+token #115: elif
+token #116: else
+token #117: endif
+token #118: error
+token #119: include
+token #120: line
+token #121: pragma
+token #122: undef
+token #123: [a-zA-Z_][a-zA-Z0-9_]*
+token #124: 0[0-7]*([uU][lL]|[lL][uU])?
+token #125: [1-9][0-9]*([uU][lL]|[lL][uU])?
+token #126: (0x|0X)[0-9a-fA-F]+([uU][lL]|[lL][uU])?
+token #127: ([0-9]+\.[0-9]*|[0-9]*\.[0-9]+)([eE]([\-\+])?[0-9]+)?([fF][lL]|[lL][fF])?
+token #128: [0-9]+[eE]([\-\+])?[0-9]+([fF][lL]|[lL][fF])?
+token #129: \/\*([^*\n]*|\*+[^*/\n]*|\n)*\*\/
+token #130: \/\/.*
+token #131: '([^\\']|\\.)*'
+token #132: \"([^\\"]|\\.)*\"
+token #133: \\\n
+token #134: [\t\ ]+
+token #135: \12|\xd|\xd\12
+token #136: ##
+token #137: #
+token #138: .
+testing string: //#define BOOST_SPIRIT_DEBUG
+#include <boost/spirit/spirit.hpp>
+#include <lexer.hpp>
+#include <iostream>
+#include <fstream>
+#include <string>
+
+using namespace spirit;
+using namespace std;
+
+ostream& operator<<(ostream& out, wchar_t c)
+{
+    if (isgraph(c))
+	    out << char(c);
+    else
+        out << '.';
+    return out;
+};
+ostream& operator<<(ostream& out, wchar_t const* c)
+{
+    while (*c)
+	    out << *c++;
+    return out;
+};
+
+template <typename LexerT, typename CharT>
+void test_match(LexerT& lexer, const CharT* str)
+{
+    int token;
+    const CharT* end = str;
+    const CharT* prev = str;
+    while (*end)
+        ++end;
+
+    cout << "testing string: " << str << endl;
+    while ((token = lexer.next_token(str, end)) != -1 && str != end)
+    {
+        cout << "matched token #" << token << " :" << string(prev, str) << '\n';
+        prev = str;
+    }
+    if (token == -1)
+    {
+        cout << "lexing failed at: " << str << endl;
+    }
+    else
+    {
+        cout << "matched token #" << token << " :" << string(prev, str) << '\n';
+    }
+
+}
+
+using namespace std;
+
+int main(int argc, char** argv)
+{
+
+    if (argc != 3)
+    {
+        cout << "Usage: <lex file> <lex string>" << endl;
+        return 1;
+    }
+
+    lexer<char> lex;
+    string line;
+    int id = 0;
+    ifstream in(argv[1]);
+    if (!in)
+    {
+        cout << "Could not open file: " << argv[1] << endl;
+        return 1;
+    }
+
+    for (getline(in, line); in.good(); getline(in, line))
+    {
+        if (line.size() > 0)
+        {
+            cout << "token #" << id << ": " << line << '\n';
+            lex.register_regex(line.c_str(), id++);
+        }
+    }
+
+    lex.createdfa();
+
+#ifdef BOOST_SPIRIT_DEBUG
+    lex.dump(cout);
+#endif
+
+    ifstream testfile(argv[2]);
+    if (testfile)
+    {
+        string teststr, line;
+        for (getline(testfile, line); testfile.good(); getline(testfile, line))
+        {
+            teststr += line;
+            teststr += '\n';
+        }
+        test_match(lex, teststr.c_str());
+    }
+    else
+    {
+        test_match(lex, argv[2]);
+    }
+
+    return 0;
+}
+
+
+
+
+
+
+matched token #130 ://#define BOOST_SPIRIT_DEBUG
+matched token #135 :
+
+matched token #137 :#
+matched token #119 :include
+matched token #134 : 
+matched token #19 :<
+matched token #123 :boost
+matched token #10 :/
+matched token #123 :spirit
+matched token #10 :/
+matched token #123 :spirit
+matched token #12 :.
+matched token #123 :hpp
+matched token #16 :>
+matched token #135 :
+
+matched token #137 :#
+matched token #119 :include
+matched token #134 : 
+matched token #19 :<
+matched token #123 :lexer
+matched token #12 :.
+matched token #123 :hpp
+matched token #16 :>
+matched token #135 :
+
+matched token #137 :#
+matched token #119 :include
+matched token #134 : 
+matched token #19 :<
+matched token #123 :iostream
+matched token #16 :>
+matched token #135 :
+
+matched token #137 :#
+matched token #119 :include
+matched token #134 : 
+matched token #19 :<
+matched token #123 :fstream
+matched token #16 :>
+matched token #135 :
+
+matched token #137 :#
+matched token #119 :include
+matched token #134 : 
+matched token #19 :<
+matched token #123 :string
+matched token #16 :>
+matched token #135 :
+
+matched token #135 :
+
+matched token #106 :using
+matched token #134 : 
+matched token #81 :namespace
+matched token #134 : 
+matched token #123 :spirit
+matched token #41 :;
+matched token #135 :
+
+matched token #106 :using
+matched token #134 : 
+matched token #81 :namespace
+matched token #134 : 
+matched token #123 :std
+matched token #41 :;
+matched token #135 :
+
+matched token #135 :
+
+matched token #123 :ostream
+matched token #0 :&
+matched token #134 : 
+matched token #83 :operator
+matched token #42 :<<
+matched token #21 :(
+matched token #123 :ostream
+matched token #0 :&
+matched token #134 : 
+matched token #123 :out
+matched token #8 :,
+matched token #134 : 
+matched token #110 :wchar_t
+matched token #134 : 
+matched token #123 :c
+matched token #38 :)
+matched token #135 :
+
+matched token #18 :{
+matched token #135 :
+
+matched token #134 :    
+matched token #76 :if
+matched token #134 : 
+matched token #21 :(
+matched token #123 :isgraph
+matched token #21 :(
+matched token #123 :c
+matched token #38 :)
+matched token #38 :)
+matched token #135 :
+
+matched token #134 :	    
+matched token #123 :out
+matched token #134 : 
+matched token #42 :<<
+matched token #134 : 
+matched token #57 :char
+matched token #21 :(
+matched token #123 :c
+matched token #38 :)
+matched token #41 :;
+matched token #135 :
+
+matched token #134 :    
+matched token #68 :else
+matched token #135 :
+
+matched token #134 :        
+matched token #123 :out
+matched token #134 : 
+matched token #42 :<<
+matched token #134 : 
+matched token #131 :'.'
+matched token #41 :;
+matched token #135 :
+
+matched token #134 :    
+matched token #89 :return
+matched token #134 : 
+matched token #123 :out
+matched token #41 :;
+matched token #135 :
+
+matched token #37 :}
+matched token #41 :;
+matched token #135 :
+
+matched token #123 :ostream
+matched token #0 :&
+matched token #134 : 
+matched token #83 :operator
+matched token #42 :<<
+matched token #21 :(
+matched token #123 :ostream
+matched token #0 :&
+matched token #134 : 
+matched token #123 :out
+matched token #8 :,
+matched token #134 : 
+matched token #110 :wchar_t
+matched token #134 : 
+matched token #59 :const
+matched token #46 :*
+matched token #134 : 
+matched token #123 :c
+matched token #38 :)
+matched token #135 :
+
+matched token #18 :{
+matched token #135 :
+
+matched token #134 :    
+matched token #111 :while
+matched token #134 : 
+matched token #21 :(
+matched token #46 :*
+matched token #123 :c
+matched token #38 :)
+matched token #135 :
+
+matched token #134 :	    
+matched token #123 :out
+matched token #134 : 
+matched token #42 :<<
+matched token #134 : 
+matched token #46 :*
+matched token #123 :c
+matched token #33 :++
+matched token #41 :;
+matched token #135 :
+
+matched token #134 :    
+matched token #89 :return
+matched token #134 : 
+matched token #123 :out
+matched token #41 :;
+matched token #135 :
+
+matched token #37 :}
+matched token #41 :;
+matched token #135 :
+
+matched token #135 :
+
+matched token #97 :template
+matched token #134 : 
+matched token #19 :<
+matched token #103 :typename
+matched token #134 : 
+matched token #123 :LexerT
+matched token #8 :,
+matched token #134 : 
+matched token #103 :typename
+matched token #134 : 
+matched token #123 :CharT
+matched token #16 :>
+matched token #135 :
+
+matched token #108 :void
+matched token #134 : 
+matched token #123 :test_match
+matched token #21 :(
+matched token #123 :LexerT
+matched token #0 :&
+matched token #134 : 
+matched token #123 :lexer
+matched token #8 :,
+matched token #134 : 
+matched token #59 :const
+matched token #134 : 
+matched token #123 :CharT
+matched token #46 :*
+matched token #134 : 
+matched token #123 :str
+matched token #38 :)
+matched token #135 :
+
+matched token #18 :{
+matched token #135 :
+
+matched token #134 :    
+matched token #78 :int
+matched token #134 : 
+matched token #123 :token
+matched token #41 :;
+matched token #135 :
+
+matched token #134 :    
+matched token #59 :const
+matched token #134 : 
+matched token #123 :CharT
+matched token #46 :*
+matched token #134 : 
+matched token #123 :end
+matched token #134 : 
+matched token #2 :=
+matched token #134 : 
+matched token #123 :str
+matched token #41 :;
+matched token #135 :
+
+matched token #134 :    
+matched token #59 :const
+matched token #134 : 
+matched token #123 :CharT
+matched token #46 :*
+matched token #134 : 
+matched token #123 :prev
+matched token #134 : 
+matched token #2 :=
+matched token #134 : 
+matched token #123 :str
+matched token #41 :;
+matched token #135 :
+
+matched token #134 :    
+matched token #111 :while
+matched token #134 : 
+matched token #21 :(
+matched token #46 :*
+matched token #123 :end
+matched token #38 :)
+matched token #135 :
+
+matched token #134 :        
+matched token #33 :++
+matched token #123 :end
+matched token #41 :;
+matched token #135 :
+
+matched token #135 :
+
+matched token #134 :    
+matched token #123 :cout
+matched token #134 : 
+matched token #42 :<<
+matched token #134 : 
+matched token #132 :"testing string: "
+matched token #134 : 
+matched token #42 :<<
+matched token #134 : 
+matched token #123 :str
+matched token #134 : 
+matched token #42 :<<
+matched token #134 : 
+matched token #123 :endl
+matched token #41 :;
+matched token #135 :
+
+matched token #134 :    
+matched token #111 :while
+matched token #134 : 
+matched token #21 :(
+matched token #21 :(
+matched token #123 :token
+matched token #134 : 
+matched token #2 :=
+matched token #134 : 
+matched token #123 :lexer
+matched token #12 :.
+matched token #123 :next_token
+matched token #21 :(
+matched token #123 :str
+matched token #8 :,
+matched token #134 : 
+matched token #123 :end
+matched token #38 :)
+matched token #38 :)
+matched token #134 : 
+matched token #29 :!=
+matched token #134 : 
+matched token #23 :-
+matched token #125 :1
+matched token #134 : 
+matched token #1 :&&
+matched token #134 : 
+matched token #123 :str
+matched token #134 : 
+matched token #29 :!=
+matched token #134 : 
+matched token #123 :end
+matched token #38 :)
+matched token #135 :
+
+matched token #134 :    
+matched token #18 :{
+matched token #135 :
+
+matched token #134 :        
+matched token #123 :cout
+matched token #134 : 
+matched token #42 :<<
+matched token #134 : 
+matched token #132 :"matched token #"
+matched token #134 : 
+matched token #42 :<<
+matched token #134 : 
+matched token #123 :token
+matched token #134 : 
+matched token #42 :<<
+matched token #134 : 
+matched token #132 :" :"
+matched token #134 : 
+matched token #42 :<<
+matched token #134 : 
+matched token #123 :string
+matched token #21 :(
+matched token #123 :prev
+matched token #8 :,
+matched token #134 : 
+matched token #123 :str
+matched token #38 :)
+matched token #134 : 
+matched token #42 :<<
+matched token #134 : 
+matched token #131 :'\n'
+matched token #41 :;
+matched token #135 :
+
+matched token #134 :        
+matched token #123 :prev
+matched token #134 : 
+matched token #2 :=
+matched token #134 : 
+matched token #123 :str
+matched token #41 :;
+matched token #135 :
+
+matched token #134 :    
+matched token #37 :}
+matched token #135 :
+
+matched token #134 :    
+matched token #76 :if
+matched token #134 : 
+matched token #21 :(
+matched token #123 :token
+matched token #134 : 
+matched token #15 :==
+matched token #134 : 
+matched token #23 :-
+matched token #125 :1
+matched token #38 :)
+matched token #135 :
+
+matched token #134 :    
+matched token #18 :{
+matched token #135 :
+
+matched token #134 :        
+matched token #123 :cout
+matched token #134 : 
+matched token #42 :<<
+matched token #134 : 
+matched token #132 :"lexing failed at: "
+matched token #134 : 
+matched token #42 :<<
+matched token #134 : 
+matched token #123 :str
+matched token #134 : 
+matched token #42 :<<
+matched token #134 : 
+matched token #123 :endl
+matched token #41 :;
+matched token #135 :
+
+matched token #134 :    
+matched token #37 :}
+matched token #135 :
+
+matched token #134 :    
+matched token #68 :else
+matched token #135 :
+
+matched token #134 :    
+matched token #18 :{
+matched token #135 :
+
+matched token #134 :        
+matched token #123 :cout
+matched token #134 : 
+matched token #42 :<<
+matched token #134 : 
+matched token #132 :"matched token #"
+matched token #134 : 
+matched token #42 :<<
+matched token #134 : 
+matched token #123 :token
+matched token #134 : 
+matched token #42 :<<
+matched token #134 : 
+matched token #132 :" :"
+matched token #134 : 
+matched token #42 :<<
+matched token #134 : 
+matched token #123 :string
+matched token #21 :(
+matched token #123 :prev
+matched token #8 :,
+matched token #134 : 
+matched token #123 :str
+matched token #38 :)
+matched token #134 : 
+matched token #42 :<<
+matched token #134 : 
+matched token #131 :'\n'
+matched token #41 :;
+matched token #135 :
+
+matched token #134 :    
+matched token #37 :}
+matched token #135 :
+
+matched token #135 :
+
+matched token #37 :}
+matched token #135 :
+
+matched token #135 :
+
+matched token #106 :using
+matched token #134 : 
+matched token #81 :namespace
+matched token #134 : 
+matched token #123 :std
+matched token #41 :;
+matched token #135 :
+
+matched token #135 :
+
+matched token #78 :int
+matched token #134 : 
+matched token #123 :main
+matched token #21 :(
+matched token #78 :int
+matched token #134 : 
+matched token #123 :argc
+matched token #8 :,
+matched token #134 : 
+matched token #57 :char
+matched token #46 :*
+matched token #46 :*
+matched token #134 : 
+matched token #123 :argv
+matched token #38 :)
+matched token #135 :
+
+matched token #18 :{
+matched token #135 :
+
+matched token #135 :
+
+matched token #134 :    
+matched token #76 :if
+matched token #134 : 
+matched token #21 :(
+matched token #123 :argc
+matched token #134 : 
+matched token #29 :!=
+matched token #134 : 
+matched token #125 :3
+matched token #38 :)
+matched token #135 :
+
+matched token #134 :    
+matched token #18 :{
+matched token #135 :
+
+matched token #134 :        
+matched token #123 :cout
+matched token #134 : 
+matched token #42 :<<
+matched token #134 : 
+matched token #132 :"Usage: <lex file> <lex string>"
+matched token #134 : 
+matched token #42 :<<
+matched token #134 : 
+matched token #123 :endl
+matched token #41 :;
+matched token #135 :
+
+matched token #134 :        
+matched token #89 :return
+matched token #134 : 
+matched token #125 :1
+matched token #41 :;
+matched token #135 :
+
+matched token #134 :    
+matched token #37 :}
+matched token #135 :
+
+matched token #135 :
+
+matched token #134 :    
+matched token #123 :lexer
+matched token #19 :<
+matched token #57 :char
+matched token #16 :>
+matched token #134 : 
+matched token #123 :lex
+matched token #41 :;
+matched token #135 :
+
+matched token #134 :    
+matched token #123 :string
+matched token #134 : 
+matched token #120 :line
+matched token #41 :;
+matched token #135 :
+
+matched token #134 :    
+matched token #78 :int
+matched token #134 : 
+matched token #123 :id
+matched token #134 : 
+matched token #2 :=
+matched token #134 : 
+matched token #124 :0
+matched token #41 :;
+matched token #135 :
+
+matched token #134 :    
+matched token #123 :ifstream
+matched token #134 : 
+matched token #123 :in
+matched token #21 :(
+matched token #123 :argv
+matched token #22 :[
+matched token #125 :1
+matched token #39 :]
+matched token #38 :)
+matched token #41 :;
+matched token #135 :
+
+matched token #134 :    
+matched token #76 :if
+matched token #134 : 
+matched token #21 :(
+matched token #28 :!
+matched token #123 :in
+matched token #38 :)
+matched token #135 :
+
+matched token #134 :    
+matched token #18 :{
+matched token #135 :
+
+matched token #134 :        
+matched token #123 :cout
+matched token #134 : 
+matched token #42 :<<
+matched token #134 : 
+matched token #132 :"Could not open file: "
+matched token #134 : 
+matched token #42 :<<
+matched token #134 : 
+matched token #123 :argv
+matched token #22 :[
+matched token #125 :1
+matched token #39 :]
+matched token #134 : 
+matched token #42 :<<
+matched token #134 : 
+matched token #123 :endl
+matched token #41 :;
+matched token #135 :
+
+matched token #134 :        
+matched token #89 :return
+matched token #134 : 
+matched token #125 :1
+matched token #41 :;
+matched token #135 :
+
+matched token #134 :    
+matched token #37 :}
+matched token #135 :
+
+matched token #135 :
+
+matched token #134 :    
+matched token #73 :for
+matched token #134 : 
+matched token #21 :(
+matched token #123 :getline
+matched token #21 :(
+matched token #123 :in
+matched token #8 :,
+matched token #134 : 
+matched token #120 :line
+matched token #38 :)
+matched token #41 :;
+matched token #134 : 
+matched token #123 :in
+matched token #12 :.
+matched token #123 :good
+matched token #21 :(
+matched token #38 :)
+matched token #41 :;
+matched token #134 : 
+matched token #123 :getline
+matched token #21 :(
+matched token #123 :in
+matched token #8 :,
+matched token #134 : 
+matched token #120 :line
+matched token #38 :)
+matched token #38 :)
+matched token #135 :
+
+matched token #134 :    
+matched token #18 :{
+matched token #135 :
+
+matched token #134 :        
+matched token #76 :if
+matched token #134 : 
+matched token #21 :(
+matched token #120 :line
+matched token #12 :.
+matched token #123 :size
+matched token #21 :(
+matched token #38 :)
+matched token #134 : 
+matched token #16 :>
+matched token #134 : 
+matched token #124 :0
+matched token #38 :)
+matched token #135 :
+
+matched token #134 :        
+matched token #18 :{
+matched token #135 :
+
+matched token #134 :            
+matched token #123 :cout
+matched token #134 : 
+matched token #42 :<<
+matched token #134 : 
+matched token #132 :"token #"
+matched token #134 : 
+matched token #42 :<<
+matched token #134 : 
+matched token #123 :id
+matched token #134 : 
+matched token #42 :<<
+matched token #134 : 
+matched token #132 :": "
+matched token #134 : 
+matched token #42 :<<
+matched token #134 : 
+matched token #120 :line
+matched token #134 : 
+matched token #42 :<<
+matched token #134 : 
+matched token #131 :'\n'
+matched token #41 :;
+matched token #135 :
+
+matched token #134 :            
+matched token #123 :lex
+matched token #12 :.
+matched token #123 :register_regex
+matched token #21 :(
+matched token #120 :line
+matched token #12 :.
+matched token #123 :c_str
+matched token #21 :(
+matched token #38 :)
+matched token #8 :,
+matched token #134 : 
+matched token #123 :id
+matched token #33 :++
+matched token #38 :)
+matched token #41 :;
+matched token #135 :
+
+matched token #134 :        
+matched token #37 :}
+matched token #135 :
+
+matched token #134 :    
+matched token #37 :}
+matched token #135 :
+
+matched token #135 :
+
+matched token #134 :    
+matched token #123 :lex
+matched token #12 :.
+matched token #123 :createdfa
+matched token #21 :(
+matched token #38 :)
+matched token #41 :;
+matched token #135 :
+
+matched token #135 :
+
+matched token #137 :#
+matched token #113 :ifdef
+matched token #134 : 
+matched token #123 :BOOST_SPIRIT_DEBUG
+matched token #135 :
+
+matched token #134 :    
+matched token #123 :lex
+matched token #12 :.
+matched token #123 :dump
+matched token #21 :(
+matched token #123 :cout
+matched token #38 :)
+matched token #41 :;
+matched token #135 :
+
+matched token #137 :#
+matched token #117 :endif
+matched token #135 :
+
+matched token #135 :
+
+matched token #134 :    
+matched token #123 :ifstream
+matched token #134 : 
+matched token #123 :testfile
+matched token #21 :(
+matched token #123 :argv
+matched token #22 :[
+matched token #125 :2
+matched token #39 :]
+matched token #38 :)
+matched token #41 :;
+matched token #135 :
+
+matched token #134 :    
+matched token #76 :if
+matched token #134 : 
+matched token #21 :(
+matched token #123 :testfile
+matched token #38 :)
+matched token #135 :
+
+matched token #134 :    
+matched token #18 :{
+matched token #135 :
+
+matched token #134 :        
+matched token #123 :string
+matched token #134 : 
+matched token #123 :teststr
+matched token #8 :,
+matched token #134 : 
+matched token #120 :line
+matched token #41 :;
+matched token #135 :
+
+matched token #134 :        
+matched token #73 :for
+matched token #134 : 
+matched token #21 :(
+matched token #123 :getline
+matched token #21 :(
+matched token #123 :testfile
+matched token #8 :,
+matched token #134 : 
+matched token #120 :line
+matched token #38 :)
+matched token #41 :;
+matched token #134 : 
+matched token #123 :testfile
+matched token #12 :.
+matched token #123 :good
+matched token #21 :(
+matched token #38 :)
+matched token #41 :;
+matched token #134 : 
+matched token #123 :getline
+matched token #21 :(
+matched token #123 :testfile
+matched token #8 :,
+matched token #134 : 
+matched token #120 :line
+matched token #38 :)
+matched token #38 :)
+matched token #135 :
+
+matched token #134 :        
+matched token #18 :{
+matched token #135 :
+
+matched token #134 :            
+matched token #123 :teststr
+matched token #134 : 
+matched token #32 :+=
+matched token #134 : 
+matched token #120 :line
+matched token #41 :;
+matched token #135 :
+
+matched token #134 :            
+matched token #123 :teststr
+matched token #134 : 
+matched token #32 :+=
+matched token #134 : 
+matched token #131 :'\n'
+matched token #41 :;
+matched token #135 :
+
+matched token #134 :        
+matched token #37 :}
+matched token #135 :
+
+matched token #134 :        
+matched token #123 :test_match
+matched token #21 :(
+matched token #123 :lex
+matched token #8 :,
+matched token #134 : 
+matched token #123 :teststr
+matched token #12 :.
+matched token #123 :c_str
+matched token #21 :(
+matched token #38 :)
+matched token #38 :)
+matched token #41 :;
+matched token #135 :
+
+matched token #134 :    
+matched token #37 :}
+matched token #135 :
+
+matched token #134 :    
+matched token #68 :else
+matched token #135 :
+
+matched token #134 :    
+matched token #18 :{
+matched token #135 :
+
+matched token #134 :        
+matched token #123 :test_match
+matched token #21 :(
+matched token #123 :lex
+matched token #8 :,
+matched token #134 : 
+matched token #123 :argv
+matched token #22 :[
+matched token #125 :2
+matched token #39 :]
+matched token #38 :)
+matched token #41 :;
+matched token #135 :
+
+matched token #134 :    
+matched token #37 :}
+matched token #135 :
+
+matched token #135 :
+
+matched token #134 :    
+matched token #89 :return
+matched token #134 : 
+matched token #124 :0
+matched token #41 :;
+matched token #135 :
+
+matched token #37 :}
+matched token #135 :
+
+matched token #135 :
+
+matched token #135 :
+
+matched token #135 :
+
+matched token #135 :
+
+matched token #135 :
+
+testing string: //#define BOOST_SPIRIT_DEBUG
+#include <boost/spirit/spirit.hpp>
+#include <lexer.hpp>
+#include <iostream>
+#include <fstream>
+#include <string>
+
+using namespace spirit;
+using namespace std;
+
+ostream& operator<<(ostream& out, wchar_t c)
+{
+    if (isgraph(c))
+	    out << char(c);
+    else
+        out << '.';
+    return out;
+};
+ostream& operator<<(ostream& out, wchar_t const* c)
+{
+    while (*c)
+	    out << *c++;
+    return out;
+};
+
+template <typename LexerT, typename CharT>
+void test_match(LexerT& lexer, const CharT* str)
+{
+    int token;
+    const CharT* end = str;
+    const CharT* prev = str;
+    while (*end)
+        ++end;
+
+    cout << "testing string: " << str << endl;
+    while ((token = lexer.next_token(str, end)) != -1 && str != end)
+    {
+        cout << "matched token #" << token << " :" << string(prev, str) << '\n';
+        prev = str;
+    }
+    if (token == -1)
+    {
+        cout << "lexing failed at: " << str << endl;
+    }
+    else
+    {
+        cout << "matched token #" << token << " :" << string(prev, str) << '\n';
+    }
+
+}
+
+using namespace std;
+
+int main(int argc, char** argv)
+{
+
+    if (argc != 3)
+    {
+        cout << "Usage: <lex file> <lex string>" << endl;
+        return 1;
+    }
+
+    lexer<char> lex;
+    string line;
+    int id = 0;
+    ifstream in(argv[1]);
+    if (!in)
+    {
+        cout << "Could not open file: " << argv[1] << endl;
+        return 1;
+    }
+
+    for (getline(in, line); in.good(); getline(in, line))
+    {
+        if (line.size() > 0)
+        {
+            cout << "token #" << id << ": " << line << '\n';
+            lex.register_regex(line.c_str(), id++);
+        }
+    }
+
+    lex.createdfa();
+
+#ifdef BOOST_SPIRIT_DEBUG
+    lex.dump(cout);
+#endif
+
+    ifstream testfile(argv[2]);
+    if (testfile)
+    {
+        string teststr, line;
+        for (getline(testfile, line); testfile.good(); getline(testfile, line))
+        {
+            teststr += line;
+            teststr += '\n';
+        }
+        test_match(lex, teststr.c_str());
+    }
+    else
+    {
+        test_match(lex, argv[2]);
+    }
+
+    return 0;
+}
+
+
+
+
+
+
+matched token #130 ://#define BOOST_SPIRIT_DEBUG
+matched token #135 :
+
+matched token #137 :#
+matched token #119 :include
+matched token #134 : 
+matched token #19 :<
+matched token #123 :boost
+matched token #10 :/
+matched token #123 :spirit
+matched token #10 :/
+matched token #123 :spirit
+matched token #12 :.
+matched token #123 :hpp
+matched token #16 :>
+matched token #135 :
+
+matched token #137 :#
+matched token #119 :include
+matched token #134 : 
+matched token #19 :<
+matched token #123 :lexer
+matched token #12 :.
+matched token #123 :hpp
+matched token #16 :>
+matched token #135 :
+
+matched token #137 :#
+matched token #119 :include
+matched token #134 : 
+matched token #19 :<
+matched token #123 :iostream
+matched token #16 :>
+matched token #135 :
+
+matched token #137 :#
+matched token #119 :include
+matched token #134 : 
+matched token #19 :<
+matched token #123 :fstream
+matched token #16 :>
+matched token #135 :
+
+matched token #137 :#
+matched token #119 :include
+matched token #134 : 
+matched token #19 :<
+matched token #123 :string
+matched token #16 :>
+matched token #135 :
+
+matched token #135 :
+
+matched token #106 :using
+matched token #134 : 
+matched token #81 :namespace
+matched token #134 : 
+matched token #123 :spirit
+matched token #41 :;
+matched token #135 :
+
+matched token #106 :using
+matched token #134 : 
+matched token #81 :namespace
+matched token #134 : 
+matched token #123 :std
+matched token #41 :;
+matched token #135 :
+
+matched token #135 :
+
+matched token #123 :ostream
+matched token #0 :&
+matched token #134 : 
+matched token #83 :operator
+matched token #42 :<<
+matched token #21 :(
+matched token #123 :ostream
+matched token #0 :&
+matched token #134 : 
+matched token #123 :out
+matched token #8 :,
+matched token #134 : 
+matched token #110 :wchar_t
+matched token #134 : 
+matched token #123 :c
+matched token #38 :)
+matched token #135 :
+
+matched token #18 :{
+matched token #135 :
+
+matched token #134 :    
+matched token #76 :if
+matched token #134 : 
+matched token #21 :(
+matched token #123 :isgraph
+matched token #21 :(
+matched token #123 :c
+matched token #38 :)
+matched token #38 :)
+matched token #135 :
+
+matched token #134 :	    
+matched token #123 :out
+matched token #134 : 
+matched token #42 :<<
+matched token #134 : 
+matched token #57 :char
+matched token #21 :(
+matched token #123 :c
+matched token #38 :)
+matched token #41 :;
+matched token #135 :
+
+matched token #134 :    
+matched token #68 :else
+matched token #135 :
+
+matched token #134 :        
+matched token #123 :out
+matched token #134 : 
+matched token #42 :<<
+matched token #134 : 
+matched token #131 :'.'
+matched token #41 :;
+matched token #135 :
+
+matched token #134 :    
+matched token #89 :return
+matched token #134 : 
+matched token #123 :out
+matched token #41 :;
+matched token #135 :
+
+matched token #37 :}
+matched token #41 :;
+matched token #135 :
+
+matched token #123 :ostream
+matched token #0 :&
+matched token #134 : 
+matched token #83 :operator
+matched token #42 :<<
+matched token #21 :(
+matched token #123 :ostream
+matched token #0 :&
+matched token #134 : 
+matched token #123 :out
+matched token #8 :,
+matched token #134 : 
+matched token #110 :wchar_t
+matched token #134 : 
+matched token #59 :const
+matched token #46 :*
+matched token #134 : 
+matched token #123 :c
+matched token #38 :)
+matched token #135 :
+
+matched token #18 :{
+matched token #135 :
+
+matched token #134 :    
+matched token #111 :while
+matched token #134 : 
+matched token #21 :(
+matched token #46 :*
+matched token #123 :c
+matched token #38 :)
+matched token #135 :
+
+matched token #134 :	    
+matched token #123 :out
+matched token #134 : 
+matched token #42 :<<
+matched token #134 : 
+matched token #46 :*
+matched token #123 :c
+matched token #33 :++
+matched token #41 :;
+matched token #135 :
+
+matched token #134 :    
+matched token #89 :return
+matched token #134 : 
+matched token #123 :out
+matched token #41 :;
+matched token #135 :
+
+matched token #37 :}
+matched token #41 :;
+matched token #135 :
+
+matched token #135 :
+
+matched token #97 :template
+matched token #134 : 
+matched token #19 :<
+matched token #103 :typename
+matched token #134 : 
+matched token #123 :LexerT
+matched token #8 :,
+matched token #134 : 
+matched token #103 :typename
+matched token #134 : 
+matched token #123 :CharT
+matched token #16 :>
+matched token #135 :
+
+matched token #108 :void
+matched token #134 : 
+matched token #123 :test_match
+matched token #21 :(
+matched token #123 :LexerT
+matched token #0 :&
+matched token #134 : 
+matched token #123 :lexer
+matched token #8 :,
+matched token #134 : 
+matched token #59 :const
+matched token #134 : 
+matched token #123 :CharT
+matched token #46 :*
+matched token #134 : 
+matched token #123 :str
+matched token #38 :)
+matched token #135 :
+
+matched token #18 :{
+matched token #135 :
+
+matched token #134 :    
+matched token #78 :int
+matched token #134 : 
+matched token #123 :token
+matched token #41 :;
+matched token #135 :
+
+matched token #134 :    
+matched token #59 :const
+matched token #134 : 
+matched token #123 :CharT
+matched token #46 :*
+matched token #134 : 
+matched token #123 :end
+matched token #134 : 
+matched token #2 :=
+matched token #134 : 
+matched token #123 :str
+matched token #41 :;
+matched token #135 :
+
+matched token #134 :    
+matched token #59 :const
+matched token #134 : 
+matched token #123 :CharT
+matched token #46 :*
+matched token #134 : 
+matched token #123 :prev
+matched token #134 : 
+matched token #2 :=
+matched token #134 : 
+matched token #123 :str
+matched token #41 :;
+matched token #135 :
+
+matched token #134 :    
+matched token #111 :while
+matched token #134 : 
+matched token #21 :(
+matched token #46 :*
+matched token #123 :end
+matched token #38 :)
+matched token #135 :
+
+matched token #134 :        
+matched token #33 :++
+matched token #123 :end
+matched token #41 :;
+matched token #135 :
+
+matched token #135 :
+
+matched token #134 :    
+matched token #123 :cout
+matched token #134 : 
+matched token #42 :<<
+matched token #134 : 
+matched token #132 :"testing string: "
+matched token #134 : 
+matched token #42 :<<
+matched token #134 : 
+matched token #123 :str
+matched token #134 : 
+matched token #42 :<<
+matched token #134 : 
+matched token #123 :endl
+matched token #41 :;
+matched token #135 :
+
+matched token #134 :    
+matched token #111 :while
+matched token #134 : 
+matched token #21 :(
+matched token #21 :(
+matched token #123 :token
+matched token #134 : 
+matched token #2 :=
+matched token #134 : 
+matched token #123 :lexer
+matched token #12 :.
+matched token #123 :next_token
+matched token #21 :(
+matched token #123 :str
+matched token #8 :,
+matched token #134 : 
+matched token #123 :end
+matched token #38 :)
+matched token #38 :)
+matched token #134 : 
+matched token #29 :!=
+matched token #134 : 
+matched token #23 :-
+matched token #125 :1
+matched token #134 : 
+matched token #1 :&&
+matched token #134 : 
+matched token #123 :str
+matched token #134 : 
+matched token #29 :!=
+matched token #134 : 
+matched token #123 :end
+matched token #38 :)
+matched token #135 :
+
+matched token #134 :    
+matched token #18 :{
+matched token #135 :
+
+matched token #134 :        
+matched token #123 :cout
+matched token #134 : 
+matched token #42 :<<
+matched token #134 : 
+matched token #132 :"matched token #"
+matched token #134 : 
+matched token #42 :<<
+matched token #134 : 
+matched token #123 :token
+matched token #134 : 
+matched token #42 :<<
+matched token #134 : 
+matched token #132 :" :"
+matched token #134 : 
+matched token #42 :<<
+matched token #134 : 
+matched token #123 :string
+matched token #21 :(
+matched token #123 :prev
+matched token #8 :,
+matched token #134 : 
+matched token #123 :str
+matched token #38 :)
+matched token #134 : 
+matched token #42 :<<
+matched token #134 : 
+matched token #131 :'\n'
+matched token #41 :;
+matched token #135 :
+
+matched token #134 :        
+matched token #123 :prev
+matched token #134 : 
+matched token #2 :=
+matched token #134 : 
+matched token #123 :str
+matched token #41 :;
+matched token #135 :
+
+matched token #134 :    
+matched token #37 :}
+matched token #135 :
+
+matched token #134 :    
+matched token #76 :if
+matched token #134 : 
+matched token #21 :(
+matched token #123 :token
+matched token #134 : 
+matched token #15 :==
+matched token #134 : 
+matched token #23 :-
+matched token #125 :1
+matched token #38 :)
+matched token #135 :
+
+matched token #134 :    
+matched token #18 :{
+matched token #135 :
+
+matched token #134 :        
+matched token #123 :cout
+matched token #134 : 
+matched token #42 :<<
+matched token #134 : 
+matched token #132 :"lexing failed at: "
+matched token #134 : 
+matched token #42 :<<
+matched token #134 : 
+matched token #123 :str
+matched token #134 : 
+matched token #42 :<<
+matched token #134 : 
+matched token #123 :endl
+matched token #41 :;
+matched token #135 :
+
+matched token #134 :    
+matched token #37 :}
+matched token #135 :
+
+matched token #134 :    
+matched token #68 :else
+matched token #135 :
+
+matched token #134 :    
+matched token #18 :{
+matched token #135 :
+
+matched token #134 :        
+matched token #123 :cout
+matched token #134 : 
+matched token #42 :<<
+matched token #134 : 
+matched token #132 :"matched token #"
+matched token #134 : 
+matched token #42 :<<
+matched token #134 : 
+matched token #123 :token
+matched token #134 : 
+matched token #42 :<<
+matched token #134 : 
+matched token #132 :" :"
+matched token #134 : 
+matched token #42 :<<
+matched token #134 : 
+matched token #123 :string
+matched token #21 :(
+matched token #123 :prev
+matched token #8 :,
+matched token #134 : 
+matched token #123 :str
+matched token #38 :)
+matched token #134 : 
+matched token #42 :<<
+matched token #134 : 
+matched token #131 :'\n'
+matched token #41 :;
+matched token #135 :
+
+matched token #134 :    
+matched token #37 :}
+matched token #135 :
+
+matched token #135 :
+
+matched token #37 :}
+matched token #135 :
+
+matched token #135 :
+
+matched token #106 :using
+matched token #134 : 
+matched token #81 :namespace
+matched token #134 : 
+matched token #123 :std
+matched token #41 :;
+matched token #135 :
+
+matched token #135 :
+
+matched token #78 :int
+matched token #134 : 
+matched token #123 :main
+matched token #21 :(
+matched token #78 :int
+matched token #134 : 
+matched token #123 :argc
+matched token #8 :,
+matched token #134 : 
+matched token #57 :char
+matched token #46 :*
+matched token #46 :*
+matched token #134 : 
+matched token #123 :argv
+matched token #38 :)
+matched token #135 :
+
+matched token #18 :{
+matched token #135 :
+
+matched token #135 :
+
+matched token #134 :    
+matched token #76 :if
+matched token #134 : 
+matched token #21 :(
+matched token #123 :argc
+matched token #134 : 
+matched token #29 :!=
+matched token #134 : 
+matched token #125 :3
+matched token #38 :)
+matched token #135 :
+
+matched token #134 :    
+matched token #18 :{
+matched token #135 :
+
+matched token #134 :        
+matched token #123 :cout
+matched token #134 : 
+matched token #42 :<<
+matched token #134 : 
+matched token #132 :"Usage: <lex file> <lex string>"
+matched token #134 : 
+matched token #42 :<<
+matched token #134 : 
+matched token #123 :endl
+matched token #41 :;
+matched token #135 :
+
+matched token #134 :        
+matched token #89 :return
+matched token #134 : 
+matched token #125 :1
+matched token #41 :;
+matched token #135 :
+
+matched token #134 :    
+matched token #37 :}
+matched token #135 :
+
+matched token #135 :
+
+matched token #134 :    
+matched token #123 :lexer
+matched token #19 :<
+matched token #57 :char
+matched token #16 :>
+matched token #134 : 
+matched token #123 :lex
+matched token #41 :;
+matched token #135 :
+
+matched token #134 :    
+matched token #123 :string
+matched token #134 : 
+matched token #120 :line
+matched token #41 :;
+matched token #135 :
+
+matched token #134 :    
+matched token #78 :int
+matched token #134 : 
+matched token #123 :id
+matched token #134 : 
+matched token #2 :=
+matched token #134 : 
+matched token #124 :0
+matched token #41 :;
+matched token #135 :
+
+matched token #134 :    
+matched token #123 :ifstream
+matched token #134 : 
+matched token #123 :in
+matched token #21 :(
+matched token #123 :argv
+matched token #22 :[
+matched token #125 :1
+matched token #39 :]
+matched token #38 :)
+matched token #41 :;
+matched token #135 :
+
+matched token #134 :    
+matched token #76 :if
+matched token #134 : 
+matched token #21 :(
+matched token #28 :!
+matched token #123 :in
+matched token #38 :)
+matched token #135 :
+
+matched token #134 :    
+matched token #18 :{
+matched token #135 :
+
+matched token #134 :        
+matched token #123 :cout
+matched token #134 : 
+matched token #42 :<<
+matched token #134 : 
+matched token #132 :"Could not open file: "
+matched token #134 : 
+matched token #42 :<<
+matched token #134 : 
+matched token #123 :argv
+matched token #22 :[
+matched token #125 :1
+matched token #39 :]
+matched token #134 : 
+matched token #42 :<<
+matched token #134 : 
+matched token #123 :endl
+matched token #41 :;
+matched token #135 :
+
+matched token #134 :        
+matched token #89 :return
+matched token #134 : 
+matched token #125 :1
+matched token #41 :;
+matched token #135 :
+
+matched token #134 :    
+matched token #37 :}
+matched token #135 :
+
+matched token #135 :
+
+matched token #134 :    
+matched token #73 :for
+matched token #134 : 
+matched token #21 :(
+matched token #123 :getline
+matched token #21 :(
+matched token #123 :in
+matched token #8 :,
+matched token #134 : 
+matched token #120 :line
+matched token #38 :)
+matched token #41 :;
+matched token #134 : 
+matched token #123 :in
+matched token #12 :.
+matched token #123 :good
+matched token #21 :(
+matched token #38 :)
+matched token #41 :;
+matched token #134 : 
+matched token #123 :getline
+matched token #21 :(
+matched token #123 :in
+matched token #8 :,
+matched token #134 : 
+matched token #120 :line
+matched token #38 :)
+matched token #38 :)
+matched token #135 :
+
+matched token #134 :    
+matched token #18 :{
+matched token #135 :
+
+matched token #134 :        
+matched token #76 :if
+matched token #134 : 
+matched token #21 :(
+matched token #120 :line
+matched token #12 :.
+matched token #123 :size
+matched token #21 :(
+matched token #38 :)
+matched token #134 : 
+matched token #16 :>
+matched token #134 : 
+matched token #124 :0
+matched token #38 :)
+matched token #135 :
+
+matched token #134 :        
+matched token #18 :{
+matched token #135 :
+
+matched token #134 :            
+matched token #123 :cout
+matched token #134 : 
+matched token #42 :<<
+matched token #134 : 
+matched token #132 :"token #"
+matched token #134 : 
+matched token #42 :<<
+matched token #134 : 
+matched token #123 :id
+matched token #134 : 
+matched token #42 :<<
+matched token #134 : 
+matched token #132 :": "
+matched token #134 : 
+matched token #42 :<<
+matched token #134 : 
+matched token #120 :line
+matched token #134 : 
+matched token #42 :<<
+matched token #134 : 
+matched token #131 :'\n'
+matched token #41 :;
+matched token #135 :
+
+matched token #134 :            
+matched token #123 :lex
+matched token #12 :.
+matched token #123 :register_regex
+matched token #21 :(
+matched token #120 :line
+matched token #12 :.
+matched token #123 :c_str
+matched token #21 :(
+matched token #38 :)
+matched token #8 :,
+matched token #134 : 
+matched token #123 :id
+matched token #33 :++
+matched token #38 :)
+matched token #41 :;
+matched token #135 :
+
+matched token #134 :        
+matched token #37 :}
+matched token #135 :
+
+matched token #134 :    
+matched token #37 :}
+matched token #135 :
+
+matched token #135 :
+
+matched token #134 :    
+matched token #123 :lex
+matched token #12 :.
+matched token #123 :createdfa
+matched token #21 :(
+matched token #38 :)
+matched token #41 :;
+matched token #135 :
+
+matched token #135 :
+
+matched token #137 :#
+matched token #113 :ifdef
+matched token #134 : 
+matched token #123 :BOOST_SPIRIT_DEBUG
+matched token #135 :
+
+matched token #134 :    
+matched token #123 :lex
+matched token #12 :.
+matched token #123 :dump
+matched token #21 :(
+matched token #123 :cout
+matched token #38 :)
+matched token #41 :;
+matched token #135 :
+
+matched token #137 :#
+matched token #117 :endif
+matched token #135 :
+
+matched token #135 :
+
+matched token #134 :    
+matched token #123 :ifstream
+matched token #134 : 
+matched token #123 :testfile
+matched token #21 :(
+matched token #123 :argv
+matched token #22 :[
+matched token #125 :2
+matched token #39 :]
+matched token #38 :)
+matched token #41 :;
+matched token #135 :
+
+matched token #134 :    
+matched token #76 :if
+matched token #134 : 
+matched token #21 :(
+matched token #123 :testfile
+matched token #38 :)
+matched token #135 :
+
+matched token #134 :    
+matched token #18 :{
+matched token #135 :
+
+matched token #134 :        
+matched token #123 :string
+matched token #134 : 
+matched token #123 :teststr
+matched token #8 :,
+matched token #134 : 
+matched token #120 :line
+matched token #41 :;
+matched token #135 :
+
+matched token #134 :        
+matched token #73 :for
+matched token #134 : 
+matched token #21 :(
+matched token #123 :getline
+matched token #21 :(
+matched token #123 :testfile
+matched token #8 :,
+matched token #134 : 
+matched token #120 :line
+matched token #38 :)
+matched token #41 :;
+matched token #134 : 
+matched token #123 :testfile
+matched token #12 :.
+matched token #123 :good
+matched token #21 :(
+matched token #38 :)
+matched token #41 :;
+matched token #134 : 
+matched token #123 :getline
+matched token #21 :(
+matched token #123 :testfile
+matched token #8 :,
+matched token #134 : 
+matched token #120 :line
+matched token #38 :)
+matched token #38 :)
+matched token #135 :
+
+matched token #134 :        
+matched token #18 :{
+matched token #135 :
+
+matched token #134 :            
+matched token #123 :teststr
+matched token #134 : 
+matched token #32 :+=
+matched token #134 : 
+matched token #120 :line
+matched token #41 :;
+matched token #135 :
+
+matched token #134 :            
+matched token #123 :teststr
+matched token #134 : 
+matched token #32 :+=
+matched token #134 : 
+matched token #131 :'\n'
+matched token #41 :;
+matched token #135 :
+
+matched token #134 :        
+matched token #37 :}
+matched token #135 :
+
+matched token #134 :        
+matched token #123 :test_match
+matched token #21 :(
+matched token #123 :lex
+matched token #8 :,
+matched token #134 : 
+matched token #123 :teststr
+matched token #12 :.
+matched token #123 :c_str
+matched token #21 :(
+matched token #38 :)
+matched token #38 :)
+matched token #41 :;
+matched token #135 :
+
+matched token #134 :    
+matched token #37 :}
+matched token #135 :
+
+matched token #134 :    
+matched token #68 :else
+matched token #135 :
+
+matched token #134 :    
+matched token #18 :{
+matched token #135 :
+
+matched token #134 :        
+matched token #123 :test_match
+matched token #21 :(
+matched token #123 :lex
+matched token #8 :,
+matched token #134 : 
+matched token #123 :argv
+matched token #22 :[
+matched token #125 :2
+matched token #39 :]
+matched token #38 :)
+matched token #41 :;
+matched token #135 :
+
+matched token #134 :    
+matched token #37 :}
+matched token #135 :
+
+matched token #135 :
+
+matched token #134 :    
+matched token #89 :return
+matched token #134 : 
+matched token #124 :0
+matched token #41 :;
+matched token #135 :
+
+matched token #37 :}
+matched token #135 :
+
+matched token #135 :
+
+matched token #135 :
+
+matched token #135 :
+
+matched token #135 :
+
+matched token #135 :
+

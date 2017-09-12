@@ -1,0 +1,58 @@
+<!doctype html public "-//ietf//dtd html//en">
+<html><head><title>boost::mpl::contains</title>
+<link rel="stylesheet" href="../mpl_wiki.css">
+</head><body bgcolor="white">
+<h1><a href="../Table_of_Contents.html"><img src="../mpl_logo.jpg" alt="[Home]" border=0 align="right"></a>contains</h1><h3>Synopsis</h3>
+<p>
+<pre>
+template&lt;
+      typename Sequence
+    , typename T
+    &gt;
+struct contains
+{
+    typedef <em>unspecified</em> type;
+};
+</pre>
+<p>
+<h3>Description</h3>
+<p>
+Returns <code>true_</code> if one or more elements in <code>Sequence</code> are identical to <code>T</code>, and <code>false_</code> otherwise. 
+<p>
+<h3>Definition</h3>
+<p>
+<pre>
+#include "<a href="../../../../../boost/mpl/contains.hpp">boost/mpl/contains.hpp</a>"
+</pre>
+<p>
+<h3>Parameters</h3>
+<table border="1">
+<tr><th>&nbsp;Parameter&nbsp;</th><th>&nbsp;Requirement&nbsp;</th><th>&nbsp;Description &nbsp;</th></tr>
+<tr><td><code>Sequence</code></td><td>A model of <a href="../Forward_Sequence.html">Forward Sequence</a></td><td>A sequence to be examined. </td></tr>
+<tr><td><code>T</code></td><td>A type</td><td>The type to search for. </td></tr>
+</table>
+<p>
+<h3>Expression semantics</h3>
+<p>
+<table border="1">
+<tr><th>&nbsp;Expression&nbsp;</th><th>&nbsp;Expression&nbsp;type&nbsp;</th><th>&nbsp;Precondition&nbsp;</th><th>&nbsp;Semantics&nbsp;</th><th>&nbsp;Postcondition&nbsp;</th></tr>
+<tr><td><code>typedef contains&lt;Sequence,T&gt;::type c;</code></td><td>A model of <code>bool</code> <a href="../Integral_Constant.html">Integral Constant</a></td><td></td><td>Equivalent to <code>typedef <a href="../Reference/not.html">not_</a>&lt; is_same&lt; <a href="../Reference/find.html">find</a>&lt;Sequence,T&gt;::type, <a href="../Reference/end.html">end</a>&lt;Sequence&gt;::type &gt; &gt;::type c</code>; </td></tr>
+</table>
+<p>
+<h3>Complexity</h3>
+<p>
+Linear. At most <code>size&lt;Sequence&gt;::value</code> comparisons for identity. 
+<p>
+<h3>Example</h3>
+<p>
+<pre>
+typedef <a href="../Reference/vector.html">vector</a>&lt;char,int,unsigned,long,unsigned long&gt; types;
+typedef contains&lt;types,bool&gt;::type result;
+BOOST_STATIC_ASSERT(!result::value);
+</pre>
+<p>
+<h3>See also</h3>
+<p>
+<a href="../Algorithms.html">Algorithms</a>, <code><a href="../Reference/find.html">find</a></code>, <code><a href="../Reference/find_if.html">find_if</a></code>, <code><a href="../Reference/count.html">count</a></code>, <code><a href="../Reference/count_if.html">count_if</a></code>
+<p><hr>
+<a href="../Table_of_Contents.html">Table of Contents</a><br>Last edited March 10, 2003 5:33 am</body></html>

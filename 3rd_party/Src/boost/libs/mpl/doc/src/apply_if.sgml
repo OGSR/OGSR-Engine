@@ -1,0 +1,130 @@
+<!-- ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||| section -->
+<section id="applyif">
+<title>apply_if</>
+
+<para>
+In run-time &Cxx;, it is guaranteed that when we reach an <literal>if</> statement, only one branch will be executed. Executing the branch for which the result is not required would be unnecessary and inefficient. More importantly, frequently the non-required branch is invalid, and executing it would cause an error. For instance, the following code would be badly broken if both branches of the statement were evaluated:
+</>
+
+<programlisting>
+<![CDATA[
+void fun(giraffe* g)
+{
+    if (g)
+        cout << g->name();
+    else
+        cout << "no giraffe";
+}
+]]>
+</> 
+
+<para>
+In compile-time world, things are different. Which parameters to <literal>if_</> template are instantiated is determined by the form of each template parameter and the corresponding language rules (<citation><xref linkend="ref.ISO98"></>, section 14.7.1), not by the value of the compile-time expression being switched on. That means that if, in attempt to process a particular <literal>if_</> construct, the compiler determines that one of its <quote>branch</> template parameters is ill-formed, it will issue a diagnostics even if the value of compile-time expression would lead to <quote>choosing</> the other, valid parameter type.
+</>
+
+<para>
+To clarify what we just said, here is a broken first attempt at writing a <literal>pointed_type</> metafunction, that when instantiated for a <literal>T</> that is either a plain pointer or a smart pointer, <quote>returns</> the pointed type:
+</>
+
+<programlisting>
+<![CDATA[
+template< typename T >
+struct pointed_type
+{
+    typedef typename mpl::if_<
+          boost::is_pointer<T>
+        , typename boost::remove_pointer<T>::type
+        , typename T::element_type // #1
+        >::type type;
+};
+
+typedef pointed_type< std::auto_ptr<int> >::type int_ptr; // ok
+typedef pointed_type<char*>::type char_ptr; // error in line #1!
+]]>
+</>
+
+<para>
+If we try to compile the above, we will get something like this: 
+</>
+
+<programlisting>
+Error: name followed by "::" must be a class or namespace name
+</>
+
+<para>
+because the expression <literal>typename T::element_type</> is not valid in case of <literal>T == char*</>.
+</>
+
+<para>
+Here's what we need to do to make <literal>pointed_type</> work for plain pointers:
+
+<footnote><para>
+It would be easy to implement <literal>pointed_type</> using partial specialization to distinguish the case where <literal>T</> is a pointer. <literal>if_</> is used here to avoid creating a complicated example.
+</></>
+
+instead of instantiating our two potential results before passing them to <literal>if_</>, we need to write metafunctions that can be used to instantiate the results; then we can use <literal>if_</> to choose a metafunction, and only then should we use that function to get the result.
+</>
+
+<para>
+<literal>boost::remove_pointer</> already is a metafunction. We just need to write an auxiliary function to return the <literal>element_type</> of a pointer type:
+</>
+
+<programlisting>
+<![CDATA[
+namespace aux {
+template< typename T >
+struct element_type
+{
+     typedef typename T::element_type type;
+};
+}
+]]>
+</>
+
+<para>
+Now we can select the metafunction to call based on the result of <literal>boost::is_pointer</>, and then <emphasis>apply</> it to form the result:
+</>
+
+<programlisting>
+<![CDATA[
+template< typename T >
+struct pointed_type
+{
+ private:
+    // pick a metafunction
+    typedef typename mpl::if_<
+          boost::is_pointer<T>
+        , boost::remove_pointer<T>
+        , aux::element_type<T>
+        >::type func_; // #1
+
+ public:
+    // apply the metafunction
+    typedef typename func_::type type;
+};
+]]>
+</>
+
+<para>
+The key knowledge that makes the above viable is that in line #1 the compiler is <emphasis>guaranteed</> not to instantiate <literal>boost::remove_pointer&lt;T&gt;</> and <literal>aux::element_type&lt;T&gt;</> templates, - even although they are passed as actual arguments to the <literal>if_</>. 
+</>
+
+<para>
+The described technique is so common in template metaprograms, that it makes sense to facilitate the selection of the nested <literal>type</> member by introducing a high level equivalent to <literal>if_</> that will do <literal>func_::type</> operation as a part of its invocation.  The MPL provides such a template - it's called <literal>apply_if</>. Using it, we can re-write the above code as simply as:
+</>
+
+<programlisting>
+[<![CDATA[
+template< typename T >
+struct pointed_type
+{
+    typedef typename mpl::apply_if<
+          boost::is_pointer<T>
+        , boost::remove_pointer<T>
+        , aux::element_type<T>
+        >::type type;
+};
+]]>
+</>
+
+</section>

@@ -1,0 +1,91 @@
+.\" <!!---------------------------------------------------------------------->
+.\" <!! Copyright (C) 1999 Dietmar Kuehl, Claas Solutions GmbH >
+.\" <!!>
+.\" <!! Permission to use, copy, modify, distribute and sell this >
+.\" <!! software for any purpose is hereby granted without fee, provided >
+.\" <!! that the above copyright notice appears in all copies and that >
+.\" <!! both that copyright notice and this permission notice appear in >
+.\" <!! supporting documentation. Dietmar Kuehl and Claas Solutions make no >
+.\" <!! representations about the suitability of this software for any >
+.\" <!! purpose. It is provided "as is" without express or implied warranty. >
+.\" <!!---------------------------------------------------------------------->
+.TH doc/s_heap.mfd 3 "12.Juli 1999" "Claas Solutions" "stdcxx"
+.SH NAME
+doc/s_heap.mfd - Template Class \fBsplay_heap<T, Comp>\fP
+
+.SH SYNOPSIS
+
+
+.nf
+#include "boost/s_heap.hpp"
+
+template <typename T, typename Comp = std::less<T> >
+class boost::splay_heap
+{
+public:
+  typedef T             value_type;
+  typedef T const&      const_reference;
+  typedef unsigned long size_type;
+  typedef Comp          compare_type;
+  typedef node*         pointer;
+
+  class const_iterator
+  {
+  public:
+    const_iterator();
+    explicit const_iterator(node* root);
+
+    bool operator== (const_iterator const& it) const;
+    bool operator!= (const_iterator const& it) const;
+
+    const_reference operator* () const;
+    T const*        operator-> () const;
+
+    const_iterator& operator++ ();
+    const_iterator operator++ (int);
+  };
+
+  splay_heap(Comp const& comp = Comp());
+  ~splay_heap();
+
+  bool            empty() const;
+  size_type       size() const;
+  const_reference top() const;
+  pointer         push(const_reference);
+  void            pop();
+  void            remove(pointer);
+
+  template <typename K> void change_top(K const&);
+  template <typename K> void change(pointer, K const&);
+  template <typename K> void decrease(pointer, K const&);
+  template <typename K> void increase(pointer, K const&);
+
+  const_iterator begin() const;
+  const_iterator end() const;
+
+private:
+  splay_heap(splay_heap const&);     // deliberately not implemented
+  void operator=(splay_heap const&); // deliberately not implemented
+};
+.fi 0 
+.SH DESCRIPTION
+The template class \fBsplay_heap\fP uses the techniques of a splay tree to maintain the elements. This means that internally, this heap looks like a normally binary search tree where nodes to the left of the root are smaller and nodes to the right are larger than the root. Splay trees are not balanced but are dynamically adapted when being used: A node accessed is moved to the root. For the use of a priority queue, the maximum element is splayed to the top of the tree. Since this is the element most often accessed, insert operations which would insert the new node at the top are modified for the use in splay heaps: The node is inserted using a normal insertion mechanism for binary trees. The current implementation does the same for removals, that is, the nodes are just removed and only subtrees become splayed. 
+
+My understanding is that there is no theory known tell to what the asymptotic behavior of such structures is. For splay trees, there is an average access of O(log n) but a worst case access of O(n). Since splay heaps do not become rebalanced, I doubt similar results can be proofed for splay heaps. It could be possible to that some randomized approach for remove of nodes can enhance the relative balance: Currently, the maximum element in the left subtree of the removed node is splayed to the top of the subtree before the node is cut. Potentially, it could be better to switch between splaying the maxium and the minimum. 
+
+The current implementation of splay heaps is rather straight forward and I haven't tested variations of the implementation. In particular, to modify or remove an arbitrary node, this node is search in the tree which makes the handling of nodes with identical priorities a little bit more complex than necessary. An obvious implementation variation could be the use of a pointer to the parent to avoid the need to search the node before it can be changed and the remove the special handling of duplicate priorities. However, this would mean that the pointer to the parent is maintained. It is unclear whether this approach would be better. In any case, the performance I measure for splay heaps (on random data) was quite satisfactory: In most cases splay heaps provided the best performance. However, in one case splay heaps also produced the by far worst performance... 
+
+Some literature about splay heaps can be found in \fIPractical Data Structures in C++\fP, B.Flamig, Wiley, one of the few books I have seen which at least starts to use C++ idioms to implement data structures (in most books, the C++ code looks rather like Pascal than C++...). However, the book does not take an STL like approach to algorithms and data structurs. In any case, this implementation of splay heaps looks quite different from the version in the book. Most notably, this implementation of splay heaps does not implement a complete splay heap but is rather restricted to the cases occuring in heap operations. 
+
+For a description of the methods of \fBsplay_heap<T, Comp>\fP see the description of common methods. 
+.SH SEE ALSO
+heap(3), heap-common(3) 
+.SH AUTHOR
+Dietmar Kühl (Claas Solutions)
+.br
+e-mail: dietmar.kuehl@claas-solutions.de
+.br
+http://www.claas-solutions.de/kuehl
+.br
+
+

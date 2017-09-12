@@ -1,0 +1,302 @@
+<html>
+<head>
+<title>Closures</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" href="theme/style.css" type="text/css">
+</head>
+
+<body>
+<table width="100%" border="0" background="theme/bkd2.gif" cellspacing="2">
+  <tr> 
+    <td width="10"> 
+    </td>
+    <td width="85%"> 
+      <font size="6" face="Verdana, Arial, Helvetica, sans-serif"><b>Closures</b></font>
+    </td>
+    <td width="112"><a href="http://spirit.sf.net"><img src="theme/spirit.gif" width="112" height="48" align="right" border="0"></a></td>
+  </tr>
+</table>
+<br>
+<table border="0">
+  <tr>
+    <td width="10"></td>
+    <td width="30"><a href="../index.html"><img src="theme/u_arr.gif" border="0"></a></td>
+    <td width="30"><a href="functional.html"><img src="theme/l_arr.gif" border="0"></a></td>
+    <td width="20"><a href="dynamic_parsers.html"><img src="theme/r_arr.gif" border="0"></a></td>
+   </tr>
+</table>
+<h2>Overview</h2>
+<p>We've seen how we can get data from our parsers using the ever so useful <a href="predefined_actions.html">assign 
+  action</a>:</p>
+<pre><code><font color="#000000"><span class=special>    </span><span class=keyword>int </span><span class=identifier>i</span><span class=special>;
+</span><span class=identifier>    integer </span><span class=special>= </span><span class=identifier>int_p</span><span class=special>[</span><span class=identifier>assign</span><span class=special>(</span><span class=identifier>i</span><span class=special>)];</span></font></code></pre>
+<p>Nifty! Our rule <tt>integer</tt>, if successful, passes the parsed integer 
+  to the variable <tt>i</tt>. Everytime we need to parse an integer, we can call 
+  our rule <tt>integer</tt> and simply extract the parsed number from the variable 
+  <tt>i</tt>. There's something you should be aware of though. In the viewpoint 
+  of the grammar, the variable <tt>i</tt> is global. When the grammar gets more 
+  complex, it's hard to keep track of the current state of <tt>i</tt>. And, with 
+  recursive rules, global variables simply won't be adequate. </p>
+<p>Closures are needed if you need your rules (or grammars) to be reentrant. For 
+  example, a rule (or grammar) might be called recursively indirectly or directly 
+  by itself. The calculator is a good example. The expression rule recursively 
+  calls itself indirectly when it invokes the factor rule. </p>
+<p>We need a machanism to attach local variables to our rules (and grammars). 
+  Closures provide an environment, a stack frame, for local variables to reside. 
+  Most importantly, the closure variables are accessible from the EBNF grammar 
+  specification and can be used to pass parser information upstream or downstream 
+  from the topmost rule down to the terminals in a top-down recursive descent. 
+  For one, closures provide a parser with the ability to have <em>inherited</em> 
+  and <em>synthetic attributes</em>, more or less analogous to <em>return values</em> 
+  and <em>function arguments</em>. </p>
+<p>When a rule is given a closure, the closure's local variables are created prior 
+  to entering the parse function and destructed after exiting the parse function. 
+  These local variables are true local variables that exist on the hardware stack.</p>
+<table width="80%" border="0" align="center">
+  <tr> 
+    <td class="note_box"><img src="theme/alert.gif" width="16" height="16"> <strong>Closures</strong> 
+      <strong>and Phoenix</strong><br> <br>
+      Spirit v1.6.0 closure support requires <a href="../phoenix/index.html">Phoenix</a>. 
+      In the future, Spirit will fully support <a href="../../../libs/lambda/index.html">BLL</a>. 
+      Currently, work is underway to merge the features of both libraries.</td>
+  </tr>
+</table>
+<h2>Using Closures</h2>
+<p> <strong>Declaring closures</strong></p>
+<p> The general closure declaration syntax is:</p>
+<pre><code>    <span class=keyword>struct </span><span class=identifier>name</span><span class=special></span> <span class=special>: </span><span class=identifier>spirit</span><span class=special>::</span><span class=identifier>closure</span><span class=special>&lt;</span><span class=identifier>name</span><span class=special>, </span><span class=keyword>type1, type2, type3..., typeN</span><span class=special>&gt;
+    {
+        </span><span class=identifier>member1 m_name1</span><span class=special>;
+        </span><span class=identifier>member2 m_name2</span><span class=special>;
+        </span><span class=identifier>member3 m_name3</span><span class=special>;
+        ...
+        </span><span class=identifier>memberN m_nameN</span><span class=special>;
+    };</span></code></pre>
+<p> <tt>member1</tt>... <tt>memberN</tt> are indirect links to the actual closure 
+  variables. Their indirect types correspond to <code><tt>type1</tt></code>... 
+  <code><tt>typeN</tt></code>. Here's an example that has two closure members:</p>
+<pre><code><span class=keyword>    struct </span><span class=identifier>my_closure </span><span class=special>: </span><span class=identifier>closure</span><span class=special></span><span class=special>&lt;</span><span class=identifier>my_closure</span><span class=special>, </span><span class=keyword>double</span><span class=special>, </span><span class=keyword>int</span><span class=special>&gt;
+    </span><span class=special>{
+        </span><span class=identifier>member1 </span><span class=identifier>x</span><span class=special>;
+        </span><span class=identifier>member2 </span><span class=identifier>y</span><span class=special>;
+    </span><span class=special>};</span></code></pre>
+<p> <tt>member1</tt> and <tt>member2</tt> are indirect links to the actual closure 
+  variables. Their indirect types correspond to double and int, respectively. 
+</p>
+<p><strong>Closure return value (synthetic attribute)</strong></p>
+<p>The closure <tt>member1</tt> is the closure's return value (synthetic attribute 
+  in parsing terminology). This return value, like the one returned by <tt>anychar_p</tt>, 
+  for example, can be used to propagate data up the parser hierarchy or passed 
+  to semantic actions. </p>
+<p><strong>Attaching closures</strong></p>
+<p>Closures can be applied to rules, subrules and grammars. The closure has a 
+  special parser context that can be used with these non terminals. The closure's 
+  context is its means to hook into the rule, subrule or grammar. Given the example 
+  <tt>my_closure</tt> above, we can create a rule with a closure by declaring 
+  it as:</p>
+<pre>
+<code>    <span class=identifier>rule</span><span class=special>&lt;</span><span class=identifier>ScannerT</span><span class=special>, </span><span class=identifier>my_closure</span><span class=special>::</span><span class=identifier>context_t</span><span class=special>&gt; </span><span class=identifier>r</span><span class=special>;</span></code></pre>
+<p>where <tt>ScannerT</tt> is the actual type of the scanner that we wish to use. 
+  Similarly for subrules:</p>
+<pre>
+<code>    <span class=identifier>subrule</span><span class=special>&lt;</span><span class=identifier>ID</span><span class=special>, </span><span class=identifier>my_closure</span><span class=special>::</span><span class=identifier>context_t</span><span class=special>&gt; </span><span class=identifier>sr</span><span class=special>;</span></code></pre>
+<p>And if you wish to attach a grammar:</p>
+<pre>
+<code>    <span class=keyword>struct </span><span class=identifier>my_grammar </span><span class=special>: </span><span class=identifier>grammar</span><span class=special>&lt;</span><span class=identifier>my_grammar</span><span class=special>, </span><span class=identifier>my_closure</span><span class=special>::</span><span class=identifier>context_t</span><span class=special>&gt;
+    </span><span class=special>{
+</span>        <span class=comment>/*...*/
+    </span><span class=special>};
+
+    </span><span class=identifier>my_grammar</span> g;</code></pre>
+<p><strong>Accessing closure members</strong></p>
+<p>Closure members can be accessed from within semantic actions just like you 
+  would struct members: by qualifying the member name with its owner rule, subrule 
+  or grammar. Examples:</p>
+<pre class="identifier"><code>    r<span class="special">.</span>x  <span class="comment">// refer to rule r's closure member x
+    </span>sr<span class="special">.</span>y <span class="comment">// refer to subrule sr's closure member y
+    </span>g<span class="special">.</span>x <span class="comment"> // refer to grammar g's closure member x</span></code></pre>
+<p><strong>Initializing closure members (inherited attributes)</strong></p>
+<p>Closure enabled rules, subrules and grammars by default, default constructs 
+  its members when the host rule, subrule or grammar enters its parse member function. 
+  If this is not desirable, we can pass constructor arguments (inherited attributes 
+  in parsing terminology) to the rule, subrule or grammar. The syntax mimics a 
+  function call. For example, if you wish to construct <tt>my_closure</tt>'s members 
+  to 3.6 and 8, respectively, when we invoke the rule <tt>r</tt>, we write:</p>
+<pre class="identifier"><code>    r<span class="special">(</span><span class="keyword">3.6</span><span class="special">, </span><span class="keyword">8</span><span class="special">) </span><span class="comment">// invoke rule r and set its closure members to 3.6 and 8</span></code></pre>
+<p>The constructor arguments are actually Phoenix lambda expressions, so you can 
+  use arbitrarily complex expressions such as:</p>
+<pre class="identifier"><code>    <span class="comment">// invoke rule r and set its closure members to (g.x / 8) * g.y and 0
+    // where g.x and g.y are the closure members of grammar g in our example
+    // above</span>
+
+    r<span class="special">((</span>g<span class="special">.</span>x<span class="keyword"> </span><span class="special">/</span><span class="keyword"> 8</span><span class="special">) *</span><span class="keyword"> </span>g<span class="special">.</span>y<span class="special">, </span><span class="keyword">0</span><span class="special">)</span></code></pre>
+<p>We can pass less arguments than the actual number of members in the closure. 
+  The members at the right with no corresponding constructor arguments are default 
+  constructed. Example:</p>
+<pre class="identifier"><code>    r<span class="special">(</span><span class="keyword">11.9</span><span class="special">) </span><span class="comment">// invoke rule r and set its closure members to 11.9 and 0</span></code></pre>
+<p>Passing more arguments than there are closure members is an error.</p>
+<h2>An example</h2>
+<p>Consider a rule that parses even palindromes: A parser that can recognize textual 
+  mirror images such as &quot;abcddcba&quot;. </p>
+<table width="80%" border="0" align="center">
+  <tr> 
+    <td class="note_box"><img src="theme/note.gif" width="16" height="16"><b> 
+      Sans closures</b> <br> <br>
+      Without closures, this can be achieved by setting up a stack, pushing the 
+      first parsed character into the stack, then recursively calling itself. 
+      Upon exit, from the recursion, the pushed character from the stack is popped 
+      and used to recognize the next parsed character to match. </td>
+  </tr>
+</table>
+<p>Let's declare our closure. We need only one closure member, a <tt>char</tt> 
+  :</p>
+<pre>
+    <code><span class=keyword>struct </span><span class=identifier>my_closure </span><span class=special>: </span><span class=identifier>spirit</span><span class=special>::</span><span class=identifier>closure</span><span class=special>&lt;</span><span class=identifier>my_closure</span><span class=special>, </span><span class=keyword>char</span><span class=special>&gt;
+    </span><span class=special>{
+        </span><span class=identifier>member1 </span><span class=identifier>ch</span><span class=special>;
+    </span><span class=special>};</span></code></pre>
+<p>Remember rule and grammar contexts? This is the closure's means to hook into 
+  the grammar and rule. The closure has a special parser context that may be used 
+  to enable rule, subrule and grammar closures.</p>
+<pre>
+    <code><span class=identifier>rule</span><span class=special>&lt;</span><span class=identifier>scanner</span><span class=special>&lt;&gt;, </span><span class=identifier>my_closure</span><span class=special>::</span><span class=identifier>context_t</span><span class=special>&gt; </span><span class=identifier>rev</span><span class=special>;</span></code></pre>
+<p> Declares a rule <tt>rev</tt> with our closure.</p>
+<pre>
+    <code><span class=identifier>rev </span><span class=special>= </span><span class=identifier>anychar_p</span><span class=special>[</span><span class=identifier>rev</span><span class=special>.</span><span class=identifier>ch </span><span class=special>= </span><span class=identifier>arg1</span><span class=special>] </span><span class=special>&gt;&gt; </span><span class=special>!</span><span class=identifier>rev </span><span class=special>&gt;&gt; </span><span class=identifier>fch_p</span><span class=special>(</span><span class=identifier>rev</span><span class=special>.</span><span class=identifier>ch</span><span class=special>);</span></code></pre>
+<p> Defines our even palindrome parser. </p>
+<p>1) <tt>anychar_p</tt> parses any character and assigns it to <tt>rev</tt>'s 
+  sole closure member <tt>rev.ch</tt>. Using <a href="../phoenix/index.html">Phoenix</a>, 
+  the result of <tt>anychar_p</tt> is assigned to <tt>rev.ch</tt>. What is <code><span class=identifier><tt>arg1</tt></span></code>? 
+  If at this point, you are not familiar with lambda expressions yet, I suggest 
+  you take a quick peek at: <a href="../phoenix/doc/place_holders.html">Phoenix 
+  Place-holders</a>. Anyway, it is a placeholder for the first argument that the 
+  semantic action will receive:</p>
+<pre>
+<code>    <span class=identifier>anychar_p</span><span class=special>[</span><span class=identifier>rev</span><span class=special>.</span><span class=identifier>ch </span><span class=special>= </span><span class=identifier>arg1</span><span class=special>]</span></code></pre>
+<p>2) Then, <tt>rev</tt> recursively calls itself:</p>
+<pre>
+<code>    <span class=special>&gt;&gt; </span><span class=special>!</span><span class=identifier>rev</span></code></pre>
+<p>Finally, </p>
+<pre>
+<code>    <span class=identifier>fch_p</span><span class=special>(</span><span class=identifier>rev</span><span class=special>.</span><span class=identifier>ch</span><span class=special>)</span></code></pre>
+<p> 3) attempts to recognize the character we just stored in <tt>rev.ch</tt>. 
+  Take note that <tt>fch_p</tt> is very similar to <tt>ch_p</tt> but accepts functors 
+  such as closure member accesses (see <a href="parametric_parsers.html">Parametric 
+  Parsers</a>).</p>
+<table width="80%" border="0" align="center">
+  <tr> 
+    <td class="note_box"><img src="theme/note.gif" width="16" height="16"><b> 
+      Place holders</b> <br> <br>
+      In Boost.Lambda (BLL), <tt>arg1</tt> corresponds to <tt>_1</tt>.</td>
+  </tr>
+</table>
+<h2><img src="theme/lens.gif" width="15" height="16"> Closures in-depth</h2>
+<p><strong>What are Closures?</strong></p>
+<p>The closure as an object that <span class="quotes">&quot;closes&quot;</span> 
+  over the local variables of a function making them visible and accessible outside 
+  the function. What is more interesting is that the closure actually packages 
+  a local context (stack frame where some variables reside) and makes it available 
+  outside the scope in which they actually exist. The information is essentially 
+  <span class="quotes">&quot;captured&quot;</span> by the closure allowing it 
+  to be referred to anywhere and anytime, even prior to the actual creation of 
+  the variables. </p>
+<p>The following diagram depicts the situation where a function <tt>A</tt> (or 
+  rule) exposes its closure and another function <tt>B</tt> references <tt>A</tt>'s 
+  variables through its closure.</p>
+<table width="40%" border="0" align="center">
+  <tr> 
+    <td><img src="theme/closure1.png"></td>
+  </tr>
+  <tr> 
+    <td> <div align="center"><b><font face="Geneva, Arial, Helvetica, san-serif" size="+1" color="#003399">The 
+        closure as an object that <i>&quot;closes&quot;</i> over the local variables 
+        of a function making them visible and accessible outside the function</font></b></div></td>
+  </tr>
+</table>
+<p>Of course, function <tt>A</tt> should be active when <tt>A.x</tt> is referenced. 
+  What this means is that function <tt>B</tt> is reliant on function <tt>A</tt> 
+  (If <tt>B</tt> is a nested function of <tt>A</tt>, this will always be the case). 
+  The free form nature of Spirit rules allows access to a closure variable anytime, 
+  anywhere. Accessing <tt>A.x</tt> is equivalent to referring to the topmost stack 
+  variable <tt>x</tt> of function <tt>A</tt>. If function <tt>A</tt> is not active 
+  when <tt>A.x</tt> is referenced, a runtime exception will be thrown.</p>
+<p><strong>Nested Functions</strong></p>
+<p>To fully understand the importance of closures, it is best to look at a language 
+  such as Pascal which allows nested functions. Since we are dealing with C++, 
+  lets us assume for the moment that C++ allows nested functions. Consider the 
+  following <b><i>pseudo</i></b> C++ code:</p>
+<pre><span class=identifier>    </span><span class=keyword>void </span><span class=identifier>a</span><span class=special>()
+    </span><span class=special>{
+        </span><span class=keyword>int </span><span class=identifier>va</span><span class=special>;
+        </span><span class=keyword>void </span><span class=identifier>b</span><span class=special>()
+        </span><span class=special>{
+            </span><span class=keyword>int </span><span class=identifier>vb</span><span class=special>;
+</span>            <span class=keyword>void </span><span class=identifier>c</span><span class=special>()
+            </span><span class=special>{
+                </span><span class=keyword>int </span><span class=identifier>vc</span><span class=special>;
+            </span><span class=special>}
+
+            </span><span class=identifier>c</span><span class=special>()</span><span class=special>;
+        </span><span class=special>}
+
+        </span><span class=identifier>b</span><span class=special>();
+    </span><span class=special>}</span></pre>
+<p>We have three functions <tt>a</tt>, <tt>b</tt> and <tt>c</tt> where <tt>c</tt> 
+  is nested in <tt>b</tt> and <tt>b</tt> is nested in <tt>a</tt>. We also have 
+  three variables <tt>va</tt>, <tt>vb</tt> and <tt>vc</tt>. The lifetime of each 
+  of these local variables starts when the function where it is declared is entered 
+  and ends when the function exits. The scope of a local variable spans all nested 
+  functions inside the enclosing function where the variable is declared.</p>
+<p>Going downstream from function <tt>a</tt> to function <tt>c</tt>, when function 
+  a is entered, the variable <tt>va</tt> will be created in the stack. When function 
+  <tt>b</tt> is entered (called by <tt>a</tt>), <tt>va</tt> is very well in scope 
+  and is visble in <tt>b</tt>. At which point a fresh variable, <tt>vb</tt>, is 
+  created on the stack. When function <tt>c</tt> is entered, both <tt>va</tt> 
+  and <tt>vb</tt> are visibly in scope, and a fresh local variable <tt>vc</tt> 
+  is created. </p>
+<p>Going upstream, <tt>vc</tt> is not and cannot be visible outside the function 
+  <tt>c</tt>. <tt>vc</tt>'s life has already expired once <tt>c</tt> exits. The 
+  same is true with <tt>vb</tt>; vb is accessible in function <tt>c</tt> but not 
+  in function <tt>a</tt>. </p>
+<strong>Nested Mutually Recursive Rules</strong> 
+<p>Now consider that <tt>a</tt>, <tt>b</tt> and <tt>c</tt> are rules:</p>
+<pre><span class=identifier>    </span><span class=identifier>a </span><span class=special>= </span><span class=identifier>b </span><span class=special>&gt;&gt; </span><span class=special>*((</span><span class=literal>'+' </span><span class=special>&gt;&gt; </span><span class=identifier>b</span><span class=special>) </span><span class=special>| </span><span class=special>(</span><span class=literal>'-' </span><span class=special>&gt;&gt; </span><span class=identifier>b</span><span class=special>));
+    </span><span class=identifier>b </span><span class=special>= </span><span class=identifier>c </span><span class=special>&gt;&gt; </span><span class=special>*((</span><span class=literal>'*' </span><span class=special>&gt;&gt; </span><span class=identifier>c</span><span class=special>) </span><span class=special>| </span><span class=special>(</span><span class=literal>'/' </span><span class=special>&gt;&gt; </span><span class=identifier>c</span><span class=special>));
+    </span><span class=identifier>c </span><span class=special>= </span><span class=identifier>int_p </span><span class=special>| </span><span class=literal>'(' </span><span class=special>&gt;&gt; </span><span class=identifier>a </span><span class=special>&gt;&gt; </span><span class=literal>')' </span><span class=special>| </span><span class=special>(</span><span class=literal>'-' </span><span class=special>&gt;&gt; </span><span class=identifier>c</span><span class=special>) </span><span class=special>| </span><span class=special>(</span><span class=literal>'+' </span><span class=special>&gt;&gt; </span><span class=identifier>c</span><span class=special>);</span></pre>
+<p>We can visualize <tt>a</tt>, <tt>b</tt> and <tt>c</tt> as mutually recursive 
+  functions where <tt>a</tt> calls <tt>b</tt>, <tt>b</tt> calls <tt>c</tt> and 
+  <tt>c</tt> recursively calls <tt>a</tt>. Now, imagine if <tt>a</tt>, <tt>b</tt> 
+  and <tt>c</tt> each has a local variable named <tt>value</tt> that can be referred 
+  to in our grammar by explicit qualification:</p>
+<pre><span class=special>    </span><span class=identifier>a</span><span class=special>.</span><span class=identifier>value </span><span class=comment>// refer to a's value local variable
+    </span><span class=identifier>b</span><span class=special>.</span><span class=identifier>value </span><span class=comment>// refer to b's value local variable
+    </span><span class=identifier>c</span><span class=special>.</span><span class=identifier>value </span><span class=comment>// refer to c's value local variable</span>
+</pre>
+<p>Like above, when <tt>a</tt> is entered, a local variable <tt>value</tt> is 
+  created on the stack. This variable can be referred to by both <tt>b</tt> and 
+  <tt>c</tt>. Again, when <tt>b</tt> is called by <tt>a</tt>, <tt>b</tt> creates 
+  a local variable <tt>value</tt>. This variable is accessible by <tt>c</tt> but 
+  not by <tt>a</tt>. </p>
+<p>Here now is where the analogy with nested functions end: when <tt>c</tt> is 
+  called, a fresh variable <tt>value</tt> is created which, as usual, lasts the 
+  whole lifetime of <tt>c</tt>. Pay close attention however that <tt>c</tt> may 
+  call <tt>a</tt> recursively. When this happens, <tt>a</tt> may now refer to 
+  the local variable of <tt>c</tt><code><span class=special>.</span></code></p>
+<table border="0">
+  <tr> 
+    <td width="10"></td>
+    <td width="30"><a href="../index.html"><img src="theme/u_arr.gif" border="0"></a></td>
+    <td width="30"><a href="functional.html"><img src="theme/l_arr.gif" border="0"></a></td>
+    <td width="20"><a href="dynamic_parsers.html"><img src="theme/r_arr.gif" border="0"></a></td>
+  </tr>
+</table>
+<br>
+<hr size="1">
+<p class="copyright">Copyright &copy; 1998-2003 Joel de Guzman<br>
+  <br>
+  <font size="2">Permission to copy, use, modify, sell and distribute this document 
+  is granted provided this copyright notice appears in all copies. This document 
+  is provided &quot;as is&quot; without express or implied warranty, and with 
+  no claim as to its suitability for any purpose. </font> </p>
+</body>
+</html>

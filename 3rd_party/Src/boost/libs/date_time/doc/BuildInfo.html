@@ -1,0 +1,111 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html><head><meta http-equiv="Content-Type" content="text/html;charset=iso-8859-1">
+<title>Boost Date-Time Build-Compiler Information</title>
+<link href="doxygen.css" rel="stylesheet" type="text/css">
+</head>
+
+<body>
+<a href="../../../index.htm">
+<img align="left" src="../../../c++boost.gif" alt="C++ Boost">
+</a>  
+<h1>Date-Time Build-Compiler Information</h1>
+<p>&nbsp;</p>
+<hr>
+<a href="index.html">Overall Index</a> --
+<a href="gregorian.html">Gregorian Index</a> --
+<a href="posix_time.html">Posix Time Index</a>
+<p>
+<a href="#overview">Overview</a>  -- 
+<a href="#options">Compilation Options</a> -- 
+<a href="#portability">Compiler/Portability Notes</a> -- 
+<a href="#directory">Directory Structure</a>  -- 
+<a href="#required">Required Boost Libraries</a> 
+<p>
+<H2><a name="overview">Overview</a></H2>
+<p>
+The library has several functions that require the creation of a library file.
+The Jamfile in the build directory will produce a library 
+(<font class="bold">libboost_date_time</font>) that contains these functions.
+<p>
+<H2><a name="options">Compilation Options</a></H2>
+<p>
+By default the posix_time system uses a 64 bit integer and a 32 bit
+integer internally to provide nano-second level resolutions.  As
+an alternative, a single 64 bit integer can be used to provide a
+microsecond level resolution.  This alternative implementation 
+may provide better performance and more compact memory usage
+for many applications that do not require nano-second resolutions.
+<p>
+The variable <b>BOOST_DATE_TIME_POSIX_TIME_STD_CONFIG</b>, as defined in 
+build/Jamfile, selects between these options.  To select the 64 bit
+integer implementation simply remove this define from the Jamfile.
+<p>
+<H2><a name="portability">Compiler/Portability Notes</a></H2>
+<p>
+The Boost Date-Time library has been built and tested with many compilers. 
+However, some compilers and standard libraries have issues.  While some
+of these issues can be worked around, others are difficult to work 
+around. The following compilers fully support all aspects of the library:
+<ul>
+  <li>GCC 3.0.3 on Linux
+  <li>GCC 3.1 (cygwin) 
+  <li>MSVC 7           
+</ul>
+<p>
+In particular, a lack of support for standard locales limits the ability 
+of the library to support iostream based input output.  For these
+compilers a set of more limited string based input-output is provided.
+
+The compilers/stadard libraries with this limitation include:
+<p>
+<ul>
+ <li>GCC 2.9x on Linux
+ <li>Borland 5.1.1 and 5.6
+ <li>MSVC 6 SP5
+</ul>
+
+Other compilers such as Comeau and Metroworks have been tested 
+sucessfully with earlier versions of the library. 
+
+<p>
+<H2><a name="directory">Directory Structure</a></H2>
+<p>
+The date_time directory structure has been changed for boost submission.
+<p>
+The directory tree has the following structure:
+<pre>
+  /boost/date_time                    -- common headers and template code
+  /boost/date_time/gregoran           -- gregorian calendar system header files
+  /boost/date_time/posix_time         -- posix time system headers
+  /libs/date_time/build               -- build files and output directory
+  /libs/date_time/test                -- test battery for generic code
+  /libs/date_time/test/gregorian      -- test battery for the gregorian system
+  /libs/date_time/test/posix_time     -- test battery for the posix_time system
+  /libs/date_time/examples/posix_time -- time example programs
+  /libs/date_time/examples/gregorian  -- nifty example programs
+  /libs/date_time/src/gregorian       -- cpp files for libboost_date_time
+  /libs/date_time/src/posix_time      -- empty (one file, but no source code...)
+</pre>
+<p>
+
+<H2><a name="required">Required Boost Libraries</a></H2>
+
+<p>
+The library depends on 
+<ul>
+  <li><a href="../../tokenizer/index.htm">boost.tokenizer</a>, 
+  <li><a href="../../integer/cstdint.htm">boost.integer(cstdint)</a>, 
+  <li><a href="../../utility/operators.htm">boost.operators</a>, and
+  <li><a href="../../conversion/lexical_cast.htm">boost::lexical_cast</a>
+</ul>
+ so at least these libraries need to be installed. 
+
+<hr>
+<address><small>
+<!-- hhmts start -->
+Last modified: Sun Jan 19 16:22:27 MST 2003
+<!-- hhmts end -->
+ by <a href="mailto:jeff&#64;crystalclearsoftware.com">Jeff Garland</a> &copy; 2000-2002
+</small></address>
+</body>
+</html>

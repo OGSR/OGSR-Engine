@@ -1,0 +1,62 @@
+<!doctype html public "-//ietf//dtd html//en">
+<html><head><title>boost::mpl::min_element</title>
+<link rel="stylesheet" href="../mpl_wiki.css">
+</head><body bgcolor="white">
+<h1><a href="../Table_of_Contents.html"><img src="../mpl_logo.jpg" alt="[Home]" border=0 align="right"></a>min_element</h1><h3>Synopsis</h3>
+<p>
+<pre>
+template&lt;
+      typename Sequence
+    , typename Pred = <a href="../Reference/less.html">less</a>&lt;_1,_2&gt;
+    &gt;
+struct min_element
+{
+    typedef <em>unspecified</em> type;
+};
+</pre>
+<p>
+<h3>Description</h3>
+<p>
+Finds the smallest element in the <code>Sequence</code>. 
+<p>
+<h3>Definition</h3>
+<p>
+<pre>
+#include "<a href="../../../../../boost/mpl/min_element.hpp">boost/mpl/min_element.hpp</a>"
+</pre>
+<p>
+<h3>Parameters</h3>
+<table border="1">
+<tr><th>&nbsp;Parameter&nbsp;</th><th>&nbsp;Requirement&nbsp;</th><th>&nbsp;Description &nbsp;</th></tr>
+<tr><td><code>Sequence</code></td><td>A model of <a href="../Forward_Sequence.html">Forward Sequence</a></td><td>A sequence to be searched. </td></tr>
+<tr><td><code>Pred</code></td><td>A model of binary Predicate [Lambda Expression]</td><td>A comparison criteria. </td></tr>
+</table>
+<p>
+<h3>Expression semantics</h3>
+<p>
+<table border="1">
+<tr><th>&nbsp;Expression&nbsp;</th><th>&nbsp;Expression&nbsp;type&nbsp;</th><th>&nbsp;Precondition&nbsp;</th><th>&nbsp;Semantics&nbsp;</th><th>&nbsp;Postcondition&nbsp;</th></tr>
+<tr><td><code>typedef min_element&lt; Sequence,Pred &gt;::type i;</code></td><td>A model of <a href="../Forward_Iterator.html">Forward Iterator</a></td><td></td><td><code>i</code> is the first iterator in <code>[begin&lt;Sequence&gt;::type, end&lt;Sequence&gt;::type)</code> such that for every iterator <code>j</code> in <code>[begin&lt;Sequence&gt;::type, end&lt;Sequence&gt;::type)</code>, <code>apply&lt; lambda&lt;Pred&gt;::type, j::type, i::type &gt;::type::value == false</code>.</td><td></td></tr>
+</table>
+<p>
+<h3>Complexity</h3>
+<p>
+Linear. Zero comparisons if <code>Sequence</code> is empty, otherwise exactly <code>size&lt;Sequence&gt;::value - 1</code> comparisons. 
+<p>
+<h3>Example</h3>
+<p>
+<pre>
+typedef <a href="../Reference/vector.html">vector</a>&lt;bool,char[50],long,double&gt; types;
+typedef min_element&lt;
+      <a href="../Reference/transform_view.html">transform_view</a>&lt; types,sizeof_&lt;_1&gt; &gt;
+    &gt;::type iter;
+<p>
+BOOST_STATIC_ASSERT((<a href="../Reference/distance.html">distance</a>&lt; begin&lt;types&gt;::type,iter &gt;::type::value == 0));
+BOOST_STATIC_ASSERT(sizeof(<a href="../Reference/deref.html">deref</a>&lt;iter&gt;::type) == sizeof(bool));
+</pre>
+<p>
+<h3>See also</h3>
+<p>
+<a href="../Algorithms.html">Algorithms</a>, <code><a href="../Reference/max_element.html">max_element</a></code>, <code><a href="../Reference/upper_bound.html">upper_bound</a></code>, <code><a href="../Reference/lower_bound.html">lower_bound</a></code>
+<p><hr>
+<a href="../Table_of_Contents.html">Table of Contents</a><br>Last edited March 10, 2003 6:05 am</body></html>

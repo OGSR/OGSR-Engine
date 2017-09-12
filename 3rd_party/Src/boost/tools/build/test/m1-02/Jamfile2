@@ -1,0 +1,11 @@
+
+make a
+    : @a.obj @auxillary/b.obj/<rtti>off
+    : yfc-link
+    ;
+
+make a.obj
+    : a.cpp
+    : yfc-compile
+    ;
+   

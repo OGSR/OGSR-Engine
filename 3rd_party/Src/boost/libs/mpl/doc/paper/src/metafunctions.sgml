@@ -1,0 +1,282 @@
+
+<!-- ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||| section -->
+<section id="metafunctions">
+<title>Metafunctions</>
+
+<!-- ||||||||||||||||||||||||||||| subsection -->
+<section id="metafunctions.simple">
+<title>The simple form</>
+
+<para>
+In C++, the basic underlying language construct which allows parameterized compile-time computation is the <firstterm>class template</> (<citation><xref linkend="ref.ISO98"></>, section 14.5.1 [temp.class]). A bare class template is the simplest possible model we could choose for metafunctions: it can take types and/or non-type arguments as actual template parameters, and instantiation <quote>returns</> a new type. For example, the following produces a type derived from its arguments:
+</>
+
+<programlisting>
+<![CDATA[
+template< typename T1, typename T2 >
+struct derive : T1, T2
+{
+};
+]]>
+</>
+
+<para>
+However, this model is far too limiting: it restricts the metafunction result not only to class types, but to instantiations of a given class template, to say nothing of the fact that every metafunction invocation introduces an additional level of template nesting. While that might be acceptable for this particular metafunction, any model which prevented us from <quote>returning</>, say, <literal>int</> is obviously not general enough. To meet this basic requirement, we must rely on a nested type to provide our return value:
+</>
+
+<programlisting>
+<![CDATA[
+template< typename T1, typename T2 >
+struct derive
+{
+    struct type : N1, N2 {};
+};
+
+// silly specialization, but demonstrates "returning" int
+template<>
+struct derive<void,void>
+{
+    typedef int type;
+};
+]]>
+</>
+
+<para>
+Veldhuizen <citation><xref linkend="ref.Vel95a"></> was first to talk about class templates of this form as <quote>compile-time functions</>, and Czarnecki and Eisenecker <citation><xref linkend="ref.CE00"></> have introduced <quote>template metafunction</> as an equivalent term (they also use the simpler term <quote>metafunction</>, as do we). Czarnecki and Eisenecker have also recognized the limitations of the simple metafunction representation and suggested the form that we discuss in <xref linkend="metafunctions.classes">.
+</>
+</section>
+
+<!-- ||||||||||||||||||||||||||||| subsection -->
+<section id="metafunctions.higherorder">
+<title>Higher-order metafunctions</>
+
+<para>
+While syntactically simple, the simple template metafunction form does not always interact optimally with the rest of &Cxx;. In particular, the simple metafunction form makes it unnecessarily awkward and tedious to define and work with higher-order metafunctions (metafunctions that operate on other metafunctions). In order to pass a simple metafunction to another template, we need to use <firstterm>template template parameters</>:
+</>
+
+<programlisting>
+<![CDATA[
+// returns F(T1,F(T2,T3))
+template<
+      template<typename> class F
+    , typename T1
+    , typename T2
+    , typename T3
+    >
+struct apply_twice
+{
+  typedef typename F<
+        T1
+      , typename F<T2,T3>::type
+      >::type type;
+};
+
+// a new metafunction returning a type derived from T1, T2, and T3
+template<
+      typename T1
+    , typename T2
+    , typename T3
+    >
+struct derive3
+    : apply_twice<derive,T1,T2,T3>
+{
+};
+]]>
+</>
+
+<para>
+This looks different, but it seems to work.
+<footnote id="note.higherorder"><para>In fact it's already broken: <literal>apply_twice</> doesn't even fit the metafunction concept since it requires a template (rather than a type) as its first parameter, which breaks the metafunction protocol.</></>
+
+However, things begin to break down noticeably when we want to <quote>return</> a metafunction from our metafunction:
+</>
+
+<programlisting>
+<![CDATA[
+// returns G s.t. G(T1,T2,T3) == F(T1,F(T2,T3))
+template< template<typename> class F >
+struct compose_self
+{
+    template<
+          typename T1
+        , typename T2
+        , typename T3
+        > 
+    struct type
+        : apply_twice<F,T1,T2,T3>
+    {
+    };
+};
+]]>
+</>
+
+<para>
+The first and most obvious problem is that the result of applying <literal>compose_self</> is not itself a type, but a template, so it can't be passed in the usual ways to other metafunctions. A more subtle issue, however, is that the metafunction <quote>returned</> is not exactly what we intended. Although it acts just like <literal>apply_twice</>, it differs in one important respect: its identity. In the C++ type system, <literal>compose_self&lt;F&gt;::template type&lt;T,U,V&gt;</> is not a synonym for <literal>apply_twice&lt;F,T,U,V&gt;</>, and any metaprogram which compared metafunctions would discover that fact.
+</>
+
+<para>
+Because &Cxx; makes a strict distinction between type and class template template parameters, reliance on simple metafunctions creates a <quote>wall</> between metafunctions and metadata, relegating metafunctions to the status of second-class citizens. For example, recalling our introduction to type sequences, there's no way to make a <literal>cons</> list of metafunctions:
+</>
+
+<programlisting>
+<![CDATA[
+typedef cons<derive, cons<derive3, nil> > derive_functions; // error!
+]]>
+</>
+
+<para>
+We might consider redefining our <literal>cons</> cell so we can pass <literal>derive</> as the head element:
+</>
+
+<programlisting>
+<![CDATA[
+template <
+      template< template<typename T, typename U> class F
+    , typename Tail
+    >
+struct cons;
+]]>
+</>
+
+<para>
+However, now we have another problem: &Cxx; templates are polymorphic with respect to their type arguments, but not with respect to template template parameters. The arity (number of parameters) of any template template parameter is strictly enforced, so we <emphasis>still</> can't embed <literal>derive3</> in a <literal>cons</> list. Moreover, polymorphism <emphasis>between</> types and metafunctions is not supported (the compiler expects one or the other), and as we've seen, the syntax and semantics of <quote>returned</> metafunctions is different from that of returned types. Trying to accomplish everything with the simple template metafunction form would seriously limit the applicability of higher-order metafunctions and would have an overall negative effect on the both conceptual and implementation clarity, simplicity and size of the library.
+</>
+</section>
+
+<!-- ||||||||||||||||||||||||||||| subsection -->
+<section id="metafunctions.classes">
+<title>Metafunction classes</>
+
+<para>
+Fortunately, the truism that <quote>there is no problem in software which can't be solved by adding yet another level of indirection</> applies here. To elevate metafunctions to the status of first-class objects, the &MPL; introduces the concept of a <quote>metafunction class</>:
+</>
+
+<programlisting>
+<![CDATA[
+// metafunction class form of derive
+struct derive
+{
+    template< typename N1, typename N2 >
+    struct apply
+    {
+        struct type : N1, N2 {};
+    };
+};
+]]>
+</>
+
+<para>
+This form should look familiar to anyone acquainted with function objects in STL, with the nested <literal>apply</> template taking the same role as the runtime function-call operator. In fact, compile-time metafunction classes have the same relationship to metafunctions that runtime function objects have to functions:
+</>
+
+<programlisting>
+<![CDATA[
+// function form of add
+template< typename T > T add(T x, T y) { return x + y; }
+
+// function object form of add
+struct add
+{
+    template< typename T >
+    T operator()(T x, T y) { return x + y; }
+};
+]]>
+</>
+
+</section>
+
+<!-- ||||||||||||||||||||||||||||| subsection -->
+<section id="metafunctions.onesize">
+<title>One size fits all?</>
+
+<para>
+The metafunction class form solves all the problems with ordinary template metafunction mentioned earlier: since it is a regular class, it can be placed in compile-time metadata sequences and manipulated by other metafunctions using the same protocols as for any other metadata. We thereby avoid the code-duplication needed to provide versions of each library component to operate on ordinary metadata and on metafunctions with each distinct supported arity.
+</>
+
+<para>
+On the other hand, it seems that accepting metafunction classes as <emphasis>the</> representation for compile-time function entities imposes code duplication danger as well: if the library's own primitives, algorithms, etc. are represented as class templates, that means that one either cannot reuse these algorithms in the context of higher-order functions, or she have to duplicate all algorithms in the second form, so, for instance, there would be two versions of <literal>find</>:
+</>
+
+<programlisting>
+<![CDATA[
+// user-friendly form
+template<
+      typename Sequence
+    , typename T
+    >
+struct find
+{
+    typedef /* ... */ type;
+};
+
+// "metafunction class" form
+struct find_func
+{
+    template< typename Sequence, typename T >
+    struct apply
+    {
+        typedef /* ... */ type;
+    };
+};
+]]>
+</>
+
+<para>
+Of course, the third option is to eliminate <quote>user-friendly form</> completely so one would always have to write:
+</>
+
+<programlisting>
+<![CDATA[
+typedef mpl::find::apply<list,long>::type iter;
+// or, if one prefers,
+// typedef mpl::apply< mpl::find,list,long >::type iter;
+]]>
+</>
+
+<para>
+instead of 
+</>
+
+<programlisting>
+<![CDATA[
+typedef mpl::find<list,long>::type iter;
+]]>
+</>
+
+<para>
+That too would hurt usability, considering that the direct invocations of library's algorithms are far more often-used than passing algorithms as arguments to other algorithms/metafunctions. 
+</>
+</section>
+
+<!-- ||||||||||||||||||||||||||||| subsection -->
+<section id="metafunctions.lambda">
+<title>From metafunction to metafunction class</>
+
+<para>
+The &MPL;'s answer to this dilemma is <firstterm>lambda expressions</>. Lambda is the mechanism that enables the library to curry metafunctions and convert them into metafunction classes, so when one wants to pass the <literal>find</> algorithm as an argument to a higher-order metafunction, she just write:
+</>
+
+<programlisting>
+<![CDATA[
+using namespace mpl::placeholder;
+typedef mpl::apply< my_f, mpl::find<_1,_2> >::type result;
+]]>
+</>
+
+<para>
+where <literal>_1</> and <literal>_2</> are placeholders for the first and second arguments to the resulting metafunction class. This preserves the intuitive syntax below for when the user wants to use <literal>find</> directly in her code:
+</>
+
+<programlisting>
+<![CDATA[
+typedef mpl::find<list,long>::type iter;
+]]>
+</>
+
+<para>
+Lambda facility is described in more details in <xref linkend="lambda">.
+</>
+
+</section>
+
+</section>

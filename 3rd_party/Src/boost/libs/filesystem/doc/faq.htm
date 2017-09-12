@@ -1,0 +1,176 @@
+<title>Boost Filesystem FAQ</title>
+<body bgcolor="#FFFFFF">
+
+<h1>
+<img border="0" src="../../../c++boost.gif" align="center" width="277" height="86">Filesystem 
+FAQ</h1>
+<p><b>Why base the generic-path string format on POSIX?</b></p>
+<p>POSIX is the basis for the most familiar path-string formats, including the 
+URL portion of URI's and the native Windows format. It is ubiquitous and 
+familiar.&nbsp; On many systems, it is very easy to implement because it is 
+either the native operating system format (Unix and Windows) or via a 
+operating system supplied 
+POSIX library (z/OS, OS/390, and many more.)</p>
+<p><b>Why not use a full URI (Universal Resource Identifier) based path?</b></p>
+<p>URI's would promise more than the Filesystem Library can actually deliver, 
+since URI's extend far beyond what most operating systems consider a file or a 
+directory.&nbsp; Thus for the primary &quot;portable script-style file system 
+operations&quot; requirement of the Filesystem Library, full URI's appear to be over-specification.</p>
+<p><b>Why isn't <i>path</i> a base class with derived <i>directory_path</i> and
+<i>file_path</i> classes?</b></p>
+<p>Why bother?&nbsp; The behavior of all three classes is essentially identical. 
+Several early versions did require users to identify each path as a file or 
+directory path, and this seemed to increase errors and decrease code 
+readability. There was no apparent upside benefit. </p>
+<p><b>Why do some function names have a &quot;native_&quot; prefix?</b></p>
+<p>To alert users that the results are inherently non-portable. The names are 
+deliberately ugly to discourage use except where really necessary.</p>
+<p><b>Why doesn't path supply operator== and other comparison operators?</b></p>
+<p>There is no way to know if two <i>path</i> objects actually represent the 
+same path.&nbsp; For example, <i>path(&quot;/foo&quot;)</i> and <i>path(&quot;../foo&quot;)</i> may 
+represent the same path, even though they are textually different. If exact 
+textual comparison is desired, <i>
+path::string()'s</i> can be used.</p>
+<p><b>Why not support a  concept of specific kinds of file systems, such as posix_file_system or windows_file_system.</b></p>
+<p>Portability is one of the one or two most important requirements for the 
+library.&nbsp;Gaining some advantage by using features specific to particular 
+operating systems is not a requirement. There doesn't appear to be much need for 
+the ability to manipulate, say, a classic Mac OS path while running on an 
+OpenVMS machine.</p>
+<p>Furthermore, concepts like &quot;posix_file_system&quot; 
+are very slippery. What happens when a NTFS or ISO 9660 file system is mounted 
+in directory on a machine running a POSIX-like operating system, for example?</p>
+<p><b>Why not supply a 'handle' type, and let the file and directory operations 
+traffic in it?</b></p>
+<p>It isn't clear there is any feasible way to meet the &quot;portable script-style 
+file system operations&quot; requirement with such a system. File systems exist where operations are usually performed on 
+  some non-string handle type. The classic Mac OS has been mentioned explicitly as a case where 
+trafficking in paths isn't always natural.&nbsp;&nbsp;&nbsp; </p>
+<p>The case for the &quot;handle&quot; (opaque data type to identify a file) 
+style may be strongest for directory iterator value type.&nbsp; (See Jesse Jones' Jan 28, 
+2002, Boost postings). However, as class path has evolved, it seems sufficient 
+even as the directory iterator value type.</p>
+<p><b>Why aren't directories considered to be files?</b></p>
+<p>Because 
+directories cannot portably and usefully be opened as files using the C++ Standard Library stdio or fstream 
+I/O facilities. An important additional rationale is that separating the concept 
+of directories and files makes exposition and specification clearer. A 
+particular problem is the naming and description of function arguments.</p>
+<div align="center">
+  <center>
+  <table border="1" cellpadding="5" cellspacing="0">
+    <tr>
+      <td colspan="3">
+      <p align="center"><b>Meaningful Names for Arguments</b></td>
+    </tr>
+    <tr>
+      <td><b>Argument Intent</b></td>
+      <td><b>Meaningful name if<br>
+      directories are files</b></td>
+      <td><b>Meaningful name if<br>
+      directories aren't files</b></td>
+    </tr>
+    <tr>
+      <td>A path to either a directory or a non-directory</td>
+      <td align="center"><i>path</i></td>
+      <td align="center"><i>path</i></td>
+    </tr>
+    <tr>
+      <td>A path to a directory, but not to a non-directory</td>
+      <td align="center"><i>directory_path</i></td>
+      <td align="center"><i>directory_path</i></td>
+    </tr>
+    <tr>
+      <td>A path to a non-directory, but not a directory</td>
+      <td align="center"><i>non_directory_path</i></td>
+      <td align="center"><i>file_path</i></td>
+    </tr>
+  </table>
+  </center>
+</div>
+<p>The problem is that when directories are considered files, <i>
+non_directory_path</i> as an argument name, and the corresponding &quot;non-directory 
+path&quot; in documentation, is ugly and lengthy, and so is shortened to just <i>path</i>, 
+causing the code and documentation to be confusing if not downright wrong. The 
+names which result from the &quot;directories aren't files&quot; approach are more 
+acceptable and less likely to be used incorrectly. </p>
+<p><b>Why are the operations.hpp non-member functions so low-level?</b></p>
+<p>To provide a toolkit from which higher-level functionality can be created.</p>
+<p>An 
+extended attempt to add convenience functions on top of, or as a replacement 
+for, the low-level functionality failed because there is no widely acceptable 
+set of simple semantics for most convenience functions considered.&nbsp; 
+Attempts to provide alternate semantics, via either run-time options or 
+compile-time polices, became overly complicated in relation to the value 
+delivered, or became contentious.&nbsp; OTOH, the specific functionality needed for several trial 
+applications was very easy for the user to construct from the lower-level 
+toolkit functions.&nbsp; See <a href="#Failed Attempts">Failed Attempts</a>.</p>
+<p><b>Isn't it inconsistent then to provide a few convenience functions?</b></p>
+<p>Yes, but experience with both this library, POSIX, and Windows indicates 
+the utility of certain convenience functions, and that it is possible to provide 
+simple, yet widely acceptable, semantics for them. For example, remove_all.</p>
+<p><b>Why are library functions so picky about errors?</b></p>
+<p>Safety. The default is to be safe rather than sorry. This is particularly 
+important given the reality that on many computer systems files and directories 
+are <a href="#global">globally shared</a> resources .</p>
+<p><b>Why are errors reported by exception rather than return code or error 
+notification variable?</b></p>
+<p>Safety.&nbsp;Return codes or error notification variables are often ignored 
+by programmers.&nbsp; Exceptions are much harder to ignore, provided desired 
+default behavior (program termination) if not caught, yet allow error recovery 
+if desired.</p>
+<p><b>Why are attributes accessed via named functions rather than property maps?</b></p>
+<p>For a few commonly used attributes (existence, directory or file, emptiness), 
+simple syntax and guaranteed presence outweigh other considerations. Because 
+access to virtually all other attributes is inherently system dependent, 
+property maps are viewed as the best hope for access and modification, but it is 
+better design to provide such functionality in a separate library. (Historical 
+note: even the apparently simple attribute &quot;read-only&quot; turned out to be so 
+system depend as to be disqualified as a &quot;guaranteed presence&quot; operation.)</p>
+<p><b>Why isn't there a set_current_directory function?</b></p>
+<p>Global variables are considered harmful [<a href="design.htm#Wulf-Shaw-73">wulf-shaw-73</a>]. 
+While we can't prevent people from shooting themselves in the foot, we aren't 
+about to hand them a loaded gun pointed right at their big toe.</p>
+<p><b>Why aren't there query functions for compound conditions like existing_directory?</b></p>
+<p>After several attempts, named queries for multi-attribute proved a 
+slippery-slope; where do you stop?</p>
+<p><b>Why aren't <a name="wide-character_names">wide-character names</a> supported? Why not std::wstring or even 
+a templated type?</b></p>
+<p>Wide-character names would provide an illusion of portability where 
+portability does not in fact exist. Behavior would be completely different on 
+operating systems (Windows, for example) that support wide-character names, than 
+on systems which don't (POSIX). Providing functionality that appears to provide 
+portability but in fact delivers only implementation-defined behavior is highly 
+undesirable. Programs would not even be portable between library implementations 
+on the same operating system, let alone portable to different operating systems.</p>
+<p>The C++ standards committee Library Working Group discussed this in some 
+detail both on the committee's library reflector and at the Spring, 2002, <font face="Times New Roman">&nbsp;meeting</font>, and feels that (1) names based on types other than char are 
+extremely non-portable, (2) there are no agreed upon semantics for conversion 
+between wide-character and narrow-character names for file systems which do not support 
+wide-character name, and 
+(3) even the committee members most interested in wide-character names are 
+unsure that they are a good idea in the context of a portable library.</p>
+<p>[October, 2002 - PJ Plauger has suggested a&nbsp; locale based conversion 
+scheme. Others have indicated support for such an experiment.]</p>
+<p><b>Why aren't file and directory name portability errors detected automatically, 
+rather than by separate function calls?</b></p>
+<p>Applications mix use of portable and non-portable names, and the situations 
+where non-portable names constitute errors vary widely.&nbsp; For example, a 
+non-portable name found by a <i>directory_iterator</i> may or may not constitute 
+an application error. In another example, for an application copying selected 
+native directories and files for later use restricted to ISO-6990 filesystem, 
+conditions for error are very different between the source and the target.</p>
+<p>A number (at least six) of designs for automatic name validity error 
+detection were evaluated, including at least four complete implementations.&nbsp; 
+While the details for rejection differed, all automatic name validity checking 
+designs tended to distort the 
+otherwise simple design of the rest of the library.</p>
+<p><b>Why are paths sometimes manipulated by member functions and sometimes by 
+non-member functions?</b></p>
+<p>The design rule is that purely lexical operations are supplied as member 
+functions, while operations performed by the operating system are provided as 
+free functions.</p>
+<hr>
+<p>© Copyright Beman Dawes, 2002</p>
+<p>Revised
+<!--webbot bot="Timestamp" S-Type="EDITED" S-Format="%d %B, %Y" startspan -->28 January, 2003<!--webbot bot="Timestamp" endspan i-checksum="38582" --></p>

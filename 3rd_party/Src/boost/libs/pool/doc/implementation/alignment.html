@@ -1,0 +1,383 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd"> 
+<HTML>
+<HEAD>
+<TITLE>Guaranteeing Alignment</TITLE>
+<LINK HREF="../pool.css" REL="stylesheet" TYPE="text/css">
+</HEAD>
+<BODY>
+
+<IMG SRC="../../../../c++boost.gif" WIDTH=276 HEIGHT=86 ALT="C++ Boost">
+
+<H1 ALIGN=CENTER>Guaranteeing Alignment</H1>
+
+<P>
+<H2>Terminology</H2>
+
+<P>
+Review the <A HREF="../concepts.html">concepts document</A> if you are not already familiar with it.  Remember that <EM>block</EM> is a contiguous section of memory, which is <EM>partitioned</EM> or <EM>segregated</EM> into fixed-size <EM>chunks</EM>.  These <EM>chunks</EM> are what are allocated and deallocated by the user.
+
+<P>
+<H2>Overview</H2>
+
+<P>
+Each <SPAN CLASS="code">Pool</SPAN> has a single free list that can extend over a number of memory blocks.  Thus, <SPAN CLASS="code">Pool</SPAN> also has a linked list of allocated memory blocks.  Each memory block, by default, is allocated using <SPAN CLASS="code">new[]</SPAN>, and all memory blocks are freed on destruction.  It is the use of <SPAN CLASS="code">new[]</SPAN> that allows us to guarantee alignment.
+
+<P>
+<H2>Proof of Concept: Guaranteeing Alignment</H2>
+
+<P>
+Each block of memory is allocated as a POD type (specifically, an array of characters) through <SPAN CLASS="code">operator new[]</SPAN>.  Let <EM>POD_size</EM> be the number of characters allocated.
+
+<P>
+<H3>Predicate 1: Arrays may not have padding</H3>
+
+<P>
+This follows from the following quote:
+
+<P>
+[5.3.3/2] (Expressions::Unary expressions::Sizeof) &quot;... When applied to an array, the result is the total number of bytes in the array.  This implies that the size of an array of <EM>n</EM> elements is <EM>n</EM> times the size of an element.&quot;
+
+<P>
+Therefore, arrays cannot contain padding, though the elements within the arrays may contain padding.
+
+<P>
+<H3>Predicate 2: Any block of memory allocated as an array of characters through <SPAN CLASS="code">operator new[]</SPAN> (hereafter referred to as <EM>the block</EM>) is properly aligned for any object of that size or smaller</H3>
+
+<P>
+This follows from:
+
+<UL>
+<LI>[3.7.3.1/2] (Basic concepts::Storage duration::Dynamic storage duration::Allocation functions) &quot;... The pointer returned shall be suitably aligned so that it can be converted to a pointer of any complete object type and then used to access the object or array in the storage allocated ...&quot;</LI>
+<LI>[5.3.4/10] (Expressions::Unary expressions::New) &quot;... For arrays of <SPAN CLASS="code">char</SPAN> and <SPAN CLASS="code">unsigned char</SPAN>, the difference between the result of the <EM>new-expression</EM> and the address returned by the allocation function shall be an integral multiple of the most stringent alignment requirement (3.9) of any object type whose size is no greater than the size of the array being created.  [<EM>Note:</EM> Because allocation functions are assumed to return pointers to storage that is appropriately aligned for objects of any type, this constraint on array allocation overhead permits the common idiom of allocating character arrays into which objects of other types will later be placed. ]&quot;</LI>
+</UL>
+
+<P>
+<H3>Consider: imaginary object type <EM>Element</EM> of a size which is a multiple of some actual object size; assume sizeof(Element) &gt; POD_size</H3>
+
+<P>
+Note that an object of that size <EM>can</EM> exist.  One object of that size is an array of the &quot;actual&quot; objects.
+
+<P>
+Note that the block is properly aligned for an Element.  This directly follows from Predicate 2.
+
+<P>
+<H3>Corollary 1: The block is properly aligned for an array of Elements</H3>
+
+<P>
+This follows from Predicates 1 and 2, and the following quote:
+
+<P>
+[3.9/9] (Basic concepts::Types) &quot;An <EM>object type</EM> is a (possibly cv-qualified) type that is not a function type, not a reference type, and not a void type.&quot;  (Specifically, array types are object types.)
+
+<P>
+<H3>Corollary 2: For any pointer <EM>p</EM> and integer <EM>i</EM>, if p is properly aligned for the type it points to, then p + i (when well-defined) is properly aligned for that type; in other words, if an array is properly aligned, then each element in that array is properly aligned</H3>
+
+<P>
+There are no quotes from the Standard to directly support this argument, but it fits the common conception of the meaning of &quot;alignment&quot;.
+
+<P>
+Note that the conditions for p + i being well-defined are outlined in [5.7/5].  We do not quote that here, but only make note that it is well-defined if p and p + i both point into or one past the same array.
+
+<P>
+<H3>Let: sizeof(Element) be the least common multiple of sizes of several actual objects (T<SUB>1</SUB>, T<SUB>2</SUB>, T<SUB>3</SUB>, ...)</H3>
+
+<P>
+<H3>Let: <EM>block</EM> be a pointer to the memory block, <EM>pe</EM> be (Element *) block, and <EM>p<SUB>n</SUB></EM> be (T<SUB>n</SUB> *) block</H3>
+
+<P>
+<H3>Corollary 3: For each integer <EM>i</EM>, such that pe + i is well-defined, then for each <EM>n</EM>, there exists some integer <EM>j<SUB>n</SUB></EM> such that p<SUB>n</SUB> + j<SUB>n</SUB> is well-defined and refers to the same memory address as pe + i</H3>
+
+<P>
+This follows naturally, since the memory block is an array of Elements, and for each n, sizeof(Element) % sizeof(T<SUB>n</SUB>) == 0; thus, the boundary of each element in the array of Elements is also a boundary of each element in each array of T<SUB>n</SUB>.
+
+<P>
+<H3>Theorem: For each integer <EM>i</EM>, such that pe + i is well-defined, that address (pe + i) is properly aligned for each type T<SUB>n</SUB></H3>
+
+<P>
+Since pe + i is well-defined, then by Corollary 3, p<SUB>n</SUB> + j<SUB>n</SUB> is well-defined.  It is properly aligned from Predicate 2 and Corollaries 1 and 2.
+
+<P>
+<H2>Use of the Theorem</H2>
+
+<P>
+The proof above covers alignment requirements for cutting chunks out of a block.  The implementation uses actual object sizes of:
+
+<UL>
+<LI>The requested object size (requested_size); this is the size of chunks requested by the user</LI>
+<LI>void * (pointer to void); this is because we interleave our free list through the chunks</LI>
+<LI>size_type; this is because we store the size of the next block within each memory block</LI>
+</UL>
+
+<P>
+Each block also contains a pointer to the next block; but that is stored as a pointer to void and cast when necessary, to simplify alignment requirements to the three types above.
+
+<P>
+Therefore, <SPAN CLASS="code">alloc_size</SPAN> is defined to be the lcm of the sizes of the three types above.
+
+<P>
+<H2>A Look at the Memory Block</H2>
+
+<P>
+Each memory block consists of three main sections.  The first section is the part that chunks are cut out of, and contains the interleaved free list.  The second section is the pointer to the next block, and the third section is the size of the next block.
+
+<P>
+Each of these sections may contain padding as necessary to guarantee alignment for each of the next sections.  The size of the first section is number_of_chunks * lcm(requested_size, sizeof(void *), sizeof(size_type)); the size of the second section is lcm(sizeof(void *), sizeof(size_type); and the size of the third section is sizeof(size_type).
+
+<P>
+Here's an example memory block, where requested_size == sizeof(void *) == sizeof(size_type) == 4:
+
+<TABLE CELLSPACING="0" CELLPADDING="0" BORDER="3" STYLE="clear: both;" ALIGN=CENTER>
+<CAPTION><EM>Memory block containing 4 chunks, showing overlying array structures; FLP = Interleaved Free List Pointer</EM></CAPTION>
+
+<TR><TH>Sections<TH>size_type alignment<TH>void * alignment<TH>requested_size alignment
+
+<TR><TD STYLE="background-color: red; text-align: center;" COLSPAN="4">Memory not belonging to process
+
+<TR><TD STYLE="background-color: gray; text-align: center;" ROWSPAN="4">Chunks section (16 bytes)
+ <TD STYLE="background-color: gray; text-align: center;">(4 bytes)
+ <TD STYLE="background-color: gray; text-align: center;">FLP for Chunk 1 (4 bytes)
+ <TD STYLE="background-color: gray; text-align: center;">Chunk 1 (4 bytes)
+<TR><TD STYLE="background-color: silver; text-align: center;">(4 bytes)
+ <TD STYLE="background-color: silver; text-align: center;">FLP for Chunk 2 (4 bytes)
+ <TD STYLE="background-color: silver; text-align: center;">Chunk 2 (4 bytes)
+<TR><TD STYLE="background-color: gray; text-align: center;">(4 bytes)
+ <TD STYLE="background-color: gray; text-align: center;">FLP for Chunk 3 (4 bytes)
+ <TD STYLE="background-color: gray; text-align: center;">Chunk 3 (4 bytes)
+<TR><TD STYLE="background-color: silver; text-align: center;">(4 bytes)
+ <TD STYLE="background-color: silver; text-align: center;">FLP for Chunk 4 (4 bytes)
+ <TD STYLE="background-color: silver; text-align: center;">Chunk 4 (4 bytes)
+
+<TR><TD STYLE="background-color: silver; text-align: center;">Pointer to next Block (4 bytes)
+ <TD STYLE="background-color: gray; text-align: center;">(4 bytes)
+ <TD STYLE="background-color: gray; text-align: center;">Pointer to next Block (4 bytes)
+
+<TR><TD STYLE="background-color: gray; text-align: center;">Size of next Block (4 bytes)
+ <TD STYLE="background-color: silver; text-align: center;">Size of next Block (4 bytes)
+
+<TR><TD STYLE="background-color: red; text-align: center;" COLSPAN="4">Memory not belonging to process
+</TABLE>
+
+<P>
+To show a visual example of possible padding, here's an example memory block where requested_size == 8 and sizeof(void *) == sizeof(size_type) == 4:
+
+<TABLE CELLSPACING="0" CELLPADDING="0" BORDER="3" STYLE="clear: both;" ALIGN=CENTER>
+<CAPTION><EM>Memory block containing 4 chunks, showing overlying array structures; FLP = Interleaved Free List Pointer</EM></CAPTION>
+
+<TR><TH>Sections<TH>size_type alignment<TH>void * alignment<TH>requested_size alignment
+
+<TR><TD STYLE="background-color: red; text-align: center;" COLSPAN="4">Memory not belonging to process
+
+<TR><TD STYLE="background-color: gray; text-align: center;" ROWSPAN="8">Chunks section (32 bytes)
+ <TD STYLE="background-color: gray; text-align: center;">(4 bytes)
+ <TD STYLE="background-color: gray; text-align: center;">FLP for Chunk 1 (4 bytes)
+ <TD STYLE="background-color: gray; text-align: center;" ROWSPAN="2">Chunk 1 (8 bytes)
+<TR><TD STYLE="background-color: silver; text-align: center;">(4 bytes)
+ <TD STYLE="background-color: silver; text-align: center;">(4 bytes)
+<TR><TD STYLE="background-color: gray; text-align: center;">(4 bytes)
+ <TD STYLE="background-color: gray; text-align: center;">FLP for Chunk 2 (4 bytes)
+ <TD STYLE="background-color: silver; text-align: center;" ROWSPAN="2">Chunk 2 (8 bytes)
+<TR><TD STYLE="background-color: silver; text-align: center;">(4 bytes)
+ <TD STYLE="background-color: silver; text-align: center;">(4 bytes)
+<TR><TD STYLE="background-color: gray; text-align: center;">(4 bytes)
+ <TD STYLE="background-color: gray; text-align: center;">FLP for Chunk 3 (4 bytes)
+ <TD STYLE="background-color: gray; text-align: center;" ROWSPAN="2">Chunk 3 (8 bytes)
+<TR><TD STYLE="background-color: silver; text-align: center;">(4 bytes)
+ <TD STYLE="background-color: silver; text-align: center;">(4 bytes)
+<TR><TD STYLE="background-color: gray; text-align: center;">(4 bytes)
+ <TD STYLE="background-color: gray; text-align: center;">FLP for Chunk 4 (4 bytes)
+ <TD STYLE="background-color: silver; text-align: center;" ROWSPAN="2">Chunk 4 (8 bytes)
+<TR><TD STYLE="background-color: silver; text-align: center;">(4 bytes)
+ <TD STYLE="background-color: silver; text-align: center;">(4 bytes)
+
+<TR><TD STYLE="background-color: silver; text-align: center;">Pointer to next Block (4 bytes)
+ <TD STYLE="background-color: gray; text-align: center;">(4 bytes)
+ <TD STYLE="background-color: gray; text-align: center;">Pointer to next Block (4 bytes)
+
+<TR><TD STYLE="background-color: gray; text-align: center;">Size of next Block (4 bytes)
+ <TD STYLE="background-color: silver; text-align: center;">Size of next Block (4 bytes)
+
+<TR><TD STYLE="background-color: red; text-align: center;" COLSPAN="4">Memory not belonging to process
+</TABLE>
+
+<P>
+Finally, here is a convoluted example where the requested_size is 7, sizeof(void *) == 3, and sizeof(size_type) == 5, showing how the least common multiple guarantees alignment requirements even in the oddest of circumstances:
+
+<TABLE CELLSPACING="0" CELLPADDING="0" BORDER="3" STYLE="clear: both;" ALIGN=CENTER>
+<CAPTION><EM>Memory block containing 2 chunks, showing overlying array structures</EM></CAPTION>
+
+<TR><TH>Sections<TH>size_type alignment<TH>void * alignment<TH>requested_size alignment
+
+<TR><TD STYLE="background-color: red; text-align: center;" COLSPAN="4">Memory not belonging to process
+
+<!-- First Section -->
+
+<TR><TD STYLE="background-color: gray; text-align: center;" ROWSPAN="42">Chunks section (210 bytes)
+ <TD STYLE="background-color: gray; text-align: center;">(5 bytes)
+ <TD STYLE="background-color: gray; text-align: center;" ROWSPAN="3">Interleaved free list pointer for Chunk 1 (15 bytes; 3 used)
+ <TD STYLE="background-color: gray; text-align: center;" ROWSPAN="21">Chunk 1 (105 bytes; 7 used)
+<TR><TD STYLE="background-color: silver; text-align: center;">(5 bytes)
+<TR><TD STYLE="background-color: gray; text-align: center;">(5 bytes)
+<TR><TD STYLE="background-color: silver; text-align: center;">(5 bytes)
+ <TD STYLE="background-color: silver; text-align: center;" ROWSPAN="3">(15 bytes)
+<TR><TD STYLE="background-color: gray; text-align: center;">(5 bytes)
+<TR><TD STYLE="background-color: silver; text-align: center;">(5 bytes)
+<TR><TD STYLE="background-color: gray; text-align: center;">(5 bytes)
+ <TD STYLE="background-color: gray; text-align: center;" ROWSPAN="3">(15 bytes)
+<TR><TD STYLE="background-color: silver; text-align: center;">(5 bytes)
+<TR><TD STYLE="background-color: gray; text-align: center;">(5 bytes)
+<TR><TD STYLE="background-color: silver; text-align: center;">(5 bytes)
+ <TD STYLE="background-color: silver; text-align: center;" ROWSPAN="3">(15 bytes)
+<TR><TD STYLE="background-color: gray; text-align: center;">(5 bytes)
+<TR><TD STYLE="background-color: silver; text-align: center;">(5 bytes)
+<TR><TD STYLE="background-color: gray; text-align: center;">(5 bytes)
+ <TD STYLE="background-color: gray; text-align: center;" ROWSPAN="3">(15 bytes)
+<TR><TD STYLE="background-color: silver; text-align: center;">(5 bytes)
+<TR><TD STYLE="background-color: gray; text-align: center;">(5 bytes)
+<TR><TD STYLE="background-color: silver; text-align: center;">(5 bytes)
+ <TD STYLE="background-color: silver; text-align: center;" ROWSPAN="3">(15 bytes)
+<TR><TD STYLE="background-color: gray; text-align: center;">(5 bytes)
+<TR><TD STYLE="background-color: silver; text-align: center;">(5 bytes)
+<TR><TD STYLE="background-color: gray; text-align: center;">(5 bytes)
+ <TD STYLE="background-color: gray; text-align: center;" ROWSPAN="3">(15 bytes)
+<TR><TD STYLE="background-color: silver; text-align: center;">(5 bytes)
+<TR><TD STYLE="background-color: gray; text-align: center;">(5 bytes)
+<TR><TD STYLE="background-color: silver; text-align: center;">(5 bytes)
+ <TD STYLE="background-color: silver; text-align: center;" ROWSPAN="3">Interleaved free list pointer for Chunk 2 (15 bytes; 3 used)
+ <TD STYLE="background-color: silver; text-align: center;" ROWSPAN="21">Chunk 2 (105 bytes; 7 used)
+<TR><TD STYLE="background-color: gray; text-align: center;">(5 bytes)
+<TR><TD STYLE="background-color: silver; text-align: center;">(5 bytes)
+<TR><TD STYLE="background-color: gray; text-align: center;">(5 bytes)
+ <TD STYLE="background-color: gray; text-align: center;" ROWSPAN="3">(15 bytes)
+<TR><TD STYLE="background-color: silver; text-align: center;">(5 bytes)
+<TR><TD STYLE="background-color: gray; text-align: center;">(5 bytes)
+<TR><TD STYLE="background-color: silver; text-align: center;">(5 bytes)
+ <TD STYLE="background-color: silver; text-align: center;" ROWSPAN="3">(15 bytes)
+<TR><TD STYLE="background-color: gray; text-align: center;">(5 bytes)
+<TR><TD STYLE="background-color: silver; text-align: center;">(5 bytes)
+<TR><TD STYLE="background-color: gray; text-align: center;">(5 bytes)
+ <TD STYLE="background-color: gray; text-align: center;" ROWSPAN="3">(15 bytes)
+<TR><TD STYLE="background-color: silver; text-align: center;">(5 bytes)
+<TR><TD STYLE="background-color: gray; text-align: center;">(5 bytes)
+<TR><TD STYLE="background-color: silver; text-align: center;">(5 bytes)
+ <TD STYLE="background-color: silver; text-align: center;" ROWSPAN="3">(15 bytes)
+<TR><TD STYLE="background-color: gray; text-align: center;">(5 bytes)
+<TR><TD STYLE="background-color: silver; text-align: center;">(5 bytes)
+<TR><TD STYLE="background-color: gray; text-align: center;">(5 bytes)
+ <TD STYLE="background-color: gray; text-align: center;" ROWSPAN="3">(15 bytes)
+<TR><TD STYLE="background-color: silver; text-align: center;">(5 bytes)
+<TR><TD STYLE="background-color: gray; text-align: center;">(5 bytes)
+<TR><TD STYLE="background-color: silver; text-align: center;">(5 bytes)
+ <TD STYLE="background-color: silver; text-align: center;" ROWSPAN="3">(15 bytes)
+<TR><TD STYLE="background-color: gray; text-align: center;">(5 bytes)
+<TR><TD STYLE="background-color: silver; text-align: center;">(5 bytes)
+
+<!-- Second Section -->
+
+<TR><TD STYLE="background-color: silver; text-align: center;" ROWSPAN="3">Pointer to next Block (15 bytes; 3 used)
+ <TD STYLE="background-color: gray; text-align: center;">(5 bytes)
+ <TD STYLE="background-color: gray; text-align: center;" ROWSPAN="3">Pointer to next Block (15 bytes; 3 used)
+<TR><TD STYLE="background-color: silver; text-align: center;">(5 bytes)
+<TR><TD STYLE="background-color: gray; text-align: center;">(5 bytes)
+
+<!-- Third Section -->
+
+<TR><TD STYLE="background-color: gray; text-align: center;">Size of next Block (5 bytes; 5 used)
+ <TD STYLE="background-color: silver; text-align: center;">Size of next Block (5 bytes; 5 used)
+
+<TR><TD STYLE="background-color: red; text-align: center;" COLSPAN="4">Memory not belonging to process
+</TABLE>
+
+<P>
+<H2>How Contiguous Chunks are Handled</H2>
+
+<P>
+The theorem above guarantees all alignment requirements for allocating chunks and also implementation details such as the interleaved free list.  However, it does so by adding padding when necessary; therefore, we have to treat allocations of contiguous chunks in a different way.
+
+<P>
+Using array arguments similar to the above, we can translate any request for contiguous memory for <EM>n</EM> objects of requested_size into a request for <EM>m</EM> contiguous chunks.  <EM>m</EM> is simply ceil(n * requested_size / alloc_size), where alloc_size is the actual size of the chunks.  To illustrate:
+
+<P>
+Here's an example memory block, where requested_size == 1 and sizeof(void *) == sizeof(size_type) == 4:
+
+<TABLE CELLSPACING="0" CELLPADDING="0" BORDER="3" STYLE="clear: both;" ALIGN=CENTER>
+<CAPTION><EM>Memory block containing 4 chunks; requested_size is 1</EM></CAPTION>
+
+<TR><TH>Sections<TH>size_type alignment<TH>void * alignment<TH>requested_size alignment
+
+<TR><TD STYLE="background-color: red; text-align: center;" COLSPAN="4">Memory not belonging to process
+
+<TR><TD STYLE="background-color: gray; text-align: center;" ROWSPAN="4">Chunks section (16 bytes)
+ <TD STYLE="background-color: gray; text-align: center;">(4 bytes)
+ <TD STYLE="background-color: gray; text-align: center;">FLP to Chunk 2 (4 bytes)
+ <TD STYLE="background-color: gray; text-align: center;">Chunk 1 (4 bytes)
+<TR><TD STYLE="background-color: silver; text-align: center;">(4 bytes)
+ <TD STYLE="background-color: silver; text-align: center;">FLP to Chunk 3 (4 bytes)
+ <TD STYLE="background-color: silver; text-align: center;">Chunk 2 (4 bytes)
+<TR><TD STYLE="background-color: gray; text-align: center;">(4 bytes)
+ <TD STYLE="background-color: gray; text-align: center;">FLP to Chunk 4 (4 bytes)
+ <TD STYLE="background-color: gray; text-align: center;">Chunk 3 (4 bytes)
+<TR><TD STYLE="background-color: silver; text-align: center;">(4 bytes)
+ <TD STYLE="background-color: silver; text-align: center;">FLP to end-of-list (4 bytes)
+ <TD STYLE="background-color: silver; text-align: center;">Chunk 4 (4 bytes)
+
+<TR><TD STYLE="background-color: silver; text-align: center;">Pointer to next Block (4 bytes)
+ <TD STYLE="background-color: gray; text-align: center;">(4 bytes)
+ <TD STYLE="background-color: gray; text-align: center;">Ptr to end-of-list (4 bytes)
+
+<TR><TD STYLE="background-color: gray; text-align: center;">Size of next Block (4 bytes)
+ <TD STYLE="background-color: silver; text-align: center;">0 (4 bytes)
+
+<TR><TD STYLE="background-color: red; text-align: center;" COLSPAN="4">Memory not belonging to process
+</TABLE>
+
+<TABLE CELLSPACING="0" CELLPADDING="0" BORDER="3" STYLE="clear: both;" ALIGN=CENTER>
+<CAPTION><EM>After user requests 7 contiguous elements of requested_size</EM></CAPTION>
+
+<TR><TH>Sections<TH>size_type alignment<TH>void * alignment<TH>requested_size alignment
+
+<TR><TD STYLE="background-color: red; text-align: center;" COLSPAN="4">Memory not belonging to process
+
+<TR><TD STYLE="background-color: gray; text-align: center;" ROWSPAN="4">Chunks section (16 bytes)
+ <TD STYLE="background-color: gray; text-align: center;">(4 bytes)
+ <TD STYLE="background-color: gray; text-align: center;">(4 bytes)
+ <TD STYLE="background-color: gray; text-align: center;">4 bytes in use by program
+<TR><TD STYLE="background-color: silver; text-align: center;">(4 bytes)
+ <TD STYLE="background-color: silver; text-align: center;">(4 bytes)
+ <TD STYLE="background-color: silver; text-align: center;">3 bytes in use by program (1 byte unused)
+<TR><TD STYLE="background-color: gray; text-align: center;">(4 bytes)
+ <TD STYLE="background-color: gray; text-align: center;">FLP to Chunk 4 (4 bytes)
+ <TD STYLE="background-color: gray; text-align: center;">Chunk 3 (4 bytes)
+<TR><TD STYLE="background-color: silver; text-align: center;">(4 bytes)
+ <TD STYLE="background-color: silver; text-align: center;">FLP to end-of-list (4 bytes)
+ <TD STYLE="background-color: silver; text-align: center;">Chunk 4 (4 bytes)
+
+<TR><TD STYLE="background-color: silver; text-align: center;">Pointer to next Block (4 bytes)
+ <TD STYLE="background-color: gray; text-align: center;">(4 bytes)
+ <TD STYLE="background-color: gray; text-align: center;">Ptr to end-of-list (4 bytes)
+
+<TR><TD STYLE="background-color: gray; text-align: center;">Size of next Block (4 bytes)
+ <TD STYLE="background-color: silver; text-align: center;">0 (4 bytes)
+
+<TR><TD STYLE="background-color: red; text-align: center;" COLSPAN="4">Memory not belonging to process
+</TABLE>
+
+<P>
+Then, when the user deallocates the contiguous memory, we can split it up into chunks again.
+
+<P>
+Note that the implementation provided for allocating contiguous chunks uses a linear instead of quadratic algorithm.  This means that it <STRONG>may not find</STRONG> contiguous free chunks if the free list is not ordered.  Thus, it is recommended to always use an ordered free list when dealing with contiguous allocation of chunks.  (In the example above, if Chunk 1 pointed to Chunk 3 pointed to Chunk 2 pointed to Chunk 4, instead of being in order, the contiguous allocation algorithm would have failed to find any of the contiguous chunks).
+
+<P>
+<HR>
+
+<P>
+Copyright &copy; 2000, 2001 Stephen Cleary (<A HREF="mailto:shammah@voyager.net">shammah@voyager.net</A>)
+
+<P>
+This file can be redistributed and/or modified under the terms found in <A HREF="../copyright.html">copyright.html</A>
+
+<P>
+This software and its documentation is provided &quot;as is&quot; without express or implied warranty, and with no claim as to its suitability for any purpose.
+
+</BODY>
+</HTML>

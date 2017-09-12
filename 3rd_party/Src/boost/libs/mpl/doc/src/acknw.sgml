@@ -1,0 +1,18 @@
+<!-- ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||| section -->
+<section id="acknw">
+<title>Acknowledgements</>
+
+<para>
+Following is a list of people who in one or another way contributed to the library development. The list is work in progress! 
+</>
+
+<para>
+David Abrahams, Emily Winch, Eric Friedman, Vesa Karvonen, Peter Dimov, Mat Marcus, Fernando Cacciola, Paul Mensonides, David B. Held, John Bandela, Arnaldur Gylfason, Hamish Mackenzie.
+</>
+
+<formalpara>
+<title>Copyright on this document</>
+<para>Copyright © 2002 Aleksey Gurtovoy, David Abrahams and Emily Winch.</>
+</>
+
+</section>

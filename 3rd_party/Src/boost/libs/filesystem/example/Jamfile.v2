@@ -1,0 +1,6 @@
+
+project
+    : requirements <library>../build/fs
+    ;
+    
+exe simple_ls : simple_ls.cpp ;    

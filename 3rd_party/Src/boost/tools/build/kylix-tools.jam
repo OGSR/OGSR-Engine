@@ -1,0 +1,157 @@
+# (C) Copyright John Maddock 2002.
+# (C) Copyright David Abrahams 2001. Permission to copy, use,
+# modify, sell and distribute this software is granted provided this
+# copyright notice appears in all copies. This software is provided
+# "as is" without express or implied warranty, and with no claim as
+# to its suitability for any purpose.
+
+# The following #// line will be used by the regression test table generation
+# program as the column heading for HTML tables. Must not include version number.
+#//<a href="http://www.borland.com/kylix">Kylix</a>
+
+# Borland tool definitions for Kylix.
+
+# KYLIX_PATH is the install location of the kylix tools.
+# This will be either /usr/local/kylix3 or ~/kylix3 depending upon install options.
+set-as-singleton KYLIX_PATH ;
+
+# compute kylix execution prefix
+# You can either source the "kylixpath" shell script provided by Borland
+# or set KYLIX_PATH to point to your Kylix install directory
+if $(KYLIX_PATH)
+{
+	KYLIX_EXEC_PREFIX = "source $(KYLIX_PATH)/bin/kylixpath > /dev/null && " ;
+}
+else
+{
+	KYLIX_EXEC_PREFIX = "" ;
+}
+
+# specify compilation and link flags
+flags kylix CFLAGS <debug-symbols>on : -v ;
+flags kylix LINKFLAGS <debug-symbols>on : -v ;
+flags kylix CFLAGS <optimization>off : -Od ;
+flags kylix CFLAGS <optimization>speed : -O2 ;
+flags kylix CFLAGS <optimization>space : -O1 ;
+flags kylix CFLAGS <inlining>off : -vi- ;
+flags kylix CFLAGS <inlining>on : -vi -w-inl ;
+flags kylix CFLAGS <inlining>full : -vi -w-inl ;
+
+# build the options common to the link and C/C++ command-lines
+{
+    local bcc-common-flags ;
+    
+    # this section sets up the target type (threading, 
+    # RTL, and console/GUI options). 
+
+    
+    local target-type = [ get-values <target-type> : $(gBUILD_PROPERTIES) ] ;
+    if ! $(target-type) || ! ( $(target-type) in $(SHARED_TYPES) )
+    {
+        flags kylix bcc-common-flags <user-interface>console : -tC ;
+        flags kylix bcc-common-flags <user-interface>gui : -t ;
+    }
+    else
+    {
+        flags kylix bcc-common-flags <runtime-link>dynamic : -tD ;
+    }
+    
+    flags kylix bcc-common-flags <target-type>$(SHARED_TYPES) : -tD ;
+
+    flags kylix LINKFLAGS : $(bcc-common-flags) ;
+    flags kylix CFLAGS : $(bcc-common-flags) ;
+}
+
+    
+flags kylix CFLAGS <cflags> ;
+flags kylix C++FLAGS <cxxflags> ;
+flags kylix DEFINES <define> ;
+flags kylix UNDEFS <undef> ;
+flags kylix HDRS <include> ;
+flags kylix STDHDRS <sysinclude> ;
+flags kylix LINKFLAGS <linkflags> ;
+flags kylix ARFLAGS <arflags> ;
+flags kylix FINDLIBS : pthread ;
+flags kylix FINDLIBS : rt ;
+flags kylix FINDLIBS : m ;
+flags kylix FINDLIBS : dl ;
+flags kylix CFLAGS <threading>single : -DBOOST_NO_THREADS ;
+
+flags kylix LIBPATH <library-path> ;
+flags kylix NEEDLIBS <library-file> ;
+flags kylix FINDLIBS <find-library> ;
+
+#### Link ####
+
+rule Link-action
+{
+    # Make sure that the kylix runtime dlls are in the runtime path
+    gRUN_PATH($(<)) += $(BCC_TOOL_PATH) ; 
+    
+    kylix-Link-action $(<) : $(>) $(NEEDLIBS) ;
+    
+}
+
+
+actions kylix-Link-action
+{
+    $(KYLIX_EXEC_PREFIX)bc++ -v -q $(LINKFLAGS) -L"$(LIBPATH)" -L"$(STDLIBPATH)" -o"$(<[1])" "$(>)" lib$(FINDLIBS).so
+}
+
+#### Cc #####
+
+rule Cc-action
+{
+    kylix-Cc-action $(<) : $(>) ;
+}
+
+actions kylix-Cc-action
+{
+    $(KYLIX_EXEC_PREFIX)bc++ -P- -g255 -j5 -q -c -w -a8 -U$(UNDEFS) -D$(DEFINES) $(CFLAGS) -I"$(HDRS)" -I"$(STDHDRS)" -o"$(<)" "$(>)"
+}
+
+#### C++ ####
+rule C++-action
+{
+    kylix-C++-action $(<) : $(>) ;
+}
+
+#
+# for C++ compiles the following options are turned on by default:
+#
+# -j5    stops after 5 errors
+# -g255  allow an infinite number of warnings
+# -q     no banner
+# -c     compile to object
+# -P     C++ code regardless of file extention
+# -w     turns on all warnings
+# -Ve    zero sized empty base classes, this option is on in the IDE by default 
+#        and effects binary compatibility.
+# -Vx    zero sized empty members, this option is on in the IDE by default 
+#        and effects binary compatibility.
+# -a8    8 byte alignment, this option is on in the IDE by default 
+#        and effects binary compatibility.
+#
+actions kylix-C++-action
+{
+    $(KYLIX_EXEC_PREFIX)bc++ -j5 -g255 -q -c -w -Ve -Vx -a8 -x -xd -RT -U$(UNDEFS) -D$(DEFINES) $(CFLAGS) $(C++FLAGS) -I"$(HDRS)"  -I"$(STDHDRS)" -o"$(<)" "$(>)"
+}
+
+#### Archive ####
+rule Archive-action
+{
+    kylix-Archive-action $(<) : $(>) ;
+}
+
+actions updated together piecemeal kylix-Archive-action
+{
+    ar -r $(<) $(>)
+}
+
+
+
+
+
+
+
+

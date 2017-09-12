@@ -1,0 +1,32 @@
+
+@import "btl-gray.css";
+
+TABLE.#two-column-table TBODY TD
+{
+    background:     white;
+    border:         1px solid black;
+    color:          black;
+    width:          50%;
+    text-align:     left;
+}
+
+BODY
+{
+    background:     white;
+}
+
+TABLE.body-table
+{
+    border:         none;
+    width:          100%;
+}
+TABLE.body-table TD
+{
+    color:          black;
+    background:     white;
+}
+
+SPAN.ref-to-top
+{
+    display:        none;
+}

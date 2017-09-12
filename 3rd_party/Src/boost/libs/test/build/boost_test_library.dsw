@@ -1,0 +1,404 @@
+Microsoft Developer Studio Workspace File, Format Version 6.00
+# WARNING: DO NOT EDIT OR DELETE THIS WORKSPACE FILE!
+
+###############################################################################
+
+Project: "auto_unit_test_test"=".\auto_unit_test_test.dsp" - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+    Begin Project Dependency
+    Project_Dep_Name unit_test_framework
+    End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "errors_handling_test"=".\errors_handling_test.dsp" - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+    Begin Project Dependency
+    Project_Dep_Name test_exec_monitor
+    End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "minimal_test"=".\minimal_test.dsp" - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+}}}
+
+###############################################################################
+
+Project: "online_test"=".\online_test.dsp" - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+}}}
+
+###############################################################################
+
+Project: "output_test_stream_test"=".\output_test_stream_test.dsp" - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+    Begin Project Dependency
+    Project_Dep_Name unit_test_framework
+    End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "parameterized_test_test"=".\parameterized_test_test.dsp" - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+    Begin Project Dependency
+    Project_Dep_Name test_exec_monitor
+    End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "prg_exec_example"=".\prg_exec_example.dsp" - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+    Begin Project Dependency
+    Project_Dep_Name prg_exec_monitor
+    End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "prg_exec_fail1"=".\prg_exec_fail1.dsp" - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+    Begin Project Dependency
+    Project_Dep_Name prg_exec_monitor
+    End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "prg_exec_fail2"=".\prg_exec_fail2.dsp" - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+    Begin Project Dependency
+    Project_Dep_Name prg_exec_monitor
+    End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "prg_exec_fail3"=".\prg_exec_fail3.dsp" - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+}}}
+
+###############################################################################
+
+Project: "prg_exec_monitor"=".\prg_exec_monitor.dsp" - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+}}}
+
+###############################################################################
+
+Project: "result_report_test"=".\result_report_test.dsp" - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+    Begin Project Dependency
+    Project_Dep_Name test_exec_monitor
+    End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "test_exec_example"=".\test_exec_example.dsp" - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+    Begin Project Dependency
+    Project_Dep_Name test_exec_monitor
+    End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "test_exec_fail1"=".\test_exec_fail1.dsp" - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+    Begin Project Dependency
+    Project_Dep_Name test_exec_monitor
+    End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "test_exec_fail2"=".\test_exec_fail2.dsp" - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+    Begin Project Dependency
+    Project_Dep_Name test_exec_monitor
+    End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "test_exec_fail3"=".\test_exec_fail3.dsp" - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+    Begin Project Dependency
+    Project_Dep_Name test_exec_monitor
+    End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "test_exec_fail4"=".\test_exec_fail4.dsp" - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+    Begin Project Dependency
+    Project_Dep_Name test_exec_monitor
+    End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "test_exec_monitor"=".\test_exec_monitor.dsp" - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+}}}
+
+###############################################################################
+
+Project: "test_fp_comparisons"=".\test_fp_comparisons.dsp" - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+    Begin Project Dependency
+    Project_Dep_Name unit_test_framework
+    End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "test_tools_test"=".\test_tools_test.dsp" - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+    Begin Project Dependency
+    Project_Dep_Name unit_test_framework
+    End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "unit_test_example1"=".\unit_test_example1.dsp" - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+    Begin Project Dependency
+    Project_Dep_Name unit_test_framework
+    End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "unit_test_example2"=".\unit_test_example2.dsp" - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+    Begin Project Dependency
+    Project_Dep_Name unit_test_framework
+    End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "unit_test_example3"=".\unit_test_example3.dsp" - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+    Begin Project Dependency
+    Project_Dep_Name unit_test_framework
+    End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "unit_test_example4"=".\unit_test_example4.dsp" - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+    Begin Project Dependency
+    Project_Dep_Name unit_test_framework
+    End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "unit_test_example5"=".\unit_test_example5.dsp" - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+    Begin Project Dependency
+    Project_Dep_Name unit_test_framework
+    End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "unit_test_framework"=".\unit_test_framework.dsp" - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+}}}
+
+###############################################################################
+
+Project: "unit_test_suite_ex_test"=".\unit_test_suite_ex_test.dsp" - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+    Begin Project Dependency
+    Project_Dep_Name unit_test_framework
+    End Project Dependency
+}}}
+
+###############################################################################
+
+Global:
+
+Package=<5>
+{{{
+}}}
+
+Package=<3>
+{{{
+}}}
+
+###############################################################################
+

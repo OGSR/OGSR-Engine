@@ -1,0 +1,239 @@
+.\" <!!---------------------------------------------------------------------->
+.\" <!! Copyright (C) 1999 Dietmar Kuehl, Claas Solutions GmbH >
+.\" <!!>
+.\" <!! Permission to use, copy, modify, distribute and sell this >
+.\" <!! software for any purpose is hereby granted without fee, provided >
+.\" <!! that the above copyright notice appears in all copies and that >
+.\" <!! both that copyright notice and this permission notice appear in >
+.\" <!! supporting documentation. Dietmar Kuehl and Claas Solutions make no >
+.\" <!! representations about the suitability of this software for any >
+.\" <!! purpose. It is provided "as is" without express or implied warranty. >
+.\" <!!---------------------------------------------------------------------->
+.TH doc/heap-common.mfd 3 "11.Juli 1999" "Claas Solutions" "boost"
+.SH NAME
+doc/heap-common.mfd - Common Methods of the Priority Queues
+
+.SH SYNOPSIS
+
+
+.nf
+template <typename Heap>
+void example()
+{
+  typedef typename Heap::value_type      value_type;
+  typedef typename Heap::size_type       size_type;
+  typedef typename Heap::pointer         pointer;
+  typedef typename Heap::const_iterator  const_iterator;
+  typedef typename Heap::const_reference const_reference;
+  typedef typename Heap::compare_type    compare_type;
+
+  Heap heap; // default constructor
+
+  heap.push(value_type());
+  heap.top();
+  heap.pop();
+  heap.size();
+  heap.empty();
+
+  const_iterator beg = heap.begin();
+  const_iterator end = heap.end();
+
+  pointer ptr = heap.push(value_type());
+  heap.change_top(value_type());
+  heap.change(ptr, value_type());
+  heap.decrease(ptr, value_type());
+  heap.increase(ptr, value_type());
+  heap.remove(ptr);
+}
+.fi 0 
+.SH DESCRIPTION
+This page describes the common members of the various priority queue classes: The common members have the same semantics and are thus only described just once. However, not all of the members described here are supported for all priority classes. See the respective manual page for the members supported. Also the manual pages for the individual priority queues document briefly how the class implemented. 
+.SH TYPEDEFS
+A few types are defined for the priority classes to support their generic manipulation. 
+.SS \FBHEAP::VALUE_TYPE\FP
+The typedef \fBvalue_type\fP identifies the type of the objects stored in the priority queue. This type is used as argument for the \fBpush()\fP member to insert a new element into the heap. The member \fBtop()\fP returns a reference to a constant object of this type. 
+.SS \FBHEAP::SIZE_TYPE\FP
+The typedef \fBsize_type\fP identifies the type used to maintain the number of the elements in the priority queue. The member \fBsize()\fP returns an object of this type. 
+.SS \FBHEAP::POINTER\FP
+The type \fBpointer\fP is used to represent handles to objects inserted into a priority queue. These handles are used for efficient lookup of the object when the object's priority is changed using one of the functions \fBchange()\fP, \fBincrease()\fP, or \fBdecrease()\fP. Whether this type really is a pointer like the name suggests of some other handle type is not defined. Objects of this type should be handled as opaque objects. 
+.SS \FBHEAP::CONST_REFERENCE\FP
+The method \fBtop()\fP returns this type to access the largest element in the priority queue. 
+.SS \FBHEAP::CONST_ITERATOR\FP
+Objects of the type \fBconst_iterator\fP are used to iterate over all objects currently stored in a priority queue. The members \fBbegin()\fP and \fBend()\fP return objects of this type. 
+.SS \FBHEAP::COMPARE_TYPE\FP
+\fBHeap::compare_type\fP is the type of the comparator object used to compare elements of the priority queue. This type is not defined by all priority classes because some priority classes can't be parameterized with a compare type. Where this type is present, it defaults to \fBstd::less<value_type>\fP. 
+.SH MEMBER FUNCTIONS
+
+.SS \FBHEAP::HEAP()\FP
+
+.TP .5i
+Effect
+The default constructor creates an empty object. In some cases, namely when the comparator class does not have a default constructor, the default constructor is not available. In this case you have to pass a comparator to the constructor of the priority queue (i.e. the comparator has to be copy constructible). 
+.RE
+
+
+.SS \FBHEAP::PUSH(VAL)\FP
+
+.TP .5i
+Effect
+The function \fBpush()\fP inserts a copy of \fBval\fP into the corresponding priority queue. If the priority queue supports changing the priority of arbitrary elements, a \fBpointer\fP to the newly inserted element is inserted. 
+.TP .5i
+Return
+A \fBpointer\fP is returned if arbitrary priority changes are supported by the priority class. Otherwise, \fBvoid\fP is returned. 
+.TP .5i
+Postcondition
+\fBsize()\fP is increased by one and \fBtop()\fP returns a reference to the new object if it is larger than all elements stored in the priority. Whether the \fBtop()\fP returns a reference to the new object or some other object, if the new object compares equal to the largest element previously stored in the priority queue is not specified. 
+.RE
+
+
+.SS \FBHEAP::TOP()\FP
+
+.TP .5i
+Effect
+This member functions provides efficient access to the largest element in the priority queue. Some implementations determine the minimum element when \fBtop()\fP is called although this member function is declared to be \fBconst\fP: This is a typical case of \fBlogical constness\fP vs. \fBbitwise constness\fP. Although the observable state of the object does not change (the logic view of the object does not change), the data structure might be update on this request internally, ie. the actual representation changes. 
+.TP .5i
+Return
+A reference to the largest object is returned. Note, that the referenced object is constant. 
+.TP .5i
+Precondition
+There has to be at least one element in the priority queue, i.e. \fBempty()\fP has to return \fBfalse\fP. 
+.RE
+
+
+.SS \FBHEAP::POP()\FP
+
+.TP .5i
+Effect
+The function \fBpop()\fP removes the largest element from the priority queue. If there are multiple copies of the largest element stored in the priority queue, only one of those elements is removed. 
+.TP .5i
+Precondition
+There has to be at least one element in the priority queue, i.e. \fBempty()\fP has to return \fBfalse\fP. 
+.TP .5i
+Postcondition
+The largest element is removed from the priority queue and correspondingly the value returned from \fBsize()\fP is reduced by one. 
+.RE
+
+
+.SS \FBHEAP::EMPTY()\FP
+
+.TP .5i
+Return
+If \fBsize() > 0\fP then \fBfalse\fP is returned, otherwise \fBtrue\fP is returned. 
+.RE
+
+
+.SS \FBHEAP::SIZE()\FP
+
+.TP .5i
+Return
+The number of elements currently stored in the priority queue is returned. 
+.RE
+
+
+.SS \FBHEAP::BEGIN()\FP
+
+.TP .5i
+Effect
+The member function \fBbegin()\fP returns an iterator defining the beginning of the sequence representing all elements stored in the priority queue. The end of the sequence is returned by \fBend()\fP. 
+
+The returned iterator in general only conforms to the input iterator requirements. Some classes support more specific iterators but probably the application should no rely on other requirements to allow easy replacement of the selected priority queue. 
+
+The order in which the elements are accessed is in general unspecified. However, for some classes there is a specific order. If this is the case, the manual page of the respective priority queue class will describe this order. 
+.TP .5i
+Return
+The start iterator for the sequence of all elements in the priority queue is returned. 
+.RE
+
+
+.SS \FBHEAP::END()\FP
+
+.TP .5i
+Effect
+The member function \fBend()\fP returns an iterator defining the end of the sequence representing all elements stored in the priority queue. The begin of the sequence is returned by \fBbegin()\fP. See the documention of this function for more details. 
+.TP .5i
+Return
+The end iterator for the sequence of all elements in the priority queue is returned. 
+.RE
+
+
+.SS \FBHEAP::CHANGE_TOP(VAL)\FP
+
+.TP .5i
+Effect
+The member function \fBchange_top()\fP is used to change the priority of the currently largest element to \fBval\fP. This is basically identical to a \fBpop()\fP followed by to \fBpush(val)\fP. However, \fBchange_top()\fP may be significantly more efficient for some priority queue classes: For example, when changing the top of a d-heap, the corresponding element only has to moved down as far as necessary. Removal and insertion would make a complete pass from root to leaf (for removal) and leaf to root (for insertion). 
+.TP .5i
+Precondition
+There has to be at least one element in the priority queue, i.e. \fBempty()\fP has to return \fBfalse\fP. 
+.TP .5i
+Postcondition
+The priority of the top element is adjusted to \fBval\fP and correspondingly the data structure is updated to make the new largest element the new top. Of course, if the changed element remained the largest, it may stay the top. 
+.TP .5i
+Note
+This function is a member template to make it possible to change 	 only the priority in composite elements: To do so, the assignment operator (\fBoperator=()\fP) can be overloaded to take a type which is then passed to this function changing selectively the priority. 
+.RE
+
+
+.SS \FBHEAP::CHANGE(PTR, VAL)\FP
+
+.TP .5i
+Effect
+The priority of the element identified by \fBptr\fP is changed to \fBval\fP. 
+.TP .5i
+Precondition
+The object identified by \fBptr\fP is indeed an element of the priority queue on which the \fBchange()\fP method is called. In particular, this means that there is at least one element in the priority queue. 
+.TP .5i
+Note
+This function is a member template to make it possible to change 	 only the priority in composite elements: To do so, the assignment operator (\fBoperator=()\fP) can be overloaded to take a type which is then passed to this function changing selectively the priority. 
+.RE
+
+
+.SS \FBHEAP::DECREASE(PTR, VAL)\FP
+
+.TP .5i
+Effect
+The priority of the element identified by \fBptr\fP is changed to \fBval\fP. This function assumes that \fBval\fP is smaller than the current priority of the element: This is not checked at all. This method is useful if it is known that the priority is guaranteed to be smaller than the current priority. 
+.TP .5i
+Precondition
+The object identified by \fBptr\fP is indeed an element of the priority queue on which the \fBdecrease()\fP method is called. In particular, this means that there is at least one element in the priority queue. 
+.TP .5i
+Note
+This function is a member template to make it possible to change 	 only the priority in composite elements: To do so, the assignment operator (\fBoperator=()\fP) can be overloaded to take a type which is then passed to this function changing selectively the priority. 
+.RE
+
+
+.SS \FBHEAP::INCREASE(PTR, VAL)\FP
+
+.TP .5i
+Effect
+The priority of the element identified by \fBptr\fP is changed to \fBval\fP. This function assumes that \fBval\fP is greater than the current priority of the element: This is not checked at all. This method is useful if it is known that the priority is guaranteed to be greater than the current priority. 
+.TP .5i
+Precondition
+The object identified by \fBptr\fP is indeed an element of the priority queue on which the \fBdecrease()\fP method is called. In particular, this means that there is at least one element in the priority queue. 
+.TP .5i
+Note
+This function is a member template to make it possible to change 	 only the priority in composite elements: To do so, the assignment operator (\fBoperator=()\fP) can be overloaded to take a type which is then passed to this function changing selectively the priority. 
+.RE
+
+
+.SS \FBHEAP::REMOVE(PTR)\FP
+
+.TP .5i
+Effect
+This method removes the element identified by \fBptr\fP from the priority queue. 
+.TP .5i
+Precondition
+The object identified by \fBptr\fP is indeed an element of the priority queue on which the \fBremove()\fP method is called. In particular, this means that there is at least one element in the priority queue. 
+.RE
+
+
+.SH SEE ALSO
+d_heap(3), f_heap(3), l_heap(3), p_heap(3), p_queue(3), queue(3), r_heap(3), stack(3) 
+.SH AUTHOR
+Dietmar Kühl (Claas Solutions)
+.br
+e-mail: dietmar.kuehl@claas-solutions.de
+.br
+http://www.claas-solutions.de/kuehl
+.br
+
+

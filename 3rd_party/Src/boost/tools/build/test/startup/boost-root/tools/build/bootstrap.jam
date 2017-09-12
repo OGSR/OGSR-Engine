@@ -1,0 +1,3 @@
+ECHO build system bootstrapped ;
+DEPENDS all : nothing ;
+NOTFILE nothing ;

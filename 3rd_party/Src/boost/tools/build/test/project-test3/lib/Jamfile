@@ -1,0 +1,5 @@
+
+use-project /lib2 : ../lib2 ;
+
+make b.obj : b.cpp : yfc-compile ;
+make m.exe : b.obj @/lib2/c.obj : yfc-link ;

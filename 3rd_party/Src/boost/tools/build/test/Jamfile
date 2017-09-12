@@ -1,0 +1,7 @@
+
+# establish a project root right here in the test directory, so that we can test
+# things independently of the boost jambase, etc.
+project-root ; 
+
+include check-test-tools.jam ;
+include check-jam-patches.jam ;

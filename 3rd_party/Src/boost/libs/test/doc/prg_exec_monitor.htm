@@ -1,0 +1,153 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+
+<HTML>
+<HEAD>
+<TITLE>Program Execution Monitor</TITLE>
+<LINK rel="stylesheet" type="text/css" href="style/btl-white.css" media="screen">
+<LINK rel="stylesheet" type="text/css" href="style/btl-print.css" media="print">
+<META http-equiv="Content-Language" content="en-us">
+<META http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+</HEAD>
+<BODY>
+<DIV class="centered">
+  <TABLE class="body-table" cellspacing="3" >
+  <TR>
+  <TD id="body"> <A name='TOP'><IMG src='../../../c++boost.gif' width='277' height='86' alt="Boost logo"></A>
+  <H1>Boost Test Library: Program Execution Monitor</H1>
+  <P class="page-toc"> <A href="index.htm">Home</A><BR>
+    <A href="#Introduction">Introduction</A><BR>
+    <A href="#Benefits">Benefits</A><BR>
+    <A href="#Specifications">Specifications</A><BR>
+    <A href="#MonitorCompilation">Compilation</A><BR>
+    <A href="#Example">Example Programs</A><BR>
+    <A href="#Rationale">Rationale</A><BR>
+    <A href="#Design">Design</A> </P>
+  <H2><A name="Introduction">Introduction</A></H2>
+  <P class="1-line-indented">The Boost Test Library's Program Execution Monitor provides
+    a replacement main() function which calls a user-supplied <SPAN class="new-term">cpp_main()</SPAN>
+    function within a try block. The supplied main() then catches and reports exceptions,
+    relieving users from messy error detection and reporting duties.</P>
+  <P>For use with the Program Execution Monitor, the traditional Hello World program
+    becomes:</P>
+  <PRE class="code">#<SPAN class="reserv-word">include</SPAN> &lt;iostream&gt;
+
+<SPAN class="cpp-type">int</SPAN> cpp_main( <SPAN class="cpp-type">int</SPAN>, <SPAN class="cpp-type">char</SPAN>* [] ) <SPAN class="comment">// note name</SPAN>
+{
+    std::cout &lt;&lt; <SPAN class="literal">&quot;Hello, world\n&quot;</SPAN>;
+
+    <SPAN class="reserv-word">return</SPAN> <SPAN class="literal">0</SPAN>;
+}
+</PRE>
+  <P class="1-line-indented">It really is that simple - just change the name of your
+    initial function from main to cpp_main(). Do make sure the argc and arcv parameters
+    are specified (although you don't have to name them if you don't use them). Now
+    you can compile it and link with the Program Execution Monitor library.</P>
+  <P class="1-line-indented">When the above program executes, the output will be:</P>
+  <P class="test-output"> Hello, world<BR>
+    no errors detected </P>
+  <P class="1-line-indented">But what if some lower-level function had thrown a runtime_error
+    with the message &quot;big trouble&quot;? Then the output would look something
+    like this:</P>
+  <P class="test-output"> ** exception: std::runtime_error: big trouble<BR>
+    **** error return code 5<BR>
+    ********** errors detected; see standard output for details *********** </P>
+  <P class="1-line-indented">And if a lower-level function had bubbled up a return
+    code of 5, the output would look something like this:</P>
+  <P class="test-output"> **** error return code 5<BR>
+    *********** errors detected; see standard output for details *********** </P>
+  <P class="1-line-indented">Note that the primary messages appear on standard output
+    stream, while the final message appears on standard error stream. This increases
+    the visibility of error notification if standard output and error streams are directed
+    to different devices or files.
+    <SPAN class="ref-to-top"><A href="#TOP"><IMG src="imgs/uarrow.gif" alt="reference to the top"></A></SPAN>
+  </P>
+  <H2><A name="Benefits">Benefits</A></H2>
+  <P class="1-line-indented">More uniform reporting of errors, particularly exceptions.</P>
+  <H3>In production programs:</H3>
+  <P class="1-line-indented">More uniform error reporting is particularly useful for
+    programs running unattended under control of scripts or batch files. Some operating
+    systems pop up message boxes if an uncaught exception occurs, and this requires
+    operator intervention. By converting such exceptions to non-zero program return
+    codes, the library makes the program a better citizen.</P>
+  <P class="1-line-indented">More uniform reporting of errors isn't a benefit to some
+    programs, particularly programs always run by hand by a knowledgeable person. So
+    cpp_main() wouldn't be worth using in that environment.</P>
+  <H3>In test programs:</H3>
+  <P class="1-line-indented">More uniform error reporting could be useful in test environments
+    such as the boost regression tests. But in this case it is preferable to use the
+    <A href="test_exec_monitor.htm">Test Execution Monitor</A> or <A href="unit_test_framework.htm">Unit
+    Test Framework</A>, cause they allows you to use Test Tools and generate more detailed
+    error information.</P>
+  <H2><A name="Specifications">Specifications</A> of the supplied main()</H2>
+  <P class="1-line-indented">Uniformly detects and reports the occurrence of several
+    types of errors, reducing the various errors to a uniform return value which is
+    returned to the host environment.</P>
+  <P>There are two intended uses:</P>
+  <UL>
+    <LI>In production programs, which require no further action beyond naming the top-level
+      function cpp_main() instead of main().</LI>
+    <LI>In test frameworks, which supply cpp_main() to detect (or catch) test specific
+      errors, report them, and then return a presumably non-zero value.</LI>
+  </UL>
+  <P>Requires:</P>
+  <P class="1-line-indented">A user-supplied cpp_main() function with same interface
+    as main().</P>
+  Effects:
+  <P class="1-line-indented">Call cpp_main( argc, argv ) in a try block.</P>
+  <P>Treat as errors:</P>
+  <UL>
+    <LI>Exceptions from cpp_main().</LI>
+    <LI>Non-zero return from cpp_main().</LI>
+  </UL>
+  <P class="1-line-indented">Report errors to both cout (with details) and cerr (summary).
+    Rationale: Detail error reporting goes to cout so that it is properly interlaced
+    with other output, thus aiding error analysis. Summary goes to cerr in case cout
+    is redirected.</P>
+  <P>Returns:</P>
+  <P class="1-line-indented">non-zero if any error was detected, zero otherwise.
+  <SPAN class="ref-to-top"><A href="#TOP"><IMG src="imgs/uarrow.gif" alt="reference to the top"></A></SPAN> </P>
+
+  <H2>The Program <A name="MonitorCompilation">Execution Monitor compilation</A></H2>
+
+  <P class="1-line-indented">The Program Execution Monitor is supplied as an offline
+    library and should be compiled and linked with a test program. Following files,
+    that are located in the Boost Test Library src directory, compose the component:</P>
+        <P class ="indented"> <A href="../src/execution_monitor.cpp">execution_monitor.cpp</A><BR>
+          <A href="../src/cpp_main.cpp">cpp_main.cpp</A> </P>
+        <P class="1-line-indented">You also have a choice to include all files constituting
+          the Program Execution Monitor directly into your program. Use <a href="../../../boost/test/included/prg_exec_monitor.hpp">&lt;boost/test/included/prg_exec_monitor.hpp&gt;</a>
+          for this porpose.</P>
+
+  <H2><A name="Example">Example</A> Program</H2>
+
+  <P class ="indented"> <a href="components_testing.htm#prg_exec_example">prg_exec_example</a><BR>
+  <a href="components_testing.htm#prg_exec_fail1">prg_exec_fail1</a><BR>
+  <a href="components_testing.htm#prg_exec_fail2">prg_exec_fail2</a><BR>
+  <a href="components_testing.htm#prg_exec_fail3">prg_exec_fail3</a><BR>
+  <H2><A name="Rationale">Rationale</A></H2>
+  <P class="1-line-indented">The components of a C++ program may report user-detected
+    errors in several ways, such as via a return value or throwing an exception. System-detected
+    errors such as dereferencing an invalid pointer are reported in other ways, totally
+    operating system and compiler dependent.</P>
+  <P class="1-line-indented">Yet many C++ programs, both production and test, must
+    run in an environment where uniform reporting of errors is necessary. For example,
+    converting otherwise uncaught exceptions to non-zero program return codes allows
+    many command line, script, or batch environments to continue processing in a controlled
+    manner. Even some GUI environments benefit from the unification of errors into
+    program return codes.</P>
+  <H2><A name="Design">Design</A></H2>
+  <P class="1-line-indented">The <A href="test_lib_design.htm">Boost Test Library Design</A>
+    document describes the relationship between the Program Execution Monitor and <A href="execution_monitor.htm">
+    Execution Monitor</A>. <SPAN class="ref-to-top"><A href="#TOP"><IMG src="imgs/uarrow.gif" alt="reference to the top"></A></SPAN> </P>
+  <BR>
+  <DIV class="footer">
+    <P>&copy Beman Dawes 2000, <A href='mailto:rogeeff@emailaccount.com'>Gennadiy Rozental</A>
+      2001-2002 </P>
+    <P>Revised: 12 February, 2003</P>
+  </DIV>
+  </TD>
+  </TR>
+  </TABLE>
+</DIV>
+</BODY>
+</HTML>

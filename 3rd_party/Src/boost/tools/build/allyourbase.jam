@@ -1,0 +1,2085 @@
+#
+# /+\
+# +\    Copyright 1993, 2000 Christopher Seiwald.
+# \+/
+#
+# This file is part of Jam - see jam.c for Copyright information.
+#
+
+# This file is ALSO:
+# (C) Copyright David Abrahams 2001. Permission to copy, use,
+# modify, sell and distribute this software is granted provided this
+# copyright notice appears in all copies. This software is provided
+# "as is" without express or implied warranty, and with no claim as
+# to its suitability for any purpose.
+
+#
+# JAMBASE - jam 2.3 ruleset providing make(1)-like functionality
+#
+# Supports UNIX, NT, and VMS.
+#
+# 12/27/93 (seiwald) - purturb library sources with SOURCE_GRIST
+# 04/18/94 (seiwald) - use '?=' when setting OS specific vars
+# 04/21/94 (seiwald) - do RmTemps together
+# 05/05/94 (seiwald) - all supported C compilers support -o: relegate
+#                      RELOCATE as an option; set Ranlib to "" to disable it
+# 06/01/94 (seiwald) - new 'actions existing' to do existing sources
+# 08/25/94 (seiwald) - new ObjectCcFlags rule to append to per-target CCFLAGS
+# 08/29/94 (seiwald) - new ObjectHdrs rule to append to per-target HDRS
+# 09/19/94 (seiwald) - LinkLibraries and Undefs now append
+#                    - Rule names downshifted.
+# 10/06/94 (seiwald) - Dumb yyacc stuff moved into Jamfile.
+# 10/14/94 (seiwald) - (Crude) support for .s, .C, .cc, .cpp, and .f files.
+# 01/08/95 (seiwald) - Shell now handled with awk, not sed
+# 01/09/95 (seiwald) - Install* now take dest directory as target
+# 01/10/95 (seiwald) - All entries sorted.
+# 01/10/95 (seiwald) - NT support moved in, with LauraW's help.  
+# 01/10/95 (seiwald) - VMS support moved in.
+# 02/06/95 (seiwald) - ObjectC++Flags and SubDirC++Flags added.
+# 02/07/95 (seiwald) - Iron out when HDRSEARCH uses "" or SEARCH_SOURCE.
+# 02/08/95 (seiwald) - SubDir works on VMS.
+# 02/14/95 (seiwald) - MkDir and entourage.
+# 04/30/95 (seiwald) - Use install -c flag so that it copies, not moves.
+# 07/10/95 (taylor) - Support for Microsoft C++.
+# 11/21/96 (peterk) - Support for BeOS
+# 07/19/99 (sickel) - Support for Mac OS X Server (and maybe client)
+# 02/18/00 (belmonte)- Support for Cygwin.
+
+# Special targets defined in this file:
+#
+# all           - parent of first, shell, files, lib, exe
+# first         - first dependent of 'all', for potential initialization
+# shell         - parent of all Shell targets 
+# files         - parent of all File targets
+# lib           - parent of all Library targets
+# exe           - parent of all Main targets
+# dirs          - parent of all MkDir targets
+# clean         - removes all Shell, File, Library, and Main targets
+# uninstall     - removes all Install targets
+#       
+
+# Rules defined by this file:
+#
+# as obj.o : source.s ;                 .s -> .o
+# Bulk dir : files ;                    populate directory with many files
+# Cc obj.o : source.c ;                 .c -> .o
+# C++ obj.o : source.cc ;               .cc -> .o
+# Clean clean : sources ;               remove sources with 'jam clean'
+# File dest : source ;                  copy file
+# Fortran obj.o : source.f ;            .f -> .o
+# GenFile source.c : program args ;     make custom file
+# Hardlink target : source ;            make link from source to target
+# HdrRule source : headers ;            handle #includes
+# InstallInto dir : sources ;           install any files
+# InstallBin dir : sources ;            install binaries
+# InstallLib dir : sources ;            install files
+# InstallFile dir : sources ;           install files
+# InstallMan dir : sources ;            install man pages
+# InstallShell dir : sources ;          install shell scripts
+# Lex source.c : source.l ;             .l -> .c
+# Library lib : source ;                archive library from compiled sources
+# LibraryFromObjects lib : objects ;    archive library from objects
+# LinkLibraries images : libraries ;    bag libraries onto Mains
+# Main image : source ;                 link executable from compiled sources
+# MainFromObjects image : objects ;     link executable from objects
+# MkDir dir ;                           make a directory, if not there
+# Object object : source ;              compile object from source
+# ObjectCcFlags source : flags ;        add compiler flags for object
+# ObjectC++Flags source : flags ;       add compiler flags for object
+# ObjectHdrs source : dirs ;            add include directories for object
+# Objects sources ;                     compile sources
+# RmTemps target : sources ;            remove temp sources after target made
+# Setuid images ;                       mark executables Setuid
+# SubDir TOP d1 d2 ... ;                start a subdirectory Jamfile
+# SubDirCcFlags flags ;                 add compiler flags until next SubDir
+# SubDirC++Flags flags ;                add compiler flags until next SubDir
+# SubDirHdrs dirs ;                     add include dirs until next SubDir
+# SubInclude TOP d1 d2 ... ;            include a subdirectory Jamfile
+# Shell exe : source ;                  make a shell executable
+# Undefines images : symbols ;          save undef's for linking
+# UserObject object : source ;          handle unknown suffixes for Object
+# Yacc source.c : source.y ;            .y -> .c
+#
+# Utility rules that have no side effects (not supported):
+#
+# FAppendSuffix f1 f2 ... : $(SUF) ;    return $(<) with suffixes
+# join value ... ;                   return contatenated values
+# FDirName d1 d2 ... ;                  return path from root to dir
+# FGrist d1 d2 ... ;                    return d1!d2!...
+# FGristFiles value ;                   return $(value:G=$(SOURCE_GRIST))
+# FGristSourceFiles value ;             return $(value:G=$(SOURCE_GRIST))
+# FRelPath d1 : d2 ;                    return rel path from d1 to d2
+# FSubDir d1 d2 ... ;                   return path to root
+#
+
+
+# Brief review of the jam language:
+#
+# Statements:
+#       rule RULE - statements to process a rule
+#       actions RULE - system commands to carry out target update
+#
+# Modifiers on actions:
+#       together - multiple instances of same rule on target get executed
+#                  once with their sources ($(>)) concatenated
+#       updated - refers to updated sources ($(>)) only
+#       ignore - ignore return status of command
+#       quietly - don't trace its execution unless verbose
+#       piecemeal - iterate command each time with a small subset of $(>)
+#       existing - refers to currently existing sources ($(>)) only
+#       bind vars - subject to binding before expanding in actions
+#
+# Special rules:
+#       ALWAYS - always build a target
+#       DEPENDS - builds the dependency graph
+#       ECHO - blurt out targets on stdout
+#       EXIT - blurt out targets and exit
+#       INCLUDES - marks sources as headers for target (a codependency)
+#       NOCARE - don't panic if the target can't be built
+#       NOUPDATE - create the target if needed but never update it 
+#       NOTFILE - ignore the timestamp of the target (it's not a file)
+#       TEMPORARY - target need not be present if sources haven't changed
+#
+# Special variables set by jam:
+#       $(<) - targets of a rule (to the left of the :)
+#       $(>) - sources of a rule (to the right of the :)
+#       $(xxx) - true on xxx (UNIX, VMS, NT, OS2, MAC)
+#       $(OS) - name of OS - varies wildly
+#       $(JAMVERSION) - version number (2.3)
+#
+# Special variables used by jam:
+#       SEARCH - where to find something (used during binding and actions)
+#       LOCATE - where to plop something not found with SEARCH
+#       HDRRULE - rule to call to handle include files
+#       HDRSCAN - egrep regex to extract include files
+#
+# Special targets:
+#       all - default if none given on command line
+#
+
+# Initialize variables
+#
+
+#
+# OS specific variable settings
+#
+
+# dwa 6/4/01 - removed all settings of the following variables for boost:
+#   CC, CCFLAGS, C++, C++FLAGS, LINK, LINKFLAGS, LINKLIBS
+# probably a lot more could be cleared away
+
+if $(NT)
+{
+    CP              ?= copy ;
+    RM              ?= del /f/q ;
+    SLASH           ?= \\ ;
+    SPLITPATH       ?= ";" ; # dwa -- added missing SPLITPATH
+    SUFLIB          ?= .lib ;
+    SUFOBJ          ?= .obj ;
+    SUFEXE          ?= .exe ;
+    SUFDLL          ?= .dll .lib ;
+    gLINK_VARIABLE(.dll) = ;             # dlls are NOT linked to directly
+    gLINK_VARIABLE(.lib) = NEEDLIBS ;    # instead, users link to import libs
+    PREDLL          ?= "" ;
+    NOARSCAN        ?= true ;
+    SHELL_EXPORT    ?= ;
+    SHELL_SET       ?= "set " ;
+    
+    # dwa 6/4/01 - removed compiler determination for boost
+    # added some yacc/lex stuff, assuming cygwin for now.
+    LEX             ?= flex ;
+    YACC            ?= bison -y ;
+    YACCFILES       ?= y.tab ;
+    YACC_OUTPUT     ?= --output= ;
+    LEX_OUTPUT      ?= -o ;
+}
+else if $(OS2)
+{
+    WATCOM          ?= $(watcom) ;
+
+    if ! $(WATCOM)
+    {
+        EXIT On OS2, set WATCOM to the root of the Watcom directory. ;
+    }
+
+    AR              ?= wlib ;
+    BINDIR          ?= \\os2\\apps ;
+    CP              ?= copy ;
+    DOT             ?= . ;
+    DOTDOT          ?= .. ;
+    MV              ?= move ;
+    NOARSCAN        ?= true ;
+    OPTIM           ?= ;
+    RM              ?= del /f ;
+    SLASH           ?= \\ ;
+    SPLITPATH       ?= ";" ; # dwa -- added missing SPLITPATH
+    STDHDRS         ?= $(WATCOM)\\h ;
+    SUFEXE          ?= .exe ;
+    SUFLIB          ?= .lib ;
+    SUFOBJ          ?= .obj ;
+    UNDEFFLAG       ?= "/u _" ;
+
+}
+else if $(VMS)
+{
+    CHMOD           ?= set file/prot= ;
+    CP              ?= copy/replace ;
+    CRELIB          ?= true ;
+    DOT             ?= [] ;
+    DOTDOT          ?= [-] ;
+    EXEMODE         ?= (w:e) ;
+    FILEMODE        ?= (w:r) ;
+    HDRS            ?= ;
+    MKDIR           ?= create/dir ;
+    MV              ?= rename ;
+    OPTIM           ?= "" ;
+    RM              ?= delete ;
+    RUNVMS          ?= mcr ;
+    SHELLMODE       ?= (w:er) ;
+    SLASH           ?= . ;
+    STDHDRS         ?= decc$library_include ;
+    SUFEXE          ?= .exe ;
+    SUFLIB          ?= .olb ;
+    SUFOBJ          ?= .obj ;
+
+    switch $(OS) 
+    {
+    case VMS     : LINKLIBS ?= sys$library:vaxcrtl.olb/lib ;
+    }
+}
+else if $(MAC)
+{
+    local OPT ;
+
+    CW      ?= "{CW}" ;
+
+    MACHDRS ?=
+            "$(UMACHDRS):Universal:Interfaces:CIncludes"
+            "$(CW):MSL:MSL_C:MSL_Common:Include"
+            "$(CW):MSL:MSL_C:MSL_MacOS:Include" ;
+
+    MACLIBS ?=
+            "$(CW):MacOS Support:Universal:Libraries:StubLibraries:Interfacelib"
+            "$(CW):MacOS Support:Universal:Libraries:StubLibraries:Mathlib" ;
+
+    MPWLIBS ?= 
+            "$(CW):MacOS Support:Libraries:Runtime:Runtime PPC:MSL MPWCRuntime.lib"
+            "$(CW):MSL:MSL_C:MSL_MacOS:Lib:PPC:MSL C.PPC MPW.Lib" ;
+
+    MPWNLLIBS ?= 
+            "$(CW):MacOS Support:Libraries:Runtime:Runtime PPC:MSL MPWCRuntime.lib"
+            "$(CW):MSL:MSL_C:MSL_MacOS:Lib:PPC:MSL C.PPC MPW(NL).Lib" ;
+
+    SIOUXHDRS ?= ;
+
+    SIOUXLIBS ?= 
+            "$(CW):MacOS Support:Libraries:Runtime:Runtime PPC:MSL RuntimePPC.lib"
+            "$(CW):MSL:MSL_C:MSL_MacOS:Lib:PPC:MSL SIOUX.PPC.Lib" 
+            "$(CW):MSL:MSL_C:MSL_MacOS:Lib:PPC:MSL C.PPC.Lib" ;
+
+    CP              ?= duplicate -y ;
+    DOT             ?= ":" ;
+    DOTDOT          ?= "::" ;
+    HDRS            ?= $(MACHDRS) $(MPWHDRS) ;
+    MKDIR           ?= newfolder ;
+    MV              ?= rename -y ;
+    NOARSCAN        ?= true ;
+    OPTIM           ?= ;
+    RM              ?= delete -y ;
+    SLASH           ?= ":" ;
+    STDHDRS         ?= ; 
+    SUFLIB          ?= .lib ;
+    SUFOBJ          ?= .o ;
+}
+else if $(OS) = BEOS && $(METROWERKS)
+{
+    AR              ?= mwld -xml -o ;
+    BINDIR          ?= /boot/apps ;
+    FORTRAN         ?= "" ;
+    LIBDIR          ?= /boot/develop/libraries ;
+    MANDIR          ?= /boot/documentation/"Shell Tools"/HTML ;
+    NOARSCAN        ?= true ;
+    STDHDRS         ?= /boot/develop/headers/posix ;
+}
+else if $(OS) = BEOS 
+{
+    BINDIR          ?= /boot/apps ;
+    FORTRAN         ?= "" ;
+    LIBDIR          ?= /boot/develop/libraries ;
+    NOARSCAN        ?= true ;
+    STDHDRS         ?= /boot/develop/headers/posix ;
+}
+else if $(UNIX)
+{
+    switch $(OS)
+    {
+    case AIX :
+        IMPLIB_FLAGS    ?= -bI: ;
+        SUFDLL          ?= .so .imp ;
+        gLINK_VARIABLE(.so) = NEEDLIBS ;  # shared libs should be added to the list of libs needed
+        gLINK_VARIABLE(.imp) = NEEDIMPS ; # import libs are handled separately.
+        gSHELL_LIBPATH = LIBPATH ;
+        
+    case AMIGA :
+        YACC            ?= bison -y ;
+
+    case CYGWIN :       
+        LEX             ?= flex ;
+        RANLIB          ?= "" ;
+        SUFEXE          ?= .exe ;
+        YACC            ?= bison -y ;
+        MKDIR           ?= mkdir -p ;
+        SUFDLL          ?= .dll ;
+
+    case DGUX :
+        RANLIB          ?= "" ;
+        RELOCATE        ?= true ;
+
+    case HPUX :
+        RANLIB          ?= "" ;
+
+    case INTERIX :
+        RANLIB          ?= "" ;
+
+    case IRIX :
+        RANLIB          ?= "" ;
+
+    case MPEIX :
+        HDRS            += /usr/include ;
+        RANLIB          ?= "" ; 
+        NOARSCAN        ?= true ;
+        NOARUPDATE      ?= true ;
+
+    case MVS :
+        RANLIB          ?= "" ; 
+
+    case NEXT :
+        AR              ?= libtool -o ;
+        RANLIB          ?= "" ;
+
+    case MACOSX :
+        MANDIR          ?= /usr/local/share/man ;
+        SUFDLL          ?= .dylib ;
+        gSHELL_LIBPATH  ?= DYLD_LIBRARY_PATH ;
+        NOARSCAN        ?= true ;
+
+    case NCR :
+        RANLIB          ?= "" ;
+
+    case PTX :
+        RANLIB          ?= "" ;
+
+    case QNX :
+        AR              ?= wlib ;
+        NOARSCAN        ?= true ;
+        RANLIB          ?= "" ;
+
+    case SCO :
+        RANLIB          ?= "" ;
+        RELOCATE        ?= true ;
+
+    case SINIX :
+        RANLIB          ?= "" ;
+
+    case SOLARIS :
+        RANLIB          ?= "" ;
+        AR              ?= "/usr/ccs/bin/ar ru" ;
+
+    case UNICOS :
+        NOARSCAN        ?= true ;
+        OPTIM           ?= -O0 ;
+
+    case UNIXWARE :
+        RANLIB          ?= "" ;
+        RELOCATE        ?= true ;
+
+    case OSF :
+        gLINK_VARIABLE(.so) = NEEDLIBS ; # shared objects should be added to the list of libs needed
+    }
+
+    # UNIX defaults
+    CHMOD           ?= chmod ;
+    LEX             ?= lex ;
+    OPTIM           ?= -O ;
+    RANLIB          ?= ranlib ;
+    YACC            ?= yacc ;
+    YACCFILES       ?= y.tab ;
+    YACCFLAGS       ?= -d ;
+    SHELL_EXPORT    ?= "export " ;
+    SHELL_SET       ?= "" ;
+    gSHELL_LIBPATH  ?= LD_LIBRARY_PATH ;
+}
+    
+#
+# General defaults; a lot like UNIX
+#
+
+AR              ?= ar ru ;
+AS              ?= as ;
+ASFLAGS         ?= ;
+AWK             ?= awk ;
+BINDIR          ?= /usr/local/bin ;
+CLONE           ?= $(CP) ;
+CLONE           ?= cp -fp ;
+CP              ?= cp -f ;
+CRELIB          ?= ;
+DOT             ?= . ;
+DOTDOT          ?= .. ;
+EXEMODE         ?= 711 ;
+DLLMODE         ?= 755 ;
+FILEMODE        ?= 644 ;
+FORTRAN         ?= f77 ;
+FORTRANFLAGS    ?= ;
+HDRS            ?= ;
+JAMFILE         ?= Jamfile ;
+JAMRULES        ?= Jamrules ;
+LEX             ?= ;
+LIBDIR          ?= /usr/local/lib ;
+LN              ?= ln ;
+MANDIR          ?= /usr/local/man ;
+MKDIR           ?= mkdir ;
+MV              ?= mv -f ;
+OPTIM           ?= ;
+RCP             ?= rcp ;
+RM              ?= rm -f ;
+RSH             ?= rsh ;
+SED             ?= sed ;
+SHELLHEADER     ?= "#!/bin/sh" ;
+SHELLMODE       ?= 755 ;
+SHELL_EXPORT    ?= ;
+SHELL_SET       ?= "" ;
+SLASH           ?= / ;
+SPLITPATH       ?= ":" ; # dwa -- added missing SPLITPATH
+STDHDRS         ?= /usr/include ;
+SUFEXE          ?= "" ;
+SUFDLL          ?= .so ;
+SUFLIB          ?= .a ;
+SUFOBJ          ?= .o ;
+PREDLL          ?= lib ;
+PRELIB          ?= lib ;
+UNDEFFLAG       ?= "-u _" ;
+YACC            ?= ;
+YACCFILES       ?= ;
+YACCFLAGS       ?= ;
+
+HDRPATTERN = 
+        "^[     ]*#[    ]*include[      ]*([<\"][^\">]*[\">]).*$" ;
+          
+#" My Jam mode gets its syntax highlighting confused without this comment
+
+OSFULL = $(OS)$(OSVER)$(OSPLAT) $(OS)$(OSPLAT) $(OS)$(OSVER) $(OS) ;
+
+#
+# Rule to automate patching of singleton variables from the user so that
+# they are correctly interpreted as a single entry instead of as a list if
+# they happen to contain spaces.
+#
+# This also remembers the first(global) value so that it can be reset
+# when cleared, but used again.
+#
+rule set-as-singleton ( variables + )
+{
+    for local variable in $(variables)
+    {
+        $(variable) = $($(variable):J=" ") ;
+        if ! $(gSINGLETON_SET($(variable)))
+        {
+            gSINGLETON($(variable)) = $($(variable)) ;
+            gSINGLETON_SET($(variable)) = true ;
+        }
+        $(variable) ?= $(gSINGLETON($(variable))) ;
+    }
+}
+
+#
+# "Fix" the known possibly directory variables.
+#
+set-as-singleton
+    BINDIR
+    CW
+    JAMFILE
+    JAMRULES
+    JAMSHELL
+    LIBDIR
+    MANDIR
+    WATCOM
+    ;
+
+#
+# Base dependencies - first for "bootstrap" kinds of rules
+#
+
+# dwa 6/17/01 - added test
+DEPENDS all : shell files lib dll exe obj ;
+DEPENDS all shell files lib dll exe obj test : first ;
+NOTFILE all first shell files lib dll exe obj dirs clean uninstall test ;
+ALWAYS clean uninstall ;
+
+#
+# Rules
+#
+
+# dwa 6/4/01 - added for boost
+# type-DEPENDS type : targets...
+#
+# Use this to create a dependency between a fake type-target and other targets. Will prevent
+# targets in dependee subprojects from being added to the type-target's dependencies.
+rule type-DEPENDS # type-target : targets...
+{
+    if ! $(gSUPPRESS_FAKE_TARGETS) && ! $(gIN_LIB_INCLUDE)
+    {
+        DEPENDS $(<) : $(>) ;
+    }
+}
+
+# dwa 6/4/01 - added for boost
+# Archive file-target : sources
+#
+# Used to dispatch through Archive-action, which should be redefined in toolset
+# description files.
+rule Archive
+{
+    Archive-action $(<) : $(>) ;
+}
+
+rule As
+{
+    DEPENDS $(<) : $(>) ;
+    ASFLAGS on $(<) += $(ASFLAGS) $(SUBDIRASFLAGS) ;
+}
+
+rule Bulk
+{
+    local i ;
+
+    for i in $(>)
+    {
+        File $(i:D=$(<)) : $(i) ;
+    }
+}
+
+# dwa 6/4/01 - modified for boost
+# factored out stuff from the builtin Cc and C++ rules
+rule Cc-platform-specifics
+{
+    # If the compiler's -o flag doesn't work, relocate the .o
+
+    if $(RELOCATE)
+    {
+        CcMv $(<) : $(>) ;
+    }
+
+    local _h = $(SEARCH_SOURCE) $(HDRS) ;
+
+    if $(VMS) && $(_h)
+    {
+        SLASHINC on $(<) = "/inc=(" $(_h[1]) ,$(_h[2-]) ")" ;
+    }
+    else if $(MAC) && $(_h)
+    {
+        local _i _j ;
+        _j = $(_h[1]) ;
+        for _i in $(_h[2-])
+        {
+            _j = $(_j),$(_i) ;
+        }
+        MACINC on $(<) = \"$(_j)\" ;
+    }
+}
+
+# dwa 6/4/01 - added for boost
+# always-c++ filename...
+#
+# declares that the given files should be compiled as C++, regardless of their
+# filename extension.
+rule always-c++
+{
+    gALWAYS_C++ += [ FGristFiles $(<) ] ;
+}
+
+# dwa 6/4/01 - modified for boost
+rule Cc
+{
+    DEPENDS $(<) : $(>) ;
+
+    Cc-platform-specifics $(<) : $(>) ;
+
+    if $(>) in $(gALWAYS_C++)
+    {
+        C++-action $(<) : $(>) ;
+    }
+    else
+    {
+        Cc-action $(<) : $(>) ;
+    }
+}
+
+# dwa 6/4/01 - modified for boost
+rule C++
+{
+    DEPENDS $(<) : $(>) ;
+
+    Cc-platform-specifics $(<) : $(>) ;
+    
+    C++-action $(<) : $(>) ;
+}
+
+rule Chmod
+{
+    if $(CHMOD) { Chmod1 $(<) ; }
+}
+
+# dwa 6/4/01 - added for boost
+# conditional <cond> : <true-value> : <false-value>
+# returns <true-value> if <cond>, <false-value> otherwise
+rule conditional
+{
+    if $(1) { return $(2) ; } else { return $(3) ; }
+}
+
+# dwa 6/4/01 - modified for boost
+rule File
+{
+    type-DEPENDS files : $(<) ;
+    DEPENDS $(<) : $(>) ;
+    SEARCH on $(>) = $(SEARCH_SOURCE) ;
+    MODE on $(<) = $(FILEMODE) ;
+    Chmod $(<) ;
+}
+
+rule FileClone
+{
+    type-DEPENDS files : $(<) ;
+    DEPENDS $(<) : $(>) ;
+    SEARCH on $(>) = $(SEARCH_SOURCE) ;
+}
+
+rule Fortran
+{
+    DEPENDS $(<) : $(>) ;
+}
+
+rule GenFile 
+{
+    local _t = [ FGristSourceFiles $(<) ] ;
+    local _s = [ FAppendSuffix $(>[1]) : $(SUFEXE) ] ;
+    Depends $(_t) : $(_s) $(>[2-]) ;
+    GenFile1 $(_t) : $(_s) $(>[2-]) ;
+    Clean clean : $(_t) ;
+}
+
+rule GenFile1
+{
+    MakeLocate $(<) : $(LOCATE_SOURCE) ;
+    SEARCH on $(>) = $(SEARCH_SOURCE) ;
+}
+
+# dwa 6/4/01 - modified for boost
+rule HardLink
+{
+    type-DEPENDS files : $(<) ;
+    DEPENDS $(<) : $(>) ;
+    SEARCH on $(>) = $(SEARCH_SOURCE) ;
+}
+
+rule HdrRule
+{
+    # HdrRule source : headers ;
+
+    # N.B.  This rule is called during binding, potentially after
+    # the fate of many targets has been determined, and must be
+    # used with caution: don't add dependencies to unrelated
+    # targets, and don't set variables on $(<).
+
+    # Tell Jam that anything depending on $(<) also depends on $(>),
+    # set SEARCH so Jam can find the headers, but then say we don't
+    # care if we can't actually find the headers (they may have been
+    # within ifdefs),
+
+    local angle-includes = [ subst-list $(>) : "<(.+)>" ] ;
+    local quoted-includes = [ subst-list $(>) : "\"(.+)\"" ] ;
+
+    local s ;
+
+    if $(HDRGRIST) 
+    { 
+        angle-includes = $(angle-includes:G=$(HDRGRIST)) ;
+        quoted-includes = $(quoted-includes:G=$(HDRGRIST)) ;
+    } 
+
+    local s = $(angle-includes) $(quoted-includes) ;
+
+    INCLUDES $(<) : $(s) ;
+    SEARCH on $(angle-includes) = $(HDRSEARCH)  ;
+    SEARCH on $(quoted-includes) = $(gBINDING($(<)):D) $(HDRSEARCH)  ;
+    NOCARE $(s) ;
+
+    BINDRULE on $(s) = remember-binding ;
+
+    # Propagate on $(<) to $(>)
+
+    HDRSEARCH on $(s) = $(HDRSEARCH) ;
+    HDRSCAN on $(s) = $(HDRSCAN) ;
+    HDRRULE on $(s) = $(HDRRULE) ;
+    HDRGRIST on $(s) = $(HDRGRIST) ;
+}
+
+# dwa 6/4/01 - modified for boost
+rule InstallInto
+{
+    local i t ;
+
+    t = $(>:G=installed) ;
+
+    type-DEPENDS install : $(t) ;
+    DEPENDS $(t) : $(>) ;
+    SEARCH on $(>) = $(SEARCH_SOURCE) ;
+    MakeLocate $(t) : $(<) ;
+
+    # Arrange for jam uninstall
+
+    Clean uninstall : $(t) ;
+
+    for i in $(>)
+    {
+        Install $(i:G=installed) : $(i) ;
+    }
+
+    Chmod $(t) ;
+
+    if $(UNIX)
+    {
+        if $(OWNER) { Chown $(t) ; OWNER on $(t) = $(OWNER) ; }
+        if $(GROUP) { Chgrp $(t) ; GROUP on $(t) = $(GROUP) ; }
+    }
+}
+
+rule InstallBin
+{
+    local _t = [ FAppendSuffix $(>) : $(SUFEXE) ] ;
+
+    InstallInto $(<) : $(_t) ;
+    MODE on $(_t:G=installed) = $(EXEMODE) ;
+}
+
+rule InstallFile
+{
+    InstallInto $(<) : $(>) ;
+    MODE on $(>:G=installed) = $(FILEMODE) ;
+}
+
+rule InstallLib
+{
+    InstallInto $(<) : $(>) ;
+    MODE on $(>:G=installed) = $(FILEMODE) ;
+}
+
+rule InstallMan
+{
+    # Really this just strips the . from the suffix
+
+    local i s d ;
+
+    for i in $(>)
+    {
+        switch $(i:S)
+        {
+        case .1 : s = 1 ; case .2 : s = 2 ; case .3 : s = 3 ;
+        case .4 : s = 4 ; case .5 : s = 5 ; case .6 : s = 6 ;
+        case .7 : s = 7 ; case .8 : s = 8 ; case .l : s = l ;
+        case .n : s = n ; case .man : s = 1 ;
+        }
+
+        d = man$(s) ;
+
+        InstallInto $(d:R=$(<)) : $(i) ;
+    }
+
+    MODE on $(>:G=installed) = $(FILEMODE) ;
+}
+
+rule InstallShell
+{
+    InstallInto $(<) : $(>) ;
+    MODE on $(>:G=installed) = $(SHELLMODE) ;
+}
+
+# dwa 6/4/01 - modified for boost
+rule Lex # file.c : file.l
+{
+    # If we don't have a way of specifying the lex output file, we'll have to move it
+    # We'd rather not do this if possible because: a. lex generates #line
+    # directives for the output file which would refer to the wrong place and
+    # b. the Jam invocation directory could be read-only
+    if ! $(LEX_OUTPUT)
+    {
+        LexMv $(<) : $(>) ;
+    }
+    
+    DEPENDS $(<) : $(>) ;
+    MakeLocate $(<) : $(LOCATE_SOURCE) ;
+    SEARCH on $(<) = $(LOCATE_SOURCE) ;
+    Clean clean : $(<) ;
+}
+
+# dwa 6/4/01 - modified for boost
+rule Library
+{
+    LibraryFromObjects $(<) : [ Objects $(>) ] ;
+}
+
+# dwa 6/4/01 - modified for boost
+rule LibraryFromObjects
+{
+    local _i _l ;
+
+    _l = $(<:S=$(SUFLIB)) ;
+
+    # library depends on its member objects
+
+    if $(KEEPOBJS)
+    {
+        type-DEPENDS obj : $(>) ;
+    }
+    else
+    {
+        type-DEPENDS lib : $(_l) ;
+    }
+
+    # Set LOCATE for the library and its contents.  The bound
+    # value shows up as $(NEEDLIBS) on the Link actions.
+    # For compatibility, we only do this if the library doesn't
+    # already have a path.
+
+    if ! $(_l:D)
+    {
+        MakeLocate $(_l) $(_l)($(>:BS)) : $(LOCATE_TARGET) ;
+    }
+
+    if $(NOARSCAN) 
+    { 
+        # If we can't scan the library to timestamp its contents,
+        # we have to just make the library depend directly on the
+        # on-disk object files.  
+
+        DEPENDS $(_l) : $(>) ;
+    }
+    else
+    {
+        # If we can scan the library, we make the library depend
+        # on its members and each member depend on the on-disk
+        # object file.
+
+        DEPENDS $(_l) : $(_l)($(>:BS)) ;
+
+        for _i in $(>)
+        {
+            DEPENDS $(_l)($(_i:BS)) : $(_i) ;
+        }
+    }
+
+    Clean clean : $(_l) ;
+
+    if $(CRELIB) { CreLib $(_l) : $(>[1]) ; }
+
+    Archive $(_l) : $(>) ;
+
+    if $(RANLIB) { Ranlib $(_l) ; }
+
+    # If we can't scan the library, we have to leave the .o's around.
+
+    if ! ( $(NOARSCAN) || $(KEEPOBJS) ) { RmTemps $(_l) : $(>) ; }
+}
+
+# dwa 6/4/01 - modified for boost to dispatch through Link-action and to pass
+# the target-type through. *** NOW UNUSED BY BOOST ***
+#
+# Link executable-target : object-target...
+rule Link
+{
+    MODE on $(<) = $(EXEMODE) ;
+    Link-action $(<) : $(>) : $(3) ;
+    Chmod $(<) ;
+}
+
+rule LinkLibraries
+{
+    # make library dependencies of target
+    # set NEEDLIBS variable used by 'actions Main'
+
+    local _t = [ FAppendSuffix $(<) : $(SUFEXE) ] ;
+
+    DEPENDS $(_t) : $(>:S=$(SUFLIB)) ;
+    NEEDLIBS on $(_t) += $(>:S=$(SUFLIB)) ;
+}
+
+# dwa 6/4/01 - modified for boost
+rule Main
+{
+    MainFromObjects $(<) : [ Objects $(>) ] ;
+}
+
+# dwa 6/4/01 - modified for boost
+rule MainFromObjects
+{
+    local _s _t ;
+
+    # Add grist to file names
+    # Add suffix to exe
+
+    _s = $(>) ;
+    _t = [ FAppendSuffix $(<) : $(SUFEXE) ] ;
+
+    if $(_t) != $(<)
+    {
+        DEPENDS $(<) : $(_t) ;
+        NOTFILE $(<) ;
+    }
+
+    # make compiled sources a dependency of target
+
+    type-DEPENDS exe : $(_t) ;
+    DEPENDS $(_t) : $(_s) ;
+    MakeLocate $(_t) : $(LOCATE_TARGET) ;
+
+    Clean clean : $(_t) ;
+
+    Link $(_t) : $(_s) ;
+}
+
+# dwa 6/4/01 - modified for boost
+rule MakeLocate
+{
+    if $(>)
+    {
+        LOCATE on $(<) = $(>) ;
+
+        # provide a way to get back the location from a built target name.
+        gLOCATE($(<)) = $(>) ; 
+        
+        # We add directory-grist here so that implicitly-created directory
+        # target names don't collide with user-specified targets.
+        Depends $(<) : [ MkDir $(>[1]:G=directory-grist) ] ;
+    }
+}
+
+# now returns the created directory target -- dwa
+rule MkDir
+{
+    # If dir exists, don't update it
+    # Do this even for $(DOT).
+
+    local dir = $(<) ;
+    if $(NT)
+    {
+        # make sure slashes all go the right way
+        dir = [ split-path $(dir) ] ;
+        dir = $(dir:J=$(SLASH)) ;
+    }
+    
+    local result = $(dir) ;
+    
+    while $(dir) && ( $(dir) != $(DOT) ) && ! $($(dir)-mkdir) 
+    {
+        # Cheesy gate to prevent multiple invocations on same dir
+        # MkDir1 has the actions 
+        # Arrange for jam dirs
+
+        $(dir)-mkdir = true ;
+        MkDir1 $(dir) ;
+        Depends dirs : $(dir) ;
+        NOUPDATE $(dir) ;
+
+
+        # Recursively make parent directories.
+        # $(dir:P) = $(dir)'s parent, & we recurse until root
+
+        local s = $(dir:P) ;
+
+        if $(NT)
+        {
+            switch $(s)
+            {
+            case *:   : s = ;
+            case *:\\ : s = ;
+            }
+        }
+
+        if $(s) && $(s) != $(dir)
+        {
+            Depends $(dir) : $(s) ;
+            dir = $(s) ;
+        }
+        else 
+        {
+            dir = ; # stop iterating
+            if $(s) { NOTFILE $(s) ; }
+        }
+    }
+    return $(result) ;
+}
+
+# dwa 6/4/01 - modified for boost
+rule Object
+{
+    local h ;
+
+    type-DEPENDS obj : $(<) ;
+    set-target-variables $(<) ;
+    
+    # Make it possible to compile a given source file by giving its
+    # object file name as a target.
+    type-DEPENDS $(<:G=) : $(<) ; 
+    
+    # locate object and search for source, if wanted
+
+    Clean clean : $(<) ;
+
+    MakeLocate $(<) : $(LOCATE_TARGET) ;
+    SEARCH on $(>) = $(SEARCH_SOURCE) ;
+
+    # Save HDRS for -I$(HDRS) on compile.
+    # We shouldn't need -I$(SEARCH_SOURCE) as cc can find headers
+    # in the .c file's directory, but generated .c files (from
+    # yacc, lex, etc) are located in $(LOCATE_TARGET), possibly
+    # different from $(SEARCH_SOURCE).
+
+    # Use unique to clean up confusing duplicates a bit
+    HDRS on $(<) = [ unique $(LOCATE_SOURCE) $(HDRS) ] ;
+
+    # Set STDHDRS on the object so that multi-compiler builds will search for
+    # headers in the right places. 
+    STDHDRS on $(<) = $(STDHDRS) ;
+
+    # handle #includes for source: Jam scans for headers with
+    # the regexp pattern $(HDRSCAN) and then invokes $(HDRRULE)
+    # with the scanned file as the target and the found headers
+    # as the sources.  HDRSEARCH is the value of SEARCH used for
+    # the found header files.  Finally, if jam must deal with 
+    # header files of the same name in different directories,
+    # they can be distinguished with HDRGRIST.
+
+    # $(h) is where cc first looks for #include "foo.h" files.
+    # If the source file is in a distant directory, look there.
+    # Else, look in "" (the current directory).
+
+    if $(SEARCH_SOURCE)
+    {
+        h = $(SEARCH_SOURCE)$(SLASH)$(>:D) ;
+    }
+    else
+    {
+        h = $(>:D) ;
+    }
+
+    HDRRULE on $(>) = HdrRule ;
+    HDRSCAN on $(>) = $(HDRPATTERN) ;
+    HDRSEARCH on $(>) = $(HDRS) $(h) $(STDHDRS) ;
+    HDRGRIST on $(>) = $(HDRGRIST) ;
+
+    # if source is not .c, generate .c with specific rule
+
+    # make sure we don't generate the same object twice.
+    if ! $(gGENERATED_TARGET($(<)))
+    {
+        switch $(>:S)
+        {
+            case .asm : As $(<) : $(>) ;
+            case .c :   Cc $(<) : $(>) ;
+            case .C :   C++ $(<) : $(>) ;
+            case .cc :  C++ $(<) : $(>) ;
+            case .cpp : C++ $(<) : $(>) ;
+            case .cxx : C++ $(<) : $(>) ;
+            case .f :   Fortran $(<) : $(>) ;
+            case .s :   As $(<) : $(>) ;
+            case * :    UserObject $(<) : $(>) ;
+        }
+        gGENERATED_TARGET($(<)) = true ;
+    }
+}
+    
+# dwa 6/4/01 - added for boost
+# Return the corresponding object file target names given a list of source file
+# target names.
+rule object-name # sources...
+{
+    return $(<:D=:S=$(SUFOBJ):G=$(TARGET_GRIST)) ;
+}
+
+# dwa 6/4/01 - added for boost
+# Build a generated source file from input-target, and build whatever that file generates.
+# Return a list of all object target names ultimately generated by recursively
+# building the products of input-target.
+rule gen-source # source => object-file-names
+{
+    local suffix = .c ;
+    if $(<:S) in .lpp .ypp
+    {
+        suffix = .cpp ;
+    }
+    
+    local immediate-target = $(<:D=:S=$(suffix):G=$(SOURCE_GRIST)) ;
+    # make sure we don't regenerate sources twice.
+    if ! $(gGENERATED_TARGET($(immediate-target)))
+    {
+        switch $(<:S)
+        {
+         case .l* : Lex $(immediate-target) : $(<) ; SEARCH on $(<) = $(SEARCH_SOURCE) ;
+         case .y* : Yacc $(immediate-target) : $(<) ; SEARCH on $(<) = $(SEARCH_SOURCE) ;
+        }
+        gGENERATED_TARGET($(immediate-target)) = true ;
+    }
+    return [ Objects $(immediate-target) ] ;
+}
+
+# dwa 6/4/01 - added for boost
+# A list of all file extensions which generate source files when built.
+SOURCE_GENERATING_EXTENSIONS ?= .lpp .ypp .l .y ;
+
+# dwa 6/4/01 - modified for boost
+# Build all object files generated by building $(<), and return a list of the
+# names of those object file targets.
+rule Objects
+{
+    local _i _n _r ;
+
+
+    for _i in $(<)
+    {
+        if $(_i:S) in $(SOURCE_GENERATING_EXTENSIONS)
+        {
+            _n = [ gen-source $(_i) ] ;
+        }
+        else
+        {
+            _n = [ object-name $(_i) ] ;
+            Object $(_n) : $(_i) ;
+        }
+        _r += $(_n) ;
+    }
+    
+    return $(_r) ;
+}
+
+rule RmTemps
+{
+    TEMPORARY $(>) ;
+}
+
+rule Setuid
+{
+    MODE on [ FAppendSuffix $(<) : $(SUFEXE) ] = 4711 ;
+}
+
+# dwa 6/4/01 - modified for boost
+rule Shell
+{
+    type-DEPENDS shell : $(<) ;
+    DEPENDS $(<) : $(>) ;
+    SEARCH on $(>) = $(SEARCH_SOURCE) ;
+    MODE on $(<) = $(SHELLMODE) ;
+    Clean clean : $(<) ;
+    Chmod $(<) ;
+}
+
+# dwa 6/7/01 - added for boost
+# subproject path
+#
+# Invokes SubDir with a path description
+rule subproject
+{
+   SubDir TOP [ split-path $(<) ] ;
+}
+
+# dwa 6/18/01 - added for boost
+# project-root
+#
+# Declares this directory to be the project root.
+rule project-root
+{
+    SubDir TOP ;
+}
+
+# dwa 6/7/01 - added for boost
+# subinclude path...
+#
+# Invokes SubInclude for each path
+rule subinclude
+{
+    local d ;
+    for d in $(<)
+    {
+        SubInclude TOP [ split-path $(d) ] ;
+    }
+}
+
+# dwa 10/6/01 - added for boost
+#
+# path-global variable-name : path... ;
+#
+# if $(variable-name) is unset, sets variable-name to path...
+# variable-name will be adjusted on a per-subproject basis to refer to the same path.
+rule path-global
+{
+    $(<) ?= $(>) ;
+    gPATH_GLOBAL_VALUE($(<)) = $($(<)) ;
+    
+    if ! ( $(<) in $(gPATH_GLOBALS) )
+    {
+        gPATH_GLOBALS += $(<) ;
+    }
+}
+
+# dwa 6/4/01 - modified for boost
+rule SubDir
+{
+    local _r ;
+
+    #
+    # SubDir TOP d1 [ ... ]
+    #
+    # This introduces a Jamfile that is part of a project tree 
+    # rooted at $(TOP).  It (only once) includes the project-specific
+    # rules file $(TOP)/Jamrules and then sets search & locate stuff.
+    #
+    # If the variable $(TOPRULES) is set (where TOP is the first arg 
+    # to SubDir), that file is included instead of $(TOP)/Jamrules.
+    #
+    # d1 ... are the directory elements that lead to this directory 
+    # from $(TOP).  We construct the system dependent path from these
+    # directory elements in order to set search&locate stuff.
+    # 
+
+    if ! $($(<[1]))
+    {
+        if ! $(<[1])
+        {
+            EXIT SubDir syntax error ;
+        }
+
+        $(<[1]) = [ FSubDir $(<[2-]) ] ;
+        $(<[1])_TOKENS = [ split-path $($(<[1])) ] ;
+        gTOP = $(<[1]) ; #  not sure why someone would want to use anything
+                         # other than TOP, but just in case...
+    }
+
+    #
+    # If $(TOP)/Jamrules hasn't been included, do so.
+    #
+
+    if ! $(gINCLUDED($(gTOP)))
+    {
+        # Gated entry.
+
+        gINCLUDED($(gTOP)) = TRUE ;
+
+        # File is $(TOPRULES) or $(TOP)/Jamrules.
+
+        _r = $($(gTOP)RULES) ;
+
+        if ! $(_r)
+        {
+            _r = $(JAMRULES:R=$($(gTOP))) ;
+        }
+
+        # Include it.
+
+        include $(_r) ;
+    }
+
+    # Get path to current directory from root using SubDir.
+    # Save dir tokens for other potential uses.
+    SUBDIR_TOKENS = $(<[2-]) ;
+    
+    # This allows us to determine whether we're in the directory where jam was
+    # invoked from so that we can make locally named targets
+    gINVOCATION_SUBDIR_TOKENS ?= $(SUBDIR_TOKENS) ;
+    gINVOCATION_SUBDIR_TOKENS ?= $(DOT) ;
+
+    # SUBDIR is the path from the invocation directory to the subproject
+    # directory.
+    SUBDIR = [ tokens-to-simple-path $($(gTOP)_TOKENS)  $(SUBDIR_TOKENS) ] ;
+
+    SEARCH_SOURCE = $(SUBDIR) ;
+
+    # This will strip off any leading dot on SUBDIR_TOKENS
+    local nodot_subdir = [ simplify-path-tokens $(SUBDIR_TOKENS) ] ;
+
+    normalized_ALL_LOCATE_TARGET ?= [ join-path $($(gTOP)) $(ALL_LOCATE_TARGET) ] ;
+    LOCATE_SOURCE = [ FDirName $(normalized_ALL_LOCATE_TARGET) $(nodot_subdir) ] ;
+    LOCATE_TARGET = $(LOCATE_SOURCE) ;
+    HCACHEFILE ?= $(LOCATE_TARGET)/.jamdeps ;
+    
+    SOURCE_GRIST = [ FGrist $(<[2-]) ] ;
+
+    # Reset per-directory ccflags, hdrs
+
+    SUBDIRCCFLAGS = ;
+    SUBDIRC++FLAGS = ;
+
+    # This variable holds the path from the directory of Jam's invocation to the
+    # directory of the current subproject.
+    RELATIVE_SUBDIR_TOKENS = [ simplify-path-tokens $($(gTOP)_TOKENS) $(SUBDIR_TOKENS) : $(DOT) ] ;
+    RELATIVE_SUBDIR = [ join-path $(RELATIVE_SUBDIR_TOKENS) ] ;
+
+    adjust-path-globals ;
+}
+
+rule in-invocation-subdir
+{
+    local subdir-tokens = $(SUBDIR_TOKENS) ;
+    subdir-tokens ?= $(DOT) ;
+    if $(subdir-tokens) = $(gINVOCATION_SUBDIR_TOKENS)
+    {
+        return true ;
+    }
+}
+
+# These are the global variables that get set up by SubDir. If you need to
+# invoke SubDir temporarily and then restore them, declare
+#       local $(gSUBDIR_GLOBALS) ;
+gSUBDIR_GLOBALS = SUBDIR SUBDIR_TOKENS SEARCH_SOURCE LOCATE_SOURCE LOCATE_TARGET
+    SOURCE_GRIST RELATIVE_SUBDIR RELATIVE_SUBDIR_TOKENS ; 
+
+
+rule protect-subdir
+{
+    return $(gSUBDIR_GLOBALS) $(gPATH_GLOBALS) ;
+}
+
+# prepends root to any unrooted elements of paths, and simplifies
+rule root-paths # paths... : root
+{
+    local path result ;
+    for path in $(<)
+    {
+        local rooted = $(path:R=$(>)) ;
+        if $(rooted) != $(path)
+        {
+            path = [ tokens-to-simple-path [ split-path $(rooted:G=) ] ] ;
+            path = $(path:G=$(rooted:G)) ;
+        }
+        result += $(path) ;
+    }
+    return $(result) ;
+}
+
+# Adjust all path globals so that they are relative to the current subproject.
+rule adjust-path-globals
+{
+    # compute path tokens from current subproject to root
+    local tokens-to-root = [ split-path [ FSubDir $(SUBDIR_TOKENS) ] ] ;
+    
+    # compute path tokens from current subproject to invocation
+    # directory. $(DOT) is added just in case we're building from the project
+    # root
+    local tokens-to-invocation
+        = $(tokens-to-root) $(gINVOCATION_SUBDIR_TOKENS) ;
+         
+    local variable ;
+    for variable in $(gPATH_GLOBALS)
+    {
+        local paths = $(gPATH_GLOBAL_VALUE($(variable))) ;
+        $(variable) = ;
+        local path ;
+        for path in $(paths)
+        {
+            # is path already rooted?
+            if $(path:R=x) = $(path)
+            {
+                $(variable) += $(path) ;
+            }
+            else
+            {
+                local tokens = $(tokens-to-invocation) [ split-path $(path) ] ;
+                $(variable) += [ tokens-to-simple-path $(tokens) ] ;
+            }
+        }
+    }
+}
+
+# dwa 6/4/01 - added for boost
+# strip-grist value
+#
+# strip all leading gristed elements from value and return the result.
+rule strip-grist
+{
+    local x = $(<:G=) ;
+    if ! $(x:G)
+    {
+        return $(x) ;
+    }
+    else
+    {
+        return [ strip-grist $(x) ] ;
+    }
+}
+
+# dwa 6/4/01 - added for boost
+# Breaks $(<) into path components
+# This could certainly be improved now that we have David Turner's regular expression features.
+#
+# split-path <foo>bar/<bee>baz/mumble  => <foo>bar <bee>baz mumble 
+rule split-path
+{
+    local result = $(gSPLIT-PATH.$(<)) ;
+
+    if ! $(result)
+    {
+        local parent = $(<:P) ;
+        if $(NT)
+        {
+            switch $(<:G=)
+            {
+                # It turns out that to match a backslash, you need a /quadruple/ slash
+                # in the case clause!
+                case *\\\\*:* : # continue splitting
+                  case *:\\\\*\\\\* :  # continue splitting
+                  case *:/*\\\\* :  # continue splitting
+                  case *:\\\\*/* :  # continue splitting
+                  case *:/*/* :  # continue splitting
+                  case *:/* : result = $(<) ;
+                case *:\\\\* : result = $(<) ;
+                case *: : result = $(<) ;
+            }
+        }
+
+        if ( ! $(<:B) ) && ( $(<) != $(DOT) ) # handle the case where $(<) is all grist.
+        {
+            result ?= $(<:G) ;
+        }
+        else if ( ! $(parent:G=) )
+        {
+            result ?= $(<) ;
+        }
+        else
+        {
+            local p = [ split-path $(parent) ] ;
+            local b = [ strip-grist $(<) ] ;
+            p += $(b:D=) ; # can't use :B here because it destroys . and ..
+            result ?= $(p) ;
+        }
+        gSPLIT-PATH.$(<) = $(result) ;
+    }
+    return $(result) ;
+}
+
+rule split ( string separator )
+{
+    local result ;
+    local s = $(string) ;
+    
+    while $(s)
+    {
+        local match = [ MATCH ^(.*)$(separator)(.*) : $(s) ] ;
+        
+        local tail = $(match[2]) ;
+        tail ?= $(s) ;
+
+        result = $(tail) $(result) ;
+        s = $(match[1]) ;
+    }
+    return $(result) ;
+}
+
+rule split-path ( path )
+{
+    if ! $(gSPLIT_PATH_CACHE($(path)))
+    {
+        gSPLIT_PATH_CACHE($(path)) =
+          [ MATCH  "^([/$(SLASH)]+).*" : $(path) ] # rooting slash(es), if any
+            [ split $(path) "[/$(SLASH)]" ]        # the rest.
+              ;
+    }
+    return $(gSPLIT_PATH_CACHE($(path))) ;
+}
+
+# dwa 6/4/01 - added for boost
+# reverse item1 item2... 
+#
+# Returns ...item2 item1
+rule reverse
+{
+    local result ;
+    for x in $(<)
+    {
+        result = $(x) $(result) ;
+    }
+    return $(result) ;
+}
+
+# dwa 6/28/01 - added for boost
+# strip-initial tokens... : input
+#
+# if input begins with tokens, remove the initial sequence of tokens and return
+# the rest. Otherwise return input unchanged.
+rule strip-initial
+{
+    local result = $(>) ;
+    local t ;
+    local matched = true ;
+    for t in $(<)
+    {
+        if $(matched) && ( $(t) = $(result[1]) )
+        {
+            result = $(result[2-]) ;
+        }
+        else
+        {
+            matched = ;
+            result = $(>) ;
+        }
+    }
+    return $(result) ;
+}
+
+# dwa 6/4/01 - added for boost
+# simplify-path-tokens token1 token2 ... tokenN : DOT-opt
+#
+# Remove redundant information from the given path elements
+# if DOT-opt is supplied, empty results are replaced with
+# $(DOT-opt).
+#
+# [ simplify-path-tokens a b . c .. .. d e ] => a d e
+# [ simplify-path-tokens a b .. .. .. d e ]  => .. d e
+# [ simplify-path-tokens .. .. d e : xxx ]   => .. .. d e (provided TOP != ../..)
+# [ simplify-path-tokens a b .. .. : xxx ]   => xxx
+rule simplify-path-tokens
+{
+    local reverse-path = [ reverse $(<) ] ;
+    local dotdots ;
+    local result ;
+    local token ;
+    for token in $(reverse-path)
+    {
+        if $(token) = $(DOT)
+        {
+        }
+        else if $(token) = $(DOTDOT)
+        {
+            dotdots += $(token) ;
+        }
+        else if $(dotdots)
+        {
+            dotdots = $(dotdots[2-]) ;
+        }
+        else
+        {
+            result = $(token) $(result) ;
+        }
+    }
+
+    result = $(dotdots) $(result) ;
+    result = [ strip-initial $($(gTOP)_TOKENS) $(gINVOCATION_SUBDIR_TOKENS) : $(result) ] ;
+    result ?= $(>) ;
+    return $(result) ;
+}
+
+rule tokens-to-simple-path
+{
+    return [ FDirName [ simplify-path-tokens  $(<) ] ] ;
+}
+
+rule SubDirCcFlags
+{
+    SUBDIRCCFLAGS += $(<) ;
+}
+
+rule SubDirC++Flags
+{
+    SUBDIRC++FLAGS += $(<) ;
+}
+
+rule SubDirHdrs
+{
+    SUBDIRHDRS += $(<) ;
+}
+
+rule SubInclude
+{
+    local _s ;
+
+    # That's
+    #       SubInclude TOP d1 [ d2 [ d3 [ d4 ] ] ]
+    #
+    # to include a subdirectory's Jamfile.
+
+    if ! $($(<[1]))
+    {
+        EXIT Top level of source tree has not been set with $(<[1]) ;
+    }
+
+    _s = [ FDirName $(<[2-]) ] ;
+
+    # protect variables from being permanently set by SubDir invocations
+    # in included files.
+    local [ protect-subdir ] ;
+    local jamfile-path
+        = [ tokens-to-simple-path
+            [ split-path $(JAMFILE:D=$(_s):R=$($(<[1]))) ] ] ;
+    load-jamfiles $(jamfile-path) ;
+}
+
+# Load a user's Jamfile(s).
+#
+rule load-jamfiles ( jamfiles * )
+{
+    # First we load the Jamfiles without generation of main targets so that
+    # dependencies are preloaded. Then we reload the files with target
+    # generation enabled.
+    
+    local jamfile ;
+    local as-dependant = $(gIN_LIB_INCLUDE) ;
+    local gIN_LIB_INCLUDE ;
+    
+    gIN_LIB_INCLUDE = TRUE ;
+    for jamfile-path in $(jamfiles)
+    {
+        if ! $(gINCLUDED_AS_DEPENDANT($(jamfile-path)))
+        {
+            gINCLUDED_AS_DEPENDANT($(jamfile-path)) = TRUE ;
+            include $(jamfile-path) ;
+        }
+    }
+    
+    if ! $(as-dependant)
+    {
+        gIN_LIB_INCLUDE = ;
+        for jamfile-path in $(jamfiles)
+        {
+            if ! $(gINCLUDED($(jamfile-path)))
+            {
+                gINCLUDED(#(jamfile-path)) = TRUE ;
+                include $(jamfile-path) ;
+            }
+        }
+    }
+}
+
+rule Undefines
+{
+    UNDEFS on [ FAppendSuffix $(<) : $(SUFEXE) ] += $(UNDEFFLAG)$(>) ;
+}
+
+rule UserObject
+{
+    EXIT "Unknown suffix on" $(>) "- see UserObject rule in Jamfile(5)." ;
+}
+
+# dwa 6/4/01 - modified for boost
+rule Yacc
+{
+    local _h ;
+
+    # Can't just replace .cpp with .h, because bison seems to generate a .cpp.h file
+    _h = $(<).h ;
+
+    # Some places don't have a yacc.
+
+    MakeLocate $(<) $(_h) : $(LOCATE_SOURCE) ;
+    SEARCH on $(<) $(_h) = $(LOCATE_SOURCE) ;
+
+    if $(YACC)
+    {
+        DEPENDS $(<) $(_h) : $(>) ;
+
+        # if YACC can accept an output file, we'll just generate the file there.
+        YACCFILES on $(<) $(_h) = [ join-path $(LOCATE_SOURCE) $(<[1]) ] ;
+        
+        Yacc1 $(<) $(_h) : $(>) ;
+        
+        if ! $(YACC_OUTPUT)
+        {
+            YaccMv $(<) $(_h) : $(>) ;
+        }
+        
+        Clean clean : $(<) $(_h) ;
+    }
+
+    # make sure someone includes $(_h) else it will be
+    # a deadly independent target
+
+    INCLUDES $(<) : $(_h) ;
+}
+
+rule remember-binding ( target : bound-path ) {
+    gBINDING($(target)) = $(bound-path) ;
+}
+
+rule subst-list ( list + : pattern ) {
+    local result ;
+    for local i in $(list) {
+        result += [ MATCH "($(pattern))" : $(i) ] ;
+    }
+    return $(result) ;
+}
+
+#
+# Utility rules; no side effects on these
+#
+
+rule FGrist
+{
+    # Turn individual elements in $(<) into grist.
+
+    local _g _i ;
+
+    _g = $(<[1]) ;
+
+    for _i in $(<[2-])
+    {
+        _g = $(_g)!$(_i) ;
+    }
+
+    return $(_g) ;
+}
+
+rule FGristFiles 
+{
+    if ! $(SOURCE_GRIST)
+    {
+        return $(<) ;
+    }
+    else 
+    {
+        return $(<:G=$(SOURCE_GRIST)) ;
+    }
+}
+
+# dwa 6/4/01 - modified for boost
+rule FGristSourceFiles
+{
+    # Produce source file name name with grist in it, 
+    # if SOURCE_GRIST is set.
+
+    # Leave header files alone, because they have a global
+    # visibility.
+
+    if ! $(SOURCE_GRIST)
+    {
+        return $(<) ;
+    }
+    else 
+    {
+        local _i _o ;
+
+        for _i in $(<)
+        {
+            switch $(_i)
+            {
+            case *.h :      _o += $(_i) ;
+            case *.hpp :      _o += $(_i) ;
+            case * :        _o += $(_i:G=$(SOURCE_GRIST)) ;
+            }
+        }
+
+        return $(_o) ;
+    }
+}
+
+# dwa 6/4/01 - modified for boost
+# join values... : [separator]
+#
+# Pastes values together into a single list element, separated by an optional separator.
+rule join ( values * : sep ? )
+{
+    sep ?= "" ;
+    return $(values:J=$(sep)) ;
+}
+
+# Given $(<), the tokens comprising a relative path from D1 to a subdirectory
+# D2, return the relative path from D2 to D1, using ../../ etc.
+rule FSubDir
+{
+    local _d ;
+
+    if ! $(<[1]) 
+    {
+        _d = $(DOT) ;
+    } 
+    else
+    {
+        _d = $(DOTDOT) ;
+
+        local _i ;
+        for _i in $(<[2-])
+        {
+            _d = $(_d:R=$(DOTDOT)) ;
+        }
+    }
+
+    return $(_d) ;
+}
+
+# dwa 6/4/01 - added for boost
+# Turn individual elements in $(<) into a usable path. If $(<) is empty, $(>) is
+# returned.
+rule join-path
+{
+    local _s _i ;
+
+    if ! $(<)
+    {
+        _s = $(>) ;
+    }
+    else if $(VMS)
+    {
+        # This handles the following cases:
+        #   a -> [.a]
+        #   a b c -> [.a.b.c]
+        #   x: -> x:
+        #   x: a -> x:[a]
+        #   x:[a] b -> x:[a.b]
+
+        switch $(<[1])
+        {
+        case *:* : _s = $(<[1]) ;
+        case \\[*\\] : _s = $(<[1]) ;
+        case * : _s = [.$(<[1])] ;
+        }
+
+        for _i in [.$(<[2-])]
+        {
+            _s = $(_i:R=$(_s)) ;
+        }
+    }
+    else if $(MAC)
+    {
+        _s = $(DOT) ;
+
+        for _i in $(<)
+        {
+            _s = $(_i:R=$(_s)) ;
+        }
+    }
+    else
+    {
+        _s = $(<[1]) ;
+        local _r = $(<[2-]) ;
+
+        # Jam doesn't handle the root directory properly
+        if $(_s) in / $(SLASH)
+        {
+            _s = $(_s)$(_r[1]) ;
+            _r = $(_r[2-]) ;
+        }
+        
+        for _i in $(_r)
+        {
+            _s = $(_i:R=$(_s)) ;
+        }
+    }
+
+    return $(_s) ;
+}
+
+# dwa 6/4/01 - modified for boost
+rule FDirName
+{
+    # Turn individual elements in $(<) into a usable path.
+    return [ join-path $(<) : $(DOT) ] ;
+}
+
+
+rule _makeCommon
+{
+    # strip common initial elements
+
+    if $($(<)[1]) && $($(<)[1]) = $($(>)[1])
+    {
+        $(<) = $($(<)[2-]) ;
+        $(>) = $($(>)[2-]) ;
+        _makeCommon $(<) : $(>) ;
+    }
+}
+
+
+rule FRelPath
+{
+    local _l _r ;
+
+    # first strip off common parts
+
+    _l = $(<) ;
+    _r = $(>) ;
+
+    _makeCommon _l : _r ;
+
+    # now make path to root and path down
+
+    _l = [ FSubDir $(_l) ] ;
+    _r = [ FDirName $(_r) ] ;
+
+    # Concatenate and save
+
+    # XXX This should be better
+
+    if $(_r) = $(DOT) {
+        return $(_l) ;
+    } else {
+        return $(_r:R=$(_l)) ;
+    }
+}
+
+# dwa 6/17/01 - modified for boost to handle multiple suffixes
+rule FAppendSuffix
+{
+   # E.g., "FAppendSuffix yacc lex foo.bat : $(SUFEXE) ;"
+   # returns (yacc,lex,foo.bat) on Unix and 
+   # (yacc.exe,lex.exe,foo.bat) on NT.
+
+    if $(>)
+    {
+        local _i _o ;
+
+        for _i in $(<)
+        {
+            if $(_i:S)
+            {
+                _o += $(_i) $(_i:S=$(>[2-])) ;
+            }
+            else
+            {
+                _o += $(_i:S=$(>)) ;
+            }
+        }
+        return $(_o) ;
+    }
+    else
+    {
+        return $(<) ;
+    }
+}
+
+rule unmakeDir
+{
+    if $(>[1]:D) && $(>[1]:D) != $(>[1]) && $(>[1]:D) != \\\\ 
+    {
+        unmakeDir $(<) : $(>[1]:D) $(>[1]:BS) $(>[2-]) ;
+    }
+    else
+    {
+        $(<) = $(>) ;
+    }
+}
+
+#
+# Actions
+#
+
+#
+# First the defaults
+#
+
+actions As
+{
+    $(AS) $(ASFLAGS) -I$(HDRS) -o $(<) $(>)
+}
+
+actions Chgrp
+{
+    chgrp $(GROUP) $(<)
+}
+
+actions Chmod1
+{
+    $(CHMOD) $(MODE) $(<)
+}
+
+actions Chown
+{
+    chown $(OWNER) $(<)
+}
+
+actions piecemeal together existing Clean
+{
+    $(RM) $(>)
+}
+
+actions File
+{
+    $(CP) $(>) $(<)
+}
+
+actions FileClone
+{
+    $(CLONE) $(>) $(<)
+}
+
+actions GenFile1
+{
+    $(>[1]) $(<) $(>[2-])
+}
+
+actions Fortran
+{
+    $(FORTRAN) $(FORTRANFLAGS) -o $(<) $(>)
+}
+
+actions HardLink
+{
+    $(RM) $(<) && $(LN) $(>) $(<)
+}
+
+actions Install
+{
+    $(CP) $(>) $(<) 
+}
+
+# dwa 6/4/01 - modified for boost
+actions together Lex
+{
+    $(LEX) $(LEXFLAGS) $(LEX_OUTPUT)$(<) $(>)
+}
+
+# dwa 6/4/01 - modified for boost
+actions together LexMv
+{
+    $(MV) lex.yy.c $(<)
+}
+
+actions MkDir1
+{
+    $(MKDIR) $(<)
+}
+
+actions together Ranlib
+{
+    $(RANLIB) $(<)
+}
+
+actions quietly updated piecemeal together RmTemps
+{
+    $(RM) $(>)
+}
+
+actions Shell
+{
+    $(AWK) '
+            NR == 1 { print "$(SHELLHEADER)" }
+            NR == 1 && /^[#:]/ { next }
+            /^##/ { next }
+            { print }
+    ' < $(>) > $(<)
+}
+
+# dwa 6/4/01 - modified for boost
+actions together Yacc1
+{
+    $(YACC) $(YACCFLAGS) $(YACC_OUTPUT)$(<[1]) $(>)
+}
+
+# dwa 6/4/01 - modified for boost
+actions together YaccMv
+{
+    $(MV) $(YACCFILES).c $(<[1])
+    $(MV) $(YACCFILES).h $(<[2])
+}
+
+# dwa 6/4/01 - killed all platform-specific actions for boost
+
+# dwa 6/4/01 - modified for boost
+actions together Yacc-fix-line-directives
+{
+    $(YACC_FIX_LINES) $(<) > $(<)
+}

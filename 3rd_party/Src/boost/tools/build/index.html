@@ -1,0 +1,293 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+  <head>
+    <meta name="generator" content=
+    "HTML Tidy for Linux/x86 (vers 1st November 2002), see www.w3.org">
+    <meta http-equiv="Content-Language" content="en-us">
+    <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+    <meta name="ProgId" content="FrontPage.Editor.Document">
+    <meta name="GENERATOR" content="Microsoft FrontPage Express 2.0">
+    <link rel="stylesheet" type="text/css" href="../../boost.css">
+    <title>Building Boost Libraries</title>
+  </head>
+  <body bgcolor="#FFFFFF" text="#000000">
+    <h1><img src="../../c++boost.gif" alt="c++boost.gif (8819 bytes)" width=
+    "277" height="86">Building Boost Libraries</h1>
+    <p><a href="#Introduction">Introduction</a><br>
+     <a href="#Preliminaries">Preliminaries</a><br>
+     <a href="#Building">Building Boost Libraries</a><br>
+     <a href="#Configuring">Configuring the tools</a><br>
+     <a href="#Tools">Supported Toolsets</a><br>
+     <a href="#Jam">Boost.Jam executable</a></p>
+    <h2><a name="Introduction">Introduction</a></h2>
+    <p>These instructions explain how to accomplish common tasks using
+    <b>Boost.Build</b>, the Boost Build System. The build system uses <a
+    href="jam_src/index.html">Boost.Jam</a>, an extension of the <a href=
+    "http://www.perforce.com/jam/jam.html">Perforce Jam</a> portable
+    <i>make</i> replacement.</p>
+    <p>For tasks not covered here, see the full <a href=
+    "build_system.htm">build system documentation</a>.</p>
+    <p>Note that many Boost libraries are implemented entirely within their
+    headers, and so can be used without building object libraries. Libraries
+    that do require building object libraries first include the <a href=
+    "../../libs/python/doc/index.html">Python</a>, <a href=
+    "../../libs/regex/index.htm">Regex</a>, <a href=
+    "../../libs/signals/doc/index.html">Signal</a>, and <a href=
+    "../../libs/thread/doc/index.html">Threads</a> libraries.</p>
+    <h2><a name="Preliminaries">Preliminaries</a></h2>
+    <ul>
+      <li><a href="../../more/download.html">Download Boost</a>, and unpack
+      the full directory structure into some root directory.</li>
+      <li>Install the <a href="#Jam">Boost.Jam executable</a> if needed. <a
+      href="http://sourceforge.net/project/showfiles.php?group_id=7586"><font
+      size="4"><b>Pre-builts are available from SourceForge</b></font></a>.
+      Make sure it's in your path. (Note: Boost requires an enhanced version
+      of Jam; the basic version won't work.)</li>
+      <li><a href="#Configuring">Configure</a> the command-line toolset(s)
+      you intend to use. It might be a good idea to verify your command line
+      compiler is working if you don't use it regularly.</li>
+      <li>Optional: <a href=
+      "../../libs/config/config.htm#configuring">configure the boost source
+      code</a>. This step should not be required on the vast majority of
+      platforms, but if you're trying to build boost on an untested or
+      unsupported platform it may be necessary.</li>
+      <li>Optional: if you intend to build the <a href=
+      "../../libs/python/doc/index.html">Boost.Python</a> library, set
+      environment variables to configure Boost.Build for your Python
+      installation. For more information, see these <a href=
+      "../../libs/python/doc/building.html">instructions</a>. If you leave
+      this step out, Boost.Build will print a message about how to do it, and
+      will skip the build for Boost.Python.</li>
+      <li>Optional: if you intend to build the boost <a href=
+      "../../libs/regex/index.htm">Regex</a> library, with either Visual C++
+      or Borland C++, then there are <a href=
+      "../../libs/regex/introduction.htm#Installation">makefiles</a> that
+      will generally give better results.</li>
+    </ul>
+    <h2><a name="Building">Building</a> Boost Libraries</h2>
+    <p>Using your operating system's command line interpreter, execute the
+    following steps. The sample commands given will work for both UNIX and
+    Windows.</p>
+    <ul>
+      <li>
+        Change to the Boost root directory. (The directory you unpacked the
+        distribution into; unless you changed it, the name will be
+        boost_n_n_n where n_n_n is the release number. Among others files, it
+        contains c++boost.gif, and subdirectories boost, libs, more, etc.) 
+        <blockquote>
+          <p><code>chdir&nbsp;boost_1_28_0&nbsp;&nbsp;</code> <i>(or whatever
+          release you downloaded)</i></p>
+        </blockquote>
+      </li>
+      <li>
+        Invoke the build system, specifying the <a href=
+        "#Tools">toolset</a>(s) you wish to use. The example is for the GNU
+        and Metrowerks compilers. 
+        <blockquote>
+          <p><code>bjam&nbsp;"-sTOOLS=gcc&nbsp;metrowerks"</code></p>
+        </blockquote>
+      </li>
+      <li>For more sophisticated invocation options, see the <a href=
+      "build_system.htm#initiating">initiating builds documentation</a>.</li>
+      <li>
+        To build a single boost library (rather than the whole lot), cd into
+        that library's build subdirectory and build from there: 
+        <blockquote>
+          <p><code>cd libs/thread/build</code><font face=
+          "Times New Roman"><br>
+          </font> <code>bjam&nbsp;"-sTOOLS=msvc"</code></p>
+        </blockquote>
+      </li>
+    </ul>
+    <p>&nbsp;</p>
+    <h2><a name="Configuring">Configuring the tools</a></h2>
+    <p>The build system's toolsets are designed to work in either of two
+    ways:</p>
+    <ol>
+      <li>The user sets up all of the environment for each toolset he wants
+      to use in the normal way. For example, for Microsoft VC++, ...vc98/bin
+      is in the path, vcvars32.bat or equivalent has been invoked, etc. For
+      Metrowerks CodeWarrior, cwenv.bat or equivalent has been called and
+      ...Other Metrowerks Tools/Command Line Tools is in the path. Many Unix
+      operating systems come preconfigured this way and require no user
+      intervention.<br>
+      <br>
+      </li>
+      <li>The user doesn't want his environment cluttered with settings or
+      has non-standard installations for some of his tools. Instead, he or
+      she sets variables which point to the toolset installation directories,
+      either in the command shell environment or on the <code>bjam</code>
+      command-line. These variables are used by the build system to locate
+      the tools and invoke the necessary setup.</li>
+    </ol>
+    <h2><a name="Tools">Supported Toolsets</a></h2>
+    <p>The following toolsets are supported by Boost.Build. For information
+    about <a href="#Configuring">configuring</a> each toolset, click its name
+    in the leftmost column.</p>
+    <table border="1" cellpadding="5" summary="">
+      <tr>
+        <td><b>TOOLS Name</b></td>
+        <td><b>Description</b></td>
+      </tr>
+      <tr>
+        <td><a href="borland-tools.html"><code>borland</code></a></td>
+        <td><a href=
+        "http://www.borland.com/bcppbuilder/freecompiler">Borland</a>
+        C++</td>
+      </tr>
+      <tr>
+        <td><a href="darwin-tools.html"><code>darwin</code></a></td>
+        <td>Apple Darwin OS hosted GNU <a href=
+        "http://developer.apple.com/tools/compilers.html">GCC</a>.</td>
+      </tr>
+      <tr>
+        <td><a href="como-tools.html"><code>como</code></a></td>
+        <td><a href="http://www.comeaucomputing.com">Comeau C++</a> compiler
+        front-end for Windows, using Microsoft <a href=
+        "http://msdn.microsoft.com/visualc/">Visual C++</a>as a
+        back-end.</td>
+      </tr>
+      <tr>
+        <td><a href="gcc-tools.html"><code>gcc</code></a></td>
+        <td><a href="http://gcc.gnu.org">GNU GCC</a> on Unix and <a href=
+        "http://www.cygwin.com">Cygwin</a>.</td>
+      </tr>
+      <tr>
+        <td><a href=
+        "gcc-stlport-tools.html"><code>gcc-stlport</code></a></td>
+        <td><a href="http://gcc.gnu.org">GNU GCC</a> on Unix and <a href=
+        "http://www.cygwin.com">Cygwin</a>, using the <a href=
+        "http://www.stlport.org">STLport</a> standard library
+        implementation</td>
+      </tr>
+      <tr>
+        <td><a href=
+        "gcc-nocygwin-tools.html"><code>gcc-nocygwin</code></a></td>
+        <td>GNU GCC Cygwin command line compiler tools running in "no-cygwin"
+        mode (produces commercially redistributable objects)</td>
+      </tr>
+      <tr>
+        <td><a href=
+        "intel-win32-tools.html"><code>intel-win32</code></a></td>
+        <td><a href=
+        "http://www.intel.com/software/products/compilers/c60/">Intel C++ for
+        Windows</a> using the Dinkumware standard library in the
+        Intel-required Microsoft <a href=
+        "http://msdn.microsoft.com/visualc/">Visual C++</a> 6 or 7
+        installation</td>
+      </tr>
+      <tr>
+        <td><a href=
+        "intel-linux-tools.html"><code>intel-linux</code></a></td>
+        <td><a href=
+        "http://www.intel.com/software/products/compilers/c60l/">Intel C++
+        for Linux</a></td>
+      </tr>
+      <tr>
+        <td><a href="kcc-tools.html"><code>kcc</code></a></td>
+        <td><a href="http://developer.intel.com/software/products/kcc/">KAI
+        C++</a></td>
+      </tr>
+      <tr>
+        <td><a href="kylix-tools.html"><code>kylix</code></a></td>
+        <td><a href="http://www.borland.com/kylix">Borland C++ for Linux
+        (Kylix).</a></td>
+      </tr>
+      <tr>
+        <td><a href="metrowerks-tools.html"><code>metrowerks</code></a></td>
+        <td><a href="http://www.metrowerks.com">Metrowerks CodeWarrior</a>
+        command-line tools</td>
+      </tr>
+      <tr>
+        <td><a href="cwpro8-tools.html"><code>cwpro8</code></a></td>
+        <td><a href="http://www.metrowerks.com">Metrowerks CodeWarrior</a>
+        Pro 8.x command-line tools</td>
+      </tr>
+      <tr>
+        <td><a href="mingw-tools.html"><code>mingw</code></a></td>
+        <td>GNU GCC and associated tools in <a href=
+        "http://www.mingw.org">MinGW</a> configuration (produces commercially
+        redistributable objects)</td>
+      </tr>
+      <tr>
+        <td><a href="mipspro-tools.html"><code>mipspro</code></a></td>
+        <td>SGI <a href=
+        "http://www.sgi.com/developers/devtools/languages/mipspro.html">MIPSpro
+        C and C++</a></td>
+      </tr>
+      <tr>
+        <td><a href="msvc-tools.html"><code>msvc</code></a></td>
+        <td>Microsoft <a href="http://msdn.microsoft.com/visualc/">Visual
+        C++</a> command-line tools.</td>
+      </tr>
+      <tr>
+        <td><a href=
+        "msvc-stlport-tools.html"><code>msvc-stlport</code></a></td>
+        <td>Microsoft <a href="http://msdn.microsoft.com/visualc/">Visual
+        C++</a> command-line tools, using the <a href=
+        "http://www.stlport.org">STLport</a> standard library
+        implementation</td>
+      </tr>
+      <tr>
+        <td><a href="tru64cxx-tools.html"><code>tru64cxx</code></a></td>
+        <td><a href="http://www.tru64unix.compaq.com/cplus/">Compaq C++</a>
+        for Tru64 UNIX (versions prior to 6.5)</td>
+      </tr>
+      <tr>
+        <td><a href="tru64cxx-tools.html"><code>tru64cxx65</code></a></td>
+        <td><a href="http://www.tru64unix.compaq.com/cplus/">Compaq C++</a>
+        Version 6.5 for Tru64 UNIX</td>
+      </tr>
+      <tr>
+        <td><a href="vacpp-tools.html"><code>vacpp</code></a></td>
+        <td><a href="http://www-3.ibm.com/software/ad/vacpp/">IBM Visual Age
+        C++</a> command-line tools</td>
+      </tr>
+      <tr>
+        <td><a href="vc7-tools.html"><code>vc7</code></a></td>
+        <td>Microsoft <a href="http://msdn.microsoft.com/visualc/">Visual
+        C++</a> command-line tools, in case you are using the <a href=
+        "msvc-tools.html"><code>msvc</code></a> toolset for a <a href=
+        "http://msdn.microsoft.com/visualc/productinfo/previous/default.asp">Visual
+        C++ 6.x</a>.</td>
+      </tr>
+    </table>
+    <p>Unless otherwise specified, the library is assumed to be the one
+    shipped with the compiler.</p>
+    <p>Additional tools can be supplied by adding an appropriate
+    xxxx-tools.jam file to the tools/build subdirectory, where xxxx is the
+    name of the tool being added. If you write an additional toolset file,
+    please submit it to Boost so others may benefit from your work.</p>
+    <h2>Boost.<a name="Jam">Jam</a> executable</h2>
+    <p>Pre-built Boost.Jam executables are available from the <a href=
+    "http://sourceforge.net/project/showfiles.php?group_id=7586"><font size=
+    "4"><b>SourceForge download section</b></font></a>. Included are plain
+    binaries, packaged binaries, and the source. The Boost.Jam source files
+    are also included in the Boost distribution, so you can build the
+    Boost.Jam executable yourself:</p>
+    <ul>
+      <li><a href="jam_src/index.html#installing">Build Instructions</a> are
+      included in the <a href="jam_src/index.html">Boost.Jam
+      documentation</a>, if you need them.</li>
+      <li>Your new Boost.Jam executable will be located in a newly-created
+      <tt>tools/build/jam_src/bin.</tt><i>platform</i> subdirectory.</li>
+      <li>There will be two executables generated: <tt>"jam"</tt>, and
+      <tt>"bjam"</tt>. They are in fact a copy of the same binary. The
+      <tt>"bjam"</tt> invocation uses the newer simpler build behaviour. But
+      if you need the traditional Jam/MR behaviour you can use the
+      <tt>"jam"</tt> invocation.</li>
+    </ul>
+    <p>Windows 9x users should note that the bjam executable will produce
+    command lines too long for command.com to handle.</p>
+    <p>Cygwin users can use the cygwin executable to work around Windows 9x
+    command line length problems, but only if they are using cygwin-gcc
+    compiler (other windows compilers don't play particularly well with this
+    executable).</p>
+    <hr>
+    <p>Revised <!--webbot bot="Timestamp" startspan s-type="EDITED"
+        s-format="%d %B, %Y" -->16 December, 2002<!--webbot bot="Timestamp"
+        i-checksum="38515" endspan --></p>
+    <p>&copy; Copyright 2001 Beman Dawes</p>
+    <p>&nbsp;</p>
+  </body>
+</html>

@@ -1,0 +1,328 @@
+<html>
+
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+<title>A New Type Conversion Mechanism for Boost.Python</title>
+</head>
+
+<body bgcolor="#FFFFFF" text="#000000">
+
+<p><img border="0" src="../../../c++boost.gif" width="277" height="86"
+alt="boost logo"></p>
+
+<h1>A New Type Conversion Mechanism for Boost.Python</h1>
+
+<p>By <a href="../../../people/dave_abrahams.htm">David Abrahams</a>.
+
+<h2>Introduction</h2>
+
+This document describes a redesign of the mechanism for automatically
+converting objects between C++ and Python. The current implementation
+uses two functions for any type <tt>T</tt>:
+
+<blockquote><pre>
+U from_python(PyObject*, type&lt;T&gt;);
+void to_python(V);
+</pre></blockquote>
+
+where U is convertible to T and T is convertible to V. These functions
+are at the heart of C++/Python interoperability in Boost.Python, so
+why would we want to change them? There are many reasons:
+
+<h3>Bugs</h3>
+<p>Firstly, the current mechanism relies on a common C++ compiler
+bug. This is not just embarrassing: as compilers get to be more
+conformant, the library stops working. The issue, in detail, is the
+use of inline friend functions in templates to generate
+conversions. It is a very powerful, and legal technique as long as
+it's used correctly:
+
+<blockquote><pre>
+template &lt;class Derived&gt;
+struct add_some_functions
+{
+     friend <i>return-type</i> some_function1(..., Derived <i>cv-*-&amp;-opt</i>, ...);
+     friend <i>return-type</i> some_function2(..., Derived <i>cv-*-&amp;-opt</i>, ...);
+};
+
+template &lt;class T&gt;
+struct some_template : add_some_functions&lt;some_template&lt;T&gt; &gt;
+{
+};
+</pre></blockquote>
+
+The <tt>add_some_functions</tt> template generates free functions
+which operate on <tt>Derived</tt>, or on related types. Strictly
+speaking the related types are not just cv-qualified <tt>Derived</tt>
+values, pointers and/or references. Section 3.4.2 in the standard
+describes exactly which types you must use as parameters to these
+functions if you want the functions to be found
+(there is also a less-technical description in section 11.5.1 of
+C++PL3 <a href="#ref_1">[1]</a>). Suffice it to say that
+with the current design, the <tt>from_python</tt> and
+<tt>to_python</tt> functions are not supposed to be callable under any
+conditions!
+
+<h3>Compilation and Linking Time</h3>
+
+The conversion functions generated for each wrapped class using the
+above technique are not function templates, but regular functions. The
+upshot is that they must <i>all</i> be generated regardless of whether
+they are actually used. Generating all of those functions can slow
+down module compilation, and resolving the references can slow down
+linking.
+
+<h3>Efficiency</h3>
+
+The conversion functions are primarily used in (member) function
+wrappers to convert the arguments and return values. Being functions,
+converters have no interface which allows us to ask &quot;will the
+conversion succeed?&quot; without calling the function. Since the
+return value of the function must be the object to be passed as an
+argument, Boost.Python currently uses C++ exception-handling to detect
+an unsuccessful conversion. It's not a particularly good use of
+exception-handling, since the failure is not handled very far from
+where it occurred. More importantly, it means that C++ exceptions are
+thrown during overload resolution as we seek an overload that matches
+the arguments passed. Depending on the implementation, this approach
+can result in significant slowdowns.
+
+<p>It is also unclear that the current library generates a minimal
+amount of code for any type conversion. Many of the conversion
+functions are nontrivial, and partly because of compiler limitations,
+they are declared <tt>inline</tt>. Also, we could have done a better
+job separating the type-specific conversion code from the code which
+is type-independent.
+
+<h3>Cross-module Support</h3>
+
+The current strategy requires every module to contain the definition
+of conversions it uses. In general, a new module can never supply
+conversion code which is used by another module. Ralf Grosse-Kunstleve
+designed a clever system which imports conversions directly from one
+library into another using some explicit declarations, but it has some
+disadvantages also:
+
+<ol>
+<li>The system Ullrich Koethe designed for implicit conversion between
+wrapped classes related through inheritance does not currently work if
+the classes are defined in separate modules.
+
+<li>The writer of the importing module is required to know the name of
+the module supplying the imported conversions.
+
+<li>There can be only one way to extract any given C++ type from a
+Python object in a given module.
+</ol>
+
+The first item might be addressed by moving Boost.Python into a shared
+library, but the other two cannot. Ralf turned the limitation in item
+two into a feature: the required module is loaded implicitly when a
+conversion it defines is invoked. We will probably want to provide
+that functionality anyway, but it's not clear that we should require
+the declaration of all such conversions. The final item is a more
+serious limitation. If, for example, new numeric types are defined in
+separate modules, and these types can all be converted to
+<tt>double</tt>s, we have to choose just one conversion method.
+
+<h3>Ease-of-use</h3>
+
+One persistent source of confusion for users of Boost.Python has been
+the fact that conversions for a class are not be visible at
+compile-time until the declaration of that class has been seen. When
+the user tries to expose a (member) function operating on or returning
+an instance of the class in question, compilation fails...even though
+the user goes on to expose the class in the same translation unit!
+
+<p>
+The new system lifts all compile-time checks for the existence of
+particular type conversions and replaces them with runtime checks, in
+true Pythonic style. While this might seem cavalier, the compile-time
+checks are actually not much use in the current system if many classes
+are wrapped in separate modules, since the checks are based only on
+the user's declaration that the conversions exist.
+
+<h2>The New Design</h2>
+
+<h3>Motivation</h3>
+
+The new design was heavily influenced by a desire to generate as
+little code as possible in extension modules. Some of Boost.Python's
+clients are enormous projects where link time is proportional to the
+amount of object code, and there are many Python extension modules. As
+such, we try to keep type-specific conversion code out of modules
+other than the one the converters are defined in, and rely as much as
+possible on centralized control through a shared library.
+
+<h3>The Basics</h3>
+
+The library contains a <tt>registry</tt> which maps runtime type
+identifiers (actually an extension of <tt>std::type_info</tt> which
+preserves references and constness) to entries containing type
+converters. An <tt>entry</tt> can contain only one converter from C++ to Python
+(<tt>wrapper</tt>), but many converters from Python to C++
+(<tt>unwrapper</tt>s). <font color="#ff0000">What should happen if
+multiple modules try to register wrappers for the same type?</font>. Wrappers
+and unwrappers are known as <tt>body</tt> objects, and are accessed
+by the user and the library (in its function-wrapping code) through
+corresponding <tt>handle</tt> (<tt>wrap&lt;T&gt;</tt> and
+<tt>unwrap&lt;T&gt;</tt>) objects. The <tt>handle</tt> objects are
+extremely lightweight, and delegate <i>all</i> of their operations to
+the corresponding <tt>body</tt>.
+
+<p>
+When a <tt>handle</tt> object is constructed, it accesses the
+registry to find a corresponding <tt>body</tt> that can convert the
+handle's constructor argument. Actually the registry record for any
+type
+<tt>T</tt>used in a module is looked up only once and stored in a
+static <tt>registration&lt;T&gt;</tt> object for efficiency. For
+example, if the handle is an <tt>unwrap&lt;Foo&amp;&gt;</tt> object,
+the <tt>entry</tt> for <tt>Foo&amp;</tt> is looked up in the
+<tt>registry</tt>, and each <tt>unwrapper</tt> it contains is queried
+to determine if it can convert the
+<tt>PyObject*</tt> with which the <tt>unwrap</tt> was constructed. If
+a body object which can perform the conversion is found, a pointer to
+it is stored in the handle. A body object may at any point store
+additional data in the handle to speed up the conversion process.
+
+<p>
+Now that the handle has been constructed, the user can ask it whether
+the conversion can be performed. All handles can be tested as though
+they were convertible to <tt>bool</tt>; a <tt>true</tt> value
+indicates success. If the user forges ahead and tries to do the
+conversion without checking when no conversion is possible, an
+exception will be thrown as usual. The conversion itself is performed
+by the body object. 
+
+<h3>Handling complex conversions</h3>
+
+<p>Some conversions may require a dynamic allocation. For example,
+when a Python tuple is converted to a <tt>std::vector&lt;double&gt;
+const&amp;</tt>, we need some storage into which to construct the
+vector so that a reference to it can be formed. Furthermore, multiple
+conversions of the same type may need to be &quot;active&quot;
+simultaneously, so we can't keep a single copy of the storage
+anywhere. We could keep the storage in the <tt>body</tt> object, and
+have the body clone itself in case the storage is used, but in that
+case the storage in the body which lives in the registry is never
+used. If the storage was actually an object of the target type (the
+safest way in C++), we'd have to find a way to construct one for the
+body in the registry, since it may not have a default constructor.
+
+<p>
+The most obvious way out of this quagmire is to allocate the object using a
+<i>new-expression</i>, and store a pointer to it in the handle. Since
+the <tt>body</tt> object knows everything about the data it needs to
+allocate (if any), it is also given responsibility for destroying that
+data. When the <tt>handle</tt> is destroyed it asks the <tt>body</tt>
+object to tear down any data it may have stored there. In many ways,
+you can think of the <tt>body</tt> as a &quot;dynamically-determined
+vtable&quot; for the handle.
+
+<h3>Eliminating Redundancy</h3>
+
+If you look at the current Boost.Python code, you'll see that there
+are an enormous number of conversion functions generated for each
+wrapped class. For a given class <tt>T</tt>, functions are generated
+to extract the following types <tt>from_python</tt>:
+
+<blockquote><pre>
+T*
+T const*
+T const* const&amp;
+T* const&amp;
+T&amp;
+T const&amp;
+T
+std::auto_ptr&lt;T&gt;&amp;
+std::auto_ptr&lt;T&gt;
+std::auto_ptr&lt;T&gt; const&amp;
+boost::shared_ptr&lt;T&gt;&amp;
+boost::shared_ptr&lt;T&gt;
+boost::shared_ptr&lt;T&gt; const&amp;
+</pre></blockquote>
+
+Most of these are implemented in terms of just a few conversions, and
+<t>if you're lucky</t>, they will be inlined and cause no extra
+overhead. In the new system, however, a significant amount of data
+will be associated with each type that needs to be converted. We
+certainly don't want to register a separate unwrapper object for all
+of the above types.
+
+<p>Fortunately, much of the redundancy can be eliminated. For example,
+if we generate an unwrapper for <tt>T&</tt>, we don't need an
+unwrapper for <tt>T const&</tt> or <tt>T</tt>. Accordingly, the user's
+request to wrap/unwrap a given type is translated at compile-time into
+a request which helps to eliminate redundancy. The rules used to
+<tt>unwrap</tt> a type are:
+
+<ol>
+<li> Treat built-in types specially: when unwrapping a value or
+   constant reference to one of these, use a value for the target
+   type. It will bind to a const reference if neccessary, and more
+   importantly, avoids having to dynamically allocate room for
+   an lvalue of types which can be cheaply copied.
+<li>
+ Reduce everything else to a reference to an un-cv-qualified type
+   where possible. Since cv-qualification is lost on Python
+   anyway, there's no point in trying to convert to a
+   <tt>const&amp;</tt>. <font color="#ff0000">What about conversions
+   to values like the tuple-&gt;vector example above? It seems to me
+   that we don't want to make a <tt>vector&lt;double&gt;&amp;</tt>
+   (non-const) converter available for that case. We may need to
+   rethink this slightly.</font>
+</ol>
+
+<p>To handle the problem described above in item 2, we modify the
+procedure slightly. To unwrap any non-scalar <tt>T</tt>, we seek an
+unwrapper for <tt>add_reference&lt;T&gt;::type</tt>. Unwrappers for
+<tt>T&nbsp;const&amp;</tt> always return <tt>T&amp;</tt>, and are
+registered under both <tt>T&nbsp;&amp;</tt> and
+<tt>T&nbsp;const&amp;</tt>.
+
+<p>For compilers not supporting partial specialization, unwrappers for
+<tt>T&nbsp;const&amp;</tt> must return <tt>T&nbsp;const&amp;</tt>
+(since constness can't be stripped), but a separate unwrapper object
+need to be registered for <tt>T&nbsp;&amp;</tt> and
+<tt>T&nbsp;const&amp;</tt> anyway, for the same reasons.
+
+<font color="#ff0000">We may want to make it possible to compile as
+though partial specialization were unavailable even on compilers where
+it is available, in case modules could be compiled by different
+compilers with compatible ABIs (e.g. Intel C++ and MSVC6).</font>
+
+<h3>Efficient Argument Conversion</h3>
+
+Since type conversions are primarily used in function wrappers, an
+optimization is provided for the case where a group of conversions are
+used together. Each <tt>handle</tt> class has a corresponding
+&quot;<tt>_more</tt>&quot; class which does the same job, but has a
+trivial destructor. Instead of asking each &quot;<tt>_more</tt>&quot;
+handle to destroy its own body, it is linked into an endogenous list
+managed by the first (ordinary) handle. The <tt>wrap</tt> and
+<tt>unwrap</tt> destructors are responsible for traversing that list
+and asking each <tt>body</tt> class to tear down its
+<tt>handle</tt>. This mechanism is also used to determine if all of
+the argument/return-value conversions can succeed with a single
+function call in the function wrapping code. <font color="#ff0000">We
+might need to handle return values in a separate step for Python
+callbacks, since the availablility of a conversion won't be known
+until the result object is retrieved.</font>
+
+<br>
+<hr>
+<h2>References</h2>
+
+<p><a name="ref_1">[1]</a>B. Stroustrup, The C++ Programming Language
+Special Edition Addison-Wesley, ISBN 0-201-70073-5.
+
+<hr>
+<p>Revised <!--webbot bot="Timestamp" s-type="EDITED" s-format="%d %B %Y" startspan -->
+  13 November, 2002
+  <!--webbot bot="Timestamp" endspan i-checksum="31283" --></p>
+<p>© Copyright David Abrahams, 2001</p>
+
+</body>
+
+</html>

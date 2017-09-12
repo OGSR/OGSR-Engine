@@ -1,0 +1,279 @@
+<html>
+
+<head>
+<meta http-equiv="Content-Type"
+content="text/html; charset=iso-8859-1">
+<meta name="Template"
+content="C:\PROGRAM FILES\MICROSOFT OFFICE\OFFICE\html.dot">
+<meta name="GENERATOR" content="Microsoft FrontPage Express 2.0">
+<title>static assertions</title>
+</head>
+
+<body bgcolor="#FFFFFF" text="#000000" link="#0000FF"
+vlink="#800080">
+
+<h1><img src="../../c++boost.gif" width="276" height="86">Header
+&lt;<a href="../../boost/static_assert.hpp">boost/static_assert.hpp</a>&gt;</h1>
+
+<p>The header &lt;boost/static_assert.hpp&gt; supplies a single
+macro BOOST_STATIC_ASSERT(x), which generates a compile time
+error message if the <a
+href="../../more/int_const_guidelines.htm">integral-constant-expression</a>
+<i>x</i> is not true. In other words it is the compile time
+equivalent of the assert macro; this is sometimes known as a
+&quot;compile-time-assertion&quot;, but will be called a &quot;static
+assertion&quot; throughout these docs. Note that if the condition
+is true, then the macro will generate neither code nor data - and
+the macro can also be used at either namespace, class or function
+scope. When used in a template, the static assertion will be
+evaluated at the time the template is instantiated; this is
+particularly useful for validating template parameters. </p>
+
+<p>One of the aims of BOOST_STATIC_ASSERT is to generate readable
+error messages. These immediately tell the user that a library is
+being used in a manner that is not supported. While error
+messages obviously differ from compiler to compiler, but you
+should see something like: </p>
+
+<pre>Illegal use of COMPILE_TIME_ASSERTION_FAILURE&lt;false&gt;</pre>
+
+<p>Which is intended to at least catch the eye!</p>
+
+<p>You can use BOOST_STATIC_ASSERT at any place where you can
+place a declaration, that is at <a href="#class">class</a>, <a
+href="#function">function</a> or <a href="#namespace">namespace</a>
+scope, this is illustrated by the following examples:</p>
+
+<h3><a name="namespace"></a>Use at namespace scope.</h3>
+
+<p>The macro can be used at namespace scope, if there is some
+requirement must always be true; generally this means some
+platform specific requirement. Suppose we require that <b>int</b>
+be at least a 32-bit integral type, and that <b>wchar_t</b> be an
+unsigned type. We can verify this at compile time as follows:</p>
+
+<pre>#include &lt;climits&gt;
+#include &lt;cwchar&gt;
+#include &lt;boost/static_assert.hpp&gt;
+
+namespace my_conditions {
+
+BOOST_STATIC_ASSERT(sizeof(int) * CHAR_BIT &gt;= 32);
+BOOST_STATIC_ASSERT(WCHAR_MIN &gt;= 0);
+
+} // namespace my_conditions
+</pre>
+
+<p>The use of the namespace <i>my_conditions</i> here requires
+some comment. The macro BOOST_STATIC_ASSERT works by generating
+an <strong>typedef</strong> declaration, and since the typedef
+must have a name, the macro generates one automatically by
+mangling a stub name with the value of __LINE__. When
+BOOST_STATIC_ASSERT is used at either class or function scope
+then each use of BOOST_STATIC_ASSERT is guaranteed to produce a
+name unique to that scope (provided you only use the macro once
+on each line). However when used in a header at namespace scope,
+that namespace can be continued over multiple headers, each of
+which may have their own static assertions, and on the &quot;same&quot;
+lines, thereby generating duplicate declarations. In theory the
+compiler should silently ignore duplicate typedef declarations,
+however many do not do so (and even if they do they are entitled
+to emit warnings in such cases). To avoid potential problems, if
+you use BOOST_STATIC_ASSERT in a header and at namespace scope,
+then enclose them in a namespace unique to that header.</p>
+
+<h3><a name="function"></a>Use at function scope</h3>
+
+<p>The macro is typically used at function scope inside template
+functions, when the template arguments need checking. Imagine
+that we have an iterator-based algorithm that requires random
+access iterators. If the algorithm is instantiated with iterators
+that do not meet our requirements then an error will be generated
+eventually, but this may be nested deep inside several templates,
+making it hard for the user to determine what went wrong. One
+option is to add a static assertion at the top level of the
+template, in that case if the condition is not met, then an error
+will be generated in a way that makes it reasonably obvious to
+the user that the template is being misused.</p>
+
+<pre>#include &lt;iterator&gt;
+#include &lt;boost/static_assert.hpp&gt;
+#include &lt;boost/type_traits.hpp&gt;
+
+template &lt;class RandomAccessIterator &gt;
+RandomAccessIterator foo(RandomAccessIterator from, RandomAccessIterator to)
+{
+   // this template can only be used with
+   // random access iterators...
+   typedef typename std::iterator_traits&lt; RandomAccessIterator &gt;::iterator_category cat;
+   BOOST_STATIC_ASSERT((boost::is_convertible&lt;cat, const std::random_access_iterator_tag&amp;&gt;::value));
+   //
+   // detail goes here...
+   return from;
+}</pre>
+
+<p>A couple of footnotes are in order here: the extra set of
+parenthesis around the assert, is to prevent the comma inside the
+is_convertible template being interpreted by the preprocessor as
+a macro argument separator; the target type for is_convertible is
+a reference type, as some compilers have problems using
+is_convertible when the conversion is via a user defined
+constructor (in any case there is no guarantee that the iterator
+tag classes are copy-constructible).</p>
+
+<h3><a name="class"></a>Use at class scope</h3>
+
+<p>The macro is typically used inside classes that are templates.
+Suppose we have a template-class that requires an unsigned
+integral type with at least 16-bits of precision as a template
+argument, we can achieve this using something like this:</p>
+
+<pre>#include &lt;climits&gt;
+#include &lt;boost/static_assert.hpp&gt;
+
+template &lt;class UnsignedInt&gt;
+class myclass
+{
+private:
+   BOOST_STATIC_ASSERT(sizeof(UnsignedInt) * CHAR_BIT &gt;= 16);
+   BOOST_STATIC_ASSERT(std::numeric_limits&lt;UnsignedInt&gt;::is_specialized
+                        &amp;&amp; std::numeric_limits&lt;UnsignedInt&gt;::is_integer
+                        &amp;&amp; !std::numeric_limits&lt;UnsignedInt&gt;::is_signed);
+public:
+   /* details here */
+};
+</pre>
+
+<h3>How it works</h3>
+
+<p>BOOST_STATIC_ASSERT works as follows. There is class
+STATIC_ASSERTION_FAILURE which is defined as:</p>
+
+<pre>namespace boost{
+
+template &lt;bool&gt; struct STATIC_ASSERTION_FAILURE;
+
+template &lt;&gt; struct STATIC_ASSERTION_FAILURE&lt;true&gt;{};
+
+}</pre>
+
+<p>The key feature is that the error message triggered by the
+undefined expression sizeof(STATIC_ASSERTION_FAILURE&lt;0&gt;),
+tends to be consistent across a wide variety of compilers. The
+rest of the machinery of BOOST_STATIC_ASSERT is just a way to
+feed the sizeof expression into a typedef. The use of a macro
+here is somewhat ugly; however boost members have spent
+considerable effort trying to invent a static assert that avoided
+macros, all to no avail. The general conclusion was that the good
+of a static assert working at namespace, function, and class
+scope outweighed the ugliness of a macro.</p>
+
+<h3>Test Programs</h3>
+
+<p>The following test programs are provided with this library:</p>
+
+<table border="0" width="100%">
+    <tr>
+        <td width="33%"><i>Test Program</i></td>
+        <td width="33%"><i>Expected to Compile</i></td>
+        <td width="34%"><i>Description</i></td>
+    </tr>
+    <tr>
+        <td width="33%"><a href="static_assert_test.cpp">static_assert_test.cpp</a></td>
+        <td width="33%">Yes</td>
+        <td width="34%">Illustrates usage, and should always
+        compile, really just tests compiler compatibility.</td>
+    </tr>
+    <tr>
+        <td width="33%"><a href="static_assert_example_1.cpp">static_assert_example_1.cpp</a></td>
+        <td width="33%">Platform dependent.</td>
+        <td width="34%">Namespace scope test program, may compile
+        depending upon the platform.</td>
+    </tr>
+    <tr>
+        <td width="33%"><a href="static_assert_example_2.cpp">static_assert_example_2.cpp</a></td>
+        <td width="33%">Yes</td>
+        <td width="34%">Function scope test program.</td>
+    </tr>
+    <tr>
+        <td width="33%"><a href="static_assert_example_3.cpp">static_assert_example_3.cpp</a></td>
+        <td width="33%">Yes</td>
+        <td width="34%">Class scope test program.</td>
+    </tr>
+    <tr>
+        <td width="33%"><a href="static_assert_test_fail_1.cpp">static_assert_test_fail_1.cpp</a></td>
+        <td width="33%">No</td>
+        <td width="34%">Illustrates failure at namespace scope.</td>
+    </tr>
+    <tr>
+        <td width="33%"><a href="static_assert_test_fail_2.cpp">static_assert_test_fail_2.cpp</a></td>
+        <td width="33%">No</td>
+        <td width="34%">Illustrates failure at non-template
+        function scope.</td>
+    </tr>
+    <tr>
+        <td width="33%"><a href="static_assert_test_fail_3.cpp">static_assert_test_fail_3.cpp</a></td>
+        <td width="33%">No</td>
+        <td width="34%">Illustrates failure at non-template class
+        scope.</td>
+    </tr>
+    <tr>
+        <td width="33%"><a href="static_assert_test_fail_4.cpp">static_assert_test_fail_4.cpp</a></td>
+        <td width="33%">No</td>
+        <td width="34%">Illustrates failure at non-template class
+        scope.</td>
+    </tr>
+    <tr>
+        <td width="33%"><a href="static_assert_test_fail_5.cpp">static_assert_test_fail_5.cpp</a></td>
+        <td width="33%">No</td>
+        <td width="34%">Illustrates failure at template class
+        scope.</td>
+    </tr>
+    <tr>
+        <td width="33%"><a href="static_assert_test_fail_6.cpp">static_assert_test_fail_6.cpp</a></td>
+        <td width="33%">No</td>
+        <td width="34%">Illustrates failure at template class
+        member function scope.</td>
+    </tr>
+    <tr>
+        <td width="33%"><a href="static_assert_test_fail_7.cpp">static_assert_test_fail_7.cpp</a></td>
+        <td width="33%">No</td>
+        <td width="34%">Illustrates failure of class scope
+        example.</td>
+    </tr>
+    <tr>
+        <td><a href="static_assert_test_fail_8.cpp">static_assert_test_fail_8.cpp</a></td>
+        <td>No</td>
+        <td>Illustrates failure of function scope example.</td>
+    </tr>
+    <tr>
+        <td><a href="static_assert_test_fail_9.cpp">static_assert_test_fail_9.cpp</a></td>
+        <td>No</td>
+        <td>Illustrates failure of function scope example (part 2).</td>
+    </tr>
+</table>
+
+<hr>
+
+<p>Revised 27th Nov 2000</p>
+
+<p>Documentation © Copyright John Maddock 2000. Permission to
+copy, use, modify, sell and distribute this document is granted
+provided this copyright notice appears in all copies. This
+document is provided &quot;as is&quot; without express or implied
+warranty, and with no claim as to its suitability for any purpose.</p>
+
+<p>Based on contributions by Steve Cleary and John Maddock.</p>
+
+<p>Maintained by <a href="mailto:John_Maddock@compuserve.com">John
+Maddock</a>, the latest version of this file can be found at <a
+href="http://www.boost.org/">www.boost.org</a>, and the boost
+discussion list at <a
+href="http://www.yahoogroups.com/list/boost">www.yahoogroups.com/list/boost</a>.
+</p>
+
+<p>&nbsp;</p>
+
+<p>&nbsp;</p>
+</body>
+</html>

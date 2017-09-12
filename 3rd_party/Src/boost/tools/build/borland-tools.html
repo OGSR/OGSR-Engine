@@ -1,0 +1,65 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+ 
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+ 
+  <link rel="stylesheet" type="text/css" href="boost.css">
+  <title>Boost.Build - borland toolset</title>
+</head>
+ <body link="#0000ff" vlink="#800080">
+ 
+<table border="0" cellpadding="7" cellspacing="0" width="100%" summary="header">
+   <tbody>
+    <tr>
+      <td valign="top" width="300">        
+      <h3><a href="http://www.boost.org/"><img height="86" width="277" alt="C++ Boost" src="../../c++boost.gif" border="0">
+      </a></h3>
+     </td>
+     <td valign="top">        
+      <h1 align="center">Boost.Build</h1>
+       
+      <h2 align="center">borland toolset</h2>
+     </td>
+   </tr>
+ 
+  </tbody>
+</table>
+ 
+<hr>  
+<h2>Introduction</h2>
+  
+<p>Boost.Build's <a href="http://www.borland.com/bcppbuilder/freecompiler">
+borland</a> toolset supports the <a href="http://www.borland.com/">Borland</a>
+ C++Builder (BCC 5.5) compiler.  </p>
+<h2>Configuration Variables</h2>
+  The borland toolset responds to the following variables which can be set in the 
+environment or configured on the jam command-line using <code>-s<i>VARIABLE_NAME</i>=</code><i>value</i>:  
+<table border="1">
+  <tbody>
+    <tr>
+      <th>Variable Name </th>
+      <th>Semantics </th>
+      <th>Default </th>
+      <th>Notes  </th>
+    </tr>
+    <tr>
+     <td><code>BCCROOT</code>     </td>
+      <td>The directory in which BCC was installed.      </td>
+      <td><code></code> (none)     </td>
+      <td>If not set the user must ensure that the tools, the bin directory
+of BCC, is available as part of the executable search path.  </td>
+    </tr>
+  </tbody>
+</table>
+  
+<hr> 
+<p>Revised    <!--webbot bot="Timestamp" S-Type="EDITED" S-Format="%d %B, %Y" startspan -->
+   06 May, 2002    <!--webbot bot="Timestamp" endspan i-checksum="39359" -->
+ </p>
+ 
+<p><i>&copy; Copyright <a href="../../people/dave_abrahams.htm">
+Dave Abrahams</a>    2002. All Rights Reserved.</i></p>
+ 
+</body>
+</html>

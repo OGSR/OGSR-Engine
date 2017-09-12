@@ -1,0 +1,175 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html><head><meta content="text/html; charset=ISO-8859-1" http-equiv="Content-Type"><title>3. Introduction</title><meta name="generator" content="DocBook XSL Stylesheets V1.48"><link rel="home" href="index.html" title="
+      C++ BOOST
+
+      The Boost Lambda Library"><link rel="up" href="index.html" title="
+      C++ BOOST
+
+      The Boost Lambda Library"><link rel="previous" href="ar01s02.html" title="2. Getting Started"><link rel="next" href="ar01s04.html" title="4. Using the library"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="navheader"><table width="100%" summary="Navigation header"><tr><th colspan="3" align="center">3. Introduction</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="ar01s02.html">Prev</a> </td><th width="60%" align="center"> </th><td width="20%" align="right"> <a accesskey="n" href="ar01s04.html">Next</a></td></tr></table><hr></div><div class="section"><div class="titlepage"><div><h2 class="title" style="clear: both"><a name="id2741991"></a>3. Introduction</h2></div></div><div class="section"><div class="titlepage"><div><h3 class="title"><a name="id2741999"></a>3.1. Motivation</h3></div></div><p>The Standard Template Library (STL)
+	[<a href="bi01.html#cit:stepanov:94" title="[STL94]">STL94</a>], now part of the C++ Standard Library [<a href="bi01.html#cit:c++:98" title="[C++98]">C++98</a>], is a generic container and algorithm library.
+Typically STL algorithms operate on container elements via <span class="emphasis"><i>function objects</i></span>. These function objects are passed as arguments to the algorithms.
+</p><p>
+Any C++ construct that can be called with the function call syntax
+is a function object. 
+The STL contains predefined function objects for some common cases (such as <tt>plus</tt>, <tt>less</tt> and <tt>not1</tt>). 
+As an example, one possible implementation for the standard <tt>plus</tt> template is:
+
+<pre class="programlisting">
+template &lt;class T&gt; : public binary_function&lt;T, T, T&gt;
+struct plus {
+  T operator()(const T&amp; i, const T&amp; j) const {
+    return i + j; 
+  }
+};
+</pre>
+
+The base class <tt>binary_function&lt;T, T, T&gt;</tt> contains typedefs for the argument and return types of the function object, which are needed to make the function object <span class="emphasis"><i>adaptable</i></span>.
+</p><p>
+In addition to the basic function object classes, such as the one above,
+the STL contains <span class="emphasis"><i>binder</i></span> templates for creating a unary function object from an adaptable binary function object by fixing one of the arguments to a constant value.
+For example, instead of having to explicitly write a function object class like:
+
+<pre class="programlisting">
+class plus_1 {
+  int _i;
+public:
+  plus_1(const int&amp; i) : _i(i) {}
+  int operator()(const int&amp; j) { return _i + j; }
+};
+</pre>
+
+the equivalent functionality can be achieved with the <tt>plus</tt> template and one of the binder templates (<tt>bind1st</tt>).
+E.g., the following two expressions create function objects with identical functionalities; 
+when invoked, both return the result of adding <tt>1</tt> to the argument of the function object:
+
+<pre class="programlisting">
+plus_1(1)
+bind1st(plus&lt;int&gt;(), 1)
+</pre>
+
+The subexpression <tt>plus&lt;int&gt;()</tt> in the latter line is a binary function object which computes the sum of two integers, and <tt>bind1st</tt> invokes this function object partially binding the first argument to <tt>1</tt>.
+As an example of using the above function object, the following code adds <tt>1</tt> to each element of some container <tt>a</tt> and outputs the results into the standard output stream <tt>cout</tt>.
+
+<pre class="programlisting">
+transform(a.begin(), a.end(), ostream_iterator&lt;int&gt;(cout),
+          bind1st(plus&lt;int&gt;(), 1));
+</pre>
+
+</p><p>
+To make the binder templates more generally applicable, the STL contains <span class="emphasis"><i>adaptors</i></span> for making 
+pointers or references to functions, and pointers to member functions, 
+adaptable.
+
+Finally, some STL implementations contain function composition operations as
+extensions to the standard [<a href="bi01.html#cit:sgi:02" title="[SGI02]">SGI02</a>].
+      </p><p>
+All these tools aim at one goal: to make it possible to specify 
+<span class="emphasis"><i>unnamed functions</i></span> in a call of an STL algorithm, 
+in other words, to pass code fragments as an argument to a function. 
+
+However, this goal is attained only partially.
+The simple example above shows that the definition of unnamed functions 
+with the standard tools is cumbersome.
+
+Complex expressions involving functors, adaptors, binders and 
+function composition operations tend to be difficult to comprehend.
+
+In addition to this, there are significant restrictions in applying 
+the standard tools. E.g. the standard binders allow only one argument 
+of a binary function to be bound; there are no binders for 
+3-ary, 4-ary etc. functions. 
+</p><p>
+The Boost Lambda Library provides solutions for the problems described above:
+
+<div class="itemizedlist"><ul type="disc"><li><p>
+Unnamed functions can be created easily with an intuitive syntax. 
+
+The above example can be written as:
+
+<pre class="programlisting">
+transform(a.begin(), a.end(), ostream_iterator&lt;int&gt;(cout), 
+          1 + _1);
+</pre>
+
+or even more intuitively:
+
+<pre class="programlisting">
+for_each(a.begin(), a.end(), cout &lt;&lt; (1 + _1));
+</pre>
+</p></li><li><p>
+Most of the restrictions in argument binding are removed, 
+arbitrary arguments of practically any C++ function can be bound.
+</p></li><li><p>
+Separate function composition operations are not needed, 
+as function composition is supported implicitly.
+
+</p></li></ul></div>
+
+</p></div><div class="section"><div class="titlepage"><div><h3 class="title"><a name="id2742792"></a>3.2. Introduction to lambda expressions</h3></div></div><p>
+	Lambda expression are common in functional programming languages. 
+	Their syntax varies between languages (and between different forms of lambda calculus), but the basic form of a lambda expressions is:
+
+
+<pre class="programlisting">
+lambda x<sub>1</sub> ... x<sub>n</sub>.e
+</pre>
+	
+
+	A lambda expression defines an unnamed function and consists of:
+	<div class="itemizedlist"><ul type="disc"><li><p>
+	      the parameters of this function: <tt>x<sub>1</sub> ... x<sub>n</sub></tt>.
+	      
+	    </p></li><li><p>the expression e which computes the value of the function in terms of the parameters <tt>x<sub>1</sub> ... x<sub>n</sub></tt>.
+	    </p></li></ul></div>
+
+	A simple example of a lambda expression is 
+<pre class="programlisting">
+lambda x y.x+y
+</pre>
+Applying the lambda function means substituting the formal parameters with the actual arguments:
+<pre class="programlisting">
+(lambda x y.x+y) 2 3 = 2 + 3 = 5 
+</pre>
+
+
+      </p><p>
+In the C++ version of lambda expressions the <tt>lambda x<sub>1</sub> ... x<sub>n</sub></tt> part is missing and the formal parameters have predefined names.
+In the current version of the library, 
+there are three such predefined formal parameters, 
+called <span class="emphasis"><i>placeholders</i></span>: 
+<tt>_1</tt>, <tt>_2</tt> and <tt>_3</tt>. 
+They refer to the first, second and third argument of the function defined 
+by the lambda expression.
+	
+For example, the C++ version of the definition
+<pre class="programlisting">lambda x y.x+y</pre>
+is 
+<pre class="programlisting">_1 + _2</pre>
+</p><p>
+Hence, there is no syntactic keyword for C++ lambda expressions. 
+	The use of a placeholder as an operand implies that the operator invocation is a lambda expression.
+	However, this is true only for operator invocations.
+	Lambda expressions containing function calls, control structures, casts etc. require special syntactic constructs. 
+	Most importantly, function calls need to be wrapped inside a <tt>bind</tt> function. 
+
+	As an example, consider the lambda expression:
+
+	<pre class="programlisting">lambda x y.foo(x,y)</pre>
+
+	Rather than <tt>foo(_1, _2)</tt>, the C++ counterpart for this expression is:
+
+	<pre class="programlisting">bind(foo, _1, _2)</pre>
+
+	We refer to this type of C++ lambda expressions as <span class="emphasis"><i>bind expressions</i></span>. 
+      </p><p>A lambda expression defines a C++ function object, hence function application syntax is like calling any other function object, for instance: <tt>(_1 + _2)(i, j)</tt>.
+
+
+      </p><div class="section"><div class="titlepage"><div><h4 class="title"><a name="sect:partial_function_application"></a>3.2.1. Partial function application</h4></div></div><p>
+A bind expression is in effect a <span class="emphasis"><i>partial function application</i></span>.
+In partial function application, some of the arguments of a function are bound to fixed values. 
+	  The result is another function, with possibly fewer arguments. 
+	  When called with the unbound arguments, this new function invokes the original function with the merged argument list of bound and unbound arguments.
+	</p></div><div class="section"><div class="titlepage"><div><h4 class="title"><a name="sect:terminology"></a>3.2.2. Terminology</h4></div></div><p>
+	  A lambda expression defines a function. A C++ lambda expression concretely constructs a function object, <span class="emphasis"><i>a functor</i></span>, when evaluated. We use the name <span class="emphasis"><i>lambda functor</i></span> to refer to such a function object. 
+	  Hence, in the terminology adopted here, the result of evaluating a lambda expression is a lambda functor.
+	</p></div></div></div><div class="navfooter"><hr><table width="100%" summary="Navigation footer"><tr><td width="40%" align="left"><a accesskey="p" href="ar01s02.html">Prev</a> </td><td width="20%" align="center"><a accesskey="u" href="index.html">Up</a></td><td width="40%" align="right"> <a accesskey="n" href="ar01s04.html">Next</a></td></tr><tr><td width="40%" align="left" valign="top">2. Getting Started </td><td width="20%" align="center"><a accesskey="h" href="index.html">Home</a></td><td width="40%" align="right" valign="top"> 4. Using the library</td></tr></table></div></body></html>

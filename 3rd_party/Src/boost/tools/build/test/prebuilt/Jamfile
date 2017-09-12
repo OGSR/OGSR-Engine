@@ -1,0 +1,9 @@
+
+project test
+    : requirements <variant>release:<define>RELEASE
+    ;
+
+use-project /ext : ext ;
+
+exe hello : hello.cpp @/ext/a ;
+

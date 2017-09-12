@@ -1,0 +1,60 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+	<head>
+		<title>Boost: throw_exception.hpp documentation</title>
+		<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+	</head>
+	<body bgcolor="white" style="MARGIN-LEFT: 5%; MARGIN-RIGHT: 5%">
+		<table border="0" width="100%">
+			<tr>
+				<td width="277">
+					<img src="../../c++boost.gif" alt="c++boost.gif (8819 bytes)" width="277" height="86">
+				</td>
+				<td align="middle">
+					<h1>throw_exception.hpp</h1>
+				</td>
+			</tr>
+			<tr>
+				<td colspan="2" height="64">&nbsp;</td>
+			</tr>
+		</table>
+		<p>
+			The header <STRONG>&lt;boost/throw_exception.hpp&gt;</STRONG> defines the 
+			helper function <STRONG>boost::throw_exception</STRONG>. It is intended to be 
+			used in Boost libraries that need to throw exceptions, but support 
+			configurations and platforms where exceptions aren't available, as indicated by 
+			the presence of the <STRONG>BOOST_NO_EXCEPTIONS</STRONG> <A href="../config/config.htm#macro_ref">
+				configuration macro</A>.
+		</p>
+		<P>When <STRONG>BOOST_NO_EXCEPTIONS</STRONG> is not defined, <tt>boost::throw_exception(e)</tt>
+			is equivalent to <tt>throw e</tt>. Otherwise, the function is left undefined, 
+			and the user is expected to supply an appropriate definition. Callers of <tt>throw_exception</tt>
+			are allowed to assume that the function never returns; therefore, if the 
+			user-defined <tt>throw_exception</tt> returns, the behavior is undefined.</P>
+		<h3><a name="Synopsis">Synopsis</a></h3>
+		<pre>
+namespace boost
+{
+
+#ifdef BOOST_NO_EXCEPTIONS
+
+void throw_exception(std::exception const &amp; e); // user defined
+
+#else
+
+template&lt;class E&gt; void throw_exception(E const &amp; e)
+{
+    throw e;
+}
+
+#endif
+
+}
+</pre>
+		<p><br>
+			<small>Copyright © 2002 by Peter Dimov. Permission to copy, use, modify, sell and 
+				distribute this document is granted provided this copyright notice appears in 
+				all copies. This document is provided "as is" without express or implied 
+				warranty, and with no claim as to its suitability for any purpose.</small></p>
+	</body>
+</html>

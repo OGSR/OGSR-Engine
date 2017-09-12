@@ -1,0 +1,37 @@
+.\" <!!---------------------------------------------------------------------->
+.\" <!! Copyright (C) 1999 Dietmar Kuehl, Claas Solutions GmbH >
+.\" <!!>
+.\" <!! Permission to use, copy, modify, distribute and sell this >
+.\" <!! software for any purpose is hereby granted without fee, provided >
+.\" <!! that the above copyright notice appears in all copies and that >
+.\" <!! both that copyright notice and this permission notice appear in >
+.\" <!! supporting documentation. Dietmar Kuehl and Claas Solutions make no >
+.\" <!! representations about the suitability of this software for any >
+.\" <!! purpose. It is provided "as is" without express or implied warranty. >
+.\" <!!---------------------------------------------------------------------->
+.TH logical-inspectability 3 "8.July 1999" "Claas Solutions" "boost"
+.SH NAME
+logical-inspectability - Abstract View of Data Structures
+
+.SH DESCRIPTION
+For abstract data structures two things are important: 
+.TP .5i
+1.
+The operations working on the data structure. 
+.TP .5i
+2.
+The current state of the data structure. 
+.RE
+
+It is quite common to provide a number of methods for data structures which perform the essential operations on these data structures. Also, some of the state, e.g. some sort of "size", is exposed to the user. However, often it is necessary to find out more about the current contents of the data structure. For example, the STL adaptor \fBstack\fP does not provide non-destructive access to the elements currently stored in the stack algthough this is clearly part of the logical concept "stack": It is only possible to get all elements by removing each fo the elements in turn. However, in some applications (e.g. during searching a path in a graph) it is useful to get the contents of the stack. 
+
+The concept of \fBlogical inspectability\fP refers to exposure of all state information of a data structure which is part of it's logic description. For example, the state of a stack is made up of all elements of the stack including their order and the current size of the stack. A stack has methods to push a new element on the stack, to access the current top element, to test whether there are elements stored in the stack and to remove the top element. To expose the whole state of the stack means, that there are also access methods to get all elements of the stack. However, it is not possible to change these elements or to add or remove elements at a different position than the stack's top. Correspondingly, the stack is not required to expose any information about the underlying container used to implement the stack: This can e.g. be a list or a vector but this does not matter for the stack's state. 
+.SH AUTHOR
+Dietmar Kühl (Claas Solutions)
+.br
+e-mail: dietmar.kuehl@claas-solutions.de
+.br
+http://www.claas-solutions.de/~kuehl
+.br
+
+

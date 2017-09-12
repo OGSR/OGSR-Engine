@@ -1,0 +1,370 @@
+[doc Pyste Documentation]
+
+[def GCCXML             [@http://www.gccxml.org GCCXML]]
+[def Boost.Python       [@../../index.html Boost.Python]]
+
+[page Introduction]
+
+[h2 What is Pyste?]
+
+Pyste is a Boost.Python code generator. The user specifies the classes and
+functions to be exported using a simple ['interface file], which following the
+Boost.Python's philosophy, is simple Python code. Pyste then uses GCCXML to
+parse all the headers and extract the necessary information to automatically
+generate C++ code.
+
+[h2 Example]
+
+Let's borrow the class [^World] from the [@../../doc/tutorial/doc/exposing_classes.html tutorial]: 
+
+    struct World
+    {
+        void set(std::string msg) { this->msg = msg; }
+        std::string greet() { return msg; }
+        std::string msg;
+    };
+
+Here's the interface file for it, named [^world.pyste]:
+
+    Class("World", "world.h")
+
+and that's it!
+
+The next step is invoke pyste in the command-line:
+
+[pre python pyste.py --module=hello world.pyste]
+
+this will create a file "[^hello.cpp]" in the directory where the command was
+run. 
+
+Pyste supports the following features:
+
+* Functions
+* Classes
+* Class Templates
+* Virtual Methods
+* Overloading
+* Attributes 
+* Enums (both "free" enums and class enums)
+* Nested Classes
+
+[page Running Pyste]
+
+To run pyste, you will need:
+
+* Python 2.2, avaiable at [@http://www.python.org python's website].
+* The great [@http://effbot.org elementtree] library, from Fredrik Lundh.
+* The excellent GCCXML, from Brad King.
+
+Installation for the tools is avaiable in their respective webpages.
+
+[blurb 
+[$theme/note.gif] GCCXML must be accessible in the PATH environment variable, so
+that pyste can call it. How to do this varies from platform to platform.
+]
+
+[h2 Ok, now what?]
+
+Well, now let's fire it up:
+
+[pre 
+'''
+>python pyste.py
+
+Usage:
+    pyste [options] --module=<name> interface-files
+
+where options are:
+    -I <path>           add an include path
+    -D <symbol>         define symbol
+    --no-using          do not declare "using namespace boost";
+                        use explicit declarations instead
+    --pyste-ns=<name>   set the namespace where new types will be declared;
+                        default is "pyste"
+'''                        
+]
+
+Options explained:
+
+The [^-I] and [^-D] are preprocessor flags, which are needed by gccxml to parse the header files correctly and by pyste to find the header files declared in the
+interface files.
+
+[^--no-using] tells pyste to don't declare "[^using namespace boost;]" in the
+generated cpp, using the namespace boost::python explicitly in all declarations.
+Use only if you're having a name conflict in one of the files.
+
+Use [^--pyste-ns] to change the namespace where new types are declared (for
+instance, the virtual wrappers). Use only if one of your header files declare a
+namespace named "pyste" and this is causing conflicts.
+
+So, the usage is simple enough:
+
+[pre >python pyste.py --module=mymodule file.pyste file2.pyste ...]
+
+will generate a file [^mymodule.cpp] in the same dir where the command was
+executed. Now you can compile the file using the same instructions of the
+[@../../doc/tutorial/doc/building_hello_world.html tutorial]. 
+
+[h2 Wait... how do I set those I and D flags?]
+
+Don't worry: normally GCCXML is already configured correctly for your plataform, 
+so the search path to the standard libraries and the standard defines should 
+already be set. You only have to set the paths to other libraries that your code 
+needs, like Boost, for example.
+
+Plus, Pyste automatically uses the contents of the environment variable
+[^INCLUDE] if it exists. Visual C++ users should run the [^Vcvars32.bat] file,
+which for Visual C++ 6 is normally located at:
+
+    C:\Program Files\Microsoft Visual Studio\VC98\bin\Vcvars32.bat
+
+with that, you should have little trouble setting up the flags.
+
+[page The Interface Files]
+
+The interface files are the heart of Pyste. The user creates one or more
+interface files declaring the classes and functions he wants to export, and then
+invokes pyste passing the interface files to it. Pyste then generates a single
+cpp file with Boost.Python code, with all the classes and functions exported.
+
+Besides declaring the classes and functions, the user has a number of other
+options, like renaming classes and methods, excluding methods and attributes,
+and so on. 
+
+[h2 Basics]
+
+Suppose we have a class and some functions that we want to expose to Python
+declared in the header [^hello.h]:
+
+    struct World
+    {
+        World(std::string msg): msg(msg) {} 
+        void set(std::string msg) { this->msg = msg; }
+        std::string greet() { return msg; }
+        std::string msg;
+    };
+
+    enum choice { red, blue };
+    
+    namespace test {
+    
+    void show(choice c) { std::cout << "value: " << (int)c << std::endl; }
+    
+    }
+
+We create a file named [^hello.pyste] and create instances of the classes
+[^Function], [^Class] and [^Enum]:
+
+    Function("test::show", "hello.h")
+    Class("World", "hello.h")
+    Enum("choice", "hello.h")
+
+That will expose the class, the free function and the enum found in [^hello.h]. 
+
+[page:1 Renaming and Excluding]
+
+You can easily rename functions, classes, methods, attributes, etc. Just use the
+function [^rename], like this:
+
+    World = Class("World", "hello.h")
+    rename(World, "IWorld")
+    show = Function("choice", "hello.h")
+    rename(show, "Show")
+
+You can rename methods and attributes using this syntax:
+
+    rename(World.greet, "Greet")
+    rename(World.set, "Set")
+    choice = Enum("choice", "hello.h")
+    rename(choice.red, "Red")
+    rename(choice.blue, "Blue")
+
+You can exclude functions, classes, methods, attributes, etc, in the same way,
+with the function [^exclude]:
+
+    exclude(World.greet)
+    exclude(World.msg)
+
+Easy, huh? [$theme/smiley.gif]
+
+[page:1 Policies]
+
+Even thought Pyste can identify various elements in the C++ code, like virtual
+methods, attributes, and so on, one thing that it can't do is to guess the
+semantics of functions that return pointers or references. In this case, the
+user must manually specify the policy. Policies are explained in the
+[@../../doc/tutorial/doc/call_policies.html tutorial].
+
+The policies in Pyste are named exactly as in Boost.Python, only the syntax is
+slightly different. For instance, this policy:
+
+    return_internal_reference<1, with_custodian_and_ward<1, 2> >()
+
+becomes in Pyste:    
+
+    return_internal_reference(1, with_custodian_and_ward(1, 2))
+
+The user can specify policies for functions and methods with the [^set_policy]
+function:
+
+    set_policy(f, return_internal_reference())
+    set_policy(C.foo, return_value_policy(manage_new_object))
+
+[blurb 
+[$theme/note.gif] [*What if a function or method needs a policy and the user
+doesn't set one?][br][br]
+If a function/method needs a policy and one was not set, Pyste will issue a error.
+The user should then go in the interface file and set the policy for it,
+otherwise the generated cpp won't compile.
+]
+
+[page:1 Templates]
+
+Template Classes can easily exported too, but you can't export the "Template"
+itself... you have to export instantiations of it! So, if you want to export a
+[^std::vector], you will have to export vectors of int, doubles, etc.
+
+Suppose we have this code:
+
+    template <class T>
+    struct Point
+    {
+        T x;
+        T y;
+    };
+
+And we want to export [^Point]s of int and double:
+
+    Point = Template("Point", "point.h")
+    Point("int")
+    Point("double")
+
+Pyste will assign default names for each instantiation. In this example, those
+would be "[^Point_int]" and "[^Point_double]", but most of the time users will want to
+rename the instantiations:
+
+    Point("int", "IPoint")         // renames the instantiation
+    double_inst = Point("double")  // another way to do the same
+    rename(double_inst, "DPoint")
+
+Note that you can rename, exclude, set policies, etc, in the [^Template] class
+like you would do with a [^Function] or a [^Class]. This changes affect all
+[*future] instantiations:
+
+    Point = Template("Point", "point.h")
+    Point("float", "FPoint")        // will have x and y as data members
+    rename(Point.x, "X")
+    rename(Point.y, "Y")
+    Point("int", "IPoint")          // will have X and Y as data members
+    Point("double", "DPoint")       // also will have X and Y as data member
+
+If you want to change a option of a particular instantiation, you can do so:
+
+    Point = Template("Point", "point.h")
+    Point("int", "IPoint")          
+    d_inst = Point("double", "DPoint")       
+    rename(d_inst.x, "X")           // only DPoint is affect by this renames,
+    rename(d_inst.y, "Y")           // IPoint stays intact
+
+[blurb [$theme/note.gif] [*What if my template accepts more than one type?]
+[br][br]
+When you want to instantiate a Template with more than one type, you can pass
+either a string with the types separated by whitespace, or a list of strings
+'''("int double" or ["int", "double"]''' would both work).
+]
+
+[page:1 Wrappers]
+
+Suppose you have this function:
+
+    std::vector<std::string> names();
+
+But you don't want to export a vector<string>, you want this function to return
+a python list of strings. Boost.Python has an excellent support for that:
+
+    list names_wrapper()
+    {
+        list result;
+        vector<string> v = names();
+        // put each string in the vector in the list
+        return result;
+    }
+    
+    BOOST_PYTHON_MODULE(test)
+    {
+        def("names", &names_wrapper);
+    }
+
+Nice heh?
+Pyste supports this mechanism too. You declare the [^names_wrapper] function in a
+header, like "[^test_wrappers.h]", and in the interface file:
+
+    Include("test_wrappers.h")
+    names = Function("names", "test.h")
+    set_wrapper(names, "names_wrapper")
+
+You can optionally declare the function in the interface file itself:
+
+    names_wrapper = Wrapper("names_wrapper",
+    """
+    list names_wrapper()
+    {
+        // call name() and convert the vector to a list...
+    }
+    """)
+    names = Function("names", "test.h")
+    set_wrapper(names, names_wrapper)
+
+The same mechanism can be done with methods too. Just remember that the first
+parameter of wrappers for methods is a pointer to the class, like in
+Boost.Python:
+
+    struct C
+    {
+        std::vector<std::string> names();
+    }
+
+    list names_wrapper(C* c)
+    {
+        // same as before, calling c->names() and converting result to a list
+    }
+
+And then in the interface file:
+
+    C = Class("C", "test.h")
+    set_wrapper(C.names, "names_wrapper")
+
+[page:1 Exporting All Declarations from a Header]
+
+Pyste also supports a mechanism to export all declarations found in a header
+file. Suppose again our file, [^hello.h]:
+
+    struct World
+    {
+        World(std::string msg): msg(msg) {} 
+        void set(std::string msg) { this->msg = msg; }
+        std::string greet() { return msg; }
+        std::string msg;
+    };
+
+    enum choice { red, blue };
+    
+    void show(choice c) { std::cout << "value: " << (int)c << std::endl; } 
+
+You can just use the [^AllFromHeader] construct:
+
+    hello = AllFromHeader("hello.h")
+
+this will export all the declarations found in [^hello.h], which is equivalent
+to write:
+
+    Class("World", "hello.h")
+    Enum("choice", "hello.h")
+    Function("show", "hello.h")
+
+Note that you can still use the functions [^rename], [^set_policy], [^exclude], etc. Just access
+the members of the header object like this:
+
+    rename(hello.World.greet, "Greet")
+    exclude(hello.World.set, "Set")
+

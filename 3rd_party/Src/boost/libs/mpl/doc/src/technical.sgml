@@ -1,0 +1,52 @@
+<!-- ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||| section -->
+<section id="technical">
+<title>Technical details</>
+
+<!-- ||||||||||||||||||||||||||||| subsection -->
+<section id="details.headers">
+<title>Physical structure</>
+
+<para>
+The library provides you with a fine-grained header structure with one header per public component (class/function template), with the header named after the component; for example, <literal>boost::mpl::apply&lt;&gt;</> template is defined in the header <literal>boost/mpl/apply.hpp</>. This scheme both ensures that you don't pay for what you don't use in terms of compilation time/header dependencies, and frees you from memorizing/looking up header/component correspondence. Several composite headers for the entities that are likely to be used together (e.g. logical operations - <literal>logical_or</>, <literal>logical_and</>, etc.) are also provided. It allows one to avoid the burden of spelling many <literal>#include</> directives in programs that make an intensive use of the library facilities. 
+
+<footnote id="note.headers"><para>The Boost Preprocessor library <citation><xref linkend="ref.PRE"></> exposes a very similar physical organization; in fact, the libraries even share the common subdirectory naming (<literal>mpl/arithmetic</> <-> <literal>preprocessor/arithmetic</>, <literal>mpl/comparison</> <-> <literal>preprocessor/comparison</>, etc.).</></>
+
+</>
+
+</section>
+
+<!-- ||||||||||||||||||||||||||||| subsection -->
+<section id="details.depend">
+<title>Dependencies</>
+
+<para>
+Besides <literal>boost/config.hpp</> header, the MPL heavily depends on two other Boost libraries - the Boost Preprocessor library <citation><xref linkend="ref.PRE"></>, and the Type Traits library <citation><xref linkend="ref.TTL"></>. These dependencies are essential and cannot be eliminated. In addition to those, the <literal>boost/mpl/assert_is_same.hpp</> header depends on Boost Static Assert library <citation><xref linkend="ref.SAL"></>. The library tests and examples may depend on some additional Boost libraries, e.g. Boost Bind <citation><xref linkend="ref.BBL"></>; you don't have to have those unless you are interested in actually compiling the tests/examples (probably you are, though).
+</>
+
+</section>
+
+<!-- ||||||||||||||||||||||||||||| subsection -->
+<section id="details.portability">
+<title>Portability</>
+
+<para>
+Below is the list of compilers the library has been tested with: 
+</>
+
+<itemizedlist mark="box">
+<listitem><simpara>Microsoft Visual C++ 6.0, SP 5</></>
+<listitem><simpara>Microsoft Visual C++ .NET (7.0)</></>
+<listitem><simpara>Metrowerks CodeWariror 7.2/8.1</></>
+<listitem><simpara>Intel C++ Compiler 5.0, 6.0</></>
+<listitem><simpara>GCC 2.95.3-5</></>
+<listitem><simpara>GCC 3.1</></>
+<listitem><simpara>Comeau C/C++ 4.2.45/4.3.0</></>
+<listitem><simpara>Borland C++ 5.5.1</></>
+</>
+
+<para>An incomplete matrix of recent test compilation results is available from here - <ulink url="http://www.mywikinet.com/mpl/log.html"></>.
+</>
+
+</section>
+
+</section>

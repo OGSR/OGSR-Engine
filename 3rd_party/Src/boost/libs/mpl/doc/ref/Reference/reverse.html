@@ -1,0 +1,58 @@
+<!doctype html public "-//ietf//dtd html//en">
+<html><head><title>boost::mpl::reverse</title>
+<link rel="stylesheet" href="../mpl_wiki.css">
+</head><body bgcolor="white">
+<h1><a href="../Table_of_Contents.html"><img src="../mpl_logo.jpg" alt="[Home]" border=0 align="right"></a>reverse</h1><h3>Synopsis</h3>
+<p>
+<pre>
+template&lt;
+      typename Sequence
+    &gt;
+struct reverse
+{
+    typedef <em>implementation-defined</em> type;
+};
+</pre>
+<p>
+<h3>Description</h3>
+<p>
+Reverses a sequence. The result sequence preserves all the functional and performance characteristics of the original <code>Sequence</code>, including its size, but not identity. 
+<p>
+<h3>Definition</h3>
+<p>
+<pre>
+#include "<a href="../../../../../boost/mpl/reverse.hpp">boost/mpl/reverse.hpp</a>"
+</pre>
+<p>
+<h3>Parameters</h3>
+<table border="1">
+<tr><th>&nbsp;Parameter&nbsp;</th><th>&nbsp;Requirement&nbsp;</th><th>&nbsp;Description &nbsp;</th></tr>
+<tr><td><code>Sequence</code></td><td>A model of <a href="../Extensible_Sequence.html">Extensible Sequence</a></td><td>The original sequence.  </td></tr>
+</table>
+<p>
+<h3>Expression semantics</h3>
+<p>
+<table border="1">
+<tr><th>&nbsp;Expression&nbsp;</th><th>&nbsp;Expression&nbsp;type&nbsp;</th><th>&nbsp;Precondition&nbsp;</th><th>&nbsp;Semantics&nbsp;</th><th>&nbsp;Postcondition&nbsp;</th></tr>
+<tr><td><code>typedef reverse&lt;Sequence&gt;::type s;</code></td><td>A model of <a href="../Extensible_Sequence.html">Extensible Sequence</a></td><td></td><td></td><td><code>size&lt;s&gt;::type::value == size&lt;Sequence&gt;::type::value</code>. </td></tr>
+</table>
+<p>
+<h3>Complexity</h3>
+<p>
+Linear.
+<p>
+<h3>Example</h3>
+<p>
+<pre>
+typedef <a href="../Reference/list_c.html">list_c</a>&lt;int,9,8,7,6,5,4,3,2,1,0&gt;::type numbers;
+typedef reverse&lt; numbers &gt;::type result;
+<p>
+typedef <a href="../Reference/range_c.html">range_c</a>&lt;int,0,10&gt; answer;
+BOOST_STATIC_ASSERT((<a href="../Reference/equal.html">equal</a>&lt;result,answer&gt;::type::value));
+</pre>
+<p>
+<h3>See also</h3>
+<p>
+<a href="../Algorithms.html">Algorithms</a>, <code><a href="../Reference/transform.html">transform</a></code>, <code><a href="../Reference/remove.html">remove</a></code>, <code><a href="../Reference/remove_if.html">remove_if</a></code>
+<p><hr>
+<a href="../Table_of_Contents.html">Table of Contents</a><br>Last edited March 10, 2003 6:13 am</body></html>

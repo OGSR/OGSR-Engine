@@ -1,0 +1,6 @@
+*.plg
+*.opt
+*.positions
+*.ncb
+Debug
+bin

@@ -1,0 +1,142 @@
+
+<!-- ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||| section -->
+<section id="lambda">
+<title>Lambda facility</>
+
+<para>
+The &MPL;'s lambda facility allows the <firstterm>inline composition</> of class templates into <quote>lambda expressions</>, which are classes and can therefore be passed around as ordinary metafunction classes, or transformed into metafunction classes before application using the expression:
+</>
+
+<programlisting><![CDATA[
+typedef mpl::lambda<expr>::type func;
+]]></>
+
+<para>
+For example, <literal>boost::remove_const</> traits template from Boost <literal>type_traits</> library <citation><xref linkend="ref.TTL"></> is a class template (obviously), or a <link linkend="metafunctions">metafunction</> in &MPL; terminology. The simplest example of an <quote>inline composition</> of it would be something like:
+</>
+
+<programlisting><![CDATA[
+typedef boost::remove_const<_1> expr;
+]]></>
+
+<para>
+This forms a so called <quote>lambda expression</>, which is neither a metafunction class, nor a metafunction, yet can be passed around everywhere because it's an ordinary &Cxx; class, because all &MPL; facilities are polymorphic with respect to their arguments. Now, that lambda expression can be <emphasis>transformed</> into a metafunction class using the &MPL;'s <literal>lambda</> facility:
+</>
+
+<programlisting><![CDATA[
+typedef boost::remove_const<_1> expr;
+typedef mpl::lambda<expr>::type func;
+]]></>
+
+<para>
+The <literal>func</> is a unary metafunction class and can be used as such. In particular, it can be pass around or invoked (applied):
+</>
+
+<programlisting><![CDATA[
+typedef mpl::apply<func,int const>::type res;
+BOOST_MPL_ASSERT_IS_SAME(res, int);
+]]></>
+
+<para>
+or even
+</>
+
+<programlisting><![CDATA[
+typedef func::apply<int const>::type res;
+BOOST_MPL_ASSERT_IS_SAME(res, int);
+]]></>
+
+<para>
+Inline composition is very appealing syntactically when one deals with metafunctions, because it makes the expression obvious:
+</>
+
+<programlisting><![CDATA[
+typedef mpl::logical_or<
+      mpl::less< mpl::sizeof_<_1>, mpl::int_c<16> >
+    , boost::is_same<_1,_2>
+    > expr;
+
+typedef mpl::lambda<expr>::type func;
+]]></>
+
+<para>
+And one does not have to specify the last part (<literal>typedef lambda&lt;expr&gt;::type func</>), because all the algorithms do this to any of their metafunction class operands internally (a <literal>lambda&lt;T&gt;::type</> expression applied to a metafunction class gives back the same metafunction class, so it's safe to apply the expression unconditionally).
+</>
+
+<para>
+The alternative way to write an equivalent of the above metafunction class would be:
+</>
+
+<programlisting><![CDATA[
+typedef bind<
+      mpl::meta_fun2<mpl::logical_or>
+    , mpl::bind< mpl::meta_fun2<mpl::less>
+        , mpl::bind< mpl::meta_fun1<mpl::sizeof_>,_1 >
+        , mpl::int_c<16>
+        >
+    , mpl::bind< mpl::meta_fun2<boost::is_same>,_1,_2 >
+    > func;
+]]></>
+
+<para>
+Or to use <literal>mpl::compose_</> family of templates in a similar way. Here, we use <literal>mpl::meta_fun</> templates to convert metafunctions into metafunction classes and then combine them using <literal>mpl::bind</>. The transformation from this form to the above inline lambda expression and vice-versa is mechanical, and that is essentially what the <literal>typedef mpl::lambda&lt;expr&gt;::type</> expression does.
+</>
+
+<para>
+For its own metafunctions (algorithms, primitives, etc.), &MPL; enables one to write the above in a less cumbersome way:
+</>
+
+<programlisting><![CDATA[
+typedef mpl::bind<
+      mpl::logical_or<>
+    , mpl::bind< mpl::less<>, mpl::bind<mpl::sizeof_<>,_1>, mpl::int_c<16> >
+    , mpl::bind< mpl::make_f2<boost::is_same>, _1,_2 >
+    > func;
+]]></>
+
+<para>
+Note that we still have to wrap <literal>is_same</> into <literal>make_f2</>, because it's a foreign template.
+</>
+
+<para>
+Now, about combining class template metafunctions and metafunction classes in the single lambda expression - it can be done like this:
+</>
+
+<programlisting><![CDATA[
+struct my_predicate
+{
+    template< typename T1, typename T2 > struct apply
+    {
+        //...
+    };
+};
+
+typedef mpl::logical_or<
+      mpl::less< mpl::sizeof_<_>,mpl::int_c<16> >
+    , mpl::bind< my_predicate,_,_ > // here
+    > expr;
+]]></>
+
+<para>
+To bind something to one of its arguments (or change the order of parameters), then use either:
+</>
+
+<programlisting><![CDATA[
+typedef mpl::logical_or<
+      mpl::less< mpl::sizeof_<_>,mpl::int_c<16> >
+    , mpl::bind<my_predicate,int,_>::type // here
+    > expr;
+]]></>
+
+<para>
+or
+</>
+
+<programlisting><![CDATA[
+typedef mpl::logical_or<
+      mpl::less< mpl::sizeof_<_>,mpl::int_c<16> >
+    , my_predicate::apply<int,_> // here
+    > expr;
+]]></>
+
+</section>

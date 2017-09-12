@@ -1,0 +1,1304 @@
+<html>
+
+<head>
+<meta http-equiv="Content-Type"
+content="text/html; charset=iso-8859-1">
+<meta name="Template"
+content="C:\PROGRAM FILES\MICROSOFT OFFICE\OFFICE\html.dot">
+<meta name="GENERATOR" content="Microsoft FrontPage 5.0">
+<title>Type Traits</title>
+</head>
+
+<body bgcolor="#FFFFFF" link="#0000FF" vlink="#800080">
+
+<h1><img src="../../c++boost.gif" width="276" height="86">Header
+&lt;<a href="../../boost/type_traits.hpp">boost/type_traits.hpp</a>&gt;</h1>
+
+<h2>Contents</h2>
+
+<pre><a href="#intro">Introduction</a>
+<a href="#primary">Primary Type Categorisation</a>
+<a href="#secondary">Secondary Type Categorisation</a>
+<a href="#properties">Type Properties</a>
+<a href="#relationships">Relationships Between Types</a>
+<a href="#transformations">Transformations Between Types</a>
+<a href="#synthesized">Synthesizing Types</a>
+<a href="#function_traits">Function Traits</a>
+<a href="#headers">Type traits headers</a>
+<a href="#example">Example Code</a></pre>
+
+<h2><a name="intro"></a>Introduction</h2>
+
+<p>The contents of &lt;boost/type_traits.hpp&gt; are declared in
+namespace boost.</p>
+
+<p>The file &lt;<a href="../../boost/type_traits.hpp">boost/type_traits.hpp</a>&gt;
+defines three kinds of type trait:</p>
+
+<ol>
+    <li>The properties of a specific type. </li>
+    <li>The relationship between two types. </li>
+    <li>A transformation from one type to another.</li>
+</ol>
+
+<p>If you are new to this library then the accompanying <a
+href="c++_type_traits.htm">article</a> provides the background
+information and motivation.</p>
+
+<p>All of the integral expressions in this library are <a
+href="../../more/int_const_guidelines.htm"><em>integral constant
+expressions</em></a>, these can sometimes cause compiler problems
+in use, so there is a related set of <a
+href="../../more/int_const_guidelines.htm">coding guidelines</a>
+to help you write portable code using this library.</p>
+
+<h2><a name="primary"></a>Primary Type Categorisation</h2>
+
+<p>The following type traits templates identify which type
+category the type belongs to. For any given type, exactly one of
+the following expressions will evaluate to true. Note that this
+means that <code>is_integral&lt;T&gt;::value</code> and <code>is_float&lt;T&gt;::value</code>
+will only every be true for built-in types; if you want to check
+for a user-defined type that may behave &quot;as if&quot; it is
+an integral or floating point type, then use the std::numeric_limits
+template instead.</p>
+
+<table border="0" cellpadding="7" cellspacing="1" width="100%">
+    <tr>
+        <td valign="top" width="5%">&nbsp;</td>
+        <td valign="top" width="23%" bgcolor="#008080"><p
+        align="center">Expression</p>
+        </td>
+        <td valign="top" width="26%" bgcolor="#008080"><p
+        align="center">Description</p>
+        </td>
+        <td valign="top" width="16%" bgcolor="#008080"><p
+        align="center">Reference</p>
+        </td>
+        <td valign="top" width="25%" bgcolor="#008080"><p
+        align="center">Compiler requirements</p>
+        </td>
+        <td valign="top" width="5%">&nbsp;</td>
+    </tr>
+    <tr>
+        <td valign="top" width="5%">&nbsp;</td>
+        <td valign="top" width="23%" bgcolor="#C0C0C0"><code>::boost::is_void&lt;T&gt;::value</code></td>
+        <td valign="top" width="26%" bgcolor="#C0C0C0">Evaluates
+        to true only if T is a cv-qualified void type.</td>
+        <td valign="top" width="16%" bgcolor="#C0C0C0"><p
+        align="center">3.9.1p9</p>
+        </td>
+        <td valign="top" width="25%" bgcolor="#C0C0C0">&nbsp;</td>
+        <td valign="top" width="5%">&nbsp;</td>
+    </tr>
+    <tr>
+        <td valign="top" width="5%">&nbsp;</td>
+        <td valign="top" width="23%" bgcolor="#C0C0C0"><code>::boost::is_integral&lt;T&gt;::value</code></td>
+        <td valign="top" width="26%" bgcolor="#C0C0C0">Evaluates
+        to true only if T is an cv-qualified integral type.</td>
+        <td valign="top" width="16%" bgcolor="#C0C0C0"><p
+        align="center">3.9.1p7</p>
+        </td>
+        <td valign="top" width="25%" bgcolor="#C0C0C0">&nbsp;</td>
+        <td valign="top" width="5%">&nbsp;</td>
+    </tr>
+    <tr>
+        <td valign="top" width="5%">&nbsp;</td>
+        <td valign="top" width="23%" bgcolor="#C0C0C0"><code>::boost::is_float&lt;T&gt;::value</code></td>
+        <td valign="top" width="26%" bgcolor="#C0C0C0">Evaluates
+        to true only if T is a cv-qualified floating point type.</td>
+        <td valign="top" width="16%" bgcolor="#C0C0C0"><p
+        align="center">3.9.1p8</p>
+        </td>
+        <td valign="top" width="25%" bgcolor="#C0C0C0">&nbsp;</td>
+        <td valign="top" width="5%">&nbsp;</td>
+    </tr>
+    <tr>
+        <td valign="top" width="5%">&nbsp;</td>
+        <td valign="top" width="23%" bgcolor="#C0C0C0"><code>::boost::is_pointer&lt;T&gt;::value</code></td>
+        <td valign="top" width="26%" bgcolor="#C0C0C0">Evaluates
+        to true only if T is cv-qualified pointer type (includes
+        function pointers, but excludes pointers to members).</td>
+        <td valign="top" width="16%" bgcolor="#C0C0C0"><p
+        align="center">3.9.2p2</p>
+        <p align="center">8.3.1</p>
+        </td>
+        <td valign="top" width="25%" bgcolor="#C0C0C0">&nbsp;</td>
+        <td valign="top" width="5%">&nbsp;</td>
+    </tr>
+    <tr>
+        <td valign="top" width="5%">&nbsp;</td>
+        <td valign="top" width="23%" bgcolor="#C0C0C0"><code>::boost::is_reference&lt;T&gt;::value</code></td>
+        <td valign="top" width="26%" bgcolor="#C0C0C0">Evaluates
+        to true only if T is a reference type.</td>
+        <td valign="top" width="16%" bgcolor="#C0C0C0"><p
+        align="center">3.9.2</p>
+        <p align="center">8.3.2</p>
+        </td>
+        <td valign="top" width="25%" bgcolor="#C0C0C0">If the
+        compiler does not support partial-specialization of class
+        templates, then this template may report the wrong result
+        for function types.</td>
+        <td valign="top" width="5%">&nbsp;</td>
+    </tr>
+    <tr>
+        <td valign="top" width="5%">&nbsp;</td>
+        <td valign="top" width="23%" bgcolor="#C0C0C0"><code>::boost::is_member_pointer&lt;T&gt;::value</code></td>
+        <td valign="top" width="26%" bgcolor="#C0C0C0">Evaluates
+        to true only if T is a cv-qualified pointer to a data-member
+        or member-function.</td>
+        <td valign="top" width="16%" bgcolor="#C0C0C0"><p
+        align="center">3.9.2</p>
+        <p align="center">8.3.3</p>
+        </td>
+        <td valign="top" width="25%" bgcolor="#C0C0C0">&nbsp;</td>
+        <td valign="top" width="5%">&nbsp;</td>
+    </tr>
+    <tr>
+        <td valign="top" width="5%">&nbsp;</td>
+        <td valign="top" width="23%" bgcolor="#C0C0C0"><code>::boost::is_array&lt;T&gt;::value</code></td>
+        <td valign="top" width="26%" bgcolor="#C0C0C0">Evaluates
+        to true only if T is an array type.</td>
+        <td valign="top" width="16%" bgcolor="#C0C0C0"><p
+        align="center">3.9.2</p>
+        <p align="center">8.3.4</p>
+        </td>
+        <td valign="top" width="25%" bgcolor="#C0C0C0">If the
+        compiler does not support partial-specialization of class
+        templates, then this template can give the wrong result
+        with function types.</td>
+        <td valign="top" width="5%">&nbsp;</td>
+    </tr>
+    <tr>
+        <td valign="top" width="5%">&nbsp;</td>
+        <td valign="top" width="23%" bgcolor="#C0C0C0"><code>::boost::is_union&lt;T&gt;::value</code></td>
+        <td valign="top" width="26%" bgcolor="#C0C0C0">Evaluates
+        to true only if T is of union type. Currently requires
+        some kind of compiler support, otherwise unions are
+        identified as classes.</td>
+        <td valign="top" width="16%" bgcolor="#C0C0C0"><p
+        align="center">3.9.2</p>
+        <p align="center">9.5</p>
+        </td>
+        <td valign="top" width="25%" bgcolor="#C0C0C0">Without (some
+        as yet unspecified) help from the compiler, we cannot
+        distinguish between union and class types, as a result
+        this expression will never evaluate to true.</td>
+        <td valign="top" width="5%">&nbsp;</td>
+    </tr>
+    <tr>
+        <td valign="top" width="5%">&nbsp;</td>
+        <td valign="top" width="23%" bgcolor="#C0C0C0"><code>::boost::is_class&lt;T&gt;::value</code></td>
+        <td valign="top" width="26%" bgcolor="#C0C0C0">Evaluates
+        to true only if T is of class/struct type.</td>
+        <td valign="top" width="16%" bgcolor="#C0C0C0"><p
+        align="center">3.9.2</p>
+        <p align="center">9.2</p>
+        </td>
+        <td valign="top" width="25%" bgcolor="#C0C0C0">Without (some
+        as yet unspecified) help from the compiler, we cannot
+        distinguish between union and class types, as a result
+        this expression will erroneously evaluate to true for
+        union types.</td>
+        <td valign="top" width="5%">&nbsp;</td>
+    </tr>
+    <tr>
+        <td valign="top" width="5%">&nbsp;</td>
+        <td valign="top" width="23%" bgcolor="#C0C0C0"><code>::boost::is_enum&lt;T&gt;::value</code></td>
+        <td valign="top" width="26%" bgcolor="#C0C0C0">Evaluates
+        to true only if T is of enum type.</td>
+        <td valign="top" width="16%" bgcolor="#C0C0C0"><p
+        align="center">3.9.2</p>
+        <p align="center">7.2</p>
+        </td>
+        <td valign="top" width="25%" bgcolor="#C0C0C0">Requires a
+        correctly functioning is_convertible template (this means
+        that is_enum is currently broken under Borland C++
+        Builder 5, and some for some versions of the Metrowerks
+        compiler).</td>
+        <td valign="top" width="5%">&nbsp;</td>
+    </tr>
+    <tr>
+        <td>&nbsp;</td>
+        <td valign="top" bgcolor="#C0C0C0"><code>::boost::is_function&lt;T&gt;::value</code></td>
+        <td valign="top" bgcolor="#C0C0C0">Evaluates to true only
+        if T is a function type (note not a reference or pointer
+        to function).</td>
+        <td valign="top" bgcolor="#C0C0C0"><p align="center">3.9.2p1</p>
+        <p align="center">8.3.5</p>
+        </td>
+        <td valign="top" bgcolor="#C0C0C0">If the compiler does
+        not support partial-specialization of class templates,
+        then this template does not compile for reference types.</td>
+        <td>&nbsp;</td>
+    </tr>
+</table>
+
+<p>&nbsp;</p>
+
+<h2><a name="secondary"></a>Secondary Type Categorisation</h2>
+
+<p>The following type categories are made up of the union of one
+or more primary type categorisations. A type may belong to more
+than one of these categories, in addition to one of the primary
+categories.</p>
+
+<table border="0" cellpadding="7" cellspacing="1" width="100%">
+    <tr>
+        <td valign="top" width="5%">&nbsp;</td>
+        <td valign="top" width="24%" bgcolor="#008080"><p
+        align="center">Expression</p>
+        </td>
+        <td valign="top" width="26%" bgcolor="#008080"><p
+        align="center">Description</p>
+        </td>
+        <td valign="top" width="15%" bgcolor="#008080"><p
+        align="center">Reference</p>
+        </td>
+        <td valign="top" width="25%" bgcolor="#008080"><p
+        align="center">Compiler requirements</p>
+        </td>
+        <td valign="top" width="5%">&nbsp;</td>
+    </tr>
+    <tr>
+        <td valign="top" width="5%">&nbsp;</td>
+        <td valign="top" width="24%" bgcolor="#C0C0C0"><code>::boost::is_arithmetic&lt;T&gt;::value</code></td>
+        <td valign="top" width="26%" bgcolor="#C0C0C0">Evaluates
+        to true only if T is a cv-qualified arithmetic type. That
+        is either an integral or floating point type.</td>
+        <td valign="top" width="15%" bgcolor="#C0C0C0"><p
+        align="center">3.9.1p8</p>
+        </td>
+        <td valign="top" width="25%" bgcolor="#C0C0C0">&nbsp;</td>
+        <td valign="top" width="5%">&nbsp;</td>
+    </tr>
+    <tr>
+        <td valign="top" width="5%">&nbsp;</td>
+        <td valign="top" width="24%" bgcolor="#C0C0C0"><code>::boost::is_fundamental&lt;T&gt;::value</code></td>
+        <td valign="top" width="26%" bgcolor="#C0C0C0">Evaluates
+        to true only if T is an cv-qualified fundamental type.
+        That is either an integral, a floating point, or a void
+        type.</td>
+        <td valign="top" width="15%" bgcolor="#C0C0C0"><p
+        align="center">3.9.1</p>
+        </td>
+        <td valign="top" width="25%" bgcolor="#C0C0C0">&nbsp;</td>
+        <td valign="top" width="5%">&nbsp;</td>
+    </tr>
+    <tr>
+        <td valign="top" width="5%">&nbsp;</td>
+        <td valign="top" width="24%" bgcolor="#C0C0C0"><code>::boost::is_object&lt;T&gt;::value</code></td>
+        <td valign="top" width="26%" bgcolor="#C0C0C0">Evaluates
+        to true only if T is a cv-qualified object type. That is
+        not a function, reference, or void type.</td>
+        <td valign="top" width="15%" bgcolor="#C0C0C0"><p
+        align="center">3.9p9</p>
+        </td>
+        <td valign="top" width="25%" bgcolor="#C0C0C0">&nbsp;</td>
+        <td valign="top" width="5%">&nbsp;</td>
+    </tr>
+    <tr>
+        <td valign="top" width="5%">&nbsp;</td>
+        <td valign="top" width="24%" bgcolor="#C0C0C0"><code>::boost::is_scalar&lt;T&gt;::value</code></td>
+        <td valign="top" width="26%" bgcolor="#C0C0C0">Evaluates
+        to true only if T is cv-qualified scalar type. That is an
+        arithmetic, enumeration, pointer or a pointer to member
+        type.</td>
+        <td valign="top" width="15%" bgcolor="#C0C0C0"><p
+        align="center">3.9p10</p>
+        </td>
+        <td valign="top" width="25%" bgcolor="#C0C0C0">If the
+        compiler does not support partial-specialization of class
+        templates, then this template can not be used with
+        function types.</td>
+        <td valign="top" width="5%">&nbsp;</td>
+    </tr>
+    <tr>
+        <td valign="top" width="5%">&nbsp;</td>
+        <td valign="top" width="24%" bgcolor="#C0C0C0"><code>::boost::is_compound&lt;T&gt;::value</code></td>
+        <td valign="top" width="26%" bgcolor="#C0C0C0">Evaluates
+        to true only if T is a compound type. That is an array,
+        function, pointer, reference, enumerator, union, class or
+        member function type.</td>
+        <td valign="top" width="15%" bgcolor="#C0C0C0"><p
+        align="center">3.9.2</p>
+        </td>
+        <td valign="top" width="25%" bgcolor="#C0C0C0">If the
+        compiler does not support partial-specialization of class
+        templates, then this template can not be used with
+        function types.</td>
+        <td>&nbsp;</td>
+    </tr>
+    <tr>
+        <td>&nbsp;</td>
+        <td bgcolor="#C0C0C0"><code>::boost::is_member_function_pointer&lt;T&gt;::value</code></td>
+        <td bgcolor="#C0C0C0">Evaluates to true only if T is a
+        pointer to a member function (and not a pointer to a
+        member object). This template splits is_member_pointer
+        into two sub-categories.</td>
+        <td bgcolor="#C0C0C0"><p align="center">3.9.2</p>
+        <p align="center">8.3.3</p>
+        </td>
+        <td bgcolor="#C0C0C0">&nbsp;</td>
+        <td>&nbsp;</td>
+    </tr>
+</table>
+
+<p>&nbsp;</p>
+
+<h2><a name="properties"></a>Type Properties</h2>
+
+<p>The following templates identify the properties that a type
+has.</p>
+
+<table border="0" cellpadding="7" cellspacing="1" width="100%">
+    <tr>
+        <td valign="top" width="5%">&nbsp;</td>
+        <td valign="top" width="23%" bgcolor="#008080"><p
+        align="center">Expression</p>
+        </td>
+        <td valign="top" width="28%" bgcolor="#008080"><p
+        align="center">Description</p>
+        </td>
+        <td valign="top" width="13%" bgcolor="#008080"><p
+        align="center">Reference</p>
+        </td>
+        <td valign="top" width="25%" bgcolor="#008080"><p
+        align="center">Compiler requirements</p>
+        </td>
+        <td valign="top" width="5%">&nbsp;</td>
+    </tr>
+    <tr>
+        <td valign="top" width="5%">&nbsp;</td>
+        <td valign="top" width="23%" bgcolor="#C0C0C0"><code>::boost::alignment_of&lt;T&gt;::value</code></td>
+        <td valign="top" width="28%" bgcolor="#C0C0C0">Identifies
+        the alignment requirements of T. Actually returns a value
+        that is only guaranteed to be a multiple of the actual
+        alignment requirements of T</td>
+        <td valign="top" width="13%" bgcolor="#C0C0C0">&nbsp;</td>
+        <td valign="top" width="25%" bgcolor="#C0C0C0">&nbsp;</td>
+        <td valign="top" width="5%">&nbsp;</td>
+    </tr>
+    <tr>
+        <td valign="top" width="5%">&nbsp;</td>
+        <td valign="top" width="23%" bgcolor="#C0C0C0"><code>::boost::is_empty&lt;T&gt;::value</code></td>
+        <td valign="top" width="28%" bgcolor="#C0C0C0">True if T
+        is an empty struct or class. If the compiler implements
+        the &quot;zero sized empty base classes&quot;
+        optimisation, then is_empty will correctly guess whether
+        T is empty. Relies upon is_class to determine whether T
+        is a class type. </td>
+        <td valign="top" width="13%" bgcolor="#C0C0C0"><p
+        align="center">10p5</p>
+        </td>
+        <td valign="top" width="25%" bgcolor="#C0C0C0"><p
+        align="left">Relies on the compiler implementing zero
+        sized empty base classes in order to detect empty classes.
+        </p>
+        <p align="left">Can not be used with incomplete types.</p>
+        <p align="left">Can not be used with union types, until
+        is_union can be made to work.</p>
+        <p align="left">If the compiler does not support partial-specialization
+        of class templates, then this template can not be used
+        with abstract types.</p>
+        </td>
+        <td valign="top" width="5%">&nbsp;</td>
+    </tr>
+    <tr>
+        <td valign="top" width="5%">&nbsp;</td>
+        <td valign="top" width="23%" bgcolor="#C0C0C0"><code>::boost::is_const&lt;T&gt;::value</code></td>
+        <td valign="top" width="28%" bgcolor="#C0C0C0">Evaluates
+        to true only if T is top-level const-qualified.</td>
+        <td valign="top" width="13%" bgcolor="#C0C0C0"><p
+        align="center">3.9.3</p>
+        </td>
+        <td valign="top" width="25%" bgcolor="#C0C0C0">&nbsp;</td>
+        <td valign="top" width="5%">&nbsp;</td>
+    </tr>
+    <tr>
+        <td valign="top" width="5%">&nbsp;</td>
+        <td valign="top" width="23%" bgcolor="#C0C0C0"><code>::boost::is_volatile&lt;T&gt;::value</code></td>
+        <td valign="top" width="28%" bgcolor="#C0C0C0">Evaluates
+        to true only if T is volatile-qualified.</td>
+        <td valign="top" width="13%" bgcolor="#C0C0C0"><p
+        align="center">3.9.3</p>
+        </td>
+        <td valign="top" width="25%" bgcolor="#C0C0C0">&nbsp;</td>
+        <td valign="top" width="5%">&nbsp;</td>
+    </tr>
+    <tr>
+        <td valign="top" width="5%">&nbsp;</td>
+        <td valign="top" width="23%" bgcolor="#C0C0C0"><code>::boost::is_polymorphic&lt;T&gt;::value</code></td>
+        <td valign="top" width="28%" bgcolor="#C0C0C0">Evaluates
+        to true only if T is a polymorphic type.</td>
+        <td valign="top" width="13%" bgcolor="#C0C0C0">10.3</td>
+        <td valign="top" width="25%" bgcolor="#C0C0C0">Requires
+        knowledge of the compilers ABI, does actually seem to
+        work with the majority of compilers though.</td>
+        <td valign="top" width="5%">&nbsp;</td>
+    </tr>
+    <tr>
+        <td valign="top" width="5%">&nbsp;</td>
+        <td valign="top" width="23%" bgcolor="#C0C0C0"><code>::boost::is_pod&lt;T&gt;::value</code></td>
+        <td valign="top" width="28%" bgcolor="#C0C0C0">Evaluates
+        to true only if T is a cv-qualified POD type.</td>
+        <td valign="top" width="13%" bgcolor="#C0C0C0"><p
+        align="center">3.9p10</p>
+        <p align="center">9p4</p>
+        </td>
+        <td valign="top" width="25%" bgcolor="#C0C0C0">Without
+        some (as yet unspecified) help from the compiler, is_pod
+        will never report that a class or struct is a POD; this
+        is always safe, if possibly sub-optimal.<p>If the
+        compiler does not support partial-specialization of class
+        templates, then this template can not be used with
+        function types.</p>
+        </td>
+        <td valign="top" width="5%">&nbsp;</td>
+    </tr>
+    <tr>
+        <td valign="top" width="5%">&nbsp;</td>
+        <td valign="top" width="23%" bgcolor="#C0C0C0"><code>::boost::has_trivial_constructor&lt;T&gt;::value</code></td>
+        <td valign="top" width="28%" bgcolor="#C0C0C0">True if T
+        has a trivial default constructor.</td>
+        <td valign="top" width="13%" bgcolor="#C0C0C0">12.1p5</td>
+        <td valign="top" width="25%" bgcolor="#C0C0C0"><p
+        align="left">Without some (as yet unspecified) help from
+        the compiler, <code>has_trivial_constructor </code>will
+        never report that a class or struct has a trivial
+        constructor; this is always safe, if possibly sub-optimal.</p>
+        <p>If the compiler does not support partial-specialization
+        of class templates, then this template can not be used
+        with function types.</p>
+        </td>
+        <td valign="top" width="5%">&nbsp;</td>
+    </tr>
+    <tr>
+        <td valign="top" width="5%">&nbsp;</td>
+        <td valign="top" width="23%" bgcolor="#C0C0C0"><code>::boost::has_trivial_copy&lt;T&gt;::value</code></td>
+        <td valign="top" width="28%" bgcolor="#C0C0C0">True if T
+        has a trivial copy constructor.</td>
+        <td valign="top" width="13%" bgcolor="#C0C0C0">12.8p6</td>
+        <td valign="top" width="25%" bgcolor="#C0C0C0"><p
+        align="left">Without some (as yet unspecified) help from
+        the compiler, <code>has_trivial_copy </code>will never
+        report that a class or struct has a trivial copy
+        constructor; this is always safe, if possibly sub-optimal.</p>
+        <p>If the compiler does not support partial-specialization
+        of class templates, then this template can not be used
+        with function types.</p>
+        </td>
+        <td valign="top" width="5%">&nbsp;</td>
+    </tr>
+    <tr>
+        <td valign="top" width="5%">&nbsp;</td>
+        <td valign="top" width="23%" bgcolor="#C0C0C0"><code>::boost::has_trivial_assign&lt;T&gt;::value</code></td>
+        <td valign="top" width="28%" bgcolor="#C0C0C0">True if T
+        has a trivial assignment operator.</td>
+        <td valign="top" width="13%" bgcolor="#C0C0C0">12.8p11</td>
+        <td valign="top" width="25%" bgcolor="#C0C0C0"><p
+        align="left">Without some (as yet unspecified) help from
+        the compiler, <code>has_trivial_assign </code>will never
+        report that a class or struct has a trivial assignment
+        operator; this is always safe, if possibly sub-optimal.</p>
+        <p>If the compiler does not support partial-specialization
+        of class templates, then this template can not be used
+        with function types.</p>
+        </td>
+        <td valign="top" width="5%">&nbsp;</td>
+    </tr>
+    <tr>
+        <td valign="top" width="5%">&nbsp;</td>
+        <td valign="top" width="23%" bgcolor="#C0C0C0"><code>::boost::has_trivial_destructor&lt;T&gt;::value</code></td>
+        <td valign="top" width="28%" bgcolor="#C0C0C0">True if T
+        has a trivial destructor.</td>
+        <td valign="top" width="13%" bgcolor="#C0C0C0">12.4p3</td>
+        <td valign="top" width="25%" bgcolor="#C0C0C0"><p
+        align="left">Without some (as yet unspecified) help from
+        the compiler, <code>has_trivial_destructor </code>will
+        never report that a class or struct has a trivial
+        destructor; this is always safe, if possibly sub-optimal.</p>
+        <p>If the compiler does not support partial-specialization
+        of class templates, then this template can not be used
+        with function types.</p>
+        </td>
+        <td valign="top" width="5%">&nbsp;</td>
+    </tr>
+    <tr>
+        <td valign="top" width="5%">&nbsp;</td>
+        <td valign="top" width="23%" bgcolor="#C0C0C0"><code>::boost::is_stateless&lt;T&gt;::value</code></td>
+        <td valign="top" width="28%" bgcolor="#C0C0C0">True if T
+        is stateless, meaning that T has no storage and its
+        constructors and destructors are trivial.</td>
+        <td valign="top" width="13%" bgcolor="#C0C0C0">&nbsp;</td>
+        <td valign="top" width="25%" bgcolor="#C0C0C0"><p
+        align="left">Without some (as yet unspecified) help from
+        the compiler, <code>is_stateless </code>will never report
+        that a class or struct is_stateless; this is always safe,
+        if possibly sub-optimal.</p>
+        <p align="left">Will report true only if all of the
+        following also report true:</p>
+        <div align="left"><pre>::boost::has_trivial_constructor&lt;T&gt;::value,
+::boost::has_trivial_copy&lt;T&gt;::value,
+::boost::has_trivial_destructor&lt;T&gt;::value,
+::boost::is_class&lt;T&gt;::value,
+::boost::is_empty&lt;T&gt;::value</pre>
+        </div><p>If the compiler does not support partial-specialization
+        of class templates, then this template can not be used
+        with function types.</p>
+        </td>
+        <td valign="top" width="5%">&nbsp;</td>
+    </tr>
+    <tr>
+        <td>&nbsp;</td>
+        <td valign="top" bgcolor="#C0C0C0"><code>::boost::has_nothrow_constructor&lt;T&gt;::value</code></td>
+        <td valign="top" bgcolor="#C0C0C0">True if T has a non-throwing
+        default constructor.</td>
+        <td bgcolor="#C0C0C0">&nbsp;</td>
+        <td align="center" bgcolor="#C0C0C0"><p align="left">Without
+        some (as yet unspecified) help from the compiler, <code>has_nothrow_constructor
+        </code>will never report that a class or struct has a non-throwing
+        constructor; this is always safe, if possibly sub-optimal.</p>
+        <p align="left">If the compiler does not support partial-specialization
+        of class templates, then this template can not be used
+        with function types.</p>
+        </td>
+        <td>&nbsp;</td>
+    </tr>
+    <tr>
+        <td>&nbsp;</td>
+        <td valign="top" bgcolor="#C0C0C0"><code>::boost::has_nothrow_copy&lt;T&gt;::value</code></td>
+        <td valign="top" bgcolor="#C0C0C0">True if T has a non-throwing
+        copy constructor.</td>
+        <td bgcolor="#C0C0C0">&nbsp;</td>
+        <td align="center" bgcolor="#C0C0C0"><p align="left">Without
+        some (as yet unspecified) help from the compiler, <code>has_nothrow_destructor
+        </code>will never report that a class or struct has a non-throwing
+        destructor; this is always safe, if possibly sub-optimal.</p>
+        <p align="left">If the compiler does not support partial-specialization
+        of class templates, then this template can not be used
+        with function types.</p>
+        </td>
+        <td>&nbsp;</td>
+    </tr>
+    <tr>
+        <td>&nbsp;</td>
+        <td valign="top" bgcolor="#C0C0C0"><code>::boost::has_nothrow_assign&lt;T&gt;::value</code></td>
+        <td valign="top" bgcolor="#C0C0C0">True if T has a non-throwing
+        assignment operator.</td>
+        <td bgcolor="#C0C0C0">&nbsp;</td>
+        <td align="center" bgcolor="#C0C0C0"><p align="left">Without
+        some (as yet unspecified) help from the compiler, <code>has_nothrow_destructor
+        </code>will never report that a class or struct has a non-throwing
+        assignment operator; this is always safe, if possibly sub-optimal.</p>
+        <p align="left">If the compiler does not support partial-specialization
+        of class templates, then this template can not be used
+        with function types.</p>
+        </td>
+        <td>&nbsp;</td>
+    </tr>
+</table>
+
+<p>&nbsp;</p>
+
+<h2><a name="relationships"></a>Relationships Between Types</h2>
+
+<p>The following templates determine the whether there is a
+relationship between two types:</p>
+
+<table border="0" cellpadding="7" cellspacing="1" width="100%">
+    <tr>
+        <td valign="top" width="5%">&nbsp;</td>
+        <td valign="top" width="23%" bgcolor="#008080"><p
+        align="center">Expression</p>
+        </td>
+        <td valign="top" width="27%" bgcolor="#008080"><p
+        align="center">Description</p>
+        </td>
+        <td valign="top" width="15%" bgcolor="#008080"><p
+        align="center">Reference</p>
+        </td>
+        <td valign="top" width="25%" bgcolor="#008080"><p
+        align="center">Compiler requirements</p>
+        </td>
+        <td valign="top" width="5%">&nbsp;</td>
+    </tr>
+    <tr>
+        <td valign="top" width="5%">&nbsp;</td>
+        <td valign="top" width="23%" bgcolor="#C0C0C0"><div
+        align="left"><pre><code>::boost::is_same&lt;T,U&gt;::value</code></pre>
+        </div></td>
+        <td valign="top" width="27%" bgcolor="#C0C0C0"><p
+        align="left">Evaluates to true if T and U are the same
+        type.</p>
+        </td>
+        <td valign="top" width="15%" bgcolor="#C0C0C0">&nbsp;</td>
+        <td valign="top" width="25%" bgcolor="#C0C0C0">If the
+        compiler does not support partial-specialization of class
+        templates, then this template can not be used with
+        abstract, incomplete or function types.</td>
+        <td valign="top" width="5%">&nbsp;</td>
+    </tr>
+    <tr>
+        <td valign="top" width="5%">&nbsp;</td>
+        <td valign="top" width="23%" bgcolor="#C0C0C0"><code>::boost::is_convertible&lt;T,U&gt;::value</code></td>
+        <td valign="top" width="27%" bgcolor="#C0C0C0">Evaluates
+        to true if an imaginary lvalue of type T is convertible
+        to type U.<p>Type T must not be an incomplete type.</p>
+        <p>Type U must not be an incomplete, abstract or function
+        type.</p>
+        <p>No types are considered to be convertible to an array
+        type.</p>
+        </td>
+        <td valign="top" width="15%" bgcolor="#C0C0C0"><p
+        align="center">4</p>
+        <p align="center">8.5</p>
+        </td>
+        <td valign="top" width="25%" bgcolor="#C0C0C0">Note that
+        this template is currently broken with Borland C++
+        Builder 5 (and earlier), for constructor-based
+        conversions, and for the Metrowerks 7 (and earlier)
+        compiler in all cases.</td>
+        <td valign="top" width="5%">&nbsp;</td>
+    </tr>
+    <tr>
+        <td>&nbsp;</td>
+        <td valign="top" bgcolor="#C0C0C0"><code>::boost::is_base_and_derived&lt;T,U&gt;::value</code></td>
+        <td bgcolor="#C0C0C0">Evaluates to true if type T is a
+        base class to type U.<p>Will detect non-public base
+        classes, and ambiguous base classes.</p>
+        <p>Note that a class is not considered to be it's own
+        base class, likewise, if either T or U are non-class
+        types, then the result will always be false.</p>
+        <p>Types T and U must not be incomplete types.</p>
+        </td>
+        <td align="center" bgcolor="#C0C0C0">10</td>
+        <td align="center" bgcolor="#C0C0C0"><p align="left">If
+        the compiler does not support partial-specialization of
+        class templates, then this template can not be used with
+        function types.</p>
+        </td>
+        <td>&nbsp;</td>
+    </tr>
+</table>
+
+<p>Note that both <code>is_convertible</code>, and <code>is_base_and_derived</code>
+can produce compiler errors if the convertion is ambiguous:</p>
+
+<pre>struct A {};
+struct B : A {};
+struct C : A {};
+struct D : B, C {};
+bool const x = boost::is_base_and_derived&lt;A,D&gt;::value;  // error
+bool const y = boost::is_convertible&lt;D*,A*&gt;::value;     // error
+</pre>
+
+<h2><a name="transformations"></a>Transformations Between Types</h2>
+
+<p>The following templates transform one type to another, based
+upon some well-defined rule. Each template has a single member
+called <i>type</i> that is the result of applying the
+transformation to the template argument T:</p>
+
+<table border="0" cellpadding="7" cellspacing="1" width="100%">
+    <tr>
+        <td valign="top" width="5%">&nbsp;</td>
+        <td valign="top" width="23%" bgcolor="#008080"><p
+        align="center">Expression</p>
+        </td>
+        <td valign="top" width="28%" bgcolor="#008080"><p
+        align="center">Description</p>
+        </td>
+        <td valign="top" width="13%" bgcolor="#008080"><p
+        align="center">Reference</p>
+        </td>
+        <td valign="top" width="25%" bgcolor="#008080"><p
+        align="center">Compiler requirements</p>
+        </td>
+        <td valign="top" width="5%">&nbsp;</td>
+    </tr>
+    <tr>
+        <td valign="top" width="5%">&nbsp;</td>
+        <td valign="top" width="23%" bgcolor="#C0C0C0"><code>::boost::remove_const&lt;T&gt;::type</code></td>
+        <td valign="top" width="28%" bgcolor="#C0C0C0">Creates a
+        type the same as T but with any top level const qualifier
+        removed. For example &quot;const int&quot; would become
+        &quot;int&quot;, but &quot;const int*&quot; would remain
+        unchanged.</td>
+        <td valign="top" width="13%" bgcolor="#C0C0C0">3.9.3</td>
+        <td width="25%" bgcolor="#C0C0C0"><p align="left">If the
+        compiler does not support partial-specialization of class
+        templates, then this template will compile, but will have
+        no effect, except where noted below.</p>
+        </td>
+        <td valign="top" width="5%">&nbsp;</td>
+    </tr>
+    <tr>
+        <td valign="top" width="5%">&nbsp;</td>
+        <td valign="top" width="23%" bgcolor="#C0C0C0"><code>::boost::remove_volatile&lt;T&gt;::type</code></td>
+        <td valign="top" width="28%" bgcolor="#C0C0C0">Creates a
+        type the same as T but with any top level volatile
+        qualifier removed. For example &quot;volatile int&quot;
+        would become &quot;int&quot;.</td>
+        <td valign="top" width="13%" bgcolor="#C0C0C0"><p
+        align="left">3.9.3</p>
+        </td>
+        <td width="25%" bgcolor="#C0C0C0"><p align="left">If the
+        compiler does not support partial-specialization of class
+        templates, then this template will compile, but will have
+        no effect, except where noted below.</p>
+        </td>
+        <td valign="top" width="5%">&nbsp;</td>
+    </tr>
+    <tr>
+        <td>&nbsp;</td>
+        <td bgcolor="#C0C0C0"><code>::boost::remove_cv&lt;T&gt;::type</code></td>
+        <td bgcolor="#C0C0C0">Creates a type the same as T but
+        with any top level cv-qualifiers removed. For example
+        &quot;const volatile int&quot; would become &quot;int&quot;.</td>
+        <td bgcolor="#C0C0C0">3.9.3</td>
+        <td bgcolor="#C0C0C0"><p align="left">If the compiler
+        does not support partial-specialization of class
+        templates, then this template will compile, but will have
+        no effect, except where noted below.</p>
+        </td>
+        <td>&nbsp;</td>
+    </tr>
+    <tr>
+        <td valign="top" width="5%">&nbsp;</td>
+        <td valign="top" width="23%" bgcolor="#C0C0C0"><code>::boost::remove_reference&lt;T&gt;::type</code></td>
+        <td valign="top" width="28%" bgcolor="#C0C0C0">If T is a
+        reference type then removes the reference, otherwise
+        leaves T unchanged. For example &quot;int&amp;&quot;
+        becomes &quot;int&quot; but &quot;int*&quot; remains
+        unchanged.</td>
+        <td valign="top" width="13%" bgcolor="#C0C0C0">8.3.2</td>
+        <td width="25%" bgcolor="#C0C0C0"><p align="left">If the
+        compiler does not support partial-specialization of class
+        templates, then this template will compile, but will have
+        no effect, except where noted below.</p>
+        </td>
+        <td valign="top" width="5%">&nbsp;</td>
+    </tr>
+    <tr>
+        <td valign="top" width="5%">&nbsp;</td>
+        <td valign="top" width="23%" bgcolor="#C0C0C0"><code>::boost::remove_bounds&lt;T&gt;::type</code></td>
+        <td valign="top" width="28%" bgcolor="#C0C0C0">If T is an
+        array type then removes the top level array qualifier
+        from T, otherwise leaves T unchanged. For example &quot;int[2][3]&quot;
+        becomes &quot;int[3]&quot;.</td>
+        <td valign="top" width="13%" bgcolor="#C0C0C0">8.3.4</td>
+        <td width="25%" bgcolor="#C0C0C0"><p align="left">If the
+        compiler does not support partial-specialization of class
+        templates, then this template will compile, but will have
+        no effect, except where noted below.</p>
+        </td>
+        <td valign="top" width="5%">&nbsp;</td>
+    </tr>
+    <tr>
+        <td valign="top" width="5%">&nbsp;</td>
+        <td valign="top" width="23%" bgcolor="#C0C0C0"><code>::boost::remove_pointer&lt;T&gt;::type</code></td>
+        <td valign="top" width="28%" bgcolor="#C0C0C0">If T is a
+        pointer type, then removes the top-level indirection from
+        T, otherwise leaves T unchanged. For example &quot;int*&quot;
+        becomes &quot;int&quot;, but &quot;int&amp;&quot; remains
+        unchanged.</td>
+        <td valign="top" width="13%" bgcolor="#C0C0C0">8.3.1</td>
+        <td width="25%" bgcolor="#C0C0C0"><p align="left">If the
+        compiler does not support partial-specialization of class
+        templates, then this template will compile, but will have
+        no effect, except where noted below.</p>
+        </td>
+        <td valign="top" width="5%">&nbsp;</td>
+    </tr>
+    <tr>
+        <td valign="top" width="5%">&nbsp;</td>
+        <td valign="top" width="23%" bgcolor="#C0C0C0"><code>::boost::add_reference&lt;T&gt;::type</code></td>
+        <td valign="top" width="28%" bgcolor="#C0C0C0">If T is a
+        reference type then leaves T unchanged, otherwise
+        converts T to a reference type. For example &quot;int&amp;&quot;
+        remains unchanged, but &quot;double&quot; becomes &quot;double&amp;&quot;.</td>
+        <td valign="top" width="13%" bgcolor="#C0C0C0">8.3.2</td>
+        <td width="25%" bgcolor="#C0C0C0">&nbsp;</td>
+        <td valign="top" width="5%">&nbsp;</td>
+    </tr>
+    <tr>
+        <td valign="top" width="5%">&nbsp;</td>
+        <td valign="top" width="23%" bgcolor="#C0C0C0"><code>::boost::add_pointer&lt;T&gt;::type</code></td>
+        <td valign="top" width="28%" bgcolor="#C0C0C0">If &quot;t&quot;
+        is an instance of T, then add_pointer&lt;T&gt;::type is
+        the type returned by &quot;&amp;t&quot;. For example
+        &quot;int&quot; and &quot;int&amp;&quot; both become
+        &quot;int*&quot;.</td>
+        <td valign="top" width="13%" bgcolor="#C0C0C0">8.3.1</td>
+        <td width="25%" bgcolor="#C0C0C0"><p align="left">If the
+        compiler does not support partial-specialization of class
+        templates, then this template will not compile with
+        reference types.</p>
+        </td>
+        <td valign="top" width="5%">&nbsp;</td>
+    </tr>
+    <tr>
+        <td>&nbsp;</td>
+        <td valign="top" bgcolor="#C0C0C0"><code>::boost::add_const&lt;T&gt;::type</code></td>
+        <td valign="top" bgcolor="#C0C0C0">The same as &quot;T
+        const&quot; for all T.</td>
+        <td valign="top" bgcolor="#C0C0C0">3.9.3</td>
+        <td valign="top" bgcolor="#C0C0C0">&nbsp;</td>
+        <td>&nbsp;</td>
+    </tr>
+    <tr>
+        <td>&nbsp;</td>
+        <td valign="top" bgcolor="#C0C0C0"><code>::boost::add_volatile&lt;T&gt;::type</code></td>
+        <td valign="top" bgcolor="#C0C0C0">The same as &quot;T
+        volatile&quot; for all T.</td>
+        <td valign="top" bgcolor="#C0C0C0">3.9.3</td>
+        <td valign="top" bgcolor="#C0C0C0">&nbsp;</td>
+        <td>&nbsp;</td>
+    </tr>
+    <tr>
+        <td>&nbsp;</td>
+        <td valign="top" bgcolor="#C0C0C0"><code>::boost::add_cv&lt;T&gt;::type</code></td>
+        <td valign="top" bgcolor="#C0C0C0">The same as &quot;T
+        const volatile&quot; for all T.</td>
+        <td valign="top" bgcolor="#C0C0C0">3.9.3</td>
+        <td bgcolor="#C0C0C0">&nbsp;</td>
+        <td>&nbsp;</td>
+    </tr>
+</table>
+
+<p>As the table above indicates, support for partial
+specialization of class templates is required to correctly
+implement the type transformation templates. On the other hand,
+practice shows that many of the templates from this category are
+very useful, and often essential for implementing some generic
+libraries. Lack of these templates is often one of the major
+limiting factors in porting those libraries to compilers that do
+not yet support this language feature. As some of these compilers
+are going to be around for a while, and at least one of them is
+very wide-spread, it was decided that the library should provide
+workarounds where possible. The basic idea behind the workaround
+is</p>
+
+<ol>
+    <li>To manually define full specializations of all type
+        transformation templates for all fundamental types, and
+        all their 1st and 2nd rank cv-[un]qualified derivative
+        pointer types, and to </li>
+    <li>Provide a user-level macro that will define such explicit
+        specializations for any user-defined type T.</li>
+</ol>
+
+<p>The first part guarantees the successful compilation of
+something like this:</p>
+
+<pre>BOOST_STATIC_ASSERT((is_same&lt;char, remove_reference&lt;char&amp;&gt;::type&gt;::value));</pre>
+
+<pre>BOOST_STATIC_ASSERT((is_same&lt;char const, remove_reference&lt;char const&amp;&gt;::type&gt;::value));</pre>
+
+<pre>BOOST_STATIC_ASSERT((is_same&lt;char volatile, remove_reference&lt;char volatile&amp;&gt;::type&gt;::value));</pre>
+
+<pre>BOOST_STATIC_ASSERT((is_same&lt;char const volatile, remove_reference&lt;char const volatile&amp;&gt;::type&gt;::value));</pre>
+
+<pre>BOOST_STATIC_ASSERT((is_same&lt;char*, remove_reference&lt;char*&amp;&gt;::type&gt;::value));</pre>
+
+<pre>BOOST_STATIC_ASSERT((is_same&lt;char const*, remove_reference&lt;char const*&amp;&gt;::type&gt;::value));</pre>
+
+<pre>...</pre>
+
+<pre>BOOST_STATIC_ASSERT((is_same&lt;char const volatile* const volatile* const volatile, remove_reference&lt;char const volatile* const volatile* const volatile&amp;&gt;::type&gt;::value));</pre>
+
+<p>and the second part provides library's users with a mechanism
+to make the above code work not only for 'char', 'int' or other
+built-in type, but for they own types too:</p>
+
+<pre>struct my {};</pre>
+
+<pre>BOOST_BROKEN_COMPILER_TYPE_TRAITS_SPECIALIZATION(my)</pre>
+
+<pre>BOOST_STATIC_ASSERT((is_same&lt;my, remove_reference&lt;my&amp;&gt;::type&gt;::value));</pre>
+
+<pre>BOOST_STATIC_ASSERT((is_same&lt;my, remove_const&lt;my const&gt;::type&gt;::value));</pre>
+
+<pre>// etc.</pre>
+
+<p>Note that the macro
+BOOST_BROKEN_COMPILER_TYPE_TRAITS_SPECIALIZATION evaluates to
+nothing on those compilers that do support partial specialization.</p>
+
+<h2><a name="synthesized"></a>Synthesizing Types</h2>
+
+<p>The following template synthesizes a type with the desired
+properties. </p>
+
+<table border="0" cellpadding="7" cellspacing="1" width="100%">
+    <tr>
+        <td valign="top" width="5%">&nbsp;</td>
+        <td valign="top" width="23%" bgcolor="#008080"><p
+        align="center">Expression</p>
+        </td>
+        <td valign="top" width="28%" bgcolor="#008080"><p
+        align="center">Description</p>
+        </td>
+        <td valign="top" width="13%" bgcolor="#008080"><p
+        align="center">Reference</p>
+        </td>
+        <td valign="top" width="25%" bgcolor="#008080"><p
+        align="center">Compiler requirements</p>
+        </td>
+        <td valign="top" width="5%">&nbsp;</td>
+    </tr>
+    <tr>
+        <td valign="top" width="5%">&nbsp;</td>
+        <td valign="top" width="23%" bgcolor="#C0C0C0"><code>::boost::type_with_alignment&lt;Align&gt;::type</code></td>
+        <td valign="top" width="28%" bgcolor="#C0C0C0">Attempts
+        to find a built-in or POD type with an alignment that is
+        a multiple of Align. </td>
+        <td valign="top" width="13%" bgcolor="#C0C0C0">&nbsp;</td>
+        <td width="25%" bgcolor="#C0C0C0">&nbsp;</td>
+        <td valign="top" width="5%">&nbsp;</td>
+    </tr>
+</table>
+
+<h2><a name="function_traits"></a>Function Traits</h2>
+
+<p>The <code>::boost::function_traits</code> class template
+extracts information from function types. </p>
+
+<table border="0" cellpadding="7" cellspacing="1" width="100%">
+    <tr>
+        <td valign="top" width="5%">&nbsp;</td>
+        <td valign="top" width="23%" bgcolor="#008080"><p
+        align="center">Expression</p>
+        </td>
+        <td valign="top" width="28%" bgcolor="#008080"><p
+        align="center">Description</p>
+        </td>
+        <td valign="top" width="13%" bgcolor="#008080"><p
+        align="center">Reference</p>
+        </td>
+        <td valign="top" width="25%" bgcolor="#008080"><p
+        align="center">Compiler requirements</p>
+        </td>
+        <td valign="top" width="5%">&nbsp;</td>
+    </tr>
+    <tr>
+        <td valign="top" width="5%">&nbsp;</td>
+        <td valign="top" width="23%" bgcolor="#C0C0C0"><code>::boost::function_traits&lt;F&gt;::arity</code></td>
+        <td valign="top" width="28%" bgcolor="#C0C0C0">Determine
+        the arity of the function type <code>F</code>. </td>
+        <td valign="top" width="13%" bgcolor="#C0C0C0">&nbsp;</td>
+        <td width="25%" bgcolor="#C0C0C0">Without partial
+        specialisation support, this template does not compile
+        for reference types.</td>
+        <td valign="top" width="5%">&nbsp;</td>
+    </tr>
+    <tr>
+        <td valign="top" width="5%">&nbsp;</td>
+        <td valign="top" width="23%" bgcolor="#C0C0C0"><code>::boost::function_traits&lt;F&gt;::result_type</code></td>
+        <td valign="top" width="28%" bgcolor="#C0C0C0">The type
+        returned by function type <code>F</code>. </td>
+        <td valign="top" width="13%" bgcolor="#C0C0C0">&nbsp;</td>
+        <td width="25%" bgcolor="#C0C0C0">Does not compile
+        without support for partial specialization of class
+        templates.</td>
+        <td valign="top" width="5%">&nbsp;</td>
+    </tr>
+    <tr>
+        <td valign="top" width="5%">&nbsp;</td>
+        <td valign="top" width="23%" bgcolor="#C0C0C0"><code>::boost::function_traits&lt;F&gt;::arg</code><code><em>N</em></code><code>_type</code></td>
+        <td valign="top" width="28%" bgcolor="#C0C0C0">The <code><em>N</em></code>th
+        argument type of function type <code>F</code>, where <code>1&lt;=</code><code><em>N</em></code><code>&lt;=</code>arity
+        of <code>F</code>.</td>
+        <td valign="top" width="13%" bgcolor="#C0C0C0">&nbsp;</td>
+        <td width="25%" bgcolor="#C0C0C0">Does not compile
+        without support for partial specialization of class
+        templates.</td>
+        <td valign="top" width="5%">&nbsp;</td>
+    </tr>
+</table>
+
+<h2><a name="compiler"></a><a name="headers"></a>Type Traits
+Headers</h2>
+
+<p>The type traits library is normally included with:</p>
+
+<pre>#include &lt;boost/type_traits.hpp&gt;</pre>
+
+<p>However the library is actually split up into a number of
+smaller headers, sometimes it can be convenient to include one of
+these directly in order to get just those type traits classes you
+actually need.&nbsp; The split headers always have the same name
+as the template you require, and are located in boost/type_traits/.&nbsp;
+So if for example some code requires is_class&lt;&gt;, then just
+include:</p>
+
+<pre>&lt;boost/type_traits/is_class.hpp&gt;</pre>
+
+<h2><a name="example"></a>Example code</h2>
+
+<p>Type-traits comes with four example programs that illustrate
+some of the ways in which the type traits templates may be used:</p>
+
+<h4>Copy_example.cpp</h4>
+
+<p>Demonstrates a version of std::copy that uses memcpy where
+appropriate to optimise the copy operation;</p>
+
+<pre>//
+// opt::copy
+// same semantics as std::copy
+// calls memcpy where appropiate.
+//
+
+namespace detail{
+
+template&lt;typename I1, typename I2&gt;
+I2 copy_imp(I1 first, I1 last, I2 out)
+{
+   while(first != last)
+   {
+      *out = *first;
+      ++out;
+      ++first;
+   }
+   return out;
+}
+
+template &lt;bool b&gt;
+struct copier
+{
+   template&lt;typename I1, typename I2&gt;
+   static I2 do_copy(I1 first, I1 last, I2 out)
+   { return copy_imp(first, last, out); }
+};
+
+template &lt;&gt;
+struct copier&lt;true&gt;
+{
+   template&lt;typename I1, typename I2&gt;
+   static I2* do_copy(I1* first, I1* last, I2* out)
+   {
+      memcpy(out, first, (last-first)*sizeof(I2));
+      return out+(last-first);
+   }
+};
+
+
+}
+
+template&lt;typename I1, typename I2&gt;
+inline I2 copy(I1 first, I1 last, I2 out)
+{
+   typedef typename boost::remove_cv&lt;typename std::iterator_traits&lt;I1&gt;::value_type&gt;::type v1_t;
+   typedef typename boost::remove_cv&lt;typename std::iterator_traits&lt;I2&gt;::value_type&gt;::type v2_t;
+   return detail::copier&lt;
+      ::boost::type_traits::ice_and&lt;
+         ::boost::is_same&lt;v1_t, v2_t&gt;::value,
+         ::boost::is_pointer&lt;I1&gt;::value,
+         ::boost::is_pointer&lt;I2&gt;::value,
+         ::boost::has_trivial_assign&lt;v1_t&gt;::value
+      &gt;::value&gt;::do_copy(first, last, out);
+}</pre>
+
+<h4>fill_example.cpp</h4>
+
+<p>Demonstrates a version of std::fill that uses memset where
+appropriate to optimise fill operations. Also uses call_traits to
+optimise parameter passing, to avoid aliasing issues:</p>
+
+<pre>namespace opt{
+//
+// fill
+// same as std::fill, uses memset where appropriate, along with call_traits
+// to &quot;optimise&quot; parameter passing.
+//
+namespace detail{
+
+template &lt;typename I, typename T&gt;
+void do_fill_(I first, I last, typename boost::call_traits&lt;T&gt;::param_type val)
+{
+   while(first != last)
+   {
+      *first = val;
+      ++first;
+   }
+}
+
+template &lt;bool opt&gt;
+struct filler
+{
+   template &lt;typename I, typename T&gt;
+   struct rebind
+   {
+      static void do_fill(I first, I last, typename boost::call_traits&lt;T&gt;::param_type val)
+      { do_fill_&lt;I,T&gt;(first, last, val); }
+   };
+};
+
+template &lt;&gt;
+struct filler&lt;true&gt;
+{
+   template &lt;typename I, typename T&gt;
+   struct rebind
+   {
+      static void do_fill(I first, I last, T val)
+      {
+         std::memset(first, val, last-first);
+      }
+   };
+};
+
+}
+
+template &lt;class I, class T&gt;
+inline void fill(I first, I last, const T&amp; val)
+{
+   typedef detail::filler&lt;
+      ::boost::type_traits::ice_and&lt;
+         ::boost::is_pointer&lt;I&gt;::value,
+         ::boost::is_arithmetic&lt;T&gt;::value,
+         (sizeof(T) == 1)
+      &gt;::value&gt; filler_t;
+   typedef typename filler_t:: template rebind&lt;I,T&gt; binder;
+   binder::do_fill(first, last, val);
+}
+
+};   // namespace opt</pre>
+
+<h4>iter_swap_example.cpp</h4>
+
+<p>Demonstrates a version of std::iter_swap that works with
+proxying iterators, as well as regular ones; calls std::swap for
+regular iterators, otherwise does a &quot;slow but safe&quot;
+swap:</p>
+
+<pre>namespace opt{
+//
+// iter_swap:
+// tests whether iterator is a proxying iterator or not, and
+// uses optimal form accordingly:
+//
+namespace detail{
+
+template &lt;bool b&gt;
+struct swapper
+{
+   template &lt;typename I&gt;
+   static void do_swap(I one, I two)
+   {
+      typedef typename std::iterator_traits&lt;I&gt;::value_type v_t;
+      v_t v = *one;
+      *one = *two;
+      *two = v;
+   }
+};
+
+template &lt;&gt;
+struct swapper&lt;true&gt;
+{
+   template &lt;typename I&gt;
+   static void do_swap(I one, I two)
+   {
+      using std::swap;
+      swap(*one, *two);
+   }
+};
+
+}
+
+template &lt;typename I1, typename I2&gt;
+inline void iter_swap(I1 one, I2 two)
+{
+   typedef typename std::iterator_traits&lt;I1&gt;::reference r1_t;
+   typedef typename std::iterator_traits&lt;I2&gt;::reference r2_t;
+   detail::swapper&lt;
+      ::boost::type_traits::ice_and&lt;
+         ::boost::is_reference&lt;r1_t&gt;::value, 
+         ::boost::is_reference&lt;r2_t&gt;::value,
+         ::boost::is_same&lt;r1_t, r2_t&gt;::value
+      &gt;::value&gt;::do_swap(one, two);
+}
+
+};   // namespace opt</pre>
+
+<h4>Trivial_destructor_example.cpp</h4>
+
+<p>This algorithm is the reverse of std::unitialized_copy; it
+takes a block of initialized memory and calls destructors on all
+objects therein. This would typically be used inside container
+classes that manage their own memory:</p>
+
+<pre>namespace opt{
+//
+// algorithm destroy_array:
+// The reverse of std::unitialized_copy, takes a block of
+// initialized memory and calls destructors on all objects therein.
+//
+
+namespace detail{
+
+template &lt;bool&gt;
+struct array_destroyer
+{
+   template &lt;class T&gt;
+   static void destroy_array(T* i, T* j){ do_destroy_array(i, j); }
+};
+
+template &lt;&gt;
+struct array_destroyer&lt;true&gt;
+{
+   template &lt;class T&gt;
+   static void destroy_array(T*, T*){}
+};
+
+template &lt;class T&gt;
+void do_destroy_array(T* first, T* last)
+{
+   while(first != last)
+   {
+      first-&gt;~T();
+      ++first;
+   }
+}
+
+}; // namespace detail
+
+template &lt;class T&gt;
+inline void destroy_array(T* p1, T* p2)
+{
+   detail::array_destroyer&lt;boost::has_trivial_destructor&lt;T&gt;::value&gt;::destroy_array(p1, p2);
+}
+} // namespace opt</pre>
+
+<hr>
+
+<p>Revised 22 April 2001</p>
+
+<p>Documentation © Copyright John Maddock 2001. Permission to
+copy, use, modify, sell and distribute this document is granted
+provided this copyright notice appears in all copies. This
+document is provided &quot;as is&quot; without express or implied
+warranty, and with no claim as to its suitability for any purpose.</p>
+
+<p>The type traits library is based on contributions by Steve
+Cleary, Beman Dawes, Aleksey Gurtovoy, Howard Hinnant, Jesse
+Jones, Mat Marcus, John Maddock and Jeremy Siek.</p>
+
+<p>Mat Marcus and Jesse Jones have worked on, and published a <a
+href="http://opensource.adobe.com/project4/project.shtml">paper</a>
+describing the partial specialisation workarounds used in this
+library.</p>
+
+<p>The is_convertible template is based on code originally
+devised by Andrei Alexandrescu, see &quot;<a
+href="http://www.cuj.com/experts/1810/alexandr.htm?topic=experts">Generic&lt;Programming&gt;:
+Mappings between Types and Values</a>&quot;.</p>
+
+<p>Maintained by <a href="../../people/john_maddock.htm">John
+Maddock</a>, the latest version of this file can be found at <a
+href="http://www.boost.org/">www.boost.org</a>, and the boost
+discussion list at <a href="mailto:boost@lists.boost.org">boost@lists.boost.org</a>
+(see <a href="http://www.boost.org/more/mailing_lists.htm#main">http://www.boost.org/more/mailing_lists.htm#main</a>).</p>
+</body>
+</html>

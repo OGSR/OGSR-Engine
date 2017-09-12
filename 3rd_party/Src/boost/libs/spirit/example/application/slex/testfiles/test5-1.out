@@ -1,0 +1,37 @@
+token #0: [0-9]{4,}
+token #1: [0-9]*
+token #2: \n
+testing string: 123
+1234
+12345
+0
+
+matched token #1 :123
+matched token #2 :
+
+matched token #0 :1234
+matched token #2 :
+
+matched token #0 :12345
+matched token #2 :
+
+matched token #1 :0
+matched token #2 :
+
+testing string: 123
+1234
+12345
+0
+
+matched token #1 :123
+matched token #2 :
+
+matched token #0 :1234
+matched token #2 :
+
+matched token #0 :12345
+matched token #2 :
+
+matched token #1 :0
+matched token #2 :
+

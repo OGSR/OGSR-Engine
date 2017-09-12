@@ -1,0 +1,2 @@
+UnionTest = Class('unions::UnionTest', 'unions.h')
+exclude(UnionTest.mBad)

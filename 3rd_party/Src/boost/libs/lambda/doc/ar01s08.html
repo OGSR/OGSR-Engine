@@ -1,0 +1,124 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html><head><meta content="text/html; charset=ISO-8859-1" http-equiv="Content-Type"><title>8. Relation to other Boost libraries</title><meta name="generator" content="DocBook XSL Stylesheets V1.48"><link rel="home" href="index.html" title="
+      C++ BOOST
+
+      The Boost Lambda Library"><link rel="up" href="index.html" title="
+      C++ BOOST
+
+      The Boost Lambda Library"><link rel="previous" href="ar01s07.html" title="7. Practical considerations"><link rel="next" href="ar01s09.html" title="9. Contributors"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="navheader"><table width="100%" summary="Navigation header"><tr><th colspan="3" align="center">8. Relation to other Boost libraries</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="ar01s07.html">Prev</a> </td><th width="60%" align="center"> </th><td width="20%" align="right"> <a accesskey="n" href="ar01s09.html">Next</a></td></tr></table><hr></div><div class="section"><div class="titlepage"><div><h2 class="title" style="clear: both"><a name="id2808510"></a>8. Relation to other Boost libraries</h2></div></div><div class="section"><div class="titlepage"><div><h3 class="title"><a name="id2808518"></a>8.1. Boost Function</h3></div></div><p>Sometimes it is convenient to store lambda functors in variables.
+However, the types of even the simplest lambda functors are long and unwieldy, and it is in general unfeasible to declare variables with lambda functor types.
+<span class="emphasis"><i>The Boost Function library</i></span> [<a href="bi01.html#cit:boost::function" title="[function]">function</a>] defines wrappers for arbitrary function objects, for example 
+lambda functors; and these wrappers have types that are easy to type out.
+
+For example:
+
+<pre class="programlisting">
+boost::function&lt;int(int, int)&gt; f = _1 + _2;
+boost::function&lt;int&amp;(int&amp;)&gt; g = (_1 += 10);
+int i = 1, j = 2;
+f(i); // returns 3
+g(i); // sets i to = 11;
+</pre>
+
+The return and parameter types of the wrapped function object must be written explicilty as the template argument to the wrapper template <tt>boost::function</tt>; even when lambda functors, which otherwise have generic parameters, are wrapped.
+Wrapping a function object with <tt>boost::function</tt> introduces a performance cost comparable to virtual function dispatch, though virtual functions are not actually used.
+
+Note that storing lambda functors inside <tt>boost::function</tt> 
+introduces a danger.
+Certain types of lambda functors may store references to the bound 
+arguments, instead as taking copies of the arguments of the lambda expression.
+When temporary lambda functor objects are used 
+in STL algorithm invocations this is always safe, as the lambda functor gets 
+destructed immediately after the STL algortihm invocation is completed.
+
+However, a lambda functor wrapped inside <tt>boost::function</tt> 
+may continue to exist longer, creating the possibility of dangling references.
+For example:
+
+<pre class="programlisting">
+int* sum = new int();
+*sum = 0;
+boost::function&lt;int&amp;(int)&gt; counter = *sum += _1;
+counter(5); // ok, *sum = 5;
+delete sum; 
+counter(3); // error, *sum does not exist anymore
+</pre>
+
+</p></div><div class="section"><div class="titlepage"><div><h3 class="title"><a name="id2808622"></a>8.2. Boost Bind</h3></div></div><p>
+<span class="emphasis"><i>The Boost Bind</i></span> [<a href="bi01.html#cit:boost::bind" title="[bind]">bind</a>] library has partially overlapping functionality with the BLL. 
+Basically, the Boost Bind library (BB in the sequel) implements the bind expression part of BLL.
+There are, however, some semantical differerences.
+</p><p>
+The BLL and BB evolved separately, and have different implementations. 
+This means that the bind expressions from the BB cannot be used within 
+bind expressions, or within other type of lambda expressions, of the BLL.
+The same holds for using BLL bind expressions in the BB.
+The libraries can coexist, however, as
+the names of the BB library are in <tt>boost</tt> namespace, 
+whereas the BLL names are in <tt>boost::lambda</tt> namespace.
+</p><p>
+The BLL requires a compiler that is reasonably conformant to the 
+C++ standard, whereas the BB library is more portable, and works with 
+a larger set of compilers. 
+</p><p>
+The following two sections describe what are the semantic differences 
+between the bind expressions in BB and BLL.
+</p><div class="section"><div class="titlepage"><div><h4 class="title"><a name="id2808686"></a>8.2.1. First argument of bind expression</h4></div></div>
+
+In BB the first argument of the bind expression, the target function, 
+is treated differently from the other arguments, 
+as no argument substitution takes place within that argument.
+In BLL the first argument is not a special case in this respect.
+
+For example:
+
+<pre class="programlisting">
+template&lt;class F&gt;
+int foo(const F&amp; f) {
+  int x;
+  ..
+  bind(f, _1)(x);
+  ...
+}
+</pre><pre class="programlisting">
+int bar(int, int);
+nested(bind(bar, 1, _1));
+</pre>
+
+The bind expression inside <tt>foo</tt> becomes:
+<pre class="programlisting">
+bind(bind(bar, 1, _1), _1)(x)
+</pre>
+
+The BLL interpretes this as:
+<pre class="programlisting">
+bar(1, x)(x)
+</pre>
+whereas the BB library as
+<pre class="programlisting">
+bar(1, x)
+</pre>
+
+To get this functionality in BLL, the bind expression inside the <tt>foo</tt> function can be written as:
+<pre class="programlisting">
+bind(unlambda(f), _1)(x);
+</pre>
+as explained in <a href="ar01s05.html#sect:unlambda" title="5.9.1.1. Unlambda">Section 5.9.1.1</a>. 
+
+</div><p>
+The BB library supports up to nine placeholders, while the BLL 
+defines only three placeholders. 
+The rationale for not providing more, is that the highest arity of the
+function objects accepted by any STL algorithm is two. 
+The placeholder count is easy to increase in the BB library.
+In BLL it is possible, but more laborous.
+The BLL currently passes the actual arguments to the lambda functors
+internally just as they are and does not wrap them inside a tuple object.
+The reason for this is that some widely used compilers are not capable
+of optimizing the intermediate tuple objects away. 
+The creation of the intermediate tuples would cause a significant
+performance hit, particularly for the simplest (and thus the most common) 
+lambda functors.  
+We are working on a hybrid approach, which will allow more placeholders
+but not compromise the performance of simple lambda functors.
+</p></div></div><div class="navfooter"><hr><table width="100%" summary="Navigation footer"><tr><td width="40%" align="left"><a accesskey="p" href="ar01s07.html">Prev</a> </td><td width="20%" align="center"><a accesskey="u" href="index.html">Up</a></td><td width="40%" align="right"> <a accesskey="n" href="ar01s09.html">Next</a></td></tr><tr><td width="40%" align="left" valign="top">7. Practical considerations </td><td width="20%" align="center"><a accesskey="h" href="index.html">Home</a></td><td width="40%" align="right" valign="top"> 9. Contributors</td></tr></table></div></body></html>

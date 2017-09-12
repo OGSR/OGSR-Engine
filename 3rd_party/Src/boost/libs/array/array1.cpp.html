@@ -1,0 +1,69 @@
+<HTML>
+<HEAD>
+<TITLE>array1.cpp</TITLE>
+</HEAD>
+
+<BODY TEXT="#000000" BGCOLOR="#FFFFFF">
+&nbsp;
+<TABLE HEIGHT=40 WIDTH="100%">
+<TR> <TD ALIGN=LEFT WIDTH="100%" BGCOLOR="#DDDDDD">
+<FONT face="Arial,Helvetica" size=+2><B>
+&nbsp;array1.cpp
+</B></FONT>
+</TD></TR></TABLE><BR>
+
+<BR><BR>
+<TT>
+<SPAN class="Source">
+<Font color="0000FF" >/</FONT><I><FONT face="Arial,Helvetica,sans-serif" color="0000FF" >*&nbsp;simple&nbsp;example&nbsp;for&nbsp;using&nbsp;class&nbsp;array&lt;&gt;</FONT></I><BR>
+&nbsp;<I><FONT face="Arial,Helvetica,sans-serif" color="0000FF" >*/</FONT></I><BR>
+#include&nbsp;&lt;iostream&gt;<BR>
+#include&nbsp;&lt;<A href="./array.hpp.html">boost/array.hpp</A>&gt;<BR>
+<BR>
+int&nbsp;main()<BR>
+{<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;<I><FONT face="Arial,Helvetica,sans-serif" color="0000FF" >//&nbsp;define&nbsp;special&nbsp;type&nbsp;name</FONT></I><BR>
+&nbsp;&nbsp;&nbsp;&nbsp;typedef&nbsp;boost::array&lt;float,6&gt;&nbsp;Array;<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;<I><FONT face="Arial,Helvetica,sans-serif" color="0000FF" >//&nbsp;create&nbsp;and&nbsp;initialize&nbsp;an&nbsp;array</FONT></I><BR>
+&nbsp;&nbsp;&nbsp;&nbsp;Array&nbsp;a&nbsp;=&nbsp;{&nbsp;{&nbsp;42&nbsp;}&nbsp;};<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;<I><FONT face="Arial,Helvetica,sans-serif" color="0000FF" >//&nbsp;access&nbsp;elements</FONT></I><BR>
+&nbsp;&nbsp;&nbsp;&nbsp;for&nbsp;(unsigned&nbsp;i=1;&nbsp;i&lt;a.size();&nbsp;++i)&nbsp;{<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;a[i]&nbsp;=&nbsp;a[i-1]+1;<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;}<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;<I><FONT face="Arial,Helvetica,sans-serif" color="0000FF" >//&nbsp;use&nbsp;some&nbsp;common&nbsp;STL&nbsp;container&nbsp;operations</FONT></I><BR>
+&nbsp;&nbsp;&nbsp;&nbsp;std::cout&nbsp;&lt;&lt;&nbsp;"size:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"&nbsp;&lt;&lt;&nbsp;a.size()&nbsp;&lt;&lt;&nbsp;std::endl;<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;std::cout&nbsp;&lt;&lt;&nbsp;"empty:&nbsp;&nbsp;&nbsp;&nbsp;"&nbsp;&lt;&lt;&nbsp;std::boolalpha&nbsp;&lt;&lt;&nbsp;a.empty()&nbsp;&lt;&lt;&nbsp;std::endl;<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;std::cout&nbsp;&lt;&lt;&nbsp;"max_size:&nbsp;"&nbsp;&lt;&lt;&nbsp;a.max_size()&nbsp;&lt;&lt;&nbsp;std::endl;<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;std::cout&nbsp;&lt;&lt;&nbsp;"front:&nbsp;&nbsp;&nbsp;&nbsp;"&nbsp;&lt;&lt;&nbsp;a.front()&nbsp;&lt;&lt;&nbsp;std::endl;<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;std::cout&nbsp;&lt;&lt;&nbsp;"back:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"&nbsp;&lt;&lt;&nbsp;a.back()&nbsp;&lt;&lt;&nbsp;std::endl;<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;std::cout&nbsp;&lt;&lt;&nbsp;"elems:&nbsp;&nbsp;&nbsp;&nbsp;";<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;<I><FONT face="Arial,Helvetica,sans-serif" color="0000FF" >//&nbsp;iterate&nbsp;through&nbsp;all&nbsp;elements</FONT></I><BR>
+&nbsp;&nbsp;&nbsp;&nbsp;for&nbsp;(Array::const_iterator&nbsp;pos=a.begin();&nbsp;pos&lt;a.end();&nbsp;++pos)&nbsp;{<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;std::cout&nbsp;&lt;&lt;&nbsp;*pos&nbsp;&lt;&lt;&nbsp;'&nbsp;';<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;}<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;std::cout&nbsp;&lt;&lt;&nbsp;std::endl;<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;<I><FONT face="Arial,Helvetica,sans-serif" color="0000FF" >//&nbsp;check&nbsp;copy&nbsp;constructor&nbsp;and&nbsp;assignment&nbsp;operator</FONT></I><BR>
+&nbsp;&nbsp;&nbsp;&nbsp;Array&nbsp;b(a);<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;Array&nbsp;c;<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;c&nbsp;=&nbsp;a;<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;if&nbsp;(a==b&nbsp;&&&nbsp;a==c)&nbsp;{<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;std::cout&nbsp;&lt;&lt;&nbsp;"copy&nbsp;construction&nbsp;and&nbsp;copy&nbsp;assignment&nbsp;are&nbsp;OK"<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;&lt;&nbsp;std::endl;<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;}<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;else&nbsp;{<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;std::cout&nbsp;&lt;&lt;&nbsp;"copy&nbsp;construction&nbsp;and&nbsp;copy&nbsp;assignment&nbsp;FAILED"<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;&lt;&nbsp;std::endl;<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;}<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;return&nbsp;0;&nbsp;&nbsp;<I><FONT face="Arial,Helvetica,sans-serif" color="0000FF" >//&nbsp;makes&nbsp;Visual-C++&nbsp;compiler&nbsp;happy</FONT></I><BR>
+}<BR>
+<BR>
+</SPAN>
+</TT>
+</BODY>
+</HTML>

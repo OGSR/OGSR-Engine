@@ -1,0 +1,93 @@
+
+<html>
+
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+
+<title>Boost Random Number Generator Library (Miscellaneous)</title>
+</head>
+
+<body bgcolor="#FFFFFF" text="#000000">
+
+<h1>Random Number Generator Library --- Miscellaneous Decorators</h1>
+
+<ul>
+<li><a href="#random_number_generator">Class template
+<code>random_number_generator</code></a>
+<li><a href="#generator_iterator">Class template
+<code>generator_iterator</code></a>
+</ul>
+
+<h2>Introduction</h2>
+
+These decorator class templates allow adaptation of the random number
+generators and distribution functions to concepts found in the C++
+Standard Library, in particular the RandomNumberGenerator and the
+InputIterator concepts.  The latter adaptation is useful, because the
+the basic random number generators do not implement the InputIterator
+requirements per se, in contrast to the distribution functions.
+
+
+<h2><a name="synopsis">Synopsis</a> of miscellaneous decorators in
+header <code>&lt;boost/random.hpp&gt;</code></h2>
+
+<pre>
+namespace boost {
+  template&lt;class UniformRandomNumberGenerator, class IntType = long&gt;
+  class random_number_generator;
+  template&lt;class Generator&gt;
+  class generator_iterator;
+} // namespace boost
+</pre>
+
+
+<h2><a name="random_number_generator">Class template
+<code>random_number_generator</code></a></h2>
+
+<h3>Synopsis</h3>
+<pre>
+template&lt;class UniformRandomNumberGenerator, class IntType = long&gt;
+class random_number_generator
+{
+public:
+  typedef UniformRandomNumberGenerator base_type;
+  typedef IntType argument_type;
+  typedef IntType result_type;
+  random_number_generator(base_type & rng);
+  result_type operator()(argument_type n);
+};
+</pre>
+
+<h3>Description</h3>
+
+Instantiations of class template <code>random_number_generator</code>
+model a RandomNumberGenerator (std:25.2.11 [lib.alg.random.shuffle]).
+On each invocation, it returns a uniformly distributed integer in
+the range [0..<code>n</code>).
+<p>
+The template parameter <code>IntType</code> shall denote some
+integer-like value type.
+<p>
+
+<em>Note:</em> I consider it unfortunate that the C++ Standard uses
+the name RandomNumberGenerator for something rather specific.
+
+<h3>Members</h3>
+
+<pre>random_number_generator(base_type & rng)</pre>
+
+<strong>Effects:</strong> Constructs a
+<code>random_number_generator</code> functor with the given uniform
+random number generator as the underlying source of random numbers.
+
+<pre>result_type operator()(argument_type n)</pre>
+
+<strong>Returns:</strong> The value of
+<code>uniform_int&lt;base_type&gt;(rng, 0, n-1)()</code>.
+
+<p>
+<hr>
+Jens Maurer, 2001-11-19
+
+</body>
+</html>

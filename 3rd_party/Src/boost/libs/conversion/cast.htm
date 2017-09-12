@@ -1,0 +1,150 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html>
+
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+<meta name="GENERATOR" content="Microsoft FrontPage 4.0">
+<meta name="ProgId" content="FrontPage.Editor.Document">
+<title>Header boost/cast.hpp Documentation</title>
+</head>
+
+<body bgcolor="#FFFFFF" text="#000000">
+
+<h1><img src="../../c++boost.gif" alt="c++boost.gif (8819 bytes)" align="middle" width="277" height="86">Header
+<a href="../../boost/cast.hpp">boost/cast.hpp</a></h1>
+
+<h2><a name="Cast Functions">Cast Functions</a></h2>
+
+<p>The header <a href="../../boost/cast.hpp">boost/cast.hpp</a>
+provides <a href="#Polymorphic_cast"><b>polymorphic_cast</b></a>, <a href="#Polymorphic_cast"><b>polymorphic_downcast</b></a>,
+and <a href="#numeric_cast"><b>numeric_cast</b></a> function templates designed
+to complement the C++ built-in casts.</p>
+
+<p>The program <a href="cast_test.cpp">cast_test.cpp</a> can be used to
+verify these function templates work as expected.</p>
+<h3><a name="Polymorphic_cast">Polymorphic casts</a></h3>
+<p>Pointers to polymorphic objects (objects of classes which define at least one
+virtual function) are sometimes downcast or crosscast. Downcasting means
+casting from a base class to a derived class. Crosscasting means casting
+across an inheritance hierarchy diagram, such as from one base to the other in a
+<b>Y</b> diagram hierarchy.</p>
+<p>Such casts can be done with old-style casts, but this approach is never to be
+recommended. Old-style casts are sorely lacking in type safety, suffer
+poor readability, and are difficult to locate with search tools.</p>
+<p>The C++ built-in <b>static_cast</b> can be used for efficiently downcasting
+pointers to polymorphic objects, but provides no error detection for the case
+where the pointer being cast actually points to the wrong derived class. The <b>polymorphic_downcast</b>
+template retains the efficiency of <b>static_cast</b> for non-debug
+compilations, but for debug compilations adds safety via an assert() that a <b>dynamic_cast</b>
+succeeds.</p>
+<p>The C++ built-in <b>dynamic_cast</b> can be used for downcasts and crosscasts
+of pointers to polymorphic objects, but error notification in the form of a
+returned value of 0 is inconvenient to test, or worse yet, easy to forget to
+test. The <b>polymorphic_cast</b> template performs a <b>dynamic_cast</b>,
+and throws an exception if the <b>dynamic_cast</b> returns 0.</p>
+<p>A <b>polymorphic_downcast</b> is preferred when debug-mode tests will cover
+100% of the object types possibly cast and when non-debug-mode efficiency is an
+issue. If these two conditions are not present, <b>polymorphic_cast</b> is
+preferred. It must also be used for crosscasts. It does an assert(
+dynamic_cast&lt;Derived&gt;(x) == x ) where x is the base pointer, ensuring that
+not only is a non-zero pointer returned, but also that it correct in the
+presence of multiple inheritance.<b> Warning:</b>: Because <b>polymorphic_downcast</b>
+uses assert(), it violates the one definition rule (ODR) if NDEBUG is inconsistently
+defined across translation units. [See ISO Std 3.2]</p>
+<p>The C++ built-in <b>dynamic_cast</b> must be used to cast references rather
+than pointers. It is also the only cast that can be used to check whether
+a given interface is supported; in that case a return of 0 isn't an error
+condition.</p>
+<h3>polymorphic_cast and polymorphic_downcast synopsis</h3>
+<blockquote>
+  <pre>namespace boost {
+
+template &lt;class Derived, class Base&gt;
+inline Derived polymorphic_cast(Base* x);
+// Throws: std::bad_cast if ( dynamic_cast&lt;Derived&gt;(x) == 0 )
+// Returns: dynamic_cast&lt;Derived&gt;(x)
+
+template &lt;class Derived, class Base&gt;
+inline Derived polymorphic_downcast(Base* x);
+// Effects: assert( dynamic_cast&lt;Derived&gt;(x) == x );
+// Returns: static_cast&lt;Derived&gt;(x)
+
+}</pre>
+</blockquote>
+<h3>polymorphic_downcast example</h3>
+<blockquote>
+  <pre>#include &lt;boost/cast.hpp&gt;
+...
+class Fruit { public: virtual ~Fruit(){}; ... };
+class Banana : public Fruit { ... };
+...
+void f( Fruit * fruit ) {
+// ... logic which leads us to believe it is a Banana
+  Banana * banana = boost::polymorphic_downcast&lt;Banana*&gt;(fruit);
+  ...</pre>
+</blockquote>
+<h3><a name="numeric_cast">numeric_cast</a></h3>
+<p>A <b>static_cast</b> or implicit conversion will not
+detect failure to preserve range for numeric casts. The <b>numeric_cast</b> function
+templates are similar to <b>static_cast</b> and certain (dubious)
+implicit conversions in this respect, except that they detect loss of numeric
+range. An exception is thrown when a runtime value-preservation check fails.</p>
+<p>The requirements on the argument and result types are:</p>
+<blockquote>
+  <ul>
+    <li>Both argument and result types are CopyConstructible [ISO Std 20.1.3].</li>
+    <li>Both argument and result types are Numeric, defined by <code>std::numeric_limits&lt;&gt;::is_specialized</code>
+      being true.</li>
+    <li>The argument can be converted to the result type using <b>static_cast</b>.</li>
+  </ul>
+</blockquote>
+<h3>numeric_cast synopsis</h3>
+<blockquote>
+  <pre>namespace boost {
+
+class bad_numeric_cast : public std::bad_cast {...};
+
+template&lt;typename Target, typename Source&gt;
+  inline Target numeric_cast(Source arg);
+    // Throws:  bad_numeric_cast unless, in converting arg from Source to Target,
+    //          there is no loss of negative range, and no underflow, and no
+    //          overflow, as determined by std::numeric_limits
+    // Returns: static_cast&lt;Target&gt;(arg)
+
+}</pre>
+</blockquote>
+<h3>numeric_cast example</h3>
+<blockquote>
+  <pre>#include &lt;boost/cast.hpp&gt;
+using namespace boost::cast;
+
+void ariane(double vx)
+{
+    ...
+    unsigned short dx = numeric_cast&lt;unsigned short&gt;(vx);
+    ...
+}</pre>
+</blockquote>
+<h3>numeric_cast rationale</h3>
+<p>The form of the throws condition is specified so that != is not a required
+operation.</p>
+<h3>History</h3>
+<p><b>polymorphic_cast</b> was suggested by Bjarne Stroustrup in &quot;The C++
+Programming Language&quot;.<br>
+<b>polymorphic_downcast</b> was contributed by <a href="../../people/dave_abrahams.htm">Dave
+Abrahams</a>.<b><br>
+numeric_cast</b> was contributed by <a href="../../people/kevlin_henney.htm">Kevlin
+Henney</a>.</p>
+<hr>
+<p>Revised <!--webbot bot="Timestamp" s-type="EDITED" s-format="%d %B, %Y" startspan
+-->06 January, 2001<!--webbot bot="Timestamp" endspan i-checksum="38320"
+--></p>
+<p>© Copyright boost.org 1999. Permission to copy, use, modify, sell and
+distribute this document is granted provided this copyright notice appears in
+all copies. This document is provided &quot;as is&quot; without express or
+implied warranty, and with no claim as to its suitability for any purpose.</p>
+
+</body>
+
+</html>

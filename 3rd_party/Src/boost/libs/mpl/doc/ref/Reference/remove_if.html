@@ -1,0 +1,59 @@
+<!doctype html public "-//ietf//dtd html//en">
+<html><head><title>boost::mpl::remove_if</title>
+<link rel="stylesheet" href="../mpl_wiki.css">
+</head><body bgcolor="white">
+<h1><a href="../Table_of_Contents.html"><img src="../mpl_logo.jpg" alt="[Home]" border=0 align="right"></a>remove_if</h1><h3>Synopsis</h3>
+<p>
+<pre>
+template&lt;
+      typename Sequence
+    , typename Pred
+    &gt;
+struct remove_if
+{
+    typedef <em>unspecified</em> type;
+};
+</pre>
+<p>
+<h3>Description</h3>
+<p>
+Returns a new sequence which contains all the elements from <code>[begin&lt;Sequence&gt;::type, end&lt;Sequence&gt;::type)</code> range except those that satisfy the predicate <code>Pred</code>. The result sequence preserves all the functional and performance characteristics of the original <code>Sequence</code>, except its size and identity. 
+<p>
+<h3>Definition</h3>
+<p>
+<pre>
+#include "<a href="../../../../../boost/mpl/remove_if.hpp">boost/mpl/remove_if.hpp</a>"
+</pre>
+<p>
+<h3>Parameters</h3>
+<table border="1">
+<tr><th>&nbsp;Parameter&nbsp;</th><th>&nbsp;Requirement&nbsp;</th><th>&nbsp;Description &nbsp;</th></tr>
+<tr><td><code>Sequence</code></td><td>A model of <a href="../Extensible_Sequence.html">Extensible Sequence</a></td><td>The original sequence. </td></tr>
+<tr><td><code>Pred</code></td><td>An unary Predicate [Lambda Expression]</td><td>A removal condition. </td></tr>
+</table>
+<p>
+<h3>Expression semantics</h3>
+<p>
+<table border="1">
+<tr><th>&nbsp;Expression&nbsp;</th><th>&nbsp;Expression&nbsp;type&nbsp;</th><th>&nbsp;Precondition&nbsp;</th><th>&nbsp;Semantics&nbsp;</th><th>&nbsp;Postcondition&nbsp;</th></tr>
+<tr><td><code>typedef remove_if&lt;Sequence,Pred&gt;::type s;</code></td><td>A model of <a href="../Extensible_Sequence.html">Extensible Sequence</a></td><td></td><td></td><td></td></tr>
+</table>
+<p>
+<h3>Complexity</h3>
+<p>
+Linear. Performs exactly <code><a href="../Reference/size.html">size</a>&lt;Sequence&gt;::type::value</code> applications of <code>Pred</code>.
+<p>
+<h3>Example</h3>
+<p>
+<pre>
+typedef <a href="../Reference/list_c.html">list_c</a>&lt;int,1,4,5,2,7,5,3,5&gt;::type numbers;
+typedef remove_if&lt; numbers, greater&lt;_,4&gt; &gt;::type result;
+typedef <a href="../Reference/list_c.html">list_c</a>&lt;int,1,4,2,3&gt;::type answer;
+BOOST_STATIC_ASSERT((<a href="../Reference/equal.html">equal</a>&lt; answer,result,<a href="../Reference/equal_to.html">equal_to</a>&lt;_,_&gt; &gt;::type::value));
+</pre>
+<p>
+<h3>See also</h3>
+<p>
+<a href="../Algorithms.html">Algorithms</a>, <code><a href="../Reference/remove.html">remove</a></code>, <code><a href="../Reference/replace.html">replace</a></code>, <code><a href="../Reference/transform.html">transform</a></code>
+<p><hr>
+<a href="../Table_of_Contents.html">Table of Contents</a><br>Last edited July 17, 2002 8:43 am</body></html>

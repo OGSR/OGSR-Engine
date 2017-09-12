@@ -1,0 +1,146 @@
+<html>
+<head>
+<title>The Rule</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" href="theme/style.css" type="text/css">
+</head>
+
+<body>
+<table width="100%" border="0" background="theme/bkd2.gif" cellspacing="2">
+  <tr> 
+    <td width="10"> 
+    </td>
+    <td width="85%"> 
+      <font size="6" face="Verdana, Arial, Helvetica, sans-serif"><b>The Rule</b></font>
+    </td>
+    <td width="112"><a href="http://spirit.sf.net"><img src="theme/spirit.gif" width="112" height="48" align="right" border="0"></a></td>
+  </tr>
+</table>
+<br>
+<table border="0">
+  <tr>
+    <td width="10"></td>
+    <td width="30"><a href="../index.html"><img src="theme/u_arr.gif" border="0"></a></td>
+    <td width="30"><a href="numerics.html"><img src="theme/l_arr.gif" border="0"></a></td>
+    <td width="20"><a href="directives.html"><img src="theme/r_arr.gif" border="0"></a></td>
+   </tr>
+</table>
+<p>The <b>rule</b> is a polymorphic parser that acts as a named place-holder capturing 
+  the behavior of an EBNF expression assigned to it. Naming an EBNF expression 
+  allows it to be referenced later. The <tt>rule</tt> is a template class parameterized 
+  by the type of the scanner (<tt>ScannerT</tt>) , the rule's <a href="indepth_the_parser_context.html">context</a> 
+  and its tag. Default template parameters are provided to make it easy to use 
+  the rule.</p>
+<pre><code><font color="#000000"><span class=identifier>    </span><span class=keyword>template</span><span class=special>&lt;
+        </span><span class=keyword>typename </span><span class=identifier>ScannerT </span><span class=special>= </span><span class=identifier>scanner</span><span class=special>&lt;&gt;,
+        </span><span class=keyword>typename </span><span class=identifier>ContextT </span><span class=special>= </span><span class=identifier>parser_context</span><span class=special>&gt;
+    </span><span class=keyword>class </span><span class=identifier>rule</span><span class=special>;</span></font></code></pre>
+<p>Default template parameters are supplied to handle the most common case. <tt>ScannerT</tt> 
+  defaults to <tt>scanner&lt;&gt;</tt>, a plain vanilla scanner that uses <tt>char 
+  const<span class="operators">*</span></tt> iterators and does nothing special 
+  at all other than iterate through all the chars in the null terminated input 
+  a character at a time. In trivial cases, declaring a rule as <tt>rule&lt;&gt;</tt> 
+  is enough. You need not be concerned at all with the <tt>ContextT</tt> template 
+  parameter unless you wish to tweak the low level behavior of the rule. Detailed 
+  information on the <tt>ContextT</tt> template parameter is provided <a href="indepth_the_parser_context.html">elsewhere</a>. 
+</p>
+<p>Presented above is the public API. There may actually be more template parameters 
+  after <tt>ContextT</tt>. Everything after the <tt>ContextT</tt> parameter should 
+  not be of concern to the client and are strictly for internal use only.</p>
+<p>The rule class models EBNF's production rule. Example:</p>
+<pre><code><font color="#000000">    <span class=identifier>rule</span><span class=special>&lt;&gt; </span><span class=identifier>a_rule </span><span class=special>= </span><span class=special>*(</span><span class=identifier>a </span><span class=special>| </span><span class=identifier>b</span><span class=special>) </span><span class=special>& </span><span class=special>+(</span><span class=identifier>c </span><span class=special>| </span><span class=identifier>d </span><span class=special>| </span><span class=identifier>e</span><span class=special>);</span></font></code></pre>
+<p>The type and functionality of the right-hand (rhs) EBNF expression, which may 
+  be arbitrarily complex, is encoded in the rule named a_rule. a_rule may now 
+  be referenced elsewhere in the grammar:</p>
+<pre><code><font color="#000000">    <span class=identifier>rule</span><span class=special>&lt;&gt; </span><span class=identifier>another_rule </span><span class=special>= </span><span class=identifier>f </span><span class=special>&gt;&gt; </span><span class=identifier>g </span><span class=special>&gt;&gt; </span><span class=identifier>h </span><span class=special>&gt;&gt; </span><span class=identifier>a_rule</span><span class=special>;</span></font></code></pre>
+<table width="80%" border="0" align="center">
+  <tr> 
+    <td class="note_box"><img src="theme/alert.gif" width="16" height="16"> <b>Referencing 
+      rules <br>
+      </b><br>
+      When a rule is referenced anywhere in the right hand side of an EBNF expression, 
+      the rule is held by the expression by reference. It is the responsibility 
+      of the client to ensure that the referenced rule stays in scope and does 
+      not get destructed while it is being referenced. </td>
+  </tr>
+</table>
+<pre><span class=special>    </span><span class=identifier>a </span><span class=special>= </span><span class=identifier>int_p</span><span class=special>;
+    </span><span class=identifier>b </span><span class=special>= </span><span class=identifier>a</span><span class=special>;
+    </span><span class=identifier>c </span><span class=special>= </span><span class=identifier>int_p </span><span class=special>&gt;&gt; </span><span class=identifier>b</span><span class=special>;</span></pre>
+<h3>Forward declarations</h3>
+<p>A <tt>rule</tt> may be declared before being defined to allow cyclic structures 
+  typically found in BNF declarations. Example:</p>
+<pre><code><font color="#000000"><span class=special>    </span><span class=identifier>rule</span><span class=special>&lt;&gt; </span><span class=identifier>a</span><span class=special>, </span><span class=identifier>b</span><span class=special>, </span><span class=identifier>c</span><span class=special>;
+
+    </span><span class=identifier>a </span><span class=special>= </span><span class=identifier>b </span><span class=special>| </span><span class=identifier>a</span><span class=special>;
+    </span><span class=identifier>b </span><span class=special>= </span><span class=identifier>c </span><span class=special>| </span><span class=identifier>a</span><span class=special>;</span></font></code></pre>
+<h3>Recursion</h3>
+<p>The right-hand side of a rule may reference other rules, including itself. 
+  The limitation is that direct or indirect left recursion is not allowed (this 
+  is an unchecked run-time error that results in an infinite loop). This is typical 
+  of top-down parsers. Example:</p>
+<pre><code><font color="#000000"><span class=special>    </span><span class=identifier>a </span><span class=special>= </span><span class=identifier>a </span><span class=special>| </span><span class=identifier>b</span><span class=special>; </span><span class=comment>// infinite loop!</span></font></code></pre>
+<table width="80%" border="0" align="center">
+  <tr> 
+    <td class="note_box"><img src="theme/lens.gif" width="15" height="16"> <b>What 
+      is left recursion?<br>
+      </b><br>
+      Left recursion happens when you have a rule that calls itself before anything 
+      else. A top-down parser will go into an infinite loop when this happens. 
+      See the <a href="faq.html#left_recursion">FAQ</a> for details on how to 
+      eliminate left recursion.</td>
+  </tr>
+</table>
+<h3>Undefined rules</h3>
+<p>An undefined rule matches nothing and is semantically equivalent to <tt>nothing_p</tt>.</p>
+<h3>Redeclarations</h3>
+<p>Like any other C++ assignment, a second assignment to a rule is destructive 
+  and will redefine it. The old definition is lost. Rules are dynamic. A rule 
+  can change its definition anytime:</p>
+<pre><code><font color="#000000"><span class=identifier>    r </span><span class=special>= </span><span class=identifier>a_definition</span><span class=special>;
+</span><span class=identifier>    r </span><span class=special>= </span><span class=identifier>another_definition</span><span class=special>;</span></font></code></pre>
+<p>Rule <tt>r</tt> loses the old definition when the second assignment is made. 
+  As mentioned, an undefined rule matches nothing and is semantically equivalent 
+  to <tt>nothing_p</tt>. 
+<h3>Dynamic Parsers</h3>
+<p>Hosting declarative EBNF in imperative C++ yields an interesting blend. We 
+  have the best of both worlds. We have the ability to conveniently modify the 
+  grammar at run time using imperative constructs such as <tt>if</tt>, <tt>else</tt> 
+  statements. Example:</p>
+<pre><code><font color="#000000"><span class=special>    </span><span class=keyword>if </span><span class=special>(</span><span class=identifier>feature_is_available</span><span class=special>)
+        </span><span class=identifier>r </span><span class=special>= </span><span class=identifier>add_this_feature</span><span class=special>;</span></font></code></pre>
+<p>Rules are essentially dynamic parsers. A dynamic parser is characterized by 
+  its ability to modify its behavior at run time. Initially, an undefined rule 
+  matches nothing. At any time, the rule may be defined and redefined, thus, dynamically 
+  altering its behavior.</p>
+<h3>No start rule</h3>
+<p>Typically, parsers have what is called a start symbol, chosen to be the root 
+  of the grammar where parsing starts. The Spirit parser framework has no notion 
+  of a start symbol. Any rule can be a start symbol. This feature promotes step-wise 
+  creation of parsers. We can build parsers from the bottom up while fully testing 
+  each level or module up untill we get to the top-most level.</p>
+<h3>parser_id</h3>
+<p>Each rule has an id of type parser_id. The default id of each rule is set to 
+  the address of that rule (converted to an integer). This is not always the most 
+  convenient, since it is not always possible to get the address of a rule to 
+  compare against. So, you can override the default id used by each rule by calling 
+  <tt>set_id(parser_id)</tt> on a rule. Example:</p>
+<pre><code><font color="#000000"><span class=identifier>    a_rule</span><span class=special>.</span><span class=identifier>set_id</span><span class=special>(</span><span class=identifier>123</span><span class=special>); </span><span class=comment>//  set a_rule's id to 12</span></font></code></pre>
+<table border="0">
+  <tr> 
+    <td width="10"></td>
+    <td width="30"><a href="../index.html"><img src="theme/u_arr.gif" border="0"></a></td>
+    <td width="30"><a href="numerics.html"><img src="theme/l_arr.gif" border="0"></a></td>
+    <td width="20"><a href="directives.html"><img src="theme/r_arr.gif" border="0"></a></td>
+  </tr>
+</table>
+<br>
+<hr size="1">
+<p class="copyright">Copyright &copy; 1998-2003 Joel de Guzman<br>
+  <br>
+  <font size="2">Permission to copy, use, modify, sell and distribute this document 
+  is granted provided this copyright notice appears in all copies. This document 
+  is provided &quot;as is&quot; without express or implied warranty, and with 
+  no claim as to its suitability for any purpose.</font></p>
+</body>
+</html>

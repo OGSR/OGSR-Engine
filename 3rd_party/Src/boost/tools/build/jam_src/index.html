@@ -1,0 +1,937 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+  <head>
+    <meta name="generator" content=
+    "HTML Tidy for Linux/x86 (vers 1st November 2002), see www.w3.org">
+    <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+    <link rel="stylesheet" type="text/css" href="../../../boost.css">
+    <title>Boost.Jam</title>
+    <meta name="author" content="Rene Rivera">
+    <meta name="description" content=
+    "Boost.Jam (bjam) is the core build tool for using the Boost.Build system. BJam is based on Perforce's Jam/MR.">
+  </head>
+  <body link="#0000ff" vlink="#800080">
+    <table border="0" cellpadding="7" cellspacing="0" width="100%" summary=
+    "header">
+      <tbody>
+        <tr>
+          <td valign="top" width="300">
+            <h3><a href="../../../index.htm"><img height="86" width="277"
+            alt="C++ Boost" src="../../../c++boost.gif" border="0"></a></h3>
+          </td>
+          <td valign="top">
+            <h1 align="center">Boost.Jam</h1>
+            <h2 align="center"><br>
+            </h2>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <hr>
+    <dl class="index">
+      <dt><a href="#introduction">Introduction</a></dt>
+      <dt><a href="#features">Features</a></dt>
+      <dt><a href="#contents">Contents</a></dt>
+      <dt><a href="#installing">Installing</a></dt>
+      <dt><a href="#core_extensions">Core Jam Extensions</a></dt>
+      <dd>
+        <dl class="index">
+          <dt><a href="#variable_quoting">Command-line and Environment
+          Variable Quoting</a></dt>
+          <dt><a href="#jambase_replacement">Startup Behavior</a></dt>
+          <dt><a href="#rule_indirection">Rule Indirection</a></dt>
+          <dt><a href="#argument_lists">Argument Lists</a></dt>
+          <dt><a href="#module_support">Module Support</a></dt>
+          <dd>
+            <dl class="index">
+              <dt><a href="#module_declaration">Declaration</a></dt>
+              <dt><a href="#module_locals">Variable Scope</a></dt>
+              <dt><a href="#local_rules">Local Rules</a></dt>
+              <dt><a href="#RULENAMES_rule">The <tt>RULENAMES</tt>
+              rule</a></dt>
+              <dt><a href="#IMPORT_rule">The <tt>IMPORT</tt> rule</a></dt>
+              <dt><a href="#EXPORT_rule">The <tt>EXPORT</tt> rule</a></dt>
+              <dt><a href="#CALLER_MODULE_rule">The <tt>CALLER_MODULE</tt>
+              rule</a></dt>
+            </dl>
+          </dd>
+          <dt><a href="#local_foreach">Local for Loop Variables</a></dt>
+          <dt><a href="#negative_indexing">Negative Indexing</a></dt>
+          <dt><a href="#BINDRULE">Target Binding Detection</a></dt>
+          <dt><a href="#FAIL_EXPECTED">Return Code Inversion</a></dt>
+          <dt><a href="#NOCARE">Ignoring Return Codes</a></dt>
+          <dt><a href="#RMOLD">Removing outdated targets</a></dt>
+          <dt><a href="#SUBST_rule">The <tt>SUBST</tt> Rule</a></dt>
+          <dt><a href="#JAM_VERSION">The <tt>JAM_VERSION</tt> global
+          variable</a></dt>
+          <dt><a href="#debugging_support">Debugging Support</a></dt>
+          <dd>
+            <dl class="index">
+              <dt><a href="#BACKTRACE_rule">The BACKTRACE rule</a></dt>
+              <dt><a href="#profiling">Profiling</a></dt>
+              <dt><a href="#parse_debugging">Parser Debugging</a></dt>
+              <dt><a href="#dependency_graph">Dependency Graph
+              Output</a></dt>
+            </dl>
+          </dd>
+          <dt><a href="#UPDATE">The <tt>UPDATE</tt> rule and changes to
+          command line handling</a></dt>
+          <dt><a href="#semaphores">Semaphores</a></dt>
+        </dl>
+      </dd>
+      <dt><a href="#jam_fundamentals">Jam Fundamentals</a></dt>
+    </dl>
+    <h2><a name="introduction"></a>Introduction</h2>
+    <p>Boost.Jam (BJam) &nbsp;is a build tool based on FTJam, which in turn
+    is based on Perforce Jam. It contains significant improvements made to
+    facilitate its use in the Boost Build System, but should be backward
+    compatible with Perforce Jam.</p>
+    <p>This is version 3.1.4 of BJam and is based on version 2.4 of
+    Jam/MR:</p>
+<pre>
+/+\
++\  Copyright 1993-2002 Christopher Seiwald and Perforce Software, Inc.
+\+/
+This is Release 2.4 of Jam/MR, a make-like program.
+License is hereby granted to use this software and distribute it
+freely, as long as this copyright notice is retained and modifications
+are clearly marked.
+ALL WARRANTIES ARE HEREBY DISCLAIMED.
+</pre>
+    <h2><a name="features"></a>Features</h2>
+    <p>Jam is a make(1) replacement that makes building simple things simple
+    and building complicated things manageable.</p>
+    <p>Jam's language is expressive, making Jamfiles (c.f. Makefiles)
+    compact.&nbsp; Here's a sample:</p>
+<pre>
+Main smail : main.c map.c resolve.c deliver.c
+     misc.c parser.y alias.c pw.c headers.c
+     scanner.l getpath.c str.c ;
+</pre>
+    <p>This builds "smail" from a dozen source files.&nbsp; Jam handles
+    header file dependencies automatically and on-the-fly.</p>
+    <p>Jam is very portable: it runs on UNIX, VMS, Mac, and NT. Most Jamfiles
+    themselves are portable, like the sample above.</p>
+    <p>Jam is unintrusive: it is small, it has negligible CPU overhead, and
+    it doesn't create any of its own funny files (c.f. Odin, nmake, SunOS
+    make).</p>
+    <p>Jam can build large projects spread across many directories in one
+    pass, without recursing, tracking the relationships among all files. Jam
+    can do this with multiple, concurrent processes.</p>
+    <p>Jam isn't under the blinkin GNU copyright, so you can incorporate it
+    into commercial products.</p>
+    <h2><a name="contents"></a>Contents</h2>
+    <table cellpadding="2" cellspacing="2" border="0" summary=
+    "Contents of Jam documents.">
+      <tr>
+        <td valign="top"><a href="Jam.html">Jam.html</a></td>
+        <td valign="top">Jam and language reference.</td>
+      </tr>
+      <tr>
+        <td valign="top"><a href="Jambase.html">Jambase.html</a></td>
+        <td valign="top">Reference for the Jambase boilerplate file.</td>
+      </tr>
+      <tr>
+        <td valign="top"><a href="Jamfile.html">Jamfile.html</a></td>
+        <td valign="top">Easy reading on creating a Jamfile and using
+        jam.</td>
+      </tr>
+      <tr>
+        <td valign="top"><a href="RELNOTES">RELNOTES</a></td>
+        <td valign="top">Release 2.4 release notes.</td>
+      </tr>
+      <tr>
+        <td valign="top"><a href="Porting">Porting</a></td>
+        <td valign="top">Notes on porting jam to wildcat platforms.</td>
+      </tr>
+    </table>
+    <h2><a name="installing"></a>Installing</h2>
+    <p>Installing BJam after building it is simply a matter of copying the
+    generated executables someplace in your <tt>PATH</tt>. For building the
+    executables there are a set of <tt>build</tt> bootstrap scripts to
+    accomodate particular environments. The scripts take one optional
+    argument, the name of the toolset to build with. When the toolset is not
+    given an attempt is made to detect an available toolset and use that. The
+    build scripts accept these areguments:</p>
+<pre>
+&lt;build script name&gt; [toolset]
+</pre>
+    <p>Running the scripts without arguments will give you the best chance of
+    success. On Windows platforms from a command console do:</p>
+<pre>
+cd &lt;jam source location&gt;
+.\build.bat
+</pre>
+    <p>On Unix type platforms do:</p>
+<pre>
+cd &lt;jam source location&gt;
+sh ./build.sh
+</pre>
+    <p>If the scripts fail to detect an appropriate toolset to build with
+    your particular toolset may not be auto-detectable. In that case, you can
+    specify the toolset as the first argument, this assumes that the toolset
+    is readily available in the <tt>PATH</tt>. The supported toolsets, and
+    wether they are auto-detected, are:</p>
+    <table cellpadding="2" cellspacing="2" border="1" summary=
+    "Bootstrap supported platforms and toolsets.">
+      <tr>
+        <th valign="top">Script</th>
+        <th valign="top">Platforms</th>
+        <th valign="top">Toolsets</th>
+        <th valign="top">Detection</th>
+      </tr>
+      <tr>
+        <td valign="top" rowspan="9" colspan="1"><tt>build.bat</tt></td>
+        <td valign="top" rowspan="9" colspan="1">Windows NT, 2000, and
+        XP</td>
+        <td valign="top"><a href=
+        "http://www.comeaucomputing.com"><tt>como</tt></a>, Comeau.Computing
+        C/C++</td>
+        <td valign="top">&nbsp;</td>
+      </tr>
+      <tr>
+        <td valign="top"><a href=
+        "http://www.borland.com/bcppbuilder/freecompiler"><tt>borland</tt></a>,
+        <a href="http://www.borland.com/">Borland</a> C++Builder (BCC
+        5.5)</td>
+        <td valign="top">* Common install location:
+        <tt>"C:\Borland\BCC55"</tt><br>
+         * <tt>BCC32.EXE</tt> in <tt>PATH</tt></td>
+      </tr>
+      <tr>
+        <td valign="top"><a href="http://gcc.gnu.org">gcc</a>, GNU GCC</td>
+        <td valign="top">&nbsp;</td>
+      </tr>
+      <tr>
+        <td valign="top"><a href="http://gcc.gnu.org">gcc-nocygwin</a>, GNU
+        GCC</td>
+        <td valign="top">&nbsp;</td>
+      </tr>
+      <tr>
+        <td valign="top"><a href=
+        "http://www.intel.com/software/products/compilers/c60"><tt>intel-win32</tt></a>,
+        Intel C++ Compiler for Windows</td>
+        <td valign="top">* <tt>ICL.EXE</tt> in <tt>PATH</tt></td>
+      </tr>
+      <tr>
+        <td valign="top"><a href=
+        "http://www.metrowerks.com"><tt>metrowerks</tt></a>, MetroWerks
+        CodeWarrior C/C++ 7.x, 8.x</td>
+        <td valign="top">* <tt>CWFolder</tt> variable configured<br>
+         * <tt>MWCC.EXE</tt> in <tt>PATH</tt></td>
+      </tr>
+      <tr>
+        <td valign="top"><a href="http://www.mingw.org">mingw</a>, GNU <a
+        href="http://gcc.gnu.org">GCC</a> as the <a href=
+        "http://www.mingw.org">MinGW</a> configuration</td>
+        <td valign="top">&nbsp;</td>
+      </tr>
+      <tr>
+        <td valign="top"><a href=
+        "http://msdn.microsoft.com/visualc/">msvc</a>, Microsoft Visual C++
+        6.x</td>
+        <td valign="top">* <tt>VCVARS32.BAT</tt> already configured<br>
+         * Common install locations: <tt>"C:\Program Files\Microsoft Visual
+        Studio"</tt>, <tt>"C:\Program Files\Microsoft Visual C++"<br>
+        </tt> * <tt>CL.EXE</tt> in <tt>PATH</tt></td>
+      </tr>
+      <tr>
+        <td valign="top"><a href=
+        "http://msdn.microsoft.com/visualc/">vc7</a>, Microsoft Visual C++
+        7.x</td>
+        <td valign="top">* Common install location: <tt>"C:\Program
+        Files\Microsoft Visual Studio .NET"</tt></td>
+      </tr>
+      <tr>
+        <td valign="top" rowspan="11" colspan="1"><tt>build.sh</tt></td>
+        <td valign="top" rowspan="10" colspan="1">Unix, Linux, Cygwin,
+        etc.</td>
+        <td valign="top"><a href="http://www.hp.com/go/c++">acc</a>, HP-UX
+        aCC</td>
+        <td valign="top">* <tt>aCC</tt> in <tt>PATH</tt><br>
+         * <tt>uname</tt> is "HP-UX"</td>
+      </tr>
+      <tr>
+        <td valign="top"><a href="http://www.comeaucomputing.com">como</a>,
+        Comeau.Computing C/C++</td>
+        <td valign="top">* <tt>como</tt> in <tt>PATH</tt></td>
+      </tr>
+      <tr>
+        <td valign="top"><a href="http://gcc.gnu.org">gcc</a>, GNU GCC</td>
+        <td valign="top">* <tt>gcc</tt> in <tt>PATH</tt></td>
+      </tr>
+      <tr>
+        <td valign="top"><a href=
+        "http://www.intel.com/software/products/compilers/c60l/">intel-linux</a>,
+        Intel C++ for Linux</td>
+        <td valign="top">* <tt>icc</tt> in <tt>PATH</tt><br>
+         * Common install locations: <tt>"/opt/intel/compiler70"</tt>,
+        <tt>"/opt/intel/compiler60"</tt>,
+        <tt>"/opt/intel/compiler50"</tt></td>
+      </tr>
+      <tr>
+        <td valign="top"><a href=
+        "http://developer.intel.com/software/products/kcc/">kcc</a>, Intel
+        KAI C++</td>
+        <td valign="top">* <tt>KCC</tt> in <tt>PATH</tt></td>
+      </tr>
+      <tr>
+        <td valign="top"><a href=
+        "http://www.borland.com/bcppbuilder/freecompiler"><tt>kylix</tt></a>,
+        <a href="http://www.borland.com/">Borland</a> C++Builder</td>
+        <td valign="top">* <tt>bc++</tt> in <tt>PATH</tt></td>
+      </tr>
+      <tr>
+        <td valign="top"><a href=
+        "http://www.sgi.com/developers/devtools/languages/mipspro.html">mipspro</a>,
+        SGI MIPSpro C</td>
+        <td valign="top">&nbsp;</td>
+      </tr>
+      <tr>
+        <td valign="top">sunpro, Sun Workshop 6 C++</td>
+        <td valign="top">&nbsp;</td>
+      </tr>
+      <tr>
+        <td valign="top"><a href=
+        "http://www.tru64unix.compaq.com/cplus/">true64cxx</a>, Compaq C++
+        Compiler for True64 UNIX</td>
+        <td valign="top">&nbsp;</td>
+      </tr>
+      <tr>
+        <td valign="top"><a href=
+        "http://www-3.ibm.com/software/ad/vacpp/">vacpp</a>, IBM VisualAge
+        C++</td>
+        <td valign="top">* <tt>xlc</tt> in <tt>PATH</tt></td>
+      </tr>
+      <tr>
+        <td valign="top">MacOS X<br>
+        </td>
+        <td valign="top"><a href=
+        "http://developer.apple.com/tools/compilers.html">darwin</a>, Apple
+        MacOS X GCC</td>
+        <td valign="top">* <tt>uname</tt> is <tt>"Darwin"</tt></td>
+      </tr>
+    </table>
+    <p>The built executables are placed in a subdirectory specific to your
+    platform. For example, in Linux running on an Intel x86 compatible chip,
+    the executables are placed in: <tt>"bin.linuxx86"</tt>. There are two
+    executables generated: <tt>jam[.exe]</tt>, and <tt>bjam[.exe]</tt>, both
+    are the same binary but with different names. The "jam" invocation is
+    used for compatability with the Perforce Jam/MR functionality, whereas
+    "bjam" is used for the extended Boost.Build functionality.</p>
+    <p>The <tt>build</tt> scripts support additional invocation arguments for
+    use by developers of Boost.Jam. The extra arguments come after the
+    toolset, and can take the form of <tt>"--options"</tt> or targets for the
+    <tt>build.jam</tt> script:</p>
+<pre>
+&lt;build script name&gt; [toolset] [--options* [targets]*]
+</pre>
+    <p>There is current only one available option, <tt>"--debug"</tt>, which
+    builds debugging versions of the executable. When built they are placed
+    in their own directory <tt>"bin.&lt;platform&gt;.debug"</tt>.</p>
+    <p>Currently there are two targets supported: <tt>dist</tt>, and
+    <tt>clean</tt>. Respectively they: generate packages (compressed
+    archives) as appropriate for distribution in the platform, or remove all
+    the built executables and objects.</p>
+    <h2><a name="core_extensions">Core Jam Extensions</a></h2>
+    <p>A number of enhancements have been made to the core language of
+    Classic Jam. These changes were aimed primarily at making it easier to
+    manage the complexity of a large system such as Boost.Build.</p>
+    <h3><a name="variable_quoting"></a>Command-line and Environment Variable
+    Quoting</h3>
+    <p>Classic Jam had an <a href="#variable_splitting">odd behavior</a> with
+    respect to command-line variable ( <tt>-s...</tt>) and environment
+    variable settings which made it impossible to define an arbitrary
+    variable with spaces in the value. Boost Jam remedies that by treating
+    all such settings as a single string if they are surrounded by
+    double-quotes. Uses of this feature can look interesting, since shells
+    require quotes to keep characters separated by whitespace from being
+    treated as separate arguments:</p>
+<pre>
+jam -sMSVCNT="\"\"C:\Program Files\Microsoft Visual C++\VC98\"\"" ...
+</pre>
+    <p>The outer quote is for the shell. The middle quote is for Jam, to tell
+    it to take everything within those quotes literally, and the inner quotes
+    are for the shell again when paths are passed as arguments to build
+    actions. Under NT, it looks a lot more sane to use environment variables
+    before invoking jam when you have to do this sort of quoting:</p>
+<pre>
+set MSVCNT=""C:\Program Files\Microsoft Visual C++\VC98\""
+</pre>
+    <h3><a name="jambase_replacement">Startup Behavior</a></h3>
+    <p>The Boost.Build v2 initialization behavior has been implemented. This
+    behavior only applies when the executable being invoked is called
+    "<code>bjam</code>" or, for backward-compatibility, when the
+    <code>BOOST_ROOT</code> variable is set.</p>
+    <ol>
+      <li>We attempt to load "boost-build.jam" by searching from the current
+      invocation directory up to the root of the file-system. This file is
+      expected to invoke the <tt>boost-build</tt> rule to indicate where the
+      Boost.Build system files are, and to load them.</li>
+      <li>
+        If boost-build.jam is not found we error and exit, giving brief
+        instructions on possible errors. 
+        <blockquote>
+          As a backward-compatibility measure for older versions of
+          Boost.Build, when the <code>BOOST_ROOT</code> variable is set, we
+          first search for <code>boost-build.jam</code> in
+          <code>$(BOOST_ROOT)/tools/build</code> and
+          <code>$(BOOST_BUILD_PATH)</code>. If found, it is loaded and
+          initialization is complete.
+        </blockquote>
+      </li>
+      <li>The <code>boost-build</code> rule adds its (optional) argument to
+      the front of <code>BOOST_BUILD_PATH</code>, and attempts to load
+      <code>bootstrap.jam</code> from those directories. If a relative path
+      is specified as an argument, it is treated as though it was relative to
+      the <code>boost-build.jam</code> file.</li>
+      <li>If the bootstrap.jam file was not found, we print a likely error
+      message and exit.</li>
+    </ol>
+    <h3><a name="rule_indirection">Rule Indirection</a></h3>
+    <p>Boost Jam allows you to call a rule whose name is held in a variable
+    or computed as the result of an expression:</p>
+<pre>
+x = foo ;
+rule foobar { ECHO foobar ; }   # a trivial rule
+$(x)bar ;                       # invokes foobar
+</pre>
+    <p>Furthermore, if the first expression expands to more than one list
+    item, everything after the first item becomes part of the first argument.
+    This allows a crude form of argument binding:</p>
+<pre>
+# return the elements of sequence for which predicate returns non-nil
+rule filter ( sequence * : predicate + )
+{
+    local result ;
+    for local x in $(sequence)
+    {
+        if [ $(predicate) $(x) ] { result += $(x); }
+    }
+    return $(result);
+}
+# true iff x == y
+rule equal ( x y )
+{
+    if $(x) = $(y) { return true; }
+}
+# bind 3 to the first argument of equal
+ECHO [ filter 1 2 3 4 5 4 3 : equal 3 ] ; # prints "3 3"
+</pre>
+    <h3><a name="argument_lists">Argument lists</a></h3>
+    <p>You can now describe the arguments accepted by a rule, and refer to
+    them by name within the rule. For example, the following prints ``I'm
+    sorry, Dave'' to the console:</p>
+<pre>
+rule report ( pronoun index ? : state : names + )
+{
+    local he.suffix she.suffix it.suffix = s ;
+    local I.suffix = m ;
+    local they.suffix you.suffix = re ;
+    ECHO $(pronoun)'$($(pronoun).suffix) $(state), $(names[$(index)]) ;
+}
+report I 2 : sorry : Joe Dave Pete ;
+</pre>
+    <p>Each name in a list of formal arguments (separated by ``<tt>:</tt>''
+    in the rule declaration) is bound to a single element of the
+    corresponding actual argument unless followed by one of these
+    modifiers:</p>
+    <table border="1" summary="Argument modifiers">
+      <tr>
+        <th>Symbol</th>
+        <th>Semantics of preceding symbol</th>
+      </tr>
+      <tr>
+        <td><tt>?</tt></td>
+        <td>optional</td>
+      </tr>
+      <tr>
+        <td><tt>*</tt></td>
+        <td>Bind to zero or more unbound elements of the actual argument.
+        When ``<tt>*</tt>'' appears where an argument name is expected, any
+        number of additional arguments are accepted. This feature can be used
+        to implement "varargs" rules.</td>
+      </tr>
+      <tr>
+        <td><tt>+</tt></td>
+        <td>Bind to one or more unbound elements of the actual argument.</td>
+      </tr>
+    </table>
+    <p>The actual and formal arguments are checked for inconsistencies, which
+    cause Jam to exit with an error code:</p>
+<pre>
+### argument error
+# rule report ( pronoun index ?  : state  : names + )
+# called with: ( I 2 foo  : sorry  : Joe Dave Pete )
+# extra argument foo
+### argument error
+# rule report ( pronoun index ?  : state  : names + )
+# called with: ( I 2  : sorry )
+# missing argument names
+</pre>
+    <p>If you omit the list of formal arguments, all checking is bypassed as
+    in ``classic'' Jam. Argument lists drastically improve the reliability
+    and readability of your rules, however, and are <b>strongly
+    recommended</b> for any new Jam code you write.</p>
+    <h3><a name="module_support">Module Support</a></h3>
+    <p>Boost Jam introduces support for modules, which provide some
+    rudimentary namespace protection for rules and variables. A new keyword,
+    ``<tt>module</tt>'' was also introduced. The features described in this
+    section are <i>primitives</i>, meaning that they are meant to provide the
+    operations needed to write Jam rules which provide a more elegant module
+    interface.</p>
+    <h4><a name="module_declaration">Declaration</a></h4>
+<pre>
+module <i>expression</i> { ... }
+</pre>
+    <p>Code within the <tt>{&nbsp;</tt> ...<tt>&nbsp;}</tt> executes within
+    the module named by evaluating <i>expression</i>. Rule definitions can be
+    found in the module's own namespace, and in the namespace of the global
+    module as <i>module-name</i><tt>.</tt><i>rule-name</i>, so within a
+    module, other rules in that module may always be invoked without
+    qualification:</p>
+<pre>
+<b>module my_module
+{</b>
+    rule salute ( x ) { ECHO $(x), world ; }
+    rule greet ( ) { salute hello ; }
+    greet ;
+<b>}
+my_module.salute</b> goodbye ;
+</pre>
+    <p>When an invoked rule is not found in the current module's namespace,
+    it is looked up in the namespace of the global module, so qualified calls
+    work across modules:</p>
+<pre>
+module your_module
+{
+    rule bedtime ( ) { <b>my_module.salute</b> goodnight ; }
+}
+</pre>
+    <h4><a name="module_locals">Variable Scope</a></h4>
+    <p>Each module has its own set of dynamically nested variable scopes.
+    When execution passes from module A to module B, all the variable
+    bindings from A become unavailable, and are replaced by the bindings that
+    belong to B. This applies equally to local and global variables:</p>
+<pre>
+module A
+{
+    x = 1 ;
+    rule f ( )
+    {
+        local y = 999 ; # becomes visible again when B.f calls A.g
+        B.f ;
+    }
+    rule g ( )
+    {
+        ECHO $(y) ;     # prints "999"
+    }
+}
+module B
+{
+    y = 2 ;
+    rule f ( )
+    {
+        ECHO $(y) ; # always prints "2"
+        A.g ;
+    }
+}
+</pre>
+    <p>The only way to access another module's variables is by entering that
+    module:</p>
+<pre>
+rule peek ( module-name ? : variables + )
+{
+    module $(module-name)
+    {
+        return $($(&gt;)) ;
+    }
+}
+</pre>
+    Note that because existing variable bindings change whenever a new module
+    scope is entered, argument bindings become unavailable. That explains the
+    use of "<code>$(&gt;)</code>" in the <code>peek</code> rule above. 
+    <h4><a name="local_rules">Local Rules</a></h4>
+<pre>
+local rule <i>rulename...</i>
+</pre>
+    <p>The rule is declared locally to the current module. It is not entered
+    in the global module with qualification, and its name will not appear in
+    the result of:</p>
+<pre>
+[ RULENAMES <i>module-name</i> ]
+</pre>
+    <h4><a name="RULENAMES_rule">The <tt>RULENAMES</tt> Rule</a></h4>
+<pre>
+rule RULENAMES ( module ? )
+</pre>
+    <p>Returns a list of the names of all non-local rules in the given
+    module. If <tt>module</tt> is omitted, the names of all non-local rules
+    in the global module are returned.</p>
+    <h4><a name="IMPORT_rule">The <tt>IMPORT</tt> Rule</a></h4>
+    <p><tt>IMPORT</tt> allows rule name aliasing across modules:</p>
+<pre>
+rule IMPORT ( source_module ? : source_rules *
+            : target_module ? : target_rules * )
+</pre>
+    <p>The <tt>IMPORT</tt> rule copies rules from the <tt>source_module</tt>
+    into the <tt>target_module</tt> as <tt>local</tt> rules. If either
+    <tt>source_module</tt> or <tt>target_module</tt> is not supplied, it
+    refers to the global module. <tt>source_rules</tt> specifies which rules
+    from the <tt>source_module</tt> to import; <tt>TARGET_RULES</tt>
+    specifies the names to give those rules in <tt>target_module</tt>. If
+    <tt>source_rules</tt> contains a name which doesn't correspond to a rule
+    in <tt>source_module</tt>, or if it contains a different number of items
+    than <tt>target_rules</tt>, an error is issued. For example,</p>
+<pre>
+# import m1.rule1 into m2 as local rule m1-rule1.
+IMPORT m1 : rule1 : m2 : m1-rule1 ;
+# import all non-local rules from m1 into m2
+IMPORT m1 : [ RULENAMES m1 ] : m2 : [ RULENAMES m1 ] ;
+</pre>
+    <h4><a name="EXPORT_rule">The <tt>EXPORT</tt> Rule</a></h4>
+    <p><tt>EXPORT</tt> allows rule name aliasing across modules:</p>
+<pre>
+rule EXPORT ( module ? : rules * )
+</pre>
+    <p>The <tt>EXPORT</tt> rule marks <tt>rules</tt> from the
+    <tt>source_module</tt> as non-local (and thus exportable). If an element
+    of <tt>rules</tt> does not name a rule in <tt>module</tt>, an error is
+    issued. For example,</p>
+<pre>
+module X {
+  local rule r { ECHO X.r ; }
+}
+IMPORT X : r : : r ; # error - r is local in X
+EXPORT X : r ;
+IMPORT X : r : : r ; # OK.
+</pre>
+    <h4><a name="CALLER_MODULE_rule">The <tt>CALLER_MODULE</tt> Rule</a></h4>
+<pre>
+rule CALLER_MODULE ( levels ? )
+</pre>
+    <p><tt>CALLER_MODULE</tt> returns the name of the module scope enclosing
+    the call to its caller (if levels is supplied, it is interpreted as an
+    integer number of additional levels of call stack to traverse to locate
+    the module). If the scope belongs to the global module, or if no such
+    module exists, returns the empty list. For example, the following prints
+    "{Y} {X}":</p>
+<pre>
+module X {
+    rule get-caller { return [ CALLER_MODULE ] ; }
+    rule get-caller's-caller { return [ CALLER_MODULE 1 ] ; }
+    rule call-Y { return Y.call-X2 ; }
+}
+module Y {
+    rule call-X { return X.get-caller ; }
+    rule call-X2 { return X.get-caller's-caller ; }
+}
+callers = [ X.get-caller ] [ Y.call-X ] [ X.call-Y ] ;
+ECHO {$(callers)} ;
+</pre>
+    <h3><a name="local_foreach">Local For Loop Variables</a></h3>
+    <p>Boost Jam allows you to declare a local <tt>for</tt> loop control
+    variable right in the loop:</p>
+<pre>
+x = 1 2 3 ;
+y = 4 5 6 ;
+for <b>local</b> y in $(x)
+{
+    ECHO $(y) ; # prints "1", "2", or "3"
+}
+ECHO $(y) ;     # prints "4 5 6"
+</pre>
+    <h4><a name="negative_indexing">Negative Indexing</a></h4>
+    <p>Classic Jam supplies 1-based list indexing, and slicing on a closed
+    (inclusive) range:</p>
+<pre>
+x = 1 2 3 4 5 ;
+ECHO $(x[3]) ;   # prints "3"
+ECHO $(x[2-4]) ; # prints "2 3 4"
+ECHO $(x[2-]) ;  # prints "2 3 4 5"
+</pre>
+    <p>Boost Jam adds Python-style negative indexing to access locations
+    relative to the <i>end</i> of the list.</p>
+<pre>
+ECHO $(x[-1]) $(x[-3]) ; # prints "5 3"
+ECHO $(x[-3--1]) ;       # prints "3 4 5"
+ECHO $(x[-3-4]) ;        # prints "3 4"
+ECHO $(x[2--2]) ;        # prints "2 3 4"       
+</pre>
+    <p>Consistency with the 1-based, inclusive indexing of Classic Jam and
+    the use of ``<tt>-</tt>'' as the range separator make this feature a bit
+    clumsier than it would otherwise need to be, but it does work.</p>
+    <h4><a name="BINDRULE">Target Binding Detection</a></h4>
+    <p>Whenever a target is <a href="#binding">bound</a> to a location in the
+    filesystem, Boost Jam will look for a variable called <tt>BINDRULE</tt>
+    (first ``<tt>on</tt>'' the target being bound, then in the global
+    module). If non-empty, <tt>$(BINDRULE[1])</tt> names a rule which is
+    called with the name of the target and the path it is being bound to. The
+    signature of the rule named by <tt>$(BINDRULE[1])</tt> should match the
+    following:</p>
+<pre>
+rule bind-rule ( target : path )
+</pre>
+    <p>This facility is useful for correct header file scanning, since many
+    compilers will search for <tt>#include</tt>d files first in the directory
+    containing the file doing the <tt>#include</tt> directive.
+    <tt>$(BINDRULE)</tt> can be used to make a record of that directory.</p>
+    <h4><a name="FAIL_EXPECTED">Return Code Inversion</a></h4>
+    <p>For handling targets whose build actions are expected to fail (e.g.
+    when testing that assertions or compile-time type checkin work properly),
+    Boost Jam supplies a <tt>FAIL_EXPECTED</tt> rule in the same style as
+    <tt>NOCARE</tt>, et. al. During target updating, the return code of the
+    build actions for arguments to <tt>FAIL_EXPECTED</tt> is inverted: if it
+    fails, building of dependent targets continues as though it succeeded. If
+    it succeeds, dependent targets are skipped.</p>
+    <h4><a name="NOCARE">Ignoring Return Codes</a></h4>
+    <p>Perforce Jam supplied a <tt>NOCARE</tt> rule which is typically used
+    for header files to indicate that if they are not found, the dependent
+    targets should be built anyway. Boost Jam extends <tt>NOCARE</tt> to
+    apply to targets with build actions: if their build actions exit with a
+    nonzero return code, dependent targets will still be built.</p>
+    <h4><a name="RMOLD">Removing Outdated Targets</a></h4>
+<pre>
+rule RMOLD ( targets * )
+</pre>
+    <p>Perforce Jam removes any target files that may exist on disk when the
+    rule used to build those targets fails. However, targets whose
+    dependencies fail to build are not removed by default. The
+    <code>RMOLD</code> rule causes its arguments to be removed if any of
+    their dependencies fail to build.</p>
+    <h3><a name="SUBST_rule">The <tt>SUBST</tt> Rule</a></h3>
+    <p><b>Note:</b> the <code>SUBST</code> rule is deprecated in favor of
+    Perforce Jam's built-in <code>MATCH</code> rule, which has been rolled
+    into Boost.Jam.</p>
+    <p>The behavior of the <tt>SUBST</tt> rule for regular-expression
+    matching and replacement (originally added in <a href=
+    "http://freetype.sourceforge.net/jam/index.html">FTJam</a>) has been
+    modified:</p>
+    <ul>
+      <li>
+        One or more replacement patterns may be supplied. The new signature
+        for <tt>SUBST</tt> is: 
+<pre>
+SUBST ( source pattern replacements + )
+</pre>
+        The return value is the concatenated results of applying each element
+        of <tt>replacements</tt> in turn. For example, the following will
+        print ``<tt>[x] (y) {z}</tt>'': 
+<pre>
+ECHO [ SUBST xyz (.)(.)(.) [$1] ($2) {$3} ] ;
+</pre>
+      </li>
+      <li>If there is no match, <tt>SUBST</tt> now returns an empty list. In
+      FTJam, the original <tt>source</tt> string was returned, making it
+      awkward to check whether a pattern was matched.</li>
+      <li>Compiled regular expressions are now internally cached, making it
+      much faster to use <tt>SUBST</tt> multiple times with the same
+      string.</li>
+    </ul>
+    <h3><a name="JAM_VERSION">The <tt>JAM_VERSION</tt> global
+    variable</a></h3>
+    <p>A predefined global variable with two elements indicates the version
+    number of Boost Jam. Boost Jam versions start at <tt>"03" "00"</tt>.
+    Earlier versions of Jam do not automatically define
+    <tt>JAM_VERSION</tt>.</p>
+    <h3><a name="debugging_support">Debugging Support</a></h3>
+    <h4><a name="BACKTRACE_rule">The BACKTRACE rule</a></h4>
+<pre>
+rule BACKTRACE ( )
+</pre>
+    <p>Returns a list of quadruples: <i>filename line module rulename</i>...,
+    describing each shallower level of the call stack. This rule can be used
+    to generate useful diagnostic messages from Jam rules.</p>
+    <p>The <tt>-d</tt> command-line option admits new arguments:</p>
+    <ul>
+      <li><tt>-d+10</tt> - enables <a name="profiling"><b>profiling</b></a>
+      of rule invocations. When Jam exits, it dumps all rules invoked, their
+      gross and net times in platform-dependent units, and the number of
+      times the rule was invoked.</li>
+      <li><tt>-d+11</tt> - enables <a name="parse_debugging"><b>parser
+      debugging</b></a>, if Jam has been compiled with the "--debug" option
+      to the parser generator named by $(YACC).</li>
+      <li><tt>-d+12</tt> - enables <a name="dependency_graph"><b>dependency
+      graph output</b></a> . This feature was ``stolen'' from a version of
+      Jam modified by <a href="mailto:cmcpheeters@aw.sgi.com">Craig
+      McPheeters</a>.</li>
+    </ul>
+    <h3><a name="UPDATE">The <tt>UPDATE</tt> rule and changes to command line
+    handling</a></h3>
+    <p>Classic jam treats any non-option element of command line as a name of
+    target to be updated. This prevented more sophisticated handling of
+    command line. This is now enabled again but with additional changes to
+    the <tt>UPDATE&gt;</tt> rule to allow for the flexibility of changing the
+    list of targets to update. The <tt>UPDATE</tt> builtin rule is:</p>
+<pre>
+rule UPDATE ( targets * )
+</pre>
+    <p>The rule has two effects: 1. it clears the list of targets to update,
+    and 2. causes the specified targets to be updated. If no target was
+    specified with the <tt>UPDATE</tt> rule, no targets will be updated. To
+    support changing of the update list in more usefull ways, the rule also
+    returns the targets previously in the update list. This makes it possible
+    to add targets as such:</p>
+<pre>
+local previous-updates = [ UPDATE ] ;
+UPDATE $(previous-updates) a-new-target ;
+</pre>
+    <h3 id="semaphores">Semaphores</h3>
+    <p>It is sometimes desirable to disallow parallel execution of some
+    actions. For example:</p>
+    <ul>
+      <li>Old versions of <tt>yacc</tt> use files with fixed names. So,
+      running two yacc actions is dangerous.</li>
+      <li>One might want to perform parallel compiling, but not do parallel
+      linking, because linking is i/o bound and only gets slower.</li>
+    </ul>
+    Craig McPeeters has extended Perforce Jam to solve such problems, and
+    that extension was integrated in Boost.Jam. 
+    <p>Any target can be assigned a <em>semaphore</em>, by setting a variable
+    called <tt>SEMAPHORE</tt> on that target. The value of the variable is
+    the semaphore name. It must be different from names of any declared
+    target, but is arbitrary otherwise.</p>
+    <p>The semantic of semaphores is that in a group of targets which have
+    the same semaphore, only one can be updated at the moment, regardless of
+    "-j" option.</p>
+    <h2><a name="jam_fundamentals">Jam Fundamentals</a></h2>
+    <p>This section is derived from the official Jam documentation and from
+    my experience using it and reading the Jambase rules. I repeat the
+    information here mostly because it is essential to understanding and
+    using Jam, but is not consolidated in a single place. Some of it is
+    missing from the official documentation altogether. I hope it will be
+    useful to anyone wishing to become familiar with Jam and the Boost build
+    system.</p>
+    <p>&middot; Jam ``<b>rules</b>'' are actually simple procedural entities.
+    Think of them as functions. Arguments are separated by colons.</p>
+    <p>&middot; A Jam <b>target</b> is an abstract entity identified by an
+    arbitrary string. The build-in <tt>DEPENDS</tt> rule creates a link in
+    the dependency graph between the named targets.</p>
+    <p>&middot; Note that the documentation for the built-in
+    <tt>INCLUDES</tt> rule is incorrect:
+    <tt>INCLUDES&nbsp;targets1&nbsp;:&nbsp;targets2</tt> causes everything
+    that depends on a member of <i>targets1</i> to depend on all members of
+    <i>targets2</i>. It does this in an odd way, by tacking <i>targets2</i>
+    onto a special tail section in the dependency list of everything in
+    <i>targets1</i>. It seems to be OK to create circular dependencies this
+    way; in fact, it appears to be the ``right thing to do'' when a single
+    build action produces both <i>targets1</i> and <i>targets2</i>.</p>
+    <p>&middot; When a rule is invoked, if there are <b><tt>actions</tt></b>
+    declared with the same name as the rule, the <tt>actions</tt> are added
+    to the updating actions for the target identified by the rule's first
+    argument. It is actually possible to invoke an undeclared rule if
+    corresponding actions are declared: the rule is treated as empty.</p>
+    <p>&middot; <a name="binding">Targets</a> (other than <tt>NOTFILE</tt>
+    targets) are associated with paths in the file system through a process
+    called <a href="./Jam.html#binding">binding</a>. Binding is a process of
+    searching for a file with the same name as the target (sans grist), based
+    on the settings of the <a href="#target_specific">target-specific</a>
+    <tt>SEARCH</tt> and <tt>LOCATE</tt> variables.</p>
+    <p>&middot; <a name="target_specific">In addition to</a> local and global
+    variables, jam allows you to set a variable <tt><b>on</b></tt> a target.
+    Target-specific variable values can usually not be read, and take effect
+    <i>only</i> in the following contexts:</p>
+    <ul>
+      <li>In updating <tt>actions</tt>, variable values are first looked up
+      <tt><b>on</b></tt> the target named by the first argument (the target
+      being updated). Because Jam builds its entire dependency tree before
+      executing <tt>actions</tt>, Jam rules make target-specific variable
+      settings as a way of supplying parameters to the corresponding
+      <tt>actions</tt>.</li>
+      <li>Binding is controlled <i>entirely</i> by the target-specific
+      setting of the <tt>SEARCH</tt> and <tt>LOCATE</tt> variables, as
+      described <a href="./Jam.html#search">here</a>.</li>
+      <li>In the special rule used for <a href="./Jam.html#hdrscan">header
+      file scanning</a>, variable values are first looked up
+      <tt><b>on</b></tt> the target named by the rule's first argument (the
+      source file being scanned).</li>
+    </ul>
+    <p>&middot; The ``<b>bound value</b>'' of a variable is the path
+    associated with the target named by the variable. In build
+    <tt>actions</tt>, the first two arguments are automatically replaced with
+    their bound values. Target-specific variables can be selectively replaced
+    by their bound values using the <a href="./Jam.html#actionmods">bind</a>
+    action modifier.</p>
+    <p>&middot; Note that the term ``binding'' as used in the Jam
+    documentation indicates a phase of processing that includes three
+    sub-phases: <i>binding</i> (yes!), update determination, and header file
+    scanning. The repetition of the term ``binding'' can lead to some
+    confusion. In particular, the <a href="./Jam.html#bindingmods">Modifying
+    Binding</a> section in the Jam documentation should probably be titled
+    ``Modifying Update Determination''.</p>
+    <p>&middot; ``Grist'' is just a string prefix of the form
+    <tt>&lt;</tt><i>characters</i><tt>&gt;</tt>. It is used in Jam to create
+    unique target names based on simpler names. For example, the file name
+    ``<tt>test.exe</tt>'' may be used by targets in separate subprojects, or
+    for the debug and release variants of the ``same'' abstract target. Each
+    distinct target bound to a file called ``<tt>test.exe</tt>'' has its own
+    unique grist prefix. The Boost build system also takes full advantage of
+    Jam's ability to divide strings on grist boundaries, sometimes
+    concatenating multiple gristed elements at the beginning of a string.
+    Grist is used instead of identifying targets with absolute paths for two
+    reasons:</p>
+    <ol summary="">
+      <li>The location of targets cannot always be derived solely from what
+      the user puts in a Jamfile, but sometimes depends also on the <a href=
+      "#binding">binding</a> process. Some mechanism to distinctly identify
+      targets with the same name is still needed.</li>
+      <li>Grist allows us to use a uniform abstract identifier for each built
+      target, regardless of target file location (as allowed by setting
+      <tt>ALL_LOCATE_TARGET</tt>.</li>
+    </ol>
+    <p>When grist is extracted from a name with
+    <tt>$(</tt><i>var</i><tt>:G)</tt>, the result includes the leading and
+    trailing angle brackets. When grist is added to a name with
+    <tt>$(</tt><i>var</i><tt>:G=</tt><i>expr</i><tt>)</tt>, existing grist is
+    first stripped. Then, if <i>expr</i> is non-empty, leading <tt>&lt;</tt>s
+    and trailing <tt>&gt;</tt>s are added if necessary to form an expression
+    of the form <tt>&lt;</tt><i>expr2</i><tt>&gt;</tt>;
+    <tt>&lt;</tt><i>expr2</i><tt>&gt;</tt> is then prepended.</p>
+    <p>&middot; <a name="variable_splitting">When Jam</a> is invoked it
+    imports all environment variable settings into corresponding Jam
+    variables, followed by all command-line (<tt>-s...</tt>) variable
+    settings. Variables whose name ends in <tt>PATH</tt>, <tt>Path</tt>, or
+    <tt>path</tt> are split into string lists on OS-specific path-list
+    separator boundaries (e.g. "<tt>:</tt>" for UNIX and "<tt>;</tt>" for
+    Windows). All other variables are split on space ("<tt>&nbsp;</tt>")
+    boundaries. Boost Jam modifies that behavior by allowing variables to be
+    <a href="#variable_quoting">quoted</a>.</p>
+    <p>&middot; A variable whose value is an empty list <i>or</i> which
+    consists entirely of empty strings has a negative logical value. Thus,
+    for example, code like the following allows a sensible non-empty default
+    which can easily be overridden by the user:</p>
+<pre>
+MESSAGE ?= starting jam... ;
+if $(MESSAGE) { ECHO The message is: $(MESSAGE) ; }
+</pre>
+    <p>If the user wants a specific message, he invokes jam with
+    <tt>"-sMESSAGE=</tt><i>message&nbsp;text</i><tt>"</tt>. If he wants no
+    message, he invokes jam with <tt>-sMESSAGE=</tt> and nothing at all is
+    printed.</p>
+    <p>&middot; The parsing of command line options in Jam can be rather
+    unintuitive, with regards to how other Unix programs accept options.
+    There are two variants accepted as valid for an option:</p>
+    <ol summary="">
+      <li><tt>-xvalue</tt>, and</li>
+      <li><tt>-x value</tt>.</li>
+    </ol>
+    <p>Please also read <a href="./Jam.html">The Jam language reference</a>
+    for the additional details, and the <a href="./RELNOTES">Jam release
+    notes</a> for a brief description of recent, but <b>fundamental changes
+    to the Jam language</b> without which you will probably not understand
+    any of the build system code. In particular, note that the
+    <tt>return</tt> statement does not affect control flow.</p>
+    <hr>
+    <p>Revised 
+    <!--webbot bot="Timestamp" S-Type="EDITED" S-Format="%d %B, %Y" startspan -->
+     2 February, 2003 
+    <!--webbot bot="Timestamp" endspan i-checksum="39359" -->
+    </p>
+    <p><i>&copy; Copyright <a href="mailto:rrivera@acm.org">Ren&eacute;
+    Rivera</a>, David Abrahams, Vladimir Prus 2003. All Rights Reserved.</i>
+    Permission to copy, use, modify, sell and distribute this document is
+    granted provided this copyright notice appears in all copies. This
+    document is provided "as is" without express or implied warranty, and
+    with no claim as to its suitability for any purpose.</p>
+  </body>
+</html>

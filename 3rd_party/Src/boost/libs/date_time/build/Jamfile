@@ -1,0 +1,38 @@
+#  (C) Copyright  2002. Permission to copy, use, modify, sell and
+#  distribute this software is granted provided this copyright notice appears
+#  in all copies. This software is provided "as is" without express or implied
+#  warranty, and with no claim as to its suitability for any purpose.
+#
+#
+# Boost.date_time build 
+#
+# To run all tests quietly: jam test
+#
+# Declares the following targets:
+#   1. libboost_date_time, a library to be linked with all
+#      Boost.date_time modules
+#
+
+# declare the location of this subproject relative to the root
+subproject libs/date_time/build ;
+
+# comment the line below and comment out the line above to change to 
+# 64 bit counted time implementation
+
+local DATE_TIME_PROPERTIES = <define>BOOST_DATE_TIME_POSIX_TIME_STD_CONFIG ;
+
+
+# Base names of the source files for libboost_date_time
+CPP_SOURCES =
+    greg_month greg_weekday ;
+
+dll boost_date_time : ../src/gregorian/$(CPP_SOURCES).cpp
+    : <sysinclude>$(BOOST_ROOT) $(DATE_TIME_PROPERTIES) 
+    : debug release 
+    ;
+
+lib boost_date_time : ../src/gregorian/$(CPP_SOURCES).cpp
+    : <sysinclude>$(BOOST_ROOT) $(DATE_TIME_PROPERTIES) 
+    : debug release 
+    ;
+

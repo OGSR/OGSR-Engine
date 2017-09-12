@@ -1,0 +1,15 @@
+import project ;
+import targets ;
+import assert ;
+
+project.load "." ;
+
+project-root.print ;
+
+assert.result dir2 : project.lookup @/cool-library : "." ;
+assert.result dir  : project.lookup dir@ : "." ;
+assert.result dir  : project.lookup @dir : "." ;
+
+NOTFILE all ;
+
+

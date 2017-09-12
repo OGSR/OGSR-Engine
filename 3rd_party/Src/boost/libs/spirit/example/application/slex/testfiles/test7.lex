@@ -1,0 +1,14 @@
+[[:digit:]]{2}
+[[:xdigit:]]{2}
+[[:lower:]]{2}
+[[:upper:]]{2}
+[[:alpha:]]{2}
+[[:alnum:]]{2}
+[[:blank:]]{2}
+[[:space:]]{2}
+[[:cntrl:]]{2}
+[[:punct:]]{2}
+[[:graph:]]{2}
+[[:print:]]{2}
+\n
+.

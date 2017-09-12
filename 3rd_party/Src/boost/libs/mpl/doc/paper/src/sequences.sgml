@@ -1,0 +1,566 @@
+
+<!-- ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||| section -->
+<section id="sequences">
+<title>Sequences, algorithms, and iterators</>
+
+<!-- ||||||||||||||||||||||||||||| subsection -->
+<section id="sequences.intro">
+<title>Introduction</>
+
+<para>
+Compile-time iteration over a sequence (of types) is one of the basic concepts of template metaprogramming. Differences in types of objects being manipulated is the most common point of variability of similar but not identical code/design, and such designs are the direct target for some metaprogramming. Templates were originally designed to solve this exact problem (e.g. <literal>std::vector</>). However, without predefined abstractions/constructs for manipulating/iterating over <emphasis>sequences</> of types (as opposed to standalone types), and without known techniques for emulating these constructs using the current language facilities, their effect on helping high-level metaprogramming happen has been limited. 
+</>
+
+<para>
+Czarnecki and Eisenecker <citation><xref linkend="ref.CE98"></>, <citation><xref linkend="ref.CE00"></> were the first to introduce compile-time sequences of types and some simple algorithms on them, although the idea of representing common data structures like trees, lists, etc. at compile time, using class template composition has been around for a while (e.g. most of the expression template libraries build such trees as a part of their expression "parsing" process <citation><xref linkend="ref.Vel95b"></>). Alexandrescu <citation><xref linkend="ref.Ale01"></> used lists of types and some algorithms on them to implement several design patterns; the accompanying code is known as the Loki library <citation><xref linkend="ref.Loki"></>. 
+</>
+</section>
+
+<!-- ||||||||||||||||||||||||||||| subsection -->
+<section id="sequences.algo">
+<title>Algorithms and sequences</>
+
+<para>
+Most of the algorithms in the &BMPL; operate on sequences. For example, searching for a type in a list looks like this:
+</>
+
+<programlisting>
+<![CDATA[
+typedef mpl::list<char,short,int,long,float,double> types;
+typedef mpl::find<types,long>::type iter;
+]]>
+</>
+
+<para>
+Here, <literal>find</> accepts two parameters - a sequence to search (<literal>types</>) and the type to search for (<literal>long</>) - and returns an iterator <literal>iter</> pointing to the first element of the sequence such that <literal>iter::type</> is identical to <literal>long</>. If no such element exists, <literal>iter</> is identical to <literal>end&lt;types&gt;::type</>. Basically, this is how one would search for a value in a <literal>std::list</> or <literal>std::vector</>, except that <literal>mpl::find</> accepts the sequence as a single parameter, while <literal>std::find</> takes two iterators.  Everything else is pretty much the same - the names are the same, the semantics are very close, there are iterators, and one can search not only by type, but also by using a predicate:
+</>
+
+<programlisting>
+<![CDATA[
+typedef mpl::find_if< types,boost::is_float<_> >::type iter;
+]]></>
+
+<para>
+This conceptual/syntactical similarity with the STL is not coincidental. Reusing the conceptual framework of the STL in the compile-time world allows us to apply familiar and sound approaches for dealing with sequential data structures. The algorithms and idioms which programmers already know from the STL can be applied again at compile-time. We consider this to be one of &MPL;'s greatest strengths, distinguishing it from earlier attempts to build a template metaprogramming library.
+</>
+</section>
+
+<!-- ||||||||||||||||||||||||||||| subsection -->
+<section id="sequences.concepts">
+<title>Sequence concepts</>
+
+<para>
+In the <literal>find</> example above, we searched for the type in a sequence built using the <literal>mpl::list</> template; but <literal>list</> is not the only sequence that the library provides. Neither is <literal>mpl::find</> or any other algorithm hard-coded to work only with <literal>list</> sequences. <literal>list</> is just one model of &MPL;'s <phrase role="concept">Forward Sequence</> concept, and <literal>find</> works with anything that satisfies this concept's requirements. The hierarchy of sequence concepts in &MPL; is quite simple - a <phrase role="concept">Sequence</> is any compile-time entity for which <literal>begin&lt;&gt;</> and <literal>end&lt;&gt;</> produce iterators to the range of its elements; a <phrase role="concept">Forward Sequence</> is a Sequence whose iterators satisfy <phrase role="concept">Forward Iterator</> requirements; a <phrase role="concept">Bidirectional Sequence</> is a Forward Sequence whose iterators satisfy <phrase role="concept">Bidirectional Iterator</> requirements; finally, a <phrase role="concept">Random Access Sequence</> is a Bidirectional Sequence whose iterators satisfy <phrase role="concept">Random Access Iterator</> requirements.
+
+<footnote id="note.seqconcepts"><para>
+A more precise definition of these concepts can be found in the library reference documentation <citation><xref linkend="ref.MPLR"></>.
+</></>
+
+</>
+
+<para>
+Decoupling algorithms from particular sequence implementations (through iterators) allows a metaprogrammer to create her own sequence types and to retain the rest of the library at her disposal. For example, one can define a <literal>tiny_list</> for dealing with sequences of three types as follows:
+</>
+
+<programlisting>
+<![CDATA[
+template< typename TinyList, long Pos >
+struct tiny_list_item;
+
+template< typename TinyList, long Pos >
+struct tiny_list_iterator
+{
+    typedef typename tiny_list_item<TinyList,Pos>::type type;
+    typedef tiny_list_iterator<TinyList, Pos-1> prior;
+    typedef tiny_list_iterator<TinyList, Pos+1> next;
+};
+
+template< typename T0, typename T1, typename T2 >
+struct tiny_list
+{
+    typedef tiny_list_iterator<tiny_list, 0> begin;
+    typedef tiny_list_iterator<tiny_list, 3> end;
+    typedef T0 type0;
+    typedef T1 type1;
+    typedef T2 type2;
+};
+
+template< typename TinyList >
+struct tiny_list_item<TinyList,0>
+{
+    typedef typename TinyList::type0 type;
+};
+
+template< typename TinyList >
+struct tiny_list_item<TinyList,1>
+{
+    typedef typename TinyList::type1 type;
+};
+
+template< typename TinyList >
+struct tiny_list_item<TinyList,2>
+{
+    typedef typename TinyList::type2 type;
+};
+]]>
+</>
+
+<para>
+and then use it with any of the library algorithms as if it were <literal>mpl::list</>:
+</>
+
+<programlisting>
+<![CDATA[
+typedef tiny_list< char,short,int > types;
+typedef mpl::transform<
+      types
+    , boost::add_pointer<_1>
+    >::type pointers;
+]]>
+</>
+
+<para>
+Note that <literal>tiny_list</> is a model of Bidirectional Sequence; it would be a Random Access Sequence if we added <literal>advance</> and <literal>distance</> members to <literal>tiny_list_iterator</>:
+</>
+
+<programlisting>
+<![CDATA[
+template< typename TinyList, long Pos >
+struct tiny_list_iterator
+{
+    static long const position = Pos;
+
+    typedef typename tiny_list_item<TinyList,Pos>::type type;
+    typedef tiny_list_iterator<TinyList, Pos-1> prior;
+    typedef tiny_list_iterator<TinyList, Pos+1> next;
+
+    template< typename N > struct advance
+    {
+        typedef tiny_list_iterator<
+              TinyList
+            , Pos + N::value
+            > type;
+    };
+
+    template< typename Other > struct distance
+    {
+        typedef mpl::integral_c<
+              long
+            , Other::position - position
+            > type;
+    };
+};
+]]>
+</>
+
+<para>
+While the <literal>tiny_list</> itself might be not that interesting (after all, it can hold only three elements), if the technique above could be automated so we would be able to define not-so-tiny sequences (with five, ten, twenty, etc. elements), it would be very valuable.
+
+<footnote id="note.tinylist"><para>
+Random access is almost as important at compile-time as it is at run-time. For example, searching for an item in a sorted random-access sequence using <literal>lower_bound</> can be much faster than performing the same operation on a forward-access-only <literal>list</>. 
+</></>
+
+</>
+
+<para>
+External code generation is an option, but there exists a solution within the language. However, it is not a template metaprogramming, but rather <emphasis>preprocessor metaprogramming</>. In fact, &MPL;'s <literal>vector</> - a fixed-size type sequence that provides random-access iterators - is implemented very much like the above <literal>tiny_list</> - using the Boost Preprocessor library <citation><xref linkend="ref.PRE"></>.
+</>
+</section>
+
+<!-- ||||||||||||||||||||||||||||| subsection -->
+<section id="sequences.revisited">
+<title>Ad hoc example revisited</>
+
+<para>
+So, the library provides its users with almost complete compile-time equivalent of the STL framework. Does it help them to solve their metaprogramming tasks? Let's return to our earlier <link linkend="example.largest"><literal>largest</></> example to see if we can rewrite it in a better way with what &MPL; has to offer. Well, actually, there is not much to look at, because the &MPL; implementation is a one-liner (we'll spread it out here for readability) 
+
+<footnote id="note.maxelement"><para>Here is another, even more elegant implementation:</>
+<programlisting>
+<![CDATA[
+template< typename Sequence >
+struct largest
+{
+    typedef typename mpl::max_element<
+          mpl::transform_view<
+              Sequence
+            , mpl::sizeof_<_>
+            >
+        >::type type;
+};
+]]></>
+</>
+
+:
+</>
+
+<programlisting>
+<![CDATA[
+template< typename Sequence >
+struct largest
+{
+    typedef typename mpl::max_element<
+          Sequence
+          mpl::less<
+              mpl::sizeof_<_1>
+            , mpl::sizeof_<_2>
+            >
+        >::type iter;
+
+    typedef typename iter::type type;
+};
+]]></>
+
+<para>
+There are no more termination conditions with tricky pattern matching, no more partial specializations; and even more importantly, it's <emphasis>obvious</> what the above code does - even although it's all templates - something that one could not say about the original version.
+</>
+</section>
+
+<!-- ||||||||||||||||||||||||||||| subsection -->
+<section id="sequences.iterfold">
+<title>iter_fold as the main iteration algorithm</>
+
+<para>
+For the purpose of examining a little bit more of the library's internal structure, let's look at how <literal>max_element</> from the above example is implemented. One might expect that <emphasis>now</> we will again see all these awkward partial specializations, esoteric pattern matching, etc. Well, let's see:
+</>
+
+<programlisting>
+<![CDATA[
+template<
+      typename Sequence
+    , typename Predicate
+    >
+struct max_element
+{
+    typedef typename mpl::iter_fold<    
+          Sequence
+        , typename mpl::begin<Sequence>::type
+        , if_< less< deref<_1>,deref<_2> >, _2, _1 >
+        >::type type;
+};
+]]>
+</>
+
+<para>
+The first thing to notice here is that this algorithm is implemented in terms of another one: <literal>iter_fold</>. In fact, this is probably the most important point of the example, because nearly all other generic sequence algorithms in the library are implemented in terms of <literal>iter_fold</>. If a user should ever need to implement her own sequence algorithm, she'll almost certainly be able to do so using this primitive, which means she won't have to resort to implementing hand-crafted iteration, pattern matching of special cases for loop termination, or workarounds for lack of partial specialization. It also means that her algorithm will automatically benefit from any optimizations the library has implemented, (e.g. recursion unrolling), and that it will work with any sequence that is a model of ForwardSequence, because <literal>iter_fold</> does not require anything more of its sequence argument.
+</>
+
+<para>
+<literal>iter_fold</> algorithm is basically a compile-time equivalent of the <literal>fold</> or <literal>reduce</> functions that comprise the basic and well-known primitives of many functional programming languages. An analogy more familiar to a &Cxx; programmer would be the <literal>std::accumulate</> algorithm from the &Cxx; standard library (<citation><xref linkend="ref.ISO98"></>, section 26.4.1 [lib.accumulate]). However, <literal>iter_fold</> is designed to take advantage of the natural characteristics of recursive traversal: it accepts <emphasis>two</> metafunction class arguments, the first of which is applied to the state "on the way in" and the second of which is applied "on the
+way out".
+</>
+
+<para>
+The interface to <literal>iter_fold</> is defined in &MPL; as follows:
+</>
+
+<programlisting>
+<![RCDATA[
+template<
+      typename Sequence
+    , typename InitialState
+    , typename ForwardOp
+    , typename BackwardOp = _1
+    >
+struct iter_fold
+{
+    typedef &unspec; type;
+};
+]]>
+</>
+
+<para>
+The algorithm <quote>returns</> the result of two-way successive applications of binary <literal>ForwardOp</> and <literal>BackwardOp</> operations to iterators in range [<literal>begin&lt;Sequence&gt;::type</>, <literal>end&lt;Sequence&gt;::type</>) and previous result of an operation; the <literal>InitialState</> is logically placed before the sequence and included in the forward traversal. The result <literal>type</> is identical to <literal>InitialState</> if the sequence is empty. 
+</>
+
+<para>
+The library also provides <literal>iter_fold_backward</>, <literal>fold</>, and <literal>fold_backward</> algorithms which wrap <literal>iter_fold</> to accommodate its most common usage patterns.
+</>
+</section>
+
+<!-- ||||||||||||||||||||||||||||| subsection -->
+<section id="sequences.numbers">
+<title>Sequences of numbers</>
+
+<para>
+What we've seen so far were sequences (and algorithms on sequences) of types. It is both possible and easy to manipulate compile-time <emphasis>values</> using the library as well. The only thing to remember is that in &Cxx;, class template non-type template parameters give us one more example of non-polymorphic behavior.  In other words, if one declared a metafunction to take a non-type template parameter (e.g. <literal>long</>) it's not possible to pass anything besides compile-time integral constants to it:
+</>
+
+<programlisting>
+<![CDATA[
+template< long N1, long N2 >
+struct equal_to
+{
+    static bool const value = (N1 == N2);
+};
+
+equal_to<5,5>::value; // ok
+equal_to<int,int>::value; // error!
+]]>
+</>
+
+<para>
+And of course this doesn't work the other way around either:
+</>
+
+<programlisting>
+<![CDATA[
+typedef mpl::list<1,2,3,4,5> numbers; // error!
+]]>
+</>
+
+<para>
+While this may be an obvious limitation, it imposes yet another dilemma on the library design: on the one hand, we don't want to restrict users to type manipulations only, and on the other hand, full support for integral manipulations would require at least duplication of most of the library facilities 
+
+<footnote id="note.nontype"><para>Ideally, if going this route, all the templates should be re-implemented for every integral type - <literal>char</>, <literal>int</>, <literal>short</>, <literal>long</>, etc.
+</></>
+
+- the same situation as we would have if we had chosen to represent metafunctions as ordinary class templates. The solution for this issue is the same as well: we represent integral values by wrapping them in types
+
+<footnote id="note.valuewrapping"><para>
+The same technique was suggested by Czarnecki and Eisenecker in <citation><xref linkend="ref.CE00"></>.
+</></>
+
+. For example, to create a list of numbers one can write:
+</>
+
+<programlisting>
+<![CDATA[
+typedef mpl::list<
+      mpl::int_c<1>
+    , mpl::int_c<2>
+    , mpl::int_c<3>
+    , mpl::int_c<4>
+    , mpl::int_c<5>
+    > numbers;
+]]>
+</>
+
+<para>
+Wrapping integral constants into types to make them first-class citizens is important well inside metaprograms, 
+where one often doesn't know (and doesn't care) if the metafunctions she is using operate on types, integral values, other metafunctions, or something else, like fixed-point or rational numbers (<literal>mpl::fixed_c</> and <literal>mpl::rational_c</>).
+</>
+
+<para>
+But, from the user's perspective, the above example is much more verbose than the shorter, incorrect one. Thus, for the purpose of convenience, the library does provide users with a template that takes non-type template parameters, but offers a more compact notation:
+</>
+
+<programlisting>
+<![CDATA[
+typedef mpl::list_c<long,1,2,3,4,5> numbers;
+]]></>
+
+<para>
+There is a similar <literal>vector</> counterpart as well:
+</>
+
+<programlisting>
+<![CDATA[
+typedef mpl::vector_c<long,1,2,3,4,5> numbers;
+]]>
+</>
+</section>
+
+<!-- ||||||||||||||||||||||||||||| subsection -->
+<section id="sequences.variety">
+<title>A variety of sequences</>
+
+<para>
+Previous efforts to provide generalized metaprogramming facilities for &Cxx; have always concentrated on <literal>cons</>-style type lists and a few core algorithms like <literal>size</> and <literal>at</>, which are tied to the specific sequence implementation. Such systems have an elegant simplicity reminiscent of the analogous functionality in pure functional Lisp. It is much more time-consuming to implement even a basic set of the sequence algorithms provided by equivalent run-time libraries (the STL in particular), but if we have learned anything from the STL, it is that tying those algorithms' implementations to a specific sequence implementation is a misguided effort!
+</>
+
+<para>
+The truth is that there is no single <quote>best</> type sequence implementation for the same reasons that there will never be a single <quote>best</> runtime sequence implementation. Furthermore, there are <emphasis>already</> quite a number of type list implementations in use today; and just as the STL algorithms can operate on sequences which don't come from STL containers, so the MPL algorithms are designed to work with foreign type sequences.
+</>
+
+<para>
+It may be an eye-opening fact for some that type lists are not the only useful compile-time sequence. Again, the need for a variety of compile-time containers arises for the same reasons that we have lists, vectors, deques, and sets in the &Cxx; standard library &mdash; different containers have different functional and performance characteristics which determine not only applicability and efficiency of particular algorithms, but also the expressiveness or verbosity of the code that uses them. While runtime performance is not an issue for &Cxx; metaprograms, compilation speed is often a significant bottleneck to advanced &Cxx; software development <citation><xref linkend="ref.Abr01"></>.
+</>
+
+<para>
+The &MPL; provides five built-in sequences: <literal>list</>, <literal>list_c</> (really just a <literal>list</> of value wrappers), <literal>vector</>, a randomly-accessible sequence of fixed maximum size, <literal>vector_c</>, and <literal>range_c</>, a randomly-accessible sequence of consecutive integral values. More important, however, is its ability to adapt to arbitrary sequence types. The only core operations that a sequence is required to provide in order to be used with the library algorithms are <literal>begin&lt;&gt;</> and <literal>end&lt;&gt;</> metafunctions which "return" iterators into the sequence. As with the STL, it is the iterators which are used to implement most of the general-purpose sequence algorithms the library provides. Also, as with the STL, algorithm specialization is used to take advantage of implementation knowledge about particular sequences: many of the "basic" sequence operations such as <literal>back&lt;&gt;</>, <literal>front&lt;&gt;</>, <literal>size&lt;&gt;</>, and <literal>at&lt;&gt;</> are specialized on sequence type to provide a more efficient implementation than the fully generic version.
+</>
+</section>
+
+<!-- ||||||||||||||||||||||||||||| subsection -->
+<section id="sequences.unrolling">
+<title>Loop/recursion unrolling</>
+
+<para>
+Almost coincidentally, loop unrolling can be as important to compile-time iterative algorithms as it is to runtime algorithms. To see why, one must first remember that all "loops" in &Cxx; metaprograms, are in fact, implemented with recursion, and that the template instantiation depth can be a valuable resource in a compiler implementation. In fact, Annex B of the &Cxx; standard (<citation><xref linkend="ref.ISO98"></>, annex B [limits]) <emphasis>recommends</> a minimum depth of 17 recursively nested template instantiations; but this is far too low for many serious metaprograms, some of which easily exceed the hard-coded instantiation limits of some otherwise excellent compilers. To see how this works in action, let's examine a straightforward implementation of the <literal>fold</> metafunction, which combines some algorithm state with each element of a sequence:
+</>
+
+<programlisting>
+<![CDATA[
+namespace aux {
+
+// unspecialized version combines the initial state and first element
+// and recurses to process the rest
+template<
+      typename Start
+    , typename Finish
+    , typename State
+    , typename BinaryFunction
+    >
+struct fold_impl
+  : fold_impl<
+        typename Start::next
+      , Finish
+      , typename apply<
+              BinaryFunction
+            , State
+            , typename Start::type
+            >::type
+      , BinaryFunction
+      >
+{
+};
+
+// specialization for loop termination
+template<
+      typename Finish
+    , typename State
+    , typename BinaryFunction
+    >
+struct fold_impl<Finish,Finish,State,BinaryFunction>
+{
+    typedef State type;
+};
+
+} // namespace aux
+
+// public interface
+template<
+      typename Sequence
+    , typename State
+    , typename ForwardOp
+    >
+struct fold
+    : aux::fold_impl<
+        , typename begin<Sequence>::type
+        , typename end<Sequence>::type
+        , State
+        , typename lambda<ForwardOp>::type
+        >
+{
+};
+
+]]>
+</>
+
+<para>
+Although simple and elegant, this implementation will always incur at least as many levels of recursive template instantiation as there are elements in the input sequence.
+
+<footnote id="note.unrolling1"><para>It could be much more, depending on the complexity of the <literal>apply&lt;...&gt;</> expression, whose depth is added to the overall recursion depth.
+</></>
+
+The library addresses this problem by explicitly "unrolling" the recursion. To apply the technique to our <literal>fold</> example, we begin by factoring out a single step of the algorithm. Our <literal>fold_impl_step</> metafunction has two results: <literal>type</> (the next state), and <literal>iterator</> (the next sequence position).
+</>
+
+<programlisting>
+<![CDATA[
+template<
+      typename BinaryFunction
+    , typename State
+    , typename Start
+    , typename Finish
+    >
+struct fold_impl_step
+{
+    typedef typename apply<
+          BinaryFunction
+        , State
+        , typename Start::type
+        >::type type;
+
+    typedef typename Start::next iterator;
+};
+]]>
+</>
+
+<para>
+As with our main algorithm implementation, we specialize for the loop termination condition so that the step becomes a no-op:
+</>
+
+<programlisting>
+<![CDATA[
+template<
+      typename BinaryFunction
+    , typename State
+    , typename Finish
+    >
+struct fold_impl_step<BinaryFunction,State,Finish,Finish>
+{
+    typedef State type;
+    typedef Finish iterator;
+};
+]]>
+</>
+
+<para>
+Now we can now reduce <literal>fold</>'s instantiation depth by any constant factor N simply by inserting N invocations of <literal>fold_impl_step</>. Here we've chosen a factor of 4:
+</>
+
+<programlisting>
+<![CDATA[
+template<
+      typename Start
+    , typename Finish
+    , typename State
+    , typename BinaryFunction
+    >
+struct fold_impl
+{
+ private:
+    typedef fold_impl_step<
+        BinaryFunction
+      , State
+      , Start
+      , Finish
+      > next1;
+    
+    typedef fold_impl_step<
+        BinaryFunction
+      , typename next1::type
+      , typename next1::iterator
+      , Finish
+      > next2;
+    
+    typedef fold_impl_step<
+        BinaryFunction
+      , typename next2::type
+      , typename next2::iterator
+      , Finish
+      > next3;
+    
+    typedef fold_impl_step<
+        BinaryFunction
+      , typename next3::type
+      , typename next3::iterator
+      , Finish
+      > next4;
+    
+    typedef fold_impl_step<
+          typename next4::iterator
+        , Finish
+        , typename next4::type
+        , BinaryFunction
+        > recursion;
+
+ public:
+    typedef typename recursion::type type;
+};
+]]>
+</>
+
+<para>
+The &MPL; applies this unrolling technique across all algorithms with an unrolling factor tuned according to the demands of the &Cxx; implementation in use, and with an option for the user to override the value.
+
+<footnote id="note.unrolling2"><para>
+This implementation detail is made relatively painless through heavy reliance on the Boost Preprocessor Library, so only one copy of the code needs to be maintained.
+</></>
+
+This fact enables users to push beyond the metaprogramming limits they would usually encounter with more naive algorithm implementations. Experiments also show a small (up to 10%) increase in metaprogram instantiation speed on some compilers when loop unrolling is used.
+</>
+</section>
+
+</section>

@@ -1,0 +1,69 @@
+<bibliography id="bibliography">
+<title>Bibliography</>
+
+<biblioentry id="ref.Abr01">
+    <abbrev>Abr01</>
+    <authorgroup>
+        <author><firstname>David</><surname>Abrahams</></>
+        <author><firstname>Carlos Pinto</><surname>Coelho</></>
+    </>
+    <title><ulink url="http://users.rcn.com/abrahams/instantiation_speed/index.html">Effects of Metaprogramming Style on Compilation Time</></>
+    <date>2001</>
+</biblioentry>
+
+<biblioentry id="ref.Ale00">
+    <abbrev>Ale00</>
+    <author><firstname>Andrei</><surname>Alexandrescu</></>
+    <title><ulink url="http://www.cuj.com/experts/1810/alexandr.htm">On Conversions between Types and Values</></>
+    <publishername>C/C++ Users Journal</>
+    <date>October 2000</>
+</biblioentry>
+
+<biblioentry id="ref.BBL">
+    <abbrev>BBL</>
+    <title>Boost Bind library</>
+    <bibliomisc><ulink url="http://www.boost.org/libs/bind/bind.html"></></>
+</biblioentry>
+    
+<biblioentry id="ref.ISO98">
+    <abbrev>ISO98</>
+    <title>ISO/IEC 14882:1998(E), Programming languages — C++</>
+    <orgname>ISO/IEC</>
+    <date>1998</>
+</biblioentry>
+
+<biblioentry id="ref.PRE">
+    <abbrev>PRE</>
+    <author><firstname>Vesa</><surname>Karvonen</></>
+    <title>Boost Preprocessor Metaprogramming library</>
+    <bibliomisc><ulink url="http://www.boost.org/libs/preprocessor/doc/"></></>
+</biblioentry>
+
+<biblioentry id="ref.TTL">
+    <abbrev>TTL</>
+    <title>Boost Type Traits library</>
+    <bibliomisc><ulink url="http://www.boost.org/libs/type_traits/"></></>
+</biblioentry>
+
+<biblioentry id="ref.SAL">
+    <abbrev>SAL</>
+    <title>Boost Static Assert library</>
+    <bibliomisc><ulink url="http://www.boost.org/libs/static_assert/static_assert.htm"></></>
+</biblioentry>
+
+<biblioentry id="ref.Vel95a">
+    <abbrev>Vel95a</>
+    <author><firstname>Todd</><surname>Veldhuizen</></>
+    <title><ulink url="http://osl.iu.edu/~tveldhui/papers/Template-Metaprograms/meta-art.html">Using C++ template metaprograms</></>
+    <biblioset relation='journal'>
+        <title>C++ Report</>
+        <publishername>SIGS Publications Inc.</>
+        <issn>1040-6042</>
+    </>
+    <volumenum>7</>
+    <issuenum>4</>
+    <pagenums>36-43</>
+    <date>May 1995</>
+</biblioentry>
+
+</bibliography>

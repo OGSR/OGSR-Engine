@@ -1,0 +1,190 @@
+# (C) Copyright David Abrahams 2001. Permission to copy, use,
+# modify, sell and distribute this software is granted provided this
+# copyright notice appears in all copies. This software is provided
+# "as is" without express or implied warranty, and with no claim as
+# to its suitability for any purpose.
+
+# The following #// line will be used by the regression test table generation
+# program as the column heading for HTML tables. Must not include version number.
+#//<a href="http://www.borland.com/bcppbuilder/freecompiler/">Borland</a>
+
+# Borland tool definitions.
+#
+# Please note that wide-character support is currently disabled for Borland in
+# features.jam, pending someone taking the time to figure out how to get the
+# appropriate libraries into the link command line.
+
+# BCCROOT is the install location of the borland tools.
+set-as-singleton BCCROOT ;
+
+# compute Borland tool path
+# You can either put the borland bin directory in your PATH, or you can set
+# BCCROOT to point at the borland installation directory
+BCC_TOOL_PATH = $(BCCROOT)$(SLASH)bin$(SLASH) ;
+BCC_TOOL_PATH ?= "" ; # Don't clobber adjoining text if BCCROOT isn't set
+
+# specify compilation and link flags
+flags borland CFLAGS <debug-symbols>on : -v ;
+flags borland LINKFLAGS <debug-symbols>on : -v ;
+flags borland CFLAGS <optimization>off : -Od ;
+flags borland CFLAGS <optimization>speed : -O2 ;
+flags borland CFLAGS <optimization>space : -O1 ;
+flags borland CFLAGS <inlining>off : -vi- ;
+flags borland CFLAGS <inlining>on : -vi -w-inl ;
+flags borland CFLAGS <inlining>full : -vi -w-inl ;
+
+# build the options common to the link and C/C++ command-lines
+{
+    local bcc-common-flags ;
+    
+    # this section sets up the target type (threading, 
+    # RTL, and console/GUI options).  The order in which
+    # these options appear is generally important, as some 
+    # (such as -tWR) can have unexpected side effects.
+
+    
+    local target-type = [ get-values <target-type> : $(gBUILD_PROPERTIES) ] ;
+    if ! $(target-type) || ! ( $(target-type) in $(SHARED_TYPES) )
+    {
+        flags borland bcc-common-flags <user-interface>console : -tWC ;
+        # -tWR sets -tW as well, so we turn it off here and then turn it 
+        # on again later if we need it:
+        flags borland bcc-common-flags <runtime-link>dynamic : -tWR -tWC ;
+        flags borland bcc-common-flags <user-interface>gui : -tW ;
+    }
+    else
+    {
+        flags borland bcc-common-flags <runtime-link>dynamic : -tWR ;
+    }
+    
+    flags borland bcc-common-flags <target-type>$(SHARED_TYPES) : -tWD ;
+    flags borland bcc-common-flags : -WM- ;
+    flags borland bcc-common-flags <threading>multi : -tWM ;
+
+    flags borland LINKFLAGS : $(bcc-common-flags) ;
+    flags borland CFLAGS : $(bcc-common-flags) ;
+}
+
+    
+flags borland LINKFLAGS <wide-character-support>on : -WU ;
+flags borland CFLAGS <wide-character-support>on : -WU ;
+
+flags borland CFLAGS <cflags> ;
+flags borland C++FLAGS <cxxflags> ;
+flags borland DEFINES <define> ;
+flags borland UNDEFS <undef> ;
+flags borland HDRS <include> ;
+flags borland STDHDRS <sysinclude> ;
+flags borland LINKFLAGS <linkflags> ;
+flags borland ARFLAGS <arflags> ;
+
+flags borland STDHDRS : $(BCCROOT)$(SLASH)include ;
+flags borland STDLIBPATH : $(BCCROOT)$(SLASH)lib ;
+
+flags borland LIBPATH <library-path> ;
+flags borland NEEDLIBS <library-file> ;
+flags borland FINDLIBS <find-library> ;
+
+# suppress some specific warnings
+
+flags borland C++FLAGS : -w-8001 ;
+
+# For detailed information about borland tools and their command-line switches,
+# see http://www.objectcentral.com/vide/help/videdoc/bcc32.html
+
+#### Link ####
+
+rule Link-action
+{
+    # Make sure that the borland runtime dlls are in the runtime path
+    gRUN_PATH($(<)) += $(BCC_TOOL_PATH) ; 
+    
+    with-command-file borland-Link-action $(<) : $(>) $(NEEDLIBS) ;
+    
+    if $(3) in $(SHARED_TYPES)
+    {
+        borland-IMPLIB-action $(<) : $(>) ;
+    }
+}
+
+# bcc32 needs to have ilink32 in the path in order to invoke it, so explicitly
+# specifying $(BCC_TOOL_PATH)bcc32 doesn't help. You need to add
+# $(BCC_TOOL_PATH) to the path
+if $(NT)
+{
+actions borland-Link-action 
+{
+    set PATH=$(BCC_TOOL_PATH);%PATH%
+    "$(BCC_TOOL_PATH)bcc32" -v -q $(LINKFLAGS) -L"$(LIBPATH)" -L"$(STDLIBPATH)" -e"$(<[1])" @"$(>)" $(FINDLIBS:S=.lib)
+}
+}
+else
+{
+actions borland-Link-action
+{
+    export PATH=$(BCC_TOOL_PATH):$PATH
+    "$(BCC_TOOL_PATH)bcc32" -v -q $(LINKFLAGS) -L"$(LIBPATH)" -L"$(STDLIBPATH)" -e"$(<[1])" @"$(>)" $(FINDLIBS:S=.lib)
+}
+}
+
+actions borland-IMPLIB-action bind IMPLIB
+{
+    $(BCC_TOOL_PATH)implib $(<[2]) $(<[1])
+}
+
+#### Cc #####
+
+rule Cc-action
+{
+    borland-Cc-action $(<) : $(>) ;
+}
+
+actions borland-Cc-action
+{
+    "$(BCC_TOOL_PATH)bcc32" -j5 -g255 -q -c -w -a8 -b- -U$(UNDEFS) -D$(DEFINES) $(CFLAGS) -I"$(HDRS)" -I"$(STDHDRS)" -o"$(<)" "$(>)"
+}
+
+#### C++ ####
+rule C++-action
+{
+    borland-C++-action $(<) : $(>) ;
+}
+
+#
+# for C++ compiles the following options are turned on by default:
+#
+# -j5    stops after 5 errors
+# -g255  allow an unlimited number of warnings
+# -q     no banner
+# -c     compile to object
+# -P     C++ code regardless of file extention
+# -w     turns on all warnings
+# -Ve    zero sized empty base classes, this option is on in the IDE by default 
+#        and effects binary compatibility.
+# -Vx    zero sized empty members, this option is on in the IDE by default 
+#        and effects binary compatibility.
+# -a8    8 byte alignment, this option is on in the IDE by default 
+#        and effects binary compatibility.
+#
+actions borland-C++-action
+{
+    "$(BCC_TOOL_PATH)bcc32" -j5 -g255 -q -c -P -w -Ve -Vx -a8 -b- -U$(UNDEFS) -D$(DEFINES) $(CFLAGS) $(C++FLAGS) -I"$(HDRS)"  -I"$(STDHDRS)" -o"$(<)" "$(>)"
+}
+
+#### Archive ####
+rule Archive-action
+{
+    borland-Archive-action $(<) : $(>) ;
+}
+
+actions updated together piecemeal borland-Archive-action
+{
+    "$(BCC_TOOL_PATH)tlib" /P64 /u /a /C /$(ARFLAGS) "$(<)" +-"$(>)"
+}
+
+
+
+
+
+
+

@@ -1,0 +1,24 @@
+# Copyright (C) 2002, Rene Rivera. Permission to copy, use, modify, sell and
+# distribute this software is granted provided this copyright notice appears in
+# all copies. This software is provided "as is" without express or implied
+# warranty, and with no claim as to its suitability for any purpose.
+
+# Example of how to define a template.
+# This is for Boost.Build-V1
+
+subproject tools/build/examples/template_use ;
+
+# Declare the template as a target. The sources, requirements, and
+# default builds sections are copied to the targets that depend (use)
+# this template.
+#
+template t-common
+    :
+        # SOURCES
+    :
+        # REQUIREMENTS
+        <include>$(SUBDIR)/include
+        <define>SOME_DEFINE
+    :
+        # DEFAULT BUILDS
+    ;

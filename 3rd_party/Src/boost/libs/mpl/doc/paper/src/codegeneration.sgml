@@ -1,0 +1,96 @@
+
+<!-- ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||| section -->
+<section id="codegeneration">
+<title>Code generation facilities</>
+
+<para>
+There are cases, especially in the domain of numeric computation, when one wants to perform some part of the calculations at compile-time, and then pass the results to a run-time part of the program for further processing. For example, suppose one has implemented a complex compile-time algorithm that works with fixed-point arithmetic:
+</>
+
+<programlisting>
+<![CDATA[
+// fixed-point algorithm input
+typedef mpl::vector<
+      mpl::fixed_c<-1,2345678>
+    , mpl::fixed_c<9,0001>
+    // ..
+    , mpl::fixed_c<3,14159>
+    > input_data;
+
+/*
+  complex compile-time algorithm 
+*/
+typedef /*...*/ result_data;
+]]>
+</>
+
+<para>
+Suppose the <literal>result_data</> here is a sequence of <literal>mpl::fixed_c</> types that keeps the results of the algorithm, and now one wishes to feed that result to the run-time part of the algorithm. With &MPL; she can do this:
+</>
+
+<programlisting>
+<![CDATA[
+double my_algorithm()
+{
+    // passing the results to the run-time part of the program
+    std::vector<double> results;
+    results.reserve(mpl::size<result_data>::value);
+    mpl::for_each<numbers,_>(
+          boost::bind(&std::vector<double>::push_back, &results, _1)
+        );
+    // ...
+}
+]]>
+</>
+
+<para>
+The <literal>for_each&lt;numbers,_&gt;(...)</> call is what actually transfers the compile-time <literal>result_data</> into run-time <literal>results</>. <literal>for_each</> is a function template declared as:
+</>
+
+<programlisting>
+<![CDATA[
+template<
+      typename Seq
+    , typename TransformOp
+    , typename F
+    >
+void for_each(F f)
+{
+    // ...
+}
+]]>
+</>
+
+<para>To call the function, one is required to explicitly provide two actual template parameters, a compile-time sequence <literal>Seq</> and a unary transformation metafunction <literal>TransformOp</>, plus a run-time function argument <literal>f</> (in our example, <literal>numbers</>, <literal>_</>, and <literal>boost::bind(...)</> correspondingly). <literal>f</> is a function object which <literal>operator()</> is called for every element in the <literal>Seq</> tranfromed by <literal>TransformOp</>.
+</>
+
+<para>
+Applying this to our example, the 
+</>
+
+<programlisting>
+<![CDATA[
+mpl::for_each<numbers,_>(
+      boost::bind(&std::vector<double>::push_back, &results, _1)
+    );
+]]>
+</>
+
+<para>
+call is roughly equivalent to this:
+</>
+
+<programlisting>
+<![CDATA[
+f(mpl::apply< _,mpl::at_c<result_data,0>::type >::type());
+f(mpl::apply< _,mpl::at_c<result_data,1>::type >::type());
+// ...
+f(mpl::apply< _,mpl::at_c<result_data,n>::type >::type());
+]]>
+</>
+
+<para>
+where <literal>n == mpl::size&lt;result_data&gt;::type::value</>.
+</>
+
+</section>

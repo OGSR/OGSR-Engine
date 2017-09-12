@@ -1,0 +1,34 @@
+import modules ;
+
+rule target-source ( targets * : sources * : properties * )
+{
+    if [ modules.peek : NT ]
+    {
+        main on $(<) = "int main() { return 0; }" ;
+    }
+    else
+    {
+        main on $(<) = "\"int main() { return 0; }\"" ;
+    }
+}
+
+actions target-source
+{
+    echo "NM target source consuming " $(>)
+    echo $(main) > $(<)      
+}
+
+rule cpp-mark ( targets * : sources * : properties * )
+{
+}
+
+actions cpp-mark
+{
+    echo "CPP-MARK consuming " $(>)
+    touch $(<)
+}
+
+
+
+
+

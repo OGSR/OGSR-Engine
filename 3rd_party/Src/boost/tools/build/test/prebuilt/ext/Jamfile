@@ -1,0 +1,6 @@
+
+project ext 
+    : requirements <variant>release:<define>RELEASE
+    ;
+
+lib a : a.cpp ;

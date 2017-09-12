@@ -1,0 +1,6 @@
+To get started with the Boost Python Library, use the examples
+getting_started1.cpp and getting_started2.cpp.
+
+    bjam -sTOOLS=your-toolset test
+
+in this directory will build and run the examples.

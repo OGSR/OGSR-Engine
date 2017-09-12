@@ -1,0 +1,347 @@
+#  (C) Copyright David Abrahams 2002. Permission to copy, use, modify, sell and
+#  distribute this software is granted provided this copyright notice appears in
+#  all copies. This software is provided "as is" without express or implied
+#  warranty, and with no claim as to its suitability for any purpose.
+
+import sequence ;
+import set ;
+import regex ;
+import feature ;
+import property ;
+import numbers ;
+import container ;
+import class : new ;
+
+# Transform property-set by applying f to each component property.
+local rule apply-to-property-set ( f property-set )
+{
+    local properties = [ feature.split $(property-set) ] ;
+    return [ string.join [ $(f) $(properties) ] : / ] ;
+}
+
+# expand the given build request by combining all property-sets which don't
+# specify conflicting non-free features.
+local rule expand-no-defaults ( property-sets * : feature-space ? )
+{
+    feature-space ?= feature ;
+    
+    # First make all features and subfeatures explicit
+    local expanded-property-sets = [ 
+      sequence.transform apply-to-property-set $(feature-space).expand-subfeatures
+        : $(property-sets) ] ;
+    
+    # Now combine all of the expanded property-sets
+    local product = [ x-product $(expanded-property-sets) : $(feature-space) ] ;
+    
+    return [ 
+      sequence.transform apply-to-property-set $(feature-space).expand-composites
+        : $(product) ] ;
+}
+
+# implementaiton of x-product, below
+local rule x-product-aux ( property-sets + : feature-space )
+{
+    local result ;
+    local p = [ feature.split $(property-sets[1]) ] ;
+    local f = [ set.difference $(p:G) : [ $(feature-space).free-features ] ] ;
+    local seen ;
+    # No conflict with things used at a higher level?
+    if ! [ set.intersection $(f) : $(x-product-used) ]
+    {
+        local x-product-seen ;
+        {
+            # don't mix in any conflicting features
+            local x-product-used = $(x-product-used) $(f) ;
+            
+            if $(property-sets[2])
+            {
+                local rest = [ x-product-aux $(property-sets[2-]) : $(feature-space) ] ;
+                result = $(property-sets[1])/$(rest) ;
+            }
+            
+            result ?= $(property-sets[1]) ;
+        }
+        
+        # If we didn't encounter a conflicting feature lower down,
+        # don't recurse again.
+        if ! [ set.intersection $(f) : $(x-product-seen) ]
+        {
+            property-sets = ;
+        }
+        
+        seen = $(x-product-seen) ;
+    }
+    
+    if $(property-sets[2])
+    {
+        result += [ x-product-aux $(property-sets[2-]) : $(feature-space) ] ;
+    }
+    
+    # Note that we've seen these features so that higher levels will
+    # recurse again without them set.
+    x-product-seen += $(f) $(seen) ;
+    return $(result) ;
+}
+
+# Return the cross-product of all elements of property-sets, less any
+# that would contain conflicting values for single-valued features.
+local rule x-product ( property-sets * : feature-space )
+{
+    if $(property-sets).non-empty
+    {
+        # prepare some "scoped globals" that can be used by the
+        # implementation function, x-product-aux.
+        local x-product-seen x-product-used ;
+        return [ x-product-aux $(property-sets) : $(feature-space) ] ;
+    }
+    # otherwise return empty
+}
+
+# 
+# Returns the result of 'expand-no-defaults' after appying feature default to it.
+#
+rule expand ( property-sets * : feature-space ? )
+{
+    feature-space ?= feature ;
+    local expanded = [ expand-no-defaults $(property-sets) : $(feature-space) ] ;
+    
+    expanded ?= "" ;
+    
+    local result ;
+    for local p in $(expanded) 
+    {
+        p = [ $(feature-space).split $(p) ] ;
+        
+        if ! $(p)
+        {
+            p = ;
+        }
+        
+        p = [ $(feature-space).add-defaults $(p) ] ;
+        result += $(p:J=/) ;
+    }
+    return $(result) ;
+}
+
+# Returns true if 'v' is either implicit value, or
+# the part before the first '-' symbol is implicit value
+local rule looks-like-implicit-value ( v : feature-space ? )
+{
+    feature-space ?= feature ;
+    
+    if [ $(feature-space).is-implicit-value $(v) ]
+    {
+        return true ;
+    }
+    else
+    {
+        local split = [ regex.split $(v) - ] ;
+        if [ $(feature-space).is-implicit-value $(split[1]) ]
+        {
+            return true ;
+        }        
+    }
+}
+
+
+# Takes the command line tokens (such as taken from ARGV rule) and constructs
+# build request from it.
+# Returns a vector of two vectors (where "vector" means container.jam's "vector"). 
+# First is the set of targets specified in the command line, and second is
+# the set of requested build properties. 
+rule from-command-line ( command-line * : feature-space ? )
+{
+    local targets ;
+    local properties ;
+    feature-space ?= feature ;
+
+    command-line = $(command-line[2-]) ;
+    for local e in $(command-line)
+    {
+        if ! [ MATCH "^(-).*" : $(e) ] 
+        {
+            # Build request spec either has "=" in it, or completely
+            # consists of implicit feature values.
+            local fs = feature-space ;
+            if [ MATCH "(.*=.*)" : $(e) ] 
+               || [ looks-like-implicit-value $(e:D=) : $(feature-space) ] 
+            {
+                properties += [ convert-command-line-element $(e) : $(feature-space) ] ;
+            }
+            else
+            {
+                targets += $(e) ;
+            }
+        }
+    }
+    return [ new vector [ new vector $(targets) ] [ new vector $(properties) ] ] ;
+}
+
+# Converts one element of command line build request specification into
+# internal form.
+local rule convert-command-line-element ( e : feature-space )
+{
+    local result ;
+    local parts = [ regex.split $(e) "/" ] ;
+    for local p in $(parts) 
+    {
+        local m = [ MATCH "(.*)=(.*)" : $(p) ] ;
+        local lresult ;
+        if $(m) 
+        {
+            local feature = $(m[1]) ;
+            local values = [ regex.split $(m[2]) "," ] ;            
+            lresult = <$(feature)>$(values) ;            
+        }
+        else
+        {
+            lresult = [ regex.split $(p) "," ] ;
+        }
+
+        if ! [ MATCH (.*-.*) : $(p) ]
+        {          
+            # property.validate cannot handle subfeatures,
+            # so we avoid the check here.
+            for local p in $(lresult)
+            {
+                property.validate $(p) : $(feature-space) ;
+            }
+        }
+        
+
+        if ! $(result) 
+        {
+            result = $(lresult) ;
+        }
+        else
+        {
+            result = $(result)/$(lresult) ;
+        }
+    }  
+    
+    return $(result) ;
+}
+
+rule __test__ ( )
+{
+    import assert ;
+    import errors : try catch ;
+    import class ;
+    
+    local test-space = [ class.new feature-space ] ;
+
+    module $(test-space)
+    {
+        local test-space = [ modules.peek build-request : test-space ] ;
+        
+        import build-request ;
+        import build-request : expand-no-defaults : build-request.expand-no-defaults ;
+        import errors : try catch ;
+
+        feature toolset : gcc msvc borland : implicit ;
+        subfeature toolset gcc : version : 2.95.2 2.95.3 2.95.4
+          3.0 3.0.1 3.0.2 : optional ;
+
+        feature variant : debug release : implicit composite ;
+        feature inlining : on off ;
+        feature "include" : : free ;
+        
+        feature stdlib : native stlport : implicit ;
+
+        feature runtime-link : dynamic static : symmetric ;
+        
+        # empty build requests should expand to empty.
+        assert.result
+          : build-request.expand-no-defaults
+          : $(test-space) ;
+        
+        assert.result <toolset>gcc/<variant>debug/<inlining>on/<stdlib>native/<runtime-link>dynamic
+          : build-request.expand
+          : $(test-space) ;
+        
+        assert.result
+          <toolset>gcc/<toolset-gcc:version>3.0.1/<stdlib>stlport/<variant>debug
+          <toolset>msvc/<stdlib>stlport/<variant>debug
+          <toolset>msvc/<variant>debug 
+          
+          : build-request.expand-no-defaults gcc-3.0.1/stlport msvc/stlport msvc debug
+          : $(test-space) ;
+        
+        assert.result
+          <toolset>gcc/<toolset-gcc:version>3.0.1/<stdlib>stlport/<variant>debug/<inlining>on/<runtime-link>dynamic
+          <toolset>msvc/<stdlib>stlport/<variant>debug/<inlining>on/<runtime-link>dynamic
+          <toolset>msvc/<variant>debug/<inlining>on/<stdlib>native/<runtime-link>dynamic
+          
+          : build-request.expand gcc-3.0.1/stlport msvc/stlport msvc debug
+          : $(test-space) ;
+        
+        assert.result
+          <toolset>gcc/<toolset-gcc:version>3.0.1/<stdlib>stlport/<variant>debug
+          <toolset>msvc/<variant>debug 
+          <variant>debug/<toolset>msvc/<stdlib>stlport
+          
+          : build-request.expand-no-defaults gcc-3.0.1/stlport msvc debug msvc/stlport
+          : $(test-space) ;
+        
+        assert.result
+          <toolset>gcc/<toolset-gcc:version>3.0.1/<stdlib>stlport/<variant>debug/<inlining>off
+          <toolset>gcc/<toolset-gcc:version>3.0.1/<stdlib>stlport/<variant>release/<inlining>off
+          
+          : build-request.expand-no-defaults gcc-3.0.1/stlport debug release <inlining>off
+          : $(test-space) ;        
+
+        assert.result
+          <include>a/b/c/<toolset>gcc/<toolset-gcc:version>3.0.1/<stdlib>stlport/<variant>debug/<include>x/y/z
+          <include>a/b/c/<toolset>msvc/<stdlib>stlport/<variant>debug/<include>x/y/z
+          <include>a/b/c/<toolset>msvc/<variant>debug/<include>x/y/z 
+          
+          : build-request.expand-no-defaults <include>a/b/c gcc-3.0.1/stlport msvc/stlport msvc debug  <include>x/y/z
+          : $(test-space) ;
+
+        local r ;
+
+        r = [ build-request.from-command-line bjam debug runtime-link=dynamic 
+                : $(test-space) ] ;              
+        assert.equal [ $(r).get-at 1 ] : ;
+        assert.equal [ $(r).get-at 2 ] : debug <runtime-link>dynamic ;
+
+        try ;
+            build-request.from-command-line bjam gcc/debug runtime-link=dynamic/static 
+                : $(test-space) ;
+        catch \"static\" is not a value of an implicit feature ;
+
+
+        r = [ build-request.from-command-line bjam -d2 --debug debug target 
+               runtime-link=dynamic
+                : $(test-space) ] ;
+        assert.equal [ $(r).get-at 1 ] : target ;
+        assert.equal [ $(r).get-at 2 ] : debug <runtime-link>dynamic ;
+                
+        r = [ build-request.from-command-line bjam debug  
+               runtime-link=dynamic,static
+                : $(test-space) ] ;
+        assert.equal [ $(r).get-at 1 ] : ;
+        assert.equal [ $(r).get-at 2 ] : debug <runtime-link>dynamic <runtime-link>static ;
+
+        r = [ build-request.from-command-line bjam debug  
+               gcc/runtime-link=dynamic,static
+                : $(test-space)  ] ;
+        assert.equal [ $(r).get-at 1 ] : ;
+        assert.equal [ $(r).get-at 2 ] : debug gcc/<runtime-link>dynamic 
+                     gcc/<runtime-link>static ;
+        
+        r = [ build-request.from-command-line bjam msvc gcc,borland/runtime-link=static
+              : $(test-space) ] ;
+        assert.equal [ $(r).get-at 1 ] : ;
+        assert.equal [ $(r).get-at 2 ] : msvc gcc/<runtime-link>static 
+                        borland/<runtime-link>static ;
+        
+        r = [ build-request.from-command-line bjam gcc-3.0
+              : $(test-space) ] ;
+        assert.equal [ $(r).get-at 1 ] : ;
+        assert.equal [ $(r).get-at 2 ] : gcc-3.0 ;
+        
+    }
+}
+
+

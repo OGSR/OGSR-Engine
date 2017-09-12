@@ -1,0 +1,117 @@
+#  Copyright (C) Vladimir Prus 2002. Permission to copy, use, modify, sell and
+#  distribute this software is granted provided this copyright notice appears in
+#  all copies. This software is provided "as is" without express or implied
+#  warranty, and with no claim as to its suitability for any purpose.
+
+import toolset : flags ;
+import property ;
+import generators ;
+import os ;
+import type ;
+
+feature.extend toolset : gcc ;
+feature.subfeature toolset gcc : version : : optional propagated link-incompatible ;
+
+# Make the "o" suffix used for gcc toolset on all
+# platforms
+type.set-generated-target-suffix OBJ : <toolset>gcc : o ;
+type.set-generated-target-suffix STATIC_LIB : <toolset>gcc : a ;
+
+
+# Initializes the gcc toolset
+# Each argument has the form:
+#    version binary-name [path]
+# And specifies the name / path that should be used to invoke
+# the specified gcc version. The default version will be always called
+# with 'g++'.
+rule init ( a1 * : a2 * : a3 * )
+{
+    if $(a1)
+    {
+        local version = $(a1[1]) ;
+        local name = $(a1[2]) ;
+        local path = $(a1[3]) ;
+        
+        feature.extend-subfeature toolset gcc : version : $(version) ;
+            
+        flags gcc NAME <toolset>gcc-$(version) : $(name) ;
+        
+        # TODO: set path accordingly.
+    }    
+}
+
+# Declare generators
+generators.register-linker gcc.link : LIB OBJ : EXE : <toolset>gcc ;
+generators.register-composing gcc.archive : OBJ : STATIC_LIB : <toolset>gcc ;
+generators.register-linker gcc.link-dll : OBJ : SHARED_LIB : <toolset>gcc ;
+generators.register-c-compiler gcc.compile : CPP : OBJ : <toolset>gcc ;
+generators.register-c-compiler gcc.compile : C : OBJ : <toolset>gcc ;
+
+
+# Declare flags and action for compilation
+flags gcc.compile OPTIONS <optimization>off : -O0 ;
+flags gcc.compile OPTIONS <optimization>speed : -O3 ;
+flags gcc.compile OPTIONS <optimization>space : -Os ;
+
+flags gcc.compile OPTIONS <inlining>off : -fno-inline ;
+flags gcc.compile OPTIONS <inlining>on : -Wno-inline ;
+flags gcc.compile OPTIONS <inlining>full : -finline-functions -Wno-inline ;
+
+flags gcc.compile OPTIONS <debug-symbols>on : -g ;
+flags gcc.compile OPTIONS <cxxflags> ;
+flags gcc.compile DEFINES <define> ;
+flags gcc.compile INCLUDES <include> ;
+
+actions compile
+{
+    $(NAME:E=g++) -Wall -ftemplate-depth-100 $(OPTIONS) -D$(DEFINES) -I$(INCLUDES) -c -o $(<) $(>) 
+}
+
+# Declare flags and action for linking
+flags gcc.link OPTIONS <debug-symbols>on : -g ;
+flags gcc.link OPTIONS <linkflags> ;
+flags gcc.link LINKPATH <library-path> ;
+flags gcc.link FINDLIBS-ST <find-static-library> ;
+flags gcc.link FINDLIBS-SA <find-shared-library> ;
+flags gcc.link LIBRARIES <library> ;
+flags gcc.link LINK-RUNTIME <link-runtime>static : static ;
+flags gcc.link LINK-RUNTIME <link-runtime>shared : dynamic ;
+flags gcc.link-dll RPATH <dll-path> ;
+
+
+rule link ( targets * : sources * : properties * )
+{
+    SPACE on $(targets) = " " ;    
+}
+
+actions link bind LIBRARIES
+{
+    $(NAME:E=g++) $(OPTIONS) -L$(LINKPATH) -Wl,-rpath$(SPACE)-Wl,$(RPATH) -o $(<) $(>) $(LIBRARIES) -Wl,-Bdynamic -l$(FINDLIBS-SA) -Wl,-Bstatic -l$(FINDLIBS-ST) $(LIBRARIES) -Wl,-Bdynamic -l$(FINDLIBS-SA) -Wl,-Bstatic -l$(FINDLIBS-ST) -Wl,-B$(LINK-RUNTIME)
+}
+
+# Declare action for creating static libraries
+actions archive 
+{
+    ar ur $(<) $(>)
+}
+
+# Declare flags and action for linking shared libraries
+flags gcc.link-dll OPTIONS <debug-symbols>on : -g ;
+flags gcc.link-dll OPTIONS <linkflags> ;
+flags gcc.link-dll LINKPATH <library-path> ;
+flags gcc.link-dll FINDLIBS-ST <find-static-library> ;
+flags gcc.link-dll FINDLIBS-SA <find-shared-library> ;
+flags gcc.link-dll LIBRARIES <library> ;
+flags gcc.link-dll LINK-RUNTIME <link-runtime>static : static ;
+flags gcc.link-dll LINK-RUNTIME <link-runtime>shared : dynamic ;
+flags gcc.link RPATH <dll-path> ;
+
+rule link-dll ( targets * : sources * : properties * )
+{
+    SPACE on $(targets) = " " ;    
+}
+
+actions link-dll bind LIBRARIES
+{
+    $(NAME:E=g++) $(OPTIONS) -L$(LINKPATH) -Wl,-rpath$(SPACE)-Wl,$(RPATH) -o $(<) -Wl,-soname,$(<[1]:D=) -shared $(>)  $(LIBRARIES) -Wl,-Bdynamic -l$(FINDLIBS-SA) -Wl,-Bstatic -l$(FINDLIBS-ST) $(LIBRARIES) -Wl,-Bdynamic -l$(FINDLIBS-SA) -Wl,-Bstatic -l$(FINDLIBS-ST) -Wl,-B$(LINK-RUNTIME)
+}

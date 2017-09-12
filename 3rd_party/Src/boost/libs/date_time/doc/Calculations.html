@@ -1,0 +1,94 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html><head><meta http-equiv="Content-Type" content="text/html;charset=iso-8859-1">
+<title>Date-Time Concepts - Calculation</title>
+<link href="doxygen.css" rel="stylesheet" type="text/css">
+</head>
+
+<body>
+<a href="../../../index.htm">
+<img align="left" src="../../../c++boost.gif" alt="C++ Boost">
+</a>  
+
+<h1>Date-Time Concepts - Calculation</h1>
+<p>&nbsp;<p>
+<hr>
+<a href="index.html">Overall Index</a> --
+<a href="gregorian.html">Gregorian Index</a> --
+<a href="posix_time.html">Posix Time Index</a>
+<p>
+<a href="#timepoints">Timepoints</a> --
+<a href="#durations">Durations</a> --
+<a href="#intervals">Interval</a> --
+<a href="#special">Special Cases</a>
+<p>
+
+<h2><a name="timepoints">Timepoints</a></h2>
+
+<p>
+This section describes some of basic arithmetic rules that can be performed with timepoints. 
+
+<PRE>
+ Timepoint + Duration --&gt; Timepoint
+ Timepoint - Duration --&gt; Timepoint
+ 
+ Duration + Timepoint --&gt; Undefined 
+ Duration - Timepoint --&gt; Undefined
+ 
+ Timepoint + Timepoint --&gt; Undefined
+ Timepoint - Timepoint --&gt; Duration
+</PRE>
+<p>
+<h2><a name="durations">Durations</a></h2>
+<p>
+This section describes standard operations for a time duration. 
+<PRE>
+ Duration + Duration  --&gt; Duration
+ Duration - Duration  --&gt; Duration
+
+ Duration * Integer   --&gt; Duration  
+ Integer  * Duration  --&gt; Duration  
+
+ Duration(&#8734;) * Integer --&gt; Duration(&#8734;) 
+ Duration(&#8734;)/Integer   --&gt; Duration(&#8734;) 
+</PRE>
+<p>
+
+
+<p>
+<h2><a name="intervals">Intervals</a></h2>
+<p>
+Here are the "operations" supported by intervals. They are based on half-open 
+range. 
+
+<PRE> 
+ //These can be defined by either of 2 Timepoints or a Timepoint and Duration
+ Timeinterval intersects Timeinterval --&gt; bool
+ Timeinterval intersection Timeinterval --&gt; Timeperiod //results undefined if no intersection 
+ Timeinterval contains  Timepoint    --&gt; bool
+ Timeinterval contains  Timeinterval --&gt; bool  
+ Timeinterval shift Duration         --&gt; shift start and end by duration amount
+ 
+</PRE>
+
+<p>
+<h2><a name="special">Special Cases</a></h2>
+
+<P>In general special values such as Not A Date Time (NADT) and infinity should follow rules like floating point values. Note that it should be possible to 
+configure NADT based systems to throw an exception instead of result in NADT. 
+<PRE>
+ Timepoint(NADT) + Duration --&gt; Timepoint(NADT)
+ Timepoint(&#8734;) + Duration --&gt; Timepoint(&#8734;)
+ Timepoint + Duration(&infin;) --&gt; Timepoint(&#8734;)
+ Timepoint - Duration(&#8734;) --&gt; Timepoint(-&#8734;)
+</PRE>
+
+<hr>
+<address><small>
+<!-- hhmts start -->
+Last modified: Sat Oct 26 07:12:02 MST 2002
+<!-- hhmts end -->
+ by <a href="mailto:jeff&#64;crystalclearsoftware.com">Jeff Garland</a> &copy; 2000-2002
+</small></address>
+</body>
+</html>
+

@@ -1,0 +1,55 @@
+<!-- ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||| section -->
+<section id="applyif2">
+<title>apply_if, part 2</>
+
+<para>
+Besides solving the <quote>making the code compile</> problem, the <literal>apply_if</> technique we've just learned can be also used to improve metaprogram efficiency.
+</>
+
+<para>
+Suppose we want to define a high-level wrapper around <literal>boost::remove_pointer</> traits template, which will strip the pointer qualification conditionally. We will call it <literal>remove_pointer_if</>:
+</>
+
+<programlisting>
+<![CDATA[
+template<
+      typename Condition
+    , typename T
+    >
+struct remove_pointer_if
+{
+    typedef typename mpl::if_<
+          Condition
+        , typename boost::remove_pointer<T>::type
+        , T
+        >::type type;
+};
+]]>
+</>
+
+<para>
+The above works the first time, but it's not the most optimal implementation. Similar to our previous examples, <literal>boost::remove_pointer&lt;T&gt;</> gets instantiated even if its result is never used. In the metaprogramming world compilation time is an important resource <citation><xref linkend="ref.Abr01"></>, and it is wasted by unnecessary template instantiations. 
+</>
+
+<para>
+Let's see what we need to substitute <literal>if_</> by <literal>apply_if</> here. We already have one metafunction to pass to <literal>apply_if</> - <literal>boost::remove_pointer&lt;T&gt;</>, but we need a second one, - let's call it <literal>f</>, - such as <literal>f&lt;T&gt;::type == T</>. We could write this one ourselves, but fortunately &MPL; already provides us with a template that matches this exact definition - it's called <literal>identity</>. Applying this knowledge, we get:
+</>
+
+<programlisting>
+<![CDATA[
+template<
+      typename Condition
+    , typename T
+    >
+struct remove_pointer_if
+{
+    typedef typename mpl::apply_if<
+          Condition
+        , boost::remove_pointer<T>
+        , mpl::identity<T>
+        >::type type;
+};
+]]>
+</>
+
+</section>

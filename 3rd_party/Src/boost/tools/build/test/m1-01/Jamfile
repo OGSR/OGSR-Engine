@@ -1,0 +1,11 @@
+
+make a
+    : @a.obj
+    : yfc-link
+    ;
+
+make a.obj
+    : a.cpp
+    : yfc-compile
+    ;
+   

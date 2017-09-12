@@ -1,0 +1,23 @@
+# (C) Copyright David Abrahams and Carlos Pinto Coelho 2001. Permission
+# to copy, use, modify, sell and distribute this software is granted
+# provided this copyright notice appears in all copies. This software is
+# provided "as is" without express or implied warranty, and with no
+# claim as to its suitability for any purpose.
+
+# this is simply an extension to the gcc toolset. 
+extends-toolset gcc ;
+
+if $(NT)
+{
+    STLPORT_LIB_BASE_NAME = stlport_cygwin ;
+}
+else
+{
+    STLPORT_LIB_BASE_NAME = stlport_gcc ;
+}
+
+SEARCH on stlport.jam = $(BOOST_BUILD_PATH) ;
+include stlport.jam ;
+
+# pthread is always needed when using the library (i.e. iostreams).
+flags gcc-stlport FINDLIBS <stlport-iostream>on : pthread ;

@@ -1,0 +1,77 @@
+<!doctype html public "-//ietf//dtd html//en">
+<html><head><title>boost::mpl::vector</title>
+<link rel="stylesheet" href="../mpl_wiki.css">
+</head><body bgcolor="white">
+<h1><a href="../Table_of_Contents.html"><img src="../mpl_logo.jpg" alt="[Home]" border=0 align="right"></a>vector</h1><h3>Synopsis</h3>
+<p>
+<pre>
+template&lt;
+      typename T1 = <em>implementation-defined</em>
+    , typename T2 = <em>implementation-defined</em>
+    , ...
+    , typename Tn = <em>implementation-defined</em>
+    &gt;
+struct vector
+{
+};
+</pre>
+<p>
+<h3>Description</h3>
+<p>
+An <code>vector</code> is a <a href="../Random_Access_Sequence.html">Random Access Sequence</a> of types. It's also an <a href="../Extensible_Sequence.html">Extensible Sequence</a> that supports constant time insertion and removal of elements at the end (through <code><a href="../Reference/push_back.html">push_back</a></code>), and linear time insertion and removal of elements at the beginning or in the middle (through <code><a href="../Reference/insert.html">insert</a></code>/<code><a href="../Reference/erase.html">erase</a></code> algorithms). On compilers that support the typeof extension, vector is the simplest and in many cases the most efficient sequence [<a href="#1">1</a>].
+<p>
+<h3>Example</h3>
+<p>
+<pre>
+typedef vector&lt;float,double,long double&gt; floats;
+typedef push_back&lt;floating_types,my_float&gt;::type ext_floats;
+typedef at_c&lt;3,ext_floats&gt;::type my;
+BOOST_STATIC_ASSERT((boost::is_same&lt;my,my_float&gt;::value));
+</pre>
+<p>
+<h3>Definition</h3>
+<p>
+<pre>
+#include "<a href="../../../../../boost/mpl/vector.hpp">boost/mpl/vector.hpp</a>"
+#include "<a href="../../../../../boost/mpl/vector/vector0.hpp">boost/mpl/vector/vector0.hpp</a>"
+#include "<a href="../../../../../boost/mpl/vector/vector10.hpp">boost/mpl/vector/vector10.hpp</a>"
+...
+#include "<a href="../../../../../boost/mpl/vector/vector50.hpp">boost/mpl/vector/vector50.hpp</a>"
+</pre>
+<p>
+<h3>Notes</h3>
+<p>
+[<a name="1">1</a>]  The <code>typeof</code> operator allows one to use overload resolution to implement a constant-time random access to elements of the sequence with minimum amount of code (in contrast to the usual brute-force approach the library has to resort to when the <code>typeof</code> operator is not available):
+<p>
+<pre>
+struct null_node
+{
+    static aux::type_wrapper&lt;void_&gt; item(...);
+};
+<p>
+template&lt; long N, typename T, typename Base &gt;
+struct node
+    : Base
+{
+    using Base::item;
+    static aux::type_wrapper&lt;T&gt; item(integral_c&lt;long,N&gt;);
+};
+<p>
+template&lt; typename V, long N &gt;
+struct at
+{
+    typedef __typeof__(V::item(integral_c&lt;long,N&gt;())) wrapped_type_;
+    typedef typename wrapped_type_::type type;
+};
+<p>
+typedef node&lt;1,char,node&lt;0,int,null_node&gt; &gt; v;
+typedef at&lt;v,0&gt;::type t; <span class="cxx-comment">// constant-time random access!</span>
+BOOST_STATIC_ASSERT((is_same&lt;t,int&gt;::value));
+</pre>
+<br>
+<p>
+<h3>See also</h3>
+<p>
+<a href="../Random_Access_Sequence.html">Random Access Sequence</a>, <code><a href="../Reference/vector_c.html">vector_c</a></code>, <code><a href="../Reference/list.html">list</a></code>, <code><a href="../Reference/list_c.html">list_c</a></code>, <code><a href="../Reference/range_c.html">range_c</a></code>
+<p><hr>
+<a href="../Table_of_Contents.html">Table of Contents</a><br>Last edited July 22, 2002 4:28 pm</body></html>

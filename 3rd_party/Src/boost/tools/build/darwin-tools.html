@@ -1,0 +1,71 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+  <head>
+    <meta name="generator" content=
+    "HTML Tidy for Linux/x86 (vers 1st November 2002), see www.w3.org">
+    <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+    <link rel="stylesheet" type="text/css" href="boost.css">
+    <title>Boost.Build - darwin toolset</title>
+  </head>
+  <body link="#0000ff" vlink="#800080">
+    <table border="0" cellpadding="7" cellspacing="0" width="100%" summary=
+    "header">
+      <tr>
+        <td valign="top" width="300">
+          <h3><a href="http://www.boost.org"><img height="86" width="277"
+          alt="C++ Boost" src="../../c++boost.gif" border="0"></a></h3>
+        </td>
+        <td valign="top">
+          <h1 align="center">Boost.Build</h1>
+          <h2 align="center">darwin toolset</h2>
+        </td>
+      </tr>
+    </table>
+    <hr>
+    <h2>Introduction</h2>
+    <p>Boost.Build's darwin toolset supports the Apple modified GNU <a href=
+    "http://developer.apple.com/tools/compilers.html">GCC</a> command-line
+    tools. Although the underlying tools are GCC this toolset is specifically
+    tailored to account for the various "features" that Apple implemented to
+    work in the Darwin OS Mach kernel.</p>
+    <h2><a name="configuration">Configuration Variables</a></h2>
+    Because of the already specific nature of this toolset there are no
+    additional configuration variables. 
+    <h2><a name="features">Toolset-Specific Features</a></h2>
+    The following <code>darwin</code>-specific <a href=
+    "build_system.htm#features">features</a> can be used in target build
+    requirements or in the <a href=
+    "build_system.htm#initiating"><code>BUILD</code></a> variable: 
+    <table border="1" summary="Toolset-Specific Features">
+      <tr>
+        <th>Feature</th>
+        <th>Values</th>
+        <th>Default</th>
+        <th>Semantics</th>
+      </tr>
+      <tr>
+        <td><code>framework</code></td>
+        <td>(free feature)</td>
+        <td>N/A</td>
+        <td>Adds application "Frameworks" to use for linking.</td>
+      </tr>
+      <tr>
+        <td><code>bundle-loader</code></td>
+        <td>(free feature)</td>
+        <td>N/A</td>
+        <td>Specifies the path to the application that will be loading this
+        "bundle". When this is specified, and building a DLL target, a
+        "bundle" version of the target is built instead of the regular shared
+        library version.</td>
+      </tr>
+    </table>
+    <hr>
+    <p>Revised 
+    <!--webbot bot="Timestamp" S-Type="EDITED" S-Format="%d %B, %Y" startspan -->
+     16 November, 2002 
+    <!--webbot bot="Timestamp" endspan i-checksum="39359" -->
+    </p>
+    <p><i>&copy; Copyright <a href="../../people/dave_abrahams.htm">Dave
+    Abrahams</a> 2002. All Rights Reserved.</i></p>
+  </body>
+</html>

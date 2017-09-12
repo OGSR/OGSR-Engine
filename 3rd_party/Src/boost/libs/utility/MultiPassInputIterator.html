@@ -1,0 +1,92 @@
+<HTML>
+<!--
+  -- Copyright (c) Jeremy Siek 2000
+  --
+  -- Permission to use, copy, modify, distribute and sell this software
+  -- and its documentation for any purpose is hereby granted without fee,
+  -- provided that the above copyright notice appears in all copies and
+  -- that both that copyright notice and this permission notice appear
+  -- in supporting documentation.  Silicon Graphics makes no
+  -- representations about the suitability of this software for any
+  -- purpose.  It is provided "as is" without express or implied warranty.
+  -->
+<Head>
+<Title>MultiPassInputIterator</Title>
+<BODY BGCOLOR="#ffffff" LINK="#0000ee" TEXT="#000000" VLINK="#551a8b" 
+	ALINK="#ff0000"> 
+<IMG SRC="../../c++boost.gif" 
+     ALT="C++ Boost" width="277" height="86"> 
+
+<BR Clear>
+
+<H2>
+<A NAME="concept:MultiPassInputIterator"></A>
+Multi-Pass Input Iterator
+</H2>
+
+This concept is a refinement of <a
+href="http://www.sgi.com/tech/stl/InputIterator.html">Input Iterator</a>,
+adding the requirements that the iterator can be used to make multiple
+passes through a range, and that if <TT>it1 == it2</TT> and
+<TT>it1</TT> is dereferenceable then <TT>++it1 == ++it2</TT>. The
+Multi-Pass Input Iterator is very similar to the <a
+href="http://www.sgi.com/tech/stl/ForwardIterator.hmtl">Forward Iterator</a>. The
+only difference is that a <a
+href="http://www.sgi.com/tech/stl/ForwardIterator.hmtl">Forward Iterator</a>
+requires the <TT>reference</TT> type to be <TT>value_type&amp;</TT>, whereas
+MultiPassInputIterator is like <a
+href="http://www.sgi.com/tech/stl/InputIterator.html">Input Iterator</a>
+in that the <TT>reference</TT> type merely has to be convertible to
+<TT>value_type</TT>.
+
+
+<h3>Design Notes</h3>
+
+comments by Valentin Bonnard:
+
+<p> I think that introducing Multi-Pass Input Iterator isn't the right
+solution. Do you also want to define Multi-Pass Bidirectionnal Iterator
+and Multi-Pass Random Access Iterator ? I don't, definitly. It only
+confuses the issue. The problem lies into the existing hierarchy of
+iterators, which mixes movabillity, modifiabillity and lvalue-ness,
+and these are clearly independant.
+
+<p> The terms Forward, Bidirectionnal and Random Access are about
+movabillity and shouldn't be used to mean anything else.  In a
+completly orthogonal way, iterators can be immutable, mutable, or
+neither.  Lvalueness of iterators is also orthogonal with
+immutabillity.  With these clean concepts, your Multi-Pass Input Iterator
+is just called a Forward Iterator.
+
+<p>                
+Other translations are:<br>
+std::Forward Iterator -> ForwardIterator & Lvalue Iterator<br>
+std::Bidirectionnal Iterator -> Bidirectionnal Iterator & Lvalue Iterator<br>
+std::Random Access Iterator -> Random Access Iterator & Lvalue Iterator<br>
+
+<p>
+Note that in practice the only operation not allowed on my 
+Forward Iterator which is allowed on std::Forward Iterator is 
+<tt>&*it</tt>. I think that <tt>&*</tt> is rarely needed in generic code.
+
+<p>
+reply by Jeremy Siek:
+
+<p>
+The above analysis by Valentin is right on. Of course, there is
+the problem with backward compatibility. The current STL implementations
+are based on the old definition of Forward Iterator. The right course
+of action is to get Forward Iterator, etc. changed in the C++ standard.
+Once that is done we can drop Multi-Pass Input Iterator.
+
+
+<br>
+<HR>
+<TABLE>
+<TR valign=top>
+<TD nowrap>Copyright &copy 2000</TD><TD>
+<a HREF="../../people/jeremy_siek.htm">Jeremy Siek</a>, Univ.of Notre Dame (<A HREF="mailto:jsiek@lsc.nd.edu">jsiek@lsc.nd.edu</A>)
+</TD></TR></TABLE>
+
+</BODY>
+</HTML> 

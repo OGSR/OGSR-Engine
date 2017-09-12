@@ -1,0 +1,23 @@
+
+project boost/graph
+    : requirements <include>../src
+    : source-location ../src
+    ;
+
+lib libbgl-viz 
+    : graphviz_graph_lex 
+    graphviz_digraph_lex 
+    graphviz_graph_parser 
+    graphviz_digraph_parser
+	;
+
+obj graphviz_graph_lex : graphviz_lex.l 
+    : <flex.prefix>bgl_undir_ <define>GRAPHVIZ_DIRECTED=0 <dependency>graphviz_graph_parser ;
+obj graphviz_graph_parser : graphviz_parser.y 
+    : <bison.prefix>bgl_undir_ 	<define>GRAPHVIZ_DIRECTED=0 ;    
+    
+    
+obj graphviz_digraph_lex : graphviz_lex.l 
+    : <flex.prefix>bgl_dir_ <define>GRAPHVIZ_DIRECTED=1 <dependency>graphviz_digraph_parser ;
+obj graphviz_digraph_parser : graphviz_parser.y 
+    : <bison.prefix>bgl_dir_ 	<define>GRAPHVIZ_DIRECTED=1 ;

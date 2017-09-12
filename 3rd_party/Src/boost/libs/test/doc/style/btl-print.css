@@ -1,0 +1,211 @@
+H1
+{
+    FONT-SIZE:      200%;
+    text-align:     center;
+}
+H2
+{
+    FONT-SIZE:      150%;
+}
+H3
+{
+    FONT-SIZE:      125%;
+}
+H4
+{
+    FONT-SIZE:      115%;
+}
+H5
+{
+    FONT-SIZE:      108%;
+}
+BODY
+{
+    background:     white;
+}
+A:link
+{
+    color:          black;
+    text-decoration:none;
+}
+A:visited
+{
+    color:          black;
+    text-decoration:none;
+}
+A:active
+{
+    color:          black;
+    text-decoration:none;
+}
+             
+P.1-line-indented
+{
+    text-indent:    10px;
+}
+P.indented
+{
+    margin-left:    20px; 
+    margin-top:     0px;
+    margin-bottom:  0px;
+}
+PRE.code
+{
+    border-left-style: groove; 
+    border-left-width: 1px; 
+    padding-left:   2em; 
+    font-size:      70%
+}
+
+P.epigraph
+{
+    text-align:     right; 
+    font-family:    Century Gothic; 
+    font-style:     italic
+}
+
+P.test-output
+{
+    font-family:    Arial; 
+    font-size:      10pt;
+    margin-left:    2em;
+    white-space:    pre
+}
+
+P.page-toc
+{
+    display:        none;
+}
+
+P.page-toc-indented
+{
+    display:        none;
+}
+
+TABLE.body-table
+{
+    border:         none;
+    margin-top:     0px;
+    padding-top:    0px;
+    width:          100%;
+}
+TABLE.body-table TD
+{
+    margin-top:     0px;
+    padding-top:    0px;
+    color:          black;
+    background:     white;
+}
+
+TABLE.parameter-table
+{
+    border:         black solid; 
+    border-width:   0px 0px 2px;
+    width:          100%
+}
+TABLE.parameter-table TD
+{
+    margin-top:     0px;
+    margin-bottom:  0px;
+    padding-top:    0px; 
+    padding-bottom: 10px; 
+}
+
+TABLE.parameter-table TD.name
+{
+    width:          25%;
+}
+
+
+TABLE.parameter-values-table
+{
+    border:         none;
+    width:          100%
+}
+TABLE.parameter-values-table TD
+{
+    margin:         0px;
+    padding-top:    0px; 
+    padding-bottom: 5px; 
+}
+
+TABLE.2fields
+{
+    border:         none collapse;
+    padding:        0px;
+    margin:         0px;
+}
+TABLE.2fields TD
+{
+    margin-left:    0px;
+    padding-left:   40px; 
+    valign:         top;
+}
+
+SPAN.reserv-word
+{
+    font-style:     italic;
+}
+SPAN.cpp-type
+{
+    font-weight:    bold;
+}
+SPAN.comment
+{
+    font-style:     oblique
+}
+SPAN.new-term
+{
+     font-weight:   bold;
+}
+
+DIV.screen-header
+{
+    display:        none;
+}
+
+TABLE.#depricated-tools-list
+{
+    width:          100%;
+    padding:        0px;
+    border:         1px solid black;
+}
+
+TABLE.#two-column-table THEAD TD
+{
+    border:         1px solid black;
+    color:          black;
+    font-weight:    bold
+    width:          50%;
+    padding:        0px;
+    text-align:     center;
+}
+
+TABLE.#two-column-table TBODY TD
+{
+    border:         1px solid black;
+    color:          black;
+    width:          50%;
+    text-align:     left;
+}
+
+SPAN.ref-to-top
+{
+    display:        none;
+}
+
+DIV.centered
+{
+    text-align:     center;
+}
+
+DIV.centered TABLE.body-table
+{
+    margin:         0px auto;
+    text-align:     left;
+} 
+
+DIV.footer
+{
+    border-top:     solid 3px rgb(50,50,50);
+}

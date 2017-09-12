@@ -1,0 +1,62 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd"> 
+<HTML>
+<HEAD>
+<TITLE>Object Pool Constructors Generator</TITLE>
+<LINK HREF="../pool.css" REL="stylesheet" TYPE="text/css">
+</HEAD>
+<BODY>
+
+<IMG SRC="../../../../c++boost.gif" WIDTH=276 HEIGHT=86 ALT="C++ Boost">
+
+<H1 ALIGN=CENTER>Object Pool Constructors Generator</H1>
+
+<P>
+<H2>Description</H2>
+
+<P>
+The template class <SPAN CLASS="code">object_pool</SPAN> (see <A HREF="object_pool.html">object_pool.html</A>) contains a number of functions <SPAN CLASS="code">construct(..)</SPAN>, which both allocate and construct an object in a single operation.
+
+<P>
+Since the number and type of arguments to this function is totally arbitrary, a simple system has been set up to automatically generate template <SPAN CLASS="code">construct</SPAN> functions.  This system is based on the macro preprocessor <STRONG>m4</STRONG>, which is standard on UNIX systems and also available for Win32 systems.
+
+<P>
+detail/pool_construct.m4, when run with <STRONG>m4</STRONG>, will create the file detail/pool_construct.inc, which only defines the <SPAN CLASS="code">construct</SPAN> functions for the proper number of arguments.  The number of arguments may be passed into the file as an m4 macro, <SPAN CLASS="code">NumberOfArguments</SPAN>; if not provided, it will default to <SPAN CLASS="code">3</SPAN>.
+
+<P>
+For each different number of arguments (<SPAN CLASS="code">1</SPAN> to <SPAN CLASS="code">NumberOfArguments</SPAN>), a template function is generated.  There are the same number of template parameters as there are arguments, and each argument's type is a reference to that (possibly cv-qualified) template argument.  Each possible permutation of the cv-qualifications is also generated.
+
+<P>
+Because each permutation is generated for each possible number of arguments, the included file size grows exponentially in terms of the number of constructor arguments, not linearly.  For the sake of rational compile times, only use as many arguments as you need.
+
+<P>
+detail/pool_construct.bat and detail/pool_construct.sh are also provided to call <STRONG>m4</STRONG>, defining <SPAN CLASS="code">NumberOfArguments</SPAN> to be their command-line parameter.  See these files for more details.
+
+<P>
+<H2>Dependencies</H2>
+
+<P>
+Dependent on for.m4 (see <A HREF="for.html">for.html</A>).
+
+<P>
+<H2>Future Directions</H2>
+
+<P>
+This system may be complemented by or replaced by a Python (or some other language) script.
+
+<P>
+<H2><A HREF="../interfaces/object_pool.html">Interface Description</A></H2>
+
+<P>
+<HR>
+
+<P>
+Copyright &copy; 2000, 2001 Stephen Cleary (<A HREF="mailto:shammah@voyager.net">shammah@voyager.net</A>)
+
+<P>
+This file can be redistributed and/or modified under the terms found in <A HREF="../copyright.html">copyright.html</A>
+
+<P>
+This software and its documentation is provided &quot;as is&quot; without express or implied warranty, and with no claim as to its suitability for any purpose.
+
+</BODY>
+</HTML>

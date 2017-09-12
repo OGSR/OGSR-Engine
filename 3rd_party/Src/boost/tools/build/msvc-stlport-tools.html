@@ -1,0 +1,150 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="boost.css">
+<title>Boost.Build - msvc-stlport toolset</title>
+</head>
+<body link="#0000ff" vlink="#800080">
+<table border="0" cellpadding="7" cellspacing="0" width="100%" summary=
+    "header">
+  <tr> 
+    <td valign="top" width="300"> 
+      <h3><a href="http://www.boost.org"><img height="86" width="277" alt="C++ Boost" src="../../c++boost.gif" border="0"></a></h3>
+    </td>
+    <td valign="top"> 
+      <h1 align="center">Boost.Build</h1>
+      <h2 align="center">msvc-stlport toolset</h2>
+    </td>
+  </tr>
+</table>
+<hr>
+
+<h2>Introduction</h2>
+
+<p>Boost.Build's <a
+href="http://msdn.microsoft.com/visualc/">msvc-stlport</a> toolset
+supports the <td>Microsoft <a
+href="http://msdn.microsoft.com/visualc/">Visual C++</a> command-line
+tools, using the <a href="http://www.stlport.org">STLport</a> standard
+library implementation on Microsoft Windows. It is designed to allow
+you to build and test with multiple installed versions of STLPort, so
+that objects build in each configuration will be built into separate
+directories.
+
+<h2><a name="configuration">Configuration Variables</a></h2>
+
+The <code>msvc</code> toolset responds to the following variables,
+which can be set in the environment or configured on the jam
+command-line using
+<code>-s<i>VARIABLE_NAME</i>=</code><i>value</i>. It is an extension
+of the <a href="msvc-tools.html">msvc toolset</a> and therefore
+responds to all of the MSVC <a
+href="msvc-tools.html#configuration">configuration variables</a> in
+addition to those listed below.
+
+<p>In the table below, <i>version</i> corresponds to an
+STLPort version number, e.g. &quot;<code>4.5.3</code>&quot;.
+
+
+<table border="1">
+
+<tr><th>Variable Name <th>Semantics <th>Default <th>Notes
+
+<tr>
+    <td><code>STLPORT_PATH</code>
+
+    <td>A directory containing at least one subdirectory of the form
+        <code>/STLPort-</code><i>version</i> where an STLPort
+        installation can be found.
+
+    <td><i>empty</i>
+
+    <td>Allows easy configuration for an installation where
+    several STLPort versions are installed under a single directory.
+
+<tr>
+    <td><code>STLPORT_</code><i>version</i><code>_PATH</code>
+
+    <td>The directory where the specific STLPort <i>version</i>
+        installation can be found, in case there is no central
+        location appropriate for <code>STLPORT_PATH</code>, above, or
+        a particular version's installation is not located in the
+        usual place.
+
+    <td><i>empty</i>
+
+    <td>Allows configuration of a specific STLPort installation.
+
+<tr>
+    <td><code>STLPORT_VERSION</code>
+
+    <td>The version of STLPort in use by default.
+
+    <td><code>4.5.3</code>
+
+    <td>Other values can be selected in parallel setting the <a
+       href="build_system.htm#initiating">build property</a>
+       &lt;stlport-version&gt; to values from the list of
+       <code>$(STLPORT_VERSIONS)</code>
+
+<tr>
+    <td><code>STLPORT_VERSIONS</code>
+
+    <td>A space-separated list of alternate versions of STLport available on this machine.
+
+    <td><code>4.5&nbsp;4.0</code>
+
+</table>
+
+<h2><a name="features">Toolset-Specific Features</a></h2>
+
+The following <code>msvc-stlport</code>-specific <a
+href="build_system.htm#features">features</a> can be used in target build
+requirements or in the <a href="build_system.htm#initiating"><code>BUILD</code></a> variable:
+
+<table border="1">
+
+<tr><th>Feature <th>Values <th>Default <th>Semantics
+
+<tr>
+    <td><code>stlport-iostream</code>
+
+    <td><code>off on</code>
+
+    <td><code>off</code>
+
+    <td>Controls whether STLPort's own iostreams are in use. Though
+    this setting is <code>off</code> by default to save users from
+    having to build STLPort, we strongly recommend <code>on</code>
+    instead.
+
+<tr>
+    <td><code>stlport-version</code>
+
+    <td><code>$(STLPORT_VERSION)&nbsp;$(STLPORT_VERSIONS)</code> (see above)
+
+    <td><code>$(STLPORT_VERSION)</code>
+
+    <td>Selects a version of STLPort for each target
+
+<tr>
+    <td><code>stlport-cstd-namespace</code>
+
+    <td><code>std global</code>
+
+    <td><code>std</code>
+
+    <td>Controls whether or not names from the &quot;C&quot; library
+    headers such as &lt;cstdlib&gt; are imported into <code>namespace
+    std</code>.
+</table>
+<hr>
+<p>Revised 
+  <!--webbot bot="Timestamp" S-Type="EDITED" S-Format="%d %B, %Y" startspan -->
+  14 May, 2002 
+  <!--webbot bot="Timestamp" endspan i-checksum="39359" -->
+</p>
+<p><i>&copy; Copyright <a href="../../people/dave_abrahams.htm">Dave Abrahams</a> 
+  2002. All Rights Reserved.</i></p>
+</body>
+</html>

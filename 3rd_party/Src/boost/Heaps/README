@@ -1,0 +1,120 @@
+Boost Priority Queues
+=====================
+
+CONTENTS
+  This directory contains the Boost priority queue page, providing
+  several templates implementing different priority queues.
+
+  For information on the use of the various classes, please refer to
+  the documentation in the directory doc/html or doc/man/man3. For more
+  information on the Boost library see <http://www.boost.org/>
+
+INSTALLATION
+  This package consists of a several template classes, the corresponding
+  documentation, and some test cases. However, there is nothing which
+  needs to be compiled, except the test cases if you want to test the
+  installation.
+
+  To install this package, you should copy the directory "boost"
+  and the files it contains into a directory where the C++ compiler
+  looks for header files. For example, on UNIX systems /usr/include
+  or /usr/local/include are reasonable choices. Alternatively you can
+  put the files in some arbitrary location and set up your projects or
+  makefiles to search this directory.
+
+  The directory doc/html contains documentation in html format. You
+  could create a link to the corresponding index.html and put the
+  files into an appropriate location. Correspondingly, the directoy
+  doc/man/man3 contains UNIX man pages. To use these, you can either
+  install them into a directory in you MAN_PATH or setup your
+  MAN_PATH to search the directory you choose to install the files.
+  Note, that the html and roff documentation is created from the
+  same source format. Thus, there is identical information in both
+  version (well, except that the HTML version contains a lot of
+  hyperlinks).
+
+VERSION heap-1.0
+  If you have problem reports or questions please specify this version
+  number to make it easier to track down the problem.
+
+FILES
+  Here is a list of files which you should have received with the
+  distribution:
+
+    README                                - this file
+    testsuite/Makefile                    - a makefile to run dejagnu
+    testsuite/config/default.exp          - configuration for dejagnu
+    testsuite/config/unix.exp             - configuration for dejagnu
+    testsuite/lib/libtest.exp             - configuration for dejagnu
+    boost/heap.hpp                        - forwarding header for all PQs
+    boost/d_heap.hpp                      - definition of d_heap
+    boost/d_heap.cc                       - implementation of d_heap
+    boost/f_heap.hpp                      - definition of fibonacci_heap
+    boost/f_heap.cc                       - implementation of fibonacci_heap
+    boost/l_heap.hpp                      - definition of lazy_fibonacci_heap
+    boost/l_heap.cc                       - implementation of lazy_fibonacci_heap
+    boost/p_heap.hpp                      - definition of pairing_heap
+    boost/p_heap.cc                       - implementation of pairing_heap
+    boost/p_queue.hpp                     - definition of priority_queue
+    boost/p_queue.cc                      - implementation of priority_queue
+    boost/queue.hpp                       - definition and implementation of queue
+    boost/r_heap.hpp                      - definition of radix_heap
+    boost/r_heap.cc                       - implementation of radix_heap
+    boost/s_heap.hpp                      - definition of splay_heap
+    boost/s_heap.cc                       - implementation of splay_heap
+    boost/stack.hpp                       - definition and implementation of stack
+    doc/html/c++boost.jpg                 - picture used in the HTML documentation
+    doc/html/sidebar.jpg                  - picture used in the HTML documentation
+    doc/html/logical-inspectability.html  - introduction to logical inspectability
+    doc/html/heaps.html                   - a frame for easy HTML navigation
+    doc/html/heapside.html                - a sidebar for easy HTML navigation
+    doc/html/heap.html                    - HTML PQ overview
+    doc/html/heap-common.html             - HTML doc of common methods
+    doc/html/heap-sample.html             - HTML doc with sample uses
+    doc/html/d_heap.html                  - HTML doc of d_heap
+    doc/html/f_heap.html                  - HTML doc of fibonacci_heap
+    doc/html/l_heap.html                  - HTML doc of lazy_fibonacci_heap
+    doc/html/p_heap.html                  - HTML doc of pairing_heap
+    doc/html/p_queue.html                 - HTML doc of priority_queue
+    doc/html/queue.html                   - HTML doc of queue
+    doc/html/r_heap.html                  - HTML doc of radix_heap
+    doc/html/s_heap.html                  - HTML doc of splay_heap
+    doc/html/stack.html                   - HTML doc of stack
+    doc/man/man3/logical-inspectability.3 - introduction to logical inspectability
+    doc/man/man3/heap.3                   - roff PQ overview
+    doc/man/man3/heap-common.3            - roff doc of common methods
+    doc/man/man3/heap-sample.3            - roff doc with sample uses
+    doc/man/man3/d_heap.3                 - roff doc of d_heap
+    doc/man/man3/f_heap.3                 - roff doc of fibonacci_heap
+    doc/man/man3/l_heap.3                 - roff doc of lazy_fibonacci_heap
+    doc/man/man3/p_heap.3                 - roff doc of pairing_heap
+    doc/man/man3/p_queue.3                - roff doc of priority_queue
+    doc/man/man3/queue.3                  - roff doc of queue
+    doc/man/man3/r_heap.3                 - roff doc of radix_heap
+    doc/man/man3/s_heap.3                 - roff doc of splay_heap
+    doc/man/man3/stack.3                  - roff doc of stack
+    sample/heapsort.cc                    - sample program: heap sorrt
+    sample/dijkstra.cc                    - sample program: shortest path
+    testsuite/boost.heap/change.exp       - dejagnu test file
+    testsuite/boost.heap/common.exp       - dejagnu test file
+    testsuite/boost.heap/d_heap.exp       - dejagnu test file
+    testsuite/boost.heap/f_heap.exp       - dejagnu test file
+    testsuite/boost.heap/heap.exp         - dejagnu test file
+    testsuite/boost.heap/queue.exp        - dejagnu test file
+    testsuite/boost.heap/r_heap.exp       - dejagnu test file
+    testsuite/boost.heap/sort.exp         - dejagnu test file
+    testsuite/boost.heap/stack.exp        - dejagnu test file
+
+AUTHOR
+  Dietmar Kühl (<mailto:dietmar.kuehl@claas-solutions.de>)
+
+COPYRIGHT
+  Copyright (C) 1999 Dietmar Kuehl, Claas Solutions GmbH
+
+  Permission to use, copy, modify, distribute and sell this software
+  for any purpose is hereby granted without fee, provided that the
+  above copyright notice appears in all copies and that both that
+  copyright notice and this permission notice appear in supporting
+  documentation. Dietmar Kuehl and Claas Solutions make no representations
+  about the suitability of this software for any purpose. It is provided
+  "as is" without express or implied warranty.

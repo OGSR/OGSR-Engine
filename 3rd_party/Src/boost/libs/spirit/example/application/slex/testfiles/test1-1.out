@@ -1,0 +1,84 @@
+token #0: (a|b)*abb+c?(ab(c|d)*)?
+token #1: [\a-zA-\x5a][a-zA-Z0-9_]*
+token #2: [0-9]*
+token #3: "xyz*.|+{}\t"
+token #4: .
+token #5: \n
+testing string: abc
+abbc
+abbcabcccd
+bad0934-090abb_zzz
+?lkiu0934
+xyz*.|+{}	
+xyz*.|+{]
+
+matched token #1 :abc
+matched token #5 :
+
+matched token #0 :abbc
+matched token #5 :
+
+matched token #0 :abbcabcccd
+matched token #5 :
+
+matched token #1 :bad0934
+matched token #4 :-
+matched token #2 :090
+matched token #1 :abb_zzz
+matched token #5 :
+
+matched token #4 :?
+matched token #1 :lkiu0934
+matched token #5 :
+
+matched token #3 :xyz*.|+{}	
+matched token #5 :
+
+matched token #1 :xyz
+matched token #4 :*
+matched token #4 :.
+matched token #4 :|
+matched token #4 :+
+matched token #4 :{
+matched token #4 :]
+matched token #5 :
+
+testing string: abc
+abbc
+abbcabcccd
+bad0934-090abb_zzz
+?lkiu0934
+xyz*.|+{}	
+xyz*.|+{]
+
+matched token #1 :abc
+matched token #5 :
+
+matched token #0 :abbc
+matched token #5 :
+
+matched token #0 :abbcabcccd
+matched token #5 :
+
+matched token #1 :bad0934
+matched token #4 :-
+matched token #2 :090
+matched token #1 :abb_zzz
+matched token #5 :
+
+matched token #4 :?
+matched token #1 :lkiu0934
+matched token #5 :
+
+matched token #3 :xyz*.|+{}	
+matched token #5 :
+
+matched token #1 :xyz
+matched token #4 :*
+matched token #4 :.
+matched token #4 :|
+matched token #4 :+
+matched token #4 :{
+matched token #4 :]
+matched token #5 :
+

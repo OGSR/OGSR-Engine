@@ -1,0 +1,9 @@
+subproject tools/build/examples/property_rule ;
+
+rule add-include ( toolset variant : properties * )
+{
+    return $(properties) <sysinclude>$($(gTOP))/inc ;
+}
+
+lib foo : foo.cpp : add-include <inlining>on  ;
+exe bar : bar.cpp <lib>foo : add-include   ;

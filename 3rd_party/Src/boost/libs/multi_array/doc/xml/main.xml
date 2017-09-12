@@ -1,0 +1,71 @@
+<?xml version='1.0' encoding="ISO-Latin-1" ?>
+<!DOCTYPE article 
+  PUBLIC  "-//OASIS//DTD DocBook XML MathML V4.1.2//EN" 
+  "/home/rgarcia/docbook-xml/docbookx.dtd"
+>
+
+<article>
+  <articleinfo>
+    <title>Class template <literal>multi_array</literal></title>
+    <author>
+      <surname>Garcia</surname><firstname>Ronald</firstname>
+      <affiliation>
+	<orgname>Indiana University</orgname>
+	<orgdiv>Open Systems Lab</orgdiv>
+      </affiliation>
+    </author>
+    <orgname>BOOST</orgname>
+    <copyright>
+      <year>2002</year>
+      <holder>Ronald Garcia</holder>
+    </copyright>
+    <legalnotice>
+      <para>blah blah legal blah blah</para>
+    </legalnotice>
+    <revhistory>
+      <revision>
+	<revnumber>1</revnumber>
+	<date>1/18/2002</date>
+	<revdescription>
+	  <simpara>Initial Revision.</simpara>
+	</revdescription>
+      </revision>
+    </revhistory>
+  </articleinfo>
+
+
+Boost.MultiArray
+
+Headers boost/multi_array.hpp and
+boost/multi_array_ref.hpp
+
+
+Motivation
+Examples
+Tutorial
+Reference Manual
+Comparison to Other Libraries
+Performance
+Portability
+Design Rationale
+Acknowledgements
+FAQ
+
+
+Motivation
+
+Examples
+
+*Insert examples here*
+
+
+(External Tutorial)
+(External Reference Manual)
+
+
+Comparison to Other Libraries
+Performance
+Portability
+Design Rationale
+Acknowledgements
+FAQ

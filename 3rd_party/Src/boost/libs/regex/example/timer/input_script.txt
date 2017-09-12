@@ -1,0 +1,7 @@
+abc
+aaaaaaaaaaabcccccccc
+quit
+^([0-9]+)(\-| |$)(.*)$
+100- this is a line of ftp response which contains a message string
+quit
+quit

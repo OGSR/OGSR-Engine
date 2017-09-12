@@ -1,0 +1,251 @@
+.\" <!!---------------------------------------------------------------------->
+.\" <!! Copyright (C) 1999 Dietmar Kuehl, Claas Solutions GmbH >
+.\" <!!>
+.\" <!! Permission to use, copy, modify, distribute and sell this >
+.\" <!! software for any purpose is hereby granted without fee, provided >
+.\" <!! that the above copyright notice appears in all copies and that >
+.\" <!! both that copyright notice and this permission notice appear in >
+.\" <!! supporting documentation. Dietmar Kuehl and Claas Solutions make no >
+.\" <!! representations about the suitability of this software for any >
+.\" <!! purpose. It is provided "as is" without express or implied warranty. >
+.\" <!!---------------------------------------------------------------------->
+.TH doc/heap-sample.html 3 "12.Juli 1999" "Claas Solutions" "stdcxx"
+.SH NAME
+doc/heap-sample.html - Priority Queue sample
+
+.SH INTRODUCTION
+Well, a sample for priority queues is somewhat hard if it goes beyond something like heap sort which is not at all interesting because it only uses features already present in the template class \fBstd::priority_queue\fP. OK, for starters, there is an implementation of heap sort below. A more realistic application of heap sort, namely Dijkstra's algorithm for shortest paths, is demonstrated below. 
+.SH HEAP SORT
+Here is a template implementation of heap sort taking the priority queue class to be used as template argument and sorting a range passed to the function: 
+
+
+
+.nf
+template <typename Heap, typename ForwardIterator>
+void heap_sort(ForwardIterator begin, ForwardIterator end)
+{
+  Heap heap; // use default constructor for construction
+
+  // insert all elements into the heap:
+  for (ForwardIterator it = begin; it != end; ++it)
+    heap.push(*it); 
+
+  // finally, extract them again:
+  for (ForwardIterator it = begin; !heap.empty(); ++it)
+    {
+      *it = heap.top();
+      heap.pop();
+    }
+}
+.fi 0 Doesn't look to complicate, does it? First, all elements are inserted into the heap constructed by this function. This builds up some data structure internal to the heap which will allow efficient extraction of the maximum element (by default, the maximum is used; of course, this can be changed easily by just inverting the comparison). Thus, after all elements are inserted are stored in the priority queue, they are simply extracted after recording the current top element. 
+
+To complete this first example, here is a simple program which sorts a bunch of random numbers (to get reproducible results, always the same seed is used) using the algorithm selected by a program argument. Finally, the sorted numbers are printed. 
+
+
+
+.nf
+#include "boost/heap.hpp"
+#include <algorithm>
+#include <cstdlib>
+#include <iostream>
+#include <iterator>
+#include <vector>
+
+int main(int ac, char* av[])
+{
+  if (ac != 2)
+  {
+    std::cerr << "usage: " << av[0] << " <heap-no.>\n";
+    std::cerr << "  0: boost::priority_queue<int, ..., std::less<int> >\n";
+    std::cerr << "  1: boost::priority_queue<int, ..., std::greater<int> >\n";
+    std::cerr << "  2: boost::d_heap<int, std::less<int> >\n";
+    std::cerr << "  3: boost::d_heap<int, std::greater<int> >\n";
+    std::cerr << "  4: boost::fibonacci_heap<int, std::less<int> >\n";
+    std::cerr << "  5: boost::fibonacci_heap<int, std::greater<int> >\n";
+    std::cerr << "  6: boost::pairing_heap<int, std::less<int> >\n";
+    std::cerr << "  7: boost::pairing_heap<int, std::greater<int> >\n";
+    std::cerr << "  8: boost::splay_heap<int, std::less<int> >\n";
+    std::cerr << "  9: boost::splay_heap<int, std::greater<int> >\n";
+
+    return EXIT_FAILURE;
+  }
+
+  int const no_elements = 20;
+  std::vector<int> vec;
+  std::generate_n(std::back_inserter(vec), no_elements, std::rand);
+
+  std::vector<int>::iterator beg = vec.begin();
+  std::vector<int>::iterator end = vec.end();
+
+  switch (std::strtol(av[1], 0, 10))
+  {
+    case 0:
+      heap_sort<boost::priority_queue<int, std::vector<int>, std::less<int> > >(beg, end);
+      break;
+    case 1:
+      heap_sort<boost::priority_queue<int, std::vector<int>, std::greater<int> > >(beg, end);
+      break;
+    case 2:
+      heap_sort<boost::d_heap<int, std::less<int> > >(beg, end);
+      break;
+    case 3:
+      heap_sort<boost::d_heap<int, std::greater<int> > >(beg, end);
+      break;
+    case 4:
+      heap_sort<boost::fibonacci_heap<int, std::less<int> > >(beg, end);
+      break;
+    case 5:
+      heap_sort<boost::fibonacci_heap<int, std::greater<int> > >(beg, end);
+      break;
+    case 6:
+      heap_sort<boost::pairing_heap<int, std::less<int> > >(beg, end);
+      break;
+    case 7:
+      heap_sort<boost::pairing_heap<int, std::greater<int> > >(beg, end);
+      break;
+    case 8:
+      heap_sort<boost::splay_heap<int, std::less<int> > >(beg, end);
+      break;
+    case 9:
+      heap_sort<boost::splay_heap<int, std::greater<int> > >(beg, end);
+      break;
+  }
+
+  std::copy(beg, end, std::ostream_iterator<int>(std::cout, "\n"));
+}
+.fi 0 This program looks huge but only because there are some things repeated several times: It would be absolutely sufficient to have just one call to \fBheap_sort()\fP which uses an appropriate priority queue. Using this program, you can select which priority queue is to be used for sorting. If you change the constant determining the number of elements (current 20) and remove the output statement at the end of the program, you can use this program to profile the heaps for the use in heap sort. Of course, this is not really interesting since \fBstd::sort()\fP does the same job much faster than any of those attempts (if it does not, you should complain at your library vendor...). On the other, it can give you a first feeling how the priority queues differ in their performance. 
+
+In this example, the comparator type was spelled out explicitly although this is not always necessary: By default, \fBstd::less<T>\fP is used where \fBT\fP is the elment type of the priority queue. This default will result in extracting the largest value from the priority queue. In the example above, the type \fBstd::greater<int>\fP was used for in some cases which has the effect that the smalllest value is obtained with the \fBtop()\fP method. Thus, the program should print the values in decending order for an even argument and in ascending order for an odd argument. 
+
+This example can be found in the file sample/heapsort.cc. 
+.SH DIJKSTRA'S ALGORITHM
+It was already mentioned in the previous section, a use like heap sort is quite unlike like for priority queues. It is more likely that they are used in setting where elements are extracted before all elements are known like eg. in certain scheduling applications where tasks are added to the priority queue and the most urgent one is extracted if there is time to start a new task. This would, however, not present any new methods compared to the heap sort example. Only the order in which the operations occur would be different. 
+
+When thinking of an application of priority queues, Dijkstra's algorithm to find shortest paths in graphs come immediately to my mind, probably due to my background. This algorithm works very simple: Initially, all nodes get an infinite distance except the start node (or the start nodes) which gets a zero distance, of course. All nodes are initially put into a priority queue. Then the algorithm executes a simple loop until the priority queue is empty: 
+.IP -
+Extract the node with the minimum distance from the priority queue. This node is the current node for this iteration. 
+.IP -
+For each adjacent node determine whether it's current distance is bigger than the distance of the current node plus the length of the edge to this node. If it is not, update the adjacent node to the distance of the current node plus the length of the edge. This decreases this node's priority. 
+.RE
+
+That's all. It is relatively simple to see why this algorithm works but I'm not going into such details here (see eg. \fINetwork Flows\fP, R.K.Ahuja, T.L.Magnanti, J.B.Orlin, Prentice Hall, for details). It would also some inappropriate to present this example on some graph class since this would require some graph class... Instead, I will use some sort of implicit graph for this example: You probably know this game where two words of the same length are given and the objective is to find the shortest sequence of one letter changes to reach one word from the other. Of course, the intermediate words have to be from some appropriate language, eg. the English language. Since it does not need a priority queue to solve this problem (a queue to implement Breadth First Search is sufficient), I will present a program which solves a variation on this game: It is allowed to change more than one letter at a time but the edge costs grows quadratic with the number of letters changed. The point of this is that the corresponding graph structure and the distance between nodes can easily be represented: The graph representation consists of words for the nodes and the edge distance is the number of letters differing between the two words squared. 
+
+For the use in Dijkstra's algorithm, each word is associated with two numbers, namely it's current distance (initially \fBINT_MAX\fP) and the index of the word from which it received it's minimal distance. The function \fBdijkstra()\fP which determines the shortest path gets two random access iterators are argument which provide access to a sequence of strings describing the dictionary to be used. In additino the indices of the start and the destintion nodes are passed as argument. For simplicity, this function just prints the found path. Like in the heap sort example, the priority queue to be used is a template argument for this function. 
+
+The first part is a function which determines the distance between two nodes, that is the square of the number of characters differing in the corresponding two strings. Since the nodes are not represented by a special struct, this function just takes two strings are argument: 
+
+
+
+.nf
+int node_distance(std::string const& s1, std::string const& s2)
+{
+  int count = 0;
+  for (std::string::size_type i = 0; i < s1.size(); ++i)
+    if (s1[i] != s2[i])
+      ++count;
+
+  return count * count;
+}
+.fi 0 Since it is not possible to determine which node is detected from the distance of the node, it is necessary to store the distance and an identification which node corresponds to the element in the elements put into the node. Thus, the priority queue stores a struct made up of two elements, the index of the node and the distance. For this struct, \fBoperator<()\fP is overloaded to return \fBtrue\fP if the distance of the first argument is \fBlarger\fP than the distance of the second argument. This operator is defined this way because the priority queue provides access to the largest element but the smallest element is needed. 
+
+There is another important aspect to be noted about this struct: It has an overloaded assignment operator which only assigns the distance but does not touch the index. This is done such that it is possible to change the priority without having to provide an where the index is set to the correct index. Although this would be easily possible in this case, it is not always possible in applications of priority queues. This approach can be used because the methods changing the priority of a node are member templates of the priority classes. These are guaranteed to use the assignment operator to change the value of an element. 
+
+
+
+.nf
+struct node_ptr
+{
+  int index;    // index of the string
+  int distance; // current distance
+
+  explicit node_ptr(int idx): index(idx), distance(INT_MAX) {}
+  void operator= (int dist) { distance = dist; }
+
+  bool operator< (node_ptr const& np) const { return distance > np.distance; }
+};
+.fi 0 It is likely that structures like this are used as the element type of priority queues if it necessary to change the priorities and to identify objects using the elements stored in a priority queue. 
+
+Now everything is prepared for the actual implementation of the algorithm. The function \fBdijkstra()\fP maintains three \fBstd::vector\fPs to keep track of some node information, name an array for the current distances which records a copy of the distance given as priority to the elements in the priority queue, an array recording the [current] predecessors of nodes, and an array storing "pointers" into the priority queue. These "pointer" are used as opaque values by the user of a priority queue. However, the priority queue uses these values to efficiently find the corresponding objects in the priority queue when the priority of an object is to be modified. 
+
+
+
+.nf
+template <template <typename T> class Heap, typename RandomAccessIt>
+void dijkstra(RandomAccessIt begin, RandomAccessIt end, int start, int destination)
+{
+  Heap<node_ptr>                                heap;
+  std::vector<typename Heap<node_ptr>::pointer> references;
+  std::vector<int>                              distance;
+  std::vector<int>                              predecessor;
+
+  for (ptrdiff_t i = 0; i < end - begin; ++i)
+    {
+      references.push_back(heap.push(node_ptr(i)));
+      distance.push_back(INT_MAX);
+      predecessor.push_back(INT_MAX);
+    }
+
+  heap.change(references[start], 0);
+  distance[start] = 0;
+  predecessor[start] = 0;
+
+  while (!heap.empty())
+    {
+      int dist;
+
+      node_ptr np = heap.top();
+      heap.pop();
+
+      if (np.index == destination)
+break;
+
+      for (ptrdiff_t i = 0; i < end - begin; ++i)
+{
+  dist = node_distance(begin[i], begin[np.index]) + np.distance;
+  if (dist < distance[i])
+    {
+      heap.change(references[i], dist);
+      distance[i] = dist;
+      predecessor[i] = np.index;
+    }
+}
+    }
+
+  for(int i = destination; i != start; i = predecessor[i])
+    std::cout << begin[i] << " - ";
+  std::cout << "
+";
+}
+.fi 0 What is missing to complete the example is a \fBmain()\fP which calls this function. Here is an example: 
+
+
+
+.nf
+template <typename T, int sz> inline int size(T (&)[sz]) { return sz; }
+template <typename T, int sz> inline T* begin(T (&array)[sz]) { return array; }
+template <typename T, int sz> inline T* end(T (&array)[sz]) { return array + sz; }
+
+int main()
+{
+  std::string nodes = { "heap", "help", "hold", "cold", "bold", "bolt", "boot" };
+
+  dijkstra<boost::splay_heap>(begin(nodes), end(nodes), 0, size(nodes) - 1);
+  dijkstra<boost::d_heap>(begin(nodes), end(nodes), 0, size(nodes) - 1);
+  dijkstra<boost::fibonacci_heap>(begin(nodes), end(nodes), 0, size(nodes) - 1);
+  dijkstra<boost::lazy_fibonacci_heap>(begin(nodes), end(nodes), 0, size(nodes) - 1);
+  dijkstra<boost::pairing_heap>(begin(nodes), end(nodes), 0, size(nodes) - 1);
+}
+.fi 0 Since the function \fBdijkstra()\fP gets the type of the priority to be used as template template argument it is not necessary and actually also not possible to specify any of the template arguments. Just the name of the template class is passed in. To deal with the size of the array containing the strings for the nodes, a little trick is used: There are template functions \fBbegin()\fP, \fBend()\fP, and \fBsize()\fP which provide iterator like access to the statically sized array \fBnodes\fP. 
+
+The complete example can be found in sample/dijkstra.cc. 
+.SH SEE ALSO
+d_heap(3), f_heap(3), heap-common(3), p_heap(3), p_queue(3), s_heap(3) 
+.SH AUTHOR
+Dietmar Kühl (Claas Solutions)
+.br
+e-mail: dietmar.kuehl@claas-solutions.de
+.br
+http://www.claas-solutions.de/kuehl
+.br
+
+

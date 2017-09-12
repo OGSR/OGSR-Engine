@@ -1,0 +1,102 @@
+<HTML>
+<!--
+  -- Copyright (c) Jeremy Siek, Lie-Quan Lee, and Andrew Lumsdaine 2000
+  --
+  -- Permission to use, copy, modify, distribute and sell this software
+  -- and its documentation for any purpose is hereby granted without fee,
+  -- provided that the above copyright notice appears in all copies and
+  -- that both that copyright notice and this permission notice appear
+  -- in supporting documentation.  We make no
+  -- representations about the suitability of this software for any
+  -- purpose.  It is provided "as is" without express or implied warranty.
+  -->
+<Head>
+<Title>Boost Graph Library: History</Title>
+<BODY BGCOLOR="#ffffff" LINK="#0000ee" TEXT="#000000" VLINK="#551a8b" 
+        ALINK="#ff0000"> 
+<IMG SRC="../../../c++boost.gif" 
+     ALT="C++ Boost" width="277" height="86"> 
+
+<BR Clear>
+
+<h1>History of the Boost Graph Library</h1>
+
+The Boost Graph Library began its life as the Generic Graph Component
+Library (GGCL), a software project at the <a
+href="http://www.lsc.nd.edu">Lab for Scientific Computing (LSC)</a> at
+the University of Notre Dame, under the direction of Professor <a
+href="http://www.osl.iu.edu/~lums">Andrew Lumsdaine</a>. The Lab's
+research directions include numerical linear algebra, parallel
+computing, and software engineering (including generic programming).
+
+<p>
+Soon after the Standard Template Library was released, work began at
+the LSC to apply generic programming to scientific computing.  The <a
+href="http://www.lsc.nd.edu/research/mtl">Matrix Template Library</a>
+(Jeremy Siek's masters thesis) was one of the first projects. Many of
+the lessons learned during construction of the MTL were applied to the
+design and implementation of the GGCL.
+
+<p>
+Graph algorithms play an important role in sparse matrix computations,
+so the LSC had a need for a good graph library. However, none of the
+available graph libraries (LEDA, GTL, Stanford GraphBase) were
+written using the generic programming style of the STL, and hence did
+not fulfill the flexibility and high-performance requirements of the
+LSC. Others were also expressing interest in a generic C++ graph
+library. During a meeting with Bjarne Stroustrup we were introduced to
+several people at AT\&T who needed such a library. There had also been
+earlier work in the area of generic graph algorithms, including some
+codes written by Alexander Stepanov, and Dietmar K&uuml;hl's masters
+thesis.
+
+<p>
+With this in mind, and motivated by homework assignments in his
+algorithms class, Jeremy began prototyping an interface and some graph
+classes in the spring on 1998. Lie-Quan Lee then developed the first
+version of GGCL, which became his masters thesis project.
+
+<p>
+The following year, Jeremy went to work for SGI with Alexander
+Stepanov and Matt Austern. During this time Alex's disjoint-sets based
+connected components algorithm was added to GGCL, and Jeremy began
+working on the concept documentation for GGCL similar to Matt's STL
+documentation.
+
+<p>
+While working at SGI, Jeremy heard about Boost and was excited to find
+a group of people interested in creating high-quality C++
+libraries. At boost there were several people interested in generic
+graph algorithms, most notably Dietmar K&uuml;hl.  Some discussions
+about generic interfaces for graph structures resulted in the a
+revision of GGCL which closely resembles the current Boost Graph
+Library interface.
+
+<p>
+On September 4, 2000 GGCL passed the Boost formal review and became
+the Boost Graph Library (BGL). The first release of BGL was
+September 27, 2000.
+
+
+<br>
+<HR>
+<TABLE>
+<TR valign=top>
+<TD nowrap>Copyright &copy 2000-2001</TD><TD>
+<A HREF="../../../people/jeremy_siek.htm">Jeremy Siek</A>,
+Indiana University (<A
+HREF="mailto:jsiek@osl.iu.edu">jsiek@osl.iu.edu</A>)<br>
+<A HREF="../../../people/liequan_lee.htm">Lie-Quan Lee</A>, Indiana University (<A HREF="mailto:llee@cs.indiana.edu">llee@cs.indiana.edu</A>)<br>
+<A HREF=http://www.osl.iu.edu/~lums>Andrew Lumsdaine</A>,
+Indiana University (<A
+HREF="mailto:lums@osl.iu.edu">lums@osl.iu.edu</A>)
+</TD></TR></TABLE>
+
+</BODY>
+</HTML> 
+<!--  LocalWords:  gif ALT GGCL LSC Lumsdaine Siek's MTL LEDA GTL GraphBase STL
+ -->
+<!--  LocalWords:  Bjarne Stroustrup hl's Quan SGI Stepanov Austern Alex's hl
+ -->
+<!--  LocalWords:  Dietmar BGL siek htm Univ
+ -->

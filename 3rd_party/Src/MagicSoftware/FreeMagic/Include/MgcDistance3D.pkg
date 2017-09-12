@@ -1,0 +1,42 @@
+// Magic Software, Inc.
+// http://www.magic-software.com
+// Copyright (c) 2000-2002.  All Rights Reserved
+//
+// Source code from Magic Software is supplied under the terms of a license
+// agreement and may not be copied or disclosed except in accordance with the
+// terms of that agreement.  The various license agreements may be found at
+// the Magic Software web site.  This file is subject to the license
+//
+// FREE SOURCE CODE
+// http://www.magic-software.com/License/free.pdf
+
+#ifndef MGCDISTANCE3D_PKG
+#define MGCDISTANCE3D_PKG
+
+#include "MgcDist3DCirCir.h"
+#include "MgcDist3DLinBox.h"
+#include "MgcDist3DLinCir.h"
+#include "MgcDist3DLinLin.h"
+#include "MgcDist3DLinPgm.h"
+#include "MgcDist3DLinRct.h"
+#include "MgcDist3DLinTri.h"
+#include "MgcDist3DPgmPgm.h"
+#include "MgcDist3DRctRct.h"
+#include "MgcDist3DTriPgm.h"
+#include "MgcDist3DTriRct.h"
+#include "MgcDist3DTriTri.h"
+#include "MgcDist3DVecBox.h"
+#include "MgcDist3DVecCir.h"
+#include "MgcDist3DVecElp.h"
+#include "MgcDist3DVecFrustum.h"
+#include "MgcDist3DVecLin.h"
+#include "MgcDist3DVecPgm.h"
+#include "MgcDist3DVecPln.h"
+#include "MgcDist3DVecQdr.h"
+#include "MgcDist3DVecRct.h"
+#include "MgcDist3DVecTri.h"
+#include "MgcEllipsoidGeodesicDist.h"
+
+#endif
+
+

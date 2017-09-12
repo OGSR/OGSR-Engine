@@ -1,0 +1,223 @@
+<html>
+
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+<meta name="GENERATOR" content="Microsoft FrontPage 4.0">
+<meta name="ProgId" content="FrontPage.Editor.Document">
+<title>Transform Iterator Adaptor Documentation</title>
+</head>
+
+<body bgcolor="#FFFFFF" text="#000000">
+
+<img src="../../c++boost.gif" alt="c++boost.gif (8819 bytes)"
+align="center" width="277" height="86">
+
+<h1>Transform Iterator Adaptor</h1>
+
+Defined in header
+<a href="../../boost/iterator_adaptors.hpp">boost/iterator_adaptors.hpp</a>
+
+<p>
+The transform iterator adaptor augments an iterator by applying some
+function object to the result of dereferencing the iterator. In other
+words, the <tt>operator*</tt> of the transform iterator first
+dereferences the base iterator, passes the result of this to the
+function object, and then returns the result. The following
+<b>pseudo-code</b> shows the basic idea:
+
+<pre>
+  value_type transform_iterator::operator*() const {
+    return this->f(*this->base_iterator);
+  }
+</pre>
+
+All of the other operators of the transform iterator behave in the
+same fashion as those of the base iterator.
+
+
+<h2>Synopsis</h2>
+
+<pre>
+namespace boost {
+  template &lt;class <a href="http://www.sgi.com/tech/stl/AdaptableUnaryFunction.html">AdaptableUnaryFunction</a>, class BaseIterator&gt;
+  class transform_iterator_generator;
+
+  template &lt;class <a href="http://www.sgi.com/tech/stl/AdaptableUnaryFunction.html">AdaptableUnaryFunction</a>, class BaseIterator&gt;
+  typename transform_iterator_generator&lt;AdaptableUnaryFunction,Iterator&gt;::type
+  make_transform_iterator(BaseIterator base, const AdaptableUnaryFunction&amp; f = AdaptableUnaryFunction());
+}
+</pre>
+
+<hr>
+
+<h2><a name="transform_iterator_generator">The Transform Iterator Type
+Generator</a></h2>
+
+The class <tt>transform_iterator_generator</tt> is a helper class whose
+purpose is to construct a transform iterator type.  The template
+parameters for this class are the <tt>AdaptableUnaryFunction</tt> function object
+type and the <tt>BaseIterator</tt> type that is being wrapped.
+
+<pre>
+template &lt;class AdaptableUnaryFunction, class Iterator&gt;
+class transform_iterator_generator
+{
+public:
+    typedef <a href="./iterator_adaptors.htm#iterator_adaptor">iterator_adaptor</a>&lt;...&gt; type;
+};
+</pre>
+
+<h3>Example</h3>
+
+<p>
+The following is an example of how to use the
+<tt>transform_iterator_generator</tt> class to iterate through a range
+of numbers, multiplying each of them by 2 when they are dereferenced.
+The <tt>boost::binder1st</tt> class is used instead of the standard
+one because tranform iterator requires the function object to be
+Default Constructible.
+
+<p>
+<PRE>
+#include &lt;functional&gt;
+#include &lt;iostream&gt;
+#include &lt;boost/iterator_adaptors.hpp&gt;
+
+// definition of class boost::binder1st and function boost::bind1st() ...
+
+int
+main(int, char*[])
+{
+  int x[] = { 1, 2, 3, 4, 5, 6, 7, 8 };
+
+  typedef boost::binder1st&lt; std::multiplies&lt;int&gt; &gt; Function;
+  typedef boost::transform_iterator_generator&lt;Function, int*&gt;::type doubling_iterator;
+
+  doubling_iterator i(x, boost::bind1st(std::multiplies&lt;int&gt;(), 2)),
+    i_end(x + sizeof(x)/sizeof(int), boost::bind1st(std::multiplies&lt;int&gt;(), 2));
+
+  std::cout &lt;&lt; "multiplying the array by 2:" &lt;&lt; std::endl;
+  while (i != i_end)
+    std::cout &lt;&lt; *i++ &lt;&lt; " ";
+  std::cout &lt;&lt; std::endl;
+
+  // to be continued...
+</PRE>
+The output from this part is:
+<pre>
+2 4 6 8 10 12 14 16
+</pre>
+
+<h3>Template Parameters</h3>
+
+<Table border>
+<TR>
+<TH>Parameter</TH><TH>Description</TH>
+</TR>
+
+<TR>
+<TD><a
+href="http://www.sgi.com/tech/stl/AdaptableUnaryFunction.html"><tt>AdaptableUnaryFunction</tt></a></TD>
+<TD>The function object that transforms each element in the iterator
+range.  The <tt>argument_type</tt> of the function object must match
+the value type of the base iterator.  The <tt>result_type</tt> of the
+function object will be the resulting iterator's
+<tt>value_type</tt>. If you want the resulting iterator to behave as
+an iterator, the result of the function should be solely a function of
+its argument. Also, the function object must be <a
+href="http://www.sgi.com/tech/stl/DefaultConstructible.html"> Default
+Constructible</a> (which many of the standard function objects are not).</TD>
+</TR>
+
+<TR>
+<TD><tt>BaseIterator</tt></TD>
+<TD>The iterator type being wrapped. This type must at least be a model
+ of the <a href="http://www.sgi.com/tech/stl/InputIterator">InputIterator</a> concept.</TD>
+</TR>
+
+</Table>
+
+<h3>Model of</h3>
+
+The transform iterator adaptor (the type
+<tt>transform_iterator_generator<...>::type</tt>) is a model of <a
+href="http://www.sgi.com/tech/stl/InputIterator.html">Input Iterator</a><a href="#1">[1]</a>.
+
+
+<h3>Members</h3>
+
+The transform iterator type implements the member functions and
+operators required of the <a
+href="http://www.sgi.com/tech/stl/RandomAccessIterator.html">Random Access Iterator</a>
+concept, except that the <tt>reference</tt> type is the same as the <tt>value_type</tt>
+so <tt>operator*()</tt> returns by-value. In addition it has the following constructor:
+
+<pre>
+transform_iterator_generator::type(const BaseIterator&amp; it,
+                                   const AdaptableUnaryFunction&amp; f = AdaptableUnaryFunction())
+</pre>
+
+<p>
+<hr>
+<p>
+
+
+<h2><a name="make_transform_iterator">The Transform Iterator Object Generator</a></h2>
+
+<pre>
+template &lt;class AdaptableUnaryFunction, class BaseIterator&gt;
+typename transform_iterator_generator&lt;AdaptableUnaryFunction,BaseIterator&gt;::type
+make_transform_iterator(BaseIterator base,
+                        const AdaptableUnaryFunction&amp; f = AdaptableUnaryFunction());
+</pre>
+
+This function provides a convenient way to create transform iterators.
+
+<h3>Example</h3>
+
+Continuing from the previous example, we use the <tt>make_transform_iterator()</tt>
+function to add four to each element of the array.
+
+<pre>
+  std::cout << "adding 4 to each element in the array:" << std::endl;
+
+  std::copy(boost::make_transform_iterator(x, boost::bind1st(std::plus<int>(), 4)),
+	    boost::make_transform_iterator(x + N, boost::bind1st(std::plus<int>(), 4)),
+	    std::ostream_iterator<int>(std::cout, " "));
+  std::cout << std::endl;
+
+  return 0;
+}
+</pre>
+The output from this part is:
+<pre>
+5 6 7 8 9 10 11 12
+</pre>
+
+<h3>Notes</h3>
+
+
+<a name="1">[1]</a> If the base iterator is a model of <a
+href="http://www.sgi.com/tech/stl/RandomAccessIterator.html">Random Access Iterator</a>
+then the transform iterator will also suppport most of the
+functionality required by the Random Access Iterator concept. However, a
+transform iterator can never completely satisfy the requirements for
+<a
+href="http://www.sgi.com/tech/stl/ForwardIterator.html">Forward Iterator</a>
+(or of any concepts that refine Forward Iterator, which includes
+Random Access Iterator and Bidirectional Iterator) since the <tt>operator*</tt> of the transform
+iterator always returns by-value.
+
+
+
+<hr>
+<p>Revised <!--webbot bot="Timestamp" s-type="EDITED" s-format="%d %b %Y" startspan -->19 Aug 2001<!--webbot bot="Timestamp" endspan i-checksum="14767" --></p>
+<p>© Copyright Jeremy Siek 2000. Permission to copy, use,
+modify, sell and distribute this document is granted provided this copyright
+notice appears in all copies. This document is provided &quot;as is&quot;
+without express or implied warranty, and with no claim as to its suitability for
+any purpose.</p>
+
+</body>
+
+</html>

@@ -1,0 +1,169 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../../boost.css">
+<title>Boost.Threads - Header &lt;boost/thread/tss.hpp&gt;</title>
+</head>
+<body link="#0000ff" vlink="#800080">
+<table border="0" cellpadding="7" cellspacing="0" width="100%" summary=
+    "header">
+  <tr>
+    <td valign="top" width="300">
+      <h3><a href="../../../index.htm"><img height="86" width="277" alt="C++ Boost" src="../../../c++boost.gif" border="0"></a></h3>
+    </td>
+    <td valign="top">
+      <h1 align="center">Boost.Threads</h1>
+      <h2 align="center">Header &lt;<a href="../../../boost/thread/tss.hpp">boost/thread/tss.hpp</a>&gt;</h2>
+    </td>
+  </tr>
+</table>
+<hr>
+<h2>Contents</h2>
+<dl class="page-index">
+  <dt><a href="#introduction">Introduction</a></dt>
+  <dt><a href="#classes">Classes</a></dt>
+  <dl class="page-index">
+    <dt><a href="#class-thread_specific_ptr">Class <code>thread_specific_ptr</code></a></dt>
+    <dl class="page-index">
+      <dt><a href="#class-thread_specific_ptr-synopsis">Class <code>thread_specific_ptr</code>
+        synopsis</a></dt>
+      <dt><a href="#class-thread_specific_ptr-ctors">Class <code>thread_specific_ptr</code>
+        constructors and destructor</a></dt>
+      <dt><a href="#class-thread_specific_ptr-modifiers">Class <code>thread_specific_ptr</code>
+        modifier functions</a></dt>
+      <dt><a href="#class-thread_specific_ptr-observers">Class <code>thread_specific_ptr</code>
+        observer functions</a></dt>
+    </dl>
+  </dl>
+  <dt><a href="#examples">Example(s)</a></dt>
+</dl>
+<hr>
+<h2><a name="introduction"></a>Introduction</h2>
+<p>The header &lt;<a href="../../../boost/thread/tss.hpp">boost/thread/tss.hpp</a>&gt;
+  defines the class <a href="#class-thread_specific_ptr">thread_specific_ptr</a>
+  which is used to manage data associated with specific thread instances.</p>
+<h2><a name="classes"></a>Classes</h2>
+<h3><a name="class-thread_specific_ptr"></a>Class <code>thread_specific_ptr</code></h3>
+<p>The <code>thread_specific_ptr</code> class defines an interface for using thread
+  specific storage. Thread specific storage is data associated with individual
+  threads and is often used to make operations <a href="definitions.html#Thread-safe">thread-safe</a>
+  that rely on global data.</p>
+<p>Template <code>thread_specific_ptr</code> stores a pointer to an object obtained
+  via <code>new</code> on a thread-by-thread basis and calls delete on the contained
+  pointer when the thread terminates. Each thread initially stores the null pointer
+  in each <code> thread_specific_ptr</code> instance.</p>
+<p>The template <code>thread_specific_ptr</code> is useful in the following cases:</p>
+<ul>
+  <li>An interface was originally written assuming a single thread of control
+    and is being ported to a multithreaded environment.</li>
+  <li>Each thread of control invokes sequences of methods that share data that
+    must be logically accessed through a globally visible access point, but are
+    physically unique for each thread, instead of being explicitly passed.</li>
+</ul>
+<h4><a name="class-thread_specific_ptr-synopsis"></a>Class <code>thread_specific_ptr</code>
+  synopsis</h4>
+<pre>
+namespace boost
+{
+    template &lt;typename T&gt;
+    class thread_specific_ptr : private boost::noncopyable // Exposition only.
+        // Class thread_specific_ptr meets the <a href="overview.html#non-copyable">NonCopyable</a> requirement.
+    {
+    public:
+        thread_specific_ptr();
+        ~thread_specific_ptr();
+
+        T* get() const;
+        T* operator-&gt;() const;
+        T&amp; operator*() const;
+        T* release();
+        void reset(T* p=0);
+    };
+};
+</pre>
+<h4><a name="class-thread_specific_ptr-ctors"></a>Class <code>thread_specific_ptr</code>
+  constructors and destructor</h4>
+<pre>
+thread_specific_ptr();
+</pre>
+<dl class="function-semantics">
+  <dt><b>Requires:</b> The expression <code>delete get()</code> is well formed.</dt>
+  <dt><b>Postconditions:</b> A thread specific storage has been reserved for use
+    by <code>*this</code> in all threads, with each thread initially storing a
+    null pointer.</dt>
+  <dt><b>Throws:</b> <code>boost::thread_resource_error</code> if the necessary
+    resources can not be obtained.</dt>
+  <dt><b>Note:</b> There is an implementation specific limit to the number of
+    thread specific storage objects that can be created, and this limit may be
+    small.</dt>
+</dl>
+<pre>
+~thread_specific_ptr();
+</pre>
+<dl class="function-semantics">
+  <dt><b>Note:</b> Does not destroy any data that may be stored in any thread&#39;s
+    thread specific storage. For this reason you should not destroy a <code>thread_specific_ptr</code>
+    object until you are certain there are no threads running that have made use
+    of its thread specific storage.</dt>
+</dl>
+<h4><a name="class-thread_specific_ptr-modifiers"></a>Class <code>thread_specific_ptr</code>
+  modifier functions</h4>
+<pre>
+T* release();
+</pre>
+<dl class="function-semantics">
+  <dt><b>Postconditions:</b> <code>*this</code> holds the null pointer for the
+    current thread.</dt>
+  <dt><b>Returns:</b> <code>this-&gt;get()</code> prior to the call.</dt>
+</dl>
+<pre>
+void reset(T* p=0);
+</pre>
+<dl class="function-semantics">
+  <dt><b>Effects:</b> If <code>this-&gt;get()!= p</code> then <code>delete this-&gt;get()</code>.
+  </dt>
+  <dt><b>Postconditions:</b> <code>*this</code> holds the pointer <code> p</code>
+    for the current thread.</dt>
+  <dt><b>Note:</b> The pointer will be deleted when the thread terminates.</dt>
+</dl>
+<h4><a name="class-thread_specific_ptr-observers"></a>Class <code>thread_specific_ptr</code>
+  observer functions</h4>
+<pre>
+T* get() const;
+</pre>
+<dl class="function-semantics">
+  <dt><b>Returns:</b> The object stored in thread specific storage for the current
+    thread for <code>*this</code>.</dt>
+  <dt><b>Note:</b> Each thread initially returns 0.</dt>
+</dl>
+<pre>
+T* operator-&gt;() const;
+</pre>
+<dl class="function-semantics">
+  <dt><b>Returns:</b> <code>this-&lt;get()</code>.</dt>
+</dl>
+<pre>
+T& operator*() const;
+</pre>
+<dl class="function-semantics">
+  <dt><b>Requires:</b> <code>this-&lt;get() != 0</code></dt>
+  <dt><b>Returns:</b> <code>this-&lt;get()</code>.</dt>
+</dl>
+<h2><a name="examples"></a>Example(s)</h2>
+<p><a href="../example/tss.cpp">libs/thread/example/tss.cpp</a></p>
+<hr>
+<p>Revised
+  <!--webbot bot="Timestamp" S-Type="EDITED" S-Format="%d %B, %Y" startspan -->
+  05 November, 2001
+  <!--webbot bot="Timestamp" endspan i-checksum="39359" -->
+</p>
+<p><i>&copy; Copyright <a href="mailto:wekempf@cox.net">William E. Kempf</a> 2001-2002.
+  All Rights Reserved.</i></p>
+<p>Permission to use, copy, modify, distribute and sell this software and its
+  documentation for any purpose is hereby granted without fee, provided that the
+  above copyright notice appear in all copies and that both that copyright notice
+  and this permission notice appear in supporting documentation. William E. Kempf
+  makes no representations about the suitability of this software for any purpose.
+  It is provided &quot;as is&quot; without express or implied warranty.</p>
+</body>
+</html>

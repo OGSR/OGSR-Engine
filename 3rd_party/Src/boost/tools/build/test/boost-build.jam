@@ -1,0 +1,2 @@
+# Find the boost build system in the ../new directory.
+boost-build ../new ;

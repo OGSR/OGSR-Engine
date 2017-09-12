@@ -1,0 +1,134 @@
+subproject libs/graph/example ;
+
+# Define SGB (stanford graph base top level directory) and 
+# LEDA (also top level directory) at the command line of jam using -s
+
+rule graph-test ( sources + : requirements * )
+{
+    unit-test $(sources[1]:S=) : $(sources) : $(requirements) <sysinclude>$(BOOST_ROOT) : debug <inlining>on ;
+}
+
+graph-test remove_edge_if_bidir.cpp  ;
+graph-test undirected_dfs.cpp  ;
+graph-test remove_edge_if_dir.cpp  ;
+graph-test remove_edge_if_undir.cpp  ;
+graph-test reverse-graph-eg.cpp  ;
+graph-test roget_components.cpp  :  
+  <include>$(SGB) <library-file>$(SGB)/libgb.a  ;
+graph-test scc.cpp <lib>../build/libbgl-viz ;
+graph-test strong_components.cpp <lib>../build/libbgl-viz ;
+graph-test strong-components.cpp  ;
+graph-test subgraph.cpp  ;
+graph-test topo-sort1.cpp  ;
+graph-test topo-sort2.cpp  ;
+graph-test topo_sort.cpp  ;
+graph-test topo-sort-file-dep2.cpp  ;
+graph-test topo-sort-file-dep.cpp  ;
+graph-test topo-sort-with-leda.cpp  :  
+  <include>$(LEDA)/incl <library-file>$(LEDA)/libG.a
+  <library-file>$(LEDA)/libL.a <library-file>$(LEDA)/libP.a  ;
+graph-test topo-sort-with-sgb.cpp  :  
+   <include>$(SGB) <library-file>$(SGB)/libgb.a  ;
+graph-test transitive_closure.cpp  ;
+graph-test transpose-example.cpp  ;
+graph-test undirected.cpp  ;
+graph-test vector-as-graph.cpp  ;
+graph-test vertex_basics.cpp  ;
+graph-test vertex-name-property.cpp  ;
+graph-test visitor.cpp  ;
+graph-test accum-compile-times.cpp  ;
+graph-test adjacency_list.cpp  ;
+graph-test adjacency_list_io.cpp  ;
+graph-test adjacency_matrix.cpp  ;
+graph-test bellman-example.cpp  ;
+graph-test bellman-ford-internet.cpp  ;
+graph-test bfs.cpp  ;
+graph-test bfs-example.cpp  ;
+graph-test bfs-name-printer.cpp  ;
+graph-test bfs_neighbor.cpp  ;
+graph-test biconnected_components.cpp  ;
+graph-test boost_web_graph.cpp  ;
+graph-test bucket_sorter.cpp  ;
+graph-test cc-internet.cpp <lib>../build/libbgl-viz ;
+graph-test city_visitor.cpp  ;
+graph-test components_on_edgelist.cpp  ;
+graph-test connected_components.cpp  ;
+graph-test connected-components.cpp  ;
+graph-test container_gen.cpp  ;
+graph-test copy-example.cpp  ;
+graph-test cuthill_mckee_ordering.cpp  ;
+graph-test cycle-file-dep2.cpp  ;
+graph-test cycle-file-dep.cpp  ;
+graph-test dag_shortest_paths.cpp  ;
+graph-test dave.cpp  ;
+graph-test default-constructor2.cpp  ;
+graph-test default-constructor.cpp  ;
+graph-test dfs.cpp  ;
+graph-test dfs-example.cpp  ;
+graph-test dfs_parenthesis.cpp <lib>../build/libbgl-viz ;
+graph-test dfs-parenthesis.cpp <lib>../build/libbgl-viz ;
+graph-test dijkstra-example.cpp  ;
+graph-test edge_basics.cpp  ;
+graph-test edge_connectivity.cpp  ;
+graph-test edge-connectivity.cpp <lib>../build/libbgl-viz ;
+graph-test edge-function.cpp  ;
+graph-test edge_iterator_constructor.cpp  ;
+graph-test edge-iter-constructor.cpp  ;
+graph-test edge_property.cpp  ;
+graph-test edmunds-karp-eg.cpp  ;
+graph-test exterior_properties.cpp  ;
+graph-test exterior_property_map.cpp  ;
+graph-test family-tree-eg.cpp  ;
+graph-test fibonacci_heap.cpp  ;
+graph-test file_dependencies.cpp  ;
+graph-test filtered_graph.cpp  ;
+graph-test gerdemann.cpp  ;
+graph-test girth.cpp  :  <include>$(SGB) 
+  <library-file>$(SGB)/libgb.a  ;
+graph-test graph-assoc-types.cpp  ;
+graph-test graph.cpp  ;
+graph-test graph-property-iter-eg.cpp  ;
+graph-test graphviz.cpp <lib>../build/libbgl-viz ;
+graph-test incremental_components.cpp  ;
+graph-test incremental-components-eg.cpp  ;
+graph-test in_edges.cpp  ;
+graph-test interior_property_map.cpp  ;
+graph-test isomorphism.cpp  ;
+graph-test iterator-property-map-eg.cpp  ;
+graph-test johnson-eg.cpp <lib>../build/libbgl-viz ;
+graph-test kevin-bacon.cpp  ;
+graph-test knights-tour.cpp  ;
+graph-test kruskal-example.cpp  ;
+graph-test kruskal-telephone.cpp <lib>../build/libbgl-viz ;
+graph-test last-mod-time.cpp  ;
+graph-test leda-concept-check.cpp  :  
+  <include>$(LEDA)/incl <library-file>$(LEDA)/libG.a <library-file>$(LEDA)/libL.a <library-file>$(LEDA)/libP.a  ;
+graph-test leda-graph-eg.cpp  :  
+  <include>$(LEDA)/incl <library-file>$(LEDA)/libG.a
+  <library-file>$(LEDA)/libL.a <library-file>$(LEDA)/libP.a  ;
+graph-test loops_dfs.cpp <lib>../build/libbgl-viz ;
+graph-test max_flow.cpp  ;
+graph-test miles_span.cpp  :  <include>$(SGB) 
+   <library-file>$(SGB)/libgb.a  ;
+graph-test minimum_degree_ordering.cpp iohb.c ;
+graph-test min_max_paths.cpp  ;
+graph-test modify_graph.cpp  ;
+graph-test neighbor_bfs.cpp  ;
+graph-test ordered_out_edges.cpp  ;
+graph-test ospf-example.cpp <lib>../build/libbgl-viz ;
+graph-test parallel-compile-time.cpp  ;
+graph-test prim-example.cpp  ;
+graph-test prim-telephone.cpp <lib>../build/libbgl-viz ;
+graph-test print-adjacent-vertices.cpp  ;
+graph-test print-edges.cpp  ;
+graph-test print-in-edges.cpp  ;
+graph-test print-out-edges.cpp  ;
+graph-test property_iterator.cpp  ;
+graph-test property-map-traits-eg.cpp  ;
+graph-test push-relabel-eg.cpp  ;
+graph-test put-get-helper-eg.cpp  ;
+graph-test quick_tour.cpp  ;
+graph-test quick-tour.cpp  ;
+graph-test reachable-loop-head.cpp <lib>../build/libbgl-viz ;
+graph-test reachable-loop-tail.cpp <lib>../build/libbgl-viz ;
+

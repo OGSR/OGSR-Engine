@@ -1,0 +1,533 @@
+<HTML><HEAD>
+<!!---------------------------------------------------------------------->
+<!! Copyright (C) 1999 Dietmar Kuehl, Claas Solutions GmbH >
+<!!>
+<!! Permission to use, copy, modify, distribute and sell this >
+<!! software for any purpose is hereby granted without fee, provided >
+<!! that the above copyright notice appears in all copies and that >
+<!! both that copyright notice and this permission notice appear in >
+<!! supporting documentation. Dietmar Kuehl and Claas Solutions make no >
+<!! representations about the suitability of this software for any >
+<!! purpose. It is provided "as is" without express or implied warranty. >
+<!!---------------------------------------------------------------------->
+<TITLE>doc/heap-common.mfd.3</TITLE>
+</HEAD>
+<BODY BGCOLOR=white LINK="0000FF" VLINK="800080">
+<IMG SRC=c++boost.jpg ALIGN=TOP WIDTH=277 HEIGHT=86><BR>
+<TABLE BORDER=0 CELLSPACING=0 CELLPADDING=0 COLS=2>
+<TR><TD WIDTH=109 VALIGN=TOP><IMG SRC=sidebar.jpg WIDTH=109 HEIGHT=494>
+</TD><TD>
+<SPACER TYPE=VERTICAL SIZE=40>
+<H1>Common Methods of the Priority Queues</H1>
+
+  <A NAME="Synopsis"><H1>Synopsis</H1></A>
+
+    <TABLE BORDER=0 CELLSPACING=0 CELLPADDING=0 COLS=2>
+<TR><TD WIDTH=30 VALIGN=TOP></TD><TD>
+<PRE>
+template &lt;typename Heap&gt;
+void example()
+{
+  typedef typename <A HREF="#value_type">Heap::value_type</A>      value_type;
+  typedef typename <A HREF="#size_type">Heap::size_type</A>       size_type;
+  typedef typename <A HREF="#pointer">Heap::pointer</A>         pointer;
+  typedef typename <A HREF="#const_iterator">Heap::const_iterator</A>  const_iterator;
+  typedef typename <A HREF="#const_reference">Heap::const_reference</A> const_reference;
+  typedef typename <A HREF="#compare_type">Heap::compare_type</A>    compare_type;
+
+  Heap heap; // <A HREF="#default-ctor">default constructor</A>
+
+  heap.<A HREF="#push">push</A>(value_type());
+  heap.<A HREF="#top">top</A>();
+  heap.<A HREF="#pop">pop</A>();
+  heap.<A HREF="#size">size</A>();
+  heap.<A HREF="#empty">empty</A>();
+
+  const_iterator beg = heap.<A HREF="#begin">begin</A>();
+  const_iterator end = heap.<A HREF="#end">end</A>();
+
+  pointer ptr = heap.<A HREF="#push">push</A>(value_type());
+  heap.<A HREF="#change_top">change_top</A>(value_type());
+  heap.<A HREF="#change">change</A>(ptr, value_type());
+  heap.<A HREF="#decrease">decrease</A>(ptr, value_type());
+  heap.<A HREF="#increase">increase</A>(ptr, value_type());
+  heap.<A HREF="#remove">remove</A>(ptr);
+}
+    </PRE></TD></TABLE>
+
+  
+  <A NAME="Description"><H1>Description</H1></A>
+
+    This page describes the common members of the various priority queue classes:
+    The common members have the same semantics and are thus only described just
+    once. However, not all of the members described here are supported for all
+    priority classes. See the respective manual page for the members supported.
+    Also the manual pages for the individual priority queues document briefly how
+    the class implemented.
+  
+  <A NAME="Typedefs"><H1>Typedefs</H1></A>
+
+    A few types are defined for the priority classes to support their
+    generic manipulation.
+
+    <A NAME="value_type"></A>
+    <A NAME="Heap::value_type"><H3><nobr><tt>Heap::value_type</tt></nobr></H3></A>
+
+      The typedef <nobr><tt>value_type</tt></nobr> identifies the type of the objects stored
+      in the priority queue. This type is used as argument for the
+      <nobr><tt><A HREF="#push">push</A>()</tt></nobr> member to insert a new element into the heap. The
+      member <nobr><tt><A HREF="#top">top</A>()</tt></nobr> returns a reference to a constant object of
+      this type.
+    
+    <A NAME="size_type"></A>
+    <A NAME="Heap::size_type"><H3><nobr><tt>Heap::size_type</tt></nobr></H3></A>
+
+      The typedef <nobr><tt>size_type</tt></nobr> identifies the type used to maintain the
+      number of the elements in the priority queue. The member
+      <nobr><tt><A HREF="#size">size</A>()</tt></nobr> returns an object of this type.
+    
+    <A NAME="pointer"></A>
+    <A NAME="Heap::pointer"><H3><nobr><tt>Heap::pointer</tt></nobr></H3></A>
+
+      The type <nobr><tt>pointer</tt></nobr> is used to represent handles to objects inserted
+      into a priority queue. These handles are used for efficient lookup of
+      the object when the object's priority is changed using one of the
+      functions <nobr><tt><A HREF="#change">change</A>()</tt></nobr>, <nobr><tt><A HREF="#increase">increase</A>()</tt></nobr>,
+      or <nobr><tt><A HREF="#decrease">decrease</A>()</tt></nobr>. Whether this type really is a
+      pointer like the name suggests of some other handle type is not defined.
+      Objects of this type should be handled as opaque objects.
+    
+    <A NAME="const_reference"></A>
+    <A NAME="Heap::const_reference"><H3><nobr><tt>Heap::const_reference</tt></nobr></H3></A>
+
+      The method <nobr><tt><A HREF="#top">top</A>()</tt></nobr> returns this type to access the largest
+      element in the priority queue.
+    
+    <A NAME="const_iterator"></A>
+    <A NAME="Heap::const_iterator"><H3><nobr><tt>Heap::const_iterator</tt></nobr></H3></A>
+
+      Objects of the type <nobr><tt>const_iterator</tt></nobr> are used to iterate over all
+      objects currently stored in a priority queue. The members
+      <nobr><tt><A HREF="#begin">begin</A>()</tt></nobr> and <nobr><tt><A HREF="#end">end</A>()</tt></nobr> return objects of
+      this type.
+    
+    <A NAME="compare_type"></A>
+    <A NAME="Heap::compare_type"><H3><nobr><tt>Heap::compare_type</tt></nobr></H3></A>
+
+      <nobr><tt>Heap::compare_type</tt></nobr> is the type of the comparator object used to
+      compare elements of the priority queue. This type is not defined by
+      all priority classes because some priority classes can't be parameterized
+      with a compare type. Where this type is present, it defaults to
+      <nobr><tt>std::less&lt;value_type&gt;</tt></nobr>.
+    
+  
+  <A NAME="Member Functions"><H1>Member Functions</H1></A>
+
+    <A NAME="default-ctor"></A>
+    <A NAME="Heap::Heap()"><H3><nobr><tt>Heap::Heap()</tt></nobr></H3></A>
+
+      <DL>
+<DT>
+Effect
+<DD>
+
+          The default constructor creates an empty object. In some cases,
+          namely when the comparator class does not have a default constructor,
+          the default constructor is not available. In this case you have to
+          pass a comparator to the constructor of the priority queue (i.e. the
+          comparator has to be copy constructible).
+        
+</DL>
+
+    
+    <A NAME="push"></A>
+    <A NAME="Heap::push(val)"><H3><nobr><tt>Heap::push(val)</tt></nobr></H3></A>
+
+      <DL>
+<DT>
+Effect
+<DD>
+
+          The function <nobr><tt>push()</tt></nobr> inserts a copy of <nobr><tt>val</tt></nobr> into the
+          corresponding priority queue. If the priority queue supports
+          changing the priority of arbitrary elements, a 
+          <nobr><tt><A HREF="#pointer">pointer</A></tt></nobr> to the newly inserted element is
+          inserted.
+        
+<DT>
+Return
+<DD>
+
+          A <nobr><tt><A HREF="#pointer">pointer</A></tt></nobr> is returned if arbitrary priority
+          changes are supported by the priority class. Otherwise, <nobr><tt>void</tt></nobr>
+          is returned.
+        
+<DT>
+Postcondition
+<DD>
+
+          <nobr><tt><A HREF="#size">size</A>()</tt></nobr> is increased by one and
+          <nobr><tt><A HREF="#top">top</A>()</tt></nobr> returns a reference to the new object if it
+          is larger than all elements stored in the priority. Whether the
+          <nobr><tt><A HREF="#top">top</A>()</tt></nobr> returns a reference to the new object or some
+          other object, if the new object compares equal to the largest
+          element previously stored in the priority queue is not specified.
+        
+</DL>
+
+    
+    <A NAME="top"></A>
+    <A NAME="Heap::top()"><H3><nobr><tt>Heap::top()</tt></nobr></H3></A>
+
+      <DL>
+<DT>
+Effect
+<DD>
+
+          This member functions provides efficient access to the
+          largest element in the priority queue. Some implementations
+          determine the minimum element when <nobr><tt>top()</tt></nobr> is called although
+          this member function is declared to be <nobr><tt>const</tt></nobr>: This is a
+          typical case of <B>logical constness</B> vs.
+          <nobr><tt>bitwise constness</tt></nobr>. Although the observable state of the
+          object does not change (the logic view of the object does not
+          change), the data structure might be update on this request
+          internally, ie. the actual representation changes.
+        
+<DT>
+Return
+<DD>
+
+          A reference to the largest object is returned. Note, that the
+          referenced object is constant.
+        
+<DT>
+Precondition
+<DD>
+
+          There has to be at least one element in the priority queue, i.e.
+          <nobr><tt><A HREF="#empty">empty</A>()</tt></nobr> has to return <nobr><tt>false</tt></nobr>.
+        
+</DL>
+
+    
+    <A NAME="pop"></A>
+    <A NAME="Heap::pop()"><H3><nobr><tt>Heap::pop()</tt></nobr></H3></A>
+
+      <DL>
+<DT>
+Effect
+<DD>
+
+          The function <nobr><tt>pop()</tt></nobr> removes the largest element from the
+          priority queue. If there are multiple copies of the largest
+          element stored in the priority queue, only one of those elements
+          is removed.
+        
+<DT>
+Precondition
+<DD>
+
+          There has to be at least one element in the priority queue, i.e.
+          <nobr><tt><A HREF="#empty">empty</A>()</tt></nobr> has to return <nobr><tt>false</tt></nobr>.
+        
+<DT>
+Postcondition
+<DD>
+
+	  The largest element is removed from the priority queue and
+          correspondingly the value returned from <nobr><tt><A HREF="#size">size</A>()</tt></nobr>
+          is reduced by one.
+        
+</DL>
+
+    
+    <A NAME="empty"></A>
+    <A NAME="Heap::empty()"><H3><nobr><tt>Heap::empty()</tt></nobr></H3></A>
+
+      <DL>
+<DT>
+Return
+<DD>
+
+          If <nobr><tt><A HREF="#size">size</A>() &gt; 0</tt></nobr> then <nobr><tt>false</tt></nobr> is returned,
+          otherwise <nobr><tt>true</tt></nobr> is returned.
+        
+</DL>
+
+    
+    <A NAME="size"></A>
+    <A NAME="Heap::size()"><H3><nobr><tt>Heap::size()</tt></nobr></H3></A>
+
+      <DL>
+<DT>
+Return
+<DD>
+
+          The number of elements currently stored in the priority queue
+          is returned.
+        
+</DL>
+
+    
+    <A NAME="begin"></A>
+    <A NAME="Heap::begin()"><H3><nobr><tt>Heap::begin()</tt></nobr></H3></A>
+
+      <DL>
+<DT>
+Effect
+<DD>
+
+          The member function <nobr><tt>begin()</tt></nobr> returns an iterator defining
+          the beginning of the sequence representing all elements stored in
+          the priority queue. The end of the sequence is returned by
+          <nobr><tt><A HREF="#end">end</A>()</tt></nobr>.
+
+          <P>
+
+
+          The returned iterator in general only conforms to the input
+          iterator requirements. Some classes support more specific
+          iterators but probably the application should no rely on
+          other requirements to allow easy replacement of the selected
+          priority queue.
+
+          <P>
+
+
+          The order in which the elements are accessed is in general
+          unspecified. However, for some classes there is a specific
+          order. If this is the case, the manual page of the respective
+          priority queue class will describe this order.
+
+        
+<DT>
+Return
+<DD>
+
+          The start iterator for the sequence of all elements in the
+          priority queue is returned.
+        
+</DL>
+
+    
+    <A NAME="end"></A>
+    <A NAME="Heap::end()"><H3><nobr><tt>Heap::end()</tt></nobr></H3></A>
+
+      <DL>
+<DT>
+Effect
+<DD>
+
+          The member function <nobr><tt>end()</tt></nobr> returns an iterator defining
+          the end of the sequence representing all elements stored in
+          the priority queue. The begin of the sequence is returned by
+          <nobr><tt><A HREF="#begin">begin</A>()</tt></nobr>. See the documention of this
+          function for more details.
+        
+<DT>
+Return
+<DD>
+
+          The end iterator for the sequence of all elements in the
+          priority queue is returned.
+        
+</DL>
+
+    
+    <A NAME="change_top"></A>
+    <A NAME="Heap::change_top(val)"><H3><nobr><tt>Heap::change_top(val)</tt></nobr></H3></A>
+
+      <DL>
+<DT>
+Effect
+<DD>
+
+          The member function <nobr><tt>change_top()</tt></nobr> is used to change the
+          priority of the currently largest element to <nobr><tt>val</tt></nobr>. This
+          is basically identical to a <nobr><tt><A HREF="#pop">pop</A>()</tt></nobr> followed by
+          to <nobr><tt><A HREF="#push">push</A>(val)</tt></nobr>. However, <nobr><tt>change_top()</tt></nobr>
+          may be significantly more efficient for some priority queue
+          classes: For example, when changing the top of a
+          <A HREF="d_heap.html">d-heap</A>, the corresponding element only
+          has to moved down as far as necessary. Removal and insertion
+          would make a complete pass from root to leaf (for removal)
+          and leaf to root (for insertion).
+        
+<DT>
+Precondition
+<DD>
+
+          There has to be at least one element in the priority queue, i.e.
+          <nobr><tt><A HREF="#empty">empty</A>()</tt></nobr> has to return <nobr><tt>false</tt></nobr>.
+        
+<DT>
+Postcondition
+<DD>
+
+          The priority of the top element is adjusted to <nobr><tt>val</tt></nobr> and
+          correspondingly the data structure is updated to make the new
+          largest element the new top. Of course, if the changed element
+          remained the largest, it may stay the top.
+        
+<DT>
+Note
+<DD>
+
+          This function is a member template to make it possible to change
+	  only the priority in composite elements: To do so, the assignment
+          operator (<nobr><tt>operator=()</tt></nobr>) can be overloaded to take a type
+          which is then passed to this function changing selectively the
+          priority.
+        
+</DL>
+
+    
+    <A NAME="change"></A>
+    <A NAME="Heap::change(ptr, val)"><H3><nobr><tt>Heap::change(ptr, val)</tt></nobr></H3></A>
+
+      <DL>
+<DT>
+Effect
+<DD>
+
+          The priority of the element identified by <nobr><tt>ptr</tt></nobr> is changed
+          to <nobr><tt>val</tt></nobr>.
+        
+<DT>
+Precondition
+<DD>
+
+          The object identified by <nobr><tt>ptr</tt></nobr> is indeed an element of the
+          priority queue on which the <nobr><tt>change()</tt></nobr> method is called. In
+          particular, this means that there is at least one element in the
+          priority queue.
+        
+<DT>
+Note
+<DD>
+
+          This function is a member template to make it possible to change
+	  only the priority in composite elements: To do so, the assignment
+          operator (<nobr><tt>operator=()</tt></nobr>) can be overloaded to take a type
+          which is then passed to this function changing selectively the
+          priority.
+        
+</DL>
+
+    
+    <A NAME="decrease"></A>
+    <A NAME="Heap::decrease(ptr, val)"><H3><nobr><tt>Heap::decrease(ptr, val)</tt></nobr></H3></A>
+
+      <DL>
+<DT>
+Effect
+<DD>
+
+          The priority of the element identified by <nobr><tt>ptr</tt></nobr> is changed
+          to <nobr><tt>val</tt></nobr>. This function assumes that <nobr><tt>val</tt></nobr> is smaller
+          than the current priority of the element: This is not checked
+          at all. This method is useful if it is known that the priority
+          is guaranteed to be smaller than the current priority.
+        
+<DT>
+Precondition
+<DD>
+
+          The object identified by <nobr><tt>ptr</tt></nobr> is indeed an element of the
+          priority queue on which the <nobr><tt>decrease()</tt></nobr> method is called. In
+          particular, this means that there is at least one element in the
+          priority queue.
+        
+<DT>
+Note
+<DD>
+
+          This function is a member template to make it possible to change
+	  only the priority in composite elements: To do so, the assignment
+          operator (<nobr><tt>operator=()</tt></nobr>) can be overloaded to take a type
+          which is then passed to this function changing selectively the
+          priority.
+        
+</DL>
+
+    
+    <A NAME="increase"></A>
+    <A NAME="Heap::increase(ptr, val)"><H3><nobr><tt>Heap::increase(ptr, val)</tt></nobr></H3></A>
+
+      <DL>
+<DT>
+Effect
+<DD>
+
+          The priority of the element identified by <nobr><tt>ptr</tt></nobr> is changed
+          to <nobr><tt>val</tt></nobr>. This function assumes that <nobr><tt>val</tt></nobr> is greater
+          than the current priority of the element: This is not checked
+          at all. This method is useful if it is known that the priority
+          is guaranteed to be greater than the current priority.
+        
+<DT>
+Precondition
+<DD>
+
+          The object identified by <nobr><tt>ptr</tt></nobr> is indeed an element of the
+          priority queue on which the <nobr><tt>decrease()</tt></nobr> method is called. In
+          particular, this means that there is at least one element in the
+          priority queue.
+        
+<DT>
+Note
+<DD>
+
+          This function is a member template to make it possible to change
+	  only the priority in composite elements: To do so, the assignment
+          operator (<nobr><tt>operator=()</tt></nobr>) can be overloaded to take a type
+          which is then passed to this function changing selectively the
+          priority.
+        
+</DL>
+
+    
+    <A NAME="remove"></A>
+    <A NAME="Heap::remove(ptr)"><H3><nobr><tt>Heap::remove(ptr)</tt></nobr></H3></A>
+
+      <DL>
+<DT>
+Effect
+<DD>
+
+          This method removes the element identified by <nobr><tt>ptr</tt></nobr> from the
+          priority queue.
+        
+<DT>
+Precondition
+<DD>
+
+          The object identified by <nobr><tt>ptr</tt></nobr> is indeed an element of the
+          priority queue on which the <nobr><tt>remove()</tt></nobr> method is called. In
+          particular, this means that there is at least one element in the
+          priority queue.
+        
+</DL>
+
+    
+  
+  <A NAME="See Also"><H1>See Also</H1></A>
+
+    <A HREF="d_heap.html">d_heap(3)</A>,
+    <A HREF="f_heap.html">f_heap(3)</A>,
+    <A HREF="l_heap.html">l_heap(3)</A>,
+    <A HREF="p_heap.html">p_heap(3)</A>,
+    <A HREF="p_queue.html">p_queue(3)</A>,
+    <A HREF="queue.html">queue(3)</A>,
+    <A HREF="r_heap.html">r_heap(3)</A>,
+    <A HREF="stack.html">stack(3)</A>
+  
+<HR>
+
+Copyright &copy 1999 <A HREF=http://www.claas-solutions.de/kuehl>Dietmar K&uuml;hl</A> (<A HREF="mailto:dietmar.kuehl@claas-solutions.de">dietmar.kuehl@claas-solutions.de</A>)<BR>
+<a href="http://www.claas-solutions.de/">Claas Solutions GmbH</a>
+</FONT></FONT>
+</TD></TR></TABLE>
+</BODY></HTML>
+

@@ -1,0 +1,49 @@
+<!-- ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||| section -->
+<section id="preface">
+<title>Preface</>
+
+<para>The &MPL; library is a &Cxx; template metaprogramming framework of compile-time algorithms, sequences and metafunction classes. The two main documentation sources for the library is <quote>the MPL paper</>, and the library's reference documentation. If you haven't heard about the MPL before, we suggest you to start with the paper, and then move on to the reference documentation and the information in this document.
+</>
+
+<itemizedlist mark="box">
+
+<listitem><simpara>
+A. Gurtovoy, D. Abrahams, <ulink url="./paper/html/index.html">The Boost C++ Metaprogramming Library</>, March 2002 | [<ulink url="./paper/mpl_paper.html">as single .html</>]</></listitem>
+
+<listitem>
+<ulink url="./ref/Table_of_Content.html">Reference documentation</>
+    <orderedlist>
+    <listitem><simpara><ulink url="./ref/Sequences.html">Sequences</></></>
+    <listitem><simpara><ulink url="./ref/Iterators.html">Iterators</></></> 
+    <listitem><simpara><ulink url="./ref/Algorithms.html">Algorithms</></></>
+    <listitem><simpara><ulink url="./ref/Metafunctions.html">Metafunctions</></></> 
+    <listitem><simpara><ulink url="./ref/Categorized_index.html">Categorized index</></></>
+    </orderedlist>
+</listitem>
+
+</itemizedlist>
+
+</section>
+
+<!-- ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||| section -->
+<section id="source">
+<title>Sources</>
+
+<para>
+The latest library sources are available from:
+</>
+
+<itemizedlist mark="box">
+    <listitem><simpara>The <ulink url="http://www.boost.org/more/download.html#CVS">boost CVS</>, <literal>mpl_v2</> branch (<literal>cvs update -P -rmpl_v2 boost/mpl boost/type_traits libs/mpl</>)</></>
+    <listitem><simpara>From here - <ulink url="http://www.mywikinet.com/mpl/mpl_23_jul_02.zip"></></></>
+
+</itemizedlist>
+
+<para>
+The library also requires the latest version of Boost Preprocessor library, that can be also obtained from <ulink url="http://www.boost.org/more/download.html#CVS">boost CVS</> or from here - <ulink url="http://www.mywikinet.com/mpl/preprocessor_19_jul_02.zip"></>.
+</>
+
+<para>A full archive that contains the library itself + all its dependencies - and therefore can be installed over a clean <ulink url="http://boost.sourceforge.net/release/boost_1_28_0.zip">Boost 1.28 distribution</> - is available from here - <ulink url="http://www.mywikinet.com/mpl/mpl_23_jul_02_full.zip"></>.
+</>
+
+</section>

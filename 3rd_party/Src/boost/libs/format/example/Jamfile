@@ -1,0 +1,32 @@
+#  Boost.Bind Library test Jamfile
+#
+#  Copyright (c) 2003 Samuel Krempp
+#
+#  Permission to copy, use, modify, sell and distribute this software
+#  is granted provided this copyright notice appears in all copies.
+#  This software is provided "as is" without express or implied
+#  warranty, and with no claim as to its suitability for any purpose.
+
+subproject libs/format/example ;
+
+exe sample_formats
+    : sample_formats.cpp
+    : <include>$(BOOST_ROOT)
+    ;
+
+exe sample_advanced
+    : sample_advanced.cpp
+    : <include>$(BOOST_ROOT)
+    ;
+
+exe sample_new_features
+    : sample_new_features.cpp
+    : <include>$(BOOST_ROOT)
+    ;
+
+exe sample_userType
+    : sample_userType.cpp
+    : <include>$(BOOST_ROOT)
+    ;
+
+

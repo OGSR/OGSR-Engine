@@ -1,0 +1,381 @@
+#
+#   Copyright (c) 2000-2002
+#   Joerg Walter, Mathias Koch
+#
+#   Permission to use, copy, modify, distribute and sell this software
+#   and its documentation for any purpose is hereby granted without fee,
+#   provided that the above copyright notice appear in all copies and
+#   that both that copyright notice and this permission notice appear
+#   in supporting documentation.  The authors make no representations
+#   about the suitability of this software for any purpose.
+#   It is provided "as is" without express or implied warranty.
+#
+#   The authors gratefully acknowledge the support of
+#   GeNeSys mbH & Co. KG in producing this work.
+#
+
+subproject libs/numeric/ublas/doc/samples ;
+
+exe unbounded_array
+    : unbounded_array.cpp
+    : <include>$(BOOST_ROOT)
+      <borland><*><cxxflags>"-w-8026 -w-8027 -w-8057 -w-8084 -w-8092"
+      <kylix><*><cxxflags>"-w-8026 -w-8027 -w-8057 -w-8084 -w-8092"
+    ;
+
+exe bounded_array
+    : bounded_array.cpp
+    : <include>$(BOOST_ROOT)
+      <borland><*><cxxflags>"-w-8026 -w-8027 -w-8057 -w-8084 -w-8092"
+      <kylix><*><cxxflags>"-w-8026 -w-8027 -w-8057 -w-8084 -w-8092"
+    ;
+
+exe range
+    : range.cpp
+    : <include>$(BOOST_ROOT)
+      <borland><*><cxxflags>"-w-8026 -w-8027 -w-8057 -w-8084 -w-8092"
+      <kylix><*><cxxflags>"-w-8026 -w-8027 -w-8057 -w-8084 -w-8092"
+    ;
+
+exe slice
+    : slice.cpp
+    : <include>$(BOOST_ROOT)
+      <borland><*><cxxflags>"-w-8026 -w-8027 -w-8057 -w-8084 -w-8092"
+      <kylix><*><cxxflags>"-w-8026 -w-8027 -w-8057 -w-8084 -w-8092"
+    ;
+
+exe map_array
+    : map_array.cpp
+    : <include>$(BOOST_ROOT)
+      <borland><*><cxxflags>"-w-8026 -w-8027 -w-8057 -w-8084 -w-8092"
+      <kylix><*><cxxflags>"-w-8026 -w-8027 -w-8057 -w-8084 -w-8092"
+    ;
+
+exe vector
+    : vector.cpp
+    : <include>$(BOOST_ROOT)
+      <borland><*><cxxflags>"-w-8026 -w-8027 -w-8057 -w-8084 -w-8092"
+      <kylix><*><cxxflags>"-w-8026 -w-8027 -w-8057 -w-8084 -w-8092"
+    ;
+
+exe unit_vector
+    : unit_vector.cpp
+    : <include>$(BOOST_ROOT)
+      <borland><*><cxxflags>"-w-8026 -w-8027 -w-8057 -w-8084 -w-8092"
+      <kylix><*><cxxflags>"-w-8026 -w-8027 -w-8057 -w-8084 -w-8092"
+    ;
+
+exe zero_vector
+    : zero_vector.cpp
+    : <include>$(BOOST_ROOT)
+      <borland><*><cxxflags>"-w-8026 -w-8027 -w-8057 -w-8084 -w-8092"
+      <kylix><*><cxxflags>"-w-8026 -w-8027 -w-8057 -w-8084 -w-8092"
+    ;
+
+exe sparse_vector
+    : sparse_vector.cpp
+    : <include>$(BOOST_ROOT)
+      <borland><*><cxxflags>"-w-8026 -w-8027 -w-8057 -w-8084 -w-8092"
+      <kylix><*><cxxflags>"-w-8026 -w-8027 -w-8057 -w-8084 -w-8092"
+    ;
+
+exe compressed_vector
+    : compressed_vector.cpp
+    : <include>$(BOOST_ROOT)
+      <borland><*><cxxflags>"-w-8026 -w-8027 -w-8057 -w-8084 -w-8092"
+      <kylix><*><cxxflags>"-w-8026 -w-8027 -w-8057 -w-8084 -w-8092"
+    ;
+
+exe coordinate_vector
+    : coordinate_vector.cpp
+    : <include>$(BOOST_ROOT)
+      <borland><*><cxxflags>"-w-8026 -w-8027 -w-8057 -w-8084 -w-8092"
+      <kylix><*><cxxflags>"-w-8026 -w-8027 -w-8057 -w-8084 -w-8092"
+    ;
+
+exe vector_range
+    : vector_range.cpp
+    : <include>$(BOOST_ROOT)
+      <borland><*><cxxflags>"-w-8026 -w-8027 -w-8057 -w-8084 -w-8092"
+      <kylix><*><cxxflags>"-w-8026 -w-8027 -w-8057 -w-8084 -w-8092"
+    ;
+
+exe vector_range_project
+    : vector_range_project.cpp
+    : <include>$(BOOST_ROOT)
+      <borland><*><cxxflags>"-w-8026 -w-8027 -w-8057 -w-8084 -w-8092"
+      <kylix><*><cxxflags>"-w-8026 -w-8027 -w-8057 -w-8084 -w-8092"
+    ;
+
+exe vector_slice
+    : vector_slice.cpp
+    : <include>$(BOOST_ROOT)
+      <borland><*><cxxflags>"-w-8026 -w-8027 -w-8057 -w-8084 -w-8092"
+      <kylix><*><cxxflags>"-w-8026 -w-8027 -w-8057 -w-8084 -w-8092"
+    ;
+
+exe vector_slice_project
+    : vector_slice_project.cpp
+    : <include>$(BOOST_ROOT)
+      <borland><*><cxxflags>"-w-8026 -w-8027 -w-8057 -w-8084 -w-8092"
+      <kylix><*><cxxflags>"-w-8026 -w-8027 -w-8057 -w-8084 -w-8092"
+    ;
+
+exe vector_unary
+    : vector_unary.cpp
+    : <include>$(BOOST_ROOT)
+      <borland><*><cxxflags>"-w-8026 -w-8027 -w-8057 -w-8084 -w-8092"
+      <kylix><*><cxxflags>"-w-8026 -w-8027 -w-8057 -w-8084 -w-8092"
+    ;
+
+exe vector_binary
+    : vector_binary.cpp
+    : <include>$(BOOST_ROOT)
+      <borland><*><cxxflags>"-w-8026 -w-8027 -w-8057 -w-8084 -w-8092"
+      <kylix><*><cxxflags>"-w-8026 -w-8027 -w-8057 -w-8084 -w-8092"
+    ;
+
+exe vector_binary_outer
+    : vector_binary_outer.cpp
+    : <include>$(BOOST_ROOT)
+      <borland><*><cxxflags>"-w-8026 -w-8027 -w-8057 -w-8084 -w-8092"
+      <kylix><*><cxxflags>"-w-8026 -w-8027 -w-8057 -w-8084 -w-8092"
+    ;
+
+exe vector_binary_scalar
+    : vector_binary_scalar.cpp
+    : <include>$(BOOST_ROOT)
+      <borland><*><cxxflags>"-w-8026 -w-8027 -w-8057 -w-8084 -w-8092"
+      <kylix><*><cxxflags>"-w-8026 -w-8027 -w-8057 -w-8084 -w-8092"
+    ;
+
+exe vector_unary_redux
+    : vector_unary_redux.cpp
+    : <include>$(BOOST_ROOT)
+      <borland><*><cxxflags>"-w-8026 -w-8027 -w-8057 -w-8084 -w-8092"
+      <kylix><*><cxxflags>"-w-8026 -w-8027 -w-8057 -w-8084 -w-8092"
+    ;
+
+exe vector_binary_redux
+    : vector_binary_redux.cpp
+    : <include>$(BOOST_ROOT)
+      <borland><*><cxxflags>"-w-8026 -w-8027 -w-8057 -w-8084 -w-8092"
+      <kylix><*><cxxflags>"-w-8026 -w-8027 -w-8057 -w-8084 -w-8092"
+    ;
+
+exe matrix
+    : matrix.cpp
+    : <include>$(BOOST_ROOT)
+      <borland><*><cxxflags>"-w-8026 -w-8027 -w-8057 -w-8084 -w-8092"
+      <kylix><*><cxxflags>"-w-8026 -w-8027 -w-8057 -w-8084 -w-8092"
+    ;
+
+exe identity_matrix
+    : identity_matrix.cpp
+    : <include>$(BOOST_ROOT)
+      <borland><*><cxxflags>"-w-8026 -w-8027 -w-8057 -w-8084 -w-8092"
+      <kylix><*><cxxflags>"-w-8026 -w-8027 -w-8057 -w-8084 -w-8092"
+    ;
+
+exe zero_matrix
+    : zero_matrix.cpp
+    : <include>$(BOOST_ROOT)
+      <borland><*><cxxflags>"-w-8026 -w-8027 -w-8057 -w-8084 -w-8092"
+      <kylix><*><cxxflags>"-w-8026 -w-8027 -w-8057 -w-8084 -w-8092"
+    ;
+
+exe sparse_matrix
+    : sparse_matrix.cpp
+    : <include>$(BOOST_ROOT)
+      <borland><*><cxxflags>"-w-8026 -w-8027 -w-8057 -w-8084 -w-8092"
+      <kylix><*><cxxflags>"-w-8026 -w-8027 -w-8057 -w-8084 -w-8092"
+    ;
+
+exe compressed_matrix
+    : compressed_matrix.cpp
+    : <include>$(BOOST_ROOT)
+      <borland><*><cxxflags>"-w-8026 -w-8027 -w-8057 -w-8084 -w-8092"
+      <kylix><*><cxxflags>"-w-8026 -w-8027 -w-8057 -w-8084 -w-8092"
+    ;
+
+exe coordinate_matrix
+    : coordinate_matrix.cpp
+    : <include>$(BOOST_ROOT)
+      <borland><*><cxxflags>"-w-8026 -w-8027 -w-8057 -w-8084 -w-8092"
+      <kylix><*><cxxflags>"-w-8026 -w-8027 -w-8057 -w-8084 -w-8092"
+    ;
+
+exe matrix_row
+    : matrix_row.cpp
+    : <include>$(BOOST_ROOT)
+      <borland><*><cxxflags>"-w-8026 -w-8027 -w-8057 -w-8084 -w-8092"
+      <kylix><*><cxxflags>"-w-8026 -w-8027 -w-8057 -w-8084 -w-8092"
+    ;
+
+exe matrix_row_project
+    : matrix_row_project.cpp
+    : <include>$(BOOST_ROOT)
+      <borland><*><cxxflags>"-w-8026 -w-8027 -w-8057 -w-8084 -w-8092"
+      <kylix><*><cxxflags>"-w-8026 -w-8027 -w-8057 -w-8084 -w-8092"
+    ;
+
+exe matrix_column
+    : matrix_column.cpp
+    : <include>$(BOOST_ROOT)
+      <borland><*><cxxflags>"-w-8026 -w-8027 -w-8057 -w-8084 -w-8092"
+      <kylix><*><cxxflags>"-w-8026 -w-8027 -w-8057 -w-8084 -w-8092"
+    ;
+
+exe matrix_column_project
+    : matrix_column_project.cpp
+    : <include>$(BOOST_ROOT)
+      <borland><*><cxxflags>"-w-8026 -w-8027 -w-8057 -w-8084 -w-8092"
+      <kylix><*><cxxflags>"-w-8026 -w-8027 -w-8057 -w-8084 -w-8092"
+    ;
+
+exe matrix_vector_range
+    : matrix_vector_range.cpp
+    : <include>$(BOOST_ROOT)
+      <borland><*><cxxflags>"-w-8026 -w-8027 -w-8057 -w-8084 -w-8092"
+      <kylix><*><cxxflags>"-w-8026 -w-8027 -w-8057 -w-8084 -w-8092"
+    ;
+
+exe matrix_vector_slice
+    : matrix_vector_slice.cpp
+    : <include>$(BOOST_ROOT)
+      <borland><*><cxxflags>"-w-8026 -w-8027 -w-8057 -w-8084 -w-8092"
+      <kylix><*><cxxflags>"-w-8026 -w-8027 -w-8057 -w-8084 -w-8092"
+    ;
+
+exe matrix_range
+    : matrix_range.cpp
+    : <include>$(BOOST_ROOT)
+      <borland><*><cxxflags>"-w-8026 -w-8027 -w-8057 -w-8084 -w-8092"
+      <kylix><*><cxxflags>"-w-8026 -w-8027 -w-8057 -w-8084 -w-8092"
+    ;
+
+exe matrix_range_project
+    : matrix_range_project.cpp
+    : <include>$(BOOST_ROOT)
+      <borland><*><cxxflags>"-w-8026 -w-8027 -w-8057 -w-8084 -w-8092"
+      <kylix><*><cxxflags>"-w-8026 -w-8027 -w-8057 -w-8084 -w-8092"
+    ;
+
+exe matrix_slice
+    : matrix_slice.cpp
+    : <include>$(BOOST_ROOT)
+      <borland><*><cxxflags>"-w-8026 -w-8027 -w-8057 -w-8084 -w-8092"
+      <kylix><*><cxxflags>"-w-8026 -w-8027 -w-8057 -w-8084 -w-8092"
+    ;
+
+exe matrix_slice_project
+    : matrix_slice_project.cpp
+    : <include>$(BOOST_ROOT)
+      <borland><*><cxxflags>"-w-8026 -w-8027 -w-8057 -w-8084 -w-8092"
+      <kylix><*><cxxflags>"-w-8026 -w-8027 -w-8057 -w-8084 -w-8092"
+    ;
+
+exe matrix_unary
+    : matrix_unary.cpp
+    : <include>$(BOOST_ROOT)
+      <borland><*><cxxflags>"-w-8026 -w-8027 -w-8057 -w-8084 -w-8092"
+      <kylix><*><cxxflags>"-w-8026 -w-8027 -w-8057 -w-8084 -w-8092"
+    ;
+
+exe matrix_binary
+    : matrix_binary.cpp
+    : <include>$(BOOST_ROOT)
+      <borland><*><cxxflags>"-w-8026 -w-8027 -w-8057 -w-8084 -w-8092"
+      <kylix><*><cxxflags>"-w-8026 -w-8027 -w-8057 -w-8084 -w-8092"
+    ;
+
+exe matrix_binary_scalar
+    : matrix_binary_scalar.cpp
+    : <include>$(BOOST_ROOT)
+      <borland><*><cxxflags>"-w-8026 -w-8027 -w-8057 -w-8084 -w-8092"
+      <kylix><*><cxxflags>"-w-8026 -w-8027 -w-8057 -w-8084 -w-8092"
+    ;
+
+exe matrix_vector_binary
+    : matrix_vector_binary.cpp
+    : <include>$(BOOST_ROOT)
+      <borland><*><cxxflags>"-w-8026 -w-8027 -w-8057 -w-8084 -w-8092"
+      <kylix><*><cxxflags>"-w-8026 -w-8027 -w-8057 -w-8084 -w-8092"
+    ;
+
+exe matrix_vector_solve
+    : matrix_vector_solve.cpp
+    : <include>$(BOOST_ROOT)
+      <borland><*><cxxflags>"-w-8026 -w-8027 -w-8057 -w-8084 -w-8092"
+      <kylix><*><cxxflags>"-w-8026 -w-8027 -w-8057 -w-8084 -w-8092"
+    ;
+
+exe matrix_matrix_binary
+    : matrix_matrix_binary.cpp
+    : <include>$(BOOST_ROOT)
+      <borland><*><cxxflags>"-w-8026 -w-8027 -w-8057 -w-8084 -w-8092"
+      <kylix><*><cxxflags>"-w-8026 -w-8027 -w-8057 -w-8084 -w-8092"
+    ;
+
+exe matrix_matrix_solve
+    : matrix_matrix_solve.cpp
+    : <include>$(BOOST_ROOT)
+      <borland><*><cxxflags>"-w-8026 -w-8027 -w-8057 -w-8084 -w-8092"
+      <kylix><*><cxxflags>"-w-8026 -w-8027 -w-8057 -w-8084 -w-8092"
+    ;
+
+exe banded_matrix
+    : banded_matrix.cpp
+    : <include>$(BOOST_ROOT)
+      <borland><*><cxxflags>"-w-8026 -w-8027 -w-8057 -w-8084 -w-8092"
+      <kylix><*><cxxflags>"-w-8026 -w-8027 -w-8057 -w-8084 -w-8092"
+    ;
+
+exe banded_adaptor
+    : banded_adaptor.cpp
+    : <include>$(BOOST_ROOT)
+      <borland><*><cxxflags>"-w-8026 -w-8027 -w-8057 -w-8084 -w-8092"
+      <kylix><*><cxxflags>"-w-8026 -w-8027 -w-8057 -w-8084 -w-8092"
+    ;
+
+exe hermitian_matrix
+    : hermitian_matrix.cpp
+    : <include>$(BOOST_ROOT)
+      <borland><*><cxxflags>"-w-8026 -w-8027 -w-8057 -w-8084 -w-8092"
+      <kylix><*><cxxflags>"-w-8026 -w-8027 -w-8057 -w-8084 -w-8092"
+    ;
+
+exe hermitian_adaptor
+    : hermitian_adaptor.cpp
+    : <include>$(BOOST_ROOT)
+      <borland><*><cxxflags>"-w-8026 -w-8027 -w-8057 -w-8084 -w-8092"
+      <kylix><*><cxxflags>"-w-8026 -w-8027 -w-8057 -w-8084 -w-8092"
+    ;
+
+exe symmetric_matrix
+    : symmetric_matrix.cpp
+    : <include>$(BOOST_ROOT)
+      <borland><*><cxxflags>"-w-8026 -w-8027 -w-8057 -w-8084 -w-8092"
+      <kylix><*><cxxflags>"-w-8026 -w-8027 -w-8057 -w-8084 -w-8092"
+    ;
+
+exe symmetric_adaptor
+    : symmetric_adaptor.cpp
+    : <include>$(BOOST_ROOT)
+      <borland><*><cxxflags>"-w-8026 -w-8027 -w-8057 -w-8084 -w-8092"
+      <kylix><*><cxxflags>"-w-8026 -w-8027 -w-8057 -w-8084 -w-8092"
+    ;
+
+exe triangular_matrix
+    : triangular_matrix.cpp
+    : <include>$(BOOST_ROOT)
+      <borland><*><cxxflags>"-w-8026 -w-8027 -w-8057 -w-8084 -w-8092"
+      <kylix><*><cxxflags>"-w-8026 -w-8027 -w-8057 -w-8084 -w-8092"
+    ;
+
+exe triangular_adaptor
+    : triangular_adaptor.cpp
+    : <include>$(BOOST_ROOT)
+      <borland><*><cxxflags>"-w-8026 -w-8027 -w-8057 -w-8084 -w-8092"
+      <kylix><*><cxxflags>"-w-8026 -w-8027 -w-8057 -w-8084 -w-8092"
+    ;
