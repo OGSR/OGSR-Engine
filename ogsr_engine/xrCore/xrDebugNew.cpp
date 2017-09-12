@@ -13,7 +13,7 @@
 #pragma warning(pop)
 
 extern bool shared_str_initialized;
-#define USE_BUG_TRAP
+//#define USE_BUG_TRAP //KRodin: мне он не нужен
 #ifdef __BORLANDC__
 /*    #	include "d3d9.h"
     #	include "d3dx9.h"

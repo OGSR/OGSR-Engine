@@ -70,7 +70,7 @@
     <USERDEFINES value="_EDITOR;_XRCOREB;XRCORE_EXPORTS"/>
     <SYSDEFINES value="NO_STRICT;_RTLDLL;USEPACKAGES"/>
     <MAINSOURCE value="xrCoreB.bpf"/>
-    <INCLUDEPATH value="blackbox;$(ETOOLS_DIR);$(D3DX_DIR)\Include;$(BCB)\include;$(BCB)\include\vcl;$(BCB)\Include\Mfc;X:\3rd_party\Src\BugTrap\Client;X:\3rd_party\Src\lzo"/>
+    <INCLUDEPATH value="blackbox;$(ETOOLS_DIR);$(D3DX_DIR)\Include;$(BCB)\include;$(BCB)\include\vcl;$(BCB)\Include\Mfc;X:\3rd_party\Src\lzo"/>
     <LIBPATH value="X:\3rd_party\Src\lzo;X:\3rd_party\Src\components\ElPack\Code;X:\3rd_party\Src\components\AlexMX;blackbox;$(BCB)\lib;$(BCB)\lib\obj;$(BCB)\Projects\Lib;X:\3rd_party\_LIB\Release\Win32;$(BCB)\lib\psdk;X:\ogsr_engine\_LIB\SDK\Release\Win32"/>
     <WARNINGS value="-w8092 -w8091 -w8090 -w8089 -w8087 -wprc -wucp -wstv -wstu -wsig -wpin 
       -w-par -wnod -wnak -wdef -wcln -wbbf -wasm -wamp -wamb"/>
@@ -79,7 +79,7 @@
   <OPTIONS>
     <IDLCFLAGS value="-Iblackbox -I$(ETOOLS_DIR) -I$(D3DX_DIR)\Include -I$(BCB)\include 
       -I$(BCB)\include\vcl -I$(BCB)\Include\Mfc 
-      -IX:\3rd_party\Src\BugTrap\Client -IX:\3rd_party\Src\lzo -src_suffix cpp 
+      -IX:\3rd_party\Src\lzo -src_suffix cpp 
       -D_EDITOR -D_XRCOREB -DXRCORE_EXPORTS -boa"/>
     <CFLAG1 value="-WD -O2 -H=X:\ogsr_engine\_TEMP\SDK\Release\Win32\core\pch.csm -Q -Vx -Ve 
       -xf -xp -Vd -VF -ff -X- -ps -a4 -6 -b- -k- -y -v -vi -tWD -tWM -c"/>
@@ -243,9 +243,9 @@ c:\program files (x86)\borland\cbuilder6\Bin\dclite60.bpl=Borland Integrated Tra
 
 [HistoryLists\hlIncludePath]
 Count=30
-Item0=blackbox;$(ETOOLS_DIR);$(D3DX_DIR)\Include;$(BCB)\include;$(BCB)\include\vcl;$(BCB)\Include\Mfc;X:\3rd_party\Src\BugTrap\Client;X:\3rd_party\Src\lzo
-Item1=blackbox;$(ETOOLS_DIR);$(D3DX_DIR)\Include;$(BCB)\include;$(BCB)\include\vcl;$(BCB)\Include\Mfc;X:\3rd_party\Src\BugTrap\Client
-Item2=blackbox;$(ETOOLS_DIR);$(DXSDK_DIR)\Include;$(BCB)\include;$(BCB)\include\vcl;$(BCB)\Include\Mfc;X:\3rd_party\Src\BugTrap\Client
+Item0=blackbox;$(ETOOLS_DIR);$(D3DX_DIR)\Include;$(BCB)\include;$(BCB)\include\vcl;$(BCB)\Include\Mfc;X:\3rd_party\Src\lzo
+Item1=blackbox;$(ETOOLS_DIR);$(D3DX_DIR)\Include;$(BCB)\include;$(BCB)\include\vcl;$(BCB)\Include\Mfc
+Item2=blackbox;$(ETOOLS_DIR);$(DXSDK_DIR)\Include;$(BCB)\include;$(BCB)\include\vcl;$(BCB)\Include\Mfc
 Item3=blackbox;$(ETOOLS_DIR);$(DXSDK_DIR)\Include;$(BCB)\include;$(BCB)\include\vcl;$(BCB)\Include\Mfc
 Item4=blackbox;$(ETOOLS_DIR);$(DXSDK_DIR)\Include;$(BCB)\include;$(BCB)\include\vcl;$(BCB)\Include\Mfc;$(BCB)\Include\atl
 Item5=C:\Program Files (x86)\Windows Kits\8.1\Include\shared;C:\Program Files (x86)\Windows Kits\8.1\Include\um;blackbox;$(ETOOLS_DIR);$(DXSDK_DIR)\Include;$(BCB)\include;$(BCB)\include\vcl;$(BCB)\Include\Mfc;$(BCB)\Include\atl
