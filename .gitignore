@@ -1,15 +1,14 @@
-# Папки #
+﻿# Папки #
 ############
-ogsr_package/OUT
-ogsr_package/READY
-ogsr_package/REDIST
-ogsr_package/UNPACKED
+/ogsr_package/OUT
+/ogsr_package/READY
+/ogsr_package/REDIST
+/ogsr_package/UNPACKED
+/ogsr_engine/_TEMP
+/ogsr_engine/_BIN
+/ogsr_engine/_LIB
 __history
-Release
-Win32
-Debug
-3rd_party
-ipch
+/3rd_party
 
 # Бинарники #
 ############
@@ -27,7 +26,9 @@ ipch
 *.db-shm
 *.db-wal
 *.opendb
-.vs
+.vs/
+*.VC.*
+*.ipch
 
 # Мусор борланда #
 ##################
