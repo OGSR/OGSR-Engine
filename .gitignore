@@ -28,6 +28,12 @@ __history
 .vs/
 *.VC.*
 *.ipch
+*.tlog
+*.log
+*.pdb
+*.sbr
+*.res
+*.bsc
 
 # Мусор борланда #
 ##################

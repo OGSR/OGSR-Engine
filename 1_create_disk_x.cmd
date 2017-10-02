@@ -1,2 +1,2 @@
-C:\Windows\system32\subst.exe X: /D
-C:\Windows\system32\subst.exe X: F:\OGSR-Engine
+subst X: /D
+subst X: .
