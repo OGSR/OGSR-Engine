@@ -1,44 +1,18 @@
-﻿# Папки #
-############
-/ogsr_package/OUT
-/ogsr_package/READY
-/ogsr_package/REDIST
-/ogsr_package/UNPACKED
-/ogsr_engine/_TEMP
+﻿# Папки
+/3rd_party/_BIN
+/3rd_party/_LIB
+/3rd_party/_TEMP
 /ogsr_engine/_BIN
 /ogsr_engine/_LIB
-__history
+/ogsr_engine/_TEMP
+/ogsr_engine/ipch
+/ogsr_package
 
-# Бинарники #
-############
-*.exe
-*.dll
-*.lib
-*.exp
-
-# Мусор студии #
-############
-*.suo
-*.obj
-*.sdf
-*.db
-*.db-shm
-*.db-wal
-*.opendb
-.vs/
-*.VC.*
+# Precompiled Headers
 *.ipch
-*.tlog
-*.log
-*.pdb
-*.sbr
-*.res
-*.bsc
 
-# Мусор борланда #
-##################
-*.~*
-
-# Мусор WinMerge #
-##################
-*.bak
+# Всякий ненужный мусор:
+*.VC.*
+*.suo
+*.user
+*.exp
