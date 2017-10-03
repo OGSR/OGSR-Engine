@@ -17,7 +17,6 @@
 #include "resource.h"
 #include "LightAnimLibrary.h"
 #include "ispatial.h"
-#include "CopyProtection.h"
 #include "Text_Console.h"
 #include <process.h>
 
@@ -67,7 +66,6 @@ void InitEngine		()
 	Engine.Initialize			( );
 	while (!g_bIntroFinished)	Sleep	(100);
 	Device.Initialize			( );
-	CheckCopyProtection			( );
 }
 
 void InitSettings	()
@@ -205,8 +203,7 @@ void Startup					( )
 	logoWindow					= NULL;
 
 	// Main cycle
-	CheckCopyProtection			( );
-Memory.mem_usage();
+	Memory.mem_usage();
 	Device.Run					( );
 
 	// Destroy APP
@@ -473,40 +470,6 @@ XRCORE_API DUMMY_STUFF	*g_temporary_stuff;
 #include "trivial_encryptor.h"
 
 //#define RUSSIAN_BUILD
-
-#if 0
-void foo	()
-{
-	typedef std::map<int,int>	TEST_MAP;
-	TEST_MAP					temp;
-	temp.insert					(std::make_pair(0,0));
-	TEST_MAP::const_iterator	I = temp.upper_bound(2);
-	if (I == temp.end())
-		OutputDebugString		("end() returned\r\n");
-	else
-		OutputDebugString		("last element returned\r\n");
-
-	typedef void*	pvoid;
-
-	LPCSTR			path = "d:\\network\\stalker_net2";
-	FILE			*f = fopen(path,"rb");
-	int				file_handle = _fileno(f);
-	u32				buffer_size = _filelength(file_handle);
-	pvoid			buffer = xr_malloc(buffer_size);
-	size_t			result = fread(buffer,buffer_size,1,f);
-	R_ASSERT3		(!buffer_size || (result && (buffer_size >= result)),"Cannot read from file",path);
-	fclose			(f);
-
-	u32				compressed_buffer_size = rtc_csize(buffer_size);
-	pvoid			compressed_buffer = xr_malloc(compressed_buffer_size);
-	u32				compressed_size = rtc_compress(compressed_buffer,compressed_buffer_size,buffer,buffer_size);
-
-	LPCSTR			compressed_path = "d:\\network\\stalker_net2.rtc";
-	FILE			*f1 = fopen(compressed_path,"wb");
-	fwrite			(compressed_buffer,compressed_size,1,f1);
-	fclose			(f1);
-}
-#endif // 0
 
 ENGINE_API	bool g_dedicated_server	= false;
 
@@ -880,8 +843,6 @@ void CApplication::LoadBegin	()
 #endif
 		phase_timer.Start	();
 		load_stage			= 0;
-
-		CheckCopyProtection	();
 	}
 }
 
@@ -920,7 +881,6 @@ void CApplication::LoadDraw		()
 		load_draw_internal			();
 
 	Device.End					();
-	CheckCopyProtection			();
 }
 
 void CApplication::LoadTitleInt(LPCSTR str)
@@ -1020,9 +980,6 @@ void CApplication::Level_Set(u32 L)
 		hLevelLogo.create	("font", temp);
 	else
 		hLevelLogo.create	("font", "intro\\intro_no_start_picture");
-		
-
-	CheckCopyProtection		();
 }
 
 int CApplication::Level_ID(LPCSTR name)

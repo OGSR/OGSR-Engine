@@ -38,9 +38,9 @@ struct /* ENGINE_API*/ VisMask
 	IC	bool						is(u16 _digit)
 	{
 		if (_digit < 64)
-			return _visimask.is(u64(1) << _digit);
+			return !!_visimask.is(u64(1) << _digit);
 		else
-			return _visimask_ex.is(u64(1) << (_digit - 64));
+			return !!_visimask_ex.is(u64(1) << (_digit - 64));
 	}
 	IC	void						zero()
 	{
