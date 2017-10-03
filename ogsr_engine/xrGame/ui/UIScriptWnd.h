@@ -1,7 +1,6 @@
 #pragma once
 
 #include "UIDialogWnd.h"
-#include "../script_space_forward.h"
 #include "../script_export_space.h"
 
 struct SCallbackInfo;

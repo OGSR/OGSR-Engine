@@ -283,4 +283,17 @@ XRCORE_API	char*				timestamp				(string64& dest);
 
 extern XRCORE_API u32			crc32					(const void* P, u32 len);
 
+
+//KRodin: Всё что ниже - взято из ЗП.
+IC int xr_strcpy(LPSTR destination, size_t const destination_size, LPCSTR source)
+{
+	return strncpy_s(destination, destination_size, source, destination_size);
+}
+
+template <int count>
+IC int xr_strcpy(char(&destination)[count], LPCSTR source)
+{
+	return xr_strcpy(destination, count, source);
+}
+
 #endif

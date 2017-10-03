@@ -13,8 +13,6 @@
 
 #include "../weapon.h"
 
-#include "../script_process.h"
-
 #include "../eatable_item.h"
 #include "../inventory.h"
 

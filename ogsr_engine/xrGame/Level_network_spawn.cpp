@@ -76,15 +76,6 @@ void CLevel::g_cl_Spawn		(LPCSTR name, u8 rp, u16 flags, Fvector pos)
 
 void CLevel::g_sv_Spawn		(CSE_Abstract* E)
 {
-#ifdef DEBUG_MEMORY_MANAGER
-	u32							E_mem = 0;
-	if (g_bMEMO)	{
-		lua_gc					(ai().script_engine().lua(),LUA_GCCOLLECT,0);
-		lua_gc					(ai().script_engine().lua(),LUA_GCCOLLECT,0);
-		E_mem					= Memory.mem_usage();	
-		Memory.stat_calls		= 0;
-	}
-#endif // DEBUG_MEMORY_MANAGER
 	//-----------------------------------------------------------------
 //	CTimer		T(false);
 
@@ -145,13 +136,6 @@ void CLevel::g_sv_Spawn		(CSE_Abstract* E)
 	//---------------------------------------------------------
 	Game().OnSpawn(O);
 	//---------------------------------------------------------
-#ifdef DEBUG_MEMORY_MANAGER
-	if (g_bMEMO) {
-		lua_gc					(ai().script_engine().lua(),LUA_GCCOLLECT,0);
-		lua_gc					(ai().script_engine().lua(),LUA_GCCOLLECT,0);
-		Msg						("* %20s : %d bytes, %d ops", *E->s_name,Memory.mem_usage()-E_mem, Memory.stat_calls );
-	}
-#endif // DEBUG_MEMORY_MANAGER
 }
 
 CSE_Abstract *CLevel::spawn_item		(LPCSTR section, const Fvector &position, u32 level_vertex_id, u16 parent_id, bool return_item)

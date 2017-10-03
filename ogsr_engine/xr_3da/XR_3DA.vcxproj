@@ -516,7 +516,7 @@
     </ResourceCompile>
     <Link>
       <AdditionalOptions>/MACHINE:I386  %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>libogg_static.lib;libtheora_static.lib;msacm32.lib;vfw32.lib;lua51.lib;luabind.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>libogg_static.lib;libtheora_static.lib;msacm32.lib;vfw32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <IgnoreSpecificDefaultLibraries>libcmt;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -931,13 +931,11 @@
   <ItemGroup>
     <ClInclude Include="..\COMMON\bone.h" />
     <ClInclude Include="..\COMMON\cl_intersect.h" />
-    <ClInclude Include="..\COMMON\doug_lea_memory_allocator.h" />
     <ClInclude Include="..\COMMON\DrawUtils.h" />
     <ClInclude Include="..\COMMON\ETextureParams.h" />
     <ClInclude Include="..\COMMON\std_classes.h" />
     <ClInclude Include="..\xrParticles\psystem.h" />
     <ClInclude Include="r2_shader_exports.h" />
-    <ClInclude Include="CopyProtection.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="trivial_encryptor.h" />
     <ClInclude Include="x_ray.h" />
@@ -1044,26 +1042,10 @@
     <ClInclude Include="EngineAPI.h" />
     <ClInclude Include="EventAPI.h" />
     <ClInclude Include="xrCPU_Pipe.h" />
-    <ClInclude Include="ai_script_lua_extension.h" />
-    <ClInclude Include="ai_script_lua_space.h" />
     <ClInclude Include="ai_script_space.h" />
     <ClInclude Include="perlin.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\COMMON\doug_lea_memory_allocator.c">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Mixed|Win32'">NotUsing</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release_Dedicated|Win32'">NotUsing</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug_Dedicated|Win32'">NotUsing</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">NotUsing</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Mixed_Dedicated|Win32'">NotUsing</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Mixed|x64'">NotUsing</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release_Dedicated|x64'">NotUsing</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug_Dedicated|x64'">NotUsing</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Mixed_Dedicated|x64'">NotUsing</PrecompiledHeader>
-    </ClCompile>
     <ClCompile Include="..\COMMON\ETextureParams.cpp" />
     <ClCompile Include="defines.cpp" />
     <ClCompile Include="stdafx.cpp">
@@ -1241,8 +1223,6 @@
     <ClCompile Include="EngineAPI.cpp" />
     <ClCompile Include="EventAPI.cpp" />
     <ClCompile Include="mailSlot.cpp" />
-    <ClCompile Include="ai_script_lua_debug.cpp" />
-    <ClCompile Include="ai_script_lua_extension.cpp" />
     <ClCompile Include="perlin.cpp" />
   </ItemGroup>
   <ItemGroup>

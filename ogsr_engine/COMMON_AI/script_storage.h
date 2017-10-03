@@ -5,70 +5,43 @@
 //	Author		: Dmitriy Iassenev
 //	Description : XRay Script Storage
 ////////////////////////////////////////////////////////////////////////////
-
 #pragma once
 
-#include "script_storage_space.h"
-#include "script_space_forward.h"
+#include "pch_script.h"
+
+namespace ScriptStorage {
+	enum ELuaMessageType {
+		eLuaMessageTypeInfo = u32(0),
+		eLuaMessageTypeError,
+		eLuaMessageTypeMessage,
+		eLuaMessageTypeHookCall,
+		eLuaMessageTypeHookReturn,
+		eLuaMessageTypeHookLine,
+		eLuaMessageTypeHookCount,
+		eLuaMessageTypeHookTailReturn = u32(-1),
+	};
+}
+using namespace ScriptStorage;
 
 struct lua_State;
-class CScriptThread;
-
-#ifdef	DEBUG
-//	#ifndef ENGINE_BUILD
-	#	define	USE_DEBUGGER
-//	#endif
-#endif
-
-using namespace ScriptStorage;
 
 class CScriptStorage {
 private:
-	lua_State					*m_virtual_machine	;
-	CScriptThread				*m_current_thread	;
-	BOOL						m_jit				;
-
-#ifdef OGSE_DEBUG
-public:
-	bool						m_stack_is_ready	;
-#endif
-
-#ifdef OGSE_DEBUG
+	lua_State *m_virtual_machine = nullptr;
 protected:
-	CMemoryWriter				m_output;
-#endif // DEBUG
-
-protected:
-	static	int					vscript_log					(ScriptStorage::ELuaMessageType tLuaMessageType, LPCSTR caFormat, va_list marker);
-			bool				parse_namespace				(LPCSTR caNamespaceName, LPSTR b, LPSTR c);
-			bool				do_file						(LPCSTR	caScriptName, LPCSTR caNameSpaceName);
-			void				reinit						();
-
+	bool do_file(const char* caScriptName, const char* caNameSpaceName);
+	bool load_buffer(lua_State *L, const char* caBuffer, size_t tSize, const char* caScriptName, const char* caNameSpaceName);
+	bool namespace_loaded(const char* caName, bool remove_from_stack = true);
+	bool object(const char* caIdentifier, int type);
+	bool object(const char* caNamespaceName, const char* caIdentifier, int type);
+	luabind::object name_space(const char* namespace_name);
+	void reinit(lua_State *LSVM);
 public:
-#ifdef OGSE_DEBUG
-			void				print_stack					();
-#endif
-
-public:
-								CScriptStorage				();
-	virtual						~CScriptStorage				();
-	IC		lua_State			*lua						();
-	IC		void				current_thread				(CScriptThread *thread);
-	IC		CScriptThread		*current_thread				() const;
-			bool				load_buffer					(lua_State *L, LPCSTR caBuffer, size_t tSize, LPCSTR caScriptName, LPCSTR caNameSpaceName = 0);
-			bool				load_file_into_namespace	(LPCSTR	caScriptName, LPCSTR caNamespaceName);
-			bool				namespace_loaded			(LPCSTR	caName, bool remove_from_stack = true);
-			bool				object						(LPCSTR	caIdentifier, int type);
-			bool				object						(LPCSTR	caNamespaceName, LPCSTR	caIdentifier, int type);
-			luabind::object		name_space					(LPCSTR	namespace_name);
-	static	int		__cdecl		script_log					(ELuaMessageType message,	LPCSTR	caFormat, ...);
-	static	bool				print_output				(lua_State *L,		LPCSTR	caScriptName,		int		iErorCode = 0);
-	static	void				print_error					(lua_State *L,		int		iErrorCode);
-
-#ifdef OGSE_DEBUG
-public:
-			void				flush_log					();
-#endif // DEBUG
+	lua_State *lua() { return m_virtual_machine; };
+	CScriptStorage() = default;
+	virtual ~CScriptStorage();
+	void script_log(ScriptStorage::ELuaMessageType message, const char* caFormat, ...);
+	static bool print_output(lua_State *L, const char* caScriptName, int iErorCode = 0);
+	static constexpr const char* GlobalNamespace = "_G";
+	void print_stack();
 };
-
-#include "script_storage_inline.h"

@@ -9,45 +9,9 @@
 #include "pch_script.h"
 #include "script_engine.h"
 #include "ai_space.h"
-#include "script_debugger.h"
-//#include <ostream>
-#include "script_additional_libs.h"
 
 using namespace luabind;
 
-void LuaLog(LPCSTR caMessage)
-{
-	ai().script_engine().script_log	(ScriptStorage::eLuaMessageTypeMessage,"%s",caMessage);
-#ifdef USE_DEBUGGER
-	if( ai().script_engine().debugger() ){
-		ai().script_engine().debugger()->Write(caMessage);
-	}
-#endif
-}
-
-void ErrorLog(LPCSTR caMessage)
-{
-	ai().script_engine().script_log	(ScriptStorage::eLuaMessageTypeError,"%s",caMessage);
-#ifdef USE_DEBUGGER
-	if( ai().script_engine().debugger() ){
-		ai().script_engine().debugger()->Write(caMessage);
-	}
-#endif
-}
-
-void FlushLogs()
-{
-#ifdef DEBUG
-	FlushLog();
-	ai().script_engine().flush_log();
-#endif // DEBUG
-}
-/*
-void verify_if_thread_is_running()
-{
-	THROW2	(ai().script_engine().current_thread(),"coroutine.yield() is called outside the LUA thread!");
-}
-*/
 bool editor()
 {
 #ifdef XRGAME_EXPORTS
@@ -212,7 +176,6 @@ bool GetAlt()
 
 void CScriptEngine::script_register(lua_State *L)
 {
-	open_additional_libs(L); //RvP
 	module(L)[
 		def("log1",			(void(*)(LPCSTR)) &Log),	//RvP
 		def("fail",			(void(*)(LPCSTR)) &msg_and_fail),
@@ -240,11 +203,7 @@ void CScriptEngine::script_register(lua_State *L)
 			.def("time",&profile_timer_script::time)
 	];
 
-	function	(L,	"log",							LuaLog);
-	function	(L,	"error_log",					ErrorLog);
-	function	(L,	"flush",						FlushLogs);
 	function	(L,	"prefetch",						prefetch_module);
-//	function	(L,	"verify_if_thread_is_running",	verify_if_thread_is_running);
 	function	(L,	"editor",						editor);
 	function	(L,	"bit_and",						bit_and);
 	function	(L,	"bit_or",						bit_or);

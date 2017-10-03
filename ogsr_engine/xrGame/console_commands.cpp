@@ -7,7 +7,6 @@
 #include "xrMessages.h"
 #include "xrserver.h"
 #include "level.h"
-#include "script_debugger.h"
 #include "ai_debug.h"
 #include "alife_simulator.h"
 #include "game_cl_base.h"
@@ -19,8 +18,6 @@
 #include "Actor_Flags.h"
 #include "customzone.h"
 #include "script_engine.h"
-#include "script_engine_space.h"
-#include "script_process.h"
 #include "xrServer_Objects.h"
 #include "ui/UIMainIngameWnd.h"
 #include "PhysicsGamePars.h"
@@ -64,7 +61,6 @@ extern	u64		g_qwEStartGameTime;
 ENGINE_API
 extern	float	psHUD_FOV;
 extern	float	psSqueezeVelocity;
-extern	int		psLUA_GCSTEP;
 
 extern	int		x_m_x;
 extern	int		x_m_z;
@@ -119,10 +115,12 @@ CUIOptConCom g_OptConCom;
 #	endif // USE_MEMORY_MONITOR
 #endif // PURE_ALLOC
 
+/*
 #ifdef SEVERAL_ALLOCATORS
 	ENGINE_API 	u32 engine_lua_memory_usage	();
 	extern		u32 game_lua_memory_usage	();
 #endif // SEVERAL_ALLOCATORS
+*/
 
 class CCC_MemStats : public IConsole_Command
 {
@@ -132,11 +130,13 @@ public:
 		Memory.mem_compact		();
 		u32		_crt_heap		= mem_usage_impl((HANDLE)_get_heap_handle(),0,0);
 		u32		_process_heap	= mem_usage_impl(GetProcessHeap(),0,0);
+/*
 #ifdef SEVERAL_ALLOCATORS
 		u32		_game_lua		= game_lua_memory_usage();
 		u32		_engine_lua		= engine_lua_memory_usage();
 		u32		_render			= ::Render->memory_usage();
 #endif // SEVERAL_ALLOCATORS
+*/
 		int		_eco_strings	= (int)g_pStringContainer->stat_economy			();
 		int		_eco_smem		= (int)g_pSharedMemoryContainer->stat_economy	();
 		u32		m_base=0,c_base=0,m_lmaps=0,c_lmaps=0;
@@ -147,11 +147,11 @@ public:
 		
 		Msg		("* [ D3D ]: textures[%d K]", (m_base+m_lmaps)/1024);
 
-#ifndef SEVERAL_ALLOCATORS
+//#ifndef SEVERAL_ALLOCATORS
 		Msg		("* [x-ray]: crt heap[%d K], process heap[%d K]",_crt_heap/1024,_process_heap/1024);
-#else // SEVERAL_ALLOCATORS
-		Msg		("* [x-ray]: crt heap[%d K], process heap[%d K], game lua[%d K], engine lua[%d K], render[%d K]",_crt_heap/1024,_process_heap/1024,_game_lua/1024,_engine_lua/1024,_render/1024);
-#endif // SEVERAL_ALLOCATORS
+//#else // SEVERAL_ALLOCATORS
+//		Msg		("* [x-ray]: crt heap[%d K], process heap[%d K], game lua[%d K], engine lua[%d K], render[%d K]",_crt_heap/1024,_process_heap/1024,_game_lua/1024,_engine_lua/1024,_render/1024);
+//#endif // SEVERAL_ALLOCATORS
 
 		Msg		("* [x-ray]: economy: strings[%d K], smem[%d K]",_eco_strings/1024,_eco_smem);
 
@@ -626,60 +626,6 @@ public:
 	  }
 };
 
-
-//#ifndef MASTER_GOLD
-class CCC_Script : public IConsole_Command {
-public:
-	CCC_Script(LPCSTR N) : IConsole_Command(N)  { bEmptyArgsHandled = true; };
-	virtual void Execute(LPCSTR args) {
-		string256	S;
-		S[0]		= 0;
-		sscanf		(args ,"%s",S);
-		if (!xr_strlen(S))
-			Log("* Specify script name!");
-		else {
-			// rescan pathes
-			FS_Path* P = FS.get_path("$game_scripts$");
-			P->m_Flags.set	(FS_Path::flNeedRescan,TRUE);
-			FS.rescan_pathes();
-			// run script
-			if (ai().script_engine().script_process(ScriptEngine::eScriptProcessorLevel))
-				ai().script_engine().script_process(ScriptEngine::eScriptProcessorLevel)->add_script(S,false,true);
-		}
-	}
-};
-
-class CCC_ScriptCommand : public IConsole_Command {
-public:
-	CCC_ScriptCommand	(LPCSTR N) : IConsole_Command(N)  { bEmptyArgsHandled = true; };
-	virtual void	Execute				(LPCSTR args) {
-		if (!xr_strlen(args))
-			Log("* Specify string to run!");
-		else {
-#if 1
-			if (ai().script_engine().script_process(ScriptEngine::eScriptProcessorLevel))
-				ai().script_engine().script_process(ScriptEngine::eScriptProcessorLevel)->add_script(args,true,true);
-#else
-			string4096		S;
-			shared_str		m_script_name = "console command";
-			sprintf_s			(S,"%s\n",args);
-			int				l_iErrorCode = luaL_loadbuffer(ai().script_engine().lua(),S,xr_strlen(S),"@console_command");
-			if (!l_iErrorCode) {
-				l_iErrorCode = lua_pcall(ai().script_engine().lua(),0,0,0);
-				if (l_iErrorCode) {
-					ai().script_engine().print_output(ai().script_engine().lua(),*m_script_name,l_iErrorCode);
-					return;
-				}
-			}
-			else {
-				ai().script_engine().print_output(ai().script_engine().lua(),*m_script_name,l_iErrorCode);
-				return;
-			}
-#endif
-		}
-	}
-};
-//#endif // MASTER_GOLD
 
 #ifdef DEBUG
 
@@ -1415,13 +1361,11 @@ void CCC_RegisterCommands()
 	CMD3(CCC_Mask,				"mt_object_handler",	&g_mt_config,	mtObjectHandler);
 	CMD3(CCC_Mask,				"mt_sound_player",		&g_mt_config,	mtSoundPlayer);
 	CMD3(CCC_Mask,				"mt_bullets",			&g_mt_config,	mtBullets);
-	CMD3(CCC_Mask,				"mt_script_gc",			&g_mt_config,	mtLUA_GC);
 	CMD3(CCC_Mask,				"mt_level_sounds",		&g_mt_config,	mtLevelSounds);
 	CMD3(CCC_Mask,				"mt_alife",				&g_mt_config,	mtALife);
 #endif // MASTER_GOLD
 
 #ifdef DEBUG
-	CMD4(CCC_Integer,			"lua_gcstep",			&psLUA_GCSTEP,	1, 1000);
 	CMD3(CCC_Mask,				"ai_debug",				&psAI_Flags,	aiDebug);
 	CMD3(CCC_Mask,				"ai_dbg_brain",			&psAI_Flags,	aiBrain);
 	CMD3(CCC_Mask,				"ai_dbg_motion",		&psAI_Flags,	aiMotion);
@@ -1505,8 +1449,6 @@ void CCC_RegisterCommands()
 	CMD1(CCC_JumpToLevel,	"jump_to_level"		);
 	CMD3(CCC_Mask,			"g_god",			&psActorFlags,	AF_GODMODE	);
 	CMD3(CCC_Mask,			"g_unlimitedammo",	&psActorFlags,	AF_UNLIMITEDAMMO);
-	CMD1(CCC_Script,		"run_script");
-	CMD1(CCC_ScriptCommand,	"run_string");
 	CMD1(CCC_TimeFactor,	"time_factor");		
 //#endif // MASTER_GOLD
 

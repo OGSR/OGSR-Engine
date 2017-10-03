@@ -3,9 +3,7 @@
 #include "LevelGameDef.h"
 #include "ai_space.h"
 #include "ParticlesObject.h"
-#include "script_process.h"
 #include "script_engine.h"
-#include "script_engine_space.h"
 #include "level.h"
 #include "game_cl_base.h"
 #include "../xr_3da/x_ray.h"
@@ -88,16 +86,6 @@ BOOL CLevel::Load_GameSpecific_After()
 			Sounds_Random_Enabled	= FALSE;
 		}
 	}	
-
-	if (!g_dedicated_server) {
-		// loading scripts
-		ai().script_engine().remove_script_process(ScriptEngine::eScriptProcessorLevel);
-
-		if (pLevel->section_exist("level_scripts") && pLevel->line_exist("level_scripts","script"))
-			ai().script_engine().add_script_process(ScriptEngine::eScriptProcessorLevel,xr_new<CScriptProcess>("level",pLevel->r_string("level_scripts","script")));
-		else
-			ai().script_engine().add_script_process(ScriptEngine::eScriptProcessorLevel,xr_new<CScriptProcess>("level",""));
-	}
 		
 	BlockCheatLoad();
 	return TRUE;

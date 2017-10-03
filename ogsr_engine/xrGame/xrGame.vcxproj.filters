@@ -1225,26 +1225,11 @@
     <Filter Include="AI\AScript\ScriptClasses\ScriptParticles">
       <UniqueIdentifier>{039b2101-1856-440b-8684-b8ab40dd9d4a}</UniqueIdentifier>
     </Filter>
-    <Filter Include="AI\AScript\ScriptDebugger">
-      <UniqueIdentifier>{ccede798-9d39-467a-8a26-ed1e0876f484}</UniqueIdentifier>
-    </Filter>
     <Filter Include="AI\AScript\ScriptEngine">
       <UniqueIdentifier>{ec7b39b3-95cf-47f3-aeed-a40ec9c722cc}</UniqueIdentifier>
     </Filter>
-    <Filter Include="AI\AScript\ScriptProcess">
-      <UniqueIdentifier>{6ece1dab-f469-4683-b664-18e2b071ac4d}</UniqueIdentifier>
-    </Filter>
     <Filter Include="AI\AScript\ScriptStorage">
       <UniqueIdentifier>{0ac542c4-3a17-41af-90ff-0d988b494e6d}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="AI\AScript\ScriptThread">
-      <UniqueIdentifier>{7a8b0ab1-8f8d-4a54-a661-742343453917}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="AI\AScript\ScriptThread\ScriptStackTracker">
-      <UniqueIdentifier>{70be1f5c-04fa-4c5b-8575-724c65ea3605}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="AI\AScript\memory_allocator">
-      <UniqueIdentifier>{4af958df-805e-4fcb-b627-aa1233882873}</UniqueIdentifier>
     </Filter>
     <Filter Include="AI\ASound">
       <UniqueIdentifier>{6a79ab5a-f675-4b39-8c96-b7dc473c8e21}</UniqueIdentifier>
@@ -4146,9 +4131,6 @@
     <ClInclude Include="ai_object_location.h">
       <Filter>AI\ANavigation\ObjectLocation</Filter>
     </ClInclude>
-    <ClInclude Include="ai_object_location_impl.h">
-      <Filter>AI\ANavigation\ObjectLocation</Filter>
-    </ClInclude>
     <ClInclude Include="ai_object_location_inline.h">
       <Filter>AI\ANavigation\ObjectLocation</Filter>
     </ClInclude>
@@ -4180,12 +4162,6 @@
       <Filter>AI\AScript</Filter>
     </ClInclude>
     <ClInclude Include="..\COMMON_AI\script_export_space.h">
-      <Filter>AI\AScript</Filter>
-    </ClInclude>
-    <ClInclude Include="script_space.h">
-      <Filter>AI\AScript</Filter>
-    </ClInclude>
-    <ClInclude Include="..\COMMON_AI\script_space_forward.h">
       <Filter>AI\AScript</Filter>
     </ClInclude>
     <ClInclude Include="script_bind_macroses.h">
@@ -4293,9 +4269,6 @@
     <ClInclude Include="script_game_object.h">
       <Filter>AI\AScript\ScriptClasses\ScriptGameObject</Filter>
     </ClInclude>
-    <ClInclude Include="script_game_object_impl.h">
-      <Filter>AI\AScript\ScriptClasses\ScriptGameObject</Filter>
-    </ClInclude>
     <ClInclude Include="script_hit.h">
       <Filter>AI\AScript\ScriptClasses\ScriptHit</Filter>
     </ClInclude>
@@ -4368,18 +4341,6 @@
     <ClInclude Include="script_callback_ex.h">
       <Filter>AI\AScript\ScriptClasses\ScriptCallbackEx</Filter>
     </ClInclude>
-    <ClInclude Include="script_callback_ex_generators.h">
-      <Filter>AI\AScript\ScriptClasses\ScriptCallbackEx</Filter>
-    </ClInclude>
-    <ClInclude Include="script_callback_ex_inline.h">
-      <Filter>AI\AScript\ScriptClasses\ScriptCallbackEx</Filter>
-    </ClInclude>
-    <ClInclude Include="script_callback_ex_nonvoid.h">
-      <Filter>AI\AScript\ScriptClasses\ScriptCallbackEx</Filter>
-    </ClInclude>
-    <ClInclude Include="script_callback_ex_void.h">
-      <Filter>AI\AScript\ScriptClasses\ScriptCallbackEx</Filter>
-    </ClInclude>
     <ClInclude Include="script_lanim.h">
       <Filter>AI\AScript\ScriptClasses\ScriptLAnim</Filter>
     </ClInclude>
@@ -4392,65 +4353,14 @@
     <ClInclude Include="script_particles_inline.h">
       <Filter>AI\AScript\ScriptClasses\ScriptParticles</Filter>
     </ClInclude>
-    <ClInclude Include="..\COMMON_AI\mslotutils.h">
-      <Filter>AI\AScript\ScriptDebugger</Filter>
-    </ClInclude>
-    <ClInclude Include="..\COMMON_AI\script_callStack.h">
-      <Filter>AI\AScript\ScriptDebugger</Filter>
-    </ClInclude>
-    <ClInclude Include="..\COMMON_AI\script_debugger.h">
-      <Filter>AI\AScript\ScriptDebugger</Filter>
-    </ClInclude>
-    <ClInclude Include="..\COMMON_AI\script_debugger_messages.h">
-      <Filter>AI\AScript\ScriptDebugger</Filter>
-    </ClInclude>
-    <ClInclude Include="..\COMMON_AI\script_debugger_threads.h">
-      <Filter>AI\AScript\ScriptDebugger</Filter>
-    </ClInclude>
-    <ClInclude Include="..\COMMON_AI\script_lua_helper.h">
-      <Filter>AI\AScript\ScriptDebugger</Filter>
-    </ClInclude>
     <ClInclude Include="..\COMMON_AI\script_engine.h">
       <Filter>AI\AScript\ScriptEngine</Filter>
     </ClInclude>
     <ClInclude Include="..\COMMON_AI\script_engine_export.h">
       <Filter>AI\AScript\ScriptEngine</Filter>
     </ClInclude>
-    <ClInclude Include="..\COMMON_AI\script_engine_inline.h">
-      <Filter>AI\AScript\ScriptEngine</Filter>
-    </ClInclude>
-    <ClInclude Include="..\COMMON_AI\script_engine_space.h">
-      <Filter>AI\AScript\ScriptEngine</Filter>
-    </ClInclude>
-    <ClInclude Include="..\COMMON_AI\script_process.h">
-      <Filter>AI\AScript\ScriptProcess</Filter>
-    </ClInclude>
-    <ClInclude Include="..\COMMON_AI\script_process_inline.h">
-      <Filter>AI\AScript\ScriptProcess</Filter>
-    </ClInclude>
     <ClInclude Include="..\COMMON_AI\script_storage.h">
       <Filter>AI\AScript\ScriptStorage</Filter>
-    </ClInclude>
-    <ClInclude Include="..\COMMON_AI\script_storage_inline.h">
-      <Filter>AI\AScript\ScriptStorage</Filter>
-    </ClInclude>
-    <ClInclude Include="..\COMMON_AI\script_storage_space.h">
-      <Filter>AI\AScript\ScriptStorage</Filter>
-    </ClInclude>
-    <ClInclude Include="..\COMMON_AI\script_thread.h">
-      <Filter>AI\AScript\ScriptThread</Filter>
-    </ClInclude>
-    <ClInclude Include="..\COMMON_AI\script_thread_inline.h">
-      <Filter>AI\AScript\ScriptThread</Filter>
-    </ClInclude>
-    <ClInclude Include="..\COMMON_AI\script_stack_tracker.h">
-      <Filter>AI\AScript\ScriptThread\ScriptStackTracker</Filter>
-    </ClInclude>
-    <ClInclude Include="..\COMMON_AI\script_stack_tracker_inline.h">
-      <Filter>AI\AScript\ScriptThread\ScriptStackTracker</Filter>
-    </ClInclude>
-    <ClInclude Include="..\COMMON\doug_lea_memory_allocator.h">
-      <Filter>AI\AScript\memory_allocator</Filter>
     </ClInclude>
     <ClInclude Include="..\COMMON_AI\ai_sounds.h">
       <Filter>AI\ASound</Filter>
@@ -6324,9 +6234,6 @@
     <ClInclude Include="ui\UIGameTutorial.h">
       <Filter>AI\AScript\ScriptClasses\UI\Tutorial</Filter>
     </ClInclude>
-    <ClInclude Include="..\COMMON_AI\script_additional_libs.h">
-      <Filter>AI\AScript\ScriptEngine</Filter>
-    </ClInclude>
     <ClInclude Include="script_rq_result.h">
       <Filter>AI\AScript\ScriptClasses\ScriptRQ</Filter>
     </ClInclude>
@@ -7728,18 +7635,6 @@
     <ClCompile Include="script_particles_script.cpp">
       <Filter>AI\AScript\ScriptClasses\ScriptParticles</Filter>
     </ClCompile>
-    <ClCompile Include="..\COMMON_AI\script_callStack.cpp">
-      <Filter>AI\AScript\ScriptDebugger</Filter>
-    </ClCompile>
-    <ClCompile Include="..\COMMON_AI\script_debugger.cpp">
-      <Filter>AI\AScript\ScriptDebugger</Filter>
-    </ClCompile>
-    <ClCompile Include="..\COMMON_AI\script_debugger_threads.cpp">
-      <Filter>AI\AScript\ScriptDebugger</Filter>
-    </ClCompile>
-    <ClCompile Include="..\COMMON_AI\script_lua_helper.cpp">
-      <Filter>AI\AScript\ScriptDebugger</Filter>
-    </ClCompile>
     <ClCompile Include="..\COMMON_AI\script_engine.cpp">
       <Filter>AI\AScript\ScriptEngine</Filter>
     </ClCompile>
@@ -7752,20 +7647,8 @@
     <ClCompile Include="..\COMMON_AI\script_engine_script.cpp">
       <Filter>AI\AScript\ScriptEngine</Filter>
     </ClCompile>
-    <ClCompile Include="..\COMMON_AI\script_process.cpp">
-      <Filter>AI\AScript\ScriptProcess</Filter>
-    </ClCompile>
     <ClCompile Include="..\COMMON_AI\script_storage.cpp">
       <Filter>AI\AScript\ScriptStorage</Filter>
-    </ClCompile>
-    <ClCompile Include="..\COMMON_AI\script_thread.cpp">
-      <Filter>AI\AScript\ScriptThread</Filter>
-    </ClCompile>
-    <ClCompile Include="..\COMMON_AI\script_stack_tracker.cpp">
-      <Filter>AI\AScript\ScriptThread\ScriptStackTracker</Filter>
-    </ClCompile>
-    <ClCompile Include="..\COMMON\doug_lea_memory_allocator.c">
-      <Filter>AI\AScript\memory_allocator</Filter>
     </ClCompile>
     <ClCompile Include="..\COMMON_AI\ai_sounds.cpp">
       <Filter>AI\ASound</Filter>
@@ -9692,9 +9575,6 @@
     </ClCompile>
     <ClCompile Include="ui\UIGameTutorialVideoItem.cpp">
       <Filter>AI\AScript\ScriptClasses\UI\Tutorial</Filter>
-    </ClCompile>
-    <ClCompile Include="..\COMMON_AI\script_additional_libs.cpp">
-      <Filter>AI\AScript\ScriptEngine</Filter>
     </ClCompile>
     <ClCompile Include="script_rq_result.cpp">
       <Filter>AI\AScript\ScriptClasses\ScriptRQ</Filter>

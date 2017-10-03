@@ -17,9 +17,7 @@
 #include "ShootingObject.h"
 //.#include "LevelFogOfWar.h"
 #include "Level_Bullet_Manager.h"
-#include "script_process.h"
 #include "script_engine.h"
-#include "script_engine_space.h"
 #include "team_base_zone.h"
 #include "infoportion.h"
 #include "patrol_path_storage.h"
@@ -239,9 +237,6 @@ CLevel::~CLevel()
 #ifdef DEBUG
 	xr_delete					(m_debug_renderer);
 #endif
-
-	if (!g_dedicated_server)
-		ai().script_engine().remove_script_process(ScriptEngine::eScriptProcessorLevel);
 
 	xr_delete					(game);
 	xr_delete					(game_events);
@@ -550,10 +545,6 @@ void CLevel::OnFrame	()
 //	g_pGamePersistent->Environment().SetGameTime	(GetGameDayTimeSec(),GetGameTimeFactor());
 	g_pGamePersistent->Environment().SetGameTime	(GetEnvironmentGameDayTimeSec(),GetGameTimeFactor());
 
-	//Device.Statistic->cripting.Begin	();
-	if (!g_dedicated_server)
-		ai().script_engine().script_process	(ScriptEngine::eScriptProcessorLevel)->update();
-	//Device.Statistic->Scripting.End	();
 	m_ph_commander->update				();
 	m_ph_commander_scripts->update		();
 //	autosave_manager().update			();
@@ -571,12 +562,6 @@ void CLevel::OnFrame	()
 		else								
 			m_level_sound_manager->Update	();
 	}
-	// deffer LUA-GC-STEP
-	if (!g_dedicated_server)
-	{
-		if (g_mt_config.test(mtLUA_GC))	Device.seqParallel.push_back	(fastdelegate::FastDelegate0<>(this,&CLevel::script_gc));
-		else							script_gc	()	;
-	}
 	//-----------------------------------------------------
 	if (pStatGraphR)
 	{	
@@ -586,12 +571,6 @@ void CLevel::OnFrame	()
 		pStatGraphR->AppendItem(float(m_dwRPC)*fRPC_Mult, 0xffff0000, 1);
 		pStatGraphR->AppendItem(float(m_dwRPS)*fRPS_Mult, 0xff00ff00, 0);
 	};
-}
-
-int		psLUA_GCSTEP					= 10			;
-void	CLevel::script_gc				()
-{
-	lua_gc	(ai().script_engine().lua(), LUA_GCSTEP, psLUA_GCSTEP);
 }
 
 #ifdef DEBUG_PRECISE_PATH

@@ -24,6 +24,13 @@
 #ifndef LUABIND_CONFIG_HPP_INCLUDED
 #define LUABIND_CONFIG_HPP_INCLUDED
 
+#define LUABIND_NO_ERROR_CHECKING
+#define LUABIND_NO_EXCEPTIONS
+#define BOOST_NO_EXCEPTIONS
+#define LUABIND_DONT_COPY_STRINGS
+
+#pragma comment( lib, "lua51.lib"	)
+
 #if !defined(DEBUG) || defined(FORCE_NO_EXCEPTIONS)
 	// release: no error checking, no exceptions
 	#define LUABIND_NO_EXCEPTIONS

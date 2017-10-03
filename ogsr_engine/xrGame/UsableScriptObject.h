@@ -1,7 +1,5 @@
 #pragma once
 
-#include "script_space_forward.h"
-
 class CGameObject;
 
 class CUsableScriptObject

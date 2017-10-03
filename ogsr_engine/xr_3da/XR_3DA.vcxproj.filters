@@ -135,9 +135,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="CopyProtection.h">
-      <Filter>General</Filter>
-    </ClInclude>
     <ClInclude Include="stdafx.h">
       <Filter>General</Filter>
     </ClInclude>
@@ -456,12 +453,6 @@
     <ClInclude Include="xrCPU_Pipe.h">
       <Filter>Engine\Core</Filter>
     </ClInclude>
-    <ClInclude Include="ai_script_lua_extension.h">
-      <Filter>Engine\Core\Scripting</Filter>
-    </ClInclude>
-    <ClInclude Include="ai_script_lua_space.h">
-      <Filter>Engine\Core\Scripting</Filter>
-    </ClInclude>
     <ClInclude Include="ai_script_space.h">
       <Filter>Engine\Core\Scripting</Filter>
     </ClInclude>
@@ -479,9 +470,6 @@
     </ClInclude>
     <ClInclude Include="..\COMMON\ETextureParams.h">
       <Filter>Interfaces\Render\Execution &amp; 3D\Shaders\ShaderManager</Filter>
-    </ClInclude>
-    <ClInclude Include="..\COMMON\doug_lea_memory_allocator.h">
-      <Filter>Interfaces\Render\Execution &amp; 3D\Shaders\ShaderManager\doug_lea_memory_allocator</Filter>
     </ClInclude>
     <ClInclude Include="..\COMMON\bone.h">
       <Filter>Game API\Animator</Filter>
@@ -848,20 +836,11 @@
     <ClCompile Include="mailSlot.cpp">
       <Filter>Engine\Core</Filter>
     </ClCompile>
-    <ClCompile Include="ai_script_lua_debug.cpp">
-      <Filter>Engine\Core\Scripting</Filter>
-    </ClCompile>
-    <ClCompile Include="ai_script_lua_extension.cpp">
-      <Filter>Engine\Core\Scripting</Filter>
-    </ClCompile>
     <ClCompile Include="perlin.cpp">
       <Filter>Engine\Noise</Filter>
     </ClCompile>
     <ClCompile Include="..\COMMON\ETextureParams.cpp">
       <Filter>Interfaces\Render\Execution &amp; 3D\Shaders\ShaderManager</Filter>
-    </ClCompile>
-    <ClCompile Include="..\COMMON\doug_lea_memory_allocator.c">
-      <Filter>Interfaces\Render\Execution &amp; 3D\Shaders\ShaderManager\doug_lea_memory_allocator</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
