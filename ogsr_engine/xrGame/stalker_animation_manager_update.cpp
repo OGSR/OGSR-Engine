@@ -14,7 +14,7 @@
 #include "profiler.h"
 #include "stalker_movement_manager.h"
 
-IC	void CStalkerAnimationManager::play_delayed_callbacks	()
+/*IC*/	void CStalkerAnimationManager::play_delayed_callbacks	()
 {
 	if (!m_call_script_callback)
 		return;

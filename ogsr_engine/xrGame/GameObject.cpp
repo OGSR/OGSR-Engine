@@ -16,7 +16,6 @@
 #include "game_cl_base.h"
 #include "object_factory.h"
 #include "../xr_3da/skeletoncustom.h"
-#include "ai_object_location_impl.h"
 #include "game_graph.h"
 #include "ai_debug.h"
 #include "..\xr_3da\igame_level.h"
@@ -28,6 +27,8 @@
 #include "game_level_cross_table.h"
 #include "animation_movement_controller.h"
 #include "game_object_space.h"
+
+#include "ai_object_location.h"
 
 #ifdef DEBUG
 #	include "debug_renderer.h"

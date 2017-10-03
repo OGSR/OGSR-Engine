@@ -93,7 +93,9 @@ shared_str	CSpaceRestrictionManager::base_out_restrictions		(ALife::_OBJECT_ID i
 	return							((*I).second.m_base_out_restrictions);
 }
 
-IC	CSpaceRestrictionManager::CRestrictionPtr CSpaceRestrictionManager::restriction	(ALife::_OBJECT_ID id)
+//KRodin: inline тут убрано из-за того, что после выключения LTCG появилась error LNK2019.
+//В другом движке у меня периодически вылетало в CSpaceRestrictionManager::collect_garbage. Не из-за этого, ли?
+/*IC*/	CSpaceRestrictionManager::CRestrictionPtr CSpaceRestrictionManager::restriction	(ALife::_OBJECT_ID id)
 {
 	CLIENT_RESTRICTIONS::iterator	I = m_clients->find(id);
 	VERIFY							(m_clients->end() != I);

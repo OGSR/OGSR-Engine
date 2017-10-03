@@ -8,12 +8,15 @@
 
 #pragma once
 
-#include "script_space_forward.h"
 #include "script_bind_macroses.h"
 #include "script_export_space.h"
 #include "xr_time.h"
 #include "character_info_defs.h"
 #include "..\xr_3da\CameraBase.h"
+
+#include "gameobject.h"
+#include "ai_space.h"
+#include "script_engine.h"
 
 enum EPdaMsg;
 enum ESoundTypes;
@@ -130,7 +133,18 @@ public:
 	virtual					~CScriptGameObject		();
 							operator CObject*		();
 
-	IC		CGameObject			&object				() const;
+	//KRodin: перенесено сюда, иначе не компилится
+	IC		CGameObject			&object				() const
+	{
+		if (m_game_object && m_game_object->lua_game_object() == this)
+			return	(*m_game_object);
+#ifdef DEBUG
+		ai().script_engine().script_log(eLuaMessageTypeError, "you are trying to use a destroyed object [%x]", m_game_object);
+		THROW2(m_game_object && m_game_object->lua_game_object() == this, "Probably, you are trying to use a destroyed object!");
+#endif
+		return	(*m_game_object);
+	}
+
 			CScriptGameObject	*Parent				() const;
 			void				Hit					(CScriptHit *tLuaHit);
 			int					clsid				() const;
