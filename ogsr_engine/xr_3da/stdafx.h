@@ -60,12 +60,5 @@ extern ENGINE_API CInifile *pGameIni;
 #pragma comment( lib, "dinput8.lib"		)
 #pragma comment( lib, "dxguid.lib"		)
 
-#if	!defined(DEBUG) || defined(FORCE_NO_EXCEPTIONS)
-	// release: no error checking, no exceptions
-	//KRodin: удалить нахер!
-	namespace std	{	class exception; }
-	namespace boost {	ENGINE_API	void throw_exception(const std::exception &A);	};
-#endif
-
 #endif // !M_BORLAND
 #endif // !defined STDAFX_3DA

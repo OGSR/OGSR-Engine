@@ -10,7 +10,6 @@ void	xrMemory::dbg_check			()											{ }
 #	if 0
 #		define DEBUG_MEMORY_LEAK		
 #		define MEMORY_LEAK_DESCRIPTION	"C++ NEW"
-//#		define MEMORY_LEAK_DESCRIPTION	"class luabind::functor<bool>"
 #		define MEMORY_LEAK_SIZE			12
 #	endif
 

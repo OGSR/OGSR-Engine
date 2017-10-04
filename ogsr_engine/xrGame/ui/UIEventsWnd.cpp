@@ -77,19 +77,11 @@ void CUIEventsWnd::Init				()
 	m_TaskFilter->SetWindowName		("filter_tab");
 	Register						(m_TaskFilter);
     AddCallback						("filter_tab",TAB_CHANGED,CUIWndCallback::void_function(this,&CUIEventsWnd::OnFilterChanged));
-/*
-    m_primary_or_all_filter_btn		= xr_new<CUI3tButton>(); m_primary_or_all_filter_btn->SetAutoDelete(true);
-	m_UILeftFrame->AttachChild		(m_primary_or_all_filter_btn);
-	xml_init.Init3tButton			(uiXml, "main_wnd:left_frame:primary_or_all", 0, m_primary_or_all_filter_btn);
 
-	Register						(m_primary_or_all_filter_btn);
-	m_primary_or_all_filter_btn->	SetWindowName("btn_primary_or_all");
-    AddCallback						("btn_primary_or_all",BUTTON_CLICKED,boost::bind(&CUIEventsWnd::OnFilterChanged,this,_1,_2));
-*/
-   m_currFilter						= eActiveTask;
-   SetDescriptionMode				(true);
+	m_currFilter					= eActiveTask;
+	SetDescriptionMode				(true);
 
-   m_ui_task_item_xml.Init			(CONFIG_PATH, UI_PATH, "job_item.xml");
+	m_ui_task_item_xml.Init			(CONFIG_PATH, UI_PATH, "job_item.xml");
 }
 
 void CUIEventsWnd::Update			()

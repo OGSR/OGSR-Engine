@@ -1,7 +1,6 @@
 #pragma once
-//#include <boost/noncopyable.hpp>
 class CBlend;
-class animation_movement_controller /*: private boost::noncopyable*/
+class animation_movement_controller
 {
 	Fmatrix&		m_pObjXForm;
 	Fmatrix			m_startObjXForm;

@@ -45,7 +45,6 @@ void CIKLimbsController::Create( CGameObject* O )
 }
 
 struct envc :
-/*private boost::noncopyable,*/
 public SEnumVerticesCallback
 {
 	Fvector &pos;

@@ -6,7 +6,7 @@
 #	include <malloc.h>
 #	pragma warning(pop)
 
-#	include <boost/crc.hpp>
+#	include "xrCore.h"
 
 	extern void BuildStackTrace		();
 
@@ -111,9 +111,7 @@
 			*--J			= 0;
 		}
 
-		boost::crc_32_type	temp;
-		temp.process_block	(string,string + accumulator);
-		u32					crc = temp.checksum();
+		u32 crc = crc32(string, accumulator);
 
 		STATS::iterator		I = stats.find(crc);
 		STATS::iterator		E = stats.end();

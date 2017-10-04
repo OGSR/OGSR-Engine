@@ -44,7 +44,6 @@ void CUIVideoPlayerWnd::Init			(CUIXml* doc, LPCSTR start_from)
 
 
 	AddCallback						("buttons_tab", TAB_CHANGED, CUIWndCallback::void_function(this, &CUIVideoPlayerWnd::OnTabChanged) );
-//.    AddCallback						("buttons_tab",TAB_CHANGED,boost::bind(&CUIVideoPlayerWnd::OnTabChanged,this,_1,_2));
 
 	int flag						=doc->ReadAttribInt(start_from, 0, "looped", 0);
 	m_flags.set						(eLooped, flag?true:false);

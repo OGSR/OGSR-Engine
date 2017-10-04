@@ -52,9 +52,9 @@ struct CLoader {
 	struct CHelper3 {
 		template <typename T>
 		struct has_value_compare {
-		template <typename _P> static object_type_traits::detail::yes	select(object_type_traits::detail::other<typename _P::value_compare>*);
-			template <typename _P> static object_type_traits::detail::no		select(...);
-			enum { value = sizeof(object_type_traits::detail::yes) == sizeof(select<T>(0)) };
+		template <typename _P> static std::true_type select(object_type_traits::detail::other<typename _P::value_compare>*);
+			template <typename _P> static std::false_type select(...);
+			static constexpr auto value = std::is_same_v<std::true_type, decltype(select<T>(nullptr))>;
 		};
 
 		template <typename T>

@@ -43,7 +43,7 @@ namespace SmartDynamicCast {
 				typedef typename add<typename T1::Tail>::result result;
 			};
 
-			typedef typename selector<is_type<T,typename Head::Head>::value>::result result;
+			typedef typename selector<std::is_same_v<T, typename Head::Head>>::result result;
 		};
 
 		template <>
