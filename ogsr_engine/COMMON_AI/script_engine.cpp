@@ -33,22 +33,21 @@ void CScriptEngine::unload()
 int CScriptEngine::lua_panic(lua_State *L)
 {
 	print_output(L, "[CScriptEngine::lua_panic]", LUA_ERRRUN);
+	Debug.fatal(DEBUG_INFO, "[CScriptEngine::lua_error]: %s", lua_isstring(L, -1) ? lua_tostring(L, -1) : "");
 	return 0;
 }
 
 #ifdef LUABIND_NO_EXCEPTIONS
 void CScriptEngine::lua_error(lua_State *L)
 {
-	print_output(L, "", LUA_ERRRUN);
-
-	auto error = lua_tostring(L, -1);
-	Debug.fatal(DEBUG_INFO, "[CScriptEngine::lua_error]: %s", error ? error : "NULL");
+	print_output(L, "[CScriptEngine::lua_error]", LUA_ERRRUN);
+	Debug.fatal(DEBUG_INFO, "[CScriptEngine::lua_error]: %s", lua_isstring(L, -1) ? lua_tostring(L, -1) : "");
 }
 #endif
 
 int CScriptEngine::lua_pcall_failed(lua_State *L)
 {
-	print_output(L, "", LUA_ERRRUN);
+	print_output(L, "[CScriptEngine::lua_pcall_failed]", LUA_ERRRUN);
 	Debug.fatal(DEBUG_INFO, "[CScriptEngine::lua_pcall_failed]: %s", lua_isstring(L, -1) ? lua_tostring(L, -1) : "");
 	if (lua_isstring(L, -1))
 		lua_pop(L, 1);
@@ -62,8 +61,14 @@ void lua_cast_failed(lua_State *L, const luabind::type_id& info)
 void lua_cast_failed(lua_State *L, LUABIND_TYPE_INFO info)
 #endif
 {
-	CScriptEngine::print_output(L, "", LUA_ERRRUN);
+	CScriptEngine::print_output(L, "[lua_cast_failed]", LUA_ERRRUN);
+#ifdef LUABIND_09
+	Msg("LUA error: cannot cast lua value to %s", info.name());
 	//Debug.fatal(DEBUG_INFO, "LUA error: cannot cast lua value to %s", info.name()); //KRodin: Тут наверное вылетать не надо.
+#else
+	Msg("LUA error: cannot cast lua value to %s", info->name());
+	//Debug.fatal(DEBUG_INFO, "LUA error: cannot cast lua value to %s", info->name()); //KRodin: Тут наверное вылетать не надо.
+#endif
 }
 #endif
 
@@ -252,4 +257,11 @@ void CScriptEngine::add_no_file(const char* file_name, u32 string_length)
 {
 	m_last_no_file_length = string_length;
 	std::memcpy(m_last_no_file, file_name, string_length + 1);
+}
+
+void CScriptEngine::collect_all_garbage()
+{
+	lua_gc(lua(), LUA_GCCOLLECT, 0);
+	lua_gc(lua(), LUA_GCCOLLECT, 0);
+	lua_gc(lua(), LUA_GCCOLLECT, 0);
 }

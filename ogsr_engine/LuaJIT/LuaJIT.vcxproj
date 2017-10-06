@@ -66,7 +66,7 @@
             xcopy "$(TargetDir)$(TargetName).pdb" "X:\ogsr_package\READY\bin\" /y/i ) else ( if x64 == $(Platform) (
               xcopy "$(TargetPath)" "X:\ogsr_package\READY\bin\x64\" /y/i
               xcopy "$(TargetDir)$(TargetName).pdb" "X:\ogsr_package\READY\bin\x64\" /y/i ) ) )
- xcopy "$(ProjectDir)jit" "X:\ogsr_package\READY\bin\" /y/i 
+xcopy "$(ProjectDir)jit" "X:\ogsr_package\READY\bin\jit\" /y/i
       </Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
@@ -108,7 +108,7 @@
             xcopy "$(TargetDir)$(TargetName).pdb" "X:\ogsr_package\READY\bin\" /y/i ) else ( if x64 == $(Platform) (
               xcopy "$(TargetPath)" "X:\ogsr_package\READY\bin\x64\" /y/i
               xcopy "$(TargetDir)$(TargetName).pdb" "X:\ogsr_package\READY\bin\x64\" /y/i ) ) )
- xcopy "$(ProjectDir)jit" "X:\ogsr_package\READY\bin\" /y/i 
+xcopy "$(ProjectDir)jit" "X:\ogsr_package\READY\bin\jit\" /y/i
       </Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>

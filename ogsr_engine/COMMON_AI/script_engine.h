@@ -44,6 +44,8 @@ public:
 	void				register_script_classes();
 	void				parse_script_namespace(const char *name, char *ns, u32 nsSize, char *func, u32 funcSize);
 
+	void				collect_all_garbage();
+
 	template <typename TResult>
 	IC		bool				functor(const char* function_to_call, luabind::functor<TResult> &lua_function);
 
