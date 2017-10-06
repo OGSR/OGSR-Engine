@@ -160,10 +160,12 @@ void CConsole::OnRender	()
 	for (int i=LogFile->size()-1-scroll_delta; i>=0; i--) 
 	{
 		ypos-=LDIST;
-		if (ypos<-1.f)	break;
-		LPCSTR			ls = *(*LogFile)[i];
-		if	(0==ls)		continue;
-		switch (ls[0]) {
+		if (ypos<-1.f) break;
+
+		auto ls = (*LogFile)[i];
+		if (!ls.c_str())
+			continue;
+		switch (ls.front()) {
 		case '~':
 			pFont->SetColor(color_rgba(255,255,0, 255));
 			out_font		(pFont,&ls[2],ypos);
@@ -191,7 +193,7 @@ void CConsole::OnRender	()
 			break;
 		default:
 			pFont->SetColor(color_rgba(255,255,255, 255));
-			out_font		(pFont,ls,ypos);
+			out_font		(pFont,ls.c_str(),ypos);
 //.			pFont->OutI  (-1.f,ypos,"%s",ls);
 		}
 	}
@@ -534,11 +536,13 @@ void CConsole::SelectCommand()
 	int		p,k;
 	BOOL	found=false;
 	for (p=LogFile->size()-1, k=0; p>=0; p--) {
-		if (0==*(*LogFile)[p])		continue;
-		if ((*LogFile)[p][0]=='~') {
+		auto str = (*LogFile)[p];
+		if (!str.c_str())
+			continue;
+		if (str.front() == '~') {
 			k--;
 			if (k==cmd_delta) {
-				strcpy_s(editor,&(*(*LogFile)[p])[2]);
+				strcpy_s(editor, &str[2]);
 				found=true;
 			}
 		}

@@ -1,196 +1,190 @@
 #include "stdafx.h"
 #pragma hdrstop
 
-#include <time.h>
 #include "resource.h"
 #include "log.h"
 
-extern BOOL					LogExecCB		= TRUE;
-static string_path			logFName		= "engine.log";
-static BOOL 				no_log			= TRUE;
-#ifdef PROFILE_CRITICAL_SECTIONS
-	static xrCriticalSection	logCS(MUTEX_PROFILE_ID(log));
-#else // PROFILE_CRITICAL_SECTIONS
-	static xrCriticalSection	logCS;
-#endif // PROFILE_CRITICAL_SECTIONS
-xr_vector<shared_str>*		LogFile			= NULL;
-static LogCallback			LogCB			= 0;
+#include <mutex> //KRodin: надо вынести в xrCore.h
+#include <sstream> //для std::stringstream
 
+static string_path			logFName = "engine.log";
+static BOOL 				no_log	 = TRUE;
+static std::recursive_mutex logCS;
+static LogCallback			LogCB	 = nullptr;
+xr_vector<std::string>*		LogFile  = nullptr;
 IWriter *LogWriter;
 
-void FlushLog			(LPCSTR file_name)
-{
-}
+void FlushLog() //Надо удалить
+{}
 
-void FlushLog			()
+void AddOne(std::string &split, bool first_line)
 {
-	FlushLog		(logFName);
-}
+	if (!LogFile)
+		return;
 
-void AddOne				(const char *split) 
-{
-	if(!LogFile)		
-						return;
-
-	logCS.Enter			();
+	std::lock_guard<decltype(logCS)> lock(logCS);
 
 #ifdef DEBUG
-	OutputDebugString	(split);
-	OutputDebugString	("\n");
+	OutputDebugString(split.c_str()); //Вывод в отладчик студии?
+	OutputDebugString("\n");
 #endif
 
-//	DUMP_PHASE;
+	if (LogCB)
+		LogCB(split.c_str()); //Только в дебаге используется вроде.
+
+	LogFile->push_back(split); //Вывод в консоль
+
+	if (!LogWriter) return;
+
+	if (first_line)
 	{
-//		DUMP_PHASE;
-		time_t t = time(NULL);
-		tm* ti = localtime(&t);
+		SYSTEMTIME lt;
+		GetLocalTime(&lt);
 		char buf[64];
-		strftime(buf, 64, "[%x %X]\t", ti);
-
-		char buf_1[1024];
-		sprintf_s(buf_1, 1024, "%s%s\r\n", buf, split);
-		shared_str			temp = shared_str(buf_1);
-		LogFile->push_back	(temp);
-
-		//+RvP
-		if(LogWriter){
-			LogWriter->w(buf_1, xr_strlen(buf_1));
-			LogWriter->flush();
-		}
-		//-RvP
+		std::snprintf(buf, 64, "\n[%02d.%02d.%02d %02d:%02d:%02d.%03d] ", lt.wDay, lt.wMonth, lt.wYear % 100, lt.wHour, lt.wMinute, lt.wSecond, lt.wMilliseconds);
+		split = buf + split;
+	}
+	else
+	{
+		split = "\n" + split;
 	}
 
-	//exec CallBack
-	if (LogExecCB&&LogCB)LogCB(split);
-
-	logCS.Leave				();
+	//Вывод в лог-файл
+	LogWriter->w(split.c_str(), split.length());
+	LogWriter->flush();
 }
 
-void Log				(const char *s) 
+void Log(const char* s)
 {
-	int		i,j;
-	char	split[1024];
+	std::string str(s);
 
-	for (i=0,j=0; s[i]!=0; i++) {
-		if (s[i]=='\n') {
-			split[j]=0;	// end of line
-			if (split[0]==0) { split[0]=' '; split[1]=0; }
-			AddOne(split);
-			j=0;
-		} else {
-			split[j++]=s[i];
+	if (str.empty()) return; //Строка пуста - выходим
+
+	bool not_first_line = false;
+	bool have_color = false;
+	auto color_s = str.front();
+	if ( //Ищем в начале строки цветовой код
+		color_s == '-' //Зелёный
+		|| color_s == '~' //Жёлтый
+		|| color_s == '!' //Красный
+		|| color_s == '*' //Серый
+		|| color_s == '#' //Бирюзовый
+	) have_color = true;
+
+	std::stringstream ss(str);
+	for (std::string item; std::getline(ss, item);) //Разбиваем текст по "\n"
+	{
+		if (not_first_line && have_color)
+		{
+			item = ' ' + item;
+			item = color_s + item; //Если надо, перед каждой строкой вставляем спец-символ цвета, чтобы в консоли цветными были все строки текста, а не только первая.
 		}
+		AddOne(item, !not_first_line);
+		not_first_line = true;
 	}
-	split[j]=0;
-	AddOne(split);
 }
 
-void __cdecl Msg		( const char *format, ...)
+void __cdecl Msg(const char *format, ...) //KRodin: Убрал ограничение на размер буфера
 {
-	va_list mark;
-	string1024	buf;
-	va_start	(mark, format );
-	int sz		= _vsnprintf(buf, sizeof(buf)-1, format, mark ); buf[sizeof(buf)-1]=0;
-    va_end		(mark);
-	if (sz)		Log(buf);
+	va_list args;
+	va_start(args, format);
+	int buf_len = std::vsnprintf(nullptr, 0, format, args);
+	auto strBuf = std::make_unique<char[]>(buf_len + 1);
+	std::vsnprintf(strBuf.get(), buf_len + 1, format, args);
+	Log(strBuf.get());
 }
 
-void Log				(const char *msg, const char *dop) {
+void Log(const char *msg, const char *dop) { //Надо убрать
 	char buf[1024];
-
-	if (dop)	sprintf_s(buf,sizeof(buf),"%s %s",msg,dop);
-	else		sprintf_s(buf,sizeof(buf),"%s",msg);
-
-	Log		(buf);
+	if (dop)
+		std::snprintf(buf,sizeof(buf),"%s %s",msg,dop);
+	else
+		std::snprintf(buf,sizeof(buf),"%s",msg);
+	Log(buf);
 }
 
-void Log				(const char *msg, u32 dop) {
+void Log(const char *msg, u32 dop) { //Надо убрать
 	char buf[1024];
-
-	sprintf_s	(buf,sizeof(buf),"%s %d",msg,dop);
-	Log			(buf);
+	std::snprintf(buf,sizeof(buf),"%s %d",msg,dop);
+	Log(buf);
 }
 
-void Log				(const char *msg, int dop) {
+void Log(const char *msg, int dop) {
 	char buf[1024];
-
-	sprintf_s	(buf, sizeof(buf),"%s %d",msg,dop);
-	Log		(buf);
+	std::snprintf(buf, sizeof(buf),"%s %d",msg,dop);
+	Log(buf);
 }
 
-void Log				(const char *msg, float dop) {
+void Log(const char *msg, float dop) {
 	char buf[1024];
-
-	sprintf_s	(buf, sizeof(buf),"%s %f",msg,dop);
-	Log		(buf);
+	std::snprintf(buf, sizeof(buf),"%s %f",msg,dop);
+	Log(buf);
 }
 
-void Log				(const char *msg, const Fvector &dop) {
+void Log(const char *msg, const Fvector &dop) {
 	char buf[1024];
-
-	sprintf_s	(buf,sizeof(buf),"%s (%f,%f,%f)",msg,dop.x,dop.y,dop.z);
-	Log		(buf);
+	std::snprintf(buf,sizeof(buf),"%s (%f,%f,%f)",msg,dop.x,dop.y,dop.z);
+	Log(buf);
 }
 
-void Log				(const char *msg, const Fmatrix &dop)	{
-	char	buf	[1024];
-
-	sprintf_s	(buf,sizeof(buf),"%s:\n%f,%f,%f,%f\n%f,%f,%f,%f\n%f,%f,%f,%f\n%f,%f,%f,%f\n",msg,dop.i.x,dop.i.y,dop.i.z,dop._14_
+void Log(const char *msg, const Fmatrix &dop)	{
+	char buf[1024];
+	std::snprintf(buf,sizeof(buf),"%s:\n%f,%f,%f,%f\n%f,%f,%f,%f\n%f,%f,%f,%f\n%f,%f,%f,%f\n",msg,dop.i.x,dop.i.y,dop.i.z,dop._14_
 																				,dop.j.x,dop.j.y,dop.j.z,dop._24_
 																				,dop.k.x,dop.k.y,dop.k.z,dop._34_
 																				,dop.c.x,dop.c.y,dop.c.z,dop._44_);
-	Log		(buf);
+	Log(buf);
 }
 
-void LogWinErr			(const char *msg, long err_code)	{
-	Msg					("%s: %s",msg,Debug.error2string(err_code)	);
-}
-
-void SetLogCB			(LogCallback cb)
+void SetLogCB(LogCallback cb)
 {
-	LogCB				= cb;
+	LogCB = cb;
 }
 
-LPCSTR log_name			()
+const char* log_name()
 {
-	return				(logFName);
+	return logFName;
 }
 
 void InitLog()
 {
-	R_ASSERT			(LogFile==NULL);
-	LogFile				= xr_new< xr_vector<shared_str> >();
+	R_ASSERT(!LogFile);
+	LogFile = xr_new< xr_vector<std::string> >();
 }
 
-void CreateLog			(BOOL nl)
+void CreateLog(BOOL nl)
 {
-    no_log				= nl;
-	strconcat			(sizeof(logFName),logFName,Core.ApplicationName,"_",Core.UserName,".log");
-	if (FS.path_exist("$logs$"))
-		FS.update_path	(logFName,"$logs$",logFName);
-	if (!no_log){
+    no_log = nl;
+	strconcat(sizeof(logFName),logFName,Core.ApplicationName,"_",Core.UserName,".log");
 
-		LogWriter = FS.w_open	(logFName);
-        if (LogWriter == NULL){
-        	MessageBox	(NULL,"Can't create log file.","Error",MB_ICONERROR);
+	if (FS.path_exist("$logs$"))
+		FS.update_path(logFName,"$logs$",logFName);
+
+	if (!no_log)
+	{
+		LogWriter = FS.w_open(logFName);
+        if (!LogWriter)
+		{
+        	MessageBox(nullptr, "Can't create log file.","Error", MB_ICONERROR);
         	abort();
         }		
 
-        for (u32 it=0; it<LogFile->size(); it++)	{
-			LPCSTR		s	= *((*LogFile)[it]);
-			if (s)
-				LogWriter->w(s, xr_strlen(s));
+        for (u32 it = 0; it < LogFile->size(); it++)
+		{
+			auto str = (*LogFile)[it];
+			str = "\n" + str;
+			LogWriter->w(str.c_str(), str.length());
 		}
+
 		LogWriter->flush();
     }
-	LogFile->reserve		(128);
+	LogFile->reserve(128);
 }
 
-void CloseLog(void)
+void CloseLog()
 {
-	if(LogWriter){
+	if (LogWriter)
 		FS.w_close(LogWriter);
-	}
 
 	FlushLog		();
  	LogFile->clear	();

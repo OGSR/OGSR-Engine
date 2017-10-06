@@ -253,8 +253,8 @@ void	CTextConsole::DrawLog(HDC hDC, RECT* pRect)
 	{
 		YPos -= tm.tmHeight;
 		if ( YPos < y_top_max )	break;
-		LPCSTR Str = *(*LogFile)[i];
-		LPCSTR pOut = Str;
+		auto Str = (*LogFile)[i].c_str();
+		auto pOut = Str;
 		if ( !Str ) continue;
 		switch ( Str[0] )
 		{
