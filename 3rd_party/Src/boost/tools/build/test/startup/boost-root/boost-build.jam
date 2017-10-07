@@ -1,2 +1,0 @@
-# Emulate v1 behavior; with the boost-build file in the boost root directory.
-boost-build tools/build ;

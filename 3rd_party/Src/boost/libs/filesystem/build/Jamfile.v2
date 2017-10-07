@@ -1,9 +1,0 @@
-
-project boost/filesystem
-    : source-location ../src
-    ;
-
-SOURCES = exception operations_posix_windows path_posix_windows convenience ;
-
-lib boost_filesystem : $(SOURCES).cpp
-     ;

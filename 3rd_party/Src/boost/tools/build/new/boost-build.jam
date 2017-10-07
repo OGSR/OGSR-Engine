@@ -1,2 +1,0 @@
-# The build system is located right here
-boost-build . ;

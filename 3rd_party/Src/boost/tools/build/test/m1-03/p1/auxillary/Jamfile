@@ -1,5 +1,0 @@
-
-make b.obj
-    : b.cpp 
-    ;
-    

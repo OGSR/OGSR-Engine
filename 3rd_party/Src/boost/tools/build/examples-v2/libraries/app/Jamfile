@@ -1,5 +1,0 @@
-
-# Declare a executable file, which uses a library. Note that
-# includes that for library will be automatically used
-# when compiling 'app.cpp'
-exe app : app.cpp ../lib1/lib1 ; 

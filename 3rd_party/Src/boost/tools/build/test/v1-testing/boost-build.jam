@@ -1,2 +1,0 @@
-TOOLS = gcc ;
-boost-build ../.. ;

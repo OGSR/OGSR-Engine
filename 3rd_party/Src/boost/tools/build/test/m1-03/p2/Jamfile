@@ -1,5 +1,0 @@
-
-make c.obj
-    : c.cpp
-    : <include>everything
-    ;

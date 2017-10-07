@@ -1,5 +1,0 @@
-
-project /boost-build-test-project-1/dir 
-    : source-location src 
-    : default-build release
-    ;

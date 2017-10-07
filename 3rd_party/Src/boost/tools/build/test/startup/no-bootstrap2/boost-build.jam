@@ -1,2 +1,0 @@
-# Bootstrap file not found via explicit lookup in .
-boost-build . ;

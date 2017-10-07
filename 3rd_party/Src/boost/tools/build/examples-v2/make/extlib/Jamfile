@@ -1,4 +1,0 @@
-
-project extlib ;
-
-make c.o : c.cpp : gcc.compile ;

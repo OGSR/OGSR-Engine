@@ -1,4 +1,0 @@
-
-project-root ;
-
-exe foo : foo.cpp ;

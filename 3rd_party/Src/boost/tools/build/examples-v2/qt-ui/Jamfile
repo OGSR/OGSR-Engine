@@ -1,2 +1,0 @@
-
-exe hello : main.cpp hello_world_widget.ui : <uses>qt ;

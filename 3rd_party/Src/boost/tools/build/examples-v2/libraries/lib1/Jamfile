@@ -1,5 +1,0 @@
-
-project lib1
-    : usage-requirements <include>include ;
-
-lib lib1 : lib1.cpp ;

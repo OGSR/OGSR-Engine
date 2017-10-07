@@ -1,4 +1,0 @@
-
-static-lib auxilliary : c.cpp ;
-
-lib auxilliary2 : c.cpp ;

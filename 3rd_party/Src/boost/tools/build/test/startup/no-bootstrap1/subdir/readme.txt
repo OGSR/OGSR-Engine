@@ -1,1 +1,0 @@
-This file is only here so cvs update -P will create the directory.

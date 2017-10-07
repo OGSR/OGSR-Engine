@@ -1,2 +1,0 @@
-
-make b.o : b.cpp : gcc.compile ;

@@ -1,4 +1,0 @@
-
-project /cool-library 
-    : requirements <include>/home/ghost/build/boost-cvs 
-    ;

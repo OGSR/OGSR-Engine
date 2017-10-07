@@ -1,5 +1,0 @@
-
-exe starvephil 
-    : starvephil.cpp ../build/boost_thread  ../../test/build/unit_test_framework 
-    ;
-

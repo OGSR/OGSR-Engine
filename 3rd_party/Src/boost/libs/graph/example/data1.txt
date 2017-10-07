@@ -1,7 +1,0 @@
-# five vertices
-n 5
-# the edges
-e
-1 2
-0 1 
-2 0 

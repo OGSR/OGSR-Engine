@@ -1,2 +1,0 @@
-Class('basic::C', 'basic.h')
-Function('basic::call_f', 'basic.h')

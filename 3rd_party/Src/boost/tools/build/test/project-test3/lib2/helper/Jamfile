@@ -1,5 +1,0 @@
-
-project lib2/helper ;
-
-make e.obj : e.cpp : yfc-compile ;
-
