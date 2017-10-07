@@ -418,14 +418,12 @@ void CALifeSimulator::script_register			(lua_State *L)
 				"Duplicated story id description!"
 			);
 
-		luabind::class_<class_exporter<CALifeSimulator> >	instance("story_ids");
+		class_<class_exporter<CALifeSimulator> > instance("story_ids");
 
-		STORY_PAIRS::const_iterator	I = story_ids.begin();
-		STORY_PAIRS::const_iterator	E = story_ids.end();
-		for ( ; I != E; ++I)
-			instance.enum_		("_story_ids")[luabind::value(*(*I).first,(*I).second)];
+		for (const auto& pair : story_ids)
+			instance = std::move(instance).enum_("_story_ids")[luabind::value(*pair.first, pair.second)];
 
-		luabind::module			(L)[instance];
+		luabind::module			(L)[std::move(instance)];
 	}
 
 	{
@@ -440,14 +438,12 @@ void CALifeSimulator::script_register			(lua_State *L)
 				"Duplicated spawn story id description!"
 			);
 
-		luabind::class_<class_exporter<class_exporter<CALifeSimulator> > >	instance("spawn_story_ids");
+		class_<class_exporter<class_exporter<CALifeSimulator> > > instance("spawn_story_ids");
 
-		SPAWN_STORY_PAIRS::const_iterator	I = spawn_story_ids.begin();
-		SPAWN_STORY_PAIRS::const_iterator	E = spawn_story_ids.end();
-		for ( ; I != E; ++I)
-			instance.enum_		("_spawn_story_ids")[luabind::value(*(*I).first,(*I).second)];
+		for (const auto& pair : spawn_story_ids)
+			instance = std::move(instance).enum_("_spawn_story_ids")[luabind::value(*pair.first, pair.second)];
 
-		luabind::module			(L)[instance];
+		luabind::module			(L)[std::move(instance)];
 	}
 }
 

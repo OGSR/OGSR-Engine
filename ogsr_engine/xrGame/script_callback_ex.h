@@ -12,7 +12,11 @@
 #include "script_engine.h"
 
 IC bool compare_safe(const luabind::object& o1, const luabind::object& o2) {
+#ifdef LUABIND_09
+	if ((luabind::type(o1) == LUA_TNIL) && (luabind::type(o2) == LUA_TNIL))
+#else
 	if ((o1.type() == LUA_TNIL) && (o2.type() == LUA_TNIL))
+#endif
 		return true;
 
 	return o1 == o2;
@@ -34,7 +38,11 @@ protected:
 
 private:
 	bool empty() const {
+#ifdef LUABIND_09
+		return !!m_functor.interpreter();
+#else
 		return !!m_functor.lua_state();
+#endif
 	}
 
 public:
@@ -47,10 +55,18 @@ public:
 	CScriptCallbackEx_& operator=(const CScriptCallbackEx_& callback) {
 		clear();
 
+#ifdef LUABIND_09
+		if (callback.m_functor.is_valid() && callback.m_functor.interpreter())
+#else
 		if (callback.m_functor.is_valid() && callback.m_functor.lua_state())
+#endif
 			m_functor = callback.m_functor;
 
+#ifdef LUABIND_09
+		if (callback.m_object.is_valid() && callback.m_object.interpreter())
+#else
 		if (callback.m_object.is_valid() && callback.m_object.lua_state())
+#endif
 			m_object = callback.m_object;
 
 		return *this;
@@ -114,10 +130,18 @@ public:
 					VERIFY(m_functor.is_valid());
 					if (m_object.is_valid()) {
 						VERIFY(m_object.is_valid());
+#ifdef LUABIND_09
+						return m_functor(m_object, std::forward<Args>(args)...);
+#else
 						return do_return(m_functor(m_object, std::forward<Args>(args)...));
+#endif
 					}
 					else
+#ifdef LUABIND_09
+						return m_functor(std::forward<Args>(args)...);
+#else
 						return do_return(m_functor(std::forward<Args>(args)...));
+#endif
 				}
 			}
 			catch (std::exception&) {
@@ -146,10 +170,18 @@ public:
 					VERIFY(m_functor.is_valid());
 					if (m_object.is_valid()) {
 						VERIFY(m_object.is_valid());
+#ifdef LUABIND_09
+						return m_functor(m_object, std::forward<Args>(args)...);
+#else
 						return do_return(m_functor(m_object, std::forward<Args>(args)...));
+#endif
 					}
 					else
+#ifdef LUABIND_09
+						return m_functor(std::forward<Args>(args)...);
+#else
 						return do_return(m_functor(std::forward<Args>(args)...));
+#endif
 				}
 			}
 			catch (std::exception&) {

@@ -10,7 +10,7 @@
 
 #if !defined(LUABIND_NO_ERROR_CHECKING) && !defined(NDEBUG)
 
-static IWriter *dumper = NULL;
+static IWriter *dumper = nullptr;
 string1024 line_buf;
 
 #include <sstream>
@@ -19,7 +19,7 @@ string1024 line_buf;
 void OpenDumper()
 {
 	string_path  dump_name;
-	strcpy_s(dump_name, 260, "lua_help.script");
+	strcpy_s(dump_name, 260, "lua_help_OGSR.script");
 
 	if (FS.path_exist("$logs$"))
 		FS.update_path(dump_name, "$logs$", dump_name);
@@ -317,7 +317,6 @@ void print_free_functions(lua_State *L, const luabind::object &object, LPCSTR he
 			if (lua_type(L, -1) == LUA_TTABLE && key_type == LUA_TSTRING && lua_objlen(L, -2) > 0) {
 				last_key = lua_tostring(L, -2);
 				LPCSTR	S = last_key.c_str();
-				MsgCB("~#CONTEXT: last_key = %s", S);
 				string_path script_name;
 				sprintf_s(script_name, sizeof(script_name) - 1, "%s.script", S);
 				if (nesting_path.size() == 0 && // скан глобального пространства имен

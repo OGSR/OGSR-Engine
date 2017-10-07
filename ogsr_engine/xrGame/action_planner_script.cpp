@@ -34,10 +34,18 @@ void CActionPlanner<CScriptGameObject>::script_register(lua_State *L)
 			.def("actual",						&get_actual)
 			.def("setup",						&CScriptActionPlanner::setup,	&CScriptActionPlannerWrapper::setup_static)
 			.def("update",						&CScriptActionPlanner::update,	&CScriptActionPlannerWrapper::update_static)
+#ifdef LUABIND_09
 			.def("add_action",					&CScriptActionPlanner::add_operator,adopt(_3))
+#else
+			.def("add_action",					&CScriptActionPlanner::add_operator,adopt<3>())
+#endif
 			.def("remove_action",				(void (CScriptActionPlanner::*)(const CScriptActionPlanner::_edge_type &))(&CScriptActionPlanner::remove_operator))
 			.def("action",						&CScriptActionPlanner::action)
+#ifdef LUABIND_09
 			.def("add_evaluator",				&CScriptActionPlanner::add_evaluator,adopt(_3))
+#else
+			.def("add_evaluator",				&CScriptActionPlanner::add_evaluator,adopt<3>())
+#endif
 			.def("remove_evaluator",			(void (CScriptActionPlanner::*)(const CScriptActionPlanner::_condition_type &))(&CScriptActionPlanner::remove_evaluator))
 			.def("evaluator",					&CScriptActionPlanner::evaluator)
 			.def("current_action_id",			&CScriptActionPlanner::current_action_id)

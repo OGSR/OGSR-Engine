@@ -15,9 +15,9 @@
 
 using namespace luabind;
 
-extern class_<CScriptGameObject> &script_register_game_object1(class_<CScriptGameObject> &);
-extern class_<CScriptGameObject> &script_register_game_object2(class_<CScriptGameObject> &);
-extern class_<CScriptGameObject> &script_register_game_object_trader(class_<CScriptGameObject> &);
+extern class_<CScriptGameObject> script_register_game_object1(class_<CScriptGameObject>&&);
+extern class_<CScriptGameObject> script_register_game_object2(class_<CScriptGameObject>&&);
+extern class_<CScriptGameObject> script_register_game_object_trader(class_<CScriptGameObject>&&);
 
 #pragma optimize("s",on)
 void CScriptGameObject::script_register(lua_State *L)
@@ -49,7 +49,7 @@ void CScriptGameObject::script_register(lua_State *L)
 		
 		script_register_game_object2(
 			script_register_game_object1(
-				script_register_game_object_trader(instance)
+				script_register_game_object_trader(std::move(instance))
 			)
 		),
 

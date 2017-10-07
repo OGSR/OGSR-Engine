@@ -23,7 +23,11 @@ CScriptIniFile *get_game_ini()
 }
 #endif // XRGAME_EXPORTS
 
-bool r_line(CScriptIniFile *self, LPCSTR S, int L,	xr_string &N, xr_string &V)
+#ifdef LUABIND_09
+bool r_line(CScriptIniFile *self, LPCSTR S, int L,	std::string &N, std::string &V)
+#else
+bool r_line(CScriptIniFile *self, LPCSTR S, int L, string_class &N, string_class &V)
+#endif
 {
 	THROW3			(self->section_exist(S),"Cannot find section",S);
 	THROW2			((int)self->line_count(S) > L,"Invalid line number");
@@ -78,12 +82,20 @@ void CScriptIniFile::script_register(lua_State *L)
 			.def("r_s32",			&CScriptIniFile::r_s32)
 			.def("r_float",			&CScriptIniFile::r_float)
 			.def("r_vector",		&CScriptIniFile::r_fvector3)
+#ifdef LUABIND_09
 			.def("r_line",			&::r_line, out_value(_4) + out_value(_5)),
+#else
+			.def("r_line",			&::r_line, out_value<4>() + out_value<5>()),
+#endif
 
 		def("system_ini",			&get_system_ini),
 #ifdef XRGAME_EXPORTS
 		def("game_ini",				&get_game_ini),
 #endif // XRGAME_EXPORTS
+#ifdef LUABIND_09
 		def("create_ini_file",		&create_ini_file,	adopt(result))
+#else
+		def("create_ini_file",		&create_ini_file,	adopt<result>())
+#endif
 	];
 }

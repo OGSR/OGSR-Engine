@@ -25,10 +25,14 @@ u16					storyId2GameId	(ALife::_STORY_ID);
 
 using namespace luabind;
 
-ALife::_STORY_ID	story_id	(LPCSTR story_id)
+ALife::_STORY_ID story_id(LPCSTR story_id)
 {
-	int res=
-							(
+#ifdef LUABIND_09
+	auto sid = luabind::object(luabind::globals(ai().script_engine().lua())["story_ids"][story_id]);
+	R_ASSERT3(sid, "SID not found: ", story_id);
+	int res = object_cast<int>(sid);
+#else
+	int res = (
 		object_cast<int>(
 			luabind::object(
 				luabind::get_globals(
@@ -39,6 +43,8 @@ ALife::_STORY_ID	story_id	(LPCSTR story_id)
 			[story_id]
 		)
 	);
+#endif
+
 	return ALife::_STORY_ID(res);
 }
 

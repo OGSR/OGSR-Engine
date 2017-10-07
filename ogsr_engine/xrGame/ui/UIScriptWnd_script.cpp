@@ -18,8 +18,8 @@
 
 using namespace luabind;
 
-extern export_class &script_register_ui_window1(export_class &);
-extern export_class &script_register_ui_window2(export_class &);
+extern export_class script_register_ui_window1(export_class&&);
+extern export_class script_register_ui_window2(export_class&&);
 
 #pragma optimize("s",on)
 void CUIDialogWndEx::script_register(lua_State *L)
@@ -30,16 +30,16 @@ void CUIDialogWndEx::script_register(lua_State *L)
 	[
 		script_register_ui_window2(
 			script_register_ui_window1(
-				instance
+				std::move(instance)
 			)
 		)
 		.def("Load",			&BaseType::Load)
 	];
 }
 
-export_class &script_register_ui_window1(export_class &instance)
+export_class script_register_ui_window1(export_class&& instance)
 {
-	instance
+	return std::move(instance)
 		.def(					constructor<>())
 
 		.def("AddCallback",		(void(BaseType::*)(LPCSTR, s16, const luabind::functor<void>&))&BaseType::AddCallback)
@@ -54,6 +54,5 @@ export_class &script_register_ui_window1(export_class &instance)
 		.def("GetCheckButton",	(CUICheckButton* (BaseType::*)(LPCSTR)) &BaseType::GetControl<CUICheckButton>)
 		.def("GetRadioButton",	(CUIRadioButton* (BaseType::*)(LPCSTR)) &BaseType::GetControl<CUIRadioButton>)
 //		.def("GetRadioGroup",	(CUIRadioGroup* (BaseType::*)(LPCSTR)) &BaseType::GetControl<CUIRadioGroup>)
-
-	;return	(instance);
+	;
 }

@@ -574,16 +574,6 @@ public:
 	}
 };
 
-class CCC_ClearLog : public IConsole_Command {
-public:
-	CCC_ClearLog(LPCSTR N) : IConsole_Command(N)  { bEmptyArgsHandled = true; };
-	virtual void Execute(LPCSTR) {
-		LogFile->clear_not_free	();
-		FlushLog				();
-		Msg						("* Log file has been cleaned successfully!");
-	}
-};
-
 class CCC_FloatBlock : public CCC_Float {
 public:
 	CCC_FloatBlock(LPCSTR N, float* V, float _min=0, float _max=1) :
@@ -921,7 +911,6 @@ public:
 
 };
 
-#ifdef DEBUG
 extern void print_help(lua_State *L);
 
 struct CCC_LuaHelp : public IConsole_Command {
@@ -931,7 +920,7 @@ struct CCC_LuaHelp : public IConsole_Command {
 		print_help(ai().script_engine().lua());
 	}
 };
-#endif
+
 #ifdef DEBUG
 struct CCC_ShowSmartCastStats : public IConsole_Command {
 	CCC_ShowSmartCastStats(LPCSTR N) : IConsole_Command(N)  { bEmptyArgsHandled = true; };
@@ -1318,7 +1307,6 @@ void CCC_RegisterCommands()
 	CMD1(CCC_LoadLastSave,		"load_last_save"		);		// load last saved game from ...
 
 	CMD1(CCC_FlushLog,			"flush"					);		// flush log
-	CMD1(CCC_ClearLog,			"clear_log"					);
 
 #ifndef MASTER_GOLD
 	CMD1(CCC_ALifeTimeFactor,		"al_time_factor"		);		// set time factor
@@ -1454,8 +1442,8 @@ void CCC_RegisterCommands()
 
 	CMD3(CCC_Mask,		"g_autopickup",			&psActorFlags,	AF_AUTOPICKUP);
 
-#ifdef DEBUG
 	CMD1(CCC_LuaHelp, "lua_help");
+#ifdef DEBUG
 	CMD1(CCC_ShowSmartCastStats,	"show_smart_cast_stats");
 	CMD1(CCC_ClearSmartCastStats,	"clear_smart_cast_stats");
 

@@ -33,9 +33,9 @@ using namespace luabind;
 
 extern CScriptActionPlanner *script_action_planner(CScriptGameObject *obj);
 
-class_<CScriptGameObject> &script_register_game_object1(class_<CScriptGameObject> &instance)
+class_<CScriptGameObject> script_register_game_object1(class_<CScriptGameObject>&& instance)
 {
-	instance
+	return std::move(instance)
 		.enum_("relation")
 		[
 			value("friend",					int(ALife::eRelationTypeFriend)),
@@ -123,7 +123,11 @@ class_<CScriptGameObject> &script_register_game_object1(class_<CScriptGameObject
 		
 		.def("rank",						&CScriptGameObject::GetRank)
 		.def("command",						&CScriptGameObject::AddAction)
+#ifdef LUABIND_09
 		.def("action",						&CScriptGameObject::GetCurrentAction, adopt(result))
+#else
+		.def("action",						&CScriptGameObject::GetCurrentAction, adopt<result>())
+#endif
 		.def("object_count",				&CScriptGameObject::GetInventoryObjectCount)
 		.def("object",						(CScriptGameObject *(CScriptGameObject::*)(LPCSTR))(&CScriptGameObject::GetObjectByName))
 		.def("object",						(CScriptGameObject *(CScriptGameObject::*)(int))(&CScriptGameObject::GetObjectByIndex))
@@ -168,7 +172,11 @@ class_<CScriptGameObject> &script_register_game_object1(class_<CScriptGameObject
 		.def("get_enemy_strength",			&CScriptGameObject::GetEnemyStrength)
 		.def("get_sound_info",				&CScriptGameObject::GetSoundInfo)
 		.def("get_monster_hit_info",		&CScriptGameObject::GetMonsterHitInfo)
+#ifdef LUABIND_09
 		.def("bind_object",					&CScriptGameObject::bind_object,adopt(_2))
+#else
+		.def("bind_object",					&CScriptGameObject::bind_object,adopt<2>())
+#endif
 		.def("motivation_action_manager",	&script_action_planner)
 
 		// bloodsucker
@@ -264,6 +272,5 @@ class_<CScriptGameObject> &script_register_game_object1(class_<CScriptGameObject
 #endif // DEBUG
 		.def("invulnerable",				(bool (CScriptGameObject::*)() const)&CScriptGameObject::invulnerable)
 		.def("invulnerable",				(void (CScriptGameObject::*)(bool))&CScriptGameObject::invulnerable)
-
-	;return	(instance);
+	;
 }

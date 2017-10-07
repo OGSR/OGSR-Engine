@@ -273,8 +273,7 @@ int lua_panic(lua_State *L)
 	return 0;
 }
 
-#pragma todo("KRodin: enable luabind_allocator after update luabind!")
-/*#ifndef LUABIND_09
+#ifndef LUABIND_09
 static void *__cdecl luabind_allocator(luabind::memory_allocation_function_parameter, const void *pointer, size_t const size) //Раньше всего инитится здесь, поэтому пусть здесь и будет
 {
 	if (!size)
@@ -298,7 +297,7 @@ static void *__cdecl luabind_allocator(luabind::memory_allocation_function_param
 	return Memory.mem_realloc(non_const_pointer, size);
 #endif
 }
-#endif*/
+#endif
 ///////////////////////////////////////////////////////////////////////////////////////////////////////
 
 using namespace luabind;
@@ -368,9 +367,8 @@ void CResourceManager::LS_Load()
 #ifdef LUABIND_09
 	luabind::disable_super_deprecation();
 #else
-#pragma todo("KRodin: enable luabind_allocator after update luabind!")
-	//luabind::allocator = &luabind_allocator; //Аллокатор инитится только здесь и только один раз!
-	//luabind::allocator_parameter = nullptr;
+	luabind::allocator = &luabind_allocator; //Аллокатор инитится только здесь и только один раз!
+	luabind::allocator_parameter = nullptr;
 #endif
 	LSVM = luaL_newstate(); //Запускаем LuaJIT. Память себе он выделит сам.
 	luaL_openlibs(LSVM); //Инициализация функций LuaJIT
@@ -391,6 +389,7 @@ void CResourceManager::LS_Load()
 		[
 		class_<adopt_sampler>("_sampler")
 		.def(constructor<const adopt_sampler&>())
+#ifdef LUABIND_09
 		.def("texture", &adopt_sampler::_texture, return_reference_to(_1))
 		.def("project", &adopt_sampler::_projective, return_reference_to(_1))
 		.def("clamp", &adopt_sampler::_clamp, return_reference_to(_1))
@@ -411,9 +410,31 @@ void CResourceManager::LS_Load()
 		.def("fmag_none", &adopt_sampler::_fmag_none, return_reference_to(_1))
 		.def("fmag_point", &adopt_sampler::_fmag_point, return_reference_to(_1))
 		.def("fmag_linear", &adopt_sampler::_fmag_linear, return_reference_to(_1)),
-
+#else
+		.def("texture", &adopt_sampler::_texture, return_reference_to<1>())
+		.def("project", &adopt_sampler::_projective, return_reference_to<1>())
+		.def("clamp", &adopt_sampler::_clamp, return_reference_to<1>())
+		.def("wrap", &adopt_sampler::_wrap, return_reference_to<1>())
+		.def("mirror", &adopt_sampler::_mirror, return_reference_to<1>())
+		.def("f_anisotropic", &adopt_sampler::_f_anisotropic, return_reference_to<1>())
+		.def("f_trilinear", &adopt_sampler::_f_trilinear, return_reference_to<1>())
+		.def("f_bilinear", &adopt_sampler::_f_bilinear, return_reference_to<1>())
+		.def("f_linear", &adopt_sampler::_f_linear, return_reference_to<1>())
+		.def("f_none", &adopt_sampler::_f_none, return_reference_to<1>())
+		.def("fmin_none", &adopt_sampler::_fmin_none, return_reference_to<1>())
+		.def("fmin_point", &adopt_sampler::_fmin_point, return_reference_to<1>())
+		.def("fmin_linear", &adopt_sampler::_fmin_linear, return_reference_to<1>())
+		.def("fmin_aniso", &adopt_sampler::_fmin_aniso, return_reference_to<1>())
+		.def("fmip_none", &adopt_sampler::_fmip_none, return_reference_to<1>())
+		.def("fmip_point", &adopt_sampler::_fmip_point, return_reference_to<1>())
+		.def("fmip_linear", &adopt_sampler::_fmip_linear, return_reference_to<1>())
+		.def("fmag_none", &adopt_sampler::_fmag_none, return_reference_to<1>())
+		.def("fmag_point", &adopt_sampler::_fmag_point, return_reference_to<1>())
+		.def("fmag_linear", &adopt_sampler::_fmag_linear, return_reference_to<1>()),
+#endif
 		class_<adopt_compiler>("_compiler")
 		.def(constructor<const adopt_compiler&>())
+#ifdef LUABIND_09
 		.def("begin", &adopt_compiler::_pass, return_reference_to(_1))
 		.def("sorting", &adopt_compiler::_options, return_reference_to(_1))
 		.def("emissive", &adopt_compiler::_o_emissive, return_reference_to(_1))
@@ -423,6 +444,17 @@ void CResourceManager::LS_Load()
 		.def("zb", &adopt_compiler::_ZB, return_reference_to(_1))
 		.def("blend", &adopt_compiler::_blend, return_reference_to(_1))
 		.def("aref", &adopt_compiler::_aref, return_reference_to(_1))
+#else
+		.def("begin", &adopt_compiler::_pass, return_reference_to<1>())
+		.def("sorting", &adopt_compiler::_options, return_reference_to<1>())
+		.def("emissive", &adopt_compiler::_o_emissive, return_reference_to<1>())
+		.def("distort", &adopt_compiler::_o_distort, return_reference_to<1>())
+		.def("wmark", &adopt_compiler::_o_wmark, return_reference_to<1>())
+		.def("fog", &adopt_compiler::_fog, return_reference_to<1>())
+		.def("zb", &adopt_compiler::_ZB, return_reference_to<1>())
+		.def("blend", &adopt_compiler::_blend, return_reference_to<1>())
+		.def("aref", &adopt_compiler::_aref, return_reference_to<1>())
+#endif
 		.def("sampler", &adopt_compiler::_sampler),	// returns sampler-object
 
 		class_<adopt_blend>("blend")

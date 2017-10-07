@@ -174,7 +174,11 @@ struct CWrapperBase : public T, public luabind::wrap_base {
 	DEFINE_LUA_WRAPPER_METHOD_V0(OnRoundEnd)
 
 	virtual game_PlayerState* createPlayerState()
+#ifdef LUABIND_09
 	{return call_member<game_PlayerState*>(this,"createPlayerState")[adopt(result)];}
+#else
+	{return call_member<game_PlayerState*>(this, "createPlayerState")[adopt<result>()]; }
+#endif
 	static game_PlayerState* createPlayerState_static(inherited* ptr)
 	{return ptr->self_type::inherited::createPlayerState();}
 
@@ -226,6 +230,10 @@ void game_sv_mp_script::script_register(lua_State *L)
 			.def("OnRoundEnd",			&BaseType::OnRoundEnd, &WrapType::OnRoundEnd_static)
 
 			.def("net_Export_State",	&BaseType::net_Export_State, &WrapType::net_Export_State_static)
+#ifdef LUABIND_09
 			.def("createPlayerState",	&BaseType::createPlayerState, &WrapType::createPlayerState_static, adopt(result) )
+#else
+			.def("createPlayerState",	&BaseType::createPlayerState, &WrapType::createPlayerState_static, adopt<result>() )
+#endif
 	];
 }
