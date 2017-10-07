@@ -20,9 +20,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE
 // OR OTHER DEALINGS IN THE SOFTWARE.
 
-
-#ifndef LUABIND_YIELD_POLICY_HPP_INCLUDED
-#define LUABIND_YIELD_POLICY_HPP_INCLUDED
+#pragma once
 
 #include <luabind/config.hpp>
 #include <luabind/detail/policy.hpp>
@@ -35,28 +33,36 @@ namespace luabind { namespace detail
 		static void postcall(lua_State*, const index_map&) {}
 	};
 
-	template<class T>
-	struct has_yield
+    template <typename... Policies>
+    struct has_yield;
+
+	template<typename Policy, typename... Policies>
+	struct has_yield<Policy, Policies...> : public std::conditional_t<
+                                                        std::is_same_v<yield_policy, Policy>,
+                                                        std::true_type,
+                                                        has_yield<Policies...>
+                                                   >
 	{
-		BOOST_STATIC_CONSTANT(bool,
-			value = (boost::is_same<yield_policy, typename T::head>::value ||
-					  has_yield<typename T::tail>::value));
 	};
 
+    template <typename T>
+    struct has_yield<T> : public std::is_same<yield_policy, T>
+    {
+    };
+
 	template<>
-	struct has_yield<null_type>
+	struct has_yield<> : public std::false_type
 	{
-		BOOST_STATIC_CONSTANT(bool, value = false);
 	};
+
+    template <typename... Policies>
+    constexpr bool has_yield_v = has_yield<Policies...>::value;
 }}
 
 namespace luabind
 {
 	namespace 
 	{
-		LUABIND_ANONYMOUS_FIX detail::policy_cons<detail::yield_policy, detail::null_type> yield;
+		detail::policy_cons<detail::yield_policy> yield;
 	}
 }
-
-#endif // LUABIND_YIELD_POLICY_HPP_INCLUDED
-

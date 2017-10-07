@@ -20,8 +20,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE
 // OR OTHER DEALINGS IN THE SOFTWARE.
 
-#ifndef WEAK_REF_040402_HPP
-#define WEAK_REF_040402_HPP
+#pragma once
 
 #include <luabind/config.hpp>
 
@@ -54,6 +53,3 @@ namespace luabind {
     };
 
 } // namespace luabind
-
-#endif // WEAK_REF_040402_HPP
-

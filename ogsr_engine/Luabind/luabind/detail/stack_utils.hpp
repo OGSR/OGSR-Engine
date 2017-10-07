@@ -20,9 +20,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE
 // OR OTHER DEALINGS IN THE SOFTWARE.
 
-
-#ifndef LUABIND_STACK_UTILS_HPP_INCLUDED
-#define LUABIND_STACK_UTILS_HPP_INCLUDED
+#pragma once
 
 #include <cassert>
 
@@ -48,5 +46,3 @@ namespace luabind { namespace detail
 		int m_n;
 	};
 }}
-
-#endif // LUABIND_STACK_UTILS_HPP_INCLUDED

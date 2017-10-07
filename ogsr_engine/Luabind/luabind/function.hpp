@@ -20,21 +20,9 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE
 // OR OTHER DEALINGS IN THE SOFTWARE.
 
+#pragma once
 
-#if !BOOST_PP_IS_ITERATING
-
-#ifndef LUABIND_FUNCTION_HPP_INCLUDED
-#define LUABIND_FUNCTION_HPP_INCLUDED
-
-#include <luabind/prefix.hpp>
 #include <luabind/config.hpp>
-
-#include <boost/config.hpp>
-#include <boost/preprocessor/repeat.hpp>
-#include <boost/preprocessor/iteration/iterate.hpp>
-#include <boost/preprocessor/repetition/enum.hpp> 
-#include <boost/preprocessor/repetition/enum_params.hpp>
-#include <boost/preprocessor/cat.hpp>
 
 #include <luabind/detail/signature_match.hpp>
 #include <luabind/detail/call_function.hpp>
@@ -42,6 +30,7 @@
 #include <luabind/detail/overload_rep_base.hpp>
 
 #include <luabind/scope.hpp>
+#include <luabind/detail/calc_has_arg.hpp>
 
 namespace luabind
 {
@@ -53,33 +42,39 @@ namespace luabind
 
 			struct overload_rep: public overload_rep_base
 			{
+                template<typename R, typename... Args, typename... Policies>
+                overload_rep(R(*f)(Args...), const policy_cons<Policies...>)
+                    : fun(reinterpret_cast<void(*)()>(f))
+                {
+                    m_params_.reserve(sizeof...(Args));
 
-#define BOOST_PP_ITERATION_PARAMS_1 (4, (0, LUABIND_MAX_ARITY, <luabind/function.hpp>, 1))
-#include BOOST_PP_ITERATE()
+                    const int expander [] = { 0, (m_params_.push_back(&typeid(Args)), 0)... };
+                    (void) expander;
 
-				inline bool operator==(const overload_rep& o) const
+                    m_arity = calcHasArg<0, 1, sizeof...(Args), Policies...>();
+                }
+
+				bool operator==(const overload_rep& o) const
 				{
 					if (o.m_arity != m_arity) return false;
 					if (o.m_params_.size() != m_params_.size()) return false;
-					for (int i = 0; i < (int)m_params_.size(); ++i)
+					for (size_t i = 0; i < m_params_.size(); ++i)
 						if (!(LUABIND_TYPE_INFO_EQUAL(m_params_[i], o.m_params_[i]))) return false;
 					return true;
 				}
 
 				typedef int(*call_ptr)(lua_State*, void(*)());
 
-				inline void set_fun(call_ptr f) { call_fun = f; }
-				inline int call(lua_State* L, void(*f)()) const { return call_fun(L, f); }
+				void set_fun(call_ptr f) { call_fun = f; }
+				int call(lua_State* L, void(*f)()) const { return call_fun(L, f); }
 
 				// this is the actual function pointer to be called when this overload is invoked
 				void (*fun)();
 
-//TODO:		private: 
-
 				call_ptr call_fun;
 
 				// the types of the parameter it takes
-				std::vector<LUABIND_TYPE_INFO> m_params_;
+				vector_class<LUABIND_TYPE_INFO> m_params_;
 
                 char end;
 			};
@@ -89,7 +84,7 @@ namespace luabind
 				function_rep(const char* name): m_name(name) {}
 				void add_overload(const free_functions::overload_rep& o);
 
-				const std::vector<overload_rep>& overloads() const throw() { return m_overloads; }
+				const vector_class<overload_rep>& overloads() const throw() { return m_overloads; }
 
 				const char* name() const { return m_name; }
 
@@ -99,92 +94,154 @@ namespace luabind
 				// this have to be write protected, since each time an overload is
 				// added it has to be checked for existence. add_overload() should
 				// be used.
-				std::vector<free_functions::overload_rep> m_overloads;
+#pragma warning(push)
+#pragma warning(disable:4251)
+				vector_class<free_functions::overload_rep> m_overloads;
+#pragma warning(pop)
 			};
 
-
-
-		// returns generates functions that calls function pointers
-
-#define LUABIND_DECL(z, n, text) typedef typename find_conversion_policy<n + 1, Policies>::type BOOST_PP_CAT(converter_policy,n); \
-		typename BOOST_PP_CAT(converter_policy,n)::template generate_converter<A##n, lua_to_cpp>::type BOOST_PP_CAT(c,n);
-
-#define LUABIND_ADD_INDEX(z,n,text) + BOOST_PP_CAT(converter_policy,n)::has_arg
-#define LUABIND_INDEX_MAP(z,n,text) 1 BOOST_PP_REPEAT(n, LUABIND_ADD_INDEX, _)
-#define LUABIND_PARAMS(z,n,text) BOOST_PP_CAT(c,n).apply(L, LUABIND_DECORATE_TYPE(A##n), LUABIND_INDEX_MAP(_,n,_))
-#define LUABIND_POSTCALL(z,n,text) BOOST_PP_CAT(c,n).converter_postcall(L, LUABIND_DECORATE_TYPE(A##n), LUABIND_INDEX_MAP(_,n,_));
-
-			template<class Policies>
+			template<typename... Policies>
 			struct maybe_yield
 			{
-				static inline int apply(lua_State* L, int nret)
+				static int apply(lua_State* L, int nret)
 				{
-					return ret(L, nret, boost::mpl::bool_<has_yield<Policies>::value>());
+					return ret(L, nret, has_yield<Policies...>());
 				}
 
-				static inline int ret(lua_State* L, int nret, boost::mpl::bool_<true>)
+				static int ret(lua_State* L, int nret, std::true_type)
 				{
 					return lua_yield(L, nret);
 				}
 
-				static inline int ret(lua_State*, int nret, boost::mpl::bool_<false>)
+				static int ret(lua_State*, int nret, std::false_type)
 				{
 					return nret;
 				}
 			};
 
 		
-			template<class T>
+			template<typename T>
 			struct returns
 			{
-				#define BOOST_PP_ITERATION_PARAMS_1 (4, (0, LUABIND_MAX_ARITY, <luabind/function.hpp>, 2))
-				#include BOOST_PP_ITERATE()
+			private:
+
+                template <typename U, size_t Index, typename... Policies>
+                static auto genConverter()
+                {
+                    using converter_policy = typename find_conversion_policy<Index + 1, Policies...>::type;
+                    return typename converter_policy::template generate_converter<U, Direction::lua_to_cpp>::type();
+                }
+
+                template <typename... Ts, size_t... Indices, typename... Policies>
+                static auto generateConverters(const std::index_sequence<Indices...>, const policy_cons<Policies...>)
+                {
+                    return std::make_tuple(
+                        genConverter<Ts, Indices, Policies...>()...
+                    );
+                }
+
+                template <typename U, size_t Index, typename Conv, typename... Policies>
+                static decltype(auto) apply(lua_State* L, Conv& conv, const policy_cons<Policies...>)
+                {
+                    return conv.apply(L, decorated_type<U>::get(), calcHasArg<1, 1, Index, Policies...>());
+                }
+
+                template <typename U, size_t Index, typename Conv, typename... Policies>
+                static void postcall(lua_State* L, Conv& conv, const policy_cons<Policies...>)
+                {
+                    conv.converter_postcall(L, decorated_type<U>::get(), calcHasArg<1, 1, Index, Policies...>());
+                }
+
+                template <typename... Args, typename... Converters, size_t... Indices, typename... Policies>
+                static void callApply(T(*f)(Args...), lua_State* L, std::tuple<Converters...>& converters, const std::index_sequence<Indices...>,
+                                      const policy_cons<Policies...> policies, std::false_type /*is_void<T>*/)
+                {
+                    using converter_policy_ret = typename find_conversion_policy<0, Policies...>::type;
+                    typename converter_policy_ret::template generate_converter<T, Direction::cpp_to_lua>::type converter_ret;
+
+                    converter_ret.apply(L, f(apply<Args, Indices>(L, std::get<Indices>(converters), policies)...));
+                }
+
+                template <typename... Args, typename... Converters, size_t... Indices, typename... Policies>
+                static void callApply(T(*f)(Args...), lua_State* L, std::tuple<Converters...>& converters, const std::index_sequence<Indices...>,
+                                      const policy_cons<Policies...> policies, std::true_type /*is_void<T>*/)
+                {
+                    f(apply<Args, Indices>(L, std::get<Indices>(converters), policies)...);
+                }
+
+                template <typename... Args, typename... Converters, size_t... Indices, typename... Policies>
+                static void callPostcall(lua_State* L, std::tuple<Converters...>& converters, const std::index_sequence<Indices...>, const policy_cons<Policies...> policies)
+                {
+                    const int expander [] = { 0, (postcall<Args, Indices>(L, std::get<Indices>(converters), policies), 0)... };
+                    (void) expander;
+                }
+
+                template <typename... Policies, size_t... Indices>
+                static void callPolicyListPostcall(lua_State* L, const int second, const std::index_sequence<Indices...>)
+                {
+                    const int indices [] =
+                    {
+                        -1,
+                        /*nargs + nret*/second,
+                        calcHasArg<1, 1, Indices, Policies...>()...
+                    };
+
+                    policy_list_postcall<Policies...>::apply(L, indices);
+                }
+
+			public:
+
+                template<typename... Args, typename... Policies>
+                static int call(T(*f)(Args...), lua_State* L, const policy_cons<Policies...> policies)
+                {
+                    const int nargs = lua_gettop(L);
+                    const auto indices = std::make_index_sequence<sizeof...(Args)>();
+                    auto converters = generateConverters<Args...>(indices, policies);
+
+                    callApply(f, L, converters, indices, policies, std::is_void<T>());
+                    callPostcall<Args...>(L, converters, indices, policies);
+
+                    const int nret = lua_gettop(L) - nargs;
+                    callPolicyListPostcall<Policies...>(L, nargs + nret, indices);
+
+                    return maybe_yield<Policies...>::apply(L, nret);
+                }
 			};
 
-			template<>
-			struct returns<void>
-			{
-				#define BOOST_PP_ITERATION_PARAMS_1 (4, (0, LUABIND_MAX_ARITY, <luabind/function.hpp>, 3))
-				#include BOOST_PP_ITERATE()
-			};
+            template<typename R, typename... Args, typename... Policies>
+            int call(R(*f)(Args...), lua_State* L, const policy_cons<Policies...> policies)
+            {
+                return free_functions::returns<R>::call(f, L, policies);
+            }
 
-			#define BOOST_PP_ITERATION_PARAMS_1 (4, (0, LUABIND_MAX_ARITY, <luabind/function.hpp>, 4))
-			#include BOOST_PP_ITERATE()
+            template<typename R, typename... Args, typename... Policies>
+            static int match(R(*)(Args...), lua_State* L, const policy_cons<Policies...> policies)
+            {
+                return match_params<Args...>(L, 1, policies);
+            }
 
-
-#undef LUABIND_PARAMS
-#undef LUABIND_DECL
-#undef LUABIND_POSTCALL
-#undef LUABIND_ADD_INDEX
-#undef LUABIND_INDEX_MAP
-
-
-			#define BOOST_PP_ITERATION_PARAMS_1 (4, (0, LUABIND_MAX_ARITY, <luabind/function.hpp>, 5))
-			#include BOOST_PP_ITERATE()
-
-
-			template<class F, class Policies>
+			template<typename F, typename... Policies>
 			struct function_callback_s
 			{
-				static inline int apply(lua_State* L, void(*fun)())
+				static int apply(lua_State* L, void(*fun)())
 				{
-					return free_functions::call(reinterpret_cast<F>(fun), L, static_cast<const Policies*>(0));
+					return free_functions::call(reinterpret_cast<F>(fun), L, policy_cons<Policies...>());
 				}
 			};
 
-			template<class F, class Policies>
+			template<typename F, typename... Policies>
 			struct match_function_callback_s
 			{
-				static inline int apply(lua_State* L)
+				static int apply(lua_State* L)
 				{
-					F fptr = 0;
-					return free_functions::match(fptr, L, static_cast<Policies*>(0));
+					F fptr = nullptr;
+					return free_functions::match(fptr, L, policy_cons<Policies...>());
 				}
 
 				static int callback(lua_State* L)
 				{
-					F fptr = 0;
-					return free_functions::match(fptr, L, static_cast<Policies*>(0));
+					F fptr = nullptr;
+					return free_functions::match(fptr, L, policy_cons<Policies...>());
 				}
 			};
 
@@ -193,25 +250,25 @@ namespace luabind
 	}
 
 	// deprecated
-	template<class F, class Policies>
-	void function(lua_State* L, const char* name, F f, const Policies& p)
+	template<typename F, typename... Policies>
+	void function(lua_State* L, const char* name, F f, const detail::policy_cons<Policies...> p)
 	{
 		module(L) [ def(name, f, p) ];
 	}
 
 	// deprecated
-	template<class F>
+	template<typename F>
 	void function(lua_State* L, const char* name, F f)
 	{
-		luabind::function(L, name, f, detail::null_type());
+		luabind::function(L, name, f, detail::policy_cons<>());
 	}
 
 	namespace detail
 	{
-		template<class F, class Policies>
+		template<typename F, typename... Policies>
 		struct function_commiter : detail::registration
 		{
-			function_commiter(const char* n, F f, const Policies& p)
+			function_commiter(const char* n, F f, const policy_cons<Policies...> p)
 				: m_name(n)
 				, fun(f)
 				, policies(p)
@@ -219,10 +276,10 @@ namespace luabind
 
 			virtual void register_(lua_State* L) const
 			{
-				detail::free_functions::overload_rep o(fun, static_cast<Policies*>(0));
+				detail::free_functions::overload_rep o(fun, policies);
 
-				o.set_match_fun(&detail::free_functions::match_function_callback_s<F, Policies>::apply);
-				o.set_fun(&detail::free_functions::function_callback_s<F, Policies>::apply);
+				o.set_match_fun(&detail::free_functions::match_function_callback_s<F, Policies...>::apply);
+				o.set_fun(&detail::free_functions::function_callback_s<F, Policies...>::apply);
 
 #ifndef LUABIND_NO_ERROR_CHECKING
 				o.set_sig_fun(&detail::get_free_function_signature<F>::apply);
@@ -231,10 +288,10 @@ namespace luabind
 				lua_pushstring(L, m_name);
 				lua_gettable(L, -2);
 
-				detail::free_functions::function_rep* rep = 0;
+				detail::free_functions::function_rep* rep = nullptr;
 				if (lua_iscfunction(L, -1))
 				{
-					if (lua_getupvalue(L, -1, 2) != 0)
+					if (lua_getupvalue(L, -1, 2) != nullptr)
 					{
 						// check the magic number that identifies luabind's functions
 						if (lua_touserdata(L, -1) == (void*)0x1337)
@@ -250,7 +307,7 @@ namespace luabind
 				}
 				lua_pop(L, 1);
 
-				if (rep == 0)
+				if (rep == nullptr)
 				{
 					lua_pushstring(L, m_name);
 					// create a new function_rep
@@ -264,7 +321,7 @@ namespace luabind
 					detail::class_registry* r = detail::class_registry::get_registry(L);
 					assert(r && "you must call luabind::open() prior to any function registrations");
 					detail::getref(L, r->lua_function());
-					int ret = lua_setmetatable(L, -2);
+					const int ret = lua_setmetatable(L, -2);
 					(void)ret;
 					assert(ret != 0);
 
@@ -280,141 +337,20 @@ namespace luabind
 
 			char const* m_name;
 			F fun;
-			Policies policies;
+            policy_cons<Policies...> policies;
 		};
 	}
 
-	template<class F, class Policies>
-	scope def(const char* name, F f, const Policies& policies)
+	template<typename F, typename... Policies>
+	scope def(const char* name, F f, const detail::policy_cons<Policies...> policies)
 	{
-		return scope(std::auto_ptr<detail::registration>(
-			new detail::function_commiter<F,Policies>(name, f, policies)));
+		return scope(luabind_new<detail::function_commiter<F, Policies...>>(name, f, policies));
 	}
 
-	template<class F>
+	template<typename F>
 	scope def(const char* name, F f)
 	{
-		return scope(std::auto_ptr<detail::registration>(
-			new detail::function_commiter<F,detail::null_type>(
-				name, f, detail::null_type())));
+		return scope(luabind_new<detail::function_commiter<F>>(name, f, detail::policy_cons<>()));
 	}
 
 } // namespace luabind
-
-
-#endif // LUABIND_FUNCTION_HPP_INCLUDED
-
-#elif BOOST_PP_ITERATION_FLAGS() == 1
-
-// overloaded template funtion that initializes the parameter list
-// called m_params and the m_arity member.
-
-#define LUABIND_INIT_PARAM(z, n, _) m_params_.push_back(LUABIND_TYPEID(A##n));
-#define LUABIND_POLICY_DECL(z,n,text) typedef typename find_conversion_policy<n + 1, Policies>::type BOOST_PP_CAT(p,n);
-#define LUABIND_ARITY(z,n,text) + BOOST_PP_CAT(p,n)::has_arg
-
-template<class R BOOST_PP_COMMA_IF(BOOST_PP_ITERATION()) BOOST_PP_ENUM_PARAMS(BOOST_PP_ITERATION(), class A), class Policies>
-overload_rep(R(*f)(BOOST_PP_ENUM_PARAMS(BOOST_PP_ITERATION(), A)), Policies*)
-	: fun(reinterpret_cast<void(*)()>(f))
-{
-	m_params_.reserve(BOOST_PP_ITERATION());
-	BOOST_PP_REPEAT(BOOST_PP_ITERATION(), LUABIND_INIT_PARAM, _)
-	BOOST_PP_REPEAT(BOOST_PP_ITERATION(), LUABIND_POLICY_DECL, _)
-
-	m_arity = 0 BOOST_PP_REPEAT(BOOST_PP_ITERATION(), LUABIND_ARITY, _);
-}
-
-#undef LUABIND_INIT_PARAM
-#undef LUABIND_POLICY_DECL
-#undef LUABIND_ARITY
-
-#elif BOOST_PP_ITERATION_FLAGS() == 2
-
-template<class Policies BOOST_PP_COMMA_IF(BOOST_PP_ITERATION()) BOOST_PP_ENUM_PARAMS(BOOST_PP_ITERATION(), class A)>
-static int call(T(*f)(BOOST_PP_ENUM_PARAMS(BOOST_PP_ITERATION(), A)), lua_State* L, const Policies*)
-{
-/*	typedef typename get_policy<0, Policies>::type ret_policy;
-	typedef typename ret_policy::head return_value_converter_intermediate;
-	typedef typename return_value_converter_intermediate::template generate_converter<T, cpp_to_lua>::type ret_conv;*/
-
-	int nargs = lua_gettop(L);
-
-//	typedef typename get_policy_list<0, Policies>::type policy_list_ret;
-//	typedef typename find_converter_policy<policy_list_ret>::type converter_policy_ret;
-	typedef typename find_conversion_policy<0, Policies>::type converter_policy_ret;
-	typename converter_policy_ret::template generate_converter<T, cpp_to_lua>::type converter_ret;
-
-	BOOST_PP_REPEAT(BOOST_PP_ITERATION(), LUABIND_DECL, _)
-		converter_ret.apply(L, f
-				(
-				 BOOST_PP_ENUM(BOOST_PP_ITERATION(), LUABIND_PARAMS, _)
-				));
-	BOOST_PP_REPEAT(BOOST_PP_ITERATION(), LUABIND_POSTCALL, _)
-
-	int nret = lua_gettop(L) - nargs;
-
-	const int indices[] =
-	{
-		-1		/* self */,
-		nargs + nret	/* result*/
-		BOOST_PP_ENUM_TRAILING(BOOST_PP_ITERATION(), LUABIND_INDEX_MAP, _)
-	};
-
-	policy_list_postcall<Policies>::apply(L, indices);
-
-	return maybe_yield<Policies>::apply(L, nret);
-}
-
-
-
-#elif BOOST_PP_ITERATION_FLAGS() == 3
-
-template<class Policies BOOST_PP_COMMA_IF(BOOST_PP_ITERATION()) BOOST_PP_ENUM_PARAMS(BOOST_PP_ITERATION(), class A)>
-static int call(void(*f)(BOOST_PP_ENUM_PARAMS(BOOST_PP_ITERATION(), A)), lua_State* L, const Policies*)
-{
-	int nargs = lua_gettop(L);
-
-	BOOST_PP_REPEAT(BOOST_PP_ITERATION(), LUABIND_DECL, _)
-		f
-		(
-		 BOOST_PP_ENUM(BOOST_PP_ITERATION(), LUABIND_PARAMS, _)
-		);
-	BOOST_PP_REPEAT(BOOST_PP_ITERATION(), LUABIND_POSTCALL, _)
-
-	int nret = lua_gettop(L) - nargs;
-
-	const int indices[] =
-	{
-		-1		/* self */,
-		nargs + nret	/* result*/
-		BOOST_PP_ENUM_TRAILING(BOOST_PP_ITERATION(), LUABIND_INDEX_MAP, _)
-	};
-
-	policy_list_postcall<Policies>::apply(L, indices);
-
-	return maybe_yield<Policies>::apply(L, nret);
-}
-
-
-#elif BOOST_PP_ITERATION_FLAGS() == 4
-
-template<class Policies, class R BOOST_PP_COMMA_IF(BOOST_PP_ITERATION()) BOOST_PP_ENUM_PARAMS(BOOST_PP_ITERATION(), class A)>
-int call(R(*f)(BOOST_PP_ENUM_PARAMS(BOOST_PP_ITERATION(), A)), lua_State* L, const Policies* policies)
-{
-	return free_functions::returns<R>::call(f, L, policies);
-}
-
-#elif BOOST_PP_ITERATION_FLAGS() == 5
-
-	template<class Policies, class R BOOST_PP_COMMA_IF(BOOST_PP_ITERATION()) BOOST_PP_ENUM_PARAMS(BOOST_PP_ITERATION(), class A)>
-	static int match(R(*)(BOOST_PP_ENUM_PARAMS(BOOST_PP_ITERATION(), A)), lua_State* L, const Policies* policies)
-	{
-		//if (lua_gettop(L) != BOOST_PP_ITERATION()) return -1;
-		typedef constructor<BOOST_PP_ENUM_PARAMS(BOOST_PP_ITERATION(), A)> ParameterTypes;
-		return match_params(L, 1, static_cast<ParameterTypes*>(0), policies);
-	}
-
-
-
-#endif
-

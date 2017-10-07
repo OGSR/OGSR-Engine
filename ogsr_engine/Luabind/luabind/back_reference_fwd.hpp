@@ -20,14 +20,10 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE
 // OR OTHER DEALINGS IN THE SOFTWARE.
 
-#ifndef BACK_REFERENCE_FWD_040510_HPP
-#define BACK_REFERENCE_FWD_040510_HPP
+#pragma once
 
 namespace luabind {
 
-   template<class T> struct back_reference;
+   template<typename T> struct back_reference;
 
 } // namespace luabind
-
-#endif // BACK_REFERENCE_FWD_040510_HPP
-

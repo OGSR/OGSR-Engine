@@ -20,17 +20,14 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE
 // OR OTHER DEALINGS IN THE SOFTWARE.
 
-#ifndef BACK_REFERENCE_040510_HPP
-#define BACK_REFERENCE_040510_HPP
+#pragma once
 
-#include <luabind/lua_include.hpp>
+#include <lua.hpp>
 #include <luabind/wrapper_base.hpp>
-#include <boost/type_traits/is_polymorphic.hpp>
-#include <boost/mpl/if.hpp>
+
+#include <type_traits>
 
 namespace luabind {
-
-#if !(defined(BOOST_MSVC) && BOOST_MSVC <= 1300)
     template<class T>
     T* get_pointer(T& ref)
     {
@@ -38,67 +35,10 @@ namespace luabind {
     }
 
     namespace detail {
-#else
-    namespace detail {
-
-        struct no_overload_tag {};
-
-    } // namespace detail
-
-    detail::no_overload_tag get_pointer(...);
-
-    namespace detail {
-
-    typedef char(&yes_overload)[1];
-    typedef char(&no_overload)[2];
-
-    no_overload check_overload(no_overload_tag);
-    template<class T>
-    yes_overload check_overload(T const&);
-
-#endif
 
     template<class T>
     struct extract_wrap_base
-    {
-# if defined(BOOST_MSVC) && BOOST_MSVC <= 1300
-        BOOST_STATIC_CONSTANT(bool,
-            value = sizeof(check_overload(get_pointer(*(T*)0)))
-                 == sizeof(yes_overload)
-        );
-
-        static wrap_base const* extract(T const* ptr)
-        {
-            return extract_impl(ptr, boost::mpl::bool_<value>());
-        }
-
-        static wrap_base const* extract_impl(T const* ptr, boost::mpl::true_)
-        {
-            return dynamic_cast<wrap_base const*>(
-                get_pointer(*ptr));
-        }
-
-        static wrap_base const* extract_impl(T const* ptr, boost::mpl::false_)
-        {
-            return dynamic_cast<wrap_base const*>(ptr);
-        }
-
-        static wrap_base* extract(T* ptr)
-        {
-            return extract_impl(ptr, boost::mpl::bool_<value>());
-        }
-
-        static wrap_base* extract_impl(T* ptr, boost::mpl::true_)
-        {
-            return dynamic_cast<wrap_base*>(
-                get_pointer(*ptr));
-        }
-
-        static wrap_base* extract_impl(T* ptr, boost::mpl::false_)
-        {
-            return dynamic_cast<wrap_base*>(ptr);
-        }
-# else       
+    {     
        static wrap_base const* extract(T const* ptr)
         {
             return dynamic_cast<wrap_base const*>(get_pointer(*ptr));
@@ -108,7 +48,6 @@ namespace luabind {
         {
             return dynamic_cast<wrap_base*>(get_pointer(*ptr));
         }
-# endif
     };
 
     struct default_back_reference {};
@@ -170,11 +109,10 @@ namespace luabind {
 
     template<class T>
     struct back_reference
-        : boost::mpl::if_<
-              boost::is_polymorphic<T>
-            , detail::back_reference_impl<T>
-            , detail::back_reference_do_nothing<T>
-          >::type
+        : std::conditional_t<std::is_polymorphic_v<T>,
+            detail::back_reference_impl<T>,
+            detail::back_reference_do_nothing<T>
+        >
     {
     };
 
@@ -189,6 +127,3 @@ namespace luabind {
 #endif
 
 } // namespace luabind
-
-#endif // BACK_REFERENCE_040510_HPP
-

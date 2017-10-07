@@ -20,13 +20,12 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE
 // OR OTHER DEALINGS IN THE SOFTWARE.
 
-
-#ifndef LUABIND_CONVERT_TO_LUA_HPP_INCLUDED
-#define LUABIND_CONVERT_TO_LUA_HPP_INCLUDED
+#pragma once
 
 #include <luabind/config.hpp>
 #include <luabind/detail/policy.hpp>
-#include <boost/ref.hpp>
+
+#include <imdexlib/is_reference_wrapper.hpp>
 
 namespace luabind { namespace detail
 {
@@ -47,7 +46,7 @@ namespace luabind { namespace detail
 	struct unwrap_ref<true>
 	{
 		template<class T>
-		static T& get(const boost::reference_wrapper<T>& r) { return r.get(); }
+		static T& get(const std::reference_wrapper<T>& r) { return r.get(); }
 
 		template<class T>
 		struct apply
@@ -59,22 +58,21 @@ namespace luabind { namespace detail
 	template<class T>
 	void convert_to_lua(lua_State* L, const T& v)
 	{
-		typedef typename unwrap_ref<boost::is_reference_wrapper<T>::value>::template apply<T>::type value_type;
-		typename default_policy::template generate_converter<value_type, cpp_to_lua>::type converter;
+        using unwrap = unwrap_ref<imdexlib::is_reference_wrapper_v<T>>;
+	    using value_type = typename unwrap::template apply<T>::type;
+		typename default_policy::generate_converter<value_type, Direction::cpp_to_lua>::type converter;
 
-		converter.apply(L, unwrap_ref<boost::is_reference_wrapper<T>::value>::get(v));
+		converter.apply(L, unwrap::get(v));
 	}
 
-	template<int Index, class T, class Policies>
-	void convert_to_lua_p(lua_State* L, const T& v, const Policies&)
+	template<int Index, class T, typename... Policies>
+	void convert_to_lua_p(lua_State* L, const T& v, const policy_cons<Policies...>)
 	{
-		typedef typename unwrap_ref<boost::is_reference_wrapper<T>::value>::template apply<T>::type value_type;
-		typedef typename find_conversion_policy<Index, Policies>::type converter_policy;
-		typename converter_policy::template generate_converter<value_type, cpp_to_lua>::type converter;
+        using unwrap = unwrap_ref<imdexlib::is_reference_wrapper_v<T>>;
+	    using value_type = typename unwrap::template apply<T>::type;
+	    using converter_policy = typename find_conversion_policy<Index, Policies...>::type;
+		typename converter_policy::template generate_converter<value_type, Direction::cpp_to_lua>::type converter;
 
-		converter.apply(L, unwrap_ref<boost::is_reference_wrapper<T>::value>::get(v));
+		converter.apply(L, unwrap::get(v));
 	}
 }}
-
-#endif
-

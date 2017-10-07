@@ -20,40 +20,58 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE
 // OR OTHER DEALINGS IN THE SOFTWARE.
 
-#if !BOOST_PP_IS_ITERATING
+#pragma once
 
-#ifndef LUABIND_CALC_ARITY_HPP_INCLUDED
-#define LUABIND_CALC_ARITY_HPP_INCLUDED
-
-#define LUABIND_FIND_CONV(z,n,text) typedef typename find_conversion_policy<n + 1, Policies>::type p##n;
-#define LUABIND_CALC_ARITY(z,n,text) + BOOST_PP_CAT(p,n)::has_arg
+#include <type_traits>
 
 namespace luabind { namespace detail
 {
-	template<int N> struct calc_arity;
+    template <int Value, int... Values>
+    struct sum_arity
+    {
+        static constexpr int value = Value + sum_arity<Values...>::value;
+    };
+    
+    template <int Value>
+    struct sum_arity<Value>
+    {
+        static constexpr int value = Value;
+    };
 
-	#define BOOST_PP_ITERATION_PARAMS_1 (4, (0, LUABIND_MAX_ARITY, <luabind/detail/calc_arity.hpp>, 1))
-	#include BOOST_PP_ITERATE()
-}}
-
-#undef LUABIND_CALC_ARITY
-#undef LUABIND_FIND_CONV
-
-
-#endif // LUABIND_CALC_ARITY_HPP_INCLUDED
-
-#else // BOOST_PP_ITERATE
-
-	template<>
-	struct calc_arity<BOOST_PP_ITERATION()>
+	template<size_t N>
+    struct calc_arity
 	{
-		template<BOOST_PP_ENUM_PARAMS(LUABIND_MAX_ARITY, class A), class Policies>
-		static int apply(constructor<BOOST_PP_ENUM_PARAMS(LUABIND_MAX_ARITY, A)>, Policies*)
-		{
-			BOOST_PP_REPEAT(BOOST_PP_ITERATION(), LUABIND_FIND_CONV, _)
-			return 0 BOOST_PP_REPEAT(BOOST_PP_ITERATION(), LUABIND_CALC_ARITY, _);
-		}
+	private:
+
+        template <size_t Index, typename... Policies>
+        static constexpr int hasArg() noexcept
+        {
+            using p = typename find_conversion_policy<Index + 1, Policies...>::type;
+            return p::has_arg ? 1 : 0;
+        }
+
+        template <typename... Policies, size_t... Indices>
+        static constexpr int applyImpl(std::index_sequence<Indices...>) noexcept
+        {
+            return sum_arity<hasArg<Indices, Policies...>()...>::value;
+        }
+
+	public:
+
+        template <typename... Policies>
+	    static constexpr int apply() noexcept
+	    {
+            return applyImpl<Policies...>(std::make_index_sequence<N>());
+	    }
 	};
 
-#endif
-
+    template<>
+    struct calc_arity<0>
+    {
+        template <typename...>
+        static constexpr int apply() noexcept
+        {
+            return 0;
+        }
+    };
+}}

@@ -20,409 +20,205 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE
 // OR OTHER DEALINGS IN THE SOFTWARE.
 
-
-#if !BOOST_PP_IS_ITERATING
-
-#ifndef LUABIND_CALL_HPP_INCLUDED
-#define LUABIND_CALL_HPP_INCLUDED
-
-#include <boost/config.hpp>
-#include <boost/preprocessor/repeat.hpp>
-#include <boost/preprocessor/iteration/iterate.hpp>
-#include <boost/preprocessor/repetition/enum.hpp> 
-#include <boost/preprocessor/repetition/enum_params.hpp>
-#include <boost/preprocessor/repetition/enum_trailing.hpp>
-#include <boost/preprocessor/repetition/repeat.hpp>
-#include <boost/preprocessor/punctuation/comma_if.hpp>
-#include <boost/preprocessor/cat.hpp>
-#include <boost/mpl/bool.hpp>
+#pragma once
 
 #include <luabind/config.hpp>
 #include <luabind/detail/policy.hpp>
 #include <luabind/yield_policy.hpp>
-
-#define LUABIND_DECL(z, n, off) \
-	typedef typename find_conversion_policy< \
-		n + off \
-	  , Policies \
-	>::type BOOST_PP_CAT(converter_policy,n); \
-	typename BOOST_PP_CAT(converter_policy,n)::template generate_converter< \
-		A##n \
-	  , lua_to_cpp \
-	>::type BOOST_PP_CAT(c,n);
-
-#define LUABIND_ADD_INDEX(z,n,text) \
-	+ BOOST_PP_CAT(converter_policy,n)::has_arg
-
-#define LUABIND_INDEX_MAP(z,n,text) \
-	text BOOST_PP_REPEAT(n, LUABIND_ADD_INDEX, _)
-
-#define LUABIND_PARAMS(z,n,text) \
-	BOOST_PP_CAT(c,n).apply( \
-		L \
-	  , LUABIND_DECORATE_TYPE(A##n) \
-	  , LUABIND_INDEX_MAP(_,n,text) \
-	)
-
-#define LUABIND_POSTCALL(z,n,text) \
-	BOOST_PP_CAT(c,n).converter_postcall( \
-		L \
-	  , LUABIND_DECORATE_TYPE(A##n) \
-	  , LUABIND_INDEX_MAP(_,n,text) \
-	);
+#include <luabind/detail/calc_has_arg.hpp>
 
 namespace luabind { namespace detail
 {
-	template<class Policies>
+	template<typename... Policies>
 	struct maybe_yield
 	{
-		static inline int apply(lua_State* L, int nret)
+		static int apply(lua_State* L, int nret)
 		{
-			return ret(L, nret, boost::mpl::bool_<has_yield<Policies>::value>());
+			return ret(L, nret, has_yield<Policies...>());
 		}
 
-		static inline int ret(lua_State* L, int nret, boost::mpl::bool_<true>)
+		static int ret(lua_State* L, int nret, std::true_type)
 		{
 			return lua_yield(L, nret);
 		}
 
-		static inline int ret(lua_State*, int nret, boost::mpl::bool_<false>)
+		static int ret(lua_State*, int nret, std::false_type)
 		{
 			return nret;
 		}
 	};
 
-	template<class Class, class WrappedClass>
+	template<typename Class, typename WrappedClass>
 	struct most_derived
 	{
-		typedef typename boost::mpl::if_<
-			boost::is_base_and_derived<Class, WrappedClass>
-		  , WrappedClass
-		  , Class
-		>::type type;
+        using type = std::conditional_t<
+            std::is_base_of_v<Class, WrappedClass>,
+            WrappedClass,
+            Class
+        >;
 	};
 
-	template<class T>
+    template<typename Class, typename WrappedClass>
+    using most_derived_t = typename most_derived<Class, WrappedClass>::type;
+
+	template<typename T>
 	struct returns
 	{
-		#define BOOST_PP_ITERATION_PARAMS_1 (4, (0, LUABIND_MAX_ARITY, <luabind/detail/call.hpp>, 1))
-		#include BOOST_PP_ITERATE()
+	private:
+
+        template <int ResInitWithOffset, typename U, size_t Index, typename... Policies>
+        static auto genConverter()
+        {
+            using converter_policy = typename find_conversion_policy<Index + ResInitWithOffset, Policies...>::type;
+            return typename converter_policy::template generate_converter<U, Direction::lua_to_cpp>::type();
+        }
+
+        template <int ResInitWithOffset, typename... Ts, size_t... Indices, typename... Policies>
+        static auto generateConverters(const std::index_sequence<Indices...>, const policy_cons<Policies...>)
+        {
+            return std::make_tuple(
+                genConverter<ResInitWithOffset, Ts, Indices, Policies...>()...
+            );
+        }
+
+        template <int ResInitWithOffset, typename U, size_t Index, typename Conv, typename... Policies>
+        static decltype(auto) apply(lua_State* L, Conv& conv, const policy_cons<Policies...>)
+        {
+            return conv.apply(L, decorated_type<U>::get(), calcHasArg<ResInitWithOffset, ResInitWithOffset, Index, Policies...>());
+        }
+
+        template <int ResInitWithOffset, typename U, size_t Index, typename Conv, typename... Policies>
+        static void postcall(lua_State* L, Conv& conv, const policy_cons<Policies...>)
+        {
+            conv.converter_postcall(L, decorated_type<U>::get(), calcHasArg<ResInitWithOffset, ResInitWithOffset, Index, Policies...>());
+        }
+
+        template <typename WrappedClass, typename C, typename... Args, typename... Ts>
+        static decltype(auto) callApply(T(C::*f)(Args...), lua_State* L, Ts&&... args)
+        {
+            using self_type = most_derived_t<C, WrappedClass>;
+            pointer_converter<Direction::lua_to_cpp> self_cv;
+
+            return (self_cv.apply(L, decorated_type<self_type*>::get(), 1)->*f)(std::forward<Ts>(args)...);
+        }
+
+        template <typename WrappedClass, typename C, typename... Args, typename... Ts>
+        static decltype(auto) callApply(T(C::*f)(Args...) const, lua_State* L, Ts&&... args)
+        {
+            using self_type = most_derived_t<C, WrappedClass>;
+            const_pointer_converter<Direction::lua_to_cpp> self_cv;
+
+            return (self_cv.apply(L, decorated_type<self_type const*>::get(), 1)->*f)(std::forward<Ts>(args)...);
+        }
+
+        template <typename WrappedClass, typename... Args, typename... Ts>
+        static decltype(auto) callApply(T(*f)(Args...), lua_State*, Ts&&... args)
+        {
+            return f(std::forward<Ts>(args)...);
+        }
+
+        template <int ResInitWithOffset, typename WrappedClass, typename Fn, typename... Converters, typename... Ts, size_t... Indices, typename... Policies>
+        static void callApply(Fn&& fn, lua_State* L, std::tuple<Converters...>& converters, const std::index_sequence<Indices...>,
+                              const imdexlib::typelist<Ts...>, const policy_cons<Policies...> policies, std::false_type /*is_void<T>*/)
+        {
+            using converter_policy_ret = typename find_conversion_policy<0, Policies...>::type;
+            typename converter_policy_ret::template generate_converter<T, Direction::cpp_to_lua>::type converter_ret;
+
+            converter_ret.apply(L, callApply<WrappedClass>(std::forward<Fn>(fn), L, apply<ResInitWithOffset, Ts, Indices>(L, std::get<Indices>(converters), policies)...));
+        }
+
+        template <int ResInitWithOffset, typename WrappedClass, typename Fn, typename... Converters, typename... Ts, size_t... Indices, typename... Policies>
+        static void callApply(Fn&& fn, lua_State* L, std::tuple<Converters...>& converters, const std::index_sequence<Indices...>,
+                              const imdexlib::typelist<Ts...>, const policy_cons<Policies...> policies, std::true_type /*is_void<T>*/)
+        {
+            callApply<WrappedClass>(std::forward<Fn>(fn), L, apply<ResInitWithOffset, Ts, Indices>(L, std::get<Indices>(converters), policies)...);
+        }
+
+        template <int ResInitWithOffset, typename... Ts, typename... Converters, size_t... Indices, typename... Policies>
+        static void callPostcall(lua_State* L, std::tuple<Converters...>& converters, const std::index_sequence<Indices...>, const policy_cons<Policies...> policies)
+        {
+            const int expander [] = { 0, (postcall<ResInitWithOffset, Ts, Indices>(L, std::get<Indices>(converters), policies), 0)... };
+            (void) expander;
+        }
+
+        template <int ResInitWithOffset, typename... Policies, size_t... Indices>
+        static void callPolicyListPostcall(lua_State* L, const int first, const std::index_sequence<Indices...>)
+        {
+            const int indices [] =
+            {
+                /*nargs + nret*/first,
+                1,
+                calcHasArg<ResInitWithOffset, ResInitWithOffset, Indices, Policies...>()...
+            };
+
+            policy_list_postcall<Policies...>::apply(L, indices);
+        }
+
+        template <typename WrappedClass,
+                  int ResInitWithOffset,
+                  typename Fn,
+	              typename... Args,
+	              typename... Policies>
+        static int call(Fn&& fn, lua_State* L, const imdexlib::typelist<Args...>, const policy_cons<Policies...> policies)
+        {
+            const int nargs = lua_gettop(L);
+            const auto indices = std::make_index_sequence<sizeof...(Args)>();
+            auto converters = generateConverters<ResInitWithOffset, Args...>(indices, policies);
+
+            callApply<ResInitWithOffset, WrappedClass>(std::forward<Fn>(fn), L, converters, indices, imdexlib::typelist<Args...>(), policies, std::is_void<T>());
+            callPostcall<ResInitWithOffset, Args...>(L, converters, indices, policies);
+
+            const int nret = lua_gettop(L) - nargs;
+
+            callPolicyListPostcall<ResInitWithOffset, Policies...>(L, nargs + nret, indices);
+
+            return maybe_yield<Policies...>::apply(L, nret);
+        }
+
+	public:
+
+        template<typename C,
+	             typename WrappedClass,
+                 typename... Args,
+                 typename... Policies>
+        static int call(T(C::*f)(Args...), WrappedClass*, lua_State* L, const policy_cons<Policies...> policies)
+        {
+            return call<WrappedClass, 2>(f, L, imdexlib::typelist<Args...>(), policies);
+        }
+
+        template<typename C,
+	             typename WrappedClass,
+	             typename... Args,
+	             typename... Policies>
+        static int call(T(C::*f)(Args...) const, WrappedClass*, lua_State* L, const policy_cons<Policies...> policies)
+        {
+            return call<WrappedClass, 2>(f, L, imdexlib::typelist<Args...>(), policies);
+        }
+
+        template<typename WrappedClass,
+                 typename... Args,
+                 typename... Policies>
+        static int call(T(*f)(Args...), WrappedClass*, lua_State* L, const policy_cons<Policies...> policies)
+        {
+            return call<WrappedClass, 1>(f, L, imdexlib::typelist<Args...>(), policies);
+        }
 	};
 
-	template<>
-	struct returns<void>
-	{
-		#define BOOST_PP_ITERATION_PARAMS_1 (4, (0, LUABIND_MAX_ARITY, <luabind/detail/call.hpp>, 2))
-		#include BOOST_PP_ITERATE()
-	};
+    template<typename WrappedClass, typename R, typename... Args, typename... Policies>
+    int call(R(*f)(Args...), WrappedClass*, lua_State* L, const policy_cons<Policies...> policies)
+    {
+        return returns<R>::call(f, static_cast<WrappedClass*>(nullptr), L, policies);
+    }
 
-	#define BOOST_PP_ITERATION_PARAMS_1 (4, (0, LUABIND_MAX_ARITY, <luabind/detail/call.hpp>, 3))
-	#include BOOST_PP_ITERATE()
+    template<typename T, typename WrappedClass, typename R, typename... Args, typename... Policies>
+    int call(R(T::*f)(Args...), WrappedClass*, lua_State* L, const policy_cons<Policies...> policies)
+    {
+        return returns<R>::call(f, static_cast<WrappedClass*>(nullptr), L, policies);
+    }
+
+    template<typename T, typename WrappedClass, typename R, typename... Args, typename... Policies>
+    int call(R(T::*f)(Args...) const, WrappedClass*, lua_State* L, const policy_cons<Policies...> policies)
+    {
+        return returns<R>::call(f, static_cast<WrappedClass*>(nullptr), L, policies);
+    }
 }}
-
-#undef LUABIND_DECL
-#undef LUABIND_PARAMS
-#undef LUABIND_POSTCALL
-#undef LUABIND_ADD_INDEX
-#undef LUABIND_INDEX_MAP
-
-#endif // LUABIND_CALL_HPP_INCLUDED
-
-#elif BOOST_PP_ITERATION_FLAGS() == 1
-
-	template<
-		class C
-	  , class WrappedClass
-	  , class Policies
-		BOOST_PP_COMMA_IF(BOOST_PP_ITERATION())
-			BOOST_PP_ENUM_PARAMS(BOOST_PP_ITERATION(), class A)
-	>
-	static int call(
-		T(C::*f)(BOOST_PP_ENUM_PARAMS(BOOST_PP_ITERATION(), A))
-	  , WrappedClass*
-	  , lua_State* L
-	  , Policies const*)
-	{
-		int nargs = lua_gettop(L);
-
-		typedef typename most_derived<C, WrappedClass>::type self_type;
-		pointer_converter<lua_to_cpp> self_cv;
-
-		typedef typename find_conversion_policy<0, Policies>::type converter_policy_ret;
-		typename converter_policy_ret::template generate_converter<T, cpp_to_lua>::type converter_ret;
-
-		BOOST_PP_REPEAT(BOOST_PP_ITERATION(), LUABIND_DECL, 2)
-
-		converter_ret.apply(
-			L
-		  , (self_cv.apply(L, LUABIND_DECORATE_TYPE(self_type*), 1)->*f)
-		(
-			BOOST_PP_ENUM(BOOST_PP_ITERATION(), LUABIND_PARAMS, 2)
-		));
-
-		BOOST_PP_REPEAT(BOOST_PP_ITERATION(), LUABIND_POSTCALL, 2)
-
-		int nret = lua_gettop(L) - nargs;
-
-		const int indices[] =
-		{
-			nargs + nret // result
-		  , 1 // self
-			BOOST_PP_ENUM_TRAILING(BOOST_PP_ITERATION(), LUABIND_INDEX_MAP, 2)
-		};
-
-		policy_list_postcall<Policies>::apply(L, indices);
-
-		return maybe_yield<Policies>::apply(L, nret);
-	}
-
-	template<
-		class C
-	  , class WrappedClass
-	  , class Policies 
-		BOOST_PP_COMMA_IF(BOOST_PP_ITERATION())
-			BOOST_PP_ENUM_PARAMS(BOOST_PP_ITERATION(), class A)
-	>
-	static int call(
-		T(C::*f)(BOOST_PP_ENUM_PARAMS(BOOST_PP_ITERATION(), A)) const
-	  , WrappedClass*
-	  , lua_State* L
-	  , Policies const*)
-	{
-		int nargs = lua_gettop(L);
-
-		typedef typename most_derived<C, WrappedClass>::type self_type;
-		const_pointer_converter<lua_to_cpp> self_cv;
-
-		typedef typename find_conversion_policy<0, Policies>::type converter_policy_ret;
-		typename converter_policy_ret::template generate_converter<T, cpp_to_lua>::type converter_ret;
-
-		BOOST_PP_REPEAT(BOOST_PP_ITERATION(), LUABIND_DECL, 2)
-
-		converter_ret.apply(
-			L
-		  , (self_cv.apply(L, LUABIND_DECORATE_TYPE(self_type const*), 1)->*f)
-		(
-			BOOST_PP_ENUM(BOOST_PP_ITERATION(), LUABIND_PARAMS, 2)
-		));
-
-		BOOST_PP_REPEAT(BOOST_PP_ITERATION(), LUABIND_POSTCALL, 2)
-		int nret = lua_gettop(L) - nargs;
-
-		const int indices[] =
-		{
-			nargs + nret // result
-		  , 1 // self
-			BOOST_PP_ENUM_TRAILING(BOOST_PP_ITERATION(), LUABIND_INDEX_MAP, 2)
-		};
-
-		policy_list_postcall<Policies>::apply(L, indices);
-
-		return maybe_yield<Policies>::apply(L, nret);
-	}
-
-	template<
-		class WrappedClass
-	  , class Policies
-		BOOST_PP_COMMA_IF(BOOST_PP_ITERATION())
-			BOOST_PP_ENUM_PARAMS(BOOST_PP_ITERATION(), class A)
-	>
-	static int call(
-		T(*f)(BOOST_PP_ENUM_PARAMS(BOOST_PP_ITERATION(), A))
-	  , WrappedClass*
-	  , lua_State* L
-	  , Policies const*)
-	{
-		int nargs = lua_gettop(L);
-		typedef typename find_conversion_policy<0, Policies>::type converter_policy_ret;
-		typename converter_policy_ret::template generate_converter<T, cpp_to_lua>::type converter_ret;
-		BOOST_PP_REPEAT(BOOST_PP_ITERATION(), LUABIND_DECL, 1)
-		converter_ret.apply(L, f
-		(
-			BOOST_PP_ENUM(BOOST_PP_ITERATION(), LUABIND_PARAMS, 1)
-		));
-
-		BOOST_PP_REPEAT(BOOST_PP_ITERATION(), LUABIND_POSTCALL, 1)
-	
-		int nret = lua_gettop(L) - nargs;
-
-		const int indices[] =
-		{
-			nargs + nret // result
-			BOOST_PP_ENUM_TRAILING(BOOST_PP_ITERATION(), LUABIND_INDEX_MAP, 1)
-		};
-
-		policy_list_postcall<Policies>::apply(L, indices);
-
-		return maybe_yield<Policies>::apply(L, nret);
-	}
-
-#elif BOOST_PP_ITERATION_FLAGS() == 2
-
-	template<
-		class C
-	  , class WrappedClass
-	  , class Policies 
-		BOOST_PP_COMMA_IF(BOOST_PP_ITERATION()) 
-			BOOST_PP_ENUM_PARAMS(BOOST_PP_ITERATION(), class A)
-	>
-	static int call(
-		void(C::*f)(BOOST_PP_ENUM_PARAMS(BOOST_PP_ITERATION(), A))
-	  , WrappedClass*
-	  , lua_State* L
-	  , Policies* const)
-	{
-		int nargs = lua_gettop(L);
-		L = L; // L is used, but metrowerks compiler seem to warn about it before expanding the macros
-
-		typedef typename most_derived<C, WrappedClass>::type self_type;
-		pointer_converter<lua_to_cpp> self_cv;
-
-		BOOST_PP_REPEAT(BOOST_PP_ITERATION(), LUABIND_DECL, 2)
-		(self_cv.apply(L, LUABIND_DECORATE_TYPE(self_type*), 1)->*f)
-		(
-			BOOST_PP_ENUM(BOOST_PP_ITERATION(), LUABIND_PARAMS, 2)
-		);
-		BOOST_PP_REPEAT(BOOST_PP_ITERATION(), LUABIND_POSTCALL, 2)
-
-		int nret = lua_gettop(L) - nargs;
-
-		const int indices[] =
-		{
-			nargs + nret // result
-		  , 1 // self
-			BOOST_PP_ENUM_TRAILING(BOOST_PP_ITERATION(), LUABIND_INDEX_MAP, 2)
-		};
-
-		policy_list_postcall<Policies>::apply(L, indices);
-
-		return maybe_yield<Policies>::apply(L, nret);
-	}
-
-	template<
-		class C
-	  , class WrappedClass
-	  , class Policies 
-		BOOST_PP_COMMA_IF(BOOST_PP_ITERATION()) 
-			BOOST_PP_ENUM_PARAMS(BOOST_PP_ITERATION(), class A)
-	>
-	static int call(
-		void(C::*f)(BOOST_PP_ENUM_PARAMS(BOOST_PP_ITERATION(), A)) const
-	  , WrappedClass*
-	  , lua_State* L
-	  , Policies const*)
-	{
-		int nargs = lua_gettop(L);
-		L = L; // L is used, but metrowerks compiler seem to warn about it before expanding the macros
-
-		typedef typename most_derived<C, WrappedClass>::type self_type;
-		const_pointer_converter<lua_to_cpp> self_cv;
-		
-		BOOST_PP_REPEAT(BOOST_PP_ITERATION(), LUABIND_DECL, 2)
-		(self_cv.apply(L, LUABIND_DECORATE_TYPE(self_type const*), 1)->*f)
-		(
-			BOOST_PP_ENUM(BOOST_PP_ITERATION(), LUABIND_PARAMS, 2)
-		);
-		BOOST_PP_REPEAT(BOOST_PP_ITERATION(), LUABIND_POSTCALL, 2)
-
-		int nret = lua_gettop(L) - nargs;
-
-		const int indices[] =
-		{
-			nargs + nret // result
-		  , 1 // self
-			BOOST_PP_ENUM_TRAILING(BOOST_PP_ITERATION(), LUABIND_INDEX_MAP, 2)
-		};
-
-		policy_list_postcall<Policies>::apply(L, indices);
-
-		return maybe_yield<Policies>::apply(L, nret);
-	}
-
-	template<
-		class WrappedClass
-	  , class Policies 
-		BOOST_PP_COMMA_IF(BOOST_PP_ITERATION())
-			BOOST_PP_ENUM_PARAMS(BOOST_PP_ITERATION(), class A)
-	>
-	static int call(
-		void(*f)(BOOST_PP_ENUM_PARAMS(BOOST_PP_ITERATION(), A))
-	  , WrappedClass*
-	  , lua_State* L
-	  , Policies const*)
-	{
-		int nargs = lua_gettop(L);
-		L = L; // L is used, but metrowerks compiler seem to warn about it before expanding the macros
-		BOOST_PP_REPEAT(BOOST_PP_ITERATION(), LUABIND_DECL, 1)
-		f(
-			BOOST_PP_ENUM(BOOST_PP_ITERATION(), LUABIND_PARAMS, 1)
-		);
-
-		int nret = lua_gettop(L) - nargs;
-
-		const int indices[] =
-		{
-			nargs + nret /* result */
-			BOOST_PP_ENUM_TRAILING(BOOST_PP_ITERATION(), LUABIND_INDEX_MAP, 1)
-		};
-		BOOST_PP_REPEAT(BOOST_PP_ITERATION(), LUABIND_POSTCALL, 1)
-
-		policy_list_postcall<Policies>::apply(L, indices);
-
-		return maybe_yield<Policies>::apply(L, nret);
-	}
-
-#elif BOOST_PP_ITERATION_FLAGS() == 3
-
-	template<
-		class WrappedClass
-	  , class Policies
-	  , class R 
-		BOOST_PP_COMMA_IF(BOOST_PP_ITERATION())
-			BOOST_PP_ENUM_PARAMS(BOOST_PP_ITERATION(), class A)
-	>
-	int call(
-		R(*f)(BOOST_PP_ENUM_PARAMS(BOOST_PP_ITERATION(), A))
-	  , WrappedClass*
-	  , lua_State* L
-	  , Policies const*)
-	{
-		return returns<R>::call(f, (WrappedClass*)0, L, (Policies*)0);
-	}
-
-	template<
-		class T
-	  , class WrappedClass
-	  , class Policies
-	  , class R 
-		BOOST_PP_COMMA_IF(BOOST_PP_ITERATION())
-			BOOST_PP_ENUM_PARAMS(BOOST_PP_ITERATION(), class A)
-	>
-	int call(
-		R(T::*f)(BOOST_PP_ENUM_PARAMS(BOOST_PP_ITERATION(), A))
-	  , WrappedClass*
-	  , lua_State* L
-	  , Policies const*)
-	{
-		return returns<R>::call(f, (WrappedClass*)0, L, (Policies*)0);
-	}
-
-	template<
-		class T
-	  , class WrappedClass
-	  , class Policies
-	  , class R
-		BOOST_PP_COMMA_IF(BOOST_PP_ITERATION())
-			BOOST_PP_ENUM_PARAMS(BOOST_PP_ITERATION(), class A)
-	>
-	int call(
-		R(T::*f)(BOOST_PP_ENUM_PARAMS(BOOST_PP_ITERATION(), A)) const
-	  , WrappedClass*
-	  , lua_State* L
-	  , Policies const*)
-	{
-		return returns<R>::call(f, (WrappedClass*)0, L, (Policies*)0);
-	}
-
-#endif
-

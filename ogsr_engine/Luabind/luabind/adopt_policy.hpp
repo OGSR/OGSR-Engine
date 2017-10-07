@@ -20,9 +20,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE
 // OR OTHER DEALINGS IN THE SOFTWARE.
 
-
-#ifndef LUABIND_ADOPT_POLICY_HPP_INCLUDED
-#define LUABIND_ADOPT_POLICY_HPP_INCLUDED
+#pragma once
 
 #include <luabind/config.hpp>
 #include <luabind/detail/policy.hpp>
@@ -30,10 +28,10 @@
 
 namespace luabind { namespace detail 
 {
-	template<class Direction = lua_to_cpp>
+	template<Direction Dir = Direction::lua_to_cpp>
 	struct adopt_pointer
 	{
-		template<class T>
+		template<typename T>
 		T* apply(lua_State* L, by_pointer<T>, int index)
 		{
 			// preconditions:
@@ -43,7 +41,7 @@ namespace luabind { namespace detail
 
 			int offset = 0;
 			object_rep* obj = static_cast<object_rep*>(lua_touserdata(L, index));
-			assert((obj != 0) && "internal error, please report");
+			assert((obj != nullptr) && "internal error, please report");
 			const class_rep* crep = obj->crep();
 
 			int steps = implicit_cast(crep, LUABIND_TYPEID(T), offset);
@@ -56,11 +54,11 @@ namespace luabind { namespace detail
 			return ptr;
 		}
 
-		template<class T>
+		template<typename T>
 		static int match(lua_State* L, by_pointer<T>, int index)
 		{
 			object_rep* obj = is_class_object(L, index);
-			if (obj == 0) return -1;
+			if (obj == nullptr) return -1;
 			// cannot cast a constant object to nonconst
 			if (obj->flags() & object_rep::constant) return -1;
 			if (!(obj->flags() & object_rep::owner)) return -1;
@@ -68,17 +66,17 @@ namespace luabind { namespace detail
 			return implicit_cast(obj->crep(), LUABIND_TYPEID(T), d);	
 		}
 
-		template<class T>
+		template<typename T>
 		void converter_postcall(lua_State*, T, int) {}
 	};
 
 	template<>
-	struct adopt_pointer<cpp_to_lua>
+	struct adopt_pointer<Direction::cpp_to_lua>
 	{
-		template<class T>
+		template<typename T>
 		void apply(lua_State* L, T* ptr)
 		{
-			if (ptr == 0) 
+			if (ptr == nullptr)
 			{
 				lua_pushnil(L);
 				return;
@@ -105,7 +103,7 @@ namespace luabind { namespace detail
 			void* obj;
 			void* held;
 
-			boost::tie(obj,held) = crep->allocate(L);
+			std::tie(obj,held) = crep->allocate(L);
 
 			new(obj) object_rep(ptr, crep, object_rep::owner, delete_s<T>::apply);
 
@@ -115,22 +113,22 @@ namespace luabind { namespace detail
 		}
 	};
 
-	template<int N>
-//	struct adopt_policy : converter_policy_tag
+	template<size_t N>
 	struct adopt_policy : conversion_policy<N>
 	{
-//		BOOST_STATIC_CONSTANT(int, index = N);
-
 		static void precall(lua_State*, const index_map&) {}
 		static void postcall(lua_State*, const index_map&) {}
 
 		struct only_accepts_nonconst_pointers {};
 
-		template<class T, class Direction>
+		template<typename T, Direction Dir>
 		struct generate_converter
 		{
-			typedef luabind::detail::is_nonconst_pointer<T> is_nonconst_p;
-			typedef typename boost::mpl::if_<is_nonconst_p, adopt_pointer<Direction>, only_accepts_nonconst_pointers>::type type;
+            using type = std::conditional_t<
+                is_nonconst_pointer<T>::value,
+                adopt_pointer<Dir>,
+                only_accepts_nonconst_pointers
+            >;
 		};
 	};
 
@@ -138,10 +136,7 @@ namespace luabind { namespace detail
 
 namespace luabind
 {
-	template<int N>
-	detail::policy_cons<detail::adopt_policy<N>, detail::null_type> 
-	adopt(boost::arg<N>) { return detail::policy_cons<detail::adopt_policy<N>, detail::null_type>(); }
+	template<size_t N>
+	detail::policy_cons<detail::adopt_policy<N>> 
+	adopt() { return detail::policy_cons<detail::adopt_policy<N>>(); }
 }
-
-#endif // LUABIND_ADOPT_POLICY_HPP_INCLUDE
-

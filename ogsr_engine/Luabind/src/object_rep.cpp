@@ -23,6 +23,13 @@
 #include <luabind/detail/object_rep.hpp>
 #include <luabind/detail/class_rep.hpp>
 
+//#define TEST_GARBAGE_COLLECTOR
+
+#ifdef TEST_GARBAGE_COLLECTOR
+	string256	debug_test_constructor, debug_test_destructor;
+	LPCSTR		debug_class = "AttackError";//"stateAttackThreaten";
+#endif
+
 namespace luabind { namespace detail
 {
 
@@ -36,6 +43,11 @@ namespace luabind { namespace detail
 	{
 		// if the object is owned by lua, a valid destructor must be given
 		assert((((m_flags & owner) && dest) || !(m_flags & owner)) && "internal error, please report");
+#ifdef TEST_GARBAGE_COLLECTOR
+		sprintf(debug_test_constructor,"%s %x %x",m_classrep->name(),m_object,this);
+		if (!sz_cmp(debug_class,m_classrep->name()))
+			Log(debug_test_constructor);
+#endif
 	}
 
 	object_rep::object_rep(class_rep* crep, int flags, detail::lua_reference const& table_ref)
@@ -46,10 +58,20 @@ namespace luabind { namespace detail
 		, m_destructor(0)
 		, m_dependency_cnt(1)
 	{
+#ifdef TEST_GARBAGE_COLLECTOR
+		sprintf(debug_test_constructor,"%s %x %x",m_classrep->name(),m_object,this);
+		if (!sz_cmp(debug_class,m_classrep->name()))
+			Log(debug_test_constructor);
+#endif
 	}
 
 	object_rep::~object_rep() 
 	{
+#ifdef TEST_GARBAGE_COLLECTOR
+		sprintf(debug_test_destructor,"%s %x %x",m_classrep->name(),m_object,this);
+		if (!sz_cmp(debug_class,m_classrep->name()))
+			Log(debug_test_destructor);
+#endif
 		if (m_flags & owner && m_destructor) m_destructor(m_object);
 	}
 

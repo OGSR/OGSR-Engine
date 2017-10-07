@@ -20,237 +20,146 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE
 // OR OTHER DEALINGS IN THE SOFTWARE.
 
-
-#if !BOOST_PP_IS_ITERATING
-
-#ifndef LUABIND_SIGNATURE_MATCH_HPP_INCLUDED
-#define LUABIND_SIGNATURE_MATCH_HPP_INCLUDED
+#pragma once
 
 #include <luabind/config.hpp>
-
-#include <boost/config.hpp>
-#include <boost/preprocessor/repeat.hpp>
-#include <boost/preprocessor/iteration/iterate.hpp>
-#include <boost/preprocessor/repetition/enum.hpp> 
-#include <boost/preprocessor/repetition/enum_params.hpp>
-#include <boost/preprocessor/repetition/enum_trailing_params.hpp>
-#include <boost/preprocessor/repetition/enum_params_with_a_default.hpp>
-#include <boost/preprocessor/punctuation/comma_if.hpp>
-#include <boost/preprocessor/cat.hpp>
-
-#include <boost/mpl/vector.hpp>
-#include <boost/mpl/for_each.hpp>
-#include <boost/mpl/size.hpp>
-#include <boost/mpl/int.hpp>
-#include <boost/type_traits.hpp>
 
 #include <luabind/detail/primitives.hpp>
 #include <luabind/detail/object_rep.hpp>
 #include <luabind/detail/class_rep.hpp>
 #include <luabind/detail/policy.hpp>
+#include <luabind/detail/policy_cons.hpp>
 
 namespace luabind
 {
-
-	namespace detail
-	{
-		template<class A>
-		struct constructor_arity_helper
-		{
-			BOOST_STATIC_CONSTANT(int, value = 1);
-		};
-
-		template<>
-		struct constructor_arity_helper<luabind::detail::null_type>
-		{
-			BOOST_STATIC_CONSTANT(int, value = 0);
-		};
-	}
-
-
-#define LUABIND_SUM(z, n, _) detail::constructor_arity_helper<A##n >::value + 
-
-	template<BOOST_PP_ENUM_PARAMS_WITH_A_DEFAULT(LUABIND_MAX_ARITY, class A, detail::null_type)>
+	template<typename... Ts>
 	struct constructor
 	{
-		BOOST_STATIC_CONSTANT(int, arity = BOOST_PP_REPEAT(LUABIND_MAX_ARITY, LUABIND_SUM, _) 0);
+        static constexpr size_t arity() noexcept
+        {
+            return sizeof...(Ts);
+        }
 	};
-
-#undef LUABIND_SUM
 }
 
 namespace luabind { namespace detail
 {
-#define LUABIND_MATCH_DECL(Z, N,_) \
-    typedef typename find_conversion_policy< \
-        N + 1 \
-      , Policies \
-    >::type BOOST_PP_CAT(converter_policy, N); \
-\
-    typedef typename BOOST_PP_CAT(converter_policy, N) \
-        ::template generate_converter< \
-            BOOST_PP_CAT(A, N), lua_to_cpp \
-        >::type BOOST_PP_CAT(converter, N); \
-\
-	int BOOST_PP_CAT(r, N) = BOOST_PP_CAT(converter, N)::match( \
-        L \
-      , LUABIND_DECORATE_TYPE(BOOST_PP_CAT(A, N)) \
-      , start_index + current_index \
-    ); \
-\
-    current_index += BOOST_PP_CAT(converter_policy, N)::has_arg; \
-\
-    if (BOOST_PP_CAT(r, N) < 0) return -1; \
-	else m += BOOST_PP_CAT(r, N);
+    template <size_t Counter, typename T, typename... Policies>
+    int calcResult(lua_State* L, const int startIndex, const int currentIndex)
+    {
+        using converter_policy = typename find_conversion_policy<Counter + 1, Policies...>::type;
+        using converter = typename converter_policy::template generate_converter<T, Direction::lua_to_cpp>::type;
+        return converter::match(L, luabind::detail::decorated_type<T>::get(), startIndex + currentIndex);
+    }
 
-	template<int N> struct match_constructor;
+    template <size_t Counter, typename... ConstructorArgs>
+    struct match_constructor_impl;
 
-	#define BOOST_PP_ITERATION_PARAMS_1 (4, (0, LUABIND_MAX_ARITY, <luabind/detail/signature_match.hpp>, 2))
-	#include BOOST_PP_ITERATE()
+    template <size_t Counter, typename Head, typename... Tail>
+    struct match_constructor_impl<Counter, Head, Tail...>
+    {
+        template <typename... Policies>
+        static int apply(lua_State* L, const int startIndex, const int currentIndex, const int result)
+        {
+            using converter_policy = typename find_conversion_policy<Counter + 1, Policies...>::type;
+            const int r = calcResult<Counter, Head, Policies...>(L, startIndex, currentIndex);
 
-#undef LUABIND_MATCH_DECL
+            if (r < 0)
+            {
+                return -1;
+            }
+            else
+            {
+                const int newCurrentIndex = currentIndex + (converter_policy::has_arg ? 1 : 0);
+                return match_constructor_impl<Counter + 1, Tail...>::template apply<Policies...>(L, startIndex, newCurrentIndex, result + r);
+            }
+        }
+    };
 
-	// this is a function that checks if the lua stack (starting at the given start_index) matches
-	// the types in the constructor type given as 3:rd parameter. It uses the Policies given as
-	// 4:th parameter to do the matching. It returns the total number of cast-steps that needs to
-	// be taken in order to match the parameters on the lua stack to the given parameter-list. Or,
-	// if the parameter doesn't match, it returns -1.
-	template<
-		BOOST_PP_ENUM_PARAMS(LUABIND_MAX_ARITY, class A)
-	  , class Policies
-	>
-	int match_params(
-		lua_State* L
-	  , int start_index
-	  , const constructor<BOOST_PP_ENUM_PARAMS(LUABIND_MAX_ARITY, A)>* c
-	  , const Policies* p)
-	{
-		typedef constructor<BOOST_PP_ENUM_PARAMS(LUABIND_MAX_ARITY, A)> sig_t;
-		return match_constructor<sig_t::arity>::apply(
-			L, start_index, c, p);
-	}
+    template <size_t Counter, typename T>
+    struct match_constructor_impl<Counter, T>
+    {
+        template <typename... Policies>
+        static int apply(lua_State* L, const int startIndex, const int currentIndex, const int result)
+        {
+            const int r = calcResult<Counter, T, Policies...>(L, startIndex, currentIndex);
+            return r < 0 ? -1 : result + r;
+        }
+    };
 
-	template<class Sig, int StartIndex, class Policies>
-	struct constructor_match
-	{
-		inline static int apply(lua_State* L)	
-		{
-			int top = lua_gettop(L) - StartIndex + 1;
-			if (top != Sig::arity) return -1;
+    template <typename... ConstructorArgs>
+    struct match_constructor
+    {
+        template <typename... Policies>
+        static int apply(lua_State* L, const int startIndex)
+        {
+            return match_constructor_impl<0, ConstructorArgs...>::template apply<Policies...>(L, startIndex, 0, 0);
+        }
+    };
 
-			return match_params(L, StartIndex, (Sig*)0, (Policies*)0);
-		}};
+    template <>
+    struct match_constructor<>
+    {
+        template <typename...>
+        static int apply(lua_State*, const int) noexcept
+        {
+            return 0;
+        }
+    };
 
-	#define BOOST_PP_ITERATION_PARAMS_1 (4, (0, LUABIND_MAX_ARITY, <luabind/detail/signature_match.hpp>, 1))
-	#include BOOST_PP_ITERATE()
+    // this is a function that checks if the lua stack (starting at the given start_index) matches
+    // the types in the constructor type given as 3:rd parameter. It uses the Policies given as
+    // 4:th parameter to do the matching. It returns the total number of cast-steps that needs to
+    // be taken in order to match the parameters on the lua stack to the given parameter-list. Or,
+    // if the parameter doesn't match, it returns -1.
+    template<typename... ConstructorArgs, typename... Policies>
+    int match_params(lua_State* L, const int startIndex, const policy_cons<Policies...>)
+    {
+        return match_constructor<ConstructorArgs...>::template apply<Policies...>(L, startIndex);
+    }
 
+    template<int StartIndex, typename... ConstructorArgs>
+    struct constructor_match
+    {
+        template <typename... Policies>
+        static int apply(lua_State* L)
+        {
+            int top = lua_gettop(L) - StartIndex + 1;
+            if (top != sizeof...(ConstructorArgs)) return -1;
+
+            return match_params<ConstructorArgs...>(L, StartIndex, policy_cons<Policies...>());
+        }
+    };
+
+    // non-const non-member function this as a pointer
+    template<typename WrappedClass,
+             typename R,
+             typename... Args,
+             typename... Policies>
+    int match(R(*)(Args...), lua_State* L, WrappedClass*, const policy_cons<Policies...> policies)
+    {
+        return match_params<Args...>(L, 1, policies);
+    }
+
+    // non-const member function
+    template<typename T,
+             typename WrappedClass,
+             typename R,
+             typename... Args,
+             typename... Policies>
+    int match(R(T::*)(Args...), lua_State* L, WrappedClass*, const policy_cons<Policies...> policies)
+    {
+        return match_params<T&, Args...>(L, 1, policies);
+    }
+
+    // const member function
+    template<typename T,
+             typename WrappedClass,
+             typename R,
+             typename... Args,
+             typename... Policies>
+    int match(R(T::*)(Args...) const, lua_State* L, WrappedClass*, const policy_cons<Policies...> policies)
+    {
+        return match_params<T const&, Args...>(L, 1, policies);
+    }
 }}
-
-#endif // LUABIND_SIGNATURE_MATCH_HPP_INCLUDED
-
-#elif BOOST_PP_ITERATION_FLAGS() == 1
-
-#define N BOOST_PP_ITERATION()
-
-	// non-const non-member function this as a pointer
-	template<
-	    class WrappedClass
-	  , class Policies
-	  , class R 
-		BOOST_PP_COMMA_IF(BOOST_PP_ITERATION()) 
-			BOOST_PP_ENUM_PARAMS(BOOST_PP_ITERATION(), class A)
-	>
-	int match(R(*)(
-		BOOST_PP_ENUM_PARAMS(BOOST_PP_ITERATION(), A))
-	  , lua_State* L
-	  , WrappedClass*
-	  , Policies const*)
-	{
-		typedef constructor<BOOST_PP_ENUM_PARAMS(BOOST_PP_ITERATION(), A)> ParameterTypes;
-		return match_params(
-			L, 1, (ParameterTypes*)0, (Policies*)0);
-	}
-
-# if (BOOST_PP_ITERATION() < (LUABIND_MAX_ARITY - 1))
-
-	// non-const member function
-	template<
-		class T
-	  , class WrappedClass
-	  , class Policies
-	  , class R 
-		BOOST_PP_COMMA_IF(N)
-			BOOST_PP_ENUM_PARAMS(N, class A)
-	>
-	int match(
-		R(T::*)(BOOST_PP_ENUM_PARAMS(N, A))
-	  , lua_State* L
-	  , WrappedClass*
-	  , Policies const*)
-	{
-		typedef constructor<
-		    T&
-		    BOOST_PP_ENUM_TRAILING_PARAMS(N, A)
-		> params_t;
-
-		return match_params(
-			L, 1, (params_t*)0, (Policies*)0);
-	}
-
-	// const member function
-	template<
-		class T
-	  , class WrappedClass
-	  , class Policies
-	  , class R 
-			BOOST_PP_COMMA_IF(N)
-				BOOST_PP_ENUM_PARAMS(N, class A)
-	>
-	int match(
-		R(T::*)(BOOST_PP_ENUM_PARAMS(N, A)) const
-	  , lua_State* L
-	  , WrappedClass*
-	  , Policies const* policies)
-	{
-		typedef constructor<
-			T const&
-			BOOST_PP_ENUM_TRAILING_PARAMS(N, A)
-		> params_t;
-		return match_params(
-			L, 1, (params_t*)0, (Policies*)0);
-	}
-
-# endif
-
-#undef N
-
-#elif BOOST_PP_ITERATION_FLAGS() == 2
-
-#define N BOOST_PP_ITERATION()
-
-	template<>
-	struct match_constructor<N>
-	{
-		template<
-			BOOST_PP_ENUM_PARAMS(LUABIND_MAX_ARITY, class A)
-		  , class Policies
-		>
-		static int apply(
-			lua_State* L
-		  , int start_index
-		  , const constructor<BOOST_PP_ENUM_PARAMS(LUABIND_MAX_ARITY, A)>*
-		  , const Policies*)
-		{
-			int m = 0;
-#if N
-            int current_index = 0;
-#endif
-            BOOST_PP_REPEAT(N, LUABIND_MATCH_DECL, _)
-			return m;
-		}
-	};
-
-#undef N
-
-#endif
-

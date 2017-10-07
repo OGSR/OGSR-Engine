@@ -20,21 +20,20 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE
 // OR OTHER DEALINGS IN THE SOFTWARE.
 
-
-#ifndef LUABIND_COPY_POLICY_HPP_INCLUDED
-#define LUABIND_COPY_POLICY_HPP_INCLUDED
+#pragma once
+#include <lua.hpp>
+#include <luabind/luabind.hpp>
 
 #include <luabind/config.hpp>
-
-#include <boost/type_traits/is_pointer.hpp>
-#include <boost/type_traits/is_reference.hpp>
 #include <luabind/detail/policy.hpp>
+
+#include <type_traits>
 
 namespace luabind { namespace detail {
 
 	struct copy_pointer_to
 	{
-		template<class T>
+		template<typename T>
 		void apply(lua_State* L, const T* ptr)
 		{
 			if (ptr == 0) 
@@ -51,7 +50,7 @@ namespace luabind { namespace detail {
 			// to use an unregistered type
 			assert(crep && "you are trying to use an unregistered type");
 
-			T* copied_obj = new T(*ptr);
+			T* copied_obj = luabind_new<T>(*ptr);
 
 			// create the struct to hold the object
 			void* obj = lua_newuserdata(L, sizeof(object_rep));
@@ -66,7 +65,7 @@ namespace luabind { namespace detail {
 
 	struct copy_reference_to
 	{
-		template<class T>
+		template<typename T>
 		void apply(lua_State* L, const T& ref)
 		{
 			class_registry* registry = class_registry::get_registry(L);
@@ -76,7 +75,7 @@ namespace luabind { namespace detail {
 			// to use an unregistered type
 			assert(crep && "you are trying to use an unregistered type");
 
-			T* copied_obj = new T(ref);
+			T* copied_obj = luabind_new<T>(ref);
 
 			// create the struct to hold the object
 			void* obj = lua_newuserdata(L, sizeof(object_rep));
@@ -89,7 +88,7 @@ namespace luabind { namespace detail {
 		}
 	};
 
-	template<int N>
+	template<size_t N>
 	struct copy_policy : conversion_policy<N>
 	{
 		struct only_accepts_pointers_or_references {};
@@ -98,26 +97,29 @@ namespace luabind { namespace detail {
 		static void precall(lua_State*, const index_map&) {}
 		static void postcall(lua_State*, const index_map&) {}
 
-		template<class T, class Direction>
+		template<typename T, Direction Dir>
 		struct generate_converter
 		{
-			typedef typename boost::mpl::if_<boost::is_same<Direction, cpp_to_lua>
-					, typename boost::mpl::if_<boost::is_pointer<T>
-						,	copy_pointer_to
-						,	typename boost::mpl::if_<boost::is_reference<T>
-								,	copy_reference_to
-								,	only_accepts_pointers_or_references>::type>::type
-					, only_converts_from_cpp_to_lua>::type type;
+            using type = std::conditional_t<
+                Dir == Direction::cpp_to_lua,
+                std::conditional_t<
+                    std::is_pointer_v<T>,
+                    copy_pointer_to,
+                    std::conditional_t<
+                        std::is_reference_v<T>,
+                        copy_reference_to,
+                        only_accepts_pointers_or_references
+                    >
+                >,
+                only_converts_from_cpp_to_lua
+            >;
 		};
 	};
 }}
 
 namespace luabind
 {
-	template<int N>
-	detail::policy_cons<detail::copy_policy<N>, detail::null_type> 
-	copy(boost::arg<N>) { return detail::policy_cons<detail::copy_policy<N>, detail::null_type>(); }
+	template<size_t N>
+	detail::policy_cons<detail::copy_policy<N>> 
+	copy() { return detail::policy_cons<detail::copy_policy<N>>(); }
 }
-
-#endif // LUABIND_COPY_POLICY_HPP_INCLUDED
-

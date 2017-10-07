@@ -20,20 +20,16 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE
 // OR OTHER DEALINGS IN THE SOFTWARE.
 
-#ifndef POINTEE_TYPEID_040211_HPP
-#define POINTEE_TYPEID_040211_HPP
+#pragma once
 
 #include <luabind/config.hpp>
 
 namespace luabind { namespace detail {
 
-    template<class T>
+    template<typename T>
     LUABIND_TYPE_INFO pointee_typeid(T*)
     {
         return LUABIND_TYPEID(T);
     }
 
 }} // namespace luabind::detail
-
-#endif // POINTEE_TYPEID_040211_HPP
-

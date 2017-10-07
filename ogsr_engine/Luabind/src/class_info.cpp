@@ -20,7 +20,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE
 // OR OTHER DEALINGS IN THE SOFTWARE.
 
-#include <luabind/lua_include.hpp>
+#include <lua.hpp>
 
 #include <luabind/luabind.hpp>
 #include <luabind/class_info.hpp>
@@ -45,7 +45,7 @@ namespace luabind
 
 		typedef detail::class_rep::property_map map_type;
 		
-		std::size_t index = 1;
+		unsigned int index = 1;
 		
 		for (map_type::const_iterator i = obj->crep()->properties().begin();
 				i != obj->crep()->properties().end(); ++i)

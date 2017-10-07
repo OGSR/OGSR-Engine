@@ -20,18 +20,12 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE
 // OR OTHER DEALINGS IN THE SOFTWARE.
 
-
-#ifndef LUABIND_CONSTRUCT_REP_HPP_INCLUDED
-#define LUABIND_CONSTRUCT_REP_HPP_INCLUDED
+#pragma once
 
 #include <luabind/config.hpp>
 
 #include <vector>
 #include <string>
-
-#include <boost/preprocessor/enum_params.hpp>
-#include <boost/function/function1.hpp>
-#include <boost/function/function2.hpp>
 
 #include <luabind/detail/signature_match.hpp>
 #include <luabind/detail/overload_rep_base.hpp>
@@ -39,13 +33,13 @@
 
 namespace luabind { namespace detail
 {
-
-
 	struct construct_rep
 	{
 		struct overload_t: public overload_rep_base
 		{
-			overload_t(): wrapped_construct_fun(0) 
+			overload_t()
+		        : construct_fun(nullptr),
+		          wrapped_construct_fun(nullptr) 
 			{
 			}
 
@@ -53,18 +47,18 @@ namespace luabind { namespace detail
 			typedef void*(*wrapped_construct_ptr)(lua_State*, weak_ref const&);
 			typedef void(*get_signature_ptr)(lua_State*, string_class&);
 
-			inline void set_constructor(construct_ptr f) { construct_fun = f; }
-			inline void set_wrapped_constructor(wrapped_construct_ptr f) { wrapped_construct_fun = f; }
+			void set_constructor(construct_ptr f) { construct_fun = f; }
+			void set_wrapped_constructor(wrapped_construct_ptr f) { wrapped_construct_fun = f; }
 
-			inline void* construct(lua_State* L, weak_ref const& backref) 
+			void* construct(lua_State* L, weak_ref const& backref) const
 			{ 
 				return construct_fun(L, backref); 
 			}
 
-			inline void* construct_wrapped(lua_State* L, weak_ref const& ref) { return wrapped_construct_fun(L, ref); } 
-			inline bool has_wrapped_construct() { return wrapped_construct_fun != 0; }
+			void* construct_wrapped(lua_State* L, weak_ref const& ref) const { return wrapped_construct_fun(L, ref); } 
+			bool has_wrapped_construct() const { return wrapped_construct_fun != nullptr; }
 
-			inline void set_arity(int arity) { m_arity = arity; }
+			void set_arity(const int arity) { m_arity = arity; }
 
 		private:
 
@@ -78,9 +72,7 @@ namespace luabind { namespace detail
 			std::swap(x.overloads, overloads);
 		}
 
-		std::vector<overload_t> overloads;
+		vector_class<overload_t> overloads;
 	};
 
 }}
-
-#endif // LUABIND_CONSTRUCT_REP_HPP_INCLUDED

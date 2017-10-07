@@ -20,9 +20,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE
 // OR OTHER DEALINGS IN THE SOFTWARE.
 
-
-#ifndef LUABIND_METHOD_REP_HPP_INCLUDED
-#define LUABIND_METHOD_REP_HPP_INCLUDED
+#pragma once
 
 #include <luabind/config.hpp>
 
@@ -48,21 +46,53 @@ namespace luabind { namespace detail
 	*/
 	struct method_rep
 	{
+        method_rep() = default;
+        method_rep(const method_rep&) = default;
+
+        method_rep(method_rep&& that) noexcept
+            : name(that.name),
+              crep(that.crep),
+              m_overloads(std::move(that.m_overloads))
+        {
+            that.name = nullptr;
+            that.crep = nullptr;
+        }
+
+        method_rep& operator= (const method_rep&) = default;
+
+        method_rep& operator= (method_rep&& that) noexcept
+        {
+            name = that.name;
+            crep = that.crep;
+            m_overloads = std::move(that.m_overloads);
+            
+            that.name = nullptr;
+            that.crep = nullptr;
+            return *this;
+        }
+
 		void add_overload(const overload_rep& o)
 		{
-			std::vector<overload_rep>::iterator i = std::find(m_overloads.begin(), m_overloads.end(), o);
-			if (i == m_overloads.end())
-			{
-				// if this overload does not exist, we can just add it to the end of the overloads list
-				m_overloads.push_back(o);
-			}
-			else
-			{
-				// if this specific overload already exists, replace it
-				*i = o;
-			}
+            auto copy = o;
+            add_overload(std::move(copy));
 		}
-		const std::vector<overload_rep>& overloads() const throw() { return m_overloads; }
+
+        void add_overload(overload_rep&& o)
+        {
+            auto i = std::find(m_overloads.begin(), m_overloads.end(), o);
+            if (i == m_overloads.end())
+            {
+                // if this overload does not exist, we can just add it to the end of the overloads list
+                m_overloads.push_back(std::move(o));
+            }
+            else
+            {
+                // if this specific overload already exists, replace it
+                *i = std::move(o);
+            }
+        }
+
+		const vector_class<overload_rep>& overloads() const throw() { return m_overloads; }
 
 		// this is a pointer to the string kept in class_rep::m_methods, and those strings are deleted
 		// at the end of the lua session.
@@ -75,9 +105,7 @@ namespace luabind { namespace detail
 		// this have to be write protected, since each time an overload is
 		// added it has to be checked for existence. add_overload() should
 		// be used.
-		std::vector<overload_rep> m_overloads;
+		vector_class<overload_rep> m_overloads;
 	};
 
 }}
-
-#endif // LUABIND_METHOD_REP_HPP_INCLUDED

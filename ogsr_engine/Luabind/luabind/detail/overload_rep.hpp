@@ -20,40 +20,52 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE
 // OR OTHER DEALINGS IN THE SOFTWARE.
 
-
-#if !BOOST_PP_IS_ITERATING
-
-#ifndef LUABIND_OVERLOAD_REP_HPP_INCLUDED
-#define LUABIND_OVERLOAD_REP_HPP_INCLUDED
+#pragma once
 
 #include <luabind/config.hpp>
-
-#include <boost/preprocessor/enum_params.hpp>
-#include <boost/preprocessor/iteration/iterate.hpp>
-#include <boost/preprocessor/repeat.hpp>
-
 #include <luabind/detail/overload_rep_base.hpp>
-
 #include <luabind/detail/class_rep.hpp>
 #include <luabind/detail/is_indirect_const.hpp>
+#include <luabind/detail/calc_has_arg.hpp>
+
+#include <imdexlib/typelist.hpp>
 
 namespace luabind { namespace detail
 {
-	struct dummy_ {};
-
 	// this class represents a specific overload of a member-function.
 	struct LUABIND_API overload_rep : public overload_rep_base
 	{
-		#define BOOST_PP_ITERATION_PARAMS_1 (4 \
-			, (0, LUABIND_MAX_ARITY, <luabind/detail/overload_rep.hpp>, 1))
-		#include BOOST_PP_ITERATE()
+        template<typename R, typename T, typename... Args, typename... Policies>
+        overload_rep(R(T::*)(Args...), const policy_cons<Policies...> policies)
+            : overload_rep(false, imdexlib::typelist<Args...>(), std::integral_constant<int, 1>(), policies)
+        {
+            
+        }
+
+        template<typename R, typename T, typename... Args, typename... Policies>
+        overload_rep(R(T::*)(Args...) const, const policy_cons<Policies...> policies)
+            : overload_rep(true, imdexlib::typelist<Args...>(), std::integral_constant<int, 1>(), policies)
+        {
+        }
+
+        template<typename R, typename... Args, typename... Policies>
+        overload_rep(R(*)(Args...), const policy_cons<Policies...> policies)
+            : overload_rep(false, imdexlib::typelist<Args...>(), std::integral_constant<int, 0>(), policies)
+        {
+        }
+
+        overload_rep(const overload_rep&) = default;
+        overload_rep(overload_rep&&) = default;
+
+        overload_rep& operator= (const overload_rep&) = default;
+        overload_rep& operator= (overload_rep&&) = default;
 
 		bool operator==(const overload_rep& o)
 		{
 			if (o.m_const != m_const) return false;
 			if (o.m_arity != m_arity) return false;
 			if (o.m_params_.size() != m_params_.size()) return false;
-			for (int i = 0; i < (int)m_params_.size(); ++i)
+			for (size_t i = 0; i < m_params_.size(); ++i)
 			{
 				if (!(LUABIND_TYPE_INFO_EQUAL(m_params_[i], o.m_params_[i]))) 
 					return false;
@@ -61,76 +73,57 @@ namespace luabind { namespace detail
 			return true;
 		}
 
-		void set_fun(boost::function1<int, lua_State*> const& f) 
-		{ call_fun = f; }
+        template <typename T>
+		void set_fun(T&& fun) 
+		{ call_fun = std::forward<T>(fun); }
 
-		void set_fun_static(boost::function1<int, lua_State*> const& f) 
-		{ call_fun_static = f; }
+        template <typename T>
+		void set_fun_static(T&& fun) 
+		{ call_fun_static = std::forward<T>(fun); }
 
 		int call(lua_State* L, bool force_static_call) const;
 
-		bool has_static() const { return !call_fun_static.empty(); }
+		bool has_static() const { return static_cast<bool>(call_fun_static); }
 
 	private:
 
+        template <int ResInit, typename... Args, typename... Policies>
+        overload_rep(const bool isConst, const imdexlib::typelist<Args...>, const std::integral_constant<int, ResInit>, const policy_cons<Policies...>)
+            : allocator(),
+              call_fun(std::allocator_arg_t(), allocator),
+              call_fun_static(std::allocator_arg_t(), allocator),
+              m_const(isConst)
+        {
+            m_params_.reserve(sizeof...(Args));
+
+            const int expander [] = { 0, (m_params_.push_back(&typeid(Args)), 0)... };
+            (void) expander;
+
+            m_arity =  calcHasArg<ResInit, 1, sizeof...(Args) , Policies...>();
+        }
+
+        luabind::memory_allocator<unsigned char> allocator;
+
 		// this is the normal function pointer that may be a virtual
-		boost::function1<int, lua_State*> call_fun;
+#pragma warning(push)
+#pragma warning(disable:4251)
+		std::function<int(lua_State*)> call_fun;
+#pragma warning(pop)
 
 		// this is the optional function pointer that is only set if
 		// the first function pointer is virtual. This must always point
 		// to a static function.
-		boost::function1<int, lua_State*> call_fun_static;
+#pragma warning(push)
+#pragma warning(disable:4251)
+		std::function<int(lua_State*)> call_fun_static;
+#pragma warning(pop)
 
 		// the types of the parameter it takes
-		std::vector<LUABIND_TYPE_INFO> m_params_;
+#pragma warning(push)
+#pragma warning(disable:4251)
+		vector_class<LUABIND_TYPE_INFO> m_params_;
+#pragma warning(pop)
 		// is true if the overload is const (this is a part of the signature)
 		bool m_const;
 	};
-
 }} // namespace luabind::detail
-
-#endif // LUABIND_OVERLOAD_REP_HPP_INCLUDED
-
-#elif BOOST_PP_ITERATION_FLAGS() == 1
-
-#define LUABIND_PARAM(z, n, _) m_params_.push_back(LUABIND_TYPEID(A##n));
-#define LUABIND_POLICY_DECL(z,n,text) typedef typename find_conversion_policy<n + 1, Policies>::type BOOST_PP_CAT(p,n);
-#define LUABIND_ARITY(z,n,text) + BOOST_PP_CAT(p,n)::has_arg
-
-		// overloaded template funtion that initializes the parameter list
-		// called m_params and the m_arity member.
-		template<class R, class T BOOST_PP_COMMA_IF(BOOST_PP_ITERATION()) BOOST_PP_ENUM_PARAMS(BOOST_PP_ITERATION(), class A), class Policies>
-		overload_rep(R(T::*)(BOOST_PP_ENUM_PARAMS(BOOST_PP_ITERATION(), A)), Policies*)
-            : m_const(false)
-		{
-			m_params_.reserve(BOOST_PP_ITERATION());
-			BOOST_PP_REPEAT(BOOST_PP_ITERATION(), LUABIND_PARAM, _)
-			BOOST_PP_REPEAT(BOOST_PP_ITERATION(), LUABIND_POLICY_DECL, _)
-			m_arity = 1 BOOST_PP_REPEAT(BOOST_PP_ITERATION(), LUABIND_ARITY, 0);
-		}
-
-		template<class R, class T BOOST_PP_COMMA_IF(BOOST_PP_ITERATION()) BOOST_PP_ENUM_PARAMS(BOOST_PP_ITERATION(), class A), class Policies>
-		overload_rep(R(T::*)(BOOST_PP_ENUM_PARAMS(BOOST_PP_ITERATION(), A)) const, Policies*)
-            : m_const(true)
-		{
-			m_params_.reserve(BOOST_PP_ITERATION());
-			BOOST_PP_REPEAT(BOOST_PP_ITERATION(), LUABIND_PARAM, _)
-			BOOST_PP_REPEAT(BOOST_PP_ITERATION(), LUABIND_POLICY_DECL, _)
-			m_arity = 1 BOOST_PP_REPEAT(BOOST_PP_ITERATION(), LUABIND_ARITY, 0);
-		}
-
-		template<class R BOOST_PP_ENUM_TRAILING_PARAMS(BOOST_PP_ITERATION(), class A), class Policies>
-		overload_rep(R(*)(BOOST_PP_ENUM_PARAMS(BOOST_PP_ITERATION(), A)), Policies*)
-            : m_const(false/*is_indirect_const<T>::value*/)
-		{
-			m_params_.reserve(BOOST_PP_ITERATION());
-			BOOST_PP_REPEAT(BOOST_PP_ITERATION(), LUABIND_PARAM, _)
-			BOOST_PP_REPEAT(BOOST_PP_ITERATION(), LUABIND_POLICY_DECL, _)
-			m_arity = 0 BOOST_PP_REPEAT(BOOST_PP_ITERATION(), LUABIND_ARITY, 0);
-		}
-
-#undef LUABIND_ARITY
-#undef LUABIND_POLICY_DECL
-#undef LUABIND_PARAM
-
-#endif

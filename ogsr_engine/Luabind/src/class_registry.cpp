@@ -20,7 +20,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE
 // OR OTHER DEALINGS IN THE SOFTWARE.
 
-#include <luabind/lua_include.hpp>
+#include <lua.hpp>
 
 #include <luabind/luabind.hpp>
 #include <luabind/detail/class_registry.hpp>
@@ -247,7 +247,7 @@ namespace luabind { namespace detail {
 
     class_rep* class_registry::find_class(LUABIND_TYPE_INFO info) const
     {
-        std::map<LUABIND_TYPE_INFO, class_rep*, cmp>::const_iterator i(
+        map_class<LUABIND_TYPE_INFO, class_rep*, cmp>::const_iterator i(
             m_classes.find(info));
 
         if (i == m_classes.end()) return 0; // the type is not registered

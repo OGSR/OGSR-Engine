@@ -21,23 +21,10 @@
 // OR OTHER DEALINGS IN THE SOFTWARE.
 
 #ifndef LUABIND_NO_ERROR_CHECKING
-
-#if !BOOST_PP_IS_ITERATING
-
-#ifndef LUABIND_GET_SIGNATURE_HPP_INCLUDED
-#define LUABIND_GET_SIGNATURE_HPP_INCLUDED
-
-#include <boost/config.hpp>
-#include <boost/preprocessor/repeat.hpp>
-#include <boost/preprocessor/iteration/iterate.hpp>
-#include <boost/preprocessor/repetition/enum.hpp> 
-#include <boost/preprocessor/repetition/enum_params.hpp>
-#include <boost/preprocessor/punctuation/comma_if.hpp>
-#include <boost/preprocessor/cat.hpp>
+#pragma once
 
 #include <luabind/config.hpp>
 #include <luabind/detail/signature_match.hpp>
-
 
 namespace luabind { namespace detail
 {
@@ -78,73 +65,147 @@ namespace luabind { namespace detail
 	inline string_class name_of_type(by_value<const unsigned long>, lua_State*, int) { return "number"; }
 
 	template<class T>
-	inline string_class name_of_type(by_value<luabind::functor<T> >, lua_State* L, long) { return "function<" + name_of_type(LUABIND_DECORATE_TYPE(T), L, 0L) + ">"; }
+	string_class name_of_type(by_value<luabind::functor<T> >, lua_State* L, long) { return "function<" + name_of_type(LUABIND_DECORATE_TYPE(T), L, 0L) + ">"; }
 
 	inline string_class name_of_type(by_value<string_class>, lua_State*, int) { return "string"; }
 	inline string_class name_of_type(by_const_pointer<char>, lua_State*, int) { return "string"; }
 	inline string_class name_of_type(by_pointer<lua_State>, lua_State*, int) { return "lua_State*"; }
-	
-	template<class T>
-	struct type_name_unless_void
-	{
-		inline static void apply(string_class& s, lua_State* L, bool first)
-		{
-			if (!first) s += ", ";
-			s += name_of_type(LUABIND_DECORATE_TYPE(T), L, 0L);
-		}
-	};
+
+    template <typename T>
+    struct type_name_unless_void
+    {
+        static void apply(string_class& s, lua_State* L, bool first)
+        {
+            if (!first) s += ", ";
+            s += name_of_type(LUABIND_DECORATE_TYPE(T), L, 0L);
+        }
+    };
 
 	template<>
 	struct type_name_unless_void<null_type>
 	{
-		inline static void apply(string_class&, lua_State*, bool) {}
+		static void apply(string_class&, lua_State*, const bool) {}
 	};
 
-#define LUABIND_ADD_LUA_TYPE_NAME(z, n, _) type_name_unless_void<BOOST_PP_CAT(A, BOOST_PP_INC(n))>::apply(s, L, false);
+    template<typename T, typename C>
+    void get_member_signature_impl(T(C::*)(), lua_State*, luabind::internal_string& s)
+    {
+        s += "()";
+    }
 
-	#define BOOST_PP_ITERATION_PARAMS_1 (4, (0, LUABIND_MAX_ARITY, <luabind/detail/get_signature.hpp>, 1))
-	#include BOOST_PP_ITERATE()
+    template<typename T, typename C, typename A, typename... Args>
+    void get_member_signature_impl(T(C::*)(A, Args...), lua_State* L, luabind::internal_string& s)
+    {
+        s += "(";
+        s += name_of_type(luabind::detail::decorated_type<A>::get(), L, 0L);
+        const int expander[] = { 0, (type_name_unless_void<Args>::apply(s, L, false), 0)... };
+        (void) expander;
+        s += ")";
+    }
 
-	template<class F>
+    template<typename T, typename C>
+    void get_member_signature_impl(T(C::*)() const, lua_State*, luabind::internal_string& s)
+    {
+        s += "() const";
+    }
+
+    template<typename T, typename C, typename A, typename... Args>
+    void get_member_signature_impl(T(C::*)(A, Args...) const, lua_State* L, luabind::internal_string& s)
+    {
+        s += "(";
+        s += name_of_type(luabind::detail::decorated_type<A>::get(), L, 0L);
+        const int expander [] = { 0, (type_name_unless_void<Args>::apply(s, L, false), 0)... };
+        (void) expander;
+        s += ") const";
+    }
+
+    template<typename T>
+    void get_member_signature_impl(T(*f)(), lua_State*, luabind::internal_string& s)
+    {
+        s += "()";
+    }
+
+    template<typename T, typename A, typename... Args>
+    void get_member_signature_impl(T(*f)(A, Args...), lua_State* L, luabind::internal_string& s)
+    {
+        s += "(";
+        s += name_of_type(luabind::detail::decorated_type<A>::get(), L, 0L);
+        const int expander [] = { 0, (type_name_unless_void<Args>::apply(s, L, false), 0)... };
+        (void) expander;
+        s += ")";
+    }
+
+    template<typename T>
+    void get_free_function_signature_impl(T(*f)(), lua_State*, luabind::internal_string& s)
+    {
+        s += "()";
+    }
+
+    template<typename T, typename A, typename... Args>
+    void get_free_function_signature_impl(T(*f)(A, Args...), lua_State* L, luabind::internal_string& s)
+    {
+        s += "(";
+        s += name_of_type(luabind::detail::decorated_type<A>::get(), L, 0L);
+        const int expander [] = { 0, (type_name_unless_void<Args>::apply(s, L, false), 0)... };
+        (void) expander;
+        s += ")";
+    }
+
+	template<typename F>
 	struct get_member_signature
 	{
-		static inline void apply(lua_State* L, string_class& s)
+		static void apply(lua_State* L, string_class& s)
 		{
-			get_member_signature_impl(static_cast<F>(0), L, s);
+			get_member_signature_impl(static_cast<F>(nullptr), L, s);
 		}
 	};
 
-	template<class F>
+	template<typename F>
 	struct get_free_function_signature
 	{
-		static inline void apply(lua_State* L, string_class& s)
+		static void apply(lua_State* L, string_class& s)
 		{
-			get_free_function_signature_impl(static_cast<F>(0), L, s);
+			get_free_function_signature_impl(static_cast<F>(nullptr), L, s);
 		}
 	};
 
+    template<typename... Args>
+    struct get_signature;
 
-	template<class Sig>
-	struct get_signature
+	template<typename T, typename... Args>
+	struct get_signature<T, Args...>
 	{
-		static inline void apply(lua_State* L, string_class& s)
+		static void apply(lua_State* L, string_class& s)
 		{
-			get_signature_impl(static_cast<const Sig*>(0), L, s);
+            s += "(";
+            type_name_unless_void<T>::apply(s, L, true);
+            const int expander [] = { 0, (type_name_unless_void<Args>::apply(s, L, false), 0)... };
+            (void) expander;
+            s += ")";
 		}
 	};
 
-	template<BOOST_PP_ENUM_PARAMS(LUABIND_MAX_ARITY, class A)>
-	inline void get_signature_impl(const constructor<BOOST_PP_ENUM_PARAMS(LUABIND_MAX_ARITY, A)>*, lua_State* L, string_class& s)
-	{
-		s += "(";
-		type_name_unless_void<A0>::apply(s, L, true);
-		BOOST_PP_REPEAT(BOOST_PP_DEC(LUABIND_MAX_ARITY), LUABIND_ADD_LUA_TYPE_NAME, _)
-		s += ")";
-	}
+    template <typename T>
+    struct get_signature<T>
+    {
+        static void apply(lua_State* L, string_class& s)
+        {
+            s += "(";
+            type_name_unless_void<T>::apply(s, L, true);
+            s += ")";
+        }
+    };
 
-#undef LUABIND_ADD_LUA_TYPE_NAME
+    template <>
+    struct get_signature<>
+    {
+        static void apply(lua_State*, string_class& s)
+        {
+            s += "()";
+        }
+    };
 
-	template<class T>
+	template<typename T>
 	struct get_setter_signature
 	{
 		static void apply(lua_State* L, string_class& s)
@@ -154,62 +215,6 @@ namespace luabind { namespace detail
 			s += ")";
 		}
 	};
-
 }}
-
-#endif // LUABIND_GET_SIGNATURE_HPP_INCLUDED
-
-#elif BOOST_PP_ITERATION_FLAGS() == 1
-
-	// member functions
-	template<class T, class C BOOST_PP_COMMA_IF(BOOST_PP_ITERATION()) BOOST_PP_ENUM_PARAMS(BOOST_PP_ITERATION(), class A)>
-	inline void get_member_signature_impl(T(C::*)(BOOST_PP_ENUM_PARAMS(BOOST_PP_ITERATION(), A)), lua_State* L, string_class& s)
-	{
-		s += "(";
-#if BOOST_PP_ITERATION() > 0
-		s += name_of_type(LUABIND_DECORATE_TYPE(A0), L, 0L);
-		BOOST_PP_REPEAT(BOOST_PP_DEC(BOOST_PP_ITERATION()), LUABIND_ADD_LUA_TYPE_NAME, _)
-#endif
-		s += ")";
-	}
-
-	template<class T, class C BOOST_PP_COMMA_IF(BOOST_PP_ITERATION()) BOOST_PP_ENUM_PARAMS(BOOST_PP_ITERATION(), class A)>
-	inline void get_member_signature_impl(T(C::*)(BOOST_PP_ENUM_PARAMS(BOOST_PP_ITERATION(), A)) const, lua_State* L, string_class& s)
-	{
-		(void)L;
-		s += "(";
-#if BOOST_PP_ITERATION() > 0
-		s += name_of_type(LUABIND_DECORATE_TYPE(A0), L, 0L);
-		BOOST_PP_REPEAT(BOOST_PP_DEC(BOOST_PP_ITERATION()), LUABIND_ADD_LUA_TYPE_NAME, _)
-#endif
-		s += ") const";
-	}
-
- 	// const C& obj
-	template<class T BOOST_PP_COMMA_IF(BOOST_PP_ITERATION()) BOOST_PP_ENUM_PARAMS(BOOST_PP_ITERATION(), class A)>
-	inline void get_member_signature_impl(T(*f)(BOOST_PP_ENUM_PARAMS(BOOST_PP_ITERATION(), A)), lua_State* L, string_class& s)
-	{
-		s += "(";
-#if BOOST_PP_ITERATION() > 0
-		s += name_of_type(LUABIND_DECORATE_TYPE(A0), L, 0L);
-		BOOST_PP_REPEAT(BOOST_PP_DEC(BOOST_PP_ITERATION()), LUABIND_ADD_LUA_TYPE_NAME, _)
-#endif
-		s += ")";
-	}
-
-	// free functions
-	template<class T BOOST_PP_COMMA_IF(BOOST_PP_ITERATION()) BOOST_PP_ENUM_PARAMS(BOOST_PP_ITERATION(), class A)>
-	inline void get_free_function_signature_impl(T(*f)(BOOST_PP_ENUM_PARAMS(BOOST_PP_ITERATION(), A)), lua_State* L, string_class& s)
-	{
-		(void)f;
-		s += "(";
-#if BOOST_PP_ITERATION() > 0
-		s += name_of_type(LUABIND_DECORATE_TYPE(A0), L, 0L);
-		BOOST_PP_REPEAT(BOOST_PP_DEC(BOOST_PP_ITERATION()), LUABIND_ADD_LUA_TYPE_NAME, _)
-#endif
-		s += ")";
-	}
-
-#endif
 
 #endif // LUABIND_NO_ERROR_CHECKING

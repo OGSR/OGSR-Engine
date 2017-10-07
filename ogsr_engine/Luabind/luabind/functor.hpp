@@ -20,19 +20,8 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE
 // OR OTHER DEALINGS IN THE SOFTWARE.
 
-#if !BOOST_PP_IS_ITERATING
+#pragma once
 
-#ifndef LUABIND_FUNCTOR_HPP_INCLUDED
-#define LUABIND_FUNCTOR_HPP_INCLUDED
-
-#include <boost/preprocessor/repeat.hpp>
-#include <boost/preprocessor/repetition/enum_params.hpp>
-#include <boost/preprocessor/repetition/enum_params.hpp>
-#include <boost/preprocessor/iteration/iterate.hpp>
-#include <boost/type_traits/is_void.hpp>
-#include <boost/mpl/if.hpp>
-
-#include <luabind/prefix.hpp>
 #include <luabind/config.hpp>
 #include <luabind/detail/policy.hpp>
 #include <luabind/detail/convert_to_lua.hpp>
@@ -42,28 +31,28 @@
 
 namespace luabind
 {
-//template<class Ret>
-//class functor;
-
 	namespace detail
 	{
-
-		struct functor_from;
-
-
 		// if the proxy_functor_caller returns non-void
-			template<class Ret, class Tuple>
+			template<typename Ret, typename... Ts>
 			class proxy_functor_caller
 			{
-//			template<class T> friend class luabind::functor;
+                using tuple_t = std::tuple<Ts...>;
 			public:
 
-				proxy_functor_caller(luabind::functor<Ret>* o, const Tuple args)
+				proxy_functor_caller(luabind::functor<Ret>* o, const tuple_t& args)
 					: m_func(o)
 					, m_args(args)
 					, m_called(false)
 				{
 				}
+
+                proxy_functor_caller(luabind::functor<Ret>* o, tuple_t&& args)
+                    : m_func(o)
+                    , m_args(std::move(args))
+                    , m_called(false)
+                {
+                }
 
 				proxy_functor_caller(const proxy_functor_caller& rhs)
 					: m_func(rhs.m_func)
@@ -73,7 +62,15 @@ namespace luabind
 					rhs.m_called = true;
 				}
 
-				~proxy_functor_caller()
+                proxy_functor_caller(proxy_functor_caller&& rhs)
+                    : m_func(rhs.m_func)
+                    , m_args(std::move(rhs.m_args))
+                    , m_called(rhs.m_called)
+                {
+                    rhs.m_called = true;
+                }
+
+				~proxy_functor_caller() LUABIND_DTOR_NOEXCEPT
 				{
 					if (m_called) return;
 
@@ -84,7 +81,7 @@ namespace luabind
 					m_func->pushvalue();
 
 					push_args_from_tuple<1>::apply(L, m_args);
-					if (pcall(L, boost::tuples::length<Tuple>::value, 0))
+					if (pcall(L, sizeof...(Ts), 0))
 					{ 
 #ifndef LUABIND_NO_EXCEPTIONS
 						throw luabind::error(L);
@@ -101,12 +98,12 @@ namespace luabind
 
 				operator Ret()
 				{
-					typename default_policy::template generate_converter<Ret, lua_to_cpp>::type converter;
+					typename default_policy::template generate_converter<Ret, Direction::lua_to_cpp>::type converter;
 
 					m_called = true;
 					lua_State* L = m_func->lua_state();
 #ifndef LUABIND_NO_ERROR_CHECKING
-					if (L == 0)
+					if (L == nullptr)
 					{
 	#ifndef LUABIND_NO_EXCEPTIONS
 						throw error(L); 
@@ -121,14 +118,13 @@ namespace luabind
 					}
 #endif
 
-
 					detail::stack_pop p(L, 1); // pop the return value
 
 					// get the function
 					m_func->pushvalue();
 
 					push_args_from_tuple<1>::apply(L, m_args);
-					if (pcall(L, boost::tuples::length<Tuple>::value, 1))
+					if (pcall(L, sizeof...(Ts), 1))
 					{ 
 #ifndef LUABIND_NO_EXCEPTIONS
 						throw luabind::error(L);
@@ -161,16 +157,16 @@ namespace luabind
 					return converter.apply(L, LUABIND_DECORATE_TYPE(Ret), -1);
 				}
 
-				template<class Policies>
-				Ret operator[](const Policies& p)
+				template<typename... Policies>
+				Ret operator[](const policy_cons<Policies...> p)
 				{
-					typedef typename detail::find_conversion_policy<0, Policies>::type converter_policy;
-					typename converter_policy::template generate_converter<Ret, lua_to_cpp>::type converter;
+					typedef typename detail::find_conversion_policy<0, Policies...>::type converter_policy;
+					typename converter_policy::template generate_converter<Ret, Direction::lua_to_cpp>::type converter;
 
 					m_called = true;
 					lua_State* L = m_func->lua_state();
 #ifndef LUABIND_NO_ERROR_CHECKING
-					if (L == 0)
+					if (L == nullptr)
 					{
 	#ifndef LUABIND_NO_EXCEPTIONS
 						throw error(L); 
@@ -191,7 +187,7 @@ namespace luabind
 					m_func->pushvalue();
 
 					detail::push_args_from_tuple<1>::apply(L, m_args, p);
-					if (pcall(L, boost::tuples::length<Tuple>::value, 1))
+					if (pcall(L, sizeof...(Ts), 1))
 					{ 
 #ifndef LUABIND_NO_EXCEPTIONS
 						throw error(L);
@@ -227,24 +223,30 @@ namespace luabind
 			private:
 
 				luabind::functor<Ret>* m_func;
-				Tuple m_args;
+				tuple_t m_args;
 				mutable bool m_called;
-
 			};
 
 		// if the proxy_member_caller returns void
-			template<class Tuple>
+			template<typename... Ts>
 			class proxy_functor_void_caller
 			{
-//			template<class T> friend class luabind::functor;
+                using tuple_t = std::tuple<Ts...>;
 			public:
 
-				proxy_functor_void_caller(luabind::functor<void>* o, const Tuple args)
+				proxy_functor_void_caller(luabind::functor<void>* o, const tuple_t& args)
 					: m_func(o)
 					, m_args(args)
 					, m_called(false)
 				{
 				}
+
+                proxy_functor_void_caller(luabind::functor<void>* o, tuple_t&& args)
+                    : m_func(o)
+                    , m_args(std::move(args))
+                    , m_called(false)
+                {
+                }
 
 				proxy_functor_void_caller(const proxy_functor_void_caller& rhs)
 					: m_func(rhs.m_func)
@@ -254,14 +256,22 @@ namespace luabind
 					rhs.m_called = true;
 				}
 
-				~proxy_functor_void_caller()
+                proxy_functor_void_caller(proxy_functor_void_caller&& rhs)
+                    : m_func(rhs.m_func)
+                    , m_args(std::move(rhs.m_args))
+                    , m_called(rhs.m_called)
+                {
+                    rhs.m_called = true;
+                }
+
+				~proxy_functor_void_caller() LUABIND_DTOR_NOEXCEPT
 				{
 					if (m_called) return;
 
 					m_called = true;
 					lua_State* L = m_func->lua_state();
 #ifndef LUABIND_NO_ERROR_CHECKING
-					if (L == 0)
+					if (L == nullptr)
 					{
 	#ifndef LUABIND_NO_EXCEPTIONS
 						throw error(L); 
@@ -275,13 +285,11 @@ namespace luabind
 	#endif
 					}
 #endif
-
-
 					// get the function
 					m_func->pushvalue();
 
 					push_args_from_tuple<1>::apply(L, m_args);
-					if (pcall(L, boost::tuples::length<Tuple>::value, 0))
+					if (pcall(L, sizeof...(Ts), 0))
 					{ 
 #ifndef LUABIND_NO_EXCEPTIONS
 						throw luabind::error(L);
@@ -296,13 +304,13 @@ namespace luabind
 					}
 				}
 
-				template<class Policies>
-				void operator[](const Policies& p)
+				template<typename... Policies>
+				void operator[](const policy_cons<Policies...> p)
 				{
 					m_called = true;
 					lua_State* L = m_func->lua_state();
 #ifndef LUABIND_NO_ERROR_CHECKING
-					if (L == 0)
+					if (L == nullptr)
 					{
 	#ifndef LUABIND_NO_EXCEPTIONS
 						throw error(L); 
@@ -316,13 +324,11 @@ namespace luabind
 	#endif
 					}
 #endif
-
-
 					// get the function
 					m_func->pushvalue();
 
 					detail::push_args_from_tuple<1>::apply(L, m_args, p);
-					if (pcall(L, boost::tuples::length<Tuple>::value, 0))
+					if (pcall(L, sizeof...(Ts), 0))
 					{ 
 #ifndef LUABIND_NO_EXCEPTIONS
 						throw error(L); 
@@ -340,14 +346,13 @@ namespace luabind
 			private:
 
 				luabind::functor<void>* m_func;
-				Tuple m_args;
+				tuple_t m_args;
 				mutable bool m_called;
-
 			};
 
 	} // detail
 
-	template<class Ret>
+	template<typename Ret>
 	class functor
 	{
 	public:
@@ -361,7 +366,7 @@ namespace luabind
 		}
 
 		functor()
-			: L_(0)
+			: L_(nullptr)
 		{
 		}
 
@@ -376,7 +381,7 @@ namespace luabind
 		operator member_ptr() const
 		{
 			if (is_valid()) return &functor::dummy;
-			return 0;
+			return nullptr;
 		}
 
 		const functor<Ret>& operator=(const functor<Ret>& rhs)
@@ -391,7 +396,7 @@ namespace luabind
 			if (!ref_.is_valid() || !rhs.ref_.is_valid()) return false;
 			pushvalue();
 			rhs.pushvalue();
-			bool result = lua_equal(L_, -1, -2) != 0;
+			const bool result = lua_equal(L_, -1, -2) != 0;
 			lua_pop(L_, 2);
 			return result;
 		}
@@ -401,26 +406,33 @@ namespace luabind
 			if (!ref_.is_valid() || !rhs.ref_.is_valid()) return true;
 			pushvalue();
 			rhs.pushvalue();
-			bool result = lua_equal(L_, -1, -2) == 0;
+			const bool result = lua_equal(L_, -1, -2) == 0;
 			lua_pop(L_, 2);
 			return result;
 		}
 
-		inline bool is_valid() const { return ref_.is_valid(); }
+		bool is_valid() const { return ref_.is_valid(); }
 	
 		lua_State* lua_state() const { return L_; }
 		void pushvalue() const { ref_.get(L_); }
 
 		void reset()
 		{
-			L_ = 0;
+			L_ = nullptr;
 			ref_.reset();
 		}
 
-		#define BOOST_PP_ITERATION_PARAMS_1 (4, (0, LUABIND_MAX_ARITY, <luabind/functor.hpp>, 1))
-		#include BOOST_PP_ITERATE()
+        template<typename... Args>
+        decltype(auto) operator()(const Args&... args) const
+        {
+            using proxy_type = std::conditional_t<
+                std::is_void_v<Ret>,
+                luabind::detail::proxy_functor_void_caller<const Args*...>,
+                luabind::detail::proxy_functor_caller<Ret, const Args*...>
+            >;
 
-// TODO: should be private
+            return proxy_type(const_cast<luabind::functor<Ret>*>(this), std::make_tuple(&args...));
+        }
 
 		functor(lua_State* L, detail::lua_reference const& ref)
 			: L_(L)
@@ -436,38 +448,3 @@ namespace luabind
 		detail::lua_reference ref_;
 	};
 }
-
-#endif // LUABIND_FUNCTOR_HPP_INCLUDED
-
-#else
-
-#define LUABIND_TUPLE_PARAMS(z, n, data) const A##n *
-#define LUABIND_OPERATOR_PARAMS(z, n, data) const A##n & a##n
-
-#if BOOST_PP_ITERATION() > 0
-	template<BOOST_PP_ENUM_PARAMS(BOOST_PP_ITERATION(), class A)>
-#endif
-	typename boost::mpl::if_<boost::is_void<Ret>
-		, luabind::detail::proxy_functor_void_caller<boost::tuples::tuple<BOOST_PP_ENUM(BOOST_PP_ITERATION(), LUABIND_TUPLE_PARAMS, _)> >
-		, luabind::detail::proxy_functor_caller<Ret, boost::tuples::tuple<BOOST_PP_ENUM(BOOST_PP_ITERATION(), LUABIND_TUPLE_PARAMS, _)> > >::type
-	operator()(BOOST_PP_ENUM(BOOST_PP_ITERATION(), LUABIND_OPERATOR_PARAMS, _)) const
-	{
-		typedef boost::tuples::tuple<BOOST_PP_ENUM(BOOST_PP_ITERATION(), LUABIND_TUPLE_PARAMS, _)> tuple_t;
-#if BOOST_PP_ITERATION() == 0
-		tuple_t args;
-#else
-		tuple_t args(BOOST_PP_ENUM_PARAMS(BOOST_PP_ITERATION(), &a));
-#endif
-
-		typedef typename boost::mpl::if_<boost::is_void<Ret>
-			, luabind::detail::proxy_functor_void_caller<boost::tuples::tuple<BOOST_PP_ENUM(BOOST_PP_ITERATION(), LUABIND_TUPLE_PARAMS, _)> >
-			, luabind::detail::proxy_functor_caller<Ret, boost::tuples::tuple<BOOST_PP_ENUM(BOOST_PP_ITERATION(), LUABIND_TUPLE_PARAMS, _)> > >::type proxy_type;
-		
-		return proxy_type(const_cast<luabind::functor<Ret>*>(this), args);
-	}
-
-	#define LUABIND_TUPLE_PARAMS(z, n, data) const A##n *
-	#define LUABIND_OPERATOR_PARAMS(z, n, data) const A##n & a##n
-
-#endif
-

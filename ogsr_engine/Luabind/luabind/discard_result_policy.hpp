@@ -20,9 +20,9 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE
 // OR OTHER DEALINGS IN THE SOFTWARE.
 
-
-#ifndef LUABIND_DISCARD_RESULT_POLICY_HPP_INCLUDED
-#define LUABIND_DISCARD_RESULT_POLICY_HPP_INCLUDED
+#pragma once
+#include <lua.hpp>
+#include <luabind/luabind.hpp>
 
 #include <luabind/config.hpp>
 #include <luabind/detail/policy.hpp>
@@ -31,7 +31,7 @@ namespace luabind { namespace detail
 {
 	struct discard_converter
 	{
-		template<class T>
+		template<typename T>
 		void apply(lua_State*, T) {}
 	};
 
@@ -42,13 +42,14 @@ namespace luabind { namespace detail
 
 		struct can_only_convert_from_cpp_to_lua {};
 
-		template<class T, class Direction>
+		template<typename T, Direction Dir>
 		struct generate_converter
 		{
-			typedef typename boost::mpl::if_<boost::is_same<Direction, cpp_to_lua>
-				, discard_converter
-				, can_only_convert_from_cpp_to_lua
-			>::type type;
+            using type = std::conditional_t<
+                Dir == Direction::cpp_to_lua,
+                discard_converter,
+                can_only_convert_from_cpp_to_lua
+            >;
 		};
 	};
 
@@ -58,9 +59,6 @@ namespace luabind
 {
 	namespace 
 	{
-		LUABIND_ANONYMOUS_FIX detail::policy_cons<detail::discard_result_policy, detail::null_type> discard_result;
+		detail::policy_cons<detail::discard_result_policy> discard_result;
 	}
 }
-
-#endif // LUABIND_DISCARD_RESULT_POLICY_HPP_INCLUDED
-

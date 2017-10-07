@@ -20,24 +20,22 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE
 // OR OTHER DEALINGS IN THE SOFTWARE.
 
-
-#ifndef LUABIND_GARBAGE_COLLECTOR_HPP_INCLUDED
-#define LUABIND_GARBAGE_COLLECTOR_HPP_INCLUDED
+#pragma once
 
 #include <luabind/config.hpp>
 
 namespace luabind { namespace detail
 {
 	// function that is used as __gc metafunction on several objects
-	template<class T>
-	inline int garbage_collector(lua_State* L)
+	template<typename T>
+	int garbage_collector(lua_State* L)
 	{
 		T* obj = static_cast<T*>(lua_touserdata(L, -1));
 		obj->~T();
 		return 0;
 	}
 
-	template<class T>
+	template<typename T>
 	struct garbage_collector_s
 	{
 		static int apply(lua_State* L)
@@ -49,5 +47,3 @@ namespace luabind { namespace detail
 	};
 
 }}
-
-#endif // LUABIND_GARBAGE_COLLECTOR_HPP_INCLUDED

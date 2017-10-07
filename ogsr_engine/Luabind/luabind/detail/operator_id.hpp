@@ -20,9 +20,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE
 // OR OTHER DEALINGS IN THE SOFTWARE.
 
-
-#ifndef LUABIND_OPERATOR_ID_HPP_INCLUDED
-#define LUABIND_OPERATOR_ID_HPP_INCLUDED
+#pragma once
 
 #include <luabind/config.hpp>
 
@@ -87,5 +85,3 @@ namespace luabind { namespace detail {
 
 
 }}
-
-#endif // LUABIND_OPERATOR_ID_HPP_INCLUDED

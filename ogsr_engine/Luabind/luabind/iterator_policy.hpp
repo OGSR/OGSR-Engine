@@ -20,9 +20,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE
 // OR OTHER DEALINGS IN THE SOFTWARE.
 
-
-#ifndef LUABIND_ITERATOR_POLICY_HPP_INCLUDED
-#define LUABIND_ITERATOR_POLICY_HPP_INCLUDED
+#pragma once
 
 #include <luabind/config.hpp>
 #include <luabind/detail/policy.hpp>
@@ -31,7 +29,7 @@
 
 namespace luabind { namespace detail 
 {
-	template<class Iter>
+	template<typename Iter>
 	struct iterator_state
 	{
 		typedef iterator_state<Iter> self_t;
@@ -64,7 +62,7 @@ namespace luabind { namespace detail
 
 	struct iterator_converter
 	{
-		template<class T>
+		template<typename T>
 		void apply(lua_State* L, const T& c)
 		{
 			typedef typename T::const_iterator iter_t;
@@ -77,7 +75,7 @@ namespace luabind { namespace detail
 			lua_pushcclosure(L, state_t::step, 1);
 		}
 
-		template<class T>
+		template<typename T>
 		void apply(lua_State* L, T& c)
 		{
 			typedef typename T::iterator iter_t;
@@ -96,7 +94,7 @@ namespace luabind { namespace detail
 		static void precall(lua_State*, const index_map&) {}
 		static void postcall(lua_State*, const index_map&) {}
 
-		template<class T, class Direction>
+		template<typename T, Direction>
 		struct generate_converter
 		{
 			typedef iterator_converter type;
@@ -109,9 +107,6 @@ namespace luabind
 {
 	namespace
 	{
-		LUABIND_ANONYMOUS_FIX detail::policy_cons<detail::iterator_policy, detail::null_type> return_stl_iterator;
+		detail::policy_cons<detail::iterator_policy> return_stl_iterator;
 	}
 }
-
-#endif // LUABIND_ITERATOR_POLICY_HPP_INCLUDED
-

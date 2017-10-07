@@ -20,12 +20,13 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE
 // OR OTHER DEALINGS IN THE SOFTWARE.
 
-#ifndef LUABIND_ERROR_HPP_INCLUDED
-#define LUABIND_ERROR_HPP_INCLUDED
+#pragma once
 
-#include <luabind/prefix.hpp>
-#include <exception>
 #include <luabind/config.hpp>
+
+#ifndef LUABIND_NO_EXCEPTIONS
+#    include <exception>
+#endif
 
 struct lua_State;
 
@@ -82,11 +83,11 @@ namespace luabind
 
 #endif
 
-	typedef int	(*pcall_callback_fun)	(lua_State*);
-	void				LUABIND_API set_pcall_callback(pcall_callback_fun e);
-	pcall_callback_fun	LUABIND_API get_pcall_callback();
+	typedef int(*pcall_callback_fun)(lua_State*);
+	LUABIND_API void set_pcall_callback(pcall_callback_fun e);
+	LUABIND_API pcall_callback_fun get_pcall_callback();
 
+	typedef void(*pregister_callback_fun)(lua_State*,bool);
+	LUABIND_API void set_pregister_callback(pregister_callback_fun e);
+	LUABIND_API pregister_callback_fun get_pregister_callback();
 }
-
-#endif // LUABIND_ERROR_HPP_INCLUDED
-

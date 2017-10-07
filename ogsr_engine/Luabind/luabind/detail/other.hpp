@@ -20,9 +20,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE
 // OR OTHER DEALINGS IN THE SOFTWARE.
 
-
-#ifndef LUABIND_OTHER_HPP_INCLUDED
-#define LUABIND_OTHER_HPP_INCLUDED
+#pragma once
 
 // header derived from source code found in Boost.Python
 
@@ -33,7 +31,6 @@
 // to its suitability for any purpose.
 
 #include <luabind/config.hpp>
-#include <boost/config.hpp>
 
 namespace luabind
 {
@@ -44,7 +41,6 @@ namespace luabind
 	};
 }
 
-#ifndef BOOST_NO_TEMPLATE_PARTIAL_SPECIALIZATION
 namespace luabind { namespace detail
 {
 	template<typename T>
@@ -61,59 +57,3 @@ namespace luabind { namespace detail
 			typedef T type;
 	};
 }} // namespace luabind::detail
-
-# else // no partial specialization
-
-#include <boost/type.hpp>
-
-namespace luabind { namespace detail
-{
-	typedef char (&yes_other_t)[1];
-	typedef char (&no_other_t)[2];
-
-	no_other_t is_other_test(...);
-
-	template<typename T>
-	yes_other_t is_other_test(type< other<T> >);
-
-	template<bool wrapped>
-	struct other_unwrapper
-	{
-			template <class T>
-			struct apply
-			{
-					typedef T type;
-			};
-	};
-
-	template<>
-	struct other_unwrapper<true>
-	{
-			template <class T>
-			struct apply
-			{
-					typedef typename T::type type;
-			};
-	};
-
-	template<typename T>
-	class is_other
-	{
-	 public:
-			BOOST_STATIC_CONSTANT(
-					bool, value = (
-							sizeof(detail::is_other_test(type<T>()))
-							== sizeof(detail::yes_other_t)));
-	};
-
-	template <typename T>
-	class unwrap_other
-			: public detail::other_unwrapper<
-			is_other<T>::value
-	>::template apply<T>
-	{};
-
-}} // namespace luabind::detail
-#endif // BOOST_NO_TEMPLATE_PARTIAL_SPECIALIZATION
-
-#endif // LUABIND_OTHER_HPP_INCLUDED

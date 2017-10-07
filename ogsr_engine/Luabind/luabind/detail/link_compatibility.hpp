@@ -20,8 +20,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE
 // OR OTHER DEALINGS IN THE SOFTWARE.
 
-#ifndef LUABIND_LINK_COMPATIBILITY_HPP_INCLUDED
-#define LUABIND_LINK_COMPATIBILITY_HPP_INCLUDED
+#pragma once
 
 #include <luabind/config.hpp>
 
@@ -29,15 +28,15 @@ namespace luabind { namespace detail
 {
 
 #ifdef LUABIND_NOT_THREADSAFE
-	void LUABIND_API not_threadsafe_defined_conflict();
+	LUABIND_API void not_threadsafe_defined_conflict();
 #else
-	void LUABIND_API not_threadsafe_not_defined_conflict();
+	LUABIND_API void not_threadsafe_not_defined_conflict();
 #endif
 
 #ifdef LUABIND_NO_ERROR_CHECKING
-	void LUABIND_API no_error_checking_defined_conflict();
+	LUABIND_API void no_error_checking_defined_conflict();
 #else
-	void LUABIND_API no_error_checking_not_defined_conflict();
+	LUABIND_API void no_error_checking_not_defined_conflict();
 #endif
 
 	inline void check_link_compatibility()
@@ -56,5 +55,3 @@ namespace luabind { namespace detail
 	}
 
 }}
-
-#endif

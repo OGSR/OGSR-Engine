@@ -20,9 +20,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE
 // OR OTHER DEALINGS IN THE SOFTWARE.
 
-
-#ifndef LUABIND_RAW_POLICY_HPP_INCLUDED
-#define LUABIND_RAW_POLICY_HPP_INCLUDED
+#pragma once
 
 #include <luabind/config.hpp>
 #include <luabind/detail/policy.hpp>
@@ -50,7 +48,7 @@ namespace luabind { namespace detail  {
 		static void precall(lua_State*, const index_map&) {}
 		static void postcall(lua_State*, const index_map&) {}
 
-		template<class T, class Direction>
+		template<typename T, Direction>
 		struct generate_converter
 		{
 			typedef raw_converter type;
@@ -61,20 +59,11 @@ namespace luabind { namespace detail  {
 
 namespace luabind {
 
-	template<int N>
-	detail::policy_cons<
-		detail::raw_policy<N>
-	  , detail::null_type
-	>
-	inline raw(boost::arg<N>) 
+	template<size_t N>
+	detail::policy_cons<detail::raw_policy<N>>
+	inline raw()
 	{ 
-		return detail::policy_cons<
-			detail::raw_policy<N>
-		  , detail::null_type
-		>(); 
+		return detail::policy_cons<detail::raw_policy<N>>(); 
 	}
 
 } // namespace luabind
-
-#endif // LUABIND_RAW_POLICY_HPP_INCLUDED
-

@@ -20,14 +20,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE
 // OR OTHER DEALINGS IN THE SOFTWARE.
 
-
-#ifndef LUABIND_CLASS_REP_HPP_INCLUDED
-#define LUABIND_CLASS_REP_HPP_INCLUDED
-
-//#include <cstdlib>
-
-#include <boost/limits.hpp>
-#include <boost/preprocessor/repetition/enum_params_with_a_default.hpp>
+#pragma once
 
 #include <luabind/config.hpp>
 #include <luabind/detail/object_rep.hpp>
@@ -41,12 +34,15 @@
 #include <luabind/detail/get_overload_signature.hpp>
 #include <luabind/error.hpp>
 
+#include <excpt.h> //для EXCEPTION_EXECUTE_HANDLER
+
 namespace luabind
 {
 
-	template<BOOST_PP_ENUM_PARAMS_WITH_A_DEFAULT(LUABIND_MAX_BASES, class A, detail::null_type)>
+	template<typename... Ts>
 	struct bases {};
-	typedef bases<detail::null_type> no_bases;
+
+    using no_bases = bases<>;
 
 	struct class_base;
 
@@ -140,7 +136,7 @@ namespace luabind { namespace detail
 		~class_rep()
 		{
 #ifndef LUABIND_DONT_COPY_STRINGS
-			for (std::vector<char*>::iterator i = m_strings.begin(); i != m_strings.end(); ++i)
+			for (vector_class<char*>::iterator i = m_strings.begin(); i != m_strings.end(); ++i)
 			{
 				delete[] *i;
 			}
@@ -161,7 +157,7 @@ namespace luabind { namespace detail
 			// we have to ignore the first argument since this may point to
 			// a method that is not present in this class (but in a subclass)
 			const char* key = lua_tostring(L, 2);
-			std::map<const char*, method_rep, ltstr>::iterator i = m_methods.find(key);
+			map_class<const char*, method_rep, ltstr>::iterator i = m_methods.find(key);
 			if (i != m_methods.end())
 			{
 				// the name is a method, return it
@@ -170,7 +166,7 @@ namespace luabind { namespace detail
 				return 1;
 			}
 
-			std::map<const char*, callback, ltstr>::iterator j = m_getters.find(key);
+			map_class<const char*, callback, ltstr>::iterator j = m_getters.find(key);
 			if (j != m_getters.end())
 			{
 				// the name is a data member
@@ -193,7 +189,7 @@ namespace luabind { namespace detail
 			// we have to ignore the first argument since this may point to
 			// a method that is not present in this class (but in a subclass)
 			const char* key = lua_tostring(L, 2);
-			std::map<const char*, callback, ltstr>::iterator j = m_setters.find(key);
+			map_class<const char*, callback, ltstr>::iterator j = m_setters.find(key);
 			if (j != m_setters.end())
 			{
 				// the name is a data member
@@ -224,28 +220,16 @@ namespace luabind { namespace detail
 			{
 				// this block is needed to make sure the string_class is destructed before
 				// lua_error() is called
-#ifdef BOOST_MSVC
 				{
 					// msvc has a bug which deletes the string twice, that's
 					// why we have to create it on the heap
-					string_class* msg = new string_class("cannot set attribute '");
-					*msg += obj->crep()->m_name;
-					*msg += ".";
-					*msg += lua_tostring(L, -2);
-					*msg += "'";
-					lua_pushstring(L, msg->c_str());
-					delete msg;
-				}
-#else
-				{
-					string_class msg = "cannot set attribute '";
+					string_class msg = string_class("cannot set attribute '");
 					msg += obj->crep()->m_name;
 					msg += ".";
 					msg += lua_tostring(L, -2);
 					msg += "'";
 					lua_pushstring(L, msg.c_str());
 				}
-#endif
 				lua_error(L);
 			}
 
@@ -267,7 +251,7 @@ namespace luabind { namespace detail
 			if (operand[0] && operand[1])
 				if (LUABIND_TYPE_INFO_EQUAL(operand[0]->crep()->type(), operand[1]->crep()->type())) operand[1] = 0;
 
-			std::vector<operator_callback>* overloads[2];
+			vector_class<operator_callback>* overloads[2];
 			for (int i = 0; i < 2; ++i)
 				if (operand[i]) overloads[i] = &operand[i]->crep()->m_operators[id]; else overloads[i] = 0;
 
@@ -278,10 +262,6 @@ namespace luabind { namespace detail
 			bool ambiguous = false;
 			int match_index = -1;
 			int min_match = std::numeric_limits<int>::max();
-
-//			std::cout << "operator_dispatcher\n";
-//			std::cout << "num overloads: " << num_overloads[0] + num_overloads[1] << "\n";
-//			std::cout << "operator: " << id << "\n";
 
 #ifdef LUABIND_NO_ERROR_CHECKING
 
@@ -356,7 +336,7 @@ namespace luabind { namespace detail
 					msg += stack_content_by_name(L, 1);
 					msg += ")' is ambiguous\nnone of the overloads have a best conversion:\n";
 
-					std::vector<operator_callback> candidates;
+					vector_class<operator_callback> candidates;
 					if (overloads[0])
 						find_exact_match(L, overloads[0]->begin(), overloads[0]->end(), min_match, num_params, candidates);
 
@@ -436,7 +416,7 @@ namespace luabind { namespace detail
 					msg += stack_content_by_name(L, 2);
 					msg += ")' is ambiguous\nnone of the overloads have a best conversion:\n";
 
-					std::vector<construct_rep::overload_t> candidates;
+					vector_class<construct_rep::overload_t> candidates;
 					find_exact_match(L, rep->overloads.begin(), rep->overloads.end(), min_match, num_params, candidates);
 					msg += get_overload_signatures(L, candidates.begin(), candidates.end(), crep->name());
 
@@ -497,7 +477,7 @@ namespace luabind { namespace detail
 			int offset = 0;
 			if (LUABIND_TYPE_INFO_EQUAL(from->type(), to->type())) return 0;
 
-			for (std::vector<class_rep::base_info>::const_iterator i = from->bases().begin(); i != from->bases().end(); ++i)
+			for (vector_class<class_rep::base_info>::const_iterator i = from->bases().begin(); i != from->bases().end(); ++i)
 			{
 				int steps = implicit_cast(i->base, to, offset);
 				pointer_offset = offset + i->pointer_offset;
@@ -603,7 +583,7 @@ namespace luabind { namespace detail
 					msg += stack_content_by_name(L, 2);
 					msg += ")' is ambiguous\nnone of the overloads have a best conversion:\n";
 
-					std::vector<overload_rep> candidates;
+					vector_class<overload_rep> candidates;
 					find_exact_match(L, rep->overloads().begin(), rep->overloads().end(), min_match, num_params, candidates);
 
 					string_class function_name;
@@ -619,48 +599,26 @@ namespace luabind { namespace detail
 			}
 
 #endif
-
-#ifndef LUABIND_NO_EXCEPTIONS
-
-			try
+#ifdef NDEBUG
+			//KRodin: try-catch здесь пропускает многие ошибки, например часто вылетает по unhandled exception из-за кривых скриптов работы с нет-пакетами,
+			//и определить, в каком месте произошла ошибка, без этого не представляется возможным.
+			__try
 			{
-
 #endif
-
 				const overload_rep& o = rep->overloads()[match_index];
 				return o.call(L, *obj);
+#ifdef NDEBUG
+			}
+			__except(EXCEPTION_EXECUTE_HANDLER)
+			{
+				lua_pushstring(L, "[luabind::detail::class_rep_scope::function_dispatcher] Caught unhandled exception!");
+			}
 
-#ifndef LUABIND_NO_EXCEPTIONS
-
-			}
-			catch(const std::exception& e)
-			{
-				lua_pushstring(L, e.what());
-			}
-			catch (const char* s)
-			{
-				lua_pushstring(L, s);
-			}
-			catch(...)
-			{
-				string_class msg = rep->crep->name();
-				msg += ":";
-				msg += rep->name;
-				msg += "() threw an exception";
-				lua_pushstring(L, msg.c_str());
-			}
 			// we can only reach this line if an exception was thrown
 			lua_error(L);
-			return 0; // will never be reached
-
+			return 0; // will never be reached			
 #endif
-			
 		}
-
-
-
-
-
 
 		struct base_info
 		{
@@ -681,7 +639,7 @@ namespace luabind { namespace detail
 			class_rep* bcrep = binfo.base;
 
 			// import all functions from the base
-			for (std::map<const char*, method_rep, ltstr>::const_iterator i = bcrep->m_methods.begin(); i != bcrep->m_methods.end(); ++i)
+			for (map_class<const char*, method_rep, ltstr>::const_iterator i = bcrep->m_methods.begin(); i != bcrep->m_methods.end(); ++i)
 			{
 #ifndef LUABIND_DONT_COPY_STRINGS
 				m_strings.push_back(dup_string(i->first));
@@ -692,7 +650,7 @@ namespace luabind { namespace detail
 				m.name = i->first;
 				m.crep = this;
 
-				for (std::vector<overload_rep>::const_iterator j = i->second.overloads().begin(); j != i->second.overloads().end(); ++j)
+				for (vector_class<overload_rep>::const_iterator j = i->second.overloads().begin(); j != i->second.overloads().end(); ++j)
 				{
 					overload_rep o = *j;
 					o.add_offset(binfo.pointer_offset);
@@ -701,7 +659,7 @@ namespace luabind { namespace detail
 			}
 
 			// import all getters from the base
-			for (std::map<const char*, callback, ltstr>::const_iterator i = bcrep->m_getters.begin(); i != bcrep->m_getters.end(); ++i)
+			for (map_class<const char*, callback, ltstr>::const_iterator i = bcrep->m_getters.begin(); i != bcrep->m_getters.end(); ++i)
 			{
 #ifndef LUABIND_DONT_COPY_STRINGS
 				m_strings.push_back(dup_string(i->first));
@@ -714,7 +672,7 @@ namespace luabind { namespace detail
 			}
 
 			// import all setters from the base
-			for (std::map<const char*, callback, ltstr>::const_iterator i = bcrep->m_setters.begin(); i != bcrep->m_setters.end(); ++i)
+			for (map_class<const char*, callback, ltstr>::const_iterator i = bcrep->m_setters.begin(); i != bcrep->m_setters.end(); ++i)
 			{
 #ifndef LUABIND_DONT_COPY_STRINGS
 				// TODO: optimize this by not copying the string if it already exists in m_setters.
@@ -730,7 +688,7 @@ namespace luabind { namespace detail
 			}
 
 			// import all static constants
-			for (std::map<const char*, int, ltstr>::const_iterator i = bcrep->m_static_constants.begin(); i != bcrep->m_static_constants.end(); ++i)
+			for (map_class<const char*, int, ltstr>::const_iterator i = bcrep->m_static_constants.begin(); i != bcrep->m_static_constants.end(); ++i)
 			{
 #ifndef LUABIND_DONT_COPY_STRINGS
 				m_strings.push_back(dup_string(i->first));
@@ -744,7 +702,7 @@ namespace luabind { namespace detail
 			// import all operators
 			for (int i = 0; i < number_of_operators; ++i)
 			{
-				for (std::vector<operator_callback>::const_iterator j = bcrep->m_operators[i].begin(); j != bcrep->m_operators[i].end(); ++j)
+				for (vector_class<operator_callback>::const_iterator j = bcrep->m_operators[i].begin(); j != bcrep->m_operators[i].end(); ++j)
 					m_operators[i].push_back(*j);
 			}
 
@@ -753,24 +711,29 @@ namespace luabind { namespace detail
 		}
 
 
-		inline const std::vector<base_info>& bases() const throw() { return m_bases; }
+		inline const vector_class<base_info>& bases() const throw() { return m_bases; }
 		inline LUABIND_TYPE_INFO type() const throw() { return m_type; }
 		inline void set_type(LUABIND_TYPE_INFO t) { m_type = t; }
 
-		inline void add_function(const char* name, const overload_rep& o)
+		void add_function(const char* name, const overload_rep& o)
 		{
+            auto copy = o;
+            add_function(name, std::move(copy));
+		}
 
+        void add_function(const char* name, overload_rep&& o)
+		{
 #ifdef LUABIND_DONT_COPY_STRINGS
-			detail::method_rep& method = m_methods[name];
-			method.name = name;
+            detail::method_rep& method = m_methods[name];
+            method.name = name;
 #else
-			m_strings.push_back(dup_string(name));
-			detail::method_rep& method = m_methods[m_strings.back()];
-			method.name = m_strings.back();
+            m_strings.push_back(dup_string(name));
+            detail::method_rep& method = m_methods[m_strings.back()];
+            method.name = m_strings.back();
 #endif
 
-			method.add_overload(o);
-			method.crep = this;
+            method.add_overload(std::move(o));
+            method.crep = this;
 		}
 
 		inline void add_constructor(const detail::construct_rep::overload_t& o)
@@ -792,10 +755,11 @@ namespace luabind { namespace detail
 #endif
 		}
 
-		inline void add_getter(const char* name, const boost::function2<int, lua_State*, int>& g)
+        template <typename Fn>
+		inline void add_getter(const char* name, Fn&& g)
 		{
 			callback c;
-			c.func = g;
+			c.func = std::forward<Fn>(g);
 			c.pointer_offset = 0;
 #ifndef LUABIND_DONT_COPY_STRINGS
 			m_strings.push_back(dup_string(name));
@@ -805,10 +769,11 @@ namespace luabind { namespace detail
 #endif
 		}
 
-		inline void add_setter(const char* name, const boost::function2<int, lua_State*, int>& s)
+        template <typename Fn>
+		inline void add_setter(const char* name, Fn&& s)
 		{
 			callback c;
-			c.func = s;
+			c.func = std::forward<Fn>(s);
 			c.pointer_offset = 0;
 #ifndef LUABIND_DONT_COPY_STRINGS
 			m_strings.push_back(dup_string(name));
@@ -819,9 +784,9 @@ namespace luabind { namespace detail
 		}
 
 #ifndef LUABIND_NO_ERROR_CHECKING
-		inline void add_operator(lua_State*, int op_id,  int(*func)(lua_State*), int(*matcher)(lua_State*), void(*sig)(lua_State*, string_class&), int arity)
+		void add_operator(lua_State*, int op_id,  int(*func)(lua_State*), int(*matcher)(lua_State*), void(*sig)(lua_State*, string_class&), int arity)
 #else
-		inline void add_operator(lua_State*, int op_id,  int(*func)(lua_State*), int(*matcher)(lua_State*), int arity)
+		void add_operator(lua_State*, int op_id,  int(*func)(lua_State*), int(*matcher)(lua_State*), int arity)
 #endif
 		{
 			operator_callback o;
@@ -838,16 +803,16 @@ namespace luabind { namespace detail
 		}
 		
 		// the lua reference to this class_rep
-		inline int self_ref() const throw() { return m_self_ref; }
+		int self_ref() const throw() { return m_self_ref; }
 
 		// the lua reference to the metatable for this class' instances
-		inline int metatable_ref() const throw() { return m_instance_metatable; }
+		int metatable_ref() const throw() { return m_instance_metatable; }
 
-		inline int table_ref() const { return m_table_ref; }
+		int table_ref() const { return m_table_ref; }
 
-		inline void(*destructor() const)(void*) { return m_destructor; }
+		void(*destructor() const)(void*) { return m_destructor; }
 
-		inline class_type get_class_type() const { return m_class_type; }
+		class_type get_class_type() const { return m_class_type; }
 
 		void add_static_constant(const char* name, int val)
 		{
@@ -859,7 +824,7 @@ namespace luabind { namespace detail
 #endif
 		}
 
-	static inline int super_callback(lua_State* L)
+	static int super_callback(lua_State* L)
 	{
 		int args = lua_gettop(L);
 		
@@ -1132,7 +1097,11 @@ namespace luabind { namespace detail
 		// TODO: lua_call may invoke longjump! make sure we don't have any memory leaks!
 		// we don't have any stack objects here
 		lua_call(L, args, 0);
-
+		//KRodin: попытка исправить утечку памяти.
+		lua_pushstring(L, "super");
+		lua_pushnil(L);
+		lua_settable(L, LUA_GLOBALSINDEX);
+		//
 #ifndef LUABIND_NO_ERROR_CHECKING
 
 		object_rep* obj = static_cast<object_rep*>(obj_ptr);
@@ -1191,7 +1160,7 @@ namespace luabind { namespace detail
 		// a method that is not present in this class (but in a subclass)
 		const char* key = lua_tostring(L, 2);
 
-		std::map<const char*, method_rep, ltstr>::iterator i = crep->m_methods.find(key);
+		map_class<const char*, method_rep, ltstr>::iterator i = crep->m_methods.find(key);
 		if (i != crep->m_methods.end())
 		{
 			// the name is a method, return it
@@ -1200,7 +1169,7 @@ namespace luabind { namespace detail
 			return 1;
 		}
 
-		std::map<const char*, class_rep::callback, ltstr>::iterator j = crep->m_getters.find(key);
+		map_class<const char*, class_rep::callback, ltstr>::iterator j = crep->m_getters.find(key);
 		if (j != crep->m_getters.end())
 		{
 			// the name is a data member
@@ -1238,11 +1207,11 @@ namespace luabind { namespace detail
 		// we have to ignore the first argument since this may point to
 		// a method that is not present in this class (but in a subclass)
 		const char* key = lua_tostring(L, 2);
-		std::map<const char*, class_rep::callback, ltstr>::iterator j = crep->m_setters.find(key);
+		map_class<const char*, class_rep::callback, ltstr>::iterator j = crep->m_setters.find(key);
 
 		if (j == crep->m_setters.end())
 		{
-			std::map<const char*, class_rep::callback, ltstr>::iterator k = crep->m_getters.find(key);
+			map_class<const char*, class_rep::callback, ltstr>::iterator k = crep->m_getters.find(key);
 
 #ifndef LUABIND_NO_ERROR_CHECKING
 
@@ -1289,7 +1258,7 @@ namespace luabind { namespace detail
 
 		const char* key = lua_tostring(L, 2);
 
-		std::map<const char*, method_rep, ltstr>::iterator i = crep->m_methods.find(key);
+		map_class<const char*, method_rep, ltstr>::iterator i = crep->m_methods.find(key);
 		if (i != crep->m_methods.end())
 		{
 			// the name is a method, return it
@@ -1300,7 +1269,7 @@ namespace luabind { namespace detail
 
 #ifndef LUABIND_NO_ERROR_CHECKING
 
-		std::map<const char*, int, ltstr>::const_iterator j = crep->m_static_constants.find(key);
+		map_class<const char*, int, ltstr>::const_iterator j = crep->m_static_constants.find(key);
 
 		if (j != crep->m_static_constants.end())
 		{
@@ -1339,7 +1308,7 @@ namespace luabind { namespace detail
 		// a list of info for every class this class derives from
 		// the information stored here is sufficient to do
 		// type casts to the base classes
-		std::vector<base_info> m_bases;
+		vector_class<base_info> m_bases;
 
 		// the class' name (as given when registered to lua with class_)
 #ifdef LUABIND_DONT_COPY_STRINGS
@@ -1376,24 +1345,38 @@ namespace luabind { namespace detail
 		// information about that method.
 		// that struct contains the function-signatures
 		// for every overload
-		std::map<const char*, method_rep, ltstr> m_methods;
+		map_class<const char*, method_rep, ltstr> m_methods;
 
 #ifndef LUABIND_DONT_COPY_STRINGS
 		// this is where the strings that the maps contains
 		// pointer to are kept. To make sure they are destructed.
-		std::vector<char*> m_strings;
+		vector_class<char*> m_strings;
 #endif
 
 		struct callback
 		{
-			boost::function2<int, lua_State*, int> func;
+		private:
+
+            luabind::memory_allocator<unsigned char> allocator;
+
+		public:
+            callback()
+                : allocator(),
+		          func(std::allocator_arg_t(), allocator),
+                  pointer_offset(0)
+            {
+            }
+            callback(const callback&) = default;
+            callback(callback&&) = default;
+
+			std::function<int(lua_State*, int)> func;
 			int pointer_offset;
 		};
 
 		// datamembers, some members may be readonly, and
 		// only have a getter function
-		std::map<const char*, callback, ltstr> m_getters;
-		std::map<const char*, callback, ltstr> m_setters;
+		map_class<const char*, callback, ltstr> m_getters;
+		map_class<const char*, callback, ltstr> m_setters;
 
 		struct operator_callback: public overload_rep_base
 		{
@@ -1406,11 +1389,11 @@ namespace luabind { namespace detail
 			int(*func)(lua_State*);
 		};
 
-		std::vector<operator_callback> m_operators[number_of_operators]; // the operators in lua
+		vector_class<operator_callback> m_operators[number_of_operators]; // the operators in lua
 
 		void(*m_destructor)(void*);
 
-		std::map<const char*, int, ltstr> m_static_constants;
+		map_class<const char*, int, ltstr> m_static_constants;
 	};
 
 
@@ -1432,6 +1415,3 @@ namespace luabind { namespace detail
 	}
 
 }}
-
-#endif // LUABIND_CLASS_REP_HPP_INCLUDED
-

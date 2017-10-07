@@ -20,8 +20,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE
 // OR OTHER DEALINGS IN THE SOFTWARE.
 
-#ifndef LUABIND_OVERLOAD_REP_IMPL_HPP_INCLUDED
-#define LUABIND_OVERLOAD_REP_IMPL_HPP_INCLUDED
+#pragma once
 
 #include <luabind/detail/overload_rep.hpp>
 
@@ -36,5 +35,3 @@ namespace luabind { namespace detail
 	}
 
 }} // namespace luabind::detail
-
-#endif // LUABIND_OVERLOAD_REP_IMPL_HPP_INCLUDED

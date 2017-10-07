@@ -20,12 +20,9 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE
 // OR OTHER DEALINGS IN THE SOFTWARE.
 
-#ifndef CLASS_CACHE_040218_HPP
-#define CLASS_CACHE_040218_HPP
+#pragma once
 
-#include <luabind/prefix.hpp>
-#include <boost/type_traits/add_reference.hpp>
-#include <boost/type_traits/add_const.hpp>
+#include <type_traits>
 
 namespace luabind { namespace detail {
 
@@ -49,17 +46,13 @@ namespace luabind { namespace detail {
     template<class T>
     struct class_cache
         : class_cache_impl<
-              typename boost::add_reference<
-                  typename boost::add_const<
-                      T
-                  >::type
-              >::type
+              std::add_lvalue_reference_t<std::add_const_t<T>>
           >
     {
     };
     
     template<class T>
-    class_rep* get_class_rep(lua_State* L, void(*)(T*) = 0)
+    class_rep* get_class_rep(lua_State* L, void(*)(T) = 0)
     {
         if (class_cache<T>::state != L)
         {
@@ -75,7 +68,7 @@ namespace luabind { namespace detail {
 #else
 
     template<class T>
-    class_rep* get_class_rep(lua_State* L, void(*)(T*) = 0)
+    class_rep* get_class_rep(lua_State* L)
     {
         class_registry* registry = class_registry::get_registry(L);
         return registry->find_class(LUABIND_TYPEID(T));
@@ -84,6 +77,3 @@ namespace luabind { namespace detail {
 #endif
 
 }} // namespace luabind::detail
-
-#endif // CLASS_CACHE_040218_HPP
-

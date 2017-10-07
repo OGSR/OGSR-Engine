@@ -20,9 +20,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE
 // OR OTHER DEALINGS IN THE SOFTWARE.
 
-
-#ifndef LUABIND_CLASS_REGISTRY_HPP_INCLUDED
-#define LUABIND_CLASS_REGISTRY_HPP_INCLUDED
+#pragma once
 
 #include <typeinfo>
 #include <map>
@@ -51,7 +49,7 @@ namespace luabind { namespace detail
 
 		struct cmp
 		{
-			bool operator()(const std::type_info* a, const std::type_info* b) const
+			bool operator()(const type_info* a, const type_info* b) const
 			{
 				return a->before(*b) != 0;
 			}
@@ -75,9 +73,12 @@ namespace luabind { namespace detail
 		}
 	
 	private:
-		typedef std::map<LUABIND_TYPE_INFO, class_rep*, cmp> CLASS_REGISTRY;
+		typedef map_class<LUABIND_TYPE_INFO, class_rep*, cmp> CLASS_REGISTRY;
 
+#pragma warning(push)
+#pragma warning(disable:4251)
 		CLASS_REGISTRY m_classes;
+#pragma warning(pop)
 
 		// this is a lua reference that points to the lua table
 		// that is to be used as meta table for all C++ class 
@@ -103,6 +104,3 @@ namespace luabind { namespace detail
 	};
 
 }}
-
-#endif // LUABIND_CLASS_REGISTRY_HPP_INCLUDED
-

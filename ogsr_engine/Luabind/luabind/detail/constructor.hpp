@@ -20,18 +20,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE
 // OR OTHER DEALINGS IN THE SOFTWARE.
 
-
-#if !BOOST_PP_IS_ITERATING
-
-#ifndef LUABIND_CONSTRUCTOR_HPP_INCLUDED
-#define LUABIND_CONSTRUCTOR_HPP_INCLUDED
-
-#include <boost/config.hpp>
-#include <boost/preprocessor/iterate.hpp>
-#include <boost/preprocessor/repetition/enum.hpp>
-#include <boost/preprocessor/repetition/enum_params.hpp>
-#include <boost/preprocessor/repeat.hpp>
-#include <boost/preprocessor/comma_if.hpp>
+#pragma once
 
 #include <luabind/config.hpp>
 #include <luabind/wrapper_base.hpp>
@@ -43,125 +32,65 @@
 
 namespace luabind { namespace detail
 {
-	template<int N>
-	struct constructor_helper;
+    template<typename T, typename... Policies>
+    struct construct_class
+    {
+    private:
 
-	template<int N>
-	struct wrapped_constructor_helper;
-	
-	#define BOOST_PP_ITERATION_PARAMS_1 (4, (0, LUABIND_MAX_ARITY, <luabind/detail/constructor.hpp>, 1))
-	#include BOOST_PP_ITERATE()
-
-	template<class T, class Policies, class ConstructorSig>
-	struct construct_class
-	{
-		inline static void* apply(lua_State* L, weak_ref const& ref)
-		{
-			typedef constructor_helper<ConstructorSig::arity> helper;
-			return helper::execute(
-                L
-			  , ref
-              , (T*)0
-              , (ConstructorSig*)0
-              , (Policies*)0
-            );
-		}
-	};
-
-	template<class T, class W, class Policies, class ConstructorSig>
-	struct construct_wrapped_class
-	{
-		inline static void* apply(lua_State* L, weak_ref const& ref)
-		{
-			typedef wrapped_constructor_helper<ConstructorSig::arity> helper;
-			return helper::execute(
-                L
-              , ref
-              , (T*)0
-              , (W*)0
-              , (ConstructorSig*)0
-              , (Policies*)0
-            );
-		}
-	};
-
-}}
-
-#endif // LUABIND_CONSTRUCTOR_HPP_INCLUDED
-
-
-#elif BOOST_PP_ITERATION_FLAGS() == 1
-
-
-#define LUABIND_DECL(z, n, text) typedef typename find_conversion_policy<n+1,Policies>::type BOOST_PP_CAT(converter_policy,n); \
-	typedef typename BOOST_PP_CAT(converter_policy,n)::template generate_converter<A##n, lua_to_cpp>::type BOOST_PP_CAT(c_t,n); \
-	typename BOOST_PP_CAT(converter_policy,n)::template generate_converter<A##n, lua_to_cpp>::type BOOST_PP_CAT(c,n);
-#define LUABIND_PARAM(z,n,text) BOOST_PP_CAT(c,n).BOOST_PP_CAT(c_t,n)::apply(L, LUABIND_DECORATE_TYPE(A##n), n + 2)
-
-	template<>
-	struct constructor_helper<BOOST_PP_ITERATION()>
-	{
-        template<class T, class Policies, BOOST_PP_ENUM_PARAMS(LUABIND_MAX_ARITY, class A)>
-        static T* execute(
-            lua_State* L
-          , weak_ref const& ref
-          , T*
-          , constructor<BOOST_PP_ENUM_PARAMS(LUABIND_MAX_ARITY,A)>*
-          , Policies*)
+        template <typename U, size_t Index>
+        static decltype(auto) applyArg(lua_State* L)
         {
-            BOOST_PP_REPEAT(BOOST_PP_ITERATION(), LUABIND_DECL, _)
-            return new T(BOOST_PP_ENUM(BOOST_PP_ITERATION(), LUABIND_PARAM, _));
+            using converter_policy = typename find_conversion_policy<Index + 1, Policies...>::type;
+            using c_t = typename converter_policy::template generate_converter<U, Direction::lua_to_cpp>::type;
+            typename converter_policy::template generate_converter<U, Direction::lua_to_cpp>::type c;
+
+            return c.c_t::apply(L, decorated_type<U>::get(), Index + 2);
         }
-/*
-		template<class T>
-		struct apply
-		{
-			template<class Policies, BOOST_PP_ENUM_PARAMS(LUABIND_MAX_ARITY, class A)>
-			static T* call(lua_State* L, const constructor<BOOST_PP_ENUM_PARAMS(LUABIND_MAX_ARITY,A)>*, const Policies*)
-			{
-				// L is used, but the metrowerks compiler warns about this before expanding the macros
-				L = L;
-				BOOST_PP_REPEAT(BOOST_PP_ITERATION(), LUABIND_DECL, _)
-				return new T(BOOST_PP_ENUM(BOOST_PP_ITERATION(), LUABIND_PARAM, _));
-			}
-		};*/
-	};
 
-	template<>
-	struct wrapped_constructor_helper<BOOST_PP_ITERATION()>
-	{
-        template<class T, class W, class Policies, BOOST_PP_ENUM_PARAMS(LUABIND_MAX_ARITY, class A)>
-        static T* execute(
-            lua_State* L
-          , weak_ref const& ref
-          , T*
-          , W*
-          , constructor<BOOST_PP_ENUM_PARAMS(LUABIND_MAX_ARITY,A)>*
-          , Policies*)
+        template <typename... ConstructorArgs, size_t... Indices>
+        static T* applyImpl(lua_State* L, std::index_sequence<Indices...>)
         {
-            BOOST_PP_REPEAT(BOOST_PP_ITERATION(), LUABIND_DECL, _)
-            W* result = new W(BOOST_PP_ENUM(BOOST_PP_ITERATION(), LUABIND_PARAM, _));
-            static_cast<weak_ref&>(detail::wrap_access::ref(*result)) = ref;
+            return luabind::luabind_new<T>(applyArg<ConstructorArgs, Indices>(L)...);
+        }
+
+    public:
+
+        template <typename... ConstructorArgs>
+        static void* apply(lua_State* L, weak_ref const&)
+        {
+            return applyImpl<ConstructorArgs...>(L, std::make_index_sequence<sizeof...(ConstructorArgs)>());
+        }
+    };
+
+    template<typename T, typename W, typename... Policies>
+    struct construct_wrapped_class
+    {
+    private:
+
+        template <typename U, size_t Index>
+        static decltype(auto) applyArg(lua_State* L)
+        {
+            using converter_policy = typename find_conversion_policy<Index + 1, Policies...>::type;
+            using c_t = typename converter_policy::template generate_converter<U, Direction::lua_to_cpp>::type;
+            typename converter_policy::template generate_converter<U, Direction::lua_to_cpp>::type c;
+
+            return c.c_t::apply(L, decorated_type<U>::get(), Index + 2);
+        }
+
+        template <typename... ConstructorArgs, size_t... Indices>
+        static T* applyImpl(lua_State* L, weak_ref const& ref, std::index_sequence<Indices...>)
+        {
+            W* result = luabind::luabind_new<W>(applyArg<ConstructorArgs, Indices>(L)...);
+            static_cast<weak_ref&>(wrap_access::ref(*result)) = ref;
             return result;
         }
-/*
-        template<class T>
-		struct apply
-		{
-			template<class Policies, BOOST_PP_ENUM_PARAMS(LUABIND_MAX_ARITY, class A)>
-			static T* call(lua_State* L, weak_ref const& ref, const constructor<BOOST_PP_ENUM_PARAMS(LUABIND_MAX_ARITY,A)>*, const Policies*)
-			{
-				BOOST_PP_REPEAT(BOOST_PP_ITERATION(), LUABIND_DECL, _)
-				T* o = new T(BOOST_PP_ENUM(BOOST_PP_ITERATION(), LUABIND_PARAM, _));
-				static_cast<weak_ref&>(detail::wrap_access::ref(*o)) = ref;
-				return o;
-			}
-		};*/
-	};
 
+    public:
 
-#undef LUABIND_PARAM
-#undef LUABIND_DECL
-
-#endif // LUABIND_CONSTRUCTOR_HPP_INCLUDED
-
+        template <typename... ConstructorArgs>
+        static void* apply(lua_State* L, weak_ref const& ref)
+        {
+            return applyImpl<ConstructorArgs...>(L, ref, std::make_index_sequence<sizeof...(ConstructorArgs)>());
+        }
+    };
+}}

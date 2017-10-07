@@ -20,7 +20,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE
 // OR OTHER DEALINGS IN THE SOFTWARE.
 
-#include <luabind/lua_include.hpp>
+#include <lua.hpp>
 
 #include <luabind/luabind.hpp>
 
@@ -124,7 +124,7 @@ namespace luabind { namespace detail
 
 		const char* name = lua_tostring(L, 1);
 
-		int stack_level = lua_gettop(L);
+//		int stack_level = lua_gettop(L);
 		//////////////////////////////////////////////////////////////////////////
 		// Here we are trying to add the class to the namespace in the local variable "this" if exist
 		//////////////////////////////////////////////////////////////////////////
@@ -164,7 +164,7 @@ namespace luabind { namespace detail
 		// also add it to the closure as return value
 		lua_pushcclosure(L, &stage2, 1);
 
-		int stack_level2 = lua_gettop(L);
+//		int stack_level2 = lua_gettop(L);
 		return 1;
 	}
 

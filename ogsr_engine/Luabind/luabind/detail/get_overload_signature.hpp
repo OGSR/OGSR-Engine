@@ -20,8 +20,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE
 // OR OTHER DEALINGS IN THE SOFTWARE.
 
-#ifndef LUABIND_GET_OVERLOAD_SIGNATURE_HPP_INCLUDED
-#define LUABIND_GET_OVERLOAD_SIGNATURE_HPP_INCLUDED
+#pragma once
 
 #include <string>
 
@@ -44,11 +43,8 @@ namespace luabind { namespace detail
 
 #ifndef LUABIND_NO_ERROR_CHECKING
 
-	string_class get_overload_signatures_candidates(lua_State* L, std::vector<const overload_rep_base*>::iterator start, std::vector<const overload_rep_base*>::iterator end, string_class name);
+	string_class get_overload_signatures_candidates(lua_State* L, vector_class<const overload_rep_base*>::iterator start, vector_class<const overload_rep_base*>::iterator end, string_class name);
 
 #endif
 
 }}
-
-#endif // LUABIND_GET_OVERLOAD_SIGNATURE_HPP_INCLUDED
-

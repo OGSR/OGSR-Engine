@@ -20,12 +20,9 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE
 // OR OTHER DEALINGS IN THE SOFTWARE.
 
+#pragma once
 
-#ifndef LUABIND_CLASS_INFO_HPP_INCLUDED
-#define LUABIND_CLASS_INFO_HPP_INCLUDED
-
-#include <luabind/prefix.hpp>
-#include <luabind/lua_include.hpp>
+#include <lua.hpp>
 #include <luabind/luabind.hpp>
 
 namespace luabind
@@ -45,6 +42,3 @@ namespace luabind
 
 	void bind_class_info(lua_State*);
 }
-
-#endif
-
