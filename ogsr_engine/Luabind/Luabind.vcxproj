@@ -73,19 +73,18 @@
 			)
 			copy /Y "..\luajit\bin\$(PlatformShortName)\LuaJIT.dll" "$(OutDir)LuaJIT.dll"
 		)
-		if not exist "$(OutDir)..\..\..\..\_LIB\Engine\$(Configuration)\$(Platform)\LuaJIT.lib" (
-			if not exist "$(OutDir)..\..\..\..\_LIB\Engine\$(Configuration)\$(Platform)\*.*" (
-				md "$(OutDir)..\..\..\..\_LIB\Engine\$(Configuration)\$(Platform)\"
+		if not exist "$(OutDir)..\ogsr_engine\_LIB\Engine\$(Configuration)\$(Platform)\LuaJIT.lib" (
+			if not exist "$(OutDir)..\ogsr_engine\_LIB\Engine\$(Configuration)\$(Platform)\*.*" (
+				md "$(OutDir)..\ogsr_engine\_LIB\Engine\$(Configuration)\$(Platform)\"
 			)
-			copy /Y "..\luajit\bin\$(PlatformShortName)\LuaJIT.lib" "$(OutDir)..\..\..\..\_LIB\Engine\$(Configuration)\$(Platform)\LuaJIT.lib"
+			copy /Y "..\luajit\bin\$(PlatformShortName)\LuaJIT.lib" "$(OutDir)..\ogsr_engine\_LIB\Engine\$(Configuration)\$(Platform)\LuaJIT.lib"
 		)
-		if not exist "$(OutDir)..\..\..\..\_LIB\Engine\$(Configuration)\$(Platform)\LuaJIT.exp" (
-			if not exist "$(OutDir)..\..\..\..\_LIB\Engine\$(Configuration)\$(Platform)\*.*" (
-				md "$(OutDir)..\..\..\..\_LIB\Engine\$(Configuration)\$(Platform)\"
+		if not exist "$(OutDir)..\ogsr_engine\_LIB\Engine\$(Configuration)\$(Platform)\LuaJIT.exp" (
+			if not exist "$(OutDir)..\ogsr_engine\_LIB\Engine\$(Configuration)\$(Platform)\*.*" (
+				md "$(OutDir)..\ogsr_engine\_LIB\Engine\$(Configuration)\$(Platform)\"
 			)
-			copy /Y "..\luajit\bin\$(PlatformShortName)\LuaJIT.exp" "$(OutDir)..\..\..\..\_LIB\Engine\$(Configuration)\$(Platform)\LuaJIT.exp"
+			copy /Y "..\luajit\bin\$(PlatformShortName)\LuaJIT.exp" "$(OutDir)..\ogsr_engine\_LIB\Engine\$(Configuration)\$(Platform)\LuaJIT.exp"
 		)
-copy /Y "..\luajit\bin\$(PlatformShortName)\LuaJIT.dll" "X:\ogsr_package\READY\bin\LuaJIT.dll"
 	  </Command>
     </PreBuildEvent>
   </ItemDefinitionGroup>

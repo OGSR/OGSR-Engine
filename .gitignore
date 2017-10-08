@@ -5,8 +5,7 @@
 /ogsr_engine/_BIN
 /ogsr_engine/_LIB
 /ogsr_engine/_TEMP
-/ogsr_engine/ipch
-/ogsr_package
+/bin
 
 # Precompiled Headers
 *.ipch

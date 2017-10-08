@@ -3,7 +3,7 @@
   <ImportGroup Label="PropertySheets" />
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup>
-    <OutDir>X:\3rd_party\_LIB\$(Configuration)\$(Platform)</OutDir>
+    <OutDir>X:\3rd_party\_LIB\$(Configuration)\$(Platform)\</OutDir>
     <IntDir>X:\3rd_party\_TEMP\$(Configuration)\$(Platform)\$(ProjectName)\</IntDir>
   </PropertyGroup>
   <ItemDefinitionGroup>

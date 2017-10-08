@@ -3,19 +3,10 @@
   <ImportGroup Label="PropertySheets" />
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup>
-    <OutDir>X:\ogsr_engine\_BIN\Engine\$(Configuration)\$(Platform)\</OutDir>
+    <OutDir>X:\bin\</OutDir>
     <IntDir>X:\ogsr_engine\_TEMP\Engine\$(Configuration)\$(Platform)\$(ProjectName)\</IntDir>
   </PropertyGroup>
   <ItemDefinitionGroup>
-    <PostBuildEvent>
-      <Command>
-        if Release == $(ConfigurationName) ( if Win32 == $(Platform) (
-            xcopy "$(TargetPath)" "X:\ogsr_package\READY\bin\" /y/i
-            xcopy "$(TargetDir)$(TargetName).pdb" "X:\ogsr_package\READY\bin\" /y/i ) else ( if x64 == $(Platform) (
-              xcopy "$(TargetPath)" "X:\ogsr_package\READY\bin\x64\" /y/i
-              xcopy "$(TargetDir)$(TargetName).pdb" "X:\ogsr_package\READY\bin\x64\" /y/i ) ) )
-      </Command>
-    </PostBuildEvent>
     <ClCompile>
         <EnableEnhancedInstructionSet>StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
       <AssemblerListingLocation>X:\ogsr_engine\_TEMP\Engine\$(Configuration)\$(Platform)\$(ProjectName)\</AssemblerListingLocation>
