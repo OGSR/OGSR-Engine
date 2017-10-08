@@ -1,0 +1,555 @@
+--[[ ----------------------------------------------------------------------------------------------
+ File       : _luaxml.lua
+ Copyright  : 2015 © Prosectors Mod
+ Author     : Gerald Franz, www.viremo.de Copyright (C) 2007-2010 
+ Editors    : Nazgool, nazgool@ukr.net
+              Charsi
+              OGSE Team
+              KRodin: убрал зависимость от библиотеки LuaFileSystem, исправил ошибку в xml.find()
+ Description: Набор функций для работы с xml-файлами. В таблицу _G добавляется пространство _G.xml
+                           (edition by Nazgool)
+              Из оригинальной библиотеки удалена LuaXml_lib.dll.
+              Функции из неё (за иключением registerCode) переписаны на lua.
+ Подключение: dofile(_luaxml.lua")
+--]] ----------------------------------------------------------------------------------------------
+
+local LJ2 = jit and jit.version_num and jit.version_num >= 20005
+local assert = function(...)
+    if _G["ASSERT"] then
+        return _G["ASSERT"](...)
+    else
+        return _G["assert"](...)
+    end
+end
+
+xml = {}
+
+-- symbolic name for tag index, this allows accessing the tag by var[xml.TAG]
+xml.TAG = 0
+
+local symbols = {
+    ['\000'] = '\000',
+    ['\001'] = '\001',
+    ['\002'] = '\002',
+    ['\003'] = '\003',
+    ['\004'] = '\004',
+    ['\005'] = '\005',
+    ['\006'] = '\006',
+    ['\007'] = '\007',
+    ['\008'] = '\008',
+    ['\009'] = '\009',
+    ['\010'] = '\010',
+    ['\011'] = '\011',
+    ['\012'] = '\012',
+    ['\013'] = '\013',
+    ['\014'] = '\014',
+    ['\015'] = '\015',
+    ['\016'] = '\016',
+    ['\017'] = '\017',
+    ['\018'] = '\018',
+    ['\019'] = '\019',
+    ['\020'] = '\020',
+    ['\021'] = '\021',
+    ['\022'] = '\022',
+    ['\023'] = '\023',
+    ['\024'] = '\024',
+    ['\025'] = '\025',
+    ['\026'] = '\026',
+    ['\027'] = '\027',
+    ['\028'] = '\028',
+    ['\029'] = '\029',
+    ['\030'] = '\030',
+    ['\031'] = '\031',
+    ['\032'] = '\032',
+    ['\033'] = '\033',
+    ['\034'] = '"', -- кавычка "
+    ['\035'] = '\035',
+    ['\036'] = '\036',
+    ['\037'] = '\037',
+    ['\038'] = '&', -- амперсанд &
+    ['\039'] = '\039',
+    ['\040'] = '\040',
+    ['\041'] = '\041',
+    ['\042'] = '\042',
+    ['\043'] = '\043',
+    ['\044'] = '\044',
+    ['\045'] = '\045',
+    ['\046'] = '\046',
+    ['\047'] = '\047',
+    ['\048'] = '\048',
+    ['\049'] = '\049',
+    ['\050'] = '\050',
+    ['\051'] = '\051',
+    ['\052'] = '\052',
+    ['\053'] = '\053',
+    ['\054'] = '\054',
+    ['\055'] = '\055',
+    ['\056'] = '\056',
+    ['\057'] = '\057',
+    ['\058'] = '\058',
+    ['\059'] = '\059',
+    ['\060'] = '<', -- левая угловая скобка <
+    ['\061'] = '\061',
+    ['\062'] = '>', -- правая угловая скобка  >
+    ['\063'] = '\063',
+    ['\064'] = '\064',
+    ['\065'] = '\065',
+    ['\066'] = '\066',
+    ['\067'] = '\067',
+    ['\068'] = '\068',
+    ['\069'] = '\069',
+    ['\070'] = '\070',
+    ['\071'] = '\071',
+    ['\072'] = '\072',
+    ['\073'] = '\073',
+    ['\074'] = '\074',
+    ['\075'] = '\075',
+    ['\076'] = '\076',
+    ['\077'] = '\077',
+    ['\078'] = '\078',
+    ['\079'] = '\079',
+    ['\080'] = '\080',
+    ['\081'] = '\081',
+    ['\082'] = '\082',
+    ['\083'] = '\083',
+    ['\084'] = '\084',
+    ['\085'] = '\085',
+    ['\086'] = '\086',
+    ['\087'] = '\087',
+    ['\088'] = '\088',
+    ['\089'] = '\089',
+    ['\090'] = '\090',
+    ['\091'] = '\091',
+    ['\092'] = '\092',
+    ['\093'] = '\093',
+    ['\094'] = '\094',
+    ['\095'] = '\095',
+    ['\096'] = '\096',
+    ['\097'] = '\097',
+    ['\098'] = '\098',
+    ['\099'] = '\099',
+    ['\100'] = '\100',
+    ['\101'] = '\101',
+    ['\102'] = '\102',
+    ['\103'] = '\103',
+    ['\104'] = '\104',
+    ['\105'] = '\105',
+    ['\106'] = '\106',
+    ['\107'] = '\107',
+    ['\108'] = '\108',
+    ['\109'] = '\109',
+    ['\110'] = '\110',
+    ['\111'] = '\111',
+    ['\112'] = '\112',
+    ['\113'] = '\113',
+    ['\114'] = '\114',
+    ['\115'] = '\115',
+    ['\116'] = '\116',
+    ['\117'] = '\117',
+    ['\118'] = '\118',
+    ['\119'] = '\119',
+    ['\120'] = '\120',
+    ['\121'] = '\121',
+    ['\122'] = '\122',
+    ['\123'] = '\123',
+    ['\124'] = '\124',
+    ['\125'] = '\125',
+    ['\126'] = '\126',
+    ['\127'] = '\127',
+    ['\128'] = '\128',
+    ['\129'] = '\129',
+    ['\130'] = '\130',
+    ['\131'] = '\131',
+    ['\132'] = '\132',
+    ['\133'] = '\133',
+    ['\134'] = '\134',
+    ['\135'] = '\135',
+    ['\136'] = '\136',
+    ['\137'] = '\137',
+    ['\138'] = '\138',
+    ['\139'] = '\139',
+    ['\140'] = '\140',
+    ['\141'] = '\141',
+    ['\142'] = '\142',
+    ['\143'] = '\143',
+    ['\144'] = '\144',
+    ['\145'] = '\145',
+    ['\146'] = '\146',
+    ['\147'] = '\147',
+    ['\148'] = '\148',
+    ['\149'] = '\149',
+    ['\150'] = '\150',
+    ['\151'] = '\151',
+    ['\152'] = '\152',
+    ['\153'] = '\153',
+    ['\154'] = '\154',
+    ['\155'] = '\155',
+    ['\156'] = '\156',
+    ['\157'] = '\157',
+    ['\158'] = '\158',
+    ['\159'] = '\159',
+    ['\160'] = ' '  , -- неразрывный пробел
+    ['\161'] = '?' , -- перевернутый восклицательный знак
+    ['\162'] = '?'  , -- цент
+    ['\163'] = '?' , -- фунт стерлингов
+    ['\164'] = '¤', -- знак денежной единицы ¤
+    ['\165'] = '?'   , -- йена
+    ['\166'] = '¦', -- вертикальная черта ¦
+    ['\167'] = '§'  , -- параграф §
+    ['\168'] = '?'   , -- диереза
+    ['\169'] = '©'  , -- знак авторского права ©
+    ['\170'] = '?'  , -- показатель женского рода
+    ['\171'] = '«' , -- открывающая двойная угловая кавычка «
+    ['\172'] = '¬'   , -- знак отрицания ¬
+    ['\173'] = '­'   , -- мягкий перенос
+    ['\174'] = '®'   , -- охраняемый знак ®
+    ['\175'] = '?'  , -- надчеркивание
+    ['\176'] = '°'   , -- градус °
+    ['\177'] = '±', -- плюс-минус ±
+    ['\178'] = '?'  , -- вторая степень
+    ['\179'] = '?'  , -- третья степень
+    ['\180'] = '?' , -- острое ударение
+    ['\181'] = 'µ' , -- знак микро µ
+    ['\182'] = '¶'  , -- конец абзаца ¶
+    ['\183'] = '·', -- средняя точка ·
+    ['\184'] = '?' , -- седиль
+    ['\185'] = '?'  , -- единица в верхнем индексе
+    ['\186'] = '?'  , -- показатель мужского рода
+    ['\187'] = '»' , -- закрывающая двойная угловая кавычка »
+    ['\188'] = '?', -- одна четвертая
+    ['\189'] = '?', -- одна вторая
+    ['\190'] = '?', -- три четверти
+    ['\191'] = '?', -- перевернутый вопросительный знак
+    ['\192'] = '\192',
+    ['\193'] = '\193',
+    ['\194'] = '\194',
+    ['\195'] = '\195',
+    ['\196'] = '\196',
+    ['\197'] = '\197',
+    ['\198'] = '\198',
+    ['\199'] = '\199',
+    ['\200'] = '\200',
+    ['\201'] = '\201',
+    ['\202'] = '\202',
+    ['\203'] = '\203',
+    ['\204'] = '\204',
+    ['\205'] = '\205',
+    ['\206'] = '\206',
+    ['\207'] = '\207',
+    ['\208'] = '\208',
+    ['\209'] = '\209',
+    ['\210'] = '\210',
+    ['\211'] = '\211',
+    ['\212'] = '\212',
+    ['\213'] = '\213',
+    ['\214'] = '\214',
+    ['\215'] = '\215',
+    ['\216'] = '\216',
+    ['\217'] = '\217',
+    ['\218'] = '\218',
+    ['\219'] = '\219',
+    ['\220'] = '\220',
+    ['\221'] = '\221',
+    ['\222'] = '\222',
+    ['\223'] = '\223',
+    ['\224'] = '\224',
+    ['\225'] = '\225',
+    ['\226'] = '\226',
+    ['\227'] = '\227',
+    ['\228'] = '\228',
+    ['\229'] = '\229',
+    ['\230'] = '\230',
+    ['\231'] = '\231',
+    ['\232'] = '\232',
+    ['\233'] = '\233',
+    ['\234'] = '\234',
+    ['\235'] = '\235',
+    ['\236'] = '\236',
+    ['\237'] = '\237',
+    ['\238'] = '\238',
+    ['\239'] = '\239',
+    ['\240'] = '\240',
+    ['\241'] = '\241',
+    ['\242'] = '\242',
+    ['\243'] = '\243',
+    ['\244'] = '\244',
+    ['\245'] = '\245',
+    ['\246'] = '\246',
+    ['\247'] = '\247',
+    ['\248'] = '\248',
+    ['\249'] = '\249',
+    ['\250'] = '\250',
+    ['\251'] = '\251',
+    ['\252'] = '\252',
+    ['\253'] = '\253',
+    ['\254'] = '\254',
+    ['\255'] = '\255',
+}
+
+function xml.encode(str)
+    assert(type(str) == "string", "[xml.encode] str is not string!")
+    if LJ2 then
+        return str:gsub('.', symbols)
+    else --KRodin: ванильный lua не переваривает таблицу как аргумент в gsub
+        return str:gsub('.', function(x)
+            return symbols[x] or x
+        end)
+    end
+end
+
+function xml.eval(str)
+    assert(type(str) == "string", "[xml.eval] str is not string!")
+    local data = {}
+    str = str:gsub('%s-<!%-%-.-%-%->', '') -- убрать комментарии
+    str = str:gsub('%s-<%?xml.-%?>'  , '') -- убрать заголовок если есть
+
+    local function parse_str(str, parent)
+        local tag, prop, rest = str:match("<%s-([%w_]+)%s*(.-)>(.-)$")
+        if tag then
+            local child = {[0] = tag}
+            table.insert(parent, child)
+
+            for key, value in prop:gmatch('(%S+)="(%S+)"') do
+                child[key] = value
+            end
+
+            if prop:match('/$') then -- самозакрывающийся тег
+                parse_str(rest, parent)
+            else                     -- закрывающий тег
+                str, rest = rest:match('^%s*(.-)%s-</%s-'..tag..'%s->(.-)$')
+                child[1] = str:match('^%s-<') and parse_str(str, child) or str
+                parse_str(rest, parent)
+            end
+
+            return child
+        end
+    end
+
+    parse_str(str, data)
+
+    return setmetatable( data[1], { __index = xml, __tostring = xml.str } ) or nil
+end
+
+function xml.load(path) --Для чистого Lua
+    local file = io.open(path)
+    if file then
+        local str = file:read('*a')
+        file:close()
+        return xml.eval(str)
+    end
+
+    --assert(nil, "file ["..tostring(path).."] not found!")
+	return nil
+end
+
+function xml.xr_load(root_alias, local_path) --Специально для движка X-Ray
+    local fs   = getFS()
+    local path = fs:update_path(root_alias, local_path)
+    local file = io.open(path)
+
+    if file then -- файл в распакованном виде на диске
+        local str = file:read('*a')
+        file:close()
+        return xml.eval(str)
+    elseif fs:exist(path) then -- файл в архиве
+        file = fs:r_open(path)
+        local chars = {}
+        local index = 1
+        local char = string.char
+
+        while not file:r_eof() do
+            chars[index] = char(file:r_u8())
+            index = index + 1
+        end
+
+        return xml.eval(table.concat(chars))
+    end
+
+    --assert(nil, "file ["..tostring(root_alias).." "..tostring(local_path).."] not found!")
+	return nil
+end
+
+-- sets or returns tag of a LuaXML object
+function xml.tag(var, tag)
+    assert(type(var) == "table", "[xml.tag] var is not table!")
+    if not tag then 
+        return var[0]
+    end
+    var[0] = tag
+end
+
+-- creates a new LuaXML object either by setting the metatable of an existing Lua table or by setting its tag
+function xml.new(arg)
+    local tag = (type(arg) == "string" and arg)
+    local var = (type(arg) == "table"  and arg) or { [0] = tag }
+
+    return setmetatable( var, { __index = xml, __tostring = xml.str } )
+end
+
+-- appends a new subordinate LuaXML object to an existing one, optionally sets tag
+function xml.append(var, tag)
+    assert(type(var) == "table", "[xml.append] var is not table!")
+    local arg = xml.new(tag)
+    var[#var+1] = arg
+    return arg
+end
+
+-- converts any Lua var into an XML string
+function xml.str(var, indent, tagValue)
+    assert(var, "[xml.str] var is nil!")
+    indent = indent or 0
+    local indentStr = ""
+    for i = 1, indent do
+        indentStr = indentStr.."  "
+    end
+    local tableStr = ""
+
+    if type(var) == "table" then
+        local tag = var[0] or tagValue or type(var)
+        local s = indentStr.."<"..tag
+        for k,v in pairs(var) do -- attributes 
+            if type(k) == "string" then
+                if type(v) == "table" and k ~= "_M" then --  otherwise recursiveness imminent
+                    tableStr = tableStr..xml.str(v, indent + 1, k)
+                else
+                    s = s.." "..k.."=\""..xml.encode(tostring(v)).."\""
+                end
+            end
+        end
+        if #var == 0 and #tableStr == 0 then
+            s = s.." />\n"
+        elseif #var == 1 and type(var[1]) ~= "table" and #tableStr == 0 then -- single element
+            s = s..">"..xml.encode(tostring(var[1])).."</"..tag..">\n"
+        else
+            s = s..">\n"
+            for k, v in ipairs(var) do -- elements
+                if type(v) == "string" then
+                    s = s..indentStr.."  "..xml.encode(v).." \n"
+                else
+                    s = s..xml.str(v, indent + 1)
+                end
+            end
+            s = s..tableStr..indentStr.."</"..tag..">\n"
+        end
+        return s
+    else
+        local tag = type(var)
+        return indentStr.."<"..tag.."> "..xml.encode(tostring(var)).." </"..tag..">\n"
+    end
+end
+
+-- saves a Lua var as xml file
+function xml.save(var, filename)
+    if var and filename and #filename ~= 0 then
+        local file = io.open(filename, 'w')
+        if file then
+            file:write("<?xml version=\"1.0\" encoding=\"windows-1251\"?>\n\n")
+            file:write(xml.str(var))
+			file:flush()
+            file:close()
+            return true
+        else
+            filename = filename:gsub('\\', '/')
+            local dir, path, name = filename:match('^([^/]+)(.-)([^/]+)$')
+
+            for node in path:gmatch("[^/]+") do
+                dir = dir .. '/'.. node
+                local result = os.execute( 'if not exist "'..dir..'/*.*" ( md "'..dir..'" )' )
+				assert(result == 0, "[xml.save] Can't create dir: "..dir)
+            end
+
+            xml.save(var, filename)
+        end
+    end
+    return false
+end
+
+-- Function 'xml.find' ----------------------
+local function is_value (obj, value)
+    for _, v in pairs(obj) do
+        if v == value then
+            return true
+        end
+    end
+    return false
+end
+
+local function is_key(obj, key, value)
+    if value then
+        return obj[key] == value
+    end
+    return obj[key] ~= nil
+end
+
+local function is_tag(obj, tag, key, value)
+    if obj[0]==tag then
+        if key then
+            return is_key(obj, key, value)
+        elseif value then
+            return is_value(obj, value)
+        end
+        return true
+    end
+    return false
+end
+
+local function check(obj, tag, key, value) 
+    if tag then 
+        return is_tag(obj, tag, key, value)
+    elseif key then
+        return is_key(obj, key, value)
+    elseif value then
+        return is_value(obj, value)
+    end
+    return true
+end
+
+local function parse(obj, tag, key, value, index, parent)
+    if check(obj, tag, key, value) then
+        setmetatable( obj, { __index = xml, __tostring = xml.str } )
+        coroutine.yield(obj, index, parent)
+    end
+    -- recursively parse subtags:
+    for k,v in ipairs(obj) do
+        if type(v) == "table" then
+            parse(v, tag, key, value, k, obj)
+        end
+    end
+end
+
+local thread = nil
+
+function xml.find(obj, tag, key, val)
+    -- check input:
+    assert(type(obj) == "table", "[xml.find] obj is not table!")
+    tag = ( type(tag) == "string" ) and #tag > 0 and tag
+    key = ( type(key) == "string" ) and #key > 0 and key
+    val = ( type(val) == "string" ) and #val > 0 and val
+
+    if tag then
+        local tag1, tag2 = tag:match("(.-),(.+)")
+        if tag1 then
+            local res = xml.find(obj, tag1) or {}
+            setmetatable( res, { __index = xml, __tostring = xml.str } )
+            return xml.find(res, tag2, key, val)
+        end
+    end
+
+    thread = coroutine.create(parse)
+    return select( 2, coroutine.resume(thread, obj, tag, key, val) )
+end
+
+function xml.next()
+    if coroutine.status(thread) == 'dead' then return end
+    return select( 2, coroutine.resume(thread) )
+end
+
+function xml.remove(obj, tag, key, val)
+    assert(type(obj) == "table", "[xml.remove] obj is not table!")
+    if type(tag) == "string" and #tag==0 then
+        tag = nil
+    end
+    local _, index = obj:find(tag, key, val)
+    if not index then return end
+    return table.remove(obj, index)
+end
