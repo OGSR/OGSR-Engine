@@ -1,7 +1,7 @@
 //KRodin: В этом файле подключается Luabind. Только здесь и больше нигде.
 #pragma once
 
-#pragma comment( lib, "luabind.lib"	)
+#pragma comment( lib, "Luabind.lib"	)
 
 //#define LUABIND_09 //Может пригодится в будущем.
 

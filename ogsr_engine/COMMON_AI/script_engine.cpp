@@ -33,7 +33,7 @@ void CScriptEngine::unload()
 int CScriptEngine::lua_panic(lua_State *L)
 {
 	print_output(L, "[CScriptEngine::lua_panic]", LUA_ERRRUN);
-	Debug.fatal(DEBUG_INFO, "[CScriptEngine::lua_error]: %s", lua_isstring(L, -1) ? lua_tostring(L, -1) : "");
+	Debug.fatal(DEBUG_INFO, "[CScriptEngine::lua_panic]: %s", lua_isstring(L, -1) ? lua_tostring(L, -1) : "");
 	return 0;
 }
 

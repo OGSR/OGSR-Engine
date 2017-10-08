@@ -441,6 +441,6 @@ void print_help(lua_State *L)
 #else
 void print_help(lua_State *L)
 {
-	Msg("! Release build doesn't support lua-help :(");
+	Msg("! For a dump lua_help, uncomment #define ENABLE_DUMP_LUA_HELP in config.hpp");
 }
 #endif

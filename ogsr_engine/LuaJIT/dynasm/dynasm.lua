@@ -2,7 +2,7 @@
 -- DynASM. A dynamic assembler for code generation engines.
 -- Originally designed and implemented for LuaJIT.
 --
--- Copyright (C) 2005-2008 Mike Pall. All rights reserved.
+-- Copyright (C) 2005-2017 Mike Pall. All rights reserved.
 -- See below for full copyright notice.
 ------------------------------------------------------------------------------
 
@@ -10,14 +10,14 @@
 local _info = {
   name =	"DynASM",
   description =	"A dynamic assembler for code generation engines",
-  version =	"1.1.4",
-  vernum =	 10104,
-  release =	"2008-01-29",
+  version =	"1.3.0",
+  vernum =	 10300,
+  release =	"2011-05-05",
   author =	"Mike Pall",
   url =		"http://luajit.org/dynasm.html",
   license =	"MIT",
   copyright =	[[
-Copyright (C) 2005-2008 Mike Pall. All rights reserved.
+Copyright (C) 2005-2017 Mike Pall. All rights reserved.
 
 Permission is hereby granted, free of charge, to any person obtaining
 a copy of this software and associated documentation files (the
@@ -85,7 +85,7 @@ end
 -- Resync CPP line numbers.
 local function wsync()
   if g_synclineno ~= g_lineno and g_opt.cpp then
-    wline("# "..g_lineno..' "'..g_fname..'"')
+    wline("#line "..g_lineno..' "'..g_fname..'"')
     g_synclineno = g_lineno
   end
 end
@@ -259,9 +259,17 @@ local condstack = {}
 
 -- Evaluate condition with a Lua expression. Substitutions already performed.
 local function cond_eval(cond)
-  local func, err = loadstring("return "..cond)
+  local func, err
+  if setfenv then
+    func, err = loadstring("return "..cond, "=expr")
+  else
+    -- No globals. All unknown identifiers evaluate to nil.
+    func, err = load("return "..cond, "=expr", "t", {})
+  end
   if func then
-    setfenv(func, {}) -- No globals. All unknown identifiers evaluate to nil.
+    if setfenv then
+      setfenv(func, {}) -- No globals. All unknown identifiers evaluate to nil.
+    end
     local ok, res = pcall(func)
     if ok then
       if res == 0 then return false end -- Oh well.
@@ -344,7 +352,7 @@ end
 
 -- Search for a file in the given path and open it for reading.
 local function pathopen(path, name)
-  local dirsep = match(package.path, "\\") and "\\" or "/"
+  local dirsep = package and match(package.path, "\\") and "\\" or "/"
   for _,p in ipairs(path) do
     local fullname = p == "" and name or p..dirsep..name
     local fin = io.open(fullname, "r")
@@ -370,8 +378,12 @@ map_coreop[".include_1"] = function(params)
   if fatal then wfatal("in include file") end
 end
 
--- Make .include initially available, too.
+-- Make .include and conditionals initially available, too.
 map_op[".include_1"] = map_coreop[".include_1"]
+map_op[".if_1"] = map_coreop[".if_1"]
+map_op[".elif_1"] = map_coreop[".elif_1"]
+map_op[".else_0"] = map_coreop[".else_0"]
+map_op[".endif_0"] = map_coreop[".endif_0"]
 
 ------------------------------------------------------------------------------
 
@@ -386,7 +398,7 @@ map_coreop[".macro_*"] = function(mparams)
   -- Split off and validate macro name.
   local name = remove(mparams, 1)
   if not name then werror("missing macro name") end
-  if not (match(name, "^[%a_][%w_%.]*$") or match(name, "^%.[%w_%.]+$")) then
+  if not (match(name, "^[%a_][%w_%.]*$") or match(name, "^%.[%w_%.]*$")) then
     wfatal("bad macro name `"..name.."'")
   end
   -- Validate macro parameter names.
@@ -604,6 +616,17 @@ end
 
 ------------------------------------------------------------------------------
 
+-- Replacement for customized Lua, which lacks the package library.
+local prefix = ""
+if not require then
+  function require(name)
+    local fp = assert(io.open(prefix..name..".lua"))
+    local s = fp:read("*a")
+    assert(fp:close())
+    return assert(loadstring(s, "@"..name..".lua"))()
+  end
+end
+
 -- Load architecture-specific module.
 local function loadarch(arch)
   if not match(arch, "^[%w_]+$") then return "bad arch name" end
@@ -672,6 +695,9 @@ map_op[".arch_1"] = function(params)
   if not params then return "name" end
   local err = loadarch(params[1])
   if err then wfatal(err) end
+  wline(format("#if DASM_VERSION != %d", _info.vernum))
+  wline('#error "Version mismatch between DynASM and included encoding engine"')
+  wline("#endif")
 end
 
 -- Dummy .arch pseudo-opcode to improve the error report.
@@ -719,8 +745,10 @@ local function splitstmt_one(c)
     splitlvl = ")"..splitlvl
   elseif c == "[" then
     splitlvl = "]"..splitlvl
-  elseif c == ")" or c == "]" then
-    if sub(splitlvl, 1, 1) ~= c then werror("unbalanced () or []") end
+  elseif c == "{" then
+    splitlvl = "}"..splitlvl
+  elseif c == ")" or c == "]" or c == "}" then
+    if sub(splitlvl, 1, 1) ~= c then werror("unbalanced (), [] or {}") end
     splitlvl = sub(splitlvl, 2)
   elseif splitlvl == "" then
     return " \0 "
@@ -736,7 +764,7 @@ local function splitstmt(stmt)
 
   -- Split at commas and equal signs, but obey parentheses and brackets.
   splitlvl = ""
-  stmt = gsub(stmt, "[,%(%)%[%]]", splitstmt_one)
+  stmt = gsub(stmt, "[,%(%)%[%]{}]", splitstmt_one)
   if splitlvl ~= "" then werror("unbalanced () or []") end
 
   -- Split off opcode.
@@ -779,7 +807,7 @@ dostmt = function(stmt)
   if not f then
     if not g_arch then wfatal("first statement must be .arch") end
     -- Improve error report.
-    for i=0,16 do
+    for i=0,9 do
       if map_op[op.."_"..i] then
 	werror("wrong number of parameters for `"..op.."'")
       end
@@ -852,13 +880,9 @@ local function dasmhead(out)
 ** DO NOT EDIT! The original file is in "%s".
 */
 
-#if DASM_VERSION != %d
-#error "Version mismatch between DynASM and included encoding engine"
-#endif
-
 ]], _info.url,
     _info.version, g_arch._info.arch, g_arch._info.version,
-    g_fname, _info.vernum))
+    g_fname))
 end
 
 -- Read input file.
@@ -1059,8 +1083,8 @@ end
 -- Add the directory dynasm.lua resides in to the Lua module search path.
 local arg = arg
 if arg and arg[0] then
-  local prefix = match(arg[0], "^(.*/)")
-  if prefix then package.path = prefix.."?.lua;"..package.path end
+  prefix = match(arg[0], "^(.*[/\\])")
+  if package and prefix then package.path = prefix.."?.lua;"..package.path end
 end
 
 -- Start DynASM.

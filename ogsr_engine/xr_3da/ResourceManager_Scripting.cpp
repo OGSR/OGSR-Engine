@@ -22,7 +22,7 @@ module('%s', package.seeall, function(m) this = m end); \
 
 const char* get_lua_traceback(lua_State *L)
 {
-#if LUAJIT_VERSION_NUM <= 10108
+#if LUAJIT_VERSION_NUM < 20000
 	static char buffer[32768]; // global buffer
 	int top = lua_gettop(L);
 	// alpet: Lua traceback added
@@ -242,9 +242,8 @@ bool OBJECT_2(const char* namespace_name, const char* identifier, int type)
 #ifdef LUABIND_NO_EXCEPTIONS
 void LuaError(lua_State* L)
 {
-	print_output("", LUA_ERRRUN);
-	auto error = lua_tostring(L, -1);
-	Debug.fatal(DEBUG_INFO, "LUA error: %s", error ? error : "NULL");
+	print_output("[ResourceManager.lua_error]", LUA_ERRRUN);
+	Debug.fatal(DEBUG_INFO, "[ResourceManager.lua_error]: %s", lua_isstring(L, -1) ? lua_tostring(L, -1) : "");
 }
 
 #ifdef LUABIND_09
@@ -253,15 +252,21 @@ void lua_cast_failed(lua_State *L, const luabind::type_id& info)
 void lua_cast_failed(lua_State *L, LUABIND_TYPE_INFO info)
 #endif
 {
-	print_output("", LUA_ERRRUN);
-	//Debug.fatal(DEBUG_INFO, "LUA error: cannot cast lua value to %s", info.name());
+	print_output("[ResourceManager.lua_cast_failed]", LUA_ERRRUN);
+#ifdef LUABIND_09
+	Msg("LUA error: cannot cast lua value to %s", info.name());
+	//Debug.fatal(DEBUG_INFO, "LUA error: cannot cast lua value to %s", info.name()); //KRodin: Тут наверное вылетать не надо.
+#else
+	Msg("LUA error: cannot cast lua value to %s", info->name());
+	//Debug.fatal(DEBUG_INFO, "LUA error: cannot cast lua value to %s", info->name()); //KRodin: Тут наверное вылетать не надо.
+#endif
 }
 #endif
 
 int lua_pcall_failed(lua_State *L)
 {
-	print_output("", LUA_ERRRUN);
-	Debug.fatal(DEBUG_INFO, "LUA error: %s", lua_isstring(L, -1) ? lua_tostring(L, -1) : "");
+	print_output("[ResourceManager.lua_pcall_failed]", LUA_ERRRUN);
+	Debug.fatal(DEBUG_INFO, "[ResourceManager.lua_pcall_failed]: %s", lua_isstring(L, -1) ? lua_tostring(L, -1) : "");
 	if (lua_isstring(L, -1))
 		lua_pop(L, 1);
 	return LUA_ERRRUN;
@@ -269,7 +274,8 @@ int lua_pcall_failed(lua_State *L)
 
 int lua_panic(lua_State *L)
 {
-	print_output("PANIC", LUA_ERRRUN);
+	print_output("[ResourceManager.lua_panic]", LUA_ERRRUN);
+	Debug.fatal(DEBUG_INFO, "[ResourceManager.lua_panic]: %s", lua_isstring(L, -1) ? lua_tostring(L, -1) : "");
 	return 0;
 }
 

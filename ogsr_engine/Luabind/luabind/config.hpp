@@ -38,8 +38,7 @@
 #endif
 #define LUABIND_DONT_COPY_STRINGS // ?
 //
-#pragma comment(lib, "lua51.lib") //LuaJIT теперь подключается только здесь и больше нигде.
-//#pragma comment(lib, "LuaJIT.lib") //LuaJIT теперь подключается только здесь и больше нигде.
+#pragma comment(lib, "LuaJIT.lib") //LuaJIT теперь подключается только здесь и больше нигде.
 //
 #pragma warning(push)
 #pragma warning(disable:4595)

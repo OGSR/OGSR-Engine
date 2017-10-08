@@ -10,6 +10,7 @@
     <ProjectGuid>{CCD4AFAE-AA10-42C6-A452-FDEE497CCDF1}</ProjectGuid>
     <RootNamespace>luabind</RootNamespace>
     <Keyword>Win32Proj</Keyword>
+    <ProjectName>Luabind</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
@@ -28,7 +29,6 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
-    <PreBuildEventUseInBuild>false</PreBuildEventUseInBuild>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
@@ -73,18 +73,19 @@
 			)
 			copy /Y "..\luajit\bin\$(PlatformShortName)\LuaJIT.dll" "$(OutDir)LuaJIT.dll"
 		)
-		if not exist "$(OutDir)../libraries/LuaJIT.lib" (
-			if not exist "$(OutDir)../libraries/*.*" (
-				md "$(OutDir)../libraries/"
+		if not exist "$(OutDir)..\..\..\..\_LIB\Engine\$(Configuration)\$(Platform)\LuaJIT.lib" (
+			if not exist "$(OutDir)..\..\..\..\_LIB\Engine\$(Configuration)\$(Platform)\*.*" (
+				md "$(OutDir)..\..\..\..\_LIB\Engine\$(Configuration)\$(Platform)\"
 			)
-			copy /Y "..\luajit\bin\$(PlatformShortName)\LuaJIT.lib" "$(OutDir)../libraries/LuaJIT.lib"
+			copy /Y "..\luajit\bin\$(PlatformShortName)\LuaJIT.lib" "$(OutDir)..\..\..\..\_LIB\Engine\$(Configuration)\$(Platform)\LuaJIT.lib"
 		)
-		if not exist "$(OutDir)../libraries/LuaJIT.exp" (
-			if not exist "$(OutDir)../libraries/*.*" (
-				md "$(OutDir)../libraries/"
+		if not exist "$(OutDir)..\..\..\..\_LIB\Engine\$(Configuration)\$(Platform)\LuaJIT.exp" (
+			if not exist "$(OutDir)..\..\..\..\_LIB\Engine\$(Configuration)\$(Platform)\*.*" (
+				md "$(OutDir)..\..\..\..\_LIB\Engine\$(Configuration)\$(Platform)\"
 			)
-			copy /Y "..\luajit\bin\$(PlatformShortName)\LuaJIT.exp" "$(OutDir)../libraries/LuaJIT.exp"
+			copy /Y "..\luajit\bin\$(PlatformShortName)\LuaJIT.exp" "$(OutDir)..\..\..\..\_LIB\Engine\$(Configuration)\$(Platform)\LuaJIT.exp"
 		)
+copy /Y "..\luajit\bin\$(PlatformShortName)\LuaJIT.dll" "X:\ogsr_package\READY\bin\LuaJIT.dll"
 	  </Command>
     </PreBuildEvent>
   </ItemDefinitionGroup>

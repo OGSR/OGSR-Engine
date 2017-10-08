@@ -23,7 +23,7 @@ module('%s', package.seeall, function(m) this = m end); \
 
 const char* get_lua_traceback(lua_State *L)
 {
-#if LUAJIT_VERSION_NUM <= 10108
+#if LUAJIT_VERSION_NUM < 20000
 	static char buffer[32768]; // global buffer
 	int top = lua_gettop(L);
 	// alpet: Lua traceback added
