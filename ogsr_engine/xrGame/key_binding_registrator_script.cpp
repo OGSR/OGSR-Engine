@@ -20,6 +20,7 @@ void key_binding_registrator::script_register(lua_State *L)
 	[
 		def("dik_to_bind",		&dik_to_bind),
 		def("bind_to_dik",		&bind_to_dik),
+		def("dik_to_keyname",	&dik_to_keyname),
 
 		class_<enum_exporter<EGameActions> >("key_bindings")
 			.enum_("commands")
@@ -78,7 +79,12 @@ void key_binding_registrator::script_register(lua_State *L)
 				value("kUSE_BIPSIZON",				int(kUSE_BIPSIZON)),
 				value("kUSE_ANTIRAD",				int(kUSE_ANTIRAD)),
 				value("kUSE_ENERGY_DRINK",			int(kUSE_ENERGY_DRINK)),
-				value("kUSE_RADIO",					int(kUSE_RADIO))
+				value("kUSE_RADIO",					int(kUSE_RADIO)),
+
+				//KRodin:
+				value("kEXT_1",						int(kEXT_1)),
+				value("kQUICK_LOAD",				int(kQUICK_LOAD)),
+				value("kENGINE",					int(kENGINE))
 			],
 		class_<key_binding_registrator >("DIK_keys")
 			.enum_("dik_keys")

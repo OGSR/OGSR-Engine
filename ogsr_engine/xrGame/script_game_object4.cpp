@@ -18,11 +18,11 @@
 #include "sight_control_action.h"
 #include "sight_manager.h"
 #include "inventoryBox.h"
+
 #include "WeaponBinoculars.h"
+#include "WeaponKnife.h"
 
 #include "HangingLamp.h"
-
-class CWeapon;
 
 //////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////
@@ -290,6 +290,7 @@ TEST_OBJECT_CLASS(CScriptGameObject::IsTorch, CTorch)
 TEST_OBJECT_CLASS(CScriptGameObject::IsWeaponGL, CWeaponMagazinedWGrenade)
 TEST_OBJECT_CLASS(CScriptGameObject::IsInventoryBox, CInventoryBox)
 TEST_OBJECT_CLASS(CScriptGameObject::IsWeaponBinoculars, CWeaponBinoculars)
+TEST_OBJECT_CLASS(CScriptGameObject::IsKnife, CWeaponKnife)
 // KD
 
 void CScriptGameObject::SetActorCamDir(Fvector _dir)

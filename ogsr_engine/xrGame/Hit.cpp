@@ -7,6 +7,8 @@
 #include "xrMessages.h"
 #include "Level.h"
 
+#include "script_game_object.h"
+
 SHit::SHit(float aPower,Fvector &adir,CObject *awho, u16 aelement, Fvector ap_in_bone_space, float aimpulse,  ALife::EHitType ahit_type, float aAP, bool AimBullet)
 {
 		power					=aPower									;
@@ -152,3 +154,26 @@ void SHit::_dump()
 	Msg("SHit::_dump()---end");
 }
 #endif
+
+void SHit::set_hit_initiator(CScriptGameObject* script_obj)
+{
+	auto obj = smart_cast<CObject*>(&(script_obj->object()));
+	if (!obj)
+	{
+		Msg("!![SHit::set_hit_initiator] CObject [%s] not found!", script_obj->Name());
+		return;
+	}
+	who = obj;
+}
+CScriptGameObject* SHit::get_hit_initiator() const
+{
+	if (who)
+	{
+		auto obj = smart_cast<CGameObject*>(who);
+		if (obj)
+			return obj->lua_game_object();
+		else
+			Msg("!![SHit::get_hit_initiator] Cast failed! CObject: [%s]", who->cName().c_str());
+	}
+	return nullptr;
+}

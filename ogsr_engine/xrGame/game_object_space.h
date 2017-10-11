@@ -60,10 +60,11 @@ namespace GameObject {
 		eOnItemToRuck,
 		eOnItemToSlot,
 		eOnBeforeUseItem,
-//		eOnBeforeHitActor,
+		entity_alive_before_hit,
 
 //		eOnHudAnimationEnd,
 
+		eOnUpdateAddonsVisibiility,
 		eOnUpdateHUDAddonsVisibiility,
 		eOnAddonInit,
 

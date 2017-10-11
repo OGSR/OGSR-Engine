@@ -132,6 +132,9 @@ public:
 	void				InvalidateState				()							{ m_dwModifyFrame = Device.dwFrame; }
 	void				Items_SetCurrentEntityHud	(bool current_entity);
 	bool				isBeautifulForActiveSlot	(CInventoryItem *pIItem);
+
+	// максимальный вес инвентаря
+	float				m_fMaxWeight;
 protected:
 	void					UpdateDropTasks		();
 	void					UpdateDropItem		(PIItem pIItem);
@@ -152,8 +155,6 @@ protected:
 	//флаг, допускающий использование слотов
 	bool				m_bSlotsUseful;
 
-	// максимальный вес инвентаря
-	float				m_fMaxWeight;
 	// текущий вес в инвентаре
 	float				m_fTotalWeight;
 

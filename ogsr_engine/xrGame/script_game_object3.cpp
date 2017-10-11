@@ -907,3 +907,146 @@ void CScriptGameObject::SetMaxWalkWeight(float _weight)
 	}
 	e->conditions().SetMaxWalkWeight(_weight);
 }
+
+float CScriptGameObject::GetMaxWeight() const
+{
+	auto e = smart_cast<CActor*>(&object());
+	if (!e)
+	{
+		Msg("!!CActor : cannot access class member GetMaxWeight!");
+		return 0;
+	}
+	float max_w = e->inventory().m_fMaxWeight;
+	auto outfit = e->GetOutfit();
+	if (outfit)
+		max_w += outfit->m_additional_weight;
+
+	return max_w;
+}
+float CScriptGameObject::GetMaxWalkWeight() const
+{
+	auto e = smart_cast<CActor*>(&object());
+	if (!e)
+	{
+		Msg("!!CActor : cannot access class member GetMaxWalkWeight!");
+		return 0;
+	}
+	float max_w = e->conditions().m_MaxWalkWeight;
+	auto outfit = e->GetOutfit();
+	if (outfit)
+		max_w += outfit->m_additional_weight2;
+
+	return max_w;
+}
+float CScriptGameObject::GetInventoryWeight() const
+{
+	auto e = smart_cast<CInventoryOwner*>(&object());
+	if (!e)
+	{
+		Msg("!!CInventoryOwner : cannot access class member GetMaxWalkWeight!");
+		return 0;
+	}
+
+	return e->inventory().TotalWeight();
+}
+
+float CScriptGameObject::GetShapeRadius() const
+{
+	if (!g_pGameLevel)
+	{
+		Msg("Error! CScriptGameObject::GetShapeRadius : game level doesn't exist.");
+		return 0.0;
+	}
+
+	auto obj = smart_cast<CSpaceRestrictor*>(&object());
+	if (!obj)
+	{
+		Msg("Error! CScriptGameObject::GetShapeRadius : incorrect object type.");
+		return 0.0;
+	}
+
+	return obj->Radius();
+}
+
+u16 CScriptGameObject::GetAmmoBoxCurr() const
+{
+	if (!g_pGameLevel)
+	{
+		Msg("Error! CScriptGameObject::GetAmmoBoxCurr : game level doesn't exist.");
+		return 0;
+	}
+
+	auto obj = smart_cast<CWeaponAmmo*>(&object());
+	if (!obj)
+	{
+		Msg("Error! CScriptGameObject::GetAmmoBoxCurr : incorrect object type.");
+		return 0;
+	}
+
+	return obj->m_boxCurr;
+}
+
+u16 CScriptGameObject::GetAmmoBoxSize() const
+{
+	if (!g_pGameLevel)
+	{
+		Msg("Error! CScriptGameObject::GetAmmoBoxSize : game level doesn't exist.");
+		return 0;
+	}
+
+	auto obj = smart_cast<CWeaponAmmo*>(&object());
+	if (!obj)
+	{
+		Msg("Error! CScriptGameObject::GetAmmoBoxSize : incorrect object type.");
+		return 0;
+	}
+
+	return obj->m_boxSize;
+}
+
+void CScriptGameObject::SetAmmoBoxSize(u16 size)
+{
+	if (!g_pGameLevel)
+	{
+		Msg("Error! CScriptGameObject::SetAmmoBoxSize : game level doesn't exist.");
+		return;
+	}
+
+	auto obj = smart_cast<CWeaponAmmo*>(&object());
+	if (!obj)
+	{
+		Msg("Error! CScriptGameObject::SetAmmoBoxSize : incorrect object type.");
+		return;
+	}
+
+	obj->m_boxSize = size;
+}
+
+void CScriptGameObject::SetAmmoBoxCurr(u16 curr)
+{
+	if (!g_pGameLevel)
+	{
+		Msg("Error! CScriptGameObject::SetAmmoBoxCurr : game level doesn't exist.");
+		return;
+	}
+
+	auto obj = smart_cast<CWeaponAmmo*>(&object());
+	if (!obj)
+	{
+		Msg("Error! CScriptGameObject::SetAmmoBoxCurr : incorrect object type.");
+		return;
+	}
+
+	obj->m_boxCurr = curr;
+}
+
+const char* CScriptGameObject::GetVisualName() const
+{
+	if (!g_pGameLevel)
+	{
+		Msg("Error! CScriptGameObject::GetVisualName : game level doesn't exist.");
+		return "";
+	}
+
+	return *object().cNameVisual();
+}

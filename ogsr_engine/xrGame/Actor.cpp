@@ -452,8 +452,6 @@ void	CActor::Hit							(SHit* pHDS)
 	bool bPlaySound = true;
 	if (!g_Alive()) bPlaySound = false;
 
-//	callback(GameObject::eOnBeforeHitActor)(lua_game_object(), &HDS);
-
 	if (HDS.hit_type == ALife::eHitTypeRadiation)
 		HDS.power *= m_fDrugRadProtectionCoeff;
 

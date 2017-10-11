@@ -1,5 +1,7 @@
 #pragma once
 
+class CScriptGameObject;
+
 struct SHit
 {
 	SHit										(float Power, Fvector &dir, CObject *who, u16 element, Fvector p_in_object_space, float impulse,  ALife::EHitType hit_type, float ap = 0.0f, bool AimBullet=false);
@@ -25,22 +27,27 @@ IC	ALife::EHitType		type					()		const	{VERIFY(is_valide());return hit_type;}
 	u16					PACKET_TYPE;
 	u16					DestID;
 	
-	float				power																																						;
-	Fvector				dir																																						;
-	CObject				*who																																					;
+	float				power;
+	Fvector				dir;
+	CObject				*who;
+	void set_hit_initiator(CScriptGameObject* script_obj);
+	CScriptGameObject* get_hit_initiator() const;
 	u16					whoID;
 	u16					weaponID;
-	u16					boneID																																					;
-	Fvector				p_in_bone_space																																			;
-	float				impulse																																					;
-	ALife::EHitType		hit_type																																				;
+	u16					boneID;
+	Fvector				p_in_bone_space;
+	float				impulse;
+	ALife::EHitType		hit_type;
 	float				ap;
 	bool				aim_bullet;
 	//---------------------------------------------------
 	//GE_HIT_STATISTIC
 	u32					BulletID;
 	u32					SenderID;
+
+	bool ignore_flag = false;
+
 #ifdef DEBUG
-	void				_dump				();
+	void				_dump();
 #endif
 };

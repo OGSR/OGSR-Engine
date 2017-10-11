@@ -606,8 +606,22 @@ public:
 			CScriptGameObject	*ObjectFromInvBox(u16 _i);
 			float				GetCamFOV();
 			void				SetCamFOV(float _fov);
+
 			void				SetMaxWeight(float _weight);
 			void				SetMaxWalkWeight(float _weight);
+			float				GetMaxWeight() const;
+			float				GetMaxWalkWeight() const;
+			float				GetInventoryWeight() const;
+
+			float GetShapeRadius() const;
+
+			u16 GetAmmoBoxCurr() const;
+			u16 GetAmmoBoxSize() const;
+			void SetAmmoBoxCurr(u16);
+			void SetAmmoBoxSize(u16);
+
+			const char* GetVisualName() const;
+
 			CScriptIniFile		*GetVisIni();
 			void				SetBoneVisible(LPCSTR _bone_name, BOOL _visible);
 			void				SetHudBoneVisible(LPCSTR _bone_name, BOOL _visible);
@@ -685,6 +699,7 @@ public:
 			_DECLARE_FUNCTION10(IsWeaponGL, bool);
 			_DECLARE_FUNCTION10(IsInventoryBox, bool);
 			_DECLARE_FUNCTION10(IsWeaponBinoculars, bool);
+			_DECLARE_FUNCTION10(IsKnife, bool);
 
 			float				GetActorJumpSpeed() const;
 			void				SetActorJumpSpeed(float _factor);

@@ -260,11 +260,16 @@ void CEntityAlive::HitImpulse	(float /**amount/**/, Fvector& /**vWorldDir/**/, F
 void CEntityAlive::Hit(SHit* pHDS)
 {
 	SHit HDS = *pHDS;
+
+	callback(GameObject::entity_alive_before_hit)(&HDS);
+	if (HDS.ignore_flag) //KRodin: добавил флаг, чтобы из скриптов можно было управлять игнорированием хита.
+		return;
+
 	//-------------------------------------------------------------------
 	if (HDS.hit_type == ALife::eHitTypeWound_2)
 		HDS.hit_type = ALife::eHitTypeWound;
 	//-------------------------------------------------------------------
-	CDamageManager::HitScale(HDS.boneID, conditions().hit_bone_scale(), conditions().wound_bone_scale(),pHDS->aim_bullet);
+	CDamageManager::HitScale(HDS.boneID, conditions().hit_bone_scale(), conditions().wound_bone_scale(),HDS.aim_bullet);
 	
 	//изменить состояние, перед тем как родительский класс обработает хит
 	CWound* pWound = conditions().ConditionHit(&HDS);

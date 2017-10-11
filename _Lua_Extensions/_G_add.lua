@@ -15,8 +15,7 @@ string.trim_l = function(s) return s:gsub("^%s+", '') end
 --Срезать пробелы справа
 string.trim_r = function(s) return s:gsub("%s*$", '') end
 --Срезать пробелы слева и справа
-string.trim   = function(s) return s:gsub('^%s*(.-)%s*$', '%1') end
---string.trim   = function(s) return s:match( "^%s*(.*%S)" ) end --Из НС2016. Возможно, он быстрее, но я его не тестировал.
+string.trim   = function(s) return s:match( "^%s*(.*%S)" ) or "" end
 ------------------------------------------------------------------------------------------------
 --Возвращает кол-во элементов в таблице. Для массивов надо использовать оператор #.
 table.size = function(t)

@@ -379,7 +379,7 @@
       <WarningLevel>Level4</WarningLevel>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
-      <DisableSpecificWarnings>4100;4456;4457;4458;4459;4091;4589;4995;</DisableSpecificWarnings>
+      <DisableSpecificWarnings>4100;4456;4457;4458;4459;4091;4589;4995;4503;</DisableSpecificWarnings>
       <AdditionalIncludeDirectories>.\;..\COMMON;..\COMMON_AI;..\COMMON_AI\PATH;..\COMMON_AI\GRAPH;..\COMMON_AI\ALGORITHMS;..\xrCore;..\xrNetServer;X:\3rd_party\Src\ode;X:\3rd_party\Src\loki;..\LuaJIT\src;..\Luabind;X:\3rd_party\Src\d3dx\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <MinimalRebuild>false</MinimalRebuild>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>

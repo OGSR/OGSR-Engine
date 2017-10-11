@@ -67,6 +67,7 @@ public:
 	}
 	virtual void			save					(NET_Packet &output_packet);
 	virtual void			load					(IReader &input_packet);
+	float	m_MaxWalkWeight;
 
 protected:
 	float m_fAlcohol;
@@ -89,7 +90,6 @@ protected:
 	float m_fAccelK;
 	float m_fSprintK;
 	
-	float	m_MaxWalkWeight;
 
 	mutable bool m_bLimping;
 	mutable bool m_bCantWalk;

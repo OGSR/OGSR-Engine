@@ -324,6 +324,7 @@ class_<CScriptGameObject> script_register_game_object2(class_<CScriptGameObject>
 		.def("is_weapon_gl", &CScriptGameObject::IsWeaponGL)
 		.def("is_inventory_box", &CScriptGameObject::IsInventoryBox)
 		.def("is_binoculars", &CScriptGameObject::IsWeaponBinoculars)
+		.def("is_knife", &CScriptGameObject::IsKnife)
 
 		.def("set_camera_direction", &CScriptGameObject::SetActorCamDir)
 		.def("update_condition", &CScriptGameObject::UpdateCondition)
@@ -334,8 +335,16 @@ class_<CScriptGameObject> script_register_game_object2(class_<CScriptGameObject>
 		.def("object_from_inv_box", &CScriptGameObject::ObjectFromInvBox)
 		.def("get_camera_fov", &CScriptGameObject::GetCamFOV)
 		.def("set_camera_fov", &CScriptGameObject::SetCamFOV)
+
 		.def("set_max_weight", &CScriptGameObject::SetMaxWeight)
 		.def("set_max_walk_weight", &CScriptGameObject::SetMaxWalkWeight)
+		.def("get_max_weight", &CScriptGameObject::GetMaxWeight)
+		.def("get_max_walk_weight", &CScriptGameObject::GetMaxWalkWeight)
+		.def("get_inventory_weight", &CScriptGameObject::GetInventoryWeight)
+
+		.def("get_shape_radius", &CScriptGameObject::GetShapeRadius)
+
+		.def("get_visual_name", &CScriptGameObject::GetVisualName)
 		.def("get_visual_ini", &CScriptGameObject::GetVisIni)
 
 		.def("set_bone_visible", &CScriptGameObject::SetBoneVisible)
@@ -356,6 +365,10 @@ class_<CScriptGameObject> script_register_game_object2(class_<CScriptGameObject>
 		.def("get_gl_mode", &CScriptGameObject::GetGLMode)
 
 		.def("get_current_ammo", &CScriptGameObject::GetCurrAmmo)
+		.def("set_ammo_box_curr", &CScriptGameObject::SetAmmoBoxCurr)
+		.def("get_ammo_box_size", &CScriptGameObject::GetAmmoBoxSize)
+		.def("set_ammo_box_size", &CScriptGameObject::SetAmmoBoxSize)
+
 		.def("set_hud_offset", &CScriptGameObject::SetHudOffset)
 		.def("set_hud_rotate", /*(void (CScriptGameObject::*)(Fvector2))(*/&CScriptGameObject::SetHudRotate)//)
 

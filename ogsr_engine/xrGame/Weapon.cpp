@@ -1191,6 +1191,8 @@ void CWeapon::UpdateAddonsVisibility()
 	u16  bone_id;
 	UpdateHUDAddonsVisibility								();	
 
+	callback(GameObject::eOnUpdateAddonsVisibiility)();
+
 	bone_id = pWeaponVisual->LL_BoneID					(wpn_scope);
 	if(ScopeAttachable())
 	{

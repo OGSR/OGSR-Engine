@@ -112,7 +112,8 @@ void CScriptGameObject::script_register(lua_State *L)
 				value("on_ruck",					int(GameObject::eOnItemToRuck)),
 				value("on_slot",					int(GameObject::eOnItemToSlot)),
 				value("on_before_use_item",			int(GameObject::eOnBeforeUseItem)),
-//				value("entity_alive_before_hit",	int(GameObject::eOnBeforeHitActor)),
+				value("entity_alive_before_hit",	int(GameObject::entity_alive_before_hit)),
+				value("update_addons_visibility",	int(GameObject::eOnUpdateAddonsVisibiility)),
 				value("update_hud_addons_visibility",	int(GameObject::eOnUpdateHUDAddonsVisibiility)),
 				value("on_addon_init",				int(GameObject::eOnAddonInit))
 //				value("on_hud_animation_end",		int(GameObject::eOnHudAnimationEnd))
