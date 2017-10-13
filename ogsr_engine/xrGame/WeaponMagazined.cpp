@@ -193,33 +193,20 @@ bool CWeaponMagazined::TryReload()
 {
 	if(m_pCurrentInventory) 
 	{
-		PIItem item = m_pCurrentInventory->GetAny(*m_ammoTypes[m_ammoType]);
-		if (!item)
-			return false;
+		m_pAmmo = smart_cast<CWeaponAmmo*>(m_pCurrentInventory->GetAny(*m_ammoTypes[m_ammoType]));
 
-		m_pAmmo = smart_cast<CWeaponAmmo*>(item);
-		if (!m_pAmmo)
-			return false;
-		
-		if(IsMisfire() && iAmmoElapsed)
+		if(m_pAmmo || unlimited_ammo() || (IsMisfire() && iAmmoElapsed))
 		{
 			m_bPending = true;
 			SwitchState(eReload); 
 			return true;
 		}
-
-		if(m_pAmmo || unlimited_ammo())  
-		{
-			m_bPending = true;
-			SwitchState(eReload); 
-			return true;
-		} 
 		else for(u32 i = 0; i < m_ammoTypes.size(); ++i) 
 		{
 			m_pAmmo = smart_cast<CWeaponAmmo*>(m_pCurrentInventory->GetAny( *m_ammoTypes[i] ));
 			if(m_pAmmo) 
 			{ 
-				m_ammoType = i; 
+				m_set_next_ammoType_on_reload = i; // https://github.com/revolucas/CoC-Xray/pull/5/commits/3c45cad1edb388664efbe3bb20a29f92e2d827ca
 				m_bPending = true;
 				SwitchState(eReload);
 				return true; 
