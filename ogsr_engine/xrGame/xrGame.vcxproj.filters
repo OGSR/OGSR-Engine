@@ -2275,6 +2275,9 @@
     <Filter Include="AI\AScript\ScriptClasses\ScriptRQ">
       <UniqueIdentifier>{585e5acb-0205-4f7a-9b8c-72506aa68ca9}</UniqueIdentifier>
     </Filter>
+    <Filter Include="AI\AScript\ScriptClasses\DerivedClientClasses">
+      <UniqueIdentifier>{34616865-8aed-4c78-892f-8a839a408906}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="mt_config.h">
@@ -6472,6 +6475,9 @@
       <Filter>AI\ALife\simulator_base\registries\spawn_registry\server_entity_wrapper</Filter>
     </ClInclude>
     <ClInclude Include="..\xrCore\FastDelegate.h" />
+    <ClInclude Include="derived_client_classes.h">
+      <Filter>AI\AScript\ScriptClasses\DerivedClientClasses</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="damage_manager.cpp">
@@ -9599,6 +9605,9 @@
     </ClCompile>
     <ClCompile Include="..\COMMON_AI\server_entity_wrapper.cpp">
       <Filter>AI\ALife\simulator_base\registries\spawn_registry\server_entity_wrapper</Filter>
+    </ClCompile>
+    <ClCompile Include="derived_client_classes.cpp">
+      <Filter>AI\AScript\ScriptClasses\DerivedClientClasses</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
