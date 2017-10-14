@@ -26,6 +26,7 @@
 #	include "script_properties_list_helper.h"
 #else
 #	include "base_client_classes.h"
+#   include "derived_client_classes.h"
 #	include "alife_simulator.h"
 #	include "script_hit.h"
 #	include "script_monster_hit_info.h"

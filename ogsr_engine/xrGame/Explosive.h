@@ -19,6 +19,7 @@ DEFINE_VECTOR(CPhysicsShellHolder*,BLASTED_OBJECTS_V,BLASTED_OBJECTS_I);
 class CExplosive : 
 	public IDamageSource
 {
+	friend class CWeaponScript;
 private:
 	collide::rq_results			rq_storage;
 

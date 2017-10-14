@@ -16,6 +16,7 @@ class CBinocularsVision;
 
 class CWeaponMagazined: public CWeapon
 {
+	friend class CWeaponScript;
 private:
 	typedef CWeapon inherited;
 protected:

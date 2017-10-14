@@ -42,6 +42,7 @@ class CInventoryItem :
 	, public pureRender
 #endif
 {
+	friend class CInventoryScript;
 private:
 	typedef CAttachableItem inherited;
 protected:
@@ -115,10 +116,15 @@ public:
 
 			BOOL				IsQuestItem			()	const	{return m_flags.test(FIsQuestItem);}			
 			u32					Cost				() const	{ return m_cost; }
+	virtual	void				SetCost				(u32 cost) 	{ m_cost = cost; }
 	virtual float				Weight				() 			{ return m_weight;}		
 
 public:
 	CInventory*					m_pCurrentInventory;
+
+	u32							m_cost;
+	float						m_weight;
+	shared_str					m_Description;
 
 	shared_str					m_name;
 	shared_str					m_nameShort;
@@ -163,10 +169,7 @@ public:
 protected:
 	
 	u8							m_slot;
-	u32							m_cost;
-	float						m_weight;
 	float						m_fCondition;
-	shared_str					m_Description;
 
 	ALife::_TIME_ID				m_dwItemRemoveTime;
 	ALife::_TIME_ID				m_dwItemIndependencyTime;

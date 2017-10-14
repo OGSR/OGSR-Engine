@@ -127,6 +127,7 @@ struct CSightParams {
 
 class CScriptGameObject {
 	mutable CGameObject		*m_game_object;
+	mutable lua_State		*m_lua_state;
 public:
 
 							CScriptGameObject		(CGameObject *tpGameObject);
@@ -151,6 +152,8 @@ public:
 			void				play_cycle			(LPCSTR anim, bool mix_in);
 			void				play_cycle			(LPCSTR anim);
 			Fvector				Center				();
+			void				set_lua_state 	    (lua_State *L) { m_lua_state = L; }
+			lua_State*			lua_state ()		{ return m_lua_state;  }
 	_DECLARE_FUNCTION10	(Position	,	Fvector		);
 	_DECLARE_FUNCTION10	(Direction	,	Fvector		);
 	_DECLARE_FUNCTION10	(Mass		,	float		);

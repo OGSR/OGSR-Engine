@@ -5,6 +5,7 @@
 struct SBoneProtections;
 
 class CCustomOutfit: public CInventoryItemObject {
+	friend class COutfitScript;
 private:
     typedef	CInventoryItemObject inherited;
 public:

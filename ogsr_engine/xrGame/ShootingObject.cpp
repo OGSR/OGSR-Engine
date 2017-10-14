@@ -97,6 +97,11 @@ void CShootingObject::LoadFireParams	(LPCSTR section, LPCSTR prefix)
 	//базовая дисперсия оружия
 	fireDispersionBase	= pSettings->r_float	(section,"fire_dispersion_base"	);
 	fireDispersionBase	= deg2rad				(fireDispersionBase);
+	constDeviation.pitch = READ_IF_EXISTS (pSettings, r_float, section, "const_deviation_pitch", 0);
+	constDeviation.yaw   = READ_IF_EXISTS (pSettings, r_float, section, "const_deviation_yaw", 0);
+
+	LPCSTR	hit_type	= READ_IF_EXISTS (pSettings, r_string, section, "hit_type", "fire_wound");
+	m_eHitType			= ALife::g_tfString2HitType(hit_type);  // поддержка произвольного хита оружия
 	//сила выстрела и его мощьность
 	s_sHitPower			= pSettings->r_string_wb(section,strconcat(sizeof(full_name),full_name, prefix, "hit_power"));//читаем строку силы хита пули оружия
 	fvHitPower[egdMaster]	= (float)atof(_GetItem(*s_sHitPower,0,buffer));//первый параметр - это хит для уровня игры мастер
@@ -402,6 +407,15 @@ void CShootingObject::FireBullet(const Fvector& pos,
 {
 	Fvector dir;
 	random_dir(dir,shot_dir,fire_disp);
+
+	if (constDeviation.pitch != 0 || constDeviation.yaw != 0) // WARN: при больших значениях девиации стрелок может отсрелить себе голову!
+	{
+		float dir_yaw, dir_pitch;
+		dir.getHP(dir_yaw, dir_pitch);
+		dir_pitch += constDeviation.pitch;		
+		dir_yaw += constDeviation.yaw;
+		dir.setHP(dir_yaw, dir_pitch);
+	}
 
 	m_vCurrentShootDir = dir;
 	m_vCurrentShootPos = pos;
