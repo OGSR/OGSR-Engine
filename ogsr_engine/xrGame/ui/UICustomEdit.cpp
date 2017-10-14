@@ -53,18 +53,6 @@ static xr_map<u32, SLetter> gs_DIK2CHR;
 CUICustomEdit::CUICustomEdit()
 {
 	m_max_symb_count		= u32(-1);
-/*	char l_c;
-	for (l_c = 'a'; l_c <= 'z'; ++l_c)
-	{
-		gs_DIK2CHR[DILetters[l_c - 'a']] = l_c;
-		gs_DIK2CHR_RUS[DILetters[l_c - 'a']] = RusLetters[l_c - 'a'];
-	}
-	for (l_c = '0'; l_c <= '9'; ++l_c)
-	{
-		gs_DIK2CHR[DILetters['z' - 'a' + l_c + 1 - '0']] = l_c;
-		gs_DIK2CHR_RUS[DILetters['z' - 'a' + l_c + 1 - '0']] = l_c;
-	}
-	*/
 
 	shared_str lang = CStringTable().GetLanguage();
 
@@ -74,6 +62,8 @@ CUICustomEdit::CUICustomEdit()
 	}
 
 	m_bShift = false;
+	m_bAlt = false;
+
 	m_bInputFocus = false;
 
 	m_iKeyPressAndHold = 0;
@@ -91,10 +81,6 @@ CUICustomEdit::CUICustomEdit()
 
 	m_textColor[0]=color_argb(255,235,219,185);
 	m_textColor[1]=color_argb(255,100,100,100);
-}
-
-CUICustomEdit::~CUICustomEdit()
-{
 }
 
 void CUICustomEdit::SetTextColor(u32 color){
@@ -124,14 +110,6 @@ void CUICustomEdit::SetPasswordMode(bool mode){
 
 void CUICustomEdit::OnFocusLost(){
 	CUIWindow::OnFocusLost();
-/*	//only for CDKey control
-	if(m_bInputFocus)
-	{
-		m_bInputFocus = false;
-		m_iKeyPressAndHold = 0;
-		GetMessageTarget()->SendMessage(this,EDIT_TEXT_COMMIT,NULL);
-	}
-*/
 }
 
 void CUICustomEdit::SendMessage(CUIWindow* pWnd, s16 msg, void* pData)
@@ -198,7 +176,6 @@ bool CUICustomEdit::OnKeyboard(int dik, EUIMessages keyboard_action)
 
 bool CUICustomEdit::KeyPressed(int dik)
 {
-	xr_map<u32, SLetter>::iterator it;
 	char out_me = 0;
 	bool bChanged = false;
 	switch(dik)
@@ -214,6 +191,8 @@ bool CUICustomEdit::KeyPressed(int dik)
 	case DIK_LSHIFT:
 	case DIK_RSHIFT:
 		m_bShift = true;
+		if (m_bAlt)
+			g_alternate_lang = !g_alternate_lang; //Переключили язык
 		break;
 	case DIK_ESCAPE:
 		if (xr_strlen(GetText()) != 0)
@@ -246,22 +225,6 @@ bool CUICustomEdit::KeyPressed(int dik)
 		break;
 	case DIK_SPACE:
 		out_me = ' ';					break;
-/*	case DIK_LBRACKET:
-		out_me = m_bShift ? '{' : '[';	break;
-	case DIK_RBRACKET:
-		out_me = m_bShift ? '}' : ']';	break;
-	case DIK_SEMICOLON:
-		out_me = m_bShift ? ':' : ';';	break;
-	case DIK_APOSTROPHE:
-		out_me = m_bShift ? '"' : '\'';	break;
-	case DIK_BACKSLASH:
-		out_me = m_bShift ? '|' : '\\';	break;
-	case DIK_SLASH:
-		out_me = m_bShift ? '?' : '/';	break;
-	case DIK_COMMA:
-		out_me = m_bShift ? '<' : ',';	break;
-	case DIK_PERIOD:
-		out_me = m_bShift ? '>' : '.';	break;*/
 	case DIK_MINUS:
 		out_me = m_bShift ? '_' : '-';	break;
 	case DIK_EQUALS:
@@ -280,42 +243,27 @@ bool CUICustomEdit::KeyPressed(int dik)
 	case DIK_NUMPAD8: out_me = '8'; break;
 	case DIK_NUMPAD9: out_me = '9'; break;
 	case DIK_NUMPAD0: out_me = '0'; break;
+	case DIK_LALT:
+	case DIK_RALT:
+		m_bAlt = true;
+		break;
 	default:
-		it = gs_DIK2CHR.find(dik);
-
-		if (m_bNumbersOnly)
-		{
-			AddChar((*it).second.GetChar(g_alternate_lang, false));
-		}
-
-		//нажата клавиша с буквой 
-		if (gs_DIK2CHR.end() != it){
-			AddLetter((*it).second);
-			bChanged = true;
-		}
-
+		auto it = gs_DIK2CHR.find(dik);
+		out_me = (*it).second.GetChar(g_alternate_lang, m_bShift);
 		break;
 	}
 
-	if (m_bNumbersOnly)
-	{
-		if (strstr(m_lines.GetText(), "."))
-			return true;
-		if (('.' == out_me) && m_bFloatNumbers){
-			AddChar(out_me);
-			bChanged = true;
-		}
-	}
-	else
-		if(out_me){
+	if (out_me)
+		if (!m_bNumbersOnly || (out_me >= '0' && out_me <= '9') || (m_bFloatNumbers && out_me == '.' && !strstr(m_lines.GetText(), ".")))
+		{
 			AddChar(out_me);
 			bChanged = true;
 		}
 
-		if(bChanged)
-			GetMessageTarget()->SendMessage(this,EDIT_TEXT_CHANGED,NULL);
+	if(bChanged)
+		GetMessageTarget()->SendMessage(this,EDIT_TEXT_CHANGED,NULL);
 
-		return true;
+	return true;
 }
 
 bool CUICustomEdit::KeyReleased(int dik)
@@ -325,7 +273,11 @@ bool CUICustomEdit::KeyReleased(int dik)
 	case DIK_LSHIFT:
 	case DIK_RSHIFT:
 		m_bShift = false;
-		return true;
+		break;
+	case DIK_LALT:
+	case DIK_RALT:
+		m_bAlt = false;
+		break;
 	}
 
 	return true;
@@ -349,37 +301,6 @@ void CUICustomEdit::AddChar(CHAR c)
 		if (m_lines.GetVisibleHeight() > GetHeight())
 			m_lines.DelLeftChar();
 	}
-}
-void CUICustomEdit::AddLetterNumbers(CHAR c)//(char c)
-{
-	if ((c >= '0' && c <= '9'))
-		AddChar(c);
-
-	return;
-}
-void CUICustomEdit::AddLetter(SLetter l)//(char c)
-{
-/*
-	if(m_bShift)
-	{
-		switch(c) {
-		case '1': c='!';	break;
-		case '2': c='@';	break;
-		case '3': c='#';	break;
-		case '4': c='$';	break;
-		case '5': c='%';	break;
-		case '6': c='^';	break;
-		case '7': c='&';	break;
-		case '8': c='*';	break;
-		case '9': c='(';	break;
-		case '0': c=')';	break;
-		default:
-			c = c-'a';
-			c = c+'A';
-		}
-	}*/
-
-	AddChar(l.GetChar(g_alternate_lang, m_bShift));
 }
 
 //время для обеспечивания печатания
@@ -455,16 +376,7 @@ void  CUICustomEdit::Draw()
 		m_lines.m_pFont->Out				(outXY.x, outXY.y, "_");
 	}
 }
-/*
-void CUICustomEdit::SetText(LPCSTR str)
-{
-	CUILinesOwner::SetText(str);
-}
 
-const char* CUICustomEdit::GetText(){
-	return CUILinesOwner::GetText();
-}
-*/
 void CUICustomEdit::SetText(LPCTSTR str)
 {
 	CUILinesOwner::SetText(str);

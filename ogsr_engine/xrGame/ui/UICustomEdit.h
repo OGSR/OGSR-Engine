@@ -13,13 +13,13 @@ struct Lt
 {
 	CHAR plain;
 	CHAR capital;
-	Lt() {};
+	Lt() = default;
 	Lt(CHAR _capital, CHAR _plain) :plain(_plain), capital(_capital) {};
 };
 struct SLetter
 {
 	Lt US, NOT_US;
-	SLetter() {};
+	SLetter() = default;
 	SLetter(Lt _US, Lt _NOT_US) :US(_US), NOT_US(_NOT_US) {};
 	CHAR GetChar(bool _alt_lang, bool _shift)
 	{
@@ -34,7 +34,7 @@ class CUICustomEdit : public CUIWindow, public CUILinesOwner {
 	u32				m_max_symb_count;
 public:
 	CUICustomEdit();
-	virtual ~CUICustomEdit();
+	virtual ~CUICustomEdit() = default;
 	// CUILinesOwner
 	virtual void			SetFont(CGameFont* pFont)					{CUILinesOwner::SetFont(pFont);}
 	virtual CGameFont*		GetFont()									{return CUILinesOwner::GetFont();}
@@ -69,15 +69,11 @@ protected:
 	bool KeyPressed(int dik);
 	bool KeyReleased(int dik);
 
-/*	void AddLetter(char c);
-	virtual void AddChar(char c);*/
-
-	void AddLetter(SLetter _l);
-	void AddLetterNumbers(CHAR c);
 	virtual void AddChar(CHAR c);
 
 	bool m_bInputFocus;
 	bool m_bShift;
+	bool m_bAlt;
 
 	bool m_bNumbersOnly;
 	bool m_bFloatNumbers;
