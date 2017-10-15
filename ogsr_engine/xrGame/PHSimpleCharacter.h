@@ -17,6 +17,7 @@ class CPHSimpleCharacter :
 	public CPHCharacter,
 	ICollisionDamageInfo
 {
+	friend class CScriptActor;
 private:
 	collide::rq_results		RQR;
 
@@ -126,6 +127,7 @@ public:
 	virtual		dSpaceID	dSpace								()									{return m_space;}
 	virtual		dGeomID		dSpacedGeom							()									{return (dGeomID)m_space;}
 	virtual		void		get_spatial_params					()									;
+	IC			dReal		get_jump_up_velocity				()									{ return jump_up_velocity; }
 	/////////////////CPHCharacter////////////////////////////////////////////
 public:
 	//update

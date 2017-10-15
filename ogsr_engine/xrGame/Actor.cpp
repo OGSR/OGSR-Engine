@@ -1736,3 +1736,21 @@ CCustomOutfit* CActor::GetOutfit() const
 	PIItem _of	= inventory().m_slots[OUTFIT_SLOT].m_pIItem;
 	return _of?smart_cast<CCustomOutfit*>(_of):NULL;
 }
+
+
+void CActor::block_action(EGameActions cmd)
+{
+	if (m_blocked_actions.find(cmd) == m_blocked_actions.end() )
+	{
+		m_blocked_actions[cmd] = true;
+	}
+}
+
+void CActor::unblock_action(EGameActions cmd)
+{
+	auto iter = m_blocked_actions.find(cmd);
+	if (iter != m_blocked_actions.end() )
+	{
+		m_blocked_actions.erase(iter);
+	}
+}

@@ -2278,6 +2278,9 @@
     <Filter Include="AI\AScript\ScriptClasses\DerivedClientClasses">
       <UniqueIdentifier>{34616865-8aed-4c78-892f-8a839a408906}</UniqueIdentifier>
     </Filter>
+    <Filter Include="AI\AScript\ScriptClasses\ScriptActor">
+      <UniqueIdentifier>{34c55a4d-379c-4e49-991d-baa1fc0fb124}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="mt_config.h">
@@ -6478,6 +6481,9 @@
     <ClInclude Include="derived_client_classes.h">
       <Filter>AI\AScript\ScriptClasses\DerivedClientClasses</Filter>
     </ClInclude>
+    <ClInclude Include="script_actor.h">
+      <Filter>AI\AScript\ScriptClasses\ScriptActor</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="damage_manager.cpp">
@@ -9608,6 +9614,9 @@
     </ClCompile>
     <ClCompile Include="derived_client_classes.cpp">
       <Filter>AI\AScript\ScriptClasses\DerivedClientClasses</Filter>
+    </ClCompile>
+    <ClCompile Include="script_actor.cpp">
+      <Filter>AI\AScript\ScriptClasses\ScriptActor</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

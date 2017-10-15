@@ -5,6 +5,7 @@
 #pragma once
 
 #include "alife_space.h"
+#include "script_export_space.h"
 #include "hit_immunity_space.h"
 
 class CHitImmunity
@@ -22,4 +23,9 @@ protected:
 	//при соответствующем типе воздействия
 	//(для защитных костюмов и специфичных животных)
 	HitImmunity::HitTypeSVec m_HitTypeK;
+public:
+	HitImmunity::HitTypeSVec &immunities() { return m_HitTypeK; }
+	static void	script_register (lua_State *L);
+
+	virtual	CHitImmunity*	cast_hit_immunities() { return this; }
 };

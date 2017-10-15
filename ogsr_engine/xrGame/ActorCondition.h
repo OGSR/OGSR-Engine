@@ -15,6 +15,7 @@ class CActor;
 //class CUIActorSleepVideoPlayer;
 
 class CActorCondition: public CEntityCondition {
+	friend class CScriptActor;
 private:
 	typedef CEntityCondition inherited;
 	enum {	eCriticalPowerReached			=(1<<0),

@@ -12,6 +12,8 @@
 #include "script_ini_file.h"
 #include "sight_manager_space.h"
 #include "searchlight.h"
+#include "hit_immunity.h"
+#include "EntityCondition.h"
 
 using namespace luabind;
 
@@ -125,6 +127,9 @@ void CScriptGameObject::script_register(lua_State *L)
 		def("sell_condition",				(void (*)(float,float))(&::sell_condition)),
 		def("show_condition",				&::show_condition)
 	];
+
+		CHitImmunity::script_register(L);
+		CEntityCondition::script_register(L);
 }
 
 #include "..\xr_3da\CameraBase.h"
