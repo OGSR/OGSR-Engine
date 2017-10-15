@@ -112,7 +112,21 @@ public:
 	virtual void	set_color				(float r, float g, float b)		{ color.set(r,g,b,1);		}
 	virtual void	set_texture				(LPCSTR name);
 	virtual void	set_lsf_params(float _speed, float _amount, float _jit) { LSF.speed = _speed; LSF.amount = _amount; LSF.smap_jitter = _jit; }
+	//
+	// alpet: для сохраняемости конфигурации источников света
+	virtual float							get_cone() { return cone; }
+	virtual Fcolor							get_color() { return color; }
+	virtual float							get_range() { return range; }
+	virtual float							get_virtual_size()
+	{
+#if RENDER==R_R2
+		return virtual_size;
+#else
+		return 0.0;
+#endif
+	}
 
+	//
 	virtual void	set_flare(bool b)
 	{
 		flags.bFlare = b;
