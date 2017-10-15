@@ -97,7 +97,7 @@ void CDestroyablePhysicsObject::Destroy()
 {
 	VERIFY(!ph_world->Processing());
 	const CGameObject *who_object = smart_cast<const CGameObject*>(FatalHit().initiator());
-	callback(GameObject::eDeath)(lua_game_object(),who_object  ? who_object : 0);
+	callback(GameObject::eDeath)(lua_game_object(),who_object  ? who_object->lua_game_object() : 0); // https://github.com/OpenXRay/xray-16/commit/32005e8e253ff084469ca19e405de2b2a35c4c90
 	CPHDestroyable::Destroy(ID(),"physic_destroyable_object");
 	if(m_destroy_sound._handle())
 	{

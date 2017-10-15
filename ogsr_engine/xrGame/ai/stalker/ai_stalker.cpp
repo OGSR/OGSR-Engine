@@ -781,7 +781,7 @@ void CAI_Stalker::shedule_Update		( u32 DT )
 	}
 
 	START_PROFILE("stalker/schedule_update/inherited")
-	inherited::inherited::shedule_Update(DT);
+	CEntityAlive::shedule_Update(DT); // https://github.com/OpenXRay/xray-16/commit/30add3fdf05472faaa954f1c18783783fb5dc5bb
 	STOP_PROFILE
 	
 	if (Remote())		{

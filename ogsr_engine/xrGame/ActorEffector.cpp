@@ -169,7 +169,7 @@ BOOL CAnimatorCamEffector::Process (Fvector &p, Fvector &d, Fvector &n, float& f
 
 BOOL CAnimatorCamLerpEffector::Process(Fvector &p, Fvector &d, Fvector &n, float& fFov, float& fFar, float& fAspect)
 {
-	if(!inherited::inherited::Process(p,d,n,fFov,fFar,fAspect))	return FALSE;
+	if(!CEffectorCam::Process(p,d,n,fFov,fFar,fAspect))	return FALSE; // https://github.com/OpenXRay/xray-16/commit/30add3fdf05472faaa954f1c18783783fb5dc5bb
 
 	const Fmatrix& m			= m_objectAnimator->XFORM();
 	m_objectAnimator->Update	(Device.fTimeDelta);

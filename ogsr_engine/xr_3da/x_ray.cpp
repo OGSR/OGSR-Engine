@@ -51,7 +51,6 @@ struct _SoundProcessor	: public pureFrame
 ENGINE_API	CApplication*	pApp			= NULL;
 static		HWND			logoWindow		= NULL;
 
-			int				doLauncher		();
 			void			doBenchmark		(LPCSTR name);
 ENGINE_API	bool			g_bBenchmark	= false;
 string512	g_sBenchmarkName;
@@ -247,76 +246,10 @@ static BOOL CALLBACK logDlgProc( HWND hw, UINT msg, WPARAM wp, LPARAM lp )
 	}
 	return TRUE;
 }
-/*
-void	test_rtc	()
-{
-	CStatTimer		tMc,tM,tC,tD;
-	u32				bytes=0;
-	tMc.FrameStart	();
-	tM.FrameStart	();
-	tC.FrameStart	();
-	tD.FrameStart	();
-	::Random.seed	(0x12071980);
-	for		(u32 test=0; test<10000; test++)
-	{
-		u32			in_size			= ::Random.randI(1024,256*1024);
-		u32			out_size_max	= rtc_csize		(in_size);
-		u8*			p_in			= xr_alloc<u8>	(in_size);
-		u8*			p_in_tst		= xr_alloc<u8>	(in_size);
-		u8*			p_out			= xr_alloc<u8>	(out_size_max);
-		for (u32 git=0; git<in_size; git++)			p_in[git] = (u8)::Random.randI	(8);	// garbage
-		bytes		+= in_size;
 
-		tMc.Begin	();
-		memcpy		(p_in_tst,p_in,in_size);
-		tMc.End		();
-
-		tM.Begin	();
-		CopyMemory(p_in_tst,p_in,in_size);
-		tM.End		();
-
-		tC.Begin	();
-		u32			out_size		= rtc_compress	(p_out,out_size_max,p_in,in_size);
-		tC.End		();
-
-		tD.Begin	();
-		u32			in_size_tst		= rtc_decompress(p_in_tst,in_size,p_out,out_size);
-		tD.End		();
-
-		// sanity check
-		R_ASSERT	(in_size == in_size_tst);
-		for (u32 tit=0; tit<in_size; tit++)			R_ASSERT(p_in[tit] == p_in_tst[tit]);	// garbage
-
-		xr_free		(p_out);
-		xr_free		(p_in_tst);
-		xr_free		(p_in);
-	}
-	tMc.FrameEnd	();	float rMc		= 1000.f*(float(bytes)/tMc.result)/(1024.f*1024.f);
-	tM.FrameEnd		(); float rM		= 1000.f*(float(bytes)/tM.result)/(1024.f*1024.f);
-	tC.FrameEnd		(); float rC		= 1000.f*(float(bytes)/tC.result)/(1024.f*1024.f);
-	tD.FrameEnd		(); float rD		= 1000.f*(float(bytes)/tD.result)/(1024.f*1024.f);
-	Msg				("* memcpy:        %5.2f M/s (%3.1f%%)",rMc,100.f*rMc/rMc);
-	Msg				("* mm-memcpy:     %5.2f M/s (%3.1f%%)",rM,100.f*rM/rMc);
-	Msg				("* compression:   %5.2f M/s (%3.1f%%)",rC,100.f*rC/rMc);
-	Msg				("* decompression: %5.2f M/s (%3.1f%%)",rD,100.f*rD/rMc);
-}
-*/
-extern void	testbed	(void);
-
-// video
-/*
-static	HINSTANCE	g_hInstance		;
-static	HINSTANCE	g_hPrevInstance	;
-static	int			g_nCmdShow		;
-void	__cdecl		intro_dshow_x	(void*)
-{
-	IntroDSHOW_wnd		(g_hInstance,g_hPrevInstance,"GameData\\Stalker_Intro.avi",g_nCmdShow);
-	g_bIntroFinished	= TRUE	;
-}
-*/
-#define dwStickyKeysStructSize sizeof( STICKYKEYS )
-#define dwFilterKeysStructSize sizeof( FILTERKEYS )
-#define dwToggleKeysStructSize sizeof( TOGGLEKEYS )
+static constexpr auto dwStickyKeysStructSize = sizeof(STICKYKEYS);
+static constexpr auto dwFilterKeysStructSize = sizeof(FILTERKEYS);
+static constexpr auto dwToggleKeysStructSize = sizeof(TOGGLEKEYS);
 
 struct damn_keys_filter {
 	BOOL bScreenSaverState;
@@ -411,56 +344,6 @@ struct damn_keys_filter {
 	}
 };
 
-#undef dwStickyKeysStructSize
-#undef dwFilterKeysStructSize
-#undef dwToggleKeysStructSize
-
-// Приблудина для SecuROM-а
-#include "securom_api.h"
-
-// Фунция для тупых требований THQ и тупых американских пользователей
-BOOL IsOutOfVirtualMemory()
-{
-#define VIRT_ERROR_SIZE 256
-#define VIRT_MESSAGE_SIZE 512
-
-	SECUROM_MARKER_HIGH_SECURITY_ON(1)
-
-	MEMORYSTATUSEX statex;
-	DWORD dwPageFileInMB = 0;
-	DWORD dwPhysMemInMB = 0;
-	HINSTANCE hApp = 0;
-	char	pszError[ VIRT_ERROR_SIZE ];
-	char	pszMessage[ VIRT_MESSAGE_SIZE ];
-
-	ZeroMemory( &statex , sizeof( MEMORYSTATUSEX ) );
-	statex.dwLength = sizeof( MEMORYSTATUSEX );
-	
-	if ( ! GlobalMemoryStatusEx( &statex ) )
-		return 0;
-
-	dwPageFileInMB = ( DWORD ) ( statex.ullTotalPageFile / ( 1024 * 1024 ) ) ;
-	dwPhysMemInMB = ( DWORD ) ( statex.ullTotalPhys / ( 1024 * 1024 ) ) ;
-
-	// Довольно отфонарное условие
-	if ( ( dwPhysMemInMB > 500 ) && ( ( dwPageFileInMB + dwPhysMemInMB ) > 2500  ) )
-		return 0;
-
-	hApp = GetModuleHandle( NULL );
-
-	if ( ! LoadString( hApp , RC_VIRT_MEM_ERROR , pszError , VIRT_ERROR_SIZE ) )
-		return 0;
- 
-	if ( ! LoadString( hApp , RC_VIRT_MEM_TEXT , pszMessage , VIRT_MESSAGE_SIZE ) )
-		return 0;
-
-	MessageBox( NULL , pszMessage , pszError , MB_OK | MB_ICONHAND );
-
-	SECUROM_MARKER_HIGH_SECURITY_OFF(1)
-
-	return 1;
-}
-
 #include "xr_ioc_cmd.h"
 
 typedef void DUMMY_STUFF (const void*,const u32&,void*);
@@ -480,12 +363,6 @@ int APIENTRY WinMain_impl(HINSTANCE hInstance,
 {
 //	foo();
 #ifndef DEDICATED_SERVER
-
-	// Check for virtual memory
-
-	if ( ( strstr( lpCmdLine , "--skipmemcheck" ) == NULL ) && IsOutOfVirtualMemory() )
-		return 0;
-
 	// Check for another instance
 #ifdef NO_MULTI_INSTANCES
 	#define STALKER_PRESENCE_MUTEX "STALKER-SoC"
@@ -564,14 +441,6 @@ int APIENTRY WinMain_impl(HINSTANCE hInstance,
 			doBenchmark				(b_name);
 			return 0;
 		}
-
-		if (strstr(lpCmdLine,"-launcher")) 
-		{
-			int l_res = doLauncher();
-			if (l_res != 0)
-				return 0;
-		};
-		
 
 		if(strstr(Core.Params,"-r2a"))	
 			Console->Execute			("renderer renderer_r2a");
@@ -945,7 +814,6 @@ void CApplication::Level_Append		(LPCSTR folder)
 
 void CApplication::Level_Scan()
 {
-#pragma todo("container is created in stack!")
 	xr_vector<char*>*		folder			= FS.file_list_open		("$game_levels$",FS_ListFolders|FS_RootOnly);
 	R_ASSERT				(folder&&folder->size());
 	for (u32 i=0; i<folder->size(); i++)	Level_Append((*folder)[i]);
@@ -993,59 +861,6 @@ int CApplication::Level_ID(LPCSTR name)
 	return -1;
 }
 
-
-//launcher stuff----------------------------
-extern "C"{
-	typedef int	 __cdecl LauncherFunc	(int);
-}
-HMODULE			hLauncher		= NULL;
-LauncherFunc*	pLauncher		= NULL;
-
-void InitLauncher(){
-	if(hLauncher)
-		return;
-	hLauncher	= LoadLibrary	("xrLauncher.dll");
-	if (0==hLauncher)	R_CHK	(GetLastError());
-	R_ASSERT2		(hLauncher,"xrLauncher DLL raised exception during loading or there is no xrLauncher.dll at all");
-
-	pLauncher = (LauncherFunc*)GetProcAddress(hLauncher,"RunXRLauncher");
-	R_ASSERT2		(pLauncher,"Cannot obtain RunXRLauncher function from xrLauncher.dll");
-};
-
-void FreeLauncher(){
-	if (hLauncher)	{ 
-		FreeLibrary(hLauncher); 
-		hLauncher = NULL; pLauncher = NULL; };
-}
-
-int doLauncher()
-{
-/*
-	execUserScript();
-	InitLauncher();
-	int res = pLauncher(0);
-	FreeLauncher();
-	if(res == 1) // do benchmark
-		g_bBenchmark = true;
-
-	if(g_bBenchmark){ //perform benchmark cycle
-		doBenchmark();
-	
-		// InitLauncher	();
-		// pLauncher	(2);	//show results
-		// FreeLauncher	();
-
-		Core._destroy			();
-		return					(1);
-
-	};
-	if(res==8){//Quit
-		Core._destroy			();
-		return					(1);
-	}
-*/
-	return 0;
-}
 
 void doBenchmark(LPCSTR name)
 {
