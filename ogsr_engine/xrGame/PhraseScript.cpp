@@ -122,7 +122,7 @@ bool CPhraseScript::Precondition(const CGameObject* pSpeakerGO, LPCSTR dialog_id
 		THROW(*Preconditions()[i]);
 		bool functor_exists = ai().script_engine().functor(*Preconditions()[i], lua_function);
 #ifdef CRASH_ON_PRECONDITION_NOT_FOUND
-		THROW3(functor_exists, "Cannot find precondition [%s]", *Preconditions()[i]);
+		R_ASSERT3(functor_exists, "Cannot find precondition: ", *Preconditions()[i]);
 		predicate_result = lua_function(pSpeakerGO->lua_game_object());
 #else
 		if (functor_exists)
