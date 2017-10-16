@@ -6484,6 +6484,7 @@
     <ClInclude Include="script_actor.h">
       <Filter>AI\AScript\ScriptClasses\ScriptActor</Filter>
     </ClInclude>
+    <ClInclude Include="..\build_config_defines.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="damage_manager.cpp">
