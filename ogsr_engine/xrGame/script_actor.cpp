@@ -189,7 +189,19 @@ void CScriptActor::script_register(lua_State *L)
 			.def("release_action",						&CActor::IR_OnKeyboardRelease)
 			.def("is_zoom_aiming_mode",					&CActor::IsZoomAimingMode)
 			// Real Wolf. End. 14.10.2014.
+
 			.def("get_body_state",						&CActor::get_state)
+			.def("is_actor_normal",						&CActor::is_actor_normal)
+			.def("is_actor_crouch",						&CActor::is_actor_crouch)
+			.def("is_actor_creep",						&CActor::is_actor_creep)
+			.def("is_actor_climb",						&CActor::is_actor_climb)
+			.def("is_actor_walking",					&CActor::is_actor_walking)
+			.def("is_actor_running",					&CActor::is_actor_running)
+			.def("is_actor_sprinting",					&CActor::is_actor_sprinting)
+			.def("is_actor_crouching",					&CActor::is_actor_crouching)
+			.def("is_actor_creeping",					&CActor::is_actor_creeping)
+			.def("is_actor_climbing",					&CActor::is_actor_climbing)
+			.def("is_actor_moving",						&CActor::is_actor_climbing)
 			,
 			class_<CActorObject, bases<CActor, CEntityAlive>>("CActor")	// хак с наследованием нужен для переопределения свойств. Luabind не поддерживает property getters override			
 			

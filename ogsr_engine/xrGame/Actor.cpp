@@ -1749,8 +1749,78 @@ void CActor::block_action(EGameActions cmd)
 void CActor::unblock_action(EGameActions cmd)
 {
 	auto iter = m_blocked_actions.find(cmd);
-	if (iter != m_blocked_actions.end() )
+	if (iter != m_blocked_actions.end())
 	{
 		m_blocked_actions.erase(iter);
 	}
+}
+
+bool CActor::is_actor_normal() {
+	return mstate_real & (mcAnyAction | mcLookout | mcCrouch | mcClimb | mcSprint) ? false : true;
+}
+
+bool CActor::is_actor_crouch() {
+	return mstate_real & (mcAnyAction | mcLookout | mcAccel | mcClimb | mcSprint)
+		? false
+		: mstate_real & mcCrouch ? true : false;
+}
+
+bool CActor::is_actor_creep() {
+	return mstate_real & (mcAnyAction | mcLookout | mcClimb | mcSprint)
+		? false
+		: mstate_real & (mcCrouch | mcAccel) ? true : false;
+}
+
+bool CActor::is_actor_climb() {
+	return (mstate_real & (mcAnyAction | mcLookout | mcCrouch | mcSprint)) ? false : true;
+}
+
+bool CActor::is_actor_walking() {
+	bool run = false;
+	if (mstate_real&mcAccel)
+		run = psActorFlags.test(AF_ALWAYSRUN) ? false : true;
+	else
+		run = psActorFlags.test(AF_ALWAYSRUN) ? true : false;
+	return ((mstate_real & (mcJump | mcFall | mcLanding | mcLanding2 | mcLookout | mcCrouch | mcClimb | mcSprint)) || run)
+		? false
+		: (mstate_real & mcAnyMove) ? true : false;
+}
+
+bool CActor::is_actor_running() {
+	bool run = false;
+	if (mstate_real&mcAccel)
+		run = psActorFlags.test(AF_ALWAYSRUN) ? false : true;
+	else
+		run = psActorFlags.test(AF_ALWAYSRUN) ? true : false;
+	return (mstate_real & (mcJump | mcFall | mcLanding | mcLanding2 | mcLookout | mcCrouch | mcClimb | mcSprint))
+		? false
+		: ((mstate_real & mcAnyMove) && run ) ? true : false;
+}
+
+bool CActor::is_actor_sprinting() {
+	return (mstate_real & (mcJump | mcFall | mcLanding | mcLanding2 | mcLookout | mcCrouch | mcAccel | mcClimb | mcLStrafe | mcRStrafe))
+		? false
+		: (mstate_real & (mcFwd|mcSprint) ? true : false);
+}
+
+bool CActor::is_actor_crouching() {
+	return (mstate_real & (mcJump | mcFall | mcLanding | mcLanding2 | mcLookout | mcAccel | mcClimb))
+		? false
+		: mstate_real & (mcAnyMove | mcCrouch) ? true : false;
+}
+
+bool CActor::is_actor_creeping() {
+	return (mstate_real & (mcJump | mcFall | mcLanding | mcLanding2 | mcClimb))
+		? false
+		: mstate_real & (mcAnyMove | mcCrouch | mcAccel) ? true : false;
+}
+
+bool CActor::is_actor_climbing() {
+	return (mstate_real & (mcJump | mcFall | mcLanding | mcLanding2))
+		? false
+		: mstate_real & (mcAnyMove | mcClimb) ? true : false;
+}
+
+bool CActor::is_actor_moving() {
+	return mstate_real & mcAnyAction ? true : false;
 }

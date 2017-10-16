@@ -623,7 +623,7 @@ void set_entity_max_health (CEntityCondition *E, float h) { E->health() = h; }
 bool get_entity_crouch	(CEntity::SEntityState *S) { return S->bCrouch; }
 bool get_entity_fall	(CEntity::SEntityState *S) { return S->bFall; }
 bool get_entity_jump	(CEntity::SEntityState *S) { return S->bJump; }
-bool get_entity_sprint	(CEntity::SEntityState *S) { return S->bSprint; }
+bool get_entity_sprint(CEntity::SEntityState *S) { return S->bSprint; }
 
 //extern LPCSTR get_lua_class_name(luabind::object O);
 

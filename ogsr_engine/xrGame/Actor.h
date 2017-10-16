@@ -797,7 +797,19 @@ public:
 			void block_action(EGameActions cmd);
 			void unblock_action(EGameActions cmd);
 			// Real Wolf. End. 14.10.2014
-	// иммунитеты от препаратов, применяемые для ослабления хита
+
+			bool is_actor_normal();
+			bool is_actor_crouch();
+			bool is_actor_creep();
+			bool is_actor_climb();
+			bool is_actor_walking();
+			bool is_actor_running();
+			bool is_actor_sprinting();
+			bool is_actor_crouching();
+			bool is_actor_creeping();
+			bool is_actor_climbing();
+			bool is_actor_moving();
+			// иммунитеты от препаратов, применяемые для ослабления хита
 private:
 	float m_fDrugPsyProtectionCoeff;
 	float m_fDrugRadProtectionCoeff;
