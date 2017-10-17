@@ -8,10 +8,8 @@
 
 #	include "xrCore.h"
 
-	extern void BuildStackTrace		();
-
-	extern char			g_stackTrace[100][4096];
-	extern int			g_stackTraceCount;
+#	include "blackbox\build_stacktrace.h"
+	static thread_local StackTraceInfo stackTrace;
 
 	static	bool		g_mem_alloc_gather_stats			= false;
 	static	float		g_mem_alloc_gather_stats_frequency	= 0.f;
@@ -82,18 +80,18 @@
 
 //		OutputDebugStackTrace	("----------------------------------------------------");
 
-		BuildStackTrace		();
+		BuildStackTrace(stackTrace);
 
-		if (g_stackTraceCount <= 2)
+		if (stackTrace.count <= 2)
 			return;
 
 		u32					accumulator = 0;
 		VERIFY				(g_stackTraceCount > 2);
-		int					*lengths = (int*)_alloca((g_stackTraceCount - 2)*sizeof(int));
+		int					*lengths = (int*)_alloca((stackTrace.count - 2)*sizeof(int));
 		{
 			int				*I = lengths;
-			for (int i=2; i<g_stackTraceCount; ++i, ++I) {
-				*I			= xr_strlen(g_stackTrace[i]);
+			for (int i=2; i<stackTrace.count; ++i, ++I) {
+				*I			= xr_strlen(stackTrace[i]);
 				accumulator	+= u32((*I)*sizeof(char) + 1);
 			}
 		}
@@ -103,8 +101,8 @@
 			PSTR			J = string;
 			VERIFY			(g_stackTraceCount > 2);
 			int				*I = lengths;
-			for (int i=2; i<g_stackTraceCount; ++i, ++I, ++J) {
-				memcpy		(J,g_stackTrace[i],*I);
+			for (int i=2; i<stackTrace.count; ++i, ++I, ++J) {
+				memcpy		(J, stackTrace[i],*I);
 				J			+= *I;
 				*J			= '\n';
 			}
