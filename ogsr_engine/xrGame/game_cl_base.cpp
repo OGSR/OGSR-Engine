@@ -66,8 +66,9 @@ void	game_cl_GameState::net_import_GameTime		(NET_Packet& P)
 
 	u64 OldTime = Level().GetEnvironmentGameTime();
 	Level().SetEnvironmentGameTimeFactor	(GameEnvironmentTime,EnvironmentTimeFactor);
-	if (OldTime > GameEnvironmentTime)
-		GamePersistent().Environment().Invalidate();
+	//KRodin: закомментировал для восттановления солнца. Внимание! Установку погоды теперь нужно делать не ранее, чем на первом апдейте. В ОГСЕ проблем быть не должно, там погодный менеджер всё контроллирует.
+	//if (OldTime > GameEnvironmentTime)
+	//	GamePersistent().Environment().Invalidate();
 }
 
 void	game_cl_GameState::net_import_state	(NET_Packet& P)
