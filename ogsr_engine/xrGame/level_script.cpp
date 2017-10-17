@@ -664,6 +664,26 @@ void AdvanceGameTime(u32 _ms)
 
 	Level().game->SetGameTimeFactor(ai().get_alife() ? ai().alife().time().game_time() : Level().GetGameTime(), Level().game->GetGameTimeFactor());
 }
+
+//
+void send_event_key_press(int dik) //Нажатие клавиши
+{
+	Level().IR_OnKeyboardPress(dik);
+}
+void send_event_key_release(int dik) //Отпускание клавиши
+{
+	Level().IR_OnKeyboardRelease(dik);
+}
+void send_event_key_hold(int dik) //Удержание клавиши.
+{
+	Level().IR_OnKeyboardHold(dik);
+}
+void send_event_mouse_wheel(int vol) //Вращение колеса мыши
+{
+	Level().IR_OnMouseWheel(vol);
+}
+//
+
 #pragma optimize("s",on)
 void CLevel::script_register(lua_State *L)
 {
@@ -766,7 +786,12 @@ void CLevel::script_register(lua_State *L)
 		def("advance_game_time",				&AdvanceGameTime),
 
 		def("get_target_dist",					&GetTargetDist),
-		def("get_target_obj",					&GetTargetObj)
+		def("get_target_obj",					&GetTargetObj),
+		//
+		def("send_event_key_press", &send_event_key_press),
+		def("send_event_key_release", &send_event_key_release),
+		def("send_event_key_hold", &send_event_key_hold),
+		def("send_event_mouse_wheel", &send_event_mouse_wheel)
 	],
 	
 	module(L,"actor_stats")
