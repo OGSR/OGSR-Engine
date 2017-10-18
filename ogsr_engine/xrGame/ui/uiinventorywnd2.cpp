@@ -192,6 +192,8 @@ void CUIInventoryWnd::DropCurrentItem(bool b_all)
 bool CUIInventoryWnd::ToSlot(CUICellItem* itm, u8 _slot_id, bool force_place)
 {
 	PIItem	iitem = (PIItem)itm->m_pData;
+	//Msg("~~[CUIInventoryWnd::ToSlot] Name [%s], slot [%u]", iitem->object().cName().c_str(), _slot_id);
+	//LogStackTrace("ST:\n");
 	iitem->SetSlot(_slot_id);
 	return ToSlot(itm, force_place);
 }
@@ -317,64 +319,62 @@ bool CUIInventoryWnd::OnItemSelected(CUICellItem* itm)
 
 bool CUIInventoryWnd::OnItemDrop(CUICellItem* itm)
 {
-	CUIDragDropListEx*	old_owner		= itm->OwnerList();
-	CUIDragDropListEx*	new_owner		= CUIDragDropListEx::m_drag_item->BackList();
-	if(old_owner==new_owner || !old_owner || !new_owner)
-					return false;
+	auto old_owner = itm->OwnerList();
+	auto new_owner = CUIDragDropListEx::m_drag_item->BackList();
+	if (old_owner == new_owner || !old_owner || !new_owner)
+		return false;
 
-	EListType t_new		= GetType(new_owner);
-	EListType t_old		= GetType(old_owner);
-	if(t_new == t_old)	return true;
+	auto t_new = GetType(new_owner);
+	auto t_old = GetType(old_owner);
 
-	switch(t_new){
-		case iwSlot:{
-			if (GetSlotList(CurrentIItem()->GetSlot()) == new_owner)
-			{
-				u8 _slot_id = FIRST_WEAPON_SLOT;
-				if (GetInventory()->m_slots[FIRST_WEAPON_SLOT].m_pIItem && !GetInventory()->m_slots[SECOND_WEAPON_SLOT].m_pIItem)
-					_slot_id = SECOND_WEAPON_SLOT;
-				ToSlot(itm, _slot_id, true);
-			}
-		}break;
-		case iwBag:{
-			ToBag	(itm, true);
-		}break;
-		case iwBelt:{
-			ToBelt	(itm, true);
-		}break;
+	if (t_new == t_old)
+		return true;
+
+	switch (t_new) {
+	case iwSlot:
+	{
+		auto item = CurrentIItem();
+		if (GetSlotList(item->GetSlot()) == new_owner)
+			ToSlot(itm, true);
+	}break;
+	case iwBag: {
+		ToBag(itm, true);
+	}break;
+	case iwBelt: {
+		ToBelt(itm, true);
+	}break;
 	};
 
-	DropItem				(CurrentIItem(), new_owner);
+	DropItem(CurrentIItem(), new_owner);
 
 	return true;
 }
 
 bool CUIInventoryWnd::OnItemDbClick(CUICellItem* itm)
 {
-	if(TryUseItem((PIItem)itm->m_pData))		
+	auto __item = (PIItem)itm->m_pData;
+	auto old_owner = itm->OwnerList();
+
+	if (TryUseItem(__item))
 		return true;
 
-	CUIDragDropListEx*	old_owner		= itm->OwnerList();
-	EListType t_old						= GetType(old_owner);
+	auto t_old = GetType(old_owner);
 
-	switch(t_old){
-		case iwSlot:{
-			ToBag	(itm, false);
-		}break;
+	switch (t_old) {
+	case iwSlot: {
+		ToBag(itm, false);
+	}break;
 
-		case iwBag:{
-			u8 _slot_id = FIRST_WEAPON_SLOT;
-			if (GetInventory()->m_slots[FIRST_WEAPON_SLOT].m_pIItem && !GetInventory()->m_slots[SECOND_WEAPON_SLOT].m_pIItem)
-				_slot_id = SECOND_WEAPON_SLOT;
-			if(!ToSlot(itm, _slot_id, false)){
-				if( !ToBelt(itm, false) )
-					ToSlot	(itm, _slot_id, true);
-			}
-		}break;
+	case iwBag:
+	{
+		if (!ToSlot(itm, false))
+			if (!ToBelt(itm, false))
+				ToSlot(itm, true);
+	}break;
 
-		case iwBelt:{
-			ToBag	(itm, false);
-		}break;
+	case iwBelt: {
+		ToBag(itm, false);
+	}break;
 	};
 
 	return true;

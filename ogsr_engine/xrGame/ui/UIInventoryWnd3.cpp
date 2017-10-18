@@ -47,20 +47,33 @@ void CUIInventoryWnd::ActivatePropertiesBox()
 	CGrenadeLauncher*	pGrenadeLauncher	= smart_cast<CGrenadeLauncher*>	(CurrentIItem());
 	CBottleItem*		pBottleItem			= smart_cast<CBottleItem*>		(CurrentIItem());
     
-	bool	b_show			= false;
+	bool b_show = false;
 
-
-	if(!pOutfit && CurrentIItem()->GetSlot()!=NO_ACTIVE_SLOT && !m_pInv->m_slots[CurrentIItem()->GetSlot()].m_bPersistent && m_pInv->CanPutInSlot(CurrentIItem()))
+	if (!pOutfit && CurrentIItem()->GetSlot() != NO_ACTIVE_SLOT )
 	{
 		if ((CurrentIItem()->GetSlot() == FIRST_WEAPON_SLOT) || (CurrentIItem()->GetSlot() == SECOND_WEAPON_SLOT))
 		{
-			UIPropertiesBox.AddItem("st_move_to_slot_1", NULL, INVENTORY_TO_WEAPON_SLOT_1_ACTION);
-			UIPropertiesBox.AddItem("st_move_to_slot_2", NULL, INVENTORY_TO_WEAPON_SLOT_2_ACTION);
-		} else
+			if (!m_pInv->InSlot(CurrentIItem())) //KRodin: сделано потому, что если перемещать предмет из слота в слот - вылетает.
+			{
+				if (!m_pInv->m_slots[FIRST_WEAPON_SLOT].m_bPersistent && m_pInv->CanPutInSlot(CurrentIItem(), FIRST_WEAPON_SLOT))
+				{
+					UIPropertiesBox.AddItem("st_move_to_slot_1", NULL, INVENTORY_TO_WEAPON_SLOT_1_ACTION);
+					b_show = true;
+				}
+				if (!m_pInv->m_slots[SECOND_WEAPON_SLOT].m_bPersistent && m_pInv->CanPutInSlot(CurrentIItem(), SECOND_WEAPON_SLOT))
+				{
+					UIPropertiesBox.AddItem("st_move_to_slot_2", NULL, INVENTORY_TO_WEAPON_SLOT_2_ACTION);
+					b_show = true;
+				}
+			}
+		}
+		else if (!m_pInv->m_slots[CurrentIItem()->GetSlot()].m_bPersistent && m_pInv->CanPutInSlot(CurrentIItem()))
+		{
 			UIPropertiesBox.AddItem("st_move_to_slot", NULL, INVENTORY_TO_SLOT_ACTION);
-
-		b_show = true;
+			b_show = true;
+		}
 	}
+
 
 	if(CurrentIItem()->Belt() && m_pInv->CanPutInBelt(CurrentIItem()))
 	{
@@ -68,7 +81,7 @@ void CUIInventoryWnd::ActivatePropertiesBox()
 		b_show			= true;
 	}
 
-	if(CurrentIItem()->Ruck() && m_pInv->CanPutInRuck(CurrentIItem()) && (CurrentIItem()->GetSlot()==u32(-1) || !m_pInv->m_slots[CurrentIItem()->GetSlot()].m_bPersistent) )
+	if(CurrentIItem()->Ruck() && m_pInv->CanPutInRuck(CurrentIItem()) && (CurrentIItem()->GetSlot() == NO_ACTIVE_SLOT || !m_pInv->m_slots[CurrentIItem()->GetSlot()].m_bPersistent) )
 	{
 		if(!pOutfit)
 			UIPropertiesBox.AddItem("st_move_to_bag",  NULL, INVENTORY_TO_BAG_ACTION);

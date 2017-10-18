@@ -52,6 +52,7 @@ public:
 	bool 					InRuck				(PIItem pIItem) const;
 
 	bool 					CanPutInSlot		(PIItem pIItem) const;
+	bool 					CanPutInSlot		(PIItem pIItem, u8 slot) const;
 	bool 					CanPutInBelt		(PIItem pIItem);
 	bool 					CanPutInRuck		(PIItem pIItem) const;
 
