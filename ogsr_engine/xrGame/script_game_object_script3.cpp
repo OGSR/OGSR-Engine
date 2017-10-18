@@ -270,6 +270,36 @@ class_<CScriptGameObject> script_register_game_object2(class_<CScriptGameObject>
 
 		.def("critically_wounded",			&CScriptGameObject::critically_wounded)
 		
+		/************************************************** added by Ray Twitty (aka Shadows) START **************************************************/
+		// фонарь
+		/* alpet: с разрешение автора утащено в torch_script.cpp. Исходный вариант остался в ревизии 110 на xp-dev.com
+		.def("enable_torch",				&CScriptGameObject::EnableTorch)
+		.def("switch_torch",				&CScriptGameObject::SwitchTorch)
+		.def("torch_enabled",				&CScriptGameObject::TorchEnabled)
+		// ПНВ
+		.def("enable_night_vision",			&CScriptGameObject::EnableNightVision)
+		.def("switch_night_vision",			&CScriptGameObject::SwitchNightVision)
+		.def("night_vision_enabled",		&CScriptGameObject::NightVisionEnabled)
+		//*/
+		// инвентарь
+		.def("get_actor_max_weight",			&CScriptGameObject::GetActorMaxWeight)
+		.def("set_actor_max_weight",			&CScriptGameObject::SetActorMaxWeight)
+		.def("get_actor_max_walk_weight",		&CScriptGameObject::GetActorMaxWalkWeight)
+		.def("set_actor_max_walk_weight",		&CScriptGameObject::SetActorMaxWalkWeight)
+		.def("get_additional_max_weight",		&CScriptGameObject::GetAdditionalMaxWeight)
+		.def("set_additional_max_weight",		&CScriptGameObject::SetAdditionalMaxWeight)
+		.def("get_additional_max_walk_weight",	&CScriptGameObject::GetAdditionalMaxWalkWeight)
+		.def("set_additional_max_walk_weight",	&CScriptGameObject::SetAdditionalMaxWalkWeight)
+		.def("get_total_weight",				&CScriptGameObject::GetTotalWeight)
+		.def("weight",							&CScriptGameObject::Weight)
+		/*************************************************** added by Ray Twitty (aka Shadows) END ***************************************************/
+
+		/*************************************************** added by Cribbledirge START ***************************************************/
+
+		.def("is_actor_outdoors",			&CScriptGameObject::IsActorOutdoors)
+
+		/**************************************************** added by Cribbledirge END ****************************************************/
+		
 		// KD
 		// functions for CInventoryOwner class
 		.def("item_on_belt", &CScriptGameObject::ItemOnBelt)

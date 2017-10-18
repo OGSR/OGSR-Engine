@@ -551,6 +551,25 @@ void CScriptGameObject::invulnerable		(bool invulnerable)
 	monster->invulnerable	(invulnerable);
 }
 
+bool CScriptGameObject::IsActorOutdoors() const
+{
+	// Check to make sure all the params are available (we're in game and such).
+	if (!g_pGameLevel) 
+	{
+		Msg("CScriptGameObject::IsActorOutdoors : Game Level Doesn't Exist.");
+		return FALSE;
+	}
+	CObject *e = g_pGameLevel->CurrentViewEntity();
+	if (!e || !e->renderable_ROS())
+	{
+		return FALSE;
+	}
+
+	// Now do the real check! This is a copy out of another section of code that is also hard coded.
+	// I don't know what the proper limit for this is supposed to be, but this seems good enough.
+	return e->renderable_ROS()->get_luminocity_hemi() > 0.05f;
+}
+
 float CScriptGameObject::GetActorJumpSpeed() const
 {
 	const CActor	*act = smart_cast<CActor*>(&object());

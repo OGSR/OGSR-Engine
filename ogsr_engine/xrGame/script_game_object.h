@@ -583,6 +583,27 @@ public:
 
 			bool				invulnerable						() const;
 			void				invulnerable						(bool invulnerable);
+			
+			/************************************************** added by Ray Twitty (aka Shadows) START **************************************************/	
+			// инвентарь
+			float				GetActorMaxWeight					() const;
+			void				SetActorMaxWeight					(float max_weight);
+			float				GetActorMaxWalkWeight				() const;
+			void				SetActorMaxWalkWeight				(float max_walk_weight);
+			float				GetAdditionalMaxWeight				() const;
+			void				SetAdditionalMaxWeight				(float add_max_weight);
+			float				GetAdditionalMaxWalkWeight			() const;
+			void				SetAdditionalMaxWalkWeight			(float add_max_walk_weight);
+			float				GetTotalWeight						() const;
+			float				Weight								() const;
+			/*************************************************** added by Ray Twitty (aka Shadows) END ***************************************************/
+
+			/*************************************************** added by Cribbledirge START ***************************************************/
+
+			/* Checks to see if the player character is outdoors */
+			bool				IsActorOutdoors() const;
+
+			/**************************************************** added by Cribbledirge END ****************************************************/
 
 			// KD
 			// functions for CInventoryOwner class
