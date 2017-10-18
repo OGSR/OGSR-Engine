@@ -919,7 +919,7 @@ float CScriptGameObject::GetMaxWeight() const
 	float max_w = e->inventory().m_fMaxWeight;
 	auto outfit = e->GetOutfit();
 	if (outfit)
-		max_w += outfit->m_additional_weight;
+		max_w += outfit->m_additional_weight2;
 
 	return max_w;
 }
@@ -934,7 +934,7 @@ float CScriptGameObject::GetMaxWalkWeight() const
 	float max_w = e->conditions().m_MaxWalkWeight;
 	auto outfit = e->GetOutfit();
 	if (outfit)
-		max_w += outfit->m_additional_weight2;
+		max_w += outfit->m_additional_weight;
 
 	return max_w;
 }
