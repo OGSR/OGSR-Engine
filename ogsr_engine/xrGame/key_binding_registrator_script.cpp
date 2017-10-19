@@ -18,9 +18,10 @@ void key_binding_registrator::script_register(lua_State *L)
 {
 	module(L)
 	[
-		def("dik_to_bind",		&dik_to_bind),
-		def("bind_to_dik",		&bind_to_dik),
+		def("dik_to_bind",	&dik_to_bind),
+		def("bind_to_dik",	&bind_to_dik),
 		def("dik_to_keyname",	&dik_to_keyname),
+		def("keyname_to_dik",	&keyname_to_dik),
 
 		class_<enum_exporter<EGameActions> >("key_bindings")
 			.enum_("commands")

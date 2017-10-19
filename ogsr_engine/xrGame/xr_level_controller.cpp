@@ -287,8 +287,11 @@ _keyboard* dik_to_ptr(int _dik, bool bSafe)
 
 int	keyname_to_dik (LPCSTR _name)
 {
-	_keyboard* _kb = keyname_to_ptr(_name);
-	return _kb->dik;
+	_keyboard* kb = keyname_to_ptr(_name);
+	if(kb)
+		return kb->dik;
+	else
+		return NULL;
 }
 
 _keyboard*	keyname_to_ptr(LPCSTR _name)
