@@ -261,7 +261,7 @@ bool CInventory::Slot(PIItem pIItem, bool bNotActivate)
 	
 	if(!CanPutInSlot(pIItem)) 
 	{
-#if 0//def _DEBUG
+		/*
 		Msg("there is item %s[%d,%x] in slot %d[%d,%x]", 
 				*m_slots[pIItem->GetSlot()].m_pIItem->object().cName(), 
 				m_slots[pIItem->GetSlot()].m_pIItem->object().ID(), 
@@ -269,7 +269,7 @@ bool CInventory::Slot(PIItem pIItem, bool bNotActivate)
 				pIItem->GetSlot(), 
 				pIItem->object().ID(),
 				pIItem);
-#endif
+		*/
 		if(m_slots[pIItem->GetSlot()].m_pIItem == pIItem && !bNotActivate )
 			Activate(pIItem->GetSlot());
 
@@ -452,7 +452,7 @@ bool CInventory::Activate(u32 slot, EActivationReason reason, bool bForce)
 		goto _finish;
 	}
 
-	R_ASSERT2(slot == NO_ACTIVE_SLOT || slot<m_slots.size(), "wrong slot number");
+	ASSERT_FMT(slot == NO_ACTIVE_SLOT || slot<m_slots.size(), "wrong slot number: [%u]", slot);
 
 	if(slot != NO_ACTIVE_SLOT && !m_slots[slot].m_bVisible) 
 	{
@@ -982,6 +982,22 @@ bool CInventory::CanPutInSlot(PIItem pIItem) const
 	
 	return false;
 }
+
+//KRodin: добавлено специально для равнозначных слотов.
+bool CInventory::CanPutInSlot(PIItem pIItem, u8 slot) const
+{
+	if (!m_bSlotsUseful)
+		return false;
+
+	if (!GetOwner()->CanPutInSlot(pIItem, slot))
+		return false;
+
+	if (slot < m_slots.size() && !m_slots[slot].m_pIItem)
+		return true;
+
+	return false;
+}
+
 //проверяет можем ли поместить вещь на пояс,
 //при этом реально ничего не меняется
 bool CInventory::CanPutInBelt(PIItem pIItem)

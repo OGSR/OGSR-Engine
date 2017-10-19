@@ -99,7 +99,7 @@ void CScriptEngine::setup_auto_load()
 
 void CScriptEngine::init()
 {
-	//Msg("[CScriptEngine::init] Starting LuaJIT!");
+	Msg("[CScriptEngine::init] Starting LuaJIT!");
 	lua_State* LSVM = luaL_newstate(); //Запускаем LuaJIT. Память себе он выделит сам.
 	R_ASSERT2(LSVM, "! ERROR : Cannot initialize LUA VM!");
 	reinit(LSVM);
@@ -127,7 +127,7 @@ void CScriptEngine::init()
 
 	register_script_classes(); //Походу, запуск class_registrator.script
 	object_factory().register_script(); //Регистрация классов
-	//Msg("[CScriptEngine::init] LuaJIT Started!");
+	Msg("[CScriptEngine::init] LuaJIT Started!");
 }
 
 void CScriptEngine::parse_script_namespace(const char *name, char *ns, u32 nsSize, char *func, u32 funcSize)
