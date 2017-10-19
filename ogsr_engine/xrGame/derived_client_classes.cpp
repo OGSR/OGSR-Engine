@@ -489,5 +489,6 @@ void CCustomMonsterScript::script_register(lua_State *L)
 		[
 			class_<CCustomMonster, bases<CEntityAlive>>("CCustomMonster")
 			.def("get_dest_vertex_id", &CCustomMonsterScript::GetDestVertexId)
+			.def_readwrite("visible_for_zones", &CCustomMonster::m_visible_for_zones)
 		];
 }

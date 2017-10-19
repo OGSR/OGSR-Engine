@@ -87,6 +87,7 @@ CCustomMonster::CCustomMonster()
 	m_sound_player				= 0;
 	m_already_dead				= false;
 	m_invulnerable				= false;
+	m_visible_for_zones			= true;
 }
 
 CCustomMonster::~CCustomMonster	()
