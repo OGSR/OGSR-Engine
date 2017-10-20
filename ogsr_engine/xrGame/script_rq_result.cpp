@@ -7,6 +7,7 @@
 void script_rq_result::set_result(collide::rq_result _res)
 {
 	range = _res.range;
+	element = _res.element;
 	if (_res.O)
 	{
 		CGameObject *obj = smart_cast<CGameObject *>(_res.O);
@@ -24,5 +25,6 @@ void script_rq_result::script_register(lua_State *L)
 			class_<script_rq_result>("rq_result")
 				.def_readonly("range", &script_rq_result::range)
 				.def_readonly("object", &script_rq_result::object)
+				.def_readonly("element", &script_rq_result::element)
 		];
 }
