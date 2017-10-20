@@ -25,7 +25,9 @@ void CUIKeyBinding::InitFromXml(CUIXml& xml_doc, LPCSTR path)
 	CUIXmlInit::InitFrameWindow	(xml_doc, strconcat(sizeof(buf),buf,path,":frame"),		0, &m_frame);
 	CUIXmlInit::InitLabel		(xml_doc, strconcat(sizeof(buf),buf,path,":header_1"),	0, &m_header[0]);
 	CUIXmlInit::InitLabel		(xml_doc, strconcat(sizeof(buf),buf,path,":header_2"),	0, &m_header[1]);
-//	CUIXmlInit::InitLabel		(xml_doc, strconcat(sizeof(buf),buf,path,":header_3"),	0, &m_header[2]);
+#ifndef REMOVE_ALTERNATIVE_KEYBOARD_BINDING
+	CUIXmlInit::InitLabel		(xml_doc, strconcat(sizeof(buf),buf,path,":header_3"),	0, &m_header[2]);
+#endif
 
 	FillUpList					(xml_doc, path);
 }
@@ -82,12 +84,14 @@ void CUIKeyBinding::FillUpList(CUIXml& xml_doc_ui, LPCSTR path_ui)
 			pEditKB->Register				(*exe,"key_binding");
 			pItem->AttachChild				(pEditKB);
 
-/*			item_width						= m_header[2].GetWidth()-3.0f;
+#ifndef REMOVE_ALTERNATIVE_KEYBOARD_BINDING
+			item_width						= m_header[2].GetWidth()-3.0f;
 			item_pos						= m_header[2].GetWndPos().x;
 			pEditKB							= xr_new<CUIEditKeyBind>(false);pEditKB->SetAutoDelete(true);
 			pEditKB->Init					(item_pos, 0, item_width, pItem->GetWndSize().y);
 			pEditKB->Register				(*exe,"key_binding");
-			pItem->AttachChild				(pEditKB);*/
+			pItem->AttachChild				(pEditKB);
+#endif
 		}
 		xml_doc.SetLocalRoot				(xml_doc.GetRoot());
 	}
