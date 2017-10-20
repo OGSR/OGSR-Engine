@@ -480,6 +480,7 @@
     <ClInclude Include="..\xrParticles\psystem.h">
       <Filter>Interfaces</Filter>
     </ClInclude>
+    <ClInclude Include="vismask.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="defines.cpp">

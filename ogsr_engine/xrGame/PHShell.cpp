@@ -1430,7 +1430,7 @@ void CPHShell::PlaceBindToElFormsRecursive(Fmatrix parent,u16 id,u16 element,Vis
 	CBoneData& bone_data= m_pKinematics->LL_GetData(u16(id));
 	SJointIKData& joint_data=bone_data.IK_data;
 
-	if(mask.is(1ui64<<(u64)id))
+	if(mask.is(/*1ui64<<(u64)*/id)) //Вот тут проверить надо, кажется мне тут было не правильно.
 	{
 
 		if(no_physics_shape(bone_data.shape)||joint_data.type==jtRigid&& element!=u16(-1))

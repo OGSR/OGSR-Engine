@@ -990,10 +990,16 @@ void	CSkeletonX_ext::_EnumBoneVertices	( SEnumVerticesCallback &C, Fvisual* V, u
 	switch	(RenderMode)
 	{
 		case RM_SKINNING_SOFT:
-			if (*Vertices1W) 
-				TEnumBoneVertices( Vertices1W, indices+iBase, *faces, C );
-			else
-				TEnumBoneVertices( Vertices2W, indices+iBase, *faces, C  );				
+			if (*Vertices1W)
+				TEnumBoneVertices(Vertices1W, indices + iBase, *faces, C);
+			else if (*Vertices2W)
+				TEnumBoneVertices(Vertices2W, indices + iBase, *faces, C);
+			else if (*Vertices3W)
+				TEnumBoneVertices(Vertices3W, indices + iBase, *faces, C);
+			else {
+				VERIFY(!!(*Vertices4W));
+				TEnumBoneVertices(Vertices4W, indices + iBase, *faces, C);
+			}
 			break;
 		case RM_SINGLE:
 		case RM_SKINNING_1B: TEnumBoneVertices	( (vertHW_1W*)vertices, indices+iBase, *faces, C  );break;
