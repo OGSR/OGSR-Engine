@@ -164,17 +164,16 @@ void CPHSkeleton::SaveNetState(NET_Packet& P)
 	if(pPhysicsShell&&pPhysicsShell->isActive())			m_flags.set(CSE_PHSkeleton::flActive,pPhysicsShell->isEnabled());
 
 	P.w_u8 (m_flags.get());
+	VisMask _vm;
 	if(K)
 	{
-		VisMask _vm = K->LL_GetBonesVisible();
+		_vm = K->LL_GetBonesVisible();
 		P.w_u64(_vm._visimask.flags);
-		P.w_u64(_vm._visimask_ex.flags);
 //		P.w_u64(K->LL_GetBonesVisible());
 		P.w_u16(K->LL_GetBoneRoot());
 	}
 	else
 	{
-		P.w_u64(u64(-1));
 		P.w_u64(u64(-1));
 		P.w_u16(0);
 	}
@@ -207,6 +206,11 @@ void CPHSkeleton::SaveNetState(NET_Packet& P)
 	P.w_vec3(max);
 
 	P.w_u16(bones_number);
+	if (bones_number >= 64)
+	{
+		Msg("!![CPHSkeleton::SaveNetState] bones_number is [%u]!", bones_number);
+		P.w_u64(K ? _vm._visimask_ex.flags : u64(-1));
+	}
 
 	for(u16 i=0;i<bones_number;i++)
 	{
@@ -221,16 +225,25 @@ void CPHSkeleton::LoadNetState(NET_Packet& P)
 	CPhysicsShellHolder* obj=PPhysicsShellHolder();
 	CKinematics* K=smart_cast<CKinematics*>(obj->Visual());
 	P.r_u8 (m_flags.flags);
+	u64 _low = 0;
+	u64 _high = 0;
 	if(K)
 	{
-		u64 _low = P.r_u64();
-		u64 _high = P.r_u64();
-		VisMask _vm(_low, _high);
-		K->LL_SetBonesVisible(_vm);
+		_low = P.r_u64();
 		K->LL_SetBoneRoot(P.r_u16());
 	}
-
+	else //KRodin: странно, а почему тут ничего не загружается если нет K? Сохраняются данные-то в любом случае. Тут баг, как мне кажется. Условие надо вообще убрать, или ничего не сохранять в функции выше, если K нету, или просто читать те два значения и ничего с ними не делать. Только вот неизвестно к чему это приведёт. Надо б ещё в других движках глянуть, как там сделано.
+		Msg("!![CPHSkeleton::LoadNetState] Something strange...");
+	//Стоп, а где загрузка векторов? Там выше же два вектора сохранялись!! Тут что-то совсем странное происходит.
 	u16 bones_number=P.r_u16();
+	if (bones_number >= 64)
+	{
+		Msg("!![CPHSkeleton::LoadNetState] bones_number is [%u]!", bones_number);
+		_high = P.r_u64();
+	}
+	VisMask _vm(_low, _high);
+	K->LL_SetBonesVisible(_vm);
+
 	for(u16 i=0;i<bones_number;i++)
 	{
 		SPHNetState state;
