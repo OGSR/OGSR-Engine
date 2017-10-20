@@ -26,8 +26,8 @@
 //////////////////////////////////////////////////////////////////////
 shared_str	s_bones_array_const;
 
-#pragma pack(push,1)
 /*
+#pragma pack(push,1)
 float u_P	(s16 v)
 {
 	return	float(v)/(32767.f/12.f);

@@ -227,12 +227,16 @@ SPHBonesData::SPHBonesData()
 void SPHBonesData::net_Save(NET_Packet &P)
 {
 	P.w_u64(bones_mask._visimask.flags);
-	P.w_u64(bones_mask._visimask_ex.flags);
 	P.w_u16			(root_bone);
 	
 	P.w_vec3		(get_min());
 	P.w_vec3		(get_max());
 	P.w_u16			((u16)bones.size());//bones number;
+	if (bones.size() >= 64)
+	{
+		Msg("!![SPHBonesData::net_Save] bones_size is [%u]!", bones.size());
+		P.w_u64(bones_mask._visimask_ex.flags);
+	}
 	PHNETSTATE_I	i=bones.begin(),e=bones.end();
 	for(;e!=i;i++)
 	{
@@ -249,8 +253,8 @@ void SPHBonesData::net_Load(NET_Packet &P)
 	bones.clear					();
 
 	u64 _low = P.r_u64();
-	u64 _high = P.r_u64();
-	bones_mask.set(_low, _high);
+	u64 _high = 0;
+
 	root_bone					=P.r_u16();
 	Fvector						_mn, _mx;
 	P.r_vec3					(_mn);
@@ -258,6 +262,12 @@ void SPHBonesData::net_Load(NET_Packet &P)
 	set_min_max					(_mn, _mx);
 
 	u16 bones_number			=P.r_u16();//bones number /**/
+	if (bones_number >= 64)
+	{
+		Msg("!![SPHBonesData::net_Load] bones_number is [%u]!", bones_number);
+		_high = P.r_u64();
+	}
+	bones_mask.set(_low, _high);
 	for(int i=0;i<bones_number;i++)
 	{
 		SPHNetState	S;

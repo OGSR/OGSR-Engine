@@ -1,21 +1,25 @@
-#ifndef VisMaskH
-#define VisMaskH
+#pragma once
 
-struct /* ENGINE_API*/ VisMask
+struct ENGINE_API VisMask final
 {
 	Flags64						_visimask;
 	Flags64						_visimask_ex;
+
 	IC 	VisMask() { _visimask.zero();  _visimask_ex.zero(); }
 	IC 	VisMask(const VisMask& _second) { _visimask.flags = _second._visimask.flags;  _visimask_ex.flags = _second._visimask_ex.flags; }
-	IC 	VisMask(u64 _low, u64 _high) { _visimask.assign(_low); _visimask_ex.assign(_high);	};
+	IC 	VisMask(u64 _low, u64 _high) { _visimask.assign(_low); _visimask_ex.assign(_high); };
 
-	IC bool							operator!=	(const VisMask& _second) const
+	IC bool							operator!=	(const VisMask& _second) const noexcept
 	{
 		if (_visimask.flags != _second._visimask.flags)
 			return true;
 		if (_visimask_ex.flags != _second._visimask_ex.flags)
 			return true;
 		return false;
+	}
+	IC bool							operator==	(const VisMask& _second) const noexcept
+	{
+		return (_visimask.flags == _second._visimask.flags) && (_visimask_ex.flags == _second._visimask_ex.flags);
 	}
 	IC VisMask&						operator=	(const VisMask& _second)
 	{
@@ -60,10 +64,8 @@ struct /* ENGINE_API*/ VisMask
 	}
 	IC	void						set_all()
 	{
-		for (u8 i = 0; i < 64; ++i)
-			_visimask.set(0xffffffffffffffffL, true);
-		for (u8 j = 0; j < 64; ++j)
-			_visimask_ex.set(0xffffffffffffffffL, true);
+		for (u16 i=0; i < 128; ++i)
+			this->set(i, true);
 	}
 	IC	void						and (const VisMask& _second)
 	{
@@ -76,5 +78,3 @@ struct /* ENGINE_API*/ VisMask
 		_visimask_ex.invert();
 	}
 };
-
-#endif
