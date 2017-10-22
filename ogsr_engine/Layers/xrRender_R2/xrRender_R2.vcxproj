@@ -200,7 +200,8 @@
       <WholeProgramOptimization>false</WholeProgramOptimization>
       <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_USRDLL;XRRENDER_R2_EXPORTS;_SECURE_SCL=0;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <StringPooling>true</StringPooling>
-      <ExceptionHandling>Sync</ExceptionHandling>
+      <ExceptionHandling>
+      </ExceptionHandling>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <BufferSecurityCheck>false</BufferSecurityCheck>
       <FunctionLevelLinking>false</FunctionLevelLinking>
@@ -219,7 +220,7 @@
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <AdditionalIncludeDirectories>..\..\COMMON;X:\3rd_party\Src\d3dx\include;..\..\xrCore</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
-      <DisableSpecificWarnings>4456;4457;4458;4995;</DisableSpecificWarnings>
+      <DisableSpecificWarnings>4456;4457;4458;4995;4577;</DisableSpecificWarnings>
       <MinimalRebuild>false</MinimalRebuild>
       <CompileAs>Default</CompileAs>
     </ClCompile>

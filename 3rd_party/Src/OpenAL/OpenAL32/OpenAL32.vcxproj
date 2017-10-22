@@ -116,7 +116,8 @@
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
       <OmitFramePointers>true</OmitFramePointers>
       <EnableFiberSafeOptimizations>true</EnableFiberSafeOptimizations>
-      <DisableSpecificWarnings>4456;4457;4458;</DisableSpecificWarnings>
+      <DisableSpecificWarnings>4456;4457;4458;4577;</DisableSpecificWarnings>
+      <ExceptionHandling />
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -181,7 +182,7 @@
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <BrowseInformation>
-	  </BrowseInformation>
+      </BrowseInformation>
       <WarningLevel>Level3</WarningLevel>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
@@ -216,7 +217,7 @@
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <BrowseInformation>
-	  </BrowseInformation>
+      </BrowseInformation>
       <WarningLevel>Level3</WarningLevel>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
@@ -236,18 +237,18 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="alBuffer.c"/>
+    <ClCompile Include="alBuffer.c" />
     <ClCompile Include="ALc.c" />
-    <ClCompile Include="alEax.c"/>
-    <ClCompile Include="aleax2.c"/>
-    <ClCompile Include="alError.c"/>
-    <ClCompile Include="alExtension.c"/>
-    <ClCompile Include="alListener.c"/>
-    <ClCompile Include="alSource.c"/>
-    <ClCompile Include="alState.c"/>
+    <ClCompile Include="alEax.c" />
+    <ClCompile Include="aleax2.c" />
+    <ClCompile Include="alError.c" />
+    <ClCompile Include="alExtension.c" />
+    <ClCompile Include="alListener.c" />
+    <ClCompile Include="alSource.c" />
+    <ClCompile Include="alState.c" />
     <ClCompile Include="alThunk.cpp" />
     <ClCompile Include="ALu.c" />
-    <ClCompile Include="OpenAL32.c"/>
+    <ClCompile Include="OpenAL32.c" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="openal32.rc" />

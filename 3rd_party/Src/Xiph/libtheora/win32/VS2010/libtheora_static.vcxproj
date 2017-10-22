@@ -118,7 +118,8 @@
       <AdditionalIncludeDirectories>..\..\include;..\..\..\libogg\include%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_USRDLL;LIBTHEORA_EXPORTS;OC_X86_ASM;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <StringPooling>true</StringPooling>
-      <ExceptionHandling>Sync</ExceptionHandling>
+      <ExceptionHandling>
+      </ExceptionHandling>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <BufferSecurityCheck>false</BufferSecurityCheck>
       <PrecompiledHeader>
@@ -126,7 +127,7 @@
       <WarningLevel>Level4</WarningLevel>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <CompileAs>CompileAsC</CompileAs>
-      <DisableSpecificWarnings>4456;4457;4458;</DisableSpecificWarnings>
+      <DisableSpecificWarnings>4456;4457;4458;4577;</DisableSpecificWarnings>
       <EnableEnhancedInstructionSet>StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <WholeProgramOptimization>false</WholeProgramOptimization>
