@@ -155,8 +155,12 @@ void CPHSkeleton::Update(u32 dt)
 	}
 
 }
+//KRodin: было выяснено, что SaveNetState здесь вызывается, а LoadNetState - нет.
+//В будущем надо подумать, что делать с этим бредом.
+//Как вариант - выпилить эту функцию нафиг. Но тогда может возникнуть проблема с совместимостью сейвов.
 void CPHSkeleton::SaveNetState(NET_Packet& P)
 {
+	//Msg("!!Called [CPHSkeleton::SaveNetState]");
 
 	CPhysicsShellHolder* obj=PPhysicsShellHolder();
 	CPhysicsShell* pPhysicsShell=obj->PPhysicsShell();
@@ -220,36 +224,9 @@ void CPHSkeleton::SaveNetState(NET_Packet& P)
 	}
 }
 
-void CPHSkeleton::LoadNetState(NET_Packet& P)
+void CPHSkeleton::LoadNetState(NET_Packet& P) //Вообще никогда не вызывается.
 {
-	CPhysicsShellHolder* obj=PPhysicsShellHolder();
-	CKinematics* K=smart_cast<CKinematics*>(obj->Visual());
-	P.r_u8 (m_flags.flags);
-	u64 _low = 0;
-	u64 _high = 0;
-	if(K)
-	{
-		_low = P.r_u64();
-		K->LL_SetBoneRoot(P.r_u16());
-	}
-	else //KRodin: странно, а почему тут ничего не загружается если нет K? Сохраняются данные-то в любом случае. Тут баг, как мне кажется. Условие надо вообще убрать, или ничего не сохранять в функции выше, если K нету, или просто читать те два значения и ничего с ними не делать. Только вот неизвестно к чему это приведёт. Надо б ещё в других движках глянуть, как там сделано.
-		Msg("!![CPHSkeleton::LoadNetState] Something strange...");
-	//Стоп, а где загрузка векторов? Там выше же два вектора сохранялись!! Тут что-то совсем странное происходит.
-	u16 bones_number=P.r_u16();
-	if (bones_number >= 64)
-	{
-		Msg("!![CPHSkeleton::LoadNetState] bones_number is [%u]!", bones_number);
-		_high = P.r_u64();
-	}
-	VisMask _vm(_low, _high);
-	K->LL_SetBonesVisible(_vm);
-
-	for(u16 i=0;i<bones_number;i++)
-	{
-		SPHNetState state;
-		state.net_Load(P);
-		obj->PHGetSyncItem(i)->set_State(state);
-	}
+	Msg("!!Called [CPHSkeleton::LoadNetState]");
 }
 
 void CPHSkeleton::RestoreNetState(CSE_PHSkeleton* po)
