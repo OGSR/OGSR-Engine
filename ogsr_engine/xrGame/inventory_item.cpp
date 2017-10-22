@@ -131,8 +131,8 @@ void CInventoryItem::Load(LPCSTR section)
 
 	m_cost				= pSettings->r_u32(section, "cost");
 
-	m_slot				= READ_IF_EXISTS(pSettings,r_u32,section,"slot", NO_ACTIVE_SLOT);
-
+	m_slot_sect = READ_IF_EXISTS(pSettings,r_u32,section,"slot", NO_ACTIVE_SLOT);
+	m_slot = m_slot_sect;
 
 	// Description
 	if ( pSettings->line_exist(section, "description") )

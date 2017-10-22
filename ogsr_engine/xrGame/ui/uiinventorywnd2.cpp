@@ -327,14 +327,21 @@ bool CUIInventoryWnd::OnItemDrop(CUICellItem* itm)
 	auto t_new = GetType(new_owner);
 	auto t_old = GetType(old_owner);
 
-	if (t_new == t_old)
+	if (t_new == t_old && t_new != iwSlot)
 		return true;
 
 	switch (t_new) {
 	case iwSlot:
 	{
 		auto item = CurrentIItem();
-		if (GetSlotList(item->GetSlot()) == new_owner)
+		if ((item->GetSlot() == FIRST_WEAPON_SLOT) || (item->GetSlot() == SECOND_WEAPON_SLOT))
+		{
+			if (GetSlotList(FIRST_WEAPON_SLOT) == new_owner)
+				ToSlot(itm, FIRST_WEAPON_SLOT, true);
+			else if (GetSlotList(SECOND_WEAPON_SLOT) == new_owner)
+				ToSlot(itm, SECOND_WEAPON_SLOT, true);
+		}
+		else if (GetSlotList(item->GetSlot()) == new_owner)
 			ToSlot(itm, true);
 	}break;
 	case iwBag: {
@@ -367,7 +374,15 @@ bool CUIInventoryWnd::OnItemDbClick(CUICellItem* itm)
 
 	case iwBag:
 	{
-		if (!ToSlot(itm, false))
+		auto item = CurrentIItem();
+		if ((item->GetSlot() == FIRST_WEAPON_SLOT) || (item->GetSlot() == SECOND_WEAPON_SLOT))
+		{
+			auto old_clot = item->GetSlot();
+			if (!ToSlot(itm, FIRST_WEAPON_SLOT, false))
+				if (!ToSlot(itm, SECOND_WEAPON_SLOT, false))
+					ToSlot(itm, old_clot, true);
+		}
+		else if (!ToSlot(itm, false))
 			if (!ToBelt(itm, false))
 				ToSlot(itm, true);
 	}break;
