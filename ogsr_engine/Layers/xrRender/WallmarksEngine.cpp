@@ -235,7 +235,7 @@ void CWallmarksEngine::AddWallmark_internal	(CDB::TRI* pTri, const Fvector* pVer
 		bb.getsphere					(W->bounds.P,W->bounds.R);
 	}
 
-	if (W->bounds.R < 1.f)	
+	//if (W->bounds.R < 1.f)	
 	{
 		// search if similar wallmark exists
 		wm_slot* slot			= FindSlot	(hShader);
@@ -358,8 +358,8 @@ void CWallmarksEngine::Render()
 			static_wallmark* W	= *w_it;
 			if (RImplementation.ViewBase.testSphere_dirty(W->bounds.P,W->bounds.R)){
 				Device.Statistic->RenderDUMP_WMS_Count++;
-				float dst	= Device.vCameraPosition.distance_to_sqr(W->bounds.P);
-				float ssa	= W->bounds.R * W->bounds.R / dst;
+				//float dst	= Device.vCameraPosition.distance_to_sqr(W->bounds.P);
+				//float ssa	= W->bounds.R * W->bounds.R / dst;
 				//if (ssa>=ssaCLIP)	{
 					u32 w_count		= u32(w_verts-w_start);
 					if ((w_count+W->verts.size())>=(MAX_TRIS*3)){
@@ -400,8 +400,8 @@ void CWallmarksEngine::Render()
 			}
 #endif
 
-			float dst	= Device.vCameraPosition.distance_to_sqr(W->m_Bounds.P);
-			float ssa	= W->m_Bounds.R * W->m_Bounds.R / dst;
+			//float dst	= Device.vCameraPosition.distance_to_sqr(W->m_Bounds.P);
+			//float ssa	= W->m_Bounds.R * W->m_Bounds.R / dst;
 			//if (ssa>=ssaCLIP){
 				Device.Statistic->RenderDUMP_WMD_Count++;
 				u32 w_count		= u32(w_verts-w_start);
@@ -413,9 +413,10 @@ void CWallmarksEngine::Render()
 				FVF::LIT	*w_save = w_verts;
 				try {
 					W->Parent()->RenderWallmark	(W,w_verts);
-				} catch (...)
+				}
+				catch(...)
 				{
-					Msg		("! Failed to render dynamic wallmark");
+					Log("! Failed to render dynamic wallmark");
 					w_verts = w_save;
 				}
 			//}
