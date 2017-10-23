@@ -314,6 +314,10 @@ class_<CScriptGameObject> script_register_game_object2(class_<CScriptGameObject>
 		.def("ruck_count", &CScriptGameObject::RuckSize)
 		.def("invalidate_inventory", &CScriptGameObject::InvalidateInventory)
 
+		// functions for CInventoryItem class
+		.def("set_inventory_item_flags",				&CScriptGameObject::SetIIFlags)
+		.def("get_inventory_item_flags",				&CScriptGameObject::GetIIFlags)
+
 		// functions for object testing
 		.def("is_game_object", &CScriptGameObject::IsGameObject)
 		.def("is_car", &CScriptGameObject::IsCar)
@@ -416,5 +420,8 @@ class_<CScriptGameObject> script_register_game_object2(class_<CScriptGameObject>
 		.def("set_additional_telepatic_protection", &CScriptGameObject::SetDrugPsyProtection)
 
 		// KD
+
+		// by Real Wolf 11.07.2014
+		.def("get_cell_item",				&CScriptGameObject::GetCellItem)
 	;
 }

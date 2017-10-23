@@ -14,6 +14,14 @@
 #include "../xr_3da/skeletonanimated.h"
 #include "ai/stalker/ai_stalker.h"
 #include "../xrNetServer/net_utils.h"
+#include "Actor.h"
+#include "Explosive.h"
+#include "inventory_item.h"
+#include "script_game_object.h"
+#include "xrServer_Space.h"
+#include "xrServer_Objects_ALife.h"
+
+struct CGlobalFlags { };
 
 using namespace luabind;
 
@@ -131,6 +139,43 @@ void CObjectScript::script_register		(lua_State *L)
 			.def("getVisible",			&CGameObject::getVisible)
 			.def("getEnabled",			&CGameObject::getEnabled)
 //			.def("setEnabled",			&CGameObject::setEnabled)
+			,
+			class_<CGlobalFlags>("global_flags")  // для оптимальности доступа, предполагается в скриптах скопировать элементы этого "класса" в пространство имен _G 
+			.enum_("inventory_item")
+			[
+				value("FdropManual"				,				int(CInventoryItem::EIIFlags::FdropManual)),
+				value("FCanTake"				,				int(CInventoryItem::EIIFlags::FCanTake)),
+				value("FCanTrade"				,				int(CInventoryItem::EIIFlags::FCanTrade)),
+				value("Fbelt"					,				int(CInventoryItem::EIIFlags::Fbelt)),
+				value("Fruck"					,				int(CInventoryItem::EIIFlags::Fruck)),
+				value("FRuckDefault"			,				int(CInventoryItem::EIIFlags::FRuckDefault)),
+				value("FUsingCondition"			,				int(CInventoryItem::EIIFlags::FUsingCondition)),
+				value("FAllowSprint"			,				int(CInventoryItem::EIIFlags::FAllowSprint)),
+				value("Fuseful_for_NPC"			,				int(CInventoryItem::EIIFlags::Fuseful_for_NPC)),
+				value("FInInterpolation"		,				int(CInventoryItem::EIIFlags::FInInterpolation)),
+				value("FInInterpolate"			,				int(CInventoryItem::EIIFlags::FInInterpolate)),
+				value("FIsQuestItem"			,				int(CInventoryItem::EIIFlags::FIsQuestItem)),
+				value("FIAlwaysTradable"		,				int(CInventoryItem::EIIFlags::FIAlwaysTradable)),
+				value("FIAlwaysUntradable"		,				int(CInventoryItem::EIIFlags::FIAlwaysUntradable)),
+				value("FIUngroupable"			,				int(CInventoryItem::EIIFlags::FIUngroupable)),
+				value("FIManualHighlighting"	,				int(CInventoryItem::EIIFlags::FIManualHighlighting))
+			]
+			.enum_("se_object_flags")
+			[
+				value("flUseSwitches"			,				int(CSE_ALifeObject:: flUseSwitches)),
+				value("flSwitchOnline"			,				int(CSE_ALifeObject:: flSwitchOnline)),
+				value("flSwitchOffline"			,				int(CSE_ALifeObject:: flSwitchOffline)),
+				value("flInteractive"			,				int(CSE_ALifeObject:: flInteractive)),
+				value("flVisibleForAI"			,				int(CSE_ALifeObject:: flVisibleForAI)),
+				value("flUsefulForAI"			,				int(CSE_ALifeObject:: flUsefulForAI)),
+				value("flOfflineNoMove"			,				int(CSE_ALifeObject:: flOfflineNoMove)),
+				value("flUsedAI_Locations"		,				int(CSE_ALifeObject:: flUsedAI_Locations)),
+				value("flGroupBehaviour"		,				int(CSE_ALifeObject:: flGroupBehaviour)),
+				value("flCanSave"				,				int(CSE_ALifeObject:: flCanSave)),
+				value("flVisibleForMap"			,				int(CSE_ALifeObject:: flVisibleForMap)),
+				value("flUseSmartTerrains"		,				int(CSE_ALifeObject:: flUseSmartTerrains)),
+				value("flCheckForSeparator"		,				int(CSE_ALifeObject:: flCheckForSeparator))
+			]
 
 //		,class_<CPhysicsShellHolder,CGameObject>("CPhysicsShellHolder")
 //			.def(constructor<>())

@@ -79,6 +79,9 @@ void CMapLocation::LoadSpot(LPCSTR type, bool bReload)
 	LPCSTR s		= g_uiSpotXml->ReadAttrib(path_base, 0, "hint", "no hint");
 	SetHint			(s);
 	
+	// Real Wolf. 03.08.2014.
+	m_type = type;
+	
 	s = g_uiSpotXml->ReadAttrib(path_base, 0, "store", NULL);
 	if(s)
 		m_flags.set( eSerailizable, TRUE);

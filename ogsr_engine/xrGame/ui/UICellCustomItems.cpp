@@ -4,12 +4,19 @@
 #include "../Weapon.h"
 #include "UIDragDropListEx.h"
 
+#include "../pch_script.h"
+#include "../game_object_space.h"
+#include "../script_callback_ex.h"
+#include "../script_game_object.h"
+#include "../Actor.h"
+
 #define INV_GRID_WIDTHF			50.0f
 #define INV_GRID_HEIGHTF		50.0f
 
 CUIInventoryCellItem::CUIInventoryCellItem(CInventoryItem* itm)
 {
 	m_pData											= (void*)itm;
+	itm->m_cell_item								= this;
 
 	inherited::SetShader							(InventoryUtilities::GetEquipmentIconsShader());
 
@@ -30,11 +37,58 @@ bool CUIInventoryCellItem::EqualTo(CUICellItem* itm)
 {
 	CUIInventoryCellItem* ci = smart_cast<CUIInventoryCellItem*>(itm);
 	if(!itm)				return false;
+
+	// Real Wolf: Колбек на группировку и само регулирование группировкой предметов. 12.08.2014.
+	auto item1 = (CInventoryItem*)m_pData;
+	auto item2 = (CInventoryItem*)itm->m_pData;
+
+	g_actor->callback(GameObject::eUIGroupItems)(item1->object().lua_game_object(), item2->object().lua_game_object() );
+
+	auto fl1 = item1->m_flags;
+	auto fl2 = item2->m_flags;
+
+	item1->m_flags.set(CInventoryItem::FIUngroupable, false);
+	item2->m_flags.set(CInventoryItem::FIUngroupable, false);
+
+	if (fl1.test(CInventoryItem::FIUngroupable) || fl2.test(CInventoryItem::FIUngroupable) )
+		return false;
+
 	return					(
 								fsimilar(object()->GetCondition(), ci->object()->GetCondition(), 0.01f) &&
 								(object()->object().cNameSect() == ci->object()->object().cNameSect())
 							);
 }
+
+CUIInventoryCellItem::~CUIInventoryCellItem()
+{
+	if (auto item = object() )
+		item->m_cell_item = NULL;
+}
+
+void CUIInventoryCellItem::OnFocusReceive()
+{
+	inherited::OnFocusReceive();
+	auto script_obj = object()->object().lua_game_object();
+	g_actor->callback(GameObject::eCellItemFocus)(script_obj);
+}
+
+void CUIInventoryCellItem::OnFocusLost()
+{
+	inherited::OnFocusLost();	
+	auto script_obj = object()->object().lua_game_object();
+	g_actor->callback(GameObject::eCellItemFocusLost)(script_obj);
+}
+
+bool CUIInventoryCellItem::OnMouse(float x, float y, EUIMessages action)
+{
+	inherited::OnMouse(x, y, action);
+
+	//if (m_bCursorOverWindow)
+	g_actor->callback(GameObject::eOnCellItemMouse)(object()->object().lua_game_object(), x, y, action);
+
+	return false;
+}
+
 CUIDragItem* CUIInventoryCellItem::CreateDragItem()
 {
 	CUIDragItem* i = inherited::CreateDragItem();

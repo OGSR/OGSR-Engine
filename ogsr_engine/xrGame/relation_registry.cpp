@@ -142,6 +142,12 @@ CHARACTER_GOODWILL	 RELATION_REGISTRY::GetGoodwill			(u16 from, u16 to) const
 	return NEUTRAL_GOODWILL;
 }
 
+#include "pch_script.h"
+#include "game_object_space.h"
+#include "script_callback_ex.h"
+#include "script_game_object.h"
+#include "Actor.h"
+
 void RELATION_REGISTRY::SetGoodwill 	(u16 from, u16 to, CHARACTER_GOODWILL goodwill)
 {
 	RELATION_DATA& relation_data = relation_registry().registry().objects(from);
@@ -150,6 +156,9 @@ void RELATION_REGISTRY::SetGoodwill 	(u16 from, u16 to, CHARACTER_GOODWILL goodw
 	clamp							(goodwill, gw_limits.x, gw_limits.y);
 
 	relation_data.personal[to].SetGoodwill(goodwill);
+
+	if (g_actor)
+		g_actor->callback(GameObject::eOnGoodwillChange)(from, to);
 }
 
 
@@ -215,3 +224,16 @@ CHARACTER_GOODWILL	 RELATION_REGISTRY::GetReputationRelation		(CHARACTER_REPUTAT
 }
 
 //////////////////////////////////////////////////////////////////////////
+
+void	 RELATION_REGISTRY::ClearGoodwill			(u16 from, u16 to)
+{
+	if(relation_registry().registry().objects_ptr(from))
+	{
+		RELATION_DATA relation_data = relation_registry().registry().objects(from);
+		PERSONAL_RELATION_MAP::iterator it = relation_data.personal.find(to);
+		if(it != relation_data.personal.end())
+		{
+			relation_data.personal.erase(it);
+		}
+	}
+}

@@ -13,6 +13,8 @@
 #include "xr_time.h"
 #include "character_info_defs.h"
 #include "..\xr_3da\CameraBase.h"
+#include "WeaponHUD.h"
+#include "ui/UIStatic.h"
 
 #include "gameobject.h"
 #include "ai_space.h"
@@ -683,6 +685,10 @@ public:
 			void				SetDrugRadProtection(float _prot);
 			void				SetDrugPsyProtection(float _prot);
 
+			// functions for CInventoryItem class
+			void				SetIIFlags						(flags16);
+			flags16				GetIIFlags						();
+
 			// functions for object testing
 			_DECLARE_FUNCTION10(IsGameObject, bool);
 			_DECLARE_FUNCTION10(IsCar, bool);
@@ -732,6 +738,9 @@ public:
 			float				GetActorExoFactor() const; 					// влияет на бег в экзе
 			void				SetActorExoFactor(float _factor);		// влияет на бег в экзе
 			// KD
+
+			// Real Wolf 07.07.2014.
+			CUIStatic* GetCellItem() const;
 
 	DECLARE_SCRIPT_REGISTER_FUNCTION
 };

@@ -68,6 +68,39 @@ namespace GameObject {
 		eOnUpdateHUDAddonsVisibiility,
 		eOnAddonInit,
 
+		// These specifically say actor as I intend to add callbacks for NPCs firing their weapons.
+		eOnActorWeaponFire,
+		eOnActorWeaponJammed,
+		eOnActorWeaponEmpty,
+		eOnActorWeaponReload,
+
+		// NPC Weapon Callbacks.
+		eOnNPCWeaponFire,
+		eOnNPCWeaponJammed,
+		eOnNPCWeaponEmpty,
+		eOnNPCWeaponReload,
+
+		// Called when the player zooms their weapon in or out.
+		eOnActorWeaponZoomIn,
+		eOnActorWeaponZoomOut,
+
+		eCellItemFocus,
+		eCellItemFocusLost,
+		eCellItemSelect,
+		eOnCellItemMouse,
+
+		eBeforeSave,
+		ePostSave,
+
+		eUIMapClick,
+		eUIMapSpotClick,
+
+		eUIPickUpItemShowing,
+		eUIGroupItems,
+		eOnWpnShellDrop,
+		eOnThrowGrenade,
+		eOnGoodwillChange,
+
 		eDummy = u32(-1),
 	};
 };

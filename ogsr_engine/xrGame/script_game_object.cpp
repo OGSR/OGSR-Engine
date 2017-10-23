@@ -624,3 +624,11 @@ void CScriptGameObject::SetActorExoFactor(float _factor)
 	}
 	act->SetExoFactor(_factor);
 }
+
+
+CUIStatic* CScriptGameObject::GetCellItem() const
+{
+	if (auto obj = smart_cast<CInventoryItem*>(&object() ) )
+		return (CUIStatic*)obj->m_cell_item;
+	return NULL;
+}
