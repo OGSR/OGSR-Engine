@@ -283,7 +283,7 @@ void		CPhysicsShellHolder::	load				(IReader &input_packet)
 
 void CPhysicsShellHolder::PHSaveState(NET_Packet &P)
 {
-
+	//Msg("!!Called [CPhysicsShellHolder::PHSaveState]");
 	//CPhysicsShell* pPhysicsShell=PPhysicsShell();
 	CKinematics* K	=smart_cast<CKinematics*>(Visual());
 	//Flags8 lflags;
@@ -348,7 +348,8 @@ void CPhysicsShellHolder::PHSaveState(NET_Packet &P)
 
 void CPhysicsShellHolder::PHLoadState(IReader &P)
 {
-	
+	//Msg("!!Called [CPhysicsShellHolder::PHLoadState]");
+
 //	Flags8 lflags;
 	CKinematics* K=smart_cast<CKinematics*>(Visual());
 //	P.r_u8 (lflags.flags);
@@ -357,12 +358,13 @@ void CPhysicsShellHolder::PHLoadState(IReader &P)
 	if(K)
 	{
 		_low = P.r_u64();
-//		K->LL_SetBonesVisible(P.r_u64());
 		K->LL_SetBoneRoot(P.r_u16());
 	}
-	else //KRodin: странно, а почему тут ничего не загружается если нет K? Сохраняются данные-то в любом случае. Тут баг, как мне кажется. Условие надо вообще убрать, или ничего не сохранять в функции выше, если K нету, или просто читать те два значения и ничего с ними не делать. Только вот неизвестно к чему это приведёт. Надо б ещё в других движках глянуть, как там сделано.
-		Msg("!![CPhysicsShellHolder::PHLoadState] Something strange...");
-
+	else //Скорее всего K есть всегда, но на всякий случай.
+	{
+		P.r_u64();
+		P.r_u16();
+	}
 	Fvector min=P.r_vec3();
 	Fvector max=P.r_vec3();
 	

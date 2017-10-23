@@ -42,7 +42,7 @@ public:
 protected:
 	IC		void				join_restrictions				(shared_str &restrictions, shared_str update);
 	IC		void				difference_restrictions			(shared_str &restrictions, shared_str update);
-	IC		CRestrictionPtr		restriction						(ALife::_OBJECT_ID id);
+	/*IC*/		CRestrictionPtr		restriction						(ALife::_OBJECT_ID id);
 			CRestrictionPtr		restriction						(shared_str out_restrictors, shared_str in_restrictors);
 	IC		void				collect_garbage					();
 	virtual void				on_default_restrictions_changed	();

@@ -616,13 +616,21 @@ void CKinematics::AddWallmark(const Fmatrix* parent_xform, const Fvector3& start
 		if (LL_GetBoneVisible(k)&&!BD.shape.flags.is(SBoneShape::sfNoPickable)){
 			Fobb& obb		= cache_obb[k];
 			obb.transform	(BD.obb,LL_GetBoneInstance(k).mTransform);
-			if (CDB::TestRayOBB(S,D, obb))
-				for (u32 i=0; i<children.size(); i++)
-					if (LL_GetChild(i)->PickBone(r,dist,S,D,k)) picked=TRUE;
+			if (CDB::TestRayOBB(S, D, obb)) {
+				for (u32 i = 0; i < children.size(); i++) {
+					if (LL_GetChild(i)->PickBone(r, dist, S, D, k))
+					{
+						picked = TRUE;
+						dist = r.dist;
+						normal = r.normal;
+						//dynamics set wallmarks bug fix
+					}
+				}
+			}
 		}
 	}
 	if (!picked) return; 
- 
+
 	// calculate contact point
 	Fvector cp;	cp.mad		(S,D,dist); 
  
@@ -655,7 +663,7 @@ void CKinematics::AddWallmark(const Fmatrix* parent_xform, const Fvector3& start
 	intrusive_ptr<CSkeletonWallmark>		wm = xr_new<CSkeletonWallmark>(this,parent_xform,shader,cp,Device.fTimeGlobal);
 	wm->m_LocalBounds.set		(cp,size*2.f);
 	wm->XFORM()->transform_tiny	(wm->m_Bounds.P,cp);
-	wm->m_Bounds.R				= wm->m_Bounds.R; 
+	wm->m_Bounds.R				= wm->m_LocalBounds.R;
 
 	Fvector tmp; tmp.invert		(D);
 	normal.add(tmp).normalize	();
@@ -676,7 +684,7 @@ void CKinematics::AddWallmark(const Fmatrix* parent_xform, const Fvector3& start
 	wallmarks.push_back		(wm);
 }
 
-static const float LIFE_TIME=30.f;
+static constexpr float LIFE_TIME = 50.f*60.f;
 struct zero_wm_pred : public std::unary_function<intrusive_ptr<CSkeletonWallmark>, bool>
 {
 	bool operator()(const intrusive_ptr<CSkeletonWallmark> x){ return x==0; }
@@ -727,7 +735,7 @@ void CKinematics::RenderWallmark(intrusive_ptr<CSkeletonWallmark> wm, FVF::LIT* 
 				Fmatrix& xform0			= LL_GetBoneInstance(F.bone_id[k][0]).mRenderTransform; 
 				xform0.transform_tiny	(P,F.vert[k]);
 			}
-			else if (F.bone_id[k][0] == F.bone_id[k][2])
+			else if (F.bone_id[k][1] == F.bone_id[k][2])
 			{
 				// 2-link
 				Fvector P0,P1;
@@ -737,31 +745,45 @@ void CKinematics::RenderWallmark(intrusive_ptr<CSkeletonWallmark> wm, FVF::LIT* 
 				xform1.transform_tiny	(P1,F.vert[k]);
 				P.lerp					(P0,P1,F.weight[k][0]);
 			}
-			else if (F.bone_id[k][0] == F.bone_id[k][3])
+			else if (F.bone_id[k][2] == F.bone_id[k][3])
 			{
 				// 3-link
 				Fvector P0, P1, P2;
 				Fmatrix& xform0 = LL_GetBoneInstance(F.bone_id[k][0]).mRenderTransform;
 				Fmatrix& xform1 = LL_GetBoneInstance(F.bone_id[k][1]).mRenderTransform;
 				Fmatrix& xform2 = LL_GetBoneInstance(F.bone_id[k][2]).mRenderTransform;
-				xform0.transform_tiny(P0, F.vert[k]); P0.mul(F.weight[k][0]);
-				xform1.transform_tiny(P1, F.vert[k]); P1.mul(F.weight[k][1]);
-				xform2.transform_tiny(P2, F.vert[k]); P2.mul(1.0f - F.weight[k][0] - F.weight[k][1]);
-				P = P0; P.add(P1); P.add(P2);
+				xform0.transform_tiny(P0, F.vert[k]);
+				xform1.transform_tiny(P1, F.vert[k]);
+				xform2.transform_tiny(P2, F.vert[k]);
+				float w0 = F.weight[k][0];
+				float w1 = F.weight[k][1];
+				P0.mul(w0);
+				P1.mul(w1);
+				P2.mul(1 - w0 - w1);
+				P = P0;
+				P.add(P1);
+				P.add(P2);
 			}
 			else
 			{
 				// 4-link
-				Fvector P0, P1, P2, P3;
-				Fmatrix& xform0 = LL_GetBoneInstance(F.bone_id[k][0]).mRenderTransform;
-				Fmatrix& xform1 = LL_GetBoneInstance(F.bone_id[k][1]).mRenderTransform;
-				Fmatrix& xform2 = LL_GetBoneInstance(F.bone_id[k][2]).mRenderTransform;
-				Fmatrix& xform3 = LL_GetBoneInstance(F.bone_id[k][3]).mRenderTransform;
-				xform0.transform_tiny(P0, F.vert[k]); P0.mul(F.weight[k][0]);
-				xform1.transform_tiny(P1, F.vert[k]); P1.mul(F.weight[k][1]);
-				xform2.transform_tiny(P2, F.vert[k]); P2.mul(F.weight[k][2]);
-				xform3.transform_tiny(P3, F.vert[k]); P3.mul(1.0f - F.weight[k][0] - F.weight[k][1] - F.weight[k][2]);
-				P = P0; P.add(P1); P.add(P2); P.add(P3);
+				Fvector PB[4];
+				for (int i = 0; i < 4; ++i) {
+					Fmatrix& xform
+						= LL_GetBoneInstance(F.bone_id[k][i]).mRenderTransform;
+					xform.transform_tiny(PB[i], F.vert[k]);
+				}
+
+				float s = 0.f;
+				for (int i = 0; i < 3; ++i) {
+					PB[i].mul(F.weight[k][i]);
+					s += F.weight[k][i];
+				}
+				PB[3].mul(1 - s);
+
+				P = PB[0];
+				for (int i = 1; i < 4; ++i)
+					P.add(PB[i]);
 			}
 
 			wm->XFORM()->transform_tiny	(V->p,P);

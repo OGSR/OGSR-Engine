@@ -21,7 +21,7 @@ struct ENGINE_API vertBoned1W			// (3+3+3+3+2+1)*4 = 15*4 = 60 bytes
 	Fvector	B;
 	float	u,v;
 	u32		matrix;
-	void	get_pos( Fvector& p ) { p.set(P); }
+	void	get_pos( Fvector& p ) const { p.set(P); }
 #ifdef	DEBUG	
 	static const u8 bones_count = 1;
 	u16		get_bone_id(u8 bone)const { VERIFY(bone<bones_count); return u16(matrix); }
@@ -37,7 +37,7 @@ struct ENGINE_API vertBoned2W			// (1+3+3 + 1+3+3 + 2)*4 = 16*4 = 64 bytes
 	Fvector	B;
 	float	w;
 	float	u,v;
-	void	get_pos( Fvector& p ) { p.set(P); }
+	void	get_pos( Fvector& p ) const { p.set(P); }
 #ifdef	DEBUG
 	static const u8 bones_count = 2;
 	u16		get_bone_id(u8 bone)const { VERIFY(bone<bones_count); return bone == 0 ? matrix0 : matrix1; }
@@ -52,7 +52,7 @@ struct ENGINE_API vertBoned3W          // 70 bytes
 	Fvector	B;
 	float	w[2];
 	float	u, v;
-	void	get_pos(Fvector& p) { p.set(P); }
+	void	get_pos(Fvector& p) const { p.set(P); }
 #ifdef	DEBUG
 	static const u8 bones_count = 3;
 	u16		get_bone_id(u8 bone)const { VERIFY(bone<bones_count); return m[bone]; }
@@ -67,7 +67,7 @@ struct ENGINE_API vertBoned4W       //76 bytes
 	Fvector	B;
 	float	w[3];
 	float	u, v;
-	void	get_pos(Fvector& p) { p.set(P); }
+	void	get_pos(Fvector& p) const { p.set(P); }
 #ifdef	DEBUG
 	static const u8 bones_count = 4;
 	u16		get_bone_id(u8 bone)const { VERIFY(bone<bones_count); return m[bone]; }
@@ -166,7 +166,7 @@ BOOL pick_bone(T_buffer vertices, CKinematics* Parent, CKinematics::pick_result 
 		}
 		float u, v;
 		r.dist = flt_max;
-		if (CDB::TestRayTri(S, D, r.tri, u, v, r.dist, true) && (dist<dist)) {
+		if (CDB::TestRayTri(S, D, r.tri, u, v, r.dist, true) && (r.dist<dist)) { //KRodin: fixed! Именно из-за простейшей ошибки в этой строке не работали воллмарки на динамических объектах.
 			r.normal.mknormal(r.tri[0], r.tri[1], r.tri[2]);
 			return TRUE;
 		};
