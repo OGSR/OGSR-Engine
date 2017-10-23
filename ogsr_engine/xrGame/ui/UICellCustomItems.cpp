@@ -42,6 +42,9 @@ bool CUIInventoryCellItem::EqualTo(CUICellItem* itm)
 	auto item1 = (CInventoryItem*)m_pData;
 	auto item2 = (CInventoryItem*)itm->m_pData;
 
+	if (item1->m_flags.test(CInventoryItem::FIUngroupable) || item2->m_flags.test(CInventoryItem::FIUngroupable) )
+		return false;
+
 	g_actor->callback(GameObject::eUIGroupItems)(item1->object().lua_game_object(), item2->object().lua_game_object() );
 
 	auto fl1 = item1->m_flags;
