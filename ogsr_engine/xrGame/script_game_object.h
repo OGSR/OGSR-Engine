@@ -137,16 +137,7 @@ public:
 							operator CObject*		();
 
 	//KRodin: перенесено сюда, иначе не компилится
-	IC		CGameObject			&object				() const
-	{
-		if (m_game_object && m_game_object->lua_game_object() == this)
-			return	(*m_game_object);
-#ifdef DEBUG
-		ai().script_engine().script_log(eLuaMessageTypeError, "you are trying to use a destroyed object [%x]", m_game_object);
-		THROW2(m_game_object && m_game_object->lua_game_object() == this, "Probably, you are trying to use a destroyed object!");
-#endif
-		return	(*m_game_object);
-	}
+	IC		CGameObject			&object				() const;
 
 			CScriptGameObject	*Parent				() const;
 			void				Hit					(CScriptHit *tLuaHit);
@@ -742,6 +733,12 @@ public:
 			// Real Wolf 07.07.2014.
 			CUIStatic* GetCellItem() const;
 
+			// alpet: visual functions for CWeapon descedants 
+			_DECLARE_FUNCTION10 (alife_object			,			CSE_ALifeDynamicObject*);
+			_DECLARE_FUNCTION10 (GetWeaponHUD_Visual	,			IRender_Visual*);
+			_DECLARE_FUNCTION10 (GetWeaponHUD			,			CWeaponHUD*);
+			void				LoadWeaponHUD_Visual	(LPCSTR wpn_hud_section);
+
 	DECLARE_SCRIPT_REGISTER_FUNCTION
 };
 add_to_type_list(CScriptGameObject)
@@ -753,3 +750,20 @@ extern void sell_condition	(float friend_factor, float enemy_factor);
 extern void buy_condition	(CScriptIniFile *ini_file, LPCSTR section);
 extern void buy_condition	(float friend_factor, float enemy_factor);
 extern void show_condition	(CScriptIniFile *ini_file, LPCSTR section);
+
+extern void	lua_pushgameobject(lua_State *L, CGameObject *obj);
+
+template <typename T>
+IC bool test_pushobject(lua_State *L, CGameObject* obj)
+{	
+	using namespace luabind::detail;
+	T *pObj = smart_cast<T*> (obj);
+	if (pObj && get_class_rep<T>(L))
+	{		
+		convert_to_lua<T*>(L, pObj);  // обязательно конвертировать указатель, а не значение. Иначе вызов деструктора при сборке мусора!
+		return true;		
+	}
+	return false;
+}
+
+#include "script_game_object_impl.h" // alpet: исправление error LNK2019: unresolved external symbol "public: class CGameObject & __thiscall CScriptGameObject::object(void)const "

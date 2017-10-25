@@ -102,6 +102,9 @@ public:
 
 	DECLARE_SCRIPT_REGISTER_FUNCTION
 };
+
+CTorch *get_torch(CScriptGameObject *script_obj); // alpet: для экспорта в объект CScriptGameObject
+
 add_to_type_list(CTorch)
 #undef script_type_list
 #define script_type_list save_type_list(CTorch)

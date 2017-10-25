@@ -283,6 +283,11 @@ public:
 	virtual	LPCSTR			visual_name			(CSE_Abstract *server_entity);
 
 	virtual	void			On_B_NotCurrentEntity () {};
+
+	CSE_ALifeDynamicObject* alife_object() const; // alpet: возвращает серверный экземпл€р дл€ этого объекта
+	virtual void			UpdateXFORM(const Fmatrix &upd); // alpet: дл€ обновлени€ позиции и направлени€
+	virtual float			GetHealth() const  { return -1;  } // alpet: дл€ универсального доступа к переменным класса вроде fHealth
+	virtual void			SetHealth(float h) { }
 };
 
 #endif // !defined(AFX_GAMEOBJECT_H__3DA72D03_C759_4688_AEBB_89FA812AA873__INCLUDED_)

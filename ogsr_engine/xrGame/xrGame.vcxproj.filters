@@ -6485,6 +6485,9 @@
       <Filter>AI\AScript\ScriptClasses\ScriptActor</Filter>
     </ClInclude>
     <ClInclude Include="..\build_config_defines.h" />
+    <ClInclude Include="script_game_object_impl.h">
+      <Filter>AI\AScript\ScriptClasses\ScriptGameObject</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="damage_manager.cpp">
@@ -9618,6 +9621,9 @@
     </ClCompile>
     <ClCompile Include="script_actor.cpp">
       <Filter>AI\AScript\ScriptClasses\ScriptActor</Filter>
+    </ClCompile>
+    <ClCompile Include="script_game_object_script4.cpp">
+      <Filter>AI\AScript\ScriptClasses\ScriptGameObject</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
