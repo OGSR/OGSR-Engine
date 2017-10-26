@@ -632,3 +632,10 @@ CUIStatic* CScriptGameObject::GetCellItem() const
 		return (CUIStatic*)obj->m_cell_item;
 	return NULL;
 }
+
+LPCSTR CScriptGameObject::GetBoneName(u16 id) const
+{
+	if (auto K = smart_cast<CKinematics*>(object().Visual()) )
+		return K->LL_BoneName_dbg(id);
+	return 0;
+}

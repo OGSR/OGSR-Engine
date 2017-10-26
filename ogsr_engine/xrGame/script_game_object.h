@@ -732,6 +732,7 @@ public:
 
 			// Real Wolf 07.07.2014.
 			CUIStatic* GetCellItem() const;
+			LPCSTR GetBoneName(u16) const;
 
 			// alpet: visual functions for CWeapon descedants 
 			_DECLARE_FUNCTION10 (alife_object			,			CSE_ALifeDynamicObject*);
