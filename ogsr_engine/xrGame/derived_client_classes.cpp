@@ -394,8 +394,8 @@ void CWeaponScript::script_register(lua_State *L)
 
 			class_<CWeapon,	CInventoryItemObject>		("CWeapon")
 			// из неэкспортируемого класса CHudItemObject:
-			.property("state", &CHudItemObject::GetState)
-			.property("next_state", &CHudItemObject::GetNextState)
+			.def("get_hud_item_state", &CHudItemObject::GetState)
+			.def("get_hud_item_next_state", &CHudItemObject::GetNextState)
 			// ============================================================================= //
 			// параметры отдачи вли€ющие на камеру
 			.def_readwrite("cam_max_angle"				,			&CWeapon::camMaxAngle)
@@ -436,6 +436,7 @@ void CWeaponScript::script_register(lua_State *L)
 			.def_readwrite("zoom_rotate_time"			,			&CWeapon::m_fZoomRotateTime)
 			.def_readwrite("iron_sight_zoom_factor"		,			&CWeapon::m_fIronSightZoomFactor)
 			.def_readwrite("scrope_zoom_factor"			,			&CWeapon::m_fScopeZoomFactor)
+			.def_readwrite("zoom_rotation_factor"			,			&CWeapon::m_fZoomRotationFactor)
 			// переменные дл€ подстройки положени€ аддонов из скриптов:
 			
 			.def_readwrite("grenade_launcher_x"			,			&CWeapon::m_iGrenadeLauncherX)
