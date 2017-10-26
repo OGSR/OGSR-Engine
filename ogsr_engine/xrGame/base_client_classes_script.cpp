@@ -20,6 +20,7 @@
 #include "script_game_object.h"
 #include "xrServer_Space.h"
 #include "xrServer_Objects_ALife.h"
+#include "Weapon.h"
 
 struct CGlobalFlags { };
 
@@ -175,6 +176,19 @@ void CObjectScript::script_register		(lua_State *L)
 				value("flVisibleForMap"			,				int(CSE_ALifeObject:: flVisibleForMap)),
 				value("flUseSmartTerrains"		,				int(CSE_ALifeObject:: flUseSmartTerrains)),
 				value("flCheckForSeparator"		,				int(CSE_ALifeObject:: flCheckForSeparator))
+			]
+			.enum_("weapon_states")
+			[
+				value("eIdle",		int(CWeapon::EWeaponStates::eIdle)),
+				value("eFire",		int(CWeapon::EWeaponStates::eFire)),
+				value("eFire2",		int(CWeapon::EWeaponStates::eFire2)),
+				value("eReload",	int(CWeapon::EWeaponStates::eReload)),
+				value("eShowing",	int(CWeapon::EWeaponStates::eShowing)),
+				value("eHiding",	int(CWeapon::EWeaponStates::eHiding)),
+				value("eHidden",	int(CWeapon::EWeaponStates::eHidden)),
+				value("eMisfire",	int(CWeapon::EWeaponStates::eMisfire)),
+				value("eMagEmpty",	int(CWeapon::EWeaponStates::eMagEmpty)),
+				value("eSwitch",	int(CWeapon::EWeaponStates::eSwitch))
 			]
 
 //		,class_<CPhysicsShellHolder,CGameObject>("CPhysicsShellHolder")
