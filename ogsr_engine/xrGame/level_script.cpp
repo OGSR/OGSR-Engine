@@ -688,6 +688,12 @@ void send_event_mouse_wheel(int vol) //Вращение колеса мыши
 }
 //
 
+// Real Wolf 07.07.2014
+u32 vertex_id(const Fvector &vec)
+{
+	return ai().level_graph().vertex_id(vec);
+}
+
 #pragma optimize("s",on)
 void CLevel::script_register(lua_State *L)
 {
@@ -786,6 +792,9 @@ void CLevel::script_register(lua_State *L)
 		def("get_second_talker",				&GetSecondTalker),
 
 		def("ray_query",						&PerformRayQuery),
+
+		// Real Wolf 07.07.2014
+		def("vertex_id",						&vertex_id),
 
 		def("advance_game_time",				&AdvanceGameTime),
 
