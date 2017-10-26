@@ -303,7 +303,7 @@ void CALifeSimulator__use_ai_locations(CALifeSimulator *self, CSE_Abstract *obje
 	obj->used_ai_locations(_use);
 }
 
-void CALifeSimulator__teleport_object(CALifeSimulator *self, u16 ID, Fvector _pos, GameGraph::_GRAPH_ID _gvid, u32 _lvid)
+void CALifeSimulator__teleport_object(CALifeSimulator *self, u16 ID, Fvector _pos, u32 _lvid, GameGraph::_GRAPH_ID _gvid)
 {
 	self->teleport_object(ID, _gvid, _lvid, _pos);
 }
