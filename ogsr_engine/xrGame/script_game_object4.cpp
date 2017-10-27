@@ -544,6 +544,16 @@ u32 CScriptGameObject::GetCurrAmmo()
 	}
 	return k->m_boxCurr;
 }
+
+u32 CScriptGameObject::GetAmmoElapsed2()
+{
+	const CWeaponMagazinedWGrenade *weapon = smart_cast<CWeaponMagazinedWGrenade*>(&object());
+	if (!weapon)
+		return (0);
+	return (weapon->GetAmmoElapsed2());
+}
+
+
 void CScriptGameObject::SetHudOffset(Fvector _offset)
 {
 	CHudItem						*k = smart_cast<CHudItem*>(&object());

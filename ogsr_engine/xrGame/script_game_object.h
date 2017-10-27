@@ -659,6 +659,7 @@ public:
 			bool				GetGLMode();
 
 			u32					GetCurrAmmo();
+			u32					GetAmmoElapsed2();
 			void				SetHudOffset(Fvector _offset);
 //			void				SetHudRotate(float _x, float _y);
 			void				SetHudRotate(Fvector2 _v);
