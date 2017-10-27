@@ -50,6 +50,7 @@ void CEnvAmbient::load(const shared_str& sect)
 	section				= sect;
 	string_path			tmp;
 	// sounds
+	ASSERT_FMT( pSettings->line_exist( sect, "sounds" ), "CEnvAmbient::load: section '%s' not found", *sect );
 	if (pSettings->line_exist(sect,"sounds")){
 		Fvector2 t		= pSettings->r_fvector2	(sect,"sound_period");
 		sound_period.set(iFloor(t.x*1000.f),iFloor(t.y*1000.f));
