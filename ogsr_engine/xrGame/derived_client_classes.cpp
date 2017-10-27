@@ -425,6 +425,7 @@ void CWeaponScript::script_register(lua_State *L)
 			.def_readwrite("fire_distance"				,			&CWeapon::fireDistance)
 			.def_readwrite("fire_dispersion_base"		,			&CWeapon::fireDispersionBase)
 			.def_readwrite("time_to_aim"				,			&CWeapon::m_fTimeToAim)
+			.def_readwrite("time_to_fire"		,			&CWeapon::fTimeToFire)
 			.def_readwrite("use_aim_bullet"				,			&CWeapon::m_bUseAimBullet)
 			.property("hit_power"						,			&get_hit_power, &set_hit_power)
 
@@ -435,7 +436,7 @@ void CWeaponScript::script_register(lua_State *L)
 			.def_readwrite("zoom_factor"				,			&CWeapon::m_fZoomFactor)
 			.def_readwrite("zoom_rotate_time"			,			&CWeapon::m_fZoomRotateTime)
 			.def_readwrite("iron_sight_zoom_factor"		,			&CWeapon::m_fIronSightZoomFactor)
-			.def_readwrite("scrope_zoom_factor"			,			&CWeapon::m_fScopeZoomFactor)
+			.def_readwrite("scope_zoom_factor"			,			&CWeapon::m_fScopeZoomFactor)
 			.def_readwrite("zoom_rotation_factor"			,			&CWeapon::m_fZoomRotationFactor)
 			// переменные для подстройки положения аддонов из скриптов:
 			
