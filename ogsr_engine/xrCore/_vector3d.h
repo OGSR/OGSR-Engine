@@ -83,7 +83,7 @@ public:
 	}
 
 	// Clamp vector3
-	IC	SelfRef	clamp(const Self &min, const Self max) 
+	IC	SelfRef	clamp(const Self &min, const Self& max) // https://github.com/OpenXRay/xray-16/commit/e1cca82fbd1f94e93f0651e676cdcbbd70a04655
 	{
 		::clamp(x,min.x,max.x);
 		::clamp(y,min.y,max.y);
