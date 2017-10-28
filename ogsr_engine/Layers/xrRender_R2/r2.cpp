@@ -10,7 +10,7 @@
 
 CRender										RImplementation;
 #ifndef OGSE_DEBUG
-#define USE_SHADER_CACHE
+//#define USE_SHADER_CACHE
 #endif
 
 //////////////////////////////////////////////////////////////////////////

@@ -18,7 +18,7 @@
 #include "xrCPU_Pipe.h"
 
 #ifdef _OGSE
-#define QUATERNION_SKINNING
+//#define QUATERNION_SKINNING
 #endif
 
 //////////////////////////////////////////////////////////////////////
