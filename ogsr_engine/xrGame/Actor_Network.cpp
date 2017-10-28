@@ -637,7 +637,7 @@ BOOL CActor::net_Spawn		(CSE_Abstract* DC)
 
 
 	//-------------------------------------
-	m_States.empty();
+	m_States.clear(); // empty() does not clear the array and checks whether it is empty.
 	//-------------------------------------
 	if (!g_Alive())
 	{
