@@ -99,7 +99,6 @@ extern ECORE_API int			ps_r2_wait_sleep;
 
 extern void						xrRender_initconsole	();
 extern BOOL						xrRender_test_hw		();
-extern void						xrRender_apply_tf		();
 
 // KD
 extern Flags32		ps_r2_test_flags;
