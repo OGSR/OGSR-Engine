@@ -67,6 +67,8 @@ public:
 
 	virtual void	Center			(Fvector& C)	const;
 	virtual float	Radius			()				const;
+
+	void SetLSFParams(float _speed, float _amount, float _jit);
 	DECLARE_SCRIPT_REGISTER_FUNCTION
 };
 add_to_type_list(CHangingLamp)

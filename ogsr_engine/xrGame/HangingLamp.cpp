@@ -358,6 +358,10 @@ BOOL CHangingLamp::UsedAI_Locations()
 	return					(FALSE);
 }
 
+void CHangingLamp::SetLSFParams(float _speed, float _amount, float _jit) {
+	light_render->set_lsf_params(_speed, _amount, _jit);
+}
+
 #pragma optimize("s",on)
 void CHangingLamp::script_register(lua_State *L)
 {
@@ -367,5 +371,6 @@ void CHangingLamp::script_register(lua_State *L)
 			.def(luabind::constructor<>())
 			.def("turn_on",		&CHangingLamp::TurnOn)
 			.def("turn_off",	&CHangingLamp::TurnOff)
+			.def("set_lsf_params",	&CHangingLamp::SetLSFParams)
 	];
 }
