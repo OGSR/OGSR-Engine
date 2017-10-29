@@ -56,10 +56,10 @@ File Scope Function Declarations
 LPCTSTR __stdcall InternalGetStackTraceString(DWORD dwOpts, EXCEPTION_POINTERS* pExPtrs);
 
 // Initializes the symbol engine if needed
-void InitializeSymbolEngine(void);
+void InitializeSymbolEngine();
 
 // Cleans up the symbol engine if needed
-void DeinitializeSymbolEngine(void);
+void DeinitializeSymbolEngine();
 
 /*//////////////////////////////////////////////////////////////////////
 Crash Handler Function Implementation
@@ -275,7 +275,7 @@ LPCTSTR __stdcall InternalGetStackTraceString(DWORD dwOpts, EXCEPTION_POINTERS* 
         // sprintf(buf, "error %d", err);
         // MessageBoxA(0, buf, "Flux Engine", 0);
         // ASSERT(!"Crashed in InternalGetStackTraceString");
-		Msg("!!FATAL: inner exception in  InternalGetStackTraceString");
+		Log("!!FATAL: inner exception in  InternalGetStackTraceString");
         szRet = NULL;
     }
     return szRet;
@@ -325,7 +325,7 @@ BOOL __stdcall GetNextStackTraceStringVB(DWORD dwOpts, EXCEPTION_POINTERS* pExPt
 }
 
 // Initializes the symbol engine if needed
-void InitializeSymbolEngine(void) {
+void InitializeSymbolEngine() {
     // static char const ms_symsrv[] = "http://msdl.microsoft.com/download/symbols";
     if (!g_bSymEngInit) {
         // Set up the symbol engine.
@@ -345,7 +345,7 @@ void InitializeSymbolEngine(void) {
 }
 
 // Cleans up the symbol engine if needed
-void DeinitializeSymbolEngine(void) {
+void DeinitializeSymbolEngine() {
     if (g_bSymEngInit) {
         SymCleanup((HANDLE)GetCurrentProcessId());
         g_bSymEngInit = FALSE;

@@ -132,8 +132,8 @@ BOOL CAI_Trader::net_Spawn			(CSE_Abstract* DC)
 	set_money				( l_tpTrader->m_dwMoney, false );
 
 	// Установка callback на кости
-	CBoneInstance			*bone_head =	&smart_cast<CKinematics*>(Visual())->LL_GetBoneInstance(smart_cast<CKinematics*>(Visual())->LL_BoneID("bip01_head"));
-	bone_head->set_callback	(bctCustom,BoneCallback,this);
+	//CBoneInstance			*bone_head =	&smart_cast<CKinematics*>(Visual())->LL_GetBoneInstance(smart_cast<CKinematics*>(Visual())->LL_BoneID("bip01_head"));
+	//bone_head->set_callback	(bctCustom,BoneCallback,this);
 
 	shedule.t_min			= 100;
 	shedule.t_max			= 2500; // This equaltiy is broken by Dima :-( // 30 * NET_Latency / 4;

@@ -12,12 +12,13 @@
 //////////////////////////////////////////////////////////////////////
 // FS_File
 //////////////////////////////////////////////////////////////////////
-FS_File::FS_File(xr_string nm, long sz, time_t modif,unsigned attr)	{set(nm,sz,modif,attr);}
-FS_File::FS_File(xr_string nm)										{set(nm,0,0,0);}
+// https://github.com/OpenXRay/xray-16/commit/7202f2355cbbb4a2fca1286386df1ffae7a7ad0e
+FS_File::FS_File(const xr_string& nm, long sz, time_t modif,unsigned attr)	{set(nm,sz,modif,attr);}
+FS_File::FS_File(const xr_string& nm)										{set(nm,0,0,0);}
 FS_File::FS_File(const _FINDDATA_T& f)								{set(f.name,f.size,f.time_write,(f.attrib&_A_SUBDIR)?flSubDir:0);}
-FS_File::FS_File(xr_string nm, const _FINDDATA_T& f)				{set(nm,f.size,f.time_write,(f.attrib&_A_SUBDIR)?flSubDir:0);}
+FS_File::FS_File(const xr_string& nm, const _FINDDATA_T& f)				{set(nm,f.size,f.time_write,(f.attrib&_A_SUBDIR)?flSubDir:0);}
 
-void FS_File::set(xr_string nm, long sz, time_t modif,unsigned attr)
+void FS_File::set(const xr_string& nm, long sz, time_t modif,unsigned attr)
 {
 	name		= nm;		xr_strlwr	(name);
 	size		= sz;

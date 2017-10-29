@@ -304,8 +304,8 @@ bool CInventory::Slot(PIItem pIItem, bool bNotActivate)
 		Activate				(pIItem->GetSlot());
 
 	
-	m_pOwner->OnItemSlot		(pIItem, pIItem->m_eItemPlace);
 	pIItem->m_eItemPlace		= eItemPlaceSlot;
+	m_pOwner->OnItemSlot		(pIItem, pIItem->m_eItemPlace);
 	pIItem->OnMoveToSlot		();
 	
 	pIItem->object().processing_activate();

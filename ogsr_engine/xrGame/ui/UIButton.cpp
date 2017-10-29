@@ -91,6 +91,7 @@ bool  CUIButton::OnMouse(float x, float y, EUIMessages mouse_action)
 			
 				if (!m_bIsSwitch)
 					m_eButtonState = BUTTON_NORMAL;
+				return true; // fixed OnMouseAction (by kolmogor)
 			}
 			else if(mouse_action == WINDOW_MOUSE_MOVE)
 			{

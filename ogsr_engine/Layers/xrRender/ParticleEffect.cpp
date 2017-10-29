@@ -205,7 +205,7 @@ void CParticleEffect::OnDeviceDestroy()
 	}
 }
 
-#if !defined(_EDITOR) && defined(THREAD_PARTICLES)
+#if !defined(_EDITOR) //&& defined(THREAD_PARTICLES) KRodin: попробуем так.
 //----------------------------------------------------
 IC void FillSprite_fpu(FVF::LIT*& pv, const Fvector& T, const Fvector& R, const Fvector& pos, const Fvector2& lt, const Fvector2& rb, float r1, float r2, u32 clr, float angle)
 {
@@ -235,19 +235,7 @@ IC void FillSprite_fpu(FVF::LIT*& pv, const Fvector& T, const Fvector& R, const 
 	pv->set(c.x + pos.x, c.y + pos.y, c.z + pos.z, clr, rb.x, rb.y);	pv++;
 	pv->set(b.x + pos.x, b.y + pos.y, b.z + pos.z, clr, rb.x, lt.y);	pv++;
 }
-#ifndef _WIN64
-__forceinline void fsincos(const float angle, float &sine, float &cosine)
-{
-	__asm {
-		fld			DWORD PTR[angle]
-		fsincos
-		mov			eax, DWORD PTR[cosine]
-		fstp		DWORD PTR[eax]
-		mov			eax, DWORD PTR[sine]
-		fstp		DWORD PTR[eax]
-	}
-}
-#endif
+
 IC void FillSprite(FVF::LIT*& pv, const Fvector& T, const Fvector& R, const Fvector& pos, const Fvector2& lt, const Fvector2& rb, float r1, float r2, u32 clr, float sina, float cosa)
 {
 	__m128 Vr, Vt, _T, _R, _pos, _zz, _sa, _ca, a, b, c, d;
@@ -404,17 +392,8 @@ void ParticleRenderStream(LPVOID lpvParams)
 
 		if (angle != *((DWORD*)&m.rot.x)) {
 			angle = *((DWORD*)&m.rot.x);
-#ifdef _WIN64
-			sina = sinf(*(float*)&angle);
-			cosa = cosf(*(float*)&angle);
-#else
-			__asm {
-				fld			DWORD PTR[angle]
-				fsincos
-				fstp		DWORD PTR[cosa]
-				fstp		DWORD PTR[sina]
-			}
-#endif
+			sina = std::sinf(*(float*)&angle);
+			cosa = std::cosf(*(float*)&angle);
 		}
 
 		_mm_prefetch(64 + (char*)&particles[i + 1], _MM_HINT_NTA);
@@ -512,7 +491,7 @@ void CParticleEffect::Render(float)
 
 			u32 nWorkers = ttapi_GetWorkersCount();
 
-			if (p_cnt < nWorkers * 20)
+			if (p_cnt < nWorkers * 64)
 				nWorkers = 1;
 
 			PRS_PARAMS* prsParams = (PRS_PARAMS*)_alloca(sizeof(PRS_PARAMS) * nWorkers);

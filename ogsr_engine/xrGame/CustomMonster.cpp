@@ -745,6 +745,8 @@ void CCustomMonster::net_Destroy()
 	CScriptEntity::net_Destroy	();
 	sound().unload				();
 	movement().net_Destroy		();
+
+	Actor()->SetActorVisibility(ID(), 0.f);
 	
 	Device.remove_from_seq_parallel	(
 		fastdelegate::FastDelegate0<>(

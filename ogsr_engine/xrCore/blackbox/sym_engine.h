@@ -11,6 +11,7 @@ scope, so I didn’t wrap them with this class.
 #pragma once
 
 #include <tchar.h>
+#include <memory>
 
 // The great Bugslayer idea of creating wrapper classes on structures
 // that have size fields came from fellow MSJ columnist, Paul DiLascia.
@@ -44,8 +45,8 @@ public:
     // To use this class, call the SymInitialize member function to
     // initialize the symbol engine and then use the other member
     // functions in place of their corresponding DBGHELP.DLL functions.
-    SymbolEngine(void) {}
-    virtual ~SymbolEngine(void) {}
+	SymbolEngine() = default;
+	virtual ~SymbolEngine() = default;
     /*----------------------------------------------------------------------
     Public Helper Information Functions
     ----------------------------------------------------------------------*/
@@ -95,10 +96,9 @@ public:
         }
 
         // Got the version size, now get the version information.
-        LPVOID lpData = (LPVOID) new TCHAR[dwVerSize];
+		auto lpData = LPVOID(std::make_unique<TCHAR[]>(dwVerSize).get());
         if (GetFileVersionInfo(szImageHlp, dwVerInfoHandle, dwVerSize, lpData) == false) {
-            delete[] lpData;
-            return false;
+             return false;
         }
 
         VS_FIXEDFILEINFO* lpVerInfo;
@@ -109,7 +109,6 @@ public:
             dwLS = lpVerInfo->dwFileVersionLS;
         }
 
-        delete[] lpData;
         return bRet;
     }
 
@@ -177,18 +176,12 @@ public:
     ----------------------------------------------------------------------*/
 public:
     BOOL SymGetLineFromAddr(IN DWORD dwAddr, OUT PDWORD pdwDisplacement, OUT PIMAGEHLP_LINE Line) {
-#ifdef DO_NOT_WORK_AROUND_SRCLINE_BUG
-        // Just pass along the values returned by the main function.
-        return ::SymGetLineFromAddr(m_hProcess, dwAddr, pdwDisplacement, Line);
-
-#else
         // The problem is that the symbol engine finds only those source
         // line addresses (after the first lookup) that fall exactly on
         // a zero displacement. I’ll walk backward 100 bytes to
         // find the line and return the proper displacement.
         DWORD dwTempDis = 0;
-        while (::SymGetLineFromAddr(m_hProcess, dwAddr - dwTempDis, pdwDisplacement, Line) ==
-               false) {
+        while (::SymGetLineFromAddr(m_hProcess, dwAddr - dwTempDis, pdwDisplacement, Line) == false) {
             dwTempDis += 1;
             if (100 == dwTempDis) {
                 return FALSE;
@@ -201,7 +194,6 @@ public:
             *pdwDisplacement = dwTempDis;
         }
         return TRUE;
-#endif // DO_NOT_WORK_AROUND_SRCLINE_BUG
     }
 
     BOOL SymGetLineFromName(IN LPSTR ModuleName, IN LPSTR FileName, IN DWORD dwLineNumber,

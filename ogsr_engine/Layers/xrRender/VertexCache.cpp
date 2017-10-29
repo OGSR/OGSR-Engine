@@ -3,7 +3,7 @@
 
 VertexCache::VertexCache()
 {
-  VertexCache(16);
+	this->VertexCache::VertexCache(16);
 }
 
 
