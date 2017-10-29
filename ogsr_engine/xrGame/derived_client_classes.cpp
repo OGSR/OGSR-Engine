@@ -394,8 +394,8 @@ void CWeaponScript::script_register(lua_State *L)
 
 			class_<CWeapon,	CInventoryItemObject>		("CWeapon")
 			// из неэкспортируемого класса CHudItemObject:
-			.def("get_hud_item_state", &CHudItemObject::GetState)
-			.def("get_hud_item_next_state", &CHudItemObject::GetNextState)
+			.property("state", &CHudItemObject::GetState)
+			.property("next_state", &CHudItemObject::GetNextState)
 			// ============================================================================= //
 			// параметры отдачи вли€ющие на камеру
 			.def_readwrite("cam_max_angle"				,			&CWeapon::camMaxAngle)
