@@ -669,3 +669,9 @@ void CScriptGameObject::SetDrugPsyProtection(float _prot)
 	}
 	k->SetDrugPsyProtection(_prot);
 }
+
+u32 CScriptGameObject::GetHudItemState() {
+	CHudItem *k = smart_cast<CHudItem*>( &object() );
+	ASSERT_FMT( k, "CHudItem : cannot access class member GetState!" );
+	return k->GetState();
+}

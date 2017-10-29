@@ -425,5 +425,7 @@ class_<CScriptGameObject> script_register_game_object2(class_<CScriptGameObject>
 		// by Real Wolf 11.07.2014
 		.def("get_cell_item",				&CScriptGameObject::GetCellItem)
 		.def("get_bone_name",				&CScriptGameObject::GetBoneName)
+
+		.def("get_hud_item_state", &CScriptGameObject::GetHudItemState)
 	;
 }

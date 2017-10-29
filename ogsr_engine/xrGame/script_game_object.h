@@ -680,6 +680,7 @@ public:
 			// functions for CInventoryItem class
 			void				SetIIFlags						(flags16);
 			flags16				GetIIFlags						();
+			u32				GetHudItemState();
 
 			// functions for object testing
 			_DECLARE_FUNCTION10(IsGameObject, bool);
