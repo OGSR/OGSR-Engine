@@ -21,6 +21,7 @@ class CElevatorState;
 
 class CPHMovementControl 
 {
+	friend class CScriptActor;
 	collide::rq_results		storage;
 
 static const int path_few_point=10;

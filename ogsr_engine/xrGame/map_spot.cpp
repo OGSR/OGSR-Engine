@@ -45,6 +45,11 @@ void CMapSpot::Update()
 	}
 }
 
+#include "pch_script.h"
+#include "game_object_space.h"
+#include "script_callback_ex.h"
+#include "script_game_object.h"
+#include "Actor.h"
 bool CMapSpot::OnMouseDown		(int mouse_btn)
 {
 /*
@@ -54,6 +59,16 @@ bool CMapSpot::OnMouseDown		(int mouse_btn)
 	}else
 		return false;
 */
+	// Real Wolf: Колбек для изменения\удаления меток. 03.08.2014.
+	if (mouse_btn == MOUSE_1)
+	{
+		g_actor->callback(GameObject::eUIMapSpotClick)(
+			m_map_location->ObjectID(), 
+			m_map_location->m_type.c_str(),
+			m_map_location->GetHint()
+		);
+		return true;
+	}
 		return false;
 }
 

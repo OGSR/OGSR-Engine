@@ -14,6 +14,7 @@
 #include "PhraseDialogManager.h"
 
 #include "step_manager.h"
+#include "xr_level_controller.h"
 
 using namespace ACTOR_DEFS;
 
@@ -72,6 +73,7 @@ class	CActor:
 #endif
 {
 	friend class CActorCondition;
+	friend class CScriptActor;
 private:
 	typedef CEntityAlive	inherited;
 	//////////////////////////////////////////////////////////////////////////
@@ -768,10 +770,46 @@ public:
 private:
 	ALife::_OBJECT_ID	m_holder_id;
 
+			xr_map<EGameActions, bool> m_blocked_actions; // Вектор с заблокированными действиями. Real Wolf. 14.10.2014.
 public:
 	virtual bool				register_schedule				() const {return false;}
+			IC u32 get_state() const
+			{
+				return this->mstate_real;
+			}
 
-	// иммунитеты от препаратов, применяемые для ослабления хита
+			IC void set_state(u32 state)
+			{
+				mstate_real = state;
+			}
+
+			IC u32 get_state_wishful() const
+			{
+				return this->mstate_wishful;
+			}
+
+			IC void set_state_wishful(u32 state)
+			{
+				mstate_wishful = state;
+			}
+
+			// Real Wolf. Start. 14.10.2014
+			void block_action(EGameActions cmd);
+			void unblock_action(EGameActions cmd);
+			// Real Wolf. End. 14.10.2014
+
+			bool is_actor_normal();
+			bool is_actor_crouch();
+			bool is_actor_creep();
+			bool is_actor_climb();
+			bool is_actor_walking();
+			bool is_actor_running();
+			bool is_actor_sprinting();
+			bool is_actor_crouching();
+			bool is_actor_creeping();
+			bool is_actor_climbing();
+			bool is_actor_moving();
+			// иммунитеты от препаратов, применяемые для ослабления хита
 private:
 	float m_fDrugPsyProtectionCoeff;
 	float m_fDrugRadProtectionCoeff;

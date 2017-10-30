@@ -1079,9 +1079,6 @@ bool CInventory::CanTakeItem(CInventoryItem *inventory_item) const
 
 	CActor* pActor = smart_cast<CActor*>(m_pOwner);
 	//актер всегда может взять вещь
-	// KD: временно сделал ограничение на взятие актором фейковых гранат из схемы гранатометания
-	if (pActor && !inventory_item->CanTakeActor())
-		return false;
 	if(!pActor && (TotalWeight() + inventory_item->Weight() > m_pOwner->MaxCarryWeight()))
 		return false;
 

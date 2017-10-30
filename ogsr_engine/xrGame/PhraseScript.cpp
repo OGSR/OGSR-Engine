@@ -9,6 +9,7 @@
 #include "ai_debug.h"
 #include "ui/xrUIXmlParser.h"
 #include "actor.h"
+#include <build_config_defines.h>
 
 CPhraseScript::CPhraseScript	()
 {
@@ -120,10 +121,15 @@ bool CPhraseScript::Precondition(const CGameObject* pSpeakerGO, LPCSTR dialog_id
 		luabind::functor<bool>	lua_function;
 		THROW(*Preconditions()[i]);
 		bool functor_exists = ai().script_engine().functor(*Preconditions()[i], lua_function);
+#ifdef CRASH_ON_PRECONDITION_NOT_FOUND
+		R_ASSERT3(functor_exists, "Cannot find precondition: ", *Preconditions()[i]);
+		predicate_result = lua_function(pSpeakerGO->lua_game_object());
+#else
 		if (functor_exists)
 			predicate_result = lua_function(pSpeakerGO->lua_game_object());
 		else
 			Msg("!!Cannot find precondition [%s]", *Preconditions()[i]);
+#endif
 		if(!predicate_result){
 		#ifdef DEBUG
 			if (psAI_Flags.test(aiDialogs))

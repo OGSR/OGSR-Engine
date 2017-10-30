@@ -12,12 +12,17 @@
 #include "script_ini_file.h"
 #include "sight_manager_space.h"
 #include "searchlight.h"
+#include "hit_immunity.h"
+#include "EntityCondition.h"
 
 using namespace luabind;
 
 extern class_<CScriptGameObject> script_register_game_object1(class_<CScriptGameObject>&&);
 extern class_<CScriptGameObject> script_register_game_object2(class_<CScriptGameObject>&&);
+extern class_<CScriptGameObject> script_register_game_object3(class_<CScriptGameObject>&&);
 extern class_<CScriptGameObject> script_register_game_object_trader(class_<CScriptGameObject>&&);
+
+extern void script_register_game_object4(lua_State *L);
 
 #pragma optimize("s",on)
 void CScriptGameObject::script_register(lua_State *L)
@@ -47,9 +52,11 @@ void CScriptGameObject::script_register(lua_State *L)
 			.def_readonly("m_vector",		&CSightParams::m_vector)
 			.def_readonly("m_sight_type",	&CSightParams::m_sight_type),
 		
-		script_register_game_object2(
-			script_register_game_object1(
-				script_register_game_object_trader(std::move(instance))
+		script_register_game_object3(
+			script_register_game_object2(
+				script_register_game_object1(
+					script_register_game_object_trader(std::move(instance))
+				)
 			)
 		),
 
@@ -115,8 +122,36 @@ void CScriptGameObject::script_register(lua_State *L)
 				value("entity_alive_before_hit",	int(GameObject::entity_alive_before_hit)),
 				value("update_addons_visibility",	int(GameObject::eOnUpdateAddonsVisibiility)),
 				value("update_hud_addons_visibility",	int(GameObject::eOnUpdateHUDAddonsVisibiility)),
-				value("on_addon_init",				int(GameObject::eOnAddonInit))
-//				value("on_hud_animation_end",		int(GameObject::eOnHudAnimationEnd))
+				value("on_addon_init",				int(GameObject::eOnAddonInit)),
+//				value("on_hud_animation_end",		int(GameObject::eOnHudAnimationEnd)),
+				// Added by Cribbledirge Start
+				value("on_actor_weapon_fire", int(GameObject::eOnActorWeaponFire)),
+				value("on_actor_weapon_reload", int(GameObject::eOnActorWeaponReload)),
+				value("on_actor_weapon_jammed", int(GameObject::eOnActorWeaponJammed)),
+				value("on_actor_weapon_empty", int(GameObject::eOnActorWeaponEmpty)),
+				value("on_actor_weapon_zoom_in", int(GameObject::eOnActorWeaponZoomIn)),
+				value("on_actor_weapon_zoom_out", int(GameObject::eOnActorWeaponZoomOut)),
+				
+				// NPC Callbacks.
+				value("on_npc_weapon_fire", int(GameObject::eOnNPCWeaponFire)),
+				value("on_npc_weapon_jammed", int(GameObject::eOnNPCWeaponJammed)),
+				value("on_npc_weapon_reload", int(GameObject::eOnNPCWeaponReload)),
+				value("on_npc_weapon_empty", int(GameObject::eOnNPCWeaponEmpty)),
+				// Cribbledirge End
+
+				value("on_cell_item_focus", int(GameObject::eCellItemFocus)),
+				value("on_cell_item_select", int(GameObject::eCellItemSelect)),
+				value("on_cell_item_focus_lost", int(GameObject::eCellItemFocusLost)),
+				value("on_cell_item_mouse", int(GameObject::eOnCellItemMouse) ),
+				value("on_before_save", int(GameObject::eBeforeSave)),
+				value("on_after_save", int(GameObject::ePostSave)),
+				value("on_level_map_click", int(GameObject::eUIMapClick) ),
+				value("on_map_spot_click", int(GameObject::eUIMapSpotClick) ),
+				value("on_pickup_item_showing", int(GameObject::eUIPickUpItemShowing) ),
+				value("on_group_items", int(GameObject::eUIGroupItems) ),
+				value("on_weapon_shell_drop", int(GameObject::eOnWpnShellDrop) ),
+				value("on_throw_grenade", int(GameObject::eOnThrowGrenade) ),
+				value("on_goodwill_change", int(GameObject::eOnGoodwillChange))
 			],
 
 		def("buy_condition",				(void (*)(CScriptIniFile*,LPCSTR))(&::buy_condition)),
@@ -125,6 +160,10 @@ void CScriptGameObject::script_register(lua_State *L)
 		def("sell_condition",				(void (*)(float,float))(&::sell_condition)),
 		def("show_condition",				&::show_condition)
 	];
+
+	script_register_game_object4(L);
+		CHitImmunity::script_register(L);
+		CEntityCondition::script_register(L);
 }
 
 #include "..\xr_3da\CameraBase.h"

@@ -13,6 +13,8 @@
 #include "xr_time.h"
 #include "character_info_defs.h"
 #include "..\xr_3da\CameraBase.h"
+#include "WeaponHUD.h"
+#include "ui/UIStatic.h"
 
 #include "gameobject.h"
 #include "ai_space.h"
@@ -127,6 +129,7 @@ struct CSightParams {
 
 class CScriptGameObject {
 	mutable CGameObject		*m_game_object;
+	mutable lua_State		*m_lua_state;
 public:
 
 							CScriptGameObject		(CGameObject *tpGameObject);
@@ -134,16 +137,7 @@ public:
 							operator CObject*		();
 
 	//KRodin: перенесено сюда, иначе не компилится
-	IC		CGameObject			&object				() const
-	{
-		if (m_game_object && m_game_object->lua_game_object() == this)
-			return	(*m_game_object);
-#ifdef DEBUG
-		ai().script_engine().script_log(eLuaMessageTypeError, "you are trying to use a destroyed object [%x]", m_game_object);
-		THROW2(m_game_object && m_game_object->lua_game_object() == this, "Probably, you are trying to use a destroyed object!");
-#endif
-		return	(*m_game_object);
-	}
+	IC		CGameObject			&object				() const;
 
 			CScriptGameObject	*Parent				() const;
 			void				Hit					(CScriptHit *tLuaHit);
@@ -151,6 +145,8 @@ public:
 			void				play_cycle			(LPCSTR anim, bool mix_in);
 			void				play_cycle			(LPCSTR anim);
 			Fvector				Center				();
+			void				set_lua_state 	    (lua_State *L) { m_lua_state = L; }
+			lua_State*			lua_state ()		{ return m_lua_state;  }
 	_DECLARE_FUNCTION10	(Position	,	Fvector		);
 	_DECLARE_FUNCTION10	(Direction	,	Fvector		);
 	_DECLARE_FUNCTION10	(Mass		,	float		);
@@ -580,6 +576,27 @@ public:
 
 			bool				invulnerable						() const;
 			void				invulnerable						(bool invulnerable);
+			
+			/************************************************** added by Ray Twitty (aka Shadows) START **************************************************/	
+			// инвентарь
+			float				GetActorMaxWeight					() const;
+			void				SetActorMaxWeight					(float max_weight);
+			float				GetActorMaxWalkWeight				() const;
+			void				SetActorMaxWalkWeight				(float max_walk_weight);
+			float				GetAdditionalMaxWeight				() const;
+			void				SetAdditionalMaxWeight				(float add_max_weight);
+			float				GetAdditionalMaxWalkWeight			() const;
+			void				SetAdditionalMaxWalkWeight			(float add_max_walk_weight);
+			float				GetTotalWeight						() const;
+			float				Weight								() const;
+			/*************************************************** added by Ray Twitty (aka Shadows) END ***************************************************/
+
+			/*************************************************** added by Cribbledirge START ***************************************************/
+
+			/* Checks to see if the player character is outdoors */
+			bool				IsActorOutdoors() const;
+
+			/**************************************************** added by Cribbledirge END ****************************************************/
 
 			// KD
 			// functions for CInventoryOwner class
@@ -642,6 +659,7 @@ public:
 			bool				GetGLMode();
 
 			u32					GetCurrAmmo();
+			u32					GetAmmoElapsed2();
 			void				SetHudOffset(Fvector _offset);
 //			void				SetHudRotate(float _x, float _y);
 			void				SetHudRotate(Fvector2 _v);
@@ -658,6 +676,12 @@ public:
 			// для актора - иммунитеты
 			void				SetDrugRadProtection(float _prot);
 			void				SetDrugPsyProtection(float _prot);
+
+			// functions for CInventoryItem class
+			void				SetIIFlags						(flags16);
+			flags16				GetIIFlags						();
+			u32				GetHudItemState();
+			float				GetRadius();
 
 			// functions for object testing
 			_DECLARE_FUNCTION10(IsGameObject, bool);
@@ -709,6 +733,19 @@ public:
 			void				SetActorExoFactor(float _factor);		// влияет на бег в экзе
 			// KD
 
+			// Real Wolf 07.07.2014.
+			CUIStatic* GetCellItem() const;
+			LPCSTR GetBoneName(u16) const;
+
+			// alpet: visual functions for CWeapon descedants 
+			_DECLARE_FUNCTION10 (alife_object			,			CSE_ALifeDynamicObject*);
+			_DECLARE_FUNCTION10 (GetWeaponHUD_Visual	,			IRender_Visual*);
+			_DECLARE_FUNCTION10 (GetWeaponHUD			,			CWeaponHUD*);
+			void				LoadWeaponHUD_Visual	(LPCSTR wpn_hud_section);
+
+			void play_hud_animation (LPCSTR anim, bool mix_in);
+			void play_hud_animation (LPCSTR anim);
+
 	DECLARE_SCRIPT_REGISTER_FUNCTION
 };
 add_to_type_list(CScriptGameObject)
@@ -720,3 +757,20 @@ extern void sell_condition	(float friend_factor, float enemy_factor);
 extern void buy_condition	(CScriptIniFile *ini_file, LPCSTR section);
 extern void buy_condition	(float friend_factor, float enemy_factor);
 extern void show_condition	(CScriptIniFile *ini_file, LPCSTR section);
+
+extern void	lua_pushgameobject(lua_State *L, CGameObject *obj);
+
+template <typename T>
+IC bool test_pushobject(lua_State *L, CGameObject* obj)
+{	
+	using namespace luabind::detail;
+	T *pObj = smart_cast<T*> (obj);
+	if (pObj && get_class_rep<T>(L))
+	{		
+		convert_to_lua<T*>(L, pObj);  // обязательно конвертировать указатель, а не значение. Иначе вызов деструктора при сборке мусора!
+		return true;		
+	}
+	return false;
+}
+
+#include "script_game_object_impl.h" // alpet: исправление error LNK2019: unresolved external symbol "public: class CGameObject & __thiscall CScriptGameObject::object(void)const "

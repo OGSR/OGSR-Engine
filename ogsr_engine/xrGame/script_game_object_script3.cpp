@@ -270,6 +270,36 @@ class_<CScriptGameObject> script_register_game_object2(class_<CScriptGameObject>
 
 		.def("critically_wounded",			&CScriptGameObject::critically_wounded)
 		
+		/************************************************** added by Ray Twitty (aka Shadows) START **************************************************/
+		// фонарь
+		/* alpet: с разрешение автора утащено в torch_script.cpp. Исходный вариант остался в ревизии 110 на xp-dev.com
+		.def("enable_torch",				&CScriptGameObject::EnableTorch)
+		.def("switch_torch",				&CScriptGameObject::SwitchTorch)
+		.def("torch_enabled",				&CScriptGameObject::TorchEnabled)
+		// ПНВ
+		.def("enable_night_vision",			&CScriptGameObject::EnableNightVision)
+		.def("switch_night_vision",			&CScriptGameObject::SwitchNightVision)
+		.def("night_vision_enabled",		&CScriptGameObject::NightVisionEnabled)
+		//*/
+		// инвентарь
+		.def("get_actor_max_weight",			&CScriptGameObject::GetActorMaxWeight)
+		.def("set_actor_max_weight",			&CScriptGameObject::SetActorMaxWeight)
+		.def("get_actor_max_walk_weight",		&CScriptGameObject::GetActorMaxWalkWeight)
+		.def("set_actor_max_walk_weight",		&CScriptGameObject::SetActorMaxWalkWeight)
+		.def("get_additional_max_weight",		&CScriptGameObject::GetAdditionalMaxWeight)
+		.def("set_additional_max_weight",		&CScriptGameObject::SetAdditionalMaxWeight)
+		.def("get_additional_max_walk_weight",	&CScriptGameObject::GetAdditionalMaxWalkWeight)
+		.def("set_additional_max_walk_weight",	&CScriptGameObject::SetAdditionalMaxWalkWeight)
+		.def("get_total_weight",				&CScriptGameObject::GetTotalWeight)
+		.def("weight",							&CScriptGameObject::Weight)
+		/*************************************************** added by Ray Twitty (aka Shadows) END ***************************************************/
+
+		/*************************************************** added by Cribbledirge START ***************************************************/
+
+		.def("is_actor_outdoors",			&CScriptGameObject::IsActorOutdoors)
+
+		/**************************************************** added by Cribbledirge END ****************************************************/
+		
 		// KD
 		// functions for CInventoryOwner class
 		.def("item_on_belt", &CScriptGameObject::ItemOnBelt)
@@ -283,6 +313,10 @@ class_<CScriptGameObject> script_register_game_object2(class_<CScriptGameObject>
 		.def("belt_count", &CScriptGameObject::BeltSize)
 		.def("ruck_count", &CScriptGameObject::RuckSize)
 		.def("invalidate_inventory", &CScriptGameObject::InvalidateInventory)
+
+		// functions for CInventoryItem class
+		.def("set_inventory_item_flags",				&CScriptGameObject::SetIIFlags)
+		.def("get_inventory_item_flags",				&CScriptGameObject::GetIIFlags)
 
 		// functions for object testing
 		.def("is_game_object", &CScriptGameObject::IsGameObject)
@@ -365,6 +399,7 @@ class_<CScriptGameObject> script_register_game_object2(class_<CScriptGameObject>
 		.def("get_gl_mode", &CScriptGameObject::GetGLMode)
 
 		.def("get_current_ammo", &CScriptGameObject::GetCurrAmmo)
+		.def("get_ammo_in_magazine2", &CScriptGameObject::GetAmmoElapsed2)
 		.def("set_ammo_box_curr", &CScriptGameObject::SetAmmoBoxCurr)
 		.def("get_ammo_box_size", &CScriptGameObject::GetAmmoBoxSize)
 		.def("set_ammo_box_size", &CScriptGameObject::SetAmmoBoxSize)
@@ -386,5 +421,14 @@ class_<CScriptGameObject> script_register_game_object2(class_<CScriptGameObject>
 		.def("set_additional_telepatic_protection", &CScriptGameObject::SetDrugPsyProtection)
 
 		// KD
+
+		// by Real Wolf 11.07.2014
+		.def("get_cell_item",				&CScriptGameObject::GetCellItem)
+		.def("get_bone_name",				&CScriptGameObject::GetBoneName)
+
+		.def("get_hud_item_state", &CScriptGameObject::GetHudItemState)
+		.def("radius", &CScriptGameObject::GetRadius)
+		.def("play_hud_animation", (void (CScriptGameObject::*)(LPCSTR))(&CScriptGameObject::play_hud_animation))
+		.def("play_hud_animation", (void (CScriptGameObject::*)(LPCSTR,bool))(&CScriptGameObject::play_hud_animation))
 	;
 }

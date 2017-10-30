@@ -53,8 +53,8 @@ void CSE_ALifeAnomalousZone::spawn_artefacts				()
 
 	float					m_min_start_power	= pSettings->r_float(name(),"min_start_power");
 	float					m_max_start_power	= pSettings->r_float(name(),"max_start_power");
-	u32						m_min_artefact_count= pSettings->r_u32	(name(),"min_artefact_count");;
-	u32						m_max_artefact_count= pSettings->r_u32	(name(),"max_artefact_count");;
+	u32						m_min_artefact_count= pSettings->r_u32	(name(),"min_artefact_count");
+	u32						m_max_artefact_count= pSettings->r_u32	(name(),"max_artefact_count");
     u32						m_artefact_count;
 
 	if (m_min_artefact_count == m_max_artefact_count)

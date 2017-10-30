@@ -1,3 +1,4 @@
+#include <build_config_defines.h>
 #include "stdafx.h"
 #include <dinput.h>
 #include "..\xr_3da\xr_ioconsole.h"
@@ -287,8 +288,11 @@ _keyboard* dik_to_ptr(int _dik, bool bSafe)
 
 int	keyname_to_dik (LPCSTR _name)
 {
-	_keyboard* _kb = keyname_to_ptr(_name);
-	return _kb->dik;
+	_keyboard* kb = keyname_to_ptr(_name);
+	if(kb)
+		return kb->dik;
+	else
+		return NULL;
 }
 
 _keyboard*	keyname_to_ptr(LPCSTR _name)
@@ -404,6 +408,11 @@ public:
 
 		if (!*key)
 			return;
+
+#ifdef REMOVE_ALTERNATIVE_KEYBOARD_BINDING
+		if (m_work_idx > 0)
+			return;
+#endif
 
 		if(!bRemapped) {
 			remap_keys	();

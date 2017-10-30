@@ -47,6 +47,7 @@ public:
 	CHARACTER_GOODWILL	 GetGoodwill				(u16 from, u16 to) const ;
 	void				 SetGoodwill				(u16 from, u16 to, CHARACTER_GOODWILL goodwill);
 	void				 ChangeGoodwill 			(u16 from, u16 to, CHARACTER_GOODWILL delta_goodwill);
+	void	 		ClearGoodwill				(u16 from, u16 to);
 
 	//отношения группировки к персонажу (именно так, а не наоборот)
 	//т.е. персонаж сам помнит, как к нему какая группировка отностися

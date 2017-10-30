@@ -12,6 +12,8 @@
 #include "hit_immunity.h"
 #include "attachable_item.h"
 
+class CUIInventoryCellItem;
+
 enum EHandDependence{
 	hdNone	= 0,
 	hd1Hand	= 1,
@@ -42,9 +44,10 @@ class CInventoryItem :
 	, public pureRender
 #endif
 {
+	friend class CInventoryScript;
 private:
 	typedef CAttachableItem inherited;
-protected:
+public:
 	enum EIIFlags{				FdropManual			=(1<<0),
 								FCanTake			=(1<<1),
 								FCanTrade			=(1<<2),
@@ -57,7 +60,10 @@ protected:
 								FInInterpolation	=(1<<9),
 								FInInterpolate		=(1<<10),
 								FIsQuestItem		=(1<<11),
-								FCanTakeActor		=(1<<12),
+								FIAlwaysTradable	=(1<<12),
+								FIAlwaysUntradable	=(1<<13),
+								FIUngroupable		=(1<<14),
+								FIManualHighlighting	=(1<<15),
 	};
 
 	Flags16						m_flags;
@@ -115,10 +121,16 @@ public:
 
 			BOOL				IsQuestItem			()	const	{return m_flags.test(FIsQuestItem);}			
 			u32					Cost				() const	{ return m_cost; }
+	virtual	void				SetCost				(u32 cost) 	{ m_cost = cost; }
 	virtual float				Weight				() 			{ return m_weight;}		
 
 public:
 	CInventory*					m_pCurrentInventory;
+
+	u32							m_cost;
+	float						m_weight;
+	shared_str					m_Description;
+	CUIInventoryCellItem*		m_cell_item;
 
 	shared_str					m_name;
 	shared_str					m_nameShort;
@@ -156,7 +168,6 @@ public:
 			bool				RuckDefault			()							{return !!m_flags.test(FRuckDefault);}
 			
 	virtual bool				CanTake				() const					{return !!m_flags.test(FCanTake);}
-			bool				CanTakeActor		() const					{ return !!m_flags.test(FCanTakeActor); }
 			bool				CanTrade			() const;
 	virtual bool 				IsNecessaryItem	    (CInventoryItem* item);
 	virtual bool				IsNecessaryItem	    (const shared_str& item_sect){return false;};
@@ -164,10 +175,7 @@ public:
 protected:
 	
 	u8							m_slot;
-	u32							m_cost;
-	float						m_weight;
 	float						m_fCondition;
-	shared_str					m_Description;
 
 	ALife::_TIME_ID				m_dwItemRemoveTime;
 	ALife::_TIME_ID				m_dwItemIndependencyTime;

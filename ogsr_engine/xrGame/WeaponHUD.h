@@ -42,6 +42,7 @@ public:
 
 class CWeaponHUD
 {
+	friend class CWeaponScript;
 	//родительский объект HUD
 	CHudItem*			m_pParentWeapon;		
 	//флаг, если hud спрятан не показывается

@@ -32,6 +32,7 @@ protected:
 public:
 	/*virtual*/IC float			GetfHealth			() const			{ return m_entity_condition->GetHealth(); }
 	/*virtual*/IC float			SetfHealth			(float value)		{m_entity_condition->health()=value; return value;}
+	IC	CEntityCondition	   *conditions()							{ return smart_cast<CEntityCondition*> (m_entity_condition); }
 	float						m_fMorale;
 	// Team params
 	int							id_Team;

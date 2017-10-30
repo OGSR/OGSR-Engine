@@ -1078,6 +1078,12 @@ void CUIMainIngameWnd::SetPickUpItem	(CInventoryItem* PickUpItem)
 };
 
 #include "UICellCustomItems.h"
+#include "../pch_script.h"
+#include "../game_object_space.h"
+#include "../script_callback_ex.h"
+#include "../script_game_object.h"
+#include "../Actor.h"
+
 typedef CUIWeaponCellItem::eAddonType eAddonType;
 
 CUIStatic* init_addon(
@@ -1175,6 +1181,10 @@ void CUIMainIngameWnd::UpdatePickUpItem	()
 		}
 		delete_data(cell_item);
 	}
+
+	// Real Wolf: Колбек для скриптового добавления своих иконок. 10.08.2014.
+	g_actor->callback(GameObject::eUIPickUpItemShowing)(m_pPickUpItem->object().lua_game_object(), &UIPickUpItemIcon);
+
 	UIPickUpItemIcon.Show(true);
 };
 

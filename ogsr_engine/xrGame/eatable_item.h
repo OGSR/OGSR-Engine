@@ -6,6 +6,7 @@ class CPhysicItem;
 class CEntityAlive;
 
 class CEatableItem : public CInventoryItem {
+	friend class CEatableItemScript;
 private:
 	typedef CInventoryItem	inherited;
 

@@ -605,6 +605,10 @@ void g_change_personal_goodwill(int _who_id, int _to_whom_id, int _amount)
 	CHARACTER_GOODWILL gw = RELATION_REGISTRY().GetGoodwill(u16(_who_id), u16(_to_whom_id));
 	RELATION_REGISTRY().SetGoodwill(u16(_who_id), u16(_to_whom_id), gw + _amount);
 }
+void g_clear_personal_goodwill(int _who_id, int _to_whom_id)
+{
+	RELATION_REGISTRY().ClearGoodwill(u16(_who_id), u16(_to_whom_id));
+}
 void set_ignore_game_state_update()
 {
 	Game().m_need_to_update = false;
@@ -683,6 +687,12 @@ void send_event_mouse_wheel(int vol) //Вращение колеса мыши
 	Level().IR_OnMouseWheel(vol);
 }
 //
+
+// Real Wolf 07.07.2014
+u32 vertex_id(const Fvector &vec)
+{
+	return ai().level_graph().vertex_id(vec);
+}
 
 #pragma optimize("s",on)
 void CLevel::script_register(lua_State *L)
@@ -783,6 +793,9 @@ void CLevel::script_register(lua_State *L)
 
 		def("ray_query",						&PerformRayQuery),
 
+		// Real Wolf 07.07.2014
+		def("vertex_id",						&vertex_id),
+
 		def("advance_game_time",				&AdvanceGameTime),
 
 		def("get_target_dist",					&GetTargetDist),
@@ -817,7 +830,8 @@ void CLevel::script_register(lua_State *L)
 		def("change_community_goodwill",		&g_change_community_goodwill),
 		def("get_personal_goodwill",			&g_get_personal_goodwill),
 		def("set_personal_goodwill",			&g_set_personal_goodwill),
-		def("change_personal_goodwill",			&g_change_personal_goodwill)
+		def("change_personal_goodwill",			&g_change_personal_goodwill),
+		def("clear_personal_goodwill",			&g_clear_personal_goodwill)
 	];
 	//установка параметров для шейдеров из скриптов
 	module(L)

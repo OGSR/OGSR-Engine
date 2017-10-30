@@ -27,6 +27,8 @@
 #include "game_level_cross_table.h"
 #include "animation_movement_controller.h"
 #include "game_object_space.h"
+#include "alife_simulator.h"
+#include "alife_object_registry.h"
 
 #include "ai_object_location.h"
 
@@ -59,6 +61,14 @@ CGameObject::~CGameObject		()
 	VERIFY						(!m_spawned);
 	xr_delete					(m_ai_location);
 	xr_delete					(m_callbacks);
+}
+
+CSE_ALifeDynamicObject* CGameObject::alife_object() const
+{
+	const CALifeSimulator *sim = ai().get_alife();
+	if (sim)
+		return sim->objects().object(ID(), true);
+	return NULL;
 }
 
 void CGameObject::init			()
@@ -904,6 +914,31 @@ void CGameObject::update_animation_movement_controller	()
 void	CGameObject::		UpdateCL			( )
 {
 	inherited::UpdateCL			();
+}
+
+void	CGameObject::UpdateXFORM(const Fmatrix &upd)
+{
+	XFORM() = upd;	
+	IRender_Visual *pV = Visual();
+	CKinematics *pK = PKinematics(Visual());
+	if (pK)
+	{
+		pK->vis.sphere.P = upd.c;		
+		pK->CalculateBones_Invalidate();	 // позволит объекту быстрее объ€витьс€ в новой точке			
+	}
+
+	// OnChangePosition processing
+	spatial_move();	
+	/*
+
+	const CLevelGraph &graph = ai().level_graph();
+	if (graph.valid_vertex_position(upd.c))
+	{
+		u32 lvid = graph.vertex_id (upd.c);
+		u16 gvid = ai().cross_table().vertex(lvid).game_vertex_id();
+		ai_location().level_vertex(lvid);
+	}
+	*/
 }
 
 void	CGameObject::OnChangeVisual	( )

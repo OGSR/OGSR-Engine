@@ -28,6 +28,7 @@ class CWeapon;
 class CCustomOutfit;
 
 class CInventoryOwner : public CAttachmentOwner {							
+	friend class CInventoryScript;
 public:
 					CInventoryOwner				();
 	virtual			~CInventoryOwner			();

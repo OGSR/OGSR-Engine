@@ -37,6 +37,7 @@ class CCustomZone :
 	public CSpaceRestrictor,
 	public Feel::Touch
 {
+	friend class CAnomalyZoneScript;
 private:
     typedef	CSpaceRestrictor inherited;
 

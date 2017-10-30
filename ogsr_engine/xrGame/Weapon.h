@@ -25,6 +25,7 @@ class CUIStaticItem;
 class CWeapon : public CHudItemObject,
 				public CShootingObject
 {
+	friend class CWeaponScript;
 private:
 	typedef CHudItemObject inherited;
 
@@ -231,6 +232,8 @@ protected:
 	float			m_fScopeZoomFactor;
 	//когда режим приближения включен
 	bool			m_bZoomMode;
+	// Member added by cribbledirge for testing weapon zoom in/out.
+	bool                    m_bZoomingIn;
 	//от 0 до 1, показывает насколько процентов
 	//мы перемещаем HUD  
 	float			m_fZoomRotationFactor;

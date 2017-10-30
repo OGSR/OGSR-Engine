@@ -76,8 +76,8 @@ class_<CScriptGameObject> script_register_game_object1(class_<CScriptGameObject>
 		.property("max_power",				&CScriptGameObject::GetMaxPower,		&CScriptGameObject::SetMaxPower)
 
 			// Actor State
-		.property("jump_speed",				&CScriptGameObject::GetActorJumpSpeed,	&CScriptGameObject::SetActorJumpSpeed)
-		.property("walk_accel",				&CScriptGameObject::GetActorWalkAccel,	&CScriptGameObject::SetActorWalkAccel)
+		//.property("jump_speed",				&CScriptGameObject::GetActorJumpSpeed,	&CScriptGameObject::SetActorJumpSpeed)
+		//.property("walk_accel",				&CScriptGameObject::GetActorWalkAccel,	&CScriptGameObject::SetActorWalkAccel)
 		.property("exo_factor",				&CScriptGameObject::GetActorExoFactor,	&CScriptGameObject::SetActorExoFactor)
 
 			// Other

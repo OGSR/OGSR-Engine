@@ -31,6 +31,7 @@ typedef xr_vector<CInventorySlot> TISlotArr;
 
 class CInventory
 {				
+	friend class  CInventoryScript;
 public:
 							CInventory			();
 	virtual					~CInventory			();

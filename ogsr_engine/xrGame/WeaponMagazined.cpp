@@ -375,6 +375,39 @@ void CWeaponMagazined::ReloadMagazine()
 	VERIFY((u32)iAmmoElapsed == m_magazine.size());
 }
 
+// Function for callbacks added by Cribbledirge.
+void CWeaponMagazined::StateSwitchCallback(GameObject::ECallbackType actor_type, GameObject::ECallbackType npc_type)
+{
+	xr_string ammo_type;
+	if (GetAmmoElapsed() == 0 || m_magazine.empty())
+	{
+		ammo_type = *m_ammoTypes[m_ammoType];
+	}
+	else
+	{
+		ammo_type = *m_ammoTypes[m_magazine.back().m_LocalAmmoType];
+	}
+
+	if (g_actor)
+	{
+		if (smart_cast<CActor*>(H_Parent()))  // This is an actor.
+		{
+			Actor()->callback(actor_type)(
+				lua_game_object(),  // The weapon as a game object.
+				ammo_type.c_str()   // The caliber of the weapon.
+			);
+		}
+		else if (smart_cast<CEntityAlive*>(H_Parent()))  // This is an NPC.
+		{
+			Actor()->callback(npc_type)(
+				smart_cast<CEntityAlive*>(H_Parent())->lua_game_object(),       // The owner of the weapon.
+				lua_game_object(),                                              // The weapon itself.
+                                ammo_type.c_str()                                               // The caliber of the weapon.
+			);
+		}
+	}
+}
+
 void CWeaponMagazined::OnStateSwitch	(u32 S)
 {
 	inherited::OnStateSwitch(S);
@@ -392,12 +425,18 @@ void CWeaponMagazined::OnStateSwitch	(u32 S)
 	case eMisfire:
 		if(smart_cast<CActor*>(this->H_Parent()) && (Level().CurrentViewEntity()==H_Parent()) )
 			HUD().GetUI()->AddInfoMessage("gun_jammed");
+		// Callbacks added by Cribbledirge.
+		StateSwitchCallback(GameObject::eOnActorWeaponJammed, GameObject::eOnNPCWeaponJammed);
 		break;
 	case eMagEmpty:
 		switch2_Empty	();
+		// Callbacks added by Cribbledirge.
+		StateSwitchCallback(GameObject::eOnActorWeaponEmpty, GameObject::eOnNPCWeaponEmpty);
 		break;
 	case eReload:
 		switch2_Reload	();
+		// Callbacks added by Cribbledirge.
+		StateSwitchCallback(GameObject::eOnActorWeaponReload, GameObject::eOnNPCWeaponReload);
 		break;
 	case eShowing:
 		switch2_Showing	();
@@ -517,7 +556,11 @@ void CWeaponMagazined::state_Fire	(float dt)
 		OnShot			();
 		static int i = 0;
 		if (i||m_iShotNum>m_iShootEffectorStart)
+		{
+			// Do Weapon Callback.  (Cribbledirge)
+			StateSwitchCallback(GameObject::eOnActorWeaponFire, GameObject::eOnNPCWeaponFire);
 			FireTrace		(p1,d);
+		}
 		else
 			FireTrace		(m_vStartPos, m_vStartDir);
 	}

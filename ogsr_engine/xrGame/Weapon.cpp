@@ -85,6 +85,7 @@ CWeapon::CWeapon(LPCSTR name)
 	m_ef_weapon_type		= u32(-1);
 	m_UIScope				= NULL;
 	m_set_next_ammoType_on_reload = u32(-1);
+	m_bZoomingIn = false;
 }
 
 CWeapon::~CWeapon		()
@@ -1488,9 +1489,25 @@ void CWeapon::UpdateHudAdditonal		(Fmatrix& trans)
 		trans.mulB_43				(hud_rotation);
 
 		if(pActor->IsZoomAimingMode())
+		{
+			// Send callback for zoom in (Added by Cribbledirge).
+			if (!m_bZoomingIn)
+			{
+				pActor->callback(GameObject::eOnActorWeaponZoomIn)(lua_game_object());
+				m_bZoomingIn = true;
+			}
 			m_fZoomRotationFactor += Device.fTimeDelta/m_fZoomRotateTime;
+		}
 		else
+		{
+			// Send callback for zoom out (Added by Cribbledirge).
+			if (m_bZoomingIn)
+			{
+				pActor->callback(GameObject::eOnActorWeaponZoomOut)(lua_game_object());
+				m_bZoomingIn = false;
+			}
 			m_fZoomRotationFactor -= Device.fTimeDelta/m_fZoomRotateTime;
+		}
 		clamp(m_fZoomRotationFactor, 0.f, 1.f);
 	}
 }

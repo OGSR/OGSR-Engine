@@ -478,6 +478,13 @@ void CUILevelMap::Update()
 
 }
 
+#include "../pch_script.h"
+#include "../game_object_space.h"
+#include "../script_callback_ex.h"
+#include "../script_game_object.h"
+#include "../Actor.h"
+#include "../UICursor.h"
+
 bool CUILevelMap::OnMouse	(float x, float y, EUIMessages mouse_action)
 {
 	if (inherited::OnMouse(x,y,mouse_action))	return true;
@@ -495,6 +502,20 @@ bool CUILevelMap::OnMouse	(float x, float y, EUIMessages mouse_action)
 		return true;
 	};
 */
+	// Real Wolf: Колбек с позицией и названием карты при клике по самой карте. 03.08.2014.
+	if (mouse_action == WINDOW_LBUTTON_DOWN)
+	{
+		Fvector2 cursor_pos =			GetUICursor()->GetCursorPosition();
+		Fvector2 _p; GetAbsolutePos		(_p);
+
+		cursor_pos.sub					(_p);
+		Fvector2 p =					ConvertLocalToReal(cursor_pos);
+		Fvector pos;
+		pos.set							(p.x, 0.0f, p.y);
+
+		g_actor->callback(GameObject::eUIMapClick)(pos, MapName().c_str() );
+	}
+
 	if(mouse_action==WINDOW_MOUSE_MOVE && (FALSE==pInput->iGetAsyncBtnState(0)) )
 	{
 		if( MapWnd() )

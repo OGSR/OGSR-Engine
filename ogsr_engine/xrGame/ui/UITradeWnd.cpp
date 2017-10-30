@@ -297,6 +297,8 @@ void CUITradeWnd::StopTrade()
 #include "../trade_parameters.h"
 bool CUITradeWnd::CanMoveToOther(PIItem pItem)
 {
+	if (pItem->m_flags.test(CInventoryItem::FIAlwaysUntradable))
+		return false;
 
 	float r1				= CalcItemsWeight(&m_uidata->UIOurTradeList);	// our
 	float r2				= CalcItemsWeight(&m_uidata->UIOthersTradeList);	// other

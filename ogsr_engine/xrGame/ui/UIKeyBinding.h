@@ -1,4 +1,5 @@
 #pragma once
+#include <build_config_defines.h>
 #include "UIWindow.h"
 #include "UILabel.h"
 #include "UIListWnd.h"
@@ -20,7 +21,11 @@ public:
 protected:
 	void			FillUpList				(CUIXml& xml_doc, LPCSTR path);
 
-	CUILabel		m_header[2];// [3];
+#ifdef REMOVE_ALTERNATIVE_KEYBOARD_BINDING
+	CUILabel		m_header[2];
+#else
+	CUILabel		m_header[3];
+#endif
 	CUIFrameWindow	m_frame;
 	CUIScrollView*	m_scroll_wnd;
 };

@@ -26,6 +26,7 @@ class CMovementManager;
 class CSoundPlayer;
 class CAI_Stalker;
 class CDangerObject;
+class CCustomMonsterScript;
 
 class CCustomMonster : 
 	public CEntityAlive, 
@@ -36,6 +37,7 @@ class CCustomMonster :
 {
 private:
 	typedef	CEntityAlive	inherited;
+	friend	class CCustomMonsterScript;
 
 private:
 	CMemoryManager		*m_memory_manager;
@@ -317,6 +319,9 @@ private:
 public:
 	virtual	void					create_anim_mov_ctrl						(CBlend *b);
 	virtual	void					destroy_anim_mov_ctrl						();
+
+	bool		m_visible_for_zones;
+	virtual bool	IsVisibleForZones() { return m_visible_for_zones; }
 };
 
 #include "custommonster_inline.h"
