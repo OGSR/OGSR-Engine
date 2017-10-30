@@ -377,10 +377,9 @@ bool CUIInventoryWnd::OnItemDbClick(CUICellItem* itm)
 		auto item = CurrentIItem();
 		if ((item->GetSlot() == FIRST_WEAPON_SLOT) || (item->GetSlot() == SECOND_WEAPON_SLOT))
 		{
-			auto old_clot = item->GetSlot();
 			if (!ToSlot(itm, FIRST_WEAPON_SLOT, false))
 				if (!ToSlot(itm, SECOND_WEAPON_SLOT, false))
-					ToSlot(itm, old_clot, true);
+					ToSlot(itm, item->m_slot_sect, true);
 		}
 		else if (!ToSlot(itm, false))
 			if (!ToBelt(itm, false))

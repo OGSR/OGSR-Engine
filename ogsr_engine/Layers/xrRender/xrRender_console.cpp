@@ -681,14 +681,4 @@ void		xrRender_initconsole	()
 	//	CMD3(CCC_Mask,		"extended_graph_stats",		&ps_service_flags,			S_EXTENDED_GRAPH_STATS);
 }
 
-void	xrRender_apply_tf		()
-{
-	Console->Execute	("r__tf_aniso"	);
-#if RENDER==R_R1
-	Console->Execute	("r1_tf_mipbias");
-#else
-	Console->Execute	("r2_tf_mipbias");
-#endif
-}
-
 #endif
