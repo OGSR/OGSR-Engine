@@ -9,7 +9,7 @@
 #include "ai_debug.h"
 #include "ui/xrUIXmlParser.h"
 #include "actor.h"
-#include "build_config_defines.h"
+#include <build_config_defines.h>
 
 CPhraseScript::CPhraseScript	()
 {

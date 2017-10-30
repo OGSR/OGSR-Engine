@@ -1,3 +1,4 @@
+#include <build_config_defines.h>
 #include "StdAfx.h"
 #include "UIKeyBinding.h"
 #include "UIXmlInit.h"
@@ -7,9 +8,15 @@
 #include "../xr_level_controller.h"
 #include "../string_table.h"
 
+#ifdef REMOVE_ALTERNATIVE_KEYBOARD_BINDING
+#define M_HEADERS_CNT 2
+#else
+#define M_HEADERS_CNT 3
+#endif
+
 CUIKeyBinding::CUIKeyBinding()
 {
-	for (int i=0; i<2; i++)
+	for (int i=0; i<M_HEADERS_CNT; i++)
 		AttachChild		(&m_header[i]);
 
 	AttachChild			(&m_frame);
