@@ -675,3 +675,33 @@ u32 CScriptGameObject::GetHudItemState() {
 	ASSERT_FMT( k, "CHudItem : cannot access class member GetState!" );
 	return k->GetState();
 }
+
+float CScriptGameObject::GetRadius() {
+	CGameObject *k = smart_cast<CGameObject*>( &object() );
+	ASSERT_FMT( k, "CGameObject : cannot access class member Radius!" );
+	return k->Radius();
+}
+
+void CScriptGameObject::play_hud_animation( LPCSTR anim, bool mix_in ) {
+	CHudItem *k = smart_cast<CHudItem*>( &object() );
+	if ( !k ) {
+		ai().script_engine().script_log( ScriptStorage::eLuaMessageTypeError, "CHudItem : cannot access class member play_hud_animation!" );
+		return;
+	}
+	CKinematicsAnimated* sa = smart_cast<CKinematicsAnimated*>( k->GetHUD()->Visual() );
+	if( sa ) {
+		MotionID m = sa->ID_Cycle( anim );
+		if ( m )
+			sa->PlayCycle( m, (BOOL) mix_in );
+		else {
+			ai().script_engine().script_log( ScriptStorage::eLuaMessageTypeError, "CHudItem : has not cycle %s", anim );
+		}
+	}
+	else {
+		ai().script_engine().script_log( ScriptStorage::eLuaMessageTypeError, "CHudItem : is not animated object" );
+	}
+}
+
+void CScriptGameObject::play_hud_animation( LPCSTR anim ) {
+	play_hud_animation( anim, true );
+}

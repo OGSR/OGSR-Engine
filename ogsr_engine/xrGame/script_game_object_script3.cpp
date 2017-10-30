@@ -427,5 +427,8 @@ class_<CScriptGameObject> script_register_game_object2(class_<CScriptGameObject>
 		.def("get_bone_name",				&CScriptGameObject::GetBoneName)
 
 		.def("get_hud_item_state", &CScriptGameObject::GetHudItemState)
+		.def("radius", &CScriptGameObject::GetRadius)
+		.def("play_hud_animation", (void (CScriptGameObject::*)(LPCSTR))(&CScriptGameObject::play_hud_animation))
+		.def("play_hud_animation", (void (CScriptGameObject::*)(LPCSTR,bool))(&CScriptGameObject::play_hud_animation))
 	;
 }

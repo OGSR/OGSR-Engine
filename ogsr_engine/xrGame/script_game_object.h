@@ -681,6 +681,7 @@ public:
 			void				SetIIFlags						(flags16);
 			flags16				GetIIFlags						();
 			u32				GetHudItemState();
+			float				GetRadius();
 
 			// functions for object testing
 			_DECLARE_FUNCTION10(IsGameObject, bool);
@@ -741,6 +742,9 @@ public:
 			_DECLARE_FUNCTION10 (GetWeaponHUD_Visual	,			IRender_Visual*);
 			_DECLARE_FUNCTION10 (GetWeaponHUD			,			CWeaponHUD*);
 			void				LoadWeaponHUD_Visual	(LPCSTR wpn_hud_section);
+
+			void play_hud_animation (LPCSTR anim, bool mix_in);
+			void play_hud_animation (LPCSTR anim);
 
 	DECLARE_SCRIPT_REGISTER_FUNCTION
 };
