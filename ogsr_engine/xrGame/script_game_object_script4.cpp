@@ -329,6 +329,7 @@ class_<CScriptGameObject> script_register_game_object3(class_<CScriptGameObject>
 		.def("get_anomaly",					&script_game_object_cast<CCustomZone>)
 		.def("get_artefact",				&script_game_object_cast<CArtefact>)		
 		.def("get_base_monster",			&script_game_object_cast<CBaseMonster>)
+		.def("get_custom_monster",			&script_game_object_cast<CCustomMonster>)
 		.def("get_eatable_item",			&script_game_object_cast<CEatableItemObject>)
 		.def("get_grenade",					&script_game_object_cast<CGrenade>)
 		.def("get_inventory_item",			&script_game_object_cast<CInventoryItemObject>)
