@@ -210,7 +210,7 @@ void CPHSkeleton::SaveNetState(NET_Packet& P)
 	P.w_vec3(max);
 
 	P.w_u16(bones_number);
-	if (bones_number >= 64)
+	if (bones_number > 64)
 	{
 		Msg("!![CPHSkeleton::SaveNetState] bones_number is [%u]!", bones_number);
 		P.w_u64(K ? _vm._visimask_ex.flags : u64(-1));
