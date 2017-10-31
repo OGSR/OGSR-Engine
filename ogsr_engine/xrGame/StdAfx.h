@@ -1,5 +1,7 @@
 #pragma once
 
+#include <build_config_defines.h>
+
 #pragma warning(disable:4995)
 #pragma warning(disable:4577)
 #include "../xr_3da/stdafx.h"

@@ -1,4 +1,3 @@
-#include <build_config_defines.h>
 #include "StdAfx.h"
 #include "UIKeyBinding.h"
 #include "UIXmlInit.h"

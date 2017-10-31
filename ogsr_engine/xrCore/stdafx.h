@@ -5,6 +5,9 @@
 #ifndef stdafxH
 #define stdafxH
 #pragma once
+
+#include <build_config_defines.h>
+
 #include "xrCore.h"
 #include "xrCore_platform.h"
 

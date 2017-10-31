@@ -6484,7 +6484,6 @@
     <ClInclude Include="script_actor.h">
       <Filter>AI\AScript\ScriptClasses\ScriptActor</Filter>
     </ClInclude>
-    <ClInclude Include="..\build_config_defines.h" />
     <ClInclude Include="script_game_object_impl.h">
       <Filter>AI\AScript\ScriptClasses\ScriptGameObject</Filter>
     </ClInclude>

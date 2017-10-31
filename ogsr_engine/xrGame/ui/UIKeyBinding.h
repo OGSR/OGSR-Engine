@@ -1,5 +1,4 @@
 #pragma once
-#include <build_config_defines.h>
 #include "UIWindow.h"
 #include "UILabel.h"
 #include "UIListWnd.h"

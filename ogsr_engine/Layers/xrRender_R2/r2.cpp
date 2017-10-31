@@ -9,9 +9,6 @@
 #include "..\..\xr_3da\Rain.h"
 
 CRender										RImplementation;
-#ifndef OGSE_DEBUG
-//#define USE_SHADER_CACHE
-#endif
 
 //////////////////////////////////////////////////////////////////////////
 class CGlow				: public IRender_Glow
