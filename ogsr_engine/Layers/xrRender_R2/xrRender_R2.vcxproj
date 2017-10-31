@@ -30,7 +30,8 @@
     <ProjectGuid>{963BA4E5-499A-454D-B002-1D5ECE0527A6}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <ProjectName>xrRender</ProjectName>
-    <WindowsTargetPlatformVersion>10.0.16299.0</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion>
+    </WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Mixed|Win32'" Label="Configuration">
@@ -217,7 +218,7 @@
       <ProgramDataBaseFileName>$(IntDir)</ProgramDataBaseFileName>
       <WarningLevel>Level4</WarningLevel>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
-      <AdditionalIncludeDirectories>..\..\COMMON;X:\3rd_party\Src\d3dx\include;..\..\xrCore</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\build_config_overrides;..\..\build_config_defines;..\..\COMMON;X:\3rd_party\Src\d3dx\include;..\..\xrCore</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <DisableSpecificWarnings>4456;4457;4458;4995;4577;</DisableSpecificWarnings>
       <MinimalRebuild>false</MinimalRebuild>

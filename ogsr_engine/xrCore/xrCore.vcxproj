@@ -30,7 +30,8 @@
     <ProjectGuid>{A0F7D1FB-59A7-4717-A7E4-96F37E91998E}</ProjectGuid>
     <RootNamespace>xrCore</RootNamespace>
     <Keyword>Win32Proj</Keyword>
-    <WindowsTargetPlatformVersion>10.0.16299.0</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion>
+    </WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Mixed|Win32'" Label="Configuration">
@@ -223,7 +224,7 @@
       <WarningLevel>Level4</WarningLevel>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <DisableSpecificWarnings>4456;4457;4458;4995;4577;</DisableSpecificWarnings>
-      <AdditionalIncludeDirectories>..\..\3rd_party\Src\lzo;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\build_config_overrides;..\build_config_defines;..\..\3rd_party\Src\lzo;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <MinimalRebuild>false</MinimalRebuild>
       <CompileAs>Default</CompileAs>

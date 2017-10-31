@@ -21,7 +21,8 @@
   <PropertyGroup Label="Globals">
     <ProjectGuid>{ED1DE89D-A3E6-4FEE-ABC7-E1B2E3EB8013}</ProjectGuid>
     <RootNamespace>Router</RootNamespace>
-    <WindowsTargetPlatformVersion>10.0.16299.0</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion>
+    </WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">

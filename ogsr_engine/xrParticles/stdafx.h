@@ -9,6 +9,8 @@
 
 #pragma once
 
+#include <build_config_defines.h>
+
 #include "../xrCore/xrCore.h"
 
 #include "psystem.h"

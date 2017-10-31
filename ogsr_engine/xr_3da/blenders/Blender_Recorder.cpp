@@ -66,10 +66,8 @@ void	CBlender_Compile::_cpp_Compile	(ShaderElement* _SH)
 		Device.Resources->m_textures_description.GetTextureUsage(base, bDetail_Diffuse, bDetail_Bump);
 
 	// KD
-#ifdef _OGSE
 	bParallax		= FALSE;
 	Device.Resources->m_textures_description.GetParallax(base, bParallax);
-#endif
 	// KD
 
 /*

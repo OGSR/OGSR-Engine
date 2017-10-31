@@ -1,4 +1,3 @@
-#include <build_config_defines.h>
 #include "stdafx.h"
 #include <dinput.h>
 #include "..\xr_3da\xr_ioconsole.h"

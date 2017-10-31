@@ -41,9 +41,8 @@ public:
 	shared_str	GetBumpName		(const shared_str& tex_name) const;
 	float		GetMaterial		(const shared_str& tex_name) const;
 
-#ifdef _OGSE
 	void		GetParallax		(const shared_str& tex_name, BOOL& bParallax) const;
-#endif
+
 	void		GetTextureUsage	(const shared_str& tex_name, BOOL& bDiffuse, BOOL& bBump) const;
 	BOOL		GetDetailTexture(const shared_str& tex_name, LPCSTR& res, R_constant_setup* &CS) const;
 #ifdef _EDITOR

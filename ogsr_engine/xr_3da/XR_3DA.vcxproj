@@ -52,7 +52,8 @@
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{2578C6D8-660D-48AE-9322-7422F8664F06}</ProjectGuid>
-    <WindowsTargetPlatformVersion>10.0.16299.0</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion>
+    </WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release_Dedicated|Win32'" Label="Configuration">
@@ -480,8 +481,8 @@
       <OmitFramePointers>true</OmitFramePointers>
       <EnableFiberSafeOptimizations>true</EnableFiberSafeOptimizations>
       <WholeProgramOptimization>false</WholeProgramOptimization>
-      <AdditionalIncludeDirectories>..\COMMON;..\xrCore\;..\xrCPU_Pipe\;X:\3rd_party\Src\d3dx\include;..\Luabind;..\LuaJIT\src;X:\3rd_party\Src\Xiph\libogg\include;X:\3rd_party\Src\Xiph\libtheora\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>_OGSE;NDEBUG;WIN32;_WINDOWS;ENGINE_BUILD;_SECURE_SCL=0;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>..\build_config_overrides;..\build_config_defines;..\COMMON;..\xrCore\;..\xrCPU_Pipe\;X:\3rd_party\Src\d3dx\include;..\Luabind;..\LuaJIT\src;X:\3rd_party\Src\Xiph\libogg\include;X:\3rd_party\Src\Xiph\libtheora\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>NDEBUG;WIN32;_WINDOWS;ENGINE_BUILD;_SECURE_SCL=0;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <StringPooling>true</StringPooling>
       <ExceptionHandling>
       </ExceptionHandling>
