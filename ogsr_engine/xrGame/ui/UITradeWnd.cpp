@@ -26,6 +26,11 @@
 #include "UICellItem.h"
 #include "UICellItemFactory.h"
 
+#include "../pch_script.h"
+#include "../game_object_space.h"
+#include "../script_callback_ex.h"
+#include "../script_game_object.h"
+
 
 #define				TRADE_XML			"trade.xml"
 #define				TRADE_CHARACTER_XML	"trade_character.xml"
@@ -613,6 +618,9 @@ void CUITradeWnd::SetCurrentItem(CUICellItem* itm)
 		sprintf_s				(str, "%d RU", m_pOthersTrade->GetItemPrice(CurrentIItem(), bBuying) );
 		m_uidata->UIItemInfo.UICost->SetText (str);
 	}
+
+	auto script_obj = CurrentIItem()->object().lua_game_object();
+	g_actor->callback(GameObject::eCellItemSelect)(script_obj);
 }
 
 void CUITradeWnd::SwitchToTalk()

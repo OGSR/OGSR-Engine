@@ -14,6 +14,11 @@
 #include "UI3tButton.h"
 #include "../WeaponMagazined.h"
 
+#include "../pch_script.h"
+#include "../game_object_space.h"
+#include "../script_callback_ex.h"
+#include "../script_game_object.h"
+
 CUICellItem* CUIInventoryWnd::CurrentItem()
 {
 	return m_pCurrentCellItem;
@@ -29,6 +34,11 @@ void CUIInventoryWnd::SetCurrentItem(CUICellItem* itm)
 	if(m_pCurrentCellItem == itm) return;
 	m_pCurrentCellItem				= itm;
 	UIItemInfo.InitItem			(CurrentIItem());
+
+	if (m_pCurrentCellItem) {
+		auto script_obj = CurrentIItem()->object().lua_game_object();
+		g_actor->callback(GameObject::eCellItemSelect)(script_obj);
+	}
 }
 
 void CUIInventoryWnd::SendMessage(CUIWindow *pWnd, s16 msg, void *pData)
@@ -220,6 +230,11 @@ bool CUIInventoryWnd::ToSlot(CUICellItem* itm, bool force_place)
 
 		SendEvent_ActivateSlot				(iitem);
 		
+		/************************************************** added by Ray Twitty (aka Shadows) START **************************************************/
+		// обновляем статик веса в инвентаре
+		InventoryUtilities::UpdateWeight	(UIBagWnd, true);
+		/*************************************************** added by Ray Twitty (aka Shadows) END ***************************************************/
+		
 		return								true;
 	}else
 	{ // in case slot is busy
@@ -257,6 +272,11 @@ bool CUIInventoryWnd::ToBag(CUICellItem* itm, bool b_use_cursor_pos)
 		bool result							= GetInventory()->Ruck(iitem);
 		VERIFY								(result);
 		CUICellItem* i						= old_owner->RemoveItem(itm, (old_owner==new_owner) );
+
+		/************************************************** added by Ray Twitty (aka Shadows) START **************************************************/
+		// обновляем статик веса в инвентаре
+		InventoryUtilities::UpdateWeight	(UIBagWnd, true);
+		/*************************************************** added by Ray Twitty (aka Shadows) END ***************************************************/
 		
 		if(b_use_cursor_pos)
 			new_owner->SetItem				(i,old_owner->GetDragItemPosition());
@@ -294,6 +314,12 @@ bool CUIInventoryWnd::ToBelt(CUICellItem* itm, bool b_use_cursor_pos)
 			new_owner->SetItem				(i);
 
 		SendEvent_Item2Belt					(iitem);
+
+		/************************************************** added by Ray Twitty (aka Shadows) START **************************************************/
+		// обновляем статик веса в инвентаре
+		InventoryUtilities::UpdateWeight	(UIBagWnd, true);
+		/*************************************************** added by Ray Twitty (aka Shadows) END ***************************************************/
+
 		return								true;
 	}
 	return									false;

@@ -16,6 +16,11 @@
 #include "../actor.h"
 #include "restrictions.h"
 
+#include "../pch_script.h"
+#include "../game_object_space.h"
+#include "../script_callback_ex.h"
+#include "../script_game_object.h"
+
 #define 	BELT_SLOT			5
 
 CUIBuyWnd::CUIBuyWnd()
@@ -634,6 +639,9 @@ void CUIBuyWnd::SetCurrentItem(CUICellItem* itm)
 		sprintf_s						(tex_name, "ui_hud_status_%s_0%d", team, m_bag.GetItemRank(m_pCurrentCellItem)+1);
 				
 		m_rankInfo.InitTexture		(tex_name);
+
+		auto script_obj = CurrentIItem()->object().lua_game_object();
+		g_actor->callback(GameObject::eCellItemSelect)(script_obj);
 	}
 }
 
