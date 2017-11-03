@@ -194,16 +194,18 @@ bool CInventory::DropItem(CGameObject *pObj)
 	VERIFY								(pIItem);
 	if( !pIItem )						return false;
 
-	if(pIItem->m_pCurrentInventory!=this)
-	{
-		Msg("ahtung !!! [%d]", Device.dwFrame);
-		Msg("CInventory::DropItem pIItem->m_pCurrentInventory!=this");
-		Msg("this = [%d]", GetOwner()->object_id());
-		Msg("pIItem->m_pCurrentInventory = [%d]", pIItem->m_pCurrentInventory->GetOwner()->object_id());
-	}
-
-	R_ASSERT							(pIItem->m_pCurrentInventory);
-	R_ASSERT							(pIItem->m_pCurrentInventory==this);
+	ASSERT_FMT(
+	  pIItem->m_pCurrentInventory,
+	  "CInventory::DropItem: [%s]: pIItem->m_pCurrentInventory",
+	  pObj->cName().c_str()
+	);
+	ASSERT_FMT(
+	  pIItem->m_pCurrentInventory == this,
+	  "CInventory::DropItem: [%s]: this = %s, pIItem->m_pCurrentInventory = %s",
+	  pObj->cName().c_str(),
+	  smart_cast<const CGameObject*>(this)->cName().c_str(),
+	  smart_cast<const CGameObject*>(pIItem->m_pCurrentInventory)->cName().c_str()
+	);
 	VERIFY								(pIItem->m_eItemPlace!=eItemPlaceUndefined);
 
 	pIItem->object().processing_activate(); 
