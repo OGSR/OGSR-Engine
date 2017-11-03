@@ -13,6 +13,12 @@
 #include "../object_broker.h"
 #include <dinput.h>
 
+#include "../pch_script.h"
+#include "../game_object_space.h"
+#include "../script_callback_ex.h"
+#include "../script_game_object.h"
+#include "../actor.h"
+
 bool CUIMpTradeWnd::OnKeyboard(int dik, EUIMessages keyboard_action)
 {
 #ifdef DEBUG
@@ -151,6 +157,9 @@ void CUIMpTradeWnd::SetCurrentItem(CUICellItem* itm)
 				
 		m_static_item_rank->InitTexture		(tex_name);
 		m_static_item_rank->TextureOn		();
+
+		auto script_obj = CurrentIItem()->object().lua_game_object();
+		g_actor->callback(GameObject::eCellItemSelect)(script_obj);
 	}
 	else
 	{

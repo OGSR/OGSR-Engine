@@ -22,6 +22,8 @@
 #include "ai_object_location.h"
 #include "object_broker.h"
 #include "..\xr_3da\IGame_Persistent.h"
+#include "alife_registry_wrappers.h"
+#include "alife_simulator_header.h"
 
 #ifdef DEBUG
 #	include "debug_renderer.h"
@@ -76,6 +78,7 @@ CInventoryItem::CInventoryItem()
 {
 	m_net_updateData	= NULL;
 	m_slot				= NO_ACTIVE_SLOT;
+	m_flags.zero();
 	m_flags.set			(Fbelt,FALSE);
 	m_flags.set			(Fruck,TRUE);
 	m_flags.set			(FRuckDefault,TRUE);
@@ -374,7 +377,8 @@ void CInventoryItem::save(NET_Packet &packet)
 {
 	packet.w_u8				((u8)m_eItemPlace);
 	packet.w_float			(m_fCondition);
-	packet.w_u8				(m_slot);
+        if ( m_eItemPlace == eItemPlaceSlot )
+          packet.w_u8( m_slot );
 
 	if (object().H_Parent()) {
 		packet.w_u8			(0);
@@ -535,9 +539,8 @@ void CInventoryItem::load(IReader &packet)
 {
 	m_eItemPlace			= (EItemPlace)packet.r_u8();
 	m_fCondition			= packet.r_float();
-	m_slot					= packet.r_u8();
-	if (m_slot == 255)
-		m_slot = NO_ACTIVE_SLOT;
+	if ( m_eItemPlace == eItemPlaceSlot && ai().get_alife()->header().version() >= 4 )
+          m_slot = packet.r_u8();
 
 	u8						tmp = packet.r_u8();
 	if (!tmp)

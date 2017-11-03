@@ -357,6 +357,11 @@ void CUICarBodyWnd::SetCurrentItem(CUICellItem* itm)
 	if(m_pCurrentCellItem == itm) return;
 	m_pCurrentCellItem		= itm;
 	m_pUIItemInfo->InitItem(CurrentIItem());
+
+	if (m_pCurrentCellItem) {
+		auto script_obj = CurrentIItem()->object().lua_game_object();
+		g_actor->callback(GameObject::eCellItemSelect)(script_obj);
+	}
 }
 
 void CUICarBodyWnd::TakeAll()

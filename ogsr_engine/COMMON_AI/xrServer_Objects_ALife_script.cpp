@@ -9,8 +9,24 @@
 #include "pch_script.h"
 #include "xrServer_Objects_ALife.h"
 #include "xrServer_script_macroses.h"
+#include "xrServer_Objects_ALife_Monsters.h"
 
 using namespace luabind;
+
+extern u32 get_level_id(u32 gvid);
+extern LPCSTR get_level_name_by_id (u32 level_id);
+
+u32		se_obj_level_id   (CSE_ALifeObject *O) { return get_level_id(O->m_tGraphID); }
+LPCSTR  se_obj_level_name (CSE_ALifeObject *O) { return get_level_name_by_id (se_obj_level_id(O));  }
+
+bool  se_obj_is_alive(CSE_ALifeObject *O)
+{
+	CSE_ALifeCreatureAbstract *cr = smart_cast<CSE_ALifeCreatureAbstract *> (O);
+	if (cr)
+		return cr->g_Alive();
+	else
+		return  false;
+}
 
 #pragma optimize("s",on)
 void CSE_ALifeSchedulable::script_register(lua_State *L)
@@ -37,6 +53,14 @@ void CSE_ALifeGraphPoint::script_register(lua_State *L)
 	];
 }
 
+flags32 &get_flags_ref(CSE_ALifeObject *sobj) { return sobj->m_flags; }
+
+
+void cse_obj_set_position (CSE_ALifeObject *o, const Fvector &pos)
+{
+	o->position().set(pos);
+}
+
 void CSE_ALifeObject::script_register(lua_State *L)
 {
 	module(L)[
@@ -53,9 +77,14 @@ void CSE_ALifeObject::script_register(lua_State *L)
 		.def			("can_switch_online",	(void (CSE_ALifeObject::*)(bool))(&CSE_ALifeObject::can_switch_online))
 		.def			("can_switch_offline",	(void (CSE_ALifeObject::*)(bool))(&CSE_ALifeObject::can_switch_offline))
 		.def			("used_ai_locations",	(void (CSE_ALifeObject::*)(bool))(&CSE_ALifeObject::used_ai_locations))
-		.def_readonly	("m_level_vertex_id",	&CSE_ALifeObject::m_tNodeID)
-		.def_readonly	("m_game_vertex_id",	&CSE_ALifeObject::m_tGraphID)
+		.def			("set_position",		&cse_obj_set_position)                     // alpet: для коррекции позиции в оффлайне
+		.def_readwrite	("m_level_vertex_id",	&CSE_ALifeObject::m_tNodeID)
+		.def_readwrite	("m_game_vertex_id",	&CSE_ALifeObject::m_tGraphID)
 		.def_readonly	("m_story_id",			&CSE_ALifeObject::m_story_id)
+		.property		("m_flags",				&get_flags_ref)
+		.property		("level_id",			&se_obj_level_id)
+		.property		("level_name",			&se_obj_level_name)
+		.property		("is_alive",			&se_obj_is_alive)
 	];
 }
 
@@ -103,6 +132,13 @@ void CSE_ALifePHSkeletonObject::script_register(lua_State *L)
 	];
 }
 
+u8  cse_get_restrictor_type(CSE_ALifeDynamicObject *se_obj)
+{
+	CSE_ALifeSpaceRestrictor *SR = smart_cast<CSE_ALifeSpaceRestrictor*> (se_obj);
+	if (SR) return SR->m_space_restrictor_type;
+	return 0;
+}
+
 void CSE_ALifeSpaceRestrictor::script_register(lua_State *L)
 {
 	module(L)[
@@ -111,7 +147,8 @@ void CSE_ALifeSpaceRestrictor::script_register(lua_State *L)
 			"cse_alife_space_restrictor",
 			CSE_ALifeDynamicObject,
 			CSE_Shape
-		)
+		),
+		def ("cse_get_restrictor_type"		,		&cse_get_restrictor_type)
 	];
 }
 

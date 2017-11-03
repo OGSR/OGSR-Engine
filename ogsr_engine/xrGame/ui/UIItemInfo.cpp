@@ -15,12 +15,6 @@
 #include "UIWpnParams.h"
 #include "ui_af_params.h"
 
-#include "../pch_script.h"
-#include "../game_object_space.h"
-#include "../script_callback_ex.h"
-#include "../script_game_object.h"
-#include "../Actor.h"
-
 CUIItemInfo::CUIItemInfo()
 {
 	UIItemImageSize.set			(0.0f,0.0f);
@@ -142,9 +136,6 @@ void CUIItemInfo::InitItem(CInventoryItem* pInvItem)
 {
 	m_pInvItem				= pInvItem;
 	if(!m_pInvItem)			return;
-
-	auto script_obj = pInvItem->object().lua_game_object();
-	g_actor->callback(GameObject::eCellItemSelect)(script_obj);
 
 	string256				str;
 	if(UIName)

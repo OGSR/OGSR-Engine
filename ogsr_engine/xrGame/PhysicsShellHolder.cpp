@@ -332,7 +332,7 @@ void CPhysicsShellHolder::PHSaveState(NET_Packet &P)
 	P.w_vec3(max);
 
 	P.w_u16(bones_number);
-	if (bones_number >= 64)
+	if (bones_number > 64)
 	{
 		Msg("!![CPhysicsShellHolder::PHSaveState] bones_number is [%u]!", bones_number);
 		P.w_u64(K ? _vm._visimask_ex.flags : u64(-1));
@@ -371,7 +371,7 @@ void CPhysicsShellHolder::PHLoadState(IReader &P)
 	VERIFY(!min.similar(max));
 
 	u16 bones_number=P.r_u16();
-	if (bones_number >= 64)
+	if (bones_number > 64)
 	{
 		Msg("!![CPhysicsShellHolder::PHLoadState] bones_number is [%u]!", bones_number);
 		_high = P.r_u64();
