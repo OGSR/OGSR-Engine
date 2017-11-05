@@ -15,7 +15,7 @@
 
 CPda::CPda(void)						
 {										
-	m_slot					= PDA_SLOT;
+	SetSlot( PDA_SLOT );
 	m_flags.set				(Fruck, TRUE);
 
 	m_idOriginalOwner		= u16(-1);

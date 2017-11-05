@@ -49,6 +49,22 @@ void CUIInventoryWnd::ActivatePropertiesBox()
     
 	bool b_show = false;
 
+#ifdef NEW_WPN_SLOTS
+
+	if ( !pOutfit && CurrentIItem()->GetSlot() != NO_ACTIVE_SLOT ) {
+          auto slots = CurrentIItem()->GetSlots();
+          for( u8 i = 0; i < (u8)slots.size(); ++i ) {
+            if ( slots[ i ] != NO_ACTIVE_SLOT && slots[ i ] != GRENADE_SLOT ) {
+              if ( !m_pInv->m_slots[ slots[ i ] ].m_pIItem || m_pInv->m_slots[ slots[ i ] ].m_pIItem != CurrentIItem() ) {
+                UIPropertiesBox.AddItem( "st_move_to_slot", NULL, INVENTORY_TO_SLOT_ACTION );
+                b_show = true;
+                break;
+              };
+            };
+          };
+	};
+
+#else
 	if (!pOutfit && CurrentIItem()->GetSlot() != NO_ACTIVE_SLOT )
 	{
 		if ((CurrentIItem()->GetSlot() == FIRST_WEAPON_SLOT) || (CurrentIItem()->GetSlot() == SECOND_WEAPON_SLOT))
@@ -70,6 +86,7 @@ void CUIInventoryWnd::ActivatePropertiesBox()
 			b_show = true;
 		}
 	}
+#endif
 
 
 	if(CurrentIItem()->Belt() && m_pInv->CanPutInBelt(CurrentIItem()))
@@ -139,6 +156,18 @@ void CUIInventoryWnd::ActivatePropertiesBox()
 	//присоединение аддонов к активному слоту (2 или 3)
 	if(pScope)
 	{
+#ifdef NEW_WPN_SLOTS
+
+          for( u8 i = 0; i < SLOTS_TOTAL; ++i ) {
+            PIItem tgt = m_pInv->m_slots[ i ].m_pIItem;
+            if( tgt && tgt->CanAttach( pScope ) ) {
+              UIPropertiesBox.AddItem( "st_attach_scope_to_rifle",  (void*)tgt, INVENTORY_ATTACH_ADDON );
+              b_show = true;
+              break;
+            }
+          };
+
+#else
 		if(m_pInv->m_slots[FIRST_WEAPON_SLOT].m_pIItem != NULL &&
 		   m_pInv->m_slots[FIRST_WEAPON_SLOT].m_pIItem->CanAttach(pScope))
 		 {
@@ -153,9 +182,22 @@ void CUIInventoryWnd::ActivatePropertiesBox()
 			UIPropertiesBox.AddItem("st_attach_scope_to_rifle",  (void*)tgt, INVENTORY_ATTACH_ADDON);
 			b_show			= true;
 		 }
+#endif
 	}
 	else if(pSilencer)
 	{
+#ifdef NEW_WPN_SLOTS
+
+          for( u8 i = 0; i < SLOTS_TOTAL; ++i ) {
+            PIItem tgt = m_pInv->m_slots[ i ].m_pIItem;
+            if( tgt && tgt->CanAttach( pSilencer ) ) {
+              UIPropertiesBox.AddItem( "st_attach_silencer_to_rifle",  (void*)tgt, INVENTORY_ATTACH_ADDON );
+              b_show = true;
+              break;
+            }
+          };
+
+#else
 		 if(m_pInv->m_slots[FIRST_WEAPON_SLOT].m_pIItem != NULL &&
 		   m_pInv->m_slots[FIRST_WEAPON_SLOT].m_pIItem->CanAttach(pSilencer))
 		 {
@@ -170,9 +212,22 @@ void CUIInventoryWnd::ActivatePropertiesBox()
 			UIPropertiesBox.AddItem("st_attach_silencer_to_rifle",  (void*)tgt, INVENTORY_ATTACH_ADDON);
 			b_show			= true;
 		 }
+#endif
 	}
 	else if(pGrenadeLauncher)
 	{
+#ifdef NEW_WPN_SLOTS
+
+          for( u8 i = 0; i < SLOTS_TOTAL; ++i ) {
+            PIItem tgt = m_pInv->m_slots[ i ].m_pIItem;
+            if( tgt && tgt->CanAttach( pGrenadeLauncher ) ) {
+              UIPropertiesBox.AddItem( "st_attach_gl_to_rifle",  (void*)tgt, INVENTORY_ATTACH_ADDON );
+              b_show = true;
+              break;
+            }
+          };
+
+#else
 		 if(m_pInv->m_slots[SECOND_WEAPON_SLOT].m_pIItem != NULL &&
 			m_pInv->m_slots[SECOND_WEAPON_SLOT].m_pIItem->CanAttach(pGrenadeLauncher))
 		 {
@@ -181,6 +236,7 @@ void CUIInventoryWnd::ActivatePropertiesBox()
 			b_show			= true;
 		 }
 
+#endif
 	}
 	LPCSTR _action = NULL;
 
@@ -235,6 +291,25 @@ void CUIInventoryWnd::ProcessPropertiesBoxClicked	()
 	{
 		switch(UIPropertiesBox.GetClickedItem()->GetTAG())
 		{
+#ifdef NEW_WPN_SLOTS
+
+                case INVENTORY_TO_SLOT_ACTION: {
+                  // ѕытаемс€ найти свободный слот из списка разрешенных.
+                  // ≈сли его нету, то принудительно займет первый слот,
+                  // указанный в списке.
+                  auto item  = CurrentIItem();
+                  auto slots = item->GetSlots();
+                  for ( u8 i = 0; i < (u8)slots.size(); ++i ) {
+                    item->SetSlot( slots[ i ] );
+                    if ( ToSlot( CurrentItem(), false ) )
+                      return;
+                  }
+                  item->SetSlot( slots.size() ? slots[ 0 ]: NO_ACTIVE_SLOT );
+                  ToSlot( CurrentItem(), true );
+                  break;
+                }
+
+#else
 		case INVENTORY_TO_WEAPON_SLOT_1_ACTION:
 			ToSlot(CurrentItem(), FIRST_WEAPON_SLOT, true);
 			break;
@@ -244,6 +319,7 @@ void CUIInventoryWnd::ProcessPropertiesBoxClicked	()
 		case INVENTORY_TO_SLOT_ACTION:	
 			ToSlot(CurrentItem(), true);
 			break;
+#endif
 		case INVENTORY_TO_BELT_ACTION:	
 			ToBelt(CurrentItem(),false);
 			break;

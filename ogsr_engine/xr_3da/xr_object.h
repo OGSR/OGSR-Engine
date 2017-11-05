@@ -134,6 +134,7 @@ public:
 	ICF shared_str						cNameVisual			()			const	{ return NameVisual;				}
 	void								cNameVisual_set		(shared_str N);
 	virtual	shared_str					shedule_Name		() const			{ return cName(); };
+	ICF LPCSTR							Name_script         () const			{ return NameObject.c_str(); }
 	
 	// Properties
 	void								processing_activate		();				// request	to enable	UpdateCL

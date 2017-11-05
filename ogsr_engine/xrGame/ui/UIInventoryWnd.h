@@ -97,11 +97,14 @@ protected:
 	CUIDragDropListEx*			m_pUITorchList;
 	CUIDragDropListEx*			m_pUIBinocularList;
 
+        // alpet: для индексированного доступа
+	CUIDragDropListEx*			m_slots_array[ SLOTS_TOTAL ];
+
 	void						ClearAllLists				();
 	void						BindDragDropListEnents		(CUIDragDropListEx* lst);
 	
 	EListType					GetType						(CUIDragDropListEx* l);
-	CUIDragDropListEx*			GetSlotList					(u32 slot_idx);
+	CUIDragDropListEx*			GetSlotList					(u8 slot_idx);
 
 	bool		xr_stdcall		OnItemDrop					(CUICellItem* itm);
 	bool		xr_stdcall		OnItemStartDrag				(CUICellItem* itm);

@@ -77,7 +77,7 @@ net_updateData* CInventoryItem::NetSync()
 CInventoryItem::CInventoryItem() 
 {
 	m_net_updateData	= NULL;
-	m_slot				= NO_ACTIVE_SLOT;
+	SetSlot(NO_ACTIVE_SLOT);
 	m_flags.zero();
 	m_flags.set			(Fbelt,FALSE);
 	m_flags.set			(Fruck,TRUE);
@@ -101,6 +101,8 @@ CInventoryItem::CInventoryItem()
 CInventoryItem::~CInventoryItem() 
 {
 	delete_data			(m_net_updateData);
+
+        ASSERT_FMT( (int)m_slots.size() >= 0, "m_slots.size() returned negative value inside destructor!" ); // alpet: дл€ детекта повреждени€ объекта
 
 	bool B_GOOD			= (	!m_pCurrentInventory || 
 							(std::find(	m_pCurrentInventory->m_all.begin(),m_pCurrentInventory->m_all.end(), this)==m_pCurrentInventory->m_all.end()) );
@@ -135,8 +137,32 @@ void CInventoryItem::Load(LPCSTR section)
 
 	m_cost				= pSettings->r_u32(section, "cost");
 
-	m_slot_sect = READ_IF_EXISTS(pSettings,r_u32,section,"slot", NO_ACTIVE_SLOT);
-	m_slot = m_slot_sect;
+	m_slots_sect = READ_IF_EXISTS( pSettings, r_string, section, "slot", "" );
+	{
+          char buf[ 16 ];
+          const int count = _GetItemCount( m_slots_sect );
+          if ( count )
+            m_slots.clear(); // full override!
+          for ( int i = 0; i < count; ++i ) {
+            u8 slot = atoi( _GetItem( m_slots_sect, i, buf ) );
+            // вместо std::find(m_slots.begin(), m_slots.end(), slot) == m_slots.end() используетс€ !IsPlaceable
+            if ( slot < SLOTS_TOTAL && !IsPlaceable( slot, slot ) )
+              m_slots.push_back( slot );
+          }
+	}
+
+#ifndef NEW_WPN_SLOTS
+        // ¬ OGSR, первый и второй оружейные слоты принудительно
+        // равнозначны. „то бы сохранить совместимость с этим, если
+        // дл€ предмета указан только один слот и это оружейный слот,
+        // добавим к нему соотв. второй оружейный слот.
+        if ( GetSlotsCount() == 1 ) {
+          if ( m_slots[ 0 ] == FIRST_WEAPON_SLOT )
+            m_slots.push_back( SECOND_WEAPON_SLOT );
+          else if ( m_slots[ 0 ] == SECOND_WEAPON_SLOT )
+            m_slots.push_back( FIRST_WEAPON_SLOT );
+        }
+#endif
 
 	// Description
 	if ( pSettings->line_exist(section, "description") )
@@ -164,6 +190,44 @@ void  CInventoryItem::ChangeCondition(float fDeltaCondition)
 {
 	m_fCondition += fDeltaCondition;
 	clamp(m_fCondition, 0.f, 1.f);
+}
+
+
+void CInventoryItem::SetSlot( u8 slot ) {
+  if ( GetSlotsCount() == 0 && slot < (u8)NO_ACTIVE_SLOT )
+    m_slots.push_back(slot); // in-constructor initialization
+
+  for ( u32 i = 0; i < GetSlotsCount(); i ++ )
+    if ( m_slots[ i ] == slot ) {
+      selected_slot = i;
+      return;
+    }
+
+  if ( slot >= (u8)NO_ACTIVE_SLOT )  // u8 used for code compatibility
+    selected_slot = NO_ACTIVE_SLOT;
+  else {
+    Msg( "!#ERROR: slot %d not acceptable for object %s (%s) with slots {%s}", slot, object().Name_script(), Name(), m_slots_sect );
+    return;
+  }
+}
+
+
+u8 CInventoryItem::GetSlot() const {
+  if ( GetSlotsCount() < 1 || selected_slot >= GetSlotsCount() ) {
+    return NO_ACTIVE_SLOT;
+  }
+  else
+    return (u8)m_slots[ selected_slot ];
+}
+
+
+bool CInventoryItem::IsPlaceable( u8 min_slot, u8 max_slot ) {
+  for ( u32 i = 0; i < GetSlotsCount(); i++ ) {
+    u8 s = m_slots[ i ];
+    if ( min_slot <= s && s <= max_slot )
+      return true;
+  }
+  return false;
 }
 
 
@@ -378,7 +442,7 @@ void CInventoryItem::save(NET_Packet &packet)
 	packet.w_u8				((u8)m_eItemPlace);
 	packet.w_float			(m_fCondition);
         if ( m_eItemPlace == eItemPlaceSlot )
-          packet.w_u8( m_slot );
+	  packet.w_u8( (u8)GetSlot() );
 
 	if (object().H_Parent()) {
 		packet.w_u8			(0);
@@ -540,7 +604,7 @@ void CInventoryItem::load(IReader &packet)
 	m_eItemPlace			= (EItemPlace)packet.r_u8();
 	m_fCondition			= packet.r_float();
 	if ( m_eItemPlace == eItemPlaceSlot && ai().get_alife()->header().version() >= 4 )
-          m_slot = packet.r_u8();
+	  SetSlot( packet.r_u8() );
 
 	u8						tmp = packet.r_u8();
 	if (!tmp)

@@ -179,6 +179,19 @@ void CUIInventoryWnd::Init()
 	xml_init.InitDragDropListEx			(uiXml, "dragdrop_torch", 0, m_pUITorchList);
 	BindDragDropListEnents				(m_pUITorchList);
 
+        for ( u8 i = 0; i < SLOTS_TOTAL; i++ )
+          m_slots_array[ i ] = NULL;
+        m_slots_array[ OUTFIT_SLOT        ] = m_pUIOutfitList;
+        m_slots_array[ KNIFE_SLOT         ] = m_pUIKnifeList;
+        m_slots_array[ FIRST_WEAPON_SLOT  ] = m_pUIPistolList;
+        m_slots_array[ SECOND_WEAPON_SLOT ] = m_pUIAutomaticList;
+        m_slots_array[ APPARATUS_SLOT     ] = m_pUIBinocularList;
+        m_slots_array[ HELMET_SLOT        ] = m_pUIHelmetList;
+        m_slots_array[ BIODETECTOR_SLOT   ] = m_pUIBIODetList;
+        m_slots_array[ NIGHT_VISION_SLOT  ] = m_pUINightVisionList;
+        m_slots_array[ DETECTOR_SLOT      ] = m_pUIDetectorList;
+        m_slots_array[ TORCH_SLOT         ] = m_pUITorchList;
+
 	//pop-up menu
 	AttachChild							(&UIPropertiesBox);
 	UIPropertiesBox.Init				(0,0,300,300);
@@ -217,17 +230,9 @@ EListType CUIInventoryWnd::GetType(CUIDragDropListEx* l)
 	if(l==m_pUIBagList)			return iwBag;
 	if(l==m_pUIBeltList)		return iwBelt;
 
-	if(l==m_pUIAutomaticList)	return iwSlot;
-	if(l==m_pUIPistolList)		return iwSlot;
-	if(l==m_pUIKnifeList)		return iwSlot;
-	if(l==m_pUIOutfitList)		return iwSlot;
-
-	if (l == m_pUIHelmetList)		return iwSlot;
-	if (l == m_pUIBIODetList)		return iwSlot;
-	if (l == m_pUINightVisionList)	return iwSlot;
-	if (l == m_pUIDetectorList)		return iwSlot;
-	if (l == m_pUITorchList)		return iwSlot;
-	if (l == m_pUIBinocularList)	return iwSlot;
+        for ( u8 i = 0; i < SLOTS_TOTAL; i++ )
+          if ( m_slots_array[ i ] == l )
+            return iwSlot;
 
 	NODEFAULT;
 #ifdef DEBUG

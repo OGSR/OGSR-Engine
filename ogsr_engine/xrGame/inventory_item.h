@@ -158,8 +158,13 @@ public:
 	virtual	float				GetConditionToShow	() const					{return GetCondition();}
 			void				ChangeCondition		(float fDeltaCondition);
 
-	virtual u8					GetSlot				()  const					{return m_slot;}
-			void				SetSlot				(u8 _slot_id)				{ m_slot = _slot_id; }
+                        u8                      selected_slot;
+                        const xr_vector<u8>&    GetSlots()     { return m_slots;      }
+                        const LPCSTR            GetSlotsSect() { return m_slots_sect; }
+                        void                    SetSlot(u8 slot); // alpet: реально это SelectSlot
+                        virtual u8              GetSlot() const;
+                        u32                     GetSlotsCount() const { return m_slots.size(); }
+                        bool                    IsPlaceable (u8 min_slot, u8 max_slot);
 
 			bool				Belt				()							{return !!m_flags.test(Fbelt);}
 			void				Belt				(bool on_belt)				{m_flags.set(Fbelt,on_belt);}
@@ -171,10 +176,10 @@ public:
 			bool				CanTrade			() const;
 	virtual bool 				IsNecessaryItem	    (CInventoryItem* item);
 	virtual bool				IsNecessaryItem	    (const shared_str& item_sect){return false;};
-	u8 m_slot_sect;
+
 protected:
-	
-	u8							m_slot;
+	xr_vector<u8> m_slots;
+	LPCSTR        m_slots_sect;
 	float						m_fCondition;
 
 	ALife::_TIME_ID				m_dwItemRemoveTime;

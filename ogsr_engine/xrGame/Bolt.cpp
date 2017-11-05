@@ -7,7 +7,7 @@
 CBolt::CBolt(void) 
 {
 	m_weight					= .1f;
-	m_slot						= BOLT_SLOT;
+	SetSlot( BOLT_SLOT );
 	m_flags.set					(Fruck, FALSE);
 	m_thrower_id				=u16(-1);
 }

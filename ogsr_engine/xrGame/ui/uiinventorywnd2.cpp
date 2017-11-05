@@ -212,7 +212,7 @@ bool CUIInventoryWnd::ToSlot(CUICellItem* itm, bool force_place)
 {
 	CUIDragDropListEx*	old_owner			= itm->OwnerList();
 	PIItem	iitem							= (PIItem)itm->m_pData;
-	u32 _slot								= iitem->GetSlot();
+	u8 _slot								= iitem->GetSlot();
 
 	if(GetInventory()->CanPutInSlot(iitem)){
 		CUIDragDropListEx* new_owner		= GetSlotList(_slot);
@@ -359,16 +359,41 @@ bool CUIInventoryWnd::OnItemDrop(CUICellItem* itm)
 	switch (t_new) {
 	case iwSlot:
 	{
-		auto item = CurrentIItem();
-		if ((item->GetSlot() == FIRST_WEAPON_SLOT) || (item->GetSlot() == SECOND_WEAPON_SLOT))
-		{
-			if (GetSlotList(FIRST_WEAPON_SLOT) == new_owner)
-				ToSlot(itm, FIRST_WEAPON_SLOT, true);
-			else if (GetSlotList(SECOND_WEAPON_SLOT) == new_owner)
-				ToSlot(itm, SECOND_WEAPON_SLOT, true);
-		}
-		else if (GetSlotList(item->GetSlot()) == new_owner)
-			ToSlot(itm, true);
+          auto item = CurrentIItem();
+
+          bool     can_put  = false;
+          Ivector2 max_size = new_owner->CellSize();
+
+          LPCSTR name = item->object().Name_script();
+          int item_w  = item->GetGridWidth();
+          int item_h  = item->GetGridHeight();
+
+          if ( new_owner->GetVerticalPlacement() )
+            std::swap( max_size.x, max_size.y );
+
+          if ( item_w <= max_size.x && item_h <= max_size.y ) {
+            for ( u8 i = 0; i < SLOTS_TOTAL; i++ )
+              if ( new_owner == GetSlotList( i ) ) {
+                if ( item->IsPlaceable( i, i ) ) {
+                  item->SetSlot( i );
+                  can_put = true;
+                }
+                else {
+                  Msg( "!WARN: cannot put item %s into slot %d, allowed slots {%s}", name, i, item->GetSlotsSect() );
+                }
+                break;
+              }   // for-if
+          }
+          else
+            Msg( "!#ERROR: item %s to large for slot: (%d x %d) vs (%d x %d) ", name, item_w, item_h, max_size.x, max_size.y );
+
+          // при невозможности поместить в выбранный слот
+          if( !can_put )
+            // восстановление не требуется, слот не был назначен
+            return true;
+
+          if( GetSlotList( item->GetSlot() ) == new_owner )
+            ToSlot( itm, true );
 	}break;
 	case iwBag: {
 		ToBag(itm, true);
@@ -400,16 +425,19 @@ bool CUIInventoryWnd::OnItemDbClick(CUICellItem* itm)
 
 	case iwBag:
 	{
-		auto item = CurrentIItem();
-		if ((item->GetSlot() == FIRST_WEAPON_SLOT) || (item->GetSlot() == SECOND_WEAPON_SLOT))
-		{
-			if (!ToSlot(itm, FIRST_WEAPON_SLOT, false))
-				if (!ToSlot(itm, SECOND_WEAPON_SLOT, false))
-					ToSlot(itm, item->m_slot_sect, true);
-		}
-		else if (!ToSlot(itm, false))
-			if (!ToBelt(itm, false))
-				ToSlot(itm, true);
+          // Пытаемся найти свободный слот из списка разрешенных.
+          // Если его нету, то принудительно займет первый слот,
+          // указанный в списке.
+          auto slots = __item->GetSlots();
+          for ( u8 i = 0; i < (u8)slots.size(); ++i ) {
+            __item->SetSlot( slots[ i ] );
+            if ( ToSlot( itm, false ) )
+              return true;
+          }
+          __item->SetSlot( slots.size() ? slots[ 0 ]: NO_ACTIVE_SLOT );
+          if ( !ToSlot( itm, false ) )
+            if ( !ToBelt( itm, false ) )
+              ToSlot( itm, true );
 	}break;
 
 	case iwBelt: {
@@ -428,52 +456,10 @@ bool CUIInventoryWnd::OnItemRButtonClick(CUICellItem* itm)
 	return						false;
 }
 
-CUIDragDropListEx* CUIInventoryWnd::GetSlotList(u32 slot_idx)
-{
-	if(slot_idx == NO_ACTIVE_SLOT || GetInventory()->m_slots[slot_idx].m_bPersistent)	return NULL;
-	switch (slot_idx)
-	{
-		case FIRST_WEAPON_SLOT:
-			return m_pUIPistolList;
-			break;
-
-		case KNIFE_SLOT:
-			return m_pUIKnifeList;
-			break;
-
-		case SECOND_WEAPON_SLOT:
-			return m_pUIAutomaticList;
-			break;
-
-		case APPARATUS_SLOT:
-			return m_pUIBinocularList;
-			break;
-
-		case OUTFIT_SLOT:
-			return m_pUIOutfitList;
-			break;
-
-		case DETECTOR_SLOT:
-			return m_pUIDetectorList;
-			break;
-
-		case TORCH_SLOT:
-			return m_pUITorchList;
-			break;
-
-		case HELMET_SLOT:
-			return m_pUIHelmetList;
-			break;
-
-		case NIGHT_VISION_SLOT:
-			return m_pUINightVisionList;
-			break;
-
-		case BIODETECTOR_SLOT:
-			return m_pUIBIODetList;
-			break;
-	};
-	return NULL;
+CUIDragDropListEx* CUIInventoryWnd::GetSlotList( u8 slot_idx ) {
+  if( slot_idx == NO_ACTIVE_SLOT || GetInventory()->m_slots[ slot_idx ].m_bPersistent )
+    return NULL;
+  return m_slots_array[ slot_idx ];
 }
 
 void CUIInventoryWnd::ColorizeAmmo(CUICellItem* itm)
