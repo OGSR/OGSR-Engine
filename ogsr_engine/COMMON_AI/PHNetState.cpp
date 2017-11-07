@@ -232,7 +232,7 @@ void SPHBonesData::net_Save(NET_Packet &P)
 	P.w_vec3		(get_min());
 	P.w_vec3		(get_max());
 	P.w_u16			((u16)bones.size());//bones number;
-	if (bones.size() >= 64)
+	if (bones.size() > 64)
 	{
 		Msg("!![SPHBonesData::net_Save] bones_size is [%u]!", bones.size());
 		P.w_u64(bones_mask._visimask_ex.flags);
@@ -262,7 +262,7 @@ void SPHBonesData::net_Load(NET_Packet &P)
 	set_min_max					(_mn, _mx);
 
 	u16 bones_number			=P.r_u16();//bones number /**/
-	if (bones_number >= 64)
+	if (bones_number > 64)
 	{
 		Msg("!![SPHBonesData::net_Load] bones_number is [%u]!", bones_number);
 		_high = P.r_u64();
