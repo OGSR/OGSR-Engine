@@ -694,6 +694,10 @@ u32 vertex_id(const Fvector &vec)
 	return ai().level_graph().vertex_id(vec);
 }
 
+void update_inventory_window() {
+  HUD().GetUI()->UIGame()->ReInitShownUI();
+}
+
 #pragma optimize("s",on)
 void CLevel::script_register(lua_State *L)
 {
@@ -842,6 +846,7 @@ void CLevel::script_register(lua_State *L)
 			def("SetEnvDescData", &SetEnvDescData),
 			def("set_input_language", &g_set_input_language),
 			def("get_input_language", &g_get_input_language),
+			def("update_inventory_window", &update_inventory_window),
 
 			class_<enum_exporter<collide::rq_target> >("rq_target")
 			.enum_("rq_target")
