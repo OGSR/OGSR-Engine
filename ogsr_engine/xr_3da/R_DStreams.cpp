@@ -8,7 +8,7 @@
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
 
-int		rsDVB_Size = 4096; //Fixed: (bytes_need<=mSize) && vl_Count 
+int		rsDVB_Size = 8192; //4096; //Fixed: (bytes_need<=mSize) && vl_Count //KRodin: увеличил ещё, т.к. у меня и при 4096 вылетало.
 int		rsDIB_Size = 512;
 
 void _VertexStream::Create	()
