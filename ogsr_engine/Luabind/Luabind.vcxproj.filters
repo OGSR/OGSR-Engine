@@ -94,5 +94,6 @@
     <ClInclude Include="luabind\detail\signature_match.hpp" />
     <ClInclude Include="luabind\detail\stack_utils.hpp" />
     <ClInclude Include="luabind\detail\typetraits.hpp" />
+    <ClInclude Include="luabind\iterator_pair_policy.hpp" />
   </ItemGroup>
 </Project>

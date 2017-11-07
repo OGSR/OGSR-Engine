@@ -128,6 +128,7 @@
     <ClInclude Include="luabind\error.hpp" />
     <ClInclude Include="luabind\function.hpp" />
     <ClInclude Include="luabind\functor.hpp" />
+    <ClInclude Include="luabind\iterator_pair_policy.hpp" />
     <ClInclude Include="luabind\iterator_policy.hpp" />
     <ClInclude Include="luabind\luabind.hpp" />
     <ClInclude Include="luabind\luabind_delete.h" />
