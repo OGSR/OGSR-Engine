@@ -66,6 +66,12 @@ CSE_ALifeDynamicObject *alife_object		(const CALifeSimulator *self, ALife::_OBJE
 	return			(self->objects().object(id,no_assert));
 }
 
+const auto& alife_objects(const CALifeSimulator *self)
+{
+	VERIFY(self);
+	return self->objects().objects();
+}
+
 CSE_ALifeDynamicObject *alife_story_object	(const CALifeSimulator *self, ALife::_STORY_ID id)
 {
 	return			(self->story_objects().object(id,true));
@@ -378,6 +384,7 @@ void CALifeSimulator::script_register			(lua_State *L)
 			.def("valid_object_id",			&valid_object_id)
 			.def("level_id",				&get_level_id)
 			.def("level_name",				&get_level_name)
+			.def("objects",					&alife_objects, return_stl_pair_iterator)
 			.def("object",					(CSE_ALifeDynamicObject *(*) (const CALifeSimulator *,ALife::_OBJECT_ID))(alife_object))
 			.def("object",					(CSE_ALifeDynamicObject *(*) (const CALifeSimulator *,LPCSTR))(alife_object))
 			.def("object",					(CSE_ALifeDynamicObject *(*) (const CALifeSimulator *,ALife::_OBJECT_ID, bool))(alife_object))
