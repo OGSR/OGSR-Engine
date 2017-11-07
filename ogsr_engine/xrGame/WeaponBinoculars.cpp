@@ -31,11 +31,11 @@ void CWeaponBinoculars::Load	(LPCSTR section)
 
 bool CWeaponBinoculars::Action(s32 cmd, u32 flags) 
 {
-	switch(cmd) 
+	/*switch(cmd) 
 	{
 	case kWPN_FIRE : 
 		return inherited::Action(kWPN_ZOOM, flags);
-	}
+	}*/
 
 	return inherited::Action(cmd, flags);
 }
@@ -137,9 +137,10 @@ void CWeaponBinoculars::load(IReader &input_packet)
 
 void CWeaponBinoculars::GetBriefInfo(xr_string& str_name, xr_string& icon_sect_name, xr_string& str_count)
 {
-	str_name		= NameShort();
+	/*str_name		= NameShort();
 	str_count		= "";
-	icon_sect_name	= *cNameSect();
+	icon_sect_name	= *cNameSect();*/
+	inherited::GetBriefInfo(str_name, icon_sect_name, str_count);
 }
 
 void CWeaponBinoculars::net_Relcase	(CObject *object)
