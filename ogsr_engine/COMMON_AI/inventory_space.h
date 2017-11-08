@@ -4,9 +4,10 @@
 #define CMD_STOP	(1<<1)
 
 #define NO_ACTIVE_SLOT		0xff
+
 #define KNIFE_SLOT			0
-#define FIRST_WEAPON_SLOT			1
-#define SECOND_WEAPON_SLOT			2
+#define FIRST_WEAPON_SLOT	1
+#define SECOND_WEAPON_SLOT	2
 #define GRENADE_SLOT		3
 #define APPARATUS_SLOT		4
 #define BOLT_SLOT			5
@@ -14,10 +15,11 @@
 #define PDA_SLOT			7
 #define DETECTOR_SLOT		8
 #define TORCH_SLOT			9
-#define ARTEFACT_SLOT		10
-#define HELMET_SLOT			11
-#define NIGHT_VISION_SLOT	12
-#define BIODETECTOR_SLOT	13
+#define HELMET_SLOT			10
+#define NIGHT_VISION_SLOT	11
+#define BIODETECTOR_SLOT	12
+#define ARTEFACT_SLOT		13 //Какая-то мультиплеерная хрень, что-ли.
+
 #define SLOTS_TOTAL			14
 
 #define RUCK_HEIGHT			280
