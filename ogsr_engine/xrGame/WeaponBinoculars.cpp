@@ -139,12 +139,13 @@ void CWeaponBinoculars::load(IReader &input_packet)
 
 void CWeaponBinoculars::GetBriefInfo(xr_string& str_name, xr_string& icon_sect_name, xr_string& str_count)
 {
-#ifndef BINOC_FIRING
+#ifdef BINOC_FIRING
+	inherited::GetBriefInfo(str_name, icon_sect_name, str_count);
+#else
 	str_name		= NameShort();
 	str_count		= "";
 	icon_sect_name	= *cNameSect();
 #endif
-	inherited::GetBriefInfo(str_name, icon_sect_name, str_count);
 }
 
 void CWeaponBinoculars::net_Relcase	(CObject *object)
