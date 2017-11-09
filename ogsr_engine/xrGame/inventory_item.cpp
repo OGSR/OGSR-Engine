@@ -603,8 +603,13 @@ void CInventoryItem::load(IReader &packet)
 {
 	m_eItemPlace			= (EItemPlace)packet.r_u8();
 	m_fCondition			= packet.r_float();
-	if ( m_eItemPlace == eItemPlaceSlot && ai().get_alife()->header().version() >= 4 )
-	  SetSlot( packet.r_u8() );
+        if ( m_eItemPlace == eItemPlaceSlot )
+          if ( ai().get_alife()->header().version() < 4 ) {
+            auto slots = GetSlots();
+            SetSlot( slots.size() ? slots[ 0 ] : NO_ACTIVE_SLOT );
+          }
+          else
+            SetSlot( packet.r_u8() );
 
 	u8						tmp = packet.r_u8();
 	if (!tmp)
