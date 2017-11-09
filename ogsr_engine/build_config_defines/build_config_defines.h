@@ -33,3 +33,7 @@
 // и при прицеливании оно будет обладать свойствами бинокля. Еще нужно
 // не забыть добавить в секцию этого оружия настройки для бинокля.
 #define BINOC_FIRING
+
+// Отключает возможность переключаться между слотами колесиком мыши.
+// http://www.amk-team.ru/forum/topic/13383-soc-melkie-pravki-dvizhka/?do=findComment&comment=1124304
+//#define NO_MOUSE_WHEEL_SWITCH_SLOT
