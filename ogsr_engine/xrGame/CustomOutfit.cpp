@@ -12,7 +12,7 @@
 
 CCustomOutfit::CCustomOutfit()
 {
-	m_slot = OUTFIT_SLOT;
+	SetSlot( OUTFIT_SLOT );
 
 	m_flags.set(FUsingCondition, TRUE);
 

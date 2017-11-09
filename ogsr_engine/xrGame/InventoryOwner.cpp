@@ -431,8 +431,6 @@ void CInventoryOwner::OnItemDrop			(CInventoryItem *inventory_item)
 	object->callback(GameObject::eOnItemDrop)(inventory_item->object().lua_game_object());
 
 	detach		(inventory_item);
-
-	inventory_item->SetSlot(inventory_item->m_slot_sect); //KRodin: для равнозначных слотов. При выкидывании из рюкзака/продаже устанавливаем стволу слот из конфигов. Чтоб не было глюков при продаже таких стволов неписям.
 }
 
 void CInventoryOwner::OnItemDropUpdate ()

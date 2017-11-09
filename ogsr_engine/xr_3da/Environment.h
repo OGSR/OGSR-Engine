@@ -148,6 +148,8 @@ public:
 
 	void				on_device_create	();
 	void				on_device_destroy	();
+
+        void setEnvAmbient( LPCSTR sect, CEnvironment* parent );
 };
 
 class ENGINE_API		CEnvDescriptorMixer: public CEnvDescriptor{
@@ -187,10 +189,8 @@ private:
 	void					SelectEnv		(EnvVec* envs, CEnvDescriptor*& e, float tm);
 	void					StopWFX			();
 public:
-#ifndef _EDITOR
-	void					ForceReselectEnvs() { SelectEnvs(CurrentWeather, Current[0], Current[1], fGameTime); eff_Rain->set_state(CEffect_Rain::States::stIdle);
-	};	// KD: временая штука для скриптовой погоды
-#endif
+	// KD: временая штука для скриптовой погоды
+	void					ForceReselectEnvs();
 	static bool sort_env_pred	(const CEnvDescriptor* x, const CEnvDescriptor* y)
 	{	return x->exec_time < y->exec_time;	}
 	static bool sort_env_etl_pred	(const CEnvDescriptor* x, const CEnvDescriptor* y)
@@ -275,6 +275,8 @@ public:
     void					ED_Reload			();
     float					GetGameTime			(){return fGameTime;}
 #endif
+
+    CEnvDescriptor* getCurrentWeather( int idx ) { return CurrentWeather->at( idx ); };
 };
 
 ENGINE_API extern Flags32	psEnvFlags;

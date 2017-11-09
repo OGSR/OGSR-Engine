@@ -118,7 +118,7 @@ void CUICustomItem::Render(FVF::TL*& Pointer, const Fvector2& pos_ns, u32 color,
 	if (tmMirrorVertical == eMirrorMode || tmMirrorBoth == eMirrorMode)		std::swap	(LTt.y,RBt.y);
 
 //	float kx = (UI()->is_16_9_mode())?0.8333f: 1.0f;
-	float kx = (UI()->is_16_9_mode()) ? Device.dwHeight / Device.dwWidth / 0.75 : 1.0f;
+	float kx = UI()->is_16_9_mode() ? UI()->get_current_kx() : 1.0f;
 	// clip poly
 	sPoly2D			S; S.resize(4);
 	// LT

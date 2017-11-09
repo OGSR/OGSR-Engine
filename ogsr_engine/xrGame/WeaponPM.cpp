@@ -7,7 +7,7 @@
 CWeaponPM::CWeaponPM() : CWeaponPistol("PM")
 {
 	m_weight = .5f;
-	m_slot = 1;
+	SetSlot( FIRST_WEAPON_SLOT );
 }
 
 CWeaponPM::~CWeaponPM()

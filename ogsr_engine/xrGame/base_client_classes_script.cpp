@@ -21,6 +21,7 @@
 #include "xrServer_Space.h"
 #include "xrServer_Objects_ALife.h"
 #include "Weapon.h"
+#include "space_restriction.h"
 
 struct CGlobalFlags { };
 
@@ -189,6 +190,15 @@ void CObjectScript::script_register		(lua_State *L)
 				value("eMisfire",	int(CWeapon::EWeaponStates::eMisfire)),
 				value("eMagEmpty",	int(CWeapon::EWeaponStates::eMagEmpty)),
 				value("eSwitch",	int(CWeapon::EWeaponStates::eSwitch))
+			]
+			.enum_("RestrictionSpace")
+			[
+				value("eDefaultRestrictorTypeNone", int(RestrictionSpace::eDefaultRestrictorTypeNone)),
+				value("eDefaultRestrictorTypeOut",  int(RestrictionSpace::eDefaultRestrictorTypeOut)),
+				value("eDefaultRestrictorTypeIn",   int(RestrictionSpace::eDefaultRestrictorTypeIn)),
+				value("eRestrictorTypeNone",        int(RestrictionSpace::eRestrictorTypeNone)),
+				value("eRestrictorTypeIn",          int(RestrictionSpace::eRestrictorTypeIn)),
+				value("eRestrictorTypeOut",         int(RestrictionSpace::eRestrictorTypeOut))
 			]
 
 //		,class_<CPhysicsShellHolder,CGameObject>("CPhysicsShellHolder")
