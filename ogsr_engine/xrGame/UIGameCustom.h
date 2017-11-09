@@ -79,8 +79,8 @@ protected:
 	CUICaption*			GameCaptions			() {return m_pgameCaptions;}
 	CUICaption*			m_pgameCaptions;
 	CUIXml*				m_msgs_xml;
-	st_vec										m_custom_statics;
 public:
+	st_vec										m_custom_statics;
 	virtual void		SetClGame				(game_cl_GameState* g){};
 
 	virtual				float					shedule_Scale		();
