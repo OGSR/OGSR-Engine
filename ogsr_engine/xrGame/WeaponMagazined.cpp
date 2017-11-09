@@ -728,7 +728,8 @@ void CWeaponMagazined::switch2_Reload()
 void CWeaponMagazined::switch2_Hiding()
 {
 	CWeapon::FireEnd();
-	
+
+	HUD_SOUND::StopSound( sndReload );
 	PlaySound	(sndHide,get_LastFP());
 
 	PlayAnimHide();
@@ -739,6 +740,7 @@ void CWeaponMagazined::switch2_Hidden()
 {
 	CWeapon::FireEnd();
 
+	HUD_SOUND::StopSound( sndReload );
 	if (m_pHUD) m_pHUD->StopCurrentAnimWithoutCallback();
 
 	signal_HideComplete		();
