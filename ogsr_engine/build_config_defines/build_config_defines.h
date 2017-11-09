@@ -37,3 +37,7 @@
 // Отключает возможность переключаться между слотами колесиком мыши.
 // http://www.amk-team.ru/forum/topic/13383-soc-melkie-pravki-dvizhka/?do=findComment&comment=1124304
 //#define NO_MOUSE_WHEEL_SWITCH_SLOT
+
+// Заблокировать авто-перезарядку и сброс зума, когда закончились
+// патроны.
+//#define NO_AUTO_RELOAD_WPN
