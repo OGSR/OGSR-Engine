@@ -628,14 +628,6 @@ void SetEnvDescData(LPCSTR section_1, LPCSTR section_2, float exec_time_1, float
 	CEnvDescriptor *env_desc1 = (*env.CurrentWeather)[1];
 	env_desc1->load(exec_time_2, section_2, &env);
 
-	CEnvDescriptor* *current_env_desc0 = &(*env.CurrentWeather)[0];
-	CEnvDescriptor* *current_env_desc1 = &(*env.CurrentWeather)[1];
-	if ((*current_env_desc0)->exec_time > (*current_env_desc1)->exec_time)
-	{
-		CEnvDescriptor *tmp_desc = *current_env_desc0;
-		*current_env_desc0 = *current_env_desc1;
-		*current_env_desc1 = tmp_desc;
-	}
 	env.ForceReselectEnvs();
 }
 
@@ -701,12 +693,20 @@ void update_inventory_window() {
 #pragma optimize("s",on)
 void CLevel::script_register(lua_State *L)
 {
-	class_<CEnvDescriptor>("CEnvDescriptor")
-		.def_readonly("fog_density",			&CEnvDescriptor::fog_density)
-		.def_readonly("far_plane",				&CEnvDescriptor::far_plane),
+	module(L)
+	[
+	class_<CEnvDescriptor>( "CEnvDescriptor" )
+          .def_readwrite( "fog_density", &CEnvDescriptor::fog_density)
+          .def_readwrite( "far_plane",   &CEnvDescriptor::far_plane)
+          .def_readwrite( "sun_dir",     &CEnvDescriptor::sun_dir )
+          .def( "load",	           ( void( CEnvDescriptor::* ) ( float, LPCSTR, CEnvironment* ) ) &CEnvDescriptor::load )
+          .def( "set_env_ambient", &CEnvDescriptor::setEnvAmbient ),
 
-	class_<CEnvironment>("CEnvironment")
-		.def("current",							current_environment);
+	class_<CEnvironment>( "CEnvironment" )
+          .def( "current",           current_environment )
+          .def( "ForceReselectEnvs", &CEnvironment::ForceReselectEnvs )
+          .def( "getCurrentWeather", &CEnvironment::getCurrentWeather )
+	],
 
 	module(L,"level")
 	[

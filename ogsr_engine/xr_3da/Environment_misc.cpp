@@ -172,7 +172,10 @@ void CEnvDescriptor::load(float exec_tm, LPCSTR S, CEnvironment* parent)
 	tb_id = parent->eff_Thunderbolt->AppendDef(pSettings, pSettings->r_string(S, "thunderbolt"));
 	bolt_period = (tb_id >= 0) ? pSettings->r_float(S, "bolt_period") : 0.f;
 	bolt_duration = (tb_id >= 0) ? pSettings->r_float(S, "bolt_duration") : 0.f;
-	env_ambient = pSettings->line_exist(S, "env_ambient") ? parent->AppendEnvAmb(pSettings->r_string(S, "env_ambient")) : 0;
+        if ( pSettings->line_exist( S, "env_ambient" ) )
+          setEnvAmbient( pSettings->r_string( S, "env_ambient" ), parent );
+        else
+          env_ambient = 0;
 
 	C_CHECK(clouds_color);
 	C_CHECK(sky_color);
@@ -210,6 +213,12 @@ void CEnvDescriptor::on_device_destroy	()
 	sky_texture_env.destroy	();
 	clouds_texture.destroy	();
 }
+
+
+void CEnvDescriptor::setEnvAmbient( LPCSTR sect, CEnvironment* parent ) {
+  env_ambient = parent->AppendEnvAmb( sect );
+}
+
 
 //-----------------------------------------------------------------------------
 // Environment Mixer

@@ -377,3 +377,16 @@ void CEnvironment::OnFrame()
 	CHK_DX(HW.pDevice->SetRenderState( D3DRS_FOGEND,	*(u32 *)(&CurrentEnv.fog_far)	));
 }
 
+
+// KD: временая штука для скриптовой погоды
+void CEnvironment::ForceReselectEnvs() {
+  CEnvDescriptor** current_env_desc0 = &( *CurrentWeather )[ 0 ];
+  CEnvDescriptor** current_env_desc1 = &( *CurrentWeather )[ 1 ];
+  if ( ( *current_env_desc0 )->exec_time > ( *current_env_desc1 )->exec_time ) {
+    CEnvDescriptor *tmp_desc = *current_env_desc0;
+    *current_env_desc0 = *current_env_desc1;
+    *current_env_desc1 = tmp_desc;
+  }
+  SelectEnvs( CurrentWeather, Current[ 0 ], Current[ 1 ], fGameTime );
+  eff_Rain->set_state( CEffect_Rain::States::stIdle );
+}
