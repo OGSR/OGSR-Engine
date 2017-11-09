@@ -7,8 +7,9 @@
 
 bool g_alternate_lang = false;
 
-u32 LETTERS_SIZE = 45;
-static u32 DILetters[] = { DIK_A, DIK_B, DIK_C, DIK_D, DIK_E, 
+static constexpr u32 LETTERS_SIZE = 45;
+
+static constexpr u32 DILetters[] = { DIK_A, DIK_B, DIK_C, DIK_D, DIK_E, 
 DIK_F, DIK_G, DIK_H, DIK_I, DIK_J, 
 DIK_K, DIK_L, DIK_M, DIK_N, DIK_O, 
 DIK_P, DIK_Q, DIK_R, DIK_S, DIK_T, 
@@ -18,32 +19,32 @@ DIK_BACKSLASH, DIK_SLASH, DIK_COMMA, DIK_PERIOD, DIK_GRAVE,
 DIK_0, DIK_1, DIK_2, DIK_3, DIK_4, DIK_5, DIK_6, DIK_7,
 DIK_8, DIK_9};
 
-static CHAR EngLetters[] = { 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h',
+static constexpr char EngLetters[] = { 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h',
 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u',
-'v', 'w', 'x', 'y', 'z', '[', ']', ';', '\'', '\\', '/', '.', ',', '`',
+'v', 'w', 'x', 'y', 'z', '[', ']', ';', '\'', '\\', '/', ',', '.', '`',
 '0', '1', '2', '3', '4', '5', '6', '7', '8', '9' };
 
-static CHAR EngLettersCap[] = { 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H',
+static constexpr char EngLettersCap[] = { 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H',
 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U',
 'V', 'W', 'X', 'Y', 'Z', '{', '}', ':', '"', '|', '?', '<', '>', '~',
 ')', '!', '@', '#', '$', '%', '^', '&', '*', '('};
 
-static CHAR RusLetters[] = { 'ô', 'è', 'ñ', 'â', 'ó', 'à', 'ï', 'ð',
+static constexpr char RusLetters[] = { 'ô', 'è', 'ñ', 'â', 'ó', 'à', 'ï', 'ð',
 'ø', 'î', 'ë', 'ä', 'ü', 'ò', 'ù', 'ç', 'é', 'ê', 'û', 'å', 'ã',
-'ì', 'ö', '÷', 'í', 'ÿ', 'õ', 'ú', 'æ', 'ý', '\\', '.', 'þ', 'á', '¸',
+'ì', 'ö', '÷', 'í', 'ÿ', 'õ', 'ú', 'æ', 'ý', '\\', '.', 'á', 'þ', '¸',
 '0', '1', '2', '3', '4', '5', '6', '7', '8', '9' };
 
-static CHAR RusLettersCap[] = { 'Ô', 'È', 'Ñ', 'Â', 'Ó', 'À', 'Ï', 'Ð',
+static constexpr char RusLettersCap[] = { 'Ô', 'È', 'Ñ', 'Â', 'Ó', 'À', 'Ï', 'Ð',
 'Ø', 'Î', 'Ë', 'Ä', 'Ü', 'Ò', 'Ù', 'Ç', 'É', 'Ê', 'Û', 'Å', 'Ã',
-'Ì', 'Ö', '×', 'Í', 'ß', 'Õ', 'Ú', 'Æ', 'Ý', '/', '\'', 'Þ', 'Á', '¨',
+'Ì', 'Ö', '×', 'Í', 'ß', 'Õ', 'Ú', 'Æ', 'Ý', '/', '\'', 'Á', 'Þ', '¨',
 ')', '!', '"', '¹', ';', '%', ':', '?', '*', '(' };
 
-static CHAR FraLetters[] = { 'q', 'b', 'c', 'd', 'e', 'f', 'g', 'h',
+static constexpr char FraLetters[] = { 'q', 'b', 'c', 'd', 'e', 'f', 'g', 'h',
 'i', 'j', 'k', 'l', ',', 'n', 'o', 'p', 'a', 'r', 's', 't', 'u',
-'v', 'z', 'x', 'y', 'w', '^', '$', 'm', '<', '!', '/', '.', ',', '`',
+'v', 'z', 'x', 'y', 'w', '^', '$', 'm', '<', '!', '/', ',', '.', '`',
 '0', '1', '2', '3', '4', '5', '6', '7', '8', '9' };
 
-static CHAR FraLettersCap[] = { 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H',
+static constexpr char FraLettersCap[] = { 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H',
 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U',
 'V', 'W', 'X', 'Y', 'Z', '{', '}', ':', '"', '|', '?', '<', '>', '~',
 ')', '!', '@', '#', '$', '%', '^', '&', '*', '(' };
@@ -243,6 +244,9 @@ bool CUICustomEdit::KeyPressed(int dik)
 	case DIK_NUMPAD8: out_me = '8'; break;
 	case DIK_NUMPAD9: out_me = '9'; break;
 	case DIK_NUMPAD0: out_me = '0'; break;
+	case DIK_NUMPADSTAR: out_me = '*'; break;
+	case DIK_NUMPADSLASH: out_me = '/'; break;
+	case DIK_NUMPADPERIOD: out_me = '.'; break;
 	case DIK_LALT:
 	case DIK_RALT:
 		m_bAlt = true;

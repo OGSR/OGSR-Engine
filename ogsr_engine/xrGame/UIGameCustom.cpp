@@ -8,6 +8,11 @@
 #include "object_broker.h"
 #include "string_table.h"
 
+void Remove_all_statics()
+{
+	delete_data(HUD().GetUI()->UIGame()->m_custom_statics);
+}
+
 struct predicate_remove_stat {
 	bool	operator() (SDrawStaticStruct& s) {
 		return ( !s.IsActual() );
@@ -44,8 +49,6 @@ void CUIGameCustom::shedule_Update		(u32 dt)
 	inherited::shedule_Update(dt);
 }
 
-bool g_b_ClearGameCaptions = false;
-
 void CUIGameCustom::OnFrame() 
 {
 	st_vec::iterator it = m_custom_statics.begin();
@@ -60,12 +63,6 @@ void CUIGameCustom::OnFrame()
 		),
 		m_custom_statics.end()
 	);
-	
-	if(g_b_ClearGameCaptions)
-	{
-		delete_data				(m_custom_statics);
-		g_b_ClearGameCaptions	= false;
-	}
 }
 
 void CUIGameCustom::Render()
