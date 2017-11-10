@@ -52,7 +52,6 @@ void CWeaponBinoculars::OnZoomIn		()
 	}
 
 	inherited::OnZoomIn();
-	m_fZoomFactor = m_fRTZoomFactor;
 
 }
 
@@ -63,8 +62,6 @@ void CWeaponBinoculars::OnZoomOut		()
 		HUD_SOUND::StopSound(sndZoomIn);
 		bool b_hud_mode = (Level().CurrentEntity() == H_Parent());	
 		HUD_SOUND::PlaySound(sndZoomOut, H_Parent()->Position(), H_Parent(), b_hud_mode);
-	
-		m_fRTZoomFactor = m_fZoomFactor;//store current
 	}
 
 	inherited::OnZoomOut();
@@ -72,7 +69,6 @@ void CWeaponBinoculars::OnZoomOut		()
 
 BOOL	CWeaponBinoculars::net_Spawn			(CSE_Abstract* DC)
 {
-	m_fRTZoomFactor = m_fScopeZoomFactor;
 	inherited::net_Spawn(DC);
 	return TRUE;
 }
@@ -92,39 +88,6 @@ void CWeaponBinoculars::OnDrawUI()
 	inherited::OnDrawUI	();
 }
 
-void GetZoomData(const float scope_factor, float& delta, float& min_zoom_factor)
-{
-	float def_fov = 1.0;// float(g_fov);
-	float min_zoom_k = 0.3f;
-	float zoom_step_count = 3.0f;
-	float delta_factor_total = def_fov-scope_factor;
-	VERIFY(delta_factor_total>0);
-	min_zoom_factor = def_fov-delta_factor_total*min_zoom_k;
-	delta = (delta_factor_total*(1-min_zoom_k) )/zoom_step_count;
-
-}
-
-void CWeaponBinoculars::ZoomInc()
-{
-	float delta,min_zoom_factor;
-	GetZoomData(m_fScopeZoomFactor,delta,min_zoom_factor);
-
-//	m_fZoomFactor	-=delta;
-	m_fZoomFactor += delta;
-//	clamp(m_fZoomFactor,m_fScopeZoomFactor,min_zoom_factor);
-	clamp(m_fZoomFactor, min_zoom_factor, m_fScopeZoomFactor);
-}
-
-void CWeaponBinoculars::ZoomDec()
-{
-	float delta,min_zoom_factor;
-	GetZoomData(m_fScopeZoomFactor,delta,min_zoom_factor);
-
-//	m_fZoomFactor	+=delta;
-	m_fZoomFactor -= delta;
-//	clamp(m_fZoomFactor,m_fScopeZoomFactor, min_zoom_factor);
-	clamp(m_fZoomFactor, min_zoom_factor, m_fScopeZoomFactor);
-}
 void CWeaponBinoculars::save(NET_Packet &output_packet)
 {
 	inherited::save(output_packet);

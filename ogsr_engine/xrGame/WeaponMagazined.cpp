@@ -939,6 +939,7 @@ void CWeaponMagazined::InitAddons()
 			shared_str scope_tex_name;
 			scope_tex_name = pSettings->r_string(*m_sScopeName, "scope_texture");
 			m_fScopeZoomFactor = pSettings->r_float	(*m_sScopeName, "scope_zoom_factor");
+			m_bScopeDynamicZoom = !!READ_IF_EXISTS(pSettings, r_bool, *m_sScopeName, "scope_dynamic_zoom", false);
 			
 			if(m_UIScope) xr_delete(m_UIScope);
 			m_UIScope = xr_new<CUIStaticItem>();
@@ -964,6 +965,7 @@ void CWeaponMagazined::InitAddons()
 		
 		if(IsZoomEnabled())
 			m_fIronSightZoomFactor = pSettings->r_float	(cNameSect(), "scope_zoom_factor");
+			m_bScopeDynamicZoom = !!READ_IF_EXISTS(pSettings, r_bool, cNameSect(), "scope_dynamic_zoom", false);
 	}
 
 	
