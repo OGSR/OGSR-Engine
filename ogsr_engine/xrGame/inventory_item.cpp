@@ -149,6 +149,8 @@ void CInventoryItem::Load(LPCSTR section)
             if ( slot < SLOTS_TOTAL && !IsPlaceable( slot, slot ) )
               m_slots.push_back( slot );
           }
+          if ( count )
+            SetSlot( m_slots[ 0 ] );
 	}
 
 #ifndef NEW_WPN_SLOTS
