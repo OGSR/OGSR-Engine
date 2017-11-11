@@ -50,6 +50,7 @@ class CPHCall
 {
 	CPHAction*		m_action			;
 	CPHCondition*	m_condition			;
+        u32 paused;
 public:
 					CPHCall							(CPHCondition* condition,CPHAction* action)					;
 					~CPHCall						()															;
@@ -57,6 +58,9 @@ public:
 	bool 			obsolete						()															;
 	bool			equal							(CPHReqComparerV* cmp_condition,CPHReqComparerV* cmp_action);
 	bool			is_any							(CPHReqComparerV* v)										;
+
+        void setPause( u32 ms );
+        bool isPaused();
 };
 
 DEFINE_VECTOR(CPHCall*,PHCALL_STORAGE,PHCALL_I);
@@ -69,8 +73,8 @@ class CPHCommander
 public:
 						~CPHCommander				()																;
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	void				add_call_unique				(CPHCondition* condition,CPHReqComparerV* cmp_condition,CPHAction* action,CPHReqComparerV* cmp_action);
-	void				add_call					(CPHCondition* condition,CPHAction* action)						;
+	CPHCall*			add_call_unique				(CPHCondition* condition,CPHReqComparerV* cmp_condition,CPHAction* action,CPHReqComparerV* cmp_action);
+	CPHCall*			add_call					(CPHCondition* condition,CPHAction* action)						;
 
 	void				remove_call					(PHCALL_I i)													;
 	PHCALL_I			find_call					(CPHReqComparerV* cmp_condition,CPHReqComparerV* cmp_action)	;				
@@ -79,8 +83,8 @@ public:
 
 	void				update  					()																;
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	void				add_call_unique_as			(CPHCondition* condition,CPHReqComparerV* cmp_condition,CPHAction* action,CPHReqComparerV* cmp_action);
-	void				add_call_as					(CPHCondition* condition,CPHAction* action)						;
+	CPHCall*			add_call_unique_as			(CPHCondition* condition,CPHReqComparerV* cmp_condition,CPHAction* action,CPHReqComparerV* cmp_action);
+	CPHCall*			add_call_as					(CPHCondition* condition,CPHAction* action)						;
 
 	void				remove_call_as				(PHCALL_I i)													;
 	PHCALL_I			find_call_as				(CPHReqComparerV* cmp_condition,CPHReqComparerV* cmp_action)	;				
@@ -92,8 +96,8 @@ public:
 	void				clear						()																;
 private:
 
-IC	void				add_call_unique				(CPHCondition* condition,CPHReqComparerV* cmp_condition,CPHAction* action,CPHReqComparerV* cmp_action,PHCALL_STORAGE& cs);
-IC	void				add_call					(CPHCondition* condition,CPHAction* action,PHCALL_STORAGE& cs)						;
+IC	CPHCall*			add_call_unique				(CPHCondition* condition,CPHReqComparerV* cmp_condition,CPHAction* action,CPHReqComparerV* cmp_action,PHCALL_STORAGE& cs);
+IC	CPHCall*			add_call					(CPHCondition* condition,CPHAction* action,PHCALL_STORAGE& cs)						;
 
 IC	void				remove_call					(PHCALL_I i,PHCALL_STORAGE& cs)													;
 IC	PHCALL_I			find_call					(CPHReqComparerV* cmp_condition,CPHReqComparerV* cmp_action,PHCALL_STORAGE& cs)	;				
