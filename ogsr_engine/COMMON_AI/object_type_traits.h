@@ -11,12 +11,12 @@
 #include <type_traits>
 
 #define declare_has(a) \
-		template <typename T>\
-		struct has_##a {\
-			template <typename P> static std::true_type  select(detail::other<typename P::a>*);\
-			template <typename P> static std::false_type select(...);\
-			static constexpr auto value = std::is_same<std::true_type, decltype(select<T>(nullptr))>::value;\
-		};
+	template <typename T>\
+	struct has_##a {\
+		template <typename P> static std::true_type  select(detail::other<typename P::a>*);\
+		template <typename P> static std::false_type select(...);\
+		static constexpr auto value = std::is_same<std::true_type, decltype(select<T>(nullptr))>::value;\
+	};
 
 template <bool expression, typename T1, typename T2>
 struct _if {
@@ -36,7 +36,7 @@ struct _if {
 namespace object_type_traits {
 	namespace detail {
 		template <typename T> struct other {};
-	};
+	}
 
 	using std::is_pointer;
 	using std::is_reference;
@@ -47,14 +47,18 @@ namespace object_type_traits {
 	using std::is_void;
 	using std::is_const;
 
-	template <typename _T1, typename _T2>
-	struct is_base_and_derived
-	{
-		using T1 = std::remove_const_t<_T1>;
-		using T2 = std::remove_const_t<_T2>;
+	namespace detail {
+		template <typename T, typename U>
+		struct is_base_and_derived : std::conjunction<std::is_class<T>,
+			std::is_class<U>,
+			std::is_base_of<T, U>> {};
+	} // detail namespace
 
-		static constexpr auto value = std::is_class<T1>::value && std::is_class<T2>::value && std::is_base_of<T1, T2>::value;
-	};
+	template <typename T, typename U>
+	struct is_base_and_derived : detail::is_base_and_derived<std::remove_const_t<T>, std::remove_const_t<U>> {};
+
+	template <typename T, typename U>
+	constexpr bool is_base_and_derived_v = is_base_and_derived<T, U>::value;
 
 	template <template <typename _1> class T1, typename T2>
 	struct is_base_and_derived_or_same_from_template {
@@ -80,4 +84,4 @@ namespace object_type_traits {
 			has_value_type<T>::value
 		};
 	};
-};
+}; // object_type_traits namespace

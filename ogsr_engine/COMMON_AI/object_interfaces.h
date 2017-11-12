@@ -16,7 +16,7 @@ public:
 };
 
 template <typename _storage_type>
-class IPureLîadableObject {
+class IPureLoadableObject {
 public:
 	virtual void					load(_storage_type	&storage)						= 0;
 };
@@ -28,7 +28,7 @@ public:
 };
 
 template <typename _storage_type_load, typename _storage_type_save>
-class IPureSerializeObject : public IPureLîadableObject<_storage_type_load>, public IPureSavableObject<_storage_type_save> {
+class IPureSerializeObject : public IPureLoadableObject<_storage_type_load>, public IPureSavableObject<_storage_type_save> {
 public:
 };
 

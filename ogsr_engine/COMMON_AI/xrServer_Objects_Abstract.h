@@ -35,6 +35,7 @@ class CDUInterface;
 
 class ISE_Shape{
 public:
+	virtual ~ISE_Shape() = default;
 	virtual void __stdcall			assign_shapes	(CShapeData::shape_def* shapes, u32 cnt)=0;
 };
 
@@ -86,11 +87,11 @@ add_to_type_list(CSE_Motion)
 #define script_type_list save_type_list(CSE_Motion)
 
 struct ISE_AbstractLEOwner{
+	virtual ~ISE_AbstractLEOwner() = default;
 	virtual void		__stdcall	get_bone_xform	(LPCSTR name, Fmatrix& xform) = 0;
 };
 
 struct ISE_Abstract {
-public:
 	enum {
 		flUpdateProperties			= u32(1 << 0),
 		flVisualChange				= u32(1 << 1),

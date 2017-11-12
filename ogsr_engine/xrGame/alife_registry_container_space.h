@@ -8,8 +8,7 @@
 
 #pragma once
 
-#include <hierarchygenerators.h>
-#define	registry_type_list				Loki::NullType
-#define	add_to_registry_type_list(a)	typedef Loki::Typelist<a,registry_type_list> registry_##a;
-#define	define_constant(a)				(a*)0 
-#define	save_registry_type_list(a)		registry_##a
+#define	registry_type_list imdexlib::typelist<>
+#define add_to_registry_type_list(a) using registry_##a = imdexlib::ts_prepend_t<a, registry_type_list>;
+#define define_constant(a) (a*)nullptr
+#define	save_registry_type_list(a) registry_##a
