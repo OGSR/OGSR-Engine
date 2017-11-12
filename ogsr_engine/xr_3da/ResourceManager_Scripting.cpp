@@ -91,15 +91,15 @@ bool print_output(const char* caScriptFileName, int errorCode)
 	auto traceback = get_lua_traceback(LSVM);
 	if (!lua_isstring(LSVM, -1)) //Ќ≈ ”ƒјЋя“№! »наче будут вылeты без лога!
 	{
-		Msg("----------------------------------------------");
+		Msg("*********************************************************************************");
 		Msg("[ResourceManager_Scripting.print_output(%s)] %s!\n%s", caScriptFileName, Prefix, traceback);
-		Msg("----------------------------------------------");
+		Msg("*********************************************************************************");
 		return false;
 	}
 	auto S = lua_tostring(LSVM, -1);
-	Msg("----------------------------------------------");
+	Msg("*********************************************************************************");
 	Msg("[ResourceManager_Scripting.print_output(%s)] %s:\n%s\n%s", caScriptFileName, Prefix, S, traceback);
-	Msg("----------------------------------------------");
+	Msg("*********************************************************************************");
 	return true;
 }
 

@@ -34,8 +34,6 @@
 #include <luabind/detail/get_overload_signature.hpp>
 #include <luabind/error.hpp>
 
-#include <excpt.h> //для EXCEPTION_EXECUTE_HANDLER
-
 namespace luabind
 {
 
@@ -599,17 +597,12 @@ namespace luabind { namespace detail
 			}
 
 #endif
-#ifdef NDEBUG
-			//KRodin: try-catch здесь пропускает многие ошибки, например часто вылетает по unhandled exception из-за кривых скриптов работы с нет-пакетами,
-			//и определить, в каком месте произошла ошибка, без этого не представляется возможным.
 			__try
 			{
-#endif
 				const overload_rep& o = rep->overloads()[match_index];
 				return o.call(L, *obj);
-#ifdef NDEBUG
 			}
-			__except(EXCEPTION_EXECUTE_HANDLER)
+			__except(DbgLogExceptionFilter("[luabind::detail::class_rep_scope::function_dispatcher] unhandled exception stack trace:\n", GetExceptionInformation()))
 			{
 				lua_pushstring(L, "[luabind::detail::class_rep_scope::function_dispatcher] Caught unhandled exception!");
 			}
@@ -617,7 +610,6 @@ namespace luabind { namespace detail
 			// we can only reach this line if an exception was thrown
 			lua_error(L);
 			return 0; // will never be reached			
-#endif
 		}
 
 		struct base_info

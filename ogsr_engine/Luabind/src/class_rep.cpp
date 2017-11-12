@@ -551,8 +551,6 @@ int luabind::detail::class_rep::constructor_dispatcher(lua_State* L)
 	1: object_rep* self, points to the object the call is being made on
 */
 
-#include <excpt.h> //для EXCEPTION_EXECUTE_HANDLER
-
 int luabind::detail::class_rep::function_dispatcher(lua_State* L)
 {
 #ifndef NDEBUG
@@ -646,25 +644,19 @@ int luabind::detail::class_rep::function_dispatcher(lua_State* L)
 	}
 
 #endif
-#ifdef NDEBUG
-	//KRodin: try-catch здесь пропускает многие ошибки, например часто вылетает по unhandled exception из-за кривых скриптов работы с нет-пакетами,
-	//и определить, в каком месте произошла ошибка, без этого не представляется возможным.
 	__try
 	{
-#endif
 		const overload_rep& o = rep->overloads()[match_index];
 
 		if (force_static_call && !o.has_static())
 			lua_pushstring(L, "pure virtual function called");
 		else
 			return o.call(L, force_static_call != 0);
-#ifdef NDEBUG
 	}
-	__except(EXCEPTION_EXECUTE_HANDLER)
+	__except(DbgLogExceptionFilter("[luabind::detail::class_rep::function_dispatcher] unhandled exception stack trace:\n", GetExceptionInformation()))
 	{
 		lua_pushstring(L, "[luabind::detail::class_rep::function_dispatcher] Caught unhandled exception!");
 	}
-#endif
 	lua_error(L);
 	return 0; // will never be reached
 }

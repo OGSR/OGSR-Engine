@@ -46,7 +46,7 @@
 #pragma warning(pop)
 #pragma comment(lib, "xrCore.lib")
 //
- //*************************************************************************************************
+//*************************************************************************************************
 
 //#define LUABIND_NOT_THREADSAFE
 // this define will make luabind non-thread safe. That is,

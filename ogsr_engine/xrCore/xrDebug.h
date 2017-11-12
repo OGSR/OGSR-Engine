@@ -36,7 +36,7 @@ public:
 
 // warning
 // this function can be used for debug purposes only
-IC	std::string __cdecl	make_string		(LPCSTR format,...)
+IC	std::string __cdecl	make_string		(const char* format,...)
 {
 	va_list		args;
 	va_start	(args,format);
@@ -49,6 +49,9 @@ IC	std::string __cdecl	make_string		(LPCSTR format,...)
 
 extern XRCORE_API xrDebug Debug;
 
-XRCORE_API void LogStackTrace(LPCSTR header);
+XRCORE_API void LogStackTrace(const char* header);
+XRCORE_API void LogStackTrace(const char* header, _EXCEPTION_POINTERS *pExceptionInfo);
+
+XRCORE_API LONG DbgLogExceptionFilter(const char* header, _EXCEPTION_POINTERS *pExceptionInfo);
 
 #include "xrDebug_macros.h"

@@ -11,12 +11,12 @@
 
 XRCORE_API xrDebug Debug;
 
-bool error_after_dialog = false;
+static bool error_after_dialog = false;
 
 #include "blackbox\build_stacktrace.h"
 static thread_local StackTraceInfo stackTrace;
 
-void LogStackTrace(LPCSTR header)
+void LogStackTrace(const char* header)
 {
 	//if (IsDebuggerPresent())
 	//	return;
@@ -26,14 +26,44 @@ void LogStackTrace(LPCSTR header)
 		Log(header);
 		Log("*********************************************************************************");
 		BuildStackTrace(stackTrace);
-		for (size_t i = 0; i < stackTrace.count; ++i)
+		for (size_t i = 2; i < stackTrace.count; ++i) //i=2 чтобы не выводить в лог эту функцию и BuildStackTrace
 			Log(stackTrace[i]);
 		Log("*********************************************************************************");
 	}
 	__finally{}
 }
 
-void gather_info(const char *expression, const char *description, const char *argument0, const char *argument1, const char *file, int line, const char *function, LPSTR assertion_info)
+void LogStackTrace(const char* header, _EXCEPTION_POINTERS *pExceptionInfo)
+{
+	//if (IsDebuggerPresent())
+	//	return;
+
+	__try
+	{
+		Log("*********************************************************************************");
+		Msg("!![LogStackTrace] ExceptionCode is [%x]", pExceptionInfo->ExceptionRecord->ExceptionCode);
+		auto save = *pExceptionInfo->ContextRecord;
+		BuildStackTrace(pExceptionInfo, stackTrace);
+		*pExceptionInfo->ContextRecord = save;
+
+		Log(header);
+		for (size_t i = 0; i < stackTrace.count; ++i) //Здесь i всегда должно быть 0! Не изменять ни в коем случае, иначе будет обрезанный стек вызовов.
+			Log(stackTrace[i]);
+		Log("*********************************************************************************");
+	}
+	__finally {}
+}
+
+// KRodin: отладочный хак для получения стека вызовов, при вызове проблемного кода внутри __try {...}
+// Использовать примерно так:
+// __except(DbgLogExceptionFilter("stack trace:\n", GetExceptionInformation())) {...}
+LONG DbgLogExceptionFilter(const char* header, _EXCEPTION_POINTERS *pExceptionInfo)
+{
+	LogStackTrace(header, pExceptionInfo);
+	return EXCEPTION_EXECUTE_HANDLER;
+}
+
+void gather_info(const char *expression, const char *description, const char *argument0, const char *argument1, const char *file, int line, const char *function, char* assertion_info)
 {
 	auto buffer = assertion_info;
 	auto endline = "\n";
@@ -364,7 +394,7 @@ void save_mini_dump(_EXCEPTION_POINTERS *pExceptionInfo)
 }
 #endif
 
-void format_message	(LPSTR buffer, const u32 &buffer_size)
+void format_message	(char* buffer, const u32 &buffer_size)
 {
     LPVOID message;
     DWORD error_code = GetLastError(); 
@@ -380,12 +410,12 @@ void format_message	(LPSTR buffer, const u32 &buffer_size)
 		nullptr,
         error_code,
         MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
-        (LPSTR)&message,
+        (char*)&message,
         0,
 		nullptr
 	);
 
-	sprintf		(buffer,"[error][%8d]    : %s",error_code, (LPSTR)&message);
+	sprintf		(buffer,"[error][%8d]    : %s",error_code, (char*)&message);
     LocalFree	(message);
 }
 
@@ -399,19 +429,7 @@ LONG WINAPI UnhandledFilter(_EXCEPTION_POINTERS *pExceptionInfo)
 		if (*error_message)
 			Msg("\n%s", error_message);
 
-		__try
-		{
-			Log("*********************************************************************************");
-			auto save = *pExceptionInfo->ContextRecord;
-			BuildStackTrace(pExceptionInfo, stackTrace);
-			*pExceptionInfo->ContextRecord = save;
-
-			Log("Unhandled exception stack trace:\n");
-			for (size_t i = 0; i < stackTrace.count; ++i)
-				Log(stackTrace[i]);
-			Log("*********************************************************************************");
-		}
-		__finally {}
+		LogStackTrace("Unhandled exception stack trace:\n", pExceptionInfo);
 
 #ifdef USE_OWN_MINI_DUMP
 		save_mini_dump(pExceptionInfo);
@@ -482,7 +500,7 @@ void debug_on_thread_spawn()
 	std::set_terminate(_terminate);
 }
 
-static void handler_base(LPCSTR reason_string)
+static void handler_base(const char* reason_string)
 {
 	bool ignore_always = false;
 	Debug.backend(
