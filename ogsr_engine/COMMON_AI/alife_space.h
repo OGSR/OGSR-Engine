@@ -16,6 +16,8 @@
 #define OBJECT_CHUNK_DATA			0x0002
 #define GAME_TIME_CHUNK_DATA		0x0005
 #define REGISTRY_CHUNK_DATA			0x0009
+// alpet: для сохранения переменных
+#define SCRIPT_VARS_CHUNK_DATA			0x000D
 #define SECTION_HEADER				"location_"
 #define SAVE_EXTENSION				".sav"
 #define SPAWN_NAME					"game.spawn"

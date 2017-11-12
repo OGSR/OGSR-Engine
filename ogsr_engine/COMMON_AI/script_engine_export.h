@@ -34,6 +34,7 @@
 #	include "script_sound.h"
 #	include "script_particles.h"
 #	include "script_binder_object.h"
+#	include "script_vars_storage.h"
 #	include "action_planner_action.h"
 #	include "action_planner.h"
 #	include "action_base.h"

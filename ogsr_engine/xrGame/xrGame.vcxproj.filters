@@ -2281,6 +2281,9 @@
     <Filter Include="AI\AScript\ScriptClasses\ScriptActor">
       <UniqueIdentifier>{34c55a4d-379c-4e49-991d-baa1fc0fb124}</UniqueIdentifier>
     </Filter>
+    <Filter Include="AI\AScript\ScriptClasses\ScriptVarsStorage">
+      <UniqueIdentifier>{37423a15-5799-4a96-a01b-291e64518936}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="mt_config.h">
@@ -6487,6 +6490,9 @@
     <ClInclude Include="script_game_object_impl.h">
       <Filter>AI\AScript\ScriptClasses\ScriptGameObject</Filter>
     </ClInclude>
+    <ClInclude Include="script_vars_storage.h">
+      <Filter>AI\AScript\ScriptClasses\ScriptVarsStorage</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="damage_manager.cpp">
@@ -9623,6 +9629,9 @@
     </ClCompile>
     <ClCompile Include="script_game_object_script4.cpp">
       <Filter>AI\AScript\ScriptClasses\ScriptGameObject</Filter>
+    </ClCompile>
+    <ClCompile Include="script_vars_storage.cpp">
+      <Filter>AI\AScript\ScriptClasses\ScriptVarsStorage</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
