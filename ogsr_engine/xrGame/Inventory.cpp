@@ -213,16 +213,16 @@ bool CInventory::DropItem(CGameObject *pObj)
 	switch(pIItem->m_eItemPlace)
 	{
 	case eItemPlaceBelt:{
-			R_ASSERT(InBelt(pIItem));
+			ASSERT_FMT(InBelt(pIItem), "CInventory::DropItem: InBelt(pIItem): %s", pObj->cName().c_str());
 			m_belt.erase(std::find(m_belt.begin(), m_belt.end(), pIItem));
 			pIItem->object().processing_deactivate();
 		}break;
 	case eItemPlaceRuck:{
-			R_ASSERT(InRuck(pIItem));
+			ASSERT_FMT(InRuck(pIItem), "CInventory::DropItem: InRuck(pIItem): %s", pObj->cName().c_str());
 			m_ruck.erase(std::find(m_ruck.begin(), m_ruck.end(), pIItem));
 		}break;
 	case eItemPlaceSlot:{
-			R_ASSERT			(InSlot(pIItem));
+			ASSERT_FMT(InSlot(pIItem), "CInventory::DropItem: InSlot(pIItem): %s", pObj->cName().c_str());
 			if(m_iActiveSlot == pIItem->GetSlot()) 
 				Activate	(NO_ACTIVE_SLOT);
 

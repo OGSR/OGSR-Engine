@@ -14,7 +14,6 @@ private:
 protected:
 	HUD_SOUND		sndZoomIn;
 	HUD_SOUND		sndZoomOut;
-	float			m_fRTZoomFactor; //run-time zoom factor
 
 public:
 					CWeaponBinoculars	(); 
@@ -24,8 +23,6 @@ public:
 
 	virtual void	OnZoomIn			();
 	virtual void	OnZoomOut			();
-	virtual	void	ZoomInc				();
-	virtual	void	ZoomDec				();
 	virtual void	net_Destroy			();
 	virtual BOOL	net_Spawn			(CSE_Abstract* DC);
 

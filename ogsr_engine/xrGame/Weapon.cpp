@@ -373,6 +373,7 @@ void CWeapon::Load		(LPCSTR section)
 	m_eSilencerStatus		 = (ALife::EWeaponAddonStatus)pSettings->r_s32(section,"silencer_status");
 	m_eGrenadeLauncherStatus = (ALife::EWeaponAddonStatus)pSettings->r_s32(section,"grenade_launcher_status");
 
+	m_bScopeDynamicZoom = !!READ_IF_EXISTS(pSettings, r_bool, section, "scope_dynamic_zoom", false);
 	m_bZoomEnabled = !!pSettings->r_bool(section,"zoom_enabled");
 	m_fZoomRotateTime = ROTATION_TIME;
 	if(m_bZoomEnabled && m_pHUD) LoadZoomOffset(*hud_sect, "");
@@ -504,6 +505,9 @@ BOOL CWeapon::net_Spawn		(CSE_Abstract* DC)
 
 	VERIFY((u32)iAmmoElapsed == m_magazine.size());
 	m_bAmmoWasSpawned		= false;
+
+	if ( m_bScopeDynamicZoom )
+		m_fRTZoomFactor = m_fScopeZoomFactor;
 
 	return bResult;
 }
@@ -899,7 +903,7 @@ bool CWeapon::Action(s32 cmd, u32 flags)
 
 		case kWPN_ZOOM_INC:
 		case kWPN_ZOOM_DEC:
-			if(IsZoomEnabled() && IsZoomed())
+			if(IsZoomEnabled() && IsZoomed() && m_bScopeDynamicZoom && IsScopeAttached())
 			{
 				if(cmd==kWPN_ZOOM_INC)  ZoomInc();
 				else					ZoomDec();
@@ -908,6 +912,40 @@ bool CWeapon::Action(s32 cmd, u32 flags)
 				return false;
 	}
 	return false;
+}
+
+void GetZoomData(const float scope_factor, float& delta, float& min_zoom_factor)
+{
+	float def_fov = 1.0;// float(g_fov);
+	float min_zoom_k = 0.3f;
+	float zoom_step_count = 3.0f;
+	float delta_factor_total = def_fov-scope_factor;
+	VERIFY(delta_factor_total>0);
+	min_zoom_factor = def_fov-delta_factor_total*min_zoom_k;
+	delta = (delta_factor_total*(1-min_zoom_k) )/zoom_step_count;
+
+}
+
+void CWeapon::ZoomInc()
+{
+	float delta,min_zoom_factor;
+	GetZoomData(m_fScopeZoomFactor,delta,min_zoom_factor);
+
+//	m_fZoomFactor	-=delta;
+	m_fZoomFactor += delta;
+//	clamp(m_fZoomFactor,m_fScopeZoomFactor,min_zoom_factor);
+	clamp(m_fZoomFactor, min_zoom_factor, m_fScopeZoomFactor);
+}
+
+void CWeapon::ZoomDec()
+{
+	float delta,min_zoom_factor;
+	GetZoomData(m_fScopeZoomFactor,delta,min_zoom_factor);
+
+//	m_fZoomFactor	+=delta;
+	m_fZoomFactor -= delta;
+//	clamp(m_fZoomFactor,m_fScopeZoomFactor, min_zoom_factor);
+	clamp(m_fZoomFactor, min_zoom_factor, m_fScopeZoomFactor);
 }
 
 void CWeapon::SpawnAmmo(u32 boxCurr, LPCSTR ammoSect, u32 ParentID) 
@@ -1268,12 +1306,18 @@ float CWeapon::CurrentZoomFactor	()
 void CWeapon::OnZoomIn()
 {
 	m_bZoomMode = true;
-	m_fZoomFactor = CurrentZoomFactor();
+	if ( m_bScopeDynamicZoom )
+		m_fZoomFactor = m_fRTZoomFactor;
+	else
+		m_fZoomFactor = CurrentZoomFactor();
 	StopHudInertion();
 }
 
 void CWeapon::OnZoomOut()
 {
+	if(H_Parent() && IsZoomed() && !IsRotatingToZoom() && m_bScopeDynamicZoom)
+		m_fRTZoomFactor = m_fZoomFactor;//store current
+
 	m_bZoomMode = false;
 	m_fZoomFactor = 1.0;// g_fov;
 

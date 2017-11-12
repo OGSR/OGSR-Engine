@@ -431,7 +431,7 @@ void CWeaponScript::script_register(lua_State *L)
 
 
 			.def_readwrite("ammo_mag_size"				,			&CWeapon::iMagazineSize)
-			//.def_readwrite("scope_dynamic_zoom"			,			&CWeapon::m_bScopeDynamicZoom)
+			.def_readwrite("scope_dynamic_zoom"			,			&CWeapon::m_bScopeDynamicZoom)
 			.def_readwrite("zoom_enabled"				,			&CWeapon::m_bZoomEnabled)
 			.def_readwrite("zoom_factor"				,			&CWeapon::m_fZoomFactor)
 			.def_readwrite("zoom_rotate_time"			,			&CWeapon::m_fZoomRotateTime)

@@ -211,10 +211,12 @@ void CActor::IR_OnMouseWheel(int direction)
 	if(inventory().Action( (direction>0)? kWPN_ZOOM_DEC:kWPN_ZOOM_INC , CMD_START)) return;
 
 
+#ifndef NO_MOUSE_WHEEL_SWITCH_SLOT
 	if (direction>0)
 		OnNextWeaponSlot				();
 	else
 		OnPrevWeaponSlot				();
+#endif
 }
 void CActor::IR_OnKeyboardRelease(int cmd)
 {

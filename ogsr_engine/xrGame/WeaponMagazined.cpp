@@ -177,9 +177,11 @@ void CWeaponMagazined::FireEnd()
 {
 	inherited::FireEnd();
 
+#ifndef NO_AUTO_RELOAD_WPN
 	CActor	*actor = smart_cast<CActor*>(H_Parent());
 	if(!iAmmoElapsed && actor && GetState()!=eReload) 
 		Reload();
+#endif
 }
 
 void CWeaponMagazined::Reload() 
@@ -692,6 +694,13 @@ void CWeaponMagazined::switch2_Fire	()
 }
 void CWeaponMagazined::switch2_Empty()
 {
+#ifdef NO_AUTO_RELOAD_WPN
+  if ( smart_cast<CActor*>( H_Parent() ) != NULL ) {
+    OnEmptyClick();
+    return;
+  }
+#endif
+
 	OnZoomOut();
 	
 	if(!TryReload())
@@ -719,7 +728,8 @@ void CWeaponMagazined::switch2_Reload()
 void CWeaponMagazined::switch2_Hiding()
 {
 	CWeapon::FireEnd();
-	
+
+	HUD_SOUND::StopSound( sndReload );
 	PlaySound	(sndHide,get_LastFP());
 
 	PlayAnimHide();
@@ -730,6 +740,7 @@ void CWeaponMagazined::switch2_Hidden()
 {
 	CWeapon::FireEnd();
 
+	HUD_SOUND::StopSound( sndReload );
 	if (m_pHUD) m_pHUD->StopCurrentAnimWithoutCallback();
 
 	signal_HideComplete		();
@@ -928,6 +939,7 @@ void CWeaponMagazined::InitAddons()
 			shared_str scope_tex_name;
 			scope_tex_name = pSettings->r_string(*m_sScopeName, "scope_texture");
 			m_fScopeZoomFactor = pSettings->r_float	(*m_sScopeName, "scope_zoom_factor");
+			m_bScopeDynamicZoom = !!READ_IF_EXISTS(pSettings, r_bool, *m_sScopeName, "scope_dynamic_zoom", false);
 			
 			if(m_UIScope) xr_delete(m_UIScope);
 			m_UIScope = xr_new<CUIStaticItem>();
@@ -953,6 +965,7 @@ void CWeaponMagazined::InitAddons()
 		
 		if(IsZoomEnabled())
 			m_fIronSightZoomFactor = pSettings->r_float	(cNameSect(), "scope_zoom_factor");
+			m_bScopeDynamicZoom = !!READ_IF_EXISTS(pSettings, r_bool, cNameSect(), "scope_dynamic_zoom", false);
 	}
 
 	
