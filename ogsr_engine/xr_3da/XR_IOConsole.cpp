@@ -378,7 +378,7 @@ void CConsole::OnPressKey(int dik, BOOL bHold)
 		break;
 	case DIK_RETURN:
 	case DIK_NUMPADENTER:
-		ExecuteCommand();
+		ExecuteCommand( true );
 		break;
 	case DIK_INSERT:
 		if( OpenClipboard(0) )
@@ -435,7 +435,7 @@ void CConsole::IR_OnKeyboardHold(int dik)
 	rep_time	= fRep;
 }
 
-void CConsole::ExecuteCommand()
+void CConsole::ExecuteCommand( bool is_user_input )
 {
 	char	first_word[MAX_LEN];
 	char	last_word [MAX_LEN];
@@ -488,7 +488,7 @@ outloop:
 	if (I!=Commands.end()) {
 //		Log("! Executing command: ", first_word);
 		IConsole_Command &C = *(I->second);
-		if (C.bEnabled) {
+		if ( C.bEnabled || !is_user_input ) {
 			if (C.bLowerCaseArgs) strlwr(last_word);
 			if (last_word[0]==0) {
 				if (C.bEmptyArgsHandled) C.Execute(last_word);

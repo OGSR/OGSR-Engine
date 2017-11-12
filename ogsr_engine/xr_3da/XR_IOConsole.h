@@ -62,7 +62,7 @@ public:
 	void			Save				();
 	void			Execute				(LPCSTR cmd);
 	void			ExecuteScript		(LPCSTR name);
-	void			ExecuteCommand		();
+	void			ExecuteCommand		( bool = false );
 
 	// get
 	BOOL			GetBool				(LPCSTR cmd, BOOL &val);
