@@ -4,6 +4,7 @@
 #include "..\xr_3da\xr_object.h"
 #include "PHScriptCall.h"
 
+
 /*
 IC bool compare_safe(const luabind::object &o1 , const luabind::object &o2)
 {
