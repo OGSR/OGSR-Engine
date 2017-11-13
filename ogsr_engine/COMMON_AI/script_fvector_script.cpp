@@ -9,6 +9,14 @@
 #include "pch_script.h"
 #include "script_fvector.h"
 
+//KRodin: костыль от проблемы, когда вектор в скриптах инитится с случайными значениями, что приводит к проблемам. Пока так, потом может более нормальное решение придумаю.
+inline decltype(auto) initialize_vector()
+{
+	Fvector vect;
+	vect.set(0, 0, 0);
+	return vect;
+}
+
 using namespace luabind;
 
 #pragma optimize("s",on)
@@ -16,7 +24,8 @@ void CScriptFvector::script_register(lua_State *L)
 {
 	module(L)
 	[
-		class_<Fvector>("vector")
+		def("vector", &initialize_vector),
+		class_<Fvector>("___VECTOR")
 			.def_readwrite("x",					&Fvector::x)
 			.def_readwrite("y",					&Fvector::y)
 			.def_readwrite("z",					&Fvector::z)
