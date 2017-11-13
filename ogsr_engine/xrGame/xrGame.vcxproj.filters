@@ -5208,15 +5208,6 @@
     <ClInclude Include="..\COMMON_AI\smart_cast.h">
       <Filter>Core\Common\SmartCast</Filter>
     </ClInclude>
-    <ClInclude Include="..\COMMON_AI\smart_cast_impl0.h">
-      <Filter>Core\Common\SmartCast</Filter>
-    </ClInclude>
-    <ClInclude Include="..\COMMON_AI\smart_cast_impl1.h">
-      <Filter>Core\Common\SmartCast</Filter>
-    </ClInclude>
-    <ClInclude Include="..\COMMON_AI\smart_cast_impl2.h">
-      <Filter>Core\Common\SmartCast</Filter>
-    </ClInclude>
     <ClInclude Include="string_table.h">
       <Filter>Core\Common\StringTable</Filter>
     </ClInclude>
@@ -8531,12 +8522,6 @@
     </ClCompile>
     <ClCompile Include="profiler.cpp">
       <Filter>Core\Common\Profiler</Filter>
-    </ClCompile>
-    <ClCompile Include="..\COMMON_AI\smart_cast.cpp">
-      <Filter>Core\Common\SmartCast</Filter>
-    </ClCompile>
-    <ClCompile Include="..\COMMON_AI\smart_cast_stats.cpp">
-      <Filter>Core\Common\SmartCast</Filter>
     </ClCompile>
     <ClCompile Include="string_table.cpp">
       <Filter>Core\Common\StringTable</Filter>

@@ -20,14 +20,10 @@ class NET_Packet;
 class CSE_ALifeMonsterAbstract;
 class CALifeSmartTerrainTask;
 
-#define INHERIT_PURE
-
 //#ifndef USE_WRITER_READER
-//#	define INHERIT_PURE \
 //	DEFINE_LUA_WRAPPER_METHOD_R2P1_V1	(save,			NET_Packet)\
 //	DEFINE_LUA_WRAPPER_METHOD_R2P1_V1	(load,			NET_Packet)
 //#else
-//#	define INHERIT_PURE \
 //	DEFINE_LUA_WRAPPER_METHOD_R2P1_V1	(save,			NET_Packet)\
 //	DEFINE_LUA_WRAPPER_METHOD_R2P1_V1	(load,			NET_Packet)\
 //	DEFINE_LUA_WRAPPER_METHOD_R2P1_V1	(save,			IWriter)\
@@ -35,7 +31,6 @@ class CALifeSmartTerrainTask;
 //#endif
 #ifdef XRSE_FACTORY_EXPORTS
 #define INHERIT_ABSTRACT \
-	INHERIT_PURE\
 	DEFINE_LUA_WRAPPER_METHOD_R2P1_V1	(STATE_Write,	NET_Packet)\
 	DEFINE_LUA_WRAPPER_METHOD_R2P1_V2	(STATE_Read,	NET_Packet,	u16)\
 	DEFINE_LUA_WRAPPER_METHOD_R2P2_V2	(FillProps,		LPCSTR,	PropItemVec)\
@@ -43,7 +38,6 @@ class CALifeSmartTerrainTask;
 	DEFINE_LUA_WRAPPER_METHOD_0			(init,			CSE_Abstract*)
 #else
 #define INHERIT_ABSTRACT \
-	INHERIT_PURE\
 	DEFINE_LUA_WRAPPER_METHOD_R2P1_V1	(STATE_Write,	NET_Packet)\
 	DEFINE_LUA_WRAPPER_METHOD_R2P1_V2	(STATE_Read,	NET_Packet,	u16)\
 	DEFINE_LUA_WRAPPER_METHOD_R2P2_V2	(FillProps,		LPCSTR,	PropItemVec)\
@@ -118,7 +112,6 @@ struct CWrapperPure : public T, public luabind::wrap_base {
 	typedef T							inherited;
 	typedef CWrapperPure<T>				self_type;
 	CWrapperPure						(LPCSTR section) : inherited(section){}
-	INHERIT_PURE;
 };
 
 template <typename T>

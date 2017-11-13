@@ -25,8 +25,6 @@
 #include <luabind/config.hpp>
 #include <luabind/luabind.hpp>
 
-#include <excpt.h> //для EXCEPTION_EXECUTE_HANDLER
-
 namespace luabind { namespace detail { namespace free_functions {
 
     void function_rep::add_overload(overload_rep const& o)
@@ -135,17 +133,12 @@ namespace luabind { namespace detail { namespace free_functions {
             lua_error(L);
         }
 #endif
-#ifdef NDEBUG
-		//KRodin: try-catch здесь пропускает многие ошибки, например часто вылетает по unhandled exception из-за кривых скриптов работы с нет-пакетами,
-		//и определить, в каком месте произошла ошибка, без этого не представляется возможным.
 		__try
 		{
-#endif
 			overload_rep const& ov_rep = rep->overloads()[match_index];
 			return ov_rep.call(L, ov_rep.fun);
-#ifdef NDEBUG
 		}
-		__except(EXCEPTION_EXECUTE_HANDLER)
+		__except(DbgLogExceptionFilter("[luabind::detail::free_functions::function_dispatcher] unhandled exception stack trace:\n", GetExceptionInformation()))
 		{
 			lua_pushstring(L, "[luabind::detail::free_functions::function_dispatcher] Caught unhandled exception!");
 		}
@@ -153,7 +146,6 @@ namespace luabind { namespace detail { namespace free_functions {
 		// we can only reach this line if an exception was thrown
         lua_error(L);
         return 0; // will never be reached
-#endif
 	}
 
 }}} // namespace luabind::detail::free_functions

@@ -36,7 +36,7 @@ struct CLoader {
 		{
 			CHelper1<T>::load_data<
 				object_type_traits::is_base_and_derived_or_same_from_template<
-					IPureLîadableObject,
+					IPureLoadableObject,
 					T
 				>::value
 			>(data,stream,p);

@@ -12,12 +12,14 @@
 #include "alife_registry_container_composition.h"
 #include "alife_abstract_registry.h"
 
-template <typename _type, typename _base>
-struct CLinearRegistryType : public _base, public _type {};
+template <typename T>
+struct CLinearRegistryType;
 
-class CALifeRegistryContainer : public Loki::GenLinearHierarchy<registry_type_list,CLinearRegistryType>::LinBase {
-private:
-	typedef registry_type_list TYPE_LIST;
+template <typename... Ts>
+struct CLinearRegistryType<imdexlib::typelist<Ts...>> : Ts... {};
+
+class CALifeRegistryContainer : public CLinearRegistryType<registry_type_list> {
+	using TYPE_LIST = registry_type_list;
 
 public:
 	template <typename T>

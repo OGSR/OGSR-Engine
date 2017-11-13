@@ -9,6 +9,7 @@
 #include "CustomOutfit.h"
 #include "CustomMonster.h"
 #include "movement_manager.h"
+#include "WeaponMagazined.h"
 
 // alpet : в этом файле при добавлении экспортеров с зависимост€ми наследовани€, необходимо соблюдать пор€док - сначала экспортируютс€ базовые классы
 // NOTE  : требуетс€ именно класс вместо структуры, чтобы объ€вить его френдом 
