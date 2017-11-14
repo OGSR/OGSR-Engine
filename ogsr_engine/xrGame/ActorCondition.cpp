@@ -303,7 +303,6 @@ extern bool g_bShowHudInfo;
 void CActorCondition::save(NET_Packet &output_packet)
 {
 	inherited::save		(output_packet);
-	Msg("SAVE: m_fPower for actor is %f", m_fPower);
 	save_data			(m_fAlcohol, output_packet);
 	save_data			(m_condition_flags, output_packet);
 	save_data			(m_fSatiety, output_packet);
