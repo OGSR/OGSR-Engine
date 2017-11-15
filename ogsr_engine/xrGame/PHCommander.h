@@ -50,7 +50,9 @@ class CPHCall
 {
 	CPHAction*		m_action			;
 	CPHCondition*	m_condition			;
-        u32 paused;
+
+        bool removed;
+        u32  paused;
 public:
 					CPHCall							(CPHCondition* condition,CPHAction* action)					;
 					~CPHCall						()															;
@@ -59,8 +61,10 @@ public:
 	bool			equal							(CPHReqComparerV* cmp_condition,CPHReqComparerV* cmp_action);
 	bool			is_any							(CPHReqComparerV* v)										;
 
-        void setPause( u32 ms );
         bool isPaused();
+        bool isNeedRemove();
+        void removeLater();
+        void setPause( u32 ms );
 };
 
 DEFINE_VECTOR(CPHCall*,PHCALL_STORAGE,PHCALL_I);

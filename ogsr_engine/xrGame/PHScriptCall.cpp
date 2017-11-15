@@ -135,6 +135,7 @@ bool CPHScriptObjectCondition::obsolete()const
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 CPHScriptObjectActionN::CPHScriptObjectActionN( const luabind::object &object,const luabind::functor<void> &functor)
 {
+	b_obsolete = false;
 	m_callback.set(functor,object);
 }
 
