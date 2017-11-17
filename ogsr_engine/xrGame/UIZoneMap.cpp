@@ -108,6 +108,16 @@ void CUIZoneMap::SetupCurrentMap()
 	if(!pLtx->section_exist(Level().name()))
 		pLtx							= Level().pLevel;
 
+	// dsh: очередной костыль. Если не создавать новый CUIMiniMap, то после
+	// перехода с локации, на которой нет текстуры миникарты, на локацию,
+	// где эта текстура есть (например, из X-10 на Радар), миникарта
+	// перестает показываться.
+	m_clipFrame.DetachChild			(m_activeMap);
+	m_activeMap						= xr_new<CUIMiniMap>();
+	m_clipFrame.AttachChild			(m_activeMap);
+	m_activeMap->SetAutoDelete		(true);
+	m_activeMap->EnableHeading		(true);  
+
 	m_activeMap->Init				(Level().name(),*pLtx,"hud\\default");
 
 	Frect r;
