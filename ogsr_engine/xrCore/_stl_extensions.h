@@ -3,8 +3,6 @@
 
 using std::swap;
 
-#include "_type_traits.h"
-
 #ifdef	__BORLANDC__
 #define M_NOSTDCONTAINERS_EXT
 #endif
@@ -81,8 +79,8 @@ public:
 							char*					_charalloc		(size_type n)							{	return (char*)allocate(n); }
 							void					deallocate		(pointer p, size_type n) const			{	xr_free	(p);				}
 							void					deallocate		(void* p, size_type n) const			{	xr_free	(p);				}
-							void					construct		(pointer p, const T& _Val)				{	new((void *)p) T(_Val);/*std::_Construct(p, _Val);*/	}
-							void					destroy			(pointer p)								{	 p->~T();/*std::_Destroy(p);*/ }
+							void					construct		(pointer p, const T& _Val)				{	new(p) T(_Val); }
+							void					destroy			(pointer p)								{	p->~T(); }
 							size_type				max_size		() const								{	size_type _Count = (size_type)(-1) / sizeof (T);	return (0 < _Count ? _Count : 1);	}
 };
 
@@ -199,17 +197,17 @@ protected:
 template	<typename T, typename allocator = xalloc<T> >									class	xr_list 		: public std::list<T,allocator>			{ public: u32 size() const {return (u32)__super::size(); } };
 template	<typename K, class P=std::less<K>, typename allocator = xalloc<K> >				class	xr_set			: public std::set<K,P,allocator>		{ public: u32 size() const {return (u32)__super::size(); } };
 template	<typename K, class P=std::less<K>, typename allocator = xalloc<K> >				class	xr_multiset		: public std::multiset<K,P,allocator>	{ public: u32 size() const {return (u32)__super::size(); } };
-template	<typename K, class V, class P=std::less<K>, typename allocator = xalloc<std::pair<K,V> > >	class	xr_map 			: public std::map<K,V,P,allocator>		{ public: u32 size() const {return (u32)__super::size(); } };
-template	<typename K, class V, class P=std::less<K>, typename allocator = xalloc<std::pair<K,V> > >	class	xr_multimap		: public std::multimap<K,V,P,allocator>	{ public: u32 size() const {return (u32)__super::size(); } };
+template	<typename K, class V, class P=std::less<K>, typename allocator = xalloc<std::pair<const K,V> > >	class	xr_map 			: public std::map<K,V,P,allocator>		{ public: u32 size() const {return (u32)__super::size(); } };
+template	<typename K, class V, class P=std::less<K>, typename allocator = xalloc<std::pair<const K,V> > >	class	xr_multimap		: public std::multimap<K,V,P,allocator>	{ public: u32 size() const {return (u32)__super::size(); } };
 
 #endif
 
-template	<class _Ty1, class _Ty2> inline	std::pair<_Ty1, _Ty2>		mk_pair		(_Ty1 _Val1, _Ty2 _Val2)	{	return (std::pair<_Ty1, _Ty2>(_Val1, _Val2));	}
+#define mk_pair std::make_pair //TODO: Везде заменить, а это убрать.
 
-struct pred_str		: public std::binary_function<char*, char*, bool>	{	
+struct pred_str {	
 	IC bool operator()(const char* x, const char* y) const				{	return xr_strcmp(x,y)<0;	}
 };
-struct pred_stri	: public std::binary_function<char*, char*, bool>	{	
+struct pred_stri {	
 	IC bool operator()(const char* x, const char* y) const				{	return stricmp(x,y)<0;	}
 };
 

@@ -16,7 +16,7 @@ struct		lua_State;
 class ENGINE_API CResourceManager
 {
 private:
-	struct str_pred : public std::binary_function<char*, char*, bool>	{
+	struct str_pred {
 		IC bool operator()(LPCSTR x, LPCSTR y) const
 		{	return xr_strcmp(x,y)<0;	}
 	};

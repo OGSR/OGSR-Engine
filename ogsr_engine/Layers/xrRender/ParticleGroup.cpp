@@ -266,7 +266,7 @@ void OnGroupParticleDead(void* owner, u32 param, PAPI::Particle& m, u32 idx)
     	PG->items[param].StartFreeChild			(PE,*eff->m_OnDeadChildName,m);
 }
 //------------------------------------------------------------------------------
-struct zero_vis_pred : public std::unary_function<IRender_Visual*, bool>
+struct zero_vis_pred
 {
 	bool operator()(const IRender_Visual* x){ return x==0; }
 };

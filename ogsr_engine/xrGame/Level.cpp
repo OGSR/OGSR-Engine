@@ -1032,7 +1032,7 @@ GlobalFeelTouch::~GlobalFeelTouch()
 {
 }
 
-struct delete_predicate_by_time : public std::binary_function<Feel::Touch::DenyTouch, DWORD, bool>
+struct delete_predicate_by_time
 {
 	bool operator () (Feel::Touch::DenyTouch const & left, DWORD const expire_time) const
 	{
@@ -1041,7 +1041,7 @@ struct delete_predicate_by_time : public std::binary_function<Feel::Touch::DenyT
 		return false;
 	};
 };
-struct objects_ptrs_equal : public std::binary_function<Feel::Touch::DenyTouch, CObject const *, bool>
+struct objects_ptrs_equal
 {
 	bool operator() (Feel::Touch::DenyTouch const & left, CObject const * const right) const
 	{
@@ -1056,7 +1056,7 @@ void GlobalFeelTouch::update()
 	//we ignore P and R arguments, we need just delete evaled denied objects...
 	xr_vector<Feel::Touch::DenyTouch>::iterator new_end = 
 		std::remove_if(feel_touch_disable.begin(), feel_touch_disable.end(), 
-			std::bind2nd(delete_predicate_by_time(), Device.dwTimeGlobal));
+			std::bind(delete_predicate_by_time(), std::placeholders::_1, Device.dwTimeGlobal));
 	feel_touch_disable.erase(new_end, feel_touch_disable.end());
 }
 
@@ -1065,7 +1065,7 @@ bool GlobalFeelTouch::is_object_denied(CObject const * O)
 	/*Fvector temp_vector;
 	feel_touch_update(temp_vector, 0.f);*/
 	if (std::find_if(feel_touch_disable.begin(), feel_touch_disable.end(),
-		std::bind2nd(objects_ptrs_equal(), O)) == feel_touch_disable.end())
+		std::bind(objects_ptrs_equal(), std::placeholders::_1, O)) == feel_touch_disable.end())
 	{
 		return false;
 	}

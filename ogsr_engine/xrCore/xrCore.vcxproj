@@ -509,7 +509,6 @@
     <ClInclude Include="xrPool.h" />
     <ClInclude Include="_std_extensions.h" />
     <ClInclude Include="_stl_extensions.h" />
-    <ClInclude Include="_type_traits.h" />
     <ClInclude Include="clsid.h" />
     <ClInclude Include="fastdelegate.h" />
     <ClInclude Include="xr_trims.h" />
