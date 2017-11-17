@@ -1,9 +1,7 @@
 ﻿# Папки
 /.vs
-/3rd_party/_BIN
 /3rd_party/_LIB
 /3rd_party/_TEMP
-/ogsr_engine/_BIN
 /ogsr_engine/_LIB
 /ogsr_engine/_TEMP
 /bin
