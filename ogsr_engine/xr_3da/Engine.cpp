@@ -30,7 +30,7 @@ void CEngine::Initialize	(void)
 	hPSGP = LoadLibrary("xrCPU_Pipe.dll");
 	R_ASSERT(hPSGP);
 	xrBinder*	bindCPU = (xrBinder*)GetProcAddress(hPSGP, "xrBind_PSGP");	R_ASSERT(bindCPU);
-	bindCPU(&PSGP, &CPU::ID);
+	bindCPU(&PSGP);
 
 	// Other stuff
 	Engine.Sheduler.Initialize			( );

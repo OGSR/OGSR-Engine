@@ -104,7 +104,7 @@ DWORD ttapi_Init( _processor_info* ID )
 		return ttapi_workers_count;
 
 	// System Info
-	ttapi_workers_count = ID->n_cores;
+	ttapi_workers_count = ID->coresCount;
 
 	SetPriorityClass( GetCurrentProcess() , REALTIME_PRIORITY_CLASS );
 

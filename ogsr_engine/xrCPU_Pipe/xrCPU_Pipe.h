@@ -45,7 +45,7 @@ struct xrDispatchTable
 
 // Binder
 // NOTE: Engine calls function named "_xrBindPSGP"
-typedef void	__cdecl	xrBinder	(xrDispatchTable* T, _processor_info* dwFeatures);
+typedef void	__cdecl	xrBinder	(xrDispatchTable* T);
 
 #undef MATRIX
 #endif
