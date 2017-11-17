@@ -67,7 +67,7 @@
       <Command>
 		if not exist "..\luajit\bin\$(PlatformShortName)\LuaJIT.dll" (
 			cd "..\luajit\src"
-			call "msvcbuild_all.bat"
+			call msvcbuild_2017.bat $(PlatformShortName)
 		)
 		cd $(ProjectDir)
 		if not exist "$(OutDir)LuaJIT.dll" (
