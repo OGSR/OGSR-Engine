@@ -498,5 +498,3 @@ public:
 };
 
 extern float default_fov;// = 67.5f;
-Fvector4 ENGINE_API w_states;
-Fvector3 ENGINE_API w_timers;

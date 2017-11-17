@@ -5144,10 +5144,7 @@
     </ClCompile>
     <ClCompile Include="wallmark_manager.cpp" />
     <ClCompile Include="MPPlayersBag.cpp" />
-    <ClCompile Include="searchlight.cpp">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
-      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">pch_script.h</PrecompiledHeaderFile>
-    </ClCompile>
+    <ClCompile Include="searchlight.cpp" />
     <ClCompile Include="trade.cpp">
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">pch_script.h</PrecompiledHeaderFile>
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">pch_script.h</PrecompiledHeaderFile>

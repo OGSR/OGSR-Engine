@@ -29,6 +29,7 @@
 #include "relation_registry.h"
 #include "GameTask.h"
 #include "car.h"
+#include "sight_manager_space.h"
 
 using namespace luabind;
 

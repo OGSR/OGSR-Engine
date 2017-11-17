@@ -321,7 +321,7 @@ using namespace luabind;
 class_<CScriptGameObject> script_register_game_object3(class_<CScriptGameObject>&& instance)
 {
 	return std::move(instance)
-		#pragma message("+ game_object.extensions export begin")
+		//#pragma message("+ game_object.extensions export begin")
 		// alpet: export object cast		 
 		.def("get_game_object",				&CScriptGameObject::object)
 		.def("get_alife_object",			&CScriptGameObject::alife_object)
@@ -351,7 +351,7 @@ class_<CScriptGameObject> script_register_game_object3(class_<CScriptGameObject>
 		.property("level_id",				&obj_level_id)
 		.property("level_name",				&obj_level_name)
 
-		#pragma message("+ game_object.extensions export end")
+		//#pragma message("+ game_object.extensions export end")
           ;
 }
 
