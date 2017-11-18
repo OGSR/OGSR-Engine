@@ -84,6 +84,7 @@
 #   include "UI/UIComboBox.h"
 #	include "ui/UIOptionsManagerScript.h"
 #	include "ui/UIMapInfo.h"
+#	include "ui/UIMainIngameWnd.h"
 #	include "ScriptXmlInit.h"
 #	include "script_ui_registrator.h"
 #	include "key_binding_registrator.h"

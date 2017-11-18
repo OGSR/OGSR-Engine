@@ -38,6 +38,7 @@
 #include "../string_table.h"
 #include "clsid_game.h"
 #include "UIArtefactPanel.h"
+#include "UIMap.h"
 
 #ifdef DEBUG
 #	include "../attachable_item.h"
@@ -78,6 +79,17 @@ const u32	g_clWhite					= 0xffffffff;
 #define		C_DEFAULT					D3DCOLOR_XRGB(0xff,0xff,0xff)
 
 #define				MAININGAME_XML				"maingame.xml"
+
+DLL_API CUIMainIngameWnd* GetMainIngameWindow()
+{
+	if (g_hud)
+	{
+		CUI *pUI = g_hud->GetUI();
+		if (pUI)
+			return pUI->UIMainIngameWnd;
+	}
+	return NULL;
+}
 
 CUIMainIngameWnd::CUIMainIngameWnd()
 {
@@ -1433,3 +1445,68 @@ void CUIMainIngameWnd::draw_adjust_mode()
 	}
 }
 #endif
+
+
+using namespace luabind::detail;			
+
+template <typename T>
+bool test_push_window(lua_State *L, CUIWindow *wnd)
+{
+	T* derived = smart_cast<T*>(wnd);
+	if (derived)
+	{		
+		convert_to_lua<T*>(L, derived);
+		return true;
+	}
+	return false;
+}
+
+
+void GetStaticRaw(CUIMainIngameWnd *wnd, lua_State *L)
+{
+	// wnd->GetChildWndList();
+	shared_str name = lua_tostring(L, 2);
+	CUIWindow *child = wnd->FindChild(name, 2); 	
+	if (!child)
+	{
+		CUIStatic *src = &wnd->GetUIZoneMap()->Background();		
+		child = src->FindChild(name, 5);
+		
+		if (!child)
+		{
+			src = &wnd->GetUIZoneMap()->ClipFrame();
+			child = src->FindChild(name, 5);
+		}
+		if (!child)
+		{
+			src = &wnd->GetUIZoneMap()->Compass();
+			child = src->FindChild(name, 5);
+		}
+	}
+
+	if (child)
+	{	
+		// if (test_push_window<CUIMotionIcon>  (L, child)) return;		
+		if (test_push_window<CUIProgressBar> (L, child)) return;		
+		if (test_push_window<CUIStatic>		 (L, child)) return;
+		if (test_push_window<CUIWindow>	     (L, child)) return;						
+	}
+	lua_pushnil(L);
+}
+
+
+using namespace luabind;
+
+#pragma optimize("s",on)
+void CUIMainIngameWnd::script_register(lua_State *L)
+{
+
+	module(L)
+		[
+
+			class_<CUIMainIngameWnd, CUIWindow>("CUIMainIngameWnd")
+			.def("GetStatic",		 &GetStaticRaw, raw<2>()),
+			def("get_main_window",   &GetMainIngameWindow) // get_mainingame_window better??
+		];
+
+}

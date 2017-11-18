@@ -611,22 +611,58 @@ bool CUIWindow::IsChild(CUIWindow *pPossibleChild) const
 }
 
 
-CUIWindow*	CUIWindow::FindChild(const shared_str name)
+CUIWindow*	CUIWindow::FindChild(const shared_str name, u32 max_nested)
 {
 	if(WindowName()==name)
 		return this;
+
+	if (0 == max_nested)
+		return NULL;
 
 //.	m_dbg_flag.set(256,TRUE);
 	WINDOW_LIST::const_iterator it = m_ChildWndList.begin();
 	WINDOW_LIST::const_iterator it_e = m_ChildWndList.end();
 	for(;it!=it_e;++it){
-		CUIWindow* pRes = (*it)->FindChild(name);
+		CUIWindow* pRes = (*it)->FindChild(name, max_nested - 1);
 		if(pRes != NULL)
 			return pRes;
 	}
 
 //.	m_dbg_flag.set(256,FALSE);
 	return NULL;
+}
+
+const shared_str CUIWindow::WindowName() const
+{ 
+	if (0 != m_windowName.size())
+		return m_windowName; 
+
+	if (NULL == GetParent())
+		return m_windowName;  
+
+	WINDOW_LIST &pcl = GetParent()->GetChildWndList();
+	WINDOW_LIST::const_iterator it = pcl.begin();
+	WINDOW_LIST::const_iterator it_e = pcl.end();
+
+	int index = 0;
+	for (; it != it_e; ++it)
+	{		
+		if (this == (*it))
+		{
+			shared_str result;			
+			result.sprintf("%s.child_%d", GetParent()->WindowName().c_str(), index);
+			return result;
+		}
+		index++;
+	}
+	return m_windowName; 
+}
+
+void CUIWindow::SetWindowName(LPCSTR wn, BOOL ifnset)
+{
+   if (ifnset && 0 != m_windowName.size())  // alpet: имя обновить, только если оно не установленно ранее
+	   return;
+   m_windowName = wn; 
 }
 
 void CUIWindow::SetParent(CUIWindow* pNewParent) 
