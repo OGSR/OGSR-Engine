@@ -224,6 +224,7 @@ void _initialize_cpu()
 	string256 features;
 	strcpy_s(features, sizeof(features), "RDTSC");
 	if (CPU::ID.hasMMX()) strcat(features, ", MMX");
+	if (CPU::ID.has3DNOWExt()) strcat(features, ", 3DNowExt!");
 	if (CPU::ID.has3DNOW()) strcat(features, ", 3DNow!");
 	if (CPU::ID.hasSSE()) strcat(features, ", SSE");
 	if (CPU::ID.hasSSE2()) strcat(features, ", SSE2");
