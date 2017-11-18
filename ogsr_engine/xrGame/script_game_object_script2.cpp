@@ -28,6 +28,9 @@
 #include "danger_object.h"
 #include "Torch.h"
 #include "searchlight.h"
+#include "game_object_space.h"
+#include "detail_path_manager_space.h"
+#include "patrol_path_manager_space.h"
 
 using namespace luabind;
 

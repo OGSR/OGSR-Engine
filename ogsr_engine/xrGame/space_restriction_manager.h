@@ -71,7 +71,14 @@ public:
 			bool				accessible						(ALife::_OBJECT_ID id, u32 level_vertex_id, float radius);
 			u32					accessible_nearest				(ALife::_OBJECT_ID id, const Fvector &position, Fvector &result);
 
-	IC		bool				restriction_presented			(shared_str restrictions, shared_str restriction) const;
+	IC		bool				restriction_presented			(shared_str restrictions, shared_str restriction) const
+	{
+		string4096 m_temp;
+		for (u32 i = 0, n = _GetItemCount(*restrictions); i<n; ++i)
+			if (!xr_strcmp(restriction, _GetItem(*restrictions, i, m_temp)))
+				return true;
+		return false;
+	};
 
 #ifdef DEBUG
 	IC		const SPACE_RESTRICTIONS &restrictions				() const;

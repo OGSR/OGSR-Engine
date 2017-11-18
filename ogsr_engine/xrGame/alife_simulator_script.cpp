@@ -66,7 +66,7 @@ CSE_ALifeDynamicObject *alife_object		(const CALifeSimulator *self, ALife::_OBJE
 	return			(self->objects().object(id,no_assert));
 }
 
-const auto& alife_objects(const CALifeSimulator *self)
+decltype(auto) alife_objects(const CALifeSimulator *self)
 {
 	VERIFY(self);
 	return self->objects().objects();
