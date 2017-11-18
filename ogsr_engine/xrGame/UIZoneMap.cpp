@@ -34,7 +34,7 @@ void CUIZoneMap::Init()
 	bool xml_result			= uiXml.Init(CONFIG_PATH, UI_PATH, "zone_map.xml");
 	R_ASSERT3(xml_result, "xml file not found", "zone_map.xml");
 
-	// load map backgroundwwwwwwwwwwwww
+	// load map background
 	CUIXmlInit xml_init;
 	xml_init.InitStatic			(uiXml, "minimap:background", 0, &m_background);
 
@@ -54,6 +54,7 @@ void CUIZoneMap::Init()
 
 	m_activeMap->EnableHeading		(true);  
 	xml_init.InitStatic				(uiXml, "minimap:compass", 0, &m_compass);
+	m_activeMap->SetWindowName		("minimap");
 
 //	m_background.AttachChild(&m_compass);
 
@@ -107,6 +108,17 @@ void CUIZoneMap::SetupCurrentMap()
 
 	if(!pLtx->section_exist(Level().name()))
 		pLtx							= Level().pLevel;
+
+	// dsh: очередной костыль. Если не создавать новый CUIMiniMap, то после
+	// перехода с локации, на которой нет текстуры миникарты, на локацию,
+	// где эта текстура есть (например, из X-10 на Радар), миникарта
+	// перестает показываться.
+	m_clipFrame.DetachChild			(m_activeMap);
+	m_activeMap						= xr_new<CUIMiniMap>();
+	m_clipFrame.AttachChild			(m_activeMap);
+	m_activeMap->SetAutoDelete		(true);
+	m_activeMap->EnableHeading		(true);  
+	m_activeMap->SetWindowName		("minimap");
 
 	m_activeMap->Init				(Level().name(),*pLtx,"hud\\default");
 

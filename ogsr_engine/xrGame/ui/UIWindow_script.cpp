@@ -129,7 +129,15 @@ void CUIWindow::script_register(lua_State *L)
 		.def("WindowName",				&CUIWindow::WindowName_script)
 		.def("SetWindowName",			&CUIWindow::SetWindowName)
 		.def("SetPPMode",				&CUIWindow::SetPPMode)
-		.def("ResetPPMode",				&CUIWindow::ResetPPMode),
+		.def("ResetPPMode",				&CUIWindow::ResetPPMode)
+
+		.def("GetMousePosX",			&CUIWindow::GetMousePosX)
+		.def("GetMousePosY",			&CUIWindow::GetMousePosY)
+		.def("GetParent",				&CUIWindow::GetParent)
+		.def("GetWndRect",				(void (CUIWindow::*)(Frect&))&CUIWindow::GetWndRect_script)			
+		.def("IsChild",					&CUIWindow::IsChild)
+		.def("FindChild",				(CUIWindow* (CUIWindow::*)(LPCSTR))&CUIWindow::FindChild)
+		.def("GetAbsoluteRect",			(void (CUIWindow::*)(Frect&))&CUIWindow::GetAbsoluteRect),
 
 //		.def("",						&CUIWindow::)
 		

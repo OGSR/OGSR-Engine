@@ -4,6 +4,7 @@
 #include "..\xr_3da\xr_object.h"
 #include "PHScriptCall.h"
 
+
 /*
 IC bool compare_safe(const luabind::object &o1 , const luabind::object &o2)
 {
@@ -134,6 +135,7 @@ bool CPHScriptObjectCondition::obsolete()const
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 CPHScriptObjectActionN::CPHScriptObjectActionN( const luabind::object &object,const luabind::functor<void> &functor)
 {
+	b_obsolete = false;
 	m_callback.set(functor,object);
 }
 

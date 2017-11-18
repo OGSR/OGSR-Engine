@@ -105,6 +105,9 @@ bool CUIXmlInit::InitWindow(CUIXml& xml_doc, LPCSTR path,
 	strconcat(sizeof(buf),buf,path,":window_name");
 	if(xml_doc.NavigateToNode(buf,index))
 		pWnd->SetWindowName		( xml_doc.Read(buf, index, NULL) );
+	else
+		if (xr_strlen(path))
+			pWnd->SetWindowName (path, TRUE);
 
 	InitAutoStaticGroup			(xml_doc, path, index, pWnd);
 	return true;

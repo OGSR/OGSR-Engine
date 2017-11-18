@@ -663,6 +663,7 @@ void		xrRender_initconsole	()
 	CMD4(CCC_Vector3, "r2_details_opt", &ps_r2_details_opt, dopt_min, dopt_max);
 	CMD4(CCC_Float, "r2_ao_intensity", &ps_r2_ao_intensity, 0.2, 2.0);
 	CMD3(CCC_Mask, "r2_ao", &ps_r2_ls_flags, R2FLAG_AO);
+	CMD3(CCC_Mask, "r__actor_shadow", &ps_r2_ls_flags, R2FLAG_ACTOR_SHADOW);
 
 /*	CMD1(CCC_RWS, "r2_reset_weapon_states");
 	CMD1(CCC_QS, "ogse_quick_save");*/

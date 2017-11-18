@@ -21,6 +21,7 @@
 #include "saved_game_wrapper.h"
 #include "string_table.h"
 #include "..\xr_3da\IGame_Persistent.h"
+#include "script_vars_storage.h"
 
 using namespace ALife;
 
@@ -56,6 +57,9 @@ void CALifeStorageManager::save	(LPCSTR save_name, bool update_name)
 		spawns().save			(stream);
 		objects().save			(stream);
 		registry().save			(stream);
+#ifdef  SCRIPT_VARS_STORAGE
+		g_ScriptVars.save		(stream);
+#endif
 
 		source_count			= stream.tell();
 		void					*source_data = stream.pointer();
@@ -110,6 +114,10 @@ void CALifeStorageManager::load	(void *buffer, const u32 &buffer_size, LPCSTR fi
 	}
 
 	registry().load				(source);
+#ifdef  SCRIPT_VARS_STORAGE
+	if ( !source.eof() )
+	  g_ScriptVars.load( source );
+#endif
 
 	can_register_objects		(true);
 

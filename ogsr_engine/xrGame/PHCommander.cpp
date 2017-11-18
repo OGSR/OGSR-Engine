@@ -2,11 +2,11 @@
 #include "PHCommander.h"
 
 
-CPHCall::CPHCall(CPHCondition* condition,CPHAction* action)	
-{
-	m_action=action;
-	m_condition=condition;
-        paused = 0;
+CPHCall::CPHCall(CPHCondition* condition,CPHAction* action) {
+  m_action    = action;
+  m_condition = condition;
+  paused      = 0;
+  removed     = false;
 }
 
 CPHCall::~CPHCall()
@@ -21,7 +21,6 @@ bool CPHCall::obsolete()
 
 void CPHCall::check()
 {
-	if (!m_condition) throw 1;
 	if(m_condition->is_true())m_action->run();
 }
 
@@ -39,9 +38,17 @@ void CPHCall::setPause( u32 ms ) {
   paused = Device.dwTimeGlobal + ms;
 }
 
-
 bool CPHCall::isPaused() {
   return paused > Device.dwTimeGlobal;
+}
+
+
+void CPHCall::removeLater() {
+  removed = true;
+}
+
+bool CPHCall::isNeedRemove() {
+  return removed;
 }
 
 
@@ -65,58 +72,41 @@ void CPHCommander::clear	()
 	while (m_calls.size())	{
 		remove_call(m_calls.end()-1);
 	}
-	while (m_calls_as_add_buffer.size())	{
-		remove_call(m_calls_as_add_buffer.end()-1);
-	}
-	while (m_calls_as_remove_buffer.size())	{
-		remove_call(m_calls_as_remove_buffer.end()-1);
-	}
 }
 
-void CPHCommander::update	()
-{
-	for(u32 i=0; i<m_calls.size(); i++)
-	{
-          if ( m_calls[ i ]->isPaused() )
-            continue;
-		try
-		{
-			m_calls[i]->check();
-		} 
-		catch(...)
-		{
-			remove_call(m_calls.begin()+i);
-			i--;
-			continue;
-		}
 
-		if(m_calls[i]->obsolete())
-		{
-			remove_call(m_calls.begin()+i);
-			i--;
-			continue;
-		}
-	}
+void CPHCommander::update() {
+  for( int i = 0; i < m_calls.size(); i++ ) {
+    if ( !m_calls[ i ]->isNeedRemove() ) {
+      if ( m_calls[ i ]->isPaused() ) continue;
+      try {
+        m_calls[ i ]->check();
+      }
+      catch( ... ) {
+        remove_call( m_calls.begin() + i );
+        i--;
+        continue;
+      }
+    }
+    if ( m_calls[ i ]->isNeedRemove() || m_calls[ i ]->obsolete() ) {
+      remove_call( m_calls.begin() + i );
+      i--;
+      continue;
+    }
+  }
 }
 
-CPHCall* CPHCommander::add_call(CPHCondition* condition,CPHAction* action,PHCALL_STORAGE& cs)
-{
-	cs.push_back(xr_new<CPHCall>(condition,action));
-	return cs.back();
-}
+
 CPHCall* CPHCommander::add_call(CPHCondition* condition,CPHAction* action)
 {
-	return add_call(condition,action,m_calls);
-}
-void CPHCommander::remove_call(PHCALL_I i,PHCALL_STORAGE& cs)
-{
-	delete_call(*i);
-	cs.erase(i);
+	m_calls.push_back(xr_new<CPHCall>(condition, action));
+	return m_calls.back();
 }
 
 void CPHCommander::remove_call(PHCALL_I i)
 {
-	remove_call(i,m_calls);
+	delete_call(*i);
+	m_calls.erase(i);
 }
 
 
@@ -133,124 +123,46 @@ struct SFEqualPred
 		return	call->equal(cmp_condition,cmp_action);
 	}
 };
-struct SFRemovePred2
-{
-	CPHReqComparerV* cmp_condition,*cmp_action;
-	SFRemovePred2(CPHReqComparerV* cmp_c,CPHReqComparerV* cmp_a)
-	{
-		cmp_condition=cmp_c;cmp_action=cmp_a;
-	}
-	bool operator()(CPHCall* call)
-	{
-		if(call->equal(cmp_condition,cmp_action))
-		{
-			delete_call(call);
-			return true;
-		}
-		return false;
-		
-	}
-};
 
-PHCALL_I CPHCommander::find_call(CPHReqComparerV* cmp_condition,CPHReqComparerV* cmp_action,PHCALL_STORAGE& cs)
-{
-	return std::find_if( cs.begin(),cs.end(),SFEqualPred(cmp_condition,cmp_action));
-}
 PHCALL_I CPHCommander::find_call(CPHReqComparerV* cmp_condition,CPHReqComparerV* cmp_action)
 {
-	return find_call(cmp_condition,cmp_action,m_calls);
-}
-void CPHCommander::remove_call(CPHReqComparerV* cmp_condition,CPHReqComparerV* cmp_action,PHCALL_STORAGE& cs)
-{
-	cs.erase	(
-		std::remove_if(
-			cs.begin(),
-			cs.end(),
-			SFRemovePred2(
-				cmp_condition,
-				cmp_action
-			)
-		),
-		cs.end()
-	);
+	return std::find_if(m_calls.begin(), m_calls.end(), SFEqualPred(cmp_condition, cmp_action));
 }
 
-void CPHCommander::remove_call(CPHReqComparerV* cmp_condition,CPHReqComparerV* cmp_action)
+bool				CPHCommander::has_call(CPHReqComparerV* cmp_condition,CPHReqComparerV* cmp_action)
 {
-	remove_call(cmp_condition,cmp_action,m_calls);
+	return find_call(cmp_condition,cmp_action) != m_calls.end();
 }
 
-CPHCall* CPHCommander::add_call_unique(CPHCondition* condition,CPHReqComparerV* cmp_condition,CPHAction* action,CPHReqComparerV* cmp_action,PHCALL_STORAGE& cs)
-{
-	if(cs.end()==find_call(cmp_condition,cmp_action,cs))
-	{
-		return add_call(condition,action,cs);
-	}
-        return nullptr;
+
+void CPHCommander::remove_call( CPHReqComparerV* cmp_condition, CPHReqComparerV* cmp_action ) {
+  auto it = find_call( cmp_condition, cmp_action );
+  if ( it != m_calls.end() ) {
+    CPHCall* call = *it;
+    call->removeLater();
+  }
 }
-CPHCall* CPHCommander::add_call_unique(CPHCondition* condition,CPHReqComparerV* cmp_condition,CPHAction* action,CPHReqComparerV* cmp_action)
-{
-	return add_call_unique(condition,cmp_condition,action,cmp_action,m_calls);
+
+
+CPHCall* CPHCommander::add_call_unique( CPHCondition* condition, CPHReqComparerV* cmp_condition, CPHAction* action, CPHReqComparerV* cmp_action ) {
+  auto it = find_call( cmp_condition, cmp_action );
+  if ( it == m_calls.end() ) return add_call( condition, action );
+  return *it;
 }
-struct SRemoveRped
-{
-	CPHReqComparerV*	cmp_object;
-	SRemoveRped(CPHReqComparerV* cmp_o)
-	{
-		cmp_object=cmp_o;
-	}
-	bool operator() (CPHCall* call)
-	{
-		if(call->is_any(cmp_object))
-		{
-			delete_call(call);
-			return true;
-		}
-		else
-			return false;
-	}
+
+
+struct SRemoveRped {
+  CPHReqComparerV* cmp_object;
+  SRemoveRped( CPHReqComparerV* cmp_o ) {
+    cmp_object = cmp_o;
+  }
+  void operator() ( CPHCall* call ) {
+    if( call->is_any( cmp_object ) ) {
+      call->removeLater();
+    }
+  }
 };
-void CPHCommander::remove_calls(CPHReqComparerV* cmp_object,PHCALL_STORAGE& cs)
-{
-	cs.erase	(
-		std::remove_if(
-			cs.begin(),
-			cs.end(),
-			SRemoveRped(cmp_object)
-		),
-		cs.end()
-	);
-}
-void CPHCommander::remove_calls(CPHReqComparerV* cmp_object)
-{
-	remove_calls(cmp_object,m_calls);
-}
 
-CPHCall*	CPHCommander::		add_call_unique_as				(CPHCondition* condition,CPHReqComparerV* cmp_condition,CPHAction* action,CPHReqComparerV* cmp_action)
-{
-	return add_call_unique(condition,cmp_condition,action,cmp_action,m_calls_as_add_buffer);
-}
-CPHCall*	CPHCommander::		add_call_as					(CPHCondition* condition,CPHAction* action)
-{
-	return add_call(condition,action,m_calls_as_add_buffer);
-}
-
-
-PHCALL_I	CPHCommander::		find_call_as				(CPHReqComparerV* cmp_condition,CPHReqComparerV* cmp_action)
-{
-	return find_call(cmp_condition,cmp_action,m_calls);
-}
-void		CPHCommander::		remove_call_as				(CPHReqComparerV* cmp_condition,CPHReqComparerV* cmp_action)
-{
-	remove_call(cmp_condition,cmp_action,m_calls_as_add_buffer);
-	
-}
-void		CPHCommander::		remove_calls_as				(CPHReqComparerV* cmp_object)
-{
-	
-}
-
-void		CPHCommander::		update_as  					()
-{
-
+void CPHCommander::remove_calls( CPHReqComparerV* cmp_object ) {
+  std::for_each( m_calls.begin(), m_calls.end(), SRemoveRped( cmp_object ) );
 }

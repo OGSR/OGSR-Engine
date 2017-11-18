@@ -155,6 +155,7 @@ public:
 	IC void					GetAbsolutePos		(Fvector2& p) 	{Frect abs; GetAbsoluteRect(abs); p.set(abs.x1,abs.y1);}
 
 
+			void			GetWndRect_script(Frect &rect)										{CUISimpleWindow::GetWndRect(rect);}
 			void			SetWndRect_script(float x, float y, float width, float height)		{CUISimpleWindow::SetWndRect(x,y,width,height);}
 			void			SetWndRect_script(Frect rect)										{CUISimpleWindow::SetWndRect(rect);}
 
@@ -189,10 +190,11 @@ public:
 	IC void					SetAutoDelete		(bool auto_delete)			{m_bAutoDelete = auto_delete;}
 
 	// Name of the window
-	const shared_str		WindowName			() const					{ return m_windowName; }
-	void					SetWindowName		(LPCSTR wn)					{ m_windowName = wn; }
+	const shared_str		WindowName			() const;
+	void					SetWindowName		(LPCSTR wn, BOOL ifnset = FALSE);					
 	LPCSTR					WindowName_script	()							{return *m_windowName;}
-	CUIWindow*				FindChild			(const shared_str name);
+	CUIWindow*				FindChild			(const shared_str name,  u32 max_nested = 15);
+	CUIWindow*				FindChild			(LPCSTR s)					{return FindChild(shared_str(s) );}
 
 	IC bool					CursorOverWindow	() const					{ return m_bCursorOverWindow; }
 
@@ -249,6 +251,9 @@ protected:
 #endif
 
 public:
+	inline float			GetMousePosX		() const					{ return cursor_pos.x;}
+	inline float			GetMousePosY		() const					{ return cursor_pos.y;}
+
 	DECLARE_SCRIPT_REGISTER_FUNCTION
 };
 

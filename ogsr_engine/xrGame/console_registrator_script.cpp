@@ -1,6 +1,7 @@
 #include "pch_script.h"
 #include "console_registrator.h"
 #include "..\xr_3da\XR_IOConsole.h"
+#include "..\xr_3da\xr_ioc_cmd.h"
 
 using namespace luabind;
 
@@ -30,6 +31,31 @@ bool get_console_bool(CConsole* c, LPCSTR cmd)
 	return !!val;
 }
 
+IConsole_Command* find_cmd(CConsole *c, LPCSTR cmd)
+{
+	CConsole::vecCMD_IT I = c->Commands.find(cmd);
+	IConsole_Command *icmd = NULL;
+
+	if (I != c->Commands.end()) 
+		icmd = I->second;
+
+	return icmd;
+}
+
+void disable_cmd(CConsole *c, LPCSTR cmd)
+{
+	IConsole_Command *icmd = find_cmd(c, cmd);
+	if (icmd)
+		icmd->SetEnabled (false);
+}
+
+void enable_cmd(CConsole *c, LPCSTR cmd)
+{
+	IConsole_Command *icmd = find_cmd(c, cmd);
+	if (icmd)
+		icmd->SetEnabled(true);
+}
+
 #pragma optimize("s",on)
 void console_registrator::script_register(lua_State *L)
 {
@@ -37,6 +63,8 @@ void console_registrator::script_register(lua_State *L)
 	[
 		def("get_console",					&console),
 		class_<CConsole>("CConsole")
+		.def("disable_command",			    &disable_cmd)
+		.def("enable_command",				&enable_cmd)
 		.def("execute",						&CConsole::Execute)
 		.def("execute_script",				&CConsole::ExecuteScript)
 		.def("show",						&CConsole::Show)
@@ -47,6 +75,7 @@ void console_registrator::script_register(lua_State *L)
 		.def("get_bool",					&get_console_bool)
 		.def("get_float",					&get_console_float)
 		.def("get_token",					&CConsole::GetToken)
+		.def_readonly ("visible",			&CConsole::bVisible)
 //		.def("",				&CConsole::)
 
 	];
