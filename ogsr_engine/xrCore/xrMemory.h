@@ -25,7 +25,6 @@
 #	define DUMP_PHASE	do {} while (0)
 #endif // DEBUG_MEMORY_MANAGER
 
-#include "xrMemory_pso.h"
 #include "xrMemory_POOL.h"
 
 class XRCORE_API		xrMemory
@@ -73,26 +72,22 @@ public:
 #endif // DEBUG_MEMORY_NAME
 	void				mem_free		(void*	p					);
 
-	pso_MemCopy*		mem_copy;
-	pso_MemFill*		mem_fill;
-	pso_MemFill32*		mem_fill32;
+	//TODO: KRodin: Везде заменить, а эти хаки убрать!
+	void* (WINAPIV* mem_copy)(void*, const void*, size_t) = std::memcpy;
+	void* (WINAPIV* mem_fill)(void*, int, size_t) = std::memset;
 };
 
 extern XRCORE_API	xrMemory	Memory;
 
-#undef	ZeroMemory
-#undef	CopyMemory
-#undef	FillMemory
-#define ZeroMemory(a,b)		Memory.mem_fill(a,0,b)
-#define CopyMemory(a,b,c)	memcpy(a,b,c)			//. CopyMemory(a,b,c)
-#define FillMemory(a,b,c)	Memory.mem_fill(a,c,b)
+//TODO: KRodin: Везде заменить, и поубирать эти макросы вообще!
+#undef ZeroMemory
+#undef CopyMemory
+#undef FillMemory
+#define ZeroMemory(a, b) std::memset(a, 0, b)
+#define CopyMemory(a, b, c) std::memcpy(a, b, c)
+#define FillMemory(a, b, c) std::memset(a, c, b)
 
-// delete
-#ifdef __BORLANDC__
-	#include "xrMemory_subst_borland.h"
-#else
-	#include "xrMemory_subst_msvc.h"
-#endif
+#include "xrMemory_subst_msvc.h"
 
 // generic "C"-like allocations/deallocations
 #ifdef DEBUG_MEMORY_NAME
