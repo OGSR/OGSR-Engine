@@ -23,9 +23,7 @@ public:
 public:
 	_object_type		*m_object;
 	CPropertyStorage	*m_storage;
-#ifdef LOG_ACTION
 	LPCSTR				m_evaluator_name;
-#endif
 
 public:
 	IC							CPropertyEvaluator	(_object_type *object = 0, LPCSTR evaluator_name = "");

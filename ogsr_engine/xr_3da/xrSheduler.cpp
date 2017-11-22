@@ -298,7 +298,7 @@ void CSheduler::ProcessStep			()
 			condition				= (NULL==T.Object || !T.Object->shedule_Needed());
 #ifndef DEBUG
 		}
-		__except(DbgLogExceptionFilter("[CSheduler::ProcessStep] unhandled exception stack trace:\n", GetExceptionInformation())) {
+		__except(ExceptStackTrace("[CSheduler::ProcessStep] stack trace:\n")) {
 			Msg						("Scheduler tried to update object %s",*T.scheduled_name);
 			FlushLog				();
 			T.Object				= 0;
@@ -373,7 +373,7 @@ void CSheduler::ProcessStep			()
 #endif
 #ifndef DEBUG
 		}
-		__except(DbgLogExceptionFilter("[CSheduler::ProcessStep2] unhandled exception stack trace:\n", GetExceptionInformation())) {
+		__except(ExceptStackTrace("[CSheduler::ProcessStep2] stack trace:\n")) {
 			Msg						("Scheduler tried to update object %s",*T.scheduled_name);
 			FlushLog				();
 			T.Object				= 0;

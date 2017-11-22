@@ -54,9 +54,6 @@ void LogStackTrace(const char* header, _EXCEPTION_POINTERS *pExceptionInfo)
 	__finally {}
 }
 
-// KRodin: отладочный хак для получения стека вызовов, при вызове проблемного кода внутри __try {...}
-// Использовать примерно так:
-// __except(DbgLogExceptionFilter("stack trace:\n", GetExceptionInformation())) {...}
 LONG DbgLogExceptionFilter(const char* header, _EXCEPTION_POINTERS *pExceptionInfo)
 {
 	LogStackTrace(header, pExceptionInfo);
@@ -431,10 +428,6 @@ LONG WINAPI UnhandledFilter(_EXCEPTION_POINTERS *pExceptionInfo)
 
 		LogStackTrace("Unhandled exception stack trace:\n", pExceptionInfo);
 
-#ifdef USE_OWN_MINI_DUMP
-		save_mini_dump(pExceptionInfo);
-#endif
-
 		auto wnd = GetActiveWindow();
 		if (!wnd)
 			wnd = GetForegroundWindow();
@@ -452,6 +445,10 @@ LONG WINAPI UnhandledFilter(_EXCEPTION_POINTERS *pExceptionInfo)
 			Debug.get_on_dialog()(false);
 #endif
 	}
+
+#ifdef USE_OWN_MINI_DUMP
+	save_mini_dump(pExceptionInfo);
+#endif
 
 	return EXCEPTION_EXECUTE_HANDLER;
 }

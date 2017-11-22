@@ -653,7 +653,7 @@ int luabind::detail::class_rep::function_dispatcher(lua_State* L)
 		else
 			return o.call(L, force_static_call != 0);
 	}
-	__except(DbgLogExceptionFilter("[luabind::detail::class_rep::function_dispatcher] unhandled exception stack trace:\n", GetExceptionInformation()))
+	__except(ExceptStackTrace("[luabind::detail::class_rep::function_dispatcher] stack trace:\n"))
 	{
 		lua_pushstring(L, "[luabind::detail::class_rep::function_dispatcher] Caught unhandled exception!");
 	}

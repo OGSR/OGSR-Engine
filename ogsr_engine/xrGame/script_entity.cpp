@@ -314,6 +314,7 @@ void CScriptEntity::ProcessScripts()
 		bfAssignMonsterAction(l_tpEntityAction);
 	}
 	catch(...) {
+		Msg("!![CScriptEntity::ProcessScripts] Error found!");
 		ResetScriptData		();
 	}
 }

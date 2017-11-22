@@ -191,8 +191,8 @@ void CStalkerAnimationManager::update						()
 		update_impl			();
 	}
 	catch(...) {
-		Msg					("! error in stalker with visual %s",*object().cNameVisual());
-		throw;
+		Msg("! error in stalker with visual [%s]", *object().cNameVisual().c_str());
+		//throw; //KRodin: а зачем падать? Мне кажется, не нужно.
 	}
 	STOP_PROFILE
 }

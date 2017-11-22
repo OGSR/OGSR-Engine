@@ -138,7 +138,7 @@ namespace luabind { namespace detail { namespace free_functions {
 			overload_rep const& ov_rep = rep->overloads()[match_index];
 			return ov_rep.call(L, ov_rep.fun);
 		}
-		__except(DbgLogExceptionFilter("[luabind::detail::free_functions::function_dispatcher] unhandled exception stack trace:\n", GetExceptionInformation()))
+		__except(ExceptStackTrace("[luabind::detail::free_functions::function_dispatcher] stack trace:\n"))
 		{
 			lua_pushstring(L, "[luabind::detail::free_functions::function_dispatcher] Caught unhandled exception!");
 		}
