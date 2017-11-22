@@ -1012,7 +1012,6 @@
     <ClInclude Include="xrImage_Resampler.h" />
     <ClInclude Include="xrTheora_Stream.h" />
     <ClInclude Include="xrTheora_Surface.h" />
-    <ClInclude Include="xrTheora_Surface_mmx.h" />
     <ClInclude Include="ResourceManager.h" />
     <ClInclude Include="TextureDescrManager.h" />
     <ClInclude Include="r_constants.h" />
@@ -1171,7 +1170,6 @@
     <ClCompile Include="xrImage_Resampler.cpp" />
     <ClCompile Include="xrTheora_Stream.cpp" />
     <ClCompile Include="xrTheora_Surface.cpp" />
-    <ClCompile Include="xrTheora_Surface_mmx.cpp" />
     <ClCompile Include="ResourceManager.cpp" />
     <ClCompile Include="ResourceManager_Loader.cpp" />
     <ClCompile Include="ResourceManager_Reset.cpp" />

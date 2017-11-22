@@ -1,9 +1,6 @@
 #include "stdafx.h"
 #include "xrtheora_surface.h"
 #include "xrtheora_stream.h"
-#ifndef _EDITOR
-#	include "xrTheora_Surface_mmx.h"
-#endif
 
 CTheoraSurface::CTheoraSurface()
 {
@@ -147,13 +144,6 @@ u32	CTheoraSurface::Height(bool bRealSize)
 
 }
 
-#ifndef _EDITOR
-	#define MMX_TV_YUV2ARGB
-#endif
-
-#undef MMX_TV_YUV2ARGB
-
-// #define MMX_TV_YUV2ARGB
 void CTheoraSurface::DecompressFrame(u32* data, u32 _width, int& _pos)
 {
 	VERIFY		(m_rgb);
@@ -180,7 +170,6 @@ void CTheoraSurface::DecompressFrame(u32* data, u32 _width, int& _pos)
 	if (yuv_rgb){
 		yuv_buffer&	yuv	= *yuv_rgb;
 
-#ifndef MMX_TV_YUV2ARGB
 		u32 pos = 0;
 		for (u32 h=0; h<height; ++h)
 		{
@@ -214,34 +203,6 @@ if(!bShaderYUV2RGB)
 			}
 		_pos = pos;
 		}
-#else
-if(!bShaderYUV2RGB)
-{
-		tv_yuv2argb		( ( lp_tv_uchar ) data, width, height,
-						yuv.y,yuv.y_width,yuv.y_height,yuv.y_stride,
-						yuv.u,yuv.v,
-						yuv.uv_width,yuv.uv_height,yuv.uv_stride, 0);
-}else
-{
-		u32 pos = 0;
-		for (u32 h=0; h<height; ++h)
-		{
-
-			u8* Y		= yuv.y+yuv.y_stride*h;
-			u8* U		= yuv.u+yuv.uv_stride*(h/uv_h);
-			u8* V		= yuv.v+yuv.uv_stride*(h/uv_h);
-
-			for (u32 w=0; w<width; ++w)
-			{
-				u8 y			= Y[w];
-				u8 u			= U[w/uv_w];
-				u8 v			= V[w/uv_w];
-				data[++pos]		= color_rgba(int(y),int(u),int(v),255);
-			}
-		}
-	_pos = pos;
-}
-#endif        
 	}
 
 	// alpha
