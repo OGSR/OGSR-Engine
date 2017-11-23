@@ -602,7 +602,7 @@ namespace luabind { namespace detail
 				const overload_rep& o = rep->overloads()[match_index];
 				return o.call(L, *obj);
 			}
-			__except(DbgLogExceptionFilter("[luabind::detail::class_rep_scope::function_dispatcher] unhandled exception stack trace:\n", GetExceptionInformation()))
+			__except(ExceptStackTrace("[luabind::detail::class_rep_scope::function_dispatcher] stack trace:\n"))
 			{
 				lua_pushstring(L, "[luabind::detail::class_rep_scope::function_dispatcher] Caught unhandled exception!");
 			}

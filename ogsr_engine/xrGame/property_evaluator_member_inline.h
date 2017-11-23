@@ -17,9 +17,7 @@ CEvaluator::CPropertyEvaluatorMember	(CPropertyStorage *storage, _condition_type
 	m_value				(value),
 	m_equality			(equality)
 {
-#ifdef LOG_ACTION
 	m_evaluator_name	= evaluator_name;
-#endif
 	m_storage			= storage;
 }
 

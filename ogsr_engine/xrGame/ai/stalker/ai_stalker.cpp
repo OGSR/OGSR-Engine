@@ -609,7 +609,9 @@ void CAI_Stalker::update_object_handler	()
 			throw;
 		}
 	}
-	catch(...) {
+	catch (...)
+	{
+		Msg("!![CAI_Stalker::update_object_handler] Error in function CObjectHandler::update()");
 		CObjectHandler::set_goal(eObjectActionIdle);
 		CObjectHandler::update	();
 	}

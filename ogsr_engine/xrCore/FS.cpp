@@ -73,17 +73,19 @@ XRCORE_API void dump_file_mappings	()
 // Tools
 //////////////////////////////////////////////////////////////////////
 //---------------------------------------------------
-void VerifyPath(LPCSTR path)
+
+#include <filesystem>
+void VerifyPath(const char* path_char) //Проверяет путь до файла. Если папки в пути отсутствуют - создаёт их.
 {
-	string1024 tmp;
-	for(int i=0;path[i];i++){
-		if( path[i]!='\\' || i==0 )
-			continue;
-		CopyMemory( tmp, path, i );
-		tmp[i] = 0;
-        _mkdir(tmp);
-	}
+	const std::string_view path(path_char);
+	const auto lastSepPos = path.find_last_of('\\');
+	const auto foldersPath = (lastSepPos != std::string_view::npos) ? path.substr(0, lastSepPos) : path;
+	std::error_code e;
+	namespace stdfs = std::experimental::filesystem;
+	stdfs::create_directories(stdfs::path(foldersPath.begin(), foldersPath.end()), e);
+	(void)e;
 }
+
 void*  FileDownload(LPCSTR fn, u32* pdwSize)
 {
 	int		hFile;

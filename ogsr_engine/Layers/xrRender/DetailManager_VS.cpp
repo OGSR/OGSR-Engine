@@ -328,12 +328,12 @@ void CDetailManager::hw_Unload()
 	__try { //KRodin: В редких случаях тут вылетает. До лучших времён заткнул этот вылет так.
 		_RELEASE(hw_lod_IB);
 	}
-	__except (DbgLogExceptionFilter("[CDetailManager::hw_Unload] unhandled exception stack trace:\n", GetExceptionInformation())) {}
+	__except (ExceptStackTrace("[CDetailManager::hw_Unload] stack trace:\n")) {}
 
 	__try { //Тут тоже на всякий случай
 		_RELEASE(hw_lod_VB);
 	}
-	__except (DbgLogExceptionFilter("[CDetailManager::hw_Unload2] unhandled exception stack trace:\n", GetExceptionInformation())) {}
+	__except (ExceptStackTrace("[CDetailManager::hw_Unload2] stack trace:\n")) {}
 }
 
 void CDetailManager::hw_Render()

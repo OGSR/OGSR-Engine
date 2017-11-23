@@ -52,6 +52,10 @@ extern XRCORE_API xrDebug Debug;
 XRCORE_API void LogStackTrace(const char* header);
 XRCORE_API void LogStackTrace(const char* header, _EXCEPTION_POINTERS *pExceptionInfo);
 
+// KRodin: отладочный хак для получения стека вызовов, при вызове проблемного кода внутри __try {...}
+// Использовать примерно так:
+// __except(ExceptStackTrace("stack trace:\n")) {...}
 XRCORE_API LONG DbgLogExceptionFilter(const char* header, _EXCEPTION_POINTERS *pExceptionInfo);
+#define ExceptStackTrace(str) DbgLogExceptionFilter(str, GetExceptionInformation())
 
 #include "xrDebug_macros.h"

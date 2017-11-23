@@ -25,21 +25,17 @@ void CScriptPropertyEvaluatorWrapper::setup_static	(CScriptPropertyEvaluator *ev
 bool CScriptPropertyEvaluatorWrapper::evaluate		()
 {
 	try {
-		return	(luabind::call_member<bool>(this,"evaluate"));
+		return luabind::call_member<bool>(this,"evaluate");
 	}
 #ifndef LUABIND_NO_EXCEPTIONS
 	catch(luabind::cast_failed &exception) {
-#ifdef LOG_ACTION
-		ai().script_engine().script_log (ScriptStorage::eLuaMessageTypeError,"SCRIPT RUNTIME ERROR : evaluator [%s] returns value with not a %s type!",m_evaluator_name,exception.info()->name());
-#else
-		ai().script_engine().script_log (ScriptStorage::eLuaMessageTypeError,"SCRIPT RUNTIME ERROR : evaluator returns value with not a %s type!",exception.info()->name());
-#endif
+		ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "!![CScriptPropertyEvaluatorWrapper::evaluate] evaluator [%s] returns value with not a %s type!", m_evaluator_name, exception.info()->name());
 	}
 #endif
 	catch(...) {
-		ai().script_engine().script_log (ScriptStorage::eLuaMessageTypeError,"SCRIPT RUNTIME ERROR : evaluator returns value with not a bool type!");
+		ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "!![CScriptPropertyEvaluatorWrapper::evaluate] evaluator [%s] returns value with not a bool type!", m_evaluator_name);
 	}
-	return		(false);
+	return false;
 }
 
 bool CScriptPropertyEvaluatorWrapper::evaluate_static	(CScriptPropertyEvaluator *evaluator)

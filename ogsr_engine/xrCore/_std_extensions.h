@@ -276,7 +276,7 @@ IC char*						xr_strlwr				(char* S)
 XRCORE_API	int					xr_strcmp				( const char* S1, const char* S2 );
 #else
 IC int							xr_strcmp				( const char* S1, const char* S2 )
-{	return (int)strcmp(S1,S2);  }
+{	return strcmp(S1,S2);  }
 #endif
 
 XRCORE_API	char*				timestamp				(string64& dest);

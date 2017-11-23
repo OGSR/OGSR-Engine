@@ -50,11 +50,13 @@ void CScriptBinder::reinit			()
 		start							= Memory.mem_usage();
 #endif // DEBUG_MEMORY_MANAGER
 	if (m_object) {
-		try {
-			m_object->reinit	();
+		__try
+		{
+			m_object->reinit();
 		}
-		catch(...) {
-			clear			();
+		__except (ExceptStackTrace("[CScriptBinder::reinit] stack_trace:\n"))
+		{
+			clear();
 		}
 	}
 }
@@ -71,31 +73,43 @@ void CScriptBinder::reload			(LPCSTR section)
 		start							= Memory.mem_usage();
 #endif // DEBUG_MEMORY_MANAGER
 	VERIFY					(!m_object);
+
 	if (!pSettings->line_exist(section,"script_binding"))
 		return;
-	
-	luabind::functor<void>	lua_function;
-	if (!ai().script_engine().functor(pSettings->r_string(section,"script_binding"),lua_function)) {
-		ai().script_engine().script_log	(ScriptStorage::eLuaMessageTypeError,"function %s is not loaded!",pSettings->r_string(section,"script_binding"));
+
+	auto script_func_name = pSettings->r_string(section, "script_binding");
+	luabind::functor<void> lua_function;
+	if (!ai().script_engine().functor(script_func_name, lua_function)) {
+		Msg("!![CScriptBinder::reload] function [%s] not loaded!", script_func_name);
 		return;
 	}
 	
-	CGameObject				*game_object = smart_cast<CGameObject*>(this);
-
-	try {
-		lua_function		(game_object ? game_object->lua_game_object() : 0);
+	auto game_object = smart_cast<CGameObject*>(this);
+	if (!game_object) //Объекта нет - значит тут делать нечего.
+	{
+		Msg("!![[CScriptBinder::reload] failed cast to CGameObject!");
+		return;
 	}
-	catch(...) {
-		clear				();
+
+	__try
+	{
+		lua_function(game_object->lua_game_object());
+	}
+	__except(EXCEPTION_EXECUTE_HANDLER)
+	{
+		Msg("!![CScriptBinder::reload] Error in call lua function [%s]", script_func_name);
+		clear();
 		return;
 	}
 
 	if (m_object) {
-		try {
+		__try
+		{
 			m_object->reload(section);
 		}
-		catch(...) {
-			clear			();
+		__except (ExceptStackTrace("[CScriptBinder::reload] stack_trace:\n"))
+		{
+			clear();
 		}
 	}
 }
@@ -110,14 +124,16 @@ BOOL CScriptBinder::net_Spawn		(CSE_Abstract* DC)
 	CSE_Abstract			*abstract = (CSE_Abstract*)DC;
 	CSE_ALifeObject			*object = smart_cast<CSE_ALifeObject*>(abstract);
 	if (object && m_object) {
-		try {
-			return			((BOOL)m_object->net_Spawn(object));
+		__try
+		{
+			return (BOOL)m_object->net_Spawn(object);
 		}
-		catch(...) {
-			clear			();
+		__except (ExceptStackTrace("[CScriptBinder::net_Spawn] stack_trace:\n"))
+		{
+			clear();
 		}
 	}
-	return					(TRUE);
+	return TRUE;
 }
 
 void CScriptBinder::net_Destroy		()
@@ -126,11 +142,13 @@ void CScriptBinder::net_Destroy		()
 #ifdef _DEBUG
 		Msg						("* Core object %s is UNbinded from the script object",smart_cast<CGameObject*>(this) ? *smart_cast<CGameObject*>(this)->cName() : "");
 #endif // _DEBUG
-		try {
-			m_object->net_Destroy	();
+		__try
+		{
+			m_object->net_Destroy();
 		}
-		catch(...) {
-			clear			();
+		__except (ExceptStackTrace("[CScriptBinder::net_Destroy] stack_trace:\n"))
+		{
+			clear();
 		}
 	}
 	xr_delete				(m_object);
@@ -150,11 +168,13 @@ void CScriptBinder::set_object		(CScriptBinderObject *object)
 void CScriptBinder::shedule_Update	(u32 time_delta)
 {
 	if (m_object) {
-		try {
-			m_object->shedule_Update	(time_delta);
+		__try
+		{
+			m_object->shedule_Update(time_delta);
 		}
-		catch(...) {
-			clear			();
+		__except (ExceptStackTrace("[CScriptBinder::shedule_Update] stack_trace:\n"))
+		{
+			clear();
 		}
 	}
 }
@@ -162,11 +182,13 @@ void CScriptBinder::shedule_Update	(u32 time_delta)
 void CScriptBinder::save			(NET_Packet &output_packet)
 {
 	if (m_object) {
-		try {
-			m_object->save	(&output_packet);
+		__try
+		{
+			m_object->save(&output_packet);
 		}
-		catch(...) {
-			clear			();
+		__except (ExceptStackTrace("[CScriptBinder::save] stack_trace:\n"))
+		{
+			clear();
 		}
 	}
 }
@@ -174,11 +196,13 @@ void CScriptBinder::save			(NET_Packet &output_packet)
 void CScriptBinder::load			(IReader &input_packet)
 {
 	if (m_object) {
-		try {
-			m_object->load	(&input_packet);
+		__try
+		{
+			m_object->load(&input_packet);
 		}
-		catch(...) {
-			clear			();
+		__except (ExceptStackTrace("[CScriptBinder::load] stack_trace:\n"))
+		{
+			clear();
 		}
 	}
 }
@@ -186,25 +210,29 @@ void CScriptBinder::load			(IReader &input_packet)
 BOOL CScriptBinder::net_SaveRelevant()
 {
 	if (m_object) {
-		try {
-			return			(m_object->net_SaveRelevant());
+		__try
+		{
+			return m_object->net_SaveRelevant();
 		}
-		catch(...) {
-			clear			();
+		__except (ExceptStackTrace("[CScriptBinder::net_SaveRelevant] stack_trace:\n"))
+		{
+			clear();
 		}
 	}
-	return							(FALSE);
+	return FALSE;
 }
 
 void CScriptBinder::net_Relcase		(CObject *object)
 {
 	CGameObject						*game_object = smart_cast<CGameObject*>(object);
 	if (m_object && game_object) {
-		try {
-			m_object->net_Relcase	(game_object->lua_game_object());
+		__try
+		{
+			m_object->net_Relcase(game_object->lua_game_object());
 		}
-		catch(...) {
-			clear			();
+		__except (ExceptStackTrace("[CScriptBinder::net_Relcase] stack_trace:\n"))
+		{
+			clear();
 		}
 	}
 }
