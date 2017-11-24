@@ -174,7 +174,7 @@ bool CScriptEngine::process_file_if_exists(const char* file_name, bool warn_if_n
 		Msg("[CScriptEngine::process_file_if_exists] loading script: [%s]", S1);
 #endif
 		m_reload_modules = false;
-		do_file(S, *file_name ? file_name : GlobalNamespace);
+		return do_file(S, *file_name ? file_name : GlobalNamespace);
 	}
 	return true;
 }

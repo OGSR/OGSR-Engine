@@ -138,9 +138,13 @@ void CScriptStorage::script_log(ScriptStorage::ELuaMessageType tLuaMessageType, 
 
 bool CScriptStorage::load_buffer(lua_State *L, const char* caBuffer, size_t tSize, const char* caScriptName, const char* caNameSpaceName) //KRodin: эта функция форматирует содержимое скрипта используя FILE_HEADER и после этого загружает его в lua
 {
-	int l_iErrorCode;
+	int l_iErrorCode = 0;
 	if (strcmp(GlobalNamespace, caNameSpaceName)) //Все скрипты кроме _G
 	{
+		//KRodin: обращаться к _G только с большой буквы! Иначе он загрузится ещё раз и это неизвестно к чему приведёт!
+		//Глобальное пространство инитится один раз после запуска луаджита, и никогда больше.
+		if (!strcmp("_g", caNameSpaceName))
+			return false;
 		//KRodin: Переделал, т.к. в оригинале тут происходило нечто, на мой взгляд, странное.
 		int buf_len = std::snprintf(nullptr, 0, FILE_HEADER, caNameSpaceName, caNameSpaceName, caBuffer);
 		auto strBuf = std::make_unique<char[]>(buf_len + 1);
@@ -179,8 +183,10 @@ bool CScriptStorage::do_file(const char* caScriptName, const char* caNameSpaceNa
 	strncpy(strBuf.get(), (const char*)l_tpFileReader->pointer(), l_tpFileReader->length());
 	strBuf.get()[l_tpFileReader->length()] = 0;
 	//
-	load_buffer(lua(), strBuf.get(), (size_t)l_tpFileReader->length(), l_caLuaFileName, caNameSpaceName);
+	bool loaded = load_buffer(lua(), strBuf.get(), (size_t)l_tpFileReader->length(), l_caLuaFileName, caNameSpaceName);
 	FS.r_close(l_tpFileReader);
+	if (!loaded)
+		return false;
 
 	int	l_iErrorCode = lua_pcall(lua(), 0, 0, 0); //KRodin: без этого скрипты не работают!
 	if (l_iErrorCode)

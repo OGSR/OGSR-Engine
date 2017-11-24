@@ -103,7 +103,7 @@ void CEatableItemScript::script_register(lua_State *L)
 			.def_readwrite("eat_max_power"				,			&CEatableItem::m_fMaxPowerUpInfluence)
 			.def_readwrite("wounds_heal_perc"			,			&CEatableItem::m_fWoundsHealPerc)
 			.def_readwrite("eat_portions_num"			,			&CEatableItem::m_iPortionsNum)
-			.def_readwrite("eat_max_power"				,			&CEatableItem::m_iStartPortionsNum)			
+			.def_readwrite("eat_start_portions_num"		,			&CEatableItem::m_iStartPortionsNum)			
 			,
 			class_<CEatableItemObject, bases<CEatableItem, CGameObject>>("CEatableItemObject")
 		];

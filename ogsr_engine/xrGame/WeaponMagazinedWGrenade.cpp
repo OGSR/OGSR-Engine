@@ -231,6 +231,7 @@ bool CWeaponMagazinedWGrenade::SwitchMode()
 void  CWeaponMagazinedWGrenade::PerformSwitchGL()
 {
 	m_bGrenadeMode		= !m_bGrenadeMode;
+	m_fZoomFactor = this->CurrentZoomFactor(); //добавлен сброс зума при переключении на подствол в режиме прицеливания
 
 	iMagazineSize		= m_bGrenadeMode?1:iMagazineSize2;
 
@@ -241,10 +242,8 @@ void  CWeaponMagazinedWGrenade::PerformSwitchGL()
 	
 	swap				(m_DefaultCartridge, m_DefaultCartridge2);
 
-	xr_vector<CCartridge> l_magazine;
-	while(m_magazine.size()) { l_magazine.push_back(m_magazine.back()); m_magazine.pop_back(); }
-	while(m_magazine2.size()) { m_magazine.push_back(m_magazine2.back()); m_magazine2.pop_back(); }
-	while(l_magazine.size()) { m_magazine2.push_back(l_magazine.back()); l_magazine.pop_back(); }
+	m_magazine.swap(m_magazine2); // https://github.com/revolucas/CoC-Xray/pull/5/commits/4a396eb30137c5625c5b0dd934e63eaa5b62cbc5
+
 	iAmmoElapsed = (int)m_magazine.size();
 
 	if(m_bZoomEnabled && m_pHUD)
@@ -565,11 +564,15 @@ bool CWeaponMagazinedWGrenade::Detach(const char* item_section_name, bool b_spaw
 	   !xr_strcmp(*m_sGrenadeLauncherName, item_section_name))
 	{
 		m_flagsAddOnState &= ~CSE_ALifeItemWeapon::eWeaponAddonGrenadeLauncher;
-		if(m_bGrenadeMode)
+
+		// https://github.com/revolucas/CoC-Xray/pull/5/commits/9ca73da34a58ceb48713b1c67608198c6af26db2
+		// Now we need to unload GL's magazine
+		if (!m_bGrenadeMode)
 		{
-			UnloadMagazine();
 			PerformSwitchGL();
 		}
+		UnloadMagazine();
+		PerformSwitchGL();
 
 		UpdateAddonsVisibility();
 		return CInventoryItemObject::Detach(item_section_name, b_spawn_item);
