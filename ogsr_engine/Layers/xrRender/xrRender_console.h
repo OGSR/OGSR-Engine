@@ -88,7 +88,7 @@ extern ECORE_API float			ps_r2_sun_depth_far_bias;	// -0.0001f
 extern ECORE_API float			ps_r2_sun_depth_near_scale;	// 1.00001f
 extern ECORE_API float			ps_r2_sun_depth_near_bias;	// -0.0001f
 extern ECORE_API float			ps_r2_sun_lumscale;			// 0.5f
-//extern ECORE_API float			ps_r2_sun_lumscale_hemi;	// 1.0f
+extern ECORE_API float			ps_r2_sun_lumscale_hemi;	// 1.0f
 extern ECORE_API float			ps_r2_sun_lumscale_amb;		// 1.0f
 extern ECORE_API float			ps_r2_zfill;				// .1f
 
