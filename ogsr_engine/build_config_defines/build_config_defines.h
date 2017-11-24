@@ -46,3 +46,10 @@
 
 // включает хранилище скриптовых переменных в сейвы
 //#define SCRIPT_VARS_STORAGE
+
+// включает экспорт функции setup_game_icon в Lua
+//#define SCRIPT_ICONS_CONTROL
+
+// Выключает использование анимации рассматривания болта, подкидывания гранат
+// и кручения ножа, т.е. anim_playing.
+//#define STOP_ANIM_PLAYING
