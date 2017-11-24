@@ -130,6 +130,10 @@ Fvector2 CUIDragDropListEx::GetDragItemPosition()
 
 void CUIDragDropListEx::OnItemStartDragging(CUIWindow* w, void* pData)
 {
+	// Избегаем случая двойного драга. Real Wolf. 12.11.14.
+	if (m_drag_item)
+		return;
+
 	OnItemSelected						(w, pData);
 	CUICellItem* itm		= smart_cast<CUICellItem*>(w);
 
