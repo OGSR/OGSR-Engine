@@ -241,11 +241,6 @@ void CEntityCondition::UpdateCondition()
 	if (m_fDeltaHealth+GetHealth() <= 0)
 	{
 		CriticalHealth			= true;
-		m_object->OnCriticalHitHealthLoss();
-	}
-	else
-	{
-		if (m_fDeltaHealth<0) m_object->OnHitHealthLoss(GetHealth()+m_fDeltaHealth);
 	}
 	//-----------------------------------------
 	UpdateHealth				();
@@ -253,7 +248,6 @@ void CEntityCondition::UpdateCondition()
 	if (!CriticalHealth && m_fDeltaHealth+GetHealth() <= 0)
 	{
 		CriticalHealth			= true;
-		m_object->OnCriticalWoundHealthLoss();
 	};
 	//-----------------------------------------
 	UpdatePower					();
@@ -262,7 +256,6 @@ void CEntityCondition::UpdateCondition()
 	if (!CriticalHealth && m_fDeltaHealth+GetHealth() <= 0)
 	{
 		CriticalHealth = true;
-		m_object->OnCriticalRadiationHealthLoss();
 	};
 	//-----------------------------------------
 	UpdatePsyHealth				();

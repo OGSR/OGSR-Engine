@@ -108,7 +108,6 @@ public:
 	{}
 #endif
 	virtual	void					LoadTitle			(LPCSTR str){}
-	virtual bool					CanBePaused			()		{ return true;}
 };
 
 class IMainMenu

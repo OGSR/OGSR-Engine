@@ -109,7 +109,6 @@ public:
 	ALife::_TIME_ID			m_game_death_time;
 
 			void			set_death_time		();
-	virtual	void			set_ready_to_save	();
 
 private:
 	ALife::_OBJECT_ID		m_killer_id;

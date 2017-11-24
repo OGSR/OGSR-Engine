@@ -1,7 +1,6 @@
 #include "stdafx.h"
 #include "Level.h"
 #include "HUDManager.h"
-#include "UIGameDM.h"
 #include "xrServer.h"
 
 #define DEMO_DATA_SIZE	65536
@@ -389,37 +388,8 @@ void						CLevel::Demo_Update				()
 			m_aDemoData.pop_front();
 		};
 	};	
-	//-------------------------------
-	if (HUD().GetUI())
-	{
-		CUIGameDM* game_dm_ui = smart_cast<CUIGameDM*>( HUD().GetUI()->UIGame());
-		if (game_dm_ui)
-		{
-			if (Pos < m_aDemoData.size())
-			{
-				string1024 tmp;
-				if (m_bDemoPlayByFrame)
-				{
-//					sprintf_s(tmp, "Demo Playing. %d perc.", u32(float(m_dwCurDemoFrame)/m_dwLastDemoFrame*100.0f));
-					if (float(m_lDemoOfs)/lFileSize > 0.9)
-					{
-						int x=0;
-						x=x;
-					}
-					sprintf_s(tmp, "Demo Playing. %d perc.", u32(float(m_lDemoOfs)/lFileSize*100.0f));
-				}
-				else
-				{
-					sprintf_s(tmp, "Demo Playing. %d perc.", u32(float(Pos)/m_aDemoData.size()*100.0f));
-				}
-				game_dm_ui->SetDemoPlayCaption(tmp);
-			}
-			else
-				game_dm_ui->SetDemoPlayCaption("");
-			
-		}
-	}
-	//---------------------------------
+
+	Msg("!!KRodin: Called Demo_update!");
 
 //	m_dwCurDemoFrame++;
 

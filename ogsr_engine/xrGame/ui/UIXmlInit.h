@@ -32,7 +32,6 @@ class CUIListBox;
 class CUIStatsPlayerList;
 class CUIDragDropListEx;
 class CUIComboBox;
-class CUITabButtonMP;
 class CUITrackBar;
 
 class CUIXmlInit
@@ -62,7 +61,6 @@ public:
 	static bool InitProgressShape		(CUIXml& xml_doc, const char* path, int index, CUIProgressShape* pWnd);
 	static bool InitFont				(CUIXml& xml_doc, const char* path, int index, u32 &color, CGameFont *&pFnt);
 //	static bool InitColor				(CUIXml& xml_doc, XML_NODE* node, u32 &color);
-	static bool InitTabButtonMP			(CUIXml& xml_doc, const char* path,	int index, CUITabButtonMP *pWnd);
 	static bool InitTabControl			(CUIXml& xml_doc, const char* path,	int index, CUITabControl *pWnd);
 	static bool InitTextBanner			(CUIXml& xml_doc, const char* path,	int index, CUITextBanner *pBnr);
 	static bool InitMultiTextStatic		(CUIXml& xml_doc, const char* path,	int index, CUIMultiTextStatic *pWnd);

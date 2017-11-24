@@ -34,10 +34,6 @@ IC	void		throw_and_log(const xr_string &s) {Msg("! %s",s.c_str()); throw *shared
 #include "../xr_3da/xr_object.h"
 #include "../xr_3da/igame_level.h"
 
-#define REGISTRY_VALUE_GSCDKEY	"InstallCDKEY"
-#define REGISTRY_VALUE_VERSION	"InstallVers"
-#define REGISTRY_VALUE_USERNAME	"InstallUserName"
-
 #ifndef DEBUG
 #	define MASTER_GOLD
 #endif // DEBUG

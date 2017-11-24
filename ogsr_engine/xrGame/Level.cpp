@@ -15,7 +15,6 @@
 #include "PHdynamicdata.h"
 #include "Physics.h"
 #include "ShootingObject.h"
-//.#include "LevelFogOfWar.h"
 #include "Level_Bullet_Manager.h"
 #include "script_engine.h"
 #include "team_base_zone.h"
@@ -26,7 +25,6 @@
 #include "seniority_hierarchy_holder.h"
 #include "space_restrictor.h"
 #include "client_spawn_manager.h"
-#include "autosave_manager.h"
 #include "ClimableObject.h"
 #include "level_graph.h"
 #include "mt_config.h"
@@ -106,7 +104,6 @@ CLevel::CLevel():IPureClient	(Device.GetTimerGlobal())
 		m_level_sound_manager		= xr_new<CLevelSoundManager>();
 		m_space_restriction_manager = xr_new<CSpaceRestrictionManager>();
 		m_client_spawn_manager		= xr_new<CClientSpawnManager>();
-		m_autosave_manager			= xr_new<CAutosaveManager>();
 
 	#ifdef DEBUG
 		m_debug_renderer			= xr_new<CDebugRenderer>();
@@ -117,7 +114,6 @@ CLevel::CLevel():IPureClient	(Device.GetTimerGlobal())
 	{
 		m_level_sound_manager		= NULL;
 		m_client_spawn_manager		= NULL;
-		m_autosave_manager			= NULL;
 		m_space_restriction_manager = NULL;
 	#ifdef DEBUG
 		m_debug_renderer			= NULL;
@@ -231,8 +227,6 @@ CLevel::~CLevel()
 	xr_delete					(m_seniority_hierarchy_holder);
 	
 	xr_delete					(m_client_spawn_manager);
-
-	xr_delete					(m_autosave_manager);
 	
 #ifdef DEBUG
 	xr_delete					(m_debug_renderer);
@@ -547,7 +541,6 @@ void CLevel::OnFrame	()
 
 	m_ph_commander->update				();
 	m_ph_commander_scripts->update		();
-//	autosave_manager().update			();
 
 	//просчитать полет пуль
 	Device.Statistic->TEST0.Begin		();
@@ -1009,20 +1002,6 @@ u32	GameID()
 }
 
 #include "..\xr_3da\IGame_Persistent.h"
-
-bool	IsGameTypeSingle()
-{
-	return g_pGamePersistent->GameType()==GAME_SINGLE || g_pGamePersistent->GameType()==GAME_ANY;
-}
-
-#ifdef BATTLEYE
-
-bool CLevel::TestLoadBEClient()
-{
-	return battleye_system.TestLoadClient();
-}
-
-#endif // BATTLEYE
 
 GlobalFeelTouch::GlobalFeelTouch()
 {

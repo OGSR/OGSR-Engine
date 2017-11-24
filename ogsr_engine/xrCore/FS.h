@@ -6,7 +6,7 @@
 
 static constexpr auto CFS_CompressMark = 1ul << 31ul;
 
-XRCORE_API void VerifyPath(const char* path);
+XRCORE_API void VerifyPath(const std::string_view path);
 
 #ifdef DEBUG
 	XRCORE_API	extern	u32		g_file_mapped_memory;

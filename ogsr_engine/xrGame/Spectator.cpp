@@ -21,7 +21,6 @@
 #include "Inventory.h"
 #include "huditem.h"
 #include "clsid_game.h"
-#include "game_cl_mp.h"
 #include "string_table.h"
 #include "map_manager.h"
 
@@ -58,27 +57,6 @@ CSpectator::~CSpectator()
 void CSpectator::UpdateCL()
 {
 	inherited::UpdateCL();
-
-	if (GameID() != GAME_SINGLE)
-	{
-		if (Game().local_player && Game().local_player->GameID == ID())
-		{
-			if (cam_active != eacFreeFly)
-			{
-				if (m_pActorToLookAt && !m_pActorToLookAt->g_Alive())
-					cam_Set(eacFreeLook);
-				if (!m_pActorToLookAt)
-				{
-					SelectNextPlayerToLook();
-					if (!m_pActorToLookAt)
-						cam_Set(eacFreeFly);
-				};
-			}
-			if (Level().CurrentViewEntity() == this) cam_Update(m_pActorToLookAt);
-			return;
-		}		
-		
-	};
 	
 	if (g_pGameLevel->CurrentViewEntity()==this){
 		if (eacFreeFly!=cam_active){
@@ -139,55 +117,25 @@ void CSpectator::IR_OnKeyboardPress(int cmd)
 		}break;
 	case kCAM_1:	
 		{
-			SelectNextPlayerToLook();
 			if (m_pActorToLookAt)
 				cam_Set			(eacFirstEye);
 			else
 				cam_Set			(eacFreeFly);			
 		}break;
-	case kCAM_2:	if (cam_active == eacFreeFly && SelectNextPlayerToLook())	cam_Set			(eacLookAt);		break;
-	case kCAM_3:	if (cam_active == eacFreeFly && SelectNextPlayerToLook())	cam_Set			(eacFreeLook);		break;
+	case kCAM_2: break;
+	case kCAM_3: break;
 	case kCAM_4:	cam_Set			(eacFreeFly);	m_pActorToLookAt = NULL;	break;
 	case kWPN_FIRE:	
 		{
 			if (cam_active != eacFreeFly)
 			{
 				++look_idx;
-				SelectNextPlayerToLook();
 				if (cam_active == eacFirstEye && m_pActorToLookAt)
 					FirstEye_ToPlayer(m_pActorToLookAt);
 			}			
 		}break;
 	case kWPN_ZOOM:
 		{
-			game_cl_mp* pMPGame = smart_cast<game_cl_mp*> (&Game());
-			if (!pMPGame) break;
-			game_PlayerState* PS = Game().local_player;
-			if (!PS || PS->GameID != ID()) break;
-
-			EActorCameras new_camera = EActorCameras((cam_active+1)%eacMaxCam);
-			
-			if (!PS->testFlag(GAME_PLAYER_FLAG_SPECTATOR))
-			{
-				while (!pMPGame->Is_Spectator_Camera_Allowed(new_camera) && new_camera != eacFreeFly)
-				{
-					new_camera = EActorCameras((new_camera+1)%eacMaxCam);
-				}
-			};
-			
-			if (new_camera == eacFreeFly)
-			{
-				cam_Set			(eacFreeFly);	
-				m_pActorToLookAt = NULL;
-			}
-			else
-			{
-				if (!m_pActorToLookAt) SelectNextPlayerToLook();
-				if (!m_pActorToLookAt)
-					cam_Set			(eacFreeFly);	
-				else
-					cam_Set			(new_camera);	
-			}
 		}break;
 	}
 }
@@ -208,7 +156,6 @@ void CSpectator::IR_OnKeyboardHold(int cmd)
 {
 	if (Remote())		return;
 
-	game_cl_mp* pMPGame = smart_cast<game_cl_mp*> (&Game());
 	game_PlayerState* PS = Game().local_player;
 
 	if ((cam_active==eacFreeFly)||(cam_active==eacFreeLook)){
@@ -240,7 +187,7 @@ void CSpectator::IR_OnKeyboardHold(int cmd)
 			vmove.mad( right, -Device.fTimeDelta*Accel_mul );
 			}break;
 		}
-		if (cam_active != eacFreeFly || (pMPGame->Is_Spectator_Camera_Allowed(eacFreeFly) || (PS && PS->testFlag(GAME_PLAYER_FLAG_SPECTATOR))))
+		if (cam_active != eacFreeFly)
 			XFORM().c.add( vmove );
 	}
 }
@@ -402,94 +349,9 @@ void			CSpectator::net_Destroy	()
 		Level().MapManager		().RemoveMapLocationByObjectID(ID());
 }
 
-bool			CSpectator::SelectNextPlayerToLook	()
-{
-	if (GameID() == GAME_SINGLE) return false;
-	
-	game_PlayerState* PS = Game().local_player;
-	if (!PS) return false;
-	m_pActorToLookAt = NULL;
-
-	game_cl_mp* pMPGame = smart_cast<game_cl_mp*> (&Game());
-
-	game_cl_GameState::PLAYERS_MAP_IT it = Game().players.begin();
-	u16 PPCount = 0;
-	CActor*	PossiblePlayers[32];
-	for(;it!=Game().players.end();++it)
-	{
-		game_PlayerState* ps = it->second;
-		if (!ps || ps->testFlag(GAME_PLAYER_FLAG_VERY_VERY_DEAD) || ps==PS) continue;
-		if (pMPGame && pMPGame->Is_Spectator_TeamCamera_Allowed())
-		{
-			if (ps->team != PS->team && !PS->testFlag(GAME_PLAYER_FLAG_SPECTATOR)) continue;
-		};
-		u16 id = ps->GameID;
-		CObject* pObject = Level().Objects.net_Find(id);
-		if (!pObject) continue;
-		CActor* A = smart_cast<CActor*>(pObject);
-		if (!A) continue;
-		PossiblePlayers[PPCount++] = A;
-	};
-	if (PPCount > 0)
-	{
-		look_idx %= PPCount;
-		m_pActorToLookAt = PossiblePlayers[look_idx];
-		return true;
-	};
-	return false;
-};
-
 void			CSpectator::net_Relcase				(CObject *O)
 {
 	if (O != m_pActorToLookAt) return;
 	m_pActorToLookAt = NULL;
-	if (cam_active != eacFreeFly) SelectNextPlayerToLook();
 	if (!m_pActorToLookAt) cam_Set(eacFreeFly);
-};
-
-void CSpectator::GetSpectatorString		(string1024& pStr)
-{
-	if (!pStr) return;
-	if (GameID() == GAME_SINGLE) return;
-	
-	xr_string	SpectatorMsg;
-	CStringTable st;
-	switch (cam_active)
-	{
-	case eacFreeFly:
-		{
-			SpectatorMsg = *st.translate("mp_spectator");
-			SpectatorMsg += " ";
-			SpectatorMsg += *st.translate("mp_free_fly");
-		}break;
-	case eacFirstEye:
-		{
-			SpectatorMsg = *st.translate("mp_spectator");
-			SpectatorMsg += " ";
-			SpectatorMsg += *st.translate("mp_first_eye");
-			SpectatorMsg += " ";
-//			SpectatorMsg = "SPECTATOR (First-Eye): ";
-			SpectatorMsg += m_pActorToLookAt->Name();			
-
-		}break;
-	case eacFreeLook:
-		{
-			SpectatorMsg = *st.translate("mp_spectator");
-			SpectatorMsg += " ";
-			SpectatorMsg += *st.translate("mp_free_look");
-			SpectatorMsg += " ";
-//			SpectatorMsg = "SPECTATOR (Free-Look):";
-			SpectatorMsg += m_pActorToLookAt->Name();
-		}break;
-	case eacLookAt:
-		{
-			SpectatorMsg = *st.translate("mp_spectator");
-			SpectatorMsg += " ";
-			SpectatorMsg += *st.translate("mp_look_at");
-			SpectatorMsg += " ";
-//			SpectatorMsg = "SPECTATOR (Look-At):";
-			SpectatorMsg += m_pActorToLookAt->Name();
-		}break;
-	};
-	strcpy_s(pStr, SpectatorMsg.c_str());
 };

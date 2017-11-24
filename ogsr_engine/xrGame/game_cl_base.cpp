@@ -12,8 +12,6 @@
 #include "string_table.h"
 #include "game_cl_base_weapon_usage_statistic.h"
 
-#include "game_sv_mp_vote_flags.h"
-
 game_cl_GameState::game_cl_GameState()
 {
 	m_WeaponUsageStatistic		= xr_new<WeaponUsageStatistic>();
@@ -196,15 +194,6 @@ void game_cl_GameState::TranslateGameMessage	(u32 msg, NET_Packet& P)
 	{
 	case GAME_EVENT_PLAYER_CONNECTED:
 		{
-
-#ifdef BATTLEYE
-			if ( g_pGameLevel && Level().battleye_system.GetTestClient() )
-			{
-				bool res_battleye = Level().battleye_system.LoadClient();
-				VERIFY( res_battleye );
-			}
-#endif // BATTLEYE
-
 			string64 PlayerName;
 			P.r_stringZ(PlayerName);
 			

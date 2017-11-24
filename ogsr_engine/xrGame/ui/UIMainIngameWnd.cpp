@@ -214,12 +214,6 @@ void CUIMainIngameWnd::Init()
 
 	xml_init.InitStatic			(uiXml, "invincible_static", 0, &UIInvincibleIcon);
 	UIInvincibleIcon.Show		(false);
-
-
-	if(GameID()==GAME_ARTEFACTHUNT){
-		xml_init.InitStatic		(uiXml, "artefact_static", 0, &UIArtefactIcon);
-		UIArtefactIcon.Show		(false);
-	}
 	
 	shared_str warningStrings[6] = 
 	{	
@@ -414,14 +408,6 @@ void CUIMainIngameWnd::Update()
 				SetWarningIconColor	(ewiInvincible,0xffffffff);
 			else
 				SetWarningIconColor	(ewiInvincible,0x00ffffff);
-		}
-		// ewiArtefact
-		if( (GameID() == GAME_ARTEFACTHUNT) && !(Device.dwFrame%30) ){
-			bool b_Artefact = (NULL != m_pActor->inventory().ItemFromSlot(ARTEFACT_SLOT));
-			if(b_Artefact)
-				SetWarningIconColor	(ewiArtefact,0xffffffff);
-			else
-				SetWarningIconColor	(ewiArtefact,0x00ffffff);
 		}
 
 		// Armor indicator stuff

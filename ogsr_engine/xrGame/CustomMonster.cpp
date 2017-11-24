@@ -828,12 +828,6 @@ BOOL CCustomMonster::feel_touch_contact		(CObject *O)
 	return		(FALSE);
 }
 
-void CCustomMonster::set_ready_to_save		()
-{
-	inherited::set_ready_to_save		();
-	memory().enemy().set_ready_to_save	();
-}
-
 void CCustomMonster::load_killer_clsids(LPCSTR section)
 {
 	m_killer_clsids.clear			();

@@ -16,7 +16,6 @@
 #include "Inventory.h"
 #include "WeaponHUD.h"
 #include "xrServer.h"
-#include "autosave_manager.h"
 
 #include "actor.h"
 #include "huditem.h"

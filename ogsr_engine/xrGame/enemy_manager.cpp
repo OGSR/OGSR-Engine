@@ -14,7 +14,6 @@
 #include "clsid_game.h"
 #include "ef_storage.h"
 #include "ef_pattern.h"
-#include "autosave_manager.h"
 #include "ai_object_location.h"
 #include "level_graph.h"
 #include "level.h"
@@ -43,7 +42,6 @@ CEnemyManager::CEnemyManager									(CCustomMonster *object)
 	m_object					= object;
 	m_ignore_monster_threshold	= 1.f;
 	m_max_ignore_distance		= 0.f;
-	m_ready_to_save				= true;
 	m_last_enemy_time			= 0;
 	m_last_enemy_change			= 0;
 	m_stalker					= smart_cast<CAI_Stalker*>(object);
@@ -91,8 +89,6 @@ float CEnemyManager::evaluate				(const CEntityAlive *object) const
 //	Msg						("[%6d] enemy manager %s evaluates %s",Device.dwTimeGlobal,*m_object->cName(),*object->cName());
 
 	bool					actor = (object->CLS_ID == CLSID_OBJECT_ACTOR);
-	if (actor)
-		m_ready_to_save		= false;
 
 	const CAI_Stalker		*stalker = smart_cast<const CAI_Stalker*>(object);
 	bool					wounded = stalker ? stalker->wounded(&m_object->movement().restrictions()) : false;
@@ -174,16 +170,6 @@ void CEnemyManager::reload					(LPCSTR section)
 	m_last_enemy_change			= 0;
 	m_useful_callback.clear		();
 	VERIFY						(m_ready_to_save);
-}
-
-void CEnemyManager::set_ready_to_save		()
-{
-	if (m_ready_to_save)
-		return;
-
-//	Msg							("%6d %s DEcreased enemy counter for player (%d -> %d)",Device.dwTimeGlobal,*m_object->cName(),Level().autosave_manager().not_ready_count(),Level().autosave_manager().not_ready_count()-1);
-	Level().autosave_manager().dec_not_ready();
-	m_ready_to_save				= true;
 }
 
 void CEnemyManager::remove_links			(CObject *object)
@@ -387,29 +373,12 @@ void CEnemyManager::update					()
 {
 	START_PROFILE("Memory Manager/enemies::update")
 
-	if (!m_ready_to_save) {
-//		Msg						("%6d %s DEcreased enemy counter for player (%d -> %d)",Device.dwTimeGlobal,*m_object->cName(),Level().autosave_manager().not_ready_count(),Level().autosave_manager().not_ready_count()-1);
-		Level().autosave_manager().dec_not_ready();
-	}
-
-	m_ready_to_save				= true;
-
 	try_change_enemy			();
 
 	if (selected()) {
 		m_last_enemy_time		= Device.dwTimeGlobal;
 		m_last_enemy			= selected();
 	}
-
-	if (!m_ready_to_save) {
-//		Msg						("%6d %s INcreased enemy counter for player (%d -> %d)",Device.dwTimeGlobal,*m_object->cName(),Level().autosave_manager().not_ready_count(),Level().autosave_manager().not_ready_count()+1);
-		Level().autosave_manager().inc_not_ready();
-	}
-
-#if 0//def _DEBUG
-	if (g_enemy_manager_second_update && selected() && smart_cast<const CAI_Stalker*>(selected()) && smart_cast<const CAI_Stalker*>(selected())->wounded())
-		Msg						("%6d WOUNDED CHOOSED %s",Device.dwTimeGlobal,*m_object->cName());
-#endif // _DEBUG
 
 	STOP_PROFILE
 }

@@ -3,7 +3,7 @@
 #include "xrMessages.h"
 
 extern BOOL		g_bCheckTime;
-extern int		g_dwEventDelay;
+static int g_dwEventDelay = 0;
 
 class	NET_Event
 {

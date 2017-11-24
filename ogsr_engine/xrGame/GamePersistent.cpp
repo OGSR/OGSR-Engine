@@ -175,24 +175,13 @@ void CGamePersistent::OnGameStart()
 
 void CGamePersistent::UpdateGameType			()
 {
-	__super::UpdateGameType		();
-	//  [7/11/2005]
-	if (!xr_strcmp(m_game_params.m_game_type, "single")) m_game_params.m_e_game_type = GAME_SINGLE;
-	else
-		if (!xr_strcmp(m_game_params.m_game_type, "deathmatch")) m_game_params.m_e_game_type = GAME_DEATHMATCH;
-		else
-			if (!xr_strcmp(m_game_params.m_game_type, "teamdeathmatch")) m_game_params.m_e_game_type = GAME_TEAMDEATHMATCH;
-			else
-				if (!xr_strcmp(m_game_params.m_game_type, "artefacthunt")) m_game_params.m_e_game_type = GAME_ARTEFACTHUNT;
-				else m_game_params.m_e_game_type = GAME_ANY;
-	//  [7/11/2005]
+	__super::UpdateGameType();
 
-	if(	m_game_params.m_e_game_type == GAME_DEATHMATCH ||
-		m_game_params.m_e_game_type == GAME_TEAMDEATHMATCH ||
-		m_game_params.m_e_game_type == GAME_ARTEFACTHUNT
-		)
-	g_current_keygroup = _mp;
+	if (!xr_strcmp(m_game_params.m_game_type, "single"))
+		m_game_params.m_e_game_type = GAME_SINGLE;
 	else
+		FATAL("Unsupported game type [%s]", m_game_params.m_game_type);
+
 	g_current_keygroup = _sp;
 }
 
@@ -463,16 +452,7 @@ static BOOL bEntryFlag		= TRUE;
 
 void CGamePersistent::OnAppActivate		()
 {
-	bool bIsMP = (g_pGameLevel && Level().game && GameID() != GAME_SINGLE);
-	bIsMP		&= !Device.Paused();
-
-	if( !bIsMP )
-	{
-		Device.Pause			(FALSE, !bRestorePause, TRUE, "CGP::OnAppActivate");
-	}else
-	{
-		Device.Pause			(FALSE, TRUE, TRUE, "CGP::OnAppActivate MP");
-	}
+	Device.Pause(FALSE, !bRestorePause, TRUE, "CGP::OnAppActivate");
 
 	bEntryFlag = TRUE;
 }
@@ -481,18 +461,9 @@ void CGamePersistent::OnAppDeactivate	()
 {
 	if(!bEntryFlag) return;
 
-	bool bIsMP = (g_pGameLevel && Level().game && GameID() != GAME_SINGLE);
+	bRestorePause = Device.Paused();
+	Device.Pause(TRUE, TRUE, TRUE, "CGP::OnAppDeactivate");
 
-	bRestorePause = FALSE;
-
-	if ( !bIsMP )
-	{
-		bRestorePause			= Device.Paused();
-		Device.Pause			(TRUE, TRUE, TRUE, "CGP::OnAppDeactivate");
-	}else
-	{
-		Device.Pause			(TRUE, FALSE, TRUE, "CGP::OnAppDeactivate MP");
-	}
 	bEntryFlag = FALSE;
 }
 
@@ -520,9 +491,4 @@ void CGamePersistent::LoadTitle(LPCSTR str)
 	sprintf_s				(buff, "%s", CStringTable().translate(str).c_str());
 	pApp->LoadTitleInt	(buff);
 //	pApp->LoadTitleInt(str);
-}
-
-bool CGamePersistent::CanBePaused()
-{
-	return IsGameTypeSingle	();
 }

@@ -1,11 +1,7 @@
 #include "stdafx.h"
 #include "xrServer.h"
 #include "game_sv_single.h"
-#include "game_sv_deathmatch.h"
-#include "game_sv_teamdeathmatch.h"
-#include "game_sv_artefacthunt.h"
 #include "xrMessages.h"
-#include "game_cl_artefacthunt.h"
 #include "game_cl_single.h"
 #include "MainMenu.h"
 
@@ -48,39 +44,7 @@ xrServer::EConnect xrServer::Connect(shared_str &session_name)
 
 	game->Create			(session_name);
 	csPlayers.Leave			();
-	
-#ifdef BATTLEYE
-	if ( game->get_option_i( *session_name, "battleye", 1) != 0 ) // default => battleye enable (always)
-	{
-		// if level exist & if server in internet
-		if ( g_pGameLevel && (game->get_option_i( *session_name, "public", 0) != 0)  )
-		{
-			if ( Level().battleye_system.server )
-			{
-				Msg( "Warning: BattlEye already loaded!" );
-			}
-			else
-			{
-				if ( !Level().battleye_system.LoadServer( this ) )
-				{
-					return ErrBELoad;
-				}
-			}
-		}//g_pGameLevel
-	}
-/*	if ( g_pGameLevel && Level().battleye_system.server )
-	{
-		if ( game->get_option_i( *session_name, "battleye_update", 1) != 0 ) // default => battleye auto_update enable (always)
-		{
-			Level().battleye_system.auto_update = 1;
-		}
-		else
-		{
-			Level().battleye_system.auto_update = 0;
-		}
-	}*/
-#endif // BATTLEYE
-	
+		
 	return IPureServer::Connect(*session_name);
 }
 
@@ -123,11 +87,6 @@ void xrServer::AttachNewClient			(IClient* CL)
 	MSYS_CONFIG	msgConfig;
 	msgConfig.sign1 = 0x12071980;
 	msgConfig.sign2 = 0x26111975;
-	msgConfig.is_battleye = 0;
-
-#ifdef BATTLEYE
-	msgConfig.is_battleye = (g_pGameLevel && Level().battleye_system.server != 0)? 1 : 0;
-#endif // BATTLEYE
 
 	if(psNET_direct_connect)  //single_game
 	{
@@ -142,7 +101,7 @@ void xrServer::AttachNewClient			(IClient* CL)
 	}
 
 	// gen message
-	if (!NeedToCheckClient_GameSpy_CDKey(CL))
+	if (!NeedToCheckClient_GameSpy_CDKey())
 	{
 	//-------------------------------------------------------------
 	Check_GameSpy_CDKey_Success(CL);

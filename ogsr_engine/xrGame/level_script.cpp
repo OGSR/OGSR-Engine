@@ -826,8 +826,7 @@ void CLevel::script_register(lua_State *L)
 
 	module(L)
 	[
-		def("command_line",						&command_line),
-		def("IsGameTypeSingle",					&IsGameTypeSingle)
+		def("command_line",						&command_line)
 	];
 
 	module(L,"relation_registry")

@@ -127,15 +127,6 @@ void CLevel::net_Stop		()
 
 void CLevel::ClientSend()
 {
-	if (GameID() != GAME_SINGLE && OnClient())
-	{
-		if ( !net_HasBandwidth() ) return;
-	};
-
-#ifdef BATTLEYE
-	battleye_system.UpdateClient();
-#endif // BATTLEYE
-
 	NET_Packet				P;
 	u32						start	= 0;
 	//----------- for E3 -----------------------------
@@ -373,30 +364,8 @@ void			CLevel::OnConnectResult				(NET_Packet*	P)
 	string128 ResultStr			;	
 	P->r_stringZ(ResultStr)		;
 	if (!result)				
-	{
-		m_bConnectResult	= false			;	
-		switch (res1)
-		{
-		case 0:		//Standart error
-			{
-				if (!xr_strcmp(ResultStr, "Data verification failed. Cheater? [2]"))
-					MainMenu()->SetErrorDialog(CMainMenu::ErrDifferentVersion);
-			}break;
-		case 1:		//GameSpy CDKey
-			{
-				if (!xr_strcmp(ResultStr, "Invalid CD Key"))
-					MainMenu()->SetErrorDialog(CMainMenu::ErrCDKeyInvalid);//, ResultStr);
-				if (!xr_strcmp(ResultStr, "CD Key in use"))
-					MainMenu()->SetErrorDialog(CMainMenu::ErrCDKeyInUse);//, ResultStr);
-				if (!xr_strcmp(ResultStr, "Your CD Key is disabled. Contact customer service."))
-					MainMenu()->SetErrorDialog(CMainMenu::ErrCDKeyDisabled);//, ResultStr);
-			}break;		
-		case 2:		//login+password
-			{
-				MainMenu()->SetErrorDialog(CMainMenu::ErrInvalidPassword);
-			}break;		
-		}
-	};	
+		m_bConnectResult = false;	
+
 	m_sConnectResult			= ResultStr;
 	
 	if (IsDemoSave())
@@ -485,29 +454,21 @@ void			CLevel::ClearAllObjects				()
 void				CLevel::OnInvalidHost			()
 {
 	IPureClient::OnInvalidHost();
-	if (MainMenu()->GetErrorDialogType() == CMainMenu::ErrNoError)
-		MainMenu()->SetErrorDialog(CMainMenu::ErrInvalidHost);
 };
 
 void				CLevel::OnInvalidPassword		()
 {
 	IPureClient::OnInvalidPassword();
-	MainMenu()->SetErrorDialog(CMainMenu::ErrInvalidPassword);
 };
 
 void				CLevel::OnSessionFull			()
 {
 	IPureClient::OnSessionFull();
-	if (MainMenu()->GetErrorDialogType() == CMainMenu::ErrNoError)
-		MainMenu()->SetErrorDialog(CMainMenu::ErrSessionFull);
 }
 
 void				CLevel::OnConnectRejected		()
 {
 	IPureClient::OnConnectRejected();
-
-//	if (MainMenu()->GetErrorDialogType() != CMainMenu::ErrNoError)
-//		MainMenu()->SetErrorDialog(CMainMenu::ErrServerReject);
 };
 
 void				CLevel::net_OnChangeSelfName			(NET_Packet* P)

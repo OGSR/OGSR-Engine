@@ -241,7 +241,7 @@ void CLevel::ClientReceive()
 			}break;
 		case M_GAMESPY_CDKEY_VALIDATION_CHALLENGE:
 			{
-				OnGameSpyChallenge(P);
+				OnGameSpyChallenge(P); //Убрать это если не вызывается!
 			}break;
 		case M_AUTH_CHALLENGE:
 			{
@@ -321,11 +321,8 @@ void CLevel::ClientReceive()
 				if (GameID() != GAME_SINGLE)
 					Game().m_WeaponUsageStatistic->OnUpdateRespond(P);
 			}break;
-		case M_BATTLEYE:
+		case M_BATTLEYE: //Убрать?
 			{
-#ifdef BATTLEYE
-			battleye_system.ReadPacketClient( P );
-#endif // BATTLEYE
 			}break;
 		}
 

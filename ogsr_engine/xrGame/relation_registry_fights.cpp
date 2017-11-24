@@ -21,7 +21,6 @@ RELATION_REGISTRY::FIGHT_DATA::FIGHT_DATA			()
 }
 
 //////////////////////////////////////////////////////////////////////////
-extern bool	IsGameTypeSingle();
 void RELATION_REGISTRY::FightRegister (u16 attacker, u16 defender, ALife::ERelationType defender_to_attacker, float hit_amount)
 {
 	UpdateFightRegister();
