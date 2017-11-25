@@ -50,6 +50,9 @@ void CScriptBinder::reinit			()
 		start							= Memory.mem_usage();
 #endif // DEBUG_MEMORY_MANAGER
 	if (m_object) {
+#ifdef CRASH_ON_SCRIPT_BINDER_ERRORS
+		m_object->reinit();
+#else
 		__try
 		{
 			m_object->reinit();
@@ -58,6 +61,7 @@ void CScriptBinder::reinit			()
 		{
 			clear();
 		}
+#endif
 	}
 }
 
@@ -91,6 +95,9 @@ void CScriptBinder::reload			(LPCSTR section)
 		return;
 	}
 
+#ifdef CRASH_ON_SCRIPT_BINDER_ERRORS
+	lua_function(game_object->lua_game_object());
+#else
 	__try
 	{
 		lua_function(game_object->lua_game_object());
@@ -101,8 +108,12 @@ void CScriptBinder::reload			(LPCSTR section)
 		clear();
 		return;
 	}
+#endif
 
 	if (m_object) {
+#ifdef CRASH_ON_SCRIPT_BINDER_ERRORS
+		m_object->reload(section);
+#else
 		__try
 		{
 			m_object->reload(section);
@@ -111,6 +122,7 @@ void CScriptBinder::reload			(LPCSTR section)
 		{
 			clear();
 		}
+#endif
 	}
 }
 
@@ -124,6 +136,9 @@ BOOL CScriptBinder::net_Spawn		(CSE_Abstract* DC)
 	CSE_Abstract			*abstract = (CSE_Abstract*)DC;
 	CSE_ALifeObject			*object = smart_cast<CSE_ALifeObject*>(abstract);
 	if (object && m_object) {
+#ifdef CRASH_ON_SCRIPT_BINDER_ERRORS
+		return (BOOL)m_object->net_Spawn(object);
+#else
 		__try
 		{
 			return (BOOL)m_object->net_Spawn(object);
@@ -132,6 +147,7 @@ BOOL CScriptBinder::net_Spawn		(CSE_Abstract* DC)
 		{
 			clear();
 		}
+#endif
 	}
 	return TRUE;
 }
@@ -142,6 +158,9 @@ void CScriptBinder::net_Destroy		()
 #ifdef _DEBUG
 		Msg						("* Core object %s is UNbinded from the script object",smart_cast<CGameObject*>(this) ? *smart_cast<CGameObject*>(this)->cName() : "");
 #endif // _DEBUG
+#ifdef CRASH_ON_SCRIPT_BINDER_ERRORS
+		m_object->net_Destroy();
+#else
 		__try
 		{
 			m_object->net_Destroy();
@@ -150,6 +169,7 @@ void CScriptBinder::net_Destroy		()
 		{
 			clear();
 		}
+#endif
 	}
 	xr_delete				(m_object);
 }
@@ -168,6 +188,9 @@ void CScriptBinder::set_object		(CScriptBinderObject *object)
 void CScriptBinder::shedule_Update	(u32 time_delta)
 {
 	if (m_object) {
+#ifdef CRASH_ON_SCRIPT_BINDER_ERRORS
+		m_object->shedule_Update(time_delta);
+#else
 		__try
 		{
 			m_object->shedule_Update(time_delta);
@@ -176,12 +199,16 @@ void CScriptBinder::shedule_Update	(u32 time_delta)
 		{
 			clear();
 		}
+#endif
 	}
 }
 
 void CScriptBinder::save			(NET_Packet &output_packet)
 {
 	if (m_object) {
+#ifdef CRASH_ON_SCRIPT_BINDER_ERRORS
+		m_object->save(&output_packet);
+#else
 		__try
 		{
 			m_object->save(&output_packet);
@@ -190,12 +217,16 @@ void CScriptBinder::save			(NET_Packet &output_packet)
 		{
 			clear();
 		}
+#endif
 	}
 }
 
 void CScriptBinder::load			(IReader &input_packet)
 {
 	if (m_object) {
+#ifdef CRASH_ON_SCRIPT_BINDER_ERRORS
+		m_object->load(&input_packet);
+#else
 		__try
 		{
 			m_object->load(&input_packet);
@@ -204,12 +235,16 @@ void CScriptBinder::load			(IReader &input_packet)
 		{
 			clear();
 		}
+#endif
 	}
 }
 
 BOOL CScriptBinder::net_SaveRelevant()
 {
 	if (m_object) {
+#ifdef CRASH_ON_SCRIPT_BINDER_ERRORS
+		return m_object->net_SaveRelevant();
+#else
 		__try
 		{
 			return m_object->net_SaveRelevant();
@@ -218,6 +253,7 @@ BOOL CScriptBinder::net_SaveRelevant()
 		{
 			clear();
 		}
+#endif
 	}
 	return FALSE;
 }
@@ -226,6 +262,9 @@ void CScriptBinder::net_Relcase		(CObject *object)
 {
 	CGameObject						*game_object = smart_cast<CGameObject*>(object);
 	if (m_object && game_object) {
+#ifdef CRASH_ON_SCRIPT_BINDER_ERRORS
+		m_object->net_Relcase(game_object->lua_game_object());
+#else
 		__try
 		{
 			m_object->net_Relcase(game_object->lua_game_object());
@@ -234,5 +273,6 @@ void CScriptBinder::net_Relcase		(CObject *object)
 		{
 			clear();
 		}
+#endif
 	}
 }
