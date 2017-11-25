@@ -10,7 +10,6 @@
 #include "UIXmlInit.h"
 #include "UIColorAnimatorWrapper.h"
 #include "UIPdaMsgListItem.h"
-#include "UIPdaKillMessage.h"
 #include "UILines.h"
 
 const char * const	CHAT_LOG_ITEMS_ANIMATION	= "ui_main_msgs_short";
@@ -54,38 +53,6 @@ CUIPdaMsgListItem* CUIGameLog::AddPdaMessage(LPCSTR msg, float delay){
 
 u32 CUIGameLog::GetTextColor(){
 	return txt_color;
-}
-
-CUIPdaKillMessage* CUIGameLog::AddLogMessage(KillMessageStruct& msg){
-	CUIPdaKillMessage* pItem = pItem = xr_new<CUIPdaKillMessage>();	
-	pItem->SetFont(GetFont());
-	pItem->SetWidth(GetDesiredChildWidth());
-	pItem->SetHeight(kill_msg_height);
-	pItem->Init(msg);
-	pItem->SetClrAnimDelay(5000.0f);
-	pItem->SetClrLightAnim(CHAT_LOG_ITEMS_ANIMATION, false, true, true, true);
-	AddWindow(pItem, true);
-	return pItem;
-}
-
-void CUIGameLog::AddChatMessage(LPCSTR msg, LPCSTR author){
-	string256 fullLine;
-	sprintf_s(fullLine, "%s %s", author, msg);
-	_TrimRight	(fullLine);
-    
-	CUIStatic* pItem = NULL;
-
-	pItem = xr_new<CUIStatic>();
-	pItem->SetTextComplexMode		(true);
-	pItem->SetText(fullLine);
-    pItem->m_pLines->SetCutWordsMode(true);
-	pItem->SetFont(GetFont());
-	pItem->SetTextColor(txt_color);
-	pItem->SetClrAnimDelay(5000.0f);
-	pItem->SetClrLightAnim(CHAT_LOG_ITEMS_ANIMATION, false, true, true, true);	
-	pItem->SetWidth(this->GetDesiredChildWidth());
-	pItem->AdjustHeightToText();
-	AddWindow(pItem, true);	
 }
 
 void CUIGameLog::SetTextAtrib(CGameFont* pFont, u32 color){

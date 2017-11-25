@@ -1,10 +1,7 @@
 #include "pch_script.h"
 #include "UIListWnd.h"
 #include "UIListItemEx.h"
-#include "ServerList.h"
-#include "UIMapList.h"
 #include "UISpinText.h"
-#include "UIMapInfo.h"
 #include "UIComboBox.h"
 
 using namespace luabind;
@@ -73,54 +70,6 @@ void CUIListWnd::script_register(lua_State *L)
 		.def(							constructor<>())
 		.def("SetSelectionColor",		&CUIListItemEx::SetSelectionColor),
 
-		class_<SServerFilters>("SServerFilters")
-		.def(							constructor<>())
-		.def_readwrite("empty",				&SServerFilters::empty)
-		.def_readwrite("full",				&SServerFilters::full)
-		.def_readwrite("with_pass",			&SServerFilters::with_pass)
-		.def_readwrite("without_pass",		&SServerFilters::without_pass)
-		.def_readwrite("without_ff",		&SServerFilters::without_ff)
-#ifdef BATTLEYE
-		.def_readwrite("with_battleye",		&SServerFilters::with_battleye)
-#endif // BATTLEYE
-		.def_readwrite("listen_servers",	&SServerFilters::listen_servers),
-
-		class_<CServerList, CUIWindow>("CServerList")
-		.def(							constructor<>())
-		.def("ConnectToSelected",		&CServerList::ConnectToSelected)
-		.def("SetFilters",				&CServerList::SetFilters)
-		.def("SetPlayerName",			&CServerList::SetPlayerName)
-		.def("RefreshList",				&CServerList::RefreshGameSpyList)
-		.def("RefreshQuick",			&CServerList::RefreshQuick)
-		.def("ShowServerInfo",			&CServerList::ShowServerInfo)
-		.def("NetRadioChanged",			&CServerList::NetRadioChanged)
-		.def("SetSortFunc",				&CServerList::SetSortFunc),
-		
-
-		class_<CUIMapList, CUIWindow>("CUIMapList")
-		.def(							constructor<>())
-		.def("SetWeatherSelector",		&CUIMapList::SetWeatherSelector)
-		.def("SetModeSelector",			&CUIMapList::SetModeSelector)
-		.def("OnModeChange",			&CUIMapList::OnModeChange)
-		.def("LoadMapList",				&CUIMapList::LoadMapList)
-		.def("SaveMapList",				&CUIMapList::SaveMapList)
-		.def("GetCommandLine",			&CUIMapList::GetCommandLine)
-		.def("SetServerParams",			&CUIMapList::SetServerParams)
-		.def("GetCurGameType",			&CUIMapList::GetCurGameType)
-		.def("StartDedicatedServer",	&CUIMapList::StartDedicatedServer)
-		.def("SetMapPic",				&CUIMapList::SetMapPic)
-		.def("SetMapInfo",				&CUIMapList::SetMapInfo)
-		.def("IsEmpty",					&CUIMapList::IsEmpty),
-		
-		class_<enum_exporter<EGameTypes> >("GAME_TYPE")
-		.enum_("gametype")
-		[
-			value("GAME_UNKNOWN",			int(GAME_ANY)),
-			value("GAME_DEATHMATCH",		int(GAME_DEATHMATCH)),
-			value("GAME_TEAMDEATHMATCH",	int(GAME_TEAMDEATHMATCH)),
-			value("GAME_ARTEFACTHUNT",		int(GAME_ARTEFACTHUNT))
-		],
 		def("xrRender_test_r2_hw",			&xrRender_test_hw_script)
-		
 	];
 }

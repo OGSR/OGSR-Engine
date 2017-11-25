@@ -4,7 +4,6 @@
 #include "xrserver.h"
 #include "game_cl_base.h"
 #include "xrmessages.h"
-#include "xrGameSpyServer.h"
 #include "../xr_3da/x_ray.h"
 #include "../xr_3da/device.h"
 #include "..\xr_3da\IGame_Persistent.h"
@@ -99,11 +98,9 @@ bool CLevel::net_start1				()
 		typedef IGame_Persistent::params params;
 		params							&p = g_pGamePersistent->m_game_params;
 		// Connect
-		if (!xr_strcmp(p.m_game_type,"single"))
-			Server					= xr_new<xrServer>();		
-		else
-			Server					= xr_new<xrGameSpyServer>();
-		
+		ASSERT_FMT(!xr_strcmp(p.m_game_type, "single"), "!!Unsupported game type: [%s]", p.m_game_type);
+		Server = xr_new<xrServer>();
+
 //		if (!strstr(*m_caServerOptions,"/alife")) 
 		if (xr_strcmp(p.m_alife,"alife"))
 		{
@@ -178,16 +175,6 @@ bool CLevel::net_start3				()
 			m_caClientOptions = tmp;
 		};
 	};
-	//setting players GameSpy CDKey if it comes from command line
-	if (strstr(m_caClientOptions.c_str(), "/cdkey="))
-	{
-		string64 CDKey;
-		const char* start = strstr(m_caClientOptions.c_str(),"/cdkey=") +xr_strlen("/cdkey=");
-		sscanf			(start, "%[^/]",CDKey);
-		string128 cmd;
-		sprintf_s(cmd, "cdkey %s", _strupr(CDKey));
-		Console->Execute			(cmd);
-	}
 	return true;
 }
 
@@ -230,27 +217,6 @@ struct LevelLoadFinalizer
 {
 bool xr_stdcall net_start_finalizer()
 {
-	if(g_pGameLevel && !g_start_total_res)
-	{
-		shared_str ln	= Level().name();
-		Msg				("! Failed to start client. Check the connection or level existance.");
-		DEL_INSTANCE	(g_pGameLevel);
-		Console->Execute("main_menu on");
-
-		if (g_connect_server_err==xrServer::ErrBELoad)
-		{
-			MainMenu()->OnLoadError("BattlEye/BEServer.dll");
-		}else
-		if(g_connect_server_err==xrServer::ErrConnect && !psNET_direct_connect && !g_dedicated_server) 
-		{
-			MainMenu()->SwitchToMultiplayerMenu();
-		}else
-		if(g_connect_server_err==xrServer::ErrNoLevel)
-		{
-			MainMenu()->SwitchToMultiplayerMenu();
-			MainMenu()->OnLoadError(ln.c_str());
-		}
-	}
 	return true;
 }
 };

@@ -167,7 +167,6 @@ void CHUDTarget::Render()
 			CEntityAlive*	pCurEnt = smart_cast<CEntityAlive*>	(Level().CurrentEntity());
 			PIItem			l_pI	= smart_cast<PIItem>		(RQ.O);
 
-			if (IsGameTypeSingle())
 			{
 				CInventoryOwner* our_inv_owner		= smart_cast<CInventoryOwner*>(pCurEnt);
 				if (E && E->g_Alive() && !E->cast_base_monster())
@@ -207,35 +206,6 @@ void CHUDTarget::Render()
 						fuzzyShowInfo += SHOW_INFO_SPEED*Device.fTimeDelta;
 					}
 			}
-			else
-			{
-				if (E && (E->GetfHealth()>0))
-				{
-					if (pCurEnt && GameID() == GAME_SINGLE){	
-						if (GameID() == GAME_DEATHMATCH)			C = C_ON_ENEMY;
-						else{	
-							if (E->g_Team() != pCurEnt->g_Team())	C = C_ON_ENEMY;
-							else									C = C_ON_FRIEND;
-						};
-						if (RQ.range >= recon_mindist() && RQ.range <= recon_maxdist()){
-							float ddist = (RQ.range - recon_mindist())/(recon_maxdist() - recon_mindist());
-							float dspeed = recon_minspeed() + (recon_maxspeed() - recon_minspeed())*ddist;
-							fuzzyShowInfo += Device.fTimeDelta/dspeed;
-						}else{
-							if (RQ.range < recon_mindist()) fuzzyShowInfo += recon_minspeed()*Device.fTimeDelta;
-							else fuzzyShowInfo = 0;
-						};
-
-						if (fuzzyShowInfo>0.5f){
-							clamp(fuzzyShowInfo,0.f,1.f);
-							int alpha_C = iFloor(255.f*(fuzzyShowInfo-0.5f)*2.f);
-							u8 alpha_b	= u8(alpha_C & 0x00ff);
-							F->SetColor	(subst_alpha(C,alpha_b));
-							F->OutNext	("%s",*RQ.O->cName());
-						}
-					}
-				};
-			};
 
 		}else{
 			fuzzyShowInfo -= HIDE_INFO_SPEED*Device.fTimeDelta;

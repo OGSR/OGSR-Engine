@@ -757,16 +757,6 @@ void CActor::Die(CObject* who)
 			TIItemContainer &l_rlist	= inventory().m_ruck;
 			for(TIItemContainer::iterator l_it = l_rlist.begin(); l_rlist.end() != l_it; ++l_it)
 			{
-				if (GameID() == GAME_ARTEFACTHUNT)
-				{
-					CArtefact* pArtefact = smart_cast<CArtefact*> (*l_it);
-					if (pArtefact)
-					{
-						(*l_it)->SetDropManual(TRUE);
-						continue;
-					};
-				};
-
 				if ((*l_it)->object().CLS_ID == CLSID_OBJECT_PLAYERS_BAG)
 				{
 					(*l_it)->SetDropManual(TRUE);
@@ -1209,7 +1199,6 @@ void CActor::shedule_Update	(u32 DT)
 	//для свойст артефактов, находящихся на поясе
 	UpdateArtefactsOnBelt						();
 	m_pPhysics_support->in_shedule_Update		(DT);
-	Check_for_AutoPickUp						();
 };
 #include "debug_renderer.h"
 void CActor::renderable_Render	()

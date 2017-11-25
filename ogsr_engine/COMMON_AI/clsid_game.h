@@ -94,12 +94,7 @@
 #define CLSID_OBJECT_W_MOUNTED		MK_CLSID('W','_','M','O','U','N','T','D')
 #define	CLSID_OBJECT_W_STATMGUN		MK_CLSID('W','_','S','T','M','G','U','N')
 // Weapons Ammo
-//#define CLSID_OBJECT_A_FN2000		MK_CLSID('A','_','F','N','2','0','0','0')
-//#define CLSID_OBJECT_A_AK74			MK_CLSID('A','_','A','K','7','4',' ',' ')
-//#define CLSID_OBJECT_A_LR300		MK_CLSID('A','_','L','R','3','0','0',' ')
-//#define CLSID_OBJECT_A_HPSA			MK_CLSID('A','_','H','P','S','A',' ',' ')
 #define CLSID_OBJECT_AMMO			MK_CLSID('A','M','M','O',' ',' ',' ',' ')
-//#define CLSID_OBJECT_A_FORT			MK_CLSID('A','_','F','O','R','T',' ',' ')
 //-----------------------------------------------------------------------------
 #define CLSID_OBJECT_A_VOG25		MK_CLSID('A','_','V','O','G','2','5',' ')
 #define CLSID_OBJECT_A_OG7B			MK_CLSID('A','_','O','G','7','B',' ',' ')
@@ -203,20 +198,10 @@
 #define CLSID_EQUIPMENT_EXO			MK_CLSID('E','Q','U','_','E','X','O',' ')
 
 // Game types
-#define CLSID_SV_GAME_SINGLE			MK_CLSID('S','V','_','S','I','N','G','L')
-#define CLSID_SV_GAME_DEATHMATCH		MK_CLSID('S','V','_','D','M',' ',' ',' ')
-#define CLSID_SV_GAME_TEAMDEATHMATCH	MK_CLSID('S','V','_','T','D','M',' ',' ')
-#define CLSID_SV_GAME_ARTEFACTHUNT		MK_CLSID('S','V','_','A','H','U','N','T')
-//#define CLSID_GAME_CS				MK_CLSID('S','V','_','C','S',' ',' ',' ')
-#define CLSID_CL_GAME_SINGLE			MK_CLSID('C','L','_','S','I','N','G','L')
-#define CLSID_CL_GAME_DEATHMATCH		MK_CLSID('C','L','_','D','M',' ',' ',' ')
-#define CLSID_CL_GAME_TEAMDEATHMATCH	MK_CLSID('C','L','_','T','D','M',' ',' ')
-#define CLSID_CL_GAME_ARTEFACTHUNT		MK_CLSID('C','L','_','A','H','U','N','T')
+#define CLSID_SV_GAME_SINGLE		MK_CLSID('S','V','_','S','I','N','G','L')
+#define CLSID_CL_GAME_SINGLE		MK_CLSID('C','L','_','S','I','N','G','L')
 
 // Game UI types
-#define CLSID_GAME_UI_SINGLE			MK_CLSID('U','I','_','S','I','N','G','L')
-#define CLSID_GAME_UI_DEATHMATCH		MK_CLSID('U','I','_','D','M',' ',' ',' ')
-#define CLSID_GAME_UI_TEAMDEATHMATCH	MK_CLSID('U','I','_','T','D','M',' ',' ')
-#define CLSID_GAME_UI_ARTEFACTHUNT		MK_CLSID('U','I','_','A','H','U','N','T')
+#define CLSID_GAME_UI_SINGLE		MK_CLSID('U','I','_','S','I','N','G','L')
 
-#define CLSID_ONLINE_OFFLINE_GROUP		MK_CLSID('O','N','_','O','F','F','_','G')
+#define CLSID_ONLINE_OFFLINE_GROUP	MK_CLSID('O','N','_','O','F','F','_','G')

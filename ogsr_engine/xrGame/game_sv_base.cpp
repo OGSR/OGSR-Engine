@@ -344,16 +344,6 @@ void game_sv_GameState::Create					(shared_str &options)
 				//u16 res					= 
 				O->r_u8	();
 
-				if (GameType != rpgtGameAny)
-				{
-					if ((GameType == rpgtGameDeathmatch && Type() != GAME_DEATHMATCH) ||
-						(GameType == rpgtGameTeamDeathmatch && Type() != GAME_TEAMDEATHMATCH)	||
-						(GameType == rpgtGameArtefactHunt && Type() != GAME_ARTEFACTHUNT)
-						)
-					{
-						continue;
-					};
-				};
 				switch (type)
 				{
 				case rptActorSpawn:

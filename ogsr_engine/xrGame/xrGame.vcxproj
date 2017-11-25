@@ -1254,7 +1254,6 @@
     <ClInclude Include="ai_space_inline.h" />
     <ClInclude Include="pch_script.h" />
     <ClInclude Include="StdAfx.h" />
-    <ClInclude Include="xr_Client_BattlEye.h" />
     <ClInclude Include="CameraFirstEye.h" />
     <ClInclude Include="cameralook.h" />
     <ClInclude Include="ActorEffector.h" />
@@ -1270,12 +1269,10 @@
     <ClInclude Include="EffectorShot.h" />
     <ClInclude Include="EffectorShotX.h" />
     <ClInclude Include="EffectorZoomInertion.h" />
-    <ClInclude Include="DynamicHeightMap.h" />
     <ClInclude Include="..\COMMON_AI\GameMtlLib.h" />
     <ClInclude Include="GamePersistent.h" />
     <ClInclude Include="Level.h" />
     <ClInclude Include="Level_network_Demo.h" />
-    <ClInclude Include="LevelFogOfWar.h" />
     <ClInclude Include="Level_Bullet_Manager.h" />
     <ClInclude Include="Tracer.h" />
     <ClInclude Include="seniority_hierarchy_holder.h" />
@@ -1289,17 +1286,11 @@
     <ClInclude Include="group_hierarchy_holder_inline.h" />
     <ClInclude Include="client_spawn_manager.h" />
     <ClInclude Include="client_spawn_manager_inline.h" />
-    <ClInclude Include="autosave_manager.h" />
-    <ClInclude Include="autosave_manager_inline.h" />
     <ClInclude Include="level_sounds.h" />
     <ClInclude Include="debug_renderer.h" />
     <ClInclude Include="debug_renderer_inline.h" />
     <ClInclude Include="xr_level_controller.h" />
     <ClInclude Include="level_debug.h" />
-    <ClInclude Include="actor_mp_client.h" />
-    <ClInclude Include="actor_mp_server.h" />
-    <ClInclude Include="actor_mp_state.h" />
-    <ClInclude Include="actor_mp_state_inline.h" />
     <ClInclude Include="Actor.h" />
     <ClInclude Include="actor_anim_defs.h" />
     <ClInclude Include="actor_defs.h" />
@@ -1473,7 +1464,6 @@
     </CustomBuildStep>
     <ClInclude Include="ExplosiveItem.h" />
     <ClInclude Include="wallmark_manager.h" />
-    <ClInclude Include="MPPlayersBag.h" />
     <ClInclude Include="searchlight.h" />
     <ClInclude Include="trade.h" />
     <ClInclude Include="CustomZone.h" />
@@ -1538,63 +1528,25 @@
     <ClInclude Include="..\COMMON_AI\associative_vector_inline.h" />
     <ClInclude Include="..\COMMON_AI\associative_vector_compare_predicate.h" />
     <ClInclude Include="..\COMMON_AI\associative_vector_compare_predicate_inline.h" />
-    <ClInclude Include="RegistryFuncs.h" />
-    <ClInclude Include="battleye.h" />
-    <ClInclude Include="battleye_system.h" />
-    <ClInclude Include="xr_Server_BattlEye.h" />
     <ClInclude Include="xrServer.h" />
     <ClInclude Include="..\COMMON_AI\xrServer_Space.h" />
     <ClInclude Include="..\COMMON\DrawUtils.h" />
     <ClInclude Include="..\xrCore\FastDelegate.h" />
     <ClInclude Include="..\COMMON_AI\ItemListTypes.h" />
-    <ClInclude Include="WaveForm.h" />
-    <ClInclude Include="xrEProps.h" />
     <ClInclude Include="game_base.h" />
     <ClInclude Include="game_base_kill_type.h" />
     <ClInclude Include="game_base_menu_events.h" />
     <ClInclude Include="..\COMMON_AI\game_base_space.h" />
-    <ClInclude Include="game_cl_artefacthunt.h" />
-    <ClInclude Include="game_cl_artefacthunt_snd_msg.h" />
-    <ClInclude Include="game_cl_deathmatch.h" />
-    <ClInclude Include="game_cl_deathmatch_snd_messages.h" />
-    <ClInclude Include="game_cl_teamdeathmatch.h" />
-    <ClInclude Include="game_cl_teamdeathmatch_snd_messages.h" />
     <ClInclude Include="game_cl_single.h" />
     <ClInclude Include="game_cl_base.h" />
     <ClInclude Include="game_cl_base_weapon_usage_statistic.h" />
-    <ClInclude Include="game_cl_mp.h" />
-    <ClInclude Include="game_cl_mp_messages_menu.h" />
-    <ClInclude Include="game_cl_mp_snd_messages.h" />
-    <ClInclude Include="game_cl_mp_script.h" />
     <ClInclude Include="game_sv_base.h" />
     <ClInclude Include="game_sv_base_console_vars.h" />
     <ClInclude Include="game_sv_event_queue.h" />
     <ClInclude Include="xr_time.h" />
-    <ClInclude Include="game_sv_artefacthunt.h" />
-    <ClInclude Include="game_sv_deathmatch.h" />
     <ClInclude Include="game_sv_single.h" />
-    <ClInclude Include="game_sv_teamdeathmatch.h" />
-    <ClInclude Include="game_sv_mp.h" />
-    <ClInclude Include="game_sv_mp_team.h" />
-    <ClInclude Include="game_sv_mp_vote_flags.h" />
-    <ClInclude Include="game_sv_mp_script.h" />
-    <ClInclude Include="GameSpy\GameSpy_Available.h" />
-    <ClInclude Include="GameSpy\GameSpy_Base_Defs.h" />
-    <ClInclude Include="GameSpy\GameSpy_Browser.h" />
-    <ClInclude Include="gamespy\GameSpy_Full.h" />
-    <ClInclude Include="GameSpy\GameSpy_FuncDefs.h" />
-    <ClInclude Include="GameSpy\GameSpy_GCD_Client.h" />
-    <ClInclude Include="GameSpy\GameSpy_GCD_Server.h" />
-    <ClInclude Include="gamespy\GameSpy_HTTP.h" />
-    <ClInclude Include="GameSpy\GameSpy_Keys.h" />
-    <ClInclude Include="GameSpy\GameSpy_Patching.h" />
-    <ClInclude Include="GameSpy\GameSpy_QR2.h" />
-    <ClInclude Include="GameSpy\GameSpy_QR2_callbacks.h" />
-    <ClInclude Include="gamespy\CdkeyDecode\base32.h" />
-    <ClInclude Include="gamespy\CdkeyDecode\cdkeydecode.h" />
     <ClInclude Include="id_generator.h" />
     <ClInclude Include="..\COMMON_AI\PropertiesListTypes.h" />
-    <ClInclude Include="ShapeData.h" />
     <ClInclude Include="..\COMMON_AI\xrServer_Objects_Abstract.h" />
     <ClInclude Include="..\COMMON_AI\xrServer_Objects_ALife_All.h" />
     <ClInclude Include="..\COMMON_AI\xrServer_script_macroses.h" />
@@ -1605,8 +1557,6 @@
     <ClInclude Include="..\COMMON_AI\xrServer_Objects_ALife_Monsters.h" />
     <ClInclude Include="..\COMMON_AI\script_value_container.h" />
     <ClInclude Include="..\COMMON_AI\script_value_container_impl.h" />
-    <ClInclude Include="xrGameSpyServer.h" />
-    <ClInclude Include="xrGameSpyServer_callbacks.h" />
     <ClInclude Include="CalculateTriangle.h" />
     <ClInclude Include="ExtendedGeom.h" />
     <ClInclude Include="ode_include.h" />
@@ -1700,7 +1650,6 @@
     <ClInclude Include="Ik\limb.h" />
     <ClInclude Include="Ik\math3d.h" />
     <ClInclude Include="Ik\mathTrig.h" />
-    <ClInclude Include="ui\CExtraContentFilter.h" />
     <ClInclude Include="MainMenu.h" />
     <ClInclude Include="UI.h" />
     <ClInclude Include="ui_base.h" />
@@ -1742,7 +1691,6 @@
     <ClInclude Include="ui\UIOptionsItem.h" />
     <ClInclude Include="ui\UIOptionsManager.h" />
     <ClInclude Include="ui\UIOptionsManagerScript.h" />
-    <ClInclude Include="ui\UIOptConCom.h" />
     <ClInclude Include="ui\UIEventsWnd.h" />
     <ClInclude Include="ui\UITaskDescrWnd.h" />
     <ClInclude Include="ui\UITaskItem.h" />
@@ -1826,52 +1774,9 @@
     <ClInclude Include="HitMarker.h" />
     <ClInclude Include="HUDManager.h" />
     <ClInclude Include="UIGameCustom.h" />
-    <ClInclude Include="UIDMStatisticWnd.h" />
-    <ClInclude Include="UIGameDM.h" />
-    <ClInclude Include="ui\UIRankIndicator.h" />
-    <ClInclude Include="ui\UIVoteStatusWnd.h" />
     <ClInclude Include="UIGameSP.h" />
-    <ClInclude Include="UIGameTDM.h" />
-    <ClInclude Include="UIGameAHunt.h" />
     <ClInclude Include="UIGame_custom_script.h" />
-    <ClInclude Include="ui\UICDkey.h" />
-    <ClInclude Include="ui\UIMapList.h" />
-    <ClInclude Include="ui\ServerList.h" />
-    <ClInclude Include="ui\UIListItemAdv.h" />
-    <ClInclude Include="ui\UIListItemServer.h" />
-    <ClInclude Include="ui\TeamInfo.h" />
-    <ClInclude Include="ui\UIStats.h" />
-    <ClInclude Include="ui\UIStatsPlayerInfo.h" />
-    <ClInclude Include="ui\UIStatsPlayerList.h" />
-    <ClInclude Include="ui\UIStatsIcon.h" />
-    <ClInclude Include="ui\UIFrags.h" />
-    <ClInclude Include="ui\UIFrags2.h" />
-    <ClInclude Include="ui\UIStatsWnd.h" />
-    <ClInclude Include="ui\UIChatWnd.h" />
     <ClInclude Include="ui\UIGameLog.h" />
-    <ClInclude Include="ui\UISpeechMenu.h" />
-    <ClInclude Include="ui\KillMessageStruct.h" />
-    <ClInclude Include="ui\UIPdaKillMessage.h" />
-    <ClInclude Include="ui\UIBuyWndBase.h" />
-    <ClInclude Include="ui\UIBuyWndShared.h" />
-    <ClInclude Include="ui\UIMpItemsStoreWnd.h" />
-    <ClInclude Include="ui\UIMpTradeWnd.h" />
-    <ClInclude Include="ui\Restrictions.h" />
-    <ClInclude Include="ui\UIBuyWeaponTab.h" />
-    <ClInclude Include="ui\UITabButtonMP.h" />
-    <ClInclude Include="ui\UIBagWnd.h" />
-    <ClInclude Include="ui\UIBuyWnd.h" />
-    <ClInclude Include="ui\UIMapDesc.h" />
-    <ClInclude Include="ui\UIMapInfo.h" />
-    <ClInclude Include="ui\UISpawnWnd.h" />
-    <ClInclude Include="ui\UISkinSelector.h" />
-    <ClInclude Include="ui\UIStatix.h" />
-    <ClInclude Include="ui\UIChangeMap.h" />
-    <ClInclude Include="ui\UIChangeWeather.h" />
-    <ClInclude Include="ui\UIKickPlayer.h" />
-    <ClInclude Include="ui\UITextVote.h" />
-    <ClInclude Include="ui\UIVote.h" />
-    <ClInclude Include="ui\UIVotingCategory.h" />
     <ClInclude Include="HUDCrosshair.h" />
     <ClInclude Include="HUDTarget.h" />
     <ClInclude Include="UICursor.h" />
@@ -4108,7 +4013,6 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="xr_Client_BattlEye.cpp" />
     <ClCompile Include="CameraFirstEye.cpp" />
     <ClCompile Include="cameralook.cpp" />
     <ClCompile Include="ActorEffector.cpp" />
@@ -4145,14 +4049,6 @@
     <ClCompile Include="EffectorShot.cpp" />
     <ClCompile Include="EffectorShotX.cpp" />
     <ClCompile Include="EffectorZoomInertion.cpp" />
-    <ClCompile Include="DynamicHeightMap.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Mixed|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Mixed|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
-    </ClCompile>
     <ClCompile Include="..\COMMON_AI\GameMtlLib.cpp" />
     <ClCompile Include="GameMtlLib_Engine.cpp" />
     <ClCompile Include="GamePersistent.cpp">
@@ -4183,7 +4079,6 @@
       <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)$(ProjectName)_script.pch</PrecompiledHeaderOutputFile>
       <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(IntDir)$(ProjectName)_script.pch</PrecompiledHeaderOutputFile>
     </ClCompile>
-    <ClCompile Include="Level_GameSpy_Funcs.cpp" />
     <ClCompile Include="Level_input.cpp">
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">pch_script.h</PrecompiledHeaderFile>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Use</PrecompiledHeader>
@@ -4249,15 +4144,6 @@
     <ClCompile Include="Level_SLS_Load.cpp" />
     <ClCompile Include="Level_SLS_Save.cpp" />
     <ClCompile Include="Level_start.cpp" />
-    <ClCompile Include="LevelGameDef.cpp" />
-    <ClCompile Include="LevelFogOfWar.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Mixed|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Mixed|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
-    </ClCompile>
     <ClCompile Include="Level_Bullet_Manager.cpp" />
     <ClCompile Include="Level_bullet_manager_firetrace.cpp" />
     <ClCompile Include="Tracer.cpp" />
@@ -4293,18 +4179,10 @@
       <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)$(ProjectName)_script.pch</PrecompiledHeaderOutputFile>
       <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(IntDir)$(ProjectName)_script.pch</PrecompiledHeaderOutputFile>
     </ClCompile>
-    <ClCompile Include="autosave_manager.cpp" />
     <ClCompile Include="level_sounds.cpp" />
     <ClCompile Include="debug_renderer.cpp" />
     <ClCompile Include="xr_level_controller.cpp" />
     <ClCompile Include="level_debug.cpp" />
-    <ClCompile Include="actor_mp_client.cpp" />
-    <ClCompile Include="actor_mp_client_export.cpp" />
-    <ClCompile Include="actor_mp_client_import.cpp" />
-    <ClCompile Include="actor_mp_server.cpp" />
-    <ClCompile Include="actor_mp_server_export.cpp" />
-    <ClCompile Include="actor_mp_server_import.cpp" />
-    <ClCompile Include="actor_mp_state.cpp" />
     <ClCompile Include="Actor.cpp">
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">pch_script.h</PrecompiledHeaderFile>
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">pch_script.h</PrecompiledHeaderFile>
@@ -4351,7 +4229,6 @@
       <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)$(ProjectName)_script.pch</PrecompiledHeaderOutputFile>
       <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(IntDir)$(ProjectName)_script.pch</PrecompiledHeaderOutputFile>
     </ClCompile>
-    <ClCompile Include="Actor_Sleep.cpp" />
     <ClCompile Include="Actor_Weapon.cpp" />
     <ClCompile Include="ActorAnimation.cpp" />
     <ClCompile Include="ActorCameras.cpp" />
@@ -5146,7 +5023,6 @@
       <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(IntDir)$(ProjectName)_script.pch</PrecompiledHeaderOutputFile>
     </ClCompile>
     <ClCompile Include="wallmark_manager.cpp" />
-    <ClCompile Include="MPPlayersBag.cpp" />
     <ClCompile Include="searchlight.cpp" />
     <ClCompile Include="trade.cpp">
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">pch_script.h</PrecompiledHeaderFile>
@@ -5431,7 +5307,6 @@
       <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)$(ProjectName)_script.pch</PrecompiledHeaderOutputFile>
       <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(IntDir)$(ProjectName)_script.pch</PrecompiledHeaderOutputFile>
     </ClCompile>
-    <ClCompile Include="console_commands_mp.cpp" />
     <ClCompile Include="date_time.cpp" />
     <ClCompile Include="xrgame_dll_detach.cpp">
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">pch_script.h</PrecompiledHeaderFile>
@@ -5482,9 +5357,6 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="string_table.cpp" />
-    <ClCompile Include="RegistryFuncs.cpp" />
-    <ClCompile Include="battleye_system.cpp" />
-    <ClCompile Include="xr_Server_BattlEye.cpp" />
     <ClCompile Include="xrServer.cpp">
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">pch_script.h</PrecompiledHeaderFile>
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">pch_script.h</PrecompiledHeaderFile>
@@ -5528,10 +5400,6 @@
       <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)$(ProjectName)_script.pch</PrecompiledHeaderOutputFile>
       <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(IntDir)$(ProjectName)_script.pch</PrecompiledHeaderOutputFile>
     </ClCompile>
-    <ClCompile Include="game_cl_artefacthunt.cpp" />
-    <ClCompile Include="game_cl_deathmatch.cpp" />
-    <ClCompile Include="game_cl_deathmatch_buywnd.cpp" />
-    <ClCompile Include="game_cl_teamdeathmatch.cpp" />
     <ClCompile Include="game_cl_single.cpp">
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">pch_script.h</PrecompiledHeaderFile>
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">pch_script.h</PrecompiledHeaderFile>
@@ -5575,24 +5443,6 @@
       <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(IntDir)$(ProjectName)_script.pch</PrecompiledHeaderOutputFile>
     </ClCompile>
     <ClCompile Include="game_cl_base_weapon_usage_statistic.cpp" />
-    <ClCompile Include="game_cl_base_weapon_usage_statistic_save.cpp" />
-    <ClCompile Include="game_cl_mp.cpp" />
-    <ClCompile Include="game_cl_mp_messages_menu.cpp" />
-    <ClCompile Include="game_cl_mp_snd_messages.cpp" />
-    <ClCompile Include="game_cl_mp_script.cpp">
-      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">pch_script.h</PrecompiledHeaderFile>
-      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">pch_script.h</PrecompiledHeaderFile>
-      <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)$(ProjectName)_script.pch</PrecompiledHeaderOutputFile>
-      <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(IntDir)$(ProjectName)_script.pch</PrecompiledHeaderOutputFile>
-      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Mixed|Win32'">pch_script.h</PrecompiledHeaderFile>
-      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Mixed|x64'">pch_script.h</PrecompiledHeaderFile>
-      <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Mixed|Win32'">$(IntDir)$(ProjectName)_script.pch</PrecompiledHeaderOutputFile>
-      <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Mixed|x64'">$(IntDir)$(ProjectName)_script.pch</PrecompiledHeaderOutputFile>
-      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">pch_script.h</PrecompiledHeaderFile>
-      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">pch_script.h</PrecompiledHeaderFile>
-      <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)$(ProjectName)_script.pch</PrecompiledHeaderOutputFile>
-      <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(IntDir)$(ProjectName)_script.pch</PrecompiledHeaderOutputFile>
-    </ClCompile>
     <ClCompile Include="game_sv_base.cpp" />
     <ClCompile Include="game_sv_base_console_vars.cpp" />
     <ClCompile Include="game_sv_base_script.cpp">
@@ -5611,83 +5461,11 @@
     </ClCompile>
     <ClCompile Include="game_sv_event_queue.cpp" />
     <ClCompile Include="xr_time.cpp" />
-    <ClCompile Include="game_sv_artefacthunt.cpp" />
-    <ClCompile Include="game_sv_artefacthunt_process_event.cpp" />
-    <ClCompile Include="game_sv_deathmatch.cpp" />
-    <ClCompile Include="game_sv_deathmatch_process_event.cpp" />
-    <ClCompile Include="game_sv_deathmatch_script.cpp">
-      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">pch_script.h</PrecompiledHeaderFile>
-      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">pch_script.h</PrecompiledHeaderFile>
-      <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)$(ProjectName)_script.pch</PrecompiledHeaderOutputFile>
-      <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(IntDir)$(ProjectName)_script.pch</PrecompiledHeaderOutputFile>
-      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Mixed|Win32'">pch_script.h</PrecompiledHeaderFile>
-      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Mixed|x64'">pch_script.h</PrecompiledHeaderFile>
-      <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Mixed|Win32'">$(IntDir)$(ProjectName)_script.pch</PrecompiledHeaderOutputFile>
-      <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Mixed|x64'">$(IntDir)$(ProjectName)_script.pch</PrecompiledHeaderOutputFile>
-      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">pch_script.h</PrecompiledHeaderFile>
-      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">pch_script.h</PrecompiledHeaderFile>
-      <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)$(ProjectName)_script.pch</PrecompiledHeaderOutputFile>
-      <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(IntDir)$(ProjectName)_script.pch</PrecompiledHeaderOutputFile>
-    </ClCompile>
     <ClCompile Include="game_sv_single.cpp" />
     <ClCompile Include="xrServer_CL_connect.cpp" />
     <ClCompile Include="xrServer_CL_disconnect.cpp" />
     <ClCompile Include="xrServer_Connect.cpp" />
     <ClCompile Include="xrServer_Disconnect.cpp" />
-    <ClCompile Include="game_sv_teamdeathmatch.cpp" />
-    <ClCompile Include="game_sv_teamdeathmatch_process_event.cpp" />
-    <ClCompile Include="game_sv_mp.cpp" />
-    <ClCompile Include="game_sv_mp_script.cpp">
-      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">pch_script.h</PrecompiledHeaderFile>
-      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">pch_script.h</PrecompiledHeaderFile>
-      <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)$(ProjectName)_script.pch</PrecompiledHeaderOutputFile>
-      <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(IntDir)$(ProjectName)_script.pch</PrecompiledHeaderOutputFile>
-      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Mixed|Win32'">pch_script.h</PrecompiledHeaderFile>
-      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Mixed|x64'">pch_script.h</PrecompiledHeaderFile>
-      <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Mixed|Win32'">$(IntDir)$(ProjectName)_script.pch</PrecompiledHeaderOutputFile>
-      <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Mixed|x64'">$(IntDir)$(ProjectName)_script.pch</PrecompiledHeaderOutputFile>
-      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">pch_script.h</PrecompiledHeaderFile>
-      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">pch_script.h</PrecompiledHeaderFile>
-      <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)$(ProjectName)_script.pch</PrecompiledHeaderOutputFile>
-      <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(IntDir)$(ProjectName)_script.pch</PrecompiledHeaderOutputFile>
-    </ClCompile>
-    <ClCompile Include="GameSpy\GameSpy_Available.cpp" />
-    <ClCompile Include="GameSpy\GameSpy_Browser.cpp" />
-    <ClCompile Include="gamespy\GameSpy_Full.cpp" />
-    <ClCompile Include="GameSpy\GameSpy_GCD_Client.cpp" />
-    <ClCompile Include="GameSpy\GameSpy_GCD_Server.cpp" />
-    <ClCompile Include="gamespy\GameSpy_HTTP.cpp" />
-    <ClCompile Include="GameSpy\GameSpy_Patching.cpp" />
-    <ClCompile Include="GameSpy\GameSpy_QR2.cpp" />
-    <ClCompile Include="GameSpy\GameSpy_QR2_callbacks.cpp" />
-    <ClCompile Include="gamespy\CdkeyDecode\base32.c">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-      </PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-      </PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Mixed|Win32'">
-      </PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Mixed|x64'">
-      </PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-      </PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-      </PrecompiledHeader>
-    </ClCompile>
-    <ClCompile Include="gamespy\CdkeyDecode\cdkeydecode.c">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-      </PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-      </PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Mixed|Win32'">
-      </PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Mixed|x64'">
-      </PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-      </PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-      </PrecompiledHeader>
-    </ClCompile>
     <ClCompile Include="..\COMMON_AI\xrServer_Factory.cpp" />
     <ClCompile Include="..\COMMON_AI\xrServer_Objects_Abstract.cpp" />
     <ClCompile Include="..\COMMON_AI\xrServer_Object_Base.cpp" />
@@ -5877,9 +5655,6 @@
     <ClCompile Include="xrServer_process_event_reject.cpp" />
     <ClCompile Include="xrServer_process_spawn.cpp" />
     <ClCompile Include="xrServer_process_update.cpp" />
-    <ClCompile Include="xrGameSpy_GameSpyFuncs.cpp" />
-    <ClCompile Include="xrGameSpyServer.cpp" />
-    <ClCompile Include="xrGameSpyServer_callbacks.cpp" />
     <ClCompile Include="PHDebug.cpp" />
     <ClCompile Include="PHWorld.cpp" />
     <ClCompile Include="PHWorldScript.cpp">
@@ -6057,7 +5832,6 @@
     <ClCompile Include="Ik\limb.cxx" />
     <ClCompile Include="Ik\math3d.cpp" />
     <ClCompile Include="Ik\mathTrig.cpp" />
-    <ClCompile Include="ui\CExtraContentFilter.cpp" />
     <ClCompile Include="MainMenu.cpp" />
     <ClCompile Include="UI.cpp" />
     <ClCompile Include="ui_base.cpp" />
@@ -6145,7 +5919,6 @@
       <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)$(ProjectName)_script.pch</PrecompiledHeaderOutputFile>
       <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(IntDir)$(ProjectName)_script.pch</PrecompiledHeaderOutputFile>
     </ClCompile>
-    <ClCompile Include="ui\UIOptConCom.cpp" />
     <ClCompile Include="ui\UIEventsWnd.cpp">
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">pch_script.h</PrecompiledHeaderFile>
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">pch_script.h</PrecompiledHeaderFile>
@@ -6511,10 +6284,6 @@
       <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)$(ProjectName)_script.pch</PrecompiledHeaderOutputFile>
       <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(IntDir)$(ProjectName)_script.pch</PrecompiledHeaderOutputFile>
     </ClCompile>
-    <ClCompile Include="UIDMStatisticWnd.cpp" />
-    <ClCompile Include="UIGameDM.cpp" />
-    <ClCompile Include="ui\UIRankIndicator.cpp" />
-    <ClCompile Include="ui\UIVoteStatusWnd.cpp" />
     <ClCompile Include="UIGameSP.cpp">
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">pch_script.h</PrecompiledHeaderFile>
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">pch_script.h</PrecompiledHeaderFile>
@@ -6529,8 +6298,6 @@
       <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)$(ProjectName)_script.pch</PrecompiledHeaderOutputFile>
       <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(IntDir)$(ProjectName)_script.pch</PrecompiledHeaderOutputFile>
     </ClCompile>
-    <ClCompile Include="UIGameTDM.cpp" />
-    <ClCompile Include="UIGameAHunt.cpp" />
     <ClCompile Include="UIGame_custom_script.cpp">
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">pch_script.h</PrecompiledHeaderFile>
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">pch_script.h</PrecompiledHeaderFile>
@@ -6545,62 +6312,7 @@
       <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)$(ProjectName)_script.pch</PrecompiledHeaderOutputFile>
       <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(IntDir)$(ProjectName)_script.pch</PrecompiledHeaderOutputFile>
     </ClCompile>
-    <ClCompile Include="ui\UICDkey.cpp" />
-    <ClCompile Include="ui\UIMapList.cpp" />
-    <ClCompile Include="ui\ServerList.cpp" />
-    <ClCompile Include="ui\ServerList_GameSpy_func.cpp" />
-    <ClCompile Include="ui\UIListItemAdv.cpp" />
-    <ClCompile Include="ui\UIListItemServer.cpp" />
-    <ClCompile Include="ui\TeamInfo.cpp" />
-    <ClCompile Include="ui\UIStats.cpp" />
-    <ClCompile Include="ui\UIStatsPlayerInfo.cpp" />
-    <ClCompile Include="ui\UIStatsPlayerList.cpp" />
-    <ClCompile Include="ui\UIStatsIcon.cpp" />
-    <ClCompile Include="ui\UIFrags.cpp" />
-    <ClCompile Include="ui\UIFrags2.cpp" />
-    <ClCompile Include="ui\UIStatsWnd.cpp" />
-    <ClCompile Include="ui\UIChatWnd.cpp" />
     <ClCompile Include="ui\UIGameLog.cpp" />
-    <ClCompile Include="ui\UISpeechMenu.cpp" />
-    <ClCompile Include="ui\UIPdaKillMessage.cpp" />
-    <ClCompile Include="ui\UIBuyWndShared.cpp" />
-    <ClCompile Include="ui\UIMpItemsStoreWnd.cpp" />
-    <ClCompile Include="ui\UIMpTradeWnd.cpp" />
-    <ClCompile Include="ui\UIMpTradeWnd_init.cpp" />
-    <ClCompile Include="ui\UIMpTradeWnd_items.cpp" />
-    <ClCompile Include="ui\UIMpTradeWnd_misc.cpp" />
-    <ClCompile Include="ui\UIMpTradeWnd_trade.cpp" />
-    <ClCompile Include="ui\UIMpTradeWnd_wpn.cpp" />
-    <ClCompile Include="ui\Restrictions.cpp" />
-    <ClCompile Include="ui\UIBuyWeaponTab.cpp" />
-    <ClCompile Include="ui\UITabButtonMP.cpp" />
-    <ClCompile Include="ui\UIBagWnd.cpp" />
-    <ClCompile Include="ui\UIBuyWnd.cpp" />
-    <ClCompile Include="ui\UIMapDesc.cpp" />
-    <ClCompile Include="ui\UIMapInfo.cpp" />
-    <ClCompile Include="ui\UIMapInfo_script.cpp">
-      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">pch_script.h</PrecompiledHeaderFile>
-      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">pch_script.h</PrecompiledHeaderFile>
-      <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)$(ProjectName)_script.pch</PrecompiledHeaderOutputFile>
-      <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(IntDir)$(ProjectName)_script.pch</PrecompiledHeaderOutputFile>
-      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Mixed|Win32'">pch_script.h</PrecompiledHeaderFile>
-      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Mixed|x64'">pch_script.h</PrecompiledHeaderFile>
-      <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Mixed|Win32'">$(IntDir)$(ProjectName)_script.pch</PrecompiledHeaderOutputFile>
-      <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Mixed|x64'">$(IntDir)$(ProjectName)_script.pch</PrecompiledHeaderOutputFile>
-      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">pch_script.h</PrecompiledHeaderFile>
-      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">pch_script.h</PrecompiledHeaderFile>
-      <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)$(ProjectName)_script.pch</PrecompiledHeaderOutputFile>
-      <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(IntDir)$(ProjectName)_script.pch</PrecompiledHeaderOutputFile>
-    </ClCompile>
-    <ClCompile Include="ui\UISpawnWnd.cpp" />
-    <ClCompile Include="ui\UISkinSelector.cpp" />
-    <ClCompile Include="ui\UIStatix.cpp" />
-    <ClCompile Include="ui\UIChangeMap.cpp" />
-    <ClCompile Include="ui\UIChangeWeather.cpp" />
-    <ClCompile Include="ui\UIKickPlayer.cpp" />
-    <ClCompile Include="ui\UITextVote.cpp" />
-    <ClCompile Include="ui\UIVote.cpp" />
-    <ClCompile Include="ui\UIVotingCategory.cpp" />
     <ClCompile Include="HUDCrosshair.cpp" />
     <ClCompile Include="HUDTarget.cpp" />
     <ClCompile Include="UICursor.cpp" />

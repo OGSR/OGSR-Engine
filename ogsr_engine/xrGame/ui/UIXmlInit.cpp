@@ -29,7 +29,6 @@
 
 #include "UITextureMaster.h"
 #include "UIDragDropListEx.h"
-#include "UItabButtonMP.h"
 
 extern int keyname_to_dik(LPCSTR);
 
@@ -344,24 +343,6 @@ bool CUIXmlInit::Init3tButton(CUIXml& xml_doc, const char* path, int index, CUI3
 	if(text_hint)
 		pWnd->m_hint_text	= CStringTable().translate(text_hint);
 
-	return true;
-}
-
-bool CUIXmlInit::InitTabButtonMP(CUIXml& xml_doc, const char* path,	int index, CUITabButtonMP *pWnd)
-{
-	Init3tButton(xml_doc, path,	index, pWnd);
-
-	string256							buff;
-	strconcat							(sizeof(buff),buff, path, ":idention");
-	
-	if (xml_doc.NavigateToNode			(buff, index))
-	{
-		pWnd->m_text_ident_pushed.x		= xml_doc.ReadAttribFlt(buff, index, "push_x", 0);
-		pWnd->m_text_ident_pushed.y		= xml_doc.ReadAttribFlt(buff, index, "push_y", 0);
-
-		pWnd->m_text_ident_cursor_over.x = xml_doc.ReadAttribFlt(buff, index, "over_x", 0);
-		pWnd->m_text_ident_cursor_over.y = xml_doc.ReadAttribFlt(buff, index, "over_y", 0);
-	}
 	return true;
 }
 

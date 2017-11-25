@@ -47,12 +47,4 @@ void xrServer::OnCL_Disconnected	(IClient* CL)
 	csPlayers.Leave			();
 
 	Server_Client_Check(CL);
-
-#ifdef BATTLEYE
-	if ( g_pGameLevel && Level().battleye_system.server )
-	{
-		Level().battleye_system.server->RemovePlayer( CL->ID.value() );
-	}
-#endif // BATTLEYE
-
 }

@@ -38,7 +38,6 @@ void CUI::Load(CUIGameCustom* pGameUI)
 {
 	if(pGameUI){
 		pGameUI->SetClGame(&Game());
-		m_pMessagesWnd->SetChatOwner(&Game());
 		return;
 	}
 	pUIGame = Game().createGameUI();

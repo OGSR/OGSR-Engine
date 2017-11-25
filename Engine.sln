@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 14
-VisualStudioVersion = 14.0.25420.1
+# Visual Studio 15
+VisualStudioVersion = 15.0.27004.2002
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libvorbis_static", "3rd_party\Src\Xiph\libvorbis\win32\VS2010\libvorbis\libvorbis_static.vcxproj", "{0F3163C6-FAE6-4FBD-BF88-037EB0420DAF}"
 EndProject
@@ -55,8 +55,6 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "xrParticles", "ogsr_engine\
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "xrNetServer", "ogsr_engine\xrNetServer\xrNetServer.vcxproj", "{435BAC9A-B225-457D-AB40-C9BD0CC8838C}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "xrGameSpy", "ogsr_engine\xrGameSpy\xrGameSpy.vcxproj", "{5535F6B4-7AE6-4B66-8AEA-CC31C14D7AB7}"
-EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "XR_3DA", "ogsr_engine\xr_3da\XR_3DA.vcxproj", "{2578C6D8-660D-48AE-9322-7422F8664F06}"
 	ProjectSection(ProjectDependencies) = postProject
 		{D6AEA327-48BC-45C8-B0E9-BF775E451904} = {D6AEA327-48BC-45C8-B0E9-BF775E451904}
@@ -68,7 +66,6 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "xrGame", "ogsr_engine\xrGame\xrGame.vcxproj", "{200652A6-043E-4634-8837-87983B3BD5E0}"
 	ProjectSection(ProjectDependencies) = postProject
 		{CCD4AFAE-AA10-42C6-A452-FDEE497CCDF1} = {CCD4AFAE-AA10-42C6-A452-FDEE497CCDF1}
-		{5535F6B4-7AE6-4B66-8AEA-CC31C14D7AB7} = {5535F6B4-7AE6-4B66-8AEA-CC31C14D7AB7}
 		{1BF75FEB-87DD-486C-880B-227987D191C2} = {1BF75FEB-87DD-486C-880B-227987D191C2}
 	EndProjectSection
 EndProject
@@ -451,30 +448,6 @@ Global
 		{435BAC9A-B225-457D-AB40-C9BD0CC8838C}.Release|x64.Build.0 = Release|x64
 		{435BAC9A-B225-457D-AB40-C9BD0CC8838C}.Release|x86.ActiveCfg = Release|Win32
 		{435BAC9A-B225-457D-AB40-C9BD0CC8838C}.Release|x86.Build.0 = Release|Win32
-		{5535F6B4-7AE6-4B66-8AEA-CC31C14D7AB7}.Debug_Dedicated|x64.ActiveCfg = Debug|x64
-		{5535F6B4-7AE6-4B66-8AEA-CC31C14D7AB7}.Debug_Dedicated|x64.Build.0 = Debug|x64
-		{5535F6B4-7AE6-4B66-8AEA-CC31C14D7AB7}.Debug_Dedicated|x86.ActiveCfg = Debug|Win32
-		{5535F6B4-7AE6-4B66-8AEA-CC31C14D7AB7}.Debug_Dedicated|x86.Build.0 = Debug|Win32
-		{5535F6B4-7AE6-4B66-8AEA-CC31C14D7AB7}.Debug|x64.ActiveCfg = Debug|x64
-		{5535F6B4-7AE6-4B66-8AEA-CC31C14D7AB7}.Debug|x64.Build.0 = Debug|x64
-		{5535F6B4-7AE6-4B66-8AEA-CC31C14D7AB7}.Debug|x86.ActiveCfg = Debug|Win32
-		{5535F6B4-7AE6-4B66-8AEA-CC31C14D7AB7}.Debug|x86.Build.0 = Debug|Win32
-		{5535F6B4-7AE6-4B66-8AEA-CC31C14D7AB7}.Mixed_Dedicated|x64.ActiveCfg = Release|x64
-		{5535F6B4-7AE6-4B66-8AEA-CC31C14D7AB7}.Mixed_Dedicated|x64.Build.0 = Release|x64
-		{5535F6B4-7AE6-4B66-8AEA-CC31C14D7AB7}.Mixed_Dedicated|x86.ActiveCfg = Release|Win32
-		{5535F6B4-7AE6-4B66-8AEA-CC31C14D7AB7}.Mixed_Dedicated|x86.Build.0 = Release|Win32
-		{5535F6B4-7AE6-4B66-8AEA-CC31C14D7AB7}.Mixed|x64.ActiveCfg = Release|x64
-		{5535F6B4-7AE6-4B66-8AEA-CC31C14D7AB7}.Mixed|x64.Build.0 = Release|x64
-		{5535F6B4-7AE6-4B66-8AEA-CC31C14D7AB7}.Mixed|x86.ActiveCfg = Release|Win32
-		{5535F6B4-7AE6-4B66-8AEA-CC31C14D7AB7}.Mixed|x86.Build.0 = Release|Win32
-		{5535F6B4-7AE6-4B66-8AEA-CC31C14D7AB7}.Release_Dedicated|x64.ActiveCfg = Release|x64
-		{5535F6B4-7AE6-4B66-8AEA-CC31C14D7AB7}.Release_Dedicated|x64.Build.0 = Release|x64
-		{5535F6B4-7AE6-4B66-8AEA-CC31C14D7AB7}.Release_Dedicated|x86.ActiveCfg = Release|Win32
-		{5535F6B4-7AE6-4B66-8AEA-CC31C14D7AB7}.Release_Dedicated|x86.Build.0 = Release|Win32
-		{5535F6B4-7AE6-4B66-8AEA-CC31C14D7AB7}.Release|x64.ActiveCfg = Release|x64
-		{5535F6B4-7AE6-4B66-8AEA-CC31C14D7AB7}.Release|x64.Build.0 = Release|x64
-		{5535F6B4-7AE6-4B66-8AEA-CC31C14D7AB7}.Release|x86.ActiveCfg = Release|Win32
-		{5535F6B4-7AE6-4B66-8AEA-CC31C14D7AB7}.Release|x86.Build.0 = Release|Win32
 		{2578C6D8-660D-48AE-9322-7422F8664F06}.Debug_Dedicated|x64.ActiveCfg = Debug_Dedicated|x64
 		{2578C6D8-660D-48AE-9322-7422F8664F06}.Debug_Dedicated|x64.Build.0 = Debug_Dedicated|x64
 		{2578C6D8-660D-48AE-9322-7422F8664F06}.Debug_Dedicated|x86.ActiveCfg = Debug_Dedicated|Win32
@@ -587,5 +560,8 @@ Global
 		{1B71D5DF-C005-4B3F-822A-345255173F0B} = {240AEFB4-B8D3-465D-BFE0-D3700EC0485C}
 		{1BF75FEB-87DD-486C-880B-227987D191C2} = {240AEFB4-B8D3-465D-BFE0-D3700EC0485C}
 		{CCD4AFAE-AA10-42C6-A452-FDEE497CCDF1} = {9078A8EF-616E-429A-B12A-EFE5CEC60330}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {1F9B04CC-5248-4AE5-97B7-66A0D0E5AA5E}
 	EndGlobalSection
 EndGlobal

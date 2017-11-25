@@ -163,9 +163,6 @@ class_<CScriptGameObject> script_register_game_object2(class_<CScriptGameObject>
 		.def("switch_to_trade",				&CScriptGameObject::SwitchToTrade)
 		.def("switch_to_talk",				&CScriptGameObject::SwitchToTalk)
 		.def("run_talk_dialog",				&CScriptGameObject::RunTalkDialog)
-//		.def("actor_sleep",					&CScriptGameObject::ActorSleep)
-//		.def("actor_fake_sleep",			&CScriptGameObject::ActorFakeSleep)
-//		.def("is_actor_sleeping",			&CScriptGameObject::IsActorSleepeng)
 		
 		.def("hide_weapon",					&CScriptGameObject::HideWeapon)
 		.def("restore_weapon",				&CScriptGameObject::RestoreWeapon)

@@ -1,7 +1,4 @@
-#if !defined _INCDEF_NETCOMMON_H_
-#define _INCDEF_NETCOMMON_H_
 #pragma once
-//==============================================================================
 
     
 #define NET_MERGE_PACKETS               1
@@ -25,8 +22,6 @@
 
 extern XRNETSERVER_API int psNET_GuaranteedPacketMode;
 
-
-//==============================================================================
 
 class XRNETSERVER_API
 MultipacketSender
@@ -66,8 +61,6 @@ private:
 };
 
 
-//==============================================================================
-
 class XRNETSERVER_API
 MultipacketReciever
 {
@@ -82,8 +75,3 @@ protected:
 
     virtual void    _Recieve( const void* data, u32 data_size, u32 param ) =0;
 };
-
-
-//==============================================================================
-#endif // _INCDEF_NETCOMMON_H_
-

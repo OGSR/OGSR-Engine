@@ -2,8 +2,6 @@
 //
 //////////////////////////////////////////////////////////////////////
 
-#if !defined(AFX_LEVEL_H__38F63863_DB0C_494B_AFAB_C495876EC671__INCLUDED_)
-#define AFX_LEVEL_H__38F63863_DB0C_494B_AFAB_C495876EC671__INCLUDED_
 #pragma once
 
 #include "..\xr_3da\igame_level.h"
@@ -14,7 +12,6 @@
 #include "alife_space.h"
 #include "xrDebug.h"
 #include "xrServer.h"
-#include "battleye_system.h"
 
 class	CHUDManager;
 class	CParticlesObject;
@@ -26,7 +23,6 @@ class	CSpaceRestrictionManager;
 class	CSeniorityHierarchyHolder;
 class	CClientSpawnManager;
 class	CGameObject;
-class	CAutosaveManager;
 class	CPHCommander;
 class	CLevelDebug;
 class	CLevelSoundManager;
@@ -77,8 +73,6 @@ protected:
 	CSeniorityHierarchyHolder	*m_seniority_hierarchy_holder;
 	// client spawn_manager
 	CClientSpawnManager			*m_client_spawn_manager;
-	// autosave manager
-	CAutosaveManager			*m_autosave_manager;
 #ifdef DEBUG
 	// debug renderer
 	CDebugRenderer				*m_debug_renderer;
@@ -153,7 +147,6 @@ private:
 	u32							m_dwDeltaUpdate ;
 	u32							m_dwLastNetUpdateTime;
 	void						UpdateDeltaUpd					( u32 LastTime );
-	void						BlockCheatLoad					()				;
 
 	BOOL						Connect2Server					(LPCSTR options);
 private:
@@ -161,7 +154,10 @@ private:
 	bool						m_bConnectResult;
 	xr_string					m_sConnectResult;
 public:	
-	void						OnGameSpyChallenge				(NET_Packet* P);
+	void						OnGameSpyChallenge(NET_Packet* P) //KRodin: удалить, если не вызывается!
+	{
+		Msg("!!Called OnGameSpyChallenge!");
+	}
 	void						OnBuildVersionChallenge			();
 	void						OnConnectResult					(NET_Packet* P);
 public:
@@ -177,12 +173,6 @@ public:
 	xr_deque<CSE_Abstract*>		game_spawn_queue;
 	xrServer*					Server;
 	GlobalFeelTouch				m_feel_deny;
-
-
-#ifdef BATTLEYE
-	BattlEyeSystem				battleye_system;
-	virtual bool				TestLoadBEClient();
-#endif // BATTLEYE
 
 private:
 	// preload sounds registry
@@ -277,7 +267,6 @@ public:
 	IC CSpaceRestrictionManager		&space_restriction_manager	();
 	IC CSeniorityHierarchyHolder	&seniority_holder			();
 	IC CClientSpawnManager			&client_spawn_manager		();
-	IC CAutosaveManager				&autosave_manager			();
 #ifdef DEBUG
 	IC CDebugRenderer				&debug_renderer				();
 #endif
@@ -380,12 +369,6 @@ IC CClientSpawnManager &CLevel::client_spawn_manager()
 	return				(*m_client_spawn_manager);
 }
 
-IC CAutosaveManager &CLevel::autosave_manager()
-{
-	VERIFY				(m_autosave_manager);
-	return				(*m_autosave_manager);
-}
-
 #ifdef DEBUG
 IC CDebugRenderer &CLevel::debug_renderer()
 {
@@ -408,11 +391,8 @@ IC CPHCommander & CLevel::ph_commander_scripts()
 IC bool					OnServer()	{ return Level().IsServer();}
 IC bool					OnClient()	{ return Level().IsClient();}
 
-	bool				IsGameTypeSingle();
+#define IsGameTypeSingle(...) true //KRodin: TODO: Вырезать отовсюду!
 
 class  CPHWorld;
 extern CPHWorld*				ph_world;
 extern BOOL						g_bDebugEvents;
-
-
-#endif // !defined(AFX_LEVEL_H__38F63863_DB0C_494B_AFAB_C495876EC671__INCLUDED_)

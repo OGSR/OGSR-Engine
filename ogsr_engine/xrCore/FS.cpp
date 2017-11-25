@@ -75,9 +75,8 @@ XRCORE_API void dump_file_mappings	()
 //---------------------------------------------------
 
 #include <filesystem>
-void VerifyPath(const char* path_char) //Проверяет путь до файла. Если папки в пути отсутствуют - создаёт их.
+void VerifyPath(const std::string_view path) //Проверяет путь до файла. Если папки в пути отсутствуют - создаёт их.
 {
-	const std::string_view path(path_char);
 	const auto lastSepPos = path.find_last_of('\\');
 	const auto foldersPath = (lastSepPos != std::string_view::npos) ? path.substr(0, lastSepPos) : path;
 	std::error_code e;

@@ -2,7 +2,6 @@
 #include "xrServer.h"
 #include "hudmanager.h"
 #include "xrserver_objects.h"
-#include "game_sv_mp_script.h"//fake
 
 #ifdef DEBUG
 #	include "xrserver_objects_alife_items.h"
@@ -118,8 +117,7 @@ CSE_Abstract* xrServer::Process_spawn(NET_Packet& P, ClientID sender, BOOL bSpaw
 		if (0xffff != E->ID_Parent) {
 			R_ASSERT					(e_parent);
 			
-			if (!smart_cast<game_sv_mp_script*>(game) )
-				game->OnTouch			(E->ID_Parent,E->ID);
+			game->OnTouch			(E->ID_Parent,E->ID);
 
 			e_parent->children.push_back(E->ID);
 		}

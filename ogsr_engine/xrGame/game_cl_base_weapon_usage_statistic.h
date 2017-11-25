@@ -202,10 +202,8 @@ struct WeaponUsageStatistic {
 	void				OnUpdateRespond				(NET_Packet* P);
 	//-----------------------------------------------
 	string_path			mFileName;
-	void				SaveData					();
 	void				Write						(FILE* pFile);
 
-	void				SaveDataLtx					(CInifile& ini);
 	void				WriteLtx					(CInifile& ini);
 };
 

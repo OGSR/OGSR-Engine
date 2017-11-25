@@ -78,8 +78,6 @@ void CActor::OnEvent		(NET_Packet& P, u16 type)
 						pGameSP->InventoryMenu->AddItemToBag(smart_cast<CInventoryItem*>(O));
 					}
 				}
-				
-				SelectBestWeapon(O);
 			} 
 			else 
 			{
@@ -109,8 +107,6 @@ void CActor::OnEvent		(NET_Packet& P, u16 type)
 				Level().m_feel_deny.feel_touch_deny(O, 1000);
 
 			}
-
-			SelectBestWeapon(O);
 
 			if (Level().CurrentViewEntity() == this && HUD().GetUI() && HUD().GetUI()->UIGame())
 				HUD().GetUI()->UIGame()->ReInitShownUI();

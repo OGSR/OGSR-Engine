@@ -1715,52 +1715,6 @@ BOOL CActor::net_SaveRelevant()
 	return TRUE;
 }
 
-void	CActor::Check_for_AutoPickUp()
-{
-	if (!psActorFlags.test(AF_AUTOPICKUP)) return;
-	if (GameID() == GAME_SINGLE) return;
-	if (Level().CurrentControlEntity() != this) return;
-	if (!g_Alive()) return;
-
-	Fvector bc; bc.add(Position(), m_AutoPickUp_AABB_Offset);
-	Fbox APU_Box;
-	APU_Box.set(Fvector().sub(bc, m_AutoPickUp_AABB), Fvector().add(bc, m_AutoPickUp_AABB));
-
-	xr_vector<ISpatial*>	ISpatialResult;
-	g_SpatialSpace->q_box   (ISpatialResult,0,STYPE_COLLIDEABLE,bc,m_AutoPickUp_AABB);
-
-	// Determine visibility for dynamic part of scene
-	for (u32 o_it=0; o_it<ISpatialResult.size(); o_it++)
-	{
-		ISpatial*		spatial	= ISpatialResult[o_it];
-		CInventoryItem*	pIItem	= smart_cast<CInventoryItem*> (spatial->dcast_CObject        ());
-		if (0 == pIItem)							continue;
-		if (!pIItem->CanTake())						continue;
-		if (Level().m_feel_deny.is_object_denied(pIItem->cast_game_object()) )	continue;
-
-		CGrenade*	pGrenade	= smart_cast<CGrenade*> (pIItem);
-		if (pGrenade) continue;
-
-		if (APU_Box.Pick(pIItem->object().Position(), pIItem->object().Position()))
-		{
-			if (GameID() == GAME_DEATHMATCH || GameID() == GAME_TEAMDEATHMATCH)
-			{
-				if (pIItem->GetSlot() == FIRST_WEAPON_SLOT || pIItem->GetSlot() == SECOND_WEAPON_SLOT )
-				{
-					if (inventory().ItemFromSlot(pIItem->GetSlot()))
-					{
-						continue;
-					}
-				}
-			}			
-			NET_Packet P;
-			u_EventGen(P,GE_OWNERSHIP_TAKE, ID());
-			P.w_u16(pIItem->object().ID());
-			u_EventSend(P);
-		}		
-	}
-}
-
 void				CActor::SetHitInfo				(CObject* who, CObject* weapon, s16 element, Fvector Pos, Fvector Dir)
 {
 	m_iLastHitterID = (who!= NULL) ? who->ID() : u16(-1);
@@ -1770,110 +1724,6 @@ void				CActor::SetHitInfo				(CObject* who, CObject* weapon, s16 element, Fvect
 	m_bWasHitted = true;
 	m_vLastHitDir = Dir;
 	m_vLastHitPos = Pos;
-};
-
-void				CActor::OnHitHealthLoss					(float NewHealth)
-{
-	if (!m_bWasHitted) return;
-	if (GameID() == GAME_SINGLE || !OnServer()) return;
-	float fNewHealth = NewHealth;
-	m_bWasHitted = false;
-	
-	if (m_iLastHitterID != u16(-1))
-	{
-		NET_Packet P;
-		u_EventGen		(P,GE_GAME_EVENT,ID());
-		P.w_u16(GAME_EVENT_PLAYER_HITTED);
-		P.w_u16(u16(ID()&0xffff));
-		P.w_u16 (u16(m_iLastHitterID&0xffff));
-		P.w_float(m_fLastHealth - fNewHealth);		
-		u_EventSend(P);
-	}	
-};
-
-
-void				CActor::OnCriticalHitHealthLoss			()
-{
-	if (GameID() == GAME_SINGLE || !OnServer()) return;
-
-	CObject* pLastHitter = Level().Objects.net_Find(m_iLastHitterID);
-	CObject* pLastHittingWeapon = Level().Objects.net_Find(m_iLastHittingWeaponID);
-
-#ifdef DEBUG
-	
-	
-	Msg("%s killed by hit from %s %s", 
-		*cName(),
-		(pLastHitter ? *(pLastHitter->cName()) : ""), 
-		((pLastHittingWeapon && pLastHittingWeapon != pLastHitter) ? *(pLastHittingWeapon->cName()) : ""));
-#endif
-	//-------------------------------------------------------------------
-	if (m_iLastHitterID != u16(-1))
-	{
-		NET_Packet P;
-		u_EventGen		(P,GE_GAME_EVENT,ID());
-		P.w_u16(GAME_EVENT_PLAYER_HITTED);
-		P.w_u16(u16(ID()&0xffff));
-		P.w_u16 (u16(m_iLastHitterID&0xffff));
-		P.w_float(m_fLastHealth);
-		u_EventSend(P);
-	}	
-	//-------------------------------------------------------------------
-	SPECIAL_KILL_TYPE SpecialHit = SKT_NONE;
-	if(pLastHittingWeapon)
-	{
-		if(pLastHittingWeapon->CLS_ID==CLSID_OBJECT_W_KNIFE)
-				SpecialHit = SKT_KNIFEKILL;
-	}
-	if (m_s16LastHittedElement > 0)
-	{
-		if (m_s16LastHittedElement == m_head)
-		{
-			CWeaponMagazined* pWeaponMagazined = smart_cast<CWeaponMagazined*>(pLastHittingWeapon);
-			if (pWeaponMagazined)
-			{
-				SpecialHit = SKT_HEADSHOT;
-				//-------------------------------
-				NET_Packet P;
-				u_EventGen(P, GEG_PLAYER_PLAY_HEADSHOT_PARTICLE, ID());
-				P.w_s16(m_s16LastHittedElement);
-				P.w_dir(m_vLastHitDir);
-				P.w_vec3(m_vLastHitPos);
-				u_EventSend(P);
-				//-------------------------------
-			}
-		}
-		else
-		{
-			CKinematics* pKinematics		= smart_cast<CKinematics*>(Visual());
-			VERIFY				(pKinematics);
-			u16 ParentBone = u16(m_s16LastHittedElement);
-			while (ParentBone)
-			{
-				ParentBone = pKinematics->LL_GetData(ParentBone).GetParentID();
-				if (ParentBone && ParentBone == m_head)
-				{
-					SpecialHit = SKT_HEADSHOT;
-					break;
-				};
-			}
-		};
-	};
-	//-------------------------------
-	if (m_bWasBackStabbed) SpecialHit = SKT_BACKSTAB;
-	//-------------------------------
-	NET_Packet P;
-	u_EventGen		(P,GE_GAME_EVENT,ID());
-	P.w_u16(GAME_EVENT_PLAYER_KILLED);
-	P.w_u16(u16(ID()&0xffff));
-	P.w_u8	(KT_HIT);
-	P.w_u16 ((m_iLastHitterID) ? u16(m_iLastHitterID&0xffff) : 0);
-	P.w_u16 ((m_iLastHittingWeaponID && m_iLastHitterID != m_iLastHittingWeaponID) ? u16(m_iLastHittingWeaponID&0xffff) : 0);
-	P.w_u8	(u8(SpecialHit));
-	u_EventSend(P);
-	//-------------------------------------------
-	if (GameID() != GAME_SINGLE)
-		Game().m_WeaponUsageStatistic->OnBullet_Check_Result(true);
 };
 
 void CActor::OnPlayHeadShotParticle(NET_Packet P)
@@ -1895,56 +1745,9 @@ void CActor::OnPlayHeadShotParticle(NET_Packet P)
 	GamePersistent().ps_needtoplay.push_back(ps);
 };
 
-void				CActor::OnCriticalWoundHealthLoss		() 
+bool CActor::Check_for_BackStab_Bone(u16 e)
 {
-	if (GameID() == GAME_SINGLE || !OnServer()) return;
-#ifdef DEBUG
-///	Msg("%s is bleed out, thanks to %s", *cName(), (m_pLastHitter ? *(m_pLastHitter->cName()) : ""));
-#endif
-	//-------------------------------
-	NET_Packet P;
-	u_EventGen		(P,GE_GAME_EVENT,ID());
-	P.w_u16(GAME_EVENT_PLAYER_KILLED);
-	P.w_u16(u16(ID()&0xffff));
-	P.w_u8	(KT_BLEEDING);
-	P.w_u16 ((m_iLastHitterID) ? u16(m_iLastHitterID&0xffff) : 0);
-	P.w_u16	((m_iLastHittingWeaponID && m_iLastHitterID != m_iLastHittingWeaponID) ? u16(m_iLastHittingWeaponID&0xffff) : 0);
-	P.w_u8	(SKT_NONE);
-	u_EventSend(P);
-};
-
-void				CActor::OnCriticalRadiationHealthLoss	() 
-{
-	if (GameID() == GAME_SINGLE || !OnServer()) return;
-	//-------------------------------
-//	Msg("%s killed by radiation", *cName());
-	NET_Packet P;
-	u_EventGen		(P,GE_GAME_EVENT,ID());
-	P.w_u16(GAME_EVENT_PLAYER_KILLED);
-	P.w_u16(u16(ID()&0xffff));
-	P.w_u8	(KT_RADIATION);
-	P.w_u16	(0);
-	P.w_u16	(0);
-	P.w_u8	(SKT_NONE);
-	u_EventSend(P);
-};
-
-bool				CActor::Check_for_BackStab_Bone			(u16 element)
-{
-	if (element == m_head) return true;
-	else
-		if (element == m_neck) return true;
-		else
-			if (element == m_spine2) return true;
-			else
-				if (element == m_l_clavicle) return true;
-				else
-					if (element == m_r_clavicle) return true;
-					else
-						if (element == m_spine1) return true;
-						else 
-							if (element == m_spine) return true;
-	return false;
+	return e == m_head || e == m_neck || e == m_spine2 || e == m_l_clavicle || e == m_r_clavicle || e == m_spine1 || e == m_spine;
 }
 
 bool				CActor::InventoryAllowSprint			()
@@ -1964,16 +1767,7 @@ bool				CActor::InventoryAllowSprint			()
 
 BOOL				CActor::BonePassBullet					(int boneID)
 {
-	if (GameID() == GAME_SINGLE) return inherited::BonePassBullet(boneID);
-
-	CCustomOutfit* pOutfit			= (CCustomOutfit*)inventory().m_slots[OUTFIT_SLOT].m_pIItem;
-	if(!pOutfit)
-	{
-		CKinematics* V		= smart_cast<CKinematics*>(Visual()); VERIFY(V);
-		CBoneInstance			&bone_instance = V->LL_GetBoneInstance(u16(boneID));
-		return (bone_instance.get_param(3)> 0.5f);
-	}
-	return pOutfit->BonePassBullet(boneID);
+	return inherited::BonePassBullet(boneID);
 }
 
 void			CActor::On_B_NotCurrentEntity		()

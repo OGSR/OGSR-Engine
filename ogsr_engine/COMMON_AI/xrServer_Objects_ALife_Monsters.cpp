@@ -262,11 +262,6 @@ void CSE_ALifeTraderAbstract::OnChangeProfile(PropValue* sender)
 
 shared_str CSE_ALifeTraderAbstract::specific_character()
 {
-#ifdef XRGAME_EXPORTS
-#pragma todo("Dima to Yura, MadMax : Remove that hacks, please!")
-	if (g_pGameLevel && Level().game && (GameID() != GAME_SINGLE)) return m_SpecificCharacter;
-#endif
-
 	if(m_SpecificCharacter.size())
 		return m_SpecificCharacter;
 

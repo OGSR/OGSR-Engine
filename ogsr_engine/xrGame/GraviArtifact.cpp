@@ -68,20 +68,5 @@ void CGraviArtefact::UpdateCLChild()
 		if(H_Parent()) 
 		{
 			XFORM().set(H_Parent()->XFORM());
-			
-			if (GameID() == GAME_ARTEFACTHUNT && m_CarringBoneID != u16(-1))
-			{
-				CKinematics* K	= smart_cast<CKinematics*>(H_Parent()->Visual());
-				if (K)
-				{
-					K->CalculateBones	();
-					Fmatrix Ruck_MTX	= K->LL_GetTransform(m_CarringBoneID);
-					Fvector	x;
-					x.set(-0.1f, 0.f, -0.3f);
-					Ruck_MTX.translate_add(x);
-					Ruck_MTX.mulA_43	(XFORM());
-					XFORM().set(Ruck_MTX);
-				};
-			};
 		};
 }

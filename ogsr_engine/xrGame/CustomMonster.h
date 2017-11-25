@@ -206,7 +206,6 @@ public:
 	virtual	const MonsterSpace::SBoneRotation &head_orientation	() const;
 	
 	virtual void				UpdatePositionAnimation	();
-	virtual void				set_ready_to_save		();
 	virtual CPhysicsShellHolder*cast_physics_shell_holder	()	{return this;}
 	virtual CParticlesPlayer*	cast_particles_player	()	{return this;}
 	virtual CCustomMonster*		cast_custom_monster		()	{return this;}

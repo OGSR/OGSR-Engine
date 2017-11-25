@@ -39,7 +39,6 @@ private:
 	void					cam_Update				(CActor* A=0);
 
 	CActor*					m_pActorToLookAt;
-	bool					SelectNextPlayerToLook	();
 
 	void					FirstEye_ToPlayer		(CObject* pObject);
 public:
@@ -62,7 +61,6 @@ public:
 	virtual IInputReceiver*	cast_input_receiver		()						{return this;}
 
 	virtual void			net_Relcase				(CObject *O);
-			void			GetSpectatorString		(string1024& pStr);
 };
 
 #endif // __SPECTATOR_H__

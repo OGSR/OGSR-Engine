@@ -1,6 +1,5 @@
 #include "stdafx.h"
 #include "../level.h"
-//.#include "../LevelFogOfWar.h"
 #include "../map_location.h"
 #include "../map_manager.h"
 #include "../map_spot.h"
@@ -420,16 +419,7 @@ void CUILevelMap::UpdateSpots		()
 	Frect _r;
 	GetAbsoluteRect(_r);
 	if( FALSE==MapWnd()->ActiveMapRect().intersected(_r)) return;
-/*
-	if(m_anomalies_map){
-		m_anomalies_map->SetWndPos	(0.0f,0.0f);
-		m_anomalies_map->SetWndSize	(GetWndSize());
-		AttachChild					(m_anomalies_map);
-	}
 
-	CLevelFogOfWar* F	= Level().FogOfWarMngr().GetFogOfWar(MapName());
-	AttachChild		(F);
-*/
 	Locations& ls =Level().MapManager().Locations();
 	for(Locations_it it=ls.begin(); it!=ls.end(); ++it){
 		if ((*it).location->Update())

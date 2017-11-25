@@ -26,7 +26,6 @@ private:
 	CAI_Stalker					*m_stalker;
 	float						m_ignore_monster_threshold;
 	float						m_max_ignore_distance;
-	mutable bool				m_ready_to_save;
 	u32							m_last_enemy_time;
 	const CEntityAlive			*m_last_enemy;
 	USEFULE_CALLBACK			m_useful_callback;
@@ -55,7 +54,6 @@ public:
 	virtual	float				evaluate			(const CEntityAlive *object) const;
 	virtual	float				do_evaluate			(const CEntityAlive *object) const;
 	virtual void				update				();
-	virtual void				set_ready_to_save	();
 	IC		u32					last_enemy_time		() const;
 	IC		const CEntityAlive	*last_enemy			() const;
 	IC		USEFULE_CALLBACK	&useful_callback	();
