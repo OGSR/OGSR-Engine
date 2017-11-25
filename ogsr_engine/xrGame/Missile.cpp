@@ -179,8 +179,10 @@ void CMissile::UpdateCL()
 {
 	inherited::UpdateCL();
 
+#ifndef STOP_ANIM_PLAYING
 	if(GetState() == MS_IDLE && m_dwStateTime > PLAYING_ANIM_TIME) 
 		OnStateSwitch(MS_PLAYING);
+#endif
 	
 	if(GetState() == MS_READY) 
 	{

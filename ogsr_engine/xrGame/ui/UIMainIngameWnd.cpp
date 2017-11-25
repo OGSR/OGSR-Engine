@@ -80,6 +80,7 @@ const u32	g_clWhite					= 0xffffffff;
 
 #define				MAININGAME_XML				"maingame.xml"
 
+
 DLL_API CUIMainIngameWnd* GetMainIngameWindow()
 {
 	if (g_hud)
@@ -90,6 +91,44 @@ DLL_API CUIMainIngameWnd* GetMainIngameWindow()
 	}
 	return NULL;
 }
+
+#ifdef SCRIPT_ICONS_CONTROL
+	CUIStatic * warn_icon_list[8] = { NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL };
+	
+	// alpet: для возможности внешнего контроля иконок (используется в NLC6 вместо типичных индикаторов). Никак не влияет на игру для остальных модов.
+	bool __declspec(dllexport) external_icon_ctrl = false;
+
+	// позволяет расцветить иконку или изменить её размер
+	bool __declspec(dllexport) SetupGameIcon(u32 icon, u32 cl, float width, float height)
+	{
+		CUIMainIngameWnd *window = GetMainIngameWindow();
+		if (!window)
+		{
+			Msg("SetupGameIcon failed due GetMainIngameWindow() returned NULL");
+			return false;
+		}
+
+		CUIStatic *sIcon = warn_icon_list[icon & 7];
+		
+		if (sIcon)
+		{			
+			if (width > 0 && height > 0)
+			{
+				sIcon->SetWidth (width);
+				sIcon->SetHeight (height);
+				sIcon->SetStretchTexture(cl > 0);
+			}
+			else 
+				window->SetWarningIconColor((CUIMainIngameWnd::EWarningIcons)icon, cl);
+
+			external_icon_ctrl = true;
+			return true;
+		}
+		return false;
+	}
+#else
+#define external_icon_ctrl				0
+#endif
 
 CUIMainIngameWnd::CUIMainIngameWnd()
 {
@@ -102,6 +141,15 @@ CUIMainIngameWnd::CUIMainIngameWnd()
 	m_artefactPanel				= xr_new<CUIArtefactPanel>();
 	m_pMPChatWnd				= NULL;
 	m_pMPLogWnd					= NULL;	
+#ifdef SCRIPT_ICONS_CONTROL
+	warn_icon_list[ewiWeaponJammed]	= &UIWeaponJammedIcon;	
+	warn_icon_list[ewiRadiation]	= &UIRadiaitionIcon;
+	warn_icon_list[ewiWound]		= &UIWoundIcon;
+	warn_icon_list[ewiStarvation]	= &UIStarvationIcon;
+	warn_icon_list[ewiPsyHealth]	= &UIPsyHealthIcon;
+	warn_icon_list[ewiInvincible]	= &UIInvincibleIcon;	
+	warn_icon_list[ewiArtefact]		= &UIArtefactIcon;
+#endif
 }
 
 #include "UIProgressShape.h"
@@ -214,6 +262,9 @@ void CUIMainIngameWnd::Init()
 
 	xml_init.InitStatic			(uiXml, "invincible_static", 0, &UIInvincibleIcon);
 	UIInvincibleIcon.Show		(false);
+
+	xml_init.InitStatic		(uiXml, "artefact_static", 0, &UIArtefactIcon);
+	UIArtefactIcon.Show		(false);
 	
 	shared_str warningStrings[6] = 
 	{	
@@ -407,7 +458,8 @@ void CUIMainIngameWnd::Update()
 			if(b_God)
 				SetWarningIconColor	(ewiInvincible,0xffffffff);
 			else
-				SetWarningIconColor	(ewiInvincible,0x00ffffff);
+				if (!external_icon_ctrl)
+					TurnOffWarningIcon (ewiInvincible);
 		}
 
 		// Armor indicator stuff
@@ -429,7 +481,7 @@ void CUIMainIngameWnd::Update()
 
 		EWarningIcons i					= ewiWeaponJammed;
 
-		while (i < ewiInvincible)
+		while (!external_icon_ctrl && i < ewiInvincible)
 		{
 			float value = 0;
 			switch (i)
@@ -1493,6 +1545,9 @@ void CUIMainIngameWnd::script_register(lua_State *L)
 			class_<CUIMainIngameWnd, CUIWindow>("CUIMainIngameWnd")
 			.def("GetStatic",		 &GetStaticRaw, raw<2>()),
 			def("get_main_window",   &GetMainIngameWindow) // get_mainingame_window better??
+#ifdef SCRIPT_ICONS_CONTROL
+			, def("setup_game_icon", &SetupGameIcon)
+#endif			
 		];
 
 }

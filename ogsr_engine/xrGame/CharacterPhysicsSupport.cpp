@@ -699,7 +699,8 @@ void CCharacterPhysicsSupport::ActivateShell			( CObject* who )
 	m_flags.set(fl_skeleton_in_shell,TRUE);
 	
 // KD: Коллизия с трупами
-/*	if(IsGameTypeSingle())
+#ifndef CORPSES_COLLISION
+	if(IsGameTypeSingle())
 	{
 		m_pPhysicsShell->SetPrefereExactIntegration	();//use exact integration for ragdolls in single
 		m_pPhysicsShell->SetRemoveCharacterCollLADisable();
@@ -707,7 +708,8 @@ void CCharacterPhysicsSupport::ActivateShell			( CObject* who )
 	else
 	{
 		m_pPhysicsShell->SetIgnoreDynamic();
-	}*/
+	}
+#endif
 	m_pPhysicsShell->SetIgnoreSmall();
 	//end seting params
 
