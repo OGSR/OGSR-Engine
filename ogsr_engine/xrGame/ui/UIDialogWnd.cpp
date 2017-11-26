@@ -24,6 +24,9 @@ CUIDialogWnd::~ CUIDialogWnd()
 
 void CUIDialogWnd::Show()
 {
+	Fvector2 pos = GetUICursor()->GetCursorPosition();
+	GetUICursor()->SetUICursorPosition( pos );
+
 	inherited::Enable(true);
 	inherited::Show(true);
 
