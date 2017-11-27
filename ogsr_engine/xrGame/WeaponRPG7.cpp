@@ -6,6 +6,7 @@
 #include "entity.h"
 #include "level.h"
 #include "../xr_3da/skeletoncustom.h"
+#include "game_object_space.h"
 
 CWeaponRPG7::CWeaponRPG7(void) : CWeaponCustomPistol("RPG7") 
 {
@@ -99,6 +100,8 @@ void CWeaponRPG7::switch2_Fire	()
 	m_iShotNum = 0;
 	m_bFireSingleShot = true;
 	bWorking = false;
+
+	StateSwitchCallback(GameObject::eOnActorWeaponStartFiring, GameObject::eOnNPCWeaponStartFiring);
 
 	if(GetState() == eFire	&& getRocketCount()) 
 	{

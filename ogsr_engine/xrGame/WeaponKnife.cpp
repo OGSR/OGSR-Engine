@@ -12,6 +12,7 @@
 #include "level_bullet_manager.h"
 #include "ai_sounds.h"
 #include "game_cl_single.h"
+#include "game_object_space.h"
 
 #define KNIFE_MATERIAL_NAME "objects\\knife"
 
@@ -203,6 +204,8 @@ void CWeaponKnife::switch2_Attacking	(u32 state)
 
 	m_attackStart	= true;
 	m_bPending		= true;
+
+	StateSwitchCallback(GameObject::eOnActorWeaponFire, GameObject::eOnNPCWeaponFire);
 }
 
 void CWeaponKnife::switch2_Idle	()

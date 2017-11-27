@@ -124,6 +124,7 @@ void CScriptGameObject::script_register(lua_State *L)
 				value("on_addon_init",				int(GameObject::eOnAddonInit)),
 //				value("on_hud_animation_end",		int(GameObject::eOnHudAnimationEnd)),
 				// Added by Cribbledirge Start
+				value("on_actor_weapon_start_firing", int(GameObject::eOnActorWeaponStartFiring)),
 				value("on_actor_weapon_fire", int(GameObject::eOnActorWeaponFire)),
 				value("on_actor_weapon_reload", int(GameObject::eOnActorWeaponReload)),
 				value("on_actor_weapon_jammed", int(GameObject::eOnActorWeaponJammed)),
@@ -132,6 +133,7 @@ void CScriptGameObject::script_register(lua_State *L)
 				value("on_actor_weapon_zoom_out", int(GameObject::eOnActorWeaponZoomOut)),
 				
 				// NPC Callbacks.
+				value("on_npc_weapon_start_firing", int(GameObject::eOnNPCWeaponStartFiring)),
 				value("on_npc_weapon_fire", int(GameObject::eOnNPCWeaponFire)),
 				value("on_npc_weapon_jammed", int(GameObject::eOnNPCWeaponJammed)),
 				value("on_npc_weapon_reload", int(GameObject::eOnNPCWeaponReload)),

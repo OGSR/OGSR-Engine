@@ -314,6 +314,7 @@ void CWeaponMagazinedWGrenade::state_Fire(float dt)
 
 			++m_iShotNum;
 			OnShot			();
+			StateSwitchCallback(GameObject::eOnActorWeaponFire, GameObject::eOnNPCWeaponFire);
 			
 			// Ammo
 			if(Local()) 

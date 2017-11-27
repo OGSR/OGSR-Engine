@@ -69,12 +69,14 @@ namespace GameObject {
 		eOnAddonInit,
 
 		// These specifically say actor as I intend to add callbacks for NPCs firing their weapons.
+		eOnActorWeaponStartFiring,
 		eOnActorWeaponFire,
 		eOnActorWeaponJammed,
 		eOnActorWeaponEmpty,
 		eOnActorWeaponReload,
 
 		// NPC Weapon Callbacks.
+		eOnNPCWeaponStartFiring,
 		eOnNPCWeaponFire,
 		eOnNPCWeaponJammed,
 		eOnNPCWeaponEmpty,

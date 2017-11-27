@@ -2,6 +2,7 @@
 
 #include "Entity.h"
 #include "WeaponCustomPistol.h"
+#include "game_object_space.h"
 
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
@@ -19,6 +20,8 @@ void CWeaponCustomPistol::switch2_Fire	()
 	bWorking					= false;
 	m_iShotNum					= 0;
 	m_bStopedAfterQueueFired	= false;
+
+	StateSwitchCallback(GameObject::eOnActorWeaponStartFiring, GameObject::eOnNPCWeaponStartFiring);
 }
 
 

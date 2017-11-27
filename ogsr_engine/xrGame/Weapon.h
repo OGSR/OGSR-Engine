@@ -80,6 +80,9 @@ public:
 	virtual void			OnActiveItem		();
 	virtual void			OnHiddenItem		();
 
+	// Callback function added by Cribbledirge.
+	virtual IC void	StateSwitchCallback(GameObject::ECallbackType actor_type, GameObject::ECallbackType npc_type);
+
 //////////////////////////////////////////////////////////////////////////
 //  Network
 //////////////////////////////////////////////////////////////////////////
