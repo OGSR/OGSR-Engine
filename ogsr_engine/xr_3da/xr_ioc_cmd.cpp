@@ -15,6 +15,9 @@
 
 #include "xr_object.h"
 
+#include <regex>
+#include <string>
+
 xr_token							snd_freq_token							[ ]={
 	{ "22khz",						sf_22K										},
 	{ "44khz",						sf_44K										},
@@ -300,8 +303,13 @@ class CCC_Start : public IConsole_Command
 	void	parse		(LPSTR dest, LPCSTR args, LPCSTR name)
 	{
 		dest[0]	= 0;
-		if (strstr(args,name))
-			sscanf(strstr(args,name)+xr_strlen(name),"(%[^)])",dest);
+		if (strstr(args, name)) {
+			std::string str = strstr(args, name) + xr_strlen(name);
+			std::regex Reg("\\(([^)]+)\\)");
+			std::smatch results;
+			if (std::regex_search(str, results, Reg))
+				strcpy(dest, results[1].str().c_str());
+		}
 	}
 public:
 	CCC_Start(LPCSTR N) : IConsole_Command(N) {};
