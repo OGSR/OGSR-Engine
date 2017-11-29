@@ -330,23 +330,9 @@ void CUIInventoryWnd::Show()
 	InitInventory			();
 	inherited::Show			();
 
-	if (!IsGameTypeSingle())
-	{
-		CActor *pActor = smart_cast<CActor*>(Level().CurrentEntity());
-		if(!pActor) return;
-
-		pActor->SetWeaponHideState(INV_STATE_INV_WND, true);
-
-		//rank icon		
-		int team = Game().local_player->team;
-		int rank = Game().local_player->rank;
-		string256 _path;		
-		if (1==team)
-			sprintf_s(_path, "ui_hud_status_green_0%d", rank+1);
-		else
-			sprintf_s(_path, "ui_hud_status_blue_0%d", rank+1);
-		UIRank->InitTexture(_path);
-	}
+#ifdef MORE_HIDE_WEAPON
+	Actor()->SetWeaponHideState(INV_STATE_INV_WND, true);
+#endif
 
 	SendInfoToActor						("ui_inventory");
 
@@ -371,13 +357,10 @@ void CUIInventoryWnd::Hide()
 		m_iCurrentActiveSlot = NO_ACTIVE_SLOT;
 	}
 
-	if (!IsGameTypeSingle())
-	{
-		CActor *pActor		= smart_cast<CActor*>(Level().CurrentEntity());
-		if(!pActor)			return;
-
+#ifdef MORE_HIDE_WEAPON
+	if ( pActor )
 		pActor->SetWeaponHideState(INV_STATE_INV_WND, false);
-	}
+#endif
 }
 
 void CUIInventoryWnd::AttachAddon(PIItem item_to_upgrade)
