@@ -19,6 +19,7 @@ CScriptEngine::CScriptEngine()
 	//
 	m_stack_level = 0;
 	m_reload_modules = false;
+	m_last_no_file_cnt    = 0;
 	m_last_no_file_length = 0;
 	*m_last_no_file = 0;
 }
@@ -26,6 +27,7 @@ CScriptEngine::CScriptEngine()
 void CScriptEngine::unload()
 {
 	lua_settop(lua(), m_stack_level);
+	m_last_no_file_cnt    = 0;
 	m_last_no_file_length = 0;
 	*m_last_no_file = 0;
 }
@@ -84,6 +86,12 @@ int auto_load(lua_State *L)
 	return 1;
 }
 
+#ifdef LOAD_SCRIPTS_SUBDIRS
+//Alun: Allow directory structuring for scripts
+typedef	xr_map<xr_string, xr_string>	script_list_type;
+static	script_list_type xray_scripts;
+#endif
+
 void CScriptEngine::setup_auto_load()
 {
 	lua_pushstring(lua(), GlobalNamespace);
@@ -95,6 +103,27 @@ void CScriptEngine::setup_auto_load()
 	lua_settable(lua(), -3);
 	// luaL_getmetatable(lua(), "XRAY_AutoLoadMetaTable");
 	lua_setmetatable(lua(), value_index);
+
+#ifdef LOAD_SCRIPTS_SUBDIRS
+	//Alun: Allow directory structuring for scripts
+	xray_scripts.clear();
+
+	FS_FileSet fset;
+	FS.file_list(fset, "$game_scripts$", FS_ListFiles, "*.script");
+	FS_FileSetIt fit = fset.begin();
+	FS_FileSetIt fit_e = fset.end();
+
+	for (; fit != fit_e; ++fit)
+	{
+		string_path	fn1, fn2;
+		_splitpath((*fit).name.c_str(), 0, fn1, fn2, 0);
+
+		FS.update_path(fn1, "$game_scripts$", fn1);
+		strconcat(sizeof(fn1), fn1, fn1, fn2, ".script");
+
+		xray_scripts.insert(mk_pair(xr_string(fn2), xr_string(fn1)));
+	}
+#endif
 }
 
 void CScriptEngine::init()
@@ -147,6 +176,58 @@ void CScriptEngine::parse_script_namespace(const char *name, char *ns, u32 nsSiz
 	xr_strcpy(func, funcSize, p + 1);
 }
 
+
+#ifdef LOAD_SCRIPTS_SUBDIRS
+// KRodin: Функция проверяет существует ли скрипт на диске. Если
+// существует - отправляет его в do_file. Вызывается из process_file,
+// auto_load и не только.
+bool CScriptEngine::process_file_if_exists( const char* file_name, bool warn_if_not_exist ) {
+#ifdef DEBUG
+  // Довольно часто вызывается... Надо что-то с этим делать.
+  Msg( "[CScriptEngine::process_file_if_exists] loading file: [%s]", file_name );
+#endif
+
+  if ( !m_reload_modules && ( *file_name && namespace_loaded( file_name ) ) )
+    return true;
+
+  u32 string_length = xr_strlen( file_name );
+  // Это походу для оптимизации только, чтоб типа если один раз
+  // убедились что файла нет, постоянно не проверять, есть ли он.
+  if ( !warn_if_not_exist && no_file_exists( file_name, string_length ) ) {
+    ++m_last_no_file_cnt;
+    if ( m_last_no_file_cnt == 10 ) {
+      Msg( "-------------------------" );
+      Msg( "[CScriptEngine::process_file_if_exists] WARNING: multiple access to nonexistent variable '%s' or loading nonexistent script", file_name );
+      print_stack();
+      Msg( "-------------------------" );
+    }
+    return false;
+  }
+
+  script_list_type::iterator it = xray_scripts.find( xr_string( *file_name ? ( strcmp( file_name, GlobalNamespace ) == 0 ? "_g" : file_name ) : "_g" ) );
+  if ( it != xray_scripts.end() ) {
+    Msg( "* loading script %s.script", file_name );
+    m_reload_modules = false;
+    return do_file( it->second.c_str(), *file_name ? file_name : GlobalNamespace );
+  }
+
+  if ( warn_if_not_exist )
+    Msg( "[CScriptEngine::process_file_if_exists] Variable %s not found; No script by this name exists, either.", file_name );
+  else {
+#ifdef DEBUG
+    Msg( "-------------------------" );
+    Msg( "[CScriptEngine::process_file_if_exists] WARNING: Access to nonexistent variable '%s' or loading nonexistent script", file_name );
+    print_stack();
+    Msg( "-------------------------" );
+#endif
+    add_no_file( file_name, string_length );
+  }
+
+  return false;
+}
+
+
+#else  // #ifdef LOAD_SCRIPTS_SUBDIRS
 bool CScriptEngine::process_file_if_exists(const char* file_name, bool warn_if_not_exist) //KRodin: Функция проверяет существует ли скрипт на диске. Если существует - отправляет его в do_file. Вызывается из process_file, auto_load и не только.
 {
 #ifdef DEBUG
@@ -178,6 +259,8 @@ bool CScriptEngine::process_file_if_exists(const char* file_name, bool warn_if_n
 	}
 	return true;
 }
+#endif  // #ifdef LOAD_SCRIPTS_SUBDIRS
+
 
 bool CScriptEngine::process_file(const char* file_name)
 {
@@ -255,6 +338,7 @@ bool CScriptEngine::no_file_exists(const char* file_name, u32 string_length)
 
 void CScriptEngine::add_no_file(const char* file_name, u32 string_length)
 {
+	m_last_no_file_cnt    = 0;
 	m_last_no_file_length = string_length;
 	std::memcpy(m_last_no_file, file_name, string_length + 1);
 }

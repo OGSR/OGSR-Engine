@@ -449,7 +449,11 @@ bool CLocatorAPI::Recurse		(const char* path)
     }
 
 	string1024 full_path;
+#ifdef LOAD_SCRIPTS_SUBDIRS
+	if (0)
+#else
 	if (m_Flags.test(flNeedCheck))
+#endif
 	{
 		strcpy_s(full_path,sizeof(full_path), path);
 		strcat(full_path, sFile.name);

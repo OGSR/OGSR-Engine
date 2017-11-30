@@ -64,3 +64,6 @@
 
 // Скрывать оружие при открытом диалоге, инвентаре и т.п.
 //#define MORE_HIDE_WEAPON
+
+// Включает загрузку скриптов из подкаталогов scripts.
+//#define LOAD_SCRIPTS_SUBDIRS
