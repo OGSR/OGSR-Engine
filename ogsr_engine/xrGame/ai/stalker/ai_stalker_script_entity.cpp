@@ -154,7 +154,7 @@ bool CAI_Stalker::bfAssignObject(CScriptEntityAction *tpEntityAction)
 	switch (l_tObjectAction.m_tGoalType) {
 		case eObjectActionIdle : {
 			if (!l_tpWeapon)
-				return	((l_tObjectAction.m_bCompleted = true) == false);
+				return false; //((l_tObjectAction.m_bCompleted = true) == false);
 			CObjectHandler::set_goal	(eObjectActionIdle,l_tpInventoryItem);
 //			inventory().Action	(kWPN_FIRE,	CMD_STOP);
 			return	((l_tObjectAction.m_bCompleted = (CObjectHandler::goal_reached())) == false);
@@ -211,7 +211,7 @@ bool CAI_Stalker::bfAssignObject(CScriptEntityAction *tpEntityAction)
 		case eObjectActionReload2 :
 		case eObjectActionReload1 : {
 			if (!l_tpWeapon)
-				return	((l_tObjectAction.m_bCompleted = true) == false);
+				return false; //((l_tObjectAction.m_bCompleted = true) == false);
 			CObjectHandler::set_goal	(eObjectActionReload1,l_tpInventoryItem);
 			if (inventory().ActiveItem()->object().ID() == l_tObjectAction.m_tpObject->ID()) {
 //				inventory().Action(kWPN_FIRE,	CMD_STOP);
@@ -270,7 +270,7 @@ bool CAI_Stalker::bfAssignObject(CScriptEntityAction *tpEntityAction)
 		case eObjectActionTake : {
 			if (inventory().GetItemFromInventory(*l_tObjectAction.m_tpObject->cName())) {
 				ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError,"item is already in the inventory!");
-				return	((l_tObjectAction.m_bCompleted = true) == false);
+				return false; //((l_tObjectAction.m_bCompleted = true) == false);
 			}
 			feel_touch_new(l_tObjectAction.m_tpObject);
 			l_tObjectAction.m_bCompleted = true;
@@ -279,7 +279,7 @@ bool CAI_Stalker::bfAssignObject(CScriptEntityAction *tpEntityAction)
 		case eObjectActionDrop : {
 			if (!inventory().GetItemFromInventory(*l_tObjectAction.m_tpObject->cName())) {
 				ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError,"item is not in the inventory!");
-				return	((l_tObjectAction.m_bCompleted = true) == false);
+				return false; //((l_tObjectAction.m_bCompleted = true) == false);
 			}
 			DropItemSendMessage(l_tObjectAction.m_tpObject);
 			break;

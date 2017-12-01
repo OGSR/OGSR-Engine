@@ -61,28 +61,28 @@ bool CCar::bfAssignObject(CScriptEntityAction *tpEntityAction)
 {
 	CScriptObjectAction	&l_tObjectAction = tpEntityAction->m_tObjectAction;
 	if (l_tObjectAction.m_bCompleted || !xr_strlen(l_tObjectAction.m_caBoneName))
-		return((l_tObjectAction.m_bCompleted = true) == false);
+		return false; //((l_tObjectAction.m_bCompleted = true) == false);
 
 	s16	l_sBoneID = smart_cast<CKinematics*>(Visual())->LL_BoneID(l_tObjectAction.m_caBoneName);
 	if (is_Door(l_sBoneID)) {
 		switch(l_tObjectAction.m_tGoalType) {
 			case MonsterSpace::eObjectActionActivate : {
 				if (!DoorOpen(l_sBoneID))
-					return((l_tObjectAction.m_bCompleted = true) == false);
+					return false; //((l_tObjectAction.m_bCompleted = true) == false);
 				break;
 			}
 			case MonsterSpace::eObjectActionDeactivate : {
 				if (!DoorClose(l_sBoneID))
-					return((l_tObjectAction.m_bCompleted = true) == false);
+					return false; //((l_tObjectAction.m_bCompleted = true) == false);
 				break;
 			}
 			case MonsterSpace::eObjectActionUse : {
 				if (!DoorSwitch(l_sBoneID))
-					return((l_tObjectAction.m_bCompleted = true) == false);
+					return false; //((l_tObjectAction.m_bCompleted = true) == false);
 				break;
 			}
 			default : 
-				return	((l_tObjectAction.m_bCompleted = true) == false);
+				return false; //((l_tObjectAction.m_bCompleted = true) == false);
 		}
 		return		(false);
 	}
@@ -91,18 +91,18 @@ bool CCar::bfAssignObject(CScriptEntityAction *tpEntityAction)
 		switch(l_tObjectAction.m_tGoalType) {
 			case MonsterSpace::eObjectActionActivate : {
 				light->TurnOn();
-				return		((l_tObjectAction.m_bCompleted = true) == false);
+				return false; //((l_tObjectAction.m_bCompleted = true) == false);
 			}
 			case MonsterSpace::eObjectActionDeactivate : {
 				light->TurnOff();
-				return		((l_tObjectAction.m_bCompleted = true) == false);
+				return false; //((l_tObjectAction.m_bCompleted = true) == false);
 			}
 			case MonsterSpace::eObjectActionUse : {
 				light->Switch();
-				return		((l_tObjectAction.m_bCompleted = true) == false);
+				return false; //((l_tObjectAction.m_bCompleted = true) == false);
 			}
 			default : 
-				return	((l_tObjectAction.m_bCompleted = true) == false);
+				return false; //((l_tObjectAction.m_bCompleted = true) == false);
 		}
 	
 	}

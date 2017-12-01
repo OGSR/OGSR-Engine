@@ -60,8 +60,13 @@ void CEntity::OnEvent		(NET_Packet& P, u16 type)
 			P.r_u32			(cl);
 			CObject			*who = Level().Objects.net_Find	(id);
 			if (who) {
-				if (this!=who)	if(bDebug) Msg("%s %s %s %s",*cName(),"Killed by ",*(who->cName()), "...");
-				else			if(bDebug) Msg("%s %s",*cName(),"Crashed...");
+				if (this!=who) {
+					if(bDebug)
+						Msg("%s %s %s %s",*cName(),"Killed by ",*(who->cName()), "...");
+				}
+				else
+					if(bDebug)
+						Msg("%s %s",*cName(),"Crashed...");
 			};
 			Die				(who);
 		}

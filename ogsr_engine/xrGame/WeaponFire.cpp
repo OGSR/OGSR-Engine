@@ -59,7 +59,7 @@ void CWeapon::FireTrace		(const Fvector& P, const Fvector& D)
 //	Msg("ammo - %s", l_cartridge.m_ammoSect.c_str());
 	VERIFY		(u16(-1) != l_cartridge.bullet_material_idx);
 	//-------------------------------------------------------------	
-	l_cartridge.m_flags.set				(CCartridge::cfTracer,(m_bHasTracers & !!l_cartridge.m_flags.test(CCartridge::cfTracer)));
+	l_cartridge.m_flags.set(CCartridge::cfTracer, (m_bHasTracers & !!l_cartridge.m_flags.test(CCartridge::cfTracer))); //KRodin: мне кажется, или здесь должно быть && ? Надо б посмотреть, работает ли оно вообще.
 	if (m_u8TracerColorID != u8(-1))
 		l_cartridge.m_u8ColorID	= m_u8TracerColorID;
 	//-------------------------------------------------------------

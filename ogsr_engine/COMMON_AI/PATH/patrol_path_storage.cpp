@@ -32,8 +32,7 @@ void CPatrolPathStorage::load_raw			(const CLevelGraph *level_graph, const CGame
 
 		shared_str				patrol_name;
 		sub_chunk->r_stringZ	(patrol_name);
-		const_iterator			I = m_registry.find(patrol_name);
-		VERIFY3					(I == m_registry.end(),"Duplicated patrol path found",*patrol_name);
+		VERIFY3					(m_registry.find(patrol_name) == m_registry.end(),"Duplicated patrol path found",*patrol_name);
 		m_registry.insert		(
 			std::make_pair(
 				patrol_name,
@@ -80,8 +79,7 @@ void CPatrolPathStorage::load				(IReader &stream)
 
 		chunk1->close			();
 
-		const_iterator			I = m_registry.find(pair.first);
-		VERIFY3					(I == m_registry.end(),"Duplicated patrol path found ",*pair.first);
+		VERIFY3(m_registry.find(pair.first) == m_registry.end(),"Duplicated patrol path found ",*pair.first);
 		
 #ifdef DEBUG
 		pair.second->name		(pair.first);

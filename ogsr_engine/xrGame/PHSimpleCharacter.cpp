@@ -563,16 +563,11 @@ void CPHSimpleCharacter::PhTune(dReal step){
 		Fvector pos;pos.set(cast_fv(dBodyGetPosition(m_body)));
 		Fvector d;d.set(cast_fv(dBodyGetLinearVel(m_body)));d.mul(fixed_step);
 		pos.sub(d);
-		if(!ud->pushing_b_neg)
+		/*if(!ud->pushing_b_neg)
 		{
-			//Fvector movement;movement.sub(cast_fv(dGeomGetPosition(m_wheel)),cast_fv(ud->last_pos));
-
-			dVectorSet(m_death_position,cast_fp(pos));
-		}
-		else
-		{
-			dVectorSet(m_death_position,cast_fp(pos));
-		}
+			Fvector movement;movement.sub(cast_fv(dGeomGetPosition(m_wheel)),cast_fv(ud->last_pos));
+		}*/
+		dVectorSet(m_death_position,cast_fp(pos));
 	}
 	
 	if(b_death_pos&&!(ud->pushing_neg||ud->pushing_b_neg))
@@ -1746,8 +1741,7 @@ ALife::EHitType	CPHSimpleCharacter:: HitType	()const
 	if(GMLib.GetMaterialByIdx(LastMaterialIDX())->Flags.test(SGameMtl::flInjurious)&&IsGameTypeSingle())
 		return ALife::eHitTypeRadiation;
 	else									
-//		return ALife::eHitTypeStrike;
-	return (GameID() == GAME_SINGLE) ? ALife::eHitTypeStrike : ALife::eHitTypePhysicStrike;
+		return ALife::eHitTypeStrike;
 }//
 CElevatorState*	CPHSimpleCharacter::ElevatorState()
 {

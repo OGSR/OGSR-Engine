@@ -252,7 +252,7 @@ bool CBulletManager::CalcBullet (collide::rq_results & rq_storage, xr_vector<ISp
 	{
 		range						= (rq_storage.r_begin()+rq_storage.r_count()-1)->range;
 	}
-	range							= _max				(EPS_L,range);
+	range							= std::max(EPS_L,range);
 
 	bullet->flags.skipped_frame = (Device.dwFrame >= bullet->frame_num);
 

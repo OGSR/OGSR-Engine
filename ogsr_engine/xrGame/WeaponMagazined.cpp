@@ -331,9 +331,6 @@ void CWeaponMagazined::ReloadMagazine()
 			}
 		}
 	}
-	else
-		m_ammoType = m_ammoType;
-
 
 	//нет патронов для перезарядки
 	if(!m_pAmmo && !unlimited_ammo() ) return;

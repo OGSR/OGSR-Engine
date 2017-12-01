@@ -56,8 +56,7 @@ void CPurchaseList::process	(const CGameObject &owner, const shared_str &name, c
 		Level().spawn_item		(*name,position,level_vertex_id,id,false);
 	}
 
-	DEFICITS::const_iterator	I = m_deficits.find(name);
-	VERIFY3						(I == m_deficits.end(),"Duplicate section in the purchase list",*name);
+	VERIFY3(m_deficits.find(name) == m_deficits.end(),"Duplicate section in the purchase list",*name);
 	m_deficits.insert			(
 		std::make_pair(
 			name,

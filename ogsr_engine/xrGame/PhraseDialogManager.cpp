@@ -59,8 +59,7 @@ void CPhraseDialogManager::InitDialog (CPhraseDialogManager* dialog_partner, DIA
 
 void CPhraseDialogManager::AddDialog(DIALOG_SHARED_PTR& phrase_dialog)
 {
-	DIALOG_VECTOR_IT it = std::find(m_ActiveDialogs.begin(), m_ActiveDialogs.end(), phrase_dialog);
-	THROW(m_ActiveDialogs.end() == it);
+	THROW(m_ActiveDialogs.end() == std::find(m_ActiveDialogs.begin(), m_ActiveDialogs.end(), phrase_dialog));
 	m_ActiveDialogs.push_back(phrase_dialog);
 }
 

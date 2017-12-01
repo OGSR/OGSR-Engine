@@ -1086,7 +1086,7 @@ struct STraceBorderQParams
 	{
 		m_movement=movement		;
 	}
-	STraceBorderQParams& operator = (STraceBorderQParams& p) {VERIFY(FALSE);return p;}
+	STraceBorderQParams& operator = (STraceBorderQParams& p) {VERIFY(FALSE);return p;} //Эта функция в дебаге должна вылетать что-ли?
 };
 
 BOOL CPHMovementControl::BorderTraceCallback(collide::rq_result& result, LPVOID params)

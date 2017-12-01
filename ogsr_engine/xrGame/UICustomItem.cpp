@@ -106,7 +106,7 @@ void CUICustomItem::Render(FVF::TL*& Pointer, const Fvector2& pos_ns, u32 color,
 		pivot.set(iHeadingPivot.x, iHeadingPivot.y);
 
 //.	UI()->ClientToScreenScaled			(pivot, pivot.x, pivot.y);
-	pivot.set							(pivot);
+	//pivot.set							(pivot); //???
 	offset.set							(pos_ns);
 	offset.add(iHeadingOffset);
 

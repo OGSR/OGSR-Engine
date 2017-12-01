@@ -250,7 +250,7 @@ void*	xrMemory::mem_realloc	(void* P, size_t size
 		//mem_copy				(p_new,p_old,_min(s_current,s_dest));
 		mem_free				(p_old);
 		_ptr					= p_new;
-	} else if (2==p_mode)		{
+	} else if (2==p_mode)		{ //KRodin: вроде как это условие всегда истинно. Остальные условия можно будет поубирать.
 		// relocate into another mmgr(pooled) from real
 		void*	p_old			= P;
 		void*	p_new			= mem_alloc(size

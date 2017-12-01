@@ -44,9 +44,8 @@ void CGroupHierarchyHolder::update_leader				()
 
 void CGroupHierarchyHolder::register_in_group			(CEntity *member)
 {
-	VERIFY						(member);
-	MEMBER_REGISTRY::iterator	I = std::find(m_members.begin(),m_members.end(),member);
-	VERIFY3						(I == m_members.end(),"Specified group member has already been found",*member->cName());
+	VERIFY(member);
+	VERIFY3(std::find(m_members.begin(),m_members.end(),member) == m_members.end(),"Specified group member has already been found",*member->cName());
 
 	if (m_members.empty()) {
 		m_visible_objects		= xr_new<VISIBLE_OBJECTS>();
