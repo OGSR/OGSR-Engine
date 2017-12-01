@@ -1,5 +1,6 @@
 #include "pch_script.h"
 #include "weaponsvd.h"
+#include "game_object_space.h"
 
 CWeaponSVD::CWeaponSVD(void) : CWeaponCustomPistol("SVD")
 {
@@ -17,6 +18,7 @@ void CWeaponSVD::switch2_Fire	()
 	m_iShotNum					= 0;
 	m_bStopedAfterQueueFired	= false;
 
+	StateSwitchCallback(GameObject::eOnActorWeaponStartFiring, GameObject::eOnNPCWeaponStartFiring);
 }
 
 void CWeaponSVD::OnAnimationEnd(u32 state) 

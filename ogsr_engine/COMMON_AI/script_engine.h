@@ -21,6 +21,7 @@ protected:
 
 private:
 	string128					m_last_no_file;
+	u32						m_last_no_file_cnt;
 	u32							m_last_no_file_length;
 
 	bool				no_file_exists(const char* file_name, u32 string_length);

@@ -374,39 +374,6 @@ void CWeaponMagazined::ReloadMagazine()
 	VERIFY((u32)iAmmoElapsed == m_magazine.size());
 }
 
-// Function for callbacks added by Cribbledirge.
-void CWeaponMagazined::StateSwitchCallback(GameObject::ECallbackType actor_type, GameObject::ECallbackType npc_type)
-{
-	xr_string ammo_type;
-	if (GetAmmoElapsed() == 0 || m_magazine.empty())
-	{
-		ammo_type = *m_ammoTypes[m_ammoType];
-	}
-	else
-	{
-		ammo_type = *m_ammoTypes[m_magazine.back().m_LocalAmmoType];
-	}
-
-	if (g_actor)
-	{
-		if (smart_cast<CActor*>(H_Parent()))  // This is an actor.
-		{
-			Actor()->callback(actor_type)(
-				lua_game_object(),  // The weapon as a game object.
-				ammo_type.c_str()   // The caliber of the weapon.
-			);
-		}
-		else if (smart_cast<CEntityAlive*>(H_Parent()))  // This is an NPC.
-		{
-			Actor()->callback(npc_type)(
-				smart_cast<CEntityAlive*>(H_Parent())->lua_game_object(),       // The owner of the weapon.
-				lua_game_object(),                                              // The weapon itself.
-                                ammo_type.c_str()                                               // The caliber of the weapon.
-			);
-		}
-	}
-}
-
 void CWeaponMagazined::OnStateSwitch	(u32 S)
 {
 	inherited::OnStateSwitch(S);
@@ -553,13 +520,11 @@ void CWeaponMagazined::state_Fire	(float dt)
 		++m_iShotNum;
 		
 		OnShot			();
+		// Do Weapon Callback.  (Cribbledirge)
+		StateSwitchCallback(GameObject::eOnActorWeaponFire, GameObject::eOnNPCWeaponFire);
 		static int i = 0;
 		if (i||m_iShotNum>m_iShootEffectorStart)
-		{
-			// Do Weapon Callback.  (Cribbledirge)
-			StateSwitchCallback(GameObject::eOnActorWeaponFire, GameObject::eOnNPCWeaponFire);
 			FireTrace		(p1,d);
-		}
 		else
 			FireTrace		(m_vStartPos, m_vStartDir);
 	}
@@ -679,6 +644,8 @@ void CWeaponMagazined::switch2_Fire	()
 	m_bStopedAfterQueueFired = false;
 	m_bFireSingleShot = true;
 	m_iShotNum = 0;
+
+	StateSwitchCallback(GameObject::eOnActorWeaponStartFiring, GameObject::eOnNPCWeaponStartFiring);
 
     if((OnClient() || Level().IsDemoPlay())&& !IsWorking())
 		FireStart();

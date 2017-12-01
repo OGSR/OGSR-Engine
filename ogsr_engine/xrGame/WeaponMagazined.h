@@ -194,9 +194,6 @@ protected:
 	virtual	int		ShotsFired			() { return m_iShotNum; }
 	virtual float	GetWeaponDeterioration	();
 
-	// Callback function added by Cribbledirge.
-	virtual IC void	StateSwitchCallback(GameObject::ECallbackType actor_type, GameObject::ECallbackType npc_type);
-
 	virtual void	OnDrawUI();
 	virtual void	net_Relcase(CObject *object);
 

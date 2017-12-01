@@ -449,7 +449,11 @@ bool CLocatorAPI::Recurse		(const char* path)
     }
 
 	string1024 full_path;
+#ifdef LOAD_SCRIPTS_SUBDIRS
+	if (0)
+#else
 	if (m_Flags.test(flNeedCheck))
+#endif
 	{
 		strcpy_s(full_path,sizeof(full_path), path);
 		strcat(full_path, sFile.name);
@@ -631,6 +635,12 @@ void CLocatorAPI::_initialize	(u32 flags, LPCSTR target_folder, LPCSTR fs_name)
 			std::pair<PathPairIt, bool> I;
 			FS_Path* P			= xr_new<FS_Path>((p_it!=pathes.end())?p_it->second->m_Path:root,lp_add,lp_def,lp_capt,fl);
 			bNoRecurse			= !(fl&FS_Path::flRecurse);
+#ifdef RESTRICT_GAMEDATA
+			bool restricted = false;
+			if ( ( xr_strcmp( id, "$game_config$" ) == 0 || xr_strcmp( id, "$game_scripts$" ) == 0 ) )
+				restricted = !Core.ParamFlags.test( xrCore::ParamFlag::dbg );
+			if ( !restricted )
+#endif
 			Recurse				(P->m_Path);
 			I					= pathes.insert(mk_pair(xr_strdup(id),P));
 #ifndef DEBUG

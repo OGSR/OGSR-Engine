@@ -26,6 +26,7 @@
 #include "UIMessagesWindow.h"
 #include "UIMainIngameWnd.h"
 #include "UITabButton.h"
+#include "../actor.h"
 
 #define		PDA_XML					"pda.xml"
 u32			g_pda_info_state		= 0;
@@ -162,6 +163,9 @@ void CUIPdaWnd::SendMessage(CUIWindow* pWnd, s16 msg, void* pData)
 
 void CUIPdaWnd::Show()
 {
+#ifdef MORE_HIDE_WEAPON
+	Actor()->SetWeaponHideState(INV_STATE_BLOCK_ALL, true);
+#endif
 	InventoryUtilities::SendInfoToActor("ui_pda");
 
 	inherited::Show();
@@ -174,6 +178,9 @@ void CUIPdaWnd::Hide()
 	InventoryUtilities::SendInfoToActor("ui_pda_hide");
 	HUD().GetUI()->UIMainIngameWnd->SetFlashIconState_(CUIMainIngameWnd::efiPdaTask, false);
 
+#ifdef MORE_HIDE_WEAPON
+	Actor()->SetWeaponHideState(INV_STATE_BLOCK_ALL, false);
+#endif
 }
 
 void CUIPdaWnd::UpdateDateTime()

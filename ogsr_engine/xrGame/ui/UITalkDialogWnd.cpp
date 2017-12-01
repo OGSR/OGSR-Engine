@@ -6,6 +6,7 @@
 #include "UIScrollView.h"
 #include "UI3tButton.h"
 #include "../UI.h"
+#include "../actor.h"
 
 
 #define				TALK_XML				"talk.xml"
