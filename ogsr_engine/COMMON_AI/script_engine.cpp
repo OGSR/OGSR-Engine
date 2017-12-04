@@ -195,7 +195,7 @@ bool CScriptEngine::process_file_if_exists( const char* file_name, bool warn_if_
   // убедились что файла нет, постоянно не проверять, есть ли он.
   if ( !warn_if_not_exist && no_file_exists( file_name, string_length ) ) {
     ++m_last_no_file_cnt;
-    if ( m_last_no_file_cnt == 10 ) {
+    if ( m_last_no_file_cnt == 1 ) {
       Msg( "-------------------------" );
       Msg( "[CScriptEngine::process_file_if_exists] WARNING: multiple access to nonexistent variable '%s' or loading nonexistent script", file_name );
       print_stack();
