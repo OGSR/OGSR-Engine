@@ -67,3 +67,7 @@
 
 // Включает загрузку скриптов из подкаталогов scripts.
 //#define LOAD_SCRIPTS_SUBDIRS
+
+// включает экспорт класса CEffectorZoomInertion для управления движением
+// прицела
+//#define SCRIPT_EZI_CONTROL
