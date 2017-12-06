@@ -137,6 +137,9 @@ bool CALifeStorageManager::load	(LPCSTR save_name)
 	}
 	else
 		strconcat				(sizeof(m_save_name),m_save_name,save_name,SAVE_EXTENSION);
+
+	strcpy_s (m_loaded_save, sizeof(m_loaded_save) - 1, m_save_name);
+
 	string_path					file_name;
 	FS.update_path				(file_name,"$game_saves$",m_save_name);
 
