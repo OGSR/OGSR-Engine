@@ -147,7 +147,7 @@ void  CUIStatic::Draw()
 {
 	if(m_bClipper){
 		Frect clip_rect;
-		if (-1 == m_ClipRect.left && -1 == m_ClipRect.right && -1 == m_ClipRect.top && -1 == m_ClipRect.left){
+		if (-1 == m_ClipRect.left && -1 == m_ClipRect.right && -1 == m_ClipRect.top){
 			Frect			our_rect;
 			GetAbsoluteRect	(our_rect);
 			clip_rect		= our_rect;

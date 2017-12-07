@@ -187,9 +187,6 @@ void CUIListWnd::DetachChild(CUIWindow* pChild)
 void CUIListWnd::RemoveAll()
 {
 	if(m_ItemList.empty()) return;
-
-	LIST_ITEM_LIST_it it;
-
 		
 	while(!m_ItemList.empty())
 	{

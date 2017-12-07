@@ -1,6 +1,11 @@
-#ifndef xrCoreH
-#define xrCoreH
 #pragma once
+
+//KRodin: это инклудить только здесь и нигде больше!
+#if __has_include("..\build_config_overrides\build_config_defines.h")
+#	include "..\build_config_overrides\build_config_defines.h"
+#else
+#	include "..\build_config_defines.h"
+#endif
 
 #pragma warning(disable:4595)
 #pragma warning(disable:4996)
@@ -278,4 +283,3 @@ extern XRCORE_API xrCore Core;
 extern XRCORE_API	u32		build_id;
 extern XRCORE_API	LPCSTR	build_date;
 XRCORE_API	 void compute_build_id();
-#endif

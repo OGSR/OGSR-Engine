@@ -192,7 +192,6 @@ void CUICarBodyWnd::InitCarBody(CInventoryOwner* pOur, CInventoryOwner* pOthers)
 
 		KNOWN_INFO_VECTOR_IT it = known_info.begin();
 		for(int i=0;it!=known_info.end();++it,++i){
-			(*it).info_id;	
 			NET_Packet		P;
 			CGameObject::u_EventGen		(P,GE_INFO_TRANSFER, our_id);
 			P.w_u16						(0);//not used

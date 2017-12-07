@@ -258,13 +258,7 @@ LPCTSTR __stdcall InternalGetStackTraceString(DWORD dwOpts, EXCEPTION_POINTERS* 
                     szRet = g_szBuff;
                     __leave;
                 } else {
-                    if (dwDisp > 0) {
-                        iCurr += wsprintf(g_szBuff + iCurr, _T("%s, line %d"),
-                                          g_stLine.FileName, g_stLine.LineNumber);
-                    } else {
-                        iCurr += wsprintf(g_szBuff + iCurr, _T("%s, line %d"), g_stLine.FileName,
-                                          g_stLine.LineNumber);
-                    }
+                        iCurr += wsprintf(g_szBuff + iCurr, _T("%s, line %d"), g_stLine.FileName, g_stLine.LineNumber);
                 }
             }
         }

@@ -52,8 +52,7 @@ void CAgentMemberManager::add					(CEntity *member)
 		)
 	);
 
-	iterator					I = std::find_if(m_members.begin(),m_members.end(), CMemberPredicate(stalker));
-	VERIFY						(I == m_members.end());
+	VERIFY(std::find_if(m_members.begin(),m_members.end(), CMemberPredicate(stalker)) == m_members.end());
 	m_members.push_back			(xr_new<CMemberOrder>(stalker));
 }
 

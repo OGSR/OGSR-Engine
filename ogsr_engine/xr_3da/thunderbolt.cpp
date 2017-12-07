@@ -16,7 +16,7 @@
 	#include "xr_object.h"
 #endif
 
-static const float MAX_DIST_FACTOR = 0.95f;
+static constexpr float MAX_DIST_FACTOR = 0.95f;
 
 SThunderboltDesc::SThunderboltDesc(CInifile* pIni, LPCSTR sect)
 {
@@ -94,7 +94,7 @@ CEffect_Thunderbolt::CEffect_Thunderbolt()
     p_var_alt		= pSettings->r_fvector2							( "thunderbolt_common","altitude" );  
 	p_var_alt.x		= deg2rad(p_var_alt.x); p_var_alt.y	= deg2rad(p_var_alt.y);
     p_var_long		= deg2rad	(				 pSettings->r_float	( "thunderbolt_common","delta_longitude" ));
-    p_min_dist		= _min		(MAX_DIST_FACTOR,pSettings->r_float	( "thunderbolt_common","min_dist_factor" ));
+    p_min_dist		= std::min(MAX_DIST_FACTOR,pSettings->r_float	( "thunderbolt_common","min_dist_factor" ));
     p_tilt			= deg2rad	(pSettings->r_float					( "thunderbolt_common","tilt" ));
     p_second_prop	= pSettings->r_float							( "thunderbolt_common","second_propability" );
     clamp			(p_second_prop,0.f,1.f);

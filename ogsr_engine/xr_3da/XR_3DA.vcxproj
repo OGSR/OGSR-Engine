@@ -481,7 +481,7 @@
       <OmitFramePointers>false</OmitFramePointers>
       <EnableFiberSafeOptimizations>true</EnableFiberSafeOptimizations>
       <WholeProgramOptimization>false</WholeProgramOptimization>
-      <AdditionalIncludeDirectories>..\build_config_overrides;..\build_config_defines;..\COMMON;..\xrCore\;..\xrCPU_Pipe\;X:\3rd_party\Src\d3dx\include;..\Luabind;..\LuaJIT\src;X:\3rd_party\Src\Xiph\libogg\include;X:\3rd_party\Src\Xiph\libtheora\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\COMMON;..\xrCore\;..\xrCPU_Pipe\;X:\3rd_party\Src\d3dx\include;..\Luabind;..\LuaJIT\src;X:\3rd_party\Src\Xiph\libogg\include;X:\3rd_party\Src\Xiph\libtheora\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>NDEBUG;WIN32;_WINDOWS;ENGINE_BUILD;_SECURE_SCL=0;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <StringPooling>true</StringPooling>
       <ExceptionHandling>

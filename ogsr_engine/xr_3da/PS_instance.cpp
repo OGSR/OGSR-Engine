@@ -28,10 +28,7 @@ CPS_Instance::~CPS_Instance					()
 	VERIFY									(it!=g_pGamePersistent->ps_active.end());
 	g_pGamePersistent->ps_active.erase		(it);
 
-	xr_vector<CPS_Instance*>::iterator it2	= std::find( g_pGamePersistent->ps_destroy.begin(),
-													g_pGamePersistent->ps_destroy.end(), this);
-
-	VERIFY									(it2==g_pGamePersistent->ps_destroy.end());
+	VERIFY(std::find(g_pGamePersistent->ps_destroy.begin(), g_pGamePersistent->ps_destroy.end(), this) == g_pGamePersistent->ps_destroy.end());
 
 	spatial_unregister						();
 	shedule_unregister						();

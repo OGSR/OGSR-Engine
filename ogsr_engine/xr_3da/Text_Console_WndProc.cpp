@@ -11,8 +11,8 @@ LRESULT CALLBACK TextConsole_WndProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARA
 		}break;
 	case  WM_ERASEBKGND:
 		{
-			int x=0;
-			x=x;
+			//int x=0;
+			//x=x;
 //			CTextConsole* pTextConsole = (CTextConsole*)Console;
 //			pTextConsole->OnPaint();
 //			return 1;
@@ -21,8 +21,8 @@ LRESULT CALLBACK TextConsole_WndProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARA
 		{
 //			CTextConsole* pTextConsole = (CTextConsole*)Console;
 //			pTextConsole->OnPaint();
-			int x=0;
-			x=x;
+			//int x=0;
+			//x=x;
 //			return 0;
 		}break;
 	default:

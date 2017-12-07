@@ -263,7 +263,7 @@ void		CHW::CreateDevice		(HWND m_hWnd)
 		fDepth  = selectDepthStencil(fTarget);
 	}
 
-	if ((D3DFMT_UNKNOWN==fTarget) || (D3DFMT_UNKNOWN==fTarget))	{
+	if (D3DFMT_UNKNOWN==fTarget) {
 		Msg					("Failed to initialize graphics hardware.\nPlease try to restart the game.");
 		FlushLog			();
 		MessageBox			(NULL,"Failed to initialize graphics hardware.\nPlease try to restart the game.","Error!",MB_OK|MB_ICONERROR);

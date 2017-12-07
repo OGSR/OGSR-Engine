@@ -1,7 +1,5 @@
 #pragma once
 
-#include <build_config_defines.h>
-
 #pragma warning(disable:4995)
 #pragma warning(disable:4577)
 #include "../xr_3da/stdafx.h"
@@ -36,4 +34,4 @@ IC	void		throw_and_log(const xr_string &s) {Msg("! %s",s.c_str()); throw *shared
 
 #ifndef DEBUG
 #	define MASTER_GOLD
-#endif // DEBUG
+#endif
