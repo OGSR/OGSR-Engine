@@ -1,9 +1,4 @@
-#ifndef	STDAFX_3DA
-#define STDAFX_3DA
-
 #pragma once
-
-#include <build_config_defines.h>
 
 #ifdef _EDITOR
 	#include "..\editors\ECore\stdafx.h"
@@ -63,4 +58,3 @@ extern ENGINE_API CInifile *pGameIni;
 #pragma comment( lib, "dxguid.lib"		)
 
 #endif // !M_BORLAND
-#endif // !defined STDAFX_3DA

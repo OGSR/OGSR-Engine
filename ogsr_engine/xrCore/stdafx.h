@@ -4,9 +4,8 @@
 //
 #ifndef stdafxH
 #define stdafxH
-#pragma once
 
-#include <build_config_defines.h>
+#pragma once
 
 #include "xrCore.h"
 #include "xrCore_platform.h"
@@ -14,4 +13,3 @@
 #endif
 
 #pragma hdrstop
-

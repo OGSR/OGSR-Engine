@@ -9,17 +9,10 @@
 
 #pragma once
 
-#include <build_config_defines.h>
-
 #include "../xrCore/xrCore.h"
 
 #include "psystem.h"
 
-#ifdef __BORLANDC__
-#define logf log
-#pragma comment( lib, "xrCoreB.lib"	)
-#else
 #pragma comment( lib, "xrCore.lib"	)
-#endif
 
 #endif //stdafxH
