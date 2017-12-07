@@ -60,54 +60,67 @@ bool CCar::bfAssignMovement(CScriptEntityAction *tpEntityAction)
 bool CCar::bfAssignObject(CScriptEntityAction *tpEntityAction)
 {
 	CScriptObjectAction	&l_tObjectAction = tpEntityAction->m_tObjectAction;
-	if (l_tObjectAction.m_bCompleted || !xr_strlen(l_tObjectAction.m_caBoneName))
-		return false; //((l_tObjectAction.m_bCompleted = true) == false);
+	if (l_tObjectAction.m_bCompleted || !xr_strlen(l_tObjectAction.m_caBoneName)) {
+		l_tObjectAction.m_bCompleted = true;
+		return false;
+	}
 
 	s16	l_sBoneID = smart_cast<CKinematics*>(Visual())->LL_BoneID(l_tObjectAction.m_caBoneName);
 	if (is_Door(l_sBoneID)) {
 		switch(l_tObjectAction.m_tGoalType) {
 			case MonsterSpace::eObjectActionActivate : {
-				if (!DoorOpen(l_sBoneID))
-					return false; //((l_tObjectAction.m_bCompleted = true) == false);
+				if (!DoorOpen(l_sBoneID)) {
+					l_tObjectAction.m_bCompleted = true;
+					return false;
+				}
 				break;
 			}
 			case MonsterSpace::eObjectActionDeactivate : {
-				if (!DoorClose(l_sBoneID))
-					return false; //((l_tObjectAction.m_bCompleted = true) == false);
+				if (!DoorClose(l_sBoneID)) {
+					l_tObjectAction.m_bCompleted = true;
+					return false;
+				}
 				break;
 			}
 			case MonsterSpace::eObjectActionUse : {
-				if (!DoorSwitch(l_sBoneID))
-					return false; //((l_tObjectAction.m_bCompleted = true) == false);
+				if (!DoorSwitch(l_sBoneID)) {
+					l_tObjectAction.m_bCompleted = true;
+					return false;
+				}
 				break;
 			}
-			default : 
-				return false; //((l_tObjectAction.m_bCompleted = true) == false);
+			default:
+				l_tObjectAction.m_bCompleted = true;
+				return false;
 		}
-		return		(false);
+		return false;
 	}
 	SCarLight* light=NULL;
 	if (m_lights.findLight(l_sBoneID,light)) {
 		switch(l_tObjectAction.m_tGoalType) {
 			case MonsterSpace::eObjectActionActivate : {
 				light->TurnOn();
-				return false; //((l_tObjectAction.m_bCompleted = true) == false);
+				l_tObjectAction.m_bCompleted = true;
+				return false;
 			}
 			case MonsterSpace::eObjectActionDeactivate : {
 				light->TurnOff();
-				return false; //((l_tObjectAction.m_bCompleted = true) == false);
+				l_tObjectAction.m_bCompleted = true;
+				return false;
 			}
 			case MonsterSpace::eObjectActionUse : {
 				light->Switch();
-				return false; //((l_tObjectAction.m_bCompleted = true) == false);
+				l_tObjectAction.m_bCompleted = true;
+				return false;
 			}
-			default : 
-				return false; //((l_tObjectAction.m_bCompleted = true) == false);
+			default:
+				l_tObjectAction.m_bCompleted = true;
+				return false;
 		}
 	
 	}
 	
-	return			(false);
+	return false;
 }
 
 void CCar::vfProcessInputKey	(int iCommand, bool bPressed)
