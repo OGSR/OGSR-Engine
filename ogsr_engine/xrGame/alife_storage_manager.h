@@ -19,6 +19,7 @@ protected:
 
 protected:
 	string_path		m_save_name;
+	string_path		m_loaded_save;
 	LPCSTR			m_section;
 
 private:
@@ -31,6 +32,7 @@ public:
 			bool	load					(LPCSTR	save_name = 0);
 			void	save					(LPCSTR	save_name = 0, bool update_name = true);
 			void	save					(NET_Packet &net_packet);
+	IC		LPCSTR	save_name				(BOOL bLoaded);	
 };
 
 #include "alife_storage_manager_inline.h"

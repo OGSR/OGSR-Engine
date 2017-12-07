@@ -375,6 +375,21 @@ bool dont_has_info								(const CALifeSimulator *self, const ALife::_OBJECT_ID 
 //	THROW								(self);
 //}
 
+LPCSTR get_save_name(CALifeSimulator *sim) 
+{
+	// alpet: обертка предотвращает вылет, при обращении к свойству на ранней стадии  инициализации
+	LPCSTR result = NULL;
+	if (sim) result = sim->save_name(FALSE);
+	return result ? result : "NULL";
+}
+
+LPCSTR get_loaded_save(CALifeSimulator *sim) 
+{
+	LPCSTR result = NULL;
+	if (sim) result = sim->save_name(TRUE);
+	return result ? result : "NULL";
+}
+
 #pragma optimize("s",on)
 void CALifeSimulator::script_register			(lua_State *L)
 {
@@ -415,6 +430,8 @@ void CALifeSimulator::script_register			(lua_State *L)
 			.def("teleport_object",			&CALifeSimulator__teleport_object)
 			.def("assign_story_id",			&CALifeSimulator__assign_story_id)
 			.def("use_ai_locations",		&CALifeSimulator__use_ai_locations)
+			.property("save_name",			&get_save_name)
+			.property("loaded_save_name",	&get_loaded_save)
 
 		,def("alife",						&alife)
 	];
