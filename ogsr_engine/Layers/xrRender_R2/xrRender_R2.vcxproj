@@ -120,7 +120,7 @@
     <IncludePath>X:\trunk\xray\xrLua\src;X:\trunk\3rd party\FreeImage\FreeImage\Source;X:\trunk\xray\xrCore;X:\trunk\3rd party\MagicSoftware\FreeMagic\Include;X:\trunk\3rd party\OpenAL\Include;X:\trunk\3rd party\luabind_old\luabind;X:\trunk\3rd party\eax\Include;X:\trunk\3rd party\boost;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <LibraryPath>$(VC_LibraryPath_x86);$(WindowsSDK_LibraryPath_x86);$(NETFXKitsDir)Lib\um\x86;X:\3rd_party\Src\dxsdk_libs\$(PlatformShortName);</LibraryPath>
+    <LibraryPath>$(VC_LibraryPath_x86);$(WindowsSDK_LibraryPath_x86);$(NETFXKitsDir)Lib\um\x86;$(SolutionDir)\3rd_party\Src\dxsdk_libs\$(PlatformShortName);</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -218,7 +218,7 @@
       <ProgramDataBaseFileName>$(IntDir)</ProgramDataBaseFileName>
       <WarningLevel>Level4</WarningLevel>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
-      <AdditionalIncludeDirectories>./;..\..\COMMON;X:\3rd_party\Src\d3dx\include;..\..\xrCore</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>./;..\..\COMMON;$(SolutionDir)\3rd_party\Src\d3dx\include;..\..\xrCore</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <DisableSpecificWarnings>4456;4457;4458;4995;4577;</DisableSpecificWarnings>
       <MinimalRebuild>false</MinimalRebuild>

@@ -3,19 +3,19 @@
   <ImportGroup Label="PropertySheets" />
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup>
-    <OutDir>X:\3rd_party\_LIB\$(Configuration)\$(Platform)\</OutDir>
-    <IntDir>X:\3rd_party\_TEMP\$(Configuration)\$(Platform)\$(ProjectName)\</IntDir>
+    <OutDir>$(SolutionDir)\3rd_party\_LIB\$(Configuration)\$(Platform)\</OutDir>
+    <IntDir>$(SolutionDir)\3rd_party\_TEMP\$(Configuration)\$(Platform)\$(ProjectName)\</IntDir>
   </PropertyGroup>
   <ItemDefinitionGroup>
     <ClCompile>
       <EnableEnhancedInstructionSet>StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
-      <AssemblerListingLocation>X:\3rd_party\_TEMP\$(Configuration)\$(Platform)\$(ProjectName)\</AssemblerListingLocation>
-      <ObjectFileName>X:\3rd_party\_TEMP\$(Configuration)\$(Platform)\$(ProjectName)\</ObjectFileName>
-      <ProgramDataBaseFileName>X:\3rd_party\_TEMP\$(Configuration)\$(Platform)\$(ProjectName)\</ProgramDataBaseFileName>
+      <AssemblerListingLocation>$(SolutionDir)\3rd_party\_TEMP\$(Configuration)\$(Platform)\$(ProjectName)\</AssemblerListingLocation>
+      <ObjectFileName>$(SolutionDir)\3rd_party\_TEMP\$(Configuration)\$(Platform)\$(ProjectName)\</ObjectFileName>
+      <ProgramDataBaseFileName>$(SolutionDir)\3rd_party\_TEMP\$(Configuration)\$(Platform)\$(ProjectName)\</ProgramDataBaseFileName>
     </ClCompile>
     <Lib>
       <SuppressStartupBanner>true</SuppressStartupBanner>
-      <OutputFile>X:\3rd_party\_LIB\$(Configuration)\$(Platform)\$(TargetName).lib</OutputFile>
+      <OutputFile>$(SolutionDir)\3rd_party\_LIB\$(Configuration)\$(Platform)\$(TargetName).lib</OutputFile>
     </Lib>
   </ItemDefinitionGroup>
   <ItemGroup />
