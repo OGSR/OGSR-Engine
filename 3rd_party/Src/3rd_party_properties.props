@@ -3,19 +3,19 @@
   <ImportGroup Label="PropertySheets" />
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup>
-    <OutDir>X:\bin\</OutDir>
-    <IntDir>X:\3rd_party\_TEMP\$(Configuration)\$(Platform)\$(ProjectName)\</IntDir>
+    <OutDir>$(SolutionDir)\bin\</OutDir>
+    <IntDir>$(SolutionDir)\3rd_party\_TEMP\$(Configuration)\$(Platform)\$(ProjectName)\</IntDir>
   </PropertyGroup>
   <ItemDefinitionGroup>
     <ClCompile>
         <EnableEnhancedInstructionSet>StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
-      <AssemblerListingLocation>X:\3rd_party\_TEMP\$(Configuration)\$(Platform)\$(ProjectName)\</AssemblerListingLocation>
-      <ObjectFileName>X:\3rd_party\_TEMP\$(Configuration)\$(Platform)\$(ProjectName)\</ObjectFileName>
-      <ProgramDataBaseFileName>X:\3rd_party\_TEMP\$(Configuration)\$(Platform)\$(ProjectName)\</ProgramDataBaseFileName>
+      <AssemblerListingLocation>$(SolutionDir)\3rd_party\_TEMP\$(Configuration)\$(Platform)\$(ProjectName)\</AssemblerListingLocation>
+      <ObjectFileName>$(SolutionDir)\3rd_party\_TEMP\$(Configuration)\$(Platform)\$(ProjectName)\</ObjectFileName>
+      <ProgramDataBaseFileName>$(SolutionDir)\3rd_party\_TEMP\$(Configuration)\$(Platform)\$(ProjectName)\</ProgramDataBaseFileName>
     </ClCompile>
     <Link>
-      <ImportLibrary>X:\3rd_party\_LIB\$(Configuration)\$(Platform)\$(TargetName).lib</ImportLibrary>
-      <AdditionalLibraryDirectories>X:\3rd_party\_LIB\$(Configuration)\$(Platform)</AdditionalLibraryDirectories>
+      <ImportLibrary>$(SolutionDir)\3rd_party\_LIB\$(Configuration)\$(Platform)\$(TargetName).lib</ImportLibrary>
+      <AdditionalLibraryDirectories>$(SolutionDir)\3rd_party\_LIB\$(Configuration)\$(Platform)</AdditionalLibraryDirectories>
       <LargeAddressAware>true</LargeAddressAware>
     </Link>
   </ItemDefinitionGroup>

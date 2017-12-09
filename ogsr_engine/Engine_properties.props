@@ -3,19 +3,19 @@
   <ImportGroup Label="PropertySheets" />
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup>
-    <OutDir>X:\bin\</OutDir>
-    <IntDir>X:\ogsr_engine\_TEMP\Engine\$(Configuration)\$(Platform)\$(ProjectName)\</IntDir>
+    <OutDir>$(SolutionDir)\bin\</OutDir>
+    <IntDir>$(SolutionDir)\ogsr_engine\_TEMP\Engine\$(Configuration)\$(Platform)\$(ProjectName)\</IntDir>
   </PropertyGroup>
   <ItemDefinitionGroup>
     <ClCompile>
         <EnableEnhancedInstructionSet>StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
-      <AssemblerListingLocation>X:\ogsr_engine\_TEMP\Engine\$(Configuration)\$(Platform)\$(ProjectName)\</AssemblerListingLocation>
-      <ObjectFileName>X:\ogsr_engine\_TEMP\Engine\$(Configuration)\$(Platform)\$(ProjectName)\</ObjectFileName>
-      <ProgramDataBaseFileName>X:\ogsr_engine\_TEMP\Engine\$(Configuration)\$(Platform)\$(ProjectName)\</ProgramDataBaseFileName>
+      <AssemblerListingLocation>$(SolutionDir)\ogsr_engine\_TEMP\Engine\$(Configuration)\$(Platform)\$(ProjectName)\</AssemblerListingLocation>
+      <ObjectFileName>$(SolutionDir)\ogsr_engine\_TEMP\Engine\$(Configuration)\$(Platform)\$(ProjectName)\</ObjectFileName>
+      <ProgramDataBaseFileName>$(SolutionDir)\ogsr_engine\_TEMP\Engine\$(Configuration)\$(Platform)\$(ProjectName)\</ProgramDataBaseFileName>
     </ClCompile>
     <Link>
-      <ImportLibrary>X:\ogsr_engine\_LIB\Engine\$(Configuration)\$(Platform)\$(TargetName).lib</ImportLibrary>
-      <AdditionalLibraryDirectories>X:\3rd_party\_LIB\$(Configuration)\$(Platform);X:\ogsr_engine\_LIB\Engine\$(Configuration)\$(Platform)</AdditionalLibraryDirectories>
+      <ImportLibrary>$(SolutionDir)\ogsr_engine\_LIB\Engine\$(Configuration)\$(Platform)\$(TargetName).lib</ImportLibrary>
+      <AdditionalLibraryDirectories>$(SolutionDir)\3rd_party\_LIB\$(Configuration)\$(Platform);$(SolutionDir)\ogsr_engine\_LIB\Engine\$(Configuration)\$(Platform)</AdditionalLibraryDirectories>
       <LargeAddressAware>true</LargeAddressAware>
     </Link>
   </ItemDefinitionGroup>
