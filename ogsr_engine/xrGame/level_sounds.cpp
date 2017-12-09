@@ -3,6 +3,7 @@
 
 #include "level.h"
 #include "level_sounds.h"
+#include "Actor_Flags.h"
 
 //-----------------------------------------------------------------------------
 // static level sounds
@@ -131,7 +132,7 @@ void CLevelSoundManager::Load()
 
 	CInifile& gameLtx	= *pGameIni;
 
-	if (gameLtx.section_exist(Level().name())){
+	if (gameLtx.section_exist(Level().name()) && psActorFlags.test(AF_MUSIC_TRACKS)){
 		if (gameLtx.line_exist(Level().name(),"music_tracks")){
 			LPCSTR music_sect		= gameLtx.r_string(Level().name(),"music_tracks");
 			if (music_sect && music_sect[0]){

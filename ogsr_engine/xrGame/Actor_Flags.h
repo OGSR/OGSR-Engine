@@ -8,6 +8,7 @@ enum{
 		AF_RUN_BACKWARD		=(1<<4),
 		AF_AUTOPICKUP		=(1<<5),
 		AF_PSP				=(1<<6),
+		AF_MUSIC_TRACKS		=(1<<7),
 };
 
 enum {

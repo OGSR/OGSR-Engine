@@ -1364,6 +1364,10 @@ void CCC_RegisterCommands()
 //#endif // MASTER_GOLD
 
 	CMD3(CCC_Mask,		"g_autopickup",			&psActorFlags,	AF_AUTOPICKUP);
+#ifndef G_MUSIC_TRACKS_OFF
+	psActorFlags.set(AF_MUSIC_TRACKS, true);
+#endif
+	CMD3(CCC_Mask,		"g_music_tracks",		&psActorFlags,	AF_MUSIC_TRACKS);
 
 	CMD1(CCC_LuaHelp, "lua_help");
 #ifdef DEBUG
