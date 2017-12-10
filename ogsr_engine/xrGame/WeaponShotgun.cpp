@@ -331,8 +331,11 @@ bool CWeaponShotgun::HaveCartridgeInInventory		(u8 cnt)
 		//попытатьс€ найти в инвентаре патроны текущего типа 
 		m_pAmmo = smart_cast<CWeaponAmmo*>(m_pCurrentInventory->GetAny(*m_ammoTypes[m_ammoType]));
 		
-		if(!m_pAmmo )
+		if(!m_pAmmo)
 		{
+#ifdef SHOTG_EXTRA_AMMO_FIX
+		  if ( m_magazine.size() == 0 )
+#endif
 			for(u32 i = 0; i < m_ammoTypes.size(); ++i) 
 			{
 				//проверить патроны всех подход€щих типов
