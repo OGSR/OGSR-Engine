@@ -170,6 +170,9 @@ public:
 	BOOL						m_bGameConfigStarted;
 	BOOL						game_configured;
 	NET_Queue_Event				*game_events;
+#ifdef SPAWN_ANTIFREEZE
+	NET_Queue_Event				*spawn_events;
+#endif
 	xr_deque<CSE_Abstract*>		game_spawn_queue;
 	xrServer*					Server;
 	GlobalFeelTouch				m_feel_deny;
@@ -231,6 +234,9 @@ public:
 	virtual void				OnRender				( );
 	void						cl_Process_Event		(u16 dest, u16 type, NET_Packet& P);
 	void						cl_Process_Spawn		(NET_Packet& P);
+#ifdef SPAWN_ANTIFREEZE
+	bool						PostponedSpawn			(u16 id);
+#endif
 	void						ProcessGameEvents		( );
 	void						ProcessGameSpawns		( );
 

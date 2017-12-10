@@ -385,7 +385,7 @@ int APIENTRY WinMain_impl(HINSTANCE hInstance,
 	g_dedicated_server			= true;
 #endif // DEDICATED_SERVER
 
-	SetThreadAffinityMask		(GetCurrentThread(),1);
+	//SetThreadAffinityMask		(GetCurrentThread(),1);
 
 	// Title window
 	logoWindow					= CreateDialog(GetModuleHandle(NULL),	MAKEINTRESOURCE(IDD_STARTUP), 0, logDlgProc );
@@ -695,6 +695,9 @@ void CApplication::OnEvent(EVENT E, u64 P1, u64 P2)
 
 static	CTimer	phase_timer		;
 extern	ENGINE_API BOOL			g_appLoaded = FALSE;
+#ifdef SPAWN_ANTIFREEZE
+extern	ENGINE_API BOOL			g_bootComplete = FALSE;
+#endif
 
 void CApplication::LoadBegin	()
 {
@@ -702,6 +705,9 @@ void CApplication::LoadBegin	()
 	if (1==ll_dwReference)	{
 
 		g_appLoaded			= FALSE;
+#ifdef SPAWN_ANTIFREEZE
+		g_bootComplete		= FALSE;
+#endif
 
 #ifndef DEDICATED_SERVER
 		_InitializeFont		(pFontSystem,"ui_font_graffiti19_russian",0);
@@ -731,6 +737,9 @@ void CApplication::destroy_loading_shaders()
 {
 	hLevelLogo.destroy		();
 	sh_progress.destroy		();
+#ifdef SPAWN_ANTIFREEZE
+	g_bootComplete = TRUE;
+#endif
 //.	::Sound->mute			(false);
 }
 
