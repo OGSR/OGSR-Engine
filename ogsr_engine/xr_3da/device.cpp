@@ -16,6 +16,7 @@
 #include "x_ray.h"
 #include "render.h"
 #include "XR_IOConsole.h"
+#include "IGame_Persistent.h"
 
 ENGINE_API CRenderDevice Device;
 ENGINE_API BOOL g_bRendering = FALSE; 
@@ -170,6 +171,21 @@ int g_svDedicateServerUpdateReate = 100;
 
 ENGINE_API xr_list<LOADING_EVENT>			g_loading_events;
 
+#ifdef ECO_RENDER				
+ENGINE_API u32 TargetRenderLoad ()
+{
+	u32 result = 100;
+	if (IsMainMenuActive())
+		result = 30;
+	if (Device.Paused())
+		result = 10;
+	if (!Device.b_is_Active)
+		result = 0;
+
+	return result;
+}
+#endif
+
 void CRenderDevice::Run			()
 {
 //	DUMP_PHASE;
@@ -254,11 +270,30 @@ void CRenderDevice::Run			()
 				// Release start point - allow thread to run
 				mt_csLeave.Enter			();
 				mt_csEnter.Leave			();
-				Sleep						(0);
 
 #ifndef DEDICATED_SERVER
 				Statistic->RenderTOTAL_Real.FrameStart	();
 				Statistic->RenderTOTAL_Real.Begin		();
+
+// дефайн ECO_RENDER лучше определять в свойствах проектов,
+// а не в build_config_defines
+#ifdef ECO_RENDER				
+				u32 optimal = 0;
+				if (TargetRenderLoad() < 50)	optimal = 30;
+				while (optimal -- > 0)
+				{					
+					u32 time_diff = frame_timer.GetElapsed_ms();
+					if (time_diff < optimal)   // если более 100 кадров в секунду, как в меню например
+					{
+						SleepEx(1, (optimal - time_diff) > 10);	   // попытка обойти разно-платформные особенности	 
+						//Statistic->RenderTOTAL.cycles++;      // idle cycles count
+					}
+				}				
+#else
+				Sleep(0);
+#endif // ECO_RENDER			
+				frame_timer.Start();	
+
 				if (b_is_Active)							{
 					if (Begin())				{
 
