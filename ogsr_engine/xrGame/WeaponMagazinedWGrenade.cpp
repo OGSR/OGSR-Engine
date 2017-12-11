@@ -262,7 +262,11 @@ void  CWeaponMagazinedWGrenade::PerformSwitchGL()
 
 bool CWeaponMagazinedWGrenade::Action(s32 cmd, u32 flags) 
 {
-	if(inherited::Action(cmd, flags)) return true;
+	if (m_bGrenadeMode && (cmd == kWPN_FIREMODE_PREV || cmd == kWPN_FIREMODE_NEXT))
+		return false;
+
+	if(inherited::Action(cmd, flags))
+		return true;
 	
 	switch(cmd) 
 	{
