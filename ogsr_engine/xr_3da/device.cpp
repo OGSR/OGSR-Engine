@@ -171,7 +171,7 @@ int g_svDedicateServerUpdateReate = 100;
 
 ENGINE_API xr_list<LOADING_EVENT>			g_loading_events;
 
-#ifdef ECO_RENDER				
+#ifdef ECO_RENDER
 ENGINE_API u32 TargetRenderLoad ()
 {
 	u32 result = 100;
@@ -277,7 +277,7 @@ void CRenderDevice::Run			()
 
 // дефайн ECO_RENDER лучше определять в свойствах проектов,
 // а не в build_config_defines
-#ifdef ECO_RENDER				
+#ifdef ECO_RENDER
 				u32 optimal = 0;
 				if (TargetRenderLoad() < 50)	optimal = 30;
 				while (optimal -- > 0)
