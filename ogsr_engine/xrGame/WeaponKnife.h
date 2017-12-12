@@ -8,6 +8,8 @@ private:
 	typedef CWeapon inherited;
 protected:
 	MotionSVec			mhud_idle;
+	MotionSVec			mhud_idle_moving;
+	MotionSVec			mhud_idle_sprint;
 	MotionSVec			mhud_hide;
 	MotionSVec			mhud_show;
 	MotionSVec			mhud_attack;
@@ -66,6 +68,8 @@ public:
 
 	virtual void		StartIdleAnim					();
 	virtual void		GetBriefInfo					(xr_string& str_name, xr_string& icon_sect_name, xr_string& str_count);
+	virtual void	PlayAnimIdle();
+	virtual void	onMovementChanged	(ACTOR_DEFS::EMoveCommand cmd);
 
 	DECLARE_SCRIPT_REGISTER_FUNCTION
 };
