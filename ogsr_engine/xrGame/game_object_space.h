@@ -74,6 +74,7 @@ namespace GameObject {
 		eOnActorWeaponJammed,
 		eOnActorWeaponEmpty,
 		eOnActorWeaponReload,
+		eOnActorWeaponSwitchGL,
 
 		// NPC Weapon Callbacks.
 		eOnNPCWeaponStartFiring,

@@ -23,6 +23,7 @@
 #include "game_object_space.h"
 #include "script_callback_ex.h"
 #include "script_game_object.h"
+#include "actor.h"
 
 CWeaponMagazinedWGrenade::CWeaponMagazinedWGrenade(LPCSTR name,ESoundTypes eSoundType) : CWeaponMagazined(name, eSoundType)
 {
@@ -258,6 +259,8 @@ void  CWeaponMagazinedWGrenade::PerformSwitchGL()
 				LoadZoomOffset(*hud_sect, "");
 		}
 	}
+
+	Actor()->callback( GameObject::eOnActorWeaponSwitchGL )( lua_game_object() );
 }
 
 bool CWeaponMagazinedWGrenade::Action(s32 cmd, u32 flags) 
