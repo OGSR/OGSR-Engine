@@ -68,8 +68,8 @@ public:
 
 	virtual void		StartIdleAnim					();
 	virtual void		GetBriefInfo					(xr_string& str_name, xr_string& icon_sect_name, xr_string& str_count);
-	virtual void	PlayAnimIdle();
-	virtual void	onMovementChanged	(ACTOR_DEFS::EMoveCommand cmd);
+	virtual void	PlayAnimIdle( u8 );
+	virtual void onMovementChanged( ACTOR_DEFS::EMoveCommand );
 
 	DECLARE_SCRIPT_REGISTER_FUNCTION
 };

@@ -47,6 +47,7 @@ CWeapon::CWeapon(LPCSTR name)
 	SetState				(eHidden);
 	SetNextState			(eHidden);
 	m_sub_state				= eSubstateReloadBegin;
+	m_idle_state				= eIdle;
 	m_bTriStateReload		= false;
 	SetDefaults				();
 
@@ -771,6 +772,21 @@ void CWeapon::UpdateWeaponParams()
 	}
 }
 
+
+u8 CWeapon::idle_state() {
+  CActor *actor = smart_cast<CActor*>( H_Parent() );
+
+  if ( actor )
+    if ( actor->get_state() & mcSprint ) {
+     return eSubstateIdleSprint;
+    }
+    else if ( actor->is_actor_running() )
+      return eSubstateIdleMoving;
+
+  return eIdle;
+}
+
+
 void CWeapon::UpdateCL		()
 {
 	inherited::UpdateCL		();
@@ -789,6 +805,16 @@ void CWeapon::UpdateCL		()
 		make_Interpolation		();
 	
 	VERIFY(smart_cast<CKinematics*>(Visual()));
+
+        if ( GetState() == eIdle ) {
+          auto state = idle_state();
+          if ( m_idle_state != state ) {
+            m_idle_state = state;
+            SwitchState( eIdle );
+          }
+        }
+        else
+          m_idle_state = eIdle;
 }
 
 

@@ -25,7 +25,7 @@ protected:
 	virtual void	PlayAnimShoot					();
 	virtual void	PlayAnimReload					();
 	virtual void	PlayReloadSound					();
-	virtual void	PlayAnimIdle					();
+	virtual void	PlayAnimIdle					( u8 );
 
 	DECLARE_SCRIPT_REGISTER_FUNCTION
 };

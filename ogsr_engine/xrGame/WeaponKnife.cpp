@@ -213,7 +213,7 @@ void CWeaponKnife::switch2_Attacking	(u32 state)
 
 
 void CWeaponKnife::switch2_Idle() {
-  PlayAnimIdle();
+  PlayAnimIdle( m_idle_state );
   m_bPending = false;
 }
 
@@ -317,27 +317,25 @@ void CWeaponKnife::GetBriefInfo(xr_string& str_name, xr_string& icon_sect_name, 
 }
 
 
-void CWeaponKnife::PlayAnimIdle() {
+void CWeaponKnife::PlayAnimIdle( u8 state ) {
   VERIFY( GetState() == eIdle );
 
-  CActor *actor = smart_cast<CActor*>( H_Parent() );
-
-  if ( actor )
-    if ( actor->get_state() & mcSprint ) {
-      m_pHUD->animPlay( random_anim( mhud_idle_sprint ), TRUE, this, GetState() );
-      return;
-    }
-    else if ( actor->is_actor_running() ) {
-      m_pHUD->animPlay( random_anim( mhud_idle_moving ), TRUE, this, GetState() );
-      return;
-    }
-
-  m_pHUD->animPlay( random_anim( mhud_idle ), TRUE, this, GetState() );
+  switch ( state ) {
+  case eSubstateIdleMoving:
+    m_pHUD->animPlay( random_anim( mhud_idle_moving ), TRUE, this, GetState() );
+    break;
+  case eSubstateIdleSprint:
+    m_pHUD->animPlay( random_anim( mhud_idle_sprint ), TRUE, this, GetState() );
+    break;
+  default:
+    m_pHUD->animPlay( random_anim( mhud_idle ), TRUE, this, GetState() );
+  }
 }
 
 
-
 void CWeaponKnife::onMovementChanged( ACTOR_DEFS::EMoveCommand cmd ) {
-  if ( cmd == ACTOR_DEFS::mcSprint && GetState()==eIdle )
-    PlayAnimIdle();
+  if ( cmd == ACTOR_DEFS::mcSprint && GetState() == eIdle ) {
+    m_idle_state = eSubstateIdleSprint;
+    PlayAnimIdle( m_idle_state );
+  }
 }

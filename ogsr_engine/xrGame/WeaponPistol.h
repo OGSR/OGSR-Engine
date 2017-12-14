@@ -23,7 +23,7 @@ public:
 
 	//анимации
 	virtual void	PlayAnimShow	();
-	virtual void	PlayAnimIdle	();
+	virtual void	PlayAnimIdle	( u8 );
 	virtual void	PlayAnimHide	();
 	virtual void	PlayAnimReload	();
 	virtual void	PlayAnimShoot	();

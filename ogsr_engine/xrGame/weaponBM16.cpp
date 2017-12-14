@@ -49,9 +49,8 @@ void CWeaponBM16::PlayAnimReload()
 
 }
 
-void CWeaponBM16::PlayAnimIdle()
-{
-	if(TryPlayAnimIdle())	return;
+void CWeaponBM16::PlayAnimIdle( u8 state = eIdle ) {
+	if ( TryPlayAnimIdle( state ) ) return;
 
 	if(IsZoomed())
 	{
