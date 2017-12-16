@@ -73,9 +73,6 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Lua", "Lua", "{9078A8EF-616E-429A-B12A-EFE5CEC60330}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "xrRender", "ogsr_engine\Layers\xrRender_R2\xrRender_R2.vcxproj", "{963BA4E5-499A-454D-B002-1D5ECE0527A6}"
-	ProjectSection(ProjectDependencies) = postProject
-		{200652A6-043E-4634-8837-87983B3BD5E0} = {200652A6-043E-4634-8837-87983B3BD5E0}
-	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "LuaJIT", "ogsr_engine\LuaJIT\src\luajit.vcxproj", "{632AEEB6-DC06-4E15-9551-B2B09A4B73C5}"
 EndProject
