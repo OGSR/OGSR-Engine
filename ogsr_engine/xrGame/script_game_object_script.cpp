@@ -132,6 +132,8 @@ void CScriptGameObject::script_register(lua_State *L)
 				value("on_actor_weapon_zoom_in", int(GameObject::eOnActorWeaponZoomIn)),
 				value("on_actor_weapon_zoom_out", int(GameObject::eOnActorWeaponZoomOut)),
 				
+				value("on_actor_weapon_switch_gl", int(GameObject::eOnActorWeaponSwitchGL)),
+				
 				// NPC Callbacks.
 				value("on_npc_weapon_start_firing", int(GameObject::eOnNPCWeaponStartFiring)),
 				value("on_npc_weapon_fire", int(GameObject::eOnNPCWeaponFire)),

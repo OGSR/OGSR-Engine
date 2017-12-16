@@ -293,7 +293,10 @@ u32 get_level_id(u32 gvid)
 
 LPCSTR get_level_name_by_id (u32 level_id)
 {
- 	return ai().game_graph().header().level((GameGraph::_LEVEL_ID) level_id).name().c_str();
+	if (level_id < 0xff)
+		return ai().game_graph().header().level((GameGraph::_LEVEL_ID) level_id).name().c_str();
+	else
+		return "l255_invalid_level";
 }
 
 bool	get_obj_alive(CScriptGameObject *O)

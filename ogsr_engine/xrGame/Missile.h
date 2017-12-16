@@ -12,6 +12,8 @@
 #define MS_EMPTY	7
 #define MS_HIDING	8
 #define MS_PLAYING	9
+#define MS_IDLE_SPRINT	10
+#define MS_IDLE_MOVING	11
 
 struct dContact;
 struct SGameMtl;
@@ -103,6 +105,8 @@ protected:
 	shared_str				m_sAnimShow;
 	shared_str				m_sAnimHide;
 	shared_str				m_sAnimIdle;
+	shared_str				m_sAnimIdleMoving;
+	shared_str				m_sAnimIdleSprint;
 	shared_str				m_sAnimPlaying;
 	shared_str				m_sAnimThrowBegin;
 	shared_str				m_sAnimThrowIdle;
@@ -111,6 +115,7 @@ protected:
 
 	//звук анимации "играния"
 	HUD_SOUND				sndPlaying;
+	u32						idle_state();
 
 protected:
 			void			setup_throw_params		();

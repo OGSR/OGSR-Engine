@@ -38,7 +38,10 @@ void CWeaponKnife::Load	(LPCSTR section)
 
 	// HUD :: Anims
 	R_ASSERT			(m_pHUD);
-	animGet				(mhud_idle,		pSettings->r_string(*hud_sect,"anim_idle"));
+	shared_str m_sAnimIdle = pSettings->r_string( *hud_sect, "anim_idle" );
+	animGet( mhud_idle, *m_sAnimIdle );
+	animGet( mhud_idle_moving, READ_IF_EXISTS( pSettings, r_string, *hud_sect, "anim_idle_moving", *m_sAnimIdle ) );
+	animGet( mhud_idle_sprint, READ_IF_EXISTS( pSettings, r_string, *hud_sect, "anim_idle_sprint", *m_sAnimIdle ) );
 	animGet				(mhud_hide,		pSettings->r_string(*hud_sect,"anim_hide"));
 	animGet				(mhud_show,		pSettings->r_string(*hud_sect,"anim_draw"));
 	animGet				(mhud_attack,	pSettings->r_string(*hud_sect,"anim_shoot1_start"));
@@ -208,13 +211,12 @@ void CWeaponKnife::switch2_Attacking	(u32 state)
 	StateSwitchCallback(GameObject::eOnActorWeaponFire, GameObject::eOnNPCWeaponFire);
 }
 
-void CWeaponKnife::switch2_Idle	()
-{
-	VERIFY(GetState()==eIdle);
 
-	m_pHUD->animPlay(random_anim(mhud_idle), TRUE, this, GetState());
-	m_bPending = false;
+void CWeaponKnife::switch2_Idle() {
+  PlayAnimIdle( m_idle_state );
+  m_bPending = false;
 }
+
 
 void CWeaponKnife::switch2_Hiding	()
 {
@@ -312,4 +314,28 @@ void CWeaponKnife::GetBriefInfo(xr_string& str_name, xr_string& icon_sect_name, 
 	str_name		= NameShort();
 	str_count		= "";
 	icon_sect_name	= *cNameSect();
+}
+
+
+void CWeaponKnife::PlayAnimIdle( u8 state ) {
+  VERIFY( GetState() == eIdle );
+
+  switch ( state ) {
+  case eSubstateIdleMoving:
+    m_pHUD->animPlay( random_anim( mhud_idle_moving ), TRUE, this, GetState() );
+    break;
+  case eSubstateIdleSprint:
+    m_pHUD->animPlay( random_anim( mhud_idle_sprint ), TRUE, this, GetState() );
+    break;
+  default:
+    m_pHUD->animPlay( random_anim( mhud_idle ), TRUE, this, GetState() );
+  }
+}
+
+
+void CWeaponKnife::onMovementChanged( ACTOR_DEFS::EMoveCommand cmd ) {
+  if ( cmd == ACTOR_DEFS::mcSprint && GetState() == eIdle ) {
+    m_idle_state = eSubstateIdleSprint;
+    PlayAnimIdle( m_idle_state );
+  }
 }

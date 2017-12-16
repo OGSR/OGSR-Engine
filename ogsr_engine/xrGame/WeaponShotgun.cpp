@@ -13,6 +13,9 @@ CWeaponShotgun::CWeaponShotgun(void) : CWeaponCustomPistol("TOZ34")
     m_eSoundShotBoth		= ESoundTypes(SOUND_TYPE_WEAPON_SHOOTING);
 	m_eSoundClose			= ESoundTypes(SOUND_TYPE_WEAPON_SHOOTING);
 	m_eSoundAddCartridge	= ESoundTypes(SOUND_TYPE_WEAPON_SHOOTING);
+#ifdef SHOTG_EXTRA_AMMO_FIX
+	m_bLockType = true;
+#endif
 }
 
 CWeaponShotgun::~CWeaponShotgun(void)
@@ -264,7 +267,7 @@ void CWeaponShotgun::OnStateSwitch	(u32 S)
 
 	CWeapon::OnStateSwitch(S);
 
-	if( m_magazine.size() == (u32)iMagazineSize || !HaveCartridgeInInventory(1) ){
+	if ( m_magazine.size() == (u32)iMagazineSize || !HaveCartridgeInInventory(1) ) {
 			switch2_EndReload		();
 			m_sub_state = eSubstateReloadEnd;
 	};
@@ -328,10 +331,16 @@ bool CWeaponShotgun::HaveCartridgeInInventory		(u8 cnt)
 	m_pAmmo = NULL;
 	if(m_pCurrentInventory) 
 	{
+		if (m_set_next_ammoType_on_reload != u32(-1)) {
+			m_ammoType = m_set_next_ammoType_on_reload;
+			m_set_next_ammoType_on_reload = u32(-1);
+			if (!m_magazine.empty()) UnloadMagazine();
+		}
+
 		//попытаться найти в инвентаре патроны текущего типа 
 		m_pAmmo = smart_cast<CWeaponAmmo*>(m_pCurrentInventory->GetAny(*m_ammoTypes[m_ammoType]));
 		
-		if(!m_pAmmo )
+		if(!m_pAmmo && ( m_magazine.empty() || !m_bLockType ))
 		{
 			for(u32 i = 0; i < m_ammoTypes.size(); ++i) 
 			{

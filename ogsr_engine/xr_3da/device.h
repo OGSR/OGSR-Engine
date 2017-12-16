@@ -34,6 +34,7 @@ private:
 	CTimer_paused							Timer;
 	CTimer_paused							TimerGlobal;
 	CTimer									TimerMM;
+	CTimer									frame_timer;   // TODO: проверить, не дублируется-ли схожий таймер
 
 	void									_Create		(LPCSTR shName);
 	void									_Destroy	(BOOL	bKeepTextures);
@@ -172,6 +173,8 @@ public:
 		if (I != seqParallel.end())
 			seqParallel.erase	(I);
 	}
+
+	IC		u32				frame_elapsed		()			{ return frame_timer.GetElapsed_ms(); }
 };
 
 extern		ENGINE_API		CRenderDevice		Device;

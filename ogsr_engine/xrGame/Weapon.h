@@ -133,6 +133,8 @@ public:
 		eSubstateReloadBegin		=0,
 		eSubstateReloadInProcess,
 		eSubstateReloadEnd,
+		eSubstateIdleMoving,
+		eSubstateIdleSprint,
 	};
 
 	virtual bool			IsHidden			()	const		{	return GetState() == eHidden;}						// Does weapon is in hidden state
@@ -151,9 +153,11 @@ public:
 	BOOL					AutoSpawnAmmo		() const		{ return m_bAutoSpawnAmmo; };
 	bool					IsTriStateReload	() const		{ return m_bTriStateReload;}
 	EWeaponSubStates		GetReloadState		() const		{ return (EWeaponSubStates)m_sub_state;}
+	u8 idle_state();
 protected:
 	bool					m_bTriStateReload;
 	u8						m_sub_state;
+	u8						m_idle_state;
 	// Weapon fires now
 	bool					bWorking2;
 	// a misfire happens, you'll need to rearm weapon

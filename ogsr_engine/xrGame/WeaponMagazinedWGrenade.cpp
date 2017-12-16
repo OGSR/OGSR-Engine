@@ -23,6 +23,7 @@
 #include "game_object_space.h"
 #include "script_callback_ex.h"
 #include "script_game_object.h"
+#include "actor.h"
 
 CWeaponMagazinedWGrenade::CWeaponMagazinedWGrenade(LPCSTR name,ESoundTypes eSoundType) : CWeaponMagazined(name, eSoundType)
 {
@@ -65,7 +66,10 @@ void CWeaponMagazinedWGrenade::Load	(LPCSTR section)
 	// HUD :: Anims
 	R_ASSERT			(m_pHUD);
 
-	animGet				(mhud_idle_g,	pSettings->r_string(*hud_sect, "anim_idle_g"));
+	shared_str m_sAnimIdle = pSettings->r_string( *hud_sect, "anim_idle_g" );
+	animGet( mhud_idle_g, *m_sAnimIdle );
+	animGet( mhud_idle_moving_g, READ_IF_EXISTS( pSettings, r_string, *hud_sect, "anim_idle_moving_g", *m_sAnimIdle ) );
+	animGet( mhud_idle_sprint_g, READ_IF_EXISTS( pSettings, r_string, *hud_sect, "anim_idle_sprint_g", *m_sAnimIdle ) );
 	animGet				(mhud_reload_g,	pSettings->r_string(*hud_sect, "anim_reload_g"));
 	animGet				(mhud_shots_g,	pSettings->r_string(*hud_sect, "anim_shoot_g"));
 	animGet				(mhud_switch_g,	pSettings->r_string(*hud_sect, "anim_switch_grenade_on"));
@@ -73,7 +77,10 @@ void CWeaponMagazinedWGrenade::Load	(LPCSTR section)
 	animGet				(mhud_show_g,	pSettings->r_string(*hud_sect, "anim_draw_g"));
 	animGet				(mhud_hide_g,	pSettings->r_string(*hud_sect, "anim_holster_g"));
 
-	animGet				(mhud_idle_w_gl,	pSettings->r_string(*hud_sect, "anim_idle_gl"));
+	m_sAnimIdle = pSettings->r_string( *hud_sect, "anim_idle_gl" );
+	animGet( mhud_idle_w_gl, *m_sAnimIdle );
+	animGet( mhud_idle_moving_gl, READ_IF_EXISTS( pSettings, r_string, *hud_sect, "anim_idle_moving_gl", *m_sAnimIdle ) );
+	animGet( mhud_idle_sprint_gl, READ_IF_EXISTS( pSettings, r_string, *hud_sect, "anim_idle_sprint_gl", *m_sAnimIdle ) );
 	animGet				(mhud_reload_w_gl,	pSettings->r_string(*hud_sect, "anim_reload_gl"));
 	animGet				(mhud_show_w_gl,	pSettings->r_string(*hud_sect, "anim_draw_gl"));
 	animGet				(mhud_hide_w_gl,	pSettings->r_string(*hud_sect, "anim_holster_gl"));
@@ -258,6 +265,8 @@ void  CWeaponMagazinedWGrenade::PerformSwitchGL()
 				LoadZoomOffset(*hud_sect, "");
 		}
 	}
+
+	Actor()->callback( GameObject::eOnActorWeaponSwitchGL )( lua_game_object() );
 }
 
 bool CWeaponMagazinedWGrenade::Action(s32 cmd, u32 flags) 
@@ -671,9 +680,28 @@ void CWeaponMagazinedWGrenade::PlayAnimReload()
 		inherited::PlayAnimReload();
 }
 
-void CWeaponMagazinedWGrenade::PlayAnimIdle()
+
+bool CWeaponMagazinedWGrenade::TryPlayAnimIdle( u8 state = eIdle ) {
+  VERIFY( GetState() == eIdle );
+  if( IsGrenadeLauncherAttached() && !IsZoomed() ) {
+    switch ( state ) {
+    case eSubstateIdleMoving:
+      m_pHUD->animPlay( random_anim( m_bGrenadeMode ? mhud_idle_moving_g : mhud_idle_moving_gl ), TRUE, NULL, GetState() );
+      return true;
+    case eSubstateIdleSprint:
+      m_pHUD->animPlay( random_anim( m_bGrenadeMode ? mhud_idle_sprint_g : mhud_idle_sprint_gl ), TRUE, NULL, GetState() );
+      return true;
+    default:
+      return false;
+    }
+  }
+  return inherited::TryPlayAnimIdle( state );
+}
+
+
+void CWeaponMagazinedWGrenade::PlayAnimIdle( u8 state )
 {
-	if(TryPlayAnimIdle())	return;
+	if ( TryPlayAnimIdle( state ) ) return;
 	VERIFY(GetState()==eIdle);
 	if(IsGrenadeLauncherAttached())
 	{
@@ -694,7 +722,7 @@ void CWeaponMagazinedWGrenade::PlayAnimIdle()
 		}
 	}
 	else
-		inherited::PlayAnimIdle();
+		inherited::PlayAnimIdle( state );
 }
 void CWeaponMagazinedWGrenade::PlayAnimShoot()
 {

@@ -457,7 +457,13 @@ void CSheduler::Update				()
 #ifdef DEBUG_SCHEDULER
 	Msg								("SCHEDULER: PROCESS STEP FINISHED %d",Device.dwFrame);
 #endif // DEBUG_SCHEDULER
+#ifdef ECO_RENDER
+	// занимать до 50 мс в кадре (клинч неписей вероятен, если много в
+	// онлайне объектов).
+	clamp							(psShedulerTarget,3.f,50.f);
+#else
 	clamp							(psShedulerTarget,3.f,66.f);
+#endif
 	psShedulerCurrent				= 0.9f*psShedulerCurrent + 0.1f*psShedulerTarget;
 	Device.Statistic->fShedulerLoad	= psShedulerCurrent;
 

@@ -108,8 +108,7 @@ void CWeaponPistol::PlayAnimShow	()
 	}
 }
 
-void CWeaponPistol::PlayAnimIdle	()
-{
+void CWeaponPistol::PlayAnimIdle( u8 state = eIdle ) {
 	VERIFY(GetState()==eIdle);
 	if(m_opened){ 
 		CWeaponPistol::WWPMotions& m = wwpm_current();
@@ -120,7 +119,7 @@ void CWeaponPistol::PlayAnimIdle	()
 			MotionSVec* m = (IsZoomed())?&wm_mhud_r.mhud_idle_aim:&wm_mhud_r.mhud_idle;
 			m_pHUD->animPlay(random_anim(*m), TRUE, NULL, GetState());
 		}else
-			inherited::PlayAnimIdle		();
+			inherited::PlayAnimIdle( state );
 	}
 }
 
