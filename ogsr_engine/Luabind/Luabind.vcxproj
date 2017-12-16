@@ -64,33 +64,6 @@
       <ProgramDatabaseFile>$(OutDir)$(ProjectName).pdb</ProgramDatabaseFile>
       <LinkTimeCodeGeneration />
     </Link>
-    <PreBuildEvent>
-      <Command>
-		if not exist "..\luajit\bin\$(PlatformShortName)\LuaJIT.dll" (
-			cd "..\luajit\src"
-			call msvcbuild_2017.bat $(PlatformShortName)
-		)
-		cd $(ProjectDir)
-		if not exist "$(OutDir)LuaJIT.dll" (
-			if not exist "$(OutDir)*.*" (
-				md "$(OutDir)"
-			)
-			copy /Y "..\luajit\bin\$(PlatformShortName)\LuaJIT.dll" "$(OutDir)LuaJIT.dll"
-		)
-		if not exist "$(OutDir)..\ogsr_engine\_LIB\Engine\$(Configuration)\$(Platform)\LuaJIT.lib" (
-			if not exist "$(OutDir)..\ogsr_engine\_LIB\Engine\$(Configuration)\$(Platform)\*.*" (
-				md "$(OutDir)..\ogsr_engine\_LIB\Engine\$(Configuration)\$(Platform)\"
-			)
-			copy /Y "..\luajit\bin\$(PlatformShortName)\LuaJIT.lib" "$(OutDir)..\ogsr_engine\_LIB\Engine\$(Configuration)\$(Platform)\LuaJIT.lib"
-		)
-		if not exist "$(OutDir)..\ogsr_engine\_LIB\Engine\$(Configuration)\$(Platform)\LuaJIT.exp" (
-			if not exist "$(OutDir)..\ogsr_engine\_LIB\Engine\$(Configuration)\$(Platform)\*.*" (
-				md "$(OutDir)..\ogsr_engine\_LIB\Engine\$(Configuration)\$(Platform)\"
-			)
-			copy /Y "..\luajit\bin\$(PlatformShortName)\LuaJIT.exp" "$(OutDir)..\ogsr_engine\_LIB\Engine\$(Configuration)\$(Platform)\LuaJIT.exp"
-		)
-	  </Command>
-    </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="src\class.cpp" />
