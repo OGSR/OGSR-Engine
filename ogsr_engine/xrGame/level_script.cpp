@@ -686,6 +686,10 @@ u32 vertex_id(const Fvector &vec)
 	return ai().level_graph().vertex_id(vec);
 }
 
+u32 vertex_id( u32 node, const Fvector &vec ) {
+ return ai().level_graph().vertex( node, vec );
+}
+
 void update_inventory_window() {
   HUD().GetUI()->UIGame()->ReInitShownUI();
 }
@@ -801,7 +805,8 @@ void CLevel::script_register(lua_State *L)
 		def("ray_query",						&PerformRayQuery),
 
 		// Real Wolf 07.07.2014
-		def("vertex_id",						&vertex_id),
+		def( "vertex_id", ( ( u32(*) ( const Fvector& ) ) &vertex_id ) ),
+		def( "vertex_id", ( ( u32(*) ( u32, const Fvector& ) ) &vertex_id ) ),
 
 		def("advance_game_time",				&AdvanceGameTime),
 
