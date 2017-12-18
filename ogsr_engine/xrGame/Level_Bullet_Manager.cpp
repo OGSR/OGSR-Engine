@@ -76,6 +76,7 @@ void SBullet::Init(const Fvector& position,
 	flags.skipped_frame					= 0;
 
 	targetID			= 0;	
+	m_ExplodeParticles = cartridge.m_ExplodeParticles;
 }
 
 //////////////////////////////////////////////////////////
@@ -129,7 +130,7 @@ void CBulletManager::Load		()
 		m_ExplodeParticles.push_back	(_GetItem(explode_particles,k,tmp));
 }
 
-void CBulletManager::PlayExplodePS		(const Fmatrix& xf)
+void CBulletManager::PlayExplodePS		(const Fmatrix& xf, RStringVec& m_ExplodeParticles)
 {
 	if (!m_ExplodeParticles.empty()){
 		const shared_str& ps_name		= m_ExplodeParticles[Random.randI(0, m_ExplodeParticles.size())];

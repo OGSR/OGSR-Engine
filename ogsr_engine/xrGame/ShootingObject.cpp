@@ -485,7 +485,7 @@ void CShootingObject::FireBullet(const Fvector& pos,
 
 	Level().BulletManager().AddBullet(	pos, dir, m_fStartBulletSpeed, l_fHitPower, 
 										fHitImpulse, parent_id, weapon_id, 
-										ALife::eHitTypeFireWound, fireDistance, cartridge, send_hit, aim_bullet);
+										m_eHitType, fireDistance, cartridge, send_hit, aim_bullet);
 }
 
 void CShootingObject::FireStart	()
