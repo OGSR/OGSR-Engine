@@ -170,7 +170,6 @@ void CWeaponHUD::Update				()
 
 void CWeaponHUD::StopCurrentAnim()
 {
-Msg( "dsh: StopCurrentAnim" );
 	m_dwAnimEndTime						= 0;
 	m_bStopAtEndAnimIsRunning			= false;
 	if(m_pCallbackItem)
