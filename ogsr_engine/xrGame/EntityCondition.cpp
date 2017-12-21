@@ -379,6 +379,7 @@ CWound* CEntityCondition::ConditionHit(SHit* pHDS)
 		ChangePsyHealth(-hit_power);
 		bAddWound =false;
 		break;
+/*
 	case ALife::eHitTypeBurn:
 		hit_power *= m_HitTypeK[pHDS->hit_type];
 		m_fHealthLost = hit_power*m_fHealthHitPart*m_fHitBoneScale;
@@ -386,6 +387,9 @@ CWound* CEntityCondition::ConditionHit(SHit* pHDS)
 		m_fDeltaPower -= hit_power*m_fPowerHitPart;
 		bAddWound		=  false;
 		break;
+dsh: обработка перенесена ниже, вместе с eHitTypeFireWound, что бы работала
+секция entity_fire_particles.
+*/
 	case ALife::eHitTypeChemicalBurn:
 		hit_power *= m_HitTypeK[pHDS->hit_type];
 		break;
@@ -408,6 +412,7 @@ CWound* CEntityCondition::ConditionHit(SHit* pHDS)
 		m_fDeltaHealth -= CanBeHarmed() ? m_fHealthLost : 0;
 		m_fDeltaPower -= hit_power*m_fPowerHitPart;
 		break;
+	case ALife::eHitTypeBurn:
 	case ALife::eHitTypeFireWound:
 	case ALife::eHitTypeWound:
 		hit_power *= m_HitTypeK[pHDS->hit_type];

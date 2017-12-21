@@ -115,7 +115,10 @@ protected:
 
 	//звук анимации "играния"
 	HUD_SOUND				sndPlaying;
-	u32						idle_state();
+
+	u8   m_idle_state;
+	u8   idle_state();
+	void PlayAnimIdle( u8 );
 
 protected:
 			void			setup_throw_params		();

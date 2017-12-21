@@ -85,3 +85,6 @@
 
 // Запрещает заряжать в дробовики патроны разного типа
 //#define SHOTG_EXTRA_AMMO_FIX
+
+// Red Virus: bobbing effect from lost alpha
+//#define WPN_BOBBING

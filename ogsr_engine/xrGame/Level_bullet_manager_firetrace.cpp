@@ -268,14 +268,14 @@ NULL:*mtl_pair->CollideParticles[::Random.randI(0,mtl_pair->CollideParticles.siz
 		}
 
 		if(bullet->flags.explosive&&bStatic)
-			PlayExplodePS(pos);
+			PlayExplodePS(pos, bullet->m_ExplodeParticles.empty() ? m_ExplodeParticles : bullet->m_ExplodeParticles);
 	}
 }
 
 void CBulletManager::StaticObjectHit	(CBulletManager::_event& E)
 {
 //	Fvector hit_normal;
-	FireShotmark(&E.bullet, E.bullet.dir,	E.point, E.R, E.tgt_material, E.normal);
+	FireShotmark(&E.bullet, E.bullet.dir,	E.point, E.R, E.tgt_material, E.normal, ( E.bullet.hit_type == ALife::eHitTypeFireWound || E.bullet.hit_type == ALife::eHitTypeWound ));
 //	ObjectHit	(&E.bullet,					E.point, E.R, E.tgt_material, hit_normal);
 }
 
@@ -286,7 +286,7 @@ void CBulletManager::DynamicObjectHit	(CBulletManager::_event& E)
 	VERIFY(E.R.O);
 	if (g_clear) E.Repeated = false;
 	if (GameID() == GAME_SINGLE) E.Repeated = false;
-	bool NeedShootmark = true;//!E.Repeated;
+	bool NeedShootmark = ( E.bullet.hit_type == ALife::eHitTypeFireWound || E.bullet.hit_type == ALife::eHitTypeWound ); //true;//!E.Repeated;
 	
 	if (E.R.O->CLS_ID == CLSID_OBJECT_ACTOR)
 	{

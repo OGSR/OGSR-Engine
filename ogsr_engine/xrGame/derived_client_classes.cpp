@@ -473,6 +473,8 @@ void CWeaponScript::script_register(lua_State *L)
 			.def_readwrite("cur_fire_mode"				,			&CWeaponMagazined::m_iCurFireMode)			
 			.property	  ("fire_mode"					,			&curr_fire_mode)
 			.property	  ("fire_modes"					,			&get_fire_modes, &set_fire_modes)
+			.def( "attach_addon", &CWeaponMagazined::Attach )
+			.def( "detach_addon", &CWeaponMagazined::Detach )
 			,
 			class_<CWeaponMagazinedWGrenade,			CWeaponMagazined>("CWeaponMagazinedWGrenade")
 			.def_readwrite("gren_mag_size"				,			&CWeaponMagazinedWGrenade::iMagazineSize2)			

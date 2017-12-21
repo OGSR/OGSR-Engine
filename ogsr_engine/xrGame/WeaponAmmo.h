@@ -27,6 +27,7 @@ public:
 	Flags8	m_flags;
 
 	shared_str	m_InvShortName;
+	RStringVec	m_ExplodeParticles;
 };
 
 class CWeaponAmmo :	public CInventoryItemObject {

@@ -24,6 +24,9 @@ void CScriptPropertyEvaluatorWrapper::setup_static	(CScriptPropertyEvaluator *ev
 
 bool CScriptPropertyEvaluatorWrapper::evaluate		()
 {
+#ifdef CRASH_ON_SCRIPT_BINDER_ERRORS
+	return luabind::call_member<bool>( this, "evaluate" );
+#else
 	try {
 		return luabind::call_member<bool>(this,"evaluate");
 	}
@@ -36,6 +39,7 @@ bool CScriptPropertyEvaluatorWrapper::evaluate		()
 		ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "!![CScriptPropertyEvaluatorWrapper::evaluate] evaluator [%s] returns value with not a bool type!", m_evaluator_name);
 	}
 	return false;
+#endif
 }
 
 bool CScriptPropertyEvaluatorWrapper::evaluate_static	(CScriptPropertyEvaluator *evaluator)

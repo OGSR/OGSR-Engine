@@ -47,6 +47,7 @@ struct SBullet
 	float			wallmark_size		;
 	//-------------------------------------------------------------------
 	u8				m_u8ColorID			;
+	RStringVec	m_ExplodeParticles;
 	
 	//тип наносимого хита
 	ALife::EHitType hit_type			;
@@ -145,7 +146,7 @@ protected:
 	float 					m_fTracerLengthMin;
 protected:
 	void					PlayWhineSound		(SBullet* bullet, CObject* object, const Fvector& pos);
-	void					PlayExplodePS		(const Fmatrix& xf);
+	void					PlayExplodePS		(const Fmatrix& xf, RStringVec&);
 	//функция обработки хитов объектов
 	static BOOL 			test_callback		(const collide::ray_defs& rd, CObject* object, LPVOID params);
 	static BOOL				firetrace_callback	(collide::rq_result& result, LPVOID params);
