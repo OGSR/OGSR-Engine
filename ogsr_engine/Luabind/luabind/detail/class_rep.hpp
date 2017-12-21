@@ -211,13 +211,10 @@ namespace luabind { namespace detail
 		// this is used to describe setters and getters
 		struct callback
 		{
-		private:
-            luabind::memory_allocator<unsigned char> allocator;
 		public:
 
             callback()
-                : allocator(),
-		          func(std::allocator_arg_t(), allocator),
+                : func(),
 #ifndef LUABIND_NO_ERROR_CHECKING
                   match(nullptr),
                   sig(nullptr),
@@ -229,8 +226,7 @@ namespace luabind { namespace detail
             callback(const callback&) = default;
 
             callback(callback&& that)
-                : allocator(std::move(that.allocator)),
-                  func(std::move(that.func)),
+                : func(std::move(that.func)),
 #ifndef LUABIND_NO_ERROR_CHECKING
                   match(that.match),
                   sig(that.sig),
@@ -248,7 +244,6 @@ namespace luabind { namespace detail
 
             callback& operator= (callback&& that)
             {
-                allocator = std::move(that.allocator);
                 func = std::move(that.func);
 #ifndef LUABIND_NO_ERROR_CHECKING
                 match = that.match;
@@ -314,9 +309,9 @@ namespace luabind { namespace detail
 
 		struct operator_callback: public overload_rep_base
 		{
-			inline void set_fun(int (*f)(lua_State*)) { func = f; }
-			inline int call(lua_State* L) { return func(L); }
-			inline void set_arity(int arity) { m_arity = arity; }
+			void set_fun(int (*f)(lua_State*)) { func = f; }
+			int call(lua_State* L) { return func(L); }
+			void set_arity(int arity) { m_arity = arity; }
 
 		private:
 			int(*func)(lua_State*);
@@ -455,8 +450,8 @@ namespace luabind { namespace detail
 		int m_operator_cache;
 
 		public:
-			inline const STATIC_CONSTANTS &static_constants() const {return m_static_constants;}
-			inline const construct_rep &constructors() const {return m_constructor;}
+			const STATIC_CONSTANTS &static_constants() const {return m_static_constants;}
+			const construct_rep &constructors() const {return m_constructor;}
 	};
 
 	bool is_class_rep(lua_State* L, int index);

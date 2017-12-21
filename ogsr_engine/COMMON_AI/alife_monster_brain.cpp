@@ -129,16 +129,16 @@ void CALifeMonsterBrain::select_task(const bool forced)
 	m_last_search_time				= current_time;
 
 	float							best_value = flt_min;
-	CALifeSmartTerrainRegistry::OBJECTS::const_iterator	I = ai().alife().smart_terrains().objects().begin();
-	CALifeSmartTerrainRegistry::OBJECTS::const_iterator	E = ai().alife().smart_terrains().objects().end();
-	for ( ; I != E; ++I) {
-		if (!(*I).second->enabled(&object()))
+
+	for (const auto &[id, smart] : ai().alife().smart_terrains().objects())
+	{
+		if (!smart->enabled(&object()))
 			continue;
 
-		float						value = (*I).second->suitable(&object());
+		float value = smart->suitable(&object());
 		if (value > best_value) {
-			best_value				= value;
-			object().m_smart_terrain_id	= (*I).second->ID;
+			best_value = value;
+			object().m_smart_terrain_id = id;
 		}
 	}
 

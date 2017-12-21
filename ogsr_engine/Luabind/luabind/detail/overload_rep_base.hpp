@@ -31,9 +31,9 @@ namespace luabind { namespace detail
 	struct LUABIND_API overload_rep_base
 	{
 #if !defined(NDEBUG) && !defined(LUABIND_NO_ERROR_CHECKING)
-		overload_rep_base(): m_get_signature_fun(nullptr), allocator(), m_match_fun(std::allocator_arg_t(), allocator), m_arity(-1) {}
+		overload_rep_base(): m_get_signature_fun(nullptr), m_match_fun(), m_arity(-1) {}
 #else
-        overload_rep_base(): allocator(), m_match_fun(std::allocator_arg_t(), allocator), m_arity(-1) {}
+        overload_rep_base(): m_match_fun(), m_arity(-1) {}
 #endif
 
         overload_rep_base(const overload_rep_base&) = default;
@@ -75,7 +75,6 @@ namespace luabind { namespace detail
 		get_sig_ptr m_get_signature_fun;
 #endif
 
-        luabind::memory_allocator<unsigned char> allocator;
 #pragma warning(push)
 #pragma warning(disable:4251)
 		match_fun_t m_match_fun;
