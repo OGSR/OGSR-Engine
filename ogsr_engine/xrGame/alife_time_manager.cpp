@@ -47,6 +47,6 @@ void CALifeTimeManager::load			(IReader	&file_stream)
 	R_ASSERT2					(file_stream.find_chunk(GAME_TIME_CHUNK_DATA),"Can't find chunk GAME_TIME_CHUNK_DATA!");
 	file_stream.r				(&m_game_time,		sizeof(m_game_time));
 	m_time_factor				= file_stream.r_float();
-	m_normal_time_factor		= file_stream.r_float();
+	/* m_normal_time_factor		= */ file_stream.r_float();
 	m_start_time				= Device.dwTimeGlobal;
 };
