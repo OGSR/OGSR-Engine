@@ -4,7 +4,7 @@
 
 // Если функция в precondition диалога не найдена, будем падать, вместо того,
 // что бы просто выводить сообщение в лог и игнорировать этот precondition.
-//#define CRASH_ON_PRECONDITION_NOT_FOUND
+#define CRASH_ON_PRECONDITION_NOT_FOUND
 
 // Убирает возможность назначать альтернативные кнопки. Т.е. убирает второй
 // столбец в настройках и отключает консольную команду bind_sec.
@@ -37,29 +37,29 @@
 
 // Отключает возможность переключаться между слотами колесиком мыши.
 // http://www.amk-team.ru/forum/topic/13383-soc-melkie-pravki-dvizhka/?do=findComment&comment=1124304
-//#define NO_MOUSE_WHEEL_SWITCH_SLOT
+#define NO_MOUSE_WHEEL_SWITCH_SLOT
 
 // Заблокировать авто-перезарядку и сброс зума, когда закончились
 // патроны.
-//#define NO_AUTO_RELOAD_WPN
+#define NO_AUTO_RELOAD_WPN
 
 // включает хранилище скриптовых переменных в сейвы
 //#define SCRIPT_VARS_STORAGE
 
 // включает экспорт функции setup_game_icon в Lua
-//#define SCRIPT_ICONS_CONTROL
+#define SCRIPT_ICONS_CONTROL
 
 // Выключает использование анимации рассматривания болта, подкидывания гранат
 // и кручения ножа, т.е. anim_playing.
-//#define STOP_ANIM_PLAYING
+#define STOP_ANIM_PLAYING
 
 // При проблемах в скриптовых биндерах будем падать, а не просто
 // ругаться в лог.
-//#define CRASH_ON_SCRIPT_BINDER_ERRORS
+#define CRASH_ON_SCRIPT_BINDER_ERRORS
 
 // Включает коллизию с трупами. Это значит, что мобы будут тупить,
 // уперевшись в тушку мутантами, т.к. не умеют обходить препятствия.
-#define CORPSES_COLLISION
+//#define CORPSES_COLLISION
 
 // Скрывать оружие при открытом диалоге, инвентаре и т.п.
 //#define MORE_HIDE_WEAPON
@@ -69,22 +69,22 @@
 
 // включает экспорт класса CEffectorZoomInertion для управления движением
 // прицела
-//#define SCRIPT_EZI_CONTROL
+#define SCRIPT_EZI_CONTROL
 
 // Вычисление и использование правильного положения солнца, вместо позиции из
 // погодных конфигов.
-//#define DYNAMIC_SUN_MOVEMENT
+#define DYNAMIC_SUN_MOVEMENT
 
 // Выключить музыкальный эмбиент по умолчанию. Можно включить командой
 // "g_music_tracks on".
-//#define G_MUSIC_TRACKS_OFF
+#define G_MUSIC_TRACKS_OFF
 
 // Добавляет небольшую задержку между рендерингом кадров, чтобы зря не
 // насиловать видеокарту при больших FPS.
-//#define ECO_RENDER
+#define ECO_RENDER
 
 // Запрещает заряжать в дробовики патроны разного типа
-//#define SHOTG_EXTRA_AMMO_FIX
+#define SHOTG_EXTRA_AMMO_FIX
 
 // Red Virus: bobbing effect from lost alpha
 //#define WPN_BOBBING
