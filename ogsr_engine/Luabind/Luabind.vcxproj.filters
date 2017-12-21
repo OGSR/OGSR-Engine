@@ -62,7 +62,6 @@
     <ClInclude Include="luabind\detail\class_cache.hpp" />
     <ClInclude Include="luabind\detail\class_registry.hpp" />
     <ClInclude Include="luabind\detail\class_rep.hpp" />
-    <ClInclude Include="luabind\detail\class_rep_scope.hpp" />
     <ClInclude Include="luabind\detail\construct_rep.hpp" />
     <ClInclude Include="luabind\detail\constructor.hpp" />
     <ClInclude Include="luabind\detail\convert_to_lua.hpp" />

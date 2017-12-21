@@ -21,6 +21,7 @@
 @set DASMDIR=..\dynasm
 @set DASM=%DASMDIR%\dynasm.lua
 @set LJBINPATH=..\bin\
+@set LJTARGETARCH=%1
 @if defined LJTARGETARCH (
   @set LJBINPATH=%LJBINPATH%%LJTARGETARCH%\
 )

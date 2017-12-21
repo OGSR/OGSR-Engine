@@ -35,7 +35,7 @@ public:
 
 // sad, but true
 public:
-			void						select_task			();
+			void select_task(const bool forced = false);
 
 private:
 			void						process_task		();
@@ -56,7 +56,9 @@ public:
 			void						on_switch_offline	();
 
 public:
-			void						update				();
+			void update(const bool forced = false);
+			inline void update_script() { this->update(true); }; //Принудительный апдейт из скриптов, не зависит от таймаута от прошлого апдейта.
+
 			bool						perform_attack		();
 			ALife::EMeetActionType		action_type			(CSE_ALifeSchedulable *tpALifeSchedulable, const int &iGroupIndex, const bool &bMutualDetection);
 
