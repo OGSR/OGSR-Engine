@@ -311,8 +311,9 @@ void CScriptGameObject::UpdateCondition()
 		ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "CEntityAlive : cannot access class member UpdateCondition!");
 		return;
 	}
-	e->conditions().UpdateCondition();
+        // в CEntityAlive::shedule_Update() вызовы идут именно в этом порядке
 	e->conditions().UpdateConditionTime();
+	e->conditions().UpdateCondition();
 	e->conditions().UpdateWounds();
 }
 
