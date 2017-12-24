@@ -157,6 +157,7 @@ public:
 			float				GetCondition		() const					{return m_fCondition;}
 	virtual	float				GetConditionToShow	() const					{return GetCondition();}
 			void				ChangeCondition		(float fDeltaCondition);
+	virtual	void				SetCondition	    (float fNewCondition) { m_fCondition = fNewCondition; ChangeCondition(0.0f); }		
 
                         u8                      selected_slot;
                         const xr_vector<u8>&    GetSlots()     { return m_slots;      }
