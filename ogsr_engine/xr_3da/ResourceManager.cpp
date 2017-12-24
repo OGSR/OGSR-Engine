@@ -316,7 +316,7 @@ void CResourceManager::DeferredUpload()
 			tex_to_load.clear();
 		}
 
-		//Msg("texture loading time: %.2f s.", timer.GetElapsed_sec());
+		Msg("texture loading time (%d): %.2f s.", m_textures.size(), timer.GetElapsed_sec());
 	}
 }
 
