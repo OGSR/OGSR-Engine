@@ -90,3 +90,9 @@ void CUIDialogWndEx::Update()
 {
 	inherited::Update();
 }
+
+
+void CUIDialogWndEx::ClearCallbacks() {
+  for ( auto it = m_callbacks.begin(); it != m_callbacks.end(); ++it )
+    (*it)->m_callback.clear();
+}
