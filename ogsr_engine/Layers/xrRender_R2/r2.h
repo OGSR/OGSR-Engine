@@ -21,7 +21,7 @@
 #include "..\..\xr_3da\irenderable.h"
 #include "..\..\xr_3da\fmesh.h"
 
-static float OLES_SUN_LIMIT_27_01_07 = 180.f;
+//static float OLES_SUN_LIMIT_27_01_07 = 180.f;
 class rain_timer_params;
 // definition
 class CRender													:	public R_dsgraph_structure
