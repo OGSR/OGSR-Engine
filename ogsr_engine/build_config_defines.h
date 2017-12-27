@@ -88,3 +88,9 @@
 
 // Red Virus: bobbing effect from lost alpha
 //#define WPN_BOBBING
+
+// Очистка списка задач при загрузке сейва от выполненных и проваленных
+//#define KEEP_INPROGRESS_TASKS_ONLY
+
+// Сколько последних сообщений показывать в истории ПДА
+#define NEWS_TO_SHOW 50

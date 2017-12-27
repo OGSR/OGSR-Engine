@@ -15,8 +15,6 @@
 
 #define				NEWS_XML			"news.xml"
 
-#define NEWS_TO_SHOW 50
-
 CUINewsWnd::CUINewsWnd()
 {}
 
