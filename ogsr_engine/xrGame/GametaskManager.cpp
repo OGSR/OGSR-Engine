@@ -50,6 +50,9 @@ CGameTaskManager::~CGameTaskManager()
 void CGameTaskManager::initialize(u16 id)
 {
 	m_gametasks->registry().init(id);// actor's id
+#ifdef KEEP_INPROGRESS_TASKS_ONLY
+	cleanup();
+#endif
 }
 
 GameTasks&	CGameTaskManager::GameTasks	() 
@@ -316,4 +319,18 @@ SGameTaskObjective* CGameTaskManager::ActiveObjective()
 	CGameTask*		t			= ActiveTask();
 	
 	return (t)?&t->Objective(g_active_task_objective_id):NULL;
+}
+
+
+void CGameTaskManager::cleanup() {
+  GameTasks().erase(
+    std::remove_if(
+      GameTasks().begin(),
+      GameTasks().end(),
+      []( const SGameTaskKey& k ) {
+        return k.game_task->Objective( 0 ).TaskState() != eTaskStateInProgress;
+      }
+    ),
+    GameTasks().end()
+  );
 }
