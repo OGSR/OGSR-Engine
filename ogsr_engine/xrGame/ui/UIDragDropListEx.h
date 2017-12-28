@@ -45,6 +45,9 @@ private:
 	Flags8					m_flags;
 	CUICellItem*			m_selected_item;
 	Ivector2				m_orig_cell_capacity;
+#ifdef SHOW_INV_ITEM_CONDITION
+	bool					m_bConditionProgBarVisible;
+#endif
 
 protected:
 	
@@ -78,6 +81,8 @@ public:
 			void			ResetCellsCapacity	(){VERIFY(ItemsCount()==0);SetCellsCapacity(m_orig_cell_capacity);};
 	 const	Ivector2&		CellSize			();
 			void			SetCellSize			(const Ivector2 new_sz);
+	const	Ivector2&		CellsSpacing		();
+			void			SetCellsSpacing		(const Ivector2& new_sz);
 			int				ScrollPos			();
 			void			SetScrollPos		(int _pos);
 			void			ReinitScroll		();
@@ -95,6 +100,10 @@ public:
 			void			SetDrawGrid			(bool b)	{ m_flags.set(flDrawGrid, b); }
 			bool			GetDrawGrid			()			{ return !!m_flags.test(flDrawGrid); }
 
+#ifdef SHOW_INV_ITEM_CONDITION
+			bool			GetConditionProgBarVisibility() {return m_bConditionProgBarVisible;};
+			void			SetConditionProgBarVisibility(bool b) {m_bConditionProgBarVisible = b;};
+#endif
 public:
 			// items management
 			virtual void	SetItem				(CUICellItem* itm); //auto
@@ -134,6 +143,8 @@ protected:
 
 	Ivector2					m_cellsCapacity;			//count		(col,	row)
 	Ivector2					m_cellSize;					//pixels	(width, height)
+	Ivector2					m_cellSpacing;				//pixels	(width, height)
+
 	UI_CELLS_VEC				m_cells;
 
 	void						GetTexUVLT			(Fvector2& uv, u32 col, u32 row);
@@ -150,6 +161,8 @@ protected:
 				void			SetCellsCapacity	(const Ivector2& c);
 	IC const	Ivector2&		CellSize			()								{return m_cellSize;};	
 				void			SetCellSize			(const Ivector2& new_sz);
+	IC const	Ivector2&		CellsSpacing		()								{return m_cellSpacing;};	
+				void			SetCellsSpacing		(const Ivector2& new_sz);
 				Ivector2		TopVisibleCell		();
 				CUICell&		GetCellAt			(const Ivector2& pos);
 				Ivector2		PickCell			(const Fvector2& abs_pos);

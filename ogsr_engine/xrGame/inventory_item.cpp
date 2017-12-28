@@ -1142,3 +1142,9 @@ u16 CInventoryItem::bone_count_to_synchronize	() const
 {
 	return 0;
 }
+
+#ifdef SHOW_INV_ITEM_CONDITION
+bool CInventoryItem::GetInvShowCondition() const {
+  return READ_IF_EXISTS( pSettings, r_bool, m_object->cNameSect(), "inv_show_condition", false );
+}
+#endif

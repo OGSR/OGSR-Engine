@@ -148,6 +148,9 @@ public:
 			const shared_str&	GetIconName			() const		{return m_icon_name;};
 			int					GetXPos				() const ;
 			int					GetYPos				() const ;
+#ifdef SHOW_INV_ITEM_CONDITION
+			bool GetInvShowCondition() const;
+#endif
 	//---------------------------------------------------------------------
 			float				GetKillMsgXPos		() const ;
 			float				GetKillMsgYPos		() const ;

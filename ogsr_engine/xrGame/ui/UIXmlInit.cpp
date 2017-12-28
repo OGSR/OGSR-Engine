@@ -420,13 +420,18 @@ bool CUIXmlInit::InitDragDropListEx(CUIXml& xml_doc, const char* path, int index
 
 	pWnd->Init		(x,y, width,height);
 
-	Ivector2 w_cell_sz, w_cells;
+	Ivector2 w_cell_sz, w_cells, w_cell_sp;
 
 	w_cell_sz.x				= xml_doc.ReadAttribInt(path, index, "cell_width");
 	w_cell_sz.y				= xml_doc.ReadAttribInt(path, index, "cell_height");
 	w_cells.y				= xml_doc.ReadAttribInt(path, index, "rows_num");
 	w_cells.x				= xml_doc.ReadAttribInt(path, index, "cols_num");
+
+	w_cell_sp.x				= xml_doc.ReadAttribInt(path, index, "cell_sp_x", 0);
+	w_cell_sp.y				= xml_doc.ReadAttribInt(path, index, "cell_sp_y", 0);
+
 	pWnd->SetCellSize		(w_cell_sz);	
+	pWnd->SetCellsSpacing		(w_cell_sp);	
 	pWnd->SetStartCellsCapacity	(w_cells);	
 
 	int tmp					= xml_doc.ReadAttribInt(path, index, "unlimited", 0);
@@ -439,6 +444,13 @@ bool CUIXmlInit::InitDragDropListEx(CUIXml& xml_doc, const char* path, int index
 	pWnd->SetVerticalPlacement(tmp != 0);
 	tmp						= xml_doc.ReadAttribInt(path, index, "show_grid", 1);
 	pWnd->SetDrawGrid		(tmp != 0);
+#ifdef SHOW_INV_ITEM_CONDITION
+	tmp 					= xml_doc.ReadAttribInt(path, index, "condition_progress_bar", 0);
+	pWnd->SetConditionProgBarVisibility(tmp!=0);	
+#endif
+
+	if (xr_strlen(path))
+		pWnd->SetWindowName (path, TRUE);
 
 	return true;
 }
