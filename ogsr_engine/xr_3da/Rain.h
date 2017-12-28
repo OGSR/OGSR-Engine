@@ -87,6 +87,7 @@ public:
 	void							OnFrame			();
 	void							phase_rmap		();
 	void							set_state		(States _state) {	state = _state;	};
+	void							InvalidateState	()		{state = stIdle;}
 };
 #ifndef _EDITOR
 class rain_timer_params
