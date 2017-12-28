@@ -1,14 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
-    <ProjectConfiguration Include="Debug|Win32">
-      <Configuration>Debug</Configuration>
-      <Platform>Win32</Platform>
-    </ProjectConfiguration>
-    <ProjectConfiguration Include="Debug|x64">
-      <Configuration>Debug</Configuration>
-      <Platform>x64</Platform>
-    </ProjectConfiguration>
     <ProjectConfiguration Include="Release|Win32">
       <Configuration>Release</Configuration>
       <Platform>Win32</Platform>
@@ -24,19 +16,7 @@
     </WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
-    <ConfigurationType>DynamicLibrary</ConfigurationType>
-    <PlatformToolset>v141</PlatformToolset>
-    <UseOfMfc>false</UseOfMfc>
-    <CharacterSet>MultiByte</CharacterSet>
-  </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
-    <ConfigurationType>DynamicLibrary</ConfigurationType>
-    <PlatformToolset>v141</PlatformToolset>
-    <UseOfMfc>false</UseOfMfc>
-    <CharacterSet>MultiByte</CharacterSet>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <PlatformToolset>v141</PlatformToolset>
     <UseOfMfc>false</UseOfMfc>
@@ -51,17 +31,7 @@
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
   </ImportGroup>
-  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="PropertySheets">
-    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-    <Import Project="$(VCTargetsPath)Microsoft.CPP.UpgradeFromVC71.props" />
-    <Import Project="..\..\3rd_party_properties.props" />
-  </ImportGroup>
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="PropertySheets">
-    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-    <Import Project="$(VCTargetsPath)Microsoft.CPP.UpgradeFromVC71.props" />
-    <Import Project="..\..\3rd_party_properties.props" />
-  </ImportGroup>
-  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
     <Import Project="$(VCTargetsPath)Microsoft.CPP.UpgradeFromVC71.props" />
     <Import Project="..\..\3rd_party_properties.props" />
@@ -80,14 +50,6 @@
     <TargetName>wrap_oal</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <LinkIncremental>false</LinkIncremental>
-    <TargetName>wrap_oal</TargetName>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <LinkIncremental>false</LinkIncremental>
-    <TargetName>wrap_oal</TargetName>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>false</LinkIncremental>
     <TargetName>wrap_oal</TargetName>
   </PropertyGroup>
@@ -164,76 +126,6 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <OptimizeReferences>true</OptimizeReferences>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
-      <TargetMachine>MachineX64</TargetMachine>
-    </Link>
-  </ItemDefinitionGroup>
-  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <Midl>
-      <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <MkTypLibCompatible>true</MkTypLibCompatible>
-      <SuppressStartupBanner>true</SuppressStartupBanner>
-      <TargetEnvironment>Win32</TargetEnvironment>
-      <TypeLibraryName>.\Debug/OpenAL32.tlb</TypeLibraryName>
-      <HeaderFileName />
-    </Midl>
-    <ClCompile>
-      <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>..\;Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>_DEBUG;WIN32;_WINDOWS;_USRDLL;AL_BUILD_LIBRARY;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
-      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
-      <BrowseInformation>
-      </BrowseInformation>
-      <WarningLevel>Level3</WarningLevel>
-      <SuppressStartupBanner>true</SuppressStartupBanner>
-      <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
-      <CompileAs>Default</CompileAs>
-    </ClCompile>
-    <ResourceCompile>
-      <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <Culture>0x0409</Culture>
-    </ResourceCompile>
-    <Link>
-      <AdditionalDependencies>openal32.lib;dxguid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <Version>1.0</Version>
-      <SuppressStartupBanner>true</SuppressStartupBanner>
-      <IgnoreSpecificDefaultLibraries>LIBCD;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
-      <GenerateDebugInformation>true</GenerateDebugInformation>
-      <TargetMachine>MachineX86</TargetMachine>
-    </Link>
-  </ItemDefinitionGroup>
-  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <Midl>
-      <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <MkTypLibCompatible>true</MkTypLibCompatible>
-      <SuppressStartupBanner>true</SuppressStartupBanner>
-      <TargetEnvironment>X64</TargetEnvironment>
-      <TypeLibraryName>.\Debug/OpenAL32.tlb</TypeLibraryName>
-      <HeaderFileName />
-    </Midl>
-    <ClCompile>
-      <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>..\;Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>_DEBUG;WIN32;_WINDOWS;_USRDLL;AL_BUILD_LIBRARY;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
-      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
-      <BrowseInformation>
-      </BrowseInformation>
-      <WarningLevel>Level3</WarningLevel>
-      <SuppressStartupBanner>true</SuppressStartupBanner>
-      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
-      <CompileAs>Default</CompileAs>
-    </ClCompile>
-    <ResourceCompile>
-      <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <Culture>0x0409</Culture>
-    </ResourceCompile>
-    <Link>
-      <AdditionalDependencies>openal32.lib;dxguid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <Version>1.0</Version>
-      <SuppressStartupBanner>true</SuppressStartupBanner>
-      <IgnoreSpecificDefaultLibraries>LIBCD;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
-      <GenerateDebugInformation>true</GenerateDebugInformation>
       <TargetMachine>MachineX64</TargetMachine>
     </Link>
   </ItemDefinitionGroup>

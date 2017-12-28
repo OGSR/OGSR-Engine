@@ -1,22 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
-    <ProjectConfiguration Include="Debug|Win32">
-      <Configuration>Debug</Configuration>
-      <Platform>Win32</Platform>
-    </ProjectConfiguration>
-    <ProjectConfiguration Include="Debug|x64">
-      <Configuration>Debug</Configuration>
-      <Platform>x64</Platform>
-    </ProjectConfiguration>
-    <ProjectConfiguration Include="Mixed|Win32">
-      <Configuration>Mixed</Configuration>
-      <Platform>Win32</Platform>
-    </ProjectConfiguration>
-    <ProjectConfiguration Include="Mixed|x64">
-      <Configuration>Mixed</Configuration>
-      <Platform>x64</Platform>
-    </ProjectConfiguration>
     <ProjectConfiguration Include="Release|Win32">
       <Configuration>Release</Configuration>
       <Platform>Win32</Platform>
@@ -32,28 +16,6 @@
     </WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
-    <ConfigurationType>DynamicLibrary</ConfigurationType>
-    <UseOfMfc>false</UseOfMfc>
-    <PlatformToolset>v141</PlatformToolset>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
-    <ConfigurationType>DynamicLibrary</ConfigurationType>
-    <UseOfMfc>false</UseOfMfc>
-    <PlatformToolset>v141</PlatformToolset>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Mixed|Win32'" Label="Configuration">
-    <ConfigurationType>DynamicLibrary</ConfigurationType>
-    <UseOfMfc>false</UseOfMfc>
-    <CharacterSet>MultiByte</CharacterSet>
-    <PlatformToolset>v141</PlatformToolset>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Mixed|x64'" Label="Configuration">
-    <ConfigurationType>DynamicLibrary</ConfigurationType>
-    <UseOfMfc>false</UseOfMfc>
-    <CharacterSet>MultiByte</CharacterSet>
-    <PlatformToolset>v141</PlatformToolset>
-  </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseOfMfc>false</UseOfMfc>
@@ -71,26 +33,6 @@
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
   </ImportGroup>
-  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="PropertySheets">
-    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-    <Import Project="$(VCTargetsPath)Microsoft.CPP.UpgradeFromVC71.props" />
-    <Import Project="..\Engine_properties.props" />
-  </ImportGroup>
-  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="PropertySheets">
-    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-    <Import Project="$(VCTargetsPath)Microsoft.CPP.UpgradeFromVC71.props" />
-    <Import Project="..\Engine_properties.props" />
-  </ImportGroup>
-  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Mixed|Win32'" Label="PropertySheets">
-    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-    <Import Project="$(VCTargetsPath)Microsoft.CPP.UpgradeFromVC71.props" />
-    <Import Project="..\Engine_properties.props" />
-  </ImportGroup>
-  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Mixed|x64'" Label="PropertySheets">
-    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-    <Import Project="$(VCTargetsPath)Microsoft.CPP.UpgradeFromVC71.props" />
-    <Import Project="..\Engine_properties.props" />
-  </ImportGroup>
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
     <Import Project="$(VCTargetsPath)Microsoft.CPP.UpgradeFromVC71.props" />
@@ -106,12 +48,6 @@
     <_ProjectFileVersion>10.0.40219.1</_ProjectFileVersion>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</LinkIncremental>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</LinkIncremental>
-    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Mixed|Win32'">true</LinkIncremental>
-    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Mixed|x64'">true</LinkIncremental>
-    <IgnoreImportLibrary Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</IgnoreImportLibrary>
-    <IgnoreImportLibrary Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</IgnoreImportLibrary>
-    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</LinkIncremental>
-    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</LinkIncremental>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <Midl>
@@ -238,225 +174,15 @@
       <LinkTimeCodeGeneration>UseLinkTimeCodeGeneration</LinkTimeCodeGeneration>
     </Link>
   </ItemDefinitionGroup>
-  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Mixed|Win32'">
-    <Midl>
-      <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <MkTypLibCompatible>true</MkTypLibCompatible>
-      <SuppressStartupBanner>true</SuppressStartupBanner>
-      <TargetEnvironment>Win32</TargetEnvironment>
-      <TypeLibraryName>.\Release/xrXMLParser.tlb</TypeLibraryName>
-    </Midl>
-    <ClCompile>
-      <Optimization>Full</Optimization>
-      <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
-      <IntrinsicFunctions>true</IntrinsicFunctions>
-      <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
-      <OmitFramePointers>false</OmitFramePointers>
-      <EnableFiberSafeOptimizations>true</EnableFiberSafeOptimizations>
-      <AdditionalIncludeDirectories>..;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>MIXED;DEBUG;WIN32;_WINDOWS;XRXMLPARSER_EXPORTS;_SECURE_SCL=0;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <StringPooling>true</StringPooling>
-      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
-      <BufferSecurityCheck>true</BufferSecurityCheck>
-      <FunctionLevelLinking>false</FunctionLevelLinking>
-      <FloatingPointModel>Fast</FloatingPointModel>
-      <ForceConformanceInForLoopScope>false</ForceConformanceInForLoopScope>
-      <RuntimeTypeInfo>true</RuntimeTypeInfo>
-      <PrecompiledHeader>Use</PrecompiledHeader>
-      <PrecompiledHeaderOutputFile>$(IntDir)$(ProjectName).pch</PrecompiledHeaderOutputFile>
-      <AssemblerOutput>
-      </AssemblerOutput>
-      <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
-      <ObjectFileName>$(IntDir)</ObjectFileName>
-      <ProgramDataBaseFileName>$(IntDir)</ProgramDataBaseFileName>
-      <WarningLevel>Level4</WarningLevel>
-      <SuppressStartupBanner>true</SuppressStartupBanner>
-      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
-      <CompileAs>CompileAsCpp</CompileAs>
-      <ShowIncludes>false</ShowIncludes>
-    </ClCompile>
-    <ResourceCompile>
-      <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <Culture>0x0409</Culture>
-    </ResourceCompile>
-    <Link>
-      <AdditionalOptions>/MACHINE:I386 %(AdditionalOptions)</AdditionalOptions>
-      <SuppressStartupBanner>true</SuppressStartupBanner>
-      <GenerateDebugInformation>true</GenerateDebugInformation>
-      <GenerateMapFile>false</GenerateMapFile>
-      <MapFileName>$(OutDir)$(ProjectName).map</MapFileName>
-      <SubSystem>Windows</SubSystem>
-      <LargeAddressAware>true</LargeAddressAware>
-    </Link>
-  </ItemDefinitionGroup>
-  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Mixed|x64'">
-    <Midl>
-      <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <MkTypLibCompatible>true</MkTypLibCompatible>
-      <SuppressStartupBanner>true</SuppressStartupBanner>
-      <TypeLibraryName>.\Release/xrXMLParser.tlb</TypeLibraryName>
-    </Midl>
-    <ClCompile>
-      <Optimization>Full</Optimization>
-      <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
-      <IntrinsicFunctions>true</IntrinsicFunctions>
-      <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
-      <OmitFramePointers>false</OmitFramePointers>
-      <EnableFiberSafeOptimizations>true</EnableFiberSafeOptimizations>
-      <AdditionalIncludeDirectories>..;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>MIXED;DEBUG;WIN32;_WINDOWS;XRXMLPARSER_EXPORTS;_SECURE_SCL=0;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <StringPooling>true</StringPooling>
-      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
-      <BufferSecurityCheck>true</BufferSecurityCheck>
-      <FunctionLevelLinking>false</FunctionLevelLinking>
-      <FloatingPointModel>Fast</FloatingPointModel>
-      <ForceConformanceInForLoopScope>false</ForceConformanceInForLoopScope>
-      <RuntimeTypeInfo>true</RuntimeTypeInfo>
-      <PrecompiledHeader>Use</PrecompiledHeader>
-      <PrecompiledHeaderOutputFile>$(IntDir)$(ProjectName).pch</PrecompiledHeaderOutputFile>
-      <AssemblerOutput>
-      </AssemblerOutput>
-      <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
-      <ObjectFileName>$(IntDir)</ObjectFileName>
-      <ProgramDataBaseFileName>$(IntDir)</ProgramDataBaseFileName>
-      <WarningLevel>Level4</WarningLevel>
-      <SuppressStartupBanner>true</SuppressStartupBanner>
-      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
-      <CompileAs>CompileAsCpp</CompileAs>
-      <ShowIncludes>false</ShowIncludes>
-    </ClCompile>
-    <ResourceCompile>
-      <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <Culture>0x0409</Culture>
-    </ResourceCompile>
-    <Link>
-      <AdditionalOptions>/MACHINE:I386 %(AdditionalOptions)</AdditionalOptions>
-      <SuppressStartupBanner>true</SuppressStartupBanner>
-      <GenerateDebugInformation>true</GenerateDebugInformation>
-      <GenerateMapFile>false</GenerateMapFile>
-      <MapFileName>$(OutDir)$(ProjectName).map</MapFileName>
-      <SubSystem>Windows</SubSystem>
-      <LargeAddressAware>true</LargeAddressAware>
-    </Link>
-  </ItemDefinitionGroup>
-  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <Midl>
-      <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <MkTypLibCompatible>true</MkTypLibCompatible>
-      <SuppressStartupBanner>true</SuppressStartupBanner>
-      <TargetEnvironment>Win32</TargetEnvironment>
-      <TypeLibraryName>.\Debug/xrXMLParser.tlb</TypeLibraryName>
-    </Midl>
-    <ClCompile>
-      <Optimization>Disabled</Optimization>
-      <EnableFiberSafeOptimizations>true</EnableFiberSafeOptimizations>
-      <AdditionalIncludeDirectories>..;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>DEBUG;WIN32;_WINDOWS;XRXMLPARSER_EXPORTS;_SECURE_SCL=0;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <StringPooling>false</StringPooling>
-      <MinimalRebuild>true</MinimalRebuild>
-      <ExceptionHandling>Sync</ExceptionHandling>
-      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
-      <SmallerTypeCheck>false</SmallerTypeCheck>
-      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
-      <FunctionLevelLinking>true</FunctionLevelLinking>
-      <FloatingPointModel>Fast</FloatingPointModel>
-      <ForceConformanceInForLoopScope>false</ForceConformanceInForLoopScope>
-      <RuntimeTypeInfo>true</RuntimeTypeInfo>
-      <PrecompiledHeader>Use</PrecompiledHeader>
-      <PrecompiledHeaderOutputFile>$(IntDir)$(ProjectName).pch</PrecompiledHeaderOutputFile>
-      <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
-      <ObjectFileName>$(IntDir)</ObjectFileName>
-      <ProgramDataBaseFileName>$(IntDir)</ProgramDataBaseFileName>
-      <WarningLevel>Level4</WarningLevel>
-      <SuppressStartupBanner>true</SuppressStartupBanner>
-      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
-      <CompileAs>CompileAsCpp</CompileAs>
-      <ShowIncludes>false</ShowIncludes>
-    </ClCompile>
-    <ResourceCompile>
-      <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <Culture>0x0409</Culture>
-    </ResourceCompile>
-    <Link>
-      <AdditionalOptions>/MACHINE:I386 %(AdditionalOptions)</AdditionalOptions>
-      <SuppressStartupBanner>true</SuppressStartupBanner>
-      <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
-      <IgnoreSpecificDefaultLibraries>%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
-      <GenerateDebugInformation>true</GenerateDebugInformation>
-      <GenerateMapFile>false</GenerateMapFile>
-      <MapFileName>
-      </MapFileName>
-      <SubSystem>Windows</SubSystem>
-      <LargeAddressAware>true</LargeAddressAware>
-    </Link>
-  </ItemDefinitionGroup>
-  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <Midl>
-      <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <MkTypLibCompatible>true</MkTypLibCompatible>
-      <SuppressStartupBanner>true</SuppressStartupBanner>
-      <TypeLibraryName>.\Debug/xrXMLParser.tlb</TypeLibraryName>
-    </Midl>
-    <ClCompile>
-      <Optimization>Disabled</Optimization>
-      <EnableFiberSafeOptimizations>true</EnableFiberSafeOptimizations>
-      <AdditionalIncludeDirectories>..;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>DEBUG;_AMD64_;_WIN64;_WINDOWS;XRXMLPARSER_EXPORTS;_SECURE_SCL=0;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <StringPooling>false</StringPooling>
-      <ExceptionHandling>Sync</ExceptionHandling>
-      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
-      <SmallerTypeCheck>true</SmallerTypeCheck>
-      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
-      <FunctionLevelLinking>true</FunctionLevelLinking>
-      <FloatingPointModel>Fast</FloatingPointModel>
-      <ForceConformanceInForLoopScope>false</ForceConformanceInForLoopScope>
-      <RuntimeTypeInfo>true</RuntimeTypeInfo>
-      <PrecompiledHeader>Use</PrecompiledHeader>
-      <PrecompiledHeaderOutputFile>$(IntDir)$(ProjectName).pch</PrecompiledHeaderOutputFile>
-      <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
-      <ObjectFileName>$(IntDir)</ObjectFileName>
-      <ProgramDataBaseFileName>$(IntDir)</ProgramDataBaseFileName>
-      <WarningLevel>Level4</WarningLevel>
-      <SuppressStartupBanner>true</SuppressStartupBanner>
-      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
-      <CompileAs>CompileAsCpp</CompileAs>
-      <ShowIncludes>false</ShowIncludes>
-    </ClCompile>
-    <ResourceCompile>
-      <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <Culture>0x0409</Culture>
-    </ResourceCompile>
-    <Link>
-      <SuppressStartupBanner>true</SuppressStartupBanner>
-      <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
-      <IgnoreSpecificDefaultLibraries>%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
-      <GenerateDebugInformation>true</GenerateDebugInformation>
-      <GenerateMapFile>false</GenerateMapFile>
-      <MapFileName>
-      </MapFileName>
-      <SubSystem>Windows</SubSystem>
-      <LargeAddressAware>true</LargeAddressAware>
-    </Link>
-  </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="StdAfx.cpp">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Mixed|Win32'">Create</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Mixed|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="xrXMLParser.cpp" />
-    <ClCompile Include="tinystr.cpp">
-      <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)$(ProjectName).pch</PrecompiledHeaderOutputFile>
-      <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(IntDir)$(ProjectName).pch</PrecompiledHeaderOutputFile>
-    </ClCompile>
+    <ClCompile Include="tinystr.cpp" />
     <ClCompile Include="tinyxml.cpp" />
-    <ClCompile Include="tinyxmlerror.cpp">
-      <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)$(ProjectName).pch</PrecompiledHeaderOutputFile>
-      <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(IntDir)$(ProjectName).pch</PrecompiledHeaderOutputFile>
-    </ClCompile>
+    <ClCompile Include="tinyxmlerror.cpp" />
     <ClCompile Include="tinyxmlparser.cpp" />
   </ItemGroup>
   <ItemGroup>

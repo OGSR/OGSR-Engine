@@ -1,22 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
-    <ProjectConfiguration Include="Debug|Win32">
-      <Configuration>Debug</Configuration>
-      <Platform>Win32</Platform>
-    </ProjectConfiguration>
-    <ProjectConfiguration Include="Debug|x64">
-      <Configuration>Debug</Configuration>
-      <Platform>x64</Platform>
-    </ProjectConfiguration>
-    <ProjectConfiguration Include="Mixed|Win32">
-      <Configuration>Mixed</Configuration>
-      <Platform>Win32</Platform>
-    </ProjectConfiguration>
-    <ProjectConfiguration Include="Mixed|x64">
-      <Configuration>Mixed</Configuration>
-      <Platform>x64</Platform>
-    </ProjectConfiguration>
     <ProjectConfiguration Include="Release|Win32">
       <Configuration>Release</Configuration>
       <Platform>Win32</Platform>
@@ -32,30 +16,6 @@
     </WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
-    <ConfigurationType>DynamicLibrary</ConfigurationType>
-    <UseOfMfc>false</UseOfMfc>
-    <CharacterSet>MultiByte</CharacterSet>
-    <PlatformToolset>v141</PlatformToolset>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
-    <ConfigurationType>DynamicLibrary</ConfigurationType>
-    <UseOfMfc>false</UseOfMfc>
-    <CharacterSet>MultiByte</CharacterSet>
-    <PlatformToolset>v141</PlatformToolset>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Mixed|Win32'" Label="Configuration">
-    <ConfigurationType>DynamicLibrary</ConfigurationType>
-    <UseOfMfc>false</UseOfMfc>
-    <CharacterSet>MultiByte</CharacterSet>
-    <PlatformToolset>v141</PlatformToolset>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Mixed|x64'" Label="Configuration">
-    <ConfigurationType>DynamicLibrary</ConfigurationType>
-    <UseOfMfc>false</UseOfMfc>
-    <CharacterSet>MultiByte</CharacterSet>
-    <PlatformToolset>v141</PlatformToolset>
-  </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseOfMfc>false</UseOfMfc>
@@ -73,26 +33,6 @@
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
   </ImportGroup>
-  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="PropertySheets">
-    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-    <Import Project="$(VCTargetsPath)Microsoft.CPP.UpgradeFromVC71.props" />
-    <Import Project="..\Engine_properties.props" />
-  </ImportGroup>
-  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="PropertySheets">
-    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-    <Import Project="$(VCTargetsPath)Microsoft.CPP.UpgradeFromVC71.props" />
-    <Import Project="..\Engine_properties.props" />
-  </ImportGroup>
-  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Mixed|Win32'" Label="PropertySheets">
-    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-    <Import Project="$(VCTargetsPath)Microsoft.CPP.UpgradeFromVC71.props" />
-    <Import Project="..\Engine_properties.props" />
-  </ImportGroup>
-  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Mixed|x64'" Label="PropertySheets">
-    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-    <Import Project="$(VCTargetsPath)Microsoft.CPP.UpgradeFromVC71.props" />
-    <Import Project="..\Engine_properties.props" />
-  </ImportGroup>
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
     <Import Project="$(VCTargetsPath)Microsoft.CPP.UpgradeFromVC71.props" />
@@ -108,16 +48,6 @@
     <_ProjectFileVersion>10.0.40219.1</_ProjectFileVersion>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</LinkIncremental>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</LinkIncremental>
-    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Mixed|Win32'">true</LinkIncremental>
-    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Mixed|x64'">true</LinkIncremental>
-    <IgnoreImportLibrary Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</IgnoreImportLibrary>
-    <IgnoreImportLibrary Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</IgnoreImportLibrary>
-    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</LinkIncremental>
-    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</LinkIncremental>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Mixed|Win32'">
-    <IncludePath>X:\trunk\3rd party\FreeImage\FreeImage\Source;X:\trunk\xray\xrCore;X:\trunk\3rd party\MagicSoftware\FreeMagic\Include;X:\trunk\3rd party\OpenAL\Include;X:\trunk\3rd party\luabind_old\luabind;X:\trunk\3rd party\eax\Include;X:\trunk\3rd party\boost;$(IncludePath)</IncludePath>
-    <LibraryPath>X:\trunk\3rd party\OpenAL\libs\Win32;X:\trunk\3rd party\eax;X:\libraries;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <Midl>
@@ -245,349 +175,53 @@
       <TargetMachine>MachineX64</TargetMachine>
     </Link>
   </ItemDefinitionGroup>
-  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Mixed|Win32'">
-    <Midl>
-      <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <MkTypLibCompatible>true</MkTypLibCompatible>
-      <SuppressStartupBanner>true</SuppressStartupBanner>
-      <TargetEnvironment>Win32</TargetEnvironment>
-      <TypeLibraryName>x:\xrCDB.tlb</TypeLibraryName>
-    </Midl>
-    <ClCompile>
-      <Optimization>Full</Optimization>
-      <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
-      <IntrinsicFunctions>true</IntrinsicFunctions>
-      <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
-      <OmitFramePointers>false</OmitFramePointers>
-      <EnableFiberSafeOptimizations>true</EnableFiberSafeOptimizations>
-      <PreprocessorDefinitions>MIXED;WIN32;DEBUG;_WINDOWS;_USRDLL;XRCDB_EXPORTS;_SECURE_SCL=0;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <StringPooling>true</StringPooling>
-      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
-      <BufferSecurityCheck>true</BufferSecurityCheck>
-      <FunctionLevelLinking>false</FunctionLevelLinking>
-      <FloatingPointModel>Fast</FloatingPointModel>
-      <ForceConformanceInForLoopScope>false</ForceConformanceInForLoopScope>
-      <RuntimeTypeInfo>true</RuntimeTypeInfo>
-      <PrecompiledHeader>Use</PrecompiledHeader>
-      <PrecompiledHeaderOutputFile>$(IntDir)$(ProjectName).pch</PrecompiledHeaderOutputFile>
-      <AssemblerOutput>
-      </AssemblerOutput>
-      <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
-      <ObjectFileName>$(IntDir)</ObjectFileName>
-      <ProgramDataBaseFileName>$(IntDir)</ProgramDataBaseFileName>
-      <BrowseInformation>
-      </BrowseInformation>
-      <WarningLevel>Level4</WarningLevel>
-      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
-      <AdditionalIncludeDirectories>..\xrCore;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-    </ClCompile>
-    <ResourceCompile>
-      <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <Culture>0x0409</Culture>
-    </ResourceCompile>
-    <Link>
-      <GenerateDebugInformation>true</GenerateDebugInformation>
-      <GenerateMapFile>false</GenerateMapFile>
-      <MapFileName>$(OutDir)$(ProjectName).map</MapFileName>
-      <SubSystem>Windows</SubSystem>
-      <LargeAddressAware>false</LargeAddressAware>
-      <TargetMachine>NotSet</TargetMachine>
-    </Link>
-  </ItemDefinitionGroup>
-  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Mixed|x64'">
-    <Midl>
-      <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <MkTypLibCompatible>true</MkTypLibCompatible>
-      <SuppressStartupBanner>true</SuppressStartupBanner>
-      <TypeLibraryName>x:\xrCDB.tlb</TypeLibraryName>
-    </Midl>
-    <ClCompile>
-      <Optimization>Full</Optimization>
-      <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
-      <IntrinsicFunctions>true</IntrinsicFunctions>
-      <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
-      <OmitFramePointers>false</OmitFramePointers>
-      <EnableFiberSafeOptimizations>true</EnableFiberSafeOptimizations>
-      <PreprocessorDefinitions>MIXED;WIN32;DEBUG;_WINDOWS;_USRDLL;XRCDB_EXPORTS;_SECURE_SCL=0;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <StringPooling>true</StringPooling>
-      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
-      <BufferSecurityCheck>true</BufferSecurityCheck>
-      <FunctionLevelLinking>false</FunctionLevelLinking>
-      <FloatingPointModel>Fast</FloatingPointModel>
-      <ForceConformanceInForLoopScope>false</ForceConformanceInForLoopScope>
-      <RuntimeTypeInfo>true</RuntimeTypeInfo>
-      <PrecompiledHeader>Use</PrecompiledHeader>
-      <PrecompiledHeaderOutputFile>$(IntDir)$(ProjectName).pch</PrecompiledHeaderOutputFile>
-      <AssemblerOutput>
-      </AssemblerOutput>
-      <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
-      <ObjectFileName>$(IntDir)</ObjectFileName>
-      <ProgramDataBaseFileName>$(IntDir)</ProgramDataBaseFileName>
-      <BrowseInformation>
-      </BrowseInformation>
-      <WarningLevel>Level4</WarningLevel>
-      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
-      <AdditionalIncludeDirectories>..\xrCore;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-    </ClCompile>
-    <ResourceCompile>
-      <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <Culture>0x0409</Culture>
-    </ResourceCompile>
-    <Link>
-      <GenerateDebugInformation>true</GenerateDebugInformation>
-      <GenerateMapFile>false</GenerateMapFile>
-      <MapFileName>$(OutDir)$(ProjectName).map</MapFileName>
-      <SubSystem>Windows</SubSystem>
-      <LargeAddressAware>false</LargeAddressAware>
-    </Link>
-  </ItemDefinitionGroup>
-  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <Midl>
-      <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <MkTypLibCompatible>true</MkTypLibCompatible>
-      <SuppressStartupBanner>true</SuppressStartupBanner>
-      <TargetEnvironment>Win32</TargetEnvironment>
-      <TypeLibraryName>x:\xrCDB.tlb</TypeLibraryName>
-    </Midl>
-    <ClCompile>
-      <Optimization>Disabled</Optimization>
-      <IntrinsicFunctions>false</IntrinsicFunctions>
-      <FavorSizeOrSpeed>Neither</FavorSizeOrSpeed>
-      <EnableFiberSafeOptimizations>true</EnableFiberSafeOptimizations>
-      <PreprocessorDefinitions>WIN32;DEBUG;_WINDOWS;_USRDLL;XRCDB_EXPORTS;_SECURE_SCL=0;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <StringPooling>false</StringPooling>
-      <MinimalRebuild>true</MinimalRebuild>
-      <ExceptionHandling>Sync</ExceptionHandling>
-      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
-      <SmallerTypeCheck>false</SmallerTypeCheck>
-      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
-      <FunctionLevelLinking>true</FunctionLevelLinking>
-      <FloatingPointModel>Fast</FloatingPointModel>
-      <ForceConformanceInForLoopScope>false</ForceConformanceInForLoopScope>
-      <RuntimeTypeInfo>true</RuntimeTypeInfo>
-      <PrecompiledHeader>Use</PrecompiledHeader>
-      <PrecompiledHeaderFile>stdafx.h</PrecompiledHeaderFile>
-      <PrecompiledHeaderOutputFile>$(IntDir)$(ProjectName).pch</PrecompiledHeaderOutputFile>
-      <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
-      <ObjectFileName>$(IntDir)</ObjectFileName>
-      <ProgramDataBaseFileName>$(IntDir)</ProgramDataBaseFileName>
-      <BrowseInformation>
-      </BrowseInformation>
-      <WarningLevel>Level4</WarningLevel>
-      <SuppressStartupBanner>true</SuppressStartupBanner>
-      <DebugInformationFormat>OldStyle</DebugInformationFormat>
-      <AdditionalIncludeDirectories>..\xrCore;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-    </ClCompile>
-    <ResourceCompile>
-      <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <Culture>0x0409</Culture>
-    </ResourceCompile>
-    <Link>
-      <AdditionalOptions>/MACHINE:I386 %(AdditionalOptions)</AdditionalOptions>
-      <SuppressStartupBanner>true</SuppressStartupBanner>
-      <GenerateDebugInformation>true</GenerateDebugInformation>
-      <GenerateMapFile>false</GenerateMapFile>
-      <MapFileName>
-      </MapFileName>
-      <MapExports>false</MapExports>
-      <LargeAddressAware>true</LargeAddressAware>
-      <TargetMachine>NotSet</TargetMachine>
-    </Link>
-  </ItemDefinitionGroup>
-  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <Midl>
-      <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <MkTypLibCompatible>true</MkTypLibCompatible>
-      <SuppressStartupBanner>true</SuppressStartupBanner>
-      <TypeLibraryName>x:\xrCDB.tlb</TypeLibraryName>
-    </Midl>
-    <ClCompile>
-      <Optimization>Disabled</Optimization>
-      <IntrinsicFunctions>false</IntrinsicFunctions>
-      <FavorSizeOrSpeed>Neither</FavorSizeOrSpeed>
-      <EnableFiberSafeOptimizations>true</EnableFiberSafeOptimizations>
-      <PreprocessorDefinitions>_AMD64_;_WIN64;DEBUG;_WINDOWS;_USRDLL;XRCDB_EXPORTS;_SECURE_SCL=0;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <StringPooling>false</StringPooling>
-      <ExceptionHandling>Sync</ExceptionHandling>
-      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
-      <SmallerTypeCheck>true</SmallerTypeCheck>
-      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
-      <FunctionLevelLinking>true</FunctionLevelLinking>
-      <FloatingPointModel>Fast</FloatingPointModel>
-      <ForceConformanceInForLoopScope>false</ForceConformanceInForLoopScope>
-      <RuntimeTypeInfo>true</RuntimeTypeInfo>
-      <PrecompiledHeader>Use</PrecompiledHeader>
-      <PrecompiledHeaderFile>stdafx.h</PrecompiledHeaderFile>
-      <PrecompiledHeaderOutputFile>$(IntDir)$(ProjectName).pch</PrecompiledHeaderOutputFile>
-      <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
-      <ObjectFileName>$(IntDir)</ObjectFileName>
-      <ProgramDataBaseFileName>$(IntDir)</ProgramDataBaseFileName>
-      <BrowseInformation>
-      </BrowseInformation>
-      <WarningLevel>Level4</WarningLevel>
-      <SuppressStartupBanner>true</SuppressStartupBanner>
-      <DebugInformationFormat>OldStyle</DebugInformationFormat>
-      <AdditionalIncludeDirectories>..\xrCore;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-    </ClCompile>
-    <ResourceCompile>
-      <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <Culture>0x0409</Culture>
-    </ResourceCompile>
-    <Link>
-      <SuppressStartupBanner>true</SuppressStartupBanner>
-      <GenerateDebugInformation>true</GenerateDebugInformation>
-      <GenerateMapFile>false</GenerateMapFile>
-      <MapFileName>
-      </MapFileName>
-      <MapExports>false</MapExports>
-      <LargeAddressAware>true</LargeAddressAware>
-    </Link>
-  </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="cl_raypick.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
-      <MinimalRebuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</MinimalRebuild>
-      <MinimalRebuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</MinimalRebuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Mixed|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Mixed|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="Frustum.cpp">
-      <MinimalRebuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</MinimalRebuild>
-      <MinimalRebuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</MinimalRebuild>
-    </ClCompile>
+    <ClCompile Include="Frustum.cpp" />
     <ClCompile Include="StdAfx.cpp">
-      <MinimalRebuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</MinimalRebuild>
-      <MinimalRebuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</MinimalRebuild>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Mixed|Win32'">Create</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Mixed|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="xrCDB.cpp">
-      <MinimalRebuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</MinimalRebuild>
-      <MinimalRebuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</MinimalRebuild>
-    </ClCompile>
+    <ClCompile Include="xrCDB.cpp" />
     <ClCompile Include="xrCDB_box.cpp">
-      <MinimalRebuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</MinimalRebuild>
-      <MinimalRebuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</MinimalRebuild>
       <AssemblerOutput Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">AssemblyAndSourceCode</AssemblerOutput>
       <AssemblerOutput Condition="'$(Configuration)|$(Platform)'=='Release|x64'">AssemblyAndSourceCode</AssemblerOutput>
     </ClCompile>
-    <ClCompile Include="xrCDB_Collector.cpp">
-      <MinimalRebuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</MinimalRebuild>
-      <MinimalRebuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</MinimalRebuild>
-    </ClCompile>
+    <ClCompile Include="xrCDB_Collector.cpp" />
     <ClCompile Include="xrCDB_frustum.cpp">
-      <MinimalRebuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</MinimalRebuild>
-      <MinimalRebuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</MinimalRebuild>
       <AssemblerOutput Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">AssemblyAndSourceCode</AssemblerOutput>
       <AssemblerOutput Condition="'$(Configuration)|$(Platform)'=='Release|x64'">AssemblyAndSourceCode</AssemblerOutput>
     </ClCompile>
     <ClCompile Include="xrCDB_ray.cpp">
-      <MinimalRebuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</MinimalRebuild>
-      <MinimalRebuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</MinimalRebuild>
-      <AssemblerOutput Condition="'$(Configuration)|$(Platform)'=='Mixed|Win32'">AssemblyAndSourceCode</AssemblerOutput>
-      <AssemblerOutput Condition="'$(Configuration)|$(Platform)'=='Mixed|x64'">AssemblyAndSourceCode</AssemblerOutput>
       <AssemblerOutput Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">AssemblyAndSourceCode</AssemblerOutput>
       <AssemblerOutput Condition="'$(Configuration)|$(Platform)'=='Release|x64'">AssemblyAndSourceCode</AssemblerOutput>
     </ClCompile>
-    <ClCompile Include="OPC_AABB.cpp">
-      <MinimalRebuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</MinimalRebuild>
-      <MinimalRebuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</MinimalRebuild>
-    </ClCompile>
-    <ClCompile Include="OPC_AABBCollider.cpp">
-      <MinimalRebuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</MinimalRebuild>
-      <MinimalRebuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</MinimalRebuild>
-    </ClCompile>
-    <ClCompile Include="OPC_AABBTree.cpp">
-      <MinimalRebuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</MinimalRebuild>
-      <MinimalRebuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</MinimalRebuild>
-    </ClCompile>
-    <ClCompile Include="OPC_Collider.cpp">
-      <MinimalRebuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</MinimalRebuild>
-      <MinimalRebuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</MinimalRebuild>
-    </ClCompile>
-    <ClCompile Include="OPC_Common.cpp">
-      <MinimalRebuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</MinimalRebuild>
-      <MinimalRebuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</MinimalRebuild>
-    </ClCompile>
-    <ClCompile Include="OPC_Container.cpp">
-      <MinimalRebuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</MinimalRebuild>
-      <MinimalRebuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</MinimalRebuild>
-    </ClCompile>
-    <ClCompile Include="OPC_Matrix3x3.cpp">
-      <MinimalRebuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</MinimalRebuild>
-      <MinimalRebuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</MinimalRebuild>
-    </ClCompile>
-    <ClCompile Include="OPC_Matrix4x4.cpp">
-      <MinimalRebuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</MinimalRebuild>
-      <MinimalRebuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</MinimalRebuild>
-    </ClCompile>
-    <ClCompile Include="OPC_Model.cpp">
-      <MinimalRebuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</MinimalRebuild>
-      <MinimalRebuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</MinimalRebuild>
-    </ClCompile>
-    <ClCompile Include="OPC_OBB.cpp">
-      <MinimalRebuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</MinimalRebuild>
-      <MinimalRebuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</MinimalRebuild>
-    </ClCompile>
-    <ClCompile Include="OPC_OBBCollider.cpp">
-      <MinimalRebuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</MinimalRebuild>
-      <MinimalRebuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</MinimalRebuild>
-    </ClCompile>
-    <ClCompile Include="OPC_OptimizedTree.cpp">
-      <MinimalRebuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</MinimalRebuild>
-      <MinimalRebuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</MinimalRebuild>
-    </ClCompile>
-    <ClCompile Include="OPC_Plane.cpp">
-      <MinimalRebuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</MinimalRebuild>
-      <MinimalRebuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</MinimalRebuild>
-    </ClCompile>
-    <ClCompile Include="OPC_PlanesCollider.cpp">
-      <MinimalRebuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</MinimalRebuild>
-      <MinimalRebuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</MinimalRebuild>
-    </ClCompile>
-    <ClCompile Include="OPC_Point.cpp">
-      <MinimalRebuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</MinimalRebuild>
-      <MinimalRebuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</MinimalRebuild>
-    </ClCompile>
-    <ClCompile Include="OPC_Ray.cpp">
-      <MinimalRebuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</MinimalRebuild>
-      <MinimalRebuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</MinimalRebuild>
-    </ClCompile>
-    <ClCompile Include="OPC_RayCollider.cpp">
-      <MinimalRebuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</MinimalRebuild>
-      <MinimalRebuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</MinimalRebuild>
-    </ClCompile>
-    <ClCompile Include="OPC_SphereCollider.cpp">
-      <MinimalRebuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</MinimalRebuild>
-      <MinimalRebuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</MinimalRebuild>
-    </ClCompile>
-    <ClCompile Include="OPC_TreeBuilders.cpp">
-      <MinimalRebuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</MinimalRebuild>
-      <MinimalRebuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</MinimalRebuild>
-    </ClCompile>
-    <ClCompile Include="OPC_TreeCollider.cpp">
-      <MinimalRebuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</MinimalRebuild>
-      <MinimalRebuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</MinimalRebuild>
-    </ClCompile>
-    <ClCompile Include="OPC_Triangle.cpp">
-      <MinimalRebuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</MinimalRebuild>
-      <MinimalRebuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</MinimalRebuild>
-    </ClCompile>
-    <ClCompile Include="OPC_VolumeCollider.cpp">
-      <MinimalRebuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</MinimalRebuild>
-      <MinimalRebuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</MinimalRebuild>
-    </ClCompile>
-    <ClCompile Include="Opcode.cpp">
-      <MinimalRebuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</MinimalRebuild>
-      <MinimalRebuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</MinimalRebuild>
-    </ClCompile>
+    <ClCompile Include="OPC_AABB.cpp" />
+    <ClCompile Include="OPC_AABBCollider.cpp" />
+    <ClCompile Include="OPC_AABBTree.cpp" />
+    <ClCompile Include="OPC_Collider.cpp" />
+    <ClCompile Include="OPC_Common.cpp" />
+    <ClCompile Include="OPC_Container.cpp" />
+    <ClCompile Include="OPC_Matrix3x3.cpp" />
+    <ClCompile Include="OPC_Matrix4x4.cpp" />
+    <ClCompile Include="OPC_Model.cpp" />
+    <ClCompile Include="OPC_OBB.cpp" />
+    <ClCompile Include="OPC_OBBCollider.cpp" />
+    <ClCompile Include="OPC_OptimizedTree.cpp" />
+    <ClCompile Include="OPC_Plane.cpp" />
+    <ClCompile Include="OPC_PlanesCollider.cpp" />
+    <ClCompile Include="OPC_Point.cpp" />
+    <ClCompile Include="OPC_Ray.cpp" />
+    <ClCompile Include="OPC_RayCollider.cpp" />
+    <ClCompile Include="OPC_SphereCollider.cpp" />
+    <ClCompile Include="OPC_TreeBuilders.cpp" />
+    <ClCompile Include="OPC_TreeCollider.cpp" />
+    <ClCompile Include="OPC_Triangle.cpp" />
+    <ClCompile Include="OPC_VolumeCollider.cpp" />
+    <ClCompile Include="Opcode.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Frustum.h" />
