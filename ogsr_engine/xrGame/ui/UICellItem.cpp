@@ -6,6 +6,13 @@
 #include "../level.h"
 #include "../object_broker.h"
 #include "UIDragDropListEx.h"
+#ifdef SHOW_INV_ITEM_CONDITION
+#include "UIProgressBar.h"
+#include "UIXmlInit.h"
+#include "UIInventoryWnd.h"
+#include "../Weapon.h"
+#include "../CustomOutfit.h"
+#endif
 
 CUICellItem::CUICellItem()
 {
@@ -15,6 +22,11 @@ CUICellItem::CUICellItem()
 	m_b_already_drawn	= false;
 	SetAccelerator		(0);
 	m_b_destroy_childs	= true;
+#ifdef SHOW_INV_ITEM_CONDITION
+	m_text				= NULL;
+	m_pConditionState 	= NULL;
+	init();
+#endif
 }
 
 CUICellItem::~CUICellItem()
@@ -134,12 +146,24 @@ bool CUICellItem::HasChild(CUICellItem* item)
 void CUICellItem::UpdateItemText()
 {
 	string32			str;
+#ifdef SHOW_INV_ITEM_CONDITION
+	if ( ChildsCount() )
+	{
+		sprintf_s				(str,"x%d",ChildsCount()+1);
+		m_text->SetText(str);
+		m_text->Show( true );
+	}else{
+		sprintf_s				(str,"");
+		m_text->Show( false );
+	}
+#else
 	if(ChildsCount())
 		sprintf_s				(str,"x%d",ChildsCount()+1);
 	else
 		sprintf_s				(str,"");
 
 	SetText				(str);
+#endif
 }
 
 void CUICellItem::SetCustomDraw			(ICustomDrawCell* c){
@@ -147,6 +171,62 @@ void CUICellItem::SetCustomDraw			(ICustomDrawCell* c){
 		xr_delete(m_custom_draw);
 	m_custom_draw = c;
 }
+
+
+#ifdef SHOW_INV_ITEM_CONDITION
+void CUICellItem::init()
+{
+	CUIXml uiXml;
+	bool xml_result						= uiXml.Init(CONFIG_PATH, UI_PATH, "inventory_new.xml");
+	R_ASSERT3							(xml_result, "file parsing error ", uiXml.m_xml_file_name);
+	
+	m_text					= xr_new<CUIStatic>();
+	m_text->SetAutoDelete	( true );
+	AttachChild				( m_text );
+	CUIXmlInit::InitStatic	( uiXml, "cell_item_text", 0, m_text );
+	m_text->Show			( false );
+	
+	m_pConditionState					= xr_new<CUIProgressBar>();
+	m_pConditionState->SetAutoDelete(true);
+	AttachChild(m_pConditionState);
+	CUIXmlInit::InitProgressBar(uiXml, "condition_progess_bar", 0, m_pConditionState);
+	m_pConditionState->Show(true);
+}
+
+
+void CUICellItem::UpdateConditionProgressBar()
+{
+    if (!m_pData) return;
+
+    if(m_pParentList && m_pParentList->GetConditionProgBarVisibility())
+    {
+        PIItem itm = (PIItem)m_pData;
+        CWeapon* pWeapon = smart_cast<CWeapon*>(itm);
+        CCustomOutfit* pOutfit = smart_cast<CCustomOutfit*>(itm);
+
+        if(pWeapon || pOutfit || itm->GetInvShowCondition())
+        {
+            Ivector2 itm_grid_size = GetGridSize();
+            if(m_pParentList->GetVerticalPlacement())
+                std::swap(itm_grid_size.x, itm_grid_size.y);
+            Ivector2 cell_size = m_pParentList->CellSize();
+            Ivector2 cell_space = m_pParentList->CellsSpacing();
+
+            m_pConditionState->SetWidth((float)cell_size.x-2);
+
+            float x = 1.f; //0.5f*(itm_grid_size.x * (cell_size.x)-m_pConditionState->GetWidth());
+            float y = itm_grid_size.y * (cell_size.y + cell_space.y) - m_pConditionState->GetHeight() - 1.f;
+
+            m_pConditionState->SetWndPos(Fvector2().set(x,y));
+            m_pConditionState->SetProgressPos(itm->GetCondition()*100.0f);
+            m_pConditionState->Show(true);
+            return;
+        }
+    }
+    m_pConditionState->Show(false);
+}
+#endif
+
 
 CUIDragItem::CUIDragItem(CUICellItem* parent)
 {

@@ -148,6 +148,9 @@ public:
 			const shared_str&	GetIconName			() const		{return m_icon_name;};
 			int					GetXPos				() const ;
 			int					GetYPos				() const ;
+#ifdef SHOW_INV_ITEM_CONDITION
+			bool GetInvShowCondition() const;
+#endif
 	//---------------------------------------------------------------------
 			float				GetKillMsgXPos		() const ;
 			float				GetKillMsgYPos		() const ;
@@ -157,6 +160,7 @@ public:
 			float				GetCondition		() const					{return m_fCondition;}
 	virtual	float				GetConditionToShow	() const					{return GetCondition();}
 			void				ChangeCondition		(float fDeltaCondition);
+	virtual	void				SetCondition	    (float fNewCondition) { m_fCondition = fNewCondition; ChangeCondition(0.0f); }		
 
                         u8                      selected_slot;
                         const xr_vector<u8>&    GetSlots()     { return m_slots;      }

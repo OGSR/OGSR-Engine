@@ -34,4 +34,6 @@ public:
 	CGameTask*				ActiveTask						();
 	SGameTaskObjective*		ActiveObjective					();
 	void					SetActiveTask					(const TASK_ID& id, u16 idx);
+
+        void cleanup();
 };

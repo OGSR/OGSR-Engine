@@ -956,6 +956,7 @@ void CActor::UpdateCL	()
 	}
 }
 
+#define TASKS_UPDATE_TIME 500u
 float	NET_Jump = 0;
 void CActor::shedule_Update	(u32 DT)
 {
@@ -968,14 +969,21 @@ void CActor::shedule_Update	(u32 DT)
 
 	//обновление инвентаря
 	UpdateInventoryOwner			(DT);
-	if (GameID() == GAME_SINGLE)
-		GameTaskManager().UpdateTasks	();
+
+	static u32 tasks_update_time = 0;
+	if ( tasks_update_time > TASKS_UPDATE_TIME ) {
+	  tasks_update_time = 0;
+	  GameTaskManager().UpdateTasks();
+	}
+	else {
+	  tasks_update_time += DT;
+	}
 
 	if(m_holder || !getEnabled() || !Ready())
 	{
 		m_sDefaultObjAction				= NULL;
 		inherited::shedule_Update		(DT);
-
+	
 /*		if (OnServer())
 		{
 			Check_Weapon_ShowHideState();

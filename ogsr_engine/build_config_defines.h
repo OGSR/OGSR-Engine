@@ -88,3 +88,15 @@
 
 // Red Virus: bobbing effect from lost alpha
 //#define WPN_BOBBING
+
+// Очистка списка задач при загрузке сейва от выполненных и проваленных
+//#define KEEP_INPROGRESS_TASKS_ONLY
+
+// Сколько последних сообщений показывать в истории ПДА
+#define NEWS_TO_SHOW 50
+
+// Показывать полоску состояния предметов в инвентаре, на его
+// иконке. Включает поддержку аттрибута condition_progress_bar для
+// dragdrop элементов и статиков condition_progess_bar и
+// cell_item_text.
+//#define SHOW_INV_ITEM_CONDITION

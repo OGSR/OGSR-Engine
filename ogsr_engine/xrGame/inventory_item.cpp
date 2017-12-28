@@ -192,6 +192,13 @@ void  CInventoryItem::ChangeCondition(float fDeltaCondition)
 {
 	m_fCondition += fDeltaCondition;
 	clamp(m_fCondition, 0.f, 1.f);
+	auto se_obj = object().alife_object();
+	if (se_obj)
+	{
+		CSE_ALifeInventoryItem *itm = smart_cast<CSE_ALifeInventoryItem*>(se_obj);
+		if (itm)
+			itm->m_fCondition = m_fCondition;
+	}
 }
 
 
@@ -1135,3 +1142,9 @@ u16 CInventoryItem::bone_count_to_synchronize	() const
 {
 	return 0;
 }
+
+#ifdef SHOW_INV_ITEM_CONDITION
+bool CInventoryItem::GetInvShowCondition() const {
+  return READ_IF_EXISTS( pSettings, r_bool, m_object->cNameSect(), "inv_show_condition", false );
+}
+#endif

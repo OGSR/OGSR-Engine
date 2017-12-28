@@ -111,7 +111,7 @@ void	CRenderTarget::accum_direct_volumetric (u32 sub_phase, Fmatrix& m_shadow)
 						zMax = ps_r2_sun_near;
 					} else {*/
 						zMin = ps_r2_sun_near;
-						zMax = OLES_SUN_LIMIT_27_01_07;
+						zMax = ps_r2_sun_limit;
 	//				}
 					center_pt.mad(Device.vCameraPosition,Device.vCameraDirection,zMin);	Device.mFullTransform.transform	(center_pt);
 					zMin = center_pt.z	;

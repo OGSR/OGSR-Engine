@@ -639,6 +639,8 @@ void CEntityCondition::script_register(lua_State *L)
 			//.property     ("class_name"			,				&get_lua_class_name)
 			,
 			class_<CEntityCondition>("CEntityCondition")
+			.def( "fdelta_time", &CEntityCondition::fdelta_time )
+			.def_readonly( "has_valid_time", &CEntityCondition::m_bTimeValid )
 #define		CONDITION_CLASS								CEntityCondition
 #include	"entity_conditions_export.inc"
 			.property("health"					,				&CEntityCondition::GetHealth,				&set_entity_health)

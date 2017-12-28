@@ -124,6 +124,15 @@ CUIDragItem* CUIInventoryCellItem::CreateDragItem()
 	return	i;
 }
 
+
+#ifdef SHOW_INV_ITEM_CONDITION
+void CUIInventoryCellItem::Update() {
+  inherited::Update();
+  UpdateConditionProgressBar();
+}
+#endif
+
+
 CUIAmmoCellItem::CUIAmmoCellItem(CWeaponAmmo* itm)
 :inherited(itm)
 {}

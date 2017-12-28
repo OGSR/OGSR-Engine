@@ -736,22 +736,26 @@ static float state_time = 0;				// таймер нахождения оружия в текущем состоянии
 static float state_time_heat = 0;			// таймер нагрева оружия
 static float previous_heating = 0;		// "нагретость" оружия в предыдущем состоянии
 
+#include "WeaponBinoculars.h"
 void CWeapon::UpdateWeaponParams()
 {
 #pragma todo("KD: переделать к чертовой матери этот тихий ужас")
 	if (!IsHidden())
 	{
-		w_states.x = IsZoomEnabled();			//x = zoom mode, y - текущее состояние, z - старое состояние
+		w_states.x = m_fZoomRotationFactor;			//x = zoom mode, y - текущее состояние, z - старое состояние
+		if ( psActorFlags.test( AF_DOF_SCOPE ) && !( IsZoomed() && !IsRotatingToZoom() && ZoomTexture() ) )
+		  w_states.x = 0.f;
 		if (w_states.y != GetState())	// первый апдейт или стейт изменился
 		{
 			w_states.z = w_states.y;						// записываем старое состояние
 			state_time_heat = state_time = Device.fTimeGlobal;	// инитим счетчики времени
 			previous_heating = w_timers.z;				// сохраняем "нагретость" оружия
 			w_timers.y = w_timers.x;						// записываем время нахождения в предыдущем состоянии
-			w_states.y = GetState();				// обновляем состояние
+			w_states.y = (float)GetState();				// обновляем состояние
 		}
 		// флаг бинокля в руках (в этом режиме не нужно размытие)
-		if (clsid() == CLSID_OBJECT_W_BINOCULAR)
+		auto bino = smart_cast<CWeaponBinoculars*>(this);
+		if (clsid() == CLSID_OBJECT_W_BINOCULAR || bino)
 			w_states.w = 0;
 		else
 			w_states.w = 1;
