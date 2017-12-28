@@ -44,6 +44,7 @@ export_class script_register_ui_window1(export_class&& instance)
 
 		.def("AddCallback",		(void(BaseType::*)(LPCSTR, s16, const luabind::functor<void>&))&BaseType::AddCallback)
 		.def("AddCallback",		(void(BaseType::*)(LPCSTR, s16, const luabind::functor<void>&, const luabind::object&))&BaseType::AddCallback)
+		.def("ClearCallbacks",		&BaseType::ClearCallbacks )
 
 		.def("Register",		(void (BaseType::*)(CUIWindow*))&BaseType::Register)
 		.def("Register",		(void (BaseType::*)(CUIWindow*,LPCSTR))&BaseType::Register)

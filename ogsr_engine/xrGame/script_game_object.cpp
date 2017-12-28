@@ -396,8 +396,8 @@ void CScriptGameObject::SetCondition	(float val)
 		ai().script_engine().script_log			(ScriptStorage::eLuaMessageTypeError,"CSciptEntity : cannot access class member SetCondition!");
 		return;
 	}
-	val					-= inventory_item->GetCondition();
-	inventory_item->ChangeCondition			(val);
+	// val					-= inventory_item->GetCondition();
+	inventory_item->SetCondition			(val);
 }
 
 void CScriptGameObject::eat				(CScriptGameObject *item)

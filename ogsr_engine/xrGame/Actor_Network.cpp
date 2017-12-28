@@ -529,6 +529,14 @@ BOOL CActor::net_Spawn		(CSE_Abstract* DC)
 	encyclopedia_registry->registry().init(ID());
 	game_news_registry->registry().init(ID());
 
+	{
+	  auto news = game_news_registry->registry().objects();
+	  if ( news.size() > NEWS_TO_SHOW )
+	    news.erase(
+	      news.begin(),
+	      news.begin() + ( news.size() - NEWS_TO_SHOW )
+            );
+	}
 
 	if (!CInventoryOwner::net_Spawn(DC)) return FALSE;
 	if (!inherited::net_Spawn(DC))	return FALSE;

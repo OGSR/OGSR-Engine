@@ -21,6 +21,9 @@ CUIDragDropListEx::CUIDragDropListEx()
 	m_vScrollBar				= xr_new<CUIScrollBar>();
 	m_vScrollBar->SetAutoDelete	(true);
 	m_selected_item				= NULL;
+#ifdef SHOW_INV_ITEM_CONDITION
+	m_bConditionProgBarVisible  = false;
+#endif
 
 	SetCellSize					(Ivector2().set(50,50));
 	SetCellsCapacity			(Ivector2().set(0,0));
@@ -332,9 +335,19 @@ const Ivector2& CUIDragDropListEx::CellSize()
 	return m_container->CellSize();
 }
 
+const Ivector2& CUIDragDropListEx::CellsSpacing()
+{
+	return m_container->CellsSpacing();
+}
+
 void CUIDragDropListEx::SetCellSize(const Ivector2 new_sz)			
 {
 	m_container->SetCellSize(new_sz);
+}
+
+void CUIDragDropListEx::SetCellsSpacing(const Ivector2& new_sz)
+{
+	m_container->SetCellsSpacing(new_sz);
 }
 
 int CUIDragDropListEx::ScrollPos()
@@ -476,7 +489,7 @@ void CUICellContainer::PlaceItemAtPos(CUICellItem* itm, Ivector2& cell_pos)
 			C.SetItem		(itm,(x==0&&y==0));
 		}
 
-	itm->SetWndPos			( Fvector2().set( (m_cellSize.x*cp.x),		(m_cellSize.y*cp.y))	);
+	itm->SetWndPos			( Fvector2().set( ((m_cellSize.x + CellsSpacing().x)*cp.x),		((m_cellSize.y + CellsSpacing().y)*cp.y))	);
 	itm->SetWndSize			( Fvector2().set( (m_cellSize.x*cs.x),		(m_cellSize.y*cs.y)		 )	);
 
 	AttachChild				(itm);
@@ -605,6 +618,12 @@ void CUICellContainer::SetCellSize(const Ivector2& new_sz)
 	ReinitSize					();
 }
 
+void CUICellContainer::SetCellsSpacing(const Ivector2& c)
+{
+	m_cellSpacing				= c;
+	ReinitSize					();
+}
+
 Ivector2 CUICellContainer::TopVisibleCell()
 {
 	return Ivector2().set	(0, iFloor(m_pParentDragDropList->ScrollPos()/float(CellSize().y)));
@@ -705,8 +724,8 @@ Ivector2 CUICellContainer::PickCell(const Fvector2& abs_pos)
 	GetAbsolutePos							(ap);
 	ap.sub									(abs_pos);
 	ap.mul									(-1);
-	res.x									= iFloor(ap.x/m_cellSize.x);
-	res.y									= iFloor(ap.y/m_cellSize.y);
+	res.x									= iFloor(ap.x/(m_cellSize.x + CellsSpacing().x));
+	res.y									= iFloor(ap.y/(m_cellSize.y + CellsSpacing().y));
 	if(!ValidCell(res))						res.set(-1, -1);
 	return res;
 }

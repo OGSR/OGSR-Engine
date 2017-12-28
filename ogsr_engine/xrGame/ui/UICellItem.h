@@ -6,6 +6,9 @@
 class CUIDragItem;
 class CUIDragDropListEx;
 class CUICellItem;
+#ifdef SHOW_INV_ITEM_CONDITION
+class CUIProgressBar;
+#endif
 
 class ICustomDrawCell
 {
@@ -27,6 +30,11 @@ protected:
 	ICustomDrawCell*		m_custom_draw;
 	int						m_accelerator;
 	virtual void			UpdateItemText			();
+#ifdef SHOW_INV_ITEM_CONDITION
+	CUIProgressBar* 		m_pConditionState;
+	CUIStatic*				m_text; 
+	void					init					();
+#endif
 public:
 							CUICellItem				();
 	virtual					~CUICellItem			();
@@ -57,6 +65,9 @@ public:
 				int			m_index;
 				bool		m_b_already_drawn;
 				bool		m_b_destroy_childs;
+#ifdef SHOW_INV_ITEM_CONDITION
+				void		UpdateConditionProgressBar();
+#endif
 };
 
 class CUIDragItem: public CUIWindow, public pureRender, public pureFrame
