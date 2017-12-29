@@ -1,23 +1,23 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <ImportGroup Label="PropertySheets" />
-  <PropertyGroup Label="UserMacros" />
   <PropertyGroup>
-    <OutDir>$(SolutionDir)\bin\</OutDir>
+    <OutDir>$(SolutionDir)\bin_$(PlatformShortName)\</OutDir>
     <IntDir>$(SolutionDir)\ogsr_engine\_TEMP\Engine\$(Configuration)\$(Platform)\$(ProjectName)\</IntDir>
   </PropertyGroup>
   <ItemDefinitionGroup>
     <ClCompile>
-        <EnableEnhancedInstructionSet>StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
+      <EnableEnhancedInstructionSet>StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
+	  <!--EnableEnhancedInstructionSet>AdvancedVectorExtensions</EnableEnhancedInstructionSet-->
       <AssemblerListingLocation>$(SolutionDir)\ogsr_engine\_TEMP\Engine\$(Configuration)\$(Platform)\$(ProjectName)\</AssemblerListingLocation>
       <ObjectFileName>$(SolutionDir)\ogsr_engine\_TEMP\Engine\$(Configuration)\$(Platform)\$(ProjectName)\</ObjectFileName>
       <ProgramDataBaseFileName>$(SolutionDir)\ogsr_engine\_TEMP\Engine\$(Configuration)\$(Platform)\$(ProjectName)\</ProgramDataBaseFileName>
+      <LanguageStandard>stdcpp17</LanguageStandard>
+	  <PreprocessorDefinitions>_ITERATOR_DEBUG_LEVEL=0;_ENFORCE_MATCHING_ALLOCATORS=0;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <ImportLibrary>$(SolutionDir)\ogsr_engine\_LIB\Engine\$(Configuration)\$(Platform)\$(TargetName).lib</ImportLibrary>
-      <AdditionalLibraryDirectories>$(SolutionDir)\3rd_party\_LIB\$(Configuration)\$(Platform);$(SolutionDir)\ogsr_engine\_LIB\Engine\$(Configuration)\$(Platform)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(SolutionDir)\3rd_party\_LIB\$(Configuration)\$(Platform);$(SolutionDir)\ogsr_engine\_LIB\Engine\$(Configuration)\$(Platform);$(SolutionDir)\3rd_party\Src\dxsdk_libs\$(PlatformShortName);</AdditionalLibraryDirectories>
       <LargeAddressAware>true</LargeAddressAware>
     </Link>
   </ItemDefinitionGroup>
-  <ItemGroup />
 </Project>
