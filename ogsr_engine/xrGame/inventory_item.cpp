@@ -112,7 +112,7 @@ CInventoryItem::~CInventoryItem()
 		Msg("inventory ptr is [%s]",m_pCurrentInventory?"not-null":"null");
 		if(p)
 			Msg("parent name is [%s]",p->cName().c_str());
-
+			
 			Msg("! ERROR item_id[%d] H_Parent=[%s][%d] [%d]",
 				object().ID(),
 				p ? p->cName().c_str() : "none",
@@ -124,6 +124,7 @@ CInventoryItem::~CInventoryItem()
 void CInventoryItem::Load(LPCSTR section) 
 {
 	CHitImmunity::LoadImmunities	(pSettings->r_string(section,"immunities_sect"),pSettings);
+	m_icon_params.Load(section);
 
 	ISpatial*			self				=	smart_cast<ISpatial*> (this);
 	if (self)			self->spatial.type	|=	STYPE_VISIBLEFORAI;	
@@ -1112,20 +1113,26 @@ float CInventoryItem::GetKillMsgHeight	() const
 
 int  CInventoryItem::GetGridWidth			() const 
 {
-	return pSettings->r_u32(m_object->cNameSect(), "inv_grid_width");
+	return (int)m_icon_params.grid_width;
 }
 
 int  CInventoryItem::GetGridHeight			() const 
 {
-	return pSettings->r_u32(m_object->cNameSect(), "inv_grid_height");
+	return (int)m_icon_params.grid_height;
 }
+
+int	 CInventoryItem::GetIconIndex() const
+{
+	return m_icon_params.icon_group;
+}
+
 int  CInventoryItem::GetXPos				() const 
 {
-	return pSettings->r_u32(m_object->cNameSect(), "inv_grid_x");
+	return (int)m_icon_params.grid_x;
 }
 int  CInventoryItem::GetYPos				() const 
 {
-	return pSettings->r_u32(m_object->cNameSect(), "inv_grid_y");
+	return (int)m_icon_params.grid_y;
 }
 
 bool CInventoryItem::IsNecessaryItem(CInventoryItem* item)		
@@ -1145,6 +1152,6 @@ u16 CInventoryItem::bone_count_to_synchronize	() const
 
 #ifdef SHOW_INV_ITEM_CONDITION
 bool CInventoryItem::GetInvShowCondition() const {
-  return READ_IF_EXISTS( pSettings, r_bool, m_object->cNameSect(), "inv_show_condition", false );
+  return m_icon_params.show_condition;
 }
 #endif

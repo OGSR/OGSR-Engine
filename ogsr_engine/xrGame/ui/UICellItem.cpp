@@ -212,9 +212,8 @@ void CUICellItem::UpdateConditionProgressBar()
             Ivector2 cell_size = m_pParentList->CellSize();
             Ivector2 cell_space = m_pParentList->CellsSpacing();
 
-            m_pConditionState->SetWidth((float)cell_size.x-2);
-
-            float x = 1.f; //0.5f*(itm_grid_size.x * (cell_size.x)-m_pConditionState->GetWidth());
+            m_pConditionState->SetWidth((float)cell_size.x-4);
+            float x = 2.f; //0.5f*(itm_grid_size.x * (cell_size.x)-m_pConditionState->GetWidth());
             float y = itm_grid_size.y * (cell_size.y + cell_space.y) - m_pConditionState->GetHeight() - 1.f;
 
             m_pConditionState->SetWndPos(Fvector2().set(x,y));
