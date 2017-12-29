@@ -229,7 +229,7 @@ void Startup					( )
 	destroyEngine();
 }
 
-static BOOL CALLBACK logDlgProc( HWND hw, UINT msg, WPARAM wp, LPARAM lp )
+static INT_PTR CALLBACK logDlgProc( HWND hw, UINT msg, WPARAM wp, LPARAM lp )
 {
 	switch( msg ){
 		case WM_DESTROY:
@@ -388,7 +388,7 @@ int APIENTRY WinMain_impl(HINSTANCE hInstance,
 	//SetThreadAffinityMask		(GetCurrentThread(),1);
 
 	// Title window
-	logoWindow					= CreateDialog(GetModuleHandle(NULL),	MAKEINTRESOURCE(IDD_STARTUP), 0, logDlgProc );
+	logoWindow					= CreateDialog(GetModuleHandle(NULL),	MAKEINTRESOURCE(IDD_STARTUP), nullptr, logDlgProc );
 	SetWindowPos				(
 		logoWindow,
 #ifndef DEBUG
@@ -733,8 +733,6 @@ void CApplication::destroy_loading_shaders()
 	sh_progress.destroy		();
 //.	::Sound->mute			(false);
 }
-
-u32 calc_progress_color(u32, u32, int, int);
 
 void CApplication::LoadDraw		()
 {

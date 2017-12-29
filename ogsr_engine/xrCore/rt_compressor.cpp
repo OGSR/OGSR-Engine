@@ -23,7 +23,7 @@ u32		rtc_csize		(u32 in)
 	return			in + in/64 + 16 + 3;
 }
 
-u32		rtc_compress	(void *dst, u32 dst_len, const void* src, u32 src_len)
+size_t rtc_compress(void *dst, size_t dst_len, const void* src, size_t src_len)
 {
 	lzo_uint		out_size	= dst_len;
 	int r = lzo1x_1_compress	( 
@@ -33,7 +33,7 @@ u32		rtc_compress	(void *dst, u32 dst_len, const void* src, u32 src_len)
 	VERIFY	(r==LZO_E_OK);
 	return	out_size;
 }
-u32		rtc_decompress	(void *dst, u32 dst_len, const void* src, u32 src_len)
+size_t rtc_decompress(void *dst, size_t dst_len, const void* src, size_t src_len)
 {
 	lzo_uint		out_size	= dst_len;
 	int r = lzo1x_decompress	( 

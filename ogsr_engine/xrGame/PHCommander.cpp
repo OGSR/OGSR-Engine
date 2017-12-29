@@ -59,7 +59,7 @@ void delete_call(CPHCall* &call)
 	}
 	catch(...)
 	{
-		call=NULL;
+		call = nullptr;
 	}
 }
 /////////////////////////////////////////////////////////////////////////////////
@@ -110,26 +110,12 @@ void CPHCommander::remove_call(PHCALL_I i)
 }
 
 
-
-struct SFEqualPred
+PHCALL_I CPHCommander::find_call(CPHReqComparerV* cmp_condition, CPHReqComparerV* cmp_action)
 {
-	CPHReqComparerV* cmp_condition,*cmp_action;
-	SFEqualPred(CPHReqComparerV* cmp_c,CPHReqComparerV* cmp_a)
-	{
-		cmp_condition=cmp_c;cmp_action=cmp_a;
-	}
-	bool operator()(CPHCall* call)
-	{
-		return	call->equal(cmp_condition,cmp_action);
-	}
-};
-
-PHCALL_I CPHCommander::find_call(CPHReqComparerV* cmp_condition,CPHReqComparerV* cmp_action)
-{
-	return std::find_if(m_calls.begin(), m_calls.end(), SFEqualPred(cmp_condition, cmp_action));
+	return std::find_if(m_calls.begin(), m_calls.end(), [cmp_condition, cmp_action](CPHCall* call) { return call->equal(cmp_condition, cmp_action); });
 }
 
-bool				CPHCommander::has_call(CPHReqComparerV* cmp_condition,CPHReqComparerV* cmp_action)
+bool CPHCommander::has_call(CPHReqComparerV* cmp_condition,CPHReqComparerV* cmp_action)
 {
 	return find_call(cmp_condition,cmp_action) != m_calls.end();
 }
@@ -138,7 +124,7 @@ bool				CPHCommander::has_call(CPHReqComparerV* cmp_condition,CPHReqComparerV* c
 void CPHCommander::remove_call( CPHReqComparerV* cmp_condition, CPHReqComparerV* cmp_action ) {
   auto it = find_call( cmp_condition, cmp_action );
   if ( it != m_calls.end() ) {
-    CPHCall* call = *it;
+    auto call = *it;
     call->removeLater();
   }
 }
@@ -151,18 +137,8 @@ CPHCall* CPHCommander::add_call_unique( CPHCondition* condition, CPHReqComparerV
 }
 
 
-struct SRemoveRped {
-  CPHReqComparerV* cmp_object;
-  SRemoveRped( CPHReqComparerV* cmp_o ) {
-    cmp_object = cmp_o;
-  }
-  void operator() ( CPHCall* call ) {
-    if( call->is_any( cmp_object ) ) {
-      call->removeLater();
-    }
-  }
-};
-
 void CPHCommander::remove_calls( CPHReqComparerV* cmp_object ) {
-  std::for_each( m_calls.begin(), m_calls.end(), SRemoveRped( cmp_object ) );
+  for (auto call : m_calls)
+	  if (call->is_any(cmp_object))
+		  call->removeLater();
 }

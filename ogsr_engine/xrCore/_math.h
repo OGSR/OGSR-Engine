@@ -1,16 +1,16 @@
-#ifndef __XR_MATH_H__
-#define __XR_MATH_H__
+#pragma once
 
 #include "cpuid.h"
 
 namespace FPU {
-	XRCORE_API void	 m24	(void);
-	XRCORE_API void	 m24r	(void);	
-	XRCORE_API void	 m53	(void);	
-	XRCORE_API void	 m53r	(void);	
-	XRCORE_API void	 m64	(void);	
-	XRCORE_API void	 m64r	(void);	
+	XRCORE_API void m24();
+	XRCORE_API void	m24r();
+	XRCORE_API void	m53();
+	XRCORE_API void	m53r();
+	XRCORE_API void	m64();
+	XRCORE_API void	m64r();
 };
+
 namespace CPU {
 	XRCORE_API extern u64				clk_per_second		;
 	XRCORE_API extern u64				clk_per_milisec		;
@@ -27,23 +27,15 @@ namespace CPU {
 	XRCORE_API extern	_processor_info	ID					;
 	XRCORE_API extern	u64				QPC	()				;
 
-#ifdef M_VISUAL
-	#ifndef _M_AMD64
-		#pragma warning(disable:4035)
-		IC u64	GetCLK(void)	{
-			_asm    _emit 0x0F;
-			_asm    _emit 0x31;
-		}
-		#pragma warning(default:4035)
-	#else
-		IC u64	GetCLK(void)	{
-			return __rdtsc();
-		}
-	#endif
-#endif
-
-#ifdef M_BORLAND
-	XRCORE_API u64 __fastcall	GetCLK				(void);
+#ifndef _M_AMD64
+#pragma warning(disable : 4035)
+	inline u64 GetCLK() {
+		_asm _emit 0x0F;
+		_asm _emit 0x31;
+	}
+#pragma warning(default : 4035)
+#else
+	inline u64 GetCLK() { return __rdtsc(); }
 #endif
 };
 
@@ -60,4 +52,3 @@ extern XRCORE_API	void	thread_spawn			(
 	void*		arglist 
 	);
 
-#endif //__XR_MATH_H__
