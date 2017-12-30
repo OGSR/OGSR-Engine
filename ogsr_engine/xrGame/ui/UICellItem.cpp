@@ -176,9 +176,13 @@ void CUICellItem::SetCustomDraw			(ICustomDrawCell* c){
 #ifdef SHOW_INV_ITEM_CONDITION
 void CUICellItem::init()
 {
-	CUIXml uiXml;
-	bool xml_result						= uiXml.Init(CONFIG_PATH, UI_PATH, "inventory_new.xml");
-	R_ASSERT3							(xml_result, "file parsing error ", uiXml.m_xml_file_name);
+	static CUIXml uiXml;
+	static bool is_xml_ready = false;
+	if ( !is_xml_ready ) {
+	  bool xml_result = uiXml.Init( CONFIG_PATH, UI_PATH, "inventory_new.xml" );
+	  R_ASSERT3( xml_result, "file parsing error ", uiXml.m_xml_file_name );
+	  is_xml_ready = true;
+	}
 	
 	m_text					= xr_new<CUIStatic>();
 	m_text->SetAutoDelete	( true );
