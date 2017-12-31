@@ -206,7 +206,7 @@ void CObjectScript::script_register		(lua_State *L)
 				value("FIAlwaysTradable"		,				int(CInventoryItem::EIIFlags::FIAlwaysTradable)),
 				value("FIAlwaysUntradable"		,				int(CInventoryItem::EIIFlags::FIAlwaysUntradable)),
 				value("FIUngroupable"			,				int(CInventoryItem::EIIFlags::FIUngroupable)),
-				value("FIManualHighlighting"	,				int(CInventoryItem::EIIFlags::FIManualHighlighting))
+				value("FIHiddenForInventory"		,				int(CInventoryItem::EIIFlags::FIHiddenForInventory))
 			]
 			.enum_("se_object_flags")
 			[

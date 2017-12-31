@@ -64,7 +64,7 @@ public:
 								FIAlwaysTradable	=(1<<12),
 								FIAlwaysUntradable	=(1<<13),
 								FIUngroupable		=(1<<14),
-								FIManualHighlighting	=(1<<15),
+								FIHiddenForInventory	=(1<<15),
 	};
 
 	Flags16						m_flags;
