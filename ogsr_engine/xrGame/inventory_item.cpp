@@ -428,11 +428,19 @@ BOOL CInventoryItem::net_Spawn			(CSE_Abstract* DC)
 		m_flags.set(Fuseful_for_NPC, alife_object->m_flags.test(CSE_ALifeObject::flUsefulForAI));
 	}
 
+	auto se_obj = object().alife_object();
+	if ( se_obj ) {
+		CSE_ALifeInventoryItem *itm = smart_cast<CSE_ALifeInventoryItem*>( se_obj );
+		if ( itm ) {
+			m_fCondition = itm->m_fCondition;
+		}
+	}
+
 	CSE_ALifeInventoryItem			*pSE_InventoryItem = smart_cast<CSE_ALifeInventoryItem*>(e);
 	if (!pSE_InventoryItem)			return TRUE;
 
 	//!!!
-	m_fCondition = pSE_InventoryItem->m_fCondition;
+	//m_fCondition = pSE_InventoryItem->m_fCondition;
 	if (GameID() != GAME_SINGLE)
 		object().processing_activate();
 
