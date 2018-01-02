@@ -66,6 +66,14 @@ TEX_INFO	get_texture_info(LPCSTR name, LPCSTR def_name)
 	return CUITextureMaster::FindItem(name, def_name);
 }
 
+
+template <typename T>
+T* wnd_object_cast( CUIWindow *wnd ) {
+  return smart_cast<T *>( wnd );
+}
+
+
+#include "UIButton.h"
 using namespace luabind;
 
 #pragma optimize("s",on)
@@ -137,6 +145,7 @@ void CUIWindow::script_register(lua_State *L)
 		.def("GetWndRect",				(void (CUIWindow::*)(Frect&))&CUIWindow::GetWndRect_script)			
 		.def("IsChild",					&CUIWindow::IsChild)
 		.def("FindChild",				(CUIWindow* (CUIWindow::*)(LPCSTR))&CUIWindow::FindChild)
+		.def("GetButton", &wnd_object_cast<CUIButton>)
 		.def("GetAbsoluteRect",			(void (CUIWindow::*)(Frect&))&CUIWindow::GetAbsoluteRect),
 
 //		.def("",						&CUIWindow::)
