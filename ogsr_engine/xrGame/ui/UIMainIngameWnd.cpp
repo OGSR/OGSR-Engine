@@ -384,17 +384,14 @@ void CUIMainIngameWnd::SetAmmoIcon (const shared_str& sect_name)
 
 	UIWeaponIcon.Show			(true);
 	//properties used by inventory menu
-	float iGridWidth			= pSettings->r_float(sect_name, "inv_grid_width");
-	float iGridHeight			= pSettings->r_float(sect_name, "inv_grid_height");
+	CIconParams icon_params(sect_name);
+	Frect rect = icon_params.original_rect();
 
-	float iXPos				= pSettings->r_float(sect_name, "inv_grid_x");
-	float iYPos				= pSettings->r_float(sect_name, "inv_grid_y");
-
-	UIWeaponIcon.GetUIStaticItem().SetOriginalRect(	(iXPos		 * INV_GRID_WIDTH),
-													(iYPos		 * INV_GRID_HEIGHT),
-													(iGridWidth	 * INV_GRID_WIDTH),
-													(iGridHeight * INV_GRID_HEIGHT));
+	UIWeaponIcon.SetShader		(icon_params.get_shader());
+	UIWeaponIcon.GetUIStaticItem().SetOriginalRect(rect);
 	UIWeaponIcon.SetStretchTexture(true);
+
+	int iGridWidth = (int)round(rect.width());
 
 	// now perform only width scale for ammo, which (W)size >2
 	// all others ammo (1x1, 1x2) will be not scaled (original picture)
@@ -1146,16 +1143,16 @@ CUIStatic* init_addon(
 	CUIStatic *addon = xr_new<CUIStatic>();
 	addon->SetAutoDelete(true);
 	
-	auto pos = cell_item->get_addon_offset(idx); pos.x *= scale/**scale_x*/; pos.y *= scale;
-	auto width = (float)pSettings->r_u32(sect, "inv_grid_width")*INV_GRID_WIDTH;
-	auto height = (float)pSettings->r_u32(sect, "inv_grid_height")*INV_GRID_HEIGHT;
-	auto tex_x = (float)pSettings->r_u32(sect, "inv_grid_x")*INV_GRID_WIDTH;
-	auto tex_y = (float)pSettings->r_u32(sect, "inv_grid_y")*INV_GRID_HEIGHT;
+	auto pos = cell_item->get_addon_offset(idx);
+	pos.x	  *= scale *scale_x; 
+	pos.y	  *= scale;
 	
+	CIconParams     params(sect);
+	Frect rect = params.original_rect();			
 	addon->SetStretchTexture(true);
-	addon->InitTexture("ui\\ui_icon_equipment");
-	addon->SetOriginalRect(tex_x, tex_y, width, height);
-	addon->SetWndRect(pos.x, pos.y, width*scale*scale_x, height*scale);
+	addon->SetShader(params.get_shader());
+	addon->SetOriginalRect		(rect);
+	addon->SetWndRect(pos.x, pos.y, rect.width()*scale*scale_x, rect.height()*scale);
 	addon->SetColor(color_rgba(255, 255, 255, 192));
 
 	return addon;
@@ -1170,20 +1167,13 @@ void CUIMainIngameWnd::UpdatePickUpItem	()
 	};
 	if (UIPickUpItemIcon.IsShown()) return;
 
-	shared_str sect_name	= m_pPickUpItem->object().cNameSect();
-
 	//properties used by inventory menu
-	int m_iGridWidth	= pSettings->r_u32(sect_name, "inv_grid_width");
-	int m_iGridHeight	= pSettings->r_u32(sect_name, "inv_grid_height");
+	CIconParams &params = m_pPickUpItem->m_icon_params;
+	Frect rect = params.original_rect();
 
-	int m_iXPos			= pSettings->r_u32(sect_name, "inv_grid_x");
-	int m_iYPos			= pSettings->r_u32(sect_name, "inv_grid_y");
+	float scale_x = m_iPickUpItemIconWidth / rect.width();
 
-	float scale_x = m_iPickUpItemIconWidth/
-		float(m_iGridWidth*INV_GRID_WIDTH);
-
-	float scale_y = m_iPickUpItemIconHeight/
-		float(m_iGridHeight*INV_GRID_HEIGHT);
+	float scale_y = m_iPickUpItemIconHeight / rect.height();
 
 	scale_x = (scale_x>1) ? 1.0f : scale_x;
 	scale_y = (scale_y>1) ? 1.0f : scale_y;
@@ -1191,16 +1181,13 @@ void CUIMainIngameWnd::UpdatePickUpItem	()
 	float scale = scale_x<scale_y?scale_x:scale_y;
 
 	
-	UIPickUpItemIcon.GetUIStaticItem().SetOriginalRect(
-		float(m_iXPos * INV_GRID_WIDTH),
-		float(m_iYPos * INV_GRID_HEIGHT),
-		float(m_iGridWidth * INV_GRID_WIDTH),
-		float(m_iGridHeight * INV_GRID_HEIGHT));
+	UIPickUpItemIcon.GetUIStaticItem().SetShader(params.get_shader());
+	UIPickUpItemIcon.GetUIStaticItem().SetOriginalRect(rect);
 
 	UIPickUpItemIcon.SetStretchTexture(true);
 
-	UIPickUpItemIcon.SetWidth(m_iGridWidth*INV_GRID_WIDTH*scale*UI()->get_current_kx());
-	UIPickUpItemIcon.SetHeight(m_iGridHeight*INV_GRID_HEIGHT*scale);
+	UIPickUpItemIcon.SetWidth(rect.width()*scale*UI()->get_current_kx());
+	UIPickUpItemIcon.SetHeight(rect.height()*scale);
 
 	UIPickUpItemIcon.SetWndPos(m_iPickUpItemIconX + 
 		(m_iPickUpItemIconWidth - UIPickUpItemIcon.GetWidth())/2,

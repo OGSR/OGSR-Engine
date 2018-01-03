@@ -26,6 +26,7 @@ void CUIButton::script_register(lua_State *L)
 		.def("GetPushOffsetX",			&CUIButton::GetPushOffsetX)
 		.def("GetPushOffsetY",			&CUIButton::GetPushOffsetY)
 */		
+		.def( "SetAccelerator", &CUIButton::SetAccelerator )
 		,
 
 		class_<CUI3tButton, CUIButton>("CUI3tButton")

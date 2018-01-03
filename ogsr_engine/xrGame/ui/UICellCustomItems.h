@@ -46,10 +46,10 @@ public:
 protected:
 	CUIStatic*					m_addons					[eMaxAddon];
 	Fvector2					m_addon_offset				[eMaxAddon];
-	void						CreateIcon					(eAddonType);
+	void						CreateIcon					(eAddonType, CIconParams &params);
 	void						DestroyIcon					(eAddonType);
 	CUIStatic*					GetIcon						(eAddonType);
-	void						InitAddon					(CUIStatic* s, LPCSTR section, Fvector2 offset, bool b_rotate);
+	void						InitAddon					(CUIStatic* s, CIconParams &params, Fvector2 offset, bool b_rotate);
 	void						InitAllAddons				(CUIStatic* s_silencer, CUIStatic* s_scope, CUIStatic* s_launcher, bool b_vertical);
 	bool						is_scope					();
 	bool						is_silencer					();

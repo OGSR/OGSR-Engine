@@ -6049,6 +6049,9 @@
     <ClInclude Include="script_vars_storage.h">
       <Filter>AI\AScript\ScriptClasses\ScriptVarsStorage</Filter>
     </ClInclude>
+    <ClInclude Include="ui\UIIconParams.h">
+      <Filter>AI\AScript\ScriptClasses\UI\Common</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="damage_manager.cpp">
@@ -8879,6 +8882,9 @@
     </ClCompile>
     <ClCompile Include="script_vars_storage.cpp">
       <Filter>AI\AScript\ScriptClasses\ScriptVarsStorage</Filter>
+    </ClCompile>
+    <ClCompile Include="ui\UIIconParams.cpp">
+      <Filter>AI\AScript\ScriptClasses\UI\Common</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -61,6 +61,13 @@ void cse_obj_set_position (CSE_ALifeObject *o, const Fvector &pos)
 	o->position().set(pos);
 }
 
+
+template <typename T>
+T* cse_object_cast( CSE_ALifeDynamicObject *se_obj ) {
+  return smart_cast<T *>( se_obj );
+}
+
+
 void CSE_ALifeObject::script_register(lua_State *L)
 {
 	module(L)[
@@ -85,6 +92,7 @@ void CSE_ALifeObject::script_register(lua_State *L)
 		.property		("level_id",			&se_obj_level_id)
 		.property		("level_name",			&se_obj_level_name)
 		.property		("is_alive",			&se_obj_is_alive)
+		.def("get_inventory_item", &cse_object_cast<CSE_ALifeInventoryItem>)
 	];
 }
 

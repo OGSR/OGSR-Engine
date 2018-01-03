@@ -151,15 +151,19 @@ void CUIInventoryWnd::InitInventory()
 	int i=1;
 	for(it=ruck_list.begin(),it_e=ruck_list.end(); it!=it_e; ++it,++i) 
 	{
-		CUICellItem* itm			= create_cell_item(*it);
-		m_pUIBagList->SetItem		(itm);
+	  if ( !(*it)->m_flags.test( CInventoryItem::FIHiddenForInventory ) ) {
+	    CUICellItem* itm = create_cell_item( *it );
+	    m_pUIBagList->SetItem( itm );
+	  }
 	}
 	//fake
 	_itm								= m_pInv->m_slots[GRENADE_SLOT].m_pIItem;
 	if(_itm)
 	{
-		CUICellItem* itm				= create_cell_item(_itm);
-		m_pUIBagList->SetItem			(itm);
+	  if ( !_itm->m_flags.test( CInventoryItem::FIHiddenForInventory ) ) {
+	    CUICellItem* itm = create_cell_item( _itm );
+	    m_pUIBagList->SetItem( itm );
+	  }
 	}
 
 	InventoryUtilities::UpdateWeight					(UIBagWnd, true);
@@ -379,7 +383,8 @@ bool CUIInventoryWnd::OnItemDrop(CUICellItem* itm)
                   can_put = true;
                 }
                 else {
-                  Msg( "!WARN: cannot put item %s into slot %d, allowed slots {%s}", name, i, item->GetSlotsSect() );
+                  if ( !DropItem( CurrentIItem(), new_owner ) )
+                    Msg( "!WARN: cannot put item %s into slot %d, allowed slots {%s}", name, i, item->GetSlotsSect() );
                 }
                 break;
               }   // for-if
@@ -388,9 +393,10 @@ bool CUIInventoryWnd::OnItemDrop(CUICellItem* itm)
             Msg( "!#ERROR: item %s to large for slot: (%d x %d) vs (%d x %d) ", name, item_w, item_h, max_size.x, max_size.y );
 
           // при невозможности поместить в выбранный слот
-          if( !can_put )
+          if ( !can_put ) {
             // восстановление не требуется, слот не был назначен
             return true;
+          }
 
           if( GetSlotList( item->GetSlot() ) == new_owner )
             ToSlot( itm, true );

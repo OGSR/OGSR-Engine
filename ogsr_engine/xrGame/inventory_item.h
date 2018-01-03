@@ -11,6 +11,7 @@
 #include "inventory_space.h"
 #include "hit_immunity.h"
 #include "attachable_item.h"
+#include "ui\UIIconParams.h"
 
 class CUIInventoryCellItem;
 
@@ -63,10 +64,11 @@ public:
 								FIAlwaysTradable	=(1<<12),
 								FIAlwaysUntradable	=(1<<13),
 								FIUngroupable		=(1<<14),
-								FIManualHighlighting	=(1<<15),
+								FIHiddenForInventory	=(1<<15),
 	};
 
 	Flags16						m_flags;
+	CIconParams					m_icon_params;
 public:
 								CInventoryItem		();
 	virtual						~CInventoryItem		();
@@ -146,6 +148,7 @@ public:
 			int					GetGridWidth		() const ;
 			int					GetGridHeight		() const ;
 			const shared_str&	GetIconName			() const		{return m_icon_name;};
+			int					GetIconIndex		() const ; 
 			int					GetXPos				() const ;
 			int					GetYPos				() const ;
 #ifdef SHOW_INV_ITEM_CONDITION

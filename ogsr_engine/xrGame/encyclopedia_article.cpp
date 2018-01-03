@@ -74,14 +74,10 @@ void CEncyclopediaArticle::load_shared	(LPCSTR)
 
 	if(ltx)
 	{
-		data()->image.SetShader(InventoryUtilities::GetEquipmentIconsShader());
+		CIconParams params(ltx);
 
-		float x			= float(pSettings->r_u32(ltx, "inv_grid_x") * INV_GRID_WIDTH);
-		float y			= float(pSettings->r_u32(ltx, "inv_grid_y") * INV_GRID_HEIGHT);
-		float width		= float(pSettings->r_u32(ltx, "inv_grid_width") * INV_GRID_WIDTH);
-		float height	= float(pSettings->r_u32(ltx, "inv_grid_height") * INV_GRID_HEIGHT);
-
-		data()->image.GetUIStaticItem().SetOriginalRect(x, y, width, height);
+		data()->image.SetShader(params.get_shader());
+		data()->image.GetUIStaticItem().SetOriginalRect(params.original_rect());
 		data()->image.ClipperOn();
 		data()->image.TextureAvailable(true);
 	}

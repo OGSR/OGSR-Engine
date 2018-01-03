@@ -180,22 +180,17 @@ void CUIItemInfo::InitItem(CInventoryItem* pInvItem)
 	if(UIItemImage)
 	{
 		// Загружаем картинку
-		UIItemImage->SetShader				(InventoryUtilities::GetEquipmentIconsShader());
+		UIItemImage->SetShader				(pInvItem->m_icon_params.get_shader());
 
+		Frect rect = pInvItem->m_icon_params.original_rect();
 		int iGridWidth						= pInvItem->GetGridWidth();
 		int iGridHeight						= pInvItem->GetGridHeight();
-		int iXPos							= pInvItem->GetXPos();
-		int iYPos							= pInvItem->GetYPos();
-
-		UIItemImage->GetUIStaticItem().SetOriginalRect(	float(iXPos*INV_GRID_WIDTH), float(iYPos*INV_GRID_HEIGHT),
-														float(iGridWidth*INV_GRID_WIDTH),	float(iGridHeight*INV_GRID_HEIGHT));
+		UIItemImage->GetUIStaticItem().SetOriginalRect(rect);
 		UIItemImage->TextureOn				();
 		UIItemImage->ClipperOn				();
 		UIItemImage->SetStretchTexture		(true);
-		Frect v_r							= {	0.0f, 
-												0.0f, 
-												float(iGridWidth*INV_GRID_WIDTH),	
-												float(iGridHeight*INV_GRID_HEIGHT)};
+		Frect v_r							= {	0.0f, 0.0f, 
+												rect.width(), rect.height()};
 		v_r.x2 *= UI()->get_current_kx();
 
 		UIItemImage->GetUIStaticItem().SetRect	(v_r);

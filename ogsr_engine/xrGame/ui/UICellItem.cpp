@@ -176,9 +176,13 @@ void CUICellItem::SetCustomDraw			(ICustomDrawCell* c){
 #ifdef SHOW_INV_ITEM_CONDITION
 void CUICellItem::init()
 {
-	CUIXml uiXml;
-	bool xml_result						= uiXml.Init(CONFIG_PATH, UI_PATH, "inventory_new.xml");
-	R_ASSERT3							(xml_result, "file parsing error ", uiXml.m_xml_file_name);
+	static CUIXml uiXml;
+	static bool is_xml_ready = false;
+	if ( !is_xml_ready ) {
+	  bool xml_result = uiXml.Init( CONFIG_PATH, UI_PATH, "inventory_new.xml" );
+	  R_ASSERT3( xml_result, "file parsing error ", uiXml.m_xml_file_name );
+	  is_xml_ready = true;
+	}
 	
 	m_text					= xr_new<CUIStatic>();
 	m_text->SetAutoDelete	( true );
@@ -212,9 +216,8 @@ void CUICellItem::UpdateConditionProgressBar()
             Ivector2 cell_size = m_pParentList->CellSize();
             Ivector2 cell_space = m_pParentList->CellsSpacing();
 
-            m_pConditionState->SetWidth((float)cell_size.x-2);
-
-            float x = 1.f; //0.5f*(itm_grid_size.x * (cell_size.x)-m_pConditionState->GetWidth());
+            m_pConditionState->SetWidth((float)cell_size.x-4);
+            float x = 2.f; //0.5f*(itm_grid_size.x * (cell_size.x)-m_pConditionState->GetWidth());
             float y = itm_grid_size.y * (cell_size.y + cell_space.y) - m_pConditionState->GetHeight() - 1.f;
 
             m_pConditionState->SetWndPos(Fvector2().set(x,y));
