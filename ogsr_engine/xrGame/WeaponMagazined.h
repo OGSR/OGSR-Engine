@@ -26,6 +26,7 @@ protected:
 	HUD_SOUND		sndShot;
 	HUD_SOUND		sndEmptyClick;
 	HUD_SOUND		sndReload;
+	HUD_SOUND		sndFireModes;
 	//звук текущего выстрела
 	HUD_SOUND*		m_pSndShotCurrent;
 
