@@ -182,11 +182,6 @@ void CScriptEngine::parse_script_namespace(const char *name, char *ns, u32 nsSiz
 // существует - отправляет его в do_file. Вызывается из process_file,
 // auto_load и не только.
 bool CScriptEngine::process_file_if_exists( const char* file_name, bool warn_if_not_exist ) {
-#ifdef DEBUG
-  // Довольно часто вызывается... Надо что-то с этим делать.
-  Msg( "[CScriptEngine::process_file_if_exists] loading file: [%s]", file_name );
-#endif
-
   if ( !m_reload_modules && ( *file_name && namespace_loaded( file_name ) ) )
     return true;
 
@@ -195,12 +190,6 @@ bool CScriptEngine::process_file_if_exists( const char* file_name, bool warn_if_
   // убедились что файла нет, постоянно не проверять, есть ли он.
   if ( !warn_if_not_exist && no_file_exists( file_name, string_length ) ) {
     ++m_last_no_file_cnt;
-    if ( m_last_no_file_cnt == 1 ) {
-      Msg( "-------------------------" );
-      Msg( "[CScriptEngine::process_file_if_exists] WARNING: multiple access to nonexistent variable '%s' or loading nonexistent script", file_name );
-      print_stack();
-      Msg( "-------------------------" );
-    }
     return false;
   }
 
@@ -214,12 +203,10 @@ bool CScriptEngine::process_file_if_exists( const char* file_name, bool warn_if_
   if ( warn_if_not_exist )
     Msg( "[CScriptEngine::process_file_if_exists] Variable %s not found; No script by this name exists, either.", file_name );
   else {
-#ifdef DEBUG
     Msg( "-------------------------" );
-    Msg( "[CScriptEngine::process_file_if_exists] WARNING: Access to nonexistent variable '%s' or loading nonexistent script", file_name );
+    Msg( "[CScriptEngine::process_file_if_exists] Variable %s not found; No script by this name exists, either.", file_name );
     print_stack();
     Msg( "-------------------------" );
-#endif
     add_no_file( file_name, string_length );
   }
 
