@@ -86,7 +86,6 @@ CWeapon::CWeapon(LPCSTR name)
 	m_ef_weapon_type		= u32(-1);
 	m_UIScope				= NULL;
 	m_set_next_ammoType_on_reload = u32(-1);
-	m_bZoomingIn = false;
 }
 
 CWeapon::~CWeapon		()
@@ -685,7 +684,8 @@ void CWeapon::OnH_B_Independent	(bool just_before_destroy)
 
 	m_strapped_mode				= false;
 	SetHUDmode					(FALSE);
-	m_bZoomMode					= false;
+	OnZoomOut();
+	m_fZoomRotationFactor	= 0.f;
 	UpdateXForm					();
 
 }
@@ -740,8 +740,7 @@ static float previous_heating = 0;		// "нагретость" оружия в предыдущем состояни
 void CWeapon::UpdateWeaponParams()
 {
 #pragma todo("KD: переделать к чертовой матери этот тихий ужас")
-	if (!IsHidden())
-	{
+	if (!IsHidden()) {
 		w_states.x = m_fZoomRotationFactor;			//x = zoom mode, y - текущее состояние, z - старое состояние
 		if ( psActorFlags.test( AF_DOF_SCOPE ) && !( IsZoomed() && !IsRotatingToZoom() && ZoomTexture() ) )
 		  w_states.x = 0.f;
@@ -1341,6 +1340,10 @@ void CWeapon::OnZoomIn()
 	else
 		m_fZoomFactor = CurrentZoomFactor();
 	StopHudInertion();
+
+	CActor* pActor = smart_cast<CActor*>(H_Parent());
+	if ( pActor )
+		pActor->callback(GameObject::eOnActorWeaponZoomIn)(lua_game_object());
 }
 
 void CWeapon::OnZoomOut()
@@ -1348,8 +1351,15 @@ void CWeapon::OnZoomOut()
 	if(H_Parent() && IsZoomed() && !IsRotatingToZoom() && m_bScopeDynamicZoom)
 		m_fRTZoomFactor = m_fZoomFactor;//store current
 
-	m_bZoomMode = false;
 	m_fZoomFactor = 1.0;// g_fov;
+	if ( m_bZoomMode ) {
+		m_bZoomMode = false;
+		CActor* pActor = smart_cast<CActor*>(H_Parent());
+		if ( pActor )
+			w_states.set( 0.f, 0.f, 0.f, 1.f );
+			::Render->set_thermovision_data( &w_timers, &w_states );
+			pActor->callback(GameObject::eOnActorWeaponZoomOut)(lua_game_object());
+	}
 
 	StartHudInertion();
 }
@@ -1564,22 +1574,10 @@ void CWeapon::UpdateHudAdditonal		(Fmatrix& trans)
 
 		if(pActor->IsZoomAimingMode())
 		{
-			// Send callback for zoom in (Added by Cribbledirge).
-			if (!m_bZoomingIn)
-			{
-				pActor->callback(GameObject::eOnActorWeaponZoomIn)(lua_game_object());
-				m_bZoomingIn = true;
-			}
 			m_fZoomRotationFactor += Device.fTimeDelta/m_fZoomRotateTime;
 		}
 		else
 		{
-			// Send callback for zoom out (Added by Cribbledirge).
-			if (m_bZoomingIn)
-			{
-				pActor->callback(GameObject::eOnActorWeaponZoomOut)(lua_game_object());
-				m_bZoomingIn = false;
-			}
 			m_fZoomRotationFactor -= Device.fTimeDelta/m_fZoomRotateTime;
 		}
 		clamp(m_fZoomRotationFactor, 0.f, 1.f);
