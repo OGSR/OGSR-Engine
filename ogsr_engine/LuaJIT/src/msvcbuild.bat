@@ -71,13 +71,13 @@ buildvm -m vmdef -o jit\vmdef.lua %ALL_LIB%
 buildvm -m folddef -o lj_folddef.h lj_opt_fold.c
 @if errorlevel 1 goto :BAD
 
-@if "%1" neq "debug" goto :NODEBUG
+@if "%2" neq "debug" goto :NODEBUG
 @shift
 @set LJCOMPILE=%LJCOMPILE% /Zi
 @set LJLINK=%LJLINK% /debug
 :NODEBUG
-@if "%1"=="amalg" goto :AMALGDLL
-@if "%1"=="static" goto :STATIC
+@if "%2"=="amalg" goto :AMALGDLL
+@if "%2"=="static" goto :STATIC
 %LJCOMPILE% /MD /DLUA_BUILD_AS_DLL lj_*.c lib_*.c
 @if errorlevel 1 goto :BAD
 %LJLINK% /DLL /out:%LJDLLNAME% lj_*.obj lib_*.obj
