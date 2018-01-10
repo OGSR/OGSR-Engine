@@ -103,6 +103,7 @@ namespace GameObject {
 		eOnWpnShellDrop,
 		eOnThrowGrenade,
 		eOnGoodwillChange,
+		eUpdateArtefactsOnBelt,
 
 		eDummy = u32(-1),
 	};

@@ -1526,19 +1526,71 @@ void CActor::UpdateArtefactsOnBelt()
 		update_time		= 0.0f;
 	}
 
+#ifdef OBJECTS_RADIOACTIVE
+#ifdef AF_PSY_HEALTH
+	float summary_prs = 0.f;
+#endif
+	float summary_rrs = 0.f;
+#endif
+
 	for(TIItemContainer::iterator it = inventory().m_belt.begin(); 
 		inventory().m_belt.end() != it; ++it) 
 	{
 		CArtefact*	artefact = smart_cast<CArtefact*>(*it);
 		if(artefact)
 		{
-			conditions().ChangeBleeding			(artefact->m_fBleedingRestoreSpeed*f_update_time);
-			conditions().ChangeHealth			(artefact->m_fHealthRestoreSpeed*f_update_time);
-			conditions().ChangePower			(artefact->m_fPowerRestoreSpeed*f_update_time);
-//			conditions().ChangeSatiety			(artefact->m_fSatietyRestoreSpeed*f_update_time);
-			conditions().ChangeRadiation		(artefact->m_fRadiationRestoreSpeed*f_update_time);
+#ifdef AF_ZERO_CONDITION
+			float k = artefact->GetCondition() > 0 ? 1.f : 0.f;
+#else
+			float k = 1.f;
+#endif
+			conditions().ChangeBleeding( artefact->m_fBleedingRestoreSpeed * f_update_time * k );
+			conditions().ChangeHealth( artefact->m_fHealthRestoreSpeed * f_update_time * k );
+#ifdef AF_PSY_HEALTH
+#ifdef OBJECTS_RADIOACTIVE
+			if ( artefact->PsyHealthRestoreSpeed() > 0 )
+				summary_prs += artefact->PsyHealthRestoreSpeed() * k;
+#else
+			conditions().ChangePsyHealth( artefact->PsyHealthRestoreSpeed() * f_update_time * k );
+#endif
+#endif
+			conditions().ChangePower( artefact->m_fPowerRestoreSpeed * f_update_time * k );
+#ifdef AF_SATIETY
+			conditions().ChangeSatiety( artefact->m_fSatietyRestoreSpeed * f_update_time * k );
+#endif
+#ifdef OBJECTS_RADIOACTIVE
+			if ( artefact->RadiationRestoreSpeed() < 0 )
+				summary_rrs += artefact->RadiationRestoreSpeed() * k;
+#else
+			conditions().ChangeRadiation( artefact->RadiationRestoreSpeed() * f_update_time * k );
+#endif
 		}
 	}
+
+#ifdef OBJECTS_RADIOACTIVE
+	auto &map_all = inventory().m_all;
+	for ( TIItemContainer::iterator it = map_all.begin(); map_all.end() != it; ++it ) {
+		CInventoryItem *obj = smart_cast<CInventoryItem*>( *it );
+		// только увеличение радиации
+		if ( obj->RadiationRestoreSpeed() > 0 ) {
+#ifdef AF_ZERO_CONDITION
+			float k = obj->GetCondition() > 0 ? 1.f : 0.f;
+#else
+			float k = 1.f;
+#endif
+#ifdef AF_PSY_HEALTH
+			summary_prs += obj->PsyHealthRestoreSpeed() * f_update_time * k;
+#endif
+			summary_rrs += obj->RadiationRestoreSpeed() * f_update_time * k;
+		}
+	}
+#ifdef AF_PSY_HEALTH
+	conditions().ChangePsyHealth( summary_prs );
+#endif
+	conditions().ChangeRadiation( summary_rrs );
+#endif
+
+	callback( GameObject::eUpdateArtefactsOnBelt )( f_update_time );
 }
 
 float	CActor::HitArtefactsOnBelt		(float hit_power, ALife::EHitType hit_type)
@@ -1550,8 +1602,15 @@ float	CActor::HitArtefactsOnBelt		(float hit_power, ALife::EHitType hit_type)
 	{
 		CArtefact*	artefact = smart_cast<CArtefact*>(*it);
 		if(artefact){
+#ifdef AF_ZERO_CONDITION
+			if ( artefact->GetCondition() > 0 ) {
+				res_hit_power_k	+= artefact->m_ArtefactHitImmunities.AffectHit( 1.0f, hit_type );
+				_af_count += 1.0f;
+			}
+#else
 			res_hit_power_k	+= artefact->m_ArtefactHitImmunities.AffectHit(1.0f, hit_type);
 			_af_count		+= 1.0f;
+#endif
 		}
 	}
 	// учет иммунитета от шлема
@@ -1561,8 +1620,15 @@ float	CActor::HitArtefactsOnBelt		(float hit_power, ALife::EHitType hit_type)
 		CArtefact*	helmet = smart_cast<CArtefact*>(helm);
 		if (helmet)
 		{
+#ifdef AF_ZERO_CONDITION
+			if ( helmet->GetCondition() > 0 ) {
+				res_hit_power_k += helmet->m_ArtefactHitImmunities.AffectHit( 1.0f, hit_type );
+				_af_count += 1.0f;
+			}
+#else
 			res_hit_power_k += helmet->m_ArtefactHitImmunities.AffectHit(1.0f, hit_type);
 			_af_count += 1.0f;
+#endif
 		}
 	}
 
