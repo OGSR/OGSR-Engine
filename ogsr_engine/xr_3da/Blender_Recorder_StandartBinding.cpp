@@ -366,8 +366,8 @@ class cl_anomalys	: public R_constant_setup {
 			result._34 = shader_exports->get_anomaly_position(5).y;
 			result._41 = shader_exports->get_anomaly_position(6).x;
 			result._42 = shader_exports->get_anomaly_position(6).y;
-			result._43 = shader_exports->get_anomaly_position(6).x;
-			result._44 = shader_exports->get_anomaly_position(6).y;
+			result._43 = shader_exports->get_anomaly_position(7).x;
+			result._44 = shader_exports->get_anomaly_position(7).y;
 		}
 		RCache.set_c	(C,result);
 	}

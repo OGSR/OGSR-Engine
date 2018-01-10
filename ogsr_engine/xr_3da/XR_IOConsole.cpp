@@ -435,7 +435,7 @@ void CConsole::IR_OnKeyboardHold(int dik)
 	rep_time	= fRep;
 }
 
-void CConsole::ExecuteCommand( bool is_user_input )
+void CConsole::ExecuteCommand( bool is_user_input ) //Надо переписать нафиг!
 {
 	char	first_word[MAX_LEN];
 	char	last_word [MAX_LEN];
@@ -481,8 +481,11 @@ outloop:
 		}
 	}
 	first_word[i]=0;
-	if (last_word[xr_strlen(last_word)-1]==' ') last_word[xr_strlen(last_word)-1]=0;
-	
+	//if (last_word[xr_strlen(last_word)-1]==' ') last_word[xr_strlen(last_word)-1]=0; //Вэ той строке творится какая-то хуита!
+	auto str_len = strlen(last_word);
+	if (last_word[str_len - 1] == ' ')
+		last_word[str_len - 1] = 0;
+
 	// search
 	vecCMD_IT I = Commands.find(first_word);
 	if (I!=Commands.end()) {

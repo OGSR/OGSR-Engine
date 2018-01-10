@@ -1,47 +1,39 @@
-// xrCPU_Pipe.cpp : Defines the entry point for the DLL application.
-
 #include "stdafx.h"
 #pragma hdrstop
 
-BOOL APIENTRY DllMain( HANDLE hModule, 
-                       DWORD  ul_reason_for_call, 
-                       LPVOID lpReserved
-					 )
-{
-    return TRUE;
-}
+BOOL APIENTRY DllMain(HANDLE hModule, DWORD  ul_reason_for_call, LPVOID lpReserved) { return TRUE; }
 
-extern xrSkin1W			xrSkin1W_SSE;
-extern xrSkin2W			xrSkin2W_SSE;
-extern xrSkin3W			xrSkin3W_SSE;
-extern xrSkin4W			xrSkin4W_SSE;
+#ifndef _M_X64
+extern xrSkin1W xrSkin1W_SSE;
+extern xrSkin2W xrSkin2W_SSE;
+extern xrSkin3W xrSkin3W_SSE;
+extern xrSkin4W xrSkin4W_SSE;
+#endif
 
-extern xrSkin4W			xrSkin4W_thread;
+extern xrSkin1W xrSkin1W_x86;
+extern xrSkin2W xrSkin2W_x86;
+extern xrSkin3W xrSkin3W_x86;
+extern xrSkin4W xrSkin4W_x86;
 
-xrSkin4W* skin4W_func = NULL;
+xrSkin4W* skin4W_func = nullptr; //Оно разве используется где-то?
 
 extern "C" {
-#pragma todo("KRodin: вернуть сюда обычные (не ассемблерные) функции для x64!")
 	__declspec(dllexport) void	__cdecl	xrBind_PSGP	(xrDispatchTable* T)
 	{
-		// generic
-#ifndef _M_X64
+#ifdef _M_X64
+		T->skin1W = xrSkin1W_x86;
+		T->skin2W = xrSkin2W_x86;
+		T->skin3W = xrSkin3W_x86;
+		T->skin4W = xrSkin4W_x86;
+		skin4W_func = xrSkin4W_x86;
+#else
 		T->skin1W = xrSkin1W_SSE;
 		T->skin2W = xrSkin2W_SSE;
 		T->skin3W = xrSkin3W_SSE;
 		T->skin4W = xrSkin4W_SSE;
-
- //KRodin: а какой вообще смысл проверять, есть поддержка SSE или нет? У нас ведь даже компилятору разрешено юзать SEE, значит, на процессорах без SSE движок даже не запустится.
-		if (CPU::ID.hasSSE())
-			skin4W_func = xrSkin4W_SSE;
+		skin4W_func = xrSkin4W_SSE;
 #endif
 
-		// Init helper threads
-		ttapi_Init(&CPU::ID);
-
-		/*if (ttapi_GetWorkersCount() > 1) {
-			// We can use threading
-			T->skin4W = xrSkin4W_thread;
-		}*/
+		ttapi_Init(&CPU::ID); //Init helper threads
 	}
 };

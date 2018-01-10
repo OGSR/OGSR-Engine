@@ -21,9 +21,7 @@
     <ClCompile Include="xrSkinW_SSE.cpp">
       <Filter>SSE</Filter>
     </ClCompile>
-    <ClCompile Include="xrSkinW_thread.cpp">
-      <Filter>SSE</Filter>
-    </ClCompile>
+    <ClCompile Include="xrSkin2W.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="StdAfx.h">

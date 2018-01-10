@@ -24,7 +24,7 @@ class dcTriListCollider
 	xr_vector<int>::iterator	I,E,B				;
 public:
 	dcTriListCollider(dxGeom* Geometry);
-	~dcTriListCollider();
+	~dcTriListCollider() = default;
 	int CollideBox(dxGeom* Box, int Flags, dContactGeom* Contact, int Stride);
 	int CollideSphere(dxGeom* Sphere, int Flags, dContactGeom* Contact, int Stride);
 	int CollideCylinder(dxGeom* Cylinder, int Flags, dContactGeom* Contacts, int Stride);

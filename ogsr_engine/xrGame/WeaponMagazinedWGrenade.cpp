@@ -78,9 +78,10 @@ void CWeaponMagazinedWGrenade::Load	(LPCSTR section)
 	animGet				(mhud_hide_g,	pSettings->r_string(*hud_sect, "anim_holster_g"));
 
 	m_sAnimIdle = pSettings->r_string( *hud_sect, "anim_idle_gl" );
+	shared_str m_sAnimIdleSprint = READ_IF_EXISTS(pSettings, r_string, *hud_sect, "anim_idle_sprint", *m_sAnimIdle);
 	animGet( mhud_idle_w_gl, *m_sAnimIdle );
 	animGet( mhud_idle_moving_gl, READ_IF_EXISTS( pSettings, r_string, *hud_sect, "anim_idle_moving_gl", *m_sAnimIdle ) );
-	animGet( mhud_idle_sprint_gl, READ_IF_EXISTS( pSettings, r_string, *hud_sect, "anim_idle_sprint_gl", *m_sAnimIdle ) );
+	animGet( mhud_idle_sprint_gl, READ_IF_EXISTS( pSettings, r_string, *hud_sect, "anim_idle_sprint_gl", *m_sAnimIdleSprint) );
 	animGet				(mhud_reload_w_gl,	pSettings->r_string(*hud_sect, "anim_reload_gl"));
 	animGet				(mhud_show_w_gl,	pSettings->r_string(*hud_sect, "anim_draw_gl"));
 	animGet				(mhud_hide_w_gl,	pSettings->r_string(*hud_sect, "anim_holster_gl"));

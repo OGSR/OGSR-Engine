@@ -136,7 +136,7 @@ void CScriptEngine::init()
 	luabind::disable_super_deprecation();
 #endif
 	luabind::open(LSVM); //Запуск луабинда
-						 //--------------Установка калбеков------------------//
+	//--------------Установка калбеков------------------//
 #ifdef LUABIND_NO_EXCEPTIONS
 	luabind::set_error_callback(lua_error);
 	luabind::set_cast_failed_callback(lua_cast_failed);
@@ -223,26 +223,31 @@ bool CScriptEngine::process_file_if_exists(const char* file_name, bool warn_if_n
 	u32 string_length = xr_strlen(file_name);
 	if (!warn_if_not_exist && no_file_exists(file_name, string_length)) //Это походу для оптимизации только, чтоб типа если один раз убедились что файла нет, постоянно не проверять, есть ли он.
 		return false;
-	string_path S, S1;
 	if (m_reload_modules || (*file_name && !namespace_loaded(file_name)))
 	{
+		string_path S, S1;
 		FS.update_path(S, "$game_scripts$", strconcat(sizeof(S1), S1, file_name, ".script"));
-		if (!warn_if_not_exist && !FS.exist(S))
+		if (!FS.exist(S))
 		{
-#ifdef DEBUG
-			Msg("-------------------------");
-			Msg("[CScriptEngine::process_file_if_exists] WARNING: Access to nonexistent variable '%s' or loading nonexistent script '%s'", file_name, S1);
-			print_stack();
-			Msg("-------------------------");
-#endif
-			add_no_file(file_name, string_length);
+			if (warn_if_not_exist)
+				Msg("[CScriptEngine::process_file_if_exists] Variable %s not found; No script by this name exists, either.", file_name);
+			else
+			{
+//#ifdef DEBUG
+				Msg("-------------------------");
+				Msg("[CScriptEngine::process_file_if_exists] WARNING: Access to nonexistent variable '%s' or loading nonexistent script '%s'", file_name, S1);
+				print_stack();
+				Msg("-------------------------");
+//#endif
+				add_no_file(file_name, string_length);
+			}
 			return false;
 		}
 #ifdef DEBUG
 		Msg("[CScriptEngine::process_file_if_exists] loading script: [%s]", S1);
 #endif
 		m_reload_modules = false;
-		return do_file(S, *file_name ? file_name : GlobalNamespace);
+		return do_file(S, file_name);
 	}
 	return true;
 }

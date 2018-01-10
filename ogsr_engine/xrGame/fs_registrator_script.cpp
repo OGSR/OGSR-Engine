@@ -141,13 +141,6 @@ FS_file_list file_list_open_script_2(CLocatorAPI* fs, LPCSTR initial, LPCSTR fol
 void dir_delete_script_2(CLocatorAPI* fs, LPCSTR path, LPCSTR nm, int remove_files)
 {	fs->dir_delete(path,nm,remove_files);}
 
-LPCSTR application_dir()
-{
-	string_path _path;
-	GetCurrentDirectory(sizeof(_path), _path);
-	return _path;
-}
-
 void dir_delete_script(CLocatorAPI* fs, LPCSTR full_path, int remove_files)
 {	fs->dir_delete(full_path,remove_files);}
 
@@ -159,9 +152,118 @@ LPCSTR get_file_age_str(CLocatorAPI* fs, LPCSTR nm)
 	return asctime( newtime );
 }
 
+
+////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////// SCRIPT C++17 FILESYSTEM - START ///////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////
+/*
+KRodin: Дело в том, что движковая FS не может обрабатывать папки с большим кол-вом файлов.
+Например, папку с сейвами, когда в ней находится слишком много файлов (в этом случае происходит вылет).
+Хоть и в этом движке эта проблема вроде как исправлена (я не тестил исправление),
+но я ради эксперимента решил экспортировать в скрипты С++17 Filesystem, в которой таких проблем нет.
+Конечно, эту проблему можно было решить и с помошью костылей типа LFS, но KRodin не ищет лёгких путей!
+//
+TODO: при необходимости, доэкспортировать остальные функции файловой системы, вынести код в отдельный .cpp
+*/
+#include <iomanip>
+#include <sstream>
+#include <filesystem>
+namespace stdfs = std::experimental::filesystem;
+
+//Путь до папки с движком
+decltype(auto) get_engine_dir()
+{
+	return luabind::internal_string(stdfs::current_path().string().c_str()); //Без приведения к луабиндовой строке, функции почему-то возвращают мусор.
+}
+
+//Перебор файлов в папке, подкаталоги не учитываются.
+void directory_iterator(const char* dir, const luabind::functor<void> &iterator_func)
+{
+	for (const stdfs::path& file : stdfs::directory_iterator(dir))
+		if (stdfs::is_regular_file(file)) //Папки не учитываем
+			iterator_func(file);
+}
+
+//Перебор файлов в папке включая подкаталоги.
+void recursive_directory_iterator(const char* dir, const luabind::functor<void> &iterator_func)
+{
+	for (const stdfs::path& file : stdfs::recursive_directory_iterator(dir))
+		if (stdfs::is_regular_file(file)) //Папки не учитываем
+			iterator_func(file);
+}
+
+//полный путь до файла с расширением.
+inline decltype(auto) get_full_path(const stdfs::path& file)
+{
+	return luabind::internal_string(file.string().c_str());
+}
+
+//имя файла без пути, но с расширением.
+inline decltype(auto) get_full_filename(const stdfs::path& file)
+{
+	return luabind::internal_string(file.filename().string().c_str());
+}
+
+//имя файла без пути, и без расширения.
+inline decltype(auto) get_short_filename(const stdfs::path& file)
+{
+	return luabind::internal_string(file.stem().string().c_str());
+}
+
+//расширение файла.
+inline decltype(auto) get_extension(const stdfs::path& file)
+{
+	return luabind::internal_string(file.extension().string().c_str());
+}
+
+//Время последнего изменения файла ( наверное в секундах, но я не уверен )
+inline decltype(auto) get_last_write_time(const stdfs::path& file)
+{
+	const auto ftime = stdfs::last_write_time(file);
+	const auto cftime = decltype(ftime)::clock::to_time_t(ftime);
+	return u32(cftime); //KRodin: TODO: добавить в луабинд поддержку u64, после этого можно будет убрать здесь приведение к u32. Хотя оно и так работает вполне нормально.
+}
+
+//Время последнего изменения файла в формате [вторник 02 янв 2018 14:03:32]
+inline decltype(auto) get_last_write_time_string(const stdfs::path& file)
+{
+	const auto ftime = stdfs::last_write_time(file);
+	const auto cftime = decltype(ftime)::clock::to_time_t(ftime);
+	std::stringstream ss;
+	ss.imbue(std::locale("")); //Устанавливаем системную локаль потоку, чтоб месяц/день недели были на системном языке.
+	ss << std::put_time(std::localtime(&cftime), "[%A %d %b %Y %T]");
+	return luabind::internal_string(ss.str().c_str());
+}
+
+#pragma optimize("s",on)
+void script_register_stdfs(lua_State *L)
+{
+	module(L, "stdfs")
+	[
+		def("directory_iterator", &directory_iterator),
+		def("recursive_directory_iterator", &recursive_directory_iterator),
+		class_<stdfs::path>("path")
+			//.def(constructor<>()) //Работает и без этого.
+			//TODO: при необходимости можно будет добавить возможность изменения некоторых свойств.
+			.property("full_path_name", &get_full_path)
+			.property("full_filename", &get_full_filename)
+			.property("short_filename", &get_short_filename)
+			.property("extension", &get_extension)
+			.property("last_write_time", &get_last_write_time)
+			.property("last_write_time_string", &get_last_write_time_string)
+	];
+}
+////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////// SCRIPT C++17 FILESYSTEM - END ///////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////
+
+
 #pragma optimize("s",on)
 void fs_registrator::script_register(lua_State *L)
 {
+	//
+	script_register_stdfs(L);
+	//
 	module(L)
 	[
 		class_<FS_item>("FS_item")
@@ -225,7 +327,7 @@ void fs_registrator::script_register(lua_State *L)
 			.def("dir_delete",							&dir_delete_script)
 			.def("dir_delete",							&dir_delete_script_2)
 
-			.def("application_dir",						&application_dir)
+			.def("application_dir",						&get_engine_dir)
 
 			.def("file_rename",							&CLocatorAPI::file_rename)
 			.def("file_length",							&CLocatorAPI::file_length)

@@ -503,16 +503,17 @@ void CWeaponMagazined::state_Fire	(float dt)
 
 	if (!H_Parent()) return;
 
-	CInventoryOwner* io		= smart_cast<CInventoryOwner*>(H_Parent());
-	if(NULL == io->inventory().ActiveItem())
+#ifdef DEBUG
+	CInventoryOwner* io = smart_cast<CInventoryOwner*>(H_Parent());
+	if (!io->inventory().ActiveItem())
 	{
-			Log("current_state", GetState() );
-			Log("next_state", GetNextState());
-			Log("state_time", m_dwStateTime);
-			Log("item_sect", cNameSect().c_str());
-			Log("H_Parent", H_Parent()->cNameSect().c_str());
+		Log("current_state", GetState());
+		Log("next_state", GetNextState());
+		Log("state_time", m_dwStateTime);
+		Log("item_sect", cNameSect().c_str());
+		Log("H_Parent", H_Parent()->cNameSect().c_str());
 	}
-
+#endif
 
 	smart_cast<CEntity*>	(H_Parent())->g_fireParams	(this, p1,d);
 	if (m_iShotNum == 0)
