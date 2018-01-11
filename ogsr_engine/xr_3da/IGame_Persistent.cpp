@@ -103,13 +103,15 @@ void IGame_Persistent::Start		(LPCSTR op)
 
 void IGame_Persistent::Disconnect	()
 {
-#ifndef _EDITOR
 	// clear "need to play" particles
-	destroy_particles					(true);
+	destroy_particles(true);
 
 	if(g_hud)
-		g_hud->OnDisconnected			();
-#endif
+		g_hud->OnDisconnected();
+
+	// Kill object - save memory
+	ObjectPool.clear();
+	Render->models_Clear(TRUE); // У нас вызывается ещё и в CLevel::remove_objects() Если что - убрать оттуда, пусть будет тут.
 }
 
 void IGame_Persistent::OnGameStart()
