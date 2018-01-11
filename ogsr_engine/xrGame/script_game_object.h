@@ -620,7 +620,7 @@ public:
 			float				GetItemWeight();
 			u32					InvBoxCount();
 			void				OpenInvBox(CScriptGameObject *object);
-			CScriptGameObject	*ObjectFromInvBox(u16 _i);
+			CScriptGameObject	*ObjectFromInvBox(u32 _i);
 			float				GetCamFOV();
 			void				SetCamFOV(float _fov);
 

@@ -257,6 +257,22 @@ void CInventoryScript::script_register(lua_State *L)
 			//.def		  ("to_slot"					,			&item_to_slot,   raw(_2))
 			//.def		  ("to_ruck"					,			&item_to_ruck,   raw(_2))
 			,
+			class_<IInventoryBox>("IInventoryBox")			
+			.def	  	 ("object"						,			&IInventoryBox::GetObjectByIndex)
+			.def	  	 ("object"						,			&IInventoryBox::GetObjectByName)
+			.def	  	 ("object_count"				,			&IInventoryBox::GetSize)
+			.def		 ("empty"						,			&IInventoryBox::IsEmpty)
+			,
+			class_<CInventoryBox, bases<IInventoryBox, CGameObject>>("CInventoryBox")
+			,
+			class_<CInventoryContainer, bases<IInventoryBox, CInventoryItemObject>>("CInventoryContainer")
+			.property	 ("cost"						,			&CInventoryContainer::Cost)
+			.property	 ("weight"						,			&CInventoryContainer::Weight)
+			.property	 ("is_opened"					,			&CInventoryContainer::IsOpened)
+			.def		  ("open"						,			&CInventoryContainer::open)
+			.def		  ("close"						,			&CInventoryContainer::close)
+			,
+
 			class_<CInventoryOwner>("CInventoryOwner")
 			.def_readonly ("inventory"					,			&CInventoryOwner::m_inventory)
 			.def_readonly ("talking"					,			&CInventoryOwner::m_bTalking)

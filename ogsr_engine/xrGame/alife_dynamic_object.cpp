@@ -178,6 +178,7 @@ bool CSE_ALifeDynamicObject::redundant				() const
 	return						(false);
 }
 
+/*
 void CSE_InventoryBox::add_online	(const bool &update_registries)
 {
 	CSE_ALifeDynamicObjectVisual		*object = (this);
@@ -273,3 +274,4 @@ void CSE_InventoryBox::add_offline	(const xr_vector<ALife::_OBJECT_ID> &saved_ch
 
 	CSE_ALifeDynamicObjectVisual::add_offline(saved_children, update_registries);
 }
+*/
