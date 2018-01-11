@@ -1579,15 +1579,55 @@ void CActor::UpdateArtefactsOnBelt()
 			float k = 1.f;
 #endif
 #ifdef AF_PSY_HEALTH
-			summary_prs += obj->PsyHealthRestoreSpeed() * f_update_time * k;
+			summary_prs += obj->PsyHealthRestoreSpeed() * k;
 #endif
-			summary_rrs += obj->RadiationRestoreSpeed() * f_update_time * k;
+			summary_rrs += obj->RadiationRestoreSpeed() * k;
 		}
 	}
-#ifdef AF_PSY_HEALTH
-	conditions().ChangePsyHealth( summary_prs );
+
+#ifdef OUTFIT_AF
+	PIItem outfit_item = inventory().m_slots[ OUTFIT_SLOT ].m_pIItem;
+	if ( outfit_item ) {
+          CCustomOutfit *outfit = smart_cast<CCustomOutfit*>( outfit_item );
+          if ( outfit ) {
+
+#ifdef AF_ZERO_CONDITION
+            float k = outfit->GetCondition() > 0 ? 1.f : 0.f;
+#else
+            float k = 1.f;
 #endif
-	conditions().ChangeRadiation( summary_rrs );
+
+            conditions().ChangeBleeding( outfit->m_fBleedingRestoreSpeed * f_update_time * k );
+            conditions().ChangeHealth( outfit->m_fHealthRestoreSpeed * f_update_time * k );
+            conditions().ChangePower( outfit->m_fPowerRestoreSpeed * f_update_time * k );
+            conditions().ChangeSatiety( outfit->m_fSatietyRestoreSpeed * f_update_time * k );
+
+#ifdef AF_PSY_HEALTH
+#ifdef OBJECTS_RADIOACTIVE
+            if ( outfit->PsyHealthRestoreSpeed() > 0 )
+              summary_prs += outfit->PsyHealthRestoreSpeed() * k;
+#else
+            conditions().ChangePsyHealth( outfit->PsyHealthRestoreSpeed() * f_update_time * k );
+#endif
+#endif
+
+#ifdef OBJECTS_RADIOACTIVE
+            if ( outfit->RadiationRestoreSpeed() < 0 )
+              summary_rrs += outfit->RadiationRestoreSpeed() * k;
+#else
+            conditions().ChangeRadiation( outfit->RadiationRestoreSpeed() * f_update_time * k );
+#endif
+
+          }
+	}
+#endif
+
+#ifdef OBJECTS_RADIOACTIVE
+#ifdef AF_PSY_HEALTH
+	conditions().ChangePsyHealth( summary_prs * f_update_time );
+#endif
+	conditions().ChangeRadiation( summary_rrs * f_update_time );
+#endif
 #endif
 
 	callback( GameObject::eUpdateArtefactsOnBelt )( f_update_time );
