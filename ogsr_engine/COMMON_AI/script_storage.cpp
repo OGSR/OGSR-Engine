@@ -59,17 +59,17 @@ const char* get_lua_traceback(lua_State *L)
 
 CScriptStorage::~CScriptStorage()
 {
-	Msg("[CScriptStorage] Closing LuaJIT - start");
+	//Msg("[CScriptStorage] Closing LuaJIT - start");
 	if (m_virtual_machine)
 		lua_close(m_virtual_machine); //¬от тут закрываетс€ LuaJIT.
-	 Msg("[CScriptStorage] Closing LuaJIT - end");
+	//Msg("[CScriptStorage] Closing LuaJIT - end");
 }
 
 void CScriptStorage::reinit(lua_State *LSVM)
 {
 	if (m_virtual_machine) // ак вы€снилось, такое происходит при загрузке игры на этапе старта сервера 
 	{
-		Msg("[CScriptStorage] Found working LuaJIT WM! Close it!");
+		//Msg("[CScriptStorage] Found working LuaJIT WM! Close it!");
 		lua_close(m_virtual_machine);
 	}
 	m_virtual_machine = LSVM;
@@ -77,7 +77,7 @@ void CScriptStorage::reinit(lua_State *LSVM)
 
 void CScriptStorage::print_stack()
 {
-	Msg("%s", get_lua_traceback(lua()));
+	Log(get_lua_traceback(lua()));
 }
 
 void CScriptStorage::script_log(ScriptStorage::ELuaMessageType tLuaMessageType, const char* caFormat, ...) //»спользуетс€ в очень многих местах //ќчень много пишет в лог.
