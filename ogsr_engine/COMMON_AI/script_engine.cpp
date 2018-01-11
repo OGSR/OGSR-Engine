@@ -86,11 +86,9 @@ int auto_load(lua_State *L)
 	return 1;
 }
 
-#ifdef LOAD_SCRIPTS_SUBDIRS
-//Alun: Allow directory structuring for scripts
-typedef	xr_map<xr_string, xr_string>	script_list_type;
-static	script_list_type xray_scripts;
-#endif
+
+using script_list_type = std::map<std::string, std::string>;
+static script_list_type xray_scripts;
 
 void CScriptEngine::setup_auto_load()
 {
@@ -104,10 +102,9 @@ void CScriptEngine::setup_auto_load()
 	// luaL_getmetatable(lua(), "XRAY_AutoLoadMetaTable");
 	lua_setmetatable(lua(), value_index);
 
-#ifdef LOAD_SCRIPTS_SUBDIRS
-	//Alun: Allow directory structuring for scripts
 	xray_scripts.clear();
 
+#ifdef LOAD_SCRIPTS_SUBDIRS
 	FS_FileSet fset;
 	FS.file_list(fset, "$game_scripts$", FS_ListFiles, "*.script");
 	FS_FileSetIt fit = fset.begin();
@@ -121,14 +118,14 @@ void CScriptEngine::setup_auto_load()
 		FS.update_path(fn1, "$game_scripts$", fn1);
 		strconcat(sizeof(fn1), fn1, fn1, fn2, ".script");
 
-		xray_scripts.insert(mk_pair(xr_string(fn2), xr_string(fn1)));
+		xray_scripts.insert({ fn2, fn1 });
 	}
 #endif
 }
 
 void CScriptEngine::init()
 {
-	Msg("[CScriptEngine::init] Starting LuaJIT!");
+	//Msg("[CScriptEngine::init] Starting LuaJIT!");
 	lua_State* LSVM = luaL_newstate(); //Запускаем LuaJIT. Память себе он выделит сам.
 	R_ASSERT2(LSVM, "! ERROR : Cannot initialize LUA VM!");
 	reinit(LSVM);
@@ -156,7 +153,7 @@ void CScriptEngine::init()
 
 	register_script_classes(); //Походу, запуск class_registrator.script
 	object_factory().register_script(); //Регистрация классов
-	Msg("[CScriptEngine::init] LuaJIT Started!");
+	//Msg("[CScriptEngine::init] LuaJIT Started!");
 }
 
 void CScriptEngine::parse_script_namespace(const char *name, char *ns, u32 nsSize, char *func, u32 funcSize)
@@ -193,7 +190,7 @@ bool CScriptEngine::process_file_if_exists( const char* file_name, bool warn_if_
     return false;
   }
 
-  script_list_type::iterator it = xray_scripts.find( xr_string( *file_name ? ( strcmp( file_name, GlobalNamespace ) == 0 ? "_g" : file_name ) : "_g" ) );
+  script_list_type::iterator it = xray_scripts.find( *file_name ? ( strcmp( file_name, GlobalNamespace ) == 0 ? "_g" : file_name ) : "_g" );
   if ( it != xray_scripts.end() ) {
     Msg( "* loading script %s.script", file_name );
     m_reload_modules = false;
@@ -215,30 +212,89 @@ bool CScriptEngine::process_file_if_exists( const char* file_name, bool warn_if_
 
 
 #else  // #ifdef LOAD_SCRIPTS_SUBDIRS
+const char* ExtractFileName(const char* fname)
+{
+	const char* result = fname;
+	for (size_t c = 0; c < strlen(fname); c++)
+		if (fname[c] == '\\') result = &fname[c + 1];
+	return result;
+}
+
+void CollectScriptFiles(script_list_type &map, const char* path)
+{
+	if (!strlen(path))
+		return;
+	string_path fname;
+	auto folders = FS.file_list_open(path, FS_ListFolders);
+	if (folders)
+	{
+		std::for_each(folders->begin(), folders->end(), [&](const char* folder)
+		{
+			if (strstr(folder, "."))
+			{
+				strconcat(sizeof(fname), fname, path, folder);
+				CollectScriptFiles(map, fname);
+			}
+		});
+		FS.file_list_close(folders);
+	}
+
+	string_path buff;
+	auto files = FS.file_list_open(path, FS_ListFiles);
+	if (!files)
+		return;
+	std::for_each(files->begin(), files->end(), [&](const char* file)
+	{
+		strconcat(sizeof(fname), fname, path, file);
+		if ((strstr(fname, ".script") /*|| strstr(fname, ".lua")*/) && FS.exist(fname))
+		{
+			const char* fstart = ExtractFileName(fname);
+			strcpy_s(buff, sizeof(buff), fstart);
+			_strlwr_s(buff, sizeof(buff));
+			const char* nspace = strtok(buff, ".");
+			map.insert({ nspace, fname });
+		}
+	});
+	FS.file_list_close(files);
+}
+
+bool LookupScript(string_path &fname, const char* base)
+{
+	string_path lc_base;
+	if (xray_scripts.empty())
+	{
+		FS.update_path(lc_base, "$game_scripts$", "");
+		CollectScriptFiles(xray_scripts, lc_base);
+	}
+	strcpy_s(lc_base, sizeof(lc_base), base);
+	_strlwr_s(lc_base, sizeof(lc_base));
+	auto it = xray_scripts.find(lc_base);
+	if (it != xray_scripts.end())
+	{
+		strcpy_s(fname, sizeof(fname), it->second.c_str());
+		return true;
+	}
+	return false;
+}
+
 bool CScriptEngine::process_file_if_exists(const char* file_name, bool warn_if_not_exist) //KRodin: Функция проверяет существует ли скрипт на диске. Если существует - отправляет его в do_file. Вызывается из process_file, auto_load и не только.
 {
-#ifdef DEBUG
-	Msg("[CScriptEngine::process_file_if_exists] loading file: [%s]", file_name); //Довольно часто вызывается... Надо что-то с этим делать.
-#endif
-	u32 string_length = xr_strlen(file_name);
+	u32 string_length = strlen(file_name);
 	if (!warn_if_not_exist && no_file_exists(file_name, string_length)) //Это походу для оптимизации только, чтоб типа если один раз убедились что файла нет, постоянно не проверять, есть ли он.
 		return false;
 	if (m_reload_modules || (*file_name && !namespace_loaded(file_name)))
 	{
-		string_path S, S1;
-		FS.update_path(S, "$game_scripts$", strconcat(sizeof(S1), S1, file_name, ".script"));
-		if (!FS.exist(S))
+		string_path S;
+		if (!LookupScript(S, file_name))
 		{
 			if (warn_if_not_exist)
 				Msg("[CScriptEngine::process_file_if_exists] Variable %s not found; No script by this name exists, either.", file_name);
 			else
 			{
-//#ifdef DEBUG
-				Msg("-------------------------");
-				Msg("[CScriptEngine::process_file_if_exists] WARNING: Access to nonexistent variable '%s' or loading nonexistent script '%s'", file_name, S1);
+				Log("-------------------------");
+				Msg("[CScriptEngine::process_file_if_exists] WARNING: Access to nonexistent variable or loading nonexistent script '%s'", file_name);
 				print_stack();
-				Msg("-------------------------");
-//#endif
+				Log("-------------------------");
 				add_no_file(file_name, string_length);
 			}
 			return false;
@@ -297,7 +353,7 @@ void CScriptEngine::register_script_classes()
 
 bool CScriptEngine::function_object(const char* function_to_call, luabind::object &object, int type)
 {
-	if (!xr_strlen(function_to_call))
+	if (!strlen(function_to_call))
 		return false;
 	string256 name_space, function;
 	parse_script_namespace(function_to_call, name_space, sizeof(name_space), function, sizeof(function));

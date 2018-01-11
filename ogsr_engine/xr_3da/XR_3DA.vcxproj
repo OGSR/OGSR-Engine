@@ -295,7 +295,6 @@
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
-      <WholeProgramOptimization Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</WholeProgramOptimization>
     </ClCompile>
     <ClCompile Include="x_ray.cpp" />
     <ClCompile Include="IInputReceiver.cpp" />
@@ -369,9 +368,7 @@
     <ClCompile Include="Stats.cpp" />
     <ClCompile Include="HW.cpp" />
     <ClCompile Include="HWCaps.cpp" />
-    <ClCompile Include="xr_effgamma.cpp">
-      <WholeProgramOptimization Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</WholeProgramOptimization>
-    </ClCompile>
+    <ClCompile Include="xr_effgamma.cpp" />
     <ClCompile Include="Blenders\Blender.cpp" />
     <ClCompile Include="Blenders\Blender_Palette.cpp" />
     <ClCompile Include="Blenders\Blender_Recorder.cpp" />
