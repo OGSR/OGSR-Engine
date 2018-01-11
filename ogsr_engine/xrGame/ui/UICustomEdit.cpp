@@ -7,8 +7,6 @@
 
 bool g_alternate_lang = false;
 
-static constexpr u32 LETTERS_SIZE = 45;
-
 static constexpr u32 DILetters[] = { DIK_A, DIK_B, DIK_C, DIK_D, DIK_E, 
 DIK_F, DIK_G, DIK_H, DIK_I, DIK_J, 
 DIK_K, DIK_L, DIK_M, DIK_N, DIK_O, 
@@ -18,6 +16,8 @@ DIK_LBRACKET, DIK_RBRACKET, DIK_SEMICOLON, DIK_APOSTROPHE,
 DIK_BACKSLASH, DIK_SLASH, DIK_COMMA, DIK_PERIOD, DIK_GRAVE,
 DIK_0, DIK_1, DIK_2, DIK_3, DIK_4, DIK_5, DIK_6, DIK_7,
 DIK_8, DIK_9};
+
+static constexpr u32 LETTERS_SIZE = std::size(DILetters);
 
 static constexpr char EngLetters[] = { 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h',
 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u',
@@ -253,7 +253,8 @@ bool CUICustomEdit::KeyPressed(int dik)
 		break;
 	default:
 		auto it = gs_DIK2CHR.find(dik);
-		out_me = (*it).second.GetChar(g_alternate_lang, m_bShift);
+		if (it != gs_DIK2CHR.end())
+			out_me = (*it).second.GetChar(g_alternate_lang, m_bShift);
 		break;
 	}
 
