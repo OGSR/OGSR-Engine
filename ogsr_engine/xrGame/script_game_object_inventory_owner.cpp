@@ -274,9 +274,12 @@ void CScriptGameObject::UnloadMagazine		()
 
 void CScriptGameObject::DropItem			(CScriptGameObject* pItem)
 {
-//	CInventoryOwner* owner = smart_cast<CInventoryOwner*>(&object());
+	CInventoryOwner* owner = smart_cast<CInventoryOwner*>(&object());
 	CInventoryItem* item = smart_cast<CInventoryItem*>(&pItem->object());
-	if(/*!owner||*/!item){
+
+	// Real Wolf: Для ящиков тоже пусть работает. 02.08.2014.
+	auto box = smart_cast<IInventoryBox*>(&object());
+	if( (!box && !owner) || !item){
 		ai().script_engine().script_log		(ScriptStorage::eLuaMessageTypeError,"CScriptGameObject::DropItem non-CInventoryOwner object !!!");
 		return;
 	}
