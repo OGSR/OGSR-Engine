@@ -27,6 +27,7 @@ SHit::SHit(float aPower,Fvector &adir,CObject *awho, u16 aelement, Fvector ap_in
 		BulletID				= 0										;
 		SenderID				= 0										;
 		aim_bullet				= AimBullet								;
+		full_power = aPower;
 }
 
 SHit::SHit()
@@ -55,6 +56,7 @@ void SHit::invalidate()
 	BulletID				= 0;
 	SenderID				= 0;
 	aim_bullet				= false									;
+	full_power = -dInfinity;
 }
 
 bool SHit::is_valide() const
@@ -104,6 +106,7 @@ void SHit::Read_Packet_Cont		(NET_Packet	Packet)
 		Packet.r_u32(BulletID);
 		Packet.r_u32(SenderID);
 	}
+	full_power = power;
 }
 
 void SHit::Write_Packet_Cont		(NET_Packet	&Packet)

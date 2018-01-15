@@ -46,6 +46,9 @@ IC	ALife::EHitType		type					()		const	{VERIFY(is_valide());return hit_type;}
 	u32					SenderID;
 
 	bool ignore_flag = false;
+	// Начальное значение хита, до обработок всякими защитами
+	// артефактов и броней.
+	float full_power;
 
 #ifdef DEBUG
 	void				_dump();

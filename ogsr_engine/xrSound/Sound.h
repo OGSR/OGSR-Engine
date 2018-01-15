@@ -194,6 +194,21 @@ public:
 class XRSOUND_API			CSound_params
 {
 public:
+#ifdef SND_DOPPLER_EFFECT
+	CSound_params() :
+		set(false),
+		alpha(0.05f)  // Coefficient for exponential moving average.
+	{ 
+		position.set(0.0f, 0.0f, 0.0f);
+		velocity.set(0.0f, 0.0f, 0.0f);
+		accVelocity.set(0.f, 0.f, 0.f);
+	}
+	Fvector                                 velocity;  // Cribbledirge.  Added for doppler effect.
+	Fvector                                 curVelocity;  // Current velocity.
+	Fvector                                 prevVelocity;  // Previous velocity.
+	Fvector                                 accVelocity;  // Velocity accumulator (for moving average).
+#endif
+
 	Fvector					position;
 	float					base_volume;
 	float					volume;
@@ -201,6 +216,40 @@ public:
 	float					min_distance;
 	float					max_distance;
 	float					max_ai_distance;
+
+#ifdef SND_DOPPLER_EFFECT
+	// Functions added by Cribbledirge for doppler effect.
+	IC virtual void update_position(const Fvector& newPosition)
+	{
+                // If the position has been set already, start getting a moving average of the velocity.
+		if (set)
+		{
+			prevVelocity.set(accVelocity);
+			curVelocity.sub(newPosition, position);
+			accVelocity.set(curVelocity.mul(alpha).add(prevVelocity.mul(1.f - alpha)));
+		}
+		else
+		{
+			set = true;
+		}
+                position.set(newPosition);
+	}
+
+	IC virtual void update_velocity(const float dt)
+	{
+		velocity.set(accVelocity).div(dt);
+	}
+private:
+	float alpha;  // Cribbledirge: Alpha value for moving average.
+
+        // A variable in place to determine if the position has been set.  This is to prevent artifacts when
+        // the position jumps from its initial position of zero to something greatly different.  This is a big
+        // issue in moving average calculation.  We want the velocity to always start at zero for when the sound
+        // was initiated, or else things will sound really really weird.
+	bool set;
+
+        // End Cribbledirge.
+#endif
 };
 
 /// definition (Sound Interface)

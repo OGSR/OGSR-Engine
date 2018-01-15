@@ -51,6 +51,7 @@ CWeaponMagazined::~CWeaponMagazined()
 	HUD_SOUND::DestroySound(sndShot);
 	HUD_SOUND::DestroySound(sndEmptyClick);
 	HUD_SOUND::DestroySound(sndReload);
+	HUD_SOUND::DestroySound(sndFireModes);
 
 	xr_delete(m_binoc_vision);
 }
@@ -63,6 +64,7 @@ void CWeaponMagazined::StopHUDSounds		()
 	
 	HUD_SOUND::StopSound(sndEmptyClick);
 	HUD_SOUND::StopSound(sndReload);
+	HUD_SOUND::StopSound(sndFireModes);
 
 	HUD_SOUND::StopSound(sndShot);
 //.	if(sndShot.enable && sndShot.snd.feedback)
@@ -96,6 +98,8 @@ void CWeaponMagazined::Load	(LPCSTR section)
 	HUD_SOUND::LoadSound(section,"snd_shoot"	, sndShot		, m_eSoundShot		);
 	HUD_SOUND::LoadSound(section,"snd_empty"	, sndEmptyClick	, m_eSoundEmptyClick	);
 	HUD_SOUND::LoadSound(section,"snd_reload"	, sndReload		, m_eSoundReload		);
+	if ( pSettings->line_exist( section, "snd_fire_modes" ) )
+		HUD_SOUND::LoadSound( section, "snd_fire_modes", sndFireModes, m_eSoundEmptyClick );
 	
 	m_pSndShotCurrent = &sndShot;
 		
@@ -486,6 +490,7 @@ void CWeaponMagazined::UpdateSounds	()
 	if (sndShot.playing			()) sndShot.set_position		(get_LastFP());
 	if (sndReload.playing		()) sndReload.set_position		(get_LastFP());
 	if (sndEmptyClick.playing	())	sndEmptyClick.set_position	(get_LastFP());
+	if (sndFireModes.playing	())	sndFireModes.set_position	(get_LastFP());
 }
 
 void CWeaponMagazined::state_Fire	(float dt)
@@ -1151,6 +1156,7 @@ void	CWeaponMagazined::OnNextFireMode		()
 	if (GetState() != eIdle) return;
 	m_iCurFireMode = (m_iCurFireMode+1+m_aFireModes.size()) % m_aFireModes.size();
 	SetQueueSize(GetCurrentFireMode());
+	PlaySound( sndFireModes, get_LastFP() );
 };
 
 void	CWeaponMagazined::OnPrevFireMode		()
@@ -1159,6 +1165,7 @@ void	CWeaponMagazined::OnPrevFireMode		()
 	if (GetState() != eIdle) return;
 	m_iCurFireMode = (m_iCurFireMode-1+m_aFireModes.size()) % m_aFireModes.size();
 	SetQueueSize(GetCurrentFireMode());	
+	PlaySound( sndFireModes, get_LastFP() );
 };
 
 void	CWeaponMagazined::OnH_A_Chield		()

@@ -10,7 +10,7 @@ class CUICharacterInfo;
 class CUIPropertiesBox;
 class CUI3tButton;
 class CUICellItem;
-class CInventoryBox;
+class IInventoryBox;
 class CInventoryOwner;
 
 class CUICarBodyWnd: public CUIDialogWnd
@@ -28,7 +28,7 @@ public:
 	virtual void			SendMessage					(CUIWindow *pWnd, s16 msg, void *pData);
 
 	void					InitCarBody					(CInventoryOwner* pOurInv, CInventoryOwner* pOthersInv);
-	void					InitCarBody					(CInventoryOwner* pOur, CInventoryBox* pInvBox);
+	void					InitCarBody					(CInventoryOwner* pOur, IInventoryBox* pInvBox);
 	virtual void			Draw						();
 	virtual void			Update						();
 		
@@ -45,7 +45,7 @@ protected:
 	CInventoryOwner*		m_pOurObject;
 
 	CInventoryOwner*		m_pOthersObject;
-	CInventoryBox*			m_pInventoryBox;
+	IInventoryBox*			m_pInventoryBox;
 
 	CUIDragDropListEx*		m_pUIOurBagList;
 	CUIDragDropListEx*		m_pUIOthersBagList;

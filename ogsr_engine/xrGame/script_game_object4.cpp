@@ -212,7 +212,7 @@ bool CScriptGameObject::critically_wounded		()
 
 bool CScriptGameObject::IsInvBoxEmpty()
 {
-	CInventoryBox* ib = smart_cast<CInventoryBox*>(&object());
+	IInventoryBox* ib = smart_cast<IInventoryBox*>(&object());
 	if(!ib) 
 		return			(false);
 	else
@@ -288,7 +288,7 @@ TEST_OBJECT_CLASS(CScriptGameObject::IsGrenade, CGrenade)
 TEST_OBJECT_CLASS(CScriptGameObject::IsBottleItem, CBottleItem)
 TEST_OBJECT_CLASS(CScriptGameObject::IsTorch, CTorch)
 TEST_OBJECT_CLASS(CScriptGameObject::IsWeaponGL, CWeaponMagazinedWGrenade)
-TEST_OBJECT_CLASS(CScriptGameObject::IsInventoryBox, CInventoryBox)
+TEST_OBJECT_CLASS(CScriptGameObject::IsInventoryBox, IInventoryBox)
 TEST_OBJECT_CLASS(CScriptGameObject::IsWeaponBinoculars, CWeaponBinoculars)
 TEST_OBJECT_CLASS(CScriptGameObject::IsKnife, CWeaponKnife)
 // KD
@@ -339,12 +339,12 @@ float CScriptGameObject::GetItemWeight()
 
 u32 CScriptGameObject::InvBoxCount()
 {
-	CInventoryBox						*e = smart_cast<CInventoryBox*>(&object());
+	IInventoryBox						*e = smart_cast<IInventoryBox*>(&object());
 	if (!e) {
-		ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "CInventoryBox : cannot access class member InvBoxCount!");
+		ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "IInventoryBox : cannot access class member InvBoxCount!");
 		return 0;
 	}
-	return e->Size();
+	return e->GetSize();
 }
 
 float CScriptGameObject::GetCamFOV()
@@ -362,7 +362,7 @@ void CScriptGameObject::SetCamFOV(float _fov)
 void CScriptGameObject::OpenInvBox(CScriptGameObject *obj)
 {
 	CInventoryOwner						*e = smart_cast<CInventoryOwner*>(&object());
-	CInventoryBox						*trunk = smart_cast<CInventoryBox*>(&(obj->object()));
+	IInventoryBox						*trunk = smart_cast<IInventoryBox*>(&(obj->object()));
 	if (!e || !trunk) {
 		ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "CInventoryOwner : cannot access class member OpenInvBox!");
 		return;
@@ -381,17 +381,14 @@ CScriptIniFile *CScriptGameObject::GetVisIni()
 	return (CScriptIniFile*)(k->GetIniFile());
 
 }
-CScriptGameObject *CScriptGameObject::ObjectFromInvBox(u16 _i)
+CScriptGameObject *CScriptGameObject::ObjectFromInvBox(int _i)
 {
-	CInventoryBox						*e = smart_cast<CInventoryBox*>(&object());
+	IInventoryBox						*e = smart_cast<IInventoryBox*>(&object());
 	if (!e) {
-		ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "CInventoryBox : cannot access class member ObjectFromInvBox!");
+		ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "IInventoryBox : cannot access class member ObjectFromInvBox!");
 		return nullptr;
 	}
-	CObject *item = Level().Objects.net_Find(e->Item(_i));
-	if (item)
-		return (smart_cast<CGameObject*>(item))->lua_game_object();
-	return nullptr;
+	return e->GetObjectByIndex( _i );
 }
 
 void CScriptGameObject::SetBoneVisible(LPCSTR _bone_name, BOOL _visible)

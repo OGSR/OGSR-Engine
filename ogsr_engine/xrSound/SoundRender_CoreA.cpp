@@ -123,6 +123,16 @@ void CSoundRender_CoreA::_initialize	(u64 window)
 	wfm.nBlockAlign				= wfm.wBitsPerSample / 8 * wfm.nChannels;
 	wfm.nAvgBytesPerSec			= wfm.nSamplesPerSec * wfm.nBlockAlign;
 
+#ifdef SND_DOPPLER_EFFECT
+        // Init listener struct.
+	Listener.position.set(0.0f, 0.0f, 0.0f);
+	Listener.prevVelocity.set(0.0f, 0.0f, 0.0f);
+	Listener.curVelocity.set(0.0f, 0.0f, 0.0f);
+	Listener.accVelocity.set(0.0f, 0.0f, 0.0f);
+	Listener.orientation[0].set(0.0f, 0.0f, 1.0f);
+	Listener.orientation[1].set(0.0f, 1.0f, 0.0f);
+#endif
+
     // inherited initialize           
     inherited::_initialize		(window);
 
@@ -179,7 +189,17 @@ void	CSoundRender_CoreA::i_eax_get			(const GUID* guid, u32 prop, void* val, u32
 
 void CSoundRender_CoreA::update_listener		( const Fvector& P, const Fvector& D, const Fvector& N, float dt )
 {
+#ifdef SND_DOPPLER_EFFECT
+        // Use exponential moving average for a nice smooth doppler effect.
+	static const float alpha = 0.05f;
+#endif
 	inherited::update_listener(P,D,N,dt);
+#ifdef SND_DOPPLER_EFFECT
+        Listener.prevVelocity.set(Listener.accVelocity);
+        Listener.curVelocity.sub(P, Listener.position);
+        Listener.accVelocity.set(Listener.curVelocity.mul(alpha).add(Listener.prevVelocity.mul(1.f - alpha)));
+	Listener.prevVelocity.set(Listener.accVelocity).div(dt);
+#endif
 
 	if (!Listener.position.similar(P)){
 		Listener.position.set	(P);
@@ -189,6 +209,10 @@ void CSoundRender_CoreA::update_listener		( const Fvector& P, const Fvector& D, 
 	Listener.orientation[1].set	(N.x,N.y,-N.z);
 
 	A_CHK						(alListener3f	(AL_POSITION,Listener.position.x,Listener.position.y,-Listener.position.z));
+#ifdef SND_DOPPLER_EFFECT
+	A_CHK(alListener3f(AL_VELOCITY, Listener.prevVelocity.x, Listener.prevVelocity.y, -Listener.prevVelocity.z));
+#else
 	A_CHK						(alListener3f	(AL_VELOCITY,0.f,0.f,0.f));
+#endif
 	A_CHK						(alListenerfv	(AL_ORIENTATION,&Listener.orientation[0].x));
 }
