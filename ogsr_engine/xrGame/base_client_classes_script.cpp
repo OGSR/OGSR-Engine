@@ -298,6 +298,39 @@ void CBlendScript::script_register		(lua_State *L)
 		];
 }
 
+// alpet ======================== CAMERA SCRIPT OBJECT =================
+
+CCameraBase* actor_camera(u16 index)
+{
+	CActor *pA = smart_cast<CActor *>(Level().CurrentEntity());
+	if (!pA) return NULL;
+	return pA->cam_ByIndex(index);
+}
+
+void CCameraBaseScript::script_register(lua_State *L)
+{
+	module(L)
+		[
+			class_<CCameraBase>("CCameraBase")
+			.def_readwrite("aspect",		&CCameraBase::f_aspect)
+			.def_readonly ("direction",		&CCameraBase::vDirection)
+			.def_readwrite("fov",			&CCameraBase::f_fov)
+			.def_readwrite("position",		&CCameraBase::vPosition)
+
+			.def_readwrite("lim_yaw",		&CCameraBase::lim_yaw)
+			.def_readwrite("lim_pitch",		&CCameraBase::lim_pitch)
+			.def_readwrite("lim_roll",		&CCameraBase::lim_roll)
+
+			.def_readwrite("yaw",			&CCameraBase::yaw)
+			.def_readwrite("pitch",			&CCameraBase::pitch)
+			.def_readwrite("roll",			&CCameraBase::roll),
+
+
+			def("actor_camera",				&actor_camera)
+		];
+}
+// alpet ======================== CAMERA SCRIPT OBJECT =================
+
 /*
 void CKinematicsScript::script_register		(lua_State *L)
 {

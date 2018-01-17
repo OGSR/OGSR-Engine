@@ -345,6 +345,7 @@ public:
 public:
 	CCameraManager&			Cameras				() 	{VERIFY(m_pActorEffector); return *m_pActorEffector;}
 	IC CCameraBase*			cam_Active			()	{return cameras[cam_active];}
+	IC CCameraBase*			cam_ByIndex(u16 index)  { return (index < eacMaxCam ? cameras[index] : NULL); }
 	IC CCameraBase*			cam_FirstEye		()	{return cameras[eacFirstEye];}
 	IC EActorCameras		active_cam			()	{return cam_active;}			// KD: need to know which cam active outside actor methods
 
