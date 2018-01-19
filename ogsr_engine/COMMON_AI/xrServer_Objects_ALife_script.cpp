@@ -93,6 +93,7 @@ void CSE_ALifeObject::script_register(lua_State *L)
 		.property		("level_name",			&se_obj_level_name)
 		.property		("is_alive",			&se_obj_is_alive)
 		.def("get_inventory_item", &cse_object_cast<CSE_ALifeInventoryItem>)
+		.def("get_level_changer", &cse_object_cast<CSE_ALifeLevelChanger>)
 	];
 }
 
@@ -168,6 +169,11 @@ void CSE_ALifeLevelChanger::script_register(lua_State *L)
 			"cse_alife_level_changer",
 			CSE_ALifeSpaceRestrictor
 		)
+		.def_readwrite( "dest_game_vertex_id", &CSE_ALifeLevelChanger::m_tNextGraphID )
+		.def_readwrite( "dest_level_vertex_id", &CSE_ALifeLevelChanger::m_dwNextNodeID )
+		.def_readwrite( "dest_position", &CSE_ALifeLevelChanger::m_tNextPosition )
+		.def_readwrite( "dest_direction", &CSE_ALifeLevelChanger::m_tAngles )
+		.def_readwrite( "silent_mode", &CSE_ALifeLevelChanger::m_bSilentMode )
 	];
 }
 
