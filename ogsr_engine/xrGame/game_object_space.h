@@ -104,6 +104,7 @@ namespace GameObject {
 		eOnThrowGrenade,
 		eOnGoodwillChange,
 		eUpdateArtefactsOnBelt,
+		eLevelChangerAction,
 
 		eDummy = u32(-1),
 	};
