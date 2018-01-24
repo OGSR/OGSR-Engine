@@ -549,7 +549,8 @@ void	CKinematicsAnimated::LL_SetChannelFactor (u16	channel,float factor)
 void CKinematicsAnimated::IBlend_Startup	()
 {
 	_DBG_SINGLE_USE_MARKER;
-	CBlend B; ZeroMemory(&B,sizeof(B));
+	CBlend B;
+	//ZeroMemory(&B,sizeof(B)); // intorr: Initialization of this variable is successfully performed in the constructor.
 	B.blend				= CBlend::eFREE_SLOT;
 	blend_pool.clear	();
         u32 i=0;

@@ -79,9 +79,10 @@ void	CResourceManager::ED_UpdateBlender	(LPCSTR Name, IBlender* data)
 //////////////////////////////////////////////////////////////////////
 void	CResourceManager::_ParseList(sh_list& dest, LPCSTR names)
 {
-	if (0==names) 		names 	= "$null";
+	if (!names || !names[0])
+		names = "$null";
 
-	ZeroMemory			(&dest, sizeof(dest));
+	dest.clear(); // intorr: To avoid memory corruption with debug runtime.
 	char*	P			= (char*) names;
 	svector<char,128>	N;
 
@@ -93,7 +94,6 @@ void	CResourceManager::_ParseList(sh_list& dest, LPCSTR names)
 			strlwr		(N.begin());
 
 			fix_texture_name( N.begin() );
-//. andy			if (strext(N.begin())) *strext(N.begin())=0;
 			dest.push_back(N.begin());
 			N.clear		();
 		} else {
@@ -108,7 +108,6 @@ void	CResourceManager::_ParseList(sh_list& dest, LPCSTR names)
 		strlwr		(N.begin());
 
 		fix_texture_name( N.begin() );
-//. andy		if (strext(N.begin())) *strext(N.begin())=0;
 		dest.push_back(N.begin());
 	}
 }
@@ -297,15 +296,15 @@ void CResourceManager::DeferredUpload()
 		if (m_textures.size() <= 100)
 		{
 			//Msg("CResourceManager::DeferredUpload -> one thread");
-			for (auto t = m_textures.begin(); t != m_textures.end(); t++)
-				t->second->Load();
+			for (const auto &[_, tex] : m_textures)
+				tex->Load();
 		}
 		else
 		{
 			u32 th_count = (m_textures.size() / 100) + 1;
 			auto th_arr = std::make_unique<std::thread[]>(th_count);
-			for (auto tex : m_textures)
-				tex_to_load.push_back(tex.second);
+			for (const auto &[_, tex] : m_textures)
+				tex_to_load.push_back(tex);
 
 			for (u32 i = 0; i < th_count; i++)
 				th_arr[i] = std::thread(TextureLoading, i + 1);

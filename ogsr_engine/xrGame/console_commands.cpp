@@ -95,18 +95,6 @@ enum E_COMMON_FLAGS{
 	flAiUseTorchDynamicLights = 1
 };
 
-#ifndef PURE_ALLOC
-#	ifndef USE_MEMORY_MONITOR
-#		define SEVERAL_ALLOCATORS
-#	endif // USE_MEMORY_MONITOR
-#endif // PURE_ALLOC
-
-/*
-#ifdef SEVERAL_ALLOCATORS
-	ENGINE_API 	u32 engine_lua_memory_usage	();
-	extern		u32 game_lua_memory_usage	();
-#endif // SEVERAL_ALLOCATORS
-*/
 
 class CCC_MemStats : public IConsole_Command
 {
@@ -115,15 +103,9 @@ public:
 	virtual void Execute(LPCSTR args) {
 		Memory.mem_compact		();
 		u32		_process_heap	= mem_usage_impl(nullptr, nullptr);
-/*
-#ifdef SEVERAL_ALLOCATORS
-		u32		_game_lua		= game_lua_memory_usage();
-		u32		_engine_lua		= engine_lua_memory_usage();
 		u32		_render			= ::Render->memory_usage();
-#endif // SEVERAL_ALLOCATORS
-*/
-		int		_eco_strings	= (int)g_pStringContainer->stat_economy			();
-		int		_eco_smem		= (int)g_pSharedMemoryContainer->stat_economy	();
+		u32		_eco_strings	= g_pStringContainer->stat_economy			();
+		u32		_eco_smem		= g_pSharedMemoryContainer->stat_economy	();
 		u32		m_base=0,c_base=0,m_lmaps=0,c_lmaps=0;
 		
 		if (Device.Resources)	Device.Resources->_GetMemoryUsage	(m_base,c_base,m_lmaps,c_lmaps);
@@ -131,13 +113,7 @@ public:
 		log_vminfo	();
 		
 		Msg		("* [ D3D ]: textures[%d K]", (m_base+m_lmaps)/1024);
-
-//#ifndef SEVERAL_ALLOCATORS
-		Msg		("* [x-ray]: process heap[%d K]", _process_heap/1024);
-//#else // SEVERAL_ALLOCATORS
-//		Msg		("* [x-ray]: process heap[%d K], game lua[%d K], engine lua[%d K], render[%d K]",_process_heap/1024,_game_lua/1024,_engine_lua/1024,_render/1024);
-//#endif // SEVERAL_ALLOCATORS
-
+		Msg		("* [x-ray]: process heap[%d K], render[%d K]", _process_heap/1024, _render / 1024);
 		Msg		("* [x-ray]: economy: strings[%d K], smem[%d K]",_eco_strings/1024,_eco_smem);
 
 #ifdef DEBUG

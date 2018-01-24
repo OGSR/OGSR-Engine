@@ -138,7 +138,7 @@ CPHCall* CPHCommander::add_call_unique( CPHCondition* condition, CPHReqComparerV
 
 
 void CPHCommander::remove_calls( CPHReqComparerV* cmp_object ) {
-  for (auto call : m_calls)
+  for (const auto& call : m_calls)
 	  if (call->is_any(cmp_object))
 		  call->removeLater();
 }
