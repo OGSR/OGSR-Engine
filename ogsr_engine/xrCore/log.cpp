@@ -6,16 +6,16 @@
 
 #include <mutex> //KRodin: надо вынести в xrCore.h
 #include <sstream> //для std::stringstream
+#include <fstream> //для std::ofstream
 
 static string_path			logFName = "engine.log";
 static BOOL 				no_log	 = TRUE;
 static std::recursive_mutex logCS;
 static LogCallback			LogCB	 = nullptr;
 xr_vector<std::string>*		LogFile  = nullptr;
-IWriter *LogWriter;
+std::ofstream logstream;
 
-void FlushLog() //Надо удалить
-{}
+void FlushLog() {} //Надо удалить
 
 void AddOne(std::string &split, bool first_line)
 {
@@ -34,7 +34,7 @@ void AddOne(std::string &split, bool first_line)
 
 	LogFile->push_back(split); //Вывод в консоль
 
-	if (!LogWriter) return;
+	if (!logstream.is_open()) return;
 
 	if (first_line)
 	{
@@ -50,8 +50,8 @@ void AddOne(std::string &split, bool first_line)
 	}
 
 	//Вывод в лог-файл
-	LogWriter->w(split.c_str(), split.length());
-	LogWriter->flush();
+	logstream << split;
+	logstream.flush();
 }
 
 void Log(const char* s)
@@ -154,39 +154,42 @@ void InitLog()
 
 void CreateLog(BOOL nl)
 {
-    no_log = nl;
-	strconcat(sizeof(logFName),logFName,Core.ApplicationName,"_",Core.UserName,".log");
-
-	if (FS.path_exist("$logs$"))
-		FS.update_path(logFName,"$logs$",logFName);
+	no_log = nl;
 
 	if (!no_log)
 	{
-		LogWriter = FS.w_open(logFName);
-        if (!LogWriter)
-		{
-        	MessageBox(nullptr, "Can't create log file.","Error", MB_ICONERROR);
-        	abort();
-        }		
+		strconcat(sizeof(logFName), logFName, Core.ApplicationName, "_", Core.UserName, ".log");
 
-        for (u32 it = 0; it < LogFile->size(); it++)
+		__try {
+			if (FS.path_exist("$logs$"))
+				FS.update_path(logFName, "$logs$", logFName);
+
+			logstream.imbue(std::locale("")); //В некоторых случаях вместо русских букв в лог выводятся иероглифы. Попробуем установить логу локаль, может поможет.
+			logstream.open(logFName);
+		}
+		__except (EXCEPTION_EXECUTE_HANDLER) {
+			MessageBox(nullptr, "Can't create log file!", "Error", MB_ICONERROR);
+			abort();
+		}
+
+		for (u32 it = 0; it < LogFile->size(); it++)
 		{
 			auto str = (*LogFile)[it];
 			str = "\n" + str;
-			LogWriter->w(str.c_str(), str.length());
+			logstream << str;
 		}
 
-		LogWriter->flush();
-    }
+		logstream.flush();
+	}
+
 	LogFile->reserve(128);
 }
 
 void CloseLog()
 {
-	if (LogWriter)
-		FS.w_close(LogWriter);
+	if (logstream.is_open())
+		logstream.close();
 
-	FlushLog		();
  	LogFile->clear	();
 	xr_delete		(LogFile);
 }

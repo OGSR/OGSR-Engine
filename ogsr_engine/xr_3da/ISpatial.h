@@ -112,14 +112,11 @@ public:
 	void						_insert			(ISpatial*		_S);
 	BOOL						_empty			()						
 	{
-		return items.empty() && (
-			0==(
-				ptrt(children[0])|ptrt(children[1])|
-				ptrt(children[2])|ptrt(children[3])|
-				ptrt(children[4])|ptrt(children[5])|
-				ptrt(children[6])|ptrt(children[7])
-				)
-			);	
+		return items.empty() &&
+			children[0] == nullptr && children[1] == nullptr &&
+			children[2] == nullptr && children[3] == nullptr &&
+			children[4] == nullptr && children[5] == nullptr &&
+			children[6] == nullptr && children[7] == nullptr;
 	}
 };
 

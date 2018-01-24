@@ -3,12 +3,13 @@
 // startup
 void	CRenderTarget::phase_scene_prepare	()
 {
-	u_setrt(Device.dwWidth, Device.dwHeight, HW.pBaseRT, NULL, NULL, HW.pBaseZB);
-	CHK_DX	( HW.pDevice->Clear	( 0L, NULL, D3DCLEAR_ZBUFFER | D3DCLEAR_STENCIL, 0x0, 1.0f, 0L) );
+	// KD: we need to clean up G-buffer every frame to avoid "ghosting" on sky
+	u_setrt(rt_Position, rt_Normal, rt_Color, 0);
+	CHK_DX(HW.pDevice->Clear(0L, NULL, D3DCLEAR_TARGET, 0x0, 1.0f, 0L));
 
 	// Clear depth & stencil
-/*	u_setrt	( Device.dwWidth,Device.dwHeight,HW.pBaseRT,NULL,NULL,HW.pBaseZB );
-	CHK_DX	( HW.pDevice->Clear	( 0L, NULL, D3DCLEAR_ZBUFFER|D3DCLEAR_STENCIL, 0x0, 1.0f, 0L) );*/
+	u_setrt(Device.dwWidth, Device.dwHeight, HW.pBaseRT, NULL, NULL, HW.pBaseZB);
+	CHK_DX(HW.pDevice->Clear(0L, NULL, D3DCLEAR_ZBUFFER | D3DCLEAR_STENCIL, 0x0, 1.0f, 0L));
 
 	u32 Offset;
 	Fvector2 p0, p1;

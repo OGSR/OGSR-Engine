@@ -79,13 +79,13 @@ void CEntity::Die(CObject* who)
 	if (!AlreadyDie()) set_death_time();
 	SetfHealth			(-1.f);
 
-	if(IsGameTypeSingle())
+	VERIFY(m_registered_member);
+
+	if (m_registered_member)
 	{
-		VERIFY				(m_registered_member);
-	}
-	m_registered_member	= false;
-	if (IsGameTypeSingle())
+		m_registered_member = false;
 		Level().seniority_holder().team(g_Team()).squad(g_Squad()).group(g_Group()).unregister_member(this);
+	}
 }
 
 //обновление состояния
