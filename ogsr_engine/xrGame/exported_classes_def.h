@@ -19,6 +19,8 @@
 #include "HudItem.h"
 #include "hud_item_object.h"
 #include "Inventory.h"
+#include "InventoryBox.h"
+#include "InventoryContainer.h"
 #include "inventory_item.h"
 #include "inventory_item_object.h"
 #include "InventoryOwner.h"

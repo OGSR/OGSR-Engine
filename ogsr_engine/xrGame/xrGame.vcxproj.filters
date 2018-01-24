@@ -2134,6 +2134,9 @@
     <Filter Include="AI\AScript\ScriptClasses\ScriptVarsStorage">
       <UniqueIdentifier>{37423a15-5799-4a96-a01b-291e64518936}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Core\Client\Objects\inventory\InventoryContainer">
+      <UniqueIdentifier>{b72c5438-5c04-4b55-acd5-7c7610097b03}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="mt_config.h">
@@ -6052,6 +6055,9 @@
     <ClInclude Include="ui\UIIconParams.h">
       <Filter>AI\AScript\ScriptClasses\UI\Common</Filter>
     </ClInclude>
+    <ClInclude Include="InventoryContainer.h">
+      <Filter>Core\Client\Objects\inventory\InventoryContainer</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="damage_manager.cpp">
@@ -8885,6 +8891,9 @@
     </ClCompile>
     <ClCompile Include="ui\UIIconParams.cpp">
       <Filter>AI\AScript\ScriptClasses\UI\Common</Filter>
+    </ClCompile>
+    <ClCompile Include="InventoryContainer.cpp">
+      <Filter>Core\Client\Objects\inventory\InventoryContainer</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

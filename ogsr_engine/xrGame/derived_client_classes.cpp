@@ -226,6 +226,12 @@ void CInventoryScript::script_register(lua_State *L)
 			.def_readonly("item_place"					,			&CInventoryItem::m_eItemPlace)
 			.def_readwrite("item_condition"				,			&CInventoryItem::m_fCondition)
 			.def_readwrite("inv_weight"					,			&CInventoryItem::m_weight)
+#ifdef OBJECTS_RADIOACTIVE
+#ifdef AF_PSY_HEALTH
+			.def_readwrite( "psy_health_restore_speed", &CInventoryItem::m_fPsyHealthRestoreSpeed )
+#endif
+			.def_readwrite( "radiation_restore_speed", &CInventoryItem::m_fRadiationRestoreSpeed )
+#endif
 			//.property("class_name"						,			&get_lua_class_name)
 			.property("inv_name"						,			&get_item_name, &set_item_name)
 			.property("inv_name_short"					,			&get_item_name_short, &set_item_name_short)
@@ -251,6 +257,22 @@ void CInventoryScript::script_register(lua_State *L)
 			//.def		  ("to_slot"					,			&item_to_slot,   raw(_2))
 			//.def		  ("to_ruck"					,			&item_to_ruck,   raw(_2))
 			,
+			class_<IInventoryBox>("IInventoryBox")			
+			.def	  	 ("object"						,			&IInventoryBox::GetObjectByIndex)
+			.def	  	 ("object"						,			&IInventoryBox::GetObjectByName)
+			.def	  	 ("object_count"				,			&IInventoryBox::GetSize)
+			.def		 ("empty"						,			&IInventoryBox::IsEmpty)
+			,
+			class_<CInventoryBox, bases<IInventoryBox, CGameObject>>("CInventoryBox")
+			,
+			class_<CInventoryContainer, bases<IInventoryBox, CInventoryItemObject>>("CInventoryContainer")
+			.property	 ("cost"						,			&CInventoryContainer::Cost)
+			.property	 ("weight"						,			&CInventoryContainer::Weight)
+			.property	 ("is_opened"					,			&CInventoryContainer::IsOpened)
+			.def		  ("open"						,			&CInventoryContainer::open)
+			.def		  ("close"						,			&CInventoryContainer::close)
+			,
+
 			class_<CInventoryOwner>("CInventoryOwner")
 			.def_readonly ("inventory"					,			&CInventoryOwner::m_inventory)
 			.def_readonly ("talking"					,			&CInventoryOwner::m_bTalking)

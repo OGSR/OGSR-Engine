@@ -154,6 +154,7 @@
 #	include "space_restrictor.h"
 #	include "smart_zone.h"
 #	include "InventoryBox.h"
+#	include "inventoryContainer.h"
 #endif // NO_XR_GAME
 
 #ifndef XRSE_FACTORY_EXPORTS
@@ -344,6 +345,7 @@ void CObjectFactory::register_classes	()
 	ADD(CDestroyablePhysicsObject,CSE_ALifeObjectPhysic			,CLSID_PHYSICS_DESTROYABLE		,"obj_phys_destroyable");
 
 	ADD(CInventoryBox			,CSE_InventoryBox				,CLSID_INVENTORY_BOX			,"inventory_box");
+	ADD(CInventoryContainer		,CSE_InventoryContainer			,CLSID_CONTAINER				,"inventory_container");
 	
 	// hack, for dedicated server only
 	// because we do not have scripts

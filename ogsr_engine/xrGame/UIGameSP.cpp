@@ -146,7 +146,7 @@ void CUIGameSP::StartCarBody(CInventoryOwner* pOurInv, CInventoryOwner* pOthers)
 	UICarBodyMenu->InitCarBody		(pOurInv,  pOthers);
 	m_game->StartStopMenu			(UICarBodyMenu,true);
 }
-void CUIGameSP::StartCarBody(CInventoryOwner* pOurInv, CInventoryBox* pBox)
+void CUIGameSP::StartCarBody(CInventoryOwner* pOurInv, IInventoryBox* pBox)
 {
 	if( MainInputReceiver() )		return;
 	UICarBodyMenu->InitCarBody		(pOurInv,  pBox);

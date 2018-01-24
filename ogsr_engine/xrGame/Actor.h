@@ -39,7 +39,7 @@ class CUsableScriptObject;
 struct SShootingEffector;
 struct SSleepEffector;
 class  CSleepEffectorPP;
-class CInventoryBox;
+class IInventoryBox;
 //class  CActorEffector;
 
 class	CHudItem;
@@ -399,7 +399,7 @@ protected:
 	CInventoryOwner*		m_pPersonWeLookingAt;
 	CHolderCustom*			m_pVehicleWeLookingAt;
 	CGameObject*			m_pObjectWeLookingAt;
-	CInventoryBox*			m_pInvBoxWeLookingAt;
+	IInventoryBox*			m_pInvBoxWeLookingAt;
 
 	// Tip for action for object we're looking at
 	shared_str				m_sDefaultObjAction;

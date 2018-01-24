@@ -52,4 +52,19 @@ public:
 
 	virtual void			net_Export			(NET_Packet& P);
 	virtual void			net_Import			(NET_Packet& P);
+
+#ifdef OUTFIT_AF
+	float m_fBleedingRestoreSpeed;
+	float m_fHealthRestoreSpeed;
+	float m_fPowerRestoreSpeed;
+	float m_fSatietyRestoreSpeed;
+#ifndef OBJECTS_RADIOACTIVE
+#ifdef AF_PSY_HEALTH
+	float m_fPsyHealthRestoreSpeed;
+	virtual float PsyHealthRestoreSpeed() const { return m_fPsyHealthRestoreSpeed; }
+#endif
+	float m_fRadiationRestoreSpeed;
+	virtual float RadiationRestoreSpeed() const { return m_fRadiationRestoreSpeed; }
+#endif
+#endif
 };

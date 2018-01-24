@@ -67,7 +67,11 @@ public:
 	virtual BOOL				is_2D					()						{ return b2D; }
 	virtual void				switch_to_2D			();
 	virtual void				switch_to_3D			();
+#ifdef SND_DOPPLER_EFFECT
+	virtual void				set_position(const Fvector &pos)	{ p_source.update_position(pos); bMoved = TRUE;	}
+#else
 	virtual void				set_position			(const Fvector &pos)	{ p_source.position	= pos; bMoved=TRUE;					}
+#endif
 	virtual void				set_frequency			(float scale)			{ VERIFY(_valid(scale));			p_source.freq=scale;}
 	virtual void				set_range				(float min, float max)	{ VERIFY(_valid(min)&&_valid(max));	p_source.min_distance=min; p_source.max_distance=max;}
 	virtual void				set_volume				(float vol)				{ VERIFY(_valid(vol));				p_source.volume=vol;}

@@ -96,6 +96,12 @@ CInventoryItem::CInventoryItem()
 	m_eItemPlace		= eItemPlaceUndefined;
 	m_Description		= "";
 	m_cell_item			= NULL;
+#ifdef OBJECTS_RADIOACTIVE
+#ifdef AF_PSY_HEALTH
+	m_fPsyHealthRestoreSpeed = 0.f;
+#endif
+	m_fRadiationRestoreSpeed = 0.f;
+#endif
 }
 
 CInventoryItem::~CInventoryItem() 
@@ -186,6 +192,12 @@ void CInventoryItem::Load(LPCSTR section)
 	m_fControlInertionFactor	= READ_IF_EXISTS(pSettings, r_float,section,"control_inertion_factor",	1.0f);
 	m_icon_name					= READ_IF_EXISTS(pSettings, r_string,section,"icon_name",				NULL);
 
+#ifdef OBJECTS_RADIOACTIVE
+#ifdef AF_PSY_HEALTH
+	m_fPsyHealthRestoreSpeed = READ_IF_EXISTS( pSettings, r_float, section,	"psy_health_restore_speed", 0.f );
+#endif
+	m_fRadiationRestoreSpeed = READ_IF_EXISTS( pSettings, r_float, section,	"radiation_restore_speed", 0.f );
+#endif
 }
 
 

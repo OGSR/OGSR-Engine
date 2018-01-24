@@ -61,5 +61,8 @@ void CScriptHit::script_register(lua_State *L)
 		.def_readwrite("bullet_id", &SHit::BulletID)
 		.def_readwrite("sender_id", &SHit::SenderID)
 		.def_readwrite("ignore_hit", &SHit::ignore_flag) //Флаг игнорирования хита. Если скриптово установить его в true, хит нанесён не будет.
+		// Начальное значение хита, до обработок всякими
+		// защитами артефактов и броней.
+		.def_readonly( "full_power", &SHit::full_power )
 	];
 }
