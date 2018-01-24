@@ -77,6 +77,8 @@ CDetailManager::CDetailManager	()
 	hw_BatchSize= 0;
 	hw_VB		= 0;
 	hw_IB		= 0;
+	hw_lod_VB	= nullptr;
+	hw_lod_IB	= nullptr;
 
 #ifndef _EDITOR
 	// KD: variable detail radius
