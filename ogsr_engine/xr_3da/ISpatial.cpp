@@ -113,8 +113,7 @@ void	ISpatial::spatial_updatesector_internal()
 void			ISpatial_NODE::_init			(ISpatial_NODE* _parent)
 {
 	parent		=	_parent;
-	children[0]	=	children[1]	=	children[2]	=	children[3]	=
-	children[4]	=	children[5]	=	children[6]	=	children[7]	=	NULL;
+	children[0] = children[1] = children[2] = children[3] = children[4] = children[5] = children[6] = children[7] = nullptr;
 	items.clear();
 }
 

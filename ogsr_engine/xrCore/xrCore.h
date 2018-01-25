@@ -137,7 +137,7 @@
 	#define _RC_NEAR RC_NEAR
 	#define _MCW_EM MCW_EM
 #else
-	#define ALIGN(a)		__declspec(align(a))
+	#define ALIGN(a) alignas(a)
 	#include <sys\utime.h>
 	#define MODULE_NAME 	"xrCore.dll"
 #endif
