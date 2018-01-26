@@ -166,10 +166,6 @@
     <ClCompile Include="LocatorAPI.cpp" />
     <ClCompile Include="LocatorAPI_auth.cpp" />
     <ClCompile Include="LocatorAPI_defs.cpp" />
-    <ClCompile Include="LocatorAPI_Notifications.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
-    </ClCompile>
     <ClCompile Include="log.cpp" />
     <ClCompile Include="Xr_ini.cpp" />
     <ClCompile Include="stream_reader.cpp" />
@@ -247,10 +243,6 @@
     <ClInclude Include="FS_internal.h" />
     <ClInclude Include="LocatorAPI.h" />
     <ClInclude Include="LocatorAPI_defs.h" />
-    <CustomBuildStep Include="LocatorAPI_Notifications.h">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
-    </CustomBuildStep>
     <ClInclude Include="log.h" />
     <ClInclude Include="xr_ini.h" />
     <ClInclude Include="stream_reader.h" />

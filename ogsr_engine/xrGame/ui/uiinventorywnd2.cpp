@@ -1,6 +1,5 @@
 #include "stdafx.h"
 #include "UIInventoryWnd.h"
-#include "UISleepWnd.h"
 #include "../level.h"
 #include "../actor.h"
 #include "../ActorCondition.h"

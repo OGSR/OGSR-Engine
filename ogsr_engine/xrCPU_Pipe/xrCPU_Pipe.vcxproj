@@ -176,8 +176,6 @@
     <ClCompile Include="xrCPU_Pipe.cpp" />
     <ClCompile Include="xrSkin2W.cpp" />
     <ClCompile Include="xrSkinW_SSE.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
       <AssemblerOutput Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">AssemblyAndMachineCode</AssemblerOutput>
       <AssemblerOutput Condition="'$(Configuration)|$(Platform)'=='Release|x64'">AssemblyAndMachineCode</AssemblerOutput>
     </ClCompile>

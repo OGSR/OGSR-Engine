@@ -26,7 +26,6 @@ using namespace InventoryUtilities;
 #include "../entitycondition.h"
 
 #include "../game_cl_base.h"
-#include "UISleepWnd.h"
 #include "../ActorCondition.h"
 #include "UIDragDropListEx.h"
 #include "UIOutfitSlot.h"

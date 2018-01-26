@@ -1163,8 +1163,7 @@
     <ClInclude Include="HudItem.h" />
     <ClInclude Include="HudSound.h" />
     <CustomBuildStep Include="Explosive.h">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild>true</ExcludedFromBuild>
     </CustomBuildStep>
     <ClInclude Include="ExplosiveItem.h" />
     <ClInclude Include="wallmark_manager.h" />
@@ -1386,7 +1385,6 @@
     <ClInclude Include="ui\UIMoneyIndicator.h" />
     <ClInclude Include="ui\UIMotionIcon.h" />
     <ClInclude Include="ui\UIPdaMsgListItem.h" />
-    <ClInclude Include="ui\UIPointerGage.h" />
     <ClInclude Include="UIZoneMap.h" />
     <ClInclude Include="ui\UIColorAnimatorWrapper.h" />
     <ClInclude Include="ui\UIActorInfo.h" />
@@ -1407,8 +1405,6 @@
     <ClInclude Include="ui\UIItemInfo.h" />
     <ClInclude Include="ui\UIWpnParams.h" />
     <ClInclude Include="ui\UIOutfitInfo.h" />
-    <ClInclude Include="ui\UITimeWnd.h" />
-    <ClInclude Include="ui\UISleepWnd.h" />
     <ClInclude Include="ui\UIInventoryUtilities.h" />
     <ClInclude Include="callback_info.h" />
     <ClInclude Include="ui\uiabstract.h" />
@@ -3276,10 +3272,7 @@
       <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)$(ProjectName)_script.pch</PrecompiledHeaderOutputFile>
       <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(IntDir)$(ProjectName)_script.pch</PrecompiledHeaderOutputFile>
     </ClCompile>
-    <ClCompile Include="profiler.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
-    </ClCompile>
+    <ClCompile Include="profiler.cpp" />
     <ClCompile Include="string_table.cpp" />
     <ClCompile Include="xrServer.cpp">
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">pch_script.h</PrecompiledHeaderFile>
@@ -3500,8 +3493,7 @@
     <ClCompile Include="CharacterPhysicsSupport.cpp" />
     <ClCompile Include="interactive_motion.cpp" />
     <ClCompile Include="tri-colliderknoopc\dcTriListCollider.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild>true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="tri-colliderknoopc\dSortTriPrimitive.cpp" />
     <ClCompile Include="tri-colliderknoopc\dTriBox.cpp">
@@ -3585,18 +3577,11 @@
     <ClCompile Include="ui\UIMoneyIndicator.cpp" />
     <ClCompile Include="ui\UIMotionIcon.cpp" />
     <ClCompile Include="ui\UIPdaMsgListItem.cpp" />
-    <ClCompile Include="ui\UIPointerGage.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
-    </ClCompile>
     <ClCompile Include="UIZoneMap.cpp" />
     <ClCompile Include="ui\UIColorAnimatorWrapper.cpp" />
     <ClCompile Include="ui\UIActorInfo.cpp" />
     <ClCompile Include="ui\UIStalkersRankingWnd.cpp" />
-    <ClCompile Include="ui\UIDebugFonts.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
-    </ClCompile>
+    <ClCompile Include="ui\UIDebugFonts.cpp" />
     <ClCompile Include="ui\UIOptionsItem.cpp" />
     <ClCompile Include="ui\UIOptionsManager.cpp" />
     <ClCompile Include="ui\UIOptionsManagerScript.cpp">
@@ -3632,14 +3617,6 @@
     <ClCompile Include="ui\ui_af_params.cpp" />
     <ClCompile Include="ui\UIItemInfo.cpp" />
     <ClCompile Include="ui\UIOutfitInfo.cpp" />
-    <ClCompile Include="ui\UITimeWnd.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
-    </ClCompile>
-    <ClCompile Include="ui\UISleepWnd.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
-    </ClCompile>
     <ClCompile Include="ui\UIInventoryUtilities.cpp" />
     <ClCompile Include="ui\UIBtnHint.cpp" />
     <ClCompile Include="ui\UIWndCallback.cpp">

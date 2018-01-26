@@ -2002,12 +2002,6 @@
     <Filter Include="AI\AScript\ScriptClasses\UI\Common\OutfitInfo">
       <UniqueIdentifier>{cc430822-3497-44cc-88af-2f02a3eb44d5}</UniqueIdentifier>
     </Filter>
-    <Filter Include="AI\AScript\ScriptClasses\UI\Common\TimeWnd">
-      <UniqueIdentifier>{bfc8e247-653a-4c56-a39a-d1cc97abf45d}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="AI\AScript\ScriptClasses\UI\Common\SleepWnd">
-      <UniqueIdentifier>{60207b51-c867-43a7-908c-4ca12dea9beb}</UniqueIdentifier>
-    </Filter>
     <Filter Include="AI\AScript\ScriptClasses\UI\Common\InventoryUtilities">
       <UniqueIdentifier>{f576b05e-c597-48bd-b39c-03bbc578a094}</UniqueIdentifier>
     </Filter>
@@ -5505,9 +5499,6 @@
     <ClInclude Include="ui\UIPdaMsgListItem.h">
       <Filter>AI\AScript\ScriptClasses\UI\Common\MainIngame</Filter>
     </ClInclude>
-    <ClInclude Include="ui\UIPointerGage.h">
-      <Filter>AI\AScript\ScriptClasses\UI\Common\MainIngame</Filter>
-    </ClInclude>
     <ClInclude Include="UIZoneMap.h">
       <Filter>AI\AScript\ScriptClasses\UI\Common\MainIngame</Filter>
     </ClInclude>
@@ -5567,12 +5558,6 @@
     </ClInclude>
     <ClInclude Include="ui\UIOutfitInfo.h">
       <Filter>AI\AScript\ScriptClasses\UI\Common\OutfitInfo</Filter>
-    </ClInclude>
-    <ClInclude Include="ui\UITimeWnd.h">
-      <Filter>AI\AScript\ScriptClasses\UI\Common\TimeWnd</Filter>
-    </ClInclude>
-    <ClInclude Include="ui\UISleepWnd.h">
-      <Filter>AI\AScript\ScriptClasses\UI\Common\SleepWnd</Filter>
     </ClInclude>
     <ClInclude Include="ui\UIInventoryUtilities.h">
       <Filter>AI\AScript\ScriptClasses\UI\Common\InventoryUtilities</Filter>
@@ -8532,9 +8517,6 @@
     <ClCompile Include="ui\UIPdaMsgListItem.cpp">
       <Filter>AI\AScript\ScriptClasses\UI\Common\MainIngame</Filter>
     </ClCompile>
-    <ClCompile Include="ui\UIPointerGage.cpp">
-      <Filter>AI\AScript\ScriptClasses\UI\Common\MainIngame</Filter>
-    </ClCompile>
     <ClCompile Include="UIZoneMap.cpp">
       <Filter>AI\AScript\ScriptClasses\UI\Common\MainIngame</Filter>
     </ClCompile>
@@ -8594,12 +8576,6 @@
     </ClCompile>
     <ClCompile Include="ui\UIOutfitInfo.cpp">
       <Filter>AI\AScript\ScriptClasses\UI\Common\OutfitInfo</Filter>
-    </ClCompile>
-    <ClCompile Include="ui\UITimeWnd.cpp">
-      <Filter>AI\AScript\ScriptClasses\UI\Common\TimeWnd</Filter>
-    </ClCompile>
-    <ClCompile Include="ui\UISleepWnd.cpp">
-      <Filter>AI\AScript\ScriptClasses\UI\Common\SleepWnd</Filter>
     </ClCompile>
     <ClCompile Include="ui\UIInventoryUtilities.cpp">
       <Filter>AI\AScript\ScriptClasses\UI\Common\InventoryUtilities</Filter>
