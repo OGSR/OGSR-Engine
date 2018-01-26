@@ -116,3 +116,18 @@ void CAnomalyDetector::deactivate( bool force ) {
   m_forced = force;
   m_active = false;
 }
+
+
+void CAnomalyDetector::remove_all_restrictions() {
+  xr_vector<u16> temp_out_restrictors;
+  xr_vector<u16> temp_in_restrictors;
+
+  temp_in_restrictors.reserve( m_storage.size() );
+  for ( ANOMALY_INFO_VEC_IT it = m_storage.begin(); it != m_storage.end(); it++ )
+    temp_in_restrictors.push_back( it->object->ID() );
+
+  m_object->movement().restrictions()
+    .remove_restrictions( temp_out_restrictors, temp_in_restrictors );
+  m_storage.clear();
+}
+

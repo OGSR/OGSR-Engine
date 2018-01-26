@@ -47,4 +47,5 @@ public:
 	
 	void		activate( bool = false );
 	void		deactivate( bool = false );
+	void		remove_all_restrictions();
 };
