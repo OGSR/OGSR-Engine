@@ -7,8 +7,6 @@
 ////////////////////////////////////////////////////////////////////////////
 #pragma once
 
-#include "stdafx.h"
-
 namespace ScriptStorage {
 	enum ELuaMessageType {
 		eLuaMessageTypeInfo = u32(0),
