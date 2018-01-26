@@ -32,7 +32,6 @@
 #include "../control_direction_base.h"
 #include "../control_movement_base.h"
 #include "../control_path_builder_base.h"
-#include "../anomaly_detector.h"
 #include "../monster_cover_manager.h"
 #include "../monster_home.h"
 #include "../../../inventory.h"
@@ -77,8 +76,6 @@ CBaseMonster::CBaseMonster()
 	m_com_manager.add_ability		(ControlCom::eControlSequencer);
 	m_com_manager.add_ability		(ControlCom::eControlTripleAnimation);
 
-
-	m_anomaly_detector				= xr_new<CAnomalyDetector>(this);
 	CoverMan						= xr_new<CMonsterCoverManager>(this);
 
 	Home							= xr_new<CMonsterHome>(this);
@@ -101,7 +98,6 @@ CBaseMonster::~CBaseMonster()
 	xr_delete(m_path_base);
 	xr_delete(m_dir_base);
 
-	xr_delete(m_anomaly_detector);
 	xr_delete(CoverMan);
 	xr_delete(Home);
 }
@@ -125,8 +121,6 @@ void CBaseMonster::shedule_Update(u32 dt)
 	control().update_schedule	();
 
 	Morale.update_schedule		(dt);
-
-	m_anomaly_detector->update_schedule();
 	
 	m_pPhysics_support->in_shedule_Update(dt);
 
@@ -289,7 +283,6 @@ BOOL CBaseMonster::feel_touch_on_contact	(CObject *O)
 
 BOOL CBaseMonster::feel_touch_contact(CObject *O)
 {
-	m_anomaly_detector->on_contact(O);
 	return inherited::feel_touch_contact(O);
 }
 

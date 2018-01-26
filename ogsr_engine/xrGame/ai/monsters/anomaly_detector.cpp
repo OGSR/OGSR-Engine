@@ -1,12 +1,14 @@
 #include "stdafx.h"
 #include "anomaly_detector.h"
-#include "BaseMonster/base_monster.h"
+#include "../../CustomMonster.h"
 #include "../../restricted_object.h"
 #include "../../customzone.h"
 #include "../../level.h"
 #include "../../space_restriction_manager.h"
+#include "../../movement_manager.h"
+#include "ai_monster_utils.h"
 
-CAnomalyDetector::CAnomalyDetector(CBaseMonster *monster) : m_object(monster)
+CAnomalyDetector::CAnomalyDetector(CCustomMonster *monster) : m_object(monster)
 {
 }
 
@@ -49,7 +51,7 @@ void CAnomalyDetector::update_schedule()
 		}
 	}
 
-	m_object->control().path_builder().restrictions().add_restrictions(temp_out_restrictors,temp_in_restrictors);
+	m_object->movement().restrictions().add_restrictions(temp_out_restrictors,temp_in_restrictors);
 
 	// remove old restrictions
 	temp_in_restrictors.clear();
@@ -59,7 +61,7 @@ void CAnomalyDetector::update_schedule()
 		}
 	}
 
-	m_object->control().path_builder().restrictions().remove_restrictions(temp_out_restrictors,temp_in_restrictors);
+	m_object->movement().restrictions().remove_restrictions(temp_out_restrictors,temp_in_restrictors);
 
 	
 	// remove from storage
@@ -84,7 +86,7 @@ void CAnomalyDetector::on_contact(CObject *obj)
 	if (custom_zone->restrictor_type() == RestrictionSpace::eRestrictorTypeNone) return;
 
 	if (Level().space_restriction_manager().restriction_presented(
-		m_object->control().path_builder().restrictions().in_restrictions(),custom_zone->cName())) return;
+		m_object->movement().restrictions().in_restrictions(),custom_zone->cName())) return;
 
 	ANOMALY_INFO_VEC_IT it = std::find(m_storage.begin(), m_storage.end(), custom_zone);	
 	if (it != m_storage.end()) return;
