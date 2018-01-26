@@ -125,7 +125,6 @@ void CAnomalyDetector::remove_all_restrictions() {
   temp_in_restrictors.reserve( m_storage.size() );
   for ( ANOMALY_INFO_VEC_IT it = m_storage.begin(); it != m_storage.end(); it++ )
     temp_in_restrictors.push_back( it->id );
-
   m_object->movement().restrictions()
     .remove_restrictions( temp_out_restrictors, temp_in_restrictors );
   m_storage.clear();
@@ -133,23 +132,18 @@ void CAnomalyDetector::remove_all_restrictions() {
 
 
 void CAnomalyDetector::remove_restriction( u16 id ) {
-  xr_vector<u16> temp_out_restrictors;
-  xr_vector<u16> temp_in_restrictors;
-
-  for ( ANOMALY_INFO_VEC_IT it = m_storage.begin(); it != m_storage.end(); it++ ) {
-    if ( it->id == id ) {
-      temp_in_restrictors.push_back( it->id );
-      m_object->movement().restrictions()
-        .remove_restrictions( temp_out_restrictors, temp_in_restrictors );
-      m_storage.erase(
-        std::remove_if(
-          m_storage.begin(),
-          m_storage.end(),
-          remove_predicate_id( id )
-        ),
-        m_storage.end()
-      );
-      return;
+  auto it = std::find(
+    m_storage.begin(), m_storage.end(), [id]( const auto it ) {
+      return it->id == id;
     }
+  );
+
+  if ( it != m_storage.end() ) {
+    xr_vector<u16> temp_out_restrictors;
+    xr_vector<u16> temp_in_restrictors;
+    temp_in_restrictors.push_back( it->id );
+    m_object->movement().restrictions()
+      .remove_restrictions( temp_out_restrictors, temp_in_restrictors );
+    m_storage.erase( it );
   }
 }

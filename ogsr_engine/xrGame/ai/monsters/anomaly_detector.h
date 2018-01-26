@@ -18,8 +18,8 @@ private:
           u16 id;
           u32 time_registered;
 
-          bool operator == ( u16 obj_id ) {
-            return ( id == obj_id );
+          bool operator == ( CObject *obj ) {
+            return ( obj->ID() == id );
           }
         };
 
@@ -31,15 +31,6 @@ private:
 			return (info.time_registered + time_remember < Device.dwTimeGlobal);
 		}
 	};
-
-        struct remove_predicate_id {
-          u16 id;
-          remove_predicate ( u16 obj_id ) : id( obj_id ) {}
-
-          IC bool operator()( const SAnomalyInfo &info ) {
-            return ( info.id == id );
-          }
-        };
 
 	DEFINE_VECTOR			(SAnomalyInfo, ANOMALY_INFO_VEC, ANOMALY_INFO_VEC_IT);
 	ANOMALY_INFO_VEC		m_storage;
