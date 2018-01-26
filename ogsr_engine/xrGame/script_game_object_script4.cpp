@@ -7,7 +7,6 @@
 ////////////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
-#include "pch_script.h"
 
 #include "pda_space.h"
 #include "memory_space.h"

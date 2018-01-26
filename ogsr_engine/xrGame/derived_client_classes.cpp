@@ -7,7 +7,6 @@
 ////////////////////////////////////////////////////////////////////////////
 
 #include "StdAfx.h"
-#include "pch_script.h"
 #include "base_client_classes.h"
 #include "derived_client_classes.h"
 #include "HUDManager.h"

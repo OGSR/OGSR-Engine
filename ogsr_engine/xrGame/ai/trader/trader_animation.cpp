@@ -1,4 +1,4 @@
-#include "pch_script.h"
+#include "stdafx.h"
 #include "trader_animation.h"
 #include "ai_trader.h"
 #include "../../script_callback_ex.h"

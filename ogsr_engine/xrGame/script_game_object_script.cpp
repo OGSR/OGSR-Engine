@@ -6,7 +6,7 @@
 //	Description : XRay Script game object script export
 ////////////////////////////////////////////////////////////////////////////
 
-#include "pch_script.h"
+#include "stdafx.h"
 #include "script_game_object.h"
 #include "game_object_space.h"
 #include "script_ini_file.h"

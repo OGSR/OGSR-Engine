@@ -6,7 +6,7 @@
 //	Description : Game graph class script export
 ////////////////////////////////////////////////////////////////////////////
 
-#include "pch_script.h"
+#include "stdafx.h"
 #include "game_graph.h"
 #include "ai_space.h"
 

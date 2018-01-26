@@ -7,8 +7,11 @@
 ////////////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
+
+#ifdef DEBUG
+
 #include "profiler.h"
-#include "../gamefont.h"
+#include "..\xr_3da\gamefont.h"
 
 #ifdef PROFILE_CRITICAL_SECTIONS
 static volatile LONG					critical_section_counter = 0;
@@ -270,3 +273,5 @@ void CProfiler::add_profile_portion	(const CProfileResultPortion &profile_portio
 	InterlockedExchange			(&critical_section_counter,0);
 #endif // PROFILE_CRITICAL_SECTIONS
 }
+
+#endif

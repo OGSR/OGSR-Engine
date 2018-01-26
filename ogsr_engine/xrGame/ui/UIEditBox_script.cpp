@@ -1,4 +1,4 @@
-#include "pch_script.h"
+#include "stdafx.h"
 #include "UIEditBox.h"
 #include "UIEditBoxEx.h"
 

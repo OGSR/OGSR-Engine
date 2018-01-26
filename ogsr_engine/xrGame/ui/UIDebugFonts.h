@@ -8,6 +8,8 @@
 
 #pragma once
 
+#ifdef DEBUG
+
 #include "UIListWnd.h"
 #include "UIDialogWnd.h"
 
@@ -22,3 +24,5 @@ public:
 protected:
 	CUIStatic  m_background;
 };
+
+#endif

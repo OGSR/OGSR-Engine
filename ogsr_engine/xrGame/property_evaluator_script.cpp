@@ -6,7 +6,7 @@
 //	Description : Property evaluator script export
 ////////////////////////////////////////////////////////////////////////////
 
-#include "pch_script.h"
+#include "stdafx.h"
 #include "script_property_evaluator_wrapper.h"
 #include "script_game_object.h"
 #include "property_evaluator_const.h"

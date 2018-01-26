@@ -7,8 +7,6 @@
 ////////////////////////////////////////////////////////////////////////////
 #pragma once
 
-#include "pch_script.h"
-
 namespace ScriptStorage {
 	enum ELuaMessageType {
 		eLuaMessageTypeInfo = u32(0),

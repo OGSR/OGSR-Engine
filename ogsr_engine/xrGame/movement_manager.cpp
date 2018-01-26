@@ -6,7 +6,7 @@
 //	Description : Movement manager
 ////////////////////////////////////////////////////////////////////////////
 
-#include "pch_script.h"
+#include "stdafx.h"
 #include "movement_manager.h"
 #include "movement_manager_space.h"
 #include "game_location_selector.h"

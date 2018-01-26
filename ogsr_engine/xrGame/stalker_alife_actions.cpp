@@ -6,7 +6,7 @@
 //	Description : Stalker alife action classes
 ////////////////////////////////////////////////////////////////////////////
 
-#include "pch_script.h"
+#include "stdafx.h"
 #include "stalker_alife_actions.h"
 #include "ai/stalker/ai_stalker.h"
 #include "inventory_item.h"

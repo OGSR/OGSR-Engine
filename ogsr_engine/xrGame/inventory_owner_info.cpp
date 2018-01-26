@@ -3,7 +3,7 @@
 //
 //////////////////////////////////////////////////////////////////////
 
-#include "pch_script.h"
+#include "stdafx.h"
 #include "InventoryOwner.h"
 #include "GameObject.h"
 #include "xrMessages.h"

@@ -1,4 +1,4 @@
-#include "pch_script.h"
+#include "stdafx.h"
 #include "alife_space.h"
 #include "Car.h"
 #include "CarWeapon.h"

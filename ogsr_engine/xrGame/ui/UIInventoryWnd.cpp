@@ -1,4 +1,4 @@
-#include "pch_script.h"
+#include "stdafx.h"
 #include "UIInventoryWnd.h"
 
 #include "xrUIXmlParser.h"
@@ -26,7 +26,6 @@ using namespace InventoryUtilities;
 #include "../entitycondition.h"
 
 #include "../game_cl_base.h"
-#include "UISleepWnd.h"
 #include "../ActorCondition.h"
 #include "UIDragDropListEx.h"
 #include "UIOutfitSlot.h"

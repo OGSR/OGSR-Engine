@@ -6,7 +6,7 @@
 //	Description : Script sound action class script export
 ////////////////////////////////////////////////////////////////////////////
 
-#include "pch_script.h"
+#include "stdafx.h"
 #include "script_sound_action.h"
 
 using namespace luabind;

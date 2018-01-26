@@ -1,4 +1,4 @@
-#include "pch_script.h"
+#include "stdafx.h"
 #include "artifact.h"
 #include "MercuryBall.h"
 #include "GraviArtifact.h"

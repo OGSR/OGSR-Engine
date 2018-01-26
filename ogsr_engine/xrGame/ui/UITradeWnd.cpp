@@ -26,7 +26,6 @@
 #include "UICellItem.h"
 #include "UICellItemFactory.h"
 
-#include "../pch_script.h"
 #include "../game_object_space.h"
 #include "../script_callback_ex.h"
 #include "../script_game_object.h"

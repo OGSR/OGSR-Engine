@@ -6,7 +6,7 @@
 //	Description : Stalker animation manager : script animations
 ////////////////////////////////////////////////////////////////////////////
 
-#include "pch_script.h"
+#include "stdafx.h"
 #include "stalker_animation_manager.h"
 #include "ai/stalker/ai_stalker.h"
 #include "script_engine.h"

@@ -11,7 +11,6 @@
 #include "xr_level_controller.h"
 #include "game_cl_base.h"
 #include "xrserver_objects_alife.h"
-#include "pch_script.h"
 #include "game_object_space.h"
 #include "script_callback_ex.h"
 #include "script_game_object.h"

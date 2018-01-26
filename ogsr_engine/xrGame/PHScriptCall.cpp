@@ -1,4 +1,4 @@
-#include "pch_script.h"
+#include "stdafx.h"
 #include "PHCommander.h"
 #include "script_callback_ex.h"
 #include "..\xr_3da\xr_object.h"

@@ -6,7 +6,7 @@
 //	Description : Script action condition class script export
 ////////////////////////////////////////////////////////////////////////////
 
-#include "pch_script.h"
+#include "stdafx.h"
 #include "script_action_condition.h"
 
 using namespace luabind;

@@ -6,7 +6,7 @@
 //	Description : Script ini file class export
 ////////////////////////////////////////////////////////////////////////////
 
-#include "pch_script.h"
+#include "stdafx.h"
 #include "script_ini_file.h"
 
 using namespace luabind;

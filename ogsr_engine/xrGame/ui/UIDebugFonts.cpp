@@ -7,6 +7,9 @@
 // Copyright 2005 GSC Game World
 
 #include "StdAfx.h"
+
+#ifdef DEBUG
+
 #include "UIDebugFonts.h"
 #include "dinput.h"
 #include "../hudmanager.h"
@@ -67,3 +70,5 @@ void CUIDebugFonts::FillUpList(){
 	}
 
 }
+
+#endif

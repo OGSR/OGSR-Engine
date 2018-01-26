@@ -1,4 +1,4 @@
-#include "pch_script.h"
+#include "stdafx.h"
 #include "weaponsvd.h"
 #include "game_object_space.h"
 

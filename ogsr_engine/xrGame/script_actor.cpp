@@ -6,7 +6,6 @@
 //	Description : Script Actor (params)
 ////////////////////////////////////////////////////////////////////////////
 #include "StdAfx.h"
-#include "pch_script.h"
 #include "base_client_classes.h"
 #include "script_game_object.h"
 #include "CharacterPhysicsSupport.h"

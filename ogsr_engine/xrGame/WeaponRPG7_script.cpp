@@ -1,4 +1,4 @@
-#include "pch_script.h"
+#include "stdafx.h"
 #include "WeaponRPG7.h"
 
 using namespace luabind;

@@ -1,4 +1,4 @@
-#include "pch_script.h"
+#include "stdafx.h"
 #include "gamepersistent.h"
 #include "../xr_3da/fmesh.h"
 #include "..\xr_3da\XR_IOConsole.h"

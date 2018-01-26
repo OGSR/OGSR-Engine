@@ -7,7 +7,6 @@
 #	include "PHDebug.h"
 #endif // DEBUG
 
-#include "pch_script.h"
 #include "hit.h"
 #include "PHDestroyable.h"
 #include "car.h"

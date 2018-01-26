@@ -6,7 +6,7 @@
 //	Description : Agent manager properties
 ////////////////////////////////////////////////////////////////////////////
 
-#include "pch_script.h"
+#include "stdafx.h"
 #include "agent_manager_properties.h"
 #include "agent_manager.h"
 #include "agent_member_manager.h"

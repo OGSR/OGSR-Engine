@@ -14,14 +14,10 @@ namespace CDB
 		return verts.size	()-1;
 	}
 
-	void	Collector::add_face_D	(
-		const Fvector& v0, const Fvector& v1, const Fvector& v2,	// vertices
-#ifdef _WIN64
-		u64 dummy								// misc
-#else
-		u32 dummy								// misc
-#endif
-		)
+	void	Collector::add_face_D (
+		const Fvector& v0, const Fvector& v1, const Fvector& v2, // vertices
+		size_t dummy // misc
+	)
 	{
 		TRI T;
 		T.verts		[0] = verts.size();
@@ -67,12 +63,8 @@ namespace CDB
 
 	void	Collector::add_face_packed_D	(
 		const Fvector& v0, const Fvector& v1, const Fvector& v2,	// vertices
-#ifdef _WIN64
-		u64		dummy,	float eps
-#else
-		u32		dummy,	float eps
-#endif
-		)
+		size_t dummy, float eps
+	)
 	{
 		TRI T;
 		T.verts	[0] = VPack(v0,eps);
@@ -323,13 +315,9 @@ namespace CDB
 	}
 
 	void	CollectorPacked::add_face_D(
-		const Fvector& v0, const Fvector& v1, const Fvector& v2,	// vertices
-#ifdef _WIN64
-		u64 dummy													// misc
-#else
-		u32 dummy													// misc
-#endif
-		)
+		const Fvector& v0, const Fvector& v1, const Fvector& v2, // vertices
+		size_t dummy // misc
+	)
 	{
 		TRI T;
 		T.verts	[0] = VPack(v0);

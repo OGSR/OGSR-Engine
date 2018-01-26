@@ -5,7 +5,6 @@
 #include "stdafx.h"
 #include "hit_immunity.h"
 #include "GameObject.h"
-#include "pch_script.h"
 
 
 CHitImmunity::CHitImmunity()

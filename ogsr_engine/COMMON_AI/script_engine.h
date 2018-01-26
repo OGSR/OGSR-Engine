@@ -8,7 +8,6 @@
 
 #pragma once
 
-#include "pch_script.h"
 #include "script_storage.h"
 #include "script_export_space.h"
 

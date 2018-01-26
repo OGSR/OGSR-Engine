@@ -1,4 +1,4 @@
-#include "pch_script.h"
+#include "stdafx.h"
 
 //UI-controls
 #include "UIScriptWnd.h"

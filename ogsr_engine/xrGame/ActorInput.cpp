@@ -1,6 +1,5 @@
 #include "stdafx.h"
 #include <dinput.h>
-#include "pch_script.h"
 #include "Actor.h"
 #include "Torch.h"
 #include "trade.h"

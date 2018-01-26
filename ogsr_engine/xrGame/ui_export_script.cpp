@@ -1,4 +1,4 @@
-#include "pch_script.h"
+#include "stdafx.h"
 
 #include "script_ui_registrator.h"
 #include "UI\UIMultiTextStatic.h"

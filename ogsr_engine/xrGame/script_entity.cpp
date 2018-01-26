@@ -6,7 +6,7 @@
 //	Description : Script entity class
 ////////////////////////////////////////////////////////////////////////////
 
-#include "pch_script.h"
+#include "stdafx.h"
 #include "script_entity.h"
 #include "CustomMonster.h"
 #include "..\xr_3da\feel_vision.h"

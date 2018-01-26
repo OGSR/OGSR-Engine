@@ -6,7 +6,7 @@
 //	Description : Space restrictor
 ////////////////////////////////////////////////////////////////////////////
 
-#include "pch_script.h"
+#include "stdafx.h"
 #include "space_restrictor.h"
 #include "xrServer_Objects_ALife.h"
 #include "level.h"

@@ -6,7 +6,7 @@
 //	Description : Enemy manager
 ////////////////////////////////////////////////////////////////////////////
 
-#include "pch_script.h"
+#include "stdafx.h"
 #include "enemy_manager.h"
 #include "memory_manager.h"
 #include "visual_memory_manager.h"

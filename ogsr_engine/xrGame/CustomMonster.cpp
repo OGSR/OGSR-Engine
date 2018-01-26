@@ -2,7 +2,7 @@
 //
 //////////////////////////////////////////////////////////////////////
 
-#include "pch_script.h"
+#include "stdafx.h"
 #include "ai_debug.h"
 #include "CustomMonster.h"
 #include "hudmanager.h"

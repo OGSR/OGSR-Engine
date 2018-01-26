@@ -6,7 +6,7 @@
 //	Description : Object factory script export
 ////////////////////////////////////////////////////////////////////////////
 
-#include "pch_script.h"
+#include "stdafx.h"
 #include "object_factory.h"
 #include "ai_space.h"
 #include "script_engine.h"

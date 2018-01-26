@@ -1,4 +1,4 @@
-#include "pch_script.h"
+#include "stdafx.h"
 #include "../xr_3da/fdemorecord.h"
 #include "../xr_3da/fdemoplay.h"
 #include "../xr_3da/environment.h"

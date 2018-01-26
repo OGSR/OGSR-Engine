@@ -1,4 +1,4 @@
-#include "pch_script.h"
+#include "stdafx.h"
 #include "GameObject.h"
 #include "../xr_3da/fbasicvisual.h"
 #include "PhysicsShell.h"

@@ -1,4 +1,4 @@
-#include "pch_script.h"
+#include "stdafx.h"
 #include "f1.h"
 
 CF1::CF1(void) {

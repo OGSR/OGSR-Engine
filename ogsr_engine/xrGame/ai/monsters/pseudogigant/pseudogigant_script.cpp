@@ -1,4 +1,4 @@
-#include "pch_script.h"
+#include "stdafx.h"
 #include "pseudo_gigant.h"
 
 using namespace luabind;

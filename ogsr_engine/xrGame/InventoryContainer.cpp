@@ -8,6 +8,7 @@
 #include "stdafx.h"
 #include "Level.h"
 #include "InventoryContainer.h"
+#include "Artifact.h"
 
 #pragma optimize("gyts", off)
 
