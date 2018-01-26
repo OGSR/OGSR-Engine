@@ -20,6 +20,7 @@ void CAnomalyDetector::load(LPCSTR section)
 {
 	m_radius				= READ_IF_EXISTS(pSettings,r_float,section,"Anomaly_Detect_Radius",15.f);
 	m_time_to_rememeber		= READ_IF_EXISTS(pSettings,r_u32,section,"Anomaly_Detect_Time_Remember",30000);
+	m_detect_probability		= READ_IF_EXISTS( pSettings, r_float, section, "Anomaly_Detect_Probability", 1.f);
 }
 
 void CAnomalyDetector::reinit()
@@ -27,6 +28,7 @@ void CAnomalyDetector::reinit()
 	m_storage.clear();
 
 	m_active = false;
+	m_forced = false;
 }
 
 
@@ -91,8 +93,26 @@ void CAnomalyDetector::on_contact(CObject *obj)
 	ANOMALY_INFO_VEC_IT it = std::find(m_storage.begin(), m_storage.end(), custom_zone);	
 	if (it != m_storage.end()) return;
 
+	float probability = randF();
+	if ( probability >= m_detect_probability && !fsimilar( m_detect_probability, 1.f ) )
+		return;
+
 	SAnomalyInfo			info;
 	info.object				= obj;
 	info.time_registered	= 0;
 	m_storage.push_back		(info);
+}
+
+
+void CAnomalyDetector::activate( bool force ) {
+  if ( m_forced && !force ) return;
+  m_forced = force;
+  m_active = true;
+}
+
+
+void CAnomalyDetector::deactivate( bool force ) {
+  if ( m_forced && !force ) return;
+  m_forced = force;
+  m_active = false;
 }

@@ -357,6 +357,7 @@ void CAnomalyDetectorScript::script_register( lua_State *L ) {
     class_<CAnomalyDetector>( "CAnomalyDetector" )
     .def_readwrite( "Anomaly_Detect_Radius", &CAnomalyDetector::m_radius )
     .def_readwrite( "Anomaly_Detect_Time_Remember", &CAnomalyDetector::m_time_to_rememeber )
+    .def_readwrite( "Anomaly_Detect_Probability", &CAnomalyDetector::m_detect_probability )
     .def_readonly( "is_active", &CAnomalyDetector::m_active )
     .def( "activate", &CAnomalyDetector::activate )
     .def( "deactivate", &CAnomalyDetector::deactivate )

@@ -8,8 +8,10 @@ class CAnomalyDetector {
 public:
 	float					m_radius;
 	u32						m_time_to_rememeber;
+	float					m_detect_probability;
 
 	bool					m_active;
+	bool					m_forced;
 
 private:
 	struct SAnomalyInfo {
@@ -43,6 +45,6 @@ public:
 	void		update_schedule		();
 	void		on_contact			(CObject *obj);
 	
-	void		activate			(){m_active = true;}
-	void		deactivate			(){m_active = false;}
+	void		activate( bool = false );
+	void		deactivate( bool = false );
 };
