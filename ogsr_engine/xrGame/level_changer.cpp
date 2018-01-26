@@ -123,11 +123,7 @@ void CLevelChanger::feel_touch_new	(CObject *tpObject)
 		Level().Send(p,net_flags(TRUE));
 		return;
 	}
-	Fvector			p,r;
-	bool			b = get_reject_pos(p,r);
-	CUIGameSP		*pGameSP = smart_cast<CUIGameSP*>(HUD().GetUI()->UIGame());
-	if (pGameSP)
-        pGameSP->ChangeLevel	(m_game_vertex_id,m_level_vertex_id,m_position,m_angles,p,r,b);
+	ChangeLevel();
 
 	m_entrance_time	= Device.fTimeGlobal;
 }
@@ -175,11 +171,24 @@ void CLevelChanger::update_actor_invitation()
 		VERIFY			(l_tpActor);
 
 		if(m_entrance_time+5.0f < Device.fTimeGlobal){
-			CUIGameSP* pGameSP = smart_cast<CUIGameSP*>(HUD().GetUI()->UIGame());
-			Fvector p,r;
-			bool b = get_reject_pos(p,r);
-			if(pGameSP)pGameSP->ChangeLevel(m_game_vertex_id,m_level_vertex_id,m_position,m_angles,p,r,b);
+			ChangeLevel();
 			m_entrance_time		= Device.fTimeGlobal;
 		}
 	}
 }
+
+
+#include "game_object_space.h"
+#include "script_callback_ex.h"
+#include "script_game_object.h"
+
+void CLevelChanger::ChangeLevel() {
+  Fvector p,r;
+  bool b = get_reject_pos( p, r );
+  CUIGameSP* pGameSP = smart_cast<CUIGameSP*>( HUD().GetUI()->UIGame() );
+  if( pGameSP ) {
+    Actor()->callback( GameObject::eLevelChangerAction )( lua_game_object(), (CUIWindow*)pGameSP->UIChangeLevelWnd );
+    pGameSP->ChangeLevel( m_game_vertex_id, m_level_vertex_id, m_position, m_angles, p, r, b );
+  }
+}
+

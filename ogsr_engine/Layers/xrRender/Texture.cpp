@@ -344,10 +344,11 @@ _DDS_2D:
 
 			// Load   SYS-MEM-surface, bound to device restrictions
 			IDirect3DTexture9*		T_sysmem;
+			UINT dim = HW.Caps.raster.bNonPow2 ? D3DX_DEFAULT_NONPOW2 : D3DX_DEFAULT;
 			R_CHK2(D3DXCreateTextureFromFileInMemoryEx
 					(
 						HW.pDevice,S->pointer(),S->length(),
-						D3DX_DEFAULT,D3DX_DEFAULT,
+						dim,dim,
 						IMG.MipLevels,0,
 						IMG.Format,
 						D3DPOOL_SYSTEMMEM,

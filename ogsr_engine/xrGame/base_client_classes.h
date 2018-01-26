@@ -8,6 +8,7 @@
 
 #pragma once
 
+#include "../xr_3da/CameraBase.h"
 #include "script_export_space.h"
 #include "xrServer_Space.h"
 
@@ -85,3 +86,7 @@ add_to_type_list(CKinematicsAnimatedScript)
 #undef script_type_list
 #define script_type_list save_type_list(CKinematicsAnimatedScript)
 
+typedef class_exporter<CCameraBase>	CCameraBaseScript;
+add_to_type_list(CCameraBaseScript)
+#undef script_type_list
+#define script_type_list save_type_list(CCameraBaseScript)

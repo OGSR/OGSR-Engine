@@ -291,6 +291,13 @@ CGameObject* GetSecondTalker()
 	return smart_cast<CGameObject*>(wnd->GetSecondTalker());
 }
 
+CUIWindow* GetUIChangeLevelWnd()
+{
+	CUIGameSP* pGameSP = smart_cast<CUIGameSP*>(HUD().GetUI()->UIGame());
+	if (!pGameSP) return nullptr;
+	return (CUIWindow*)pGameSP->UIChangeLevelWnd;
+}
+
 script_rq_result PerformRayQuery(Fvector start, Fvector dir, float range, collide::rq_target tgt, CScriptGameObject* ignore)
 {
 	collide::rq_result RQ;
@@ -694,6 +701,18 @@ void update_inventory_window() {
   HUD().GetUI()->UIGame()->ReInitShownUI();
 }
 
+
+void change_level( GameGraph::_GRAPH_ID game_vertex_id, u32 level_vertex_id, Fvector pos, Fvector dir ) {
+  NET_Packet p;
+  p.w_begin( M_CHANGE_LEVEL );
+  p.w( &game_vertex_id, sizeof( game_vertex_id ) );
+  p.w( &level_vertex_id, sizeof( level_vertex_id ) );
+  p.w_vec3( pos );
+  p.w_vec3( dir );
+  Level().Send( p, net_flags( TRUE ) );
+}
+
+
 #pragma optimize("s",on)
 void CLevel::script_register(lua_State *L)
 {
@@ -801,6 +820,7 @@ void CLevel::script_register(lua_State *L)
 		def("get_talk_wnd",						&GetTalkWindow),
 		def("get_trade_wnd",					&GetTradeWindow),
 		def("get_second_talker",				&GetSecondTalker),
+		def("get_change_level_wnd",				&GetUIChangeLevelWnd),
 
 		def("ray_query",						&PerformRayQuery),
 
@@ -816,7 +836,9 @@ void CLevel::script_register(lua_State *L)
 		def("send_event_key_press", &send_event_key_press),
 		def("send_event_key_release", &send_event_key_release),
 		def("send_event_key_hold", &send_event_key_hold),
-		def("send_event_mouse_wheel", &send_event_mouse_wheel)
+		def("send_event_mouse_wheel", &send_event_mouse_wheel),
+
+		def( "change_level", &change_level )
 	],
 	
 	module(L,"actor_stats")

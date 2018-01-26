@@ -25,6 +25,7 @@ private:
 	void					update_actor_invitation	();
 	bool					m_bSilentMode;
 	bool					get_reject_pos(Fvector& p, Fvector& r);
+	void					ChangeLevel();
 public:
 	virtual				~CLevelChanger		();
 	virtual BOOL		net_Spawn			(CSE_Abstract* DC);

@@ -326,12 +326,12 @@ void CDetailManager::hw_Unload()
 	hw_lod_Geom.destroy();
 
 	__try { //KRodin: В редких случаях тут вылетает. До лучших времён заткнул этот вылет так.
-		_RELEASE(hw_lod_IB);
+		if ( hw_lod_IB ) _RELEASE( hw_lod_IB );
 	}
 	__except (ExceptStackTrace("[CDetailManager::hw_Unload] stack trace:\n")) {}
 
 	__try { //Тут тоже на всякий случай
-		_RELEASE(hw_lod_VB);
+		if ( hw_lod_VB ) _RELEASE( hw_lod_VB );
 	}
 	__except (ExceptStackTrace("[CDetailManager::hw_Unload2] stack trace:\n")) {}
 }

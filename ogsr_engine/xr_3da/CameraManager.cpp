@@ -236,12 +236,14 @@ void CCameraManager::Update(const Fvector& P, const Fvector& D, const Fvector& N
 	BOOL bOverlapped			= FALSE;
 	if (m_EffectorsCam.size())
 	{
-		for (int i=m_EffectorsCam.size()-1; i>=0; i--)
+		auto r_it = m_EffectorsCam.rbegin();
+		while (r_it != m_EffectorsCam.rend())
 		{
-			CEffectorCam* eff		= m_EffectorsCam[i];
+			CEffectorCam* eff		= *r_it;
 			if(eff->Valid() && eff->Process(vPosition,vDirection,vNormal,fFov,fFar,fAspect))
 			{
 				bOverlapped		|= eff->Overlapped();
+				++r_it;
 			}else
 			{
 				if(eff->AllowProcessingIfInvalid())
@@ -250,7 +252,11 @@ void CCameraManager::Update(const Fvector& P, const Fvector& D, const Fvector& N
 					bOverlapped		|= eff->Overlapped();
 				}
 
-				m_EffectorsCam.erase(m_EffectorsCam.begin()+i);
+				// Dereferencing reverse iterator returns previous element of the list, r_it.base() returns current element
+				// So, we should use base()-1 iterator to delete just processed element. 'Previous' element would be 
+				// automatically changed after deletion, so r_it would dereferencing to another value, no need to change it
+				auto r_to_del = r_it.base();
+				m_EffectorsCam.erase(--r_to_del);
 				xr_delete(eff);
 			}
 		}

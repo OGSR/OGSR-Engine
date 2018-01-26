@@ -128,7 +128,9 @@ class CCC_GameDifficulty : public CCC_Token {
 public:
 	CCC_GameDifficulty(LPCSTR N) : CCC_Token(N,(u32*)&g_SingleGameDifficulty,difficulty_type_token)  {};
 	virtual void Execute(LPCSTR args) {
+#ifndef GD_MASTER_ONLY
 		CCC_Token::Execute(args);
+#endif
 		if (g_pGameLevel && Level().game){
 //#ifndef	DEBUG
 			if (GameID() != GAME_SINGLE){

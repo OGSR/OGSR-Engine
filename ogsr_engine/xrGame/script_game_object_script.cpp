@@ -155,7 +155,8 @@ void CScriptGameObject::script_register(lua_State *L)
 				value("on_weapon_shell_drop", int(GameObject::eOnWpnShellDrop) ),
 				value("on_throw_grenade", int(GameObject::eOnThrowGrenade) ),
 				value("on_goodwill_change", int(GameObject::eOnGoodwillChange)),
-				value( "update_artefacts_on_belt", int( GameObject::eUpdateArtefactsOnBelt ) )
+				value( "update_artefacts_on_belt", int( GameObject::eUpdateArtefactsOnBelt ) ),
+				value( "level_changer_action", int( GameObject::eLevelChangerAction ) )
 			],
 
 		def("buy_condition",				(void (*)(CScriptIniFile*,LPCSTR))(&::buy_condition)),
@@ -168,20 +169,4 @@ void CScriptGameObject::script_register(lua_State *L)
 	script_register_game_object4(L);
 		CHitImmunity::script_register(L);
 		CEntityCondition::script_register(L);
-}
-
-#include "..\xr_3da\CameraBase.h"
-
-using namespace luabind;
-#pragma optimize("s",on)
-void CCameraScript::script_register(lua_State *L)
-{
-	module(L)
-		[
-			class_<CCameraBase>("camera_script")
-			.property("lim_yaw", &CCameraBase::GetLimYaw, &CCameraBase::SetLimYaw)
-			.property("lim_pitch", &CCameraBase::GetLimPitch, &CCameraBase::SetLimPitch)
-			.property("rot_speed", &CCameraBase::GetRotSpeed, &CCameraBase::SetRotSpeed)
-			.property("yaw", &CCameraBase::GetYaw, &CCameraBase::SetYaw)
-		];
 }
