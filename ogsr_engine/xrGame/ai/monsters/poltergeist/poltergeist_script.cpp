@@ -1,4 +1,4 @@
-#include "pch_script.h"
+#include "stdafx.h"
 #include "poltergeist.h"
 
 using namespace luabind;

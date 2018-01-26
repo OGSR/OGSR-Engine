@@ -6,7 +6,7 @@
 //	Description : Stalker danger property evaluators classes
 ////////////////////////////////////////////////////////////////////////////
 
-#include "pch_script.h"
+#include "stdafx.h"
 #include "stalker_danger_property_evaluators.h"
 #include "ai/stalker/ai_stalker.h"
 #include "script_game_object.h"

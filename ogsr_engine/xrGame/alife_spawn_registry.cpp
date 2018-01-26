@@ -113,8 +113,6 @@ struct dummy {
     int ref;
 };
 
-//#include "pch_script.h"
-
 void CALifeSpawnRegistry::load				(IReader &file_stream, xrGUID *save_guid)
 {
 	IReader						*chunk;

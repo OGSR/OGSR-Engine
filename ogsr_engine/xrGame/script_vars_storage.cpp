@@ -6,7 +6,6 @@
 //	Description : global script vars class, with saving content to savegame
 ////////////////////////////////////////////////////////////////////////////
 #include "stdafx.h"
-#include "pch_script.h"
 #include "alife_space.h"
 #include "script_vars_storage.h"
 #include "script_net_packet.h"

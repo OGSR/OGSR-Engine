@@ -1,5 +1,4 @@
 #include "stdafx.h"
-#include "pch_script.h"
 #include "searchlight.h"
 #include "..\xr_3da\LightAnimLibrary.h"
 #include "script_entity_action.h"

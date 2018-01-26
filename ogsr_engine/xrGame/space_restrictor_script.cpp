@@ -1,4 +1,4 @@
-#include "pch_script.h"
+#include "stdafx.h"
 #include "space_restrictor.h"
 
 using namespace luabind;

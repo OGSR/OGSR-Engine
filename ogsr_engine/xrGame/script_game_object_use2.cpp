@@ -1,4 +1,4 @@
-#include "pch_script.h"
+#include "stdafx.h"
 #include "script_game_object.h"
 #include "ai/monsters/bloodsucker/bloodsucker.h"
 #include "ai/monsters/zombie/zombie.h"

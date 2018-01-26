@@ -6,7 +6,7 @@
 //	Description : Script watch action class script export
 ////////////////////////////////////////////////////////////////////////////
 
-#include "pch_script.h"
+#include "stdafx.h"
 #include "script_watch_action.h"
 #include "script_game_object.h"
 #include "sight_manager_space.h"

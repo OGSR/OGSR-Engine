@@ -1,4 +1,4 @@
-#include "pch_script.h"
+#include "stdafx.h"
 #include "hudmanager.h"
 #include "game_cl_base.h"
 #include "level.h"

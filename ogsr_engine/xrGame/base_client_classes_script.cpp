@@ -6,7 +6,7 @@
 //	Description : XRay base client classes script export
 ////////////////////////////////////////////////////////////////////////////
 
-#include "pch_script.h"
+#include "stdafx.h"
 #include "base_client_classes.h"
 #include "base_client_classes_wrappers.h"
 #include "../xr_3da/feel_sound.h"

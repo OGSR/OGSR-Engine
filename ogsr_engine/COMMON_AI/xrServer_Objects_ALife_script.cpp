@@ -6,7 +6,7 @@
 //	Description : Server objects for ALife simulator, script export
 ////////////////////////////////////////////////////////////////////////////
 
-#include "pch_script.h"
+#include "stdafx.h"
 #include "xrServer_Objects_ALife.h"
 #include "xrServer_script_macroses.h"
 #include "xrServer_Objects_ALife_Monsters.h"

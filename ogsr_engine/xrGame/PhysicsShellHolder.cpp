@@ -1,4 +1,4 @@
-#include "pch_script.h"
+#include "stdafx.h"
 #include "PhysicsShellHolder.h"
 #include "PhysicsShell.h"
 #include "xrMessages.h"

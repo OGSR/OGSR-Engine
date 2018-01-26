@@ -6,7 +6,7 @@
 //	Description : ALife monster brain class script export
 ////////////////////////////////////////////////////////////////////////////
 
-#include "pch_script.h"
+#include "stdafx.h"
 #include "alife_monster_brain.h"
 #include "alife_monster_movement_manager.h"
 

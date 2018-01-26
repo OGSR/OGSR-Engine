@@ -1,4 +1,4 @@
-#include "pch_script.h"
+#include "stdafx.h"
 #include "HairsZone.h"
 #include "hudmanager.h"
 #include "level.h"

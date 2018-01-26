@@ -6,7 +6,7 @@
 //	Description : Script zone object
 ////////////////////////////////////////////////////////////////////////////
 
-#include "pch_script.h"
+#include "stdafx.h"
 #include "script_zone.h"
 #include "script_game_object.h"
 #include "xrserver_objects_alife_monsters.h"

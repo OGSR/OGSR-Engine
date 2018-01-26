@@ -1,4 +1,4 @@
-#include "pch_script.h"
+#include "stdafx.h"
 #include "pseudodog.h"
 #include "psy_dog.h"
 

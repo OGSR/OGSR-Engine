@@ -139,7 +139,6 @@ CHARACTER_GOODWILL	 RELATION_REGISTRY::GetGoodwill			(u16 from, u16 to) const
 	return NEUTRAL_GOODWILL;
 }
 
-#include "pch_script.h"
 #include "game_object_space.h"
 #include "script_callback_ex.h"
 #include "script_game_object.h"

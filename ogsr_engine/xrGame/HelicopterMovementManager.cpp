@@ -1,4 +1,4 @@
-#include "pch_script.h"
+#include "stdafx.h"
 #include "Helicopter.h"
 #include "level.h"
 #include "patrol_path.h"

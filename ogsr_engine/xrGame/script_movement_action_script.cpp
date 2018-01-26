@@ -6,7 +6,7 @@
 //	Description : Script movement action class script export
 ////////////////////////////////////////////////////////////////////////////
 
-#include "pch_script.h"
+#include "stdafx.h"
 #include "script_movement_action.h"
 #include "script_game_object.h"
 #include "patrol_path_manager_space.h"

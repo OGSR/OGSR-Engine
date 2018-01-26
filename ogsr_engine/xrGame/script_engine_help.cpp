@@ -6,7 +6,7 @@
 //	Description : Script Engine help
 ////////////////////////////////////////////////////////////////////////////
 
-#include "pch_script.h"
+#include "stdafx.h"
 
 #if !defined(LUABIND_NO_ERROR_CHECKING) && !defined(NDEBUG)
 

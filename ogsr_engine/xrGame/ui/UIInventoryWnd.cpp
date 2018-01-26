@@ -1,4 +1,4 @@
-#include "pch_script.h"
+#include "stdafx.h"
 #include "UIInventoryWnd.h"
 
 #include "xrUIXmlParser.h"

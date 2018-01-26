@@ -4227,9 +4227,6 @@
     <ClInclude Include="ai_space_inline.h">
       <Filter>AI\ASpace</Filter>
     </ClInclude>
-    <ClInclude Include="pch_script.h">
-      <Filter>Core</Filter>
-    </ClInclude>
     <ClInclude Include="StdAfx.h">
       <Filter>Core</Filter>
     </ClInclude>
@@ -7226,9 +7223,6 @@
     </ClCompile>
     <ClCompile Include="ai_space.cpp">
       <Filter>AI\ASpace</Filter>
-    </ClCompile>
-    <ClCompile Include="pch_script.cpp">
-      <Filter>Core</Filter>
     </ClCompile>
     <ClCompile Include="StdAfx.cpp">
       <Filter>Core</Filter>

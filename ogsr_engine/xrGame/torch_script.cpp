@@ -1,4 +1,4 @@
-#include "pch_script.h"
+#include "stdafx.h"
 #include "torch.h"
 #include "script_game_object.h"
 #include "inventory_item_object.h"

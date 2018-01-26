@@ -1,5 +1,4 @@
 #include "stdafx.h"
-#include "pch_script.h"
 #include "entitycondition.h"
 #include "inventoryowner.h"
 #include "customoutfit.h"

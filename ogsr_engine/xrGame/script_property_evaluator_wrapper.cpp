@@ -6,7 +6,7 @@
 //	Description : Script property evaluator wrapper
 ////////////////////////////////////////////////////////////////////////////
 
-#include "pch_script.h"
+#include "stdafx.h"
 #include "script_property_evaluator_wrapper.h"
 #include "script_game_object.h"
 #include "ai_space.h"

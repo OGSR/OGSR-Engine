@@ -6,7 +6,7 @@
 //	Description : Script action planner wrapper
 ////////////////////////////////////////////////////////////////////////////
 
-#include "pch_script.h"
+#include "stdafx.h"
 #include "script_action_planner_wrapper.h"
 #include "script_game_object.h"
 #include "ai_debug.h"

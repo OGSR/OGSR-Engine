@@ -6,7 +6,7 @@
 //	Description : XRay Script sound class script export
 ////////////////////////////////////////////////////////////////////////////
 
-#include "pch_script.h"
+#include "stdafx.h"
 #include "script_particles.h"
 
 using namespace luabind;

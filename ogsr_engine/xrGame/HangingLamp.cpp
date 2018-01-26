@@ -1,4 +1,4 @@
-#include "pch_script.h"
+#include "stdafx.h"
 #include "HangingLamp.h"
 #include "../xr_3da/LightAnimLibrary.h"
 #include "../xr_3da/xr_collide_form.h"
