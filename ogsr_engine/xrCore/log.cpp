@@ -4,7 +4,6 @@
 #include "resource.h"
 #include "log.h"
 
-#include <mutex> //KRodin: надо вынести в xrCore.h
 #include <sstream> //для std::stringstream
 #include <fstream> //для std::ofstream
 

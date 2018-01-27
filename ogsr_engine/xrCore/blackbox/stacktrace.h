@@ -5,6 +5,8 @@ Copyright (c) 1997-2000 John Robbins -- All rights reserved.
 
 #pragma once
 
+#ifdef XR_USE_BLACKBOX
+
 #define NOMINMAX
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
@@ -83,3 +85,5 @@ BOOL __stdcall GetFirstStackTraceStringVB(DWORD dwOpts, EXCEPTION_POINTERS* pExP
                                           UINT uiSize);
 BOOL __stdcall GetNextStackTraceStringVB(DWORD dwOpts, EXCEPTION_POINTERS* pExPtrs, LPTSTR szBuff,
                                          UINT uiSize);
+
+#endif

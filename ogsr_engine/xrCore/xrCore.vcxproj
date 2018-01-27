@@ -149,6 +149,7 @@
     <ClCompile Include="blackbox\stacktrace.cpp" />
     <ClCompile Include="compute_build_id.cpp" />
     <ClCompile Include="FTimer.cpp" />
+    <ClCompile Include="stacktrace_collector.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
@@ -186,7 +187,7 @@
     <ClCompile Include="ppmd_compressor.cpp" />
     <ClCompile Include="Model.cpp">
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
-	  <WarningLevel>TurnOffAllWarnings</WarningLevel>
+      <WarningLevel>TurnOffAllWarnings</WarningLevel>
     </ClCompile>
     <ClCompile Include="rt_compressor.cpp" />
     <ClCompile Include="rt_compressor9.cpp" />
@@ -199,6 +200,7 @@
     <ClInclude Include="blackbox\sym_engine.h" />
     <ClInclude Include="FTimer.h" />
     <ClInclude Include="resource.h" />
+    <ClInclude Include="stacktrace_collector.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="xrCore.h" />
     <ClInclude Include="xrCore_platform.h" />

@@ -1,5 +1,7 @@
 #pragma once
 
+#ifdef XR_USE_BLACKBOX
+
 #include "stacktrace.h"
 
 namespace {
@@ -55,3 +57,5 @@ inline void BuildStackTrace(StackTraceInfo& stackTrace) {
         BuildStackTrace(&ex_ptrs, stackTrace);
     }
 }
+
+#endif

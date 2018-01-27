@@ -13,7 +13,11 @@ XRCORE_API xrDebug Debug;
 
 static bool error_after_dialog = false;
 
-#include "blackbox\build_stacktrace.h"
+#ifndef XR_USE_BLACKBOX
+#	include "stacktrace_collector.h"
+#else
+#	include "blackbox\build_stacktrace.h"
+#endif
 static thread_local StackTraceInfo stackTrace;
 
 void LogStackTrace(const char* header)
@@ -26,7 +30,7 @@ void LogStackTrace(const char* header)
 		Log(header);
 		Log("*********************************************************************************");
 		BuildStackTrace(stackTrace);
-		for (size_t i = 2; i < stackTrace.count; ++i) //i=2 чтобы не выводить в лог эту функцию и BuildStackTrace
+		for (size_t i = 0; i < stackTrace.count; ++i)
 			Log(stackTrace[i]);
 		Log("*********************************************************************************");
 	}
@@ -38,16 +42,16 @@ void LogStackTrace(const char* header, _EXCEPTION_POINTERS *pExceptionInfo)
 	//if (IsDebuggerPresent())
 	//	return;
 
+	Msg("!![LogStackTrace] ExceptionCode is [%x]", pExceptionInfo->ExceptionRecord->ExceptionCode);
+	Log(header);
 	__try
 	{
 		Log("*********************************************************************************");
-		Msg("!![LogStackTrace] ExceptionCode is [%x]", pExceptionInfo->ExceptionRecord->ExceptionCode);
 		auto save = *pExceptionInfo->ContextRecord;
 		BuildStackTrace(pExceptionInfo, stackTrace);
 		*pExceptionInfo->ContextRecord = save;
 
-		Log(header);
-		for (size_t i = 0; i < stackTrace.count; ++i) //Здесь i всегда должно быть 0! Не изменять ни в коем случае, иначе будет обрезанный стек вызовов.
+		for (size_t i = 0; i < stackTrace.count; ++i)
 			Log(stackTrace[i]);
 		Log("*********************************************************************************");
 	}

@@ -10,6 +10,8 @@ scope, so I didn’t wrap them with this class.
 
 #pragma once
 
+#ifdef XR_USE_BLACKBOX
+
 #include <tchar.h>
 #include <memory>
 
@@ -241,3 +243,5 @@ protected:
     // process value, just a unique value.
     HANDLE m_hProcess;
 };
+
+#endif

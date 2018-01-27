@@ -8,7 +8,11 @@
 
 #	include "xrCore.h"
 
+#ifndef XR_USE_BLACKBOX
+#	include "stacktrace_collector.h"
+#else
 #	include "blackbox\build_stacktrace.h"
+#endif
 	static thread_local StackTraceInfo stackTrace;
 
 	static	bool		g_mem_alloc_gather_stats			= false;
