@@ -17,10 +17,6 @@ private:
         struct SAnomalyInfo {
           u16 id;
           u32 time_registered;
-
-          bool operator == ( CObject *obj ) {
-            return ( obj->ID() == id );
-          }
         };
 
 	struct remove_predicate {

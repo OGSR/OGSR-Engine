@@ -18,9 +18,9 @@ CAnomalyDetector::~CAnomalyDetector()
 
 void CAnomalyDetector::load(LPCSTR section)
 {
-	m_radius				= READ_IF_EXISTS(pSettings,r_float,section,"Anomaly_Detect_Radius",15.f);
-	m_time_to_rememeber		= READ_IF_EXISTS(pSettings,r_u32,section,"Anomaly_Detect_Time_Remember",30000);
-	m_detect_probability		= READ_IF_EXISTS( pSettings, r_float, section, "Anomaly_Detect_Probability", 1.f);
+	m_radius		= READ_IF_EXISTS( pSettings, r_float, section, "Anomaly_Detect_Radius", 15.f );
+	m_time_to_rememeber	= READ_IF_EXISTS( pSettings, r_u32, section, "Anomaly_Detect_Time_Remember", 30000 );
+	m_detect_probability	= READ_IF_EXISTS( pSettings, r_float, section, "Anomaly_Detect_Probability", 1.f );
 }
 
 void CAnomalyDetector::reinit()
@@ -87,20 +87,27 @@ void CAnomalyDetector::on_contact(CObject *obj)
 	// if its NOT A restrictor - skip
 	if (custom_zone->restrictor_type() == RestrictionSpace::eRestrictorTypeNone) return;
 
+	auto it = std::find_if(
+	  m_storage.begin(), m_storage.end(), [ custom_zone ]( const auto it ) {
+	    return it.id == custom_zone->ID();
+	  }
+	);
+	if ( it != m_storage.end() ) {
+	  it->time_registered = time();
+	  return;
+	}
+	
 	if (Level().space_restriction_manager().restriction_presented(
 		m_object->movement().restrictions().in_restrictions(),custom_zone->cName())) return;
 
-	ANOMALY_INFO_VEC_IT it = std::find(m_storage.begin(), m_storage.end(), custom_zone);	
-	if (it != m_storage.end()) return;
-
-	float probability = randF();
+	float probability = Random.randF();
 	if ( probability >= m_detect_probability && !fsimilar( m_detect_probability, 1.f ) )
 		return;
 
-	SAnomalyInfo			info;
-	info.object				= obj;
+	SAnomalyInfo		info;
+	info.id			= obj->ID();
 	info.time_registered	= 0;
-	m_storage.push_back		(info);
+	m_storage.push_back	(info);
 }
 
 
@@ -132,9 +139,9 @@ void CAnomalyDetector::remove_all_restrictions() {
 
 
 void CAnomalyDetector::remove_restriction( u16 id ) {
-  auto it = std::find(
-    m_storage.begin(), m_storage.end(), [id]( const auto it ) {
-      return it->id == id;
+  auto it = std::find_if(
+    m_storage.begin(), m_storage.end(), [ id ]( const auto it ) {
+      return it.id == id;
     }
   );
 
