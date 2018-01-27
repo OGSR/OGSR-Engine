@@ -1,8 +1,11 @@
-#ifndef ALDEVICELIST_H
-#define ALDEVICELIST_H
+#pragma once
 
-#define AL_GENERIC_HARDWARE "Generic Hardware"
-#define AL_GENERIC_SOFTWARE "Generic Software"
+#include <al.h>
+#include <alc.h>
+
+static constexpr const char* AL_GENERIC_HARDWARE = "Generic Hardware";
+static constexpr const char* AL_GENERIC_SOFTWARE = "Generic Software";
+static constexpr const char* AL_SOFT = "OpenAL Soft";
 
 struct ALDeviceDesc{
 	xr_string			name;
@@ -12,9 +15,10 @@ struct ALDeviceDesc{
 		u8				selected	:1;
 		u8				xram		:1;
 		u8				eax			:1;
+		u8				efx			:1;
 		u8				eax_unwanted:1;
 	};
-						ALDeviceDesc			(LPCSTR nm, int mn, int mj){name=nm;minor_ver=mn;major_ver=mj;selected=false;xram=false;eax=false;eax_unwanted=true;}
+	ALDeviceDesc(LPCSTR nm, int mn, int mj) { name = nm; minor_ver = mn; major_ver = mj; selected = false; xram = false; eax = false; efx = false; eax_unwanted = true; }
 };
 
 class ALDeviceList
@@ -43,4 +47,3 @@ public:
 	void				SelectBestDevice		();
 };
 
-#endif // ALDEVICELIST_H

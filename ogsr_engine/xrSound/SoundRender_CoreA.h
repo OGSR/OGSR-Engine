@@ -1,15 +1,10 @@
-#ifndef SoundRender_CoreAH
-#define SoundRender_CoreAH
 #pragma once
 
 #include "SoundRender_Core.h"            
 
-#include <al.h>
-#include <alc.h>
-//.#include <alut.h>
-#include <eax.h>
-
 #include "OpenALDeviceList.h"
+
+#include <eax.h>
 
 #ifdef DEBUG
 #	define A_CHK(expr)		{ alGetError(); 		expr; ALenum error=alGetError(); 			VERIFY2(error==AL_NO_ERROR, (LPCSTR)alGetString(error)); }
@@ -57,4 +52,3 @@ public:
 	virtual const Fvector&	listener_position		( ){return Listener.position;}
 };
 extern CSoundRender_CoreA* SoundRenderA;
-#endif
