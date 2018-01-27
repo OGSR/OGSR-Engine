@@ -319,6 +319,7 @@ void CCustomMonster::shedule_Update	( u32 DT )
 		else
 			Exec_Visibility					();
 		memory().update						(dt);
+		anomaly_detector().update_schedule();
 	}
 	inherited::shedule_Update	(DT);
 
@@ -382,8 +383,6 @@ void CCustomMonster::shedule_Update	( u32 DT )
 			NET.push_back		(uNext);
 		}
 	}
-
-	m_anomaly_detector->update_schedule();
 }
 
 void CCustomMonster::net_update::lerp(CCustomMonster::net_update& A, CCustomMonster::net_update& B, float f)
