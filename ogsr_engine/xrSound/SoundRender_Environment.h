@@ -1,5 +1,3 @@
-#ifndef soundrender_environmentH
-#define soundrender_environmentH
 #pragma once
 
 // refs
@@ -23,8 +21,8 @@ public:
     float           EnvironmentDiffusion;       // environment diffusion
     float           AirAbsorptionHF;            // change in level per meter at 5 kHz
 public:
-                    CSoundRender_Environment	(void);
-                    ~CSoundRender_Environment	(void);
+                    CSoundRender_Environment	();
+                    ~CSoundRender_Environment() = default;
 	void			set_identity	            ();
 	void			set_default		            ();
 	void			clamp			            ();
@@ -51,4 +49,3 @@ public:
 	void						Remove	(int id);
 	SE_VEC&						Library	();
 };
-#endif
