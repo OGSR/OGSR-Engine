@@ -15,8 +15,9 @@ public:
 
 private:
         struct SAnomalyInfo {
-          u16 id;
-          u32 time_registered;
+          u16  id;
+          bool ignored;
+          u32  time_registered;
         };
 
 	struct remove_predicate {

@@ -52,17 +52,14 @@ void CAnomalyDetector::update_schedule()
 			it->time_registered = time();
 		}
 	}
-
 	m_object->movement().restrictions().add_restrictions(temp_out_restrictors,temp_in_restrictors);
 
 	// remove old restrictions
 	temp_in_restrictors.clear();
-	for (ANOMALY_INFO_VEC_IT it = m_storage.begin(); it != m_storage.end(); it++) {
-		if (it->time_registered + m_time_to_rememeber < time()) {
-			temp_in_restrictors.push_back(it->id);
-		}
+	for ( ANOMALY_INFO_VEC_IT it = m_storage.begin(); it != m_storage.end(); it++ ) {
+	  if ( it->time_registered + m_time_to_rememeber < time() && !it->ignored )
+	    temp_in_restrictors.push_back( it->id );
 	}
-
 	m_object->movement().restrictions().remove_restrictions(temp_out_restrictors,temp_in_restrictors);
 
 	
@@ -100,13 +97,17 @@ void CAnomalyDetector::on_contact(CObject *obj)
 	if (Level().space_restriction_manager().restriction_presented(
 		m_object->movement().restrictions().in_restrictions(),custom_zone->cName())) return;
 
-	float probability = Random.randF();
-	if ( probability >= m_detect_probability && !fsimilar( m_detect_probability, 1.f ) )
-		return;
 
 	SAnomalyInfo		info;
 	info.id			= obj->ID();
-	info.time_registered	= 0;
+	if ( Random.randF() >= m_detect_probability && !fsimilar( m_detect_probability, 1.f ) ) {
+	  info.ignored         = true;
+	  info.time_registered = time();
+	}
+	else {
+	  info.ignored         = false;
+	  info.time_registered = 0;
+	}
 	m_storage.push_back	(info);
 }
 
