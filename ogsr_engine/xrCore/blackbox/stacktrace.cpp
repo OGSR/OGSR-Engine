@@ -4,6 +4,8 @@ Copyright (c) 1997-2000 John Robbins -- All rights reserved.
 ----------------------------------------------------------------------*/
 #include "stdafx.h"
 
+#ifdef XR_USE_BLACKBOX
+
 #include "StackTrace.h"
 #include "sym_engine.h"
 #include <psapi.h>
@@ -345,3 +347,5 @@ void DeinitializeSymbolEngine() {
         g_bSymEngInit = FALSE;
     }
 }
+
+#endif

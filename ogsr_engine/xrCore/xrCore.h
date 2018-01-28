@@ -54,20 +54,13 @@
 	#define _STLP_USE_DECLSPEC		1	// no exceptions, import allocator and common stuff
 	#endif
 #endif
-                  
-// #include <exception>
-// using std::exception;
+
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdarg.h>
 #include <math.h>
-#include <string.h>
 
-#include <typeinfo>
-//#include <typeinfo.h>
-
-//#include <process.h>
 
 #ifndef DEBUG
 	#ifdef _DEBUG
@@ -172,6 +165,8 @@
 #include <map>
 #include <string>
 #include <functional>
+#include <mutex>
+#include <typeinfo>
 #pragma warning (pop)
 #pragma warning (disable : 4100 )		// unreferenced formal parameter
 

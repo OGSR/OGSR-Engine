@@ -7,16 +7,6 @@
 // TODO: reference any additional headers you need in STDAFX.H
 // and not in this file
 
-#ifdef __BORLANDC__
-#	pragma comment(lib,	"eaxB.lib"			)
-#	pragma comment(lib,	"vorbisfileB.lib"	)
-#	pragma comment(lib,	"EToolsB.lib"		)
-#	pragma comment(lib,	"OpenAL32B.lib"		)
-#	pragma comment(lib,	"dsoundb.lib" 		)
-#	pragma comment(lib,	"xrCoreB.lib"		)
-#else
-#	pragma comment(lib,	"xrCore.lib"		)
-#	pragma comment(lib,	"xrCDB.lib"			)
-#	pragma comment(lib,	"dsound.lib" 		)
-#endif
-
+#pragma comment(lib, "xrCore.lib" )
+#pragma comment(lib, "xrCDB.lib"  )
+#pragma comment(lib, "dsound.lib" ) //Убрать?

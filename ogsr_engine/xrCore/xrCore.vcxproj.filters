@@ -187,6 +187,9 @@
     <ClCompile Include="blackbox\stacktrace.cpp">
       <Filter>Debug core\BlackBox</Filter>
     </ClCompile>
+    <ClCompile Include="stacktrace_collector.cpp">
+      <Filter>Debug core</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="FTimer.h">
@@ -405,6 +408,9 @@
     </ClInclude>
     <ClInclude Include="blackbox\sym_engine.h">
       <Filter>Debug core\BlackBox</Filter>
+    </ClInclude>
+    <ClInclude Include="stacktrace_collector.h">
+      <Filter>Debug core</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

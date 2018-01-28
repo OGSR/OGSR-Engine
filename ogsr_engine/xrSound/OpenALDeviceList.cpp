@@ -24,8 +24,6 @@
 #include "stdafx.h"
 
 #include "OpenALDeviceList.h"
-#include <al.h>
-#include <alc.h>
 
 #pragma warning(push)
 #pragma warning(disable:4995)
@@ -68,26 +66,11 @@ void ALDeviceList::Enumerate()
 
 		devices				= (char *)alcGetString(NULL, ALC_DEVICE_SPECIFIER);
 		Msg					("devices %s",devices);
+
 		m_defaultDeviceName	= (char *)alcGetString(NULL, ALC_DEFAULT_DEVICE_SPECIFIER);
 		Msg("SOUND: OpenAL: system  default SndDevice name is %s", m_defaultDeviceName.c_str());
 		
-		// ManowaR
-		// "Generic Hardware" device on software AC'97 codecs introduce 
-		// high CPU usage ( up to 30% ) as a consequence - freezes, FPS drop
-		// So if default device is "Generic Hardware" which maps to DirectSound3D interface
-		// We re-assign it to "Generic Software" to get use of old good DirectSound interface
-		// This makes 3D-sound processing unusable on cheap AC'97 codecs
-		// Also we assume that if "Generic Hardware" exists, than "Generic Software" is also exists
-		// Maybe wrong
-		/*
-		KD: fuck it
-		if(0==stricmp(m_defaultDeviceName.c_str(),AL_GENERIC_HARDWARE))
-		{
-			m_defaultDeviceName			= AL_GENERIC_SOFTWARE;
-			Msg("SOUND: OpenAL: default SndDevice name set to %s", m_defaultDeviceName.c_str());
-		}
-		*/
-		index				= 0;
+		index = 0;
 		// go through device list (each device terminated with a single NULL, list terminated with double NULL)
 		while (*devices != NULL) 
 		{
@@ -101,13 +84,26 @@ void ALDeviceList::Enumerate()
 					// if new actual device name isn't already in the list, then add it...
 					actualDeviceName = alcGetString(device, ALC_DEVICE_SPECIFIER);
 
-					if ( (actualDeviceName != NULL) && xr_strlen(actualDeviceName)>0 ) 
+					if ( (actualDeviceName != nullptr) && strlen(actualDeviceName) > 0 ) 
 					{
-						alcGetIntegerv					(device, ALC_MAJOR_VERSION, sizeof(int), &major);
-						alcGetIntegerv					(device, ALC_MINOR_VERSION, sizeof(int), &minor);
-						m_devices.push_back				(ALDeviceDesc(actualDeviceName,minor,major));
-						m_devices.back().xram			= (alIsExtensionPresent("EAX-RAM") == TRUE);
-						m_devices.back().eax			= (alIsExtensionPresent("EAX2.0") == TRUE);
+						alcGetIntegerv(device, ALC_MAJOR_VERSION, sizeof(int), &major);
+						alcGetIntegerv(device, ALC_MINOR_VERSION, sizeof(int), &minor);
+						m_devices.push_back(ALDeviceDesc(actualDeviceName, minor, major));
+						
+						IS_OpenAL_Soft = !stricmp(m_devices.back().name.c_str(), AL_SOFT);
+						if (IS_OpenAL_Soft)
+						{
+							m_devices.back().efx = alcIsExtensionPresent(alcGetContextsDevice(alcGetCurrentContext()), "ALC_EXT_EFX");
+							m_devices.back().xram = alcIsExtensionPresent(alcGetContextsDevice(alcGetCurrentContext()), "EAX_RAM");
+						}
+						else
+						{
+							m_devices.back().xram = (alIsExtensionPresent("EAX-RAM") == TRUE);
+							m_devices.back().eax = (alIsExtensionPresent("EAX2.0") == TRUE);
+						}
+
+						Msg("SOUND: OpenAL: [%s] EFX Support: %s", m_devices.back().name.c_str(), m_devices.back().efx ? "yes" : "no");
+
 						// KD: disable unwanted eax flag to force eax on all devices
 						m_devices.back().eax_unwanted	= 0;/*((0==xr_strcmp(actualDeviceName,AL_GENERIC_HARDWARE))||
 														   (0==xr_strcmp(actualDeviceName,AL_GENERIC_SOFTWARE)));*/
@@ -124,6 +120,18 @@ void ALDeviceList::Enumerate()
 		}
 	}else
 		Msg("SOUND: OpenAL: EnumerationExtension NOT Present");
+
+	// KRodin: по умолчанию почему-то устанавливается девайс Generic Software и из-за этого у меня эхо в наушниках.
+	// Неплохо бы сделать в меню возможность выбора девайса (в ЗП так сделано, если память не изменяет).
+	// Пока же просто включаю использование OpenAL Soft принудительно.
+	// Надо ещё подумать, что делать с системами, у которых Generic Hardware.
+	// Может вообще всегда устанавливать принудительное использование OpenAL Soft ?
+	// Наверное так и сделаю:
+	if (IS_OpenAL_Soft)
+	{
+		m_defaultDeviceName = AL_SOFT;
+		Msg("SOUND: OpenAL: default SndDevice name set to %s", m_defaultDeviceName.c_str());
+	}
 
 	ResetFilters();
 
