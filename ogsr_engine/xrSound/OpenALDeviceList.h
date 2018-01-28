@@ -33,6 +33,7 @@ public:
 						ALDeviceList			();
 						~ALDeviceList			();
 
+	bool IS_OpenAL_Soft = false; //Чтобы можно было менять dll-ку без необходимости пересборки движка.
 	int					GetNumDevices			()				{return m_devices.size();}
 	const ALDeviceDesc&	GetDeviceDesc			(int index)		{return m_devices[index];}
 	const xr_string&	GetDeviceName			(int index)		{return m_devices[index].name;}

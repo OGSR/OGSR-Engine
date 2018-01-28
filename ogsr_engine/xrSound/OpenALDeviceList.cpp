@@ -66,21 +66,10 @@ void ALDeviceList::Enumerate()
 
 		devices				= (char *)alcGetString(NULL, ALC_DEVICE_SPECIFIER);
 		Msg					("devices %s",devices);
+
 		m_defaultDeviceName	= (char *)alcGetString(NULL, ALC_DEFAULT_DEVICE_SPECIFIER);
 		Msg("SOUND: OpenAL: system  default SndDevice name is %s", m_defaultDeviceName.c_str());
 		
-		// KRodin: по умолчанию почему-то устанавливается девайс Generic Software и из-за этого у меня эхо в наушниках.
-		// Неплохо бы сделать в меню возможность выбора девайса (в ЗП так сделано, если память не изменяет).
-		// Пока же просто включаю использование OpenAL Soft принудительно.
-		// Надо ещё подумать, что делать с системами, у которых Generic Hardware.
-		// Может вообще всегда устанавливать принудительное использование OpenAL Soft ?
-		// Наверное так и сделаю:
-		//if (!stricmp(m_defaultDeviceName.c_str(), AL_GENERIC_SOFTWARE))
-		//{
-			m_defaultDeviceName = AL_SOFT;
-			Msg("SOUND: OpenAL: default SndDevice name set to %s", m_defaultDeviceName.c_str());
-		//}
-
 		index = 0;
 		// go through device list (each device terminated with a single NULL, list terminated with double NULL)
 		while (*devices != NULL) 
@@ -101,9 +90,18 @@ void ALDeviceList::Enumerate()
 						alcGetIntegerv(device, ALC_MINOR_VERSION, sizeof(int), &minor);
 						m_devices.push_back(ALDeviceDesc(actualDeviceName, minor, major));
 						
-						m_devices.back().efx = alcIsExtensionPresent(alcGetContextsDevice(alcGetCurrentContext()), "ALC_EXT_EFX");
-						m_devices.back().xram = alcIsExtensionPresent(alcGetContextsDevice(alcGetCurrentContext()), "EAX_RAM");
-					
+						IS_OpenAL_Soft = !stricmp(m_devices.back().name.c_str(), AL_SOFT);
+						if (IS_OpenAL_Soft)
+						{
+							m_devices.back().efx = alcIsExtensionPresent(alcGetContextsDevice(alcGetCurrentContext()), "ALC_EXT_EFX");
+							m_devices.back().xram = alcIsExtensionPresent(alcGetContextsDevice(alcGetCurrentContext()), "EAX_RAM");
+						}
+						else
+						{
+							m_devices.back().xram = (alIsExtensionPresent("EAX-RAM") == TRUE);
+							m_devices.back().eax = (alIsExtensionPresent("EAX2.0") == TRUE);
+						}
+
 						Msg("SOUND: OpenAL: [%s] EFX Support: %s", m_devices.back().name.c_str(), m_devices.back().efx ? "yes" : "no");
 
 						// KD: disable unwanted eax flag to force eax on all devices
@@ -122,6 +120,18 @@ void ALDeviceList::Enumerate()
 		}
 	}else
 		Msg("SOUND: OpenAL: EnumerationExtension NOT Present");
+
+	// KRodin: по умолчанию почему-то устанавливается девайс Generic Software и из-за этого у меня эхо в наушниках.
+	// Неплохо бы сделать в меню возможность выбора девайса (в ЗП так сделано, если память не изменяет).
+	// Пока же просто включаю использование OpenAL Soft принудительно.
+	// Надо ещё подумать, что делать с системами, у которых Generic Hardware.
+	// Может вообще всегда устанавливать принудительное использование OpenAL Soft ?
+	// Наверное так и сделаю:
+	if (IS_OpenAL_Soft)
+	{
+		m_defaultDeviceName = AL_SOFT;
+		Msg("SOUND: OpenAL: default SndDevice name set to %s", m_defaultDeviceName.c_str());
+	}
 
 	ResetFilters();
 

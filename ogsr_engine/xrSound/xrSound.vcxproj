@@ -98,8 +98,10 @@
       <ImageHasSafeExceptionHandlers>false</ImageHasSafeExceptionHandlers>
     </Link>
     <PostBuildEvent>
-      <Command>copy /Y "$(SolutionDir)\3rd_party\Src\OpenAL\bin\$(PlatformShortName)\soft_oal.dll" "$(OutDir)soft_oal.dll"</Command>
-      <Command>copy /Y "$(SolutionDir)\3rd_party\Src\OpenAL\bin\alsoft.ini" "$(OutDir)alsoft.ini"</Command>
+      <Command>
+		copy /Y "$(SolutionDir)\3rd_party\Src\OpenAL\bin\$(PlatformShortName)\soft_oal.dll" "$(OutDir)soft_oal.dll"
+		copy /Y "$(SolutionDir)\3rd_party\Src\OpenAL\bin\alsoft.ini" "$(OutDir)alsoft.ini"
+	  </Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -148,8 +150,10 @@
       <IgnoreSpecificDefaultLibraries>libcmt</IgnoreSpecificDefaultLibraries>
     </Link>
     <PostBuildEvent>
-      <Command>copy /Y "$(SolutionDir)\3rd_party\Src\OpenAL\bin\$(PlatformShortName)\soft_oal.dll" "$(OutDir)soft_oal.dll"</Command>
-      <Command>copy /Y "$(SolutionDir)\3rd_party\Src\OpenAL\bin\alsoft.ini" "$(OutDir)alsoft.ini"</Command>
+      <Command>
+		copy /Y "$(SolutionDir)\3rd_party\Src\OpenAL\bin\$(PlatformShortName)\soft_oal.dll" "$(OutDir)soft_oal.dll"
+		copy /Y "$(SolutionDir)\3rd_party\Src\OpenAL\bin\alsoft.ini" "$(OutDir)alsoft.ini"
+	  </Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
