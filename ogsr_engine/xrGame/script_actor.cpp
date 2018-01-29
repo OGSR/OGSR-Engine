@@ -200,7 +200,7 @@ void CScriptActor::script_register(lua_State *L)
 			.def("is_actor_crouching",					&CActor::is_actor_crouching)
 			.def("is_actor_creeping",					&CActor::is_actor_creeping)
 			.def("is_actor_climbing",					&CActor::is_actor_climbing)
-			.def("is_actor_moving",						&CActor::is_actor_climbing)
+			.def("is_actor_moving",						&CActor::is_actor_moving)
 			.def( "UpdateArtefactsOnBelt", &CActor::UpdateArtefactsOnBelt )
 			,
 			class_<CActorObject, bases<CActor, CEntityAlive>>("CActor")	// хак с наследованием нужен для переопределения свойств. Luabind не поддерживает property getters override			
