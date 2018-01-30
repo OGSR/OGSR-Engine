@@ -1635,8 +1635,6 @@ extern void	noise3Init();
 #ifndef _EDITOR
 
 #include <xmmintrin.h>
-#include "../xrCPU_Pipe/ttapi.h"
-#pragma comment(lib,"xrCPU_Pipe.lib")
 
 __forceinline __m128 _mm_load_fvector( const Fvector& v )
 {
@@ -1775,7 +1773,7 @@ void PATurbulence::Execute(ParticleEffect *effect, float dt)
 	if ( ! p_cnt )
 		return;
 
-	u32 nWorkers = ttapi_GetWorkersCount();
+	size_t nWorkers = TTAPI.threads.size();
 
 	//Is how it is in Shadow of Chernobyl and Clear Sky source and does seem to run better then * 20. Only 20% CPU usage.
 	if ( p_cnt < nWorkers * 64 )
@@ -1804,11 +1802,10 @@ void PATurbulence::Execute(ParticleEffect *effect, float dt)
 		tesParams[i].octaves = octaves;
 		tesParams[i].magnitude = magnitude;
 
-		ttapi_AddWorker( PATurbulenceExecuteStream , (LPVOID) &tesParams[i] );
+		TTAPI.threads[i]->addJob([=] { PATurbulenceExecuteStream((void*)&tesParams[i]); });
 	}
 
-	ttapi_RunAllWorkers();
-
+	TTAPI.wait();
 }
 
 #else

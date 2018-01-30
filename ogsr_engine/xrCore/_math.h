@@ -39,16 +39,6 @@ namespace CPU {
 #endif
 };
 
-extern XRCORE_API	void	_initialize_cpu			();
-extern XRCORE_API	void	_initialize_cpu_thread	();
-
-// threading
-typedef				void	thread_t				( void * );
-extern XRCORE_API	void	thread_name				( const char* name);
-extern XRCORE_API	void	thread_spawn			(
-	thread_t*	entry,
-	const char*	name,
-	unsigned	stack,
-	void*		arglist 
-	);
-
+XRCORE_API void _initialize_cpu();
+XRCORE_API void set_current_thread_name(const char* threadName);
+XRCORE_API void set_thread_name(const char* threadName, std::thread& thread);

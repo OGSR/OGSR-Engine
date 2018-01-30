@@ -265,6 +265,7 @@ void SPHBonesData::net_Load(NET_Packet &P)
 	if (bones_number > 64)
 	{
 		Msg("!![SPHBonesData::net_Load] bones_number is [%u]!", bones_number);
+		LogStackTrace("[SPHBonesData::net_Load] stask trace:\n");
 		_high = P.r_u64();
 	}
 	bones_mask.set(_low, _high);

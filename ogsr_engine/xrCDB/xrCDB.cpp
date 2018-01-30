@@ -47,50 +47,12 @@ MODEL::~MODEL()
 	xr_free		(verts);	verts_count= 0;
 }
 
-struct	BTHREAD_params
-{
-	MODEL*				M;
-	Fvector*			V;
-	int					Vcnt;
-	TRI*				T;
-	int					Tcnt;
-	build_callback*		BC;
-	void*				BCP;
-	bool rebuildTrisRequired;
-};
-
-void	MODEL::build_thread		(void *params)
-{
-	_initialize_cpu_thread		();
-	FPU::m64r					();
-	BTHREAD_params	P			= *( (BTHREAD_params*)params );
-	P.M->cs.Enter				();
-	P.M->build_internal			(P.V,P.Vcnt,P.T,P.Tcnt,P.BC,P.BCP, P.rebuildTrisRequired);
-	P.M->status					= S_READY;
-	P.M->cs.Leave				();
-	//Msg("* xrCDB: cform build completed, memory usage: %d K",P.M->memory()/1024);
-}
-
 void MODEL::build(Fvector* V, int Vcnt, TRI* T, int Tcnt, build_callback* bc, void* bcp, const bool rebuildTrisRequired) {
 	R_ASSERT(S_INIT == status);
 	R_ASSERT((Vcnt >= 4) && (Tcnt >= 2));
-	_initialize_cpu_thread();
-	const auto cpu_thrd = CPU::ID.threadCount;
 
-	if (cpu_thrd > 1)
-	{
-		BTHREAD_params P = { this, V, Vcnt, T, Tcnt, bc, bcp, rebuildTrisRequired };
-		thread_spawn(build_thread, "CDB-construction", 0, &P);
-		while (S_INIT == status)
-		{
-			Sleep(5);
-		}
-	}
-	else
-	{
-		build_internal(V, Vcnt, T, Tcnt, bc, bcp, rebuildTrisRequired);
-		status = S_READY;
-	}
+	build_internal(V, Vcnt, T, Tcnt, bc, bcp, rebuildTrisRequired);
+	status = S_READY;
 }
 
 void	MODEL::build_internal	(Fvector* V, int Vcnt, TRI* T, int Tcnt, build_callback* bc, void* bcp, const bool rebuildTrisRequired)

@@ -141,9 +141,6 @@
     <ClCompile Include="xrMemory_debug.cpp">
       <Filter>Memory manager</Filter>
     </ClCompile>
-    <ClCompile Include="xrMemory_POOL.cpp">
-      <Filter>Memory manager</Filter>
-    </ClCompile>
     <ClCompile Include="xrMemory_subst_msvc.cpp">
       <Filter>Memory manager</Filter>
     </ClCompile>
@@ -189,6 +186,9 @@
     </ClCompile>
     <ClCompile Include="stacktrace_collector.cpp">
       <Filter>Debug core</Filter>
+    </ClCompile>
+    <ClCompile Include="xrSkinXW.cpp">
+      <Filter>Math</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -336,9 +336,6 @@
     <ClInclude Include="xrMemory_align.h">
       <Filter>Memory manager</Filter>
     </ClInclude>
-    <ClInclude Include="xrMEMORY_POOL.h">
-      <Filter>Memory manager</Filter>
-    </ClInclude>
     <ClInclude Include="xrMemory_pure.h">
       <Filter>Memory manager</Filter>
     </ClInclude>
@@ -412,6 +409,10 @@
     <ClInclude Include="stacktrace_collector.h">
       <Filter>Debug core</Filter>
     </ClInclude>
+    <ClInclude Include="xrSkinXW.hpp">
+      <Filter>Math</Filter>
+    </ClInclude>
+    <ClInclude Include="thread_pool.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="xrCore.rc">

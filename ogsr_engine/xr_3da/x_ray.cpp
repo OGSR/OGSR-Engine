@@ -145,30 +145,6 @@ void execUserScript				( )
 	Console->Execute			("unbindall");
 	Console->ExecuteScript		(Console->ConfigFile);
 }
-void slowdownthread	( void* )
-{
-//	Sleep		(30*1000);
-	for (;;)	{
-		if (Device.Statistic->fFPS<30) Sleep(1);
-		if (Device.mt_bMustExit)	return;
-		if (0==pSettings)			return;
-		if (0==Console)				return;
-		if (0==pInput)				return;
-		if (0==pApp)				return;
-	}
-}
-void CheckPrivilegySlowdown		( )
-{
-#ifdef DEBUG
-	if	(strstr(Core.Params,"-slowdown"))	{
-		thread_spawn(slowdownthread,"slowdown",0,0);
-	}
-	if	(strstr(Core.Params,"-slowdown2x"))	{
-		thread_spawn(slowdownthread,"slowdown",0,0);
-		thread_spawn(slowdownthread,"slowdown",0,0);
-	}
-#endif // DEBUG
-}
 
 void Startup					( )
 {
@@ -758,7 +734,7 @@ void CApplication::LoadTitleInt(LPCSTR str)
 	VERIFY						(str && xr_strlen(str)<256);
 	strcpy_s						(app_title, str);
 	Msg							("* phase time: %d ms",phase_timer.GetElapsed_ms());	phase_timer.Start();
-	Msg							("* phase cmem: %d K", Memory.mem_usage()/1024);
+	//Msg							("* phase cmem: %d K", Memory.mem_usage()/1024);
 //.	Console->Execute			("stat_memory");
 	Log							(app_title);
 	
