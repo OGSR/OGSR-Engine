@@ -28,6 +28,8 @@ CSound_manager_interface*		Sound		= 0;
 
 CSoundRender_Core::CSoundRender_Core	()
 {
+	efx_reverb = EFX_REVERB_PRESET_GENERIC;
+	bEFX = false;
 	bPresent					= FALSE;
     bEAX						= FALSE;
     bDeferredEAX				= FALSE;
@@ -51,19 +53,12 @@ CSoundRender_Core::CSoundRender_Core	()
 
 CSoundRender_Core::~CSoundRender_Core()
 {
-#ifdef _EDITOR
-	ETOOLS::destroy_model		(geom_ENV);
-	ETOOLS::destroy_model		(geom_SOM);
-#else
 	xr_delete					(geom_ENV);
 	xr_delete					(geom_SOM);
-#endif
 }
 
 void CSoundRender_Core::_initialize	(u64 window)
 {
-    Log							("* sound: EAX 2.0 extension:",bEAX?"present":"absent");
-    Log							("* sound: EAX 2.0 deferred:",bDeferredEAX?"present":"absent");
 	Timer.Start					( );
 
     // load environment
@@ -357,17 +352,12 @@ CSoundRender_Environment*	CSoundRender_Core::get_environment			( const Fvector& 
 	}else{
 		if (geom_ENV){
 			Fvector	dir				= {0,-1,0};
-#ifdef _EDITOR
-			ETOOLS::ray_options		(CDB::OPT_ONLYNEAREST);
-			ETOOLS::ray_query		(geom_ENV,P,dir,1000.f);
-			if (ETOOLS::r_count()){
-				CDB::RESULT*		r	= ETOOLS::r_begin();
-#else
+
 			geom_DB.ray_options		(CDB::OPT_ONLYNEAREST);
 			geom_DB.ray_query		(geom_ENV,P,dir,1000.f);
 			if (geom_DB.r_count()){
 				CDB::RESULT*		r	= geom_DB.r_begin();
-#endif            
+
 				CDB::TRI*			T	= geom_ENV->get_tris()+r->id;
 				Fvector*			V	= geom_ENV->get_verts();
 				Fvector tri_norm;
@@ -409,6 +399,68 @@ void						CSoundRender_Core::env_apply		()
 void CSoundRender_Core::update_listener( const Fvector& P, const Fvector& D, const Fvector& N, float dt )
 {
 }
+
+
+//////////////////////////////////////////////////
+#include <efx.h>
+static LPALEFFECTF alEffectf;
+static LPALEFFECTI alEffecti;
+static LPALDELETEEFFECTS alDeleteEffects;
+static LPALISEFFECT alIsEffect;
+static LPALGENEFFECTS alGenEffects;
+
+bool CSoundRender_Core::EFXTestSupport(const EFXEAXREVERBPROPERTIES* reverb)
+{
+#	define LOAD_PROC(x, type) ((x) = (type)alGetProcAddress(#x))
+
+	LOAD_PROC(alGenEffects, LPALGENEFFECTS);
+	LOAD_PROC(alDeleteEffects, LPALDELETEEFFECTS);
+	LOAD_PROC(alIsEffect, LPALISEFFECT);
+	LOAD_PROC(alEffecti, LPALEFFECTI);
+
+	LOAD_PROC(alEffectf, LPALEFFECTF);
+
+	ALuint effect = 0;
+	alGenEffects(1, &effect);
+
+	alEffecti(effect, AL_EFFECT_TYPE, AL_EFFECT_REVERB);
+	alEffectf(effect, AL_REVERB_DENSITY, reverb->flDensity);
+	alEffectf(effect, AL_REVERB_DIFFUSION, reverb->flDiffusion);
+	alEffectf(effect, AL_REVERB_GAIN, reverb->flGain);
+	alEffectf(effect, AL_REVERB_GAINHF, reverb->flGainHF);
+	alEffectf(effect, AL_REVERB_DECAY_TIME, reverb->flDecayTime);
+	alEffectf(effect, AL_REVERB_DECAY_HFRATIO, reverb->flDecayHFRatio);
+	alEffectf(effect, AL_REVERB_REFLECTIONS_GAIN, reverb->flReflectionsGain);
+	alEffectf(effect, AL_REVERB_REFLECTIONS_DELAY, reverb->flReflectionsDelay);
+	alEffectf(effect, AL_REVERB_LATE_REVERB_GAIN, reverb->flLateReverbGain);
+	alEffectf(effect, AL_REVERB_LATE_REVERB_DELAY, reverb->flLateReverbDelay);
+	alEffectf(effect, AL_REVERB_AIR_ABSORPTION_GAINHF, reverb->flAirAbsorptionGainHF);
+	alEffectf(effect, AL_REVERB_ROOM_ROLLOFF_FACTOR, reverb->flRoomRolloffFactor);
+	alEffecti(effect, AL_REVERB_DECAY_HFLIMIT, reverb->iDecayHFLimit);
+
+	/* Check if an error occured, and clean up if so. */
+	ALenum err = alGetError();
+	if (err != AL_NO_ERROR)
+	{
+		fprintf(stderr, "OpenAL error: %s\n", alGetString(err));
+		if (alIsEffect(effect))
+			alDeleteEffects(1, &effect);
+		return false;
+	}
+	return true;
+}
+
+void CSoundRender_Core::i_efx_listener_set(CSound_environment* _E, EFXEAXREVERBPROPERTIES* reverb)
+{
+	const auto E = static_cast<CSoundRender_Environment*>(_E);
+	reverb->flDecayTime = E->DecayTime;
+	reverb->flDecayHFRatio = E->DecayHFRatio;
+	reverb->flReflectionsDelay = E->ReflectionsDelay;
+	reverb->flLateReverbDelay = E->ReverbDelay;
+	reverb->flRoomRolloffFactor = E->RoomRolloffFactor;
+}
+//////////////////////////////////////////////////
+
 
 void	CSoundRender_Core::i_eax_listener_set	(CSound_environment* _E)
 {
@@ -484,63 +536,3 @@ void CSoundRender_Core::object_relcase( CObject* obj )
         }
     }
 }
-
-#ifdef _EDITOR
-void						CSoundRender_Core::set_user_env		( CSound_environment* E)
-{
-	if (0==E && !bUserEnvironment)	return;
-
-	if (E)
-	{
-		s_user_environment	= *((CSoundRender_Environment*)E);
-		bUserEnvironment	= TRUE;
-	}
-	else 
-	{
-		bUserEnvironment	= FALSE;
-	}
-	env_apply			();
-}
-
-void						CSoundRender_Core::refresh_env_library()
-{
-	env_unload			();
-	env_load			();
-	env_apply			();
-}
-void						CSoundRender_Core::refresh_sources()
-{
-	for (u32 eit=0; eit<s_emitters.size(); eit++)
-    	s_emitters[eit]->stop(FALSE);
-	for (u32 sit=0; sit<s_sources.size(); sit++){
-    	CSoundRender_Source* s = s_sources[sit];
-    	s->unload		();
-		s->load			(*s->fname);
-    }
-}
-void CSoundRender_Core::set_environment_size	(CSound_environment* src_env, CSound_environment** dst_env)
-{
-	if (bEAX){
-		CSoundRender_Environment* SE 	= static_cast<CSoundRender_Environment*>(src_env); 
-		CSoundRender_Environment* DE 	= static_cast<CSoundRender_Environment*>(*dst_env); 
-		// set environment
-		i_eax_set			    		(&DSPROPSETID_EAX_ListenerProperties, DSPROPERTY_EAXLISTENER_IMMEDIATE | DSPROPERTY_EAXLISTENER_ENVIRONMENTSIZE, &SE->EnvironmentSize, sizeof(SE->EnvironmentSize));
-		i_eax_listener_set				(SE);
-		i_eax_commit_setting			();
-		i_eax_set			    		(&DSPROPSETID_EAX_ListenerProperties, DSPROPERTY_EAXLISTENER_IMMEDIATE | DSPROPERTY_EAXLISTENER_ENVIRONMENTSIZE, &DE->EnvironmentSize, sizeof(DE->EnvironmentSize));
-		i_eax_listener_get				(DE);
-	}
-}
-void CSoundRender_Core::set_environment	(u32 id, CSound_environment** dst_env)
-{
-	if (bEAX){
-		CSoundRender_Environment* DE 	= static_cast<CSoundRender_Environment*>(*dst_env); 
-		// set environment
-		i_eax_set			    		(&DSPROPSETID_EAX_ListenerProperties, DSPROPERTY_EAXLISTENER_IMMEDIATE | DSPROPERTY_EAXLISTENER_ENVIRONMENTSIZE, &id, sizeof(id));
-		i_eax_listener_get				(DE);
-	}
-}
-#endif
-
-
-

@@ -1,5 +1,3 @@
-#ifndef SoundRender_TargetAH
-#define SoundRender_TargetAH
 #pragma once
 
 #include "soundrender_Target.h"
@@ -32,4 +30,3 @@ public:
 	virtual void				update					();
 	virtual void				fill_parameters			();
 };
-#endif

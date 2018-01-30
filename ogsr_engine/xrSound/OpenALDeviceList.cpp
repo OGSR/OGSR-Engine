@@ -53,22 +53,21 @@ void ALDeviceList::Enumerate()
 	int major, minor, index;
 	const char *actualDeviceName;
 
-	Msg("SOUND: OpenAL: enumerate devices...");
+	Msg("[OpenAL] enumerate devices...");
 	// have a set of vectors storing the device list, selection status, spec version #, and XRAM support status
 	// -- empty all the lists and reserve space for 10 devices
-	m_devices.clear				();
+	m_devices.clear();
 	
 	CoUninitialize();
 	// grab function pointers for 1.0-API functions, and if successful proceed to enumerate all devices
-	if (alcIsExtensionPresent(NULL, "ALC_ENUMERATION_EXT")) 
+	if (alcIsExtensionPresent(nullptr, "ALC_ENUMERATION_EXT")) 
 	{
-		Msg("SOUND: OpenAL: EnumerationExtension Present");
+		Msg("[OpenAL] EnumerationExtension Present");
 
-		devices				= (char *)alcGetString(NULL, ALC_DEVICE_SPECIFIER);
-		Msg					("devices %s",devices);
+		devices = (char *)alcGetString(nullptr, ALC_DEVICE_SPECIFIER);
 
-		m_defaultDeviceName	= (char *)alcGetString(NULL, ALC_DEFAULT_DEVICE_SPECIFIER);
-		Msg("SOUND: OpenAL: system  default SndDevice name is %s", m_defaultDeviceName.c_str());
+		m_defaultDeviceName	= (char *)alcGetString(nullptr, ALC_DEFAULT_DEVICE_SPECIFIER);
+		Msg("[OpenAL] system default SndDevice name is [%s]", m_defaultDeviceName.c_str());
 		
 		index = 0;
 		// go through device list (each device terminated with a single NULL, list terminated with double NULL)
@@ -90,7 +89,9 @@ void ALDeviceList::Enumerate()
 						alcGetIntegerv(device, ALC_MINOR_VERSION, sizeof(int), &minor);
 						m_devices.push_back(ALDeviceDesc(actualDeviceName, minor, major));
 						
-						IS_OpenAL_Soft = !stricmp(m_devices.back().name.c_str(), AL_SOFT);
+						if(!IS_OpenAL_Soft)
+							IS_OpenAL_Soft = !stricmp(m_devices.back().name.c_str(), AL_SOFT);
+
 						if (IS_OpenAL_Soft)
 						{
 							m_devices.back().efx = alcIsExtensionPresent(alcGetContextsDevice(alcGetCurrentContext()), "ALC_EXT_EFX");
@@ -102,8 +103,6 @@ void ALDeviceList::Enumerate()
 							m_devices.back().eax = (alIsExtensionPresent("EAX2.0") == TRUE);
 						}
 
-						Msg("SOUND: OpenAL: [%s] EFX Support: %s", m_devices.back().name.c_str(), m_devices.back().efx ? "yes" : "no");
-
 						// KD: disable unwanted eax flag to force eax on all devices
 						m_devices.back().eax_unwanted	= 0;/*((0==xr_strcmp(actualDeviceName,AL_GENERIC_HARDWARE))||
 														   (0==xr_strcmp(actualDeviceName,AL_GENERIC_SOFTWARE)));*/
@@ -111,38 +110,32 @@ void ALDeviceList::Enumerate()
 					}
 					alcDestroyContext(context);
 				}else
-					Msg("SOUND: OpenAL: cant create context for %s",device);
+					Msg("[OpenAL] cant create context for [%s]",device);
 				alcCloseDevice(device);
 			}else
-				Msg("SOUND: OpenAL: cant open device %s",devices);
+				Msg("[OpenAL] cant open device [%s]",devices);
 
-			devices		+= xr_strlen(devices) + 1;
+			devices += xr_strlen(devices) + 1;
 		}
 	}else
-		Msg("SOUND: OpenAL: EnumerationExtension NOT Present");
+		Msg("[OpenAL] EnumerationExtension NOT Present");
 
-	// KRodin: по умолчанию почему-то устанавливается девайс Generic Software и из-за этого у меня эхо в наушниках.
-	// Неплохо бы сделать в меню возможность выбора девайса (в ЗП так сделано, если память не изменяет).
-	// Пока же просто включаю использование OpenAL Soft принудительно.
-	// Надо ещё подумать, что делать с системами, у которых Generic Hardware.
-	// Может вообще всегда устанавливать принудительное использование OpenAL Soft ?
-	// Наверное так и сделаю:
 	if (IS_OpenAL_Soft)
 	{
 		m_defaultDeviceName = AL_SOFT;
-		Msg("SOUND: OpenAL: default SndDevice name set to %s", m_defaultDeviceName.c_str());
+		Msg("[OpenAL] default SndDevice name set to [%s]", m_defaultDeviceName.c_str());
 	}
 
 	ResetFilters();
 
 	if(0!=GetNumDevices())
-		Msg("SOUND: OpenAL: All available devices:");
+		Msg("[OpenAL] All available devices:");
 
 	int majorVersion, minorVersion;
 	for (int i = 0; i < GetNumDevices(); i++)
 	{
 		GetDeviceVersion		(i, &majorVersion, &minorVersion);
-		Msg	("%d. %s, Spec Version %d.%d %s", 
+		Msg	("    %d. %s, Spec Version %d.%d %s", 
 			i+1, 
 			GetDeviceName(i).c_str(), 
 			majorVersion, 
@@ -179,9 +172,9 @@ void ALDeviceList::SelectBestDevice()
 	};
 
 	if(GetNumDevices()==0)
-		Msg("SOUND: OpenAL: SelectBestDevice: list empty");
+		Msg("[OpenAL] SelectBestDevice: list empty");
 	else
-		Msg("SOUND: OpenAL: SelectBestDevice is %s %d.%d",GetDeviceName(m_defaultDeviceIndex).c_str(),best_majorVersion,best_minorVersion);
+		Msg("[OpenAL] SelectBestDevice is [%s %d.%d]",GetDeviceName(m_defaultDeviceIndex).c_str(),best_majorVersion,best_minorVersion);
 }
 
 /*

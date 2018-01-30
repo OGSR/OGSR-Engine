@@ -1,5 +1,3 @@
-#ifndef SoundRender_SourceH
-#define SoundRender_SourceH
 #pragma once
 
 #include "soundrender_cache.h"
@@ -40,4 +38,3 @@ public:
 	virtual LPCSTR			file_name				()	{return *fname;	}
 	virtual float			base_volume				()	{return m_fBaseVolume; }
 };
-#endif

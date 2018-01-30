@@ -1099,8 +1099,9 @@ void	IPureClient::Sync_Average	()
 //	Msg("* CLIENT: d(%d), dc(%d), s(%d)",net_TimeDelta,net_TimeDelta_Calculated,size);
 }
 
-void 				sync_thread(void* P)
+void sync_thread(void* P)
 {
+	Msg("~~NW Sync thread called!");
 	SetThreadPriority	(GetCurrentThread(),THREAD_PRIORITY_TIME_CRITICAL);
 	IPureClient*	C	= (IPureClient*)P;
 	C->Sync_Thread		();
@@ -1109,7 +1110,10 @@ void	IPureClient::net_Syncronize	()
 {
 	net_Syncronised		= FALSE;
 	net_DeltaArray.clear();
-	thread_spawn		(sync_thread,"network-time-sync",0,this);
+
+	std::thread SyNc_thread(sync_thread, this);
+	set_thread_name("network-time-sync", SyNc_thread);
+	Msg("--NW Sync thread started!");
 }
 
 void	IPureClient::ClearStatistic()

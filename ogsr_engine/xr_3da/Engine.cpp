@@ -6,41 +6,31 @@
 #include "Engine.h"
 
 CEngine				Engine;
-xrDispatchTable		PSGP;
-
-//////////////////////////////////////////////////////////////////////
-// Construction/Destruction
-//////////////////////////////////////////////////////////////////////
-
-CEngine::CEngine()
-{
-	
-}
-
-CEngine::~CEngine()
-{
-	
-}
 
 extern	void msCreate		(LPCSTR name);
 
-void CEngine::Initialize	(void)
+void CEngine::Initialize()
 {
-	// Bind PSGP
-	hPSGP = LoadLibrary("xrCPU_Pipe.dll");
-	R_ASSERT(hPSGP);
-	xrBinder*	bindCPU = (xrBinder*)GetProcAddress(hPSGP, "xrBind_PSGP");	R_ASSERT(bindCPU);
-	bindCPU(&PSGP);
-
-	// Other stuff
+	//
+	u32 th_count = std::thread::hardware_concurrency(); //CPU::ID.coresCount
+	// Check for override from command line
+	char szSearchFor[] = "-max-threads";
+	char* pszTemp = strstr(GetCommandLine(), szSearchFor);
+	u32 dwOverride = 0;
+	if (pszTemp)
+		if (sscanf_s(pszTemp + strlen(szSearchFor), "%u", &dwOverride))
+			if ((dwOverride >= 1) && (dwOverride <= th_count))
+				th_count = dwOverride;
+	TTAPI.initialize(th_count);
+	R_ASSERT(TTAPI.threads.size());
+	Msg("TTAPI number of threads: [%zi]", TTAPI.threads.size());
+	//
 	Engine.Sheduler.Initialize			( );
-	// 
+
 #ifdef DEBUG
 	msCreate							("game");
 #endif
 }
-
-typedef void __cdecl ttapi_Done_func(void);
 
 void CEngine::Destroy	()
 {
@@ -50,15 +40,4 @@ void CEngine::Destroy	()
 	if (Memory.debug_mode)				dbg_dump_leaks_prepare	();
 #endif // DEBUG_MEMORY_MANAGER
 	Engine.External.Destroy				( );
-	
-	if (hPSGP)
-	{
-		ttapi_Done_func*  ttapi_Done = (ttapi_Done_func*)GetProcAddress(hPSGP, "ttapi_Done");	R_ASSERT(ttapi_Done);
-		if (ttapi_Done)
-			ttapi_Done();
-
-		FreeLibrary(hPSGP);
-		hPSGP = 0;
-		ZeroMemory(&PSGP, sizeof(PSGP));
-	}
 }

@@ -96,16 +96,27 @@ void CSoundRender_Core::update	( const Fvector& P, const Fvector& D, const Fvect
 			s_targets_defer[it]->fill_parameters();
 	}
 
-	// update EAX
-    if (psSoundFlags.test(ss_EAX) && bEAX){
+	// update EAX or EFX
+    if (psSoundFlags.test(ss_EAX) && ( bEAX || bEFX )){
         if (bListenerMoved){
             bListenerMoved			= FALSE;
             e_target				= *get_environment	(P);
         }
         e_current.lerp				(e_current,e_target,dt);
 
-        i_eax_listener_set			(&e_current);
-		i_eax_commit_setting		();
+		if (bEAX)
+		{
+			i_eax_listener_set(&e_current);
+			i_eax_commit_setting();
+		}
+		else
+		{
+			i_efx_listener_set(&e_current, &efx_reverb); //KRodin: Сделал по аналогии с eax. Некоторые эффекты подошли. Посмотрим, что получится.
+			if (!EFXTestSupport(&efx_reverb))
+			{
+				//Msg("!![OpenAL] EFX ERROR!"); //Иногда такое бывает. Из-за каких-нибудь эффектов наверно. Но мне пока лень разбираться, в чем там проблема.
+			}
+		}
 	}
 
     // update listener
@@ -190,17 +201,11 @@ float CSoundRender_Core::get_occlusion_to( const Fvector& hear_pt, const Fvector
 		float range				= dir.magnitude	();
 		dir.div					(range);
 
-#ifdef _EDITOR
-		ETOOLS::ray_options		(CDB::OPT_CULL);
-		ETOOLS::ray_query		(geom_SOM,hear_pt,dir,range);
-		u32 r_cnt				= ETOOLS::r_count();
-		CDB::RESULT*	_B 		= ETOOLS::r_begin();
-#else
 		geom_DB.ray_options		(CDB::OPT_CULL);
 		geom_DB.ray_query		(geom_SOM,hear_pt,dir,range);
 		u32 r_cnt				= geom_DB.r_count();
 		CDB::RESULT*	_B 		= geom_DB.r_begin();
-#endif            
+
 		if (0!=r_cnt){
 			for (u32 k=0; k<r_cnt; k++){
 				CDB::RESULT* R	 = _B+k;
@@ -234,19 +239,11 @@ float CSoundRender_Core::get_occlusion(Fvector& P, float R, Fvector* occ)
 			if (_range>0 && _range<range){occ_value=psSoundOcclusionScale; bNeedFullTest=false;}
 		// 2. Polygon doesn't picked up - real database query
 		if (bNeedFullTest){
-#ifdef _EDITOR
-			ETOOLS::ray_options		(CDB::OPT_ONLYNEAREST);
-			ETOOLS::ray_query		(geom_MODEL,base,dir,range);
-			if (0!=ETOOLS::r_count()){ 
-				// cache polygon
-				const CDB::RESULT*	R = ETOOLS::r_begin			();
-#else
 			geom_DB.ray_options		(CDB::OPT_ONLYNEAREST);
 			geom_DB.ray_query		(geom_MODEL,base,dir,range);
 			if (0!=geom_DB.r_count()){ 
 				// cache polygon
 				const CDB::RESULT*	R = geom_DB.r_begin		();
-#endif            
 				const CDB::TRI&		T = geom_MODEL->get_tris	() [ R->id ];
 				const Fvector*		V = geom_MODEL->get_verts	();
 				occ[0].set			(V[T.verts[0]]);
@@ -257,17 +254,10 @@ float CSoundRender_Core::get_occlusion(Fvector& P, float R, Fvector* occ)
 		}
 	}
 	if (0!=geom_SOM){
-#ifdef _EDITOR
-		ETOOLS::ray_options		(CDB::OPT_CULL);
-		ETOOLS::ray_query		(geom_SOM,base,dir,range);
-		u32 r_cnt				= ETOOLS::r_count();
-        CDB::RESULT*	_B 		= ETOOLS::r_begin();
-#else
 		geom_DB.ray_options		(CDB::OPT_CULL);
 		geom_DB.ray_query		(geom_SOM,base,dir,range);
 		u32 r_cnt				= geom_DB.r_count();
         CDB::RESULT*	_B 		= geom_DB.r_begin();
-#endif            
 		if (0!=r_cnt){
 			for (u32 k=0; k<r_cnt; k++){
 				CDB::RESULT* R	 = _B+k;

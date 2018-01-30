@@ -8,14 +8,10 @@
 #include <eax.h>
 #pragma warning(pop)
 
-CSoundRender_Environment::CSoundRender_Environment(void)
+CSoundRender_Environment::CSoundRender_Environment()
 {
 	version			= sdef_env_version;
 	set_default		();
-}
-
-CSoundRender_Environment::~CSoundRender_Environment(void)
-{
 }
 
 void CSoundRender_Environment::set_default	()

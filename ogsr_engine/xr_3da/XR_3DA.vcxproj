@@ -65,7 +65,7 @@
       <OmitFramePointers>false</OmitFramePointers>
       <EnableFiberSafeOptimizations>true</EnableFiberSafeOptimizations>
       <WholeProgramOptimization>false</WholeProgramOptimization>
-      <AdditionalIncludeDirectories>..\COMMON;..\xrCore\;..\xrCPU_Pipe\;$(SolutionDir)\3rd_party\Src\d3dx\include;..\Luabind;..\LuaJIT\src;$(SolutionDir)\3rd_party\Src\Xiph\libogg\include;$(SolutionDir)\3rd_party\Src\Xiph\libtheora\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\COMMON;..\xrCore\;$(SolutionDir)\3rd_party\Src\d3dx\include;..\Luabind;..\LuaJIT\src;$(SolutionDir)\3rd_party\Src\Xiph\libogg\include;$(SolutionDir)\3rd_party\Src\Xiph\libtheora\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>NDEBUG;WIN32;_WINDOWS;ENGINE_BUILD;_SECURE_SCL=0;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <StringPooling>true</StringPooling>
       <ExceptionHandling>
@@ -127,7 +127,7 @@
       <OmitFramePointers>false</OmitFramePointers>
       <EnableFiberSafeOptimizations>true</EnableFiberSafeOptimizations>
       <WholeProgramOptimization>false</WholeProgramOptimization>
-      <AdditionalIncludeDirectories>..\COMMON;..\xrCore\;..\xrCPU_Pipe\;$(SolutionDir)\3rd_party\Src\d3dx\include;..\Luabind;..\LuaJIT\src;$(SolutionDir)\3rd_party\Src\Xiph\libogg\include;$(SolutionDir)\3rd_party\Src\Xiph\libtheora\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\COMMON;..\xrCore\;$(SolutionDir)\3rd_party\Src\d3dx\include;..\Luabind;..\LuaJIT\src;$(SolutionDir)\3rd_party\Src\Xiph\libogg\include;$(SolutionDir)\3rd_party\Src\Xiph\libtheora\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>NDEBUG;_AMD64_;_WIN64;_WINDOWS;ENGINE_BUILD;_SECURE_SCL=0;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <StringPooling>true</StringPooling>
       <ExceptionHandling>
@@ -285,7 +285,6 @@
     <ClInclude Include="Engine.h" />
     <ClInclude Include="EngineAPI.h" />
     <ClInclude Include="EventAPI.h" />
-    <ClInclude Include="xrCPU_Pipe.h" />
     <ClInclude Include="ai_script_space.h" />
     <ClInclude Include="perlin.h" />
   </ItemGroup>
