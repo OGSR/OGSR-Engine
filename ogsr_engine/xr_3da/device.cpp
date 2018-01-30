@@ -65,8 +65,6 @@ void CRenderDevice::Clear	()
 		));
 }
 
-extern void CheckPrivilegySlowdown();
-
 void xrRender_apply_tf()
 {
 	Console->Execute("r__tf_aniso");
@@ -100,7 +98,6 @@ void CRenderDevice::End		(void)
 			Resources->DestroyNecessaryTextures				();
 			Memory.mem_compact								();
 			Msg												("* MEMORY USAGE: %d K",Memory.mem_usage()/1024);
-			CheckPrivilegySlowdown							();
 			xrRender_apply_tf(); //KRodin: вот это надо делать именно здесь, и нигде больше! Иначе не работает.
 		}
 	}
@@ -119,7 +116,9 @@ void CRenderDevice::End		(void)
 
 
 volatile u32	mt_Thread_marker		= 0x12345678;
-void 			mt_Thread	(void *ptr)	{
+void mt_Thread()
+{
+	set_current_thread_name("X-RAY Secondary thread");
 	while (true) {
 		// waiting for Device permission to execute
 		Device.mt_csEnter.Enter	();
@@ -193,7 +192,7 @@ void CRenderDevice::Run			()
 	MSG				msg;
     BOOL			bGotMsg;
 	Log				("Starting engine...");
-	thread_name		("X-RAY Primary thread");
+	set_current_thread_name("X-RAY Primary thread");
 
 	// Startup timers and calculate timer delta
 	dwTimeGlobal				= 0;
@@ -211,7 +210,7 @@ void CRenderDevice::Run			()
 //	InitializeCriticalSection	(&mt_csLeave);
 	mt_csEnter.Enter			();
 	mt_bMustExit				= FALSE;
-	thread_spawn				(mt_Thread,"X-RAY Secondary thread",0,0);
+	std::thread second_thread(mt_Thread);
 
 	// Message cycle
     PeekMessage					( &msg, NULL, 0U, 0U, PM_NOREMOVE );
@@ -362,9 +361,8 @@ void CRenderDevice::Run			()
 	// Stop Balance-Thread
 	mt_bMustExit			= TRUE;
 	mt_csEnter.Leave		();
-	while (mt_bMustExit)	Sleep(0);
-//	DeleteCriticalSection	(&mt_csEnter);
-//	DeleteCriticalSection	(&mt_csLeave);
+
+	second_thread.join();
 }
 
 void ProcessLoading(RP_FUNC *f);

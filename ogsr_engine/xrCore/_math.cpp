@@ -188,7 +188,6 @@ namespace CPU
 	}
 };
 
-bool g_initialize_cpu_called = false;
 
 //------------------------------------------------------------------------------------
 void _initialize_cpu() 
@@ -225,95 +224,53 @@ void _initialize_cpu()
 	Didentity.identity		();	// Identity matrix
 	pvInitializeStatics		();	// Lookup table for compressed normals
 	FPU::initialize			();
-	_initialize_cpu_thread	();
-
-	g_initialize_cpu_called = true;
 }
 
 
-// per-thread initialization
-#include <xmmintrin.h>
-#define _MM_DENORMALS_ZERO_MASK 0x0040
-#define _MM_DENORMALS_ZERO_ON 0x0040
-#define _MM_FLUSH_ZERO_MASK 0x8000
-#define _MM_FLUSH_ZERO_ON 0x8000
-#define _MM_SET_FLUSH_ZERO_MODE(mode) _mm_setcsr((_mm_getcsr() & ~_MM_FLUSH_ZERO_MASK) | (mode))
-#define _MM_SET_DENORMALS_ZERO_MODE(mode) _mm_setcsr((_mm_getcsr() & ~_MM_DENORMALS_ZERO_MASK) | (mode))
-static	BOOL	_denormals_are_zero_supported	= TRUE;
+#ifdef _WIN32
+static const DWORD MS_VC_EXCEPTION = 0x406D1388;
 
-void _initialize_cpu_thread	()
-{
-#ifndef XRCORE_STATIC
-	// fpu & sse 
-	FPU::m24r	();
-#endif  // XRCORE_STATIC
-	if (CPU::ID.hasSSE())	{
-		//_mm_setcsr ( _mm_getcsr() | (_MM_FLUSH_ZERO_ON+_MM_DENORMALS_ZERO_ON) );
-		_MM_SET_FLUSH_ZERO_MODE			(_MM_FLUSH_ZERO_ON);
-		if (_denormals_are_zero_supported)	{
-			__try	{
-				_MM_SET_DENORMALS_ZERO_MODE	(_MM_DENORMALS_ZERO_ON);
-			} __except(EXCEPTION_EXECUTE_HANDLER) {
-				_denormals_are_zero_supported	= FALSE;
-			}
-		}
-	}
-}
-
-// threading API 
-#pragma pack(push,8)
-struct THREAD_NAME	{
-	DWORD	dwType;
-	LPCSTR	szName;
-	DWORD	dwThreadID;
-	DWORD	dwFlags;
-};
-void	thread_name	(const char* name)
-{
-	THREAD_NAME		tn;
-	tn.dwType		= 0x1000;
-	tn.szName		= name;
-	tn.dwThreadID	= DWORD(-1);
-	tn.dwFlags		= 0;
-	__try
-	{
-		RaiseException(0x406D1388,0,sizeof(tn)/sizeof(DWORD),(ULONG_PTR*)&tn);
-	}
-	__except(EXCEPTION_CONTINUE_EXECUTION)
-	{
-	}
-}
+#pragma pack(push, 8)
+typedef struct tagTHREADNAME_INFO {
+	DWORD dwType;     // Must be 0x1000.
+	LPCSTR szName;    // Pointer to name (in user addr space).
+	DWORD dwThreadID; // Thread ID (-1=caller thread).
+	DWORD dwFlags;    // Reserved for future use, must be zero.
+} THREADNAME_INFO;
 #pragma pack(pop)
 
-struct	THREAD_STARTUP
-{
-	thread_t*	entry	;
-	char*		name	;
-	void*		args	;
-};
-void	__cdecl			thread_entry	(void*	_params )	{
-	// initialize
-	THREAD_STARTUP*		startup	= (THREAD_STARTUP*)_params	;
-	thread_name			(startup->name);
-	thread_t*			entry	= startup->entry;
-	void*				arglist	= startup->args;
-	xr_delete			(startup);
-	_initialize_cpu_thread		();
+static void set_thread_name(DWORD dwThreadID, const char* threadName) {
+	// DWORD dwThreadID = ::GetThreadId( static_cast<HANDLE>( t.native_handle() ) );
 
-	// call
-	entry				(arglist);
+	THREADNAME_INFO info;
+	info.dwType = 0x1000;
+	info.szName = threadName;
+	info.dwThreadID = dwThreadID;
+	info.dwFlags = 0;
+
+	__try {
+		RaiseException(MS_VC_EXCEPTION, 0, sizeof(info) / sizeof(ULONG_PTR), (ULONG_PTR*)&info);
+	}
+	__except (EXCEPTION_EXECUTE_HANDLER) {
+	}
+}
+void set_current_thread_name(const char* threadName) { set_thread_name(GetCurrentThreadId(), threadName); }
+
+void set_thread_name(const char* threadName, std::thread& thread) {
+	DWORD threadId = ::GetThreadId(static_cast<HANDLE>(thread.native_handle()));
+	set_thread_name(threadId, threadName);
 }
 
-void	thread_spawn	(thread_t*	entry, const char*	name, unsigned	stack, void* arglist )
-{
-	Debug._initialize	(false);
-
-	THREAD_STARTUP*		startup	= xr_new<THREAD_STARTUP>	();
-	startup->entry		= entry;
-	startup->name		= (char*)name;
-	startup->args		= arglist;
-	_beginthread		(thread_entry,stack,startup);
+#else
+void set_thread_name(const char* threadName, std::thread& thread) {
+	auto handle = thread.native_handle();
+	pthread_setname_np(handle, threadName);
 }
+
+#include <sys/prctl.h>
+void set_current_thread_name(const char* threadName) { prctl(PR_SET_NAME, threadName, 0, 0, 0); }
+
+#endif
 
 void spline1	( float t, Fvector *p, Fvector *ret )
 {
@@ -337,6 +294,7 @@ void spline1	( float t, Fvector *p, Fvector *ret )
 	}
 }
 
+/* Не используется
 void spline2( float t, Fvector *p, Fvector *ret )
 {
 	float	s= 1.0f - t;
@@ -375,3 +333,4 @@ void spline3( float t, Fvector *p, Fvector *ret )
 	ret->y = p[0].y*b0+p[1].y*b1+p[2].y*b2+p[3].y*b3;
 	ret->z = p[0].z*b0+p[1].z*b1+p[2].z*b2+p[3].z*b3;
 }
+*/
