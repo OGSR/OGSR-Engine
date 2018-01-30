@@ -11,10 +11,20 @@ extern	void msCreate		(LPCSTR name);
 
 void CEngine::Initialize()
 {
-	TTAPI.initialize();
+	//
+	u32 th_count = std::thread::hardware_concurrency(); //CPU::ID.coresCount
+	// Check for override from command line
+	char szSearchFor[] = "-max-threads";
+	char* pszTemp = strstr(GetCommandLine(), szSearchFor);
+	u32 dwOverride = 0;
+	if (pszTemp)
+		if (sscanf_s(pszTemp + strlen(szSearchFor), "%u", &dwOverride))
+			if ((dwOverride >= 1) && (dwOverride <= th_count))
+				th_count = dwOverride;
+	TTAPI.initialize(th_count);
 	R_ASSERT(TTAPI.threads.size());
 	Msg("TTAPI number of threads: [%zi]", TTAPI.threads.size());
-
+	//
 	Engine.Sheduler.Initialize			( );
 
 #ifdef DEBUG
