@@ -3,11 +3,7 @@
 
 #include "ParticleEffect.h"
 
-#ifndef _EDITOR
 #include <xmmintrin.h>
-#include "../../xrCPU_Pipe/ttapi.h"
-#pragma comment(lib,"xrCPU_Pipe.lib")
-#endif
 
 using namespace PAPI;
 using namespace PS;
@@ -489,12 +485,12 @@ void CParticleEffect::Render(float)
 			FVF::LIT* pv_start = (FVF::LIT*)RCache.Vertex.Lock(p_cnt * 4 * 4, geom->vb_stride, dwOffset);
 			FVF::LIT* pv = pv_start;
 
-			u32 nWorkers = ttapi_GetWorkersCount();
+			size_t nWorkers = TTAPI.threads.size();
 
 			if (p_cnt < nWorkers * 64)
 				nWorkers = 1;
 
-			PRS_PARAMS* prsParams = (PRS_PARAMS*)_alloca(sizeof(PRS_PARAMS) * nWorkers);
+			auto prsParams = (PRS_PARAMS*)_alloca(sizeof(PRS_PARAMS) * nWorkers);
 
 			// Give ~1% more for the last worker
 			// to minimize wait in final spin
@@ -511,10 +507,10 @@ void CParticleEffect::Render(float)
 				prsParams[i].p_to = (i == (nWorkers - 1)) ? p_cnt : (prsParams[i].p_from + nStep);
 				prsParams[i].particles = particles;
 				prsParams[i].pPE = this;
-				ttapi_AddWorker(ParticleRenderStream, (LPVOID)&prsParams[i]);
+				TTAPI.threads[i]->addJob([=] { ParticleRenderStream((void*)&prsParams[i]); });
 			}
 
-			ttapi_RunAllWorkers();
+			TTAPI.wait();
 
 			dwCount = p_cnt << 2;
 

@@ -758,7 +758,7 @@ void CApplication::LoadTitleInt(LPCSTR str)
 	VERIFY						(str && xr_strlen(str)<256);
 	strcpy_s						(app_title, str);
 	Msg							("* phase time: %d ms",phase_timer.GetElapsed_ms());	phase_timer.Start();
-	Msg							("* phase cmem: %d K", Memory.mem_usage()/1024);
+	//Msg							("* phase cmem: %d K", Memory.mem_usage()/1024);
 //.	Console->Execute			("stat_memory");
 	Log							(app_title);
 	

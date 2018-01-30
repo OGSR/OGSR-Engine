@@ -47,14 +47,4 @@
 
 extern ENGINE_API CInifile *pGameIni;
 
-#pragma comment( lib, "xrCore.lib"	)
-#pragma comment( lib, "xrCDB.lib"	)
-#pragma comment( lib, "xrSound.lib"	)
-
-#pragma comment( lib, "winmm.lib"		)
-
-#pragma comment( lib, "d3d9.lib"		)
-#pragma comment( lib, "dinput8.lib"		)
-#pragma comment( lib, "dxguid.lib"		)
-
 #endif // !M_BORLAND

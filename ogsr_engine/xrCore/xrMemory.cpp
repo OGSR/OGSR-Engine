@@ -52,19 +52,6 @@ void	xrMemory::_initialize	(BOOL bDebug)
 	stat_calls				= 0;
 	stat_counter			= 0;
 
-#ifndef M_BORLAND
-	if (!strstr(Core.Params,"-pure_alloc")) {
-		// initialize POOLs
-		u32	element		= mem_pools_ebase;
-		u32 sector		= mem_pools_ebase*1024;
-		for (u32 pid=0; pid<mem_pools_count; pid++)
-		{
-			mem_pools[pid]._initialize(element,sector,0x1);
-			element		+=	mem_pools_ebase;
-		}
-	}
-#endif // M_BORLAND
-
 #ifdef DEBUG_MEMORY_MANAGER
 	if (0==strstr(Core.Params,"-memo"))	mem_initialized				= TRUE;
 	else								g_bMEMO						= TRUE;

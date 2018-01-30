@@ -447,9 +447,6 @@
     <ClInclude Include="EventAPI.h">
       <Filter>Engine\Core</Filter>
     </ClInclude>
-    <ClInclude Include="xrCPU_Pipe.h">
-      <Filter>Engine\Core</Filter>
-    </ClInclude>
     <ClInclude Include="ai_script_space.h">
       <Filter>Engine\Core\Scripting</Filter>
     </ClInclude>
