@@ -155,6 +155,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="xrCore.cpp" />
+    <ClCompile Include="xrMemory_POOL.cpp" />
     <ClCompile Include="xrSkinXW.cpp" />
     <ClCompile Include="_compressed_normal.cpp" />
     <ClCompile Include="_math.cpp" />
@@ -205,6 +206,7 @@
     <ClInclude Include="thread_pool.h" />
     <ClInclude Include="xrCore.h" />
     <ClInclude Include="xrCore_platform.h" />
+    <ClInclude Include="xrMEMORY_POOL.h" />
     <ClInclude Include="xrSkinXW.hpp" />
     <ClInclude Include="_bitwise.h" />
     <ClInclude Include="_color.h" />

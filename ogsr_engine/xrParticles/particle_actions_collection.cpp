@@ -1773,7 +1773,7 @@ void PATurbulence::Execute(ParticleEffect *effect, float dt)
 	if ( ! p_cnt )
 		return;
 
-	size_t nWorkers = TTAPI.threads.size();
+	size_t nWorkers = TTAPI->threads.size();
 
 	//Is how it is in Shadow of Chernobyl and Clear Sky source and does seem to run better then * 20. Only 20% CPU usage.
 	if ( p_cnt < nWorkers * 64 )
@@ -1802,10 +1802,10 @@ void PATurbulence::Execute(ParticleEffect *effect, float dt)
 		tesParams[i].octaves = octaves;
 		tesParams[i].magnitude = magnitude;
 
-		TTAPI.threads[i]->addJob([=] { PATurbulenceExecuteStream((void*)&tesParams[i]); });
+		TTAPI->threads[i]->addJob([=] { PATurbulenceExecuteStream((void*)&tesParams[i]); });
 	}
 
-	TTAPI.wait();
+	TTAPI->wait();
 }
 
 #else

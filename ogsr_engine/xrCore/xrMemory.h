@@ -1,3 +1,5 @@
+#ifndef xrMemoryH
+#define xrMemoryH
 #pragma once
 
 #include "memory_monitor.h"
@@ -22,6 +24,8 @@
 #else // DEBUG_MEMORY_MANAGER
 #	define DUMP_PHASE	do {} while (0)
 #endif // DEBUG_MEMORY_MANAGER
+
+#include "xrMemory_POOL.h"
 
 class XRCORE_API		xrMemory
 {
@@ -128,9 +132,11 @@ XRCORE_API	char* 	xr_strdup	(const char* string);
 const		u32			mem_pools_count			=	54;
 const		u32			mem_pools_ebase			=	16;
 const		u32			mem_generic				=	mem_pools_count+1;
+extern		MEMPOOL		mem_pools				[mem_pools_count];
 extern		BOOL		mem_initialized;
 
 XRCORE_API void vminfo			(size_t *_free, size_t *reserved, size_t *committed);
 XRCORE_API void log_vminfo		();
 XRCORE_API u32	mem_usage_impl	(u32* pBlocksUsed, u32* pBlocksFree);
 
+#endif // xrMemoryH
