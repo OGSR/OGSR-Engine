@@ -21,9 +21,9 @@ void CEngine::Initialize()
 		if (sscanf_s(pszTemp + strlen(szSearchFor), "%u", &dwOverride))
 			if ((dwOverride >= 1) && (dwOverride <= th_count))
 				th_count = dwOverride;
-	TTAPI.initialize(th_count);
-	R_ASSERT(TTAPI.threads.size());
-	Msg("TTAPI number of threads: [%zi]", TTAPI.threads.size());
+	TTAPI->initialize(th_count);
+	R_ASSERT(TTAPI->threads.size());
+	Msg("TTAPI number of threads: [%zi]", TTAPI->threads.size());
 	//
 	Engine.Sheduler.Initialize			( );
 

@@ -190,6 +190,9 @@
     <ClCompile Include="xrSkinXW.cpp">
       <Filter>Math</Filter>
     </ClCompile>
+    <ClCompile Include="xrMemory_POOL.cpp">
+      <Filter>Memory manager</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="FTimer.h">
@@ -413,6 +416,9 @@
       <Filter>Math</Filter>
     </ClInclude>
     <ClInclude Include="thread_pool.h" />
+    <ClInclude Include="xrMEMORY_POOL.h">
+      <Filter>Memory manager</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="xrCore.rc">

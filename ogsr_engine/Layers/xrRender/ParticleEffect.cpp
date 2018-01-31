@@ -485,7 +485,7 @@ void CParticleEffect::Render(float)
 			FVF::LIT* pv_start = (FVF::LIT*)RCache.Vertex.Lock(p_cnt * 4 * 4, geom->vb_stride, dwOffset);
 			FVF::LIT* pv = pv_start;
 
-			size_t nWorkers = TTAPI.threads.size();
+			size_t nWorkers = TTAPI->threads.size();
 
 			if (p_cnt < nWorkers * 64)
 				nWorkers = 1;
@@ -507,10 +507,10 @@ void CParticleEffect::Render(float)
 				prsParams[i].p_to = (i == (nWorkers - 1)) ? p_cnt : (prsParams[i].p_from + nStep);
 				prsParams[i].particles = particles;
 				prsParams[i].pPE = this;
-				TTAPI.threads[i]->addJob([=] { ParticleRenderStream((void*)&prsParams[i]); });
+				TTAPI->threads[i]->addJob([=] { ParticleRenderStream((void*)&prsParams[i]); });
 			}
 
-			TTAPI.wait();
+			TTAPI->wait();
 
 			dwCount = p_cnt << 2;
 

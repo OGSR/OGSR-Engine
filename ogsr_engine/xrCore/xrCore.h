@@ -280,4 +280,4 @@ extern XRCORE_API	LPCSTR	build_date;
 XRCORE_API	 void compute_build_id();
 
 #include "thread_pool.h"
-extern ThreadPool XRCORE_API TTAPI;
+extern XRCORE_API ThreadPool* TTAPI;
