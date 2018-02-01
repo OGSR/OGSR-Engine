@@ -279,5 +279,9 @@ extern XRCORE_API	u32		build_id;
 extern XRCORE_API	LPCSTR	build_date;
 XRCORE_API	 void compute_build_id();
 
+#ifdef NEW_TTAPI
 #include "thread_pool.h"
 extern XRCORE_API ThreadPool* TTAPI;
+#else
+#include "ttapi_OLD.h"
+#endif

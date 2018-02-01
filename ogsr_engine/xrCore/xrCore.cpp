@@ -17,7 +17,9 @@ int (WINAPIV * __vsnprintf)(char *, size_t, const char*, va_list) = _vsnprintf;
 XRCORE_API		xrCore	Core;
 XRCORE_API	LPCSTR	build_date;
 
+#ifdef NEW_TTAPI
 XRCORE_API ThreadPool* TTAPI = new ThreadPool();
+#endif
 
 namespace CPU
 {
