@@ -94,6 +94,7 @@ void CSE_ALifeObject::script_register(lua_State *L)
 		.property		("is_alive",			&se_obj_is_alive)
 		.def("get_inventory_item", &cse_object_cast<CSE_ALifeInventoryItem>)
 		.def("get_level_changer", &cse_object_cast<CSE_ALifeLevelChanger>)
+		.def("get_space_restrictor", &cse_object_cast<CSE_ALifeSpaceRestrictor>)
 	];
 }
 
@@ -156,7 +157,8 @@ void CSE_ALifeSpaceRestrictor::script_register(lua_State *L)
 			"cse_alife_space_restrictor",
 			CSE_ALifeDynamicObject,
 			CSE_Shape
-		),
+		)
+		.def_readwrite( "restrictor_type", &CSE_ALifeSpaceRestrictor::m_space_restrictor_type ),
 		def ("cse_get_restrictor_type"		,		&cse_get_restrictor_type)
 	];
 }
