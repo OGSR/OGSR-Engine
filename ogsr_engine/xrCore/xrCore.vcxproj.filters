@@ -190,6 +190,7 @@
     <ClCompile Include="xrSkinXW.cpp">
       <Filter>Math</Filter>
     </ClCompile>
+    <ClCompile Include="ttapi_OLD.cpp" />
     <ClCompile Include="xrMemory_POOL.cpp">
       <Filter>Memory manager</Filter>
     </ClCompile>
@@ -416,6 +417,7 @@
       <Filter>Math</Filter>
     </ClInclude>
     <ClInclude Include="thread_pool.h" />
+    <ClInclude Include="ttapi_OLD.h" />
     <ClInclude Include="xrMEMORY_POOL.h">
       <Filter>Memory manager</Filter>
     </ClInclude>

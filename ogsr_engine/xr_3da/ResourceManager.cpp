@@ -262,6 +262,7 @@ void CResourceManager::Delete(const Shader* S)
 }
 
 
+#ifndef TTAPI_OXYGEN
 #include <thread>
 xr_vector<CTexture*> tex_to_load;
 void TextureLoading(u32 thread_num)
@@ -319,6 +320,24 @@ void CResourceManager::DeferredUpload()
 	}
 }
 
+#else
+
+void CResourceManager::DeferredUpload()
+{
+	if (Device.b_is_Ready)
+	{
+		CTimer timer;
+		timer.Start();
+
+		for (const auto &[_, tex] : m_textures)
+			ttapi_AddWorker([&] { tex->Load(); });
+
+		ttapi_RunAllWorkers();
+
+		Msg("texture loading time (%d): %.2f s.", m_textures.size(), timer.GetElapsed_sec());
+	}
+}
+#endif
 
 /*
 void	CResourceManager::DeferredUnload	()
