@@ -38,6 +38,9 @@ void CEngine::Initialize()
 
 void CEngine::Destroy	()
 {
+#ifndef NEW_TTAPI
+	ttapi_Done();
+#endif
 	Engine.Sheduler.Destroy				( );
 #ifdef DEBUG_MEMORY_MANAGER
 	extern void	dbg_dump_leaks_prepare	( );
