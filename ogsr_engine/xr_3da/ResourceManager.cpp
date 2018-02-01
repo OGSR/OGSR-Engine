@@ -262,7 +262,7 @@ void CResourceManager::Delete(const Shader* S)
 }
 
 
-#ifndef NEW_TTAPI
+#if !defined(NEW_TTAPI) && !defined(TTAPI_OXYGEN)
 #include <thread>
 xr_vector<CTexture*> tex_to_load;
 void TextureLoading(u32 thread_num)
