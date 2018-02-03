@@ -95,6 +95,7 @@ void CSE_ALifeObject::script_register(lua_State *L)
 		.def("get_inventory_item", &cse_object_cast<CSE_ALifeInventoryItem>)
 		.def("get_level_changer", &cse_object_cast<CSE_ALifeLevelChanger>)
 		.def("get_space_restrictor", &cse_object_cast<CSE_ALifeSpaceRestrictor>)
+		.def("get_weapon", &cse_object_cast<CSE_ALifeItemWeapon>)
 	];
 }
 
