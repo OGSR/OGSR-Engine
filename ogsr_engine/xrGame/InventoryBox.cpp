@@ -106,9 +106,7 @@ u32 IInventoryBox::GetSize() const
  { 
 	LPCSTR t = typeid(*this).name();
 	R_ASSERT(t);
-	u32	result = m_items.size();
-	R_ASSERT2(result < 1000, "to many items in inventory box, probably cast error");
-	return result; 
+	return m_items.size(); 
 }
 
 bool IInventoryBox::IsEmpty() const

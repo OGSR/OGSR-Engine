@@ -283,16 +283,6 @@ public:
 	CMonsterHome			*Home;
 
 
-	// -----------------------------------------------------------------------------
-	// Anomaly Detector
-private:
-	CAnomalyDetector		*m_anomaly_detector;
-
-public:
-	CAnomalyDetector		&anomaly_detector	() {return (*m_anomaly_detector);}
-	// -----------------------------------------------------------------------------
-
-
 //	//-----------------------------------------------------------------
 //	// Spawn Inventory Item
 //	//-----------------------------------------------------------------

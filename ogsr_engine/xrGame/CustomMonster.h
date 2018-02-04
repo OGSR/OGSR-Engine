@@ -11,6 +11,7 @@
 #include "..\xr_3da\feel_touch.h"
 #include "..\xr_3da\skeletonanimated.h"
 #include "associative_vector.h"
+#include "ai\monsters\anomaly_detector.h"
 
 namespace MonsterSpace {
 	struct SBoneRotation;
@@ -321,6 +322,15 @@ public:
 
 	bool		m_visible_for_zones;
 	virtual bool	IsVisibleForZones() { return m_visible_for_zones; }
+
+	// -----------------------------------------------------------------------------
+	// Anomaly Detector
+private:
+	CAnomalyDetector		*m_anomaly_detector;
+
+public:
+	CAnomalyDetector		&anomaly_detector	() {return (*m_anomaly_detector);}
+	// -----------------------------------------------------------------------------
 };
 
 #include "custommonster_inline.h"
