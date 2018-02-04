@@ -17,6 +17,11 @@ LPCSTR profile_name_script (CSE_ALifeTraderAbstract* ta)
 	return *ta->character_profile();
 }
 
+LPCSTR character_name_script (CSE_ALifeTraderAbstract* ta)
+{
+	return ta->m_character_name.c_str();
+}
+
 #pragma optimize("s",on)
 void CSE_ALifeTraderAbstract::script_register(lua_State *L)
 {
@@ -30,6 +35,8 @@ void CSE_ALifeTraderAbstract::script_register(lua_State *L)
 			.def("rank",			&Rank)
 			.def("reputation",		&Reputation)
 #endif // XRGAME_EXPORTS
+			.def_readwrite( "money", &CSE_ALifeTraderAbstract::m_dwMoney )
+			.property( "character_name", &character_name_script )
 	];
 }
 
