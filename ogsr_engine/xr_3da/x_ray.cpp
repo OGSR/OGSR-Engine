@@ -364,20 +364,13 @@ int APIENTRY WinMain_impl(HINSTANCE hInstance,
 	//SetThreadAffinityMask		(GetCurrentThread(),1);
 
 	// Title window
-	logoWindow					= CreateDialog(GetModuleHandle(NULL),	MAKEINTRESOURCE(IDD_STARTUP), nullptr, logDlgProc );
-	SetWindowPos				(
-		logoWindow,
-#ifndef DEBUG
-		HWND_TOPMOST,
-#else
-		HWND_NOTOPMOST,
-#endif // NDEBUG
-		0,
-		0,
-		0,
-		0,
-		SWP_NOMOVE | SWP_NOSIZE | SWP_SHOWWINDOW
-	);
+	logoWindow = CreateDialog(GetModuleHandle(nullptr), MAKEINTRESOURCE(IDD_STARTUP), nullptr, logDlgProc);
+	HWND logoInsertPos = HWND_TOPMOST;
+	if (IsDebuggerPresent())
+	{
+		logoInsertPos = HWND_NOTOPMOST;
+	}
+	SetWindowPos(logoWindow, logoInsertPos, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE | SWP_SHOWWINDOW);
 
 	// AVI
 	g_bIntroFinished			= TRUE;
@@ -734,7 +727,7 @@ void CApplication::LoadTitleInt(LPCSTR str)
 	VERIFY						(str && xr_strlen(str)<256);
 	strcpy_s						(app_title, str);
 	Msg							("* phase time: %d ms",phase_timer.GetElapsed_ms());	phase_timer.Start();
-	//Msg							("* phase cmem: %d K", Memory.mem_usage()/1024);
+	Msg							("* phase cmem: %d K", Memory.mem_usage()/1024);
 //.	Console->Execute			("stat_memory");
 	Log							(app_title);
 	
