@@ -1,23 +1,24 @@
 #pragma once
 
-class CBaseMonster;
+class CCustomMonster;
 
 class CAnomalyDetector {
-	CBaseMonster			*m_object;
+	CCustomMonster			*m_object;
 
+public:
 	float					m_radius;
 	u32						m_time_to_rememeber;
+	float					m_detect_probability;
 
 	bool					m_active;
+	bool					m_forced;
 
-	struct SAnomalyInfo {
-		CObject		*object;
-		u32			time_registered;
-
-		bool		operator == (CObject *obj) 	{
-			return (object == obj);
-		}
-	};
+private:
+        struct SAnomalyInfo {
+          u16  id;
+          bool ignored;
+          u32  time_registered;
+        };
 
 	struct remove_predicate {
 		u32		time_remember;
@@ -32,7 +33,7 @@ class CAnomalyDetector {
 	ANOMALY_INFO_VEC		m_storage;
 
 public:
-				CAnomalyDetector	(CBaseMonster *monster);
+				CAnomalyDetector	(CCustomMonster *monster);
 	virtual		~CAnomalyDetector	();
 
 	void		load				(LPCSTR section);
@@ -41,6 +42,8 @@ public:
 	void		update_schedule		();
 	void		on_contact			(CObject *obj);
 	
-	void		activate			(){m_active = true;}
-	void		deactivate			(){m_active = false;}
+	void		activate( bool = false );
+	void		deactivate( bool = false );
+	void		remove_all_restrictions();
+	void		remove_restriction( u16 );
 };

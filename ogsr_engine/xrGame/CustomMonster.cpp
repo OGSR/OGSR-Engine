@@ -88,10 +88,12 @@ CCustomMonster::CCustomMonster()
 	m_already_dead				= false;
 	m_invulnerable				= false;
 	m_visible_for_zones			= true;
+	m_anomaly_detector				= xr_new<CAnomalyDetector>(this);
 }
 
 CCustomMonster::~CCustomMonster	()
 {
+	xr_delete(m_anomaly_detector);
 	xr_delete					(m_sound_user_data_visitor);
 	xr_delete					(m_memory_manager);
 	xr_delete					(m_movement_manager);
@@ -170,6 +172,8 @@ void CCustomMonster::Load		(LPCSTR section)
 //	fArmor					= 0;
 
 	// Msg				("! cmonster size: %d",sizeof(*this));
+
+	m_anomaly_detector->load		(section);
 }
 
 void CCustomMonster::reinit		()
@@ -204,6 +208,8 @@ void CCustomMonster::reinit		()
 	//////////////////////////////////////////////////////////////////////////
 	m_update_rotation_on_frame		= true;
 	m_movement_enabled_before_animation_controller	= true;
+
+	m_anomaly_detector->reinit		();
 }
 
 void CCustomMonster::reload		(LPCSTR section)
@@ -313,6 +319,7 @@ void CCustomMonster::shedule_Update	( u32 DT )
 		else
 			Exec_Visibility					();
 		memory().update						(dt);
+		anomaly_detector().update_schedule();
 	}
 	inherited::shedule_Update	(DT);
 
@@ -815,6 +822,8 @@ BOOL CCustomMonster::feel_touch_on_contact	(CObject *O)
 
 BOOL CCustomMonster::feel_touch_contact		(CObject *O)
 {
+	m_anomaly_detector->on_contact(O);
+
 	CCustomZone	*custom_zone = smart_cast<CCustomZone*>(O);
 	if (!custom_zone)
 		return	(TRUE);

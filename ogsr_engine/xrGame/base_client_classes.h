@@ -11,6 +11,7 @@
 #include "../xr_3da/CameraBase.h"
 #include "script_export_space.h"
 #include "xrServer_Space.h"
+#include "ai/monsters/anomaly_detector.h"
 
 class DLL_Pure;
 class ISpatial;
@@ -23,6 +24,7 @@ class FHierrarhyVisual;
 class CBlend;
 class CKinematics;
 class CKinematicsAnimated;
+class CAnomalyDetector;
 
 typedef class_exporter<DLL_Pure>	DLL_PureScript;
 add_to_type_list(DLL_PureScript)
@@ -90,3 +92,8 @@ typedef class_exporter<CCameraBase>	CCameraBaseScript;
 add_to_type_list(CCameraBaseScript)
 #undef script_type_list
 #define script_type_list save_type_list(CCameraBaseScript)
+
+typedef class_exporter<CAnomalyDetector> CAnomalyDetectorScript;
+add_to_type_list(CAnomalyDetectorScript)
+#undef script_type_list
+#define script_type_list save_type_list(CAnomalyDetectorScript)

@@ -151,6 +151,11 @@ void remove_out_restriction	(CALifeSimulator *alife, CSE_ALifeMonsterAbstract *m
 	alife->remove_restriction	(monster->ID,id,RestrictionSpace::eRestrictorTypeOut);
 }
 
+void remove_out_restrictions	(CALifeSimulator *alife, CSE_ALifeMonsterAbstract *monster)
+{
+	alife->remove_all_restrictions	(monster->ID,RestrictionSpace::eRestrictorTypeOut);
+}
+
 u32 get_level_id(CALifeSimulator *self)
 {
 	return						(self->graph().level().level_id());
@@ -415,6 +420,7 @@ void CALifeSimulator::script_register			(lua_State *L)
 			.def("remove_in_restriction",	&remove_in_restriction)
 			.def("remove_in_restrictions",	&remove_in_restrictions)
 			.def("remove_out_restriction",	&remove_out_restriction)
+			.def("remove_out_restrictions",	&remove_out_restrictions)
 			.def("remove_all_restrictions",	&CALifeSimulator::remove_all_restrictions)
 			.def("create",					&CALifeSimulator__create)
 			.def("create",					&CALifeSimulator__spawn_item2)

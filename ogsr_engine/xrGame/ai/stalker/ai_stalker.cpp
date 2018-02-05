@@ -780,6 +780,7 @@ void CAI_Stalker::shedule_Update		( u32 DT )
 		STOP_PROFILE
 
 		STOP_PROFILE
+		anomaly_detector().update_schedule();
 	}
 
 	START_PROFILE("stalker/schedule_update/inherited")

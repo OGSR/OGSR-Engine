@@ -66,6 +66,11 @@ void CSE_ALifeItemWeapon::script_register(lua_State *L)
 			"cse_alife_item_weapon",
 			CSE_ALifeItem
 		)
+		.def_readwrite( "ammo_current", &CSE_ALifeItemWeapon::a_current )
+		.def_readwrite( "ammo_elapsed", &CSE_ALifeItemWeapon::a_elapsed )
+		.def_readwrite( "weapon_state", &CSE_ALifeItemWeapon::wpn_state )
+		.def_readwrite( "addon_flags",  &CSE_ALifeItemWeapon::m_addon_flags )
+		.def_readwrite( "ammo_type",    &CSE_ALifeItemWeapon::ammo_type )
 	];
 }
 

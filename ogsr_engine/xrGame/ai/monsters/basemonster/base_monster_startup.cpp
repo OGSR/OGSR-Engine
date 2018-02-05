@@ -15,7 +15,6 @@
 
 #include "../state_manager.h"
 #include "../controlled_entity.h"
-#include "../anomaly_detector.h"
 #include "../monster_cover_manager.h"
 #include "../monster_home.h"
 #include "../../../ai_object_location.h"
@@ -51,7 +50,6 @@ void CBaseMonster::Load(LPCSTR section)
 
 	control().load					(section);
 
-	m_anomaly_detector->load		(section);
 	CoverMan->load					();
 
 	m_rank							= (pSettings->line_exist(section,"rank")) ? int(pSettings->r_u32(section,"rank")) : 0;
@@ -146,8 +144,6 @@ void CBaseMonster::reinit()
 	ignore_collision_hit			= false;
 
 	control().reinit				();
-
-	m_anomaly_detector->reinit		();
 
 	m_skip_transfer_enemy			= false;
 
