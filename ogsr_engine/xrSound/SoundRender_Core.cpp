@@ -26,6 +26,19 @@ int		psSoundCacheSizeMB		= 32;
 CSoundRender_Core*				SoundRender = 0;
 CSound_manager_interface*		Sound		= 0;
 
+//////////////////////////////////////////////////
+#include <efx.h>
+#define LOAD_PROC(x, type)  ((x) = (type)alGetProcAddress(#x))
+static LPALEFFECTF alEffectf;
+static LPALEFFECTI alEffecti;
+static LPALDELETEEFFECTS alDeleteEffects;
+static LPALISEFFECT alIsEffect;
+static LPALGENEFFECTS alGenEffects;
+LPALDELETEAUXILIARYEFFECTSLOTS alDeleteAuxiliaryEffectSlots; 
+LPALGENAUXILIARYEFFECTSLOTS alGenAuxiliaryEffectSlots;
+LPALAUXILIARYEFFECTSLOTI alAuxiliaryEffectSloti;
+
+
 CSoundRender_Core::CSoundRender_Core	()
 {
 	efx_reverb = EFX_REVERB_PRESET_GENERIC;
@@ -49,10 +62,19 @@ CSoundRender_Core::CSoundRender_Core	()
 	Timer_Value					= Timer.GetElapsed_ms();
 	Timer_Delta					= 0;
 	m_iPauseCounter				= 1;
+
+	effect = 0;
+	slot = 0;
 }
 
 CSoundRender_Core::~CSoundRender_Core()
 {
+	if (bEFX)
+	{
+		if(effect) alDeleteEffects(1, &effect);
+		if(slot)   alDeleteAuxiliaryEffectSlots(1, &slot);
+	}
+
 	xr_delete					(geom_ENV);
 	xr_delete					(geom_SOM);
 }
@@ -401,26 +423,21 @@ void CSoundRender_Core::update_listener( const Fvector& P, const Fvector& D, con
 }
 
 
-//////////////////////////////////////////////////
-#include <efx.h>
-static LPALEFFECTF alEffectf;
-static LPALEFFECTI alEffecti;
-static LPALDELETEEFFECTS alDeleteEffects;
-static LPALISEFFECT alIsEffect;
-static LPALGENEFFECTS alGenEffects;
-
-bool CSoundRender_Core::EFXTestSupport(const EFXEAXREVERBPROPERTIES* reverb)
+void CSoundRender_Core::InitAlEFXAPI()
 {
-#	define LOAD_PROC(x, type) ((x) = (type)alGetProcAddress(#x))
-
+	LOAD_PROC(alDeleteAuxiliaryEffectSlots, LPALDELETEAUXILIARYEFFECTSLOTS);
 	LOAD_PROC(alGenEffects, LPALGENEFFECTS);
 	LOAD_PROC(alDeleteEffects, LPALDELETEEFFECTS);
 	LOAD_PROC(alIsEffect, LPALISEFFECT);
 	LOAD_PROC(alEffecti, LPALEFFECTI);
-
+	LOAD_PROC(alAuxiliaryEffectSloti, LPALAUXILIARYEFFECTSLOTI);
+	LOAD_PROC(alGenAuxiliaryEffectSlots, LPALGENAUXILIARYEFFECTSLOTS);
 	LOAD_PROC(alEffectf, LPALEFFECTF);
+}
 
-	ALuint effect = 0;
+bool CSoundRender_Core::EFXTestSupport(const EFXEAXREVERBPROPERTIES* reverb)
+{
+
 	alGenEffects(1, &effect);
 
 	alEffecti(effect, AL_EFFECT_TYPE, AL_EFFECT_REVERB);
@@ -452,12 +469,15 @@ bool CSoundRender_Core::EFXTestSupport(const EFXEAXREVERBPROPERTIES* reverb)
 
 void CSoundRender_Core::i_efx_listener_set(CSound_environment* _E, EFXEAXREVERBPROPERTIES* reverb)
 {
-	const auto E = static_cast<CSoundRender_Environment*>(_E);
-	reverb->flDecayTime = E->DecayTime;
-	reverb->flDecayHFRatio = E->DecayHFRatio;
-	reverb->flReflectionsDelay = E->ReflectionsDelay;
-	reverb->flLateReverbDelay = E->ReverbDelay;
-	reverb->flRoomRolloffFactor = E->RoomRolloffFactor;
+ 	const auto E = static_cast<CSoundRender_Environment*>(_E);
+ 	reverb->flDecayTime				= E->DecayTime;
+ 	reverb->flDecayHFRatio			= E->DecayHFRatio;
+	reverb->flReflectionsGain		= E->Reflections;
+ 	reverb->flReflectionsDelay		= E->ReflectionsDelay;
+ 	reverb->flLateReverbDelay		= E->ReverbDelay;
+	reverb->flLateReverbGain		= E->Reverb;
+	reverb->flRoomRolloffFactor		= E->RoomRolloffFactor;
+	reverb->flAirAbsorptionGainHF	= E->AirAbsorptionHF;
 }
 //////////////////////////////////////////////////
 

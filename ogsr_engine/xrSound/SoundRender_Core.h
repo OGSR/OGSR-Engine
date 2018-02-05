@@ -1,5 +1,6 @@
 #pragma once
 
+#include <al.h>
 #include <efx-presets.h>
 
 #include "SoundRender.h"
@@ -122,6 +123,9 @@ public:
 
 protected: // EFX
 	EFXEAXREVERBPROPERTIES				efx_reverb;
+	ALuint								effect;
+	ALuint								slot;
 	bool 								EFXTestSupport(const EFXEAXREVERBPROPERTIES* reverb);
+	void								InitAlEFXAPI();
 };
 extern CSoundRender_Core* SoundRender;
