@@ -1,7 +1,5 @@
 #pragma once
 
-#include "xrCore.h"
-
 struct vertRender;
 struct vertBoned1W;
 struct vertBoned2W;

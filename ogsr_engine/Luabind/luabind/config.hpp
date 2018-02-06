@@ -42,7 +42,7 @@
 //
 #pragma warning(push)
 #pragma warning(disable:4595)
-#include "../xrCore/xrCore.h" //KRodin: „тобы использовались операторы new/delete из xrCore. »наче могут возникать проблемы при освобождении пам€ти.
+#include "xrCore.h" //KRodin: „тобы использовались операторы new/delete из xrCore. »наче могут возникать проблемы при освобождении пам€ти.
 #pragma warning(pop)
 #pragma comment(lib, "xrCore.lib")
 //

@@ -154,7 +154,6 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="ttapi_OLD.cpp" />
     <ClCompile Include="xrCore.cpp" />
     <ClCompile Include="xrMemory_POOL.cpp" />
     <ClCompile Include="xrSkinXW.cpp" />
@@ -204,8 +203,6 @@
     <ClInclude Include="resource.h" />
     <ClInclude Include="stacktrace_collector.h" />
     <ClInclude Include="stdafx.h" />
-    <ClInclude Include="thread_pool.h" />
-    <ClInclude Include="ttapi_OLD.h" />
     <ClInclude Include="xrCore.h" />
     <ClInclude Include="xrCore_platform.h" />
     <ClInclude Include="xrMEMORY_POOL.h" />
