@@ -98,7 +98,8 @@ public:
 	// eax listener
 	void								i_eax_commit_setting	();
 	void								i_eax_listener_set		(CSound_environment* E);
-	void								i_efx_listener_set		(CSound_environment* E, EFXEAXREVERBPROPERTIES* reverb);
+	void								i_efx_listener_set		(CSound_environment* E);
+	bool								i_efx_commit_setting	();
 	void								i_eax_listener_get		(CSound_environment* E);
 
 public:
@@ -125,7 +126,7 @@ protected: // EFX
 	EFXEAXREVERBPROPERTIES				efx_reverb;
 	ALuint								effect;
 	ALuint								slot;
-	bool 								EFXTestSupport(const EFXEAXREVERBPROPERTIES* reverb);
+	bool 								EFXTestSupport();
 	void								InitAlEFXAPI();
 };
 extern CSoundRender_Core* SoundRender;

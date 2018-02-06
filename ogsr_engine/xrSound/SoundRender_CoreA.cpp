@@ -118,9 +118,8 @@ void CSoundRender_CoreA::_initialize	(u64 window)
 	}
 	else if ( deviceDesc.efx ) {
           InitAlEFXAPI();
-          bEFX = EFXTestSupport( &efx_reverb );
-          Msg( "[OpenAL] EFX: %s", bEFX ? "present, but disabled" : "absent" );
-          bEFX = false;         // dsh: отключено до лучших времен
+          bEFX = EFXTestSupport();
+          Msg( "[OpenAL] EFX: %s", bEFX ? "present" : "absent" );
         }
 
 	ZeroMemory					( &wfm, sizeof( WAVEFORMATEX ) );

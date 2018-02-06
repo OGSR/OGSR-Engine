@@ -435,52 +435,79 @@ void CSoundRender_Core::InitAlEFXAPI()
 	LOAD_PROC(alEffectf, LPALEFFECTF);
 }
 
-bool CSoundRender_Core::EFXTestSupport(const EFXEAXREVERBPROPERTIES* reverb)
-{
+bool CSoundRender_Core::EFXTestSupport() {
+  alGenEffects( 1, &effect );
 
-	alGenEffects(1, &effect);
+  alEffecti( effect, AL_EFFECT_TYPE, AL_EFFECT_REVERB );
+  alEffectf( effect, AL_REVERB_DENSITY,               efx_reverb.flDensity );
+  alEffectf( effect, AL_REVERB_DIFFUSION,             efx_reverb.flDiffusion );
+  alEffectf( effect, AL_REVERB_GAIN,                  efx_reverb.flGain );
+  alEffectf( effect, AL_REVERB_GAINHF,                efx_reverb.flGainHF );
+  alEffectf( effect, AL_REVERB_DECAY_TIME,            efx_reverb.flDecayTime );
+  alEffectf( effect, AL_REVERB_DECAY_HFRATIO,         efx_reverb.flDecayHFRatio );
+  alEffectf( effect, AL_REVERB_REFLECTIONS_GAIN,      efx_reverb.flReflectionsGain );
+  alEffectf( effect, AL_REVERB_REFLECTIONS_DELAY,     efx_reverb.flReflectionsDelay );
+  alEffectf( effect, AL_REVERB_LATE_REVERB_GAIN,      efx_reverb.flLateReverbGain );
+  alEffectf( effect, AL_REVERB_LATE_REVERB_DELAY,     efx_reverb.flLateReverbDelay );
+  alEffectf( effect, AL_REVERB_AIR_ABSORPTION_GAINHF, efx_reverb.flAirAbsorptionGainHF );
+  alEffectf( effect, AL_REVERB_ROOM_ROLLOFF_FACTOR,   efx_reverb.flRoomRolloffFactor );
+  alEffecti( effect, AL_REVERB_DECAY_HFLIMIT,         efx_reverb.iDecayHFLimit );
 
-	alEffecti(effect, AL_EFFECT_TYPE, AL_EFFECT_REVERB);
-	alEffectf(effect, AL_REVERB_DENSITY, reverb->flDensity);
-	alEffectf(effect, AL_REVERB_DIFFUSION, reverb->flDiffusion);
-	alEffectf(effect, AL_REVERB_GAIN, reverb->flGain);
-	alEffectf(effect, AL_REVERB_GAINHF, reverb->flGainHF);
-	alEffectf(effect, AL_REVERB_DECAY_TIME, reverb->flDecayTime);
-	alEffectf(effect, AL_REVERB_DECAY_HFRATIO, reverb->flDecayHFRatio);
-	alEffectf(effect, AL_REVERB_REFLECTIONS_GAIN, reverb->flReflectionsGain);
-	alEffectf(effect, AL_REVERB_REFLECTIONS_DELAY, reverb->flReflectionsDelay);
-	alEffectf(effect, AL_REVERB_LATE_REVERB_GAIN, reverb->flLateReverbGain);
-	alEffectf(effect, AL_REVERB_LATE_REVERB_DELAY, reverb->flLateReverbDelay);
-	alEffectf(effect, AL_REVERB_AIR_ABSORPTION_GAINHF, reverb->flAirAbsorptionGainHF);
-	alEffectf(effect, AL_REVERB_ROOM_ROLLOFF_FACTOR, reverb->flRoomRolloffFactor);
-	alEffecti(effect, AL_REVERB_DECAY_HFLIMIT, reverb->iDecayHFLimit);
+  /* Check if an error occured, and clean up if so. */
+  ALenum err = alGetError();
+  if ( err != AL_NO_ERROR ) {
+    Msg( "OpenAL error: %s", alGetString( err ) );
+    if ( alIsEffect( effect ) )
+      alDeleteEffects( 1, &effect );
+      return false;
+  }
 
-	/* Check if an error occured, and clean up if so. */
-	ALenum err = alGetError();
-	if (err != AL_NO_ERROR)
-	{
-		fprintf(stderr, "OpenAL error: %s\n", alGetString(err));
-		if (alIsEffect(effect))
-			alDeleteEffects(1, &effect);
-		return false;
-	}
-	return true;
+  alGenAuxiliaryEffectSlots( 1, &slot );
+  err = alGetError();
+  ASSERT_FMT( err == AL_NO_ERROR, "[OpenAL] EFX error: %s", alGetString( err ) );
+
+  return true;
 }
 
-void CSoundRender_Core::i_efx_listener_set(CSound_environment* _E, EFXEAXREVERBPROPERTIES* reverb)
-{
- 	const auto E = static_cast<CSoundRender_Environment*>(_E);
- 	reverb->flDecayTime				= E->DecayTime;
- 	reverb->flDecayHFRatio			= E->DecayHFRatio;
-	reverb->flReflectionsGain		= E->Reflections;
- 	reverb->flReflectionsDelay		= E->ReflectionsDelay;
- 	reverb->flLateReverbDelay		= E->ReverbDelay;
-	reverb->flLateReverbGain		= E->Reverb;
-	reverb->flRoomRolloffFactor		= E->RoomRolloffFactor;
-	reverb->flAirAbsorptionGainHF	= E->AirAbsorptionHF;
+inline float mB_to_gain( float mb ) {
+  return powf( 10.0f, mb / 2000.0f );
 }
-//////////////////////////////////////////////////
 
+void CSoundRender_Core::i_efx_listener_set( CSound_environment* _E ) {
+  const auto E = static_cast<CSoundRender_Environment*>( _E );
+
+  // http://openal.org/pipermail/openal/2014-March/000083.html
+  float density = powf( E->EnvironmentSize, 3.0f ) / 16.0f;
+  if( density > 1.0f ) density = 1.0f;
+  alEffectf( effect, AL_REVERB_DENSITY,               density );
+  alEffectf( effect, AL_REVERB_DIFFUSION,             E->EnvironmentDiffusion );
+  alEffectf( effect, AL_REVERB_GAIN,                  mB_to_gain( E->Room ) );
+  alEffectf( effect, AL_REVERB_GAINHF,                mB_to_gain( E->RoomHF ) );
+  alEffectf( effect, AL_REVERB_DECAY_TIME,            E->DecayTime );
+  alEffectf( effect, AL_REVERB_DECAY_HFRATIO,         E->DecayHFRatio );
+  alEffectf( effect, AL_REVERB_REFLECTIONS_GAIN,      mB_to_gain( E->Reflections ) );
+  alEffectf( effect, AL_REVERB_REFLECTIONS_DELAY,     mB_to_gain( E->ReflectionsDelay ) );
+  alEffectf( effect, AL_REVERB_LATE_REVERB_DELAY,     E->ReverbDelay );
+  alEffectf( effect, AL_REVERB_LATE_REVERB_GAIN,      E->Reverb );
+  alEffectf( effect, AL_REVERB_AIR_ABSORPTION_GAINHF, mB_to_gain( E->AirAbsorptionHF ) );
+  alEffectf( effect, AL_REVERB_ROOM_ROLLOFF_FACTOR,   E->RoomRolloffFactor );
+}
+
+bool CSoundRender_Core::i_efx_commit_setting() {
+  alGetError();
+  /* Tell the effect slot to use the loaded effect object. Note that the this
+   * effectively copies the effect properties. You can modify or delete the
+   * effect object afterward without affecting the effect slot.
+   */
+  alAuxiliaryEffectSloti( slot, AL_EFFECTSLOT_EFFECT, effect );
+  ALenum err = alGetError();
+  if ( err != AL_NO_ERROR ) {
+    Msg( "[OpenAL] EFX error: %s", alGetString( err ) );
+    return false;
+  }
+
+  return true;
+}
 
 void	CSoundRender_Core::i_eax_listener_set	(CSound_environment* _E)
 {
