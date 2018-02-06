@@ -641,38 +641,32 @@ void	CInifile::remove_line	( LPCSTR S, LPCSTR L )
 }
 
 
-std::string CInifile::get_as_string() {
-  std::string str;
-  string512   val;
+#include <sstream>
 
-  for ( RootIt r_it = DATA.begin(); r_it != DATA.end(); ++r_it ) {
-    if ( r_it != DATA.begin() ) str.append( "\r\n" );
-    auto size = std::snprintf( nullptr, 0, "[%s]\r\n", *(*r_it)->Name );
-    std::string temp( size + 1, '\0' );
-    std::sprintf( &temp[ 0 ], "[%s]\r\n", *(*r_it)->Name );
-    str.append( temp.c_str() );
-    for ( SectCIt s_it = (*r_it)->Data.begin(); s_it != (*r_it)->Data.end(); ++s_it ) {
-      const Item& I = *s_it;
-      if ( *I.first ) {
-        if ( *I.second ) {
-          _decorate( val, *I.second );
+std::string CInifile::get_as_string() {
+  std::stringstream str;
+
+  bool first_sect = true;
+  for ( const auto& r_it : DATA ) {
+    if ( !first_sect ) str << "\r\n";
+    first_sect = false;
+    str << "[" << r_it->Name.c_str() << "]\r\n";
+    for ( const auto& I : r_it->Data ) {
+      if ( I.first.c_str() ) {
+        if ( I.second.c_str() ) {
+          string512 val;
+          _decorate( val, I.second.c_str() );
           _TrimRight( val );
           // only name and value
-          auto size = std::snprintf( nullptr, 0, "%s = %s\r\n", *I.first, val );
-          std::string temp( size + 1, '\0' );
-          std::sprintf( &temp[ 0 ], "%s = %s\r\n", *I.first, val );
-          str.append( temp.c_str() );
+          str << I.first.c_str() << " = " << val << "\r\n";
         }
         else {
           // only name
-          auto size = std::snprintf( nullptr, 0, "%s =\r\n", *I.first );
-          std::string temp( size + 1, '\0' );
-          std::sprintf( &temp[ 0 ], "%s =\r\n", *I.first );
-          str.append( temp.c_str() );
+          str << I.first.c_str() << " =\r\n";
         }
       }
     }
   }
 
-  return str;
+  return str.str();
 }
