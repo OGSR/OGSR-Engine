@@ -82,6 +82,15 @@ void CScriptIniFile::script_register(lua_State *L)
 			.def("r_s32",			&CScriptIniFile::r_s32)
 			.def("r_float",			&CScriptIniFile::r_float)
 			.def("r_vector",		&CScriptIniFile::r_fvector3)
+			.def_readwrite( "readonly", &CScriptIniFile::bReadOnly )
+			.def( "remove_line", &CScriptIniFile::remove_line )
+			.def( "w_bool",   &CScriptIniFile::w_bool )
+			.def( "w_string", &CScriptIniFile::w_string )
+			.def( "w_u32",    &CScriptIniFile::w_u32 )
+			.def( "w_s32",    &CScriptIniFile::w_s32 )
+			.def( "w_float",  &CScriptIniFile::w_float )
+			.def( "w_vector", &CScriptIniFile::w_fvector3 )
+			.def( "get_as_string", &CScriptIniFile::get_as_string )
 #ifdef LUABIND_09
 			.def("r_line",			&::r_line, out_value(_4) + out_value(_5)),
 #else

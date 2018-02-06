@@ -111,11 +111,8 @@ void CSoundRender_Core::update	( const Fvector& P, const Fvector& D, const Fvect
 		}
 		else
 		{
-			i_efx_listener_set(&e_current, &efx_reverb); //KRodin: Сделал по аналогии с eax. Некоторые эффекты подошли. Посмотрим, что получится.
-			if (!EFXTestSupport(&efx_reverb))
-			{
-				//Msg("!![OpenAL] EFX ERROR!"); //Иногда такое бывает. Из-за каких-нибудь эффектов наверно. Но мне пока лень разбираться, в чем там проблема.
-			}
+			i_efx_listener_set( &e_current ); //KRodin: Сделал по аналогии с eax. Некоторые эффекты подошли. Посмотрим, что получится.
+			bEFX = i_efx_commit_setting();
 		}
 	}
 

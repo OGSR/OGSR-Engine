@@ -29,6 +29,11 @@ CScriptIniFile *get_spawn_ini(CSE_Abstract *abstract)
 	return	((CScriptIniFile*)&abstract->spawn_ini());
 }
 
+void save_spawn_ini( CSE_Abstract *abstract ) {
+  auto str = abstract->spawn_ini().get_as_string();
+  abstract->m_ini_string = shared_str( str.c_str() );
+}
+
 LPCSTR get_ini_string_script( const CSE_Abstract *abstract ) {
   return abstract->m_ini_string.c_str();
 }
@@ -126,6 +131,7 @@ void CSE_Abstract::script_register(lua_State *L)
 			.def			("UPDATE_Write",		&BaseType::UPDATE_Write, &WrapType::UPDATE_Write_static)
 //			.def(		constructor<LPCSTR>())
 			.property( "custom_data", &get_ini_string_script, &set_ini_string_script )
+			.def( "save_spawn_ini", &save_spawn_ini )
 	];
 }
 

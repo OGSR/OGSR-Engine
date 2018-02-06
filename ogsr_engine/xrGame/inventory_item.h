@@ -124,7 +124,7 @@ public:
 			BOOL				IsQuestItem			()	const	{return m_flags.test(FIsQuestItem);}			
 			u32					Cost				() const	{ return m_cost; }
 	virtual	void				SetCost				(u32 cost) 	{ m_cost = cost; }
-	virtual float				Weight				() 			{ return m_weight;}		
+	virtual float				Weight				() const	{ return m_weight;}		
 
 #ifdef OBJECTS_RADIOACTIVE
 #ifdef AF_PSY_HEALTH

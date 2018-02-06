@@ -29,4 +29,5 @@ public:
 	virtual void				stop					();
 	virtual void				update					();
 	virtual void				fill_parameters			();
+	virtual	void				alAuxInit				(ALuint slot);
 };

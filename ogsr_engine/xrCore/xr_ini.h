@@ -50,15 +50,16 @@ public:
 private:
 	LPSTR		fName;
 	Root		DATA;
-	BOOL		bReadOnly;
 	void		Load			(IReader* F, LPCSTR path);
 public:
+	BOOL		bReadOnly;
     BOOL		bSaveAtEnd;
 public:
 				CInifile		( IReader* F, LPCSTR path=0 );
 				CInifile		( LPCSTR szFileName, BOOL ReadOnly=TRUE, BOOL bLoadAtStart=TRUE, BOOL SaveAtEnd=TRUE);
 	virtual 	~CInifile		( );
     bool		save_as         ( LPCSTR new_fname=0 );
+	std::string	get_as_string();
 
 	LPCSTR		fname			( ) { return fName; };
 

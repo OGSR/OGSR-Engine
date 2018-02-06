@@ -116,15 +116,11 @@ void CSoundRender_CoreA::_initialize	(u64 window)
 		Msg("[OpenAL] EAX 2.0 extension: %s", bEAX ? "present" : "absent");
 		Msg("[OpenAL] EAX 2.0 deferred: %s", bDeferredEAX ? "present" : "absent");
 	}
-	else
-	{
-		bEFX = deviceDesc.efx;
-		if (bEFX)
-		{
-			bEFX = EFXTestSupport(&efx_reverb);
-		}
-		Msg("[OpenAL] EFX: %s", bEFX ? "present" : "absent");
-	}
+	else if ( deviceDesc.efx ) {
+          InitAlEFXAPI();
+          bEFX = EFXTestSupport();
+          Msg( "[OpenAL] EFX: %s", bEFX ? "present" : "absent" );
+        }
 
 	ZeroMemory					( &wfm, sizeof( WAVEFORMATEX ) );
 	switch	( psSoundFreq ){            
@@ -157,6 +153,7 @@ void CSoundRender_CoreA::_initialize	(u64 window)
 	{
 		T						=	xr_new<CSoundRender_TargetA>();
 		if (T->_initialize()){	
+			if(bEFX)T->alAuxInit(slot);
 			s_targets.push_back	(T);
         }else{
         	Log					("! [OpenAL] Max targets - ",tit);
