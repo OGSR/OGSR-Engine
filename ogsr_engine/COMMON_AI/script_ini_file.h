@@ -32,6 +32,9 @@ public:
 			int			r_s32				(LPCSTR S, LPCSTR L);
 			float		r_float				(LPCSTR S, LPCSTR L);
 			Fvector		r_fvector3			(LPCSTR S, LPCSTR L);
+
+			LPCSTR		get_as_string();
+
 			DECLARE_SCRIPT_REGISTER_FUNCTION
 };
 add_to_type_list(CScriptIniFile)

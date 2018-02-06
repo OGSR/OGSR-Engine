@@ -90,6 +90,7 @@ void CScriptIniFile::script_register(lua_State *L)
 			.def( "w_s32",    &CScriptIniFile::w_s32 )
 			.def( "w_float",  &CScriptIniFile::w_float )
 			.def( "w_vector", &CScriptIniFile::w_fvector3 )
+			.def( "get_as_string", &CScriptIniFile::get_as_string )
 #ifdef LUABIND_09
 			.def("r_line",			&::r_line, out_value(_4) + out_value(_5)),
 #else
