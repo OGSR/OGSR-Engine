@@ -79,8 +79,8 @@ class ThreadPool {
 public:
     std::vector<std::unique_ptr<Thread>> threads;
 
-    void initialize(u32 threads_count) {
-        for (u32 i = 0; i < threads_count; i++) {
+    void initialize(std::uint32_t threads_count) {
+        for (std::uint32_t i = 0; i < threads_count; i++) {
             threads.push_back(std::make_unique<Thread>());
         }
     }

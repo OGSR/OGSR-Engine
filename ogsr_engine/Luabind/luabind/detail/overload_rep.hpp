@@ -28,7 +28,7 @@
 #include <luabind/detail/is_indirect_const.hpp>
 #include <luabind/detail/calc_has_arg.hpp>
 
-#include <imdexlib/typelist.hpp>
+#include <Utils/imdexlib/typelist.hpp>
 
 namespace luabind { namespace detail
 {

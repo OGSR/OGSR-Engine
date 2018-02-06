@@ -151,10 +151,3 @@
 #ifndef _M_X64
 #	define XR_USE_BLACKBOX
 #endif
-
-// ttapi, based on C++11 ThreadPool system
-#define NEW_TTAPI
-#ifndef NEW_TTAPI
-//	ttapi, based on WinAPI ThreadPool system.
-#	define TTAPI_OXYGEN
-#endif

@@ -262,66 +262,6 @@ void CResourceManager::Delete(const Shader* S)
 }
 
 
-#if !defined(NEW_TTAPI) && !defined(TTAPI_OXYGEN)
-#include <thread>
-xr_vector<CTexture*> tex_to_load;
-void TextureLoading(u32 thread_num)
-{
-	//Msg("TextureLoading -> thread %d started!", thread_num);
-
-	const u32 upperbound = thread_num * 100;
-	const u32 lowerbound = upperbound - 100;
-
-	for (u32 i = lowerbound; i < upperbound; i++)
-	{
-		if (i < tex_to_load.size())
-			tex_to_load[i]->Load();
-		else
-			break;
-	}
-
-	//Msg("TextureLoading -> thread %d finished!", thread_num);
-}
-
-void CResourceManager::DeferredUpload()
-{
-	if (Device.b_is_Ready)
-	{
-		tex_to_load.clear();
-
-		//Msg("CResourceManager::DeferredUpload -> START, size = %d", m_textures.size());
-
-		CTimer timer;
-		timer.Start();
-
-		if (m_textures.size() <= 100)
-		{
-			//Msg("CResourceManager::DeferredUpload -> one thread");
-			for (const auto &[_, tex] : m_textures)
-				tex->Load();
-		}
-		else
-		{
-			u32 th_count = (m_textures.size() / 100) + 1;
-			auto th_arr = std::make_unique<std::thread[]>(th_count);
-			for (const auto &[_, tex] : m_textures)
-				tex_to_load.push_back(tex);
-
-			for (u32 i = 0; i < th_count; i++)
-				th_arr[i] = std::thread(TextureLoading, i + 1);
-
-			for (u32 i = 0; i < th_count; i++)
-				th_arr[i].join();
-
-			tex_to_load.clear();
-		}
-
-		Msg("texture loading time (%d): %.2f s.", m_textures.size(), timer.GetElapsed_sec());
-	}
-}
-
-#else
-
 void CResourceManager::DeferredUpload()
 {
 	if (Device.b_is_Ready)
@@ -329,25 +269,16 @@ void CResourceManager::DeferredUpload()
 		CTimer timer;
 		timer.Start();
 
-#ifndef TTAPI_OXYGEN
 		u32 nWorkers = TTAPI->threads.size();
-#endif
+
 		for (const auto &[_, tex] : m_textures)
-#ifdef TTAPI_OXYGEN
-			ttapi_AddWorker([&] { tex->Load(); });
-#else
 			TTAPI->threads[Random.randI(nWorkers)]->addJob([&] { tex->Load(); });
-#endif
-#ifdef TTAPI_OXYGEN
-		ttapi_RunAllWorkers();
-#else
+
 		TTAPI->wait();
-#endif
 
 		Msg("texture loading time (%d): %.2f s.", m_textures.size(), timer.GetElapsed_sec());
 	}
 }
-#endif
 
 /*
 void	CResourceManager::DeferredUnload	()

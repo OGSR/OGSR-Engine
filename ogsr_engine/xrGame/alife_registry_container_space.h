@@ -8,7 +8,7 @@
 
 #pragma once
 
-#include "imdexlib\typelist.hpp"
+#include <Utils/imdexlib/typelist.hpp>
 
 #define	registry_type_list imdexlib::typelist<>
 #define add_to_registry_type_list(a) using registry_##a = imdexlib::ts_prepend_t<a, registry_type_list>;
