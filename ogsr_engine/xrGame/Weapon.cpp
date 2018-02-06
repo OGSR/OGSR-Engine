@@ -1354,10 +1354,11 @@ void CWeapon::OnZoomOut()
 	if ( m_bZoomMode ) {
 		m_bZoomMode = false;
 		CActor* pActor = smart_cast<CActor*>(H_Parent());
-		if ( pActor )
+		if ( pActor ) {
 			w_states.set( 0.f, 0.f, 0.f, 1.f );
 			::Render->set_thermovision_data( &w_timers, &w_states );
 			pActor->callback(GameObject::eOnActorWeaponZoomOut)(lua_game_object());
+		}
 	}
 
 	StartHudInertion();
