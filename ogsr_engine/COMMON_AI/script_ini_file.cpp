@@ -104,6 +104,9 @@ Fvector CScriptIniFile::r_fvector3		(LPCSTR S, LPCSTR L)
 	return		(inherited::r_fvector3(S,L));
 }
 
-LPCSTR CScriptIniFile::get_as_string() {
-  return inherited::get_as_string().c_str();
+
+using namespace luabind;
+
+luabind::internal_string CScriptIniFile::get_as_string() {
+  return luabind::internal_string( inherited::get_as_string().c_str() );
 }

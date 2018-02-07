@@ -33,7 +33,7 @@ public:
 			float		r_float				(LPCSTR S, LPCSTR L);
 			Fvector		r_fvector3			(LPCSTR S, LPCSTR L);
 
-			LPCSTR		get_as_string();
+			luabind::internal_string get_as_string();
 
 			DECLARE_SCRIPT_REGISTER_FUNCTION
 };
