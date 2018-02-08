@@ -84,7 +84,9 @@ public:
 	virtual void						play_no_feedback		( ref_sound& S, CObject* O,	u32 flags=0, float delay=0.f, Fvector* pos=0, float* vol=0, float* freq=0, Fvector2* range=0);
 	virtual void						set_master_volume		( float			f )=0;
 	virtual void						set_geometry_env		( IReader*		I );
+	virtual void						unset_geometry_env		();
 	virtual void						set_geometry_som		( IReader*		I );
+	virtual void						unset_geometry_som		();
 	virtual void						set_geometry_occ		( CDB::MODEL*	M );
 	virtual void						set_handler				( sound_event*	E );
 
@@ -123,10 +125,16 @@ public:
 	void								env_apply				();
 
 protected: // EFX
-	EFXEAXREVERBPROPERTIES				efx_reverb;
+	EFXEAXREVERBPROPERTIES*				efx_reverb;
 	ALuint								effect;
 	ALuint								slot;
 	bool 								EFXTestSupport();
 	void								InitAlEFXAPI();
+	bool use_efx_preset;
+        void applyEFXPreset();
+
+public:
+        void setEFXPreset( std::string );
+        void unsetEFXPreset();
 };
 extern CSoundRender_Core* SoundRender;

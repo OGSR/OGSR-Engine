@@ -26,6 +26,137 @@ int		psSoundCacheSizeMB		= 32;
 CSoundRender_Core*				SoundRender = 0;
 CSound_manager_interface*		Sound		= 0;
 
+
+std::unordered_map <std::string, EFXEAXREVERBPROPERTIES> efx_reverb_presets = {
+  { "generic", EFX_REVERB_PRESET_GENERIC },
+  { "paddedcell", EFX_REVERB_PRESET_PADDEDCELL },
+  { "room", EFX_REVERB_PRESET_ROOM },
+  { "bathroom", EFX_REVERB_PRESET_BATHROOM },
+  { "livingroom", EFX_REVERB_PRESET_LIVINGROOM },
+  { "stoneroom", EFX_REVERB_PRESET_STONEROOM },
+  { "auditorium", EFX_REVERB_PRESET_AUDITORIUM },
+  { "concerthall", EFX_REVERB_PRESET_CONCERTHALL },
+  { "cave", EFX_REVERB_PRESET_CAVE },
+  { "arena", EFX_REVERB_PRESET_ARENA },
+  { "hangar", EFX_REVERB_PRESET_HANGAR },
+  { "carpetedhallway", EFX_REVERB_PRESET_CARPETEDHALLWAY },
+  { "hallway", EFX_REVERB_PRESET_HALLWAY },
+  { "stonecorridor", EFX_REVERB_PRESET_STONECORRIDOR },
+  { "alley", EFX_REVERB_PRESET_ALLEY },
+  { "forest", EFX_REVERB_PRESET_FOREST },
+  { "city", EFX_REVERB_PRESET_CITY },
+  { "mountains", EFX_REVERB_PRESET_MOUNTAINS },
+  { "quarry", EFX_REVERB_PRESET_QUARRY },
+  { "plain", EFX_REVERB_PRESET_PLAIN },
+  { "parkinglot", EFX_REVERB_PRESET_PARKINGLOT },
+  { "sewerpipe", EFX_REVERB_PRESET_SEWERPIPE },
+  { "underwater", EFX_REVERB_PRESET_UNDERWATER },
+  { "drugged", EFX_REVERB_PRESET_DRUGGED },
+  { "dizzy", EFX_REVERB_PRESET_DIZZY },
+  { "psychotic", EFX_REVERB_PRESET_PSYCHOTIC },
+
+  { "castle_smallroom", EFX_REVERB_PRESET_CASTLE_SMALLROOM },
+  { "castle_shortpassage", EFX_REVERB_PRESET_CASTLE_SHORTPASSAGE },
+  { "castle_mediumroom", EFX_REVERB_PRESET_CASTLE_MEDIUMROOM },
+  { "castle_largeroom", EFX_REVERB_PRESET_CASTLE_LARGEROOM },
+  { "castle_longpassage", EFX_REVERB_PRESET_CASTLE_LONGPASSAGE },
+  { "castle_hall", EFX_REVERB_PRESET_CASTLE_HALL },
+  { "castle_cupboard", EFX_REVERB_PRESET_CASTLE_CUPBOARD },
+  { "castle_courtyard", EFX_REVERB_PRESET_CASTLE_COURTYARD },
+  { "castle_alcove", EFX_REVERB_PRESET_CASTLE_ALCOVE },
+
+  { "factory_smallroom", EFX_REVERB_PRESET_FACTORY_SMALLROOM },
+  { "factory_shortpassage", EFX_REVERB_PRESET_FACTORY_SHORTPASSAGE },
+  { "factory_mediumroom", EFX_REVERB_PRESET_FACTORY_MEDIUMROOM },
+  { "factory_largeroom", EFX_REVERB_PRESET_FACTORY_LARGEROOM },
+  { "factory_longpassage", EFX_REVERB_PRESET_FACTORY_LONGPASSAGE },
+  { "factory_hall", EFX_REVERB_PRESET_FACTORY_HALL },
+  { "factory_cupboard", EFX_REVERB_PRESET_FACTORY_CUPBOARD },
+  { "factory_courtyard", EFX_REVERB_PRESET_FACTORY_COURTYARD },
+  { "factory_alcove", EFX_REVERB_PRESET_FACTORY_ALCOVE },
+
+  { "icepalace_smallroom", EFX_REVERB_PRESET_ICEPALACE_SMALLROOM },
+  { "icepalace_shortpassage", EFX_REVERB_PRESET_ICEPALACE_SHORTPASSAGE },
+  { "icepalace_mediumroom", EFX_REVERB_PRESET_ICEPALACE_MEDIUMROOM },
+  { "icepalace_largeroom", EFX_REVERB_PRESET_ICEPALACE_LARGEROOM },
+  { "icepalace_longpassage", EFX_REVERB_PRESET_ICEPALACE_LONGPASSAGE },
+  { "icepalace_hall", EFX_REVERB_PRESET_ICEPALACE_HALL },
+  { "icepalace_cupboard", EFX_REVERB_PRESET_ICEPALACE_CUPBOARD },
+  { "icepalace_courtyard", EFX_REVERB_PRESET_ICEPALACE_COURTYARD },
+  { "icepalace_alcove", EFX_REVERB_PRESET_ICEPALACE_ALCOVE },
+
+  { "spacestation_smallroom", EFX_REVERB_PRESET_SPACESTATION_SMALLROOM },
+  { "spacestation_shortpassage", EFX_REVERB_PRESET_SPACESTATION_SHORTPASSAGE },
+  { "spacestation_mediumroom", EFX_REVERB_PRESET_SPACESTATION_MEDIUMROOM },
+  { "spacestation_largeroom", EFX_REVERB_PRESET_SPACESTATION_LARGEROOM },
+  { "spacestation_longpassage", EFX_REVERB_PRESET_SPACESTATION_LONGPASSAGE },
+  { "spacestation_hall", EFX_REVERB_PRESET_SPACESTATION_HALL },
+  { "spacestation_cupboard", EFX_REVERB_PRESET_SPACESTATION_CUPBOARD },
+  { "spacestation_alcove", EFX_REVERB_PRESET_SPACESTATION_ALCOVE },
+
+  { "wooden_smallroom", EFX_REVERB_PRESET_WOODEN_SMALLROOM },
+  { "wooden_shortpassage", EFX_REVERB_PRESET_WOODEN_SHORTPASSAGE },
+  { "wooden_mediumroom", EFX_REVERB_PRESET_WOODEN_MEDIUMROOM },
+  { "wooden_largeroom", EFX_REVERB_PRESET_WOODEN_LARGEROOM },
+  { "wooden_longpassage", EFX_REVERB_PRESET_WOODEN_LONGPASSAGE },
+  { "wooden_hall", EFX_REVERB_PRESET_WOODEN_HALL },
+  { "wooden_cupboard", EFX_REVERB_PRESET_WOODEN_CUPBOARD },
+  { "wooden_courtyard", EFX_REVERB_PRESET_WOODEN_COURTYARD },
+  { "wooden_alcove", EFX_REVERB_PRESET_WOODEN_ALCOVE },
+
+  { "sport_emptystadium", EFX_REVERB_PRESET_SPORT_EMPTYSTADIUM },
+  { "sport_squashcourt", EFX_REVERB_PRESET_SPORT_SQUASHCOURT },
+  { "sport_smallswimmingpool", EFX_REVERB_PRESET_SPORT_SMALLSWIMMINGPOOL },
+  { "sport_largeswimmingpool", EFX_REVERB_PRESET_SPORT_LARGESWIMMINGPOOL },
+  { "sport_gymnasium", EFX_REVERB_PRESET_SPORT_GYMNASIUM },
+  { "sport_fullstadium", EFX_REVERB_PRESET_SPORT_FULLSTADIUM },
+  { "sport_stadiumtannoy", EFX_REVERB_PRESET_SPORT_STADIUMTANNOY },
+
+  { "prefab_workshop", EFX_REVERB_PRESET_PREFAB_WORKSHOP },
+  { "prefab_schoolroom", EFX_REVERB_PRESET_PREFAB_SCHOOLROOM },
+  { "prefab_practiseroom", EFX_REVERB_PRESET_PREFAB_PRACTISEROOM },
+  { "prefab_outhouse", EFX_REVERB_PRESET_PREFAB_OUTHOUSE },
+  { "prefab_caravan", EFX_REVERB_PRESET_PREFAB_CARAVAN },
+
+  { "dome_tomb", EFX_REVERB_PRESET_DOME_TOMB },
+  { "pipe_small", EFX_REVERB_PRESET_PIPE_SMALL },
+  { "dome_saintpauls", EFX_REVERB_PRESET_DOME_SAINTPAULS },
+  { "pipe_longthin", EFX_REVERB_PRESET_PIPE_LONGTHIN },
+  { "pipe_large", EFX_REVERB_PRESET_PIPE_LARGE },
+  { "pipe_resonant", EFX_REVERB_PRESET_PIPE_RESONANT },
+
+  { "outdoors_backyard", EFX_REVERB_PRESET_OUTDOORS_BACKYARD },
+  { "outdoors_rollingplains", EFX_REVERB_PRESET_OUTDOORS_ROLLINGPLAINS },
+  { "outdoors_deepcanyon", EFX_REVERB_PRESET_OUTDOORS_DEEPCANYON },
+  { "outdoors_creek", EFX_REVERB_PRESET_OUTDOORS_CREEK },
+  { "outdoors_valley", EFX_REVERB_PRESET_OUTDOORS_VALLEY },
+
+  { "mood_heaven", EFX_REVERB_PRESET_MOOD_HEAVEN },
+  { "mood_hell", EFX_REVERB_PRESET_MOOD_HELL },
+  { "mood_memory", EFX_REVERB_PRESET_MOOD_MEMORY },
+
+  { "driving_commentator", EFX_REVERB_PRESET_DRIVING_COMMENTATOR },
+  { "driving_pitgarage", EFX_REVERB_PRESET_DRIVING_PITGARAGE },
+  { "driving_incar_racer", EFX_REVERB_PRESET_DRIVING_INCAR_RACER },
+  { "driving_incar_sports", EFX_REVERB_PRESET_DRIVING_INCAR_SPORTS },
+  { "driving_incar_luxury", EFX_REVERB_PRESET_DRIVING_INCAR_LUXURY },
+  { "driving_fullgrandstand", EFX_REVERB_PRESET_DRIVING_FULLGRANDSTAND },
+  { "driving_emptygrandstand", EFX_REVERB_PRESET_DRIVING_EMPTYGRANDSTAND },
+  { "driving_tunnel", EFX_REVERB_PRESET_DRIVING_TUNNEL },
+
+  { "city_streets", EFX_REVERB_PRESET_CITY_STREETS },
+  { "city_subway", EFX_REVERB_PRESET_CITY_SUBWAY },
+  { "city_museum", EFX_REVERB_PRESET_CITY_MUSEUM },
+  { "city_library", EFX_REVERB_PRESET_CITY_LIBRARY },
+  { "city_underpass", EFX_REVERB_PRESET_CITY_UNDERPASS },
+  { "city_abandoned", EFX_REVERB_PRESET_CITY_ABANDONED },
+  
+  { "dustyroom", EFX_REVERB_PRESET_DUSTYROOM },
+  { "chapel", EFX_REVERB_PRESET_CHAPEL },
+  { "smallwaterroom", EFX_REVERB_PRESET_SMALLWATERROOM },
+};
+
+
 //////////////////////////////////////////////////
 #include <efx.h>
 #define LOAD_PROC(x, type)  ((x) = (type)alGetProcAddress(#x))
@@ -41,7 +172,6 @@ LPALAUXILIARYEFFECTSLOTI alAuxiliaryEffectSloti;
 
 CSoundRender_Core::CSoundRender_Core	()
 {
-	efx_reverb = EFX_REVERB_PRESET_GENERIC;
 	bEFX = false;
 	bPresent					= FALSE;
     bEAX						= FALSE;
@@ -65,6 +195,8 @@ CSoundRender_Core::CSoundRender_Core	()
 
 	effect = 0;
 	slot = 0;
+	use_efx_preset = false;
+	efx_reverb     = nullptr;
 }
 
 CSoundRender_Core::~CSoundRender_Core()
@@ -370,6 +502,7 @@ CSoundRender_Environment*	CSoundRender_Core::get_environment			( const Fvector& 
 	static CSoundRender_Environment	identity;
 
 	if (bUserEnvironment){
+		use_efx_preset = false;
 		return &s_user_environment;
 	}else{
 		if (geom_ENV){
@@ -385,6 +518,7 @@ CSoundRender_Environment*	CSoundRender_Core::get_environment			( const Fvector& 
 				Fvector tri_norm;
 				tri_norm.mknormal		(V[T->verts[0]],V[T->verts[1]],V[T->verts[2]]);
 				float	dot				= dir.dotproduct(tri_norm);
+				use_efx_preset = false;
 				if (dot<0){
 					u16		id_front	= (u16)((T->dummy&0x0000ffff)>>0);		//	front face
 					return	s_environment->Get(id_front);
@@ -393,10 +527,12 @@ CSoundRender_Environment*	CSoundRender_Core::get_environment			( const Fvector& 
 					return	s_environment->Get(id_back);
 				}
 			}else{
+				use_efx_preset = true;
 				identity.set_identity	();
 				return &identity;
 			}
 		}else{
+			use_efx_preset = true;
 			identity.set_identity	();
 			return &identity;
 		}
@@ -439,19 +575,9 @@ bool CSoundRender_Core::EFXTestSupport() {
   alGenEffects( 1, &effect );
 
   alEffecti( effect, AL_EFFECT_TYPE, AL_EFFECT_REVERB );
-  alEffectf( effect, AL_REVERB_DENSITY,               efx_reverb.flDensity );
-  alEffectf( effect, AL_REVERB_DIFFUSION,             efx_reverb.flDiffusion );
-  alEffectf( effect, AL_REVERB_GAIN,                  efx_reverb.flGain );
-  alEffectf( effect, AL_REVERB_GAINHF,                efx_reverb.flGainHF );
-  alEffectf( effect, AL_REVERB_DECAY_TIME,            efx_reverb.flDecayTime );
-  alEffectf( effect, AL_REVERB_DECAY_HFRATIO,         efx_reverb.flDecayHFRatio );
-  alEffectf( effect, AL_REVERB_REFLECTIONS_GAIN,      efx_reverb.flReflectionsGain );
-  alEffectf( effect, AL_REVERB_REFLECTIONS_DELAY,     efx_reverb.flReflectionsDelay );
-  alEffectf( effect, AL_REVERB_LATE_REVERB_GAIN,      efx_reverb.flLateReverbGain );
-  alEffectf( effect, AL_REVERB_LATE_REVERB_DELAY,     efx_reverb.flLateReverbDelay );
-  alEffectf( effect, AL_REVERB_AIR_ABSORPTION_GAINHF, efx_reverb.flAirAbsorptionGainHF );
-  alEffectf( effect, AL_REVERB_ROOM_ROLLOFF_FACTOR,   efx_reverb.flRoomRolloffFactor );
-  alEffecti( effect, AL_REVERB_DECAY_HFLIMIT,         efx_reverb.iDecayHFLimit );
+  setEFXPreset( "generic" );
+  applyEFXPreset();
+  unsetEFXPreset();
 
   /* Check if an error occured, and clean up if so. */
   ALenum err = alGetError();
@@ -469,12 +595,41 @@ bool CSoundRender_Core::EFXTestSupport() {
   return true;
 }
 
+void CSoundRender_Core::setEFXPreset( std::string name ) {
+  efx_reverb = &efx_reverb_presets.at( name );
+}
+
+void CSoundRender_Core::unsetEFXPreset() {
+  efx_reverb = nullptr;
+}
+
+void CSoundRender_Core::applyEFXPreset() {
+  alEffectf( effect, AL_REVERB_DENSITY,               efx_reverb->flDensity );
+  alEffectf( effect, AL_REVERB_DIFFUSION,             efx_reverb->flDiffusion );
+  alEffectf( effect, AL_REVERB_GAIN,                  efx_reverb->flGain );
+  alEffectf( effect, AL_REVERB_GAINHF,                efx_reverb->flGainHF );
+  alEffectf( effect, AL_REVERB_DECAY_TIME,            efx_reverb->flDecayTime );
+  alEffectf( effect, AL_REVERB_DECAY_HFRATIO,         efx_reverb->flDecayHFRatio );
+  alEffectf( effect, AL_REVERB_REFLECTIONS_GAIN,      efx_reverb->flReflectionsGain );
+  alEffectf( effect, AL_REVERB_REFLECTIONS_DELAY,     efx_reverb->flReflectionsDelay );
+  alEffectf( effect, AL_REVERB_LATE_REVERB_GAIN,      efx_reverb->flLateReverbGain );
+  alEffectf( effect, AL_REVERB_LATE_REVERB_DELAY,     efx_reverb->flLateReverbDelay );
+  alEffectf( effect, AL_REVERB_AIR_ABSORPTION_GAINHF, efx_reverb->flAirAbsorptionGainHF );
+  alEffectf( effect, AL_REVERB_ROOM_ROLLOFF_FACTOR,   efx_reverb->flRoomRolloffFactor );
+  alEffecti( effect, AL_REVERB_DECAY_HFLIMIT,         efx_reverb->iDecayHFLimit );
+}
+
 inline float mB_to_gain( float mb ) {
   return powf( 10.0f, mb / 2000.0f );
 }
 
 void CSoundRender_Core::i_efx_listener_set( CSound_environment* _E ) {
   const auto E = static_cast<CSoundRender_Environment*>( _E );
+
+  if ( use_efx_preset && efx_reverb ) {
+    applyEFXPreset();
+    return;
+  }
 
   // http://openal.org/pipermail/openal/2014-March/000083.html
   float density = powf( E->EnvironmentSize, 3.0f ) / 16.0f;
@@ -582,4 +737,20 @@ void CSoundRender_Core::object_relcase( CObject* obj )
 	                    s_emitters[eit]->owner_data->g_object	= 0;     
         }
     }
+}
+
+
+void CSoundRender_Core::unset_geometry_som() {
+  if ( geom_SOM ) {
+    xr_delete( geom_SOM );
+    geom_SOM = nullptr;
+  }
+}
+
+
+void CSoundRender_Core::unset_geometry_env() {
+  if ( geom_ENV ) {
+    xr_delete( geom_ENV );
+    geom_ENV = nullptr;
+  }
 }
