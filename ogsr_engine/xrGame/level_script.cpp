@@ -722,6 +722,12 @@ void unsetEFXPreset() {
 }
 
 
+void set_cam_inert( float v ) {
+  psCamInert = v;
+  clamp( psCamInert, 0.0f, 1.0f );
+}
+
+
 #pragma optimize("s",on)
 void CLevel::script_register(lua_State *L)
 {
@@ -838,7 +844,7 @@ void CLevel::script_register(lua_State *L)
 		def( "vertex_id", ( ( u32(*) ( u32, const Fvector& ) ) &vertex_id ) ),
 
 		def("advance_game_time",				&AdvanceGameTime),
-
+		
 		def("get_target_dist",					&GetTargetDist),
 		def("get_target_obj",					&GetTargetObj),
 		//
@@ -849,7 +855,8 @@ void CLevel::script_register(lua_State *L)
 
 		def( "change_level", &change_level ),
 		def( "set_efx_preset", &setEFXPreset ),
-		def( "unset_efx_preset", &unsetEFXPreset )
+		def( "unset_efx_preset", &unsetEFXPreset ),
+		def( "set_cam_inert", &set_cam_inert )
 	],
 	
 	module(L,"actor_stats")
