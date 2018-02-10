@@ -79,7 +79,7 @@ class ThreadPool {
 public:
     std::vector<std::unique_ptr<Thread>> threads;
 
-    void initialize(std::uint32_t threads_count) {
+    void initialize(std::uint32_t threads_count = std::thread::hardware_concurrency()) {
         for (std::uint32_t i = 0; i < threads_count; i++) {
             threads.push_back(std::make_unique<Thread>());
         }

@@ -103,10 +103,3 @@ Fvector CScriptIniFile::r_fvector3		(LPCSTR S, LPCSTR L)
 	THROW3		(inherited::line_exist(S,L),"Cannot find line",L);
 	return		(inherited::r_fvector3(S,L));
 }
-
-
-using namespace luabind;
-
-luabind::internal_string CScriptIniFile::get_as_string() {
-  return luabind::internal_string( inherited::get_as_string().c_str() );
-}
