@@ -1,19 +1,8 @@
-#ifndef _STL_EXT_internal
-#define _STL_EXT_internal
+#pragma once
 
 using std::swap;
 
-#ifdef	__BORLANDC__
-#define M_NOSTDCONTAINERS_EXT
-#endif
-#ifdef	_M_AMD64
-#define M_DONTDEFERCLEAR_EXT
-#endif
-
-#define	M_DONTDEFERCLEAR_EXT		//. for mem-debug only
-
-//--------	
-#ifdef	M_NOSTDCONTAINERS_EXT
+#if 0
 
 #define xr_list std::list
 #define xr_deque std::deque
@@ -105,7 +94,7 @@ namespace std
 };
 
 // string(char)
-typedef		std::basic_string<char, std::char_traits<char>, xalloc<char> >	xr_string;
+using xr_string = std::basic_string<char, std::char_traits<char>, xalloc<char>>;
 
 // vector
 template	<typename T, typename allocator = xalloc<T> >
@@ -158,57 +147,37 @@ public:
 };
 
 // deque
-template <typename T, typename allocator = xalloc<T> >
-class xr_deque : public std::deque<T,allocator> {
-public: 
-	typedef typename allocator								allocator_type;
-	typedef typename allocator_type::value_type				value_type;
-	typedef typename allocator_type::size_type				size_type;
-	u32		size				() const							{return (u32)__super::size();	} 
-};
+template <typename T, typename allocator = xalloc<T>>
+using xr_deque = std::deque<T, allocator>;
 
 // stack
-template <typename _Ty, class _C = xr_vector<_Ty> >
-class xr_stack {
-public:
-	typedef typename _C::allocator_type						allocator_type;
-	typedef typename allocator_type::value_type				value_type;
-	typedef typename allocator_type::size_type				size_type;
+template <typename T, class C = xr_deque<T>>
+using xr_stack = std::stack<T, C>;
 
-	//explicit			stack(const allocator_type& _Al = allocator_type()) : c(_Al) {}
-	allocator_type		get_allocator	() const							{return (c.get_allocator()); }
-	bool				empty			() const							{return (c.empty()); }
-	u32					size			() const							{return c.size(); } 
-	value_type&			top				()									{return (c.back()); }
-	const value_type&	top				() const							{return (c.back()); }
-	void				push			(const value_type& _X)				{c.push_back(_X); }
-	void				pop				()									{c.pop_back(); }
-	bool				operator==		(const xr_stack<_Ty, _C>& _X) const	{return (c == _X.c); }
-	bool				operator!=		(const xr_stack<_Ty, _C>& _X) const	{return (!(*this == _X)); }
-	bool				operator<		(const xr_stack<_Ty, _C>& _X) const	{return (c < _X.c); }
-	bool				operator>		(const xr_stack<_Ty, _C>& _X) const	{return (_X < *this); }
-	bool				operator<=		(const xr_stack<_Ty, _C>& _X) const	{return (!(_X < *this)); }
-	bool				operator>=		(const xr_stack<_Ty, _C>& _X) const	{return (!(*this < _X)); }
+template <typename T, typename allocator = xalloc<T>>
+using xr_list = std::list<T, allocator>;
 
-protected:
-	_C c;
-};
+template <typename K, class P = std::less<K>, typename allocator = xalloc<K>>
+using xr_set = std::set<K, P, allocator>;
 
-template	<typename T, typename allocator = xalloc<T> >									class	xr_list 		: public std::list<T,allocator>			{ public: u32 size() const {return (u32)__super::size(); } };
-template	<typename K, class P=std::less<K>, typename allocator = xalloc<K> >				class	xr_set			: public std::set<K,P,allocator>		{ public: u32 size() const {return (u32)__super::size(); } };
-template	<typename K, class P=std::less<K>, typename allocator = xalloc<K> >				class	xr_multiset		: public std::multiset<K,P,allocator>	{ public: u32 size() const {return (u32)__super::size(); } };
-template	<typename K, class V, class P=std::less<K>, typename allocator = xalloc<std::pair<const K,V> > >	class	xr_map 			: public std::map<K,V,P,allocator>		{ public: u32 size() const {return (u32)__super::size(); } };
-template	<typename K, class V, class P=std::less<K>, typename allocator = xalloc<std::pair<const K,V> > >	class	xr_multimap		: public std::multimap<K,V,P,allocator>	{ public: u32 size() const {return (u32)__super::size(); } };
+template <typename K, class P = std::less<K>, typename allocator = xalloc<K>>
+using xr_multiset = std::multiset<K, P, allocator>;
+
+template <typename K, class V, class P = std::less<K>, typename allocator = xalloc<std::pair<const K, V>>>
+using xr_map = std::map<K, V, P, allocator>;
+
+template <typename K, class V, class P = std::less<K>, typename allocator = xalloc<std::pair<const K, V>>>
+using xr_multimap = std::multimap<K, V, P, allocator>;
 
 #endif
 
 #define mk_pair std::make_pair //TODO: Везде заменить, а это убрать.
 
 struct pred_str {	
-	IC bool operator()(const char* x, const char* y) const				{	return xr_strcmp(x,y)<0;	}
+	bool operator()(const char* x, const char* y) const { return std::strcmp(x, y) < 0; }
 };
 struct pred_stri {	
-	IC bool operator()(const char* x, const char* y) const				{	return stricmp(x,y)<0;	}
+	bool operator()(const char* x, const char* y) const { return _stricmp(x, y) < 0; }
 };
 
 // STL extensions
@@ -263,10 +232,3 @@ DEFINE_VECTOR(float,FloatVec,FloatIt);
 DEFINE_VECTOR(float*,LPFloatVec,LPFloatIt);
 DEFINE_VECTOR(int,IntVec,IntIt);
 DEFINE_VECTOR(int*,LPIntVec,LPIntIt);
-
-#ifdef __BORLANDC__
-DEFINE_VECTOR(AnsiString,AStringVec,AStringIt);
-DEFINE_VECTOR(AnsiString*,LPAStringVec,LPAStringIt);
-#endif
-
-#endif

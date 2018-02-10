@@ -36,8 +36,6 @@ namespace luabind
 
 	struct value
 	{
-		friend class vector_class<value>;
-
 		template<class T>
 		value(const char* name, T v)
 			: name_(name)
