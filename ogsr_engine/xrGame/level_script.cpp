@@ -713,6 +713,21 @@ void change_level( GameGraph::_GRAPH_ID game_vertex_id, u32 level_vertex_id, Fve
 }
 
 
+void setEFXPreset( LPCSTR preset ) {
+  ::Sound->setEFXPreset( preset );
+}
+
+void unsetEFXPreset() {
+  ::Sound->unsetEFXPreset();
+}
+
+
+void set_cam_inert( float v ) {
+  psCamInert = v;
+  clamp( psCamInert, 0.0f, 1.0f );
+}
+
+
 #pragma optimize("s",on)
 void CLevel::script_register(lua_State *L)
 {
@@ -829,7 +844,7 @@ void CLevel::script_register(lua_State *L)
 		def( "vertex_id", ( ( u32(*) ( u32, const Fvector& ) ) &vertex_id ) ),
 
 		def("advance_game_time",				&AdvanceGameTime),
-
+		
 		def("get_target_dist",					&GetTargetDist),
 		def("get_target_obj",					&GetTargetObj),
 		//
@@ -838,7 +853,10 @@ void CLevel::script_register(lua_State *L)
 		def("send_event_key_hold", &send_event_key_hold),
 		def("send_event_mouse_wheel", &send_event_mouse_wheel),
 
-		def( "change_level", &change_level )
+		def( "change_level", &change_level ),
+		def( "set_efx_preset", &setEFXPreset ),
+		def( "unset_efx_preset", &unsetEFXPreset ),
+		def( "set_cam_inert", &set_cam_inert )
 	],
 	
 	module(L,"actor_stats")

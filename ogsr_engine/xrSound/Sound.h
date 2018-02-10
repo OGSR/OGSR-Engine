@@ -346,7 +346,9 @@ public:
 
 	virtual void					set_master_volume		( float f=1.f )																			= 0;
 	virtual void					set_geometry_env		( IReader* I )																			= 0;
+	virtual void					unset_geometry_env		()																			= 0;
 	virtual void					set_geometry_som		( IReader* I )																			= 0;
+	virtual void					unset_geometry_som		()																			= 0;
 	virtual void					set_geometry_occ		( CDB::MODEL* M )																		= 0;
 	virtual void					set_handler				( sound_event* E )																		= 0;
 	//@}
@@ -358,6 +360,8 @@ public:
 
 	virtual void					object_relcase			( CObject* obj )																		= 0;
 	virtual const Fvector&			listener_position		()																						= 0;
+	virtual void setEFXPreset( std::string ) = 0;
+	virtual void unsetEFXPreset() = 0;
 #ifdef __BORLANDC__
 	virtual SoundEnvironment_LIB*	get_env_library			()																						= 0;
 	virtual void					refresh_env_library		()																						= 0;

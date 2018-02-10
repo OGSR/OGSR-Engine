@@ -18,6 +18,9 @@
 #include <regex>
 #include <string>
 
+#define READ_IF_EXISTS(ltx,method,section,name,default_value)\
+	((ltx->line_exist(section,name)) ? (ltx->method(section,name)) : (default_value))
+
 xr_token							snd_freq_token							[ ]={
 	{ "22khz",						sf_22K										},
 	{ "44khz",						sf_44K										},
@@ -581,7 +584,8 @@ void CCC_Register()
 	CMD2(CCC_Float,		"cam_slide_inert",		&psCamSlideInert);
 
 //	CMD1(CCC_r2,		"renderer"					);
-	//psSoundRolloff	= pSettings->r_float	("sound","rolloff");		clamp(psSoundRolloff,			EPS_S,	2.f);
+        psSoundRolloff = READ_IF_EXISTS( pSettings, r_float, "sound", "rolloff", psSoundRolloff );
+        clamp( psSoundRolloff, EPS_S, 2.f );
 	psSoundOcclusionScale	= pSettings->r_float	("sound","occlusion_scale");clamp(psSoundOcclusionScale,	0.1f,	.5f);
 
 	extern	int	g_Dump_Export_Obj;
