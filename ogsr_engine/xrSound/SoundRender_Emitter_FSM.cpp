@@ -38,12 +38,12 @@ void CSoundRender_Emitter::update	(float dt)
 		fade_volume			= 1.f;
 		occluder_volume		= SoundRender->get_occlusion	(p_source.position,.2f,occluder);
 		smooth_volume		= p_source.base_volume*p_source.volume*(owner_data->s_type==st_Effect?psSoundVEffects*psSoundVFactor:psSoundVMusic)*(b2D?1.f:occluder_volume);
-		e_current = e_target= *SoundRender->get_environment	(p_source.position);
 		if (update_culling(dt))	
 		{
 			state			=	stPlaying;
 			position		=	0;
 			SoundRender->i_start(this);
+			update_environment( dt );
 		}
 		else state			=	stSimulating;
 		break;
@@ -61,11 +61,11 @@ void CSoundRender_Emitter::update	(float dt)
 		fade_volume			= 1.f;
 		occluder_volume		= SoundRender->get_occlusion	(p_source.position,.2f,occluder);
 		smooth_volume		= p_source.base_volume*p_source.volume*(owner_data->s_type==st_Effect?psSoundVEffects*psSoundVFactor:psSoundVMusic)*(b2D?1.f:occluder_volume);
-		e_current = e_target= *SoundRender->get_environment	(p_source.position);
 		if (update_culling(dt)){
 			state		  	=	stPlayingLooped;
 			position	  	=	0;
 			SoundRender->i_start(this);
+			update_environment( dt );
 		}else state		  	=	stSimulatingLooped;
 		break;
 	case stPlaying:
@@ -110,6 +110,7 @@ void CSoundRender_Emitter::update	(float dt)
 				state					=	stPlaying;
 				position				= 	(((dwTime-dwTimeStarted)%source->dwTimeTotal)*source->dwBytesPerMS);
 				SoundRender->i_start		(this);
+				update_environment( dt );
 			}
 		}
 		break;
@@ -143,6 +144,7 @@ void CSoundRender_Emitter::update	(float dt)
 			state					=	stPlayingLooped;	// switch state
 			position				= (((dwTime-dwTimeStarted)%source->dwTimeTotal)*source->dwBytesPerMS);
 			SoundRender->i_start	(this);
+			update_environment( dt );
 		}
 		break;
 	}
@@ -211,15 +213,13 @@ float	CSoundRender_Emitter::priority				()
 	return	smooth_volume*att*priority_scale;
 }
 
-void	CSoundRender_Emitter::update_environment	(float dt)
-{
-	if (bMoved)
-	{
-		e_target = *SoundRender->get_environment(p_source.position);
+
+void CSoundRender_Emitter::update_environment( float dt ) {
+  if ( !b2D && bMoved ) {
+    SoundRender->efx_assing_env_slot( p_source.position, target );
 #ifdef SND_DOPPLER_EFFECT
-                // Cribbledirge: updates the velocity of the sound.
-                p_source.update_velocity(dt);
+    // Cribbledirge: updates the velocity of the sound.
+    p_source.update_velocity( dt );
 #endif
-	}
-	e_current.lerp		(e_current,e_target,dt);
+  }
 }

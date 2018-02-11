@@ -43,8 +43,6 @@ public:
 	State						state;
 	u32							position;
 	CSound_params				p_source;
-	CSoundRender_Environment	e_current;
-	CSoundRender_Environment	e_target;
 
 	int							iPaused;
 	BOOL						bMoved;

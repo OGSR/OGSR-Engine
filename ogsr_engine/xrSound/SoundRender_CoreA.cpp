@@ -153,7 +153,6 @@ void CSoundRender_CoreA::_initialize	(u64 window)
 	{
 		T						=	xr_new<CSoundRender_TargetA>();
 		if (T->_initialize()){	
-			if(bEFX)T->alAuxInit(slot);
 			s_targets.push_back	(T);
         }else{
         	Log					("! [OpenAL] Max targets - ",tit);

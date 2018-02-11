@@ -100,8 +100,6 @@ public:
 	// eax listener
 	void								i_eax_commit_setting	();
 	void								i_eax_listener_set		(CSound_environment* E);
-	void								i_efx_listener_set		(CSound_environment* E);
-	bool								i_efx_commit_setting	();
 	void								i_eax_listener_get		(CSound_environment* E);
 
 public:
@@ -125,16 +123,19 @@ public:
 	void								env_apply				();
 
 protected: // EFX
+        std::vector<ALuint> efx_slots;
 	EFXEAXREVERBPROPERTIES*				efx_reverb;
 	ALuint								effect;
 	ALuint								slot;
 	bool 								EFXTestSupport();
 	void								InitAlEFXAPI();
-	bool use_efx_preset;
-        void applyEFXPreset();
+        void   applyEFXPreset();
+        ALuint efx_get_env_slot( const Fvector& );
+        void   efx_configure_env_slots();
 
 public:
         void setEFXPreset( std::string );
         void unsetEFXPreset();
+        void efx_assing_env_slot( const Fvector&, CSoundRender_Target* );
 };
 extern CSoundRender_Core* SoundRender;
