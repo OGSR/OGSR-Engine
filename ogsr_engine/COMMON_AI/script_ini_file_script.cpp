@@ -23,11 +23,7 @@ CScriptIniFile *get_game_ini()
 }
 #endif // XRGAME_EXPORTS
 
-#ifdef LUABIND_09
-bool r_line(CScriptIniFile *self, LPCSTR S, int L,	std::string &N, std::string &V)
-#else
-bool r_line(CScriptIniFile *self, LPCSTR S, int L, string_class &N, string_class &V)
-#endif
+bool r_line(CScriptIniFile *self, LPCSTR S, int L, std::string &N, std::string &V)
 {
 	THROW3			(self->section_exist(S),"Cannot find section",S);
 	THROW2			((int)self->line_count(S) > L,"Invalid line number");

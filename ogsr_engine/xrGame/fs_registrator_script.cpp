@@ -173,7 +173,7 @@ namespace stdfs = std::experimental::filesystem;
 //Путь до папки с движком
 decltype(auto) get_engine_dir()
 {
-	return luabind::internal_string(stdfs::current_path().string().c_str()); //Без приведения к луабиндовой строке, функции почему-то возвращают мусор.
+	return stdfs::current_path().string();
 }
 
 //Перебор файлов в папке, подкаталоги не учитываются.
@@ -195,25 +195,25 @@ void recursive_directory_iterator(const char* dir, const luabind::functor<void> 
 //полный путь до файла с расширением.
 inline decltype(auto) get_full_path(const stdfs::path& file)
 {
-	return luabind::internal_string(file.string().c_str());
+	return file.string();
 }
 
 //имя файла без пути, но с расширением.
 inline decltype(auto) get_full_filename(const stdfs::path& file)
 {
-	return luabind::internal_string(file.filename().string().c_str());
+	return file.filename().string();
 }
 
 //имя файла без пути, и без расширения.
 inline decltype(auto) get_short_filename(const stdfs::path& file)
 {
-	return luabind::internal_string(file.stem().string().c_str());
+	return file.stem().string();
 }
 
 //расширение файла.
 inline decltype(auto) get_extension(const stdfs::path& file)
 {
-	return luabind::internal_string(file.extension().string().c_str());
+	return file.extension().string();
 }
 
 //Время последнего изменения файла ( наверное в секундах, но я не уверен )
@@ -221,7 +221,7 @@ inline decltype(auto) get_last_write_time(const stdfs::path& file)
 {
 	const auto ftime = stdfs::last_write_time(file);
 	const auto cftime = decltype(ftime)::clock::to_time_t(ftime);
-	return u32(cftime); //KRodin: TODO: добавить в луабинд поддержку u64, после этого можно будет убрать здесь приведение к u32. Хотя оно и так работает вполне нормально.
+	return cftime;
 }
 
 //Время последнего изменения файла в формате [вторник 02 янв 2018 14:03:32]
@@ -232,7 +232,7 @@ inline decltype(auto) get_last_write_time_string(const stdfs::path& file)
 	std::stringstream ss;
 	ss.imbue(std::locale("")); //Устанавливаем системную локаль потоку, чтоб месяц/день недели были на системном языке.
 	ss << std::put_time(std::localtime(&cftime), "[%A %d %b %Y %T]");
-	return luabind::internal_string(ss.str().c_str());
+	return ss.str();
 }
 
 #pragma optimize("s",on)
