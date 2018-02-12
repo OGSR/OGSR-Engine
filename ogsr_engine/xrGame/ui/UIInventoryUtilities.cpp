@@ -73,7 +73,8 @@ bool InventoryUtilities::GreaterRoomInRuck(PIItem item1, PIItem item2)
 		
 		if (r1.y == r2.y){
 			if(item1->object().cNameSect()==item2->object().cNameSect())
-				return (item1->object().ID() > item2->object().ID());
+				//return (item1->object().ID() > item2->object().ID());
+				return ( item1->GetCondition() > item2->GetCondition() );
 			else
 				return (item1->object().cNameSect()>item2->object().cNameSect());
 
