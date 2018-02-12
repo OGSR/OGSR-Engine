@@ -43,7 +43,7 @@ void CSoundRender_Emitter::update	(float dt)
 			state			=	stPlaying;
 			position		=	0;
 			SoundRender->i_start(this);
-			update_environment( dt );
+			update_environment( dt, dwDeltaTime, true );
 		}
 		else state			=	stSimulating;
 		break;
@@ -65,7 +65,7 @@ void CSoundRender_Emitter::update	(float dt)
 			state		  	=	stPlayingLooped;
 			position	  	=	0;
 			SoundRender->i_start(this);
-			update_environment( dt );
+			update_environment( dt, dwDeltaTime, true );
 		}else state		  	=	stSimulatingLooped;
 		break;
 	case stPlaying:
@@ -90,7 +90,7 @@ void CSoundRender_Emitter::update	(float dt)
 				SoundRender->i_stop		(this);
 			}else{
 				// We are still playing
-				update_environment	(dt);
+				update_environment( dt, dwDeltaTime );
 			}
 		}
 		break;
@@ -110,7 +110,7 @@ void CSoundRender_Emitter::update	(float dt)
 				state					=	stPlaying;
 				position				= 	(((dwTime-dwTimeStarted)%source->dwTimeTotal)*source->dwBytesPerMS);
 				SoundRender->i_start		(this);
-				update_environment( dt );
+				update_environment( dt, dwDeltaTime, true );
 			}
 		}
 		break;
@@ -130,7 +130,7 @@ void CSoundRender_Emitter::update	(float dt)
 			SoundRender->i_stop		(this);
 		}else{
 			// We are still playing
-			update_environment	(dt);
+			update_environment( dt, dwDeltaTime );
 		}
 		break;
 	case stSimulatingLooped:
@@ -144,7 +144,7 @@ void CSoundRender_Emitter::update	(float dt)
 			state					=	stPlayingLooped;	// switch state
 			position				= (((dwTime-dwTimeStarted)%source->dwTimeTotal)*source->dwBytesPerMS);
 			SoundRender->i_start	(this);
-			update_environment( dt );
+			update_environment( dt, dwDeltaTime, true );
 		}
 		break;
 	}
@@ -214,9 +214,16 @@ float	CSoundRender_Emitter::priority				()
 }
 
 
-void CSoundRender_Emitter::update_environment( float dt ) {
+#define ENV_UPDATE_TIME 500u
+void CSoundRender_Emitter::update_environment( float dt, u32 dwDeltaTime, bool starting ) {
   if ( !b2D && bMoved ) {
-    SoundRender->efx_assing_env_slot( p_source.position, target );
+    if ( starting || env_update_time > ENV_UPDATE_TIME ) {
+      env_update_time = 0;
+      SoundRender->efx_assing_env_slot( p_source.position, target );
+    }
+    else {
+      env_update_time += dwDeltaTime;
+    }
 #ifdef SND_DOPPLER_EFFECT
     // Cribbledirge: updates the velocity of the sound.
     p_source.update_velocity( dt );
