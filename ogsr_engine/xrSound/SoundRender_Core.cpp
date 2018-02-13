@@ -797,7 +797,7 @@ void CSoundRender_Core::efx_configure_env_slots() {
 
 
 void CSoundRender_Core::efx_assing_env_slot( const Fvector& P, CSoundRender_Target* T ) {
-  if ( bEFX && ( efx_reverb || geom_ENV ) ) {
+  if ( psSoundFlags.test( ss_EAX ) && bEFX && ( efx_reverb || geom_ENV ) ) {
     auto s = efx_get_env_slot( P );
     if ( s == AL_EFFECTSLOT_NULL )
       if ( efx_reverb ) s = slot;
