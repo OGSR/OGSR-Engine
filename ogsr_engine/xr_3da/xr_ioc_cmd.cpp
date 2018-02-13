@@ -560,7 +560,7 @@ void CCC_Register()
 	CMD1(CCC_SND_Restart,"snd_restart"			);
 	CMD3(CCC_Mask,		"snd_acceleration",		&psSoundFlags,		ss_Hardware	);
 	CMD3(CCC_Mask,		"snd_efx",				&psSoundFlags,		ss_EAX		);
-	CMD4(CCC_Integer, "snd_targets", &psSoundTargets, 512, 1024); //--#SM+#-- Максимальный лимит одновременно играющихы звуков. Оригинал: 4 - 32. + SoundRender_Core.cpp
+	CMD4(CCC_Integer, "snd_targets", &psSoundTargets, 32, 1024); //--#SM+#-- Максимальный лимит одновременно играющихы звуков. Оригинал: 4 - 32. + SoundRender_Core.cpp
 	CMD4(CCC_Integer,	"snd_cache_size",		&psSoundCacheSizeMB,4,32		);
 
 #ifdef DEBUG
