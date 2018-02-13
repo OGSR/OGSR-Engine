@@ -24,6 +24,7 @@ BOOL	CSoundRender_TargetA::_initialize		()
 {
 	inherited::_initialize();
     // initialize buffer
+    alGetError();
 	A_CHK(alGenBuffers	(sdef_target_count, pBuffers));	
     alGenSources		(1, &pSource);
     ALenum error		= alGetError();
