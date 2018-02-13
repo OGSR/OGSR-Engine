@@ -8,6 +8,7 @@
 
 #ifdef DYNAMIC_SND_TARGETS
 #include "soundrender_targetA.h"
+XRSOUND_API extern float			psSoundCull				;
 #endif
 
 void	CSoundRender_Core::i_start		(CSoundRender_Emitter* E)
@@ -30,19 +31,24 @@ void	CSoundRender_Core::i_start		(CSoundRender_Emitter* E)
 
 #ifdef DYNAMIC_SND_TARGETS
 	if ( T->get_emitter() ) {
-		Msg( "! SOUND: OpenAL: increasing max_targets to %u", s_targets.size() + 1 );
-		CSoundRender_Target* T2 = xr_new<CSoundRender_TargetA>();
-		if ( T2->_initialize() ) {
-			s_targets.push_back( T2 );
-			T = T2;
-		}
-		else {
-			Msg( "! SOUND: OpenAL: can't increase max_targets from %u", s_targets.size() );
-			T2->_destroy();
-			xr_delete( T2 );
-			// Stop currently playing
-			T->get_emitter()->cancel();
-		}
+	  if ( Ptarget < psSoundCull ) {
+	    T->get_emitter()->cancel();
+	  }
+	  else {
+	    Msg( "! SOUND: OpenAL: increasing max_targets to %u", s_targets.size() + 1 );
+	    CSoundRender_Target* T2 = xr_new<CSoundRender_TargetA>();
+	    if ( T2->_initialize() ) {
+	      s_targets.push_back( T2 );
+	      T = T2;
+	    }
+	    else {
+	      Msg( "! SOUND: OpenAL: can't increase max_targets from %u", s_targets.size() );
+	      T2->_destroy();
+	      xr_delete( T2 );
+	      // Stop currently playing
+	      T->get_emitter()->cancel();
+	    }
+	  }
 	}
 #else
 	// Stop currently playing
