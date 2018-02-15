@@ -198,6 +198,7 @@ CSoundRender_Core::CSoundRender_Core	()
 	effect = 0;
 	slot = 0;
 	efx_reverb = nullptr;
+        efx_def_env_slot = AL_EFFECTSLOT_NULL;
 }
 
 
@@ -604,7 +605,8 @@ bool CSoundRender_Core::EFXTestSupport() {
 }
 
 void CSoundRender_Core::setEFXPreset( std::string name ) {
-  efx_reverb = &efx_reverb_presets.at( name );
+  efx_def_env_slot = AL_EFFECTSLOT_NULL;
+  efx_reverb       = &efx_reverb_presets.at( name );
   applyEFXPreset();
 }
 
@@ -743,7 +745,7 @@ ALuint CSoundRender_Core::efx_get_env_slot( const Fvector& P ) {
     }
   }
 
-  return AL_EFFECTSLOT_NULL;
+  return efx_def_env_slot;
 }
 
 
@@ -784,6 +786,10 @@ void CSoundRender_Core::efx_configure_env_slots() {
     alEffectf( effect, AL_REVERB_LATE_REVERB_GAIN,      mB_to_gain( E->Reverb ) );
     alEffectf( effect, AL_REVERB_AIR_ABSORPTION_GAINHF, mB_to_gain( E->AirAbsorptionHF ) );
     alEffectf( effect, AL_REVERB_ROOM_ROLLOFF_FACTOR,   E->RoomRolloffFactor );
+    err = alGetError();
+    if ( err != AL_NO_ERROR ) {
+      Msg( "[OpenAL] EFX: EAX preset '%s' error: %s", E->name.c_str(), alGetString( err ) );
+    }
 
     alGetError();
     alAuxiliaryEffectSloti( slot, AL_EFFECTSLOT_EFFECT, effect );
@@ -797,10 +803,27 @@ void CSoundRender_Core::efx_configure_env_slots() {
 
 
 void CSoundRender_Core::efx_assing_env_slot( const Fvector& P, CSoundRender_Target* T ) {
-  if ( psSoundFlags.test( ss_EAX ) && bEFX && ( efx_reverb || geom_ENV ) ) {
+  if ( psSoundFlags.test( ss_EAX ) && bEFX && ( efx_reverb || geom_ENV || efx_def_env_slot != AL_EFFECTSLOT_NULL ) ) {
     auto s = efx_get_env_slot( P );
     if ( s == AL_EFFECTSLOT_NULL )
       if ( efx_reverb ) s = slot;
     T->alAuxInit( s );
   }
+}
+
+
+
+void CSoundRender_Core::setEFXEAXPreset( std::string name ) {
+  int env_id = s_environment->GetID( name.c_str() );
+  if ( env_id < 0 ) {
+    Msg( "[OpenAL] EFX: EAX preset '%s' not found", name.c_str() );
+  }
+  else {
+    efx_def_env_slot = efx_slots.at( env_id );
+    efx_reverb       = nullptr;
+  }
+}
+
+void CSoundRender_Core::unsetEFXEAXPreset() {
+  efx_def_env_slot = AL_EFFECTSLOT_NULL;
 }

@@ -362,6 +362,8 @@ public:
 	virtual const Fvector&			listener_position		()																						= 0;
 	virtual void setEFXPreset( std::string ) = 0;
 	virtual void unsetEFXPreset() = 0;
+        virtual void setEFXEAXPreset( std::string ) = 0;
+        virtual void unsetEFXEAXPreset() = 0;
 #ifdef __BORLANDC__
 	virtual SoundEnvironment_LIB*	get_env_library			()																						= 0;
 	virtual void					refresh_env_library		()																						= 0;

@@ -124,11 +124,11 @@ public:
 
 protected: // EFX
         std::vector<ALuint> efx_slots;
-	EFXEAXREVERBPROPERTIES*				efx_reverb;
-	ALuint								effect;
-	ALuint								slot;
-	bool 								EFXTestSupport();
-	void								InitAlEFXAPI();
+	EFXEAXREVERBPROPERTIES*	efx_reverb;
+	ALuint effect;
+	ALuint slot, efx_def_env_slot;
+	bool   EFXTestSupport();
+	void   InitAlEFXAPI();
         void   applyEFXPreset();
         ALuint efx_get_env_slot( const Fvector& );
         void   efx_configure_env_slots();
@@ -137,5 +137,7 @@ public:
         void setEFXPreset( std::string );
         void unsetEFXPreset();
         void efx_assing_env_slot( const Fvector&, CSoundRender_Target* );
+        void setEFXEAXPreset( std::string );
+        void unsetEFXEAXPreset();
 };
 extern CSoundRender_Core* SoundRender;
