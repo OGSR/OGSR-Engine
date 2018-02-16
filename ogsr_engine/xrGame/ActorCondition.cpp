@@ -106,13 +106,16 @@ void CActorCondition::UpdateCondition()
 	if (GodMode())				return;
 	if (!object().g_Alive())	return;
 	if (!object().Local() && m_object != Level().CurrentViewEntity())		return;	
-	
+
+	float weight      = object().GetCarryWeight();
+	float max_weight  = object().inventory().GetMaxWeight();
+	float weight_coef = weight / max_weight;
 
 	if ((object().mstate_real&mcAnyMove)) {
-		ConditionWalk(object().inventory().TotalWeight()/object().inventory().GetMaxWeight(), isActorAccelerated(object().mstate_real,object().IsZoomAimingMode()), (object().mstate_real&mcSprint) != 0);
+		ConditionWalk(weight_coef, isActorAccelerated(object().mstate_real,object().IsZoomAimingMode()), (object().mstate_real&mcSprint) != 0);
 	}
 	else {
-		ConditionStand(object().inventory().TotalWeight()/object().inventory().GetMaxWeight());
+		ConditionStand(weight_coef);
 	};
 	
 	if( IsGameTypeSingle() ){
@@ -121,8 +124,6 @@ void CActorCondition::UpdateCondition()
 
 		if( true )
 		{
-			float weight = object().inventory().TotalWeight();
-
 			float base_w = object().MaxCarryWeight();
 /*
 			CCustomOutfit* outfit	= m_object->GetOutfit();
@@ -270,7 +271,7 @@ bool CActorCondition::IsCantWalkWeight()
 		if(outfit)
 			max_w += outfit->m_additional_weight;
 
-		if( object().inventory().TotalWeight() > max_w )
+		if( object().GetCarryWeight() > max_w )
 		{
 			m_condition_flags.set			(eCantWalkWeight, TRUE);
 			return true;

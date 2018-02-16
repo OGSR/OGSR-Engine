@@ -960,7 +960,7 @@ float CScriptGameObject::GetInventoryWeight() const
 		return 0;
 	}
 
-	return e->inventory().TotalWeight();
+	return e->GetCarryWeight();
 }
 
 float CScriptGameObject::GetShapeRadius() const
