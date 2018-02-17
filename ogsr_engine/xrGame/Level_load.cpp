@@ -71,12 +71,20 @@ BOOL CLevel::Load_GameSpecific_After()
 
 		CInifile& gameLtx = *pGameIni;
 		::Sound->unsetEFXPreset();
+		::Sound->unsetEFXEAXPreset();
 		if ( gameLtx.section_exist( Level().name() ) ) {
 		  if ( gameLtx.line_exist( Level().name(), "efx_reverb_preset" ) ) {
 		    LPCSTR preset = gameLtx.r_string( Level().name(), "efx_reverb_preset" );
 		    if ( preset && preset[ 0 ] ) {
 		      Msg("- Set EFX preset to '%s'", preset );
 		      ::Sound->setEFXPreset( preset );
+		    }
+		  }
+		  else if ( gameLtx.line_exist( Level().name(), "efx_eax_preset" ) ) {
+		    LPCSTR preset = gameLtx.r_string( Level().name(), "efx_eax_preset" );
+		    if ( preset && preset[ 0 ] ) {
+		      Msg("- Set EFX EAX preset to '%s'", preset );
+		      ::Sound->setEFXEAXPreset( preset );
 		    }
 		  }
 		}

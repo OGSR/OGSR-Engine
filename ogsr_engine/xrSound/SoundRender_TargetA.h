@@ -14,6 +14,7 @@ class CSoundRender_TargetA: public CSoundRender_Target
     float						cache_pitch;
 
     ALuint						buf_block;
+    ALuint efx_env_slot;
 private:
 	void						fill_block				(ALuint BufferID);
 public:

@@ -5,6 +5,7 @@
 #include "soundrender_core.h"
 #include "soundrender_source.h"
 #include "soundrender_emitter.h"
+#include "soundrender_target.h"
 #pragma warning(push)
 #pragma warning(disable:4995)
 #include <eax.h>
@@ -168,6 +169,7 @@ static LPALGENEFFECTS alGenEffects;
 LPALDELETEAUXILIARYEFFECTSLOTS alDeleteAuxiliaryEffectSlots; 
 LPALGENAUXILIARYEFFECTSLOTS alGenAuxiliaryEffectSlots;
 LPALAUXILIARYEFFECTSLOTI alAuxiliaryEffectSloti;
+LPALGETAUXILIARYEFFECTSLOTI alGetAuxiliaryEffectSloti;
 
 
 CSoundRender_Core::CSoundRender_Core	()
@@ -178,8 +180,8 @@ CSoundRender_Core::CSoundRender_Core	()
     bDeferredEAX				= FALSE;
 	bUserEnvironment			= FALSE;
 	geom_MODEL					= NULL;
-	geom_ENV					= NULL;
-	geom_SOM					= NULL;
+	geom_ENV					= nullptr;
+	geom_SOM					= nullptr;
 	s_environment				= NULL;
 	Handler						= NULL;
 	s_targets_pu				= 0;
@@ -195,21 +197,27 @@ CSoundRender_Core::CSoundRender_Core	()
 
 	effect = 0;
 	slot = 0;
-	use_efx_preset = false;
-	efx_reverb     = nullptr;
+	efx_reverb = nullptr;
+        efx_def_env_slot = AL_EFFECTSLOT_NULL;
 }
 
-CSoundRender_Core::~CSoundRender_Core()
-{
-	if (bEFX)
-	{
-		if(effect) alDeleteEffects(1, &effect);
-		if(slot)   alDeleteAuxiliaryEffectSlots(1, &slot);
-	}
 
-	xr_delete					(geom_ENV);
-	xr_delete					(geom_SOM);
+CSoundRender_Core::~CSoundRender_Core() {
+  if ( bEFX ) {
+    if( effect ) alDeleteEffects( 1, &effect );
+    if( slot ) alDeleteAuxiliaryEffectSlots( 1, &slot );
+    for ( auto s : efx_slots ) {
+      ALint eff;
+      alGetAuxiliaryEffectSloti( s, AL_EFFECTSLOT_EFFECT, &eff );
+      alDeleteEffects( 1, &(ALuint)eff );
+      alDeleteAuxiliaryEffectSlots( 1, &s );
+    }
+  }
+
+  if ( geom_ENV ) xr_delete( geom_ENV );
+  if ( geom_SOM ) xr_delete( geom_SOM );
 }
+
 
 void CSoundRender_Core::_initialize	(u64 window)
 {
@@ -217,6 +225,7 @@ void CSoundRender_Core::_initialize	(u64 window)
 
     // load environment
 	env_load					();
+	if ( bEFX ) efx_configure_env_slots();
 
 	bPresent					= TRUE;
 
@@ -308,7 +317,7 @@ void CSoundRender_Core::set_geometry_occ(CDB::MODEL* M)
 
 void CSoundRender_Core::set_geometry_som(IReader* I)
 {
-	xr_delete(geom_SOM);
+	if ( geom_SOM ) xr_delete( geom_SOM );
 
 	if (!I)
 		return;
@@ -343,7 +352,7 @@ void CSoundRender_Core::set_geometry_som(IReader* I)
 
 void CSoundRender_Core::set_geometry_env(IReader* I)
 {
-	xr_delete(geom_ENV);
+	if ( geom_ENV ) xr_delete( geom_ENV );
 
 	if (!I || !s_environment)
 		return;
@@ -502,7 +511,6 @@ CSoundRender_Environment*	CSoundRender_Core::get_environment			( const Fvector& 
 	static CSoundRender_Environment	identity;
 
 	if (bUserEnvironment){
-		use_efx_preset = false;
 		return &s_user_environment;
 	}else{
 		if (geom_ENV){
@@ -518,7 +526,6 @@ CSoundRender_Environment*	CSoundRender_Core::get_environment			( const Fvector& 
 				Fvector tri_norm;
 				tri_norm.mknormal		(V[T->verts[0]],V[T->verts[1]],V[T->verts[2]]);
 				float	dot				= dir.dotproduct(tri_norm);
-				use_efx_preset = false;
 				if (dot<0){
 					u16		id_front	= (u16)((T->dummy&0x0000ffff)>>0);		//	front face
 					return	s_environment->Get(id_front);
@@ -527,12 +534,10 @@ CSoundRender_Environment*	CSoundRender_Core::get_environment			( const Fvector& 
 					return	s_environment->Get(id_back);
 				}
 			}else{
-				use_efx_preset = true;
 				identity.set_identity	();
 				return &identity;
 			}
 		}else{
-			use_efx_preset = true;
 			identity.set_identity	();
 			return &identity;
 		}
@@ -568,6 +573,7 @@ void CSoundRender_Core::InitAlEFXAPI()
 	LOAD_PROC(alEffecti, LPALEFFECTI);
 	LOAD_PROC(alAuxiliaryEffectSloti, LPALAUXILIARYEFFECTSLOTI);
 	LOAD_PROC(alGenAuxiliaryEffectSlots, LPALGENAUXILIARYEFFECTSLOTS);
+	LOAD_PROC(alGetAuxiliaryEffectSloti, LPALGETAUXILIARYEFFECTSLOTI);
 	LOAD_PROC(alEffectf, LPALEFFECTF);
 }
 
@@ -576,7 +582,6 @@ bool CSoundRender_Core::EFXTestSupport() {
 
   alEffecti( effect, AL_EFFECT_TYPE, AL_EFFECT_REVERB );
   setEFXPreset( "generic" );
-  applyEFXPreset();
   unsetEFXPreset();
 
   /* Check if an error occured, and clean up if so. */
@@ -592,11 +597,17 @@ bool CSoundRender_Core::EFXTestSupport() {
   err = alGetError();
   ASSERT_FMT( err == AL_NO_ERROR, "[OpenAL] EFX error: %s", alGetString( err ) );
 
+  alAuxiliaryEffectSloti( slot, AL_EFFECTSLOT_EFFECT, effect );
+  err = alGetError();
+  ASSERT_FMT( err == AL_NO_ERROR, "[OpenAL] EFX error: %s", alGetString( err ) );
+
   return true;
 }
 
 void CSoundRender_Core::setEFXPreset( std::string name ) {
-  efx_reverb = &efx_reverb_presets.at( name );
+  efx_def_env_slot = AL_EFFECTSLOT_NULL;
+  efx_reverb       = &efx_reverb_presets.at( name );
+  applyEFXPreset();
 }
 
 void CSoundRender_Core::unsetEFXPreset() {
@@ -617,51 +628,6 @@ void CSoundRender_Core::applyEFXPreset() {
   alEffectf( effect, AL_REVERB_AIR_ABSORPTION_GAINHF, efx_reverb->flAirAbsorptionGainHF );
   alEffectf( effect, AL_REVERB_ROOM_ROLLOFF_FACTOR,   efx_reverb->flRoomRolloffFactor );
   alEffecti( effect, AL_REVERB_DECAY_HFLIMIT,         efx_reverb->iDecayHFLimit );
-}
-
-inline float mB_to_gain( float mb ) {
-  return powf( 10.0f, mb / 2000.0f );
-}
-
-void CSoundRender_Core::i_efx_listener_set( CSound_environment* _E ) {
-  const auto E = static_cast<CSoundRender_Environment*>( _E );
-
-  if ( use_efx_preset && efx_reverb ) {
-    applyEFXPreset();
-    return;
-  }
-
-  // http://openal.org/pipermail/openal/2014-March/000083.html
-  float density = powf( E->EnvironmentSize, 3.0f ) / 16.0f;
-  if( density > 1.0f ) density = 1.0f;
-  alEffectf( effect, AL_REVERB_DENSITY,               density );
-  alEffectf( effect, AL_REVERB_DIFFUSION,             E->EnvironmentDiffusion );
-  alEffectf( effect, AL_REVERB_GAIN,                  mB_to_gain( E->Room ) );
-  alEffectf( effect, AL_REVERB_GAINHF,                mB_to_gain( E->RoomHF ) );
-  alEffectf( effect, AL_REVERB_DECAY_TIME,            E->DecayTime );
-  alEffectf( effect, AL_REVERB_DECAY_HFRATIO,         E->DecayHFRatio );
-  alEffectf( effect, AL_REVERB_REFLECTIONS_GAIN,      mB_to_gain( E->Reflections ) );
-  alEffectf( effect, AL_REVERB_REFLECTIONS_DELAY,     E->ReflectionsDelay );
-  alEffectf( effect, AL_REVERB_LATE_REVERB_DELAY,     E->ReverbDelay );
-  alEffectf( effect, AL_REVERB_LATE_REVERB_GAIN,      mB_to_gain( E->Reverb ) );
-  alEffectf( effect, AL_REVERB_AIR_ABSORPTION_GAINHF, mB_to_gain( E->AirAbsorptionHF ) );
-  alEffectf( effect, AL_REVERB_ROOM_ROLLOFF_FACTOR,   E->RoomRolloffFactor );
-}
-
-bool CSoundRender_Core::i_efx_commit_setting() {
-  alGetError();
-  /* Tell the effect slot to use the loaded effect object. Note that the this
-   * effectively copies the effect properties. You can modify or delete the
-   * effect object afterward without affecting the effect slot.
-   */
-  alAuxiliaryEffectSloti( slot, AL_EFFECTSLOT_EFFECT, effect );
-  ALenum err = alGetError();
-  if ( err != AL_NO_ERROR ) {
-    Msg( "[OpenAL] EFX error: %s", alGetString( err ) );
-    return false;
-  }
-
-  return true;
 }
 
 void	CSoundRender_Core::i_eax_listener_set	(CSound_environment* _E)
@@ -753,4 +719,111 @@ void CSoundRender_Core::unset_geometry_env() {
     xr_delete( geom_ENV );
     geom_ENV = nullptr;
   }
+}
+
+
+ALuint CSoundRender_Core::efx_get_env_slot( const Fvector& P ) {
+  if ( geom_ENV ) {
+    Fvector dir = { 0, -1, 0 };
+    geom_DB.ray_options( CDB::OPT_ONLYNEAREST );
+    geom_DB.ray_query( geom_ENV, P, dir, 1000.f );
+    if ( geom_DB.r_count() ) {
+      CDB::RESULT* r = geom_DB.r_begin();
+      CDB::TRI*    T = geom_ENV->get_tris() + r->id;
+      Fvector*     V = geom_ENV->get_verts();
+      Fvector      tri_norm;
+      tri_norm.mknormal( V[ T->verts[ 0 ] ],V[ T->verts[ 1 ] ], V[ T->verts[ 2 ] ] );
+      float dot = dir.dotproduct( tri_norm );
+      if ( dot < 0 ) {
+        u16 id_front = (u16)( ( T->dummy & 0x0000ffff ) >> 0 ); // front face
+        return efx_slots.at( id_front );
+      }
+      else {
+        u16 id_back = (u16)( ( T->dummy & 0xffff0000) >> 16 ); // back face
+        return efx_slots.at( id_back );
+      }
+    }
+  }
+
+  return efx_def_env_slot;
+}
+
+
+inline float mB_to_gain( float mb ) {
+  return powf( 10.0f, mb / 2000.0f );
+}
+
+
+void CSoundRender_Core::efx_configure_env_slots() {
+  efx_slots.reserve( s_environment->Library().size() );
+
+  for ( u32 i = 0; i < s_environment->Library().size(); i++ ) {
+    ALenum err = alGetError();
+    ALuint effect;
+    alGenEffects( 1, &effect );
+    alEffecti( effect, AL_EFFECT_TYPE, AL_EFFECT_REVERB );
+    err = alGetError();
+    ASSERT_FMT( err == AL_NO_ERROR, "[OpenAL] EFX error: %s", alGetString( err ) );
+
+    ALuint slot;
+    alGenAuxiliaryEffectSlots( 1, &slot );
+    err = alGetError();
+    ASSERT_FMT( err == AL_NO_ERROR, "[OpenAL] EFX error: %s", alGetString( err ) );
+
+    auto E = s_environment->Get( i );
+    // http://openal.org/pipermail/openal/2014-March/000083.html
+    float density = powf( E->EnvironmentSize, 3.0f ) / 16.0f;
+    if( density > 1.0f ) density = 1.0f;
+    alEffectf( effect, AL_REVERB_DENSITY,               density );
+    alEffectf( effect, AL_REVERB_DIFFUSION,             E->EnvironmentDiffusion );
+    alEffectf( effect, AL_REVERB_GAIN,                  mB_to_gain( E->Room ) );
+    alEffectf( effect, AL_REVERB_GAINHF,                mB_to_gain( E->RoomHF ) );
+    alEffectf( effect, AL_REVERB_DECAY_TIME,            E->DecayTime );
+    alEffectf( effect, AL_REVERB_DECAY_HFRATIO,         E->DecayHFRatio );
+    alEffectf( effect, AL_REVERB_REFLECTIONS_GAIN,      mB_to_gain( E->Reflections ) );
+    alEffectf( effect, AL_REVERB_REFLECTIONS_DELAY,     E->ReflectionsDelay );
+    alEffectf( effect, AL_REVERB_LATE_REVERB_DELAY,     E->ReverbDelay );
+    alEffectf( effect, AL_REVERB_LATE_REVERB_GAIN,      mB_to_gain( E->Reverb ) );
+    alEffectf( effect, AL_REVERB_AIR_ABSORPTION_GAINHF, mB_to_gain( E->AirAbsorptionHF ) );
+    alEffectf( effect, AL_REVERB_ROOM_ROLLOFF_FACTOR,   E->RoomRolloffFactor );
+    err = alGetError();
+    if ( err != AL_NO_ERROR ) {
+      Msg( "[OpenAL] EFX: EAX preset '%s' error: %s", E->name.c_str(), alGetString( err ) );
+    }
+
+    alGetError();
+    alAuxiliaryEffectSloti( slot, AL_EFFECTSLOT_EFFECT, effect );
+    err = alGetError();
+    ASSERT_FMT( err == AL_NO_ERROR, "[OpenAL] EFX error: %s", alGetString( err ) );
+    efx_slots.push_back( slot );
+  }
+
+  Msg( "[OpenAL] EFX: %u environment slots configured", efx_slots.size() );
+}
+
+
+void CSoundRender_Core::efx_assing_env_slot( const Fvector& P, CSoundRender_Target* T ) {
+  if ( psSoundFlags.test( ss_EAX ) && bEFX && ( efx_reverb || geom_ENV || efx_def_env_slot != AL_EFFECTSLOT_NULL ) ) {
+    auto s = efx_get_env_slot( P );
+    if ( s == AL_EFFECTSLOT_NULL )
+      if ( efx_reverb ) s = slot;
+    T->alAuxInit( s );
+  }
+}
+
+
+
+void CSoundRender_Core::setEFXEAXPreset( std::string name ) {
+  int env_id = s_environment->GetID( name.c_str() );
+  if ( env_id < 0 ) {
+    Msg( "[OpenAL] EFX: EAX preset '%s' not found", name.c_str() );
+  }
+  else {
+    efx_def_env_slot = efx_slots.at( env_id );
+    efx_reverb       = nullptr;
+  }
+}
+
+void CSoundRender_Core::unsetEFXEAXPreset() {
+  efx_def_env_slot = AL_EFFECTSLOT_NULL;
 }

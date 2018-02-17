@@ -63,6 +63,7 @@
 #include "script_callback_ex.h"
 #include "InventoryBox.h"
 #include "location_manager.h"
+#include "PHCapture.h"
 
 const u32		patch_frames	= 50;
 const float		respawn_delay	= 1.f;
@@ -1822,6 +1823,23 @@ void CActor::OnDifficultyChanged	()
 CVisualMemoryManager	*CActor::visual_memory	() const
 {
 	return							(&memory().visual());
+}
+
+float		CActor::GetCarryWeight() const
+{
+	float add = 0;
+	CPHCapture* capture = character_physics_support()->movement()->PHCapture();
+	if (capture && capture->taget_object())
+	{
+		CPhysicsShellHolder *obj = capture->taget_object();
+		CInventoryOwner *io = smart_cast<CInventoryOwner *> (obj);
+		if (io)
+			add += io->GetCarryWeight();
+
+		add += READ_IF_EXISTS(pSettings, r_float, *obj->cNameSect(), "ph_mass", 0) * 0.1f;
+	}
+	
+	return CInventoryOwner::GetCarryWeight() + add;
 }
 
 float		CActor::GetMass				()

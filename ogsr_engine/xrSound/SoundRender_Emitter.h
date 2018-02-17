@@ -43,8 +43,6 @@ public:
 	State						state;
 	u32							position;
 	CSound_params				p_source;
-	CSoundRender_Environment	e_current;
-	CSoundRender_Environment	e_target;
 
 	int							iPaused;
 	BOOL						bMoved;
@@ -84,7 +82,6 @@ public:
 	void						cancel					();						// manager forces out of rendering
 	void						update					(float dt);
 	BOOL						update_culling			(float dt);
-	void						update_environment		(float dt);
 	void						rewind					();
 	virtual void				stop					(BOOL bDeffered);
 	void						pause					(BOOL bVal, int id);
@@ -93,4 +90,8 @@ public:
 
 	CSoundRender_Emitter		();
 	~CSoundRender_Emitter		();
+
+	u32   env_update_time;
+	void  update_environment( float, u32, bool = false );
+        float calc_dist_gain( float );
 };

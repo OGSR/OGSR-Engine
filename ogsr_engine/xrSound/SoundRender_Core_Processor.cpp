@@ -96,24 +96,15 @@ void CSoundRender_Core::update	( const Fvector& P, const Fvector& D, const Fvect
 			s_targets_defer[it]->fill_parameters();
 	}
 
-	// update EAX or EFX
-    if (psSoundFlags.test(ss_EAX) && ( bEAX || bEFX )){
-        if (bListenerMoved){
-            bListenerMoved			= FALSE;
-            e_target				= *get_environment	(P);
-        }
-        e_current.lerp				(e_current,e_target,dt);
-
-		if (bEAX)
-		{
-			i_eax_listener_set(&e_current);
-			i_eax_commit_setting();
-		}
-		else
-		{
-			i_efx_listener_set( &e_current ); //KRodin: Сделал по аналогии с eax. Некоторые эффекты подошли. Посмотрим, что получится.
-			bEFX = i_efx_commit_setting();
-		}
+	// update EAX
+        if ( psSoundFlags.test( ss_EAX ) && bEAX ) {
+          if ( bListenerMoved ) {
+            bListenerMoved = FALSE;
+            e_target       = *get_environment( P );
+          }
+          e_current.lerp( e_current, e_target, dt );
+          i_eax_listener_set( &e_current );
+          i_eax_commit_setting();
 	}
 
     // update listener

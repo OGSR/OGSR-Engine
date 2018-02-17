@@ -623,9 +623,9 @@ void	CInifile::w_fvector4	( LPCSTR S, LPCSTR L, const Fvector4&	V, LPCSTR commen
 	w_string	(S,L,temp,comment);
 }
 
-void	CInifile::w_bool		( LPCSTR S, LPCSTR L, BOOL				V, LPCSTR comment )
+void	CInifile::w_bool		( LPCSTR S, LPCSTR L, bool V, LPCSTR comment )
 {
-	w_string	(S,L,V?"on":"off",comment);
+	w_string	(S,L,V?"true":"false",comment);
 }
 
 void	CInifile::remove_line	( LPCSTR S, LPCSTR L )

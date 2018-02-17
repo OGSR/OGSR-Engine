@@ -38,12 +38,12 @@ void CSoundRender_Emitter::update	(float dt)
 		fade_volume			= 1.f;
 		occluder_volume		= SoundRender->get_occlusion	(p_source.position,.2f,occluder);
 		smooth_volume		= p_source.base_volume*p_source.volume*(owner_data->s_type==st_Effect?psSoundVEffects*psSoundVFactor:psSoundVMusic)*(b2D?1.f:occluder_volume);
-		e_current = e_target= *SoundRender->get_environment	(p_source.position);
 		if (update_culling(dt))	
 		{
 			state			=	stPlaying;
 			position		=	0;
 			SoundRender->i_start(this);
+			update_environment( dt, dwDeltaTime, true );
 		}
 		else state			=	stSimulating;
 		break;
@@ -61,11 +61,11 @@ void CSoundRender_Emitter::update	(float dt)
 		fade_volume			= 1.f;
 		occluder_volume		= SoundRender->get_occlusion	(p_source.position,.2f,occluder);
 		smooth_volume		= p_source.base_volume*p_source.volume*(owner_data->s_type==st_Effect?psSoundVEffects*psSoundVFactor:psSoundVMusic)*(b2D?1.f:occluder_volume);
-		e_current = e_target= *SoundRender->get_environment	(p_source.position);
 		if (update_culling(dt)){
 			state		  	=	stPlayingLooped;
 			position	  	=	0;
 			SoundRender->i_start(this);
+			update_environment( dt, dwDeltaTime, true );
 		}else state		  	=	stSimulatingLooped;
 		break;
 	case stPlaying:
@@ -90,7 +90,7 @@ void CSoundRender_Emitter::update	(float dt)
 				SoundRender->i_stop		(this);
 			}else{
 				// We are still playing
-				update_environment	(dt);
+				update_environment( dt, dwDeltaTime );
 			}
 		}
 		break;
@@ -110,6 +110,7 @@ void CSoundRender_Emitter::update	(float dt)
 				state					=	stPlaying;
 				position				= 	(((dwTime-dwTimeStarted)%source->dwTimeTotal)*source->dwBytesPerMS);
 				SoundRender->i_start		(this);
+				update_environment( dt, dwDeltaTime, true );
 			}
 		}
 		break;
@@ -129,7 +130,7 @@ void CSoundRender_Emitter::update	(float dt)
 			SoundRender->i_stop		(this);
 		}else{
 			// We are still playing
-			update_environment	(dt);
+			update_environment( dt, dwDeltaTime );
 		}
 		break;
 	case stSimulatingLooped:
@@ -143,6 +144,7 @@ void CSoundRender_Emitter::update	(float dt)
 			state					=	stPlayingLooped;	// switch state
 			position				= (((dwTime-dwTimeStarted)%source->dwTimeTotal)*source->dwBytesPerMS);
 			SoundRender->i_start	(this);
+			update_environment( dt, dwDeltaTime, true );
 		}
 		break;
 	}
@@ -185,7 +187,7 @@ BOOL	CSoundRender_Emitter::update_culling	(float dt)
 		if (dist>p_source.max_distance)										{ smooth_volume = 0; return FALSE; }
 
 		// Calc attenuated volume
-		float att			= p_source.min_distance/(psSoundRolloff*dist);	clamp(att,0.f,1.f);
+		float att		= calc_dist_gain( dist );
 		float fade_scale	= bStopping||(att*p_source.base_volume*p_source.volume*(owner_data->s_type==st_Effect?psSoundVEffects*psSoundVFactor:psSoundVMusic)<psSoundCull)?-1.f:1.f;
 		fade_volume			+=	dt*10.f*fade_scale;
 
@@ -207,19 +209,44 @@ BOOL	CSoundRender_Emitter::update_culling	(float dt)
 float	CSoundRender_Emitter::priority				()
 {
 	float	dist		= SoundRender->listener_position().distance_to	(p_source.position);
-	float	att			= p_source.min_distance/(psSoundRolloff*dist);	clamp(att,0.f,1.f);
+	float	att		= calc_dist_gain( dist );
 	return	smooth_volume*att*priority_scale;
 }
 
-void	CSoundRender_Emitter::update_environment	(float dt)
-{
-	if (bMoved)
-	{
-		e_target = *SoundRender->get_environment(p_source.position);
+
+#define ENV_UPDATE_TIME 1000u
+void CSoundRender_Emitter::update_environment( float dt, u32 dwDeltaTime, bool starting ) {
+  if ( !b2D && bMoved ) {
+    if ( starting || env_update_time > ENV_UPDATE_TIME ) {
+      env_update_time = 0;
+      SoundRender->efx_assing_env_slot( p_source.position, target );
+    }
+    else {
+      env_update_time += dwDeltaTime;
+    }
 #ifdef SND_DOPPLER_EFFECT
-                // Cribbledirge: updates the velocity of the sound.
-                p_source.update_velocity(dt);
+    // Cribbledirge: updates the velocity of the sound.
+    p_source.update_velocity( dt );
 #endif
-	}
-	e_current.lerp		(e_current,e_target,dt);
+  }
+}
+
+
+/*
+The AL_INVERSE_DISTANCE_CLAMPED model works according to the following
+formula:
+distance = max(distance,AL_REFERENCE_DISTANCE);
+distance = min(distance,AL_MAX_DISTANCE);
+gain = AL_REFERENCE_DISTANCE / (AL_REFERENCE_DISTANCE +
+ AL_ROLLOFF_FACTOR *
+ (distance – AL_REFERENCE_DISTANCE));
+*/
+float CSoundRender_Emitter::calc_dist_gain( float dist ) {
+  if ( dist < p_source.min_distance )
+    dist = p_source.min_distance;
+  if ( dist > p_source.max_distance )
+    dist = p_source.max_distance;
+  float att = p_source.min_distance / ( p_source.min_distance + psSoundRolloff * ( dist - p_source.min_distance ) );
+  clamp( att, 0.f, 1.f );
+  return att;
 }

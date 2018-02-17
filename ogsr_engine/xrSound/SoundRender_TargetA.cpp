@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #pragma hdrstop
 
+#include <efx.h>
 #include "soundrender_TargetA.h"
 #include "soundrender_emitter.h"
 #include "soundrender_source.h"
@@ -12,18 +13,18 @@ CSoundRender_TargetA::CSoundRender_TargetA():CSoundRender_Target()
     cache_gain			= 0.f;
     cache_pitch			= 1.f;
     pSource				= 0;
+    efx_env_slot = AL_EFFECTSLOT_NULL;
 }
 
 CSoundRender_TargetA::~CSoundRender_TargetA()
 {
 }
 
-#include <efx.h>
-
 BOOL	CSoundRender_TargetA::_initialize		()
 {
 	inherited::_initialize();
     // initialize buffer
+    alGetError();
 	A_CHK(alGenBuffers	(sdef_target_count, pBuffers));	
     alGenSources		(1, &pSource);
     ALenum error		= alGetError();
@@ -40,10 +41,13 @@ BOOL	CSoundRender_TargetA::_initialize		()
     }
 }
 
-void CSoundRender_TargetA::alAuxInit(ALuint slot)
-{
-	A_CHK(alSource3i(pSource, AL_AUXILIARY_SEND_FILTER, slot, 0, AL_FILTER_NULL));
+
+void CSoundRender_TargetA::alAuxInit( ALuint slot ) {
+  if ( slot != efx_env_slot )
+    A_CHK( alSource3i( pSource, AL_AUXILIARY_SEND_FILTER, slot, 0, AL_FILTER_NULL ) );
+    efx_env_slot = slot;
 }
+
 
 void	CSoundRender_TargetA::_destroy		()
 {
@@ -79,6 +83,7 @@ void	CSoundRender_TargetA::stop			()
 		A_CHK		(alSourceStop(pSource));
 		A_CHK		(alSourcei	(pSource, AL_BUFFER,   NULL));
 		A_CHK		(alSourcei	(pSource, AL_SOURCE_RELATIVE,	TRUE));
+		alAuxInit( AL_EFFECTSLOT_NULL );
 	}
     inherited::stop	();
 }

@@ -189,6 +189,7 @@ public:
 			void						HitMark			(float P, Fvector dir,			CObject* who, s16 element, Fvector position_in_bone_space, float impulse,  ALife::EHitType hit_type);
 
 	virtual float						GetMass				() ;
+	virtual float						GetCarryWeight		() const; 
 	virtual float						Radius				() const;
 	virtual void						g_PerformDrop		();
 
