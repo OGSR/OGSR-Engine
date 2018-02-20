@@ -76,7 +76,7 @@ BOOL	CInifile::Sect::line_exist( LPCSTR L, LPCSTR* val )
 CInifile::CInifile(IReader* F ,LPCSTR path)
 {
 	fName		= 0;
-	bReadOnly	= TRUE;
+	bReadOnly	= true;
 	bSaveAtEnd	= FALSE;
 	Load		(F,path);
 }
@@ -84,7 +84,7 @@ CInifile::CInifile(IReader* F ,LPCSTR path)
 CInifile::CInifile(LPCSTR szFileName, BOOL ReadOnly, BOOL bLoad, BOOL SaveAtEnd)
 {
 	fName		= szFileName?xr_strdup(szFileName):0;
-    bReadOnly	= ReadOnly;
+    bReadOnly	= !!ReadOnly;
     bSaveAtEnd	= SaveAtEnd;
 	if (bLoad)
 	{	

@@ -45,7 +45,7 @@ public:
 public:
 	inline pointer				address				(reference value) const;
 	inline const_pointer		address				(const_reference value) const;
-	inline	pointer				allocate			(size_type n, const void * p=0) const;
+	inline	pointer				allocate			(size_type n, const void* p = nullptr) const;
 	inline	char				*__charalloc		(size_type n);
 	inline	void				deallocate			(pointer p, size_type n) const;
 	inline	void				deallocate			(void *p, size_type n) const;

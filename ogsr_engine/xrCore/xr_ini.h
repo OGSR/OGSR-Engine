@@ -52,7 +52,7 @@ private:
 	Root		DATA;
 	void		Load			(IReader* F, LPCSTR path);
 public:
-	BOOL		bReadOnly;
+	bool		bReadOnly;
     BOOL		bSaveAtEnd;
 public:
 				CInifile		( IReader* F, LPCSTR path=0 );

@@ -81,6 +81,7 @@ u32				crc32(const void* P, u32 len)
 	return ulCRC ^ 0xffffffff;
 }
 
+/*
 u32				crc32(const void* P, u32 len, u32 starting_crc)
 {
 	Crc32Initializer::init();
@@ -114,3 +115,4 @@ u32				path_crc32(const char* path, u32 len)
 
 	return ulCRC ^ 0xffffffff;
 }
+*/
