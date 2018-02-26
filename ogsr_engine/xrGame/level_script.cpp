@@ -638,13 +638,40 @@ void SetEnvDescData(LPCSTR section_1, LPCSTR section_2, float exec_time_1, float
 	env.ForceReselectEnvs();
 }
 
-void g_set_artefact_position(u32 _i, Fvector2 _pos)
+void g_set_artefact_position(const u32 i, const float x, const float y, const float z)
 {
-	shader_exports->set_artefact_position(_i, _pos);
+	Fvector pos;
+	pos.set(x, y, z);
+
+	if (fis_zero(pos.x) && fis_zero(pos.y) && fis_zero(pos.z))
+	{
+		Fvector2 res;
+		shader_exports->set_artefact_position(i, res.set(0.f, 0.f));
+	}
+	else
+	{
+		Device.mView.transform_tiny(pos);
+		Fvector2 res;
+		shader_exports->set_artefact_position(i, res.set(pos.x, pos.z));
+	}
+
 }
-void g_set_anomaly_position(u32 _i, Fvector2 _pos)
+void g_set_anomaly_position(const u32 i, const float x, const float y, const float z)
 {
-	shader_exports->set_anomaly_position(_i, _pos);
+	Fvector pos;
+	pos.set(x, y, z);
+
+	if (fis_zero(pos.x) && fis_zero(pos.y) && fis_zero(pos.z))
+	{
+		Fvector2 res;
+		shader_exports->set_anomaly_position(i, res.set(0.f, 0.f));
+	}
+	else
+	{
+		Device.mView.transform_tiny(pos);
+		Fvector2 res;
+		shader_exports->set_anomaly_position(i, res.set(pos.x, pos.z));
+	}
 }
 void g_set_detector_params(int _one, int _two)
 {
