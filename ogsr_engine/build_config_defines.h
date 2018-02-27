@@ -151,3 +151,6 @@
 #ifndef _M_X64
 #	define XR_USE_BLACKBOX
 #endif
+
+//Режим огня у оружия будет сохраняться при сейв-лоаде.
+//#define SAVE_WEAPON_FIRE_MODE

@@ -81,9 +81,11 @@ void CWeaponMagazined::net_Destroy()
 BOOL CWeaponMagazined::net_Spawn(CSE_Abstract* DC)
 {
 	BOOL bRes = inherited::net_Spawn(DC);
+#ifdef SAVE_WEAPON_FIRE_MODE
 	const auto wpn = smart_cast<CSE_ALifeItemWeaponMagazined*>(DC);
 	m_iCurFireMode = wpn->m_u8CurFireMode;
 	SetQueueSize(GetCurrentFireMode());
+#endif
 	return bRes;
 }
 
