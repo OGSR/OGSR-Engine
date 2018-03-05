@@ -275,9 +275,7 @@ public:
 };
 extern XRCORE_API xrCore Core;
 
-extern XRCORE_API	u32		build_id;
-extern XRCORE_API	LPCSTR	build_date;
-XRCORE_API	 void compute_build_id();
+static constexpr const char* BUILD_DATE = __DATE__ " " __TIME__;
 
 #include "Utils/thread_pool.hpp"
 extern XRCORE_API ThreadPool* TTAPI;

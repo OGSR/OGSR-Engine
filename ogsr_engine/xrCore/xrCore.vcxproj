@@ -147,7 +147,6 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="blackbox\stacktrace.cpp" />
-    <ClCompile Include="compute_build_id.cpp" />
     <ClCompile Include="FTimer.cpp" />
     <ClCompile Include="stacktrace_collector.cpp" />
     <ClCompile Include="stdafx.cpp">

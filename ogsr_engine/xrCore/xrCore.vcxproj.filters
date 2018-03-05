@@ -178,9 +178,6 @@
       <Filter>Compression\lz</Filter>
     </ClCompile>
     <ClCompile Include="xrSyncronize.cpp" />
-    <ClCompile Include="compute_build_id.cpp">
-      <Filter>Kernel</Filter>
-    </ClCompile>
     <ClCompile Include="blackbox\stacktrace.cpp">
       <Filter>Debug core\BlackBox</Filter>
     </ClCompile>

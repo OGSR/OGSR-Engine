@@ -14,8 +14,7 @@
 int (WINAPIV * __vsnprintf)(char *, size_t, const char*, va_list) = _vsnprintf;
 #endif // DEBUG
 
-XRCORE_API		xrCore	Core;
-XRCORE_API	LPCSTR	build_date;
+XRCORE_API xrCore Core;
 
 XRCORE_API ThreadPool* TTAPI = new ThreadPool();
 
@@ -109,7 +108,7 @@ void xrCore::_initialize	(LPCSTR _ApplicationName, LogCallback cb, BOOL init_fs,
 	#endif
 #endif
 		FS._initialize		(flags,0,fs_fname);
-		Msg					("'%s' build %d, %s\n","XRAY Engine (OGSE Edition)",build_id, build_date);
+		Msg("[OGSR Engine] build date: [%s]", BUILD_DATE);
 		EFS._initialize		();
 #ifdef DEBUG
     #ifndef	_EDITOR
