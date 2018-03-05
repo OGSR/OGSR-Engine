@@ -248,21 +248,25 @@ void CSkeletonX::_Render	(ref_geom& hGeom, u32 vCount, u32 iOffset, u32 pCount)
 			u32						count	= RMS_bonecount;
 			for (u32 mid = 0; mid<count; mid++)	{
 				Fmatrix&	M				= Parent->LL_GetTransform_R				(u16(mid));
-#ifdef QUATERNION_SKINNING
-				u32			id = mid * 2;
+				if (strstr(Core.Params, "-enable_qt_skinning"))
+				{
+					u32 id = mid * 2;
 
-				D3DXVECTOR3 scale, translate;
-				D3DXQUATERNION rotate;
-				D3DXMatrixDecompose(&scale, &rotate, &translate, (D3DXMATRIX*)&M);
+					D3DXVECTOR3 scale, translate;
+					D3DXQUATERNION rotate;
+					D3DXMatrixDecompose(&scale, &rotate, &translate, (D3DXMATRIX*)&M);
 
-				RCache.set_ca(&*array, id + 0, rotate.x, rotate.y, rotate.z, rotate.w);
-				RCache.set_ca(&*array, id + 1, translate.x, translate.y, translate.z, 1.0);
-#else
-				u32			id				= mid*3;
-				RCache.set_ca	(&*array,id+0,M._11,M._21,M._31,M._41);
-				RCache.set_ca	(&*array,id+1,M._12,M._22,M._32,M._42);
-				RCache.set_ca	(&*array,id+2,M._13,M._23,M._33,M._43);
-#endif
+					RCache.set_ca(&*array, id + 0, rotate.x, rotate.y, rotate.z, rotate.w);
+					RCache.set_ca(&*array, id + 1, translate.x, translate.y, translate.z, 1.0);
+				}
+				else
+				{
+					u32 id = mid * 3;
+
+					RCache.set_ca(&*array, id + 0, M._11, M._21, M._31, M._41);
+					RCache.set_ca(&*array, id + 1, M._12, M._22, M._32, M._42);
+					RCache.set_ca(&*array, id + 2, M._13, M._23, M._33, M._43);
+				}
 			}
 
 			// render

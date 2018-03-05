@@ -5,8 +5,8 @@ log1("--LUA version: ["..(jit.version or _VERSION).."]")
 --lfs.dll должен быть в папке bin. Утащил из Prosectors Project.
 xpcall(function() require("lfs") end, log1)
 --=======================================[LuaXML]===============================================
---_luaxml.lua должен быть в папке scripts.
-xpcall(function() dofile(getFS():update_path("$game_scripts$", "_luaxml.lua")) end, log1)
+--_luaxml.script должен быть в папке scripts.
+prefetch("_luaxml")
 --=================================[Функции из xrLuaFix]========================================
 --Cрезать первое "слово"
 string.trim_w = function(s) return s:gsub("%s-(%S+)%s+", '', 1) end

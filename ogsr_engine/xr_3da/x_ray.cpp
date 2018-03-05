@@ -387,7 +387,6 @@ int APIENTRY WinMain_impl(HINSTANCE hInstance,
 
 	g_temporary_stuff			= &trivial_encryptor::decode;
 	
-	compute_build_id			();
 	Core._initialize			("xray",NULL, TRUE, fsgame[0] ? fsgame : NULL);
 	InitSettings				();
 
