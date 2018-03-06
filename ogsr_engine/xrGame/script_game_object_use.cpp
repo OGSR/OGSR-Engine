@@ -155,17 +155,20 @@ ALife::ERelationType CScriptGameObject::GetRelationType	(CScriptGameObject* who)
 }
 
 template <typename T>
-IC	T	*CScriptGameObject::action_planner()
+IC T *CScriptGameObject::action_planner()
 {
-	CAI_Stalker				*manager = smart_cast<CAI_Stalker*>(&object());
+	auto manager = smart_cast<CAI_Stalker*>(&object());
 	if (!manager)
-		ai().script_engine().script_log				(ScriptStorage::eLuaMessageTypeError,"CAI_Stalker : cannot access class member action_planner!");
-	return					(&manager->brain());
+	{
+		Msg("!!CAI_Stalker : cannot access class member action_planner! Object: [%s]", object().Name());
+		return nullptr;
+	}
+	return &manager->brain();
 }
 
-CScriptActionPlanner		*script_action_planner(CScriptGameObject *obj)
+CScriptActionPlanner *script_action_planner(CScriptGameObject *obj)
 {
-	return					(obj->action_planner<CScriptActionPlanner>());
+	return obj->action_planner<CScriptActionPlanner>();
 }
 
 void CScriptGameObject::set_enemy_callback	(const luabind::functor<bool> &functor)
