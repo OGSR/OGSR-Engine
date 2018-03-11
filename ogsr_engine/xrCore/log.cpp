@@ -164,6 +164,7 @@ void CreateLog(BOOL nl)
 				FS.update_path(logFName, "$logs$", logFName);
 
 			logstream.imbue(std::locale("")); //В некоторых случаях вместо русских букв в лог выводятся иероглифы. Попробуем установить логу локаль, может поможет.
+			VerifyPath(logFName);
 			logstream.open(logFName);
 		}
 		__except (EXCEPTION_EXECUTE_HANDLER) {
