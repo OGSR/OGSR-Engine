@@ -241,6 +241,11 @@ void CALifeSpawnRegistry::build_story_spawns()
 		if (object->m_spawn_story_id == INVALID_SPAWN_STORY_ID)
 			continue;
 
-		m_spawn_story_ids.insert		(std::make_pair(object->m_spawn_story_id,(*I).first));
+		auto spawn_story_id = object->m_spawn_story_id;
+		auto object_id = (*I).first;
+#ifdef DEBUG
+		Msg("~~[CALifeSpawnRegistry::build_story_spawns] Object [%s] spawn_story_id [%u] object_id [%u]", object->name(), spawn_story_id, object_id);
+#endif
+		m_spawn_story_ids.insert({ spawn_story_id, object_id });
 	}
 }
