@@ -52,6 +52,7 @@ public:
 	//отношение между группами монстров
 	static int					relation			(MONSTER_COMMUNITY_INDEX from, MONSTER_COMMUNITY_INDEX to);
 	int							relation			(MONSTER_COMMUNITY_INDEX to);
+	static void set_relation( MONSTER_COMMUNITY_ID, MONSTER_COMMUNITY_ID, int );
 
 	static void					DeleteIdToIndexData	();
 private:
