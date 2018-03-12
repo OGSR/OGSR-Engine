@@ -40,7 +40,7 @@
 #define NO_AUTO_RELOAD_WPN
 
 // включает хранилище скриптовых переменных в сейвы
-//#define SCRIPT_VARS_STORAGE
+#define SCRIPT_VARS_STORAGE
 
 // включает экспорт функции setup_game_icon в Lua
 #define SCRIPT_ICONS_CONTROL
@@ -89,7 +89,7 @@
 //#define KEEP_INPROGRESS_TASKS_ONLY
 
 // Сколько последних сообщений показывать в истории ПДА
-#define NEWS_TO_SHOW 50
+#define NEWS_TO_SHOW 500
 
 // Показывать полоску состояния предметов в инвентаре, на его
 // иконке. Включает поддержку аттрибута condition_progress_bar для
