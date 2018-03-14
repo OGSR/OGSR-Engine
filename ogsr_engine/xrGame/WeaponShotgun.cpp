@@ -159,7 +159,8 @@ void CWeaponShotgun::switch2_Fire2	()
 
 		CEntity*					E = smart_cast<CEntity*>(H_Parent());
 		if (E){
-		CInventoryOwner* io		= smart_cast<CInventoryOwner*>(H_Parent());
+#ifdef DEBUG
+			CInventoryOwner* io		= smart_cast<CInventoryOwner*>(H_Parent());
 			if(NULL == io->inventory().ActiveItem())
 			{
 			Log("current_state", GetState() );
@@ -168,6 +169,7 @@ void CWeaponShotgun::switch2_Fire2	()
 			Log("item_sect", cNameSect().c_str());
 			Log("H_Parent", H_Parent()->cNameSect().c_str());
 			}
+#endif
 			E->g_fireParams		(this, p1,d);
 		}
 		

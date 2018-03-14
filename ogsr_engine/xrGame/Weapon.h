@@ -180,7 +180,7 @@ public:
 	virtual bool GrenadeLauncherAttachable();
 	virtual bool ScopeAttachable();
 	virtual bool SilencerAttachable();
-	virtual bool UseScopeTexture() { if ((GetAddonsState() & CSE_ALifeItemWeapon::eForcedNotexScope) != 0) return false; else return true;};
+	virtual bool UseScopeTexture();
 
 	//обновление видимости для косточек аддонов
 			void UpdateAddonsVisibility();
@@ -500,6 +500,9 @@ private:
 public:
 	const float				&hit_probability			() const;
 	void					UpdateWeaponParams();
+	//
+	bool is_second_zoom_offset_enabled = false;
+	void UpdateZoomOffset();
 };
 
 extern float default_fov;// = 67.5f;
