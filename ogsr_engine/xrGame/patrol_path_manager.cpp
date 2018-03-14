@@ -53,11 +53,10 @@ CPatrolPathManager::~CPatrolPathManager			()
 
 bool CPatrolPathManager::extrapolate_path		()
 {
-	VERIFY					(m_path && m_path->vertex(m_curr_point_index));
+	VERIFY(m_path && m_path->vertex(m_curr_point_index));
 	if (!m_extrapolate_callback)
-		return				(true);
-	
-	return					(m_extrapolate_callback(m_curr_point_index));
+		return true;
+	return m_extrapolate_callback(m_curr_point_index, m_path_name.c_str());
 }
 
 void CPatrolPathManager::reinit					()
@@ -322,7 +321,7 @@ u32 CPatrolPathManager::get_next_point(u32 prev_point_index)
 shared_str	CPatrolPathManager::path_name	() const
 {
 	if (!m_path) {
-		ai().script_engine().script_log(eLuaMessageTypeError,"Path not specified (object %s)!",*m_game_object->cName());
+		Msg("!![CPatrolPathManager::path_name] Path not specified (object %s)!",*m_game_object->cName());
 		return				("");
 	}
 	VERIFY					(m_path);
