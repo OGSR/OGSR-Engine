@@ -200,6 +200,7 @@ public:
 			void				set_range			(float new_range);
 			bool				Alive				() const;
 			ALife::ERelationType	GetRelationType	(CScriptGameObject* who);
+			bool			IsRelationEnemy ( CScriptGameObject* );
 
 	// CScriptEntity
 	

@@ -32,6 +32,7 @@
 #include "../xr_3da/r2_shader_exports.h"
 #include "../xr_3da/xr_collide_defs.h"
 #include "script_rq_result.h"
+#include "monster_community.h"
 
 using namespace luabind;
 
@@ -764,6 +765,11 @@ void set_cam_inert( float v ) {
 }
 
 
+void set_monster_relation( LPCSTR from, LPCSTR to, int rel ) {
+  MONSTER_COMMUNITY::set_relation( (MONSTER_COMMUNITY_ID)from, (MONSTER_COMMUNITY_ID)to, rel );
+}
+
+
 #pragma optimize("s",on)
 void CLevel::script_register(lua_State *L)
 {
@@ -894,7 +900,8 @@ void CLevel::script_register(lua_State *L)
 		def( "unset_efx_preset", &unsetEFXPreset ),
 		def( "set_efx_eax_preset", &setEFXEAXPreset ),
 		def( "unset_efx_eax_preset", &unsetEFXEAXPreset ),
-		def( "set_cam_inert", &set_cam_inert )
+		def( "set_cam_inert", &set_cam_inert ),
+		def( "set_monster_relation", &set_monster_relation )
 	],
 	
 	module(L,"actor_stats")

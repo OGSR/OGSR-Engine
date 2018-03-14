@@ -154,6 +154,24 @@ ALife::ERelationType CScriptGameObject::GetRelationType	(CScriptGameObject* who)
 	return l_tpEntityAlive1->tfGetRelationType(l_tpEntityAlive2);
 }
 
+
+bool CScriptGameObject::IsRelationEnemy ( CScriptGameObject* who ) {
+  CEntityAlive* l_tpEntityAlive1 = smart_cast<CEntityAlive*>( &object() );
+  if ( !l_tpEntityAlive1 ) {
+    ai().script_engine().script_log( ScriptStorage::eLuaMessageTypeError, "%s cannot access class member GetRelationType!", *object().cName() );
+    return false;
+  }
+	
+  CEntityAlive* l_tpEntityAlive2 = smart_cast<CEntityAlive*>( &who->object() );
+  if ( !l_tpEntityAlive2 ) {
+    ai().script_engine().script_log( ScriptStorage::eLuaMessageTypeError, "%s cannot apply GetRelationType method for non-alive object!", *who->object().cName() );
+    return false;
+  }
+	
+  return l_tpEntityAlive1->is_relation_enemy( l_tpEntityAlive2 );
+}
+
+
 template <typename T>
 IC T *CScriptGameObject::action_planner()
 {
