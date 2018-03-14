@@ -296,4 +296,12 @@ IC int xr_strcpy(char(&destination)[count], LPCSTR source)
 	return xr_strcpy(destination, count, source);
 }
 
+template <int count>
+inline int __cdecl xr_sprintf(char(&destination)[count], const char* format_string, ...)
+{
+	va_list args;
+	va_start(args, format_string);
+	return vsprintf_s(destination, count, format_string, args);
+}
+
 #endif

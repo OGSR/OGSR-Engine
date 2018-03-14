@@ -42,4 +42,7 @@ public:
 	static bool print_output(lua_State *L, const char* caScriptName, int iErorCode = 0);
 	static constexpr const char* GlobalNamespace = "_G";
 	void print_stack();
+	void dump_state();
+	void LogTable(lua_State *l, LPCSTR S, int level);
+	void LogVariable(lua_State * l, const char* name, int level, bool bOpenTable);
 };

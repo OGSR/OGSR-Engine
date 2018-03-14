@@ -425,6 +425,12 @@ LONG WINAPI UnhandledFilter(_EXCEPTION_POINTERS *pExceptionInfo)
 {
 	if (!error_after_dialog /*&& !IsDebuggerPresent()*/)
 	{
+		auto pCrashHandler = Debug.get_crashhandler();
+		if (pCrashHandler != nullptr)
+		{
+			pCrashHandler();
+		}
+
 		string1024 error_message;
 		format_message(error_message, sizeof(error_message));
 		if (*error_message)
