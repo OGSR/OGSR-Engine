@@ -82,3 +82,10 @@ void MONSTER_COMMUNITY::DeleteIdToIndexData	()
 	m_relation_table.clear();
 	inherited::DeleteIdToIndexData();
 }
+
+
+void MONSTER_COMMUNITY::set_relation ( MONSTER_COMMUNITY_ID from, MONSTER_COMMUNITY_ID to, int rel ) {
+  MONSTER_COMMUNITY_INDEX idx_from = IdToIndex( from );
+  MONSTER_COMMUNITY_INDEX idx_to   = IdToIndex( to   );
+  m_relation_table.table()[ idx_from ][ idx_to ] = rel;
+}

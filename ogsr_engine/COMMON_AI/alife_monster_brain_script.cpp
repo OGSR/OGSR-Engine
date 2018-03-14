@@ -26,5 +26,8 @@ void CALifeMonsterBrain::script_register	(lua_State *L)
 			.def("movement",				&get_movement)
 			.def("update",					&CALifeMonsterBrain::update_script)
 			.def("can_choose_alife_tasks",	(void (CALifeMonsterBrain::*)(bool))&CALifeMonsterBrain::can_choose_alife_tasks)
+			.def( "can_choose_alife_tasks",	( bool ( CALifeMonsterBrain::* ) () const ) &CALifeMonsterBrain::can_choose_alife_tasks )
+			.def_readwrite( "m_time_interval", &CALifeMonsterBrain::m_time_interval )
+			.def_readwrite( "m_last_search_time", &CALifeMonsterBrain::m_last_search_time )
 	];
 }

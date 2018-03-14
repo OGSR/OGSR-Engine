@@ -44,6 +44,7 @@ class_<CScriptGameObject> script_register_game_object1(class_<CScriptGameObject>
 			value("friend",					int(ALife::eRelationTypeFriend)),
 			value("neutral",				int(ALife::eRelationTypeNeutral)),
 			value("enemy",					int(ALife::eRelationTypeEnemy)),
+			value("worst_enemy",				int(ALife::eRelationTypeWorstEnemy)),
 			value("dummy",					int(ALife::eRelationTypeDummy))
 		]
 		.enum_("action_types")
@@ -114,6 +115,7 @@ class_<CScriptGameObject> script_register_game_object1(class_<CScriptGameObject>
 		.def("fov",							&CScriptGameObject::GetFOV)
 		.def("range",						&CScriptGameObject::GetRange)
 		.def("relation",					&CScriptGameObject::GetRelationType)
+		.def( "is_relation_enemy",				&CScriptGameObject::IsRelationEnemy )
 		.def("script",						&CScriptGameObject::SetScriptControl)
 		.def("get_script",					&CScriptGameObject::GetScriptControl)
 		.def("get_script_name",				&CScriptGameObject::GetScriptControlName)
