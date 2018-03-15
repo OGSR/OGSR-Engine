@@ -470,6 +470,7 @@ void CWeaponScript::script_register(lua_State *L)
 
 			.def_readonly("misfire"						,			&CWeapon::bMisfire)
 			.def_readonly("zoom_mode"					,			&CWeapon::m_bZoomMode)
+			.def_readwrite("is_second_zoom_offset_enabled",			&CWeapon::is_second_zoom_offset_enabled)
 			
 
 			.property("ammo_elapsed"					,			&CWeapon::GetAmmoElapsed, &CWeapon::SetAmmoElapsed)

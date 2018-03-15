@@ -628,62 +628,24 @@ bool CInventory::Action(s32 cmd, u32 flags)
 	case kWPN_5:
 	case kWPN_6:
        {
-		   if (cmd == kWPN_6 && !IsGameTypeSingle()) return false;
-
 			if(flags&CMD_START)
 			{
-                if((int)m_iActiveSlot == cmd - kWPN_1 &&
-					m_slots[m_iActiveSlot].m_pIItem )
-				{
-					if(IsGameTypeSingle())
-						b_send_event = Activate(NO_ACTIVE_SLOT);
-					else
-					{
-						ActivateNextItemInActiveSlot();
-					}
-				}else{ 					
-					if ((int)m_iActiveSlot == cmd - kWPN_1 && !IsGameTypeSingle())
-						break;
-
+                if((int)m_iActiveSlot == cmd - kWPN_1 && m_slots[m_iActiveSlot].m_pIItem )
+					b_send_event = Activate(NO_ACTIVE_SLOT);
+				else				
 					b_send_event = Activate(cmd - kWPN_1, eKeyAction);
-				}
 			}
 		}break;
 	case kWPN_8:
 	{
 		if (flags&CMD_START)
 		{
-			if ((int)m_iActiveSlot == DETECTOR_SLOT &&
-				m_slots[m_iActiveSlot].m_pIItem)
-			{
-				if (IsGameTypeSingle())
-					b_send_event = Activate(NO_ACTIVE_SLOT);
-				else
-				{
-					ActivateNextItemInActiveSlot();
-				}
-			}
-			else {
-				if ((int)m_iActiveSlot == DETECTOR_SLOT && !IsGameTypeSingle())
-					break;
-
+			if ((int)m_iActiveSlot == DETECTOR_SLOT && m_slots[m_iActiveSlot].m_pIItem)
+				b_send_event = Activate(NO_ACTIVE_SLOT);
+			else
 				b_send_event = Activate(DETECTOR_SLOT, eKeyAction);
-			}
 		}
 	}break;
-	case kARTEFACT:
-		{
-			if(flags&CMD_START)
-			{
-                if((int)m_iActiveSlot == ARTEFACT_SLOT &&
-					m_slots[m_iActiveSlot].m_pIItem && IsGameTypeSingle())
-				{
-					b_send_event = Activate(NO_ACTIVE_SLOT);
-				}else {
-					b_send_event = Activate(ARTEFACT_SLOT);
-				}
-			}
-		}break;
 	}
 
 	if(b_send_event && g_pGameLevel && OnClient() && pActor)

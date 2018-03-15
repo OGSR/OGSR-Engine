@@ -528,12 +528,14 @@ LPCSTR CScriptEntity::GetPatrolPathName()
 {
 #ifdef DEBUG
 	if (!GetScriptControl()) {
-		ai().script_engine().script_log(eLuaMessageTypeError,"Object %s is not under script control while you are trying to get patrol path name!",*m_object->cName());
+		Msg("!![CScriptEntity::GetPatrolPathName] Object [%s] is not under script control while you are trying to get patrol path name!", *m_object->cName());
 		return "";
 	}
 #endif
-	if (m_tpActionQueue.empty())
-		return				("");
+	if (m_tpActionQueue.empty()) {
+		Msg("!![CScriptEntity::GetPatrolPathName] Object [%s] m_tpActionQueue is empty!", *m_object->cName());
+		return "";
+	}
 	return					(*m_tpActionQueue.back()->m_tMovementAction.m_path_name);
 }
 

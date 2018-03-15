@@ -239,7 +239,8 @@ bool CWeaponMagazinedWGrenade::SwitchMode()
 void  CWeaponMagazinedWGrenade::PerformSwitchGL()
 {
 	m_bGrenadeMode		= !m_bGrenadeMode;
-	m_fZoomFactor = this->CurrentZoomFactor(); //добавлен сброс зума при переключении на подствол в режиме прицеливания
+
+	m_fZoomFactor = this->CurrentZoomFactor();
 
 	iMagazineSize		= m_bGrenadeMode?1:iMagazineSize2;
 
@@ -254,18 +255,7 @@ void  CWeaponMagazinedWGrenade::PerformSwitchGL()
 
 	iAmmoElapsed = (int)m_magazine.size();
 
-	if(m_bZoomEnabled && m_pHUD)
-	{
-		if(m_bGrenadeMode)
-			LoadZoomOffset(*hud_sect, "grenade_");
-		else 
-		{
-			if(GrenadeLauncherAttachable())
-				LoadZoomOffset(*hud_sect, "grenade_normal_");
-			else
-				LoadZoomOffset(*hud_sect, "");
-		}
-	}
+	UpdateZoomOffset();
 
 	Actor()->callback( GameObject::eOnActorWeaponSwitchGL )( lua_game_object() );
 }
@@ -307,6 +297,7 @@ void CWeaponMagazinedWGrenade::state_Fire(float dt)
 		
 		if(H_Parent())
 		{ 
+#ifdef DEBUG
 			CInventoryOwner* io		= smart_cast<CInventoryOwner*>(H_Parent());
 			if(NULL == io->inventory().ActiveItem())
 			{
@@ -316,6 +307,7 @@ void CWeaponMagazinedWGrenade::state_Fire(float dt)
 			Log("item_sect", cNameSect().c_str());
 			Log("H_Parent", H_Parent()->cNameSect().c_str());
 			}
+#endif
 
 			smart_cast<CEntity*>	(H_Parent())->g_fireParams	(this, p1,d);
 		}else 
@@ -363,6 +355,7 @@ void CWeaponMagazinedWGrenade::SwitchState(u32 S)
 		CEntity*					E = smart_cast<CEntity*>(H_Parent());
 
 		if (E){
+#ifdef DEBUG
 			CInventoryOwner* io		= smart_cast<CInventoryOwner*>(H_Parent());
 			if(NULL == io->inventory().ActiveItem())
 			{
@@ -372,6 +365,7 @@ void CWeaponMagazinedWGrenade::SwitchState(u32 S)
 			Log("item_sect", cNameSect().c_str());
 			Log("H_Parent", H_Parent()->cNameSect().c_str());
 			}
+#endif
 			E->g_fireParams		(this, p1,d);
 		}
 		if (IsGameTypeSingle())
@@ -610,29 +604,19 @@ void CWeaponMagazinedWGrenade::InitAddons()
 			CRocketLauncher::m_fLaunchSpeed = pSettings->r_float(*m_sGrenadeLauncherName,"grenade_vel");
 		}
 
-		if(m_bZoomEnabled && m_pHUD)
-		{
-			if(m_bGrenadeMode)
-				LoadZoomOffset(*hud_sect, "grenade_");
-			else 
-			{
-				if(IsGrenadeLauncherAttached())
-					LoadZoomOffset(*hud_sect, "grenade_normal_");
-				else
-					LoadZoomOffset(*hud_sect, "");
-			}
-		}
+		UpdateZoomOffset();
 	}
 
 	callback(GameObject::eOnAddonInit)(2);
 }
 
-bool	CWeaponMagazinedWGrenade::UseScopeTexture()
+bool CWeaponMagazinedWGrenade::UseScopeTexture()
 {
-	if ((GetAddonsState() & CSE_ALifeItemWeapon::eForcedNotexScope) != 0) return false;
-	if (IsGrenadeLauncherAttached() && m_bGrenadeMode) return false;
-	return true;
-};
+	if (IsGrenadeLauncherAttached() && m_bGrenadeMode)
+		return false;
+	return inherited::UseScopeTexture();
+}
+
 //float default_fov = 67.5f;
 float	CWeaponMagazinedWGrenade::CurrentZoomFactor	()
 {

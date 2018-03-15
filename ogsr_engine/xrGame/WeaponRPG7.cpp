@@ -111,6 +111,7 @@ void CWeaponRPG7::switch2_Fire	()
 
 		CEntity* E = smart_cast<CEntity*>	(H_Parent());
 		if (E){
+#ifdef DEBUG
 			CInventoryOwner* io		= smart_cast<CInventoryOwner*>(H_Parent());
 			if(NULL == io->inventory().ActiveItem())
 			{
@@ -120,6 +121,7 @@ void CWeaponRPG7::switch2_Fire	()
 			Log("item_sect", cNameSect().c_str());
 			Log("H_Parent", H_Parent()->cNameSect().c_str());
 			}
+#endif
 			E->g_fireParams				(this, p1,d);
 		}
 
