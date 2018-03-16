@@ -80,6 +80,8 @@
 #define		r2_RT_volumetric	"$user$volumetric"		// ---
 // KD end
 
+static constexpr const char* r2_RT_secondVP = "$user$viewport2"; // --#SM+#-- +SecondVP+ Хранит картинку со второго вьюпорта
+
 #define		JITTER(a) r2_jitter #a
 
 const		float				SMAP_near_plane		= .1f	;

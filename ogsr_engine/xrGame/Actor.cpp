@@ -373,6 +373,10 @@ if(!g_dedicated_server)
 		m_HeavyBreathSnd.create	(pSettings->r_string(section,"heavy_breath_snd"), st_Effect,SOUND_TYPE_MONSTER_INJURING);
 		m_BloodSnd.create		(pSettings->r_string(section,"heavy_blood_snd"), st_Effect,SOUND_TYPE_MONSTER_INJURING);
 	}
+	if (this == Level().CurrentEntity()) //--#SM+#-- Сбрасываем режим рендеринга в дефолтный [reset some render flags]
+	{
+		g_pGamePersistent->m_pGShaderConstants->m_blender_mode.set(0.f, 0.f, 0.f, 0.f);
+	}
 }
 	if( psActorFlags.test(AF_PSP) )
 		cam_Set					(eacLookAt);
@@ -847,7 +851,7 @@ void CActor::g_Physics(Fvector& _accel, float jump, float dt)
 		}
 	}
 }
-float g_fov = 67.5f;
+float g_fov = 67.5f; //75.0f - SWM
 
 float CActor::currentFOV()
 {
@@ -857,7 +861,7 @@ float CActor::currentFOV()
 		pWeapon->IsZoomed() && (!pWeapon->ZoomTexture() ||
 		(!pWeapon->IsRotatingToZoom() && pWeapon->ZoomTexture())))
 		//		return pWeapon->GetZoomFactor() * (0.75f);
-		return atan(tan(g_fov * (0.5 * PI / 180)) / pWeapon->GetZoomFactor()) / (0.5 * PI / 180);
+		return atan(tan(g_fov * (0.5 * PI / 180)) / pWeapon->GetZoomFactor()) / (0.5 * PI / 180); //В SWM - return pWeapon->GetFov(); //И вообще, надо подумать, какой фов устанавливать второму вьюпорту.
 	else
 		return g_fov;
 }
@@ -919,11 +923,20 @@ void CActor::UpdateCL	()
 		{
 			float fire_disp_full = pWeapon->GetFireDispersion(true);
 
-			HUD().SetCrosshairDisp(fire_disp_full, 0.02f);
+			if (!Device.m_SecondViewport.IsSVPFrame()) //--#SM+#-- +SecondVP+ Чтобы перекрестие не скакало из за смены FOV (Sin!) [fix for crosshair shaking while SecondVP]
+				HUD().SetCrosshairDisp(fire_disp_full, 0.02f);
+
 			HUD().ShowCrosshair(pWeapon->use_crosshair());
 
 			psHUD_Flags.set( HUD_CROSSHAIR_RT2, pWeapon->show_crosshair() );
 			psHUD_Flags.set( HUD_DRAW_RT,		pWeapon->show_indicators() );
+
+			// Обновляем двойной рендер от оружия [Update SecondVP with weapon data]
+			pWeapon->UpdateSecondVP();	//--#SM+#-- +SecondVP+
+			
+			// Обновляем информацию об оружии в шейдерах
+			g_pGamePersistent->m_pGShaderConstants->hud_params.x = pWeapon->GetZRotatingFactor(); //--#SM+#--
+			g_pGamePersistent->m_pGShaderConstants->hud_params.y = pWeapon->GetSecondVP_FovFactor(); //--#SM+#--
 		}
 
 	}
@@ -933,6 +946,13 @@ void CActor::UpdateCL	()
 		{
 			HUD().SetCrosshairDisp(0.f);
 			HUD().ShowCrosshair(false);
+
+			// Очищаем информацию об оружии в шейдерах
+			g_pGamePersistent->m_pGShaderConstants->hud_params.set(0.f, 0.f, 0.f, 0.f); //--#SM+#--
+
+			// Отключаем второй вьюпорт  [Turn off SecondVP]
+			// + CWeapon::UpdateSecondVP();
+			Device.m_SecondViewport.SetSVPActive(false); //--#SM+#-- +SecondVP+
 		}
 	}
 

@@ -45,7 +45,9 @@ public:
 	R_dsgraph::mapSorted_T										mapWmark;			// sorted
 	R_dsgraph::mapSorted_T										mapEmissive;
 	R_dsgraph::mapHUD_T											mapHUDEmissive;
-	R_dsgraph::mapHUD_T											mapHUDSorted;
+	
+	//R_dsgraph::mapHUD_T											mapHUDSorted;
+	R_dsgraph::mapSorted_T										mapHUDSorted; //??? Вернуть как было?
 #endif
 
 	// Runtime structures 

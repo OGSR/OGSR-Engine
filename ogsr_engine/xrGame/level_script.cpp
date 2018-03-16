@@ -770,6 +770,40 @@ void set_monster_relation( LPCSTR from, LPCSTR to, int rel ) {
 }
 
 
+//
+float set_blender_mode_main(float blender_num = 0.f) //--#SM+#--
+{
+	g_pGamePersistent->m_pGShaderConstants->m_blender_mode.x = blender_num;
+	return g_pGamePersistent->m_pGShaderConstants->m_blender_mode.x;
+}
+
+float get_blender_mode_main() //--#SM+#--
+{
+	return g_pGamePersistent->m_pGShaderConstants->m_blender_mode.x;
+}
+
+float set_blender_mode_second(float blender_num = 0.f) //--#SM+#--
+{
+	g_pGamePersistent->m_pGShaderConstants->m_blender_mode.y = blender_num;
+	return g_pGamePersistent->m_pGShaderConstants->m_blender_mode.y;
+}
+
+float get_blender_mode_second() //--#SM+#--
+{
+	return g_pGamePersistent->m_pGShaderConstants->m_blender_mode.y;
+}
+
+Fmatrix get_shader_params() //--#SM+#--
+{
+	return g_pGamePersistent->m_pGShaderConstants->m_script_params;
+}
+
+void set_shader_params(const Fmatrix& m_params) //--#SM+#--
+{
+	g_pGamePersistent->m_pGShaderConstants->m_script_params = m_params;
+}
+//
+
 #pragma optimize("s",on)
 void CLevel::script_register(lua_State *L)
 {

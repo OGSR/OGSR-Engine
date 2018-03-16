@@ -475,6 +475,7 @@
       <Filter>Interfaces</Filter>
     </ClInclude>
     <ClInclude Include="vismask.h" />
+    <ClInclude Include="ShadersExternalData.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="defines.cpp">
