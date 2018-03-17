@@ -15,6 +15,7 @@
 #include "..\xr_3da\CameraBase.h"
 #include "WeaponHUD.h"
 #include "ui/UIStatic.h"
+#include "../COMMON_AI/PATH/patrol_path.h"
 
 #include "gameobject.h"
 #include "ai_space.h"
@@ -244,6 +245,9 @@ public:
 	// CBaseMonster
 			void				skip_transfer_enemy		(bool val);
 			void				set_home				(LPCSTR name, float r_min, float r_max, bool aggressive);
+			void set_home( CPatrolPath*, float, float, bool );
+			bool at_home();
+			bool at_home( Fvector );
 			void				remove_home				();
 			void				berserk					();
 			void				set_custom_panic_threshold	(float value);
