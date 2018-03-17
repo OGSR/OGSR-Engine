@@ -37,13 +37,11 @@
             this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
             this.Nickname = new System.Windows.Forms.Label();
             this.name = new System.Windows.Forms.RichTextBox();
-            this.disasm = new System.Windows.Forms.CheckBox();
-            this.noprefetch = new System.Windows.Forms.CheckBox();
-            this.dsound = new System.Windows.Forms.CheckBox();
             this.lang_pic_fr = new System.Windows.Forms.PictureBox();
             this.lang_pic_en = new System.Windows.Forms.PictureBox();
             this.lang_pic_ru = new System.Windows.Forms.PictureBox();
             this.button4 = new System.Windows.Forms.Button();
+            this.noprefetch = new System.Windows.Forms.CheckBox();
             this.tabPage4 = new System.Windows.Forms.TabPage();
             this.OtherTabs = new System.Windows.Forms.TabControl();
             this.tabPage8 = new System.Windows.Forms.TabPage();
@@ -65,6 +63,13 @@
             this.file_sav_label = new System.Windows.Forms.Label();
             this.terms_label = new System.Windows.Forms.Label();
             this.text = new System.Windows.Forms.RichTextBox();
+            this.RU = new System.Windows.Forms.Label();
+            this.label2 = new System.Windows.Forms.Label();
+            this.label3 = new System.Windows.Forms.Label();
+            this.pictureBox_night = new System.Windows.Forms.PictureBox();
+            this.pictureBox_day = new System.Windows.Forms.PictureBox();
+            this.folderBrowserDialog1 = new System.Windows.Forms.FolderBrowserDialog();
+            this.saveFileDialog1 = new System.Windows.Forms.SaveFileDialog();
             this.tabPage11 = new System.Windows.Forms.TabPage();
             this.team = new System.Windows.Forms.RichTextBox();
             this.tabPage1 = new System.Windows.Forms.TabPage();
@@ -78,36 +83,15 @@
             this.columnHeader2 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.string_start = new System.Windows.Forms.GroupBox();
             this.start_string = new System.Windows.Forms.Label();
-            this.center_screen = new System.Windows.Forms.CheckBox();
-            this.ss_tga = new System.Windows.Forms.CheckBox();
             this.nointro = new System.Windows.Forms.CheckBox();
             this.teni = new System.Windows.Forms.GroupBox();
             this.sh_quality = new System.Windows.Forms.TrackBar();
-            this.tabPage2 = new System.Windows.Forms.TabPage();
-            this.propertyGrid1 = new System.Windows.Forms.PropertyGrid();
-            this.tabpage = new System.Windows.Forms.TabControl();
             this.tabPage5 = new System.Windows.Forms.TabPage();
             this.propertyGrid2 = new System.Windows.Forms.PropertyGrid();
             this.richTextBox2 = new System.Windows.Forms.RichTextBox();
-            this.tabPage3 = new System.Windows.Forms.TabPage();
-            this.label9 = new System.Windows.Forms.Label();
-            this.progressBar2 = new System.Windows.Forms.ProgressBar();
-            this.button3 = new System.Windows.Forms.Button();
-            this.label1 = new System.Windows.Forms.Label();
-            this.label8 = new System.Windows.Forms.Label();
-            this.button2 = new System.Windows.Forms.Button();
-            this.label7 = new System.Windows.Forms.Label();
-            this.label6 = new System.Windows.Forms.Label();
-            this.button1 = new System.Windows.Forms.Button();
-            this.label4 = new System.Windows.Forms.Label();
-            this.richTextBox1 = new System.Windows.Forms.RichTextBox();
-            this.RU = new System.Windows.Forms.Label();
-            this.label2 = new System.Windows.Forms.Label();
-            this.label3 = new System.Windows.Forms.Label();
-            this.pictureBox_night = new System.Windows.Forms.PictureBox();
-            this.pictureBox_day = new System.Windows.Forms.PictureBox();
-            this.folderBrowserDialog1 = new System.Windows.Forms.FolderBrowserDialog();
-            this.saveFileDialog1 = new System.Windows.Forms.SaveFileDialog();
+            this.tabPage2 = new System.Windows.Forms.TabPage();
+            this.propertyGrid1 = new System.Windows.Forms.PropertyGrid();
+            this.tabpage = new System.Windows.Forms.TabControl();
             ((System.ComponentModel.ISupportInitialize)(this.lang_pic_fr)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.lang_pic_en)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.lang_pic_ru)).BeginInit();
@@ -115,6 +99,8 @@
             this.OtherTabs.SuspendLayout();
             this.tabPage8.SuspendLayout();
             this.tabPage9.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox_night)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox_day)).BeginInit();
             this.tabPage11.SuspendLayout();
             this.tabPage1.SuspendLayout();
             this.tabPage10.SuspendLayout();
@@ -123,12 +109,9 @@
             this.string_start.SuspendLayout();
             this.teni.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.sh_quality)).BeginInit();
+            this.tabPage5.SuspendLayout();
             this.tabPage2.SuspendLayout();
             this.tabpage.SuspendLayout();
-            this.tabPage5.SuspendLayout();
-            this.tabPage3.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox_night)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox_day)).BeginInit();
             this.SuspendLayout();
             // 
             // OgseLink
@@ -181,30 +164,6 @@
             this.name.Name = "name";
             this.toolTip1.SetToolTip(this.name, resources.GetString("name.ToolTip"));
             // 
-            // disasm
-            // 
-            resources.ApplyResources(this.disasm, "disasm");
-            this.disasm.Name = "disasm";
-            this.toolTip1.SetToolTip(this.disasm, resources.GetString("disasm.ToolTip"));
-            this.disasm.UseVisualStyleBackColor = true;
-            this.disasm.CheckedChanged += new System.EventHandler(this.noprefetch_CheckedChanged);
-            // 
-            // noprefetch
-            // 
-            resources.ApplyResources(this.noprefetch, "noprefetch");
-            this.noprefetch.Name = "noprefetch";
-            this.toolTip1.SetToolTip(this.noprefetch, resources.GetString("noprefetch.ToolTip"));
-            this.noprefetch.UseVisualStyleBackColor = true;
-            this.noprefetch.CheckedChanged += new System.EventHandler(this.noprefetch_CheckedChanged);
-            // 
-            // dsound
-            // 
-            resources.ApplyResources(this.dsound, "dsound");
-            this.dsound.Name = "dsound";
-            this.toolTip1.SetToolTip(this.dsound, resources.GetString("dsound.ToolTip"));
-            this.dsound.UseVisualStyleBackColor = true;
-            this.dsound.CheckedChanged += new System.EventHandler(this.noprefetch_CheckedChanged);
-            // 
             // lang_pic_fr
             // 
             resources.ApplyResources(this.lang_pic_fr, "lang_pic_fr");
@@ -237,6 +196,14 @@
             this.toolTip1.SetToolTip(this.button4, resources.GetString("button4.ToolTip"));
             this.button4.UseVisualStyleBackColor = true;
             this.button4.Click += new System.EventHandler(this.button4_Click);
+            // 
+            // noprefetch
+            // 
+            resources.ApplyResources(this.noprefetch, "noprefetch");
+            this.noprefetch.Name = "noprefetch";
+            this.toolTip1.SetToolTip(this.noprefetch, resources.GetString("noprefetch.ToolTip"));
+            this.noprefetch.UseVisualStyleBackColor = true;
+            this.noprefetch.CheckedChanged += new System.EventHandler(this.noprefetch_CheckedChanged);
             // 
             // tabPage4
             // 
@@ -382,6 +349,40 @@
             resources.ApplyResources(this.text, "text");
             this.text.Name = "text";
             // 
+            // RU
+            // 
+            resources.ApplyResources(this.RU, "RU");
+            this.RU.Name = "RU";
+            // 
+            // label2
+            // 
+            resources.ApplyResources(this.label2, "label2");
+            this.label2.Name = "label2";
+            // 
+            // label3
+            // 
+            resources.ApplyResources(this.label3, "label3");
+            this.label3.Name = "label3";
+            // 
+            // pictureBox_night
+            // 
+            resources.ApplyResources(this.pictureBox_night, "pictureBox_night");
+            this.pictureBox_night.BackColor = System.Drawing.Color.Black;
+            this.pictureBox_night.Name = "pictureBox_night";
+            this.pictureBox_night.TabStop = false;
+            // 
+            // pictureBox_day
+            // 
+            resources.ApplyResources(this.pictureBox_day, "pictureBox_day");
+            this.pictureBox_day.BackColor = System.Drawing.Color.Black;
+            this.pictureBox_day.Name = "pictureBox_day";
+            this.pictureBox_day.TabStop = false;
+            // 
+            // saveFileDialog1
+            // 
+            this.saveFileDialog1.AddExtension = false;
+            resources.ApplyResources(this.saveFileDialog1, "saveFileDialog1");
+            // 
             // tabPage11
             // 
             this.tabPage11.Controls.Add(this.team);
@@ -426,17 +427,14 @@
             this.tabPage12.Controls.Add(this.button4);
             this.tabPage12.Controls.Add(this.savePicture);
             this.tabPage12.Controls.Add(this.SavesList);
-            this.tabPage12.Controls.Add(this.disasm);
             this.tabPage12.Controls.Add(this.string_start);
             this.tabPage12.Controls.Add(this.noprefetch);
-            this.tabPage12.Controls.Add(this.center_screen);
-            this.tabPage12.Controls.Add(this.ss_tga);
             this.tabPage12.Controls.Add(this.nointro);
-            this.tabPage12.Controls.Add(this.dsound);
             this.tabPage12.Controls.Add(this.teni);
             resources.ApplyResources(this.tabPage12, "tabPage12");
             this.tabPage12.Name = "tabPage12";
             this.tabPage12.UseVisualStyleBackColor = true;
+            this.tabPage12.Click += new System.EventHandler(this.tabPage12_Click);
             // 
             // savePicture
             // 
@@ -480,20 +478,6 @@
             resources.ApplyResources(this.start_string, "start_string");
             this.start_string.Name = "start_string";
             // 
-            // center_screen
-            // 
-            resources.ApplyResources(this.center_screen, "center_screen");
-            this.center_screen.Name = "center_screen";
-            this.center_screen.UseVisualStyleBackColor = true;
-            this.center_screen.CheckedChanged += new System.EventHandler(this.noprefetch_CheckedChanged);
-            // 
-            // ss_tga
-            // 
-            resources.ApplyResources(this.ss_tga, "ss_tga");
-            this.ss_tga.Name = "ss_tga";
-            this.ss_tga.UseVisualStyleBackColor = true;
-            this.ss_tga.CheckedChanged += new System.EventHandler(this.noprefetch_CheckedChanged);
-            // 
             // nointro
             // 
             resources.ApplyResources(this.nointro, "nointro");
@@ -515,35 +499,6 @@
             this.sh_quality.Maximum = 4;
             this.sh_quality.Name = "sh_quality";
             this.sh_quality.Scroll += new System.EventHandler(this.sh_quality_ValueChanged);
-            // 
-            // tabPage2
-            // 
-            this.tabPage2.Controls.Add(this.propertyGrid1);
-            resources.ApplyResources(this.tabPage2, "tabPage2");
-            this.tabPage2.Name = "tabPage2";
-            this.tabPage2.UseVisualStyleBackColor = true;
-            // 
-            // propertyGrid1
-            // 
-            resources.ApplyResources(this.propertyGrid1, "propertyGrid1");
-            this.propertyGrid1.Name = "propertyGrid1";
-            this.propertyGrid1.PropertySort = System.Windows.Forms.PropertySort.Categorized;
-            this.propertyGrid1.ToolbarVisible = false;
-            this.propertyGrid1.PropertyValueChanged += new System.Windows.Forms.PropertyValueChangedEventHandler(this.propertyGrid1_PropertyValueChanged);
-            // 
-            // tabpage
-            // 
-            resources.ApplyResources(this.tabpage, "tabpage");
-            this.tabpage.Controls.Add(this.tabPage2);
-            this.tabpage.Controls.Add(this.tabPage5);
-            this.tabpage.Controls.Add(this.tabPage12);
-            this.tabpage.Controls.Add(this.tabPage3);
-            this.tabpage.Controls.Add(this.tabPage10);
-            this.tabpage.Controls.Add(this.tabPage1);
-            this.tabpage.Controls.Add(this.tabPage11);
-            this.tabpage.Name = "tabpage";
-            this.tabpage.SelectedIndex = 0;
-            this.tabpage.Selected += new System.Windows.Forms.TabControlEventHandler(this.tabpage_Selected);
             // 
             // tabPage5
             // 
@@ -567,118 +522,33 @@
             this.richTextBox2.Name = "richTextBox2";
             this.richTextBox2.ReadOnly = true;
             // 
-            // tabPage3
+            // tabPage2
             // 
-            this.tabPage3.Controls.Add(this.label9);
-            this.tabPage3.Controls.Add(this.progressBar2);
-            this.tabPage3.Controls.Add(this.button3);
-            this.tabPage3.Controls.Add(this.label1);
-            this.tabPage3.Controls.Add(this.label8);
-            this.tabPage3.Controls.Add(this.button2);
-            this.tabPage3.Controls.Add(this.label7);
-            this.tabPage3.Controls.Add(this.label6);
-            this.tabPage3.Controls.Add(this.button1);
-            this.tabPage3.Controls.Add(this.label4);
-            this.tabPage3.Controls.Add(this.richTextBox1);
-            resources.ApplyResources(this.tabPage3, "tabPage3");
-            this.tabPage3.Name = "tabPage3";
-            this.tabPage3.UseVisualStyleBackColor = true;
+            this.tabPage2.Controls.Add(this.propertyGrid1);
+            resources.ApplyResources(this.tabPage2, "tabPage2");
+            this.tabPage2.Name = "tabPage2";
+            this.tabPage2.UseVisualStyleBackColor = true;
             // 
-            // label9
+            // propertyGrid1
             // 
-            resources.ApplyResources(this.label9, "label9");
-            this.label9.ForeColor = System.Drawing.SystemColors.ActiveCaptionText;
-            this.label9.Name = "label9";
+            resources.ApplyResources(this.propertyGrid1, "propertyGrid1");
+            this.propertyGrid1.Name = "propertyGrid1";
+            this.propertyGrid1.PropertySort = System.Windows.Forms.PropertySort.Categorized;
+            this.propertyGrid1.ToolbarVisible = false;
+            this.propertyGrid1.PropertyValueChanged += new System.Windows.Forms.PropertyValueChangedEventHandler(this.propertyGrid1_PropertyValueChanged);
             // 
-            // progressBar2
+            // tabpage
             // 
-            resources.ApplyResources(this.progressBar2, "progressBar2");
-            this.progressBar2.Name = "progressBar2";
-            // 
-            // button3
-            // 
-            resources.ApplyResources(this.button3, "button3");
-            this.button3.Name = "button3";
-            this.button3.UseVisualStyleBackColor = true;
-            // 
-            // label1
-            // 
-            resources.ApplyResources(this.label1, "label1");
-            this.label1.Name = "label1";
-            // 
-            // label8
-            // 
-            resources.ApplyResources(this.label8, "label8");
-            this.label8.ForeColor = System.Drawing.Color.Red;
-            this.label8.Name = "label8";
-            // 
-            // button2
-            // 
-            resources.ApplyResources(this.button2, "button2");
-            this.button2.Name = "button2";
-            this.button2.UseVisualStyleBackColor = true;
-            this.button2.Click += new System.EventHandler(this.button2_Click);
-            // 
-            // label7
-            // 
-            resources.ApplyResources(this.label7, "label7");
-            this.label7.Name = "label7";
-            // 
-            // label6
-            // 
-            resources.ApplyResources(this.label6, "label6");
-            this.label6.Name = "label6";
-            // 
-            // button1
-            // 
-            resources.ApplyResources(this.button1, "button1");
-            this.button1.Name = "button1";
-            this.button1.UseVisualStyleBackColor = true;
-            this.button1.Click += new System.EventHandler(this.button1_Click);
-            // 
-            // label4
-            // 
-            resources.ApplyResources(this.label4, "label4");
-            this.label4.Name = "label4";
-            // 
-            // richTextBox1
-            // 
-            resources.ApplyResources(this.richTextBox1, "richTextBox1");
-            this.richTextBox1.Name = "richTextBox1";
-            // 
-            // RU
-            // 
-            resources.ApplyResources(this.RU, "RU");
-            this.RU.Name = "RU";
-            // 
-            // label2
-            // 
-            resources.ApplyResources(this.label2, "label2");
-            this.label2.Name = "label2";
-            // 
-            // label3
-            // 
-            resources.ApplyResources(this.label3, "label3");
-            this.label3.Name = "label3";
-            // 
-            // pictureBox_night
-            // 
-            resources.ApplyResources(this.pictureBox_night, "pictureBox_night");
-            this.pictureBox_night.BackColor = System.Drawing.Color.Black;
-            this.pictureBox_night.Name = "pictureBox_night";
-            this.pictureBox_night.TabStop = false;
-            // 
-            // pictureBox_day
-            // 
-            resources.ApplyResources(this.pictureBox_day, "pictureBox_day");
-            this.pictureBox_day.BackColor = System.Drawing.Color.Black;
-            this.pictureBox_day.Name = "pictureBox_day";
-            this.pictureBox_day.TabStop = false;
-            // 
-            // saveFileDialog1
-            // 
-            this.saveFileDialog1.AddExtension = false;
-            resources.ApplyResources(this.saveFileDialog1, "saveFileDialog1");
+            resources.ApplyResources(this.tabpage, "tabpage");
+            this.tabpage.Controls.Add(this.tabPage2);
+            this.tabpage.Controls.Add(this.tabPage5);
+            this.tabpage.Controls.Add(this.tabPage12);
+            this.tabpage.Controls.Add(this.tabPage10);
+            this.tabpage.Controls.Add(this.tabPage1);
+            this.tabpage.Controls.Add(this.tabPage11);
+            this.tabpage.Name = "tabpage";
+            this.tabpage.SelectedIndex = 0;
+            this.tabpage.Selected += new System.Windows.Forms.TabControlEventHandler(this.tabpage_Selected);
             // 
             // Form1
             // 
@@ -710,6 +580,8 @@
             this.tabPage8.PerformLayout();
             this.tabPage9.ResumeLayout(false);
             this.tabPage9.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox_night)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox_day)).EndInit();
             this.tabPage11.ResumeLayout(false);
             this.tabPage1.ResumeLayout(false);
             this.tabPage10.ResumeLayout(false);
@@ -721,13 +593,9 @@
             this.teni.ResumeLayout(false);
             this.teni.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.sh_quality)).EndInit();
+            this.tabPage5.ResumeLayout(false);
             this.tabPage2.ResumeLayout(false);
             this.tabpage.ResumeLayout(false);
-            this.tabPage5.ResumeLayout(false);
-            this.tabPage3.ResumeLayout(false);
-            this.tabPage3.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox_night)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox_day)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -766,6 +634,13 @@
         private System.Windows.Forms.RichTextBox text;
         private System.Windows.Forms.RichTextBox name;
         private System.Windows.Forms.Label Nickname;
+        private System.Windows.Forms.PictureBox lang_pic_ru;
+        private System.Windows.Forms.PictureBox lang_pic_en;
+        private System.Windows.Forms.PictureBox lang_pic_fr;
+        private System.Windows.Forms.Label RU;
+        private System.Windows.Forms.Label label2;
+        private System.Windows.Forms.Label label3;
+        private System.Windows.Forms.SaveFileDialog saveFileDialog1;
         private System.Windows.Forms.TabPage tabPage11;
         private System.Windows.Forms.RichTextBox team;
         private System.Windows.Forms.TabPage tabPage1;
@@ -777,41 +652,18 @@
         private System.Windows.Forms.ListView SavesList;
         private System.Windows.Forms.ColumnHeader columnHeader1;
         private System.Windows.Forms.ColumnHeader columnHeader2;
-        private System.Windows.Forms.CheckBox disasm;
         private System.Windows.Forms.GroupBox string_start;
         private System.Windows.Forms.Label start_string;
         private System.Windows.Forms.CheckBox noprefetch;
-        private System.Windows.Forms.CheckBox center_screen;
-        private System.Windows.Forms.CheckBox ss_tga;
         private System.Windows.Forms.CheckBox nointro;
-        private System.Windows.Forms.CheckBox dsound;
         private System.Windows.Forms.GroupBox teni;
         private System.Windows.Forms.TrackBar sh_quality;
+        private System.Windows.Forms.TabPage tabPage5;
+        private System.Windows.Forms.PropertyGrid propertyGrid2;
+        private System.Windows.Forms.RichTextBox richTextBox2;
         private System.Windows.Forms.TabPage tabPage2;
         private System.Windows.Forms.PropertyGrid propertyGrid1;
         private System.Windows.Forms.TabControl tabpage;
-        private System.Windows.Forms.PictureBox lang_pic_ru;
-        private System.Windows.Forms.PictureBox lang_pic_en;
-        private System.Windows.Forms.PictureBox lang_pic_fr;
-        private System.Windows.Forms.Label RU;
-        private System.Windows.Forms.Label label2;
-        private System.Windows.Forms.Label label3;
-        private System.Windows.Forms.TabPage tabPage3;
-        private System.Windows.Forms.Button button1;
-        private System.Windows.Forms.Label label4;
-        private System.Windows.Forms.RichTextBox richTextBox1;
-        private System.Windows.Forms.Label label7;
-        private System.Windows.Forms.Label label6;
-        private System.Windows.Forms.Button button2;
-        private System.Windows.Forms.Label label8;
-        private System.Windows.Forms.Label label1;
-        private System.Windows.Forms.Button button3;
-        private System.Windows.Forms.ProgressBar progressBar2;
-        private System.Windows.Forms.Label label9;
-        private System.Windows.Forms.SaveFileDialog saveFileDialog1;
-        private System.Windows.Forms.TabPage tabPage5;
-        private System.Windows.Forms.RichTextBox richTextBox2;
-        private System.Windows.Forms.PropertyGrid propertyGrid2;
         private System.Windows.Forms.Button button4;
     }
 }

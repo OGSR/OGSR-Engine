@@ -12,19 +12,6 @@ using System.IO;
 
 namespace Configurator
 {
-
-	enum E_PSI_ZONES
-	{
-        [LocalizedDescription("psyzones_disabled")]
-		Off,
-
-        [LocalizedDescription("psyzones_to_psyvybros")]
-		On_psi_vibros,
-
-        [LocalizedDescription("psyzones_to_vybros")]
-		On_vibros,
-	}
-
 	enum E_JUMP
 	{
 		[Description("стандартный")]
@@ -88,14 +75,6 @@ namespace Configurator
 			}
 		}
 
-   /*     [LocalizedDisplayName("dinamicheski_hud_name")]
-        [LocalizedDescription("dinamicheski_hud_desc")]
-        [LocalizedCategory("player")]*/
-        [GlobalizedProperty("dinamicheski_hud_name", Description = "dinamicheski_hud_desc", Category = "player")]
-		[TypeConverter(typeof(BooleanTypeConverter))]
-		[DefaultValue(false)]
-		public bool dinamicheski_hud { get; set; }
-
     /*    [LocalizedDisplayName("pnv_disabling_name")]
         [LocalizedDescription("pnv_disabling_desc")]
         [LocalizedCategory("player")]*/
@@ -104,23 +83,13 @@ namespace Configurator
         [DefaultValue(false)]
         public bool pnv_disabling { get; set; }
 
-   /*     [LocalizedDisplayName("pnv_autostart_name")]
-        [LocalizedDescription("pnv_autostart_desc")]
-        [LocalizedCategory("player")]*/
-        [GlobalizedProperty("pnv_autostart_name", Description = "pnv_autostart_desc", Category = "player")]
+       //KRodin: убрал, подумать, надо ли вообще.
+       /* [GlobalizedProperty("pnv_autostart_name", Description = "pnv_autostart_desc", Category = "player")]
         [TypeConverter(typeof(BooleanTypeConverter))]
         [DefaultValue(false)]
-        public bool pnv_autostart { get; set; }
+        public bool pnv_autostart { get; set; }*/
 
-   /*     [LocalizedDisplayName("zalyap_hud_name")]
-        [LocalizedDescription("zalyap_hud_desc")]
-        [LocalizedCategory("player")]*/
-        [GlobalizedProperty("zalyap_hud_name", Description = "zalyap_hud_desc", Category = "player")]
-		[TypeConverter(typeof(BooleanTypeConverter))]
-		[DefaultValue(false)]
-		public bool zalyap_hud { get; set; }
-
-        //[DisplayName("Прыжок")]
+         //[DisplayName("Прыжок")]
         //[Description("")]
         //[Category("Игрок")]
         //[TypeConverter(typeof(EnumTypeConverter))]
@@ -191,14 +160,6 @@ namespace Configurator
 
 		#region npc settings
 
-    /*    [LocalizedDisplayName("son_name")]
-        [LocalizedDescription("son_desc")]
-		[Category("NPC")]*/
-        [GlobalizedProperty("son_name", Description = "son_desc", Category = "NPC")]
-		[TypeConverter(typeof(BooleanTypeConverter))]
-		[DefaultValue(true)]
-		public bool son { get; set; }
-
      /*   [LocalizedDisplayName("dop_spawn_name")]
         [LocalizedDescription("dop_spawn_desc")]
 		[Category("NPC")]*/
@@ -206,29 +167,6 @@ namespace Configurator
 		[TypeConverter(typeof(BooleanTypeConverter))]
 		[DefaultValue(true)]
 		public bool dop_spawn { get; set; }
-
-		private int _period_resp_new = 2;
-   /*     [LocalizedDisplayName("period_resp_new_name")]
-        [LocalizedDescription("period_resp_new_desc")]
-		[Category("NPC")]*/
-        [GlobalizedProperty("period_resp_new_name", Description = "period_resp_new_desc", Category = "NPC")]
-		[DefaultValue(2)]
-		[TypeConverter(typeof(MyIntConverter))]
-		public int period_resp_new
-		{ 
-			get
-			{
-				return _period_resp_new;
-			}
-			set
-			{
-				if (value < 2)
-					value = 2;
-				else if (value > 24)
-					value = 24;
-				_period_resp_new = value;
-			}
-		}
 
 		private int _period_resp_old = 2;
      /*   [LocalizedDisplayName("period_resp_old_name")]
@@ -250,29 +188,6 @@ namespace Configurator
 				else if (value > 24)
 					value = 24;
 				_period_resp_old = value;
-			}
-		}
-
-		private int _mnog_resp = 1;
-    /*    [LocalizedDisplayName("mnog_resp_name")]
-        [LocalizedDescription("")]
-		[Category("NPC")]*/
-        [GlobalizedProperty("mnog_resp_name", Description = "", Category = "NPC")]
-		[DefaultValue(1)]
-		[TypeConverter(typeof(MyIntConverter))]
-		public int mnog_resp
-		{
-			get
-			{
-				return _mnog_resp;
-			}
-			set
-			{
-				if (value < 1)
-					value = 1;
-				else if (value > 5)
-					value = 5;
-				_mnog_resp = value;
 			}
 		}
 
@@ -350,30 +265,6 @@ namespace Configurator
 				_chastota_news = value;
 			}
 		}
-
-    /*    [LocalizedDisplayName("psy_surges_name")]
-        [LocalizedDescription("psy_surges_desc")]
-        [LocalizedCategory("world_settings")]*/
-        [GlobalizedProperty("psy_surges_name", Description = "psy_surges_desc", Category = "world_settings")]
-		[TypeConverter(typeof(BooleanTypeConverter))]
-		[DefaultValue(true)]
-		public bool psi_vibros { get; set; }
-
-   /*     [LocalizedDisplayName("psyzones_name")]
-        [LocalizedDescription("psyzones_desc")]
-        [LocalizedCategory("world_settings")]*/
-        [GlobalizedProperty("psyzones_name", Description = "psyzones_desc", Category = "world_settings")]
-		[TypeConverter(typeof(EnumTypeConverter))]
-		[DefaultValue(E_PSI_ZONES.On_vibros)]
-		public E_PSI_ZONES psi_zones { get; set; }
-
-   /*     [LocalizedDisplayName("offline_alife_name")]
-        [LocalizedDescription("offline_alife_desc")]
-        [LocalizedCategory("world_settings")]*/
-        [GlobalizedProperty("offline_alife_name", Description = "offline_alife_desc", Category = "world_settings")]
-		[TypeConverter(typeof(BooleanTypeConverter))]
-		[DefaultValue(false)]
-		public bool offline_alife { get; set; }
 
 		private int _tajmer_chaes = 15;
    /*     [LocalizedDisplayName("chaes_timer_name")]
@@ -460,31 +351,6 @@ namespace Configurator
         [DefaultValue(E_WEATHER.Default)]
         public E_WEATHER weather_type { get; set; }
 
-        [GlobalizedProperty("ambient_music_name", Description = "ambient_music_desc", Category = "world_settings")]
-        [TypeConverter(typeof(BooleanTypeConverter))]
-        [DefaultValue(false)]
-        public bool ambient_music
-        {
-            get
-            {
-                return File.Exists(Environment.CurrentDirectory + "\\gamedata\\config\\game_maps_single.ltx");
-            }
-            set
-            {
-                if (Directory.Exists(Environment.CurrentDirectory + "\\gamedata\\config"))
-                {
-                    if (value)
-                    {
-                        File.Copy(Environment.CurrentDirectory + "\\gamedata\\config\\game_maps_single.mus", Environment.CurrentDirectory + "\\gamedata\\config\\game_maps_single.ltx");
-                    }
-                    else
-                    {
-                        File.Delete(Environment.CurrentDirectory + "\\gamedata\\config\\game_maps_single.ltx");
-                    }
-                }
-            }
-        }
-
     /*    [LocalizedDisplayName("stashes_name")]
         [LocalizedDescription("stashes_desc")]
         [LocalizedCategory("stashes_settings")]*/
@@ -547,11 +413,9 @@ namespace Configurator
 			{
 				#region numeric
 				cfg.ves = (int)GetDecimalFromIni("inventory", "max_weight", Data.RootAppPath);
-				cfg.mnog_resp = (int)GetDecimalFromIni("options", "resp_index", Data.RootAppPath);
 				cfg.verojatnost_tajnik = (int)(100 - GetDecimalFromIni("options", "treasure_dropout", Data.RootAppPath));
 				cfg.chastota_news = (int)GetDecimalFromIni("options", "random_news_delta", Data.RootAppPath);
 				cfg.period_vibros = (int)GetDecimalFromIni("options", "t_surge", Data.RootAppPath);
-				cfg.period_resp_new = (int)GetDecimalFromIni("options", "t_spawn", Data.RootAppPath);
 				cfg.period_resp_old = (int)GetDecimalFromIni("options", "t_common", Data.RootAppPath);
 				cfg.tajmer_chaes = (int)GetDecimalFromIni("options", "aes_timer", Data.RootAppPath);
 				cfg.time_factor = (int)GetDecimalFromIni("options", "s_time_factor", Data.RootAppPath);
@@ -564,36 +428,17 @@ namespace Configurator
 
 				cfg.sluchajnie_tajniki = SetCheckboxValueFromIni("options", "option_random_treasure");
 				cfg.otobr_soderj_tajnikov = SetCheckboxValueFromIni("options", "treasure_need_text");
-				cfg.son = SetCheckboxValueFromIni("options", "npc_sleep");
 				cfg.dinamic_news = SetCheckboxValueFromIni("options", "random_news");
 				cfg.dop_spawn = SetCheckboxValueFromIni("options", "additional_spawn");
-				cfg.psi_vibros = SetCheckboxValueFromIni("options", "horror_flag");
-				cfg.dinamicheski_hud = SetCheckboxValueFromIni("options", "suithud_enable");
-				cfg.zalyap_hud = SetCheckboxValueFromIni("options", "blood_enable");
 				cfg.plohoe_samochustv = SetCheckboxValueFromIni("options", "bleed_enable");
                 cfg.ammo_on_belt = SetCheckboxValueFromIni("options", "ammunition_on_belt");
                 cfg.poboch_lek = SetCheckboxValueFromIni("options", "poison_drugs");
 				cfg.medlen_lek = SetCheckboxValueFromIni("options", "slow_drugs");
-				cfg.offline_alife = SetCheckboxValueFromIni("options", "offline_alife");
                 cfg.pnv_disabling = SetCheckboxValueFromIni("wpn_addon_setup", "cheat_nv_block");
-                cfg.pnv_autostart = SetCheckboxValueFromIni("wpn_addon_setup", "cheat_nv_scope_autoenable");
+                //cfg.pnv_autostart = SetCheckboxValueFromIni("wpn_addon_setup", "cheat_nv_scope_autoenable");
 				#endregion
 
-				int value = GetIntValueFromIni("options", "psyzones_flag");
-				switch(value)
-				{
-					case 1:
-						cfg.psi_zones = E_PSI_ZONES.On_psi_vibros;
-						break;
-					case 2:
-						cfg.psi_zones = E_PSI_ZONES.On_vibros;
-						break;
-					default:
-						cfg.psi_zones = E_PSI_ZONES.Off;
-						break;
-				}
-
-                value = GetIntValueFromIni("options", "weather_type");
+				int value = GetIntValueFromIni("options", "weather_type");
                 switch (value)
                 {
                     case 1:
@@ -650,11 +495,9 @@ namespace Configurator
 			#region numeric
 			Utils.INI.WritePrivateProfileString("inventory", "max_weight", ConvertDecimalToString(cfg.ves), Data.RootAppPath);
 			Utils.INI.WritePrivateProfileString("actor_condition", "max_walk_weight", ConvertDecimalToString(cfg.ves + 10), actorLtx);
-			Utils.INI.WritePrivateProfileString("options", "resp_index", ConvertDecimalToString(cfg.mnog_resp), Data.RootAppPath);
 			Utils.INI.WritePrivateProfileString("options", "treasure_dropout", ConvertDecimalToString(100 - cfg.verojatnost_tajnik), Data.RootAppPath);
 			Utils.INI.WritePrivateProfileString("options", "random_news_delta", ConvertDecimalToString(cfg.chastota_news), Data.RootAppPath);
 			Utils.INI.WritePrivateProfileString("options", "t_surge", ConvertDecimalToString(cfg.period_vibros), Data.RootAppPath);
-			Utils.INI.WritePrivateProfileString("options", "t_spawn", ConvertDecimalToString(cfg.period_resp_new), Data.RootAppPath);
 			Utils.INI.WritePrivateProfileString("options", "t_common", ConvertDecimalToString(cfg.period_resp_old), Data.RootAppPath);
 			Utils.INI.WritePrivateProfileString("options", "aes_timer", ConvertDecimalToString(cfg.tajmer_chaes), Data.RootAppPath);
 			Utils.INI.WritePrivateProfileString("options", "s_time_factor", ConvertDecimalToString(cfg.time_factor), Data.RootAppPath);
@@ -668,39 +511,16 @@ namespace Configurator
 
 			WriteCheckboxValueToIni(cfg.sluchajnie_tajniki, "options", "option_random_treasure");
 			WriteCheckboxValueToIni(cfg.otobr_soderj_tajnikov, "options", "treasure_need_text");
-			WriteCheckboxValueToIni(cfg.son, "options", "npc_sleep");
 			WriteCheckboxValueToIni(cfg.dinamic_news, "options", "random_news");
 			WriteCheckboxValueToIni(cfg.dop_spawn, "options", "additional_spawn");
-			WriteCheckboxValueToIni(cfg.psi_vibros, "options", "horror_flag");
-			WriteCheckboxValueToIni(cfg.zalyap_hud, "options", "blood_enable");
 			WriteCheckboxValueToIni(cfg.plohoe_samochustv, "options", "bleed_enable");
             WriteCheckboxValueToIni(cfg.ammo_on_belt, "options", "ammunition_on_belt");
             WriteCheckboxValueToIni(cfg.poboch_lek, "options", "poison_drugs");
 			WriteCheckboxValueToIni(cfg.medlen_lek, "options", "slow_drugs");
             WriteBoolValueToIni(cfg.pnv_disabling, "wpn_addon_setup", "cheat_nv_block");
-            WriteBoolValueToIni(cfg.pnv_autostart, "wpn_addon_setup", "cheat_nv_scope_autoenable");
-
-			if (cfg.dinamicheski_hud == false)
-			{
-				Utils.INI.WritePrivateProfileString("options", "suithud_enable", "0", Data.RootAppPath);
-				Utils.INI.WritePrivateProfileString("options", "blurs_enable", "0", Data.RootAppPath);
-			}
-			else
-			{
-				Utils.INI.WritePrivateProfileString("options", "suithud_enable", "1", Data.RootAppPath);
-				Utils.INI.WritePrivateProfileString("options", "blurs_enable", "1", Data.RootAppPath);
-			}
+           // WriteBoolValueToIni(cfg.pnv_autostart, "wpn_addon_setup", "cheat_nv_scope_autoenable");
 
 			string value = "0";
-			if (cfg.psi_zones == E_PSI_ZONES.On_psi_vibros)
-				value = "1";
-			else if (cfg.psi_zones == E_PSI_ZONES.On_vibros)
-				value = "2";
-			else
-				value = "0";
-			Utils.INI.WritePrivateProfileString("options", "psyzones_flag", value, Data.RootAppPath);
-            
-            value = "0";
             if (cfg.weather_type == E_WEATHER.Bright)
                 value = "1";
             else if (cfg.weather_type == E_WEATHER.Rainy)
@@ -717,8 +537,6 @@ namespace Configurator
 			else
 				value = "0";
 			Utils.INI.WritePrivateProfileString("options", "oh_shit_im_hit", value, Data.RootAppPath);
-
-			WriteCheckboxValueToIni(cfg.offline_alife, "options", "offline_alife");
 
 			#endregion
 

@@ -5984,9 +5984,6 @@
   <data name="button1.Text" xml:space="preserve">
     <value>Check updates</value>
   </data>
-  <data name="button2.Text" xml:space="preserve">
-    <value>Download patch</value>
-  </data>
   <data name="button3.Text" xml:space="preserve">
     <value>Install patch</value>
   </data>

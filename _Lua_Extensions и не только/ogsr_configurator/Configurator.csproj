@@ -25,9 +25,9 @@
     <UpdatePeriodically>false</UpdatePeriodically>
     <UpdateRequired>false</UpdateRequired>
     <MapFileExtensions>true</MapFileExtensions>
-    <SupportUrl>http://ogse.ru</SupportUrl>
-    <ProductName>Configurator OGSE</ProductName>
-    <PublisherName>OGSE Team</PublisherName>
+    <SupportUrl>https://github.com/KRodinn/OGSR-Engine</SupportUrl>
+    <ProductName>OGSR configurator</ProductName>
+    <PublisherName>KRodin</PublisherName>
     <ApplicationRevision>6</ApplicationRevision>
     <ApplicationVersion>0.5.3.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
@@ -170,7 +170,6 @@
     <None Include="app.config">
       <SubType>Designer</SubType>
     </None>
-    <None Include="backup\ogse_config_orig.ltx" />
     <None Include="Properties\app.manifest" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
@@ -216,13 +215,13 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>if Release == $(ConfigurationName) (
-xcopy "$(TargetPath)" "X:\ogsr_package\READY\" /y/i 
-xcopy "$(TargetPath).config" "X:\ogsr_package\READY\" /y/i
-xcopy "$(TargetDir)\ru-RU\$(TargetName).resources.dll" "X:\ogsr_package\READY\localization\ru-RU\" /y/i
-xcopy "$(TargetDir)\en-US\$(TargetName).resources.dll" "X:\ogsr_package\READY\localization\en-US\" /y/i
-xcopy "$(TargetDir)\fr-FR\$(TargetName).resources.dll" "X:\ogsr_package\READY\localization\fr-FR\" /y/i) 
-</PostBuildEvent>
+    <PostBuildEvent>
+		xcopy "$(TargetPath)" "..\..\!READY\" /y/i 
+		xcopy "$(TargetPath).config" "..\..\!READY\" /y/i
+		xcopy "$(TargetDir)\ru-RU\$(TargetName).resources.dll" "..\..\!READY\localization\ru-RU\" /y/i
+		xcopy "$(TargetDir)\en-US\$(TargetName).resources.dll" "..\..\!READY\localization\en-US\" /y/i
+		xcopy "$(TargetDir)\fr-FR\$(TargetName).resources.dll" "..\..\!READY\localization\fr-FR\" /y/i
+	</PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it.
        Other similar extension points exist, see Microsoft.Common.targets.

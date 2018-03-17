@@ -281,9 +281,6 @@
   <data name="label8.Text" xml:space="preserve">
     <value>Pas de mise-à-jour</value>
   </data>
-  <data name="button2.Text" xml:space="preserve">
-    <value>Télécharger le patch</value>
-  </data>
   <data name="button1.Text" xml:space="preserve">
     <value>Vérifier les mises-à-jour</value>
   </data>

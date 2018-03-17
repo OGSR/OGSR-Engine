@@ -7,11 +7,11 @@ using System.Resources;
 // набора атрибутов. Измените значения этих атрибутов, чтобы изменить сведения,
 // связанные со сборкой.
 [assembly: AssemblyTitle("Configurator")]
-[assembly: AssemblyDescription("OGSE 0.6.9.3 Configurator")]
+[assembly: AssemblyDescription("OGSR configurator")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("OGSE")]
+[assembly: AssemblyCompany("OGSR")]
 [assembly: AssemblyProduct("Configurator")]
-[assembly: AssemblyCopyright("Skarm & K.D.")]
+[assembly: AssemblyCopyright("Skarm & K.D. & KRodin")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
