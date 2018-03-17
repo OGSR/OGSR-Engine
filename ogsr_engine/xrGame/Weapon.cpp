@@ -456,6 +456,7 @@ void CWeapon::LoadZoomOffset(LPCSTR section, LPCSTR prefix)
 	string256 full_name;
 	if (
 		is_second_zoom_offset_enabled //Если включен режим второго прицеливания
+		&& !READ_IF_EXISTS(pSettings, r_bool, *cNameSect(), "disable_second_scope", false) //И второй прицел не запрещён (нужно для поддержки замороченной системы ogse_addons)
 		&& pSettings->line_exist(hud_sect, strconcat(sizeof(full_name), full_name, "second_", prefix, "zoom_offset")) //И в секциии худа есть настройки для второго режима прицеливания
 		&& pSettings->line_exist(hud_sect, strconcat(sizeof(full_name), full_name, "second_", prefix, "zoom_rotate_x"))
 		&& pSettings->line_exist(hud_sect, strconcat(sizeof(full_name), full_name, "second_", prefix, "zoom_rotate_y"))
