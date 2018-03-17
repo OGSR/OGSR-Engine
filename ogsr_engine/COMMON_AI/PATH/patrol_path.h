@@ -12,6 +12,7 @@
 #include "patrol_point.h"
 
 class CPatrolPath : public CGraphAbstractSerialize<CPatrolPoint,float,u32> {
+  friend class CPatrolPathScript;
 private:
 	struct CAlwaysTrueEvaluator {
 		IC	bool	operator()	(const Fvector &position) const
@@ -36,6 +37,8 @@ public:
 	template <typename T>
 	IC		const CVertex	*point			(const Fvector &position, const T &evaluator) const;
 	IC		const CVertex	*point			(const Fvector &position) const;
+	CPatrolPoint add_point( Fvector );
+	CPatrolPoint point( u32 );
 
 #ifdef DEBUG
 public:

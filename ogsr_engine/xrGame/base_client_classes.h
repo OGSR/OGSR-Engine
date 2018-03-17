@@ -25,6 +25,8 @@ class CBlend;
 class CKinematics;
 class CKinematicsAnimated;
 class CAnomalyDetector;
+class CPatrolPoint;
+class CPatrolPath;
 
 typedef class_exporter<DLL_Pure>	DLL_PureScript;
 add_to_type_list(DLL_PureScript)
@@ -97,3 +99,24 @@ typedef class_exporter<CAnomalyDetector> CAnomalyDetectorScript;
 add_to_type_list(CAnomalyDetectorScript)
 #undef script_type_list
 #define script_type_list save_type_list(CAnomalyDetectorScript)
+
+
+class CPatrolPointScript {
+public:
+  static LPCSTR getName( CPatrolPoint* );
+  static void   setName( CPatrolPoint*, LPCSTR );
+  DECLARE_SCRIPT_REGISTER_FUNCTION
+};
+
+add_to_type_list( CPatrolPointScript )
+#undef script_type_list
+#define script_type_list save_type_list( CPatrolPointScript )
+
+
+class CPatrolPathScript {
+  DECLARE_SCRIPT_REGISTER_FUNCTION
+};
+
+add_to_type_list( CPatrolPathScript )
+#undef script_type_list
+#define script_type_list save_type_list( CPatrolPathScript )
