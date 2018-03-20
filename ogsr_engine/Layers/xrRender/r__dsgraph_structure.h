@@ -45,6 +45,7 @@ public:
 	R_dsgraph::mapSorted_T										mapWmark;			// sorted
 	R_dsgraph::mapSorted_T										mapEmissive;
 	R_dsgraph::mapHUD_T											mapHUDEmissive;
+	
 	R_dsgraph::mapHUD_T											mapHUDSorted;
 #endif
 

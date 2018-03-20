@@ -180,6 +180,7 @@
     <ClInclude Include="..\COMMON\std_classes.h" />
     <ClInclude Include="..\xrParticles\psystem.h" />
     <ClInclude Include="r2_shader_exports.h" />
+    <ClInclude Include="ShadersExternalData.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="trivial_encryptor.h" />
     <ClInclude Include="vismask.h" />

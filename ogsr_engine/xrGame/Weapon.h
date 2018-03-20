@@ -247,6 +247,7 @@ protected:
 	//от 0 до 1, показывает насколько процентов
 	//мы перемещаем HUD  
 	float			m_fZoomRotationFactor;
+	float m_fSecondVP_FovFactor; //модификатор изменения FOV во втором вьюпорте при зуме
 	bool			m_bHideCrosshairInZoom;
 public:
 
@@ -505,6 +506,10 @@ public:
 	//
 	bool is_second_zoom_offset_enabled = false;
 	void UpdateZoomOffset();
+	//
+	void UpdateSecondVP(); //
+	float GetZRotatingFactor() const { return m_fZoomRotationFactor; }    //--#SM+#--
+	float GetSecondVP_FovFactor() const { return m_fSecondVP_FovFactor; } //--#SM+#--
 	void SwitchScope();
 };
 
