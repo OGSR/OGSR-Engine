@@ -46,8 +46,7 @@ public:
 	R_dsgraph::mapSorted_T										mapEmissive;
 	R_dsgraph::mapHUD_T											mapHUDEmissive;
 	
-	//R_dsgraph::mapHUD_T											mapHUDSorted;
-	R_dsgraph::mapSorted_T										mapHUDSorted; //??? Вернуть как было?
+	R_dsgraph::mapHUD_T											mapHUDSorted;
 #endif
 
 	// Runtime structures 

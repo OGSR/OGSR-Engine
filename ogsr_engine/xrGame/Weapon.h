@@ -506,14 +506,11 @@ public:
 	//
 	bool is_second_zoom_offset_enabled = false;
 	void UpdateZoomOffset();
-<<<<<<< HEAD
 	//
 	void UpdateSecondVP(); //
 	float GetZRotatingFactor() const { return m_fZoomRotationFactor; }    //--#SM+#--
 	float GetSecondVP_FovFactor() const { return m_fSecondVP_FovFactor; } //--#SM+#--
-=======
 	void SwitchScope();
->>>>>>> refs/remotes/origin/main
 };
 
 extern float default_fov;// = 67.5f;

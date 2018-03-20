@@ -1859,5 +1859,8 @@ void CWeapon::UpdateSecondVP()
 	bool bCond_2 = /*m_zoom_params.*/m_fSecondVP_FovFactor > 0.0f;     // В конфиге должен быть прописан фактор зума (scope_lense_fov_factor) больше чем 0
 	//bool bCond_3 = pActor->cam_Active() == pActor->cam_FirstEye(); // Мы должны быть от 1-го лица
 
-	Device.m_SecondViewport.SetSVPActive(/*bCond_1 &&*/ bCond_2 /*&& bCond_3*/);
+	if (bCond_1)
+		Msg("--Viewport active");
+
+	Device.m_SecondViewport.SetSVPActive(bCond_1 /*&& bCond_2*&& bCond_3*/);
 }
