@@ -883,6 +883,15 @@ void CWeapon::UpdateCL		()
 
 void CWeapon::renderable_Render		()
 {
+	//KRodin: чтоб ствол в руках актора не был виден внутри прицела. Громоздко, да. Но по быстрому ничего другого в голову не пришло.
+	if (Device.m_SecondViewport.IsSVPFrame())
+		if (auto O = H_Parent())
+			if (auto EA = smart_cast<CEntityAlive*>(O))
+				if (auto pActor = EA->cast_actor())
+					if (auto inv_owner = EA->cast_inventory_owner())
+						if (inv_owner->m_inventory->ActiveItem() == this)
+							return;
+	//
 	UpdateXForm				();
 
 	//нарисовать подсветку
@@ -1848,19 +1857,18 @@ void CWeapon::UpdateSecondVP()
 	if (!EA)
 		return;
 	CActor* pActor = EA->cast_actor();
+	if (!pActor)
+		return;
+	CInventoryOwner* inv_owner = EA->cast_inventory_owner();
 
-	//auto inv_owner = EA->cast_inventory_owner();
+	bool b_is_active_item = inv_owner && (inv_owner->m_inventory->ActiveItem() == this);
+	R_ASSERT(b_is_active_item); // Эта функция должна вызываться только для оружия в руках нашего игрока
 
-	//bool b_is_active_item = inv_owner && (inv_owner->ActiveItem() == this); //KRodin: тут надо получать инвентарь актора. Потом доделать!
-	//R_ASSERT(pActor && b_is_active_item); // Эта функция должна вызываться только для оружия в руках нашего игрока
+	bool bCond_1 = m_fZoomRotationFactor > 0.05f;    // Мы должны целиться
+	bool bCond_2 = m_fSecondVP_FovFactor > 0.0f;     // В конфиге должен быть прописан фактор зума (scope_lense_fov_factor) больше чем 0
+	bool bCond_3 = pActor->cam_Active() == pActor->cam_FirstEye(); // Мы должны быть от 1-го лица
+	auto wpn_w_gl = smart_cast<CWeaponMagazinedWGrenade*>(this);
+	bool bCond_4 = ( !wpn_w_gl || !wpn_w_gl->m_bGrenadeMode );     // Мы не должны быть в режиме подствольника
 
-
-	bool bCond_1 = /*m_zoom_params.*/m_fZoomRotationFactor > 0.05f;    // Мы должны целиться
-	bool bCond_2 = /*m_zoom_params.*/m_fSecondVP_FovFactor > 0.0f;     // В конфиге должен быть прописан фактор зума (scope_lense_fov_factor) больше чем 0
-	//bool bCond_3 = pActor->cam_Active() == pActor->cam_FirstEye(); // Мы должны быть от 1-го лица
-
-	if (bCond_1)
-		Msg("--Viewport active");
-
-	Device.m_SecondViewport.SetSVPActive(bCond_1 /*&& bCond_2*&& bCond_3*/);
+	Device.m_SecondViewport.SetSVPActive(bCond_1 && bCond_2 && bCond_3 && bCond_4);
 }
