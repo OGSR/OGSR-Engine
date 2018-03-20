@@ -240,6 +240,8 @@ protected:
 	float			m_fIronSightZoomFactor;
 	//коэффициент увеличения прицела
 	float			m_fScopeZoomFactor;
+	//коэффициент увеличения второго прицела
+	float			m_fSecondScopeZoomFactor;
 	//когда режим приближения включен
 	bool			m_bZoomMode;
 	//от 0 до 1, показывает насколько процентов
@@ -504,10 +506,14 @@ public:
 	//
 	bool is_second_zoom_offset_enabled = false;
 	void UpdateZoomOffset();
+<<<<<<< HEAD
 	//
 	void UpdateSecondVP(); //
 	float GetZRotatingFactor() const { return m_fZoomRotationFactor; }    //--#SM+#--
 	float GetSecondVP_FovFactor() const { return m_fSecondVP_FovFactor; } //--#SM+#--
+=======
+	void SwitchScope();
+>>>>>>> refs/remotes/origin/main
 };
 
 extern float default_fov;// = 67.5f;

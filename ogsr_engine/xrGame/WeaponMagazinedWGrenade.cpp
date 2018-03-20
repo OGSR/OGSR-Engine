@@ -617,17 +617,12 @@ bool CWeaponMagazinedWGrenade::UseScopeTexture()
 	return inherited::UseScopeTexture();
 }
 
-//float default_fov = 67.5f;
-float	CWeaponMagazinedWGrenade::CurrentZoomFactor	()
+float CWeaponMagazinedWGrenade::CurrentZoomFactor()
 {
-	float zf = 1.0f;
 	if (IsGrenadeLauncherAttached() && m_bGrenadeMode) 
-		zf = m_fIronSightZoomFactor;
+		return m_fIronSightZoomFactor;
 	else
-		zf = inherited::CurrentZoomFactor();
-
-//	zf /= (g_fov / default_fov);
-	return zf;
+		return inherited::CurrentZoomFactor();
 }
 
 //виртуальные функции для проигрывания анимации HUD

@@ -1,0 +1,480 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="actor_hit_all" xml:space="preserve">
+    <value>Camera shakes and flashes</value>
+  </data>
+  <data name="actor_hit_camera" xml:space="preserve">
+    <value>Camera shakes</value>
+  </data>
+  <data name="actor_hit_disabled" xml:space="preserve">
+    <value>Disabled</value>
+  </data>
+  <data name="ambient_music_desc" xml:space="preserve">
+    <value>This option enables ambient music in the game. Music varies from one location to another.</value>
+  </data>
+  <data name="ambient_music_name" xml:space="preserve">
+    <value>Ambient music</value>
+  </data>
+  <data name="ammo_on_belt_desc" xml:space="preserve">
+    <value>When enabled this option disables using ammunition for guns from ruck. Place packs with bullets on belt instead</value>
+  </data>
+  <data name="ammo_on_belt_name" xml:space="preserve">
+    <value>Ammo on belt</value>
+  </data>
+  <data name="CANT_FIND_FILE" xml:space="preserve">
+    <value>Can't find the file</value>
+  </data>
+  <data name="chaes_timer_name" xml:space="preserve">
+    <value>CNPP surge timer, min</value>
+  </data>
+  <data name="chrom_aberr_desc" xml:space="preserve">
+    <value>This option enables chromatic aberration effect (light dispersion due to lens defects).</value>
+  </data>
+  <data name="chrom_aberr_name" xml:space="preserve">
+    <value>Chromatic aberration effect</value>
+  </data>
+  <data name="ddof_gain_desc" xml:space="preserve">
+    <value>Gain of brightness of blurred pixels while dynamic depth of field is enabled. Bigger values result in nice blur of light sources, but also can overbright the sky at some weather presets. Can be changed from 1 to 4.</value>
+  </data>
+  <data name="ddof_gain_name" xml:space="preserve">
+    <value>DDOF gain</value>
+  </data>
+  <data name="dinamicheski_hud_desc" xml:space="preserve">
+    <value>This option toggles visibility of the gas mask or the outfit mask and also shows the dynamic effects such as blood stains and glass fractures depending on the condition of the mask.</value>
+  </data>
+  <data name="dinamicheski_hud_name" xml:space="preserve">
+    <value>Dynamic hud</value>
+  </data>
+  <data name="dof" xml:space="preserve">
+    <value>Depth of field</value>
+  </data>
+  <data name="dop_spawn_desc" xml:space="preserve">
+    <value>This option controls additional periodical spawn of stalkers and monsters in random places. It can really change the whole game, and some storyline situations will become unpredictable.</value>
+  </data>
+  <data name="dop_spawn_name" xml:space="preserve">
+    <value>Enable add. spawn after surges</value>
+  </data>
+  <data name="dynamic_news" xml:space="preserve">
+    <value>Dynamic news</value>
+  </data>
+  <data name="dynamic_news_desc" xml:space="preserve">
+    <value>This option enables dynamic in-game news about NPCs' death.</value>
+  </data>
+  <data name="eng" xml:space="preserve">
+    <value>English</value>
+  </data>
+  <data name="exo_prob_desc" xml:space="preserve">
+    <value>Probability of finding an exoskeleton armor in a stalker's inventory after his death. Can be changed in the range of 1 to 15. </value>
+  </data>
+  <data name="exo_prob_name" xml:space="preserve">
+    <value>Exo drop probability</value>
+  </data>
+  <data name="fov_volume_desc" xml:space="preserve">
+    <value>Must be within the range of 5 to 140.</value>
+  </data>
+  <data name="fov_volume_name" xml:space="preserve">
+    <value>FOV (field of view)</value>
+  </data>
+  <data name="hbao_int_desc" xml:space="preserve">
+    <value>Intensity of Horizon-Based Ambient Occlusion. Can be changed from 0 to 100.</value>
+  </data>
+  <data name="hbao_int_name" xml:space="preserve">
+    <value>HBAO intensity</value>
+  </data>
+  <data name="indirect_bounce_desc" xml:space="preserve">
+    <value>Some sort of secondary lighting imitation for SSDO. Reduces the FPS, but ambient occlusion shadows look better.</value>
+  </data>
+  <data name="indirect_bounce_name" xml:space="preserve">
+    <value>Indirect bounces for SSDO</value>
+  </data>
+  <data name="long_flare_desc" xml:space="preserve">
+    <value>This option enables long horizontal flare on various lamps.</value>
+  </data>
+  <data name="long_flare_name" xml:space="preserve">
+    <value>Long flare</value>
+  </data>
+  <data name="medlen_lek_desc" xml:space="preserve">
+    <value>This option enables slow healing after the use of medkits, making the game more realistic.</value>
+  </data>
+  <data name="medlen_lek_name" xml:space="preserve">
+    <value>Slow healing from medkits</value>
+  </data>
+  <data name="mnog_resp_name" xml:space="preserve">
+    <value>Respawn multiplier</value>
+  </data>
+  <data name="moonroad_desc" xml:space="preserve">
+    <value>This option enables the reflection of sun or moon lights on water surfaces — the so called "moonroad".</value>
+  </data>
+  <data name="moonroad_name" xml:space="preserve">
+    <value>Moonroad</value>
+  </data>
+  <data name="news_freq_desc" xml:space="preserve">
+    <value>This is a coefficient for the frequency of dynamic news - less values result in more frequent messages.</value>
+  </data>
+  <data name="news_freq_name" xml:space="preserve">
+    <value>News frequency</value>
+  </data>
+  <data name="no_internet" xml:space="preserve">
+    <value>Can't connect to server. Check your internet connection.</value>
+  </data>
+  <data name="NO_LOCALE" xml:space="preserve">
+    <value>Can't find OGSE localization file</value>
+  </data>
+  <data name="no_update" xml:space="preserve">
+    <value>No updates</value>
+  </data>
+  <data name="NPC" xml:space="preserve">
+    <value>NPC</value>
+  </data>
+  <data name="off" xml:space="preserve">
+    <value>Off</value>
+  </data>
+  <data name="offline_alife_desc" xml:space="preserve">
+    <value>This option enables NPC offline simulation mode. They will fight with each other and monsters, gather items and weapons. Offline events will be described in the dynamic news.</value>
+  </data>
+  <data name="offline_alife_name" xml:space="preserve">
+    <value>Offline alife</value>
+  </data>
+  <data name="on" xml:space="preserve">
+    <value>On</value>
+  </data>
+  <data name="patch_downloaded" xml:space="preserve">
+    <value>Patch downloaded!</value>
+  </data>
+  <data name="period_resp_new_desc" xml:space="preserve">
+    <value>Respawn period of new OGSE monsters (in game hours). Can differ slightly from the chosen value (one or two hours).</value>
+  </data>
+  <data name="period_resp_new_name" xml:space="preserve">
+    <value>Respawn period of new NPCs</value>
+  </data>
+  <data name="period_resp_old_desc" xml:space="preserve">
+    <value>Respawn period of standard stalkers and monsters (in game hours). If set to 0, then the respawn will occur immediately after sufficient free places are available.</value>
+  </data>
+  <data name="period_resp_old_name" xml:space="preserve">
+    <value>Respawn period of standart NPCs</value>
+  </data>
+  <data name="player" xml:space="preserve">
+    <value>Player</value>
+  </data>
+  <data name="plohoe_samochustv_desc" xml:space="preserve">
+    <value>This option toggles camera effects depending on the medical condition of the actor.</value>
+  </data>
+  <data name="plohoe_samochustv_name" xml:space="preserve">
+    <value>«Feeling bad» effects</value>
+  </data>
+  <data name="pnv_autostart_desc" xml:space="preserve">
+    <value>Automatic use of scope's built-in night vision function.</value>
+  </data>
+  <data name="pnv_autostart_name" xml:space="preserve">
+    <value>NVD: autostart with scope</value>
+  </data>
+  <data name="pnv_disabling_desc" xml:space="preserve">
+    <value>This option controls disabling night vision while aiming through certain scopes or when using binoculars. Does not affect night vision binoculars and scopes.</value>
+  </data>
+  <data name="pnv_disabling_name" xml:space="preserve">
+    <value>NVD: disable while aiming</value>
+  </data>
+  <data name="poboch_lek_desc" xml:space="preserve">
+    <value>This option controls side effects of drugs in case of overdose.</value>
+  </data>
+  <data name="poboch_lek_name" xml:space="preserve">
+    <value>Drugs' side effects</value>
+  </data>
+  <data name="popadanie_po_ger_desc" xml:space="preserve">
+    <value />
+  </data>
+  <data name="popadanie_po_ger_name" xml:space="preserve">
+    <value>Hit / impact effects</value>
+  </data>
+  <data name="psyzones_desc" xml:space="preserve">
+    <value>This option controls psy-zones spawn, if it updates after psy- or regular surges, or becomes completely disabled.</value>
+  </data>
+  <data name="psyzones_disabled" xml:space="preserve">
+    <value>Disabled</value>
+  </data>
+  <data name="psyzones_name" xml:space="preserve">
+    <value>Psy-zones</value>
+  </data>
+  <data name="psyzones_to_psyvybros" xml:space="preserve">
+    <value>Bound to psy-surge</value>
+  </data>
+  <data name="psyzones_to_vybros" xml:space="preserve">
+    <value>Bound to surge</value>
+  </data>
+  <data name="psy_surges_desc" xml:space="preserve">
+    <value>This option enables psy-surge after common surge with a probablity that depends on current location.</value>
+  </data>
+  <data name="psy_surges_name" xml:space="preserve">
+    <value>Psy-surges</value>
+  </data>
+  <data name="puddles_grow_desc" xml:space="preserve">
+    <value>Puddles grow rate during rain. Can be changed from 0 to 100.</value>
+  </data>
+  <data name="puddles_grow_name" xml:space="preserve">
+    <value>Puddles grow rate</value>
+  </data>
+  <data name="random_stashes_desc" xml:space="preserve">
+    <value>This option enables completely random content of stashes, with exception for the named ones.</value>
+  </data>
+  <data name="random_stashes_name" xml:space="preserve">
+    <value>Random stashes</value>
+  </data>
+  <data name="rdof_int_desc" xml:space="preserve">
+    <value>Intensity of depth of field effect during a reload. Can be changed from 0 to 100.</value>
+  </data>
+  <data name="rdof_int_name" xml:space="preserve">
+    <value>Reload DOF intensity</value>
+  </data>
+  <data name="rus" xml:space="preserve">
+    <value>Russian</value>
+  </data>
+  <data name="shafts" xml:space="preserve">
+    <value>Volumetric light</value>
+  </data>
+  <data name="show_stashes_desc" xml:space="preserve">
+    <value>This option enables showing the contents of a stash in a hint window.</value>
+  </data>
+  <data name="show_stashes_name" xml:space="preserve">
+    <value>Show contents of stashes</value>
+  </data>
+  <data name="son_desc" xml:space="preserve">
+    <value>This option enables NPCs to sleep. During the night they will be weak and will try to get some sleep if in a safe area.</value>
+  </data>
+  <data name="son_name" xml:space="preserve">
+    <value>Enable sleep</value>
+  </data>
+  <data name="ssdo_int_desc" xml:space="preserve">
+    <value>Intensity of Screen Space Dynamic Occlusion. Can be changed from 0 to 100.</value>
+  </data>
+  <data name="ssdo_int_name" xml:space="preserve">
+    <value>SSDO intensity</value>
+  </data>
+  <data name="ss_dust_desc" xml:space="preserve">
+    <value>This option enables "Crysis" type dust imitation in sunshafts.</value>
+  </data>
+  <data name="ss_dust_name" xml:space="preserve">
+    <value>Dust in sunshafts</value>
+  </data>
+  <data name="ss_volume_dust_desc" xml:space="preserve">
+    <value>This option enables dust imitation in volumetric light of lamps.</value>
+  </data>
+  <data name="ss_volume_dust_name" xml:space="preserve">
+    <value>Dust in lamp light</value>
+  </data>
+  <data name="stashes_desc" xml:space="preserve">
+    <value>Probability of random stashes appearance.</value>
+  </data>
+  <data name="stashes_name" xml:space="preserve">
+    <value>Stashes probability, %</value>
+  </data>
+  <data name="stashes_settings" xml:space="preserve">
+    <value>Stashes</value>
+  </data>
+  <data name="suit_prob_desc" xml:space="preserve">
+    <value>Probability of finding common armor in a stalker's inventory upon his death. Can be changed in the range from 1 to 25. Does not affect exo drop probability.</value>
+  </data>
+  <data name="suit_prob_name" xml:space="preserve">
+    <value>Armor drop probability</value>
+  </data>
+  <data name="surge_timer_desc" xml:space="preserve">
+    <value>Period between surges in game time hours. There is also a random bias (from -4 to 4 h).</value>
+  </data>
+  <data name="surge_timer_name" xml:space="preserve">
+    <value>Surge frequency</value>
+  </data>
+  <data name="time_factor_desc" xml:space="preserve">
+    <value>The less the time factor is, the longer the days are.</value>
+  </data>
+  <data name="time_factor_name" xml:space="preserve">
+    <value>Time factor</value>
+  </data>
+  <data name="time_start_name" xml:space="preserve">
+    <value>Time of game start</value>
+  </data>
+  <data name="update_available" xml:space="preserve">
+    <value>Update is available</value>
+  </data>
+  <data name="various" xml:space="preserve">
+    <value>Other</value>
+  </data>
+  <data name="ves_desc" xml:space="preserve">
+    <value>Must be within the range of 40 to 100 kg.</value>
+  </data>
+  <data name="ves_name" xml:space="preserve">
+    <value>Maximum carry weight, kg</value>
+  </data>
+  <data name="vignette_desc" xml:space="preserve">
+    <value>This option enables vignetting on screen (screen borders are darker than screen senter)</value>
+  </data>
+  <data name="vignette_int_desc" xml:space="preserve">
+    <value>Intensity of vignetting. Can be changed from 0 to 100. The value of 100 results in totally dark pixels on screen borders.</value>
+  </data>
+  <data name="vignette_int_name" xml:space="preserve">
+    <value>Intensity of vignetting</value>
+  </data>
+  <data name="vignette_name" xml:space="preserve">
+    <value>Vignetting</value>
+  </data>
+  <data name="vol_light_max_int_desc" xml:space="preserve">
+    <value>This option controls the intensity of volumetric lamp lights. Can be changed from 0 to 100.</value>
+  </data>
+  <data name="vol_light_max_int_name" xml:space="preserve">
+    <value>Lamp light volumetric intensity</value>
+  </data>
+  <data name="vol_max_int_desc" xml:space="preserve">
+    <value>This option controls the intensity of volumetric light from sun ("Clear Sky" type). Can be changed from 0 to 100.</value>
+  </data>
+  <data name="vol_max_int_name" xml:space="preserve">
+    <value>Sunlight volumetric intensity</value>
+  </data>
+  <data name="wait_for_download" xml:space="preserve">
+    <value>Wait for active download to be completed</value>
+  </data>
+  <data name="weather_bright" xml:space="preserve">
+    <value>Bright</value>
+  </data>
+  <data name="weather_default" xml:space="preserve">
+    <value>Standard</value>
+  </data>
+  <data name="weather_rainy" xml:space="preserve">
+    <value>Rainy</value>
+  </data>
+  <data name="weather_type_desc" xml:space="preserve">
+    <value>This option changes the in-game weather presets.</value>
+  </data>
+  <data name="weather_type_name" xml:space="preserve">
+    <value>Weather</value>
+  </data>
+  <data name="world_settings" xml:space="preserve">
+    <value>World</value>
+  </data>
+  <data name="zalyap_hud_desc" xml:space="preserve">
+    <value>This option enables blood stains on the equipped mask when shooting somebody at close range.</value>
+  </data>
+  <data name="zalyap_hud_name" xml:space="preserve">
+    <value>Blood on masks</value>
+  </data>
+  <data name="zdof_int_desc" xml:space="preserve">
+    <value>Intensity of Depth Of Field effect when zooming in. Can be changed from 0 to 100.</value>
+  </data>
+  <data name="zdof_int_name" xml:space="preserve">
+    <value>Zoom DOF intensity</value>
+  </data>
+</root>

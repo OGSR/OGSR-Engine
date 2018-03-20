@@ -470,8 +470,9 @@ void CWeaponScript::script_register(lua_State *L)
 
 			.def_readonly("misfire"						,			&CWeapon::bMisfire)
 			.def_readonly("zoom_mode"					,			&CWeapon::m_bZoomMode)
-			.def_readwrite("is_second_zoom_offset_enabled",			&CWeapon::is_second_zoom_offset_enabled)
-			
+
+			.def_readonly("is_second_zoom_offset_enabled",			&CWeapon::is_second_zoom_offset_enabled)
+			.def("SwitchScope"							,			&CWeapon::SwitchScope)
 
 			.property("ammo_elapsed"					,			&CWeapon::GetAmmoElapsed, &CWeapon::SetAmmoElapsed)
 			.property("const_deviation"					,			&CWeaponScript::FireDeviation)	// отклонение при стрельбе от целика (для непристрелляного оружия).

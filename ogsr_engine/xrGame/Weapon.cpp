@@ -458,6 +458,7 @@ void CWeapon::LoadZoomOffset(LPCSTR section, LPCSTR prefix)
 	string256 full_name;
 	if (
 		is_second_zoom_offset_enabled //Если включен режим второго прицеливания
+		&& !READ_IF_EXISTS(pSettings, r_bool, *cNameSect(), "disable_second_scope", false) //И второй прицел не запрещён (нужно для поддержки замороченной системы ogse_addons)
 		&& pSettings->line_exist(hud_sect, strconcat(sizeof(full_name), full_name, "second_", prefix, "zoom_offset")) //И в секциии худа есть настройки для второго режима прицеливания
 		&& pSettings->line_exist(hud_sect, strconcat(sizeof(full_name), full_name, "second_", prefix, "zoom_rotate_x"))
 		&& pSettings->line_exist(hud_sect, strconcat(sizeof(full_name), full_name, "second_", prefix, "zoom_rotate_y"))
@@ -478,7 +479,7 @@ void CWeapon::LoadZoomOffset(LPCSTR section, LPCSTR prefix)
 		is_second_zoom_offset_enabled = false;
 		//Msg("~~Second scope disabled!");
 	}
-	//Зум фактор обновлять здесь необходимо. TODO: Подумать, может завести поддержку second_soom_factor ?
+	//Зум фактор обновлять здесь необходимо. second_soom_factor поддерживается.
 	auto wpn_w_gl = smart_cast<CWeaponMagazinedWGrenade*>(this);
 	if (wpn_w_gl)
 		m_fZoomFactor = wpn_w_gl->CurrentZoomFactor();
@@ -510,6 +511,12 @@ void CWeapon::UpdateZoomOffset() //Собрал все манипуляции с зум оффсетом сюда, ч
 			LoadZoomOffset(*hud_sect, "");
 		}
 	}
+}
+
+void CWeapon::SwitchScope()
+{
+	is_second_zoom_offset_enabled = !is_second_zoom_offset_enabled;
+	UpdateZoomOffset();
 }
 
 /*
@@ -1001,8 +1008,7 @@ bool CWeapon::Action(s32 cmd, u32 flags)
 		{
 			if (flags&CMD_START)
 			{
-				is_second_zoom_offset_enabled = !is_second_zoom_offset_enabled;
-				this->UpdateZoomOffset();
+				this->SwitchScope();
 			}
 		}
 	}
@@ -1390,11 +1396,15 @@ bool CWeapon::Activate()
 void CWeapon::InitAddons()
 {
 }
-float default_fov = 67.5f;
-float CWeapon::CurrentZoomFactor	()
+
+float CWeapon::CurrentZoomFactor()
 {
-	float zf = ( IsScopeAttached() && !is_second_zoom_offset_enabled ) ? m_fScopeZoomFactor : m_fIronSightZoomFactor;
-	return zf;
+	if (is_second_zoom_offset_enabled)
+		return m_fSecondScopeZoomFactor;
+	else if (IsScopeAttached())
+		return m_fScopeZoomFactor;
+	else
+		return m_fIronSightZoomFactor;
 };
 
 void CWeapon::OnZoomIn()
