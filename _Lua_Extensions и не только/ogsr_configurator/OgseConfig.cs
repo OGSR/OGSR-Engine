@@ -53,9 +53,6 @@ namespace Configurator
 		#region Actor settings
 
 		private int _ves = 60;
-   /*     [LocalizedDisplayName("ves_name")]
-        [LocalizedDescription("ves_desc")]
-        [LocalizedCategory("player")]*/
         [GlobalizedProperty("ves_name", Description = "ves_desc", Category = "player")]
 		[DefaultValue(60)]
 		[TypeConverter(typeof(MyIntConverter))]
@@ -75,68 +72,42 @@ namespace Configurator
 			}
 		}
 
-    /*    [LocalizedDisplayName("pnv_disabling_name")]
-        [LocalizedDescription("pnv_disabling_desc")]
-        [LocalizedCategory("player")]*/
         [GlobalizedProperty("pnv_disabling_name", Description = "pnv_disabling_desc", Category = "player")]
         [TypeConverter(typeof(BooleanTypeConverter))]
         [DefaultValue(false)]
         public bool pnv_disabling { get; set; }
 
-       //KRodin: убрал, подумать, надо ли вообще.
-       /* [GlobalizedProperty("pnv_autostart_name", Description = "pnv_autostart_desc", Category = "player")]
+        [GlobalizedProperty("pnv_autostart_name", Description = "pnv_autostart_desc", Category = "player")]
         [TypeConverter(typeof(BooleanTypeConverter))]
         [DefaultValue(false)]
-        public bool pnv_autostart { get; set; }*/
+        public bool pnv_autostart { get; set; }
 
-         //[DisplayName("Прыжок")]
-        //[Description("")]
-        //[Category("Игрок")]
-        //[TypeConverter(typeof(EnumTypeConverter))]
-        //[DefaultValue(E_JUMP.VeryHigh)]
-        //public E_JUMP prigok { get; set; }
-
-  /*      [LocalizedDisplayName("poboch_lek_name")]
-        [LocalizedDescription("poboch_lek_desc")]
-        [LocalizedCategory("player")]*/
         [GlobalizedProperty("poboch_lek_name", Description = "poboch_lek_desc", Category = "player")]
 		[TypeConverter(typeof(BooleanTypeConverter))]
 		[DefaultValue(false)]
 		public bool poboch_lek { get; set; }
 
-    /*    [LocalizedDisplayName("medlen_lek_name")]
-        [LocalizedDescription("medlen_lek_desc")]
-        [LocalizedCategory("player")]*/
         [GlobalizedProperty("medlen_lek_name", Description = "medlen_lek_desc", Category = "player")]
 		[TypeConverter(typeof(BooleanTypeConverter))]
 		[DefaultValue(false)]
 		public bool medlen_lek { get; set; }
 
-     /*   [LocalizedDisplayName("plohoe_samochustv_name")]
-        [LocalizedDescription("")]
-        [LocalizedCategory("player")]*/
         [GlobalizedProperty("plohoe_samochustv_name", Description = "plohoe_samochustv_desc", Category = "player")]
 		[TypeConverter(typeof(BooleanTypeConverter))]
 		[DefaultValue(true)]
 		public bool plohoe_samochustv { get; set; }
 
-        [GlobalizedProperty("ammo_on_belt_name", Description = "ammo_on_belt_desc", Category = "player")]
+       /* [GlobalizedProperty("ammo_on_belt_name", Description = "ammo_on_belt_desc", Category = "player")]
         [TypeConverter(typeof(BooleanTypeConverter))]
         [DefaultValue(true)]
-        public bool ammo_on_belt { get; set; }
+        public bool ammo_on_belt { get; set; }*/
 
-        /*     [LocalizedDisplayName("popadanie_po_ger_name")]
-             [LocalizedDescription("popadanie_po_ger_desc")]
-             [LocalizedCategory("player")]*/
         [GlobalizedProperty("popadanie_po_ger_name", Description = "popadanie_po_ger_desc", Category = "player")]
 		[TypeConverter(typeof(EnumTypeConverter))]
 		[DefaultValue(E_ACTOR_HIT.All)]
 		public E_ACTOR_HIT popadanie_po_ger { get; set; }
 
 		private int _fov_volume = 75;
-//        [LocalizedDisplayName("fov_volume_name")]
-//        [LocalizedDescription("fov_volume_desc")]
-//       [LocalizedCategory("player")]
         [GlobalizedProperty("fov_volume_name", Description = "fov_volume_desc", Category = "player")]
 		[DefaultValue(75)]
 		[TypeConverter(typeof(MyIntConverter))]
@@ -160,18 +131,12 @@ namespace Configurator
 
 		#region npc settings
 
-     /*   [LocalizedDisplayName("dop_spawn_name")]
-        [LocalizedDescription("dop_spawn_desc")]
-		[Category("NPC")]*/
         [GlobalizedProperty("dop_spawn_name", Description = "dop_spawn_desc", Category = "NPC")]
 		[TypeConverter(typeof(BooleanTypeConverter))]
 		[DefaultValue(true)]
 		public bool dop_spawn { get; set; }
 
 		private int _period_resp_old = 2;
-     /*   [LocalizedDisplayName("period_resp_old_name")]
-        [LocalizedDescription("period_resp_old_desc")]
-		[Category("NPC")]*/
         [GlobalizedProperty("period_resp_old_name", Description = "period_resp_old_desc", Category = "NPC")]
 		[DefaultValue(2)]
 		[TypeConverter(typeof(MyIntConverter))]
@@ -235,18 +200,12 @@ namespace Configurator
 
 		#region world settings
 
-     /*   [LocalizedDisplayName("dynamic_news")]
-        [LocalizedDescription("dynamic_news_desc")]
-        [LocalizedCategory("dynamic_news")]*/
         [GlobalizedProperty("dynamic_news", Description = "dynamic_news_desc", Category = "dynamic_news")]
 		[TypeConverter(typeof(BooleanTypeConverter))]
 		[DefaultValue(true)]
 		public bool dinamic_news { get; set; }
 
 		private int _chastota_news = 5;
-   /*     [LocalizedDisplayName("news_freq_name")]
-        [LocalizedDescription("news_freq_desc")]
-        [LocalizedCategory("dynamic_news")]*/
         [GlobalizedProperty("news_freq_name", Description = "news_freq_desc", Category = "dynamic_news")]
 		[DefaultValue(5)]
 		[TypeConverter(typeof(MyIntConverter))]
@@ -267,9 +226,6 @@ namespace Configurator
 		}
 
 		private int _tajmer_chaes = 15;
-   /*     [LocalizedDisplayName("chaes_timer_name")]
-        [LocalizedDescription("")]
-        [LocalizedCategory("world_settings")]*/
         [GlobalizedProperty("chaes_timer_name", Description = "", Category = "world_settings")]
 		[DefaultValue(15)]
 		[TypeConverter(typeof(MyIntConverter))]
@@ -290,9 +246,6 @@ namespace Configurator
 		}
 
 		public int _period_vibros = 36;
-    /*    [LocalizedDisplayName("surge_timer_name")]
-        [LocalizedDescription("surge_timer_desc")]
-        [LocalizedCategory("world_settings")]*/
         [GlobalizedProperty("surge_timer_name", Description = "surge_timer_desc", Category = "world_settings")]
 		[DefaultValue(36)]
 		[TypeConverter(typeof(MyIntConverter))]
@@ -313,9 +266,6 @@ namespace Configurator
 		}
 
 		private int _time_factor = 6;
-   /*     [LocalizedDisplayName("time_factor_name")]
-        [LocalizedDescription("time_factor_desc")]
-        [LocalizedCategory("world_settings")]*/
         [GlobalizedProperty("time_factor_name", Description = "time_factor_desc", Category = "world_settings")]
 		[DefaultValue(6)]
 		[TypeConverter(typeof(MyIntConverter))]
@@ -335,9 +285,6 @@ namespace Configurator
 			}
 		}
 
-   /*     [LocalizedDisplayName("time_start_name")]
-		[Description("")]
-        [LocalizedCategory("world_settings")]*/
         [GlobalizedProperty("time_start_name", Description = "", Category = "world_settings")]
 		[DefaultValue(typeof(DateTime), "2012-05-01T06:00:00")]
 		[Editor(typeof(NullEditor), typeof(UITypeEditor))]
@@ -351,9 +298,6 @@ namespace Configurator
         [DefaultValue(E_WEATHER.Default)]
         public E_WEATHER weather_type { get; set; }
 
-    /*    [LocalizedDisplayName("stashes_name")]
-        [LocalizedDescription("stashes_desc")]
-        [LocalizedCategory("stashes_settings")]*/
         [GlobalizedProperty("stashes_name", Description = "stashes_desc", Category = "stashes_settings")]
 		[DefaultValue(35)]
 		[TypeConverter(typeof(MyIntConverter))]
@@ -373,17 +317,11 @@ namespace Configurator
 			}
 		}
 
-  /*      [LocalizedDisplayName("random_stashes_name")]
-        [LocalizedDescription("random_stashes_desc")]
-        [LocalizedCategory("stashes_settings")]*/
         [GlobalizedProperty("random_stashes_name", Description = "random_stashes_desc", Category = "stashes_settings")]
 		[TypeConverter(typeof(BooleanTypeConverter))]
 		[DefaultValue(true)]
 		public bool sluchajnie_tajniki { get; set; }
 
-   /*     [LocalizedDisplayName("show_stashes_name")]
-        [LocalizedDescription("show_stashes_desc")]
-        [LocalizedCategory("stashes_settings")]*/
         [GlobalizedProperty("show_stashes_name", Description = "show_stashes_desc", Category = "stashes_settings")]
 		[TypeConverter(typeof(BooleanTypeConverter))]
 		[DefaultValue(true)]
@@ -431,11 +369,11 @@ namespace Configurator
 				cfg.dinamic_news = SetCheckboxValueFromIni("options", "random_news");
 				cfg.dop_spawn = SetCheckboxValueFromIni("options", "additional_spawn");
 				cfg.plohoe_samochustv = SetCheckboxValueFromIni("options", "bleed_enable");
-                cfg.ammo_on_belt = SetCheckboxValueFromIni("options", "ammunition_on_belt");
+               // cfg.ammo_on_belt = SetCheckboxValueFromIni("options", "ammunition_on_belt");
                 cfg.poboch_lek = SetCheckboxValueFromIni("options", "poison_drugs");
 				cfg.medlen_lek = SetCheckboxValueFromIni("options", "slow_drugs");
                 cfg.pnv_disabling = SetCheckboxValueFromIni("wpn_addon_setup", "cheat_nv_block");
-                //cfg.pnv_autostart = SetCheckboxValueFromIni("wpn_addon_setup", "cheat_nv_scope_autoenable");
+                cfg.pnv_autostart = SetCheckboxValueFromIni("wpn_addon_setup", "cheat_nv_scope_autoenable");
 				#endregion
 
 				int value = GetIntValueFromIni("options", "weather_type");
@@ -514,11 +452,11 @@ namespace Configurator
 			WriteCheckboxValueToIni(cfg.dinamic_news, "options", "random_news");
 			WriteCheckboxValueToIni(cfg.dop_spawn, "options", "additional_spawn");
 			WriteCheckboxValueToIni(cfg.plohoe_samochustv, "options", "bleed_enable");
-            WriteCheckboxValueToIni(cfg.ammo_on_belt, "options", "ammunition_on_belt");
+          //  WriteCheckboxValueToIni(cfg.ammo_on_belt, "options", "ammunition_on_belt");
             WriteCheckboxValueToIni(cfg.poboch_lek, "options", "poison_drugs");
 			WriteCheckboxValueToIni(cfg.medlen_lek, "options", "slow_drugs");
             WriteBoolValueToIni(cfg.pnv_disabling, "wpn_addon_setup", "cheat_nv_block");
-           // WriteBoolValueToIni(cfg.pnv_autostart, "wpn_addon_setup", "cheat_nv_scope_autoenable");
+            WriteBoolValueToIni(cfg.pnv_autostart, "wpn_addon_setup", "cheat_nv_scope_autoenable");
 
 			string value = "0";
             if (cfg.weather_type == E_WEATHER.Bright)

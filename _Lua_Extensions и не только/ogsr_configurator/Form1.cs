@@ -253,13 +253,7 @@ namespace Configurator
             string[] k1 = launchParamsList[1].Split('=');
             string[] k2 = launchParamsList[2].Split('=');
             string[] k3 = launchParamsList[3].Split('=');
-           // string[] k4 = launchParamsList[4].Split('=');
-            //string[] k5 = launchParamsList[5].Split('=');
-            //string[] k6 = launchParamsList[6].Split('=');
             string k4 = launchParamsList[4];
-            //string[] k8 = new string[] { "disasm", "0" }; //KRodin: убрать?
-           // if (launchParamsList.Count > 8)
-           //     k8 = launchParamsList[8].Split('=');
 
             lang = k1[1];
             nointro.Checked = int.Parse(k2[1]) != 0;
