@@ -269,7 +269,7 @@ void CDetailManager::UpdateVisibleM()
 	// Initialize 'vis' and 'cache'
 	// Collect objects for rendering
 	Device.Statistic->RenderDUMP_DT_VIS.Begin();
-	g_pGamePersistent->m_pGShaderConstants->m_blender_mode.w = 1.0f; //--#SM+#-- Флаг начала рендера травы [begin of grass render]
+	g_pGamePersistent->m_pGShaderConstants.m_blender_mode.w = 1.0f; //--#SM+#-- Флаг начала рендера травы [begin of grass render]
 
 #ifndef _EDITOR
 	for (u32 _mz = 0; _mz<dm_current_cache1_line; _mz++) {
@@ -359,7 +359,7 @@ void CDetailManager::UpdateVisibleM()
 		}
 	}
 
-	g_pGamePersistent->m_pGShaderConstants->m_blender_mode.w = 0.0f; //--#SM+#-- Флаг конца рендера травы [end of grass render]
+	g_pGamePersistent->m_pGShaderConstants.m_blender_mode.w = 0.0f; //--#SM+#-- Флаг конца рендера травы [end of grass render]
 	Device.Statistic->RenderDUMP_DT_VIS.End();
 }
 

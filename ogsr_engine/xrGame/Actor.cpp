@@ -375,7 +375,7 @@ if(!g_dedicated_server)
 	}
 	if (this == Level().CurrentEntity()) //--#SM+#-- Сбрасываем режим рендеринга в дефолтный [reset some render flags]
 	{
-		g_pGamePersistent->m_pGShaderConstants->m_blender_mode.set(0.f, 0.f, 0.f, 0.f);
+		g_pGamePersistent->m_pGShaderConstants.m_blender_mode.set(0.f, 0.f, 0.f, 0.f);
 	}
 }
 	if( psActorFlags.test(AF_PSP) )
@@ -935,8 +935,8 @@ void CActor::UpdateCL	()
 			pWeapon->UpdateSecondVP();	//--#SM+#-- +SecondVP+
 			
 			// Обновляем информацию об оружии в шейдерах
-			g_pGamePersistent->m_pGShaderConstants->hud_params.x = pWeapon->GetZRotatingFactor(); //--#SM+#--
-			g_pGamePersistent->m_pGShaderConstants->hud_params.y = pWeapon->GetSecondVP_FovFactor(); //--#SM+#--
+			g_pGamePersistent->m_pGShaderConstants.hud_params.x = pWeapon->GetZRotatingFactor(); //--#SM+#--
+			g_pGamePersistent->m_pGShaderConstants.hud_params.y = pWeapon->GetSecondVP_FovFactor(); //--#SM+#--
 		}
 
 	}
@@ -948,7 +948,7 @@ void CActor::UpdateCL	()
 			HUD().ShowCrosshair(false);
 
 			// Очищаем информацию об оружии в шейдерах
-			g_pGamePersistent->m_pGShaderConstants->hud_params.set(0.f, 0.f, 0.f, 0.f); //--#SM+#--
+			g_pGamePersistent->m_pGShaderConstants.hud_params.set(0.f, 0.f, 0.f, 0.f); //--#SM+#--
 
 			// Отключаем второй вьюпорт  [Turn off SecondVP]
 			// + CWeapon::UpdateSecondVP();

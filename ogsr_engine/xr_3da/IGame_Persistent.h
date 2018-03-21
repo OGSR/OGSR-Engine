@@ -68,7 +68,7 @@ public:
 	CEnvironment*					pEnvironment;
 	CEnvironment&					Environment()	{return *pEnvironment;};
 
-	ShadersExternalData* m_pGShaderConstants; //--#SM+#--
+	ShadersExternalData m_pGShaderConstants; //--#SM+#--
 
 	virtual bool					OnRenderPPUI_query	() { return FALSE; };	// should return true if we want to have second function called
 	virtual void					OnRenderPPUI_main	() {};

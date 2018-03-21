@@ -33,7 +33,7 @@ IGame_Persistent::IGame_Persistent	()
 
 	pEnvironment					= xr_new<CEnvironment>();
 
-	m_pGShaderConstants = new ShadersExternalData(); //--#SM+#--
+	m_pGShaderConstants = ShadersExternalData(); //--#SM+#--
 }
 
 IGame_Persistent::~IGame_Persistent	()
@@ -44,7 +44,6 @@ IGame_Persistent::~IGame_Persistent	()
 	Device.seqAppActivate.Remove	(this);
 	Device.seqAppDeactivate.Remove	(this);
 	xr_delete						(pEnvironment);
-	delete m_pGShaderConstants; //--#SM+#-- //TODO: нахрена в виде указателя? Переделать!
 }
 
 void IGame_Persistent::OnAppActivate		()

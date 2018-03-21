@@ -138,14 +138,35 @@ BOOL CAI_Crow::net_Spawn		(CSE_Abstract* DC)
 	m_Anims.m_fly.Load			(M,"norm_fly_fwd");
 	m_Anims.m_idle.Load			(M,"norm_idle");
 
-	// disable UpdateCL, enable only on HIT
-	processing_deactivate		();
+	// Crow fixes by Sin! (Gunslinger mod)  --#SM+#--
+	// [bug] баг - кто-то забыл проинициализировать, из-за чего при неудачном стечении обстоятельств вороны вне сектора обзора не летают... Исправим.
+	o_workload_frame = 0;
+	o_workload_rframe = 0;
 
-	auto tmp = Actor()->Position();
-	tmp.x = tmp.x + ::Random.randF(-50.0f, 50.0f);
-	tmp.y = tmp.y + ::Random.randF(20.0f, 50.0f);
-	tmp.z = tmp.z + ::Random.randF(-50.0f, 50.0f);
-	Position().set(tmp);
+	// без этого уже сбитые вороны "воскресают" при перезагрузке игры и начинают вести себя некорректно (начинают летать, при попадании не падают на землю) --#SM+#--
+	if (GetfHealth() > 0) {
+		st_current = ECrowStates::eFlyIdle;
+		st_target = ECrowStates::eFlyIdle;
+
+		// disable UpdateCL, enable only on HIT
+		processing_deactivate();
+
+		//Вороны подняты в воздух, и теперь не вылетают из земли после загрузки сейвов в некоторых случаях.
+		auto tmp = Actor()->Position();
+		tmp.x = tmp.x + ::Random.randF(-50.0f, 50.0f);
+		tmp.y = tmp.y + ::Random.randF(20.0f, 50.0f);
+		tmp.z = tmp.z + ::Random.randF(-50.0f, 50.0f);
+		Position().set(tmp);
+	}
+	else
+	{
+		st_current = ECrowStates::eDeathFall;
+		st_target = ECrowStates::eDeathDead;
+
+		// turn on physic
+		processing_activate();
+		CreateSkeleton();
+	}
 	
 	return R;
 }
@@ -278,11 +299,13 @@ void CAI_Crow::UpdateCL		()
 		XFORM().set					(m_pPhysicsShell->mXFORM);
 	}
 }
-void CAI_Crow::renderable_Render	()
+void CAI_Crow::renderable_Render()
 {
-	UpdateWorkload					(Device.fTimeDelta);
-	inherited::renderable_Render	();
-	o_workload_rframe				= Device.dwFrame	;
+	//CAI_Crow::renderable_Render вызывается только для ВИДИМЫХ В ЭТОМ КАДРЕ объектов --#SM+#--
+	//из-за этого вороны, видимые в мире, но не видимые в зуме, замедляются - fDeltaTime для кадров линзы не учитывается
+	UpdateWorkload(Device.fTimeDelta * (Device.dwFrame - o_workload_frame));
+	inherited::renderable_Render();
+	o_workload_rframe = Device.dwFrame;
 }
 void CAI_Crow::shedule_Update		(u32 DT)
 {
@@ -328,8 +351,10 @@ void CAI_Crow::shedule_Update		(u32 DT)
 	m_Sounds.m_idle.SetPosition		(Position());
 
 	// work
-	if (o_workload_rframe	== (Device.dwFrame-1))	;
-	else					UpdateWorkload			(fDT);
+	if (o_workload_rframe >= (Device.dwFrame - 2))  //--#SM+#--
+		;
+	else
+		UpdateWorkload(fDT);
 }
 
 // Core events
