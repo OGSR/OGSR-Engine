@@ -1,7 +1,6 @@
 #include "stdafx.h"
 #pragma hdrstop
 
-#include "resource.h"
 #include "log.h"
 
 #include <sstream> //для std::stringstream

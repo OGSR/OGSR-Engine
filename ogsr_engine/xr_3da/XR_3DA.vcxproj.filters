@@ -837,11 +837,6 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="OutOfVirtError.RES">
-      <Filter>General\Resources</Filter>
-    </Resource>
-  </ItemGroup>
-  <ItemGroup>
     <ResourceCompile Include="resource.rc">
       <Filter>General\Resources</Filter>
     </ResourceCompile>

@@ -417,9 +417,6 @@
     <ClCompile Include="perlin.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="OutOfVirtError.RES" />
-  </ItemGroup>
-  <ItemGroup>
     <ResourceCompile Include="resource.rc" />
   </ItemGroup>
   <ItemGroup>
