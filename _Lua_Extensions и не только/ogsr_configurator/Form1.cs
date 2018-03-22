@@ -209,17 +209,7 @@ namespace Configurator
 
         private void set_image()
         {
-            var t = DateTime.Now;
-            if ((t.Hour > 8) && (t.Hour < 20))
-            {
-                pictureBox_day.Visible = true;
-                pictureBox_night.Visible = false;
-            }
-            else
-            {
-                pictureBox_day.Visible = false;
-                pictureBox_night.Visible = true;
-            }
+            pictureBox_day.Visible = true;
         }
 
         #endregion

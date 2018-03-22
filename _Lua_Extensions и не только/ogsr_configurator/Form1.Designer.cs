@@ -66,7 +66,6 @@
             this.RU = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
-            this.pictureBox_night = new System.Windows.Forms.PictureBox();
             this.pictureBox_day = new System.Windows.Forms.PictureBox();
             this.folderBrowserDialog1 = new System.Windows.Forms.FolderBrowserDialog();
             this.saveFileDialog1 = new System.Windows.Forms.SaveFileDialog();
@@ -99,7 +98,6 @@
             this.OtherTabs.SuspendLayout();
             this.tabPage8.SuspendLayout();
             this.tabPage9.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox_night)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox_day)).BeginInit();
             this.tabPage11.SuspendLayout();
             this.tabPage1.SuspendLayout();
@@ -364,17 +362,11 @@
             resources.ApplyResources(this.label3, "label3");
             this.label3.Name = "label3";
             // 
-            // pictureBox_night
-            // 
-            resources.ApplyResources(this.pictureBox_night, "pictureBox_night");
-            this.pictureBox_night.BackColor = System.Drawing.Color.Black;
-            this.pictureBox_night.Name = "pictureBox_night";
-            this.pictureBox_night.TabStop = false;
-            // 
             // pictureBox_day
             // 
             resources.ApplyResources(this.pictureBox_day, "pictureBox_day");
             this.pictureBox_day.BackColor = System.Drawing.Color.Black;
+            this.pictureBox_day.Image = global::Configurator.Properties.Resources.Title_logo;
             this.pictureBox_day.Name = "pictureBox_day";
             this.pictureBox_day.TabStop = false;
             // 
@@ -560,7 +552,6 @@
             this.Controls.Add(this.lang_pic_fr);
             this.Controls.Add(this.lang_pic_en);
             this.Controls.Add(this.lang_pic_ru);
-            this.Controls.Add(this.pictureBox_night);
             this.Controls.Add(this.pictureBox_day);
             this.Controls.Add(this.StartGameButton);
             this.Controls.Add(this.CloseButton);
@@ -580,7 +571,6 @@
             this.tabPage8.PerformLayout();
             this.tabPage9.ResumeLayout(false);
             this.tabPage9.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox_night)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox_day)).EndInit();
             this.tabPage11.ResumeLayout(false);
             this.tabPage1.ResumeLayout(false);
@@ -610,7 +600,6 @@
         private System.Windows.Forms.PictureBox pictureBox_day;
         private System.Windows.Forms.ToolTip toolTip1;
         private System.Windows.Forms.FolderBrowserDialog folderBrowserDialog1;
-        private System.Windows.Forms.PictureBox pictureBox_night;
         private System.Windows.Forms.TabPage tabPage4;
         private System.Windows.Forms.TabControl OtherTabs;
         private System.Windows.Forms.TabPage tabPage8;

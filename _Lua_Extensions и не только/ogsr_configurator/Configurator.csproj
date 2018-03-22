@@ -136,9 +136,11 @@
     <Compile Include="Utils.cs" />
     <EmbeddedResource Include="Form1.en-US.resx">
       <DependentUpon>Form1.cs</DependentUpon>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="Form1.fr-FR.resx">
       <DependentUpon>Form1.cs</DependentUpon>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="Form1.resx">
       <DependentUpon>Form1.cs</DependentUpon>
@@ -146,6 +148,7 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Form1.ru-RU.resx">
       <DependentUpon>Form1.cs</DependentUpon>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
@@ -182,17 +185,13 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Content\fon.png" />
-    <Content Include="Content\fon11.jpg" />
-    <Content Include="Content\fon22.jpg" />
-    <Content Include="Content\fon33.jpg" />
-    <Content Include="Content\fon4.png" />
     <None Include="Resources\fr.png" />
     <None Include="Resources\ru.png" />
     <None Include="Resources\us.png" />
     <None Include="Resources\fr_disabled.png" />
     <None Include="Resources\ru_disabled.png" />
     <None Include="Resources\us_disabled.png" />
+    <Content Include="Resources\Title_logo.jpg" />
     <Content Include="stalker.ico" />
   </ItemGroup>
   <ItemGroup />
