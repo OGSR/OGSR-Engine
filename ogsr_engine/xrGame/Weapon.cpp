@@ -1869,6 +1869,7 @@ void CWeapon::UpdateSecondVP()
 	bool bCond_3 = pActor->cam_Active() == pActor->cam_FirstEye(); // ћы должны быть от 1-го лица
 	auto wpn_w_gl = smart_cast<CWeaponMagazinedWGrenade*>(this);
 	bool bCond_4 = ( !wpn_w_gl || !wpn_w_gl->m_bGrenadeMode );     // ћы не должны быть в режиме подствольника
+	bool bCond_5 = !is_second_zoom_offset_enabled; // ћы не должны быть в режиме второго прицеливани€.
 
-	Device.m_SecondViewport.SetSVPActive(bCond_1 && bCond_2 && bCond_3 && bCond_4);
+	Device.m_SecondViewport.SetSVPActive(bCond_1 && bCond_2 && bCond_3 && bCond_4 && bCond_5);
 }
