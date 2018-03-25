@@ -180,7 +180,7 @@ public:
 	virtual bool GrenadeLauncherAttachable();
 	virtual bool ScopeAttachable();
 	virtual bool SilencerAttachable();
-	virtual bool UseScopeTexture() { if ((GetAddonsState() & CSE_ALifeItemWeapon::eForcedNotexScope) != 0) return false; else return true;};
+	virtual bool UseScopeTexture();
 
 	//обновление видимости для косточек аддонов
 			void UpdateAddonsVisibility();
@@ -240,11 +240,14 @@ protected:
 	float			m_fIronSightZoomFactor;
 	//коэффициент увеличения прицела
 	float			m_fScopeZoomFactor;
+	//коэффициент увеличения второго прицела
+	float			m_fSecondScopeZoomFactor;
 	//когда режим приближения включен
 	bool			m_bZoomMode;
 	//от 0 до 1, показывает насколько процентов
 	//мы перемещаем HUD  
 	float			m_fZoomRotationFactor;
+	float m_fSecondVP_FovFactor; //модификатор изменения FOV во втором вьюпорте при зуме
 	bool			m_bHideCrosshairInZoom;
 public:
 
@@ -500,6 +503,14 @@ private:
 public:
 	const float				&hit_probability			() const;
 	void					UpdateWeaponParams();
+	//
+	bool is_second_zoom_offset_enabled = false;
+	void UpdateZoomOffset();
+	//
+	void UpdateSecondVP(); //
+	float GetZRotatingFactor() const { return m_fZoomRotationFactor; }    //--#SM+#--
+	float GetSecondVP_FovFactor() const { return m_fSecondVP_FovFactor; } //--#SM+#--
+	void SwitchScope();
 };
 
 extern float default_fov;// = 67.5f;

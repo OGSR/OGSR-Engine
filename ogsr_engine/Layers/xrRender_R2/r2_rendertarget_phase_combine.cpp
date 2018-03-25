@@ -21,11 +21,19 @@ void	CRenderTarget::phase_combine	()
 	Fvector2	p0,p1;
 
 	//*** exposure-pipeline
-	u32			gpu_id	= Device.dwFrame%2;
+	u32 gpu_id = Device.dwFrame % 2;
+	if (Device.m_SecondViewport.IsSVPActive())	//--#SM+#-- +SecondVP+ Fix for screen flickering
 	{
-		t_LUM_src->surface_set		(rt_LUM_pool[gpu_id*2+0]->pSurface);
-		t_LUM_dest->surface_set		(rt_LUM_pool[gpu_id*2+1]->pSurface);
+		gpu_id = (Device.dwFrame - 1) % 2;	// Фикс "мерцания" tonemapping (HDR) после выключения двойного рендера. 
+											// Побочный эффект - при работе двойного рендера скорость изменения tonemapping (HDR) падает в два раза
+											// Мерцание связано с тем, что HDR для своей работы хранит уменьшенние копии "прошлых кадров"
+											// Эти кадры относительно похожи друг на друга, однако при включЄнном двойном рендере
+											// в половине кадров оказывается картинка из второго рендера, и поскольку она часто может отличатся по цвету\яркости
+											// то при попытке создания "плавного" перехода между ними получается эффект мерцания
 	}
+
+	t_LUM_src->surface_set		(rt_LUM_pool[gpu_id*2+0]->pSurface);
+	t_LUM_dest->surface_set		(rt_LUM_pool[gpu_id*2+1]->pSurface);
 
 	if (!_menu_pp && ps_r2_pp_flags.test(R2PP_FLAG_SSAO) && R2RM_NORMAL == ps_Render_mode)			phase_ssao();
 

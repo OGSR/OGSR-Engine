@@ -32,6 +32,8 @@ IGame_Persistent::IGame_Persistent	()
 	m_pMainMenu						= NULL;
 
 	pEnvironment					= xr_new<CEnvironment>();
+
+	m_pGShaderConstants = ShadersExternalData(); //--#SM+#--
 }
 
 IGame_Persistent::~IGame_Persistent	()

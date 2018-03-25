@@ -17,13 +17,33 @@ class	ENGINE_API	CGammaControl;
 #include "shader.h"
 #include "R_Backend.h"
 
-#define VIEWPORT_NEAR  0.1f
+#define VIEWPORT_NEAR 0.05f //0.1f
 
 #define DEVICE_RESET_PRECACHE_FRAME_COUNT 10
 
 // refs
 class ENGINE_API CRenderDevice 
 {
+public:
+	class ENGINE_API CSecondVPParams //--#SM+#-- +SecondVP+
+	{
+	public:
+		bool m_bCamReady; // Флаг готовности камеры (FOV, позиция, и т.п) к рендеру второго вьюпорта
+	private:
+		bool m_bIsActive;  // Флаг активации рендера во второй вьюпорт
+		u8   m_FrameDelay; // На каком кадре с момента прошлого рендера во второй вьюпорт мы начнём новый (не может быть меньше 2 - каждый второй кадр, чем больше тем более низкий FPS во втором вьюпорте)
+	public:
+		IC bool IsSVPActive() { return m_bIsActive; }
+		void    SetSVPActive(bool bState);
+		bool    IsSVPFrame();
+
+		IC u8 GetSVPFrameDelay() { return m_FrameDelay; }
+		void  SetSVPFrameDelay(u8 iDelay)
+		{
+			m_FrameDelay = iDelay;
+			clamp<u8>(m_FrameDelay, 2, u8(-1));
+		}
+	};
 private:
     // Main objects used for creating and rendering the 3D scene
     u32										m_dwWindowStyle;
@@ -79,6 +99,7 @@ public:
 	CRegistrator	<pureFrame			>			seqFrameMT;
 	CRegistrator	<pureDeviceReset	>			seqDeviceReset;
 	xr_vector		<fastdelegate::FastDelegate0<> >	seqParallel;
+	CSecondVPParams m_SecondViewport; //--#SM+#-- +SecondVP+
 
 	// Dependent classes
 	CResourceManager*						Resources;	  
@@ -115,6 +136,10 @@ public:
 		b_is_Ready			= FALSE;
 		Timer.Start			();
 		m_bNearer			= FALSE;
+		//--#SM+#-- +SecondVP+
+		m_SecondViewport.SetSVPActive(false);
+		m_SecondViewport.SetSVPFrameDelay(2);
+		m_SecondViewport.m_bCamReady = false;
 	};
 
 	void	Pause							(BOOL bOn, BOOL bTimer, BOOL bSound, LPCSTR reason);

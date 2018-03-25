@@ -31,6 +31,8 @@
 #include "script_callback_ex.h"
 #include "script_game_object.h"
 
+#include "WeaponMagazinedWGrenade.h"
+
 #define WEAPON_REMOVE_TIME		60000
 #define ROTATION_TIME			0.25f
 
@@ -232,7 +234,7 @@ void CWeapon::ForceUpdateFireParticles()
 	{//update particlesXFORM real bullet direction
 
 		if (!H_Parent())		return;
-
+#ifdef DEBUG
 		CInventoryOwner* io		= smart_cast<CInventoryOwner*>(H_Parent());
 		if(NULL == io->inventory().ActiveItem())
 		{
@@ -242,7 +244,7 @@ void CWeapon::ForceUpdateFireParticles()
 				Log("item_sect", cNameSect().c_str());
 				Log("H_Parent", H_Parent()->cNameSect().c_str());
 		}
-
+#endif
 		Fvector					p, d; 
 		smart_cast<CEntity*>(H_Parent())->g_fireParams	(this, p,d);
 
@@ -375,7 +377,8 @@ void CWeapon::Load		(LPCSTR section)
 	m_bScopeDynamicZoom = !!READ_IF_EXISTS(pSettings, r_bool, section, "scope_dynamic_zoom", false);
 	m_bZoomEnabled = !!pSettings->r_bool(section,"zoom_enabled");
 	m_fZoomRotateTime = ROTATION_TIME;
-	if(m_bZoomEnabled && m_pHUD) LoadZoomOffset(*hud_sect, "");
+
+	UpdateZoomOffset();
 
 	if(m_eScopeStatus == ALife::eAddonAttachable)
 	{
@@ -430,6 +433,8 @@ void CWeapon::Load		(LPCSTR section)
 		strconcat					(sizeof(temp),temp,"hit_probability_",get_token_name(difficulty_type_token,i));
 		m_hit_probability[i]		= READ_IF_EXISTS(pSettings,r_float,section,temp,1.f);
 	}
+
+	m_fSecondVP_FovFactor = READ_IF_EXISTS(pSettings, r_float, section, "scope_lense_fov_factor", 0.0f); //Можно и из конфига прицела читать и наоборот! Пока так.
 }
 
 void CWeapon::LoadFireParams		(LPCSTR section, LPCSTR prefix)
@@ -448,16 +453,72 @@ void CWeapon::LoadFireParams		(LPCSTR section, LPCSTR prefix)
 	CShootingObject::LoadFireParams(section, prefix);
 };
 
-void CWeapon::LoadZoomOffset (LPCSTR section, LPCSTR prefix)
+void CWeapon::LoadZoomOffset(LPCSTR section, LPCSTR prefix)
 {
 	string256 full_name;
-	m_pHUD->SetZoomOffset(pSettings->r_fvector3	(hud_sect, strconcat(sizeof(full_name),full_name, prefix, "zoom_offset")));
-	m_pHUD->SetZoomRotateX(pSettings->r_float	(hud_sect, strconcat(sizeof(full_name),full_name, prefix, "zoom_rotate_x")));
-	m_pHUD->SetZoomRotateY(pSettings->r_float	(hud_sect, strconcat(sizeof(full_name),full_name, prefix, "zoom_rotate_y")));
-
+	if (
+		is_second_zoom_offset_enabled //Если включен режим второго прицеливания
+		&& !READ_IF_EXISTS(pSettings, r_bool, *cNameSect(), "disable_second_scope", false) //И второй прицел не запрещён (нужно для поддержки замороченной системы ogse_addons)
+		&& pSettings->line_exist(hud_sect, strconcat(sizeof(full_name), full_name, "second_", prefix, "zoom_offset")) //И в секциии худа есть настройки для второго режима прицеливания
+		&& pSettings->line_exist(hud_sect, strconcat(sizeof(full_name), full_name, "second_", prefix, "zoom_rotate_x"))
+		&& pSettings->line_exist(hud_sect, strconcat(sizeof(full_name), full_name, "second_", prefix, "zoom_rotate_y"))
+	) { //Используем настройки для второго режима прицеливания
+		m_pHUD->SetZoomOffset(pSettings->r_fvector3(hud_sect, strconcat(sizeof(full_name), full_name, "second_", prefix, "zoom_offset")));
+		m_pHUD->SetZoomRotateX(pSettings->r_float(hud_sect,   strconcat(sizeof(full_name), full_name, "second_", prefix, "zoom_rotate_x")));
+		m_pHUD->SetZoomRotateY(pSettings->r_float(hud_sect,   strconcat(sizeof(full_name), full_name, "second_", prefix, "zoom_rotate_y")));
+		//
+		is_second_zoom_offset_enabled = true;
+		//Msg("--Second scope enabled!");
+	}
+	else //В противном случае используем стандартные настройки
+	{
+		m_pHUD->SetZoomOffset(pSettings->r_fvector3(hud_sect, strconcat(sizeof(full_name), full_name, prefix, "zoom_offset")));
+		m_pHUD->SetZoomRotateX(pSettings->r_float(hud_sect,   strconcat(sizeof(full_name), full_name, prefix, "zoom_rotate_x")));
+		m_pHUD->SetZoomRotateY(pSettings->r_float(hud_sect,   strconcat(sizeof(full_name), full_name, prefix, "zoom_rotate_y")));
+		//
+		is_second_zoom_offset_enabled = false;
+		//Msg("~~Second scope disabled!");
+	}
+	//Зум фактор обновлять здесь необходимо. second_soom_factor поддерживается.
+	auto wpn_w_gl = smart_cast<CWeaponMagazinedWGrenade*>(this);
+	if (wpn_w_gl)
+		m_fZoomFactor = wpn_w_gl->CurrentZoomFactor();
+	else
+		m_fZoomFactor = this->CurrentZoomFactor();
+	//
 	if(pSettings->line_exist(hud_sect, "zoom_rotate_time"))
 		m_fZoomRotateTime = pSettings->r_float(hud_sect,"zoom_rotate_time");
+
+	callback(GameObject::eOnSecondScopeSwitch)(is_second_zoom_offset_enabled); //Для нормальной поддержки скриптовых оружейных наворотов ОГСЕ
 }
+
+void CWeapon::UpdateZoomOffset() //Собрал все манипуляции с зум оффсетом сюда, чтоб были в одном месте.
+{
+	if (m_bZoomEnabled && m_pHUD) {
+		auto wpn_w_gl = smart_cast<CWeaponMagazinedWGrenade*>(this);
+		if (wpn_w_gl) {
+			if (wpn_w_gl->m_bGrenadeMode)
+				LoadZoomOffset(*hud_sect, "grenade_");
+			else
+			{
+				if (GrenadeLauncherAttachable())
+					LoadZoomOffset(*hud_sect, "grenade_normal_");
+				else
+					LoadZoomOffset(*hud_sect, "");
+			}
+		}
+		else {
+			LoadZoomOffset(*hud_sect, "");
+		}
+	}
+}
+
+void CWeapon::SwitchScope()
+{
+	is_second_zoom_offset_enabled = !is_second_zoom_offset_enabled;
+	UpdateZoomOffset();
+}
+
 /*
 void CWeapon::animGet	(MotionSVec& lst, LPCSTR prefix)
 {
@@ -822,6 +883,15 @@ void CWeapon::UpdateCL		()
 
 void CWeapon::renderable_Render		()
 {
+	//KRodin: чтоб ствол в руках актора не был виден внутри прицела. Громоздко, да. Но по быстрому ничего другого в голову не пришло.
+	if (Device.m_SecondViewport.IsSVPFrame())
+		if (auto O = H_Parent())
+			if (auto EA = smart_cast<CEntityAlive*>(O))
+				if (auto pActor = EA->cast_actor())
+					if (auto inv_owner = EA->cast_inventory_owner())
+						if (inv_owner->m_inventory->ActiveItem() == this)
+							return;
+	//
 	UpdateXForm				();
 
 	//нарисовать подсветку
@@ -919,25 +989,37 @@ bool CWeapon::Action(s32 cmd, u32 flags)
             return true;
 
 		case kWPN_ZOOM:
-			if(IsZoomEnabled())
+		{
+			if (IsZoomEnabled())
 			{
-                if(flags&CMD_START && !IsPending())
+				if (flags&CMD_START && !IsPending())
 					OnZoomIn();
-                else if(IsZoomed())
+				else if (IsZoomed())
 					OnZoomOut();
 				return true;
-			}else 
+			}
+			else
 				return false;
-
+		}
 		case kWPN_ZOOM_INC:
 		case kWPN_ZOOM_DEC:
-			if(IsZoomEnabled() && IsZoomed() && m_bScopeDynamicZoom && IsScopeAttached())
+		{
+			if (IsZoomEnabled() && IsZoomed() && m_bScopeDynamicZoom && IsScopeAttached())
 			{
-				if(cmd==kWPN_ZOOM_INC)  ZoomInc();
+				if (cmd == kWPN_ZOOM_INC)  ZoomInc();
 				else					ZoomDec();
 				return true;
-			}else
+			}
+			else
 				return false;
+		}
+		case kSWITCH_SCOPE: //KRodin: заюзаем эту кнопку, один хрен она только в мультиплеере нужна, а он вырезан.
+		{
+			if (flags&CMD_START)
+			{
+				this->SwitchScope();
+			}
+		}
 	}
 	return false;
 }
@@ -1323,12 +1405,15 @@ bool CWeapon::Activate()
 void CWeapon::InitAddons()
 {
 }
-float default_fov = 67.5f;
-float CWeapon::CurrentZoomFactor	()
+
+float CWeapon::CurrentZoomFactor()
 {
-	float zf = IsScopeAttached() ? m_fScopeZoomFactor : m_fIronSightZoomFactor;
-//	zf *= (g_fov / default_fov);
-	return zf;
+	if (is_second_zoom_offset_enabled)
+		return m_fSecondScopeZoomFactor;
+	else if (IsScopeAttached())
+		return m_fScopeZoomFactor;
+	else
+		return m_fIronSightZoomFactor;
 };
 
 void CWeapon::OnZoomIn()
@@ -1363,6 +1448,10 @@ void CWeapon::OnZoomOut()
 
 	StartHudInertion();
 }
+
+bool CWeapon::UseScopeTexture() {
+	return (( GetAddonsState() & CSE_ALifeItemWeapon::eForcedNotexScope ) == 0) && !is_second_zoom_offset_enabled;
+};
 
 CUIStaticItem* CWeapon::ZoomTexture()
 {
@@ -1753,4 +1842,34 @@ void CWeapon::StateSwitchCallback(GameObject::ECallbackType actor_type, GameObje
 			);
 		}
 	}
+}
+
+// Обновление необходимости включения второго вьюпорта +SecondVP+
+// Вызывается только для активного оружия игрока
+void CWeapon::UpdateSecondVP()
+{
+	// + CActor::UpdateCL();
+	//
+	CObject* O = H_Parent();
+	if (!O)
+		return ;
+	CEntityAlive* EA = smart_cast<CEntityAlive*>(O);
+	if (!EA)
+		return;
+	CActor* pActor = EA->cast_actor();
+	if (!pActor)
+		return;
+	CInventoryOwner* inv_owner = EA->cast_inventory_owner();
+
+	bool b_is_active_item = inv_owner && (inv_owner->m_inventory->ActiveItem() == this);
+	R_ASSERT(b_is_active_item); // Эта функция должна вызываться только для оружия в руках нашего игрока
+
+	bool bCond_1 = m_fZoomRotationFactor > 0.05f;    // Мы должны целиться
+	bool bCond_2 = m_fSecondVP_FovFactor > 0.0f;     // В конфиге должен быть прописан фактор зума (scope_lense_fov_factor) больше чем 0
+	bool bCond_3 = pActor->cam_Active() == pActor->cam_FirstEye(); // Мы должны быть от 1-го лица
+	auto wpn_w_gl = smart_cast<CWeaponMagazinedWGrenade*>(this);
+	bool bCond_4 = ( !wpn_w_gl || !wpn_w_gl->m_bGrenadeMode );     // Мы не должны быть в режиме подствольника
+	bool bCond_5 = !is_second_zoom_offset_enabled; // Мы не должны быть в режиме второго прицеливания.
+
+	Device.m_SecondViewport.SetSVPActive(bCond_1 && bCond_2 && bCond_3 && bCond_4 && bCond_5);
 }

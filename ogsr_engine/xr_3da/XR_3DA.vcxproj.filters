@@ -475,6 +475,7 @@
       <Filter>Interfaces</Filter>
     </ClInclude>
     <ClInclude Include="vismask.h" />
+    <ClInclude Include="ShadersExternalData.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="defines.cpp">
@@ -834,11 +835,6 @@
     <ClCompile Include="..\COMMON\ETextureParams.cpp">
       <Filter>Interfaces\Render\Execution &amp; 3D\Shaders\ShaderManager</Filter>
     </ClCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="OutOfVirtError.RES">
-      <Filter>General\Resources</Filter>
-    </Resource>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="resource.rc">

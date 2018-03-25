@@ -272,9 +272,6 @@
     <ClInclude Include="lzhuf.h" />
     <ClInclude Include="xrSyncronize.h" />
   </ItemGroup>
-  <ItemGroup>
-    <ResourceCompile Include="xrCore.rc" />
-  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

@@ -317,6 +317,7 @@ CRenderTarget::CRenderTarget		()
 	w = Device.dwWidth, h = Device.dwHeight;
 	rt_Generic_0.create(r2_RT_generic0, w, h, D3DFMT_A8R8G8B8);
 	rt_Generic_1.create(r2_RT_generic1, w, h, D3DFMT_A8R8G8B8);
+	rt_secondVP.create(r2_RT_secondVP, w, h, D3DFMT_A8R8G8B8); //--#SM+#-- +SecondVP+
 	// RT - KD
 	if (ps_r2_pp_flags.test(R2PP_FLAG_SUNSHAFTS) && (ps_sunshafts_mode == R2SS_SCREEN_SPACE))
 	{

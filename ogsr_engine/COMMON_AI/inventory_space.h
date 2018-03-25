@@ -18,9 +18,8 @@
 #define HELMET_SLOT			10
 #define NIGHT_VISION_SLOT	11
 #define BIODETECTOR_SLOT	12
-#define ARTEFACT_SLOT		13 //Какая-то мультиплеерная хрень, что-ли.
 
-#define SLOTS_TOTAL			14
+#define SLOTS_TOTAL			13
 
 #define RUCK_HEIGHT			280
 #define RUCK_WIDTH			7

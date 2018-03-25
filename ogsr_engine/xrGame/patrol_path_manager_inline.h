@@ -63,6 +63,7 @@ IC	void CPatrolPathManager::set_path				(const CPatrolPath *path, shared_str pat
 	if (m_path == path)
 		return;
 	m_path					= path;
+	//Msg("~~[CPatrolPathManager::set_path] old path [%s], new_path [%s]", m_path_name.c_str(), path_name.c_str());
 	m_path_name				= path_name;
 	m_actuality				= false;
 	m_completed				= false;

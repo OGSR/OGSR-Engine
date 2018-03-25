@@ -396,11 +396,60 @@ class cl_detector	: public R_constant_setup {
 };	static cl_detector		binder_detector;
 #endif
 
+//////////////////////////////////////////////////
+//KRodin: разгрести, и выкинуть то что не используется!
+// SM_TODO: RCache.hemi заменить на более "логичное" место
+static class cl_hud_params : public R_constant_setup //--#SM+#--
+{
+	virtual void setup(R_constant* C) { RCache.set_c(C, g_pGamePersistent->m_pGShaderConstants.hud_params); }
+} binder_hud_params;
+
+static class cl_script_params : public R_constant_setup //--#SM+#--
+{
+	virtual void setup(R_constant* C) { RCache.set_c(C, g_pGamePersistent->m_pGShaderConstants.m_script_params); }
+} binder_script_params;
+
+static class cl_blend_mode : public R_constant_setup //--#SM+#--
+{
+	virtual void setup(R_constant* C) { RCache.set_c(C, g_pGamePersistent->m_pGShaderConstants.m_blender_mode); }
+} binder_blend_mode;
+
+/*/Три класса ниже - для тепловизора походу.
+class cl_camo_data : public R_constant_setup //--#SM+#--
+{
+	virtual void setup(R_constant* C) { RCache.hemi.c_camo_data = C; }
+};
+static cl_camo_data binder_camo_data;
+
+class cl_custom_data : public R_constant_setup //--#SM+#--
+{
+	virtual void setup(R_constant* C) { RCache.hemi.c_custom_data = C; }
+};
+static cl_custom_data binder_custom_data;
+
+class cl_entity_data : public R_constant_setup //--#SM+#--
+{
+	virtual void setup(R_constant* C) { RCache.hemi.c_entity_data = C; }
+};
+static cl_entity_data binder_entity_data;
+*/
+//////////////////////////////////////////////////
+
 // Standart constant-binding
 void	CBlender_Compile::SetMapping	()
 {
 	if (!shader_exports)
 		shader_exports = xr_new<ShExports>();
+
+	// misc
+	r_Constant("m_hud_params", &binder_hud_params); //--#SM+#--
+	r_Constant("m_script_params", &binder_script_params); //--#SM+#--
+	r_Constant("m_blender_mode", &binder_blend_mode); //--#SM+#--
+
+	// objects data
+	/*r_Constant("m_obj_camo_data", &binder_camo_data); //--#SM+#--
+	r_Constant("m_obj_custom_data", &binder_custom_data); //--#SM+#--
+	r_Constant("m_obj_entity_data", &binder_entity_data); //--#SM+#--*/
 
 	// matrices
 	r_Constant				("m_W",				&binder_w);

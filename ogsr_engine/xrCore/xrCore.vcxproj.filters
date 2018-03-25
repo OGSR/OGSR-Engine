@@ -417,11 +417,6 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include="xrCore.rc">
-      <Filter>Kernel</Filter>
-    </ResourceCompile>
-  </ItemGroup>
-  <ItemGroup>
     <CustomBuildStep Include="FileSystem.h">
       <Filter>FS</Filter>
     </CustomBuildStep>

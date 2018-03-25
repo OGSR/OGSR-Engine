@@ -106,11 +106,10 @@ void CRenderDevice::End		(void)
 	// end scene
 	RCache.OnFrameEnd	();
 	Memory.dbg_check		();
-    CHK_DX				(HW.pDevice->EndScene());
+    CHK_DX(HW.pDevice->EndScene());
 
-	HRESULT _hr		= HW.pDevice->Present( NULL, NULL, NULL, NULL );
-	if				(D3DERR_DEVICELOST==_hr)	return;			// we will handle this later
-	//R_ASSERT2		(SUCCEEDED(_hr),	"Presentation failed. Driver upgrade needed?");
+	if (!Device.m_SecondViewport.IsSVPFrame() && !Device.m_SecondViewport.m_bCamReady) //--#SM+#-- +SecondVP+ Не выводим кадр из второго вьюпорта на экран (на практике у нас экранная картинка обновляется минимум в два раза реже) [don't flush image into display for SecondVP-frame]
+		HW.pDevice->Present(nullptr, nullptr, nullptr, nullptr);
 #endif
 }
 
@@ -489,4 +488,16 @@ void CRenderDevice::OnWM_Activate(WPARAM wParam, LPARAM lParam)
 			ShowCursor				(TRUE);
 		}
 	}
+}
+
+void CRenderDevice::CSecondVPParams::SetSVPActive(bool bState) //--#SM+#-- +SecondVP+
+{
+	m_bIsActive = bState;
+	if (g_pGamePersistent)
+		g_pGamePersistent->m_pGShaderConstants.m_blender_mode.z = (m_bIsActive ? 1.0f : 0.0f);
+}
+
+bool CRenderDevice::CSecondVPParams::IsSVPFrame() //--#SM+#-- +SecondVP+
+{
+	return IsSVPActive() && ((Device.dwFrame % m_FrameDelay) == 0);
 }

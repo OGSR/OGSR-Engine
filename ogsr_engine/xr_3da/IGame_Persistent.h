@@ -1,11 +1,11 @@
-#ifndef IGame_PersistentH
-#define IGame_PersistentH
 #pragma once
 
 #include "Environment.h"
 #ifndef _EDITOR
 	#include "IGame_ObjectPool.h"
 #endif
+
+#include "ShadersExternalData.h" //--#SM+#--
 
 class IMainMenu;
 class ENGINE_API CPS_Instance;
@@ -68,6 +68,8 @@ public:
 	CEnvironment*					pEnvironment;
 	CEnvironment&					Environment()	{return *pEnvironment;};
 
+	ShadersExternalData m_pGShaderConstants; //--#SM+#--
+
 	virtual bool					OnRenderPPUI_query	() { return FALSE; };	// should return true if we want to have second function called
 	virtual void					OnRenderPPUI_main	() {};
 	virtual void					OnRenderPPUI_PP		() {};
@@ -122,6 +124,4 @@ public:
 extern ENGINE_API	bool g_dedicated_server;
 extern ENGINE_API	IGame_Persistent*	g_pGamePersistent;
 extern bool IsMainMenuActive();
-
-#endif //IGame_PersistentH
 
