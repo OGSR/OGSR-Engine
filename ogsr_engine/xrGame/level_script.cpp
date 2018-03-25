@@ -770,6 +770,16 @@ void set_monster_relation( LPCSTR from, LPCSTR to, int rel ) {
 }
 
 
+void patrol_path_add( LPCSTR patrol_path, CPatrolPath* path ) {
+  ai().patrol_paths_raw().add_path( shared_str( patrol_path ), path );
+}
+
+
+void patrol_path_remove( LPCSTR patrol_path ) {
+  ai().patrol_paths_raw().remove_path( shared_str( patrol_path ) );
+}
+
+
 #pragma optimize("s",on)
 void CLevel::script_register(lua_State *L)
 {
@@ -901,7 +911,9 @@ void CLevel::script_register(lua_State *L)
 		def( "set_efx_eax_preset", &setEFXEAXPreset ),
 		def( "unset_efx_eax_preset", &unsetEFXEAXPreset ),
 		def( "set_cam_inert", &set_cam_inert ),
-		def( "set_monster_relation", &set_monster_relation )
+		def( "set_monster_relation", &set_monster_relation ),
+		def( "patrol_path_add", &patrol_path_add ),
+		def( "patrol_path_remove", &patrol_path_remove )
 	],
 	
 	module(L,"actor_stats")
