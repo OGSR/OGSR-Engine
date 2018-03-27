@@ -191,7 +191,6 @@
     <None Include="Resources\fr_disabled.png" />
     <None Include="Resources\ru_disabled.png" />
     <None Include="Resources\us_disabled.png" />
-    <Content Include="Resources\Title_logo.jpg" />
     <Content Include="stalker.ico" />
   </ItemGroup>
   <ItemGroup />
