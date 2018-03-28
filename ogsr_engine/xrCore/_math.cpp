@@ -1,202 +1,102 @@
 #include "stdafx.h"
-#pragma hdrstop
 
-#include <process.h>
+#include <powerbase.h>
+#pragma comment(lib, "PowrProf.lib")
 
-// mmsystem.h
-#define MMNOSOUND
-#define MMNOMIDI
-#define MMNOAUX
-#define MMNOMIXER
-#define MMNOJOY
-#include <mmsystem.h>
+typedef struct _PROCESSOR_POWER_INFORMATION {
+	ULONG Number;
+	ULONG MaxMhz;
+	ULONG CurrentMhz;
+	ULONG MhzLimit;
+	ULONG MaxIdleState;
+	ULONG CurrentIdleState;
+} PROCESSOR_POWER_INFORMATION, *PPROCESSOR_POWER_INFORMATION;
 
 // Initialized on startup
-XRCORE_API	Fmatrix			Fidentity;
-XRCORE_API	Dmatrix			Didentity;
-XRCORE_API	CRandom			Random;
+XRCORE_API Fmatrix Fidentity;
+XRCORE_API Dmatrix Didentity;
+XRCORE_API CRandom Random;
 
 
-#ifdef _M_AMD64
-
-namespace FPU {
-	XRCORE_API void m24() {
-		_control87(_RC_CHOP, MCW_RC);
-	}
-	XRCORE_API void m24r() {
-		_control87(_RC_NEAR, MCW_RC);
-	}
-	XRCORE_API void m53() {
-		_control87(_RC_CHOP, MCW_RC);
-	}
-	XRCORE_API void m53r() {
-		_control87(_RC_NEAR, MCW_RC);
-	}
-	XRCORE_API void m64() {
-		_control87(_RC_CHOP, MCW_RC);
-	}
-	XRCORE_API void m64r() {
-		_control87(_RC_NEAR, MCW_RC);
+/*
+Функции управления точностью вычислений с плавающей точкой.
+Более подробную информацию можно получить здесь:
+https://docs.microsoft.com/en-us/cpp/c-runtime-library/reference/control87-controlfp-control87-2
+Число 24, 53 и 64 - определяют ограничение точности в битах.
+Наличие 'r' - включает округление результатов.
+Реально в движке используются только m24r и m64r.
+*/
+namespace FPU
+{
+	void m24()
+	{
+		_controlfp(_PC_24, MCW_PC);
+		_controlfp(_RC_CHOP, MCW_RC);
 	}
 
-#else
-u16 getFPUsw() {
-	u16 SW;
-	__asm fstcw SW;
-	return SW;
-}
-
-namespace FPU {
-	static u16 _24 = 0;
-	static u16 _24r = 0;
-	static u16 _53 = 0;
-	static u16 _53r = 0;
-	static u16 _64 = 0;
-	static u16 _64r = 0;
-
-	XRCORE_API void m24() {
-		u16 p = _24;
-		__asm fldcw p;
-	}
-	XRCORE_API void m24r() {
-		u16 p = _24r;
-		__asm fldcw p;
-	}
-	XRCORE_API void m53() {
-		u16 p = _53;
-		__asm fldcw p;
-	}
-	XRCORE_API void m53r() {
-		u16 p = _53r;
-		__asm fldcw p;
-	}
-	XRCORE_API void m64() {
-		u16 p = _64;
-		__asm fldcw p;
-	}
-	XRCORE_API void m64r() {
-		u16 p = _64r;
-		__asm fldcw p;
+	void m24r()
+	{
+		_controlfp(_PC_24, MCW_PC);
+		_controlfp(_RC_NEAR, MCW_RC);
 	}
 
-#endif
+	void m53()
+	{
+		_controlfp(_PC_53, MCW_PC);
+		_controlfp(_RC_CHOP, MCW_RC);
+	}
 
-	void initialize() {
-		_clear87();
+	void m53r()
+	{
+		_controlfp(_PC_53, MCW_PC);
+		_controlfp(_RC_NEAR, MCW_RC);
+	}
 
-#ifdef _M_IX86
-		_control87(_PC_24, MCW_PC);
-		_control87(_RC_CHOP, MCW_RC);
-		_24 = getFPUsw(); // 24, chop
-		_control87(_RC_NEAR, MCW_RC);
-		_24r = getFPUsw(); // 24, rounding
+	void m64()
+	{
+		_controlfp(_PC_64, MCW_PC);
+		_controlfp(_RC_CHOP, MCW_RC);
+	}
 
-		_control87(_PC_53, MCW_PC);
-		_control87(_RC_CHOP, MCW_RC);
+	void m64r()
+	{
+		_controlfp(_PC_64, MCW_PC);
+		_controlfp(_RC_NEAR, MCW_RC);
+	}
 
-		_53 = getFPUsw(); // 53, chop
-		_control87(_RC_NEAR, MCW_RC);
-		_53r = getFPUsw(); // 53, rounding
+	void initialize()
+	{
+		_clearfp();
 
-		_control87(_PC_64, MCW_PC);
-		_control87(_RC_CHOP, MCW_RC);
-		_64 = getFPUsw(); // 64, chop
-
-		_control87(_RC_NEAR, MCW_RC);
-		_64r = getFPUsw(); // 64, rounding
-#endif
-
-		m24r();
+		// По-умолчанию для плагинов экспорта из 3D-редакторов включена высокая точность вычислений с плавающей точкой
+		//if (Core.PluginMode)
+		//	m64r();
+		//else
+			m24r();
 
 		::Random.seed(u32(CPU::GetCLK() % (1i64 << 32i64)));
 	}
-} // namespace FPU
+}
 
 
-namespace CPU 
+namespace CPU
 {
-	XRCORE_API u64				clk_per_second	;
-	XRCORE_API u64				clk_per_milisec	;
-	XRCORE_API u64				clk_per_microsec;
-	XRCORE_API u64				clk_overhead	;
-	XRCORE_API float			clk_to_seconds	;
-	XRCORE_API float			clk_to_milisec	;
-	XRCORE_API float			clk_to_microsec	;
-	XRCORE_API u64				qpc_freq		= 0	;
-	XRCORE_API u64				qpc_overhead	= 0	;
-	XRCORE_API u32				qpc_counter		= 0	;
-	
-	XRCORE_API _processor_info	ID;
-
-	XRCORE_API u64				QPC	()			{
-		u64		_dest	;
-		QueryPerformanceCounter			((PLARGE_INTEGER)&_dest);
-		qpc_counter	++	;
-		return	_dest	;
+	u64 qpc_freq;
+	u32 qpc_counter = 0;
+	_processor_info	ID;
+	u64 QPC() {
+		u64 _dest;
+		QueryPerformanceCounter(PLARGE_INTEGER(&_dest));
+		qpc_counter++;
+		return _dest;
 	}
+}
 
-	void Detect	()
-	{
-		// Timers & frequency
-		u64			start,end;
-		u32			dwStart,dwTest;
-
-		SetPriorityClass		(GetCurrentProcess(),REALTIME_PRIORITY_CLASS);
-
-		// Detect Freq
-		dwTest	= timeGetTime();
-		do { dwStart = timeGetTime(); } while (dwTest==dwStart);
-		start	= GetCLK();
-		while (timeGetTime()-dwStart<1000) ;
-		end		= GetCLK();
-		clk_per_second = end-start;
-
-		// Detect RDTSC Overhead
-		clk_overhead	= 0;
-		u64 dummy		= 0;
-                int i = 0;
-		for (i=0; i<256; i++)	{
-			start			=	GetCLK();
-			clk_overhead	+=	GetCLK()-start-dummy;
-		}
-		clk_overhead		/=	256;
-
-		// Detect QPC Overhead
-		QueryPerformanceFrequency	((PLARGE_INTEGER)&qpc_freq)	;
-		qpc_overhead	= 0;
-		for (i=0; i<256; i++)	{
-			start			=	QPC();
-			qpc_overhead	+=	QPC()-start-dummy;
-		}
-		qpc_overhead		/=	256;
-
-		SetPriorityClass	(GetCurrentProcess(),NORMAL_PRIORITY_CLASS);
-
-		clk_per_second	-=	clk_overhead;
-		clk_per_milisec	=	clk_per_second/1000;
-		clk_per_microsec	=	clk_per_milisec/1000;
-
-		_control87	( _PC_64,   MCW_PC );
-//		_control87	( _RC_CHOP, MCW_RC );
-		double a,b;
-		a = 1;		b = double(clk_per_second);
-		clk_to_seconds = float(double(a/b));
-		a = 1000;	b = double(clk_per_second);
-		clk_to_milisec = float(double(a/b));
-		a = 1000000;b = double(clk_per_second);
-		clk_to_microsec = float(double(a/b));
-	}
-};
-
-
-//------------------------------------------------------------------------------------
-void _initialize_cpu() 
+void _initialize_cpu()
 {
-	Msg("* Detected CPU: %s [%s], F%d/M%d/S%d, %.2f mhz, %u-clk 'rdtsc'",
+	Msg("* Detected CPU: %s [%s], F%d/M%d/S%d",
 		CPU::ID.brand, CPU::ID.vendor,
-		CPU::ID.family,CPU::ID.model,CPU::ID.stepping,
-		float(CPU::clk_per_second/u64(1000000)),
-		u32(CPU::clk_overhead)
+		CPU::ID.family, CPU::ID.model, CPU::ID.stepping
 	);
 
 	if (strstr(Core.Params, "-x86"))
@@ -220,15 +120,33 @@ void _initialize_cpu()
 	Msg("* CPU features: %s", features);
 	Msg("* CPU cores: [%u], threads: [%u]", CPU::ID.coresCount, CPU::ID.threadCount);
 
-	Fidentity.identity		();	// Identity matrix
-	Didentity.identity		();	// Identity matrix
-	pvInitializeStatics		();	// Lookup table for compressed normals
-	FPU::initialize			();
+	SYSTEM_INFO sysInfo;
+	GetSystemInfo(&sysInfo);
+	const size_t cpusCount = sysInfo.dwNumberOfProcessors;
+
+	xr_vector<PROCESSOR_POWER_INFORMATION> cpusInfo(cpusCount);
+	CallNtPowerInformation(ProcessorInformation, nullptr, 0, cpusInfo.data(),
+		sizeof(PROCESSOR_POWER_INFORMATION) * cpusCount);
+
+	for (size_t i = 0; i < cpusInfo.size(); i++) {
+		const PROCESSOR_POWER_INFORMATION& cpuInfo = cpusInfo[i];
+		Msg("* CPU%zu current freq: %lu MHz, max freq: %lu MHz",
+			i, cpuInfo.CurrentMhz, cpuInfo.MaxMhz);
+	}
+
+	LARGE_INTEGER Freq;
+	QueryPerformanceFrequency(&Freq);
+	CPU::qpc_freq = Freq.QuadPart;
+
+	Fidentity.identity();	// Identity matrix
+	Didentity.identity();	// Identity matrix
+	pvInitializeStatics();	// Lookup table for compressed normals
+	FPU::initialize();
 }
 
 
 #ifdef _WIN32
-static const DWORD MS_VC_EXCEPTION = 0x406D1388;
+static constexpr DWORD MS_VC_EXCEPTION = 0x406D1388;
 
 #pragma pack(push, 8)
 typedef struct tagTHREADNAME_INFO {
@@ -271,6 +189,7 @@ void set_thread_name(const char* threadName, std::thread& thread) {
 void set_current_thread_name(const char* threadName) { prctl(PR_SET_NAME, threadName, 0, 0, 0); }
 
 #endif
+
 
 void spline1	( float t, Fvector *p, Fvector *ret )
 {

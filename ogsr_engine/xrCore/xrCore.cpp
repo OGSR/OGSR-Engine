@@ -18,11 +18,6 @@ XRCORE_API xrCore Core;
 
 XRCORE_API ThreadPool* TTAPI = new ThreadPool();
 
-namespace CPU
-{
-	extern	void			Detect	();
-};
-
 static u32	init_counter	= 0;
 
 void xrCore::_initialize	(LPCSTR _ApplicationName, LogCallback cb, BOOL init_fs, LPCSTR fs_fname)
@@ -30,11 +25,11 @@ void xrCore::_initialize	(LPCSTR _ApplicationName, LogCallback cb, BOOL init_fs,
 	strcpy_s					(ApplicationName,_ApplicationName);
 	if (0==init_counter) {
 #ifdef XRCORE_STATIC	
-		_clear87	();
-		_control87	( _PC_53,   MCW_PC );
-		_control87	( _RC_CHOP, MCW_RC );
-		_control87	( _RC_NEAR, MCW_RC );
-		_control87	( _MCW_EM,  MCW_EM );
+		_clearfp();
+		_controlfp(_PC_53, MCW_PC);
+		_controlfp(_RC_CHOP, MCW_RC);
+		_controlfp(_RC_NEAR, MCW_RC);
+		_controlfp(_MCW_EM, MCW_EM);
 #endif
 		// Init COM so we can use CoCreateInstance
 //		HRESULT co_res = 
@@ -69,9 +64,6 @@ void xrCore::_initialize	(LPCSTR _ApplicationName, LogCallback cb, BOOL init_fs,
 
 		DWORD	sz_comp		= sizeof(CompName);
 		GetComputerName		(CompName,&sz_comp);
-
-		// Mathematics & PSI detection
-		CPU::Detect			();
 		
 		Memory._initialize	(strstr(Params,"-mem_debug") ? TRUE : FALSE);
 
@@ -150,40 +142,39 @@ void xrCore::_destroy		()
 }
 
 #ifndef XRCORE_STATIC
-
-//. why ??? 
-#ifdef _EDITOR
-	BOOL WINAPI DllEntryPoint(HINSTANCE hinstDLL, DWORD ul_reason_for_call, LPVOID lpvReserved)
-#else
-	BOOL WINAPI DllMain(HINSTANCE hinstDLL, DWORD ul_reason_for_call, LPVOID lpvReserved)
-#endif
+BOOL WINAPI DllMain(HINSTANCE hinstDLL, DWORD ul_reason_for_call, LPVOID lpvReserved)
 {
 	switch (ul_reason_for_call)
 	{
 	case DLL_PROCESS_ATTACH:
-		{
-			_clear87();
-#ifdef _M_IX86
-			_control87( _PC_53,   MCW_PC );
-#endif
-			_control87( _RC_CHOP, MCW_RC );
-			_control87( _RC_NEAR, MCW_RC );
-			_control87( _MCW_EM,  MCW_EM );
-		}
-		break;
-	case DLL_THREAD_ATTACH:
-/*		if (!strstr(GetCommandLine(), "-editor"))
-			CoInitializeEx(NULL, COINIT_MULTITHREADED);*/
-		timeBeginPeriod	(1);
-		break;
-	case DLL_THREAD_DETACH:
-/*		if (!strstr(GetCommandLine(), "-editor"))
-			CoUninitialize();*/
+		_clearfp();
+		_controlfp( _PC_53,   MCW_PC );
+		_controlfp( _RC_CHOP, MCW_RC );
+		_controlfp( _RC_NEAR, MCW_RC );
+		_controlfp( _MCW_EM,  MCW_EM );
+		/*
+			ѕо сути это не рекомендуемый Microsoft, но повсеместно используемый способ повышени€ точности
+			соблюдени€ и измерени€ временных интревалов функци€ми Sleep, QueryPerformanceCounter,
+			timeGetTime и GetTickCount.
+			‘ункци€ действует на всю операционную систему в целом (!) и нет необходимости вызывать еЄ при
+			старте нового потока. ¬ызов timeEndPeriod специалисты Microsoft считают об€зательным.
+			≈сть подозрени€, что Windows сама устанавливает максимальную точность при старте таких
+			приложений как, например, игры. “огда есть шанс, что вызов timeBeginPeriod здесь бессмысленен.
+			Ќедостатком данного способа €вл€етс€ то, что он приводит к общему замедлению работы как
+			текущего приложени€, так и всей операционной системы.
+			≈щЄ можно посмотреть ссылки:
+			https://msdn.microsoft.com/en-us/library/vs/alm/dd757624(v=vs.85).aspx
+			https://users.livejournal.com/-winnie/151099.html
+			https://github.com/tebjan/TimerTool
+		*/
+		timeBeginPeriod(1);
 		break;
 	case DLL_PROCESS_DETACH:
 #ifdef USE_MEMORY_MONITOR
-		memory_monitor::flush_each_time	(true);
+		memory_monitor::flush_each_time(true);
 #endif // USE_MEMORY_MONITOR
+		_clearfp();
+		timeEndPeriod(1);
 		break;
 	}
     return TRUE;
