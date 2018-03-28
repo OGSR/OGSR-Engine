@@ -8,8 +8,8 @@
 #include "cderr.h"
 #include "commdlg.h"
 
-EFS_Utils*	xr_EFS	= NULL;
-//----------------------------------------------------
+std::unique_ptr<EFS_Utils> xr_EFS;
+
 EFS_Utils::EFS_Utils( )
 {
 }

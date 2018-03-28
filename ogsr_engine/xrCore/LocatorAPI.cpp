@@ -32,7 +32,7 @@ XRCORE_API DUMMY_STUFF	*g_temporary_stuff = 0;
 //#	undef TRIVIAL_ENCRYPTOR_DECODER
 #endif // PROTECTED_BUILD
 
-CLocatorAPI*		xr_FS = NULL;
+std::unique_ptr<CLocatorAPI> xr_FS;
 
 #define FSLTX	"fs.ltx"
 

@@ -31,8 +31,7 @@ void xrCore::_initialize	(LPCSTR _ApplicationName, LogCallback cb, BOOL init_fs,
 		_controlfp(_RC_NEAR, MCW_RC);
 		_controlfp(_MCW_EM, MCW_EM);
 #endif
-		// Init COM so we can use CoCreateInstance
-//		HRESULT co_res = 
+
 		if (!strstr(GetCommandLine(), "-editor"))
 			CoInitializeEx(NULL, COINIT_MULTITHREADED);
 		strcpy_s			(Params,sizeof(Params),GetCommandLine());
@@ -76,10 +75,8 @@ void xrCore::_initialize	(LPCSTR _ApplicationName, LogCallback cb, BOOL init_fs,
 
 		rtc_initialize		();
 
-		xr_FS				= xr_new<CLocatorAPI>	();
-
-		xr_EFS				= xr_new<EFS_Utils>		();
-//.		R_ASSERT			(co_res==S_OK);
+		xr_FS = std::make_unique<CLocatorAPI>();
+		xr_EFS = std::make_unique<EFS_Utils>();
 	}
 	if (init_fs){
 		u32 flags			= 0;
@@ -124,8 +121,9 @@ void xrCore::_destroy		()
 	if (0==init_counter){
 		FS._destroy			();
 		EFS._destroy		();
-		xr_delete			(xr_FS);
-		xr_delete			(xr_EFS);
+
+		xr_FS.reset();
+		xr_EFS.reset();
 
 #ifndef	_EDITOR
 		if (trained_model) {
