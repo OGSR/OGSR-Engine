@@ -2122,7 +2122,6 @@
     <ClCompile Include="TorridZone.cpp" />
     <ClCompile Include="ZoneVisual.cpp" />
     <ClCompile Include="space_restrictor.cpp" />
-    <ClCompile Include="space_restrictor_script.cpp" />
     <ClCompile Include="HairsZone.cpp" />
     <ClCompile Include="HairsZone_script.cpp" />
     <ClCompile Include="AmebaZone.cpp" />

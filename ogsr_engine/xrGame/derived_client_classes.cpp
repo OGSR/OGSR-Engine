@@ -50,6 +50,7 @@ void CAnomalyZoneScript::script_register(lua_State *L)
 	module(L)
 		[	
 			class_<CSpaceRestrictor, CGameObject>("CSpaceRestrictor")
+			.def(constructor<>())
 			.property("restrictor_center"				,				&get_restrictor_center)
 			.property("restrictor_type"					,				&CSpaceRestrictor::restrictor_type)
 			.property("radius"							,				&CSpaceRestrictor::Radius)						
