@@ -146,19 +146,19 @@ void CScriptEngine::script_register(lua_State *L)
 			.def("stop",&profile_timer_script::stop)
 			.def("time",&profile_timer_script::time)
 		,
-		def("prefetch", prefetch_module),
-		def("editor", editor),
-		def("bit_and", bit_and),
-		def("bit_or", bit_or),
-		def("bit_xor", bit_xor),
-		def("bit_not", bit_not),
-		def("user_name", user_name),
-		def("time_global", script_time_global),
+		def("prefetch", &prefetch_module),
+		def("editor", &editor),
+		def("bit_and", &bit_and),
+		def("bit_or", &bit_or),
+		def("bit_xor", &bit_xor),
+		def("bit_not", &bit_not),
+		def("user_name", &user_name),
+		def("time_global", &script_time_global),
 		// функции из ogse.dll
-		def("GetShift", GetShift),
-		def("GetLAlt", GetLAlt),
-		def("GetRAlt", GetRAlt),
-		def("GetAlt", GetAlt),
-		def("device", get_device)
+		def("GetShift", &GetShift),
+		def("GetLAlt", &GetLAlt),
+		def("GetRAlt", &GetRAlt),
+		def("GetAlt", &GetAlt),
+		def("device", &get_device)
 	];
 }
