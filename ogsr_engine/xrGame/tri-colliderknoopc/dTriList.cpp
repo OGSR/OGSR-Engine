@@ -57,7 +57,7 @@ inline bool ValidateCollision(dxGeom* o1, dxGeom* o2){
 
 
 
-int dCollideSTL(dxGeom* TriList, dxGeom* Sphere, int Flags, dContactGeom* Contact, int Stride) throw()
+int dCollideSTL(dxGeom* TriList, dxGeom* Sphere, int Flags, dContactGeom* Contact, int Stride) noexcept
 {
 
 	if (ValidateCollision(Sphere, TriList)){
@@ -72,7 +72,7 @@ int dCollideSTL(dxGeom* TriList, dxGeom* Sphere, int Flags, dContactGeom* Contac
 
 
 
-int dCollideBTL(dxGeom* TriList, dxGeom* Box, int Flags, dContactGeom* Contact, int Stride)throw()
+int dCollideBTL(dxGeom* TriList, dxGeom* Box, int Flags, dContactGeom* Contact, int Stride) noexcept
 {
 
 	if (ValidateCollision(Box, TriList)){
@@ -85,7 +85,7 @@ int dCollideBTL(dxGeom* TriList, dxGeom* Box, int Flags, dContactGeom* Contact, 
 
 }
 
-int dCollideCTL(dxGeom* TriList, dxGeom* Cyl, int Flags, dContactGeom* Contact, int Stride)throw()
+int dCollideCTL(dxGeom* TriList, dxGeom* Cyl, int Flags, dContactGeom* Contact, int Stride) noexcept
 {
 
 	if (ValidateCollision(Cyl, TriList)){
@@ -117,7 +117,7 @@ dColliderFn* dTriListColliderFn(int num)
 
 }
 
-int dAABBTestTL(dxGeom* TriList, dxGeom* Object, dReal AABB[6]) throw()
+int dAABBTestTL(dxGeom* TriList, dxGeom* Object, dReal AABB[6]) noexcept
 {
 
 	return 1;

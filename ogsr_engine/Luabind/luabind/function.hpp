@@ -84,7 +84,7 @@ namespace luabind
 				function_rep(const char* name): m_name(name) {}
 				void add_overload(const free_functions::overload_rep& o);
 
-				const vector_class<overload_rep>& overloads() const throw() { return m_overloads; }
+				const vector_class<overload_rep>& overloads() const noexcept { return m_overloads; }
 
 				const char* name() const { return m_name; }
 

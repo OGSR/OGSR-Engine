@@ -148,21 +148,21 @@ namespace luabind { namespace detail
 
 		void add_base_class(const base_info& binfo);
 
-		const vector_class<base_info>& bases() const throw() { return m_bases; }
+		const vector_class<base_info>& bases() const noexcept { return m_bases; }
 
 		void set_type(LUABIND_TYPE_INFO t) { m_type = t; }
-		LUABIND_TYPE_INFO type() const throw() { return m_type; }
-		LUABIND_TYPE_INFO holder_type() const throw() { return m_holder_type; }
-		LUABIND_TYPE_INFO const_holder_type() const throw() { return m_const_holder_type; }
-		bool has_holder() const throw() { return m_construct_holder != 0; }
+		LUABIND_TYPE_INFO type() const noexcept { return m_type; }
+		LUABIND_TYPE_INFO holder_type() const noexcept { return m_holder_type; }
+		LUABIND_TYPE_INFO const_holder_type() const noexcept { return m_const_holder_type; }
+		bool has_holder() const noexcept { return m_construct_holder != 0; }
 
-		const char* name() const throw() { return m_name; }
+		const char* name() const noexcept { return m_name; }
 
 		// the lua reference to this class_rep
 		// TODO: remove
-//		int self_ref() const throw() { return m_self_ref; }
+//		int self_ref() const noexcept { return m_self_ref; }
 		// the lua reference to the metatable for this class' instances
-		int metatable_ref() const throw() { return m_instance_metatable; }
+		int metatable_ref() const noexcept { return m_instance_metatable; }
 
 		void get_table(lua_State* L) const { m_table_ref.get(L); }
 		void get_default_table(lua_State* L) const { m_default_table_ref.get(L); }
