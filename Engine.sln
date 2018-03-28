@@ -63,6 +63,11 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "xrRender", "ogsr_engine\Lay
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "LuaJIT", "ogsr_engine\LuaJIT\src\luajit.vcxproj", "{632AEEB6-DC06-4E15-9551-B2B09A4B73C5}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{73C18BE5-9F9C-49C3-A2B9-9DE89498B70E}"
+	ProjectSection(SolutionItems) = preProject
+		ogsr_engine\xray.natvis = ogsr_engine\xray.natvis
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Release|x64 = Release|x64
