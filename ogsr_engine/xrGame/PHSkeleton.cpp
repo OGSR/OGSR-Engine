@@ -77,7 +77,7 @@ bool CPHSkeleton::Spawn(CSE_Abstract *D)
 	if(po->_flags.test(CSE_PHSkeleton::flSpawnCopy))
 	{
 		CPHSkeleton* source=smart_cast<CPHSkeleton*>(Level().Objects.net_Find(po->source_id));
-		R_ASSERT2(source,"no source");
+		ASSERT_FMT( source, "no source: '%s'", *D->s_name );
 		source->UnsplitSingle(this);
 		m_flags.set				(CSE_PHSkeleton::flSpawnCopy,FALSE);
 		po->_flags.set				(CSE_PHSkeleton::flSpawnCopy,FALSE);
