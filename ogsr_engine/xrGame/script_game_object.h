@@ -477,6 +477,7 @@ public:
 			int					active_sound_count		(bool only_playing);
 			const CCoverPoint	*best_cover				(const Fvector &position, const Fvector &enemy_position, float radius, float min_enemy_distance, float max_enemy_distance);
 			const CCoverPoint	*safe_cover				(const Fvector &position, float radius, float min_distance);
+			const CCoverPoint	*ambush_cover				(const Fvector &position, const Fvector &enemy_position, float radius, float min_distance);
 			CScriptIniFile		*spawn_ini				() const;
 			bool				active_zone_contact		(u16 id);
 
