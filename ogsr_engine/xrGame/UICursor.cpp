@@ -5,9 +5,7 @@
 #include "UI.h"
 #include "HUDManager.h"
 #include "ui/UIStatic.h"
-
-
-#define C_DEFAULT	D3DCOLOR_XRGB(0xff,0xff,0xff)
+#include "..\xr_3da\xr_input.h"
 
 CUICursor::CUICursor()
 {    
@@ -21,6 +19,18 @@ CUICursor::~CUICursor	()
 {
 	xr_delete				(m_static);
 	Device.seqRender.Remove	(this);
+}
+
+void CUICursor::Show()
+{
+	bVisible = true;
+	pInput->ClipCursor(false);
+}
+
+void CUICursor::Hide()
+{
+	bVisible = false;
+	pInput->ClipCursor(true);
 }
 
 void CUICursor::InitInternal()
