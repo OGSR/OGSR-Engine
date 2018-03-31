@@ -80,10 +80,8 @@ Fvector2 CUICursor::GetCursorPositionDelta()
 
 void CUICursor::UpdateCursorPosition()
 {
-
-	POINT		p;
-	BOOL r		= GetCursorPos(&p);
-	R_ASSERT	(r);
+	Ivector2 p;
+	IInputReceiver::IR_GetMousePosReal(p);
 
 	vPrevPos = vPos;
 
@@ -100,5 +98,6 @@ void CUICursor::SetUICursorPosition(Fvector2 pos)
 	p.x			= iFloor(vPos.x / (UI_BASE_WIDTH/(float)Device.dwWidth));
 	p.y			= iFloor(vPos.y / (UI_BASE_HEIGHT/(float)Device.dwHeight));
 
+	ClientToScreen(Device.m_hWnd, (LPPOINT)&p);
 	SetCursorPos(p.x, p.y);
 }
