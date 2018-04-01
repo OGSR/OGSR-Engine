@@ -468,25 +468,24 @@ BOOL CRenderDevice::Paused()
 
 void CRenderDevice::OnWM_Activate(WPARAM wParam, LPARAM lParam)
 {
-	u16 fActive						= LOWORD(wParam);
-	BOOL fMinimized					= (BOOL) HIWORD(wParam);
-	BOOL bActive					= ((fActive!=WA_INACTIVE) && (!fMinimized))?TRUE:FALSE;
+	const u16 fActive = LOWORD(wParam);
+	const BOOL fMinimized = (BOOL)HIWORD(wParam);
+	const BOOL bActive = ((fActive != WA_INACTIVE) && (!fMinimized)) ? TRUE : FALSE;
+	const BOOL isGameActive = (strstr(Core.Params, "-always_active") != nullptr || bActive) ? TRUE : FALSE;
 
-	if (bActive!=Device.b_is_Active)
+	if (bActive)
+		ShowCursor(FALSE);
+	else
+		ShowCursor(TRUE);
+
+	if (isGameActive != Device.b_is_Active)
 	{
-		Device.b_is_Active				= bActive;
+		Device.b_is_Active = isGameActive;
 
-		if (Device.b_is_Active)	
-		{
+		if (Device.b_is_Active)
 			Device.seqAppActivate.Process(rp_AppActivate);
-#ifndef DEDICATED_SERVER
-				ShowCursor			(FALSE);
-#endif
-		}else	
-		{
+		else
 			Device.seqAppDeactivate.Process(rp_AppDeactivate);
-			ShowCursor				(TRUE);
-		}
 	}
 }
 
