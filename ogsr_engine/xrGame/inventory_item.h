@@ -49,24 +49,29 @@ class CInventoryItem :
 private:
 	typedef CAttachableItem inherited;
 public:
-	enum EIIFlags{				FdropManual			=(1<<0),
-								FCanTake			=(1<<1),
-								FCanTrade			=(1<<2),
-								Fbelt				=(1<<3),
-								Fruck				=(1<<4),
-								FRuckDefault		=(1<<5),
-								FUsingCondition		=(1<<6),
-								FAllowSprint		=(1<<7),
-								Fuseful_for_NPC		=(1<<8),
-								FInInterpolation	=(1<<9),
-								FInInterpolate		=(1<<10),
-								FIsQuestItem		=(1<<11),
-								FIAlwaysTradable	=(1<<12),
-								FIAlwaysUntradable	=(1<<13),
-								FIUngroupable		=(1<<14),
-								FIHiddenForInventory	=(1<<15),
+	enum EIIFlags {
+		FdropManual = (1 << 0),
+		FCanTake = (1 << 1),
+		FCanTrade = (1 << 2),
+		Fbelt = (1 << 3),
+		Fruck = (1 << 4),
+		FRuckDefault = (1 << 5),
+		FUsingCondition = (1 << 6),
+		FAllowSprint = (1 << 7),
+		Fuseful_for_NPC = (1 << 8),
+		FInInterpolation = (1 << 9),
+		FInInterpolate = (1 << 10),
+		FIsQuestItem = (1 << 11),
+		FIAlwaysUntradable = (1 << 12),
+		FIUngroupable = (1 << 13),
+		FIHiddenForInventory = (1 << 14),
+		FIAlwaysHighlighted = (1 << 15),
 	};
-
+	//KRodin: если захочется поменять - можно вытащить значения в build_config_defines
+	enum EIIColors : u32 {
+		ClrUntradable  = color_argb(255, 124, 0, 0),
+		ClrHighlighted = color_argb(255, 0, 128, 0),
+	};
 	Flags16						m_flags;
 	CIconParams					m_icon_params;
 public:

@@ -1,26 +1,47 @@
-#ifndef __C__
-#define __C__
+#pragma once
 
 // maps unsigned 8 bits/channel to D3DCOLOR
-ICF u32	color_argb	(u32 a, u32 r, u32 g, u32 b)	{	return ((a&0xff)<<24)|((r&0xff)<<16)|((g&0xff)<<8)|(b&0xff);	}
-ICF u32	color_rgba	(u32 r, u32 g, u32 b, u32 a)	{	return color_argb(a,r,g,b);		}
-ICF	u32	color_argb_f(f32 a, f32 r, f32 g, f32 b)	
-{
-	s32	 _r = clampr(iFloor(r*255.f),0,255);
-	s32	 _g = clampr(iFloor(g*255.f),0,255);
-	s32	 _b = clampr(iFloor(b*255.f),0,255);
-	s32	 _a = clampr(iFloor(a*255.f),0,255);
-	return color_argb(_a,_r,_g,_b);
+constexpr u32 color_argb(u32 a, u32 r, u32 g, u32 b) noexcept {
+	return ((a & 0xff) << 24) | ((r & 0xff) << 16) | ((g & 0xff) << 8) | (b & 0xff);
 }
-ICF u32	color_rgba_f(f32 r, f32 g, f32 b, f32 a)	{	return color_argb_f(a,r,g,b);	}
-ICF u32	color_xrgb	(u32 r, u32 g, u32 b)			{	return color_argb(0xff,r,g,b);	}
-ICF	u32	color_get_R	(u32 rgba)						{	return (((rgba) >> 16) & 0xff);	}
-ICF	u32	color_get_G	(u32 rgba)						{	return (((rgba) >> 8) & 0xff);	}
-ICF	u32	color_get_B	(u32 rgba)						{	return ((rgba) & 0xff);			}
-ICF	u32 color_get_A (u32 rgba)						{	return ((rgba) >> 24);			}
-ICF u32 subst_alpha	(u32 rgba, u32 a)				{	return rgba&~color_rgba(0,0,0,0xff)|color_rgba(0,0,0,a);}
-ICF u32 bgr2rgb		(u32 bgr)						{	return color_rgba(color_get_B(bgr),color_get_G(bgr),color_get_R(bgr),0);}
-ICF u32 rgb2bgr		(u32 rgb)						{	return bgr2rgb(rgb);}
+constexpr u32 color_rgba(u32 r, u32 g, u32 b, u32 a) noexcept {
+	return color_argb(a, r, g, b);
+}
+constexpr u32 color_argb_f(f32 a, f32 r, f32 g, f32 b) noexcept {
+	s32	 _r = clampr(iFloor(r*255.f), 0, 255);
+	s32	 _g = clampr(iFloor(g*255.f), 0, 255);
+	s32	 _b = clampr(iFloor(b*255.f), 0, 255);
+	s32	 _a = clampr(iFloor(a*255.f), 0, 255);
+	return color_argb(_a, _r, _g, _b);
+}
+constexpr u32 color_rgba_f(f32 r, f32 g, f32 b, f32 a) noexcept {
+	return color_argb_f(a, r, g, b);
+}
+constexpr u32 color_xrgb(u32 r, u32 g, u32 b) noexcept {
+	return color_argb(0xff, r, g, b);
+}
+constexpr u32 color_get_R(u32 rgba) noexcept {
+	return (((rgba) >> 16) & 0xff);
+}
+constexpr u32 color_get_G(u32 rgba) noexcept {
+	return (((rgba) >> 8) & 0xff);
+}
+constexpr u32 color_get_B(u32 rgba) noexcept {
+	return ((rgba) & 0xff);
+}
+constexpr u32 color_get_A(u32 rgba) noexcept {
+	return ((rgba) >> 24);
+}
+constexpr u32 subst_alpha(u32 rgba, u32 a) noexcept {
+	return rgba & ~color_rgba(0, 0, 0, 0xff) | color_rgba(0, 0, 0, a);
+}
+constexpr u32 bgr2rgb(u32 bgr) noexcept {
+	return color_rgba(color_get_B(bgr), color_get_G(bgr), color_get_R(bgr), 0);
+}
+constexpr u32 rgb2bgr(u32 rgb) noexcept {
+	return bgr2rgb(rgb);
+}
+
 
 template <class T>
 struct _color {
@@ -240,5 +261,3 @@ typedef _color<double>	Dcolor;
 
 template <class T>
 BOOL	_valid			(const _color<T>& c)	{ return _valid(c.r) && _valid(c.g) && _valid(c.b) && _valid(c.a); }
-
-#endif

@@ -203,10 +203,10 @@ void CObjectScript::script_register		(lua_State *L)
 				value("FInInterpolation"		,				int(CInventoryItem::EIIFlags::FInInterpolation)),
 				value("FInInterpolate"			,				int(CInventoryItem::EIIFlags::FInInterpolate)),
 				value("FIsQuestItem"			,				int(CInventoryItem::EIIFlags::FIsQuestItem)),
-				value("FIAlwaysTradable"		,				int(CInventoryItem::EIIFlags::FIAlwaysTradable)),
 				value("FIAlwaysUntradable"		,				int(CInventoryItem::EIIFlags::FIAlwaysUntradable)),
 				value("FIUngroupable"			,				int(CInventoryItem::EIIFlags::FIUngroupable)),
-				value("FIHiddenForInventory"		,				int(CInventoryItem::EIIFlags::FIHiddenForInventory))
+				value("FIHiddenForInventory"	,				int(CInventoryItem::EIIFlags::FIHiddenForInventory)),
+				value("FIAlwaysHighlighted"		,				int(CInventoryItem::EIIFlags::FIAlwaysHighlighted))
 			]
 			.enum_("se_object_flags")
 			[

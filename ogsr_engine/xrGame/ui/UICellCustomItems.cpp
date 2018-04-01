@@ -30,7 +30,7 @@ bool CUIInventoryCellItem::EqualTo(CUICellItem* itm)
 	CUIInventoryCellItem* ci = smart_cast<CUIInventoryCellItem*>(itm);
 	if(!itm)				return false;
 
-	// Real Wolf: ÐšÐ¾Ð»Ð±ÐµÐº Ð½Ð° Ð³Ñ€ÑƒÐ¿Ð¿Ð¸Ñ€Ð¾Ð²ÐºÑƒ Ð¸ ÑÐ°Ð¼Ð¾ Ñ€ÐµÐ³ÑƒÐ»Ð¸Ñ€Ð¾Ð²Ð°Ð½Ð¸Ðµ Ð³Ñ€ÑƒÐ¿Ð¿Ð¸Ñ€Ð¾Ð²ÐºÐ¾Ð¹ Ð¿Ñ€ÐµÐ´Ð¼ÐµÑ‚Ð¾Ð². 12.08.2014.
+	// Real Wolf: Êîëáåê íà ãðóïïèðîâêó è ñàìî ðåãóëèðîâàíèå ãðóïïèðîâêîé ïðåäìåòîâ. 12.08.2014.
 	auto item1 = (CInventoryItem*)m_pData;
 	auto item2 = (CInventoryItem*)itm->m_pData;
 
