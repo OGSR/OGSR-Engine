@@ -25,4 +25,5 @@ public:
 		bool	at_home				(const Fvector &pos);
 	IC	bool	has_home			() {return (m_path != 0);}
 	IC	bool	is_aggressive		() {return m_aggressive;}
+        void setup( CPatrolPath*, float, float, bool = false );
 };

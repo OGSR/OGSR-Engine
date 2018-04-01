@@ -22,6 +22,8 @@
 #include "xrServer_Objects_ALife.h"
 #include "Weapon.h"
 #include "space_restriction.h"
+#include "../COMMON_AI/PATH/patrol_path.h"
+#include "../COMMON_AI/PATH/patrol_point.h"
 
 struct CGlobalFlags { };
 
@@ -363,5 +365,38 @@ void CAnomalyDetectorScript::script_register( lua_State *L ) {
     .def( "deactivate", &CAnomalyDetector::deactivate )
     .def( "remove_all_restrictions", &CAnomalyDetector::remove_all_restrictions )
     .def( "remove_restriction", &CAnomalyDetector::remove_restriction )
+  ];
+}
+
+
+LPCSTR CPatrolPointScript::getName( CPatrolPoint *pp ) {
+  return pp->m_name.c_str();
+}
+
+void CPatrolPointScript::setName( CPatrolPoint *pp, LPCSTR str ) {
+  pp->m_name = shared_str( str );
+}
+
+void CPatrolPointScript::script_register( lua_State *L ) {
+  module( L ) [
+    class_<CPatrolPoint>( "CPatrolPoint" )
+    .def( constructor<>() )
+    .def_readwrite( "m_position",        &CPatrolPoint::m_position )
+    .def_readwrite( "m_flags",           &CPatrolPoint::m_flags )
+    .def_readwrite( "m_level_vertex_id", &CPatrolPoint::m_level_vertex_id )
+    .def_readwrite( "m_game_vertex_id",  &CPatrolPoint::m_game_vertex_id )
+    .property( "m_name", &CPatrolPointScript::getName, &CPatrolPointScript::setName )
+    .def( "position", ( CPatrolPoint& ( CPatrolPoint::* ) ( Fvector ) ) ( &CPatrolPoint::position ) )
+  ];
+}
+
+
+void CPatrolPathScript::script_register( lua_State *L ) {
+  module( L ) [
+    class_<CPatrolPath>( "CPatrolPath" )
+    .def( constructor<>() )
+    .def( "add_point", &CPatrolPath::add_point )
+    .def( "point", ( CPatrolPoint ( CPatrolPath::* ) ( u32 ) ) ( &CPatrolPath::point ) )
+    .def( "add_vertex", &CPatrolPath::add_vertex )
   ];
 }

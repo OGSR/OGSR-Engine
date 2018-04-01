@@ -68,6 +68,7 @@ public:
 //	IC		CALifeSimulator				&alife					();
 #endif // PRIQUEL
 	IC		const CPatrolPathStorage	&patrol_paths			() const;
+	IC		CPatrolPathStorage		&patrol_paths_raw();
 	IC		CEF_Storage					&ef_storage				() const;
 	IC		CGraphEngine				&graph_engine			() const;
 	IC		const CALifeSimulator		&alife					() const;

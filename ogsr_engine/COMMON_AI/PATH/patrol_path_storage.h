@@ -38,6 +38,8 @@ public:
 			void					load_raw			(const CLevelGraph *level_graph, const CGameLevelCrossTable *cross, const CGameGraph *game_graph, IReader &stream);
 	IC		const CPatrolPath		*path				(shared_str patrol_name, bool no_assert = false) const;
 	IC		const PATROL_REGISTRY	&patrol_paths		() const;
+	void add_path( shared_str, CPatrolPath* );
+	void remove_path( shared_str );
 };
 
 #include "patrol_path_storage_inline.h"

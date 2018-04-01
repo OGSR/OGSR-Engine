@@ -61,14 +61,20 @@ void CMonsterHome::load(LPCSTR line)
 	m_aggressive = false;
 }
 
-void CMonsterHome::setup(LPCSTR path_name, float min_radius, float max_radius, bool aggressive)
-{
-	m_path			= ai().patrol_paths().path(path_name);
-	check_path		(m_object,m_path);
-	m_radius_min	= min_radius;
-	m_radius_max	= max_radius;
+void CMonsterHome::setup( LPCSTR path_name, float min_radius, float max_radius, bool aggressive ) {
+  m_path       = ai().patrol_paths().path( path_name );
+  check_path( m_object, m_path );
+  m_radius_min = min_radius;
+  m_radius_max = max_radius;
+  m_aggressive = aggressive;
+}
 
-	m_aggressive	= aggressive;
+void CMonsterHome::setup( CPatrolPath* path, float min_radius, float max_radius, bool aggressive ) {
+  m_path       = path;
+  check_path( m_object, m_path );
+  m_radius_min = min_radius;
+  m_radius_max = max_radius;
+  m_aggressive = aggressive;
 }
 
 u32	CMonsterHome::get_place()

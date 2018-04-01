@@ -85,16 +85,34 @@ void CScriptGameObject::skip_transfer_enemy(bool val)
 	if (monster) monster->skip_transfer_enemy(val);
 }
 
+
 void CScriptGameObject::set_home(LPCSTR name, float r_min, float r_max, bool aggressive)
 {
 	CBaseMonster *monster = smart_cast<CBaseMonster *>(&object());
 	if (monster) monster->Home->setup(name,r_min,r_max,aggressive);
 }
+
+void CScriptGameObject::set_home( CPatrolPath* path , float r_min, float r_max, bool aggressive ) {
+  CBaseMonster *monster = smart_cast<CBaseMonster *>( &object() );
+  if ( monster ) monster->Home->setup( path, r_min, r_max, aggressive );
+}
+
 void CScriptGameObject::remove_home()
 {
 	CBaseMonster *monster = smart_cast<CBaseMonster *>(&object());
 	if (monster) monster->Home->remove_home();
 }
+
+bool CScriptGameObject::at_home() {
+  CBaseMonster *monster = smart_cast<CBaseMonster *>( &object() );
+  return monster ? monster->Home->at_home() : false;
+}
+
+bool CScriptGameObject::at_home( Fvector pos ) {
+  CBaseMonster *monster = smart_cast<CBaseMonster *>( &object() );
+  return monster ? monster->Home->at_home( pos ) : false;
+}
+
 
 bool CScriptGameObject::fake_death_fall_down()
 {

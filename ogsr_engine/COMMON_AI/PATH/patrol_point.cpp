@@ -22,13 +22,14 @@
 #	include "patrol_path.h"
 #endif
 
-CPatrolPoint::CPatrolPoint									(const CPatrolPath *path)
-{
+
+CPatrolPoint::CPatrolPoint( const CPatrolPath *path ) {
 #ifdef DEBUG
 	m_path				= path;
 	m_initialized		= false;
 #endif
 }
+
 
 #ifdef DEBUG
 void CPatrolPoint::verify_vertex_id							(const CLevelGraph *level_graph, const CGameLevelCrossTable *cross, const CGameGraph *game_graph) const
@@ -132,3 +133,20 @@ const GameGraph::_GRAPH_ID &CPatrolPoint::game_vertex_id	() const
 	return				(m_game_vertex_id);
 }
 #endif
+
+
+CPatrolPoint &CPatrolPoint::position( Fvector position ) {
+  m_position = position;
+
+  auto level_graph = &ai().level_graph();
+  if ( level_graph && level_graph->valid_vertex_position( m_position ) ) {
+    Fvector pos = m_position;
+    pos.y += .15f;
+    m_level_vertex_id = level_graph->vertex_id( pos );
+  }
+  else
+    m_level_vertex_id = u32( -1 );
+  correct_position( level_graph, &ai().cross_table(), &ai().game_graph() );
+
+  return *this;
+}

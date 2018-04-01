@@ -57,6 +57,7 @@ class_<CScriptGameObject> script_register_game_object2(class_<CScriptGameObject>
 		.def("active_sound_count",			(int (CScriptGameObject::*)(bool))(&CScriptGameObject::active_sound_count))
 		.def("best_cover",					&CScriptGameObject::best_cover)
 		.def("safe_cover",					&CScriptGameObject::safe_cover)
+		.def("ambush_cover",					&CScriptGameObject::ambush_cover)
 		.def("spawn_ini",					&CScriptGameObject::spawn_ini)
 		.def("memory_visible_objects",		&CScriptGameObject::memory_visible_objects, return_stl_iterator)
 		.def("memory_sound_objects",		&CScriptGameObject::memory_sound_objects, return_stl_iterator)
