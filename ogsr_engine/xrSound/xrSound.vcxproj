@@ -101,6 +101,8 @@
       <Command>
 		copy /Y "$(SolutionDir)\3rd_party\Src\OpenAL\bin\$(PlatformShortName)\OpenAL32.dll" "$(OutDir)OpenAL32.dll"
 		copy /Y "$(SolutionDir)\3rd_party\Src\OpenAL\bin\alsoft.ini" "$(OutDir)alsoft.ini"
+		copy /Y "$(SolutionDir)\3rd_party\Src\OpenAL\bin\default-44100.mhr" "$(OutDir)default-44100.mhr"
+		copy /Y "$(SolutionDir)\3rd_party\Src\OpenAL\bin\default-48000.mhr" "$(OutDir)default-48000.mhr"
 	  </Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
@@ -153,6 +155,8 @@
       <Command>
 		copy /Y "$(SolutionDir)\3rd_party\Src\OpenAL\bin\$(PlatformShortName)\OpenAL32.dll" "$(OutDir)OpenAL32.dll"
 		copy /Y "$(SolutionDir)\3rd_party\Src\OpenAL\bin\alsoft.ini" "$(OutDir)alsoft.ini"
+		copy /Y "$(SolutionDir)\3rd_party\Src\OpenAL\bin\default-44100.mhr" "$(OutDir)default-44100.mhr"
+		copy /Y "$(SolutionDir)\3rd_party\Src\OpenAL\bin\default-48000.mhr" "$(OutDir)default-48000.mhr"
 	  </Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>

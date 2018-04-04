@@ -51,11 +51,11 @@
 
 // При проблемах в скриптовых биндерах будем падать, а не просто
 // ругаться в лог.
-#define CRASH_ON_SCRIPT_BINDER_ERRORS
+//#define CRASH_ON_SCRIPT_BINDER_ERRORS
 
 // Включает коллизию с трупами. Это значит, что мобы будут тупить,
 // уперевшись в тушку мутантами, т.к. не умеют обходить препятствия.
-//#define CORPSES_COLLISION
+#define CORPSES_COLLISION
 
 // Скрывать оружие при открытом диалоге, инвентаре и т.п.
 //#define MORE_HIDE_WEAPON
@@ -109,7 +109,7 @@
 // объектами. Насколько я понимаю, по умолчанию трупы игноруруют
 // коллизии только с живыми мобами. С этим дефайном гора трупов не
 // будет лагать.
-#define CORPSES_IGNORE_DYNAMIC
+//#define CORPSES_IGNORE_DYNAMIC
 
 // эффект Доплера для звука из xp-dev
 //#define SND_DOPPLER_EFFECT
