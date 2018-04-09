@@ -7911,9 +7911,6 @@
     <ClCompile Include="space_restrictor.cpp">
       <Filter>Core\Client\Objects\zones\SpaceRestrictor</Filter>
     </ClCompile>
-    <ClCompile Include="space_restrictor_script.cpp">
-      <Filter>Core\Client\Objects\zones\SpaceRestrictor</Filter>
-    </ClCompile>
     <ClCompile Include="HairsZone.cpp">
       <Filter>Core\Client\Objects\zones\HairsZone</Filter>
     </ClCompile>

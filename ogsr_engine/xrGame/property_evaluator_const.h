@@ -16,11 +16,12 @@ protected:
 	typedef CPropertyEvaluator<_object_type>		inherited;
 
 protected:
-	_value_type			m_value;
+	using val_type = inherited::_value_type;
+	val_type			m_value;
 
 public:
-	IC					CPropertyEvaluatorConst	(_value_type value, LPCSTR evaluator_name = "");
-	virtual _value_type	evaluate				();
+	IC					CPropertyEvaluatorConst	(val_type value, LPCSTR evaluator_name = "");
+	virtual val_type	evaluate				();
 };
 
 

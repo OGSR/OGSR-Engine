@@ -638,11 +638,6 @@ void CUITradeWnd::BindDragDropListEnents(CUIDragDropListEx* lst)
 
 void CUITradeWnd::ColorizeItem(CUICellItem* itm, bool b)
 {
-/*	if(!b)
-		itm->SetColor				(color_rgba(255,100,100,255));*/
-	PIItem iitem = (PIItem)itm->m_pData;
 	if (!b)
-		itm->SetTextureColor(color_rgba(255, 100, 100, 255));
-	else if (iitem->m_eItemPlace == eItemPlaceSlot || iitem->m_eItemPlace == eItemPlaceBelt)
-		itm->SetTextureColor(color_rgba(100, 255, 100, 255));
+		itm->SetColor(CInventoryItem::ClrUntradable);
 }

@@ -236,11 +236,12 @@ void CUICarBodyWnd::UpdateLists()
 	std::sort									(ruck_list.begin(),ruck_list.end(),InventoryUtilities::GreaterRoomInRuck);
 
 	//Íàø ðþêçàê
-	TIItemContainer::iterator it;
-	for(it =  ruck_list.begin(); ruck_list.end() != it; ++it) 
+	for(const auto& inv_item : ruck_list)
 	{
-		CUICellItem* itm				= create_cell_item(*it);
-		m_pUIOurBagList->SetItem		(itm);
+		CUICellItem* itm = create_cell_item(inv_item);
+		if (inv_item->m_flags.test(CInventoryItem::FIAlwaysHighlighted))
+			itm->SetColor(CInventoryItem::ClrHighlighted);
+		m_pUIOurBagList->SetItem(itm);
 	}
 
 
@@ -253,10 +254,10 @@ void CUICarBodyWnd::UpdateLists()
 	std::sort										(ruck_list.begin(),ruck_list.end(),InventoryUtilities::GreaterRoomInRuck);
 
 	//×óæîé ðþêçàê
-	for(it =  ruck_list.begin(); ruck_list.end() != it; ++it) 
+	for (const auto& inv_item : ruck_list)
 	{
-		CUICellItem* itm							= create_cell_item(*it);
-		m_pUIOthersBagList->SetItem					(itm);
+		CUICellItem* itm = create_cell_item(inv_item);
+		m_pUIOthersBagList->SetItem(itm);
 	}
 
 	InventoryUtilities::UpdateWeight				(*m_pUIOurBagWnd);

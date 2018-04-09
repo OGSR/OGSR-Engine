@@ -75,7 +75,7 @@
       </BrowseInformation>
       <WarningLevel>Level4</WarningLevel>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
-      <AdditionalIncludeDirectories>..\COMMON;..\..\3rd_party\Src\OpenAL\include;..\..\3rd_party\Src\eax\Include;..\..\3rd_party\Src\Xiph\libogg\include;..\..\3rd_party\Src\Xiph\libvorbis\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\COMMON;..\..\3rd_party\Src\OpenAL_Soft\include\AL;..\..\3rd_party\Src\eax\Include;..\..\3rd_party\Src\Xiph\libogg\include;..\..\3rd_party\Src\Xiph\libvorbis\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <MinimalRebuild>false</MinimalRebuild>
       <DisableSpecificWarnings>4456;4457;4458;4995;4577;</DisableSpecificWarnings>
@@ -97,12 +97,6 @@
       <IgnoreSpecificDefaultLibraries>libcmt</IgnoreSpecificDefaultLibraries>
       <ImageHasSafeExceptionHandlers>false</ImageHasSafeExceptionHandlers>
     </Link>
-    <PostBuildEvent>
-      <Command>
-		copy /Y "$(SolutionDir)\3rd_party\Src\OpenAL\bin\$(PlatformShortName)\OpenAL32.dll" "$(OutDir)OpenAL32.dll"
-		copy /Y "$(SolutionDir)\3rd_party\Src\OpenAL\bin\alsoft.ini" "$(OutDir)alsoft.ini"
-	  </Command>
-    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
@@ -131,7 +125,7 @@
       </BrowseInformation>
       <WarningLevel>Level4</WarningLevel>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
-      <AdditionalIncludeDirectories>..\COMMON;..\..\3rd_party\Src\OpenAL\include;..\..\3rd_party\Src\eax\Include;..\..\3rd_party\Src\Xiph\libogg\include;..\..\3rd_party\Src\Xiph\libvorbis\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\COMMON;..\..\3rd_party\Src\OpenAL_Soft\include\AL;..\..\3rd_party\Src\eax\Include;..\..\3rd_party\Src\Xiph\libogg\include;..\..\3rd_party\Src\Xiph\libvorbis\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <DisableSpecificWarnings>4456;4457;4458;4995;4577;</DisableSpecificWarnings>
     </ClCompile>
@@ -149,12 +143,6 @@
       </LinkTimeCodeGeneration>
       <IgnoreSpecificDefaultLibraries>libcmt</IgnoreSpecificDefaultLibraries>
     </Link>
-    <PostBuildEvent>
-      <Command>
-		copy /Y "$(SolutionDir)\3rd_party\Src\OpenAL\bin\$(PlatformShortName)\OpenAL32.dll" "$(OutDir)OpenAL32.dll"
-		copy /Y "$(SolutionDir)\3rd_party\Src\OpenAL\bin\alsoft.ini" "$(OutDir)alsoft.ini"
-	  </Command>
-    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="..\COMMON\cl_intersect.h" />

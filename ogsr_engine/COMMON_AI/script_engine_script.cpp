@@ -10,153 +10,96 @@
 #include "script_engine.h"
 #include "ai_space.h"
 
-using namespace luabind;
+bool editor() { return false; }
 
-bool editor()
-{
-#ifdef XRGAME_EXPORTS
-	return		(false);
-#else
-	return		(true);
-#endif
-}
+CRenderDevice *get_device() { return &Device; }
 
-#ifdef XRGAME_EXPORTS
-CRenderDevice *get_device()
-{
-	return		(&Device);
-}
-#endif
+inline int bit_and(const int i, const int j) { return i & j; }
+inline int bit_or(const int i, const int j) { return i | j; }
+inline int bit_xor(const int i, const int j) { return i ^ j; }
+inline int bit_not(const int i) { return ~i; }
 
-int bit_and(int i, int j)
-{
-	return			(i & j);
-}
+const char* user_name() { return Core.UserName; }
 
-int bit_or(int i, int j)
-{
-	return			(i | j);
-}
-
-int bit_xor(int i, int j)
-{
-	return			(i ^ j);
-}
-
-int bit_not(int i)
-{
-	return			(~i);
-}
-
-LPCSTR user_name()
-{
-	return			(Core.UserName);
-}
-
-void prefetch_module(LPCSTR file_name)
+void prefetch_module(const char* file_name)
 {
 	ai().script_engine().process_file(file_name);
 }
 
+
 struct profile_timer_script {
-	u64							m_start_cpu_tick_count;
-	u64							m_accumulator;
-	u64							m_count;
-	int							m_recurse_mark;
-	
-	IC								profile_timer_script	()
-	{
-		m_start_cpu_tick_count	= 0;
-		m_accumulator			= 0;
-		m_count					= 0;
-		m_recurse_mark			= 0;
+	using Clock = std::chrono::high_resolution_clock;
+	using Time = Clock::time_point;
+	using Duration = Clock::duration;
+
+	Time start_time;
+	Duration accumulator;
+	u64 count = 0;
+	int recurse_mark = 0;
+
+	profile_timer_script()
+		: start_time(),
+		accumulator(),
+		count(0),
+		recurse_mark(0) {
 	}
 
-	IC								profile_timer_script	(const profile_timer_script &profile_timer)
-	{
-		*this					= profile_timer;
+	bool operator< (const profile_timer_script& profile_timer) const {
+		return accumulator < profile_timer.accumulator;
 	}
 
-	IC		profile_timer_script&	operator=				(const profile_timer_script &profile_timer)
-	{
-		m_start_cpu_tick_count	= profile_timer.m_start_cpu_tick_count;
-		m_accumulator			= profile_timer.m_accumulator;
-		m_count					= profile_timer.m_count;
-		m_recurse_mark			= profile_timer.m_recurse_mark;
-		return					(*this);
-	}
-
-	IC		bool					operator<				(const profile_timer_script &profile_timer) const
-	{
-		return					(m_accumulator < profile_timer.m_accumulator);
-	}
-
-	IC		void					start					()
-	{
-		if (m_recurse_mark) {
-			++m_recurse_mark;
+	void start() {
+		if (recurse_mark) {
+			++recurse_mark;
 			return;
 		}
 
-		++m_recurse_mark;
-		++m_count;
-		m_start_cpu_tick_count	= CPU::GetCLK();
+		++recurse_mark;
+		++count;
+		start_time = Clock::now();
 	}
 
-	IC		void					stop					()
-	{
-		THROW					(m_recurse_mark);
-		--m_recurse_mark;
-		
-		if (m_recurse_mark)
+	void stop() {
+		THROW(m_recurse_mark);
+		--recurse_mark;
+
+		if (recurse_mark)
 			return;
-		
-		u64						finish = CPU::GetCLK();
-		if (finish > m_start_cpu_tick_count)
-			m_accumulator		+= finish - m_start_cpu_tick_count;
+
+		const auto finish = Clock::now();
+		if (finish > start_time) {
+			accumulator += finish - start_time;
+		}
 	}
 
-	IC		float					time					() const
-	{
-		FPU::m64r				();
-		float					result = (float(double(m_accumulator)/double(CPU::clk_per_second))*1000000.f);
-		FPU::m24r				();
-		return					(result);
+	decltype(auto) time() const {
+		using namespace std::chrono;
+		return duration_cast<microseconds>(accumulator).count();
 	}
 };
 
-IC	profile_timer_script	operator+	(const profile_timer_script &portion0, const profile_timer_script &portion1)
-{
-	profile_timer_script	result;
-	result.m_accumulator	= portion0.m_accumulator + portion1.m_accumulator;
-	result.m_count			= portion0.m_count + portion1.m_count;
-	return					(result);
+inline profile_timer_script operator+(const profile_timer_script& portion0,
+	const profile_timer_script& portion1) {
+	profile_timer_script result;
+	result.accumulator = portion0.accumulator + portion1.accumulator;
+	result.count = portion0.count + portion1.count;
+	return result;
 }
 
-//IC	std::ostream& operator<<(std::ostream &stream, profile_timer_script &timer)
-//{
-//	stream					<< timer.time();
-//	return					(stream);
-//}
 
-#ifdef XRGAME_EXPORTS
 ICF	u32	script_time_global	()	{ return Device.dwTimeGlobal; }
-#else
-ICF	u32	script_time_global	()	{ return 0; }
-#endif
 
-#pragma optimize("s",on)
 void msg_and_fail(LPCSTR msg)
 {
 	Msg(msg);
 	R_ASSERT(false);
 }
-#ifndef XRSE_FACTORY_EXPORTS
+
 void take_screenshot(IRender_interface::ScreenshotMode mode, LPCSTR name)
 {
 	::Render->Screenshot(mode, name);
 }
-#endif
+
 bool GetShift() 
 {
 	return (GetAsyncKeyState(VK_SHIFT) & 0x8000) != 0;
@@ -174,13 +117,15 @@ bool GetAlt()
 	return (GetAsyncKeyState(VK_MENU) & 0x8000) != 0;
 }
 
+using namespace luabind;
+#pragma optimize("s",on)
+
 void CScriptEngine::script_register(lua_State *L)
 {
 	module(L)[
-		def("log1",			(void(*)(LPCSTR)) &Log),	//RvP
+		def("log1",			(void(*)(LPCSTR)) &Log),
 		def("fail",			(void(*)(LPCSTR)) &msg_and_fail),
 		def("flush_log",	(void(*)(void)) &FlushLog),
-#ifndef XRSE_FACTORY_EXPORTS
 		def("screenshot",	(void(*)(IRender_interface::ScreenshotMode, LPCSTR)) &take_screenshot),
 
 		class_<enum_exporter<IRender_interface::ScreenshotMode> >("screenshot_modes")
@@ -190,35 +135,30 @@ void CScriptEngine::script_register(lua_State *L)
 				value("cubemap", int(IRender_interface::ScreenshotMode::SM_FOR_CUBEMAP)),
 				value("gamesave", int(IRender_interface::ScreenshotMode::SM_FOR_GAMESAVE)),
 				value("levelmap", int(IRender_interface::ScreenshotMode::SM_FOR_LEVELMAP))
-			],
-#endif
+			]
+		,
 		class_<profile_timer_script>("profile_timer")
 			.def(constructor<>())
 			.def(constructor<profile_timer_script&>())
 			.def(const_self + profile_timer_script())
 			.def(const_self < profile_timer_script())
-//			.def(tostring(self))
 			.def("start",&profile_timer_script::start)
 			.def("stop",&profile_timer_script::stop)
 			.def("time",&profile_timer_script::time)
+		,
+		def("prefetch", &prefetch_module),
+		def("editor", &editor),
+		def("bit_and", &bit_and),
+		def("bit_or", &bit_or),
+		def("bit_xor", &bit_xor),
+		def("bit_not", &bit_not),
+		def("user_name", &user_name),
+		def("time_global", &script_time_global),
+		// функции из ogse.dll
+		def("GetShift", &GetShift),
+		def("GetLAlt", &GetLAlt),
+		def("GetRAlt", &GetRAlt),
+		def("GetAlt", &GetAlt),
+		def("device", &get_device)
 	];
-
-	function	(L,	"prefetch",						prefetch_module);
-	function	(L,	"editor",						editor);
-	function	(L,	"bit_and",						bit_and);
-	function	(L,	"bit_or",						bit_or);
-	function	(L,	"bit_xor",						bit_xor);
-	function	(L,	"bit_not",						bit_not);
-	function	(L, "user_name",					user_name);
-	function	(L, "time_global",					script_time_global);
-
-	// функции из ogse.dll
-	function(L, "GetShift", GetShift);
-	function(L, "GetLAlt", GetLAlt);
-	function(L, "GetRAlt", GetRAlt);
-	function(L, "GetAlt", GetAlt);
-
-#ifdef XRGAME_EXPORTS
-	function	(L,	"device",						get_device);
-#endif
 }

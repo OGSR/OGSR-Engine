@@ -602,6 +602,9 @@ void CApplication::OnEvent(EVENT E, u64 P1, u64 P2)
 {
 	if (E==eQuit)
 	{
+		if (pInput)
+			pInput->ClipCursor(false);
+
 		PostQuitMessage	(0);
 		
 		for (u32 i=0; i<Levels.size(); i++)
@@ -643,7 +646,10 @@ void CApplication::OnEvent(EVENT E, u64 P1, u64 P2)
 	} 
 	else if (E==eDisconnect) 
 	{
-		if (g_pGameLevel) 
+		if (pInput && Engine.Event.Peek("KERNEL:quit"))
+			pInput->ClipCursor(false);
+
+		if (g_pGameLevel)
 		{
 			Console->Hide			();
 			g_pGameLevel->net_Stop	();
@@ -730,7 +736,7 @@ void CApplication::LoadTitleInt(LPCSTR str)
 //.	Console->Execute			("stat_memory");
 	Log							(app_title);
 	
-	if (g_pGamePersistent->GameType()==1 && strstr(Core.Params,"alife"))
+	if (g_pGamePersistent->GameType()==1 && !xr_strcmp(g_pGamePersistent->m_game_params.m_alife, "alife"))
 		max_load_stage			= 17;
 	else
 		max_load_stage			= 14;

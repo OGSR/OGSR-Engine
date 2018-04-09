@@ -5,9 +5,7 @@
 #include "UI.h"
 #include "HUDManager.h"
 #include "ui/UIStatic.h"
-
-
-#define C_DEFAULT	D3DCOLOR_XRGB(0xff,0xff,0xff)
+#include "..\xr_3da\xr_input.h"
 
 CUICursor::CUICursor()
 {    
@@ -15,12 +13,25 @@ CUICursor::CUICursor()
 	vPos.set				(0.f,0.f);
 	InitInternal			();
 	Device.seqRender.Add	(this,2);
+	pInput->ClipCursor(IsVisible());
 }
 //--------------------------------------------------------------------
 CUICursor::~CUICursor	()
 {
 	xr_delete				(m_static);
 	Device.seqRender.Remove	(this);
+}
+
+void CUICursor::Show()
+{
+	bVisible = true;
+	pInput->ClipCursor(true);
+}
+
+void CUICursor::Hide()
+{
+	bVisible = false;
+	pInput->ClipCursor(false);
 }
 
 void CUICursor::InitInternal()
@@ -80,10 +91,8 @@ Fvector2 CUICursor::GetCursorPositionDelta()
 
 void CUICursor::UpdateCursorPosition()
 {
-
-	POINT		p;
-	BOOL r		= GetCursorPos(&p);
-	R_ASSERT	(r);
+	Ivector2 p;
+	IInputReceiver::IR_GetMousePosReal(p);
 
 	vPrevPos = vPos;
 
@@ -100,5 +109,6 @@ void CUICursor::SetUICursorPosition(Fvector2 pos)
 	p.x			= iFloor(vPos.x / (UI_BASE_WIDTH/(float)Device.dwWidth));
 	p.y			= iFloor(vPos.y / (UI_BASE_HEIGHT/(float)Device.dwHeight));
 
+	ClientToScreen(Device.m_hWnd, (LPPOINT)&p);
 	SetCursorPos(p.x, p.y);
 }

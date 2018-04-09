@@ -87,19 +87,19 @@ ICF float	rad2deg 	(float val)											{return implement::rad2deg(val);}
 ICF double	rad2deg 	(double val)										{return implement::rad2deg(val);}
 
 // clamping/snapping
-template <class T>
-IC void clamp	( T& val, const T& _low, const T& _high ){
-	if( val<_low ) val = _low; else if( val>_high ) val = _high;
+template <typename T>
+constexpr void clamp(T& val, const T& _low, const T& _high) noexcept {
+	if (val < _low) val = _low; else if (val > _high) val = _high;
 };
-template <class T>
-IC T	clampr	( const T& val, const T& _low, const T& _high ){
-	if		( val<_low	)	return _low; 
-	else if	( val>_high )	return _high;
+template <typename T>
+constexpr T	clampr(const T& val, const T& _low, const T& _high) noexcept {
+	if (val < _low)	return _low;
+	else if (val > _high)	return _high;
 	else					return val;
 };
-IC float snapto	( float value, float snap )	{
-	if( snap<=0.f ) return value;
-	return float(iFloor((value+(snap*0.5f)) / snap )) * snap;
+constexpr float snapto(float value, float snap) noexcept {
+	if (snap <= 0.f) return value;
+	return float(iFloor((value + (snap*0.5f)) / snap)) * snap;
 };
 
 // pre-definitions

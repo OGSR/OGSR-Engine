@@ -92,7 +92,7 @@ namespace luabind { namespace detail
             }
         }
 
-		const vector_class<overload_rep>& overloads() const throw() { return m_overloads; }
+		const vector_class<overload_rep>& overloads() const noexcept { return m_overloads; }
 
 		// this is a pointer to the string kept in class_rep::m_methods, and those strings are deleted
 		// at the end of the lua session.

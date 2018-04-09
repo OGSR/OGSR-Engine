@@ -1776,6 +1776,7 @@ void PATurbulence::Execute(ParticleEffect *effect, float dt)
 	size_t nWorkers = TTAPI->threads.size();
 
 	//Is how it is in Shadow of Chernobyl and Clear Sky source and does seem to run better then * 20. Only 20% CPU usage.
+	//KRodin: ВНИМАНИЕ, НЕ МЕНЯТЬ!!! Пусть вот так и остаётся. Тесты показывают, что это самый оптимальный вариант.
 	if ( p_cnt < nWorkers * 64 )
 		nWorkers = 1;
 
