@@ -75,6 +75,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "common", "3rd_party\Src\Ope
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "OpenAL32", "3rd_party\Src\OpenAL_Soft\build\OpenAL32.vcxproj", "{5EF926E4-7015-3860-A71D-2018860D4E07}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "bsincgen", "3rd_party\Src\OpenAL_Soft\build\bsincgen.vcxproj", "{0523FE04-37AD-34C3-8E1B-9FA43C92A442}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Release|x64 = Release|x64
@@ -157,6 +159,10 @@ Global
 		{5EF926E4-7015-3860-A71D-2018860D4E07}.Release|x64.Build.0 = Release|x64
 		{5EF926E4-7015-3860-A71D-2018860D4E07}.Release|x86.ActiveCfg = Release|Win32
 		{5EF926E4-7015-3860-A71D-2018860D4E07}.Release|x86.Build.0 = Release|Win32
+		{0523FE04-37AD-34C3-8E1B-9FA43C92A442}.Release|x64.ActiveCfg = Release|Win32
+		{0523FE04-37AD-34C3-8E1B-9FA43C92A442}.Release|x64.Build.0 = Release|Win32
+		{0523FE04-37AD-34C3-8E1B-9FA43C92A442}.Release|x86.ActiveCfg = Release|Win32
+		{0523FE04-37AD-34C3-8E1B-9FA43C92A442}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -174,6 +180,7 @@ Global
 		{1D0D59BF-4644-47DB-B3A6-B29B0886D6D5} = {240AEFB4-B8D3-465D-BFE0-D3700EC0485C}
 		{FF359A96-2502-3362-8FB6-A0E40B35A2B0} = {1D0D59BF-4644-47DB-B3A6-B29B0886D6D5}
 		{5EF926E4-7015-3860-A71D-2018860D4E07} = {1D0D59BF-4644-47DB-B3A6-B29B0886D6D5}
+		{0523FE04-37AD-34C3-8E1B-9FA43C92A442} = {1D0D59BF-4644-47DB-B3A6-B29B0886D6D5}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {1F9B04CC-5248-4AE5-97B7-66A0D0E5AA5E}

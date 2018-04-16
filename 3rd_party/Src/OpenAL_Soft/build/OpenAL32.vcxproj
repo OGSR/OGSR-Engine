@@ -12,7 +12,7 @@
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{5EF926E4-7015-3860-A71D-2018860D4E07}</ProjectGuid>
-    <WindowsTargetPlatformVersion>8.1</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion></WindowsTargetPlatformVersion>
     <Keyword>Win32Proj</Keyword>
     <Platform>Win32</Platform>
     <ProjectName>OpenAL32</ProjectName>
@@ -243,12 +243,16 @@ if %errorlevel% neq 0 goto :VCEnd</Command>
     <ClCompile Include="..\Alc\backends\dsound.c" />
     <ClCompile Include="..\Alc\backends\wasapi.c" />
     <ClCompile Include="..\Alc\backends\wave.c" />
-    <ClInclude Include="..\build\bsinc_inc.h" />
+    <ClInclude Include="bsinc_inc.h" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\build\common.vcxproj">
+    <ProjectReference Include="common.vcxproj">
       <Project>{FF359A96-2502-3362-8FB6-A0E40B35A2B0}</Project>
       <Name>common</Name>
+    </ProjectReference>
+    <ProjectReference Include="bsincgen.vcxproj">
+      <Project>{0523FE04-37AD-34C3-8E1B-9FA43C92A442}</Project>
+      <Name>bsincgen</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
