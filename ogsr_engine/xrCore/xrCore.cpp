@@ -111,10 +111,6 @@ void xrCore::_initialize	(LPCSTR _ApplicationName, LogCallback cb, BOOL init_fs,
 	init_counter++;
 }
 
-#ifndef	_EDITOR
-#include "compression_ppmd_stream.h"
-extern compression::ppmd::stream	*trained_model;
-#endif
 void xrCore::_destroy		()
 {
 	--init_counter;
@@ -124,14 +120,6 @@ void xrCore::_destroy		()
 
 		xr_FS.reset();
 		xr_EFS.reset();
-
-#ifndef	_EDITOR
-		if (trained_model) {
-			void			*buffer = trained_model->buffer();
-			xr_free			(buffer);
-			xr_delete		(trained_model);
-		}
-#endif
 
 		Memory._destroy		();
 		if (!strstr(GetCommandLine(), "-editor"))

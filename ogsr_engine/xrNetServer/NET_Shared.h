@@ -11,8 +11,6 @@
 	#pragma comment(lib,	"xrNetServer"	)
 #endif
 
-#include "net_compressor.h"
-
 XRNETSERVER_API extern ClientID BroadcastCID;
 
 XRNETSERVER_API extern Flags32	psNET_Flags;

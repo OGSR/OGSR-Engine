@@ -10,13 +10,6 @@
 #include <sys\stat.h>
 #pragma warning(default:4995)
 
-typedef void DUMMY_STUFF (const void*,const u32&,void*);
-XRCORE_API DUMMY_STUFF	*g_dummy_stuff = 0;
-
-#ifdef M_BORLAND
-#	define O_SEQUENTIAL 0
-#endif // M_BORLAND
-
 #ifdef DEBUG
 	XRCORE_API	u32								g_file_mapped_memory = 0;
 	u32								g_file_mapped_count	= 0;
@@ -227,9 +220,6 @@ void	IWriter::w_compressed(void* ptr, u32 count)
 	BYTE*		dest	= 0;
 	unsigned	dest_sz	= 0;
 	_compressLZ	(&dest,&dest_sz,ptr,count);
-	
-	if (g_dummy_stuff)
-		g_dummy_stuff	(dest,dest_sz,dest);
 
 	if (dest && dest_sz)
 		w(dest,dest_sz);

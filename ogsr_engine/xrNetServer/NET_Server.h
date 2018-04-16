@@ -145,8 +145,6 @@ protected:
 	shared_str				connect_options;
 	IDirectPlay8Server*		NET;
 	IDirectPlay8Address*	net_Address_device;
-	
-	NET_Compressor			net_Compressor;
 
 	xrCriticalSection		csPlayers;
 	xr_vector<IClient*>		net_Players;

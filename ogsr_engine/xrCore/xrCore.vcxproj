@@ -180,15 +180,9 @@
     <ClCompile Include="xrMemory_subst_msvc.cpp" />
     <ClCompile Include="xrDebugNew.cpp" />
     <ClCompile Include="crc32.cpp" />
-    <ClCompile Include="xr_shared.cpp" />
     <ClCompile Include="xrsharedmem.cpp" />
     <ClCompile Include="xrstring.cpp" />
     <ClCompile Include="memory_monitor.cpp" />
-    <ClCompile Include="ppmd_compressor.cpp" />
-    <ClCompile Include="Model.cpp">
-      <PrecompiledHeader>NotUsing</PrecompiledHeader>
-      <WarningLevel>TurnOffAllWarnings</WarningLevel>
-    </ClCompile>
     <ClCompile Include="rt_compressor.cpp" />
     <ClCompile Include="rt_compressor9.cpp" />
     <ClCompile Include="LzHuf.cpp" />
@@ -199,7 +193,6 @@
     <ClInclude Include="blackbox\stacktrace.h" />
     <ClInclude Include="blackbox\sym_engine.h" />
     <ClInclude Include="FTimer.h" />
-    <ClInclude Include="resource.h" />
     <ClInclude Include="stacktrace_collector.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="xrCore.h" />
@@ -230,7 +223,6 @@
     <ClInclude Include="vector.h" />
     <ClInclude Include="cpuid.h" />
     <ClInclude Include="FixedMap.h" />
-    <ClInclude Include="FixedSet.h" />
     <ClInclude Include="FixedVector.h" />
     <ClInclude Include="xrPool.h" />
     <ClInclude Include="_std_extensions.h" />
@@ -261,13 +253,6 @@
     <ClInclude Include="intrusive_ptr.h" />
     <ClInclude Include="intrusive_ptr_inline.h" />
     <ClInclude Include="memory_monitor.h" />
-    <ClInclude Include="ppmd_compressor.h" />
-    <ClInclude Include="PPMd.h" />
-    <ClInclude Include="PPMdType.h" />
-    <ClInclude Include="Coder.hpp" />
-    <ClInclude Include="SubAlloc.hpp" />
-    <ClInclude Include="compression_ppmd_stream.h" />
-    <ClInclude Include="compression_ppmd_stream_inline.h" />
     <ClInclude Include="rt_compressor.h" />
     <ClInclude Include="lzhuf.h" />
     <ClInclude Include="xrSyncronize.h" />

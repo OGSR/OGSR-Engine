@@ -52,8 +52,6 @@ protected:
 	xrCriticalSection		net_csEnumeration;
 	xr_vector<HOST_NODE>	net_Hosts;
 
-	NET_Compressor			net_Compressor;
-
 	ConnectionState			net_Connected;
 	BOOL					net_Syncronised;
 	BOOL					net_Disconnected;

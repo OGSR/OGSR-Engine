@@ -46,21 +46,6 @@
     <Filter Include="Compression">
       <UniqueIdentifier>{0cd59bba-b771-438a-8c04-08bf07c29af7}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Compression\ppmd">
-      <UniqueIdentifier>{2e0dee9d-ac1e-4d64-9589-62c792e0783a}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Compression\ppmd\common">
-      <UniqueIdentifier>{ab6213cb-5f35-42fd-be3d-6c898679d236}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Compression\ppmd\core">
-      <UniqueIdentifier>{b66299b9-b7c1-40ae-92c4-424d650129b4}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Compression\ppmd\core\allocator">
-      <UniqueIdentifier>{09503a6f-0e66-4b01-9ac9-387ccb675fc6}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Compression\ppmd\stream">
-      <UniqueIdentifier>{b57a9c62-e3c0-4b10-9702-2ed76454296a}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Compression\rt">
       <UniqueIdentifier>{cc2c5e62-9f98-43cd-8155-4710441461a5}</UniqueIdentifier>
     </Filter>
@@ -150,9 +135,6 @@
     <ClCompile Include="crc32.cpp">
       <Filter>shared memory/string library</Filter>
     </ClCompile>
-    <ClCompile Include="xr_shared.cpp">
-      <Filter>shared memory/string library</Filter>
-    </ClCompile>
     <ClCompile Include="xrsharedmem.cpp">
       <Filter>shared memory/string library</Filter>
     </ClCompile>
@@ -161,12 +143,6 @@
     </ClCompile>
     <ClCompile Include="memory_monitor.cpp">
       <Filter>memory_monitor</Filter>
-    </ClCompile>
-    <ClCompile Include="ppmd_compressor.cpp">
-      <Filter>Compression\ppmd</Filter>
-    </ClCompile>
-    <ClCompile Include="Model.cpp">
-      <Filter>Compression\ppmd\core</Filter>
     </ClCompile>
     <ClCompile Include="rt_compressor.cpp">
       <Filter>Compression\rt</Filter>
@@ -193,9 +169,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="FTimer.h">
-      <Filter>Kernel</Filter>
-    </ClInclude>
-    <ClInclude Include="resource.h">
       <Filter>Kernel</Filter>
     </ClInclude>
     <ClInclude Include="stdafx.h">
@@ -277,9 +250,6 @@
       <Filter>Math\CPU</Filter>
     </ClInclude>
     <ClInclude Include="FixedMap.h">
-      <Filter>Math\STLext</Filter>
-    </ClInclude>
-    <ClInclude Include="FixedSet.h">
       <Filter>Math\STLext</Filter>
     </ClInclude>
     <ClInclude Include="FixedVector.h">
@@ -368,27 +338,6 @@
     </ClInclude>
     <ClInclude Include="memory_monitor.h">
       <Filter>memory_monitor</Filter>
-    </ClInclude>
-    <ClInclude Include="ppmd_compressor.h">
-      <Filter>Compression\ppmd</Filter>
-    </ClInclude>
-    <ClInclude Include="PPMd.h">
-      <Filter>Compression\ppmd\common</Filter>
-    </ClInclude>
-    <ClInclude Include="PPMdType.h">
-      <Filter>Compression\ppmd\common</Filter>
-    </ClInclude>
-    <ClInclude Include="Coder.hpp">
-      <Filter>Compression\ppmd\core</Filter>
-    </ClInclude>
-    <ClInclude Include="SubAlloc.hpp">
-      <Filter>Compression\ppmd\core\allocator</Filter>
-    </ClInclude>
-    <ClInclude Include="compression_ppmd_stream.h">
-      <Filter>Compression\ppmd\stream</Filter>
-    </ClInclude>
-    <ClInclude Include="compression_ppmd_stream_inline.h">
-      <Filter>Compression\ppmd\stream</Filter>
     </ClInclude>
     <ClInclude Include="rt_compressor.h">
       <Filter>Compression\rt</Filter>
