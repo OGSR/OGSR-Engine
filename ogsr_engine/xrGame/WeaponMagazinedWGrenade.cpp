@@ -798,3 +798,14 @@ bool CWeaponMagazinedWGrenade::IsNecessaryItem	    (const shared_str& item_sect)
 				std::find(m_ammoTypes2.begin(), m_ammoTypes2.end(), item_sect) != m_ammoTypes2.end() 
 			);
 }
+
+
+float CWeaponMagazinedWGrenade::Weight() const {
+  float res = CWeaponMagazined::Weight();
+  if ( m_magazine2.size() ) {
+    float w  = pSettings->r_float( *m_ammoTypes2[ m_ammoType2 ], "inv_weight" );
+    float bs = pSettings->r_float( *m_ammoTypes2[ m_ammoType2 ], "box_size" );
+    res += w * ( m_magazine2.size() / bs );
+  }
+  return res;
+}

@@ -1224,15 +1224,15 @@ bool CWeapon::IsSilencerAttached() const
 			CSE_ALifeItemWeapon::eAddonPermanent == m_eSilencerStatus;
 }
 
-bool CWeapon::GrenadeLauncherAttachable()
+bool CWeapon::GrenadeLauncherAttachable() const
 {
 	return (CSE_ALifeItemWeapon::eAddonAttachable == m_eGrenadeLauncherStatus);
 }
-bool CWeapon::ScopeAttachable()
+bool CWeapon::ScopeAttachable() const
 {
 	return (CSE_ALifeItemWeapon::eAddonAttachable == m_eScopeStatus);
 }
-bool CWeapon::SilencerAttachable()
+bool CWeapon::SilencerAttachable() const
 {
 	return (CSE_ALifeItemWeapon::eAddonAttachable == m_eSilencerStatus);
 }
@@ -1748,19 +1748,16 @@ LPCSTR	CWeapon::GetCurrentAmmo_ShortName	()
 	return *(l_cartridge.m_InvShortName);
 }
 
-float CWeapon::Weight()
+float CWeapon::Weight() const
 {
 	float res = CInventoryItemObject::Weight();
-	if(IsGrenadeLauncherAttached()&&GetGrenadeLauncherName().size()){
+	if ( GrenadeLauncherAttachable() && IsGrenadeLauncherAttached() )
 		res += pSettings->r_float(GetGrenadeLauncherName(),"inv_weight");
-	}
-	if(IsScopeAttached()&&GetScopeName().size()){
+	if ( ScopeAttachable() && IsScopeAttached() )
 		res += pSettings->r_float(GetScopeName(),"inv_weight");
-	}
-	if(IsSilencerAttached()&&GetSilencerName().size()){
+	if ( SilencerAttachable() && IsSilencerAttached() )
 		res += pSettings->r_float(GetSilencerName(),"inv_weight");
-	}
-	
+
 	if(iAmmoElapsed)
 	{
 		float w		= pSettings->r_float(*m_ammoTypes[m_ammoType],"inv_weight");

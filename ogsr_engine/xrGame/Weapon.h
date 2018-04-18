@@ -177,9 +177,9 @@ public:
 			bool IsScopeAttached			() const;
 			bool IsSilencerAttached			() const;
 
-	virtual bool GrenadeLauncherAttachable();
-	virtual bool ScopeAttachable();
-	virtual bool SilencerAttachable();
+	virtual bool GrenadeLauncherAttachable() const;
+	virtual bool ScopeAttachable() const;
+	virtual bool SilencerAttachable() const;
 	virtual bool UseScopeTexture();
 
 	//обновление видимости для косточек аддонов
@@ -196,9 +196,9 @@ public:
 	int	GetGrenadeLauncherX() {return m_iGrenadeLauncherX;}
 	int	GetGrenadeLauncherY() {return m_iGrenadeLauncherY;}
 
-	const shared_str& GetGrenadeLauncherName	()		{return m_sGrenadeLauncherName;}
-	const shared_str& GetScopeName				()		{return m_sScopeName;}
-	const shared_str& GetSilencerName			()		{return m_sSilencerName;}
+	const shared_str& GetGrenadeLauncherName	() const		{return m_sGrenadeLauncherName;}
+	const shared_str& GetScopeName				() const		{return m_sScopeName;}
+	const shared_str& GetSilencerName			() const		{return m_sSilencerName;}
 
 	u8		GetAddonsState						()		const		{return m_flagsAddOnState;};
 	void	SetAddonsState						(u8 st)	{m_flagsAddOnState=st;}//dont use!!! for buy menu only!!!
@@ -267,7 +267,7 @@ public:
 
 			void			LoadZoomOffset		(LPCSTR section, LPCSTR prefix);
 
-	virtual float				Weight			();		
+	virtual float				Weight			() const;		
 
 public:
     virtual EHandDependence		HandDependence		()	const		{	return eHandDependence;}
