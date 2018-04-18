@@ -115,9 +115,12 @@ void CPlanner::update				()
 	}
 	//KRodin: чтоб не вылетать при вызове апдейта из скрипта, тут ловим ошибку, шедулер в любом случае повиснет - и с зависшим неписем будет разбираться уже специальный скрипт.
 	__except (ExceptStackTrace("[CPlanner::update] stack_trace:\n")) {
-#ifdef CRASH_ON_SCRIPT_BINDER_ERRORS
-		ASSERT_FMT( false, "!![CPlanner::update] Fatal Error in update()" );
-#elif defined( LOG_ACTION )
+		if ( initialized() ) {
+                  current_action().finalize();
+                  m_current_action_id = _action_id_type( -1 );
+                  m_initialized       = false;
+		}
+#ifdef LOG_ACTION
 		Msg("!![CPlanner::update] Fatal Error in object: [%s]", object_name());
 #endif
 	}
