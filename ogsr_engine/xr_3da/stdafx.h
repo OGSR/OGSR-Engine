@@ -1,9 +1,5 @@
 #pragma once
 
-#ifdef _EDITOR
-	#include "..\editors\ECore\stdafx.h"
-#else
-
 #include "../xrCore/xrCore.h"
 
 #ifdef _DEBUG
@@ -17,27 +13,20 @@
 
 // you must define ENGINE_BUILD then building the engine itself
 // and not define it if you are about to build DLL
-#ifndef NO_ENGINE_API
-	#ifdef	ENGINE_BUILD
-		#define DLL_API			__declspec(dllimport)
-		#define ENGINE_API		__declspec(dllexport)
-	#else
-		#define DLL_API			__declspec(dllexport)
-		#define ENGINE_API		__declspec(dllimport)
-	#endif
+#ifdef ENGINE_BUILD
+#	define DLL_API			__declspec(dllimport)
+#	define ENGINE_API		__declspec(dllexport)
 #else
-	#define ENGINE_API
-	#define DLL_API
-#endif // NO_ENGINE_API
+#	define DLL_API			__declspec(dllexport)
+#	define ENGINE_API		__declspec(dllimport)
+#endif
 
 #define ECORE_API
 
 // Our headers
 #include "engine.h"
 #include "defines.h"
-#ifndef NO_XRLOG
 #include "../xrCore/log.h"
-#endif
 #include "device.h"
 #include "fs.h"
 
@@ -46,5 +35,3 @@
 #include "../xrSound/sound.h"
 
 extern ENGINE_API CInifile *pGameIni;
-
-#endif // !M_BORLAND

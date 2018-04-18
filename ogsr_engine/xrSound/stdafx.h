@@ -2,8 +2,7 @@
 // or project specific include files that are used frequently, but
 // are changed infrequently
 //
-#ifndef stdafxH
-#define stdafxH
+
 #pragma once
 
 #include "../xrCore/xrCore.h"
@@ -33,14 +32,3 @@
 #define ENGINE_API
 
 #include "../xrCore/xr_resource.h"
-
-#ifdef __BORLANDC__
-#define logf log
-#endif
-
-#ifdef _EDITOR    
-# 	include "ETools.h"
-#endif
-// TODO: reference additional headers your program requires here
-#endif
-

@@ -35,32 +35,17 @@ void BuildStackTrace(StackTraceInfo& stackTrace) {
     symbolInfo->MaxNameLen = MaxFrameLength;
     symbolInfo->SizeOfStruct = sizeof(SYMBOL_INFO);
 
-#ifndef _M_X64
-	IMAGEHLP_LINE lineInfo = { 0 };
-    lineInfo.SizeOfStruct = sizeof(IMAGEHLP_LINE);
-	IMAGEHLP_MODULE moduleInfo = { 0 };
-	moduleInfo.SizeOfStruct = sizeof(IMAGEHLP_MODULE);
-#else
 	IMAGEHLP_LINE64 lineInfo = { 0 };
 	lineInfo.SizeOfStruct = sizeof(IMAGEHLP_LINE64);
 	IMAGEHLP_MODULE64 moduleInfo = { 0 };
 	moduleInfo.SizeOfStruct = sizeof(IMAGEHLP_MODULE64);
-#endif
-    for (size_t i = 0; i < framesCount; i++) {
-#ifndef _M_X64
-		const auto addr = reinterpret_cast<DWORD>(stack[i]);
-#else
+
+	for (size_t i = 0; i < framesCount; i++) {
 		const auto addr = reinterpret_cast<DWORD64>(stack[i]);
-#endif
 		SymFromAddr(processHandle, addr, nullptr, symbolInfo);
         DWORD displacement = 0;
-#ifndef _M_X64
-		SymGetLineFromAddr(processHandle, addr, &displacement, &lineInfo);
-		SymGetModuleInfo(processHandle, addr, &moduleInfo);
-#else
 		SymGetLineFromAddr64(processHandle, addr, &displacement, &lineInfo);
 		SymGetModuleInfo64(processHandle, addr, &moduleInfo);
-#endif
 		auto dst = stackTrace.frames + (MaxFrameLength + 1) * i;
 		std::snprintf(dst, MaxFrameLength + 1, "[%zi]: [%s]: [%s()] at [%s:%u]", framesCount - i, moduleInfo.ImageName, symbolInfo->Name, lineInfo.FileName, lineInfo.LineNumber);
 	}

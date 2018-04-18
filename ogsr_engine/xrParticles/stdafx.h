@@ -4,15 +4,8 @@
 //
 // Third generation by Oles.
 
-#ifndef stdafxH
-#define stdafxH
-
 #pragma once
 
 #include "../xrCore/xrCore.h"
 
 #include "psystem.h"
-
-#pragma comment( lib, "xrCore.lib"	)
-
-#endif //stdafxH

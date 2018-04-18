@@ -4,9 +4,6 @@
 //
 // Third generation by Oles.
 
-#ifndef stdafxH
-#define stdafxH
-
 #pragma once
 
 #include "../xrCore/xrCore.h"
@@ -24,5 +21,3 @@
 #ifdef DEBUG
 int (WINAPIV * __vsnprintf)(char *, size_t, const char*, va_list) = _vsnprintf;
 #endif
-
-#endif //stdafxH

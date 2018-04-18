@@ -1266,27 +1266,7 @@ void CUIMainIngameWnd::reset_ui()
 }
 
 #ifdef DEBUG
-/*
-#include "d3dx9core.h"
-#include "winuser.h"
-#pragma comment(lib,"d3dx9.lib")
-#pragma comment(lib,"d3d9.lib")
-ID3DXFont*     g_pTestFont = NULL;
-ID3DXSprite*        g_pTextSprite = NULL;   // Sprite for batching draw text calls
-*/
 
-/*
-#include "UIGameTutorial.h"
-#include "../actor_statistic_mgr.h"
-CUIGameTutorial* g_tut = NULL;
-*/
-//#include "../postprocessanimator.h"
-//CPostprocessAnimator* pp = NULL;
-//extern void create_force_progress();
-
-//#include "UIVotingCategory.h"
-
-//CUIVotingCategory* v = NULL;
 #include "UIFrameWindow.h"
 CUIFrameWindow*		pUIFrame = NULL;
 
@@ -1312,89 +1292,12 @@ void test_key	(int dik)
 			xr_delete(pUIFrame);
 	}
 
-/*
-	if(dik==DIK_K){
-		if(g_pTestFont){
-			g_pTestFont->Release();
-			g_pTestFont = NULL;
-			
-			g_pTextSprite->Release();
-			return;
-		}
-	HRESULT hr;
-	static int _height	= -12;
-	static u32 _width	= 0;
-	static u32 _weigth	= FW_BOLD;
-	static BOOL _italic = FALSE;
-
-    hr = D3DXCreateFont( HW.pDevice, _height, _width, _weigth, 1, _italic, DEFAULT_CHARSET, 
-                         OUT_DEFAULT_PRECIS, DEFAULT_QUALITY, DEFAULT_PITCH | FF_DONTCARE, 
-                         "Times New Roman", &g_pTestFont );
-
-
-	D3DXCreateSprite( HW.pDevice, &g_pTextSprite );
-
-	g_pTestFont->PreloadText("This is a trivial call to ID3DXFont::DrawText", xr_strlen("This is a trivial call to ID3DXFont::DrawText"));
-
-	}
-*/
 }
-/*
-D3DCOLOR _clr	= D3DXCOLOR( 1.0f, 0.0f, 0.0f, 1.0f );
-LPCSTR _str		= "This is a trivial call to ID3DXFont::DrawText";
-int _len		= 43;
-*/
+
 void test_draw	()
 {
 	if(pUIFrame)
 		pUIFrame->Draw();
-/*
-	if(g_pTestFont){
-
-//	g_pTestFont->PreloadText("This is a trivial call to ID3DXFont::DrawText", xr_strlen("This is a trivial call to ID3DXFont::DrawText"));
-//	g_pTestFont2->PreloadText("This is a trivial call to ID3DXFont::DrawText", xr_strlen("This is a trivial call to ID3DXFont::DrawText"));
-
-//	IDirect3DTexture9	*T;
-//	RECT				R;
-//	POINT				P;
-//	g_pTestFont2->PreloadGlyphs(0,255);
-//	g_pTestFont2->GetGlyphData(50, &T, &R, &P);
-//	R_CHK		(D3DXSaveTextureToFile	("x:\\test_font.dds",D3DXIFF_DDS,T,0));
-
-#define DT_TOP                      0x00000000
-#define DT_LEFT                     0x00000000
-#define DT_CENTER                   0x00000001
-#define DT_RIGHT                    0x00000002
-#define DT_VCENTER                  0x00000004
-#define DT_BOTTOM                   0x00000008
-#define DT_WORDBREAK                0x00000010
-#define DT_SINGLELINE               0x00000020
-#define DT_EXPANDTABS               0x00000040
-#define DT_TABSTOP                  0x00000080
-#define DT_NOCLIP                   0x00000100
-#define DT_EXTERNALLEADING          0x00000200
-#define DT_CALCRECT                 0x00000400
-#define DT_NOPREFIX                 0x00000800
-#define DT_INTERNAL                 0x00001000
-
-
-		RECT rc;
-        g_pTextSprite->Begin( D3DXSPRITE_ALPHABLEND | D3DXSPRITE_SORT_TEXTURE );
-
-		rc.left   = 50;
-		rc.top    = 150;
-		rc.right  = 250;
-		rc.bottom = 180;
-
-		for(int i=0; i<13; ++i){
-			g_pTestFont->DrawText( g_pTextSprite, _str, _len, &rc, DT_SINGLELINE, _clr);
-			rc.top			+= 30; rc.bottom		+= 30;
-		}
-
-		g_pTextSprite->End();
-
-	}
-*/
 }
 
 void CUIMainIngameWnd::draw_adjust_mode()

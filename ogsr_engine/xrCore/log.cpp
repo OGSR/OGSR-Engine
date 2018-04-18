@@ -147,7 +147,7 @@ const char* log_name()
 void InitLog()
 {
 	R_ASSERT(!LogFile);
-	LogFile = xr_new< xr_vector<std::string> >();
+	LogFile = xr_new<xr_vector<std::string>>();
 }
 
 void CreateLog(BOOL nl)
@@ -181,7 +181,7 @@ void CreateLog(BOOL nl)
 		logstream.flush();
 	}
 
-	LogFile->reserve(128);
+	LogFile->reserve(1000);
 }
 
 void CloseLog()
@@ -189,6 +189,6 @@ void CloseLog()
 	if (logstream.is_open())
 		logstream.close();
 
- 	LogFile->clear	();
-	xr_delete		(LogFile);
+ 	LogFile->clear();
+	xr_delete(LogFile);
 }

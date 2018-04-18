@@ -8,7 +8,6 @@
 	#define XRNETSERVER_API __declspec(dllexport)
 #else
 	#define XRNETSERVER_API __declspec(dllimport)
-	#pragma comment(lib,	"xrNetServer"	)
 #endif
 
 XRNETSERVER_API extern ClientID BroadcastCID;

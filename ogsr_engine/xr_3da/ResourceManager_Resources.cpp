@@ -3,10 +3,7 @@
 
 #pragma warning(disable:4995)
 #include <d3dx9.h>
-#ifndef _EDITOR
-	#pragma comment( lib, "d3dx9.lib"		)
-    #include "render.h"
-#endif
+#include "render.h"
 #pragma warning(default:4995)
 
 #include "ResourceManager.h"

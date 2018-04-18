@@ -1,5 +1,3 @@
-#ifndef xrXMLParserH
-#define xrXMLParserH
 #pragma once
 
 
@@ -7,7 +5,6 @@
 	#define XRXMLPARSER_API __declspec(dllexport)
 #else
 	#define XRXMLPARSER_API __declspec(dllimport)
-	#pragma comment			(lib,"xrXMLParser.lib")
 #endif
 
 
@@ -106,4 +103,3 @@ private:
 	TiXmlDocument								m_Doc;
 };
 
-#endif //xrXMLParserH

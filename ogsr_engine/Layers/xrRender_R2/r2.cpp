@@ -475,15 +475,7 @@ void	CRender::Statistics	(CGameFont* _F)
 
 /////////
 #include "D3Dcompiler.h"
-#pragma comment(lib,"d3dx9.lib")
-#pragma comment(lib,"d3dcompiler.lib")
-/*
-extern "C"
-{
-LPCSTR WINAPI	D3DXGetPixelShaderProfile	(LPDIRECT3DDEVICE9  pDevice);
-LPCSTR WINAPI	D3DXGetVertexShaderProfile	(LPDIRECT3DDEVICE9	pDevice);
-};
-*/
+
 HRESULT	CRender::shader_compile(
 	LPCSTR							name,
 	LPCSTR                          pSrcData,
