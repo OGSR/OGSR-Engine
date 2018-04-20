@@ -381,8 +381,8 @@ bool CUIInventoryWnd::OnItemDrop(CUICellItem* itm)
                   can_put = true;
                 }
                 else {
-                  if ( !DropItem( CurrentIItem(), new_owner ) )
-                    Msg( "!WARN: cannot put item %s into slot %d, allowed slots {%s}", name, i, item->GetSlotsSect() );
+                  if ( !DropItem( CurrentIItem(), new_owner ) && item->GetSlotsCount() > 0 )
+                    Msg( "! cannot put item %s into slot %d, allowed slots {%s}", name, i, item->GetSlotsSect() );
                 }
                 break;
               }   // for-if
