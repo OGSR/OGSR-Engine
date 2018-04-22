@@ -171,4 +171,5 @@ protected:
 
 public:
 	PIItem						CurrentIItem();
+	void UpdateWeight();
 };

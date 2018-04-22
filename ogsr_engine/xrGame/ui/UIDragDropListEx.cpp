@@ -113,6 +113,10 @@ void CUIDragDropListEx::CreateDragItem(CUICellItem* itm)
 	R_ASSERT							(!m_drag_item);
 	m_drag_item							= itm->CreateDragItem();
 	GetParent()->SetCapture				(m_drag_item, true);
+
+	Fvector2 p;
+	itm->GetAbsolutePos(p);
+	itm->OnMouse(p.x, p.y, EUIMessages::DRAG_DROP_ITEM_DRAG);
 }
 
 void CUIDragDropListEx::DestroyDragItem()
@@ -152,6 +156,13 @@ void CUIDragDropListEx::OnItemDrop(CUIWindow* w, void* pData)
 	OnItemSelected						(w, pData);
 	CUICellItem*		itm				= smart_cast<CUICellItem*>(w);
 	VERIFY								(itm->OwnerList() == itm->OwnerList());
+
+	if (itm)
+	{
+		Fvector2 p;
+		itm->GetAbsolutePos(p);
+		itm->OnMouse(p.x, p.y, EUIMessages::DRAG_DROP_ITEM_DROP);
+	}
 
 	if(m_f_item_drop && m_f_item_drop(itm) ){
 		DestroyDragItem						();

@@ -729,6 +729,12 @@ void update_inventory_window() {
   HUD().GetUI()->UIGame()->ReInitShownUI();
 }
 
+void update_inventory_weight() {
+  CUIGameSP* pGameSP = smart_cast<CUIGameSP*>( HUD().GetUI()->UIGame() );
+  if ( pGameSP)
+    pGameSP->InventoryMenu->UpdateWeight();
+}
+
 
 void change_level( GameGraph::_GRAPH_ID game_vertex_id, u32 level_vertex_id, Fvector pos, Fvector dir ) {
   NET_Packet p;
@@ -993,6 +999,7 @@ void CLevel::script_register(lua_State *L)
 			def("set_input_language", &g_set_input_language),
 			def("get_input_language", &g_get_input_language),
 			def("update_inventory_window", &update_inventory_window),
+			def("update_inventory_weight", &update_inventory_weight),
 
 			class_<enum_exporter<collide::rq_target> >("rq_target")
 			.enum_("rq_target")

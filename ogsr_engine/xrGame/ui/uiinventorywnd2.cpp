@@ -164,7 +164,7 @@ void CUIInventoryWnd::InitInventory()
 	  }
 	}
 
-	InventoryUtilities::UpdateWeight					(UIBagWnd, true);
+	UpdateWeight();
 
 	m_b_need_reinit					= false;
 }  
@@ -179,7 +179,7 @@ void CUIInventoryWnd::DropCurrentItem(bool b_all)
 	{
 		SendEvent_Item_Drop		(CurrentIItem());
 		SetCurrentItem			(NULL);
-		InventoryUtilities::UpdateWeight			(UIBagWnd, true);
+		UpdateWeight();
 		return;
 	}
 
@@ -195,7 +195,7 @@ void CUIInventoryWnd::DropCurrentItem(bool b_all)
 
 		SendEvent_Item_Drop					(CurrentIItem());
 		SetCurrentItem						(NULL);
-		InventoryUtilities::UpdateWeight	(UIBagWnd, true);
+		UpdateWeight();
 		return;
 	}
 }
@@ -234,7 +234,7 @@ bool CUIInventoryWnd::ToSlot(CUICellItem* itm, bool force_place)
 		
 		/************************************************** added by Ray Twitty (aka Shadows) START **************************************************/
 		// обновляем статик веса в инвентаре
-		InventoryUtilities::UpdateWeight	(UIBagWnd, true);
+		UpdateWeight();
 		/*************************************************** added by Ray Twitty (aka Shadows) END ***************************************************/
 		
 		return								true;
@@ -277,7 +277,7 @@ bool CUIInventoryWnd::ToBag(CUICellItem* itm, bool b_use_cursor_pos)
 
 		/************************************************** added by Ray Twitty (aka Shadows) START **************************************************/
 		// обновляем статик веса в инвентаре
-		InventoryUtilities::UpdateWeight	(UIBagWnd, true);
+		UpdateWeight();
 		/*************************************************** added by Ray Twitty (aka Shadows) END ***************************************************/
 		
 		if(b_use_cursor_pos)
@@ -319,7 +319,7 @@ bool CUIInventoryWnd::ToBelt(CUICellItem* itm, bool b_use_cursor_pos)
 
 		/************************************************** added by Ray Twitty (aka Shadows) START **************************************************/
 		// обновляем статик веса в инвентаре
-		InventoryUtilities::UpdateWeight	(UIBagWnd, true);
+		UpdateWeight();
 		/*************************************************** added by Ray Twitty (aka Shadows) END ***************************************************/
 
 		return								true;
@@ -381,8 +381,8 @@ bool CUIInventoryWnd::OnItemDrop(CUICellItem* itm)
                   can_put = true;
                 }
                 else {
-                  if ( !DropItem( CurrentIItem(), new_owner ) )
-                    Msg( "!WARN: cannot put item %s into slot %d, allowed slots {%s}", name, i, item->GetSlotsSect() );
+                  if ( !DropItem( CurrentIItem(), new_owner ) && item->GetSlotsCount() > 0 )
+                    Msg( "! cannot put item %s into slot %d, allowed slots {%s}", name, i, item->GetSlotsSect() );
                 }
                 break;
               }   // for-if
@@ -540,4 +540,9 @@ void CUIInventoryWnd::ClearAllLists()
 	m_pUINightVisionList->ClearAll(true);
 	m_pUIBIODetList->ClearAll(true);
 	m_pUIBinocularList->ClearAll(true);
+}
+
+
+void CUIInventoryWnd::UpdateWeight() {
+  InventoryUtilities::UpdateWeight( UIBagWnd, true );
 }
