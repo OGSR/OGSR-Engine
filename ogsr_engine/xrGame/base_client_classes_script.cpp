@@ -309,7 +309,7 @@ CCameraBase* actor_camera(u16 index)
 	return pA->cam_ByIndex(index);
 }
 
-void CCameraBaseScript::script_register(lua_State *L)
+void CCameraScript::script_register(lua_State *L)
 {
 	module(L)
 		[

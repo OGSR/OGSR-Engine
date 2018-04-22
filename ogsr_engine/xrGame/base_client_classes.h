@@ -90,11 +90,6 @@ add_to_type_list(CKinematicsAnimatedScript)
 #undef script_type_list
 #define script_type_list save_type_list(CKinematicsAnimatedScript)
 
-typedef class_exporter<CCameraBase>	CCameraBaseScript;
-add_to_type_list(CCameraBaseScript)
-#undef script_type_list
-#define script_type_list save_type_list(CCameraBaseScript)
-
 typedef class_exporter<CAnomalyDetector> CAnomalyDetectorScript;
 add_to_type_list(CAnomalyDetectorScript)
 #undef script_type_list

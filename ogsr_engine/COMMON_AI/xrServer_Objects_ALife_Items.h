@@ -291,7 +291,6 @@ class CSE_InventoryContainer : public CSE_InventoryBoxAbstract, public CSE_ALife
 public:
 						CSE_InventoryContainer			(LPCSTR caSection) : CSE_ALifeItem(caSection) {};
 	virtual				~CSE_InventoryContainer		() {};
-#ifdef XRGAME_EXPORTS
 	virtual void		add_offline			(const xr_vector<ALife::_OBJECT_ID> &saved_children, const bool &update_registries)
 	{
 		add_offline_impl (smart_cast<CSE_ALifeDynamicObjectVisual*>(this), saved_children, update_registries);
@@ -302,12 +301,12 @@ public:
 		add_online_impl (smart_cast<CSE_ALifeDynamicObjectVisual*>(this), update_registries);
 		CSE_ALifeItem::add_online(update_registries);
 	};
-#endif
-
 };
 
-add_to_type_list(CSE_InventoryContainer)
-#define script_type_list save_type_list(CSE_InventoryContainer)
+// KRodin: Закомментировал, попытка предотвратить повторную регистрацию cse_alife_item в луабинде.
+// По идее, оно и не нужно, ведь у класса CSE_InventoryContainer нету метода ::script_register()
+//add_to_type_list(CSE_InventoryContainer)
+//#define script_type_list save_type_list(CSE_InventoryContainer)
 
 #pragma warning(pop)
 
