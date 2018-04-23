@@ -15,6 +15,7 @@
 #include <condition_variable>
 #include <functional>
 #include <memory>
+#include <Objbase.h>
 
 class Thread {
 private:
@@ -26,6 +27,9 @@ private:
 
     // Loop through all remaining jobs
     void queueLoop() {
+		//
+		CoInitializeEx(NULL, COINIT_MULTITHREADED);
+		//
         while (true) {
             std::function<void()> job;
             {
@@ -80,9 +84,9 @@ public:
     std::vector<std::unique_ptr<Thread>> threads;
 
     void initialize(std::uint32_t threads_count = std::thread::hardware_concurrency()) {
-        for (std::uint32_t i = 0; i < threads_count; i++) {
-            threads.push_back(std::make_unique<Thread>());
-        }
+		do {
+			threads.push_back(std::make_unique<Thread>());
+		} while (--threads_count);
     }
 
     // Wait until all threads have finished their work items

@@ -118,6 +118,9 @@ volatile u32	mt_Thread_marker		= 0x12345678;
 void mt_Thread()
 {
 	set_current_thread_name("X-RAY Secondary thread");
+	//
+	CoInitializeEx(NULL, COINIT_MULTITHREADED);
+	//
 	while (true) {
 		// waiting for Device permission to execute
 		Device.mt_csEnter.Enter	();
