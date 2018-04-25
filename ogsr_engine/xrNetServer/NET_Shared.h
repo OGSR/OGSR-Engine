@@ -23,11 +23,8 @@ XRNETSERVER_API extern int		psNET_ServerPending;
 
 XRNETSERVER_API extern BOOL		psNET_direct_connect;
 
-enum	{
-	NETFLAG_MINIMIZEUPDATES		= (1<<0),
-	NETFLAG_DBG_DUMPSIZE		= (1<<1),
-	NETFLAG_LOG_SV_PACKETS		= (1<<2),
-	NETFLAG_LOG_CL_PACKETS		= (1<<3),
+enum {
+	NETFLAG_MINIMIZEUPDATES = (1<<0),
 };
 
 IC u32 TimeGlobal	(CTimer* timer)	{ return timer->GetElapsed_ms();	}

@@ -100,8 +100,6 @@ public:
 	void					ClearStatistic			();
 	IClientStatistic		GetStatistic			() const {return  net_Statistic; }
 	void					UpdateStatistic			();
-
-			bool			GetServerAddress		(ip_address& pAddress, DWORD* pPort);
 	
 	// time management
 	IC u32					timeServer				()	{ return TimeGlobal(device_timer) + net_TimeDelta + net_TimeDelta_User; }

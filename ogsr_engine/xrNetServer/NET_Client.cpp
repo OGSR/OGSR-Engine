@@ -3,7 +3,6 @@
 #include "net_client.h"
 #include "net_server.h"
 #include "net_messages.h"
-#include "NET_Log.h"
 
 #pragma warning(push)
 #pragma warning(disable:4995)
@@ -105,8 +104,6 @@ const GUID CLSID_DirectPlay8Address =
 
 const GUID IID_IDirectPlay8Address =
 { 0x83783300, 0x4063, 0x4c8a,{ 0x9d, 0xb3, 0x82, 0x83, 0x0a, 0x7f, 0xeb, 0x31 } };
-
-static	INetLog* pClNetLog = NULL; 
 
 #define BASE_PORT_LAN_SV	5445
 #define BASE_PORT_LAN_CL	5446
@@ -322,16 +319,6 @@ void  IPureClient::_Recieve( const void* data, u32 data_size, u32 /*param*/ )
 	else if( net_Connected == EnmConnectionCompleted )
 	{
 		// one of the messages - decompress it
-
-		if( psNET_Flags.test( NETFLAG_LOG_CL_PACKETS ) ) 
-		{
-			if( !pClNetLog ) 
-				pClNetLog = xr_new<INetLog>("logs\\net_cl_log.log", timeServer());
-			    
-			if( pClNetLog ) 
-				pClNetLog->LogData( timeServer(), const_cast<void*>(data), data_size, TRUE );
-		}
-
 		OnMessage( const_cast<void*>(data), data_size );
 	}
 }
@@ -351,26 +338,17 @@ IPureClient::IPureClient	(CTimer* timer): net_Statistic(timer)
 	net_Time_LastUpdate		= 0;
 	net_TimeDelta			= 0;
 	net_TimeDelta_Calculated = 0;
-
-	pClNetLog = NULL;//xr_new<INetLog>("logs\\net_cl_log.log", timeServer());
 }
 
 IPureClient::~IPureClient	()
 {
-	xr_delete(pClNetLog); pClNetLog = NULL;
 	psNET_direct_connect = FALSE;
 }
 
-void gen_auth_code();
 BOOL IPureClient::Connect	(LPCSTR options)
 {
 	R_ASSERT						(options);
 	net_Disconnected				= FALSE;
-
-	if(!psNET_direct_connect && !strstr(options,"localhost") )
-	{
-		gen_auth_code	();
-	}
 
 	if(!psNET_direct_connect)
 	{
@@ -923,13 +901,6 @@ void	IPureClient::SendTo_LL(void* data, u32 size, u32 dwFlags, u32 dwTimeout)
 	if( net_Disconnected )	
 	    return;
 
-	if( psNET_Flags.test(NETFLAG_LOG_CL_PACKETS) ) 
-	{
-		if( !pClNetLog) 
-		    pClNetLog = xr_new<INetLog>( "logs\\net_cl_log.log", timeServer() );
-		if( pClNetLog ) 
-		    pClNetLog->LogData( timeServer(), data, size );
-	}
 	DPN_BUFFER_DESC				desc;
 
 	desc.dwBufferSize   = size;
@@ -1125,39 +1096,3 @@ BOOL	IPureClient::net_IsSyncronised()
 {
 	return net_Syncronised;
 }
-
-#include <WINSOCK2.H>
-#include <Ws2tcpip.h>
-bool	IPureClient::GetServerAddress		(ip_address& pAddress, DWORD* pPort)
-{
-	*pPort		= 0;
-	if (!net_Address_server) return false;
-
-	WCHAR wstrHostname[ 2048 ] = {0};	
-	DWORD dwHostNameSize = sizeof(wstrHostname);
-	DWORD dwHostNameDataType = DPNA_DATATYPE_STRING;
-	CHK_DX(net_Address_server->GetComponentByName( DPNA_KEY_HOSTNAME, wstrHostname, &dwHostNameSize, &dwHostNameDataType ));
-
-	string2048				HostName;
-	CHK_DX(WideCharToMultiByte(CP_ACP,0,wstrHostname,-1,HostName,sizeof(HostName),0,0));
-
-	hostent* pHostEnt		= gethostbyname(HostName);
-	char*					localIP;
-	localIP					= inet_ntoa (*(struct in_addr *)*pHostEnt->h_addr_list);
-	pHostEnt				= gethostbyname(pHostEnt->h_name);
-	localIP					= inet_ntoa (*(struct in_addr *)*pHostEnt->h_addr_list);
-	pAddress.set			(localIP);
-
-//.	pAddress[0]				= (char)(*(struct in_addr *)*pHostEnt->h_addr_list).s_net;
-//.	pAddress[1]				= (char)(*(struct in_addr *)*pHostEnt->h_addr_list).s_host;
-//.	pAddress[2]				= (char)(*(struct in_addr *)*pHostEnt->h_addr_list).s_lh;
-//.	pAddress[3]				= (char)(*(struct in_addr *)*pHostEnt->h_addr_list).s_impno;
-
-	DWORD dwPort			= 0;
-	DWORD dwPortSize		= sizeof(dwPort);
-	DWORD dwPortDataType	= DPNA_DATATYPE_DWORD;
-	CHK_DX(net_Address_server->GetComponentByName( DPNA_KEY_PORT, &dwPort, &dwPortSize, &dwPortDataType ));
-	*pPort					= dwPort;
-
-	return true;
-};

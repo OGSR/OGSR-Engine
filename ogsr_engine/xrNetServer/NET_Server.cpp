@@ -3,14 +3,10 @@
 #include "NET_Common.h"
 #include "net_server.h"
 
-#include "NET_Log.h"
-
 #pragma warning(push)
 #pragma warning(disable:4995)
 #include <malloc.h>
 #pragma warning(pop)
-
-static	INetLog* pSvNetLog = NULL; 
 
 #define BASE_PORT_LAN_SV		5445
 #define BASE_PORT				0
@@ -99,39 +95,6 @@ xr_string IBannedClient::BannedTimeTo() const
 	return res;
 }
 
-
-void gen_auth_code() //?????
-{
-		xr_vector<xr_string>	ignore, test	;
-
-		LPCSTR pth				= FS.get_path("$app_data_root$")->m_Path;
-		ignore.push_back		(xr_string(pth));
-		ignore.push_back		(xr_string("gamedata\\config\\localization.ltx"));
-		ignore.push_back		(xr_string("gamedata\\config\\fonts.ltx"));
-		ignore.push_back		(xr_string("gamedata\\config\\misc\\items.ltx"));
-		ignore.push_back		(xr_string("gamedata\\config\\text"));
-		ignore.push_back		(xr_string("gamedata\\config\\gameplay"));
-		ignore.push_back		(xr_string("gamedata\\config\\ui"));
-
-		test.push_back			(xr_string("gamedata\\config"));
-//.		test.push_back			(xr_string("gamedata\\scripts"));
-		test.push_back			(xr_string("gamedata\\shaders"));
-		test.push_back			(xr_string("gamedata\\textures\\act"));
-		test.push_back			(xr_string("gamedata\\textures\\wpn"));
-
-		test.push_back			(xr_string("ode.dll"));
-		test.push_back			(xr_string("xrcdb.dll"));
-		test.push_back			(xr_string("xrcore.dll"));
-		test.push_back			(xr_string("xrgame.dll"));
-		test.push_back			(xr_string("xrnetserver.dll"));
-		test.push_back			(xr_string("xrparticles.dll"));
-		test.push_back			(xr_string("xrrender.dll"));
-		test.push_back			(xr_string("xrsound.dll"));
-		test.push_back			(xr_string("xrxmlparser.dll"));
-//		test.push_back			(xr_string("xr_3da.exe"));
-
-		FS.auth_generate		(ignore,test);
-}
 
 IClient::IClient( CTimer* timer )
   : stats(timer),
@@ -235,16 +198,6 @@ IPureServer::_Recieve( const void* data, u32 data_size, u32 param )
     id.set( param );
     packet.construct( data, data_size );
 	csMessage.Enter();
-	//---------------------------------------
-	if( psNET_Flags.test(NETFLAG_LOG_SV_PACKETS) ) 
-	{
-		if( !pSvNetLog) 
-			pSvNetLog = xr_new<INetLog>("logs\\net_sv_log.log", TimeGlobal(device_timer));
-		    
-		if( pSvNetLog ) 
-		    pSvNetLog->LogPacket( TimeGlobal(device_timer), &packet, TRUE );
-	}
-	//---------------------------------------
 	u32	result = OnMessage( packet, id );
 
 	csMessage.Leave();
@@ -269,7 +222,6 @@ IPureServer::IPureServer	(CTimer* timer, BOOL	Dedicated)
 	SV_Client				= NULL;
 	NET						= NULL;
 	net_Address_device		= NULL;
-	pSvNetLog				= NULL;//xr_new<INetLog>("logs\\net_sv_log.log", TimeGlobal(device_timer));
 }
 
 IPureServer::~IPureServer	()
@@ -281,8 +233,6 @@ IPureServer::~IPureServer	()
 
 	SV_Client					= NULL;
 
-	xr_delete					(pSvNetLog); 
-
 	psNET_direct_connect		= FALSE;
 }
 
@@ -293,9 +243,6 @@ IPureServer::EConnect IPureServer::Connect(LPCSTR options)
 
 	if(strstr(options, "/single") && !strstr(Core.Params, "-no_direct_connect" ))
 		psNET_direct_connect	=	TRUE;
-	else{
-		gen_auth_code	();
-	}
 
 	// Parse options
 	string4096				session_name;
@@ -632,13 +579,6 @@ void	IPureServer::SendTo_Buf(ClientID id, void* data, u32 size, u32 dwFlags, u32
 
 void	IPureServer::SendTo_LL(ClientID ID/*DPNID ID*/, void* data, u32 size, u32 dwFlags, u32 dwTimeout)
 {
-	//	if (psNET_Flags.test(NETFLAG_LOG_SV_PACKETS)) pSvNetLog->LogData(TimeGlobal(device_timer), data, size);
-	if (psNET_Flags.test(NETFLAG_LOG_SV_PACKETS)) 
-	{
-		if (!pSvNetLog) pSvNetLog = xr_new<INetLog>("logs\\net_sv_log.log", TimeGlobal(device_timer));
-		if (pSvNetLog) pSvNetLog->LogData(TimeGlobal(device_timer), data, size);
-	}
-
 	// send it
 	DPN_BUFFER_DESC		desc;
 	desc.dwBufferSize	= size;
