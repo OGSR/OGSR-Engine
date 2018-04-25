@@ -22,7 +22,7 @@
 #include "gamemtllib.h"
 #include "clsid_game.h"
 #ifdef DEBUG
-#include "../StatGraph.h"
+#include "../xr_3da/StatGraph.h"
 #include "PHDebug.h"
 #endif
 #include "Physics.h"

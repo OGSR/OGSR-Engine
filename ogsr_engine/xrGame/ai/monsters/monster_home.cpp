@@ -11,7 +11,7 @@
 #include "../../restricted_object.h"
 
 #ifdef DEBUG
-#	include "7game_graph.h"
+#	include "game_graph.h"
 void check_path	(const CBaseMonster *monster, const CPatrolPath *path)
 {
 	VERIFY2			(

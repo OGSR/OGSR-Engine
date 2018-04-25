@@ -3,7 +3,7 @@
 #ifdef DEBUG
 struct dContact;
 //#include "FastDelegate.h"
-#include "../StatGraph.h"
+#include "../xr_3da/StatGraph.h"
 #define DRAW_CONTACTS
 
 

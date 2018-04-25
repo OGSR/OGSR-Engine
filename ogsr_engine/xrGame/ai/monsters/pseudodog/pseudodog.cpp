@@ -9,17 +9,6 @@
 #include "../control_animation_base.h"
 #include "../control_movement_base.h"
 
-#ifdef _DEBUG
-#	include <dinput.h>
-#	include "../../../ai_object_location.h"
-#	include "../../../level_debug.h"
-#	include "../../../level_graph.h"
-#	include "../../../ai_space.h"
-#	include "../../../alife_simulator.h"
-#	include "../../../xrServer_Object_Base.h"
-#	include "../../../xrserver.h"
-#endif
-
 CAI_PseudoDog::CAI_PseudoDog()
 {
 	com_man().add_ability(ControlCom::eControlJump);

@@ -2,7 +2,7 @@
 #ifdef DEBUG
 #include "physics.h"
 #include "MathUtils.h"
-#include "../StatGraph.h"
+#include "../xr_3da/StatGraph.h"
 #include "PHDebug.h"
 #include "PHObject.h"
 #include "ExtendedGeom.h"
