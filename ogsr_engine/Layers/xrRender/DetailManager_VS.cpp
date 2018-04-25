@@ -276,7 +276,6 @@ void CDetailManager::hw_Load()
 		R_CHK(hw_lod_IB->Lock(0, 0, (void**)(&pI), 0));
 		for (u32 o = 0; o<objects.size(); o++)
 		{
-			CDetail& D = *objects[o];
 			u32 batchsize = hw_BatchSize*1.4;
 			u16		offset = 0;
 			for (u32 batch = 0; batch<batchsize; batch++)
@@ -633,8 +632,8 @@ void CDetailManager::hw_Render_dump_lod(ref_constant x_array, u32 c_offset)
 	RCache.set_Element(objects[0]->shader->E[1]);
 	RImplementation.apply_lmaterial();
 	for (u32 O = 0; O<objects.size(); O++) {
-		CDetail&	Object = *objects[O];
-		/*		if (Object.m_Flags.is(DO_NO_WAVING))
+		/*CDetail&	Object = *objects[O];
+		if (Object.m_Flags.is(DO_NO_WAVING))
 		{
 		vOffset		+=	batchsize * 4;
 		iOffset		+=	batchsize * 6;

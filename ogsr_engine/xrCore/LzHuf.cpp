@@ -32,7 +32,7 @@ char		wterr[] = "Can't write.";
 u8				text_buf[N + F];
 int					match_position, match_length, lson[N + 1], rson[N + 257], dad[N + 1];
 
-unsigned			code, len;
+//unsigned			code, len;
 unsigned			tim_size=0;
 
 unsigned freq[T + 1];	/* frequency table */
@@ -484,8 +484,8 @@ void EncodeChar(unsigned c)
 		k = prnt[k];
     } while (k != R);
     fs.PutCode(j, i);
-    code = i;
-    len = j;
+    /*code = i;
+    len = j;*/
     update(c);
 }
 

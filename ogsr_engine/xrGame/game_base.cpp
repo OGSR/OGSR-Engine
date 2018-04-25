@@ -178,6 +178,7 @@ CLASS_ID game_GameState::getCLASS_ID(LPCSTR game_type_name, bool isServer)
 		return TEXT2CLSID("CL_SINGL");
 
 	FATAL("Unsupportet game type!");
+	return 0; //fix warning C4715
 }
 
 void game_GameState::switch_Phase		(u32 new_phase)

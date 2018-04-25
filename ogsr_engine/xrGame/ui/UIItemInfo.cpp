@@ -183,8 +183,6 @@ void CUIItemInfo::InitItem(CInventoryItem* pInvItem)
 		UIItemImage->SetShader				(pInvItem->m_icon_params.get_shader());
 
 		Frect rect = pInvItem->m_icon_params.original_rect();
-		int iGridWidth						= pInvItem->GetGridWidth();
-		int iGridHeight						= pInvItem->GetGridHeight();
 		UIItemImage->GetUIStaticItem().SetOriginalRect(rect);
 		UIItemImage->TextureOn				();
 		UIItemImage->ClipperOn				();

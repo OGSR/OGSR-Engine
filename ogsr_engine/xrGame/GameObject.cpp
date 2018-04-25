@@ -919,7 +919,6 @@ void	CGameObject::		UpdateCL			( )
 void	CGameObject::UpdateXFORM(const Fmatrix &upd)
 {
 	XFORM() = upd;	
-	IRender_Visual *pV = Visual();
 	CKinematics *pK = PKinematics(Visual());
 	if (pK)
 	{

@@ -269,10 +269,8 @@ void CResourceManager::DeferredUpload()
 		CTimer timer;
 		timer.Start();
 
-		u32 nWorkers = TTAPI->threads.size();
-
-		for (const auto &[_, tex] : m_textures)
-			TTAPI->threads[Random.randI(nWorkers)]->addJob([&] { tex->Load(); });
+		for (const auto& pair : m_textures)
+			TTAPI->threads[Random.randI(TTAPI->threads.size())]->addJob([&] { pair.second->Load(); });
 
 		TTAPI->wait();
 

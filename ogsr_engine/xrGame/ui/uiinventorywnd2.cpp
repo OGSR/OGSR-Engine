@@ -476,7 +476,6 @@ void CUIInventoryWnd::ColorizeAmmo(CUICellItem* itm)
 	u32 item_count = m_pUIBagList->ItemsCount();
 	for (u32 i = 0; i<item_count; ++i) {
 		CUICellItem* bag_item = m_pUIBagList->GetItemIdx(i);
-		PIItem invitem = (PIItem)bag_item->m_pData;
 
 		bag_item->SetTextureColor(0xffffffff);
 	}
@@ -484,7 +483,6 @@ void CUIInventoryWnd::ColorizeAmmo(CUICellItem* itm)
 	u32 belt_item_count = m_pUIBeltList->ItemsCount();
 	for (u32 i = 0; i<belt_item_count; ++i) {
 		CUICellItem* belt_item = m_pUIBeltList->GetItemIdx(i);
-		PIItem invitem = (PIItem)belt_item->m_pData;
 
 		belt_item->SetTextureColor(0xffffffff);
 	}

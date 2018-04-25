@@ -25,8 +25,6 @@ void	CRenderTarget::phase_scene_prepare	()
 
 	float	_w = float(Device.dwWidth);
 	float	_h = float(Device.dwHeight);
-	float	ddw = 1.f / _w;
-	float	ddh = 1.f / _h;
 	p0.set(.5f / _w, .5f / _h);
 	p1.set((_w + .5f) / _w, (_h + .5f) / _h);
 

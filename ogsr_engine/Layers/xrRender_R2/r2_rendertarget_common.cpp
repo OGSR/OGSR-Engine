@@ -16,8 +16,6 @@ void CRenderTarget::prepare_simple_quad(ref_rt& DEST_RT, ref_selement& SHADER, u
 
 	float	_w					= float(w)*downscale;
 	float	_h					= float(h)*downscale;
-	float	ddw					= 1.f/_w;
-	float	ddh					= 1.f/_h;
 	p0.set						(.5f/_w, .5f/_h);
 	p1.set						((_w+.5f)/_w, (_h+.5f)/_h );
 

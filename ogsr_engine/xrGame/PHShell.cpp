@@ -84,7 +84,7 @@ void CPHShell::EnableObject(CPHObject* obj)
 void CPHShell::DisableObject()
 {
 
-	CPhysicsShellHolder* ref_object=(*elements.begin())->PhysicsRefObject();
+//.	CPhysicsShellHolder* ref_object=(*elements.begin())->PhysicsRefObject();
 //.	if (!ref_object) return;
 
 	//InterpolateGlobalTransform(&mXFORM);

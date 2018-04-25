@@ -239,7 +239,6 @@ BOOL rain_timer_params::RayPick(const Fvector& s, const Fvector& d, float& range
 int rain_timer_params::Update(BOOL state, bool need_raypick)
 {
 	float	factor = g_pGamePersistent->Environment().CurrentEnv.rain_density;
-	CEffect_Rain* rain_manager = g_pGamePersistent->Environment().eff_Rain;
 	if (factor>EPS_L)
 	{
 		// is raining	

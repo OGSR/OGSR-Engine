@@ -286,7 +286,6 @@ int script_vars_dump (lua_State *L, CScriptVarsTable *svt, bool unpack) // дамп 
 		}
 
 		auto it = svt->map().begin();
-		int i = 1;
 		for (; it != svt->map().end(); it++)
 		{			
 			LPCSTR key = *it->first;			
@@ -340,7 +339,6 @@ int CScriptVarsTable::assign(lua_State *L,  int index)
 	int save_top = lua_gettop(L);
 	is_array = false;
 		
-	LPCSTR tk = NULL;
 	int count = lua_objlen(L, index); // сколько в array части таблицы элементов (непрерывный набор ключей от 1 до X)
 	string16 tmp;
 	// предварительное прочесывание как массива выстраивает индексы от 1 до count

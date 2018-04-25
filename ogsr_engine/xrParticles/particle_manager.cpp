@@ -139,7 +139,6 @@ void CParticleManager::Update(int effect_id, int alist_id, float dt)
 	pa->lock();
 
 	// Step through all the actions in the action list.
-    float kill_old_time = 1.0f;
 	for(PAVecIt it=pa->begin(); it!=pa->end(); it++)
 	{
 		VERIFY((*it));

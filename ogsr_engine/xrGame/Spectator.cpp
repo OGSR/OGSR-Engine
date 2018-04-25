@@ -156,8 +156,6 @@ void CSpectator::IR_OnKeyboardHold(int cmd)
 {
 	if (Remote())		return;
 
-	game_PlayerState* PS = Game().local_player;
-
 	if ((cam_active==eacFreeFly)||(cam_active==eacFreeLook)){
 		CCameraBase* C	= cameras	[cam_active];
 		Fvector vmove={0,0,0};
