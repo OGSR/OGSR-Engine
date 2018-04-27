@@ -221,8 +221,12 @@ void CPhraseDialog::load_shared	(LPCSTR)
 		if (functor_exists)
 			lua_function(this);
 		else {
-			Msg("!![%s] Cannot find precondition [%s]", __FUNCTION__, func);
+#ifdef CRASH_ON_PRECONDITION_NOT_FOUND
 			FATAL("Cannot find precondition: [%s]", func);
+#else
+			Msg("!![%s] Cannot find precondition [%s]", __FUNCTION__, func);
+			THROW3(functor_exists, "Cannot find precondition", func);
+#endif
 		}
 		return;
 	}
