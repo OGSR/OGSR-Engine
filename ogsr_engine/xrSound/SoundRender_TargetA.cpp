@@ -139,8 +139,9 @@ void CSoundRender_TargetA::update()
 
 void	CSoundRender_TargetA::fill_parameters()
 {
+#ifdef DEBUG
 	CSoundRender_Emitter* SE = pEmitter; VERIFY(SE);
-
+#endif
 	inherited::fill_parameters();
 
     // 3D params

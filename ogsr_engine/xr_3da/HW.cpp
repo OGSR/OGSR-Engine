@@ -441,7 +441,7 @@ void CHW::updateWindowProps(HWND m_hWnd)
 		// desktop.
 
 		RECT m_rcWindowBounds;
-		float fYOffset = 0.f;
+		int fYOffset = 0;
 		bool bCenter = true;
 		if (strstr(Core.Params, "-no_center_screen"))
 			bCenter = false;

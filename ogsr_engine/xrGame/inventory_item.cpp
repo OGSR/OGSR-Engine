@@ -151,7 +151,7 @@ void CInventoryItem::Load(LPCSTR section)
           if ( count )
             m_slots.clear(); // full override!
           for ( int i = 0; i < count; ++i ) {
-            u8 slot = atoi( _GetItem( m_slots_sect, i, buf ) );
+            u8 slot = u8( atoi( _GetItem( m_slots_sect, i, buf ) ) );
             // вместо std::find(m_slots.begin(), m_slots.end(), slot) == m_slots.end() используется !IsPlaceable
             if ( slot < SLOTS_TOTAL && !IsPlaceable( slot, slot ) )
               m_slots.push_back( slot );
@@ -221,7 +221,7 @@ void CInventoryItem::SetSlot( u8 slot ) {
 
   for ( u32 i = 0; i < GetSlotsCount(); i ++ )
     if ( m_slots[ i ] == slot ) {
-      selected_slot = i;
+      selected_slot = u8( i );
       return;
     }
 

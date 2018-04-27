@@ -861,7 +861,7 @@ float CActor::currentFOV()
 		pWeapon->IsZoomed() && (!pWeapon->ZoomTexture() ||
 		(!pWeapon->IsRotatingToZoom() && pWeapon->ZoomTexture())))
 		//		return pWeapon->GetZoomFactor() * (0.75f);
-		return atan(tan(g_fov * (0.5 * PI / 180)) / pWeapon->GetZoomFactor()) / (0.5 * PI / 180); //В SWM - return pWeapon->GetFov(); //И вообще, надо подумать, какой фов устанавливать второму вьюпорту.
+		return float(atan(tan(g_fov * (0.5 * PI / 180)) / pWeapon->GetZoomFactor()) / (0.5 * PI / 180)); //В SWM - return pWeapon->GetFov(); //И вообще, надо подумать, какой фов устанавливать второму вьюпорту.
 	else
 		return g_fov;
 }

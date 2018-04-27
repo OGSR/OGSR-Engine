@@ -85,7 +85,10 @@ void        CPostprocessAnimator::Load                            (LPCSTR name)
        if (!xr_strcmp (ext,POSTPROCESS_FILE_EXTENSION))
           {
           IReader* F = FS.r_open (full_path);
-          u32 dwVersion = F->r_u32();
+#ifdef DEBUG
+		  u32 dwVersion =
+#endif
+          F->r_u32();
           VERIFY (dwVersion == POSTPROCESS_FILE_VERSION);
           //load base color
           VERIFY (m_Params[0]);

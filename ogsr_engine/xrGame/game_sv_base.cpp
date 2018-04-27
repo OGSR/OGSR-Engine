@@ -188,10 +188,13 @@ float					game_sv_GameState::get_option_f				(LPCSTR lst, LPCSTR name, float def
 
 	if (found)
 	{	
-		float		val;
-		int cnt		= sscanf(found+xr_strlen(op),"%f",&val);
-		VERIFY		(cnt==1);
-		return		val;
+		float val;
+#ifdef DEBUG
+		int cnt =
+#endif
+		sscanf(found + xr_strlen(op), "%f", &val);
+		VERIFY(cnt==1);
+		return val;
 //.		return atoi	(strstr(lst,op)+xr_strlen(op));
 	}else
 		return def;

@@ -167,8 +167,7 @@ void CLevelChanger::update_actor_invitation()
 	xr_vector<CObject*>::iterator it_e		= feel_touch.end();
 
 	for(;it!=it_e;++it){
-		CActor*			l_tpActor = smart_cast<CActor*>(*it);
-		VERIFY			(l_tpActor);
+		VERIFY(smart_cast<CActor*>(*it));
 
 		if(m_entrance_time+5.0f < Device.fTimeGlobal){
 			ChangeLevel();

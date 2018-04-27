@@ -1775,8 +1775,7 @@ void	CPHSimpleCharacter::	TestRestrictorContactCallbackFun	(bool& do_colide,bool
 	if(obj_data->ph_object->CastType()!=tpCharacter)	return;
 	CPHActorCharacter	*actor_character	=(static_cast<CPHCharacter*>(obj_data->ph_object))->CastActorCharacter();
 	if(!actor_character) return;
-	CPHSimpleCharacter	*ch_this			=static_cast<CPHSimpleCharacter*>(retrieveGeomUserData(g_this)->ph_object);
-	VERIFY(ch_this);
+	VERIFY(static_cast<CPHSimpleCharacter*>(retrieveGeomUserData(g_this)->ph_object));
 	save_max(restrictor_depth,c.geom.depth);
 	do_colide=true;
 	c.surface.mu=0.f;

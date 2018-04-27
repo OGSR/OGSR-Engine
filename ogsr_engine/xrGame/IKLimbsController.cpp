@@ -108,8 +108,7 @@ void	CIKLimbsController::LimbCalculate( SCalculateData &cd )
 
 void	CIKLimbsController::LimbUpdate( CIKLimb &L, u16 i )
 {
-	CKinematicsAnimated *skeleton_animated = m_object->Visual( )->dcast_PKinematicsAnimated( );
-	VERIFY( skeleton_animated );
+	VERIFY( m_object->Visual()->dcast_PKinematicsAnimated() );
 	L.Update( m_object, m_legs_blend, i );
 }
 

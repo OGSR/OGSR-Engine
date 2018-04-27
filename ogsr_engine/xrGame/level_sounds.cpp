@@ -75,7 +75,7 @@ void SMusicTrack::Load(LPCSTR fn, LPCSTR params)
 	m_SourceLeft.create	(_l,st_Music,sg_Undefined);
 	m_SourceRight.create(_r,st_Music,sg_Undefined);
 	// parse params
-	int cnt				= _GetItemCount(params); VERIFY(cnt==5);
+	VERIFY(_GetItemCount(params) == 5);
 	m_ActiveTime.set	(0,0);
 	m_PauseTime.set		(0,0);
 	m_Volume			= 1.f;

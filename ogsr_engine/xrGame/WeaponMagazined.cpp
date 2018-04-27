@@ -625,8 +625,8 @@ void CWeaponMagazined::switch2_Idle	()
 void CWeaponMagazined::switch2_Fire	()
 {
 	CInventoryOwner* io		= smart_cast<CInventoryOwner*>(H_Parent());
-	CInventoryItem* ii		= smart_cast<CInventoryItem*>(this);
 #ifdef DEBUG
+	CInventoryItem* ii		= smart_cast<CInventoryItem*>(this);
 	VERIFY2					(io,make_string("no inventory owner, item %s",*cName()));
 
 	if (ii != io->inventory().ActiveItem())

@@ -221,7 +221,10 @@ bool CUIInventoryWnd::ToSlot(CUICellItem* itm, bool force_place)
 		
 		if(_slot==GRENADE_SLOT && !new_owner )return true; //fake, sorry (((
 
-		bool result							= GetInventory()->Slot(iitem);
+#ifdef DEBUG
+		bool result =
+#endif
+		GetInventory()->Slot(iitem);
 		VERIFY								(result);
 
 		CUICellItem* i						= old_owner->RemoveItem(itm, (old_owner==new_owner) );
@@ -242,14 +245,16 @@ bool CUIInventoryWnd::ToSlot(CUICellItem* itm, bool force_place)
 	{ // in case slot is busy
 		if(!force_place ||  _slot==NO_ACTIVE_SLOT || GetInventory()->m_slots[_slot].m_bPersistent) return false;
 
-		PIItem	_iitem						= GetInventory()->m_slots[_slot].m_pIItem;
 		CUIDragDropListEx* slot_list		= GetSlotList(_slot);
 		VERIFY								(slot_list->ItemsCount()==1);
 
 		CUICellItem* slot_cell				= slot_list->GetItemIdx(0);
-		VERIFY								(slot_cell && ((PIItem)slot_cell->m_pData)==_iitem);
+		VERIFY(slot_cell && ((PIItem)slot_cell->m_pData) == GetInventory()->m_slots[_slot].m_pIItem);
 
-		bool result							= ToBag(slot_cell, false);
+#ifdef DEBUG
+		bool result =
+#endif
+		ToBag(slot_cell, false);
 		VERIFY								(result);
 
 		return ToSlot						(itm, false);
@@ -270,8 +275,10 @@ bool CUIInventoryWnd::ToBag(CUICellItem* itm, bool b_use_cursor_pos)
 		}else
 				new_owner					= m_pUIBagList;
 
-
-		bool result							= GetInventory()->Ruck(iitem);
+#ifdef DEBUG
+		bool result =
+#endif
+		GetInventory()->Ruck(iitem);
 		VERIFY								(result);
 		CUICellItem* i						= old_owner->RemoveItem(itm, (old_owner==new_owner) );
 
@@ -304,8 +311,10 @@ bool CUIInventoryWnd::ToBelt(CUICellItem* itm, bool b_use_cursor_pos)
 				VERIFY						(new_owner==m_pUIBeltList);
 		}else
 				new_owner					= m_pUIBeltList;
-
-		bool result							= GetInventory()->Belt(iitem);
+#ifdef DEBUG
+		bool result =
+#endif
+		GetInventory()->Belt(iitem);
 		VERIFY								(result);
 		CUICellItem* i						= old_owner->RemoveItem(itm, (old_owner==new_owner) );
 		

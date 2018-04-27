@@ -216,15 +216,18 @@ void CPhraseDialog::load_shared	(LPCSTR)
 	if(NULL == phrase_list_node){
 		LPCSTR func = pXML->Read(dialog_node, "init_func", 0, "");
 
-		luabind::functor<void>	lua_function;
-		bool functor_exists = ai().script_engine().functor(func ,lua_function);
-		THROW3(functor_exists, "Cannot find precondition", func);
-		lua_function	(this);
+		luabind::functor<void> lua_function;
+		bool functor_exists = ai().script_engine().functor(func, lua_function);
+		if (functor_exists)
+			lua_function(this);
+		else {
+			Msg("!![%s] Cannot find precondition [%s]", __FUNCTION__, func);
+			FATAL("Cannot find precondition: [%s]", func);
+		}
 		return;
 	}
 
-	int phrase_num = pXML->GetNodesNum(phrase_list_node, "phrase");
-	THROW3(phrase_num, "dialog %s has no phrases at all", *item_data.id);
+	THROW3(pXML->GetNodesNum(phrase_list_node, "phrase"), "dialog %s has no phrases at all", *item_data.id);
 
 	pXML->SetLocalRoot(phrase_list_node);
 

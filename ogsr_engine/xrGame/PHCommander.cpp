@@ -77,7 +77,7 @@ void CPHCommander::clear	()
 
 
 void CPHCommander::update() {
-  for( int i = 0; i < m_calls.size(); i++ ) {
+  for( size_t i = 0; i < m_calls.size(); i++ ) {
     if ( !m_calls[ i ]->isNeedRemove() ) {
       if ( m_calls[ i ]->isPaused() ) continue;
       try {
@@ -113,7 +113,7 @@ void CPHCommander::remove_call(PHCALL_I i)
 
 PHCALL_I CPHCommander::find_call(CPHReqComparerV* cmp_condition, CPHReqComparerV* cmp_action)
 {
-	return std::find_if(m_calls.begin(), m_calls.end(), [cmp_condition, cmp_action](CPHCall* call) { return call->equal(cmp_condition, cmp_action); });
+	return std::find_if(m_calls.begin(), m_calls.end(), [&](CPHCall* call) { return call->equal(cmp_condition, cmp_action); });
 }
 
 bool CPHCommander::has_call(CPHReqComparerV* cmp_condition,CPHReqComparerV* cmp_action)

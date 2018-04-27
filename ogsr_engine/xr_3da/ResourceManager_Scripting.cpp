@@ -151,7 +151,9 @@ bool do_file(const char* caScriptName, const char* caNameSpaceName)
 
 bool namespace_loaded(const char* name, bool remove_from_stack)
 {
+#ifdef DEBUG
 	int start = lua_gettop(LSVM);
+#endif
 	lua_pushstring(LSVM, GlobalNamespace);
 	lua_rawget(LSVM, LUA_GLOBALSINDEX);
 	string256 S2;
@@ -207,7 +209,9 @@ bool namespace_loaded(const char* name, bool remove_from_stack)
 
 bool OBJECT_1(const char* identifier, int type)
 {
+#ifdef DEBUG
 	int start = lua_gettop(LSVM);
+#endif
 	lua_pushnil(LSVM);
 	while (lua_next(LSVM, -2))
 	{
@@ -228,7 +232,9 @@ bool OBJECT_1(const char* identifier, int type)
 
 bool OBJECT_2(const char* namespace_name, const char* identifier, int type)
 {
+#ifdef DEBUG
 	int start = lua_gettop(LSVM);
+#endif
 	if (xr_strlen(namespace_name) && !namespace_loaded(namespace_name, false))
 	{
 		VERIFY(lua_gettop(LSVM) == start);

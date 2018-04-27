@@ -1038,7 +1038,9 @@ void CRender::render_sun_near	()
 
 	// Begin SMAP-render
 	{
-		bool	bSpecialFull					= mapNormal[1].size() || mapMatrix[1].size() || mapSorted.size();
+#ifdef DEBUG
+		bool bSpecialFull = mapNormal[1].size() || mapMatrix[1].size() || mapSorted.size();
+#endif
 		VERIFY									(!bSpecialFull);
 		HOM.Disable								();
 		phase									= PHASE_SMAP;

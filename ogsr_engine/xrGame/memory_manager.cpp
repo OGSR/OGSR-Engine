@@ -236,8 +236,7 @@ u32 CMemoryManager::memory_time(const CObject *object) const
 	if (!this->object().g_Alive())
 		return			(0);
 
-	const CGameObject	*game_object = smart_cast<const CGameObject*>(object);
-	VERIFY				(game_object);
+	VERIFY(smart_cast<const CGameObject*>(object));
 
 	{
 		xr_vector<CVisibleObject>::const_iterator	I = std::find(visual().objects().begin(),visual().objects().end(),object_id(object));
@@ -267,8 +266,7 @@ Fvector CMemoryManager::memory_position	(const CObject *object) const
 	if (!this->object().g_Alive())
 		return			(result);
 
-	const CGameObject	*game_object = smart_cast<const CGameObject*>(object);
-	VERIFY				(game_object);
+	VERIFY(smart_cast<const CGameObject*>(object));
 
 	{
 		xr_vector<CVisibleObject>::const_iterator	I = std::find(visual().objects().begin(),visual().objects().end(),object_id(object));

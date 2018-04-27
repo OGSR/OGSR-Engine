@@ -88,7 +88,10 @@ CSavedGameWrapper::CSavedGameWrapper		(LPCSTR saved_game_name)
 
 	{
 		R_ASSERT2				(reader.find_chunk(OBJECT_CHUNK_DATA),"Can't find chunk OBJECT_CHUNK_DATA!");
-		u32						count = reader.r_u32();
+#ifdef DEBUG
+		u32 count =
+#endif
+		reader.r_u32();
 		VERIFY					(count > 0);
 		CSE_ALifeDynamicObject	*object = CALifeObjectRegistry::get_object(reader);
 		VERIFY					(object->ID == 0);

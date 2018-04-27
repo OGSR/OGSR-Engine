@@ -282,7 +282,7 @@ void CSheduler::ProcessStep			()
 	u32		dwTime					= Device.dwTimeGlobal;
 	CTimer							eTimer;
 	for (int i=0;!Items.empty() && Top().dwTimeForExecute < dwTime; ++i) {
-		u32		delta_ms			= dwTime - Top().dwTimeForExecute;
+		//u32		delta_ms			= dwTime - Top().dwTimeForExecute;
 
 		// Update
 		Item	T					= Top	();
@@ -364,9 +364,9 @@ void CSheduler::ProcessStep			()
 #ifdef DEBUG
 //		u32	execTime				= eTimer.GetElapsed_ms		();
 			// VERIFY3					(T.Object->dbg_update_shedule == T.Object->dbg_startframe, "Broken sequence of calls to 'shedule_Update'", _obj_name );
-			if (delta_ms> 3*dwUpdate)	{
+			//if (delta_ms> 3*dwUpdate)	{
 				//Msg	("! xrSheduler: failed to shedule object [%s] (%dms)",	_obj_name, delta_ms	);
-			}
+			//}
 			if (execTime> 15)			{
 				Msg	("* xrSheduler: too much time consumed by object [%s] (%dms)",	_obj_name, execTime	);
 			}

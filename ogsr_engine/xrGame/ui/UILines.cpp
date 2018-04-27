@@ -176,8 +176,7 @@ void CUILines::ParseText(){
 				char *pszTemp = NULL;
 				const u32 tcolor = line->m_subLines[i].m_color;
 				char szTempLine[ MAX_MB_CHARS ] , *pszSearch = NULL;
-				size_t llen = xr_strlen( line->m_subLines[i].m_text.c_str() );
-				VERIFY( llen < MAX_MB_CHARS );
+				VERIFY( xr_strlen( line->m_subLines[i].m_text.c_str() ) < MAX_MB_CHARS );
 				strcpy( szTempLine , line->m_subLines[i].m_text.c_str() );
 				pszSearch = szTempLine;
 				while ( ( pszTemp = strstr( pszSearch , "\\n" ) ) != NULL ) {

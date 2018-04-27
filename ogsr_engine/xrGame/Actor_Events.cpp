@@ -215,9 +215,11 @@ void CActor::OnEvent		(NET_Packet& P, u16 type)
 	case GEG_PLAYER_DETACH_HOLDER:
 		{
 			if			(!m_holder)	break;
-			u32 id			= P.r_u32();
-			CGameObject*	GO	= smart_cast<CGameObject*>(m_holder);
-			VERIFY			(id==GO->ID());
+#ifdef DEBUG
+			u32 id =
+#endif
+			P.r_u32();
+			VERIFY(id == smart_cast<CGameObject*>(m_holder)->ID());
 			use_Holder		(NULL);
 		}break;
 	case GEG_PLAYER_PLAY_HEADSHOT_PARTICLE:

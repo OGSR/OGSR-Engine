@@ -33,7 +33,7 @@ constexpr u32 color_get_A(u32 rgba) noexcept {
 	return ((rgba) >> 24);
 }
 constexpr u32 subst_alpha(u32 rgba, u32 a) noexcept {
-	return rgba & ~color_rgba(0, 0, 0, 0xff) | color_rgba(0, 0, 0, a);
+	return (rgba &~ color_rgba(0, 0, 0, 0xff)) | color_rgba(0, 0, 0, a);
 }
 constexpr u32 bgr2rgb(u32 bgr) noexcept {
 	return color_rgba(color_get_B(bgr), color_get_G(bgr), color_get_R(bgr), 0);

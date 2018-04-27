@@ -245,8 +245,8 @@ void CControl_Manager::capture(CControl_Com *com, ControlCom::EControlType type)
 void CControl_Manager::release(CControl_Com *com, ControlCom::EControlType type)  // who, type
 {
 	CControl_Com *target = m_control_elems[type];
-	CControl_Com *capturer = target->ced()->capturer();
-	VERIFY	(capturer == com);
+
+	VERIFY(target->ced()->capturer() == com);
 
 	// select new capture if there is a base controller
 	CONTROLLERS_MAP_IT it = m_base_elems.find(type);
@@ -368,8 +368,7 @@ bool CControl_Manager::check_start_conditions(ControlCom::EControlType type)
 
 bool CControl_Manager::build_path_line(CControl_Com *com, const Fvector &target, u32 node, u32 vel_mask)
 {
-	CControl_Com *path		= m_control_elems[ControlCom::eControlPath];
-	VERIFY					(com == path->ced()->capturer());
+	VERIFY(com == m_control_elems[ControlCom::eControlPath]->ced()->capturer());
 
 	return (path_builder().build_special(target, node, vel_mask));
 }
