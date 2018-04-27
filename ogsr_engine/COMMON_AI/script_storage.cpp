@@ -73,7 +73,7 @@ void CScriptStorage::dump_state()
 		int VarID = 1;
 		while ((name = lua_getlocal(L, &l_tDebugInfo, VarID++)) != NULL)
 		{
-			LogVariable(L, name, 1, true);
+			LogVariable(L, name, 1);
 
 			lua_pop(L, 1);  /* remove variable value */
 		}
@@ -93,13 +93,13 @@ void CScriptStorage::LogTable(lua_State *l, LPCSTR S, int level)
 		char sFullName[256];
 		xr_sprintf(sname, "%s", lua_tostring(l, -2));
 		xr_sprintf(sFullName, "%s.%s", S, sname);
-		LogVariable(l, sFullName, level + 1, false);
+		LogVariable(l, sFullName, level + 1);
 
 		lua_pop(l, 1);  /* removes `value'; keeps `key' for next iteration */
 	}
 }
 
-void CScriptStorage::LogVariable(lua_State * l, const char* name, int level, bool bOpenTable)
+void CScriptStorage::LogVariable(lua_State * l, const char* name, int level)
 {
 	const char * type;
 	int ntype = lua_type(l, -1);
@@ -112,6 +112,14 @@ void CScriptStorage::LogVariable(lua_State * l, const char* name, int level, boo
 
 	switch (ntype)
 	{
+	case LUA_TFUNCTION:
+		xr_strcpy(value, "[[function]]");
+		break;
+
+	case LUA_TTHREAD:
+		xr_strcpy(value, "[[thread]]");
+		break;
+				
 	case LUA_TNUMBER:
 		xr_sprintf(value, "%f", lua_tonumber(l, -1));
 		break;
@@ -125,7 +133,7 @@ void CScriptStorage::LogVariable(lua_State * l, const char* name, int level, boo
 		break;
 
 	case LUA_TTABLE:
-		if (bOpenTable)
+		if (level <= 3)
 		{
 			Msg("%s Table: %s", tabBuffer, name);
 			LogTable(l, name, level + 1);
@@ -219,38 +227,30 @@ void CScriptStorage::script_log(ScriptStorage::ELuaMessageType tLuaMessageType, 
 	string4096 S2;
 	switch (tLuaMessageType)
 	{
-	case ScriptStorage::eLuaMessageTypeInfo: {
+	case ScriptStorage::eLuaMessageTypeInfo:
 		S = "[LUA INFO]";
 		break;
-	}
-	case ScriptStorage::eLuaMessageTypeError: {
+	case ScriptStorage::eLuaMessageTypeError:
 		S = "[LUA ERROR]";
 		break;
-	}
-	case ScriptStorage::eLuaMessageTypeMessage: {
+	case ScriptStorage::eLuaMessageTypeMessage:
 		S = "[LUA MESSAGE]";
 		break;
-	}
-	case ScriptStorage::eLuaMessageTypeHookCall: {
+	case ScriptStorage::eLuaMessageTypeHookCall:
 		S = "[LUA HOOK_CALL]";
 		break;
-	}
-	case ScriptStorage::eLuaMessageTypeHookReturn: {
+	case ScriptStorage::eLuaMessageTypeHookReturn:
 		S = "[LUA HOOK_RETURN]";
 		break;
-	}
-	case ScriptStorage::eLuaMessageTypeHookLine: {
+	case ScriptStorage::eLuaMessageTypeHookLine:
 		S = "[LUA HOOK_LINE]";
 		break;
-	}
-	case ScriptStorage::eLuaMessageTypeHookCount: {
+	case ScriptStorage::eLuaMessageTypeHookCount:
 		S = "[LUA HOOK_COUNT]";
 		break;
-	}
-	case ScriptStorage::eLuaMessageTypeHookTailReturn: {
+	case ScriptStorage::eLuaMessageTypeHookTailReturn:
 		S = "[LUA HOOK_TAIL_RETURN]";
 		break;
-	}
 	default: NODEFAULT;
 	}
 	xr_strcpy(S2, S);
@@ -328,7 +328,9 @@ bool CScriptStorage::do_file(const char* caScriptName, const char* caNameSpaceNa
 
 bool CScriptStorage::namespace_loaded(const char* name, bool remove_from_stack) //KRodin: видимо, функция проверяет, загружен ли скрипт.
 {
+#ifdef DEBUG
 	int start = lua_gettop(lua());
+#endif
 	lua_pushstring(lua(), GlobalNamespace);
 	lua_rawget(lua(), LUA_GLOBALSINDEX);
 	string256 S2;
@@ -384,7 +386,9 @@ bool CScriptStorage::namespace_loaded(const char* name, bool remove_from_stack) 
 
 bool CScriptStorage::object(const char* identifier, int type)
 {
+#ifdef DEBUG
 	int start = lua_gettop(lua());
+#endif
 	lua_pushnil(lua());
 	while (lua_next(lua(), -2))
 	{
@@ -405,7 +409,9 @@ bool CScriptStorage::object(const char* identifier, int type)
 
 bool CScriptStorage::object(const char* namespace_name, const char* identifier, int type)
 {
+#ifdef DEBUG
 	int start = lua_gettop(lua());
+#endif
 	if (xr_strlen(namespace_name) && !namespace_loaded(namespace_name, false))
 	{
 		VERIFY(lua_gettop(lua()) == start);
@@ -452,30 +458,24 @@ bool CScriptStorage::print_output(lua_State *L, const char* caScriptFileName, in
 	auto Prefix = "";
 	if (errorCode) {
 		switch (errorCode) {
-		case LUA_ERRRUN: {
+		case LUA_ERRRUN:
 			Prefix = "SCRIPT RUNTIME ERROR";
 			break;
-		}
-		case LUA_ERRMEM: {
+		case LUA_ERRMEM:
 			Prefix = "SCRIPT ERROR (memory allocation)";
 			break;
-		}
-		case LUA_ERRERR: {
+		case LUA_ERRERR:
 			Prefix = "SCRIPT ERROR (while running the error handler function)";
 			break;
-		}
-		case LUA_ERRFILE: {
+		case LUA_ERRFILE:
 			Prefix = "SCRIPT ERROR (while running file)";
 			break;
-		}
-		case LUA_ERRSYNTAX: {
+		case LUA_ERRSYNTAX:
 			Prefix = "SCRIPT SYNTAX ERROR";
 			break;
-		}
-		case LUA_YIELD: {
+		case LUA_YIELD:
 			Prefix = "Thread is yielded";
 			break;
-		}
 		default: NODEFAULT;
 		}
 	}

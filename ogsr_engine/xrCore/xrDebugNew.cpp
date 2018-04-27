@@ -130,7 +130,7 @@ __declspec(noreturn) void xrDebug::do_exit(const std::string &message)
 	auto wnd = GetActiveWindow();
 	if (!wnd)
 		wnd = GetForegroundWindow();
-	ShowWindow(wnd, SW_MINIMIZE);
+	ShowWindow(wnd, SW_FORCEMINIMIZE);
 
 	while (ShowCursor(TRUE) < 0);
 
@@ -153,7 +153,7 @@ void xrDebug::backend(const char *expression, const char *description, const cha
 	auto game_hwnd = GetActiveWindow();
 	if (!game_hwnd)
 		game_hwnd = GetForegroundWindow();
-	ShowWindow(game_hwnd, SW_MINIMIZE);
+	ShowWindow(game_hwnd, SW_FORCEMINIMIZE);
 
 #ifdef USE_OWN_ERROR_MESSAGE_WINDOW
 	if (get_on_dialog())
@@ -441,7 +441,7 @@ LONG WINAPI UnhandledFilter(_EXCEPTION_POINTERS *pExceptionInfo)
 		auto wnd = GetActiveWindow();
 		if (!wnd)
 			wnd = GetForegroundWindow();
-		ShowWindow(wnd, SW_MINIMIZE);
+		ShowWindow(wnd, SW_FORCEMINIMIZE);
 
 #ifdef USE_OWN_ERROR_MESSAGE_WINDOW
 		while (ShowCursor(TRUE) < 0);
@@ -486,7 +486,7 @@ void _terminate()
 	auto wnd = GetActiveWindow();
 	if (!wnd)
 		wnd = GetForegroundWindow();
-	ShowWindow(wnd, SW_MINIMIZE);
+	ShowWindow(wnd, SW_FORCEMINIMIZE);
 
 	while (ShowCursor(TRUE) < 0);
 

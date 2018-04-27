@@ -54,11 +54,11 @@ public:
 		P.w_u16			(destination);
 		if (data.size())	P.w(&*data.begin(),(u32)data.size());
 	}
-	void				implication	(NET_Packet& P) const
+	void implication(NET_Packet& P) const
 	{
-		CopyMemory	(P.B.data,&*data.begin(),(u32)data.size());
-		P.B.count		= (u32)data.size();
-		P.r_pos			= 0;
+		std::copy(data.begin(), data.end(), P.B.data);
+		P.B.count = data.size();
+		P.r_pos = 0;
 	}
 };
 

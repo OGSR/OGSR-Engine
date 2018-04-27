@@ -290,13 +290,14 @@ void CALifeSimulator__release					(CALifeSimulator *self, CSE_Abstract *object, 
 
 void CALifeSimulator__assign_story_id(CALifeSimulator *self, ALife::_OBJECT_ID _id, ALife::_STORY_ID _story_id)
 {
-#ifdef DEBUG
-	if (psAI_Flags.test(aiALife)) {
-		Msg("[LSS] Assigning story_id for object [%s][%s][%d][%x]", object->name_replace(), *object->s_name, object->ID, smart_cast<void*>(object));
-	}
-#endif
 	CSE_ALifeDynamicObject			*obj = ai().alife().objects().object(_id);
 	R_ASSERT(obj);
+
+#ifdef DEBUG
+	if (psAI_Flags.test(aiALife)) {
+		Msg("[LSS] Assigning story_id for object [%s][%s][%d][%x]", obj->name_replace(), obj->s_name.c_str(), obj->ID, obj);
+	}
+#endif
 
 	if (!(ai().alife().story_objects().object(_story_id)))
 	{

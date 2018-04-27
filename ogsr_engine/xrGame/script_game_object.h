@@ -137,7 +137,6 @@ public:
 	virtual					~CScriptGameObject		();
 							operator CObject*		();
 
-	//KRodin: перенесено сюда, иначе не компилится
 	IC		CGameObject			&object				() const;
 
 			CScriptGameObject	*Parent				() const;

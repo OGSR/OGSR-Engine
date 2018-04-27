@@ -1058,6 +1058,9 @@ void CSE_ALifeObjectHangingLamp::STATE_Read	(NET_Packet	&tNetPacket, u16 size)
 	}else{
 		light_ambient_bone			= light_main_bone;
 	}
+
+	if (tNetPacket.r_eof()) return;
+
 	tNetPacket.r_float(m_speed);
 	tNetPacket.r_float(m_amount);
 	tNetPacket.r_float(m_smap_jitter);

@@ -151,7 +151,7 @@ void CVisualMemoryManager::reload				(LPCSTR section)
 		m_free.Load		(section,!!m_client);
 }
 
-IC	const CVisionParameters &CVisualMemoryManager::current_state() const
+/*IC*/	const CVisionParameters &CVisualMemoryManager::current_state() const
 {
 	return				(!m_stalker || (m_stalker->movement().mental_state() != eMentalStateDanger) ? m_free : m_danger);
 }

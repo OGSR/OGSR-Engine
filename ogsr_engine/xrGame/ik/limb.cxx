@@ -842,7 +842,7 @@ int Limb::Solve(float x[], float *new_swivel, float *new_pos)
 	swivel_angle = 0.0f;
 	success = SolveByAngle(swivel_angle, x);
     }
-	VERIFY(swivel_angle!=-dInfinity);
+	//VERIFY(swivel_angle!=-dInfinity);
     if (new_swivel)
 	*new_swivel = swivel_angle;
     if (new_pos)

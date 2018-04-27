@@ -11,13 +11,15 @@
 #pragma warning(default:4995)
 
 #ifdef DEBUG
+//KRodin: TODO: разобраться, почему тут в редких случаях вылетает при загрузке текстур.
 	XRCORE_API	u32								g_file_mapped_memory = 0;
 	u32								g_file_mapped_count	= 0;
-	typedef std::map<u32,std::pair<u32,shared_str> >	FILE_MAPPINGS;
+	typedef xr_map<u32,std::pair<u32,shared_str> >	FILE_MAPPINGS;
 	FILE_MAPPINGS					g_file_mappings;
 
 void register_file_mapping			(void *address, const u32 &size, LPCSTR file_name)
 {
+/*
 	FILE_MAPPINGS::const_iterator	I = g_file_mappings.find(*(u32*)&address);
 	VERIFY							(I == g_file_mappings.end());
 	g_file_mappings.insert			(std::make_pair(*(u32*)&address,std::make_pair(size,shared_str(file_name))));
@@ -30,10 +32,12 @@ void register_file_mapping			(void *address, const u32 &size, LPCSTR file_name)
 	sprintf_s						(temp, sizeof(temp),"file mapping: %s",file_name);
 	memory_monitor::monitor_alloc	(address,size,temp);
 #endif // USE_MEMORY_MONITOR
+*/
 }
 
 void unregister_file_mapping		(void *address, const u32 &size)
 {
+/*
 	FILE_MAPPINGS::iterator			I = g_file_mappings.find(*(u32*)&address);
 	VERIFY							(I != g_file_mappings.end());
 //	VERIFY2							((*I).second.first == size,make_string("file mapping sizes are different: %d -> %d",(*I).second.first,size));
@@ -45,10 +49,12 @@ void unregister_file_mapping		(void *address, const u32 &size)
 #ifdef USE_MEMORY_MONITOR
 	memory_monitor::monitor_free	(address);
 #endif // USE_MEMORY_MONITOR
+*/
 }
 
 XRCORE_API void dump_file_mappings	()
 {
+/*
 	Msg								("* active file mappings (%d):",g_file_mappings.size());
 
 	FILE_MAPPINGS::const_iterator	I = g_file_mappings.begin();
@@ -60,6 +66,7 @@ XRCORE_API void dump_file_mappings	()
 			(*I).second.first,
 			(*I).second.second.c_str()
 		);
+*/
 }
 #endif // DEBUG
 //////////////////////////////////////////////////////////////////////

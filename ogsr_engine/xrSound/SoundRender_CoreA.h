@@ -6,7 +6,7 @@
 
 #include <eax.h>
 
-#ifdef DEBUG
+#if 0//def DEBUG //KRodin: оно вот совсем не нужно, ну правда. ќшибки-то могут быть, тем более после обновлени€ ќпенјЋ - это не фатально всЄ.
 #	define A_CHK(expr)		{ alGetError(); 		expr; ALenum error=alGetError(); 			VERIFY2(error==AL_NO_ERROR, (LPCSTR)alGetString(error)); }
 #	define AC_CHK(expr)		{ alcGetError(pDevice); expr; ALCenum error=alcGetError(pDevice); 	VERIFY2(error==ALC_NO_ERROR,(LPCSTR)alcGetString(pDevice,error)); }
 #else

@@ -300,7 +300,7 @@ bool CScriptEngine::process_file_if_exists(const char* file_name, bool warn_if_n
 			return false;
 		}
 #ifdef DEBUG
-		Msg("[CScriptEngine::process_file_if_exists] loading script: [%s]", S1);
+		Msg("[CScriptEngine::process_file_if_exists] loading script: [%s]", file_name);
 #endif
 		m_reload_modules = false;
 		return do_file(S, file_name);

@@ -26,7 +26,9 @@ void xrCore::_initialize	(LPCSTR _ApplicationName, LogCallback cb, BOOL init_fs,
 	if (0==init_counter) {
 #ifdef XRCORE_STATIC	
 		_clearfp();
+#ifdef _M_IX86
 		_controlfp(_PC_53, MCW_PC);
+#endif
 		_controlfp(_RC_CHOP, MCW_RC);
 		_controlfp(_RC_NEAR, MCW_RC);
 		_controlfp(_MCW_EM, MCW_EM);
@@ -134,7 +136,9 @@ BOOL WINAPI DllMain(HINSTANCE hinstDLL, DWORD ul_reason_for_call, LPVOID lpvRese
 	{
 	case DLL_PROCESS_ATTACH:
 		_clearfp();
+#ifdef _M_IX86
 		_controlfp( _PC_53,   MCW_PC );
+#endif
 		_controlfp( _RC_CHOP, MCW_RC );
 		_controlfp( _RC_NEAR, MCW_RC );
 		_controlfp( _MCW_EM,  MCW_EM );

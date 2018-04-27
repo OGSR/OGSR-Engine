@@ -150,7 +150,7 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\build\bsinc_inc.h">
+    <ClInclude Include="bsinc_inc.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

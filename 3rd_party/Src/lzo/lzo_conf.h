@@ -205,16 +205,16 @@ LZO_COMPILE_TIME_ASSERT_HEADER(sizeof(lzo_uint64_t) == 8)
 #  define lzo_memset(a,b,c)     memset(a,b,c)
 #endif
 
-#undef NDEBUG
+//#undef NDEBUG
 #if (LZO_CFG_FREESTANDING)
 #  undef LZO_DEBUG
-#  define NDEBUG 1
-#  undef assert
-#  define assert(e) ((void)0)
+//#  define NDEBUG 1
+//#  undef assert
+//#  define assert(e) ((void)0)
 #else
-#  if !defined(LZO_DEBUG)
+/*#  if !defined(LZO_DEBUG)
 #    define NDEBUG 1
-#  endif
+#  endif*/
 #  include <assert.h>
 #endif
 

@@ -58,7 +58,7 @@ public:
 #endif
 
 public:
-	IC		_condition_type	uid						(const u32 id1, const u32 id0) const;
+	/*IC*/		_condition_type	uid						(const u32 id1, const u32 id0) const;
 	IC		bool			object_action			(_condition_type action_id, CObject *object);
 	IC		u32				current_action_object_id() const;
 	IC		u32				current_action_state_id	() const;

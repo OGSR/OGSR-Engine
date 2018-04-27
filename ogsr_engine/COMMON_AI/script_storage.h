@@ -44,5 +44,5 @@ public:
 	void print_stack();
 	void dump_state();
 	void LogTable(lua_State *l, LPCSTR S, int level);
-	void LogVariable(lua_State * l, const char* name, int level, bool bOpenTable);
+	void LogVariable(lua_State * l, const char* name, int level);
 };

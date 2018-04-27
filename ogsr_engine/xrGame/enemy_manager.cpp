@@ -169,7 +169,6 @@ void CEnemyManager::reload					(LPCSTR section)
 	m_last_enemy				= 0;
 	m_last_enemy_change			= 0;
 	m_useful_callback.clear		();
-	VERIFY						(m_ready_to_save);
 }
 
 void CEnemyManager::remove_links			(CObject *object)

@@ -2,8 +2,6 @@
 //
 //////////////////////////////////////////////////////////////////////
 
-#if !defined(AFX_CAMERABASE_H__B11F8AE1_1213_11D4_B4E3_4854E82A090D__INCLUDED_)
-#define AFX_CAMERABASE_H__B11F8AE1_1213_11D4_B4E3_4854E82A090D__INCLUDED_
 #pragma once
 
 #include "CameraDefs.h"
@@ -74,5 +72,3 @@ typedef class_exporter<CCameraBase> CCameraScript;
 add_to_type_list(CCameraScript)
 #undef script_type_list
 #define script_type_list save_type_list(CCameraScript)
-
-#endif // !defined(AFX_CAMERABASE_H__B11F8AE1_1213_11D4_B4E3_4854E82A090D__INCLUDED_)

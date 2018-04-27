@@ -12,13 +12,12 @@
 #include "..\xr_3da\ai_script_space.h" //KRodin: пусть луа для рендера и скриптов инитится в одном месте.
 
 // this include MUST be here, since smart_cast is used >1800 times in the project
-#include "smart_cast.h"
+#include <smart_cast.h>
 
 #define READ_IF_EXISTS(ltx,method,section,name,default_value)\
 	((ltx->line_exist(section,name)) ? (ltx->method(section,name)) : (default_value))
 
-#undef THROW
-#if XRAY_EXCEPTIONS
+#if defined(DEBUG) && defined(XRAY_EXCEPTIONS)
 IC	xr_string	string2xr_string(LPCSTR s) {return *shared_str(s ? s : "");}
 IC	void		throw_and_log(const xr_string &s) {Msg("! %s",s.c_str()); throw *shared_str(s.c_str());}
 #	define		THROW(xpr)				if (!(xpr)) {throw_and_log (__FILE__LINE__" Expression \""#xpr"\"");}

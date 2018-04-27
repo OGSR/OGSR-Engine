@@ -60,7 +60,6 @@ struct profile_timer_script {
 	}
 
 	void stop() {
-		THROW(m_recurse_mark);
 		--recurse_mark;
 
 		if (recurse_mark)

@@ -25,50 +25,15 @@ private:
 
 public:
 	IC										CAI_ObjectLocation	();
-	IC			void						init				()
-	{
-		if (ai().get_level_graph())
-			ai().level_graph().set_invalid_vertex(m_level_vertex_id);
-		else
-			m_level_vertex_id = u32(-1);
-
-		if (ai().get_game_graph())
-			ai().game_graph().set_invalid_vertex(m_game_vertex_id);
-		else
-			m_game_vertex_id = GameGraph::_GRAPH_ID(-1);
-	}
+	IC			void						init();
 	IC	virtual	void						reinit				();
-	IC			void						game_vertex			(const GameGraph::CVertex	*game_vertex)
-	{
-		VERIFY(ai().game_graph().valid_vertex_id(ai().game_graph().vertex_id(game_vertex)));
-		m_game_vertex_id = ai().game_graph().vertex_id(game_vertex);
-	}
-	IC			void						game_vertex			(const GameGraph::_GRAPH_ID	game_vertex_id)
-	{
-		VERIFY(ai().game_graph().valid_vertex_id(game_vertex_id));
-		m_game_vertex_id = game_vertex_id;
-	}
-	IC			const GameGraph::CVertex	*game_vertex		() const
-	{
-		VERIFY(ai().game_graph().valid_vertex_id(m_game_vertex_id));
-		return				(ai().game_graph().vertex(m_game_vertex_id));
-	}
+	/*IC*/			void						game_vertex(const GameGraph::CVertex	*game_vertex);
+	/*IC*/			void						game_vertex(const GameGraph::_GRAPH_ID	game_vertex_id);
+	/*IC*/			const GameGraph::CVertex	*game_vertex() const;
 	IC			const GameGraph::_GRAPH_ID	game_vertex_id		() const;
-	IC			void						level_vertex		(const LevelGraph::CVertex	*level_vertex)
-	{
-		VERIFY(ai().level_graph().valid_vertex_id(ai().level_graph().vertex_id(level_vertex)));
-		m_level_vertex_id = ai().level_graph().vertex_id(level_vertex);
-	}
-	IC			void						level_vertex		(const u32					level_vertex_id)
-	{
-		VERIFY(ai().level_graph().valid_vertex_id(level_vertex_id));
-		m_level_vertex_id = level_vertex_id;
-	}
-	IC			const LevelGraph::CVertex	*level_vertex		() const
-	{
-		VERIFY(ai().level_graph().valid_vertex_id(m_level_vertex_id));
-		return				(ai().level_graph().vertex(m_level_vertex_id));
-	}
+	/*IC*/			void						level_vertex(const LevelGraph::CVertex	*level_vertex);
+	/*IC*/			void						level_vertex(const u32					level_vertex_id);
+	/*IC*/			const LevelGraph::CVertex	*level_vertex() const;
 
 	IC			const u32					level_vertex_id		() const;
 };

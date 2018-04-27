@@ -46,12 +46,6 @@
 		#endif
 	#endif
 
-	// Check debug mode
-	#ifdef	DEBUG			// May be defined instead of _DEBUG. Let's fix it.
-		#undef	_DEBUG
-		#define _DEBUG
-	#endif
-
 	#ifdef  _DEBUG
 	// Here you may define items for debug builds
 	#endif

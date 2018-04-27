@@ -30,37 +30,49 @@ namespace FPU
 {
 	void m24()
 	{
+#ifdef _M_IX86
 		_controlfp(_PC_24, MCW_PC);
+#endif
 		_controlfp(_RC_CHOP, MCW_RC);
 	}
 
 	void m24r()
 	{
+#ifdef _M_IX86
 		_controlfp(_PC_24, MCW_PC);
+#endif
 		_controlfp(_RC_NEAR, MCW_RC);
 	}
 
 	void m53()
 	{
+#ifdef _M_IX86
 		_controlfp(_PC_53, MCW_PC);
+#endif
 		_controlfp(_RC_CHOP, MCW_RC);
 	}
 
 	void m53r()
 	{
+#ifdef _M_IX86
 		_controlfp(_PC_53, MCW_PC);
+#endif
 		_controlfp(_RC_NEAR, MCW_RC);
 	}
 
 	void m64()
 	{
+#ifdef _M_IX86
 		_controlfp(_PC_64, MCW_PC);
+#endif
 		_controlfp(_RC_CHOP, MCW_RC);
 	}
 
 	void m64r()
 	{
+#ifdef _M_IX86
 		_controlfp(_PC_64, MCW_PC);
+#endif
 		_controlfp(_RC_NEAR, MCW_RC);
 	}
 

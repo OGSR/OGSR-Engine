@@ -6,9 +6,6 @@
 #	define USE_DOUG_LEA_ALLOCATOR_FOR_RENDER
 #endif // USE_MEMORY_MONITOR
 
-#ifdef USE_DOUG_LEA_ALLOCATOR_FOR_RENDER
-#	include	"doug_lea_memory_allocator.h"
-
 	extern "C"
 	{
 		void dlfatal(char *file, int line, char *function)
@@ -16,6 +13,9 @@
 			Debug.fatal(file, line, function, "Doug lea fatal error!");
 		}
 	};
+#ifdef USE_DOUG_LEA_ALLOCATOR_FOR_RENDER
+#	include	"doug_lea_memory_allocator.h"
+
 
 	template <class T>
 	class doug_lea_alloc {

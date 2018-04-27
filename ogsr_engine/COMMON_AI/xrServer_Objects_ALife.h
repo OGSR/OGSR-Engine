@@ -424,9 +424,9 @@ SERVER_ENTITY_DECLARE_BEGIN2(CSE_ALifeObjectHangingLamp,CSE_ALifeDynamicObjectVi
     float							m_health;
 
 //lsf
-	float							m_speed;
-	float							m_amount;
-	float							m_smap_jitter;
+	float							m_speed = 0.f;
+	float							m_amount = 0.f;
+	float							m_smap_jitter = 0.f;
 	
                                     CSE_ALifeObjectHangingLamp	(LPCSTR caSection);
     virtual							~CSE_ALifeObjectHangingLamp	();

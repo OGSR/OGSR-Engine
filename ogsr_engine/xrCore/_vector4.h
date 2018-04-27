@@ -1,5 +1,3 @@
-#ifndef _VECTOR4_H
-#define _VECTOR4_H
 #pragma once
 
 template <class T>
@@ -59,13 +57,6 @@ public:
 typedef							_vector4<float>		Fvector4;
 typedef							_vector4<double>	Dvector4;
 typedef							_vector4<s32>		Ivector4;
-#ifndef __BORLANDC__
-	typedef __declspec(align(16))	_vector4<float>		Fvector4a;
-	typedef __declspec(align(16))	_vector4<double>	Dvector4a;
-	typedef __declspec(align(16))	_vector4<s32>		Ivector4a;
-#endif
 
 template <class T>
 BOOL	_valid			(const _vector4<T>& v)	{ return _valid((T)v.x) && _valid((T)v.y) && _valid((T)v.z) && _valid((T)v.w);	}
-
-#endif

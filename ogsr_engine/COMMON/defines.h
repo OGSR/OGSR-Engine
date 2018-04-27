@@ -1,5 +1,4 @@
-#ifndef DefinesH
-#define DefinesH
+#pragma once
 
 #ifdef	DEBUG
 	ENGINE_API	extern BOOL			bDebug;
@@ -9,7 +8,6 @@
 
 #define _RELEASE(x)			{ if(x) { (x)->Release();       (x)=NULL; } }
 #define _SHOW_REF(msg, x)   { if(x) { x->AddRef(); Log(msg,u32(x->Release()));}}
-#define THROW				throw 123456789
 
 // textures
 ENGINE_API extern	int		psTextureLOD		;
@@ -72,5 +70,3 @@ ENGINE_API extern	Flags32		psDeviceFlags		;
 #define _omotions_			    "$omotions$"
 #define _smotion_			    "$smotion$"
 #define _detail_objects_	    "$detail_objects$"
-
-#endif

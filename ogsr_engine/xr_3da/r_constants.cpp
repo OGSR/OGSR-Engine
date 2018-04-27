@@ -91,7 +91,7 @@ BOOL	R_constant_table::parse	(void* _desc, u16 destination)
 							break;
 						}
 						break;
-					case 4:			r_type		=	RC_4x4;		VERIFY(4 == it->RegisterCount); break;
+					case 4:			r_type		=	RC_4x4;		/*VERIFY(4 == it->RegisterCount); KRodin: Для шейдеров ОГСЕ - это норма*/ break;
 					default:
 						fatal		("MATRIX_ROWS: unsupported number of Rows");
 						break;
