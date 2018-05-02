@@ -58,7 +58,7 @@ public:
 	virtual		void	UpdateCL						();
 	virtual		void	UpdateWorkload					(u32	dt	);				// related to fast-mode optimizations
 	virtual		void	shedule_Update					(u32	dt	);
-	virtual		void	enter_Zone						(SZoneObjectInfo& io)		{}
+	virtual		void	enter_Zone						(SZoneObjectInfo& io);
 	virtual		void	exit_Zone						(SZoneObjectInfo& io);
 	virtual		void	feel_touch_new					(CObject* O	);
 	virtual		void	feel_touch_delete				(CObject* O	);

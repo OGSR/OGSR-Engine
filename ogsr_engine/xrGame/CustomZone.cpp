@@ -16,6 +16,9 @@
 #include "../xr_3da/skeletoncustom.h"
 #include "zone_effector.h"
 #include "breakableobject.h"
+#include "script_callback_ex.h"
+#include "game_object_space.h"
+#include "script_game_object.h"
 
 //////////////////////////////////////////////////////////////////////////
 #define PREFETCHED_ARTEFACTS_NUM 1	//количество предварительно проспавненых артефактов
@@ -1350,10 +1353,16 @@ void CCustomZone::net_Relcase(CObject* O)
 	inherited::net_Relcase(O);
 }
 
-void CCustomZone::exit_Zone	(SZoneObjectInfo& io)
-{
-	StopObjectIdleParticles(io.object);
+
+void CCustomZone::enter_Zone( SZoneObjectInfo& io ) {
+  callback( GameObject::eZoneEnter )( lua_game_object(), io.object->lua_game_object() );
 }
+
+void CCustomZone::exit_Zone( SZoneObjectInfo& io ) {
+  StopObjectIdleParticles( io.object );
+  callback( GameObject::eZoneExit )( lua_game_object(), io.object->lua_game_object() );
+}
+
 
 void CCustomZone::PlayAccumParticles()
 {
