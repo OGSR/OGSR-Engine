@@ -25,7 +25,7 @@
 #include "sound_collection_storage.h"
 #include "relation_registry.h"
 
-typedef xr_vector<std::pair<shared_str,int> >	STORY_PAIRS;
+typedef xr_map<shared_str,int> STORY_PAIRS;
 extern STORY_PAIRS								story_ids;
 extern STORY_PAIRS								spawn_story_ids;
 

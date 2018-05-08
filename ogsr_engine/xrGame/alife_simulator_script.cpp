@@ -22,7 +22,7 @@
 
 using namespace luabind;
 
-typedef xr_vector<std::pair<shared_str,int> >	STORY_PAIRS;
+typedef xr_map<shared_str,int> STORY_PAIRS;
 typedef STORY_PAIRS								SPAWN_STORY_PAIRS;
 LPCSTR											_INVALID_STORY_ID		= "INVALID_STORY_ID";
 LPCSTR											_INVALID_SPAWN_STORY_ID	= "INVALID_SPAWN_STORY_ID";
@@ -104,16 +104,11 @@ void generate_story_ids		(
 		R_ASSERT3			(!strchr(*temp,' '),invalid_id_description,*temp);
 		R_ASSERT2			(xr_strcmp(*temp,INVALID_ID_STRING),invalid_id_redefinition);
 		
-		STORY_PAIRS::const_iterator	I = result.begin();
-		STORY_PAIRS::const_iterator	E = result.end();
-		for ( ; I != E; ++I)
-			R_ASSERT3		((*I).first != temp,duplicated_id_description,*temp);
-		
-		result.push_back	(std::make_pair(*temp,atoi(N)));
+		auto ret = result.insert( std::make_pair( *temp, atoi( N ) ) );
+		ASSERT_FMT( ret.second == true, duplicated_id_description, *temp );
 	}
 
-	result.push_back		(std::make_pair(INVALID_ID_STRING,INVALID_ID));
-
+	result.insert( std::make_pair( INVALID_ID_STRING, INVALID_ID ) );
 }
 
 void kill_entity0			(CALifeSimulator *alife, CSE_ALifeMonsterAbstract *monster, const GameGraph::_GRAPH_ID &game_vertex_id)
@@ -452,7 +447,7 @@ void CALifeSimulator::script_register			(lua_State *L)
 				"INVALID_STORY_ID",
 				"Invalid story id description (contains spaces)!",
 				"INVALID_STORY_ID redifinition!",
-				"Duplicated story id description!"
+				"Duplicated story id description %s!"
 			);
 
 		class_<class_exporter<CALifeSimulator> > instance("story_ids");
@@ -472,7 +467,7 @@ void CALifeSimulator::script_register			(lua_State *L)
 				"INVALID_SPAWN_STORY_ID",
 				"Invalid spawn story id description (contains spaces)!",
 				"INVALID_SPAWN_STORY_ID redifinition!",
-				"Duplicated spawn story id description!"
+				"Duplicated spawn story id description %s!"
 			);
 
 		class_<class_exporter<class_exporter<CALifeSimulator> > > instance("spawn_story_ids");
