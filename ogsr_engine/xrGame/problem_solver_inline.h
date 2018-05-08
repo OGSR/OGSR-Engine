@@ -183,13 +183,18 @@ IC	void CProblemSolverAbstract::remove_evaluator			(const _condition_type &condi
 	m_actuality					= false;
 }
 
+
 TEMPLATE_SPECIALIZATION
-IC	typename CProblemSolverAbstract::_condition_evaluator_ptr CProblemSolverAbstract::evaluator	(const _condition_type &condition_id) const
-{
-	EVALUATORS::const_iterator	I = evaluators().find(condition_id);
-	THROW						(evaluators().end() != I);
-	return						((*I).second);
+IC typename CProblemSolverAbstract::_condition_evaluator_ptr CProblemSolverAbstract::evaluator ( const _condition_type &condition_id ) const {
+  EVALUATORS::const_iterator I = evaluators().find( condition_id );
+  THROW( evaluators().end() != I );
+  if ( I == evaluators().end() ) {
+    Msg( "! [CProblemSolverAbstract::evaluator]: condition_id == %u not found in evaluators()",  condition_id );
+    return nullptr;
+  }
+  return (*I).second;
 }
+
 
 TEMPLATE_SPECIALIZATION
 IC	const typename CProblemSolverAbstract::EVALUATORS &CProblemSolverAbstract::evaluators() const
@@ -197,14 +202,20 @@ IC	const typename CProblemSolverAbstract::EVALUATORS &CProblemSolverAbstract::ev
 	return						(m_evaluators);
 }
 
+
 TEMPLATE_SPECIALIZATION
-IC	void CProblemSolverAbstract::evaluate_condition			(typename xr_vector<COperatorCondition>::const_iterator &I, typename xr_vector<COperatorCondition>::const_iterator &E, const _condition_type &condition_id) const
-{
-	size_t							index = I - m_current_state.conditions().begin();
-	m_current_state.add_condition	(I,COperatorCondition(condition_id,evaluator(condition_id)->evaluate()));
-	I								= m_current_state.conditions().begin() + index;
-	E								= m_current_state.conditions().end();
+IC bool CProblemSolverAbstract::evaluate_condition ( typename xr_vector<COperatorCondition>::const_iterator &I, typename xr_vector<COperatorCondition>::const_iterator &E, const _condition_type &condition_id ) const {
+  auto eva = evaluator( condition_id );
+  if ( eva ) {
+    size_t index = I - m_current_state.conditions().begin();
+    m_current_state.add_condition( I, COperatorCondition( condition_id, eva->evaluate() ) );
+    I = m_current_state.conditions().begin() + index;
+    E = m_current_state.conditions().end();
+    return true;
+  }
+  return false;
 }
+
 
 TEMPLATE_SPECIALIZATION
 IC	typename CProblemSolverAbstract::_edge_value_type CProblemSolverAbstract::get_edge_weight	(const _index_type &vertex_index0, const _index_type &vertex_index1, const const_iterator &i) const
@@ -274,7 +285,8 @@ IC	bool CProblemSolverAbstract::is_goal_reached_impl (const _index_type &vertex_
 				for ( ; (II != EE) && ((*II).condition() < (*i).condition()); )
 					++II;
 				if ((II == EE) || ((*II).condition() > (*i).condition()))
-					evaluate_condition(II,EE,(*i).condition());
+                                  if ( !evaluate_condition( II, EE, (*i).condition() ) )
+                                    return false;
 				if ((*II).value() != (*i).value())
 					return	(false);
 				++II;
@@ -297,7 +309,8 @@ IC	bool CProblemSolverAbstract::is_goal_reached_impl (const _index_type &vertex_
 
 	for ( ; i != e; ) {
 		if ((I == E) || ((*I).condition() > (*i).condition()))
-			evaluate_condition(I,E,(*i).condition());
+                  if ( !evaluate_condition( I, E, (*i).condition() ) )
+                    return false;
 
 		if ((*I).condition() < (*i).condition())
 			++I;
@@ -322,7 +335,8 @@ IC	bool CProblemSolverAbstract::is_goal_reached_impl(const _index_type &vertex_i
 	xr_vector<COperatorCondition>::const_iterator	e = vertex_index.conditions().end();
 	for ( ; i != e; ) {
 		if ((I == E) || ((*I).condition() > (*i).condition()))
-			evaluate_condition	(I,E,(*i).condition());
+                  if ( !evaluate_condition( I, E, (*i).condition() ) )
+                    return false;
 
 		if ((*I).condition() < (*i).condition())
 			++I;
@@ -421,7 +435,8 @@ IC	typename CProblemSolverAbstract::_edge_value_type CProblemSolverAbstract::est
 	xr_vector<COperatorCondition>::const_iterator	e = condition.conditions().end();
 	for ( ; (i != e); ) {
 		if ((I == E) || ((*I).condition() > (*i).condition()))
-			evaluate_condition	(I,E,(*i).condition());
+                  if ( !evaluate_condition( I, E, (*i).condition() ) )
+                    return result;
 
 		if ((*I).condition() < (*i).condition())
 			++I;
