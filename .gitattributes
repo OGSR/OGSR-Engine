@@ -2,7 +2,8 @@
 * text=auto
 
 # Custom
-*.script diff=lua
-*.ltx diff=ini
-*.ps diff=cpp
-*.vs diff=cpp
+*.script text linguist-language=Lua
+*.ltx    text linguist-language=INI
+*.ps     text linguist-language=HLSL
+*.vs     text linguist-language=HLSL
+*.s      text linguist-language=Lua
