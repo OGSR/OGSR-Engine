@@ -282,7 +282,7 @@ IC	void CSQuadTree::all		(xr_vector<_object_type*> &objects, CQuadNode *node, in
 }
 
 TEMPLATE_SPECIALIZATION
-IC	void CSQuadTree::all		(xr_vector<_object_type*> &objects, bool clear = true) const
+IC	void CSQuadTree::all		(xr_vector<_object_type*> &objects, bool clear) const
 {
 	if (clear)
 		objects.clear			();

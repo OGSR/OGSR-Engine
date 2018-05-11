@@ -80,8 +80,8 @@ public:
 	IC		bool		is_goal_reached	(const _index_type &node_index);
 	IC		bool		is_limit_reached(const _iteration_type iteration_count) const;
 	IC		bool		is_accessible	(const _index_type &vertex_id) const;
-	IC		void		begin			(const _index_type &vertex_id, const_iterator &begin, const_iterator &end);
-	IC		const _index_type get_value	(const_iterator &i) const;
+	IC		void		begin			(const _index_type &vertex_id, _Graph::const_iterator &begin, _Graph::const_iterator &end);
+	IC		const _index_type get_value	(_Graph::const_iterator &i) const;
 };
 
 #include "path_manager_level_inline.h"
