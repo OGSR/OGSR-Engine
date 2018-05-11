@@ -261,6 +261,7 @@ void CResourceManager::Delete(const Shader* S)
 	Msg	("! ERROR: Failed to find complete shader");
 }
 
+#include <execution>
 
 void CResourceManager::DeferredUpload()
 {
@@ -269,10 +270,9 @@ void CResourceManager::DeferredUpload()
 		CTimer timer;
 		timer.Start();
 
-		for (const auto& pair : m_textures)
-			TTAPI->threads[Random.randI(TTAPI->threads.size())]->addJob([&] { pair.second->Load(); });
-
-		TTAPI->wait();
+		std::for_each(std::execution::par_unseq, m_textures.begin(), m_textures.end(), [](const auto& pair) {
+			pair.second->Load();
+        });
 
 		Msg("texture loading time (%d): %.2f s.", m_textures.size(), timer.GetElapsed_sec());
 	}
