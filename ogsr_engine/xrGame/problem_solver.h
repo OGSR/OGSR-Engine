@@ -136,7 +136,7 @@ public:
 	IC		void						remove_evaluator		(const _condition_type &condition_id);
 	IC		_condition_evaluator_ptr	evaluator				(const _condition_type &condition_id) const;
 	IC		const EVALUATORS			&evaluators				() const;
-	IC		void						evaluate_condition		(typename xr_vector<COperatorCondition>::const_iterator &I, typename xr_vector<COperatorCondition>::const_iterator &E, const _condition_type &condition_id) const;
+	IC		bool						evaluate_condition		(typename xr_vector<COperatorCondition>::const_iterator &I, typename xr_vector<COperatorCondition>::const_iterator &E, const _condition_type &condition_id) const;
 
 	// solver interface
 	IC		void						solve					();

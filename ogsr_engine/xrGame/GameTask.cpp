@@ -21,31 +21,13 @@
 ALife::_STORY_ID	story_id		(LPCSTR story_id);
 u16					storyId2GameId	(ALife::_STORY_ID);
 
+typedef xr_map<shared_str,int> STORY_PAIRS;
+extern STORY_PAIRS story_ids;
 
-
-using namespace luabind;
-
-ALife::_STORY_ID story_id(LPCSTR story_id)
-{
-#ifdef LUABIND_09
-	auto sid = luabind::object(luabind::globals(ai().script_engine().lua())["story_ids"][story_id]);
-	R_ASSERT3(sid, "SID not found: ", story_id);
-	int res = object_cast<int>(sid);
-#else
-	int res = (
-		object_cast<int>(
-			luabind::object(
-				luabind::get_globals(
-					ai().script_engine().lua()
-				)
-				["story_ids"]
-			)
-			[story_id]
-		)
-	);
-#endif
-
-	return ALife::_STORY_ID(res);
+ALife::_STORY_ID story_id( LPCSTR story_id ) {
+  auto I = story_ids.find( story_id );
+  ASSERT_FMT( I != story_ids.end(), "story_id not found: %s", story_id );
+  return ALife::_STORY_ID( (*I).second );
 }
 
 u16 storyId2GameId	(ALife::_STORY_ID id)
