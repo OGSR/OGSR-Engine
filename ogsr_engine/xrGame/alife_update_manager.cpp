@@ -524,7 +524,7 @@ void CALifeUpdateManager::remove_all_restrictions	(ALife::_OBJECT_ID id, const R
 
 	CSE_ALifeCreatureAbstract				*creature = smart_cast<CSE_ALifeCreatureAbstract*>(object);
 	if (!creature) {
-		Msg									("! cannot remove restriction to the entity with id %d, because there is an object with the specified id, but it is not a creature",id);
+		Msg									("! cannot remove restriction to the entity with id [%d][%s], because there is an object with the specified id, but it is not a creature",id,object->name_replace());
 		return;
 	}
 
