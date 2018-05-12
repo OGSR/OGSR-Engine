@@ -422,7 +422,7 @@ public:
 
 ENGINE_API BOOL r2_sun_static = FALSE;
 
-u32				renderer_value=0;
+/*u32				renderer_value=0;
 class CCC_r2 : public CCC_Token
 {
 	typedef CCC_Token inherited;
@@ -448,7 +448,7 @@ public:
 		}
 	}
 
-};
+};*/
 //-----------------------------------------------------------------------
 ENGINE_API float	psHUD_FOV=0.45f;
 

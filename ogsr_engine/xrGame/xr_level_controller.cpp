@@ -257,8 +257,8 @@ _action* action_name_to_ptr(LPCSTR _name)
 			return &actions[idx];
 		++idx;
 	}
-	Msg				("! cant find corresponding [id] for action_name", _name);
-	return			NULL;
+	Msg("! cant find corresponding [id] for action_name [%s]", _name);
+	return nullptr;
 }
 
 LPCSTR	dik_to_keyname			(int _dik)

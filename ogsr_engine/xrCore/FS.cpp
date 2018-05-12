@@ -11,7 +11,7 @@
 #pragma warning(default:4995)
 
 #ifdef DEBUG
-//KRodin: TODO: разобраться, почему тут в редких случаях вылетает при загрузке текстур.
+#pragma todo("KRodin: надо разобраться, почему тут в редких случаях вылетает при загрузке текстур. Пока проблемные участки закомментировал.")
 	XRCORE_API	u32								g_file_mapped_memory = 0;
 	u32								g_file_mapped_count	= 0;
 	typedef xr_map<u32,std::pair<u32,shared_str> >	FILE_MAPPINGS;

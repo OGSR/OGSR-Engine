@@ -232,7 +232,8 @@ void	CHelicopter::Hit							(SHit* pHDS)
 			Log("----Helicopter::Hit(). health=",GetfHealth());
 #endif
 	};
-	if (pHDS->who&& //KRodin: а почему только хиты от актора, сталкеров и аномалий передаются в каллбек? TODO: подумать над этим.
+#pragma todo("KRodin: а почему только хиты от актора, сталкеров и аномалий передаются в каллбек? Почему бы не передавать хиты от любвх объектов? Надо подумать над этим.")
+	if (pHDS->who&&
 		( pHDS->who->CLS_ID==CLSID_OBJECT_ACTOR	||
 		smart_cast<CAI_Stalker*>(pHDS->who)		||
 		smart_cast<CCustomZone*>(pHDS->who) )
