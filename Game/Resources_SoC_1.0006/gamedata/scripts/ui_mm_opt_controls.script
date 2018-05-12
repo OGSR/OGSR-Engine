@@ -1,0 +1,25 @@
+--Меню настроек клавиатуры. Используется скриптом ui_mm_opt_main.script
+
+class "opt_controls" (CUIWindow)
+function opt_controls:__init() super()
+end
+
+function opt_controls:__finalize()
+end
+
+function opt_controls:InitControls(x, y, xml, handler)
+	self:Init(x, y, 738, 416)
+	self:SetAutoDelete(true)
+
+	xml:InitFrame("frame", self)
+
+	xml:InitStatic("tab_controls:cap_mousesens", self)
+	xml:InitLabel("tab_controls:cap_keyboardsetup", self)
+	xml:InitLabel("tab_controls:cap_keyboardsetup", self)
+	xml:InitTrackBar("tab_controls:track_mousesens", self)
+	xml:InitCheck("tab_controls:check_mouseinvert", self)
+	xml:InitKeyBinding("tab_controls:key_binding", self)
+
+	local btn = xml:Init3tButton("tab_controls:btn_default", self)
+	handler:Register(btn, "btn_keyb_default")
+end

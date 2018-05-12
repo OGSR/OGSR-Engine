@@ -1,0 +1,11 @@
+#ifndef CALC_LUMA_PS
+#include "common.h"
+#define CALC_LUMA_PS
+float4 main( p_screen _in ):COLOR0
+{
+	float4 color = tex2D(s_image, _in.tc0.xy);
+	color.a = dot(color.rgb, lumcoeff);
+
+   return color;
+}
+#endif

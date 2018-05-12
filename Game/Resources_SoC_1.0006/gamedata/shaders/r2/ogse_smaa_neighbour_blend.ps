@@ -1,0 +1,29 @@
+#include "common.h"
+
+#define SMAA_HLSL_3 1
+#if !defined(AA_QUALITY)
+	#define	SMAA_PRESET_LOW 1
+#elif AA_QUALITY==1		// Low
+	#define	SMAA_PRESET_LOW 1
+#elif AA_QUALITY==2		// Medium
+	#define	SMAA_PRESET_MEDIUM 1
+#elif AA_QUALITY==3		// High
+	#define	SMAA_PRESET_HIGH 1
+#elif AA_QUALITY==4		// Extreme
+	#define	SMAA_PRESET_ULTRA 1
+#endif
+struct _in
+{
+	float2	tc0: TEXCOORD0;
+	float4	tc1: TEXCOORD1;
+	float4	tc2: TEXCOORD2;
+	float4	tc3: TEXCOORD3;
+	float4	tc4: TEXCOORD4;
+};
+#include "antialiasing\smaa.h"
+uniform sampler2D s_blendtex;
+float4 main( _in i ):COLOR0
+{
+	float4 offset[2] = {i.tc1, i.tc2};
+	return SMAANeighborhoodBlendingPS(i.tc0, offset, s_image, s_blendtex);
+};

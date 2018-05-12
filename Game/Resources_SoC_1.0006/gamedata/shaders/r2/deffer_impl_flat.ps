@@ -1,0 +1,106 @@
+#include "common.h"
+#include "sload.h"
+#include "ogse_config.h"
+
+#define	USE_4_DETAIL
+
+#if defined(USE_TDETAIL) && defined(USE_4_DETAIL)
+	#define	USE_4_BUMP
+#endif
+
+#ifdef USE_4_BUMP
+/*f_deffer*/ GB 	main	( p_bumped I 	)
+#else
+/*f_deffer*/ GB 	main	( p_flat I 		)
+#endif
+{
+//	f_deffer	O;
+
+ 	// diffuse
+	float4 D		= tbase		(I.tcdh);			// IN:  rgb.a
+	float4 L 	= tex2D		(s_lmap, I.tcdh);
+
+	float	G	= def_gloss	;
+
+	float refl_intensity = 0.f;
+
+	float4	mask= tex2D		(s_mask, I.tcdh);
+	float 	mag	= dot 		(mask,1);
+			mask= mask/mag;
+
+#ifdef USE_WET_SURFACES
+
+   	float wet_time = ogse_c_rain.z;
+	wet_time *= RAIN_WETTING_SPEED*ogse_c_rain.w; //wetting speed - 2.0 is only for test
+	wet_time  = saturate(wet_time);
+
+	D    *= lerp(1.0, RAIN_MAX_DIFFUSE_SCALING, wet_time);
+	D	 *= lerp(1.0, 0.5, mask.g*saturate(wet_time));	// дл€ ёры
+
+	G    *= lerp(1.0, RAIN_MAX_SPECULAR_SCALING, wet_time);
+
+/*	D    *= RAIN_MAX_DIFFUSE_SCALING;
+	G    *= RAIN_MAX_SPECULAR_SCALING;*/
+
+//	refl_intensity = mask.g*RAIN_MAX_REFLECTION_POWER;
+
+    refl_intensity = wet_time*mask.g*lerp(0.0, RAIN_MAX_REFLECTION_POWER/* + (1.f - RAIN_MAX_REFLECTION_POWER)*AccumulatedWater*/, wet_time);		// asphalt only
+      
+#endif
+
+#ifdef	USE_TDETAIL
+	#ifdef USE_4_DETAIL
+
+		float3	d_R	= tex2D		(s_dt_r, I.tcdbump)*mask.r;
+		float3	d_G	= tex2D		(s_dt_g, I.tcdbump)*mask.g;
+		float3	d_B	= tex2D		(s_dt_b, I.tcdbump)*mask.b;
+		float3	d_A	= tex2D		(s_dt_a, I.tcdbump)*mask.a;
+		float3	dt	= d_R+d_G+d_B+d_A;
+			D.rgb	= 2*D.rgb*dt	 ;
+
+		#ifdef USE_4_BUMP
+
+ 			 float4	n_Rt = tex2D	(s_dn_r, I.tcdbump).wzyx;
+			 float4	n_Gt = tex2D	(s_dn_g, I.tcdbump).wzyx;
+			 float4	n_Bt = tex2D	(s_dn_b, I.tcdbump).wzyx;
+			 float4	n_At = tex2D	(s_dn_a, I.tcdbump).wzyx;
+	 
+ 			 float3	n_R = (n_Rt-0.5)*mask.r; float g_R=n_Rt.w*mask.r;
+			 float3	n_G = (n_Gt-0.5)*mask.g; float g_G=n_Gt.w*mask.g;
+			 float3	n_B = (n_Bt-0.5)*mask.b; float g_B=n_Bt.w*mask.b;
+			 float3	n_A = (n_At-0.5)*mask.a; float g_A=n_At.w*mask.a;
+
+			 float3	mix		= 	n_R+n_G+n_B+n_A;
+					mix.z	*=	0.5;		//. make bump twice as contrast (fake, remove me if possible)
+			 float3	N		= 	mul     	(float3x3(I.M1, I.M2, I.M3), mix.xyz);
+
+	 	 			G 		= 	g_R+g_G+g_B+g_A;
+		#else
+			float3	N 	= I.N.xyz	;
+		#endif
+
+/*		#ifdef USE_WET_SURFACES
+		   refl_intensity = wet_time*mask.g*lerp(0.0, RAIN_MAX_REFLECTION_POWER/* + (1.f - RAIN_MAX_REFLECTION_POWER)*AccumulatedWater*//*, wet_time);		// asphalt only
+		#endif*/
+
+	#else
+		D.rgb	= 2*D.rgb*tex2D	(s_detail, I.tcdbump).rgb;
+	#endif
+#else
+	float3	N 	= I.N.xyz	;
+#endif
+
+	// hemi, sun, material
+	float 	ms	= xmaterial	;
+
+	N	= normalize	(N);
+
+	// 2. Standart output
+/*	O.Ne          = float4		(encode_normal(N, ms), 				D.w	);	// hemi
+	O.position    = encode_pos	(I.position.xyz + N.xyz*def_virtualh/2.h, ms, refl_intensity);	//
+	O.C			  = float4		(D.xyz,							G	);	// OUT: rgb.gloss*/
+
+  GB O		= make_gbuffer(I.position.xyz + N.xyz*def_virtualh/2.h, N.xyz, D.xyz, float4(D.w, ms, G, refl_intensity));
+
+	return O;
+}

@@ -1,0 +1,37 @@
+#include "common.h"
+
+uniform sampler2D s_faces;
+uniform float4 c_color;
+uniform float4 c_params;
+
+float4 main(p_screen _in):COLOR0
+{
+	float4 depth = {0.0, 0.0, 0.0, 0.0};
+
+	// prepare depths for test
+	depth = tex2D(s_faces, _in.tc0);
+	depth.xy *= 200.f;
+	float dep = get_depth(_in.tc0);
+	
+	// calculate weight
+	// I. cam outside object
+	// 1) global depth < front depth				{don't fog at all	weight = 0}
+	// 2) back_depth > global depth > front depth	{partially fog		weight = (global depth - front depth)/max_density}
+	// 3) global depth > back depth					{full fog			weight = (back depth - front depth)/max_density}
+	// II. cam inside object, front depth == 0
+	// 1) back_depth > global depth					{partially fog		weight = (global depth - front depth)/max_density}
+	// 2) global depth > back depth					{full fog			weight = (back depth - front depth)/max_density}
+	float weight = 0;																			// 1
+
+	#define fog_back float(depth.x)
+	#define fog_front float(depth.y)
+	#define scene_depth float(dep)
+	#define fog_density float(c_params.x)
+
+	scene_depth += 800*(step(scene_depth, 0.001));
+
+	weight = clamp( scene_depth, 0.0, fog_back ) - fog_front;
+
+	// returning
+	return float4(c_color.xyz,saturate(weight * fog_density));
+};

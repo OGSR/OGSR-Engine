@@ -1,0 +1,34 @@
+#include "common.h"
+#include "sload.h"
+
+/*f_deffer*/ GB 	main	( p_flat I )
+{
+//  f_deffer	O;
+
+  // diffuse
+  float3 D	= tbase		(I.tcdh);	// IN:  rgb.a
+
+#ifdef	USE_TDETAIL
+	D.rgb	= 2*D.rgb*tex2D	(s_detail, I.tcdbump).rgb;
+#endif
+
+	// hemi,sun,material
+	float 	ms	= xmaterial		;
+#ifdef USE_LM_HEMI
+	float4	lm 	= tex2D			(s_hemi, I.lmh);
+	float 	h  	= dot			(lm.rgb,1.h/3.h);
+#else
+	float 	h	= I.position.w	;
+#endif
+
+  float3 Nrm = normalize(I.N.xyz);
+
+  // 2. Standart output
+/*  O.Ne          = float4		(encode_normal(Nrm, ms), 	h			);
+  O.position    = encode_pos(I.position.xyz + Nrm.xyz*def_virtualh/2.h, 	ms, 0.f			);
+  O.C			= float4		(D.rgb,											def_gloss	);	// OUT: rgb.gloss*/
+
+  GB O		= make_gbuffer(I.position.xyz + Nrm.xyz*def_virtualh/2.h, Nrm.xyz, D.xyz, float4(h, ms, def_gloss, 0.f));
+
+  return O;
+}

@@ -1,0 +1,30 @@
+#include "common.h"
+#include "sload.h"
+
+struct 	p_particle
+{
+	p_flat	base	;
+	float4 	color	: COLOR0;
+};
+
+/*f_deffer*/ GB 	main	( p_particle II )
+{
+  //f_deffer	O;
+  p_flat	I;	I=II.base;
+
+  // 1. Base texture + kill pixels with low alpha
+  float4 	D 	= 	tex2D		(s_base, I.tcdh);
+			D	*=	II.color;
+			clip	(D.w-def_aref);
+
+  float3 Nrm = normalize(I.N.xyz);
+
+  // 2. Standart output
+  /*O.Ne          = float4		(encode_normal(Nrm, xmaterial),	I.position.w	);
+  O.position    = encode_pos(I.position.xyz + Nrm*def_virtualh/2.h, xmaterial, 0.f);
+  O.C			= float4		(D.xyz,													def_gloss		);		// OUT: rgb.gloss*/
+
+  GB O		= make_gbuffer(I.position.xyz + Nrm.xyz*def_virtualh/2.h, Nrm.xyz, D.xyz, float4(I.position.w, xmaterial, def_gloss, 0.f));
+
+  return O;
+}

@@ -1,0 +1,26 @@
+#include "common.h"
+
+uniform float4 blur_params;		// x - weigth of center pixel, y - num of pixel in blur radius, z - texcoords delta on one sample, w - weight gradient 
+uniform sampler2D s_blur_temp;
+#ifndef NUM_OF_BLUR_SAMPLES
+#define NUM_OF_BLUR_SAMPLES 1.0
+#endif
+float4 main (p_screen _in):COLOR0
+{
+	float x = 1.0;
+
+	float4 final = tex2D(s_blur_temp, _in.tc0)*blur_params.x;
+	float wsum = blur_params.x;
+
+	while (x < NUM_OF_BLUR_SAMPLES)
+	{
+		float weight = blur_params.x + blur_params.w*x;
+		float2 tc = float2(blur_params.z, 0.0)*ogse_c_resolution.zw*x;
+		final += tex2Dlod(s_blur_temp, float4(float2(_in.tc0 + tc),0,0))*weight;
+		final += tex2Dlod(s_blur_temp, float4(float2(_in.tc0 - tc),0,0))*weight;
+		x += 1.0;
+		wsum += 2*weight;
+	}
+
+	return final/wsum;
+}

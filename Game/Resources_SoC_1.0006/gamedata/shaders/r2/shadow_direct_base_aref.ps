@@ -1,0 +1,17 @@
+#include "common.h"
+
+//////////////////////////////////////////////////////////////////////////////////////////
+// Pixel
+float4 	main	( v_shadow_direct_aref I )	: COLOR
+{
+#if !defined(USE_PCSS) && defined(USE_HWSMAP)
+	return 	tex2D		(s_base, I.tc0);
+#else
+	// 1. Base texture + kill pixels with low alpha
+	float4 	C 	= tex2D		(s_base, I.tc0);
+	clip		(C.w - 30.f/255.f/*def_aref*/);
+
+	// 2.
+	return I.depth;
+#endif
+}

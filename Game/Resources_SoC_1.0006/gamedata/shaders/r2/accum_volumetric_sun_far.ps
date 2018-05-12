@@ -1,0 +1,119 @@
+#ifdef	USE_HWSMAP_PCF
+	#define SUNSHAFTS_DYNAMIC
+#endif	//	USE_HWSMAP_PCF
+
+#include "common.h"
+#include "shadow.h"
+
+#define RAY_PATH	2.0h
+
+#define	JITTER_SUN_SHAFTS
+#define	FILTER_LOW
+
+#ifndef SUNSHAFTS_QUALITY
+	#define RAY_SAMPLES int(1)
+#else
+	#if SUNSHAFTS_QUALITY==1
+		#define RAY_SAMPLES int(5)
+	#else
+		#if SUNSHAFTS_QUALITY==2
+			#define RAY_SAMPLES int(10)
+		#else
+			#if SUNSHAFTS_QUALITY==3
+				#define RAY_SAMPLES int(15)
+			#else
+//				#undef FILTER_LOW
+				#define RAY_SAMPLES int(20)
+			#endif
+		#endif
+	#endif
+#endif
+
+uniform float4 c_sunshafts;		// x - exposure, y - length, z - r2_sun_near
+float4 	main (float2 tc : TEXCOORD0, float4 tcJ : TEXCOORD1 ) : COLOR
+{
+#ifndef	SUNSHAFTS_QUALITY
+	return half4(0,0,0,0);
+#else	//	SUN_SHAFTS_QUALITY
+
+	half3	P = get_xyz_position(tc);
+
+//	P.z = lerp(P.z, 0.f, is_sky(P.z));
+	half	sky = is_sky(P.z);
+	half	max_density = c_sunshafts.x*SS_VOL_MAX_INTENSITY;
+	half	res = lerp(0, max_density, sky);
+	if (sky)
+		return res*Ldynamic_color;
+			P.z = lerp(P.z, 0.f, sky);
+			
+	if (P.z <= (c_sunshafts.z+0.001))
+		discard;					// helps to save some fps in outdoor areas
+
+#ifndef	JITTER_SUN_SHAFTS
+//	Fixed ray length, fixed step dencity
+//	half3	direction = (RAY_PATH/RAY_SAMPLES)*normalize(P);	
+//	Variable ray length, variable step dencity
+	half3	direction = P/RAY_SAMPLES;
+#else	//	JITTER_SUN_SHAFTS
+//	Variable ray length, variable step dencity, use jittering
+	half4	J0 	= tex2D		(jitter0,tcJ);
+	half	coeff = (RAY_SAMPLES - 2*J0.x)/(RAY_SAMPLES*RAY_SAMPLES);		
+	half3	direction = P*coeff;
+//	half3	direction = P/(RAY_SAMPLES+(J0.x*4-2));
+#endif	//	JITTER_SUN_SHAFTS
+
+	half	depth = P.z;
+	half	deltaDepth = direction.z;
+	
+	half4	current	= mul (m_shadow,float4(P,1));
+	half4	delta 	= mul (m_shadow, float4(direction,0));
+
+//	half	res = 0;
+//	half	max_density = c_sunshafts.x*SS_VOL_MAX_INTENSITY;
+	half	density = max_density/RAY_SAMPLES;
+
+/*	if (depth<0.0001)
+		res = max_density;*/
+//	res = lerp(res, max_density, step(depth, 0.0001));
+
+	#ifndef SUNSHAFTS_DYNAMIC
+	for ( int i=0; i<RAY_SAMPLES; ++i )
+	{
+		if (depth>c_sunshafts.z)
+#ifndef	FILTER_LOW
+				res += density*shadow(current, float4(P.xyz, 1.0), 1.0);
+#else	//	FILTER_LOW
+				res += density*sample_hw_pcf(current, float4(0,0,0,0));
+#endif	//	FILTER_LOW
+		depth -= deltaDepth;
+		current -= delta;
+	}
+	#else
+	int n = (int)((P.z - 0.3) / deltaDepth);
+	for ( int i=0; i<n; ++i )
+	{		
+		if (depth>c_sunshafts.z)
+#ifndef	FILTER_LOW
+				res += density*shadow(current, float4(P.xyz, 1.0), 1.0);
+#else	//	FILTER_LOW
+				res += density*sample_hw_pcf(current, float4(0,0,0,0));
+#endif	//	FILTER_LOW
+		depth -= deltaDepth;
+		current -= delta;
+	}
+	#endif
+
+	//	float fSturation = -dot(Ldynamic_dir, half3(0,0,1));
+	float fSturation = -Ldynamic_dir.z;
+
+	//	Normalize dot product to
+//	fSturation	= 0.5*fSturation+0.5;
+	//	Map saturation to 0.2..1
+	fSturation	= 0.80*fSturation+0.20;
+
+	res		*= fSturation;
+
+	return res*Ldynamic_color;
+#endif	//	SUN_SHAFTS_QUALITY
+}
+

@@ -1,0 +1,67 @@
+/*	Screen-Space Directional Occlusion.
+Based on Tobias Ritschel tech paper.
+Implemented by K.D. (OGSE team)
+Last Changed: 17.11.2012
+*/
+#ifndef OGSE_SSDO_H
+#define OGSE_SSDO_H
+#ifndef SSAO_QUALITY
+	#define	SSAO_QUALITY int(1)
+#endif
+#include "common.h"
+#include "ogse_config.h"
+
+static const float3 arr[7] = 
+{
+	float3(	0.8113	,	0.0000	,	-0.4	),
+	float3(	0.3183	,	0.6913	,	-0.3	),
+	float3(	-0.2074	,	0.5981	,	-0.5	),
+	float3(	-0.5497	,	0.3373	,	-0.5	),
+	float3(	-0.8652	,	-0.4010	,	-1.0	),
+	float3(	-0.1994	,	-0.5347	,	-0.5	),
+	float3(	0.4934	,	-0.5759	,	-0.8	),
+};
+
+float3 calc_ssdo(float4 P, float3 N, float2 tc)
+{
+	int quality = SSAO_QUALITY + 1;
+	float3 occ = float3(0,0,0);
+	float scale = P.z/10.f * SSDO_RADIUS;
+	float grass_tuning = 1 + SSDO_GRASS_TUNING*is_in_range(float3(P.w, 0.360, 0.365));
+	for (int a = 1; a < quality; ++a)
+	{
+		scale *= a;
+		for (int i = 0; i < 7; i++)
+		{
+			float3 occ_pos_view = P.xyz + (arr[i] + N) * scale;
+			float4 occ_pos_screen = proj_to_screen(mul(m_P, float4(occ_pos_view, 1.0)));
+			occ_pos_screen.xy /= occ_pos_screen.w;
+			float screen_occ = get_depth_fast(occ_pos_screen);//tex2Dproj(s_position, occ_pos_screen).xyz;		
+			screen_occ = lerp(screen_occ, 0.f, is_sky(screen_occ));
+			// consider only unoccluded samples
+			float is_occluder = step(occ_pos_view.z, screen_occ);
+			float occ_coeff = saturate(is_occluder + saturate(2.1 - screen_occ) + step(SSDO_DISCARD_THRESHOLD, abs(P.z-screen_occ)));
+			occ += float3(occ_coeff, occ_coeff, occ_coeff);
+			#ifdef SSDO_USE_INDIRECT_BOUNCES
+				// collect also indirect bonuses. Must be discarded:
+				// - samples outside testing hemisphere
+				// - backfacing samples
+				float3 sample_normal = get_xyz_normal_fast(occ_pos_screen);//tex2Dproj(s_normal, occ_pos_screen);
+				float3 sample_diffuse = tex2Dlod(s_diffuse, float4(occ_pos_screen.xy,0,0));
+				occ += (1 - is_occluder) * saturate(-dot(sample_normal, N)) * sample_diffuse * SSDO_COLOR_BLEEDING;
+			#endif
+		}
+	}
+	occ /= (7 * SSAO_QUALITY);
+	occ = saturate(occ*grass_tuning);
+	return (occ + (1 - occ)*(1 - SSDO_BLEND_FACTOR));
+}
+
+float4 main(p_screen _in):COLOR0
+{
+	float4 P = get_full_position(_in.tc0);//tex2D(s_position, _in.tc0);
+	float3 N = get_xyz_normal(_in.tc0);//tex2D(s_normal, _in.tc0).xyz;
+	float3 occ = calc_ssdo(P, N, _in.tc0);
+	return float4(occ.x, occ.y, occ.z, 1.0);
+}
+#endif

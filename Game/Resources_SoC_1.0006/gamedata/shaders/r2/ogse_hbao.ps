@@ -1,0 +1,158 @@
+#ifndef OGSE_HBAO_H
+#define OGSE_HBAO_H
+#include "common.h"
+#include "ogse_config.h"
+#ifndef SSAO_QUALITY
+	#define	SSAO_QUALITY int(1)
+#endif
+static const float g_R = HBAO_RADIUS;
+static const float g_sqr_R = g_R*g_R;
+static const float g_inv_R = 1/g_R;
+static const float2 resolution = ogse_c_resolution.xy;
+static const float2 inv_resolution = ogse_c_resolution.zw;
+
+static const float g_NumDir = 3 + SSAO_QUALITY;
+
+#define M_PI 3.14159265f
+
+//----------------------------------------------------------------------------------
+float tangent(float3 P, float3 S)
+{
+    return (P.z - S.z) / length(S.xy - P.xy);
+}
+
+float3 tangent_eye_pos(float2 uv, float4 tangentPlane)
+{
+    // view vector going through the surface point at uv
+    float3 V = get_xyz_position(uv);//tex2D(s_position, uv).xyz;
+    float NdotV = dot(tangentPlane.xyz, V);
+    // intersect with tangent plane except for silhouette edges
+    if (NdotV < 0.0) V *= (tangentPlane.w / NdotV);
+    return V;
+}
+
+float length2(float3 v) { return dot(v, v); } 
+
+//----------------------------------------------------------------------------------
+float3 min_diff(float3 P, float3 Pr, float3 Pl)
+{
+    float3 V1 = Pr - P;
+    float3 V2 = P - Pl;
+    return (length2(V1) < length2(V2)) ? V1 : V2;
+}
+
+//----------------------------------------------------------------------------------
+float falloff(float r)
+{
+    return 1.0f - r*r;
+}
+
+//----------------------------------------------------------------------------------
+float2 snap_uv_offset(float2 uv)
+{
+    return round(uv * resolution.xy) * inv_resolution.xy;
+}
+
+//----------------------------------------------------------------------------------
+float horizon_occlusion(float2 deltaUV, 
+                        float2 uv0, 
+                        float3 P, 
+                        float numSteps, 
+                        float randstep,
+                        float3 dPdu,
+                        float3 dPdv)
+{
+    // Randomize starting point within the first sample distance
+    float2 uv = uv0 + snap_uv_offset( randstep * deltaUV );
+    
+    // Snap increments to pixels to avoid disparities between xy 
+    // and z sample locations and sample along a line
+    deltaUV = snap_uv_offset( deltaUV );
+
+    // Compute tangent vector using the tangent plane
+    float3 T = deltaUV.x * dPdu + deltaUV.y * dPdv;
+
+    float phi = atan(-T.z / length(T.xy)) + HBAO_ANGLE_BIAS;
+    float tanH = tan(min(phi, M_PI*0.5));
+    float sinH = tanH / sqrt(1.0f + tanH*tanH);
+	
+    float ao = 0;
+    for (float j = 1; j <= numSteps; ++j) {
+		uv += deltaUV;
+        float3 S = get_xyz_position_fast(uv);//tex2D(s_position, uv).xyz;
+        
+        // Ignore any samples outside the radius of influence
+        float d2  = length2(S - P);
+		[branch]
+        if (d2 < g_sqr_R) {
+            float tanS = tangent(P, S);
+
+			[branch]
+            if(tanS > tanH) {
+                // Accumulate AO between the horizon and the sample
+                float sinS = tanS / sqrt(1.0f + tanS*tanS);
+                float r = sqrt(d2) * g_inv_R;
+                ao += falloff(r) * (sinS - sinH)*saturate((abs(P.z - S.z) - HBAO_THRESHOLD*(lerp(0.17, 1.00, saturate((P.z - 5)/30))))*1000);
+                
+                // Update the current horizon angle
+                tanH = tanS;
+                sinH = sinS;
+            }
+        }
+    }
+
+    return ao;
+}
+
+float calc_hbao(float4 P, float3 N, float2 tc0)
+{
+    // Calculate the real number of steps based on Z distance, and  
+    // early out if geometry is too far away.   	
+
+	float2 	step_size	= float2(inv_resolution.x, inv_resolution.y)*HBAO_STEP_SIZE;
+    float numDirs = min ( g_NumDir, min(step_size.x * 0.25 * resolution.x, step_size.y * 0.25 * resolution.y));
+	// handle sky
+	numDirs *= is_not_sky(P.z);
+	if( numDirs < 1.0 ) return 1.0;
+    step_size = step_size / ( HBAO_NUM_STEPS + 1 );// * (1 + P.z/10);
+
+	float grass_tuning = 1 + HBAO_GRASS_TUNING*is_in_range(float3(P.w, 0.360, 0.365));
+
+    float4 tangentPlane = float4(N, dot(P, N));
+    
+    // Nearest neighbor pixels on the tangent plane
+    float3 Pr = tangent_eye_pos(tc0 + float2(inv_resolution.x, 0), tangentPlane);
+    float3 Pl = tangent_eye_pos(tc0 + float2(-inv_resolution.x, 0), tangentPlane);
+    float3 Pt = tangent_eye_pos(tc0 + float2(0, inv_resolution.y), tangentPlane);
+    float3 Pb = tangent_eye_pos(tc0 + float2(0, -inv_resolution.y), tangentPlane);
+
+    // Screen-aligned basis for the tangent plane
+    float3 dPdu = min_diff(P, Pr, Pl);
+    float3 dPdv = min_diff(P, Pt, Pb) * (resolution.y * inv_resolution.x);
+
+    // Loop over all directions
+    float ao = 0;
+    float delta = 0.5;//g_NumDir / numDirs;
+    float alpha = 2.0f * M_PI / g_NumDir;
+    for (float d = 0; d < g_NumDir; d+=delta) {
+        float angle = alpha * d;
+		float2 dir = float2(1,1);
+		sincos(angle, dir.y, dir.x);
+        float2 deltaUV = dir * step_size.xy;
+        ao += horizon_occlusion(deltaUV, tc0, P, HBAO_NUM_STEPS, 1, dPdu, dPdv);
+    }
+
+	ao /= g_NumDir;
+	ao = saturate(1 - ao);
+	ao = saturate(ao*grass_tuning);
+	return (ao + (1 - ao)*(1 - HBAO_BLEND_FACTOR));
+}
+float4 main(p_screen _in):COLOR0
+{
+	float4 P = get_full_position(_in.tc0);//tex2D(s_position, _in.tc0).xyz;
+	float3 N = get_xyz_normal(_in.tc0);//tex2D(s_normal, _in.tc0).xyz;
+	float occ = calc_hbao(P, N, _in.tc0);
+	return float4(occ, occ, occ, 1.0);
+}
+
+#endif

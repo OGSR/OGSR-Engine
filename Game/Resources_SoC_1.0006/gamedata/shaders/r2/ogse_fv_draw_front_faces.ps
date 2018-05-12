@@ -1,0 +1,6 @@
+#include "common.h"
+
+float4 main(float4 _pos:TEXCOORD0):COLOR0
+{
+	return float4(0.0, saturate(_pos.z), 0.0, 0.0);
+};

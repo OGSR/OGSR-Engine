@@ -1,0 +1,44 @@
+#include "common.h"
+#include "ogse_reflections.h"
+
+uniform float4x4 	m_v2w:register(ps,c3);	// компилятор, как ты меня заебал своими глюками
+
+float4 main(p_screen I):COLOR 
+{
+	float4 final = float4(0.f,0.f,0.f,0.f);
+// 1. get reflections power
+	final.w = get_refl_power(I.tc0);
+
+//	clip(final.w-EPS);
+	
+/*	if (final.w > EPS)		// can't perform branching here because of strange bugs
+	{*/
+	// 2. get and transform position and normal
+		float4 P = float4(0.f,0.f,0.f,1.f);
+		float4 N = float4(0.f,0.f,0.f,1.f);
+		N.xyz = get_xyz_normal(I.tc0);
+		P.xyz = get_xyz_position_fast(I.tc0);
+
+		float dep = P.z;
+		
+	// 3. transform normal and position back to world space for proper env map computations
+		N = mul((float4x3)m_v2w, N);
+		P = mul(m_v2w, P);
+		N.y *= clamp(dep, 2, 20);		// for more "vertical" normals
+		
+	// 4. calc reflections
+		float3 v2point = P.xyz - eye_position.xyz;		
+		float3 vreflect = reflect(normalize(v2point), normalize(N.xyz));
+				
+	#if ((REFLECTIONS_MODE == REFL_GROUND) || (REFLECTIONS_MODE == REFL_BOTH))
+		float3 env	= calc_envmap(vreflect);
+		float4 refl = calc_reflections_late_out(P, vreflect, final.w);
+		final.xyz = lerp(refl.xyz, env, refl.w);
+		final.w *= lerp(RAIN_GAIN_REFLECTIONS, 1.0, refl.w);
+	#else
+		final.xyz = calc_envmap(vreflect);
+	#endif
+//	}
+
+	return final;
+}

@@ -1,0 +1,7 @@
+#include "common.h"
+
+uniform sampler2D s_pp;
+float4 main(p_screen I):COLOR
+{
+	return tex2D(s_pp, I.tc0);
+}

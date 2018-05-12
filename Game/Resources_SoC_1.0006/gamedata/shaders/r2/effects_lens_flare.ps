@@ -1,0 +1,43 @@
+#include "common.h"
+
+struct 	v2p
+{
+ 	float2 	tc0		: TEXCOORD0;	// base
+	float4 tc1		: TEXCOORD1;
+	float4 c0		: COLOR0;
+};
+
+uniform sampler2D s_flare;
+uniform sampler2D s_glow;
+uniform sampler2D s_dirt;
+uniform float4 flare_params;	// x - 0.01f*fDistance, y - is require flare, y - is sun, w - is enabled dirt from script
+//////////////////////////////////////////////////////////////////////////////////////////
+// Pixel
+float4 	main	( v2p I )	: COLOR
+{
+	float4 final = {0.0, 0.0, 0.0, 0.0};
+	float2 len = I.tc0.xy-float2(0.5,0.5);
+
+#ifdef USE_LENS_FLARES
+	float2 str_tc = float2(0.5,0.5)+len.xy/FL_GLOW_RADIUS;
+#ifdef FL_USE_LONG_FLARE
+	float3 flare =  I.c0.xyz*tex2D (s_flare,I.tc0).z;
+#else
+	float3 flare = float3(0,0,0);
+#endif
+	float alpha_glow = tex2D (s_glow,str_tc).a;
+	float3 glow = I.c0.xyz*alpha_glow*2*smoothstep(0.02, 0.3, alpha_glow);
+	final.xyz = flare*lerp(0.0, 0.5, saturate(0.5 + flare_params.x))*lerp(1.0, 0.0, saturate(-0.5 + flare_params.x)) + saturate(glow*(1 - flare_params.x));
+	final.w = I.c0.a*FL_POWER*flare_params.y*(1.0 - flare_params.z);
+#endif
+
+#ifdef USE_LENS_DIRT
+	float4 dirt = tex2D (s_dirt,I.tc1);
+	final.xyz += dirt.www*saturate(0.5-length(len))*2*FL_DIRT_INTENSITY*flare_params.w;
+	#ifndef USE_LENS_FLARES
+		final.w = FL_DIRT_INTENSITY*0.35*flare_params.w;
+	#endif
+#endif
+
+	return final;
+}

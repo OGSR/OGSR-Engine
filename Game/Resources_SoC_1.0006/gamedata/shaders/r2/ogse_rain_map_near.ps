@@ -1,0 +1,24 @@
+#include "common.h"
+//#include "lmodel.h"
+#include "ogse_rain.h"
+
+float4 	main		( float2 tc : TEXCOORD0, float4 tcJ : TEXCOORD1, float3 T : TANGENT, float4 color : COLOR0) : COLOR
+{
+  float4 _P		= get_full_position(tc);//tex2D 	(s_position, 	tc);
+//  float4  _N		= tex2D 	(s_normal,   	tc);
+
+ // 	float 	m	= xmaterial	;
+//	float4	light 	= plight_infinity (m,_P,_N,Ldynamic_dir);
+
+	// ----- rain map
+  	float4 	P4 	= float4	(_P.x,_P.y,_P.z,1.f);
+	float4 	PS	= mul		(m_rain, 	P4);
+	float 	s 	= rain		(PS);//raintest(PS, tcJ);
+
+	float4 ret = /*light*s;*/float4(s,s,s,s);
+
+/*	#ifndef FP16_BLEND  
+		ret 	+= (float4)tex2D 	(s_accumulator, tc); 	// emulate blend
+	#endif*/
+	return 	ret	;
+}

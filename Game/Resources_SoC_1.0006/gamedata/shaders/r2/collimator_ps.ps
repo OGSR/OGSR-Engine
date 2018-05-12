@@ -1,0 +1,14 @@
+#include "common.h"
+#include "sload.h"
+
+float4  main( v_model I ):COLOR
+{
+  //float4 D 	= tbase(I.tcdh);
+  //clip(D.w - def_aref);
+  //float r = length(I.tc - float2(0.5, 0.5));
+  float p = 0.0001;
+  float r =  abs(fmod(I.tc.x, p)) - p * 0.5; // abs(I.tc.x - I.tc.y);
+  clip(I.tc.x + 0.0000001);
+  
+  return   float4(1,1,1,1)*8.0h;
+}

@@ -1,0 +1,93 @@
+#include "common.h"
+#ifdef DDOF_QUALITY
+	#include "ogse_bokeh_blur.h"
+#else
+	static const float2 resolution = ogse_c_resolution.xy*0.5;
+	static const float2 inv_resolution = ogse_c_resolution.zw*2.0;
+#endif
+#define EPSDEPTH float(0.001)
+#define ZDOF_MULT float(10);
+#define RDOF_MULT float(5);
+uniform float4 c_timers; // x - timer of current state, y - previous state timer, z - heat/cool timer, w - dof script control
+uniform float4 c_states; // x - zoom_mode, y - weapon state, z - previous weapon state, w - (0 - is binocular, 1 - is not binocular)
+/*enum CWeapon::EWeaponStates
+{
+  eIdle = 0x0,
+  eFire = 0x1,
+  eFire2 = 0x2,
+  eReload = 0x3,
+  eShowing = 0x4,
+  eHiding = 0x5,
+  eHidden = 0x6,
+  eMisfire = 0x7,
+  eMagEmpty = 0x8,
+  eSwitch = 0x9,
+};*/
+float DOFFactor( float depth, float focus) {
+	float dist_to_focus	= depth - focus;
+	dist_to_focus *= saturate(depth - DDOF_NEAR_MINDIST);	// порог блюра, чтобы не размывалось оружие в руках
+	float blur_far = saturate(dist_to_focus / (DDOF_FAR_PLANE))*DDOF_FAR_INTENSITY;
+	float blur_near = saturate(dist_to_focus / (-DDOF_NEAR_PLANE-focus+0.1))*DDOF_NEAR_INTENSITY;
+	float blur = blur_near+blur_far;
+	blur*=blur;
+	return saturate(blur);
+}
+float calc_regular_dof(float dep, float focus) {
+	float depth = lerp(dep, focus, is_sky(dep));
+	return DOFFactor(depth, focus);
+}
+float calc_zoom_dof(float2 center) {
+	float dep = length((float2(0.500001f,0.497f) - center)*resolution.xy);
+	return lerp(0, ZDOF_INTENSITY, saturate((dep - ZDOF_MINDIST)/(ZDOF_MAXDIST - ZDOF_MINDIST)));
+}
+float calc_reload_dof(float2 center, float dep) {
+	return saturate(dep - RDOF_DIST) * RDOF_INTENSITY;
+}
+float4 main(p_screen _in):COLOR0 {
+	float2 center = _in.tc0;
+	float dep = get_depth(center);//tex2D(s_position, center).z;
+	dep = lerp(dep, DDOF_SKY_DIST, is_sky(dep));
+	float3 img = tex2D(s_image, center);
+	float4 final = float4(img,0.f);
+	#ifdef DDOF_QUALITY
+		float3 blur = float3(0.0, 0.0, 0.0); // x - dynamic, y - zoom, z - reload
+		#ifdef USE_DYNAMIC_DDOF
+			float focus = 0;
+			float2 scale = inv_resolution.xy * DDOF_FOCUS_CIRCLE;
+			float contrib = EPSDEPTH;
+			for (int i = 0; i < 12; i++) {	
+				float2 tap = float2(0.500001f,0.500001f) + poisson_disk[i]*scale;
+				float sample_depth = get_depth_fast(tap);//tex2D(s_position, tap).z;
+				sample_depth = lerp(sample_depth, DDOF_SKY_DIST, is_sky(sample_depth));//if (sample_depth <= EPSDEPTH) sample_depth = DDOF_SKY_DIST;
+				float weight = step(ZDOF_OFFSET, sample_depth);
+				focus += sample_depth*weight;
+				contrib += weight;
+			}
+			focus /= contrib;
+			blur.x = calc_regular_dof(dep, focus);
+		#endif
+		#ifdef USE_ZOOM_DDOF
+			[branch]
+			if (c_states.x > 0.5)
+				blur.y = calc_zoom_dof(center)*c_states.w;
+		#endif
+		#ifdef USE_RELOAD_DDOF
+			blur.z = calc_reload_dof(center, dep);
+			float is_reload_begin = saturate(is_in_range(float3(c_states.y, 2.5, 3.5)));
+			float is_reload_end = saturate(is_in_range(float3(c_states.z, 2.5, 3.5)));
+			float speed = saturate(c_timers.x*RDOF_SPEED);
+			blur.x *= (1 - is_reload_begin)*(1 - is_reload_end*saturate(1 - speed));
+			blur.z *= (is_reload_begin*speed + is_reload_end*saturate(1 - speed));	
+		#endif
+		final.w = saturate(blur.x) + 10*blur.y + 5*blur.z;
+		final.w = lerp(final.w, 5.0, c_timers.w);	// script control
+		#if DDOF_QUALITY==1
+			float4 blurred = tex2D(s_blur, center);
+			final.xyz = lerp(final, blurred.xyz, saturate(final.w));
+		#else
+			final.xyz = bokeh_dof(center, dep, final.w);
+			final.w = saturate(step(0.05, final.w));
+		#endif
+	#endif
+	return final;
+}

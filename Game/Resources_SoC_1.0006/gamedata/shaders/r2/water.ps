@@ -1,0 +1,176 @@
+#include "common.h"
+#include "ogse_reflections.h"
+#include "shared\waterconfig.h"
+#include "lmodel.h"
+#include "hmodel.h"
+#define USE_TRANSPARENT_GEOM
+#include "shadow.h"
+
+struct vf
+{
+	float2	tbase		: TEXCOORD0;  // base tc
+	float4	tnorm0		: TEXCOORD1;  // tc for normal map
+	float4	position	: TEXCOORD2;  // pos for reflection calculation
+	float3	M1			: TEXCOORD3;  // matrix for tangent2world normal transformation
+	float3	M2			: TEXCOORD4;
+	float3	M3			: TEXCOORD5;
+	float3	v2point_w	: TEXCOORD6;
+	float4	position_w	: TEXCOORD7;
+	float4	tctexgen    : TEXCOORD8;  // position in screen space of current pixel
+	float4	c0			: COLOR0;
+};
+
+uniform sampler2D	s_nmap;
+uniform sampler2D	s_leaves;
+uniform sampler2D	s_jitter;
+uniform sampler2D	s_sky:register(ps,s2);	// texture with skycube
+
+float3 calc_fog(float3 pos, float3 color, float2 tc)
+{
+
+	float         	dist			= length		(pos);
+	float         	fog				= saturate		(dist*fog_params.w + fog_params.x); //
+	float3			final			= lerp     		(color,fog_color.xyz,fog);        			//
+	float        	skyblend		= saturate		(fog*fog);
+	float3			sky				= tex2D			(s_sky,tc).xyz;
+					final			= lerp     		(final,sky,skyblend);        			//
+	return			final;
+}
+float3 calc_moon_road(float3 color, float3 vreflect, float2 tc, float depth, float Nz)
+{
+#ifdef USE_MOON_ROAD
+	float r = 0.0015*tex2D(s_jitter, tc).x;											// randomize borders of road
+	float f = dot(normalize(vreflect.xz), -normalize(L_sun_dir_w.xz));
+	f = step(lerp(0.998+r /*+ 0.2*ogse_c_screen.w*2.2*/, 1, depth*0.01), f);		// road appearance factor
+	f *= step(10, depth);															// cut road in near 10 m
+	f *= saturate((depth-10)*0.5);													// fade in road in 2 m
+	f *= step(Nz, 0);																// remove road from pixels with normals with positive z for better look
+	f *= 1 - saturate(abs(L_sun_dir_w.y*2));										// road fading out with sun height
+	f *= ogse_c_various.x;															// weather control
+	return lerp(color, L_sun_color*MOON_ROAD_INTENSITY, f);
+#else
+	return color;
+#endif
+}
+
+float4 main (vf I) : COLOR
+{
+	// base color
+	float4 base = tex2D(s_base,I.tbase);
+
+	// base normal
+	float3 n0 = tex2D(s_nmap,I.tnorm0.xy).xyz;
+	float3 n1 = tex2D(s_nmap,I.tnorm0.zw).xyz;
+	float3 Navg = n0 + n1 - 1;	
+	float3 Nw = normalize(mul(float3x3(I.M1, I.M2, I.M3), Navg));
+	float4 P = I.position;
+
+	// reflections
+	float3 v2point = normalize(I.v2point_w);
+	float3 N = mul(m_V, Nw);
+	float3 vreflect = reflect(normalize(v2point), normalize(Nw.xyz));
+
+	float3 c_reflection =  {1,1,1};
+#ifdef NEED_REFLECTIONS
+	#if ((REFLECTIONS_MODE==REFL_WATER) || (REFLECTIONS_MODE==REFL_BOTH))
+		float4 refl = calc_reflections(I.position_w, vreflect);
+		#if defined(USE_PUDDLES) && defined(NEED_PUDDLES)
+			refl.xyz *= SW_PUDDLES_REFL_INTENSITY;
+		#else
+			refl.xyz *= SW_REFL_INTENSITY;
+		#endif
+		#ifndef NO_ENV
+			float3 env = calc_envmap(vreflect);
+			c_reflection = lerp(refl.xyz, env.xyz, refl.www);
+		#else
+			c_reflection = lerp(refl.xyz, base.xyz, refl.www);
+		#endif
+	#else
+		#ifndef NO_ENV
+			c_reflection = calc_envmap(vreflect);
+		#else
+			c_reflection = base.rgb;
+		#endif
+	#endif
+#endif
+	
+#ifdef TRANSPARENT_WATER
+	base.rgb *= I.c0.xyz;
+#endif
+
+	float fresnel = 0.05 + 0.95*pow(1 - saturate(dot(Nw.xyz,v2point.xyz)), 4);
+#ifdef NEED_PUDDLES
+	base.rgb *= 0.5;
+	float3 final = lerp(base.rgb,c_reflection,fresnel*PUDDLES_ENV_POWER);
+#else
+	float3 final = lerp(base.rgb,c_reflection,fresnel*WATER_ENV_POWER);
+#endif
+
+	final = lerp(final,base.rgb,base.a);
+	float _z = 	get_depth_proj(I.tctexgen);
+
+	float alpha = 0.5h+0.5h*fresnel;
+	// soft water
+#ifdef	USE_SOFT_WATER
+	float fog_exp_intens = -4.0h;
+	float waterDepth = (_z-P.z);
+	float fog = 1 - exp(fog_exp_intens*waterDepth);
+	float3 Fc = float3(0.1h, 0.1h, 0.1h) * SW_WATER_INTENSITY;
+	final = lerp(Fc, final, alpha);
+
+	alpha = min(alpha, saturate(waterDepth));
+	alpha = max (fog, alpha);
+
+	//foam
+	#if defined(NEED_FOAM) && defined(SW_USE_FOAM)
+		//	Leaves
+		float4	leaves	= tex2D(s_leaves, I.tbase);
+				leaves.rgb *= SW_WATER_INTENSITY;
+				leaves.rgb = saturate(leaves.rgb);
+		float	calc_cos = -dot(float3(I.M1.z, I.M2.z, I.M3.z),  v2point);
+		float	calc_depth = saturate(waterDepth*calc_cos);
+		float	fLeavesFactor = smoothstep(0.025, 0.05, calc_depth );
+				fLeavesFactor *= smoothstep(0.075+SW_FOAM_THICKNESS, 0.05+SW_FOAM_THICKNESS, calc_depth );
+		final		= lerp(final, leaves.rgb*SW_FOAM_INTENSITY, leaves.a*fLeavesFactor);
+		alpha		= lerp(alpha, leaves.a, leaves.a*fLeavesFactor);
+	#endif 	
+#endif	
+
+	float 	ms	= xmaterial		;
+	// lighting
+	float4	sun_light 	= plight_infinity (ms, P.xyz,N.xyz,-L_sun_dir_e);
+	// ---- torch
+	float   rsqr;
+	float4	torch_light 	= plight_local_torch (ms, P.xyz, N.xyz, TRANSLUCENT_TORCH_POSITION, TRANSLUCENT_TORCH_ATT_FACTOR, TRANSLUCENT_TORCH_ANGLE_COS);
+
+	// ----- shadow
+  	float4 	P4 	= float4	(P.x,P.y,P.z,1.f);
+	float 	s 	= sunmask_trans	(P4);
+	float4 	PS_near	= mul		(m_shadow_near_ogse, 	P4);
+	float s_near 	= sample_shadow_near		(PS_near, P4, 1.0);
+	float4 	PS_far	= mul		(m_shadow_far_ogse, 	P4);
+	float s_far 	= sample_shadow_far		(PS_far, P4, 1.0);
+	s *= lerp(s_far, s_near, step(P.z, ogse_c_various.z));
+	s += alpha;
+
+	// ----- hemi model
+	float3       hdiffuse,hspecular;
+    hmodel		(hdiffuse, hspecular, ms, P.w, WATER_GLOSS, P.xyz, N.xyz);
+
+	// combine color
+	float4   ret	= float4(L_sun_color.xyz,1) * sun_light * saturate(s) * ogse_c_various.y + TRANSLUCENT_TORCH_COLOR * torch_light * ogse_c_various.w;
+	ret.xyz += hdiffuse;
+	final = ret.xyz*final;
+	final += (ret.www + hspecular)*WATER_GLOSS;
+
+	// moon road
+#ifdef TRANSPARENT_WATER
+	final = calc_moon_road(final, vreflect, I.tbase.xy, _z, Nw.z);
+#endif
+
+	// fog
+	final = calc_fog(P,final,I.tbase.xy);
+
+	// finally!
+    return  float4   (final, alpha);
+}

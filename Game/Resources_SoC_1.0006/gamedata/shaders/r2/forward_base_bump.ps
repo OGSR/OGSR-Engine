@@ -1,0 +1,84 @@
+#include "common.h"
+#include "lmodel.h"
+#include "hmodel.h"
+#define USE_TRANSPARENT_GEOM
+#include "shadow.h"
+#include "sload.h"
+
+uniform sampler2D	s_sky:register(ps,s2);	// texture with skycube
+
+float3 calc_fog(float3 pos, float3 color, float2 tc)
+{
+
+	float         	dist			= length		(pos);
+	float         	fog				= saturate		(dist*fog_params.w + fog_params.x); //
+	float3			final			= lerp     		(color,fog_color.xyz,fog);        			//
+	float        	skyblend		= saturate		(fog*fog);
+	float3			sky				= tex2D			(s_sky,tc).xyz;
+					final			= lerp     		(final,sky,skyblend);        			//
+	return			final;
+}
+float4 	main	( p_bumped I )	: COLOR
+{
+	// ------bump
+	surface_bumped 	S 	= sload 	(I);
+
+#ifdef USE_LM_HEMI
+	float4	lm 	= tex2D			(s_hemi, I.lmh);
+	float 	h  	= dot			(lm.rgb,1.h/3.h);
+#else
+	float   h	= I.position.w	;
+#endif
+
+	float 	ms	= xmaterial		;
+
+	float3 _N			= mul       (float3x3(I.M1, I.M2, I.M3), S.normal);
+		   _N			= normalize	(_N);
+	float4 _P = I.position;
+	// ----- lighting model
+	// ---- sun
+	float3 l_pos = _P.xyz + _N.xyz*S.height*def_virtualh;
+	float4	sun_light 	= plight_infinity (ms, l_pos,_N.xyz,-L_sun_dir_e);
+	// ---- torch
+	float   rsqr;
+	float4	torch_light 	= plight_local_torch (ms, l_pos, _N.xyz, TRANSLUCENT_TORCH_POSITION, TRANSLUCENT_TORCH_ATT_FACTOR, TRANSLUCENT_TORCH_ANGLE_COS);
+	// ----- shadow
+  	float4 	P4 	= float4	(_P.x,_P.y,_P.z,1.f);
+	float 	s 	= sunmask_trans	(P4);
+	float4 	PS_near	= mul		(m_shadow_near_ogse, 	P4);
+	float s_near 	= sample_shadow_near		(PS_near, P4, 1.0);
+	float4 	PS_far	= mul		(m_shadow_far_ogse, 	P4);
+	float s_far 	= sample_shadow_far		(PS_far, P4, 1.0);
+	s *= lerp(s_far, s_near, step(_P.z, ogse_c_various.z));
+//	s += S.base.a;
+
+	// ----- hemi model
+	
+	float3       hdiffuse,hspecular;
+    hmodel		(hdiffuse, hspecular, ms, h, S.gloss, _P.xyz, _N.xyz);
+
+#ifdef USE_AO
+	float ao_int = h;
+	ao_int = clamp(ao_int, 0.01, 1.0);
+	#ifdef AO_INTENSITY
+		ao_int *= 10.f/AO_INTENSITY;
+	#endif
+#else
+	float ao_int = 1.f;
+#endif
+
+	hdiffuse *= saturate(ao_int);
+	hspecular *= saturate(ao_int);
+
+	// combine color
+	float4   ret	= float4(L_sun_color.xyz,1) * sun_light * saturate(s) * ogse_c_various.y + TRANSLUCENT_TORCH_COLOR * torch_light * ogse_c_various.w;
+	ret.xyz += hdiffuse;
+	float3 final = ret.xyz*S.base.xyz;
+	final += (ret.www + hspecular)*S.gloss;
+
+	// fog
+	final.xyz = calc_fog(_P,final,I.tcdh);
+
+	// that's all folks!
+	return float4(final, S.base.a);
+}

@@ -1,0 +1,16 @@
+#include "common.h"
+#include "rain.h"
+
+float4 	main		( float2 tc : TEXCOORD0, float4 tcJ : TEXCOORD1, float3 T : TANGENT, float4 color : COLOR0) : COLOR
+{
+  float4 _P		= get_full_position(tc);//tex2D 	(s_position, 	tc);
+
+	// ----- rain map
+  	float4 	P4 	= float4	(_P.x,_P.y,_P.z,1.f);
+	float4 	PS	= mul		(m_rain, 	P4);
+	float 	s 	= rain		(PS);
+
+	float4   ret	= float4(s,s,s,s);
+
+	return 		ret;//blend		(ret.xyzw,tc);
+}

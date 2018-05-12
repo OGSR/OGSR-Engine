@@ -1,0 +1,8 @@
+#include "common.h"
+
+float4 main(p_screen _in):COLOR0
+{
+	float4 col = tex2D(s_image, _in.tc0);
+	col.a = get_depth(_in.tc0);//tex2D(s_position, _in.tc0).z;
+	return col;
+};
