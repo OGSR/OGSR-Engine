@@ -79,13 +79,6 @@ void CUIInventoryWnd::InitInventory()
 		m_pUIPistolList->SetItem		(itm);
 	}
 
-	_itm = m_pInv->m_slots[KNIFE_SLOT].m_pIItem;
-	if (_itm)
-	{
-		CUICellItem* itm = create_cell_item(_itm);
-		m_pUIKnifeList->SetItem(itm);
-	}
-
 	_itm								= m_pInv->m_slots[SECOND_WEAPON_SLOT].m_pIItem;
 	if(_itm)
 	{
@@ -93,11 +86,21 @@ void CUIInventoryWnd::InitInventory()
 		m_pUIAutomaticList->SetItem		(itm);
 	}
 	_itm = m_pInv->m_slots[APPARATUS_SLOT].m_pIItem;
+
+#ifdef OGSE_NEW_SLOTS
+	_itm = m_pInv->m_slots[KNIFE_SLOT].m_pIItem;
+	if (_itm)
+	{
+		CUICellItem* itm = create_cell_item(_itm);
+		m_pUIKnifeList->SetItem(itm);
+	}
+
 	if (_itm)
 	{
 		CUICellItem* itm = create_cell_item(_itm);
 		m_pUIBinocularList->SetItem(itm);
 	}
+
 	_itm = m_pInv->m_slots[DETECTOR_SLOT].m_pIItem;
 	if (_itm)
 	{
@@ -111,24 +114,28 @@ void CUIInventoryWnd::InitInventory()
 		CUICellItem* itm = create_cell_item(_itm);
 		m_pUITorchList->SetItem(itm);
 	}
+
 	_itm = m_pInv->m_slots[HELMET_SLOT].m_pIItem;
 	if (_itm)
 	{
 		CUICellItem* itm = create_cell_item(_itm);
 		m_pUIHelmetList->SetItem(itm);
 	}
+
 	_itm = m_pInv->m_slots[NIGHT_VISION_SLOT].m_pIItem;
 	if (_itm)
 	{
 		CUICellItem* itm = create_cell_item(_itm);
 		m_pUINightVisionList->SetItem(itm);
 	}
+
 	_itm = m_pInv->m_slots[BIODETECTOR_SLOT].m_pIItem;
 	if (_itm)
 	{
 		CUICellItem* itm = create_cell_item(_itm);
 		m_pUIBIODetList->SetItem(itm);
 	}
+#endif
 
 	PIItem _outfit						= m_pInv->m_slots[OUTFIT_SLOT].m_pIItem;
 	CUICellItem* outfit					= (_outfit)?create_cell_item(_outfit):NULL;
@@ -141,8 +148,6 @@ void CUIInventoryWnd::InitInventory()
 		m_pUIBeltList->SetItem		(itm);
 	}
 
-
-	
 	ruck_list		= m_pInv->m_ruck;
 	std::sort		(ruck_list.begin(),ruck_list.end(),InventoryUtilities::GreaterRoomInRuck);
 
@@ -539,14 +544,16 @@ void CUIInventoryWnd::ClearAllLists()
 	m_pUIBeltList->ClearAll					(true);
 	m_pUIOutfitList->ClearAll				(true);
 	m_pUIPistolList->ClearAll				(true);
-	m_pUIKnifeList->ClearAll				(true);
 	m_pUIAutomaticList->ClearAll			(true);
+#ifdef OGSE_NEW_SLOTS
+	m_pUIKnifeList->ClearAll(true);
 	m_pUIDetectorList->ClearAll(true);
 	m_pUITorchList->ClearAll(true);
 	m_pUIHelmetList->ClearAll(true);
 	m_pUINightVisionList->ClearAll(true);
 	m_pUIBIODetList->ClearAll(true);
 	m_pUIBinocularList->ClearAll(true);
+#endif
 }
 
 
