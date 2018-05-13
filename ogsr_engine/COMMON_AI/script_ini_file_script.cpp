@@ -8,20 +8,7 @@
 
 #include "stdafx.h"
 #include "script_ini_file.h"
-
-using namespace luabind;
-
-CScriptIniFile *get_system_ini()
-{
-	return	((CScriptIniFile*)pSettings);
-}
-
-#ifdef XRGAME_EXPORTS
-CScriptIniFile *get_game_ini()
-{
-	return	((CScriptIniFile*)pGameIni);
-}
-#endif // XRGAME_EXPORTS
+#include <Utils\cdecl_cast.hpp>
 
 bool r_line(CScriptIniFile *self, LPCSTR S, int L, std::string &N, std::string &V)
 {
@@ -59,6 +46,7 @@ CScriptIniFile *create_ini_file	(LPCSTR ini_string)
 }
 #pragma warning(pop)
 
+using namespace luabind;
 #pragma optimize("s",on)
 void CScriptIniFile::script_register(lua_State *L)
 {
@@ -88,15 +76,13 @@ void CScriptIniFile::script_register(lua_State *L)
 			.def( "w_vector", &CScriptIniFile::w_fvector3 )
 			.def( "get_as_string", &CScriptIniFile::get_as_string )
 #ifdef LUABIND_09
-			.def("r_line",			&::r_line, out_value(_4) + out_value(_5)),
+			.def("r_line",			&::r_line, out_value(_4) + out_value(_5))
 #else
-			.def("r_line",			&::r_line, out_value<4>() + out_value<5>()),
+			.def("r_line",			&::r_line, out_value<4>() + out_value<5>())
 #endif
-
-		def("system_ini",			&get_system_ini),
-#ifdef XRGAME_EXPORTS
-		def("game_ini",				&get_game_ini),
-#endif // XRGAME_EXPORTS
+		,
+		def("system_ini", cdecl_cast([] { return reinterpret_cast<CScriptIniFile*>(pSettings); })),
+		def("game_ini",   cdecl_cast([] { return reinterpret_cast<CScriptIniFile*>(pGameIni);  })),
 #ifdef LUABIND_09
 		def("create_ini_file",		&create_ini_file,	adopt(result))
 #else

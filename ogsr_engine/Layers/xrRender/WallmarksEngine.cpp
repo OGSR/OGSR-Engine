@@ -396,7 +396,7 @@ void CWallmarksEngine::Render()
 			{
 				Log("W->used_in_render",W->used_in_render);
 				Log("Device.dwFrame",Device.dwFrame);
-				VERIFY(W->used_in_render == Device.dwFrame);
+				//VERIFY(W->used_in_render == Device.dwFrame);
 			}
 #endif
 

@@ -38,7 +38,7 @@ CWeaponMagazined::CWeaponMagazined(LPCSTR name, ESoundTypes eSoundType) : CWeapo
 	m_iQueueSize = WEAPON_ININITE_QUEUE;
 	m_bLockType = false;
 
-	m_binoc_vision = NULL;
+	m_binoc_vision = nullptr;
 	m_bVision = false;
 }
 
@@ -51,8 +51,8 @@ CWeaponMagazined::~CWeaponMagazined()
 	HUD_SOUND::DestroySound(sndEmptyClick);
 	HUD_SOUND::DestroySound(sndReload);
 	HUD_SOUND::DestroySound(sndFireModes);
-
-	xr_delete(m_binoc_vision);
+	if (m_binoc_vision)
+		xr_delete(m_binoc_vision);
 }
 
 
@@ -75,7 +75,8 @@ void CWeaponMagazined::StopHUDSounds		()
 void CWeaponMagazined::net_Destroy()
 {
 	inherited::net_Destroy();
-	xr_delete(m_binoc_vision);
+	if (m_binoc_vision)
+		xr_delete(m_binoc_vision);
 }
 
 BOOL CWeaponMagazined::net_Spawn(CSE_Abstract* DC)
@@ -154,11 +155,8 @@ void CWeaponMagazined::Load	(LPCSTR section)
 	}
 	else
 		m_bHasDifferentFireModes = false;
-	//  [7/21/2005]
 
-	m_bVision = false;
-	if (pSettings->line_exist(section, "vision_present"))
-		m_bVision = !!pSettings->r_bool(section, "vision_present");
+	m_bVision = !!READ_IF_EXISTS(pSettings, r_bool, section, "vision_present", false);
 }
 
 void CWeaponMagazined::FireStart		()
@@ -905,7 +903,7 @@ void CWeaponMagazined::InitAddons()
 {
 	//////////////////////////////////////////////////////////////////////////
 	// Прицел
-	m_fIronSightZoomFactor = READ_IF_EXISTS(pSettings, r_float, cNameSect(), "ironsight_zoom_factor", 50.0f);
+	m_fIronSightZoomFactor = READ_IF_EXISTS(pSettings, r_float, cNameSect(), "ironsight_zoom_factor", 1.0f);
 	//
 	m_fSecondScopeZoomFactor = READ_IF_EXISTS(pSettings, r_float, cNameSect(), "second_scope_zoom_factor", m_fIronSightZoomFactor);
 	//
@@ -944,9 +942,12 @@ void CWeaponMagazined::InitAddons()
 	{
 		if(m_UIScope) xr_delete(m_UIScope);
 		
-		if(IsZoomEnabled())
-			m_fIronSightZoomFactor = pSettings->r_float	(cNameSect(), "scope_zoom_factor");
+		if (IsZoomEnabled())
+		{
+			//KRodin: Зачем??? На стволах без прицела если нужно приближение - надо править ironsight_zoom_factor, а не городить тут такие костыли.
+			//m_fIronSightZoomFactor = pSettings->r_float(cNameSect(), "scope_zoom_factor");
 			m_bScopeDynamicZoom = !!READ_IF_EXISTS(pSettings, r_bool, cNameSect(), "scope_dynamic_zoom", false);
+		}
 	}
 
 	
@@ -1098,10 +1099,7 @@ void CWeaponMagazined::OnZoomIn			()
 		R_ASSERT				(S);
 
 		if (m_bVision && !m_binoc_vision)
-		{
-			//.VERIFY			(!m_binoc_vision);
 			m_binoc_vision = xr_new<CBinocularsVision>(this);
-		}
 	}
 }
 void CWeaponMagazined::OnZoomOut		()
@@ -1117,8 +1115,11 @@ void CWeaponMagazined::OnZoomOut		()
 	if (pActor)
 	{
 		pActor->Cameras().RemoveCamEffector(eCEZoom);
-		VERIFY(m_binoc_vision);
-		xr_delete(m_binoc_vision);
+		if (m_bVision)
+		{
+			VERIFY(m_binoc_vision);
+			xr_delete(m_binoc_vision);
+		}
 	}
 
 }
