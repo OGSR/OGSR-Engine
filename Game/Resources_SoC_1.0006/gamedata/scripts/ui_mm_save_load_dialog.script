@@ -293,22 +293,19 @@ function save_load_dialog:load_game_internal()
 
 	local item = list:GetItem(index)
 	local fname = item.fn:GetText()
-	local console = get_console()
 
 	if not alife() then
-		console:execute("disconnect")
-		console:execute("start server(" .. fname .. "/single/alife/load) client(localhost)")
+		cmd("disconnect")
+		cmd("start server(" .. fname .. "/single/alife/load) client(localhost)")
 	else
-		console:execute("load " .. fname)
+		cmd("load " .. fname)
 	end
 
 	self:OnButton_back_clicked()
 end
 
 function save_load_dialog:SaveFile(fileName)
-	if fileName then
-		get_console():execute("save " .. fileName)
-	end
+	cmd("save " .. fileName)
 end
 
 
@@ -347,7 +344,6 @@ function save_load_dialog:OnButton_save_clicked()
 end
 
 function save_load_dialog:OnButton_load_clicked()
-	local console = get_console()
 	local list = self:GetListWnd("list_window")
 
 	if list:GetSize() == 0 then return end

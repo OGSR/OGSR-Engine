@@ -124,7 +124,7 @@ function options_dialog:HintRefresh()
 end
 
 function options_dialog:OnBtnDefault()
-	get_console():execute("unbindall")
+	cmd("unbindall")
 
 	local opt = COptionsManager()
 	opt:SetCurrentValues("mm_opt_controls")
@@ -162,6 +162,8 @@ function options_dialog:OnBtnAccept()
 	self.owner:Show(true)
 
 	self:HintRefresh()
+
+	cmd("cfg_save") -- сохраняем файл настроек на диск
 end
 
 function options_dialog:OnBtnCancel()
