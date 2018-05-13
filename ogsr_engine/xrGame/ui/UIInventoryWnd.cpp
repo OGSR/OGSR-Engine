@@ -185,10 +185,12 @@ void CUIInventoryWnd::Init()
         for ( u8 i = 0; i < SLOTS_TOTAL; i++ )
           m_slots_array[ i ] = NULL;
         m_slots_array[ OUTFIT_SLOT        ] = m_pUIOutfitList;
+#ifdef OGSE_NEW_SLOTS
+        m_slots_array[ KNIFE_SLOT         ] = m_pUIKnifeList;
+#endif
         m_slots_array[ FIRST_WEAPON_SLOT  ] = m_pUIPistolList;
         m_slots_array[ SECOND_WEAPON_SLOT ] = m_pUIAutomaticList;
 #ifdef OGSE_NEW_SLOTS
-        m_slots_array[ KNIFE_SLOT         ] = m_pUIKnifeList;
         m_slots_array[ APPARATUS_SLOT     ] = m_pUIBinocularList;
         m_slots_array[ HELMET_SLOT        ] = m_pUIHelmetList;
         m_slots_array[ BIODETECTOR_SLOT   ] = m_pUIBIODetList;

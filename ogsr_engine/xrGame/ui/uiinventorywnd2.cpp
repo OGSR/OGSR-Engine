@@ -79,6 +79,15 @@ void CUIInventoryWnd::InitInventory()
 		m_pUIPistolList->SetItem		(itm);
 	}
 
+#ifdef OGSE_NEW_SLOTS
+	_itm = m_pInv->m_slots[KNIFE_SLOT].m_pIItem;
+	if (_itm)
+	{
+		CUICellItem* itm = create_cell_item(_itm);
+		m_pUIKnifeList->SetItem(itm);
+	}
+#endif
+
 	_itm								= m_pInv->m_slots[SECOND_WEAPON_SLOT].m_pIItem;
 	if(_itm)
 	{
@@ -88,13 +97,6 @@ void CUIInventoryWnd::InitInventory()
 	_itm = m_pInv->m_slots[APPARATUS_SLOT].m_pIItem;
 
 #ifdef OGSE_NEW_SLOTS
-	_itm = m_pInv->m_slots[KNIFE_SLOT].m_pIItem;
-	if (_itm)
-	{
-		CUICellItem* itm = create_cell_item(_itm);
-		m_pUIKnifeList->SetItem(itm);
-	}
-
 	if (_itm)
 	{
 		CUICellItem* itm = create_cell_item(_itm);
@@ -544,9 +546,11 @@ void CUIInventoryWnd::ClearAllLists()
 	m_pUIBeltList->ClearAll					(true);
 	m_pUIOutfitList->ClearAll				(true);
 	m_pUIPistolList->ClearAll				(true);
-	m_pUIAutomaticList->ClearAll			(true);
 #ifdef OGSE_NEW_SLOTS
 	m_pUIKnifeList->ClearAll(true);
+#endif
+	m_pUIAutomaticList->ClearAll			(true);
+#ifdef OGSE_NEW_SLOTS
 	m_pUIDetectorList->ClearAll(true);
 	m_pUITorchList->ClearAll(true);
 	m_pUIHelmetList->ClearAll(true);

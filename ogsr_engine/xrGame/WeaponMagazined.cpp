@@ -945,7 +945,10 @@ void CWeaponMagazined::InitAddons()
 		if (IsZoomEnabled())
 		{
 			//KRodin: Зачем??? На стволах без прицела если нужно приближение - надо править ironsight_zoom_factor, а не городить тут такие костыли.
-			//m_fIronSightZoomFactor = pSettings->r_float(cNameSect(), "scope_zoom_factor");
+			//Впрочем, для ОГСЕ оно нужно, обнесу этим дефайном, чтоб не городить новый.
+#ifdef OGSE_NEW_SLOTS
+			m_fIronSightZoomFactor = pSettings->r_float(cNameSect(), "scope_zoom_factor");
+#endif
 			m_bScopeDynamicZoom = !!READ_IF_EXISTS(pSettings, r_bool, cNameSect(), "scope_dynamic_zoom", false);
 		}
 	}

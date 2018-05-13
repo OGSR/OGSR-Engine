@@ -81,8 +81,13 @@ void CScriptIniFile::script_register(lua_State *L)
 			.def("r_line",			&::r_line, out_value<4>() + out_value<5>())
 #endif
 		,
+
+#pragma warning(push)
+#pragma warning(disable:4239)
 		def("system_ini", cdecl_cast([] { return reinterpret_cast<CScriptIniFile*>(pSettings); })),
 		def("game_ini",   cdecl_cast([] { return reinterpret_cast<CScriptIniFile*>(pGameIni);  })),
+#pragma warning(pop)
+
 #ifdef LUABIND_09
 		def("create_ini_file",		&create_ini_file,	adopt(result))
 #else
