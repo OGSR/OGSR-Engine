@@ -1,4 +1,5 @@
-# Сборка движка:
+# OGSR Engine
+![Logo](https://github.com/KRodinn/OGSR-Engine/blob/main/Game/ogsr_configurator/Resources/Banner_conf.png)
 * Для сборки требуется Visual Studio 15.5 или выше.
 * Открываете Engine.sln
 * В студии выбираете Сборка -> Собрать решение, предварительно выставив платформу x86 и конфигурацию Release
