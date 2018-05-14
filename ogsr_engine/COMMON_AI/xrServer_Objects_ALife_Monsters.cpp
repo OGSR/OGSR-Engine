@@ -1092,6 +1092,7 @@ bool CSE_ALifeCreatureAbstract::can_switch_offline	() const
 ////////////////////////////////////////////////////////////////////////////
 CSE_ALifeMonsterAbstract::CSE_ALifeMonsterAbstract(LPCSTR caSection)	: CSE_ALifeCreatureAbstract(caSection), CSE_ALifeSchedulable(caSection)
 {
+	m_group_id					= 0xffff;
 	m_tNextGraphID				= m_tGraphID;
 	m_tPrevGraphID				= m_tGraphID;
 	m_fCurSpeed					= 0.0f;
@@ -1729,7 +1730,6 @@ void CSE_ALifePsyDogPhantom::FillProps	(LPCSTR pref, PropItemVec& values)
 //////////////////////////////////////////////////////////////////////////
 CSE_ALifeHumanAbstract::CSE_ALifeHumanAbstract(LPCSTR caSection) : CSE_ALifeTraderAbstract(caSection), CSE_ALifeMonsterAbstract(caSection)
 {
-	m_group_id					= 0xffff;
 }
 
 CSE_ALifeHumanAbstract::~CSE_ALifeHumanAbstract()
