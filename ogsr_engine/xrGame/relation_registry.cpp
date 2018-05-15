@@ -225,11 +225,7 @@ void	 RELATION_REGISTRY::ClearGoodwill			(u16 from, u16 to)
 {
 	if(relation_registry().registry().objects_ptr(from))
 	{
-		RELATION_DATA relation_data = relation_registry().registry().objects(from);
-		PERSONAL_RELATION_MAP::iterator it = relation_data.personal.find(to);
-		if(it != relation_data.personal.end())
-		{
-			relation_data.personal.erase(it);
-		}
+		RELATION_DATA& relation_data = relation_registry().registry().objects(from);
+		relation_data.personal.erase( to );
 	}
 }
