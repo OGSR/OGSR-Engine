@@ -154,6 +154,14 @@ void _initialize_cpu()
 	Didentity.identity();	// Identity matrix
 	pvInitializeStatics();	// Lookup table for compressed normals
 	FPU::initialize();
+	//
+#ifndef __AVX__
+	if (CPU::ID.hasSSE41()) {
+		iFloor = iFloorSSE41;
+		iCeil  = iCeilSSE41;
+	}
+#endif
+	//
 }
 
 
