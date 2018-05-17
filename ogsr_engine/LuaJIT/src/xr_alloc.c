@@ -1,8 +1,9 @@
-#include "xr_alloc.h"
 #include "lj_def.h"
 #include "lj_arch.h"
 
 #if LJ_64
+
+#include "xr_alloc.h"
 
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
