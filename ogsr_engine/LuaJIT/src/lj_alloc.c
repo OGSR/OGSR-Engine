@@ -31,7 +31,6 @@
 #include "lj_def.h"
 #include "lj_arch.h"
 #include "lj_alloc.h"
-#include "xr_alloc.h"
 
 #ifndef LUAJIT_USE_SYSMALLOC
 
@@ -79,6 +78,8 @@
 #include <windows.h>
 
 #if LJ_64
+
+#include "xr_alloc.h"
 
 /* Undocumented, but hey, that's what we all love so much about Windows. */
 typedef long (*PNTAVM)(HANDLE handle, void **addr, ULONG zbits,
