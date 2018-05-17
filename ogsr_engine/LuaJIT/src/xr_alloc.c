@@ -2,6 +2,8 @@
 #include "lj_def.h"
 #include "lj_arch.h"
 
+#if LJ_64
+
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
 
@@ -134,3 +136,5 @@ void dump_map(void* ptr, size_t size, char c)
 	OutputDebugString("--------------------------------------------------------------------------------------------------------------------------------\r\n");
 #endif
 }
+
+#endif
