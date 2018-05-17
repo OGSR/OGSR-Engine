@@ -43,13 +43,10 @@ void CRenderDevice::Initialize()
     GetWindowRect	( m_hWnd, &m_rcWindowBounds );
     GetClientRect	( m_hWnd, &m_rcWindowClient );
 
-	// Command line
-	char *lpCmdLine		= Core.Params;
-	if (strstr(lpCmdLine,"-gpu_sw")!=NULL)		HW.Caps.bForceGPU_SW		= TRUE;
+	if (strstr(Core.Params,"-gpu_sw")!=NULL)		HW.Caps.bForceGPU_SW		= TRUE;
 	else										HW.Caps.bForceGPU_SW		= FALSE;
-	if (strstr(lpCmdLine,"-gpu_nopure")!=NULL)	HW.Caps.bForceGPU_NonPure	= TRUE;
+	if (strstr(Core.Params,"-gpu_nopure")!=NULL)	HW.Caps.bForceGPU_NonPure	= TRUE;
 	else										HW.Caps.bForceGPU_NonPure	= FALSE;
-	if (strstr(lpCmdLine,"-gpu_ref")!=NULL)		HW.Caps.bForceGPU_REF		= TRUE;
+	if (strstr(Core.Params,"-gpu_ref")!=NULL)		HW.Caps.bForceGPU_REF		= TRUE;
 	else										HW.Caps.bForceGPU_REF		= FALSE;
 }
-

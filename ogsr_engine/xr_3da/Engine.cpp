@@ -12,10 +12,10 @@ extern	void msCreate		(LPCSTR name);
 void CEngine::Initialize()
 {
 	//
-	u32 th_count = CPU::ID.threadCount; //CPU::ID.coresCount
+	u32 th_count = CPU::ID.threadCount;
 	// Check for override from command line
 	char szSearchFor[] = "-max-threads";
-	char* pszTemp = strstr(GetCommandLine(), szSearchFor);
+	char* pszTemp = strstr(Core.Params, szSearchFor);
 	u32 dwOverride = 0;
 	if (pszTemp)
 		if (sscanf_s(pszTemp + strlen(szSearchFor), "%u", &dwOverride))

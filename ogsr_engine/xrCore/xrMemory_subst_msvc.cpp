@@ -50,7 +50,7 @@ void*	xrMemory::mem_alloc		(size_t size
 #	ifdef XRCORE_STATIC
 			true
 #	else // XRCORE_STATIC
-			!!strstr(GetCommandLine(),"-pure_alloc")
+			!!strstr(Core.Params,"-pure_alloc")
 #	endif // XRCORE_STATIC
 			;
 	}

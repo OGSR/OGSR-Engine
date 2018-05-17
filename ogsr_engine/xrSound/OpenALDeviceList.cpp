@@ -142,7 +142,7 @@ void ALDeviceList::Enumerate()
 			minorVersion,
 			(GetDeviceName(i)==m_defaultDeviceName)? "(default)":"" );
 	}
-	if (!strstr(GetCommandLine(), "-editor"))
+	if (!strstr(Core.Params, "-editor"))
 		CoInitializeEx (NULL, COINIT_MULTITHREADED);
 }
 
