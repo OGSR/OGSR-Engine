@@ -29,23 +29,6 @@ bool r_line(CScriptIniFile *self, LPCSTR S, int L, std::string &N, std::string &
 	return			(true);
 }
 
-#pragma warning(push)
-#pragma warning(disable:4238)
-CScriptIniFile *create_ini_file	(LPCSTR ini_string)
-{
-	return			(
-		(CScriptIniFile*)
-		xr_new<CInifile>(
-			&IReader			(
-				(void*)ini_string,
-				xr_strlen(ini_string)
-			),
-			FS.get_path("$game_config$")->m_Path
-		)
-	);
-}
-#pragma warning(pop)
-
 using namespace luabind;
 #pragma optimize("s",on)
 void CScriptIniFile::script_register(lua_State *L)
@@ -81,17 +64,18 @@ void CScriptIniFile::script_register(lua_State *L)
 			.def("r_line",			&::r_line, out_value<4>() + out_value<5>())
 #endif
 		,
-
 #pragma warning(push)
-#pragma warning(disable:4239)
+#pragma warning(disable:4238 4239)
 		def("system_ini", cdecl_cast([] { return reinterpret_cast<CScriptIniFile*>(pSettings); })),
 		def("game_ini",   cdecl_cast([] { return reinterpret_cast<CScriptIniFile*>(pGameIni);  })),
+		def("create_ini_file", cdecl_cast([](const char* ini_string) {
+			return reinterpret_cast<CScriptIniFile*>(
+				new CInifile(
+					&IReader((void*)ini_string, strlen(ini_string)),
+					FS.get_path("$game_config$")->m_Path
+				)
+			);
+		}), adopt<result>())
 #pragma warning(pop)
-
-#ifdef LUABIND_09
-		def("create_ini_file",		&create_ini_file,	adopt(result))
-#else
-		def("create_ini_file",		&create_ini_file,	adopt<result>())
-#endif
 	];
 }

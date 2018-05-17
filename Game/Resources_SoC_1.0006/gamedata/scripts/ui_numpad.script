@@ -3,11 +3,10 @@ class "numpad" (CUIScriptWnd)
 function numpad:__init(owner) super()
 	self.owner = owner
 	self:Init_window()
-	--log1("--numpad:__init()")
 end
 
 function numpad:__finalize()
-	--log1("~~numpad:__finalize()")
+	--log1("--numpad:__finalize()")
 end
 
 function numpad:Init_window()
@@ -25,13 +24,13 @@ function numpad:Init_window()
 	end
 	--	
 	self:Register(xml:Init3tButton("btn_c", self), "btn_c")
-	self:AddCallback("btn_c", ui_events.BUTTON_CLICKED, self.OnButton_c_clicked)
+	self:AddCallback("btn_c", ui_events.BUTTON_CLICKED, self.OnButton_c_clicked, self)
 	self:Register(xml:Init3tButton("btn_backspase",	self), "btn_backspase")
-	self:AddCallback("btn_backspase", ui_events.BUTTON_CLICKED, self.OnButton_backspace_clicked)
+	self:AddCallback("btn_backspase", ui_events.BUTTON_CLICKED, self.OnButton_backspace_clicked, self)
 	self:Register(xml:Init3tButton("btn_enter", self), "btn_enter")
-	self:AddCallback("btn_enter", ui_events.BUTTON_CLICKED, self.OnButton_OK_clicked)
+	self:AddCallback("btn_enter", ui_events.BUTTON_CLICKED, self.OnButton_OK_clicked, self)
 	self:Register(xml:Init3tButton("btn_cancel", self), "btn_cancel")
-	self:AddCallback("btn_cancel", ui_events.BUTTON_CLICKED, self.OnButton_CANCEL_clicked)	
+	self:AddCallback("btn_cancel", ui_events.BUTTON_CLICKED, self.OnButton_CANCEL_clicked, self)	
 end
 
 function numpad:AddNumber(number)
