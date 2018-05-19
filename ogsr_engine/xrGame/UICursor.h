@@ -25,6 +25,6 @@ public:
 	void			UpdateCursorPosition	();
 
 	bool			IsVisible		() {return bVisible;}
-	void			Show();
-	void			Hide();
+	void			Show			() {bVisible = true;}
+	void			Hide			() {bVisible = false;}
 };

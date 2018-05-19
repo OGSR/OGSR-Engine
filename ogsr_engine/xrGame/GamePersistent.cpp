@@ -15,8 +15,6 @@
 #include "weaponhud.h"
 #include "stalker_animation_data_storage.h"
 #include "stalker_velocity_holder.h"
-#include "../xr_3da/xr_input.h"
-#include "ui_base.h"
 
 #include "../xr_3da/cameramanager.h"
 #include "actor.h"
@@ -457,8 +455,6 @@ void CGamePersistent::OnAppActivate		()
 	Device.Pause(FALSE, !bRestorePause, TRUE, "CGP::OnAppActivate");
 
 	bEntryFlag = TRUE;
-
-	pInput->ClipCursor(!GetUICursor()->IsVisible());
 }
 
 void CGamePersistent::OnAppDeactivate	()
