@@ -458,7 +458,7 @@ void CGamePersistent::OnAppActivate		()
 
 	bEntryFlag = TRUE;
 
-	pInput->ClipCursor(GetUICursor()->IsVisible());
+	pInput->ClipCursor(!GetUICursor()->IsVisible());
 }
 
 void CGamePersistent::OnAppDeactivate	()
@@ -469,8 +469,6 @@ void CGamePersistent::OnAppDeactivate	()
 	Device.Pause(TRUE, TRUE, TRUE, "CGP::OnAppDeactivate");
 
 	bEntryFlag = FALSE;
-
-	pInput->ClipCursor(false);
 }
 
 bool CGamePersistent::OnRenderPPUI_query()

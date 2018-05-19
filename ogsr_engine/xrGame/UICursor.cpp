@@ -13,7 +13,6 @@ CUICursor::CUICursor()
 	vPos.set				(0.f,0.f);
 	InitInternal			();
 	Device.seqRender.Add	(this,2);
-	pInput->ClipCursor(IsVisible());
 }
 //--------------------------------------------------------------------
 CUICursor::~CUICursor	()
@@ -25,13 +24,13 @@ CUICursor::~CUICursor	()
 void CUICursor::Show()
 {
 	bVisible = true;
-	pInput->ClipCursor(true);
+	pInput->ClipCursor(false);
 }
 
 void CUICursor::Hide()
 {
 	bVisible = false;
-	pInput->ClipCursor(false);
+	pInput->ClipCursor(true);
 }
 
 void CUICursor::InitInternal()
