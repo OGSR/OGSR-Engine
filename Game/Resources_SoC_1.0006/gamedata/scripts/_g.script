@@ -7,10 +7,10 @@ FFI = require('ffi') --Делать только здесь и только од
 math.randomseed(os.time())
 --====================================[LuaFileSystem]===========================================
 --lfs.dll должен быть в папке bin.
-xpcall(function() require("lfs") end, log1)
+--xpcall(function() require("lfs") end, log1)
 --=======================================[LuaXML]===============================================
 --_luaxml.script должен быть в папке scripts.
-prefetch("_luaxml")
+--prefetch("_luaxml")
 --=================================[Функции из xrLuaFix]========================================
 --Cрезать первое "слово"
 string.trim_w = function(s) return s:gsub("%s-(%S+)%s+", '', 1) end
@@ -840,6 +840,8 @@ function start_game_callback()
 		[clsid.wpn_walther] 			= true,
 		[clsid.wpn_walther_s] 			= true,
 	}
+	--
+	m_netpk.attach()
 	--
 	task_manager.clear_task_manager()
 	treasure_manager.clear_treasure_manager()
