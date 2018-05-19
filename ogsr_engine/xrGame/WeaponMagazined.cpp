@@ -82,11 +82,9 @@ void CWeaponMagazined::net_Destroy()
 BOOL CWeaponMagazined::net_Spawn(CSE_Abstract* DC)
 {
 	BOOL bRes = inherited::net_Spawn(DC);
-#ifdef SAVE_WEAPON_FIRE_MODE
 	const auto wpn = smart_cast<CSE_ALifeItemWeaponMagazined*>(DC);
 	m_iCurFireMode = wpn->m_u8CurFireMode;
 	SetQueueSize(GetCurrentFireMode());
-#endif
 	return bRes;
 }
 
@@ -903,7 +901,7 @@ void CWeaponMagazined::InitAddons()
 {
 	//////////////////////////////////////////////////////////////////////////
 	// Прицел
-	m_fIronSightZoomFactor = READ_IF_EXISTS(pSettings, r_float, cNameSect(), "ironsight_zoom_factor", 1.0f);
+	m_fIronSightZoomFactor = READ_IF_EXISTS(pSettings, r_float, cNameSect(), "ironsight_zoom_factor", 50.0f);
 	//
 	m_fSecondScopeZoomFactor = READ_IF_EXISTS(pSettings, r_float, cNameSect(), "second_scope_zoom_factor", m_fIronSightZoomFactor);
 	//
@@ -944,11 +942,7 @@ void CWeaponMagazined::InitAddons()
 		
 		if (IsZoomEnabled())
 		{
-			//KRodin: Зачем??? На стволах без прицела если нужно приближение - надо править ironsight_zoom_factor, а не городить тут такие костыли.
-			//Впрочем, для ОГСЕ оно нужно, обнесу этим дефайном, чтоб не городить новый.
-#ifdef OGSE_NEW_SLOTS
 			m_fIronSightZoomFactor = pSettings->r_float(cNameSect(), "scope_zoom_factor");
-#endif
 			m_bScopeDynamicZoom = !!READ_IF_EXISTS(pSettings, r_bool, cNameSect(), "scope_dynamic_zoom", false);
 		}
 	}

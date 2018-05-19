@@ -2,10 +2,11 @@
 
 #include	"fixedmap.h"
 
-#ifndef USE_MEMORY_MONITOR
-#	define USE_DOUG_LEA_ALLOCATOR_FOR_RENDER
-#endif // USE_MEMORY_MONITOR
+#if defined(USE_MEMORY_MONITOR) && defined (USE_DOUG_LEA_ALLOCATOR_FOR_RENDER)
+#	undef USE_DOUG_LEA_ALLOCATOR_FOR_RENDER
+#endif
 
+#if __has_include("doug_lea_memory_allocator.c")
 	extern "C"
 	{
 		void dlfatal(char *file, int line, char *function)
@@ -13,6 +14,8 @@
 			Debug.fatal(file, line, function, "Doug lea fatal error!");
 		}
 	};
+#endif
+
 #ifdef USE_DOUG_LEA_ALLOCATOR_FOR_RENDER
 #	include	"doug_lea_memory_allocator.h"
 

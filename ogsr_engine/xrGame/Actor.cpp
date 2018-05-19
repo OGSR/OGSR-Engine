@@ -855,13 +855,18 @@ float g_fov = 67.5f; //75.0f - SWM
 
 float CActor::currentFOV()
 {
-	CWeapon* pWeapon = smart_cast<CWeapon*>(inventory().ActiveItem());	
+	const auto pWeapon = smart_cast<CWeapon*>(inventory().ActiveItem());	
 
-	if (eacFirstEye == cam_active && pWeapon &&
-		pWeapon->IsZoomed() && (!pWeapon->ZoomTexture() ||
-		(!pWeapon->IsRotatingToZoom() && pWeapon->ZoomTexture())))
-		//		return pWeapon->GetZoomFactor() * (0.75f);
-		return float(atan(tan(g_fov * (0.5 * PI / 180)) / pWeapon->GetZoomFactor()) / (0.5 * PI / 180)); //В SWM - return pWeapon->GetFov(); //И вообще, надо подумать, какой фов устанавливать второму вьюпорту.
+	if (
+		eacFirstEye == cam_active
+		&& pWeapon && pWeapon->IsZoomed()
+		&& (!pWeapon->ZoomTexture() || (!pWeapon->IsRotatingToZoom() && pWeapon->ZoomTexture()))
+	)
+#ifdef OGSE_WPN_ZOOM_SYSTEM
+		return float(atan(tan(g_fov * (0.5 * PI / 180)) / pWeapon->GetZoomFactor()) / (0.5 * PI / 180));
+#else
+		return pWeapon->GetZoomFactor() * 0.75f;
+#endif
 	else
 		return g_fov;
 }
