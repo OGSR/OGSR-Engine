@@ -501,7 +501,7 @@ void CWeapon::UpdateZoomOffset() //—обрал все манипул€ции с зум оффсетом сюда, ч
 				LoadZoomOffset(*hud_sect, "grenade_");
 			else
 			{
-				if (GrenadeLauncherAttachable())
+				if ( GrenadeLauncherAttachable() && IsGrenadeLauncherAttached() )
 					LoadZoomOffset(*hud_sect, "grenade_normal_");
 				else
 					LoadZoomOffset(*hud_sect, "");
