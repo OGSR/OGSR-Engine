@@ -383,10 +383,14 @@ namespace Configurator
 
         private void StartGameClick(object sender, EventArgs e)
         {
-            SaveAndStartGame();
+            SaveAndStartGame("x86");
+        }
+        private void StartGameClick64(object sender, EventArgs e)
+        {
+            SaveAndStartGame("x64");
         }
 
-        private void SaveAndStartGame()
+        private void SaveAndStartGame(string platform)
         {
             try
             {
@@ -406,27 +410,35 @@ namespace Configurator
                     start_string.Text += " -start server(" + SavesList.SelectedItems[0].Text + "/single/alife/load)  ";
                 }
             }
-            StartGame();
+            StartGame(platform);
         }
 
-        private void StartGame()
+        private void StartGame(string platform)
         {
-            ExecuteString(start_string.Text);
-            Close();
+            ExecuteString(platform, start_string.Text);
         }
 
         //по двойному клику по сейву запускаем игру
         private void SavesListDoubleClick(object sender, EventArgs e)
         {
-            SaveAndStartGame();
+            //SaveAndStartGame(); KRodin: выключаю, т.к. теперь надо выбрать, движок какой разрядности запускать.
         }
 
         #endregion
 
-        public void ExecuteString(string param)
+        public void ExecuteString(string platform, string param)
         {
-            var p = new Process { StartInfo = new ProcessStartInfo(@"bin\\XR_3DA.exe", param) };
-            p.Start();
+            string engine_path = @"bin_" + platform + "\\XR_3DA.exe";
+            try
+            {
+                var p = new Process { StartInfo = new ProcessStartInfo(engine_path, param) };
+                p.Start();
+                Close();
+            }
+            catch (Exception ex) //Если файл не нашли, выведем об этом человеко-читаемое сообщение
+            {
+                MessageBox.Show(ex.Message + ": " + Directory.GetCurrentDirectory() + "\\" + engine_path);
+            }
         }
 
         private void SaveSettings()

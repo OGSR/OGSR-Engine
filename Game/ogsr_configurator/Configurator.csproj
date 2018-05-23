@@ -56,7 +56,7 @@
     <GenerateSerializationAssemblies>Auto</GenerateSerializationAssemblies>
   </PropertyGroup>
   <PropertyGroup>
-    <ApplicationIcon>stalker.ico</ApplicationIcon>
+    <ApplicationIcon>..\..\ogsr_engine\xr_3da\stalker.ico</ApplicationIcon>
   </PropertyGroup>
   <PropertyGroup>
     <SignManifests>false</SignManifests>
@@ -191,7 +191,6 @@
     <None Include="Resources\fr_disabled.png" />
     <None Include="Resources\ru_disabled.png" />
     <None Include="Resources\us_disabled.png" />
-    <Content Include="stalker.ico" />
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>

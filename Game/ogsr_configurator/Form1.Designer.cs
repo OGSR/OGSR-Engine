@@ -91,6 +91,7 @@
             this.tabPage2 = new System.Windows.Forms.TabPage();
             this.propertyGrid1 = new System.Windows.Forms.PropertyGrid();
             this.tabpage = new System.Windows.Forms.TabControl();
+            this.StartGameButton64 = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.lang_pic_fr)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.lang_pic_en)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.lang_pic_ru)).BeginInit();
@@ -542,10 +543,18 @@
             this.tabpage.SelectedIndex = 0;
             this.tabpage.Selected += new System.Windows.Forms.TabControlEventHandler(this.tabpage_Selected);
             // 
+            // StartGameButton64
+            // 
+            resources.ApplyResources(this.StartGameButton64, "StartGameButton64");
+            this.StartGameButton64.Name = "StartGameButton64";
+            this.StartGameButton64.UseVisualStyleBackColor = true;
+            this.StartGameButton64.Click += new System.EventHandler(this.StartGameClick64);
+            // 
             // Form1
             // 
             resources.ApplyResources(this, "$this");
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.Controls.Add(this.StartGameButton64);
             this.Controls.Add(this.label3);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.RU);
@@ -654,6 +663,7 @@
         private System.Windows.Forms.PropertyGrid propertyGrid1;
         private System.Windows.Forms.TabControl tabpage;
         private System.Windows.Forms.Button button4;
+        private System.Windows.Forms.Button StartGameButton64;
     }
 }
 
