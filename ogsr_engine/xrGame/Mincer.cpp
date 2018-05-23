@@ -48,7 +48,9 @@ void CMincer::Load (LPCSTR section)
 	m_torn_particles=pSettings->r_string(section,"torn_particles");
 	m_tearing_sound.create(pSettings->r_string(section,"body_tearing_sound"),st_Effect,sg_SourceType);
 	m_fActorBlowoutRadiusPercent=pSettings->r_float(section,"actor_blowout_radius_percent");
-
+	// bak
+	m_fArtefactSpawnProbabilityTorn=READ_IF_EXISTS(pSettings, r_float, section, "birth_on_torn_probability", 1.0f);
+	
 	//pSettings->r_fvector3(section,whirlwind_center);
 }
 
@@ -137,6 +139,9 @@ void CMincer::NotificateDestroy			(CPHDestroyableNotificate *dn)
 	position_in_bone_space.set		(0.0f, 0.0f, 0.0f);
 	throw_in_dir.set				(1.0f, 0.0f, 1.0f);
 	CreateHit(obj->ID(),ID(),throw_in_dir,0.0f,0,position_in_bone_space,impulse,ALife::eHitTypeExplosion);
+	// bak
+	if(::Random.randF(0.f, 1.f)< m_fArtefactSpawnProbabilityTorn) 
+		BornArtefact(true);
 }
 
 void CMincer::AffectPullAlife(CEntityAlive* EA,const Fvector& throw_in_dir,float dist)

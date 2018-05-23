@@ -24,6 +24,7 @@ private:
 	shared_str	   m_torn_particles;
 	ref_sound	   m_tearing_sound;
 	float		   m_fActorBlowoutRadiusPercent;
+	float		   m_fArtefactSpawnProbabilityTorn;	// bak
 
 public:
 	virtual CTelekinesis &Telekinesis			() {return m_telekinetics;}
