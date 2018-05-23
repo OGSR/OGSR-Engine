@@ -6,8 +6,6 @@
 #	include <malloc.h>
 #	pragma warning(pop)
 
-#	include "xrCore.h"
-
 #ifndef XR_USE_BLACKBOX
 #	include "stacktrace_collector.h"
 #else
