@@ -221,32 +221,41 @@ void CScriptGameObject::set_enemy_callback	()
 
 void CScriptGameObject::SetCallback(GameObject::ECallbackType type, const luabind::functor<void> &functor)
 {
-	object().callback(type).set(functor);
+	if (auto it = this->object().m_callbacks.find(type); it != this->object().m_callbacks.end())
+		(*it).second->m_callback.set(functor);
+	else {
+		auto callback = std::make_unique<GOCallbackInfo>();
+		callback->m_callback.set(functor);
+		this->object().m_callbacks[type] = std::move(callback);
+	}
 }
 
 void CScriptGameObject::SetCallback(GameObject::ECallbackType type, const luabind::functor<void> &functor, const luabind::object &object)
 {
-	this->object().callback(type).set(functor, object);
+	if (auto it = this->object().m_callbacks.find(type); it != this->object().m_callbacks.end())
+		(*it).second->m_callback.set(functor, object);
+	else {
+		auto callback = std::make_unique<GOCallbackInfo>();
+		callback->m_callback.set(functor, object);
+		this->object().m_callbacks[type] = std::move(callback);
+	}
 }
 
 void CScriptGameObject::SetCallback(GameObject::ECallbackType type)
 {
-	object().callback(type).clear();
+	if (auto it = this->object().m_callbacks.find(type); it != this->object().m_callbacks.end())
+		(*it).second->m_callback.clear();
 }
 
 void CScriptGameObject::set_fastcall(const luabind::functor<bool> &functor, const luabind::object &object)
 {
-	
-
-	
 	CPHScriptGameObjectCondition* c=xr_new<CPHScriptGameObjectCondition>(object,functor,m_game_object);
 	CPHDummiAction*				  a=xr_new<CPHDummiAction>();
 	CPHSriptReqGObjComparer cmpr(m_game_object);
 	Level().ph_commander_scripts().remove_calls(&cmpr);
 	Level().ph_commander_scripts().add_call(c,a);
-	
-
 }
+
 void CScriptGameObject::set_const_force(const Fvector &dir,float value,u32 time_interval)
 {
 	CPhysicsShell	*shell=object().cast_physics_shell_holder()->PPhysicsShell();
@@ -264,5 +273,4 @@ void CScriptGameObject::set_const_force(const Fvector &dir,float value,u32 time_
 	CPHExpireOnStepCondition *cn=xr_new<CPHExpireOnStepCondition>();
 	cn->set_time_interval(time_interval);
 	ph_world->AddCall(cn,a);
-	
 }

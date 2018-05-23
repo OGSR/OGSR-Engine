@@ -2,8 +2,6 @@
 //
 //////////////////////////////////////////////////////////////////////
 
-#if !defined(AFX_GAMEOBJECT_H__3DA72D03_C759_4688_AEBB_89FA812AA873__INCLUDED_)
-#define AFX_GAMEOBJECT_H__3DA72D03_C759_4688_AEBB_89FA812AA873__INCLUDED_
 #pragma once
 
 #include "..\xr_3da\xr_object.h"
@@ -12,6 +10,7 @@
 #include "UsableScriptObject.h"
 #include "script_binder.h"
 #include "Hit.h"
+#include "script_callback_ex.h"
 
 class CPhysicsShell;
 class CSE_Abstract;
@@ -46,6 +45,10 @@ namespace GameObject {
 
 template <typename _return_type>
 class CScriptCallbackEx;
+
+struct GOCallbackInfo {
+	CScriptCallbackEx<void> m_callback;
+};
 
 class CGameObject : 
 	public CObject, 
@@ -269,17 +272,9 @@ public:
 	virtual bool			natural_detector	() const {return true;}
 	virtual bool			use_center_to_aim	() const {return false;}
 
-public:
-	
-	typedef CScriptCallbackEx<void> CScriptCallbackExVoid;
+	xr_map<GameObject::ECallbackType, std::unique_ptr<GOCallbackInfo>> m_callbacks;
 
-private:
-	
-	DEFINE_MAP				(GameObject::ECallbackType, CScriptCallbackExVoid, CALLBACK_MAP, CALLBACK_MAP_IT);
-	CALLBACK_MAP			*m_callbacks;
-
-public:
-	CScriptCallbackExVoid	&callback			(GameObject::ECallbackType type) const;
+	CScriptCallbackEx<void>& callback(GameObject::ECallbackType type) const;
 	virtual	LPCSTR			visual_name			(CSE_Abstract *server_entity);
 
 	virtual	void			On_B_NotCurrentEntity () {};
@@ -289,5 +284,3 @@ public:
 	virtual float			GetHealth() const  { return -1;  } // alpet: для универсального доступа к переменным класса вроде fHealth
 	virtual void			SetHealth(float h) { }
 };
-
-#endif // !defined(AFX_GAMEOBJECT_H__3DA72D03_C759_4688_AEBB_89FA812AA873__INCLUDED_)
