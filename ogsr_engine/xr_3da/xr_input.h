@@ -1,4 +1,5 @@
-#pragma once
+#ifndef __XR_INPUT__
+#define __XR_INPUT__
 
 #define DIRECTINPUT_VERSION 0x0800
 #include <dinput.h>
@@ -13,10 +14,12 @@ const int all_device_key		= mouse_device_key | keyboard_device_key;
 const int default_key			= mouse_device_key | keyboard_device_key ;
 
 class ENGINE_API CInput
+#ifndef M_BORLAND
 	:
 	public pureFrame,
 	public pureAppActivate,
 	public pureAppDeactivate
+#endif
 {
 public:
 	enum {
@@ -74,7 +77,6 @@ public:
 	BOOL						iGetAsyncKeyState			( int dik );
 	BOOL						iGetAsyncBtnState			( int btn );
 	void						iGetLastMouseDelta			( Ivector2& p )	{ p.set(offs[0],offs[1]); }
-	void ClipCursor(bool clip);
 
 	CInput						( BOOL bExclusive = true, int deviceForInit = default_key);
 	~CInput						( );
@@ -91,3 +93,5 @@ public:
 };
 
 extern ENGINE_API CInput *		pInput;
+
+#endif //__XR_INPUT__

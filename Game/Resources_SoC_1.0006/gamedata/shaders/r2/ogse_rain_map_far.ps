@@ -1,0 +1,35 @@
+#include "common.h"
+#include "ogse_rain.h"
+
+#define SUN_FARPLANE 180.f
+
+float4 	main		( float2 tc : TEXCOORD0, float4 tcJ : TEXCOORD1 ) : COLOR
+{
+  float4 _P		= get_full_position(tc);//tex2D 	(s_position, 	tc);
+  
+	// ----- shadow
+  	float4 	P4 	= float4	(_P.x,_P.y,_P.z,1);
+	float4 	PS	= mul		(m_rain, 	P4);
+	
+#ifdef	USE_HWSMAP
+	#ifdef USE_FETCH4
+		float 	s 	= sample_hw_f4	(PS, float4(0,0,0,0) );
+	#else
+		float 	s 	= sample_hw_pcf	(PS, float4(0,0,0,0) );
+	#endif
+#else
+	float 	s 	= sample_sw	(PS.xy / PS.w, float2(0,0), PS.z);
+#endif
+
+#ifdef 	SUN_FARPLANE
+	float f		= saturate	(_P.z/SUN_FARPLANE);
+	s			= lerp		(s, 0.333h, f*f);
+#endif
+
+	float4 ret = float4(s,s,s,s);
+
+	#ifndef FP16_BLEND  
+		ret 	+= (float4)tex2D 	(s_accumulator, tc); 	// emulate blend
+	#endif
+	return 	ret	;
+}

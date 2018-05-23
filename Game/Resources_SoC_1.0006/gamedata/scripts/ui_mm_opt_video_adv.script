@@ -1,0 +1,238 @@
+-- Меню расширенных настроек графики для Теней Чернобыля.
+-- Перенесено из OGSE. Cпециально для использования с движком OGSR.
+
+local hint_captions = {
+	["cam_inert"] =             "video_settings_name_1",
+	["vis_dist"] =              "video_settings_name_2",
+	["geometry_lod"] =          "video_settings_name_3",
+	["detail_density"] =        "video_settings_name_4",
+	["detail_distance"] =       "video_settings_name_5",
+--	["r2_details_opt"] =        "video_settings_name_6",
+	["texture_lod"] =           "video_settings_name_7",
+	["aniso"] =                 "video_settings_name_8",
+	["r__bloodmarks"] =         "video_settings_name_9",
+--	["ssample"] =               "video_settings_name_10",
+	["r2_sun"] =                "video_settings_name_11",
+	["r2_sun_details"] =        "video_settings_name_12",
+	["light_distance"] =        "video_settings_name_13",
+	["npc_torch"] =             "video_settings_name_14",
+	["particles_distance"] =    "video_settings_name_15",
+	["vsync"] =                 "video_settings_name_16",
+	["60hz"] =                  "video_settings_name_17",
+	["r2_aa"] =                 "video_settings_name_18",
+	["r2_aa_mode"] =            "video_settings_name_19",
+	["r2_tf_mipbias"] =         "video_settings_name_20",
+	["r2_gloss_factor"] =       "video_settings_name_21",
+	["r2_sun_near"] =           "video_settings_name_22",
+--	["r2_sun_near_border"] =    "video_settings_name_23",
+	["r2_true_sun_shadows"] =   "video_settings_name_24",
+	["r2_tonemap"] =            "video_settings_name_25",
+	["r2_tonemap_middlegray"] = "video_settings_name_26",
+--	["r2_sun_lumscale"] =       "video_settings_name_27",
+	["r2_sun_lumscale_amb"] =   "video_settings_name_28",
+	["r2_sunshafts"] =          "video_settings_name_29",
+	["r2_sunshafts_mode"] =     "video_settings_name_30",
+	["r2_soft_water"] =         "video_settings_name_31",
+	["r2_soft_particles"] =     "video_settings_name_32",
+	["r2_soft_shadows"] =       "video_settings_name_33",
+	["r2_lights_shadow_fade"] = "video_settings_name_34",
+	["r2_ao"] =                 "video_settings_name_35",
+	["r2_ao_intensity"] =       "video_settings_name_36",
+	["r2_ssao"] =               "video_settings_name_37",
+	["r2_ssao_mode"] =          "video_settings_name_38",
+	["r2_steep_parallax"] =     "video_settings_name_39",
+	["r2_dof"] =                "video_settings_name_40",
+	["r2_dof_reload"] =         "video_settings_name_41",
+	["r2_dof_zoom"] =           "video_settings_name_42",
+	["r2_dof_quality"] =        "video_settings_name_43",
+	["r2_detail_bump"] =        "video_settings_name_44",
+	["r2_lens_flare"] =         "video_settings_name_45",
+	["r2_lens_dirt"] =          "video_settings_name_46",
+	["r2_rain_drops"] =         "video_settings_name_47",
+	["r2_puddles"] =            "video_settings_name_48",
+	["r2_wet_surfaces"] =       "video_settings_name_49",
+	["r2_volumetric_lights"] =  "video_settings_name_50",
+	["r2_reflections"] =        "video_settings_name_51",
+	["r2_reflections_mode"] =   "video_settings_name_52",
+--	["r2_gbuffer_opt"] =        "video_settings_name_53",
+	["r2_image_sharpening"] =   "video_settings_name_54",
+	["r2_volumetric_fog"] =     "video_settings_name_55",
+}
+
+local hint_strings = {
+	["cam_inert"] =             "video_settings_desc_1",
+	["vis_dist"] =              "video_settings_desc_2",
+	["geometry_lod"] =          "video_settings_desc_3",
+	["detail_density"] =        "video_settings_desc_4",
+	["detail_distance"] =       "video_settings_desc_5",
+--	["r2_details_opt"] =        "video_settings_desc_6",
+	["texture_lod"] =           "video_settings_desc_7",
+	["aniso"] =                 "video_settings_desc_8",
+	["r__bloodmarks"] =         "video_settings_desc_9",
+--	["ssample"] =               "video_settings_desc_10",
+	["r2_sun"] =                "video_settings_desc_11",
+	["r2_sun_details"] =        "video_settings_desc_12",
+	["light_distance"] =        "video_settings_desc_13",
+	["npc_torch"] =             "video_settings_desc_14",
+	["particles_distance"] =    "video_settings_desc_15",
+	["vsync"] =                 "video_settings_desc_16",
+	["60hz"] =                  "video_settings_desc_17",
+	["r2_aa"] =                 "video_settings_desc_18",
+	["r2_aa_mode"] =            "video_settings_desc_19",
+	["r2_tf_mipbias"] =         "video_settings_desc_20",
+	["r2_gloss_factor"] =       "video_settings_desc_21",
+	["r2_sun_near"] =           "video_settings_desc_22",
+--	["r2_sun_near_border"] =    "video_settings_desc_23",
+	["r2_true_sun_shadows"] =   "video_settings_desc_24",
+	["r2_tonemap"] =            "video_settings_desc_25",
+	["r2_tonemap_middlegray"] = "video_settings_desc_26",
+--	["r2_sun_lumscale"] =       "video_settings_desc_27",
+	["r2_sun_lumscale_amb"] =   "video_settings_desc_28",
+	["r2_sunshafts"] =          "video_settings_desc_29",
+	["r2_sunshafts_mode"] =     "video_settings_desc_30",
+	["r2_soft_water"] =         "video_settings_desc_31",
+	["r2_soft_particles"] =     "video_settings_desc_32",
+	["r2_soft_shadows"] =       "video_settings_desc_33",
+	["r2_lights_shadow_fade"] = "video_settings_desc_34",
+	["r2_ao"] =                 "video_settings_desc_35",
+	["r2_ao_intensity"] =       "video_settings_desc_36",
+	["r2_ssao"] =               "video_settings_desc_37",
+	["r2_ssao_mode"] =          "video_settings_desc_38",
+	["r2_steep_parallax"] =     "video_settings_desc_39",
+	["r2_dof"] =                "video_settings_desc_40",
+	["r2_dof_reload"] =         "video_settings_desc_41",
+	["r2_dof_zoom"] =           "video_settings_desc_42",
+	["r2_dof_quality"] =        "video_settings_desc_43",
+	["r2_detail_bump"] =        "video_settings_desc_44",
+	["r2_lens_flare"] =         "video_settings_desc_45",
+	["r2_lens_dirt"] =          "video_settings_desc_46",
+	["r2_rain_drops"] =         "video_settings_desc_47",
+	["r2_puddles"] =            "video_settings_desc_48",
+	["r2_wet_surfaces"] =       "video_settings_desc_49",
+	["r2_volumetric_lights"] =  "video_settings_desc_50",
+	["r2_reflections"] =        "video_settings_desc_51",
+	["r2_reflections_mode"] =   "video_settings_desc_52",
+--	["r2_gbuffer_opt"] =        "video_settings_desc_53",
+	["r2_image_sharpening"] =   "video_settings_desc_54",
+	["r2_volumetric_fog"] =     "video_settings_desc_55",
+}
+
+local adv_vid_opt_params = {
+	{"vis_dist",              "track", 0},
+	{"r2_ao",                 "check", 0},
+	{"r2_ao_intensity",       "track", 0},
+	{"r2_ssao",               "list",  0},
+	{"r2_ssao_mode",          "list",  0},
+	{"r2_steep_parallax",     "list",  1},
+	{"r2_dof",                "check", 0},
+	{"r2_dof_reload",         "check", 0},
+	{"r2_dof_zoom",           "check", 0},
+	{"r2_dof_quality",        "list",  0},
+	{"geometry_lod",          "track", 0},
+	{"detail_density",        "track", 0},
+	{"detail_distance",       "track", 0},
+--	{"r2_details_opt",        "check", 1},
+	{"r2_soft_water",         "check", 1},
+	{"r2_soft_particles",     "check", 1},
+	{"r__bloodmarks",         "check", 0},
+	{"texture_lod",           "track", 0},
+	{"aniso",                 "track", 0},
+	{"r2_aa",                 "list",  0},
+	{"r2_aa_mode",            "list",  0},
+--	{"ssample",               "track", 0},
+	{"r2_sun",                "check", 0},
+	{"r2_sun_details",        "check", 0},
+	{"r2_detail_bump",        "check", 1},
+	{"r2_sunshafts",          "list",  0},
+	{"r2_sunshafts_mode",     "list",  0},
+	{"light_distance",        "track", 0},
+	{"npc_torch",             "check", 0},
+	{"particles_distance",    "track", 0},
+	{"vsync",                 "check", 0},
+	{"60hz",                  "check", 0},
+	{"r2_sun_near",           "track", 0},
+	{"r2_tf_mipbias",         "track", 0},
+	{"r2_gloss_factor",       "track", 0},
+--	{"r2_sun_near_border",    "track", 0},
+	{"r2_true_sun_shadows",   "check", 0},
+	{"r2_soft_shadows",       "list",  1},
+	{"r2_lights_shadow_fade", "list",  0},
+	{"r2_tonemap",            "check", 0},
+	{"r2_tonemap_middlegray", "track", 0},
+--	{"r2_sun_lumscale",       "track", 0},
+	{"r2_sun_lumscale_amb",   "track", 0},
+	{"cam_inert",             "track", 0},
+	{"r2_lens_flare",         "check", 0},
+	{"r2_lens_dirt",          "check", 0},
+	{"r2_rain_drops",         "check", 0},
+	{"r2_puddles",            "check", 1},
+	{"r2_wet_surfaces",       "check", 1},
+	{"r2_volumetric_lights",  "check", 0},
+	{"r2_reflections",        "list",  1},
+	{"r2_reflections_mode",   "list",  1},
+--	{"r2_gbuffer_opt",        "check", 1},
+	{"r2_image_sharpening",   "track", 0},
+	{"r2_volumetric_fog",     "check", 0},
+}
+
+local control_init_funs = {
+	["track"] = "InitTrackBar",
+	["list"]  = "InitComboBox",
+	["check"] = "InitCheck",
+}
+
+
+class "opt_video_adv" (CUIScriptWnd)
+function opt_video_adv:__init() super()
+end
+
+function opt_video_adv:__finalize()
+	--log1("--opt_video_adv:__finalize() called!")
+end
+
+function opt_video_adv:InitControls(x, y, xml, handler)
+	self:Init(x, y, 738, 416)
+	self:SetAutoDelete(true)
+
+	self.message_box = CUIMessageBoxEx()
+
+	xml:InitFrame("frame_videoadv", self)
+	self.scroll_v = xml:InitScrollView("video_adv:scroll_v", self)
+
+	-- перебираем с конца, поскольку в настройках scroll view в xml стоит параметр flip_vert="1",
+	-- который инвертирует порядок элементов, что в свою очередь сделано для того, чтобы визуально первые элементы
+	-- добавлялись последними, что в свою очередь позволяет раскрывающимся спискам перекрывать элементы, расположенные ниже по списку
+	for i = #adv_vid_opt_params, 1, -1 do
+		local opt, ctr_type, need_restart = unpack(adv_vid_opt_params[i])
+
+		local _st = xml:InitStatic("video_adv:templ_item", self.scroll_v)
+		xml:InitStatic("video_adv:cap_"..opt, _st)
+		local ctl = xml[control_init_funs[ctr_type]](xml, "video_adv:"..ctr_type.."_"..opt, _st)
+		self:Register(_st, "video_adv_cap_"..opt)
+		self:AddCallback(
+			"video_adv_cap_"..opt,
+			ui_events.STATIC_FOCUS_RECEIVED,
+			function()
+				handler.hint_name:SetText(game.translate_string(hint_captions[opt]))
+				handler.hint_caption:SetText(game.translate_string(hint_strings[opt]))
+			end
+		)
+
+		if need_restart == 1 then
+			self:Register(ctl, "video_adv:"..ctr_type.."_"..opt)
+			self:AddCallback(
+				"video_adv:"..ctr_type.."_"..opt,
+				ctr_type == "list" and ui_events.LIST_ITEM_SELECT or ui_events.BUTTON_CLICKED,
+				function()
+					self.message_box:Init("message_box_restart_game")
+					handler:GetHolder():start_stop_menu(self.message_box, true)
+				end
+			)
+		end
+
+		ctl:Enable(true)
+	end
+
+	local btn = xml:Init3tButton("video_adv:btn_to_simply",	self)
+	handler:Register(btn, "btn_simply_graphic")
+end

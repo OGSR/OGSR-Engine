@@ -1,0 +1,35 @@
+#include "common.h"
+#include "sload.h"
+
+/*f_deffer*/ GB 	main	( p_bumped I )
+{
+ // f_deffer	O;
+
+  surface_bumped 	S 	= sload 	(I);
+
+  float refl_intensity = 0.f;
+
+#ifdef USE_WET_SURFACES
+
+   	float wet_time = ogse_c_rain.z;
+	wet_time *= RAIN_WETTING_SPEED*ogse_c_rain.w; //wetting speed - 2.0 is only for test
+	wet_time  = saturate(wet_time);
+
+   S.base.rgb    *= lerp(1.0, RAIN_MAX_DIFFUSE_SCALING, wet_time);
+   S.gloss    *= lerp(1.0, RAIN_MAX_SPECULAR_SCALING, wet_time);
+
+   refl_intensity = wet_time*mask.g*lerp(0.0, RAIN_MAX_REFLECTION_POWER/* + (1.f - RAIN_MAX_REFLECTION_POWER)*AccumulatedWater*/, wet_time);
+   
+#endif
+
+  // Sample normal, rotate it by matrix, encode position 
+  float3 Ne  = mul       (float3x3(I.M1, I.M2, I.M3), S.normal);
+		Ne	= normalize	(Ne);
+/*  O.Ne 		= float4		(encode_normal(Ne, xmaterial),				S.base.w	);
+  O.position= encode_pos(I.position.xyz + Ne.xyz*S.height*def_virtualh, xmaterial, refl_intensity);
+  O.C		= float4		(S.base.xyz,								S.gloss		);		// OUT: rgb.gloss*/
+
+  GB O		= make_gbuffer(I.position.xyz + Ne.xyz*S.height*def_virtualh, Ne, S.base.xyz, float4(h, xmaterial, S.gloss, refl_intensity));
+
+  return O;
+}

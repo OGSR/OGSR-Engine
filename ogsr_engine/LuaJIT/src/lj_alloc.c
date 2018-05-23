@@ -79,10 +79,12 @@
 
 #if LJ_64
 
+#include "xr_alloc.h"
+
 /* Undocumented, but hey, that's what we all love so much about Windows. */
 typedef long (*PNTAVM)(HANDLE handle, void **addr, ULONG zbits,
 		       size_t *size, ULONG alloctype, ULONG prot);
-static PNTAVM ntavm;
+PNTAVM ntavm;
 
 /* Number of top bits of the lower 32 bits of an address that must be zero.
 ** Apparently 0 gives us full 64 bit addresses and 1 gives us the lower 2GB.
@@ -93,28 +95,34 @@ static void INIT_MMAP(void)
 {
   ntavm = (PNTAVM)GetProcAddress(GetModuleHandleA("ntdll.dll"),
 				 "NtAllocateVirtualMemory");
+  XR_INIT();
 }
 
 /* Win64 32 bit MMAP via NtAllocateVirtualMemory. */
 static LJ_AINLINE void *CALL_MMAP(size_t size)
 {
   DWORD olderr = GetLastError();
-  void *ptr = NULL;
-  long st = ntavm(INVALID_HANDLE_VALUE, &ptr, NTAVM_ZEROBITS, &size,
-		  MEM_RESERVE|MEM_COMMIT, PAGE_READWRITE);
+  void* ptr = XR_MMAP(size);
   SetLastError(olderr);
-  return st == 0 ? ptr : MFAIL;
+  return ptr;
 }
 
 /* For direct MMAP, use MEM_TOP_DOWN to minimize interference */
 static LJ_AINLINE void *DIRECT_MMAP(size_t size)
 {
   DWORD olderr = GetLastError();
-  void *ptr = NULL;
-  long st = ntavm(INVALID_HANDLE_VALUE, &ptr, NTAVM_ZEROBITS, &size,
-		  MEM_RESERVE|MEM_COMMIT|MEM_TOP_DOWN, PAGE_READWRITE);
+  void* ptr = XR_MMAP(size);
   SetLastError(olderr);
-  return st == 0 ? ptr : MFAIL;
+  return ptr;
+}
+
+/* This function supports releasing coalesed segments */
+static LJ_AINLINE int CALL_MUNMAP(void *ptr, size_t size)
+{
+	DWORD olderr = GetLastError();
+	XR_DESTROY(ptr, size);
+	SetLastError(olderr);
+	return 0;
 }
 
 #else
@@ -140,8 +148,6 @@ static LJ_AINLINE void *DIRECT_MMAP(size_t size)
   return ptr ? ptr : MFAIL;
 }
 
-#endif
-
 /* This function supports releasing coalesed segments */
 static LJ_AINLINE int CALL_MUNMAP(void *ptr, size_t size)
 {
@@ -162,6 +168,8 @@ static LJ_AINLINE int CALL_MUNMAP(void *ptr, size_t size)
   SetLastError(olderr);
   return 0;
 }
+
+#endif
 
 #else
 
@@ -194,7 +202,7 @@ static LJ_AINLINE void *CALL_MMAP(size_t size)
   return ptr;
 }
 
-#elif LJ_TARGET_OSX || LJ_TARGET_PS4 || defined(__FreeBSD__) || defined(__FreeBSD_kernel__) || defined(__NetBSD__) || defined(__OpenBSD__) || defined(__DragonFly__) || defined(__sun__) || LJ_TARGET_CYGWIN
+#elif LJ_TARGET_OSX || LJ_TARGET_PS4 || defined(__FreeBSD__) || defined(__FreeBSD_kernel__) || defined(__NetBSD__) || defined(__OpenBSD__) || defined(__DragonFly__) || defined(__sun__)
 
 /* OSX and FreeBSD mmap() use a naive first-fit linear search.
 ** That's perfect for us. Except that -pagezero_size must be set for OSX,

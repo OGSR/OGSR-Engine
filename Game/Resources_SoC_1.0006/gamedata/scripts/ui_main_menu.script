@@ -1,0 +1,188 @@
+-- Главное меню для Теней Чернобыля.
+-- KRodin (c) 2018
+-- Выкинул из скрипта всё что связано с мультиплеером и прочий мусор.
+-- Исправил утечки памяти из-за неудаления частей меню после его закрытия (см. main_menu:close_and_delete_menu())
+-- Сделано специально для использования с движком OGSR.
+
+class "main_menu" (CUIScriptWnd)
+function main_menu:__init() super()
+	self.mbox_mode = 0
+	self:InitControls()
+	self:InitCallBacks()
+end
+
+function main_menu:__finalize()
+	--log1("--main_menu:__finalize() called!")
+end
+
+function main_menu:InitControls()
+	self:Init(0, 0, 1024, 768)			  
+	local xml = CScriptXmlInit()
+	xml:ParseFile("ui_mm_main.xml")
+
+	xml:InitStatic("back_movie", self)
+	xml:InitStatic("background", self)
+	xml:InitStatic("fire_movie", self)
+	self.shniaga = xml:InitMMShniaga("shniaga_wnd", self)
+
+	self.message_box = CUIMessageBoxEx()
+	self:Register(self.message_box, "msg_box")	
+
+	local ver = xml:InitStatic("static_version", self)
+	local mm = _G.main_menu.get_main_menu()
+	ver:SetText("ver. "..mm:GetGSVer())
+end
+
+function main_menu:Show(...)
+	self.shniaga:SetVisibleMagnifier(...)
+end
+
+function main_menu:InitCallBacks()
+	-- new game
+	self:Connect("btn_novice",  ui_events.BUTTON_CLICKED, self.StartGame, self, "gd_novice")
+	self:Connect("btn_stalker", ui_events.BUTTON_CLICKED, self.StartGame, self, "gd_stalker")
+	self:Connect("btn_veteran", ui_events.BUTTON_CLICKED, self.StartGame, self, "gd_veteran")
+	self:Connect("btn_master",  ui_events.BUTTON_CLICKED, self.StartGame, self, "gd_master")
+	-- options																											
+	self:AddCallback("btn_options", ui_events.BUTTON_CLICKED, self.OnButton_options_clicked, self)
+	-- load																												
+	self:AddCallback("btn_load", ui_events.BUTTON_CLICKED, self.OnButton_load_clicked, self)
+	-- save																												
+	self:AddCallback("btn_save", ui_events.BUTTON_CLICKED, self.OnButton_save_clicked, self)
+	-- quit																												
+	self:AddCallback("btn_quit", ui_events.BUTTON_CLICKED, self.OnButton_quit_clicked, self)
+	self:AddCallback("btn_quit_to_mm", ui_events.BUTTON_CLICKED, self.OnButton_disconnect_clicked, self)
+	self:AddCallback("btn_lastsave", ui_events.BUTTON_CLICKED, self.OnButton_last_save, self)
+	self:AddCallback("btn_credits", ui_events.BUTTON_CLICKED, self.OnButton_credits_clicked, self)
+	-- message box																										
+	self:AddCallback("msg_box", ui_events.MESSAGE_BOX_OK_CLICKED, self.OnMsgOk, self)
+	self:AddCallback("msg_box", ui_events.MESSAGE_BOX_CANCEL_CLICKED, self.OnMsgCancel, self)
+	self:AddCallback("msg_box", ui_events.MESSAGE_BOX_YES_CLICKED, self.OnMsgYes, self)
+	self:AddCallback("msg_box", ui_events.MESSAGE_BOX_NO_CLICKED, self.OnMsgNo, self)
+	self:Connect("msg_box", ui_events.MESSAGE_BOX_QUIT_GAME_CLICKED, cmd, "disconnect")
+	self:Connect("msg_box", ui_events.MESSAGE_BOX_QUIT_WIN_CLICKED,  cmd, "quit")
+	self:AddCallback("btn_ret", ui_events.BUTTON_CLICKED, self.close_and_delete_menu, self)
+end
+
+function main_menu:OnMsgOk()
+	self.mbox_mode = 0
+end
+
+function main_menu:OnMsgCancel()
+	self.mbox_mode = 0
+end
+
+function main_menu:LoadLastSave()
+	cmd("load_last_save")
+	self:close_and_delete_menu()
+end
+
+function main_menu:OnMsgYes()
+	if self.mbox_mode == 1 then
+		self:LoadLastSave()	
+	end
+
+	self.mbox_mode = 0
+end
+
+function main_menu:OnMsgNo()
+	self.mbox_mode = 0
+end
+
+
+function main_menu:OnButton_last_save()
+	if not alife() then
+		self:LoadLastSave()
+		return
+	end
+
+	self.mbox_mode = 1
+	self.message_box:Init("message_box_confirm_load_save")
+	self:GetHolder():start_stop_menu(self.message_box, true)
+end
+
+function main_menu:OnButton_credits_clicked()
+	game.start_tutorial("credits_seq")
+end
+
+function main_menu:OnButton_quit_clicked()
+	self.message_box:Init("message_box_quit_windows")
+	self:GetHolder():start_stop_menu(self.message_box, true)
+end
+
+function main_menu:OnButton_disconnect_clicked()
+	self.message_box:Init("message_box_quit_game")
+	self.message_box:SetText("ui_mm_quit_game_message")
+	self:GetHolder():start_stop_menu(self.message_box, true)
+end
+
+function main_menu:StartGame( difficulty )
+	cmd("g_game_difficulty "..difficulty)
+	if alife() then
+		cmd("disconnect")	
+	end
+	cmd("start server(all/single/alife/new) client(localhost)")
+	self:close_and_delete_menu()
+end
+
+function main_menu:OnButton_save_clicked()
+	if not self.save_dlg then
+		self.save_dlg = ui_mm_save_load_dialog.save_load_dialog( true )
+		self.save_dlg.owner = self
+	end
+
+	self:GetHolder():start_stop_menu(self.save_dlg, true)
+	self:Show(false)
+end
+
+function main_menu:OnButton_load_clicked()
+	if not self.load_dlg then
+		self.load_dlg = ui_mm_save_load_dialog.save_load_dialog()
+		self.load_dlg.owner = self
+	end
+
+	self:GetHolder():start_stop_menu(self.load_dlg, true)
+	self:Show(false)
+end
+
+function main_menu:OnButton_options_clicked()
+	if not self.opt_dlg then
+		self.opt_dlg = ui_mm_opt_main.options_dialog()
+		self.opt_dlg.owner = self
+	end
+
+	self:GetHolder():start_stop_menu(self.opt_dlg, true)
+	self:Show(false)
+end
+
+function main_menu:OnKeyboard(dik, keyboard_action)
+	CUIScriptWnd.OnKeyboard(self, dik, keyboard_action)
+
+	if keyboard_action == ui_events.WINDOW_KEY_PRESSED then
+		if dik_to_bind(dik) == key_bindings.kQUIT then
+			if level.present() and db.actor and db.actor:alive() then
+				self:close_and_delete_menu()
+			end
+		elseif dik == DIK_keys.DIK_N then --personal_test
+			xpcall(function() dofile(getFS():update_path("$game_scripts$", "personal_test.lua")) end, log1)
+		end
+	end
+
+	return true
+end
+
+--Для закрытия меню использовать только этот специальный метод!
+function main_menu:close_and_delete_menu()
+	-- Удаляем в движке каллбеки, в которых хранятся ссылки на объекты оконных классов (которые добавляются в AddCallback(..., self),
+	-- иначе части меню не удалятся и будут висеть в памяти до перезапуска LUA (до загрузки сейва, например)
+	-- Так же, надо обнулить висячие ссылки (self.*_dlg), иначе сборщик мусора эти объекты не удалит. Да, это странно, но это так.
+	if self.save_dlg then self.save_dlg:ClearCallbacks() self.save_dlg = nil end
+	if self.load_dlg then self.load_dlg:ClearCallbacks() self.load_dlg = nil end
+	if self.opt_dlg then
+		if self.opt_dlg.dlg_video_adv then self.opt_dlg.dlg_video_adv:ClearCallbacks() end
+		self.opt_dlg:ClearCallbacks() self.opt_dlg = nil
+	end
+	self:ClearCallbacks() --main_menu удаляется движком, но для надёжности и ему каллбеки удалим.
+	--
+	cmd("main_menu off")
+end

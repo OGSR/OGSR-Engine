@@ -1,0 +1,7 @@
+#include "common.h"
+
+uniform float4 c_switch;
+float4 main(p_screen _in):COLOR0
+{
+	return tex2D(s_image, _in.tc0 + ogse_c_resolution.zw*c_switch.xy);
+};

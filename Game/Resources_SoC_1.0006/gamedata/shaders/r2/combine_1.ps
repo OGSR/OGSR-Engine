@@ -1,0 +1,146 @@
+#include "ogse_config.h"
+#include "common.h"
+#include "lmodel.h"
+#include "hmodel.h"
+//#include "ogse_apply_rain.h"
+
+struct         _input      {
+        float4         hpos        : POSITION        ;
+#ifdef        USE_VTF
+          float4         tc0                : TEXCOORD0        ;        // tc.xy, tc.w = tonemap scale
+#else
+          float2         tc0                : TEXCOORD0        ;        // tc.xy
+#endif
+};
+
+struct        _out                {
+        float4        low                : COLOR0        ;
+        float4        high        : COLOR1        ;
+};
+
+uniform sampler1D         fog_table        ;
+uniform sampler2D s_ssao;
+uniform sampler2D s_vol;
+_out       main                ( _input I )
+{
+          // Sample the buffers:
+          float4 P        = get_full_position(I.tc0);//tex2D         (s_position,      I.tc0);                // position.(mtl or sun)
+          float4 N         = get_full_normal(I.tc0);//tex2D         (s_normal,        I.tc0);                // normal.hemi
+          float4 D         = tex2D         (s_diffuse,       I.tc0);                // rgb.gloss
+          float4 L         = tex2D         (s_accumulator, 	I.tc0);                // diffuse.specular
+		  
+/*		  	float3 vol = tex2D(s_vol, I.tc0).xyz;
+			D.xyz += vol;
+			D = saturate(D);
+			*/
+
+		  // debug
+/*		_out o;
+		o.high = L;
+		o.low = L;
+		return o;*/
+		//debug
+
+#ifdef         USE_SUPER_SPECULAR
+        {
+                float        ds      	= dot        (D.rgb,1.h/3.h)  	;
+                       		D.w         = max        (D.w, 	ds*ds/8.h)	;
+        }
+#endif
+
+#ifdef  FORCE_GLOSS
+        D.w                =        FORCE_GLOSS                ;
+#endif
+
+#ifdef         USE_GAMMA_22
+        D.rgb        =        (D.rgb*D.rgb)        ;        // pow(2.2)
+#endif
+
+       // hemisphere + AO
+        float3       hdiffuse,hspecular;
+        hmodel		(hdiffuse, hspecular, P.w, N.w, D.w, P.xyzw, N.xyz);
+		float3 occ = float3(1.f,1.f,1.f);
+#ifdef USE_SSAO
+		occ = tex2D(s_ssao, I.tc0).xyz;
+#endif
+#ifdef USE_AO
+	float ao_int = N.w;
+	ao_int = clamp(ao_int, 0.05, 1.0);
+	#ifdef AO_INTENSITY
+		ao_int *= 10.f/AO_INTENSITY;
+	#endif
+#else
+	float ao_int = 1.f;
+#endif
+
+		hdiffuse *= occ*saturate(ao_int);
+		hspecular *= occ*saturate(ao_int); 
+
+#ifdef USE_RAIN_MAP
+	/*
+		overall value of rain applying is consist of three modifiers:
+		1. rain intensity
+		2. wetting switch from rain map
+		3. time factor
+	*/
+			// 1. calculate wet level
+/*		float wet_level = saturate(calculate_wet_level(/*hdiffuse, hspecular, *//*I.tc0.xy, P.z));
+			
+		D.rgb *= lerp(1.0, RMAP_MAX_DIFFUSE_SCALING, wet_level);
+		D.a	*= lerp(1.0, RMAP_MAX_SPECULAR_SCALING, wet_level);*/
+
+			// 2. apply puddles
+
+			// 3. apply reflections
+//		float3 env_map = calculate_env_mapping(P, N);
+//		D.rgb = lerp(D.rgb,env_map,wet_level*RMAP_MAX_ENV_MAP_COEFF/**N.z*/*D.a);	// make sure, that there is no reflections on vertical planes
+
+#endif
+
+        float4         light       = float4         (L.rgb + hdiffuse, L.w)        ;
+
+//		light.xyz = clamp(light.xyz, float3(0,0,0), float3(1.5,1.5,1.5));
+        float4         C           = D*light;                                                        // rgb.gloss * light(diffuse.specular)
+        float3         spec        = C.www         + hspecular;        // replicated specular
+#ifdef         USE_SUPER_SPECULAR
+                      spec      = (C.rgb*.5h + .5h)*C.w + hspecular        ;
+#endif
+		float3       color     = C.rgb + spec     ;
+
+        //. color + hemi + sun + lighting + specular
+		//			color 	= 	hdiffuse+hspecular+L.rgb+spec+C.rgb;
+        //. hemi + sun + lighting + specular
+		//			color 	= 	hdiffuse+hspecular+L.rgb+spec;
+		//. hemi + sun + lighting no specular
+		//			color 	= 	hdiffuse+hspecular+L.rgb;
+		//. hemi + sun no specular
+		//			color 	= 	hdiffuse+hspecular+L.rgb;
+		//. sun + lighting + specular
+		//			color 	= 	hspecular+L.rgb+spec;
+		//. only lighting and specular
+		// color 		= light.rgb + spec;
+
+        // here should be distance fog
+        float3        	pos        		= P.xyz;
+        float         	dist		= length		(pos);
+        float         	fog				= saturate		(dist*fog_params.w + fog_params.x); //
+                     	color			= lerp     		(color,fog_color,fog);        			//
+		float        	skyblend		= saturate		(fog*fog);
+
+        // final tone-mapping
+#ifdef        USE_VTF
+        float          	tm_scale        = I.tc0.w;                // interpolated from VS
+#else
+        float         	tm_scale        = tex2D        (s_tonemap,I.tc0).x;
+#endif
+
+#ifdef        USE_SUPER_SPECULAR
+        color        	= spec          - hspecular	;
+#endif
+
+        _out        	o;
+        tonemap        	(o.low, o.high,  color, tm_scale )	;
+                        o.low.a         = skyblend	;
+						o.high.a		= skyblend	;
+		return        	o;
+}

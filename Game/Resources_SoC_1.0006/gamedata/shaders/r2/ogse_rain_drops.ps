@@ -1,0 +1,36 @@
+#ifndef OGSE_RAIN_DROPS_H
+#define OGSE_RAIN_DROPS_H
+#include "common.h"
+#include "ogse_config.h"
+// constants for rain drops
+uniform float4 c_timers; // x - rain timer, y - last rain duration, z - drops time
+uniform sampler2D s_rain_drops;
+uniform sampler2D s_rain_drops_streaks;
+uniform sampler2D s_rain_drops_scroll;
+#define DROP_SCROLL_SPEED float(0.5)
+float4 main (p_screen _in):COLOR0
+{
+	float4 t_drop = tex2D(s_rain_drops, _in.tc0);
+	float4 t_streaks = tex2D(s_rain_drops_streaks, _in.tc0);
+	float t_scroll = tex2D(s_rain_drops_scroll, _in.tc0 - float2(0.h, 0.1h) * timers.x * DROP_SCROLL_SPEED).x;
+	float3 img = tex2D(s_image, _in.tc0);
+	float3 drop_color = normalize(img) / 18;
+	
+	float time = (c_timers.x - c_timers.y)/c_timers.z + lerp(0, saturate(c_timers.y/c_timers.z), saturate(c_timers.y));
+	time *= 8;
+	float static_image_lerp = ((t_drop.x - 0.5)*saturate(time) 
+							+ (t_drop.y - 0.5)*saturate(time - 1) 
+							+ (t_drop.z - 0.5)*saturate(time - 2) 
+							+ (t_drop.w - 0.5)*saturate(time - 3)) * 2.h;
+	float3 static_image = lerp(img, drop_color, static_image_lerp);
+	
+	float scroll_image_lerp =((t_streaks.x - 0.5)*saturate(time - 4) 
+							+ (t_streaks.y - 0.5)*saturate(time - 5) 
+							+ (t_streaks.z - 0.5)*saturate(time - 6) 
+							+ (t_streaks.w - 0.5)*saturate(time - 7)) * 2.h * t_scroll;
+	float3 scroll_image = lerp(img, drop_color, scroll_image_lerp);
+	float3 final = (static_image + scroll_image) / 2;
+	return float4(final, 1.0);
+}
+
+#endif

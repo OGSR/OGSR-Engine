@@ -25,6 +25,7 @@ protected:
 	typedef typename inherited_action::_edge_value_type		_edge_value_type;
 	typedef typename inherited_action::_condition_type		_condition_type;
 	typedef typename inherited_action::_value_type			_value_type;
+	typedef typename inherited_planner::_world_operator _world_operator;
 
 public:
 	typedef typename inherited_action::COperatorCondition	COperatorCondition;

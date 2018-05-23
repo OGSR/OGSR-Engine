@@ -6,9 +6,6 @@
 #include <signal.h> // for signals
 #include <mutex>
 
-#define USE_OWN_ERROR_MESSAGE_WINDOW
-//#define USE_OWN_MINI_DUMP
-
 XRCORE_API xrDebug Debug;
 
 static bool error_after_dialog = false;
@@ -256,7 +253,13 @@ int out_of_memory_handler	(size_t size)
 }
 
 #ifdef USE_OWN_MINI_DUMP
+#pragma warning(push)
+#pragma warning(disable : 4091) // 'typedef ': ignored on left of '' when no variable is declared
+#include <DbgHelp.h>
+#pragma warning(pop)
+
 #pragma comment(lib, "Version.lib")
+
 typedef BOOL(WINAPI *MINIDUMPWRITEDUMP)(HANDLE hProcess, DWORD dwPid, HANDLE hFile, MINIDUMP_TYPE DumpType,
 	CONST PMINIDUMP_EXCEPTION_INFORMATION ExceptionParam,
 	CONST PMINIDUMP_USER_STREAM_INFORMATION UserStreamParam,

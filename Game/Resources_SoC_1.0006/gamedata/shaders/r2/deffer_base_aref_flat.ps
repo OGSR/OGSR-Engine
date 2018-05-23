@@ -1,0 +1,68 @@
+#include "common.h"
+#include "sload.h"
+#include "ogse_config.h"
+
+#define wire_aref float(150.f/255.f)
+
+/*f_deffer*/ GB	main	( p_flat I)
+{
+//  f_deffer	O;
+
+  // 1. Base texture + kill pixels with low alpha
+  float4 D 	= tbase	 	(I.tcdh);
+  clip		(D.w-wire_aref);
+
+#ifdef	USE_TDETAIL
+	D.rgb	= 2*D.rgb*tex2D	(s_detail, I.tcdbump).rgb;
+#endif
+
+	// hemi,sun,material
+	float 	ms	= xmaterial		;
+#ifdef USE_LM_HEMI
+	float4	lm 	= tex2D			(s_hemi, I.lmh);
+	float 	h  	= dot			(lm.rgb,1.h/3.h);
+#else
+	float 	h	= I.position.w	;
+#endif
+
+	float gloss = def_gloss;
+#ifdef TS_LEAVES_LIGHTING
+	float3 D_yellow = D.rgb*float3(0.9,1.0,0.2);
+	float angle_cos = saturate(dot(-eye_direction, normalize(L_sun_dir_w)));
+	D.rgb = lerp(D.rgb, D_yellow, angle_cos);
+	gloss = lerp(gloss, gloss/2, angle_cos);
+#endif
+
+#if defined(USE_WET_SURFACES) && (defined(USE_WET_LEAVES) || defined(DETAILS_RENDERING))
+   /////////////////////////////
+   // Rain effets - Specific code
+
+   	float wet_time = ogse_c_rain.z;
+	wet_time *= RAIN_WETTING_SPEED*ogse_c_rain.w; //wetting speed - uncomment it when needed
+	wet_time = saturate(wet_time);
+
+	D    *= lerp(1.0, RAIN_MAX_DIFFUSE_SCALING, wet_time);
+	D	 *= lerp(1.0, RAIN_MAX_DIFFUSE_DETAILS_MULT, saturate(wet_time));	// дл€ ёры
+	gloss    *= lerp(1.0, RAIN_MAX_SPECULAR_SCALING, wet_time);
+	
+/*	D    *= RAIN_MAX_DIFFUSE_SCALING;
+	gloss    *= RAIN_MAX_SPECULAR_SCALING;*/
+   
+   // End Rain effect specific code
+   ////////////////////////	
+#endif
+
+#if defined(USE_GRASS_WAVE) && defined(DETAILS_RENDERING)
+	D *= I.tcdh.z;
+#endif
+
+  float3 Nrm = normalize(I.N.xyz);
+  // 2. Standart output
+/*  O.Ne          = float4		(encode_normal(Nrm, ms), 	h		);
+  O.position    = encode_pos(I.position.xyz + Nrm*def_virtualh/2.h	, 	ms, 0.f		);	//.
+  O.C			= float4		(D.rgb,											gloss	);	// OUT: rgb.gloss*/
+
+  GB O		= make_gbuffer(I.position.xyz + Nrm.xyz*def_virtualh/2.h, Nrm.xyz, D.xyz, float4(h, ms, gloss, 0.f));
+
+  return O;
+}

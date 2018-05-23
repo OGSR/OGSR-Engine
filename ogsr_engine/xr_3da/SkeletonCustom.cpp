@@ -823,7 +823,7 @@ CSkeletonWallmark::~CSkeletonWallmark()
 		if(used_in_render!=u32(-1))
 		{
 			Msg		("used_in_render=%d",used_in_render);
-			VERIFY	(used_in_render==u32(-1));
+			//VERIFY	(used_in_render==u32(-1));
 		}
 }
 #endif

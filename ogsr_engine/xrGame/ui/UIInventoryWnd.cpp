@@ -142,9 +142,11 @@ void CUIInventoryWnd::Init()
 	xml_init.InitDragDropListEx			(uiXml, "dragdrop_outfit", 0, m_pUIOutfitList);
 	BindDragDropListEnents				(m_pUIOutfitList);
 
+#ifdef OGSE_NEW_SLOTS
 	m_pUIKnifeList						= xr_new<CUIDragDropListEx>(); AttachChild(m_pUIKnifeList); m_pUIKnifeList->SetAutoDelete(true);
 	xml_init.InitDragDropListEx			(uiXml, "dragdrop_knife", 0, m_pUIKnifeList);
 	BindDragDropListEnents				(m_pUIKnifeList);
+#endif
 
 	m_pUIPistolList						= xr_new<CUIDragDropListEx>(); AttachChild(m_pUIPistolList); m_pUIPistolList->SetAutoDelete(true);
 	xml_init.InitDragDropListEx			(uiXml, "dragdrop_pistol", 0, m_pUIPistolList);
@@ -154,6 +156,7 @@ void CUIInventoryWnd::Init()
 	xml_init.InitDragDropListEx			(uiXml, "dragdrop_automatic", 0, m_pUIAutomaticList);
 	BindDragDropListEnents				(m_pUIAutomaticList);
 
+#ifdef OGSE_NEW_SLOTS
 	m_pUIBinocularList					= xr_new<CUIDragDropListEx>(); AttachChild(m_pUIBinocularList); m_pUIBinocularList->SetAutoDelete(true);
 	xml_init.InitDragDropListEx			(uiXml, "dragdrop_binocular", 0, m_pUIBinocularList);
 	BindDragDropListEnents				(m_pUIBinocularList);
@@ -177,19 +180,24 @@ void CUIInventoryWnd::Init()
 	m_pUITorchList						= xr_new<CUIDragDropListEx>(); AttachChild(m_pUITorchList); m_pUITorchList->SetAutoDelete(true);
 	xml_init.InitDragDropListEx			(uiXml, "dragdrop_torch", 0, m_pUITorchList);
 	BindDragDropListEnents				(m_pUITorchList);
+#endif
 
         for ( u8 i = 0; i < SLOTS_TOTAL; i++ )
           m_slots_array[ i ] = NULL;
         m_slots_array[ OUTFIT_SLOT        ] = m_pUIOutfitList;
+#ifdef OGSE_NEW_SLOTS
         m_slots_array[ KNIFE_SLOT         ] = m_pUIKnifeList;
+#endif
         m_slots_array[ FIRST_WEAPON_SLOT  ] = m_pUIPistolList;
         m_slots_array[ SECOND_WEAPON_SLOT ] = m_pUIAutomaticList;
+#ifdef OGSE_NEW_SLOTS
         m_slots_array[ APPARATUS_SLOT     ] = m_pUIBinocularList;
         m_slots_array[ HELMET_SLOT        ] = m_pUIHelmetList;
         m_slots_array[ BIODETECTOR_SLOT   ] = m_pUIBIODetList;
         m_slots_array[ NIGHT_VISION_SLOT  ] = m_pUINightVisionList;
         m_slots_array[ DETECTOR_SLOT      ] = m_pUIDetectorList;
         m_slots_array[ TORCH_SLOT         ] = m_pUITorchList;
+#endif
 
 	//pop-up menu
 	AttachChild							(&UIPropertiesBox);

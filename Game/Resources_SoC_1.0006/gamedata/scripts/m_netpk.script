@@ -1,0 +1,3415 @@
+--[[ ----------------------------------------------------------------------------------------------
+ File       : m_netpk.script [optional]
+ Description: Интерфейс чтения/записи net-пакетов (SHoC:6/7(118),CS:8(124),SCoP:12(128))
+ Copyright  : 2008-2013 © STALKER-community
+ Author     : Artos (по материалам: bardak, Red75, Sokol_jack, KD87 (uACDC), xStream (xs_netpk))
+ Last edit  : 08.01.2018 (включены исправления авторов: Charsi, Kirgudu, naxac, dsh)
+--]] ----------------------------------------------------------------------------------------------
+--[[ ----------------------------------------------------------------------------------------------
+KRodin: Этот скрипт единственный нормально работает с LuaJIT 2+.
+Все остальные скрипты для работы с нет-пакетами, с которыми я сталкивался - ведут себя неадекватно.
+В этом скрипте включена OGSR-специфичная правка для поддержки более 64 костей в моделях.
+Для работы скрипта требуются функции log3 и table.copy из _G, и конфиг m_netpk.ltx
+Подключение скрипта: добавить в _G.start_game_callback():
+	m_netpk.attach()
+--]] ----------------------------------------------------------------------------------------------
+
+--/ -----------------------------------------------------------------
+--/ VARIABLEs (not to change!)
+--/ -----------------------------------------------------------------
+local disabled_convert_obj = false --/ отключена проверка на тип объекта и конвертирование в серверную сущность
+local disabled_convert_cd  = false --/ отключено конвертирование 'custom_data' из строки в таблицу (и обратно)
+local disabled_net_dummy   = false --/ отключено использование net_dummy в хелперах
+local enabled_debug        = false --/ включен режим отладки ...
+local str_clsid2class = {} --/ массив (строковый) соответствия 'script_clsid' <=> 'server_object_class'
+local clsid2net       = {} --/ массив соответствий 'script_clsid' <=> 'net-class'
+local sim = alife() --/ cache function 'alife'
+--/ ----------------------------------------------
+local bits_mode = { --/ table of admissible flags
+	[0] = 0, --/ change 'abstract' properties of packet
+	[1] = 1, --/ only 'state' part of packet
+	[2] = 2, --/ only 'update' part of packet
+	[3] = 3, --/ full packet ('state' + 'update')
+	[4] = 0  --/ for 'abstract' properties of packet (debug)
+}
+local shape_type = {
+	sphere = 0,
+	box    = 1
+}
+--/ -----------------------------------------------------------------
+local sModule = script_name() --/ string name of this file module
+--/ -----------------------------------------------------------------
+--/ for output of the debug information
+local log = function(fmt,...)
+	_G.log3(sModule..":"..tostring(fmt),...)
+end
+-- if to_log and type(string.exformat) == 'function' then
+-- 	log = function(fmt,...) to_log(sModule..":"..string.exformat(fmt,...)) end
+-- end
+--/ -----------------------------------------------------------------
+class "net_dummy" --/ dummy class (can use in helpers)
+--/ -----------------------------------------------------------------
+function net_dummy:__init(obj) end
+function net_dummy:get() return {upd={}} end --/> zero_table
+function net_dummy:set() end
+function net_dummy:isOk() return false end --/>
+function net_dummy:setCallback() return nil end --/>
+function net_dummy:dumpDesc() return "net_dummy" end
+function net_dummy:print() end
+--/ -----------------------------------------------------------------
+local net_stub = net_dummy --/ for dummy class (can use in helpers)
+--/ convert object to server_object
+local convert_obj = function(obj)
+	if obj and obj.id then
+		if type(obj.id) == 'number' then
+			return obj --/> server_object
+		elseif type(obj.id) == 'function' then
+			if not sim then sim = alife() end
+			return sim:object(obj:id()) --/> server_object
+		end
+	end
+end
+--/ -----------------------------------------------------------------------------------------------
+--/ GET: general (universal) call-function
+--/ in: object [,part_flags]
+--/  part_flags:: 0: 'abstract' | 1: only 'state' | 2: only 'update' | nil (or others): full packet
+--/ -----------------------------------------------------------------------------------------------
+get = function(obj, part_flags, packet)
+	local sobj = convert_obj(obj)
+	local script_clsid = sobj and sobj:clsid()
+	if script_clsid then
+		local net_class = this.get_net_class(script_clsid) --/ clsid2net[script_clsid]
+		local mode = bits_mode[part_flags or 3]
+		if bits_mode[mode] == 0 then --/ for 'abstract' part
+			return this.net_cse_abstract(sobj, part_flags, packet, net_class) --/> out: packet_manager for 'abstract' part
+		elseif net_class then  --log("get:Obj=[%s],clsid=[%s]", sobj:name(), script_clsid, "") --/#~#
+			return net_class(sobj, mode) --/> out: packet_manager 'state'|'update'|'full' part(s)
+		end  --log("get:Obj=[%s],clsid=[%s]~unknown:<%s>", sobj:name(), script_clsid, "Warning!") --/#~#
+	end
+	return net_stub --/> (net_dummy class or stub)
+end
+--/ -----------------------------------------------------------------
+--/ Constants and their converters in flags
+--/ -----------------------------------------------------------------
+--/ game version (patch) (SHoC:6/7, CS:8, SCoP:12)
+local script_version = script_server_object_version() or 0
+--/ constant for disabling read/write of state/update parts of subpacket
+local bit_ver = 1 --/ is SHoC (default)
+if script_version > 7 then
+	if script_version < 12 then
+		bit_ver = 2 --/ is CS
+	else
+		bit_ver = 4 --/ is SCoP
+	end
+end
+--/ for manipulating read/write of properties dependent on the script_version
+local can_ver = function(ver)
+	return (not ver) or bit_and(ver, bit_ver) ~= 0 --/> boolean-flag
+end
+--/ -----------------------------------------------------------------
+--/ constant for disabling read/write of state&update parts of subpackets
+local only_bases = bits_mode[0] --/ constant
+--/ converter for manipulating read/write of state part of subpackets
+local only_st = function(mode)
+	return bit_and(bits_mode[mode or 3], 1) --/> number-flag
+end
+--/ converter for manipulating read/write of update part of subpackets
+local only_up = function(mode)
+	return bit_and(bits_mode[mode or 3], 2) --/> number-flag
+end
+--/ -----------------------------------------------------------------
+--/ HELPERs functions
+--/ -----------------------------------------------------------------
+--/ math expansion
+if not math.nan then
+	math.nan = -(0/0) --/ not a number
+end
+if not math.isnan then
+	math.isnan = function(value) --/ the following assume type(value) == 'number':
+		return value ~= value --/>
+	end
+end
+--/ string expansion
+if not string.trim then
+	string.trim = function(str)
+		return str:match('^%s*(.*%S)') or '' --/>
+	end
+end
+--/ -------------------------
+local table_size = function(tbl)
+	local count = 0
+	for _,_ in pairs(tbl or {}) do
+		count = count +1
+	end
+	return count --/>
+end
+--/ -----------------------------------------------------------------
+--/ custom data (ini-style strings)
+--/ -----------------------------------------------------------------
+local _parse_custom_data = function(str)
+	if type(str) == 'string' then
+		local tbl = {}
+		str = str:gsub(";.-\n", "\n"):trim() --/ cleanup comments, symbol ';' is denied in sections names and keys/values!
+		for section,section_data in str:gmatch('%s*%[([^%]]*)%]%s*([^%[%z]*)%s*') do --/ get sections names and their's data
+			section = section:trim() --/#!# use trim
+			section_data = section_data:trim()
+			tbl[section] = {}
+			for line in section_data:gmatch('([^\n]*)\n*') do
+				if line:len() > 0 then
+					if line:match('=') then --/ 'key=val' sequence
+						for k,v in line:gmatch('([^=]-)%s*=%s*(.*)') do
+							k = k:trim()
+							if k and k ~= '' and v then
+								if v == "<<true>>" then
+									tbl[section][k] = true
+								elseif v == "<<false>>" then
+									tbl[section][k] = false
+								else
+									tbl[section][k] = v:trim()
+								end
+							end
+						end
+					else --/ 'key' sequence
+						for k in line:gmatch('(.+)') do
+							k = k:trim()
+							if k and k ~= '' then
+								tbl[section][k] = math.nan --/#!# use nan instead nil for key existance
+							end
+						end
+					end
+				end
+			end
+		end
+		return tbl, true --/>
+	end
+	return {}, false --/>
+end
+
+local _fill_custom_data = function(tbl)
+	local str = ""
+	if type(tbl) == 'table' then
+		for key,value in pairs(tbl) do
+			str = str .. "\n[" .. key.. "]\n"
+			for k,v in pairs(value) do
+				k = tostring(k)
+				if not math.isnan(v) then --/#!# use nan instead nil for key existance
+					if type(v) == 'boolean' then
+						if v then
+							v = "<<true>>"
+						else
+							v = "<<false>>"
+						end
+					else
+						v = tostring(v)
+					end
+					str = str .. k.. " = " .. v .. "\n"
+				else
+					str = str .. k .. "\n"
+				end
+			end
+		end
+	end
+	return str --/>
+end
+--/ -----------------------------------------------------------------
+--/ class for storing and manipulating ini-style custom data
+--/ can use in external scripts
+--/ -----------------------------------------------------------------
+class "custom_data"
+--/ -----------------------------------------------------------------
+function custom_data:__init(input)
+	self:set(input)
+end
+
+function custom_data:set(input)
+	if type(input) == 'string' then
+		self:setString(input)
+	else
+		self:setTable(input)
+	end
+end
+--/ self.data is generated from string on the fly
+--/ self.raw is taken from string as is
+--/ "use raw string" flag is off
+--/ in: string
+--/ out: boolean (success flag)
+function custom_data:setString(str)
+	local no_err
+	self.data, no_err = _parse_custom_data(str)
+	self.raw = str
+	self.useRaw = false
+	return no_err --/>
+end
+--/ self.raw is taken from string as is
+--/ "use raw string" flag is on
+--/ in: string
+function custom_data:setStringRaw(str)
+	self.raw = str
+	self.useRaw = true
+end
+--/ table is passed by REFERENCE!!! Changes in it applied to self.data immediately
+--/ self.raw is generated from table on the fly
+--/ "use raw string" flag is off
+--/ in: table
+function custom_data:setTable(tbl)
+	if type(tbl) == 'table' then
+		self.data = tbl
+		self.raw = _fill_custom_data(tbl)
+	else
+		self.data = {}
+		self.raw = ''
+	end
+	self.useRaw = false
+end
+--/ string is generated from self.data on the fly
+--/ out: string
+function custom_data:getString()
+	return _fill_custom_data(self.data) --/>
+end
+--/ returns string as is from raw property
+--/ out: string
+function custom_data:getStringRaw()
+	return self.raw --/>
+end
+--/ table is returned by REFERENCE!!! Changes in it applied to self.data immediately
+--/ out: table
+function custom_data:getTable()
+	return self.data --/>
+end
+--/ sets "use raw string" flag if mode parameter is present
+--/ returns current flag
+--/ out: boolean
+function custom_data:useStringRaw(mode)
+	if type(mode) == 'boolean' then
+		self.useRaw = mode
+	end
+	return self.useRaw --/>
+end
+--/ -----------------------------------------------------------------
+--/ shape type classes, can use in external scripts
+--/ -----------------------------------------------------------------
+class "shape"
+--/ -----------------------------------------------------------------
+function shape:__init(sh_type, ...)
+	if sh_type and sh_type == shape_type.box then
+		self:setBox(...)
+	else
+		self:setSphere(...)
+	end
+end
+function shape:setSphere(offset, radius)
+	self.type = shape_type.sphere --/ 0
+	self.offset = offset or vector():set(0,0,0) --/ center
+	self.radius = radius or 1
+end
+function shape:setBox(axis_x, axis_y, axis_z, offset)
+	self.type = shape_type.box --/ 1
+	self.axis_x = axis_x or vector():set( 0, 0, 0 ) --/ length
+	self.axis_y = axis_y or vector():set( 0, 0, 0 ) --/ height
+	self.axis_z = axis_z or vector():set( 0, 0, 0 ) --/ width
+	self.offset = offset or vector():set( 0, 0, 0 )
+end
+function shape:isSphere()
+	return self.type == shape_type.sphere --/>
+end
+function shape:getTable()
+	local t = {type = self.type}
+	if self.type == shape_type.sphere then
+		t.offset = self.offset
+		t.radius = self.radius
+	else
+		t.axis_x = self.axis_x
+		t.axis_y = self.axis_y
+		t.axis_z = self.axis_z
+		t.offset = self.offset
+	end
+	return t --/>
+end
+function shape:getRadius()
+	if self.type == shape_type.sphere then
+		return self.radius --/>
+	end
+	return 0.5*math.sqrt(self.axis_x:magnitude()^2 + self.axis_z:magnitude()^2) --/>
+end
+--/ -----------------------------------------------------------------
+class "complex_shape"
+--/ -----------------------------------------------------------------
+function complex_shape:__init()
+	self.shapes = {}
+end
+function complex_shape:add(shp)
+	table.insert(self.shapes, shp)
+	return self --/>
+end
+function complex_shape:addSphere(radius, offset)
+	table.insert(self.shapes, shape(shape_type.sphere, offset, radius))
+	return self --/>
+end
+function complex_shape:addBox(axis_x, axis_y, axis_z, offset)
+	table.insert(self.shapes, shape(shape_type.box, axis_x, axis_y, axis_z, offset))
+	return self --/>
+end
+function complex_shape:remove(n)
+	table.remove(self.shapes, n)
+end
+function complex_shape:count()
+	return #self.shapes --/>
+end
+function complex_shape:get(n)
+	return self.shapes[n] --/>
+end
+function complex_shape:getTable()
+	local t = {}
+	for i=1,#self.shapes do
+		table.insert( t, self:get(i):getTable() )
+	end
+	return t --/>
+end
+function complex_shape:getRadius()
+	local radius = 0
+	for i=1,#self.shapes do
+		radius = math.max( radius, self:get(i):getRadius() )
+	end
+	return radius --/>
+end
+--/ -----------------------------------------------------------------------------------------------
+--/ properties types: datatypes (look ACDC's data_packet.pm for them)
+--/ -----------------------------------------------------------------------------------------------
+--/ char/byte
+_r_u8 = function(pk) return pk:r_u8() end
+_r_h8 = function(pk) return pk:r_u8() end
+_r_q8 = function(pk) return pk:r_u8() end
+_w_u8 = function(pk,val) pk:w_u8(val) end
+_w_h8 = function(pk,val) pk:w_u8(val) end
+_w_q8 = function(pk,val) pk:w_u8(val) end
+--/ int
+_r_u16 = function(pk) return pk:r_u16() end
+_r_h16 = function(pk) return pk:r_u16() end
+_w_u16 = function(pk,val) pk:w_u16(val) end
+_w_h16 = function(pk,val) pk:w_u16(val) end
+--/ int32
+_r_s32 = function(pk) return pk:r_s32() end
+_r_u32 = function(pk) return pk:r_s32() end
+_r_h32 = function(pk) return pk:r_s32() end
+_w_s32 = function(pk,val) pk:w_s32(val) end
+_w_u32 = function(pk,val) pk:w_s32(val) end
+_w_h32 = function(pk,val) pk:w_s32(val) end
+--/ float
+_r_f32 = function(pk) return pk:r_float() end
+_w_f32 = function(pk,val) pk:w_float(val) end
+--/ string
+_r_sz = function(pk) return pk:r_stringZ() end
+_w_sz = function(pk,val) pk:w_stringZ(val) end
+--/ boolean
+_r_b8 = function(pk) return pk:r_bool() end --/#+# not in ACDC
+_w_b8 = function(pk,val) pk:w_bool(val) end --/#+# not in ACDC
+--/ vector
+_r_f32v3 = function(pk) return pk:r_vec3(vector():set( 0, 0, 0 )) end
+_w_f32v3 = function(pk,val) pk:w_vec3(val) end
+--/ -------------------------
+--/ prop.type: variable chunk
+--/  in|out:: datatype: u8|u16|s32|floor|bool|stringZ|... [default: nil=>'u8']
+--/ -------------------------
+--/ read:: in: packet, lenght [,datatype [,table]] | out: table
+local _r_chunk = function(pk,len,dt,tbl)
+	if len and len > 0 then
+		if not (tbl and type(tbl) == 'table') then tbl = {} end
+		local func = this["_r_"..(dt or 'u8')]
+		for i=1,len do
+			table.insert( tbl, func(pk) )
+		end
+	end
+	return tbl or {} --/>
+end
+--/ write:: in: packet, table [,datatype]
+local _w_chunk = function(pk,tbl,dt)
+	if type(tbl) == 'table' and next(tbl) then
+		local func = this["_w_"..(dt or 'u8')]
+		for _,v in ipairs(tbl) do
+			func(pk,v)
+		end
+	end
+end
+--/ -------------------------
+--/ prop.type: fixed chunks
+--/ -------------------------
+_r_q8v     = function(pk,ver,len) return _r_chunk(pk,len,'u8' ) end
+_r_q8v3    = function(pk) return _r_chunk(pk,3,          'u8' ) end
+_r_q8v4    = function(pk) return _r_chunk(pk,4,          'u8' ) end
+_r_q8v8    = function(pk) return _r_chunk(pk,8,          'u8' ) end
+_r_q8v12   = function(pk) return _r_chunk(pk,3*4,        'u8' ) end
+_r_q8v16   = function(pk) return _r_chunk(pk,4*4,        'u8' ) end
+_r_u8v8    = function(pk) return _r_chunk(pk,8,          'u8' ) end
+_r_l8u8v   = function(pk) return _r_chunk(pk,pk:r_u8 (), 'u8' ) end
+_r_l8u16v  = function(pk) return _r_chunk(pk,pk:r_u8 (), 'u16') end
+_r_l16u8v  = function(pk) return _r_chunk(pk,pk:r_u16(), 'u8' ) end
+_r_l32u8v  = function(pk) return _r_chunk(pk,pk:r_s32(), 'u8' ) end
+_r_l32u16v = function(pk) return _r_chunk(pk,pk:r_s32(), 'u16') end
+_r_l32szv  = function(pk) return _r_chunk(pk,pk:r_s32(), 'sz' ) end
+
+_w_q8v     = function(pk,tbl) _w_chunk(pk,tbl,'u8') end
+_w_q8v3    = _w_q8v
+_w_q8v4    = _w_q8v
+_w_q8v8    = _w_q8v
+_w_q8v12   = _w_q8v
+_w_q8v16   = _w_q8v
+_w_u8v8    = _w_q8v
+_w_l8u8v   = function(pk,tbl) pk:w_u8 (#tbl) _w_chunk(pk,tbl,'u8' ) end
+_w_l8u16v  = function(pk,tbl) pk:w_u8 (#tbl) _w_chunk(pk,tbl,'u16') end
+_w_l16u8v  = function(pk,tbl) pk:w_u16(#tbl) _w_chunk(pk,tbl,'u8' ) end
+_w_l32u8v  = function(pk,tbl) pk:w_s32(#tbl) _w_chunk(pk,tbl,'u8' ) end
+_w_l32u16v = function(pk,tbl) pk:w_s32(#tbl) _w_chunk(pk,tbl,'u16') end
+_w_l32szv  = function(pk,tbl) pk:w_s32(#tbl) _w_chunk(pk,tbl,'sz' ) end
+--/ -------------------------
+_r_l8szbv = function(pk)
+	tbl = {}
+	local count = pk:r_u8()
+	for i=1,count do
+		tbl[pk:r_stringZ()] = pk:r_bool()
+	end
+	return tbl --/>
+end
+_w_l8szbv = function(pk,tbl)
+	pk:w_u8( table_size(tbl) ) --/< count
+	for s,v in pairs(tbl) do
+		pk:w_stringZ(s)
+		pk:w_bool(v)
+	end
+end
+--/ -------------------------
+_r_l8szu16v = function(pk)
+	local tbl = {}
+	local count = pk:r_u8()
+	for i=1, count do
+		local s = pk:r_stringZ()
+		tbl[s]  = pk:r_u16()
+	end
+	return tbl --/>
+end
+_w_l8szu16v = function(pk,tbl)
+	pk:w_u8( table_size(tbl) )
+	for s,v in pairs(tbl) do
+		pk:w_stringZ(s)
+		pk:w_u16(tonumber(v) or 0)
+	end
+end
+--/ -------------------------
+_r_l8u16u16v = function(pk)
+	local tbl = {}
+	local count = pk:r_u8()
+	for i=1, count do
+		local k = pk:r_u16()
+		tbl[k]  = pk:r_u16()
+	end
+	return tbl --/>
+end
+_w_l8u16u16v = function(pk,tbl)
+	pk:w_u8( table_size(tbl) )
+	for k,v in pairs(tbl) do
+		pk:w_u16(k)
+		pk:w_u16(v)
+	end
+end
+--/ -------------------------
+_r_l8u16u8v = function(pk)
+	local tbl = {}
+	local count = pk:r_u8()
+	for i=1, count do
+		local k = pk:r_u16()
+		tbl[k]  = pk:r_u8()
+	end
+	return tbl --/>
+end
+_w_l8u16u8v = function(pk,tbl)
+	pk:w_u8( table_size(tbl) )
+	for k,v in pairs(tbl) do
+		pk:w_u16(k)
+		pk:w_u8(v)
+	end
+end
+--/ dead_time ---------------
+_r_l8u8CTimev = function(pk,ver)
+	local tbl = {}
+	local count = pk:r_u8()
+	for i=1, count do
+		local k = pk:r_u8()
+		tbl[k] = _r_uCTime(pk,ver)
+	end
+	return tbl --/>
+end
+_w_l8u8CTimev = function(pk,tbl)
+	pk:w_u8( table_size(tbl) )
+	for k,v in pairs(tbl) do
+		pk:w_u8(k)
+		_w_uCTime(pk, v)
+	end
+end
+--/ -------------------------
+--/ prop.type: custom data:: packed binary string - look perl's or php's pack function format
+--/ -------------------------
+_r_cd = function(pk)
+	if not disabled_convert_cd then
+		return custom_data(pk:r_stringZ()) --/> to helpers
+	end
+	return pk:r_stringZ() --/> 'string'
+end
+_w_cd = function(pk,val)
+	if not disabled_convert_cd then
+		if val:useStringRaw() then
+			pk:w_stringZ(val:getStringRaw()) --/< from helpers
+		else
+			pk:w_stringZ(val:getString()) --/< from helpers
+		end
+	elseif type(val) == 'string' then
+		pk:w_stringZ(val) --/< 'string'
+	else
+		pk:w_stringZ('') --/< 'zero_string'
+	end
+end
+_def_cd = function()
+	if not disabled_convert_cd then
+		return custom_data() --/> helpers
+	end
+	return '' --/> 'zero_string'
+end
+--/ -------------------------
+--/ prop.type: shapes
+--/ -------------------------
+_r_shape = function(pk)
+	local shp = complex_shape()
+	local shapes_count = pk:r_u8()
+	for i=1, shapes_count do
+		local sh_type = pk:r_u8()
+		if sh_type == shape_type.sphere then
+			shp:add( shape(sh_type, pk:r_vec3(vector():set( 0, 0, 0 )), pk:r_float()) )
+		else
+			shp:add( shape(sh_type, pk:r_vec3(vector():set( 0, 0, 0 )), pk:r_vec3(vector():set( 0, 0, 0 )), pk:r_vec3(vector():set( 0, 0, 0 )), pk:r_vec3(vector():set( 0, 0, 0 )) ) )
+		end
+	end
+	return shp --/>
+end
+_w_shape = function(pk, val)
+	local shapes_count = val:count()
+	pk:w_u8(shapes_count)
+	for i=1, shapes_count do
+		local shp = val:get(i)
+		if shp:isSphere() then
+			pk:w_u8(shape_type.sphere)
+			pk:w_vec3(shp.offset)
+			pk:w_float(shp.radius)
+		else
+			pk:w_u8(shape_type.box)
+			pk:w_vec3(shp.axis_x)
+			pk:w_vec3(shp.axis_y)
+			pk:w_vec3(shp.axis_z)
+			pk:w_vec3(shp.offset)
+		end
+	end
+end
+--/ -------------------------
+--/ prop.type: CTime (look utils.script!)
+--/ -------------------------
+_r_uCTime = function(pk,ver)
+	local tbl = {pk:r_u8()} --/< Y
+	if tbl[1] ~= 0 then
+		if tbl[1] == 255 then --/ and bit_ver ~= 1 | CS&SCoP
+			return nil --/>
+		elseif not pk:r_eof() then
+			tbl[1] = tbl[1] + 2000
+			for i=2,6 do
+				table.insert( tbl, pk:r_u8() ) --/< M,D,h,m,s
+			end
+			table.insert( tbl, pk:r_u16() ) --/< ms
+		end
+	end
+	return tbl --/>
+end
+_w_uCTime = function(pk,tbl)
+	if type(tbl) ~= 'table' then --/ CS&SCoP
+		pk:w_u8(-1)
+	elseif #tbl == 7 then
+		pk:w_u8(tbl[1] - 2000) --/< Y
+		for i=2,6 do
+			pk:w_u8(tbl[i] or 0) --/< M,D,h,m,s
+		end
+		pk:w_u16(tbl[7] or 0) --/< ms
+	else
+		pk:w_u8(0)
+	end
+end
+--/ -------------------------
+_r_bCTime = function(pk,ver)
+	local iFlg = pk:r_u8()
+	if bit_and(iFlg,1) ~= 0 then --/ flag: time_present
+		if not pk:r_eof() then
+			return _r_uCTime(pk,ver) --/>
+		end
+		--log("_r_bCTime:flg=[%s]~wrong:<%s>", iFlg, "Warning!") --/#~#
+	end
+	return iFlg --/> #?#
+end
+_w_bCTime = function(pk,val)
+	if type(val) == 'table' and next(val) then
+		pk:w_u8(1) --/< flag: time_present
+		_w_uCTime(pk,val)
+	else
+		pk:w_u8(0)
+	end
+end
+--/ -----------------------------------------------------------------------------------------------
+--/ prop.type: 'st' (for se_smart_terrain)
+--/ -----------------------------------------------------------------------------------------------
+--/ -----------------------------------------------------------------
+--/ only for SHoC (ver = 1)
+--/ -----------------------------------------------------------------
+--/ gulags
+_r_strn1 = function(pk,ver)
+	local tbl = {}
+	tbl.gulag_working = pk:r_bool()
+	if tbl.gulag_working == true then
+		tbl.gulag = {}
+		tbl.gulag.casualities              = pk:r_u8()
+		tbl.gulag.state                    = pk:r_u8()
+		tbl.gulag.stateBegin               = _r_uCTime(pk,ver)
+		tbl.gulag.population               = pk:r_u8()
+		tbl.gulag.population_comed         = pk:r_u8()
+		tbl.gulag.population_non_exclusive = pk:r_u8()
+		tbl.gulag.jobs = {}
+		local jobs_count = pk:r_u8()
+		for i=1, jobs_count do
+			local t = {} --/ Job
+			t.begin                = pk:r_u32()
+			t.fill_idle            = pk:r_u32()
+			t.idle_after_death_end = pk:r_u32()
+			table.insert(tbl.gulag.jobs, t)
+		end
+		--/ npc_info (in smart)
+		tbl.npc_info = {}
+		local npc_info_count = pk:r_u8()
+		for i=1, npc_info_count do
+			local t = {}
+			local npc_id      = pk:r_u16()
+			t.o_group         = pk:r_u8()
+			t.o_squad         = pk:r_u8()
+			t.exclusive       = pk:r_bool()
+			t.stay_end        = _r_uCTime(pk,ver)
+			t.begin_job       = pk:r_bool()
+			t.didnt_begin_job = pk:r_bool()
+			t.jobN            = pk:r_u8()
+			tbl.npc_info[npc_id] = t
+		end
+		tbl.population_locked = pk:r_bool()
+	end
+	return tbl --/>
+end
+_w_strn1 = function(pk,tbl)
+	if tbl.gulag_working == true then
+		pk:w_bool(true)
+		pk:w_u8(tbl.gulag.casualities)
+		pk:w_u8(tbl.gulag.state)
+		_w_uCTime(pk, tbl.gulag.stateBegin)
+		pk:w_u8(tbl.gulag.population)
+		pk:w_u8(tbl.gulag.population_comed)
+		pk:w_u8(tbl.gulag.population_non_exclusive)
+		--/ gulag.jobs
+		pk:w_u8( table_size(tbl.gulag.jobs) ) --/< gulag.jobs count
+		for _,v in pairs(tbl.gulag.jobs) do
+			pk:w_u32(v.begin or 0)
+			pk:w_u32(v.fill_idle or 0)
+			pk:w_u32(v.idle_after_death_end or 0)
+		end
+		--/ npc_info (in smart)
+		pk:w_u8( table_size(tbl.npc_info) ) --/< npc_info count
+		for npc_id,v in pairs(tbl.npc_info) do
+			pk:w_u16(npc_id)
+			pk:w_u8  (v.o_group)
+			pk:w_u8  (v.o_squad)
+			pk:w_bool(v.exclusive)
+			_w_uCTime(pk, v.stay_end)
+			pk:w_bool(v.begin_job)
+			pk:w_bool(v.didnt_begin_job)
+			pk:w_u8  (v.jobN)
+		end
+		pk:w_bool(tbl.population_locked)
+	else
+		pk:w_bool(false)
+	end
+end
+--/ -----------------------------------------------------------------
+--/ only for CS (ver = 2)
+--/ -----------------------------------------------------------------
+--/ CCombat_manager
+_r_cmb_mgr = function(pk,ver)
+	local tbl = {}
+	tbl.squads = {}
+	local squads_count = pk:r_u8()
+	for i=1,squads_count do
+		local s = pk:r_stringZ()
+		tbl.squads[s] = {}
+		tbl.squads[s].stage           = pk:r_stringZ()
+		tbl.squads[s].attack_shouted  = pk:r_bool()
+		tbl.squads[s].prepare_shouted = pk:r_bool()
+		tbl.squads[s].attack_squad    = pk:r_bool()
+		tbl.squads[s].inited_defend_time     = _r_bCTime(pk,ver)
+		tbl.squads[s].start_attack_wait      = _r_bCTime(pk,ver)
+		tbl.squads[s].last_defence_kill_time = _r_bCTime(pk,ver)
+		tbl.squads[s].squad_power     = pk:r_float()
+	end
+	tbl.force_online = pk:r_bool()
+	tbl.force_online_squads = {}
+	local count = pk:r_u8() --/< force_online_squads count
+	for i=1, count do
+		local s = pk:r_stringZ()
+		tbl.force_online_squads[s] = true
+	end
+	return tbl --/>
+end
+_w_cmb_mgr = function(pk,tbl)
+	pk:w_u8( table_size(tbl.squads) ) --/< squads count
+	for k,v in pairs(tbl.squads) do
+		pk:w_stringZ(k) --/ ID отряда
+		pk:w_stringZ(v.stage)
+		pk:w_bool   (v.attack_shouted)
+		pk:w_bool   (v.prepare_shouted)
+		pk:w_bool   (v.attack_squad)
+		_w_bCTime(pk, v.inited_defend_time)
+		_w_bCTime(pk, v.start_attack_wait)
+		_w_bCTime(pk, v.last_defence_kill_time)
+		pk:w_float(v._squad_power)
+	end
+	pk:w_bool(tbl.force_online)
+	pk:w_u8( table_size(tbl.force_online_squads) ) --/< force_online_squads count
+	for s,v in pairs(tbl.force_online_squads) do
+		pk:w_stringZ(s)
+	end
+end
+--/ CCover_manager
+_r_cvr_mgr = function(pk,ver)
+	local tbl = {}
+	tbl.is_valid = pk:r_bool()
+	tbl.cover_table = {}
+	local cover_table_count = pk:r_u8()
+	for i=1, cover_table_count do
+		local t = {}
+		local npc_id      = pk:r_u16()
+		t.cover_vertex_id = pk:r_u32()
+		t.cover_position  = pk:r_vec3(vector():set( 0, 0, 0 ))
+		t.look_pos        = pk:r_vec3(vector():set( 0, 0, 0 ))
+		t.is_smart_cover  = pk:r_bool()
+		tbl.cover_table[npc_id] = t
+	end
+	tbl.cover__marker = pk:r_u16() --/#!#
+	return tbl --/>
+end
+_w_cvr_mgr = function(pk,tbl)
+	local size_marker = pk:w_tell() --/#+#
+	pk:w_bool(tbl.is_valid)
+	pk:w_u8( table_size(tbl.cover_table) ) --/< cover_table count
+	for npc_id,v in pairs(tbl.cover_table) do
+		pk:w_u16 (npc_id)
+		pk:w_u32 (v.cover_vertex_id)
+		pk:w_vec3(v.cover_position)
+		pk:w_vec3(v.look_pos)
+		pk:w_bool(v.is_smart_cover)
+	end
+	tbl.cover__marker = pk:w_tell() - size_marker
+	pk:w_u16(tbl.cover__marker) --/#!#
+end
+--/ -----------------------------------------------------------------
+--/ only for SCoP (ver = 4)
+--/ -----------------------------------------------------------------
+--/ arriving_npc (go to gulags)
+_r_st41 = function(pk,ver)
+	local tbl = {}
+	local count = pk:r_u8()
+	for i=1,count do
+		local npc_id = pk:r_u16()
+		tbl[npc_id] = false
+	end
+	return tbl --/>
+end
+_w_st41 = function(pk,tbl)
+	pk:w_u8( table_size(tbl) ) --/< arriving_npc count
+	for npc_id,v in pairs(tbl) do
+		pk:w_u16(npc_id)
+	end
+end
+--/ base_on_actor_control
+_r_st44 = function(pk,ver)
+	local is_base_on_actor_control = pk:r_bool()
+	if is_base_on_actor_control then
+		local tbl = {}
+		tbl.status     = pk:r_u8()
+		tbl.alarm_time = _r_uCTime(pk,ver)
+		tbl.actor_control__marker = pk:r_u16() --/#+# (def:2)
+		return tbl --/>
+	end
+	return false --/>
+end
+_w_st44 = function(pk,tbl)
+	if type(tbl) == 'table' then
+		local size_marker = pk:w_tell() --/#+#
+		pk:w_bool(true) --/< base_on_actor_control present
+		pk:w_u8(tbl.status)
+		_w_uCTime(pk, tbl.alarm_time)
+		tbl.actor_control__marker = pk:w_tell() - size_marker
+		pk:w_u16(tbl.actor_control__marker) --/#!#
+	else
+		pk:w_bool(false)
+	end
+end
+--/ already_spawned
+_r_st45 = function(pk,ver)
+	local tbl = {}
+	tbl.respawn_point_enabled = pk:r_bool()
+	if tbl.respawn_point_enabled == true then
+		tbl.already_spawned = {}
+		local count = pk:r_u8()
+		for i=1, count do
+			local s = pk:r_stringZ()
+			tbl.already_spawned[s] = {num = pk:r_u8()}
+		end
+		tbl.last_respawn_update = _r_bCTime(pk,ver)
+	end
+	return tbl --/>
+end
+_w_st45 = function(pk,tbl)
+	if tbl.respawn_point_enabled == true and tbl.already_spawned then
+		pk:w_bool(true)
+		pk:w_u8( table_size(tbl.already_spawned) ) --/< already_spawned count
+		for s,v in pairs(tbl.already_spawned) do
+			pk:w_stringZ(s)
+			pk:w_u8(v.num)
+		end
+		_w_bCTime(pk, tbl.last_respawn_update)
+	else
+		pk:w_bool(false)
+	end
+end
+--/ -----------------------------------------------------------------
+--/ for CS (ver=2) & SCoP (ver=4)
+--/ -----------------------------------------------------------------
+--/ npc_info (in gulags)
+_r_st62 = function(pk,ver)
+	local tbl = {}
+	local count = pk:r_u8()
+	for i=1, count do
+		local t = {}
+		local npc_id = pk:r_u16()
+		t.job_prior  = pk:r_u8()
+		t.job_id     = pk:r_u8()
+		t.begin_job  = pk:r_bool()
+		t.need_job   = pk:r_stringZ()
+		if t.job_prior == 255 then t.job_prior = -1 end
+		if t.job_id == 255 then t.job_id = -1 end
+		tbl[npc_id] = t
+	end
+	return tbl --/>
+end
+_w_st62 = function(pk,tbl)
+	pk:w_u8( table_size(tbl) ) --/< npc_info count
+	for npc_id,v in pairs(tbl) do
+		pk:w_u16    (npc_id)
+		pk:w_u8     (v.job_prior or -1)
+		pk:w_u8     (v.job_id    or -1)
+		pk:w_bool   (v.begin_job or false)
+		pk:w_stringZ(v.need_job  or "nil")
+	end
+end
+--/ -----------------------------------------------------------------------------------------------
+--/ prop.type: 'sf_squads' (for se_sim_faction)
+--/ -----------------------------------------------------------------------------------------------
+local _r_squad = function(pk,ver)
+	local tbl = {}
+	tbl.squad_id    = pk:r_stringZ()
+	tbl.settings_id = pk:r_stringZ()
+	if tbl.settings_id == "nil" then tbl.settings_id = nil end
+	--/ flag: class 'sim_squad_generic' or 'sim_squad_scripted'
+	tbl.is_scripted = pk:r_bool()
+	--/ class: sim_squad_generic
+	tbl.smart_id                 = pk:r_u16()
+	tbl.assigned_target_smart_id = pk:r_u16()
+	tbl.sim_combat_id            = pk:r_u16()
+	tbl.delayed_attack_task      = pk:r_u16()
+	if tbl.smart_id == 65535 then tbl.smart_id = nil end
+	if tbl.assigned_target_smart_id == 65535 then tbl.assigned_target_smart_id = nil end
+	if tbl.sim_combat_id == 65535 then tbl.sim_combat_id = nil end
+	if tbl.delayed_attack_task == 65535 then tbl.delayed_attack_task = nil end
+	--/ random_tasks
+	tbl.random_tasks = {} --/ l8u16u16v
+	local cnt = pk:r_u8()
+	for i=1,cnt do
+		local k = pk:r_u16()
+		tbl.random_tasks[k] = pk:r_u16()
+	end
+	--/ members of squad
+	tbl.npc_count    = pk:r_u8()
+	tbl.squad_power  = pk:r_float()
+	tbl.commander_id = pk:r_u16()
+
+	tbl.squad_npc = {}
+	cnt = pk:r_u8()
+	for i=1,cnt do
+		local k = pk:r_u16()
+		tbl.squad_npc[k] = k
+	end
+	tbl.spoted_shouted = pk:r_bool()
+	--/ action-timer
+	tbl.last_action_timer  = _r_uCTime(pk,ver)
+	tbl.squad_attack_power = pk:r_u16()
+	--/ current action
+	tbl.is_current_action = pk:r_bool() --/ flag
+	if tbl.is_current_action == true then
+		tbl.is_attack_point = pk:r_bool() --/ class actions
+		if tbl.is_attack_point == true then
+			tbl.dest_smrt_id = pk:r_u16()
+		end
+		if tbl.is_attack_point == true then --/ flag: class sim_attack_point
+			tbl.major = pk:r_bool()
+			tbl.target_power_value = pk:r_u16()
+			if tbl.target_power_value == 65535 then tbl.target_power_value = nil end
+		else --/ flag: class sim_stay_point
+			tbl.stay_defended = pk:r_bool()
+			tbl.next_point_id = pk:r_u16()
+			if tbl.next_point_id == 65535 then tbl.next_point_id = nil end
+			tbl.begin_time = _r_bCTime(pk)
+		end
+		tbl.current_action__marker = pk:r_u16()
+	end
+	tbl.items_spawned = pk:r_bool()
+	tbl.bring_item_inited_time   = _r_uCTime(pk,ver)
+	tbl.recover_item_inited_time = _r_uCTime(pk,ver)
+	--/ end of sim_squad_generic
+	tbl.squad_generic__marker = pk:r_u16()
+	if tbl.is_scripted == true then
+		--/ class: sim_squad_scripted
+		tbl.next_target = pk:r_u8()
+		tbl.need_free_update = pk:r_bool()
+		if tbl.next_target == 255 then tbl.next_target = nil end
+		local relations = {[1]="friend",[2]="enemy",[3]="neutral"}
+		local relation = pk:r_u8()
+		tbl.relationship = relations[relation]
+		tbl.sympathy = pk:r_u8()
+		if tbl.sympathy == 255 then tbl.sympathy = nil end
+		--/ end of sim_squad_scripted
+		tbl.squad_scripted__marker = pk:r_u16()
+	end
+	return tbl --/>
+end
+local _w_squad = function(pk,tbl)
+	pk:w_stringZ(tbl.squad_id)
+	pk:w_stringZ(tostring(tbl.settings_id))
+	--/ class: scripted or generic
+	if tbl.is_scripted then --/ name == "sim_squad_scripted"
+		pk:w_bool(true)
+	else
+		pk:w_bool(false)
+	end
+	--/ squad generic
+	local size_marker = pk:w_tell() --/#+#
+	pk:w_u16(tbl.smart_id or -1)
+	pk:w_u16(tbl.assigned_target_smart_id or -1)
+	pk:w_u16(tbl.sim_combat_id or -1)
+	pk:w_u16(tbl.delayed_attack_task or -1)
+	--/ random_tasks
+	pk:w_u8( table_size(tbl.random_tasks) ) --/< random_tasks count
+	for k,v in pairs(tbl.random_tasks) do
+		pk:w_u16(k)
+		pk:w_u16(v)
+	end
+	--/ members of squad
+	pk:w_u8(tbl.npc_count)
+	pk:w_float(tbl.squad_power)
+	pk:w_u16(tbl.commander_id)
+
+	pk:w_u8( table_size(tbl.squad_npc) ) --/< squad_npc count
+	for k,v in pairs(tbl.squad_npc) do
+		pk:w_u16(v)
+	end
+	pk:w_bool(tbl.spoted_shouted == true)
+	--/ action-timer
+	_w_uCTime(pk, tbl.last_action_timer)
+	pk:w_u16(tbl.squad_attack_power)
+	--/ current action
+	if tbl.is_current_action then
+		pk:w_bool(true) --/< current_action present
+		if tbl.is_attack_point then --/ class sim_attack_point
+			pk:w_bool(true)
+			pk:w_u16(tbl.dest_smrt_id or -1)
+		else --/ class sim_stay_point
+			pk:w_bool(false)
+		end
+		--/ current_action:save(pk)
+		local size_marker = pk:w_tell() --/#+#
+		if tbl.is_attack_point then
+			pk:w_bool(tbl.major == true)
+			pk:w_u16(tbl.target_power_value or -1)
+		else --/ is stay_point
+			pk:w_bool(tbl.stay_defended == true)
+			pk:w_u16(tbl.next_point_id or -1)
+			_w_bCTime(pk, tbl.begin_time)
+		end
+		tbl.current_action__marker = pk:w_tell() - size_marker
+		pk:w_u16(tbl.current_action__marker) --/#!#
+	else
+		pk:w_bool(false)
+	end
+	pk:w_bool(tbl.tbl.items_spawned == true)
+	_w_uCTime(pk, tbl.bring_item_inited_time)
+	_w_uCTime(pk, tbl.recover_item_inited_time)
+	--/ end of sim_squad_generic
+	tbl.squad_generic__marker = pk:w_tell() - size_marker
+	pk:w_u16(tbl.squad_generic__marker) --/#!#
+	if tbl.is_scripted == true then --/ sim_squad_scripted
+		local size_marker = pk:w_tell() --/#+#
+		if tbl.next_target then
+			pk:w_u8(tbl.next_target)
+			pk:w_bool(true) --/ need_free_update
+		else
+			pk:w_u8(-1)
+			pk:w_bool(false)
+		end
+		local relations = {["friend"]=1,["enemy"]=2,["neutral"]=3}
+		local rel = relations[tbl.relationship or ""]
+		pk:w_u8(rel or 0)
+		pk:w_u8(tbl.sympathy or -1)
+		--/ end of sim_squad_scripted
+		tbl.squad_scripted__marker = pk:w_tell() - size_marker
+		pk:w_u16(tbl.squad_scripted__marker) --/#!#
+	end
+end
+--/ -------------------------
+_r_sf_squads = function(pk,ver)
+	local tbl = {} --/ squads
+	local count = pk:r_u16() --/squads count
+	for i=1,count do
+		local squad = _r_squad(pk,ver)
+		table.insert( tbl, squad )
+	end
+	return tbl --/>
+end
+_w_sf_squads = function(pk,tbl)
+	pk:w_u16( table_size(tbl) ) --/< squads count
+	for _,v in pairs(tbl) do
+		_w_squad(pk,v)
+	end
+end
+--/ -------------------------
+_r_cook = function(pk,ver)
+	local tbl = {} --/ cooking_food
+	local count = pk:r_u8() --/ cooking_food_count
+	for i=1,count do
+		tbl[i] = {}
+		tbl[i].cooking_food_idx  = pk:r_u16()
+		tbl[i].cooking_food_time = _r_uCTime(pk)
+	end
+	return tbl --/>
+end
+_w_cook = function(pk,tbl)
+	pk:w_u16( table_size(tbl) ) --/< cooking_food_count
+	for _,v in pairs(tbl) do
+		pk:w_u16(v.cooking_food_idx)
+		_w_uCTime(pk, v.cooking_food_time)
+	end
+end
+--/ -----------------------------------------------------------------------------------------------
+--/ Main section with classes
+--/ -----------------------------------------------------------------------------------------------
+--/ -----------------------------------------------------------------
+class "net_base" --/ base class
+--/ -----------------------------------------------------------------
+function net_base:__init(obj, mode, can, name)
+	self.obj     = obj --/ convert_obj(obj)   --/ server_object
+	self._mode   = bit_and(mode or 3, 3)      --/ number-flag for disabling state/update parts of (sub)packet
+	self._can_st = bit_and(can  or 3, 1) ~= 0 --/ boolean-flag 'state' part of subpacket
+	self._can_up = bit_and(can  or 3, 2) ~= 0 --/ boolean-flag 'update' part of subpacket
+	self.dbg     = bit_and(mode or 3, 4) ~= 0 --/ boolean-flag for debug
+	self.name    = name                       --/ for desctiption (and for debug)
+	if self.dbg then log("net_base:init:(%s):mode=[%s/%s],can=[%s],props=[%s/%s]:obj=[%s]", name, mode, self._mode, can, self._can_st, self._can_up, self.obj and self.obj:name(), "") end --/#~#
+end
+--/ read ----------
+function net_base:_read(ret,stpk,uppk)
+	if self.dbg then log("net_base:_read:(%s)~>sub_class=[%s]:mode=[%s]:st=[%s/%s]:up=[%s/%s]:[%s]", self.name, self.bases[1] and self.bases[1].name, self._mode, self._can_st, type(stpk), self._can_up, type(uppk), ">") end --/#~#
+	if next(self.bases) then
+		self:_read_bases(ret,stpk,uppk)
+	end
+	if self._mode == 0 then --/ 'abstract' part
+		if self.co_props and next(self.co_props) then
+			if self.dbg then log("net_base:_read:(%s)~>co_props:[%s]", ">") end --/#~#
+			self:_read_co_props(ret,stpk)
+		end
+	else --/ 'state'/'update' part(s)
+		if self._can_st and next(self.st_props) then
+			self:_read_st_props(ret,stpk)
+		end
+		if self._can_up and next(self.up_props) then
+			self:_read_up_props(ret,uppk)
+		end
+	end
+	if self.dbg then log("net_base:_read:(%s):%s]", self.name, "<") end --/#~#
+end
+function net_base:_read_bases(ret,stpk,uppk)
+	for _,sub_class in ipairs(self.bases) do
+		sub_class:_read(ret,stpk,uppk)
+	end
+end
+function net_base:_read_co_props(ret,pk)
+	for _,prop in ipairs(self.co_props) do
+		if can_ver(prop.ver) and not pk:r_eof() then
+			ret[prop.name] = this["_r_"..prop.type](pk, prop.ver)
+		end
+	end
+end
+function net_base:_read_st_props(ret,pk)
+	for _,prop in ipairs(self.st_props) do
+		if can_ver(prop.ver) and not pk:r_eof() then
+			ret[prop.name] = this["_r_"..prop.type](pk, prop.ver)
+		end
+	end
+end
+function net_base:_read_up_props(ret,pk)
+	for _,prop in ipairs(self.up_props) do
+		if can_ver(prop.ver) and not pk:r_eof() then
+			ret.upd[prop.name] = this["_r_"..prop.type](pk, prop.ver)
+		end
+	end
+end
+--/ write ---------
+function net_base:_write(data,stpk,uppk)
+	if self.dbg then log("net_base:_write:(%s):st=[%s/%s]:up=[%s/%s]:[%s]", self.name, self._can_st, type(stpk), self._can_up, type(uppk), ">") end --/#~#
+	if next(self.bases) then
+		self:_write_bases(data,stpk,uppk)
+	end
+	if self._mode == 0 then --/ 'abstract' part
+		if self.co_props and next(self.co_props) then
+			self:_write_co_props(data,stpk)
+		end
+	else --/ 'state'/'update' part(s)
+		if self._can_st and next(self.st_props) then
+			self:_write_st_props(data,stpk)
+		end
+		if self._can_up and next(self.up_props) then
+			self:_write_up_props(data,uppk)
+		end
+	end
+	if self.dbg then log("net_base:_write:(%s):st=[%s/%s]:up=[%s/%s]:[%s]", self.name, self._can_st, type(stpk), self._can_up, type(uppk), "<") end --/#~#
+end
+function net_base:_write_bases(data,stpk,uppk)
+	for _,sub_class in ipairs(self.bases) do
+		sub_class:_write(data,stpk,uppk)
+	end
+end
+function net_base:_write_co_props(data,pk)
+	for _,prop in ipairs(self.co_props) do
+		if can_ver(prop.ver) then
+			this["_w_"..prop.type](pk, data[prop.name] or prop.default or 0)
+		end
+	end
+end
+function net_base:_write_st_props(data,pk)
+	for _,prop in ipairs(self.st_props) do
+		if can_ver(prop.ver) then
+			this["_w_"..prop.type](pk, data[prop.name] or prop.default or 0)
+		end
+	end
+end
+function net_base:_write_up_props(data,pk)
+	for _,prop in ipairs(self.up_props) do
+		if can_ver(prop.ver) then
+			this["_w_"..prop.type](pk, data.upd[prop.name] or prop.default or 0)
+		end
+	end
+end
+--/ Get -----------
+function net_base:get()
+	if not (self.obj and self._mode ~= 0) then return {} end --/> zero
+	--/ preparation
+	local stpk,uppk = nil,nil
+	local stsz,upsz = 0,0
+	if bit_and(self._mode, 1) ~= 0 then
+		stpk = net_packet()
+		stpk:w_begin(0) --/ installation in the package beginning (+2)
+		self.obj:STATE_Write(stpk)
+		stpk:r_seek(2) --/ installation of the beginning (+2) of reading
+		stsz = stpk:r_tell()
+	end
+	if bit_and(self._mode, 2) ~= 0 then
+		uppk = net_packet()
+		uppk:w_begin(0) --/ installation in the package beginning (+2)
+		self.obj:UPDATE_Write(uppk)
+		uppk:r_seek(2) --/ installation of the beginning (+2) of reading
+		upsz = uppk:r_tell()
+	end
+	local t = {}
+	if uppk ~= nil then
+		t.upd = {} --/ sub-table for update-propeties
+	end
+	--/ read
+	if self.dbg then log("net_base:get:(%s):(%s):m(%s)/st(%s)/up(%s):[%s]", self.obj:name(), self.name, self._mode, self._can_st, self._can_up, ">") end --/#~#
+	self:_read(t, stpk, uppk)
+	if self.dbg then log("net_base:get:(%s):(%s):m(%s)/st(%s)/up(%s):[%s]", self.obj:name(), self.name, self._mode, self._can_st, self._can_up, "<") end --/#~#
+	--/ check state size and tail
+	if stpk ~= nil then
+		self.size = stpk:r_tell() - stsz
+		if not stpk:r_eof() then --/ exist left?
+			t.__tail = tail_data():peekFrom(stpk)
+			t.__tail_size = t.__tail.pk:w_tell() - t.__tail.pk:r_tell()
+			if self.dbg then log("net_base:get:obj=[%s]:(%s):mode=[%s]:tail(st)=[%s]:<%s>", self.obj:name(), self.name, self._mode, t.__tail_size, "Info!") end --/#~#
+		end
+	end
+	--/ check update size and tail
+	if uppk ~= nil then
+		self.size_upd = uppk:r_tell() - upsz
+		if not uppk:r_eof() then --/ exist left?
+			t.upd.__tail = tail_data():peekFrom(uppk)
+			t.upd.__tail_size = t.upd.__tail.pk:w_tell() - t.upd.__tail.pk:r_tell()
+			if self.dbg then log("net_base:get:obj=[%s]:(%s):mode=[%s]:tail(up)=[%s]:<%s>", self.obj:name(), self.name, self._mode, t.upd.__tail_size, "Info!") end --/#~#
+		end
+	end
+	if (stpk and stpk:r_elapsed()~=0) or (uppk and uppk:r_elapsed()~=0) then
+		if self.dbg then log(string.format("%s elapsed std: %i upd:%i",self.obj:name(),stpk:r_elapsed(),uppk:r_elapsed())) end --/#~#
+	end
+	return t --/>
+end
+--/ Set -----------
+function net_base:set(data)
+	if not (self.obj and data) and self._mode == 0 then
+		if self.dbg then log("net_base:set:(%s):obj=[%s]:data=[%s]:mode=[%s]:<%s>", self.obj and self.obj:name(), self.name, self._mode, type(data), "Warning!") end --/#~#
+		return false --/>
+	end
+	--/ preparation
+	local stpk,uppk = nil,nil
+	if bit_and(self._mode, 1) ~= 0 then
+		stpk = net_packet()
+		stpk:w_begin(0) --/ installation in the package beginning (+2)
+		stpk:r_seek(0) --/ installation of the beginning of reading
+	end
+	if bit_and(self._mode, 2) ~= 0 then
+		uppk = net_packet()
+		uppk:w_begin(0) --/ installation in the package beginning (+2)
+		uppk:r_seek(0) --/ installation of the beginning of reading
+		if not data.upd then data.upd = {} end --/ sub-table for update-propeties
+	end
+	--/ writing
+	if self.dbg then log("net_base:set:(%s):(%s):m(%s)/st(%s)/up(%s):[%s]", self.obj:name(), self.name, self._mode, self._can_st, self._can_up, ">") end --/#~#
+	self:_write(data,stpk,uppk) --/ write data
+	if self.dbg then log("net_base:set:(%s):(%s):m(%s)/st(%s)/up(%s):[%s]", self.obj:name(), self.name, self._mode, self._can_st, self._can_up, "<") end --/#~#
+	--/ state
+	if stpk and stpk:r_elapsed() > 2 then
+		if data.__tail ~= nil then
+			data.__tail:pushTo(stpk) --/ write state tail
+		end
+		stpk:r_seek(2) --/ installation of the beginning (+2) of reading
+		self.size = stpk:w_tell()
+		self.obj:STATE_Read(stpk, self.size)
+	end
+	--/ update
+	if uppk and uppk:r_elapsed() > 2 then
+		if data.upd.__tail ~= nil then
+			data.upd.__tail:pushTo(uppk) --/ write update tail
+		end
+		uppk:r_seek(2) --/ installation of the beginning (+2) of reading
+		self.size_upd = uppk:w_tell()
+		self.obj:UPDATE_Read(uppk)
+	end
+	if self.dbg then log("net_base:set:(%s):(%s):m(%s)/st(%s)/up(%s):size=[%s/%s]:[%s]", self.obj:name(), self.name, self._mode, self._can_st, self._can_up, self.size, self.size_upd, "<<<") end --/#~#
+	return true --/>
+end
+--/ ---------------
+function net_base:isOk()
+	return (self.obj ~= nil and self._mode ~= 0) --/>
+end
+--/ ---------------
+function net_base:get_tail()
+	if self:isOk() then
+		return tail_data:get_pk() --/> blank tail packet
+	end
+end
+--/ ---------------
+function net_base:__dumpDesc()
+	local str = ""
+	for _,sub_class in ipairs(self.bases) do
+		str = str .. sub_class:__dumpDesc()
+	end
+	str = str .. ";-- "..self.name.." part ---\n"
+	for _,prop in ipairs(self.st_props) do
+		str = str .. "     " .. prop.name .. " => " .. prop.type .. "\n"
+	end
+	for _,prop in ipairs(self.up_props) do
+		str = str .. "     upd." .. prop.name .. " => " .. prop.type .. "\n"
+	end
+	return str --/>
+end
+
+function net_base:dumpDesc()
+	return "<<< dump of "..self.name.." desctiption >>>\n" .. self:__dumpDesc() .. "<<< dump end >>>\n" --/>
+end
+--/ -----------------------------------------------------------------
+--/ in development!
+--/ -----------------------------------------------------------------
+function net_base:get_pk2tbl()
+	if not self.obj then return {} end --/> zero
+	--/ preparation
+	local t = {}
+	--/ abstract-part
+	if self._mode == 0 and self.pk then
+		local pk = self.pk
+		local r_pos,w_pos = pk:r_tell(),pk:w_tell() --/ begin&end of reading
+		pk:r_seek(0) --/ installation of the beginning of reading
+		while not pk:r_eof() do --/ цикл (до конца читаемого пакета)
+			table.insert( t, string.format("%02x", pk:r_u8()) )
+		end
+		--/ restore of the beginning of reading
+		if r_pos < w_pos then
+			pk:r_seek(r_pos)
+		else
+			pk:r_seek(0)
+		end
+		return t --/> table
+	end
+	--/ state-packet
+	if bit_and(self._mode, 1) ~= 0 then
+		local stpk = net_packet()
+		stpk:w_begin(0) --/ installation in the package beginning (+2)
+		self.obj:STATE_Write(stpk)
+		if stpk:r_elapsed() > 2 then
+			stpk:r_seek(2) --/ installation of the beginning (+2) of reading
+			while not stpk:r_eof() do --/ цикл (до конца читаемого пакета)
+				table.insert( t, string.format("%02x", stpk:r_u8()) )
+			end
+		end
+	end
+	--/ update-packet
+	if bit_and(self._mode, 2) ~= 0 then
+		local uppk = net_packet()
+		uppk:w_begin(0) --/ installation in the package beginning (+2)
+		self.obj:UPDATE_Write(uppk)
+		if uppk:r_elapsed() > 2 then
+			uppk:r_seek(2) --/ installation of the beginning (+2) of reading
+			t.upd = {} --/ sub-table for update-propeties
+			while not uppk:r_eof() do --/ цикл (до конца читаемого пакета)
+				table.insert( t.upd, string.format("%02x", uppk:r_u8()) )
+			end
+		end
+	end
+	return t --/> table
+end
+function net_base:get_pk2str()
+	return table.concat(self:get_pk2tbl(), ' ') --/> string
+end
+function net_base:print()
+	if self.obj and self._mode ~= 0 and table.print then
+		table.print(self:get(),sModule..":NetPacket|"..self.obj:name())
+	end
+end
+--/ -----------------------------------------------------------------
+
+--/ -----------------------------------------------------------------
+class "tail_data" --/ specific class
+--/ -----------------------------------------------------------------
+function tail_data:__init()
+	self.pk = nil
+end
+
+function tail_data:get_pk()
+	self.pk = net_packet()
+	self.pk:w_begin(0) --/ installation in the package beginning (+2)
+	self.pk:r_seek(0) --/ installation of the beginning of reading
+	return self --/> blank packet
+end
+
+function tail_data:peekFrom(src_packet)
+	self:get_pk()
+	while not src_packet:r_eof() do
+		self.pk:w_u8(src_packet:r_u8())
+	end
+	return self --/>
+end
+
+function tail_data:peekPartFrom(src_packet, target_pos)
+	self:get_pk()
+	while src_packet:r_tell() < target_pos do
+		self.pk:w_u8(src_packet:r_u8())
+	end
+	if self.pk:r_elapsed() > 2 then
+		self.pk:r_seek(2) --/ installation of the beginning (+2) of reading
+	end
+	return self --/>
+end
+
+function tail_data:pushTo(src_packet)
+	if self.pk then
+		if self.pk:r_elapsed() > 2 then
+			self.pk:r_seek(2) --/ installation of the beginning (+2) of reading
+		end
+		while not self.pk:r_eof() do
+			src_packet:w_u8(self.pk:r_u8())
+		end
+		return self --/>
+	end
+	return --/>
+end
+
+function tail_data:get()
+	local t = {}
+	if self.pk then
+		while not self.pk:r_eof() do
+			table.insert(t, self.pk:r_u8())
+		end
+	end
+	return t --/>
+end
+--/ -----------------------------------------------------------------
+--/ Helper: switchings 'online->offline->online'
+--/ -----------------------------------------------------------------
+local actived_switchings = false --/ флаг запущенного коллбэка переключений
+local tbl_switchings = {} --/ локальный ID-массив флагов/счетчиков для переключений
+
+local execute_switchings = function()
+	local can_switch = next(tbl_switchings) ~= nil --/ flag: exist switchings
+	if can_switch then
+		for id,v in pairs(tbl_switchings) do
+			local sobj = sim:object(id)
+			can_switch = sobj ~= nil --/ flag: exist server_object?
+			if can_switch then --/ exist server_object?
+				v.cnt = (v.cnt or 0) +1
+				if sobj.online then --/ object in 'online'
+					if v.off ~= true then
+						if v.off == false and v.cnt == 1 then --/ phase-1: flag: need switch 'online->offline'
+							v.off = true --/ change flag -> need switch to 'online'
+							--/ set switchings 'online->offline'
+							sim:set_switch_online(id, false)
+							sim:set_switch_offline(id, true)
+						else --/ already switched (v.off == 'nil')
+							can_switch = false --/ switches finished -> clear
+						end
+					end
+				else --/ object in 'offline'
+					if v.off == true then --/ phase-2: need switch 'offline->online'
+						v.off,v.cnt = nil,1 --/ clear flag & reset count
+						--/ set switchings 'offline->online'
+						sim:set_switch_online (id, true)
+						sim:set_switch_offline(id, false)
+					end
+				end
+			end
+			if not can_switch or v.cnt > 48 then --/ if limit is exceeded -> clear:
+				if v and v.cnt > 32 then log("execute_switchings:obj=[%s/%s]:cnt(%s):flag(%s)=>online(%s):<%s>", sobj and sobj:name(), id, v.cnt, v.off, sobj and sobj.online, "Warning!") end --/#~#
+				tbl_switchings[id] = nil
+			end
+		end
+		can_switch = next(tbl_switchings) ~= nil --/ flag: switches finished?
+	end
+	return not can_switch --/>
+end
+function do_switchings(id)
+	if type(db.do_switchings) == 'function' then
+		db.do_switchings(id) --/ добавляем в 'единый переключатель' (for SIMBION)
+	elseif type(id) == 'number' then --/ проверка валидности аргумента
+		--/ added to table 'online->offline->online'
+		tbl_switchings[id] = {cnt = 0, off = not level.object_by_id(id)}
+		--/ start callback for 'online->offline->online'
+		if not actived_switchings then
+			actived_switchings = true --/ set flag
+			level.add_call(execute_switchings, function() actived_switchings = false end)
+		end
+	end
+end
+function callback_do_switch(uo, id, obj)
+	do_switchings(id) --/ added to table for 'online->offline->online'
+end
+function is_switchings(id)
+	if id and tbl_switchings[id] then
+		return tbl_switchings[id].off ~= nil --/>
+	end
+	return nil --/>
+end
+
+--/ -----------------------------------------------------------------------------------------------
+class "net_cse_abstract" (net_base) --/[+] specific case: abstract part of packet
+--/ -----------------------------------------------------------------------------------------------
+function net_cse_abstract:__init(obj, mode, packet, net_class)
+	super(obj, bits_mode[0], bits_mode[0], "cse_abstract") --/< only 'state' part from net-packet
+	self.bases = { net_class and net_class(obj, bits_mode[0]) } --/ 'net_class' - object class
+	self.props = {
+		--{ name = 'dummy16',            type = 'u16',    default = 0           }, --/#x# читаем/пишем в hook'е!
+		{ name = 'section_name',       type = 'sz',     default = ''          },
+		{ name = 'name',               type = 'sz',     default = ''          },
+		{ name = 's_gameid',           type = 'h8',     default = 0           },
+		{ name = 's_rp',               type = 'h8',     default = 254         },
+		{ name = 'position',           type = 'f32v3',  default = vector():set( 0, 0, 0 ) },
+		{ name = 'direction',          type = 'f32v3',  default = vector():set( 0, 0, 0 ) },
+		{ name = 'respawn_time',       type = 'h16',    default = 0           },
+		{ name = 'id',                 type = 'h16',    default = -1          }, --/ object's ID
+		{ name = 'parent_id',          type = 'h16',    default = -1          },
+		{ name = 'phantom_id',         type = 'h16',    default = -1          },
+		{ name = 's_flags',            type = 'h16',    default = 33          },
+		{ name = 'version',            type = 'h16',    default = 118         }, --/ SHoC:118|CS: 124|SCoP:128 (look ACDC)
+		{ name = 'cse_abstract__unk1', type = 'h16',    default = -1, ver = 6 }, --/ CS&SCoP
+		{ name = 'script_version',     type = 'u16',    default = script_version }, --/ SHoC:6/7|CS:8|SCoP:12
+		{ name = 'cobj_data',          type = 'l16u8v', default = {}          }, --/ game_object params & dynamic data (unused_pad)
+		{ name = 'spawn_id',           type = 'u16',    default = 65535       }, --/ index section from all.spawn
+		{ name = 'extended_size',      type = 'u16',    default = 0           }
+	}
+	self.co_props = { --/ может в ~> 'net_cse_alife_dynamic_object_visual'?
+		--{ name = 'ph_shell_state',     type = 'u8',     default = 0           } --/ доступность физ.оболочки у объекта (CPhysicsShellHolder)
+	}
+	self.pk = packet --/< 'abstract' packet
+	self.dbg = bit_and(mode or 0, 4) ~= 0 --/ boolean-flag for debug
+--	log("net_cse_abstract:init:Obj=[%s],mode=[%s]~>(%s)%s", obj:name(), mode, self.dbg, "") --/#~#
+end
+
+function net_cse_abstract:isOk()
+	return self.obj ~= nil and not (self.pk and self.pk.w_tell and self.pk:w_tell() < 4) --/>
+end
+--/ read from server_object's net-packet
+function net_cse_abstract:get(packet)
+	if packet then self.pk = packet end
+	if not (self.obj and self.pk) then
+		log("net_cse_abstract:get:obj=["..type(self.obj).."],packet=["..type(self.pk).."]:<Warning!>")
+		return self._data or {} --/> ошибка вызова/инициализации
+	end
+	local r_pos, w_pos = self.pk:r_tell(), self.pk:w_tell() --/ begin&end of reading
+	if r_pos < 4 or w_pos < 4 then
+		return self._data or {} --/> пакет 'пуст'
+	end
+	--/ read data from packet
+	self._data = self:_read_data()
+	--/ check left (подстраховка)
+	local end_pos = r_pos --/ читать до 'state'-part
+	if r_pos > w_pos then --/ если 'state'-part некорректна:
+		end_pos = w_pos --/ читать все записанные данные
+	end
+	if self.pk:r_tell() < end_pos then --/ exist left? -> read
+		self._data.__tail = tail_data():peekPartFrom(self.pk,end_pos)
+		self._data.__tail_size = self._data.__tail.pk:r_elapsed()
+	end
+	if r_pos < w_pos then --/ если имелась 'state'-part
+		self.pk:r_seek(r_pos) --/ restore of the beginning of reading
+	end
+	return self._data --/> data-table
+end
+--/ write to server_object's net-packet
+function net_cse_abstract:set(data,packet)
+	if data then self._data = data end
+	if packet then self.pk = packet end
+	if not (self.obj and self._data and self.pk) then
+		return false --/>
+	end
+	self:_write_data()
+	if self._data.__tail then
+		self._data.__tail:pushTo(self.pk) --/ write left
+	end
+	return true --/>
+end
+--/ read 'abstract'-part
+function net_cse_abstract:_read_data()
+	local t,pk = {}, self.pk
+	pk:r_seek(0) --/ installation of the beginning of reading
+	t.dummy16 = pk:r_u16() --/ hook: считываем 'стартовые' байты пакета (2)
+	for _,prop in ipairs(self.props) do
+		if can_ver(prop.ver) then
+			if prop.name ~= 'cobj_data' or not self.bases[1] then
+				t[prop.name] = this["_r_"..prop.type](pk, prop.ver)
+			else --/ читаем 'клиентские' данные
+				local size = pk:r_u16() --/ count bytes
+				if size == 0 then
+					t[prop.name] = prop.default --/< zero-table
+				else
+					if self.dbg then log("net_cse_abstract:_read_data:Obj=[%s/%s]:cid=[%s/%s]:cobj_size=[%s]", self.obj:name(), self.obj.id, self.obj:clsid(), self.bases[1] and self.bases[1].name, size, "") end --/#~#
+					local tbl,first_pos = {}, pk:r_tell() --/ create table 'cobj_data'
+					tbl.ph_shell_state = pk:r_u8() --/ читаем общий параметр (CPhysicsShellHolder)
+					self:_read(tbl,pk) --/ read cobj params
+					--/ read dynamic data
+					local first_dyn = pk:r_tell() - first_pos +1
+					if first_dyn <= size then  --log("net_cse_abstract:get:Obj=[%s/%s]:cobj_size=[%s],first_pos=[%s],first_dyn=[%s]", self.obj:name(), self.obj.id, size, first_pos, first_dyn, "") --/#~#
+						if not self.dbg then
+							tbl.__dyn_data = tail_data():peekPartFrom(pk, first_pos + size) --/ read rests
+						else --/ for debug (with key-value)
+							tbl.dyn = {}
+							for i=first_dyn,size do
+								table.insert( tbl.dyn, {["offset_"..i] = pk:r_u8()} ) --/ key: смещение байта от начала
+							end
+						end
+					end
+					t.cobj_size = size
+					t[prop.name] = tbl
+				end
+			end
+		end
+	end
+	return t --/>
+end
+--/ write 'abstract'-part
+function net_cse_abstract:_write_data()
+	local pk,data = self.pk, self._data
+	pk:w_begin(data.dummy16) --/ hook: пишем 'стартовые' байты (+2)
+	for _,prop in ipairs(self.props) do
+		if can_ver(prop.ver) then
+			if prop.name ~= 'cobj_data' or not data.cobj_size then
+				this["_w_"..prop.type](pk, data[prop.name] or prop.default or 0)
+			else --/ пишем 'клиентские' данные
+				local size = data.cobj_size
+				if not size then
+					pk:w_u16(0) --/< write zero count bytes
+				else
+					if self.dbg then log("net_cse_abstract:_write_data:Obj=[%s/%s]:cobj_size=[%s]:cid=[%s/%s]", self.obj:name(), self.obj.id, size, self.obj:clsid(), self.bases[1] and self.bases[1].name, "") end --/#~#
+					pk:w_u16(size) --/< write count bytes
+					local tbl = data[prop.name] --/ table 'cobj_data'
+					pk:w_u8(tbl.ph_shell_state or 0) --/ пишем общий параметр (CPhysicsShellHolder)
+					self:_write(tbl,pk) --/ write cobj params
+					--/ write dynamic data
+					if tbl.__dyn_data then
+						tbl.__dyn_data:pushTo(pk) --/ write rests
+					elseif tbl.dyn then
+						for _,v in ipairs(tbl.dyn) do
+							pk:w_u8(v[next(v)] or 0)
+						end
+					end
+				end
+			end
+		end
+	end
+end
+
+--/ set callback-functions
+--/  in: function | table
+--/  out: boolean (succes flag)
+function net_cse_abstract:setCallback(callback)
+	local lua_type = type(callback)
+	if lua_type ~= 'table' and lua_type ~= 'function' then return nil end --/>
+	self.obj.cb_netpk = function(sobj, packet) --/< set master-callback function
+		self.pk = packet
+		if self:isOk() then
+			sobj.cb_netpk = nil --/ clear master-callback
+			local data = self:get() --/ read params from server_object's net-packet
+			if lua_type == 'function' then
+				callback(data) --/ call function
+			else --/ if lua_type == 'table' then
+				for k,v in pairs(callback) do
+					if data[k] ~= nil then data[k] = v end --/ change property in 'cse_abstract'
+				end
+			end
+			self:set(data) --/ write server_object's net-packet
+		end
+	end
+	if self.obj.online then
+		this.do_switchings(self.obj.id)
+		return true --/> with switch 'online->offline->online'
+	end
+	return false --/>
+end
+--/ read from game_object's reader
+function net_cse_abstract:get_cobj(reader)
+	local pk = reader or self.pk
+	if not (self.obj and pk) then return {} end --/>
+	local r_pos = pk:r_tell() --/ position of reading
+	pk:r_seek(0) --/ installation of the beginning of reading
+	local size = pk:r_elapsed() --/ count bytes
+	if size == 0 then return {} end --/> zero-table
+	if self.dbg then log("net_cse_abstract:get_cobj:Obj=[%s/%s]:cid=[%s/%s]:cobj_size=[%s]", self.obj:name(), self.obj.id, self.obj:clsid(), self.bases[1] and self.bases[1].name, size, "") end --/#~#
+	--/ читаем 'клиентские' данные ('cobj_data')
+	local t = {} --/ create table 'cobj_data'
+	t.ph_shell_state = pk:r_u8() --/ читаем общий параметр (CPhysicsShellHolder)
+	self:_read(t,pk) --/ read cobj params
+	--/ read dynamic data
+	if not pk:r_eof() then  --log("net_cse_abstract:get_cobj:Obj=[%s/%s]:cobj_size=[%s],first_pos=[%s],first_dyn=[%s]", self.obj:name(), self.obj.id, size, r_pos, pk:r_tell(), "") --/#~#
+		if not self.dbg then
+			t.__dyn_data = tail_data():peekPartFrom(pk,size) --/ read rests
+		else --/ for debug (with key-value)
+			t.dyn,i = {},0
+			while not pk:r_eof() do
+				i = i +1
+				table.insert( t.dyn, {["offset_"..i] = pk:r_u8()} ) --/ key: смещение байта от начала
+			end
+		end
+	end
+	pk:r_seek(r_pos) --/ restore position of reading (а нужно ли?)
+	return t --/> data-table
+end
+
+function net_cse_abstract:print()
+	if self.obj and self.pk and table.print then
+		table.print(self:get(),sModule..":NetPacket(abstract)|"..self.obj:name())
+	end
+end
+--/ -----------------------------------------------------------------------------------------------
+--/ classes below are net-packet's "sections" OOP-style "mirror"
+--/ use: just create one of them, it will init all "secions" on wich it depends
+--/ -----------------------------------------------------------------------------------------------
+--/ -----------------------------------------------------------------
+class "net_cse_alife_object" (net_base) --/[+] has derived
+--/ -----------------------------------------------------------------
+function net_cse_alife_object:__init(obj,mode)
+	super(obj, mode, only_st(mode), "cse_alife_object")
+	self.bases = {}
+	self.st_props = {
+		{ name = 'game_vertex_id',  type = 'u16', default = -1        },
+		{ name = 'distance',        type = 'f32', default =  0.0      },
+		{ name = 'direct_control',  type = 'u32', default =  1        },
+		{ name = 'level_vertex_id', type = 'u32', default = -1        },
+		{ name = 'object_flags',    type = 'h32', default =  0        },
+		--{ name = 'custom_data',   type = 'sz',  default = ''        }, --/#-# if only 'string'
+		{ name = 'custom_data',     type = 'cd',  default = _def_cd() }, --/#!# used helpers
+		{ name = 'story_id',        type = 's32', default = -1        },
+		{ name = 'spawn_story_id',  type = 's32', default = -1        }
+	}
+	self.up_props = {}
+end
+function net_cse_alife_object:_write_st_props(data,pk)
+	if self.obj then --/ hook 'object_flags' for painless spawn
+		local script_clsid = self.obj:clsid()
+		if script_clsid == clsid.inventory_box then
+			--/ сброс флагов: 'UseSwitches'[1] + 'SwitchOffline'[4] + 'OfflineNoMove'[64] + 'UsedAI_Locations'[128]
+			data.object_flags = bit_and(data.object_flags,bit_not(197)) --/ сброс флагов: (1+4+64+128)=>(0xffffff3a)
+		elseif script_clsid == clsid.script_heli or script_clsid == clsid.helicopter or script_clsid == clsid.car_s then
+			--/ сброс флагов: 'UseSwitches'[1] + 'SwitchOffline'[4]
+			data.object_flags = bit_and(data.object_flags,bit_not(5)) --/ сброс флагов: (1+4)=>(0xffffff3a)
+		end
+	end
+	for _,prop in ipairs(self.st_props) do
+		this["_w_"..prop.type](pk, data[prop.name] or prop.default or 0)
+	end
+end
+--/ -----------------------------------------------------------------
+class "net_cse_visual" (net_base) --/[+] has derived
+--/ -----------------------------------------------------------------
+function net_cse_visual:__init(obj,mode)
+	super(obj, mode, only_st(mode), "cse_visual")
+	self.bases = {}
+	self.st_props = {
+		{ name = 'visual_name',  type = 'sz', default = '' },
+		{ name = 'visual_flags', type = 'u8', default = 0  }
+	}
+	self.up_props = {}
+end
+--/ -----------------------------------------------------------------
+class "net_cse_shape" (net_base) --/[+] has derived
+--/ -----------------------------------------------------------------
+function net_cse_shape:__init(obj,mode)
+	super(obj, mode, only_st(mode), "cse_shape")
+	self.bases = {}
+	self.st_props = {
+		{ name = 'shapes', type = 'shape', default = complex_shape() } --/#!# used helpers
+	}
+	self.up_props = {}
+end
+--/ -----------------------------------------------------------------
+class "net_cse_motion" (net_base) --/[+] has derived
+--/ -----------------------------------------------------------------
+function net_cse_motion:__init(obj,mode)
+	super(obj, mode, only_st(mode), "cse_motion")
+	self.bases = {}
+	self.st_props = {
+		{ name = 'motion_name', type = 'sz', default = '' }
+	}
+	self.up_props = {}
+end
+--/ -----------------------------------------------------------------
+class "net_cse_ph_skeleton" (net_base) --/[+] has derived
+--/ -----------------------------------------------------------------
+function net_cse_ph_skeleton:__init(obj,mode)
+	super(obj, mode, only_st(mode), "cse_ph_skeleton")
+	self.bases = {}
+	self.st_props = {
+		{ name = 'skeleton_name',  type = 'sz',  default = '$editor', hook = 'idle' },
+		{ name = 'skeleton_flags', type = 'u8',  default = 0  },
+		{ name = 'source_id',      type = 'h16', default = -1 }
+	}
+	self.st_props_bones = { --/#+#
+		{ name = 'bones_mask',     type = 'u8v8',  default = {0,0,0,0,0,0,0,0} },
+		{ name = 'root_bone',      type = 'u16',   default = 0                 },
+		{ name = 'bbox_min',       type = 'f32v3', default = vector():set( 0, 0, 0 ) },
+		{ name = 'bbox_max',       type = 'f32v3', default = vector():set( 0, 0, 0 ) },
+		{ name = 'bones_count',    type = 'u16',   default = 0                 }, --/#~# changed name ('bone_count')
+		{ name = 'bones_mask_ex',  type = 'u8v8',  default = {0,0,0,0,0,0,0,0} },
+	}
+	self.st_props_bone = { --/#+#
+		{ name = 'ph_position',    type = 'q8v3',  default = {0,0,0},  },
+		{ name = 'ph_rotation',    type = 'q8v4',  default = {0,0,0,0} },
+		{ name = 'enabled',        type = 'b8',    default = true      } --/#~# changed type 'u8'
+	}
+	self.up_props = {}
+end
+function net_cse_ph_skeleton:_read_st_props(ret,pk)
+	for _,prop in ipairs(self.st_props) do
+		ret[prop.name] = this["_r_"..prop.type](pk)
+	end
+	--/ hooks 'bones'
+	if bit_and(ret.skeleton_flags, 4) ~= 0 then --/ check 'skeleton'
+		for _,prop in ipairs(self.st_props_bones) do --/ read 'bones'
+                  if prop.name == "bones_mask_ex" then
+                    if ret.bones_count > 64 then
+                      ret[ prop.name ] = this[ "_r_" .. prop.type ]( pk )
+                    else
+                      ret[ prop.name ] = table.copy( prop.default )
+                    end
+                  else
+                    ret[prop.name] = this["_r_"..prop.type](pk)
+                  end
+		end
+		if ret.bones_count > 0 then --/ read 'bone': ...
+			ret["bones"] = {}
+			for i=1,ret.bones_count do
+				local bone = {}
+				for _,prop in ipairs(self.st_props_bone) do
+					bone[prop.name] = this["_r_"..prop.type](pk)
+				end
+				table.insert(ret["bones"], bone)
+			end
+		end
+	end
+end
+function net_cse_ph_skeleton:_write_st_props(data,pk)
+	--/ hook 'skeleton_name' for cars|helicopters
+	local script_clsid = self.obj and self.obj:clsid()
+	local is_technics = script_clsid and (script_clsid == clsid.car_s or script_clsid == clsid.helicopter or script_clsid == clsid.script_heli)
+	for _,prop in ipairs(self.st_props) do
+		if is_technics and prop.hook and data[prop.name] == prop.default then --/ and prop.name == 'skeleton_name'
+			data[prop.name] = prop.hook --/#!# change '$editor'
+		end
+		this["_w_"..prop.type](pk, data[prop.name] or prop.default or 0)
+	end
+	--/ hooks 'bones'
+	if bit_and(data.skeleton_flags, 4) ~= 0 and data.bones_count then --/ check 'bones'
+		for _,prop in ipairs(self.st_props_bones) do --/ write 'bones'
+                  if
+                    prop.name ~= "bones_mask_ex"
+                    or data.bones_count > 64
+                  then
+                    this[ "_w_" .. prop.type ](
+                      pk, data[ prop.name ] or prop.default or 0
+                    )
+                  end
+                end
+		if data.bones then --/ write 'bone' ...
+			for _,bone in ipairs(data.bones) do
+				for _,prop in ipairs(self.st_props_bone) do
+					this["_w_"..prop.type](pk, bone[prop.name] or prop.default or 0)
+				end
+			end
+		end
+	end
+end
+--/ -----------------------------------------------------------------
+class "net_cse_alife_dynamic_object" (net_base) --/[+] has derived
+--/ -----------------------------------------------------------------
+function net_cse_alife_dynamic_object:__init(obj,mode)
+	super(obj, mode, only_st(mode), "cse_alife_dynamic_object")
+	self.bases = {
+		net_cse_alife_object(nil, mode)
+	}
+	self.st_props = {}
+	self.up_props = {}
+end
+--/ -----------------------------------------------------------------
+class "net_cse_alife_dynamic_object_visual" (net_base) --/[+] has derived
+--/ -----------------------------------------------------------------
+function net_cse_alife_dynamic_object_visual:__init(obj,mode)
+	super(obj, mode, only_st(mode), "cse_alife_dynamic_object_visual")
+	self.bases = {
+		net_cse_alife_object(obj, mode), --/#!# forward 'obj' (hook 'object_flags')
+		net_cse_visual      (nil, mode)
+	}
+	self.st_props = {}
+	self.up_props = {}
+end
+--/ -----------------------------------------------------------------
+class "net_cse_alife_ph_skeleton_object" (net_base) --/[+]
+--/ -----------------------------------------------------------------
+function net_cse_alife_ph_skeleton_object:__init(obj,mode)
+	super(obj, mode, only_bases, "cse_alife_ph_skeleton_object")
+	self.bases = {
+		net_cse_alife_dynamic_object_visual(obj, mode), --/#!# forward 'obj' (hook 'object_flags')
+		net_cse_ph_skeleton                (obj, mode)  --/#!# forward 'obj' (hook 'skeleton_name')
+	}
+	self.st_props = {}
+	self.up_props = {}
+end
+--/ -----------------------------------------------------------------
+class "net_cse_alife_object_climable" (net_base) --/[+]
+--/ -----------------------------------------------------------------
+function net_cse_alife_object_climable:__init(obj,mode)
+	super(obj, mode, only_st(mode), "cse_alife_object_climable")
+	self.bases = {
+		net_cse_alife_dynamic_object(nil, mode),
+		net_cse_shape               (nil, mode)
+	}
+	self.st_props = {
+		{ name = 'game_material', type = 'sz', default = 'materials\\fake_ladders' }
+	}
+	self.up_props = {}
+end
+--/ -----------------------------------------------------------------
+class "net_cse_smart_cover" (net_base) --/[+]
+--/ -----------------------------------------------------------------
+function net_cse_smart_cover:__init(obj,mode)
+	super(obj, mode, only_st(mode), "cse_smart_cover")
+	self.bases = {
+		net_cse_alife_dynamic_object(nil, mode),
+		net_cse_shape               (nil, mode)
+	}
+	self.st_props = {
+		{ name = 'description',              type = 'sz',  default = ''  },
+		{ name = 'hold_position_time',       type = 'f32', default = 0.0 },
+		{ name = 'enter_min_enemy_distance', type = 'f32', default = 0.0 },
+		{ name = 'exit_min_enemy_distance',  type = 'f32', default = 0.0 },
+		{ name = 'is_combat_cover',          type = 'u8',  default = 0   },
+		{ name = 'MP_respawn',               type = 'u8',  default = 0, ver = 4 } --/ SCoP
+	}
+	self.up_props = {}
+end
+--/ -----------------------------------------------------------------
+class "net_se_smart_cover" (net_base) --/[+]
+--/ -----------------------------------------------------------------
+function net_se_smart_cover:__init(obj,mode)
+	super(obj, mode, only_st(mode), "se_smart_cover")
+	self.bases = {
+		net_cse_alife_dynamic_object(nil, mode),
+		net_cse_shape               (nil, mode)
+	}
+	self.st_props = {
+		{ name = 'last_description', type = 'sz',     default = '' },
+		{ name = 'loopholes',        type = 'l8szbv', default = {} }
+	}
+	self.up_props = {}
+end
+--/ -----------------------------------------------------------------
+class "net_cse_alife_object_physic" (net_base) --/[+]
+--/ -----------------------------------------------------------------
+function net_cse_alife_object_physic:__init(obj,mode)
+	super(obj, mode, mode, "cse_alife_object_physic")
+	self.bases = {
+		net_cse_alife_ph_skeleton_object(nil, mode)
+	}
+	self.st_props = {
+		{ name = 'physic_type', type = 'h32', default = 0   },
+		{ name = 'mass',        type = 'f32', default = 0.0 },
+		{ name = 'fixed_bones', type = 'sz',  default = ''  }
+	}
+	self.up_props = {
+		{ name = 'num_items',           type = 'h8',    default = 0,                   ver = 6 }, --/ CS&SCoP
+		{ name = 'ph_force',            type = 'f32v3', default = vector():set(0,0,0), ver = 6 },
+		{ name = 'ph_torque',           type = 'f32v3', default = vector():set(0,0,0), ver = 6 },
+		{ name = 'ph_position',         type = 'f32v3', default = vector():set(0,0,0), ver = 6 },
+		{ name = 'ph_rotation',         type = 'q8v4',  default = {0,0,0,0},           ver = 6 }, --/ quaterinon
+		{ name = 'ph_angular_velosity', type = 'q8v3',  default = {0,0,0},             ver = 6 },
+		{ name = 'ph_linear_velosity',  type = 'q8v3',  default = {0,0,0},             ver = 6 },
+		{ name = 'enabled',             type = 'b8',    default = true,                ver = 6 } --/#~# changed type 'u8'
+	}
+end
+function net_cse_alife_object_physic:_read_up_props(ret,pk)
+	--/ physic packet hooks
+	local skip_props = {}
+	for _,prop in ipairs(self.up_props) do
+		if can_ver(prop.ver) and not skip_props[prop.name] then
+			ret.upd[prop.name] = this["_r_"..prop.type](pk, prop.ver)
+			if prop.name == 'num_items' then
+				if ret.upd.num_items ~= 0 then
+					if bit_and(ret.upd.num_items, 64) == 64 then
+						skip_props.ph_angular_vel = true
+					end
+					if bit_and(ret.upd.num_items, 128) == 128 then
+						skip_props.ph_linear_vel = true
+					end
+				else
+					return --/>
+				end
+			end
+		end
+	end
+end
+function net_cse_alife_object_physic:_write_up_props(data,pk)
+	--/ physic packet hooks
+	local skip_props = {}
+	for _,prop in ipairs(self.up_props) do
+		if can_ver(prop.ver) and not skip_props[prop.name] then
+			this["_w_"..prop.type](pk, data.upd[prop.name] or prop.default or 0)
+			if prop.name == 'num_items' then
+				local num_items = data.upd.num_items or 0
+				if num_items ~= 0 then
+					if bit_and(num_items, 64) == 64 then
+						skip_props.ph_angular_vel = true
+					end
+					if bit_and(num_items, 128) == 128 then
+						skip_props.ph_linear_vel = true
+					end
+				else
+					return --/>
+				end
+			end
+		end
+	end
+end
+--/ -----------------------------------------------------------------
+class "net_se_safe" (net_base) --/[+] LA (в разработке!)
+--/ -----------------------------------------------------------------
+function net_se_smart_cover:__init(obj,mode)
+	super(obj, mode, only_st(mode), "se_safe")
+	self.bases = {
+		net_cse_alife_object_physic(nil, mode),
+	}
+	self.st_props = {
+		{ name = 'items_spawned', type = 'b8', default = false },
+		{ name = 'safe_locked',   type = 'b8', default = false },
+		--/#?# ... +tail
+	}
+	self.up_props = {}
+end
+--/ -----------------------------------------------------------------
+class "net_cse_alife_object_hanging_lamp" (net_base) --/[+]
+--/ -----------------------------------------------------------------
+function net_cse_alife_object_hanging_lamp:__init(obj,mode)
+	super(obj, mode, only_st(mode), "cse_alife_object_hanging_lamp")
+	self.bases = {
+		net_cse_alife_ph_skeleton_object(nil, mode)
+	}
+	self.st_props = {
+		{ name = 'main_color',          type = 'h32', default = 16777215  },
+		{ name = 'main_brightness',     type = 'f32', default = 0.0       },
+		{ name = 'main_color_animator', type = 'sz',  default = ''        },
+		{ name = 'main_range',          type = 'f32', default = 0.0       },
+		{ name = 'light_flags',         type = 'h16', default = 0         },
+		{ name = 'startup_animation',   type = 'sz',  default = '$editor', hook = 'idle'}, --/#?# '$editor' => 'idle'
+		{ name = 'lamp_fixed_bones',    type = 'sz',  default = ''        },
+		{ name = 'health',              type = 'f32', default = 1.0       },
+		{ name = 'main_virtual_size',   type = 'f32', default = 0.0       },
+		{ name = 'ambient_radius',      type = 'f32', default = 0.0       },
+		{ name = 'ambient_power',       type = 'f32', default = 0.0       },
+		{ name = 'ambient_texture',     type = 'sz',  default = ''        },
+		{ name = 'main_texture',        type = 'sz',  default = ''        },
+		{ name = 'main_bone',           type = 'sz',  default = ''        },
+		{ name = 'main_cone_angle',     type = 'f32', default = 0.0       },
+		{ name = 'glow_texture',        type = 'sz',  default = ''        },
+		{ name = 'glow_radius',         type = 'f32', default = 0.0       },
+		{ name = 'ambient_bone',        type = 'sz',  default = ''        },
+		{ name = 'cse_alife_object_hanging_lamp__unk6', type = 'f32', default = 0.0, ver = 6 }, --/ CS&SCoP
+		{ name = 'cse_alife_object_hanging_lamp__unk7', type = 'f32', default = 0.0, ver = 6 }, --/ CS&SCoP
+		{ name = 'cse_alife_object_hanging_lamp__unk8', type = 'f32', default = 0.0, ver = 6 }  --/ CS&SCoP
+	}
+	self.up_props = {}
+end
+function net_cse_alife_object_hanging_lamp:_write_st_props(data,pk)
+	--/ hook 'startup_animation'
+	for _,prop in ipairs(self.st_props) do
+		if prop.hook and data[prop.name] == prop.default then
+			data[prop.name] = prop.hook --/#!# change '$editor'
+		end
+		this["_w_"..prop.type](pk, data[prop.name] or prop.default or 0)
+	end
+end
+--/ -----------------------------------------------------------------
+class "net_cse_alife_object_projector" (net_base) --/[+]
+--/ -----------------------------------------------------------------
+function net_cse_alife_object_projector:__init(obj,mode)
+	super(obj, mode, only_bases, "cse_alife_object_projector")
+	self.bases = {
+		net_cse_alife_dynamic_object_visual(nil, mode)
+	}
+	self.st_props = {}
+	self.up_props = {}
+end
+--/ -----------------------------------------------------------------
+class "net_cse_alife_inventory_box" (net_base) --/[+]
+--/ -----------------------------------------------------------------
+function net_cse_alife_inventory_box:__init(obj,mode)
+	super(obj, mode, only_st(mode), "cse_alife_inventory_box")
+	self.bases = {
+		net_cse_alife_dynamic_object_visual(obj, mode) --/#!# forward 'obj' (hook 'object_flags')
+	}
+	self.st_props = {
+		{ name = 'cse_alive_inventory_box__unk1', type = 'u8', default = 1,  ver = 4 }, --/ SCoP ('given')
+		{ name = 'cse_alive_inventory_box__unk2', type = 'u8', default = 0,  ver = 4 }, --/ SCoP ('checked')
+		{ name = 'tip',                           type = 'sz', default = '', ver = 4 }  --/ SCoP
+	}
+	self.up_props = {}
+end
+--/ -----------------------------------------------------------------
+class "net_cse_alife_object_breakable" (net_base) --/[+]
+--/ -----------------------------------------------------------------
+function net_cse_alife_object_breakable:__init(obj,mode)
+	super(obj, mode, only_st(mode), "cse_alife_object_breakable")
+	self.bases = {
+		net_cse_alife_dynamic_object_visual(nil, mode)
+	}
+	self.st_props = {
+		{ name = 'health', type = 'f32', default = 1.0 }
+	}
+	self.up_props = {}
+end
+--/ -----------------------------------------------------------------
+class "net_cse_alife_mounted_weapon" (net_base) --/[+]
+--/ -----------------------------------------------------------------
+function net_cse_alife_mounted_weapon:__init(obj,mode)
+	super(obj, mode, only_st(mode), "cse_alife_mounted_weapon")
+	self.bases = {
+		net_cse_alife_dynamic_object_visual(nil, mode)
+	}
+	self.st_props = {}
+	self.up_props = {}
+end
+--/ -----------------------------------------------------------------
+class "net_cse_alife_stationary_mgun" (net_base) --/[+]
+--/ -----------------------------------------------------------------
+function net_cse_alife_stationary_mgun:__init(obj,mode)
+	super(obj, mode, only_up(mode), "cse_alife_stationary_mgun")
+	self.bases = {
+		net_cse_alife_dynamic_object_visual(nil, mode)
+	}
+	self.st_props = {}
+	self.up_props = {
+		{ name = 'working',              type = 'b8',    default = false               }, --/#~# changed type 'u8'
+		{ name = 'dest_enemy_direction', type = 'f32v3', default = vector():set(0,0,0) }
+	}
+end
+--/ -----------------------------------------------------------------
+class "net_cse_alife_car" (net_base) --/[+]
+--/ -----------------------------------------------------------------
+function net_cse_alife_car:__init(obj,mode)
+	super(obj, mode, only_st(mode), "cse_alife_car")
+	self.bases = {
+		net_cse_alife_ph_skeleton_object(obj, mode) --/#!# forward 'obj' ( for hooks)
+	}
+	self.st_props = {
+		{ name = 'health', type = 'f32', default = 1.0 }
+	}
+	self.up_props = {}
+end
+--/ -----------------------------------------------------------------
+class "net_se_car" (net_base) --/[???] LA (в разработке!)
+--/ -----------------------------------------------------------------
+function net_se_car:__init(obj,mode)
+	super(obj, mode, only_st(mode), "se_car")
+	self.bases = {
+		net_cse_alife_car(obj, mode) --/#!# forward 'obj' ( for hooks)
+	}
+	self.st_props = {
+		{ name = 'trunk_init_done', type = 'b8',  default = false }, --/#?#
+		{ name = 'fuel',            type = 'f32', default = 1.0 }, --/#?#
+	}
+	self.up_props = {}
+end
+--/ -----------------------------------------------------------------
+class "net_cse_alife_helicopter" (net_base) --/[+] has derived, but spawnable
+--/ -----------------------------------------------------------------
+function net_cse_alife_helicopter:__init(obj,mode)
+	super(obj, mode, only_st(mode), "cse_alife_helicopter")
+	self.bases = {
+		net_cse_alife_dynamic_object_visual(obj, mode), --/#!# forward 'obj' (hook 'object_flags')
+		net_cse_motion                     (nil, mode),
+		net_cse_ph_skeleton                (obj, mode)  --/#!# forward 'obj' (hook 'skeleton_name')
+	}
+	self.st_props = {
+		{ name = 'startup_animation', type = 'sz', default = '$editor', hook = 'idle'      },
+		{ name = 'engine_sound',      type = 'sz', default = ''       , hook = '$no_sound' }
+	}
+	self.up_props = {}
+end
+function net_cse_alife_helicopter:_write_st_props(data,pk)
+	--/ hooks for painless spawn
+	for _,prop in ipairs(self.st_props) do
+		if prop.hook and data[prop.name] == prop.default then
+			data[prop.name] = prop.hook
+		end
+		this["_w_"..prop.type](pk, data[prop.name] or prop.default or 0)
+	end
+end
+--/ -----------------------------------------------------------------
+class "net_cse_turret_mgun" (net_base) --/[+]
+--/ -----------------------------------------------------------------
+function net_cse_turret_mgun:__init(obj,mode)
+	super(obj, mode, only_st(mode), "cse_turret_mgun")
+	self.bases = {
+		net_cse_alife_dynamic_object_visual(obj, mode), --/#!# forward 'obj' (hook 'object_flags')
+		net_cse_ph_skeleton                (obj, mode)  --/#!# forward 'obj' (hook 'skeleton_name')
+	}
+	self.st_props = {}
+	self.up_props = {}
+end
+--/ -----------------------------------------------------------------
+class "net_se_turret_mgun" (net_base) --/[+]
+--/ -----------------------------------------------------------------
+function net_se_turret_mgun:__init(obj,mode)
+	super(obj, mode, only_st(mode), "se_turret_mgun")
+	self.bases = {
+		net_cse_alife_helicopter(nil, mode)
+	}
+	self.st_props = {
+		{ name = 'health', type = 'f32', default = 1.0 }
+	}
+	self.up_props = {}
+end
+--/ -----------------------------------------------------------------
+class "net_cse_alife_creature_abstract" (net_base) --/[+] has derived
+--/ -----------------------------------------------------------------
+function net_cse_alife_creature_abstract:__init(obj,mode)
+	super(obj, mode, mode, "cse_alife_creature_abstract")
+	self.bases = {
+		net_cse_alife_dynamic_object_visual(nil, mode)
+	}
+	self.st_props = {
+		{ name = 'g_team',                   type = 'u8',      default = -1  },
+		{ name = 'g_squad',                  type = 'u8',      default = -1  },
+		{ name = 'g_group',                  type = 'u8',      default = -1  },
+		{ name = 'health',                   type = 'f32',     default = 1.0 },
+		{ name = 'dynamic_out_restrictions', type = 'l32u16v', default = {}  },
+		{ name = 'dynamic_in_restrictions',  type = 'l32u16v', default = {}  },
+		{ name = 'killer_id',                type = 'h16',     default = -1  },
+		{ name = 'game_death_time',          type = 'u8v8',    default = {0,0,0,0,0,0,0,0} }
+	}
+	self.up_props = {
+		{ name = 'health',         type = 'f32',   default = 1.0 },
+		{ name = 'timestamp',      type = 'h32',   default = -1  },
+		{ name = 'creature_flags', type = 'h8',    default = 254 },
+		{ name = 'position',       type = 'f32v3', default = vector():set( 0, 0, 0 ) },
+		{ name = 'o_model',        type = 'f32',   default = 0   },
+		{ name = 'o_torso',        type = 'f32v3', default = vector():set(0,0,0) },
+		{ name = 'g_team',         type = 'u8',    default = 0   },
+		{ name = 'g_squad',        type = 'u8',    default = 0   },
+		{ name = 'g_group',        type = 'u8',    default = 0   }
+	}
+end
+--/ -----------------------------------------------------------------
+class "net_cse_alife_creature_crow" (net_base) --/[+]
+--/ -----------------------------------------------------------------
+function net_cse_alife_creature_crow:__init(obj,mode)
+	super(obj, mode, only_bases, "cse_alife_creature_crow")
+	self.bases = {
+		net_cse_alife_creature_abstract(nil, mode)
+	}
+	self.st_props = {}
+	self.up_props = {}
+end
+--/ -----------------------------------------------------------------
+class "net_cse_alife_creature_phantom" (net_base) --/[+]
+--/ -----------------------------------------------------------------
+function net_cse_alife_creature_phantom:__init(obj,mode)
+	super(obj, mode, only_bases, "cse_alife_creature_phantom")
+	self.bases = {
+		net_cse_alife_creature_abstract(nil, mode)
+	}
+	self.st_props = {}
+	self.up_props = {}
+end
+--/ -----------------------------------------------------------------
+class "net_cse_alife_monster_abstract" (net_base) --/[+] has derived
+--/ -----------------------------------------------------------------
+function net_cse_alife_monster_abstract:__init(obj,mode)
+	super(obj, mode, mode, "cse_alife_monster_abstract")
+	self.bases = {
+		net_cse_alife_creature_abstract(nil, mode)
+	}
+	self.st_props = {
+		{ name = 'base_out_restrictors',      type = 'sz',  default = ''    },
+		{ name = 'base_in_restrictors',       type = 'sz',  default = ''    },
+		{ name = 'smart_terrain_id',          type = 'u16', default = 65535 },
+		{ name = 'smart_terrain_task_active', type = 'u8',  default = 0     }
+	}
+	self.up_props = {
+		{ name = 'next_game_vertex_id', type = 'u16', default = 65535 },
+		{ name = 'prev_game_vertex_id', type = 'u16', default = 65535 },
+		{ name = 'distance_from_point', type = 'f32', default = 0 },
+		{ name = 'distance_to_point',   type = 'f32', default = 0 }
+	}
+end
+--/ -----------------------------------------------------------------
+class "net_cse_alife_trader_abstract" (net_base) --/[+] has derived
+--/ -----------------------------------------------------------------
+function net_cse_alife_trader_abstract:__init(obj,mode)
+	super(obj, mode, only_st(mode), "cse_alife_trader_abstract")
+	self.bases = {}
+	self.st_props = {
+		{ name = 'money',              type = 'u32', default = 0           },
+		{ name = 'specific_character', type = 'sz',  default = ''          },
+		{ name = 'trader_flags',       type = 'h32', default = 1           },
+		{ name = 'character_profile',  type = 'sz',  default = ''          },
+		{ name = 'community_index',    type = 'h32', default = -1          },
+		{ name = 'rank',               type = 'h32', default = -2147483647 },
+		{ name = 'reputation',         type = 'h32', default = -2147483647 },
+		{ name = 'character_name',     type = 'sz',  default = ''          },
+		{ name = 'cse_alife_trader_abstract__unk2', type = 'u8', default = 0, ver = 4 }, --/ SCoP
+		{ name = 'cse_alife_trader_abstract__unk3', type = 'u8', default = 0, ver = 4 }  --/ SCoP
+	}
+	self.up_props = {}
+end
+--/ -----------------------------------------------------------------
+class "net_cse_alife_human_abstract" (net_base) --/[+] has derived
+--/ -----------------------------------------------------------------
+function net_cse_alife_human_abstract:__init(obj,mode)
+	super(obj, mode, only_st(mode), "cse_alife_human_abstract")
+	self.bases = {
+		net_cse_alife_trader_abstract (nil, mode),
+		net_cse_alife_monster_abstract(nil, mode)
+	}
+	self.st_props = {
+		{ name = 'equipment_preferences',   type = 'l32u8v', default = {} }, --/ old name 'predicate5'
+		{ name = 'main_weapon_preferences', type = 'l32u8v', default = {} }  --/ old name 'predicate4'
+	}
+	self.up_props = {}
+end
+--/ -----------------------------------------------------------------
+class "net_cse_alife_human_stalker" (net_base) --/[+] has derived
+--/ -----------------------------------------------------------------
+function net_cse_alife_human_stalker:__init(obj,mode)
+	super(obj, mode, only_up(mode), "cse_alife_human_stalker" )
+	self.bases = {
+		net_cse_alife_human_abstract(nil, mode),
+		net_cse_ph_skeleton         (nil, mode)
+	}
+	self.st_props = {}
+	self.up_props = {
+		{ name = 'start_dialog', type = 'sz', default = '' }
+	}
+end
+--/ -----------------------------------------------------------------
+class "net_se_stalker" (net_base) --/[+]
+--/ -----------------------------------------------------------------
+function net_se_stalker:__init(obj,mode)
+	super(obj, mode, only_st(mode), "se_stalker")
+	self.bases = {
+		net_cse_alife_human_stalker(nil, mode)
+	}
+	self.st_props = {
+		{ name = 'job_online',           type = 'u8', default = 2 ,     ver = 3 }, --/ SHoC&CS
+		{ name = 'job_online_condlist',  type = 'sz', default = '',     ver = 3 }, --/ SHoC&CS
+		{ name = 'was_in_smart_terrain', type = 'u8', default = 0 ,     ver = 1 }, --/ SHoC
+		{ name = 'death_dropped',        type = 'u8', default = 0 ,     ver = 3 }, --/ SHoC&CS
+		{ name = 'squad_id',             type = 'sz', default = '',     ver = 2 }, --/ CS
+		{ name = 'sim_forced_online',    type = 'u8', default = 0 ,     ver = 2 }, --/ CS
+		{ name = 'old_lvid',             type = 'sz', default = 'nil',  ver = 4 }, --/ SCoP ('last_lvid')
+		{ name = 'active_section',       type = 'sz', default = 'nil',  ver = 4 }, --/ SCoP
+		{ name = 'death_droped',         type = 'b8',  default = false, ver = 4 }, --/#?# SCoP
+		{ name = 'pda_dlg_count',        type = 'u8',  default = 0,     ver = 8 }, --/#?# LA
+		{ name = 'pda_dlg_update',       type = 's32', default = -1,    ver = 8 }  --/#?# LA
+		--/#?# LA ...+tail (pda_meet_dlg,pda_meet_dlg_id,pda_dialogs)
+	}
+	self.up_props = {}
+end
+function net_se_stalker:_read_st_props(ret,pk)
+	for _,prop in ipairs(self.st_props) do
+		if can_ver(prop.ver) and (prop.name ~= "job_online_condlist" or ret.job_online == 3) then
+			ret[prop.name] = this["_r_"..prop.type](pk, prop.ver)
+		end
+	end
+end
+function net_se_stalker:_write_st_props(data,pk)
+	for _,prop in ipairs(self.st_props) do
+		if can_ver(prop.ver) and (prop.name ~= "job_online_condlist" or data.job_online == 3) then
+			this["_w_"..prop.type](pk, data[prop.name] or prop.default or 0)
+		end
+	end
+end
+--/ -----------------------------------------------------------------
+class "net_cse_alife_trader" (net_base) --/[+]
+--/ -----------------------------------------------------------------
+function net_cse_alife_trader:__init(obj,mode)
+	super(obj, mode, only_bases, "cse_alife_trader")
+	self.bases = {
+		net_cse_alife_dynamic_object_visual(nil, mode),
+		net_cse_alife_trader_abstract      (nil, mode)
+	}
+	self.st_props = {}
+	self.up_props = {}
+end
+--/ -----------------------------------------------------------------
+class "net_se_trader" (net_base) --/[+] SHoC|STCS has derived
+--/ -----------------------------------------------------------------
+function net_se_trader:__init(obj,mode)
+	super(obj, mode, only_bases, "se_trader")
+	self.bases = {
+		net_cse_alife_trader(nil, mode)
+	}
+	self.st_props = {}
+	self.up_props = {}
+end
+--/ -----------------------------------------------------------------
+class "net_cse_alife_creature_actor" (net_base) --/[+]
+--/ -----------------------------------------------------------------
+function net_cse_alife_creature_actor:__init(obj,mode)
+	super(obj, mode, mode, "cse_alife_creature_actor")
+	self.bases = {
+		net_cse_alife_creature_abstract(nil, mode),
+		net_cse_alife_trader_abstract  (nil, mode),
+		net_cse_ph_skeleton            (nil, mode)
+	}
+	self.st_props = {
+		{ name = 'holder_id',             type = 'h16', default = -1 }
+	}
+	self.up_props = {
+		{ name = 'actor_state',           type = 'h16' },
+		{ name = 'actor_accel_header',    type = 'h16' },
+		{ name = 'actor_accel_data',      type = 'h32' },
+		{ name = 'actor_velocity_header', type = 'h16' },
+		{ name = 'actor_velocity_data',   type = 'h32' },
+		{ name = 'actor_radiation',       type = 'f32' },
+		{ name = 'actor_weapon',          type = 'u8'  },
+		{ name = 'num_items',             type = 'u16' } --/#?#
+	}
+end
+--/ -----------------------------------------------------------------
+class "net_se_actor" (net_base) --/[+] CS/CoP
+--/ -----------------------------------------------------------------
+function net_cse_alife_creature_actor:__init(obj,mode)
+	super(obj, mode, only_st(mode), "se_actor")
+	self.bases = {
+		net_cse_alife_creature_actor(nil, mode)
+	}
+	self.st_props = {
+		--{ name = 'start_position_filled', type = 'b8', default = false, ver = 6 }  --/#?# CS&SCoP
+		{ name = 'start_position_filled', type = 'b8', default = false, ver = 4 }  --/ SCoP
+	}
+	self.up_props = {}
+end
+--/ -----------------------------------------------------------------
+class "net_cse_alife_monster_base" (net_base) --/[+] has derived
+--/ -----------------------------------------------------------------
+function net_cse_alife_monster_base:__init(obj,mode)
+	super(obj, mode, only_st(mode), "cse_alife_monster_base")
+	self.bases = {
+		net_cse_alife_monster_abstract(nil, mode),
+		net_cse_ph_skeleton           (nil, mode)
+	}
+	self.st_props = {
+		{ name = 'spec_object_id', type = 'u16', default = 65535 }
+	}
+	self.up_props = {}
+end
+--/ -----------------------------------------------------------------
+class "net_se_monster" (net_base) --/[+]
+--/ -----------------------------------------------------------------
+function net_se_monster:__init(obj,mode)
+	super(obj, mode, only_st(mode), "se_monster")
+	self.bases = {
+		net_cse_alife_monster_base(nil, mode)
+	}
+	self.st_props = {
+		{ name = 'job_online',           type = 'u8', default = 2 ,    ver = 3 }, --/ SHoC&CS
+		{ name = 'job_online_condlist',  type = 'sz', default = '',    ver = 3 }, --/ SHoC&CS
+		{ name = 'was_in_smart_terrain', type = 'u8', default = 0 ,    ver = 1 }, --/ SHoC
+		{ name = 'squad_id',             type = 'sz', default = '',    ver = 2 }, --/ CS
+		{ name = 'sim_forced_online',    type = 'u8', default = 0 ,    ver = 2 }, --/ CS
+		{ name = 'old_lvid',             type = 'sz', default = 'nil', ver = 4 }, --/ SCoP
+		{ name = 'active_section',       type = 'sz', default = 'nil', ver = 4 }  --/ SCoP
+	}
+	self.up_props = {}
+end
+function net_se_monster:_read_st_props(ret,pk)
+	for _,prop in ipairs(self.st_props) do
+		if can_ver(prop.ver) and (prop.name ~= "job_online_condlist" or ret.job_online == 3) then
+			ret[prop.name] = this["_r_"..prop.type](pk, prop.ver)
+		end
+	end
+end
+function net_se_monster:_write_st_props(data,pk)
+	for _,prop in ipairs(self.st_props) do
+		if can_ver(prop.ver) and (prop.name ~= "job_online_condlist" or data.job_online == 3) then
+			this["_w_"..prop.type](pk, data[prop.name] or prop.default or 0)
+		end
+	end
+end
+--/ -----------------------------------------------------------------
+class "net_cse_alife_monster_zombie" (net_base) --/[+]
+--/ -----------------------------------------------------------------
+function net_cse_alife_monster_zombie:__init(obj,mode)
+	super(obj, mode, only_st(mode), "cse_alife_monster_zombie")
+	self.bases = {
+		net_cse_alife_monster_abstract(nil, mode)
+	}
+	self.st_props = {
+		{ name = 'field_of_view',    type = 'f32', default = 0.0 },
+		{ name = 'eye_range',        type = 'f32', default = 0.0 },
+		{ name = 'minimum_speed',    type = 'f32', default = 0.0 },
+		{ name = 'maximum_speed',    type = 'f32', default = 0.0 },
+		{ name = 'attack_speed',     type = 'f32', default = 0.0 },
+		{ name = 'pursuit_distance', type = 'f32', default = 0.0 },
+		{ name = 'home_distance',    type = 'f32', default = 0.0 },
+		{ name = 'hit_power',        type = 'f32', default = 0.0 },
+		{ name = 'hit_interval',     type = 'u16', default = 0   },
+		{ name = 'distance',         type = 'f32', default = 0.0 },
+		{ name = 'maximum_angle',    type = 'f32', default = 0.0 }
+	}
+	self.up_props = {}
+end
+--/ -----------------------------------------------------------------
+class "net_cse_alife_space_restrictor" (net_base) --/[+] has derived
+--/ -----------------------------------------------------------------
+function net_cse_alife_space_restrictor:__init(obj,mode)
+	super(obj, mode, only_st(mode), "cse_alife_space_restrictor")
+	self.bases = {
+		net_cse_alife_object(nil, mode),
+		net_cse_shape       (nil, mode)
+	}
+	self.st_props = {
+		{ name = 'restrictor_type', type = 'u8', default = -1 },
+	}
+	self.up_props = {}
+end
+--/ -----------------------------------------------------------------
+class "net_cse_alife_smart_zone" (net_base) --/[+] has derived
+--/ -----------------------------------------------------------------
+function net_cse_alife_smart_zone:__init(obj,mode)
+	super(obj, mode, only_bases, "cse_alife_smart_zone")
+	self.bases = {
+		net_cse_alife_space_restrictor(nil, mode)
+	}
+	self.st_props = {}
+	self.up_props = {}
+end
+--/ -----------------------------------------------------------------
+class "net_se_anom_zone" (net_base) --/[+]
+--/ -----------------------------------------------------------------
+function net_se_anom_zone:__init(obj,mode)
+	super(obj, mode, only_st(mode), "se_anom_zone")
+	self.bases = {
+		net_cse_alife_space_restrictor(nil, mode)
+	}
+	self.st_props = {
+		{ name = 'af_spawn_id',   type = 'u16',    default = 65535 },
+		{ name = 'af_spawn_time', type = 'uCTime', default = 0 }
+	}
+	self.up_props = {}
+end
+--/ -----------------------------------------------------------------
+class "net_se_anomaly_field" (net_base) --/#???# (в разработке!)
+--/ -----------------------------------------------------------------
+function net_se_anomaly_field:__init(obj,mode)
+	super(obj, mode, only_st(mode), "se_anomaly_field")
+	self.bases = {
+		net_cse_alife_space_restrictor(nil, mode)
+	}
+	self.st_props = {
+		{ name = 'startup',     type = 'u8', default = 1 },
+		--{ name = 'update_time', type = 'bCTime', default = 0 },
+		--{ name = 'zone_count',  type = 'u8', default = 0 }
+	}
+	self.up_props = {}
+end
+--/ -----------------------------------------------------------------
+class "net_se_respawn" (net_base) --/[+]
+--/ -----------------------------------------------------------------
+function net_se_respawn:__init(obj,mode)
+	super(obj, mode, only_st(mode), "se_respawn")
+	self.bases = {
+		net_cse_alife_smart_zone(nil, mode)
+	}
+	self.st_props = {
+		{ name = 'spawned_ids',  type = 'l8u16v', default = {}    }, --/#~# changed name ('spawned_obj')
+		{ name = 'respawn_time', type = 'bCTime', default = false }  --/#+# hook for "SIMBION-mod"
+	}
+	self.up_props = {}
+end
+function net_se_respawn:_read_st_props(ret,pk)
+	for _,prop in ipairs(self.st_props) do
+		if prop.name == "spawned_ids" or not pk:r_eof() then
+			ret[prop.name] = this["_r_"..prop.type](pk, prop.ver)
+		end
+	end
+end
+function net_se_respawn:_write_st_props(data,pk)
+	for _,prop in ipairs(self.st_props) do
+		if prop.name == "spawned_ids" or data[prop.name] ~= nil then
+			this["_w_"..prop.type](pk, data[prop.name] or prop.default or 0)
+		end
+	end
+end
+--/ -----------------------------------------------------------------
+class "net_cse_alife_team_base_zone" (net_base) --/[+]
+--/ -----------------------------------------------------------------
+function net_cse_alife_team_base_zone:__init(obj,mode)
+	super(obj, mode, only_st(mode), "cse_alife_team_base_zone")
+	self.bases = {
+		net_cse_alife_space_restrictor(nil, mode)
+	}
+	self.st_props = {
+		{ name = 'team', type = 'u8', default = 0 }
+	}
+	self.up_props = {}
+end
+--/ -----------------------------------------------------------------
+class "net_se_smart_terrain" (net_base) --/[+]
+--/ -----------------------------------------------------------------
+function net_se_smart_terrain:__init(obj,mode)
+	super(obj, mode, only_st(mode), "se_smart_terrain")
+	self.bases = {
+		net_cse_alife_smart_zone(nil, mode)
+	}
+	self.st_props = {
+		{ name = 'duration_end',             type = 'uCTime',     default = 0,     ver = 1 },
+		{ name = 'idle_end',                 type = 'uCTime',     default = 0,     ver = 1 },
+		{ name = 'smart',                    type = 'strn1',      default = {},    ver = 1 }, --/#~# changed name 'gulag_working'
+		{ name = 'actor_defence_come',       type = 'b8',         default = false, ver = 2 },
+		{ name = 'combat_quest',             type = 'sz',         default = 'nil', ver = 2 },
+		{ name = 'task',                     type = 'u16',        default = -1,    ver = 2 },
+		{ name = 'see_actor_enemy',          type = 'sz',         default = 'nil', ver = 2 },
+		{ name = 'see_actor_enemy_time',     type = 'bCTime',     default = false, ver = 2 },
+		{ name = 'combat_manager',           type = 'cmb_mgr',    default = {},    ver = 2 },
+		{ name = 'cover_manager',            type = 'cvr_mgr',    default = {},    ver = 2 },
+		{ name = 'combat_manager__marker',   type = 'u16',        default = 0,     ver = 2, marker = true },
+		{ name = 'arriving_npc',             type = 'st41',       default = {},    ver = 4 },
+		{ name = 'npc_info',                 type = 'st62',       default = {},    ver = 6 },
+		{ name = 'dead_time',                type = 'l8u8CTimev', default = {},    ver = 6 },
+		{ name = 'base_on_actor_control',    type = 'st44',       default = false, ver = 4 },
+		{ name = 'respawn_point',            type = 'st45',       default = {},    ver = 4 }, --/#~#
+		{ name = 'population',               type = 'u8',         default = 0,     ver = 4 },
+		{ name = 'se_smart_terrain__marker', type = 'u16',        default = 0,     ver = 6, marker = true }
+	}
+	self.up_props = {}
+end
+function net_se_smart_terrain:_write_st_props(data,pk)
+	local size_marker = pk:w_tell()
+	for _,prop in ipairs(self.st_props) do
+		if can_ver(prop.ver) then
+			if prop.marker then data[prop.name] = pk:w_tell() - size_marker end --/ hook marker
+			this["_w_"..prop.type](pk, data[prop.name] or prop.default or 0)
+		end
+	end
+end
+--/ -----------------------------------------------------------------
+class "net_se_sim_faction" (net_base) --/[+] STCS
+--/ -----------------------------------------------------------------
+function net_se_sim_faction:__init(obj,mode)
+	super(obj, mode, only_st(mode), "se_sim_faction")
+	self.bases = {
+		net_cse_alife_smart_zone(nil, mode)
+	}
+	self.st_props = {
+		{ name = 'community_player',              type = 'u8',        default = 0  },
+		{ name = 'start_position_filled',         type = 'u8',        default = 0  },
+		{ name = 'current_expansion_level',       type = 'u8',        default = 0  },
+		{ name = 'last_spawn_time',               type = 'uCTime',    default = -1 },
+		{ name = 'squad_target_cache',            type = 'l8szu16v',  default = {} },
+		{ name = 'random_tasks',                  type = 'l8u16u16v', default = {} },
+		{ name = 'current_attack_quantity',       type = 'l8u16u8v',  default = {} },
+		{ name = 'squads',                        type = 'sf_squads', default = {} }, --/ used helpers
+		{ name = 'se_sim_faction__marker',        type = 'u16',       default = 0, marker = true }
+	}
+	self.up_props = {}
+end
+function net_se_sim_faction:_write_st_props(data,pk)
+	local size_marker = pk:w_tell()
+	for _,prop in ipairs(self.st_props) do
+		if prop.marker then data[prop.name] = pk:w_tell() - size_marker end --/ hook marker
+		this["_w_"..prop.type](pk, data[prop.name] or prop.default or 0)
+	end
+end
+--/ -----------------------------------------------------------------
+class "net_cse_alife_online_offline_group" (net_base) --/[+] only SCoP
+--/ -----------------------------------------------------------------
+function net_cse_alife_online_offline_group:__init(obj,mode)
+	super(obj, mode, only_st(mode), "sim_squad_scripted")
+	self.bases = {
+		net_cse_alife_dynamic_object(nil, mode)
+		--net_cse_alife_schedulable(nil, mode) --/#?#
+	}
+	self.st_props = {
+		{ name = 'members', type = 'l32u16v', default = {}, ver = 6 }
+	}
+	self.up_props = {}
+end
+--/ -----------------------------------------------------------------
+class "net_sim_squad_scripted" (net_base) --/[+] only SCoP
+--/ -----------------------------------------------------------------
+function net_sim_squad_scripted:__init(obj,mode)
+	super(obj, mode, only_st(mode), "sim_squad_scripted")
+	self.bases = {
+		net_cse_alife_online_offline_group(nil, mode)
+	}
+	self.st_props = {
+		{ name = 'current_target_id',          type = 'sz',  default = 'nil', ver = 6 },
+		{ name = 'respawn_point_id',           type = 'sz',  default = 'nil', ver = 6 },
+		{ name = 'respawn_point_prop_section', type = 'sz',  default = 'nil', ver = 6 },
+		{ name = 'smart_id',                   type = 'sz',  default = 'nil', ver = 6 },
+		{ name = 'sim_squad_scripted__marker', type = 'u16', default = 0,     ver = 6, marker = true }
+	}
+	self.up_props = {}
+end
+function net_sim_squad_scripted:_write_st_props(data,pk)
+	local size_marker = pk:w_tell()
+	for _,prop in ipairs(self.st_props) do
+		if prop.marker then data[prop.name] = pk:w_tell() - size_marker end --/ hook marker
+		this["_w_"..prop.type](pk, data[prop.name] or prop.default or 0)
+	end
+end
+--/ -----------------------------------------------------------------
+class "net_cse_alife_level_changer" (net_base) --/[+] has derived
+--/ -----------------------------------------------------------------
+function net_cse_alife_level_changer:__init(obj,mode)
+	super(obj, mode, only_st(mode), "cse_alife_level_changer")
+	self.bases = {
+		net_cse_alife_space_restrictor(nil, mode)
+	}
+	self.st_props = {
+		{ name = 'dest_game_vertex_id',  type = 'u16',   default = 0  },
+		{ name = 'dest_level_vertex_id', type = 'u32',   default = 0  },
+		{ name = 'dest_position',        type = 'f32v3', default = vector():set(0,0,0) },
+		{ name = 'dest_direction',       type = 'f32v3', default = vector():set(0,0,0) },
+		{ name = 'dest_level_name',      type = 'sz',    default = '' },
+		{ name = 'dest_graph_point',     type = 'sz',    default = '' },
+		{ name = 'silent_mode',          type = 'u8',    default = 0  }
+	}
+	self.up_props = {}
+end
+--/ -----------------------------------------------------------------
+class "net_se_level_changer" (net_base) --/[+] STCS|SCoP
+--/ -----------------------------------------------------------------
+function net_se_level_changer:__init(obj,mode)
+	super(obj, mode, only_st(mode), "se_level_changer")
+	self.bases = {
+		net_cse_alife_level_changer(nil, mode)
+	}
+	self.st_props = {
+	{ name = 'enabled', type = 'b8', default = true                       }, --/#~# changed type 'u8'
+	{ name = 'hint',    type = 'sz', default = 'level_changer_invitation' }
+	}
+	self.up_props = {}
+end
+--/ -----------------------------------------------------------------
+class "net_cse_alife_custom_zone" (net_base) --/[+] has derived
+--/ -----------------------------------------------------------------
+function net_cse_alife_custom_zone:__init(obj,mode)
+	super(obj, mode, only_st(mode), "cse_alife_custom_zone")
+	self.bases = {
+		net_cse_alife_space_restrictor(nil, mode)
+	}
+	self.st_props = {
+		{ name = 'max_power',        type = 'f32', default = 0.0 },
+		{ name = 'owner_id',         type = 'h32', default = -1  },
+		{ name = 'enabled_time',     type = 'u32', default = 0   },
+		{ name = 'disabled_time',    type = 'u32', default = 0   },
+		{ name = 'start_time_shift', type = 'u32', default = 0   }
+	}
+	self.up_props = {}
+end
+--/ -----------------------------------------------------------------
+class "net_cse_alife_anomalous_zone" (net_base) --/[+] has derived
+--/ -----------------------------------------------------------------
+function net_cse_alife_anomalous_zone:__init(obj,mode)
+	super(obj, mode, only_st(mode), "cse_alife_anomalous_zone")
+	self.bases = {
+		net_cse_alife_custom_zone(nil, mode)
+	}
+	self.st_props = {
+		{ name = 'offline_interactive_radius', type = 'f32', default = 0.0 },
+		{ name = 'artefact_spawn_count',       type = 'u16', default = 0   },
+		{ name = 'artefact_position_offset',   type = 'h32', default = 0   }
+	}
+	self.up_props = {}
+end
+--/ -----------------------------------------------------------------
+class "net_se_zone_anom" (net_base)
+--/ -----------------------------------------------------------------
+function net_se_zone_anom:__init(obj,mode)
+	super(obj, mode, only_st(mode), "se_zone_anom")
+	self.bases = {
+		net_cse_alife_anomalous_zone(nil, mode)
+	}
+	self.st_props = {
+		--{ name = 'last_spawn_time_present', type = 'u8',   default = 0 },
+		{ name = 'last_spawn_time', type = 'bCTime', default = 0 }
+	}
+	self.up_props = {}
+end
+--/ -----------------------------------------------------------------
+class "net_se_flame_zone" (net_base) --/[+]
+--/ -----------------------------------------------------------------
+function net_se_flame_zone:__init(obj,mode)
+	super(obj, mode, only_st(mode), "se_flame_zone")
+	self.bases = {
+		net_cse_alife_anomalous_zone(nil, mode)
+	}
+	self.st_props = {
+		{ name = 'cooking_food', type = 'cook', default = {} }
+	}
+	self.up_props = {}
+end
+--/ -----------------------------------------------------------------
+class "net_cse_alife_zone_visual" (net_base) --/[+] has derived
+--/ -----------------------------------------------------------------
+function net_cse_alife_zone_visual:__init(obj,mode)
+	super(obj, mode, only_st(mode), "cse_alife_zone_visual")
+	self.bases = {
+		net_cse_alife_anomalous_zone(nil, mode),
+		net_cse_visual              (nil, mode)
+	}
+	self.st_props = {
+		{ name = 'idle_animation',   type = 'sz', default = '' },
+		{ name = 'attack_animation', type = 'sz', default = '' }
+	}
+	self.up_props = {}
+end
+--/ -----------------------------------------------------------------
+class "net_se_zone_visual" (net_base)
+--/ -----------------------------------------------------------------
+function net_se_zone_visual:__init(obj,mode)
+	super(obj, mode, only_st(mode), "se_zone_visual")
+	self.bases = {
+		net_cse_alife_zone_visual(nil, mode)
+	}
+	self.st_props = {
+		--{ name = 'last_spawn_time_present', type = 'u8', default = 0 },
+		{ name = 'last_spawn_time', type = 'bCTime', default = 0 }
+	}
+	self.up_props = {}
+end
+--/ -----------------------------------------------------------------
+class "net_cse_alife_torrid_zone" (net_base) --/[+] has derived
+--/ -----------------------------------------------------------------
+function net_cse_alife_torrid_zone:__init(obj,mode)
+	super(obj, mode, only_bases, "cse_alife_torrid_zone")
+	self.bases = {
+		net_cse_alife_custom_zone(nil, mode),
+		net_cse_motion           (nil, mode)
+	}
+	self.st_props = {}
+	self.up_props = {}
+end
+--/ -----------------------------------------------------------------
+class "net_se_torrid_zone" (net_base)
+--/ -----------------------------------------------------------------
+function net_se_torrid_zone:__init(obj,mode)
+	super(obj, mode, only_st(mode), "se_torrid_zone")
+	self.bases = {
+		net_cse_alife_torrid_zone(nil, mode)
+	}
+	self.st_props = {
+		--{ name = 'last_spawn_time_present', type = 'b8', default = 0, ver = 4 },
+		{ name = 'last_spawn_time', type = 'bCTime', default = 0 }
+	}
+	self.up_props = {}
+end
+--/ -----------------------------------------------------------------
+class "net_cse_alife_inventory_item" (net_base) --/[+] CInventoryItem (has derived)
+--/ -----------------------------------------------------------------
+function net_cse_alife_inventory_item:__init(obj,mode)
+	super(obj, mode, mode, "cse_alife_inventory_item")
+	self.bases = {
+		net_cse_alife_dynamic_object_visual(nil, mode)
+	}
+	self.st_props = {
+		{ name = 'condition', type = 'f32',    default = 1.0          },
+		{ name = 'upgrades',  type = 'l32szv', default = nil, ver = 6 } --/ CS&SCoP
+	}
+	self.up_props = {
+		{ name = 'num_items',      type = 'h8',    default = 0                            },
+		{ name = 'force',          type = 'f32v3', default = vector():set(0,0,0), ver = 6 }, --/ CS&SCoP
+		{ name = 'torque',         type = 'f32v3', default = vector():set(0,0,0), ver = 6 }, --/ CS&SCoP
+		{ name = 'ph_position',    type = 'f32v3', default = vector():set(0,0,0)          },
+		{ name = 'ph_rotation',    type = 'q8v4',  default = {0,0,0,0}                    }, --/ quaterinon
+		{ name = 'ph_angular_vel', type = 'q8v3',  default = {0,0,0}                      },
+		{ name = 'ph_linear_vel',  type = 'q8v3',  default = {0,0,0}                      },
+		{ name = 'enabled',        type = 'b8',    default = false,               ver = 6 } --/#~# changed type 'u8'
+	}
+	self.co_props = {
+		{ name = 'place_flags',    type = 'h8',    default = 0                            }, --/ находится у кого-то (CoP: в слоте/на поясе/...)
+		{ name = 'inv_item_unk1',  type = 'u8',    default = 0,                   ver = 4 }, --/#?# CoP
+		{ name = 'condition',      type = 'f32',   default = 1.0                          }, --/ состояние предмета (износ)
+		{ name = 'ph_shell_enable',type = 'b8',    default = true                         }, --/ имеет физ.оболочку (не имеет владельна)
+	}
+end
+function net_cse_alife_inventory_item:_read_up_props(ret,pk)
+	--/ item packet hooks
+	local skip_props = {}
+	for _,prop in ipairs(self.up_props) do
+		if can_ver(prop.ver) and not skip_props[prop.name] then
+			ret.upd[prop.name] = this["_r_"..prop.type](pk, prop.ver)
+			if prop.name == 'num_items' then
+				if ret.upd.num_items ~= 0 then
+					if bit_and(ret.upd.num_items, 64) == 64 then
+						skip_props.ph_angular_vel = true
+					end
+					if bit_and(ret.upd.num_items, 128) == 128 then
+						skip_props.ph_linear_vel = true
+					end
+				else
+					return --/>
+				end
+			end
+		end
+	end
+end
+function net_cse_alife_inventory_item:_write_up_props(data,pk)
+	--/ item packet hooks
+	local skip_props = {}
+	for _,prop in ipairs(self.up_props) do
+		if can_ver(prop.ver) and not skip_props[prop.name] then
+			this["_w_"..prop.type](pk, data.upd[prop.name] or prop.default or 0)
+			if prop.name == 'num_items' then
+				local num_items = data.upd.num_items or 0
+				if num_items ~= 0 then
+					if bit_and(num_items, 64) == 64 then
+						skip_props.ph_angular_vel = true
+					end
+					if bit_and(num_items, 128) == 128 then
+						skip_props.ph_linear_vel = true
+					end
+				else
+					return --/>
+				end
+			end
+		end
+	end
+end
+--/ -----------------------------------------------------------------
+class "net_cse_alife_item" (net_base) --/[+] has derived, but spawnable
+--/ -----------------------------------------------------------------
+function net_cse_alife_item:__init(obj,mode)
+	super(obj, mode, only_bases, "cse_alife_item")
+	self.bases = {
+		net_cse_alife_inventory_item(nil, mode)
+	}
+	self.st_props = {}
+	self.up_props = {}
+end
+--/ -----------------------------------------------------------------
+class "net_cse_alife_item_torch" (net_base) --/[+]
+--/ -----------------------------------------------------------------
+function net_cse_alife_item_torch:__init(obj,mode)
+	super(obj, mode, only_up(mode), "cse_alife_item_torch")
+	self.bases = {
+		net_cse_alife_inventory_item(nil, mode)
+	}
+	self.st_props = {}
+	self.up_props = {
+		{ name = 'torch_flags',   type = 'u8',  default = -1 },
+		{ name = 'battery_state', type = 'u16', default = -1, ver = 8}, --/#+LA#
+	}
+end
+--/ -----------------------------------------------------------------
+class "net_cse_alife_item_detector" (net_base) --/[+]
+--/ -----------------------------------------------------------------
+function net_cse_alife_item_detector:__init(obj,mode)
+	super(obj, mode, only_bases, "cse_alife_item_detector")
+	self.bases = {
+		net_cse_alife_inventory_item(nil, mode)
+	}
+	self.st_props = {}
+	self.up_props = {}
+end
+--/ -----------------------------------------------------------------
+class "net_cse_alife_item_artefact" (net_base) --/[+]
+--/ -----------------------------------------------------------------
+function net_cse_alife_item_artefact:__init(obj,mode)
+	super(obj, mode, only_bases, "cse_alife_item_artefact")
+	self.bases = {
+		net_cse_alife_inventory_item(nil, mode)
+	}
+	self.st_props = {}
+	self.up_props = {}
+end
+--/ -----------------------------------------------------------------
+class "net_cse_alife_item_grenade" (net_base) --/[+]
+--/ -----------------------------------------------------------------
+function net_cse_alife_item_grenade:__init(obj,mode)
+	super(obj, mode, only_bases, "cse_alife_item_grenade")
+	self.bases = {
+		net_cse_alife_inventory_item(nil, mode)
+	}
+	self.st_props = {}
+	self.up_props = {}
+end
+--/ -----------------------------------------------------------------
+class "net_cse_alife_item_explosive" (net_base) --/[+]
+--/ -----------------------------------------------------------------
+function net_cse_alife_item_explosive:__init(obj,mode)
+	super(obj, mode, only_bases, "cse_alife_item_explosive")
+	self.bases = {
+		net_cse_alife_inventory_item(nil, mode)
+	}
+	self.st_props = {}
+	self.up_props = {}
+end
+--/ -----------------------------------------------------------------
+class "net_cse_alife_item_bolt" (net_base) --/[+]
+--/ -----------------------------------------------------------------
+function net_cse_alife_item_bolt:__init(obj,mode)
+	super(obj, mode, only_bases, "cse_alife_item_bolt")
+	self.bases = {
+		net_cse_alife_inventory_item(nil, mode)
+	}
+	self.st_props = {}
+	self.up_props = {}
+end
+--/ -----------------------------------------------------------------
+class "net_cse_alife_item_custom_outfit" (net_base) --/[+]
+--/ -----------------------------------------------------------------
+function net_cse_alife_item_custom_outfit:__init(obj,mode)
+	super(obj, mode, only_up(mode), "cse_alife_item_custom_outfit")
+	self.bases = {
+		net_cse_alife_inventory_item(nil, mode)
+	}
+	self.st_props = {}
+	self.up_props = {
+		{ name = 'condition', type = 'q8', default = 0 }
+	}
+end
+--/ -----------------------------------------------------------------
+class "net_cse_alife_item_helmet" (net_base) --/[+] CoP
+--/ -----------------------------------------------------------------
+function net_cse_alife_item_helmet:__init(obj,mode)
+	super(obj, mode, only_up(mode), "cse_alife_item_helmet")
+	self.bases = {
+		net_cse_alife_inventory_item(nil, mode)
+	}
+	self.st_props = {}
+	self.up_props = {
+		{ name = 'condition', type = 'q8', default = 0 }
+	}
+end
+--/ -----------------------------------------------------------------
+class "net_cse_alife_item_pda" (net_base) --/[+]
+--/ -----------------------------------------------------------------
+function net_cse_alife_item_pda:__init(obj,mode)
+	super(obj, mode, only_st(mode), "cse_alife_item_pda")
+	self.bases = {
+		net_cse_alife_inventory_item(nil, mode)
+	}
+	self.st_props = {
+		{ name = 'original_owner',     type = 'u16', default = 0  },
+		{ name = 'specific_character', type = 'sz',  default = '' },
+		{ name = 'info_portion',       type = 'sz',  default = '' }
+	}
+	self.up_props = {}
+end
+--/ -----------------------------------------------------------------
+class "net_cse_alife_item_document" (net_base) --/[+]
+--/ -----------------------------------------------------------------
+function net_cse_alife_item_document:__init(obj,mode)
+	super(obj, mode, only_st(mode), "cse_alife_item_document")
+	self.bases = {
+		net_cse_alife_inventory_item(nil, mode)
+	}
+	self.st_props = {
+		{ name = 'info_portion', type = 'sz', default = '' }
+	}
+	self.up_props = {}
+end
+--/ -----------------------------------------------------------------
+class "net_cse_alife_item_ammo" (net_base) --/[+]
+--/ -----------------------------------------------------------------
+function net_cse_alife_item_ammo:__init(obj,mode)
+	super(obj, mode, mode, "cse_alife_item_ammo")
+	self.bases = {
+		net_cse_alife_inventory_item(nil, mode)
+	}
+	self.st_props = {
+		{ name = 'ammo_left', type = 'u16', default = 0 }
+	}
+	self.up_props = {
+		{ name = 'ammo_left', type = 'u16', default = 0 }
+	}
+end
+--/ -----------------------------------------------------------------
+class "net_cse_alife_item_weapon" (net_base) --/[+]
+--/ -----------------------------------------------------------------
+function net_cse_alife_item_weapon:__init(obj,mode)
+	super(obj, mode, mode, "cse_alife_item_weapon")
+	self.bases = {
+		net_cse_alife_inventory_item(nil, mode)
+	}
+	self.st_props = {
+		{ name = 'ammo_current', type = 'u16', default = 0 },
+		{ name = 'ammo_elapsed', type = 'u16', default = 0 },
+		{ name = 'weapon_state', type = 'u8',  default = 0 },
+		{ name = 'addon_flags',  type = 'u8',  default = 0 },
+		{ name = 'ammo_type',    type = 'u8',  default = 0 },
+		{ name = 'cse_alife_item_weapon__unk1', type = 'u8', default = 0, ver = 6 } --/ CS&SCoP
+	}
+	self.up_props = {
+		{ name = 'condition',    type = 'q8',  default = 255 },
+		{ name = 'weapon_flags', type = 'u8',  default = 0 },
+		{ name = 'ammo_elapsed', type = 'u16', default = 0 },
+		{ name = 'addon_flags',  type = 'u8',  default = 0 },
+		{ name = 'ammo_type',    type = 'u8',  default = 0 },
+		{ name = 'weapon_state', type = 'u8',  default = 0 },
+		{ name = 'weapon_zoom',  type = 'u8',  default = 0 }
+	}
+	self.co_props = {
+		{ name = 'ammo_elapsed', type = 'u8',  default = 0          }, --/#!# остаток патронов/зарядов в магазине/аддоне
+		{ name = 'addon_state',  type = 'h8',  default = 0          }, --/#?#'u8'/'b8'
+		{ name = 'ammo_type',    type = 'u8',  default = 0          }, --/
+		{ name = 'zoom_mode',    type = 'u8',  default = 0          }, --/#?#'b8' прицеливание
+		{ name = 'scope_type',   type = 'u8',  default = 0, ver = 4 }, --/ CoP: тип прицела (number-index)
+		{ name = 'addon_flags',  type = 'h8',  default = 0          }, --/ флаги аддонов:: 0:none, 1:scope, 2:gl, 4:sil
+	}
+end
+--/ -----------------------------------------------------------------
+class "net_cse_alife_item_weapon_magazined" (net_base) --/[+] has derived, but spawnable
+--/ -----------------------------------------------------------------
+function net_cse_alife_item_weapon_magazined:__init(obj,mode)
+	super(obj, mode, only_up(mode), "cse_alife_item_weapon_magazined")
+	self.bases = {
+		net_cse_alife_item_weapon(nil, mode)
+	}
+	self.st_props = {}
+	self.up_props = {
+		{ name = 'current_fire_mode', type = 'u8', default = 0 }
+	}
+	self.co_props = {
+		{ name = 'queue_size',        type = 'u8', default = 0 }, --/#?#
+		{ name = 'shot_count',        type = 'u8', default = 0 }, --/#?# режим огня:: 0:Auto , 1:одиночные выстрелы
+		{ name = 'current_fire_mode', type = 'u8', default = 0 }, --/#!#
+	}
+end
+--/ -----------------------------------------------------------------
+class "net_cse_alife_item_weapon_magazined_w_gl" (net_base) --/[+]
+--/ -----------------------------------------------------------------
+function net_cse_alife_item_weapon_magazined_w_gl:__init(obj,mode)
+	super(obj, mode, only_up(mode), "cse_alife_item_weapon_magazined_w_gl")
+	self.bases = {
+		net_cse_alife_item_weapon_magazined(nil, mode)
+	}
+	self.st_props = {}
+	self.up_props = {
+		{ name = 'grenade_mode',  type = 'u8', default = 0 },
+		{ name = 'grenade_count', type = 'u8', default = 0, ver = 8 }, --/#+LA#
+	}
+	self.co_props = {
+		{ name = 'grenade_mode',  type = 'u8', default = 0 }, --/#?#'b8'
+		{ name = 'grenade_count', type = 'u8', default = 0 }, --/#?# iMagazineCount
+	}
+end
+function net_cse_alife_item_weapon_magazined_w_gl:_read(ret,stpk,uppk)
+	if self._mode == 0 then
+		self:_read_bases(ret,stpk,uppk)
+		self:_read_co_props(ret,stpk)
+	else
+		if self._can_up then
+			for _,prop in ipairs(self.up_props) do
+				if can_ver(prop.ver) and not uppk:r_eof() then
+					ret.upd[prop.name] = this["_r_"..prop.type](uppk)
+				end
+			end
+		end
+		self:_read_bases(ret,stpk,uppk)
+	end
+end
+function net_cse_alife_item_weapon_magazined_w_gl:_write(data,stpk,uppk)
+	if self._mode == 0 then
+		self:_write_bases(data,stpk,uppk)
+		self:_write_co_props(data,stpk)
+	else
+		if self._can_up then
+			for _,prop in ipairs(self.up_props) do
+				if can_ver(prop.ver) then
+					this["_w_"..prop.type](uppk, data.upd[prop.name] or prop.default or 0)
+				end
+			end
+		end
+		self:_write_bases(data,stpk,uppk)
+	end
+end
+--/ -----------------------------------------------------------------
+class "net_cse_alife_item_weapon_shotgun" (net_base) --/[+]
+--/ -----------------------------------------------------------------
+function net_cse_alife_item_weapon_shotgun:__init(obj,mode)
+	super(obj, mode, only_up(mode), "cse_alife_item_weapon_shotgun")
+	self.bases = {
+		net_cse_alife_item_weapon_magazined(nil, mode)
+	}
+	self.st_props = {}
+	self.up_props = {
+		{ name = 'ammo_ids', type = 'l8u8v', default = {} }
+	}
+end
+--/ -----------------------------------------------------------------
+class "net_cse_alife_item_weapon_auto_shotgun" (net_base) --/[+]
+--/ -----------------------------------------------------------------
+function net_cse_alife_item_weapon_auto_shotgun:__init(obj,mode)
+	super(obj, mode, only_up(mode), "cse_alife_item_weapon_auto_shotgun")
+	self.bases = {
+		net_cse_alife_item_weapon_shotgun(nil, mode)
+	}
+	self.st_props = {}
+	self.up_props = {}
+end
+--/ -----------------------------------------------------------------
+
+--/------------------------------------------------------------------------------------------------
+--/ HELPERs
+--/------------------------------------------------------------------------------------------------
+local function initialize()
+	if not sim then sim = alife() end
+	local sini = system_ini() --/ cache function 'system_ini'
+	--/ читаем конфиг-файл модуля
+	local ltx = ini_file("mods\\"..sModule..".ltx") --/ объект конфиг-файла (из папки мода)
+	if not ltx:section_exist("clsid_to_class") then
+		ltx = ini_file(sModule..".ltx") --/ проверяем в корневой папке конфиг-файлов
+	end
+	if ltx:section_exist("clsid_to_class") then
+		--/ установка параметров (режимов) работы модуля
+		disabled_convert_obj = utils.cfg_get_bool(ltx, "options", "disable_convert_client2server", nil, false, disabled_convert_obj)
+		disabled_convert_cd  = utils.cfg_get_bool(ltx, "options", "disable_convert_custom_data",   nil, false, disabled_convert_cd)
+		disabled_net_dummy   = utils.cfg_get_bool(ltx, "options", "disable_net_dummy",             nil, false, disabled_net_dummy)
+		enabled_debug        = utils.cfg_get_bool(ltx, "options", "enable_debug",                  nil, false, enabled_debug)
+		if enabled_debug then
+			--bits_mode[1]=5 bits_mode[2]=6 bits_mode[3]=7 --/ for global debug
+			bits_mode[4]=0 bits_mode[5]=5 bits_mode[6]=6 bits_mode[7]=7 --/ for 'manual' debug
+		end
+		local iBitMode = (db.is_dbg0 and bit_ver) or 15 --/ for debug
+		--/ читаем секцию общих соответствий 'script_clsid <==> cse_server_object_class' (строки!)
+		for i=0, ltx:line_count("clsid_to_class")-1 do
+			local result,idx,value = ltx:r_line("clsid_to_class",i,"","")
+			local scr_clsid = idx and idx:match('%S+') --/ trim_w
+			if scr_clsid then
+				local t = {}
+				if value and value ~= "" then
+					for str in value:gmatch('([^,]+)') do
+						table.insert(t, str:match('^%s*(%S*)')) --/ +trim_w
+					end
+				end
+				--/ [1] = cse_server_object_class, [2] = CLSID, [3] = flag, [4] = server_object_class
+				if t[1] then --/ exist cse_server_object_class ?
+					if iBitMode == 15 then --/ for release-mode
+						str_clsid2class[scr_clsid] = t
+					elseif sini:section_exist(scr_clsid) then --/ for any mods
+						if sini:line_exist(scr_clsid,"class") and t[2] then
+							if db.is_dbg1 then log("initialize:scr_clsid=[%s],CLSID=[%s]<?>[%s]:(%s)", scr_clsid, sini:r_string(scr_clsid,"class"), t[2], "Info") end --/#~#
+							if sini:r_string(scr_clsid,"class") == t[2] or t[2] == 'unknown' then --/ not use(!): 'r_clsid'
+								str_clsid2class[scr_clsid] = t
+							else log("initialize:scr_clsid=[%s],CLSID=[%s]<?>[%s]:<%s>", scr_clsid, sini:r_string(scr_clsid,"class"), t[2], "Warning!") --/#~#
+							end
+						end
+					elseif t[3] then --/ for debug and mixed-mode
+						local iMode = tonumber(t[3])
+						if iMode and bit_and(iMode,iBitMode) ~= 0 then
+							str_clsid2class[scr_clsid] = t
+						end
+					end
+				end
+			end
+		end
+	end
+	if not next(str_clsid2class) then
+		abort(sModule..":initialize:Error_read_config_file") --/ ошибка чтения конфиг-файла
+	end
+end
+
+function get_clsid2net()
+	if auto_attach then this.attach() end
+	if not sim then sim = alife() end
+	--/ создаем массив соответствий 'script_clsid <==> net_class'
+	if next(str_clsid2class) and clsid ~= nil then
+		clsid2net = {}
+		for k,v in pairs(str_clsid2class) do
+			local scr_clsid, cse_class = clsid[k], v[1]
+			if
+			  scr_clsid and cse_class
+			  and cse_class ~= "unknown"
+			then
+			  local net_class = this[ "net_" .. cse_class ]
+			  if net_class then
+			    clsid2net[ scr_clsid ] = net_class
+			  end
+			end
+		end
+		--table.print( str_clsid2class, sModule..":str_clsid2net|" ) --/#~#
+		--/ helpers:
+		if disabled_convert_obj then
+			convert_obj = function(obj) return obj end --/ stub
+		end
+		--/ dummy class (can use in helpers)
+		if disabled_net_dummy then
+			net_stub = function() end
+			_G["net_dummy"] = nil
+		end
+	end
+end
+function get_net_class(script_clsid)
+	if not next(clsid2net) then this.get_clsid2net() end
+	local net_class = clsid2net[script_clsid]
+	if net_class == nil then
+		for k,v in pairs(str_clsid2class) do
+			local scr_clsid = clsid[k]
+			if not scr_clsid then  --log("get_net_class: clsid=["..k.."] => X") --/#~#
+				str_clsid2class[k] = nil --/ clear
+			elseif scr_clsid == script_clsid then
+				net_class = this["net_"..(v[1] or "unknown")] or false
+				clsid2net[scr_clsid] = net_class
+				break
+			end
+		end
+	end
+	return net_class --/>
+end
+--/-------------------------------------------------------------------
+--/ global constants/flags/functions can be used with packets
+--/-------------------------------------------------------------------
+local FuncByName = {
+	["get_netpk"]  = this.get,
+	["shape_type"] = shape_type, --/#!# table
+	["net_dummy"]  = this.net_dummy --/#!# class-constructor
+}
+if FuncByName then
+	--/ translate tables to global scope (optional)
+	_G.object_flags = { --/ for alife_object
+		UseSwitches       =    1,
+		SwitchOnline      =    2,
+		SwitchOffline     =    4,
+		Interactive       =    8,
+		VisibleForAI      =   16,
+		UsefulForAI       =   32,
+		OfflineNoMove     =   64,
+		UsedAI_Locations  =  128,
+		UseGroupBehaviour =  256,
+		CanSave           =  512,
+		VisibleForMap     = 1024,
+		UseSmartTerrains  = 2048,
+		CheckForSeparator = 4096,
+		CorpseRemoval     = 8192
+	}
+	_G.trader_flags = { --/ trader
+		Dummy        = 0,
+		InfiniteAmmo = 1
+	}
+	_G.torch_flags = { --/ torch
+		Active            = 1,
+		NightVisionActive = 2,
+		Attached          = 4
+	}
+	_G.addon_flags = { --/ weapon
+		scope    = 1,
+		launcher = 2,
+		silencer = 4
+	}
+	_G.hanging_lamp_flags = { --/ hanging lamp
+		Physic       =  1,
+		CastShadow   =  2,
+		R1           =  4,
+		R2           =  8,
+		TypeSpot     = 16,
+		PointAmbient = 32
+	}
+	_G.visual_flags = { Obstacle= 1 } --/ visual
+	--/ types:
+	_G.restrictor_type = { --/ restrictor types
+		DefaultRestrictorTypeNone = 0,
+		DefaultRestrictorTypeOut  = 1,
+		DefaultRestrictorTypeIn   = 2,
+		RestrictorTypeNone        = 3,
+		RestrictorTypeIn          = 4,
+		RestrictorTypeOut         = 5
+	}
+	--/ translate (change) function/class/tables to global scope
+	setfenv(1,_G)
+	for name,func in pairs(FuncByName) do
+		_G[name] = func
+		if type(func) == 'number' then --/ if not class-constructor ('userdata') or table
+			setfenv(_G[name],_G)
+		end
+	end
+	FuncByName = nil
+end
+--/ -----------------------------------------------------------------
+--/ Attach module
+--/ -----------------------------------------------------------------
+auto_attach = true --/ flag
+--/ --------------------------
+function attach()
+	if auto_attach then
+		initialize() --/ read config-file
+		auto_attach = false
+	end
+end
+--/ -----------------------------------------------------------------
+--if auto_attach then this.attach() end --/ auto attach module
+--/ -----------------------------------------------------------------------------------------------

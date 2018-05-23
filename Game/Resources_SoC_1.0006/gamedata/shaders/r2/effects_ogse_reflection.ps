@@ -1,0 +1,29 @@
+#include "common.h"
+#include "ogse_config.h"
+#include "ogse_reflections.h"
+#include "shared\waterconfig.h"
+
+struct vf
+{
+	float4	hpos		: POSITION;	  // position in projected space for rasterizer
+	float4	pos			: TEXCOORD0;  // position world space
+	float3	N			: TEXCOORD1;  // matrix for tangent2world normal transformation
+	float3	v2point		: TEXCOORD2;  // eye-to-point vector in world space - for reflections
+};
+
+float4 main (vf I) : COLOR
+{
+	float3 v2point = normalize(I.v2point);
+	float3 vreflect = reflect(v2point, I.N);	
+	
+	#if (REFLECTIONS_MODE==REFL_GROUND) || (REFLECTIONS_MODE==REFL_BOTH)
+		float4 refl = calc_reflections(I.pos, vreflect);
+//		refl.xyz *= SW_REFL_INTENSITY;
+		float3 env = calc_envmap(vreflect);
+		float3 comb_ref = lerp(refl.xyz, env.xyz, 0/*refl.www*/);
+	#else 
+		float3 comb_ref = calc_envmap(vreflect);
+	#endif
+
+    return  float4   (refl.xyz, 1 );
+}

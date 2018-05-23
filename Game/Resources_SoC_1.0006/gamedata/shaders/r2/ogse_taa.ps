@@ -1,0 +1,29 @@
+#include "common.h"
+#include "ogse_config.h"
+
+uniform sampler2D s_image_curr;
+uniform sampler2D s_image_prev0;
+uniform sampler2D s_image_prev1;
+uniform sampler2D s_image_prev2;
+uniform sampler2D s_position_curr;
+uniform sampler2D s_position_prev;
+/*uniform float4x4 m_current;
+uniform float4x4 m_previous;*/
+#define EPS float(0.001)
+float4 main(p_screen _in):COLOR0
+{
+	float4 final = tex2D(s_image_curr, _in.tc0.xy/* + float2(-0.5, 0.0)*ogse_c_resolution.zw*/);
+	float4 depth_curr = tex2D(s_position_curr, _in.tc0.xy);
+	if ((depth_curr.z - AA_TECH_SWITCH) > EPS) {
+//		float4 p_current = mul	(m_current,	depth_curr);
+		float4 p_previous = mul	(m_previous,	depth_curr);
+		float4 depth = tex2Dproj(s_position_prev, p_previous);
+//		float2 p_velocity 	= ( (p_current.xy/p_current.w)-(p_previous.xy/p_previous.w) );
+		float4 s1 = tex2D(s_image_prev0, _in.tc0.xy);
+//		float4 s2 = tex2D(s_image_prev1, _in.tc0.xy);
+//		float4 s3 = tex2D(s_image_prev2, _in.tc0.xy);
+		final = lerp(final, (final+s1)*0.5, saturate(0.01 - abs(depth_curr.z - depth.z)));
+//		final = (final + s1 + s2 + s3)*0.25;
+	}
+	return final;
+};

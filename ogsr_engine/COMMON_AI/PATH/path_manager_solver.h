@@ -44,9 +44,11 @@ protected:
 	typedef CProblemSolver<T1,T2,T3,T4,T5,T6,T7,T8>	_Graph;
 	typedef typename _Graph::_edge_type				_edge_type;
 
+public:
+	typedef typename _Graph::const_iterator const_iterator;
+
 protected:
 	xr_vector<_edge_type>							*m_edge_path;
-	const_iterator									m_iterator;
 
 public:
 	virtual						~CPathManager	();

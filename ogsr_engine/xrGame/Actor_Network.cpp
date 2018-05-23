@@ -52,12 +52,15 @@ int			g_dwInputUpdateDelta		= 20;
 BOOL		net_cl_inputguaranteed		= FALSE;
 CActor*		g_actor						= NULL;
 
-CActor*			Actor()	
-{	
-	VERIFY		(g_actor); 
-	if (GameID() != GAME_SINGLE) 
-		VERIFY	(g_actor == Level().CurrentControlEntity());
-	return		(g_actor); 
+CActor* Actor()
+{
+	// KRodin: Эта функция теперь вызывается из многих новых каллбеков,
+	// и вполне может быть вызвана, когда актора ещё нет.
+	// Т.ч. вылетать не будем в этом случае.
+	//VERIFY		(g_actor); 
+	//if (GameID() != GAME_SINGLE) 
+	//	VERIFY	(g_actor == Level().CurrentControlEntity());
+	return g_actor; 
 };
 
 //--------------------------------------------------------------------

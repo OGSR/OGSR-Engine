@@ -1,0 +1,16 @@
+#include "common.h"
+
+struct _out
+{
+	half4 P:COLOR0;
+	half4 N:COLOR1;
+};
+
+_out main(p_screen _in)
+{
+	_out o;
+	o.P = half4(0.f,0.f,SKY_DEPTH,0.f);
+	o.N = half4(0.f,0.f,0.f,0.f);
+
+	return o;
+}

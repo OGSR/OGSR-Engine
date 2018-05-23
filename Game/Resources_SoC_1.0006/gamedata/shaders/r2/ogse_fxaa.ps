@@ -1,0 +1,42 @@
+#ifndef OGSE_FXAA_H
+#include "common.h"
+#include "ogse_config.h"
+#define OGSE_FXAA_H
+#define FXAA_HLSL_3 1			// sm version
+//#define FXAA_GREEN_AS_LUMA 1	// tell shader that luma is stored in green channel
+#if !defined(AA_QUALITY)
+	#define	FXAA_QUALITY__PRESET 10
+#elif AA_QUALITY==1		// Low
+	#define	FXAA_QUALITY__PRESET 10
+#elif AA_QUALITY==2		// Medium
+	#define	FXAA_QUALITY__PRESET 20
+#elif AA_QUALITY==3		// High
+	#define	FXAA_QUALITY__PRESET 29
+#elif AA_QUALITY==4		// Extreme
+	#define	FXAA_QUALITY__PRESET 39
+#endif
+#include "antialiasing\fxaa.h"
+float4 main( p_screen _in ):COLOR0
+{
+	float4 c0 = FxaaPixelShader(
+		_in.tc0.xy, //pos
+		0,			//fxaaConsolePosPos (?)
+		s_image, //tex
+		s_image, //fxaaConsole360TexExpBiasNegOne
+		s_image, //fxaaConsole360TexExpBiasNegTwo
+		ogse_c_resolution.zw, //fxaaQualityRcpFrame
+		0,//float4(-0.5*ogse_c_resolution.z,-0.5*ogse_c_resolution.w,0.5*ogse_c_resolution.z,0.5*ogse_c_resolution.w), //fxaaConsoleRcpFrameOpt
+		0,//float4(-2.0*ogse_c_resolution.z,-2.0*ogse_c_resolution.w,2.0*ogse_c_resolution.z,2.0*ogse_c_resolution.w), //fxaaConsoleRcpFrameOpt2
+		0,//float4(8.0*ogse_c_resolution.z,8.0*ogse_c_resolution.w,-4.0*ogse_c_resolution.z,-4.0*ogse_c_resolution.w), //fxaaConsole360RcpFrameOpt2
+		FXAA_QUALITY__SUBPIX,
+		FXAA_QUALITY__EDGE_THRESHOLD,
+		FXAA_QUALITY__EDGE_THRESHOLD_MIN,
+		0,//FXAA_CONSOLE__EDGE_SHARPNESS, //fxaaConsoleEdgeSharpness
+		0,//FXAA_CONSOLE__EDGE_THRESHOLD, //fxaaConsoleEdgeThreshold
+		0,//FXAA_CONSOLE__EDGE_THRESHOLD_MIN, //fxaaConsoleEdgeThresholdMin
+		0 //fxaaConsole360ConstDir
+	);
+	c0.w = 1;
+    return saturate(c0);
+}
+#endif

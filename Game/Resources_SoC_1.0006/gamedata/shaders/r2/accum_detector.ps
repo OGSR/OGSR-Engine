@@ -1,0 +1,37 @@
+#include "common.h"
+
+uniform float4x4 ogse_c_artefacts;	// view space artefacts position, xz, two pairs on a row
+uniform sampler2D s_wave;
+float calculate_bright	(float2 pos, float2 tc)
+{
+	float res;
+	float2 art_tc;
+	float4 scr_corners = ID_SCREEN_CORNERS;
+	art_tc.x = scr_corners.x + (scr_corners.y - scr_corners.x) * (pos.x + ID_DETECT_RADIUS) / (2 * ID_DETECT_RADIUS);
+	art_tc.y = scr_corners.z + (scr_corners.w - scr_corners.z) * (ID_DETECT_RADIUS - pos.y) / ID_DETECT_RADIUS;
+	float2 vec = tc - art_tc;
+	res = step(length(vec), ID_DOT_RADIUS) * step(0.001, length(pos));
+	return res;
+}
+
+float4  main  ( p_flat I )  : COLOR
+{
+	float2 norm_tc = (I.tcdh.xy - ID_SCREEN_CORNERS.xz)/ (ID_SCREEN_CORNERS.yw - ID_SCREEN_CORNERS.xz);
+
+	float bright = calculate_bright(float2(ogse_c_artefacts._11, ogse_c_artefacts._21), I.tcdh.xy);
+	bright += calculate_bright(float2(ogse_c_artefacts._31, ogse_c_artefacts._41), I.tcdh.xy);
+	bright += calculate_bright(float2(ogse_c_artefacts._12, ogse_c_artefacts._22), I.tcdh.xy);
+	bright += calculate_bright(float2(ogse_c_artefacts._32, ogse_c_artefacts._42), I.tcdh.xy);
+	bright += calculate_bright(float2(ogse_c_artefacts._13, ogse_c_artefacts._23), I.tcdh.xy);
+	bright += calculate_bright(float2(ogse_c_artefacts._33, ogse_c_artefacts._43), I.tcdh.xy);
+	bright += calculate_bright(float2(ogse_c_artefacts._14, ogse_c_artefacts._24), I.tcdh.xy);
+	bright += calculate_bright(float2(ogse_c_artefacts._34, ogse_c_artefacts._44), I.tcdh.xy);
+
+	float4 color = lerp(float4(0,0,0,0), ID_DOT_COLOR, saturate(bright));
+
+	float wave = tex2D(s_wave, float2(I.tcdh.y + timers.x*0.3, I.tcdh.x)*3).x;
+
+	color += wave * ID_DOT_COLOR;
+
+	return saturate(color)*ID_DOT_POWER;
+}

@@ -1,0 +1,516 @@
+
+function is_food_present (npc)
+    if npc:object ("bread") ~= nil or npc:object ("kolbasa") ~= nil or npc:object ("vodka") ~= nil then
+       return true
+    end    
+    return false
+end
+
+
+----------------------------------------------------------------------------------------------------------------------
+class "evaluator_rest" (property_evaluator)
+----------------------
+function evaluator_rest:__init (name, storage) super (nil, name)
+    self.st = storage
+end
+----------------------
+function evaluator_rest:evaluate ()
+  	return xr_logic.is_active (self.object, self.st)
+end
+----------------------------------------------------------------------------------------------------------------------
+
+
+
+----------------------------------------------------------------------------------------------------------------------
+class "evaluator_food" (property_evaluator)
+----------------------
+function evaluator_food:__init (name, storage) super (nil, name)
+    self.st = storage
+end
+----------------------
+function evaluator_food:evaluate ()
+    return this.is_food_present (self.object)
+end
+----------------------------------------------------------------------------------------------------------------------
+
+
+----------------------------------------------------------------------------------------------------------------------
+class "evaluator_pos" (property_evaluator)
+----------------------
+function evaluator_pos:__init (name, storage) super (nil, name)
+    self.st = storage
+end
+----------------------
+function evaluator_pos:evaluate ()
+    return self.st.on_position
+end
+----------------------------------------------------------------------------------------------------------------------
+
+
+
+----------------------------------------------------------------------------------------------------------------------
+class "action_position" (action_base)
+----------------------
+function action_position:__init (name, storage) super (nil, name)
+    self.st = storage
+	self.move_mgr = move_mgr.move_mgr (self.st.npc)
+	self.on_position = false
+	self.set = false
+	self.was_reset  = false
+end    
+----------------------
+function action_position:initialize ()
+    action_base.initialize (self)
+    self:reset_scheme()    
+	self.set = false
+end
+----------------------
+function action_position:activate_scheme ()
+    self.was_reset = false
+end
+----------------------
+function action_position:execute ()
+    action_base.execute (self)
+
+        if not self.was_reset then
+                self:reset_scheme()
+        end
+	
+	if self.on_position == false then 
+       self.move_mgr:update ()
+	   return 
+    end
+	
+	if self.object:active_item () ~= nil then
+       self.object:set_item (object.deactivate, self.object:active_item ())
+       return
+    else 
+       if self.set == false then 
+          xr_state.change_state (self.object, 3)
+          --printf ("Change state at %d", device ():time_global ())
+          self.set = true
+          return
+       end   
+    end   
+	
+	if xr_state.finish_state (self.object) ~= true then 
+	   return 
+	end
+	--printf ("End of change state at %d", device ():time_global ())
+	self.st.on_position = true    
+	self.st.standing = false
+end
+----------------------
+function action_position:finalize ()
+	self.move_mgr:finalize ()
+    action_base.finalize (self)
+end            
+----------------------
+function action_position:reset_scheme ()
+    self.was_reset = true
+	self.object:clear_animations()
+	
+	if self.st.path_walk_info == nil then
+	   local patrol_main = patrol (self.st.path_rest)
+	   if not patrol_main then
+          abort("object '%s': unable to find path_main '%s' on the map", self.object:name(), self.st.path_rest)
+	   end
+	   local num_wayp = patrol_main:count()
+		if num_wayp == 1 then
+			self.st.path_walk = self.st.path_rest
+			self.st.path_walk_info = utils.path_parse_waypoints_from_arglist(self.st.path_rest, 1, { 0, "wp00|ret=1" } )
+			self.st.path_look = nil
+			self.st.path_look_info = nil
+		elseif num_wayp == 2 then
+			self.st.path_walk = self.st.path_rest
+			self.st.path_walk_info = utils.path_parse_waypoints_from_arglist(self.st.path_rest, 2, { 1, "wp00" }, { 0, "wp01" } )
+			self.st.path_look = self.st.path_rest
+			self.st.path_look_info = utils.path_parse_waypoints_from_arglist(self.st.path_rest,	2, { 0, "wp00" }, { 1, "wp01|ret=1" } )
+		else
+			abort("object '%s': path_main '%s' contains %d waypoints, while 1 or 2 were expected",
+				self.object:name(), self.st.path_rest, num_wayp)
+		end
+	end
+	
+	self.move_mgr:initialize ()
+--	if self.st.path_walk_info == nil then
+--		self.st.path_walk_info = utils.path_parse_waypoints(self.st.path_rest)
+--	end
+--	if self.st.path_look_info == nil then
+--		self.st.path_look_info = utils.path_parse_waypoints(self.st.path_rest)
+--	end
+	--self.move_mgr:reset (self.st.path_rest, self.st.path_walk_info, self.st.path_rest, self.st.path_look_info, nil, nil, {obj = self, func = self.callback})
+	self.move_mgr:reset (self.st.path_walk, self.st.path_walk_info, self.st.path_look, self.st.path_look_info, nil, nil, { obj = self, func = self.callback }, true )
+end	
+
+----------------------------------------------------------------------------------------------------------------------
+function action_position:callback (mode, number)
+
+    printf ("CALLBACK CALLED")
+    if self.on_position == true then return end
+    
+	self.object:set_movement_type(move.stand)
+	self.object:set_body_state(move.crouch)
+	self.object:set_mental_state(anim.danger)
+    self.on_position = true
+    self.object:set_item (object.deactivate, self.object:active_item ())
+    return true
+end
+
+
+
+----------------------------------------------------------------------------------------------------------------------
+class "action_rest" (action_base) 
+----------------------
+function action_rest:__init (name, storage) super (nil, name)
+    self.st = storage
+    self.was_reset = false
+end
+----------------------
+function action_rest:reset_scheme ()
+    self.eat_enable = false
+    self.drink_enable = false
+    self.eat_object = nil
+    self.drink_object = nil
+    self.state = 0
+    self.time_to_eat = 0
+    self.stage = 0
+    self.st.signals = {}
+    self.was_reset = true
+    
+    self.rest_end_signalled = false
+    
+    if self.state == 2 then return end
+    
+    self.eat_object = self.object:object ("bread")
+    if self.eat_object == nil then
+       self.eat_object = self.object:object ("kolbasa") 
+    end
+    
+    self.eat_enable = self.eat_object ~= nil
+    self.drink_object = self.object:object ("vodka")
+    self.drink_enable = self.drink_object ~= nil
+   
+    if self.state == 0 then
+       self.state = 1  
+       return 
+    end
+    
+    self.stage = 0
+    
+end
+---------
+function action_rest:activate_scheme ()
+    self.was_reset = false
+end
+---------
+function action_rest:initialize ()
+    action_base.initialize (self)
+    self:reset_scheme ()    
+    
+end
+----------------------
+function action_rest:execute ()
+    action_base.execute (self)
+        if not self.was_reset then
+                self:reset_scheme()
+        end
+    local hand_object = self.object:active_item ()
+    
+    if self.eat_enable == true then
+       if self.stage == 0 then  
+         if hand_object ~= nil and hand_object:id () == self.eat_object:id () then
+            self.time_to_eat = device ():time_global () + 30000
+            self.object:clear_animations () 
+            self.stage = 1
+          end   
+          --printf ("ENABLE BREAD 1")
+          self.object:set_item (object.use, self.eat_object)
+          self.time_to_eat = device ():time_global () + 30000
+          return
+       end   
+       --printf ("ENABLE BREAD 2")
+       if device ():time_global () - self.time_to_eat > 0 then
+          self.eat_enable = false
+          self.stage = 0
+          self.time_to_eat = device ():time_global () + 20000
+       end
+       return
+    end   
+    
+    if self.drink_enable == true then
+       if self.stage == 0 then  
+         if hand_object ~= nil and hand_object:id () == self.drink_object:id () then
+            self.object:clear_animations () 
+            self.stage = 1
+          end   
+          --printf ("ENABLE VODKA 1")
+          self.object:set_item (object.use, self.drink_object)
+          self.time_to_eat = device ():time_global () + 20000
+          return
+       end   
+       --printf ("ENABLE VODKA 2")
+       if device ():time_global () - self.time_to_eat > 0 then
+          self.object:set_item (object.deactivate, self.drink_object)
+          self.drink_enable = false
+          self.state = 2
+          --xr_state.change_state (self.object, 0)
+       end
+       return
+    end   
+    
+    --if xr_state.finish_state (self.object) ~= true then return end
+
+    if self.rest_end_signalled == false then
+       --printf ("ON SIGNAL !") 
+       self.st.signals["rest_end"] = true
+       self.rest_end_signalled = true
+    end   
+
+    local actor = level.actor()
+    if actor then
+       if xr_logic.try_switch_to_another_section (self.object, self.st, actor) then
+          return
+       end
+    end
+    self.object:set_item (object.activate, self.object:best_weapon ())
+end
+----------------------
+function  action_rest:finalize ()
+--    if self.object:best_enemy () ~= nil then
+--       printf ("ANIMATIONS CLEARED") 
+--       self.object:clear_animations ()
+--       self.object:set_item (object.deactivate, self.object:active_item ())
+--    end    
+    action_base.finalize (self)
+end    
+----------------------
+
+
+----------------------------------------------------------------------------------------------------------------------
+class "action_no_food" (action_base)
+----------------------
+function action_no_food:__init (name, storage) super (nil, name)
+    self.st = storage
+    self.rest_end_signalled = false
+    self.was_reset = false
+end
+----------------------
+function action_no_food:initialize ()
+    action_base.initialize (self)
+    self:reset_scheme ()
+end
+----------------------
+function action_no_food:reset_scheme ()
+    self.was_reset = true
+    self.rest_end_signalled = false
+end
+----------------------
+function action_no_food:activate_scheme ()
+    self.was_reset = false
+end
+----------------------
+function action_no_food:execute ()
+    action_base.execute (self)
+    
+    if not self.was_reset then
+       self:reset_scheme()
+    end
+    
+    if self.rest_end_signalled == false then
+       self.st.signals["rest_end"] = true
+       self.rest_end_signalled = true
+    end   
+    local actor = level.actor()
+    if actor then
+       if xr_logic.try_switch_to_another_section (self.object, self.st, actor) then
+          return
+       end
+    end
+end
+----------------------
+function action_no_food:finalize ()
+    action_base.finalize (self)
+end        
+----------------------------------------------------------------------------------------------------------------------
+
+
+----------------------------------------------------------------------------------------------------------------------
+class "action_stand" (action_base)
+----------------------
+function action_stand:__init (name, storage) super (nil, name)
+    self.st = storage
+    self.was_reset = false
+end
+----------------------
+function action_stand:initialize ()
+    action_base.initialize (self)
+    self.set = false
+    self:reset_scheme ()
+end
+----------------------
+function action_stand:reset_scheme ()
+    self.set = false
+    self.was_reset = true
+end
+----------------------
+function action_stand:activate_scheme ()
+    self.was_reset = false
+end
+----------------------
+function action_stand:execute ()
+    action_base.execute (self)
+    if not self.was_reset then
+       self:reset_scheme()
+    end
+    
+	if self.object:active_item () ~= nil then
+       self.object:set_item (object.deactivate, self.object:active_item ())
+       return
+    else 
+       if self.set == false then 
+          xr_state.change_state (self.object, 0)
+          self.set = true
+          return
+       end   
+    end   
+	
+	if xr_state.finish_state (self.object) ~= true then 
+	   return 
+	end
+	self.st.on_position = false
+end
+----------------------
+function action_stand:finalize ()
+    action_base.finalize (self)
+end    
+----------------------------------------------------------------------------------------------------------------------
+
+----------------------------------------------------------------------------------------------------------------------
+class "action_stand2" (action_base)
+----------------------
+function action_stand2:__init (name, storage) super (nil, name)
+    self.st = storage
+    self.was_reset = false
+end
+----------------------
+function action_stand2:initialize ()
+    action_base.initialize (self)
+    self.reset_scheme ()
+end
+----------------------
+function action_stand2:reset_scheme ()
+    self.was_reset = true
+end
+----------------------
+function action_stand2:activate_scheme ()
+    self.was_reset = false
+end
+----------------------
+function action_stand2:execute ()
+    action_base.execute (self)
+    if not self.was_reset then
+       self:reset_scheme()
+    end
+	self.st.on_position = false
+end
+----------------------
+function action_stand2:finalize ()
+    action_base.finalize (self)
+end    
+----------------------------------------------------------------------------------------------------------------------
+
+----------------------------------------------------------------------------------------------------------------------
+function add_to_binder (npc, ini, scheme, section, st)
+
+    local operators		= {}
+    local properties	= {}
+	
+    properties["food"]              = xr_evaluators_id.sidor_rest      + 0
+    properties["on_position"]       = xr_evaluators_id.sidor_rest      + 1
+    properties["rest"]              = xr_evaluators_id.sidor_rest      + 2
+    properties["state"]             = xr_evaluators_id.state_change 
+    
+    operators["action_position"]    = xr_actions_id.sidor_act_rest     + 0
+    operators["action_rest"]        = xr_actions_id.sidor_act_rest     + 1
+    operators["action_no_food"]     = xr_actions_id.sidor_act_rest     + 2 
+    operators["action_stand"]       = xr_actions_id.sidor_act_rest     + 3
+    operators["action_stand2"]      = xr_actions_id.sidor_act_rest     + 4
+
+	local manager  = npc:motivation_action_manager ()
+   	
+    manager:add_evaluator (properties["food"], this.evaluator_food ("rest_have_food", st))
+    manager:add_evaluator (properties["on_position"], this.evaluator_pos ("rest_on_position", st))
+    manager:add_evaluator (properties["rest"], this.evaluator_rest ("rest_need_rest", st))
+    
+    local action = this.action_position ("action_position", st)
+    action:add_precondition     (world_property (stalker_ids.property_alive,    true))
+	
+	-- added by Dima
+	if nil ~= stalker_ids.property_danger then
+		action:add_precondition	(world_property(stalker_ids.property_danger, false))
+	end
+		
+   	action:add_precondition     (world_property (stalker_ids.property_enemy,    false))
+   	action:add_precondition     (world_property (properties["rest"],            true))
+   	action:add_precondition     (world_property (properties["on_position"],     false))
+   	action:add_effect           (world_property (properties["on_position"],     true))
+   	manager:add_action          (operators["action_position"], action)
+   	
+	xr_logic.subscribe_action_for_events (npc, st, action)
+    
+    action = this.action_rest ("action_rest", st)
+    action:add_precondition     (world_property (stalker_ids.property_alive,    true))
+   	action:add_precondition     (world_property (stalker_ids.property_enemy,    false))
+   	action:add_precondition     (world_property (properties["food"],            true))
+   	action:add_precondition     (world_property (properties["rest"],            true))
+   	action:add_precondition     (world_property (properties["on_position"],     true))
+   	action:add_effect           (world_property (properties["rest"],            false))
+   	manager:add_action          (operators["action_rest"], action)
+	xr_logic.subscribe_action_for_events (npc, st, action)
+
+    action = this.action_no_food ("action_no_food", st)
+    action:add_precondition     (world_property (stalker_ids.property_alive,    true))
+   	action:add_precondition     (world_property (stalker_ids.property_enemy,    false))
+   	action:add_precondition     (world_property (properties["food"],            false))
+   	action:add_precondition     (world_property (properties["rest"],            true))
+   	action:add_precondition     (world_property (properties["on_position"],     true))
+   	action:add_effect           (world_property (properties["rest"],            false))
+   	manager:add_action          (operators["action_no_food"], action)
+	xr_logic.subscribe_action_for_events (npc, st, action)
+
+    action = this.action_stand ("action_stand", st)
+    action:add_precondition     (world_property (stalker_ids.property_alive,    true))
+   	action:add_precondition     (world_property (stalker_ids.property_enemy,    true))
+   	action:add_precondition     (world_property (properties["rest"],            true))
+   	action:add_precondition     (world_property (properties["on_position"],     true))
+   	action:add_effect           (world_property (properties["on_position"],     false))
+   	manager:add_action          (operators["action_stand"], action)
+	xr_logic.subscribe_action_for_events (npc, st, action)
+
+    action = this.action_stand2 ("action_stand2", st)
+    action:add_precondition     (world_property (stalker_ids.property_alive,    true))
+   	action:add_precondition     (world_property (stalker_ids.property_enemy,    true))
+   	action:add_precondition     (world_property (properties["rest"],            false))
+   	action:add_precondition     (world_property (properties["on_position"],     true))
+   	action:add_effect           (world_property (properties["on_position"],     false))
+   	manager:add_action          (operators["action_stand2"], action)
+	xr_logic.subscribe_action_for_events (npc, st, action)
+   	     	   
+    manager:action (xr_actions_id.alife):add_precondition (world_property (properties["rest"],  false))
+    manager:action (stalker_ids.action_combat_planner):add_precondition (world_property (properties["on_position"],  false))
+    
+end
+----------------------------------------------------------------------------------------------------------------------
+function set_scheme (npc, ini, scheme, section, gulag_name)
+
+	local st = xr_logic.assign_storage_and_bind (npc, ini, scheme, section)
+	st.logic = xr_logic.cfg_get_switch_conditions (ini, section, npc)
+	st.path_rest = utils.cfg_get_string(ini, section, "path_rest", npc, true,  gulag_name)
+    st.on_position = false	
+	st.path_walk_info = nil
+	st.path_look_info = nil
+	st.path_walk = nil
+	st.path_look = nil 
+end
+

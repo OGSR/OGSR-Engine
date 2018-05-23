@@ -34,10 +34,11 @@ void xrCore::_initialize	(LPCSTR _ApplicationName, LogCallback cb, BOOL init_fs,
 		_controlfp(_MCW_EM, MCW_EM);
 #endif
 
-		if (!strstr(GetCommandLine(), "-editor"))
-			CoInitializeEx(NULL, COINIT_MULTITHREADED);
-		strcpy_s			(Params,sizeof(Params),GetCommandLine());
-		_strlwr_s			(Params,sizeof(Params));
+		strcpy_s(Params, sizeof(Params), GetCommandLine());
+		_strlwr_s(Params, sizeof(Params));
+
+		if (!strstr(Params, "-editor"))
+			CoInitializeEx(nullptr, COINIT_MULTITHREADED);
 
 		if ( strstr( Params, "-dbg" ) )
 			ParamFlags.set( ParamFlag::dbg, TRUE );
@@ -124,7 +125,7 @@ void xrCore::_destroy		()
 		xr_EFS.reset();
 
 		Memory._destroy		();
-		if (!strstr(GetCommandLine(), "-editor"))
+		if (!strstr(Core.Params, "-editor"))
 			CoUninitialize();
 	}
 }

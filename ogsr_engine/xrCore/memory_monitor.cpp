@@ -51,7 +51,7 @@ union _allocation_size {
 
 STATIC bool use_monitor					()
 {
-	return						(!!strstr(GetCommandLine(),"-memory_monitor"));
+	return						(!!strstr(Core.Params,"-memory_monitor"));
 }
 }
 

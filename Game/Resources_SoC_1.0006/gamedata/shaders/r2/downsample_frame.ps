@@ -1,0 +1,35 @@
+#include "common.h"
+
+struct _out
+{
+	float4 c0:COLOR0;
+	float4 c1:COLOR1;
+};
+
+uniform sampler2D s_image_0;
+uniform sampler2D s_image_1;
+_out main(combine _in)
+{
+	_out o;
+	float4 s0 = tex2D(s_image_0, _in.tc0.xy);
+	float4 s1 = tex2D(s_image_0, _in.tc1.xy);
+	float4 s2 = tex2D(s_image_0, _in.tc2.xy);
+	float4 s3 = tex2D(s_image_0, _in.tc3.xy);
+	float4 s4 = tex2D(s_image_0, _in.tc4.xy);
+	float4 s5 = tex2D(s_image_0, _in.tc5.xy);
+	float4 s6 = tex2D(s_image_0, _in.tc6.xy);
+
+	o.c0 = (s0+s1+s2+s3+s4+s5+s6)/7;
+
+	s0 = tex2D(s_image_1, _in.tc0.xy);
+	s1 = tex2D(s_image_1, _in.tc1.xy);
+	s2 = tex2D(s_image_1, _in.tc2.xy);
+	s3 = tex2D(s_image_1, _in.tc3.xy);
+	s4 = tex2D(s_image_1, _in.tc4.xy);
+	s5 = tex2D(s_image_1, _in.tc5.xy);
+	s6 = tex2D(s_image_1, _in.tc6.xy);
+
+	o.c1 = (s0+s1+s2+s3+s4+s5+s6)/7;
+
+	return o;
+};

@@ -1,0 +1,68 @@
+#include "ogse_config.h"
+#include "common.h"
+#define EPS float(0.002)
+uniform sampler2D s_distort;
+uniform float4 c_timers; // x - timer of current state, y - previous state timer, z - heat/cool timer
+float4 main(combine I):COLOR 
+{
+//	return float4(0.1,0.8,0.1,1.0);
+	float4 tc5r 		=  I.tc5.wzyx;
+	float4 tc6r 		=  I.tc6.wzyx;
+	
+	float4 main_sample = get_full_position(I.tc0.xy);//tex2D(s_position, I.tc0);
+	float final = is_in_range(float3(main_sample.w, IKV_PRESET_1_MIN, IKV_PRESET_1_MAX)) + is_in_range(float3(main_sample.w, IKV_PRESET_2_MIN, IKV_PRESET_2_MAX));
+	
+	float scale = max(4/(main_sample.z+0.0001), 2);
+	float sample = get_material((I.tc1.xy - I.tc0.xy)*scale+I.tc0.xy);//tex2D(s_position,(I.tc1 - I.tc0)*scale+I.tc0).w;
+	final += is_in_range(float3(sample, IKV_PRESET_1_MIN, IKV_PRESET_1_MAX)) + is_in_range(float3(sample, IKV_PRESET_2_MIN, IKV_PRESET_2_MAX));
+	sample = get_material((I.tc2.xy - I.tc0.xy)*scale+I.tc0.xy);//tex2D(s_position,(I.tc2 - I.tc0)*scale+I.tc0).w;
+	final += is_in_range(float3(sample, IKV_PRESET_1_MIN, IKV_PRESET_1_MAX)) + is_in_range(float3(sample, IKV_PRESET_2_MIN, IKV_PRESET_2_MAX));
+	sample = get_material((I.tc3.xy - I.tc0.xy)*scale+I.tc0.xy);//tex2D(s_position,(I.tc3 - I.tc0)*scale+I.tc0).w;
+	final += is_in_range(float3(sample, IKV_PRESET_1_MIN, IKV_PRESET_1_MAX)) + is_in_range(float3(sample, IKV_PRESET_2_MIN, IKV_PRESET_2_MAX));
+	sample = get_material((I.tc4.xy - I.tc0.xy)*scale+I.tc0.xy);//tex2D(s_position,(I.tc4 - I.tc0)*scale+I.tc0).w;
+	final += is_in_range(float3(sample, IKV_PRESET_1_MIN, IKV_PRESET_1_MAX)) + is_in_range(float3(sample, IKV_PRESET_2_MIN, IKV_PRESET_2_MAX));
+	sample = get_material((I.tc5.xy - I.tc0.xy)*scale+I.tc0.xy);//tex2D(s_position,(I.tc5 - I.tc0)*scale+I.tc0).w;
+	final += is_in_range(float3(sample, IKV_PRESET_1_MIN, IKV_PRESET_1_MAX)) + is_in_range(float3(sample, IKV_PRESET_2_MIN, IKV_PRESET_2_MAX));
+	sample = get_material((I.tc6.xy - I.tc0.xy)*scale+I.tc0.xy);//tex2D(s_position,(I.tc6 - I.tc0)*scale+I.tc0).w;
+	final += is_in_range(float3(sample, IKV_PRESET_1_MIN, IKV_PRESET_1_MAX)) + is_in_range(float3(sample, IKV_PRESET_2_MIN, IKV_PRESET_2_MAX));
+	sample = get_material((tc5r.xy - I.tc0.xy)*scale+I.tc0.xy);//tex2D(s_position,(tc5r - I.tc0)*scale+I.tc0).w;
+	final += is_in_range(float3(sample, IKV_PRESET_1_MIN, IKV_PRESET_1_MAX)) + is_in_range(float3(sample, IKV_PRESET_2_MIN, IKV_PRESET_2_MAX));
+	sample = get_material((tc6r.xy - I.tc0.xy)*scale+I.tc0.xy);//tex2D(s_position,(tc6r - I.tc0)*scale+I.tc0).w;
+	final += is_in_range(float3(sample, IKV_PRESET_1_MIN, IKV_PRESET_1_MAX)) + is_in_range(float3(sample, IKV_PRESET_2_MIN, IKV_PRESET_2_MAX));
+
+	// усредненный материал
+	final /= 9;
+	final = saturate(final - 0.5)*2;
+	
+	// интерполируем в пределах пресетов
+	float lerp_coeff = saturate((main_sample.w - IKV_PRESET_1_MIN) / (IKV_PRESET_1_MAX - IKV_PRESET_1_MIN)*is_in_range(float3(main_sample.w, IKV_PRESET_1_MIN, IKV_PRESET_1_MAX))
+	+	(main_sample.w - IKV_PRESET_2_MIN) / (IKV_PRESET_2_MAX - IKV_PRESET_2_MIN)*is_in_range(float3(main_sample.w, IKV_PRESET_2_MIN, IKV_PRESET_2_MAX)));
+	final = lerp(0, final, lerp_coeff);
+	final += min(0.01*main_sample.z, IKV_DIST);
+
+	// нагрев оружия при стрельбе
+	float fire_scale = IKV_HEATING_SPEED*is_in_range(float3(main_sample.w, IKV_PRESET_2_MIN, IKV_PRESET_2_MAX))*saturate((2 - main_sample.z)*100); // учет глубины сцены
+	final += saturate(c_timers.z)*fire_scale; // нагрев и охлаждение
+		
+	// выборка огня и партиклов из дисторт-текстуры
+	float4 distort = tex2D(s_distort, I.tc0.xy);
+	float4 image = tex2D(s_image, I.tc0.xy);
+	float4 delta = abs(image - distort*8);
+	float dist = (saturate(distort.x - 0.5) + saturate(distort.y - 0.5) + saturate(distort.w - 0.5))*4*saturate((delta.x + delta.y + delta.z - 0.2)*100);
+	final = saturate(final + dist*saturate((main_sample.z - 0.001)*1000));
+	
+	float4 img = lerp(IKV_DEAD_COLOR, IKV_MID3_COLOR, clamp(final, 0.0, 0.25)*4)*is_in_range(float3(final,0.00,0.250));
+		img += lerp(IKV_MID3_COLOR, IKV_MID2_COLOR, clamp(final - 0.25, 0.0, 0.25)*4)*is_in_range(float3(final,0.249,0.501));
+		img += lerp(IKV_MID2_COLOR, IKV_MID1_COLOR, clamp(final - 0.50, 0.0, 0.25)*4)*is_in_range(float3(final,0.500,0.751));
+		img += lerp(IKV_MID1_COLOR, IKV_LIVE_COLOR, clamp(final - 0.75, 0.0, 0.25)*4)*is_in_range(float3(final,0.750,1.2));
+		
+	// шум
+	float3 jit;
+	jit.x = tex2D(s_jitter_0, float2(I.tc0.x, I.tc0.y - timers.x*0.1)*23).x;
+	jit.y = tex2D(s_jitter_1, float2(I.tc0.x + timers.x*0.1, I.tc0.y)*23).x;
+	jit.z = tex2D(s_jitter_5, float2(I.tc0.x, I.tc0.y)).x;
+	float3 dust = saturate(float3(jit.x, jit.x, jit.x)*float3(jit.y, jit.y, jit.y)*float3(jit.z, jit.z, jit.z))*IKV_NOISE_INTENSITY;
+	img.xyz += dust;
+		
+	return img;//*saturate((main_sample.z*final - 0.001)*1000);
+}

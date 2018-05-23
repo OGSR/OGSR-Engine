@@ -1,0 +1,31 @@
+#include "common.h"
+#include "sload.h"
+#include "ogse_config.h"
+
+/*f_deffer*/ GB 	main	( p_bumped I )
+{
+ // f_deffer	O;
+
+  surface_bumped 	S 	= sload 	(I);
+
+  // Sample normal, rotate it by matrix, encode position 
+  float3 Ne				= mul       (float3x3(I.M1, I.M2, I.M3), S.normal);
+		Ne				= normalize	(Ne);
+
+
+	// hemi,sun,material
+	float 	ms	= xmaterial		;
+#ifdef USE_LM_HEMI
+	float4	lm 	= tex2D			(s_hemi, I.lmh);
+	float 	h  	= dot			(lm.rgb,1.h/3.h);
+#else
+	float 	h	= I.position.w	;
+#endif
+/*	O.Ne 		= float4		(encode_normal(Ne, ms), 					h		);
+	O.position  = encode_pos(I.position.xyz + Ne.xyz*S.height*def_virtualh, ms, 0.f		);
+	O.C			= float4		(S.base.xyz, 								S.gloss	);							// OUT: rgb.gloss*/
+
+	  GB O		= make_gbuffer(I.position.xyz + Ne.xyz*S.height*def_virtualh, Ne, S.base.xyz, float4(h, ms, S.gloss, 0.f));
+
+  return O;
+}

@@ -1,0 +1,20 @@
+#include "common.h"
+
+struct 	v2p
+{
+ 	float2 	tc0		: TEXCOORD0;	// base
+	float4 tc1		: TEXCOORD1;
+};
+
+uniform sampler2D s_dirt;
+//////////////////////////////////////////////////////////////////////////////////////////
+// Pixel
+float4 	main	( v2p I )	: COLOR
+{
+	float2 len = I.tc0.xy-float2(0.5,0.5);
+	float4 dirt = tex2D (s_dirt,I.tc1);
+	float4 final;
+	final.xyz = dirt.www*saturate(0.5-length(len))*2*FL_DIRT_INTENSITY;
+	final.w = 1.0;
+	return final;
+}

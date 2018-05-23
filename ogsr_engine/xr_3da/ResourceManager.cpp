@@ -262,6 +262,30 @@ void CResourceManager::Delete(const Shader* S)
 }
 
 
+static xr_vector<CTexture*> textures_to_load;
+
+static void LoadTextures(const size_t thread_num, const size_t textures_per_worker)
+{
+#ifdef DEBUG
+	Msg("[%s] Thread [%u], amount of textures = [%u]", __FUNCTION__, thread_num, textures_per_worker);
+
+	CTimer timer;
+	timer.Start();
+#endif
+	const auto upperbound = thread_num * textures_per_worker;
+	const auto lowerbound = upperbound - textures_per_worker;
+	for (auto i = lowerbound; i < upperbound; i++)
+	{
+		if (i < textures_to_load.size())
+			textures_to_load[i]->Load();
+		else
+			break;
+	}
+#ifdef DEBUG
+	Msg("[%s] Thread [%u], texture loading time = [%u ms.]", __FUNCTION__, thread_num, timer.GetElapsed_ms());
+#endif
+}
+
 void CResourceManager::DeferredUpload()
 {
 	if (Device.b_is_Ready)
@@ -269,14 +293,23 @@ void CResourceManager::DeferredUpload()
 		CTimer timer;
 		timer.Start();
 
-		for (const auto& pair : m_textures)
-			TTAPI->threads[Random.randI(TTAPI->threads.size())]->addJob([&] { pair.second->Load(); });
+		const auto nWorkers = TTAPI->threads.size();
+		const auto textures_per_worker = m_textures.size() / nWorkers;
+
+		for (const auto& t : m_textures)
+			textures_to_load.push_back(t.second);
+
+		for (auto i = 1; i <= nWorkers; ++i)
+			TTAPI->threads[i - 1]->addJob([=] { LoadTextures(i, textures_per_worker); });
 
 		TTAPI->wait();
 
-		Msg("texture loading time (%d): %.2f s.", m_textures.size(), timer.GetElapsed_sec());
+		textures_to_load.clear();
+
+		Msg("[%s] texture loading time (%zi): [%.2f s.]", __FUNCTION__, m_textures.size(), timer.GetElapsed_sec());
 	}
 }
+
 
 /*
 void	CResourceManager::DeferredUnload	()

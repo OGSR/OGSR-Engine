@@ -1,0 +1,37 @@
+#include "common.h"
+
+uniform sampler2D s_image_curr;
+uniform sampler2D s_image_prev;
+#define SMAA_REPROJECTION_WEIGHT_SCALE 30.0
+float4 main( float2	tc: TEXCOORD0 ):COLOR0
+{
+	float4	pos			= tex2D(s_position, tc);
+	float4 	p_current	= mul	(m_current,	pos);
+	float4 	p_previous 	= mul	(m_previous,	pos);
+	float2 	p_velocity 	= ( p_current.xy/p_current.w - (p_previous.xy/p_previous.w) );
+
+	float4 curr = tex2D(s_image_curr, tc);
+	float4 prev = tex2D(s_image_prev, tc + p_velocity);
+	float depth	= tex2D(s_position, tc).z;
+    // Attenuate the previous pixel if the velocity is different:
+    float delta = abs(depth * depth - prev.a * prev.a) / 5.0;
+    float weight = 0.5*saturate(1.0 - (sqrt(delta) * SMAA_REPROJECTION_WEIGHT_SCALE))/**saturate(depth - SMAA_T2X_SWITCH)*/;
+
+	return lerp(curr, prev, weight);
+
+/*	float3 pos = tex2D(s_position, tc);
+	float4 	p_previous 	= mul	(m_previous,	pos);
+	p_previous.xy /= p_previous.w;
+	float2 p_velocity = p_previous.xy - tc;
+	float2 vel = p_velocity;
+	float fVLenSq = dot(vel, vel) + 1e-6f;
+	vel /= fVLenSq;
+
+	float4 curr = tex2D(s_image_curr, tc);
+	float4 prev = tex2D(s_image_prev, tc + vel*min(fVLenSq, fVMaxLen));
+
+	float fBlendW = 0.5 - 0.5*saturate(fVLenSq/fVMaxLen);
+	fBlendW *= saturate(1 - abs(depth - prev.a) * SMAA_REPROJECTION_WEIGHT_SCALE);
+
+	return lerp(curr, prev, fBlendW);*/
+};

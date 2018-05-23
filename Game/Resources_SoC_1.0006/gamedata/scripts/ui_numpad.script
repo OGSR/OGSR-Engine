@@ -1,0 +1,128 @@
+
+class "numpad" (CUIScriptWnd)
+function numpad:__init(owner) super()
+	self.owner = owner
+	self:Init_window()
+end
+
+function numpad:__finalize()
+	--log1("--numpad:__finalize()")
+end
+
+function numpad:Init_window()
+	self:Init(342, 199, 339, 369)			  
+    local xml = CScriptXmlInit()
+    xml:ParseFile("ui_numpad_wnd.xml")
+     
+	xml:InitStatic("background", self)
+	local t = xml:InitStatic("edit_box", self)
+	t:SetWindowName("edit_window")
+	--
+	for n = 0, 9 do
+		self:Register( xml:Init3tButton("btn_"..n, self), "btn_"..n )	
+		self:Connect("btn_"..n, ui_events.BUTTON_CLICKED, self.AddNumber, self, n)
+	end
+	--	
+	self:Register(xml:Init3tButton("btn_c", self), "btn_c")
+	self:AddCallback("btn_c", ui_events.BUTTON_CLICKED, self.OnButton_c_clicked, self)
+	self:Register(xml:Init3tButton("btn_backspase",	self), "btn_backspase")
+	self:AddCallback("btn_backspase", ui_events.BUTTON_CLICKED, self.OnButton_backspace_clicked, self)
+	self:Register(xml:Init3tButton("btn_enter", self), "btn_enter")
+	self:AddCallback("btn_enter", ui_events.BUTTON_CLICKED, self.OnButton_OK_clicked, self)
+	self:Register(xml:Init3tButton("btn_cancel", self), "btn_cancel")
+	self:AddCallback("btn_cancel", ui_events.BUTTON_CLICKED, self.OnButton_CANCEL_clicked, self)	
+end
+
+function numpad:AddNumber(number)
+	local edit_window = self:GetStatic("edit_window")
+	local text = edit_window:GetText()
+
+	if text == nil then
+		text = "" .. number
+	else
+		if (string.len(text) > 12) then
+			return
+		end
+
+		text = text .. number
+	end
+
+	edit_window:SetText(text)
+end
+
+function numpad:OnButton_backspace_clicked()
+	local edit_window = self:GetStatic("edit_window")
+	local text = edit_window:GetText()
+
+	if text == nil then
+		return
+	end
+
+	local b = 1
+	local e = string.len(text) - 1
+
+	text = string.sub(text, b, e)
+
+	edit_window:SetText(text)
+end
+
+function numpad:OnButton_c_clicked()
+	local edit_window = self:GetStatic("edit_window")	
+	edit_window:SetText("")
+end
+
+function numpad:OnButton_CANCEL_clicked()
+	self.owner:OnNumberReceive("")
+	self:quit()
+end
+
+function numpad:OnButton_OK_clicked()
+	local edit_window = self:GetStatic("edit_window")
+	local text = edit_window:GetText()
+	self.owner:OnNumberReceive(text)
+	self:quit()
+end
+
+function numpad:OnKeyboard(dik, keyboard_action)
+	CUIScriptWnd.OnKeyboard(self, dik, keyboard_action)
+
+	if keyboard_action == ui_events.WINDOW_KEY_PRESSED then
+		if dik == DIK_keys.DIK_0 or dik == DIK_keys.DIK_NUMPAD0 then
+			self:AddNumber(0)
+		elseif dik == DIK_keys.DIK_1 or dik == DIK_keys.DIK_NUMPAD1 then
+			self:AddNumber(1)
+		elseif dik == DIK_keys.DIK_2 or dik == DIK_keys.DIK_NUMPAD2 then
+			self:AddNumber(2)
+		elseif dik == DIK_keys.DIK_3 or dik == DIK_keys.DIK_NUMPAD3 then
+			self:AddNumber(3)
+		elseif dik == DIK_keys.DIK_4 or dik == DIK_keys.DIK_NUMPAD4 then
+			self:AddNumber(4)
+		elseif dik == DIK_keys.DIK_5 or dik == DIK_keys.DIK_NUMPAD5 then
+			self:AddNumber(5)
+		elseif dik == DIK_keys.DIK_6 or dik == DIK_keys.DIK_NUMPAD6 then
+			self:AddNumber(6)
+		elseif dik == DIK_keys.DIK_7 or dik == DIK_keys.DIK_NUMPAD7 then
+			self:AddNumber(7)
+		elseif dik == DIK_keys.DIK_8 or dik == DIK_keys.DIK_NUMPAD8 then
+			self:AddNumber(8)
+		elseif dik == DIK_keys.DIK_9 or dik == DIK_keys.DIK_NUMPAD9 then
+			self:AddNumber(9)
+		elseif dik == DIK_keys.DIK_BACK then
+			self:OnButton_backspace_clicked()
+		elseif dik == DIK_keys.DIK_RETURN or dik == DIK_keys.DIK_NUMPADENTER then
+			self:OnButton_OK_clicked()
+		elseif dik == DIK_keys.DIK_DELETE or dik == DIK_keys.DIK_NUMPADCOMMA then
+			self:OnButton_c_clicked()
+		elseif dik_to_bind(dik) == key_bindings.kQUIT then
+			self:quit()
+		end
+	end
+
+	return true
+end
+
+function numpad:quit()
+	self.owner = nil
+	self:GetHolder():start_stop_menu(self, true)
+	self:ClearCallbacks() --Очищаем каллбеки и отпускаем объект для сборщика мусора.
+end

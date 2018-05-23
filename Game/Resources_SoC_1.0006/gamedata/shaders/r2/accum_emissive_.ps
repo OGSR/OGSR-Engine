@@ -1,0 +1,10 @@
+#include "common.h"
+
+float4  main  ( p_flat I )  : COLOR
+{
+	//float4 D 	= tbase	 	(I.tcdh);
+	 float4 	D 	= 	tex2D		(s_base, I.tcdh);
+
+  clip		(D.w-def_aref);
+  return   float4    (1,1,1,1)*8.0h;
+}

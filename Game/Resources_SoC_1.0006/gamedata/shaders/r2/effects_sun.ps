@@ -1,0 +1,26 @@
+#include "common.h"
+
+struct 	v2p
+{
+ 	float2 	tc0		: TEXCOORD0;	// base
+#ifdef FL_USE_DIRT
+	float4 tc1		: TEXCOORD1;
+#endif
+	float4 c0		: COLOR0;
+};
+uniform sampler2D s_dirt;
+uniform float4 flare_params;	// x - 0.01f*fDistance, y - is require flare, y - is sun, w - is enabled dirt from script
+//////////////////////////////////////////////////////////////////////////////////////////
+// Pixel
+float4 	main	( v2p I )	: COLOR
+{
+	float4 col = I.c0*tex2D	(s_base,I.tc0);
+	float2 len = I.tc0.xy-float2(0.5,0.5);
+	
+	#ifdef FL_USE_DIRT
+		float4 dirt = tex2D (s_dirt,I.tc1);
+		col.xyz += dirt.www*saturate(0.5-length(len))*2*FL_DIRT_INTENSITY*flare_params.w;
+	#endif
+
+	return col;
+}
