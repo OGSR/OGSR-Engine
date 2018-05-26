@@ -10,6 +10,8 @@
 #include "xrServer_Objects_ALife_Monsters.h"
 #include "ai_space.h"
 #include "alife_simulator.h"
+#include "alife_group_registry.h"
+#include "relation_registry.h"
 #include "alife_time_manager.h"
 #include "alife_graph_registry.h"
 #include "game_graph.h"
@@ -30,6 +32,21 @@ void CSE_ALifeMonsterAbstract::add_offline							(const xr_vector<ALife::_OBJECT
 {
 	inherited1::add_offline			(saved_children,update_registries);
 	brain().on_switch_offline		();
+}
+
+void CSE_ALifeMonsterAbstract::on_register							()
+{	
+	inherited1::on_register();
+	brain().on_register						();	
+}
+
+void CSE_ALifeMonsterAbstract::on_unregister							()
+{
+	inherited1::on_unregister();
+	RELATION_REGISTRY().ClearRelations								(ID);
+	brain().on_unregister					();
+	if (m_group_id != 0xffff)
+		ai().alife().groups().object(m_group_id).unregister_member	(ID);
 }
 
 void CSE_ALifeMonsterAbstract::update								()

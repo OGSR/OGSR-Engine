@@ -68,7 +68,19 @@ void CShootingObject::Load	(LPCSTR section)
 	//время затрачиваемое на выстрел
 	fTimeToFire			= pSettings->r_float		(section,"rpm");
 	VERIFY(fTimeToFire>0.f);
+	//Alundaio: Two-shot burst rpm; used for Abakan/AN-94
+	fTimeToFire2			= READ_IF_EXISTS( pSettings, r_float, section, "rpm_mode_2", fTimeToFire );
 	fTimeToFire			= 60.f / fTimeToFire;
+	fTimeToFire2			= 60.f / fTimeToFire2;
+
+	//Cycle down RPM after first 2 shots; used for Abakan/AN-94
+	if (pSettings->line_exist(section, "cycle_down"))
+	{
+		bCycleDown = pSettings->r_bool(section, "cycle_down")?true:false;
+	}
+	else
+		bCycleDown = false;
+	//Alundaio: END
 
 	LoadFireParams		(section, "");
 	LoadLights			(section, "");

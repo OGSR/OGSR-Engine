@@ -617,6 +617,10 @@ void g_clear_personal_goodwill(int _who_id, int _to_whom_id)
 {
 	RELATION_REGISTRY().ClearGoodwill(u16(_who_id), u16(_to_whom_id));
 }
+void g_clear_personal_relations( int _who_id )
+{
+	RELATION_REGISTRY().ClearRelations( u16( _who_id ) );
+}
 void set_ignore_game_state_update()
 {
 	Game().m_need_to_update = false;
@@ -987,7 +991,8 @@ void CLevel::script_register(lua_State *L)
 		def("get_personal_goodwill",			&g_get_personal_goodwill),
 		def("set_personal_goodwill",			&g_set_personal_goodwill),
 		def("change_personal_goodwill",			&g_change_personal_goodwill),
-		def("clear_personal_goodwill",			&g_clear_personal_goodwill)
+		def("clear_personal_goodwill",			&g_clear_personal_goodwill),
+		def("clear_personal_relations",			&g_clear_personal_relations)
 	];
 	//установка параметров для шейдеров из скриптов
 	module(L)
