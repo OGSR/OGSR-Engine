@@ -192,7 +192,7 @@ IC typename CProblemSolverAbstract::_condition_evaluator_ptr CProblemSolverAbstr
     u16 object_id = condition_id >> 16;
     u16 action_id = condition_id & 0xffff;
     auto obj = Level().Objects.net_Find( object_id );
-    Msg( "! [CProblemSolverAbstract::evaluator]: condition_id %u ( %u, %s, %u ) not found in evaluators()",  condition_id, object_id, ( obj ? obj->cName() : "" ), action_id );
+    Msg( "! [CProblemSolverAbstract::evaluator]: condition_id %u ( %u, %s, %u ) not found in evaluators()",  condition_id, object_id, ( obj ? obj->cName().c_str() : "" ), action_id );
     return nullptr;
   }
   return (*I).second;
