@@ -218,7 +218,10 @@ function CRandomTask:load(p)
 		self.task_info[id].last_task_time = utils.r_CTime(p)
 		
 		if self.task_info[id].type == "defend_lager" then                                                           
-			local defend_object = alife():object(self.task_info[id].selected_target)                                  
+			local defend_object = alife():object(self.task_info[id].selected_target)     
+			if not defend_object then
+				defend_object = alife():actor()
+			end
 			local sm_ini = defend_object:spawn_ini()                                                                  
 			self.task_info[id].defend_target = utils.cfg_get_number(sm_ini, "random_task", "defend_target", nil, true)
 		end                                                                                                         
