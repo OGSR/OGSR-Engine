@@ -1,0 +1,155 @@
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; BINOCULARS
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+[wpn_binoc]:identity_immunities
+GroupControlSection			= spawn_group
+discovery_dependency		= 
+$spawn						= "weapons\binocular"
+$npc						= on							; option for Level Editor
+$prefetch 					= 8
+scheduled					= off							; option for ALife Simulator
+cform						= skeleton
+class						= WP_BINOC
+hud							= wpn_binoc_hud
+
+ef_main_weapon_type			= 5
+ef_weapon_type				= 0
+
+
+flame_particles		   		= weapons\generic_weapon05
+smoke_particles		   		= weapons\generic_shoot_00
+
+fire_point               	= 0.0, 0.133, 0.161
+shell_point		 			= 0.0, 0.133, 0.047
+shell_particles	 			= weapons\generic_shells
+
+position					= -0.08 , -0.05 , 0.05 
+normal						= 0, 1, 0
+direction					= 0, 0, 1
+orientation					= 0 , -90, 70
+
+attach_angle_offset			= 3.080506,-1.493053,-1.202040   ;устанавливается в радианах Angle*PI/180
+attach_position_offset		= 0.080000,0.021273,0.100000
+attach_bone_name			= bip01_r_hand
+auto_attach					= false
+
+visual						= weapons\binoculars\wpn_binoculars.ogf
+description					= enc_equipment_devic_binocul1
+hand_dependence		 		= 1
+single_handed				= 0
+
+slot 			 			= 4		; // binocular
+animation_slot				= 13	; type of the animation that will be used
+
+ammo_limit		 			= 0
+ammo_current		 		= 0
+ammo_elapsed		 		= 0
+
+ammo_mag_size		 		= 0
+ammo_class		 			= ammo_9x19_fmj
+
+inv_name		 			= binocular
+inv_name_short				= binocular
+inv_weight		 			= 1.0
+
+show_ammo					= false
+
+inv_grid_width				= 2
+inv_grid_height				= 1
+inv_grid_x					= 16
+inv_grid_y					= 8
+
+min_radius					= 100
+max_radius					= 150
+
+cost						= 200
+
+cam_relax_speed				= 5.5
+cam_dispersion				= 2
+cam_max_angle				= 5
+cam_max_angle_horz			= 5.0
+cam_step_angle_horz			= 0.5
+
+disp_vel_factor				= 0.1
+disp_crouch_factor			= 0.75
+disp_jump_factor			= 3
+
+ph_mass						= 1
+
+scope_status				= 1
+silencer_status				= 0
+grenade_launcher_status		= 0
+
+zoom_enabled				= true
+scope_texture				= wpn\wpn_crosshair_bino
+scope_zoom_factor			= 7.5
+
+
+fire_dispersion_base		= 0.1
+
+cam_relax_speed         	= 1.5	
+cam_dispersion          	= 1.5	
+cam_max_angle				= 7		
+cam_max_angle_horz			= 10.0	
+cam_step_angle_horz			= 1.5	
+
+fire_dispersion_condition_factor = 5
+misfire_probability 		= 0.0001
+condition_shot_dec 			= 0.00003
+
+hit_power                	= 1
+hit_impulse		 		 	= 1
+hit_type					= fire_wound	
+
+fire_distance            	= 1
+bullet_speed		 	 	= 1		
+rpm                      	= 1
+
+light_color		 			= 0.6,0.5,0.3
+light_range		 			= 3.0
+light_var_color		 		= 0.05
+light_var_range		 		= 0.5
+light_time 		 			= 0.2
+
+snd_draw					= weapons\generic_draw
+snd_holster					= weapons\generic_holster
+snd_gyro					= weapons\binoculars_gyro
+snd_zoomin					= weapons\binoculars_zoomin
+snd_zoomout					= weapons\binoculars_zoomout
+snd_shoot					= weapons\walther_p99_shoot
+snd_empty					= weapons\pistol_empty
+snd_reload					= weapons\pm_reload, 0.8
+snd_close					= weapons\generic_close
+
+
+
+
+vision_present				= true
+vis_frame_speed				= 4				; скорость, с которой наводится рамка на цель
+vis_frame_color				= 0.7,0.7,0.7,1.0	; цвет рамки RGBA (A) Не учитывается
+found_snd					= detectors\DA-2_beep1
+
+[wpn_binoc_hud]
+shell_point					= 0.0, 0.0, 0.0
+fire_point              	= 0.05, 0.0, 0.1
+fire_bone               	= binoculars
+orientation             	= 10, 0, -2
+position                	= 0.18, 0, 0
+;position                	= 0.15, -0.14, 0.25
+visual                  	= weapons\binoculars\wpn_binoculars_hud.ogf
+
+zoom_offset					= -0.238600,0.153600,0.000000
+zoom_rotate_x				= -0.014000
+zoom_rotate_y				= 0.324000
+
+anim_idle					= idle
+anim_reload					= idle
+anim_draw					= draw
+anim_holster				= holster
+anim_shoot					= idle
+anim_idle_aim				= idle
+
+
+
+
+

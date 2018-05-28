@@ -1,0 +1,262 @@
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+[wpn_abakan]:identity_immunities
+GroupControlSection		= spawn_group
+discovery_dependency	= 
+$spawn              	= "weapons\abakan"	; name and section in level editor
+$npc					= on				
+$prefetch 				= 8
+scheduled				= off               ;[] option for ALife Simulator
+cform               	= skeleton
+class               	= WP_AK74			; class of the weapon that corresponding to CPP class
+min_radius          	= 30				; [] for AI
+max_radius          	= 100				; [] for AI
+description				= enc_weapons1_wpn-abakan
+	
+ef_main_weapon_type		= 2
+ef_weapon_type			= 6
+
+;-----------------------------------------------------------------------------------
+holder_range_modifier	= 1.0		       ; во сколько раз увеличивается eye_range 
+holder_fov_modifier		= 0.7              ; во сколько раз увеличивается eye_fov
+;-----------------------------------------------------------------------------------
+
+
+cost					= 2500				; the price of the item
+weapon_class			= assault_rifle		; the type of the box that will be used in buy-menu in multiplayer mode	
+	
+ammo_limit				= 210				; obsolete
+ammo_elapsed			= 30				; obsolete
+	
+ammo_mag_size			= 30				; clip (magazine) size
+fire_modes				= 1, 2, -1
+
+ammo_class				= ammo_5.45x39_fmj, ammo_5.45x39_ap  ; name of the ltx-section of used ammo 
+grenade_class			= ammo_vog-25, ammo_vog-25p			; name of the ltx-section of used grenades 
+launch_speed			= 0
+
+hand_dependence			= 1									; how many hands (1 or 2) we used to hold weapon in
+single_handed			= 0
+	
+slot 					= 2									; number of slot in inventory we put weapon in (1 - knife slot, 2 - pistol, 3 - rifle, 4 - grenade, 5 - apparatus)
+animation_slot			= 2									; type of the animation that will be used
+
+inv_name	        	= wpn-abakan					; name in inventory	
+inv_name_short			= wpn-abakan
+inv_weight			= 3.9								; weight in inventory
+
+inv_grid_width			= 5	 ; position and size of the icon that will be used to display weapon in the inventory menu
+inv_grid_height			= 2	 ; all icons are on the texture ui_icon_equipment.dds,   
+inv_grid_x				= 6  ; position and size are in terms of 64x64 squares
+inv_grid_y				= 2
+
+kill_msg_x			= 119
+kill_msg_y			= 199
+kill_msg_width		= 93
+kill_msg_height		= 32
+
+;-----------------------------------------------------------------------------------
+; base dispersion
+;
+; === Setting of the weapon shooting dispersal parameter ===
+;Dispersal consists from to basic constituents – dispersal of the weapon (relatively small). In fact, this is a dispersal of a weapon griped in a vice; - dispersal of the weapon behavior in the hands of the host (if he running, or walking or shoots in single shots or in a burst) is another, more significant factor of dispersal. 
+;Dispersal of the weapon depends only from basic dispersal, basket case factor ant time of the ammo.
+;Dispersal of the way the host shooting (standing, running and etc.)
+;Two types of shooting modes can be defined: - usual mode and zoomed mode.  
+;Usual mode: - depends from the position of the player while shooting (standing, sitting, walking and running)
+;Zoomed mode – depends from the dispersal of the weapon and do NOT depends from the position of the shooter. In that mode, dispersal of the weapon &laquo switches to;&raquo;  sight swinging (created be effector). 
+;Weapon recoil in the game also created by recoil effector. 
+;
+;-----------------------------------------------------------------------------------
+;params of weapon recoil
+dispersion_start		= 2
+fire_dispersion_base			= 0.17;0.19		;угол (в градусах) базовой дисперсии оружия (оружия зажатого в тисках)
+control_inertion_factor			= 1.3f
+
+;отдача
+cam_relax_speed         		= 5.6;0.15;0.125		;скорость возврата в исходное положение
+cam_dispersion          		= 0.125		;увеличения угла (в градусах) с каждым выстрелом
+cam_dispersion_inc			= 0.25		;увеличениe cam_dispersion с каждым выстрелом
+cam_dispertion_frac			= 0.9		;ствол будет подыматься на cam_dispersion*cam_dispertion_frac +- cam_dispersion*(1-cam_dispertion_frac)
+cam_max_angle				= 8.0	    	;максимальный угол отдачи
+cam_max_angle_horz			= 15.0		;(degree) maximum shot horizontal degree 
+cam_step_angle_horz			= 0.9		;(degree) size of step camera moved in horizontal position while shooting
+
+
+fire_dispersion_condition_factor 	= 5	    	;увеличение дисперсии в процентах при максимальном износе 
+misfire_probability 			= 0.0050	;вероятность осечки при максимальном износе 
+condition_shot_dec 			= 0.0001	;увеличение износа при каждом выстреле
+
+fire_point             		=  0,0.225,0.687			; position (3rd person view) for particles of fire 
+fire_point2            		=  0,0.148,0.558			; position (3rd person view) for particles of fire (when shooting with secondary fire)
+
+flame_particles				= weapons\generic_weapon05	; particles for shooting effects
+smoke_particles				= weapons\generic_shoot_00
+grenade_flame_particles		= weapons\generic_weapon01
+	
+shell_point		 			= 0,0.252,0.196				; position (3rd person view) for shell to throw out
+shell_particles	 			= weapons\generic_shells	; name of the particles for shells
+
+PDM_disp_base 				= 1.0
+PDM_disp_vel_factor 			= 1.3
+PDM_disp_accel_factor 			= 1.3
+PDM_crouch	 			= 1.0
+PDM_crouch_no_acc 			= 1.0
+
+; ttc
+hit_power               = 0.36, 0.40, 0.43, 0.46	; size of damage by bullet
+hit_impulse		 		= 140		; size of physic impulse by bullet	
+hit_type 					= fire_wound 				; [] type of the wound
+
+fire_distance            		= 1000						; maximum fire distance that bullet can fly
+bullet_speed				= 900						; starting bullet speed
+rpm                      		= 600
+
+use_aim_bullet				= true		;Поддерживается ли первая суппер пуля
+time_to_aim					= 1.0		
+
+
+silencer_hit_power       		= 0.42
+silencer_hit_impulse	 		= 120
+silencer_fire_distance   		= 600
+silencer_bullet_speed	 		= 310
+
+hud                      	= wpn_abakan_hud				; name of the section of the hud
+
+position         	        = -0.026,-0.178,0			; position (offset) and orientation of the weapon in the hands of character
+orientation      	        = 0,0,0						; (3rd person view)
+
+;--STRAP PARAMETERS-----------------------------------------------------------------
+strap_position         		= -0.16,-0.40,0.15			; position (offset) and orientation of the weapon when it is strapped
+strap_orientation      		= -10,-5,10					; (3rd person view in degrees)
+strap_bone0					= bip01_spine2
+strap_bone1					= bip01_spine1
+
+visual         		        = weapons\abakan\wpn_abakan		; name of the model for 3rd person view
+
+light_color					= 0.6,0.5,0.3				; params for light during the fire
+light_range					= 5							; radius
+light_var_color				= 0.05						
+light_var_range				= 0.5
+light_time 					= 0.2						
+
+ph_mass						= 5							; physic mass (kg)
+
+;addons
+scope_status				= 2							; 0 - no addon
+silencer_status				= 0;2							; 1 - permanent
+grenade_launcher_status		= 0;2							; 2 - attachable
+
+zoom_enabled				= true						; (on,off)zoom mode (right mouse button)
+scope_zoom_factor	    	= 50						; fov for zoom mode
+
+scope_name 					= wpn_addon_scope			; section name for the attachable scope
+scope_x 					= 47						; offset in inventory icon
+scope_y 					= 0
+silencer_name  				= wpn_addon_silencer		; section name for the attachable silencer
+silencer_x 					= 218						; offset in inventory icon
+silencer_y 					= 9					
+grenade_launcher_name 		= wpn_addon_grenade_launcher; section name for the attachable grenade launcher
+grenade_launcher_x 			= 126						; offset in inventory icon
+grenade_launcher_y 			= 24
+
+;sounds (name of the sound, volume (0.0 - 1.0), delay (sec))
+snd_draw					= weapons\ak74_draw
+snd_holster					= weapons\generic_holster
+snd_shoot					= weapons\ak74u_shot_0
+snd_shoot1					= weapons\ak74u_shot_1
+snd_shoot2					= weapons\ak74u_shot_2
+snd_shoot3					= weapons\ak74u_shot_3		
+snd_empty					= weapons\gen_empty, 0.5
+snd_reload					= weapons\abakan_reload, 0.7, 0.35
+snd_shoot_grenade			= weapons\gen_grenshoot
+snd_reload_grenade			= weapons\gen_grenload, 1.0, 0.8
+snd_switch					= weapons\groza_switch, 1.0, 0.5
+
+
+;silencer_flame_particles 	= weapons\generic_weapon01
+silencer_smoke_particles 	= weapons\generic_shoot_00
+
+snd_silncer_shot			= weapons\w_ak74_shot1 
+
+silencer_light_color		= 0.6,0.5,0.3
+silencer_light_range		= 0.01
+silencer_light_var_color	= 0.05
+silencer_light_var_range	= 0.5
+silencer_light_time 		= 0.2
+
+
+;-----------------------------------------------------------------------------
+;-- HUD DESCRIPTION
+;-----------------------------------------------------------------------------
+ 
+[wpn_abakan_hud]
+allow_inertion				= true
+
+;similar to corresponding params in weapon section but for 1st person view
+
+shell_point					= 0.105000,-0.022000,-0.049000
+shell_dir			     	= 0.0, 1.0, 0.0
+
+fire_point					= 0.290000,0.001000,-0.047000
+fire_point2              	= 0.30, 0.00, 0.05
+fire_bone               	= wpn_body
+
+orientation             	= 0, 0, 0		
+position                	= 0, 0, 0
+visual                  	= weapons\abakan\wpn_abakan_hud.ogf
+
+grenade_bone            	= wpn_grenade	; name of the bone in the model for grenade launcher
+
+; animation names
+
+anim_idle					= idle
+anim_idle_aim				= idle_aim
+anim_reload					= reload
+anim_draw					= draw
+anim_holster				= holster
+anim_shoot					= shoot
+			
+; animation names
+; attached grenade launcher [GRENADE fire mode]
+anim_idle_g					= idle_grenade
+anim_idle_g_aim				= idle_grenade_aim
+anim_reload_g				= grenade_reload
+anim_shoot_g				= grenade_shoot
+anim_switch_grenade_on		= grenade_on
+anim_switch_grenade_off		= grenade_off
+anim_draw_g					= grenade_draw
+anim_holster_g				= grenade_holster
+
+; attached grenade launcher [NORMAL fire mode]
+anim_idle_gl				= idle_w_gl
+anim_idle_gl_aim			= idle_w_gl_aim
+anim_reload_gl				= reload_w_gl
+anim_draw_gl				= draw_w_gl
+anim_holster_gl				= holster_w_gl
+anim_shoot_gl				= shoot_w_gl
+anim_idle_sprint			= idle_sprint
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;HUD offset in zoom mode (to all)
+;(use CONSOLE: hud_adjust_mode 0,1,2, then keys WSADQE and P to show current value in console)
+
+zoom_offset			= -0.110800,0.042200,-0.028000
+zoom_rotate_x		= 0.015900
+zoom_rotate_y		= 0.017500
+
+zoom_hide_crosshair	= true						;to hide crosshair in zoom 
+
+
+; same as above, but for attached grenade launcher for
+; in NORMAL shoot mode
+
+grenade_normal_zoom_offset			= -0.110600,0.045800,-0.009000
+grenade_normal_zoom_rotate_x		= 0.021000
+grenade_normal_zoom_rotate_y		= 0.017500
+
+; same as above, but for attached grenade launcher for
+; in GRENADE mode
+
+grenade_zoom_offset			= -0.074600,-0.086200,-0.010000
+grenade_zoom_rotate_x		= -0.080000
+grenade_zoom_rotate_y		= -0.018500
