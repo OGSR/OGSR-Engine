@@ -100,7 +100,7 @@ void xrCore::_initialize	(LPCSTR _ApplicationName, LogCallback cb, BOOL init_fs,
 	#endif
 #endif
 		FS._initialize		(flags,0,fs_fname);
-		Msg("[OGSR Engine] build date: [%s]", BUILD_DATE);
+		Msg("[OGSR Engine (%s)] build date: [" __DATE__ " " __TIME__ "]", GetBuildConfiguration());
 		EFS._initialize		();
 #ifdef DEBUG
     #ifndef	_EDITOR

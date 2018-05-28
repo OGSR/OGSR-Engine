@@ -110,8 +110,18 @@ public:
 		
 		if (Device.Resources)	Device.Resources->_GetMemoryUsage	(m_base,c_base,m_lmaps,c_lmaps);
 		
-		log_vminfo	();
-		
+		Log("--------------------------------------------------------------------------------");
+
+		SProcessMemInfo memCounters;
+		GetProcessMemInfo(memCounters);
+		Msg("[%I64dMB] physical memory installed, [%I64dMB] available, [%ld] percent of memory in use",
+			memCounters.TotalPhysicalMemory / (1024 * 1024), memCounters.FreePhysicalMemory / (1024 * 1024), memCounters.MemoryLoad);
+
+		Msg("PageFile usage: [%I64dMB], Peak PageFile usage: [%I64dMB]",
+			memCounters.PagefileUsage / (1024 * 1024), memCounters.PeakPagefileUsage / (1024 * 1024));
+
+		Log("--------------------------------------------------------------------------------");
+
 		Msg		("* [ D3D ]: textures[%d K]", (m_base+m_lmaps)/1024);
 		Msg		("* [x-ray]: process heap[%d K], render[%d K]", _process_heap/1024, _render / 1024);
 		Msg		("* [x-ray]: economy: strings[%d K], smem[%d K]",_eco_strings/1024,_eco_smem);

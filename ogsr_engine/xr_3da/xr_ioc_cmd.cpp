@@ -260,41 +260,19 @@ bool CCC_LoadCFG_custom::allow(LPCSTR cmd)
 //-----------------------------------------------------------------------
 class CCC_Start : public IConsole_Command
 {
-	void	parse		(LPSTR dest, LPCSTR args, LPCSTR name)
+protected:
+	std::string parse(const std::string& str)
 	{
-		dest[0]	= 0;
-		if (strstr(args, name)) {
-			std::string str = strstr(args, name) + xr_strlen(name);
-			std::regex Reg("\\(([^)]+)\\)");
-			std::smatch results;
-			if (std::regex_search(str, results, Reg))
-				strcpy(dest, results[1].str().c_str());
-		}
+		std::regex Reg("\\(([^)]+)\\)");
+		std::smatch results;
+		ASSERT_FMT(std::regex_search(str, results, Reg), "Failed parsing string: [%s]", str.c_str());
+		return results[1].str();
 	}
 public:
-	CCC_Start(LPCSTR N) : IConsole_Command(N) {};
-	virtual void Execute(LPCSTR args) {
-/*		if (g_pGameLevel)	{
-			Log		("! Please disconnect/unload first");
-			return;
-		}
-*/
-		string4096	op_server,op_client;
-		op_server[0] = 0;
-		op_client[0] = 0;
-		
-		parse		(op_server,args,"server");	// 1. server
-		parse		(op_client,args,"client");	// 2. client
-		
-		if(!op_client[0] && strstr(op_server,"single"))
-			strcpy_s(op_client, "localhost");
-
-		if (0==xr_strlen(op_client))	
-		{
-			Log("! Can't start game without client. Arguments: '%s'.",args);
-			return;
-		}
-		Engine.Event.Defer	("KERNEL:start",u64(xr_strlen(op_server)?xr_strdup(op_server):0),u64(xr_strdup(op_client)));
+	CCC_Start(const char* N) : IConsole_Command(N) {};
+	void Execute(const char* args) override {
+		auto str = this->parse(args);
+		Engine.Event.Defer("KERNEL:start", u64(xr_strdup(str.c_str())), u64(xr_strdup("localhost")));
 	}
 };
 

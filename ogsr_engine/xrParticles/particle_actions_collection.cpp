@@ -1675,22 +1675,9 @@ struct TES_PARAMS {
 };
 
 
-void PATurbulenceExecuteStream( LPVOID lpvParams )
+void PATurbulenceExecuteStream(TES_PARAMS* pParams)
 {
-	#ifdef _GPA_ENABLED	
-		TAL_SCOPED_TASK_NAMED( "PATurbulenceExecuteStream()" );
-
-		TAL_ID rtID = TAL_MakeID( 1 , Core.dwFrame , 0);	
-		TAL_AddRelationThis(TAL_RELATION_IS_CHILD_OF, rtID);
-	#endif // _GPA_ENABLED
-
-
-	pVector pV;
-    pVector vX;
-    pVector vY;
-    pVector vZ;
-
-	TES_PARAMS* pParams = (TES_PARAMS *) lpvParams;
+	pVector pV, vX, vY, vZ;
 
 	u32 p_from = pParams->p_from;
 	u32 p_to = pParams->p_to;
@@ -1757,10 +1744,6 @@ void PATurbulenceExecuteStream( LPVOID lpvParams )
 
 void PATurbulence::Execute(ParticleEffect *effect, float dt)
 {
-	#ifdef _GPA_ENABLED	
-		TAL_SCOPED_TASK_NAMED( "PATurbulence::Execute()" );
-	#endif // _GPA_ENABLED
-
 	if ( noise_start ) {
 		noise_start = 0;
 		noise3Init();
@@ -1803,7 +1786,7 @@ void PATurbulence::Execute(ParticleEffect *effect, float dt)
 		tesParams[i].octaves = octaves;
 		tesParams[i].magnitude = magnitude;
 
-		TTAPI->threads[i]->addJob([=] { PATurbulenceExecuteStream((void*)&tesParams[i]); });
+		TTAPI->threads[i]->addJob([=] { PATurbulenceExecuteStream(&tesParams[i]); });
 	}
 
 	TTAPI->wait();

@@ -1,5 +1,3 @@
-#ifndef xrMemoryH
-#define xrMemoryH
 #pragma once
 
 #include "memory_monitor.h"
@@ -135,8 +133,17 @@ const		u32			mem_generic				=	mem_pools_count+1;
 extern		MEMPOOL		mem_pools				[mem_pools_count];
 extern		BOOL		mem_initialized;
 
-XRCORE_API void vminfo			(size_t *_free, size_t *reserved, size_t *committed);
-XRCORE_API void log_vminfo		();
 XRCORE_API u32	mem_usage_impl	(u32* pBlocksUsed, u32* pBlocksFree);
 
-#endif // xrMemoryH
+struct SProcessMemInfo {
+	u64 PeakWorkingSetSize;
+	u64 WorkingSetSize;
+	u64 PagefileUsage;
+	u64 PeakPagefileUsage;
+	
+	u64 TotalPhysicalMemory;
+	s64 FreePhysicalMemory;
+	u64 TotalVirtualMemory;
+	u32 MemoryLoad;
+};
+XRCORE_API void GetProcessMemInfo(SProcessMemInfo& minfo);

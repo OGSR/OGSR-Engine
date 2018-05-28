@@ -121,6 +121,7 @@ void _initialize_cpu()
 	if (CPU::ID.has3DNOW()) strcat(features, ", 3DNow!");
 	if (CPU::ID.hasSSE()) strcat(features, ", SSE");
 	if (CPU::ID.hasSSE2()) strcat(features, ", SSE2");
+	R_ASSERT(CPU::ID.hasSSE2());
 	if (CPU::ID.hasSSE3()) strcat(features, ", SSE3");
 	if (CPU::ID.hasMWAIT()) strcat(features, ", MONITOR/MWAIT");
 	if (CPU::ID.hasSSSE3()) strcat(features, ", SSSE3");
@@ -155,12 +156,10 @@ void _initialize_cpu()
 	pvInitializeStatics();	// Lookup table for compressed normals
 	FPU::initialize();
 	//
-#ifndef __AVX__
 	if (CPU::ID.hasSSE41()) {
 		iFloor = iFloorSSE41;
 		iCeil  = iCeilSSE41;
 	}
-#endif
 	//
 }
 

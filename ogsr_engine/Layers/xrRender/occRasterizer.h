@@ -2,11 +2,11 @@
 //////////////////////////////////////////////////////////////////////
 #pragma once
 
-const int	occ_dim_0			= 64;
-const int	occ_dim_1			= occ_dim_0/2;
-const int	occ_dim_2			= occ_dim_1/2;
-const int	occ_dim_3			= occ_dim_2/2;
-const int	occ_dim				= occ_dim_0+4;	// 2 pixel border around frame
+constexpr int	occ_dim_0			= 64;
+constexpr int	occ_dim_1			= occ_dim_0/2;
+constexpr int	occ_dim_2			= occ_dim_1/2;
+constexpr int	occ_dim_3			= occ_dim_2/2;
+constexpr int	occ_dim				= occ_dim_0+4;	// 2 pixel border around frame
 
 class occTri
 {
@@ -20,8 +20,8 @@ public:
 	Fvector			center;
 };
 
-const float			occQ_s32	= float(0x40000000);	// [-2..2]
-const float			occQ_s16	= float(16384-1);		// [-2..2]
+constexpr float			occQ_s32	= float(0x40000000);	// [-2..2]
+constexpr float			occQ_s16	= float(16384-1);		// [-2..2]
 typedef	s32			occD;
 
 class occRasterizer  
@@ -57,12 +57,12 @@ public:
 		case 1:		return &(bufDepth_1[0][0]);	
 		case 2:		return &(bufDepth_2[0][0]);	
 		case 3:		return &(bufDepth_3[0][0]);	
-		default:	return NULL;
+		default:	return nullptr;
 		}
 	}
 	
-	occRasterizer	();
-	~occRasterizer	();
+	occRasterizer() = default;
+	~occRasterizer() = default;
 };
 
 extern occRasterizer	Raster;

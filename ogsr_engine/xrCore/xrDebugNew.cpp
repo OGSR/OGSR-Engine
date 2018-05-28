@@ -259,141 +259,62 @@ int out_of_memory_handler	(size_t size)
 #pragma warning(pop)
 
 #pragma comment(lib, "Version.lib")
-
-typedef BOOL(WINAPI *MINIDUMPWRITEDUMP)(HANDLE hProcess, DWORD dwPid, HANDLE hFile, MINIDUMP_TYPE DumpType,
-	CONST PMINIDUMP_EXCEPTION_INFORMATION ExceptionParam,
-	CONST PMINIDUMP_USER_STREAM_INFORMATION UserStreamParam,
-	CONST PMINIDUMP_CALLBACK_INFORMATION CallbackParam
-	);
-
-HMODULE LoadDebugHlp()
-{
-	auto hDll = GetModuleHandle("dbghelp.dll");
-	if (hDll)
-		return hDll;
-
-	string_path szDbgHelpPath;
-
-	if (GetModuleFileName(nullptr, szDbgHelpPath, _MAX_PATH))
-	{
-		char *pSlash = strchr(szDbgHelpPath, '\\');
-		if (pSlash)
-		{
-			strcpy(pSlash + 1, "DBGHELP.DLL");
-			// alpet: проверка версии необходима, т.к. старый файл очень часто лажает с выводом стека вызовов
-			DWORD nope;
-			DWORD size = GetFileVersionInfoSize(szDbgHelpPath, &nope);
-			if (size > 0)
-			{
-				LPVOID ver_data = xr_malloc(size);
-				if (GetFileVersionInfo(szDbgHelpPath, NULL, size, ver_data))
-				{
-					VS_FIXEDFILEINFO *info = nullptr;
-					UINT len;
-					VerQueryValue(ver_data, "\\", (LPVOID*)&info, &len);
-					if (info && info->dwFileVersionMS >= 6)
-						hDll = ::LoadLibrary(szDbgHelpPath);
-					else
-						Log("!#ERROR: dbghelp.dll version is old for this build.");
-				}
-
-				xr_free(ver_data);
-			}
-		}
-	}
-
-	if (!hDll)
-	{
-		// load any version we can
-		hDll = ::LoadLibrary("DBGHELP.DLL");
-	}
-
-	return hDll;
-}
+#pragma comment(lib, "dbghelp.lib")
 
 void save_mini_dump(_EXCEPTION_POINTERS *pExceptionInfo)
 {
-	// firstly see if dbghelp.dll is around and has the function we need
-	// look next to the EXE first, as the one in System32 might be old 
-	// (e.g. Windows 2000)
-	LPCTSTR szResult = nullptr;
-	auto hDll = LoadDebugHlp();
+	string_path	szDumpPath;
+	string64	t_stemp;
 
-	if (hDll)
+	timestamp(t_stemp);
+	strcpy(szDumpPath, Core.ApplicationName);
+	strcat(szDumpPath, "_");
+	strcat(szDumpPath, Core.UserName);
+	strcat(szDumpPath, "_");
+	strcat(szDumpPath, t_stemp);
+	strcat(szDumpPath, ".mdmp");
+
+	__try {
+		if (FS.path_exist("$logs$"))
+			FS.update_path(szDumpPath, "$logs$", szDumpPath);
+	}
+	__except (EXCEPTION_EXECUTE_HANDLER) {
+		string_path	temp;
+		strcpy(temp, szDumpPath);
+		strcpy(szDumpPath, "logs/");
+		strcat(szDumpPath, temp);
+	}
+
+	// create the file
+	auto hFile = ::CreateFile(szDumpPath, GENERIC_WRITE, FILE_SHARE_WRITE, nullptr, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, nullptr);
+	if (INVALID_HANDLE_VALUE == hFile)
 	{
-		auto pDump = (MINIDUMPWRITEDUMP)::GetProcAddress(hDll, "MiniDumpWriteDump");
-		if (pDump)
-		{
-			string_path	szDumpPath;
-			string_path	szScratch;
-			string64	t_stemp;
+		// try to place into current directory
+		MoveMemory(szDumpPath, szDumpPath + 5, strlen(szDumpPath));
+		hFile = ::CreateFile(szDumpPath, GENERIC_WRITE, FILE_SHARE_WRITE, nullptr, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, nullptr);
+	}
+	if (hFile != INVALID_HANDLE_VALUE)
+	{
+		_MINIDUMP_EXCEPTION_INFORMATION ExInfo;
 
-			timestamp(t_stemp);
-			strcpy(szDumpPath, Core.ApplicationName);
-			strcat(szDumpPath, "_");
-			strcat(szDumpPath, Core.UserName);
-			strcat(szDumpPath, "_");
-			strcat(szDumpPath, t_stemp);
-			strcat(szDumpPath, ".mdmp");
+		ExInfo.ThreadId = ::GetCurrentThreadId();
+		ExInfo.ExceptionPointers = pExceptionInfo;
+		ExInfo.ClientPointers = NULL;
 
-			__try {
-				if (FS.path_exist("$logs$"))
-					FS.update_path(szDumpPath, "$logs$", szDumpPath);
-			}
-			__except (EXCEPTION_EXECUTE_HANDLER) {
-				string_path	temp;
-				strcpy(temp, szDumpPath);
-				strcpy(szDumpPath, "logs/");
-				strcat(szDumpPath, temp);
-			}
+		// write the dump
+		auto dump_flags = MINIDUMP_TYPE(MiniDumpNormal | MiniDumpFilterMemory | MiniDumpScanMemory);
 
-			// create the file
-			auto hFile = ::CreateFile(szDumpPath, GENERIC_WRITE, FILE_SHARE_WRITE, nullptr, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, nullptr);
-			if (INVALID_HANDLE_VALUE == hFile)
-			{
-				// try to place into current directory
-				MoveMemory(szDumpPath, szDumpPath + 5, strlen(szDumpPath));
-				hFile = ::CreateFile(szDumpPath, GENERIC_WRITE, FILE_SHARE_WRITE, nullptr, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, nullptr);
-			}
-			if (hFile != INVALID_HANDLE_VALUE)
-			{
-				_MINIDUMP_EXCEPTION_INFORMATION ExInfo;
-
-				ExInfo.ThreadId = ::GetCurrentThreadId();
-				ExInfo.ExceptionPointers = pExceptionInfo;
-				ExInfo.ClientPointers = NULL;
-
-				// write the dump
-				auto dump_flags = MINIDUMP_TYPE(MiniDumpNormal | MiniDumpFilterMemory | MiniDumpScanMemory);
-
-				BOOL bOK = pDump(GetCurrentProcess(), GetCurrentProcessId(), hFile, dump_flags, &ExInfo, nullptr, nullptr);
-				if (bOK)
-				{
-					sprintf(szScratch, "Saved dump file to '%s'", szDumpPath);
-					szResult = szScratch;
-					//					retval = EXCEPTION_EXECUTE_HANDLER;
-				}
-				else
-				{
-					sprintf(szScratch, "Failed to save dump file to '%s' (error %d)", szDumpPath, GetLastError());
-					szResult = szScratch;
-				}
-				::CloseHandle(hFile);
-			}
-			else
-			{
-				sprintf(szScratch, "Failed to create dump file '%s' (error %d)", szDumpPath, GetLastError());
-				szResult = szScratch;
-			}
-		}
+		BOOL bOK = MiniDumpWriteDump(GetCurrentProcess(), GetCurrentProcessId(), hFile, dump_flags, &ExInfo, nullptr, nullptr);
+		if (bOK)
+			Msg("--Saved dump file to [%s]", szDumpPath);
 		else
-		{
-			szResult = "DBGHELP.DLL too old";
-		}
+			Msg("!!Failed to save dump file to [%s] (error [%d])", szDumpPath, GetLastError());
+
+		::CloseHandle(hFile);
 	}
 	else
 	{
-		szResult = "DBGHELP.DLL not found";
+		Msg("!!Failed to create dump file [%s] (error [%d])", szDumpPath, GetLastError());
 	}
 }
 #endif

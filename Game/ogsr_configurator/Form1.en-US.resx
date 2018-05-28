@@ -228,7 +228,10 @@
     <value>TGA format for high-res screenshots</value>
   </data>
   <data name="StartGameButton.Text" xml:space="preserve">
-    <value>Launch game</value>
+    <value>Launch (x86)</value>
+  </data>
+  <data name="StartGameButton64.Text" xml:space="preserve">
+    <value>Launch (x64)</value>
   </data>
   <data name="string_start.Text" xml:space="preserve">
     <value>Final launch string:</value>

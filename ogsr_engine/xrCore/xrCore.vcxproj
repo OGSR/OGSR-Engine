@@ -96,6 +96,12 @@
       <AdditionalDependencies>lzo.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalOptions>/MACHINE:I386 %(AdditionalOptions)</AdditionalOptions>
     </Link>
+	<PostBuildEvent>
+      <Command>
+		copy /Y "$(SolutionDir)\Game\dlls\d3dcompiler_47.dll" "$(OutDir)d3dcompiler_47.dll"
+		copy /Y "$(SolutionDir)\Game\dlls\dbghelp.dll" "$(OutDir)dbghelp.dll"
+	  </Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
@@ -144,6 +150,12 @@
       </LinkTimeCodeGeneration>
       <AdditionalDependencies>lzo.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
+	<PostBuildEvent>
+      <Command>
+		copy /Y "$(SolutionDir)\Game\dlls\d3dcompiler_47.dll" "$(OutDir)d3dcompiler_47.dll"
+		copy /Y "$(SolutionDir)\Game\dlls\dbghelp.dll" "$(OutDir)dbghelp.dll"
+	  </Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="blackbox\stacktrace.cpp" />

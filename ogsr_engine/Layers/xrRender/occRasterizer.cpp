@@ -42,27 +42,19 @@ IC void propagade_depth			(LPVOID p_dest, LPVOID p_src, int dim)
 	}
 }
 
-//////////////////////////////////////////////////////////////////////
-// Construction/Destruction
-//////////////////////////////////////////////////////////////////////
-
-occRasterizer::occRasterizer	()
+void occRasterizer::clear()
 {
-	
-}
+	for (u32 mit = 0; mit < occ_dim; mit++)
+	{
+		for (u32 it = 0; it < occ_dim; it++)
+		{
+			bufFrame[mit][it] = nullptr;
+		}
+	}
 
-occRasterizer::~occRasterizer	()
-{
-	
-}
-
-void occRasterizer::clear		()
-{
-	std::size_t size = occ_dim*occ_dim;
 	float f = 1.f;
-	std::memset(bufFrame, 0, size * 4); // fill32
 	u32 fillValue = *LPDWORD(&f);
-	for (std::size_t i = 0; i < size; i++) // fill32 TODO: SSE optimize
+	for (size_t i = 0; i < occ_dim * occ_dim; i++) // fill32 TODO: SSE optimize
 	{
 		std::memcpy(reinterpret_cast<u8*>(bufDepth) + (i * sizeof(u32)), &fillValue, sizeof(u32));
 	}

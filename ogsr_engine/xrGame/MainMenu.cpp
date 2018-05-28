@@ -454,10 +454,6 @@ void CMainMenu::OnDeviceReset()
 LPCSTR CMainMenu::GetGSVer()
 {
 	static string256 buff;
-#ifdef _M_X64
-	xr_strcpy(buff, 255, "1.0007 x64 by KRodin && Dsh");
-#else
-	xr_strcpy(buff, 255, "1.0007 by KRodin && Dsh");
-#endif
+	std::snprintf(buff, sizeof(buff), "1.0007 %s by KRodin && Dsh", Core.GetBuildConfiguration());
 	return buff;
 }

@@ -14,7 +14,7 @@ class CZoneEffector;
 //информация о объекте, находящемся в зоне
 struct SZoneObjectInfo
 {
-	SZoneObjectInfo():object(NULL),zone_ignore(false),time_in_zone(0),hit_num(0),total_damage(0),small_object(false),nonalive_object(false) {}
+	SZoneObjectInfo():object(NULL),zone_ignore(false),time_in_zone(0),hit_num(0),total_damage(0),small_object(false),nonalive_object(false),death_in_zone(false) {}
 	CGameObject*			object; 
 	bool					small_object;
 	bool					nonalive_object;
@@ -28,6 +28,8 @@ struct SZoneObjectInfo
 	u32						hit_num;
 	//количество повреждений нанесенных зоной
 	float					total_damage;
+	//существо померло в зоне
+	bool					death_in_zone;
 
 	bool operator == (const CGameObject* O) const {return object==O;}
 };
@@ -103,6 +105,9 @@ protected:
 		eIdleLight				=(1<<6),
 		eSpawnBlowoutArtefacts	=(1<<7),
 		eUseOnOffTime			=(1<<8),
+		eBirthOnNonAlive		=(1<<9),
+		eBirthOnAlive			=(1<<10),
+		eBirthOnDead			=(1<<11),
 	};
 	u32					m_owner_id;		//if created from artefact
 	u32					m_ttl;
@@ -324,7 +329,7 @@ protected:
 
 	//рождение артефакта в зоне, во время ее срабатывания
 	//и присоединение его к зоне
-					void	BornArtefact				();
+					void	BornArtefact				(bool forced);
 	//выброс артефактов из зоны
 					void	ThrowOutArtefact			(CArtefact* pArtefact);
 	
@@ -340,6 +345,9 @@ protected:
 	//вероятность того, что артефакт засповниться при единичном 
 	//срабатывании аномалии
 	float					m_fArtefactSpawnProbability;
+	// bak вероятность спавна при смерти в зоне
+	float					m_fArtefactSpawnOnDeathProbability;
+	
 	//величина импульса выкидывания артефакта из зоны
 	float					 m_fThrowOutPower;
 	//высота над центром зоны, где будет появляться артефакт
@@ -362,6 +370,9 @@ protected:
 	//расстояние от зоны до текущего актера
 	float					m_fDistanceToCurEntity;
 
+	// bak / флаг для рождения артефакта
+	bool					m_bBornOnBlowoutFlag;
+	
 protected:
 	u32						m_ef_anomaly_type;
 	u32						m_ef_weapon_type;

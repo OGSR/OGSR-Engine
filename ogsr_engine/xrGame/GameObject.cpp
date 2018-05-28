@@ -49,7 +49,9 @@ CGameObject::CGameObject		()
 	m_ai_location				= !g_dedicated_server ? xr_new<CAI_ObjectLocation>() : 0;
 	m_server_flags.one			();
 
-	m_callbacks					= xr_new<CALLBACK_MAP>();
+	auto dummy_callback = std::make_unique<GOCallbackInfo>();
+	this->m_callbacks[GameObject::eDummy] = std::move(dummy_callback);
+
 	m_anim_mov_ctrl				= 0;
 }
 
@@ -60,7 +62,7 @@ CGameObject::~CGameObject		()
 	VERIFY						(!m_lua_game_object);
 	VERIFY						(!m_spawned);
 	xr_delete					(m_ai_location);
-	xr_delete					(m_callbacks);
+	m_callbacks.clear();
 }
 
 CSE_ALifeDynamicObject* CGameObject::alife_object() const
@@ -96,8 +98,9 @@ void CGameObject::reinit	()
 	if (!g_dedicated_server)
         ai_location().reinit	();
 
-	// clear callbacks	
-	for (CALLBACK_MAP_IT it = m_callbacks->begin(); it != m_callbacks->end(); ++it) it->second.clear();
+	// clear callbacks
+	for (auto& pair : m_callbacks)
+		pair.second->m_callback.clear();
 }
 
 void CGameObject::reload	(LPCSTR section)
@@ -885,9 +888,12 @@ void CGameObject::net_Relcase			(CObject* O)
 		CScriptBinder::net_Relcase	(O);
 }
 
-CGameObject::CScriptCallbackExVoid &CGameObject::callback(GameObject::ECallbackType type) const
+CScriptCallbackEx<void>& CGameObject::callback(GameObject::ECallbackType type) const
 {
-	return ((*m_callbacks)[type]);
+	if (auto it = m_callbacks.find(type); it != m_callbacks.end())
+		return (*it).second->m_callback;
+	else //KRodin: вот по-нормальному, надо возвращать nullptr и проверять в вызывающей функции, есть ли каллбек вообще. Но это кучу функций переделать надо, поэтому буду возвращать фейковый каллбек.
+		return m_callbacks.at(GameObject::eDummy)->m_callback;
 }
 
 LPCSTR CGameObject::visual_name			(CSE_Abstract *server_entity)
