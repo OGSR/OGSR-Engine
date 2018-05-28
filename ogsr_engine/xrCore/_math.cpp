@@ -156,12 +156,10 @@ void _initialize_cpu()
 	pvInitializeStatics();	// Lookup table for compressed normals
 	FPU::initialize();
 	//
-#ifndef __AVX__
 	if (CPU::ID.hasSSE41()) {
 		iFloor = iFloorSSE41;
 		iCeil  = iCeilSSE41;
 	}
-#endif
 	//
 }
 

@@ -41,28 +41,7 @@ IC u32 btwPow2_Ceil(u32 v)
 	return i;
 }
 
-
 #include <immintrin.h>
-// Может когда-нибудь я сделаю сборку с включенными AVX инструкциями. А юзать их вместе с включенным SSE - накладно из-за переключения между регистрами.
-// Можно конечно обнулять регистры в начале и конце каждой функции, но это на мой взгляд не лучшее решение.
-// см. http://qaru.site/questions/4585/using-avx-cpu-instructions-poor-performance-without-archavx/39253#39253
-#ifdef __AVX__
-//--------------------------------------------------------------------
-ICF int iFloor(float x) {
-	__m256 float_cast = _mm256_broadcast_ss(&x);
-	__m256 floor = _mm256_floor_ps(float_cast);
-	__m256i int_cast = _mm256_cvttps_epi32(floor);
-	return _mm256_cvtsi256_si32(int_cast);
-}
-
-ICF int iCeil(float x) {
-	__m256 float_cast = _mm256_broadcast_ss(&x);
-	__m256 ceil = _mm256_ceil_ps(float_cast);
-	__m256i int_cast = _mm256_cvttps_epi32(ceil);
-	return _mm256_cvtsi256_si32(int_cast);
-}
-//--------------------------------------------------------------------
-#else
 //--------------------------------------------------------------------
 ICF int iFloorFPU(float x) {
 	int a = *(const int*)(&x);
@@ -119,5 +98,3 @@ ICF int iCeilSSE41(float x) {
 // На новые переключимся в _initialize_cpu() при обнаружении SSE4.1
 inline int(__cdecl* iFloor)(float) = iFloorFPU;
 inline int(__cdecl* iCeil)(float)  = iCeilFPU;
-
-#endif
