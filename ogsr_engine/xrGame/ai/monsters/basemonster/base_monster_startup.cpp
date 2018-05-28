@@ -60,7 +60,7 @@ void CBaseMonster::Load(LPCSTR section)
 //	} else m_spawn_probability			= 0.f;
 
 	m_melee_rotation_factor			= READ_IF_EXISTS(pSettings,r_float,section,"Melee_Rotation_Factor", 1.5f);
-	berserk_always					= READ_IF_EXISTS(!!pSettings,r_bool,section,"berserk_always", false);
+	berserk_always					= !!READ_IF_EXISTS(pSettings,r_bool,section,"berserk_always", false);
 }
 
 // if sound is absent just do not load that one
