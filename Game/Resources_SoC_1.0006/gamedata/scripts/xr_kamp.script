@@ -126,8 +126,16 @@ end
 
 class "CKampManager"
 function CKampManager:__init(path)
-	self.kamp_name = path
-	self.patrol = patrol(path)
+	--KRodin: костыль от вылета по невалидному вертексу на x64.
+	--TODO: “акое надо решать в движке, т.к. на x86 вылета нет.
+	if path == "yantar_zombies_kamp_4" then
+		self.kamp_name = "yantar_zombies_kamp_4_task"
+		self.patrol = patrol("yantar_zombies_kamp_4_task")
+	else
+		self.kamp_name = path
+		self.patrol = patrol(path)
+	end
+
 	self.center = self.patrol:level_vertex_id(0)
 	self.position = {{dir = vector():set(1, 0, 0),	used = nil},
 					 {dir = vector():set(1, 0, 1),	used = nil},
