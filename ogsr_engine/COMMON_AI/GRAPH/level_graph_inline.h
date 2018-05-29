@@ -31,10 +31,15 @@ ICF bool CLevelGraph::valid_vertex_id	(u32 id) const
 
 ICF CLevelGraph::CVertex *CLevelGraph::vertex(const u32 vertex_id) const
 {
+#ifdef CRASH_ON_INVALID_VERTEX_ID
+	ASSERT_FMT( valid_vertex_id( vertex_id ), "invalid vertex_id %u", vertex_id );
+	return (m_nodes + vertex_id);
+#else
 #if _M_X64
 	return (valid_vertex_id(vertex_id)) ? (m_nodes + vertex_id) : (m_nodes + header().vertex_count() - 1);
 #else
 	return (m_nodes + vertex_id);
+#endif
 #endif
 }
 

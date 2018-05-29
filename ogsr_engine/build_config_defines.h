@@ -183,3 +183,6 @@
 
 // Включает создание минидампов при вылетах
 #define USE_OWN_MINI_DUMP
+
+// Включает вылет, если в vertex() будет передан не валидный вертекс.
+//#define CRASH_ON_INVALID_VERTEX_ID

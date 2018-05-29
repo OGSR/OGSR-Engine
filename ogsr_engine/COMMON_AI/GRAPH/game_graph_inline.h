@@ -99,15 +99,18 @@ IC	float CGameGraph::distance										(const _GRAPH_ID tGraphID0, const _GRAPH_
 	return						(_GRAPH_ID(-1));
 }
 
-IC	bool CGameGraph::accessible										(const u32 &vertex_id) const
-{
-	VERIFY						(valid_vertex_id(vertex_id));
-	return						(m_enabled[vertex_id]);
+IC bool CGameGraph::accessible ( const u32 &vertex_id ) const {
+  VERIFY( valid_vertex_id( vertex_id ) );
+  return valid_vertex_id( vertex_id ) && m_enabled[ vertex_id ];
 }
 
 IC	void CGameGraph::accessible										(const u32 &vertex_id, bool value) const
 {
+#ifdef CRASH_ON_INVALID_VERTEX_ID
+	ASSERT_FMT( valid_vertex_id( vertex_id ), "invalid vertex_id %u", vertex_id );
+#else
 	VERIFY						(valid_vertex_id(vertex_id));
+#endif
 	m_enabled[vertex_id]		= value;
 }
 
@@ -133,10 +136,15 @@ IC	const float &CGameGraph::edge_weight							(const_iterator i) const
 
 IC const CGameGraph::CVertex *CGameGraph::vertex(const u32 &vertex_id) const
 {
+#ifdef CRASH_ON_INVALID_VERTEX_ID
+	ASSERT_FMT( valid_vertex_id( vertex_id ), "invalid vertex_id %u", vertex_id );
+	return (m_nodes + vertex_id);
+#else
 #if _M_X64
 	return (valid_vertex_id(vertex_id)) ? (m_nodes + vertex_id) : (m_nodes + header().vertex_count() - 1);
 #else
 	return (m_nodes + vertex_id);
+#endif
 #endif
 }
 
