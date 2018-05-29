@@ -397,6 +397,36 @@ void CWeaponScript::set_hit_power(CWeapon *wpn, luabind::object const& t)
 	vector.w = object_cast<float>(t[4]);	
 }
 
+LPCSTR get_scope_name(CWeapon *I) { return I->m_sScopeName.c_str(); }
+
+void set_scope_name(CWeapon *item, LPCSTR text)
+{
+    if (!text || text[0] == '\0')
+        text = "";
+
+    item->m_sScopeName = CStringTable().translate(text);
+}
+
+LPCSTR get_silencer_name(CWeapon *I) { return I->m_sSilencerName.c_str(); }
+
+void set_silencer_name(CWeapon *item, LPCSTR text)
+{
+    if (!text || text[0] == '\0')
+        text = "";
+
+    item->m_sSilencerName = CStringTable().translate(text);
+}
+
+LPCSTR get_grenade_launcher_name(CWeapon *I) { return I->m_sGrenadeLauncherName.c_str(); }
+
+void set_grenade_launcher_name(CWeapon *item, LPCSTR text)
+{
+    if (!text || text[0] == '\0')
+        text = "";
+
+    item->m_sGrenadeLauncherName = CStringTable().translate(text);
+}
+
 void CWeaponScript::script_register(lua_State *L)
 {
 #ifdef NLC_EXTENSIONS
@@ -468,6 +498,14 @@ void CWeaponScript::script_register(lua_State *L)
 			.def_readwrite("scope_y"					,			&CWeapon::m_iScopeY)
 			.def_readwrite("silencer_x"					,			&CWeapon::m_iSilencerX)
 			.def_readwrite("silencer_y"					,			&CWeapon::m_iSilencerY)
+
+            .def_readwrite("scope_status", &CWeapon::m_eScopeStatus)
+            .def_readwrite("silencer_status", &CWeapon::m_eSilencerStatus)
+            .def_readwrite("grenade_launcher_status", &CWeapon::m_eGrenadeLauncherStatus)
+
+            .property("scope_name", &get_scope_name, &set_scope_name)
+            .property("silencer_name", &get_silencer_name, &set_silencer_name)
+            .property("grenade_launcher_name", &get_grenade_launcher_name, &set_grenade_launcher_name)
 
 			.def_readonly("misfire"						,			&CWeapon::bMisfire)
 			.def_readonly("zoom_mode"					,			&CWeapon::m_bZoomMode)

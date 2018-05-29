@@ -382,7 +382,9 @@ class_<CScriptGameObject> script_register_game_object2(class_<CScriptGameObject>
 
 		.def("set_bone_visible", &CScriptGameObject::SetBoneVisible)
 		.def("set_hud_bone_visible", &CScriptGameObject::SetHudBoneVisible)
-		.def("get_bone_id", &CScriptGameObject::GetBoneID)
+        .def("get_bone_visible", &CScriptGameObject::GetBoneVisible)
+        .def("get_hud_bone_visible", &CScriptGameObject::GetHudBoneVisible)
+        .def("get_bone_id", &CScriptGameObject::GetBoneID)
 
 		.def("get_binoc_zoom_factor", &CScriptGameObject::GetBinocZoomFactor)
 		.def("set_binoc_zoom_factor", &CScriptGameObject::SetBinocZoomFactor)

@@ -202,6 +202,11 @@ public:
 
 	u8		GetAddonsState						()		const		{return m_flagsAddOnState;};
 	void	SetAddonsState						(u8 st)	{m_flagsAddOnState=st;}//dont use!!! for buy menu only!!!
+
+                                                                               //названия секций подключаемых аддонов
+    shared_str		m_sScopeName;
+    shared_str		m_sSilencerName;
+    shared_str		m_sGrenadeLauncherName;
 protected:
 	//состояние подключенных аддонов
 	u8 m_flagsAddOnState;
@@ -211,10 +216,6 @@ protected:
 	ALife::EWeaponAddonStatus	m_eSilencerStatus;
 	ALife::EWeaponAddonStatus	m_eGrenadeLauncherStatus;
 
-	//названия секций подключаемых аддонов
-	shared_str		m_sScopeName;
-	shared_str		m_sSilencerName;
-	shared_str		m_sGrenadeLauncherName;
 
 	//смещение иконов апгрейдов в инвентаре
 	int	m_iScopeX, m_iScopeY;
