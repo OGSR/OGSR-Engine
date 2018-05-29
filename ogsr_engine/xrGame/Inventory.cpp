@@ -222,7 +222,7 @@ bool CInventory::DropItem(CGameObject *pObj)
 			m_ruck.erase(std::find(m_ruck.begin(), m_ruck.end(), pIItem));
 		}break;
 	case eItemPlaceSlot:{
-			ASSERT_FMT(InSlot(pIItem), "CInventory::DropItem: InSlot(pIItem): %s", pObj->cName().c_str());
+			ASSERT_FMT(InSlot(pIItem), "CInventory::DropItem: InSlot(pIItem): [%s], id: [%u]", pObj->cName().c_str(), pObj->ID());
 			if(m_iActiveSlot == pIItem->GetSlot()) 
 				Activate	(NO_ACTIVE_SLOT);
 
