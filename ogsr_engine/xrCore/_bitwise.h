@@ -80,14 +80,14 @@ ICF int iCeilFPU(float x) {
 //--------------------------------------------------------------------
 //--------------------------------------------------------------------
 ICF int iFloorSSE41(float x) {
-	__m128 float_cast = _mm_broadcast_ss(&x);
+	__m128 float_cast = _mm_load_ss((float*)&x);
 	__m128 floor = _mm_floor_ps(float_cast);
 	__m128i int_cast = _mm_cvttps_epi32(floor);
 	return _mm_cvtsi128_si32(int_cast);
 }
 
 ICF int iCeilSSE41(float x) {
-	__m128 float_cast = _mm_broadcast_ss(&x);
+	__m128 float_cast = _mm_load_ss((float*)&x);
 	__m128 ceil = _mm_ceil_ps(float_cast);
 	__m128i int_cast = _mm_cvttps_epi32(ceil);
 	return _mm_cvtsi128_si32(int_cast);
