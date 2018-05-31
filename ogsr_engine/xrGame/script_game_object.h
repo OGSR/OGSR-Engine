@@ -646,7 +646,9 @@ public:
 
 			CScriptIniFile		*GetVisIni();
 			void				SetBoneVisible(LPCSTR _bone_name, BOOL _visible);
+            BOOL                GetBoneVisible(LPCSTR _bone_name);
 			void				SetHudBoneVisible(LPCSTR _bone_name, BOOL _visible);
+            BOOL                GetHudBoneVisible(LPCSTR _bone_name);
 			u16					GetBoneID(LPCSTR _bone_name);
 
 			float				GetBinocZoomFactor();

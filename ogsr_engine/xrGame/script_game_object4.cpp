@@ -403,6 +403,16 @@ void CScriptGameObject::SetBoneVisible(LPCSTR _bone_name, BOOL _visible)
 	k->CalculateBones();
 }
 
+BOOL CScriptGameObject::GetBoneVisible(LPCSTR _bone_name)
+{
+    CKinematics						*k = smart_cast<CKinematics*>(object().Visual());
+    if (!k) {
+        ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "CKinematics : cannot access class member GetBoneVisible!");
+        return FALSE;
+    }
+    return k->LL_GetBoneVisible(k->LL_BoneID(_bone_name));
+}
+
 void CScriptGameObject::SetHudBoneVisible(LPCSTR _bone_name, BOOL _visible)
 {
 	CHudItem						*k = smart_cast<CHudItem*>(&object());
@@ -413,6 +423,17 @@ void CScriptGameObject::SetHudBoneVisible(LPCSTR _bone_name, BOOL _visible)
 	CKinematics *kin = smart_cast<CKinematics *>(k->GetHUD()->Visual());
 	kin->LL_SetBoneVisible(kin->LL_BoneID(_bone_name), _visible, TRUE);
 	kin->CalculateBones_Invalidate();
+}
+
+BOOL CScriptGameObject::GetHudBoneVisible(LPCSTR _bone_name)
+{
+    CHudItem						*k = smart_cast<CHudItem*>(&object());
+    if (!k) {
+        ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "CHudItem : cannot access class member GetHudBoneVisible!");
+        return FALSE;
+    }
+    CKinematics *kin = smart_cast<CKinematics *>(k->GetHUD()->Visual());
+    return kin->LL_GetBoneVisible(kin->LL_BoneID(_bone_name));
 }
 
 u16 CScriptGameObject::GetBoneID(LPCSTR _bone_name)

@@ -99,7 +99,7 @@
 	<PostBuildEvent>
       <Command>
 		copy /Y "$(SolutionDir)\Game\dlls\d3dcompiler_47.dll" "$(OutDir)d3dcompiler_47.dll"
-		copy /Y "$(SolutionDir)\Game\dlls\dbghelp.dll" "$(OutDir)dbghelp.dll"
+		copy /Y "$(SolutionDir)\Game\dlls\dbghelp_x86.dll" "$(OutDir)dbghelp.dll"
 	  </Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
@@ -153,7 +153,7 @@
 	<PostBuildEvent>
       <Command>
 		copy /Y "$(SolutionDir)\Game\dlls\d3dcompiler_47.dll" "$(OutDir)d3dcompiler_47.dll"
-		copy /Y "$(SolutionDir)\Game\dlls\dbghelp.dll" "$(OutDir)dbghelp.dll"
+		copy /Y "$(SolutionDir)\Game\dlls\dbghelp_x64.dll" "$(OutDir)dbghelp.dll"
 	  </Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
