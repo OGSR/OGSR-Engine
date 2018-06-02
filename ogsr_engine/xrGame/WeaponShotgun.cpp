@@ -339,15 +339,17 @@ bool CWeaponShotgun::HaveCartridgeInInventory		(u8 cnt)
 			if (!m_magazine.empty()) UnloadMagazine();
 		}
 
+		bool forActor = ParentIsActor();
+
 		//попытатьс€ найти в инвентаре патроны текущего типа 
-		m_pAmmo = smart_cast<CWeaponAmmo*>(m_pCurrentInventory->GetAny(*m_ammoTypes[m_ammoType]));
+		m_pAmmo = smart_cast<CWeaponAmmo*>(m_pCurrentInventory->GetAmmo(*m_ammoTypes[m_ammoType], forActor));
 		
 		if(!m_pAmmo && ( m_magazine.empty() || !m_bLockType ))
 		{
 			for(u32 i = 0; i < m_ammoTypes.size(); ++i) 
 			{
 				//проверить патроны всех подход€щих типов
-				m_pAmmo = smart_cast<CWeaponAmmo*>(m_pCurrentInventory->GetAny(*m_ammoTypes[i]));
+				m_pAmmo = smart_cast<CWeaponAmmo*>(m_pCurrentInventory->GetAmmo(*m_ammoTypes[i], forActor));
 				if(m_pAmmo) 
 				{ 
 					m_ammoType = i; 
