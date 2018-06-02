@@ -864,81 +864,102 @@ void doBenchmark(LPCSTR name)
 		Startup	 				();
 	}
 }
+
+u32 calc_progress_color(u32, u32, int, int);
+
 #pragma optimize("g", off)
 void CApplication::load_draw_internal()
 {
-	if(!sh_progress){
-		CHK_DX			(HW.pDevice->Clear(0,0,D3DCLEAR_TARGET,D3DCOLOR_ARGB(0,0,0,0),1,0));
+	if (!sh_progress) {
+		CHK_DX(HW.pDevice->Clear(0, 0, D3DCLEAR_TARGET, D3DCOLOR_ARGB(0, 0, 0, 0), 1, 0));
 		return;
-	}
-		// Draw logo
-		u32	Offset;
-		u32	C						= 0xffffffff;
-		u32	_w						= Device.dwWidth;
-		u32	_h						= Device.dwHeight;
-		FVF::TL* pv					= NULL;
-
-//progress
-		float bw					= 1024.0f;
-		float bh					= 768.0f;
-		Fvector2					k; k.set(float(_w)/bw, float(_h)/bh);
-
-		RCache.set_Shader			(sh_progress);
-		CTexture*	T				= RCache.get_ActiveTexture(0);
-		Fvector2					tsz;
-		tsz.set						((float)T->get_Width(),(float)T->get_Height());
-		Frect						back_text_coords;
-		Frect						back_coords;
-		Fvector2					back_size;
-
-//progress background
-		static float offs			= -0.5f;
-
-		if (!hLevelLogo) {
-			back_size.set(1024, 768);
-			back_text_coords.lt.set(0, 0); back_text_coords.rb.add(back_text_coords.lt, back_size);
-			back_coords.lt.set(offs, offs); back_coords.rb.add(back_coords.lt, back_size);
-
-			back_coords.lt.mul(k); back_coords.rb.mul(k);
-
-			back_text_coords.lt.x /= tsz.x; back_text_coords.lt.y /= tsz.y; back_text_coords.rb.x /= tsz.x; back_text_coords.rb.y /= tsz.y;
-			pv = (FVF::TL*) RCache.Vertex.Lock(4, ll_hGeom.stride(), Offset);
-			pv->set(back_coords.lt.x, back_coords.rb.y, C, back_text_coords.lt.x, back_text_coords.rb.y);	pv++;
-			pv->set(back_coords.lt.x, back_coords.lt.y, C, back_text_coords.lt.x, back_text_coords.lt.y);	pv++;
-			pv->set(back_coords.rb.x, back_coords.rb.y, C, back_text_coords.rb.x, back_text_coords.rb.y);	pv++;
-			pv->set(back_coords.rb.x, back_coords.lt.y, C, back_text_coords.rb.x, back_text_coords.lt.y);	pv++;
-			RCache.Vertex.Unlock(4, ll_hGeom.stride());
-
-			RCache.set_Geometry(ll_hGeom);
-			RCache.Render(D3DPT_TRIANGLELIST, Offset, 0, 4, 0, 2);
-		} else
-		{
-			Frect						r;
-			r.lt.set(0, 0);
-			r.lt.x += offs;
-			r.lt.y += offs;
-			r.rb.add(r.lt, Fvector2().set(bw, bh));
-			r.lt.mul(k);
-			r.rb.mul(k);
-			pv = (FVF::TL*) RCache.Vertex.Lock(4, ll_hGeom.stride(), Offset);
-			pv->set(r.lt.x, r.rb.y, C, 0, 1);	pv++;
-			pv->set(r.lt.x, r.lt.y, C, 0, 0);	pv++;
-			pv->set(r.rb.x, r.rb.y, C, 1, 1);	pv++;
-			pv->set(r.rb.x, r.lt.y, C, 1, 0);	pv++;
-			RCache.Vertex.Unlock(4, ll_hGeom.stride());
-
-			RCache.set_Shader(hLevelLogo);
-			RCache.set_Geometry(ll_hGeom);
-			RCache.Render(D3DPT_TRIANGLELIST, Offset, 0, 4, 0, 2);
 		}
 
-		// Draw title
-		VERIFY						(pFontSystem);
-		pFontSystem->Clear			();
-		pFontSystem->SetColor		(color_rgba(157,140,120,255));
-		pFontSystem->SetAligment	(CGameFont::alCenter);
-		pFontSystem->OutI			(0.f,0.815f,app_title);
-		pFontSystem->OnRender		();
+	// Draw logo
+	u32	Offset;
+	u32	C = 0xffffffff;
+	u32	_w = Device.dwWidth;
+	u32	_h = Device.dwHeight;
+	FVF::TL* pv = NULL;
+
+	//progress
+	float bw = 1024.0f;
+	float bh = 768.0f;
+	Fvector2					k; k.set(float(_w) / bw, float(_h) / bh);
+
+	RCache.set_Shader(sh_progress);
+	CTexture*	T = RCache.get_ActiveTexture(0);
+	Fvector2					tsz;
+	tsz.set((float)T->get_Width(), (float)T->get_Height());
+	Frect						back_text_coords;
+	Frect						back_coords;
+	Fvector2					back_size;
+
+	//progress background
+	static float offs = -0.5f;
+
+#ifndef USE_LEGACY_LOAD_SCREENS 
+	if (!hLevelLogo) 
+#endif // !USE_LEGACY_LOAD_SCREENS 
+	{
+		back_size.set(1024, 768);
+		back_text_coords.lt.set(0, 0); back_text_coords.rb.add(back_text_coords.lt, back_size);
+		back_coords.lt.set(offs, offs); back_coords.rb.add(back_coords.lt, back_size);
+
+		back_coords.lt.mul(k); back_coords.rb.mul(k);
+
+		back_text_coords.lt.x /= tsz.x; back_text_coords.lt.y /= tsz.y; back_text_coords.rb.x /= tsz.x; back_text_coords.rb.y /= tsz.y;
+		pv = (FVF::TL*) RCache.Vertex.Lock(4, ll_hGeom.stride(), Offset);
+		pv->set(back_coords.lt.x, back_coords.rb.y, C, back_text_coords.lt.x, back_text_coords.rb.y);	pv++;
+		pv->set(back_coords.lt.x, back_coords.lt.y, C, back_text_coords.lt.x, back_text_coords.lt.y);	pv++;
+		pv->set(back_coords.rb.x, back_coords.rb.y, C, back_text_coords.rb.x, back_text_coords.rb.y);	pv++;
+		pv->set(back_coords.rb.x, back_coords.lt.y, C, back_text_coords.rb.x, back_text_coords.lt.y);	pv++;
+		RCache.Vertex.Unlock(4, ll_hGeom.stride());
+
+		RCache.set_Geometry(ll_hGeom);
+		RCache.Render(D3DPT_TRIANGLELIST, Offset, 0, 4, 0, 2);
+	}
+
+	//draw level-specific screenshot
+	if (hLevelLogo)
+	{
+#ifdef USE_LEGACY_LOAD_SCREENS 
+		bw = 512.0f;
+		bh = 256.0f;
+
+		float bx = 257.0f;
+		float by = 369.0f;
+#else
+		float bx = 0.0f;
+		float by = 0.0f;
+#endif // !USE_LEGACY_LOAD_SCREENS 
+
+		Frect r;
+		r.lt.set(bx, by);
+		r.lt.x += offs;
+		r.lt.y += offs;
+		r.rb.add(r.lt, Fvector2().set(bw, bh));
+		r.lt.mul(k);
+		r.rb.mul(k);
+		pv = (FVF::TL*) RCache.Vertex.Lock(4, ll_hGeom.stride(), Offset);
+		pv->set(r.lt.x, r.rb.y, C, 0, 1);	pv++;
+		pv->set(r.lt.x, r.lt.y, C, 0, 0);	pv++;
+		pv->set(r.rb.x, r.rb.y, C, 1, 1);	pv++;
+		pv->set(r.rb.x, r.lt.y, C, 1, 0);	pv++;
+		RCache.Vertex.Unlock(4, ll_hGeom.stride());
+
+		RCache.set_Shader(hLevelLogo);
+		RCache.set_Geometry(ll_hGeom);
+		RCache.Render(D3DPT_TRIANGLELIST, Offset, 0, 4, 0, 2);
+	}
+
+	// Draw title
+	VERIFY(pFontSystem);
+	pFontSystem->Clear();
+	pFontSystem->SetColor(color_rgba(157, 140, 120, 255));
+	pFontSystem->SetAligment(CGameFont::alCenter);
+	pFontSystem->OutI(0.f, 0.815f, app_title);
+	pFontSystem->OnRender();
 }
 
 u32 calc_progress_color(u32 idx, u32 total, int stage, int max_stage)

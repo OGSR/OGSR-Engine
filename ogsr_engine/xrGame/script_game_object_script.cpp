@@ -156,8 +156,16 @@ void CScriptGameObject::script_register(lua_State *L)
 				value("on_weapon_shell_drop", int(GameObject::eOnWpnShellDrop) ),
 				value("on_throw_grenade", int(GameObject::eOnThrowGrenade) ),
 				value("on_goodwill_change", int(GameObject::eOnGoodwillChange)),
-				value( "update_artefacts_on_belt", int( GameObject::eUpdateArtefactsOnBelt ) ),
-				value( "level_changer_action", int( GameObject::eLevelChangerAction ) )
+				value("update_artefacts_on_belt", int( GameObject::eUpdateArtefactsOnBelt ) ),
+				value("level_changer_action", int( GameObject::eLevelChangerAction ) ),
+
+				value("on_attach_vehicle", int(GameObject::eAttachVehicle)),
+				value("on_detach_vehicle", int(GameObject::eDetachVehicle)),
+				value("on_use_vehicle", int(GameObject::eUseVehicle)),
+
+				value("on_inv_box_item_take", int(GameObject::eOnInvBoxItemTake)),
+				value("on_inv_box_item_drop", int(GameObject::eOnInvBoxItemDrop)),
+				value("on_inv_box_open", int(GameObject::eOnInvBoxOpen))
 			],
 
 		def("buy_condition",				(void (*)(CScriptIniFile*,LPCSTR))(&::buy_condition)),
