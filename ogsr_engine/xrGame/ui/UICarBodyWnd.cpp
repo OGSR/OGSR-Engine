@@ -148,10 +148,10 @@ void CUICarBodyWnd::InitCarBody(CInventoryOwner* pOur, IInventoryBox* pInvBox)
 	EnableAll										();
 	UpdateLists										();
 
-    if (auto obj = smart_cast<CInventoryBox*>(pInvBox))
-    {
-        obj->callback(GameObject::eOnInvBoxOpen)();
-    }
+	if (auto obj = smart_cast<CInventoryBox*>(pInvBox))
+	{
+		obj->callback(GameObject::eOnInvBoxOpen)();
+	}
 }
 
 void CUICarBodyWnd::InitCarBody(CInventoryOwner* pOur, CInventoryOwner* pOthers)

@@ -107,13 +107,13 @@ namespace GameObject {
 		eUpdateArtefactsOnBelt,
 		eLevelChangerAction,
 
-        eAttachVehicle,
-        eDetachVehicle,
-        eUseVehicle,
+		eAttachVehicle,
+		eDetachVehicle,
+		eUseVehicle,
 
-        eOnInvBoxItemTake,
-        eOnInvBoxItemDrop,
-        eOnInvBoxOpen,
+		eOnInvBoxItemTake,
+		eOnInvBoxItemDrop,
+		eOnInvBoxOpen,
 
 		eDummy = u32(-1),
 	};
