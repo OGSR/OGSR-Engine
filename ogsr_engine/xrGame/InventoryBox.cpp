@@ -29,10 +29,16 @@ void IInventoryBox::ProcessEvent(CGameObject *O, NET_Packet& P, u16 type)
 			itm->setVisible		(FALSE);
 			itm->setEnabled		(FALSE);
 
-			// Real Wolf: Коллбек для ящика на получение предмета. 02.08.2014.
-			if( m_in_use )
-				if (auto obj = smart_cast<CGameObject*>(itm) )
-					Actor()->callback(GameObject::eInvBoxItemPlace)(O->lua_game_object(), obj->lua_game_object());
+			// Real Wolf: Коллбек для ящика на получение предмета. 02.08.2014.		
+            if (auto obj = smart_cast<CGameObject*>(itm)) 
+            {
+                O->callback(GameObject::eOnInvBoxItemTake)(obj->lua_game_object());
+
+                if (m_in_use)
+                {
+                    Actor()->callback(GameObject::eInvBoxItemPlace)(O->lua_game_object(), obj->lua_game_object());
+                }
+            }
 
 		}break;
 	case GE_OWNERSHIP_REJECT:
@@ -45,11 +51,15 @@ void IInventoryBox::ProcessEvent(CGameObject *O, NET_Packet& P, u16 type)
 			m_items.erase		(it);
 			itm->H_SetParent	(NULL,!P.r_eof() && P.r_u8());
 
-			if( m_in_use )
-			{
-				CGameObject* GO		= smart_cast<CGameObject*>(itm);
-				Actor()->callback(GameObject::eInvBoxItemTake)( O->lua_game_object(), GO->lua_game_object() );
-			}
+            if (auto obj = smart_cast<CGameObject*>(itm))
+            {
+                O->callback(GameObject::eOnInvBoxItemDrop)(obj->lua_game_object());
+
+                if (m_in_use)
+                {
+                    Actor()->callback(GameObject::eInvBoxItemTake)(O->lua_game_object(), obj->lua_game_object());
+                }
+            }
 		}break;
 	};
 }
