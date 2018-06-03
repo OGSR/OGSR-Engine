@@ -34,6 +34,8 @@ CUILines::CUILines()
 	m_pFont = UI()->Font()->pFontLetterica16Russian;
 	m_cursor_pos.set(0,0);
 	m_iCursorPos = 0;
+	m_wndSize.set(0.f, 0.f);
+	m_wndPos.set(0.f, 0.f);
 }
 
 CUILines::~CUILines(){
