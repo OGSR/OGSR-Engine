@@ -188,3 +188,6 @@
 
 // Включает создание минидампов при вылетах
 #define USE_OWN_MINI_DUMP
+
+// Патроны используются только с пояса (by Karlan)
+//#define AMMO_FROM_BELT

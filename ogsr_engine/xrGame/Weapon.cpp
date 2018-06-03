@@ -970,7 +970,7 @@ bool CWeapon::Action(s32 cmd, u32 flags)
 					{
 						l_newType = (l_newType+1)%m_ammoTypes.size();
 						b1 = l_newType != m_ammoType;
-						b2 = unlimited_ammo() ? false : (!m_pCurrentInventory->GetAny(*m_ammoTypes[l_newType]));						
+						b2 = unlimited_ammo() ? false : (!m_pCurrentInventory->GetAmmo(*m_ammoTypes[l_newType], ParentIsActor()));
 					} while( b1 && b2);
 
 					if(l_newType != m_ammoType) 
@@ -1153,12 +1153,24 @@ int CWeapon::GetAmmoCurrent(bool use_item_to_spawn) const
 			}
 		}
 
-		for(TIItemContainer::iterator l_it = m_pCurrentInventory->m_ruck.begin(); m_pCurrentInventory->m_ruck.end() != l_it; ++l_it) 
+		bool include_ruck = true;
+
+#ifdef AMMO_FROM_BELT
+		auto parent = const_cast<CObject*>(H_Parent());
+		auto pActor = smart_cast<CActor*>(parent);
+		include_ruck = !psActorFlags.test(AF_AMMO_ON_BELT) || !pActor;
+#endif //  AMMO_FROM_BELT
+
+		if (include_ruck)
 		{
-			CWeaponAmmo *l_pAmmo = smart_cast<CWeaponAmmo*>(*l_it);
-			if(l_pAmmo && !xr_strcmp(l_pAmmo->cNameSect(), l_ammoType)) 
+			for (TIItemContainer::iterator l_it = m_pCurrentInventory->m_ruck.begin(); m_pCurrentInventory->m_ruck.end() != l_it; ++l_it)
 			{
-				iAmmoCurrent = iAmmoCurrent + l_pAmmo->m_boxCurr;
+				CWeaponAmmo *l_pAmmo = smart_cast<CWeaponAmmo*>(*l_it);
+
+				if (l_pAmmo && !xr_strcmp(l_pAmmo->cNameSect(), l_ammoType))
+				{
+					iAmmoCurrent = iAmmoCurrent + l_pAmmo->m_boxCurr;
+				}
 			}
 		}
 

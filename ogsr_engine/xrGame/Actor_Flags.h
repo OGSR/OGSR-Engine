@@ -10,6 +10,7 @@ enum{
 		AF_PSP				=(1<<6),
 		AF_MUSIC_TRACKS		=(1<<7),
 		AF_DOF_SCOPE		=(1<<8),
+		AF_AMMO_ON_BELT		=(1<<9),
 };
 
 enum {

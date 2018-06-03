@@ -204,7 +204,9 @@ bool CWeaponMagazined::TryReload()
 {
 	if(m_pCurrentInventory) 
 	{
-		m_pAmmo = smart_cast<CWeaponAmmo*>(m_pCurrentInventory->GetAny(*m_ammoTypes[m_ammoType]));
+		bool forActor = ParentIsActor();
+
+		m_pAmmo = smart_cast<CWeaponAmmo*>(m_pCurrentInventory->GetAmmo(*m_ammoTypes[m_ammoType], forActor));
 
 		if(m_pAmmo || unlimited_ammo() || (IsMisfire() && iAmmoElapsed))
 		{
@@ -214,7 +216,7 @@ bool CWeaponMagazined::TryReload()
 		}
 		else for(u32 i = 0; i < m_ammoTypes.size(); ++i) 
 		{
-			m_pAmmo = smart_cast<CWeaponAmmo*>(m_pCurrentInventory->GetAny( *m_ammoTypes[i] ));
+			m_pAmmo = smart_cast<CWeaponAmmo*>(m_pCurrentInventory->GetAmmo( *m_ammoTypes[i], forActor));
 			if(m_pAmmo) 
 			{ 
 				m_set_next_ammoType_on_reload = i; // https://github.com/revolucas/CoC-Xray/pull/5/commits/3c45cad1edb388664efbe3bb20a29f92e2d827ca
@@ -232,11 +234,13 @@ bool CWeaponMagazined::TryReload()
 
 bool CWeaponMagazined::IsAmmoAvailable()
 {
-	if (smart_cast<CWeaponAmmo*>(m_pCurrentInventory->GetAny(*m_ammoTypes[m_ammoType])))
+	bool forActor = ParentIsActor();
+
+	if (smart_cast<CWeaponAmmo*>(m_pCurrentInventory->GetAmmo(*m_ammoTypes[m_ammoType], forActor)))
 		return	(true);
 	else
 		for(u32 i = 0; i < m_ammoTypes.size(); ++i)
-			if (smart_cast<CWeaponAmmo*>(m_pCurrentInventory->GetAny(*m_ammoTypes[i])))
+			if (smart_cast<CWeaponAmmo*>(m_pCurrentInventory->GetAmmo(*m_ammoTypes[i], forActor)))
 				return	(true);
 	return		(false);
 }
@@ -285,10 +289,12 @@ void CWeaponMagazined::UnloadMagazine(bool spawn_ammo)
 	if (!spawn_ammo)
 		return;
 
+	bool forActor = ParentIsActor();
+
 	xr_map<LPCSTR, u16>::iterator l_it;
 	for(l_it = l_ammo.begin(); l_ammo.end() != l_it; ++l_it) 
 	{
-		CWeaponAmmo *l_pA = smart_cast<CWeaponAmmo*>(m_pCurrentInventory->GetAny(l_it->first));
+		CWeaponAmmo *l_pA = smart_cast<CWeaponAmmo*>(m_pCurrentInventory->GetAmmo(l_it->first, forActor));
 		if(l_pA) 
 		{
 			u16 l_free = l_pA->m_boxSize - l_pA->m_boxCurr;
@@ -323,15 +329,17 @@ void CWeaponMagazined::ReloadMagazine()
 	
 	if(!unlimited_ammo()) 
 	{
+		bool forActor = ParentIsActor();
+
 		//попытатьс€ найти в инвентаре патроны текущего типа 
-		m_pAmmo = smart_cast<CWeaponAmmo*>(m_pCurrentInventory->GetAny(*m_ammoTypes[m_ammoType]));
+		m_pAmmo = smart_cast<CWeaponAmmo*>(m_pCurrentInventory->GetAmmo(*m_ammoTypes[m_ammoType], forActor));
 		
 		if(!m_pAmmo && !m_bLockType) 
 		{
 			for(u32 i = 0; i < m_ammoTypes.size(); ++i) 
 			{
 				//проверить патроны всех подход€щих типов
-				m_pAmmo = smart_cast<CWeaponAmmo*>(m_pCurrentInventory->GetAny(*m_ammoTypes[i]));
+				m_pAmmo = smart_cast<CWeaponAmmo*>(m_pCurrentInventory->GetAmmo(*m_ammoTypes[i], forActor));
 				if(m_pAmmo) 
 				{ 
 					m_ammoType = i; 
