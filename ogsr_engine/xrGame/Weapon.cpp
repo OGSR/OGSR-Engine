@@ -890,19 +890,13 @@ void CWeapon::UpdateCL		()
 
 void CWeapon::renderable_Render		()
 {
-	//KRodin: чтоб ствол в руках актора не был виден внутри прицела. Громоздко, да. Но по быстрому ничего другого в голову не пришло.
-	if (Device.m_SecondViewport.IsSVPFrame())
-		if (auto O = H_Parent())
-			if (auto EA = smart_cast<CEntityAlive*>(O))
-				if (auto pActor = EA->cast_actor())
-					if (auto inv_owner = EA->cast_inventory_owner())
-						if (inv_owner->m_inventory->ActiveItem() == this)
-							return;
-	//
+	//KRodin: чтоб ствол в руках актора не был виден внутри 3D прицела.
+	if (Device.m_SecondViewport.IsSVPFrame() && this->m_fZoomRotationFactor > 0.05f)
+		return;
+
 	UpdateXForm				();
 
 	//нарисовать подсветку
-
 	RenderLight				();	
 
 	//если мы в режиме снайперки, то сам HUD рисовать не надо

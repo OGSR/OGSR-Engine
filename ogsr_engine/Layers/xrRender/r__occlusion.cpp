@@ -66,7 +66,8 @@ void	R_occlusion::occq_end		(u32&	ID		)
 }
 u32		R_occlusion::occq_get		(u32&	ID		)
 {
-	if (!enabled)		return 0xffffffff;
+	if (!enabled || !used[ID].Q)
+		return 0xffffffff;
 
 	DWORD	fragments	= 0;
 	HRESULT hr;
@@ -75,6 +76,7 @@ u32		R_occlusion::occq_get		(u32&	ID		)
 	CTimer	T;
 	T.Start	();
 	Device.Statistic->RenderDUMP_Wait.Begin	();
+#pragma todo("KRodin: в строке со while в редких случаях просиходит исключение 0xC0000005 на движках обоих разрядностей. Попытался зафиксить выше, но не факт, что поможет.")
 	while	((hr=used[ID].Q->GetData(&fragments,sizeof(fragments),D3DGETDATA_FLUSH))==S_FALSE) {
 		if (!SwitchToThread())			Sleep(ps_r2_wait_sleep);
 		if (T.GetElapsed_ms() > 500)	{

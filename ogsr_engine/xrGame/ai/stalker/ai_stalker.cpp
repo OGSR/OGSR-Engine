@@ -693,9 +693,14 @@ void CAI_Stalker::UpdateCL()
 		try {
 			sight().update			();
 		}
-		catch(...) {
-			sight().setup			(CSightAction(SightManager::eSightTypeCurrentDirection));
-			sight().update			();
+		catch (...) {
+			try {
+				sight().setup(CSightAction(SightManager::eSightTypeCurrentDirection));
+				sight().update();
+			}
+			catch (...) {
+				Msg("!![%s] error in sight().update() of NPC [%s]", __FUNCTION__, this->Name());
+			}
 		}
 
 		Exec_Look					(client_update_fdelta());
