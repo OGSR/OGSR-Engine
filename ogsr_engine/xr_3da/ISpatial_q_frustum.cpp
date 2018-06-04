@@ -42,11 +42,19 @@ public:
 
 		// recurse
 		float	c_R		= n_R/2;
+#pragma todo("KRodin: внутри цикла в редких случаях происходит исключение. Если верить минидампам, конечный кадр стека находится в строке выше: if (0==(S->spatial.type&mask))	continue;. Попробую запускать walk в безопасном режиме и при ошибках просто прекращать цикл.")
 		for (u32 octant=0; octant<8; octant++)
 		{
 			if (0==N->children[octant])	continue;
 			Fvector		c_C;			c_C.mad	(n_C,c_spatial_offset[octant],c_R);
-			walk						(N->children[octant],c_C,c_R,fmask);
+			try {
+				walk(N->children[octant], c_C, c_R, fmask);
+			}
+			catch (...) {
+				Msg("!![ISpatial_q_frustum.walk] error in children node №%u", octant);
+				N->children[octant] = nullptr; //Не уверен, что надо, посмотрим.
+				continue;
+			}
 		}
 	}
 };

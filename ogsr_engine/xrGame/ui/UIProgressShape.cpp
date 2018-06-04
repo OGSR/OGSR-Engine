@@ -10,6 +10,7 @@ CUIProgressShape::CUIProgressShape(){
 	AttachChild		(m_pTexture);	
 	m_pBackground	= xr_new<CUIStatic>();
 	AttachChild		(m_pBackground);
+	m_stage = 0.f;
 };
 
 CUIProgressShape::~CUIProgressShape(){

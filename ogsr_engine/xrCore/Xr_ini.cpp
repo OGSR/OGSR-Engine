@@ -407,6 +407,7 @@ s32 CInifile::r_s32(LPCSTR S, LPCSTR L)
 float CInifile::r_float(LPCSTR S, LPCSTR L)
 {
 	LPCSTR		C = r_string(S,L);
+#pragma todo("KRodin: если идальше буду тут ловить вылеты, заменить конвертацию строк в цифры на способ C++17")
 	return		float(atof( C ));
 }
 Fcolor CInifile::r_fcolor( LPCSTR S, LPCSTR L )

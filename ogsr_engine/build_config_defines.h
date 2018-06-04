@@ -175,6 +175,11 @@
 #	define OGSE_WPN_ZOOM_SYSTEM
 #endif
 
+#ifdef SHOC_EDITION
+// Использовать старый режим для отрисовки экранов загрузки
+#   define USE_LEGACY_LOAD_SCREENS
+#endif
+
 // Что с ним, что без него - никакой разницы в FPS.
 //#define USE_DOUG_LEA_ALLOCATOR_FOR_RENDER
 
@@ -186,3 +191,6 @@
 
 // Включает вылет, если в vertex() будет передан не валидный вертекс.
 //#define CRASH_ON_INVALID_VERTEX_ID
+
+// Патроны используются только с пояса (by Karlan)
+//#define AMMO_FROM_BELT

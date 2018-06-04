@@ -808,6 +808,24 @@ PIItem CInventory::GetAny(const char *name) const
 	return itm;
 }
 
+PIItem CInventory::GetAmmo(const char *name, bool forActor) const
+{
+	bool include_ruck = true;
+
+#ifdef AMMO_FROM_BELT
+	include_ruck = !forActor || !psActorFlags.test(AF_AMMO_ON_BELT);
+#endif
+
+	PIItem itm;
+	if (include_ruck) {
+		itm = GetAny(name);
+	}
+	else {
+		itm = Get(name, false);
+	}
+	return itm;
+}
+
 PIItem CInventory::item(CLASS_ID cls_id) const
 {
 	const TIItemContainer &list = m_all;
