@@ -28,9 +28,10 @@ void CSpaceRestrictor::Center		(Fvector& C) const
 	XFORM().transform_tiny			(C,CFORM()->getSphere().P);
 }
 
-float CSpaceRestrictor::Radius		() const
-{
-	return							(CFORM()->getRadius());
+float CSpaceRestrictor::Radius() const {
+  auto cf = CFORM();
+  ASSERT_FMT( cf, "[%]: %s has no CFORM()", __FUNCTION__, cName().c_str() );
+  return cf->getRadius();
 }
 
 BOOL CSpaceRestrictor::net_Spawn	(CSE_Abstract* data)
