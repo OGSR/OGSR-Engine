@@ -824,6 +824,17 @@ void set_shader_params(const Fmatrix& m_params) //--#SM+#--
 }
 //
 
+
+bool valid_vertex_id( u32 level_vertex_id ) {
+  return ai().level_graph().valid_vertex_id( level_vertex_id );
+}
+
+
+u32 vertex_count() {
+  return ai().level_graph().header().vertex_count();
+}
+
+
 #pragma optimize("s",on)
 void CLevel::script_register(lua_State *L)
 {
@@ -958,6 +969,8 @@ void CLevel::script_register(lua_State *L)
 		def( "set_monster_relation", &set_monster_relation ),
 		def( "patrol_path_add", &patrol_path_add ),
 		def( "patrol_path_remove", &patrol_path_remove ),
+		def( "valid_vertex_id",	valid_vertex_id ),
+		def( "vertex_count",	vertex_count ),
 		//--#SM+# Begin --
 		def("set_blender_mode_main", &set_blender_mode_main),
 		def("get_blender_mode_main", &get_blender_mode_main),
