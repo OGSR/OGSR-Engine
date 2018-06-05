@@ -144,6 +144,10 @@ bool CRestrictedObject::accessible			(u32 level_vertex_id) const
 bool CRestrictedObject::accessible			(u32 level_vertex_id, float radius) const
 {
 	START_PROFILE("Restricted Object/Accessible");
+#ifdef CRASH_ON_INVALID_VERTEX_ID
+	if ( !ai().level_graph().valid_vertex_id( level_vertex_id ) )
+		return false;
+#endif
 	VERIFY						(ai().level_graph().valid_vertex_id(level_vertex_id));
 	return						(Level().space_restriction_manager().accessible(object().ID(),level_vertex_id,radius));
 	STOP_PROFILE;
