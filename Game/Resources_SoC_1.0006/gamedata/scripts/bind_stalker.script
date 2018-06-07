@@ -70,6 +70,8 @@ function actor_binder:net_spawn(data)
 	--' Загружаем настройки дропа
 	death_manager.init_drop_settings()
 
+	ogsr_memory_control.init()
+
 	return true
 end
 ----------------------------------------------------------------------------------------------------------------------

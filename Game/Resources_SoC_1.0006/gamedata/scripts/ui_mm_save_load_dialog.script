@@ -4,7 +4,23 @@
 -- Так же исправлен вылет из-за большого кол-ва сейвов в папке.
 -- Сделано специально для использования с движком OGSR.
 
-local function fill_savedgames_list( wnd )
+function fill_savedgames_list( wnd )
+  if wnd.is_save_dlg then
+    local edit_box = wnd:GetEditBox("edit_filename")
+    edit_box:SetText("")
+  else
+    local picture = wnd:GetStatic("static_pict")
+    wnd.file_caption:SetText("")
+    wnd.file_data:SetText("")
+    picture:InitTexture("ui\\ui_noise")
+  end
+  --
+  local list_box = wnd:GetListWnd("list_window")
+  if list_box:GetSize() > 0 then
+    list_box:RemoveAll()
+    list_box:SetSelectedItem(-1)
+  end
+  --
   local t = {}
   local path = getFS():update_path( "$game_saves$", "" )
   --
@@ -87,7 +103,6 @@ function save_load_dialog:__init( is_save_dlg ) super()
 		self:InitControlsLoad()
 	end
 	self:InitCallBacks()
-	fill_savedgames_list(self)
 	self.msgbox_id = 0
 end
 
@@ -200,10 +215,11 @@ end
 
 function save_load_dialog:OnListItemClickedSave()
 	local list_box = self:GetListWnd("list_window")
+	local edit_box = self:GetEditBox("edit_filename")
+	edit_box:SetText("")
 
 	if list_box:GetSize() == 0 then return end
 
-	local edit_box = self:GetEditBox("edit_filename")
 	local item_id = list_box:GetFocusedItem()
 	local item = list_box:GetItem(item_id)
 
@@ -215,19 +231,18 @@ end
 
 function save_load_dialog:OnListItemClickedLoad()
 	local list_box = self:GetListWnd("list_window")
+	local picture = self:GetStatic("static_pict")
+
+	self.file_caption:SetText("")
+	self.file_data:SetText("")
+	picture:InitTexture("ui\\ui_noise")
 
 	if list_box:GetSize() == 0 then return end
 
-	local picture = self:GetStatic("static_pict")
 	local itm_index = list_box:GetSelectedItem()
 	local item = list_box:GetItem(itm_index)
 
-	if not item then
-		self.file_caption:SetText("")
-		self.file_data:SetText("")
-		picture:InitTexture("ui\\ui_noise")
-		return
-	end
+	if not item then return end
 
 	local item_text = item.fn:GetText()
 	self.file_caption:SetText(item_text)
@@ -240,8 +255,6 @@ function save_load_dialog:OnListItemClickedLoad()
 
 	if getFS():exist("$game_saves$", item_text..".dds") then
 		picture:InitTexture(item_text)
-	else
-		picture:InitTexture("ui\\ui_noise")
 	end
 end
 

@@ -130,7 +130,9 @@ function main_menu:OnButton_save_clicked()
 		self.save_dlg = ui_mm_save_load_dialog.save_load_dialog( true )
 		self.save_dlg.owner = self
 	end
-
+	--
+	ui_mm_save_load_dialog.fill_savedgames_list(self.save_dlg)
+	--
 	self:GetHolder():start_stop_menu(self.save_dlg, true)
 	self:Show(false)
 end
@@ -140,7 +142,9 @@ function main_menu:OnButton_load_clicked()
 		self.load_dlg = ui_mm_save_load_dialog.save_load_dialog()
 		self.load_dlg.owner = self
 	end
-
+	--
+	ui_mm_save_load_dialog.fill_savedgames_list(self.load_dlg)
+	--
 	self:GetHolder():start_stop_menu(self.load_dlg, true)
 	self:Show(false)
 end
