@@ -53,9 +53,10 @@ protected:
 
 	void				PerformTrade				();
 	void				UpdatePrices				();
-	void				ColorizeItem				(CUICellItem* itm, bool b);
+	void				ColorizeItem				(CUICellItem* itm, bool canTrade, bool highlighted);
 
 	enum EListType{eNone,e1st,e2nd,eBoth};
+
 	void				UpdateLists					(EListType);
 
 	void				FillList					(TIItemContainer& cont, CUIDragDropListEx& list, bool do_colorize);
