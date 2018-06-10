@@ -25,13 +25,22 @@ IC	u32	CSpaceRestrictionBridge::accessible_nearest	(T restriction, const Fvector
 {
 #pragma todo("Dima to Dima : _Warning : this place can be optimized in case of a slowdown")
 	VERIFY							(initialized());
+#ifdef CRASH_ON_INVALID_VERTEX_ID
+	ASSERT_FMT( !restriction->border().empty(), "[%s]: %s has border().empty()", __FUNCTION__, name().c_str() );
+	ASSERT_FMT( !restriction->accessible_neighbour_border(restriction,out_restriction).empty(), "[%s]: %s has accessible_neighbour_border().empty()", __FUNCTION__, name().c_str() );
+#else
 	VERIFY							(!restriction->border().empty());
 	VERIFY							(!restriction->accessible_neighbour_border(restriction,out_restriction).empty());
+#endif
 
 	float							min_dist_sqr = flt_max;
 	u32								selected = u32(-1);
 	xr_vector<u32>::const_iterator	I = restriction->accessible_neighbour_border(restriction,out_restriction).begin();
 	xr_vector<u32>::const_iterator	E = restriction->accessible_neighbour_border(restriction,out_restriction).end();
+	if ( I == E ) {
+	  Msg( "! [%s]: %s: empty accessible_neighbour_border()", __FUNCTION__, *name() );
+	  selected = ai().level_graph().header().vertex_count() - 1;
+	}
 	for ( ; I != E; ++I) {
 		float	distance_sqr = ai().level_graph().vertex_position(*I).distance_to_sqr(position);
 		if (distance_sqr < min_dist_sqr) {
