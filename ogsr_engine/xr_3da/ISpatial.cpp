@@ -311,11 +311,17 @@ void			ISpatial_DB::remove		(ISpatial* S)
 #ifdef DEBUG
 	stat_remove.Begin	();
 #endif
-	ISpatial_NODE* N	= S->spatial.node_ptr;
-	N->_remove			(S);
+	try {
+		ISpatial_NODE* N = S->spatial.node_ptr;
+		N->_remove(S);
 
-	// Recurse
-	if (N->_empty())					_remove(N->parent,N);
+		// Recurse
+		if (N->_empty())
+			_remove(N->parent, N);
+	}
+	catch (...) {
+		Log("!!Error in ISpatial_DB::remove");
+	}
 #ifdef DEBUG
 	stat_remove.End		();
 #endif
