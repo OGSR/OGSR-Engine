@@ -16,7 +16,11 @@ CPatrolPathParams::CPatrolPathParams	(LPCSTR caPatrolPathToGo, const PatrolPathM
 	m_path_name			= caPatrolPathToGo;
 	m_path				= ai().patrol_paths().path(m_path_name,true);
 	
+#ifdef CRASH_ON_INVALID_VERTEX_ID
+	ASSERT_FMT( m_path, "[%s]: there is no patrol path %s", __FUNCTION__, caPatrolPathToGo );
+#else
 	THROW3				(m_path,"There is no patrol path",caPatrolPathToGo);
+#endif
 	
 	m_tPatrolPathStart	= tPatrolPathStart;
 	m_tPatrolPathStop	= tPatrolPathStop;
