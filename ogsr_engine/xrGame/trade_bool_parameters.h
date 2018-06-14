@@ -8,12 +8,17 @@
 
 #pragma once
 
+#include <regex>
+#include <string>
+#include <vector>
+
 class CTradeBoolParameters {
 public:
 	typedef xr_vector<shared_str>	SECTIONS;
 
 private:
 	SECTIONS	m_sections;
+        std::vector<std::regex> m_sections_re;
 
 public:
 	IC			CTradeBoolParameters	();

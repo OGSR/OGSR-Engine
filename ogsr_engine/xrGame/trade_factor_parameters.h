@@ -11,12 +11,18 @@
 #include "associative_vector.h"
 #include "trade_factors.h"
 
+#include <regex>
+#include <string>
+#include <utility>
+#include <vector>
+
 class CTradeFactorParameters {
 public:
 	typedef associative_vector<shared_str,CTradeFactors>	FACTORS;
 
 private:
 	FACTORS					m_factors;
+        std::vector< std::pair<std::regex, CTradeFactors> > m_factors_re;
 
 public:
 	IC						CTradeFactorParameters	();
