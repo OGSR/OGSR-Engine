@@ -26,14 +26,14 @@ after_build:
 
     cd ..\Game\Resources_SoC_1.0006
 
-    7z a ..\..\OGSR_Engine_SHOC_EDITION_%PLATFORM%(%APPVEYOR_BUILD_VERSION%).7z .\
+    7z a ..\..\OGSR_Engine_SHOC_EDITION_%PLATFORM%_%APPVEYOR_BUILD_VERSION%.7z .\
 
 
     cd ..\..\
 
-    appveyor PushArtifact OGSR_Engine_SHOC_EDITION_%PLATFORM%(%APPVEYOR_BUILD_VERSION%).7z Release
+    appveyor PushArtifact OGSR_Engine_SHOC_EDITION_%PLATFORM%_%APPVEYOR_BUILD_VERSION%.7z Release
 artifacts:
-- path: .\OGSR_Engine_SHOC_EDITION_$(platform)($(appveyor_build_version)).7z
+- path: .\OGSR_Engine_SHOC_EDITION_$(platform)_$(appveyor_build_version).7z
   name: Release
 deploy:
 - provider: GitHub
