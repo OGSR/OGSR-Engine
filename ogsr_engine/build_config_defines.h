@@ -194,3 +194,6 @@
 
 // Патроны используются только с пояса (by Karlan)
 //#define AMMO_FROM_BELT
+
+// Включает раскраску предметов в окне торговца.
+//#define COLORIZE_OTHER_TRADE

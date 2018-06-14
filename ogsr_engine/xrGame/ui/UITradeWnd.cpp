@@ -299,10 +299,11 @@ void CUITradeWnd::StopTrade()
 }
 
 #include "../trade_parameters.h"
-bool CUITradeWnd::CanMoveToOther(PIItem pItem)
+bool CUITradeWnd::CanMoveToOther( PIItem pItem, bool our )
 {
 	if (pItem->m_flags.test(CInventoryItem::FIAlwaysUntradable))
 		return false;
+	if ( !our ) return true;
 
 	float r1				= CalcItemsWeight(&m_uidata->UIOurTradeList);	// our
 	float r2				= CalcItemsWeight(&m_uidata->UIOthersTradeList);	// other
@@ -331,7 +332,7 @@ void move_item(CUICellItem* itm, CUIDragDropListEx* from, CUIDragDropListEx* to)
 
 bool CUITradeWnd::ToOurTrade()
 {
-	if (!CanMoveToOther(CurrentIItem()))	return false;
+	if ( !CanMoveToOther( CurrentIItem(), true ) ) return false;
 
 	move_item				(CurrentItem(), &m_uidata->UIOurBagList, &m_uidata->UIOurTradeList);
 	UpdatePrices			();
@@ -340,6 +341,8 @@ bool CUITradeWnd::ToOurTrade()
 
 bool CUITradeWnd::ToOthersTrade()
 {
+	if ( !CanMoveToOther( CurrentIItem(), false ) ) return false;
+
 	move_item				(CurrentItem(), &m_uidata->UIOthersBagList, &m_uidata->UIOthersTradeList);
 	UpdatePrices			();
 
@@ -518,21 +521,24 @@ void CUITradeWnd::UpdateLists(EListType mode)
 	}
 }
 
-void CUITradeWnd::FillList	(TIItemContainer& cont, CUIDragDropListEx& dragDropList, bool do_colorize)
+void CUITradeWnd::FillList	(TIItemContainer& cont, CUIDragDropListEx& dragDropList, bool our)
 {
 	TIItemContainer::iterator it	= cont.begin();
 	TIItemContainer::iterator it_e	= cont.end();
 
-	for(; it != it_e; ++it) 
+	for(; it != it_e; ++it)
 	{
 		CInventoryItem* item = *it;
 		CUICellItem* itm = create_cell_item	(item);
-		if (do_colorize) {
-			bool canTrade = CanMoveToOther(item);
-			bool highlighted = item->m_flags.test(CInventoryItem::FIAlwaysHighlighted);
-
-			ColorizeItem(itm, canTrade, highlighted);
+#ifndef COLORIZE_OTHER_TRADE
+		if ( our ) {
+#endif
+                  bool canTrade    = CanMoveToOther( item, our );
+                  bool highlighted = item->m_flags.test( CInventoryItem::FIAlwaysHighlighted );
+                  ColorizeItem( itm, canTrade, highlighted );
+#ifndef COLORIZE_OTHER_TRADE
 		}
+#endif
 		dragDropList.SetItem		(itm);
 	}
 

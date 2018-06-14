@@ -59,11 +59,11 @@ protected:
 
 	void				UpdateLists					(EListType);
 
-	void				FillList					(TIItemContainer& cont, CUIDragDropListEx& list, bool do_colorize);
+	void				FillList					(TIItemContainer&, CUIDragDropListEx&, bool);
 
 	bool				m_bDealControlsVisible;
 
-	bool				CanMoveToOther				(PIItem pItem);
+	bool				CanMoveToOther				(PIItem, bool);
 
 	//указатели игрока и того с кем торгуем
 	CInventory*			m_pInv;
