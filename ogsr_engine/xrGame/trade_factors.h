@@ -12,11 +12,13 @@ class CTradeFactors {
 private:
 	float			m_friend_factor;
 	float			m_enemy_factor;
+	float			m_min_condition;
 
 public:
-	IC				CTradeFactors	(const float &friend_factor = 1.f, const float &enemy_factor = 1.f);
+	IC				CTradeFactors	(const float& = 1.f, const float& = 1.f, const float& = 0.f);
 	IC	const float	&friend_factor	() const;
 	IC	const float	&enemy_factor	() const;
+	IC	const float	&min_condition	() const;
 };
 
 #include "trade_factors_inline.h"

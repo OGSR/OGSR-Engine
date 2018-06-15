@@ -123,12 +123,19 @@ IC	void CTradeParameters::process							(_action_type type, CInifile &ini_file, 
 		}
 
 		string256			temp0, temp1;
-		THROW3				(_GetItemCount(*(*I).second) == 2,"Invalid parameters in section",*section);
+		int cnt = _GetItemCount( *(*I).second );
+		ASSERT_FMT( cnt >= 2, "[%s]: invalid parameters in section %s", __FUNCTION__, *section );
+		float min_condition = 0.f;
+		if ( cnt > 2 ) {
+		  string256 str;
+		  min_condition = (float)atof( _GetItem( *(*I).second, 2, str ) );
+		}
 		_action.enable		(
 			(*I).first,
 			CTradeFactors	(
 				(float)atof(_GetItem(*(*I).second,0,temp0)),
-				(float)atof(_GetItem(*(*I).second,1,temp1))
+				(float)atof(_GetItem(*(*I).second,1,temp1)),
+				min_condition
 			)
 		);
 	}
