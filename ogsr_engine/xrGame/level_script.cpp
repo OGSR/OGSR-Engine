@@ -291,6 +291,18 @@ CGameObject* GetSecondTalker()
 	if (wnd == nullptr) return nullptr;
 	return smart_cast<CGameObject*>(wnd->GetSecondTalker());
 }
+CUIWindow* GetPdaWindow()
+{
+	CUIGameSP* pGameSP = smart_cast<CUIGameSP*>(HUD().GetUI()->UIGame());
+	if (!pGameSP) return nullptr;
+	return (CUIWindow*)pGameSP->PdaMenu;
+}
+CUIWindow* GetCarBodyWindow()
+{
+	CUIGameSP* pGameSP = smart_cast<CUIGameSP*>(HUD().GetUI()->UIGame());
+	if (!pGameSP) return nullptr;
+	return (CUIWindow*)pGameSP->UICarBodyMenu;
+}
 
 CUIWindow* GetUIChangeLevelWnd()
 {
@@ -941,6 +953,8 @@ void CLevel::script_register(lua_State *L)
 		def("get_inventory_wnd",				&GetInventoryWindow),
 		def("get_talk_wnd",						&GetTalkWindow),
 		def("get_trade_wnd",					&GetTradeWindow),
+		def("get_pda_wnd",						&GetPdaWindow),
+		def("get_car_body_wnd",					&GetCarBodyWindow),
 		def("get_second_talker",				&GetSecondTalker),
 		def("get_change_level_wnd",				&GetUIChangeLevelWnd),
 
