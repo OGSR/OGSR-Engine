@@ -32,6 +32,7 @@ public:
     struct XRCORE_API	Sect {
 		shared_str		Name;
 		Items			Data;
+		std::vector<Item> Unordered;
 
 //.		IC SectCIt		begin()		{ return Data.begin();	}
 //.		IC SectCIt		end()		{ return Data.end();	}

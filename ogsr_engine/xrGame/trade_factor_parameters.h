@@ -29,6 +29,7 @@ public:
 	IC	void				clear					();
 	IC	void				enable					(const shared_str &section, const CTradeFactors &factors);
 	IC	bool				enabled					(const shared_str &section) const;
+	IC	bool				disabled				(const shared_str &section) const;
 	IC	const CTradeFactors	&factors				(const shared_str &section) const;
 };
 

@@ -63,3 +63,8 @@ IC const CTradeFactors &CTradeFactorParameters::factors ( const shared_str &sect
   ASSERT_FMT( false, "[%s]: %s not found", __FUNCTION__, section.c_str() );
   return (*I).second;
 }
+
+
+IC bool CTradeFactorParameters::disabled ( const shared_str &section ) const {
+  return enabled( section ) ? factors( section ).disabled() : false;
+}

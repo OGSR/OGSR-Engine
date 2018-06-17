@@ -318,9 +318,7 @@ bool CUITradeWnd::CanMoveToOther( PIItem pItem, bool our )
 		))
 		return				(false);
 
-	const CTradeFactors *p_trade_factors = &m_pOthersInvOwner->trade_parameters().factors( CTradeParameters::action_buy( 0 ), pItem->object().cNameSect() );
-	const CTradeFactors &trade_factors   = *p_trade_factors;
-	if ( pItem->GetCondition() < trade_factors.min_condition() )
+	if ( pItem->GetCondition() < m_pOthersInvOwner->trade_parameters().factors( CTradeParameters::action_buy( 0 ), pItem->object().cNameSect() ).min_condition() )
 	  return false;
 
 	if(otherInvWeight-r2+r1+itmWeight > otherMaxWeight)

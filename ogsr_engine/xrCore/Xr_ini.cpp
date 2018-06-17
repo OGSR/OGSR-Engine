@@ -114,18 +114,33 @@ CInifile::~CInifile( )
 		xr_delete	(*I);
 }
 
-static void	insert_item(CInifile::Sect *tgt, const CInifile::Item& I)
-{
-	CInifile::SectIt_	sect_it		= std::lower_bound(tgt->Data.begin(),tgt->Data.end(),*I.first,item_pred);
-	if (sect_it!=tgt->Data.end() && sect_it->first.equal(I.first)){ 
-		sect_it->second	= I.second;
+
+static void insert_item( CInifile::Sect *tgt, const CInifile::Item& I ) {
+  CInifile::SectIt_ sect_it = std::lower_bound( tgt->Data.begin(), tgt->Data.end(), *I.first, item_pred );
+  if ( sect_it != tgt->Data.end() && sect_it->first.equal( I.first ) ) { 
+    sect_it->second  = I.second;
 #ifdef DEBUG
-		sect_it->comment= I.comment;
+    sect_it->comment = I.comment;
 #endif
-	}else{
-		tgt->Data.insert	(sect_it,I);
-	}
+    auto found = std::find_if(
+      tgt->Unordered.begin(), tgt->Unordered.end(),
+      [&]( const auto& it ) {
+        return xr_strcmp( *it.first, *I.first ) == 0;
+      }
+    );
+    if ( found != tgt->Unordered.end() ) {
+      found->second  = I.second;
+#ifdef DEBUG
+      found->comment = I.comment;
+#endif
+    }
+  }
+  else {
+    tgt->Data.insert( sect_it, I );
+    tgt->Unordered.push_back( I );
+  }
 }
+
 
 void	CInifile::Load(IReader* F, LPCSTR path)
 {
@@ -505,50 +520,41 @@ BOOL	CInifile::r_line( const shared_str& S, int L, const char** N, const char** 
 	return r_line(*S,L,N,V);
 }
 
+
 //--------------------------------------------------------------------------------------------------------
 // Write functions
 //--------------------------------------------------------------------------------------
-void	CInifile::w_string	( LPCSTR S, LPCSTR L, LPCSTR			V, LPCSTR comment)
-{
-	R_ASSERT	(!bReadOnly);
+void CInifile::w_string ( LPCSTR S, LPCSTR L, LPCSTR V, LPCSTR comment ) {
+  R_ASSERT( !bReadOnly );
 
-	// section
-	char	sect	[256];
-	_parse	(sect,S);
-	_strlwr	(sect);
-	if (!section_exist(sect))	{
-		// create _new_ section
-		Sect			*NEW = xr_new<Sect>();
-		NEW->Name		= sect;
-		RootIt I		= std::lower_bound(DATA.begin(),DATA.end(),sect,sect_pred);
-		DATA.insert		(I,NEW);
-	}
+  // section
+  char sect[ 256 ];
+  _parse( sect, S );
+  _strlwr( sect );
+  if ( !section_exist( sect ) ) {
+    // create _new_ section
+    Sect *NEW = xr_new<Sect>();
+    NEW->Name = sect;
+    RootIt I = std::lower_bound( DATA.begin(), DATA.end(), sect, sect_pred );
+    DATA.insert( I, NEW );
+  }
 
-	// parse line/value
-	char	line	[256];	_parse	(line,L);
-	char	value	[256];	_parse	(value,V);
+  // parse line/value
+  char line [ 256 ]; _parse( line, L );
+  char value[ 256 ]; _parse( value, V );
 
-	// duplicate & insert
-	Item	I;
-	Sect&	data	= r_section	(sect);
-	I.first			= (line[0]?line:0);
-	I.second		= (value[0]?value:0);
+  // duplicate & insert
+  Item I;
+  I.first  = line[ 0 ] ? line : 0;
+  I.second = value[ 0 ] ? value : 0;
 #ifdef DEBUG
-	I.comment		= (comment?comment:0);
+  I.comment = comment ? comment : 0;
 #endif
-	SectIt_	it		= std::lower_bound(data.Data.begin(),data.Data.end(),*I.first,item_pred);
-
-    if (it != data.Data.end()) {
-	    // Check for "first" matching
-    	if (0==xr_strcmp(*it->first,*I.first)) {
-            *it  = I;
-        } else {
-			data.Data.insert(it,I);
-        }
-    } else {
-		data.Data.insert(it,I);
-    }
+  Sect* data = &r_section( sect );
+  insert_item( data, I );
 }
+
+
 void	CInifile::w_u8			( LPCSTR S, LPCSTR L, u8				V, LPCSTR comment )
 {
 	string128 temp; sprintf_s		(temp,sizeof(temp),"%d",V);
@@ -636,16 +642,24 @@ void	CInifile::w_bool		( LPCSTR S, LPCSTR L, bool V, LPCSTR comment )
 	w_string	(S,L,V?"true":"false",comment);
 }
 
-void	CInifile::remove_line	( LPCSTR S, LPCSTR L )
-{
-	R_ASSERT	(!bReadOnly);
 
-    if (line_exist(S,L)){
-		Sect&	data	= r_section	(S);
-		SectIt_ A = std::lower_bound(data.Data.begin(),data.Data.end(),L,item_pred);
-    	R_ASSERT(A!=data.Data.end() && xr_strcmp(*A->first,L)==0);
-        data.Data.erase(A);
-    }
+void CInifile::remove_line( LPCSTR S, LPCSTR L ) {
+  R_ASSERT( !bReadOnly );
+
+  if ( line_exist( S, L ) ) {
+    Sect& data = r_section( S );
+    SectIt_ A  = std::lower_bound( data.Data.begin(), data.Data.end(), L, item_pred );
+    R_ASSERT( A != data.Data.end() && xr_strcmp( *A->first, L ) == 0 );
+    data.Data.erase( A );
+    auto found = std::find_if(
+      data.Unordered.begin(), data.Unordered.end(),
+      [&]( const auto& it ) {
+        return xr_strcmp( *it.first, L ) == 0;
+      }
+    );
+    R_ASSERT( found != data.Unordered.end() && xr_strcmp( *found->first, L ) == 0 );
+    data.Unordered.erase( found );
+  }
 }
 
 
@@ -659,7 +673,7 @@ std::string CInifile::get_as_string() {
     if ( !first_sect ) str << "\r\n";
     first_sect = false;
     str << "[" << r_it->Name.c_str() << "]\r\n";
-    for ( const auto& I : r_it->Data ) {
+    for ( const auto& I : r_it->Unordered ) {
       if ( I.first.c_str() ) {
         if ( I.second.c_str() ) {
           string512 val;
