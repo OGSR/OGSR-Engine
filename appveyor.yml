@@ -1,10 +1,45 @@
 version: 1.0.{build}
+skip_tags: true
 image: Previous Visual Studio 2017
 configuration: Release
 platform:
 - x86
 - x64
+before_build:
+- cmd: >-
+    rem set OGSR_DEPLOY=true
+
+    copy /Y "ogsr_engine\build_config_defines.h" "ogsr_engine\hack.appveyor"
 build:
   project: Engine.sln
+  publish_wap: true
   parallel: true
   verbosity: minimal
+after_build:
+- cmd: >-
+    cd bin_%PLATFORM%
+
+    md ..\Game\Resources_SoC_1.0006\bin_%PLATFORM%
+
+    copy *.* ..\Game\Resources_SoC_1.0006\bin_%PLATFORM%
+
+
+    cd ..\Game\Resources_SoC_1.0006
+
+    7z a ..\..\OGSR_Engine_SHOC_EDITION_%PLATFORM%_%APPVEYOR_BUILD_VERSION%.7z .\
+
+
+    cd ..\..\
+
+    appveyor PushArtifact OGSR_Engine_SHOC_EDITION_%PLATFORM%_%APPVEYOR_BUILD_VERSION%.7z Release
+artifacts:
+- path: .\OGSR_Engine_SHOC_EDITION_$(platform)_$(appveyor_build_version).7z
+  name: Release
+deploy:
+- provider: GitHub
+  auth_token:
+    secure: eeav3SIAQE4q9s4J76hKDxnCZiZefvs2p3bZbYKHpIv5SKQqpUBKT0QkOGvd3FZ+
+  artifact: Release
+  force_update: true
+  on:
+    ogsr_deploy: true

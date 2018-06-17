@@ -52,7 +52,7 @@ public:
 			}
 			catch (...) {
 				Msg("!![ISpatial_q_frustum.walk] error in children node №%u", octant);
-				N->children[octant] = nullptr; //Не уверен, что надо, посмотрим.
+				//N->children[octant] = nullptr; //Не уверен, что надо, посмотрим.
 				continue;
 			}
 		}

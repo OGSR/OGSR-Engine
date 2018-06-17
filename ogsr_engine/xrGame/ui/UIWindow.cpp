@@ -468,25 +468,17 @@ bool CUIWindow::OnKeyboard(int dik, EUIMessages keyboard_action)
 
 bool CUIWindow::OnKeyboardHold(int dik)
 {
-	bool result;
+	if (m_pKeyboardCapturer)
+		if (m_pKeyboardCapturer->OnKeyboardHold(dik));
+			return true;
 
-	if(NULL!=m_pKeyboardCapturer)
+	for (auto it = m_ChildWndList.rbegin(); it != m_ChildWndList.rend(); ++it)
 	{
-		result = m_pKeyboardCapturer->OnKeyboardHold(dik);
-		
-		if(result) return true;
-	}
-
-	WINDOW_LIST::reverse_iterator it = m_ChildWndList.rbegin();
-
-	for(; it!=m_ChildWndList.rend(); ++it)
-	{
-		if((*it)->IsEnabled())
-		{
-			result = (*it)->OnKeyboardHold(dik);
-			
-			if(result)	return true;
-		}
+		auto wnd = (*it);
+		if (wnd)
+			if (wnd->IsEnabled())
+				if (wnd->OnKeyboardHold(dik))
+					return true;
 	}
 
 	return false;

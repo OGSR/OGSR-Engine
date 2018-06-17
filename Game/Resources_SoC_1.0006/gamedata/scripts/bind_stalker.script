@@ -26,6 +26,44 @@ function actor_binder:__init (obj) super(obj)
 	self.actor_detector = xr_detector.actor_detector()
 end
 ----------------------------------------------------------------------------------------------------------------------
+local function lc_question_add() --Переход "Припять - ЧАЭС" задаёт вопрос о смене уровня.
+	local sobj = alife():object("exit_to_stancia_01")
+	if sobj then
+		local lc = sobj:get_level_changer()
+		if lc.silent_mode ~= 0 then
+			lc.silent_mode = 0
+			log3( "~~[%s]: fixed ['exit_to_stancia_01']...", script_name() )
+		end
+	end
+end
+
+local function del_buggy_objects() --Удаление из игры глючных объектов
+	local names = {
+----Рестрикторы постоянных звуков стрельбы в Припяти----
+		"pri_ambient_battle_sound_zone_0000",
+		"pri_ambient_battle_sound_zone_0001",
+		"pri_ambient_battle_sound_zone_0002",
+		"pri_ambient_battle_sound_zone_0003",
+--------------------------------------------------------
+-----Рестрикторы постоянных звуков стрельбы на ЧАЭС-----
+		"aes_space_restrictor_sound_battle_0000",
+		"aes_space_restrictor_sound_battle_0001",
+--------------------------------------------------------
+		"sar_enter_zone", --Рестриктор, воспроизводящий "зов Монолита" в Саркофаге
+		"mil_physic_object_0127", --глючно заспавненная модель автомата на АС
+--------------------------------------------------------
+		"rosros_cutscene", --Рестриктор, запускающий облет камеры на ДТ
+		"pri_zone_no_gravity", --Аномалия выполнена очень криво, ибо можно подняться и пройти сверху, только с замедлением, как по воде. Такое ощущение, что стоит что-то невидимое, и на него можно залезть и прогуляться. Лучше убрать, выглядит как баг.
+	}
+	for _, n in ipairs( names ) do
+		local sobj = alife():object( n )
+		if sobj then
+			log3( "~~[%s]: found [%s], removing...", script_name(), sobj:name() )
+			alife():release(sobj, true)
+		end
+	end
+end
+
 function actor_binder:net_spawn(data)
 ------------KD: установка настроек графики------------
 	-- шмапы
@@ -71,6 +109,9 @@ function actor_binder:net_spawn(data)
 	death_manager.init_drop_settings()
 
 	ogsr_memory_control.init()
+	
+	lc_question_add()
+	del_buggy_objects()
 
 	return true
 end
