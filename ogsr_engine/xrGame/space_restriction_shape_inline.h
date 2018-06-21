@@ -42,6 +42,10 @@ IC	CSpaceRestrictionShape::CSpaceRestrictionShape	(CSpaceRestrictor *space_restr
 	m_restrictor				= space_restrictor;
 	
 	build_border				();
+	if ( border().empty() && m_restrictor->restrictor_type() != RestrictionSpace::eRestrictorTypeNone ) {
+          Msg( "* [%s]: change restrictor_type of %s to eRestrictorTypeNone because border().empty()", __FUNCTION__, name().c_str() );
+	  m_restrictor->change_restrictor_type( RestrictionSpace::eRestrictorTypeNone );
+	}
 }
 
 IC	void CSpaceRestrictionShape::initialize			()

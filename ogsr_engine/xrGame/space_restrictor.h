@@ -60,6 +60,7 @@ public:
 	virtual	bool				register_schedule	() const {return false;}
 
 	IC RestrictionSpace::ERestrictorTypes restrictor_type() const; 
+	IC void change_restrictor_type( RestrictionSpace::ERestrictorTypes ); 
 
 public:
 #ifdef DEBUG
