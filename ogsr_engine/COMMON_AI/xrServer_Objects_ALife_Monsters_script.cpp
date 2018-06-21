@@ -55,11 +55,10 @@ void CSE_ALifeTrader::script_register(lua_State *L)
 void CSE_ALifeCustomZone::script_register(lua_State *L)
 {
 	module(L)[
-		luabind_class_dynamic_alife2(
+		luabind_class_dynamic_alife1(
 			CSE_ALifeCustomZone,
 			"cse_custom_zone",
-			CSE_ALifeDynamicObject,
-			CSE_Shape
+			CSE_ALifeSpaceRestrictor
 		)
 	];
 }
