@@ -12,9 +12,6 @@
 #include "trade_factors.h"
 
 #include <regex>
-#include <string>
-#include <utility>
-#include <vector>
 
 class CTradeFactorParameters {
 public:
