@@ -79,7 +79,6 @@ protected:
 	virtual void	UpdateSounds	();
 
 	bool			TryReload		();
-	bool			TryPlayAnimIdle	( u8 );
 
 protected:
 	virtual void	ReloadMagazine	();
@@ -186,6 +185,7 @@ protected:
 	virtual bool	AllowFireWhileWorking() {return false;}
 
 	//виртуальные функции для проигрывания анимации HUD
+	virtual bool	TryPlayAnimIdle( u8 );
 	virtual void	PlayAnimShow();
 	virtual void	PlayAnimHide();
 	virtual void	PlayAnimReload();
