@@ -136,7 +136,9 @@ void CSpaceRestrictionHolder::register_restrictor				(CSpaceRestrictor *space_re
 	}
 	
 	CSpaceRestrictionShape	*shape = xr_new<CSpaceRestrictionShape>(space_restrictor,restrictor_type != RestrictionSpace::eDefaultRestrictorTypeNone);
-	if ( space_restrictor->restrictor_type() == RestrictionSpace::eRestrictorTypeNone ) {
+	if ( shape->border().empty() ) {
+          Msg( "* [%s]: change restrictor_type of %s to eRestrictorTypeNone because border().empty()", __FUNCTION__, space_restrictor->cName().c_str() );
+	  space_restrictor->change_restrictor_type( RestrictionSpace::eRestrictorTypeNone );
 	  xr_delete( shape );
 	  return;
 	}
