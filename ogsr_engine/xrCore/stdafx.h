@@ -6,4 +6,3 @@
 #pragma once
 
 #include "xrCore.h"
-#include "xrCore_platform.h"

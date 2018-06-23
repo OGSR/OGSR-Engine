@@ -24,9 +24,9 @@ using namespace ScriptStorage;
 struct lua_State;
 
 class CScriptStorage {
-private:
-	lua_State *m_virtual_machine = nullptr;
 protected:
+	lua_State *m_virtual_machine = nullptr;
+	std::set<void*> m_dumpedObjList;
 	bool do_file(const char* caScriptName, const char* caNameSpaceName);
 	bool load_buffer(lua_State *L, const char* caBuffer, size_t tSize, const char* caScriptName, const char* caNameSpaceName);
 	bool namespace_loaded(const char* caName, bool remove_from_stack = true);

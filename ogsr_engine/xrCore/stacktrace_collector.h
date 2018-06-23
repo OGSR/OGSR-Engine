@@ -3,7 +3,7 @@
 #ifndef XR_USE_BLACKBOX
 
 static constexpr size_t MaxStackTraceDepth = 256u;
-static constexpr size_t MaxFrameLength = 512u;
+static constexpr size_t MaxFrameLength = 1024u; // 512u;
 
 struct StackTraceInfo {
     char frames[MaxStackTraceDepth * (MaxFrameLength + 1)];

@@ -25,7 +25,7 @@ IC void CTradeBoolParameters::disable ( const shared_str &section ) {
   std::string str( section.c_str() );
   if ( std::regex_search( str, results, Reg ) ) {
     std::regex re( results[ 1 ].str() );
-    m_sections_re.push_back( re );
+    m_sections_re.emplace_back( std::move(re) );
   }
   else {
     VERIFY( std::find( m_sections.begin(), m_sections.end(), section ) == m_sections.end() );
