@@ -265,6 +265,10 @@ void CWeapon::ForceUpdateFireParticles()
 
 }
 
+LPCSTR wpn_scope_def_bone = "wpn_scope";
+LPCSTR wpn_silencer_def_bone = "wpn_silencer";
+LPCSTR wpn_launcher_def_bone = "wpn_launcher";
+
 void CWeapon::Load		(LPCSTR section)
 {
 	inherited::Load					(section);
@@ -407,6 +411,21 @@ void CWeapon::Load		(LPCSTR section)
 		m_iGrenadeLauncherX = pSettings->r_s32(section,"grenade_launcher_x");
 		m_iGrenadeLauncherY = pSettings->r_s32(section,"grenade_launcher_y");
 	}
+
+	if (pSettings->line_exist(section, "scope_bone"))
+		m_sWpn_scope_bone = pSettings->r_string(section, "scope_bone");
+	else
+		m_sWpn_scope_bone = wpn_scope_def_bone;
+
+	if (pSettings->line_exist(section, "silencer_bone"))
+		m_sWpn_silencer_bone = pSettings->r_string(section, "silencer_bone");
+	else
+		m_sWpn_silencer_bone = wpn_silencer_def_bone;
+
+	if (pSettings->line_exist(section, "launcher_bone"))
+		m_sWpn_launcher_bone = pSettings->r_string(section, "launcher_bone");
+	else
+		m_sWpn_launcher_bone = wpn_launcher_def_bone;
 
 	InitAddons();
 
@@ -1260,13 +1279,7 @@ bool CWeapon::SilencerAttachable() const
 	return (CSE_ALifeItemWeapon::eAddonAttachable == m_eSilencerStatus);
 }
 
-LPCSTR wpn_scope				= "wpn_scope";
-LPCSTR wpn_silencer				= "wpn_silencer";
-LPCSTR wpn_grenade_launcher		= "wpn_grenade_launcher";
-LPCSTR wpn_launcher				= "wpn_launcher";
-
-
-
+LPCSTR wpn_grenade_launcher = "wpn_grenade_launcher";
 
 void CWeapon::UpdateHUDAddonsVisibility()
 {//actor only
@@ -1285,7 +1298,7 @@ void CWeapon::UpdateHUDAddonsVisibility()
 
 	callback(GameObject::eOnUpdateHUDAddonsVisibiility)();
 
-	bone_id = pHudVisual->LL_BoneID(wpn_scope);
+	bone_id = pHudVisual->LL_BoneID(*m_sWpn_scope_bone);
 	if(ScopeAttachable())
 	{
 		VERIFY2(bone_id!=BI_NONE,"there are no scope bone.");
@@ -1307,7 +1320,7 @@ void CWeapon::UpdateHUDAddonsVisibility()
 		pHudVisual->LL_SetBoneVisible			(bone_id,TRUE,TRUE);
 
 
-	bone_id = pHudVisual->LL_BoneID(wpn_silencer);
+	bone_id = pHudVisual->LL_BoneID(*m_sWpn_silencer_bone);
 	if(SilencerAttachable())
 	{
 		VERIFY2(bone_id!=BI_NONE,"there are no silencer bone.");
@@ -1329,11 +1342,11 @@ void CWeapon::UpdateHUDAddonsVisibility()
 		pHudVisual->LL_SetBoneVisible			(bone_id,TRUE,TRUE);
 
 
-	bone_id = pHudVisual->LL_BoneID(wpn_grenade_launcher);
+	bone_id = pHudVisual->LL_BoneID(*m_sWpn_launcher_bone);
 	if(GrenadeLauncherAttachable())
 	{
 		if(bone_id==BI_NONE)
-			bone_id = pHudVisual->LL_BoneID(wpn_launcher);
+			bone_id = pHudVisual->LL_BoneID(wpn_grenade_launcher);
 
 		VERIFY2(bone_id!=BI_NONE,"there are no grenade launcher bone.");
 		if(IsGrenadeLauncherAttached())
@@ -1365,7 +1378,7 @@ void CWeapon::UpdateAddonsVisibility()
 
 	callback(GameObject::eOnUpdateAddonsVisibiility)();
 
-	bone_id = pWeaponVisual->LL_BoneID					(wpn_scope);
+	bone_id = pWeaponVisual->LL_BoneID					(*m_sWpn_scope_bone);
 	if(ScopeAttachable())
 	{
 		if(IsScopeAttached())
@@ -1382,7 +1395,7 @@ void CWeapon::UpdateAddonsVisibility()
 
 		pWeaponVisual->LL_SetBoneVisible			(bone_id,FALSE,TRUE);
 
-	bone_id = pWeaponVisual->LL_BoneID					(wpn_silencer);
+	bone_id = pWeaponVisual->LL_BoneID					(*m_sWpn_silencer_bone);
 	if(SilencerAttachable())
 	{
 		if(IsSilencerAttached()){
@@ -1398,7 +1411,7 @@ void CWeapon::UpdateAddonsVisibility()
 
 		pWeaponVisual->LL_SetBoneVisible			(bone_id,FALSE,TRUE);
 
-	bone_id = pWeaponVisual->LL_BoneID					(wpn_launcher);
+	bone_id = pWeaponVisual->LL_BoneID					(*m_sWpn_launcher_bone);
 	if(GrenadeLauncherAttachable())
 	{
 		if(IsGrenadeLauncherAttached())

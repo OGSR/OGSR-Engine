@@ -45,6 +45,13 @@ void CWeaponPistol::Load	(LPCSTR section)
 	animGet				(mhud_pistol.mhud_show_empty,	pSettings->r_string(*hud_sect, "anim_draw_empty"));
 	animGet				(mhud_pistol.mhud_reload_empty,	pSettings->r_string(*hud_sect, "anim_reload_empty"));
 
+	shared_str m_sAnimIdle = pSettings->r_string(*hud_sect, "anim_idle");
+	shared_str m_sAnimIdleSprint = READ_IF_EXISTS(pSettings, r_string, *hud_sect, "anim_idle_sprint", *m_sAnimIdle);
+	shared_str m_sAnimIdleMoving = READ_IF_EXISTS(pSettings, r_string, *hud_sect, "anim_idle_moving", *m_sAnimIdle);
+
+	animGet				(mhud_pistol.mhud_idle_sprint_empty, READ_IF_EXISTS(pSettings, r_string, *hud_sect, "anim_idle_sprint_empty", *m_sAnimIdleSprint));
+	animGet				(mhud_pistol.mhud_idle_moving_empty, READ_IF_EXISTS(pSettings, r_string, *hud_sect, "anim_idle_moving_empty", *m_sAnimIdleMoving));
+
 	string128			str;
 	strconcat(sizeof(str),str,pSettings->r_string(*hud_sect, "anim_empty"),"_r");
 	animGet				(mhud_pistol_r.mhud_empty,		str);
@@ -60,8 +67,6 @@ void CWeaponPistol::Load	(LPCSTR section)
 
 	strconcat(sizeof(str),str,pSettings->r_string(*hud_sect, "anim_reload_empty"),"_r");
 	animGet				(mhud_pistol_r.mhud_reload_empty,	str);
-
-
 
 	strconcat(sizeof(str),str,pSettings->r_string(*hud_sect, "anim_idle"),"_r");
 	animGet				(wm_mhud_r.mhud_idle,	str);
@@ -111,6 +116,7 @@ void CWeaponPistol::PlayAnimShow	()
 void CWeaponPistol::PlayAnimIdle( u8 state = eIdle ) {
 	VERIFY(GetState()==eIdle);
 	if(m_opened){ 
+		if (TryPlayAnimIdle(state)) return;
 		CWeaponPistol::WWPMotions& m = wwpm_current();
 		m_pHUD->animPlay(random_anim(m.mhud_empty), TRUE, NULL, GetState());
 	}else{
@@ -166,6 +172,30 @@ void CWeaponPistol::PlayAnimShoot	()
 		m_pHUD->animPlay	(random_anim(m.mhud_shot_l), FALSE, this, GetState()); 
 		m_opened = true; 
 	}
+}
+
+bool CWeaponPistol::TryPlayAnimIdle(u8 state = eIdle) 
+{
+	VERIFY(GetState() == eIdle);
+	if (m_opened)
+	{
+		if ( !IsZoomed() ) {
+			CWeaponPistol::WWPMotions& m = wwpm_current();
+			switch (state) {
+			case eSubstateIdleMoving:
+				m_pHUD->animPlay(random_anim(m.mhud_idle_moving_empty), TRUE, NULL, GetState());
+				return true;
+			case eSubstateIdleSprint:
+				m_pHUD->animPlay(random_anim(m.mhud_idle_sprint_empty), TRUE, NULL, GetState());
+				return true;
+			default:
+				return false;
+			}
+		}
+		return false;
+	}
+	else 
+		return inherited::TryPlayAnimIdle(state);
 }
 
 

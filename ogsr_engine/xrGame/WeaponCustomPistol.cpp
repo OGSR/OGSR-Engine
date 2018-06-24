@@ -14,27 +14,32 @@ CWeaponCustomPistol::CWeaponCustomPistol(LPCSTR name) : CWeaponMagazined(name,SO
 CWeaponCustomPistol::~CWeaponCustomPistol()
 {
 }
-void CWeaponCustomPistol::switch2_Fire	()
+void CWeaponCustomPistol::switch2_Fire()
 {
-	m_bFireSingleShot			= true;
-	bWorking					= false;
-	m_iShotNum					= 0;
-	m_bStopedAfterQueueFired	= false;
-
-	StateSwitchCallback(GameObject::eOnActorWeaponStartFiring, GameObject::eOnNPCWeaponStartFiring);
-}
-
-
-
-void CWeaponCustomPistol::FireEnd() 
-{
-	if(fTime<=0) 
+	if (GetCurrentFireMode() == 1) 
 	{
-		m_bPending = false;
-		inherited::FireEnd();
+		m_bFireSingleShot = true;
+		bWorking = false;
+		m_iShotNum = 0;
+		m_bStopedAfterQueueFired = false;
+
+		StateSwitchCallback(GameObject::eOnActorWeaponStartFiring, GameObject::eOnNPCWeaponStartFiring);
+	}
+	else 
+	{
+		inherited::switch2_Fire();
 	}
 }
 
+void CWeaponCustomPistol::FireEnd() 
+{
+	if (fTime <= 0 && GetCurrentFireMode() == 1)
+	{
+		m_bPending = false;
+	}
+
+	inherited::FireEnd();
+}
 
 void CWeaponCustomPistol::net_Relcase(CObject *object)
 {
@@ -46,7 +51,7 @@ void CWeaponCustomPistol::OnDrawUI()
 	inherited::OnDrawUI();
 }
 
-void	CWeaponCustomPistol::net_Destroy()
+void CWeaponCustomPistol::net_Destroy()
 {
 	inherited::net_Destroy();
 }
