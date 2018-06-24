@@ -579,9 +579,13 @@ void SArtefactActivation::SpawnAnomaly()
 	VERIFY(!ph_world->Processing());
 	string128 tmp;
 	LPCSTR str			= pSettings->r_string("artefact_spawn_zones",*m_af->cNameSect());
-	VERIFY3(3==_GetItemCount(str),"Bad record format in artefact_spawn_zones",str);
+	VERIFY3(_GetItemCount(str) >= 3,"Bad record format in artefact_spawn_zones",str);
 	float zone_radius	= (float)atof(_GetItem(str,1,tmp));
 	float zone_power	= (float)atof(_GetItem(str,2,tmp));
+	u8 restrictor_type = RestrictionSpace::eRestrictorTypeNone;
+	if ( _GetItemCount( str ) > 3 && atoi( _GetItem( str, 3, tmp ) ) != 0 ) {
+	  restrictor_type = RestrictionSpace::eDefaultRestrictorTypeNone;
+        }
 	LPCSTR zone_sect	= _GetItem(str,0,tmp); //must be last call of _GetItem... (LPCSTR !!!)
 
 		Fvector pos;
@@ -602,7 +606,7 @@ void SArtefactActivation::SpawnAnomaly()
 		AlifeZone->assign_shapes	(&_shape,1);
 		AlifeZone->m_maxPower		= zone_power;
 		AlifeZone->m_owner_id		= m_owner_id;
-		AlifeZone->m_space_restrictor_type	= RestrictionSpace::eRestrictorTypeNone;
+		AlifeZone->m_space_restrictor_type	= restrictor_type;
 
 		NET_Packet					P;
 		object->Spawn_Write			(P,TRUE);
