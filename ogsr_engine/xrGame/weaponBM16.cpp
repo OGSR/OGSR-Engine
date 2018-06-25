@@ -11,16 +11,23 @@ void CWeaponBM16::Load	(LPCSTR section)
 {
 	inherited::Load		(section);
 
-	animGet	(mhud_reload1,	pSettings->r_string(*hud_sect,"anim_reload_1"));
-	animGet	(mhud_shot1,	pSettings->r_string(*hud_sect,"anim_shoot_1"));
-	animGet	(mhud_idle1,		pSettings->r_string(*hud_sect,"anim_idle_1"));
-	animGet	(mhud_idle2,		pSettings->r_string(*hud_sect,"anim_idle_2"));
-	animGet	(mhud_zoomed_idle1,		pSettings->r_string(*hud_sect,"anim_zoomed_idle_1"));
-	animGet	(mhud_zoomed_idle2,		pSettings->r_string(*hud_sect,"anim_zoomedidle_2"));
+	animGet	(mhud_reload1,			pSettings->r_string(*hud_sect, "anim_reload_1"));
+	animGet	(mhud_shot1,			pSettings->r_string(*hud_sect, "anim_shoot_1"));
+	animGet	(mhud_idle1,			pSettings->r_string(*hud_sect, "anim_idle_1"));
+	animGet	(mhud_idle2,			pSettings->r_string(*hud_sect, "anim_idle_2"));
+	animGet	(mhud_zoomed_idle1,		pSettings->r_string(*hud_sect, "anim_zoomed_idle_1"));
+	animGet	(mhud_zoomed_idle2,		pSettings->r_string(*hud_sect, "anim_zoomedidle_2"));
 
+	shared_str m_sAnimIdle = pSettings->r_string(*hud_sect, "anim_idle");
+	shared_str m_sAnimIdleSprint = READ_IF_EXISTS(pSettings, r_string, *hud_sect, "anim_idle_sprint", *m_sAnimIdle);
+	shared_str m_sAnimIdleMoving = READ_IF_EXISTS(pSettings, r_string, *hud_sect, "anim_idle_moving", *m_sAnimIdle);
+
+	animGet (mhud_idle_sprint_1, READ_IF_EXISTS(pSettings, r_string, *hud_sect, "anim_idle_sprint_1", *m_sAnimIdleSprint));
+	animGet (mhud_idle_sprint_2, READ_IF_EXISTS(pSettings, r_string, *hud_sect, "anim_idle_sprint_2", *m_sAnimIdleSprint));
+	animGet (mhud_idle_moving_1, READ_IF_EXISTS(pSettings, r_string, *hud_sect, "anim_idle_moving_1", *m_sAnimIdleMoving));
+	animGet (mhud_idle_moving_2, READ_IF_EXISTS(pSettings, r_string, *hud_sect, "anim_idle_moving_2", *m_sAnimIdleMoving));
 
 	HUD_SOUND::LoadSound(section, "snd_reload_1", m_sndReload1, m_eSoundShot);
-
 }
 
 void CWeaponBM16::PlayReloadSound()
@@ -80,4 +87,43 @@ void CWeaponBM16::PlayAnimIdle( u8 state = eIdle ) {
 		}break;
 		};
 	}
+}
+
+bool CWeaponBM16::TryPlayAnimIdle(u8 state = eIdle) {
+	VERIFY(GetState() == eIdle);
+	if (!IsZoomed()) {
+		switch (state) {
+			case eSubstateIdleMoving:
+				switch (m_magazine.size())
+				{
+				case 0: {
+					m_pHUD->animPlay(random_anim(mhud.mhud_idle_moving), TRUE, NULL, GetState());
+				}break;
+				case 1: {
+					m_pHUD->animPlay(random_anim(mhud_idle_moving_1), TRUE, NULL, GetState());
+				}break;
+				case 2: {
+					m_pHUD->animPlay(random_anim(mhud_idle_moving_2), TRUE, NULL, GetState());
+				}break;
+				};
+				return true;
+			case eSubstateIdleSprint:
+				switch (m_magazine.size())
+				{
+				case 0: {
+					m_pHUD->animPlay(random_anim(mhud.mhud_idle_sprint), TRUE, NULL, GetState());
+				}break;
+				case 1: {
+					m_pHUD->animPlay(random_anim(mhud_idle_sprint_1), TRUE, NULL, GetState());
+				}break;
+				case 2: {
+					m_pHUD->animPlay(random_anim(mhud_idle_sprint_2), TRUE, NULL, GetState());
+				}break;
+				};
+				return true;
+			default:
+				return false;
+		}
+	}
+	return false;
 }

@@ -77,6 +77,7 @@ void CScriptStorage::dump_state()
 
 			lua_pop(L, 1);  /* remove variable value */
 		}
+		m_dumpedObjList.clear();
 		Msg("\tEnd");
 	}
 	reentrantGuard = false;
@@ -148,6 +149,10 @@ void CScriptStorage::LogVariable(lua_State * l, const char* name, int level)
 	case LUA_TUSERDATA:
 	{
 		luabind::detail::object_rep* obj = static_cast<luabind::detail::object_rep*>(lua_touserdata(l, -1));
+
+		// Skip already dumped object
+		if (m_dumpedObjList.find(obj) != m_dumpedObjList.end()) return;
+		m_dumpedObjList.insert(obj);
 		luabind::detail::lua_reference& r = obj->get_lua_table();
 		if (r.is_valid())
 		{

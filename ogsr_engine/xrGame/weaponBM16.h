@@ -14,6 +14,10 @@ protected:
 	MotionSVec		mhud_idle_zoomed_empty;
 	MotionSVec		mhud_zoomed_idle1;
 	MotionSVec		mhud_zoomed_idle2;
+	MotionSVec		mhud_idle_sprint_1;
+	MotionSVec		mhud_idle_sprint_2;
+	MotionSVec		mhud_idle_moving_1;
+	MotionSVec		mhud_idle_moving_2;
 
 	HUD_SOUND		m_sndReload1;
 
@@ -22,6 +26,7 @@ public:
 	virtual void	Load							(LPCSTR section);
 
 protected:
+	virtual bool	TryPlayAnimIdle					( u8 );
 	virtual void	PlayAnimShoot					();
 	virtual void	PlayAnimReload					();
 	virtual void	PlayReloadSound					();
