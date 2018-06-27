@@ -918,7 +918,6 @@ void CWeaponMagazined::InitAddons()
 	//////////////////////////////////////////////////////////////////////////
 	// Прицел
 	m_fIronSightZoomFactor = READ_IF_EXISTS(pSettings, r_float, cNameSect(), "ironsight_zoom_factor", 50.0f);
-	//
 	m_fSecondScopeZoomFactor = READ_IF_EXISTS(pSettings, r_float, cNameSect(), "second_scope_zoom_factor", m_fIronSightZoomFactor);
 	//
 	if(IsScopeAttached())
@@ -929,27 +928,28 @@ void CWeaponMagazined::InitAddons()
 			m_iScopeX	 = pSettings->r_s32(cNameSect(),"scope_x");
 			m_iScopeY	 = pSettings->r_s32(cNameSect(),"scope_y");
 
-			shared_str scope_tex_name;
-			scope_tex_name = pSettings->r_string(*m_sScopeName, "scope_texture");
 			m_fScopeZoomFactor = pSettings->r_float	(*m_sScopeName, "scope_zoom_factor");
 			m_bScopeDynamicZoom = !!READ_IF_EXISTS(pSettings, r_bool, *m_sScopeName, "scope_dynamic_zoom", false);
-			
+
+			shared_str scope_tex_name;
+			scope_tex_name = pSettings->r_string(*m_sScopeName, "scope_texture");
+
 			if(m_UIScope) xr_delete(m_UIScope);
 			m_UIScope = xr_new<CUIStaticItem>();
-
 			m_UIScope->Init(*scope_tex_name, "hud\\scope", 0, 0, alNone);
 
 		}
 		else if(m_eScopeStatus == ALife::eAddonPermanent)
 		{
-			m_fScopeZoomFactor = pSettings->r_float	(cNameSect(), "scope_zoom_factor");
+			m_fScopeZoomFactor = pSettings->r_float(cNameSect(), "scope_zoom_factor");
+			m_bScopeDynamicZoom = !!READ_IF_EXISTS(pSettings, r_bool, cNameSect(), "scope_dynamic_zoom", false);
+
 			shared_str scope_tex_name;
 			scope_tex_name = pSettings->r_string(cNameSect(), "scope_texture");
 
 			if(m_UIScope) xr_delete(m_UIScope);
 			m_UIScope = xr_new<CUIStaticItem>();
 			m_UIScope->Init(*scope_tex_name, "hud\\scope", 0, 0, alNone);
-
 		}
 	}
 	else
@@ -958,12 +958,19 @@ void CWeaponMagazined::InitAddons()
 		
 		if (IsZoomEnabled())
 		{
-			m_fIronSightZoomFactor = pSettings->r_float(cNameSect(), "scope_zoom_factor");
-			m_bScopeDynamicZoom = !!READ_IF_EXISTS(pSettings, r_bool, cNameSect(), "scope_dynamic_zoom", false);
+			m_fScopeZoomFactor = pSettings->r_float(cNameSect(), "scope_zoom_factor");
+			m_bScopeDynamicZoom = false;
+
+			// for weapon without any scope - scope_zoom_factor will overrider ironsight_zoom_factor
+			m_fIronSightZoomFactor = m_fScopeZoomFactor; 
 		}
 	}
 
-	
+	if (m_bScopeDynamicZoom)
+    {
+		m_fRTZoomFactor = m_fScopeZoomFactor;
+    }
+
 
 	if(IsSilencerAttached() && SilencerAttachable())
 	{		

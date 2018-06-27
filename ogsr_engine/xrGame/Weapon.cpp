@@ -383,9 +383,11 @@ void CWeapon::Load		(LPCSTR section)
 	m_eSilencerStatus		 = (ALife::EWeaponAddonStatus)pSettings->r_s32(section,"silencer_status");
 	m_eGrenadeLauncherStatus = (ALife::EWeaponAddonStatus)pSettings->r_s32(section,"grenade_launcher_status");
 
-	m_bScopeDynamicZoom = !!READ_IF_EXISTS(pSettings, r_bool, section, "scope_dynamic_zoom", false);
 	m_bZoomEnabled = !!pSettings->r_bool(section,"zoom_enabled");
 	m_fZoomRotateTime = ROTATION_TIME;
+	m_bScopeDynamicZoom = false;
+	m_fScopeZoomFactor = 0;
+	m_fRTZoomFactor = 0;
 
 	UpdateZoomOffset();
 
@@ -591,9 +593,6 @@ BOOL CWeapon::net_Spawn		(CSE_Abstract* DC)
 
 	VERIFY((u32)iAmmoElapsed == m_magazine.size());
 	m_bAmmoWasSpawned		= false;
-
-	if ( m_bScopeDynamicZoom )
-		m_fRTZoomFactor = m_fScopeZoomFactor;
 
 	return bResult;
 }
