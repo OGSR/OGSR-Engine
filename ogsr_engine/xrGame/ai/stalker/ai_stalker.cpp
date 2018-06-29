@@ -1077,12 +1077,10 @@ void CAI_Stalker::fill_bones_body_parts	(LPCSTR bone_id, const ECriticalWoundTyp
 	VERIFY					(kinematics);
 
 	CInifile::Sect			&body_part_section = pSettings->r_section(body_part_section_id);
-	CInifile::SectCIt		I = body_part_section.Data.begin();
-	CInifile::SectCIt		E = body_part_section.Data.end();
-	for ( ; I != E; ++I)
+	for ( const auto &I : body_part_section.Data )
 		m_bones_body_parts.insert	(
 			std::make_pair(
-				kinematics->LL_BoneID((*I).first),
+				kinematics->LL_BoneID(I.first),
 				u32(wound_type)
 			)
 		);

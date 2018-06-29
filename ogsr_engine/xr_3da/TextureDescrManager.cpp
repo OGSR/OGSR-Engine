@@ -38,19 +38,15 @@ void CTextureDescrMngr::LoadLTX()
 		if (ini.section_exist("association"))
 		{
 			CInifile::Sect& data	= ini.r_section("association");
-			CInifile::SectCIt I		= data.Data.begin();
-			CInifile::SectCIt E		= data.Data.end();
-			for ( ; I!=E; ++I)	
+			for ( const auto &item : data.Data )	
 			{
-				const CInifile::Item& item	= *I;
-
 				texture_desc& desc		= m_texture_details[item.first];
 				desc.m_assoc			= xr_new<texture_assoc>();
 
 				string_path				T;
 				float					s;
 
-				int res = sscanf					(*item.second,"%[^,],%f",T,&s);
+				int res = sscanf					(item.second.c_str(),"%[^,],%f",T,&s);
 				R_ASSERT(res==2);
 				desc.m_assoc->detail_name = T;
 				desc.m_assoc->cs		= xr_new<cl_dt_scaler>(s);
@@ -69,10 +65,8 @@ void CTextureDescrMngr::LoadLTX()
 		if (ini.section_exist("specification"))
 		{
 			CInifile::Sect& 	sect = ini.r_section("specification");
-			for (CInifile::SectCIt I2=sect.Data.begin(); I2!=sect.Data.end(); ++I2)	
+			for ( const auto &item : sect.Data )	
 			{
-				const CInifile::Item& item	= *I2;
-
 				texture_desc& desc		= m_texture_details[item.first];
 				desc.m_spec				= xr_new<texture_spec>();
 
@@ -102,10 +96,8 @@ void CTextureDescrMngr::LoadLTX()
 		if (ini.section_exist("types"))
 		{
 			CInifile::Sect& 	data = ini.r_section("types");
-			for (CInifile::SectCIt I=data.Data.begin(); I!=data.Data.end(); I++)	
+			for ( const auto &item : data.Data )	
 			{
-				const CInifile::Item& item	= *I;
-
 				texture_desc& desc		= m_texture_details[item.first];
 				desc.m_type				= (u16)atoi(item.second.c_str());
 			}

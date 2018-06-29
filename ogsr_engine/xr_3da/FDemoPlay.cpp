@@ -123,11 +123,11 @@ void CDemoPlay::stat_Stop	()
 
 		FS.update_path		(fname,"$app_data_root$",fname);
 		CInifile			res		(fname,FALSE,FALSE,TRUE);
-		res.w_float			("general","renderer",	float(::Render->get_generation())/10.f,	"dx-level required"		);
-		res.w_float			("general","min",		rfps_min,								"absolute minimum"		);
-		res.w_float			("general","max",		rfps_max,								"absolute maximum"		);
-		res.w_float			("general","average",	rfps_average,							"average for this run"	);
-		res.w_float			("general","middle",	rfps_middlepoint,						"per-frame middle-point");
+		res.w_float			("general","renderer",	float(::Render->get_generation())/10.f);
+		res.w_float			("general","min",		rfps_min);
+		res.w_float			("general","max",		rfps_max);
+		res.w_float			("general","average",	rfps_average);
+		res.w_float			("general","middle",	rfps_middlepoint);
 		for (u32	it=1; it<stat_table.size(); it++)
 		{
 			string32		id;

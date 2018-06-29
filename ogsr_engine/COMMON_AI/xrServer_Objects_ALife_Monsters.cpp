@@ -39,10 +39,8 @@ void setup_location_types_section(GameGraph::TERRAIN_VECTOR &m_vertex_types, CIn
 	terrain_mask.tMask.resize		(GameGraph::LOCATION_TYPE_COUNT);
 
 	CInifile::Sect&	sect			= ini->r_section(section);
-	CInifile::SectCIt				I = sect.Data.begin();
-	CInifile::SectCIt				E = sect.Data.end();
-	for ( ; I != E; ++I) {
-		LPCSTR						S = *(*I).first;
+	for ( const auto &I : sect.Data ) {
+		LPCSTR						S = I.first.c_str();
 		string16					I;
 		u32							N = _GetItemCount(S);
 		

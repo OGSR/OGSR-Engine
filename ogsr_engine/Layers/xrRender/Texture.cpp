@@ -26,15 +26,10 @@ void fix_texture_name(LPSTR fn)
 int get_texture_load_lod(LPCSTR fn)
 {
 	CInifile::Sect& sect	= pSettings->r_section("reduce_lod_texture_list");
-	CInifile::SectCIt it_	= sect.Data.begin();
-	CInifile::SectCIt it_e_	= sect.Data.end();
 
-	CInifile::SectCIt it	= it_;
-	CInifile::SectCIt it_e	= it_e_;
-
-	for(;it!=it_e;++it)
+	for(const auto &it : sect.Data )
 	{
-		if( strstr(fn, it->first.c_str()) )
+		if( strstr(fn, it.first.c_str()) )
 		{
 			if(psTextureLOD<1)
 				return 0;

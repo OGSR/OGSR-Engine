@@ -371,12 +371,10 @@ void CBaseMonster::fill_bones_body_parts	(LPCSTR body_part, CriticalWoundType wo
 	VERIFY					(kinematics);
 
 	CInifile::Sect			&body_part_section = pSettings->r_section(body_parts_section);
-	CInifile::SectCIt		I = body_part_section.Data.begin();
-	CInifile::SectCIt		E = body_part_section.Data.end();
-	for ( ; I != E; ++I)
+	for ( const auto &I : body_part_section.Data )
 		m_bones_body_parts.insert	(
 			std::make_pair(
-				kinematics->LL_BoneID((*I).first),
+				kinematics->LL_BoneID(I.first),
 				u32(wound_type)
 			)
 		);

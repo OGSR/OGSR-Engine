@@ -16,9 +16,7 @@ void CTradeParameters::process	(action_show, CInifile &ini_file, const shared_st
 	VERIFY					(ini_file.section_exist(section));
 	m_show.clear			();
 	CInifile::Sect			&S = ini_file.r_section(section);
-	CInifile::SectCIt		I = S.Data.begin();
-	CInifile::SectCIt		E = S.Data.end();
-	for ( ; I != E; ++I)
-		if (!(*I).second.size())
-			m_show.disable	((*I).first);
+	for ( const auto &I : S.Data )
+		if (!I.second.size())
+			m_show.disable	(I.first);
 }

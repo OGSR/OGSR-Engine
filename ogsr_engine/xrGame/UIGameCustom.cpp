@@ -232,32 +232,25 @@ void CMapListHelper::Load()
 
 	//read weathers set
 	CInifile::Sect w			= map_list_cfg.r_section("weather");
-	CInifile::SectCIt wi		= w.Data.begin();
-	CInifile::SectCIt wi_e		= w.Data.end();
-	for( ;wi!=wi_e; ++wi)
+	for( const auto &wi : w.Data )
 	{
 		m_weathers.resize		(m_weathers.size()+1);
 		SGameWeathers& gw		= m_weathers.back();
-		gw.m_weather_name		= (*wi).first;
-		gw.m_start_time			= (*wi).second;
+		gw.m_weather_name		= wi.first;
+		gw.m_start_time			= wi.second;
 	}
 
 	//read original maps from config
-	CInifile::RootIt it			= map_list_cfg.sections().begin();
-	CInifile::RootIt it_e		= map_list_cfg.sections().end();
-	for( ;it!=it_e; ++it)
+	for( const auto &it : map_list_cfg.sections() )
 	{
 		m_storage.resize		(m_storage.size()+1);
 		SGameTypeMaps&	Itm		= m_storage.back();
-		Itm.m_game_type_name	= (*it)->Name;
+		Itm.m_game_type_name	= it.first;
 		Itm.m_game_type_id		= (EGameTypes)get_token_id(game_types, Itm.m_game_type_name.c_str() );
 
-		CInifile::SectCIt sit	= (*it)->Data.begin();
-		CInifile::SectCIt sit_e	= (*it)->Data.end();
-		
-		for( ;sit!=sit_e; ++sit)
+		for( const auto &sit : it.second->Data )
 		{
-			Itm.m_map_names.push_back	((*sit).first);
+			Itm.m_map_names.push_back	(sit.first);
 		}
 	}
 	// scan for additional maps
@@ -276,11 +269,9 @@ void CMapListHelper::Load()
 		if(map_ini.section_exist("map_usage"))
 		{
 			CInifile::Sect S			= map_ini.r_section("map_usage");
-			CInifile::SectCIt si		= S.Data.begin();
-			CInifile::SectCIt si_e		= S.Data.end();
-			for( ;si!=si_e; ++si)
+			for( const auto &si : S.Data )
 			{
-				const shared_str& game_type = (*si).first;
+				const shared_str& game_type = si.first;
 				SGameTypeMaps* M			= GetMapListInt(game_type);
 				if(!M)
 				{

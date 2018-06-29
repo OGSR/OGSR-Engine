@@ -138,11 +138,10 @@ void CLevelSoundManager::Load()
 			if (music_sect && music_sect[0]){
 				Msg("- Loading music tracks from '%s'...",music_sect);
 				CInifile::Sect&	S	= gameLtx.r_section	(music_sect);
-				CInifile::SectCIt it	= S.Data.begin(), end = S.Data.end();
 				m_MusicTracks.reserve	(S.Data.size());
-				for (;it!=end; it++){
+				for ( const auto &it : S.Data ) {
 					m_MusicTracks.push_back	(SMusicTrack());
-					m_MusicTracks.back().Load(*it->first,*it->second);
+					m_MusicTracks.back().Load(it.first.c_str(),it.second.c_str());
 				}
 			}
 		}

@@ -953,19 +953,18 @@ void CCar::Init()
 	if(ini->section_exist("damage_items"))
 	{
 		CInifile::Sect& data		= ini->r_section("damage_items");
-		for (CInifile::SectCIt		I=data.Data.begin(); I!=data.Data.end(); I++){
-			const CInifile::Item& item	= *I;
-			u16 index				= pKinematics->LL_BoneID(*item.first); 
-			R_ASSERT3(index != BI_NONE, "Wrong bone name", *item.first);
+		for ( const auto &item : data.Data ) {
+			u16 index				= pKinematics->LL_BoneID(item.first.c_str());
+			R_ASSERT3(index != BI_NONE, "Wrong bone name", item.first.c_str());
 			xr_map   <u16,SWheel>::iterator i=m_wheels_map.find(index);
 			
 			if(i!=m_wheels_map.end())
-					i->second.CDamagableHealthItem::Init(float(atof(*item.second)),2);
+					i->second.CDamagableHealthItem::Init(float(atof(item.second.c_str())),2);
 			else 
 			{
 				xr_map   <u16,SDoor>::iterator i=m_doors.find(index);
 				R_ASSERT3(i!=m_doors.end(),"only wheel and doors bones allowed for damage defs",*item.first);
-				i->second.CDamagableHealthItem::Init(float(atof(*item.second)),1);
+				i->second.CDamagableHealthItem::Init(float(atof(item.second.c_str())),1);
 			}
 
 		}

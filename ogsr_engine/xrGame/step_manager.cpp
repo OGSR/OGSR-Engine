@@ -199,16 +199,14 @@ Fvector	CStepManager::get_foot_position(ELegType leg_type)
 
 void CStepManager::load_foot_bones	(CInifile::Sect &data)
 {
-	for (CInifile::SectCIt I=data.Data.begin(); I!=data.Data.end(); ++I){
-		const CInifile::Item& item	= *I;
+	for ( const auto &item : data.Data ) {
+		u16 index = smart_cast<CKinematics*>(m_object->Visual())->LL_BoneID(item.second.c_str());
+		VERIFY3(index != BI_NONE, "foot bone not found", item.second.c_str());
 
-		u16 index = smart_cast<CKinematics*>(m_object->Visual())->LL_BoneID(*item.second);
-		VERIFY3(index != BI_NONE, "foot bone not found", *item.second);
-
-		if (xr_strcmp(*item.first, "front_left") == 0) 			m_foot_bones[eFrontLeft]	= index;
-		else if (xr_strcmp(*item.first, "front_right")== 0)		m_foot_bones[eFrontRight]	= index;
-		else if (xr_strcmp(*item.first, "back_right")== 0)		m_foot_bones[eBackRight]	= index;
-		else if (xr_strcmp(*item.first, "back_left")== 0)		m_foot_bones[eBackLeft]		= index;
+		if (xr_strcmp(item.first.c_str(), "front_left") == 0) 			m_foot_bones[eFrontLeft]	= index;
+		else if (xr_strcmp(item.first.c_str(), "front_right")== 0)		m_foot_bones[eFrontRight]	= index;
+		else if (xr_strcmp(item.first.c_str(), "back_right")== 0)		m_foot_bones[eBackRight]	= index;
+		else if (xr_strcmp(item.first.c_str(), "back_left")== 0)		m_foot_bones[eBackLeft]		= index;
 	}
 }
 
