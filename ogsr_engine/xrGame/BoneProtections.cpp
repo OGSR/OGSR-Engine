@@ -53,13 +53,13 @@ void SBoneProtections::reload(const shared_str& bone_sect, CKinematics* kinemati
 		BP.BonePassBullet = BonePassBullet;
 
 
-		if (!xr_strcmp(i.first,"default"))
+		if (!xr_strcmp(i.first.c_str(),"default"))
 		{
 			m_default = BP;
 		}
 		else 
 		{
-			if (!xr_strcmp(i.first,"hit_fraction")) continue;
+			if (!xr_strcmp(i.first.c_str(),"hit_fraction")) continue;
 
 			s16	bone_id				= kinematics->LL_BoneID(i.first);
 			R_ASSERT2				(BI_NONE != bone_id, i.first.c_str());			
