@@ -10,11 +10,11 @@ class XRCORE_API CInifile {
   typedef std::pair<shared_str, shared_str> Item;
   struct XRCORE_API Sect {
     shared_str Name;
-    std::map<shared_str, shared_str> Data;
+    std::unordered_map<shared_str, shared_str> Data;
     std::vector<Item> Unordered;
     BOOL line_exist ( LPCSTR, LPCSTR* = 0 );
   };
-  typedef std::map<shared_str, Sect*> Root;
+  typedef std::unordered_map<shared_str, Sect*> Root;
 
   // factorisation
   static CInifile* Create  ( LPCSTR, BOOL = TRUE );

@@ -65,6 +65,7 @@ public:
 	str_c				operator*	() const						{	return p_?p_->value:0;							}
 	bool				operator!	() const						{	return p_ == 0;									}
 	bool				operator<	(shared_str const &rhs)			{   if (0 == p_) return true; else return (xr_strcmp(p_->value, *rhs) < 0); }
+	bool				operator==	( shared_str const &rhs ) { return _get() == rhs._get(); }
 	char				operator[]	(size_t id)						{	return p_->value[id];							}
 	str_c				c_str		() const						{	return p_?p_->value:0;							}
 
@@ -82,6 +83,16 @@ public:
 		return 		(shared_str&)*this;
 	}
 };
+
+
+namespace std {
+  template<> struct hash<shared_str> {
+    std::size_t operator() ( const shared_str &s ) const {
+      return std::hash<std::string>{}( s.c_str() );
+    }
+  };
+}
+
 
 // res_ptr == res_ptr
 // res_ptr != res_ptr
