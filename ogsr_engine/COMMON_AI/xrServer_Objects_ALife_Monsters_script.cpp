@@ -40,6 +40,12 @@ void CSE_ALifeTraderAbstract::script_register(lua_State *L)
 	];
 }
 
+
+ALife::_OBJECT_ID CSE_AlifeTrader__smart_terrain_id ( CSE_ALifeTrader *trader ) {
+  THROW( trader );
+  return 0xffff;
+}
+
 void CSE_ALifeTrader::script_register(lua_State *L)
 {
 	module(L)[
@@ -49,8 +55,10 @@ void CSE_ALifeTrader::script_register(lua_State *L)
 			CSE_ALifeDynamicObjectVisual,
 			CSE_ALifeTraderAbstract
 		)
+		.def( "smart_terrain_id", &CSE_AlifeTrader__smart_terrain_id )
 	];
 }
+
 
 void CSE_ALifeCustomZone::script_register(lua_State *L)
 {
