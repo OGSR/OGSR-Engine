@@ -245,7 +245,7 @@ void					CRender::destroy				()
 	PSLibrary.OnDestroy			();
 	Device.seqFrame.Remove		(this);
 }
-extern int reset_frame;
+extern u32 reset_frame;
 void CRender::reset_begin()
 {
 	// Update incremental shadowmap-visibility solver

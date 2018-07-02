@@ -388,7 +388,7 @@ void CDetailManager::Render	()
 	Device.Statistic->RenderDUMP_DT_Render.End	();
 	m_frame_rendered		= Device.dwFrame;
 }
-int reset_frame = 0;
+u32 reset_frame = 0;
 void __stdcall	CDetailManager::MT_CALC		()
 {
 #ifndef _EDITOR

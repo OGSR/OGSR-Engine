@@ -149,8 +149,8 @@ void CDetailManager::hw_Load()
 	// Determine POOL & USAGE
 	u32 dwUsage = D3DUSAGE_WRITEONLY;
 
-	int lod_verts = objects.size()*hw_BatchSize * 4 * 1.4;
-	int lod_indices = objects.size()*hw_BatchSize * 6 * 1.4;
+	int lod_verts   = int( objects.size() * hw_BatchSize * 4 * 1.4 );
+	int lod_indices = int( objects.size() * hw_BatchSize * 6 * 1.4 );
 
 	// Create VB/IB
 	R_CHK(HW.pDevice->CreateVertexBuffer((dwVerts*vSize/* + lod_verts*vSize*/), dwUsage, 0, D3DPOOL_MANAGED, &hw_VB, 0));
@@ -204,7 +204,7 @@ void CDetailManager::hw_Load()
 		for (u32 o = 0; o<objects.size(); o++)
 		{
 			CDetail& D = *objects[o];
-			u32 batchsize = hw_BatchSize*1.4;
+			u32 batchsize = u32( hw_BatchSize * 1.4 );
 			for (u32 batch = 0; batch<batchsize; batch++)
 			{
 				u32 mid = batch*c_size;
@@ -276,7 +276,7 @@ void CDetailManager::hw_Load()
 		R_CHK(hw_lod_IB->Lock(0, 0, (void**)(&pI), 0));
 		for (u32 o = 0; o<objects.size(); o++)
 		{
-			u32 batchsize = hw_BatchSize*1.4;
+			u32 batchsize = u32( hw_BatchSize * 1.4 );
 			u16		offset = 0;
 			for (u32 batch = 0; batch<batchsize; batch++)
 			{
@@ -609,7 +609,7 @@ void CDetailManager::hw_Render_dump_lod(ref_constant x_array, u32 c_offset)
 	u32		vOffset = 0;
 	u32		iOffset = 0;
 
-	u32		batchsize = 1.4 * hw_BatchSize;
+	u32		batchsize = u32( 1.4 * hw_BatchSize );
 
 	vis_list& list = m_visibles[0];
 	/*
