@@ -202,3 +202,7 @@
 
 // Включает раскраску предметов в окне торговца.
 //#define COLORIZE_OTHER_TRADE
+
+// Выставлять для оружия состояние eSubstateIdleMoving при actor->is_actor_walking() || actor->is_actor_creeping() || actor->is_actor_crouching()
+// Включает анимацию anim_idle_moving
+//#define MORE_WPN_IDLE_MOVING_STATES

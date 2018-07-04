@@ -868,8 +868,14 @@ u8 CWeapon::idle_state() {
     if ( actor->get_state() & mcSprint ) {
      return eSubstateIdleSprint;
     }
-    else if ( actor->is_actor_running() )
-      return eSubstateIdleMoving;
+	else {
+#ifdef MORE_WPN_IDLE_MOVING_STATES
+		if (actor->is_actor_running() || actor->is_actor_walking() || actor->is_actor_creeping() || actor->is_actor_crouching())
+#else
+		if (actor->is_actor_running())
+#endif
+			return eSubstateIdleMoving;
+	}
 
   return eIdle;
 }

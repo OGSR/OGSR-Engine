@@ -15,7 +15,7 @@ public:
 		cfCanBeUnlimited		= (1<<2),
 		cfExplosive				= (1<<3),
 	};
-	float	m_kDist, m_kDisp, m_kHit, m_kImpulse, m_kPierce, m_kAP, m_kAirRes;
+	float	m_kDist, m_kDisp, m_kHit, m_kImpulse, m_kPierce, m_kAP, m_kAirRes, m_kSpeed;
 	int		m_buckShot;
 	float	m_impair;
 	float	fWallmarkSize;
@@ -54,7 +54,7 @@ public:
 	virtual u32						Cost				() const;
 	bool							Get					(CCartridge &cartridge);
 
-	float		m_kDist, m_kDisp, m_kHit, m_kImpulse, m_kPierce, m_kAP, m_kAirRes;
+	float		m_kDist, m_kDisp, m_kHit, m_kImpulse, m_kPierce, m_kAP, m_kAirRes, m_kSpeed;
 	int			m_buckShot;
 	float		m_impair;
 	float		fWallmarkSize;
