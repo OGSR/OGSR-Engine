@@ -22,6 +22,7 @@ CCartridge::CCartridge()
 	m_kAirRes = 0.0f;
 	m_buckShot = 1;
 	m_impair = 1.f;
+	m_kSpeed = 1.f;
 
 	bullet_material_idx = u16(-1);
 }
@@ -30,12 +31,14 @@ void CCartridge::Load(LPCSTR section, u8 LocalAmmoType)
 {
 	m_ammoSect				= section;
 	m_LocalAmmoType			= LocalAmmoType;
+
 	m_kDist					= pSettings->r_float(section, "k_dist");
 	m_kDisp					= pSettings->r_float(section, "k_disp");
 	m_kHit					= pSettings->r_float(section, "k_hit");
 	m_kImpulse				= pSettings->r_float(section, "k_impulse");
 	m_kPierce				= pSettings->r_float(section, "k_pierce");
 	m_kAP					= READ_IF_EXISTS(pSettings, r_float, section, "k_ap", 0.0f);
+	m_kSpeed				= READ_IF_EXISTS(pSettings, r_float, section, "k_bullet_speed", 1.0f);
 	m_u8ColorID				= READ_IF_EXISTS(pSettings, r_u8, section, "tracer_color_ID", 0);
 	
 	if (pSettings->line_exist(section, "k_air_resistance"))
@@ -106,16 +109,19 @@ void CWeaponAmmo::Load(LPCSTR section)
 	m_kImpulse				= pSettings->r_float(section, "k_impulse");
 	m_kPierce				= pSettings->r_float(section, "k_pierce");
 	m_kAP					= READ_IF_EXISTS(pSettings, r_float, section, "k_ap", 0.0f);
+	m_kSpeed				= READ_IF_EXISTS(pSettings, r_float, section, "k_bullet_speed", 1.0f);
 	m_u8ColorID				= READ_IF_EXISTS(pSettings, r_u8, section, "tracer_color_ID", 0);
 
 	if (pSettings->line_exist(section, "k_air_resistance"))
 		m_kAirRes				=  pSettings->r_float(section, "k_air_resistance");
 	else
 		m_kAirRes				= pSettings->r_float(BULLET_MANAGER_SECTION, "air_resistance_k");
+
 	m_tracer				= !!pSettings->r_bool(section, "tracer");
 	m_buckShot				= pSettings->r_s32(section, "buck_shot");
 	m_impair				= pSettings->r_float(section, "impair");
 	fWallmarkSize			= pSettings->r_float(section,"wm_size");
+
 	R_ASSERT				(fWallmarkSize>0);
 
 	m_boxSize				= (u16)pSettings->r_s32(section, "box_size");
