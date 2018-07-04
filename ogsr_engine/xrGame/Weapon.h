@@ -274,6 +274,7 @@ public:
 			void			LoadZoomOffset		(LPCSTR section, LPCSTR prefix);
 
 	virtual float				Weight			() const;		
+	virtual u32					Cost			() const;
 
 public:
     virtual EHandDependence		HandDependence		()	const		{	return eHandDependence;}
