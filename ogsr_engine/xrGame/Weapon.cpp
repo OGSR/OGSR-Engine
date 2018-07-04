@@ -1832,12 +1832,16 @@ u32 CWeapon::Cost() const
 {
 	u32 res = m_cost;
 	
+#ifdef WPN_COST_INCLUDE_ADDONS
+
 	if (GrenadeLauncherAttachable() && IsGrenadeLauncherAttached())
 		res += pSettings->r_float(GetGrenadeLauncherName(), "cost");
 	if (ScopeAttachable() && IsScopeAttached())
 		res += pSettings->r_float(GetScopeName(), "cost");
 	if (SilencerAttachable() && IsSilencerAttached())
 		res += pSettings->r_float(GetSilencerName(), "cost");
+
+#endif // WPN_COST_INCLUDE_ADDONS
 
 	return res;
 }

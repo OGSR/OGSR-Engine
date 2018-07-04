@@ -206,3 +206,6 @@
 // Выставлять для оружия состояние eSubstateIdleMoving при actor->is_actor_walking() || actor->is_actor_creeping() || actor->is_actor_crouching()
 // Включает анимацию anim_idle_moving
 //#define MORE_WPN_IDLE_MOVING_STATES
+
+// Цена оружия будет включать в себя стоимость установленных аддонов
+//#define WPN_COST_INCLUDE_ADDONS
