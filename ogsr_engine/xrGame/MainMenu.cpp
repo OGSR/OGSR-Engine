@@ -453,7 +453,5 @@ void CMainMenu::OnDeviceReset()
 
 LPCSTR CMainMenu::GetGSVer()
 {
-	static string256 buff;
-	std::snprintf(buff, sizeof(buff), "1.0007 %s by KRodin && Dsh", Core.GetBuildConfiguration());
-	return buff;
+	return Core.GetEngineVersion();
 }

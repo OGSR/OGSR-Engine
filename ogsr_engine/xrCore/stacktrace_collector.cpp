@@ -24,16 +24,16 @@ thread_local static char symbol[sizeof(SYMBOL_INFO) + (MaxFrameLength + 1) * siz
 #pragma optimize("", off)
 
 void BuildStackTrace(StackTraceInfo& stackTrace) {
-    static std::mutex dbghelpMutex;
-    std::lock_guard<std::mutex> lock(dbghelpMutex);
+	static std::mutex dbghelpMutex;
+	std::lock_guard<std::mutex> lock(dbghelpMutex);
 
-    const auto processHandle = GetCurrentProcess();
-    const auto symRes = SymInitialize(processHandle, nullptr, TRUE);
+	const auto processHandle = GetCurrentProcess();
+	SymInitialize(processHandle, nullptr, TRUE);
 
-    const auto framesCount = CaptureStackBackTrace(1, MaxStackTraceDepth, stack, nullptr);
-    auto symbolInfo = reinterpret_cast<SYMBOL_INFO*>(&symbol);
-    symbolInfo->MaxNameLen = MaxFrameLength;
-    symbolInfo->SizeOfStruct = sizeof(SYMBOL_INFO);
+	const auto framesCount = CaptureStackBackTrace(1, MaxStackTraceDepth, stack, nullptr);
+	auto symbolInfo = reinterpret_cast<SYMBOL_INFO*>(&symbol);
+	symbolInfo->MaxNameLen = MaxFrameLength;
+	symbolInfo->SizeOfStruct = sizeof(SYMBOL_INFO);
 
 	IMAGEHLP_LINE64 lineInfo = { 0 };
 	lineInfo.SizeOfStruct = sizeof(IMAGEHLP_LINE64);
@@ -43,14 +43,14 @@ void BuildStackTrace(StackTraceInfo& stackTrace) {
 	for (size_t i = 0; i < framesCount; i++) {
 		const auto addr = reinterpret_cast<DWORD64>(stack[i]);
 		SymFromAddr(processHandle, addr, nullptr, symbolInfo);
-        DWORD displacement = 0;
+		DWORD displacement = 0;
 		SymGetLineFromAddr64(processHandle, addr, &displacement, &lineInfo);
 		SymGetModuleInfo64(processHandle, addr, &moduleInfo);
 		auto dst = stackTrace.frames + (MaxFrameLength + 1) * i;
 		std::snprintf(dst, MaxFrameLength + 1, "[%zi]: [%s]: [%s()] at [%s:%u]", framesCount - i, moduleInfo.ImageName, symbolInfo->Name, lineInfo.FileName, lineInfo.LineNumber);
 	}
 
-    stackTrace.count = framesCount;
+	stackTrace.count = framesCount;
 }
 
 #pragma optimize("", on)

@@ -174,6 +174,7 @@ public:
 		return "x86";
 #endif
 	}
+	const char* GetEngineVersion();
 };
 extern XRCORE_API xrCore Core;
 

@@ -99,7 +99,11 @@ void xrCore::_initialize	(LPCSTR _ApplicationName, LogCallback cb, BOOL init_fs,
 	#endif
 #endif
 		FS._initialize		(flags,0,fs_fname);
+
 		Msg("[OGSR Engine (%s)] build date: [" __DATE__ " " __TIME__ "]", GetBuildConfiguration());
+		if (strlen(APPVEYOR_BUILD_VERSION))
+			Log("[AppVeyor] build version: [" APPVEYOR_BUILD_VERSION "], repo: [" APPVEYOR_REPO_NAME "]");
+
 		EFS._initialize		();
 #ifdef DEBUG
     #ifndef	_EDITOR
@@ -128,6 +132,16 @@ void xrCore::_destroy		()
 			CoUninitialize();
 	}
 }
+
+const char* xrCore::GetEngineVersion() {
+	static string256 buff;
+	if (strlen(APPVEYOR_BUILD_VERSION))
+		std::snprintf(buff, sizeof(buff), APPVEYOR_BUILD_VERSION " (%s) from repo: [" APPVEYOR_REPO_NAME "]", this->GetBuildConfiguration());
+	else
+		std::snprintf(buff, sizeof(buff), "1.0007 (%s) [OGSR Engine]", this->GetBuildConfiguration()); //KRodin: I don't know what it's better to write here...
+	return buff;
+}
+
 
 #ifndef XRCORE_STATIC
 BOOL WINAPI DllMain(HINSTANCE hinstDLL, DWORD ul_reason_for_call, LPVOID lpvReserved)
