@@ -868,8 +868,14 @@ u8 CWeapon::idle_state() {
     if ( actor->get_state() & mcSprint ) {
      return eSubstateIdleSprint;
     }
-    else if ( actor->is_actor_running() )
-      return eSubstateIdleMoving;
+	else {
+#ifdef MORE_WPN_IDLE_MOVING_STATES
+		if (actor->is_actor_running() || actor->is_actor_walking() || actor->is_actor_creeping() || actor->is_actor_crouching())
+#else
+		if (actor->is_actor_running())
+#endif
+			return eSubstateIdleMoving;
+	}
 
   return eIdle;
 }
@@ -1821,6 +1827,25 @@ float CWeapon::Weight() const
 
 	return res;
 }
+
+u32 CWeapon::Cost() const
+{
+	u32 res = m_cost;
+	
+#ifdef WPN_COST_INCLUDE_ADDONS
+
+	if (GrenadeLauncherAttachable() && IsGrenadeLauncherAttached())
+		res += pSettings->r_float(GetGrenadeLauncherName(), "cost");
+	if (ScopeAttachable() && IsScopeAttached())
+		res += pSettings->r_float(GetScopeName(), "cost");
+	if (SilencerAttachable() && IsSilencerAttached())
+		res += pSettings->r_float(GetSilencerName(), "cost");
+
+#endif // WPN_COST_INCLUDE_ADDONS
+
+	return res;
+}
+
 void CWeapon::Hide		()
 {
 	if(IsGameTypeSingle())

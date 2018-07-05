@@ -44,7 +44,7 @@ void SBullet::Init(const Fvector& position,
 {
 	flags._storage		= 0;
 	pos 				= position;
-	speed = max_speed	= starting_speed;
+	speed = max_speed	= starting_speed * cartridge.m_kSpeed;
 	VERIFY				(speed>0);
 
 	VERIFY(direction.magnitude()>0);
