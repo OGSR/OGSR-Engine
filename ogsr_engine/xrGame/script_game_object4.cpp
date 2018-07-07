@@ -238,6 +238,7 @@ bool CScriptGameObject::IsInvBoxEmpty()
 #include "grenade.h"
 #include "BottleItem.h"
 #include "WeaponMagazinedWGrenade.h"
+#include "WeaponShotgun.h"
 #include "Actor.h"
 #include "../xr_3da/CameraBase.h"
 
@@ -269,6 +270,7 @@ TEST_OBJECT_CLASS(CScriptGameObject::IsScope, CScope)
 TEST_OBJECT_CLASS(CScriptGameObject::IsSilencer, CSilencer)
 TEST_OBJECT_CLASS(CScriptGameObject::IsGrenadeLauncher, CGrenadeLauncher)
 TEST_OBJECT_CLASS(CScriptGameObject::IsWeaponMagazined, CWeaponMagazined)
+TEST_OBJECT_CLASS(CScriptGameObject::IsWeaponShotgun, CWeaponShotgun)
 TEST_OBJECT_CLASS(CScriptGameObject::IsSpaceRestrictor, CSpaceRestrictor)
 TEST_OBJECT_CLASS(CScriptGameObject::IsStalker, CAI_Stalker)
 TEST_OBJECT_CLASS(CScriptGameObject::IsAnomaly, CCustomZone)

@@ -31,3 +31,4 @@
 #include "Weapon.h"
 #include "WeaponMagazined.h"
 #include "WeaponMagazinedWGrenade.h"
+#include "WeaponShotgun.h"

@@ -32,7 +32,14 @@ public:
 	virtual void	PlayAnimAddOneCartridgeWeapon();
 	void			PlayAnimCloseWeapon	();
 
+	virtual	void	UpdateCL();
+
 	virtual bool	Action(s32 cmd, u32 flags);
+
+#ifdef DUPLET_STATE_SWITCH
+	bool is_duplet_enabled = false;
+	void SwitchDuplet();
+#endif // !DUPLET_STATE_SWITCH
 
 protected:
 	virtual void	OnAnimationEnd		(u32 state);
