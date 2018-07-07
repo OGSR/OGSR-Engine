@@ -23,8 +23,9 @@ void fix_texture_name(LPSTR fn)
 		*_ext = 0;
 }
 
-int get_texture_load_lod(LPCSTR fn)
+int get_texture_load_lod(LPCSTR /*fn*/)
 {
+	/* //KRodin: выключаю, ибо в 2к18 это нафиг не нужно.
 	CInifile::Sect& sect	= pSettings->r_section("reduce_lod_texture_list");
 
 	for(const auto &it : sect.Data )
@@ -40,11 +41,11 @@ int get_texture_load_lod(LPCSTR fn)
 				return 2;
 		}
 	}
+	*/
 
-	if(psTextureLOD<2)
+	if (psTextureLOD < 2)
 		return 0;
-	else
-	if(psTextureLOD<4)
+	else if (psTextureLOD < 4)
 		return 1;
 	else
 		return 2;
