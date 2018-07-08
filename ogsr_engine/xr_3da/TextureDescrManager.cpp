@@ -106,10 +106,10 @@ void CTextureDescrMngr::LoadLTX()
 	}//file-exist
 }
 
-void CTextureDescrMngr::LoadTHM()
+void CTextureDescrMngr::LoadTHM(char* fpath)
 {
 	FS_FileSet				flist;
-	FS.file_list			(flist,"$game_textures$",FS_ListFiles,"*.thm");
+	FS.file_list			(flist,fpath ,FS_ListFiles,"*.thm");
 	Msg						("count of .thm files=%d", flist.size());
 	FS_FileSetIt It			= flist.begin();
 	FS_FileSetIt It_e		= flist.end();
@@ -117,7 +117,7 @@ void CTextureDescrMngr::LoadTHM()
 	string_path				fn;
 	for(;It!=It_e;++It)
 	{
-		FS.update_path		(fn,"$game_textures$", (*It).name.c_str());
+		FS.update_path		(fn,fpath , (*It).name.c_str());
 		IReader* F			= FS.r_open(fn);
 		strcpy_s				(fn,(*It).name.c_str());
 		fix_texture_thm_name(fn);
@@ -175,7 +175,8 @@ void CTextureDescrMngr::Load()
 	TT.Start				();
 
 	LoadLTX					();
-	LoadTHM					();
+	LoadTHM					("$game_textures$");
+	LoadTHM					("$level_textures$");
 
 	Msg("load time=%d ms",TT.GetElapsed_ms());
 }
