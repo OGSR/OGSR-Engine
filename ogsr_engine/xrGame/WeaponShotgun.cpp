@@ -57,13 +57,8 @@ void CWeaponShotgun::Load	(LPCSTR section)
 
 }
 
-
-
-
 void CWeaponShotgun::OnShot () 
 {
-//.?std::swap(m_pHUD->FirePoint(), m_pHUD->FirePoint2());
-//.	std::swap(vLoadedFirePoint, vLoadedFirePoint2);
 	inherited::OnShot();
 }
 
@@ -81,20 +76,26 @@ void CWeaponShotgun::Fire2Start ()
 			if (GetState()==eShowing)		return;
 			if (GetState()==eHiding)		return;
 
+			CWeapon::FireStart();
+
 			if (!iAmmoElapsed)	
 			{
-				CWeapon::FireStart			();
 				SwitchState					(eMagEmpty);
+				StopShooting();
 			}
 			else					
 			{
-				CWeapon::FireStart			();
 				SwitchState					((iAmmoElapsed < iMagazineSize)?eFire:eFire2);
 			}
 		}
-	}else{
-		if (!iAmmoElapsed)	
-			SwitchState						(eMagEmpty);
+	}
+	else
+	{
+		if (!iAmmoElapsed)
+		{
+			SwitchState(eMagEmpty);
+			StopShooting();
+		}
 	}
 }
 
@@ -138,6 +139,39 @@ void CWeaponShotgun::OnShotBoth()
 	pSmokeParticles = NULL;
 	CShootingObject::StartParticles(pSmokeParticles, *m_sSmokeParticlesCurrent, get_LastFP2(), zero_vel, true);
 
+}
+
+void CWeaponShotgun::UpdateCL()
+{
+	float dt = Device.fTimeDelta;
+
+	//когда происходит апдейт состояния оружия
+	//ничего другого не делать
+	if (GetNextState() == GetState())
+	{
+		switch (GetState())
+		{
+		case eFire2:
+			//if (iAmmoElapsed > 0)
+			//	state_Fire(dt);
+
+			if (fTime <= 0)
+			{
+				if (iAmmoElapsed == 0)
+					OnMagazineEmpty();
+				StopShooting();
+			}
+			else
+			{
+				fTime -= dt;
+			}
+
+			break;
+		}
+	}
+
+	inherited::UpdateCL();
+	
 }
 
 void CWeaponShotgun::switch2_Fire	()
@@ -192,8 +226,37 @@ void CWeaponShotgun::UpdateSounds	()
 	if (sndShotBoth.playing())		sndShotBoth.set_position		(get_LastFP());
 }
 
+#ifdef DUPLET_STATE_SWITCH
+void CWeaponShotgun::SwitchDuplet()
+{
+	is_duplet_enabled = !is_duplet_enabled;
+}
+#endif
+
 bool CWeaponShotgun::Action			(s32 cmd, u32 flags) 
 {
+#ifdef DUPLET_STATE_SWITCH
+
+	if (is_duplet_enabled)
+	{
+		switch (cmd)
+		{
+		case kWPN_FIRE:
+		{
+			if (flags&CMD_START)
+			{
+				if (IsPending()) return false;
+				Fire2Start();
+			}
+			else
+				Fire2End();
+		}
+		return true;
+		}
+	}
+
+#endif // !DUPLET_STATE_SWITCH
+
 	if(inherited::Action(cmd, flags)) return true;
 
 	if(	m_bTriStateReload && GetState()==eReload &&
@@ -204,8 +267,11 @@ bool CWeaponShotgun::Action			(s32 cmd, u32 flags)
 		m_sub_state = eSubstateReloadEnd;
 		return true;
 	}
+
+#ifndef DUPLET_STATE_SWITCH
+
 	//если оружие чем-то занято, то ничего не делать
-	if(IsPending()) return false;
+	if (IsPending()) return false;
 
 	switch(cmd) 
 	{
@@ -216,6 +282,9 @@ bool CWeaponShotgun::Action			(s32 cmd, u32 flags)
 			}
 			return true;
 	}
+
+#endif // !DUPLET_STATE_SWITCH
+
 	return false;
 }
 

@@ -709,6 +709,7 @@ public:
 			_DECLARE_FUNCTION10(IsSilencer, bool);
 			_DECLARE_FUNCTION10(IsGrenadeLauncher, bool);
 			_DECLARE_FUNCTION10(IsWeaponMagazined, bool);
+			_DECLARE_FUNCTION10(IsWeaponShotgun, bool);
 			_DECLARE_FUNCTION10(IsSpaceRestrictor, bool);
 			_DECLARE_FUNCTION10(IsStalker, bool);
 			_DECLARE_FUNCTION10(IsAnomaly, bool);

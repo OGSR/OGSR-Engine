@@ -170,15 +170,22 @@ void CWeaponMagazined::FireStart		()
 
 			inherited::FireStart();
 			
-			if (iAmmoElapsed == 0) 
+			if (iAmmoElapsed == 0)
+			{
 				OnMagazineEmpty();
+				StopShooting();
+			}
 			else
 				SwitchState(eFire);
 		}
 	} 
 	else 
 	{
-		if(eReload!=GetState() && eMisfire!=GetState()) OnMagazineEmpty();
+		if(eReload!=GetState() && eMisfire!=GetState()) 
+        {
+            OnMagazineEmpty();
+            StopShooting();
+        }
 	}
 }
 
@@ -437,7 +444,6 @@ void CWeaponMagazined::UpdateCL			()
 {
 	inherited::UpdateCL	();
 	float dt = Device.fTimeDelta;
-
 	
 
 	//когда происходит апдейт состояния оружия

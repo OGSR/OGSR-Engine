@@ -345,6 +345,7 @@ class_<CScriptGameObject> script_register_game_object3(class_<CScriptGameObject>
 		.def("get_weapon",					&script_game_object_cast<CWeapon>)
 		.def("get_weapon_m",				&script_game_object_cast<CWeaponMagazined>)
 		.def("get_weapon_mwg",				&script_game_object_cast<CWeaponMagazinedWGrenade>)
+		.def("get_weapon_sg",				&script_game_object_cast<CWeaponShotgun>)
 		.def("get_weapon_hud",				&CScriptGameObject::GetWeaponHUD)
 		.def("get_hud_visual",				&CScriptGameObject::GetWeaponHUD_Visual)
 		.def("load_hud_visual",				&CScriptGameObject::LoadWeaponHUD_Visual)

@@ -511,7 +511,7 @@ void CWeaponScript::script_register(lua_State *L)
 			.def_readonly("zoom_mode"					,			&CWeapon::m_bZoomMode)
 
 			.def_readonly("is_second_zoom_offset_enabled",			&CWeapon::is_second_zoom_offset_enabled)
-			.def("SwitchScope"							,			&CWeapon::SwitchScope)
+			.def("switch_scope"							,			&CWeapon::SwitchScope)
 
 			.property("ammo_elapsed"					,			&CWeapon::GetAmmoElapsed, &CWeapon::SetAmmoElapsed)
 			.property("const_deviation"					,			&CWeaponScript::FireDeviation)	// отклонение при стрельбе от целика (для непристрелляного оружия).
@@ -525,7 +525,6 @@ void CWeaponScript::script_register(lua_State *L)
 			.def("get_particles_xform"					,			&CWeapon::get_ParticlesXFORM)
 			.def("get_fire_point"						,			&CWeapon::get_CurrentFirePoint)
 			.def("get_fire_point2"						,			&CWeapon::get_CurrentFirePoint2)
-
 
 			,
 			class_<CWeaponMagazined, CWeapon>			("CWeaponMagazined")
@@ -544,7 +543,6 @@ void CWeaponScript::script_register(lua_State *L)
 			class_<CMissile, CInventoryItemObject>		("CMissile")
 			.def_readwrite("destroy_time"				,			&CMissile::m_dwDestroyTime)
 			.def_readwrite("destroy_time_max"			,			&CMissile::m_dwDestroyTimeMax)			
-			
 		];
 }
 
