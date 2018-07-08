@@ -253,8 +253,11 @@ protected:
 	//от 0 до 1, показывает насколько процентов
 	//мы перемещаем HUD  
 	float			m_fZoomRotationFactor;
-	float m_fSecondVP_FovFactor; //модификатор изменения FOV во втором вьюпорте при зуме
+	//модификатор изменения FOV во втором вьюпорте при зуме
+	float m_fSecondVP_FovFactor; 
 	bool			m_bHideCrosshairInZoom;
+
+	float			m_fScopeInertionFactor;
 public:
 
 	IC bool					IsZoomEnabled		()	const	{return m_bZoomEnabled;}
@@ -273,8 +276,9 @@ public:
 
 			void			LoadZoomOffset		(LPCSTR section, LPCSTR prefix);
 
-	virtual float				Weight			() const;		
-	virtual u32					Cost			() const;
+	virtual float			Weight				() const;		
+	virtual u32				Cost				() const;
+	virtual float			GetControlInertionFactor() const;
 
 public:
     virtual EHandDependence		HandDependence		()	const		{	return eHandDependence;}

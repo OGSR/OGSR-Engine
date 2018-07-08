@@ -429,6 +429,9 @@ void CWeapon::Load		(LPCSTR section)
 	else
 		m_sWpn_launcher_bone = wpn_launcher_def_bone;
 
+    m_fSecondVP_FovFactor = 0.0f; //Можно и из конфига прицела читать и наоборот! Пока так.
+	m_fScopeInertionFactor = m_fControlInertionFactor;
+
 	InitAddons();
 
 	//////////////////////////////////////
@@ -459,8 +462,7 @@ void CWeapon::Load		(LPCSTR section)
 		strconcat					(sizeof(temp),temp,"hit_probability_",get_token_name(difficulty_type_token,i));
 		m_hit_probability[i]		= READ_IF_EXISTS(pSettings,r_float,section,temp,1.f);
 	}
-
-	m_fSecondVP_FovFactor = READ_IF_EXISTS(pSettings, r_float, section, "scope_lense_fov_factor", 0.0f); //Можно и из конфига прицела читать и наоборот! Пока так.
+	
 }
 
 void CWeapon::LoadFireParams		(LPCSTR section, LPCSTR prefix)
@@ -1948,4 +1950,14 @@ void CWeapon::UpdateSecondVP()
 	bool bCond_5 = !is_second_zoom_offset_enabled; // Мы не должны быть в режиме второго прицеливания.
 
 	Device.m_SecondViewport.SetSVPActive(bCond_1 && bCond_2 && bCond_3 && bCond_4 && bCond_5);
+}
+
+// Чувствительность мышкии с оружием в руках во время прицеливания
+float CWeapon::GetControlInertionFactor() const
+{
+	if (IsScopeAttached() && IsZoomed())
+		return m_fScopeInertionFactor;
+
+	float fInertionFactor = inherited::GetControlInertionFactor();
+	return fInertionFactor;
 }
