@@ -101,6 +101,8 @@ private:
 	template <typename T>
 	IC		T					*r_open_impl		(LPCSTR path, LPCSTR _fname);
 			void				ProcessExternalArch	();
+	
+			char*				fld_curr_season;
 public:
 								CLocatorAPI		();
 								~CLocatorAPI	();
@@ -162,6 +164,9 @@ public:
 	void						rescan_pathes		();
 	void						lock_rescan			();
 	void						unlock_rescan		();
+	
+	char*						curr_season;
+	char*						get_season_folder	(char* fname);
 };
 
 extern XRCORE_API std::unique_ptr<CLocatorAPI> xr_FS;
