@@ -944,6 +944,8 @@ void CWeaponMagazined::InitAddons()
 			m_UIScope = xr_new<CUIStaticItem>();
 			m_UIScope->Init(*scope_tex_name, "hud\\scope", 0, 0, alNone);
 
+			m_fSecondVP_FovFactor = READ_IF_EXISTS(pSettings, r_float, *m_sScopeName, "scope_lense_fov_factor", 0.0f);
+			m_fScopeInertionFactor = READ_IF_EXISTS(pSettings, r_float, *m_sScopeName, "scope_inertion_factor", m_fControlInertionFactor);
 		}
 		else if(m_eScopeStatus == ALife::eAddonPermanent)
 		{
@@ -956,6 +958,9 @@ void CWeaponMagazined::InitAddons()
 			if(m_UIScope) xr_delete(m_UIScope);
 			m_UIScope = xr_new<CUIStaticItem>();
 			m_UIScope->Init(*scope_tex_name, "hud\\scope", 0, 0, alNone);
+
+			m_fSecondVP_FovFactor = READ_IF_EXISTS(pSettings, r_float, cNameSect(), "scope_lense_fov_factor", 0.0f);
+			m_fScopeInertionFactor = READ_IF_EXISTS(pSettings, r_float, cNameSect(), "scope_inertion_factor", m_fControlInertionFactor);
 		}
 	}
 	else
@@ -970,13 +975,15 @@ void CWeaponMagazined::InitAddons()
 			// for weapon without any scope - scope_zoom_factor will overrider ironsight_zoom_factor
 			m_fIronSightZoomFactor = m_fScopeZoomFactor; 
 		}
+
+		m_fSecondVP_FovFactor = 0.0f;
+		m_fScopeInertionFactor = m_fControlInertionFactor;
 	}
 
 	if (m_bScopeDynamicZoom)
     {
 		m_fRTZoomFactor = m_fScopeZoomFactor;
     }
-
 
 	if(IsSilencerAttached() && SilencerAttachable())
 	{		
