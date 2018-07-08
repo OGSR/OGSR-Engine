@@ -25,7 +25,7 @@ void fix_texture_name(LPSTR fn)
 
 int get_texture_load_lod(LPCSTR /*fn*/)
 {
-	/* //KRodin: âûêëþ÷àþ, èáî â 2ê18 ýòî íàôèã íå íóæíî.
+	/* //KRodin: Ã¢Ã»ÃªÃ«Ã¾Ã·Ã Ã¾, Ã¨Ã¡Ã® Ã¢ 2Ãª18 Ã½Ã²Ã® Ã­Ã Ã´Ã¨Ã£ Ã­Ã¥ Ã­Ã³Ã¦Ã­Ã®.
 	CInifile::Sect& sect	= pSettings->r_section("reduce_lod_texture_list");
 
 	for(const auto &it : sect.Data )
@@ -280,10 +280,11 @@ IDirect3DBaseTexture9*	CRender::texture_load(LPCSTR fRName, u32& ret_msize)
 	fix_texture_name		(fname);
 	IReader* S				= NULL;
 	//if (FS.exist(fn,"$game_textures$",fname,	".dds")	&& strstr(fname,"_bump"))	goto _BUMP;
-	if (!FS.exist(fn,"$game_textures$",	fname,	".dds")	&& strstr(fname,"_bump"))	goto _BUMP_from_base;
-	if (FS.exist(fn,"$level$",			fname,	".dds"))							goto _DDS;
-	if (FS.exist(fn,"$game_saves$",		fname,	".dds"))							goto _DDS;
-	if (FS.exist(fn,"$game_textures$",	fname,	".dds"))							goto _DDS;
+	if (!FS.exist(fn, "$game_textures$", fname, ".dds") && (!FS.exist(fn, "$level_textures$", fname, ".dds")) && strstr(fname,"_bump"))	goto _BUMP_from_base;
+	if (FS.exist(fn, "$level_textures$", fname, ".dds"))							goto _DDS;
+	if (FS.exist(fn, "$level$",	     fname, ".dds"))							goto _DDS;							goto _DDS;
+	if (FS.exist(fn,"$game_saves$",		fname,	".dds"))						goto _DDS;
+	if (FS.exist(fn,"$game_textures$",	fname,	".dds"))						goto _DDS;
 
 #ifdef _EDITOR
 	ELog.Msg(mtError,"Can't find texture '%s'",fname);
