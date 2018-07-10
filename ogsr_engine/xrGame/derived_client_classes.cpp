@@ -281,6 +281,8 @@ void CInventoryScript::script_register(lua_State *L)
 			.def_readwrite("raw_money"					,			&CInventoryOwner::m_money)
 			.property	  ("money"						,			&CInventoryOwner::get_money,				&set_io_money)			
 			//.property	  ("class_name"					,			&get_lua_class_name)			
+			.def( "Name", &CInventoryOwner::Name )
+			.def( "SetName", &CInventoryOwner::SetName )
 			
 		];
 }
