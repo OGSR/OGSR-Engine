@@ -298,20 +298,17 @@ void CUICarBodyWnd::SendMessage(CUIWindow *pWnd, s16 msg, void *pData)
 				{
 					auto wpn = smart_cast<CWeapon*>(CurrentIItem());
 					wpn->Detach(wpn->GetScopeName().c_str(), true);
-				}
-					break;
+				}break;
 				case INVENTORY_DETACH_SILENCER_ADDON:
 				{
 					auto wpn = smart_cast<CWeapon*>(CurrentIItem());
 					wpn->Detach(wpn->GetSilencerName().c_str(), true);
-				}
-					break;
+				}break;
 				case INVENTORY_DETACH_GRENADE_LAUNCHER_ADDON:
 				{
 					auto wpn = smart_cast<CWeapon*>(CurrentIItem());
 					wpn->Detach(wpn->GetGrenadeLauncherName().c_str(), true);
-				}
-					break;
+				}break;
 				case INVENTORY_MOVE_ACTION:
 				{
 					void* d = m_pUIPropertiesBox->GetClickedItem()->GetData();
@@ -325,6 +322,21 @@ void CUICarBodyWnd::SendMessage(CUIWindow *pWnd, s16 msg, void *pData)
 					bool b_all = (d == (void*)33);
 
 					DropItemsfromCell(b_all);
+				}break;
+			}
+
+			// refresh if nessesary
+			switch (m_pUIPropertiesBox->GetClickedItem()->GetTAG())
+			{
+				case INVENTORY_UNLOAD_MAGAZINE:
+				case INVENTORY_DETACH_SCOPE_ADDON:
+				case INVENTORY_DETACH_SILENCER_ADDON:
+				case INVENTORY_DETACH_GRENADE_LAUNCHER_ADDON:
+				{
+					if (m_pInventoryBox)
+					{
+						UpdateLists_delayed();
+					}
 				}break;
 			}
 		}
@@ -452,20 +464,24 @@ void CUICarBodyWnd::MoveItemsfromCell(bool b_all)
 
 	if (owner_list != m_pUIOthersBagList)
 	{ // from actor to box
-		for (u32 j = 0; j<ci->ChildsCount(); ++j)
+		if (b_all)
 		{
-			PIItem _itm = (PIItem)(ci->Child(j)->m_pData);
-			if (m_pOthersObject)
-				TransferItem(_itm, m_pOurObject, m_pOthersObject, false);
-			else
+			for (u32 j = 0; j < ci->ChildsCount(); ++j)
 			{
-				move_item(tmp_id, m_pInventoryBox->object().ID(), _itm->object().ID());
-				//. Actor()->callback(GameObject::eInvBoxItemTake)( m_pInventoryBox->lua_game_object(), _itm->object().lua_game_object() );
+				PIItem _itm = (PIItem)(ci->Child(j)->m_pData);
+				if (m_pOthersObject)
+					TransferItem(_itm, m_pOurObject, m_pOthersObject, true);
+				else
+				{
+					move_item(tmp_id, m_pInventoryBox->object().ID(), _itm->object().ID());
+					//. Actor()->callback(GameObject::eInvBoxItemTake)( m_pInventoryBox->lua_game_object(), _itm->object().lua_game_object() );
+				}
 			}
 		}
+
 		PIItem itm = (PIItem)(ci->m_pData);
 		if (m_pOthersObject)
-			TransferItem(itm, m_pOurObject, m_pOthersObject, false);
+			TransferItem(itm, m_pOurObject, m_pOthersObject, true);
 		else
 		{
 			move_item(tmp_id, m_pInventoryBox->object().ID(), itm->object().ID());
@@ -474,17 +490,21 @@ void CUICarBodyWnd::MoveItemsfromCell(bool b_all)
 	}
 	else
 	{ // from box to actor
-		for (u32 j = 0; j<ci->ChildsCount(); ++j)
+		if (b_all)
 		{
-			PIItem _itm = (PIItem)(ci->Child(j)->m_pData);
-			if (m_pOthersObject)
-				TransferItem(_itm, m_pOthersObject, m_pOurObject, false);
-			else
+			for (u32 j = 0; j < ci->ChildsCount(); ++j)
 			{
-				move_item(m_pInventoryBox->object().ID(), tmp_id, _itm->object().ID());
-				//. Actor()->callback(GameObject::eInvBoxItemTake)( m_pInventoryBox->lua_game_object(), _itm->object().lua_game_object() );
+				PIItem _itm = (PIItem)(ci->Child(j)->m_pData);
+				if (m_pOthersObject)
+					TransferItem(_itm, m_pOthersObject, m_pOurObject, false);
+				else
+				{
+					move_item(m_pInventoryBox->object().ID(), tmp_id, _itm->object().ID());
+					//. Actor()->callback(GameObject::eInvBoxItemTake)( m_pInventoryBox->lua_game_object(), _itm->object().lua_game_object() );
+				}
 			}
 		}
+
 		PIItem itm = (PIItem)(ci->m_pData);
 		if (m_pOthersObject)
 			TransferItem(itm, m_pOthersObject, m_pOurObject, false);
@@ -496,17 +516,14 @@ void CUICarBodyWnd::MoveItemsfromCell(bool b_all)
 	}
 }
 
-void SendEvent_Item_Drop(PIItem	pItem)
+void SendEvent_Item_Drop(u16 from_id, PIItem	pItem)
 {
 	pItem->SetDropManual(TRUE);
 
-	if (OnClient())
-	{
-		NET_Packet P;
-		pItem->object().u_EventGen(P, GE_OWNERSHIP_REJECT, pItem->object().H_Parent()->ID());
-		P.w_u16(pItem->object().ID());
-		pItem->object().u_EventSend(P);
-	}	
+	NET_Packet P;
+	pItem->object().u_EventGen(P, GE_OWNERSHIP_REJECT, from_id);
+	P.w_u16(pItem->object().ID());
+	pItem->object().u_EventSend(P);
 }
 
 void CUICarBodyWnd::DropItemsfromCell(bool b_all)
@@ -523,21 +540,37 @@ void CUICarBodyWnd::DropItemsfromCell(bool b_all)
 		return;
 	}
 
+	CUIDragDropListEx* old_owner = ci->OwnerList();
+
+	u16 from_id = 0;
+	if (old_owner == m_pUIOthersBagList)
+	{
+		from_id = (m_pInventoryBox) ? m_pInventoryBox->object().ID() : smart_cast<CGameObject*>(m_pOthersObject)->ID();
+	}
+	else 
+	{
+		from_id = smart_cast<CGameObject*>(m_pOurObject)->ID();
+	}
+
 	if (b_all)
 	{
 		u32 cnt = ci->ChildsCount();
 
 		for (u32 i = 0; i<cnt; ++i) {
 			CUICellItem*	itm = ci->PopChild();
+
 			PIItem			iitm = (PIItem)itm->m_pData;
-			SendEvent_Item_Drop(iitm);
+			SendEvent_Item_Drop(from_id, iitm);
 		}
 	}
 
 	PIItem	iitm = (PIItem)ci->m_pData;
-	SendEvent_Item_Drop(CurrentIItem());
+	SendEvent_Item_Drop(from_id, iitm);
+
+	old_owner->RemoveItem(ci, false);
 
 	SetCurrentItem(NULL);
+
 	InventoryUtilities::UpdateWeight(*m_pUIOurBagWnd);
 }
 
@@ -601,7 +634,7 @@ void CUICarBodyWnd::ActivatePropertiesBox()
 	
 	LPCSTR _action		= NULL;
 
-	if (pWeapon && !m_pInventoryBox)
+	if (pWeapon)
 	{
 		if (pWeapon->GrenadeLauncherAttachable() && pWeapon->IsGrenadeLauncherAttached())
 		{
@@ -669,14 +702,10 @@ void CUICarBodyWnd::ActivatePropertiesBox()
 	if (hasMany)
 		m_pUIPropertiesBox->AddItem("st_move_all", (void*)33, INVENTORY_MOVE_ACTION);
 
-	if (!m_pInventoryBox)
-	{
-		m_pUIPropertiesBox->AddItem("st_drop", NULL, INVENTORY_DROP_ACTION);
+	m_pUIPropertiesBox->AddItem("st_drop", NULL, INVENTORY_DROP_ACTION);
 
-		if (hasMany)
-			m_pUIPropertiesBox->AddItem("st_drop_all", (void*)33, INVENTORY_DROP_ACTION);
-	}
-	
+	if (hasMany)
+		m_pUIPropertiesBox->AddItem("st_drop_all", (void*)33, INVENTORY_DROP_ACTION);
 
 	if(b_show){
 		m_pUIPropertiesBox->AutoUpdateSize	();
@@ -746,13 +775,14 @@ bool CUICarBodyWnd::MoveItem(CUICellItem* itm)
 
 	PIItem p_itm = (PIItem)itm->m_pData;
 
+	bool bMoveDirection = (old_owner == m_pUIOthersBagList);
+
 	if (m_pOthersObject)
 	{
 		if (TransferItem(p_itm,
-			(old_owner == m_pUIOthersBagList) ? m_pOthersObject : m_pOurObject,
-			(old_owner == m_pUIOurBagList) ? m_pOthersObject : m_pOurObject,
-			(old_owner == m_pUIOurBagList)
-		)
+			bMoveDirection ? m_pOthersObject : m_pOurObject,
+			bMoveDirection ? m_pOurObject : m_pOthersObject,
+			!bMoveDirection)
 			)
 		{
 			CUICellItem* ci = old_owner->RemoveItem(CurrentItem(), false);
@@ -762,8 +792,6 @@ bool CUICarBodyWnd::MoveItem(CUICellItem* itm)
 	else
 	{
 		u16 tmp_id = (smart_cast<CGameObject*>(m_pOurObject))->ID();
-
-		bool bMoveDirection = (old_owner == m_pUIOthersBagList);
 
 		move_item(
 			bMoveDirection ? m_pInventoryBox->object().ID() : tmp_id,
