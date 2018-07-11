@@ -92,6 +92,7 @@ public:
 	virtual LPCSTR	Name        () const;
 	u32					get_money		() const				{return m_money;}
 	void				set_money		(u32 amount, bool bSendEvent);
+	void SetName( LPCSTR name ) { m_game_name = name; };
 protected:
 	u32					m_money;
 	// торговля
