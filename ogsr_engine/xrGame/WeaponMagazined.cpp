@@ -762,6 +762,9 @@ bool CWeaponMagazined::Action(s32 cmd, u32 flags)
 	{
 	case kWPN_RELOAD:
 		{
+#ifdef LOCK_RELOAD_IN_SPRINT
+		if (!ParentIsActor() || !(g_actor->get_state() & mcSprint))
+#endif
 			if(flags&CMD_START) 
 				if(iAmmoElapsed < iMagazineSize || IsMisfire()) 
 					Reload();

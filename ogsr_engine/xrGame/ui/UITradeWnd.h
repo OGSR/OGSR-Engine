@@ -5,6 +5,8 @@
 class CInventoryOwner;
 class CEatableItem;
 class CTrade;
+class CUIPropertiesBox;
+
 struct CUITradeInternal;
 
 class CUIDragDropListEx;
@@ -31,6 +33,10 @@ public:
 
 	void 				DisableAll					();
 	void 				EnableAll					();
+	virtual bool		OnKeyboard					(int dik, EUIMessages keyboard_action);
+	virtual bool		OnMouse						(float x, float y, EUIMessages mouse_action);
+
+	void				ActivatePropertiesBox		();
 
 	void 				SwitchToTalk				();
 	void 				StartTrade					();
@@ -40,11 +46,10 @@ protected:
 	CUITradeInternal*	m_uidata;
 
 	bool				bStarted;
-	bool 				ToOurTrade					();
-	bool 				ToOthersTrade				();
-	bool 				ToOurBag					();
-	bool 				ToOthersBag					();
-	void 				SendEvent_ItemDrop			(PIItem pItem);
+	bool 				ToOurTrade					(CUICellItem* itm);
+	bool 				ToOthersTrade				(CUICellItem* itm);
+	bool 				ToOurBag					(CUICellItem* itm);
+	bool 				ToOthersBag					(CUICellItem* itm);
 	
 	u32					CalcItemsPrice				(CUIDragDropListEx* pList, CTrade* pTrade, bool bBuying);
 	float				CalcItemsWeight				(CUIDragDropListEx* pList);
@@ -54,6 +59,8 @@ protected:
 	void				PerformTrade				();
 	void				UpdatePrices				();
 	void				ColorizeItem				(CUICellItem* itm, bool canTrade, bool highlighted);
+	bool				MoveItem					(CUICellItem * itm);
+	void				MoveItemsfromCell			(bool b_all);
 
 	enum EListType{eNone,e1st,e2nd,eBoth};
 
@@ -72,6 +79,7 @@ protected:
 	CInventoryOwner*	m_pOthersInvOwner;
 	CTrade*				m_pTrade;
 	CTrade*				m_pOthersTrade;
+	CUIPropertiesBox*	m_pUIPropertiesBox;
 
 	u32					m_iOurTradePrice;
 	u32					m_iOthersTradePrice;
@@ -87,7 +95,7 @@ protected:
 
 	bool		xr_stdcall		OnItemDrop			(CUICellItem* itm);
 	bool		xr_stdcall		OnItemStartDrag		(CUICellItem* itm);
-	bool		xr_stdcall		OnItemDbClick		(CUICellItem* itm);
+	bool		xr_stdcall		OnItemDbClick		(CUICellItem* itm);	
 	bool		xr_stdcall		OnItemSelected		(CUICellItem* itm);
 	bool		xr_stdcall		OnItemRButtonClick	(CUICellItem* itm);
 

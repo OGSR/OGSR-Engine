@@ -25,10 +25,13 @@
 #include "UIDragDropListEx.h"
 #include "UICellItem.h"
 #include "UICellItemFactory.h"
+#include "UIPropertiesBox.h"
+#include "UIListBoxItem.h"
 
 #include "../game_object_space.h"
 #include "../script_callback_ex.h"
 #include "../script_game_object.h"
+#include "../xr_3da/xr_input.h"
 
 
 #define				TRADE_XML			"trade.xml"
@@ -165,10 +168,15 @@ void CUITradeWnd::Init()
 
 
 	AttachChild							(&m_uidata->UIPerformTradeButton);
-	xml_init.Init3tButton					(uiXml, "button", 0, &m_uidata->UIPerformTradeButton);
+	xml_init.Init3tButton				(uiXml, "button", 0, &m_uidata->UIPerformTradeButton);
 
 	AttachChild							(&m_uidata->UIToTalkButton);
-	xml_init.Init3tButton					(uiXml, "button", 1, &m_uidata->UIToTalkButton);
+	xml_init.Init3tButton				(uiXml, "button", 1, &m_uidata->UIToTalkButton);
+
+	m_pUIPropertiesBox					= xr_new<CUIPropertiesBox>(); m_pUIPropertiesBox->SetAutoDelete(true);
+	AttachChild(m_pUIPropertiesBox);
+	m_pUIPropertiesBox->Init(0, 0, 300, 300);
+	m_pUIPropertiesBox->Hide();
 
 	m_uidata->UIDealMsg					= NULL;
 
@@ -195,6 +203,8 @@ void CUITradeWnd::InitTrade(CInventoryOwner* pOur, CInventoryOwner* pOthers)
 		
 	m_pTrade							= pOur->GetTrade();
 	m_pOthersTrade						= pOur->GetTrade()->GetPartnerTrade();
+
+	m_pUIPropertiesBox->Hide();
     	
 	EnableAll							();
 
@@ -210,6 +220,22 @@ void CUITradeWnd::SendMessage(CUIWindow *pWnd, s16 msg, void *pData)
 	else if(pWnd == &m_uidata->UIPerformTradeButton && msg == BUTTON_CLICKED)
 	{
 		PerformTrade();
+	}
+	else if (pWnd == m_pUIPropertiesBox && msg == PROPERTY_CLICKED)
+	{
+		if (m_pUIPropertiesBox->GetClickedItem())
+		{
+			switch (m_pUIPropertiesBox->GetClickedItem()->GetTAG())
+			{			
+				case INVENTORY_MOVE_ACTION:
+				{
+					void* d = m_pUIPropertiesBox->GetClickedItem()->GetData();
+					bool b_all = (d == (void*)33);
+
+					MoveItemsfromCell(b_all);
+				}break;
+			}
+		}
 	}
 
 	CUIWindow::SendMessage(pWnd, msg, pData);
@@ -333,36 +359,36 @@ void move_item(CUICellItem* itm, CUIDragDropListEx* from, CUIDragDropListEx* to)
 	to->SetItem				(_itm);
 }
 
-bool CUITradeWnd::ToOurTrade()
+bool CUITradeWnd::ToOurTrade(CUICellItem* itm)
 {
-	if ( !CanMoveToOther( CurrentIItem(), true ) ) return false;
+	if ( !CanMoveToOther((PIItem)m_pCurrentCellItem->m_pData, true ) ) return false;
 
-	move_item				(CurrentItem(), &m_uidata->UIOurBagList, &m_uidata->UIOurTradeList);
+	move_item				(itm, &m_uidata->UIOurBagList, &m_uidata->UIOurTradeList);
 	UpdatePrices			();
 	return					true;
 }
 
-bool CUITradeWnd::ToOthersTrade()
+bool CUITradeWnd::ToOthersTrade(CUICellItem* itm)
 {
-	if ( !CanMoveToOther( CurrentIItem(), false ) ) return false;
+	if ( !CanMoveToOther((PIItem)m_pCurrentCellItem->m_pData, false ) ) return false;
 
-	move_item				(CurrentItem(), &m_uidata->UIOthersBagList, &m_uidata->UIOthersTradeList);
+	move_item				(itm, &m_uidata->UIOthersBagList, &m_uidata->UIOthersTradeList);
 	UpdatePrices			();
 
 	return					true;
 }
 
-bool CUITradeWnd::ToOurBag()
+bool CUITradeWnd::ToOurBag(CUICellItem* itm)
 {
-	move_item				(CurrentItem(), &m_uidata->UIOurTradeList, &m_uidata->UIOurBagList);
+	move_item				(itm, &m_uidata->UIOurTradeList, &m_uidata->UIOurBagList);
 	UpdatePrices			();
 	
 	return					true;
 }
 
-bool CUITradeWnd::ToOthersBag()
+bool CUITradeWnd::ToOthersBag(CUICellItem* itm)
 {
-	move_item				(CurrentItem(), &m_uidata->UIOthersTradeList, &m_uidata->UIOthersBagList);
+	move_item				(itm, &m_uidata->UIOthersTradeList, &m_uidata->UIOthersBagList);
 	UpdatePrices			();
 
 	return					true;
@@ -437,6 +463,59 @@ void CUITradeWnd::PerformTrade()
 	}
 	SetCurrentItem			(NULL);
 }
+
+#include "../xr_level_controller.h"
+
+bool CUITradeWnd::OnKeyboard(int dik, EUIMessages keyboard_action)
+{
+	if (m_pUIPropertiesBox->GetVisible())
+		m_pUIPropertiesBox->OnKeyboard(dik, keyboard_action);
+
+	if (inherited::OnKeyboard(dik, keyboard_action))return true;
+
+	return false;
+}
+
+bool CUITradeWnd::OnMouse(float x, float y, EUIMessages mouse_action)
+{
+	//вызов дополнительного меню по правой кнопке
+	if (mouse_action == WINDOW_RBUTTON_DOWN)
+	{
+		if (m_pUIPropertiesBox->IsShown())
+		{
+			m_pUIPropertiesBox->Hide();
+			return						true;
+		}
+	}
+
+	CUIWindow::OnMouse(x, y, mouse_action);
+
+	return true; // always returns true, because ::StopAnyMove() == true;
+}
+
+void CUITradeWnd::ActivatePropertiesBox()
+{
+	m_pUIPropertiesBox->RemoveAll();
+
+	bool hasMany = CurrentItem()->ChildsCount() > 0;
+
+	m_pUIPropertiesBox->AddItem("st_move", NULL, INVENTORY_MOVE_ACTION);
+
+	if (hasMany)
+		m_pUIPropertiesBox->AddItem("st_move_all", (void*)33, INVENTORY_MOVE_ACTION);
+	
+	m_pUIPropertiesBox->AutoUpdateSize();
+	m_pUIPropertiesBox->BringAllToTop();
+
+	Fvector2						cursor_pos;
+	Frect							vis_rect;
+
+	GetAbsoluteRect(vis_rect);
+	cursor_pos = GetUICursor()->GetCursorPosition();
+	cursor_pos.sub(vis_rect.lt);
+	m_pUIPropertiesBox->Show(vis_rect, cursor_pos);
+}
+
 
 void CUITradeWnd::DisableAll()
 {
@@ -561,6 +640,7 @@ bool CUITradeWnd::OnItemSelected(CUICellItem* itm)
 bool CUITradeWnd::OnItemRButtonClick(CUICellItem* itm)
 {
 	SetCurrentItem				(itm);
+	ActivatePropertiesBox();
 	return						false;
 }
 
@@ -570,39 +650,82 @@ bool CUITradeWnd::OnItemDrop(CUICellItem* itm)
 	CUIDragDropListEx*	old_owner		= itm->OwnerList();
 	CUIDragDropListEx*	new_owner		= CUIDragDropListEx::m_drag_item->BackList();
 	if(old_owner==new_owner || !old_owner || !new_owner)
-					return false;
+		return false;
 
-	if(old_owner==&m_uidata->UIOurBagList && new_owner==&m_uidata->UIOurTradeList)
-		ToOurTrade				();
-	else if(old_owner==&m_uidata->UIOurTradeList && new_owner==&m_uidata->UIOurBagList)
-		ToOurBag				();
-	else if(old_owner==&m_uidata->UIOthersBagList && new_owner==&m_uidata->UIOthersTradeList)
-		ToOthersTrade			();
-	else if(old_owner==&m_uidata->UIOthersTradeList && new_owner==&m_uidata->UIOthersBagList)
-		ToOthersBag				();
-
-	return true;
+	return MoveItem(itm);
 }
 
 bool CUITradeWnd::OnItemDbClick(CUICellItem* itm)
 {
 	SetCurrentItem						(itm);
-	CUIDragDropListEx*	old_owner		= itm->OwnerList();
-	
-	if(old_owner == &m_uidata->UIOurBagList)
-		ToOurTrade				();
-	else if(old_owner == &m_uidata->UIOurTradeList)
-		ToOurBag				();
-	else if(old_owner == &m_uidata->UIOthersBagList)
-		ToOthersTrade			();
-	else if(old_owner == &m_uidata->UIOthersTradeList)
-		ToOthersBag				();
-	else
-		R_ASSERT2(false, "wrong parent for cell item");
+
+	if (Level().IR_GetKeyState(DIK_LSHIFT)) {
+		MoveItemsfromCell(true);
+	}
+	else {
+		if (!MoveItem(itm))
+			R_ASSERT2(false, "wrong parent for cell item");
+	}
 
 	return true;
 }
 
+void CUITradeWnd::MoveItemsfromCell(bool b_all)
+{
+	CUICellItem* cur_item = CurrentItem();
+
+	if (!cur_item) 
+	{
+		return;
+	}
+
+	if (b_all)
+	{
+		u32 cnt = cur_item->ChildsCount();
+
+		//Msg("Move all items %d", cnt);
+
+		CUIDragDropListEx* old_owner = cur_item->OwnerList();
+		CUIDragDropListEx* to;
+
+		if (old_owner == &m_uidata->UIOurBagList)
+			to = &m_uidata->UIOurTradeList;
+		else if (old_owner == &m_uidata->UIOurTradeList)
+			to = &m_uidata->UIOurBagList;
+		else if (old_owner == &m_uidata->UIOthersBagList)
+			to = &m_uidata->UIOthersTradeList;
+		else if (old_owner == &m_uidata->UIOthersTradeList)
+			to = &m_uidata->UIOthersBagList;
+
+		for (u32 i = 0; i < cnt; ++i) 
+		{
+			CUICellItem* itm = cur_item->PopChild();
+
+			//Msg("MoveAllItems child ... %d", i);
+
+			to->SetItem(itm);
+		}
+	}
+
+	MoveItem(cur_item);
+	SetCurrentItem(NULL);
+}
+
+bool CUITradeWnd::MoveItem(CUICellItem* itm) 
+{
+	CUIDragDropListEx*	old_owner = itm->OwnerList();
+
+	if (old_owner == &m_uidata->UIOurBagList)
+		ToOurTrade(itm);
+	else if (old_owner == &m_uidata->UIOurTradeList)
+		ToOurBag(itm);
+	else if (old_owner == &m_uidata->UIOthersBagList)
+		ToOthersTrade(itm);
+	else if (old_owner == &m_uidata->UIOthersTradeList)
+		ToOthersBag(itm);
+
+	return true;
+}
 
 CUICellItem* CUITradeWnd::CurrentItem()
 {

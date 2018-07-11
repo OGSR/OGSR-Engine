@@ -22,7 +22,6 @@ CUIPropertiesBox::~CUIPropertiesBox()
 {
 }
 
-
 void CUIPropertiesBox::Init(float x, float y, float width, float height)
 {
 	inherited::Init			(x,y, width, height);
@@ -140,15 +139,9 @@ void CUIPropertiesBox::AutoUpdateSize()
 	m_UIListWnd.SetHeight(GetHeight());
 	float f = float(m_UIListWnd.GetLongestLength()+m_UIListWnd.GetHorizIndent()) + 2; 
 	SetWidth(_max(20.0f,f));
-//		f = float(m_UIListWnd.GetLongestLength());
 	m_UIListWnd.SetWidth(_max(20.0f,f));
 	m_UIListWnd.UpdateChildrenLenght();
 }
-
-//int CUIPropertiesBox::GetClickedIndex() 
-//{
-////	return m_iClickedElement;
-//}
 
 CUIListBoxItem* CUIPropertiesBox::GetClickedItem()
 {

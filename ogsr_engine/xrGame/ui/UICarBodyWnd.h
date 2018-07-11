@@ -38,6 +38,7 @@ public:
 	void					DisableAll					();
 	void					EnableAll					();
 	virtual bool			OnKeyboard					(int dik, EUIMessages keyboard_action);
+	virtual bool			OnMouse						(float x, float y, EUIMessages mouse_action);
 
 	void					UpdateLists_delayed			();
 
@@ -74,9 +75,6 @@ protected:
 
 	void					ActivatePropertiesBox		();
 	void					EatItem						();
-
-	bool					ToOurBag					();
-	bool					ToOthersBag					();
 	
 	void					SetCurrentItem				(CUICellItem* itm);
 	CUICellItem*			CurrentItem					();
@@ -84,6 +82,9 @@ protected:
 
 	// Взять все
 	void					TakeAll						();
+	bool					MoveItem					(CUICellItem * itm);
+	void					MoveItemsfromCell			(bool b_all);
+	void					DropItemsfromCell			(bool b_all);
 
 
 	bool		xr_stdcall	OnItemDrop					(CUICellItem* itm);
