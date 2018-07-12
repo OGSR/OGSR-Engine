@@ -165,11 +165,18 @@ void CInventory::Take(CGameObject *pObj, bool bNotActivate, bool strict_placemen
 
 		break;
 	default:
-		if(CanPutInSlot(pIItem))
+
+#ifdef RUCK_FLAG_PREFERRED
+		bool def_to_slot = !pIItem->RuckDefault();
+#else
+		bool def_to_slot = true;
+#endif
+
+		if(def_to_slot && CanPutInSlot(pIItem))
 		{
 			result						= Slot(pIItem, bNotActivate); VERIFY(result);
 		} 
-		else if ( !pIItem->RuckDefault() && CanPutInBelt(pIItem))
+		else if (!pIItem->RuckDefault() && CanPutInBelt(pIItem))
 		{
 			result						= Belt(pIItem); VERIFY(result);
 		}

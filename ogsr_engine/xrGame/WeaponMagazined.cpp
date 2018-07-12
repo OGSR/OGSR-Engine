@@ -301,12 +301,15 @@ void CWeaponMagazined::UnloadMagazine(bool spawn_ammo)
 	xr_map<LPCSTR, u16>::iterator l_it;
 	for(l_it = l_ammo.begin(); l_ammo.end() != l_it; ++l_it) 
 	{
-		CWeaponAmmo *l_pA = smart_cast<CWeaponAmmo*>(m_pCurrentInventory->GetAmmo(l_it->first, forActor));
-		if(l_pA) 
+		if (m_pCurrentInventory)
 		{
-			u16 l_free = l_pA->m_boxSize - l_pA->m_boxCurr;
-			l_pA->m_boxCurr = l_pA->m_boxCurr + (l_free < l_it->second ? l_free : l_it->second);
-			l_it->second = l_it->second - (l_free < l_it->second ? l_free : l_it->second);
+			CWeaponAmmo *l_pA = smart_cast<CWeaponAmmo*>(m_pCurrentInventory->GetAmmo(l_it->first, forActor));
+			if (l_pA)
+			{
+				u16 l_free = l_pA->m_boxSize - l_pA->m_boxCurr;
+				l_pA->m_boxCurr = l_pA->m_boxCurr + (l_free < l_it->second ? l_free : l_it->second);
+				l_it->second = l_it->second - (l_free < l_it->second ? l_free : l_it->second);
+			}
 		}
 		if(l_it->second && !unlimited_ammo()) SpawnAmmo(l_it->second, l_it->first);
 	}
@@ -762,6 +765,9 @@ bool CWeaponMagazined::Action(s32 cmd, u32 flags)
 	{
 	case kWPN_RELOAD:
 		{
+#ifdef LOCK_RELOAD_IN_SPRINT
+		if (!ParentIsActor() || !(g_actor->get_state() & mcSprint))
+#endif
 			if(flags&CMD_START) 
 				if(iAmmoElapsed < iMagazineSize || IsMisfire()) 
 					Reload();
