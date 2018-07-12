@@ -972,18 +972,24 @@ void CWeaponMagazined::InitAddons()
 	else
 	{
 		if(m_UIScope) xr_delete(m_UIScope);
-		
+
+		m_bScopeDynamicZoom = false;
+
 		if (IsZoomEnabled())
 		{
 			m_fScopeZoomFactor = pSettings->r_float(cNameSect(), "scope_zoom_factor");
-			m_bScopeDynamicZoom = false;
 
 			// for weapon without any scope - scope_zoom_factor will overrider ironsight_zoom_factor
 			m_fIronSightZoomFactor = m_fScopeZoomFactor; 
-		}
 
-		m_fSecondVP_FovFactor = 0.0f;
-		m_fScopeInertionFactor = m_fControlInertionFactor;
+			m_fSecondVP_FovFactor = READ_IF_EXISTS(pSettings, r_float, *m_sScopeName, "scope_lense_fov_factor", 0.0f);
+			m_fScopeInertionFactor = READ_IF_EXISTS(pSettings, r_float, *m_sScopeName, "scope_inertion_factor", m_fControlInertionFactor);
+		}
+		else 
+		{
+			m_fSecondVP_FovFactor = 0.0f;
+			m_fScopeInertionFactor = m_fControlInertionFactor;
+		}
 	}
 
 	if (m_bScopeDynamicZoom)
