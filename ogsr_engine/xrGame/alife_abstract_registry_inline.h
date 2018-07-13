@@ -41,6 +41,11 @@ IC	const typename CSALifeAbstractRegistry::OBJECT_REGISTRY &CSALifeAbstractRegis
 }
 
 TEMPLATE_SPECIALIZATION
+IC typename CSALifeAbstractRegistry::OBJECT_REGISTRY &CSALifeAbstractRegistry::objects() {
+  return m_objects;
+}
+
+TEMPLATE_SPECIALIZATION
 IC	void CSALifeAbstractRegistry::add				(const _index_type &index, _data_type &data, bool no_assert)
 {
 	const_iterator	I = objects().find(index);

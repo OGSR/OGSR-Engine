@@ -51,6 +51,7 @@ protected:
 	bool										m_can_register_objects;
 	// temp
 	ALife::SCHEDULE_P_VECTOR					m_tpaCombatGroups[2];
+	bool m_unloading;
 
 protected:
 	IC		CALifeSimulatorHeader				&header						();
@@ -112,6 +113,7 @@ public:
 
 public:
 	ALife::ITEM_P_VECTOR						m_temp_item_vector;
+	IC bool is_unloading() const;
 };
 
 #include "alife_simulator_base_inline.h"

@@ -29,6 +29,7 @@ public:
 	virtual	void					save					(IWriter &memory_stream);
 	virtual	void					load					(IReader &file_stream);
 	IC		const OBJECT_REGISTRY	&objects				() const;
+	IC		OBJECT_REGISTRY	&objects				();
 	IC		void					add						(const _index_type &index, _data_type &data, bool no_assert = false);
 	IC		void					remove					(const _index_type &index, bool no_assert = false);
 	IC		_data_type				*object					(const _index_type &index, bool no_assert = false);

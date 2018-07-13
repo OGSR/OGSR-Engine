@@ -14,6 +14,7 @@
 #include "script_engine.h"
 #include "mainmenu.h"
 #include "object_factory.h"
+#include "relation_registry.h"
 
 LPCSTR alife_section = "alife";
 
@@ -65,6 +66,7 @@ CALifeSimulator::CALifeSimulator		(xrServer *server, shared_str *command_line) :
 	functor						();
 
 	load						(p.m_game_or_spawn,!xr_strcmp(p.m_new_or_load,"load") ? false : true, !xr_strcmp(p.m_new_or_load,"new"));
+	RELATION_REGISTRY().build_reverse_personal();
 }
 
 CALifeSimulator::~CALifeSimulator		()

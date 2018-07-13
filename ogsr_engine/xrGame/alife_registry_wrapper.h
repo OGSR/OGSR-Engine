@@ -24,6 +24,9 @@ public:
 	typename _registry_type::_data&			objects					(u16 id);
 	const typename _registry_type::_data*	objects_ptr				(u16 id);
 
+	IC const typename _registry_type::OBJECT_REGISTRY& get_registry_objects() const;
+	IC typename _registry_type::OBJECT_REGISTRY& get_registry_objects();
+
 private:
 	//id - владельца реестра
 	u16	holder_id;
@@ -32,6 +35,18 @@ private:
 //	typename _registry_type::_data	local_registry;
 	typename _registry_type::OBJECT_REGISTRY local_registry;
 };
+
+
+template <typename _registry_type>
+IC const typename _registry_type::OBJECT_REGISTRY& CALifeRegistryWrapper<_registry_type>::get_registry_objects() const {
+  return ai().alife().registry( ( _registry_type* ) NULL ).objects();
+};
+
+template <typename _registry_type>
+IC typename _registry_type::OBJECT_REGISTRY& CALifeRegistryWrapper<_registry_type>::get_registry_objects() {
+  return ai().alife().registry( ( _registry_type* ) NULL ).objects();
+};
+
 
 template <typename _registry_type>
 const typename _registry_type::_data* CALifeRegistryWrapper<_registry_type>::objects_ptr	(u16 id)

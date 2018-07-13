@@ -203,3 +203,8 @@ IC	void						CALifeSimulatorBase::add_story_object(CSE_ALifeDynamicObject *objec
 {
 	story_objects().add(_story_id, object, true);
 }
+
+
+IC bool CALifeSimulatorBase::is_unloading() const {
+  return m_unloading;
+}

@@ -44,6 +44,7 @@ CALifeSimulatorBase::CALifeSimulatorBase	(xrServer *server, LPCSTR section)
 	m_registry_container		= 0;
 	random().seed				(u32(CPU::QPC() & 0xffffffff));
 	m_can_register_objects		= true;
+	m_unloading			= false;
 }
 
 CALifeSimulatorBase::~CALifeSimulatorBase	()
@@ -58,6 +59,7 @@ void CALifeSimulatorBase::destroy			()
 
 void CALifeSimulatorBase::unload			()
 {
+	m_unloading = true;
 	xr_delete					(m_objects);
 	xr_delete					(m_header);
 	xr_delete					(m_time_manager);
@@ -69,6 +71,7 @@ void CALifeSimulatorBase::unload			()
 	xr_delete					(m_groups);
 	xr_delete					(m_registry_container);
 	m_initialized				= false;
+	m_unloading = false;
 }
 
 void CALifeSimulatorBase::reload			(LPCSTR section)

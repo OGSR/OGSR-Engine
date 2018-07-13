@@ -28,6 +28,7 @@ SRelation::~SRelation()
 void RELATION_DATA::clear	()
 {
 	personal.clear();
+	reverse_personal.clear();
 	communities.clear();
 }
 
@@ -86,6 +87,23 @@ CRelationRegistryWrapper& RELATION_REGISTRY::relation_registry()
 }
 
 
+void RELATION_REGISTRY::build_reverse_personal() {
+  for( const auto &it : relation_registry().registry().get_registry_objects() ) {
+    if ( it.first ) { // skip actor (0)
+      const auto &relation_data = relation_registry().registry().objects( it.first );
+      for ( const auto &it2 : relation_data.personal ) {
+        if ( it2.first ) { // skip actor (0)
+          auto &relation_data2 = relation_registry().registry().objects( it2.first );
+	  const auto it3 = std::find( relation_data2.reverse_personal.begin(), relation_data2.reverse_personal.end(), it.first );
+          ASSERT_FMT( it3 == relation_data2.reverse_personal.end(), "[%s]: %u already exists in revers_personal of %u", __FUNCTION__, it.first, it2.first );
+          relation_data2.reverse_personal.push_back( it.first );
+        }
+      }
+    }
+  }
+}
+
+
 RELATION_REGISTRY::FIGHT_VECTOR& RELATION_REGISTRY::fight_registry()
 {
 	if(!m_fight_registry)
@@ -110,15 +128,38 @@ const shared_str& RELATION_REGISTRY::GetSpotName(ALife::ERelationType& type)
 
 //////////////////////////////////////////////////////////////////////////
 
-void RELATION_REGISTRY::ClearRelations	(u16 person_id)
-{
-	const RELATION_DATA* relation_data = relation_registry().registry().objects_ptr(person_id);
-	if(relation_data)
-	{
-		relation_registry().registry().objects(person_id).clear();
-	}
+
+void RELATION_REGISTRY::ClearRelations( u16 person_id ) {
+  if( relation_registry().registry().objects_ptr( person_id ) ) {
+    auto &relation_data = relation_registry().registry().objects( person_id );
+    for ( const auto &it : relation_data.personal ) {
+      if ( it.first ) { // skip actor (0)
+        clear_reverse_personal( person_id, it.first );
+      }
+    }
+    for ( const auto to : relation_data.reverse_personal ) {
+      ASSERT_FMT( relation_registry().registry().objects_ptr( to ), "[%s]: %u not found clearing %u", __FUNCTION__, to, person_id );
+      auto &relation_data2 = relation_registry().registry().objects( to );
+      const auto it = relation_data2.personal.find( person_id );
+      ASSERT_FMT( it != relation_data2.personal.end(), "[%s]: %u not found in personal of %u", __FUNCTION__, person_id, to );
+      relation_data2.personal.erase( it );
+    }
+    auto &objects = relation_registry().registry().get_registry_objects();
+    auto it       = objects.find( person_id );
+    ASSERT_FMT( it != objects.end(), "[%s]: %u not found", __FUNCTION__, person_id );
+    objects.erase( it );
+  }
 }
 
+
+void RELATION_REGISTRY::clear_reverse_personal( u16 from, u16 to ) {
+  ASSERT_FMT( to, "[%s]: actor detected clearing %u", __FUNCTION__, from );
+  ASSERT_FMT( relation_registry().registry().objects_ptr( to ), "[%s]: %u not found clearing %u", __FUNCTION__, to, from );
+  auto &relation_data = relation_registry().registry().objects( to );
+  const auto it = std::find( relation_data.reverse_personal.begin(), relation_data.reverse_personal.end(), from );
+  ASSERT_FMT( it != relation_data.reverse_personal.end(), "[%s]: %u not found in reverse_personal of %u", __FUNCTION__, from, to );
+  relation_data.reverse_personal.erase( it );
+}
 
 
 //////////////////////////////////////////////////////////////////////////
@@ -152,6 +193,14 @@ void RELATION_REGISTRY::SetGoodwill 	(u16 from, u16 to, CHARACTER_GOODWILL goodw
 	clamp							(goodwill, gw_limits.x, gw_limits.y);
 
 	relation_data.personal[to].SetGoodwill(goodwill);
+
+	if ( to ) { // skip actor (0)
+	  auto &relation_data2 = relation_registry().registry().objects( to );
+	  auto it = std::find( relation_data2.reverse_personal.begin(), relation_data2.reverse_personal.end(), from );
+	  if ( it == relation_data2.reverse_personal.end() ) {
+	    relation_data2.reverse_personal.push_back( from );
+	  }
+	}
 
 	if (g_actor)
 		g_actor->callback(GameObject::eOnGoodwillChange)(from, to);
@@ -221,11 +270,13 @@ CHARACTER_GOODWILL	 RELATION_REGISTRY::GetReputationRelation		(CHARACTER_REPUTAT
 
 //////////////////////////////////////////////////////////////////////////
 
-void	 RELATION_REGISTRY::ClearGoodwill			(u16 from, u16 to)
-{
-	if(relation_registry().registry().objects_ptr(from))
-	{
-		RELATION_DATA& relation_data = relation_registry().registry().objects(from);
-		relation_data.personal.erase( to );
-	}
+
+void RELATION_REGISTRY::ClearGoodwill( u16 from, u16 to ) {
+  if ( relation_registry().registry().objects_ptr( from ) ) {
+    auto &relation_data = relation_registry().registry().objects( from );
+    relation_data.personal.erase( to );
+    if ( to ) { // skip actor (0)
+      clear_reverse_personal( from, to );
+    }
+  }
 }

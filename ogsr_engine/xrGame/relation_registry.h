@@ -117,8 +117,10 @@ public:
 	const shared_str&							GetSpotName			(ALife::ERelationType& type);
 	static CRelationRegistryWrapper&			relation_registry();
 	static void									clear_relation_registry();
+	static void build_reverse_personal();
 private:
 	static CRelationRegistryWrapper				*m_relation_registry;
+	static void clear_reverse_personal( u16, u16 );
 };
 
 #include "relation_registry_inline.h"
