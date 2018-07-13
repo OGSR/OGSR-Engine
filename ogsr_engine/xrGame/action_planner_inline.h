@@ -98,20 +98,29 @@ void CPlanner::update				()
 
 		THROW(!solution().empty());
 
-		if (initialized()) {
+		if ( solution().empty() ) {
+		  if ( initialized() ) {
+		    Msg( "! [CPlanner::update]: %s has solution().empty()", m_object->cName().c_str() );
+		    current_action().finalize();
+		    m_current_action_id = _action_id_type(-1);
+		    m_initialized       = false;
+		  }
+		}
+		else {
+		  if ( initialized() ) {
 			if (current_action_id() != solution().front()) {
 				current_action().finalize();
 				m_current_action_id = solution().front();
 				current_action().initialize();
 			}
-		}
-		else {
+		  }
+		  else {
 			m_initialized = true;
 			m_current_action_id = solution().front();
 			current_action().initialize();
+		  }
+		  current_action().execute();
 		}
-
-		current_action().execute();
 	}
 	//KRodin: чтоб не вылетать при вызове апдейта из скрипта, тут ловим ошибку, шедулер в любом случае повиснет - и с зависшим неписем будет разбираться уже специальный скрипт.
 	__except (ExceptStackTrace("[CPlanner::update] stack_trace:\n")) {
