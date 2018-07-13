@@ -329,7 +329,10 @@ protected:
 public:
 	virtual	u32				GetRealPing					() { return m_dwRealPing; };
 
+private:
+	bool m_is_removing_objects;
 public:
+	bool is_removing_objects() { return m_is_removing_objects; }
 			void			remove_objects				();
 	virtual void			OnSessionTerminate			(LPCSTR reason);
 

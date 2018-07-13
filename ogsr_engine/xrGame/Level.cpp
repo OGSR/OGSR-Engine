@@ -183,6 +183,8 @@ CLevel::CLevel():IPureClient	(Device.GetTimerGlobal())
 	}
 	*/
 	//---------------------------------------------------------	
+
+	m_is_removing_objects = false;
 }
 
 extern CAI_Space *g_ai_space;

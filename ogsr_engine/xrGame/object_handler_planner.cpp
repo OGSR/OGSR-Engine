@@ -300,6 +300,19 @@ void CObjectHandlerPlanner::remove_item		(CInventoryItem *inventory_item)
 		set_goal			(MonsterSpace::eObjectActionIdle,0,0,0,0,0);
 	}
 
+	if ( !Level().is_removing_objects() )
+	  for ( ;; ) {
+	    const auto it = std::find_if(
+	      m_current_state.conditions().begin(), m_current_state.conditions().end(), [ & ]( const auto it ) {
+	        return action_object_id( it.condition() ) == inventory_item->object().ID();
+	      }
+	    );
+	    if ( it == m_current_state.conditions().end() )
+	      break;
+	    Msg( "! [%s]: %s found in m_current_state", __FUNCTION__, inventory_item->object().cName().c_str() );
+	    m_current_state.remove_condition( it->condition() );
+	  }
+
 	remove_evaluators		(&inventory_item->object());
 	remove_operators		(&inventory_item->object());
 }
