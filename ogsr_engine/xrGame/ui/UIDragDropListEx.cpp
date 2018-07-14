@@ -300,15 +300,17 @@ void CUIDragDropListEx::ReinitScroll()
 		m_vScrollBar->Show			( h1 > h2 );
 		m_vScrollBar->Enable		( h1 > h2 );
 
-		m_vScrollBar->SetRange		(0, _max(0,iFloor(h1-h2)) );
-//		m_vScrollBar->SetScrollPos	(0);
-		m_vScrollBar->SetStepSize	(CellSize().y/3);
-		m_vScrollBar->SetPageSize	(iFloor(GetWndSize().y/float(CellSize().y)));
-
+		m_vScrollBar->SetRange		(0, _max(0, iFloor(h1 - h2)));
+		m_vScrollBar->SetStepSize	(CellSize().y / 3);
+		m_vScrollBar->SetPageSize	(1);
+		
 		m_vScrollBar->SetScrollPos(m_vScrollBar->GetScrollPos());
 
 		m_container->SetWndPos		(0,0);
 }
+
+#include "../xr_3da/xr_input.h"
+#include "../level.h"
 
 bool CUIDragDropListEx::OnMouse(float x, float y, EUIMessages mouse_action)
 {
@@ -316,14 +318,26 @@ bool CUIDragDropListEx::OnMouse(float x, float y, EUIMessages mouse_action)
 
 	if(m_vScrollBar->IsShown())
 	{
+		bool with_shift = (Level().IR_GetKeyState(DIK_LSHIFT));
+
 		switch(mouse_action){
 		case WINDOW_MOUSE_WHEEL_DOWN:
 				m_vScrollBar->TryScrollInc();
+				if (with_shift) 
+				{
+					m_vScrollBar->TryScrollInc();
+					m_vScrollBar->TryScrollInc();
+				}
 				return true;
 				break;
 
 		case WINDOW_MOUSE_WHEEL_UP:
 				m_vScrollBar->TryScrollDec();
+				if (with_shift)
+				{
+					m_vScrollBar->TryScrollDec();
+					m_vScrollBar->TryScrollDec();
+				}
 				return true;
 				break;
 		}
