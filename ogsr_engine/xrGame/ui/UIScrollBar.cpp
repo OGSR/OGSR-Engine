@@ -219,12 +219,12 @@ void CUIScrollBar::ClampByViewRect()
 	}
 }
 
-void CUIScrollBar::SetPosScrollFromView(float view_pos, float view_size, float view_offs)
+void CUIScrollBar::SetPosScrollFromView(float view_pos, int view_size, int view_offs)
 {
 	int scroll_size	= ScrollSize();
 	float pos			= view_pos-view_offs;
-	float work_size	= m_ScrollWorkArea-view_size;
-	SetScrollPosClamped	(work_size?iFloor(((pos/work_size)*(scroll_size) + m_iMinPos)):0);
+	int work_size = m_ScrollWorkArea - view_size;
+	SetScrollPosClamped	(work_size ? iFloor(((pos/work_size)*(scroll_size) + m_iMinPos)):0);
 }
 
 int CUIScrollBar::PosViewFromScroll(int view_size, int view_offs)
@@ -354,6 +354,15 @@ void CUIScrollBar::Draw()
 
 void CUIScrollBar::Refresh()
 {
-	SendMessage(m_ScrollBox, SCROLLBOX_MOVE, NULL);
+	if (m_bIsHorizontal)
+	{
+		if (GetMessageTarget())
+			GetMessageTarget()->SendMessage(this, SCROLLBAR_HSCROLL);
+	}
+	else
+	{
+		if (GetMessageTarget())
+			GetMessageTarget()->SendMessage(this, SCROLLBAR_VSCROLL);
+	}
 }
 

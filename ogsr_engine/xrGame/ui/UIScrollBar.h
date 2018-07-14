@@ -37,7 +37,7 @@ protected:
 
 	u32				ScrollSize			(){return _max(1,m_iMaxPos-m_iMinPos-m_iPageSize+1);}
 	void			ClampByViewRect		();
-	void			SetPosScrollFromView(float view_pos, float view_width, float view_offs);
+	void			SetPosScrollFromView(float view_pos, int view_width, int view_offs);
 	int				PosViewFromScroll	(int view_size, int view_offs);
 	void			SetScrollPosClamped	(int iPos) { 
 														m_iScrollPos = iPos; 

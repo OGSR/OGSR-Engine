@@ -306,7 +306,7 @@ void CUIDragDropListEx::ReinitScroll()
 		
 		m_vScrollBar->SetScrollPos(m_vScrollBar->GetScrollPos());
 
-		m_container->SetWndPos		(0,0);
+		m_container->SetWndPos(m_container->GetWndPos().x, float(-m_vScrollBar->GetScrollPos()));
 }
 
 #include "../xr_3da/xr_input.h"
