@@ -66,6 +66,8 @@ void CUIInventoryWnd::InitInventory()
 
 	m_pInv						= &pInvOwner->inventory();
 
+	int bag_scroll = m_pUIBagList->ScrollPos();
+
 	UIPropertiesBox.Hide		();
 	ClearAllLists				();
 	m_pMouseCapturer			= NULL;
@@ -170,6 +172,8 @@ void CUIInventoryWnd::InitInventory()
 	    m_pUIBagList->SetItem( itm );
 	  }
 	}
+
+	m_pUIBagList->SetScrollPos(bag_scroll);
 
 	UpdateWeight();
 
