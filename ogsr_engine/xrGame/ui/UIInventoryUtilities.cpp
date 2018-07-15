@@ -101,7 +101,7 @@ bool InventoryUtilities::FreeRoom_inBelt	(TIItemContainer& item_list, PIItem _it
 
 	item_list.push_back	(_item);
 	std::stable_sort(
-	  item_list.begin(), item_list.end(), []( const auto a, const auto b ) {
+	  item_list.begin(), item_list.end(), []( const auto& a, const auto& b ) {
 	    if ( a->GetGridWidth() > b->GetGridWidth() ) return true;
 	    if ( a->GetGridWidth() == b->GetGridWidth() )
 	      return a->GetGridHeight() > b->GetGridHeight();

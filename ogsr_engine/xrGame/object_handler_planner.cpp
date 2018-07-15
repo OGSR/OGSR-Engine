@@ -303,7 +303,7 @@ void CObjectHandlerPlanner::remove_item		(CInventoryItem *inventory_item)
 	if ( !Level().is_removing_objects() )
 	  for ( ;; ) {
 	    const auto it = std::find_if(
-	      m_current_state.conditions().begin(), m_current_state.conditions().end(), [ & ]( const auto it ) {
+	      m_current_state.conditions().begin(), m_current_state.conditions().end(), [ & ]( const auto& it ) {
 	        return action_object_id( it.condition() ) == inventory_item->object().ID();
 	      }
 	    );

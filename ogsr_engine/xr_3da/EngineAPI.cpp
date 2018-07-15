@@ -32,12 +32,12 @@ void CEngineAPI::Initialize()
 	constexpr const char* r2_name = "xrRender.dll";
 	Msg("--Loading DLL: [%s]", r2_name);
 	hRender = LoadLibrary(r2_name);
-	ASSERT_FMT(hRender, "Failed render loading. Error code: [%d]", GetLastError());
+	ASSERT_FMT(hRender, "Failed render loading. Error: [%s]", Debug.error2string(GetLastError()));
 
 	constexpr const char* g_name = "xrGame.dll";
 	Msg("--Loading DLL: [%s]", g_name);
 	hGame = LoadLibrary(g_name);
-	ASSERT_FMT(hGame, "Game DLL raised exception during loading or there is no game DLL at all. Error code: [%d]", GetLastError());
+	ASSERT_FMT(hGame, "Game DLL raised exception during loading or there is no game DLL at all. Error: [%s]", Debug.error2string(GetLastError()));
 	pCreate = (Factory_Create*)GetProcAddress(hGame, "xrFactory_Create");
 	R_ASSERT(pCreate);
 	pDestroy = (Factory_Destroy*)GetProcAddress(hGame, "xrFactory_Destroy");

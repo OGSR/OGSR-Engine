@@ -94,7 +94,7 @@ void RELATION_REGISTRY::build_reverse_personal() {
       for ( const auto &it2 : relation_data.personal ) {
         if ( it2.first ) { // skip actor (0)
           auto &relation_data2 = relation_registry().registry().objects( it2.first );
-	  const auto it3 = std::find( relation_data2.reverse_personal.begin(), relation_data2.reverse_personal.end(), it.first );
+          const auto it3 = std::find( relation_data2.reverse_personal.begin(), relation_data2.reverse_personal.end(), it.first );
           ASSERT_FMT( it3 == relation_data2.reverse_personal.end(), "[%s]: %u already exists in revers_personal of %u", __FUNCTION__, it.first, it2.first );
           relation_data2.reverse_personal.push_back( it.first );
         }
