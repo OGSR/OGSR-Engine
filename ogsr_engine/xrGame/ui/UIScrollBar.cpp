@@ -252,12 +252,12 @@ void CUIScrollBar::SendMessage(CUIWindow *pWnd, s16 msg, void *pData)
 			ClampByViewRect		();
 			if(m_bIsHorizontal)
 			{
-				SetPosScrollFromView(m_ScrollBox->GetWndPos().x,m_ScrollBox->GetWidth(),GetHeight());
+				SetPosScrollFromView(m_ScrollBox->GetWndPos().x,(int)m_ScrollBox->GetWidth(),(int)GetHeight());
 				if (GetMessageTarget())
 					GetMessageTarget()->SendMessage(this, SCROLLBAR_HSCROLL);
 			}else
 			{
-				SetPosScrollFromView(m_ScrollBox->GetWndPos().y,m_ScrollBox->GetHeight(),GetWidth());
+				SetPosScrollFromView(m_ScrollBox->GetWndPos().y,(int)m_ScrollBox->GetHeight(),(int)GetWidth());
 				if (GetMessageTarget())
 					GetMessageTarget()->SendMessage(this, SCROLLBAR_VSCROLL);
 			}
