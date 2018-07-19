@@ -274,6 +274,7 @@ LPCTSTR __stdcall InternalGetStackTraceString(DWORD dwOpts, EXCEPTION_POINTERS* 
 		Log("!!FATAL: inner exception in  InternalGetStackTraceString");
         szRet = NULL;
     }
+    DeinitializeSymbolEngine();
     return szRet;
 }
 
@@ -330,13 +331,11 @@ void InitializeSymbolEngine() {
         SymSetOptions(dwOpts | SYMOPT_DEFERRED_LOADS | SYMOPT_LOAD_ANYTHING | SYMOPT_UNDNAME | SYMOPT_LOAD_LINES);
 
         HANDLE hProcess = (HANDLE)GetCurrentProcessId();
-        SymInitialize(hProcess, NULL, TRUE);
+        g_bSymEngInit = SymInitialize( hProcess, NULL, TRUE );
         // if (g_SymServerLookup)
         //{
         //    SymSetSearchPath(hProcess, ms_symsrv);
         //}
-
-        g_bSymEngInit = TRUE;
     }
 }
 

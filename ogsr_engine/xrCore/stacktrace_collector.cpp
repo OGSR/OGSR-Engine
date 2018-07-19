@@ -4,6 +4,10 @@
 
 //!!! KRodin: It is necessary to disable in the settings of all projects "Frame pointer ommision" (/Oy), otherwise it will not work !!!
 
+#ifdef _M_IX86
+#pragma message( "CaptureStackBackTrace на x86 не всегда может развернуть стек. Это не баг, так и должно быть." )
+#endif
+
 #include "stacktrace_collector.h"
 
 #pragma warning(push)
@@ -28,7 +32,7 @@ void BuildStackTrace(StackTraceInfo& stackTrace) {
 	std::lock_guard<std::mutex> lock(dbghelpMutex);
 
 	const auto processHandle = GetCurrentProcess();
-	SymInitialize(processHandle, nullptr, TRUE);
+	const BOOL SymInit = SymInitialize(processHandle, nullptr, TRUE);
 
 	const auto framesCount = CaptureStackBackTrace(1, MaxStackTraceDepth, stack, nullptr);
 	auto symbolInfo = reinterpret_cast<SYMBOL_INFO*>(&symbol);
@@ -51,6 +55,9 @@ void BuildStackTrace(StackTraceInfo& stackTrace) {
 	}
 
 	stackTrace.count = framesCount;
+
+	if (SymInit)
+		SymCleanup(processHandle);
 }
 
 #pragma optimize("", on)

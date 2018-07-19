@@ -5,6 +5,7 @@ configuration: Release
 platform:
 - x86
 - x64
+shallow_clone: true
 before_build:
 - cmd: >-
     rem set OGSR_DEPLOY=true
