@@ -175,6 +175,8 @@ void xrDebug::backend(const char *expression, const char *description, const cha
 
 	if (get_on_dialog())
 		get_on_dialog()(false);
+
+	TerminateProcess( GetCurrentProcess(), 1 );
 #else
 	DEBUG_INVOKE;
 #endif
@@ -371,6 +373,8 @@ LONG WINAPI UnhandledFilter(_EXCEPTION_POINTERS *pExceptionInfo)
 
 		if (Debug.get_on_dialog())
 			Debug.get_on_dialog()(false);
+
+		TerminateProcess( GetCurrentProcess(), 1 );
 #endif
 	}
 
