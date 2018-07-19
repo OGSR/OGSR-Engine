@@ -1,17 +1,10 @@
-prefetch("_G")
 
-function cs_register(factory,client_object_class,server_object_class,clsid,script_clsid)
-	factory:register	(client_object_class,server_object_class,clsid,script_clsid)
-end
-
-function c_register(factory,client_object_class,clsid,script_clsid)
-	if (editor() == false) then
-		factory:register(client_object_class,clsid,script_clsid)
-	end
+local function cs_register(factory, ...)
+	factory:register(...)
 end
 
 function register(object_factory)
-	c_register	(object_factory, "ui_main_menu.main_menu",								"MAIN_MNU", "main_menu")
+	cs_register	(object_factory, "ui_main_menu.main_menu",								"MAIN_MNU", "main_menu")
 	
 	cs_register	(object_factory, "ce_smart_zone", "smart_terrain.se_smart_terrain",		"SMRTTRRN",	"smart_terrain")
 	cs_register	(object_factory, "ce_smart_zone", "se_respawn.se_respawn",				"RE_SPAWN", "respawn")

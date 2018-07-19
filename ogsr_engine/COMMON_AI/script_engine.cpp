@@ -32,45 +32,45 @@ void CScriptEngine::unload()
 	*m_last_no_file = 0;
 }
 
-int CScriptEngine::lua_panic(lua_State *L)
-{
-	print_output(L, "[CScriptEngine::lua_panic]", LUA_ERRRUN);
-	Debug.fatal(DEBUG_INFO, "[CScriptEngine::lua_panic]: %s", lua_isstring(L, -1) ? lua_tostring(L, -1) : "");
-	return 0;
+
+#define DEF_LUA_ERROR_TEMPLATE( L )                  \
+print_output( L, "[" __FUNCTION__ "]", LUA_ERRRUN ); \
+FATAL( "[%s]: %s", __FUNCTION__, lua_isstring( L, -1 ) ? lua_tostring( L, -1 ) : "" );
+
+int CScriptEngine::lua_panic( lua_State* L ) {
+  DEF_LUA_ERROR_TEMPLATE( L )
+  return 0;
 }
 
 #ifdef LUABIND_NO_EXCEPTIONS
-void CScriptEngine::lua_error(lua_State *L)
-{
-	print_output(L, "[CScriptEngine::lua_error]", LUA_ERRRUN);
-	Debug.fatal(DEBUG_INFO, "[CScriptEngine::lua_error]: %s", lua_isstring(L, -1) ? lua_tostring(L, -1) : "");
+void CScriptEngine::lua_error( lua_State* L ) {
+  DEF_LUA_ERROR_TEMPLATE( L )
 }
 #endif
 
-int CScriptEngine::lua_pcall_failed(lua_State *L)
-{
-	print_output(L, "[CScriptEngine::lua_pcall_failed]", LUA_ERRRUN);
-	Debug.fatal(DEBUG_INFO, "[CScriptEngine::lua_pcall_failed]: %s", lua_isstring(L, -1) ? lua_tostring(L, -1) : "");
-	if (lua_isstring(L, -1))
-		lua_pop(L, 1);
-	return LUA_ERRRUN;
+int CScriptEngine::lua_pcall_failed( lua_State* L ) {
+  DEF_LUA_ERROR_TEMPLATE( L )
+  if ( lua_isstring( L, -1 ) )
+    lua_pop( L, 1 );
+  return LUA_ERRRUN;
 }
+
 
 #ifdef LUABIND_NO_EXCEPTIONS
 #ifdef LUABIND_09
-void lua_cast_failed(lua_State *L, const luabind::type_id& info)
+void lua_cast_failed( lua_State* L, const luabind::type_id& info )
 #else
-void lua_cast_failed(lua_State *L, LUABIND_TYPE_INFO info)
+void lua_cast_failed( lua_State* L, LUABIND_TYPE_INFO info )
 #endif
 {
-	CScriptEngine::print_output(L, "[lua_cast_failed]", LUA_ERRRUN);
+  CScriptEngine::print_output( L, "[" __FUNCTION__ "]", LUA_ERRRUN );
 #ifdef LUABIND_09
-	Msg("LUA error: cannot cast lua value to %s", info.name());
-	//Debug.fatal(DEBUG_INFO, "LUA error: cannot cast lua value to %s", info.name()); //KRodin: Тут наверное вылетать не надо.
+  const char* info_name = info.name();
 #else
-	Msg("LUA error: cannot cast lua value to %s", info->name());
-	//Debug.fatal(DEBUG_INFO, "LUA error: cannot cast lua value to %s", info->name()); //KRodin: Тут наверное вылетать не надо.
+  const char* info_name = info->name();
 #endif
+  Msg( "!![%s] LUA error: cannot cast lua value to [%s]", __FUNCTION__, info_name );
+  //FATAL("[%s] LUA error: cannot cast lua value to [%s]", __FUNCTION__, info_name); //KRodin: Тут наверное вылетать не надо.
 }
 #endif
 
@@ -323,32 +323,10 @@ bool CScriptEngine::process_file(const char* file_name, bool reload_modules)
 	return result;
 }
 
-void CScriptEngine::register_script_classes()
-{
-	string_path					S;
-	FS.update_path(S, "$game_config$", "script.ltx");
-	CInifile					*l_tpIniFile = xr_new<CInifile>(S);
-	R_ASSERT(l_tpIniFile);
-
-	if (!l_tpIniFile->section_exist("common")) {
-		xr_delete(l_tpIniFile);
-		return;
-	}
-
-	shared_str m_class_registrators = READ_IF_EXISTS(l_tpIniFile, r_string, "common", "class_registrators", "");
-	xr_delete(l_tpIniFile);
-
-	u32							n = _GetItemCount(*m_class_registrators);
-	string256					I;
-	for (u32 i = 0; i<n; ++i) {
-		_GetItem(*m_class_registrators, i, I);
-		luabind::functor<void>	result;
-		if (!functor(I, result)) {
-			Msg("!![CScriptEngine::register_script_classes()] Cannot load class registrator [%s]!", I);
-			continue;
-		}
-		result(const_cast<CObjectFactory*>(&object_factory()));
-	}
+void CScriptEngine::register_script_classes() {
+  luabind::functor<void> result;
+  ASSERT_FMT( functor( "class_registrator.register", result ), "[%s] Cannot load class_registrator!", __FUNCTION__ );
+  result( const_cast<CObjectFactory*>( &object_factory() ) );
 }
 
 bool CScriptEngine::function_object(const char* function_to_call, luabind::object &object, int type)
