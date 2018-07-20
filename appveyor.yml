@@ -1,7 +1,9 @@
 version: 1.0.{build}
 skip_tags: true
 image: Previous Visual Studio 2017
-configuration: Release
+configuration:
+- Debug
+- Release
 platform:
 - x86
 - x64
