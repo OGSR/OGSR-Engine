@@ -1,6 +1,14 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
     <ProjectConfiguration Include="Release|Win32">
       <Configuration>Release</Configuration>
       <Platform>Win32</Platform>
@@ -70,7 +78,13 @@
     <Link Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
       <TargetMachine>MachineX86</TargetMachine>
     </Link>
+    <Link Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+      <TargetMachine>MachineX86</TargetMachine>
+    </Link>
     <Link Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+      <TargetMachine>MachineX64</TargetMachine>
+    </Link>
+    <Link Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
       <TargetMachine>MachineX64</TargetMachine>
     </Link>
   </ItemDefinitionGroup>
