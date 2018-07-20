@@ -4,7 +4,6 @@
 
 #include <new.h> // for _set_new_mode
 #include <signal.h> // for signals
-#include <mutex>
 
 XRCORE_API xrDebug Debug;
 
@@ -19,12 +18,9 @@ static thread_local StackTraceInfo stackTrace;
 
 void LogStackTrace(const char* header)
 {
-	//if (IsDebuggerPresent())
-	//	return;
-
+	Log(header);
 	__try
 	{
-		Log(header);
 		Log("*********************************************************************************");
 		BuildStackTrace(stackTrace);
 		for (size_t i = 0; i < stackTrace.count; ++i)
@@ -36,9 +32,6 @@ void LogStackTrace(const char* header)
 
 void LogStackTrace(const char* header, _EXCEPTION_POINTERS *pExceptionInfo)
 {
-	//if (IsDebuggerPresent())
-	//	return;
-
 	Msg("!![LogStackTrace] ExceptionCode is [%x]", pExceptionInfo->ExceptionRecord->ExceptionCode);
 	Log(header);
 	__try
@@ -244,7 +237,7 @@ int out_of_memory_handler	(size_t size)
 	u32						eco_smem		= g_pSharedMemoryContainer->stat_economy	();
 	Msg						("* [x-ray]: process heap[%d K]", process_heap/1024);
 	Msg						("* [x-ray]: economy: strings[%d K], smem[%d K]",eco_strings/1024,eco_smem);
-	Debug.fatal				(DEBUG_INFO,"Out of memory. Memory request: %d K",size/1024);
+	FATAL					("Out of memory. Memory request: [%d K]", size/1024);
 	return					1;
 }
 
@@ -304,27 +297,26 @@ void save_mini_dump(_EXCEPTION_POINTERS *pExceptionInfo)
 		if (bOK)
 			Msg("--Saved dump file to [%s]", szDumpPath);
 		else
-			Msg("!!Failed to save dump file to [%s] (error [%d])", szDumpPath, GetLastError());
+			Msg("!!Failed to save dump file to [%s] (error [%s])", szDumpPath, Debug.error2string(GetLastError()));
 
 		::CloseHandle(hFile);
 	}
 	else
 	{
-		Msg("!!Failed to create dump file [%s] (error [%d])", szDumpPath, GetLastError());
+		Msg("!!Failed to create dump file [%s] (error [%s])", szDumpPath, Debug.error2string(GetLastError()));
 	}
 }
 #endif
 
-void format_message	(char* buffer, const u32 &buffer_size)
+void format_message	(char* buffer, const size_t& buffer_size)
 {
-    LPVOID message;
-    DWORD error_code = GetLastError(); 
-
-	if (!error_code) {
+	auto error_code = GetLastError();
+	if ( error_code == ERROR_SUCCESS ) {
 		*buffer	= 0;
 		return;
 	}
 
+    void* message = nullptr;
     FormatMessage(
         FORMAT_MESSAGE_ALLOCATE_BUFFER | 
         FORMAT_MESSAGE_FROM_SYSTEM,
@@ -336,14 +328,14 @@ void format_message	(char* buffer, const u32 &buffer_size)
 		nullptr
 	);
 
-	sprintf		(buffer,"[error][%8d]    : %s",error_code, (char*)&message);
-    LocalFree	(message);
+	sprintf( buffer, "[error][%8d] : [%s]", error_code, ( char* )message );
+    LocalFree(message);
 }
 
 
 LONG WINAPI UnhandledFilter(_EXCEPTION_POINTERS *pExceptionInfo)
 {
-	if (!error_after_dialog /*&& !IsDebuggerPresent()*/)
+	if (!error_after_dialog)
 	{
 		auto pCrashHandler = Debug.get_crashhandler();
 		if (pCrashHandler != nullptr)
@@ -422,11 +414,6 @@ void _terminate()
 #endif
 
 	exit(-1);
-}
-
-void debug_on_thread_spawn()
-{
-	std::set_terminate(_terminate);
 }
 
 static void handler_base(const char* reason_string)
@@ -514,13 +501,6 @@ static void pure_call_handler()
 	handler_base("pure virtual function call");
 }
 
-/* //Не используется
-static void unexpected_handler()
-{
-	handler_base					("unexpected program termination");
-}
-*/
-
 static void abort_handler(int signal)
 {
 	handler_base("application is aborting");
@@ -536,27 +516,26 @@ static void illegal_instruction_handler(int signal)
 	handler_base("illegal instruction");
 }
 
-//	static void storage_access_handler		(int signal)
-//	{
-//		handler_base					("illegal storage access");
-//	}
-
 static void termination_handler(int signal)
 {
 	handler_base("termination with exit code 3");
 }
 
+static void segment_violation( int signal ) {
+  handler_base( "Segment violation error" );
+}
+
 void xrDebug::_initialize(const bool &dedicated)
 {
-	debug_on_thread_spawn();
+	std::set_terminate( _terminate );
 
 	_set_abort_behavior(0, _WRITE_ABORT_MSG | _CALL_REPORTFAULT);
 	signal(SIGABRT, abort_handler);
 	signal(SIGABRT_COMPAT, abort_handler);
 	signal(SIGFPE, floating_point_handler);
 	signal(SIGILL, illegal_instruction_handler);
+	//signal(SIGSEGV, segment_violation);
 	signal(SIGINT, 0);
-	//		signal							(SIGSEGV,		storage_access_handler);
 	signal(SIGTERM, termination_handler);
 
 	_set_invalid_parameter_handler(&invalid_parameter_handler);
@@ -567,9 +546,6 @@ void xrDebug::_initialize(const bool &dedicated)
 
 	_set_purecall_handler(&pure_call_handler);
 
-/* // should be if we use exceptions
-	std::set_unexpected(_terminate);
-*/
 	::SetUnhandledExceptionFilter(UnhandledFilter);
 
 #ifdef USE_OWN_ERROR_MESSAGE_WINDOW

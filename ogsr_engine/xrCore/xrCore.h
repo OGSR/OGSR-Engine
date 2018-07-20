@@ -19,6 +19,10 @@
 #	define DEBUG
 #endif
 
+#if defined( _DEBUG ) && defined( NDEBUG )
+#error Something strange...
+#endif
+
 #if defined(DEBUG) && defined(NDEBUG)
 #	undef NDEBUG
 #endif
