@@ -60,7 +60,7 @@ public:
 	IC CDB::RESULT*	r_begin			()	{	return CL.r_begin();		};
 	IC CDB::RESULT*	r_end			()	{	return CL.r_end();			};
 	IC void			r_free			()	{	CL.r_free();				}
-	IC int			r_count			()	{	return CL.r_count();		};
+	IC int			r_count			()	{	return int(CL.r_count());	};
 	IC void			r_clear			()	{	CL.r_clear();				};
 	IC void			r_clear_compact	()	{	CL.r_clear_compact();		};
 	

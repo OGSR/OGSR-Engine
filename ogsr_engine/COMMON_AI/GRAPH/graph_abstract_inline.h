@@ -219,7 +219,10 @@ IC	void CAbstractGraph::save			(IWriter &stream)
 	stream.open_chunk			(1);
 	const_vertex_iterator		I = vertices().begin();
 	const_vertex_iterator		E = vertices().end();
+#pragma warning( push ) // ќ„≈Ќ№ странный варнинг, с чего он вдруг по€вилс€ - пон€ти€ не имею.
+#pragma warning( disable : 4913 ) // warning C4913: пользовательский двоичный оператор "," существует, но ни одной перегрузке не удалось преобразовать все операнды, по умолчанию использован встроенный двоичный оператор "," (компилируетс€ исходный файл ui\UIMainIngameWnd.cpp)
 	for (int i=0; I != E; ++I, ++i) {
+#pragma warning( pop )
 		stream.open_chunk		(i);
 		{
 			stream.open_chunk	(0);

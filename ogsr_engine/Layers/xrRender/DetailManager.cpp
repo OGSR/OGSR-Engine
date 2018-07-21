@@ -89,14 +89,14 @@ CDetailManager::CDetailManager	()
 	dm_fade = dm_current_fade;
 	ps_r__Detail_density = ps_current_detail_density;
 	cache_level1	= (CacheSlot1**)Memory.mem_alloc(dm_cache1_line*sizeof(CacheSlot1*)
-#ifdef DEBUG
+#ifdef USE_MEMORY_MONITOR
 		,"CDetailManager::cache_level1"
 #endif
 		);
 	for (u32 i = 0; i < dm_cache1_line; ++i)
 	{
 		cache_level1[i]	= (CacheSlot1*)Memory.mem_alloc(dm_cache1_line*sizeof(CacheSlot1)
-#ifdef DEBUG
+#ifdef USE_MEMORY_MONITOR
 		,"CDetailManager::cache_level1 "+i
 #endif
 		);
@@ -105,19 +105,19 @@ CDetailManager::CDetailManager	()
 	}
 
 	cache	= (Slot***)Memory.mem_alloc(dm_cache_line*sizeof(Slot**)
-#ifdef DEBUG
+#ifdef USE_MEMORY_MONITOR
 		,"CDetailManager::cache"
 #endif
 	);
 	for (u32 i = 0; i < dm_cache_line; ++i)
 		cache[i] = (Slot**)Memory.mem_alloc(dm_cache_line*sizeof(Slot*)
-#ifdef DEBUG
+#ifdef USE_MEMORY_MONITOR
 		,"CDetailManager::cache "+i
 #endif		
 		);
 
 	cache_pool	= (Slot *)Memory.mem_alloc(dm_cache_size*sizeof(Slot)
-#ifdef DEBUG
+#ifdef USE_MEMORY_MONITOR
 		,"CDetailManager::cache_pool"
 #endif
 		);

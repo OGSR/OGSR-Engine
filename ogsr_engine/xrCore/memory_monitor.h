@@ -3,7 +3,7 @@
 
 #ifdef DEBUG
     #ifndef	_EDITOR
-        #define	USE_MEMORY_MONITOR
+        //#define	USE_MEMORY_MONITOR //KRodin: НЕ нужно. Вообще надо порезать нафиг.
     #endif // _EDITOR
 #endif // DEBUG
 

@@ -623,7 +623,6 @@ void CUICarBodyWnd::ActivatePropertiesBox()
 {		
 	m_pUIPropertiesBox->RemoveAll();
 	
-	CCustomOutfit*		pOutfit			= smart_cast<CCustomOutfit*>	(CurrentIItem());
 	CWeapon*			pWeapon			= smart_cast<CWeapon*>			(CurrentIItem());
 	CEatableItem*		pEatableItem	= smart_cast<CEatableItem*>		(CurrentIItem());
 	CMedkit*			pMedkit			= smart_cast<CMedkit*>			(CurrentIItem());
@@ -762,6 +761,8 @@ bool CUICarBodyWnd::OnItemDbClick(CUICellItem* itm)
 {
 	if (Level().IR_GetKeyState(DIK_LSHIFT)) {
 		MoveItemsfromCell(true);
+#pragma todo( "KRodin to Lordmuzer: Здесь тоже надо что-то возвращать. Не знаю, как лучше, пусть будет true пока." )
+		return true;
 	}
 	else {
 		return MoveItem(itm);

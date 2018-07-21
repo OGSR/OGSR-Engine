@@ -464,7 +464,7 @@ void CParticleEffect::Render(float)
 			// to minimize wait in final spin
 			u32 nSlice = p_cnt / 128;
 
-			u32 nStep = ((p_cnt - nSlice) / nWorkers);
+			u32 nStep = u32((p_cnt - nSlice) / nWorkers);
 
 			for (u32 i = 0; i < nWorkers; ++i) {
 				prsParams[i].pv = pv + i*nStep * 4;

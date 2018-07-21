@@ -13,7 +13,6 @@ struct _processor_info final {
 	int			stepping;		// Processor revision number
 	unsigned int threadCount;	// number of available threads, both physical and logical
 	unsigned int coresCount;	// number of physical cores
-	unsigned int affinity_mask;	// recommended affinity mask
 
 	void clearFeatures() {
 		m_f1_ECX = m_f1_EDX = m_f7_EBX = m_f7_ECX = m_f81_ECX = m_f81_EDX = 0;

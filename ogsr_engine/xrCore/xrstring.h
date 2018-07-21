@@ -87,7 +87,7 @@ public:
 
 namespace std {
   template<> struct hash<shared_str> {
-    std::size_t operator() ( const shared_str &s ) const {
+    [[nodiscard]] decltype(auto) operator() ( const shared_str &s ) const noexcept {
       return std::hash<std::string>{}( s.c_str() );
     }
   };

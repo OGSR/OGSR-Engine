@@ -126,7 +126,8 @@ __declspec(noreturn) void xrDebug::do_exit(const std::string &message)
 
 	MessageBox(wnd, message.c_str(), "Error", MB_OK | MB_ICONERROR | MB_SYSTEMMODAL);
 
-	TerminateProcess(GetCurrentProcess(), 1);
+	if ( !IsDebuggerPresent() )
+		TerminateProcess( GetCurrentProcess(), 1 );
 }
 
 void xrDebug::backend(const char *expression, const char *description, const char *argument0, const char *argument1, const char *file, int line, const char *function, bool &ignore_always)
@@ -168,11 +169,11 @@ void xrDebug::backend(const char *expression, const char *description, const cha
 
 	if (get_on_dialog())
 		get_on_dialog()(false);
-
-	TerminateProcess( GetCurrentProcess(), 1 );
 #else
 	DEBUG_INVOKE;
 #endif
+	if ( !IsDebuggerPresent() )
+		TerminateProcess( GetCurrentProcess(), 1 );
 }
 
 const char* xrDebug::error2string(const DWORD code) const {
@@ -365,8 +366,6 @@ LONG WINAPI UnhandledFilter(_EXCEPTION_POINTERS *pExceptionInfo)
 
 		if (Debug.get_on_dialog())
 			Debug.get_on_dialog()(false);
-
-		TerminateProcess( GetCurrentProcess(), 1 );
 #endif
 	}
 
@@ -521,9 +520,9 @@ static void termination_handler(int signal)
 	handler_base("termination with exit code 3");
 }
 
-static void segment_violation( int signal ) {
+/*static void segment_violation( int signal ) {
   handler_base( "Segment violation error" );
-}
+}*/
 
 void xrDebug::_initialize(const bool &dedicated)
 {
