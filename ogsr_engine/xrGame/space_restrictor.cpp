@@ -14,6 +14,9 @@
 #include "restriction_space.h"
 #include "ai_space.h"
 #include "CustomZone.h"
+#include "game_object_space.h"
+#include "script_game_object.h"
+#include "entity_alive.h"
 
 #ifdef DEBUG
 #	include "debug_renderer.h"
@@ -90,6 +93,7 @@ BOOL CSpaceRestrictor::net_Spawn	(CSE_Abstract* data)
 void CSpaceRestrictor::net_Destroy	()
 {
 	inherited::net_Destroy			();
+	ScheduleUnregister();
 	
 	if (!ai().get_level_graph())
 		return;
@@ -207,6 +211,90 @@ continue_loop:
 	}
 	return							(false);
 }
+
+
+void CSpaceRestrictor::ScheduleRegister() {
+  if ( !IsScheduled() ) {
+    shedule_register();
+    feel_touch.clear();
+    b_scheduled = true;
+  }
+}
+
+
+void CSpaceRestrictor::ScheduleUnregister() {
+  if ( IsScheduled() ) {
+    shedule_unregister();
+    feel_touch.clear();
+    b_scheduled = false;
+  }
+}
+
+
+void CSpaceRestrictor::shedule_Update( u32 dt ) {
+  inherited::shedule_Update( dt );
+  if ( IsScheduled() ) {
+    const Fsphere &s = CFORM()->getSphere();
+    Fvector P;
+    XFORM().transform_tiny( P, s.P );
+    feel_touch_update( P, s.R );
+  }
+}
+
+
+void CSpaceRestrictor::feel_touch_new( CObject *tpObject ) {
+  if ( IsScheduled() ) {
+    CGameObject *l_tpGameObject = smart_cast<CGameObject*>( tpObject );
+    if ( !l_tpGameObject )
+      return;
+    CEntityAlive* pEntityAlive = smart_cast<CEntityAlive*>( l_tpGameObject );
+    if ( pEntityAlive )
+      callback( GameObject::eZoneEnter )( lua_game_object(), l_tpGameObject->lua_game_object() );
+  }
+}
+
+
+void CSpaceRestrictor::feel_touch_delete( CObject *tpObject ) {
+  if ( IsScheduled() ) {
+    CGameObject *l_tpGameObject = smart_cast<CGameObject*>( tpObject );
+    if ( !l_tpGameObject || l_tpGameObject->getDestroy() )
+      return;
+    CEntityAlive* pEntityAlive = smart_cast<CEntityAlive*>( l_tpGameObject );
+    if ( pEntityAlive )
+      callback( GameObject::eZoneExit )( lua_game_object(), l_tpGameObject->lua_game_object() );
+  }
+}
+
+
+void CSpaceRestrictor::net_Relcase( CObject *O ) {
+  if ( IsScheduled() && !Level().is_removing_objects() ) {
+    CGameObject *l_tpGameObject = smart_cast<CGameObject*>( O );
+    if ( !l_tpGameObject )
+      return;
+    CEntityAlive* pEntityAlive = smart_cast<CEntityAlive*>( l_tpGameObject );
+    if ( pEntityAlive ) {
+      const auto I = std::find( feel_touch.begin(), feel_touch.end(), O );
+      if ( I != feel_touch.end() ) {
+        callback( GameObject::eZoneExit )( lua_game_object(), l_tpGameObject->lua_game_object() );
+      }
+    }
+  }
+  inherited::net_Relcase( O );
+}
+
+
+BOOL CSpaceRestrictor::feel_touch_contact( CObject* O ) {
+  return ( (CCF_Shape*)CFORM() )->Contact( O );
+}
+
+
+bool CSpaceRestrictor::active_contact( u16 id ) const {
+  for ( const auto& I : feel_touch )
+    if ( I->ID() == id )
+      return true;
+  return false;
+}
+
 
 #ifdef DEBUG
 

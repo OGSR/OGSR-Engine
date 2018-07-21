@@ -9,12 +9,11 @@
 #pragma once
 
 #include "space_restrictor.h"
-#include "..\xr_3da\feel_touch.h"
 #include "script_export_space.h"
 
 class CScriptGameObject;
 
-class CScriptZone : public CSpaceRestrictor, public Feel::Touch {
+class CScriptZone : public CSpaceRestrictor {
 public:
 	typedef	CSpaceRestrictor inherited;
 
