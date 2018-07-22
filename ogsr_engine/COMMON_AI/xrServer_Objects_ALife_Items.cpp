@@ -564,7 +564,7 @@ CSE_ALifeItemWeaponMagazined::CSE_ALifeItemWeaponMagazined(const char* caSection
 	auto FireModesList = READ_IF_EXISTS(pSettings, r_string, caSection, "fire_modes", nullptr);
 	if (FireModesList) {
 		int ModesCount = _GetItemCount(FireModesList);
-		m_u8CurFireMode = ModesCount - 1;
+		m_u8CurFireMode = u8(ModesCount - 1);
 	}
 	else {
 		m_u8CurFireMode = 0;

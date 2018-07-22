@@ -148,12 +148,12 @@ void CScriptStorage::LogVariable(lua_State * l, const char* name, int level)
 
 	case LUA_TUSERDATA:
 	{
-		luabind::detail::object_rep* obj = static_cast<luabind::detail::object_rep*>(lua_touserdata(l, -1));
+		auto obj = static_cast<luabind::detail::object_rep*>(lua_touserdata(l, -1));
 
 		// Skip already dumped object
 		if (m_dumpedObjList.find(obj) != m_dumpedObjList.end()) return;
 		m_dumpedObjList.insert(obj);
-		luabind::detail::lua_reference& r = obj->get_lua_table();
+		auto& r = obj->get_lua_table();
 		if (r.is_valid())
 		{
 			r.get(l);
@@ -164,7 +164,11 @@ void CScriptStorage::LogVariable(lua_State * l, const char* name, int level)
 		}
 		else
 		{
-			xr_strcpy(value, "[not available]");
+			// Dump class and element pointer if available
+			if (const auto objectClass = obj->crep())
+                xr_sprintf(value, "(%s): %p", objectClass->name(), obj->ptr());
+            else
+			    xr_strcpy(value, "[not available]");
 		}
 	}
 	break;

@@ -175,7 +175,7 @@ public:
 	virtual	void	OnNextFireMode		();
 	virtual	void	OnPrevFireMode		();
 	virtual bool	HasFireModes		() { return m_bHasDifferentFireModes; };
-	virtual	int		GetCurrentFireMode	() { return m_aFireModes[m_iCurFireMode]; };	
+	virtual	int		GetCurrentFireMode	() { return m_bHasDifferentFireModes ? m_aFireModes[m_iCurFireMode] : 1; };
 	virtual LPCSTR	GetCurrentFireModeStr	() {return m_sCurFireMode;};
 
 	virtual void	save				(NET_Packet &output_packet);

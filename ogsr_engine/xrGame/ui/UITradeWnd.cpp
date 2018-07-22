@@ -686,7 +686,7 @@ void CUITradeWnd::MoveItemsfromCell(bool b_all)
 		//Msg("Move all items %d", cnt);
 
 		CUIDragDropListEx* old_owner = cur_item->OwnerList();
-		CUIDragDropListEx* to;
+		CUIDragDropListEx* to = nullptr;
 
 		if (old_owner == &m_uidata->UIOurBagList)
 			to = &m_uidata->UIOurTradeList;
@@ -696,6 +696,8 @@ void CUITradeWnd::MoveItemsfromCell(bool b_all)
 			to = &m_uidata->UIOthersTradeList;
 		else if (old_owner == &m_uidata->UIOthersTradeList)
 			to = &m_uidata->UIOthersBagList;
+
+		R_ASSERT( to != nullptr );
 
 		for (u32 i = 0; i < cnt; ++i) 
 		{

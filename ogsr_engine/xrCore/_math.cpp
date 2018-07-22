@@ -139,7 +139,7 @@ void _initialize_cpu()
 
 	xr_vector<PROCESSOR_POWER_INFORMATION> cpusInfo(cpusCount);
 	CallNtPowerInformation(ProcessorInformation, nullptr, 0, cpusInfo.data(),
-		sizeof(PROCESSOR_POWER_INFORMATION) * cpusCount);
+		ULONG(sizeof(PROCESSOR_POWER_INFORMATION) * cpusCount));
 
 	for (size_t i = 0; i < cpusInfo.size(); i++) {
 		const PROCESSOR_POWER_INFORMATION& cpuInfo = cpusInfo[i];

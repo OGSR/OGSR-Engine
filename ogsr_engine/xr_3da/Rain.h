@@ -61,9 +61,11 @@ private:
 	Particle*						particle_active;
 	Particle*						particle_idle;
 
+public:
 	// Sounds
 	ref_sound						snd_Ambient;
 
+private:
 	// Utilities
 	void							p_create		();
 	void							p_destroy		();

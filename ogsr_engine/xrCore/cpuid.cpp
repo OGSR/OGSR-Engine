@@ -69,9 +69,6 @@ _processor_info::_processor_info()
 	}
 
 	// Calculate available processors
-	ULONG_PTR pa_mask_save, sa_mask_stub = 0;
-	GetProcessAffinityMask(GetCurrentProcess(), &pa_mask_save, &sa_mask_stub);
-
 	DWORD returnedLength = 0;
 	DWORD byteOffset = 0;
 	GetLogicalProcessorInformation(nullptr, &returnedLength);
@@ -103,5 +100,4 @@ _processor_info::_processor_info()
 	// All logical processors
 	coresCount = processorCoreCount;
 	threadCount = logicalProcessorCount;
-	affinity_mask = pa_mask_save;
 }

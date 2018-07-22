@@ -1769,7 +1769,7 @@ void PATurbulence::Execute(ParticleEffect *effect, float dt)
 	// to minimize wait in final spin
 	u32 nSlice = p_cnt / 128; 
 
-	u32 nStep = ( ( p_cnt - nSlice ) / nWorkers );
+	u32 nStep = u32( ( p_cnt - nSlice ) / nWorkers );
 	//u32 nStep = ( p_cnt / nWorkers );
 
 	//Msg( "Trb: %u" , nStep );

@@ -550,7 +550,7 @@ void CKinematicsAnimated::IBlend_Startup	()
 {
 	_DBG_SINGLE_USE_MARKER;
 	CBlend B;
-	//ZeroMemory(&B,sizeof(B)); // intorr: Initialization of this variable is successfully performed in the constructor.
+	ZeroMemory( &B, sizeof( B ) );
 	B.blend				= CBlend::eFREE_SLOT;
 	blend_pool.clear	();
         u32 i=0;

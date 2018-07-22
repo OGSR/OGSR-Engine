@@ -189,7 +189,7 @@ float Miniball::squared_radius () const
 
 int Miniball::num_points () const
 {
-	return L.size();
+	return int(L.size());
 }
 
 Miniball::Cit Miniball::points_begin () const

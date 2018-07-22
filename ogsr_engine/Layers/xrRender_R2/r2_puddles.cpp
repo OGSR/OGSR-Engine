@@ -21,7 +21,7 @@ void	CPuddles::Load()
 	CInifile::Root& sects = ini.sections();
 	if (!sects.empty())
 	{
-		size = sects.size();
+		size = u32(sects.size());
 		R_ASSERT2(size <= MAX_PUDDLES, "there are too mush puddles for level (max 30)");
 		int i = 0;
 		for ( const auto &it : sects )

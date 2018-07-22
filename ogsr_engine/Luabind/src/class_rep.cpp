@@ -439,7 +439,7 @@ int luabind::detail::class_rep::constructor_dispatcher(lua_State* L)
 #endif
 
 		int num_params = lua_gettop(L) - 1;
-		found = find_best_match(L, &rep->overloads.front(), rep->overloads.size(), sizeof(construct_rep::overload_t), ambiguous, min_match, match_index, num_params);
+		found = find_best_match(L, &rep->overloads.front(), int(rep->overloads.size()), sizeof(construct_rep::overload_t), ambiguous, min_match, match_index, num_params);
 
 #ifdef LUABIND_NO_ERROR_CHECKING
 	}
@@ -587,7 +587,7 @@ int luabind::detail::class_rep::function_dispatcher(lua_State* L)
 #endif
 
 		int num_params = lua_gettop(L) /*- 1*/;
-		found = find_best_match(L, &rep->overloads().front(), rep->overloads().size(), sizeof(overload_rep), ambiguous, min_match, match_index, num_params);
+		found = find_best_match(L, &rep->overloads().front(), int(rep->overloads().size()), sizeof(overload_rep), ambiguous, min_match, match_index, num_params);
 
 #ifdef LUABIND_NO_ERROR_CHECKING
 
@@ -802,7 +802,7 @@ int luabind::detail::class_rep::super_callback(lua_State* L)
 #endif
 
 			int num_params = lua_gettop(L) - 1;
-			found = find_best_match(L, &rep->overloads.front(), rep->overloads.size(), sizeof(construct_rep::overload_t), ambiguous, min_match, match_index, num_params);
+			found = find_best_match(L, &rep->overloads.front(), int(rep->overloads.size()), sizeof(construct_rep::overload_t), ambiguous, min_match, match_index, num_params);
 
 #ifdef LUABIND_NO_ERROR_CHECKING
 

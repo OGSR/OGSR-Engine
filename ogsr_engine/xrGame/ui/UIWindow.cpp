@@ -469,7 +469,7 @@ bool CUIWindow::OnKeyboard(int dik, EUIMessages keyboard_action)
 bool CUIWindow::OnKeyboardHold(int dik)
 {
 	if (m_pKeyboardCapturer)
-		if (m_pKeyboardCapturer->OnKeyboardHold(dik));
+		if (m_pKeyboardCapturer->OnKeyboardHold(dik))
 			return true;
 
 	for (auto it = m_ChildWndList.rbegin(); it != m_ChildWndList.rend(); ++it)

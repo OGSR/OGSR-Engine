@@ -258,7 +258,7 @@ IC static int CollideIntoGroup(dGeomID o1, dGeomID o2,dJointGroupID jointGroup,C
 
 
 		if	(pushing_neg)
-			surface.mu=FLT_MAX;
+			surface.mu = std::numeric_limits<dReal>::max();
 		if	(do_collide && collided_contacts<MAX_CONTACTS)
 		{
 			++collided_contacts;

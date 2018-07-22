@@ -91,7 +91,7 @@ void CStreamReader::r						(void *_buffer, u32 buffer_size)
 	}
 
 	u8							*buffer = (u8*)_buffer;
-	u32							elapsed_in_window = m_current_window_size - (m_current_pointer - m_start_pointer);
+	u32							elapsed_in_window = u32(m_current_window_size - (m_current_pointer - m_start_pointer));
 
 	do {
 		Memory.mem_copy			(buffer,m_current_pointer,elapsed_in_window);

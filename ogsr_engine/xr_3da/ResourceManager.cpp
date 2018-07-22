@@ -293,13 +293,13 @@ void CResourceManager::DeferredUpload()
 		CTimer timer;
 		timer.Start();
 
-		const auto nWorkers = TTAPI->threads.size();
-		const auto textures_per_worker = m_textures.size() / nWorkers;
+		const size_t nWorkers = TTAPI->threads.size();
+		const size_t textures_per_worker = m_textures.size() / nWorkers;
 
 		for (const auto& t : m_textures)
 			textures_to_load.push_back(t.second);
 
-		for (auto i = 1; i <= nWorkers; ++i)
+		for (size_t i = 1; i <= nWorkers; ++i)
 			TTAPI->threads[i - 1]->addJob([=] { LoadTextures(i, textures_per_worker); });
 
 		TTAPI->wait();

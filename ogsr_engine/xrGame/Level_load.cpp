@@ -113,12 +113,7 @@ BOOL CLevel::Load_GameSpecific_After()
 
 		// Сбрасываем состояния дождя при загрузке уровня во избежание пропажи звука. Real Wolf.
 		if (g_pGamePersistent->pEnvironment)
-		{
-			if (auto rain = g_pGamePersistent->pEnvironment->eff_Rain)
-			{
-				rain->InvalidateState();
-			}
-		}
+			g_pGamePersistent->pEnvironment->Invalidate();
 	}	
 		
 	return TRUE;

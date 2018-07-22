@@ -4080,7 +4080,7 @@ static void* sys_alloc(mstate m, size_t nb) {
 	top_foot, plus alignment-pad to make sure we don't lose bytes if
 	not on boundary, and round this up to a granularity unit.
 	*/
-
+#if MORECORE_CONTIGUOUS
 	if (MORECORE_CONTIGUOUS && !use_noncontiguous(m)) {
 		char* br = CMFAIL;
 		size_t ssize = asize; /* sbrk call size */
@@ -4141,7 +4141,7 @@ static void* sys_alloc(mstate m, size_t nb) {
 
 		RELEASE_MALLOC_GLOBAL_LOCK();
 	}
-
+#endif
 	if (HAVE_MMAP && tbase == CMFAIL) {  /* Try MMAP */
 		char* mp = (char*)(CALL_MMAP(asize));
 		if (mp != CMFAIL) {
@@ -4150,7 +4150,7 @@ static void* sys_alloc(mstate m, size_t nb) {
 			mmap_flag = USE_MMAP_BIT;
 		}
 	}
-
+#if HAVE_MORECORE
 	if (HAVE_MORECORE && tbase == CMFAIL) { /* Try noncontiguous MORECORE */
 		if (asize < HALF_MAX_SIZE_T) {
 			char* br = CMFAIL;
@@ -4168,7 +4168,7 @@ static void* sys_alloc(mstate m, size_t nb) {
 			}
 		}
 	}
-
+#endif
 	if (tbase != CMFAIL) {
 
 		if ((m->footprint += tsize) > m->max_footprint)
@@ -4607,7 +4607,10 @@ void* dlmalloc(size_t bytes) {
 					unlink_first_small_chunk(gm, b, p, i);
 					rsize = small_index2size(i) - nb;
 					/* Fit here cannot be remainderless if 4byte sizes */
+#pragma warning(push)
+#pragma warning(disable : 4127)
 					if (SIZE_T_SIZE != 4 && rsize < MIN_CHUNK_SIZE)
+#pragma warning(pop)
 						set_inuse_and_pinuse(gm, p, small_index2size(i));
 					else {
 						set_size_and_pinuse_of_inuse_chunk(gm, p, nb);

@@ -57,7 +57,7 @@ IC	u32 CStreamReader::tell								() const
 {
 	VERIFY			(m_current_pointer >= m_start_pointer);
 	VERIFY			(u32(m_current_pointer - m_start_pointer) <= m_current_window_size);
-	return			(m_current_offset_from_start + (m_current_pointer - m_start_pointer));
+	return u32(m_current_offset_from_start + (m_current_pointer - m_start_pointer));
 }
 
 IC	void CStreamReader::close							()
