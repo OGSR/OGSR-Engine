@@ -125,6 +125,8 @@ public:
 	float				rain_increase_speed;
 	float				moon_road_intensity;
 
+	float m_fTreeAmplitudeIntensity;
+
     int					lens_flare_id;
 	int					tb_id;
     

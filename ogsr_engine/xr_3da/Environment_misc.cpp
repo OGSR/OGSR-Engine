@@ -123,6 +123,8 @@ CEnvDescriptor::CEnvDescriptor()
 	sun_color.set		(1,1,1);
 	sun_dir.set			(0,-1,0);
 
+	m_fTreeAmplitudeIntensity = 0.01;
+
     lens_flare_id		= -1;
 	tb_id				= -1;
     
@@ -176,6 +178,8 @@ void CEnvDescriptor::load(float exec_tm, LPCSTR S, CEnvironment* parent)
           setEnvAmbient( pSettings->r_string( S, "env_ambient" ), parent );
         else
           env_ambient = 0;
+	if ( pSettings->line_exist( S, "tree_amplitude_intensity" ) )
+		m_fTreeAmplitudeIntensity = pSettings->r_float( S, "tree_amplitude_intensity" );
 
 	C_CHECK(clouds_color);
 	C_CHECK(sky_color);
@@ -299,6 +303,8 @@ void CEnvDescriptorMixer::lerp	(CEnvironment* , CEnvDescriptor& A, CEnvDescripto
 	
 	// other
 	moon_road_intensity = fi*A.moon_road_intensity + f*B.moon_road_intensity;
+
+	m_fTreeAmplitudeIntensity = fi * A.m_fTreeAmplitudeIntensity + f * B.m_fTreeAmplitudeIntensity;
 
 	// colors
 	sky_color.lerp			(A.sky_color,B.sky_color,f).add(M.sky_color).mul(_power);
