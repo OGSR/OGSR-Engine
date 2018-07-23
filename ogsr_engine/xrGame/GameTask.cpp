@@ -191,7 +191,11 @@ void CGameTask::Load(const TASK_ID& id)
 		for(j=0; j<info_num; ++j){
 			str							= g_gameTaskXml->Read(l_root, "function_complete", j, NULL);
 			functor_exists				= ai().script_engine().functor(str ,objective.m_complete_lua_functions[j]);
+#ifdef CRASH_ON_PRECONDITION_NOT_FOUND
+			ASSERT_FMT( functor_exists, "[%s]: Cannot find script function described in task objective: %s", __FUNCTION__, str );
+#else
 			THROW3						(functor_exists, "Cannot find script function described in task objective  ", str);
+#endif
 		}
 
 
@@ -201,7 +205,11 @@ void CGameTask::Load(const TASK_ID& id)
 		for(j=0; j<info_num; ++j){
 			str							= g_gameTaskXml->Read(l_root, "function_fail", j, NULL);
 			functor_exists				= ai().script_engine().functor(str ,objective.m_fail_lua_functions[j]);
+#ifdef CRASH_ON_PRECONDITION_NOT_FOUND
+			ASSERT_FMT( functor_exists, "[%s]: Cannot find script function described in task objective: %s", __FUNCTION__, str );
+#else
 			THROW3						(functor_exists, "Cannot find script function described in task objective  ", str);
+#endif
 		}
 
 //------function_on_complete
@@ -210,7 +218,11 @@ void CGameTask::Load(const TASK_ID& id)
 		for(j=0; j<info_num; ++j){
 			str							= g_gameTaskXml->Read(l_root, "function_call_complete", j, NULL);
 			functor_exists				= ai().script_engine().functor(str ,objective.m_lua_functions_on_complete[j]);
+#ifdef CRASH_ON_PRECONDITION_NOT_FOUND
+			ASSERT_FMT( functor_exists, "[%s]: Cannot find script function described in task objective: %s", __FUNCTION__, str );
+#else
 			THROW3						(functor_exists, "Cannot find script function described in task objective  ", str);
+#endif
 		}
 
 
@@ -220,7 +232,11 @@ void CGameTask::Load(const TASK_ID& id)
 		for(j=0; j<info_num; ++j){
 			str							= g_gameTaskXml->Read(l_root, "function_call_fail", j, NULL);
 			functor_exists				= ai().script_engine().functor(str ,objective.m_lua_functions_on_fail[j]);
+#ifdef CRASH_ON_PRECONDITION_NOT_FOUND
+			ASSERT_FMT( functor_exists, "[%s]: Cannot find script function described in task objective: %s", __FUNCTION__, str );
+#else
 			THROW3						(functor_exists, "Cannot find script function described in task objective  ", str);
+#endif
 		}
 
 		g_gameTaskXml->SetLocalRoot		(task_node);
@@ -536,7 +552,11 @@ void SScriptObjectiveHelper::init_functors(xr_vector<shared_str>& v_src, xr_vect
 	for(u32 idx=0 ;it!=it_e;++it,++idx)
 	{
 			bool functor_exists		= ai().script_engine().functor(*(*it) ,v_dest[idx]);
+#ifdef CRASH_ON_PRECONDITION_NOT_FOUND
+			ASSERT_FMT( functor_exists, "[%s]: Cannot find script function described in task objective: %s", __FUNCTION__, (*it).c_str() );
+#else
 			if(!functor_exists)		Log("Cannot find script function described in task objective  ", *(*it));
+#endif
 	}
 }
 
