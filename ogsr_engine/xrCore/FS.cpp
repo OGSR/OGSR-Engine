@@ -8,10 +8,12 @@
 	u32								g_file_mapped_count	= 0;
 	typedef xr_map<u32,std::pair<u32,shared_str> >	FILE_MAPPINGS;
 	FILE_MAPPINGS					g_file_mappings;
+	static std::mutex g_file_mappings_Mutex;
 
 void register_file_mapping			(void *address, const u32 &size, LPCSTR file_name)
 {
-#ifdef _DEBUG //В релизной конфигурации тут почему-то бывают редкие ошибки. Может оно и не предназначено для использования в релизе
+	std::lock_guard<decltype( g_file_mappings_Mutex )> lock( g_file_mappings_Mutex );
+
 	FILE_MAPPINGS::const_iterator	I = g_file_mappings.find(*(u32*)&address);
 	VERIFY							(I == g_file_mappings.end());
 	g_file_mappings.insert			(std::make_pair(*(u32*)&address,std::make_pair(size,shared_str(file_name))));
@@ -24,12 +26,12 @@ void register_file_mapping			(void *address, const u32 &size, LPCSTR file_name)
 	sprintf_s						(temp, sizeof(temp),"file mapping: %s",file_name);
 	memory_monitor::monitor_alloc	(address,size,temp);
 #endif // USE_MEMORY_MONITOR
-#endif
 }
 
 void unregister_file_mapping		(void *address, const u32 &size)
 {
-#ifdef _DEBUG
+	std::lock_guard<decltype( g_file_mappings_Mutex )> lock( g_file_mappings_Mutex );
+
 	FILE_MAPPINGS::iterator			I = g_file_mappings.find(*(u32*)&address);
 	VERIFY							(I != g_file_mappings.end());
 //	VERIFY2							((*I).second.first == size,make_string("file mapping sizes are different: %d -> %d",(*I).second.first,size));
@@ -41,12 +43,12 @@ void unregister_file_mapping		(void *address, const u32 &size)
 #ifdef USE_MEMORY_MONITOR
 	memory_monitor::monitor_free	(address);
 #endif // USE_MEMORY_MONITOR
-#endif
 }
 
 XRCORE_API void dump_file_mappings	()
 {
-#ifdef _DEBUG
+	std::lock_guard<decltype( g_file_mappings_Mutex )> lock( g_file_mappings_Mutex );
+
 	Msg								("* active file mappings (%d):",g_file_mappings.size());
 
 	FILE_MAPPINGS::const_iterator	I = g_file_mappings.begin();
@@ -58,13 +60,12 @@ XRCORE_API void dump_file_mappings	()
 			(*I).second.first,
 			(*I).second.second.c_str()
 		);
-#endif
 }
 #endif // DEBUG
+
 //////////////////////////////////////////////////////////////////////
 // Tools
 //////////////////////////////////////////////////////////////////////
-//---------------------------------------------------
 
 #include <filesystem>
 void VerifyPath(const std::string_view path) //Проверяет путь до файла. Если папки в пути отсутствуют - создаёт их.

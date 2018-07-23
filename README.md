@@ -1,5 +1,5 @@
 # OGSR Engine [![Build status](https://ci.appveyor.com/api/projects/status/w5yowu9901tphox1?svg=true)](https://ci.appveyor.com/project/KRodinn/ogsr-engine)
-![Logo](https://github.com/KRodinn/OGSR-Engine/blob/main/Game/ogsr_configurator/Resources/Banner_conf.png)
+![Logo](https://pp.userapi.com/c847218/v847218213/a9398/F7TfxQhSSGs.jpg)
 ### [>>Разработчики<<](https://github.com/KRodinn/OGSR-Engine/graphs/contributors) ### 
 ### [>>Список изменений<<](https://github.com/KRodinn/OGSR-Engine/wiki/Список-изменений) ###
 ### [>>Свежий релиз SHOC-версии движка<<](https://github.com/KRodinn/OGSR-Engine/releases/latest) ###
