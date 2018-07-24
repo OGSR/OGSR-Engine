@@ -10,6 +10,7 @@
 
 IC	CSpaceRestrictor::CSpaceRestrictor		()
 {
+	b_scheduled             = false;
 	m_space_restrictor_type = RestrictionSpace::eRestrictorTypeNone;
 }
 

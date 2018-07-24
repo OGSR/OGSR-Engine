@@ -1,7 +1,6 @@
 #pragma once
 
 #include "space_restrictor.h"
-#include "..\xr_3da\feel_touch.h"
 
 class CActor;
 class CLAItem;
@@ -36,8 +35,7 @@ struct SZoneObjectInfo
 
 
 class CCustomZone :
-	public CSpaceRestrictor,
-	public Feel::Touch
+	public CSpaceRestrictor
 {
 	friend class CAnomalyZoneScript;
 private:

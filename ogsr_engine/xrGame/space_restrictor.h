@@ -10,8 +10,9 @@
 
 #include "gameobject.h"
 #include "restriction_space.h"
+#include "..\xr_3da\feel_touch.h"
 
-class CSpaceRestrictor : public CGameObject {
+class CSpaceRestrictor : public CGameObject, public Feel::Touch {
 private:
 	typedef CGameObject			inherited;
 
@@ -66,6 +67,20 @@ public:
 #ifdef DEBUG
 	virtual void				OnRender			();
 #endif
+
+private:
+	bool b_scheduled;
+public:
+	void ScheduleRegister();
+	void ScheduleUnregister();
+IC	bool IsScheduled() { return b_scheduled; }	
+
+	virtual void net_Relcase( CObject* );
+	virtual void shedule_Update( u32 );
+	virtual void feel_touch_new( CObject* );
+	virtual void feel_touch_delete( CObject* );
+	virtual BOOL feel_touch_contact( CObject* );
+	bool         active_contact( u16 ) const;
 };
 
 #include "space_restrictor_inline.h"
