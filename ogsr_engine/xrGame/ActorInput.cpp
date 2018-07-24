@@ -167,6 +167,8 @@ void CActor::IR_OnKeyboardPress(int cmd)
 				}
 			}
 		}break;
+#pragma todo( "KRodin: ну вообще, такое надо в скриптах делать, на мой взгл€д. „тобы было настраиваемо." )
+#ifndef SHOC_EDITION
 	case kUSE_B190:
 	case kUSE_BIPSIZON:
 	case kUSE_ANTIRAD:
@@ -200,6 +202,7 @@ void CActor::IR_OnKeyboardPress(int cmd)
 				}
 			}
 		}break;
+#endif
 	}
 }
 void CActor::IR_OnMouseWheel(int direction)
