@@ -15,18 +15,16 @@
 } while(0)
 
 #define R_ASSERT(expr, ...) do { \
-	static bool ignore_always = false; \
-	if (!ignore_always && !(expr)) \
-		Debug.fail(#expr, __VA_ARGS__, DEBUG_INFO, ignore_always); \
+	if (!(expr)) \
+		Debug.fail(#expr, __VA_ARGS__, DEBUG_INFO); \
 } while(0)
 #define R_ASSERT2 R_ASSERT
 #define R_ASSERT3 R_ASSERT
 
 #define R_CHK(expr, ...) do { \
-	static bool ignore_always = false; \
 	HRESULT hr = expr; \
-	if (!ignore_always && FAILED(hr)) \
-		Debug.error(hr, #expr, __VA_ARGS__, DEBUG_INFO, ignore_always); \
+	if (FAILED(hr)) \
+		Debug.error(hr, #expr, __VA_ARGS__, DEBUG_INFO); \
 } while(0)
 #define R_CHK2 R_CHK
 
