@@ -245,12 +245,11 @@ void CPHSkeleton::RestoreNetState(CSE_PHSkeleton* po)
 	if( saved_bones.size() == obj->PHGetSyncItemsNumber() )
 	{
 		u16 bone = 0;
-		std::all_of(saved_bones.begin(), saved_bones.end(),[&](SPHNetState state)
+		for ( const auto& state : saved_bones )
 		{
 			obj->PHGetSyncItem(bone)->set_State(state);
 			bone++;
-			return true;
-		});
+		};
 	}
         else
           Msg( "~ [%s]: [%s] has different state in saved_bones[%u] PHGetSyncItemsNumber[%u] Visual[%s] alive[%s]", __FUNCTION__, obj->Name_script(), saved_bones.size(), obj->PHGetSyncItemsNumber(), obj->cNameVisual().c_str(), obj->GetHealth()>0 ? "yes" : "no" );
