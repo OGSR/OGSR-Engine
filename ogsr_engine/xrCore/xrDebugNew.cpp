@@ -53,7 +53,9 @@ void LogStackTrace(const char* header, _EXCEPTION_POINTERS *pExceptionInfo)
 LONG DbgLogExceptionFilter(const char* header, _EXCEPTION_POINTERS *pExceptionInfo)
 {
 	LogStackTrace(header, pExceptionInfo);
+#ifdef USE_OWN_MINI_DUMP
 	save_mini_dump( pExceptionInfo ); //Пусть и тут будет, может пригодится когда-нибудь.
+#endif
 	return EXCEPTION_EXECUTE_HANDLER;
 }
 
