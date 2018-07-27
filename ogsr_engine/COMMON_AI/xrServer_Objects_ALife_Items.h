@@ -191,6 +191,8 @@ add_to_type_list(CSE_ALifeItemWeaponMagazined)
 
 SERVER_ENTITY_DECLARE_BEGIN(CSE_ALifeItemWeaponMagazinedWGL, CSE_ALifeItemWeaponMagazined)
 bool			m_bGrenadeMode;
+u8				ammo_type2;
+u8				a_current2;
 CSE_ALifeItemWeaponMagazinedWGL(LPCSTR caSection);
 virtual							~CSE_ALifeItemWeaponMagazinedWGL();
 

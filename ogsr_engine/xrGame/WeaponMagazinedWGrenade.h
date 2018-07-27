@@ -113,6 +113,8 @@ public:
 
 	CCartridge				m_DefaultCartridge2;
 
+	int						iAmmoElapsed2;
+
 	virtual void UpdateGrenadeVisibility(bool visibility);
 
 	//название косточки для гранаты подствольника в HUD
