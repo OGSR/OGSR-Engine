@@ -281,6 +281,7 @@ void CHUDManager::OnScreenRatioChanged()
 
 	pUI->UIMainIngameWnd				= xr_new<CUIMainIngameWnd>	();
 	pUI->UIMainIngameWnd->Init			();
+	pUI->UIMainIngameWnd->OnConnected(); //Перезагружаем здесь миникарту, чтобы она не пропадала при изменении разрешения экрана.
 	pUI->UnLoad							();
 	pUI->Load							(pUI->UIGame());
 }
