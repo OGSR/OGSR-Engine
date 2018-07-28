@@ -1032,7 +1032,7 @@ bool CWeapon::Action(s32 cmd, u32 flags)
 		case kWPN_ZOOM_INC:
 		case kWPN_ZOOM_DEC:
 		{
-			if (IsZoomEnabled() && IsZoomed() && m_bScopeDynamicZoom && IsScopeAttached())
+			if (IsZoomEnabled() && IsZoomed() && m_bScopeDynamicZoom && IsScopeAttached() && (flags&CMD_START))
 			{
 				if (cmd == kWPN_ZOOM_INC)  ZoomInc();
 				else					ZoomDec();
