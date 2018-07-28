@@ -425,6 +425,7 @@ void CWeaponMagazined::OnStateSwitch	(u32 S)
 		switch2_Empty	();
 		// Callbacks added by Cribbledirge.
 		StateSwitchCallback(GameObject::eOnActorWeaponEmpty, GameObject::eOnNPCWeaponEmpty);
+		SwitchState(eIdle);
 		break;
 	case eReload:
 		switch2_Reload	();
