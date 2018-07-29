@@ -43,7 +43,7 @@ s16	q_tc	(float v)
 	int		_v	= clampr(iFloor(v*(32767.f/16.f)), -32768, 32767);
 	return	s16	(_v);
 }
-#ifdef _DEBUG
+#ifdef DEBUG
 float errN	(Fvector3 v, u8* qv)
 {
 	Fvector3	uv;	

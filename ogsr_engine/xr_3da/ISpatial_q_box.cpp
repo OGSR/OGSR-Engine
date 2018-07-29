@@ -49,6 +49,7 @@ public:
 		float	c_R		= n_R/2;
 		for (u32 octant=0; octant<8; octant++)
 		{
+			//Тут такая же проблема как и в другом исспартиал. Как-то не особо воспроизводимо, увы. Один раз получилось при выстреле из пг вылет получить.
 			if (0==N->children[octant])	continue;
 			Fvector		c_C;			c_C.mad	(n_C,c_spatial_offset[octant],c_R);
 			walk						(N->children[octant],c_C,c_R);

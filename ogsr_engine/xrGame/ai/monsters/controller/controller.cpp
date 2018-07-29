@@ -42,7 +42,7 @@
 #include "../monster_cover_manager.h"
 #include "controller_psy_aura.h"
 
-#ifdef _DEBUG
+#ifdef DEBUG
 #	include <dinput.h>
 #endif
 
@@ -62,7 +62,7 @@ CController::CController()
 	m_aura				= xr_new<CControllerAura>(this);
 
 
-#ifdef _DEBUG	
+#ifdef DEBUG	
 	P1.set(0.f,0.f,0.f);
 	P2.set(0.f,0.f,0.f);
 #endif
@@ -711,7 +711,7 @@ CBaseMonster::SDebugInfo CController::show_debug_info()
 }
 #endif
 
-#ifdef _DEBUG
+#ifdef DEBUG
 void CController::debug_on_key(int key)
 {
 	switch (key){

@@ -150,7 +150,7 @@ void CIKLimbsController::Calculate( )
 
 void CIKLimbsController::Destroy(CGameObject* O)
 {
-#ifdef _DEBUG
+#ifdef DEBUG
 	CPhysicsShellHolder*	Sh = smart_cast<CPhysicsShellHolder*>(O);
 	VERIFY(Sh);
 	CIKLimbsController* ik = Sh->character_ik_controller();

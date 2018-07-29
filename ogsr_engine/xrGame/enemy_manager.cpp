@@ -30,9 +30,9 @@ static const u32 ENEMY_INERTIA_TIME_TO_SOMEBODY	= 3000;
 static const u32 ENEMY_INERTIA_TIME_TO_ACTOR	= 0;
 static const u32 ENEMY_INERTIA_TIME_FROM_ACTOR	= 6000;
 
-#ifdef _DEBUG
+#ifdef DEBUG
 bool g_enemy_manager_second_update	 = false;
-#endif // _DEBUG
+#endif // DEBUG
 
 #define USE_EVALUATOR
 
@@ -315,10 +315,10 @@ void CEnemyManager::process_wounded			(bool &only_wounded)
 	}
 
 	if (only_wounded) {
-#if 0//def _DEBUG
+#if 0//def DEBUG
 		if (g_enemy_manager_second_update)
 			Msg					("%6d ONLY WOUNDED LEFT %s",Device.dwTimeGlobal,*m_object->cName());
-#endif // _DEBUG
+#endif // DEBUG
 		return;
 	}
 

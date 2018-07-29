@@ -107,7 +107,7 @@ public:
 		else 
 		{
 			if (!g_bCheckTime) return TRUE;
-#ifdef _DEBUG
+#ifdef DEBUG
 			if (T<queue.begin()->timestamp) return FALSE;
 #endif
 			return TRUE;

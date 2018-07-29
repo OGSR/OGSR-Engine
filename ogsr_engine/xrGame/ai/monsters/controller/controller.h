@@ -170,7 +170,7 @@ public:
 #endif
 
 private:
-#ifdef _DEBUG	
+#ifdef DEBUG	
 		virtual void	debug_on_key		(int key);
 
 		Fvector			P1,P2;

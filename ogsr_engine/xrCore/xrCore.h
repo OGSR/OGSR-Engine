@@ -24,7 +24,12 @@
 #endif
 
 #if defined(DEBUG) && defined(NDEBUG)
-#	undef NDEBUG
+#error Something strange...
+#endif
+
+#if defined( _DEBUG ) && defined( DISABLE_DBG_ASSERTIONS )
+#define NDEBUG
+#undef DEBUG
 #endif
 
 #include "xrCore_platform.h"

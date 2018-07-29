@@ -139,7 +139,7 @@ public:
 #ifdef DEBUG
 	virtual CBaseMonster::SDebugInfo show_debug_info();
 
-#ifdef _DEBUG
+#ifdef DEBUG
 			void debug_on_key						(int key);
 #endif
 

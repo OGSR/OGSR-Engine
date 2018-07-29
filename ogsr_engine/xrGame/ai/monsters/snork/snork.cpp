@@ -10,7 +10,7 @@
 #include "../control_movement_base.h"
 #include "../../../PHMovementControl.h"
 
-#ifdef _DEBUG
+#ifdef DEBUG
 #	include <dinput.h>
 #	include "../../../actor.h"
 #	include "../../../ai_object_location.h"
@@ -115,7 +115,7 @@ void CSnork::UpdateCL()
 	//find_geometry	();
 	//////////////////////////////////////////////////////////////////////////
 	
-#ifdef _DEBUG
+#ifdef DEBUG
 	// test 
 	CObject *obj = Level().CurrentEntity();
 	if (!obj) return;
@@ -281,7 +281,7 @@ void CSnork::on_activate_control(ControlCom::EControlType type)
 //////////////////////////////////////////////////////////////////////////
 
 
-#ifdef _DEBUG
+#ifdef DEBUG
 void CSnork::debug_on_key(int key)
 {
 	CActor *actor = smart_cast<CActor *>(Level().CurrentEntity());

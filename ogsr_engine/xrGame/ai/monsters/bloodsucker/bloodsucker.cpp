@@ -466,7 +466,7 @@ CBaseMonster::SDebugInfo CAI_Bloodsucker::show_debug_info()
 	return CBaseMonster::SDebugInfo();
 }
 
-#ifdef _DEBUG
+#ifdef DEBUG
 void CAI_Bloodsucker::debug_on_key(int key)
 {
 	switch (key){

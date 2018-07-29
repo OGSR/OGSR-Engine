@@ -55,7 +55,7 @@ using namespace StalkerDecisionSpace;
 
 typedef CStalkerActionBase::_edge_value_type _edge_value_type;
 
-#ifdef _DEBUG
+#ifdef DEBUG
 //#	define SILENT_COMBAT
 #endif
 

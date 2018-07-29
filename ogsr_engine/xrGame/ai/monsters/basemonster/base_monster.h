@@ -440,7 +440,7 @@ public:
 	void					debug_fsm			();
 #endif
 
-#ifdef _DEBUG
+#ifdef DEBUG
 	virtual void			debug_on_key		(int key) {}
 #endif
 //////////////////////////////////////////////////////////////////////////

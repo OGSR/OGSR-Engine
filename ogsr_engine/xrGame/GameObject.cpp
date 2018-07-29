@@ -577,7 +577,7 @@ void CGameObject::validate_ai_locations			(bool decrement_reference)
 	center.z						= Position().z;
 	u32								l_dwNewLevelVertexID = ai().level_graph().vertex(ai_location().level_vertex_id(),center);
 
-#ifdef _DEBUG
+#ifdef DEBUG
 //	Msg								("%6d Searching for node for object %s (%.5f seconds)",Device.dwTimeGlobal,*cName(),timer.GetElapsed_sec());
 #endif
 	VERIFY							(ai().level_graph().valid_vertex_id(l_dwNewLevelVertexID));

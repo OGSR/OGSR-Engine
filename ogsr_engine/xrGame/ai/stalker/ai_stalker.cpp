@@ -426,7 +426,7 @@ BOOL CAI_Stalker::net_Spawn			(CSE_Abstract* DC)
 
 	sight().setup					(CSightAction(SightManager::eSightTypeCurrentDirection));
 
-#ifdef _DEBUG
+#ifdef DEBUG
 	if (ai().get_alife() && !Level().MapManager().HasMapLocation("debug_stalker",ID())) {
 		CMapLocation				*map_location = 
 			Level().MapManager().AddMapLocation(
@@ -436,7 +436,7 @@ BOOL CAI_Stalker::net_Spawn			(CSE_Abstract* DC)
 
 		map_location->SetHint		(cName());
 	}
-#endif // _DEBUG
+#endif // DEBUG
 
 #ifdef DEBUG_MEMORY_MANAGER
 	if (g_bMEMO) {

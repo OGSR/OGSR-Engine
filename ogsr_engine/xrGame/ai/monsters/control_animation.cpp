@@ -4,7 +4,7 @@
 #include "control_manager.h"
 #include "profiler.h"
 
-//#ifdef _DEBUG
+//#ifdef DEBUG
 //#include "control_animation_base.h"
 //#endif
 
@@ -115,7 +115,7 @@ void CControlAnimation::play_part(SAnimationPart &part, PlayCallback callback)
 	
 	
 ///////////////////////////////////////////////////////////////////////////////
-//#ifdef _DEBUG	
+//#ifdef DEBUG	
 //	Msg("Monster[%s] Time[%u] Anim[%s]",*(m_object->cName()), Device.dwTimeGlobal,*(m_object->anim().GetAnimTranslation(part.motion)));
 //#endif
 ///////////////////////////////////////////////////////////////////////////////

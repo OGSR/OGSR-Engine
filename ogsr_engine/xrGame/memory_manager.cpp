@@ -81,15 +81,15 @@ void CMemoryManager::reload			(LPCSTR section)
 	danger().reload		(section);
 }
 
-#ifdef _DEBUG
+#ifdef DEBUG
 extern bool g_enemy_manager_second_update;
-#endif // _DEBUG
+#endif // DEBUG
 
 void CMemoryManager::update_enemies	(const bool &registered_in_combat)
 {
-#ifdef _DEBUG
+#ifdef DEBUG
 	g_enemy_manager_second_update	= false;
-#endif // _DEBUG
+#endif // DEBUG
 	enemy().update		();
 
 	if	(
@@ -112,9 +112,9 @@ void CMemoryManager::update_enemies	(const bool &registered_in_combat)
 		update			(sound().objects(),true);
 		update			(hit().objects(),true);
 
-#ifdef _DEBUG
+#ifdef DEBUG
 		g_enemy_manager_second_update	= true;
-#endif // _DEBUG
+#endif // DEBUG
 		enemy().update	();
 	}
 }

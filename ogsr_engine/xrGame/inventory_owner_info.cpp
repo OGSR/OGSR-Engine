@@ -128,12 +128,14 @@ void CInventoryOwner::TransferInfo(shared_str info_id, bool add_info) const
 	const CObject* pThisObject = smart_cast<const CObject*>(this); VERIFY(pThisObject);
 
 	//отправляем от нашему PDA пакет информации с номером
+/*
 	NET_Packet		P;
 	CGameObject::u_EventGen(P, GE_INFO_TRANSFER, pThisObject->ID());
 	P.w_u16			(pThisObject->ID());					//отправитель
 	P.w_stringZ		(info_id);							//сообщение
 	P.w_u8			(add_info?1:0);							//добавить/удалить информацию
-//	CGameObject::u_EventSend(P);
+	CGameObject::u_EventSend(P);
+*/
 
 	CInfoPortion info_portion;
 	info_portion.Load(info_id);

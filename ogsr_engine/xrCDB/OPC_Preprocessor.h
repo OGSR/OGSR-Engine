@@ -46,10 +46,6 @@
 		#endif
 	#endif
 
-	#ifdef  _DEBUG
-	// Here you may define items for debug builds
-	#endif
-
 	#ifndef THIS_FILE
 		#define THIS_FILE			__FILE__
 	#endif

@@ -175,7 +175,7 @@ NET_Packet*		INetQueue::Create	(const NET_Packet& _other)
 {
 	NET_Packet*	P			= 0;
 	cs.Enter		();
-//#ifdef _DEBUG
+//#ifdef DEBUG
 //		Msg ("- INetQueue::Create - ready %d, unused %d", ready.size(), unused.size());
 //#endif
 	if (unused.empty())	
@@ -199,7 +199,7 @@ NET_Packet*		INetQueue::Retreive	()
 {
 	NET_Packet*	P			= 0;
 	cs.Enter		();
-//#ifdef _DEBUG
+//#ifdef DEBUG
 //			Msg ("INetQueue::Retreive - ready %d, unused %d", ready.size(), unused.size());
 //#endif
 	if (!ready.empty())		P = ready.front();
@@ -221,7 +221,7 @@ NET_Packet*		INetQueue::Retreive	()
 void			INetQueue::Release	()
 {
 	cs.Enter		();
-//#ifdef _DEBUG
+//#ifdef DEBUG
 //		Msg ("INetQueue::Release - ready %d, unused %d", ready.size(), unused.size());
 //#endif
 	VERIFY			(!ready.empty());

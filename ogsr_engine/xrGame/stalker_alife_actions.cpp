@@ -27,7 +27,7 @@
 
 using namespace StalkerSpace;
 
-#ifdef _DEBUG
+#ifdef DEBUG
 //#	define STALKER_DEBUG_MODE
 #endif
 

@@ -580,7 +580,7 @@ void	IPureServer::SendTo_LL(ClientID ID/*DPNID ID*/, void* data, u32 size, u32 d
 	desc.dwBufferSize	= size;
 	desc.pBufferData	= LPBYTE(data);
 
-#ifdef _DEBUG
+#ifdef DEBUG
 	u32 time_global		= TimeGlobal(device_timer);
 	if (time_global - stats.dwSendTime >= 999)
 	{

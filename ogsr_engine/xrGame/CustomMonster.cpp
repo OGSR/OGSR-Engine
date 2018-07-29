@@ -1020,7 +1020,7 @@ bool CCustomMonster::update_critical_wounded	(const u16 &bone_id, const float &p
 	m_critical_wound_accumulator	+= power - m_critical_wound_decrease_quant*time_delta;
 	clamp							(m_critical_wound_accumulator,0.f,m_critical_wound_threshold);
 
-#if 0//def _DEBUG
+#if 0//def DEBUG
 	Msg								(
 		"%6d [%s] update_critical_wounded: %f[%f] (%f,%f) [%f]",
 		Device.dwTimeGlobal,

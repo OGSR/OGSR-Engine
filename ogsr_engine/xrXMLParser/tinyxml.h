@@ -38,11 +38,6 @@ distribution.
 #include <string.h>
 #include <assert.h>
 
-// Help out windows:
-#if defined( _DEBUG ) && !defined( DEBUG )
-#	define DEBUG
-#endif
-
 #define TIXML_USE_STL
 
 #ifdef TIXML_USE_STL

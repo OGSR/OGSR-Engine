@@ -2,7 +2,7 @@
 
 #include "../xrCore/xrCore.h"
 
-#ifdef _DEBUG
+#ifdef DEBUG
 	#define D3D_DEBUG_INFO
 #endif
 

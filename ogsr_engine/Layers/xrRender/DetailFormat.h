@@ -128,4 +128,4 @@ public:
 };
 
 #pragma pack(pop)
-#endif // _DEBUG
+#endif // DEBUG

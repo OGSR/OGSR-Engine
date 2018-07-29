@@ -40,7 +40,7 @@ public:
 
 	virtual IStateManagerBase *create_state_manager	();
 private:
-#ifdef _DEBUG	
+#ifdef DEBUG	
 	virtual void	debug_on_key		(int key);
 #endif
 

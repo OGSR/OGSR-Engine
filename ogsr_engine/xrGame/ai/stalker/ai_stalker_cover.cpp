@@ -17,7 +17,7 @@
 
 extern const float MIN_SUITABLE_ENEMY_DISTANCE = 3.f;
 
-#ifdef _DEBUG
+#ifdef DEBUG
 static int g_advance_search_count		= 0;
 static int g_near_cover_search_count	= 0;
 static int g_far_cover_search_count		= 0;
@@ -46,10 +46,10 @@ void CAI_Stalker::on_best_cover_changed				(const CCoverPoint *new_cover, const 
 
 const CCoverPoint *CAI_Stalker::find_best_cover		(const Fvector &position_to_cover_from)
 {
-#ifdef _DEBUG
+#ifdef DEBUG
 //	Msg									("* [%6d][%s] search for new cover performed",Device.dwTimeGlobal,*cName());
 #endif
-#ifdef _DEBUG
+#ifdef DEBUG
 	++g_near_cover_search_count;
 #endif
 	m_ce_best->setup					(position_to_cover_from,MIN_SUITABLE_ENEMY_DISTANCE,170.f,MIN_SUITABLE_ENEMY_DISTANCE);
@@ -57,7 +57,7 @@ const CCoverPoint *CAI_Stalker::find_best_cover		(const Fvector &position_to_cov
 	if (point)
 		return							(point);
 
-#ifdef _DEBUG
+#ifdef DEBUG
 	++g_far_cover_search_count;
 #endif
 	m_ce_best->setup					(position_to_cover_from,10.f,170.f,10.f);
@@ -94,7 +94,7 @@ void CAI_Stalker::update_best_cover_actuality		(const Fvector &position_to_cover
 
 	if (m_best_cover->position().distance_to_sqr(position_to_cover_from) < _sqr(MIN_SUITABLE_ENEMY_DISTANCE)) {
 		m_best_cover_actual				= false;
-#if 0//def _DEBUG
+#if 0//def DEBUG
 		Msg								("* [%6d][%s] enemy too close",Device.dwTimeGlobal,*cName());
 #endif
 		return;
@@ -103,7 +103,7 @@ void CAI_Stalker::update_best_cover_actuality		(const Fvector &position_to_cover
 	float								cover_value = best_cover_value(position_to_cover_from);
 	if (cover_value >= m_best_cover_value + 1.f) {
 		m_best_cover_actual				= false;
-#if 0//def _DEBUG
+#if 0//def DEBUG
 		Msg								("* [%6d][%s] cover became too bad",Device.dwTimeGlobal,*cName());
 #endif
 		return;
@@ -124,10 +124,10 @@ void CAI_Stalker::update_best_cover_actuality		(const Fvector &position_to_cover
 	m_best_cover_advance_cover			= m_best_cover;
 	m_best_cover_can_try_advance		= false;
 
-#ifdef _DEBUG
+#ifdef DEBUG
 //	Msg									("* [%6d][%s] advance search performed",Device.dwTimeGlobal,*cName());
 #endif
-#ifdef _DEBUG
+#ifdef DEBUG
 	++g_advance_search_count;
 #endif
 	m_ce_best->setup					(position_to_cover_from,MIN_SUITABLE_ENEMY_DISTANCE,170.f,MIN_SUITABLE_ENEMY_DISTANCE);
@@ -159,7 +159,7 @@ void CAI_Stalker::on_restrictions_change			()
 {
 	inherited::on_restrictions_change	();
 	m_best_cover_actual					= false;
-#ifdef _DEBUG
+#ifdef DEBUG
 	Msg									("* [%6d][%s] on_restrictions_change",Device.dwTimeGlobal,*cName());
 #endif
 }
@@ -169,7 +169,7 @@ void CAI_Stalker::on_enemy_change					(const CEntityAlive *enemy)
 	inherited::on_enemy_change			(enemy);
 	m_item_actuality					= false;
 	m_best_cover_actual					= false;
-#ifdef _DEBUG
+#ifdef DEBUG
 //	Msg									("* [%6d][%s] on_enemy_change",Device.dwTimeGlobal,*cName());
 #endif
 }
@@ -180,7 +180,7 @@ void CAI_Stalker::on_danger_location_add			(const CDangerLocation &location)
 		return;
 
 	if (m_best_cover->position().distance_to_sqr(location.position()) <= _sqr(location.m_radius)) {
-#ifdef _DEBUG
+#ifdef DEBUG
 //		Msg								("* [%6d][%s] on_danger_add",Device.dwTimeGlobal,*cName());
 #endif
 		m_best_cover_actual				= false;
@@ -191,7 +191,7 @@ void CAI_Stalker::on_danger_location_remove			(const CDangerLocation &location)
 {
 	if (!m_best_cover) {
 		if (Position().distance_to_sqr(location.position()) <= _sqr(location.m_radius)) {
-#ifdef _DEBUG
+#ifdef DEBUG
 //			Msg							("* [%6d][%s] on_danger_remove",Device.dwTimeGlobal,*cName());
 #endif
 			m_best_cover_actual			= false;
@@ -201,7 +201,7 @@ void CAI_Stalker::on_danger_location_remove			(const CDangerLocation &location)
 	}
 
 	if (m_best_cover->position().distance_to_sqr(location.position()) <= _sqr(location.m_radius)) {
-#ifdef _DEBUG
+#ifdef DEBUG
 //		Msg								("* [%6d][%s] on_danger_remove",Device.dwTimeGlobal,*cName());
 #endif
 		m_best_cover_actual				= false;
@@ -210,7 +210,7 @@ void CAI_Stalker::on_danger_location_remove			(const CDangerLocation &location)
 
 void CAI_Stalker::on_cover_blocked					(const CCoverPoint *cover)
 {
-#ifdef _DEBUG
+#ifdef DEBUG
 //	Msg									("* [%6d][%s] cover is blocked",Device.dwTimeGlobal,*cName());
 #endif
 	m_best_cover_actual					= false;

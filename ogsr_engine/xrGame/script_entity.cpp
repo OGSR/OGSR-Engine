@@ -239,7 +239,7 @@ void CScriptEntity::ProcessScripts()
 	while (!m_tpActionQueue.empty()) {
 		l_tpEntityAction= m_tpActionQueue.front();
 		VERIFY		(l_tpEntityAction);
-#ifdef _DEBUG
+#ifdef DEBUG
 //		if (!xr_strcmp("m_stalker_wounded",*object().cName()))
 //			Msg			("%6d Processing action : %s",Device.dwTimeGlobal,*l_tpEntityAction->m_tAnimationAction.m_caAnimationToPlay);
 #endif
@@ -252,7 +252,7 @@ void CScriptEntity::ProcessScripts()
 		if (!l_tpEntityAction->CheckIfActionCompleted())
 			break;
 
-#ifdef _DEBUG
+#ifdef DEBUG
 //		if (!xr_strcmp("m_stalker_wounded",*object().cName()))
 //			Msg			("%6d Action completed : %s",Device.dwTimeGlobal,*l_tpEntityAction->m_tAnimationAction.m_caAnimationToPlay);
 #endif
@@ -373,7 +373,7 @@ bool CScriptEntity::bfAssignSound(CScriptEntityAction *tpEntityAction)
 	if (m_current_sound) {
 		if (!m_current_sound->_feedback())
 			if (!l_tSoundAction.m_bStartedToPlay) {
-#ifdef _DEBUG
+#ifdef DEBUG
 //				Msg									("%6d Starting sound %s",Device.dwTimeGlobal,*l_tSoundAction.m_caSoundToPlay);
 #endif
 				const Fmatrix	&l_tMatrix = GetUpdatedMatrix(l_tSoundAction.m_caBoneName,l_tSoundAction.m_tSoundPosition,l_tSoundAction.m_tSoundAngles);

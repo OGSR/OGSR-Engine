@@ -155,9 +155,9 @@ BOOL CScriptBinder::net_Spawn		(CSE_Abstract* DC)
 void CScriptBinder::net_Destroy		()
 {
 	if (m_object) {
-#ifdef _DEBUG
+#ifdef DEBUG
 		Msg						("* Core object %s is UNbinded from the script object",smart_cast<CGameObject*>(this) ? *smart_cast<CGameObject*>(this)->cName() : "");
-#endif // _DEBUG
+#endif // DEBUG
 #ifdef CRASH_ON_SCRIPT_BINDER_ERRORS
 		m_object->net_Destroy();
 #else
@@ -178,9 +178,9 @@ void CScriptBinder::set_object		(CScriptBinderObject *object)
 {
 	if (IsGameTypeSingle()) {
 		VERIFY2				(!m_object,"Cannot bind to the object twice!");
-#ifdef _DEBUG
+#ifdef DEBUG
 		Msg					("* Core object %s is binded with the script object",smart_cast<CGameObject*>(this) ? *smart_cast<CGameObject*>(this)->cName() : "");
-#endif // _DEBUG
+#endif // DEBUG
 		m_object			= object;
 	}
 }

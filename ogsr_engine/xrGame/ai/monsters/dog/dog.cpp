@@ -5,7 +5,7 @@
 #include "../control_animation_base.h"
 #include "../control_movement_base.h"
 
-#ifdef _DEBUG
+#ifdef DEBUG
 #	include <dinput.h>
 #endif
 
@@ -138,7 +138,7 @@ void CAI_Dog::CheckSpecParams(u32 spec_params)
 
 
 
-#ifdef _DEBUG
+#ifdef DEBUG
 void CAI_Dog::debug_on_key(int key)
 {
 	CKinematicsAnimated *skel = smart_cast<CKinematicsAnimated *>(Visual());

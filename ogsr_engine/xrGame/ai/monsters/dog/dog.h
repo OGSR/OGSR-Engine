@@ -23,7 +23,7 @@ public:
 	
 
 private:
-#ifdef _DEBUG	
+#ifdef DEBUG	
 	virtual void	debug_on_key		(int key);
 #endif
 

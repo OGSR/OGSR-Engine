@@ -547,14 +547,14 @@ void CActor::g_SetAnimation( u32 mstate_rl )
 
 
 
-#ifdef _DEBUG
+#ifdef DEBUG
 	if(bDebug){
 		HUD().Font().pFontStat->OutSetI	(0,0);
 		HUD().Font().pFontStat->OutNext("[%s]",mov_state[moving_idx]);
 	}
 #endif
 
-#ifdef _DEBUG
+#ifdef DEBUG
 	if ((Level().CurrentControlEntity() == this) && g_ShowAnimationInfo) {
 		string128 buf;
 		strcpy(buf,"");

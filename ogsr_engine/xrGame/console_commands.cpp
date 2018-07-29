@@ -544,7 +544,7 @@ public:
 
 	  virtual void	Execute	(LPCSTR args)
 	  {
-#ifdef _DEBUG
+#ifdef DEBUG
 		  CCC_Float::Execute(args);
 #else
 		  if (!g_pGameLevel || GameID() == GAME_SINGLE)

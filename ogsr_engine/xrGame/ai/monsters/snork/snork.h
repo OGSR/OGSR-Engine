@@ -30,7 +30,7 @@ public:
 	virtual void	on_activate_control		(ControlCom::EControlType);
 
 private:
-#ifdef _DEBUG	
+#ifdef DEBUG	
 	virtual void	debug_on_key		(int key);
 #endif
 

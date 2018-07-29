@@ -31,7 +31,7 @@ GameEvent*		GameEventQueue::Create	()
 		ready.push_back		(xr_new<GameEvent> ());
 		ge					= ready.back	();
 		//---------------------------------------------
-#ifdef _DEBUG
+#ifdef DEBUG
 //		Msg ("* GameEventQueue::Create - ready %d, unused %d", ready.size(), unused.size());
 #endif
 		LastTimeCreate = GetTickCount();
@@ -53,7 +53,7 @@ GameEvent*		GameEventQueue::Create	(NET_Packet& P, u16 type, u32 time, ClientID 
 		ready.push_back		(xr_new<GameEvent> ());
 		ge					= ready.back	();
 		//---------------------------------------------
-#ifdef _DEBUG
+#ifdef DEBUG
 //		Msg ("* GameEventQueue::Create - ready %d, unused %d", ready.size(), unused.size());
 #endif
 		LastTimeCreate = GetTickCount();
@@ -85,7 +85,7 @@ GameEvent*		GameEventQueue::Retreive	()
 		{
 			xr_delete(unused.back());
 			unused.pop_back();
-#ifdef _DEBUG
+#ifdef DEBUG
 //			Msg ("GameEventQueue::Retreive - ready %d, unused %d", ready.size(), unused.size());
 #endif
 		}		
@@ -105,7 +105,7 @@ void			GameEventQueue::Release	()
 	if ((LastTimeCreate < tmp_time) &&  (size > 32))
 	{
 		xr_delete(ready.front());
-#ifdef _DEBUG
+#ifdef DEBUG
 //		Msg ("GameEventQueue::Release - ready %d, unused %d", ready.size(), unused.size());
 #endif
 	}
