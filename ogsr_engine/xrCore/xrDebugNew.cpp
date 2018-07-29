@@ -9,7 +9,9 @@ XRCORE_API xrDebug Debug;
 
 static bool error_after_dialog = false;
 
-void save_mini_dump(_EXCEPTION_POINTERS*);
+#ifdef USE_OWN_MINI_DUMP
+void save_mini_dump( _EXCEPTION_POINTERS* );
+#endif
 
 #ifndef XR_USE_BLACKBOX
 #	include "stacktrace_collector.h"
@@ -54,7 +56,8 @@ LONG DbgLogExceptionFilter(const char* header, _EXCEPTION_POINTERS *pExceptionIn
 {
 	LogStackTrace(header, pExceptionInfo);
 #ifdef USE_OWN_MINI_DUMP
-	save_mini_dump( pExceptionInfo ); //Пусть и тут будет, может пригодится когда-нибудь.
+	if ( !IsDebuggerPresent() )
+		save_mini_dump( pExceptionInfo ); //Пусть и тут будет, может пригодится когда-нибудь.
 #endif
 	return EXCEPTION_EXECUTE_HANDLER;
 }
@@ -132,7 +135,7 @@ __declspec(noreturn) void xrDebug::do_exit(const std::string &message)
 	MessageBox(wnd, message.c_str(), "Error", MB_OK | MB_ICONERROR | MB_SYSTEMMODAL);
 
 	if ( !IsDebuggerPresent() )
-		TerminateProcess( GetCurrentProcess(), 1 );
+		exit(-1); //TerminateProcess( GetCurrentProcess(), 1 );
 	else
 		DEBUG_INVOKE;
 }
@@ -149,6 +152,12 @@ void xrDebug::backend(const char *expression, const char *description, const cha
 	if (pCrashHandler)
 		pCrashHandler();
 
+/* KRodin: у меня этот способ не работает - происходит исключение внутри функции save_mini_dump(). Если сильно надо будет тут получать минидампы - придумать другой способ.
+#ifdef USE_OWN_MINI_DUMP
+	if ( !IsDebuggerPresent() )
+		save_mini_dump(nullptr);
+#endif
+*/
 #ifdef USE_OWN_ERROR_MESSAGE_WINDOW
 	auto game_hwnd = GetActiveWindow();
 	if (!game_hwnd)
@@ -177,7 +186,7 @@ void xrDebug::backend(const char *expression, const char *description, const cha
 		get_on_dialog()(false);
 #endif
 	if ( !IsDebuggerPresent() )
-		TerminateProcess( GetCurrentProcess(), 1 );
+		exit(-1); //TerminateProcess( GetCurrentProcess(), 1 );
 	else
 		DEBUG_INVOKE;
 }
