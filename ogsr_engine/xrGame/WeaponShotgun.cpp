@@ -79,24 +79,14 @@ void CWeaponShotgun::Fire2Start ()
 			CWeapon::FireStart();
 
 			if (!iAmmoElapsed)	
-			{
-				SwitchState					(eMagEmpty);
-				StopShooting();
-			}
+				SwitchState(eMagEmpty);
 			else					
-			{
-				SwitchState					((iAmmoElapsed < iMagazineSize)?eFire:eFire2);
-			}
+				SwitchState((iAmmoElapsed < iMagazineSize)?eFire:eFire2);
 		}
 	}
 	else
-	{
 		if (!iAmmoElapsed)
-		{
 			SwitchState(eMagEmpty);
-			StopShooting();
-		}
-	}
 }
 
 void CWeaponShotgun::Fire2End () 
