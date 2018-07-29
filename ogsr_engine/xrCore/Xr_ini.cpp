@@ -18,11 +18,11 @@ void CInifile::Destroy( CInifile* ini ) {
 //Тело функций Inifile
 XRCORE_API void _parse( LPSTR dest, LPCSTR src ) {
   if ( src ) {
-    BOOL bInsideSTR = false;
+    bool bInsideSTR = false;
     while ( *src ) {
       if ( isspace( (u8)*src ) ) {
         if ( bInsideSTR ) { *dest++ = *src++; continue; }
-        while ( *src && isspace( *src ) ) src++;
+        while ( *src && iswspace( *src ) ) src++;
         continue;
       }
       else if ( *src == '"' ) {
@@ -37,7 +37,7 @@ XRCORE_API void _parse( LPSTR dest, LPCSTR src ) {
 
 XRCORE_API void _decorate( LPSTR dest, LPCSTR src ) {
   if (src) {
-    BOOL bInsideSTR = false;
+    bool bInsideSTR = false;
     while ( *src ) {
       if ( *src == ',' ) {
         if ( bInsideSTR )
