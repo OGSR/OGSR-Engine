@@ -23,6 +23,8 @@
 #include "script_callback_ex.h"
 #include "script_game_object.h"
 #include "actor.h"
+#include "alife_registry_wrappers.h"
+#include "alife_simulator_header.h"
 
 CWeaponMagazinedWGrenade::CWeaponMagazinedWGrenade(LPCSTR name,ESoundTypes eSoundType) : CWeaponMagazined(name, eSoundType)
 {
@@ -147,8 +149,8 @@ BOOL CWeaponMagazinedWGrenade::net_Spawn(CSE_Abstract* DC)
 	m_bPending = false;
 
 	const auto wgl = smart_cast<CSE_ALifeItemWeaponMagazinedWGL*>( DC );
-	m_ammoType2 = wgl->ammo_type2;
-	iAmmoElapsed2 = wgl->a_current2;
+	m_ammoType2   = m_ammoType2   > 0 ? m_ammoType2   : wgl->ammo_type2;
+	iAmmoElapsed2 = iAmmoElapsed2 > 0 ? iAmmoElapsed2 : wgl->a_elapsed2;
 
 	if (wgl->m_bGrenadeMode) // m_bGrenadeMode enabled
 	{
@@ -767,7 +769,8 @@ void CWeaponMagazinedWGrenade::save(NET_Packet &output_packet)
 {
 	inherited::save(output_packet);
 	save_data(m_bGrenadeMode, output_packet);
-	save_data(m_magazine2.size() << 2 | m_ammoType2, output_packet);
+	save_data(m_magazine2.size(), output_packet);
+	save_data(m_ammoType2, output_packet);
 	//Msg( "~~[%s][%s] saved: m_bGrenadeMode: [%d], m_magazine2.size(): [%u], m_ammoType2: [%u]", __FUNCTION__, this->Name(), m_bGrenadeMode, m_magazine2.size(), m_ammoType2 );
 }
 
@@ -776,37 +779,36 @@ void CWeaponMagazinedWGrenade::load(IReader &input_packet)
 	inherited::load(input_packet);
 
 	load_data(m_bGrenadeMode, input_packet);
-
-	u32 sz;
-	load_data(sz, input_packet);
-
-	m_ammoType2 = sz & 0x3;
-	sz >>= 2;
-	
-	iAmmoElapsed2 = sz;
+	load_data(iAmmoElapsed2, input_packet);
+	if ( ai().get_alife()->header().version() >= 5 )
+	  load_data( m_ammoType2, input_packet );
 	//Msg( "~~[%s][%s] loaded: m_bGrenadeMode: [%d], iAmmoElapsed2: [%d], m_ammoType2: [%u]", __FUNCTION__, this->Name(), m_bGrenadeMode, iAmmoElapsed2, m_ammoType2 );
 }
 
 void CWeaponMagazinedWGrenade::net_Export(NET_Packet& P)
 {
 	//Msg( "~~[%s][%s] net_export: m_bGrenadeMode: [%d], iAmmoElapsed2: [%d], m_ammoType2: [%u]", __FUNCTION__, this->Name(), m_bGrenadeMode, m_magazine2.size(), m_ammoType2 );
-	P.w_u8((m_ammoType2 << 6) + (m_magazine2.size() << 1 & 0x3E) + (m_bGrenadeMode ? 1 : 0));
+	P.w_u8( m_bGrenadeMode ? 1 : 0 );
 
 	inherited::net_Export(P);
+
+	P.w_u8( (u8)m_ammoType2 );
+	P.w_u16( (u16)m_magazine2.size() );
 }
 
 void CWeaponMagazinedWGrenade::net_Import(NET_Packet& P) //Этот и все подобные методы вообще не вызываются в в синглплеере, походу.
 {
 	u8 _data = P.r_u8();
 	bool NewMode = !!(_data & 0x1);
-	m_ammoType2 = _data>>6;
-	iAmmoElapsed2 = _data>>1 & 0x1F;
+
+	inherited::net_Import(P);
+
+	m_ammoType2   = P.r_u8();
+	iAmmoElapsed2 = P.r_u16();
 
 	if (NewMode != m_bGrenadeMode)
 		SwitchMode();
 	//Msg( "~~[%s][%s] net_import: m_bGrenadeMode: [%d], iAmmoElapsed2: [%d], m_ammoType2: [%u]", __FUNCTION__, this->Name(), NewMode, iAmmoElapsed2, m_ammoType2 );
-
-	inherited::net_Import(P);
 }
 
 bool CWeaponMagazinedWGrenade::IsNecessaryItem	    (const shared_str& item_sect)
