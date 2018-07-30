@@ -83,8 +83,5 @@ void CSE_ALifeAnomalousZone::script_register(lua_State *L)
 			"cse_anomalous_zone",
 			CSE_ALifeCustomZone
 		)
-#ifdef XRGAME_EXPORTS
-		.def("spawn_artefacts",	&CSE_ALifeAnomalousZone::spawn_artefacts)
-#endif
 	];
 }
