@@ -337,7 +337,7 @@ void CMapLocation::UpdateSpot(CUICustomMap* map, CMapSpot* sp )
 		//update spot position
 		Fvector2 position = Position();
 
-		m_position_on_map =	map->ConvertRealToLocal(position, (map->Heading()) ? false : true);
+		m_position_on_map =	map->ConvertRealToLocal(position, true);
 
 		sp->SetWndPos(m_position_on_map);
 		Frect wnd_rect = sp->GetWndRect();
