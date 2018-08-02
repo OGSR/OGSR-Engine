@@ -322,13 +322,9 @@ struct damn_keys_filter {
 
 #include "xr_ioc_cmd.h"
 
-typedef void DUMMY_STUFF (const void*,const u32&,void*);
-XRCORE_API DUMMY_STUFF	*g_temporary_stuff;
-
-#define TRIVIAL_ENCRYPTOR_DECODER
+typedef void DUMMY_STUFF( const void*, const u32&, void* );
+XRCORE_API DUMMY_STUFF* g_temporary_stuff;
 #include "trivial_encryptor.h"
-
-//#define RUSSIAN_BUILD
 
 ENGINE_API	bool g_dedicated_server	= false;
 
