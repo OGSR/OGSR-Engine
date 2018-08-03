@@ -171,6 +171,11 @@ public:
 	Flags16		ParamFlags;
 	enum		ParamFlag {
 		dbg	= ( 1 << 0 ),
+		fpslock60 = (1 << 1),
+		fpslock120 = (1 << 2),
+		fpslock144 = (1 << 3),
+		fpslock240 = (1 << 4),
+		nofpslock = (1 << 5),
 	};
 
 	void		_initialize	(LPCSTR ApplicationName, LogCallback cb=0, BOOL init_fs=TRUE, LPCSTR fs_fname=0);
