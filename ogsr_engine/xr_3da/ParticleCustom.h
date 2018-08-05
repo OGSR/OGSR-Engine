@@ -8,6 +8,7 @@ public:
 	// geometry-format
 	ref_geom		geom;
 public:
+	IParticleCustom() { geom = NULL; } // alpet: предотвращение странного вылета
 	virtual 		~IParticleCustom	(){;}
 
     virtual void 	OnDeviceCreate		()=0;

@@ -24,6 +24,11 @@
 #include "space_restriction.h"
 #include "../COMMON_AI/PATH/patrol_path.h"
 #include "../COMMON_AI/PATH/patrol_point.h"
+#include "../xr_3da/ResourceManager.h"
+#include "../xr_3da/device.h"
+#include "../xr_3da/Render.h"
+
+#include "exported_classes_def.h"
 
 struct CGlobalFlags { };
 
@@ -267,13 +272,67 @@ void CObjectScript::script_register		(lua_State *L)
 	];
 }
 
-void IRender_VisualScript::script_register		(lua_State *L)
+// alpet ======================== SCRIPT_TEXTURE_CONTROL BEGIN =========== 
+
+IRender_Visual* visual_get_child(IRender_Visual	*v, u32 n_child)
+{
+	if (!v) return NULL; // not have visual
+	CKinematics *k = dynamic_cast<CKinematics*> (v);
+	if (!k) return NULL;
+	if (n_child >= k->children.size()) return NULL;
+	return k->children.at(n_child);
+}
+
+CTexture* visual_get_texture(IRender_Visual *child_v, int n_texture)
+{
+	if (!child_v) return NULL; // not have visual
+
+	const int max_tex_number = 255;
+
+	n_texture = (n_texture > max_tex_number) ? max_tex_number : n_texture;
+
+	// визуал выстраивается иерархически - есть потомки и предки
+
+	Shader* s = child_v->shader._get();
+
+	if (s && s->E[0]._get()) // обычно в первом элементе находится исчерпывающий список текстур 
+	{
+		ShaderElement* E = s->E[0]._get();
+
+		int tex_count = 0;
+
+		for (u32 p = 0; p < E->passes.size(); p++)
+		{
+			if (E->passes[p]._get())
+			{
+				SPass* pass = E->passes[p]._get();
+
+				STextureList* tlist = pass->T._get();
+				if (!tlist)
+					continue;
+
+				for (u32 t = 0; t < tlist->size() && tex_count <= n_texture; t++, tex_count++)
+					if (tex_count == n_texture)
+					{
+						return tlist->at(t).second._get();
+					}
+			}
+		}
+	}
+
+	return NULL;
+}
+
+void IRender_VisualScript::script_register(lua_State *L)
 {
 	module(L)
 	[
 		class_<IRender_Visual>("IRender_Visual")
 			.def(constructor<>())
 			.def("dcast_PKinematicsAnimated",&IRender_Visual::dcast_PKinematicsAnimated)
+			.def("child", &visual_get_child)
+
+			.def("get_texture", &visual_get_texture)
 	];
 }
 
@@ -353,7 +412,6 @@ void FHierrarhyVisualScript::script_register		(lua_State *L)
 }
 */
 
-
 void CAnomalyDetectorScript::script_register( lua_State *L ) {
   module( L ) [
     class_<CAnomalyDetector>( "CAnomalyDetector" )
@@ -400,3 +458,89 @@ void CPatrolPathScript::script_register( lua_State *L ) {
     .def( "add_vertex", &CPatrolPath::add_vertex )
   ];
 }
+
+// alpet ======================== SCRIPT_TEXTURE_CONTROL EXPORTS 2 =========== 
+
+CTexture* script_object_get_texture(CScriptGameObject *script_obj, u32 n_child, u32 n_texture)
+{
+	IRender_Visual* v = script_obj->object().Visual();
+	IRender_Visual* child_v = visual_get_child(v, n_child);
+	return visual_get_texture(child_v, n_texture);
+}
+
+void script_texture_find(lua_State *L)
+{
+	LPCSTR name = lua_tostring(L, 1);
+	auto textures = Device.Resources->_FindTexture(name);
+
+	lua_createtable(L, 0, textures.size());
+
+	int tidx = lua_gettop(L);
+
+	for (auto& tex : textures)
+	{
+		// key - texture name
+		LPCSTR key = tex->cName.c_str();
+		lua_pushstring(L, key);
+
+		// value - texture object
+		luabind::detail::convert_to_lua<CTexture*>(L, tex);
+
+		lua_settable(L, tidx);
+	}
+}
+
+LPCSTR script_texture_getname(CTexture *t)
+{
+	return t->cName.c_str();
+}
+
+void script_texture_setname(CTexture *t, LPCSTR name)
+{
+	t->set_name(name);
+}
+
+void script_texture_load(CTexture *t)
+{
+	t->Preload();
+	t->Load();
+	Device.Resources->_SetTexture(t);
+}
+
+void script_texture_unload(CTexture *t)
+{
+	t->Unload();
+	Device.Resources->_DeleteTexture(t);
+}
+
+void CTextureScript::script_register(lua_State *L)
+{
+	// added by alpet 10.07.14
+	module(L)
+		[
+			class_<CTexture>("CTexture")
+			.def("load", &script_texture_load)
+			.def("unload", &script_texture_unload)
+			.def("get_name", &script_texture_getname)
+			.def("set_name", &script_texture_setname)
+			.def_readonly("ref_count", &CTexture::dwReference)
+		];
+}
+
+using namespace luabind;
+
+void CResourceManagerScript::script_register(lua_State *L)
+{
+	// added by alpet 10.07.14
+	module(L)[
+		// added by alpet
+		def("texture_find", &script_texture_find, raw<1>()),
+		def("texture_load", &script_texture_load),
+		def("texture_unload", &script_texture_unload),
+		def("texture_from_object", &script_object_get_texture),
+		def("texture_from_visual", &visual_get_texture),
+		def("texture_get_name", &script_texture_getname),
+		def("texture_set_name", &script_texture_setname)
+	];
+}
+// alpet ======================== SCRIPT_TEXTURE_CONTROL END =========== 
