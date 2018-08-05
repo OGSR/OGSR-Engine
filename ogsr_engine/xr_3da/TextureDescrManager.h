@@ -32,7 +32,7 @@ class CTextureDescrMngr
 	map_TD									m_texture_details;
 
 	void		LoadLTX		();
-	void		LoadTHM		();
+	void		LoadTHM		(char* fpath);
 
 public:
 	void		Load		();

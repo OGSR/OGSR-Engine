@@ -448,7 +448,7 @@ bool CLocatorAPI::Recurse		(const char* path)
 		strcpy_s(full_path,sizeof(full_path), path);
 		strcat(full_path, sFile.name);
 
-		// загоняем в вектор для того *.db* приходили в сортированном порядке
+		// Г§Г ГЈГ®Г­ГїГҐГ¬ Гў ГўГҐГЄГІГ®Г° Г¤Г«Гї ГІГ®ГЈГ® *.db* ГЇГ°ГЁГµГ®Г¤ГЁГ«ГЁ Гў Г±Г®Г°ГІГЁГ°Г®ГўГ Г­Г­Г®Г¬ ГЇГ®Г°ГїГ¤ГЄГҐ
 		if(!ignore_name(sFile.name) && !ignore_path(full_path))
 			rec_files.push_back(sFile);
 
@@ -462,7 +462,7 @@ bool CLocatorAPI::Recurse		(const char* path)
 	}
 	else
 	{
-		// загоняем в вектор для того *.db* приходили в сортированном порядке
+		// Г§Г ГЈГ®Г­ГїГҐГ¬ Гў ГўГҐГЄГІГ®Г° Г¤Г«Гї ГІГ®ГЈГ® *.db* ГЇГ°ГЁГµГ®Г¤ГЁГ«ГЁ Гў Г±Г®Г°ГІГЁГ°Г®ГўГ Г­Г­Г®Г¬ ГЇГ®Г°ГїГ¤ГЄГҐ
 		if(!ignore_name(sFile.name))
 			rec_files.push_back(sFile);
 
@@ -736,7 +736,7 @@ xr_vector<char*>* CLocatorAPI::file_list_open			(const char* _path, u32 flags)
 {
 	R_ASSERT		(_path);
 	VERIFY			(flags);
-	// проверить нужно ли пересканировать пути
+	// ГЇГ°Г®ГўГҐГ°ГЁГІГј Г­ГіГ¦Г­Г® Г«ГЁ ГЇГҐГ°ГҐГ±ГЄГ Г­ГЁГ°Г®ГўГ ГІГј ГЇГіГІГЁ
 	check_pathes	();
 
 	string_path		N;
@@ -795,7 +795,7 @@ int CLocatorAPI::file_list(FS_FileSet& dest, LPCSTR path, u32 flags, LPCSTR mask
 {
 	R_ASSERT		(path);
 	VERIFY			(flags);
-	// проверить нужно ли пересканировать пути
+	// ГЇГ°Г®ГўГҐГ°ГЁГІГј Г­ГіГ¦Г­Г® Г«ГЁ ГЇГҐГ°ГҐГ±ГЄГ Г­ГЁГ°Г®ГўГ ГІГј ГЇГіГІГЁ
     check_pathes	();
                
 	string_path		N;
@@ -1092,7 +1092,7 @@ void CLocatorAPI::copy_file_to_build	(T *&r, LPCSTR source_name)
 
 bool CLocatorAPI::check_for_file	(LPCSTR path, LPCSTR _fname, string_path& fname, const file *&desc)
 {
-	// проверить нужно ли пересканировать пути
+	// ГЇГ°Г®ГўГҐГ°ГЁГІГј Г­ГіГ¦Г­Г® Г«ГЁ ГЇГҐГ°ГҐГ±ГЄГ Г­ГЁГ°Г®ГўГ ГІГј ГЇГіГІГЁ
     check_pathes			();
 
 	// correct path
@@ -1214,7 +1214,7 @@ void	CLocatorAPI::w_close(IWriter* &S)
 
 CLocatorAPI::files_it CLocatorAPI::file_find_it(LPCSTR fname)
 {
-	// проверить нужно ли пересканировать пути
+	// ГЇГ°Г®ГўГҐГ°ГЁГІГј Г­ГіГ¦Г­Г® Г«ГЁ ГЇГҐГ°ГҐГ±ГЄГ Г­ГЁГ°Г®ГўГ ГІГј ГЇГіГІГЁ
     check_pathes	();
 
 	file			desc_f;
@@ -1369,7 +1369,7 @@ void CLocatorAPI::update_path(xr_string& dest, LPCSTR initial, LPCSTR src)
 
 u32 CLocatorAPI::get_file_age(LPCSTR nm)
 {
-	// проверить нужно ли пересканировать пути
+	// ГЇГ°Г®ГўГҐГ°ГЁГІГј Г­ГіГ¦Г­Г® Г«ГЁ ГЇГҐГ°ГҐГ±ГЄГ Г­ГЁГ°Г®ГўГ ГІГј ГЇГіГІГЁ
     check_pathes	();
 
 	files_it I 		= file_find_it(nm);
@@ -1378,7 +1378,7 @@ u32 CLocatorAPI::get_file_age(LPCSTR nm)
 
 void CLocatorAPI::set_file_age(LPCSTR nm, u32 age)
 {
-	// проверить нужно ли пересканировать пути
+	// ГЇГ°Г®ГўГҐГ°ГЁГІГј Г­ГіГ¦Г­Г® Г«ГЁ ГЇГҐГ°ГҐГ±ГЄГ Г­ГЁГ°Г®ГўГ ГІГј ГЇГіГІГЁ
     check_pathes	();
 
     // set file
@@ -1526,3 +1526,32 @@ void CLocatorAPI::ProcessExternalArch()
 		ProcessArchive		(full_mod_name, _path);
 	}
 }
+
+
+char* CLocatorAPI::get_season_folder(char* fname)
+{ 
+	if ((curr_season) && (strlen(curr_season) > 0) && (strcmp(curr_season, "default") != 0))
+	{
+		string_path lvl_tx, myfn, dpath;
+		strconcat(sizeof(lvl_tx), lvl_tx, "textures_", curr_season, "\\");
+		this->get_path("$level_textures$")->_set(lvl_tx);
+		this->update_path(myfn, "$level_textures$", "");
+		this->rescan_path(myfn, TRUE);
+
+		char w_fname[128];
+		strcpy(w_fname, fname);
+		w_fname[strlen(w_fname) - 1] = 0;
+		strconcat(sizeof(w_fname), dpath, w_fname, "_", curr_season, "\\");
+		if (this->exist("$game_levels$", dpath))
+		{
+			fld_curr_season = dpath;
+			return	fld_curr_season;
+		}
+		this->get_path("$level_textures$")->_set("textures_default//");
+		
+		return fname;
+	}
+	this->get_path("$level_textures$")->_set("textures_default//");
+	return fname;
+}
+

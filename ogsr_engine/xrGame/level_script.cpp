@@ -640,9 +640,9 @@ void set_ignore_game_state_update()
 
 void SetEnvDescData(LPCSTR section_1, LPCSTR section_2, float exec_time_1, float exec_time_2)
 {
-	// в общем, какой тут смысл. Скрипт берет на себя все, кроме установки текущей погоды.
-	// устанавливается погода двумя дескрипторами, соответственно, чтоб не тащить за собой кучу всего, 
-	// единомоментно загружен минимум погодных дескрипторов. Остальные подгружаются по необходимости.
+	// Гў Г®ГЎГ№ГҐГ¬, ГЄГ ГЄГ®Г© ГІГіГІ Г±Г¬Г»Г±Г«. Г‘ГЄГ°ГЁГЇГІ ГЎГҐГ°ГҐГІ Г­Г  Г±ГҐГЎГї ГўГ±ГҐ, ГЄГ°Г®Г¬ГҐ ГіГ±ГІГ Г­Г®ГўГЄГЁ ГІГҐГЄГіГ№ГҐГ© ГЇГ®ГЈГ®Г¤Г».
+	// ГіГ±ГІГ Г­Г ГўГ«ГЁГўГ ГҐГІГ±Гї ГЇГ®ГЈГ®Г¤Г  Г¤ГўГіГ¬Гї Г¤ГҐГ±ГЄГ°ГЁГЇГІГ®Г°Г Г¬ГЁ, Г±Г®Г®ГІГўГҐГІГ±ГІГўГҐГ­Г­Г®, Г·ГІГ®ГЎ Г­ГҐ ГІГ Г№ГЁГІГј Г§Г  Г±Г®ГЎГ®Г© ГЄГіГ·Гі ГўГ±ГҐГЈГ®, 
+	// ГҐГ¤ГЁГ­Г®Г¬Г®Г¬ГҐГ­ГІГ­Г® Г§Г ГЈГ°ГіГ¦ГҐГ­ Г¬ГЁГ­ГЁГ¬ГіГ¬ ГЇГ®ГЈГ®Г¤Г­Г»Гµ Г¤ГҐГ±ГЄГ°ГЁГЇГІГ®Г°Г®Гў. ГЋГ±ГІГ Г«ГјГ­Г»ГҐ ГЇГ®Г¤ГЈГ°ГіГ¦Г ГѕГІГ±Гї ГЇГ® Г­ГҐГ®ГЎГµГ®Г¤ГЁГ¬Г®Г±ГІГЁ.
 	CEnvironment &env = g_pGamePersistent->Environment(); 
 														  
 	env.SetWeather("ogse_script_weather", true);
@@ -713,19 +713,19 @@ void AdvanceGameTime(u32 _ms)
 }
 
 //
-void send_event_key_press(int dik) //Нажатие клавиши
+void send_event_key_press(int dik) //ГЌГ Г¦Г ГІГЁГҐ ГЄГ«Г ГўГЁГёГЁ
 {
 	Level().IR_OnKeyboardPress(dik);
 }
-void send_event_key_release(int dik) //Отпускание клавиши
+void send_event_key_release(int dik) //ГЋГІГЇГіГ±ГЄГ Г­ГЁГҐ ГЄГ«Г ГўГЁГёГЁ
 {
 	Level().IR_OnKeyboardRelease(dik);
 }
-void send_event_key_hold(int dik) //Удержание клавиши.
+void send_event_key_hold(int dik) //Г“Г¤ГҐГ°Г¦Г Г­ГЁГҐ ГЄГ«Г ГўГЁГёГЁ.
 {
 	Level().IR_OnKeyboardHold(dik);
 }
-void send_event_mouse_wheel(int vol) //Вращение колеса мыши
+void send_event_mouse_wheel(int vol) //Г‚Г°Г Г№ГҐГ­ГЁГҐ ГЄГ®Г«ГҐГ±Г  Г¬Г»ГёГЁ
 {
 	Level().IR_OnMouseWheel(vol);
 }
@@ -844,6 +844,16 @@ bool valid_vertex_id( u32 level_vertex_id ) {
 
 u32 vertex_count() {
   return ai().level_graph().header().vertex_count();
+}
+
+void supertest(LPCSTR sname)
+{
+	FS.curr_season = (char*) sname;
+}
+
+char* get_season()
+{
+	return (FS.curr_season);
 }
 
 
@@ -991,7 +1001,9 @@ void CLevel::script_register(lua_State *L)
 		def("set_blender_mode_second", &set_blender_mode_second),
 		def("get_blender_mode_second", &get_blender_mode_second),
 		def("set_shader_params", &set_shader_params),
-		def("get_shader_params", &get_shader_params)
+		def("get_shader_params", &get_shader_params),
+		def("set_season",			&supertest),
+	   	def("get_season",			&get_season)
 		//--#SM+# End --
 	],
 	
@@ -1021,7 +1033,7 @@ void CLevel::script_register(lua_State *L)
 		def("clear_personal_goodwill",			&g_clear_personal_goodwill),
 		def("clear_personal_relations",			&g_clear_personal_relations)
 	];
-	//установка параметров для шейдеров из скриптов
+	//ГіГ±ГІГ Г­Г®ГўГЄГ  ГЇГ Г°Г Г¬ГҐГІГ°Г®Гў Г¤Г«Гї ГёГҐГ©Г¤ГҐГ°Г®Гў ГЁГ§ Г±ГЄГ°ГЁГЇГІГ®Гў
 	module(L)
 		[
 			def("set_artefact_slot", &g_set_artefact_position),
