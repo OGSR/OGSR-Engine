@@ -320,9 +320,7 @@ void CCameraManager::ApplyDevice (float _viewport_near)
 	if (Device.m_SecondViewport.IsSVPFrame())
 	{
 		// ƒл€ второго вьюпорта FOV выставл€ем здесь
-		Device.fFOV *= g_pGamePersistent->m_pGShaderConstants.hud_params.y;
-#pragma todo("KRodin: надо придумать какую-то формулу, чтобы кратность 3D прицела была одинаковой независимо от FOV. “ут попробовал сделать как с рассчЄтом зум_фактора, но получилось что-то странное.")
-		//Device.fFOV = float(atan(tan(Device.fFOV * (0.5 * PI / 180)) / g_pGamePersistent->m_pGShaderConstants.hud_params.y) / (0.5 * PI / 180));
+		Device.fFOV = float(atan(tan(Device.fFOV * (0.5 * PI / 180)) / g_pGamePersistent->m_pGShaderConstants.hud_params.y) / (0.5 * PI / 180));
 
 		// ѕредупреждаем что мы изменили настройки камеры
 		Device.m_SecondViewport.m_bCamReady = true;

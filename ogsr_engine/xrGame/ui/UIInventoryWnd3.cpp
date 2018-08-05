@@ -48,20 +48,39 @@ void CUIInventoryWnd::ActivatePropertiesBox()
 	CBottleItem*		pBottleItem			= smart_cast<CBottleItem*>		(CurrentIItem());
     
 	bool b_show = false;
+	bool extend_new_wpn_menu = false;
+
+#ifdef NEW_WPN_SLOTS_EXTEND_MENU
+	extend_new_wpn_menu = true;
+#endif // NEW_WPN_SLOTS_EXTEND_MENU
 
 #ifdef NEW_WPN_SLOTS
 
-	if ( !pOutfit && CurrentIItem()->GetSlot() != NO_ACTIVE_SLOT ) {
-          auto slots = CurrentIItem()->GetSlots();
-          for( u8 i = 0; i < (u8)slots.size(); ++i ) {
-            if ( slots[ i ] != NO_ACTIVE_SLOT && slots[ i ] != GRENADE_SLOT ) {
-              if ( !m_pInv->m_slots[ slots[ i ] ].m_pIItem || m_pInv->m_slots[ slots[ i ] ].m_pIItem != CurrentIItem() ) {
-                UIPropertiesBox.AddItem( "st_move_to_slot", NULL, INVENTORY_TO_SLOT_ACTION );
-                b_show = true;
-                break;
-              };
-            };
-          };
+	if (!pOutfit && CurrentIItem()->GetSlot() != NO_ACTIVE_SLOT) {
+		auto slots = CurrentIItem()->GetSlots();
+		bool multi_slot = slots.size() > 1;
+		for (u8 i = 0; i < (u8)slots.size(); ++i) {
+			auto slot = slots[i];
+			if (slot != NO_ACTIVE_SLOT && slot != GRENADE_SLOT) {
+				if (!m_pInv->m_slots[slot].m_pIItem || m_pInv->m_slots[slot].m_pIItem != CurrentIItem()) {
+					b_show = true;
+
+					if (multi_slot && extend_new_wpn_menu)
+					{
+						string256 full_action_text;
+						string16 tmp;
+
+						strconcat(sizeof(full_action_text), full_action_text, "st_move_to_slot_", itoa(slot, tmp, 10));
+						UIPropertiesBox.AddItem(full_action_text, (void*)slot, INVENTORY_TO_SLOT_ACTION);
+					}
+					else 
+					{
+						UIPropertiesBox.AddItem("st_move_to_slot", NULL, INVENTORY_TO_SLOT_ACTION);
+						break;
+					}
+				};
+			};
+		};
 	};
 
 #else
@@ -154,90 +173,129 @@ void CUIInventoryWnd::ActivatePropertiesBox()
 	}
 	
 	//присоединение аддонов к активному слоту (2 или 3)
-	if(pScope)
+	if (pScope)
 	{
 #ifdef NEW_WPN_SLOTS
 
-          for( u8 i = 0; i < SLOTS_TOTAL; ++i ) {
-            PIItem tgt = m_pInv->m_slots[ i ].m_pIItem;
-            if( tgt && tgt->CanAttach( pScope ) ) {
-              UIPropertiesBox.AddItem( "st_attach_scope_to_rifle",  (void*)tgt, INVENTORY_ATTACH_ADDON );
-              b_show = true;
-              break;
-            }
-          };
+		for (u8 i = 0; i < SLOTS_TOTAL; ++i) {
+			PIItem tgt = m_pInv->m_slots[i].m_pIItem;
+			if (tgt && tgt->CanAttach(pScope)) {
+				b_show = true;
+				if (extend_new_wpn_menu)
+				{
+					string256 full_action_text;
+					string16 tmp;
+
+					strconcat(sizeof(full_action_text), full_action_text, "st_attach_scope_to_rifle_", itoa(i, tmp, 10));
+
+					UIPropertiesBox.AddItem(full_action_text, (void*)tgt, INVENTORY_ATTACH_ADDON);
+				}
+				else 
+				{
+					UIPropertiesBox.AddItem("st_attach_scope_to_rifle", (void*)tgt, INVENTORY_ATTACH_ADDON);
+					b_show = true;
+					break;
+				}
+			}
+		};
 
 #else
-		if(m_pInv->m_slots[FIRST_WEAPON_SLOT].m_pIItem != NULL &&
-		   m_pInv->m_slots[FIRST_WEAPON_SLOT].m_pIItem->CanAttach(pScope))
-		 {
+		if (m_pInv->m_slots[FIRST_WEAPON_SLOT].m_pIItem != NULL &&
+			m_pInv->m_slots[FIRST_WEAPON_SLOT].m_pIItem->CanAttach(pScope))
+		{
 			PIItem tgt = m_pInv->m_slots[FIRST_WEAPON_SLOT].m_pIItem;
-			UIPropertiesBox.AddItem("st_attach_scope_to_pistol",  (void*)tgt, INVENTORY_ATTACH_ADDON);
-			b_show			= true;
-		 }
-		 if(m_pInv->m_slots[SECOND_WEAPON_SLOT].m_pIItem != NULL &&
+			UIPropertiesBox.AddItem("st_attach_scope_to_pistol", (void*)tgt, INVENTORY_ATTACH_ADDON);
+			b_show = true;
+		}
+		if (m_pInv->m_slots[SECOND_WEAPON_SLOT].m_pIItem != NULL &&
 			m_pInv->m_slots[SECOND_WEAPON_SLOT].m_pIItem->CanAttach(pScope))
-		 {
+		{
 			PIItem tgt = m_pInv->m_slots[SECOND_WEAPON_SLOT].m_pIItem;
-			UIPropertiesBox.AddItem("st_attach_scope_to_rifle",  (void*)tgt, INVENTORY_ATTACH_ADDON);
-			b_show			= true;
-		 }
+			UIPropertiesBox.AddItem("st_attach_scope_to_rifle", (void*)tgt, INVENTORY_ATTACH_ADDON);
+			b_show = true;
+		}
 #endif
-	}
-	else if(pSilencer)
+		}
+	else if (pSilencer)
 	{
 #ifdef NEW_WPN_SLOTS
 
-          for( u8 i = 0; i < SLOTS_TOTAL; ++i ) {
-            PIItem tgt = m_pInv->m_slots[ i ].m_pIItem;
-            if( tgt && tgt->CanAttach( pSilencer ) ) {
-              UIPropertiesBox.AddItem( "st_attach_silencer_to_rifle",  (void*)tgt, INVENTORY_ATTACH_ADDON );
-              b_show = true;
-              break;
-            }
-          };
+		for (u8 i = 0; i < SLOTS_TOTAL; ++i) {
+			PIItem tgt = m_pInv->m_slots[i].m_pIItem;
+			if (tgt && tgt->CanAttach(pSilencer)) {
+				b_show = true;
+				if (extend_new_wpn_menu)
+				{
+					string256 full_action_text;
+					string16 tmp;
+
+					strconcat(sizeof(full_action_text), full_action_text, "st_attach_silencer_to_rifle_", itoa(i, tmp, 10));
+
+					UIPropertiesBox.AddItem(full_action_text, (void*)tgt, INVENTORY_ATTACH_ADDON);
+				}
+				else
+				{
+					UIPropertiesBox.AddItem("st_attach_silencer_to_rifle", (void*)tgt, INVENTORY_ATTACH_ADDON);
+					b_show = true;
+					break;
+				}
+			}
+		};
 
 #else
-		 if(m_pInv->m_slots[FIRST_WEAPON_SLOT].m_pIItem != NULL &&
-		   m_pInv->m_slots[FIRST_WEAPON_SLOT].m_pIItem->CanAttach(pSilencer))
-		 {
+		if (m_pInv->m_slots[FIRST_WEAPON_SLOT].m_pIItem != NULL &&
+			m_pInv->m_slots[FIRST_WEAPON_SLOT].m_pIItem->CanAttach(pSilencer))
+		{
 			PIItem tgt = m_pInv->m_slots[FIRST_WEAPON_SLOT].m_pIItem;
-			UIPropertiesBox.AddItem("st_attach_silencer_to_pistol",  (void*)tgt, INVENTORY_ATTACH_ADDON);
-			b_show			= true;
-		 }
-		 if(m_pInv->m_slots[SECOND_WEAPON_SLOT].m_pIItem != NULL &&
+			UIPropertiesBox.AddItem("st_attach_silencer_to_pistol", (void*)tgt, INVENTORY_ATTACH_ADDON);
+			b_show = true;
+		}
+		if (m_pInv->m_slots[SECOND_WEAPON_SLOT].m_pIItem != NULL &&
 			m_pInv->m_slots[SECOND_WEAPON_SLOT].m_pIItem->CanAttach(pSilencer))
-		 {
+		{
 			PIItem tgt = m_pInv->m_slots[SECOND_WEAPON_SLOT].m_pIItem;
-			UIPropertiesBox.AddItem("st_attach_silencer_to_rifle",  (void*)tgt, INVENTORY_ATTACH_ADDON);
-			b_show			= true;
-		 }
+			UIPropertiesBox.AddItem("st_attach_silencer_to_rifle", (void*)tgt, INVENTORY_ATTACH_ADDON);
+			b_show = true;
+		}
 #endif
-	}
-	else if(pGrenadeLauncher)
+		}
+	else if (pGrenadeLauncher)
 	{
 #ifdef NEW_WPN_SLOTS
 
-          for( u8 i = 0; i < SLOTS_TOTAL; ++i ) {
-            PIItem tgt = m_pInv->m_slots[ i ].m_pIItem;
-            if( tgt && tgt->CanAttach( pGrenadeLauncher ) ) {
-              UIPropertiesBox.AddItem( "st_attach_gl_to_rifle",  (void*)tgt, INVENTORY_ATTACH_ADDON );
-              b_show = true;
-              break;
-            }
-          };
+		for (u8 i = 0; i < SLOTS_TOTAL; ++i) {
+			PIItem tgt = m_pInv->m_slots[i].m_pIItem;
+			if (tgt && tgt->CanAttach(pGrenadeLauncher)) {
+				b_show = true;
+				if (extend_new_wpn_menu)
+				{
+					string256 full_action_text;
+					string16 tmp;
+
+					strconcat(sizeof(full_action_text), full_action_text, "st_attach_gl_to_rifle_", itoa(i, tmp, 10));
+
+					UIPropertiesBox.AddItem(full_action_text, (void*)tgt, INVENTORY_ATTACH_ADDON);
+				}
+				else
+				{
+					UIPropertiesBox.AddItem("st_attach_gl_to_rifle", (void*)tgt, INVENTORY_ATTACH_ADDON);
+					b_show = true;
+					break;
+				}
+			}
+		};
 
 #else
-		 if(m_pInv->m_slots[SECOND_WEAPON_SLOT].m_pIItem != NULL &&
+		if (m_pInv->m_slots[SECOND_WEAPON_SLOT].m_pIItem != NULL &&
 			m_pInv->m_slots[SECOND_WEAPON_SLOT].m_pIItem->CanAttach(pGrenadeLauncher))
-		 {
+		{
 			PIItem tgt = m_pInv->m_slots[SECOND_WEAPON_SLOT].m_pIItem;
-			UIPropertiesBox.AddItem("st_attach_gl_to_rifle",  (void*)tgt, INVENTORY_ATTACH_ADDON);
-			b_show			= true;
-		 }
+			UIPropertiesBox.AddItem("st_attach_gl_to_rifle", (void*)tgt, INVENTORY_ATTACH_ADDON);
+			b_show = true;
+		}
 
 #endif
-	}
+		}
 	LPCSTR _action = NULL;
 
 	if(pMedkit || pAntirad)
@@ -294,10 +352,19 @@ void CUIInventoryWnd::ProcessPropertiesBoxClicked	()
 #ifdef NEW_WPN_SLOTS
 
                 case INVENTORY_TO_SLOT_ACTION: {
-                  // Пытаемся найти свободный слот из списка разрешенных.
-                  // Если его нету, то принудительно займет первый слот,
-                  // указанный в списке.
                   auto item  = CurrentIItem();
+				  // Явно указали слот в меню
+				  void* d = UIPropertiesBox.GetClickedItem()->GetData();
+				  if (d) 
+				  {
+					  auto slot = (u8)d;
+					  item->SetSlot(slot);
+					  if (ToSlot(CurrentItem(), true))
+						  return;
+				  }
+				  // Пытаемся найти свободный слот из списка разрешенных.
+				  // Если его нету, то принудительно займет первый слот,
+				  // указанный в списке.
                   auto slots = item->GetSlots();
                   for ( u8 i = 0; i < (u8)slots.size(); ++i ) {
                     item->SetSlot( slots[ i ] );
