@@ -125,10 +125,10 @@ void CInventoryOwner::OnDisableInfo(shared_str info_id) const
 void CInventoryOwner::TransferInfo(shared_str info_id, bool add_info) const
 {
 	VERIFY( info_id.size() );
+/*
 	const CObject* pThisObject = smart_cast<const CObject*>(this); VERIFY(pThisObject);
 
 	//отправляем от нашему PDA пакет информации с номером
-/*
 	NET_Packet		P;
 	CGameObject::u_EventGen(P, GE_INFO_TRANSFER, pThisObject->ID());
 	P.w_u16			(pThisObject->ID());					//отправитель

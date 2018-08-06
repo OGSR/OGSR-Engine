@@ -293,7 +293,11 @@ void CWeaponMagazined::UnloadMagazine(bool spawn_ammo)
 	xr_map<LPCSTR, u16>::iterator l_it;
 	for(l_it = l_ammo.begin(); l_ammo.end() != l_it; ++l_it) 
 	{
+#if defined( HARD_AMMO_RELOAD )
+		if ( !forActor && m_pCurrentInventory )
+#else
 		if (m_pCurrentInventory)
+#endif
 		{
 			CWeaponAmmo *l_pA = smart_cast<CWeaponAmmo*>(m_pCurrentInventory->GetAmmo(l_it->first, forActor));
 			if (l_pA)
@@ -307,7 +311,7 @@ void CWeaponMagazined::UnloadMagazine(bool spawn_ammo)
 	}
 }
 
-void CWeaponMagazined::ReloadMagazine() 
+void CWeaponMagazined::ReloadMagazine()
 {
 	m_dwAmmoCurrentCalcFrame = 0;	
 
@@ -334,14 +338,28 @@ void CWeaponMagazined::ReloadMagazine()
 		bool forActor = ParentIsActor();
 
 		//попытаться найти в инвентаре патроны текущего типа 
+#if defined( HARD_AMMO_RELOAD )
+		if ( forActor )
+		  m_pAmmo = smart_cast<CWeaponAmmo*>( m_pCurrentInventory->GetAmmoMaxCurr( *m_ammoTypes[ m_ammoType ], forActor ) );
+		else
+		  m_pAmmo = smart_cast<CWeaponAmmo*>( m_pCurrentInventory->GetAmmo( *m_ammoTypes[ m_ammoType ], forActor ) );
+#else
 		m_pAmmo = smart_cast<CWeaponAmmo*>(m_pCurrentInventory->GetAmmo(*m_ammoTypes[m_ammoType], forActor));
+#endif
 		
 		if(!m_pAmmo && !m_bLockType) 
 		{
 			for(u32 i = 0; i < m_ammoTypes.size(); ++i) 
 			{
 				//проверить патроны всех подходящих типов
+#if defined( HARD_AMMO_RELOAD )
+				if ( forActor )
+				  m_pAmmo = smart_cast<CWeaponAmmo*>( m_pCurrentInventory->GetAmmoMaxCurr( *m_ammoTypes[ i ], forActor ) );
+				else
+				  m_pAmmo = smart_cast<CWeaponAmmo*>( m_pCurrentInventory->GetAmmo( *m_ammoTypes[ i ], forActor ) );
+#else
 				m_pAmmo = smart_cast<CWeaponAmmo*>(m_pCurrentInventory->GetAmmo(*m_ammoTypes[i], forActor));
+#endif
 				if(m_pAmmo) 
 				{ 
 					m_ammoType = i; 
@@ -355,10 +373,16 @@ void CWeaponMagazined::ReloadMagazine()
 	if(!m_pAmmo && !unlimited_ammo() ) return;
 
 	//разрядить магазин, если загружаем патронами другого типа
+#if defined( HARD_AMMO_RELOAD )
+	if ( !m_bLockType && !m_magazine.empty() )
+	  if ( ( ParentIsActor() && !unlimited_ammo() ) || ( !m_pAmmo || xr_strcmp( m_pAmmo->cNameSect(), *m_magazine.back().m_ammoSect ) ) )
+	    UnloadMagazine();
+#else
 	if(!m_bLockType && !m_magazine.empty() && 
 		(!m_pAmmo || xr_strcmp(m_pAmmo->cNameSect(), 
 					 *m_magazine.back().m_ammoSect)))
 		UnloadMagazine();
+#endif
 
 	VERIFY((u32)iAmmoElapsed == m_magazine.size());
 
@@ -383,6 +407,22 @@ void CWeaponMagazined::ReloadMagazine()
 	if(m_pAmmo && !m_pAmmo->m_boxCurr && OnServer()) 
 		m_pAmmo->SetDropManual(TRUE);
 
+#ifdef HARD_AMMO_RELOAD
+	if ( ParentIsActor() && m_pAmmo ) {
+	  if ( !m_bLockType && iMagazineSize > iAmmoElapsed && iMagazineSize > m_pAmmo->m_boxSize ) {
+	    m_bLockType = true;
+	    u32 need_ammo = iMagazineSize - m_pAmmo->m_boxSize;
+	    while ( need_ammo ) {
+	      ReloadMagazine();
+	      if ( need_ammo > m_pAmmo->m_boxSize )
+	        break;
+	      need_ammo -= m_pAmmo->m_boxSize;
+	    }
+	    m_bLockType = false;
+	  }
+	}
+	else
+#endif
 	if(iMagazineSize > iAmmoElapsed) 
 	{ 
 		m_bLockType = true; 

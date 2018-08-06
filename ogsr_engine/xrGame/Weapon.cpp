@@ -989,6 +989,10 @@ bool CWeapon::Action(s32 cmd, u32 flags)
 					return false;
 				}
 									
+#ifdef LOCK_RELOAD_IN_SPRINT
+				if ( ParentIsActor() && g_actor->get_state() & mcSprint )
+				  return true;
+#endif
 				if(flags&CMD_START) 
 				{
 					u32 l_newType = m_ammoType;
