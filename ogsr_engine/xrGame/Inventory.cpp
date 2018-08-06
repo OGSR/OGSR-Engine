@@ -1184,3 +1184,50 @@ void CInventory::SetSlotsBlocked(u16 mask, bool bBlock)
 		}
 	}
 }
+
+
+void CInventory::Iterate( bool bSearchRuck, std::function<bool( const PIItem )> callback ) const {
+  const auto& list = bSearchRuck ? m_ruck : m_belt;
+  for ( const auto& it : list )
+    if ( callback( it ) ) break;
+}
+
+
+PIItem CInventory::GetAmmoMaxCurr( const char *name, bool forActor ) const {
+  PIItem box = nullptr;
+  u32    max = 0;
+  auto callback = [&]( const auto pIItem ) -> bool {
+    if ( !xr_strcmp( pIItem->object().cNameSect(), name ) && pIItem->Useful() ) {
+      const auto *ammo = smart_cast<CWeaponAmmo*>( pIItem );
+      if ( ammo ) {
+        if ( ammo->m_boxCurr == ammo->m_boxSize ) {
+          box = pIItem;
+          return true;
+        }
+        if ( ammo->m_boxCurr > max ) {
+          box = pIItem;
+          max = ammo->m_boxCurr;
+        }
+      }
+    }
+    return false;
+  };
+
+#if defined( AMMO_FROM_BELT )
+  bool include_ruck = !forActor || !psActorFlags.test( AF_AMMO_ON_BELT );
+#else
+  bool include_ruck = true;
+#endif
+
+  Iterate( false, callback );
+  if ( include_ruck ) {
+    if ( box ) {
+      const auto *ammo = smart_cast<CWeaponAmmo*>( box );
+      if ( ammo->m_boxCurr == ammo->m_boxSize )
+        return box;
+    }
+    Iterate( true, callback );
+  }
+
+  return box;
+}
