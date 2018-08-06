@@ -115,3 +115,13 @@ class CPatrolPathScript {
 add_to_type_list( CPatrolPathScript )
 #undef script_type_list
 #define script_type_list save_type_list( CPatrolPathScript )
+
+typedef class_exporter<CResourceManager> CResourceManagerScript;
+add_to_type_list(CResourceManagerScript)
+#undef script_type_list
+#define script_type_list save_type_list(CResourceManagerScript)
+
+typedef class_exporter<CTexture> CTextureScript;
+add_to_type_list(CTextureScript)
+#undef script_type_list
+#define script_type_list save_type_list(CTextureScript)
