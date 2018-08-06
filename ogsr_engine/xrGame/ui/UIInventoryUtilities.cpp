@@ -72,11 +72,15 @@ bool InventoryUtilities::GreaterRoomInRuck(PIItem item1, PIItem item2)
 		if(r1.y > r2.y)		return true;
 		
 		if (r1.y == r2.y){
-			if(item1->object().cNameSect()==item2->object().cNameSect())
-				//return (item1->object().ID() > item2->object().ID());
-				return ( item1->GetCondition() > item2->GetCondition() );
+			if ( !xr_strcmp( item1->object().cNameSect(), item2->object().cNameSect() ) ) {
+			  const auto *ammo1 = smart_cast<CWeaponAmmo*>( item1 );
+			  const auto *ammo2 = smart_cast<CWeaponAmmo*>( item2 );
+			  if ( ammo1 && ammo2 )
+			    return ( ammo1->m_boxCurr > ammo2->m_boxCurr );
+			  return ( item1->GetCondition() > item2->GetCondition() );
+			}
 			else
-				return (item1->object().cNameSect()>item2->object().cNameSect());
+			  return xr_strcmp( item1->object().cNameSect(), item2->object().cNameSect() ) < 0;
 
 		}
 
