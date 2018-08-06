@@ -2,9 +2,10 @@
 #pragma hdrstop
 
 #include "xrMemory_align.h"
-#include "xrMemory_pure.h"
 
-#ifndef	__BORLANDC__
+#if defined( XRCORE_STATIC ) || ( defined( DEBUG ) || defined( _M_X64 ) )
+#define PURE_ALLOC
+#endif
 
 #ifndef DEBUG_MEMORY_MANAGER
 #	define	debug_mode 0
@@ -47,11 +48,11 @@ void*	xrMemory::mem_alloc		(size_t size
 	if (!g_use_pure_alloc_initialized) {
 		g_use_pure_alloc_initialized	= true;
 		g_use_pure_alloc				= 
-#	ifdef XRCORE_STATIC
+#if defined XRCORE_STATIC || defined(_M_X64)
 			true
-#	else // XRCORE_STATIC
+#	else
 			!!strstr(Core.Params,"-pure_alloc")
-#	endif // XRCORE_STATIC
+#	endif
 			;
 	}
 
@@ -273,4 +274,3 @@ void*	xrMemory::mem_realloc	(void* P, size_t size
 	return	_ptr;
 }
 
-#endif // __BORLANDC__

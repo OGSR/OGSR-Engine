@@ -400,7 +400,6 @@
     <ClInclude Include="file_stream_reader.h" />
     <ClInclude Include="xrMemory.h" />
     <ClInclude Include="xrMemory_align.h" />
-    <ClInclude Include="xrMemory_pure.h" />
     <ClInclude Include="xrMemory_subst_msvc.h" />
     <ClInclude Include="xrDebug.h" />
     <ClInclude Include="xrDebug_macros.h" />
