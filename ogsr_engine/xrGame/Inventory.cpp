@@ -1231,3 +1231,18 @@ PIItem CInventory::GetAmmoMaxCurr( const char *name, bool forActor ) const {
 
   return box;
 }
+
+
+int CInventory::GetIndexOnBelt( PIItem pIItem ) const {
+  const auto& it = std::find( m_belt.begin(), m_belt.end(), pIItem );
+  return it == m_belt.end() ? -1 : std::distance( m_belt.begin(), it );
+}
+
+
+void CInventory::RestoreBeltOrder() {
+  std::sort(
+    m_belt.begin(), m_belt.end(), []( const auto& a, const auto& b ) {
+      return a->GetLoadedBeltIndex() < b->GetLoadedBeltIndex();
+    }
+  );
+}

@@ -84,6 +84,7 @@ static Fvector	vFootExt;
 
 Flags32			psActorFlags={0};
 //Flags32			psCallbackFlags = { 31 };
+static bool updated;
 
 CActor::CActor() : CEntityAlive()
 {
@@ -193,6 +194,8 @@ CActor::CActor() : CEntityAlive()
 
 	m_fDrugPsyProtectionCoeff	= 1.f;
 	m_fDrugRadProtectionCoeff	= 1.f;
+
+	updated = false;
 }
 
 
@@ -994,6 +997,8 @@ void CActor::shedule_Update	(u32 DT)
 		pHudItem->SetHUDmode(HUDview());
 
 	//обновление инвентаря
+	if ( !updated )
+          inventory().RestoreBeltOrder();
 	UpdateInventoryOwner			(DT);
 
 	static u32 tasks_update_time = 0;
@@ -1233,6 +1238,8 @@ void CActor::shedule_Update	(u32 DT)
 	//для свойст артефактов, находящихся на поясе
 	UpdateArtefactsOnBelt						();
 	m_pPhysics_support->in_shedule_Update		(DT);
+
+	updated = true;
 };
 #include "debug_renderer.h"
 void CActor::renderable_Render	()
