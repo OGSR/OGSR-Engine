@@ -34,10 +34,10 @@ after_build:
 
     cd ..\..\
 
-    appveyor PushArtifact OGSR_Engine_SHOC_EDITION_%PLATFORM%_%APPVEYOR_BUILD_VERSION%.7z Release
+    appveyor PushArtifact OGSR_Engine_SHOC_EDITION_%PLATFORM%_%APPVEYOR_BUILD_VERSION%.7z %CONFIGURATION%
 artifacts:
 - path: .\OGSR_Engine_SHOC_EDITION_$(platform)_$(appveyor_build_version).7z
-  name: Release
+  name: $(configuration)
 deploy:
 - provider: GitHub
   auth_token:
