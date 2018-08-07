@@ -7,6 +7,7 @@
 #include "rain.h"
 #include "resourcemanager.h"
 
+#define DEF_TREE_AMPLITUDE_INTENSITY 0.01f
 #define READ_IF_EXISTS(ltx,method,section,name,default_value)\
 	((ltx->line_exist(section,name)) ? (ltx->method(section,name)) : (default_value))
 
@@ -123,7 +124,7 @@ CEnvDescriptor::CEnvDescriptor()
 	sun_color.set		(1,1,1);
 	sun_dir.set			(0,-1,0);
 
-	m_fTreeAmplitudeIntensity = 0.01;
+	m_fTreeAmplitudeIntensity = DEF_TREE_AMPLITUDE_INTENSITY;
 
     lens_flare_id		= -1;
 	tb_id				= -1;
@@ -178,8 +179,7 @@ void CEnvDescriptor::load(float exec_tm, LPCSTR S, CEnvironment* parent)
           setEnvAmbient( pSettings->r_string( S, "env_ambient" ), parent );
         else
           env_ambient = 0;
-	if ( pSettings->line_exist( S, "tree_amplitude_intensity" ) )
-		m_fTreeAmplitudeIntensity = pSettings->r_float( S, "tree_amplitude_intensity" );
+	m_fTreeAmplitudeIntensity = READ_IF_EXISTS( pSettings, r_float, S, "tree_amplitude_intensity", DEF_TREE_AMPLITUDE_INTENSITY );
 
 	C_CHECK(clouds_color);
 	C_CHECK(sky_color);
