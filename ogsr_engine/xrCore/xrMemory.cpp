@@ -2,6 +2,7 @@
 #pragma hdrstop
 
 #include	"xrsharedmem.h"
+#include	"xrMemory_pure.h"
 
 #include	<malloc.h>
 
@@ -51,12 +52,8 @@ void	xrMemory::_initialize	(BOOL bDebug)
 	stat_calls				= 0;
 	stat_counter			= 0;
 
-#ifdef _M_X64
-	if constexpr ( false )
-#else
-	if (!strstr(Core.Params,"-pure_alloc"))
-#endif
-	{
+#ifndef M_BORLAND
+	if (!strstr(Core.Params,"-pure_alloc")) {
 		// initialize POOLs
 		u32	element		= mem_pools_ebase;
 		u32 sector		= mem_pools_ebase*1024;
@@ -66,6 +63,7 @@ void	xrMemory::_initialize	(BOOL bDebug)
 			element		+=	mem_pools_ebase;
 		}
 	}
+#endif // M_BORLAND
 
 #ifdef DEBUG_MEMORY_MANAGER
 	if (0==strstr(Core.Params,"-memo"))	mem_initialized				= TRUE;
