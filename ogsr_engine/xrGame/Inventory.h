@@ -79,8 +79,11 @@ public:
 	PIItem					Get					(CLASS_ID cls_id,  bool bSearchRuck) const;
 	PIItem					GetAny				(const char *name) const;
 	PIItem					GetAmmo				(const char * name, bool forActor) const;
+
 	void   Iterate        ( bool, std::function<bool( const PIItem )> ) const;
 	PIItem GetAmmoMaxCurr ( const char*, bool ) const;
+	int    GetIndexOnBelt ( PIItem ) const;
+	void   RestoreBeltOrder();
 
 	//search both (ruck and belt)
 	PIItem					item				(CLASS_ID cls_id) const;

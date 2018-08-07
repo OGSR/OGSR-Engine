@@ -102,6 +102,7 @@ CInventoryItem::CInventoryItem()
 #endif
 	m_fRadiationRestoreSpeed = 0.f;
 #endif
+	loaded_belt_index = (u8)(-1);
 }
 
 CInventoryItem::~CInventoryItem() 
@@ -469,7 +470,12 @@ void CInventoryItem::net_Destroy		()
 
 void CInventoryItem::save(NET_Packet &packet)
 {
-	packet.w_u8				((u8)m_eItemPlace);
+	if ( m_eItemPlace == eItemPlaceBelt && smart_cast<CActor*>( object().H_Parent() ) ) {
+          packet.w_u8( (u8)eItemPlaceBeltActor );
+          packet.w_u8( (u8)m_pCurrentInventory->GetIndexOnBelt( this ) );
+	}
+	else
+          packet.w_u8( (u8)m_eItemPlace );
 	packet.w_float			(m_fCondition);
         if ( m_eItemPlace == eItemPlaceSlot )
 	  packet.w_u8( (u8)GetSlot() );
@@ -557,6 +563,8 @@ void CInventoryItem::net_Export(NET_Packet& P)
 void CInventoryItem::load(IReader &packet)
 {
 	m_eItemPlace			= (EItemPlace)packet.r_u8();
+	if ( m_eItemPlace == eItemPlaceBeltActor )
+          SetLoadedBeltIndex( packet.r_u8() );
 	m_fCondition			= packet.r_float();
         if ( m_eItemPlace == eItemPlaceSlot )
           if ( ai().get_alife()->header().version() < 4 ) {
@@ -1175,3 +1183,9 @@ bool CInventoryItem::GetInvShowCondition() const {
   return m_icon_params.show_condition;
 }
 #endif
+
+
+void CInventoryItem::SetLoadedBeltIndex( u8 pos ) {
+  loaded_belt_index = pos;
+  m_eItemPlace = eItemPlaceBelt;
+}
