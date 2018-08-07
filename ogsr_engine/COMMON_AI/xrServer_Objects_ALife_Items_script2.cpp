@@ -87,5 +87,6 @@ void CSE_ALifeItemWeaponMagazined::script_register(lua_State *L)
 			"cse_alife_item_weapon_magazined",
 			CSE_ALifeItemWeapon
 			)
+			.def_readwrite("current_fire_mode", &CSE_ALifeItemWeaponMagazined::m_u8CurFireMode)
 	];
 }

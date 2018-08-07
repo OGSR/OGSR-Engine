@@ -303,7 +303,7 @@ bool CUIScrollBar::ScrollDec()
 
 bool CUIScrollBar::ScrollInc()
 {
-	if(m_iScrollPos<=(m_iMaxPos - m_iStepSize)){
+	if(m_iScrollPos<m_iMaxPos){
 		SetScrollPos	(m_iScrollPos+m_iStepSize);
 		return true;
 	}
