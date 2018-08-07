@@ -248,15 +248,18 @@ void CRenderDevice::Run			()
 
 #ifndef ECO_RENDER
 				// FPS Lock
-				if (g_dwFPSlimit > 0)
+
+				static int menuFPSlimit = 61;
+				bool isMenuActive = IsMainMenuActive();
+
+				if (g_dwFPSlimit > 0 || isMenuActive)
 				{
 					static DWORD dwLastFrameTime = 0;
 					DWORD dwCurrentTime = timeGetTime();
-					if ((dwCurrentTime - dwLastFrameTime) < (1000 / g_dwFPSlimit))
+					if ((dwCurrentTime - dwLastFrameTime) < (1000 / (isMenuActive ? menuFPSlimit : g_dwFPSlimit)))
 						continue;
 					dwLastFrameTime = dwCurrentTime;
 				}
-
 #endif // !ECO_RENDER
 
 #ifdef DEDICATED_SERVER
