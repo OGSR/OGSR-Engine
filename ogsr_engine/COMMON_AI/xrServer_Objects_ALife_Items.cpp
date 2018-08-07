@@ -591,9 +591,7 @@ void CSE_ALifeItemWeaponMagazined::STATE_Read		(NET_Packet& P, u16 size)
 {
 	inherited::STATE_Read(P, size);
 
-	if (!P.r_eof()) {
-		m_u8CurFireMode = P.r_u8();
-	}
+	m_u8CurFireMode = P.r_u8();
 }
 void CSE_ALifeItemWeaponMagazined::STATE_Write		(NET_Packet& P)
 {
@@ -650,11 +648,9 @@ void CSE_ALifeItemWeaponMagazinedWGL::STATE_Read		(NET_Packet& P, u16 size)
 {
 	inherited::STATE_Read(P, size);
 
-	if (!P.r_eof()) {
-		ammo_type2 = P.r_u8();
-		a_elapsed2 = P.r_u16();
-		//Msg( "~~[%s][%s] update_read: m_bGrenadeMode: [%u], iAmmoElapsed2: [%u], m_ammoType2: [%u]", __FUNCTION__, this->name(), m_bGrenadeMode, a_elapsed2, ammo_type2 );
-	}
+	ammo_type2 = P.r_u8();
+	a_elapsed2 = P.r_u16();
+	//Msg( "~~[%s][%s] update_read: m_bGrenadeMode: [%u], iAmmoElapsed2: [%u], m_ammoType2: [%u]", __FUNCTION__, this->name(), m_bGrenadeMode, a_elapsed2, ammo_type2 );
 }
 
 void CSE_ALifeItemWeaponMagazinedWGL::STATE_Write		(NET_Packet& P)

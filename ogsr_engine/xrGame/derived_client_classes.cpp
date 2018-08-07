@@ -546,6 +546,7 @@ void CWeaponScript::script_register(lua_State *L)
 			,
 			class_<CWeaponMagazinedWGrenade,			CWeaponMagazined>("CWeaponMagazinedWGrenade")
 			.def_readwrite("gren_mag_size"				,			&CWeaponMagazinedWGrenade::iMagazineSize2)			
+			.def("switch_gl"							,			&CWeaponMagazinedWGrenade::SwitchMode)
 			,
 			class_<CMissile, CInventoryItemObject>		("CMissile")
 			.def_readwrite("destroy_time"				,			&CMissile::m_dwDestroyTime)
