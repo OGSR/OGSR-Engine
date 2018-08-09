@@ -12,6 +12,9 @@ XRCORE_API xrCore Core;
 
 XRCORE_API ThreadPool* TTAPI = new ThreadPool();
 
+//indicate that we reach WinMain, and all static variables are initialized
+XRCORE_API bool gModulesLoaded = false;
+
 static u32	init_counter	= 0;
 
 void xrCore::_initialize	(LPCSTR _ApplicationName, LogCallback cb, BOOL init_fs, LPCSTR fs_fname)

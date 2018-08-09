@@ -474,6 +474,7 @@ int APIENTRY WinMain(HINSTANCE hInstance,
                      char *    lpCmdLine,
                      int       nCmdShow)
 {
+    gModulesLoaded = true;
 	__try 
 	{
 #ifdef DEDICATED_SERVER

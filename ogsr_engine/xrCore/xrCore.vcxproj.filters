@@ -166,6 +166,9 @@
     <ClCompile Include="xrMemory_POOL.cpp">
       <Filter>Memory manager</Filter>
     </ClCompile>
+    <ClCompile Include="xrMemoryDebug.cpp">
+      <Filter>Memory manager</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="FTimer.h">
@@ -306,9 +309,6 @@
     <ClInclude Include="xrMemory_align.h">
       <Filter>Memory manager</Filter>
     </ClInclude>
-    <ClInclude Include="xrMemory_pure.h">
-      <Filter>Memory manager</Filter>
-    </ClInclude>
     <ClInclude Include="xrMemory_subst_msvc.h">
       <Filter>Memory manager</Filter>
     </ClInclude>
@@ -362,6 +362,9 @@
       <Filter>Math</Filter>
     </ClInclude>
     <ClInclude Include="xrMEMORY_POOL.h">
+      <Filter>Memory manager</Filter>
+    </ClInclude>
+    <ClInclude Include="xrMemoryDebug.h">
       <Filter>Memory manager</Filter>
     </ClInclude>
   </ItemGroup>

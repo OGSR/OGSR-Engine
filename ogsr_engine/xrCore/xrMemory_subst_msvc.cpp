@@ -2,9 +2,22 @@
 #pragma hdrstop
 
 #include "xrMemory_align.h"
-#include "xrMemory_pure.h"
 
-#ifndef	__BORLANDC__
+#ifdef USE_MEMORY_VALIDATOR
+#include "xrMemoryDebug.h"
+#endif
+
+#if defined( XRCORE_STATIC ) || ( defined( DEBUG ) || defined( DISABLE_MEMPOOLS ) )
+#define PURE_ALLOC
+#endif
+
+// Additional 16 bytes of memory almost like in original xr_aligned_offset_malloc
+// But for DEBUG we don't need this if we want to find memory problems
+#ifdef DEBUG
+constexpr size_t reserved = 0;
+#else
+constexpr size_t reserved = 16;
+#endif
 
 #ifndef DEBUG_MEMORY_MANAGER
 #	define	debug_mode 0
@@ -47,20 +60,23 @@ void*	xrMemory::mem_alloc		(size_t size
 	if (!g_use_pure_alloc_initialized) {
 		g_use_pure_alloc_initialized	= true;
 		g_use_pure_alloc				= 
-#	ifdef XRCORE_STATIC
+#if defined XRCORE_STATIC || defined( DISABLE_MEMPOOLS )
 			true
-#	else // XRCORE_STATIC
+#else
 			!!strstr(Core.Params,"-pure_alloc")
-#	endif // XRCORE_STATIC
+#endif
 			;
 	}
 
 	if (g_use_pure_alloc) {
-		void							*result = malloc(size);
+		void* ptr = malloc(size + reserved);
 #ifdef USE_MEMORY_MONITOR
 		memory_monitor::monitor_alloc	(result,size,_name);
-#endif // USE_MEMORY_MONITOR
-		return							(result);
+#endif
+#ifdef USE_MEMORY_VALIDATOR
+        RegisterPointer( ptr );
+#endif
+		return ptr;
 	}
 #endif // PURE_ALLOC
 
@@ -132,7 +148,10 @@ void	xrMemory::mem_free		(void* P)
 
 #ifdef PURE_ALLOC
 	if (g_use_pure_alloc) {
-		free					(P);
+#ifdef USE_MEMORY_VALIDATOR
+        UnregisterPointer( P );
+#endif
+		free(P);
 		return;
 	}
 #endif // PURE_ALLOC
@@ -173,12 +192,18 @@ void*	xrMemory::mem_realloc	(void* P, size_t size
 	stat_calls++;
 #ifdef PURE_ALLOC
 	if (g_use_pure_alloc) {
-		void							*result = realloc(P,size);
+#ifdef USE_MEMORY_VALIDATOR
+        UnregisterPointer( P );
+#endif
+		void* ptr = realloc( P, size + reserved );
+#ifdef USE_MEMORY_VALIDATOR
+		RegisterPointer( ptr );
+#endif
 #	ifdef USE_MEMORY_MONITOR
 		memory_monitor::monitor_free	(P);
 		memory_monitor::monitor_alloc	(result,size,_name);
 #	endif // USE_MEMORY_MONITOR
-		return							(result);
+		return ptr;
 	}
 #endif // PURE_ALLOC
 	if (0==P) {
@@ -273,4 +298,3 @@ void*	xrMemory::mem_realloc	(void* P, size_t size
 	return	_ptr;
 }
 
-#endif // __BORLANDC__

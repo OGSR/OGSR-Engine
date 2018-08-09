@@ -194,3 +194,5 @@ extern XRCORE_API xrCore Core;
 
 #include "Utils/thread_pool.hpp"
 extern XRCORE_API ThreadPool* TTAPI;
+
+extern XRCORE_API bool gModulesLoaded;

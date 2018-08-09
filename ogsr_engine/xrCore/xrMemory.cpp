@@ -2,9 +2,6 @@
 #pragma hdrstop
 
 #include	"xrsharedmem.h"
-#include	"xrMemory_pure.h"
-
-#include	<malloc.h>
 
 xrMemory	Memory;
 BOOL		mem_initialized	= FALSE;
@@ -52,8 +49,12 @@ void	xrMemory::_initialize	(BOOL bDebug)
 	stat_calls				= 0;
 	stat_counter			= 0;
 
-#ifndef M_BORLAND
-	if (!strstr(Core.Params,"-pure_alloc")) {
+#ifdef DISABLE_MEMPOOLS
+    if constexpr ( false )
+#else
+    if ( !strstr( Core.Params, "-pure_alloc" ) )
+#endif
+	{
 		// initialize POOLs
 		u32	element		= mem_pools_ebase;
 		u32 sector		= mem_pools_ebase*1024;
@@ -63,7 +64,6 @@ void	xrMemory::_initialize	(BOOL bDebug)
 			element		+=	mem_pools_ebase;
 		}
 	}
-#endif // M_BORLAND
 
 #ifdef DEBUG_MEMORY_MANAGER
 	if (0==strstr(Core.Params,"-memo"))	mem_initialized				= TRUE;
@@ -114,8 +114,10 @@ void	xrMemory::_destroy()
 
 void	xrMemory::mem_compact	()
 {
+	// KRodin: WTF???
 	RegFlushKey						( HKEY_CLASSES_ROOT );
 	RegFlushKey						( HKEY_CURRENT_USER );
+	//
 	_heapmin						( );
 	HeapCompact						(GetProcessHeap(),0);
 	if (g_pStringContainer)			g_pStringContainer->clean		();
