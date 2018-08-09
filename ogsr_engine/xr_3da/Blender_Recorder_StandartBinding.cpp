@@ -435,6 +435,28 @@ static cl_entity_data binder_entity_data;
 */
 //////////////////////////////////////////////////
 
+class cl_VPtexgen : public R_constant_setup {
+  virtual void setup( R_constant* C ) {
+    Fmatrix mTexgen;
+    float _w             = float( Device.dwWidth );
+    float _h             = float( Device.dwHeight );
+    float o_w            = ( .5f / _w );
+    float o_h            = ( .5f / _h );
+    Fmatrix mTexelAdjust = {
+      0.5f, 0.0f, 0.0f, 0.0f,
+      0.0f, -0.5f, 0.0f, 0.0f,
+      0.0f, 0.0f, 1.0f, 0.0f,
+      0.5f + o_w, 0.5f + o_h, 0.0f, 1.0f
+    };
+
+    mTexgen.mul( mTexelAdjust, RCache.xforms.m_vp );
+
+    RCache.set_c( C, mTexgen );
+  }
+};
+static cl_VPtexgen binder_VPtexgen;
+
+
 // Standart constant-binding
 void	CBlender_Compile::SetMapping	()
 {
@@ -483,8 +505,6 @@ void	CBlender_Compile::SetMapping	()
 	r_Constant				("env_color",		&binder_env_color);
 
 	// KD binders
-#ifndef _EDITOR
-
 	r_Constant				("ogse_c_resolution",	&binder_resolution);
 	r_Constant				("ogse_c_screen",		&binder_screen_params);
 //	r_Constant				("ogse_pos_decompression",		&binder_dec_params);
@@ -498,7 +518,8 @@ void	CBlender_Compile::SetMapping	()
 /*	r_Constant				("m_shadow_near_ogse",		&binder_sns_matrix);
 	r_Constant				("m_shadow_far_ogse",		&binder_sfs_matrix);
 	r_Constant				("m_shadow_clouds_ogse",	&binder_scs_matrix);*/
-#endif
+
+	r_Constant( "mVPTexgen", &binder_VPtexgen );
 
 	// detail
 	if (bDetail	&& detail_scaler)

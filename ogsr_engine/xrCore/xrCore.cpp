@@ -145,10 +145,26 @@ void xrCore::_destroy		()
 const char* xrCore::GetEngineVersion() {
 	static string256 buff;
 	if (strlen(APPVEYOR_BUILD_VERSION))
-		std::snprintf(buff, sizeof(buff), APPVEYOR_BUILD_VERSION " (%s) from repo: [" APPVEYOR_REPO_NAME "]", this->GetBuildConfiguration());
+		std::snprintf(buff, sizeof(buff), APPVEYOR_BUILD_VERSION " (%s) from repo: [" APPVEYOR_REPO_NAME "]", GetBuildConfiguration());
 	else
-		std::snprintf(buff, sizeof(buff), "1.0007 (%s) [OGSR Engine]", this->GetBuildConfiguration()); //KRodin: I don't know what it's better to write here...
+		std::snprintf(buff, sizeof(buff), "1.0007 (%s) [OGSR Engine]", GetBuildConfiguration()); //KRodin: I don't know what it's better to write here...
 	return buff;
+}
+
+constexpr const char* xrCore::GetBuildConfiguration() {
+#ifdef _DEBUG
+#	ifdef _M_X64
+		return "x64_Dbg";
+#	else
+		return "x86_Dbg";
+#	endif
+#else
+#	ifdef _M_X64
+		return "x64";
+#	else
+		return "x86";
+#	endif
+#endif
 }
 
 
