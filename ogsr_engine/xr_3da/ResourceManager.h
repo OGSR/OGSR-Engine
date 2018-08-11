@@ -77,7 +77,6 @@ public:
 	IBlender*						_GetBlender			(LPCSTR Name);
 	IBlender* 						_FindBlender		(LPCSTR Name);
 	xr_vector<CTexture*>			_FindTexture		(LPCSTR Name);
-	CTexture*						_SetTexture			(CTexture* T);
 	void							_GetMemoryUsage		(u32& m_base, u32& c_base, u32& m_lmaps, u32& c_lmaps);
 	void							_DumpMemoryUsage	();
 //.	BOOL							_GetDetailTexture	(LPCSTR Name, LPCSTR& T, R_constant_setup* &M);
