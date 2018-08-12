@@ -149,11 +149,21 @@ void CTexture::Preload	()
 //		Msg	("mid[%f] : %s",m_material,*cName);
 	}
 */
-	m_bumpmap = Device.Resources->m_textures_description.GetBumpName(cName);
-	m_material = Device.Resources->m_textures_description.GetMaterial(cName);
+	Preload(*cName);
 }
 
-void CTexture::Load		()
+void CTexture::Preload(LPCSTR name)
+{
+	m_bumpmap = Device.Resources->m_textures_description.GetBumpName(name);
+	m_material = Device.Resources->m_textures_description.GetMaterial(name);
+}
+
+void CTexture::Load()
+{
+	Load(*cName);
+}
+
+void CTexture::Load(LPCSTR name)
 {
 	if (flags.bLoaded)
 		return; //на всякий случай.
@@ -164,8 +174,8 @@ void CTexture::Load		()
 
 	flags.bUser						= false;
 	flags.MemoryUsage				= 0;
-	if (0==stricmp(*cName,"$null"))	return;
-	if (0!=strstr(*cName,"$user$"))	{
+	if (0==stricmp(name,"$null"))	return;
+	if (0!=strstr(name,"$user$"))	{
 		flags.bUser	= true;
 		return;
 	}
@@ -174,7 +184,7 @@ void CTexture::Load		()
 #ifndef		DEDICATED_SERVER
 	// Check for OGM
 	string_path			fn;
-	if (FS.exist(fn,"$game_textures$",*cName,".ogm")){
+	if (FS.exist(fn,"$game_textures$", name,".ogm")){
 		// AVI
 		pTheora		= xr_new<CTheoraSurface>();
 		m_play_time	= 0xFFFFFFFF;
@@ -205,7 +215,7 @@ void CTexture::Load		()
 
 		}
 	} else
-	if (FS.exist(fn,"$game_textures$",*cName,".avi")){
+	if (FS.exist(fn,"$game_textures$", name,".avi")){
 		// AVI
 		pAVI = xr_new<CAviPlayerCustom>();
 
@@ -232,7 +242,7 @@ void CTexture::Load		()
 
 		}
 	} else
-    if (FS.exist(fn,"$game_textures$",*cName,".seq"))
+    if (FS.exist(fn,"$game_textures$", name,".seq"))
 	{
 		// Sequence
 		string256 buffer;
@@ -271,7 +281,7 @@ void CTexture::Load		()
 	{
 		// Normal texture
 		u32	mem  = 0;
-		pSurface = ::Render->texture_load	(*cName,mem);
+		pSurface = ::Render->texture_load	(name,mem);
 
 		// Calc memory usage and preload into vid-mem
 		if (pSurface) {

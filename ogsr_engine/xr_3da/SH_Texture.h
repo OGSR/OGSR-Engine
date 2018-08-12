@@ -48,6 +48,8 @@ public:
 
 	void								Preload			();
 	void								Load			();
+	void								Preload			(LPCSTR name);
+	void								Load			(LPCSTR name);
 	void								PostLoad		();
 	void								Unload			(void);
 //	void								Apply			(u32 dwStage);
