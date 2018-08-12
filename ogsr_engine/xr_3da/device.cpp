@@ -248,15 +248,15 @@ void CRenderDevice::Run			()
 
 #ifndef ECO_RENDER
 				// FPS Lock
+				static constexpr unsigned int menuFPSlimit  = 61;
+				static constexpr unsigned int pauseFPSlimit = 11;
+				unsigned int curFPSLimit = IsMainMenuActive() ? menuFPSlimit : Device.Paused() ? pauseFPSlimit : g_dwFPSlimit;
 
-				static int menuFPSlimit = 61;
-				bool isMenuActive = IsMainMenuActive();
-
-				if (g_dwFPSlimit > 0 || isMenuActive)
+				if ( curFPSLimit > 0 )
 				{
 					static DWORD dwLastFrameTime = 0;
 					DWORD dwCurrentTime = timeGetTime();
-					if ((dwCurrentTime - dwLastFrameTime) < (1000 / (isMenuActive ? menuFPSlimit : g_dwFPSlimit)))
+					if ( dwCurrentTime - dwLastFrameTime < 1000 / curFPSLimit )
 						continue;
 					dwLastFrameTime = dwCurrentTime;
 				}
