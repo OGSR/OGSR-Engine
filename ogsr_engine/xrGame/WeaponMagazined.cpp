@@ -409,14 +409,15 @@ void CWeaponMagazined::ReloadMagazine()
 
 #ifdef HARD_AMMO_RELOAD
 	if ( ParentIsActor() && m_pAmmo ) {
-	  if ( !m_bLockType && iMagazineSize > iAmmoElapsed && iMagazineSize > m_pAmmo->m_boxSize ) {
+          int box_size = m_pAmmo->m_boxSize;
+	  if ( !m_bLockType && iMagazineSize > iAmmoElapsed && iMagazineSize > box_size ) {
 	    m_bLockType = true;
-	    u32 need_ammo = iMagazineSize - m_pAmmo->m_boxSize;
-	    while ( need_ammo ) {
+	    int need_ammo = iMagazineSize - box_size;
+	    while ( need_ammo > 0 ) {
 	      ReloadMagazine();
-	      if ( need_ammo > m_pAmmo->m_boxSize )
+	      if ( need_ammo < box_size )
 	        break;
-	      need_ammo -= m_pAmmo->m_boxSize;
+	      need_ammo -= box_size;
 	    }
 	    m_bLockType = false;
 	  }
