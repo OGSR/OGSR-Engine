@@ -14,8 +14,8 @@
 @if not defined INCLUDE goto :FAIL
 
 @setlocal
-@set LJCOMPILE=cl /nologo /c /O2 /W3 /D_CRT_SECURE_NO_DEPRECATE /D_CRT_STDIO_INLINE=__declspec(dllexport)__inline
-@set LJLINK=link /nologo
+@set LJCOMPILE=cl /nologo /MP /Zi /c /O2 /W3 /D_CRT_SECURE_NO_DEPRECATE /D_CRT_STDIO_INLINE=__declspec(dllexport)__inline
+@set LJLINK=link /nologo /DEBUG /LARGEADDRESSAWARE /DYNAMICBASE:NO /BASE:"0x34000000" /FIXED
 @set LJMT=mt /nologo
 @set LJLIB=lib /nologo /nodefaultlib
 @set DASMDIR=..\dynasm
@@ -71,10 +71,6 @@ buildvm -m vmdef -o jit\vmdef.lua %ALL_LIB%
 buildvm -m folddef -o lj_folddef.h lj_opt_fold.c
 @if errorlevel 1 goto :BAD
 
-@if "%2" neq "debug" goto :NODEBUG
-@shift
-@set LJCOMPILE=%LJCOMPILE% /Zi
-@set LJLINK=%LJLINK% /debug
 :NODEBUG
 @if "%2"=="amalg" goto :AMALGDLL
 @if "%2"=="static" goto :STATIC
@@ -113,7 +109,7 @@ if not exist %LJBINPATH%lua\jit\*.* (
 )
 copy /Y jit\*.* %LJBINPATH%lua\jit\
 
-@del *.obj *.manifest minilua.exe minilua.exp minilua.lib buildvm.exe buildvm.exp buildvm.lib jit\vmdef.lua
+@del *.obj *.manifest minilua.exe minilua.exp minilua.lib buildvm.exe buildvm.exp buildvm.lib jit\vmdef.lua *.ilk *.pdb 
 @del host\buildvm_arch.h
 @del lj_bcdef.h lj_ffdef.h lj_libdef.h lj_recdef.h lj_folddef.h
 @echo.

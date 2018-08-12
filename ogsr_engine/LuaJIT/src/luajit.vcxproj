@@ -43,6 +43,7 @@
 				md "$(OutDir)"
 			)
 			copy /Y "..\bin\$(PlatformShortName)\LuaJIT.dll" "$(OutDir)LuaJIT.dll"
+			copy /Y "..\bin\$(PlatformShortName)\LuaJIT.pdb" "$(OutDir)LuaJIT.pdb"
 		)
 		if not exist "$(OutDir)..\ogsr_engine\_LIB\Engine\$(Configuration)\$(Platform)\LuaJIT.lib" (
 			if not exist "$(OutDir)..\ogsr_engine\_LIB\Engine\$(Configuration)\$(Platform)\*.*" (
@@ -65,6 +66,7 @@
 			md "$(OutDir)"
 		)
 		copy /Y "..\bin\$(PlatformShortName)\LuaJIT.dll" "$(OutDir)LuaJIT.dll"
+		copy /Y "..\bin\$(PlatformShortName)\LuaJIT.pdb" "$(OutDir)LuaJIT.pdb"
 		if not exist "$(OutDir)..\ogsr_engine\_LIB\Engine\$(Configuration)\$(Platform)\*.*" (
 			md "$(OutDir)..\ogsr_engine\_LIB\Engine\$(Configuration)\$(Platform)\"
 		)
