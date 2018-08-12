@@ -495,22 +495,11 @@ LPCSTR script_texture_getname(CTexture *t)
 	return t->cName.c_str();
 }
 
-void script_texture_setname(CTexture *t, LPCSTR name)
-{
-	t->set_name(name);
-}
-
-void script_texture_load(CTexture *t)
-{
-	t->Preload();
-	t->Load();
-	Device.Resources->_SetTexture(t);
-}
-
-void script_texture_unload(CTexture *t)
+void script_texture_load(CTexture *t, LPCSTR name)
 {
 	t->Unload();
-	Device.Resources->_DeleteTexture(t);
+	t->Preload(name);
+	t->Load(name);
 }
 
 void CTextureScript::script_register(lua_State *L)
@@ -520,9 +509,7 @@ void CTextureScript::script_register(lua_State *L)
 		[
 			class_<CTexture>("CTexture")
 			.def("load", &script_texture_load)
-			.def("unload", &script_texture_unload)
 			.def("get_name", &script_texture_getname)
-			.def("set_name", &script_texture_setname)
 			.def_readonly("ref_count", &CTexture::dwReference)
 		];
 }
@@ -536,11 +523,9 @@ void CResourceManagerScript::script_register(lua_State *L)
 		// added by alpet
 		def("texture_find", &script_texture_find, raw<1>()),
 		def("texture_load", &script_texture_load),
-		def("texture_unload", &script_texture_unload),
 		def("texture_from_object", &script_object_get_texture),
 		def("texture_from_visual", &visual_get_texture),
-		def("texture_get_name", &script_texture_getname),
-		def("texture_set_name", &script_texture_setname)
+		def("texture_get_name", &script_texture_getname)
 	];
 }
 // alpet ======================== SCRIPT_TEXTURE_CONTROL END =========== 

@@ -493,17 +493,7 @@ CTexture* CResourceManager::_CreateTexture	(LPCSTR _Name)
 		return		T;
 	}
 }
-CTexture*	CResourceManager::_SetTexture(CTexture* T)
-{
-	LPSTR N = LPSTR(*T->cName);
-	map_TextureIt I = m_textures.find(N);
-	if (I != m_textures.end())	return	I->second;
-	else
-	{
-		m_textures.insert(mk_pair(N, T));
-		return		T;
-	}
-}
+
 void	CResourceManager::_DeleteTexture		(const CTexture* T)
 {
 	// DBG_VerifyTextures	();
