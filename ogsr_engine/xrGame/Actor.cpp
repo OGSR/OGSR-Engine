@@ -1483,7 +1483,8 @@ void CActor::OnItemDrop			(CInventoryItem *inventory_item)
 {
 	CInventoryOwner::OnItemDrop(inventory_item);
 
-	UpdateArtefactPanel();
+	if ( inventory_item->m_eItemPlace == eItemPlaceBelt )
+		UpdateArtefactPanel();
 }
 
 
@@ -1504,7 +1505,8 @@ void CActor::OnItemRuck		(CInventoryItem *inventory_item, EItemPlace previous_pl
 {
 	CInventoryOwner::OnItemRuck(inventory_item, previous_place);
 
-	UpdateArtefactPanel();
+	if ( previous_place == eItemPlaceBelt )
+		UpdateArtefactPanel();
 }
 void CActor::OnItemBelt		(CInventoryItem *inventory_item, EItemPlace previous_place)
 {
