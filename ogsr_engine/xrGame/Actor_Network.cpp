@@ -545,13 +545,7 @@ BOOL CActor::net_Spawn		(CSE_Abstract* DC)
 	if (!inherited::net_Spawn(DC))	return FALSE;
 
 	CSE_ALifeTraderAbstract	 *pTA	= smart_cast<CSE_ALifeTraderAbstract*>(e);
-	set_money				(pTA->m_dwMoney, false);
-
-	//убрать все артефакты с пояса
-	m_ArtefactsOnBelt.clear();
-//.	if(	TRUE == E->s_flags.test(M_SPAWN_OBJECT_LOCAL) && TRUE == E->s_flags.is(M_SPAWN_OBJECT_ASPLAYER))
-//.		HUD().GetUI()->UIMainIngameWnd->m_artefactPanel->InitIcons(m_ArtefactsOnBelt);
-		
+	set_money				(pTA->m_dwMoney, false);		
 
 	ROS()->force_mode	(IRender_ObjectSpecific::TRACE_ALL);
 
@@ -737,12 +731,7 @@ void CActor::net_Destroy	()
 	m_holder=NULL;
 	m_holderID=u16(-1);
 	
-	m_ArtefactsOnBelt.clear();
-	if (Level().CurrentViewEntity() == this)
-		HUD().GetUI()->UIMainIngameWnd->m_artefactPanel->InitIcons(m_ArtefactsOnBelt);	
-
 	SetDefaultVisualOutfit(NULL);
-	
 
 	if(g_actor == this) g_actor= NULL;
 

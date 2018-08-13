@@ -1245,4 +1245,7 @@ void CInventory::RestoreBeltOrder() {
       return a->GetLoadedBeltIndex() < b->GetLoadedBeltIndex();
     }
   );
+
+  if ( auto pActor = smart_cast<CActor*>( m_pOwner ) )
+    pActor->UpdateArtefactPanel();
 }

@@ -468,26 +468,15 @@ CTexture* script_object_get_texture(CScriptGameObject *script_obj, u32 n_child, 
 	return visual_get_texture(child_v, n_texture);
 }
 
-void script_texture_find(lua_State *L)
+decltype(auto) script_texture_find(const char* name)
 {
-	LPCSTR name = lua_tostring(L, 1);
 	auto textures = Device.Resources->_FindTexture(name);
-
-	lua_createtable(L, 0, textures.size());
-
-	int tidx = lua_gettop(L);
+	auto table = luabind::newtable(ai().script_engine().lua());
 
 	for (auto& tex : textures)
-	{
-		// key - texture name
-		LPCSTR key = tex->cName.c_str();
-		lua_pushstring(L, key);
+		table[tex->cName.c_str()] = tex; // key - texture name, value - texture object
 
-		// value - texture object
-		luabind::detail::convert_to_lua<CTexture*>(L, tex);
-
-		lua_settable(L, tidx);
-	}
+	return table;
 }
 
 LPCSTR script_texture_getname(CTexture *t)
@@ -521,7 +510,7 @@ void CResourceManagerScript::script_register(lua_State *L)
 	// added by alpet 10.07.14
 	module(L)[
 		// added by alpet
-		def("texture_find", &script_texture_find, raw<1>()),
+		def("texture_find", &script_texture_find),
 		def("texture_load", &script_texture_load),
 		def("texture_from_object", &script_object_get_texture),
 		def("texture_from_visual", &visual_get_texture),

@@ -31,40 +31,26 @@ namespace luabind { namespace detail
 			}
 		}
 
-		iterator_pair_state(const Iter& s, const Iter& e)
-			: start(s)
-			, end(e)
+		explicit iterator_pair_state( Iter&& s, Iter&& e )
+			: start(std::move(s))
+			, end(std::move(e))
 		{}
 
-		Iter start;
-		Iter end;
+	private:
+		Iter start, end;
 	};
 
 	struct iterator_pair_converter
 	{
 		template<typename T>
-		void apply(lua_State* L, const T& c)
-		{
-			typedef typename T::const_iterator iter_t;
-			typedef iterator_pair_state<iter_t> state_t;
-
-			// note that this should be destructed, for now.. just hope that iterator
-			// is a pod
-			void* iter = lua_newuserdata(L, sizeof(state_t));
-			new (iter) state_t(c.begin(), c.end());
-			lua_pushcclosure(L, state_t::step, 1);
-		}
-
-		template<typename T>
 		void apply(lua_State* L, T& c)
 		{
-			typedef typename T::iterator iter_t;
-			typedef iterator_pair_state<iter_t> state_t;
+			auto it_begin = c.crbegin();
+			using state_t = iterator_pair_state<decltype( it_begin )>;
 
-			// note that this should be destructed, for now.. just hope that iterator
-			// is a pod
+			// note that this should be destructed, for now.. just hope that iterator is a pod
 			void* iter = lua_newuserdata(L, sizeof(state_t));
-			new (iter) state_t(c.begin(), c.end());
+			new (iter) state_t(std::move(it_begin), c.crend());
 			lua_pushcclosure(L, state_t::step, 1);
 		}
 	};
