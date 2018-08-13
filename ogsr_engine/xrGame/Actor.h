@@ -204,15 +204,12 @@ public:
 
 	//свойства артефактов
 	virtual void		UpdateArtefactsOnBelt	();
-	virtual void		MoveArtefactBelt		(const CArtefact* artefact, bool on_belt);
+	virtual void		UpdateArtefactPanel();
 	virtual float		HitArtefactsOnBelt		(float hit_power, ALife::EHitType hit_type);
-	const xr_vector<const CArtefact*>& ArtefactsOnBelt() {return m_ArtefactsOnBelt;}
 protected:
 	//звук тяжелого дыхания
 	ref_sound			m_HeavyBreathSnd;
 	ref_sound			m_BloodSnd;
-
-	xr_vector<const CArtefact*> m_ArtefactsOnBelt;
 
 protected:
 	//Sleep params

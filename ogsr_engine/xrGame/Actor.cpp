@@ -1483,9 +1483,7 @@ void CActor::OnItemDrop			(CInventoryItem *inventory_item)
 {
 	CInventoryOwner::OnItemDrop(inventory_item);
 
-	CArtefact* artefact = smart_cast<CArtefact*>(inventory_item);
-	if(artefact && artefact->m_eItemPlace == eItemPlaceBelt)
-		MoveArtefactBelt(artefact, false);
+	UpdateArtefactPanel();
 }
 
 
@@ -1506,38 +1504,20 @@ void CActor::OnItemRuck		(CInventoryItem *inventory_item, EItemPlace previous_pl
 {
 	CInventoryOwner::OnItemRuck(inventory_item, previous_place);
 
-	CArtefact* artefact = smart_cast<CArtefact*>(inventory_item);
-	if(artefact && previous_place == eItemPlaceBelt)
-		MoveArtefactBelt(artefact, false);
+	UpdateArtefactPanel();
 }
 void CActor::OnItemBelt		(CInventoryItem *inventory_item, EItemPlace previous_place)
 {
 	CInventoryOwner::OnItemBelt(inventory_item, previous_place);
 
-	CArtefact* artefact = smart_cast<CArtefact*>(inventory_item);
-	if(artefact)
-		MoveArtefactBelt(artefact, true);
+	UpdateArtefactPanel();
 }
 
 
-void CActor::MoveArtefactBelt(const CArtefact* artefact, bool on_belt)
+void CActor::UpdateArtefactPanel()
 {
-	VERIFY(artefact);
-
-	//повесить артефакт на пояс
-	if(on_belt)
-	{
-		VERIFY(m_ArtefactsOnBelt.end() == std::find(m_ArtefactsOnBelt.begin(), m_ArtefactsOnBelt.end(), artefact));
-		m_ArtefactsOnBelt.push_back(artefact);
-	}
-	else
-	{
-		xr_vector<const CArtefact*>::iterator it = std::remove(m_ArtefactsOnBelt.begin(), m_ArtefactsOnBelt.end(), artefact);
-		VERIFY(it != m_ArtefactsOnBelt.end());
-		m_ArtefactsOnBelt.erase(it);
-	}	
-	if (Level().CurrentViewEntity() && Level().CurrentViewEntity() == this)
-		HUD().GetUI()->UIMainIngameWnd->m_artefactPanel->InitIcons(m_ArtefactsOnBelt);
+	if (Level().CurrentViewEntity() && Level().CurrentViewEntity() == this) //Оно надо вообще без мультиплеера?
+		HUD().GetUI()->UIMainIngameWnd->m_artefactPanel->InitIcons(inventory().m_belt);
 }
 
 #define ARTEFACTS_UPDATE_TIME 0.100f
