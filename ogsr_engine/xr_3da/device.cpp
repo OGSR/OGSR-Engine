@@ -249,7 +249,7 @@ void CRenderDevice::Run			()
 #ifndef ECO_RENDER
 				// FPS Lock
 				static constexpr unsigned int menuFPSlimit  = 61;
-				static constexpr unsigned int pauseFPSlimit = 11;
+				static constexpr unsigned int pauseFPSlimit = 31;
 				unsigned int curFPSLimit = IsMainMenuActive() ? menuFPSlimit : Device.Paused() ? pauseFPSlimit : g_dwFPSlimit;
 
 				if ( curFPSLimit > 0 )
