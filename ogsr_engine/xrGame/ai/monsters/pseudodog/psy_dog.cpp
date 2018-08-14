@@ -36,6 +36,12 @@ void CPsyDog::Load(LPCSTR section)
 	m_phantoms_max			= pSettings->r_u8(section,"Max_Phantoms_Count");
 	m_phantoms_min			= pSettings->r_u8(section,"Min_Phantoms_Count");
 	m_time_phantom_appear	= pSettings->r_u32(section,"Time_Phantom_Appear");
+
+	// "psy_dog_phantom"
+	if (pSettings->line_exist(section, "phantom_section"))
+		m_phantom_section = pSettings->r_string(section, "phantom_section");
+	else
+		m_phantom_section = "psy_dog_phantom";
 }
 
 BOOL CPsyDog::net_Spawn(CSE_Abstract *dc)
@@ -82,7 +88,7 @@ bool CPsyDog::spawn_phantom()
 	if (!control().path_builder().get_node_in_radius(ai_location().level_vertex_id(), 4,8,5,node)) return false;
 	
  	// set id to created server object
-	CSE_Abstract			*phantom = Level().spawn_item("psy_dog_phantom", ai().level_graph().vertex_position(node), node, 0xffff, true);
+	CSE_Abstract			*phantom = Level().spawn_item(m_phantom_section, ai().level_graph().vertex_position(node), node, 0xffff, true);
 	CSE_ALifeMonsterBase	*pSE_Monster = smart_cast<CSE_ALifeMonsterBase*>(phantom);
 	VERIFY(pSE_Monster);
 

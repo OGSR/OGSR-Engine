@@ -24,6 +24,8 @@ class CPsyDog : public CAI_PseudoDog {
 	//internals
 	u32				m_time_last_phantom_appear;
 
+	LPCSTR			m_phantom_section;
+
 
 public:
 						CPsyDog				();
