@@ -39,53 +39,28 @@ void CWeaponPistol::Load	(LPCSTR section)
 
 	HUD_SOUND::LoadSound(section, "snd_close", sndClose, m_eSoundClose);
 
-	animGet				(mhud_pistol.mhud_empty,		pSettings->r_string(*hud_sect, "anim_empty"));
-	animGet				(mhud_pistol.mhud_shot_l,		pSettings->r_string(*hud_sect, "anim_shot_last"));
-	animGet				(mhud_pistol.mhud_close,		pSettings->r_string(*hud_sect, "anim_close"));
-	animGet				(mhud_pistol.mhud_show_empty,	pSettings->r_string(*hud_sect, "anim_draw_empty"));
-	animGet				(mhud_pistol.mhud_reload_empty,	pSettings->r_string(*hud_sect, "anim_reload_empty"));
+	animGetEx( mhud_pistol.mhud_empty,        "anim_empty" );
+	animGetEx( mhud_pistol.mhud_shot_l,       "anim_shot_last" );
+	animGetEx( mhud_pistol.mhud_close,        "anim_close" );
+	animGetEx( mhud_pistol.mhud_show_empty,   "anim_draw_empty" );
+	animGetEx( mhud_pistol.mhud_reload_empty, "anim_reload_empty" );
 
-	shared_str m_sAnimIdle = pSettings->r_string(*hud_sect, "anim_idle");
-	shared_str m_sAnimIdleSprint = READ_IF_EXISTS(pSettings, r_string, *hud_sect, "anim_idle_sprint", *m_sAnimIdle);
-	shared_str m_sAnimIdleMoving = READ_IF_EXISTS(pSettings, r_string, *hud_sect, "anim_idle_moving", *m_sAnimIdle);
+	animGetEx( mhud_pistol.mhud_idle_sprint_empty, pSettings->line_exist( hud_sect.c_str(), "anim_idle_sprint_empty" ) ? "anim_idle_sprint_empty" : pSettings->line_exist( hud_sect.c_str(), "anim_idle_sprint" ) ? "anim_idle_sprint" : "anim_idle" );
+	animGetEx( mhud_pistol.mhud_idle_moving_empty, pSettings->line_exist( hud_sect.c_str(), "anim_idle_moving_empty" ) ? "anim_idle_moving_empty" : pSettings->line_exist( hud_sect.c_str(), "anim_idle_moving" ) ? "anim_idle_sprint" : "anim_idle" );
 
-	animGet				(mhud_pistol.mhud_idle_sprint_empty, READ_IF_EXISTS(pSettings, r_string, *hud_sect, "anim_idle_sprint_empty", *m_sAnimIdleSprint));
-	animGet				(mhud_pistol.mhud_idle_moving_empty, READ_IF_EXISTS(pSettings, r_string, *hud_sect, "anim_idle_moving_empty", *m_sAnimIdleMoving));
-
-	string128			str;
-	strconcat(sizeof(str),str,pSettings->r_string(*hud_sect, "anim_empty"),"_r");
-	animGet				(mhud_pistol_r.mhud_empty,		str);
-
-	strconcat(sizeof(str),str,pSettings->r_string(*hud_sect, "anim_shot_last"),"_r");
-	animGet				(mhud_pistol_r.mhud_shot_l,		str);
-
-	strconcat(sizeof(str),str,pSettings->r_string(*hud_sect, "anim_close"),"_r");
-	animGet				(mhud_pistol_r.mhud_close,		str);
-
-	strconcat(sizeof(str),str,pSettings->r_string(*hud_sect, "anim_draw_empty"),"_r");
-	animGet				(mhud_pistol_r.mhud_show_empty,	str);
-
-	strconcat(sizeof(str),str,pSettings->r_string(*hud_sect, "anim_reload_empty"),"_r");
-	animGet				(mhud_pistol_r.mhud_reload_empty,	str);
-
-	strconcat(sizeof(str),str,pSettings->r_string(*hud_sect, "anim_idle"),"_r");
-	animGet				(wm_mhud_r.mhud_idle,	str);
-
-	strconcat(sizeof(str),str,pSettings->r_string(*hud_sect, "anim_reload"),"_r");
-	animGet				(wm_mhud_r.mhud_reload,	str);
-
-	strconcat(sizeof(str),str,pSettings->r_string(*hud_sect, "anim_draw"),"_r");
-	animGet				(wm_mhud_r.mhud_show,	str);
-
-	strconcat(sizeof(str),str,pSettings->r_string(*hud_sect, "anim_holster"),"_r");
-	animGet				(wm_mhud_r.mhud_hide,	str);
-
-	strconcat(sizeof(str),str,pSettings->r_string(*hud_sect, "anim_shoot"),"_r");
-	animGet				(wm_mhud_r.mhud_shots,	str);
+	animGetEx( mhud_pistol_r.mhud_empty,        "anim_empty", "_r" );
+	animGetEx( mhud_pistol_r.mhud_shot_l,       "anim_shot_last", "_r" );
+	animGetEx( mhud_pistol_r.mhud_close,        "anim_close", "_r" );
+	animGetEx( mhud_pistol_r.mhud_show_empty,   "anim_draw_empty", "_r" );
+	animGetEx( mhud_pistol_r.mhud_reload_empty, "anim_reload_empty", "_r" );
+	animGetEx( wm_mhud_r.mhud_idle,             "anim_idle", "_r" );
+	animGetEx( wm_mhud_r.mhud_reload,           "anim_reload", "_r" );
+	animGetEx( wm_mhud_r.mhud_show,             "anim_draw", "_r" );
+	animGetEx( wm_mhud_r.mhud_hide,             "anim_holster", "_r" );
+	animGetEx( wm_mhud_r.mhud_shots,            "anim_shoot", "_r" );
 
 	if(IsZoomEnabled()){
-		strconcat(sizeof(str),str,pSettings->r_string(*hud_sect, "anim_idle_aim"),"_r");
-		animGet				(wm_mhud_r.mhud_idle_aim,		str);
+		animGetEx( wm_mhud_r.mhud_idle_aim, "anim_idle_aim", "_r" );
 	}
 
 }

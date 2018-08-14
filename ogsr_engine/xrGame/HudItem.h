@@ -91,6 +91,7 @@ public:
 
 	virtual	void	UpdateXForm			() = 0;
 	void					animGet		(MotionSVec& lst, LPCSTR prefix);
+	void animGetEx( MotionSVec&, LPCSTR, LPCSTR = nullptr );
 
 	CWeaponHUD*		GetHUD				() {return m_pHUD;}
 

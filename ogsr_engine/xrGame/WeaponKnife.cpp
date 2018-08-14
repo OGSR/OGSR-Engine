@@ -38,16 +38,15 @@ void CWeaponKnife::Load	(LPCSTR section)
 
 	// HUD :: Anims
 	R_ASSERT			(m_pHUD);
-	shared_str m_sAnimIdle = pSettings->r_string( *hud_sect, "anim_idle" );
-	animGet( mhud_idle, *m_sAnimIdle );
-	animGet( mhud_idle_moving, READ_IF_EXISTS( pSettings, r_string, *hud_sect, "anim_idle_moving", *m_sAnimIdle ) );
-	animGet( mhud_idle_sprint, READ_IF_EXISTS( pSettings, r_string, *hud_sect, "anim_idle_sprint", *m_sAnimIdle ) );
-	animGet				(mhud_hide,		pSettings->r_string(*hud_sect,"anim_hide"));
-	animGet				(mhud_show,		pSettings->r_string(*hud_sect,"anim_draw"));
-	animGet				(mhud_attack,	pSettings->r_string(*hud_sect,"anim_shoot1_start"));
-	animGet				(mhud_attack2,	pSettings->r_string(*hud_sect,"anim_shoot2_start"));
-	animGet				(mhud_attack_e,	pSettings->r_string(*hud_sect,"anim_shoot1_end"));
-	animGet				(mhud_attack2_e,pSettings->r_string(*hud_sect,"anim_shoot2_end"));
+	animGetEx( mhud_idle,        "anim_idle" );
+	animGetEx( mhud_idle_moving, pSettings->line_exist( hud_sect.c_str(), "anim_idle_moving" ) ? "anim_idle_moving" : "anim_idle" );
+	animGetEx( mhud_idle_sprint, pSettings->line_exist( hud_sect.c_str(), "anim_idle_sprint" ) ? "anim_idle_sprint" : "anim_idle" );
+	animGetEx( mhud_hide,        "anim_hide" );
+	animGetEx( mhud_show,        "anim_draw" );
+	animGetEx( mhud_attack,      "anim_shoot1_start" );
+	animGetEx( mhud_attack2,     "anim_shoot2_start" );
+	animGetEx( mhud_attack_e,    "anim_shoot1_end" );
+	animGetEx( mhud_attack2_e,   "anim_shoot2_end" );
 
 	HUD_SOUND::LoadSound(section,"snd_shoot"		, m_sndShot		, ESoundTypes(SOUND_TYPE_WEAPON_SHOOTING)		);
 	

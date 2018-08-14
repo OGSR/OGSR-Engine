@@ -294,3 +294,23 @@ void CHudItem::animGet	(MotionSVec& lst, LPCSTR prefix)
 	}
 	ASSERT_FMT(!lst.empty(), "Can't find [anim_%s] in hud section [%s]", prefix, this->hud_sect.c_str());
 }
+
+
+void CHudItem::animGetEx( MotionSVec& lst, LPCSTR prefix, LPCSTR suffix ) {
+  std::string anim_name = pSettings->r_string( hud_sect.c_str(), prefix );
+  if ( suffix )
+    anim_name += suffix;
+  animGet( lst, anim_name.c_str() );
+
+  std::string speed_k = prefix;
+  speed_k += "_speed_k";
+  if ( pSettings->line_exist( hud_sect.c_str(), speed_k.c_str() ) ) {
+    float k = pSettings->r_float( hud_sect.c_str(), speed_k.c_str() );
+    if ( !fsimilar( k, 1.f ) )
+      for ( const auto& M : lst ) {
+        auto *animated   = smart_cast<CKinematicsAnimated*>( m_pHUD->Visual() );
+        auto *motion_def = animated->LL_GetMotionDef( M );
+        motion_def->SpeedKoeff( k );
+      }
+  }
+}

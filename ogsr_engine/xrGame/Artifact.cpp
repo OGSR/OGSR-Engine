@@ -106,11 +106,11 @@ void CArtefact::Load(LPCSTR section)
 	m_bCanSpawnZone = !!pSettings->line_exist("artefact_spawn_zones", section);
 
 
-	animGet				(m_anim_idle,					pSettings->r_string(*hud_sect,"anim_idle"));
-	animGet				(m_anim_idle_sprint,			pSettings->r_string(*hud_sect,"anim_idle_sprint"));
-	animGet				(m_anim_hide,					pSettings->r_string(*hud_sect,"anim_hide"));
-	animGet				(m_anim_show,					pSettings->r_string(*hud_sect,"anim_show"));
-	animGet				(m_anim_activate,				pSettings->r_string(*hud_sect,"anim_activate"));
+	animGetEx( m_anim_idle,        "anim_idle" );
+	animGetEx( m_anim_idle_sprint, "anim_idle_sprint" );
+	animGetEx( m_anim_hide,        "anim_hide" );
+	animGetEx( m_anim_show,        "anim_show" );
+	animGetEx( m_anim_activate,    "anim_activate" );
 }
 
 BOOL CArtefact::net_Spawn(CSE_Abstract* DC) 

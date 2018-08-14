@@ -68,32 +68,28 @@ void CWeaponMagazinedWGrenade::Load	(LPCSTR section)
 	// HUD :: Anims
 	R_ASSERT			(m_pHUD);
 
-	shared_str m_sAnimIdle = pSettings->r_string( *hud_sect, "anim_idle_g" );
-	animGet( mhud_idle_g, *m_sAnimIdle );
-	animGet( mhud_idle_moving_g, READ_IF_EXISTS( pSettings, r_string, *hud_sect, "anim_idle_moving_g", *m_sAnimIdle ) );
-	shared_str m_sAnimIdleSprint = READ_IF_EXISTS(pSettings, r_string, *hud_sect, "anim_idle_sprint", *m_sAnimIdle);
-	animGet( mhud_idle_sprint_g, READ_IF_EXISTS( pSettings, r_string, *hud_sect, "anim_idle_sprint_g", *m_sAnimIdleSprint) );
-	animGet				(mhud_reload_g,	pSettings->r_string(*hud_sect, "anim_reload_g"));
-	animGet				(mhud_shots_g,	pSettings->r_string(*hud_sect, "anim_shoot_g"));
-	animGet				(mhud_switch_g,	pSettings->r_string(*hud_sect, "anim_switch_grenade_on"));
-	animGet				(mhud_switch,	pSettings->r_string(*hud_sect, "anim_switch_grenade_off"));
-	animGet				(mhud_show_g,	pSettings->r_string(*hud_sect, "anim_draw_g"));
-	animGet				(mhud_hide_g,	pSettings->r_string(*hud_sect, "anim_holster_g"));
+	animGetEx( mhud_idle_g,        "anim_idle_g" );
+	animGetEx( mhud_idle_moving_g, pSettings->line_exist( hud_sect.c_str(), "anim_idle_moving_g" ) ? "anim_idle_moving_g" : "anim_idle_g" );
+	animGetEx( mhud_idle_sprint_g, pSettings->line_exist( hud_sect.c_str(), "anim_idle_sprint_g" ) ? "anim_idle_sprint_g" : pSettings->line_exist( hud_sect.c_str(), "anim_idle_sprint" ) ? "anim_idle_sprint" : "anim_idle_g" );
+	animGetEx( mhud_reload_g,      "anim_reload_g" );
+	animGetEx( mhud_shots_g,       "anim_shoot_g" );
+	animGetEx( mhud_switch_g,      "anim_switch_grenade_on" );
+	animGetEx( mhud_switch,        "anim_switch_grenade_off" );
+	animGetEx( mhud_show_g,	       "anim_draw_g" );
+	animGetEx( mhud_hide_g,        "anim_holster_g" );
 
-	m_sAnimIdle = pSettings->r_string( *hud_sect, "anim_idle_gl" );
-	m_sAnimIdleSprint = READ_IF_EXISTS(pSettings, r_string, *hud_sect, "anim_idle_sprint", *m_sAnimIdle);
-	animGet( mhud_idle_w_gl, *m_sAnimIdle );
-	animGet( mhud_idle_moving_gl, READ_IF_EXISTS( pSettings, r_string, *hud_sect, "anim_idle_moving_gl", *m_sAnimIdle ) );
-	animGet( mhud_idle_sprint_gl, READ_IF_EXISTS( pSettings, r_string, *hud_sect, "anim_idle_sprint_gl", *m_sAnimIdleSprint) );
-	animGet				(mhud_reload_w_gl,	pSettings->r_string(*hud_sect, "anim_reload_gl"));
-	animGet				(mhud_show_w_gl,	pSettings->r_string(*hud_sect, "anim_draw_gl"));
-	animGet				(mhud_hide_w_gl,	pSettings->r_string(*hud_sect, "anim_holster_gl"));
-	animGet				(mhud_shots_w_gl,	pSettings->r_string(*hud_sect, "anim_shoot_gl"));
+	animGetEx( mhud_idle_w_gl,      "anim_idle_gl" );
+	animGetEx( mhud_idle_moving_gl, pSettings->line_exist( hud_sect.c_str(), "anim_idle_moving_gl" ) ? "anim_idle_moving_gl" : "anim_idle_gl" );
+	animGetEx( mhud_idle_sprint_gl, pSettings->line_exist( hud_sect.c_str(), "anim_idle_sprint_gl" ) ? "anim_idle_sprint_gl" : pSettings->line_exist( hud_sect.c_str(), "anim_idle_sprint" ) ? "anim_idle_sprint" : "anim_idle_gl" );
+	animGetEx( mhud_reload_w_gl,    "anim_reload_gl" );
+	animGetEx( mhud_show_w_gl,      "anim_draw_gl" );
+	animGetEx( mhud_hide_w_gl,      "anim_holster_gl" );
+	animGetEx( mhud_shots_w_gl,     "anim_shoot_gl" );
 
 	if(this->IsZoomEnabled())
 	{
-		animGet				(mhud_idle_g_aim,		pSettings->r_string(*hud_sect, "anim_idle_g_aim"));
-		animGet				(mhud_idle_w_gl_aim,	pSettings->r_string(*hud_sect, "anim_idle_gl_aim"));
+		animGetEx( mhud_idle_g_aim,    "anim_idle_g_aim" );
+		animGetEx( mhud_idle_w_gl_aim, "anim_idle_gl_aim" );
 	}
 
 

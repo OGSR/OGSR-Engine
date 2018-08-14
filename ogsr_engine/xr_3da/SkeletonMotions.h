@@ -111,7 +111,9 @@ class ENGINE_API		CMotionDef
 public:
     u16						bone_or_part;
 	u16						motion;
-	u16						speed;				// quantized: 0..10
+	//u16						speed;				// quantized: 0..10
+	float						speed;
+	float						speed_k;
 	u16						power;				// quantized: 0..10
 	u16						accrue;				// quantized: 0..10
 	u16						falloff;			// quantized: 0..10
@@ -126,9 +128,11 @@ public:
 
     ICF float				Accrue				(){return fQuantizerRangeExt*Dequantize(accrue);}
     ICF float				Falloff				(){return fQuantizerRangeExt*Dequantize(falloff);}
-    ICF float				Speed				(){return Dequantize(speed);}
+    ICF float				Speed				() { return speed * speed_k; } //{return Dequantize(speed);}
     ICF float				Power				(){return Dequantize(power);}
     bool					StopAtEnd			();
+    ICF float SpeedKoeff() { return speed_k; }
+    void SpeedKoeff( float new_speed_k ) { speed_k = new_speed_k; }
 };
 struct accel_str_pred {	
 	IC bool operator()(const shared_str& x, const shared_str& y) const	{	return xr_strcmp(x,y)<0;	}

@@ -39,20 +39,20 @@ void CWeaponShotgun::Load	(LPCSTR section)
 
 	// Звук и анимация для выстрела дуплетом
 	HUD_SOUND::LoadSound(section, "snd_shoot_duplet", sndShotBoth, m_eSoundShotBoth);
-	animGet	(mhud_shot_boths,	pSettings->r_string(*hud_sect,"anim_shoot_both"));
+	animGetEx( mhud_shot_boths, "anim_shoot_both" );
 
 	if(pSettings->line_exist(section, "tri_state_reload")){
 		m_bTriStateReload = !!pSettings->r_bool(section, "tri_state_reload");
 	};
 	if(m_bTriStateReload){
 		HUD_SOUND::LoadSound(section, "snd_open_weapon", m_sndOpen, m_eSoundOpen);
-		animGet	(mhud_open,	pSettings->r_string(*hud_sect,"anim_open_weapon"));
+		animGetEx( mhud_open, "anim_open_weapon" );
 
 		HUD_SOUND::LoadSound(section, "snd_add_cartridge", m_sndAddCartridge, m_eSoundAddCartridge);
-		animGet	(mhud_add_cartridge,	pSettings->r_string(*hud_sect,"anim_add_cartridge"));
+		animGetEx( mhud_add_cartridge, "anim_add_cartridge" );
 
 		HUD_SOUND::LoadSound(section, "snd_close_weapon", m_sndClose, m_eSoundClose);
-		animGet	(mhud_close,	pSettings->r_string(*hud_sect,"anim_close_weapon"));
+		animGetEx( mhud_close, "anim_close_weapon" );
 	};
 
 }

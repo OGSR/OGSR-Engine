@@ -106,17 +106,16 @@ void CWeaponMagazined::Load	(LPCSTR section)
 	
 	// HUD :: Anims
 	R_ASSERT			(m_pHUD);
-	shared_str m_sAnimIdle = pSettings->r_string( *hud_sect, "anim_idle" );
-	animGet( mhud.mhud_idle, *m_sAnimIdle );
-	animGet( mhud.mhud_idle_moving, READ_IF_EXISTS( pSettings, r_string, *hud_sect, "anim_idle_moving", *m_sAnimIdle ) );
-	animGet( mhud.mhud_idle_sprint, READ_IF_EXISTS( pSettings, r_string, *hud_sect, "anim_idle_sprint", *m_sAnimIdle ) );
-	animGet				(mhud.mhud_reload,	pSettings->r_string(*hud_sect, "anim_reload"));
-	animGet				(mhud.mhud_show,		pSettings->r_string(*hud_sect, "anim_draw"));
-	animGet				(mhud.mhud_hide,		pSettings->r_string(*hud_sect, "anim_holster"));
-	animGet				(mhud.mhud_shots,	pSettings->r_string(*hud_sect, "anim_shoot"));
+	animGetEx( mhud.mhud_idle,        "anim_idle" );
+	animGetEx( mhud.mhud_idle_moving, pSettings->line_exist( hud_sect.c_str(), "anim_idle_moving" ) ? "anim_idle_moving" : "anim_idle" );
+	animGetEx( mhud.mhud_idle_sprint, pSettings->line_exist( hud_sect.c_str(), "anim_idle_sprint" ) ? "anim_idle_sprint" : "anim_idle" );
+	animGetEx( mhud.mhud_reload,      "anim_reload" );
+	animGetEx( mhud.mhud_show,        "anim_draw" );
+	animGetEx( mhud.mhud_hide,        "anim_holster" );
+	animGetEx( mhud.mhud_shots,       "anim_shoot" );
 
 	if(IsZoomEnabled())
-		animGet				(mhud.mhud_idle_aim,		pSettings->r_string(*hud_sect, "anim_idle_aim"));
+		animGetEx( mhud.mhud_idle_aim, "anim_idle_aim" );
 	
 
 	//звуки и партиклы глушителя, еслит такой есть

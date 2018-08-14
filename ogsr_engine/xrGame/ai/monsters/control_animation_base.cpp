@@ -287,7 +287,7 @@ float CControlAnimationBase::GetAnimSpeed(EMotionAnim anim)
 
 	CMotionDef			*def = get_motion_def(anim_it, 0);
 
-	return				(def->Dequantize(def->speed));
+	return				(def->Speed());
 }
 
 
