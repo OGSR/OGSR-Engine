@@ -31,7 +31,6 @@ class	game_cl_GameState	: public game_GameState, public ISheduled
 	shared_str							m_game_type_name;
 //	bool								m_bCrosshair;	//был ли показан прицел-курсор HUD перед вызовом меню
 protected:
-	CUIGameCustom*						m_game_ui_custom;
 	u16									m_u16VotingEnabled;	
 	bool								m_bServerControlHits;	
 

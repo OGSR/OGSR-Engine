@@ -21,7 +21,6 @@ game_cl_GameState::game_cl_GameState()
 
 	shedule.t_min				= 5;
 	shedule.t_max				= 20;
-	m_game_ui_custom			= NULL;
 	shedule_register			();
 
 	m_u16VotingEnabled			= 0;
@@ -283,11 +282,6 @@ void game_cl_GameState::shedule_Update		(u32 dt)
 {
 	ISheduled::shedule_Update	(dt);
 
-	if(!m_game_ui_custom){
-		if( HUD().GetUI() )
-			m_game_ui_custom = HUD().GetUI()->UIGame();
-	} 
-	//---------------------------------------
 	switch (Phase())
 	{
 	case GAME_PHASE_INPROGRESS:
@@ -397,17 +391,23 @@ void game_cl_GameState::set_type_name(LPCSTR s)
 		g_pGamePersistent->OnGameStart();
 	}
 };
-void game_cl_GameState::reset_ui()
-{
-	if(g_dedicated_server)	return;
 
-	if(!m_game_ui_custom)
-		m_game_ui_custom = HUD().GetUI()->UIGame();
+void game_cl_GameState::reset_ui() { //KRodin: ‘ункци€ правильно работает именно в таком варианте! Ќ≈ »«ћ≈Ќя“№!
+  if ( g_dedicated_server )
+    return;
 
-	m_game_ui_custom->reset_ui					();
+  auto h = smart_cast<CHUDManager*>( Level().pHUD );
 
-	HUD().GetUI()->UIMainIngameWnd->reset_ui	();
+  auto ui = h->GetUI();
 
-	if (HUD().GetUI()->MainInputReceiver())
-		HUD().GetUI()->StartStopMenu			(HUD().GetUI()->MainInputReceiver(),true);
+  auto uigame = ui->UIGame();
+
+  uigame->reset_ui();
+
+  auto mgw = ui->UIMainIngameWnd;
+
+  mgw->reset_ui();
+
+  if ( auto MIR = ui->MainInputReceiver() )
+    ui->StartStopMenu( MIR, true );
 }
