@@ -108,9 +108,19 @@ void CRender::render_main	(Fmatrix&	m_ViewProjection, bool _fportals)
 				if (spatial->spatial.type & STYPE_RENDERABLE)
 				{
 					// renderable
-					IRenderable*	renderable		= spatial->dcast_Renderable	();
-					VERIFY							(renderable);
-
+					IRenderable* renderable = spatial->dcast_Renderable();
+					//bool bSphere = view.testSphere_dirty(spatial->spatial.sphere.P, spatial->spatial.sphere.R);
+ 					if (!renderable)
+					{
+						CGlow* pGlow = dynamic_cast<CGlow*>(spatial);
+						R_ASSERT(pGlow, "Glow don't created!");
+ 						//if (bSphere)
+							Glows->add(pGlow);
+						//else
+						//	pGlow->hide_glow();
+					}
+					else //if (bSphere)
+					{
 					// Occlusion
 					vis_data&		v_orig			= renderable->renderable.visual->vis;
 					vis_data		v_copy			= v_orig;
@@ -126,6 +136,7 @@ void CRender::render_main	(Fmatrix&	m_ViewProjection, bool _fportals)
 					set_Object						(renderable);
 					renderable->renderable_Render	();
 					set_Object						(0);
+					}
 				}
 				break;	// exit loop on frustums
 			}
@@ -415,6 +426,10 @@ void CRender::render_forward				()
 		PortalTraverser.fade_render				()	;					// faded-portals
 		r_dsgraph_render_sorted					()	;					// strict-sorted geoms
 		r_dsgraph_render_hud_sorted				()	;
+
+		if ( Glows && ps_r2_pp_flags.is( R_FLAG_GLOW_USE ) )
+			Glows->Render(); // glows render
+
 		g_pGamePersistent->Environment().RenderLast()	;					// rain/thunder-bolts
 	}
 

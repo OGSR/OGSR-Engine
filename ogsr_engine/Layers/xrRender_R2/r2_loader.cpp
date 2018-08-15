@@ -50,6 +50,7 @@ void CRender::level_Load(IReader* fs)
 	}
 
 	// Components
+	Glows = xr_new<CGlowManager>();
 	Wallmarks					= xr_new<CWallmarksEngine>	();
 	Details						= xr_new<CDetailManager>	();
 
@@ -146,7 +147,7 @@ void CRender::level_Unload()
 	Portals.clear			();
 
 	//*** Lights
-	// Glows.Unload			();
+	Glows->Unload();
 	Lights.Unload			();
 
 	//*** Visuals
@@ -169,6 +170,7 @@ void CRender::level_Unload()
 	//*** Components
 	xr_delete					(Details);
 	xr_delete					(Wallmarks);
+	xr_delete(Glows);
 
 	//*** Shaders
 	Shaders.clear_and_free		();
@@ -269,6 +271,12 @@ void CRender::LoadLights(IReader *fs)
 {
 	// lights
 	Lights.Load	(fs);
+
+	// glows
+	IReader *chunk = fs->open_chunk(fsL_GLOWS);
+	R_ASSERT(chunk && "Can't find glows");
+	Glows->Load(chunk);
+	chunk->close();
 }
 
 struct b_portal

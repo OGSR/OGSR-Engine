@@ -287,6 +287,11 @@ void CUITradeWnd::Show()
 	SetCurrentItem					(NULL);
 	ResetAll						();
 	m_uidata->UIDealMsg				= NULL;
+
+#ifndef HARD_AMMO_RELOAD
+	if (auto pActor = Actor())
+		pActor->RepackAmmo();
+#endif
 }
 
 void CUITradeWnd::Hide()

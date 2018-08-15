@@ -345,6 +345,11 @@ void CUIInventoryWnd::Show()
 
 	Update								();
 	PlaySnd								(eInvSndOpen);
+
+#ifndef HARD_AMMO_RELOAD
+	if (auto pActor = Actor())
+		pActor->RepackAmmo();
+#endif
 }
 
 void CUIInventoryWnd::Hide()
@@ -367,11 +372,6 @@ void CUIInventoryWnd::Hide()
 #ifdef MORE_HIDE_WEAPON
 	if ( pActor )
 		pActor->SetWeaponHideState(INV_STATE_INV_WND, false);
-#endif
-
-#ifndef HARD_AMMO_RELOAD
-	if ( pActor )
-		pActor->RepackAmmo();
 #endif
 }
 

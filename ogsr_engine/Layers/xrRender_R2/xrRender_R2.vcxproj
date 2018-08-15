@@ -268,6 +268,7 @@
   <ItemGroup>
     <ClInclude Include="..\..\COMMON\doug_lea_memory_allocator.h" />
     <ClInclude Include="..\xrRender\DetailFormat.h" />
+    <ClInclude Include="..\xrRender\dxGlowManager.h" />
     <ClInclude Include="..\xrRender\light.h" />
     <ClInclude Include="Blender_aa.h" />
     <ClInclude Include="Blender_blur.h" />
@@ -351,6 +352,7 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="..\..\COMMON\tga.cpp" />
+    <ClCompile Include="..\xrRender\dxGlowManager.cpp" />
     <ClCompile Include="blender_aa.cpp" />
     <ClCompile Include="blender_blur.cpp" />
     <ClCompile Include="blender_dof.cpp" />

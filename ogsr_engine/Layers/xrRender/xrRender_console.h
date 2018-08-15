@@ -97,6 +97,7 @@ extern ECORE_API float			ps_r2_dhemi_scale;			// 1.5f
 extern ECORE_API int			ps_r2_dhemi_count;			// 5
 extern ECORE_API float			ps_r2_slight_fade;			// 1.f
 extern ECORE_API int			ps_r2_wait_sleep;
+extern ECORE_API int ps_GlowsPerFrame;
 
 extern void						xrRender_initconsole	();
 extern BOOL						xrRender_test_hw		();
@@ -223,6 +224,7 @@ enum
 	R2PP_FLAG_LENS_DIRT_CONTROL = (1 << 9),
 	R2PP_FLAG_DOF_CONTROL = (1 << 10),
 	R2PP_FLAG_LIGHT_SHADOW_FADE = (1 << 11),
+	R_FLAG_GLOW_USE = (1 << 12),
 };
 
 enum

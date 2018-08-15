@@ -46,6 +46,9 @@
     <Filter Include="Core_Target">
       <UniqueIdentifier>{c6def490-0c8f-437c-8904-bce1ddbb70e1}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Glow">
+      <UniqueIdentifier>{281d5f0c-a6ce-48e7-bd04-9ae5564b8228}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="cl_intersect.h">
@@ -284,6 +287,9 @@
     </ClInclude>
     <ClInclude Include="..\..\COMMON\doug_lea_memory_allocator.h">
       <Filter>Core\memory</Filter>
+    </ClInclude>
+    <ClInclude Include="..\xrRender\dxGlowManager.h">
+      <Filter>Glow</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -670,6 +676,9 @@
     </ClCompile>
     <ClCompile Include="..\..\COMMON\doug_lea_memory_allocator.c">
       <Filter>Core\memory</Filter>
+    </ClCompile>
+    <ClCompile Include="..\xrRender\dxGlowManager.cpp">
+      <Filter>Glow</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
