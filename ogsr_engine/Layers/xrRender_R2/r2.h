@@ -21,6 +21,8 @@
 #include "..\..\xr_3da\irenderable.h"
 #include "..\..\xr_3da\fmesh.h"
 
+#include "../xrRender/dxGlowManager.h"
+
 //static float OLES_SUN_LIMIT_27_01_07 = 180.f;
 class rain_timer_params;
 // definition
@@ -102,6 +104,7 @@ public:
 	CDetailManager*												Details;
 	CModelPool*													Models;
 	CWallmarksEngine*											Wallmarks;
+	CGlowManager*												Glows;
 
 	CRenderTarget*												Target;			// Render-target
 

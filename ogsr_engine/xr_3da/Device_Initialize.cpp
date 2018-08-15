@@ -36,6 +36,7 @@ void CRenderDevice::Initialize()
                                /*rc.left, rc.top, */CW_USEDEFAULT, CW_USEDEFAULT,
                                (rc.right-rc.left), (rc.bottom-rc.top), 0L,
                                0, hInstance, 0L );
+        gGameWindow = m_hWnd;
     }
 
     // Save window properties

@@ -222,6 +222,7 @@ void CCarWeapon::FireEnd()
 
 void CCarWeapon::OnShot()
 {
+#pragma todo("KRodin: а может тут сразу возвращать id стреляющего, а не машины?")
 	FireBullet				(	m_fire_pos, m_fire_dir, fireDispersionBase, *m_Ammo, 
 								m_object->ID(), m_object->ID(), SendHitAllowed(m_object));
 
