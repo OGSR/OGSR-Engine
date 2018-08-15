@@ -383,6 +383,11 @@ void CUICarBodyWnd::Show()
 	inherited::Show							();
 	SetCurrentItem							(NULL);
 	InventoryUtilities::UpdateWeight		(*m_pUIOurBagWnd);
+
+#ifndef HARD_AMMO_RELOAD
+	if (auto pActor = Actor())
+		pActor->RepackAmmo();
+#endif
 }
 
 void CUICarBodyWnd::DisableAll()

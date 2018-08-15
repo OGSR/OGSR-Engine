@@ -48,6 +48,7 @@ IC	std::string __cdecl	make_string		(const char* format,...)
 }
 
 extern XRCORE_API xrDebug Debug;
+extern XRCORE_API HWND gGameWindow;
 
 XRCORE_API void LogStackTrace(const char* header);
 XRCORE_API void LogStackTrace(const char* header, _EXCEPTION_POINTERS *pExceptionInfo);

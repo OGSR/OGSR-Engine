@@ -6,6 +6,7 @@
 #include <signal.h> // for signals
 
 XRCORE_API xrDebug Debug;
+XRCORE_API HWND gGameWindow = nullptr;
 
 static bool error_after_dialog = false;
 
@@ -125,14 +126,11 @@ void gather_info(const char *expression, const char *description, const char *ar
 
 __declspec(noreturn) void xrDebug::do_exit(const std::string &message)
 {
-	auto wnd = GetActiveWindow();
-	if (!wnd)
-		wnd = GetForegroundWindow();
-	ShowWindow(wnd, SW_HIDE);
+	ShowWindow(gGameWindow, SW_HIDE);
 
 	while (ShowCursor(TRUE) < 0);
 
-	MessageBox(wnd, message.c_str(), "Error", MB_OK | MB_ICONERROR | MB_SYSTEMMODAL);
+	MessageBox(gGameWindow, message.c_str(), "Error", MB_OK | MB_ICONERROR | MB_SYSTEMMODAL);
 
 	if ( !IsDebuggerPresent() )
 		exit(-1); //TerminateProcess( GetCurrentProcess(), 1 );
@@ -159,10 +157,7 @@ void xrDebug::backend(const char *expression, const char *description, const cha
 #endif
 */
 #ifdef USE_OWN_ERROR_MESSAGE_WINDOW
-	auto game_hwnd = GetActiveWindow();
-	if (!game_hwnd)
-		game_hwnd = GetForegroundWindow();
-	ShowWindow(game_hwnd, SW_HIDE);
+	ShowWindow(gGameWindow, SW_HIDE);
 
 	if (get_on_dialog())
 		get_on_dialog()	(true);
@@ -176,7 +171,7 @@ void xrDebug::backend(const char *expression, const char *description, const cha
 	error_after_dialog = true;
 
 	MessageBox(
-		game_hwnd,
+		gGameWindow,
 		assertion_info,
 		"FATAL ERROR",
 		MB_OK | MB_ICONERROR | MB_SYSTEMMODAL
@@ -328,8 +323,10 @@ void save_mini_dump(_EXCEPTION_POINTERS *pExceptionInfo)
 }
 #endif
 
-void format_message	(char* buffer, const size_t& buffer_size)
+void format_message(char* buffer, const size_t& buffer_size)
 {
+	__try {
+
 	auto error_code = GetLastError();
 	if ( error_code == ERROR_SUCCESS ) {
 		*buffer	= 0;
@@ -350,6 +347,10 @@ void format_message	(char* buffer, const size_t& buffer_size)
 
 	sprintf( buffer, "[error][%8d] : [%s]", error_code, ( char* )message );
     LocalFree(message);
+
+	} __except(EXCEPTION_EXECUTE_HANDLER) {
+		Log("Exception catched in function [" __FUNCTION__ "]");
+	}
 }
 
 
@@ -369,17 +370,14 @@ LONG WINAPI UnhandledFilter(_EXCEPTION_POINTERS *pExceptionInfo)
 		LogStackTrace("Unhandled exception stack trace:\n", pExceptionInfo);
 
 #ifdef USE_OWN_ERROR_MESSAGE_WINDOW
-		auto wnd = GetActiveWindow();
-		if (!wnd)
-			wnd = GetForegroundWindow();
-		ShowWindow(wnd, SW_HIDE);
+		ShowWindow(gGameWindow, SW_HIDE);
 
 		while (ShowCursor(TRUE) < 0);
 
 		if (Debug.get_on_dialog())
 			Debug.get_on_dialog()(true);
 
-		MessageBox(wnd, "Fatal error occured\n\nPress OK to abort program execution", "FATAL ERROR", MB_OK | MB_ICONERROR | MB_SYSTEMMODAL);
+		MessageBox(gGameWindow, "Fatal error occured\n\nPress OK to abort program execution", "FATAL ERROR", MB_OK | MB_ICONERROR | MB_SYSTEMMODAL);
 
 		if (Debug.get_on_dialog())
 			Debug.get_on_dialog()(false);

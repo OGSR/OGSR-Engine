@@ -345,6 +345,11 @@ void CUIInventoryWnd::Show()
 
 	Update								();
 	PlaySnd								(eInvSndOpen);
+
+#ifndef HARD_AMMO_RELOAD
+	if (auto pActor = Actor())
+		pActor->RepackAmmo();
+#endif
 }
 
 void CUIInventoryWnd::Hide()

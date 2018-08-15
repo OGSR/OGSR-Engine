@@ -47,6 +47,7 @@ xr_token							ext_refl_mode_token[] = {
 	{ 0,							0 }
 };
 
+int ps_GlowsPerFrame = 16;
 u32			ps_ssao_quality = 0;
 u32			ps_sunshafts_quality = 0;
 u32			ps_dof_quality = 0;
@@ -134,9 +135,6 @@ float		ps_r1_lmodel_lerp			= 0.1f	;
 float		ps_r1_dlights_clip			= 30.f	;
 float		ps_r1_pps_u					= 0.f	;
 float		ps_r1_pps_v					= 0.f	;
-
-// R1-specific
-int			ps_r1_GlowsPerFrame			= 16	;					// r1-only
 
 // R2
 float		ps_r2_ssaLOD_A				= 48.f	;
@@ -431,7 +429,7 @@ public:
 //-----------------------------------------------------------------------
 
 Flags32		ps_r2_dof_flags = { 0 };
-Flags32		ps_r2_pp_flags = { 0 };
+Flags32		ps_r2_pp_flags = { R_FLAG_GLOW_USE };
 Flags32		ps_service_flags = { 0 };
 Flags32		ps_r2_test_flags = { 0 };
 float		ssa_discard = 3.5f;
@@ -493,9 +491,7 @@ void		xrRender_initconsole	()
 	CMD4(CCC_Float,		"r1_pps_u",				&ps_r1_pps_u,				-1.f,	+1.f	);
 	CMD4(CCC_Float,		"r1_pps_v",				&ps_r1_pps_v,				-1.f,	+1.f	);
 	CMD4(CCC_Float,		"r1_dlights_clip",		&ps_r1_dlights_clip,		10.f,	150.f	);
-
-	// R1-specific
-	CMD4(CCC_Integer,	"r1_glows_per_frame",	&ps_r1_GlowsPerFrame,		2,		32		);*/
+*/
 
 	// R2
 	CMD4(CCC_Float,		"r2_ssa_lod_a",			&ps_r2_ssaLOD_A,			16,		96		);
@@ -540,6 +536,9 @@ void		xrRender_initconsole	()
 //	CMD3(CCC_Mask,		"r2_exp_splitscene",	&ps_r2_ls_flags,			R2FLAG_EXP_SPLIT_SCENE);
 //	CMD3(CCC_Mask,		"r2_exp_donttest_uns",	&ps_r2_ls_flags,			R2FLAG_EXP_DONT_TEST_UNSHADOWED);
 	
+	CMD3(CCC_Mask,		"r_glows_use",			&ps_r2_pp_flags,			R_FLAG_GLOW_USE);
+	CMD4(CCC_Integer,	"r__glows_per_frame",	&ps_GlowsPerFrame,	2, 32);
+
 	CMD3(CCC_Mask,		"r2_sun_tsm",			&ps_r2_ls_flags,			R2FLAG_SUN_TSM	);
 	CMD4(CCC_Float,		"r2_sun_tsm_proj",		&ps_r2_sun_tsm_projection,	.001f,	0.8f	);
 	CMD4(CCC_Float,		"r2_sun_tsm_bias",		&ps_r2_sun_tsm_bias,		-0.5,	+0.5	);
