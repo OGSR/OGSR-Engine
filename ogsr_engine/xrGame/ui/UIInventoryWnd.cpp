@@ -368,6 +368,11 @@ void CUIInventoryWnd::Hide()
 	if ( pActor )
 		pActor->SetWeaponHideState(INV_STATE_INV_WND, false);
 #endif
+
+#ifndef HARD_AMMO_RELOAD
+	if ( pActor )
+		pActor->RepackAmmo();
+#endif
 }
 
 void CUIInventoryWnd::AttachAddon(PIItem item_to_upgrade)

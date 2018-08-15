@@ -1971,3 +1971,47 @@ bool CActor::is_actor_climbing() {
 bool CActor::is_actor_moving() {
 	return mstate_real & mcAnyAction ? true : false;
 }
+
+
+void CActor::RepackAmmo() {
+  xr_vector<CWeaponAmmo*> _ammo;
+  // заполняем массив неполными пачками
+  for ( PIItem& _pIItem : inventory().m_ruck ) {
+    CWeaponAmmo* pAmmo = smart_cast<CWeaponAmmo*>( _pIItem );
+    if ( pAmmo && pAmmo->m_boxCurr < pAmmo->m_boxSize )
+      _ammo.push_back( pAmmo );
+  }
+  while ( !_ammo.empty() ) {
+    shared_str asect = _ammo[ 0 ]->cNameSect(); // текущая секция
+    u16 box_size     = _ammo[ 0 ]->m_boxSize; // размер пачки
+    u32 cnt          = 0;
+    u16 cart_cnt     = 0;
+    // считаем кол=во патронов текущей секции
+    for ( CWeaponAmmo* ammo : _ammo ) {
+      if ( asect == ammo->cNameSect() ) {
+        cnt = cnt + ammo->m_boxCurr;
+        cart_cnt++;
+      }
+    }
+    // если больше одной неполной пачки, то перепаковываем
+    if ( cart_cnt > 1 ) {
+      for ( CWeaponAmmo* ammo : _ammo ) {
+        if ( asect == ammo->cNameSect() ) {
+          if ( cnt > 0 ) {
+            if ( cnt > box_size ) {
+              ammo->m_boxCurr = box_size;
+              cnt             = cnt - box_size;
+            } else {
+              ammo->m_boxCurr = ( u16 )cnt;
+              cnt             = 0;
+            }
+          } else {
+            ammo->DestroyObject();
+          }
+        }
+      }
+    }
+    //чистим массив от обработанных пачек
+    _ammo.erase( std::remove_if( _ammo.begin(), _ammo.end(), [asect]( CWeaponAmmo* a ) { return a->cNameSect() == asect; } ), _ammo.end() );
+  }
+}

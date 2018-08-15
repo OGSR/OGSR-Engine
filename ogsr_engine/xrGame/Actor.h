@@ -800,8 +800,10 @@ public:
 			bool is_actor_creeping();
 			bool is_actor_climbing();
 			bool is_actor_moving();
-			// иммунитеты от препаратов, применяемые для ослабления хита
+			
+			void RepackAmmo();
 private:
+	// иммунитеты от препаратов, применяемые для ослабления хита
 	float m_fDrugPsyProtectionCoeff;
 	float m_fDrugRadProtectionCoeff;
 
