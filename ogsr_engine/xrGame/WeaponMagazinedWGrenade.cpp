@@ -265,7 +265,8 @@ void  CWeaponMagazinedWGrenade::PerformSwitchGL()
 
 	m_magazine.swap(m_magazine2); // https://github.com/revolucas/CoC-Xray/pull/5/commits/4a396eb30137c5625c5b0dd934e63eaa5b62cbc5
 
-	iAmmoElapsed = (int)m_magazine.size();
+	iAmmoElapsed  = (int)m_magazine.size();
+	iAmmoElapsed2 = (int)m_magazine2.size();
 
 	UpdateZoomOffset();
 
