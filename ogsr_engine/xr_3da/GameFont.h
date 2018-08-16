@@ -1,13 +1,9 @@
-#ifndef GameFontH
-#define GameFontH
 #pragma once
 
 #include "MbHelpers.h"
 
 class ENGINE_API CGameFont
-#ifndef M_BORLAND
 	: public pureRender
-#endif
 {
 public:
 	enum EAligment{
@@ -113,5 +109,3 @@ public:
 	shared_str				m_font_name;
 #endif
 };
-
-#endif // _XR_GAMEFONT_H_
