@@ -1,5 +1,4 @@
-#ifndef __XR_INPUT__
-#define __XR_INPUT__
+#pragma once
 
 #define DIRECTINPUT_VERSION 0x0800
 #include <dinput.h>
@@ -14,12 +13,10 @@ const int all_device_key		= mouse_device_key | keyboard_device_key;
 const int default_key			= mouse_device_key | keyboard_device_key ;
 
 class ENGINE_API CInput
-#ifndef M_BORLAND
 	:
 	public pureFrame,
 	public pureAppActivate,
 	public pureAppDeactivate
-#endif
 {
 public:
 	enum {
@@ -93,5 +90,3 @@ public:
 };
 
 extern ENGINE_API CInput *		pInput;
-
-#endif //__XR_INPUT__

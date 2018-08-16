@@ -6,11 +6,9 @@
 #	define DEBUG_MEMORY_NAME
 #endif // USE_MEMORY_MONITOR
 
-#ifndef M_BORLAND
-#	if 0//def DEBUG
+#if 0//def DEBUG
 #		define DEBUG_MEMORY_MANAGER
-#	endif // DEBUG
-#endif // M_BORLAND
+#endif // DEBUG
 
 #ifdef DEBUG_MEMORY_MANAGER
 	XRCORE_API	extern BOOL	g_bMEMO;
@@ -110,14 +108,14 @@ XRCORE_API	char* 	xr_strdup	(const char* string);
 
 #ifdef DEBUG_MEMORY_NAME
 // Global new/delete override
-#	if !(defined(__BORLANDC__) || defined(NO_XRNEW))
+#	if !(defined(NO_XRNEW))
 	IC void*	operator new		(size_t size)		{	return Memory.mem_alloc(size?size:1, "C++ NEW");	}
 	IC void		operator delete		(void *p)			{	xr_free(p);											}
 	IC void*	operator new[]		(size_t size)		{	return Memory.mem_alloc(size?size:1, "C++ NEW");	}
 	IC void		operator delete[]	(void* p)			{	xr_free(p);											}
 #	endif
 #else // DEBUG_MEMORY_NAME
-#	if !(defined(__BORLANDC__) || defined(NO_XRNEW))
+#	if !(defined(NO_XRNEW))
 	IC void*	operator new		(size_t size)		{	return Memory.mem_alloc(size?size:1);				}
 	IC void		operator delete		(void *p)			{	xr_free(p);											}
 	IC void*	operator new[]		(size_t size)		{	return Memory.mem_alloc(size?size:1);				}
