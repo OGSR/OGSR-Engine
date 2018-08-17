@@ -10,10 +10,8 @@
 #define HEMI3_VERTS	196
 
 #pragma warning (disable:4305)
-#ifdef __BORLANDC__
-#pragma warn -8071
-#endif
-const Fvector hemi_1[HEMI1_VERTS] = {
+
+constexpr Fvector hemi_1[HEMI1_VERTS] = {
 	{ 0.525730,	 0.850655,	-0.000000},
 	{ 0.162460,	 0.850655,	 0.500000},
 	{ 0.000000,	 1.000000,	-0.000000},
@@ -41,7 +39,7 @@ const Fvector hemi_1[HEMI1_VERTS] = {
 	{ 0.587788,	 0.000000,	-0.809013},
 	{ 0.951057,	 0.000000,	-0.309017},
 };
-const u16 hemi_1v[HEMI1_FACES*3] = {
+constexpr u16 hemi_1v[HEMI1_FACES*3] = {
 	0,		1,		2,
 	1,		3,		2,
 	3,		4,		2,
@@ -84,7 +82,7 @@ const u16 hemi_1v[HEMI1_FACES*3] = {
 	24,		25,		10,
 };
 
-const Fvector hemi_2[HEMI2_VERTS] = 
+constexpr Fvector hemi_2[HEMI2_VERTS] = 
 {
 	{ 0.273268,	 0.961937,	-0.000000},
 	{ 0.084444,	 0.961937,	 0.259892},
@@ -178,7 +176,7 @@ const Fvector hemi_2[HEMI2_VERTS] =
 	{ 0.309017,	 0.000000,	-0.951057},
 	{ 0.809021,	 0.000000,	-0.587788},
 };					   	
-const u16 hemi_2v[HEMI2_FACES*3] = {
+constexpr u16 hemi_2v[HEMI2_FACES*3] = {
 	0,		1,		2,
 	3,		4,		0,
 	4,		1,		0,
@@ -341,7 +339,7 @@ const u16 hemi_2v[HEMI2_FACES*3] = {
 	90,		80,		79,
 };
 
-const Fvector hemi_3[HEMI3_VERTS] = 
+constexpr Fvector hemi_3[HEMI3_VERTS] = 
 {					   	
 	{+0.0000,	+0.5000,	+0.0000	},
 	{+0.2629,	+0.4253,	+0.0000	},

@@ -100,11 +100,9 @@ void	xrMemory::_destroy()
 	xr_delete					(g_pSharedMemoryContainer);
 	xr_delete					(g_pStringContainer);
 
-#ifndef M_BORLAND
-#	ifdef DEBUG_MEMORY_MANAGER
+#ifdef DEBUG_MEMORY_MANAGER
 		if (debug_mode)				dbg_dump_leaks	();
-#	endif // DEBUG_MEMORY_MANAGER
-#endif // M_BORLAND
+#endif // DEBUG_MEMORY_MANAGER
 
 	mem_initialized				= FALSE;
 #ifdef DEBUG_MEMORY_MANAGER

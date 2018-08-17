@@ -1,20 +1,9 @@
-#ifndef SoundH
-#define SoundH
 #pragma once
 
 #ifdef XRSOUND_EXPORTS
 	#define XRSOUND_API __declspec(dllexport)
 #else
 	#define XRSOUND_API __declspec(dllimport)
-#endif
-
-#ifdef __BORLANDC__
-	#define XRSOUND_EDITOR_API XRSOUND_API
-
-	// editor only refs
-	class XRSOUND_EDITOR_API SoundEnvironment_LIB;
-#else
-	#define XRSOUND_EDITOR_API
 #endif
 
 #define SNDENV_FILENAME				"sEnvironment.xr"
@@ -364,14 +353,6 @@ public:
 	virtual void unsetEFXPreset() = 0;
         virtual void setEFXEAXPreset( std::string ) = 0;
         virtual void unsetEFXEAXPreset() = 0;
-#ifdef __BORLANDC__
-	virtual SoundEnvironment_LIB*	get_env_library			()																						= 0;
-	virtual void					refresh_env_library		()																						= 0;
-	virtual void					set_user_env			(CSound_environment* E)																	= 0;
-	virtual void					refresh_sources			()																						= 0;
-    virtual void					set_environment			(u32 id, CSound_environment** dst_env)													= 0;
-    virtual void					set_environment_size	(CSound_environment* src_env, CSound_environment** dst_env)								= 0;
-#endif
 };
 extern XRSOUND_API CSound_manager_interface*		Sound;
 
@@ -404,4 +385,3 @@ IC void	ref_sound::set_params					( CSound_params* p )
         _feedback()->set_volume   	(p->volume);
     }
 }
-#endif
