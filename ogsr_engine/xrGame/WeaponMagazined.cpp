@@ -16,6 +16,7 @@
 #include "level.h"
 #include "object_broker.h"
 #include "string_table.h"
+#include "WeaponBinoculars.h"
 #include "WeaponBinocularsVision.h"
 
 #include "game_object_space.h"
@@ -989,7 +990,7 @@ void CWeaponMagazined::InitAddons()
 		else if(m_eScopeStatus == ALife::eAddonPermanent)
 		{
 			m_fScopeZoomFactor = pSettings->r_float(cNameSect(), "scope_zoom_factor");
-			m_bScopeDynamicZoom = !!READ_IF_EXISTS(pSettings, r_bool, cNameSect(), "scope_dynamic_zoom", false);
+			m_bScopeDynamicZoom = smart_cast<CWeaponBinoculars*>(this) != nullptr || !!READ_IF_EXISTS(pSettings, r_bool, cNameSect(), "scope_dynamic_zoom", false);
 
 			shared_str scope_tex_name;
 			scope_tex_name = pSettings->r_string(cNameSect(), "scope_texture");
