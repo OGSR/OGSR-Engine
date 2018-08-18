@@ -397,11 +397,11 @@ class_<CScriptGameObject> script_register_game_object2(class_<CScriptGameObject>
 		.def("get_grenade_launcher_status", &CScriptGameObject::GrenadeLauncherAttachable)
 		.def("get_ammo_type", &CScriptGameObject::GetAmmoType)
 		.def("get_underbarrel_ammo_type", &CScriptGameObject::GetUnderbarrelAmmoType)
-		.def("get_underbarrel_num_types", &CScriptGameObject::GetUnderbarrelNumTypes)
+		.def("get_ammo_in_magazine2", &CScriptGameObject::GetAmmoElapsed2)
 		.def("get_gl_mode", &CScriptGameObject::GetGLMode)
 
 		.def("get_current_ammo", &CScriptGameObject::GetCurrAmmo)
-		.def("get_ammo_in_magazine2", &CScriptGameObject::GetAmmoElapsed2)
+
 		.def("set_ammo_box_curr", &CScriptGameObject::SetAmmoBoxCurr)
 		.def("get_ammo_box_size", &CScriptGameObject::GetAmmoBoxSize)
 		.def("set_ammo_box_size", &CScriptGameObject::SetAmmoBoxSize)

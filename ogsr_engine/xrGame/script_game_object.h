@@ -662,11 +662,11 @@ public:
 			bool				GrenadeLauncherAttachable();
 			u32					GetAmmoType();
 			u32					GetUnderbarrelAmmoType();
-			u32					GetUnderbarrelNumTypes();
+			u32					GetAmmoElapsed2();
 			bool				GetGLMode();
 
 			u32					GetCurrAmmo();
-			u32					GetAmmoElapsed2();
+
 			void				SetHudOffset(Fvector _offset);
 //			void				SetHudRotate(float _x, float _y);
 			void				SetHudRotate(Fvector2 _v);
