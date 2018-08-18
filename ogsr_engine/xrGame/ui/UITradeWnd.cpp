@@ -232,7 +232,7 @@ void CUITradeWnd::SendMessage(CUIWindow *pWnd, s16 msg, void *pData)
 					void* d = m_pUIPropertiesBox->GetClickedItem()->GetData();
 					bool b_all = (d == (void*)33);
 
-					MoveItemsfromCell(b_all);
+					MoveItems(CurrentItem(), b_all);
 				}break;
 			}
 		}
@@ -657,7 +657,14 @@ bool CUITradeWnd::OnItemDrop(CUICellItem* itm)
 	if(old_owner==new_owner || !old_owner || !new_owner)
 		return false;
 
-	return MoveItem(itm);
+	if (Level().IR_GetKeyState(DIK_LSHIFT)) {
+		MoveItems(itm, true);
+	}
+	else {
+		MoveItem(itm);
+	}
+
+	return true;
 }
 
 bool CUITradeWnd::OnItemDbClick(CUICellItem* itm)
@@ -665,32 +672,29 @@ bool CUITradeWnd::OnItemDbClick(CUICellItem* itm)
 	SetCurrentItem						(itm);
 
 	if (Level().IR_GetKeyState(DIK_LSHIFT)) {
-		MoveItemsfromCell(true);
+		MoveItems(itm, true);
 	}
 	else {
-		if (!MoveItem(itm))
-			R_ASSERT2(false, "wrong parent for cell item");
+		MoveItem(itm);
 	}
 
 	return true;
 }
 
-void CUITradeWnd::MoveItemsfromCell(bool b_all)
+void CUITradeWnd::MoveItems(CUICellItem* itm, bool b_all)
 {
-	CUICellItem* cur_item = CurrentItem();
-
-	if (!cur_item) 
+	if (!itm)
 	{
 		return;
 	}
 
 	if (b_all)
 	{
-		u32 cnt = cur_item->ChildsCount();
+		u32 cnt = itm->ChildsCount();
 
 		//Msg("Move all items %d", cnt);
 
-		CUIDragDropListEx* old_owner = cur_item->OwnerList();
+		CUIDragDropListEx* old_owner = itm->OwnerList();
 		CUIDragDropListEx* to = nullptr;
 
 		if (old_owner == &m_uidata->UIOurBagList)
@@ -706,16 +710,15 @@ void CUITradeWnd::MoveItemsfromCell(bool b_all)
 
 		for (u32 i = 0; i < cnt; ++i) 
 		{
-			CUICellItem* itm = cur_item->PopChild();
+			CUICellItem* child_itm = itm->PopChild();
 
 			//Msg("MoveAllItems child ... %d", i);
 
-			to->SetItem(itm);
+			to->SetItem(child_itm);
 		}
 	}
 
-	MoveItem(cur_item);
-	SetCurrentItem(NULL);
+	MoveItem(itm);
 }
 
 bool CUITradeWnd::MoveItem(CUICellItem* itm) 

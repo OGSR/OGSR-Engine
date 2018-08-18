@@ -175,3 +175,10 @@ void CWeaponRPG7::net_Import( NET_Packet& P)
 	inherited::net_Import		(P);
 	UpdateMissileVisibility		();
 }
+
+void CWeaponRPG7::PlayAnimReload()
+{
+	VERIFY(GetState() == eReload);
+	// play anim with MixIn=FALSE to avoid issue with blinking rocket during reload
+	m_pHUD->animPlay(random_anim(mhud.mhud_reload), FALSE, this, GetState());
+}

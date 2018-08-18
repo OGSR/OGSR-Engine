@@ -314,7 +314,7 @@ void CUICarBodyWnd::SendMessage(CUIWindow *pWnd, s16 msg, void *pData)
 					void* d = m_pUIPropertiesBox->GetClickedItem()->GetData();
 					bool b_all = (d == (void*)33);
 
-					MoveItemsfromCell(b_all);
+					MoveItems(CurrentItem(), b_all);
 				}break;
 				case INVENTORY_DROP_ACTION:
 				{
@@ -457,23 +457,22 @@ void CUICarBodyWnd::TakeAll()
 	}
 }
 
-void CUICarBodyWnd::MoveItemsfromCell(bool b_all)
+void CUICarBodyWnd::MoveItems(CUICellItem* itm, bool b_all)
 {
 	u16 tmp_id = 0;
 	if (m_pInventoryBox) {
 		tmp_id = (smart_cast<CGameObject*>(m_pOurObject))->ID();
 	}
 
-	CUICellItem* ci = CurrentItem();
-	CUIDragDropListEx* owner_list = ci->OwnerList();
+	CUIDragDropListEx* owner_list = itm->OwnerList();
 
 	if (owner_list != m_pUIOthersBagList)
 	{ // from actor to box
 		if (b_all)
 		{
-			for (u32 j = 0; j < ci->ChildsCount(); ++j)
+			for (u32 j = 0; j < itm->ChildsCount(); ++j)
 			{
-				PIItem _itm = (PIItem)(ci->Child(j)->m_pData);
+				PIItem _itm = (PIItem)(itm->Child(j)->m_pData);
 				if (m_pOthersObject)
 					TransferItem(_itm, m_pOurObject, m_pOthersObject, true);
 				else
@@ -484,12 +483,12 @@ void CUICarBodyWnd::MoveItemsfromCell(bool b_all)
 			}
 		}
 
-		PIItem itm = (PIItem)(ci->m_pData);
+		PIItem p_itm = (PIItem)(itm->m_pData);
 		if (m_pOthersObject)
-			TransferItem(itm, m_pOurObject, m_pOthersObject, true);
+			TransferItem(p_itm, m_pOurObject, m_pOthersObject, true);
 		else
 		{
-			move_item(tmp_id, m_pInventoryBox->object().ID(), itm->object().ID());
+			move_item(tmp_id, m_pInventoryBox->object().ID(), p_itm->object().ID());
 			//. Actor()->callback(GameObject::eInvBoxItemTake)(m_pInventoryBox->lua_game_object(), itm->object().lua_game_object() );
 		}
 	}
@@ -497,9 +496,9 @@ void CUICarBodyWnd::MoveItemsfromCell(bool b_all)
 	{ // from box to actor
 		if (b_all)
 		{
-			for (u32 j = 0; j < ci->ChildsCount(); ++j)
+			for (u32 j = 0; j < itm->ChildsCount(); ++j)
 			{
-				PIItem _itm = (PIItem)(ci->Child(j)->m_pData);
+				PIItem _itm = (PIItem)(itm->Child(j)->m_pData);
 				if (m_pOthersObject)
 					TransferItem(_itm, m_pOthersObject, m_pOurObject, false);
 				else
@@ -510,15 +509,16 @@ void CUICarBodyWnd::MoveItemsfromCell(bool b_all)
 			}
 		}
 
-		PIItem itm = (PIItem)(ci->m_pData);
+		PIItem p_itm = (PIItem)(itm->m_pData);
 		if (m_pOthersObject)
-			TransferItem(itm, m_pOthersObject, m_pOurObject, false);
+			TransferItem(p_itm, m_pOthersObject, m_pOurObject, false);
 		else
 		{
-			move_item(m_pInventoryBox->object().ID(), tmp_id, itm->object().ID());
+			move_item(m_pInventoryBox->object().ID(), tmp_id, p_itm->object().ID());
 			//. Actor()->callback(GameObject::eInvBoxItemTake)(m_pInventoryBox->lua_game_object(), itm->object().lua_game_object() );
 		}
 	}
+	SetCurrentItem(NULL);
 }
 
 void SendEvent_Item_Drop(u16 from_id, PIItem	pItem)
@@ -757,24 +757,30 @@ bool CUICarBodyWnd::OnItemDrop(CUICellItem* itm)
 	CUIDragDropListEx*	new_owner		= CUIDragDropListEx::m_drag_item->BackList();
 	
 	if(old_owner==new_owner || !old_owner || !new_owner)
-		return true;
+		return false;
 
-	return MoveItem(itm);
+	if (Level().IR_GetKeyState(DIK_LSHIFT)) {
+		MoveItems(itm, true);
+	}
+	else {
+		MoveItem(itm);
+	}
+
+	return true;
 }
 
 bool CUICarBodyWnd::OnItemDbClick(CUICellItem* itm)
 {
 	if (Level().IR_GetKeyState(DIK_LSHIFT)) {
-		MoveItemsfromCell(true);
-#pragma todo( "KRodin to Lordmuzer: Здесь тоже надо что-то возвращать. Не знаю, как лучше, пусть будет true пока." )
-		return true;
+		MoveItems(itm, true);
 	}
 	else {
-		return MoveItem(itm);
+		MoveItem(itm);
 	}
+	return true;
 }
 
-bool CUICarBodyWnd::MoveItem(CUICellItem* itm) 
+void CUICarBodyWnd::MoveItem(CUICellItem* itm) 
 {
 	CUIDragDropListEx*	old_owner = itm->OwnerList();
 	CUIDragDropListEx*	new_owner = (old_owner == m_pUIOthersBagList) ? m_pUIOurBagList : m_pUIOthersBagList;
@@ -811,8 +817,6 @@ bool CUICarBodyWnd::MoveItem(CUICellItem* itm)
 
 	}
 	SetCurrentItem(NULL);
-
-	return						true;
 }
 
 bool CUICarBodyWnd::OnItemSelected(CUICellItem* itm)
