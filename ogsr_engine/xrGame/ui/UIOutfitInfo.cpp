@@ -23,8 +23,8 @@ CUIOutfitInfo::~CUIOutfitInfo()
 
 LPCSTR _imm_names []={
 	"burn_immunity",
-	"strike_immunity",
 	"shock_immunity",
+	"strike_immunity",
 	"wound_immunity",		
 	"radiation_immunity",
 	"telepatic_immunity",

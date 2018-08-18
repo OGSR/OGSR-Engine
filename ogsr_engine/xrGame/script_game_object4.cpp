@@ -538,20 +538,11 @@ u32 CScriptGameObject::GetUnderbarrelAmmoType()
 	}
 	return k->m_ammoType2;
 }
-u32 CScriptGameObject::GetUnderbarrelNumTypes()
-{
-	CWeaponMagazinedWGrenade						*k = smart_cast<CWeaponMagazinedWGrenade*>(&object());
-	if (!k) {
-		ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "CWeaponMagazinedWGrenade : cannot access class member GetUnderbarrelNumTypes!");
-		return 0;
-	}
-	return k->m_ammoTypes2.size();
-}
 bool CScriptGameObject::GetGLMode()
 {
 	CWeaponMagazinedWGrenade						*k = smart_cast<CWeaponMagazinedWGrenade*>(&object());
 	if (!k) {
-		ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "CWeaponMagazinedWGrenade : cannot access class member GetUnderbarrelNumTypes!");
+		ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "CWeaponMagazinedWGrenade : cannot access class member GetGLMode!");
 		return false;
 	}
 	return k->m_bGrenadeMode;

@@ -21,14 +21,14 @@ void CXml::ClearInternal()
 
 void ParseFile(LPCSTR path, CMemoryWriter& W, IReader *F, CXml* xml )
 {
-	string4096	str;
+	xr_string str;
 	
 	while( !F->eof() ){
-		F->r_string		(str,sizeof(str));
+		F->r_string	(str);
 
-		if (str[0] && (str[0]=='#') && strstr(str,"#include") ){
+		if (str[0] && (str[0]=='#') && strstr(str.c_str(),"#include") ){
 			string256	inc_name;	
-			if (_GetItem	(str,1,inc_name,'"'))
+			if (_GetItem	(str.c_str(),1,inc_name,'"'))
 			{
 				IReader* I 			= NULL;
 				if(inc_name==strstr(inc_name,"ui\\"))
@@ -51,7 +51,7 @@ void ParseFile(LPCSTR path, CMemoryWriter& W, IReader *F, CXml* xml )
 				FS.r_close	(I);
 			}
 		}else
-			W.w_string		(str);
+			W.w_string		(str.c_str());
 
 	}
 }
