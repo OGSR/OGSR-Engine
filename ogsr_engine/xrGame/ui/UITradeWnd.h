@@ -59,8 +59,8 @@ protected:
 	void				PerformTrade				();
 	void				UpdatePrices				();
 	void				ColorizeItem				(CUICellItem* itm, bool canTrade, bool highlighted);
-	bool				MoveItem					(CUICellItem * itm);
-	void				MoveItemsfromCell			(bool b_all);
+	bool				MoveItem					(CUICellItem* itm);
+	void				MoveItems					(CUICellItem* itm, bool b_all);
 
 	enum EListType{eNone,e1st,e2nd,eBoth};
 
