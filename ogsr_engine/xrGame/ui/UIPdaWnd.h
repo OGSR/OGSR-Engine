@@ -72,5 +72,5 @@ public:
 	void					SetActiveSubdialog	(EPdaTabs section);
 	virtual bool			StopAnyMove			(){return false;}
 
-			void			PdaContentsChanged	(pda_section::part type);
+			void			PdaContentsChanged	( pda_section::part type, bool = true );
 };

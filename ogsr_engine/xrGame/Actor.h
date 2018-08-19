@@ -130,7 +130,7 @@ public:
 
 protected:
 //	virtual void AddMapLocationsFromInfo (const CInfoPortion* info_portion) const;
-	virtual void AddEncyclopediaArticle	(const CInfoPortion* info_portion) const;
+	virtual void AddEncyclopediaArticle( const CInfoPortion*, bool = false ) const;
 	virtual void AddGameTask			(const CInfoPortion* info_portion) const;
 protected:
 struct SDefNewsMsg{

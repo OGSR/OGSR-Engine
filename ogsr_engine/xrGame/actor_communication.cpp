@@ -31,56 +31,71 @@
 #include "ai/monsters/basemonster/base_monster.h"
 #include "ai/trader/ai_trader.h"
 
-void CActor::AddEncyclopediaArticle	 (const CInfoPortion* info_portion) const
-{
-	VERIFY(info_portion);
-	ARTICLE_VECTOR& article_vector = encyclopedia_registry->registry().objects();
+void CActor::AddEncyclopediaArticle( const CInfoPortion* info_portion, bool revert ) const {
+  VERIFY( info_portion );
+  auto& article_vector = encyclopedia_registry->registry().objects();
 
-	ARTICLE_VECTOR::iterator last_end = article_vector.end();
-	ARTICLE_VECTOR::iterator B = article_vector.begin();
-	ARTICLE_VECTOR::iterator E = last_end;
+  std::vector<pda_section::part> updated_pda;
+  auto update_pda_section = [ &updated_pda ]( const auto& data ) {
+    pda_section::part p = pda_section::encyclopedia;
+    switch ( data.article_type ) {
+        case ARTICLE_DATA::eEncyclopediaArticle:
+          p = pda_section::encyclopedia; break;
+        case ARTICLE_DATA::eJournalArticle:
+          p = pda_section::journal; break;
+        case ARTICLE_DATA::eInfoArticle:
+          p = pda_section::info; break;
+        case ARTICLE_DATA::eTaskArticle:
+          p = pda_section::quests; break;
+        default: NODEFAULT;
+      };
+      auto it = std::find( updated_pda.begin(), updated_pda.end(), p );
+      if ( it == updated_pda.end() )
+        updated_pda.push_back( p );
+  };
 
-	for(ARTICLE_ID_VECTOR::const_iterator it = info_portion->ArticlesDisable().begin();
-									it != info_portion->ArticlesDisable().end(); it++)
-	{
-		FindArticleByIDPred pred(*it);
-		last_end = std::remove_if(B, last_end, pred);
-	}
-	article_vector.erase(last_end, E);
+  auto last_end = article_vector.end();
+  for ( const auto& id : ( revert ? info_portion->Articles() : info_portion->ArticlesDisable() ) ) {
+    last_end = std::remove_if(
+      article_vector.begin(), last_end, [ & ]( const auto& it ) {
+        if ( it.article_id == id ) {
+          update_pda_section( it );
+          return true;
+        }
+        return false;
+      }
+    );
+  }
+  article_vector.erase( last_end, article_vector.end() );
 
+  if ( !revert )
+    for ( const auto& id : info_portion->Articles() ) {
+      const auto it = std::find_if(
+        article_vector.begin(), article_vector.end(), [&id]( const auto& it ) {
+          return it.article_id == id;
+        }
+      );
+      if ( it != article_vector.end() ) continue;
 
-	for(ARTICLE_ID_VECTOR::const_iterator it = info_portion->Articles().begin();
-									it != info_portion->Articles().end(); it++)
-	{
-		FindArticleByIDPred pred(*it);
-		if( std::find_if(article_vector.begin(), article_vector.end(), pred) != article_vector.end() ) continue;
+      CEncyclopediaArticle article;
+      article.Load( id );
+      article_vector.push_back(
+        ARTICLE_DATA( id, Level().GetGameTime(), article.data()->articleType )
+      );
+      LPCSTR g, n;
+      int _atype = article.data()->articleType;
+      g = *( article.data()->group );
+      n = *( article.data()->name  );
+      callback( GameObject::eArticleInfo )( lua_game_object(), g, n, _atype );
 
-		CEncyclopediaArticle article;
+      update_pda_section( article_vector.back() );
+    }
 
-		article.Load(*it);
-
-		article_vector.push_back(ARTICLE_DATA(*it, Level().GetGameTime(), article.data()->articleType));
-		LPCSTR g,n;
-		int _atype = article.data()->articleType;
-		g = *(article.data()->group);
-		n = *(article.data()->name);
-		callback(GameObject::eArticleInfo)(lua_game_object(), g, n, _atype);
-
-		if( HUD().GetUI() ){
-			CUIGameSP* pGameSP = smart_cast<CUIGameSP*>(HUD().GetUI()->UIGame());
-			pda_section::part p = pda_section::encyclopedia;
-			switch (article.data()->articleType){
-				case ARTICLE_DATA::eEncyclopediaArticle:	p = pda_section::encyclopedia;	break;
-				case ARTICLE_DATA::eJournalArticle:			p = pda_section::journal;		break;
-				case ARTICLE_DATA::eInfoArticle:			p = pda_section::info;			break;
-				case ARTICLE_DATA::eTaskArticle:			p = pda_section::quests;		break;
-				default: NODEFAULT;
-			};
-			pGameSP->PdaMenu->PdaContentsChanged			(p);
-		}
-
-	}
-
+  if ( !updated_pda.empty() && HUD().GetUI() ) {
+    auto* pGameSP = smart_cast<CUIGameSP*>( HUD().GetUI()->UIGame() );
+    for ( const auto& p : updated_pda )
+      pGameSP->PdaMenu->PdaContentsChanged( p, !revert );
+  }
 }
 
 
@@ -145,6 +160,12 @@ bool CActor::OnReceiveInfo(shared_str info_id) const
 void CActor::OnDisableInfo(shared_str info_id) const
 {
 	CInventoryOwner::OnDisableInfo(info_id);
+
+#ifdef REMOVE_ARTICLES_ON_DISABLE_INFO
+	CInfoPortion info_portion;
+	info_portion.Load( info_id );
+	AddEncyclopediaArticle( &info_portion, true );
+#endif
 
 	if(!HUD().GetUI())
 		return;

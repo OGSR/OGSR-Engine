@@ -854,6 +854,7 @@ void CLevel::script_register(lua_State *L)
 	[
 	class_<CEnvDescriptor>( "CEnvDescriptor" )
           .def_readwrite( "fog_density", &CEnvDescriptor::fog_density)
+          .def_readwrite( "fog_distance", &CEnvDescriptor::fog_distance )
           .def_readwrite( "far_plane",   &CEnvDescriptor::far_plane)
           .def_readwrite( "sun_dir",     &CEnvDescriptor::sun_dir )
           .def( "load",	           ( void( CEnvDescriptor::* ) ( float, LPCSTR, CEnvironment* ) ) &CEnvDescriptor::load )
