@@ -92,8 +92,10 @@ function options_dialog:UpdateControls()
 	opt:SaveBackupValues("mm_opt_sound")
 
 	opt:SetCurrentValues("mm_opt_controls")
+	opt:SaveBackupValues("mm_opt_controls")
 
 	opt:SetCurrentValues("key_binding")
+	opt:SaveBackupValues("key_binding")
 end
 
 function options_dialog:InitCallBacks()
@@ -101,11 +103,9 @@ function options_dialog:InitCallBacks()
 	self:AddCallback("btn_advanced_graphic", ui_events.BUTTON_CLICKED, self.OnBtnAdvGraphic, self)
 	self:AddCallback("btn_accept", ui_events.BUTTON_CLICKED, self.OnBtnAccept, self)
 	self:AddCallback("btn_cancel", ui_events.BUTTON_CLICKED, self.OnBtnCancel, self)
-	self:AddCallback("btn_default_graphic", ui_events.BUTTON_CLICKED, self.OnBtnDefGraph, self)	
-	self:AddCallback("btn_default_sound", ui_events.BUTTON_CLICKED, self.OnBtnDefSound, self)	
 	self:AddCallback("combo_preset", ui_events.LIST_ITEM_SELECT, self.OnPresetChanged, self)	
 	self:AddCallback("btn_simply_graphic", ui_events.BUTTON_CLICKED, self.OnSimplyGraphic, self)	
-	self:AddCallback("btn_keyb_default", ui_events.BUTTON_CLICKED, self.OnBtnDefault, self)
+	self:AddCallback("btn_keyb_default", ui_events.BUTTON_CLICKED, self.Onbtn_keyb_default, self)
 	self:AddCallback("btn_advanced_graphic", ui_events.STATIC_FOCUS_RECEIVED, self.HintRefresh, self)
 	self:AddCallback("btn_accept",           ui_events.STATIC_FOCUS_RECEIVED, self.HintRefresh, self)
 	self:AddCallback("btn_cancel",           ui_events.STATIC_FOCUS_RECEIVED, self.HintRefresh, self)
@@ -123,7 +123,7 @@ function options_dialog:HintRefresh()
 	end
 end
 
-function options_dialog:OnBtnDefault()
+function options_dialog:Onbtn_keyb_default()
 	cmd("unbindall")
 
 	local opt = COptionsManager()
@@ -137,16 +137,6 @@ function options_dialog:OnPresetChanged()
 	opt:SetCurrentValues("mm_opt_video_adv")
 end
 
-function options_dialog:OnBtnDefGraph()
-	local opt = COptionsManager()
-	opt:SendMessage2Group("mm_opt_video", "set_default_value")
-end
-
-function options_dialog:OnBtnDefSound()
-	local opt = COptionsManager()
-	opt:SendMessage2Group("mm_opt_sound", "set_default_value")
-end
-
 function options_dialog:OnBtnAccept()
 	local opt = COptionsManager()
 	opt:SaveValues("mm_opt_video_preset")
@@ -156,7 +146,16 @@ function options_dialog:OnBtnAccept()
 	opt:SaveValues("mm_opt_gameplay")
 	opt:SaveValues("mm_opt_sound")
 	opt:SaveValues("mm_opt_controls")
+
 	opt:OptionsPostAccept()
+
+	opt:SaveBackupValues("mm_opt_video_preset")
+	opt:SaveBackupValues("mm_opt_video")
+	opt:SaveBackupValues("mm_opt_video_adv")
+	opt:SaveBackupValues("mm_opt_gameplay")
+	opt:SaveBackupValues("mm_opt_sound")
+	opt:SaveBackupValues("mm_opt_controls")
+	opt:SaveBackupValues("key_binding")
 
 	self:GetHolder():start_stop_menu(self, true)
 	self.owner:Show(true)
@@ -172,7 +171,19 @@ function options_dialog:OnBtnCancel()
 	opt:UndoGroup("mm_opt_video")
 	opt:UndoGroup("mm_opt_video_adv")
 	opt:UndoGroup("mm_opt_sound")
+	opt:UndoGroup("mm_opt_gameplay")
+	opt:UndoGroup("mm_opt_controls")
+	opt:UndoGroup("key_binding")
+
 	opt:OptionsPostAccept()
+
+	opt:SaveBackupValues("mm_opt_video_preset")
+	opt:SaveBackupValues("mm_opt_video")
+	opt:SaveBackupValues("mm_opt_video_adv")
+	opt:SaveBackupValues("mm_opt_gameplay")
+	opt:SaveBackupValues("mm_opt_sound")
+	opt:SaveBackupValues("mm_opt_controls")
+	opt:SaveBackupValues("key_binding")
 
 	self:GetHolder():start_stop_menu(self, true)
 	self.owner:Show(true)

@@ -129,6 +129,12 @@
 	<string id="ui_mm_resolution">
 		<text>Разрешение</text>
 	</string>
+	<string id="ui_mm_fps_lock">
+		<text>Ограничение FPS</text>
+	</string>
+	<string id="ui_mm_always_active">
+		<text>Не вставать на паузу при переключении на другие окна</text>
+	</string>
 	<string id="ui_mm_gamma">
 		<text>Гамма</text>
 	</string>
@@ -391,7 +397,44 @@
 	</string>
 	<string id="ui_mm_r2_dof">
 		<text>Динамическая глубина поля зрения</text>
-	</string>	
+	</string>
+
+	<string id="nofpslock">
+		<text>Неограничено</text>
+	</string>
+	<string id="fpslock60">
+		<text>60</text>
+	</string>
+	<string id="fpslock120">
+		<text>120</text>
+	</string>
+	<string id="fpslock144">
+		<text>144</text>
+	</string>
+	<string id="fpslock240">
+		<text>240</text>
+	</string>
+
+	<string id="ui_mm_r2_actor_shadow">
+		<text>Тень от главного героя</text>
+	</string>
+
+	<string id="ui_mm_r2_glows_use">
+		<text>Glow-еффект ламп</text>
+	</string>
+
+	<string id="ui_mm_r2_sun_limit">
+		<text>Расстояние действия солнца</text>
+	</string>
+
+	<string id="ui_mm_ambient">
+		<text>Включить музыкальный эмбиент (требуется перезаход на локацию)</text>
+	</string>
+
+	<string id="ui_mm_ammunition_on_belt">
+		<text>Включить использование патронов только с пояса</text>
+	</string>
+
 	<!-- Окно "Звук" -->
 	<string id="ui_mm_sound">
 		<text>Звук</text>
@@ -643,6 +686,16 @@
 	<string id="video_settings_name_55">
 		<text>Объёмный туман - r2_volumetric_fog</text>
 	</string>
+	<string id="video_settings_name_56">
+		<text>Тень от главного героя - r__actor_shadow</text>
+	</string>
+	<string id="video_settings_name_57">
+		<text>Glow-еффект ламп - r_glows_use</text>
+	</string>
+	<string id="video_settings_name_58">
+		<text>Расстояние действия солнца - r2_sun_limit</text>
+	</string>
+
 	<string id="video_settings_desc_1">
 		<text>Эта настройка регулирует степень инерции точки обзора игрока. Чем она выше, тем сильней будет раскачиваться точка обзора при ходьбе и беге, при ударах, а так же тем сильней будет заметен эффект увода прицела когда главный герой выдохся после длительного бега. ВНИМАНИЕ! Это настройка из разряда \"на любителя\", и если вы не знаете точно, что делаете - оставьте её на значении по-умолчанию.</text>
 	</string>
@@ -808,6 +861,11 @@
 	<string id="video_settings_desc_55">
 		<text>Настройка включает технологию объёмного тумана. Он применяется для имитации мутной воды, дымки в низинах и для тому подобных эффектов.</text>
 	</string>
-
+	<string id="video_settings_desc_57">
+		<text>НЕСОВМЕСТИМ С БЬЮЩИМИСЯ ЛАМПОЧКАМИ!</text>
+	</string>
+	<string id="video_settings_desc_58">
+		<text>Настраивает расстояние действия солнца. С помощью этой настройки можно выиграть немного FPS в солнечную погоду. Можно уменьшить, например, на половину. Картинка не особенно изменится, а FPS станет повыше.</text>
+	</string>
 
 </string_table>
