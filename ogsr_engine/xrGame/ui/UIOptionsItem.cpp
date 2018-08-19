@@ -92,15 +92,14 @@ void CUIOptionsItem::SaveOptTokenValue(const char* val){
 }
 
 void CUIOptionsItem::SaveValue(){
-	if (	m_entry == "vid_mode"		|| 
-			m_entry == "_preset"		|| 
-			m_entry == "rs_fullscreen" 	||	
-			//m_entry == "rs_fullscreen"	||
-			m_entry == "r__supersample"	|| 
-			m_entry == "rs_refresh_60hz"||
-			m_entry == "rs_no_v_sync"	||
-			m_entry == "texture_lod"	||
-			// KD: additional options
+	if (
+		m_entry == "vid_mode" || 
+		m_entry == "_preset" || 
+		m_entry == "rs_fullscreen" ||	
+		m_entry == "r__supersample" || 
+		m_entry == "rs_v_sync" ||
+		m_entry == "texture_lod" ||
+		// KD: additional options
 		m_entry == "r2_mblur" ||
 		m_entry == "r2_aa" ||
 		m_entry == "r2_dof_quality" ||
@@ -117,10 +116,9 @@ void CUIOptionsItem::SaveValue(){
 		m_entry == "r2_volumetric_lights" ||
 		m_entry == "r2_lights_shadow_fade" ||
 		m_entry == "r2_ao" ||
-		m_entry == "r2_ao_intensity")
-
-	m_optionsManager.DoVidRestart();
-
+		m_entry == "r2_ao_intensity"
+	) m_optionsManager.DoVidRestart();
+	
 	if (/*m_entry == "snd_freq" ||*/ m_entry == "snd_efx")
 		m_optionsManager.DoSndRestart();
 }

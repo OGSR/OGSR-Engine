@@ -95,10 +95,6 @@
 // "g_music_tracks on".
 #define G_MUSIC_TRACKS_OFF
 
-// Добавляет небольшую задержку между рендерингом кадров, чтобы зря не
-// насиловать видеокарту при больших FPS.
-//#define ECO_RENDER
-
 // Запрещает заряжать в дробовики патроны разного типа
 #define SHOTG_EXTRA_AMMO_FIX
 
@@ -207,7 +203,7 @@
 //#define CRASH_ON_INVALID_VERTEX_ID
 
 // Патроны используются только с пояса (by Karlan)
-//#define AMMO_FROM_BELT
+#define AMMO_FROM_BELT
 
 // Включает раскраску предметов в окне торговца.
 //#define COLORIZE_OTHER_TRADE

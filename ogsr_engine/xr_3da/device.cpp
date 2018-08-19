@@ -20,10 +20,10 @@
 
 ENGINE_API CRenderDevice Device;
 ENGINE_API BOOL g_bRendering = FALSE; 
+u32 g_dwFPSlimit = 60;
 
 BOOL		g_bLoaded = FALSE;
 ref_light	precache_light = 0;
-unsigned int			g_dwFPSlimit = 121;
 
 BOOL CRenderDevice::Begin	()
 {
@@ -173,21 +173,6 @@ int g_svDedicateServerUpdateReate = 100;
 
 ENGINE_API xr_list<LOADING_EVENT>			g_loading_events;
 
-#ifdef ECO_RENDER
-ENGINE_API u32 TargetRenderLoad ()
-{
-	u32 result = 100;
-	if (IsMainMenuActive())
-		result = 30;
-	if (Device.Paused())
-		result = 10;
-	if (!Device.b_is_Active)
-		result = 0;
-
-	return result;
-}
-#endif
-
 void CRenderDevice::Run			()
 {
 //	DUMP_PHASE;
@@ -215,18 +200,6 @@ void CRenderDevice::Run			()
 	mt_bMustExit				= FALSE;
 	std::thread second_thread(mt_Thread);
 
-	// Load FPS Lock
-	if (Core.ParamFlags.test(Core.nofpslock))
-		g_dwFPSlimit = 0;
-	else if (Core.ParamFlags.test(Core.fpslock60))
-		g_dwFPSlimit = 61;
-	else if (Core.ParamFlags.test(Core.fpslock120))
-		g_dwFPSlimit = 121;
-	else if (Core.ParamFlags.test(Core.fpslock144))
-		g_dwFPSlimit = 145;
-	else if (Core.ParamFlags.test(Core.fpslock240))
-		g_dwFPSlimit = 241;
-
 	// Message cycle
     PeekMessage					( &msg, NULL, 0U, 0U, PM_NOREMOVE );
 
@@ -246,21 +219,19 @@ void CRenderDevice::Run			()
         {
 			if (b_is_Ready) {
 
-#ifndef ECO_RENDER
 				// FPS Lock
-				static constexpr unsigned int menuFPSlimit  = 61;
-				static constexpr unsigned int pauseFPSlimit = 31;
-				unsigned int curFPSLimit = IsMainMenuActive() ? menuFPSlimit : Device.Paused() ? pauseFPSlimit : g_dwFPSlimit;
+				static constexpr u32 menuFPSlimit  = 60;
+				static constexpr u32 pauseFPSlimit = 30;
+				u32 curFPSLimit = IsMainMenuActive() ? menuFPSlimit : Device.Paused() ? pauseFPSlimit : g_dwFPSlimit;
 
 				if ( curFPSLimit > 0 )
 				{
 					static DWORD dwLastFrameTime = 0;
 					DWORD dwCurrentTime = timeGetTime();
-					if ( dwCurrentTime - dwLastFrameTime < 1000 / curFPSLimit )
+					if ( dwCurrentTime - dwLastFrameTime < 1000 / ( curFPSLimit + 1 ) )
 						continue;
 					dwLastFrameTime = dwCurrentTime;
 				}
-#endif // !ECO_RENDER
 
 #ifdef DEDICATED_SERVER
 				u32 FrameStartTime = TimerGlobal.GetElapsed_ms();
@@ -305,22 +276,7 @@ void CRenderDevice::Run			()
 				Statistic->RenderTOTAL_Real.FrameStart	();
 				Statistic->RenderTOTAL_Real.Begin		();
 
-#ifdef ECO_RENDER
-				u32 optimal = 0;
-				if (TargetRenderLoad() < 50)	optimal = 30;
-				while (optimal -- > 0)
-				{					
-					u32 time_diff = frame_timer.GetElapsed_ms();
-					if (time_diff < optimal)   // если более 100 кадров в секунду, как в меню например
-					{
-						SleepEx(1, (optimal - time_diff) > 10);	   // попытка обойти разно-платформные особенности	 
-						//Statistic->RenderTOTAL.cycles++;      // idle cycles count
-					}
-				}				
-#else
 				Sleep(0);
-#endif // ECO_RENDER			
-				frame_timer.Start();	
 
 				if (b_is_Active)							{
 					if (Begin())				{
@@ -501,7 +457,7 @@ void CRenderDevice::OnWM_Activate(WPARAM wParam, LPARAM lParam)
 	const u16 fActive = LOWORD(wParam);
 	const BOOL fMinimized = (BOOL)HIWORD(wParam);
 	const BOOL bActive = ((fActive != WA_INACTIVE) && (!fMinimized)) ? TRUE : FALSE;
-	const BOOL isGameActive = (strstr(Core.Params, "-always_active") != nullptr || bActive) ? TRUE : FALSE;
+	const BOOL isGameActive = (psDeviceFlags.is(rsAlwaysActive) || bActive) ? TRUE : FALSE;
 
 	if (bActive)
 		ShowCursor(FALSE);
