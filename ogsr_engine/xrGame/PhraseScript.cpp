@@ -101,7 +101,7 @@ void  CPhraseScript::TransferInfo	(const CInventoryOwner* pOwner) const
 }
 
 
-bool CPhraseScript::Precondition( const CGameObject* pSpeakerGO, LPCSTR /*dialog_id*/, LPCSTR /*phrase_id*/ ) const {
+bool CPhraseScript::Precondition( const CGameObject* pSpeakerGO, LPCSTR dialog_id, LPCSTR phrase_id ) const {
   bool predicate_result = true;
 
   if ( !CheckInfo( smart_cast<const CInventoryOwner*>( pSpeakerGO ) ) ) {
