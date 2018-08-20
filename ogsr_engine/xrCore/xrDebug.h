@@ -20,6 +20,7 @@ public:
 	on_dialog*		get_on_dialog() const { return m_on_dialog;	}
 	void			set_on_dialog		(on_dialog* on_dialog)		{ m_on_dialog = on_dialog;	}
 
+	const char* DXerror2string(const HRESULT code) const;
 	const char* error2string(const DWORD code) const;
 
 	void			fail				(const char *e1, const char *file, int line, const char *function);
@@ -27,8 +28,8 @@ public:
 	void			fail				(const char *e1, const char *e2, const char *file, int line, const char *function);
 	void			fail				(const char *e1, const char *e2, const char *e3, const char *file, int line, const char *function);
 	void			fail				(const char *e1, const char *e2, const char *e3, const char *e4, const char *file, int line, const char *function);
-	void			error				(const DWORD code, const char* e1, const char *file, int line, const char *function);
-	void			error				(const DWORD code, const char* e1, const char* e2, const char *file, int line, const char *function);
+	void			error				(const HRESULT code, const char* e1, const char *file, int line, const char *function);
+	void			error				(const HRESULT code, const char* e1, const char* e2, const char *file, int line, const char *function);
 	void _cdecl		fatal				(const char *file, int line, const char *function, const char* F,...);
 	void			backend				(const char* reason, const char* expression, const char *argument0, const char *argument1, const char* file, int line, const char *function);
 	__declspec(noreturn) static void	do_exit(const std::string &message);
