@@ -17,7 +17,7 @@ CPhraseScript::~CPhraseScript	()
 {
 }
 
-//�������� �� XML �����
+//загрузка из XML файла
 void CPhraseScript::Load		(CUIXml* uiXml, XML_NODE* phrase_node)
 {
 //	m_sScriptTextFunc = uiXml.Read(phrase_node, "script_text", 0, NULL);
@@ -101,111 +101,125 @@ void  CPhraseScript::TransferInfo	(const CInventoryOwner* pOwner) const
 }
 
 
+bool CPhraseScript::Precondition( const CGameObject* pSpeakerGO, LPCSTR dialog_id, LPCSTR phrase_id ) const {
+  bool predicate_result = true;
 
-bool CPhraseScript::Precondition(const CGameObject* pSpeakerGO, LPCSTR dialog_id, LPCSTR phrase_id) const 
-{
-	bool predicate_result = true;
-
-	if(!CheckInfo(smart_cast<const CInventoryOwner*>(pSpeakerGO)))
-	{
-		#ifdef DEBUG
-			if (psAI_Flags.test(aiDialogs))
-				Msg("dialog [%s] phrase[%s] rejected by CheckInfo",dialog_id,phrase_id);
-		#endif
-		return false;
-	}
-
-	for(u32 i = 0; i<Preconditions().size(); ++i)
-	{
-		luabind::functor<bool>	lua_function;
-		THROW(*Preconditions()[i]);
-		bool functor_exists = ai().script_engine().functor(*Preconditions()[i], lua_function);
-#ifdef CRASH_ON_PRECONDITION_NOT_FOUND
-		R_ASSERT3(functor_exists, "Cannot find precondition: ", *Preconditions()[i]);
-		predicate_result = lua_function(pSpeakerGO->lua_game_object());
-#else
-		if (functor_exists)
-			predicate_result = lua_function(pSpeakerGO->lua_game_object());
-		else
-			Msg("!!Cannot find precondition [%s]", *Preconditions()[i]);
+  if ( !CheckInfo( smart_cast<const CInventoryOwner*>( pSpeakerGO ) ) ) {
+#ifdef DEBUG
+    if ( psAI_Flags.test( aiDialogs ) )
+      Msg( "dialog [%s] phrase[%s] rejected by CheckInfo", dialog_id, phrase_id );
 #endif
-		if(!predicate_result){
-		#ifdef DEBUG
-			if (psAI_Flags.test(aiDialogs))
-				Msg("dialog [%s] phrase[%s] rejected by script predicate", dialog_id, phrase_id);
-		#endif
-			break;
-		} 
-	}
-	return predicate_result;
+    return false;
+  }
+
+  for ( const auto& Cond : Preconditions() ) {
+    std::string ConditionString( Cond.c_str() );
+    if ( luabind::functor<bool> lua_function; ai().script_engine().functor( ConditionString.c_str(), lua_function ) ) // Обычный функтор
+      predicate_result = lua_function( pSpeakerGO->lua_game_object() );
+    else { // Функтор с аргументами
+      luabind::functor<luabind::object> loadstring_functor;
+      ASSERT_FMT( ai().script_engine().functor( "loadstring", loadstring_functor ), "Something strange..." );
+      ConditionString         = "return " + ConditionString;
+      luabind::object ret_obj = loadstring_functor( ConditionString.c_str() ); // Создаём функцию из строки через loadstring
+      auto ret_func           = luabind::object_cast<luabind::functor<bool>>( ret_obj ); // Первое возвращённое loadstring значение должно быть функцией
+      ASSERT_FMT( ret_func, "Loadstring returns nil for code: %s", ConditionString.c_str() ); // Если это не функция, значит loadstring вернул nil и что-то пошло не так
+      // Вызываем созданную функцию и передаём ей дефолтные аргументы. Они прилетят после аргументов, прописанных явно, если например сделать так:
+      // <precondition>my_script.test_func(123, true, nil, ...)</precondition>
+      // А если не указать '...' - дефолтные аргументы не будут переданы в функцию.
+      predicate_result = ret_func( pSpeakerGO->lua_game_object() );
+    }
+
+    if ( !predicate_result ) {
+#ifdef DEBUG
+      if ( psAI_Flags.test( aiDialogs ) )
+        Msg( "dialog [%s] phrase[%s] rejected by script predicate", dialog_id, phrase_id );
+#endif
+      break;
+    }
+  }
+  return predicate_result;
 }
 
-void CPhraseScript::Action(const CGameObject* pSpeakerGO, LPCSTR dialog_id, LPCSTR phrase_id) const 
-{
+void CPhraseScript::Action( const CGameObject* pSpeakerGO, LPCSTR dialog_id, LPCSTR /*phrase_id*/ ) const {
+  for ( const auto& Act : Actions() ) {
+    std::string ActionString( Act.c_str() );
+    if ( luabind::functor<void> lua_function; ai().script_engine().functor( ActionString.c_str(), lua_function ) ) // Обычный функтор
+      lua_function( pSpeakerGO->lua_game_object(), dialog_id );
+    else { // Функтор с аргументами
+      luabind::functor<luabind::object> loadstring_functor;
+      ASSERT_FMT( ai().script_engine().functor( "loadstring", loadstring_functor ), "Something strange..." );
+      ActionString            = "return " + ActionString;
+      luabind::object ret_obj = loadstring_functor( ActionString.c_str() ); // Создаём функцию из строки через loadstring
+      auto ret_func           = luabind::object_cast<luabind::functor<void>>( ret_obj ); // Первое возвращённое loadstring значение должно быть функцией
+      ASSERT_FMT( ret_func, "Loadstring returns nil for code: %s", ActionString.c_str() ); // Если это не функция, значит loadstring вернул nil и что-то пошло не так
+      // Вызываем созданную функцию и передаём ей дефолтные аргументы. Они прилетят после аргументов, прописанных явно, если например сделать так:
+      // <action>my_script.test_func(123, true, nil, ...)</action>
+      // А если не указать '...' - дефолтные аргументы не будут переданы в функцию.
+      ret_func( pSpeakerGO->lua_game_object(), dialog_id );
+    }
+  }
 
-	for(u32 i = 0; i<Actions().size(); ++i)
-	{
-		luabind::functor<void>	lua_function;
-		THROW(*Actions()[i]);
-		bool functor_exists = ai().script_engine().functor(*Actions()[i], lua_function);
-		if (functor_exists)
-			lua_function(pSpeakerGO->lua_game_object(), dialog_id);
-		else
-			Msg("!!Cannot find phrase dialog script function [%s]", *Actions()[i]);
-	}
-	TransferInfo(smart_cast<const CInventoryOwner*>(pSpeakerGO));
+  TransferInfo( smart_cast<const CInventoryOwner*>( pSpeakerGO ) );
 }
 
-bool CPhraseScript::Precondition	(	const CGameObject* pSpeakerGO1, 
-										const CGameObject* pSpeakerGO2, 
-										LPCSTR dialog_id, 
-										LPCSTR phrase_id,
-										LPCSTR next_phrase_id) const 
-{
-	bool predicate_result = true;
 
-	if(!CheckInfo(smart_cast<const CInventoryOwner*>(pSpeakerGO1))){
-		#ifdef DEBUG
-		if (psAI_Flags.test(aiDialogs))
-			Msg("dialog [%s] phrase[%s] rejected by CheckInfo",dialog_id,phrase_id);
-		#endif
-		return false;
-	}
-	for(u32 i = 0; i<Preconditions().size(); ++i)
-	{
-		luabind::functor<bool>	lua_function;
-		THROW(*Preconditions()[i]);
-		bool functor_exists = ai().script_engine().functor(*Preconditions()[i], lua_function);
-		if (functor_exists)
-			predicate_result = lua_function(pSpeakerGO1->lua_game_object(), pSpeakerGO2->lua_game_object(), dialog_id, phrase_id, next_phrase_id);
-		else
-			Msg("!!Cannot find phrase precondition [%s]", *Preconditions()[i]);
-		if(!predicate_result)
-		{
-		#ifdef DEBUG
-			if (psAI_Flags.test(aiDialogs))
-				Msg("dialog [%s] phrase[%s] rejected by script predicate",dialog_id,phrase_id);
-		#endif
-			break;
-		}
-	}
-	return predicate_result;
+bool CPhraseScript::Precondition( const CGameObject* pSpeakerGO1, const CGameObject* pSpeakerGO2, LPCSTR dialog_id, LPCSTR phrase_id, LPCSTR next_phrase_id ) const {
+  bool predicate_result = true;
+
+  if ( !CheckInfo( smart_cast<const CInventoryOwner*>( pSpeakerGO1 ) ) ) {
+#ifdef DEBUG
+    if ( psAI_Flags.test( aiDialogs ) )
+      Msg( "dialog [%s] phrase[%s] rejected by CheckInfo", dialog_id, phrase_id );
+#endif
+    return false;
+  }
+
+  for ( const auto& Cond : Preconditions() ) {
+    std::string ConditionString( Cond.c_str() );
+    if ( luabind::functor<bool> lua_function; ai().script_engine().functor( ConditionString.c_str(), lua_function ) ) // Обычный функтор
+      predicate_result = lua_function( pSpeakerGO1->lua_game_object(), pSpeakerGO2->lua_game_object(), dialog_id, phrase_id, next_phrase_id );
+    else { // Функтор с аргументами
+      luabind::functor<luabind::object> loadstring_functor;
+      ASSERT_FMT( ai().script_engine().functor( "loadstring", loadstring_functor ), "Something strange..." );
+      ConditionString         = "return " + ConditionString;
+      luabind::object ret_obj = loadstring_functor( ConditionString.c_str() ); // Создаём функцию из строки через loadstring
+      auto ret_func           = luabind::object_cast<luabind::functor<bool>>( ret_obj ); // Первое возвращённое loadstring значение должно быть функцией
+      ASSERT_FMT( ret_func, "Loadstring returns nil for code: %s", ConditionString.c_str() ); // Если это не функция, значит loadstring вернул nil и что-то пошло не так
+      // Вызываем созданную функцию и передаём ей дефолтные аргументы. Они прилетят после аргументов, прописанных явно, если например сделать так:
+      // <precondition>my_script.test_func(123, true, nil, ...)</precondition>
+      // А если не указать '...' - дефолтные аргументы не будут переданы в функцию.
+      predicate_result = ret_func( pSpeakerGO1->lua_game_object(), pSpeakerGO2->lua_game_object(), dialog_id, phrase_id, next_phrase_id );
+    }
+
+    if ( !predicate_result ) {
+#ifdef DEBUG
+      if ( psAI_Flags.test( aiDialogs ) )
+        Msg( "dialog [%s] phrase[%s] rejected by script predicate", dialog_id, phrase_id );
+#endif
+      break;
+    }
+  }
+  return predicate_result;
 }
 
-void CPhraseScript::Action(const CGameObject* pSpeakerGO1, const CGameObject* pSpeakerGO2, LPCSTR dialog_id, LPCSTR phrase_id) const 
-{
-	TransferInfo(smart_cast<const CInventoryOwner*>(pSpeakerGO1));
+void CPhraseScript::Action( const CGameObject* pSpeakerGO1, const CGameObject* pSpeakerGO2, LPCSTR dialog_id, LPCSTR phrase_id ) const {
+  TransferInfo( smart_cast<const CInventoryOwner*>( pSpeakerGO1 ) );
 
-	for(u32 i = 0; i<Actions().size(); ++i)
-	{
-		luabind::functor<void>	lua_function;
-		THROW(*Actions()[i]);
-		bool functor_exists = ai().script_engine().functor(*Actions()[i], lua_function);
-		if (functor_exists)
-			try {
-				lua_function(pSpeakerGO1->lua_game_object(), pSpeakerGO2->lua_game_object(), dialog_id, phrase_id);
-			} catch (...) {}
-		else
-			Msg("!!Cannot find phrase dialog script function [%s]", *Actions()[i]);
-	}
+  for ( const auto& Act : Actions() ) {
+    std::string ActionString( Act.c_str() );
+    if ( luabind::functor<void> lua_function; ai().script_engine().functor( ActionString.c_str(), lua_function ) ) // Обычный функтор
+      lua_function( pSpeakerGO1->lua_game_object(), pSpeakerGO2->lua_game_object(), dialog_id, phrase_id );
+    else { // Функтор с аргументами
+      luabind::functor<luabind::object> loadstring_functor;
+      ASSERT_FMT( ai().script_engine().functor( "loadstring", loadstring_functor ), "Something strange..." );
+      ActionString            = "return " + ActionString;
+      luabind::object ret_obj = loadstring_functor( ActionString.c_str() ); // Создаём функцию из строки через loadstring
+      auto ret_func           = luabind::object_cast<luabind::functor<void>>( ret_obj ); // Первое возвращённое loadstring значение должно быть функцией
+      ASSERT_FMT( ret_func, "Loadstring returns nil for code: %s", ActionString.c_str() ); // Если это не функция, значит loadstring вернул nil и что-то пошло не так
+      // Вызываем созданную функцию и передаём ей дефолтные аргументы. Они прилетят после аргументов, прописанных явно, если например сделать так:
+      // <action>my_script.test_func(123, true, nil, ...)</action>
+      // А если не указать '...' - дефолтные аргументы не будут переданы в функцию.
+      ret_func( pSpeakerGO1->lua_game_object(), pSpeakerGO2->lua_game_object(), dialog_id, phrase_id );
+    }
+  }
 }

@@ -5,6 +5,10 @@
 #include <new.h> // for _set_new_mode
 #include <signal.h> // for signals
 
+#include <dxerr.h>
+#pragma comment( lib, "dxerr.lib" )
+int( WINAPIV* __vsnprintf )( char*, size_t, const char*, va_list ) = _vsnprintf;
+
 XRCORE_API xrDebug Debug;
 XRCORE_API HWND gGameWindow = nullptr;
 
@@ -186,20 +190,26 @@ void xrDebug::backend(const char *expression, const char *description, const cha
 		DEBUG_INVOKE;
 }
 
+const char* xrDebug::DXerror2string( const HRESULT code ) const {
+  static string1024 desc_storage;
+  std::snprintf( desc_storage, sizeof( desc_storage ), "Error Code: [%d], Error Name: [%s], Error Text: [%s]", code, DXGetErrorString( code ), DXGetErrorDescription( code ) );
+  return desc_storage;
+}
+
 const char* xrDebug::error2string(const DWORD code) const {
 	static string1024 desc_storage;
 	FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM, 0, code, 0, desc_storage, sizeof(desc_storage) - 1, 0);
 	return desc_storage;
 }
 
-void xrDebug::error(const DWORD hr, const char* expr, const char *file, int line, const char *function)
+void xrDebug::error(const HRESULT hr, const char* expr, const char *file, int line, const char *function)
 {
-	backend(error2string(hr), expr, 0, 0, file, line, function);
+	backend(DXerror2string(hr), expr, 0, 0, file, line, function);
 }
 
-void xrDebug::error(const DWORD hr, const char* expr, const char* e2, const char *file, int line, const char *function)
+void xrDebug::error(const HRESULT hr, const char* expr, const char* e2, const char *file, int line, const char *function)
 {
-	backend(error2string(hr), expr, e2, 0, file, line, function);
+	backend(DXerror2string(hr), expr, e2, 0, file, line, function);
 }
 
 void xrDebug::fail(const char *e1, const char *file, int line, const char *function)
