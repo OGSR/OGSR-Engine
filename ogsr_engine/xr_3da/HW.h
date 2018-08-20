@@ -42,9 +42,9 @@ public:
 
 	void					selectResolution		(u32 &dwWidth, u32 &dwHeight, BOOL bWindowed);
 	D3DFORMAT				selectDepthStencil		(D3DFORMAT);
-	u32						selectPresentInterval	();
+	UINT					selectPresentInterval	();
 	u32						selectGPU				();
-	u32						selectRefresh			(u32 dwWidth, u32 dwHeight, D3DFORMAT fmt);
+	UINT					selectRefresh			(u32 dwWidth, u32 dwHeight, D3DFORMAT fmt);
 	void					updateWindowProps		(HWND hw);
 	BOOL					support					(D3DFORMAT fmt, DWORD type, DWORD usage);
 

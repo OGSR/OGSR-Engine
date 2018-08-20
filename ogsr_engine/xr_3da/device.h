@@ -1,5 +1,3 @@
-#ifndef xr_device
-#define xr_device
 #pragma once
 
 // Note:
@@ -16,6 +14,8 @@ class	ENGINE_API	CGammaControl;
 #include "xr_effgamma.h"
 #include "shader.h"
 #include "R_Backend.h"
+
+extern u32 g_dwFPSlimit;
 
 #define VIEWPORT_NEAR 0.05f //0.1f
 
@@ -54,7 +54,6 @@ private:
 	CTimer_paused							Timer;
 	CTimer_paused							TimerGlobal;
 	CTimer									TimerMM;
-	CTimer									frame_timer;   // TODO: проверить, не дублируется-ли схожий таймер
 
 	void									_Create		(LPCSTR shName);
 	void									_Destroy	(BOOL	bKeepTextures);
@@ -202,8 +201,6 @@ public:
 		if (I != seqParallel.end())
 			seqParallel.erase	(I);
 	}
-
-	IC		u32				frame_elapsed		()			{ return frame_timer.GetElapsed_ms(); }
 };
 
 extern		ENGINE_API		CRenderDevice		Device;
@@ -214,4 +211,3 @@ extern	ENGINE_API xr_list<LOADING_EVENT>		g_loading_events;
 
 #include	"R_Backend_Runtime.h"
 
-#endif

@@ -62,6 +62,11 @@ void CUIOptionsManager::SeveBackupValues(const char* group)
 	for (u32 i = 0; i < (*it).second.size(); i++){
 		(*it).second[i]->SeveBackUpValue();
 	}
+
+	if ( strstr( group, "mm_opt_video" ) )
+		m_b_vid_restart = false;
+	else if ( strstr( group, "mm_opt_sound" ) )
+		m_b_snd_restart = false;
 }
 
 void CUIOptionsManager::SetCurrentValues(const char* group){

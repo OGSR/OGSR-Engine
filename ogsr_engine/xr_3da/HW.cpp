@@ -34,23 +34,16 @@ void CHW::Reset		(HWND hwnd)
 	_RELEASE			(pBaseZB);
 	_RELEASE			(pBaseRT);
 
-#ifndef _EDITOR
-#ifndef DEDICATED_SERVER
 	BOOL	bWindowed		= !psDeviceFlags.is	(rsFullscreen);
-#else
-	BOOL	bWindowed		= TRUE;
-#endif
 
 	selectResolution		(DevPP.BackBufferWidth, DevPP.BackBufferHeight, bWindowed);
 	// Windoze
 	DevPP.SwapEffect			= bWindowed?D3DSWAPEFFECT_COPY:D3DSWAPEFFECT_DISCARD;
 	DevPP.Windowed				= bWindowed;
-	DevPP.PresentationInterval = selectPresentInterval();//D3DPRESENT_INTERVAL_IMMEDIATE;
-	if( !bWindowed )		DevPP.FullScreen_RefreshRateInHz	= selectRefresh	(DevPP.BackBufferWidth,DevPP.BackBufferHeight,Caps.fTarget);
-	else					DevPP.FullScreen_RefreshRateInHz	= D3DPRESENT_RATE_DEFAULT;
-#endif
+	DevPP.PresentationInterval = selectPresentInterval();
+	DevPP.FullScreen_RefreshRateInHz = bWindowed ? D3DPRESENT_RATE_DEFAULT : selectRefresh( DevPP.BackBufferWidth, DevPP.BackBufferHeight, Caps.fTarget );
 
-	while	(TRUE)	{
+	while(true)	{
 		HRESULT _hr							= HW.pDevice->Reset	(&DevPP);
 		if (SUCCEEDED(_hr))					break;
 		Msg		("! ERROR: [%dx%d]: %s",DevPP.BackBufferWidth,DevPP.BackBufferHeight,Debug.error2string(_hr));
@@ -299,9 +292,8 @@ void		CHW::CreateDevice		(HWND m_hWnd)
 	P.Flags					= 0;	//. D3DPRESENTFLAG_DISCARD_DEPTHSTENCIL;
 
 	// Refresh rate
-	P.PresentationInterval	= selectPresentInterval();//D3DPRESENT_INTERVAL_IMMEDIATE;
-    if( !bWindowed )		P.FullScreen_RefreshRateInHz	= selectRefresh	(P.BackBufferWidth, P.BackBufferHeight,fTarget);
-    else					P.FullScreen_RefreshRateInHz	= D3DPRESENT_RATE_DEFAULT;
+	P.PresentationInterval = selectPresentInterval();
+	P.FullScreen_RefreshRateInHz = bWindowed ? D3DPRESENT_RATE_DEFAULT : selectRefresh( P.BackBufferWidth, P.BackBufferHeight, fTarget );
 
     // Create the device
 	u32 GPU		= selectGPU();	
@@ -361,19 +353,12 @@ void		CHW::CreateDevice		(HWND m_hWnd)
 #endif
 }
 
-u32	CHW::selectPresentInterval	()
+UINT CHW::selectPresentInterval()
 {
-	D3DCAPS9	caps;
-	pD3D->GetDeviceCaps(DevAdapter,DevT,&caps);
+  if ( psDeviceFlags.is( rsVSync ) )
+    return D3DPRESENT_INTERVAL_ONE;
 
-	if (!psDeviceFlags.test(rsVSync)) 
-	{
-		if (caps.PresentationIntervals & D3DPRESENT_INTERVAL_IMMEDIATE)
-			return D3DPRESENT_INTERVAL_IMMEDIATE;
-		if (caps.PresentationIntervals & D3DPRESENT_INTERVAL_ONE)
-			return D3DPRESENT_INTERVAL_ONE;
-	}
-	return D3DPRESENT_INTERVAL_DEFAULT;
+  return D3DPRESENT_INTERVAL_IMMEDIATE;
 }
 
 u32 CHW::selectGPU ()
@@ -394,12 +379,10 @@ u32 CHW::selectGPU ()
 	} else return D3DCREATE_SOFTWARE_VERTEXPROCESSING;
 }
 
-u32 CHW::selectRefresh(u32 dwWidth, u32 dwHeight, D3DFORMAT fmt)
+UINT CHW::selectRefresh(u32 /*dwWidth*/, u32 /*dwHeight*/, D3DFORMAT /*fmt*/)
 {
-	if (psDeviceFlags.is(rsRefresh60hz))	return D3DPRESENT_RATE_DEFAULT;
-	else
-	{
-		u32 selected	= D3DPRESENT_RATE_DEFAULT;
+		/*u32 selected = D3DPRESENT_RATE_DEFAULT;
+		 //KRodin: выключаю, т.к. этот код предположительно приводит к тормозам в полном разрешении.
 		u32 count		= pD3D->GetAdapterModeCount(DevAdapter,fmt);
 		for (u32 I=0; I<count; I++)
 		{
@@ -410,8 +393,9 @@ u32 CHW::selectRefresh(u32 dwWidth, u32 dwHeight, D3DFORMAT fmt)
 				if (Mode.RefreshRate>selected) selected = Mode.RefreshRate;
 			}
 		}
-		return selected;
-	}
+		
+		return selected;*/
+	return D3DPRESENT_RATE_DEFAULT;
 }
 
 BOOL	CHW::support	(D3DFORMAT fmt, DWORD type, DWORD usage)

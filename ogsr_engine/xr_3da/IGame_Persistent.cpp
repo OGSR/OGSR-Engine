@@ -118,7 +118,8 @@ void IGame_Persistent::Disconnect	()
 
 void IGame_Persistent::OnGameStart()
 {
-#ifndef _EDITOR
+//KRodin: префетчинг выключен ввиду своей бесполезности и прожорливости.
+/*
 	LoadTitle								("st_prefetching_objects");
 	if (strstr(Core.Params,"-noprefetch"))	return;
 
@@ -137,7 +138,7 @@ void IGame_Persistent::OnGameStart()
 
 	Msg					("* [prefetch] time:    %d ms",	iFloor(p_time));
 	Msg					("* [prefetch] memory:  %dKb",	p_mem/1024);
-#endif
+*/
 }
 
 void IGame_Persistent::OnGameEnd	()

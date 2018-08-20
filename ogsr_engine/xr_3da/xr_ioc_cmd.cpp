@@ -48,6 +48,16 @@ xr_token							vid_bpp_token							[ ]={
 	{ "32",							32											},
 	{ 0,							0											}
 };
+
+xr_token FpsLockToken[] = {
+  { "nofpslock",  0 },
+  { "fpslock60",  60 },
+  { "fpslock120", 120 },
+  { "fpslock144", 144 },
+  { "fpslock240", 240 },
+  { 0, 0 }
+};
+
 //-----------------------------------------------------------------------
 class CCC_Quit : public IConsole_Command
 {
@@ -496,10 +506,14 @@ void CCC_Register()
 	CMD4(CCC_Integer,	"r__supersample",		&ps_r__Supersample,			1,		4		);
 
 
-	CMD3(CCC_Mask,		"rs_v_sync",			&psDeviceFlags,		rsVSync				);
+	CMD3( CCC_Mask, "rs_fullscreen", &psDeviceFlags, rsFullscreen );
+	CMD3( CCC_Mask, "rs_v_sync", &psDeviceFlags, rsVSync );
+	CMD3( CCC_Mask, "rs_always_active", &psDeviceFlags, rsAlwaysActive );
+	CMD3( CCC_Token, "r_fps_lock", &g_dwFPSlimit, FpsLockToken );
+
+
 //	CMD3(CCC_Mask,		"rs_disable_objects_as_crows",&psDeviceFlags,	rsDisableObjectsAsCrows	);
-	CMD3(CCC_Mask,		"rs_fullscreen",		&psDeviceFlags,		rsFullscreen			);
-	CMD3(CCC_Mask,		"rs_refresh_60hz",		&psDeviceFlags,		rsRefresh60hz			);
+
 	CMD3(CCC_Mask,		"rs_stats",				&psDeviceFlags,		rsStatistic				);
 	CMD4(CCC_Float,		"rs_vis_distance",		&psVisDistance,		0.4f,	1.5f			);
 
