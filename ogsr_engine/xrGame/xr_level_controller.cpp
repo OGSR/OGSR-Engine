@@ -105,9 +105,12 @@ std::vector<_action> actions = {
 	{ "quick_save",			kQUICK_SAVE				,_sp },
 	{ "quick_load",			kQUICK_LOAD				,_sp },
 																
-	{ NULL, 				kLASTACTION				,_both}		
+	/*{ NULL, 				kLASTACTION				,_both}		*/
 };															
-std::vector<_keyboard> keyboards = {
+
+std::vector<_binding> g_key_bindings;
+
+_keyboard keyboards[] = {
 	{ "kESCAPE",	 	DIK_ESCAPE		},	{ "k1",				DIK_1			},
 	{ "k2",				DIK_2			},	{ "k3",				DIK_3			},
 	{ "k4",				DIK_4			},	{ "k5",				DIK_5			},
@@ -174,8 +177,6 @@ std::vector<_keyboard> keyboards = {
 	{ "mouse6",			MOUSE_6			},	{ "mouse7",			MOUSE_7			},
 	{ "mouse8",			MOUSE_8			},	{ NULL, 			0				}
 };
-std::vector<_binding> g_key_bindings;
-
 _key_group	g_current_keygroup = _sp;
 
 void initialize_bindings()
@@ -201,8 +202,38 @@ void initialize_bindings()
 	}
 #endif
 
-	for(int idx=0; idx<actions.size(); ++idx)
-		g_key_bindings[idx].m_action = &actions[idx];
+	Msg("initialize_bindings");
+
+	_action n1;
+	n1.key_group = _both;
+	n1.action_name = "new_action1";
+	n1.id = (EGameActions)actions.size();
+	actions.push_back(n1);
+
+	_action n2;
+	n2.key_group = _both;
+	n2.action_name = "new_action2";
+	n2.id = (EGameActions)actions.size();
+	actions.push_back(n2);
+
+	_action n3;
+	n3.key_group = _both;
+	n3.action_name = "new_action3";
+	n3.id = (EGameActions)actions.size();
+	actions.push_back(n3);
+
+	_action nL;
+	nL.key_group = _both;
+	nL.action_name = NULL;
+	nL.id = kLASTACTION;
+	actions.push_back(nL);
+
+	for (int idx = 0; idx < actions.size(); ++idx)
+	{
+		_binding b;
+		b.m_action = &actions[idx];
+		g_key_bindings.push_back(b);
+	}
 	
 }
 
