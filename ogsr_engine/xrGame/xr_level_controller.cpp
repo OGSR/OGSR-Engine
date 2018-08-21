@@ -6,10 +6,7 @@
 #include "xr_level_controller.h"
 #include "string_table.h"
 
-_binding	g_key_bindings		[bindings_count]; 
-_key_group	g_current_keygroup	= _sp;
-
-_action  actions[]		= {
+std::vector<_action> actions = {
 	{ "left",				kLEFT					,_both},	
 	{ "right",				kRIGHT					,_both},	
 	{ "up",					kUP						,_both},	
@@ -110,8 +107,7 @@ _action  actions[]		= {
 																
 	{ NULL, 				kLASTACTION				,_both}		
 };															
-
-_keyboard keyboards[] = {
+std::vector<_keyboard> keyboards = {
 	{ "kESCAPE",	 	DIK_ESCAPE		},	{ "k1",				DIK_1			},
 	{ "k2",				DIK_2			},	{ "k3",				DIK_3			},
 	{ "k4",				DIK_4			},	{ "k5",				DIK_5			},
@@ -178,6 +174,9 @@ _keyboard keyboards[] = {
 	{ "mouse6",			MOUSE_6			},	{ "mouse7",			MOUSE_7			},
 	{ "mouse8",			MOUSE_8			},	{ NULL, 			0				}
 };
+std::vector<_binding> g_key_bindings;
+
+_key_group	g_current_keygroup = _sp;
 
 void initialize_bindings()
 {
@@ -202,7 +201,7 @@ void initialize_bindings()
 	}
 #endif
 
-	for(int idx=0; idx<bindings_count; ++idx)
+	for(int idx=0; idx<actions.size(); ++idx)
 		g_key_bindings[idx].m_action = &actions[idx];
 	
 }
@@ -346,7 +345,7 @@ int get_action_dik(EGameActions _action_id)
 
 EGameActions get_binded_action(int _dik)
 {
-	for(int idx=0; idx<bindings_count; ++idx)
+	for(int idx=0; idx<g_key_bindings.size(); ++idx)
 	{
 		_binding*	binding = &g_key_bindings[idx];
 
@@ -434,7 +433,7 @@ public:
 		curr_pbinding->m_keyboard[m_work_idx]= pkeyboard;
 			
 		{
-			for(int idx=0; idx<bindings_count; ++idx)
+			for(int idx=0; idx<g_key_bindings.size(); ++idx)
 			{
 				_binding*	binding			= &g_key_bindings[idx];
 				if(binding==curr_pbinding)	continue;
@@ -457,7 +456,7 @@ public:
 		if(m_work_idx==0)
 			F->w_printf		("unbindall\r\n");
 
-		for(int idx=0; idx<bindings_count;++idx)
+		for(int idx=0; idx<g_key_bindings.size();++idx)
 		{
 			_binding* pbinding = &g_key_bindings[idx];
 			if( pbinding->m_keyboard[m_work_idx] )
@@ -495,7 +494,7 @@ public:
 
 	virtual void Execute(LPCSTR args) {
 		Log("- --- Action list start ---");
-		for(int idx=0; idx<bindings_count;++idx)
+		for(int idx=0; idx<g_key_bindings.size();++idx)
 		{
 			_binding* pbinding = &g_key_bindings[idx];
 			Log("-", pbinding->m_action->action_name);
@@ -512,7 +511,7 @@ public:
 
 	virtual void Execute(LPCSTR args) 
 	{
-		for(int idx=0; idx<bindings_count;++idx)
+		for(int idx=0; idx<g_key_bindings.size();++idx)
 		{
 			_binding* pbinding		= &g_key_bindings[idx];
 			pbinding->m_keyboard[0]	= NULL;
@@ -540,7 +539,7 @@ public:
 		Log				("- --- Bind list start ---");
 		string512		buff;			
 		
-		for(int idx=0; idx<bindings_count;++idx)
+		for(int idx=0; idx<g_key_bindings.size();++idx)
 		{
 			_binding* pbinding		= &g_key_bindings[idx];
 			sprintf_s		(buff,"[%s] primary is[%s] secondary is[%s]",

@@ -136,18 +136,15 @@ LPCSTR			id_to_action_name		(EGameActions _id);
 EGameActions	action_name_to_id		(LPCSTR _name);
 _action*		action_name_to_ptr		(LPCSTR _name);
 
-extern _action		actions		[];
-//extern _keyboard	keyboards	[];
-//extern xr_vector< _keyboard >	keyboards;
+extern std::vector<_action>		actions;
 
-#define bindings_count kLASTACTION
 struct _binding
 {
 	_action*		m_action;
 	_keyboard*		m_keyboard[2];
 };
 
-extern _binding g_key_bindings[];
+extern std::vector<_binding> g_key_bindings;
 
 bool				is_binded			(EGameActions action_id, int dik);
 int					get_action_dik		(EGameActions action_id);
