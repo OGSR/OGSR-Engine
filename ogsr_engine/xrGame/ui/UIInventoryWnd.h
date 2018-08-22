@@ -167,8 +167,6 @@ protected:
 	void						SetCurrentItem				(CUICellItem* itm);
 	CUICellItem*				CurrentItem					();
 
-	void						ColorizeAmmo				(CUICellItem* itm);
-
 	TIItemContainer				ruck_list;
 	u32							m_iCurrentActiveSlot;
 

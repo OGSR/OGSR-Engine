@@ -65,6 +65,7 @@ public:
 				int			m_index;
 				bool		m_b_already_drawn;
 				bool		m_b_destroy_childs;
+				void ColorizeItems( CUIDragDropListEx*, CUIDragDropListEx*,  CUIDragDropListEx* = nullptr, CUIDragDropListEx* = nullptr);
 #ifdef SHOW_INV_ITEM_CONDITION
 				void		UpdateConditionProgressBar();
 #endif

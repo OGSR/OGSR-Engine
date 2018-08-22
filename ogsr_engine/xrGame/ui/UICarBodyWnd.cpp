@@ -821,8 +821,11 @@ void CUICarBodyWnd::MoveItem(CUICellItem* itm)
 
 bool CUICarBodyWnd::OnItemSelected(CUICellItem* itm)
 {
-	SetCurrentItem		(itm);
-	return				false;
+	SetCurrentItem(itm);
+#ifdef COLORIZE_WPN_AMMO_AND_ADDONS
+	itm->ColorizeItems(m_pUIOurBagList, m_pUIOthersBagList);
+#endif
+	return false;
 }
 
 bool CUICarBodyWnd::OnItemRButtonClick(CUICellItem* itm)

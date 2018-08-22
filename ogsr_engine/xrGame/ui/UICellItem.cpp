@@ -6,6 +6,7 @@
 #include "../level.h"
 #include "../object_broker.h"
 #include "UIDragDropListEx.h"
+#include "../WeaponMagazinedWGrenade.h"
 #ifdef SHOW_INV_ITEM_CONDITION
 #include "UIProgressBar.h"
 #include "UIXmlInit.h"
@@ -320,4 +321,59 @@ void CUICellItem::Update()
 	
 	inherited::Update();
 	m_b_already_drawn = false;
+}
+
+void CUICellItem::ColorizeItems( CUIDragDropListEx* List1, CUIDragDropListEx* List2, CUIDragDropListEx* List3, CUIDragDropListEx* List4 ) {
+  auto inventoryitem = ( CInventoryItem* )this->m_pData;
+  if ( !inventoryitem )
+    return;
+
+  u32 Color = READ_IF_EXISTS( pSettings, r_color, "inventory_color_ammo", "color", color_argb( 255, 212, 8, 185 ) );
+
+  auto ClearTextureColor = [=]( auto* DdListEx ) {
+    for ( u32 i = 0, item_count = DdListEx->ItemsCount(); i < item_count; ++i ) {
+      CUICellItem* CellItem = DdListEx->GetItemIdx( i );
+      if ( CellItem->GetTextureColor() == Color )
+        CellItem->SetTextureColor( 0xffffffff );
+    }
+  };
+
+  ClearTextureColor( List1 );
+  ClearTextureColor( List2 );
+  if ( List3 )
+    ClearTextureColor( List3 );
+  if ( List4 )
+    ClearTextureColor( List4 );
+
+  auto Wpn = smart_cast<CWeaponMagazined*>( inventoryitem );
+  if ( !Wpn )
+    return;
+
+  xr_vector<shared_str> ColorizeSects;
+  std::copy( Wpn->m_ammoTypes.begin(), Wpn->m_ammoTypes.end(), std::back_inserter( ColorizeSects ) );
+  if ( auto WpnGl = smart_cast<CWeaponMagazinedWGrenade*>( inventoryitem ) )
+    std::copy( WpnGl->m_ammoTypes2.begin(), WpnGl->m_ammoTypes2.end(), std::back_inserter( ColorizeSects ) );
+  if ( Wpn->SilencerAttachable() )
+    ColorizeSects.push_back( Wpn->GetSilencerName() );
+  if ( Wpn->ScopeAttachable() )
+    ColorizeSects.push_back( Wpn->GetScopeName() );
+  if ( Wpn->GrenadeLauncherAttachable() )
+    ColorizeSects.push_back( Wpn->GetGrenadeLauncherName() );
+
+  auto ProcessColorize = [=]( auto* DdListEx ) {
+    for ( u32 i = 0, item_count = DdListEx->ItemsCount(); i < item_count; ++i ) {
+      CUICellItem* CellItem = DdListEx->GetItemIdx( i );
+      auto invitem          = ( CInventoryItem* )CellItem->m_pData;
+      if ( invitem && ( std::find( ColorizeSects.begin(), ColorizeSects.end(), invitem->object().cNameSect() ) != ColorizeSects.end() ) )
+        if ( CellItem->GetTextureColor() == 0xffffffff )
+          CellItem->SetTextureColor( Color );
+    }
+  };
+
+  ProcessColorize( List1 );
+  ProcessColorize( List2 );
+  if ( List3 )
+    ProcessColorize( List3 );
+  if ( List4 )
+    ProcessColorize( List4 );
 }
