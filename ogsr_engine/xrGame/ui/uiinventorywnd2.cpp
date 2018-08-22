@@ -11,7 +11,6 @@
 #include "UICellItemFactory.h"
 #include "UIDragDropListEx.h"
 #include "UI3tButton.h"
-#include "../WeaponMagazined.h"
 
 #include "../game_object_space.h"
 #include "../script_callback_ex.h"
@@ -360,9 +359,11 @@ bool CUIInventoryWnd::OnItemStartDrag(CUICellItem* itm)
 
 bool CUIInventoryWnd::OnItemSelected(CUICellItem* itm)
 {
-	SetCurrentItem		(itm);
-//	ColorizeAmmo		(itm);
-	return				false;
+	SetCurrentItem(itm);
+#ifdef COLORIZE_WPN_AMMO_AND_ADDONS
+	itm->ColorizeItems(m_pUIBagList, m_pUIBeltList);
+#endif
+	return false;
 }
 
 bool CUIInventoryWnd::OnItemDrop(CUICellItem* itm)
@@ -484,64 +485,6 @@ CUIDragDropListEx* CUIInventoryWnd::GetSlotList( u8 slot_idx ) {
   if( slot_idx == NO_ACTIVE_SLOT || GetInventory()->m_slots[ slot_idx ].m_bPersistent )
     return NULL;
   return m_slots_array[ slot_idx ];
-}
-
-void CUIInventoryWnd::ColorizeAmmo(CUICellItem* itm)
-{
-	CInventoryItem* inventoryitem = (CInventoryItem*)itm->m_pData;
-	if (!inventoryitem) return;
-
-	//clear texture color
-	//for bag
-	u32 item_count = m_pUIBagList->ItemsCount();
-	for (u32 i = 0; i<item_count; ++i) {
-		CUICellItem* bag_item = m_pUIBagList->GetItemIdx(i);
-
-		bag_item->SetTextureColor(0xffffffff);
-	}
-	//for belt
-	u32 belt_item_count = m_pUIBeltList->ItemsCount();
-	for (u32 i = 0; i<belt_item_count; ++i) {
-		CUICellItem* belt_item = m_pUIBeltList->GetItemIdx(i);
-
-		belt_item->SetTextureColor(0xffffffff);
-	}
-
-	CWeaponMagazined* weapon = smart_cast<CWeaponMagazined*>(inventoryitem);
-	if (!weapon) return;
-
-	xr_vector<shared_str> ammo_types = weapon->m_ammoTypes;
-
-	u32 color = pSettings->r_color("inventory_color_ammo", "color");
-
-	//for bag
-	for (size_t id = 0; id<ammo_types.size(); ++id) {
-		u32 item_count = m_pUIBagList->ItemsCount();
-		for (u32 i = 0; i<item_count; ++i) {
-			CUICellItem* bag_item = m_pUIBagList->GetItemIdx(i);
-			PIItem invitem = (PIItem)bag_item->m_pData;
-
-			if (invitem && xr_strcmp(invitem->object().cNameSect(), ammo_types[id]) == 0 && invitem->Useful()) {
-				bag_item->SetTextureColor(color);
-				break;										//go out from loop, because we can't have 2 CUICellItem's with same section
-			}
-
-		}
-	}
-
-	//for belt
-	for (size_t id = 0; id<ammo_types.size(); ++id) {
-		u32 belt_item_count = m_pUIBeltList->ItemsCount();
-		for (u32 i = 0; i<belt_item_count; ++i) {
-			CUICellItem* belt_item = m_pUIBeltList->GetItemIdx(i);
-			PIItem invitem = (PIItem)belt_item->m_pData;
-
-			if (invitem && xr_strcmp(invitem->object().cNameSect(), ammo_types[id]) == 0 && invitem->Useful()) {
-				belt_item->SetTextureColor(color);
-			}
-
-		}
-	}
 }
 
 void CUIInventoryWnd::ClearAllLists()
