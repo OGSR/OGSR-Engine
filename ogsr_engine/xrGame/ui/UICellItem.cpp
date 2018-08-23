@@ -6,6 +6,7 @@
 #include "../level.h"
 #include "../object_broker.h"
 #include "UIDragDropListEx.h"
+#include "../WeaponMagazinedWGrenade.h"
 #ifdef SHOW_INV_ITEM_CONDITION
 #include "UIProgressBar.h"
 #include "UIXmlInit.h"
@@ -320,4 +321,45 @@ void CUICellItem::Update()
 	
 	inherited::Update();
 	m_b_already_drawn = false;
+}
+
+void CUICellItem::ColorizeItems( std::initializer_list<CUIDragDropListEx*> args ) {
+  auto inventoryitem = ( CInventoryItem* )this->m_pData;
+  if ( !inventoryitem )
+    return;
+
+  u32 Color = READ_IF_EXISTS( pSettings, r_color, "inventory_color_ammo", "color", color_argb( 255, 212, 8, 185 ) );
+
+  for ( auto* DdListEx : args ) {
+    for ( u32 i = 0, item_count = DdListEx->ItemsCount(); i < item_count; ++i ) {
+      CUICellItem* CellItem = DdListEx->GetItemIdx( i );
+      if ( CellItem->GetTextureColor() == Color )
+        CellItem->SetTextureColor( 0xffffffff );
+    }
+  }
+
+  auto Wpn = smart_cast<CWeaponMagazined*>( inventoryitem );
+  if ( !Wpn )
+    return;
+
+  xr_vector<shared_str> ColorizeSects;
+  std::copy( Wpn->m_ammoTypes.begin(), Wpn->m_ammoTypes.end(), std::back_inserter( ColorizeSects ) );
+  if ( auto WpnGl = smart_cast<CWeaponMagazinedWGrenade*>( inventoryitem ) )
+    std::copy( WpnGl->m_ammoTypes2.begin(), WpnGl->m_ammoTypes2.end(), std::back_inserter( ColorizeSects ) );
+  if ( Wpn->SilencerAttachable() )
+    ColorizeSects.push_back( Wpn->GetSilencerName() );
+  if ( Wpn->ScopeAttachable() )
+    ColorizeSects.push_back( Wpn->GetScopeName() );
+  if ( Wpn->GrenadeLauncherAttachable() )
+    ColorizeSects.push_back( Wpn->GetGrenadeLauncherName() );
+
+  for ( auto* DdListEx : args ) {
+    for ( u32 i = 0, item_count = DdListEx->ItemsCount(); i < item_count; ++i ) {
+      CUICellItem* CellItem = DdListEx->GetItemIdx( i );
+      auto invitem          = ( CInventoryItem* )CellItem->m_pData;
+      if ( invitem && ( std::find( ColorizeSects.begin(), ColorizeSects.end(), invitem->object().cNameSect() ) != ColorizeSects.end() ) )
+        if ( CellItem->GetTextureColor() == 0xffffffff )
+          CellItem->SetTextureColor( Color );
+    }
+  }
 }
