@@ -361,7 +361,7 @@ bool CUIInventoryWnd::OnItemSelected(CUICellItem* itm)
 {
 	SetCurrentItem(itm);
 #ifdef COLORIZE_WPN_AMMO_AND_ADDONS
-	itm->ColorizeItems(m_pUIBagList, m_pUIBeltList);
+	itm->ColorizeItems( { m_pUIBagList, m_pUIBeltList } );
 #endif
 	return false;
 }

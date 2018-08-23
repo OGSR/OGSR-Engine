@@ -823,7 +823,7 @@ bool CUICarBodyWnd::OnItemSelected(CUICellItem* itm)
 {
 	SetCurrentItem(itm);
 #ifdef COLORIZE_WPN_AMMO_AND_ADDONS
-	itm->ColorizeItems(m_pUIOurBagList, m_pUIOthersBagList);
+	itm->ColorizeItems( { m_pUIOurBagList, m_pUIOthersBagList } );
 #endif
 	return false;
 }

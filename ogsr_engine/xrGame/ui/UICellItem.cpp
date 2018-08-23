@@ -323,27 +323,20 @@ void CUICellItem::Update()
 	m_b_already_drawn = false;
 }
 
-void CUICellItem::ColorizeItems( CUIDragDropListEx* List1, CUIDragDropListEx* List2, CUIDragDropListEx* List3, CUIDragDropListEx* List4 ) {
+void CUICellItem::ColorizeItems( std::initializer_list<CUIDragDropListEx*> args ) {
   auto inventoryitem = ( CInventoryItem* )this->m_pData;
   if ( !inventoryitem )
     return;
 
   u32 Color = READ_IF_EXISTS( pSettings, r_color, "inventory_color_ammo", "color", color_argb( 255, 212, 8, 185 ) );
 
-  auto ClearTextureColor = [=]( auto* DdListEx ) {
+  for ( auto* DdListEx : args ) {
     for ( u32 i = 0, item_count = DdListEx->ItemsCount(); i < item_count; ++i ) {
       CUICellItem* CellItem = DdListEx->GetItemIdx( i );
       if ( CellItem->GetTextureColor() == Color )
         CellItem->SetTextureColor( 0xffffffff );
     }
-  };
-
-  ClearTextureColor( List1 );
-  ClearTextureColor( List2 );
-  if ( List3 )
-    ClearTextureColor( List3 );
-  if ( List4 )
-    ClearTextureColor( List4 );
+  }
 
   auto Wpn = smart_cast<CWeaponMagazined*>( inventoryitem );
   if ( !Wpn )
@@ -360,7 +353,7 @@ void CUICellItem::ColorizeItems( CUIDragDropListEx* List1, CUIDragDropListEx* Li
   if ( Wpn->GrenadeLauncherAttachable() )
     ColorizeSects.push_back( Wpn->GetGrenadeLauncherName() );
 
-  auto ProcessColorize = [=]( auto* DdListEx ) {
+  for ( auto* DdListEx : args ) {
     for ( u32 i = 0, item_count = DdListEx->ItemsCount(); i < item_count; ++i ) {
       CUICellItem* CellItem = DdListEx->GetItemIdx( i );
       auto invitem          = ( CInventoryItem* )CellItem->m_pData;
@@ -368,12 +361,5 @@ void CUICellItem::ColorizeItems( CUIDragDropListEx* List1, CUIDragDropListEx* Li
         if ( CellItem->GetTextureColor() == 0xffffffff )
           CellItem->SetTextureColor( Color );
     }
-  };
-
-  ProcessColorize( List1 );
-  ProcessColorize( List2 );
-  if ( List3 )
-    ProcessColorize( List3 );
-  if ( List4 )
-    ProcessColorize( List4 );
+  }
 }
