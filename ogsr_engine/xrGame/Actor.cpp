@@ -1689,7 +1689,7 @@ float	CActor::HitArtefactsOnBelt		(float hit_power, ALife::EHitType hit_type)
 
 	res_hit_power_k			-= _af_count;
 
-	return					res_hit_power_k * hit_power;
+	return res_hit_power_k > 0 ? res_hit_power_k * hit_power : 0;
 }
 
 
