@@ -135,6 +135,7 @@ void CPsyDog::Think()
 
 void CPsyDog::net_Destroy()
 {
+	m_aura->on_death	();
 	delete_all_phantoms	();
 	inherited::net_Destroy();
 }
