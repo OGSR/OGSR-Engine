@@ -63,6 +63,9 @@ protected:
 	
 public:
 	static CUIDragItem*		m_drag_item;
+	bool  colorize_ammo;
+	bool  highlight_cop;
+	float tx;
 							CUIDragDropListEx	();
 	virtual					~CUIDragDropListEx	();
 				void		Init				(float x, float y, float w, float h);
@@ -120,6 +123,7 @@ public:
 			void			ClearAll			(bool bDestroy);	
 			void			Compact				();
 			bool			IsOwner				(CUICellItem* itm);
+			void			clear_select_armament();
 public:
 	//UIWindow overriding
 	virtual		void		Draw				();
@@ -147,7 +151,7 @@ protected:
 
 	UI_CELLS_VEC				m_cells;
 
-	void						GetTexUVLT			(Fvector2& uv, u32 col, u32 row);
+	void						GetTexUVLT			( Fvector2& uv, u32 col, u32 row, u8 = 0 );
 	void						ReinitSize			();
 	u32							GetCellsInRange		(const Irect& rect, UI_CELLS_VEC& res);
 
@@ -181,4 +185,5 @@ protected:
 				void			Grow				();
 				void			Shrink				();
 				void			ClearAll			(bool bDestroy);
+				void			clear_select_armament();
 };
