@@ -84,3 +84,14 @@ void CInfoDocument::renderable_Render()
 {
 	inherited::renderable_Render();
 }
+
+using namespace luabind;
+#pragma optimize("s",on)
+void CInfoDocument::script_register(lua_State *L)
+{
+	module(L)
+		[
+			class_<CInfoDocument, CGameObject>("CInfoDocument")
+			.def(constructor<>())
+		];
+}

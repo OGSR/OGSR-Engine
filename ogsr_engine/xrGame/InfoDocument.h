@@ -8,6 +8,7 @@
 
 #include "inventory_item_object.h"
 #include "InfoPortionDefs.h"
+#include "script_export_space.h"
 
 class CInfoDocument: public CInventoryItemObject {
 private:
@@ -26,7 +27,13 @@ public:
 	virtual void OnH_A_Chield		();
 	virtual void OnH_B_Independent	(bool just_before_destroy);
 
+	DECLARE_SCRIPT_REGISTER_FUNCTION
+
 protected:
 	//индекс информации, содержащейс€ в документе
 	shared_str m_Info;
 };
+
+add_to_type_list(CInfoDocument)
+#undef script_type_list
+#define script_type_list save_type_list(CInfoDocument)
