@@ -41,6 +41,10 @@ CUIDragDropListEx::CUIDragDropListEx()
 	AddCallback					("cell_item",	DRAG_DROP_ITEM_DB_CLICK,		CUIWndCallback::void_function		(this, &CUIDragDropListEx::OnItemDBClick)			);
 
 	SetDrawGrid(true);
+
+        colorize_ammo = READ_IF_EXISTS( pSettings, r_bool, "dragdrop", "colorize_ammo", true );
+        highlight_cop = READ_IF_EXISTS( pSettings, r_bool, "dragdrop", "highlight_cop", false );
+	tx = highlight_cop ? 0.25f : 0.5f;
 }
 
 CUIDragDropListEx::~CUIDragDropListEx()
@@ -456,6 +460,11 @@ CUICellItem* CUIDragDropListEx::GetItemIdx(u32 idx)
 	return smart_cast<CUICellItem*>(*it);
 }
 
+void CUIDragDropListEx::clear_select_armament()
+{
+	m_container->clear_select_armament();
+}
+
 CUICellContainer::CUICellContainer(CUIDragDropListEx* parent)
 {
 	m_pParentDragDropList		= parent;
@@ -621,14 +630,17 @@ bool CUICellContainer::IsRoomFree(const Ivector2& pos, const Ivector2& _size)
 	return true;
 }
 
-void CUICellContainer::GetTexUVLT(Fvector2& uv, u32 col, u32 row)
+void CUICellContainer::GetTexUVLT(Fvector2& uv, u32 col, u32 row, u8 select_mode)
 {
-	uv.set(0.0f,0.0f);
-
-//.	if( (col%2==1 && row%2==1)||(col%2==0 && row%2==0) )
-//.		uv.set(0.5f,0.0f);
+	switch ( select_mode )
+	{
+	case 0:		uv.set(0.00f, 0.0f);	break;
+	case 1:		uv.set(0.25f, 0.0f);	break;
+	case 2:		uv.set(0.50f, 0.0f);	break;
+	case 3:		uv.set(0.75f, 0.0f);	break;
+	default:	uv.set(0.00f, 0.0f);	break;
+	}
 }
-
 
 void CUICellContainer::SetCellsCapacity(const Ivector2& c)
 {
@@ -784,7 +796,7 @@ void CUICellContainer::Draw()
 	const Fvector2 pts[6] =		{{0.0f,0.0f},{1.0f,0.0f},{1.0f,1.0f},
 								 {0.0f,0.0f},{1.0f,1.0f},{0.0f,1.0f}};
 #define ty 1.0f
-#define tx 0.5f
+	float tx = m_pParentDragDropList->tx;
 	const Fvector2 uvs[6] =		{{0.0f,0.0f},{tx,0.0f},{tx,ty},
 								 {0.0f,0.0f},{tx,ty},{0.0f,ty}};
 
@@ -798,8 +810,19 @@ void CUICellContainer::Draw()
 	FVF::TL* pv					= start_pv;
 	for (int x=0; x<=tgt_cells.width(); ++x){
 		for (int y=0; y<=tgt_cells.height(); ++y){
+
+			Ivector2 cpos;
+			cpos.set( x, y );
+			cpos.add( TopVisibleCell() );
+			CUICell& ui_cell = GetCellAt( cpos );
+			u8 select_mode = 0;
+			if ( !ui_cell.Empty() ) {
+			  if ( ui_cell.m_item->m_select_armament )
+			    select_mode = 3;
+			}
+
 			Fvector2			tp;
-			GetTexUVLT			(tp,tgt_cells.x1+x,tgt_cells.y1+y);
+			GetTexUVLT( tp, tgt_cells.x1 + x, tgt_cells.y1 + y, select_mode );
 			for (u32 k=0; k<6; ++k,++pv){
 				const Fvector2& p	= pts[k];
 				const Fvector2& uv	= uvs[k];
@@ -831,4 +854,18 @@ void CUICellContainer::Draw()
 	}
 
 	UI()->PopScissor			();
+}
+
+void CUICellContainer::clear_select_armament()
+{
+	UI_CELLS_VEC_IT itb = m_cells.begin();
+	UI_CELLS_VEC_IT ite = m_cells.end();
+	for ( ; itb != ite; ++itb )
+	{
+		CUICell& cell = (*itb);
+		if ( cell.m_item )
+		{
+			cell.m_item->m_select_armament = false;
+		}
+	}
 }

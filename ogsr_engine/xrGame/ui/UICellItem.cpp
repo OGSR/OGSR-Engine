@@ -6,6 +6,7 @@
 #include "../level.h"
 #include "../object_broker.h"
 #include "UIDragDropListEx.h"
+#include "../WeaponMagazinedWGrenade.h"
 #ifdef SHOW_INV_ITEM_CONDITION
 #include "UIProgressBar.h"
 #include "UIXmlInit.h"
@@ -27,6 +28,7 @@ CUICellItem::CUICellItem()
 	m_pConditionState 	= NULL;
 	init();
 #endif
+	m_select_armament	= false;
 }
 
 CUICellItem::~CUICellItem()
@@ -320,4 +322,56 @@ void CUICellItem::Update()
 	
 	inherited::Update();
 	m_b_already_drawn = false;
+}
+
+void CUICellItem::ColorizeItems( std::initializer_list<CUIDragDropListEx*> args ) {
+  auto inventoryitem = ( CInventoryItem* )this->m_pData;
+  if ( !inventoryitem )
+    return;
+
+  u32  Color   = READ_IF_EXISTS( pSettings, r_color, "dragdrop", "color_ammo", color_argb( 255, 212, 8, 185 ) );
+  bool process = false;
+
+  for ( auto* DdListEx : args ) {
+    if ( DdListEx->highlight_cop ) {
+      process = true;
+      DdListEx->clear_select_armament();
+    }
+    if ( !DdListEx->colorize_ammo ) continue;
+    process = true;
+    for ( u32 i = 0, item_count = DdListEx->ItemsCount(); i < item_count; ++i ) {
+      CUICellItem* CellItem = DdListEx->GetItemIdx( i );
+      if ( CellItem->GetTextureColor() == Color )
+        CellItem->SetTextureColor( 0xffffffff );
+    }
+  }
+  if ( !process ) return;
+
+  auto Wpn = smart_cast<CWeaponMagazined*>( inventoryitem );
+  if ( !Wpn )
+    return;
+
+  xr_vector<shared_str> ColorizeSects;
+  std::copy( Wpn->m_ammoTypes.begin(), Wpn->m_ammoTypes.end(), std::back_inserter( ColorizeSects ) );
+  if ( auto WpnGl = smart_cast<CWeaponMagazinedWGrenade*>( inventoryitem ) )
+    std::copy( WpnGl->m_ammoTypes2.begin(), WpnGl->m_ammoTypes2.end(), std::back_inserter( ColorizeSects ) );
+  if ( Wpn->SilencerAttachable() )
+    ColorizeSects.push_back( Wpn->GetSilencerName() );
+  if ( Wpn->ScopeAttachable() )
+    ColorizeSects.push_back( Wpn->GetScopeName() );
+  if ( Wpn->GrenadeLauncherAttachable() )
+    ColorizeSects.push_back( Wpn->GetGrenadeLauncherName() );
+
+  for ( auto* DdListEx : args ) {
+    for ( u32 i = 0, item_count = DdListEx->ItemsCount(); i < item_count; ++i ) {
+      CUICellItem* CellItem = DdListEx->GetItemIdx( i );
+      auto invitem          = ( CInventoryItem* )CellItem->m_pData;
+      if ( invitem && ( std::find( ColorizeSects.begin(), ColorizeSects.end(), invitem->object().cNameSect() ) != ColorizeSects.end() ) ) {
+        if ( DdListEx->highlight_cop )
+          CellItem->m_select_armament = true;
+        if ( DdListEx->colorize_ammo && CellItem->GetTextureColor() == 0xffffffff )
+          CellItem->SetTextureColor( Color );
+      }
+    }
+  }
 }

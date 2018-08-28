@@ -65,9 +65,11 @@ public:
 				int			m_index;
 				bool		m_b_already_drawn;
 				bool		m_b_destroy_childs;
+				void ColorizeItems(std::initializer_list<CUIDragDropListEx*>);
 #ifdef SHOW_INV_ITEM_CONDITION
 				void		UpdateConditionProgressBar();
 #endif
+				bool		m_select_armament;
 };
 
 class CUIDragItem: public CUIWindow, public pureRender, public pureFrame

@@ -131,6 +131,7 @@
 #	include "Scope.h"
 #	include "StalkerOutfit.h"
 #	include "Torch.h"
+#   include "InfoDocument.h"
 #	include "script_actor.h"
 #	include "WeaponAK74.h"
 #	include "WeaponBinoculars.h"

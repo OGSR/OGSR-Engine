@@ -341,7 +341,7 @@ _DDS_2D:
 			// Load   SYS-MEM-surface, bound to device restrictions
 			IDirect3DTexture9*		T_sysmem;
 			UINT dim = HW.Caps.raster.bNonPow2 ? D3DX_DEFAULT_NONPOW2 : D3DX_DEFAULT;
-			R_CHK2(D3DXCreateTextureFromFileInMemoryEx
+			HRESULT hr = D3DXCreateTextureFromFileInMemoryEx
 					(
 						HW.pDevice,S->pointer(),S->length(),
 						dim,dim,
@@ -352,7 +352,8 @@ _DDS_2D:
 						D3DX_DEFAULT,
 						0,&IMG,0,
 						&T_sysmem
-					), fn);
+					);
+			ASSERT_FMT( SUCCEEDED( hr ), "[%s]: can't load %s: %s", __FUNCTION__, fn, Debug.DXerror2string( hr ) );
 			FS.r_close				(S);
 			img_loaded_lod			= get_texture_load_lod(fn);
 			pTexture2D				= TW_LoadTextureFromTexture(T_sysmem,IMG.Format, img_loaded_lod, dwWidth, dwHeight);

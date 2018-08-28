@@ -297,9 +297,9 @@ float CEntityCondition::HitOutfitEffect(float hit_power, ALife::EHitType hit_typ
 		new_hit_power				= pOutfit->HitThruArmour(hit_power, element, AP);
 	else
 		new_hit_power				*= pOutfit->GetHitTypeProtection(hit_type,element);
-	
+
 	//увеличить изношенность костюма
-	pOutfit->Hit					(hit_power, hit_type);
+	pOutfit->Hit(hit_power, hit_type);
 
 	return							new_hit_power;
 }

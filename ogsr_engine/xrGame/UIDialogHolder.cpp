@@ -210,17 +210,22 @@ void CDialogHolder::OnFrame	()
 
 }
 
-void CDialogHolder::shedule_Update(u32 dt)
-{
-	ISheduled::shedule_Update(dt);
+void CDialogHolder::shedule_Update( u32 dt ) {
+  ISheduled::shedule_Update( dt );
 
-	if (m_dialogsToRender.empty())
-		return;
+  if ( m_dialogsToRender.empty() )
+    return;
 
-	std::sort			(m_dialogsToRender.begin(), m_dialogsToRender.end());
-
-	while ((m_dialogsToRender.size()) && (!m_dialogsToRender[m_dialogsToRender.size()-1].enabled)) 
-		m_dialogsToRender.pop_back();
+  m_dialogsToRender.erase(
+    std::remove_if(
+      m_dialogsToRender.begin(),
+      m_dialogsToRender.end(),
+      []( const auto& it ) {
+        return !it.enabled;
+      }
+    ),
+    m_dialogsToRender.end()
+  );
 }
 
 float CDialogHolder::shedule_Scale()
