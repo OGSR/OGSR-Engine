@@ -6,109 +6,107 @@
 #include "xr_level_controller.h"
 #include "string_table.h"
 
-#define NAMEOF(s) #s
+#define DEF_ACTION( a1, a2 ) { a1, a2, #a2 },
 
 std::vector<_action> actions = {
-	{ "left",				kLEFT					,_both, NAMEOF(kLEFT)},
-	{ "right",				kRIGHT					,_both, NAMEOF(kRIGHT)},
-	{ "up",					kUP						,_both, NAMEOF(kUP)},
-	{ "down",				kDOWN					,_both, NAMEOF(kDOWN)},
-	{ "jump",				kJUMP					,_both, NAMEOF(kJUMP)},
-	{ "crouch",				kCROUCH					,_both, NAMEOF(kCROUCH)},
-	{ "crouch_toggle",		kCROUCH_TOGGLE			,_both, NAMEOF(kCROUCH_TOGGLE)},
-	{ "accel",				kACCEL					,_both, NAMEOF(kACCEL)},
-	{ "sprint_toggle",  	kSPRINT_TOGGLE  		,_both, NAMEOF(kSPRINT_TOGGLE)},
-																
-	{ "forward",			kFWD					,_both, NAMEOF(kFWD)},
-	{ "back",				kBACK					,_both, NAMEOF(kBACK)},
-	{ "lstrafe",			kL_STRAFE				,_both, NAMEOF(kL_STRAFE)},
-	{ "rstrafe",			kR_STRAFE				,_both, NAMEOF(kR_STRAFE)},
-																
-	{ "llookout",			kL_LOOKOUT				,_both, NAMEOF(kL_LOOKOUT)},
-	{ "rlookout",			kR_LOOKOUT				,_both, NAMEOF(kR_LOOKOUT)},
-																
-	{ "turn_engine",		kENGINE					,_sp,	NAMEOF(kENGINE)},
-																
-	{ "cam_1",				kCAM_1					,_both, NAMEOF(kCAM_1)},
-	{ "cam_2",				kCAM_2					,_both, NAMEOF(kCAM_2)},
-	{ "cam_3",				kCAM_3					,_both, NAMEOF(kCAM_3)},
-	{ "cam_4",				kCAM_4					,_both, NAMEOF(kCAM_4)},
-	{ "cam_zoom_in",		kCAM_ZOOM_IN			,_both, NAMEOF(kCAM_ZOOM_IN)},
-	{ "cam_zoom_out",		kCAM_ZOOM_OUT			,_both, NAMEOF(kCAM_ZOOM_OUT)},
-															
-	{ "torch",				kTORCH					,_both, NAMEOF(kTORCH)},
-	{ "night_vision",		kNIGHT_VISION			,_both, NAMEOF(kNIGHT_VISION)},
-	{ "wpn_1",				kWPN_1					,_both, NAMEOF(kWPN_1)},
-	{ "wpn_2",				kWPN_2					,_both, NAMEOF(kWPN_2)},
-	{ "wpn_3",				kWPN_3					,_both, NAMEOF(kWPN_3)},
-	{ "wpn_4",				kWPN_4					,_both, NAMEOF(kWPN_4)},
-	{ "wpn_5",				kWPN_5					,_both, NAMEOF(kWPN_5)},
-	{ "wpn_6",				kWPN_6					,_both, NAMEOF(kWPN_6)},
-	{ "wpn_8",				kWPN_8					,_both, NAMEOF(kWPN_8)},
-	{ "switch_scope",		kSWITCH_SCOPE			,_both, NAMEOF(kSWITCH_SCOPE)},
-	{ "wpn_next",			kWPN_NEXT				,_both, NAMEOF(kWPN_NEXT)},
-	{ "wpn_fire",			kWPN_FIRE				,_both, NAMEOF(kWPN_FIRE)},
-	{ "wpn_zoom",			kWPN_ZOOM				,_both, NAMEOF(kWPN_ZOOM)},
-	{ "wpn_zoom_inc",		kWPN_ZOOM_INC			,_both, NAMEOF(kWPN_ZOOM_INC)},
-	{ "wpn_zoom_dec",		kWPN_ZOOM_DEC			,_both, NAMEOF(kWPN_ZOOM_DEC)},
-	{ "wpn_reload",			kWPN_RELOAD				,_both, NAMEOF(kWPN_RELOAD)},
-	{ "wpn_func",			kWPN_FUNC				,_both, NAMEOF(kWPN_FUNC)},
-	{ "wpn_firemode_prev",	kWPN_FIREMODE_PREV		,_both, NAMEOF(kWPN_FIREMODE_PREV)},
-	{ "wpn_firemode_next",	kWPN_FIREMODE_NEXT		,_both, NAMEOF(kWPN_FIREMODE_NEXT)},
-															
-	{ "pause",				kPAUSE					,_both, NAMEOF(kPAUSE)},
-	{ "drop",				kDROP					,_both, NAMEOF(kDROP)},
-	{ "use",				kUSE					,_both, NAMEOF(kUSE)},
-	{ "scores",				kSCORES					,_both, NAMEOF(kSCORES)},
-	{ "chat",				kCHAT					,_mp,	NAMEOF(kCHAT)},
-	{ "chat_team",			kCHAT_TEAM				,_mp,	NAMEOF(kCHAT_TEAM)},
-	{ "screenshot",			kSCREENSHOT				,_both, NAMEOF(kSCREENSHOT)},
-	{ "quit",				kQUIT					,_both, NAMEOF(kQUIT)},
-	{ "console",			kCONSOLE				,_both, NAMEOF(kCONSOLE)},
-	{ "inventory",			kINVENTORY				,_both, NAMEOF(kINVENTORY)},
-	{ "buy_menu",			kBUY					,_mp,	NAMEOF(kBUY)},
-	{ "skin_menu",			kSKIN					,_mp,	NAMEOF(kSKIN)},
-	{ "team_menu",			kTEAM					,_mp,	NAMEOF(kTEAM)},
-	{ "active_jobs",		kACTIVE_JOBS			,_sp,	NAMEOF(kACTIVE_JOBS)},
-	{ "map",				kMAP					,_both, NAMEOF(kMAP)},
-	{ "contacts",			kCONTACTS				,_sp,	NAMEOF(kCONTACTS)},
-	{ "ext_1",				kEXT_1					,_both, NAMEOF(kEXT_1)},
-																
-	{ "vote_begin",			kVOTE_BEGIN				,_mp,	NAMEOF(kVOTE_BEGIN)},
-	{ "vote",				kVOTE					,_mp,	NAMEOF(kVOTE)},
-	{ "vote_yes",			kVOTEYES				,_mp,	NAMEOF(kVOTEYES)},
-	{ "vote_no",			kVOTENO					,_mp,	NAMEOF(kVOTENO)},
-																
-	{ "next_slot",			kNEXT_SLOT				,_both, NAMEOF(kNEXT_SLOT)},
-	{ "prev_slot",			kPREV_SLOT				,_both, NAMEOF(kPREV_SLOT)},
-															
-	{ "speech_menu_0",		kSPEECH_MENU_0			,_mp, NAMEOF(kSPEECH_MENU_0)},
-	{ "speech_menu_1",		kSPEECH_MENU_1			,_mp, NAMEOF(kSPEECH_MENU_1)},
-	{ "speech_menu_2",		kSPEECH_MENU_2			,_mp, NAMEOF(kSPEECH_MENU_2)},
-	{ "speech_menu_3",		kSPEECH_MENU_3			,_mp, NAMEOF(kSPEECH_MENU_3)},
-	{ "speech_menu_4",		kSPEECH_MENU_4			,_mp, NAMEOF(kSPEECH_MENU_4)},
-	{ "speech_menu_5",		kSPEECH_MENU_5			,_mp, NAMEOF(kSPEECH_MENU_5)},
-	{ "speech_menu_6",		kSPEECH_MENU_6			,_mp, NAMEOF(kSPEECH_MENU_6)},
-	{ "speech_menu_7",		kSPEECH_MENU_7			,_mp, NAMEOF(kSPEECH_MENU_7)},
-	{ "speech_menu_8",		kSPEECH_MENU_8			,_mp, NAMEOF(kSPEECH_MENU_8)},
-	{ "speech_menu_9",		kSPEECH_MENU_9			,_mp, NAMEOF(kSPEECH_MENU_9)},
-																
-	{ "use_bandage",		kUSE_BANDAGE			,_sp, NAMEOF(kUSE_BANDAGE)},
-	{ "use_medkit",			kUSE_MEDKIT				,_sp, NAMEOF(kUSE_MEDKIT)},
+	DEF_ACTION("left",				kLEFT)
+	DEF_ACTION("right",				kRIGHT)
+	DEF_ACTION("up",				kUP)
+	DEF_ACTION("down",				kDOWN)
+	DEF_ACTION("jump",				kJUMP)
+	DEF_ACTION("crouch",			kCROUCH)
+	DEF_ACTION("crouch_toggle",		kCROUCH_TOGGLE)
+	DEF_ACTION("accel",				kACCEL)
+	DEF_ACTION("sprint_toggle",  	kSPRINT_TOGGLE)
+
+	DEF_ACTION("forward",			kFWD)
+	DEF_ACTION("back",				kBACK)
+	DEF_ACTION("lstrafe",			kL_STRAFE)
+	DEF_ACTION("rstrafe",			kR_STRAFE)
+
+	DEF_ACTION("llookout",			kL_LOOKOUT)
+	DEF_ACTION("rlookout",			kR_LOOKOUT)
+
+	DEF_ACTION("turn_engine",		kENGINE)
+
+	DEF_ACTION("cam_1",				kCAM_1)
+	DEF_ACTION("cam_2",				kCAM_2)
+	DEF_ACTION("cam_3",				kCAM_3)
+	DEF_ACTION("cam_4",				kCAM_4)
+	DEF_ACTION("cam_zoom_in",		kCAM_ZOOM_IN)
+	DEF_ACTION("cam_zoom_out",		kCAM_ZOOM_OUT)
+
+	DEF_ACTION("torch",				kTORCH)
+	DEF_ACTION("night_vision",		kNIGHT_VISION)
+	DEF_ACTION("wpn_1",				kWPN_1)
+	DEF_ACTION("wpn_2",				kWPN_2)
+	DEF_ACTION("wpn_3",				kWPN_3)
+	DEF_ACTION("wpn_4",				kWPN_4)
+	DEF_ACTION("wpn_5",				kWPN_5)
+	DEF_ACTION("wpn_6",				kWPN_6)
+	DEF_ACTION("wpn_8",				kWPN_8)
+	DEF_ACTION("switch_scope",		kSWITCH_SCOPE)
+	DEF_ACTION("wpn_next",			kWPN_NEXT)
+	DEF_ACTION("wpn_fire",			kWPN_FIRE)
+	DEF_ACTION("wpn_zoom",			kWPN_ZOOM)
+	DEF_ACTION("wpn_zoom_inc",		kWPN_ZOOM_INC)
+	DEF_ACTION("wpn_zoom_dec",		kWPN_ZOOM_DEC)
+	DEF_ACTION("wpn_reload",		kWPN_RELOAD)
+	DEF_ACTION("wpn_func",			kWPN_FUNC)
+	DEF_ACTION("wpn_firemode_prev",	kWPN_FIREMODE_PREV)
+	DEF_ACTION("wpn_firemode_next",	kWPN_FIREMODE_NEXT)
+
+	DEF_ACTION("pause",				kPAUSE)
+	DEF_ACTION("drop",				kDROP)
+	DEF_ACTION("use",				kUSE)
+	DEF_ACTION("scores",			kSCORES)
+	DEF_ACTION("chat",				kCHAT)
+	DEF_ACTION("chat_team",			kCHAT_TEAM)
+	DEF_ACTION("screenshot",		kSCREENSHOT)
+	DEF_ACTION("quit",				kQUIT)
+	DEF_ACTION("console",			kCONSOLE)
+	DEF_ACTION("inventory",			kINVENTORY)
+	DEF_ACTION("buy_menu",			kBUY)
+	DEF_ACTION("skin_menu",			kSKIN)
+	DEF_ACTION("team_menu",			kTEAM)
+	DEF_ACTION("active_jobs",		kACTIVE_JOBS)
+	DEF_ACTION("map",				kMAP)
+	DEF_ACTION("contacts",			kCONTACTS)
+	DEF_ACTION("ext_1",				kEXT_1)
+
+	DEF_ACTION("vote_begin",		kVOTE_BEGIN)
+	DEF_ACTION("vote",				kVOTE)
+	DEF_ACTION("vote_yes",			kVOTEYES)
+	DEF_ACTION("vote_no",			kVOTENO)
+
+	DEF_ACTION("next_slot",			kNEXT_SLOT)
+	DEF_ACTION("prev_slot",			kPREV_SLOT)
+
+	DEF_ACTION("speech_menu_0",		kSPEECH_MENU_0)
+	DEF_ACTION("speech_menu_1",		kSPEECH_MENU_1)
+	DEF_ACTION("speech_menu_2",		kSPEECH_MENU_2)
+	DEF_ACTION("speech_menu_3",		kSPEECH_MENU_3)
+	DEF_ACTION("speech_menu_4",		kSPEECH_MENU_4)
+	DEF_ACTION("speech_menu_5",		kSPEECH_MENU_5)
+	DEF_ACTION("speech_menu_6",		kSPEECH_MENU_6)
+	DEF_ACTION("speech_menu_7",		kSPEECH_MENU_7)
+	DEF_ACTION("speech_menu_8",		kSPEECH_MENU_8)
+	DEF_ACTION("speech_menu_9",		kSPEECH_MENU_9)
+
+	DEF_ACTION("use_bandage",		kUSE_BANDAGE)
+	DEF_ACTION("use_medkit",			kUSE_MEDKIT)
 
 	// KD - OGSE
-	{ "use_b190",			kUSE_B190				,_sp, NAMEOF(kUSE_B190)},
-	{ "use_bipsizon",		kUSE_BIPSIZON			,_sp, NAMEOF(kUSE_BIPSIZON)},
-	{ "use_antirad",		kUSE_ANTIRAD			,_sp, NAMEOF(kUSE_ANTIRAD)},
-	{ "use_energy_drink",	kUSE_ENERGY_DRINK		,_sp, NAMEOF(kUSE_ENERGY_DRINK)},
-	{ "use_radio",			kUSE_RADIO				,_sp, NAMEOF(kUSE_RADIO)},
+	DEF_ACTION("use_b190",			kUSE_B190)
+	DEF_ACTION("use_bipsizon",		kUSE_BIPSIZON)
+	DEF_ACTION("use_antirad",		kUSE_ANTIRAD)
+	DEF_ACTION("use_energy_drink",	kUSE_ENERGY_DRINK)
+	DEF_ACTION("use_radio",			kUSE_RADIO)
 	// KD - OGSE
 
-	{ "quick_save",			kQUICK_SAVE				,_sp, NAMEOF(kQUICK_SAVE)},
-	{ "quick_load",			kQUICK_LOAD				,_sp, NAMEOF(kQUICK_LOAD)},
-																
-	/*{ NULL, 				kLASTACTION				,_both}*/
-};															
+	DEF_ACTION("quick_save",			kQUICK_SAVE)
+	DEF_ACTION("quick_load",			kQUICK_LOAD)
+};
 
 std::vector<_binding> g_key_bindings;
 
@@ -179,7 +177,6 @@ _keyboard keyboards[] = {
 	{ "mouse6",			MOUSE_6			},	{ "mouse7",			MOUSE_7			},
 	{ "mouse8",			MOUSE_8			},	{ NULL, 			0				}
 };
-_key_group	g_current_keygroup = _sp;
 
 void initialize_bindings()
 {
@@ -220,7 +217,6 @@ void initialize_bindings()
 			pSettings->r_line(keyboard_section, i, &name, &value);
 			
 			_action n;
-			n.key_group = _both;
 			n.id = (EGameActions)id++;
 			n.action_name = name;
 			n.export_name = value;
@@ -237,7 +233,6 @@ void initialize_bindings()
 
 	// last action
 	_action nL;
-	nL.key_group = _both;
 	nL.id = kLASTACTION;
 	nL.action_name = NULL;
 	nL.export_name = NULL;
@@ -346,16 +341,6 @@ _keyboard*	keyname_to_ptr(LPCSTR _name)
 	return			NULL;
 }
 
-bool is_group_not_conflicted(_key_group g1, _key_group g2)
-{
-	return ((g1==_sp && g2==_mp) || (g1==_mp && g2==_sp));
-}
-
-bool is_group_matching(_key_group g1, _key_group g2)
-{
-	return ( (g1==g2) || (g1==_both) || (g2==_both) );
-}
-
 bool is_binded(EGameActions _action_id, int _dik)
 {
 	_binding* pbinding = &g_key_bindings[_action_id];
@@ -387,14 +372,10 @@ EGameActions get_binded_action(int _dik)
 	{
 		_binding*	binding = &g_key_bindings[idx];
 
-		bool b_is_group_matching	= is_group_matching(binding->m_action->key_group,g_current_keygroup);
-		
-		if(!b_is_group_matching)	continue;
-
-		if(binding->m_keyboard[0] && binding->m_keyboard[0]->dik==_dik && b_is_group_matching)
+		if(binding->m_keyboard[0] && binding->m_keyboard[0]->dik==_dik)
 			return binding->m_action->id;
 		
-		if(binding->m_keyboard[1] && binding->m_keyboard[1]->dik==_dik && b_is_group_matching)
+		if(binding->m_keyboard[1] && binding->m_keyboard[1]->dik==_dik)
 			return binding->m_action->id;
 	}
 	return kNOTBINDED;
@@ -474,14 +455,14 @@ public:
 			for(int idx=0; idx<g_key_bindings.size(); ++idx)
 			{
 				_binding*	binding			= &g_key_bindings[idx];
-				if(binding==curr_pbinding)	continue;
 
-				bool b_conflict = !is_group_not_conflicted(binding->m_action->key_group, curr_pbinding->m_action->key_group);
+				if(binding==curr_pbinding)	
+					continue;
 
-				if(binding->m_keyboard[0]==pkeyboard && b_conflict)
+				if(binding->m_keyboard[0]==pkeyboard)
 					binding->m_keyboard[0]=NULL;
 				
-				if(binding->m_keyboard[1]==pkeyboard && b_conflict)
+				if(binding->m_keyboard[1]==pkeyboard)
 					binding->m_keyboard[1]=NULL;
 			}
 		}

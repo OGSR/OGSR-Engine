@@ -110,21 +110,12 @@ struct _keyboard
 	int			dik;
 	xr_string	key_local_name;
 };
-enum _key_group{
-	_both	=	(1<<0)			,
-	_sp		=	_both | (1<<1)	,
-	_mp		=	_both | (1<<2)	,
-};
 
-extern _key_group g_current_keygroup;
-
-bool is_group_not_conflicted(_key_group g1, _key_group g2);
 
 struct _action
 {
 	LPCSTR			action_name;
 	EGameActions	id;
-	_key_group		key_group;
 	LPCSTR			export_name;
 };
 

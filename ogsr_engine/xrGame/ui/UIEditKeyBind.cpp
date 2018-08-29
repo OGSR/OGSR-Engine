@@ -212,10 +212,6 @@ void CUIEditKeyBind::OnMessage(const char* message){
     if (0 == xr_strcmp(m_action->action_name, command))
 		return;// fuck
 
-	_action* other_action	= action_name_to_ptr(command);
-	if( is_group_not_conflicted(m_action->key_group,other_action->key_group) )	
-		return;
-
 	SetText				("---");
 	m_keyboard			= NULL;
 }
