@@ -99,9 +99,9 @@ enum	EGameActions
 	kQUICK_SAVE,
 	kQUICK_LOAD,
 
-	kLASTACTION,
-	kNOTBINDED,
-	kFORCEDWORD		= u32(-1)
+	kLASTACTION = u32(-3),
+	kNOTBINDED = u32(-2),
+	kFORCEDWORD	= u32(-1)
 };
 
 struct _keyboard		
@@ -125,6 +125,7 @@ struct _action
 	LPCSTR			action_name;
 	EGameActions	id;
 	_key_group		key_group;
+	LPCSTR			export_name;
 };
 
 LPCSTR			dik_to_keyname			(int _dik);

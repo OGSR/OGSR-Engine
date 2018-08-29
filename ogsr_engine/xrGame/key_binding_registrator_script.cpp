@@ -16,7 +16,13 @@ int bind_to_dik(EGameActions bind) {
 #pragma optimize("s",on)
 void key_binding_registrator::script_register(lua_State *L)
 {
-	Msg("key_binding_registrator::script_register");
+	auto game_actions = class_<enum_exporter<EGameActions>>("key_bindings");
+
+	for (const auto& action : actions)
+	{
+		if (action.id != kLASTACTION)
+			game_actions = std::move(game_actions).enum_("commands")[value(action.export_name, action.id)];
+	}
 
 	module(L)
 	[
@@ -25,98 +31,8 @@ void key_binding_registrator::script_register(lua_State *L)
 		def("dik_to_keyname",	&dik_to_keyname),
 		def("keyname_to_dik",	&keyname_to_dik),
 
-		class_<enum_exporter<EGameActions> >("key_bindings")
-			.enum_("commands")
-			[
-				value("kFWD",						int(kFWD)),
-				value("kBACK",						int(kBACK)),
-				value("kL_STRAFE",					int(kL_STRAFE)),
-				value("kR_STRAFE",					int(kR_STRAFE)),
-				value("kL_LOOKOUT",					int(kL_LOOKOUT)),
-				value("kR_LOOKOUT",					int(kR_LOOKOUT)),
-				value("kLEFT",						int(kLEFT)),
-				value("kRIGHT",						int(kRIGHT)),
-				value("kUP",						int(kUP)),
-				value("kDOWN",						int(kDOWN)),
-				value("kJUMP",						int(kJUMP)),
-				value("kCROUCH",					int(kCROUCH)),
-				value("kCROUCH_TOGGLE",				int(kCROUCH_TOGGLE)),
-				value("kACCEL",						int(kACCEL)),
-				value("kSPRINT_TOGGLE",				int(kSPRINT_TOGGLE)),
-				value("kCAM_1",						int(kCAM_1)),
-				value("kCAM_2",						int(kCAM_2)),
-				value("kCAM_3",						int(kCAM_3)),
-				value("kCAM_4",						int(kCAM_4)),
-				value("kCAM_ZOOM_IN",				int(kCAM_ZOOM_IN)),
-				value("kCAM_ZOOM_OUT",				int(kCAM_ZOOM_OUT)),
-				value("kTORCH",						int(kTORCH)),
-				value("kNIGHT_VISION",				int(kNIGHT_VISION)),
-				value("kWPN_1",						int(kWPN_1)),
-				value("kWPN_2",						int(kWPN_2)),
-				value("kWPN_3",						int(kWPN_3)),
-				value("kWPN_4",						int(kWPN_4)),
-				value("kWPN_5",						int(kWPN_5)),
-				value("kWPN_6",						int(kWPN_6)),
-				value("kWPN_8",						int(kWPN_8)),
-				value("kSWITCH_SCOPE",				int(kSWITCH_SCOPE)),
-				value("kWPN_NEXT",					int(kWPN_NEXT)),
-				//value("kWPN_PREV",					int(kWPN_PREV)),
-				value("kWPN_FIRE",					int(kWPN_FIRE)),
-				value("kWPN_RELOAD",				int(kWPN_RELOAD)),
-				value("kWPN_ZOOM",					int(kWPN_ZOOM)),
-				value("kWPN_ZOOM_INC",				int(kWPN_ZOOM_INC)),
-				value("kWPN_ZOOM_DEC",				int(kWPN_ZOOM_DEC)),
-				value("kWPN_FUNC",					int(kWPN_FUNC)),
-				value("kWPN_FIREMODE_PREV",			int(kWPN_FIREMODE_PREV)),
-				value("kWPN_FIREMODE_NEXT",			int(kWPN_FIREMODE_NEXT)),
-				value("kUSE",						int(kUSE)),
-				value("kPAUSE",						int(kPAUSE)),
-				value("kDROP",						int(kDROP)),
-				value("kSCORES",					int(kSCORES)),
-				value("kCHAT",						int(kCHAT)),
-				value("kCHAT_TEAM",					int(kCHAT_TEAM)),
-				value("kSCREENSHOT",				int(kSCREENSHOT)),
-				value("kQUIT",						int(kQUIT)),
-				value("kCONSOLE",					int(kCONSOLE)),
-				value("kINVENTORY",					int(kINVENTORY)),
-				value("kBUY",						int(kBUY)),
-				value("kSKIN",						int(kSKIN)),
-				value("kTEAM",						int(kTEAM)),
-				value("kACTIVE_JOBS",				int(kACTIVE_JOBS)),
-				value("kMAP",						int(kMAP)),
-				value("kCONTACTS",					int(kCONTACTS)),
-				value("kVOTE_BEGIN",				int(kVOTE_BEGIN)),
-				value("kVOTE",						int(kVOTE)),
-				value("kVOTEYES",					int(kVOTEYES)),
-				value("kVOTENO",					int(kVOTENO)),
-				value("kNEXT_SLOT",					int(kNEXT_SLOT)),
-				value("kPREV_SLOT",					int(kPREV_SLOT)),
-				value("kSPEECH_MENU_0",				int(kSPEECH_MENU_0)),
-				value("kSPEECH_MENU_1",				int(kSPEECH_MENU_1)),
-				value("kSPEECH_MENU_2",				int(kSPEECH_MENU_2)),
-				value("kSPEECH_MENU_3",				int(kSPEECH_MENU_3)),
-				value("kSPEECH_MENU_4",				int(kSPEECH_MENU_4)),
-				value("kSPEECH_MENU_5",				int(kSPEECH_MENU_5)),
-				value("kSPEECH_MENU_6",				int(kSPEECH_MENU_6)),
-				value("kSPEECH_MENU_7",				int(kSPEECH_MENU_7)),
-				value("kSPEECH_MENU_8",				int(kSPEECH_MENU_8)),
-				value("kSPEECH_MENU_9",				int(kSPEECH_MENU_9)),
-				value("kUSE_BANDAGE",				int(kUSE_BANDAGE)),
-				value("kUSE_MEDKIT",				int(kUSE_MEDKIT)),
-				value("kQUICK_SAVE",				int(kQUICK_SAVE)),
+		std::move(game_actions),
 
-				// KD - OGSE
-				value("kUSE_B190",					int(kUSE_B190)),
-				value("kUSE_BIPSIZON",				int(kUSE_BIPSIZON)),
-				value("kUSE_ANTIRAD",				int(kUSE_ANTIRAD)),
-				value("kUSE_ENERGY_DRINK",			int(kUSE_ENERGY_DRINK)),
-				value("kUSE_RADIO",					int(kUSE_RADIO)),
-
-				//KRodin:
-				value("kEXT_1",						int(kEXT_1)),
-				value("kQUICK_LOAD",				int(kQUICK_LOAD)),
-				value("kENGINE",					int(kENGINE))
-			],
 		class_<key_binding_registrator >("DIK_keys")
 			.enum_("dik_keys")
 			[
