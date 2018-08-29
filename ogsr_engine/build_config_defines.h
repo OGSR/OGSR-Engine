@@ -280,3 +280,7 @@
 // ; инвентаря должен быть включен показ сетки.
 // highlight_cop = true
 #define COLORIZE_WPN_AMMO_AND_ADDONS
+
+// Помечать предметы, которые находятся в слотах и на поясе, как не
+// продаваемые.
+//#define EQUIPPED_UNTRADABLE

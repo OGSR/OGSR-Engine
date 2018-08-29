@@ -243,6 +243,8 @@ void CUICarBodyWnd::UpdateLists()
 		CUICellItem* itm = create_cell_item(inv_item);
 		if (inv_item->m_flags.test(CInventoryItem::FIAlwaysHighlighted))
 			itm->SetColor(CInventoryItem::ClrHighlighted);
+		if ( inv_item->m_highlight_equipped )
+		  itm->m_select_equipped = true;
 		m_pUIOurBagList->SetItem(itm);
 	}
 

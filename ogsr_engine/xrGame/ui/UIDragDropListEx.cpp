@@ -816,9 +816,13 @@ void CUICellContainer::Draw()
 			cpos.add( TopVisibleCell() );
 			CUICell& ui_cell = GetCellAt( cpos );
 			u8 select_mode = 0;
-			if ( !ui_cell.Empty() ) {
-			  if ( ui_cell.m_item->m_select_armament )
+			if ( m_pParentDragDropList->highlight_cop && !ui_cell.Empty() ) {
+			  if ( ui_cell.m_item->m_selected )
+			    select_mode = 1;
+			  else if ( ui_cell.m_item->m_select_armament )
 			    select_mode = 3;
+			  else if ( ui_cell.m_item->m_select_equipped )
+			    select_mode = 2;
 			}
 
 			Fvector2			tp;

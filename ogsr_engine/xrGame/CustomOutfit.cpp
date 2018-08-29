@@ -140,6 +140,7 @@ BOOL	CCustomOutfit::BonePassBullet					(int boneID)
 #include "torch.h"
 void	CCustomOutfit::OnMoveToSlot		()
 {
+	inherited::OnMoveToSlot();
 	if (m_pCurrentInventory)
 	{
 		CActor* pActor = smart_cast<CActor*> (m_pCurrentInventory->GetOwner());

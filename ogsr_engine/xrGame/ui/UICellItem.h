@@ -69,7 +69,9 @@ public:
 #ifdef SHOW_INV_ITEM_CONDITION
 				void		UpdateConditionProgressBar();
 #endif
+				bool		m_selected;
 				bool		m_select_armament;
+				bool		m_select_equipped;
 };
 
 class CUIDragItem: public CUIWindow, public pureRender, public pureFrame

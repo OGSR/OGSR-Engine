@@ -28,7 +28,9 @@ CUICellItem::CUICellItem()
 	m_pConditionState 	= NULL;
 	init();
 #endif
+	m_selected		= false;
 	m_select_armament	= false;
+	m_select_equipped	= false;
 }
 
 CUICellItem::~CUICellItem()
@@ -330,22 +332,16 @@ void CUICellItem::ColorizeItems( std::initializer_list<CUIDragDropListEx*> args 
     return;
 
   u32  Color   = READ_IF_EXISTS( pSettings, r_color, "dragdrop", "color_ammo", color_argb( 255, 212, 8, 185 ) );
-  bool process = false;
 
   for ( auto* DdListEx : args ) {
-    if ( DdListEx->highlight_cop ) {
-      process = true;
-      DdListEx->clear_select_armament();
-    }
+    DdListEx->clear_select_armament();
     if ( !DdListEx->colorize_ammo ) continue;
-    process = true;
     for ( u32 i = 0, item_count = DdListEx->ItemsCount(); i < item_count; ++i ) {
       CUICellItem* CellItem = DdListEx->GetItemIdx( i );
       if ( CellItem->GetTextureColor() == Color )
         CellItem->SetTextureColor( 0xffffffff );
     }
   }
-  if ( !process ) return;
 
   auto Wpn = smart_cast<CWeaponMagazined*>( inventoryitem );
   if ( !Wpn )
@@ -361,14 +357,14 @@ void CUICellItem::ColorizeItems( std::initializer_list<CUIDragDropListEx*> args 
     ColorizeSects.push_back( Wpn->GetScopeName() );
   if ( Wpn->GrenadeLauncherAttachable() )
     ColorizeSects.push_back( Wpn->GetGrenadeLauncherName() );
+  std::copy( Wpn->m_highlightAddons.begin(), Wpn->m_highlightAddons.end(), std::back_inserter( ColorizeSects ) );
 
   for ( auto* DdListEx : args ) {
     for ( u32 i = 0, item_count = DdListEx->ItemsCount(); i < item_count; ++i ) {
       CUICellItem* CellItem = DdListEx->GetItemIdx( i );
       auto invitem          = ( CInventoryItem* )CellItem->m_pData;
       if ( invitem && ( std::find( ColorizeSects.begin(), ColorizeSects.end(), invitem->object().cNameSect() ) != ColorizeSects.end() ) ) {
-        if ( DdListEx->highlight_cop )
-          CellItem->m_select_armament = true;
+        CellItem->m_select_armament = true;
         if ( DdListEx->colorize_ammo && CellItem->GetTextureColor() == 0xffffffff )
           CellItem->SetTextureColor( Color );
       }
