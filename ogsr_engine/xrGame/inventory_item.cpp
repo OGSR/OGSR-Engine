@@ -103,6 +103,7 @@ CInventoryItem::CInventoryItem()
 	m_fRadiationRestoreSpeed = 0.f;
 #endif
 	loaded_belt_index = (u8)(-1);
+	m_highlight_equipped = false;
 }
 
 CInventoryItem::~CInventoryItem() 
@@ -1189,3 +1190,36 @@ void CInventoryItem::SetLoadedBeltIndex( u8 pos ) {
   loaded_belt_index = pos;
   m_eItemPlace = eItemPlaceBelt;
 }
+
+
+void CInventoryItem::OnMoveToSlot() {
+#ifdef EQUIPPED_UNTRADABLE
+  if ( smart_cast<CActor*>( object().H_Parent() ) ) {
+    m_flags.set( FIAlwaysUntradable, TRUE );
+    m_flags.set( FIUngroupable,      TRUE );
+  }
+#endif
+  m_highlight_equipped = true;
+};
+
+
+void CInventoryItem::OnMoveToBelt() {
+#ifdef EQUIPPED_UNTRADABLE
+  if ( smart_cast<CActor*>( object().H_Parent() ) ) {
+    m_flags.set( FIAlwaysUntradable, TRUE );
+    m_flags.set( FIUngroupable,      TRUE );
+  }
+#endif
+  m_highlight_equipped = true;
+};
+
+
+void CInventoryItem::OnMoveToRuck() {
+#ifdef EQUIPPED_UNTRADABLE
+  if ( smart_cast<CActor*>( object().H_Parent() ) ) {
+    m_flags.set( FIAlwaysUntradable, FALSE );
+    m_flags.set( FIUngroupable,      FALSE );
+  }
+#endif
+  m_highlight_equipped = false;
+};

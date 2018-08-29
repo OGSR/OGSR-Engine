@@ -155,9 +155,9 @@ public:
 	EItemPlace					m_eItemPlace;
 
 
-	virtual void				OnMoveToSlot		() {};
-	virtual void				OnMoveToBelt		() {};
-	virtual void				OnMoveToRuck		() {};
+	virtual void				OnMoveToSlot		();
+	virtual void				OnMoveToBelt		();
+	virtual void				OnMoveToRuck		();
 					
 			int					GetGridWidth		() const ;
 			int					GetGridHeight		() const ;
@@ -292,6 +292,7 @@ public:
 
  public:
         u8   GetLoadedBeltIndex() { return loaded_belt_index; };
+	bool m_highlight_equipped;
 };
 
 #include "inventory_item_inline.h"

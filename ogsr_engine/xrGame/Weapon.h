@@ -469,6 +469,7 @@ protected:
 
 public:
 	xr_vector<shared_str>	m_ammoTypes;
+	xr_vector<shared_str>	m_highlightAddons;
 
 	CWeaponAmmo*			m_pAmmo;
 	u32						m_ammoType;

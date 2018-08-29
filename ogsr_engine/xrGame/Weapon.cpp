@@ -463,6 +463,18 @@ void CWeapon::Load		(LPCSTR section)
 		m_hit_probability[i]		= READ_IF_EXISTS(pSettings,r_float,section,temp,1.f);
 	}
 	
+	m_highlightAddons.clear();
+	if ( pSettings->line_exist( section, "highlight_addons" ) ) {
+	  LPCSTR S = pSettings->r_string( section, "highlight_addons" );
+	  if ( S && S[ 0 ] ) {
+	    string128 _addonItem;
+	    int count = _GetItemCount( S );
+	    for ( int it = 0; it < count; ++it ) {
+	      _GetItem( S, it, _addonItem );
+	      m_highlightAddons.push_back( _addonItem );
+	    }
+	  }
+	}
 }
 
 void CWeapon::LoadFireParams		(LPCSTR section, LPCSTR prefix)
