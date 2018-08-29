@@ -62,6 +62,7 @@ CUIInventoryCellItem::~CUIInventoryCellItem()
 
 void CUIInventoryCellItem::OnFocusReceive()
 {
+	m_selected = true;
 	inherited::OnFocusReceive();
 	auto script_obj = object()->object().lua_game_object();
 	g_actor->callback(GameObject::eCellItemFocus)(script_obj);
@@ -69,6 +70,7 @@ void CUIInventoryCellItem::OnFocusReceive()
 
 void CUIInventoryCellItem::OnFocusLost()
 {
+	m_selected = false;
 	inherited::OnFocusLost();	
 	auto script_obj = object()->object().lua_game_object();
 	g_actor->callback(GameObject::eCellItemFocusLost)(script_obj);
