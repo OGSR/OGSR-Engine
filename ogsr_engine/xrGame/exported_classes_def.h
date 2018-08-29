@@ -32,3 +32,4 @@
 #include "WeaponMagazined.h"
 #include "WeaponMagazinedWGrenade.h"
 #include "WeaponShotgun.h"
+#include "InfoDocument.h"
