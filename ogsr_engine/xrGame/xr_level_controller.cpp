@@ -6,110 +6,109 @@
 #include "xr_level_controller.h"
 #include "string_table.h"
 
-_binding	g_key_bindings		[bindings_count]; 
-_key_group	g_current_keygroup	= _sp;
+#define DEF_ACTION( a1, a2 ) { a1, a2, #a2 },
 
-_action  actions[]		= {
-	{ "left",				kLEFT					,_both},	
-	{ "right",				kRIGHT					,_both},	
-	{ "up",					kUP						,_both},	
-	{ "down",				kDOWN					,_both},	
-	{ "jump",				kJUMP					,_both},	
-	{ "crouch",				kCROUCH					,_both},	
-	{ "crouch_toggle",		kCROUCH_TOGGLE			,_both},	
-	{ "accel",				kACCEL					,_both},	
-	{ "sprint_toggle",  	kSPRINT_TOGGLE  		,_both},	
-																
-	{ "forward",			kFWD					,_both},	
-	{ "back",				kBACK					,_both},	
-	{ "lstrafe",			kL_STRAFE				,_both},	
-	{ "rstrafe",			kR_STRAFE				,_both},	
-																
-	{ "llookout",			kL_LOOKOUT				,_both},	
-	{ "rlookout",			kR_LOOKOUT				,_both},	
-																
-	{ "turn_engine",		kENGINE					,_sp},		
-																
-	{ "cam_1",				kCAM_1					,_both},	
-	{ "cam_2",				kCAM_2					,_both},	
-	{ "cam_3",				kCAM_3					,_both},	
-	{ "cam_4",				kCAM_4					,_both},	
-	{ "cam_zoom_in",		kCAM_ZOOM_IN			,_both},	
-	{ "cam_zoom_out",		kCAM_ZOOM_OUT			,_both},	
-															
-	{ "torch",				kTORCH					,_both},	
-	{ "night_vision",		kNIGHT_VISION			,_both},	
-	{ "wpn_1",				kWPN_1					,_both},	
-	{ "wpn_2",				kWPN_2					,_both},	
-	{ "wpn_3",				kWPN_3					,_both},	
-	{ "wpn_4",				kWPN_4					,_both},	
-	{ "wpn_5",				kWPN_5					,_both},	
-	{ "wpn_6",				kWPN_6					,_both},	
-	{ "wpn_8",				kWPN_8					,_both },
-	{ "switch_scope",		kSWITCH_SCOPE			,_both},
-	{ "wpn_next",			kWPN_NEXT				,_both},	
-	{ "wpn_fire",			kWPN_FIRE				,_both},	
-	{ "wpn_zoom",			kWPN_ZOOM				,_both},	
-	{ "wpn_zoom_inc",		kWPN_ZOOM_INC			,_both},	
-	{ "wpn_zoom_dec",		kWPN_ZOOM_DEC			,_both},	
-	{ "wpn_reload",			kWPN_RELOAD				,_both},	
-	{ "wpn_func",			kWPN_FUNC				,_both},	
-	{ "wpn_firemode_prev",	kWPN_FIREMODE_PREV		,_both},	
-	{ "wpn_firemode_next",	kWPN_FIREMODE_NEXT		,_both},	
-															
-	{ "pause",				kPAUSE					,_both},	
-	{ "drop",				kDROP					,_both},	
-	{ "use",				kUSE					,_both},	
-	{ "scores",				kSCORES					,_both},	
-	{ "chat",				kCHAT					,_mp},		
-	{ "chat_team",			kCHAT_TEAM				,_mp},		
-	{ "screenshot",			kSCREENSHOT				,_both},	
-	{ "quit",				kQUIT					,_both},	
-	{ "console",			kCONSOLE				,_both},	
-	{ "inventory",			kINVENTORY				,_both},	
-	{ "buy_menu",			kBUY					,_mp},		
-	{ "skin_menu",			kSKIN					,_mp},		
-	{ "team_menu",			kTEAM					,_mp},		
-	{ "active_jobs",		kACTIVE_JOBS			,_sp},		
-	{ "map",				kMAP					,_both},	
-	{ "contacts",			kCONTACTS				,_sp},		
-	{ "ext_1",				kEXT_1					,_both},	
-																
-	{ "vote_begin",			kVOTE_BEGIN				,_mp},		
-	{ "vote",				kVOTE					,_mp},		
-	{ "vote_yes",			kVOTEYES				,_mp},		
-	{ "vote_no",			kVOTENO					,_mp},		
-																
-	{ "next_slot",			kNEXT_SLOT				,_both},	
-	{ "prev_slot",			kPREV_SLOT				,_both},	
-															
-	{ "speech_menu_0",		kSPEECH_MENU_0			,_mp},		
-	{ "speech_menu_1",		kSPEECH_MENU_1			,_mp},		
-	{ "speech_menu_2",		kSPEECH_MENU_2			,_mp},		
-	{ "speech_menu_3",		kSPEECH_MENU_3			,_mp},		
-	{ "speech_menu_4",		kSPEECH_MENU_4			,_mp},		
-	{ "speech_menu_5",		kSPEECH_MENU_5			,_mp},		
-	{ "speech_menu_6",		kSPEECH_MENU_6			,_mp},		
-	{ "speech_menu_7",		kSPEECH_MENU_7			,_mp},		
-	{ "speech_menu_8",		kSPEECH_MENU_8			,_mp},		
-	{ "speech_menu_9",		kSPEECH_MENU_9			,_mp},		
-																
-	{ "use_bandage",		kUSE_BANDAGE			,_sp},		
-	{ "use_medkit",			kUSE_MEDKIT				,_sp},		
+std::vector<_action> actions = {
+	DEF_ACTION("left",				kLEFT)
+	DEF_ACTION("right",				kRIGHT)
+	DEF_ACTION("up",				kUP)
+	DEF_ACTION("down",				kDOWN)
+	DEF_ACTION("jump",				kJUMP)
+	DEF_ACTION("crouch",			kCROUCH)
+	DEF_ACTION("crouch_toggle",		kCROUCH_TOGGLE)
+	DEF_ACTION("accel",				kACCEL)
+	DEF_ACTION("sprint_toggle",  	kSPRINT_TOGGLE)
+
+	DEF_ACTION("forward",			kFWD)
+	DEF_ACTION("back",				kBACK)
+	DEF_ACTION("lstrafe",			kL_STRAFE)
+	DEF_ACTION("rstrafe",			kR_STRAFE)
+
+	DEF_ACTION("llookout",			kL_LOOKOUT)
+	DEF_ACTION("rlookout",			kR_LOOKOUT)
+
+	DEF_ACTION("turn_engine",		kENGINE)
+
+	DEF_ACTION("cam_1",				kCAM_1)
+	DEF_ACTION("cam_2",				kCAM_2)
+	DEF_ACTION("cam_3",				kCAM_3)
+	DEF_ACTION("cam_4",				kCAM_4)
+	DEF_ACTION("cam_zoom_in",		kCAM_ZOOM_IN)
+	DEF_ACTION("cam_zoom_out",		kCAM_ZOOM_OUT)
+
+	DEF_ACTION("torch",				kTORCH)
+	DEF_ACTION("night_vision",		kNIGHT_VISION)
+	DEF_ACTION("wpn_1",				kWPN_1)
+	DEF_ACTION("wpn_2",				kWPN_2)
+	DEF_ACTION("wpn_3",				kWPN_3)
+	DEF_ACTION("wpn_4",				kWPN_4)
+	DEF_ACTION("wpn_5",				kWPN_5)
+	DEF_ACTION("wpn_6",				kWPN_6)
+	DEF_ACTION("wpn_8",				kWPN_8)
+	DEF_ACTION("switch_scope",		kSWITCH_SCOPE)
+	DEF_ACTION("wpn_next",			kWPN_NEXT)
+	DEF_ACTION("wpn_fire",			kWPN_FIRE)
+	DEF_ACTION("wpn_zoom",			kWPN_ZOOM)
+	DEF_ACTION("wpn_zoom_inc",		kWPN_ZOOM_INC)
+	DEF_ACTION("wpn_zoom_dec",		kWPN_ZOOM_DEC)
+	DEF_ACTION("wpn_reload",		kWPN_RELOAD)
+	DEF_ACTION("wpn_func",			kWPN_FUNC)
+	DEF_ACTION("wpn_firemode_prev",	kWPN_FIREMODE_PREV)
+	DEF_ACTION("wpn_firemode_next",	kWPN_FIREMODE_NEXT)
+
+	DEF_ACTION("pause",				kPAUSE)
+	DEF_ACTION("drop",				kDROP)
+	DEF_ACTION("use",				kUSE)
+	DEF_ACTION("scores",			kSCORES)
+	DEF_ACTION("chat",				kCHAT)
+	DEF_ACTION("chat_team",			kCHAT_TEAM)
+	DEF_ACTION("screenshot",		kSCREENSHOT)
+	DEF_ACTION("quit",				kQUIT)
+	DEF_ACTION("console",			kCONSOLE)
+	DEF_ACTION("inventory",			kINVENTORY)
+	DEF_ACTION("buy_menu",			kBUY)
+	DEF_ACTION("skin_menu",			kSKIN)
+	DEF_ACTION("team_menu",			kTEAM)
+	DEF_ACTION("active_jobs",		kACTIVE_JOBS)
+	DEF_ACTION("map",				kMAP)
+	DEF_ACTION("contacts",			kCONTACTS)
+	DEF_ACTION("ext_1",				kEXT_1)
+
+	DEF_ACTION("vote_begin",		kVOTE_BEGIN)
+	DEF_ACTION("vote",				kVOTE)
+	DEF_ACTION("vote_yes",			kVOTEYES)
+	DEF_ACTION("vote_no",			kVOTENO)
+
+	DEF_ACTION("next_slot",			kNEXT_SLOT)
+	DEF_ACTION("prev_slot",			kPREV_SLOT)
+
+	DEF_ACTION("speech_menu_0",		kSPEECH_MENU_0)
+	DEF_ACTION("speech_menu_1",		kSPEECH_MENU_1)
+	DEF_ACTION("speech_menu_2",		kSPEECH_MENU_2)
+	DEF_ACTION("speech_menu_3",		kSPEECH_MENU_3)
+	DEF_ACTION("speech_menu_4",		kSPEECH_MENU_4)
+	DEF_ACTION("speech_menu_5",		kSPEECH_MENU_5)
+	DEF_ACTION("speech_menu_6",		kSPEECH_MENU_6)
+	DEF_ACTION("speech_menu_7",		kSPEECH_MENU_7)
+	DEF_ACTION("speech_menu_8",		kSPEECH_MENU_8)
+	DEF_ACTION("speech_menu_9",		kSPEECH_MENU_9)
+
+	DEF_ACTION("use_bandage",		kUSE_BANDAGE)
+	DEF_ACTION("use_medkit",			kUSE_MEDKIT)
 
 	// KD - OGSE
-	{ "use_b190",			kUSE_B190				,_sp},
-	{ "use_bipsizon",		kUSE_BIPSIZON			,_sp},
-	{ "use_antirad",		kUSE_ANTIRAD			,_sp},
-	{ "use_energy_drink",	kUSE_ENERGY_DRINK		,_sp},
-	{ "use_radio",			kUSE_RADIO				,_sp},
+	DEF_ACTION("use_b190",			kUSE_B190)
+	DEF_ACTION("use_bipsizon",		kUSE_BIPSIZON)
+	DEF_ACTION("use_antirad",		kUSE_ANTIRAD)
+	DEF_ACTION("use_energy_drink",	kUSE_ENERGY_DRINK)
+	DEF_ACTION("use_radio",			kUSE_RADIO)
 	// KD - OGSE
 
-	{ "quick_save",			kQUICK_SAVE				,_sp },
-	{ "quick_load",			kQUICK_LOAD				,_sp },
-																
-	{ NULL, 				kLASTACTION				,_both}		
-};															
+	DEF_ACTION("quick_save",			kQUICK_SAVE)
+	DEF_ACTION("quick_load",			kQUICK_LOAD)
+};
+
+std::vector<_binding> g_key_bindings;
 
 _keyboard keyboards[] = {
 	{ "kESCAPE",	 	DIK_ESCAPE		},	{ "k1",				DIK_1			},
@@ -202,9 +201,42 @@ void initialize_bindings()
 	}
 #endif
 
-	for(int idx=0; idx<bindings_count; ++idx)
-		g_key_bindings[idx].m_action = &actions[idx];
-	
+	constexpr LPCSTR keyboard_section = "custom_keyboard_action";
+
+	if (pSettings->section_exist(keyboard_section))
+	{
+		u32 action_count = pSettings->line_count(keyboard_section);
+
+		LPCSTR name;
+		LPCSTR value;
+
+		size_t id = actions.size();
+
+		for (int i = 0; i < action_count; ++i) 
+		{
+			pSettings->r_line(keyboard_section, i, &name, &value);
+			
+			_action n;
+			n.id = (EGameActions)id++;
+			n.action_name = name;
+			n.export_name = value;
+			actions.push_back(n);
+		}
+	}
+
+	for (int idx = 0; idx < actions.size(); ++idx)
+	{
+		_binding b;
+		b.m_action = &actions[idx];
+		g_key_bindings.push_back(b);		
+	}	
+
+	// last action
+	_action nL;
+	nL.id = kLASTACTION;
+	nL.action_name = NULL;
+	nL.export_name = NULL;
+	actions.push_back(nL);
 }
 
 void remap_keys()
@@ -309,16 +341,6 @@ _keyboard*	keyname_to_ptr(LPCSTR _name)
 	return			NULL;
 }
 
-bool is_group_not_conflicted(_key_group g1, _key_group g2)
-{
-	return ((g1==_sp && g2==_mp) || (g1==_mp && g2==_sp));
-}
-
-bool is_group_matching(_key_group g1, _key_group g2)
-{
-	return ( (g1==g2) || (g1==_both) || (g2==_both) );
-}
-
 bool is_binded(EGameActions _action_id, int _dik)
 {
 	_binding* pbinding = &g_key_bindings[_action_id];
@@ -346,18 +368,14 @@ int get_action_dik(EGameActions _action_id)
 
 EGameActions get_binded_action(int _dik)
 {
-	for(int idx=0; idx<bindings_count; ++idx)
+	for(int idx=0; idx<g_key_bindings.size(); ++idx)
 	{
 		_binding*	binding = &g_key_bindings[idx];
 
-		bool b_is_group_matching	= is_group_matching(binding->m_action->key_group,g_current_keygroup);
-		
-		if(!b_is_group_matching)	continue;
-
-		if(binding->m_keyboard[0] && binding->m_keyboard[0]->dik==_dik && b_is_group_matching)
+		if(binding->m_keyboard[0] && binding->m_keyboard[0]->dik==_dik)
 			return binding->m_action->id;
 		
-		if(binding->m_keyboard[1] && binding->m_keyboard[1]->dik==_dik && b_is_group_matching)
+		if(binding->m_keyboard[1] && binding->m_keyboard[1]->dik==_dik)
 			return binding->m_action->id;
 	}
 	return kNOTBINDED;
@@ -434,17 +452,17 @@ public:
 		curr_pbinding->m_keyboard[m_work_idx]= pkeyboard;
 			
 		{
-			for(int idx=0; idx<bindings_count; ++idx)
+			for(int idx=0; idx<g_key_bindings.size(); ++idx)
 			{
 				_binding*	binding			= &g_key_bindings[idx];
-				if(binding==curr_pbinding)	continue;
 
-				bool b_conflict = !is_group_not_conflicted(binding->m_action->key_group, curr_pbinding->m_action->key_group);
+				if(binding==curr_pbinding)	
+					continue;
 
-				if(binding->m_keyboard[0]==pkeyboard && b_conflict)
+				if(binding->m_keyboard[0]==pkeyboard)
 					binding->m_keyboard[0]=NULL;
 				
-				if(binding->m_keyboard[1]==pkeyboard && b_conflict)
+				if(binding->m_keyboard[1]==pkeyboard)
 					binding->m_keyboard[1]=NULL;
 			}
 		}
@@ -457,7 +475,7 @@ public:
 		if(m_work_idx==0)
 			F->w_printf		("unbindall\r\n");
 
-		for(int idx=0; idx<bindings_count;++idx)
+		for(int idx=0; idx<g_key_bindings.size();++idx)
 		{
 			_binding* pbinding = &g_key_bindings[idx];
 			if( pbinding->m_keyboard[m_work_idx] )
@@ -495,7 +513,7 @@ public:
 
 	virtual void Execute(LPCSTR args) {
 		Log("- --- Action list start ---");
-		for(int idx=0; idx<bindings_count;++idx)
+		for(int idx=0; idx<g_key_bindings.size();++idx)
 		{
 			_binding* pbinding = &g_key_bindings[idx];
 			Log("-", pbinding->m_action->action_name);
@@ -512,7 +530,7 @@ public:
 
 	virtual void Execute(LPCSTR args) 
 	{
-		for(int idx=0; idx<bindings_count;++idx)
+		for(int idx=0; idx<g_key_bindings.size();++idx)
 		{
 			_binding* pbinding		= &g_key_bindings[idx];
 			pbinding->m_keyboard[0]	= NULL;
@@ -540,7 +558,7 @@ public:
 		Log				("- --- Bind list start ---");
 		string512		buff;			
 		
-		for(int idx=0; idx<bindings_count;++idx)
+		for(int idx=0; idx<g_key_bindings.size();++idx)
 		{
 			_binding* pbinding		= &g_key_bindings[idx];
 			sprintf_s		(buff,"[%s] primary is[%s] secondary is[%s]",

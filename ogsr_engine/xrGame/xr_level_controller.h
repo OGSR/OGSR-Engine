@@ -99,9 +99,9 @@ enum	EGameActions
 	kQUICK_SAVE,
 	kQUICK_LOAD,
 
-	kLASTACTION,
-	kNOTBINDED,
-	kFORCEDWORD		= u32(-1)
+	kLASTACTION = u32(-3),
+	kNOTBINDED = u32(-2),
+	kFORCEDWORD	= u32(-1)
 };
 
 struct _keyboard		
@@ -110,21 +110,13 @@ struct _keyboard
 	int			dik;
 	xr_string	key_local_name;
 };
-enum _key_group{
-	_both	=	(1<<0)			,
-	_sp		=	_both | (1<<1)	,
-	_mp		=	_both | (1<<2)	,
-};
 
-extern _key_group g_current_keygroup;
-
-bool is_group_not_conflicted(_key_group g1, _key_group g2);
 
 struct _action
 {
 	LPCSTR			action_name;
 	EGameActions	id;
-	_key_group		key_group;
+	LPCSTR			export_name;
 };
 
 LPCSTR			dik_to_keyname			(int _dik);
@@ -136,18 +128,15 @@ LPCSTR			id_to_action_name		(EGameActions _id);
 EGameActions	action_name_to_id		(LPCSTR _name);
 _action*		action_name_to_ptr		(LPCSTR _name);
 
-extern _action		actions		[];
-//extern _keyboard	keyboards	[];
-//extern xr_vector< _keyboard >	keyboards;
+extern std::vector<_action>		actions;
 
-#define bindings_count kLASTACTION
 struct _binding
 {
 	_action*		m_action;
 	_keyboard*		m_keyboard[2];
 };
 
-extern _binding g_key_bindings[];
+extern std::vector<_binding> g_key_bindings;
 
 bool				is_binded			(EGameActions action_id, int dik);
 int					get_action_dik		(EGameActions action_id);
