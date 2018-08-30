@@ -224,19 +224,22 @@ void initialize_bindings()
 		}
 	}
 
-	for (int idx = 0; idx < actions.size(); ++idx)
-	{
-		_binding b;
-		b.m_action = &actions[idx];
-		g_key_bindings.push_back(b);		
-	}	
-
 	// last action
 	_action nL;
 	nL.id = kLASTACTION;
 	nL.action_name = NULL;
 	nL.export_name = NULL;
 	actions.push_back(nL);
+
+	for (int idx = 0; idx < actions.size(); ++idx)
+	{
+		if (actions[idx].id != kLASTACTION)
+		{
+			_binding b;
+			b.m_action = &actions[idx];
+			g_key_bindings.push_back(b);
+		}
+	}
 }
 
 void remap_keys()
