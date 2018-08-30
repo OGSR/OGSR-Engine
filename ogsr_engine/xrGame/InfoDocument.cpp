@@ -12,7 +12,6 @@
 
 CInfoDocument::CInfoDocument(void) 
 {
-	m_Info = NULL;
 }
 
 CInfoDocument::~CInfoDocument(void) 
@@ -28,7 +27,30 @@ BOOL CInfoDocument::net_Spawn(CSE_Abstract* DC)
 	CSE_ALifeItemDocument	*l_tpALifeItemDocument = smart_cast<CSE_ALifeItemDocument*>(l_tpAbstract);
 	R_ASSERT				(l_tpALifeItemDocument);
 
-	m_Info					= l_tpALifeItemDocument->m_wDoc;
+	m_Info.clear();
+	shared_str m_wDoc = l_tpALifeItemDocument->m_wDoc;
+	if ( m_wDoc.size() )
+	  m_Info.push_back( m_wDoc.c_str() );
+
+	CInifile& ini = l_tpAbstract->spawn_ini();
+	if ( ini.section_exist( "known_info" ) ) {
+	  const auto& sect = ini.r_section( "known_info" );
+	  for ( const auto &I : sect.Data ) {
+	    m_Info.push_back( I.first.c_str() );
+	  }
+	}
+
+	if ( pSettings->line_exist( l_tpAbstract->name(), "known_info" ) ) {
+	  LPCSTR S = pSettings->r_string( l_tpAbstract->name(), "known_info" );
+	  if ( S && S[ 0 ] ) {
+	    string128 info;
+	    int count = _GetItemCount( S );
+	    for ( int it = 0; it < count; ++it ) {
+	      _GetItem( S, it, info );
+	      m_Info.push_back( info );
+	    }
+	  }
+	}
 
 	return					(res);
 }
@@ -64,12 +86,11 @@ void CInfoDocument::OnH_A_Chield()
 	if(!pInvOwner) return;
 	
 	//создать и отправить пакет о получении новой информации
-	if(m_Info.size())
-	{
+	for ( const auto& it : m_Info ) {
 		NET_Packet		P;
 		u_EventGen		(P,GE_INFO_TRANSFER, H_Parent()->ID());
 		P.w_u16			(ID());						//отправитель
-		P.w_stringZ		(m_Info);				//сообщение
+		P.w_stringZ		( it.c_str() );				//сообщение
 		P.w_u8			(1);						//добавление сообщения
 		u_EventSend		(P);
 	}

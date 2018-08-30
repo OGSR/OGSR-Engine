@@ -31,7 +31,7 @@ public:
 
 protected:
 	//индекс информации, содержащейс€ в документе
-	shared_str m_Info;
+	std::vector<std::string> m_Info;
 };
 
 add_to_type_list(CInfoDocument)
