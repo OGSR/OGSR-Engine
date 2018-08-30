@@ -459,10 +459,17 @@ void CRenderDevice::OnWM_Activate(WPARAM wParam, LPARAM lParam)
 	const BOOL bActive = ((fActive != WA_INACTIVE) && (!fMinimized)) ? TRUE : FALSE;
 	const BOOL isGameActive = (psDeviceFlags.is(rsAlwaysActive) || bActive) ? TRUE : FALSE;
 
-	if (bActive)
+	if (bActive) {
 		ShowCursor(FALSE);
-	else
+		if (m_hWnd) {
+			RECT winRect;
+			GetWindowRect(m_hWnd, &winRect);
+			ClipCursor(&winRect);
+		}
+	} else {
 		ShowCursor(TRUE);
+		ClipCursor(nullptr);
+	}
 
 	if (isGameActive != Device.b_is_Active)
 	{
