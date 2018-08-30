@@ -175,8 +175,6 @@ void CGamePersistent::UpdateGameType			()
 		m_game_params.m_e_game_type = GAME_SINGLE;
 	else
 		FATAL("Unsupported game type [%s]", m_game_params.m_game_type);
-
-	g_current_keygroup = _sp;
 }
 
 void CGamePersistent::OnGameEnd	()
