@@ -190,9 +190,6 @@
 #   define USE_LEGACY_LOAD_SCREENS
 #endif
 
-// Что с ним, что без него - никакой разницы в FPS.
-//#define USE_DOUG_LEA_ALLOCATOR_FOR_RENDER
-
 // Включает кастомное окно с сообщением об ошибках, выключает стандартное "Прекращена работа программы..."
 #define USE_OWN_ERROR_MESSAGE_WINDOW
 
@@ -243,15 +240,8 @@
 // автоматического.
 //#define HARD_AMMO_RELOAD
 
-// Отключить использование мемпулов. Пока выключаю только на x64, для экспериментов.
-#ifdef _M_X64
-#	define DISABLE_MEMPOOLS
-#endif
-
-#ifdef DISABLE_MEMPOOLS
-// Валидатор желательно использовать только при отладке проблем с памятью. Соотв. работает только при отключенных мемпулах
-//#	define USE_MEMORY_VALIDATOR
-#endif
+// Валидатор желательно использовать только при отладке проблем с памятью.
+//#define USE_MEMORY_VALIDATOR
 
 // Флаги рендера R2 по умолчанию. Включен "r_glows_use on".
 #define DEF_R2_PP_FLAGS R_FLAG_GLOW_USE

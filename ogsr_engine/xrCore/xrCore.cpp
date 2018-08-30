@@ -64,9 +64,7 @@ void xrCore::_initialize	(LPCSTR _ApplicationName, LogCallback cb, BOOL init_fs,
 		DWORD	sz_comp		= sizeof(CompName);
 		GetComputerName		(CompName,&sz_comp);
 		
-		Memory._initialize	(strstr(Params,"-mem_debug") ? TRUE : FALSE);
-
-		DUMP_PHASE;
+		Memory._initialize();
 
 		InitLog				();
 		_initialize_cpu		();
@@ -188,9 +186,6 @@ BOOL WINAPI DllMain(HINSTANCE hinstDLL, DWORD ul_reason_for_call, LPVOID lpvRese
 		timeBeginPeriod(1);
 		break;
 	case DLL_PROCESS_DETACH:
-#ifdef USE_MEMORY_MONITOR
-		memory_monitor::flush_each_time(true);
-#endif // USE_MEMORY_MONITOR
 		_clearfp();
 		timeEndPeriod(1);
 		break;

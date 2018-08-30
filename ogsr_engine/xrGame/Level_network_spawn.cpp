@@ -70,7 +70,6 @@ void CLevel::g_cl_Spawn		(LPCSTR name, u8 rp, u16 flags, Fvector pos)
 
 #ifdef DEBUG
 	extern Flags32				psAI_Flags;
-	extern float				debug_on_frame_gather_stats_frequency;
 #	include "ai_debug.h"
 #endif // DEBUG
 
@@ -93,9 +92,6 @@ void CLevel::g_sv_Spawn		(CSE_Abstract* E)
 	// Msg				("--spawn--CREATE: %f ms",1000.f*T.GetAsync());
 
 //	T.Start		();
-#ifdef DEBUG_MEMORY_MANAGER
-	mem_alloc_gather_stats		(false);
-#endif // DEBUG_MEMORY_MANAGER
 	if (0==O || (!O->net_Spawn	(E))) 
 	{
 		O->net_Destroy			( );
@@ -103,13 +99,7 @@ void CLevel::g_sv_Spawn		(CSE_Abstract* E)
 			client_spawn_manager().clear(O->ID());
 		Objects.Destroy			(O);
 		Msg						("! Failed to spawn entity '%s'",*E->s_name);
-#ifdef DEBUG_MEMORY_MANAGER
-		mem_alloc_gather_stats	(!!psAI_Flags.test(aiDebugOnFrameAllocs));
-#endif // DEBUG_MEMORY_MANAGER
 	} else {
-#ifdef DEBUG_MEMORY_MANAGER
-		mem_alloc_gather_stats	(!!psAI_Flags.test(aiDebugOnFrameAllocs));
-#endif // DEBUG_MEMORY_MANAGER
 		if(!g_dedicated_server)
 			client_spawn_manager().callback(O);
 		//Msg			("--spawn--SPAWN: %f ms",1000.f*T.GetAsync());

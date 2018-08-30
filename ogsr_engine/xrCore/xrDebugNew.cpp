@@ -113,11 +113,6 @@ void gather_info(const char *expression, const char *description, const char *ar
 		}
 	}
 
-#ifdef USE_MEMORY_MONITOR
-	memory_monitor::flush_each_time(true);
-	memory_monitor::flush_each_time(false);
-#endif // USE_MEMORY_MONITOR
-
 #ifdef USE_OWN_ERROR_MESSAGE_WINDOW
 #ifdef USE_OWN_MINI_DUMP
 	buffer += sprintf(buffer, "See log file and minidump for detailed information\r\n");
@@ -251,7 +246,7 @@ void __cdecl xrDebug::fatal(const char *file, int line, const char *function, co
 int out_of_memory_handler	(size_t size)
 {
 	Memory.mem_compact		();
-	u32						process_heap	= mem_usage_impl(nullptr, nullptr);
+	size_t					process_heap	= mem_usage_impl(nullptr, nullptr);
 	u32						eco_strings		= g_pStringContainer->stat_economy			();
 	u32						eco_smem		= g_pSharedMemoryContainer->stat_economy	();
 	Msg						("* [x-ray]: process heap[%d K]", process_heap/1024);

@@ -107,18 +107,7 @@ void CAI_Stalker::reinit			()
 	//загрузка спецевической звуковой схемы для сталкера согласно m_SpecificCharacter
 	sound().sound_prefix			(SpecificCharacter().sound_voice_prefix());
 
-#ifdef DEBUG_MEMORY_MANAGER
-	u32									start = 0;
-	if (g_bMEMO)
-		start							= Memory.mem_usage();
-#endif // DEBUG_MEMORY_MANAGER
-
 	LoadSounds						(*cNameSect());
-
-#ifdef DEBUG_MEMORY_MANAGER
-	if (g_bMEMO)
-		Msg					("CAI_Stalker::LoadSounds() : %d",Memory.mem_usage() - start);
-#endif // DEBUG_MEMORY_MANAGER
 
 	m_pPhysics_support->in_Init		();
 	
@@ -215,18 +204,7 @@ void CAI_Stalker::LoadSounds		(LPCSTR section)
 
 void CAI_Stalker::reload			(LPCSTR section)
 {
-#ifdef DEBUG_MEMORY_MANAGER
-	u32									start = 0;
-	if (g_bMEMO)
-		start							= Memory.mem_usage();
-#endif // DEBUG_MEMORY_MANAGER
-
 	brain().setup					(this);
-
-#ifdef DEBUG_MEMORY_MANAGER
-	if (g_bMEMO)
-		Msg					("brain().setup() : %d",Memory.mem_usage() - start);
-#endif // DEBUG_MEMORY_MANAGER
 
 	CCustomMonster::reload			(section);
 	if (!already_dead())
@@ -331,12 +309,6 @@ void CAI_Stalker::Load				(LPCSTR section)
 
 BOOL CAI_Stalker::net_Spawn			(CSE_Abstract* DC)
 {
-#ifdef DEBUG_MEMORY_MANAGER
-	u32									start = 0;
-	if (g_bMEMO)
-		start							= Memory.mem_usage();
-#endif // DEBUG_MEMORY_MANAGER
-
 	CSE_Abstract					*e	= (CSE_Abstract*)(DC);
 	CSE_ALifeHumanStalker			*tpHuman = smart_cast<CSE_ALifeHumanStalker*>(e);
 	R_ASSERT						(tpHuman);
@@ -347,18 +319,7 @@ BOOL CAI_Stalker::net_Spawn			(CSE_Abstract* DC)
 	
 	set_money						(tpHuman->m_dwMoney, false);
 
-#ifdef DEBUG_MEMORY_MANAGER
-	u32									_start = 0;
-	if (g_bMEMO)
-		_start							= Memory.mem_usage();
-#endif // DEBUG_MEMORY_MANAGER
-
 	animation().reload				(this);
-
-#ifdef DEBUG_MEMORY_MANAGER
-	if (g_bMEMO)
-		Msg					("CStalkerAnimationManager::reload() : %d",Memory.mem_usage() - _start);
-#endif // DEBUG_MEMORY_MANAGER
 
 	movement().m_head.current.yaw	= movement().m_head.target.yaw = movement().m_body.current.yaw = movement().m_body.target.yaw	= angle_normalize_signed(-tpHuman->o_torso.yaw);
 	movement().m_body.current.pitch	= movement().m_body.target.pitch	= 0;
@@ -437,12 +398,6 @@ BOOL CAI_Stalker::net_Spawn			(CSE_Abstract* DC)
 		map_location->SetHint		(cName());
 	}
 #endif // DEBUG
-
-#ifdef DEBUG_MEMORY_MANAGER
-	if (g_bMEMO) {
-		Msg							("CAI_Stalker::net_Spawn() : %d",Memory.mem_usage() - start);
-	}
-#endif // DEBUG_MEMORY_MANAGER
 
 	if(SpecificCharacter().terrain_sect().size())
 	{
@@ -988,13 +943,7 @@ CMemoryManager *CAI_Stalker::create_memory_manager		()
 }
 
 DLL_Pure *CAI_Stalker::_construct			()
-{
-#ifdef DEBUG_MEMORY_MANAGER
-	u32									start = 0;
-	if (g_bMEMO)
-		start							= Memory.mem_usage();
-#endif // DEBUG_MEMORY_MANAGER
-	
+{	
 	m_pPhysics_support					= xr_new<CCharacterPhysicsSupport>(CCharacterPhysicsSupport::etStalker,this);
 	CCustomMonster::_construct			();
 	CObjectHandler::_construct			();
@@ -1006,11 +955,6 @@ DLL_Pure *CAI_Stalker::_construct			()
 	m_brain								= xr_new<CStalkerPlanner>();
 	m_sight_manager						= xr_new<CSightManager>(this);
 	m_weapon_shot_effector				= xr_new<CWeaponShotEffector>();
-
-#ifdef DEBUG_MEMORY_MANAGER
-	if (g_bMEMO)
-		Msg								("CAI_Stalker::_construct() : %d",Memory.mem_usage() - start);
-#endif // DEBUG_MEMORY_MANAGER
 
 	return								(this);
 }

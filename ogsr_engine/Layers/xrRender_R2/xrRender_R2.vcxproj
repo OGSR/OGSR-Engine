@@ -266,7 +266,6 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\COMMON\doug_lea_memory_allocator.h" />
     <ClInclude Include="..\xrRender\DetailFormat.h" />
     <ClInclude Include="..\xrRender\dxGlowManager.h" />
     <ClInclude Include="..\xrRender\light.h" />
@@ -348,9 +347,6 @@
     <ClInclude Include="r2_rendertarget_wallmarks.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\COMMON\doug_lea_memory_allocator.c">
-      <PrecompiledHeader>NotUsing</PrecompiledHeader>
-    </ClCompile>
     <ClCompile Include="..\..\COMMON\tga.cpp" />
     <ClCompile Include="..\xrRender\dxGlowManager.cpp" />
     <ClCompile Include="blender_aa.cpp" />

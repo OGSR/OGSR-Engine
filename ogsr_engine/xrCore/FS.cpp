@@ -20,12 +20,6 @@ void register_file_mapping			(void *address, const u32 &size, LPCSTR file_name)
 
 	g_file_mapped_memory			+= size;
 	++g_file_mapped_count;
-#ifdef USE_MEMORY_MONITOR
-//	memory_monitor::monitor_alloc	(addres,size,"file mapping");
-	string512						temp;
-	sprintf_s						(temp, sizeof(temp),"file mapping: %s",file_name);
-	memory_monitor::monitor_alloc	(address,size,temp);
-#endif // USE_MEMORY_MONITOR
 }
 
 void unregister_file_mapping		(void *address, const u32 &size)
@@ -39,10 +33,6 @@ void unregister_file_mapping		(void *address, const u32 &size)
 	--g_file_mapped_count;
 
 	g_file_mappings.erase			(I);
-
-#ifdef USE_MEMORY_MONITOR
-	memory_monitor::monitor_free	(address);
-#endif // USE_MEMORY_MONITOR
 }
 
 XRCORE_API void dump_file_mappings	()
@@ -104,11 +94,7 @@ void*  FileDownload(LPCSTR fn, u32* pdwSize)
 	size	= _filelength(hFile);
 #endif
 
-	buf		= Memory.mem_alloc	(size
-#ifdef DEBUG_MEMORY_NAME
-		,"FILE in memory"
-#endif // DEBUG_MEMORY_NAME
-		);
+	buf		= Memory.mem_alloc	(size);
 	int r_bytes	= _read	(hFile,buf,size);
 	R_ASSERT3(r_bytes==(int)size,"Can't read file data:",fn);
 	_close	(hFile);
@@ -164,16 +150,8 @@ void CMemoryWriter::w	(const void* ptr, u32 count)
 		// reallocate
 		if (mem_size==0)	mem_size=128;
 		while (mem_size <= (position+count)) mem_size*=2;
-		if (0==data)		data = (BYTE*)	Memory.mem_alloc	(mem_size
-#ifdef DEBUG_MEMORY_NAME
-			,		"CMemoryWriter - storage"
-#endif // DEBUG_MEMORY_NAME
-			);
-		else				data = (BYTE*)	Memory.mem_realloc	(data,mem_size
-#ifdef DEBUG_MEMORY_NAME
-			,	"CMemoryWriter - storage"
-#endif // DEBUG_MEMORY_NAME
-			);
+		if (0==data)		data = (BYTE*)	Memory.mem_alloc	(mem_size);
+		else				data = (BYTE*)	Memory.mem_realloc	(data,mem_size);
 	}
 	CopyMemory	(data+position,ptr,count);
 	position		+=count;

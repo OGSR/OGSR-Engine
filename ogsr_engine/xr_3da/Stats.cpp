@@ -259,17 +259,9 @@ void CStats::Show()
 		F.OutNext	("TEST 1:      %2.2fms, %d",TEST1.result,TEST1.count);
 		F.OutNext	("TEST 2:      %2.2fms, %d",TEST2.result,TEST2.count);
 		F.OutNext	("TEST 3:      %2.2fms, %d",TEST3.result,TEST3.count);
-#ifdef DEBUG_MEMORY_MANAGER
-		F.OutSkip	();
-		F.OutNext	("str: cmp[%3d], dock[%3d], qpc[%3d]",Memory.stat_strcmp,Memory.stat_strdock,CPU::qpc_counter);
-		Memory.stat_strcmp	=	0		;
-		Memory.stat_strdock	=	0		;
-		CPU::qpc_counter	=	0		;
-#else // DEBUG_MEMORY_MANAGER
 		F.OutSkip	();
 		F.OutNext	("qpc[%3d]",CPU::qpc_counter);
 		CPU::qpc_counter	=	0		;
-#endif // DEBUG_MEMORY_MANAGER
 //		F.OutSet	(640,0);
 		F.OutSkip	();
 		F.OutNext	("static:        %3.1f/%d",	RCache.stat.r.s_static.verts/1024.f,		RCache.stat.r.s_static.dips );

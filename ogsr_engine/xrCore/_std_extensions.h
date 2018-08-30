@@ -1,12 +1,7 @@
-#ifndef _STD_EXT_internal
-#define _STD_EXT_internal
+#pragma once
 
-#define	BREAK_AT_STRCMP
-#ifndef DEBUG
-#undef  BREAK_AT_STRCMP
-#endif
-#ifdef  _EDITOR
-#undef  BREAK_AT_STRCMP
+#ifdef DEBUG
+#	define BREAK_AT_STRCMP
 #endif
 
 #ifdef abs
@@ -27,37 +22,6 @@
 
 #ifdef max
 #undef max
-#endif
-
-#ifdef  _EDITOR
-IC void strcpy_s(char* strDestination,   size_t sizeInBytes,   const char *strSource)
-{
-	strcpy(strDestination, strSource);
-}
-
-IC void strcpy_s(char* strDestination,   const char *strSource)
-{
-	strcpy(strDestination, strSource);
-}
-
-IC void _strlwr_s(char* strDestination, size_t sizeInBytes)
-{
-    strlwr(strDestination);
-}
-
-IC void strcat_s(char* strDestination,   size_t sizeInBytes,   const char *strSource)
-{
-	strcat(strDestination, strSource);
-}
-
-IC int sprintf_s(char* dest, size_t sizeOfBuffer, const char* format, ...)
-{
-	va_list 	mark;
-	va_start	(mark, format );
-	int sz		= _vsnprintf(dest, sizeOfBuffer, format, mark );
-    dest		[sizeOfBuffer-1]=0;
-    va_end		(mark);
-}
 #endif
 
 // token type definition
@@ -165,103 +129,73 @@ IC s64		_max	(s64 x, s64 y)	{ return x - ((x - y) & ((x - y) >> (sizeof(s64) * 8
 
 IC u32							xr_strlen				( const char* S );
 
-#ifndef  _EDITOR
-// string management
-IC LPCSTR						strconcat				( int dest_sz, char* dest, const char* S1, const char* S2)
-{
-	u32 l1 = xr_strlen(S1);
-	strcpy_s(dest,dest_sz,S1);
-	strcat_s(dest,dest_sz-l1,S2);
-	return dest;
-//.	return strcat(strcpy(dest,S1),S2);
+
+// dest = S1+S2
+IC char* strconcat( size_t dest_sz, char* dest, const char* S1, const char* S2 ) {
+  size_t L1 = strlen( S1 ), L2 = strlen( S2 );
+  ASSERT_FMT( L1 + L2 + 1 <= dest_sz, "buffer overflow" );
+
+  memcpy( dest, S1, L1 );
+  memcpy( dest + L1, S2, L2 + 1 );
+
+  return dest;
 }
 
 // dest = S1+S2+S3
-IC LPCSTR						strconcat				( int dest_sz, char* dest, const char* S1, const char* S2, const char* S3)
-{
-	u32 l1 = xr_strlen(S1);
-	u32 l2 = xr_strlen(S2);
-	strcpy_s(dest,dest_sz,S1);
-	strcat_s(dest,dest_sz-l1,S2);
-	strcat_s(dest,dest_sz-l1-l2,S3);
+IC char* strconcat( size_t dest_sz, char* dest, const char* S1, const char* S2, const char* S3 ) {
+  size_t L1 = strlen( S1 ), L2 = strlen( S2 ), L3 = strlen( S3 );
+  ASSERT_FMT( L1 + L2 + L3 + 1 <= dest_sz, "buffer overflow" );
 
-	return dest;
-//.	return strcat(strcat(strcpy(dest,S1),S2),S3);
+  memcpy( dest, S1, L1 );
+  memcpy( dest + L1, S2, L2 );
+  memcpy( dest + L1 + L2, S3, L3 + 1 );
+
+  return dest;
 }
 
 // dest = S1+S2+S3+S4
-IC LPCSTR						strconcat				( int dest_sz, char* dest, const char* S1, const char* S2, const char* S3, const char* S4)
-{
-	u32 l1 = xr_strlen(S1);
-	u32 l2 = xr_strlen(S2);
-	u32 l3 = xr_strlen(S3);
-	strcpy_s(dest,dest_sz,S1);
-	strcat_s(dest,dest_sz-l1,S2);
-	strcat_s(dest,dest_sz-l1-l2,S3);
-	strcat_s(dest,dest_sz-l1-l2-l3,S4);
+IC char* strconcat( size_t dest_sz, char* dest, const char* S1, const char* S2, const char* S3, const char* S4 ) {
+  size_t L1 = strlen( S1 ), L2 = strlen( S2 ), L3 = strlen( S3 ), L4 = strlen( S4 );
+  ASSERT_FMT( L1 + L2 + L3 + L4 + 1 <= dest_sz, "buffer overflow" );
 
-	return dest;
-//.	return strcat(strcat(strcat(strcpy(dest,S1),S2),S3),S4);
+  memcpy( dest, S1, L1 );
+  memcpy( dest + L1, S2, L2 );
+  memcpy( dest + L1 + L2, S3, L3 );
+  memcpy( dest + L1 + L2 + L3, S4, L4 + 1 );
+
+  return dest;
 }
 
 // dest = S1+S2+S3+S4+S5
-IC LPCSTR						strconcat				( int dest_sz, char* dest, const char* S1, const char* S2, const char* S3, const char* S4, const char* S5)
-{
-	u32 l1 = xr_strlen(S1);
-	u32 l2 = xr_strlen(S2);
-	u32 l3 = xr_strlen(S3);
-	u32 l4 = xr_strlen(S4);
-	strcpy_s(dest,dest_sz,S1);
-	strcat_s(dest,dest_sz-l1,S2);
-	strcat_s(dest,dest_sz-l1-l2,S3);
-	strcat_s(dest,dest_sz-l1-l2-l3,S4);
-	strcat_s(dest,dest_sz-l1-l2-l3-l4,S5);
+IC char* strconcat( size_t dest_sz, char* dest, const char* S1, const char* S2, const char* S3, const char* S4, const char* S5 ) {
+  size_t L1 = strlen( S1 ), L2 = strlen( S2 ), L3 = strlen( S3 ), L4 = strlen( S4 ), L5 = strlen( S5 );
+  ASSERT_FMT( L1 + L2 + L3 + L4 + L5 + 1 <= dest_sz, "buffer overflow" );
 
-	return dest;
-//.	return strcat(strcat(strcat(strcat(strcpy(dest,S1),S2),S3),S4),S5);
+  memcpy( dest, S1, L1 );
+  memcpy( dest + L1, S2, L2 );
+  memcpy( dest + L1 + L2, S3, L3 );
+  memcpy( dest + L1 + L2 + L3, S4, L4 );
+  memcpy( dest + L1 + L2 + L3 + L4, S5, L5 + 1 );
+
+  return dest;
 }
 
 // dest = S1+S2+S3+S4+S5+S6
-IC LPCSTR						strconcat				( int dest_sz, char* dest, const char* S1, const char* S2, const char* S3, const char* S4, const char* S5, const char* S6)
-{
-	u32 l1 = xr_strlen(S1);
-	u32 l2 = xr_strlen(S2);
-	u32 l3 = xr_strlen(S3);
-	u32 l4 = xr_strlen(S4);
-	u32 l5 = xr_strlen(S5);
-	strcpy_s(dest,dest_sz,S1);
-	strcat_s(dest,dest_sz-l1,S2);
-	strcat_s(dest,dest_sz-l1-l2,S3);
-	strcat_s(dest,dest_sz-l1-l2-l3,S4);
-	strcat_s(dest,dest_sz-l1-l2-l3-l4,S5);
-	strcat_s(dest,dest_sz-l1-l2-l3-l4-l5,S6);
+IC char* strconcat( size_t dest_sz, char* dest, const char* S1, const char* S2, const char* S3, const char* S4, const char* S5, const char* S6 ) {
+  size_t L1 = strlen( S1 ), L2 = strlen( S2 ), L3 = strlen( S3 ), L4 = strlen( S4 ), L5 = strlen( S5 ), L6 = strlen( S6 );
+  ASSERT_FMT( L1 + L2 + L3 + L4 + L5 + L6 + 1 <= dest_sz, "buffer overflow" );
 
-	return dest;
-	//.	return strcat(strcat(strcat(strcat(strcat(strcpy(dest,S1),S2),S3),S4),S5),S6);
+  memcpy( dest, S1, L1 );
+  memcpy( dest + L1, S2, L2 );
+  memcpy( dest + L1 + L2, S3, L3 );
+  memcpy( dest + L1 + L2 + L3, S4, L4 );
+  memcpy( dest + L1 + L2 + L3 + L4, S5, L5 );
+  memcpy( dest + L1 + L2 + L3 + L4 + L5, S6, L6 + 1 );
+
+  return dest;
 }
 
-#else
 
-IC char*						strconcat				( int dest_sz,  char* dest, const char* S1, const char* S2)
-{	return strcat(strcpy(dest,S1),S2); }
-
-// dest = S1+S2+S3
-IC char*						strconcat				( int dest_sz,  char* dest, const char* S1, const char* S2, const char* S3)
-{	return strcat(strcat(strcpy(dest,S1),S2),S3); }
-
-// dest = S1+S2+S3+S4
-IC char*						strconcat				( int dest_sz,  char* dest, const char* S1, const char* S2, const char* S3, const char* S4)
-{	return strcat(strcat(strcat(strcpy(dest,S1),S2),S3),S4); }
-
-// dest = S1+S2+S3+S4+S5
-IC char*						strconcat				( int dest_sz,  char* dest, const char* S1, const char* S2, const char* S3, const char* S4, const char* S5)
-{	return strcat(strcat(strcat(strcat(strcpy(dest,S1),S2),S3),S4),S5); }
-
-// dest = S1+S2+S3+S4+S5+S6
-IC char*						strconcat				( int dest_sz,  char* dest, const char* S1, const char* S2, const char* S3, const char* S4, const char* S5, const char* S6)
-{	return strcat(strcat(strcat(strcat(strcat(strcpy(dest,S1),S2),S3),S4),S5),S6); }
-
-#endif
 // return pointer to ".ext"
 IC char*						strext					( const char* S )
 {	return (char*) strrchr(S,'.');	}
@@ -278,6 +212,8 @@ XRCORE_API	int					xr_strcmp				( const char* S1, const char* S2 );
 IC int							xr_strcmp				( const char* S1, const char* S2 )
 {	return strcmp(S1,S2);  }
 #endif
+
+XRCORE_API char* xr_strdup( const char* string );
 
 XRCORE_API	char*				timestamp				(string64& dest);
 
@@ -303,5 +239,3 @@ inline int __cdecl xr_sprintf(char(&destination)[count], const char* format_stri
 	va_start(args, format_string);
 	return vsprintf_s(destination, count, format_string, args);
 }
-
-#endif

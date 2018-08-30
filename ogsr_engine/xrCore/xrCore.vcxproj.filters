@@ -40,9 +40,6 @@
     <Filter Include="intrusive_ptr">
       <UniqueIdentifier>{8c0b93f8-63e4-4abd-b6ab-ffb508cd22ad}</UniqueIdentifier>
     </Filter>
-    <Filter Include="memory_monitor">
-      <UniqueIdentifier>{5a1305f9-9311-4144-b242-b7a402b3eeda}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Compression">
       <UniqueIdentifier>{0cd59bba-b771-438a-8c04-08bf07c29af7}</UniqueIdentifier>
     </Filter>
@@ -111,22 +108,7 @@
     <ClCompile Include="file_stream_reader.cpp">
       <Filter>FS\file_stream_reader</Filter>
     </ClCompile>
-    <ClCompile Include="memory_allocation_stats.cpp">
-      <Filter>Memory manager</Filter>
-    </ClCompile>
-    <ClCompile Include="memory_usage.cpp">
-      <Filter>Memory manager</Filter>
-    </ClCompile>
     <ClCompile Include="xrMemory.cpp">
-      <Filter>Memory manager</Filter>
-    </ClCompile>
-    <ClCompile Include="xrMemory_align.cpp">
-      <Filter>Memory manager</Filter>
-    </ClCompile>
-    <ClCompile Include="xrMemory_debug.cpp">
-      <Filter>Memory manager</Filter>
-    </ClCompile>
-    <ClCompile Include="xrMemory_subst_msvc.cpp">
       <Filter>Memory manager</Filter>
     </ClCompile>
     <ClCompile Include="xrDebugNew.cpp">
@@ -140,9 +122,6 @@
     </ClCompile>
     <ClCompile Include="xrstring.cpp">
       <Filter>shared memory/string library</Filter>
-    </ClCompile>
-    <ClCompile Include="memory_monitor.cpp">
-      <Filter>memory_monitor</Filter>
     </ClCompile>
     <ClCompile Include="rt_compressor.cpp">
       <Filter>Compression\rt</Filter>
@@ -162,9 +141,6 @@
     </ClCompile>
     <ClCompile Include="xrSkinXW.cpp">
       <Filter>Math</Filter>
-    </ClCompile>
-    <ClCompile Include="xrMemory_POOL.cpp">
-      <Filter>Memory manager</Filter>
     </ClCompile>
     <ClCompile Include="xrMemoryDebug.cpp">
       <Filter>Memory manager</Filter>
@@ -306,12 +282,6 @@
     <ClInclude Include="xrMemory.h">
       <Filter>Memory manager</Filter>
     </ClInclude>
-    <ClInclude Include="xrMemory_align.h">
-      <Filter>Memory manager</Filter>
-    </ClInclude>
-    <ClInclude Include="xrMemory_subst_msvc.h">
-      <Filter>Memory manager</Filter>
-    </ClInclude>
     <ClInclude Include="xrDebug.h">
       <Filter>Debug core</Filter>
     </ClInclude>
@@ -336,9 +306,6 @@
     <ClInclude Include="intrusive_ptr_inline.h">
       <Filter>intrusive_ptr</Filter>
     </ClInclude>
-    <ClInclude Include="memory_monitor.h">
-      <Filter>memory_monitor</Filter>
-    </ClInclude>
     <ClInclude Include="rt_compressor.h">
       <Filter>Compression\rt</Filter>
     </ClInclude>
@@ -360,9 +327,6 @@
     </ClInclude>
     <ClInclude Include="xrSkinXW.hpp">
       <Filter>Math</Filter>
-    </ClInclude>
-    <ClInclude Include="xrMEMORY_POOL.h">
-      <Filter>Memory manager</Filter>
     </ClInclude>
     <ClInclude Include="xrMemoryDebug.h">
       <Filter>Memory manager</Filter>

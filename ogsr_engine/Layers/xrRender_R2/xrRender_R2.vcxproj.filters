@@ -7,9 +7,6 @@
     <Filter Include="Core">
       <UniqueIdentifier>{1f1d2604-e7b6-416b-afc0-e2954b40b32b}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Core\memory">
-      <UniqueIdentifier>{24709d71-3c2d-4202-bbba-0d9b1f6e9b61}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Details">
       <UniqueIdentifier>{e1a46172-b7fd-4689-9dbd-62460e0ec70f}</UniqueIdentifier>
     </Filter>
@@ -284,9 +281,6 @@
     </ClInclude>
     <ClInclude Include="r2_puddles.h">
       <Filter>Core</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\COMMON\doug_lea_memory_allocator.h">
-      <Filter>Core\memory</Filter>
     </ClInclude>
     <ClInclude Include="..\xrRender\dxGlowManager.h">
       <Filter>Glow</Filter>
@@ -673,9 +667,6 @@
     </ClCompile>
     <ClCompile Include="..\..\COMMON\tga.cpp">
       <Filter>Core</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\COMMON\doug_lea_memory_allocator.c">
-      <Filter>Core\memory</Filter>
     </ClCompile>
     <ClCompile Include="..\xrRender\dxGlowManager.cpp">
       <Filter>Glow</Filter>
