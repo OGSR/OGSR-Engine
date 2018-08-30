@@ -135,6 +135,16 @@ void CEntityCondition::reinit	()
 
 }
 
+void CEntityCondition::ChangeCircumspection(float value)
+{
+	m_fDeltaCircumspection += value;
+}
+
+void CEntityCondition::ChangeEntityMorale(float value)
+{
+	m_fDeltaEntityMorale += value;
+}
+
 void CEntityCondition::ChangeHealth(float value)
 {
 	VERIFY(_valid(value));	
@@ -146,8 +156,6 @@ void CEntityCondition::ChangePower(float value)
 	m_fDeltaPower += value;
 }
 
-
-
 void CEntityCondition::ChangeRadiation(float value)
 {
 	m_fDeltaRadiation += value;
@@ -157,17 +165,6 @@ void CEntityCondition::ChangePsyHealth(float value)
 {
 	m_fDeltaPsyHealth += value;
 }
-
-
-void CEntityCondition::ChangeCircumspection(float value)
-{
-	m_fDeltaCircumspection += value;
-}
-void CEntityCondition::ChangeEntityMorale(float value)
-{
-	m_fDeltaEntityMorale += value;
-}
-
 
 void CEntityCondition::ChangeBleeding(float percent)
 {
@@ -179,6 +176,7 @@ void CEntityCondition::ChangeBleeding(float percent)
 			(*it)->SetDestroy		(true);
 	}
 }
+
 bool RemoveWoundPred(CWound* pWound)
 {
 	if(pWound->GetDestroy())

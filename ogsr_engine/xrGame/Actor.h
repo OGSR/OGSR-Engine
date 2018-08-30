@@ -199,13 +199,12 @@ public:
 
 
 public:
-	//сон
-//			void		UpdateSleep			();
-
 	//свойства артефактов
-	virtual void		UpdateArtefactsOnBelt	();
+	virtual void		UpdateArtefactsOnBelt();
+	virtual void		ApplyArtefactRestore(CArtefact* artefact, float f_update_time);
+	virtual float		HitArtefactsOnBelt(float hit_power, ALife::EHitType hit_type);
+
 	virtual void		UpdateArtefactPanel();
-	virtual float		HitArtefactsOnBelt		(float hit_power, ALife::EHitType hit_type);
 protected:
 	//звук т€желого дыхани€
 	ref_sound			m_HeavyBreathSnd;
