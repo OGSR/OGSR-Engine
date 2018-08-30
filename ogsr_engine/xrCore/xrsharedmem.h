@@ -1,5 +1,3 @@
-#ifndef xrsharedmemH	
-#define xrsharedmemH
 #pragma once
 
 #pragma pack(push,4)
@@ -116,5 +114,3 @@ template<class T>
 IC void swap			(ref_smem<T> & lhs, ref_smem<T> & rhs)			{ lhs.swap(rhs);				}
 
 #pragma pack(pop)
-
-#endif

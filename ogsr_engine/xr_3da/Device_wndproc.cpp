@@ -9,33 +9,7 @@ LRESULT CALLBACK WndProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
 	switch(uMsg)
 	{
 	case WM_ACTIVATE:
-		{
-			Device.OnWM_Activate			(wParam, lParam);
-/*
-			u16 fActive						= LOWORD(wParam);
-			BOOL fMinimized					= (BOOL) HIWORD(wParam);
-			BOOL bActive					= ((fActive!=WA_INACTIVE) && (!fMinimized))?TRUE:FALSE;
-
-			if (bActive!=Device.bActive)
-			{
-				Device.bActive				= bActive;
-
-				if (Device.b_is_Active)	
-				{
-					Device.seqAppActivate.Process(rp_AppActivate);
-#ifndef		DEDICATED_SERVER
-						ShowCursor			(FALSE);
-#endif
-				}else	
-				{
-					Device.seqAppDeactivate.Process(rp_AppDeactivate);
-					ShowCursor				(TRUE);
-				}
-			}
-*/
-		}
-
-
+		Device.OnWM_Activate(wParam, lParam);
 		break;
 	case WM_SETCURSOR:
 		return 1;

@@ -25,7 +25,8 @@ void CRenderDevice::Destroy	(void) {
 
 	Log("Destroying Direct3D...");
 
-	ShowCursor	(TRUE);
+	ShowCursor(TRUE);
+	ClipCursor(nullptr);
 	HW.Validate					();
 
 	_Destroy					(FALSE);
@@ -85,9 +86,10 @@ void CRenderDevice::Reset		(bool precache)
 	u32 tm_end				= TimerAsync();
 	Msg						("*** RESET [%d ms]",tm_end-tm_start);
 
-#ifndef DEDICATED_SERVER
-	ShowCursor	(FALSE);
-#endif
+	ShowCursor(FALSE);
+	RECT winRect;
+	GetWindowRect(m_hWnd, &winRect);
+	ClipCursor(&winRect);
 		
 	seqDeviceReset.Process(rp_DeviceReset);
 

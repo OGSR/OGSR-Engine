@@ -106,7 +106,6 @@ void CRenderDevice::End		(void)
 	g_bRendering		= FALSE;
 	// end scene
 	RCache.OnFrameEnd	();
-	Memory.dbg_check		();
     CHK_DX(HW.pDevice->EndScene());
 
 	if (!Device.m_SecondViewport.IsSVPFrame() && !Device.m_SecondViewport.m_bCamReady) //--#SM+#-- +SecondVP+ Не выводим кадр из второго вьюпорта на экран (на практике у нас экранная картинка обновляется минимум в два раза реже) [don't flush image into display for SecondVP-frame]
@@ -175,7 +174,6 @@ ENGINE_API xr_list<LOADING_EVENT>			g_loading_events;
 
 void CRenderDevice::Run			()
 {
-//	DUMP_PHASE;
 	g_bLoaded		= FALSE;
 	MSG				msg;
     BOOL			bGotMsg;
@@ -459,10 +457,17 @@ void CRenderDevice::OnWM_Activate(WPARAM wParam, LPARAM lParam)
 	const BOOL bActive = ((fActive != WA_INACTIVE) && (!fMinimized)) ? TRUE : FALSE;
 	const BOOL isGameActive = (psDeviceFlags.is(rsAlwaysActive) || bActive) ? TRUE : FALSE;
 
-	if (bActive)
+	if (bActive) {
 		ShowCursor(FALSE);
-	else
+		if (m_hWnd) {
+			RECT winRect;
+			GetWindowRect(m_hWnd, &winRect);
+			ClipCursor(&winRect);
+		}
+	} else {
 		ShowCursor(TRUE);
+		ClipCursor(nullptr);
+	}
 
 	if (isGameActive != Device.b_is_Active)
 	{

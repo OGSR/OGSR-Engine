@@ -6,9 +6,6 @@
 #ifdef BREAK_AT_STRCMP
 int								xr_strcmp				( const char* S1, const char* S2 )
 {
-#ifdef DEBUG_MEMORY_MANAGER
-	Memory.stat_strcmp	++;
-#endif // DEBUG_MEMORY_MANAGER
 	int res				= (int)strcmp(S1,S2);
 	return				res;
 }
@@ -37,4 +34,12 @@ char*							timestamp				(string64& dest)
 		if (':'==temp[it]) temp[it]='-';
 	strcat		( dest, temp);
 	return dest;
+}
+
+char* xr_strdup( const char* string ) {
+  VERIFY( string );
+  size_t len   = strlen( string ) + 1;
+  char* memory = ( char* )Memory.mem_alloc( len );
+  CopyMemory( memory, string, len );
+  return memory;
 }

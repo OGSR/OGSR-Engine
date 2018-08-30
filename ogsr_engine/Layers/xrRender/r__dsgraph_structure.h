@@ -160,12 +160,5 @@ public:
 	void		r_dsgraph_render_R1_box							(IRender_Sector* _sector, Fbox& _bb, int _element);
 
 public:
-	virtual		u32						memory_usage			()
-	{
-#ifdef USE_DOUG_LEA_ALLOCATOR_FOR_RENDER
-		return	((u32)dlmallinfo().uordblks);
-#else // USE_DOUG_LEA_ALLOCATOR_FOR_RENDER
-		return	(0);
-#endif // USE_DOUG_LEA_ALLOCATOR_FOR_RENDER
-	}
+	virtual u32 memory_usage() { return 0; }
 };

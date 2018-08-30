@@ -44,11 +44,6 @@ void CScriptBinder::clear			()
 
 void CScriptBinder::reinit			()
 {
-#ifdef DEBUG_MEMORY_MANAGER
-	u32									start = 0;
-	if (g_bMEMO)
-		start							= Memory.mem_usage();
-#endif // DEBUG_MEMORY_MANAGER
 	if (m_object) {
 #ifdef CRASH_ON_SCRIPT_BINDER_ERRORS
 		m_object->reinit();
@@ -71,11 +66,6 @@ void CScriptBinder::Load			(LPCSTR section)
 
 void CScriptBinder::reload			(LPCSTR section)
 {
-#ifdef DEBUG_MEMORY_MANAGER
-	u32									start = 0;
-	if (g_bMEMO)
-		start							= Memory.mem_usage();
-#endif // DEBUG_MEMORY_MANAGER
 	VERIFY					(!m_object);
 
 	if (!pSettings->line_exist(section,"script_binding"))
@@ -128,11 +118,6 @@ void CScriptBinder::reload			(LPCSTR section)
 
 BOOL CScriptBinder::net_Spawn		(CSE_Abstract* DC)
 {
-#ifdef DEBUG_MEMORY_MANAGER
-	u32									start = 0;
-	if (g_bMEMO)
-		start							= Memory.mem_usage();
-#endif // DEBUG_MEMORY_MANAGER
 	CSE_Abstract			*abstract = (CSE_Abstract*)DC;
 	CSE_ALifeObject			*object = smart_cast<CSE_ALifeObject*>(abstract);
 	if (object && m_object) {

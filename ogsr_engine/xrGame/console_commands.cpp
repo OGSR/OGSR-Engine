@@ -82,8 +82,6 @@ extern	float	g_fTimeFactor;
 		u32		g_dwDebugNodeSource		= 0;
 		u32		g_dwDebugNodeDest		= 0;
 extern	BOOL	g_bDrawBulletHit;
-
-		float	debug_on_frame_gather_stats_frequency	= 0.f;
 #endif
 #ifdef DEBUG 
 extern LPSTR	dbg_stalker_death_anim;
@@ -102,7 +100,7 @@ public:
 	CCC_MemStats(LPCSTR N) : IConsole_Command(N)  { bEmptyArgsHandled = TRUE; };
 	virtual void Execute(LPCSTR args) {
 		Memory.mem_compact		();
-		u32		_process_heap	= mem_usage_impl(nullptr, nullptr);
+		size_t	_process_heap	= mem_usage_impl(nullptr, nullptr);
 		u32		_render			= ::Render->memory_usage();
 		u32		_eco_strings	= g_pStringContainer->stat_economy			();
 		u32		_eco_smem		= g_pSharedMemoryContainer->stat_economy	();
@@ -1059,26 +1057,6 @@ public:
 	}
 };
 
-#ifdef DEBUG_MEMORY_MANAGER
-
-class CCC_MemAllocShowStats : public IConsole_Command {
-public:
-	CCC_MemAllocShowStats(LPCSTR N) : IConsole_Command(N)  { bEmptyArgsHandled = true; };
-	virtual void Execute(LPCSTR) {
-		mem_alloc_show_stats	();
-	}
-};
-
-class CCC_MemAllocClearStats : public IConsole_Command {
-public:
-	CCC_MemAllocClearStats(LPCSTR N) : IConsole_Command(N)  { bEmptyArgsHandled = true; };
-	virtual void Execute(LPCSTR) {
-		mem_alloc_clear_stats	();
-	}
-};
-
-#endif // DEBUG_MEMORY_MANAGER
-
 class CCC_DumpModelBones : public IConsole_Command {
 public:
 	CCC_DumpModelBones	(LPCSTR N) : IConsole_Command(N)
@@ -1257,13 +1235,6 @@ void CCC_RegisterCommands()
 
 	CMD3(CCC_Mask,				"ai_draw_visibility_rays",	&psAI_Flags,	aiDrawVisibilityRays);
 	CMD3(CCC_Mask,				"ai_animation_stats",		&psAI_Flags,	aiAnimationStats);
-
-#ifdef DEBUG_MEMORY_MANAGER
-	CMD3(CCC_Mask,				"debug_on_frame_gather_stats",				&psAI_Flags,	aiDebugOnFrameAllocs);
-	CMD4(CCC_Float,				"debug_on_frame_gather_stats_frequency",	&debug_on_frame_gather_stats_frequency, 0.f, 1.f);
-	CMD1(CCC_MemAllocShowStats,	"debug_on_frame_show_stats");
-	CMD1(CCC_MemAllocClearStats,"debug_on_frame_clear_stats");
-#endif // DEBUG_MEMORY_MANAGER
 
 	CMD1(CCC_DumpModelBones,	"debug_dump_model_bones");
 
