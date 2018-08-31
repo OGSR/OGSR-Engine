@@ -1599,6 +1599,7 @@ void CActor::UpdateArtefactsOnBelt()
 			summary_rrs += obj->RadiationRestoreSpeed() * k;
 		}
 	}
+#endif  // #ifdef OBJECTS_RADIOACTIVE
 
 #ifdef OUTFIT_AF
 	PIItem outfit_item = inventory().m_slots[ OUTFIT_SLOT ].m_pIItem;
@@ -1635,15 +1636,14 @@ void CActor::UpdateArtefactsOnBelt()
 
           }
 	}
-#endif
+#endif  // #ifdef OUTFIT_AF
 
 #ifdef OBJECTS_RADIOACTIVE
 #ifdef AF_PSY_HEALTH
 	conditions().ChangePsyHealth( summary_prs * f_update_time );
 #endif
 	conditions().ChangeRadiation( summary_rrs * f_update_time );
-#endif
-#endif
+#endif  // #ifdef OBJECTS_RADIOACTIVE
 
 	callback( GameObject::eUpdateArtefactsOnBelt )( f_update_time );
 }
