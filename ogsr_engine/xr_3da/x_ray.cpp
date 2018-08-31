@@ -20,6 +20,9 @@
 #include "Text_Console.h"
 #include <process.h>
 
+#define READ_IF_EXISTS(ltx,method,section,name,default_value)\
+	((ltx->line_exist(section,name)) ? (ltx->method(section,name)) : (default_value))
+
 //---------------------------------------------------------------------
 ENGINE_API CInifile* pGameIni		= NULL;
 BOOL	g_bIntroFinished			= FALSE;
@@ -98,6 +101,19 @@ void InitConsole	()
 		sscanf					(strstr(Core.Params,"-ltx ")+5,"%[^ ] ",c_name);
 		strcpy_s					(Console->ConfigFile,c_name);
 	}
+
+	Core.Features.set(
+	  xrCore::Feature::equipped_untradable,
+	  READ_IF_EXISTS(
+	    pSettings, r_bool, "dragdrop", "equipped_untradable", false
+	  )
+        );
+	Core.Features.set(
+	  xrCore::Feature::highlight_equipped,
+	  READ_IF_EXISTS(
+	    pSettings, r_bool, "dragdrop", "highlight_equipped",  false
+	  )
+	);
 }
 
 void InitInput		()
