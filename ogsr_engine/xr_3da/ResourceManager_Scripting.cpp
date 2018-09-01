@@ -1,5 +1,5 @@
 #include "stdafx.h"
-#pragma hdrstop
+
 
 #include	"render.h"
 #include	"ResourceManager.h"

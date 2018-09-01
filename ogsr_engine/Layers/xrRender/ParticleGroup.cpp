@@ -1,6 +1,6 @@
 //---------------------------------------------------------------------------
 #include "stdafx.h"
-#pragma hdrstop
+
 
 #include "..\..\xrParticles\psystem.h"
 #include "ParticleGroup.h"
