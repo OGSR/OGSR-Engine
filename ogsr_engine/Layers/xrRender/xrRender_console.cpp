@@ -1,5 +1,4 @@
 #include	"stdafx.h"
-#pragma		hdrstop
 
 #include	"xrRender_console.h"
 #include "..\xrRender_R2\r2_fog_volumes.h"
