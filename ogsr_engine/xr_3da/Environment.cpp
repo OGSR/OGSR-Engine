@@ -1,5 +1,5 @@
 #include "stdafx.h"
-#pragma hdrstop
+
 
 #ifndef _EDITOR
     #include "render.h"

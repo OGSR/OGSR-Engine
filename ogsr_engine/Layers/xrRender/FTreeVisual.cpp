@@ -1,5 +1,5 @@
 #include "stdafx.h"
-#pragma hdrstop
+
 
 #include "..\..\xr_3da\igame_level.h"
 #include "..\..\xr_3da\fmesh.h"

@@ -7,7 +7,7 @@
 ////////////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
-#pragma hdrstop
+
 #pragma pack(push,4)
 
 #include "../xrNetServer/net_utils.h"

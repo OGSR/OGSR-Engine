@@ -1,5 +1,5 @@
 #include "stdafx.h"
-#pragma hdrstop
+
 
 #pragma warning(push)
 #pragma warning(disable:4995)

@@ -3,7 +3,7 @@
 //////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
-#pragma hdrstop
+
 
 #include "DetailManager.h"
 #include "cl_intersect.h"

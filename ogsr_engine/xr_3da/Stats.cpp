@@ -1,6 +1,6 @@
 #include "stdafx.h"
 #include "GameFont.h"
-#pragma hdrstop
+
 
 #include "ISpatial.h"
 #include "IGame_Persistent.h"
