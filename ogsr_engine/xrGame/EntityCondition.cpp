@@ -122,7 +122,6 @@ void CEntityCondition::reinit	()
 	m_fDeltaHealth			= 0;
 	m_fDeltaPower			= 0;
 	m_fDeltaRadiation		= 0;
-	m_fDeltaCircumspection	= 0;
 	m_fDeltaEntityMorale	= 0;
 	m_fDeltaPsyHealth		= 0;
 
@@ -133,11 +132,6 @@ void CEntityCondition::reinit	()
 
 	ClearWounds				();
 
-}
-
-void CEntityCondition::ChangeCircumspection(float value)
-{
-	m_fDeltaCircumspection += value;
 }
 
 void CEntityCondition::ChangeEntityMorale(float value)
@@ -221,7 +215,6 @@ void CEntityCondition::UpdateConditionTime()
 		m_fDeltaHealth			= 0;
 		m_fDeltaPower			= 0;
 		m_fDeltaRadiation		= 0;
-		m_fDeltaCircumspection	= 0;
 		m_fDeltaEntityMorale	= 0;
 	}
 
@@ -269,7 +262,6 @@ void CEntityCondition::UpdateCondition()
 	m_fDeltaPower				= 0;
 	m_fDeltaRadiation			= 0;
 	m_fDeltaPsyHealth			= 0;
-	m_fDeltaCircumspection		= 0;
 	m_fDeltaEntityMorale		= 0;
 
 	clamp						(health(),			MIN_HEALTH, max_health());

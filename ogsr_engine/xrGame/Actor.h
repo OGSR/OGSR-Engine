@@ -60,6 +60,16 @@ class CActorStatisticMgr;
 
 class CLocationManager;
 
+struct ActorRestoreParams
+{
+	float	HealthRestoreSpeed;
+	float	PowerRestoreSpeed;
+	float	BleedingRestoreSpeed;
+	float	SatietyRestoreSpeed;
+	float	PsyHealthRestoreSpeed;
+	float	RadiationRestoreSpeed;
+};
+
 class	CActor: 
 	public CEntityAlive, 
 	public IInputReceiver,
@@ -201,8 +211,9 @@ public:
 public:
 	//свойства артефактов
 	virtual void		UpdateArtefactsOnBelt();
-	virtual void		ApplyArtefactRestore(CArtefact* artefact, float f_update_time);
-	virtual float		HitArtefactsOnBelt(float hit_power, ALife::EHitType hit_type);
+
+	virtual ActorRestoreParams		ActiveArtefactsOnBelt();
+	virtual float					HitArtefactsOnBelt(float hit_power, ALife::EHitType hit_type);
 
 	virtual void		UpdateArtefactPanel();
 protected:
