@@ -1193,33 +1193,48 @@ void CInventoryItem::SetLoadedBeltIndex( u8 pos ) {
 
 
 void CInventoryItem::OnMoveToSlot() {
-#ifdef EQUIPPED_UNTRADABLE
   if ( smart_cast<CActor*>( object().H_Parent() ) ) {
-    m_flags.set( FIAlwaysUntradable, TRUE );
-    m_flags.set( FIUngroupable,      TRUE );
+    if ( Core.Features.test( xrCore::Feature::equipped_untradable ) ) {
+      m_flags.set( FIAlwaysUntradable, TRUE );
+      m_flags.set( FIUngroupable,      TRUE );
+      if ( Core.Features.test( xrCore::Feature::highlight_equipped ) )
+        m_highlight_equipped = true;
+    }
+    else if ( Core.Features.test( xrCore::Feature::highlight_equipped ) ) {
+      m_flags.set( FIUngroupable, TRUE );
+      m_highlight_equipped = true;
+    }
   }
-#endif
-  m_highlight_equipped = true;
 };
 
 
 void CInventoryItem::OnMoveToBelt() {
-#ifdef EQUIPPED_UNTRADABLE
   if ( smart_cast<CActor*>( object().H_Parent() ) ) {
-    m_flags.set( FIAlwaysUntradable, TRUE );
-    m_flags.set( FIUngroupable,      TRUE );
+    if ( Core.Features.test( xrCore::Feature::equipped_untradable ) ) {
+      m_flags.set( FIAlwaysUntradable, TRUE );
+      m_flags.set( FIUngroupable,      TRUE );
+      if ( Core.Features.test( xrCore::Feature::highlight_equipped ) )
+        m_highlight_equipped = true;
+    }
+    else if ( Core.Features.test( xrCore::Feature::highlight_equipped ) ) {
+      m_flags.set( FIUngroupable, TRUE );
+      m_highlight_equipped = true;
+    }
   }
-#endif
-  m_highlight_equipped = true;
 };
 
 
 void CInventoryItem::OnMoveToRuck() {
-#ifdef EQUIPPED_UNTRADABLE
   if ( smart_cast<CActor*>( object().H_Parent() ) ) {
-    m_flags.set( FIAlwaysUntradable, FALSE );
-    m_flags.set( FIUngroupable,      FALSE );
+    if ( Core.Features.test( xrCore::Feature::equipped_untradable ) ) {
+      m_flags.set( FIAlwaysUntradable, FALSE );
+      m_flags.set( FIUngroupable,      FALSE );
+      if ( Core.Features.test( xrCore::Feature::highlight_equipped ) )
+        m_highlight_equipped = false;
+    }
+    else if ( Core.Features.test( xrCore::Feature::highlight_equipped ) ) {
+      m_flags.set( FIUngroupable, FALSE );
+      m_highlight_equipped = false;
+    }
   }
-#endif
-  m_highlight_equipped = false;
 };

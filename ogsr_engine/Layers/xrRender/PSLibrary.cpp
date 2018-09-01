@@ -2,7 +2,7 @@
 // file: PSLibrary.cpp
 //----------------------------------------------------
 #include "stdafx.h"
-#pragma hdrstop
+
 
 #include "PSLibrary.h"
 #include "ParticleEffect.h"

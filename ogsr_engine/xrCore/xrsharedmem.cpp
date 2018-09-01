@@ -1,5 +1,5 @@
 #include "stdafx.h"
-#pragma hdrstop
+
 
 XRCORE_API	smem_container*	g_pSharedMemoryContainer	= NULL;
 

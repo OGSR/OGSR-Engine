@@ -1,5 +1,5 @@
 #include "stdafx.h"
-#pragma hdrstop
+
 
 #include "LocatorAPI_defs.h"
 #pragma warning(disable:4995)

@@ -2,7 +2,7 @@
 //
 
 #include "stdafx.h"
-#pragma hdrstop
+
 
 #include <io.h>
 #include <fcntl.h>

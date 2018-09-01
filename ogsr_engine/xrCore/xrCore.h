@@ -170,7 +170,13 @@ public:
 
 	Flags16		ParamFlags;
 	enum		ParamFlag {
-		dbg	= ( 1 << 0 ),
+	  dbg = ( 1 << 0 ),
+	};
+
+	Flags16		Features;
+	enum		Feature {
+	  equipped_untradable = ( 1 << 0 ),
+	  highlight_equipped  = ( 1 << 1 ),
 	};
 
 	void		_initialize	(LPCSTR ApplicationName, LogCallback cb=0, BOOL init_fs=TRUE, LPCSTR fs_fname=0);

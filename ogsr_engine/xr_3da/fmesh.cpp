@@ -1,5 +1,5 @@
 #include "stdafx.h"
-#pragma hdrstop
+
 
 #ifdef ENGINE_BUILD
 #pragma warning(disable:4995)
