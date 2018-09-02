@@ -12,7 +12,7 @@ private:
 	on_dialog*		m_on_dialog = nullptr;
 
 public:
-	void			_initialize			(const bool &dedicated);
+	void			_initialize			();
 	
 	crashhandler*	get_crashhandler() const { return handler; };
 	void			set_crashhandler	(crashhandler* handler)	{ this->handler = handler; };

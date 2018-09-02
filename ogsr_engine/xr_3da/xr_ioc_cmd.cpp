@@ -394,11 +394,7 @@ public:
 
 	virtual void	Execute	(LPCSTR args)
 	{
-#ifdef DEDICATED_SERVER
-		inherited::Execute	("renderer_r1");
-#else
 		inherited::Execute	(args);
-#endif // DEDICATED_SERVER
 
 		psDeviceFlags.set	(rsR2, (renderer_value>0) );
 		r2_sun_static =		(renderer_value!=2);
@@ -558,13 +554,6 @@ if(strstr(Core.Params,"designer"))
 	CMD1(CCC_DumpResources,		"dump_resources");
 	CMD1(CCC_DumpOpenFiles,		"dump_open_files");
 //#endif
-
-
-	extern int g_svTextConsoleUpdateRate;
-	CMD4(CCC_Integer, "sv_console_update_rate", &g_svTextConsoleUpdateRate, 1, 100);
-
-	extern int g_svDedicateServerUpdateReate;
-	CMD4(CCC_Integer, "sv_dedicated_server_update_rate", &g_svDedicateServerUpdateReate, 1, 1000);
 
 	Fvector		rp_min, rp_max;
 	rp_min.set(0, 0, 0);	rp_max.set(100, 100, 100);

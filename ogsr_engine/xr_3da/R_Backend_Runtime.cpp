@@ -10,7 +10,6 @@
 
 void CBackend::OnFrameEnd	()
 {
-#ifndef DEDICATED_SERVER
 	for (u32 stage=0; stage<HW.Caps.raster.dwStages; stage++)
 		CHK_DX(HW.pDevice->SetTexture(0,0));
 	CHK_DX				(HW.pDevice->SetStreamSource	(0,0,0,0));
@@ -18,18 +17,15 @@ void CBackend::OnFrameEnd	()
 	CHK_DX				(HW.pDevice->SetVertexShader	(0));
 	CHK_DX				(HW.pDevice->SetPixelShader		(0));
 	Invalidate			();
-#endif
 }
 
 void CBackend::OnFrameBegin	()
 {
-#ifndef DEDICATED_SERVER
 	PGO					(Msg("PGO:*****frame[%d]*****",Device.dwFrame));
 	Memory.mem_fill		(&stat,0,sizeof(stat));
 	Vertex.Flush		();
 	Index.Flush			();
 	set_Stencil			(FALSE);
-#endif
 }
 
 void CBackend::Invalidate	()

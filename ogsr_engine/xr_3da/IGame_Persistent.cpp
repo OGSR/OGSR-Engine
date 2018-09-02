@@ -152,12 +152,8 @@ void IGame_Persistent::OnGameEnd	()
 void IGame_Persistent::OnFrame		()
 {
 
-#ifndef DEDICATED_SERVER
 	if(!Device.Paused() || Device.dwPrecacheFrame)
 		Environment().OnFrame				();
-#endif
-
-#ifndef _EDITOR
 
 	Device.Statistic->Particles_starting= ps_needtoplay.size	();
 	Device.Statistic->Particles_active	= ps_active.size		();
@@ -184,7 +180,6 @@ void IGame_Persistent::OnFrame		()
 		ps_destroy.pop_back		();
 		psi->PSI_internal_delete();
 	}
-#endif
 }
 
 void IGame_Persistent::destroy_particles		(const bool &all_particles)
