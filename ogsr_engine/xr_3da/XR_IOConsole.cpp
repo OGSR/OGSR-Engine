@@ -133,8 +133,6 @@ void CConsole::OnRender	()
 		 ( g_pGamePersistent && g_pGamePersistent->m_pMainMenu && g_pGamePersistent->m_pMainMenu->IsActive() ) )	
 		 bGame = true;
 
-	if		(g_dedicated_server)				bGame = false;
-
 	VERIFY	(HW.pDevice);
 
 	//*** Shadow
@@ -525,8 +523,8 @@ void CConsole::Show			()
 
 void CConsole::Hide()
 {
-	if	(!bVisible)													return;
-	if	(g_pGamePersistent && g_dedicated_server)	return;
+	if (!bVisible)
+		return;
 
 	bVisible				= false;
 	Device.seqFrame.Remove	(this);

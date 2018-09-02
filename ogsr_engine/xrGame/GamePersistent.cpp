@@ -189,7 +189,7 @@ void CGamePersistent::OnGameEnd	()
 
 void CGamePersistent::WeathersUpdate()
 {
-	if (g_pGameLevel && !g_dedicated_server)
+	if (g_pGameLevel)
 	{
 		CActor* actor				= smart_cast<CActor*>(Level().CurrentViewEntity());
 		BOOL bIndoor				= TRUE;
@@ -255,7 +255,7 @@ void CGamePersistent::start_logo_intro		()
 	if (Device.dwPrecacheFrame==0)
 	{
 		m_intro_event.bind		(this,&CGamePersistent::update_logo_intro);
-		if (!g_dedicated_server && 0==xr_strlen(m_game_params.m_game_or_spawn) && NULL==g_pGameLevel)
+		if (0==xr_strlen(m_game_params.m_game_or_spawn) && NULL==g_pGameLevel)
 		{
 			VERIFY				(NULL==m_intro);
 			m_intro				= xr_new<CUISequencer>();
@@ -316,7 +316,7 @@ void CGamePersistent::OnFrame	()
 #ifdef DEBUG
 	++m_frame_counter;
 #endif
-	if (!g_dedicated_server && !m_intro_event.empty())	m_intro_event();
+	if (!m_intro_event.empty())	m_intro_event();
 
 	if( !m_pMainMenu->IsActive() )
 		m_pMainMenu->DestroyInternal(false);

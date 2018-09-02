@@ -37,8 +37,6 @@
 #	include "PHDebug.h"
 #endif
 
-ENGINE_API bool g_dedicated_server;
-
 CGameObject::CGameObject		()
 {
 	init						();
@@ -46,7 +44,7 @@ CGameObject::CGameObject		()
 	m_bCrPr_Activated			= false;
 	m_dwCrPr_ActivationStep		= 0;
 	m_spawn_time				= 0;
-	m_ai_location				= !g_dedicated_server ? xr_new<CAI_ObjectLocation>() : 0;
+	m_ai_location				= xr_new<CAI_ObjectLocation>();
 	m_server_flags.one			();
 
 	auto dummy_callback = std::make_unique<GOCallbackInfo>();
@@ -95,8 +93,7 @@ void CGameObject::Load(LPCSTR section)
 void CGameObject::reinit	()
 {
 	m_visual_callback.clear	();
-	if (!g_dedicated_server)
-        ai_location().reinit	();
+	ai_location().reinit	();
 
 	// clear callbacks
 	for (auto& pair : m_callbacks)
@@ -300,12 +297,10 @@ BOOL CGameObject::net_Spawn		(CSE_Abstract*	DC)
 	}
 
 	reload						(*cNameSect());
-	if(!g_dedicated_server)
-		CScriptBinder::reload	(*cNameSect());
+	CScriptBinder::reload	(*cNameSect());
 	
 	reinit						();
-	if(!g_dedicated_server)
-		CScriptBinder::reinit	();
+	CScriptBinder::reinit	();
 #ifdef DEBUG
 	if(ph_dbg_draw_mask1.test(ph_m1_DbgTrackObject)&&stricmp(PH_DBG_ObjectTrack(),*cName())==0)
 	{
@@ -821,8 +816,7 @@ void CGameObject::shedule_Update	(u32 dt)
 	// Msg							("-SUB-:[%x][%s] CGameObject::shedule_Update",smart_cast<void*>(this),*cName());
 	inherited::shedule_Update	(dt);
 	
-	if(!g_dedicated_server)
-		CScriptBinder::shedule_Update(dt);
+	CScriptBinder::shedule_Update(dt);
 }
 
 BOOL CGameObject::net_SaveRelevant	()
@@ -884,8 +878,7 @@ u32	CGameObject::ef_detector_type		() const
 void CGameObject::net_Relcase			(CObject* O)
 {
 	inherited::net_Relcase		(O);
-	if(!g_dedicated_server)
-		CScriptBinder::net_Relcase	(O);
+	CScriptBinder::net_Relcase	(O);
 }
 
 CScriptCallbackEx<void>& CGameObject::callback(GameObject::ECallbackType type) const

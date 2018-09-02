@@ -1133,7 +1133,7 @@ void CWeapon::SpawnAmmo(u32 boxCurr, LPCSTR ammoSect, u32 ParentID)
 		D->ID_Phantom				= 0xffff;
 		D->s_flags.assign			(M_SPAWN_OBJECT_LOCAL);
 		D->RespawnTime				= 0;
-		l_pA->m_tNodeID				= g_dedicated_server ? u32(-1) : ai_location().level_vertex_id();
+		l_pA->m_tNodeID				= ai_location().level_vertex_id();
 
 		if(boxCurr == 0xffffffff) 	
 			boxCurr					= l_pA->m_boxSize;

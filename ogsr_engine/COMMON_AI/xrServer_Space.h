@@ -6,6 +6,8 @@
 //	Description : Server objects space
 ////////////////////////////////////////////////////////////////////////////
 
+#pragma once
+
 #include "script_export_space.h"
 
 #define SERVER_ENTITY_EDITOR_METHODS					virtual void FillProps(LPCSTR pref, PropItemVec& values);

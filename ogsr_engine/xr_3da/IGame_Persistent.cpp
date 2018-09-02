@@ -13,10 +13,6 @@
 #	include "CustomHUD.h"
 #endif
 
-#ifdef _EDITOR
-	bool g_dedicated_server	= false;
-#endif
-
 ENGINE_API	IGame_Persistent*		g_pGamePersistent	= NULL;
 
 bool IsMainMenuActive() { return  g_pGamePersistent && g_pGamePersistent->m_pMainMenu && g_pGamePersistent->m_pMainMenu->IsActive(); }
@@ -56,8 +52,7 @@ void IGame_Persistent::OnAppDeactivate		()
 
 void IGame_Persistent::OnAppStart	()
 {
-	if(!g_dedicated_server)
-		Environment().load				();
+	Environment().load();
 }
 
 void IGame_Persistent::OnAppEnd		()

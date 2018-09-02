@@ -150,10 +150,6 @@ void CStats::Show()
 		Memory.stat_calls	= 0		;
 	}
 
-	////////////////////////////////////////////////
-	if (g_dedicated_server) return;
-	////////////////////////////////////////////////
-
 	CGameFont& F = *pFont;
 	float		f_base_size	= 0.01f;
 				F.SetHeightI	(f_base_size);

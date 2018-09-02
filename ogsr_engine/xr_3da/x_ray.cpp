@@ -108,8 +108,6 @@ void InitConsole	()
 void InitInput		()
 {
 	BOOL bCaptureInput			= !strstr(Core.Params,"-i");
-	if(g_dedicated_server)
-		bCaptureInput			= FALSE;
 
 	pInput						= xr_new<CInput>		(bCaptureInput);
 }
@@ -328,8 +326,6 @@ struct damn_keys_filter {
 typedef void DUMMY_STUFF( const void*, const u32&, void* );
 XRCORE_API DUMMY_STUFF* g_temporary_stuff;
 #include "trivial_encryptor.h"
-
-ENGINE_API	bool g_dedicated_server	= false;
 
 int APIENTRY WinMain_impl(HINSTANCE hInstance,
                      HINSTANCE hPrevInstance,
@@ -686,10 +682,7 @@ void CApplication::LoadDraw		()
 
 	if(!Device.Begin () )		return;
 
-	if	(g_dedicated_server)
-		Console->OnRender			();
-	else
-		load_draw_internal			();
+	load_draw_internal			();
 
 	Device.End					();
 }
