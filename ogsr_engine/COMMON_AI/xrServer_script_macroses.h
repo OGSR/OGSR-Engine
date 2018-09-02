@@ -14,35 +14,16 @@
 #include "ai_space.h"
 #include "script_engine.h"
 
-//#define USE_WRITER_READER
 class CSE_Abstract;
 class NET_Packet;
 class CSE_ALifeMonsterAbstract;
 class CALifeSmartTerrainTask;
 
-//#ifndef USE_WRITER_READER
-//	DEFINE_LUA_WRAPPER_METHOD_R2P1_V1	(save,			NET_Packet)\
-//	DEFINE_LUA_WRAPPER_METHOD_R2P1_V1	(load,			NET_Packet)
-//#else
-//	DEFINE_LUA_WRAPPER_METHOD_R2P1_V1	(save,			NET_Packet)\
-//	DEFINE_LUA_WRAPPER_METHOD_R2P1_V1	(load,			NET_Packet)\
-//	DEFINE_LUA_WRAPPER_METHOD_R2P1_V1	(save,			IWriter)\
-//	DEFINE_LUA_WRAPPER_METHOD_R2P1_V1	(load,			IReader)
-//#endif
-#ifdef XRSE_FACTORY_EXPORTS
-#define INHERIT_ABSTRACT \
-	DEFINE_LUA_WRAPPER_METHOD_R2P1_V1	(STATE_Write,	NET_Packet)\
-	DEFINE_LUA_WRAPPER_METHOD_R2P1_V2	(STATE_Read,	NET_Packet,	u16)\
-	DEFINE_LUA_WRAPPER_METHOD_R2P2_V2	(FillProps,		LPCSTR,	PropItemVec)\
-	DEFINE_LUA_WRAPPER_METHOD_R2P1_V4	(OnEvent,		NET_Packet, u16, u32, ClientID)\
-	DEFINE_LUA_WRAPPER_METHOD_0			(init,			CSE_Abstract*)
-#else
 #define INHERIT_ABSTRACT \
 	DEFINE_LUA_WRAPPER_METHOD_R2P1_V1	(STATE_Write,	NET_Packet)\
 	DEFINE_LUA_WRAPPER_METHOD_R2P1_V2	(STATE_Read,	NET_Packet,	u16)\
 	DEFINE_LUA_WRAPPER_METHOD_R2P2_V2	(FillProps,		LPCSTR,	PropItemVec)\
 	DEFINE_LUA_WRAPPER_METHOD_0			(init,			CSE_Abstract*)
-#endif
 
 #define INHERIT_ALIFE \
 	INHERIT_ABSTRACT\
@@ -174,33 +155,11 @@ struct CWrapperAbstractItem : public T, public luabind::wrap_base {
 #define luabind_virtual_pure(a,b) \
 	.def(	constructor<LPCSTR>())
 
-//#ifndef USE_WRITER_READER
-//#	define luabind_virtual_pure(a,b) \
-//		.def(	constructor<LPCSTR>()) \
-//		DEFINE_LUABIND_VIRTUAL_FUNCTION_EXPLICIT_1(a,b,save,void,NET_Packet&,NET_Packet*) \
-//		DEFINE_LUABIND_VIRTUAL_FUNCTION_EXPLICIT_1(a,b,load,void,NET_Packet&,NET_Packet*) 
-//#else
-//#	define luabind_virtual_pure(a,b) \
-//		.def(	constructor<LPCSTR>()) \
-//		DEFINE_LUABIND_VIRTUAL_FUNCTION_EXPLICIT_1(a,b,save,void,NET_Packet&,NET_Packet*) \
-//		DEFINE_LUABIND_VIRTUAL_FUNCTION_EXPLICIT_1(a,b,load,void,NET_Packet&,NET_Packet*) \
-//		DEFINE_LUABIND_VIRTUAL_FUNCTION_EXPLICIT_1(a,b,save,void,IWriter&,IWriter*) \
-//		DEFINE_LUABIND_VIRTUAL_FUNCTION_EXPLICIT_1(a,b,load,void,IReader&,IReader*)
-//#endif
-#ifdef XRSE_FACTORY_EXPORTS
-#define luabind_virtual_abstract(a,b) \
-	DEFINE_LUABIND_VIRTUAL_FUNCTION(a,b,FillProps	) \
-	DEFINE_LUABIND_VIRTUAL_FUNCTION(a,b,STATE_Write	) \
-	DEFINE_LUABIND_VIRTUAL_FUNCTION(a,b,STATE_Read	) \
-	DEFINE_LUABIND_VIRTUAL_FUNCTION(a,b,OnEvent		) \
-	DEFINE_LUABIND_VIRTUAL_FUNCTION(a,b,init		)
-#else
 #define luabind_virtual_abstract(a,b) \
 	DEFINE_LUABIND_VIRTUAL_FUNCTION(a,b,FillProps	) \
 	DEFINE_LUABIND_VIRTUAL_FUNCTION(a,b,STATE_Write	) \
 	DEFINE_LUABIND_VIRTUAL_FUNCTION(a,b,STATE_Read	) \
 	DEFINE_LUABIND_VIRTUAL_FUNCTION(a,b,init		)
-#endif
 
 #define luabind_virtual_alife(a,b) \
 	DEFINE_LUABIND_VIRTUAL_FUNCTION_EXPLICIT_CONST_0(a,b,can_switch_online,bool) \

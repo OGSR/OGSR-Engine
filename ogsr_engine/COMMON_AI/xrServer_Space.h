@@ -6,9 +6,6 @@
 //	Description : Server objects space
 ////////////////////////////////////////////////////////////////////////////
 
-#ifndef xrServer_SpaceH
-#define xrServer_SpaceH
-
 #include "script_export_space.h"
 
 #define SERVER_ENTITY_EDITOR_METHODS					virtual void FillProps(LPCSTR pref, PropItemVec& values);
@@ -50,15 +47,9 @@ DEFINE_VECTOR	(Fvector,					FVECTOR_VECTOR,					FVECTOR_IT);
 #	define DECLARE_ENTITY_DESTROY
 #endif
 
-#ifdef XRSE_FACTORY_EXPORTS
-#	define DECLARE_ENTITY_DESTROY
-#endif
-
 #ifdef DECLARE_ENTITY_DESTROY
 template <class T> void	F_entity_Destroy	(T *&P)
 {
 	xr_delete	(P);
 };
-#endif
-
 #endif

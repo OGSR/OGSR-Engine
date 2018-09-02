@@ -393,9 +393,6 @@ void game_cl_GameState::set_type_name(LPCSTR s)
 };
 
 void game_cl_GameState::reset_ui() { //KRodin: ‘ункци€ правильно работает именно в таком варианте! Ќ≈ »«ћ≈Ќя“№!
-  if ( g_dedicated_server )
-    return;
-
   auto h = smart_cast<CHUDManager*>( Level().pHUD );
 
   auto ui = h->GetUI();

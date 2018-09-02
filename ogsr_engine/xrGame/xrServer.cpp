@@ -46,7 +46,7 @@ xrClientData::~xrClientData()
 }
 
 
-xrServer::xrServer():IPureServer(Device.GetTimerGlobal(), g_dedicated_server)
+xrServer::xrServer():IPureServer(Device.GetTimerGlobal())
 {
 	m_iCurUpdatePacket = 0;
 	m_aUpdatePackets.push_back(NET_Packet());

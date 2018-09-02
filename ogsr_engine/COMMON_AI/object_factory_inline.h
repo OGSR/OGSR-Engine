@@ -55,7 +55,6 @@ IC	const CObjectFactory::OBJECT_ITEM_STORAGE &CObjectFactory::clsids	() const
 	return				(m_clsids);
 }
 
-#ifndef NO_XR_GAME
 IC	const CObjectItemAbstract &CObjectFactory::item	(const CLASS_ID &clsid) const
 {
 	actualize			();
@@ -63,18 +62,6 @@ IC	const CObjectItemAbstract &CObjectFactory::item	(const CLASS_ID &clsid) const
 	VERIFY				((I != clsids().end()) && ((*I)->clsid() == clsid));
 	return				(**I);
 }
-#else
-IC	const CObjectItemAbstract *CObjectFactory::item	(const CLASS_ID &clsid, bool no_assert) const
-{
-	actualize			();
-	const_iterator		I = std::lower_bound(clsids().begin(),clsids().end(),clsid,CObjectItemPredicate());
-	if ((I == clsids().end()) || ((*I)->clsid() != clsid)) {
-		R_ASSERT		(no_assert);
-		return			(0);
-	}
-	return				(*I);
-}
-#endif
 
 IC	void CObjectFactory::add	(CObjectItemAbstract *item)
 {
@@ -83,10 +70,8 @@ IC	void CObjectFactory::add	(CObjectItemAbstract *item)
 	I					= std::find_if(clsids().begin(),clsids().end(),CObjectItemPredicateCLSID(item->clsid()));
 	VERIFY				(I == clsids().end());
 	
-#ifndef NO_XR_GAME
 	I					= std::find_if(clsids().begin(),clsids().end(),CObjectItemPredicateScript(item->script_clsid()));
 	VERIFY				(I == clsids().end());
-#endif
 	
 	m_actual			= false;
 	m_clsids.push_back	(item);
@@ -100,7 +85,6 @@ IC	int	CObjectFactory::script_clsid	(const CLASS_ID &clsid) const
 	return				(int(I - clsids().begin()));
 }
 
-#ifndef NO_XR_GAME
 IC	CObjectFactory::CLIENT_BASE_CLASS *CObjectFactory::client_object	(const CLASS_ID &clsid) const
 {
 	return				(item(clsid).client_object());
@@ -110,13 +94,6 @@ IC	CObjectFactory::SERVER_BASE_CLASS *CObjectFactory::server_object	(const CLASS
 {
 	return				(item(clsid).server_object(section));
 }
-#else
-IC	CObjectFactory::SERVER_BASE_CLASS *CObjectFactory::server_object	(const CLASS_ID &clsid, LPCSTR section) const
-{
-	const CObjectItemAbstract	*object = item(clsid,true);
-	return				(object ? object->server_object(section) : 0);
-}
-#endif
 
 IC	void CObjectFactory::actualize										() const
 {

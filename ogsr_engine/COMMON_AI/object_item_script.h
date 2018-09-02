@@ -21,20 +21,16 @@ protected:
 
 public:
 												CObjectItemScript	(
-#ifndef NO_XR_GAME
 													luabind::object client_creator, 
-#endif
 													luabind::object server_creator, 
 													const CLASS_ID &clsid, 
 													LPCSTR script_clsid
 												);
-#ifndef NO_XR_GAME
 												CObjectItemScript	(
 													luabind::object creator, 
 													const CLASS_ID &clsid, 
 													LPCSTR script_clsid
 												);
 	virtual ObjectFactory::CLIENT_BASE_CLASS	*client_object		() const;
-#endif
 	virtual ObjectFactory::SERVER_BASE_CLASS	*server_object		(LPCSTR section) const;
 };

@@ -10,8 +10,7 @@
 #include "object_item_script.h"
 #include "object_factory.h"
 
-#ifndef NO_XR_GAME
-#	include "attachable_item.h"
+#include "attachable_item.h"
 
 ObjectFactory::CLIENT_BASE_CLASS *CObjectItemScript::client_object	() const
 {
@@ -30,7 +29,6 @@ ObjectFactory::CLIENT_BASE_CLASS *CObjectItemScript::client_object	() const
 	return		(object->_construct());
 }
 
-#endif
 
 ObjectFactory::SERVER_BASE_CLASS *CObjectItemScript::server_object	(LPCSTR section) const
 {
@@ -74,22 +72,16 @@ ObjectFactory::SERVER_BASE_CLASS *CObjectItemScript::server_object	(LPCSTR secti
 }
 
 CObjectItemScript::CObjectItemScript	(
-#ifndef NO_XR_GAME
 	luabind::object		client_creator, 
-#endif
 	luabind::object		server_creator, 
 	const CLASS_ID		&clsid, 
 	LPCSTR				script_clsid
 ) : 
 	inherited								(clsid,script_clsid)
 {
-#ifndef NO_XR_GAME
 	m_client_creator						= client_creator;
-#endif
 	m_server_creator						= server_creator;
 }
-
-#ifndef NO_XR_GAME
 
 CObjectItemScript::CObjectItemScript	(
 	luabind::object		unknown_creator, 
@@ -101,4 +93,3 @@ CObjectItemScript::CObjectItemScript	(
 	m_client_creator = m_server_creator		= unknown_creator;
 }
 
-#endif
