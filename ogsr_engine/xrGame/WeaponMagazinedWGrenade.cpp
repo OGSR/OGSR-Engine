@@ -168,7 +168,8 @@ BOOL CWeaponMagazinedWGrenade::net_Spawn(CSE_Abstract* DC)
 	}
 	else
 	{
-		m_DefaultCartridge2.Load(*m_ammoTypes2[m_ammoType2], u8(m_ammoType2));
+		ASSERT_FMT( m_ammoType2 < m_ammoTypes2.size(), "Ammo type [%u] not found in weapon [%s]. Something strange...", m_ammoType2, this->cName().c_str() );
+		m_DefaultCartridge2.Load(m_ammoTypes2.at(m_ammoType2).c_str(), u8(m_ammoType2));
 		while ((u32)iAmmoElapsed2 > m_magazine2.size())
 			m_magazine2.push_back(m_DefaultCartridge2);
 	}

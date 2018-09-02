@@ -817,11 +817,7 @@ PIItem CInventory::GetAny(const char *name) const
 
 PIItem CInventory::GetAmmo(const char *name, bool forActor) const
 {
-	bool include_ruck = true;
-
-#ifdef AMMO_FROM_BELT
-	include_ruck = !forActor || !psActorFlags.test(AF_AMMO_ON_BELT);
-#endif
+	bool include_ruck = !forActor || !psActorFlags.test(AF_AMMO_ON_BELT);
 
 	PIItem itm;
 	if (include_ruck) {
@@ -1213,11 +1209,7 @@ PIItem CInventory::GetAmmoMaxCurr( const char *name, bool forActor ) const {
     return false;
   };
 
-#if defined( AMMO_FROM_BELT )
   bool include_ruck = !forActor || !psActorFlags.test( AF_AMMO_ON_BELT );
-#else
-  bool include_ruck = true;
-#endif
 
   Iterate( false, callback );
   if ( include_ruck ) {

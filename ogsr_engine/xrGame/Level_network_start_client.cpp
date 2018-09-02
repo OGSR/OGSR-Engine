@@ -94,8 +94,7 @@ bool	CLevel::net_start_client4				()
 		// *note: release version always has "mt_*" enabled
 		Device.seqFrameMT.Remove			(g_pNetProcessor);
 		Device.seqFrame.Remove				(g_pNetProcessor);
-		if (psDeviceFlags.test(mtNetwork))	Device.seqFrameMT.Add	(g_pNetProcessor,REG_PRIORITY_HIGH	+ 2);
-		else								Device.seqFrame.Add		(g_pNetProcessor,REG_PRIORITY_LOW	- 2);
+		Device.seqFrameMT.Add(g_pNetProcessor,REG_PRIORITY_HIGH	+ 2);
 
 		if(!psNET_direct_connect)
 		{

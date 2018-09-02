@@ -580,8 +580,7 @@ CApplication::CApplication()
 	// Register us
 	Device.seqFrame.Add			(this, REG_PRIORITY_HIGH+1000);
 	
-	if (psDeviceFlags.test(mtSound))	Device.seqFrameMT.Add		(&SoundProcessor);
-	else								Device.seqFrame.Add			(&SoundProcessor);
+	Device.seqFrameMT.Add(&SoundProcessor);
 
 	Console->Show				( );
 

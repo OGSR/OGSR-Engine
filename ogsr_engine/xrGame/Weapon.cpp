@@ -1182,11 +1182,9 @@ int CWeapon::GetAmmoCurrent(bool use_item_to_spawn) const
 
 		bool include_ruck = true;
 
-#ifdef AMMO_FROM_BELT
 		auto parent = const_cast<CObject*>(H_Parent());
 		auto pActor = smart_cast<CActor*>(parent);
 		include_ruck = !psActorFlags.test(AF_AMMO_ON_BELT) || !pActor;
-#endif //  AMMO_FROM_BELT
 
 		if (include_ruck)
 		{

@@ -639,9 +639,7 @@ bool CUITradeWnd::OnItemStartDrag(CUICellItem* itm)
 bool CUITradeWnd::OnItemSelected(CUICellItem* itm)
 {
 	SetCurrentItem(itm);
-#ifdef COLORIZE_WPN_AMMO_AND_ADDONS
 	itm->ColorizeItems( { &m_uidata->UIOurTradeList, &m_uidata->UIOthersTradeList, &m_uidata->UIOurBagList, &m_uidata->UIOthersBagList } );
-#endif
 	return false;
 }
 

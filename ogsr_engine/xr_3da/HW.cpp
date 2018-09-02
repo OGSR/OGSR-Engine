@@ -414,7 +414,7 @@ void CHW::updateWindowProps(HWND m_hWnd)
 		bool bBordersMode = strstr(Core.Params, "-draw_borders");
 		if (bBordersMode)
 			dwWindowStyle |= WS_BORDER | WS_DLGFRAME | WS_SYSMENU | WS_MINIMIZEBOX;
-		SetWindowLong( m_hWnd, GWL_STYLE, dwWindowStyle );
+		SetWindowLongPtr( m_hWnd, GWL_STYLE, dwWindowStyle );
 		// When moving from fullscreen to windowed mode, it is important to
 		// adjust the window size after recreating the device rather than
 		// beforehand to ensure that you get the window size you want.  For
@@ -458,8 +458,8 @@ void CHW::updateWindowProps(HWND m_hWnd)
 	}
 	else
 	{
-		SetWindowLong(m_hWnd, GWL_STYLE, dwWindowStyle = (WS_POPUP | WS_VISIBLE));
-		SetWindowLong(m_hWnd, GWL_EXSTYLE, WS_EX_TOPMOST);
+		SetWindowLongPtr(m_hWnd, GWL_STYLE, dwWindowStyle /*= (WS_POPUP | WS_VISIBLE)*/);
+		//SetWindowLongPtr(m_hWnd, GWL_EXSTYLE, WS_EX_TOPMOST); // Не из-за этого ли окно в полноэкранном режиме под отладчиком новозможно свернуть при исключении?
 	}
 
 	ShowCursor(FALSE);
