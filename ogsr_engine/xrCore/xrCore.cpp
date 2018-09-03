@@ -82,16 +82,10 @@ void xrCore::_initialize	(LPCSTR _ApplicationName, LogCallback cb, BOOL init_fs,
 		if (strstr(Params,"-cache"))  flags |= CLocatorAPI::flCacheFiles;
 		else flags &= ~CLocatorAPI::flCacheFiles;
 #endif // DEBUG
-#ifdef _EDITOR // for EDITORS - no cache
-		flags 				&=~ CLocatorAPI::flCacheFiles;
-#endif // _EDITOR
 		flags |= CLocatorAPI::flScanAppRoot;
 
-#ifndef	_EDITOR
-	#ifndef ELocatorAPIH
 		if (0!=strstr(Params,"-file_activity"))	 flags |= CLocatorAPI::flDumpFileActivity;
-	#endif
-#endif
+
 		FS._initialize		(flags,0,fs_fname);
 
 		Msg("[OGSR Engine (%s)] build date: [" __DATE__ " " __TIME__ "]", GetBuildConfiguration());
@@ -100,10 +94,8 @@ void xrCore::_initialize	(LPCSTR _ApplicationName, LogCallback cb, BOOL init_fs,
 
 		EFS._initialize		();
 #ifdef DEBUG
-    #ifndef	_EDITOR
 		Msg					("CRT heap 0x%08x",_get_heap_handle());
 		Msg					("Process heap 0x%08x",GetProcessHeap());
-    #endif
 #endif // DEBUG
 	}
 	

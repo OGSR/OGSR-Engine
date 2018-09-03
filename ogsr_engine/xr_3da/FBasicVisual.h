@@ -40,9 +40,6 @@ private:
 class	ENGINE_API				IRender_Visual
 {
 public:
-#ifdef _EDITOR
-    ogf_desc					desc		;
-#endif
 #ifdef DEBUG
 	shared_str					dbg_name	;
 #endif

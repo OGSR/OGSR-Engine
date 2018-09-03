@@ -209,7 +209,6 @@ u32		ps_r__detail_radius = 49;
 //- Mad Max
 float		ps_r2_gloss_factor			= 1.0f;
 //- Mad Max
-#ifndef _EDITOR
 #include	"..\..\xr_3da\xr_ioconsole.h"
 #include	"..\..\xr_3da\xr_ioc_cmd.h"
 
@@ -682,5 +681,3 @@ void		xrRender_initconsole	()
 
 	//	CMD3(CCC_Mask,		"extended_graph_stats",		&ps_service_flags,			S_EXTENDED_GRAPH_STATS);
 }
-
-#endif

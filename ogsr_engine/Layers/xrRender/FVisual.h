@@ -1,15 +1,9 @@
 // FVisual.h: interface for the FVisual class.
 //
 //////////////////////////////////////////////////////////////////////
-#ifndef FVisualH
-#define FVisualH
 #pragma once
 
-#ifdef _EDITOR
-#	include "fbasicvisual.h"
-#else
-#	include "..\..\xr_3da\fbasicvisual.h"
-#endif
+#include "..\..\xr_3da\fbasicvisual.h"
 
 class	Fvisual					: public		IRender_Visual, public IRender_Mesh
 {
@@ -24,5 +18,3 @@ public:
 	Fvisual();
 	virtual ~Fvisual();
 };
-
-#endif 

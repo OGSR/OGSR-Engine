@@ -1,9 +1,6 @@
 #include "stdafx.h"
 
-
-#ifndef _EDITOR
-    #include "render.h"
-#endif
+#include "render.h"
 
 #include "Environment.h"
 #include "xr_efflensflare.h"
@@ -16,9 +13,7 @@
 
 #include "resourcemanager.h"
 
-#ifndef _EDITOR
-	#include "IGame_Level.h"
-#endif
+#include "IGame_Level.h"
 
 #include "D3DUtils.h"
 
@@ -46,10 +41,6 @@ CEnvironment::CEnvironment	()
     eff_LensFlare 			= 0;
     eff_Thunderbolt			= 0;
 	OnDeviceCreate			();
-#ifdef _EDITOR
-	ed_from_time			= 0.f;
-	ed_to_time				= DAY_LENGTH;
-#endif
 	fGameTime				= 0.f;
     fTimeFactor				= 12.f;
 
@@ -150,11 +141,8 @@ void CEnvironment::SetWeather(shared_str name, bool forced)
 #ifdef WEATHER_LOGGING
 		Msg					("Starting Cycle: %s [%s]",*name,forced?"forced":"deferred");
 #endif
-    }else{
-#ifndef _EDITOR
-		FATAL				("! Empty weather name");
-#endif
-    }
+    }else
+		FATAL("! Empty weather name");
 }
 
 bool CEnvironment::SetWeatherFX(shared_str name)
@@ -206,11 +194,8 @@ bool CEnvironment::SetWeatherFX(shared_str name)
 		for (EnvIt l_it=CurrentWeather->begin(); l_it!=CurrentWeather->end(); l_it++)
 			Msg				(". Env: '%s' Tm: %3.2f",*(*l_it)->sect_name,(*l_it)->exec_time);
 #endif
-	}else{
-#ifndef _EDITOR
-		FATAL				("! Empty weather effect name");
-#endif
-	}
+	}else
+		FATAL("! Empty weather effect name");
 	return true;
 }
 
@@ -288,24 +273,7 @@ int get_ref_count(IUnknown* ii)
 
 void CEnvironment::OnFrame()
 {
-#ifdef _EDITOR
-	SetGameTime				(fGameTime+Device.fTimeDelta*fTimeFactor,fTimeFactor);
-    if (fsimilar(ed_to_time,DAY_LENGTH)&&fsimilar(ed_from_time,0.f)){
-	    if (fGameTime>DAY_LENGTH)	fGameTime-=DAY_LENGTH;
-    }else{
-	    if (fGameTime>ed_to_time){	
-        	fGameTime=fGameTime-ed_to_time+ed_from_time;
-            Current[0]=Current[1]=0;
-        }
-    	if (fGameTime<ed_from_time){	
-        	fGameTime=ed_from_time;
-            Current[0]=Current[1]=0;
-        }
-    }
-	if (!psDeviceFlags.is(rsEnvironment))		return;
-#else
 	if (!g_pGameLevel)		return;
-#endif
 
 //	if (pInput->iGetAsyncKeyState(DIK_O))		SetWeatherFX("surge_day"); 
 

@@ -91,9 +91,6 @@ public:
 	void							ED_UpdateBlender	(LPCSTR Name, IBlender*		data);
 	void							ED_UpdateMatrix		(LPCSTR Name, CMatrix*		data);
 	void							ED_UpdateConstant	(LPCSTR Name, CConstant*	data);
-#ifdef _EDITOR
-	void							ED_UpdateTextures	(AStringVec* names);
-#endif
 
 	// Low level resource creation
 	CTexture*						_CreateTexture		(LPCSTR Name);

@@ -49,9 +49,6 @@ BOOL	SPass::equal	(ref_state& _state, ref_ps& _ps, ref_vs& _vs, ref_ctable& _cta
 
 	if (T != _T)					return FALSE;
 	if (C != _C)					return FALSE;
-#ifdef _EDITOR
-	if (M != _M)					return FALSE;
-#endif
 	return TRUE;
 }
 

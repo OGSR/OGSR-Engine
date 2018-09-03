@@ -1,13 +1,8 @@
-#ifndef _RENDER_H_
-#define _RENDER_H_
+#pragma once
 
 #include "frustum.h"
 #include "vis_common.h"
 #include "IRenderDetailModel.h"
-
-#ifdef _EDITOR
-    #error you cant include this file in borland
-#endif
 
 // refs
 class ENGINE_API	IRenderable;
@@ -273,5 +268,3 @@ public:
 };
 
 extern ENGINE_API	IRender_interface*	Render;
-
-#endif

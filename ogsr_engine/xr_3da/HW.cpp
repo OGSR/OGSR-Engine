@@ -50,9 +50,7 @@ void CHW::Reset		(HWND hwnd)
 #ifdef DEBUG
 	R_CHK				(pDevice->CreateStateBlock			(D3DSBT_ALL,&dwDebugSB));
 #endif
-#ifndef _EDITOR
 	updateWindowProps	(hwnd);
-#endif
 }
 
 xr_token* vid_mode_token = nullptr;
@@ -111,17 +109,11 @@ void	CHW::DestroyDevice	()
 	_SHOW_REF				("refCount:dwDebugSB",dwDebugSB);
 	_RELEASE				(dwDebugSB);
 #endif
-#ifdef _EDITOR
-	_RELEASE				(HW.pDevice);
-#else
 	_SHOW_REF				("DeviceREF:",HW.pDevice);
 	_RELEASE				(HW.pDevice);
-#endif    
 	DestroyD3D				();
 	
-#ifndef _EDITOR
 	free_vid_mode_list		();
-#endif
 }
 void	CHW::selectResolution	(u32 &dwWidth, u32 &dwHeight, BOOL bWindowed)
 {
@@ -243,9 +235,7 @@ void		CHW::CreateDevice		(HWND m_hWnd)
 	D3DPRESENT_PARAMETERS&	P	= DevPP;
     ZeroMemory				( &P, sizeof(P) );
 
-#ifndef _EDITOR
 	selectResolution	(P.BackBufferWidth, P.BackBufferHeight, bWindowed);
-#endif
 // Back buffer
 //.	P.BackBufferWidth		= dwWidth;
 //. P.BackBufferHeight		= dwHeight;
@@ -322,10 +312,8 @@ void		CHW::CreateDevice		(HWND m_hWnd)
 	u32	memory									= pDevice->GetAvailableTextureMem	();
 	Msg		("*     Texture memory: %d M",		memory/(1024*1024));
 	Msg		("*          DDI-level: %2.1f",		float(D3DXGetDriverLevel(pDevice))/100.f);
-#ifndef _EDITOR
 	updateWindowProps							(m_hWnd);
 	fill_vid_mode_list							(this);
-#endif
 }
 
 UINT CHW::selectPresentInterval()
@@ -453,7 +441,6 @@ struct _uniq_mode
 	bool operator() (LPCSTR _other) {return !stricmp(_val,_other);}
 };
 
-#ifndef _EDITOR
 void free_vid_mode_list()
 {
 	for( int i=0; vid_mode_token[i].name; i++ )
@@ -507,5 +494,4 @@ void	fill_vid_mode_list			(CHW* _hw)
 #endif // DEBUG
 	}
 }
-#endif
 

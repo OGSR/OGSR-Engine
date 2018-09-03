@@ -14,9 +14,7 @@
 #include "environment.h"
 #include "Rain.h"
 //#include "xrRender\xrRender_console.h"
-#ifndef _EDITOR
-	#include "Render.h"
-#endif
+#include "Render.h"
 #include "r2_shader_exports.h"
 
 ShExports* shader_exports = NULL;
@@ -210,7 +208,6 @@ class cl_hemi_color	: public R_constant_setup {
 	}
 };	static cl_hemi_color		binder_hemi_color;
 
-#ifndef _EDITOR
 // KD binders
 class cl_resolution	: public R_constant_setup {
 	u32			marker;
@@ -394,7 +391,6 @@ class cl_detector	: public R_constant_setup {
 		RCache.set_c	(C,result);
 	}
 };	static cl_detector		binder_detector;
-#endif
 
 //////////////////////////////////////////////////
 //KRodin: разгрести, и выкинуть то что не используется!
