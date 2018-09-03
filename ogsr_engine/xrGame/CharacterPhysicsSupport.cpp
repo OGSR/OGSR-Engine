@@ -702,15 +702,8 @@ void CCharacterPhysicsSupport::ActivateShell			( CObject* who )
 #ifdef CORPSES_IGNORE_DYNAMIC
 	m_pPhysicsShell->SetIgnoreDynamic();
 #elif !defined ( CORPSES_COLLISION )
-	if(IsGameTypeSingle())
-	{
-		m_pPhysicsShell->SetPrefereExactIntegration	();//use exact integration for ragdolls in single
-		m_pPhysicsShell->SetRemoveCharacterCollLADisable();
-	}
-	else
-	{
-		m_pPhysicsShell->SetIgnoreDynamic();
-	}
+	m_pPhysicsShell->SetPrefereExactIntegration	();//use exact integration for ragdolls in single
+	m_pPhysicsShell->SetRemoveCharacterCollLADisable();
 #endif
 	m_pPhysicsShell->SetIgnoreSmall();
 	//end seting params

@@ -91,10 +91,7 @@ void SHit::Read_Packet_Cont		(NET_Packet	Packet)
 	Packet.r_u16			(boneID);
 	Packet.r_vec3			(p_in_bone_space);
 	Packet.r_float			(impulse);
-	if (IsGameTypeSingle())
-		aim_bullet				= Packet.r_u16()!=0;
-	else
-		aim_bullet				= false;
+	aim_bullet				= Packet.r_u16()!=0;
 	hit_type				= (ALife::EHitType)Packet.r_u16();	//hit type
 
 	if (hit_type == ALife::eHitTypeFireWound)
@@ -118,8 +115,7 @@ void SHit::Write_Packet_Cont		(NET_Packet	&Packet)
 	Packet.w_u16		(boneID);
 	Packet.w_vec3		(p_in_bone_space);
 	Packet.w_float		(impulse);
-	if (IsGameTypeSingle())
-		Packet.w_u16		(aim_bullet!=0);
+	Packet.w_u16		(aim_bullet!=0);
 	Packet.w_u16		(u16(hit_type&0xffff));	
 	if (hit_type == ALife::eHitTypeFireWound)
 	{

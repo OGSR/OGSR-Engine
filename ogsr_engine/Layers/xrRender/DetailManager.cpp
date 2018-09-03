@@ -4,16 +4,8 @@
 
 #include "stdafx.h"
 
-
 #include "DetailManager.h"
 #include "cl_intersect.h"
-
-#ifdef _EDITOR
-#	include "ESceneClassList.h"
-#	include "Scene.h"
-#	include "SceneObject.h"
-#	include "IGame_Persistent.h"
-#endif
 
 const float dbgOffset			= 0.f;
 const int	dbgItems			= 128;
@@ -106,7 +98,6 @@ CDetailManager::CDetailManager	()
 
 CDetailManager::~CDetailManager	()
 {
-#ifndef _EDITOR
 	for (u32 i = 0; i < dm_cache_size; ++i)
 		cache_pool[i].~Slot();
 	Memory.mem_free(cache_pool);
@@ -122,11 +113,7 @@ CDetailManager::~CDetailManager	()
 		Memory.mem_free(cache_level1[i]);
 	}
 	Memory.mem_free(cache_level1);
-#endif
 }
-/*
-*/
-#ifndef _EDITOR
 
 /*
 void dump	(CDetailManager::vis_list& lst)
@@ -197,7 +184,6 @@ void CDetailManager::Load		()
 	swing_desc[1].rot2	= pSettings->r_float("details","swing_fast_rot2");
 	swing_desc[1].speed	= pSettings->r_float("details","swing_fast_speed");
 }
-#endif
 void CDetailManager::Unload		()
 {
 	if (UseVS())	hw_Unload	();
@@ -225,11 +211,7 @@ void CDetailManager::UpdateVisibleM()
 	/* KD: there is some bug: frustrum created from full transform matrix seems to be broken in some frames, so we should use saved frustrum from render interface*/
 	View = RImplementation.ViewBase;
 
-#ifndef _EDITOR
 	float fade_limit = dm_current_fade;	
-#else
-	float fade_limit = dm_fade;
-#endif
 	fade_limit = fade_limit*fade_limit;
 
 	//	float fade_start			= 1.f;		fade_start=fade_start*fade_start;
@@ -249,13 +231,8 @@ void CDetailManager::UpdateVisibleM()
 	Device.Statistic->RenderDUMP_DT_VIS.Begin();
 	g_pGamePersistent->m_pGShaderConstants.m_blender_mode.w = 1.0f; //--#SM+#-- Флаг начала рендера травы [begin of grass render]
 
-#ifndef _EDITOR
 	for (u32 _mz = 0; _mz<dm_current_cache1_line; _mz++) {
 		for (u32 _mx = 0; _mx<dm_current_cache1_line; _mx++) {
-#else
-	for (u32 _mz = 0; _mz<dm_cache1_line; _mz++) {
-		for (u32 _mx = 0; _mx<dm_cache1_line; _mx++) {
-#endif
 			CacheSlot1& MS = cache_level1[_mz][_mx];
 			if (MS.empty)		continue;
 
@@ -269,9 +246,8 @@ void CDetailManager::UpdateVisibleM()
 
 				// if slot empty - continue
 				if (S.empty)	continue;
-#ifndef _EDITOR
+
 				if (!RImplementation.HOM.visible(S.vis))	continue;	// invisible-occlusion
-#endif
 																		// if upper test = fcvPartial - test inner slots
 																		// KD - if slot is far far away - do not test it.
 																		//				if () {
@@ -343,12 +319,10 @@ void CDetailManager::UpdateVisibleM()
 
 void CDetailManager::Render	()
 {
-#ifndef _EDITOR
 	if (0 == RImplementation.Details)		return;	// possibly deleted
 	if (0 == dtFS)						return;
 	if (!psDeviceFlags.is(rsDetails))	return;
 	if (g_pGamePersistent && g_pGamePersistent->m_pMainMenu && g_pGamePersistent->m_pMainMenu->IsActive())				return;
-#endif
 
 	// MT
 	MT_SYNC					();
@@ -369,14 +343,12 @@ void CDetailManager::Render	()
 u32 reset_frame = 0;
 void __stdcall	CDetailManager::MT_CALC		()
 {
-#ifndef _EDITOR
 	if (reset_frame == Device.dwFrame)	return;
 	// проверки
 	if (0 == RImplementation.Details)		return;	// possibly deleted
 	if (!psDeviceFlags.is(rsDetails))	return;
 	if (0 == dtFS)						return;
 	if (g_pGamePersistent && g_pGamePersistent->m_pMainMenu && g_pGamePersistent->m_pMainMenu->IsActive())				return;
-#endif    
 
 	MT.Enter					();
 	if (m_frame_calc!=Device.dwFrame)	

@@ -134,11 +134,6 @@ void	CBlender_Compile::r_End			()
 	dest.state				= Device.Resources->_CreateState		(RS.GetContainer());
 	dest.T					= Device.Resources->_CreateTextureList	(passTextures);
 	dest.C					= 0;
-#ifdef _EDITOR
-	dest.M					= 0;
-	SH->passes.push_back	(Device.Resources->_CreatePass(dest.state,dest.ps,dest.vs,dest.constants,dest.T,dest.M,dest.C));
-#else
 	ref_matrix_list			temp(0);
 	SH->passes.push_back	(Device.Resources->_CreatePass(dest.state,dest.ps,dest.vs,dest.constants,dest.T,temp,dest.C));
-#endif
 }

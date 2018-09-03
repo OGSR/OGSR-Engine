@@ -540,8 +540,7 @@ bool CActor::CanRun()
 
 bool CActor::CanSprint			()
 {
-	bool can_Sprint = CanAccelerate() && !conditions().IsCantSprint() &&
-						Game().PlayerCanSprint(this)
+	bool can_Sprint = CanAccelerate() && !conditions().IsCantSprint()
 						&& CanRun()
 						&& !(mstate_real&mcLStrafe || mstate_real&mcRStrafe)
 						&& InventoryAllowSprint()

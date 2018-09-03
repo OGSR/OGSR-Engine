@@ -101,17 +101,6 @@ public:
 #ifdef _LW_EXPORT
 	void			ParseObjectMotion(LWItemID object);
 #endif
-#ifdef _EDITOR
-	void 			FindNearestKey	(float t, float& min_k, float& max_k, float eps=EPS_L);
-	void			CreateKey		(float t, const Fvector& P, const Fvector& R);
-	void			DeleteKey		(float t);
-    void			NormalizeKeys	();
-    int				KeyCount		();
-	CEnvelope*		Envelope		(EChannelType et=ctPositionX){return envs[et];}
-    BOOL			ScaleKeys		(float from_time, float to_time, float scale_factor);
-    BOOL			NormalizeKeys	(float from_time, float to_time, float speed);
-    float			GetLength		(float* mn=0, float* mx=0);
-#endif
 };
 
 //--------------------------------------------------------------------------
@@ -122,51 +111,6 @@ enum ESMFlags{
     esmNoMix	= 1<<2,
     esmSyncPart	= 1<<3
 };
-
-#ifdef _EDITOR
-	#include "SkeletonMotions.h"
-
-class ENGINE_API CSMotion: public CCustomMotion{
-	BoneMotionVec	bone_mots;
-public:
-    u16			           	        m_BoneOrPart;
-    float		           	        fSpeed;
-    float		           	        fAccrue;
-    float		           	        fFalloff;
-    float		           	        fPower;
-	Flags8		           	        m_Flags;
-
-	xr_vector<motion_marks>			marks;
-
-    void			Clear			();
-public:
-					CSMotion		();
-					CSMotion		(CSMotion* src);
-	virtual			~CSMotion		();
-
-	void			_Evaluate		(int bone_idx, float t, Fvector& T, Fvector& R);
-
-    void			CopyMotion		(CSMotion* src);
-
-    st_BoneMotion*	FindBoneMotion	(shared_str name);
-    BoneMotionVec&	BoneMotions		()				{return bone_mots;}
-	Flags8			GetMotionFlags	(int bone_idx)	{return bone_mots[bone_idx].m_Flags;}
-
-	virtual void	Save			(IWriter& F);
-	virtual bool	Load			(IReader& F);
-
-	virtual void	SaveMotion		(const char* buf);
-	virtual bool	LoadMotion		(const char* buf);
-
-    void			SortBonesBySkeleton(BoneVec& bones);
-    void			WorldRotate		(int boneId, float h, float p, float b);
-
-    void			Optimize		();
-	#ifdef _LW_EXPORT
-	void			ParseBoneMotion	(LWItemID bone);
-	#endif
-};
-#endif
 
 struct ECORE_API SAnimParams		{
     float			t;

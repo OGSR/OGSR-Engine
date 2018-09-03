@@ -58,8 +58,6 @@ CActor* Actor()
 	// и вполне может быть вызвана, когда актора ещё нет.
 	// Т.ч. вылетать не будем в этом случае.
 	//VERIFY		(g_actor); 
-	//if (GameID() != GAME_SINGLE) 
-	//	VERIFY	(g_actor == Level().CurrentControlEntity());
 	return g_actor; 
 };
 
@@ -117,13 +115,8 @@ void CActor::net_Export	(NET_Packet& P)					// export to server
 
 	P.w_u8				(u8(inventory().GetActiveSlot()));
 	/////////////////////////////////////////////////
-	u16 NumItems		= PHGetSyncItemsNumber();
-	
-	if (H_Parent() || (GameID() == GAME_SINGLE) || ((NumItems > 1) && OnClient()))
-		NumItems = 0;
-	
-	if (!g_Alive()) NumItems = 0;
-	
+	u16 NumItems		= 0;
+		
 	P.w_u16				(NumItems);
 	if (!NumItems)		return;
 
@@ -587,11 +580,6 @@ BOOL CActor::net_Spawn		(CSE_Abstract* DC)
 
 	Engine.Sheduler.Register	(this,TRUE);
 
-	if (!IsGameTypeSingle())
-	{
-		setEnabled(TRUE);
-	}
-
 	hit_slowmo				= 0.f;
 
 	OnChangeVisual();
@@ -602,10 +590,7 @@ BOOL CActor::net_Spawn		(CSE_Abstract* DC)
 	m_bInInterpolation = false;
 	m_bInterpolate = false;
 
-//	if (GameID() != GAME_SINGLE)
-	{
-		processing_activate();
-	}
+	processing_activate();
 
 #ifdef DEBUG
 	LastPosS.clear();
@@ -670,7 +655,6 @@ BOOL CActor::net_Spawn		(CSE_Abstract* DC)
 	m_bWasHitted = false;
 	m_dwILastUpdateTime		= 0;
 
-	if (IsGameTypeSingle()){
 		Level().MapManager().AddMapLocation("actor_location",ID());
 		Level().MapManager().AddMapLocation("actor_location_p",ID());
 
@@ -678,7 +662,6 @@ BOOL CActor::net_Spawn		(CSE_Abstract* DC)
 		GameTaskManager().initialize(ID());
 
 		m_statistic_manager = xr_new<CActorStatisticMgr>();
-	}
 
 
 	spatial.type |=STYPE_REACTTOSOUND;

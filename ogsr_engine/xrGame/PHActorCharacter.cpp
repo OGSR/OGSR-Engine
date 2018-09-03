@@ -38,10 +38,7 @@ void CPHActorCharacter::Create(dVector3 sizes)
 {
 	if(b_exist) return;
 	inherited::Create(sizes);
-	if(!IsGameTypeSingle())
-	{
-		ClearRestrictors();
-	}
+
 	RESTRICTOR_I i=begin(m_restrictors),e=end(m_restrictors);
 	for(;e!=i;++i)
 	{
@@ -234,9 +231,7 @@ void CPHActorCharacter::InitContact(dContact* c,bool &do_collide,u16 material_id
 	SGameMtl*	material_2=GMLib.GetMaterialByIdx(material_idx_2);
 	if((material_1&&material_1->Flags.test(SGameMtl::flActorObstacle))||(material_2&&material_2->Flags.test(SGameMtl::flActorObstacle)))
 		do_collide=true;
-	if(IsGameTypeSingle())
-	{
-	
+
 		if(b_restrictor)
 		{
 			b_side_contact=true;
@@ -261,25 +256,6 @@ void CPHActorCharacter::InitContact(dContact* c,bool &do_collide,u16 material_id
 			m_friction_factor*=0.1f;
 			
 		}
-	}
-	else
-	{
-		
-		dxGeomUserData* D1=retrieveGeomUserData(c->geom.g1);
-		dxGeomUserData* D2=retrieveGeomUserData(c->geom.g2);
-		if(D1&&D2)
-		{
-			CActor* A1=smart_cast<CActor*>(D1->ph_ref_object);
-			CActor* A2=smart_cast<CActor*>(D2->ph_ref_object);
-			if(A1&&A2)
-			{
-				do_collide=do_collide&&!b_restrictor&&(A1->PPhysicsShell()==0)==(A2->PPhysicsShell()==0);
-				c->surface.mu=1.f;
-			}
-		}
-		if(do_collide)inherited::InitContact(c,do_collide,material_idx_1,material_idx_2);
-	}
-
 }
 
 void CPHActorCharacter::ChooseRestrictionType	(CPHCharacter::ERestrictionType my_type,float my_depth,CPHCharacter *ch)

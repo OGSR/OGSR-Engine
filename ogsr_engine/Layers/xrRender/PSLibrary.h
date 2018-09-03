@@ -1,8 +1,7 @@
 //----------------------------------------------------
 // file: PSLibrary.h
 //----------------------------------------------------
-#ifndef PSLibraryH
-#define PSLibraryH
+#pragma once
 
 #include "ParticleEffect.h"
 #include "ParticleGroup.h"
@@ -10,12 +9,6 @@
 class ECORE_API CPSLibrary	{
     PS::PEDVec			m_PEDs;
     PS::PGDVec			m_PGDs;
-
-#ifdef _EDITOR    
-    AnsiString			m_CurrentParticles;
-public:
-	void __stdcall	 	FindByName		(LPCSTR new_name, bool& res);
-#endif
 
 public:
     bool 				Load			(LPCSTR nm);
@@ -58,6 +51,3 @@ public:
 #define PS_CHUNK_FIRSTGEN		0x0002
 #define PS_CHUNK_SECONDGEN		0x0003
 #define PS_CHUNK_THIRDGEN		0x0004
-
-#endif /*_INCDEF_PSLibrary_H_*/
-

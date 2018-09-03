@@ -44,9 +44,7 @@ void	CResourceManager::OnDeviceDestroy(BOOL )
 	m_td.clear		();
 
 	// scripting
-#ifndef _EDITOR
 	LS_Unload				();
-#endif
 }
 
 void	CResourceManager::OnDeviceCreate	(IReader* F)
@@ -55,10 +53,8 @@ void	CResourceManager::OnDeviceCreate	(IReader* F)
 
 	string256	name;
 
-#ifndef _EDITOR
 	// scripting
 	LS_Load					();
-#endif
 	IReader*	fs			= 0;
 	// Load constants
  	fs	 		  			= F->open_chunk	(0);
@@ -151,10 +147,6 @@ void	CResourceManager::OnDeviceCreate	(IReader* F)
 
 void	CResourceManager::OnDeviceCreate	(LPCSTR shName)
 {
-#ifdef _EDITOR
-	if (!FS.exist(shName)) return;
-#endif
-
 	// Check if file is compressed already
 	string32	ID			= "shENGINE";
 	string32	id;

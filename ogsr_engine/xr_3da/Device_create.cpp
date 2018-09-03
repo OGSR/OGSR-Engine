@@ -84,11 +84,6 @@ void CRenderDevice::Create	()
 	Statistic			= xr_new<CStats>();
 	Log					("Starting RENDER device...");
 
-#ifdef _EDITOR
-	psCurrentVidMode[0]	= dwWidth;
-	psCurrentVidMode[1] = dwHeight;
-#endif
-
 	HW.CreateDevice		(m_hWnd);
 	dwWidth				= HW.DevPP.BackBufferWidth	;
 	dwHeight			= HW.DevPP.BackBufferHeight	;

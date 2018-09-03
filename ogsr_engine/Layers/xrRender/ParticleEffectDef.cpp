@@ -1,11 +1,7 @@
 #include "stdafx.h"
 
-
 #include "ParticleEffectDef.h"
-#ifdef _EDITOR
-	#include "UI_ToolsCustom.h"
-	#include "ParticleEffectActions.h"
-#endif
+
 //---------------------------------------------------------------------------
 using namespace PAPI;
 using namespace PS;
@@ -33,9 +29,6 @@ CPEDef::CPEDef()
 
 CPEDef::~CPEDef()
 {
-#ifdef _EDITOR
-	for (EPAVecIt it=m_EActionList.begin(); it!=m_EActionList.end(); it++) xr_delete(*it);
-#endif
 }
 void CPEDef::CreateShader()
 {
@@ -123,9 +116,6 @@ void CPEDef::ExecuteCollision(PAPI::Particle* particles, u32 p_cnt, float dt, CP
 			float dist 	= dir.magnitude();
 			if (dist>=EPS){
 				dir.div	(dist);
-#ifdef _EDITOR                
-				if (Tools->RayPick(m.posB,dir,dist,&pt,&n)){
-#else
 				collide::rq_result	RQ;
                 collide::rq_target	RT = m_Flags.is(dfCollisionDyn)?collide::rqtBoth:collide::rqtStatic;
 				if (g_pGameLevel->ObjectSpace.RayPick(m.posB,dir,dist,RT,RQ,NULL)){	
@@ -137,7 +127,6 @@ void CPEDef::ExecuteCollision(PAPI::Particle* particles, u32 p_cnt, float dt, CP
 						Fvector*	verts	=	g_pGameLevel->ObjectSpace.GetStaticVerts();
 						n.mknormal(verts[T->verts[0]],verts[T->verts[1]],verts[T->verts[2]]);
 					}
-#endif
 					pick_cnt++;
 					if (cb&&(pick_cnt==1)) if (!cb(owner,m,pt,n)) break;
 					if (m_Flags.is(dfCollisionDel)){ 
@@ -222,24 +211,6 @@ BOOL CPEDef::Load(IReader& F)
 		}
 	}
 
-#ifdef _EDITOR
-	if (F.find_chunk(PED_CHUNK_OWNER)){
-		AnsiString tmp;
-		F.r_stringZ	(m_OwnerName);
-		F.r_stringZ	(m_ModifName);
-		F.r			(&m_CreateTime,sizeof(m_CreateTime));
-		F.r			(&m_ModifTime,sizeof(m_ModifTime));
-	}
-    if (pCreateEAction&&F.find_chunk(PED_CHUNK_EDATA)){
-        m_EActionList.resize(F.r_u32());
-        for (EPAVecIt it=m_EActionList.begin(); it!=m_EActionList.end(); it++){
-            PAPI::PActionEnum type = (PAPI::PActionEnum)F.r_u32();
-            (*it)	= pCreateEAction(type);
-            (*it)->Load		(F);
-        }
-    } 
-#endif
-
 	return TRUE;
 }
 
@@ -301,22 +272,6 @@ void CPEDef::Save(IWriter& F)
 		F.w_fvector3	(m_APDefaultRotation);
 		F.close_chunk	();
 	}
-#ifdef _EDITOR
-	F.open_chunk	(PED_CHUNK_OWNER);
-	F.w_stringZ		(m_OwnerName);
-	F.w_stringZ		(m_ModifName);
-	F.w				(&m_CreateTime,sizeof(m_CreateTime));
-	F.w				(&m_ModifTime,sizeof(m_ModifTime));
-	F.close_chunk	();
-
-	F.open_chunk	(PED_CHUNK_EDATA);
-    F.w_u32			(m_EActionList.size());
-    for (EPAVecIt it=m_EActionList.begin(); it!=m_EActionList.end(); it++){
-        F.w_u32		((*it)->type);
-    	(*it)->Save	(F);
-    }
-	F.close_chunk	();
-#endif
 }
 
 

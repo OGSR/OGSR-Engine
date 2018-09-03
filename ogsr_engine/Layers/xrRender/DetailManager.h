@@ -14,22 +14,12 @@ const int 		dm_cache1_count = 4;								//
 const int		dm_max_objects = 64;
 const int		dm_obj_in_slot = 4;
 const float		dm_slot_size = DETAIL_SLOT_SIZE;
-#ifdef _EDITOR
-	#include	"ESceneClassList.h"
-	const int	dm_max_decompress	= 14;
-	const int		dm_size				= 24;								//!
-	const int 		dm_cache1_line		= dm_size*2/dm_cache1_count;		//! dm_size*2 must be div dm_cache1_count
-	const int		dm_cache_line		= dm_size+1+dm_size;
-	const int		dm_cache_size		= dm_cache_line*dm_cache_line;
-	const float		dm_fade				= float(2*dm_size)-.5f;
-#else
 	const int	dm_max_decompress	= 7;
 	extern u32		dm_size;
 	extern u32 		dm_cache1_line;
 	extern u32		dm_cache_line;
 	extern u32		dm_cache_size;
 	extern float	dm_fade;
-#endif
 const u32		dm_max_cache_size	= 62001; // assuming max dm_size = 124
 extern u32		dm_current_size;//				= iFloor((float)ps_r__detail_radius/4)*2;				//!
 extern u32 		dm_current_cache1_line;//		= dm_current_size*2/dm_cache1_count;		//! dm_current_size*2 must be div dm_cache1_count
@@ -112,18 +102,11 @@ public:
 	DetailVec						objects;
 	vis_list						m_visibles	[3];	// 0=still, 1=Wave1, 2=Wave2
 
-#ifndef _EDITOR    
 	xrXRC							xrc; 
 	CacheSlot1**					cache_level1;
 	Slot***							cache;	// grid-cache itself
 	svector<Slot*,dm_max_cache_size>	cache_task;									// non-unpacked slots
 	Slot*							cache_pool;				// just memory for slots
-#else
-	CacheSlot1 						cache_level1[dm_cache1_line][dm_cache1_line];
-	Slot*							cache		[dm_cache_line][dm_cache_line];	// grid-cache itself
-	svector<Slot*,dm_cache_size>	cache_task;									// non-unpacked slots
-	Slot							cache_pool	[dm_cache_size];				// just memory for slots
-#endif
 	int								cache_cx;
 	int								cache_cz;
 
@@ -132,10 +115,6 @@ public:
 	void							UpdateVisibleM	();
 	void							UpdateVisibleS	();
 public:
-#ifdef _EDITOR
-	virtual ObjectList* 			GetSnapList		()=0;
-#endif
-
 	IC bool							UseVS			()		{ return HW.Caps.geometry_major >= 1; }
 
 	// Software processor

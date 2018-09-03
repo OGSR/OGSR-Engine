@@ -5,9 +5,8 @@
 #include 	"SkeletonCustom.h"
 #include	"SkeletonX.h"
 #include	"fmesh.h"
-#ifndef _EDITOR
-    #include	"Render.h"
-#endif
+#include	"Render.h"
+
 int			psSkeletonUpdate	= 32;
 xrCriticalSection	UCalc_Mutex
 #ifdef PROFILE_CRITICAL_SECTIONS
@@ -223,12 +222,10 @@ void	CKinematics::Load(const char* N, IReader *data, u32 dwFlags)
         LD->close	();
     }
 
-#ifndef _EDITOR    
 	// User data
 	IReader* UD 	= data->open_chunk(OGF_S_USERDATA);
     pUserData		= UD?xr_new<CInifile>(UD,FS.get_path("$game_config$")->m_Path):0;
     if (UD)			UD->close();
-#endif
 
 	// Globals
 	bone_map_N		= xr_new<accel>		();

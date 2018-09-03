@@ -65,10 +65,6 @@ enum {
 	M_CHANGE_SELF_NAME,
 	M_REMOTE_CONTROL_AUTH,
 	M_REMOTE_CONTROL_CMD,
-	M_BATTLEYE, //Убрать?
-	M_MAP_SYNC,
-
-	MSG_FORCEDWORD				= u32(-1)
 };
 
 enum {

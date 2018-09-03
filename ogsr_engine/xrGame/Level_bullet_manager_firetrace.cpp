@@ -50,7 +50,7 @@ BOOL CBulletManager::test_callback(const collide::ray_defs& rd, CObject* object,
 				CActor* actor		= smart_cast<CActor*>(entity);
 				CAI_Stalker* stalker= smart_cast<CAI_Stalker*>(entity);
 				// в кого попали?
-				if (actor && IsGameTypeSingle()/**/||stalker/**/){
+				if (actor || stalker) {
 					// попали в актера или сталкера
 					Fsphere S		= cform->getSphere();
 					entity->XFORM().transform_tiny	(S.P)	;
@@ -285,7 +285,7 @@ void CBulletManager::DynamicObjectHit	(CBulletManager::_event& E)
 	//только для динамических объектов
 	VERIFY(E.R.O);
 	if (g_clear) E.Repeated = false;
-	if (GameID() == GAME_SINGLE) E.Repeated = false;
+	E.Repeated = false;
 	bool NeedShootmark = ( E.bullet.hit_type == ALife::eHitTypeFireWound || E.bullet.hit_type == ALife::eHitTypeWound  || E.bullet.hit_type == ALife::eHitTypeWound_2 ); //true;//!E.Repeated;
 	
 	if (E.R.O->CLS_ID == CLSID_OBJECT_ACTOR)
@@ -335,16 +335,6 @@ void CBulletManager::DynamicObjectHit	(CBulletManager::_event& E)
 	{
 		//-------------------------------------------------
 		bool AddStatistic = false;
-		if (GameID() != GAME_SINGLE && E.bullet.flags.allow_sendhit && E.R.O->CLS_ID == CLSID_OBJECT_ACTOR
-			&& Game().m_WeaponUsageStatistic->CollectData())
-		{
-			CActor* pActor = smart_cast<CActor*>(E.R.O);
-			if (pActor)// && pActor->g_Alive())
-			{
-				Game().m_WeaponUsageStatistic->OnBullet_Hit(&E.bullet, E.R.O->ID(), (s16)E.R.element, E.point);
-				AddStatistic = true;
-			};
-		};
 /*		
 		NET_Packet		P;
 //		CGameObject::u_EventGen	(P,(AddStatistic)? GE_HIT_STATISTIC : GE_HIT,E.R.O->ID());

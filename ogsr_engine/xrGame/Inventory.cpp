@@ -933,12 +933,12 @@ bool CInventory::Eat(PIItem pIItem)
 	CEntityAlive *entity_alive = smart_cast<CEntityAlive*>(m_pOwner);
 	R_ASSERT				(entity_alive);
 
-	if (IsGameTypeSingle() && Actor()->m_inventory == this)
+	if (Actor()->m_inventory == this)
 		Actor()->callback(GameObject::eOnBeforeUseItem)((smart_cast<CGameObject*>(pIItem))->lua_game_object());
 	
 	pItemToEat->UseBy		(entity_alive);
 
-	if(IsGameTypeSingle() && Actor()->m_inventory == this)
+	if(Actor()->m_inventory == this)
 		Actor()->callback(GameObject::eUseObject)((smart_cast<CGameObject*>(pIItem))->lua_game_object());
 
 	if(pItemToEat->Empty() && entity_alive->Local())
@@ -1120,7 +1120,6 @@ void  CInventory::AddAvailableItems(TIItemContainer& items_container, bool for_t
 
 bool CInventory::isBeautifulForActiveSlot	(CInventoryItem *pIItem)
 {
-	if (!IsGameTypeSingle()) return (true);
 	TISlotArr::iterator it =  m_slots.begin();
 	for( ; it!=m_slots.end(); ++it) {
 		if ((*it).m_pIItem && (*it).m_pIItem->IsNecessaryItem(pIItem))

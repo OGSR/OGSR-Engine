@@ -89,9 +89,7 @@ protected:
     float				m_StateBlend;
 
 public:
-#ifndef _EDITOR
 	collide::ray_cache	m_ray_cache;
-#endif
 public:
 						CLensFlare		();
 	virtual				~CLensFlare		();

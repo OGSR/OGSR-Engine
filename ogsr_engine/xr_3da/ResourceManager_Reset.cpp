@@ -1,10 +1,7 @@
 #include "stdafx.h"
 
-
 #include "ResourceManager.h"
-#ifndef _EDITOR
-    #include	"Render.h"
-#endif
+#include "Render.h"
 
 void	CResourceManager::reset_begin			()
 {

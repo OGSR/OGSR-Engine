@@ -382,8 +382,8 @@ void CWeaponMagazinedWGrenade::SwitchState(u32 S)
 #endif
 			E->g_fireParams		(this, p1,d);
 		}
-		if (IsGameTypeSingle())
-			p1.set						(get_LastFP2());
+
+		p1.set(get_LastFP2());
 		
 		Fmatrix launch_matrix;
 		launch_matrix.identity();

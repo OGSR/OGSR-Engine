@@ -100,14 +100,7 @@ void	CBlender_Compile::SetParams		(int iPriority, bool bStrictB2F)
 	SH->flags.iPriority		= iPriority;
 	SH->flags.bStrictB2F	= bStrictB2F;
 	if (bStrictB2F){			
-#ifdef _EDITOR    
-		if (1!=(SH->flags.iPriority/2)){
-        	Log("!If StrictB2F true then Priority must div 2.");
-            SH->flags.bStrictB2F	= FALSE;
-        }
-#else
     	VERIFY(1==(SH->flags.iPriority/2));
-#endif
     }
 	//SH->Flags.bLighting		= FALSE;
 }
@@ -215,10 +208,6 @@ void	CBlender_Compile::StageSET_Address	(u32 adr)
 }
 void	CBlender_Compile::StageSET_XForm	(u32 tf, u32 tc)
 {
-#ifdef _EDITOR
-	RS.SetTSS	(Stage(),D3DTSS_TEXTURETRANSFORMFLAGS,	tf);
-	RS.SetTSS	(Stage(),D3DTSS_TEXCOORDINDEX,			tc);
-#endif
 }
 void	CBlender_Compile::StageSET_Color	(u32 a1, u32 op, u32 a2)
 {

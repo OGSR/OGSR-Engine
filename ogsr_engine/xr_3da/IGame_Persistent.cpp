@@ -3,7 +3,6 @@
 
 #include "IGame_Persistent.h"
 #include "environment.h"
-#ifndef _EDITOR
 #	include "x_ray.h"
 #	include "IGame_Level.h"
 #	include "XR_IOConsole.h"
@@ -11,7 +10,6 @@
 #	include "Render.h"
 #	include "ps_instance.h"
 #	include "CustomHUD.h"
-#endif
 
 ENGINE_API	IGame_Persistent*		g_pGamePersistent	= NULL;
 
@@ -60,9 +58,7 @@ void IGame_Persistent::OnAppEnd		()
 	Environment().unload				();
 	OnGameEnd						();
 
-#ifndef _EDITOR
 	DEL_INSTANCE					(g_hud);
-#endif    
 }
 
 
@@ -88,10 +84,8 @@ void IGame_Persistent::Start		(LPCSTR op)
 	{
 		if (*m_game_params.m_game_type)
 			OnGameStart					();
-#ifndef _EDITOR
 		if(g_hud)
 			DEL_INSTANCE			(g_hud);
-#endif            
 	}
 	else UpdateGameType();
 
@@ -138,10 +132,8 @@ void IGame_Persistent::OnGameStart()
 
 void IGame_Persistent::OnGameEnd	()
 {
-#ifndef _EDITOR
 	ObjectPool.clear					();
 	Render->models_Clear				(TRUE);
-#endif
 }
 
 void IGame_Persistent::OnFrame		()
@@ -179,7 +171,6 @@ void IGame_Persistent::OnFrame		()
 
 void IGame_Persistent::destroy_particles		(const bool &all_particles)
 {
-#ifndef _EDITOR
 	ps_needtoplay.clear				();
 
 	while (ps_destroy.size())
@@ -214,5 +205,4 @@ void IGame_Persistent::destroy_particles		(const bool &all_particles)
 	}
 
 	VERIFY								(ps_needtoplay.empty() && ps_destroy.empty() && (!all_particles || ps_active.empty()));
-#endif
 }

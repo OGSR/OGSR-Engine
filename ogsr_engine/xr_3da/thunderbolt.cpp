@@ -1,20 +1,13 @@
 #include "stdafx.h"
-#pragma once
 
-#ifndef _EDITOR
-    #include "render.h"
-#endif    
+#include "render.h"
 #include "Thunderbolt.h"
 #include "igame_persistent.h"
 #include "LightAnimLibrary.h"
 
-#ifdef _EDITOR
-    #include "ui_toolscustom.h"
-#else
-	#include "igame_level.h"
-	#include "xr_area.h"
-	#include "xr_object.h"
-#endif
+#include "igame_level.h"
+#include "xr_area.h"
+#include "xr_object.h"
 
 static constexpr float MAX_DIST_FACTOR = 0.95f;
 
@@ -124,9 +117,6 @@ int CEffect_Thunderbolt::AppendDef(CInifile* pIni, LPCSTR sect)
 BOOL CEffect_Thunderbolt::RayPick(const Fvector& s, const Fvector& d, float& dist)
 {
 	BOOL bRes 	= TRUE;
-#ifdef _EDITOR
-    bRes 				= Tools->RayPick	(s,d,dist,0,0);
-#else
 	collide::rq_result	RQ;
 	CObject* E 			= g_pGameLevel->CurrentViewEntity();
 	bRes 				= g_pGameLevel->ObjectSpace.RayPick(s,d,dist,collide::rqtBoth,RQ,E);	
@@ -138,7 +128,6 @@ BOOL CEffect_Thunderbolt::RayPick(const Fvector& s, const Fvector& d, float& dis
         float dst	=dist;
         if (PL.intersectRayDist(s,d,dst)&&(dst<=dist)){dist=dst; return true;}else return false;
     }
-#endif
     return bRes;
 }
 #define FAR_DIST g_pGamePersistent->Environment().CurrentEnv.far_plane

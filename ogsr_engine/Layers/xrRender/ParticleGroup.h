@@ -31,26 +31,9 @@ namespace PS
 			float			m_Time0;
 			float			m_Time1;
 							SEffect				(){m_Flags.zero();/*set(flEnabled)*/m_Time0=0;m_Time1=0;}
-#ifdef _EDITOR
-            BOOL			Equal				(const SEffect&);
-#endif
 		};
 		DEFINE_VECTOR(SEffect*,EffectVec,EffectIt);
 		EffectVec			m_Effects;
-#ifdef _EDITOR
-        shared_str			m_OwnerName;
-        shared_str			m_ModifName;
-        time_t				m_CreateTime;
-        time_t				m_ModifTime;
-// change Equal if variables changed 
-		void __stdcall  	OnEffectsEditClick	(ButtonValue* sender, bool& bDataModified, bool& bSafe);
-		void __stdcall  	OnEffectTypeChange	(PropValue* sender);
-		void __stdcall  	OnEffectEditClick	(ButtonValue* sender, bool& bDataModified, bool& bSafe);
-		void __stdcall  	OnControlClick	(ButtonValue* sender, bool& bDataModified, bool& bSafe);
-		void __stdcall  	OnParamsChange	(PropValue* sender);
-		void				FillProp	   	(LPCSTR pref, ::PropItemVec& items, ::ListItem* owner);
-		BOOL				Equal			(const CPGDef* pe);
-#endif
 	public:
 							CPGDef		  	();
 							~CPGDef		  	();
@@ -58,10 +41,6 @@ namespace PS
 
 		void 				Save		  	(IWriter& F);
 		BOOL 				Load		 	(IReader& F);
-
-#ifdef _EDITOR
-        void				Clone			(CPGDef* source);
-#endif
 	};
 	DEFINE_VECTOR(CPGDef*,PGDVec,PGDIt);
 

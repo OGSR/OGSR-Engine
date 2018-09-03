@@ -38,7 +38,7 @@
 bool g_bDisableAllInput = false;
 extern	float	g_fTimeFactor;
 
-#define CURRENT_ENTITY()	(game?((GameID() == GAME_SINGLE) ? CurrentEntity() : CurrentControlEntity()):NULL)
+#define CURRENT_ENTITY() ( game ? CurrentEntity() : nullptr )
 
 void CLevel::IR_OnMouseWheel( int direction )
 {
@@ -134,10 +134,7 @@ void CLevel::IR_OnKeyboardPress	(int key)
 	case kPAUSE:
 		if(!g_block_pause)
 		{
-			if ( IsGameTypeSingle() )
-			{
-				Device.Pause(!Device.Paused(), TRUE, TRUE, "li_pause_key");
-			}
+			Device.Pause(!Device.Paused(), TRUE, TRUE, "li_pause_key");
 		}
 		return;
 		break;
@@ -155,12 +152,12 @@ void CLevel::IR_OnKeyboardPress	(int key)
 
 	if (Actor()) Actor()->callback(GameObject::eOnKeyPress)(key, get_binded_action(key));
 
-	if(_curr == kQUICK_SAVE && IsGameTypeSingle())
+	if(_curr == kQUICK_SAVE)
 	{
 		Console->Execute			("save");
 		return;
 	}
-	if(_curr == kQUICK_LOAD && IsGameTypeSingle())
+	else if(_curr == kQUICK_LOAD)
 	{
 #ifdef DEBUG
 		FS.get_path					("$game_config$")->m_Flags.set(FS_Path::flNeedRescan, TRUE);
@@ -181,11 +178,6 @@ void CLevel::IR_OnKeyboardPress	(int key)
 	switch (key) {
 	case DIK_NUMPAD5: 
 		{
-			if (GameID() != GAME_SINGLE) 
-			{
-				Msg("For this game type Demo Record is disabled.");
-///				return;
-			};
 			Console->Hide	();
 			Console->Execute("demo_record 1");
 		}
@@ -198,8 +190,7 @@ void CLevel::IR_OnKeyboardPress	(int key)
 		return;
 
 	case DIK_BACK:
-		if (GameID() == GAME_SINGLE)
-			HW.Caps.SceneMode			= (HW.Caps.SceneMode+1)%3;
+		HW.Caps.SceneMode			= (HW.Caps.SceneMode+1)%3;
 		return;
 
 	case DIK_F4: {
@@ -269,8 +260,6 @@ void CLevel::IR_OnKeyboardPress	(int key)
 		return;
 	}
 	case MOUSE_1: {
-		if (GameID() != GAME_SINGLE)
-			break;
 		if (pInput->iGetAsyncKeyState(DIK_LALT)) {
 			if (CurrentEntity()->CLS_ID == CLSID_OBJECT_ACTOR)
 				try_change_current_entity	();
@@ -286,26 +275,13 @@ void CLevel::IR_OnKeyboardPress	(int key)
 	case DIK_DIVIDE:
 		if( OnServer() ){
 //			float NewTimeFactor				= pSettings->r_float("alife","time_factor");
-			
-			if (GameID() == GAME_SINGLE)
-				Server->game->SetGameTimeFactor(g_fTimeFactor);
-			else
-			{
-				Server->game->SetEnvironmentGameTimeFactor(g_fTimeFactor);
-				Server->game->SetGameTimeFactor(g_fTimeFactor);
-			};
+			Server->game->SetGameTimeFactor(g_fTimeFactor);
 		}
 		break;	
 	case DIK_MULTIPLY:
 		if( OnServer() ){
 			float NewTimeFactor				= 1000.f;
-			if (GameID() == GAME_SINGLE)
-				Server->game->SetGameTimeFactor(NewTimeFactor);
-			else
-			{
-				Server->game->SetEnvironmentGameTimeFactor(NewTimeFactor);
-//				Server->game->SetGameTimeFactor(NewTimeFactor);
-			};
+			Server->game->SetGameTimeFactor(NewTimeFactor);
 		}
 		break;
 #endif
@@ -314,11 +290,6 @@ void CLevel::IR_OnKeyboardPress	(int key)
 //		if (!ai().get_alife())
 //			break;
 //		const_cast<CALifeSimulatorHeader&>(ai().alife().header()).set_state(ALife::eZoneStateSurge);
-		if (GameID() != GAME_SINGLE)
-		{
-			extern INT g_sv_SendUpdate;
-			g_sv_SendUpdate = 1;
-		};
 		break;
 	}
 		return;

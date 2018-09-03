@@ -595,16 +595,9 @@ void CKinematicsAnimated::Load(const char* N, IReader *data, u32 dwFlags)
         	_GetItem	(items_nm,k,nm);
             strcat		(nm,".omf");
             string_path	fn;
-            if (!FS.exist(fn, "$level$", nm)){
-                if (!FS.exist(fn, "$game_meshes$", nm)){
-#ifdef _EDITOR
-                    Msg			("!Can't find motion file '%s'.",nm);
-                    return;
-#else            
-                    Debug.fatal	(DEBUG_INFO,"Can't find motion file '%s'.",nm);
-#endif
-                }
-            }
+            if (!FS.exist(fn, "$level$", nm))
+                if (!FS.exist(fn, "$game_meshes$", nm))
+                    FATAL("Can't find motion file '%s'",nm);
             // Check compatibility
             m_Motions.push_back				(SMotionsSlot());
             if( !g_pMotionsContainer->has(nm) ) //optimize fs operations
@@ -627,17 +620,8 @@ void CKinematicsAnimated::Load(const char* N, IReader *data, u32 dwFlags)
 			strcat(nm, ".omf");
 			string_path	fn;
 			if (!FS.exist(fn, "$level$", nm))
-			{
 				if (!FS.exist(fn, "$game_meshes$", nm))
-				{
-#ifdef _EDITOR
-					Msg("!Can't find motion file '%s'.", nm);
-					return;
-#else
-					Debug.fatal(DEBUG_INFO, "Can't find motion file '%s'.", nm);
-#endif
-				}
-			}
+					FATAL("Can't find motion file '%s'", nm);
 			// Check compatibility
 			m_Motions.push_back(SMotionsSlot());
 			if (!g_pMotionsContainer->has(nm)) //optimize fs operations
@@ -1286,22 +1270,3 @@ void CKinematicsAnimated::OnCalculateBones		()
 {
 	UpdateTracks	()	;
 }
-
-#ifdef _EDITOR
-MotionID CKinematicsAnimated::ID_Motion(LPCSTR  N, u16 slot)
-{
-	MotionID 				motion_ID;
-    if (slot<MAX_ANIM_SLOT){
-        shared_motions* s_mots	= &m_Motions[slot].motions;
-        // find in cycles
-        accel_map::iterator I 	= s_mots->cycle()->find(LPSTR(N));
-        if (I!=s_mots->cycle()->end())	motion_ID.set(slot,I->second);
-        if (!motion_ID.valid()){
-            // find in fx's
-            accel_map::iterator I 	= s_mots->fx()->find(LPSTR(N));
-            if (I!=s_mots->fx()->end())	motion_ID.set(slot,I->second);
-        }
-    }
-    return motion_ID;
-}
-#endif

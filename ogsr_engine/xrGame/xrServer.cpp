@@ -656,9 +656,6 @@ u32 xrServer::OnMessage	(NET_Packet& P, ClientID sender)			// Non-Zero means bro
 		{
 			AddDelayedPacket(P, sender);
 		}break;
-	case M_BATTLEYE: //Убрать?
-		{
-		}
 	}
 
 	VERIFY							(verify_entities());

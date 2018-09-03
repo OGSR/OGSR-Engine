@@ -177,14 +177,12 @@ void CInput::KeyUpdate	( )
 		if (KBState[i]) 
 			cbStack.back()->IR_OnKeyboardHold( i );
 
-#ifndef _EDITOR
 	if(!b_altF4 && iGetAsyncKeyState(DIK_F4) && (iGetAsyncKeyState(DIK_RMENU) || iGetAsyncKeyState(DIK_LMENU)))
 	{
 		b_altF4				= TRUE;
 		Engine.Event.Defer	("KERNEL:disconnect");
 		Engine.Event.Defer	("KERNEL:quit");
 	}
-#endif    
 }
 
 bool CInput::get_dik_name(int dik, LPSTR dest_str, int dest_sz)

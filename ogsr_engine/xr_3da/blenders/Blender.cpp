@@ -19,11 +19,7 @@ void CBlender_DESC::Setup	(LPCSTR N)
 	strlwr(cName);
 	
 	strcpy_s(cComputer,Core.CompName);			// Computer
-#ifndef _EDITOR
 	_tzset(); _time32( (__time32_t*)&cTime );	// Time
-#else
-	_tzset(); time  ((long*)&cTime);			// Time
-#endif
 };
 
 //////////////////////////////////////////////////////////////////////

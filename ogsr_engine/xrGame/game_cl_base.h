@@ -108,27 +108,13 @@ public:
 	virtual		void				OnWarnMessage			(NET_Packet* P)	{};
 	virtual		void				OnRadminMessage			(u16 type, NET_Packet* P)	{};
 	
-
-	virtual		bool				IsVotingEnabled			()	{return m_u16VotingEnabled != 0;};
-	virtual		bool				IsVotingEnabled			(u16 flag) {return (m_u16VotingEnabled & flag) != 0;};
-	virtual		bool				IsVotingActive			()	{ return false; };
-	virtual		void				SetVotingActive			( bool Active )	{ };
-	virtual		void				SendStartVoteMessage	(LPCSTR args)	{};
-	virtual		void				SendVoteYesMessage		()	{};
-	virtual		void				SendVoteNoMessage		()	{};
-	virtual		void				OnVoteStart				(NET_Packet& P)	{};
-	virtual		void				OnVoteStop				(NET_Packet& P)	{};
-
 	virtual		void				OnRender				()	{};
 	virtual		bool				IsServerControlHits		()	{return m_bServerControlHits;};
 	virtual		bool				IsEnemy					(game_PlayerState* ps)	{return false;};
 	virtual		bool				IsEnemy					(CEntityAlive* ea1, CEntityAlive* ea2)	{return false;};
-	virtual		bool				PlayerCanSprint			(CActor* pActor) {return true;};
 
 	virtual		void				OnSpawn					(CObject* pObj)	{};
 	virtual		void				OnDestroy				(CObject* pObj)	{};
 
-	virtual		void				OnPlayerFlagsChanged	(game_PlayerState* ps)	{};
-	virtual		void				OnPlayerVoted			(game_PlayerState* ps)	{};
 	virtual		void				SendPickUpEvent			(u16 ID_who, u16 ID_what);
 };
