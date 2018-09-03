@@ -116,10 +116,8 @@ void CActorCondition::UpdateCondition()
 	}
 	else {
 		ConditionStand(weight_coef);
-	};
+	}
 	
-	if( IsGameTypeSingle() ){
-
 		float k_max_power = 1.0f;
 
 		if( true )
@@ -136,14 +134,11 @@ void CActorCondition::UpdateCondition()
 			k_max_power = 1.0f;
 		
 		SetMaxPower		(GetMaxPower() - m_fPowerLeakSpeed*m_fDeltaTime*k_max_power);
-	}
 
 
 	m_fAlcohol		+= m_fV_Alcohol*m_fDeltaTime;
 	clamp			(m_fAlcohol,			0.0f,		1.0f);
 
-	if ( IsGameTypeSingle() )
-	{	
 		CEffectorCam* ce = Actor()->Cameras().GetCamEffector((ECamEffectorType)effAlcohol);
 		if	((m_fAlcohol>0.0001f) ){
 			if(!ce){
@@ -176,21 +171,17 @@ void CActorCondition::UpdateCondition()
 		}
 		if(fis_zero(GetPsyHealth()))
 			health() =0.0f;
-	};
 
 	UpdateSatiety				();
 
 	inherited::UpdateCondition	();
 
-	if( IsGameTypeSingle() )
-		UpdateTutorialThresholds();
+	UpdateTutorialThresholds();
 }
 
 
 void CActorCondition::UpdateSatiety()
 {
-	if (!IsGameTypeSingle()) return;
-
 	float k = 1.0f;
 	if(m_fSatiety>0)
 	{
@@ -263,7 +254,7 @@ bool CActorCondition::IsCantWalk() const
 
 bool CActorCondition::IsCantWalkWeight()
 {
-	if(IsGameTypeSingle() && !GodMode())
+	if(!GodMode())
 	{
 		float max_w				= m_MaxWalkWeight;
 

@@ -115,8 +115,6 @@ BOOL CInventoryOwner::net_Spawn		(CSE_Abstract* DC)
 	if(!pThis) return FALSE;
 	CSE_Abstract* E	= (CSE_Abstract*)(DC);
 
-	if ( IsGameTypeSingle() )
-	{
 		CSE_ALifeTraderAbstract* pTrader = NULL;
 		if(E) pTrader = smart_cast<CSE_ALifeTraderAbstract*>(E);
 		if(!pTrader) return FALSE;
@@ -138,15 +136,6 @@ BOOL CInventoryOwner::net_Spawn		(CSE_Abstract* DC)
 			dialog_manager->SetDefaultStartDialog(CharacterInfo().StartDialog());
 		}
 		m_game_name			= pTrader->m_character_name;
-	}
-	else
-	{
-		CharacterInfo().m_SpecificCharacter.Load					("mp_actor");
-		CharacterInfo().InitSpecificCharacter						("mp_actor");
-		CharacterInfo().m_SpecificCharacter.data()->m_sGameName = (E->name_replace()[0]) ? E->name_replace() : *pThis->cName();
-		m_game_name												= (E->name_replace()[0]) ? E->name_replace() : *pThis->cName();
-	}
-	
 
 	if(!pThis->Local())  return TRUE;
 

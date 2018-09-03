@@ -205,11 +205,8 @@ void CUIMainIngameWnd::Init()
 	UIZoneMap->Init				();
 	UIZoneMap->SetScale			(DEFAULT_MAP_SCALE);
 
-	if(IsGameTypeSingle())
-	{
 		xml_init.InitStatic					(uiXml, "static_pda_online", 0, &UIPdaOnline);
 		UIZoneMap->Background().AttachChild	(&UIPdaOnline);
-	}
 
 
 	//Полоса прогресса здоровья
@@ -235,14 +232,11 @@ void CUIMainIngameWnd::Init()
 	AttachChild					(m_UIIcons);
 
 	// Загружаем иконки 
-	if(IsGameTypeSingle())
-	{
 		xml_init.InitStatic		(uiXml, "starvation_static", 0, &UIStarvationIcon);
 		UIStarvationIcon.Show	(false);
 
 		xml_init.InitStatic		(uiXml, "psy_health_static", 0, &UIPsyHealthIcon);
 		UIPsyHealthIcon.Show	(false);
-	}
 
 	xml_init.InitStatic			(uiXml, "weapon_jammed_static", 0, &UIWeaponJammedIcon);
 	UIWeaponJammedIcon.Show		(false);
@@ -303,11 +297,8 @@ void CUIMainIngameWnd::Init()
 	AttachChild								(&UIMotionIcon);
 	UIMotionIcon.Init						();
 
-	if(IsGameTypeSingle())
-	{
 		m_artefactPanel->InitFromXML		(uiXml, "artefact_panel", 0);
 		this->AttachChild					(m_artefactPanel);	
-	}
 
 	AttachChild								(&UIStaticDiskIO);
 	UIStaticDiskIO.SetWndRect				(1000,750,16,16);
@@ -338,16 +329,6 @@ void CUIMainIngameWnd::Draw()
 	}
 	FS.dwOpenCounter = 0;
 
-	if(!IsGameTypeSingle())
-	{
-		float		luminocity = smart_cast<CGameObject*>(Level().CurrentEntity())->ROS()->get_luminocity();
-		float		power = log(luminocity > .001f ? luminocity : .001f)*(1.f/*luminocity_factor*/);
-		luminocity	= exp(power);
-
-		static float cur_lum = luminocity;
-		cur_lum = luminocity*0.01f + cur_lum*0.99f;
-		UIMotionIcon.SetLuminosity((s16)iFloor(cur_lum*100.0f));
-	}
 	if(!m_pActor) return;
 
 	UIMotionIcon.SetNoise		((s16)(0xffff&iFloor(m_pActor->m_snd_noise*100.0f)));
@@ -423,7 +404,7 @@ void CUIMainIngameWnd::Update()
 		return;
 	}
 
-	if( !(Device.dwFrame%30) && IsGameTypeSingle() )
+	if( !(Device.dwFrame%30) )
 	{
 			string256				text_str;
 			CPda* _pda	= m_pActor->GetPDA();

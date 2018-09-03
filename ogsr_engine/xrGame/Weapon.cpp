@@ -124,11 +124,7 @@ void CWeapon::UpdateXForm	()
 		CEntityAlive*	E		= smart_cast<CEntityAlive*>(H_Parent());
 		
 		if(!E) 
-		{
-			if (!IsGameTypeSingle())
-				UpdatePosition(H_Parent()->XFORM());
 			return;
-		}
 
 		const CInventoryOwner	*parent = smart_cast<const CInventoryOwner*>(E);
 		if (parent && parent->use_simplified_visual())
@@ -893,9 +889,6 @@ void CWeapon::UpdateCL		()
 	//нарисовать партиклы
 	UpdateFlameParticles	();
 	UpdateFlameParticles2	();
-
-	if(!IsGameTypeSingle())
-		make_Interpolation		();
 	
 	VERIFY(smart_cast<CKinematics*>(Visual()));
 
@@ -1849,10 +1842,7 @@ u32 CWeapon::Cost() const
 
 void CWeapon::Hide		()
 {
-	if(IsGameTypeSingle())
-		SwitchState(eHiding);
-	else
-		SwitchState(eHidden);
+	SwitchState(eHiding);
 
 	OnZoomOut();
 }

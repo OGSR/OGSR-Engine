@@ -694,16 +694,8 @@ void CActor::Die(CObject* who)
 			{
 				if((*I).m_pIItem)
 				{
-					if (IsGameTypeSingle())
-						(*I).m_pIItem->SetDropManual(TRUE);
-					else
-					{
-						if ((*I).m_pIItem->object().CLS_ID!=CLSID_OBJECT_W_KNIFE && slot_idx!=GRENADE_SLOT)
-						{
-							(*I).m_pIItem->SetDropManual(TRUE);
-						}							
-					}
-				};
+					(*I).m_pIItem->SetDropManual(TRUE);
+				}
 			continue;
 			}
 			else
@@ -720,21 +712,7 @@ void CActor::Die(CObject* who)
 		TIItemContainer &l_blist = inventory().m_belt;
 		while (!l_blist.empty())	
 			inventory().Ruck(l_blist.front());
-
-		if (!IsGameTypeSingle())
-		{
-			//if we are on server and actor has PDA - destroy PDA
-			TIItemContainer &l_rlist	= inventory().m_ruck;
-			for(TIItemContainer::iterator l_it = l_rlist.begin(); l_rlist.end() != l_it; ++l_it)
-			{
-				if ((*l_it)->object().CLS_ID == CLSID_OBJECT_PLAYERS_BAG)
-				{
-					(*l_it)->SetDropManual(TRUE);
-					continue;
-				};
-			};
-		};
-	};
+	}
 
 	cam_Set					(eacFreeLook);
 	mstate_wishful	&=		~mcAnyMove;

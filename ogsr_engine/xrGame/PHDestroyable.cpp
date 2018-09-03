@@ -149,11 +149,8 @@ void CPHDestroyable::Destroy(u16 source_id/*=u16(-1)*/,LPCSTR section/*="ph_skel
 	}
 	xr_vector<shared_str>::iterator i=m_destroyed_obj_visual_names.begin(),e=m_destroyed_obj_visual_names.end();
 
-	if (IsGameTypeSingle())
-	{
-		for(;e!=i;i++)
-			GenSpawnReplace(source_id,section,*i);
-	};	
+	for(;e!=i;i++)
+		GenSpawnReplace(source_id,section,*i);
 ///////////////////////////////////////////////////////////////////////////
 	m_flags.set(fl_destroyed,TRUE);
 	return;

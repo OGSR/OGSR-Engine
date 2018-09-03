@@ -624,14 +624,8 @@ void game_sv_GameState::OnEvent (NET_Packet &tNetPacket, u16 type, u32 time, Cli
 			u16     id_src				= tNetPacket.r_u16();
 			CSE_Abstract*	e_src		= get_entity_from_eid	(id_src	);
 
-			if(!e_src)  // && !IsGameTypeSingle() added by andy because of Phantom does not have server entity
-			{
-				if( IsGameTypeSingle() ) break;
-
-				game_PlayerState* ps	= get_eid(id_src);
-				if (!ps)				break;
-				id_src					= ps->GameID;
-			}
+			if(!e_src)  // added by andy because of Phantom does not have server entity
+				break;
 
 			OnHit(id_src, id_dest, tNetPacket);
 			m_server->SendBroadcast		(BroadcastCID,tNetPacket,net_flags(TRUE,TRUE));

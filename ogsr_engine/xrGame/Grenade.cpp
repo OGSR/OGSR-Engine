@@ -225,8 +225,6 @@ void CGrenade::UpdateCL()
 {
 	inherited::UpdateCL			();
 	CExplosive::UpdateCL		();
-
-	if(!IsGameTypeSingle())	make_Interpolation();
 }
 
 bool CGrenade::Action(s32 cmd, u32 flags) 

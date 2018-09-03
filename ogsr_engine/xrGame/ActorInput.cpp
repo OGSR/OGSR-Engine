@@ -153,7 +153,7 @@ void CActor::IR_OnKeyboardPress(int cmd)
 	case kUSE_BANDAGE:
 	case kUSE_MEDKIT:
 		{
-			if(IsGameTypeSingle() && !(GetTrade()->IsInTradeState()))
+			if(!(GetTrade()->IsInTradeState()))
 			{
 				PIItem itm = inventory().item((cmd==kUSE_BANDAGE)?  CLSID_IITEM_BANDAGE:CLSID_IITEM_MEDKIT );	
 				if(itm)
@@ -174,7 +174,7 @@ void CActor::IR_OnKeyboardPress(int cmd)
 	case kUSE_ANTIRAD:
 	case kUSE_ENERGY_DRINK:
 		{
-			if (IsGameTypeSingle() && !(GetTrade()->IsInTradeState()))
+			if (!(GetTrade()->IsInTradeState()))
 			{
 
 				PIItem itm = nullptr;

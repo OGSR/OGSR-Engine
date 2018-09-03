@@ -141,36 +141,7 @@ void CUIMapWnd::Init(LPCSTR xml_name, LPCSTR start_from)
 		Register						(m_ToolBar[btnIndex]);
 		AddCallback						(*m_ToolBar[btnIndex]->WindowName(),BUTTON_CLICKED,CUIWndCallback::void_function(this, &CUIMapWnd::OnToolZoomOutClicked));
 	}
-/*
-	btnIndex		= eAddSpot;
-	strconcat(pth, sToolbar.c_str(), ":add_spot_btn");
-	if(uiXml.NavigateToNode(pth,0) && IsGameTypeSingle() ){
-		m_ToolBar[btnIndex]				= xr_new<CUI3tButton>(); m_ToolBar[btnIndex]->SetAutoDelete(true);
-		xml_init.Init3tButton			(uiXml, pth, 0, m_ToolBar[btnIndex]);
-		UIMainMapHeader->AttachChild	(m_ToolBar[btnIndex]);
-		Register						(m_ToolBar[btnIndex]);
-		AddCallback						(*m_ToolBar[btnIndex]->WindowName(),BUTTON_CLICKED,CUIWndCallback::void_function(&CUIMapWnd::OnToolAddSpotClicked,this,_1,_2));
-	}
-	btnIndex		= eRemoveSpot;
-	strconcat(pth, sToolbar.c_str(), ":remove_spot_btn");
-	if(uiXml.NavigateToNode(pth,0 ) && IsGameTypeSingle() ){
-		m_ToolBar[btnIndex]				= xr_new<CUI3tButton>(); m_ToolBar[btnIndex]->SetAutoDelete(true);
-		xml_init.Init3tButton			(uiXml, pth, 0, m_ToolBar[btnIndex]);
-		UIMainMapHeader->AttachChild	(m_ToolBar[btnIndex]);
-		Register						(m_ToolBar[btnIndex]);
-		AddCallback						(*m_ToolBar[btnIndex]->WindowName(),BUTTON_CLICKED,CUIWndCallback::void_function(&CUIMapWnd::OnToolRemoveSpotClicked,this,_1,_2));
-	}
 
-	btnIndex		= eHighlightSpot;
-	strconcat(pth, sToolbar.c_str(), ":highlight_spot_btn");
-	if(uiXml.NavigateToNode(pth,0) && IsGameTypeSingle() ){
-		m_ToolBar[btnIndex]				= xr_new<CUI3tButton>(); m_ToolBar[btnIndex]->SetAutoDelete(true);
-		xml_init.Init3tButton			(uiXml, pth, 0, m_ToolBar[btnIndex]);
-		UIMainMapHeader->AttachChild	(m_ToolBar[btnIndex]);
-		Register						(m_ToolBar[btnIndex]);
-		AddCallback						(*m_ToolBar[btnIndex]->WindowName(),BUTTON_CLICKED,CUIWndCallback::void_function(&CUIMapWnd::OnToolHighlightSpotClicked,this,_1,_2));
-	}
-*/
 	m_text_hint							= xr_new<CUIStatic>();
 	strconcat							(sizeof(pth),pth,start_from,":main_wnd:text_hint");
 	xml_init.InitStatic					(uiXml, pth, 0, m_text_hint);
@@ -193,11 +164,7 @@ void CUIMapWnd::Init(LPCSTR xml_name, LPCSTR start_from)
 	m_currentZoom							= m_GlobalMap->GetCurrentZoom();
 
 	// initialize local maps
-	xr_string sect_name;
-	if( IsGameTypeSingle() )
-		sect_name = "level_maps_single";
-	else
-		sect_name = "level_maps_mp";
+	xr_string sect_name("level_maps_single");
 
 	if (gameLtx.section_exist(sect_name.c_str())){
 		CInifile::Sect& S		= gameLtx.r_section(sect_name.c_str());

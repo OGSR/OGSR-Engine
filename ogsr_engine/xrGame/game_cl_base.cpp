@@ -281,19 +281,7 @@ float game_cl_GameState::shedule_Scale		()
 void game_cl_GameState::shedule_Update		(u32 dt)
 {
 	ISheduled::shedule_Update	(dt);
-
-	switch (Phase())
-	{
-	case GAME_PHASE_INPROGRESS:
-		{
-			if (!IsGameTypeSingle())
-				m_WeaponUsageStatistic->Update();
-		}break;
-	default:
-		{
-		}break;
-	};
-};
+}
 
 void game_cl_GameState::StartStopMenu(CUIDialogWnd* pDialog, bool bDoHideIndicators)
 {
