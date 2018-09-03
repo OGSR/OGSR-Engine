@@ -414,7 +414,7 @@ void CRenderDevice::OnWM_Activate(WPARAM wParam, LPARAM lParam)
 			ClipCursor(&winRect);
 		}
 	} else {
-		ShowCursor(TRUE);
+		while (ShowCursor(TRUE) < 0);
 		ClipCursor(nullptr);
 	}
 
