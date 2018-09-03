@@ -1223,7 +1223,7 @@ void CCustomZone::SpawnArtefact()
 #endif
 	Fvector pos;
 	Center(pos);
-	Level().spawn_item(*m_ArtefactSpawn[i].section, pos, (g_dedicated_server)?u32(-1):ai_location().level_vertex_id(), ID());
+	Level().spawn_item(*m_ArtefactSpawn[i].section, pos, ai_location().level_vertex_id(), ID());
 }
 
 

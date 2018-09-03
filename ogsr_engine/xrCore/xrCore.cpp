@@ -69,8 +69,6 @@ void xrCore::_initialize	(LPCSTR _ApplicationName, LogCallback cb, BOOL init_fs,
 		InitLog				();
 		_initialize_cpu		();
 
-//		Debug._initialize	();
-
 		rtc_initialize		();
 
 		xr_FS = std::make_unique<CLocatorAPI>();

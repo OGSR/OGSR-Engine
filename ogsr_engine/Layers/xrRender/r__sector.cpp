@@ -250,10 +250,7 @@ void CSector::load		(IReader& fs)
 		count--;
 	}
 
-	if	(g_dedicated_server)	m_root	= 0;
-	else {
 		// Assign visual
 		size	= fs.find_chunk(fsP_Root);	R_ASSERT(size==4);
 		m_root	= RImplementation.getVisual	(fs.r_u32());
-	}
 }

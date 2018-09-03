@@ -428,7 +428,7 @@ public:
 //-----------------------------------------------------------------------
 
 Flags32		ps_r2_dof_flags = { 0 };
-Flags32		ps_r2_pp_flags = { DEF_R2_PP_FLAGS };
+Flags32		ps_r2_pp_flags = { 0 };
 Flags32		ps_service_flags = { 0 };
 Flags32		ps_r2_test_flags = { 0 };
 float		ssa_discard = 3.5f;

@@ -5,10 +5,8 @@
 #include "stdafx.h"
 #include "EffectorZoomInertion.h"
 
-
 #define EFFECTOR_ZOOM_SECTION "zoom_inertion_effector"
 
-#ifdef SCRIPT_EZI_CONTROL
 #include "Actor.h"
 
  bool __declspec(dllexport)		external_zoom_osc = false; // alpet: флажок внешнего рассчета колебаний прицела (из скриптов).
@@ -30,9 +28,6 @@
 	 return NULL;
  }
 
-#else
- #define external_zoom_osc 0
-#endif
 
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
@@ -175,8 +170,6 @@ void set_target_point  (CEffectorZoomInertion *E, const Fvector src) { E->m_vTar
 #pragma optimize("s",on)
 void CEffectorZoomInertion::script_register(lua_State *L)
 {
-#ifdef  SCRIPT_EZI_CONTROL
-
 	module(L)
 		[
 			
@@ -202,5 +195,4 @@ void CEffectorZoomInertion::script_register(lua_State *L)
 			def("find_effector_zi", &FindEffectorZoomInertion),
 			def("switch_zoom_osc", &switch_zoom_osc)			
 		];
-#endif
 }

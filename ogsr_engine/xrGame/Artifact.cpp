@@ -593,7 +593,7 @@ void SArtefactActivation::SpawnAnomaly()
 		u32 lvid = m_af->UsedAI_Locations() ? m_af->ai_location().level_vertex_id() : ai().level_graph().vertex(pos);
 		CSE_Abstract		*object = Level().spawn_item(	zone_sect,
 															pos,
-															(g_dedicated_server)?u32(-1): lvid,
+															lvid,
 															0xffff,
 															true
 		);

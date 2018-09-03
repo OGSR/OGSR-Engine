@@ -45,132 +45,10 @@ struct story_name_predicate {
 	}
 };
 
-#ifdef XRSE_FACTORY_EXPORTS
-
-struct SFillPropData{
-    RTokenVec 	locations[4];
-    RStringVec	level_ids;
-	RTokenVec 	story_names;
-	RTokenVec 	spawn_story_names;
-	RStringVec	character_profiles;
-
-    u32			counter;
-                SFillPropData	()
-    {
-        counter = 0;
-    }
-                ~SFillPropData	()
-    {
-    	VERIFY	(0==counter);
-    }
-    void		load			()
-    {
-        // create ini
-#ifdef XRGAME_EXPORTS
-        CInifile				*Ini = 	pGameIni;
-#else // XRGAME_EXPORTS
-        CInifile				*Ini = 0;
-        string_path				gm_name;
-        FS.update_path			(gm_name,"$game_config$",GAME_CONFIG);
-        R_ASSERT3				(FS.exist(gm_name),"Couldn't find file",gm_name);
-        Ini						= xr_new<CInifile>(gm_name);
-#endif // XRGAME_EXPORTS
-
-        // location type
-        LPCSTR					N,V;
-        u32 					k;
-		for (int i=0; i<GameGraph::LOCATION_TYPE_COUNT; ++i){
-            VERIFY				(locations[i].empty());
-            string256			caSection, T;
-            strconcat			(sizeof(caSection), caSection,SECTION_HEADER,itoa(i,T,10));
-            R_ASSERT			(Ini->section_exist(caSection));
-            for (k = 0; Ini->r_line(caSection,k,&N,&V); ++k)
-                locations[i].push_back	(xr_rtoken(V,atoi(N)));
-        }
-        
-		// level names/ids
-        VERIFY					(level_ids.empty());
-        for (k = 0; Ini->r_line("levels",k,&N,&V); ++k)
-            level_ids.push_back	(Ini->r_string_wb(N,"caption"));
-
-        // story names
-		{
-			VERIFY					(story_names.empty());
-			LPCSTR section 			= "story_ids";
-			R_ASSERT				(Ini->section_exist(section));
-			for (k = 0; Ini->r_line(section,k,&N,&V); ++k)
-				story_names.push_back	(xr_rtoken(V,atoi(N)));
-
-			std::sort				(story_names.begin(),story_names.end(),story_name_predicate());
-			story_names.insert		(story_names.begin(),xr_rtoken("NO STORY ID",ALife::_STORY_ID(-1)));
-		}
-
-        // spawn story names
-		{
-			VERIFY					(spawn_story_names.empty());
-			LPCSTR section 			= "spawn_story_ids";
-			R_ASSERT				(Ini->section_exist(section));
-			for (k = 0; Ini->r_line(section,k,&N,&V); ++k)
-				spawn_story_names.push_back	(xr_rtoken(V,atoi(N)));
-
-			std::sort				(spawn_story_names.begin(),spawn_story_names.end(),story_name_predicate());
-			spawn_story_names.insert(spawn_story_names.begin(),xr_rtoken("NO SPAWN STORY ID",ALife::_SPAWN_STORY_ID(-1)));
-		}
-
-#ifndef AI_COMPILER
-		//character profiles indexes
-		VERIFY					(character_profiles.empty());
-		for(int i = 0; i<=CCharacterInfo::GetMaxIndex(); i++)
-		{
-			character_profiles.push_back(CCharacterInfo::IndexToId(i));
-		}
-
-		std::sort(character_profiles.begin(), character_profiles.end(), SortStringsByAlphabetPred);
-#endif
-		
-        // destroy ini
-#ifndef XRGAME_EXPORTS
-		xr_delete				(Ini);
-#endif // XRGAME_EXPORTS
-    }
-    void		unload			()
-    {
-        for (int i=0; i<GameGraph::LOCATION_TYPE_COUNT; ++i)
-            locations[i].clear	();
-        level_ids.clear			();
-        story_names.clear		();
-        spawn_story_names.clear	();
-		character_profiles.clear();
-    }        
-    void 		dec				()
-    {
-        VERIFY(counter > 0);
-        --counter;
-        if (!counter)
-            unload	();
-    }                           
-    void 		inc				()
-    {
-        VERIFY(counter < 0xffffffff);
-        if (!counter)
-            load	();
-        ++counter;
-    }
-};
-static SFillPropData			fp_data;
-#endif
-
 void CSE_ALifeTraderAbstract::FillProps	(LPCSTR pref, PropItemVec& items)
 {
 	PHelper().CreateU32			(items, PrepareKey(pref,*base()->s_name,"Money"), 	&m_dwMoney,	0, u32(-1));
 	PHelper().CreateFlag32		(items,	PrepareKey(pref,*base()->s_name,"Trader\\Infinite ammo"),&m_trader_flags, eTraderFlagInfiniteAmmo);
-#ifdef XRSE_FACTORY_EXPORTS
-	RListValue *value		= PHelper().CreateRList	(items,	PrepareKey(pref,*base()->s_name,"npc profile"),	 
-		&m_sCharacterProfile, 
-		&*fp_data.character_profiles.begin(), fp_data.character_profiles.size());
-	
-	value->OnChangeEvent.bind	(this,&CSE_ALifeTraderAbstract::OnChangeProfile);
-#endif
 }
 
 ////////////////////////////////////////////////////////////////////////////
@@ -183,17 +61,10 @@ CSE_ALifeGraphPoint::CSE_ALifeGraphPoint	(LPCSTR caSection) : CSE_Abstract(caSec
 	m_tLocations[1]				= 0;
 	m_tLocations[2]				= 0;
 	m_tLocations[3]				= 0;
-
-#ifdef XRSE_FACTORY_EXPORTS
-	fp_data.inc					();
-#endif
 }
 
 CSE_ALifeGraphPoint::~CSE_ALifeGraphPoint	()
 {
-#ifdef XRSE_FACTORY_EXPORTS
-    fp_data.dec					();
-#endif
 }
 
 void CSE_ALifeGraphPoint::STATE_Read		(NET_Packet	&tNetPacket, u16 size)
@@ -228,14 +99,6 @@ void CSE_ALifeGraphPoint::UPDATE_Write		(NET_Packet	&tNetPacket)
 
 void CSE_ALifeGraphPoint::FillProps			(LPCSTR pref, PropItemVec& items)
 {
-#ifdef XRSE_FACTORY_EXPORTS
-	PHelper().CreateRToken8		(items,	PrepareKey(pref,*s_name,"Location\\1"),				&m_tLocations[0],			&*fp_data.locations[0].begin(), fp_data.locations[0].size());
-	PHelper().CreateRToken8		(items,	PrepareKey(pref,*s_name,"Location\\2"),				&m_tLocations[1],			&*fp_data.locations[1].begin(), fp_data.locations[1].size());
-	PHelper().CreateRToken8		(items,	PrepareKey(pref,*s_name,"Location\\3"),				&m_tLocations[2],			&*fp_data.locations[2].begin(), fp_data.locations[2].size());
-	PHelper().CreateRToken8		(items,	PrepareKey(pref,*s_name,"Location\\4"),				&m_tLocations[3],			&*fp_data.locations[3].begin(), fp_data.locations[3].size());
-	PHelper().CreateRList	 	(items,	PrepareKey(pref,*s_name,"Connection\\Level name"),	&m_caConnectionLevelName,	&*fp_data.level_ids.begin(),	fp_data.level_ids.size());
-	PHelper().CreateRText	 	(items,	PrepareKey(pref,*s_name,"Connection\\Point name"),	&m_caConnectionPointName);
-#endif
 }
 
 ////////////////////////////////////////////////////////////////////////////
@@ -257,9 +120,6 @@ CSE_ALifeObject::CSE_ALifeObject			(LPCSTR caSection) : CSE_Abstract(caSection)
 #ifdef XRGAME_EXPORTS
 	m_alife_simulator			= 0;
 #endif
-#ifdef XRSE_FACTORY_EXPORTS
-    fp_data.inc					();
-#endif
 	m_flags.set					(flOfflineNoMove,FALSE);
 	seed						(u32(CPU::QPC() & 0xffffffff));
 }
@@ -279,9 +139,6 @@ Fvector CSE_ALifeObject::draw_level_position	() const
 
 CSE_ALifeObject::~CSE_ALifeObject			()
 {
-#ifdef XRSE_FACTORY_EXPORTS
-    fp_data.dec					();
-#endif
 }
 
 bool CSE_ALifeObject::move_offline			() const
@@ -399,10 +256,6 @@ void CSE_ALifeObject::FillProps				(LPCSTR pref, PropItemVec& items)
 	}                            
 	PHelper().CreateFlag32		(items,	PrepareKey(pref,*s_name,"ALife\\Interactive"),			&m_flags,			flInteractive);
 	PHelper().CreateFlag32		(items,	PrepareKey(pref,*s_name,"ALife\\Used AI locations"),	&m_flags,			flUsedAI_Locations);
-#ifdef XRSE_FACTORY_EXPORTS
-	PHelper().CreateRToken32	(items,	PrepareKey(pref,*s_name,"ALife\\Story ID"),				&m_story_id,		&*fp_data.story_names.begin(), fp_data.story_names.size());
-	PHelper().CreateRToken32	(items,	PrepareKey(pref,*s_name,"ALife\\Spawn Story ID"),		&m_spawn_story_id,	&*fp_data.spawn_story_names.begin(), fp_data.spawn_story_names.size());
-#endif
 }
 
 u32	CSE_ALifeObject::ef_equipment_type		() const
@@ -764,17 +617,11 @@ CSE_ALifeLevelChanger::CSE_ALifeLevelChanger(LPCSTR caSection) : CSE_ALifeSpaceR
 	m_dwNextNodeID				= u32(-1);
 	m_tNextPosition.set			(0.f,0.f,0.f);
 	m_tAngles.set				(0.f,0.f,0.f);
-#ifdef XRSE_FACTORY_EXPORTS
-    fp_data.inc					();
-#endif
 	m_bSilentMode				= FALSE;
 }
 
 CSE_ALifeLevelChanger::~CSE_ALifeLevelChanger()
 {
-#ifdef XRSE_FACTORY_EXPORTS
-    fp_data.dec					();
-#endif
 }
 
 void CSE_ALifeLevelChanger::STATE_Read		(NET_Packet	&tNetPacket, u16 size)
@@ -831,9 +678,6 @@ void CSE_ALifeLevelChanger::FillProps		(LPCSTR pref, PropItemVec& items)
 {
 	inherited::FillProps		(pref,items);
 	
-#ifdef XRSE_FACTORY_EXPORTS
-	PHelper().CreateRList		(items,PrepareKey(pref,*s_name,"Level to change"),		&m_caLevelToChange,		&*fp_data.level_ids.begin(), fp_data.level_ids.size());
-#endif
 	PHelper().CreateRText		(items,PrepareKey(pref,*s_name,"Level point to change"),	&m_caLevelPointToChange);
 
 	PHelper().CreateBOOL		(items,PrepareKey(pref,*s_name,"Silent mode"),	&m_bSilentMode);

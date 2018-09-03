@@ -150,10 +150,6 @@ void CStats::Show()
 		Memory.stat_calls	= 0		;
 	}
 
-	////////////////////////////////////////////////
-	if (g_dedicated_server) return;
-	////////////////////////////////////////////////
-
 	CGameFont& F = *pFont;
 	float		f_base_size	= 0.01f;
 				F.SetHeightI	(f_base_size);
@@ -411,10 +407,7 @@ void CStats::OnDeviceCreate			()
 {
 	g_bDisableRedText				= strstr(Core.Params,"-xclsx")?TRUE:FALSE;
 
-//	if (!strstr(Core.Params, "-dedicated"))
-#ifndef DEDICATED_SERVER
 	pFont	= xr_new<CGameFont>		("stat_font", CGameFont::fsDeviceIndependent);
-#endif
 
 #ifdef DEBUG
 	if (!g_bDisableRedText)			SetLogCB	(_LogCallback);

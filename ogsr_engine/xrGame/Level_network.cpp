@@ -14,12 +14,10 @@
 #include "client_spawn_manager.h"
 #include "seniority_hierarchy_holder.h"
 
-ENGINE_API bool g_dedicated_server;
-
 constexpr int max_objects_size			= 2*1024;
 constexpr int max_objects_size_in_save	= 6*1024;
 
-extern void Remove_all_statics();
+void Remove_all_statics();
 
 void CLevel::remove_objects	()
 {
@@ -54,13 +52,11 @@ void CLevel::remove_objects	()
 	ph_commander().clear		();
 	ph_commander_scripts().clear();
 
-	if(!g_dedicated_server)
-		space_restriction_manager().clear	();
+	space_restriction_manager().clear	();
 
 	psDeviceFlags.set			(rsDisableObjectsAsCrows, b_stored);
 
-	if (!g_dedicated_server)
-		ai().script_engine().collect_all_garbage();
+	ai().script_engine().collect_all_garbage();
 
 	Remove_all_statics();
 
@@ -71,15 +67,11 @@ void CLevel::remove_objects	()
 	Render->clear_static_wallmarks				();
 
 #ifdef DEBUG
-	if(!g_dedicated_server)
 		if (!client_spawn_manager().registry().empty())
 			client_spawn_manager().dump				();
 #endif // DEBUG
-	if(!g_dedicated_server)
-	{
 		VERIFY										(client_spawn_manager().registry().empty());
 		client_spawn_manager().clear			();
-	}
 
 	for (int i=0; i<6; i++)
 	{
@@ -116,8 +108,7 @@ void CLevel::net_Stop		()
 		xr_delete				(Server);
 	}
 
-	if (!g_dedicated_server)
-		ai().script_engine().collect_all_garbage();
+	ai().script_engine().collect_all_garbage();
 
 	Remove_all_statics();
 

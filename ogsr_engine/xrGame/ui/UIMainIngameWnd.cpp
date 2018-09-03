@@ -91,7 +91,6 @@ DLL_API CUIMainIngameWnd* GetMainIngameWindow()
 	return NULL;
 }
 
-#ifdef SCRIPT_ICONS_CONTROL
 	CUIStatic * warn_icon_list[8] = { NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL };
 	
 	// alpet: для возможности внешнего контроля иконок (используется в NLC6 вместо типичных индикаторов). Никак не влияет на игру для остальных модов.
@@ -125,9 +124,6 @@ DLL_API CUIMainIngameWnd* GetMainIngameWindow()
 		}
 		return false;
 	}
-#else
-#define external_icon_ctrl				0
-#endif
 
 CUIMainIngameWnd::CUIMainIngameWnd()
 {
@@ -140,7 +136,6 @@ CUIMainIngameWnd::CUIMainIngameWnd()
 	m_artefactPanel				= xr_new<CUIArtefactPanel>();
 	m_pMPChatWnd				= NULL;
 	m_pMPLogWnd					= NULL;	
-#ifdef SCRIPT_ICONS_CONTROL
 	warn_icon_list[ewiWeaponJammed]	= &UIWeaponJammedIcon;	
 	warn_icon_list[ewiRadiation]	= &UIRadiaitionIcon;
 	warn_icon_list[ewiWound]		= &UIWoundIcon;
@@ -148,7 +143,6 @@ CUIMainIngameWnd::CUIMainIngameWnd()
 	warn_icon_list[ewiPsyHealth]	= &UIPsyHealthIcon;
 	warn_icon_list[ewiInvincible]	= &UIInvincibleIcon;	
 	warn_icon_list[ewiArtefact]		= &UIArtefactIcon;
-#endif
 }
 
 #include "UIProgressShape.h"
@@ -1433,9 +1427,7 @@ void CUIMainIngameWnd::script_register(lua_State *L)
 			class_<CUIMainIngameWnd, CUIWindow>("CUIMainIngameWnd")
 			.def("GetStatic",		 &GetStaticRaw, raw<2>()),
 			def("get_main_window",   &GetMainIngameWindow) // get_mainingame_window better??
-#ifdef SCRIPT_ICONS_CONTROL
 			, def("setup_game_icon", &SetupGameIcon)
-#endif			
 		];
 
 }

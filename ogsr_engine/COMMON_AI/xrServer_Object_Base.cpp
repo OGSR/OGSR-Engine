@@ -13,16 +13,10 @@
 #include "script_value_container_impl.h"
 #include "clsid_game.h"
 
-#pragma warning(push)
-#pragma warning(disable:4995)
-#include <malloc.h>
-#pragma warning(pop)
-
 #ifndef AI_COMPILER
 #	include "object_factory.h"
 #endif
 
-#ifndef XRSE_FACTORY_EXPORTS
 #	include "..\..\editors\xrEProps\xrEProps.h"
 	
 	IPropHelper &PHelper()
@@ -32,7 +26,6 @@
 		return(*(IPropHelper*)0);
 #	endif
 	}
-#endif
 
 LPCSTR script_section = "script";
 LPCSTR current_version = "current_server_entity_version";
@@ -213,18 +206,12 @@ void CSE_Abstract::Spawn_Write				(NET_Packet	&tNetPacket, BOOL bLocal)
 //	tNetPacket.w_u64			(m_min_spawn_interval);
 //	tNetPacket.w_u64			(m_max_spawn_interval);
 
-#ifdef XRSE_FACTORY_EXPORTS
-	CScriptValueContainer::assign();
-#endif
-
 	// write specific data
 	u32	position				= tNetPacket.w_tell();
 	tNetPacket.w_u16			(0);
 	STATE_Write					(tNetPacket);
 	u16 size					= u16(tNetPacket.w_tell() - position);
-//#ifdef XRSE_FACTORY_EXPORTS
 	R_ASSERT3					((m_tClassID == CLSID_SPECTATOR) || (size > sizeof(size)),"object isn't successfully saved, get your backup :(",name_replace());
-//#endif
 	tNetPacket.w_seek			(position,&size,sizeof(u16));
 }
 
@@ -383,29 +370,10 @@ xr_token game_types[]={
 
 void CSE_Abstract::FillProps				(LPCSTR pref, PropItemVec& items)
 {
-/*
-#if defined(XRSE_FACTORY_EXPORTS) || (defined(XRGAME_EXPORTS) && defined(DEBUG))
-	PHelper().CreateToken8		(items,	PrepareKey(pref,"Game Type"),			&s_gameid,		game_types);
-    PHelper().CreateU16			(items,	PrepareKey(pref, "Respawn Time (s)"),	&RespawnTime,	0,43200);
-
-//	LPCSTR						gcs = pSettings->r_string(s_name,"GroupControlSection");
-//	PHelper().CreateChoose		(items,PrepareKey(pref,*s_name,"Spawn\\group control"),				&m_spawn_control,		smSpawnItem,	0,	(void*)gcs,	16);
-	PHelper().CreateFlag32		(items,PrepareKey(pref,*s_name,"Spawn\\enabled"),					&m_spawn_flags,			flSpawnEnabled);
-//	PHelper().CreateFloat		(items,PrepareKey(pref,*s_name,"Spawn\\probability"),				&m_spawn_probability,	0.f,			1.f);
-//	PHelper().CreateFlag32		(items,PrepareKey(pref,*s_name,"Spawn\\spawn on surge only"),		&m_spawn_flags,			flSpawnOnSurgeOnly);
-//	PHelper().CreateFlag32		(items,PrepareKey(pref,*s_name,"Spawn\\spawn if destroyed only"),	&m_spawn_flags,			flSpawnIfDestroyedOnly);
-//	PHelper().CreateFlag32		(items,PrepareKey(pref,*s_name,"Spawn\\spawn infinite count"),		&m_spawn_flags,			flSpawnInfiniteCount);
-//	PHelper().CreateFlag32		(items,PrepareKey(pref,*s_name,"Spawn\\auto destroy on spawn"),		&m_spawn_flags,			flSpawnDestroyOnSpawn);
-#endif // XRGAME_EXPORTS
-*/
 }
 
 void CSE_Abstract::FillProp					(LPCSTR pref, PropItemVec &items)
 {
-#ifdef XRSE_FACTORY_EXPORTS
-	CScriptValueContainer::assign();
-	CScriptValueContainer::clear();
-#endif
 	FillProps					(pref,items);
 }
 

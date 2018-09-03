@@ -93,11 +93,9 @@ public:
 	DECLARE_SCRIPT_REGISTER_FUNCTION
 };
 
-#ifdef  SCRIPT_VARS_STORAGE
 add_to_type_list(CScriptVarsStorage)
 #undef script_type_list
 #define script_type_list save_type_list(CScriptVarsStorage)
-#endif
 
 extern CScriptVarsStorage g_ScriptVars;
 extern int lua_pushsvt(lua_State *L, CScriptVarsTable *T);

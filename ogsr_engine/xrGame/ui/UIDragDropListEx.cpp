@@ -42,7 +42,7 @@ CUIDragDropListEx::CUIDragDropListEx()
 
 	SetDrawGrid(true);
 
-        colorize_ammo = READ_IF_EXISTS( pSettings, r_bool, "dragdrop", "colorize_ammo", true );
+        colorize_ammo = READ_IF_EXISTS( pSettings, r_bool, "dragdrop", "colorize_ammo", false );
         highlight_cop = READ_IF_EXISTS( pSettings, r_bool, "dragdrop", "highlight_cop", false );
 	tx = highlight_cop ? 0.25f : 0.5f;
 }

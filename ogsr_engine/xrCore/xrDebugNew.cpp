@@ -512,7 +512,7 @@ static void termination_handler(int signal)
   handler_base( "Segment violation error" );
 }*/
 
-void xrDebug::_initialize(const bool &dedicated)
+void xrDebug::_initialize()
 {
 	std::set_terminate( _terminate );
 

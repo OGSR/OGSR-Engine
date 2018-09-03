@@ -300,16 +300,15 @@ class CCC_DemoRecord : public IConsole_Command
 {
 public:
 
-	CCC_DemoRecord(LPCSTR N) : IConsole_Command(N) {};
+	CCC_DemoRecord(LPCSTR N) : IConsole_Command(N) {}
 	virtual void Execute(LPCSTR args) {
-		#ifndef	DEBUG
-		if (GameID() != GAME_SINGLE) 
-		{
-			Msg("For this game type Demo Record is disabled.");
+		if (!g_pGameLevel) { // level not loaded
+			Log("Demo Record is disabled when level is not loaded.");
 			return;
-		};
-		#endif
-		Console->Hide	();
+        }
+
+		Console->Hide();
+		
 		string_path		fn_; 
 		strconcat		(sizeof(fn_),fn_, args, ".xrdemo");
 		string_path		fn;
@@ -1284,9 +1283,7 @@ void CCC_RegisterCommands()
 //#endif // MASTER_GOLD
 
 	CMD3(CCC_Mask,		"g_autopickup",			&psActorFlags,	AF_AUTOPICKUP);
-#ifndef G_MUSIC_TRACKS_OFF
-	psActorFlags.set(AF_MUSIC_TRACKS, true);
-#endif
+
 	CMD3(CCC_Mask,		"g_music_tracks",		&psActorFlags,	AF_MUSIC_TRACKS);
 
 	CMD1(CCC_LuaHelp, "lua_help");

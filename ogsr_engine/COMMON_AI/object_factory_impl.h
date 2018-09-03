@@ -6,20 +6,13 @@
 //	Description : Object factory implementation
 ////////////////////////////////////////////////////////////////////////////
 
-#ifndef object_factory_implH
-#define object_factory_implH
-
 #pragma once
 
 #include "object_factory.h"
 #include "object_item_single.h"
 
-#ifndef NO_XR_GAME
-#	include "object_type_traits.h"
-#	include "object_item_client_server.h"
-#endif // NO_XR_GAME
-
-#ifndef NO_XR_GAME
+#include "object_type_traits.h"
+#include "object_item_client_server.h"
 
 template <typename _client_type, typename _server_type>
 IC	void CObjectFactory::add	(const CLASS_ID &clsid, LPCSTR script_clsid)
@@ -53,15 +46,3 @@ IC	void CObjectFactory::add	(const CLASS_ID &clsid, LPCSTR script_clsid)
 		(clsid,script_clsid)
 	);
 }
-
-#else // NO_XR_GAME
-
-template <typename _unknown_type>
-IC	void CObjectFactory::add	(const CLASS_ID &clsid, LPCSTR script_clsid)
-{
-	add					(xr_new<CObjectItemSingle<_unknown_type,false> >(clsid,script_clsid));
-}
-
-#endif // NO_XR_GAME
-
-#endif // object_factory_implH

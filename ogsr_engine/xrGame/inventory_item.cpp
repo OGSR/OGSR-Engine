@@ -394,7 +394,7 @@ bool CInventoryItem::Detach(const char* item_section_name, bool b_spawn_item)
 								smart_cast<CSE_ALifeDynamicObject*>(D);
 		R_ASSERT			(l_tpALifeDynamicObject);
 		
-		l_tpALifeDynamicObject->m_tNodeID = (g_dedicated_server)?u32(-1):object().ai_location().level_vertex_id();
+		l_tpALifeDynamicObject->m_tNodeID = object().ai_location().level_vertex_id();
 			
 		// Fill
 		D->s_name			=	item_section_name;

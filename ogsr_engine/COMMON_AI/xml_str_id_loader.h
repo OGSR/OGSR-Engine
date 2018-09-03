@@ -129,21 +129,7 @@ TEMPLATE_SPECIALIZATION
 void CSXML_IdToIndex::DeleteIdToIndexData	()
 {
 	VERIFY		(m_pItemDataVector);
-#ifndef XRSE_FACTORY_EXPORTS
 	_destroy_item_data_vector_cont	(m_pItemDataVector);
-#else
-	T_VECTOR::iterator it = m_pItemDataVector->begin();
-	T_VECTOR::iterator it_e = m_pItemDataVector->end();
-
-	xr_vector<CUIXml*>			_tmp;
-	for (; it != it_e; ++it)
-	{
-		xr_vector<CUIXml*>::iterator it_f = std::find(_tmp.begin(), _tmp.end(), (*it)._xml);
-		if (it_f == _tmp.end())
-			_tmp.push_back((*it)._xml);
-	}
-	delete_data(_tmp);
-#endif
 	xr_delete	(m_pItemDataVector);
 }
 
