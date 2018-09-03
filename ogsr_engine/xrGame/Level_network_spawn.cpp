@@ -83,8 +83,8 @@ void CLevel::g_sv_Spawn		(CSE_Abstract* E)
 #endif
 
 	// Optimization for single-player only	- minimize traffic between client and server
-	if	(GameID()	== GAME_SINGLE)		psNET_Flags.set	(NETFLAG_MINIMIZEUPDATES,TRUE);
-	else								psNET_Flags.set	(NETFLAG_MINIMIZEUPDATES,FALSE);
+#pragma todo( "KRodin: Посмотреть внимательнее, что это за оптимизация. Может вообще всё там порезать." )
+	psNET_Flags.set(NETFLAG_MINIMIZEUPDATES,TRUE);
 
 	// Client spawn
 //	T.Start		();

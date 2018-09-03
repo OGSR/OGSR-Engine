@@ -88,17 +88,6 @@ void CUIInventoryWnd::Init()
 	AttachChild							(&UIProgressBack);
 	xml_init.InitStatic					(uiXml, "progress_background", 0, &UIProgressBack);
 
-	if (GameID() != GAME_SINGLE){
-		AttachChild						(&UIProgressBack_rank);
-		xml_init.InitStatic				(uiXml, "progress_back_rank", 0, &UIProgressBack_rank);
-
-		UIProgressBack_rank.AttachChild	(&UIProgressBarRank);
-		xml_init.InitProgressBar		(uiXml, "progress_bar_rank", 0, &UIProgressBarRank);
-		UIProgressBarRank.SetProgressPos(100);
-
-	}
-	
-
 	UIProgressBack.AttachChild (&UIProgressBarHealth);
 	xml_init.InitProgressBar (uiXml, "progress_bar_health", 0, &UIProgressBarHealth);
 	
@@ -118,17 +107,6 @@ void CUIInventoryWnd::Init()
 
 	//Элементы автоматического добавления
 	xml_init.InitAutoStatic				(uiXml, "auto_static", this);
-
-
-	if (GameID() != GAME_SINGLE){
-		UIRankFrame = xr_new<CUIStatic> (); UIRankFrame->SetAutoDelete(true);
-		UIRank = xr_new<CUIStatic> (); UIRank->SetAutoDelete(true);
-
-		CUIXmlInit::InitStatic(uiXml, "rank", 0, UIRankFrame);
-		CUIXmlInit::InitStatic(uiXml, "rank:pic", 0, UIRank);
-		AttachChild(UIRankFrame);
-		UIRankFrame->AttachChild(UIRank);		
-	}
 
 	m_pUIBagList						= xr_new<CUIDragDropListEx>(); UIBagWnd.AttachChild(m_pUIBagList); m_pUIBagList->SetAutoDelete(true);
 	xml_init.InitDragDropListEx			(uiXml, "dragdrop_bag", 0, m_pUIBagList);
@@ -305,18 +283,7 @@ void CUIInventoryWnd::Update()
 		UIProgressBarRadiation.SetProgressPos	(v);
 
 		CInventoryOwner* pOurInvOwner	= smart_cast<CInventoryOwner*>(pEntityAlive);
-		u32 _money						= 0;
-
-		if (GameID() != GAME_SINGLE){
-			game_PlayerState* ps = Game().GetPlayerByGameID(pEntityAlive->ID());
-			if (ps){
-				UIProgressBarRank.SetProgressPos(ps->experience_D*100);
-				_money							= ps->money_for_round;
-			}
-		}else
-		{
-			_money							= pOurInvOwner->get_money();
-		}
+		u32 _money						= pOurInvOwner->get_money();
 		// update money
 		string64						sMoney;
 		sprintf_s							(sMoney,"%d RU", _money);

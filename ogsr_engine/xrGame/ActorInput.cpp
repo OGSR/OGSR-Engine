@@ -423,8 +423,6 @@ void CActor::ActorUse()
 
 			VERIFY(pEntityAliveWeLookingAt);
 
-			if (GameID()==GAME_SINGLE)
-			{			
 				if(pEntityAliveWeLookingAt->g_Alive())
 				{
 					TryToTalk();
@@ -436,7 +434,6 @@ void CActor::ActorUse()
 					CUIGameSP* pGameSP = smart_cast<CUIGameSP*>(HUD().GetUI()->UIGame());
 					if(pGameSP)pGameSP->StartCarBody(this, m_pPersonWeLookingAt );
 				}
-			}
 		}
 
 		collide::rq_result& RQ = HUD().GetCurrentRayQuery();

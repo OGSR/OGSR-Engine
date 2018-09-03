@@ -21,9 +21,7 @@
 
 BOOL	GodMode	()	
 { 
-	if (GameID() == GAME_SINGLE) 
-		return psActorFlags.test(AF_GODMODE); 
-	return FALSE;	
+	return psActorFlags.test(AF_GODMODE); 
 }
 
 CActorCondition::CActorCondition(CActor *object) :

@@ -931,7 +931,3 @@ void		game_sv_GameState::OnRender				()
 	}
 };
 #endif
-//  [7/5/2005]
-
-BOOL	game_sv_GameState::IsVotingEnabled			()	{return g_sv_base_iVotingEnabled != 0;};
-BOOL	game_sv_GameState::IsVotingEnabled			(u16 flag) {return (g_sv_base_iVotingEnabled&flag) != 0;};

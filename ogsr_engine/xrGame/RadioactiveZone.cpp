@@ -50,7 +50,7 @@ void CRadioactiveZone::Affect(SZoneObjectInfo* O)
 		dir.set(0,0,0);
 	
 		Fvector position_in_bone_space;
-		float power = (GameID() == GAME_SINGLE) ? Power(GO->Position().distance_to(pos)) : 0.0f;
+		float power = Power(GO->Position().distance_to(pos));
 		float impulse = 0.f;
 		if(power > EPS) 
 		{
@@ -65,14 +65,7 @@ void CRadioactiveZone::Affect(SZoneObjectInfo* O)
 void CRadioactiveZone::feel_touch_new					(CObject* O	)
 {
 	inherited::feel_touch_new(O);
-	if (GameID() != GAME_SINGLE)
-	{
-		if (O->CLS_ID == CLSID_OBJECT_ACTOR)
-		{
-			CreateHit(O->ID(),ID(),Fvector().set(0, 0, 0),0.0f,BI_NONE,Fvector().set(0, 0, 0),0.0f,ALife::eHitTypeRadiation);
-		}
-	};
-};
+}
 
 #include "actor.h"
 BOOL CRadioactiveZone::feel_touch_contact(CObject* O)
