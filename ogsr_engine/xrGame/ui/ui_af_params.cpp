@@ -70,6 +70,7 @@ LPCSTR af_actor_param_names[]={
 	"psy_health_v"
 #endif
 };
+
 void CUIArtefactParams::InitFromXml(CUIXml& xml_doc)
 {
 	LPCSTR _base				= "af_params";
@@ -145,7 +146,7 @@ void CUIArtefactParams::SetInfo(const shared_str& af_section)
 			_color = (_val>0)?"%c[red]":"%c[green]";
 
 
-		sprintf_s					(	_buff, "%s %s %+.0f %s", 
+		sprintf_s					(	_buff, "%s %s %+.0f%s", 
 									CStringTable().translate(af_item_param_names[i]).c_str(), 
 									_color, 
 									_val, 
