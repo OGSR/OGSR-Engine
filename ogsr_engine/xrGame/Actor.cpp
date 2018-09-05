@@ -1407,6 +1407,38 @@ void CActor::UpdateArtefactPanel()
 		HUD().GetUI()->UIMainIngameWnd->m_artefactPanel->InitIcons(inventory().m_belt);
 }
 
+void ApplyArtefactEffects(ActorRestoreParams r, CArtefact*	artefact)
+{
+#ifdef AF_ZERO_CONDITION
+  float k = artefact->GetCondition() > 0 ? 1.f : 0.f;
+#else
+  float k = 1.f;
+#endif // AF_ZERO_CONDITION
+  r.BleedingRestoreSpeed += artefact->m_fBleedingRestoreSpeed * k;
+  r.HealthRestoreSpeed += artefact->m_fHealthRestoreSpeed * k;
+  r.PowerRestoreSpeed += artefact->m_fPowerRestoreSpeed * k;
+
+#ifdef AF_SATIETY
+  r.SatietyRestoreSpeed += artefact->m_fSatietyRestoreSpeed * k;
+#endif
+
+#ifdef AF_PSY_HEALTH
+#ifdef OBJECTS_RADIOACTIVE
+  if (artefact->PsyHealthRestoreSpeed() > 0)
+    r.PsyHealthRestoreSpeed += artefact->PsyHealthRestoreSpeed() * k;
+#else
+  r.PsyHealthRestoreSpeed += artefact->PsyHealthRestoreSpeed() * k;
+#endif
+#endif // AF_PSY_HEALTH
+
+#ifdef OBJECTS_RADIOACTIVE
+  if (artefact->RadiationRestoreSpeed() < 0)
+    r.RadiationRestoreSpeed += artefact->RadiationRestoreSpeed() * k;
+#else
+  r.RadiationRestoreSpeed += artefact->RadiationRestoreSpeed() * k;
+#endif // OBJECTS_RADIOACTIVE
+}
+
 ActorRestoreParams CActor::ActiveArtefactsOnBelt()
 {
 	ActorRestoreParams r;
@@ -1419,46 +1451,9 @@ ActorRestoreParams CActor::ActiveArtefactsOnBelt()
 		CArtefact*	artefact = smart_cast<CArtefact*>(*it);
 		if (artefact)
 		{
-#ifdef AF_ZERO_CONDITION
-			float k = artefact->GetCondition() > 0 ? 1.f : 0.f;
-#else
-			float k = 1.f;
-#endif // AF_ZERO_CONDITION
-			r.BleedingRestoreSpeed += artefact->m_fBleedingRestoreSpeed * k;
-			r.HealthRestoreSpeed += artefact->m_fHealthRestoreSpeed * k;
-			r.PowerRestoreSpeed += artefact->m_fPowerRestoreSpeed * k;
-
-#ifdef AF_SATIETY
-			r.SatietyRestoreSpeed += artefact->m_fSatietyRestoreSpeed * k;
-#endif
-
-#ifdef AF_PSY_HEALTH
-#ifdef OBJECTS_RADIOACTIVE
-			if (artefact->PsyHealthRestoreSpeed() > 0)
-				r.PsyHealthRestoreSpeed += artefact->PsyHealthRestoreSpeed() * k;
-#else
-			r.PsyHealthRestoreSpeed += artefact->PsyHealthRestoreSpeed() * k;
-#endif
-#endif // AF_PSY_HEALTH
-
-#ifdef OBJECTS_RADIOACTIVE
-			if (artefact->RadiationRestoreSpeed() < 0)
-				r.RadiationRestoreSpeed += artefact->RadiationRestoreSpeed() * k;
-#else
-			r.RadiationRestoreSpeed += artefact->RadiationRestoreSpeed() * k;
-#endif // OBJECTS_RADIOACTIVE
+      ApplyArtefactEffects(r, artefact);
 		}
 	}
-
-	//PIItem helm = inventory().m_slots[HELMET_SLOT].m_pIItem;
-	//if (helm)
-	//{
-	//	CArtefact*	helmet = smart_cast<CArtefact*>(helm);
-	//	if (helmet)
-	//	{
-	//		ApplyArtefactRestore(helmet, f_update_time);
-	//	}
-	//}
 
 #ifdef OBJECTS_RADIOACTIVE
 	auto &map_all = inventory().m_all;
@@ -1486,6 +1481,17 @@ ActorRestoreParams CActor::ActiveArtefactsOnBelt()
 #endif // OBJECTS_RADIOACTIVE
 
 #ifdef OUTFIT_AF
+
+  PIItem helm = inventory().m_slots[HELMET_SLOT].m_pIItem;
+  if (helm)
+  {
+    CArtefact*	helmet = smart_cast<CArtefact*>(helm);
+    if (helmet)
+    {
+      ApplyArtefactEffects(r, helmet);
+    }
+  }
+
 	PIItem outfit_item = inventory().m_slots[OUTFIT_SLOT].m_pIItem;
 	if (outfit_item) {
 		CCustomOutfit *outfit = smart_cast<CCustomOutfit*>(outfit_item);
