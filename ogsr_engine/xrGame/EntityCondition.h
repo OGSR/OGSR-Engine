@@ -66,7 +66,6 @@ public:
 
 	void 					ChangeBleeding			(float percent);
 
-	void 					ChangeCircumspection	(float value);
 	void 					ChangeEntityMorale		(float value);
 
 	virtual CWound*			ConditionHit			(SHit* pHDS);
@@ -133,8 +132,6 @@ protected:
 	float m_fDeltaPower;
 	float m_fDeltaRadiation;
 	float m_fDeltaPsyHealth;
-
-	float m_fDeltaCircumspection;
 	float m_fDeltaEntityMorale;
 
 	struct SConditionChangeV
