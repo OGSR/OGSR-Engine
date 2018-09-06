@@ -101,12 +101,12 @@ void		CWallmarksEngine::static_wm_render		(CWallmarksEngine::static_wallmark*	W,
 	float		a		= 1-(W->ttl/ps_r__WallmarkTTL);
 	int			aC		= iFloor	( a * 255.f);	clamp	(aC,0,255);
 	u32			C		= color_rgba(128,128,128,aC);
-	FVF::LIT*	S		= &*W->verts.begin	();
-	FVF::LIT*	E		= &*W->verts.end	();
-	for (; S!=E; S++, V++){
-		V->p.set		(S->p);
-		V->color		= C;
-		V->t.set		(S->t);
+
+	for ( const auto& Lit : W->verts ) {
+		V->p.set( Lit.p );
+		V->color = C;
+		V->t.set( Lit.t );
+		V++;
 	}
 }
 //--------------------------------------------------------------------------------
@@ -227,11 +227,10 @@ void CWallmarksEngine::AddWallmark_internal	(CDB::TRI* pTri, const Fvector* pVer
 	// calc sphere
 	if (W->verts.size()<3) { static_wm_destroy(W); return; }
 	else {
-		Fbox bb;	bb.invalidate();
-
-		FVF::LIT* I=&*W->verts.begin	();
-		FVF::LIT* E=&*W->verts.end		();
-		for (; I!=E; I++)	bb.modify	(I->p);
+		Fbox bb;
+		bb.invalidate();
+		for (const auto& Lit : W->verts)
+			bb.modify(Lit.p);
 		bb.getsphere					(W->bounds.P,W->bounds.R);
 	}
 

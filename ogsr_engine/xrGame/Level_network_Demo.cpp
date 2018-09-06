@@ -245,7 +245,7 @@ void						CLevel::Demo_Load_toFrame	(LPCSTR FileName, DWORD toFrame, long &ofs)
 		fseek(fTDemo, 0, SEEK_SET);
 
 		//-------------- load file header ---------------------		
-		fread(&m_sDemoHeader.bServerClient, 32, 1, fTDemo);
+		fread(&m_sDemoHeader.bServerClient, 32, 1, fTDemo); //-V512
 		DWORD OptSize = 0;
 		fread(&OptSize, 4, 1, fTDemo);
 		string4096 ServerOptions = "";

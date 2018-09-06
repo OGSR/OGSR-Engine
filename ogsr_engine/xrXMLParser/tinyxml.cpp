@@ -1112,7 +1112,7 @@ void TiXmlDocument::CopyTo( TiXmlDocument* target ) const
 	TiXmlNode::CopyTo( target );
 
 	target->error = error;
-	target->errorDesc = errorDesc.c_str ();
+	target->errorDesc = this->errorDesc;
 
 	TiXmlNode* node = 0;
 	for ( node = firstChild; node; node = node->NextSibling() )

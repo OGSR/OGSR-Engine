@@ -179,10 +179,10 @@ void CAI_Trader::OnEvent		(NET_Packet& P, u16 type)
 				inventory().Take(smart_cast<CGameObject*>(Obj), false, false);
 			}else
 			{
-				NET_Packet				P;
-				u_EventGen				(P,GE_OWNERSHIP_REJECT,ID());
-				P.w_u16					(u16(Obj->ID()));
-				u_EventSend				(P);
+				NET_Packet				_P;
+				u_EventGen				(_P,GE_OWNERSHIP_REJECT,ID());
+				_P.w_u16				(u16(Obj->ID()));
+				u_EventSend				(_P);
 			}
 			break;
 		case GE_TRADE_SELL:

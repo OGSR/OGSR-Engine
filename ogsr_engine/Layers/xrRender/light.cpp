@@ -112,7 +112,7 @@ void	light::set_position		(const Fvector& P)
 }
 
 void	light::set_range		(float R)			{
-	float	eps					=	_max	(range*0.1f,EPS_L);
+	float eps = std::max( range * 0.1f, EPS_L );
 	if (fsimilar(range,R,eps))	return	;
 	range						= R		;
 	spatial_move				();

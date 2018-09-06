@@ -321,8 +321,8 @@ void CDetailManager::hw_Unload()
 
 	hw_lod_Geom.destroy();
 
-	if ( hw_lod_IB ) _RELEASE( hw_lod_IB );
-	if ( hw_lod_VB ) _RELEASE( hw_lod_VB );
+	if ( hw_lod_IB ) _RELEASE( hw_lod_IB ); //-V571
+	if ( hw_lod_VB ) _RELEASE( hw_lod_VB ); //-V571
 }
 
 void CDetailManager::hw_Render()

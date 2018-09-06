@@ -770,7 +770,6 @@ bool CUIMainIngameWnd::OnKeyboardPress(int dik)
 
 			tmpV = pActor->GetMissileOffset();
 
-			if (!pActor) return false;
 			switch (dik)
 			{
 				// Shift +x

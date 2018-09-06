@@ -360,7 +360,7 @@ void			CLevel::OnConnectResult				(NET_Packet*	P)
 		FILE* fTDemo = fopen(m_sDemoName, "ab");
 		if (fTDemo)
 		{
-			fwrite(&m_sDemoHeader.bServerClient, 32, 1, fTDemo);
+			fwrite(&m_sDemoHeader.bServerClient, 32, 1, fTDemo); //-V512
 			
 			DWORD OptLen = m_sDemoHeader.ServerOptions.size();
 			fwrite(&OptLen, 4, 1, fTDemo);

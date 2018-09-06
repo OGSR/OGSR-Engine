@@ -151,11 +151,7 @@ void CUIEditKeyBind::Register(const char* entry, const char* group)
 
 void CUIEditKeyBind::SetCurrentValue()
 {
-	string64				buff;
-	ZeroMemory				(buff,sizeof(buff));
-
 	_binding*	pbinding	= &g_key_bindings[m_action->id];
-
 
 	int idx					= (m_bPrimary)?0:1;
 	m_keyboard				= pbinding->m_keyboard[idx];

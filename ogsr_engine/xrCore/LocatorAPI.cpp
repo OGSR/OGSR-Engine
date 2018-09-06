@@ -914,7 +914,7 @@ void CLocatorAPI::check_cached_files	(LPSTR fname, const file &desc, LPCSTR &sou
 	// Use
 	source_name		= &fname_copy[0];
 	strcpy_s		(fname_copy,sizeof(fname_copy),fname);
-	strcpy_s		(fname,sizeof(fname),fname_in_cache);
+	strcpy_s		(fname,sizeof(fname),fname_in_cache); //Это бред какой-то. Но функция никогда не вызывается по сути. //-V579
 }
 
 void CLocatorAPI::file_from_cache_impl	(IReader *&R, LPSTR fname, const file &desc)

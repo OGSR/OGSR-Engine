@@ -252,16 +252,13 @@ void game_sv_GameState::net_Export_State						(NET_Packet& P, ClientID to)
 		xrClientData*	C		=	(xrClientData*)	m_server->client_Get	(p_it);
 		game_PlayerState* A		=	get_it			(p_it);
 		if (!C->net_Ready || (A->IsSkip() && C->ID != to)) continue;
-		if (0==C)	strcpy(p_name,"Unknown");
-		else 
-		{
+
 			CSE_Abstract* C_e		= C->owner;
 			if (0==C_e)		strcpy(p_name,"Unknown");
 			else 
 			{
 				strcpy	(p_name,C_e->name_replace());
 			}
-		}
 
 		A->setName(p_name);
 		u16 tmp_flags = A->flags__;

@@ -320,7 +320,7 @@ void CCameraManager::ApplyDevice (float _viewport_near)
 	if (Device.m_SecondViewport.IsSVPFrame())
 	{
 		// Для второго вьюпорта FOV выставляем здесь
-		Device.fFOV = float(atan(tan(Device.fFOV * (0.5 * PI / 180)) / g_pGamePersistent->m_pGShaderConstants.hud_params.y) / (0.5 * PI / 180));
+		Device.fFOV = float(atan(tan(Device.fFOV * (0.5 * PI / 180)) / g_pGamePersistent->m_pGShaderConstants.hud_params.y) / (0.5 * PI / 180)); //-V595
 
 		// Предупреждаем что мы изменили настройки камеры
 		Device.m_SecondViewport.m_bCamReady = true;

@@ -18,7 +18,7 @@ public:
 	IC void push_back(T& val)
 	{
 		array[first]=val;
-		first=(++first)%size;
+		first=(++first)%size; //-V567
 	}
 	IC T& operator [] (int i)
 	{

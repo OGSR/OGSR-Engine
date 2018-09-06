@@ -23,12 +23,9 @@
 	((ltx->line_exist(section,name)) ? (ltx->method(section,name)) : (default_value))
 
 //---------------------------------------------------------------------
-ENGINE_API CInifile* pGameIni		= NULL;
-BOOL	g_bIntroFinished			= FALSE;
-extern	void	Intro				( void* fn );
-extern	void	Intro_DSHOW			( void* fn );
-extern	int PASCAL IntroDSHOW_wnd	(HINSTANCE hInstC, HINSTANCE hInstP, LPSTR lpCmdLine, int nCmdShow);
-int		max_load_stage = 0;
+ENGINE_API CInifile* pGameIni = nullptr;
+volatile bool g_bIntroFinished = false;
+int max_load_stage = 0;
 
 #define NO_MULTI_INSTANCES
 
@@ -364,7 +361,7 @@ int APIENTRY WinMain_impl(HINSTANCE hInstance,
 	SetWindowPos(logoWindow, logoInsertPos, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE | SWP_SHOWWINDOW);
 
 	// AVI
-	g_bIntroFinished			= TRUE;
+	g_bIntroFinished = true;
 
 	g_sLaunchOnExit_app[0]		= NULL;
 	g_sLaunchOnExit_params[0]	= NULL;

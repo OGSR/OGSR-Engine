@@ -218,7 +218,7 @@ void CPhysicObject::CreateBody(CSE_ALifeObjectPhysic* po) {
 			{	
 				m_pPhysicsShell		= P_create_Shell();
 				m_pPhysicsShell->set_Kinematics(pKinematics);
-				AddElement(0,pKinematics->LL_GetBoneRoot());
+				AddElement(0,pKinematics->LL_GetBoneRoot()); //-V595
 				m_pPhysicsShell->setMass1(m_mass);
 			} break;
 

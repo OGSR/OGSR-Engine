@@ -47,7 +47,7 @@ void SStatSectionData::load(IReader &stream)
 	if(ai().get_alife()->header().version()==0x0002)
 	{
 	int tmp;
-	load_data			(tmp,				stream);
+	load_data			(tmp,				stream); //-V614
 		switch(tmp)
 		{
 		case 100:

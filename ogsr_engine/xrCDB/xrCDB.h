@@ -206,8 +206,8 @@ namespace CDB {
 		ICF void		frustum_options	(u32 f)	{	frustum_mode = f;	}
 		void			frustum_query	(const MODEL *m_def, const CFrustum& F);
 
-		ICF RESULT*		r_begin			()	{	return &*rd.begin();		};
-		ICF RESULT*		r_end			()	{	return &*rd.end();			};
+		ICF RESULT* r_begin() { return std::data(rd); }
+		ICF RESULT* r_end()   { return std::data(rd) + std::size(rd); }
 		RESULT&			r_add			()	;
 		void			r_free			()	;
 		ICF size_t		r_count			()	{	return rd.size();			};

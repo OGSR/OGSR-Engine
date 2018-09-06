@@ -89,7 +89,7 @@ CSE_Abstract* xrServer::Process_spawn(NET_Packet& P, ClientID sender, BOOL bSpaw
 			if (bSpawnWithClientsMainEntityAsParent)
 			{
 				R_ASSERT				(CL);
-				CSE_Abstract* P		= CL->owner;
+				CSE_Abstract* P		= CL->owner; //-V595
 				R_ASSERT				(P);
 				E->ID_Parent			= P->ID;
 			}

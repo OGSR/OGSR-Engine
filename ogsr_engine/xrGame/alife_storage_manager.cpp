@@ -33,7 +33,7 @@ CALifeStorageManager::~CALifeStorageManager	()
 
 void CALifeStorageManager::save	(LPCSTR save_name, bool update_name)
 {
-	strcpy_s					(g_last_saved_game,sizeof(g_last_saved_game),save_name);
+	strcpy_s					(g_last_saved_game,sizeof(g_last_saved_game),save_name); //-V595
 
 	string_path					save;
 	strcpy						(save,m_save_name);

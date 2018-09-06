@@ -1761,7 +1761,7 @@ void PATurbulence::Execute(ParticleEffect *effect, float dt)
 	if ( p_cnt < nWorkers * 64 )
 		nWorkers = 1;
 
-	TES_PARAMS* tesParams = (TES_PARAMS*) _alloca( sizeof(TES_PARAMS) * nWorkers );
+	TES_PARAMS* tesParams = (TES_PARAMS*) _alloca( sizeof(TES_PARAMS) * nWorkers ); //-V630
 
 	// Give ~1% more for the last worker
 	// to minimize wait in final spin

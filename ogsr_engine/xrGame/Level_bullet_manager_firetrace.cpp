@@ -37,7 +37,7 @@ BOOL CBulletManager::test_callback(const collide::ray_defs& rd, CObject* object,
 	bullet_test_callback_data* pData	= (bullet_test_callback_data*)params;
 	SBullet* bullet = pData->pBullet;
 
-	if( (object->ID() == bullet->parent_id)		&&  
+	if( (object->ID() == bullet->parent_id)		&&   //-V595
 		(bullet->fly_dist<PARENT_IGNORE_DIST)	&&
 		(!bullet->flags.ricochet_was))			return FALSE;
 

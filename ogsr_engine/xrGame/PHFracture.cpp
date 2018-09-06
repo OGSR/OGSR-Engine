@@ -101,7 +101,7 @@ void CPHFracturesHolder::PassEndFractures(u16 from,CPHElement* dest)
 	u16 begin_geom_num=i_from->m_start_geom_num;
 	u16 leaved_geoms=begin_geom_num;
 	u16 passed_geoms=end_geom-begin_geom_num;
-	if(i_from==e) return;
+	if(i_from==e) return; //-V783
 
 	for(;i!=i_from;++i)//correct end geoms for fractures leaved in source
 	{

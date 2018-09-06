@@ -443,7 +443,7 @@ u8 CWeaponShotgun::AddCartridge		(u8 cnt)
 	{
 		if (!unlimited_ammo())
 		{
-			if (!m_pAmmo->Get(l_cartridge)) break;
+			if (!m_pAmmo->Get(l_cartridge)) break; //-V595
 		}
 		--cnt;
 		++iAmmoElapsed;

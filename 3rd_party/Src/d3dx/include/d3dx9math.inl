@@ -748,13 +748,13 @@ D3DXMATRIX::D3DXMATRIX( CONST FLOAT* pf )
         return;
 #endif
 
-    memcpy(&_11, pf, sizeof(D3DXMATRIX));
+    memcpy(&_11, pf, sizeof(D3DXMATRIX)); //-V512
 }
 
 D3DXINLINE
 D3DXMATRIX::D3DXMATRIX( CONST D3DMATRIX& mat )
 {
-    memcpy(&_11, &mat, sizeof(D3DXMATRIX));
+    memcpy(&_11, &mat, sizeof(D3DXMATRIX)); //-V512
 }
 
 D3DXINLINE
@@ -1041,7 +1041,7 @@ _D3DXMATRIXA16::operator delete[](void* p)
 D3DXINLINE _D3DXMATRIXA16& 
 _D3DXMATRIXA16::operator=(CONST D3DXMATRIX& rhs)
 {
-    memcpy(&_11, &rhs, sizeof(D3DXMATRIX));
+    memcpy(&_11, &rhs, sizeof(D3DXMATRIX)); //-V512
     return *this;
 }
 

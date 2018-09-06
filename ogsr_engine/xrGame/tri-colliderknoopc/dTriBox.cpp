@@ -57,7 +57,7 @@ unsigned int i;
 dVector3 norm,pos;
 unsigned int ret=1;
 
-if(code==0){
+if(code==0){ //Всегда истинно //-V547
 	norm[0]=triAx[0]*signum;
 	norm[1]=triAx[1]*signum;
 	norm[2]=triAx[2]*signum;

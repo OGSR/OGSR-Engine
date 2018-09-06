@@ -220,7 +220,7 @@ void CUIEventsWnd::ShowDescription			(CGameTask* t, int idx)
 		if(Actor()->encyclopedia_registry->registry().objects_ptr())
 		{
 			string512	need_group;
-			if (0==idx){ //Это условие всегда истинно
+			if (0==idx){ //Это условие всегда истинно //-V547
 				strcpy(need_group,*t->m_ID);
 			}
 			else if(o.article_key.size())

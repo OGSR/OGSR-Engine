@@ -759,7 +759,7 @@ void CUITradeWnd::SetCurrentItem(CUICellItem* itm)
 	CUIDragDropListEx* owner	= itm->OwnerList();
 	bool bBuying				= (owner==&m_uidata->UIOurBagList) || (owner==&m_uidata->UIOurTradeList);
 
-	if(itm && m_uidata->UIItemInfo.UICost){
+	if(m_uidata->UIItemInfo.UICost){
 
 		string256			str;
 

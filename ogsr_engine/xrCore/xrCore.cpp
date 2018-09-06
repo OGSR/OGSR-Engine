@@ -79,7 +79,7 @@ void xrCore::_initialize	(LPCSTR _ApplicationName, LogCallback cb, BOOL init_fs,
 		if (0!=strstr(Params,"-build"))	 flags |= CLocatorAPI::flBuildCopy;
 		if (0!=strstr(Params,"-ebuild")) flags |= CLocatorAPI::flBuildCopy|CLocatorAPI::flEBuildCopy;
 #ifdef DEBUG
-		if (strstr(Params,"-cache"))  flags |= CLocatorAPI::flCacheFiles;
+		if constexpr(false) /*(strstr(Params,"-cache"))*/  flags |= CLocatorAPI::flCacheFiles;
 		else flags &= ~CLocatorAPI::flCacheFiles;
 #endif // DEBUG
 		flags |= CLocatorAPI::flScanAppRoot;

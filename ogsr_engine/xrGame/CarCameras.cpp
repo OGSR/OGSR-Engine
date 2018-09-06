@@ -52,7 +52,7 @@ void	CCar::OnCameraChange		(int type)
 		{
 			Owner()->setVisible(FALSE);
 		}
-		else if(active_camera->tag==ectFirst)
+		else if(active_camera->tag==ectFirst) //-V595
 		{
 			Owner()->setVisible(TRUE);
 		}
