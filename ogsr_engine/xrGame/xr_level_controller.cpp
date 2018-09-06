@@ -96,14 +96,6 @@ std::vector<_action> actions = {
 	DEF_ACTION("use_bandage",		kUSE_BANDAGE)
 	DEF_ACTION("use_medkit",			kUSE_MEDKIT)
 
-	// KD - OGSE
-	DEF_ACTION("use_b190",			kUSE_B190)
-	DEF_ACTION("use_bipsizon",		kUSE_BIPSIZON)
-	DEF_ACTION("use_antirad",		kUSE_ANTIRAD)
-	DEF_ACTION("use_energy_drink",	kUSE_ENERGY_DRINK)
-	DEF_ACTION("use_radio",			kUSE_RADIO)
-	// KD - OGSE
-
 	DEF_ACTION("quick_save",			kQUICK_SAVE)
 	DEF_ACTION("quick_load",			kQUICK_LOAD)
 };
