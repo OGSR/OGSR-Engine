@@ -140,7 +140,6 @@ const	static int		PARAMS_COUNT = 7;
 
 		float			m_fV_Radiation;
 		float			m_fV_PsyHealth;
-		float			m_fV_Circumspection;
 		float			m_fV_EntityMorale;
 		float			m_fV_RadiationHealth;
 		float			m_fV_Bleeding;
