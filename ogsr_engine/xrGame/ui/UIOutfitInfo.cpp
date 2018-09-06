@@ -22,6 +22,15 @@ CUIOutfitInfo::~CUIOutfitInfo()
 }
 
 LPCSTR _imm_names []={
+	"health_restore_speed",
+	"radiation_restore_speed",
+	"satiety_restore_speed",
+	"power_restore_speed",
+	"bleeding_restore_speed",
+#ifdef AF_PSY_HEALTH
+	"psy_health_restore_speed",
+#endif
+
 	"burn_immunity",
 	"shock_immunity",
 	"strike_immunity",
@@ -34,6 +43,15 @@ LPCSTR _imm_names []={
 };
 
 LPCSTR _imm_st_names[]={
+	"ui_inv_health",
+	"ui_inv_radiation",
+	"ui_inv_satiety",
+	"ui_inv_power",
+	"ui_inv_bleeding",
+#ifdef AF_PSY_HEALTH
+	"ui_inv_psy_health",
+#endif
+
 	"ui_inv_outfit_burn_protection",
 	"ui_inv_outfit_shock_protection",
 	"ui_inv_outfit_strike_protection",
@@ -43,6 +61,17 @@ LPCSTR _imm_st_names[]={
 	"ui_inv_outfit_chemical_burn_protection",
 	"ui_inv_outfit_explosion_protection",
 	"ui_inv_outfit_fire_wound_protection",
+};
+
+LPCSTR _actor_param_names[] = {
+	"satiety_health_v",
+	"radiation_v",
+	"satiety_v",
+	"satiety_power_v",
+	"wound_incarnation_v",
+#ifdef AF_PSY_HEALTH
+	"psy_health_v"
+#endif
 };
 
 void CUIOutfitInfo::InitFromXml(CUIXml& xml_doc)
@@ -57,13 +86,17 @@ void CUIOutfitInfo::InitFromXml(CUIXml& xml_doc)
 	strconcat					(sizeof(_buff),_buff, _base, ":scroll_view");
 	CUIXmlInit::InitScrollView	(xml_doc, _buff, 0, m_listWnd);
 
-	for(u32 i=ALife::eHitTypeBurn; i<= ALife::eHitTypeFireWound; ++i)
+	for (u32 i = _item_start; i < _max_item_index; ++i)
 	{
-		m_items[i]				= xr_new<CUIStatic>();
-		CUIStatic* _s			= m_items[i];
-		_s->SetAutoDelete		(false);
-		strconcat				(sizeof(_buff),_buff, _base, ":static_", _imm_names[i]);
-		CUIXmlInit::InitStatic	(xml_doc, _buff,	0, _s);
+		strconcat(sizeof(_buff), _buff, _base, ":static_", _imm_names[i]);
+
+		if (xml_doc.NavigateToNode(_buff, 0))
+		{
+			m_items[i] = xr_new<CUIStatic>();
+			CUIStatic* _s = m_items[i];
+			_s->SetAutoDelete(false);
+			CUIXmlInit::InitStatic(xml_doc, _buff, 0, _s);
+		}
 	}
 
 }
@@ -72,51 +105,100 @@ void CUIOutfitInfo::Update(CCustomOutfit* outfit)
 {
 	m_outfit				= outfit;
 
-    SetItem(ALife::eHitTypeBurn,		false);
-	SetItem(ALife::eHitTypeShock,		false);
-	SetItem(ALife::eHitTypeStrike,		false);
-	SetItem(ALife::eHitTypeWound,		false);
-	SetItem(ALife::eHitTypeRadiation,	false);
-	SetItem(ALife::eHitTypeTelepatic,	false);
-    SetItem(ALife::eHitTypeChemicalBurn,false);
-	SetItem(ALife::eHitTypeExplosion,	false);
-	SetItem(ALife::eHitTypeFireWound,	false);
+	SetItem();
 }
 
-void CUIOutfitInfo::SetItem(u32 hitType, bool force_add)
+float CUIOutfitInfo::GetArtefactParam(ActorRestoreParams params, u32 i)
+{
+	float r = 0;
+	switch (i)
+	{
+	case _item_health_restore_speed:
+		r = params.HealthRestoreSpeed; break;
+	case _item_radiation_restore_speed:
+		r = params.RadiationRestoreSpeed; break;
+	case _item_satiety_restore_speed:
+		r = params.SatietyRestoreSpeed; break;
+	case _item_power_restore_speed:
+		r = params.PowerRestoreSpeed; break;
+	case _item_bleeding_restore_speed:
+		r = params.BleedingRestoreSpeed; break;
+	case _item_psy_health_restore_speed:
+		r = params.PsyHealthRestoreSpeed; break;
+	}
+	return r;
+}
+
+void CUIOutfitInfo::SetItem()
 {
 	string128 _buff;
-	float _val_outfit	= 0.0f;
-	float _val_af		= 0.0f;
 
-	CUIStatic* _s		= m_items[hitType];
+	auto artefactEffects = Actor()->ActiveArtefactsOnBelt();
 
-	_val_outfit			= m_outfit ? m_outfit->GetDefHitTypeProtection(ALife::EHitType(hitType)) : 1.0f;
-	_val_outfit			= 1.0f - _val_outfit;
-
-
-	_val_af				= Actor()->HitArtefactsOnBelt(1.0f,ALife::EHitType(hitType));
-	_val_af				= 1.0f - _val_af;
-
-	if(fsimilar(_val_outfit, 0.0f) && fsimilar(_val_af, 0.0f) && !force_add)
+	for (u32 i = _item_start; i < _max_item_index; ++i)
 	{
-		if(_s->GetParent()!=NULL)
+		CUIStatic* _s = m_items[i];
+
+		if (!_s) continue;
+
+		if (_s->GetParent() != NULL)
 			m_listWnd->RemoveWindow(_s);
-		return;
+
+		float _val_outfit = 0.0f;
+		float _val_af = 0.0f;
+
+		if (i < _max_item_index1)
+		{
+			_val_outfit = GetArtefactParam(artefactEffects, i);
+
+			float _actor_val = pSettings->r_float("actor_condition", _actor_param_names[i]);
+			_val_outfit = (_val_outfit / _actor_val);
+		}
+		else
+		{
+			_val_outfit = m_outfit ? m_outfit->GetDefHitTypeProtection(ALife::EHitType(i - _max_item_index1)) : 1.0f;
+			_val_outfit = 1.0f - _val_outfit;
+
+			_val_af = Actor()->HitArtefactsOnBelt(1.0f, ALife::EHitType(i - _max_item_index1));
+			_val_af = 1.0f - _val_af;
+		}
+
+		if (fsimilar(_val_outfit, 0.0f) && fsimilar(_val_af, 0.0f))
+		{
+			continue;
+		}
+
+		LPCSTR _sn = "";
+		if (i != _item_radiation_restore_speed
+			&& i != _item_power_restore_speed
+			&& i != _item_satiety_restore_speed)
+		{
+			_val_outfit *= 100.0f;
+			_val_af *= 100.0f;
+			_sn = "%";
+		}
+
+		if (i == _item_bleeding_restore_speed)
+			_val_outfit *= -1.0f;
+
+		LPCSTR _color = (_val_outfit > 0) ? "%c[green]" : "%c[red]";
+
+		if (i == _item_bleeding_restore_speed || i == _item_radiation_restore_speed)
+			_color = (_val_outfit > 0) ? "%c[red]" : "%c[green]";
+
+		LPCSTR _imm_name = *CStringTable().translate(_imm_st_names[i]);
+
+		int _sz = sprintf_s(_buff, sizeof(_buff), "%s ", _imm_name);
+		_sz += sprintf_s(_buff + _sz, sizeof(_buff) - _sz, "%s %+3.0f%s", _color, _val_outfit, _sn);
+
+		if (!fsimilar(_val_af, 0.0f))
+		{
+			_sz += sprintf_s(_buff + _sz, sizeof(_buff) - _sz, "%s %+3.0f%%", (_val_af > 0.0f) ? "%c[green]" : "%c[red]", _val_af);
+		}
+
+		_s->SetText(_buff);
+
+		if (_s->GetParent() == NULL)
+			m_listWnd->AddWindow(_s, false);
 	}
-
-//	LPCSTR			_clr_outfit, _clr_af;
-	LPCSTR			_imm_name	= *CStringTable().translate(_imm_st_names[hitType]);
-
-	int _sz			= sprintf_s	(_buff,sizeof(_buff),"%s ", _imm_name);
-	_sz				+= sprintf_s	(_buff+_sz,sizeof(_buff)-_sz,"%s %+3.0f%%", (_val_outfit>0.0f)?"%c[green]":"%c[red]", _val_outfit*100.0f);
-
-	if( !fsimilar(_val_af, 0.0f) )
-	{
-		_sz		+= sprintf_s	(_buff+_sz,sizeof(_buff)-_sz,"%s %+3.0f%%", (_val_af>0.0f)?"%c[green]":"%c[red]", _val_af*100.0f);
-	}
-	_s->SetText			(_buff);
-
-	if(_s->GetParent()==NULL)
-		m_listWnd->AddWindow(_s, false);
 }

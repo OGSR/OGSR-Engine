@@ -79,6 +79,13 @@ CInventory::CInventory()
 	m_slots[NIGHT_VISION_SLOT].m_bVisible		= false;
 	m_slots[BIODETECTOR_SLOT].m_bVisible		= false;
 
+	for (u32 i = 0; i < m_slots.size(); ++i)
+	{
+		sprintf_s(temp, "slot_visible_%d", i + 1);
+		if (pSettings->line_exist("inventory", temp))
+			m_slots[i].m_bVisible = !!pSettings->r_bool("inventory", temp);
+	};
+
 	m_bSlotsUseful								= true;
 	m_bBeltUseful								= false;
 

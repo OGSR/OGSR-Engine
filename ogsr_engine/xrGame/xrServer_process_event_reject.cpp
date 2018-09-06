@@ -26,8 +26,11 @@ bool xrServer::Process_event_reject	(NET_Packet& P, const ClientID sender, const
 
 	if (0xffff == e_entity->ID_Parent) 
 	{
+#ifdef DEBUG
 		Msg	("~ ERROR: can't detach independant object. entity[%s:%d], parent[%s:%d], section[%s]",
 			e_entity->name_replace(),id_entity,e_parent->name_replace(),id_parent, *e_entity->s_name);
+#endif
+
 		return			(false);
 	}
 
