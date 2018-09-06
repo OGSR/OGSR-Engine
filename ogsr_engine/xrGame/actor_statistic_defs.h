@@ -25,6 +25,7 @@ struct SStatSectionData: public IPureSerializeObject<IReader,IWriter>
 
 	SStatDetailBData&		GetData			(const shared_str&);
 	s32						GetTotalPoints	() const;
+	s32						GetTotalCounts	() const;
 	virtual void			save			(IWriter &stream);
 	virtual void			load			(IReader &stream);
 };
