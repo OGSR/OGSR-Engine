@@ -13,8 +13,6 @@ before_build:
     rem set OGSR_DEPLOY=true
 
     copy /Y "ogsr_engine\build_config_defines.h" "ogsr_engine\hack.appveyor"
-
-    set PreferredToolArchitecture=x64
 build:
   project: Engine.sln
   publish_wap: true
