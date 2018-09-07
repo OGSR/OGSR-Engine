@@ -2,7 +2,6 @@
 //////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
-#pragma hdrstop
 
 #pragma warning(disable:4995)
 #include <d3dx9.h>
@@ -10,15 +9,12 @@
 #include "HW.h"
 #include "xr_IOconsole.h"
 
-#ifndef _EDITOR
-	void	fill_vid_mode_list			(CHW* _hw);
-	void	free_vid_mode_list			();
-#else
-	void	fill_vid_mode_list			(CHW* _hw)	{};
-	void	free_vid_mode_list			()			{};
-#endif
+#pragma comment( lib, "d3d9.lib" )
 
-	void	free_vid_mode_list			();
+void	fill_vid_mode_list			(CHW* _hw);
+void	free_vid_mode_list			();
+
+void	free_vid_mode_list			();
 
 ENGINE_API CHW			HW;
 
@@ -54,33 +50,20 @@ void CHW::Reset		(HWND hwnd)
 #ifdef DEBUG
 	R_CHK				(pDevice->CreateStateBlock			(D3DSBT_ALL,&dwDebugSB));
 #endif
-#ifndef _EDITOR
 	updateWindowProps	(hwnd);
-#endif
 }
 
-xr_token*				vid_mode_token = NULL;
+xr_token* vid_mode_token = nullptr;
 
-void CHW::CreateD3D	()
+void CHW::CreateD3D()
 {
-#ifndef DEDICATED_SERVER
-	LPCSTR		_name			= "d3d9.dll";
-#else
-	LPCSTR		_name			= "xrd3d9-null.dll";
-#endif
-
-	hD3D9            			= LoadLibrary(_name);
-	R_ASSERT2	           	 	(hD3D9,"Can't find 'd3d9.dll'\nPlease install latest version of DirectX before running this program");
-    typedef IDirect3D9 * WINAPI _Direct3DCreate9(UINT SDKVersion);
-	_Direct3DCreate9* createD3D	= (_Direct3DCreate9*)GetProcAddress(hD3D9,"Direct3DCreate9");	R_ASSERT(createD3D);
-    this->pD3D 					= createD3D( D3D_SDK_VERSION );
-    R_ASSERT2					(this->pD3D,"Please install DirectX 9.0c");
+  this->pD3D = Direct3DCreate9( D3D_SDK_VERSION );
+  R_ASSERT2( this->pD3D, "Please install DirectX 9.0c" );
 }
 
 void CHW::DestroyD3D()
 {
-	_RELEASE					(this->pD3D);
-    FreeLibrary					(hD3D9);
+	_RELEASE(this->pD3D);
 }
 
 //////////////////////////////////////////////////////////////////////
@@ -126,32 +109,22 @@ void	CHW::DestroyDevice	()
 	_SHOW_REF				("refCount:dwDebugSB",dwDebugSB);
 	_RELEASE				(dwDebugSB);
 #endif
-#ifdef _EDITOR
-	_RELEASE				(HW.pDevice);
-#else
 	_SHOW_REF				("DeviceREF:",HW.pDevice);
 	_RELEASE				(HW.pDevice);
-#endif    
 	DestroyD3D				();
 	
-#ifndef _EDITOR
 	free_vid_mode_list		();
-#endif
 }
 void	CHW::selectResolution	(u32 &dwWidth, u32 &dwHeight, BOOL bWindowed)
 {
 	fill_vid_mode_list			(this);
-#ifdef DEDICATED_SERVER
-	dwWidth		= 640;
-	dwHeight	= 480;
-#else
+
 	if(bWindowed)
 	{
 		dwWidth		= psCurrentVidMode[0];
 		dwHeight	= psCurrentVidMode[1];
 	}else //check
 	{
-#ifndef _EDITOR
 		string64					buff;
 		sprintf_s					(buff,sizeof(buff),"%dx%d",psCurrentVidMode[0],psCurrentVidMode[1]);
 		
@@ -163,9 +136,7 @@ void	CHW::selectResolution	(u32 &dwWidth, u32 &dwHeight, BOOL bWindowed)
 
 		dwWidth						= psCurrentVidMode[0];
 		dwHeight					= psCurrentVidMode[1];
-#endif
 	}
-#endif
 
 }
 
@@ -174,11 +145,7 @@ void		CHW::CreateDevice		(HWND m_hWnd)
 	CreateD3D				();
 
 	// General - select adapter and device
-#ifdef DEDICATED_SERVER
-	BOOL  bWindowed			= TRUE;
-#else
 	BOOL  bWindowed			= !psDeviceFlags.is(rsFullscreen);
-#endif
 
 	DevAdapter				= D3DADAPTER_DEFAULT;
 	DevT					= Caps.bForceGPU_REF?D3DDEVTYPE_REF:D3DDEVTYPE_HAL;
@@ -268,9 +235,7 @@ void		CHW::CreateDevice		(HWND m_hWnd)
 	D3DPRESENT_PARAMETERS&	P	= DevPP;
     ZeroMemory				( &P, sizeof(P) );
 
-#ifndef _EDITOR
 	selectResolution	(P.BackBufferWidth, P.BackBufferHeight, bWindowed);
-#endif
 // Back buffer
 //.	P.BackBufferWidth		= dwWidth;
 //. P.BackBufferHeight		= dwHeight;
@@ -347,10 +312,8 @@ void		CHW::CreateDevice		(HWND m_hWnd)
 	u32	memory									= pDevice->GetAvailableTextureMem	();
 	Msg		("*     Texture memory: %d M",		memory/(1024*1024));
 	Msg		("*          DDI-level: %2.1f",		float(D3DXGetDriverLevel(pDevice))/100.f);
-#ifndef _EDITOR
 	updateWindowProps							(m_hWnd);
 	fill_vid_mode_list							(this);
-#endif
 }
 
 UINT CHW::selectPresentInterval()
@@ -414,7 +377,7 @@ void CHW::updateWindowProps(HWND m_hWnd)
 		bool bBordersMode = strstr(Core.Params, "-draw_borders");
 		if (bBordersMode)
 			dwWindowStyle |= WS_BORDER | WS_DLGFRAME | WS_SYSMENU | WS_MINIMIZEBOX;
-		SetWindowLong( m_hWnd, GWL_STYLE, dwWindowStyle );
+		SetWindowLongPtr( m_hWnd, GWL_STYLE, dwWindowStyle );
 		// When moving from fullscreen to windowed mode, it is important to
 		// adjust the window size after recreating the device rather than
 		// beforehand to ensure that you get the window size you want.  For
@@ -458,8 +421,8 @@ void CHW::updateWindowProps(HWND m_hWnd)
 	}
 	else
 	{
-		SetWindowLong(m_hWnd, GWL_STYLE, dwWindowStyle = (WS_POPUP | WS_VISIBLE));
-		SetWindowLong(m_hWnd, GWL_EXSTYLE, WS_EX_TOPMOST);
+		SetWindowLongPtr(m_hWnd, GWL_STYLE, dwWindowStyle /*= (WS_POPUP | WS_VISIBLE)*/);
+		//SetWindowLongPtr(m_hWnd, GWL_EXSTYLE, WS_EX_TOPMOST); // Не из-за этого ли окно в полноэкранном режиме под отладчиком новозможно свернуть при исключении?
 	}
 
 	ShowCursor(FALSE);
@@ -478,7 +441,6 @@ struct _uniq_mode
 	bool operator() (LPCSTR _other) {return !stricmp(_val,_other);}
 };
 
-#ifndef _EDITOR
 void free_vid_mode_list()
 {
 	for( int i=0; vid_mode_token[i].name; i++ )
@@ -532,5 +494,4 @@ void	fill_vid_mode_list			(CHW* _hw)
 #endif // DEBUG
 	}
 }
-#endif
 

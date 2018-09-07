@@ -532,7 +532,7 @@ void SGameTaskObjective::load(IReader &stream)
 
 
 		bool b_script;
-		load_data(b_script,				stream);
+		load_data(b_script,				stream); //-V614
 		if(b_script){
 			load_data(m_pScriptHelper,	stream);
 
@@ -605,7 +605,7 @@ void SGameTaskKey::load(IReader &stream)
 	load_data(game_task->m_Title,			stream);
 
 	u32 cnt;
-	load_data(cnt, stream);
+	load_data(cnt, stream); //-V614
 
 	if(cnt>game_task->m_Objectives.size())
 		game_task->m_Objectives.resize(cnt);

@@ -429,7 +429,6 @@
     <ClInclude Include="SH_Texture.h" />
     <ClInclude Include="Shader.h" />
     <ClInclude Include="r_constants_cache.h" />
-    <ClInclude Include="Text_Console.h" />
     <ClInclude Include="D3DUtils.h" />
     <ClInclude Include="du_box.h" />
     <ClInclude Include="du_cone.h" />
@@ -560,8 +559,6 @@
     <ClCompile Include="SH_Texture.cpp" />
     <ClCompile Include="Shader.cpp" />
     <ClCompile Include="r_constants_cache.cpp" />
-    <ClCompile Include="Text_Console.cpp" />
-    <ClCompile Include="Text_Console_WndProc.cpp" />
     <ClCompile Include="D3DUtils.cpp" />
     <ClCompile Include="du_box.cpp" />
     <ClCompile Include="du_cone.cpp" />

@@ -77,9 +77,6 @@ struct	ENGINE_API		SPass			: public xr_resource_flagged									{
 
 	ref_texture_list					T;
 	ref_constant_list					C;
-#ifdef _EDITOR
-	ref_matrix_list						M;
-#endif
 
 						~SPass			();
 	BOOL				equal			(ref_state& _state, ref_ps& _ps, ref_vs& _vs, ref_ctable& _ctable, ref_texture_list& _T, ref_matrix_list& _M, ref_constant_list& _C);

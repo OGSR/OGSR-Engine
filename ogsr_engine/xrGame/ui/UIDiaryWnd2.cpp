@@ -207,7 +207,7 @@ void CUIDiaryWnd::LoadJournalTab			(ARTICLE_DATA::EArticleType _type)
 		}
 	}
 	g_pda_info_state	&=	!pda_section::journal;
-
+#pragma todo("KRodin: journal же не может не быть, что этим кодом хотели сделать? Проверить, рабочий ли он вообще.")
 }
 
 void CUIDiaryWnd::UnloadInfoTab	()

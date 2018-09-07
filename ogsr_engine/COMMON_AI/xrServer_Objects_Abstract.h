@@ -6,8 +6,7 @@
 //	Description : Server objects
 ////////////////////////////////////////////////////////////////////////////
 
-#ifndef xrServer_Objects_AbstractH
-#define xrServer_Objects_AbstractH
+#pragma once
 
 #pragma pack(push,4)
 #include "xrServer_Space.h"
@@ -21,10 +20,8 @@
 class NET_Packet;
 class CDUInterface;
 
-#ifndef _EDITOR
 #ifndef XRGAME_EXPORTS
 #	include "Sound.h"
-#endif
 #endif
 
 #include "..\..\editors\xrEProps\xrEProps.h"
@@ -122,4 +119,3 @@ public:
 #pragma warning(pop)
 
 #pragma pack(pop)
-#endif // xrServer_Objects_AbstractH

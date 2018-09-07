@@ -153,7 +153,7 @@ void  CUIStatic::Draw()
 			clip_rect		= our_rect;
 			Frect			_r;
 			GetParent()->GetAbsoluteRect(_r);
-			if(GetParent())	clip_rect.intersection(our_rect,_r);			
+			clip_rect.intersection(our_rect,_r);			
 		}else				
 			clip_rect		= m_ClipRect;
 

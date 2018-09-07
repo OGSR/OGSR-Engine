@@ -86,8 +86,8 @@ void	CRenderTarget::phase_combine	()
 		// Compute params
 		Fmatrix		m_v2w;			m_v2w.invert				(Device.mView		);
 		CEnvDescriptorMixer& envdesc= g_pGamePersistent->Environment().CurrentEnv		;
-		const float minamb			= 0.001f;
-		Fvector4	ambclr			= { _max(envdesc.ambient.x*2,minamb),	_max(envdesc.ambient.y*2,minamb),			_max(envdesc.ambient.z*2,minamb),	0	};
+		constexpr float minamb = 0.001f;
+		Fvector4 ambclr = { std::max( envdesc.ambient.x * 2, minamb ), std::max( envdesc.ambient.y * 2, minamb ), std::max( envdesc.ambient.z * 2, minamb ), 0 };
 					ambclr.mul		(ps_r2_sun_lumscale_amb);
 		Fvector4	envclr			= { envdesc.sky_color.x*2+EPS,	envdesc.sky_color.y*2+EPS,	envdesc.sky_color.z*2+EPS,	envdesc.weight					};
 		Fvector4	fogclr			= { envdesc.fog_color.x,	envdesc.fog_color.y,	envdesc.fog_color.z,		0	};
@@ -147,15 +147,15 @@ void	CRenderTarget::phase_combine	()
 	if (!_menu_pp && R2RM_NORMAL == ps_Render_mode && ps_r2_ls_flags.test(R2FLAG_PUDDLES) && Puddles->m_bLoaded)				phase_puddles();
 
 	// Forward rendering
-	{
+	//{
 		u_setrt							(rt_Generic_0,0,0,HW.pBaseZB);		// LDR RT
 		RCache.set_CullMode				(CULL_CCW);
 		RCache.set_Stencil				(FALSE);
 		RCache.set_ColorWriteEnable		();
 		g_pGamePersistent->Environment().RenderClouds	();
 		RImplementation.render_forward	();
-		if (g_pGamePersistent)	g_pGamePersistent->OnRenderPPUI_main()	;	// PP-UI
-	}
+		g_pGamePersistent->OnRenderPPUI_main()	;	// PP-UI
+	//}
 
 	// sunshafts combine
 	if (!_menu_pp) phase_combine_volumetric();
@@ -175,7 +175,7 @@ void	CRenderTarget::phase_combine	()
 			RCache.set_ColorWriteEnable	();
 			CHK_DX(HW.pDevice->Clear	( 0L, NULL, D3DCLEAR_TARGET, color_rgba(127,127,0,127), 1.0f, 0L));
 			RImplementation.r_dsgraph_render_distort	();
-			if (g_pGamePersistent)	g_pGamePersistent->OnRenderPPUI_PP()	;	// PP-UI
+			g_pGamePersistent->OnRenderPPUI_PP()	;	// PP-UI
 		}
 	}
 
@@ -433,8 +433,8 @@ void	CRenderTarget::phase_combine_volumetric()
 		// Compute params
 		Fmatrix		m_v2w;			m_v2w.invert(Device.mView);
 		CEnvDescriptorMixer& envdesc = g_pGamePersistent->Environment().CurrentEnv;
-		const float minamb = 0.001f;
-		Fvector4	ambclr = { _max(envdesc.ambient.x * 2,minamb),	_max(envdesc.ambient.y * 2,minamb),			_max(envdesc.ambient.z * 2,minamb),	0 };
+		constexpr float minamb = 0.001f;
+		Fvector4 ambclr = { std::max( envdesc.ambient.x * 2, minamb ), std::max( envdesc.ambient.y * 2, minamb ), std::max( envdesc.ambient.z * 2, minamb ), 0 };
 		ambclr.mul(ps_r2_sun_lumscale_amb);
 		Fvector4	envclr = { envdesc.sky_color.x * 2 + EPS,	envdesc.sky_color.y * 2 + EPS,	envdesc.sky_color.z * 2 + EPS,	envdesc.weight };
 		Fvector4	fogclr = { envdesc.fog_color.x,	envdesc.fog_color.y,	envdesc.fog_color.z,		0 };

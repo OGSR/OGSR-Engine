@@ -1,5 +1,5 @@
 #include "stdafx.h"
-#pragma hdrstop
+
 
 static u32	crc32_table[256];					// Lookup table array 
 

@@ -153,8 +153,8 @@ typedef struct MixHrtfParams {
 
 
 typedef struct DirectParams {
-    BiquadState LowPass;
-    BiquadState HighPass;
+    BiquadFilter LowPass;
+    BiquadFilter HighPass;
 
     NfcFilter NFCtrlFilter;
 
@@ -171,8 +171,8 @@ typedef struct DirectParams {
 } DirectParams;
 
 typedef struct SendParams {
-    BiquadState LowPass;
-    BiquadState HighPass;
+    BiquadFilter LowPass;
+    BiquadFilter HighPass;
 
     struct {
         ALfloat Current[MAX_OUTPUT_CHANNELS];
@@ -431,13 +431,34 @@ void aluInitEffectPanning(struct ALeffectslot *slot);
 void aluSelectPostProcess(ALCdevice *device);
 
 /**
+ * Calculates ambisonic encoder coefficients using the X, Y, and Z direction
+ * components, which must represent a normalized (unit length) vector, and the
+ * spread is the angular width of the sound (0...tau).
+ *
+ * NOTE: The components use ambisonic coordinates. As a result:
+ *
+ * Ambisonic Y = OpenAL -X
+ * Ambisonic Z = OpenAL Y
+ * Ambisonic X = OpenAL -Z
+ *
+ * The components are ordered such that OpenAL's X, Y, and Z are the first,
+ * second, and third parameters respectively -- simply negate X and Z.
+ */
+void CalcAmbiCoeffs(const ALfloat y, const ALfloat z, const ALfloat x, const ALfloat spread,
+                    ALfloat coeffs[MAX_AMBI_COEFFS]);
+
+/**
  * CalcDirectionCoeffs
  *
- * Calculates ambisonic coefficients based on a direction vector. The vector
- * must be normalized (unit length), and the spread is the angular width of the
- * sound (0...tau).
+ * Calculates ambisonic coefficients based on an OpenAL direction vector. The
+ * vector must be normalized (unit length), and the spread is the angular width
+ * of the sound (0...tau).
  */
-void CalcDirectionCoeffs(const ALfloat dir[3], ALfloat spread, ALfloat coeffs[MAX_AMBI_COEFFS]);
+inline void CalcDirectionCoeffs(const ALfloat dir[3], ALfloat spread, ALfloat coeffs[MAX_AMBI_COEFFS])
+{
+    /* Convert from OpenAL coords to Ambisonics. */
+    CalcAmbiCoeffs(-dir[0], dir[1], -dir[2], spread, coeffs);
+}
 
 /**
  * CalcAngleCoeffs
@@ -448,23 +469,26 @@ void CalcDirectionCoeffs(const ALfloat dir[3], ALfloat spread, ALfloat coeffs[MA
  */
 inline void CalcAngleCoeffs(ALfloat azimuth, ALfloat elevation, ALfloat spread, ALfloat coeffs[MAX_AMBI_COEFFS])
 {
-    ALfloat dir[3] = {
-        sinf(azimuth) * cosf(elevation),
-        sinf(elevation),
-        -cosf(azimuth) * cosf(elevation)
-    };
-    CalcDirectionCoeffs(dir, spread, coeffs);
+    ALfloat x = -sinf(azimuth) * cosf(elevation);
+    ALfloat y = sinf(elevation);
+    ALfloat z = cosf(azimuth) * cosf(elevation);
+
+    CalcAmbiCoeffs(x, y, z, spread, coeffs);
 }
 
 /**
- * CalcAnglePairwiseCoeffs
+ * ScaleAzimuthFront
  *
- * Calculates ambisonic coefficients based on azimuth and elevation. The
- * azimuth and elevation parameters are in radians, going right and up
- * respectively. This pairwise variant warps the result such that +30 azimuth
- * is full right, and -30 azimuth is full left.
+ * Scales the given azimuth toward the side (+/- pi/2 radians) for positions in
+ * front.
  */
-void CalcAnglePairwiseCoeffs(ALfloat azimuth, ALfloat elevation, ALfloat spread, ALfloat coeffs[MAX_AMBI_COEFFS]);
+inline float ScaleAzimuthFront(float azimuth, float scale)
+{
+    ALfloat sign = copysignf(1.0f, azimuth);
+    if(!(fabsf(azimuth) > F_PI_2))
+        return minf(fabsf(azimuth) * scale, F_PI_2) * sign;
+    return azimuth;
+}
 
 
 void ComputePanningGainsMC(const ChannelConfig *chancoeffs, ALsizei numchans, ALsizei numcoeffs, const ALfloat coeffs[MAX_AMBI_COEFFS], ALfloat ingain, ALfloat gains[MAX_OUTPUT_CHANNELS]);

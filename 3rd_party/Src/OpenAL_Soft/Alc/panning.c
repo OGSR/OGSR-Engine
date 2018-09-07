@@ -33,11 +33,14 @@
 #include "bool.h"
 #include "ambdec.h"
 #include "bformatdec.h"
+#include "filters/splitter.h"
 #include "uhjfilter.h"
 #include "bs2b.h"
 
 
+extern inline void CalcDirectionCoeffs(const ALfloat dir[3], ALfloat spread, ALfloat coeffs[MAX_AMBI_COEFFS]);
 extern inline void CalcAngleCoeffs(ALfloat azimuth, ALfloat elevation, ALfloat spread, ALfloat coeffs[MAX_AMBI_COEFFS]);
+extern inline float ScaleAzimuthFront(float azimuth, float scale);
 extern inline void ComputeDryPanGains(const DryMixParams *dry, const ALfloat coeffs[MAX_AMBI_COEFFS], ALfloat ingain, ALfloat gains[MAX_OUTPUT_CHANNELS]);
 extern inline void ComputeFirstOrderGains(const BFMixParams *foa, const ALfloat mtx[4], ALfloat ingain, ALfloat gains[MAX_OUTPUT_CHANNELS]);
 
@@ -66,13 +69,9 @@ static const ALsizei ACN2ACN[MAX_AMBI_COEFFS] = {
 };
 
 
-void CalcDirectionCoeffs(const ALfloat dir[3], ALfloat spread, ALfloat coeffs[MAX_AMBI_COEFFS])
+void CalcAmbiCoeffs(const ALfloat y, const ALfloat z, const ALfloat x, const ALfloat spread,
+                    ALfloat coeffs[MAX_AMBI_COEFFS])
 {
-    /* Convert from OpenAL coords to Ambisonics. */
-    ALfloat x = -dir[2];
-    ALfloat y = -dir[0];
-    ALfloat z =  dir[1];
-
     /* Zeroth-order */
     coeffs[0]  = 1.0f; /* ACN 0 = 1 */
     /* First-order */
@@ -150,14 +149,6 @@ void CalcDirectionCoeffs(const ALfloat dir[3], ALfloat spread, ALfloat coeffs[MA
         coeffs[14] *= ZH3_norm;
         coeffs[15] *= ZH3_norm;
     }
-}
-
-void CalcAnglePairwiseCoeffs(ALfloat azimuth, ALfloat elevation, ALfloat spread, ALfloat coeffs[MAX_AMBI_COEFFS])
-{
-    ALfloat sign = (azimuth < 0.0f) ? -1.0f : 1.0f;
-    if(!(fabsf(azimuth) > F_PI_2))
-        azimuth = minf(fabsf(azimuth) * F_PI_2 / (F_PI/6.0f), F_PI_2) * sign;
-    CalcAngleCoeffs(azimuth, elevation, spread, coeffs);
 }
 
 
@@ -383,8 +374,8 @@ static bool MakeSpeakerMap(ALCdevice *device, const AmbDecConf *conf, ALsizei sp
 static const ChannelMap MonoCfg[1] = {
     { FrontCenter, { 1.0f } },
 }, StereoCfg[2] = {
-    { FrontLeft,   { 5.00000000e-1f,  2.88675135e-1f, 0.0f,  5.77350269e-2f } },
-    { FrontRight,  { 5.00000000e-1f, -2.88675135e-1f, 0.0f,  5.77350269e-2f } },
+    { FrontLeft,   { 5.00000000e-1f,  2.88675135e-1f, 0.0f,  5.52305643e-2f } },
+    { FrontRight,  { 5.00000000e-1f, -2.88675135e-1f, 0.0f,  5.52305643e-2f } },
 }, QuadCfg[4] = {
     { BackLeft,    { 3.53553391e-1f,  2.04124145e-1f, 0.0f, -2.04124145e-1f } },
     { FrontLeft,   { 3.53553391e-1f,  2.04124145e-1f, 0.0f,  2.04124145e-1f } },
@@ -415,7 +406,8 @@ static const ChannelMap MonoCfg[1] = {
     { BackRight,   { 2.04124145e-1f, -1.08880247e-1f, 0.0f, -1.88586120e-1f,  1.29099444e-1f, 0.0f, 0.0f, 0.0f,  7.45355993e-2f, -3.73460789e-2f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f,  0.00000000e+0f } },
 };
 
-static void InitNearFieldCtrl(ALCdevice *device, ALfloat ctrl_dist, ALsizei order, bool periphonic)
+static void InitNearFieldCtrl(ALCdevice *device, ALfloat ctrl_dist, ALsizei order,
+                              const ALsizei *restrict chans_per_order)
 {
     const char *devname = alstr_get_cstr(device->DeviceName);
     ALsizei i;
@@ -426,14 +418,10 @@ static void InitNearFieldCtrl(ALCdevice *device, ALfloat ctrl_dist, ALsizei orde
          * be used when rendering to an ambisonic buffer.
          */
         device->AvgSpeakerDist = minf(ctrl_dist, 10.0f);
+        TRACE("Using near-field reference distance: %.2f meters\n", device->AvgSpeakerDist);
 
-        device->Dry.NumChannelsPerOrder[0] = 1;
-        if(periphonic)
-            for(i = 1;i < order+1;i++)
-                device->Dry.NumChannelsPerOrder[i] = (i+1)*(i+1) - i*i;
-        else
-            for(i = 1;i < order+1;i++)
-                device->Dry.NumChannelsPerOrder[i] = (i*2+1) - ((i-1)*2+1);
+        for(i = 0;i < order+1;i++)
+            device->Dry.NumChannelsPerOrder[i] = chans_per_order[i];
         for(;i < MAX_AMBI_ORDER+1;i++)
             device->Dry.NumChannelsPerOrder[i] = 0;
     }
@@ -609,9 +597,12 @@ static void InitPanning(ALCdevice *device)
 
         if(ConfigValueFloat(devname, "decoder", "nfc-ref-delay", &nfc_delay) && nfc_delay > 0.0f)
         {
+            static const ALsizei chans_per_order[MAX_AMBI_ORDER+1] = {
+                1, 3, 5, 7
+            };
             nfc_delay = clampf(nfc_delay, 0.001f, 1000.0f);
             InitNearFieldCtrl(device, nfc_delay * SPEEDOFSOUNDMETRESPERSEC,
-                              device->AmbiOrder, true);
+                              device->AmbiOrder, chans_per_order);
         }
     }
     else
@@ -727,6 +718,8 @@ static void InitCustomPanning(ALCdevice *device, const AmbDecConf *conf, const A
 
 static void InitHQPanning(ALCdevice *device, const AmbDecConf *conf, const ALsizei speakermap[MAX_OUTPUT_CHANNELS])
 {
+    static const ALsizei chans_per_order2d[MAX_AMBI_ORDER+1] = { 1, 2, 2, 2 };
+    static const ALsizei chans_per_order3d[MAX_AMBI_ORDER+1] = { 1, 3, 5, 7 };
     ALfloat avg_dist;
     ALsizei count;
     ALsizei i;
@@ -803,7 +796,7 @@ static void InitHQPanning(ALCdevice *device, const AmbDecConf *conf, const ALsiz
     avg_dist /= (ALfloat)conf->NumSpeakers;
     InitNearFieldCtrl(device, avg_dist,
         (conf->ChanMask > 0x1ff) ? 3 : (conf->ChanMask > 0xf) ? 2 : 1,
-        !!(conf->ChanMask&AMBI_PERIPHONIC_MASK)
+        (conf->ChanMask&AMBI_PERIPHONIC_MASK) ? chans_per_order3d : chans_per_order2d
     );
 
     InitDistanceComp(device, conf, speakermap);
@@ -814,10 +807,10 @@ static void InitHrtfPanning(ALCdevice *device)
     /* NOTE: azimuth goes clockwise. */
     static const struct AngularPoint AmbiPoints[] = {
         { DEG2RAD( 90.0f), DEG2RAD(   0.0f) },
-        { DEG2RAD( 35.0f), DEG2RAD(  45.0f) },
-        { DEG2RAD( 35.0f), DEG2RAD( 135.0f) },
-        { DEG2RAD( 35.0f), DEG2RAD(-135.0f) },
-        { DEG2RAD( 35.0f), DEG2RAD( -45.0f) },
+        { DEG2RAD( 35.2643897f), DEG2RAD(  45.0f) },
+        { DEG2RAD( 35.2643897f), DEG2RAD( 135.0f) },
+        { DEG2RAD( 35.2643897f), DEG2RAD(-135.0f) },
+        { DEG2RAD( 35.2643897f), DEG2RAD( -45.0f) },
         { DEG2RAD(  0.0f), DEG2RAD(   0.0f) },
         { DEG2RAD(  0.0f), DEG2RAD(  45.0f) },
         { DEG2RAD(  0.0f), DEG2RAD(  90.0f) },
@@ -826,10 +819,10 @@ static void InitHrtfPanning(ALCdevice *device)
         { DEG2RAD(  0.0f), DEG2RAD(-135.0f) },
         { DEG2RAD(  0.0f), DEG2RAD( -90.0f) },
         { DEG2RAD(  0.0f), DEG2RAD( -45.0f) },
-        { DEG2RAD(-35.0f), DEG2RAD(  45.0f) },
-        { DEG2RAD(-35.0f), DEG2RAD( 135.0f) },
-        { DEG2RAD(-35.0f), DEG2RAD(-135.0f) },
-        { DEG2RAD(-35.0f), DEG2RAD( -45.0f) },
+        { DEG2RAD(-35.2643897f), DEG2RAD(  45.0f) },
+        { DEG2RAD(-35.2643897f), DEG2RAD( 135.0f) },
+        { DEG2RAD(-35.2643897f), DEG2RAD(-135.0f) },
+        { DEG2RAD(-35.2643897f), DEG2RAD( -45.0f) },
         { DEG2RAD(-90.0f), DEG2RAD(   0.0f) },
     };
     static const ALfloat AmbiMatrixFOA[][MAX_AMBI_COEFFS] = {
@@ -872,11 +865,12 @@ static void InitHrtfPanning(ALCdevice *device)
         { 5.55555556e-02f,  0.00000000e+00f, -1.23717915e-01f,  0.00000000e+00f,  0.00000000e+00f,  0.00000000e+00f },
     };
     static const ALfloat AmbiOrderHFGainFOA[MAX_AMBI_ORDER+1] = {
-        1.00000000e+00f, 5.77350269e-01f
+        3.00000000e+00f, 1.73205081e+00f
     }, AmbiOrderHFGainHOA[MAX_AMBI_ORDER+1] = {
-        9.80580676e-01f, 7.59554525e-01f, 3.92232270e-01f
+        2.40192231e+00f, 1.86052102e+00f, 9.60768923e-01f
     };
     static const ALsizei IndexMap[6] = { 0, 1, 2, 3, 4, 8 };
+    static const ALsizei ChansPerOrder[MAX_AMBI_ORDER+1] = { 1, 3, 2, 0 };
     const ALfloat (*restrict AmbiMatrix)[MAX_AMBI_COEFFS] = AmbiMatrixFOA;
     const ALfloat *restrict AmbiOrderHFGain = AmbiOrderHFGainFOA;
     ALsizei count = 4;
@@ -884,7 +878,6 @@ static void InitHrtfPanning(ALCdevice *device)
 
     static_assert(COUNTOF(AmbiPoints) == COUNTOF(AmbiMatrixFOA), "FOA Ambisonic HRTF mismatch");
     static_assert(COUNTOF(AmbiPoints) == COUNTOF(AmbiMatrixHOA), "HOA Ambisonic HRTF mismatch");
-    static_assert(COUNTOF(AmbiPoints) <= HRTF_AMBI_MAX_CHANNELS, "HRTF_AMBI_MAX_CHANNELS is too small");
 
     if(device->AmbiUp)
     {
@@ -931,22 +924,8 @@ static void InitHrtfPanning(ALCdevice *device)
         AmbiOrderHFGain
     );
 
-    if(GetConfigValueBool(alstr_get_cstr(device->DeviceName), "decoder", "nfc", 1) &&
-       device->HrtfHandle->distance > 0.0f)
-    {
-        /* NFC is only used when AvgSpeakerDist is greater than 0, and can only
-         * be used when rendering to an ambisonic buffer.
-         */
-        device->AvgSpeakerDist = minf(device->HrtfHandle->distance, 10.0f);
-
-        i = 0;
-        device->Dry.NumChannelsPerOrder[i++] = 1;
-        device->Dry.NumChannelsPerOrder[i++] = 3;
-        if(device->AmbiUp)
-            device->Dry.NumChannelsPerOrder[i++] = 2;
-        while(i < MAX_AMBI_ORDER+1)
-            device->Dry.NumChannelsPerOrder[i++] = 0;
-    }
+    InitNearFieldCtrl(device, device->HrtfHandle->distance, device->AmbiUp ? 2 : 1,
+                      ChansPerOrder);
 }
 
 static void InitUhjPanning(ALCdevice *device)

@@ -47,8 +47,6 @@
 #	include "physicobject.h"
 #endif
 
-ENGINE_API bool g_dedicated_server;
-
 extern BOOL	g_bDebugDumpPhysicsStep;
 
 CPHWorld	*ph_world			= 0;
@@ -84,10 +82,7 @@ CLevel::CLevel():IPureClient	(Device.GetTimerGlobal())
 
 	m_pBulletManager			= xr_new<CBulletManager>();
 
-	if(!g_dedicated_server)
-		m_map_manager				= xr_new<CMapManager>();
-	else
-		m_map_manager				= NULL;
+	m_map_manager				= xr_new<CMapManager>();
 
 //	m_pFogOfWarMngr				= xr_new<CFogOfWarMngr>();
 //----------------------------------------------------
@@ -100,8 +95,6 @@ CLevel::CLevel():IPureClient	(Device.GetTimerGlobal())
 	physics_step_time_callback	= (PhysicsStepTimeCallback*) &PhisStepsCallback;
 	m_seniority_hierarchy_holder= xr_new<CSeniorityHierarchyHolder>();
 
-	if(!g_dedicated_server)
-	{
 		m_level_sound_manager		= xr_new<CLevelSoundManager>();
 		m_space_restriction_manager = xr_new<CSpaceRestrictionManager>();
 		m_client_spawn_manager		= xr_new<CClientSpawnManager>();
@@ -111,19 +104,6 @@ CLevel::CLevel():IPureClient	(Device.GetTimerGlobal())
 		m_level_debug				= xr_new<CLevelDebug>();
 	#endif
 
-	}else
-	{
-		m_level_sound_manager		= NULL;
-		m_client_spawn_manager		= NULL;
-		m_space_restriction_manager = NULL;
-	#ifdef DEBUG
-		m_debug_renderer			= NULL;
-		m_level_debug				= NULL;
-	#endif
-	}
-
-
-	
 	m_ph_commander				= xr_new<CPHCommander>();
 	m_ph_commander_scripts		= xr_new<CPHCommander>();
 
@@ -412,16 +392,13 @@ void CLevel::ProcessGameEvents		()
 			}			
 		}
 	}
-	if (OnServer() && GameID()!= GAME_SINGLE)
-		Game().m_WeaponUsageStatistic->Send_Check_Respond();
 }
 
 void CLevel::OnFrame	()
 {
 	m_feel_deny.update					();
 
-	if (GameID()!=GAME_SINGLE)			psDeviceFlags.set(rsDisableObjectsAsCrows,true);
-	else								psDeviceFlags.set(rsDisableObjectsAsCrows,false);
+	psDeviceFlags.set(rsDisableObjectsAsCrows,false);
 
 	// commit events from bullet manager from prev-frame
 	Device.Statistic->TEST0.Begin		();
@@ -431,9 +408,6 @@ void CLevel::OnFrame	()
 	// Client receive
 	if (net_isDisconnected())	
 	{
-		if (OnClient() && GameID() != GAME_SINGLE) 
-			ClearAllObjects();
-
 		Engine.Event.Defer				("kernel:disconnect");
 		return;
 	} else {
@@ -450,13 +424,12 @@ void CLevel::OnFrame	()
 
 	if (m_bNeed_CrPr)					make_NetCorrectionPrediction();
 
-	if(!g_dedicated_server)
-		MapManager().Update		();
+	MapManager().Update		();
 	// Inherited update
 	inherited::OnFrame		();
 
 	// Draw client/server stats
-	if ( !g_dedicated_server && psDeviceFlags.test(rsStatistic))
+	if (psDeviceFlags.test(rsStatistic))
 	{
 		CGameFont* F = HUD().Font().pFontDI;
 		if (!psNET_direct_connect) 
@@ -529,13 +502,10 @@ void CLevel::OnFrame	()
 	Device.Statistic->TEST0.End			();
 
 	// update static sounds
-	if(!g_dedicated_server)
-	{
 		if (g_mt_config.test(mtLevelSounds)) 
 			Device.seqParallel.push_back	(fastdelegate::FastDelegate0<>(m_level_sound_manager,&CLevelSoundManager::Update));
 		else								
 			m_level_sound_manager->Update	();
-	}
 	//-----------------------------------------------------
 	if (pStatGraphR)
 	{	
@@ -611,13 +581,6 @@ void CLevel::OnRender()
 			CTeamBaseZone	*team_base_zone = smart_cast<CTeamBaseZone*>(_O);
 			if (team_base_zone)
 				team_base_zone->OnRender();
-			
-			if (GameID() != GAME_SINGLE)
-			{
-				CInventoryItem* pIItem = smart_cast<CInventoryItem*>(_O);
-				if (pIItem) pIItem->OnRender();
-			}
-
 			
 			if (dbg_net_Draw_Flags.test(1<<11)) //draw skeleton
 			{
@@ -855,23 +818,8 @@ bool		CLevel::InterpolationDisabled	()
 	return g_cl_lvInterp < 0; 
 };
 
-void 		CLevel::PhisStepsCallback		( u32 Time0, u32 Time1 )
-{
-	if (GameID() == GAME_SINGLE)	return;
-
-//#pragma todo("Oles to all: highly inefficient and slow!!!")
-//fixed (Andy)
-	/*
-	for (xr_vector<CObject*>::iterator O=Level().Objects.objects.begin(); O!=Level().Objects.objects.end(); ++O) 
-	{
-		if( (*O)->CLS_ID == CLSID_OBJECT_ACTOR){
-			CActor* pActor = smart_cast<CActor*>(*O);
-			if (!pActor || pActor->Remote()) continue;
-				pActor->UpdatePosStack(Time0, Time1);
-		}
-	};
-	*/
-};
+void 		CLevel::PhisStepsCallback		( u32 , u32 )
+{}
 
 void				CLevel::SetNumCrSteps		( u32 NumSteps )
 {

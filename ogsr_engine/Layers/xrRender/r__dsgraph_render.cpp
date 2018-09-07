@@ -17,37 +17,24 @@ ICF float calcLOD	(float ssa/*fDistSq*/, float R)
 }
 
 // NORMAL
-IC	bool	cmp_normal_items		(const _NormalItem& N1, const _NormalItem& N2)
-{	return (N1.ssa > N2.ssa);		}
-
-void __fastcall mapNormal_Render	(mapNormalItems& N)
-{
-	// *** DIRECT ***
-	std::sort				(N.begin(),N.end(),cmp_normal_items);
-	_NormalItem				*I=&*N.begin(), *E = &*N.end();
-	for (; I!=E; I++)		{
-		_NormalItem&		Ni	= *I;
-		Ni.pVisual->Render	(calcLOD(Ni.ssa,Ni.pVisual->vis.sphere.R));
-	}
+void __fastcall mapNormal_Render( mapNormalItems& N ) {
+  // *** DIRECT ***
+  std::sort( N.begin(), N.end(), []( const auto& N1, const auto& N2 ) { return N1.ssa > N2.ssa; } );
+  for ( const auto& Ni : N )
+    Ni.pVisual->Render( calcLOD( Ni.ssa, Ni.pVisual->vis.sphere.R ) );
 }
 
 // Matrix
-IC	bool	cmp_matrix_items		(const _MatrixItem& N1, const _MatrixItem& N2)
-{	return (N1.ssa > N2.ssa);		}
-
-void __fastcall mapMatrix_Render	(mapMatrixItems& N)
-{
-	// *** DIRECT ***
-	std::sort				(N.begin(),N.end(),cmp_matrix_items);
-	_MatrixItem				*I=&*N.begin(), *E = &*N.end();
-	for (; I!=E; I++)		{
-		_MatrixItem&	Ni				= *I;
-		RCache.set_xform_world			(Ni.Matrix);
-		RImplementation.apply_object	(Ni.pObject);
-		RImplementation.apply_lmaterial	();
-		Ni.pVisual->Render				(calcLOD(Ni.ssa,Ni.pVisual->vis.sphere.R));
-	}
-	N.clear	();
+void __fastcall mapMatrix_Render( mapMatrixItems& N ) {
+  // *** DIRECT ***
+  std::sort( N.begin(), N.end(), []( const auto& N1, const auto& N2 ) { return N1.ssa > N2.ssa; } );
+  for ( const auto& Ni : N ) {
+    RCache.set_xform_world( Ni.Matrix );
+    RImplementation.apply_object( Ni.pObject );
+    RImplementation.apply_lmaterial();
+    Ni.pVisual->Render( calcLOD( Ni.ssa, Ni.pVisual->vis.sphere.R ) );
+  }
+  N.clear();
 }
 
 // ALPHA

@@ -2,8 +2,6 @@
 //
 //////////////////////////////////////////////////////////////////////
 
-#ifndef RainH
-#define RainH
 #pragma once
 
 #include "xr_collide_defs.h"
@@ -11,8 +9,6 @@
 //refs
 class ENGINE_API IRender_DetailModel;
 
-
-//
 class ENGINE_API CEffect_Rain
 {
 private:
@@ -91,7 +87,6 @@ public:
 	void							set_state		(States _state) {	state = _state;	};
 	void							InvalidateState	()		{state = stIdle;}
 };
-#ifndef _EDITOR
 class rain_timer_params
 {
 public:
@@ -116,5 +111,3 @@ public:
 ENGINE_API extern rain_timer_params *rain_timers_raycheck;
 ENGINE_API extern rain_timer_params *rain_timers;
 ENGINE_API extern Fvector4 *rain_params;
-#endif
-#endif //RainH

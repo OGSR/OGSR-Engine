@@ -1,11 +1,4 @@
-//---------------------------------------------------------------------------
-
-#ifndef LightAnimLibraryH
-#define LightAnimLibraryH
-//---------------------------------------------------------------------------
-#ifdef _EDITOR
-	#include "../xrEProps/FolderLib.h"              
-#endif
+#pragma once
 
 class ENGINE_API CLAItem				{
 public:
@@ -47,10 +40,6 @@ public:
 public:
 					ELightAnimLibrary	();
 					~ELightAnimLibrary	();
-#ifdef _EDITOR       
-	void  	 __stdcall		RemoveObject		(LPCSTR fname, EItemType type, bool& res);
-    void	 __stdcall	 	RenameObject		(LPCSTR fn0, LPCSTR fn1, EItemType type);
-#endif
 
     void			OnCreate			();
     void			OnDestroy			();
@@ -63,5 +52,3 @@ public:
 };
 
 extern ENGINE_API ELightAnimLibrary LALib;
-
-#endif

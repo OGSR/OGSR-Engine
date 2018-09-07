@@ -71,7 +71,7 @@ void CUIInventoryWnd::ActivatePropertiesBox()
 						string16 tmp;
 
 						strconcat(sizeof(full_action_text), full_action_text, "st_move_to_slot_", itoa(slot, tmp, 10));
-						UIPropertiesBox.AddItem(full_action_text, (void*)slot, INVENTORY_TO_SLOT_ACTION);
+						UIPropertiesBox.AddItem(full_action_text, (void*)(__int64)slot, INVENTORY_TO_SLOT_ACTION);
 					}
 					else 
 					{
@@ -147,7 +147,7 @@ void CUIInventoryWnd::ActivatePropertiesBox()
 			UIPropertiesBox.AddItem("st_detach_silencer",  NULL, INVENTORY_DETACH_SILENCER_ADDON);
 		b_show			= true;
 		}
-		if(smart_cast<CWeaponMagazined*>(pWeapon) && IsGameTypeSingle())
+		if(smart_cast<CWeaponMagazined*>(pWeapon))
 		{
 			bool b = (0!=pWeapon->GetAmmoElapsed());
 
@@ -357,7 +357,7 @@ void CUIInventoryWnd::ProcessPropertiesBoxClicked	()
 				  void* d = UIPropertiesBox.GetClickedItem()->GetData();
 				  if (d) 
 				  {
-					  auto slot = (u8)d;
+					  auto slot = (u8)(__int64)d;
 					  item->SetSlot(slot);
 					  if (ToSlot(CurrentItem(), true))
 						  return;

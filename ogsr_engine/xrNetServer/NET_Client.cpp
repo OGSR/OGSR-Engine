@@ -432,7 +432,7 @@ BOOL IPureClient::Connect	(LPCSTR options)
 		if (CoCreateInstanceRes != S_OK)
 		{
 			DXTRACE_ERR(tmp, CoCreateInstanceRes );
-			CHK_DX(CoCreateInstanceRes );
+			CHK_DX(CoCreateInstanceRes ); //-V607
 		}	
 		//---------------------------
 
@@ -1008,7 +1008,7 @@ void	IPureClient::Sync_Thread	()
 		else {
 			DWORD			dwPending=0;
 			do {
-				R_CHK			(NET->GetSendQueueInfo(&dwPending,0,0));
+				R_CHK			(NET->GetSendQueueInfo(&dwPending,0,0)); //-V595
 				Sleep			(1);
 			} while (dwPending);
 		}

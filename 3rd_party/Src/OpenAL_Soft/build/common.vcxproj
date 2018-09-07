@@ -12,7 +12,8 @@
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{FF359A96-2502-3362-8FB6-A0E40B35A2B0}</ProjectGuid>
-    <WindowsTargetPlatformVersion></WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion>
+    </WindowsTargetPlatformVersion>
     <Keyword>Win32Proj</Keyword>
     <Platform>Win32</Platform>
     <ProjectName>common</ProjectName>
@@ -123,6 +124,7 @@
     </Lib>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\common\alcomplex.c" />
     <ClCompile Include="..\common\almalloc.c" />
     <ClCompile Include="..\common\atomic.c" />
     <ClCompile Include="..\common\rwlock.c" />

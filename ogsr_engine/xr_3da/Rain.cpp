@@ -1,26 +1,19 @@
 #include "stdafx.h"
-#pragma once
 
 #include "Rain.h"
 #include "igame_persistent.h"
 #include "environment.h"
 
-#ifdef _EDITOR
-    #include "ui_toolscustom.h"
-#else
-    #include "render.h"
-	#include "igame_level.h"
-	#include "xr_area.h"
-	#include "xr_object.h"
-#endif
+#include "render.h"
+#include "igame_level.h"
+#include "xr_area.h"
+#include "xr_object.h"
 #include "XR_IOConsole.h"
 #include "xr_ioc_cmd.h"
 
-#ifndef _EDITOR
 rain_timer_params *rain_timers_raycheck = NULL;
 rain_timer_params *rain_timers = NULL;
 Fvector4 *rain_params = NULL;
-#endif
 
 static const int	max_desired_items	= 2500;
 static const float	source_radius		= 12.5f;
@@ -74,14 +67,12 @@ CEffect_Rain::CEffect_Rain()
 	p_create						();
 	FS.r_close						(F);
 
-#ifndef _EDITOR
 	if (!rain_timers_raycheck)
 		rain_timers_raycheck = xr_new<rain_timer_params>();
 	if (!rain_timers)
 		rain_timers = xr_new<rain_timer_params>();
 	if (!rain_params)
 		rain_params = xr_new<Fvector4>();
-#endif
 }
 
 CEffect_Rain::~CEffect_Rain()
@@ -92,14 +83,12 @@ CEffect_Rain::~CEffect_Rain()
 	p_destroy						();
 	::Render->model_Delete			(DM_Drop);
 
-#ifndef _EDITOR
 	if (rain_timers_raycheck)
 		xr_delete(rain_timers_raycheck);
 	if (rain_timers)
 		xr_delete(rain_timers);
 	if (rain_params)
 		xr_delete(rain_params);
-#endif
 }
 
 // Born
@@ -152,14 +141,10 @@ void	CEffect_Rain::Born		(Item& dest, float radius)
 BOOL CEffect_Rain::RayPick(const Fvector& s, const Fvector& d, float& range, collide::rq_target tgt)
 {
 	BOOL bRes 			= TRUE;
-#ifdef _EDITOR
-    Tools->RayPick		(s,d,range);
-#else
 	collide::rq_result	RQ;
 	CObject* E 			= g_pGameLevel->CurrentViewEntity();
 	bRes 				= g_pGameLevel->ObjectSpace.RayPick( s,d,range,tgt,RQ,E);	
     if (bRes) range 	= RQ.range;
-#endif
     return bRes;
 }
 
@@ -179,17 +164,14 @@ void CEffect_Rain::RenewItem(Item& dest, float height, BOOL bHit)
 
 void	CEffect_Rain::OnFrame	()
 {
-#ifndef _EDITOR
 	if (!g_pGameLevel)			return;
-#endif
+
 	// Parse states
 	float	factor				= g_pGamePersistent->Environment().CurrentEnv.rain_density;
 	float	hemi_factor			= 1.f;
-#ifndef _EDITOR
 	CObject* E 					= g_pGameLevel->CurrentViewEntity();
 	if (E&&E->renderable_ROS())
 		hemi_factor				= 1.f-2.0f*(0.3f-_min(_min(1.f,E->renderable_ROS()->get_luminocity_hemi()),0.3f));
-#endif
 
 	switch (state)
 	{
@@ -226,7 +208,6 @@ enum
 	NO_RAIN,
 	IS_RAIN,
 };
-#ifndef _EDITOR
 BOOL rain_timer_params::RayPick(const Fvector& s, const Fvector& d, float& range, collide::rq_target tgt)
 {
 	BOOL bRes = TRUE;
@@ -320,20 +301,14 @@ int rain_timer_params::Update(BOOL state, bool need_raypick)
 }
 static bool rain_flag = false;
 static float start_timer = 0.0;
-#endif
 //#include "xr_input.h"
 void	CEffect_Rain::Render	()
 {
-#ifndef _EDITOR
 	if (!g_pGameLevel)			return;
 
 	::Render->getTarget()->phase_rain();
-#endif
 
 	float	factor				= g_pGamePersistent->Environment().CurrentEnv.rain_density;
-#ifdef _EDITOR
-	if (factor<EPS_L)			return;
-#else
 
 	rain_timers->Update(true/*ps_r2_test_flags.test(R2FLAG_RAIN_MAP & R2FLAG_WET_SURFACES)*/, false);
 	//rain params update
@@ -358,7 +333,6 @@ void	CEffect_Rain::Render	()
 		start_timer = Device.fTimeGlobal;
 		rain_flag = true;
 	}
-#endif
 
 //	u32 desired_items			= iFloor	(0.5f*(1.f+factor)*float(max_desired_items));
 	u32 desired_items = iFloor(saturate(g_pGamePersistent->Environment().CurrentEnv.rain_increase_speed*factor*factor)*float(max_desired_items));

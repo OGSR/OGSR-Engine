@@ -113,7 +113,7 @@ bool CPhraseScript::Precondition( const CGameObject* pSpeakerGO, LPCSTR dialog_i
   }
 
   for ( const auto& Cond : Preconditions() ) {
-    std::string ConditionString( Cond.c_str() );
+    std::string ConditionString( Cond.c_str() ); //-V808
     if ( luabind::functor<bool> lua_function; ai().script_engine().functor( ConditionString.c_str(), lua_function ) ) // Обычный функтор
       predicate_result = lua_function( pSpeakerGO->lua_game_object() );
     else { // Функтор с аргументами
@@ -142,7 +142,7 @@ bool CPhraseScript::Precondition( const CGameObject* pSpeakerGO, LPCSTR dialog_i
 
 void CPhraseScript::Action( const CGameObject* pSpeakerGO, LPCSTR dialog_id, LPCSTR /*phrase_id*/ ) const {
   for ( const auto& Act : Actions() ) {
-    std::string ActionString( Act.c_str() );
+    std::string ActionString( Act.c_str() ); //-V808
     if ( luabind::functor<void> lua_function; ai().script_engine().functor( ActionString.c_str(), lua_function ) ) // Обычный функтор
       lua_function( pSpeakerGO->lua_game_object(), dialog_id );
     else { // Функтор с аргументами
@@ -175,7 +175,7 @@ bool CPhraseScript::Precondition( const CGameObject* pSpeakerGO1, const CGameObj
   }
 
   for ( const auto& Cond : Preconditions() ) {
-    std::string ConditionString( Cond.c_str() );
+    std::string ConditionString( Cond.c_str() ); //-V808
     if ( luabind::functor<bool> lua_function; ai().script_engine().functor( ConditionString.c_str(), lua_function ) ) // Обычный функтор
       predicate_result = lua_function( pSpeakerGO1->lua_game_object(), pSpeakerGO2->lua_game_object(), dialog_id, phrase_id, next_phrase_id );
     else { // Функтор с аргументами
@@ -206,7 +206,7 @@ void CPhraseScript::Action( const CGameObject* pSpeakerGO1, const CGameObject* p
   TransferInfo( smart_cast<const CInventoryOwner*>( pSpeakerGO1 ) );
 
   for ( const auto& Act : Actions() ) {
-    std::string ActionString( Act.c_str() );
+    std::string ActionString( Act.c_str() ); //-V808
     if ( luabind::functor<void> lua_function; ai().script_engine().functor( ActionString.c_str(), lua_function ) ) // Обычный функтор
       lua_function( pSpeakerGO1->lua_game_object(), pSpeakerGO2->lua_game_object(), dialog_id, phrase_id );
     else { // Функтор с аргументами

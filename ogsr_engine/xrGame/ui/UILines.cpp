@@ -157,7 +157,7 @@ void CUILines::ParseText(){
 
 	CUILine* line = NULL;
 	if (uFlags.test(flColoringMode))
-		line = ParseTextToColoredLine(m_text.c_str());
+		line = ParseTextToColoredLine(m_text);
 	else
 	{
 		line = xr_new<CUILine>();
@@ -506,7 +506,7 @@ u32 CUILines::GetColorFromText(const xr_string& str)const{
 
 CUILine* CUILines::ParseTextToColoredLine(const xr_string& str){
 	CUILine* line = xr_new<CUILine>();
-	xr_string tmp = str;
+	xr_string tmp(str);
 	xr_string entry;
 	u32 color;
 

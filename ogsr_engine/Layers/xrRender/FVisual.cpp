@@ -3,7 +3,7 @@
 //////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
-#pragma hdrstop
+
 
 #pragma warning(disable:4995)
 #include <d3dx9.h>
@@ -41,7 +41,6 @@ void Fvisual::Load		(const char* N, IReader *data, u32 dwFlags)
 	BOOL				loaded_v=false;
 
 	if (data->find_chunk(OGF_GCONTAINER)) {
-#ifndef _EDITOR
 		// verts
 		u32 ID				= data->r_u32					();
 		vBase				= data->r_u32					();
@@ -63,7 +62,6 @@ void Fvisual::Load		(const char* N, IReader *data, u32 dwFlags)
 		VERIFY				(NULL==p_rm_Indices);
 		p_rm_Indices		= RImplementation.getIB		(ID);
 		p_rm_Indices->AddRef();
-#endif
 #if RENDER==R_R2
 		// check for fast-vertices
 		if (data->find_chunk(OGF_FASTPATH))		{
@@ -103,7 +101,6 @@ void Fvisual::Load		(const char* N, IReader *data, u32 dwFlags)
 	// read vertices
 	if (!loaded_v && (dwFlags&VLOAD_NOVERTICES)==0) {
 		if (data->find_chunk(OGF_VCONTAINER)) {
-#ifndef _EDITOR
 			u32 ID				= data->r_u32				();
 			vBase				= data->r_u32				();
 			vCount				= data->r_u32				();
@@ -111,7 +108,6 @@ void Fvisual::Load		(const char* N, IReader *data, u32 dwFlags)
 			p_rm_Vertices		= RImplementation.getVB			(ID);
 			p_rm_Vertices->AddRef();
 			vFormat				= RImplementation.getVB_Format	(ID);
-#endif
 		} else {
 			R_ASSERT			(data->find_chunk(OGF_VERTICES));
 			vBase				= 0;
@@ -136,7 +132,6 @@ void Fvisual::Load		(const char* N, IReader *data, u32 dwFlags)
 	if (!loaded_v && (dwFlags&VLOAD_NOINDICES)==0) {
 		dwPrimitives = 0;
 		if (data->find_chunk(OGF_ICONTAINER)) {
-#ifndef _EDITOR
 			u32 ID				= data->r_u32			();
 			iBase				= data->r_u32			();
 			iCount				= data->r_u32			();
@@ -144,7 +139,6 @@ void Fvisual::Load		(const char* N, IReader *data, u32 dwFlags)
 			VERIFY				(NULL==p_rm_Indices);
 			p_rm_Indices		= RImplementation.getIB	(ID);
 			p_rm_Indices->AddRef	();
-#endif
 		} else {
 			R_ASSERT			(data->find_chunk(OGF_INDICES));
 			iBase				= 0;

@@ -43,8 +43,6 @@ CMainMenu::CMainMenu()
 	m_NeedErrDialog = ErrNoError;
 	m_start_time = 0;
 
-	if (!g_dedicated_server)
-	{
 		g_btnHint = xr_new<CUIButtonHint>();
 
 		for (u32 i = 0; i<u32(ErrMax); i++)
@@ -53,7 +51,6 @@ CMainMenu::CMainMenu()
 			INIT_MSGBOX(pNewErrDlg, ErrMsgBoxTemplate[i]);
 			m_pMB_ErrDlgs.push_back(pNewErrDlg);
 		}
-	}
 }
 
 CMainMenu::~CMainMenu()
@@ -92,8 +89,6 @@ void CMainMenu::Activate(bool bActivate)
 	if ((m_screenshotFrame == Device.dwFrame) ||
 		(m_screenshotFrame == Device.dwFrame - 1) ||
 		(m_screenshotFrame == Device.dwFrame + 1))	return;
-
-	if (g_dedicated_server && bActivate) return;
 
 	if (bActivate)
 	{

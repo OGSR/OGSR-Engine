@@ -1,5 +1,4 @@
 #include	"stdafx.h"
-#pragma		hdrstop
 
 #include	"xrRender_console.h"
 #include "..\xrRender_R2\r2_fog_volumes.h"
@@ -210,7 +209,6 @@ u32		ps_r__detail_radius = 49;
 //- Mad Max
 float		ps_r2_gloss_factor			= 1.0f;
 //- Mad Max
-#ifndef _EDITOR
 #include	"..\..\xr_3da\xr_ioconsole.h"
 #include	"..\..\xr_3da\xr_ioc_cmd.h"
 
@@ -429,7 +427,7 @@ public:
 //-----------------------------------------------------------------------
 
 Flags32		ps_r2_dof_flags = { 0 };
-Flags32		ps_r2_pp_flags = { DEF_R2_PP_FLAGS };
+Flags32		ps_r2_pp_flags = { 0 };
 Flags32		ps_service_flags = { 0 };
 Flags32		ps_r2_test_flags = { 0 };
 float		ssa_discard = 3.5f;
@@ -683,5 +681,3 @@ void		xrRender_initconsole	()
 
 	//	CMD3(CCC_Mask,		"extended_graph_stats",		&ps_service_flags,			S_EXTENDED_GRAPH_STATS);
 }
-
-#endif

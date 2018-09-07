@@ -3,7 +3,7 @@
 //////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
-#pragma hdrstop
+
 
 #pragma warning(disable:4995)
 #include <direct.h>
@@ -914,7 +914,7 @@ void CLocatorAPI::check_cached_files	(LPSTR fname, const file &desc, LPCSTR &sou
 	// Use
 	source_name		= &fname_copy[0];
 	strcpy_s		(fname_copy,sizeof(fname_copy),fname);
-	strcpy_s		(fname,sizeof(fname),fname_in_cache);
+	strcpy_s		(fname,sizeof(fname),fname_in_cache); //Это бред какой-то. Но функция никогда не вызывается по сути. //-V579
 }
 
 void CLocatorAPI::file_from_cache_impl	(IReader *&R, LPSTR fname, const file &desc)
@@ -1175,9 +1175,6 @@ IWriter* CLocatorAPI::w_open	(LPCSTR path, LPCSTR _fname)
 	xr_strlwr(fname);//,".$");
 	if (path&&path[0]) update_path(fname,path,fname);
     CFileWriter* W 	= xr_new<CFileWriter>(fname,false); 
-#ifdef _EDITOR
-	if (!W->valid()) xr_delete(W);
-#endif    
 	return W;
 }
 
@@ -1188,9 +1185,6 @@ IWriter* CLocatorAPI::w_open_ex	(LPCSTR path, LPCSTR _fname)
 	xr_strlwr(fname);//,".$");
 	if (path&&path[0]) update_path(fname,path,fname);
 	CFileWriter* W 	= xr_new<CFileWriter>(fname,true); 
-#ifdef _EDITOR
-	if (!W->valid()) xr_delete(W);
-#endif    
 	return W;
 }
 

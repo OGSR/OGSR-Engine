@@ -438,8 +438,6 @@ const char* TiXmlBase::ReadName( const char* p, TIXML_STRING * name, TiXmlEncodi
 const char* TiXmlBase::GetEntity( const char* p, char* value, int* length, TiXmlEncoding encoding )
 {
 	// Presume an entity, and pull it out.
-    TIXML_STRING ent;
-	int i;
 	*length = 0;
 
 	if ( *(p+1) && *(p+1) == '#' && *(p+2) )
@@ -512,7 +510,7 @@ const char* TiXmlBase::GetEntity( const char* p, char* value, int* length, TiXml
 	}
 
 	// Now try to match it.
-	for( i=0; i<NUM_ENTITY; ++i )
+	for( int i=0; i<NUM_ENTITY; ++i )
 	{
 		if ( strncmp( entity[i].str, p, entity[i].strLength ) == 0 )
 		{

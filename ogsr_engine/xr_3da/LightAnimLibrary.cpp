@@ -1,6 +1,6 @@
 //---------------------------------------------------------------------------
 #include "stdafx.h"
-#pragma hdrstop
+
 
 #include "LightAnimLibrary.h"
 //---------------------------------------------------------------------------
@@ -280,33 +280,3 @@ CLAItem* ELightAnimLibrary::AppendItem(LPCSTR name, CLAItem* src)
     Items.push_back		(I);
 	return I;
 }
-
-#ifdef _EDITOR
-void __stdcall ELightAnimLibrary::RemoveObject(LPCSTR _fname, EItemType type, bool& res)
-{
-	if (TYPE_FOLDER==type){
-        res = true;
-		return;
-    }else if (TYPE_OBJECT==type){
-        LAItemIt it=FindItemI(_fname); 
-        if (it!=Items.end()){
-	        xr_delete(*it);
-    	    Items.erase(it);
-            res = true;
-            return;
-        }
-    }else THROW;
-    res = false;
-}
-//---------------------------------------------------------------------------
-
-void __stdcall ELightAnimLibrary::RenameObject(LPCSTR nm0, LPCSTR nm1, EItemType type)
-{
-	if (TYPE_FOLDER==type){
-    }else if (TYPE_OBJECT==type){
-		CLAItem* I=FindItem(nm0); R_ASSERT(I);
-		I->cName	= nm1;
-	}
-}
-//---------------------------------------------------------------------------
-#endif

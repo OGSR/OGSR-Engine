@@ -1,5 +1,5 @@
 #include "stdafx.h"
-#pragma hdrstop
+
 
 #include "ObjectAnimator.h"
 #include "motion.h"
@@ -123,41 +123,3 @@ float CObjectAnimator::GetLength		()
 	float res = m_Current->Length()/m_Current->FPS();
 	return res; 
 }
-
-#ifdef _EDITOR
-
-#include "d3dutils.h"
-#include "envelope.h"
-
-static FvectorVec path_points;
-
-void CObjectAnimator::DrawPath()
-{
-    // motion path
-	if (m_Current){
-        float fps 				= m_Current->FPS();
-        float min_t				= (float)m_Current->FrameStart()/fps;
-        float max_t				= (float)m_Current->FrameEnd()/fps;
-
-        Fvector 				T,r;
-        u32 clr					= 0xffffffff;
-        path_points.clear		();
-        for (float t=min_t; (t<max_t)||fsimilar(t,max_t,EPS_L); t+=1/30.f){
-            m_Current->_Evaluate(t,T,r);
-            path_points.push_back(T);
-        }
-
-        Device.SetShader		(Device.m_WireShader);
-        RCache.set_xform_world	(Fidentity);
-        if (!path_points.empty())DU.DrawPrimitiveL		(D3DPT_LINESTRIP,path_points.size()-1,&*(path_points.begin()),path_points.size(),clr,true,false);
-        CEnvelope* E 			= m_Current->Envelope	();
-        for (KeyIt k_it=E->keys.begin(); k_it!=E->keys.end(); k_it++){
-            m_Current->_Evaluate((*k_it)->time,T,r);
-            if (Device.m_Camera.GetPosition().distance_to_sqr(T)<50.f*50.f){
-                DU.DrawCross	(T,0.1f,0.1f,0.1f, 0.1f,0.1f,0.1f, clr,false);
-                DU.OutText		(T,AnsiString().sprintf("K: %3.3f",(*k_it)->time).c_str(),0xffffffff,0x00000000);
-            }
-        }
-    }
-}
-#endif

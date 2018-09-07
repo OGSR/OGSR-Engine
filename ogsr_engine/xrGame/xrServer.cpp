@@ -46,7 +46,7 @@ xrClientData::~xrClientData()
 }
 
 
-xrServer::xrServer():IPureServer(Device.GetTimerGlobal(), g_dedicated_server)
+xrServer::xrServer():IPureServer(Device.GetTimerGlobal())
 {
 	m_iCurUpdatePacket = 0;
 	m_aUpdatePackets.push_back(NET_Packet());
@@ -656,9 +656,6 @@ u32 xrServer::OnMessage	(NET_Packet& P, ClientID sender)			// Non-Zero means bro
 		{
 			AddDelayedPacket(P, sender);
 		}break;
-	case M_BATTLEYE: //Убрать?
-		{
-		}
 	}
 
 	VERIFY							(verify_entities());

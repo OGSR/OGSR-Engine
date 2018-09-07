@@ -58,8 +58,6 @@ CActor* Actor()
 	// и вполне может быть вызвана, когда актора ещё нет.
 	// Т.ч. вылетать не будем в этом случае.
 	//VERIFY		(g_actor); 
-	//if (GameID() != GAME_SINGLE) 
-	//	VERIFY	(g_actor == Level().CurrentControlEntity());
 	return g_actor; 
 };
 
@@ -117,13 +115,8 @@ void CActor::net_Export	(NET_Packet& P)					// export to server
 
 	P.w_u8				(u8(inventory().GetActiveSlot()));
 	/////////////////////////////////////////////////
-	u16 NumItems		= PHGetSyncItemsNumber();
-	
-	if (H_Parent() || (GameID() == GAME_SINGLE) || ((NumItems > 1) && OnClient()))
-		NumItems = 0;
-	
-	if (!g_Alive()) NumItems = 0;
-	
+	u16 NumItems		= 0;
+		
 	P.w_u16				(NumItems);
 	if (!NumItems)		return;
 
@@ -587,11 +580,6 @@ BOOL CActor::net_Spawn		(CSE_Abstract* DC)
 
 	Engine.Sheduler.Register	(this,TRUE);
 
-	if (!IsGameTypeSingle())
-	{
-		setEnabled(TRUE);
-	}
-
 	hit_slowmo				= 0.f;
 
 	OnChangeVisual();
@@ -602,10 +590,7 @@ BOOL CActor::net_Spawn		(CSE_Abstract* DC)
 	m_bInInterpolation = false;
 	m_bInterpolate = false;
 
-//	if (GameID() != GAME_SINGLE)
-	{
-		processing_activate();
-	}
+	processing_activate();
 
 #ifdef DEBUG
 	LastPosS.clear();
@@ -661,8 +646,7 @@ BOOL CActor::net_Spawn		(CSE_Abstract* DC)
 	callback.bind	(this,&CActor::on_requested_spawn);
 	m_holder_id				= E->m_holderID;
 	if (E->m_holderID != ALife::_OBJECT_ID(-1))
-		if(!g_dedicated_server)
-			Level().client_spawn_manager().add(E->m_holderID,ID(),callback);
+		Level().client_spawn_manager().add(E->m_holderID,ID(),callback);
 	//F
 	//-------------------------------------------------------------
 	m_iLastHitterID = u16(-1);
@@ -671,7 +655,6 @@ BOOL CActor::net_Spawn		(CSE_Abstract* DC)
 	m_bWasHitted = false;
 	m_dwILastUpdateTime		= 0;
 
-	if (IsGameTypeSingle()){
 		Level().MapManager().AddMapLocation("actor_location",ID());
 		Level().MapManager().AddMapLocation("actor_location_p",ID());
 
@@ -679,7 +662,6 @@ BOOL CActor::net_Spawn		(CSE_Abstract* DC)
 		GameTaskManager().initialize(ID());
 
 		m_statistic_manager = xr_new<CActorStatisticMgr>();
-	}
 
 
 	spatial.type |=STYPE_REACTTOSOUND;
@@ -697,14 +679,12 @@ void CActor::net_Destroy	()
 	inherited::net_Destroy	();
 
 	if (m_holder_id != ALife::_OBJECT_ID(-1))
-		if(!g_dedicated_server)
-			Level().client_spawn_manager().remove	(m_holder_id,ID());
+		Level().client_spawn_manager().remove	(m_holder_id,ID());
 
 	delete_data				(m_game_task_manager);
 	delete_data				(m_statistic_manager);
 	
-	if(!g_dedicated_server)
-		Level().MapManager		().RemoveMapLocationByObjectID(ID());
+	Level().MapManager		().RemoveMapLocationByObjectID(ID());
 
 #pragma todo("Dima to MadMax : do not comment inventory owner net_Destroy!!!")
 	CInventoryOwner::net_Destroy();
@@ -757,8 +737,7 @@ void CActor::net_Relcase	(CObject* O)
 	}
 	inherited::net_Relcase	(O);
 
-	if (!g_dedicated_server)
-		memory().remove_links(O);
+	memory().remove_links(O);
 	m_pPhysics_support->in_NetRelcase(O);
 }
 

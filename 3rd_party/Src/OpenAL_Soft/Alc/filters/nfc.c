@@ -2,6 +2,7 @@
 #include "config.h"
 
 #include "nfc.h"
+#include "alMain.h"
 
 #include <string.h>
 
@@ -57,25 +58,25 @@ static void NfcFilterCreate1(struct NfcFilter1 *nfc, const float w0, const float
     float b_00, g_0;
     float r;
 
-    nfc->g = 1.0f;
-    nfc->coeffs[0] = 1.0f;
+    nfc->base_gain = 1.0f;
+    nfc->gain = 1.0f;
 
     /* Calculate bass-boost coefficients. */
     r = 0.5f * w0;
     b_00 = B[1][0] * r;
     g_0 = 1.0f + b_00;
 
-    nfc->coeffs[0] *= g_0;
-    nfc->coeffs[1] = (2.0f * b_00) / g_0;
+    nfc->gain *= g_0;
+    nfc->b1 = 2.0f * b_00 / g_0;
 
     /* Calculate bass-cut coefficients. */
     r = 0.5f * w1;
     b_00 = B[1][0] * r;
     g_0 = 1.0f + b_00;
 
-    nfc->g /= g_0;
-    nfc->coeffs[0] /= g_0;
-    nfc->coeffs[1+1] = (2.0f * b_00) / g_0;
+    nfc->base_gain /= g_0;
+    nfc->gain /= g_0;
+    nfc->a1 = 2.0f * b_00 / g_0;
 }
 
 static void NfcFilterAdjust1(struct NfcFilter1 *nfc, const float w0)
@@ -87,8 +88,8 @@ static void NfcFilterAdjust1(struct NfcFilter1 *nfc, const float w0)
     b_00 = B[1][0] * r;
     g_0 = 1.0f + b_00;
 
-    nfc->coeffs[0] = nfc->g * g_0;
-    nfc->coeffs[1] = (2.0f * b_00) / g_0;
+    nfc->gain = nfc->base_gain * g_0;
+    nfc->b1 = 2.0f * b_00 / g_0;
 }
 
 
@@ -97,8 +98,8 @@ static void NfcFilterCreate2(struct NfcFilter2 *nfc, const float w0, const float
     float b_10, b_11, g_1;
     float r;
 
-    nfc->g = 1.0f;
-    nfc->coeffs[0] = 1.0f;
+    nfc->base_gain = 1.0f;
+    nfc->gain = 1.0f;
 
     /* Calculate bass-boost coefficients. */
     r = 0.5f * w0;
@@ -106,9 +107,9 @@ static void NfcFilterCreate2(struct NfcFilter2 *nfc, const float w0, const float
     b_11 = B[2][1] * r * r;
     g_1 = 1.0f + b_10 + b_11;
 
-    nfc->coeffs[0] *= g_1;
-    nfc->coeffs[1] = ((2.0f * b_10) + (4.0f * b_11)) / g_1;
-    nfc->coeffs[2] = (4.0f * b_11) / g_1;
+    nfc->gain *= g_1;
+    nfc->b1 = (2.0f*b_10 + 4.0f*b_11) / g_1;
+    nfc->b2 = 4.0f * b_11 / g_1;
 
     /* Calculate bass-cut coefficients. */
     r = 0.5f * w1;
@@ -116,10 +117,10 @@ static void NfcFilterCreate2(struct NfcFilter2 *nfc, const float w0, const float
     b_11 = B[2][1] * r * r;
     g_1 = 1.0f + b_10 + b_11;
 
-    nfc->g /= g_1;
-    nfc->coeffs[0] /= g_1;
-    nfc->coeffs[2+1] = ((2.0f * b_10) + (4.0f * b_11)) / g_1;
-    nfc->coeffs[2+2] = (4.0f * b_11) / g_1;
+    nfc->base_gain /= g_1;
+    nfc->gain /= g_1;
+    nfc->a1 = (2.0f*b_10 + 4.0f*b_11) / g_1;
+    nfc->a2 = 4.0f * b_11 / g_1;
 }
 
 static void NfcFilterAdjust2(struct NfcFilter2 *nfc, const float w0)
@@ -132,9 +133,9 @@ static void NfcFilterAdjust2(struct NfcFilter2 *nfc, const float w0)
     b_11 = B[2][1] * r * r;
     g_1 = 1.0f + b_10 + b_11;
 
-    nfc->coeffs[0] = nfc->g * g_1;
-    nfc->coeffs[1] = ((2.0f * b_10) + (4.0f * b_11)) / g_1;
-    nfc->coeffs[2] = (4.0f * b_11) / g_1;
+    nfc->gain = nfc->base_gain * g_1;
+    nfc->b1 = (2.0f*b_10 + 4.0f*b_11) / g_1;
+    nfc->b2 = 4.0f * b_11 / g_1;
 }
 
 
@@ -144,8 +145,8 @@ static void NfcFilterCreate3(struct NfcFilter3 *nfc, const float w0, const float
     float b_00, g_0;
     float r;
 
-    nfc->g = 1.0f;
-    nfc->coeffs[0] = 1.0f;
+    nfc->base_gain = 1.0f;
+    nfc->gain = 1.0f;
 
     /* Calculate bass-boost coefficients. */
     r = 0.5f * w0;
@@ -153,15 +154,15 @@ static void NfcFilterCreate3(struct NfcFilter3 *nfc, const float w0, const float
     b_11 = B[3][1] * r * r;
     g_1 = 1.0f + b_10 + b_11;
 
-    nfc->coeffs[0] *= g_1;
-    nfc->coeffs[1] = ((2.0f * b_10) + (4.0f * b_11)) / g_1;
-    nfc->coeffs[2] = (4.0f * b_11) / g_1;
+    nfc->gain *= g_1;
+    nfc->b1 = (2.0f*b_10 + 4.0f*b_11) / g_1;
+    nfc->b2 = 4.0f * b_11 / g_1;
 
     b_00 = B[3][2] * r;
     g_0 = 1.0f + b_00;
 
-    nfc->coeffs[0] *= g_0;
-    nfc->coeffs[2+1] = (2.0f * b_00) / g_0;
+    nfc->gain *= g_0;
+    nfc->b3 = 2.0f * b_00 / g_0;
 
     /* Calculate bass-cut coefficients. */
     r = 0.5f * w1;
@@ -169,17 +170,17 @@ static void NfcFilterCreate3(struct NfcFilter3 *nfc, const float w0, const float
     b_11 = B[3][1] * r * r;
     g_1 = 1.0f + b_10 + b_11;
 
-    nfc->g /= g_1;
-    nfc->coeffs[0] /= g_1;
-    nfc->coeffs[3+1] = ((2.0f * b_10) + (4.0f * b_11)) / g_1;
-    nfc->coeffs[3+2] = (4.0f * b_11) / g_1;
-    
+    nfc->base_gain /= g_1;
+    nfc->gain /= g_1;
+    nfc->a1 = (2.0f*b_10 + 4.0f*b_11) / g_1;
+    nfc->a2 = 4.0f * b_11 / g_1;
+
     b_00 = B[3][2] * r;
     g_0 = 1.0f + b_00;
 
-    nfc->g /= g_0;
-    nfc->coeffs[0] /= g_0;
-    nfc->coeffs[3+2+1] = (2.0f * b_00) / g_0;
+    nfc->base_gain /= g_0;
+    nfc->gain /= g_0;
+    nfc->a3 = 2.0f * b_00 / g_0;
 }
 
 static void NfcFilterAdjust3(struct NfcFilter3 *nfc, const float w0)
@@ -193,15 +194,15 @@ static void NfcFilterAdjust3(struct NfcFilter3 *nfc, const float w0)
     b_11 = B[3][1] * r * r;
     g_1 = 1.0f + b_10 + b_11;
 
-    nfc->coeffs[0] = nfc->g * g_1;
-    nfc->coeffs[1] = ((2.0f * b_10) + (4.0f * b_11)) / g_1;
-    nfc->coeffs[2] = (4.0f * b_11) / g_1;
+    nfc->gain = nfc->base_gain * g_1;
+    nfc->b1 = (2.0f*b_10 + 4.0f*b_11) / g_1;
+    nfc->b2 = 4.0f * b_11 / g_1;
 
     b_00 = B[3][2] * r;
     g_0 = 1.0f + b_00;
 
-    nfc->coeffs[0] *= g_0;
-    nfc->coeffs[2+1] = (2.0f * b_00) / g_0;
+    nfc->gain *= g_0;
+    nfc->b3 = 2.0f * b_00 / g_0;
 }
 
 
@@ -223,86 +224,83 @@ void NfcFilterAdjust(NfcFilter *nfc, const float w0)
 
 void NfcFilterProcess1(NfcFilter *nfc, float *restrict dst, const float *restrict src, const int count)
 {
-    const float b0 = nfc->first.coeffs[0];
-    const float a0 = nfc->first.coeffs[1];
-    const float a1 = nfc->first.coeffs[2];
-    float z1 = nfc->first.history[0];
+    const float gain = nfc->first.gain;
+    const float b1 = nfc->first.b1;
+    const float a1 = nfc->first.a1;
+    float z1 = nfc->first.z[0];
     int i;
+
+    ASSUME(count > 0);
 
     for(i = 0;i < count;i++)
     {
-        float out = src[i] * b0;
-        float y;
-
-        y = out - (a1*z1);
-        out = y + (a0*z1);
+        float y = src[i]*gain - a1*z1;
+        float out = y + b1*z1;
         z1 += y;
 
         dst[i] = out;
     }
-    nfc->first.history[0] = z1;
+    nfc->first.z[0] = z1;
 }
 
 void NfcFilterProcess2(NfcFilter *nfc, float *restrict dst, const float *restrict src, const int count)
 {
-    const float b0 = nfc->second.coeffs[0];
-    const float a00 = nfc->second.coeffs[1];
-    const float a01 = nfc->second.coeffs[2];
-    const float a10 = nfc->second.coeffs[3];
-    const float a11 = nfc->second.coeffs[4];
-    float z1 = nfc->second.history[0];
-    float z2 = nfc->second.history[1];
+    const float gain = nfc->second.gain;
+    const float b1 = nfc->second.b1;
+    const float b2 = nfc->second.b2;
+    const float a1 = nfc->second.a1;
+    const float a2 = nfc->second.a2;
+    float z1 = nfc->second.z[0];
+    float z2 = nfc->second.z[1];
     int i;
+
+    ASSUME(count > 0);
 
     for(i = 0;i < count;i++)
     {
-        float out = src[i] * b0;
-        float y;
-
-        y = out - (a10*z1) - (a11*z2);
-        out = y + (a00*z1) + (a01*z2);
+        float y = src[i]*gain - a1*z1 - a2*z2;
+        float out = y + b1*z1 + b2*z2;
         z2 += z1;
         z1 += y;
 
         dst[i] = out;
     }
-    nfc->second.history[0] = z1;
-    nfc->second.history[1] = z2;
+    nfc->second.z[0] = z1;
+    nfc->second.z[1] = z2;
 }
 
 void NfcFilterProcess3(NfcFilter *nfc, float *restrict dst, const float *restrict src, const int count)
 {
-    const float b0 = nfc->third.coeffs[0];
-    const float a00 = nfc->third.coeffs[1];
-    const float a01 = nfc->third.coeffs[2];
-    const float a02 = nfc->third.coeffs[3];
-    const float a10 = nfc->third.coeffs[4];
-    const float a11 = nfc->third.coeffs[5];
-    const float a12 = nfc->third.coeffs[6];
-    float z1 = nfc->third.history[0];
-    float z2 = nfc->third.history[1];
-    float z3 = nfc->third.history[2];
+    const float gain = nfc->third.gain;
+    const float b1 = nfc->third.b1;
+    const float b2 = nfc->third.b2;
+    const float b3 = nfc->third.b3;
+    const float a1 = nfc->third.a1;
+    const float a2 = nfc->third.a2;
+    const float a3 = nfc->third.a3;
+    float z1 = nfc->third.z[0];
+    float z2 = nfc->third.z[1];
+    float z3 = nfc->third.z[2];
     int i;
+
+    ASSUME(count > 0);
 
     for(i = 0;i < count;i++)
     {
-        float out = src[i] * b0;
-        float y;
-
-        y = out - (a10*z1) - (a11*z2);
-        out = y + (a00*z1) + (a01*z2);
+        float y = src[i]*gain - a1*z1 - a2*z2;
+        float out = y + b1*z1 + b2*z2;
         z2 += z1;
         z1 += y;
 
-        y = out - (a12*z3);
-        out = y + (a02*z3);
+        y = out - a3*z3;
+        out = y + b3*z3;
         z3 += y;
 
         dst[i] = out;
     }
-    nfc->third.history[0] = z1;
-    nfc->third.history[1] = z2;
-    nfc->third.history[2] = z3;
+    nfc->third.z[0] = z1;
+    nfc->third.z[1] = z2;
+    nfc->third.z[2] = z3;
 }
 
 #if 0 /* Original methods the above are derived from. */

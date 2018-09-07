@@ -81,10 +81,10 @@ void CActor::OnEvent		(NET_Packet& P, u16 type)
 			} 
 			else 
 			{
-				NET_Packet P;
-				u_EventGen(P,GE_OWNERSHIP_REJECT,ID());
-				P.w_u16(u16(O->ID()));
-				u_EventSend(P);
+				NET_Packet _P;
+				u_EventGen(_P,GE_OWNERSHIP_REJECT,ID());
+				_P.w_u16(u16(O->ID()));
+				u_EventSend(_P);
 			}
 		}
 		break;

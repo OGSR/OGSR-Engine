@@ -747,11 +747,8 @@ void CExplosive::ActivateExplosionBox(const Fvector &size,Fvector &in_out_pos)
 }
 void CExplosive::net_Relcase(CObject* O)
 {
-	if (GameID() == GAME_SINGLE)
-	{
 		if(O->ID()==m_iCurrentParentID)
 			m_iCurrentParentID=u16(-1);
-	}
 	
 	BLASTED_OBJECTS_I I=std::find(m_blasted_objects.begin(),m_blasted_objects.end(),smart_cast<CPhysicsShellHolder*>(O));
 	if(m_blasted_objects.end()!=I)

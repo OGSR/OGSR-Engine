@@ -27,7 +27,6 @@ ref_light	precache_light = 0;
 
 BOOL CRenderDevice::Begin	()
 {
-#ifndef DEDICATED_SERVER
 	HW.Validate		();
 	HRESULT	_hr		= HW.pDevice->TestCooperativeLevel();
     if (FAILED(_hr))
@@ -52,7 +51,6 @@ BOOL CRenderDevice::Begin	()
 	if (HW.Caps.SceneMode)	overdrawBegin	();
 	FPU::m24r	();
 	g_bRendering = 	TRUE;
-#endif
 	return		TRUE;
 }
 
@@ -76,8 +74,6 @@ void xrRender_apply_tf()
 
 void CRenderDevice::End		(void)
 {
-#ifndef DEDICATED_SERVER
-
 	VERIFY	(HW.pDevice);
 
 	if (HW.Caps.SceneMode)	overdrawEnd		();
@@ -110,7 +106,6 @@ void CRenderDevice::End		(void)
 
 	if (!Device.m_SecondViewport.IsSVPFrame() && !Device.m_SecondViewport.m_bCamReady) //--#SM+#-- +SecondVP+ Не выводим кадр из второго вьюпорта на экран (на практике у нас экранная картинка обновляется минимум в два раза реже) [don't flush image into display for SecondVP-frame]
 		HW.pDevice->Present(nullptr, nullptr, nullptr, nullptr);
-#endif
 }
 
 
@@ -151,9 +146,6 @@ void mt_Thread()
 void CRenderDevice::PreCache	(u32 amount)
 {
 	if (HW.Caps.bForceGPU_REF)	amount=0;
-#ifdef DEDICATED_SERVER
-	amount = 0;
-#endif
 	// Msg			("* PCACHE: start for %d...",amount);
 	dwPrecacheFrame	= dwPrecacheTotal = amount;
 	if(amount && !precache_light && g_pGameLevel)
@@ -167,8 +159,6 @@ void CRenderDevice::PreCache	(u32 amount)
 	}
 }
 
-
-int g_svDedicateServerUpdateReate = 100;
 
 ENGINE_API xr_list<LOADING_EVENT>			g_loading_events;
 
@@ -231,9 +221,6 @@ void CRenderDevice::Run			()
 					dwLastFrameTime = dwCurrentTime;
 				}
 
-#ifdef DEDICATED_SERVER
-				u32 FrameStartTime = TimerGlobal.GetElapsed_ms();
-#endif
 				if (psDeviceFlags.test(rsStatistic))	g_bEnableStatGather	= TRUE;
 				else									g_bEnableStatGather	= FALSE;
 				if(g_loading_events.size())
@@ -270,7 +257,6 @@ void CRenderDevice::Run			()
 				mt_csLeave.Enter			();
 				mt_csEnter.Leave			();
 
-#ifndef DEDICATED_SERVER
 				Statistic->RenderTOTAL_Real.FrameStart	();
 				Statistic->RenderTOTAL_Real.Begin		();
 
@@ -288,7 +274,6 @@ void CRenderDevice::Run			()
 				Statistic->RenderTOTAL_Real.End			();
 				Statistic->RenderTOTAL_Real.FrameEnd	();
 				Statistic->RenderTOTAL.accum	= Statistic->RenderTOTAL_Real.accum;
-#endif
 				// *** Suspend threads
 				// Capture startup point
 				// Release end point - allow thread to wait for startup point
@@ -302,37 +287,6 @@ void CRenderDevice::Run			()
 					Device.seqParallel.clear_not_free	();
 					seqFrameMT.Process					(rp_Frame);
 				}
-#ifdef DEDICATED_SERVER
-				u32 FrameEndTime = TimerGlobal.GetElapsed_ms();
-				u32 FrameTime = (FrameEndTime - FrameStartTime);
-				/*
-				string1024 FPS_str = "";
-				string64 tmp;
-				strcat(FPS_str, "FPS Real - ");
-				if (dwTimeDelta != 0)
-					strcat(FPS_str, ltoa(1000/dwTimeDelta, tmp, 10));
-				else
-					strcat(FPS_str, "~~~");
-
-				strcat(FPS_str, ", FPS Proj - ");
-				if (FrameTime != 0)
-					strcat(FPS_str, ltoa(1000/FrameTime, tmp, 10));
-				else
-					strcat(FPS_str, "~~~");
-				
-*/
-				u32 DSUpdateDelta = 1000/g_svDedicateServerUpdateReate;
-				if (FrameTime < DSUpdateDelta)
-				{
-					Sleep(DSUpdateDelta - FrameTime);
-//					Msg("sleep for %d", DSUpdateDelta - FrameTime);
-//					strcat(FPS_str, ", sleeped for ");
-//					strcat(FPS_str, ltoa(DSUpdateDelta - FrameTime, tmp, 10));
-				}
-
-//				Msg(FPS_str);
-#endif
-
 			} else {
 				Sleep		(100);
 			}
@@ -404,8 +358,6 @@ void CRenderDevice::Pause(BOOL bOn, BOOL bTimer, BOOL bSound, LPCSTR reason)
 	Msg("pause [%s] timer=[%s] sound=[%s] reason=%s",bOn?"ON":"OFF", bTimer?"ON":"OFF", bSound?"ON":"OFF", reason);
 #endif // DEBUG
 
-#ifndef DEDICATED_SERVER	
-
 	if(bOn)
 	{
 		if(!Paused())						
@@ -440,9 +392,6 @@ void CRenderDevice::Pause(BOOL bOn, BOOL bTimer, BOOL bSound, LPCSTR reason)
 			}
 		}
 	}
-
-#endif
-
 }
 
 BOOL CRenderDevice::Paused()
@@ -465,7 +414,7 @@ void CRenderDevice::OnWM_Activate(WPARAM wParam, LPARAM lParam)
 			ClipCursor(&winRect);
 		}
 	} else {
-		ShowCursor(TRUE);
+		while (ShowCursor(TRUE) < 0);
 		ClipCursor(nullptr);
 	}
 

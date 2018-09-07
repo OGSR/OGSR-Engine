@@ -24,10 +24,6 @@ public:
 		VerifyPath	(*fName);
         if (exclusive){
     		int handle	= _sopen(*fName,_O_WRONLY|_O_TRUNC|_O_CREAT|_O_BINARY,SH_DENYWR);
-#ifdef _EDITOR
-    		if (handle==-1)
-    			Msg	("!Can't create file: '%s'. Error: '%s'.",*fName,_sys_errlist[errno]);
-#endif
     		hf		= _fdopen(handle,"wb");
         }else{
 			hf			= fopen(*fName,"wb");

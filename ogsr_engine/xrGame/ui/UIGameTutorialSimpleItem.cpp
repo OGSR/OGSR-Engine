@@ -203,7 +203,7 @@ void CUISequenceSimpleItem::Start()
 				ui_game_sp->PdaMenu->SetActiveSubdialog(eptActorStatistic);
 				bShowPda = true;
 			}else if(!stricmp(m_pda_section,"pda_encyclopedia")){
-				ui_game_sp->PdaMenu->SetActiveSubdialog(eptEncyclopedia);
+				ui_game_sp->PdaMenu->SetActiveSubdialog(eptEncyclopedia); //-V595
 				bShowPda = true;
 			}
 		}

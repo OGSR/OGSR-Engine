@@ -1,5 +1,5 @@
 #include "stdafx.h"
-#pragma hdrstop
+
 #ifdef DEBUG
 #include "ode_include.h"
 #include "../xr_3da/StatGraph.h"
@@ -52,7 +52,7 @@ void	CCar::OnCameraChange		(int type)
 		{
 			Owner()->setVisible(FALSE);
 		}
-		else if(active_camera->tag==ectFirst)
+		else if(active_camera->tag==ectFirst) //-V595
 		{
 			Owner()->setVisible(TRUE);
 		}

@@ -159,21 +159,10 @@ void CArtefact::OnH_A_Chield()
 	inherited::OnH_A_Chield		();
 
 	StopLights();
-	if (GameID() == GAME_SINGLE)
-	{
 		if (*m_sParticlesName) 
 		{	
 			CParticlesPlayer::StopParticles(m_sParticlesName, BI_NONE, true);
 		}
-	}
-	else
-	{
-		CKinematics* K	= smart_cast<CKinematics*>(H_Parent()->Visual());
-		if (K)
-			m_CarringBoneID			= K->LL_BoneID("bip01_head");
-		else
-			m_CarringBoneID = u16(-1);
-	}
 }
 
 void CArtefact::OnH_B_Independent(bool just_before_destroy) 
@@ -593,7 +582,7 @@ void SArtefactActivation::SpawnAnomaly()
 		u32 lvid = m_af->UsedAI_Locations() ? m_af->ai_location().level_vertex_id() : ai().level_graph().vertex(pos);
 		CSE_Abstract		*object = Level().spawn_item(	zone_sect,
 															pos,
-															(g_dedicated_server)?u32(-1): lvid,
+															lvid,
 															0xffff,
 															true
 		);

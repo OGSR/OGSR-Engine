@@ -308,7 +308,7 @@ if(!psNET_direct_connect)
 #ifdef DEBUG
 //		DXTRACE_ERR(tmp, CoCreateInstanceRes );
 #endif // DEBUG
-		CHK_DX(CoCreateInstanceRes );
+		CHK_DX(CoCreateInstanceRes ); //-V607
 	}	
 	//---------------------------
 	
@@ -835,7 +835,7 @@ void IPureServer::BanAddress(const ip_address& Address, u32 BanTimeSec)
 	};
 
 	IBannedClient* pNewClient = xr_new<IBannedClient>();
-	pNewClient->HAddr				= Address;
+	pNewClient->HAddr				= Address; //-V595
 	time							(&pNewClient->BanTime);
 	pNewClient->BanTime				+= BanTimeSec; 
 	if (pNewClient) 

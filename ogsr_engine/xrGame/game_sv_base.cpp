@@ -13,8 +13,6 @@
 
 #include "debug_renderer.h"
 
-ENGINE_API	bool g_dedicated_server;
-
 #define			MAPROT_LIST_NAME		"maprot_list.ltx"
 string_path		MAPROT_LIST		= "";
 BOOL	net_sv_control_hit	= FALSE		;
@@ -238,7 +236,6 @@ void game_sv_GameState::net_Export_State						(NET_Packet& P, ClientID to)
 	P.w_u8			(u8(g_bCollectStatisticData));
 
 	// Players
-//	u32	p_count			= get_players_count() - ((g_dedicated_server)? 1 : 0);
 	u32 p_count = 0;
 	for (u32 p_it=0; p_it<get_players_count(); ++p_it)
 	{
@@ -255,16 +252,13 @@ void game_sv_GameState::net_Export_State						(NET_Packet& P, ClientID to)
 		xrClientData*	C		=	(xrClientData*)	m_server->client_Get	(p_it);
 		game_PlayerState* A		=	get_it			(p_it);
 		if (!C->net_Ready || (A->IsSkip() && C->ID != to)) continue;
-		if (0==C)	strcpy(p_name,"Unknown");
-		else 
-		{
+
 			CSE_Abstract* C_e		= C->owner;
 			if (0==C_e)		strcpy(p_name,"Unknown");
 			else 
 			{
 				strcpy	(p_name,C_e->name_replace());
 			}
-		}
 
 		A->setName(p_name);
 		u16 tmp_flags = A->flags__;
@@ -627,14 +621,8 @@ void game_sv_GameState::OnEvent (NET_Packet &tNetPacket, u16 type, u32 time, Cli
 			u16     id_src				= tNetPacket.r_u16();
 			CSE_Abstract*	e_src		= get_entity_from_eid	(id_src	);
 
-			if(!e_src)  // && !IsGameTypeSingle() added by andy because of Phantom does not have server entity
-			{
-				if( IsGameTypeSingle() ) break;
-
-				game_PlayerState* ps	= get_eid(id_src);
-				if (!ps)				break;
-				id_src					= ps->GameID;
-			}
+			if(!e_src)  // added by andy because of Phantom does not have server entity
+				break;
 
 			OnHit(id_src, id_dest, tNetPacket);
 			m_server->SendBroadcast		(BroadcastCID,tNetPacket,net_flags(TRUE,TRUE));
@@ -940,7 +928,3 @@ void		game_sv_GameState::OnRender				()
 	}
 };
 #endif
-//  [7/5/2005]
-
-BOOL	game_sv_GameState::IsVotingEnabled			()	{return g_sv_base_iVotingEnabled != 0;};
-BOOL	game_sv_GameState::IsVotingEnabled			(u16 flag) {return (g_sv_base_iVotingEnabled&flag) != 0;};

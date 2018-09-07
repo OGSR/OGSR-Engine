@@ -23,9 +23,7 @@
 #	include "custommonster.h"
 #endif // MASTER_GOLD
 
-#ifndef _EDITOR
-#	include "ai_debug.h"
-#endif // _EDITOR
+#include "ai_debug.h"
 
 static	void *	ode_alloc	(size_t size)								{ return xr_malloc(size);			}
 static	void *	ode_realloc	(void *ptr, size_t oldsize, size_t newsize)	{ return xr_realloc(ptr,newsize);	}
@@ -170,11 +168,10 @@ void CGamePersistent::OnGameStart()
 void CGamePersistent::UpdateGameType			()
 {
 	__super::UpdateGameType();
+	m_game_params.m_e_game_type = GAME_SINGLE;
 
-	if (!xr_strcmp(m_game_params.m_game_type, "single"))
-		m_game_params.m_e_game_type = GAME_SINGLE;
-	else
-		FATAL("Unsupported game type [%s]", m_game_params.m_game_type);
+#pragma todo( "KRodin: надо подумать, надо ли тут вылетать вообще. Ќе может ли возникнуть каких-нибудь проблем, если парсер налажал. ќн же вли€ет не только на m_game_type. Ќа данный момент парсер может налажать, если встретит скобочки () в имени сейва." )
+	ASSERT_FMT(!xr_strcmp(m_game_params.m_game_type, "single"), "failed to parse the name of the save, rename it and try to load again.");
 }
 
 void CGamePersistent::OnGameEnd	()
@@ -189,7 +186,7 @@ void CGamePersistent::OnGameEnd	()
 
 void CGamePersistent::WeathersUpdate()
 {
-	if (g_pGameLevel && !g_dedicated_server)
+	if (g_pGameLevel)
 	{
 		CActor* actor				= smart_cast<CActor*>(Level().CurrentViewEntity());
 		BOOL bIndoor				= TRUE;
@@ -255,7 +252,7 @@ void CGamePersistent::start_logo_intro		()
 	if (Device.dwPrecacheFrame==0)
 	{
 		m_intro_event.bind		(this,&CGamePersistent::update_logo_intro);
-		if (!g_dedicated_server && 0==xr_strlen(m_game_params.m_game_or_spawn) && NULL==g_pGameLevel)
+		if (0==xr_strlen(m_game_params.m_game_or_spawn) && NULL==g_pGameLevel)
 		{
 			VERIFY				(NULL==m_intro);
 			m_intro				= xr_new<CUISequencer>();
@@ -316,7 +313,7 @@ void CGamePersistent::OnFrame	()
 #ifdef DEBUG
 	++m_frame_counter;
 #endif
-	if (!g_dedicated_server && !m_intro_event.empty())	m_intro_event();
+	if (!m_intro_event.empty())	m_intro_event();
 
 	if( !m_pMainMenu->IsActive() )
 		m_pMainMenu->DestroyInternal(false);
@@ -428,10 +425,8 @@ void CGamePersistent::OnEvent(EVENT E, u64 P1, u64 P2)
 void CGamePersistent::Statistics	(CGameFont* F)
 {
 #ifdef DEBUG
-#	ifndef _EDITOR
 		m_last_stats_frame		= m_frame_counter;
 		profiler().show_stats	(F,!!psAI_Flags.test(aiStats));
-#	endif
 #endif
 }
 

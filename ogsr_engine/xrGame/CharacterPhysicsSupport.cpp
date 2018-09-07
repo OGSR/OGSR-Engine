@@ -121,7 +121,7 @@ void CCharacterPhysicsSupport::SetRemoved()
 		{
 			m_EntityAlife.processing_deactivate();
 		}
-		if(m_pPhysicsShell)m_pPhysicsShell->Deactivate();
+		m_pPhysicsShell->Deactivate();
 		xr_delete(m_pPhysicsShell);
 	}
 	else
@@ -698,19 +698,10 @@ void CCharacterPhysicsSupport::ActivateShell			( CObject* who )
 	m_eState=esDead;
 	m_flags.set(fl_skeleton_in_shell,TRUE);
 	
-// KD: Коллизия с трупами
-#ifdef CORPSES_IGNORE_DYNAMIC
+#ifndef CORPSES_COLLISION
 	m_pPhysicsShell->SetIgnoreDynamic();
-#elif !defined ( CORPSES_COLLISION )
-	if(IsGameTypeSingle())
-	{
-		m_pPhysicsShell->SetPrefereExactIntegration	();//use exact integration for ragdolls in single
-		m_pPhysicsShell->SetRemoveCharacterCollLADisable();
-	}
-	else
-	{
-		m_pPhysicsShell->SetIgnoreDynamic();
-	}
+	//m_pPhysicsShell->SetPrefereExactIntegration();
+	//m_pPhysicsShell->SetRemoveCharacterCollLADisable();
 #endif
 	m_pPhysicsShell->SetIgnoreSmall();
 	//end seting params

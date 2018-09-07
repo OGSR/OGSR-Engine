@@ -272,7 +272,7 @@ public:
 			if((coord[2] < min[2]) || (coord[2] > max[2]))	return rpNone;
 			return rpOriginOutside;
 		}
-		if (2==WhichPlane) //KRodin: это условие всегда истинно
+		if (2==WhichPlane) //KRodin: это условие всегда истинно //-V547
 		{
 			// 0 & 1
 			coord[0] = origin[0] + MaxT[2] * dir[0];

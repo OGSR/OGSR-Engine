@@ -139,12 +139,7 @@ public:
 	virtual void				Bone_Calculate			(CBoneData* bd, Fmatrix* parent);
 			void				Bone_GetAnimPos			(Fmatrix& pos,u16 id, u8 channel_mask, bool ignore_callbacks);
 	virtual void				OnCalculateBones		();
-public: 
-#ifdef _EDITOR
-public:
-#else
 private:
-#endif
 	u32											Update_LastTime;
 
 	CBlendInstance*								blend_instances;
@@ -179,12 +174,6 @@ public:
 #ifdef DEBUG
 	std::pair<LPCSTR,LPCSTR>	LL_MotionDefName_dbg	(MotionID	ID);
 //	LPCSTR						LL_MotionDefName_dbg	(LPVOID		ptr);
-#endif
-#ifdef _EDITOR
-    u32							LL_CycleCount	(){u32 cnt=0; for (u32 k=0; k<m_Motions.size(); k++) cnt+=m_Motions[k].motions.cycle()->size(); return cnt;}
-    u32							LL_FXCount		(){u32 cnt=0; for (u32 k=0; k<m_Motions.size(); k++) cnt+=m_Motions[k].motions.fx()->size(); return cnt;}
-	accel_map*					LL_Motions		(u32 slot){return m_Motions[slot].motions.motion_map();}
-	MotionID					ID_Motion		(LPCSTR  N, u16 slot);
 #endif
 	u16							LL_MotionsSlotCount(){return (u16)m_Motions.size();}
 	const shared_motions&		LL_MotionsSlot	(u16 idx){return m_Motions[idx].motions;}

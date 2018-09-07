@@ -1,7 +1,7 @@
 // xrCore.cpp : Defines the entry point for the DLL application.
 //
 #include "stdafx.h"
-#pragma hdrstop
+
 
 #include <mmsystem.h>
 #include <objbase.h>
@@ -69,8 +69,6 @@ void xrCore::_initialize	(LPCSTR _ApplicationName, LogCallback cb, BOOL init_fs,
 		InitLog				();
 		_initialize_cpu		();
 
-//		Debug._initialize	();
-
 		rtc_initialize		();
 
 		xr_FS = std::make_unique<CLocatorAPI>();
@@ -81,19 +79,13 @@ void xrCore::_initialize	(LPCSTR _ApplicationName, LogCallback cb, BOOL init_fs,
 		if (0!=strstr(Params,"-build"))	 flags |= CLocatorAPI::flBuildCopy;
 		if (0!=strstr(Params,"-ebuild")) flags |= CLocatorAPI::flBuildCopy|CLocatorAPI::flEBuildCopy;
 #ifdef DEBUG
-		if (strstr(Params,"-cache"))  flags |= CLocatorAPI::flCacheFiles;
+		if constexpr(false) /*(strstr(Params,"-cache"))*/  flags |= CLocatorAPI::flCacheFiles;
 		else flags &= ~CLocatorAPI::flCacheFiles;
 #endif // DEBUG
-#ifdef _EDITOR // for EDITORS - no cache
-		flags 				&=~ CLocatorAPI::flCacheFiles;
-#endif // _EDITOR
 		flags |= CLocatorAPI::flScanAppRoot;
 
-#ifndef	_EDITOR
-	#ifndef ELocatorAPIH
 		if (0!=strstr(Params,"-file_activity"))	 flags |= CLocatorAPI::flDumpFileActivity;
-	#endif
-#endif
+
 		FS._initialize		(flags,0,fs_fname);
 
 		Msg("[OGSR Engine (%s)] build date: [" __DATE__ " " __TIME__ "]", GetBuildConfiguration());
@@ -102,10 +94,8 @@ void xrCore::_initialize	(LPCSTR _ApplicationName, LogCallback cb, BOOL init_fs,
 
 		EFS._initialize		();
 #ifdef DEBUG
-    #ifndef	_EDITOR
 		Msg					("CRT heap 0x%08x",_get_heap_handle());
 		Msg					("Process heap 0x%08x",GetProcessHeap());
-    #endif
 #endif // DEBUG
 	}
 	

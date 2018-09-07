@@ -1,6 +1,6 @@
 #include "stdafx.h"
 #include "GameFont.h"
-#pragma hdrstop
+
 
 #include "ISpatial.h"
 #include "IGame_Persistent.h"
@@ -149,10 +149,6 @@ void CStats::Show()
 		else						fMem_calls	=	.9f*fMem_calls + .1f*mem_count;
 		Memory.stat_calls	= 0		;
 	}
-
-	////////////////////////////////////////////////
-	if (g_dedicated_server) return;
-	////////////////////////////////////////////////
 
 	CGameFont& F = *pFont;
 	float		f_base_size	= 0.01f;
@@ -411,10 +407,7 @@ void CStats::OnDeviceCreate			()
 {
 	g_bDisableRedText				= strstr(Core.Params,"-xclsx")?TRUE:FALSE;
 
-//	if (!strstr(Core.Params, "-dedicated"))
-#ifndef DEDICATED_SERVER
 	pFont	= xr_new<CGameFont>		("stat_font", CGameFont::fsDeviceIndependent);
-#endif
 
 #ifdef DEBUG
 	if (!g_bDisableRedText)			SetLogCB	(_LogCallback);

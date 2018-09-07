@@ -12,7 +12,8 @@
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{5EF926E4-7015-3860-A71D-2018860D4E07}</ProjectGuid>
-    <WindowsTargetPlatformVersion></WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion>
+    </WindowsTargetPlatformVersion>
     <Keyword>Win32Proj</Keyword>
     <Platform>Win32</Platform>
     <ProjectName>OpenAL32</ProjectName>
@@ -95,9 +96,9 @@
     </Link>
     <PostBuildEvent>
       <Command>
-		copy /Y "..\alsoft.ini" "$(OutDir)alsoft.ini"
-		copy /Y "..\hrtf\default-44100.mhr" "$(OutDir)default-44100.mhr"
-		copy /Y "..\hrtf\default-48000.mhr" "$(OutDir)default-48000.mhr"
+		copy /Y "..\alsoftrc.sample" "$(OutDir)alsoft.ini"
+		::copy /Y "..\hrtf\default-44100.mhr" "$(OutDir)default-44100.mhr"
+		::copy /Y "..\hrtf\default-48000.mhr" "$(OutDir)default-48000.mhr"
 	  </Command>
     </PostBuildEvent>
     <ProjectReference>
@@ -150,9 +151,9 @@
     </Link>
     <PostBuildEvent>
       <Command>
-		copy /Y "..\alsoft.ini" "$(OutDir)alsoft.ini"
-		copy /Y "..\hrtf\default-44100.mhr" "$(OutDir)default-44100.mhr"
-		copy /Y "..\hrtf\default-48000.mhr" "$(OutDir)default-48000.mhr"
+		copy /Y "..\alsoftrc.sample" "$(OutDir)alsoft.ini"
+		::copy /Y "..\hrtf\default-44100.mhr" "$(OutDir)default-44100.mhr"
+		::copy /Y "..\hrtf\default-48000.mhr" "$(OutDir)default-48000.mhr"
 	  </Command>
     </PostBuildEvent>
     <ProjectReference>
@@ -161,9 +162,8 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <CustomBuild Include="bsinc_inc.h.rule">
-      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Generating bsinc_inc.h</Message>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Generating bsinc_inc.h</Message>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">setlocal
+      <Message>Generating bsinc_inc.h</Message>
+      <Command>setlocal
 native-tools\bsincgen "bsinc_inc.h"
 if %errorlevel% neq 0 goto :cmEnd
 :cmEnd
@@ -172,8 +172,15 @@ endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
 exit /b %1
 :cmDone
 if %errorlevel% neq 0 goto :VCEnd</Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">setlocal
-native-tools\bsincgen "bsinc_inc.h"
+      <AdditionalInputs>bsinc_inc.h.rule;..\native-tools\bsincgen.c;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs>bsinc_inc.h</Outputs>
+      <LinkObjects>false</LinkObjects>
+    </CustomBuild>
+	
+    <CustomBuild Include="default-44100.mhr.h.rule">
+      <Message>Generating default-44100.mhr.h</Message>
+      <Command>setlocal
+native-tools\bin2h "..\hrtf\default-44100.mhr" "default-44100.mhr.h" hrtf_default_44100
 if %errorlevel% neq 0 goto :cmEnd
 :cmEnd
 endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
@@ -181,15 +188,31 @@ endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
 exit /b %1
 :cmDone
 if %errorlevel% neq 0 goto :VCEnd</Command>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">bsinc_inc.h.rule;..\native-tools\bsincgen.c;%(AdditionalInputs)</AdditionalInputs>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">bsinc_inc.h.rule;..\native-tools\bsincgen.c;%(AdditionalInputs)</AdditionalInputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">bsinc_inc.h</Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">bsinc_inc.h</Outputs>
-      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</LinkObjects>
-      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</LinkObjects>
+      <AdditionalInputs>default-44100.mhr.h.rule;..\hrtf\default-44100.mhr;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs>default-44100.mhr.h</Outputs>
+      <LinkObjects>false</LinkObjects>
+    </CustomBuild>
+	
+    <CustomBuild Include="default-48000.mhr.h.rule">
+      <Message>Generating default-48000.mhr.h</Message>
+      <Command>setlocal
+native-tools\bin2h "..\hrtf\default-48000.mhr" "default-48000.mhr.h" hrtf_default_48000
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs>default-48000.mhr.h.rule;..\hrtf\default-48000.mhr;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs>default-48000.mhr.h</Outputs>
+      <LinkObjects>false</LinkObjects>
     </CustomBuild>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\Alc\effects\autowah.c" />
+    <ClCompile Include="..\Alc\effects\fshifter.c" />
+    <ClCompile Include="..\Alc\filters\splitter.c" />
     <ClCompile Include="..\OpenAL32\alAuxEffectSlot.c" />
     <ClCompile Include="..\OpenAL32\alBuffer.c" />
     <ClCompile Include="..\OpenAL32\alEffect.c" />
@@ -243,7 +266,6 @@ if %errorlevel% neq 0 goto :VCEnd</Command>
     <ClCompile Include="..\Alc\backends\dsound.c" />
     <ClCompile Include="..\Alc\backends\wasapi.c" />
     <ClCompile Include="..\Alc\backends\wave.c" />
-    <ClInclude Include="bsinc_inc.h" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="common.vcxproj">

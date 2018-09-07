@@ -1,6 +1,6 @@
 //---------------------------------------------------------------------------
 #include "stdafx.h"
-#pragma hdrstop
+
 
 #include "..\..\xrParticles\psystem.h"
 #include "ParticleGroup.h"
@@ -26,23 +26,6 @@ void CPGDef::SetName(LPCSTR name)
 {
     m_Name			= name;
 }
-
-#ifdef _EDITOR
-void CPGDef::Clone	(CPGDef* source)
-{
-	m_Name			= "<invalid_name>";
-    m_Flags			= source->m_Flags;
-    m_fTimeLimit	= source->m_fTimeLimit;
-    m_OwnerName		= source->m_OwnerName;
-    m_ModifName		= source->m_ModifName;
-    m_CreateTime	= source->m_CreateTime;
-    m_ModifTime		= source->m_ModifTime;
-
-    m_Effects.resize(source->m_Effects.size(),0);		
-    for (EffectIt d_it=m_Effects.begin(),s_it=source->m_Effects.begin(); s_it!=source->m_Effects.end(); s_it++,d_it++)
-    	*d_it		= xr_new<SEffect>(**s_it);
-}
-#endif
 
 //------------------------------------------------------------------------------
 // I/O part
@@ -91,15 +74,6 @@ BOOL CPGDef::Load(IReader& F)
    		m_fTimeLimit= F.r_float();
     }
 
-#ifdef _EDITOR
-    if (F.find_chunk(PGD_CHUNK_OWNER)){
-	    F.r_stringZ	(m_OwnerName);
-	    F.r_stringZ	(m_ModifName);
-        F.r			(&m_CreateTime,sizeof(m_CreateTime));
-        F.r			(&m_ModifTime,sizeof(m_ModifTime));
-    }
-#endif
-    
     return TRUE;
 }                   
 
@@ -131,15 +105,6 @@ void CPGDef::Save(IWriter& F)
     F.open_chunk	(PGD_CHUNK_TIME_LIMIT);
    	F.w_float		(m_fTimeLimit);
     F.close_chunk	();
-
-#ifdef _EDITOR
-	F.open_chunk	(PGD_CHUNK_OWNER);
-    F.w_stringZ		(m_OwnerName);
-    F.w_stringZ		(m_ModifName);
-    F.w				(&m_CreateTime,sizeof(m_CreateTime));
-    F.w				(&m_ModifTime,sizeof(m_ModifTime));
-	F.close_chunk	();
-#endif
 }
 
 //------------------------------------------------------------------------------
@@ -197,13 +162,8 @@ void CParticleGroup::SItem::StartFreeChild(CParticleEffect* emitter, LPCSTR nm, 
         C->Play					();
         C->UpdateParent			(M,vel,FALSE);
         _children_free.push_back(C);
-    }else{
-#ifdef _EDITOR        
-        Msg			("!Can't use looped effect '%s' as 'On Birth' child for group.",nm);
-#else
-        Debug.fatal	(DEBUG_INFO,"Can't use looped effect '%s' as 'On Birth' child for group.",nm);
-#endif
-    }
+    }else
+        FATAL("Can't use looped effect '%s' as 'On Birth' child for group",nm);
 }
 void CParticleGroup::SItem::Play()
 {

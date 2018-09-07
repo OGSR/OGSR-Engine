@@ -161,13 +161,11 @@ void CScriptBinder::net_Destroy		()
 
 void CScriptBinder::set_object		(CScriptBinderObject *object)
 {
-	if (IsGameTypeSingle()) {
 		VERIFY2				(!m_object,"Cannot bind to the object twice!");
 #ifdef DEBUG
 		Msg					("* Core object %s is binded with the script object",smart_cast<CGameObject*>(this) ? *smart_cast<CGameObject*>(this)->cName() : "");
 #endif // DEBUG
 		m_object			= object;
-	}
 }
 
 void CScriptBinder::shedule_Update	(u32 time_delta)

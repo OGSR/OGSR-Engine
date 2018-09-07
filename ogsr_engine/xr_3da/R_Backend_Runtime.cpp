@@ -1,5 +1,5 @@
 #include "stdafx.h"
-#pragma hdrstop
+
 
 #pragma warning(push)
 #pragma warning(disable:4995)
@@ -10,7 +10,6 @@
 
 void CBackend::OnFrameEnd	()
 {
-#ifndef DEDICATED_SERVER
 	for (u32 stage=0; stage<HW.Caps.raster.dwStages; stage++)
 		CHK_DX(HW.pDevice->SetTexture(0,0));
 	CHK_DX				(HW.pDevice->SetStreamSource	(0,0,0,0));
@@ -18,18 +17,15 @@ void CBackend::OnFrameEnd	()
 	CHK_DX				(HW.pDevice->SetVertexShader	(0));
 	CHK_DX				(HW.pDevice->SetPixelShader		(0));
 	Invalidate			();
-#endif
 }
 
 void CBackend::OnFrameBegin	()
 {
-#ifndef DEDICATED_SERVER
 	PGO					(Msg("PGO:*****frame[%d]*****",Device.dwFrame));
 	Memory.mem_fill		(&stat,0,sizeof(stat));
 	Vertex.Flush		();
 	Index.Flush			();
 	set_Stencil			(FALSE);
-#endif
 }
 
 void CBackend::Invalidate	()
@@ -58,9 +54,6 @@ void CBackend::Invalidate	()
 
 	for (u32 ps_it =0; ps_it<16;)	textures_ps	[ps_it++]	= 0;
 	for (u32 vs_it =0; vs_it< 5;)	textures_vs	[vs_it++]	= 0;
-#ifdef _EDITOR
-	for (u32 m_it =0; m_it< 8;)		matrices	[m_it++]	= 0;
-#endif
 }
 
 void	CBackend::set_ClipPlanes	(u32 _enable, Fplane*	_planes /*=NULL */, u32 count/* =0*/)

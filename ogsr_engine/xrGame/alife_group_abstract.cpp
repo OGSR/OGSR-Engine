@@ -91,7 +91,7 @@ bool CSE_ALifeGroupAbstract::synchronize_location	()
 	for ( ; I != E; ++I)
 		ai().alife().objects().object(*I)->synchronize_location	();
 
-	CSE_ALifeDynamicObject		&member = *ai().alife().objects().object(*I);
+	CSE_ALifeDynamicObject		&member = *ai().alife().objects().object(*I); //-V783
 	object->o_Position			= member.o_Position;
 	object->m_tNodeID			= member.m_tNodeID;
 

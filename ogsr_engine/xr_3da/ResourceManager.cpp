@@ -3,7 +3,7 @@
 //////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
-#pragma hdrstop
+
 
 #pragma warning(disable:4995)
 #include <d3dx9.h>
@@ -43,11 +43,7 @@ IBlender* CResourceManager::_GetBlender		(LPCSTR Name)
 
 	LPSTR N = LPSTR(Name);
 	map_Blender::iterator I = m_blenders.find	(N);
-#ifdef _EDITOR
-	if (I==m_blenders.end())	return 0;
-#else
 	if (I==m_blenders.end())	{ Debug.fatal(DEBUG_INFO,"Shader '%s' not found in library.",Name); return 0; }
-#endif
 	else					return I->second;
 }
 
@@ -178,10 +174,6 @@ Shader*	CResourceManager::_cpp_Create	(IBlender* B, LPCSTR s_shader, LPCSTR s_te
 	C.BT				= B;
 	C.bEditor			= FALSE;
 	C.bDetail			= FALSE;
-#ifdef _EDITOR
-	if (!C.BT)			{ ELog.Msg(mtError,"Can't find shader '%s'",s_shader); return 0; }
-	C.bEditor			= TRUE;
-#endif
 
 	// Parse names
 	_ParseList			(C.L_textures,	s_textures	);
@@ -257,33 +249,20 @@ Shader*	CResourceManager::_cpp_Create	(IBlender* B, LPCSTR s_shader, LPCSTR s_te
 
 Shader*	CResourceManager::_cpp_Create	(LPCSTR s_shader, LPCSTR s_textures, LPCSTR s_constants, LPCSTR s_matrices)
 {
-#ifndef DEDICATED_SERVER
 	return	_cpp_Create(_GetBlender(s_shader?s_shader:"null"),s_shader,s_textures,s_constants,s_matrices);
-#else
-	return NULL;
-#endif
 }
 
 Shader*		CResourceManager::Create	(IBlender*	B,		LPCSTR s_shader,	LPCSTR s_textures,	LPCSTR s_constants, LPCSTR s_matrices)
 {
-#ifndef DEDICATED_SERVER
 	return	_cpp_Create	(B,s_shader,s_textures,s_constants,s_matrices);
-#else
-	return NULL;
-#endif
 }
 
 Shader*		CResourceManager::Create	(LPCSTR s_shader,	LPCSTR s_textures,	LPCSTR s_constants,	LPCSTR s_matrices)
 {
-#ifndef DEDICATED_SERVER
-	#ifndef _EDITOR
-		if	(_lua_HasShader(s_shader))		return	_lua_Create	(s_shader,s_textures);
-		else								
-	#endif
-		return	_cpp_Create	(s_shader,s_textures,s_constants,s_matrices);
-#else
-	return NULL;
-#endif
+  if ( _lua_HasShader( s_shader ) )
+    return _lua_Create( s_shader, s_textures );
+  else
+    return _cpp_Create( s_shader, s_textures, s_constants, s_matrices );
 }
 
 void CResourceManager::Delete(const Shader* S)
@@ -351,25 +330,6 @@ void	CResourceManager::DeferredUnload	()
 		t->second->Unload();
 }
 */
-#ifdef _EDITOR
-void	CResourceManager::ED_UpdateTextures(AStringVec* names)
-{
-	// 1. Unload
-	if (names){
-		for (u32 nid=0; nid<names->size(); nid++)
-		{
-			map_TextureIt I = m_textures.find	((*names)[nid].c_str());
-			if (I!=m_textures.end())	I->second->Unload();
-		}
-	}else{
-		for (map_TextureIt t=m_textures.begin(); t!=m_textures.end(); t++)
-			t->second->Unload();
-	}
-
-	// 2. Load
-	// DeferredUpload	();
-}
-#endif
 
 void	CResourceManager::_GetMemoryUsage(u32& m_base, u32& c_base, u32& m_lmaps, u32& c_lmaps)
 {

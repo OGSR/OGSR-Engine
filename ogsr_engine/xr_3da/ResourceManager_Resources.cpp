@@ -1,5 +1,5 @@
 #include "stdafx.h"
-#pragma hdrstop
+
 
 #pragma warning(disable:4995)
 #include <d3dx9.h>
@@ -95,9 +95,6 @@ SPass*		CResourceManager::_CreatePass			(ref_state& _state, ref_ps& _ps, ref_vs&
 	P->vs						=	_vs;
 	P->constants				=	_ctable;
 	P->T						=	_T;
-#ifdef _EDITOR
-	P->M						=	_M;
-#endif
 	P->C						=	_C;
 
 	v_passes.push_back			(P);

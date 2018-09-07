@@ -26,7 +26,7 @@
 u32 get_rank(const shared_str&) { return u32(-1); }
 
 static const int MAX_AMMO_ATTACH_COUNT = 10;
-static const int enough_ammo_box_count = 1;
+//static const int enough_ammo_box_count = 1;
 
 IC	bool CAI_Stalker::CTradeItem::operator<		(const CTradeItem &trade_item) const
 {
@@ -334,7 +334,7 @@ bool CAI_Stalker::non_conflicted					(const CInventoryItem *item, const CWeapon 
 
 bool CAI_Stalker::enough_ammo						(const CWeapon *new_weapon) const
 {
-	int						ammo_box_count = 0;
+	//int						ammo_box_count = 0;
 
 	TIItemContainer::const_iterator	I = inventory().m_all.begin();
 	TIItemContainer::const_iterator	E = inventory().m_all.end();
@@ -342,8 +342,9 @@ bool CAI_Stalker::enough_ammo						(const CWeapon *new_weapon) const
 		if (std::find(new_weapon->m_ammoTypes.begin(),new_weapon->m_ammoTypes.end(),(*I)->object().cNameSect()) == new_weapon->m_ammoTypes.end())
 			continue;
 
-		++ammo_box_count;
-		if (ammo_box_count >= enough_ammo_box_count)
+		//++ammo_box_count;
+		//if (ammo_box_count >= enough_ammo_box_count) //Это условие всегда истинно. Какой-то недодел лимитных патронов для неписей, видимо.
+#pragma todo( "KRodin: заметка: видимо эта функция отвечает за то, что чтобы непись начал использовать ствол, ему надо продать пачку патронов." )
 			return			(true);
 	}
 

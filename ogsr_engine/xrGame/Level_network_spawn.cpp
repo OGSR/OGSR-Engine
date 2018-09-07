@@ -83,8 +83,8 @@ void CLevel::g_sv_Spawn		(CSE_Abstract* E)
 #endif
 
 	// Optimization for single-player only	- minimize traffic between client and server
-	if	(GameID()	== GAME_SINGLE)		psNET_Flags.set	(NETFLAG_MINIMIZEUPDATES,TRUE);
-	else								psNET_Flags.set	(NETFLAG_MINIMIZEUPDATES,FALSE);
+#pragma todo( "KRodin: Посмотреть внимательнее, что это за оптимизация. Может вообще всё там порезать." )
+	psNET_Flags.set(NETFLAG_MINIMIZEUPDATES,TRUE);
 
 	// Client spawn
 //	T.Start		();
@@ -95,12 +95,10 @@ void CLevel::g_sv_Spawn		(CSE_Abstract* E)
 	if (0==O || (!O->net_Spawn	(E))) 
 	{
 		O->net_Destroy			( );
-		if(!g_dedicated_server)
 			client_spawn_manager().clear(O->ID());
 		Objects.Destroy			(O);
 		Msg						("! Failed to spawn entity '%s'",*E->s_name);
 	} else {
-		if(!g_dedicated_server)
 			client_spawn_manager().callback(O);
 		//Msg			("--spawn--SPAWN: %f ms",1000.f*T.GetAsync());
 		if ((E->s_flags.is(M_SPAWN_OBJECT_LOCAL)) && (E->s_flags.is(M_SPAWN_OBJECT_ASPLAYER)))	{

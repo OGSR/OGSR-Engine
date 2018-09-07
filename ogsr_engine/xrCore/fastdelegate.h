@@ -420,7 +420,7 @@ struct SimplifyMemFunc<SINGLE_MEMFUNCPTR_SIZE + 2*sizeof(int) >
 		// Check that the horrible_cast<>s will work
 		typedef int ERROR_CantUsehorrible_cast[sizeof(function_to_bind)==sizeof(u.s)
 			&& sizeof(function_to_bind)==sizeof(u.ProbeFunc)
-			&& sizeof(u2.virtfunc)==sizeof(u2.s) ? 1 : -1];
+			&& sizeof(u2.virtfunc)==sizeof(u2.s) ? 1 : -1]; //-V568
    // Unfortunately, taking the address of a MF prevents it from being inlined, so 
    // this next line can't be completely optimised away by the compiler.
 		u2.virtfunc = &GenericVirtualClass::GetThis;
@@ -805,7 +805,7 @@ public:
 		// Ensure that there's a compilation failure if function pointers 
 		// and data pointers have different sizes.
 		// If you get this error, you need to #undef FASTDELEGATE_USESTATICFUNCTIONHACK.
-		typedef int ERROR_CantUseEvilMethod[sizeof(UnvoidStaticFuncPtr)==sizeof(this) ? 1 : -1];
+		typedef int ERROR_CantUseEvilMethod[sizeof(UnvoidStaticFuncPtr)==sizeof(this) ? 1 : -1]; //-V568
 		return horrible_cast<UnvoidStaticFuncPtr>(this);
 	}
 #endif // !defined(FASTDELEGATE_USESTATICFUNCTIONHACK)

@@ -1,5 +1,5 @@
 #include "stdafx.h"
-#pragma hdrstop
+
 #pragma warning(push)
 #pragma warning(disable:4995)
 #include <xmmintrin.h>
@@ -91,7 +91,7 @@ ICF BOOL	isect_fpu	(const Fvector& min, const Fvector& max, const ray_t &ray, Fv
 		if((coord[2] < min[2]) || (coord[2] > max[2]))	return false;
 		return true;
 	}
-	if (2==WhichPlane)	{	// 0 & 1 //KRodin: это условие тоже всегда истинно.
+	if (2==WhichPlane)	{	// 0 & 1 //KRodin: это условие тоже всегда истинно. //-V547
 		coord[0] = ray.pos[0] + MaxT[2] * ray.fwd_dir[0];
 		if((coord[0] < min[0]) || (coord[0] > max[0]))	return false;
 		coord[1] = ray.pos[1] + MaxT[2] * ray.fwd_dir[1];

@@ -35,20 +35,6 @@ void CLevel::ClientReceive()
 		P->r_begin	(m_type);
 		switch (m_type)
 		{
-		case M_MAP_SYNC:
-			{
-				shared_str map_name;
-				P->r_stringZ(map_name);
-
-				shared_str _name		= net_Hosts.size() ? net_Hosts.front().dpSessionName:"";
-
-				if(_name.size() && _name!=map_name && OnClient())
-				{
-					Msg("!!! map sync failed. current is[%s] server is[%s]",m_name.c_str(), map_name.c_str());
-					Engine.Event.Defer	("KERNEL:disconnect");
-					Engine.Event.Defer	("KERNEL:start",m_caServerOptions.size() ? size_t( xr_strdup(*m_caServerOptions)) : 0, m_caClientOptions.size() ? size_t(xr_strdup(*m_caClientOptions)) : 0);
-				}
-			}break;
 		case M_SPAWN:			
 			{
 				if (!m_bGameConfigStarted || !bReady) 
@@ -303,27 +289,8 @@ void CLevel::ClientReceive()
 			{
 				net_OnChangeSelfName(P);
 			}break;
-		case M_BULLET_CHECK_RESPOND:
-			{
-				if (!game) break;
-				if (GameID() != GAME_SINGLE)
-					Game().m_WeaponUsageStatistic->On_Check_Respond(P);
-			}break;
-		case M_STATISTIC_UPDATE:
-			{
-				if (!game) break;
-				if (GameID() != GAME_SINGLE)
-					Game().m_WeaponUsageStatistic->OnUpdateRequest(P);
-			}break;
-		case M_STATISTIC_UPDATE_RESPOND:
-			{
-				if (!game) break;
-				if (GameID() != GAME_SINGLE)
-					Game().m_WeaponUsageStatistic->OnUpdateRespond(P);
-			}break;
-		case M_BATTLEYE: //Убрать?
-			{
-			}break;
+		default:
+			break;
 		}
 
 		net_msg_Release();

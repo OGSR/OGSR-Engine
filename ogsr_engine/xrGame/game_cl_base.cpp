@@ -106,25 +106,13 @@ void	game_cl_GameState::net_import_state	(NET_Packet& P)
 		if( I!=players.end() )
 		{
 			IP = I->second;
-			//***********************************************
-			u16 OldFlags = IP->flags__;
-			u8 OldVote = IP->m_bCurrentVoteAgreed;
-			//-----------------------------------------------
 			IP->net_Import(P);
-			//-----------------------------------------------
-			if (OldFlags != IP->flags__)
-				if (Type() != GAME_SINGLE) OnPlayerFlagsChanged(IP);
-			if (OldVote != IP->m_bCurrentVoteAgreed)
-				OnPlayerVoted(IP);
-			//***********************************************
 
 			players_new.insert(mk_pair(ID,IP));
 			players.erase(I);
 		}else{
 			IP = createPlayerState();
 			IP->net_Import		(P);
-
-			if (Type() != GAME_SINGLE) OnPlayerFlagsChanged(IP);
 
 			players_new.insert(mk_pair(ID,IP));
 		}
@@ -152,26 +140,14 @@ void	game_cl_GameState::net_import_update(NET_Packet& P)
 	if (players.end()!=I)
 	{
 		game_PlayerState* IP		= I->second;
-//		CopyMemory	(&IP,&PS,sizeof(PS));		
-		//***********************************************
-		u16 OldFlags = IP->flags__;
-		u8 OldVote = IP->m_bCurrentVoteAgreed;
-		//-----------------------------------------------
 		IP->net_Import(P);
-		//-----------------------------------------------
-		if (OldFlags != IP->flags__)
-			if (Type() != GAME_SINGLE) OnPlayerFlagsChanged(IP);
-		if (OldVote != IP->m_bCurrentVoteAgreed)
-			OnPlayerVoted(IP);
-		//***********************************************
 	}
 	else
 	{
 		game_PlayerState*	PS = createPlayerState();
 		PS->net_Import		(P);
-		if (Type() != GAME_SINGLE) OnPlayerFlagsChanged(PS);
 		xr_delete(PS);
-	};
+	}
 
 	//Syncronize GameTime
 	net_import_GameTime (P);
@@ -281,19 +257,7 @@ float game_cl_GameState::shedule_Scale		()
 void game_cl_GameState::shedule_Update		(u32 dt)
 {
 	ISheduled::shedule_Update	(dt);
-
-	switch (Phase())
-	{
-	case GAME_PHASE_INPROGRESS:
-		{
-			if (!IsGameTypeSingle())
-				m_WeaponUsageStatistic->Update();
-		}break;
-	default:
-		{
-		}break;
-	};
-};
+}
 
 void game_cl_GameState::StartStopMenu(CUIDialogWnd* pDialog, bool bDoHideIndicators)
 {
@@ -393,9 +357,6 @@ void game_cl_GameState::set_type_name(LPCSTR s)
 };
 
 void game_cl_GameState::reset_ui() { //KRodin: ‘ункци€ правильно работает именно в таком варианте! Ќ≈ »«ћ≈Ќя“№!
-  if ( g_dedicated_server )
-    return;
-
   auto h = smart_cast<CHUDManager*>( Level().pHUD );
 
   auto ui = h->GetUI();

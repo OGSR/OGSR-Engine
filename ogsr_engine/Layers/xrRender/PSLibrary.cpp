@@ -2,7 +2,7 @@
 // file: PSLibrary.cpp
 //----------------------------------------------------
 #include "stdafx.h"
-#pragma hdrstop
+
 
 #include "PSLibrary.h"
 #include "ParticleEffect.h"
@@ -46,15 +46,10 @@ void CPSLibrary::OnDestroy()
 PS::PEDIt CPSLibrary::FindPEDIt(LPCSTR Name)
 {
 	if (!Name) return m_PEDs.end();
-#ifdef _EDITOR
-	for (PS::PEDIt it=m_PEDs.begin(); it!=m_PEDs.end(); it++)
-    	if (0==xr_strcmp((*it)->Name(),Name)) return it;
-	return m_PEDs.end();
-#else
+
 	PS::PEDIt I = std::lower_bound(m_PEDs.begin(),m_PEDs.end(),Name,ped_find_pred);
 	if (I==m_PEDs.end() || (0!=xr_strcmp((*I)->m_Name,Name)))	return m_PEDs.end();
 	else														return I;
-#endif
 }
 
 PS::CPEDef* CPSLibrary::FindPED(LPCSTR Name)
@@ -66,15 +61,10 @@ PS::CPEDef* CPSLibrary::FindPED(LPCSTR Name)
 PS::PGDIt CPSLibrary::FindPGDIt(LPCSTR Name)
 {
 	if (!Name) return m_PGDs.end();
-#ifdef _EDITOR
-	for (PS::PGDIt it=m_PGDs.begin(); it!=m_PGDs.end(); it++)
-    	if (0==xr_strcmp((*it)->m_Name,Name)) return it;
-	return m_PGDs.end();
-#else
+
 	PS::PGDIt I = std::lower_bound(m_PGDs.begin(),m_PGDs.end(),Name,pgd_find_pred);
 	if (I==m_PGDs.end() || (0!=xr_strcmp((*I)->m_Name,Name)))	return m_PGDs.end();
 	else														return I;
-#endif
 }
 
 PS::CPGDef* CPSLibrary::FindPGD(LPCSTR Name)

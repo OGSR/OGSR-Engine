@@ -77,7 +77,7 @@ float evaluate(CEF_Storage *ef_storage, LPCSTR function, CSE_ALifeObject *_0, CS
 
 	ef_storage->alife().member()	= smart_cast<CSE_ALifeSchedulable*>(_0);
 	if (_0 && !ef_storage->alife().member()) {
-		ai().script_engine().script_log(eLuaMessageTypeError,"object %s is not herited from CSE_ALifeSchedulable!",_1->name_replace());
+		ai().script_engine().script_log(eLuaMessageTypeError,"object %s is not herited from CSE_ALifeSchedulable!",_1->name_replace()); //-V595
 		return		(0.f);
 	}
 

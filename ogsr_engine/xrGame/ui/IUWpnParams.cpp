@@ -85,10 +85,7 @@ void CUIWpnParams::SetInfo(const shared_str& wpn_section)
 
 	m_progressRPM.SetProgressPos		(g_lua_wpn_params->m_functorRPM(*wpn_section));
 	m_progressAccuracy.SetProgressPos	(g_lua_wpn_params->m_functorAccuracy(*wpn_section));
-	if (GameID() == GAME_SINGLE)
-        m_progressDamage.SetProgressPos	(g_lua_wpn_params->m_functorDamage(*wpn_section));
-	else
-		m_progressDamage.SetProgressPos	(g_lua_wpn_params->m_functorDamageMP(*wpn_section));
+    m_progressDamage.SetProgressPos	(g_lua_wpn_params->m_functorDamage(*wpn_section));
 	m_progressHandling.SetProgressPos	(g_lua_wpn_params->m_functorHandling(*wpn_section));
 }
 

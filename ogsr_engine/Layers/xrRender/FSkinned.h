@@ -1,18 +1,12 @@
 // SkeletonX.h: interface for the CSkeletonX class.
 //
 //////////////////////////////////////////////////////////////////////
-
-#ifndef		FSkinnedH
-#define		FSkinnedH
-#pragma		once
+#pragma once
 
 #include	"FVisual.h"
 #include	"FProgressive.h"
-#ifdef _EDITOR
-#	include	"SkeletonX.h"
-#else
-#	include	"../../xr_3da/SkeletonX.h"
-#endif
+#include	"../../xr_3da/SkeletonX.h"
+
 struct	SEnumVerticesCallback;
 class		CSkeletonX_ext	: public CSkeletonX	// shared code for SkeletonX derivates
 {
@@ -75,5 +69,3 @@ private:
 	CSkeletonX_PM				(const CSkeletonX_PM& other);
 	void	operator=			( const CSkeletonX_PM& other);
 };
-
-#endif // FSkinnedH

@@ -38,10 +38,8 @@ void CUIZoneMap::Init()
 	CUIXmlInit xml_init;
 	xml_init.InitStatic			(uiXml, "minimap:background", 0, &m_background);
 
-	if(IsGameTypeSingle()){
 		xml_init.InitStatic			(uiXml, "minimap:background:dist_text", 0, &m_pointerDistanceText);
 		m_background.AttachChild	(&m_pointerDistanceText);
-	}
 
 	xml_init.InitStatic(uiXml, "minimap:level_frame", 0, &m_clipFrame);
 
@@ -81,7 +79,6 @@ void CUIZoneMap::UpdateRadar		(Fvector pos)
 	m_background.Update();
 	m_activeMap->SetActivePoint( pos );
 
-	if(IsGameTypeSingle()){
 		if(m_activeMap->GetPointerDistance()>0.5f){
 			string64	str;
 			sprintf_s		(str,"%.1f m.",m_activeMap->GetPointerDistance());
@@ -89,7 +86,6 @@ void CUIZoneMap::UpdateRadar		(Fvector pos)
 		}else{
 			m_pointerDistanceText.SetText("");
 		}
-	}
 }
 
 bool CUIZoneMap::ZoomIn()

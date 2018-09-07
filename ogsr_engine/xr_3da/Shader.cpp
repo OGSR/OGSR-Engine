@@ -3,7 +3,7 @@
 //////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
-#pragma hdrstop
+
 
 #include "Shader.h"
 #include "ResourceManager.h"
@@ -49,9 +49,6 @@ BOOL	SPass::equal	(ref_state& _state, ref_ps& _ps, ref_vs& _vs, ref_ctable& _cta
 
 	if (T != _T)					return FALSE;
 	if (C != _C)					return FALSE;
-#ifdef _EDITOR
-	if (M != _M)					return FALSE;
-#endif
 	return TRUE;
 }
 
@@ -80,8 +77,8 @@ BOOL ShaderElement::equal	(ShaderElement& S)
 
 BOOL ShaderElement::equal	(ShaderElement* S)
 {	
-	if (0==S && 0==this)	return TRUE;
-	if (0==S || 0==this)	return FALSE;
+	if (0==S && 0==this)	return TRUE; //-V704
+	if (0==S || 0==this)	return FALSE; //-V704
 	return	equal	(*S);	
 }
 

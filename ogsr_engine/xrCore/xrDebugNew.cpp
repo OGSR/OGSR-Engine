@@ -83,14 +83,14 @@ void gather_info(const char *expression, const char *description, const char *ar
 
 		if (extended_description) {
 			buffer += sprintf(buffer, "%s%s%s", endline, description, endline);
-			if (argument0) {
+			/*if (argument0) { //Этот код не выполнится. См. условие extended_description
 				if (argument1) {
 					buffer += sprintf(buffer, "%s%s", argument0, endline);
 					buffer += sprintf(buffer, "%s%s", argument1, endline);
 				}
 				else
 					buffer += sprintf(buffer, "%s%s", argument0, endline);
-			}
+			}*/
 		}
 		else {
 			buffer += sprintf(buffer, "%sDescription   : %s%s", prefix, description, endline);
@@ -512,7 +512,7 @@ static void termination_handler(int signal)
   handler_base( "Segment violation error" );
 }*/
 
-void xrDebug::_initialize(const bool &dedicated)
+void xrDebug::_initialize()
 {
 	std::set_terminate( _terminate );
 

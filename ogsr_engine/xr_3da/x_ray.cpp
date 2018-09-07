@@ -17,21 +17,16 @@
 #include "resource.h"
 #include "LightAnimLibrary.h"
 #include "ispatial.h"
-#include "Text_Console.h"
 #include <process.h>
 
 #define READ_IF_EXISTS(ltx,method,section,name,default_value)\
 	((ltx->line_exist(section,name)) ? (ltx->method(section,name)) : (default_value))
 
 //---------------------------------------------------------------------
-ENGINE_API CInifile* pGameIni		= NULL;
-BOOL	g_bIntroFinished			= FALSE;
-extern	void	Intro				( void* fn );
-extern	void	Intro_DSHOW			( void* fn );
-extern	int PASCAL IntroDSHOW_wnd	(HINSTANCE hInstC, HINSTANCE hInstP, LPSTR lpCmdLine, int nCmdShow);
-int		max_load_stage = 0;
+ENGINE_API CInifile* pGameIni = nullptr;
+volatile bool g_bIntroFinished = false;
+int max_load_stage = 0;
 
-//#define NO_SINGLE
 #define NO_MULTI_INSTANCES
 
 //---------------------------------------------------------------------
@@ -83,16 +78,7 @@ void InitSettings	()
 }
 void InitConsole	()
 {
-#ifdef DEDICATED_SERVER
-	{
-		Console						= xr_new<CTextConsole>	();		
-	}
-#else
-	//	else
-	{
-		Console						= xr_new<CConsole>	();
-	}
-#endif
+	Console						= xr_new<CConsole>	();
 	Console->Initialize			( );
 
 	strcpy_s						(Console->ConfigFile,"user.ltx");
@@ -119,8 +105,6 @@ void InitConsole	()
 void InitInput		()
 {
 	BOOL bCaptureInput			= !strstr(Core.Params,"-i");
-	if(g_dedicated_server)
-		bCaptureInput			= FALSE;
 
 	pInput						= xr_new<CInput>		(bCaptureInput);
 }
@@ -179,10 +163,8 @@ void Startup					( )
 	}
 
 	// Initialize APP
-//#ifndef DEDICATED_SERVER
 	ShowWindow( Device.m_hWnd , SW_SHOWNORMAL );
 	Device.Create				( );
-//#endif
 	LALib.OnCreate				( );
 	pApp						= xr_new<CApplication>	();
 	g_pGamePersistent			= (IGame_Persistent*)	NEW_INSTANCE (CLSID_GAME_PERSISTANT);
@@ -342,15 +324,12 @@ typedef void DUMMY_STUFF( const void*, const u32&, void* );
 XRCORE_API DUMMY_STUFF* g_temporary_stuff;
 #include "trivial_encryptor.h"
 
-ENGINE_API	bool g_dedicated_server	= false;
-
 int APIENTRY WinMain_impl(HINSTANCE hInstance,
                      HINSTANCE hPrevInstance,
                      char *    lpCmdLine,
                      int       nCmdShow)
 {
 //	foo();
-#ifndef DEDICATED_SERVER
 	// Check for another instance
 #ifdef NO_MULTI_INSTANCES
 	#define STALKER_PRESENCE_MUTEX "STALKER-SoC"
@@ -369,9 +348,6 @@ int APIENTRY WinMain_impl(HINSTANCE hInstance,
 		return 1;
 	}
 #endif
-#else // DEDICATED_SERVER
-	g_dedicated_server			= true;
-#endif // DEDICATED_SERVER
 
 	//SetThreadAffinityMask		(GetCurrentThread(),1);
 
@@ -385,7 +361,7 @@ int APIENTRY WinMain_impl(HINSTANCE hInstance,
 	SetWindowPos(logoWindow, logoInsertPos, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE | SWP_SHOWWINDOW);
 
 	// AVI
-	g_bIntroFinished			= TRUE;
+	g_bIntroFinished = true;
 
 	g_sLaunchOnExit_app[0]		= NULL;
 	g_sLaunchOnExit_params[0]	= NULL;
@@ -402,11 +378,9 @@ int APIENTRY WinMain_impl(HINSTANCE hInstance,
 	Core._initialize			("xray",NULL, TRUE, fsgame[0] ? fsgame : NULL);
 	InitSettings				();
 
-#ifndef DEDICATED_SERVER
 	{
 		damn_keys_filter		filter;
 		(void)filter;
-#endif // DEDICATED_SERVER
 
 		FPU::m24r				();
 		InitEngine				();
@@ -459,14 +433,12 @@ int APIENTRY WinMain_impl(HINSTANCE hInstance,
 			
 			_spawnv							(_P_NOWAIT, _args[0], _args);//, _envvar);
 		}
-#ifndef DEDICATED_SERVER
-#ifdef NO_MULTI_INSTANCES		
+#ifdef NO_MULTI_INSTANCES
 		// Delete application presence mutex
 		CloseHandle( hCheckPresenceMutex );
 #endif
 	}
 	// here damn_keys_filter class instanse will be destroyed
-#endif // DEDICATED_SERVER
 
 	return						0;
 }
@@ -493,11 +465,7 @@ int APIENTRY WinMain(HINSTANCE hInstance,
     gModulesLoaded = true;
 	__try 
 	{
-#ifdef DEDICATED_SERVER
-		Debug._initialize	(true);
-#else // DEDICATED_SERVER
-		Debug._initialize	(false);
-#endif // DEDICATED_SERVER
+		Debug._initialize();
 
 		WinMain_impl		(hInstance,hPrevInstance,lpCmdLine,nCmdShow);
 	}
@@ -580,8 +548,7 @@ CApplication::CApplication()
 	// Register us
 	Device.seqFrame.Add			(this, REG_PRIORITY_HIGH+1000);
 	
-	if (psDeviceFlags.test(mtSound))	Device.seqFrameMT.Add		(&SoundProcessor);
-	else								Device.seqFrame.Add			(&SoundProcessor);
+	Device.seqFrameMT.Add(&SoundProcessor);
 
 	Console->Show				( );
 
@@ -630,14 +597,6 @@ void CApplication::OnEvent(EVENT E, u64 P1, u64 P2)
 		R_ASSERT	(0==g_pGameLevel);
 		R_ASSERT	(0!=g_pGamePersistent);
 
-#ifdef NO_SINGLE
-		Console->Execute("main_menu on");
-		if (	op_server == NULL					||
-				strstr(op_server, "/deathmatch")	||
-				strstr(op_server, "/teamdeathmatch")||
-				strstr(op_server, "/artefacthunt")
-			)
-#endif	
 		{		
 			Console->Execute("main_menu off");
 			Console->Hide();
@@ -684,13 +643,11 @@ void CApplication::LoadBegin	()
 
 		g_appLoaded			= FALSE;
 
-#ifndef DEDICATED_SERVER
 		_InitializeFont		(pFontSystem,"ui_font_graffiti19_russian",0);
 
 		ll_hGeom.create		(FVF::F_TL, RCache.Vertex.Buffer(), RCache.QuadIB);
 		sh_progress.create	("hud\\default","ui\\ui_load");
 		ll_hGeom2.create		(FVF::F_TL, RCache.Vertex.Buffer(),NULL);
-#endif
 		phase_timer.Start	();
 		load_stage			= 0;
 	}
@@ -722,10 +679,7 @@ void CApplication::LoadDraw		()
 
 	if(!Device.Begin () )		return;
 
-	if	(g_dedicated_server)
-		Console->OnRender			();
-	else
-		load_draw_internal			();
+	load_draw_internal			();
 
 	Device.End					();
 }

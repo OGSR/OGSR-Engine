@@ -124,11 +124,7 @@ void CWeapon::UpdateXForm	()
 		CEntityAlive*	E		= smart_cast<CEntityAlive*>(H_Parent());
 		
 		if(!E) 
-		{
-			if (!IsGameTypeSingle())
-				UpdatePosition(H_Parent()->XFORM());
 			return;
-		}
 
 		const CInventoryOwner	*parent = smart_cast<const CInventoryOwner*>(E);
 		if (parent && parent->use_simplified_visual())
@@ -893,9 +889,6 @@ void CWeapon::UpdateCL		()
 	//нарисовать партиклы
 	UpdateFlameParticles	();
 	UpdateFlameParticles2	();
-
-	if(!IsGameTypeSingle())
-		make_Interpolation		();
 	
 	VERIFY(smart_cast<CKinematics*>(Visual()));
 
@@ -1133,7 +1126,7 @@ void CWeapon::SpawnAmmo(u32 boxCurr, LPCSTR ammoSect, u32 ParentID)
 		D->ID_Phantom				= 0xffff;
 		D->s_flags.assign			(M_SPAWN_OBJECT_LOCAL);
 		D->RespawnTime				= 0;
-		l_pA->m_tNodeID				= g_dedicated_server ? u32(-1) : ai_location().level_vertex_id();
+		l_pA->m_tNodeID				= ai_location().level_vertex_id();
 
 		if(boxCurr == 0xffffffff) 	
 			boxCurr					= l_pA->m_boxSize;
@@ -1182,11 +1175,9 @@ int CWeapon::GetAmmoCurrent(bool use_item_to_spawn) const
 
 		bool include_ruck = true;
 
-#ifdef AMMO_FROM_BELT
 		auto parent = const_cast<CObject*>(H_Parent());
 		auto pActor = smart_cast<CActor*>(parent);
 		include_ruck = !psActorFlags.test(AF_AMMO_ON_BELT) || !pActor;
-#endif //  AMMO_FROM_BELT
 
 		if (include_ruck)
 		{
@@ -1851,10 +1842,7 @@ u32 CWeapon::Cost() const
 
 void CWeapon::Hide		()
 {
-	if(IsGameTypeSingle())
-		SwitchState(eHiding);
-	else
-		SwitchState(eHidden);
+	SwitchState(eHiding);
 
 	OnZoomOut();
 }

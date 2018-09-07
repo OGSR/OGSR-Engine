@@ -1,5 +1,5 @@
 #include "stdafx.h"
-#pragma hdrstop
+
 
 #include "LocatorAPI_defs.h"
 #pragma warning(disable:4995)
@@ -33,7 +33,7 @@ FS_Path::FS_Path	(LPCSTR _Root, LPCSTR _Add, LPCSTR _DefExt, LPCSTR _FilterCapti
 {
 //	VERIFY			(_Root&&_Root[0]);
 	string_path		temp;
-    strcpy_s		(temp,sizeof(temp),_Root); 
+    strcpy_s		(temp,sizeof(temp),_Root);  //-V595
     if (_Add) 		strcat(temp,_Add);
 	if (temp[0] && temp[xr_strlen(temp)-1]!='\\') strcat(temp,"\\");
 	m_Path			= xr_strlwr(xr_strdup(temp));
@@ -42,10 +42,6 @@ FS_Path::FS_Path	(LPCSTR _Root, LPCSTR _Add, LPCSTR _DefExt, LPCSTR _FilterCapti
 	m_Add			= _Add?xr_strlwr(xr_strdup(_Add)):0;
 	m_Root			= _Root?xr_strlwr(xr_strdup(_Root)):0;
     m_Flags.assign	(flags);
-#ifdef _EDITOR
-	// Editor(s)/User(s) wants pathes already created in "real" file system :)
-	VerifyPath		(m_Path);
-#endif
 }
 
 FS_Path::~FS_Path	()
@@ -119,7 +115,7 @@ bool XRCORE_API PatternMatch(LPCSTR s, LPCSTR mask)
 		if (!*s) { while (*mask=='*') mask++; return !*mask; }
 		if (*mask=='*') { if (!*++mask) return true; mp=mask; cp=s+1; continue; }
 		if (*mask==*s||*mask=='?') { mask++, s++; continue; }
-		mask=mp; s=cp++;
+		mask=mp; s=cp++; //-V769
 	}
 }
 

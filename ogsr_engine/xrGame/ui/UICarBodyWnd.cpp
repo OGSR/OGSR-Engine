@@ -657,7 +657,7 @@ void CUICarBodyWnd::ActivatePropertiesBox()
 			m_pUIPropertiesBox->AddItem("st_detach_silencer", NULL, INVENTORY_DETACH_SILENCER_ADDON);
 			b_show = true;
 		}
-		if (smart_cast<CWeaponMagazined*>(pWeapon) && IsGameTypeSingle())
+		if (smart_cast<CWeaponMagazined*>(pWeapon))
 		{
 			bool b = (0 != pWeapon->GetAmmoElapsed());
 
@@ -824,9 +824,7 @@ void CUICarBodyWnd::MoveItem(CUICellItem* itm)
 bool CUICarBodyWnd::OnItemSelected(CUICellItem* itm)
 {
 	SetCurrentItem(itm);
-#ifdef COLORIZE_WPN_AMMO_AND_ADDONS
 	itm->ColorizeItems( { m_pUIOurBagList, m_pUIOthersBagList } );
-#endif
 	return false;
 }
 

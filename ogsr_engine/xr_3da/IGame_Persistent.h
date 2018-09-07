@@ -1,9 +1,7 @@
 #pragma once
 
 #include "Environment.h"
-#ifndef _EDITOR
-	#include "IGame_ObjectPool.h"
-#endif
+#include "IGame_ObjectPool.h"
 
 #include "ShadersExternalData.h" //--#SM+#--
 
@@ -11,9 +9,7 @@ class IMainMenu;
 class ENGINE_API CPS_Instance;
 //-----------------------------------------------------------------------------------------------------------
 class ENGINE_API IGame_Persistent	: 
-#ifndef _EDITOR
 	public DLL_Pure,
-#endif
 	public pureAppStart, 
 	public pureAppEnd,
 	public pureAppActivate, 
@@ -60,9 +56,7 @@ public:
 	virtual void					Start				(LPCSTR op);
 	virtual void					Disconnect			();
 
-#ifndef _EDITOR
 	IGame_ObjectPool				ObjectPool;
-#endif
 	IMainMenu*						m_pMainMenu;	
 
 	CEnvironment*					pEnvironment;
@@ -86,29 +80,14 @@ public:
 
 	virtual void					UpdateGameType		() {};
 
-	virtual void					RegisterModel		(IRender_Visual* V)
-#ifndef _EDITOR
-     = 0;
-#else
-	{}
-#endif
-	virtual	float					MtlTransparent		(u32 mtl_idx)
-#ifndef _EDITOR
-	= 0;
-#else
-	{return 1.f;}
-#endif
+	virtual void					RegisterModel		(IRender_Visual* V) = 0;
+	virtual	float					MtlTransparent		(u32 mtl_idx) = 0;
 
 	IGame_Persistent				();
 	virtual ~IGame_Persistent		();
 
 			u32						GameType			() {return m_game_params.m_e_game_type;};
-	virtual void					Statistics			(CGameFont* F)
-#ifndef _EDITOR
-     = 0;
-#else
-	{}
-#endif
+	virtual void					Statistics			(CGameFont* F)  = 0;
 	virtual	void					LoadTitle			(LPCSTR str){}
 };
 
@@ -121,7 +100,6 @@ public:
 	virtual void	DestroyInternal					(bool bForce)										=0;
 };
 
-extern ENGINE_API	bool g_dedicated_server;
 extern ENGINE_API	IGame_Persistent*	g_pGamePersistent;
 extern bool IsMainMenuActive();
 

@@ -40,13 +40,39 @@
 #define SZFMT "%zu"
 #endif
 
+#ifdef __has_builtin
+#define HAS_BUILTIN __has_builtin
+#else
+#define HAS_BUILTIN(x) (0)
+#endif
 
 #ifdef __GNUC__
+/* LIKELY optimizes the case where the condition is true. The condition is not
+ * required to be true, but it can result in more optimal code for the true
+ * path at the expense of a less optimal false path.
+ */
 #define LIKELY(x) __builtin_expect(!!(x), !0)
+/* The opposite of LIKELY, optimizing the case where the condition is false. */
 #define UNLIKELY(x) __builtin_expect(!!(x), 0)
+/* Unlike LIKELY, ASSUME requires the condition to be true or else it invokes
+ * undefined behavior. It's essentially an assert without actually checking the
+ * condition at run-time, allowing for stronger optimizations than LIKELY.
+ */
+#if HAS_BUILTIN(__builtin_assume)
+#define ASSUME __builtin_assume
 #else
+#define ASSUME(x) do { if(!(x)) __builtin_unreachable(); } while(0)
+#endif
+
+#else
+
 #define LIKELY(x) (!!(x))
 #define UNLIKELY(x) (!!(x))
+#ifdef _MSC_VER
+#define ASSUME __assume
+#else
+#define ASSUME(x) ((void)0)
+#endif
 #endif
 
 #ifndef UINT64_MAX
@@ -89,15 +115,25 @@ typedef ALuint64SOFT ALuint64;
 #endif
 #endif
 
+#ifndef I64
+#if defined(_MSC_VER)
+#define I64(x) ((ALint64)(x##i64))
+#elif SIZEOF_LONG == 8
+#define I64(x) ((ALint64)(x##l))
+#elif SIZEOF_LONG_LONG == 8
+#define I64(x) ((ALint64)(x##ll))
+#endif
+#endif
+
 /* Define a CTZ64 macro (count trailing zeros, for 64-bit integers). The result
  * is *UNDEFINED* if the value is 0.
  */
 #ifdef __GNUC__
 
 #if SIZEOF_LONG == 8
-#define CTZ64(x) __builtin_ctzl(x)
+#define CTZ64 __builtin_ctzl
 #else
-#define CTZ64(x) __builtin_ctzll(x)
+#define CTZ64 __builtin_ctzll
 #endif
 
 #elif defined(HAVE_BITSCANFORWARD64_INTRINSIC)
@@ -108,7 +144,7 @@ inline int msvc64_ctz64(ALuint64 v)
     _BitScanForward64(&idx, v);
     return (int)idx;
 }
-#define CTZ64(x) msvc64_ctz64(x)
+#define CTZ64 msvc64_ctz64
 
 #elif defined(HAVE_BITSCANFORWARD_INTRINSIC)
 
@@ -122,7 +158,7 @@ inline int msvc_ctz64(ALuint64 v)
     }
     return (int)idx;
 }
-#define CTZ64(x) msvc_ctz64(x)
+#define CTZ64 msvc_ctz64
 
 #else
 
@@ -145,14 +181,18 @@ inline int fallback_ctz64(ALuint64 value)
 {
     return fallback_popcnt64(~value & (value - 1));
 }
-#define CTZ64(x) fallback_ctz64(x)
+#define CTZ64 fallback_ctz64
 #endif
 
+#if defined(__BYTE_ORDER__) && defined(__ORDER_LITTLE_ENDIAN__)
+#define IS_LITTLE_ENDIAN (__BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__)
+#else
 static const union {
     ALuint u;
     ALubyte b[sizeof(ALuint)];
 } EndianTest = { 1 };
 #define IS_LITTLE_ENDIAN (EndianTest.b[0] == 1)
+#endif
 
 #define COUNTOF(x) (sizeof(x) / sizeof(0[x]))
 
@@ -200,19 +240,129 @@ inline size_t RoundUp(size_t value, size_t r)
     return value - (value%r);
 }
 
-/* Fast float-to-int conversion. Assumes the FPU is already in round-to-zero
- * mode. */
+/* Fast float-to-int conversion. No particular rounding mode is assumed; the
+ * IEEE-754 default is round-to-nearest with ties-to-even, though an app could
+ * change it on its own threads. On some systems, a truncating conversion may
+ * always be the fastest method.
+ */
 inline ALint fastf2i(ALfloat f)
 {
-#ifdef HAVE_LRINTF
-    return lrintf(f);
-#elif defined(_MSC_VER) && defined(_M_IX86)
+#if defined(HAVE_INTRIN_H) && ((defined(_M_IX86_FP) && (_M_IX86_FP > 0)) || defined(_M_X64))
+    return _mm_cvt_ss2si(_mm_set1_ps(f));
+
+#elif defined(_MSC_VER) && defined(_M_IX86_FP)
+
     ALint i;
     __asm fld f
     __asm fistp i
     return i;
+
+#elif (defined(__GNUC__) || defined(__clang__)) && (defined(__i386__) || defined(__x86_64__))
+
+    ALint i;
+#ifdef __SSE_MATH__
+    __asm__("cvtss2si %1, %0" : "=r"(i) : "x"(f));
 #else
+    __asm__ __volatile__("fistpl %0" : "=m"(i) : "t"(f) : "st");
+#endif
+    return i;
+
+    /* On GCC when compiling with -fno-math-errno, lrintf can be inlined to
+     * some simple instructions. Clang does not inline it, always generating a
+     * libc call, while MSVC's implementation is horribly slow, so always fall
+     * back to a normal integer conversion for them.
+     */
+#elif defined(HAVE_LRINTF) && !defined(_MSC_VER) && !defined(__clang__)
+
+    return lrintf(f);
+
+#else
+
     return (ALint)f;
+#endif
+}
+
+/* Converts float-to-int using standard behavior (truncation). */
+inline int float2int(float f)
+{
+#if ((defined(__GNUC__) || defined(__clang__)) && (defined(__i386__) || defined(__x86_64__)) && \
+     !defined(__SSE_MATH__)) || (defined(_MSC_VER) && defined(_M_IX86_FP) && _M_IX86_FP == 0)
+    ALint sign, shift, mant;
+    union {
+        ALfloat f;
+        ALint i;
+    } conv;
+
+    conv.f = f;
+    sign = (conv.i>>31) | 1;
+    shift = ((conv.i>>23)&0xff) - (127+23);
+
+    /* Over/underflow */
+    if(UNLIKELY(shift >= 31 || shift < -23))
+        return 0;
+
+    mant = (conv.i&0x7fffff) | 0x800000;
+    if(LIKELY(shift < 0))
+        return (mant >> -shift) * sign;
+    return (mant << shift) * sign;
+
+#else
+
+    return (ALint)f;
+#endif
+}
+
+/* Rounds a float to the nearest integral value, according to the current
+ * rounding mode. This is essentially an inlined version of rintf, although
+ * makes fewer promises (e.g. -0 or -0.25 rounded to 0 may result in +0).
+ */
+inline float fast_roundf(float f)
+{
+#if (defined(__GNUC__) || defined(__clang__)) && (defined(__i386__) || defined(__x86_64__)) && \
+    !defined(__SSE_MATH__)
+
+    float out;
+    __asm__ __volatile__("frndint" : "=t"(out) : "0"(f));
+    return out;
+
+#else
+
+    /* Integral limit, where sub-integral precision is not available for
+     * floats.
+     */
+    static const float ilim[2] = {
+         8388608.0f /*  0x1.0p+23 */,
+        -8388608.0f /* -0x1.0p+23 */
+    };
+    ALuint sign, expo;
+    union {
+        ALfloat f;
+        ALuint i;
+    } conv;
+
+    conv.f = f;
+    sign = (conv.i>>31)&0x01;
+    expo = (conv.i>>23)&0xff;
+
+    if(UNLIKELY(expo >= 150/*+23*/))
+    {
+        /* An exponent (base-2) of 23 or higher is incapable of sub-integral
+         * precision, so it's already an integral value. We don't need to worry
+         * about infinity or NaN here.
+         */
+        return f;
+    }
+    /* Adding the integral limit to the value (with a matching sign) forces a
+     * result that has no sub-integral precision, and is consequently forced to
+     * round to an integral value. Removing the integral limit then restores
+     * the initial value rounded to the integral. The compiler should not
+     * optimize this out because of non-associative rules on floating-point
+     * math (as long as you don't use -fassociative-math,
+     * -funsafe-math-optimizations, -ffast-math, or -Ofast, in which case this
+     * may break).
+     */
+    f += ilim[sign];
+    return f - ilim[sign];
 #endif
 }
 

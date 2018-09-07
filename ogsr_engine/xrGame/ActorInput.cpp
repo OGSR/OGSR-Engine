@@ -153,7 +153,7 @@ void CActor::IR_OnKeyboardPress(int cmd)
 	case kUSE_BANDAGE:
 	case kUSE_MEDKIT:
 		{
-			if(IsGameTypeSingle() && !(GetTrade()->IsInTradeState()))
+			if(!(GetTrade()->IsInTradeState()))
 			{
 				PIItem itm = inventory().item((cmd==kUSE_BANDAGE)?  CLSID_IITEM_BANDAGE:CLSID_IITEM_MEDKIT );	
 				if(itm)
@@ -167,42 +167,6 @@ void CActor::IR_OnKeyboardPress(int cmd)
 				}
 			}
 		}break;
-#pragma todo( "KRodin: ну вообще, такое надо в скриптах делать, на мой взгл€д. „тобы было настраиваемо." )
-#ifndef SHOC_EDITION
-	case kUSE_B190:
-	case kUSE_BIPSIZON:
-	case kUSE_ANTIRAD:
-	case kUSE_ENERGY_DRINK:
-		{
-			if (IsGameTypeSingle() && !(GetTrade()->IsInTradeState()))
-			{
-
-				PIItem itm = nullptr;
-				if (cmd == kUSE_B190)
-					itm = inventory().Get("yod", true);
-				else if (cmd == kUSE_BIPSIZON)
-					itm = inventory().Get("bipsizon", true);
-				else if (cmd == kUSE_ANTIRAD)
-					itm = inventory().Get("antirad", true);
-				else if (cmd == kUSE_ENERGY_DRINK)
-				{
-					itm = inventory().Get("energy_drink", true);
-					if (!itm)
-						itm = inventory().Get("dix", true);
-				}
-
-				if (itm)
-				{
-					inventory().Eat(itm);
-					SDrawStaticStruct* _s = HUD().GetUI()->UIGame()->AddCustomStatic("item_used", true);
-					_s->m_endTime = Device.fTimeGlobal + 3.0f;// 3sec
-					string1024					str;
-					strconcat(sizeof(str), str, *CStringTable().translate("st_item_used"), ": ", itm->Name());
-					_s->wnd()->SetText(str);
-				}
-			}
-		}break;
-#endif
 	}
 }
 void CActor::IR_OnMouseWheel(int direction)
@@ -423,8 +387,6 @@ void CActor::ActorUse()
 
 			VERIFY(pEntityAliveWeLookingAt);
 
-			if (GameID()==GAME_SINGLE)
-			{			
 				if(pEntityAliveWeLookingAt->g_Alive())
 				{
 					TryToTalk();
@@ -436,7 +398,6 @@ void CActor::ActorUse()
 					CUIGameSP* pGameSP = smart_cast<CUIGameSP*>(HUD().GetUI()->UIGame());
 					if(pGameSP)pGameSP->StartCarBody(this, m_pPersonWeLookingAt );
 				}
-			}
 		}
 
 		collide::rq_result& RQ = HUD().GetCurrentRayQuery();

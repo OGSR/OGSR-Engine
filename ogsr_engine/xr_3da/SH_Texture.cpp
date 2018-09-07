@@ -1,11 +1,9 @@
 #include "stdafx.h"
-#pragma hdrstop
+
 
 #include "ResourceManager.h"
 
-#ifndef _EDITOR
-    #include "render.h"
-#endif
+#include "render.h"
     
 #include "tntQAVI.h"
 #include "xrTheora_Surface.h"
@@ -181,7 +179,7 @@ void CTexture::Load(LPCSTR name)
 	}
 
 	Preload							();
-#ifndef		DEDICATED_SERVER
+
 	// Check for OGM
 	string_path			fn;
 	if (FS.exist(fn,"$game_textures$", name,".ogm")){
@@ -289,7 +287,6 @@ void CTexture::Load(LPCSTR name)
 			flags.MemoryUsage		=	mem;
 		}
 	}
-#endif
 	PostLoad	()		;
 }
 

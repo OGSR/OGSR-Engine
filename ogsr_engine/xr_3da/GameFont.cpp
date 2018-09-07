@@ -1,14 +1,7 @@
 #include "stdafx.h"
-#pragma hdrstop
 
 #include "GameFont.h"
-#ifndef _EDITOR
-    #include "Render.h"
-#endif
-#ifdef _EDITOR
-unsigned short int mbhMulti2Wide
-	( wide_char *WideStr , wide_char *WidePos , const unsigned short int WideStrSize , const char *MultiStr  ){return 0;};
-#endif
+#include "Render.h"
 
 extern ENGINE_API BOOL g_bRendering; 
 ENGINE_API Fvector2		g_current_font_scale={1.0f,1.0f};

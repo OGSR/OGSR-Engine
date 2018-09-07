@@ -641,7 +641,8 @@ bool CCar::attach_Actor(CGameObject* actor)
 	if(ini->line_exist("car_definition","driver_place"))
 		id=K->LL_BoneID(ini->r_string("car_definition","driver_place"));
 	else
-	{	
+	{
+#pragma todo( "KRodin: Этот код выдаст ошибку, т.к. в начале функции если есть Owner() происходит выход из функции. Что здесь предполагалось делать?" )
 		Owner()->setVisible(0);
 		id=K->LL_GetBoneRoot();
 	}
@@ -1700,10 +1701,10 @@ void CCar::OnEvent(NET_Packet& P, u16 type)
 			else 
 			{
 				if (!O || !O->H_Parent() || (this != O->H_Parent())) return;
-				NET_Packet P;
-				u_EventGen(P,GE_OWNERSHIP_REJECT,ID());
-				P.w_u16(u16(O->ID()));
-				u_EventSend(P);
+				NET_Packet _P;
+				u_EventGen(_P,GE_OWNERSHIP_REJECT,ID());
+				_P.w_u16(u16(O->ID()));
+				u_EventSend(_P);
 			}
 		}break;
 	case GE_OWNERSHIP_REJECT:

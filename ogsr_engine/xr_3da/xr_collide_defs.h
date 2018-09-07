@@ -127,8 +127,8 @@ namespace collide
 			results.push_back			(res);
 		}
 		IC int			r_count			()	{ return results.size();	}
-		IC rq_result*	r_begin			()	{ return &*results.begin();	}
-		IC rq_result*	r_end			()	{ return &*results.end();	}
+		IC rq_result* r_begin() { return std::data(results); }
+		IC rq_result* r_end()   { return std::data(results) + std::size(results); }
 		IC void			r_clear			()	{ results.clear_not_free();	}
 		IC void			r_sort			()	{ std::sort(results.begin(),results.end(),r_sort_pred);}
 	};

@@ -409,7 +409,7 @@ void CAgentEnemyManager::assign_wounded			()
 #endif // DEBUG
 
 	u32						previous_wounded_count = m_wounded.size();
-	WOUNDED_ENEMY			*previous_wounded = (WOUNDED_ENEMY*)_alloca(previous_wounded_count*sizeof(WOUNDED_ENEMY));
+	WOUNDED_ENEMY			*previous_wounded = (WOUNDED_ENEMY*)_alloca(previous_wounded_count*sizeof(WOUNDED_ENEMY)); //-V630
 	std::copy				(m_wounded.begin(),m_wounded.end(),previous_wounded);
 	m_wounded.clear			();
 

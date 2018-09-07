@@ -75,14 +75,14 @@ static struct BackendInfo BackendList[] = {
 #ifdef HAVE_COREAUDIO
     { "core", ALCcoreAudioBackendFactory_getFactory },
 #endif
-#ifdef HAVE_OSS
-    { "oss", ALCossBackendFactory_getFactory },
-#endif
 #ifdef HAVE_SOLARIS
     { "solaris", ALCsolarisBackendFactory_getFactory },
 #endif
 #ifdef HAVE_SNDIO
     { "sndio", ALCsndioBackendFactory_getFactory },
+#endif
+#ifdef HAVE_OSS
+    { "oss", ALCossBackendFactory_getFactory },
 #endif
 #ifdef HAVE_QSA
     { "qsa", ALCqsaBackendFactory_getFactory },
@@ -550,14 +550,12 @@ static const struct {
     DECL(AL_EFFECT_ECHO),
     DECL(AL_EFFECT_FLANGER),
     DECL(AL_EFFECT_PITCH_SHIFTER),
-#if 0
     DECL(AL_EFFECT_FREQUENCY_SHIFTER),
+#if 0
     DECL(AL_EFFECT_VOCAL_MORPHER),
 #endif
     DECL(AL_EFFECT_RING_MODULATOR),
-#if 0
     DECL(AL_EFFECT_AUTOWAH),
-#endif
     DECL(AL_EFFECT_COMPRESSOR),
     DECL(AL_EFFECT_EQUALIZER),
     DECL(AL_EFFECT_DEDICATED_LOW_FREQUENCY_EFFECT),
@@ -632,6 +630,10 @@ static const struct {
     DECL(AL_FLANGER_FEEDBACK),
     DECL(AL_FLANGER_DELAY),
 
+    DECL(AL_FREQUENCY_SHIFTER_FREQUENCY),
+    DECL(AL_FREQUENCY_SHIFTER_LEFT_DIRECTION),
+    DECL(AL_FREQUENCY_SHIFTER_RIGHT_DIRECTION),
+
     DECL(AL_RING_MODULATOR_FREQUENCY),
     DECL(AL_RING_MODULATOR_HIGHPASS_CUTOFF),
     DECL(AL_RING_MODULATOR_WAVEFORM),
@@ -653,6 +655,11 @@ static const struct {
     DECL(AL_EQUALIZER_HIGH_CUTOFF),
 
     DECL(AL_DEDICATED_GAIN),
+
+    DECL(AL_AUTOWAH_ATTACK_TIME),
+    DECL(AL_AUTOWAH_RELEASE_TIME),
+    DECL(AL_AUTOWAH_RESONANCE),
+    DECL(AL_AUTOWAH_PEAK_GAIN),
 
     DECL(AL_NUM_RESAMPLERS_SOFT),
     DECL(AL_DEFAULT_RESAMPLER_SOFT),
@@ -721,6 +728,7 @@ static const ALchar alExtList[] =
     "AL_SOFT_deferred_updates "
     "AL_SOFT_direct_channels "
     "AL_SOFTX_events "
+    "AL_SOFTX_filter_gain_ex "
     "AL_SOFT_gain_clamp_ex "
     "AL_SOFT_loop_points "
     "AL_SOFTX_map_buffer "
@@ -2213,9 +2221,12 @@ static ALCenum UpdateDeviceParams(ALCdevice *device, const ALCint *attrList)
                     break;
             }
         }
-        else if(depth > 24)
-            depth = 24;
-        device->DitherDepth = (depth > 0) ? powf(2.0f, (ALfloat)(depth-1)) : 0.0f;
+
+        if(depth > 0)
+        {
+            depth = clampi(depth, 2, 20);
+            device->DitherDepth = powf(2.0f, (ALfloat)(depth-1));
+        }
     }
     if(!(device->DitherDepth > 0.0f))
         TRACE("Dithering disabled\n");
@@ -4393,6 +4404,12 @@ ALC_API ALCboolean ALC_APIENTRY alcCaptureCloseDevice(ALCdevice *device)
         } while(!ATOMIC_COMPARE_EXCHANGE_PTR_STRONG_SEQ(&list->next, &origdev, nextdev));
     }
     UnlockLists();
+
+    almtx_lock(&device->BackendLock);
+    if((device->Flags&DEVICE_RUNNING))
+        V0(device->Backend,stop)();
+    device->Flags &= ~DEVICE_RUNNING;
+    almtx_unlock(&device->BackendLock);
 
     ALCdevice_DecRef(device);
 

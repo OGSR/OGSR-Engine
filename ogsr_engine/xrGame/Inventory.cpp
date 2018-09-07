@@ -79,6 +79,13 @@ CInventory::CInventory()
 	m_slots[NIGHT_VISION_SLOT].m_bVisible		= false;
 	m_slots[BIODETECTOR_SLOT].m_bVisible		= false;
 
+	for (u32 i = 0; i < m_slots.size(); ++i)
+	{
+		sprintf_s(temp, "slot_visible_%d", i + 1);
+		if (pSettings->line_exist("inventory", temp))
+			m_slots[i].m_bVisible = !!pSettings->r_bool("inventory", temp);
+	};
+
 	m_bSlotsUseful								= true;
 	m_bBeltUseful								= false;
 
@@ -817,11 +824,7 @@ PIItem CInventory::GetAny(const char *name) const
 
 PIItem CInventory::GetAmmo(const char *name, bool forActor) const
 {
-	bool include_ruck = true;
-
-#ifdef AMMO_FROM_BELT
-	include_ruck = !forActor || !psActorFlags.test(AF_AMMO_ON_BELT);
-#endif
+	bool include_ruck = !forActor || !psActorFlags.test(AF_AMMO_ON_BELT);
 
 	PIItem itm;
 	if (include_ruck) {
@@ -930,12 +933,12 @@ bool CInventory::Eat(PIItem pIItem)
 	CEntityAlive *entity_alive = smart_cast<CEntityAlive*>(m_pOwner);
 	R_ASSERT				(entity_alive);
 
-	if (IsGameTypeSingle() && Actor()->m_inventory == this)
+	if (Actor()->m_inventory == this)
 		Actor()->callback(GameObject::eOnBeforeUseItem)((smart_cast<CGameObject*>(pIItem))->lua_game_object());
 	
 	pItemToEat->UseBy		(entity_alive);
 
-	if(IsGameTypeSingle() && Actor()->m_inventory == this)
+	if(Actor()->m_inventory == this)
 		Actor()->callback(GameObject::eUseObject)((smart_cast<CGameObject*>(pIItem))->lua_game_object());
 
 	if(pItemToEat->Empty() && entity_alive->Local())
@@ -1117,7 +1120,6 @@ void  CInventory::AddAvailableItems(TIItemContainer& items_container, bool for_t
 
 bool CInventory::isBeautifulForActiveSlot	(CInventoryItem *pIItem)
 {
-	if (!IsGameTypeSingle()) return (true);
 	TISlotArr::iterator it =  m_slots.begin();
 	for( ; it!=m_slots.end(); ++it) {
 		if ((*it).m_pIItem && (*it).m_pIItem->IsNecessaryItem(pIItem))
@@ -1213,11 +1215,7 @@ PIItem CInventory::GetAmmoMaxCurr( const char *name, bool forActor ) const {
     return false;
   };
 
-#if defined( AMMO_FROM_BELT )
   bool include_ruck = !forActor || !psActorFlags.test( AF_AMMO_ON_BELT );
-#else
-  bool include_ruck = true;
-#endif
 
   Iterate( false, callback );
   if ( include_ruck ) {

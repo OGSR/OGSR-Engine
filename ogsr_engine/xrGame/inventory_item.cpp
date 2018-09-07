@@ -394,7 +394,7 @@ bool CInventoryItem::Detach(const char* item_section_name, bool b_spawn_item)
 								smart_cast<CSE_ALifeDynamicObject*>(D);
 		R_ASSERT			(l_tpALifeDynamicObject);
 		
-		l_tpALifeDynamicObject->m_tNodeID = (g_dedicated_server)?u32(-1):object().ai_location().level_vertex_id();
+		l_tpALifeDynamicObject->m_tNodeID = object().ai_location().level_vertex_id();
 			
 		// Fill
 		D->s_name			=	item_section_name;
@@ -402,17 +402,7 @@ bool CInventoryItem::Detach(const char* item_section_name, bool b_spawn_item)
 		D->s_gameid			=	u8(GameID());
 		D->s_RP				=	0xff;
 		D->ID				=	0xffff;
-		if (GameID() == GAME_SINGLE)
-		{
-			D->ID_Parent		=	u16(object().H_Parent()->ID());
-		}
-		else	// i'm not sure this is right
-		{		// but it is simpliest way to avoid exception in MP BuyWnd... [Satan]
-			if (object().H_Parent())
-				D->ID_Parent	=	u16(object().H_Parent()->ID());
-			else
-				D->ID_Parent	= NULL;
-		}
+		D->ID_Parent		=	object().H_Parent()->ID();
 		D->ID_Phantom		=	0xffff;
 		D->o_Position		=	object().Position();
 		D->s_flags.assign	(M_SPAWN_OBJECT_LOCAL);
@@ -455,8 +445,6 @@ BOOL CInventoryItem::net_Spawn			(CSE_Abstract* DC)
 
 	//!!!
 	//m_fCondition = pSE_InventoryItem->m_fCondition;
-	if (GameID() != GAME_SINGLE)
-		object().processing_activate();
 
 	m_dwItemIndependencyTime		= 0;
 

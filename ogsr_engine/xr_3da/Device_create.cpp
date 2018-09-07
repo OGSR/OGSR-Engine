@@ -69,12 +69,10 @@ void CRenderDevice::_Create	(LPCSTR shName)
 	::Render->create			();
 	Statistic->OnDeviceCreate	();
 
-#ifndef DEDICATED_SERVER
 	m_WireShader.create			("editor\\wire");
 	m_SelectionShader.create	("editor\\selection");
 
 	DU.OnDeviceCreate			();
-#endif
 
 	dwFrame						= 0;
 }
@@ -85,11 +83,6 @@ void CRenderDevice::Create	()
 	if (b_is_Ready)		return;		// prevent double call
 	Statistic			= xr_new<CStats>();
 	Log					("Starting RENDER device...");
-
-#ifdef _EDITOR
-	psCurrentVidMode[0]	= dwWidth;
-	psCurrentVidMode[1] = dwHeight;
-#endif
 
 	HW.CreateDevice		(m_hWnd);
 	dwWidth				= HW.DevPP.BackBufferWidth	;

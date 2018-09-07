@@ -87,14 +87,6 @@ enum	EGameActions
 						
 	kUSE_BANDAGE,
 	kUSE_MEDKIT,	
-
-	// KD - OGSE
-	kUSE_B190,
-	kUSE_BIPSIZON,
-	kUSE_ANTIRAD,
-	kUSE_ENERGY_DRINK,
-	kUSE_RADIO,
-	// KD - OGSE
 	
 	kQUICK_SAVE,
 	kQUICK_LOAD,

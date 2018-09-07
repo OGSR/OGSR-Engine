@@ -46,7 +46,7 @@ void CALifeSpawnRegistry::save				(IWriter &memory_stream)
 	
 	memory_stream.open_chunk	(0);
 	memory_stream.w_stringZ		(m_spawn_name);
-	memory_stream.w				(&header().guid(),sizeof(header().guid()));
+	memory_stream.w				(&header().guid(),sizeof(header().guid())); //-V568
 	memory_stream.close_chunk	();
 	
 	memory_stream.open_chunk	(1);

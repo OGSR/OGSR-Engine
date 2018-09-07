@@ -32,7 +32,7 @@ private:
 		VERIFY(newNodes);
 
 		ZeroMemory(newNodes, Size(newLimit));
-		if (limit) CopyMemory	(newNodes, nodes, Size(limit));
+		if (limit) CopyMemory	(newNodes, nodes, Size(limit)); //-V595
 
 		for (u32 I=0; I<pool; I++)
 		{

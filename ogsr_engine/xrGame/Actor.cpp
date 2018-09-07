@@ -183,7 +183,7 @@ CActor::CActor() : CEntityAlive()
 	m_game_task_manager		= NULL;
 	m_statistic_manager		= NULL;
 	//-----------------------------------------------------------------------------------
-	m_memory				= g_dedicated_server ? 0 : xr_new<CActorMemory>(this);
+	m_memory				= xr_new<CActorMemory>(this);
 	m_bOutBorder			= false;
 	hit_probability			= 1.f;
 	m_feel_touch_characters = 0;
@@ -239,8 +239,7 @@ void CActor::reinit	()
 	material().reinit							();
 
 	m_pUsableObject								= NULL;
-	if (!g_dedicated_server)
-		memory().reinit							();
+	memory().reinit							();
 	
 	set_input_external_handler					(0);
 	m_time_lock_accel							= 0;
@@ -252,8 +251,7 @@ void CActor::reload	(LPCSTR section)
 	CInventoryOwner::reload		(section);
 	material().reload			(section);
 	CStepManager::reload		(section);
-	if (!g_dedicated_server)
-		memory().reload			(section);
+	memory().reload			(section);
 	m_location_manager->reload	(section);
 }
 
@@ -265,8 +263,7 @@ void CActor::Load	(LPCSTR section )
 	CInventoryOwner::Load		(section);
 	m_location_manager->Load	(section);
 
-	if (GameID() == GAME_SINGLE)
-		OnDifficultyChanged		();
+	OnDifficultyChanged		();
 	//////////////////////////////////////////////////////////////////////////
 	ISpatial*		self			=	smart_cast<ISpatial*> (this);
 	if (self)	{
@@ -351,8 +348,6 @@ void CActor::Load	(LPCSTR section )
 
 	//Weapons				= xr_new<CWeaponList> (this);
 
-if(!g_dedicated_server)
-{
 	LPCSTR hit_snd_sect = pSettings->r_string(section,"hit_sounds");
 	for(int hit_type=0; hit_type<(int)ALife::eHitTypeMax; ++hit_type)
 	{
@@ -380,7 +375,7 @@ if(!g_dedicated_server)
 	{
 		g_pGamePersistent->m_pGShaderConstants.m_blender_mode.set(0.f, 0.f, 0.f, 0.f);
 	}
-}
+
 	if( psActorFlags.test(AF_PSP) )
 		cam_Set					(eacLookAt);
 	else
@@ -466,39 +461,7 @@ void	CActor::Hit							(SHit* pHDS)
 	if (HDS.hit_type == ALife::eHitTypeTelepatic)
 		HDS.power *= m_fDrugPsyProtectionCoeff;
 
-	if (!IsGameTypeSingle() && !g_dedicated_server)
-	{
-		game_PlayerState* ps = Game().GetPlayerByGameID(ID());
-		if (ps && ps->testFlag(GAME_PLAYER_FLAG_INVINCIBLE))
-		{
-			bPlaySound = false;
-			if (Device.dwFrame != last_hit_frame &&
-				HDS.bone() != BI_NONE)
-			{		
-				// вычислить позицию и направленность партикла
-				Fmatrix pos; 
-
-				CParticlesPlayer::MakeXFORM(this,HDS.bone(),HDS.dir,HDS.p_in_bone_space,pos);
-
-				// установить particles
-				CParticlesObject* ps = NULL;
-
-				if (eacFirstEye == cam_active && this == Level().CurrentEntity())
-					ps = CParticlesObject::Create(invincibility_fire_shield_1st,TRUE);
-				else
-					ps = CParticlesObject::Create(invincibility_fire_shield_3rd,TRUE);
-
-				ps->UpdateParent(pos,Fvector().set(0.f,0.f,0.f));
-				GamePersistent().ps_needtoplay.push_back(ps);
-			};
-		};
-		 
-
-		last_hit_frame = Device.dwFrame;
-	};
-
-	if(	!g_dedicated_server	&& 
-		!sndHit[HDS.hit_type].empty()			&& 
+	if(	!sndHit[HDS.hit_type].empty()			&& 
 		(ALife::eHitTypeTelepatic != HDS.hit_type))
 	{
 		ref_sound& S = sndHit[HDS.hit_type][Random.randI(sndHit[HDS.hit_type].size())];
@@ -535,7 +498,7 @@ void	CActor::Hit							(SHit* pHDS)
 	else
 		hit_slowmo = 0.f;
 	//---------------------------------------------------------------
-	if (Level().CurrentViewEntity() == this && !g_dedicated_server && HDS.hit_type == ALife::eHitTypeFireWound)
+	if (Level().CurrentViewEntity() == this && HDS.hit_type == ALife::eHitTypeFireWound)
 	{
 		CObject* pLastHitter = Level().Objects.net_Find(m_iLastHitterID);
 		CObject* pLastHittingWeapon = Level().Objects.net_Find(m_iLastHittingWeaponID);
@@ -550,18 +513,12 @@ void	CActor::Hit							(SHit* pHDS)
 //		mstate_real	&=~mcSprint;
 		mstate_wishful	&=~mcSprint;
 	};
-	if(!g_dedicated_server)
-	{
-		HitMark			(HDS.damage(), HDS.dir, HDS.who, HDS.bone(), HDS.p_in_bone_space, HDS.impulse, HDS.hit_type);
-	}
 
-	switch (GameID())
-	{
-	case GAME_SINGLE:		
-		{
+	HitMark(HDS.damage(), HDS.dir, HDS.who, HDS.bone(), HDS.p_in_bone_space, HDS.impulse, HDS.hit_type);
+
 			float hit_power	= HitArtefactsOnBelt(HDS.damage(), HDS.hit_type);
 
-			if (GodMode())//psActorFlags.test(AF_GODMODE))
+			if (GodMode())
 			{
 				HDS.power = 0.0f;
 //				inherited::Hit(0.f,dir,who,element,position_in_bone_space,impulse, hit_type);
@@ -573,47 +530,7 @@ void	CActor::Hit							(SHit* pHDS)
 				//inherited::Hit		(hit_power,dir,who,element,position_in_bone_space, impulse, hit_type);
 				HDS.power = hit_power;
 				inherited::Hit(&HDS);
-			};
-		}
-		break;
-	default:
-		{
-			m_bWasBackStabbed = false;
-			if (HDS.hit_type == ALife::eHitTypeWound_2 && Check_for_BackStab_Bone(HDS.bone()))
-			{
-				// convert impulse into local coordinate system
-				Fmatrix					mInvXForm;
-				mInvXForm.invert		(XFORM());
-				Fvector					vLocalDir;
-				mInvXForm.transform_dir	(vLocalDir,HDS.dir);
-				vLocalDir.invert		();
-
-				Fvector a	= {0,0,1};
-				float res = a.dotproduct(vLocalDir);
-				if (res < -0.707)
-				{
-					game_PlayerState* ps = Game().GetPlayerByGameID(ID());
-					if (!ps || !ps->testFlag(GAME_PLAYER_FLAG_INVINCIBLE))						
-						m_bWasBackStabbed = true;
-				}
-			};
-			
-			float hit_power = 0;
-
-			if (m_bWasBackStabbed) hit_power = (HDS.damage() == 0) ? 0 : 100000.0f;
-			else hit_power	= HitArtefactsOnBelt(HDS.damage(), HDS.hit_type);
-
-			HDS.power			= hit_power;
-			inherited::Hit		(&HDS);
-
-			if(OnServer() && !g_Alive() && HDS.hit_type==ALife::eHitTypeExplosion)
-			{
-				game_PlayerState* ps							= Game().GetPlayerByGameID(ID());
-				Game().m_WeaponUsageStatistic->OnExplosionKill	(ps, HDS);
 			}
-		}		
-		break;
-	}
 }
 
 void CActor::HitMark	(float P, 
@@ -732,16 +649,8 @@ void CActor::Die(CObject* who)
 			{
 				if((*I).m_pIItem)
 				{
-					if (IsGameTypeSingle())
-						(*I).m_pIItem->SetDropManual(TRUE);
-					else
-					{
-						if ((*I).m_pIItem->object().CLS_ID!=CLSID_OBJECT_W_KNIFE && slot_idx!=GRENADE_SLOT)
-						{
-							(*I).m_pIItem->SetDropManual(TRUE);
-						}							
-					}
-				};
+					(*I).m_pIItem->SetDropManual(TRUE);
+				}
 			continue;
 			}
 			else
@@ -758,38 +667,18 @@ void CActor::Die(CObject* who)
 		TIItemContainer &l_blist = inventory().m_belt;
 		while (!l_blist.empty())	
 			inventory().Ruck(l_blist.front());
-
-		if (!IsGameTypeSingle())
-		{
-			//if we are on server and actor has PDA - destroy PDA
-			TIItemContainer &l_rlist	= inventory().m_ruck;
-			for(TIItemContainer::iterator l_it = l_rlist.begin(); l_rlist.end() != l_it; ++l_it)
-			{
-				if ((*l_it)->object().CLS_ID == CLSID_OBJECT_PLAYERS_BAG)
-				{
-					(*l_it)->SetDropManual(TRUE);
-					continue;
-				};
-			};
-		};
-	};
+	}
 
 	cam_Set					(eacFreeLook);
 	mstate_wishful	&=		~mcAnyMove;
 	mstate_real		&=		~mcAnyMove;
 
-	if(!g_dedicated_server)
-	{
 		::Sound->play_at_pos	(sndDie[Random.randI(SND_DIE_COUNT)],this,Position());
 
 		m_HeavyBreathSnd.stop	();
 		m_BloodSnd.stop			();		
-	}
 
-	if(IsGameTypeSingle())
-	{
-		start_tutorial		("game_over");
-	}
+	start_tutorial		("game_over");
 	xr_delete				(m_sndShockEffector);
 }
 
@@ -1135,7 +1024,7 @@ void CActor::shedule_Update	(u32 DT)
 	pCamBobbing->SetState						(mstate_real, conditions().IsLimping(), IsZoomAimingMode());
 
 	//звук тяжелого дыхания при уталости и хромании
-	if(this==Level().CurrentControlEntity() && !g_dedicated_server )
+	if(this==Level().CurrentControlEntity())
 	{
 		if(conditions().IsLimping() && g_Alive())
 		{
@@ -1190,8 +1079,6 @@ void CActor::shedule_Update	(u32 DT)
 		m_pVehicleWeLookingAt			= smart_cast<CHolderCustom*>(game_object);
 		CEntityAlive* pEntityAlive		= smart_cast<CEntityAlive*>(game_object);
 		
-		if (GameID() == GAME_SINGLE )
-		{
 			if (m_pUsableObject && m_pUsableObject->tip_text())
 			{
 				m_sDefaultObjAction = CStringTable().translate( m_pUsableObject->tip_text() );
@@ -1220,7 +1107,6 @@ void CActor::shedule_Update	(u32 DT)
 				else 
 					m_sDefaultObjAction = NULL;
 			}
-		}
 	}
 	else 
 	{
@@ -1450,7 +1336,6 @@ float CActor::Radius()const
 
 bool		CActor::use_bolts				() const
 {
-	if (GameID() != GAME_SINGLE) return false;
 	return CInventoryOwner::use_bolts();
 };
 
@@ -1522,6 +1407,132 @@ void CActor::UpdateArtefactPanel()
 		HUD().GetUI()->UIMainIngameWnd->m_artefactPanel->InitIcons(inventory().m_belt);
 }
 
+void ApplyArtefactEffects(ActorRestoreParams& r, CArtefact*	artefact)
+{
+#ifdef AF_ZERO_CONDITION
+  float k = artefact->GetCondition() > 0 ? 1.f : 0.f;
+#else
+  float k = 1.f;
+#endif // AF_ZERO_CONDITION
+  r.BleedingRestoreSpeed += artefact->m_fBleedingRestoreSpeed * k;
+  r.HealthRestoreSpeed += artefact->m_fHealthRestoreSpeed * k;
+  r.PowerRestoreSpeed += artefact->m_fPowerRestoreSpeed * k;
+
+#ifdef AF_SATIETY
+  r.SatietyRestoreSpeed += artefact->m_fSatietyRestoreSpeed * k;
+#endif
+
+#ifdef AF_PSY_HEALTH
+#ifdef OBJECTS_RADIOACTIVE
+  if (artefact->PsyHealthRestoreSpeed() > 0)
+    r.PsyHealthRestoreSpeed += artefact->PsyHealthRestoreSpeed() * k;
+#else
+  r.PsyHealthRestoreSpeed += artefact->PsyHealthRestoreSpeed() * k;
+#endif
+#endif // AF_PSY_HEALTH
+
+#ifdef OBJECTS_RADIOACTIVE
+  if (artefact->RadiationRestoreSpeed() < 0)
+    r.RadiationRestoreSpeed += artefact->RadiationRestoreSpeed() * k;
+#else
+  r.RadiationRestoreSpeed += artefact->RadiationRestoreSpeed() * k;
+#endif // OBJECTS_RADIOACTIVE
+}
+
+ActorRestoreParams CActor::ActiveArtefactsOnBelt()
+{
+	ActorRestoreParams r;
+
+	Memory.mem_fill(&r, 0, sizeof(r));
+
+	for (TIItemContainer::iterator it = inventory().m_belt.begin();
+		inventory().m_belt.end() != it; ++it)
+	{
+		CArtefact*	artefact = smart_cast<CArtefact*>(*it);
+		if (artefact)
+		{
+      ApplyArtefactEffects(r, artefact);
+		}
+	}
+
+#ifdef OBJECTS_RADIOACTIVE
+	auto &map_all = inventory().m_all;
+	for (TIItemContainer::iterator it = map_all.begin(); map_all.end() != it; ++it) {
+		CInventoryItem *obj = smart_cast<CInventoryItem*>(*it);
+
+#ifdef AF_ZERO_CONDITION
+		float k = obj->GetCondition() > 0 ? 1.f : 0.f;
+#else
+		float k = 1.f;
+#endif // AF_ZERO_CONDITION
+
+#ifdef AF_PSY_HEALTH
+		// только уменьшение пси здоровоья
+		if (obj->PsyHealthRestoreSpeed() < 0) {
+			r.PsyHealthRestoreSpeed += obj->PsyHealthRestoreSpeed() * k;
+		}
+#endif
+
+		// только увеличение радиации
+		if (obj->RadiationRestoreSpeed() > 0) {
+			r.RadiationRestoreSpeed += obj->RadiationRestoreSpeed() * k;
+		}
+	}
+#endif // OBJECTS_RADIOACTIVE
+
+#ifdef OUTFIT_AF
+
+  PIItem helm = inventory().m_slots[HELMET_SLOT].m_pIItem;
+  if (helm)
+  {
+    CArtefact*	helmet = smart_cast<CArtefact*>(helm);
+    if (helmet)
+    {
+      ApplyArtefactEffects(r, helmet);
+    }
+  }
+
+	PIItem outfit_item = inventory().m_slots[OUTFIT_SLOT].m_pIItem;
+	if (outfit_item) {
+		CCustomOutfit *outfit = smart_cast<CCustomOutfit*>(outfit_item);
+		if (outfit) {
+
+#ifdef AF_ZERO_CONDITION
+			float k = outfit->GetCondition() > 0 ? 1.f : 0.f;
+#else
+			float k = 1.f;
+#endif // AF_ZERO_CONDITION
+
+			r.BleedingRestoreSpeed += outfit->m_fBleedingRestoreSpeed * k;
+			r.HealthRestoreSpeed += outfit->m_fHealthRestoreSpeed * k;
+			r.PowerRestoreSpeed += outfit->m_fPowerRestoreSpeed * k;
+
+#ifdef AF_SATIETY
+			r.SatietyRestoreSpeed += outfit->m_fSatietyRestoreSpeed * k;
+#endif
+
+#ifdef AF_PSY_HEALTH
+#ifdef OBJECTS_RADIOACTIVE
+			if (outfit->PsyHealthRestoreSpeed() > 0)
+				r.PsyHealthRestoreSpeed += outfit->PsyHealthRestoreSpeed() * k;
+#else
+			r.PsyHealthRestoreSpeed += outfit->PsyHealthRestoreSpeed() * k;
+#endif
+#endif // AF_PSY_HEALTH
+
+#ifdef OBJECTS_RADIOACTIVE
+			if (outfit->RadiationRestoreSpeed() < 0)
+				r.RadiationRestoreSpeed += outfit->RadiationRestoreSpeed() * k;
+#else
+			r.RadiationRestoreSpeed += outfit->RadiationRestoreSpeed() * k;
+#endif // OBJECTS_RADIOACTIVE
+		}
+	}
+#endif // OUTFIT_AF
+
+	return r;
+}
+
 #define ARTEFACTS_UPDATE_TIME 0.100f
 
 void CActor::UpdateArtefactsOnBelt()
@@ -1541,109 +1552,25 @@ void CActor::UpdateArtefactsOnBelt()
 		update_time		= 0.0f;
 	}
 
-#ifdef OBJECTS_RADIOACTIVE
-#ifdef AF_PSY_HEALTH
-	float summary_prs = 0.f;
-#endif
-	float summary_rrs = 0.f;
-#endif
+	auto effects = ActiveArtefactsOnBelt();
 
-	for(TIItemContainer::iterator it = inventory().m_belt.begin(); 
-		inventory().m_belt.end() != it; ++it) 
-	{
-		CArtefact*	artefact = smart_cast<CArtefact*>(*it);
-		if(artefact)
-		{
-#ifdef AF_ZERO_CONDITION
-			float k = artefact->GetCondition() > 0 ? 1.f : 0.f;
-#else
-			float k = 1.f;
-#endif
-			conditions().ChangeBleeding( artefact->m_fBleedingRestoreSpeed * f_update_time * k );
-			conditions().ChangeHealth( artefact->m_fHealthRestoreSpeed * f_update_time * k );
-#ifdef AF_PSY_HEALTH
-#ifdef OBJECTS_RADIOACTIVE
-			if ( artefact->PsyHealthRestoreSpeed() > 0 )
-				summary_prs += artefact->PsyHealthRestoreSpeed() * k;
-#else
-			conditions().ChangePsyHealth( artefact->PsyHealthRestoreSpeed() * f_update_time * k );
-#endif
-#endif
-			conditions().ChangePower( artefact->m_fPowerRestoreSpeed * f_update_time * k );
-#ifdef AF_SATIETY
-			conditions().ChangeSatiety( artefact->m_fSatietyRestoreSpeed * f_update_time * k );
-#endif
-#ifdef OBJECTS_RADIOACTIVE
-			if ( artefact->RadiationRestoreSpeed() < 0 )
-				summary_rrs += artefact->RadiationRestoreSpeed() * k;
-#else
-			conditions().ChangeRadiation( artefact->RadiationRestoreSpeed() * f_update_time * k );
-#endif
-		}
-	}
+	if (!fis_zero(effects.BleedingRestoreSpeed))
+		conditions().ChangeBleeding(effects.BleedingRestoreSpeed * f_update_time);
 
-#ifdef OBJECTS_RADIOACTIVE
-	auto &map_all = inventory().m_all;
-	for ( TIItemContainer::iterator it = map_all.begin(); map_all.end() != it; ++it ) {
-		CInventoryItem *obj = smart_cast<CInventoryItem*>( *it );
-		// только увеличение радиации
-		if ( obj->RadiationRestoreSpeed() > 0 ) {
-#ifdef AF_ZERO_CONDITION
-			float k = obj->GetCondition() > 0 ? 1.f : 0.f;
-#else
-			float k = 1.f;
-#endif
-#ifdef AF_PSY_HEALTH
-			summary_prs += obj->PsyHealthRestoreSpeed() * k;
-#endif
-			summary_rrs += obj->RadiationRestoreSpeed() * k;
-		}
-	}
-#endif  // #ifdef OBJECTS_RADIOACTIVE
+	if (!fis_zero(effects.HealthRestoreSpeed))
+		conditions().ChangeHealth(effects.HealthRestoreSpeed * f_update_time);
 
-#ifdef OUTFIT_AF
-	PIItem outfit_item = inventory().m_slots[ OUTFIT_SLOT ].m_pIItem;
-	if ( outfit_item ) {
-          CCustomOutfit *outfit = smart_cast<CCustomOutfit*>( outfit_item );
-          if ( outfit ) {
+	if (!fis_zero(effects.PowerRestoreSpeed))
+		conditions().ChangePower(effects.PowerRestoreSpeed * f_update_time);
 
-#ifdef AF_ZERO_CONDITION
-            float k = outfit->GetCondition() > 0 ? 1.f : 0.f;
-#else
-            float k = 1.f;
-#endif
+	if (!fis_zero(effects.SatietyRestoreSpeed))
+		conditions().ChangeSatiety(effects.SatietyRestoreSpeed * f_update_time);
 
-            conditions().ChangeBleeding( outfit->m_fBleedingRestoreSpeed * f_update_time * k );
-            conditions().ChangeHealth( outfit->m_fHealthRestoreSpeed * f_update_time * k );
-            conditions().ChangePower( outfit->m_fPowerRestoreSpeed * f_update_time * k );
-            conditions().ChangeSatiety( outfit->m_fSatietyRestoreSpeed * f_update_time * k );
+	if (!fis_zero(effects.PsyHealthRestoreSpeed))
+		conditions().ChangePsyHealth(effects.PsyHealthRestoreSpeed * f_update_time);
 
-#ifdef AF_PSY_HEALTH
-#ifdef OBJECTS_RADIOACTIVE
-            if ( outfit->PsyHealthRestoreSpeed() > 0 )
-              summary_prs += outfit->PsyHealthRestoreSpeed() * k;
-#else
-            conditions().ChangePsyHealth( outfit->PsyHealthRestoreSpeed() * f_update_time * k );
-#endif
-#endif
-
-#ifdef OBJECTS_RADIOACTIVE
-            if ( outfit->RadiationRestoreSpeed() < 0 )
-              summary_rrs += outfit->RadiationRestoreSpeed() * k;
-#else
-            conditions().ChangeRadiation( outfit->RadiationRestoreSpeed() * f_update_time * k );
-#endif
-
-          }
-	}
-#endif  // #ifdef OUTFIT_AF
-
-#ifdef OBJECTS_RADIOACTIVE
-#ifdef AF_PSY_HEALTH
-	conditions().ChangePsyHealth( summary_prs * f_update_time );
-#endif
-	conditions().ChangeRadiation( summary_rrs * f_update_time );
-#endif  // #ifdef OBJECTS_RADIOACTIVE
+	if (!fis_zero(effects.RadiationRestoreSpeed))
+		conditions().ChangeRadiation(effects.RadiationRestoreSpeed * f_update_time);
 
 	callback( GameObject::eUpdateArtefactsOnBelt )( f_update_time );
 }
@@ -1665,7 +1592,7 @@ float	CActor::HitArtefactsOnBelt		(float hit_power, ALife::EHitType hit_type)
 #else
 			res_hit_power_k	+= artefact->m_ArtefactHitImmunities.AffectHit(1.0f, hit_type);
 			_af_count		+= 1.0f;
-#endif
+#endif // AF_ZERO_CONDITION
 		}
 	}
 	// учет иммунитета от шлема
@@ -1683,16 +1610,14 @@ float	CActor::HitArtefactsOnBelt		(float hit_power, ALife::EHitType hit_type)
 #else
 			res_hit_power_k += helmet->m_ArtefactHitImmunities.AffectHit(1.0f, hit_type);
 			_af_count += 1.0f;
-#endif
+#endif // AF_ZERO_CONDITION
 		}
 	}
 
-	res_hit_power_k			-= _af_count;
+	res_hit_power_k -= _af_count;
 
 	return res_hit_power_k > 0 ? res_hit_power_k * hit_power : 0;
 }
-
-
 
 void	CActor::SetZoomRndSeed		(s32 Seed)
 {

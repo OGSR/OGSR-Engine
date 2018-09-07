@@ -1,5 +1,5 @@
 #include "stdafx.h"
-#pragma hdrstop
+
 
 #include "WeaponMounted.h"
 #include "xrServer_Objects_ALife.h"

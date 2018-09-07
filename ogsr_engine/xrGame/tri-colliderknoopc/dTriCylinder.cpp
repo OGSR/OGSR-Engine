@@ -121,7 +121,7 @@ int dcTriListCollider::dSortedTriCyl (
 	dVector3 norm;
 	unsigned int ret=0;
 	dVector3 pos;
-	if(code==0){
+	if(code==0){ //Всегда истинно //-V547
 		norm[0]=triAx[0]*signum;
 		norm[1]=triAx[1]*signum;
 		norm[2]=triAx[2]*signum;

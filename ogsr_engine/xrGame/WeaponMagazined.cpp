@@ -393,7 +393,7 @@ void CWeaponMagazined::ReloadMagazine()
 	{
 		if (!unlimited_ammo())
 		{
-			if (!m_pAmmo->Get(l_cartridge)) break;
+			if (!m_pAmmo->Get(l_cartridge)) break; //-V595
 		}
 		++iAmmoElapsed;
 		l_cartridge.m_LocalAmmoType = u8(m_ammoType);

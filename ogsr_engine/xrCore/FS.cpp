@@ -1,5 +1,5 @@
 #include "stdafx.h"
-#pragma hdrstop
+
 
 #include "fs_internal.h"
 
@@ -74,25 +74,13 @@ void*  FileDownload(LPCSTR fn, u32* pdwSize)
 	u32		size;
 	void*	buf;
 
-#ifdef _EDITOR
-	hFile	= _open(fn,O_RDONLY|O_BINARY|O_SEQUENTIAL);
-#else
 	hFile	= _open(fn,O_RDONLY|O_BINARY|O_SEQUENTIAL,_S_IREAD);
-#endif
 	if (hFile<=0)	{
 		Sleep	(1);
-#ifdef _EDITOR
-		hFile	= _open(fn,O_RDONLY|O_BINARY|O_SEQUENTIAL);
-#else
 		hFile	= _open(fn,O_RDONLY|O_BINARY|O_SEQUENTIAL,_S_IREAD);
-#endif
 	}
 	R_ASSERT2(hFile>0,fn);
-#ifdef _EDITOR
-	size	= filelength(hFile);
-#else
 	size	= _filelength(hFile);
-#endif
 
 	buf		= Memory.mem_alloc	(size);
 	int r_bytes	= _read	(hFile,buf,size);

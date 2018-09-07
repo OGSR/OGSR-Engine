@@ -1,15 +1,15 @@
 /* API declaration export attribute */
-#define AL_API  __declspec(dllexport)
-#define ALC_API __declspec(dllexport)
+#define AL_API __declspec( dllexport )
+#define ALC_API __declspec( dllexport )
 
 /* Define any available alignment declaration */
-#define ALIGN(x) __declspec(align(x))
+#define ALIGN( x ) __declspec( align( x ) )
 
 /* Define a built-in call indicating an aligned data pointer */
-#define ASSUME_ALIGNED(x, y) x
+#define ASSUME_ALIGNED( x, y ) x
 
 /* Define if HRTF data is embedded in the library */
-/* #undef ALSOFT_EMBED_HRTF_DATA */
+#define ALSOFT_EMBED_HRTF_DATA
 
 /* Define if we have the sysconf function */
 /* #undef HAVE_SYSCONF */
@@ -97,6 +97,9 @@
 
 /* Define if we have the cbrtf function */
 #define HAVE_CBRTF
+
+/* Define if we have the copysignf function */
+#define HAVE_COPYSIGNF
 
 /* Define if we have the strtof function */
 #define HAVE_STRTOF
@@ -198,7 +201,9 @@
 #define HAVE__CONTROLFP
 
 /* Define if we have __control87_2() */
+#ifndef _M_X64
 #define HAVE___CONTROL87_2
+#endif
 
 /* Define if we have pthread_setschedparam() */
 /* #undef HAVE_PTHREAD_SETSCHEDPARAM */

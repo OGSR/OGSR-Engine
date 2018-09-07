@@ -2,7 +2,7 @@
 /* (copyright Ken CPerlinNoise) */
 
 #include "stdafx.h"
-#pragma hdrstop
+
 
 #include "perlin.h"
 

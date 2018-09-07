@@ -106,9 +106,6 @@
     <Filter Include="Interfaces\Render\Execution &amp; 3D\Shaders\Resources\dx9_R_shader">
       <UniqueIdentifier>{00b5d642-a1a9-4a52-af04-24773ed33198}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Interfaces\Render\Execution &amp; 3D\TextConsole">
-      <UniqueIdentifier>{9f9e76e4-2288-416b-8e9f-20e69a673923}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Interfaces\Render\Execution &amp; 3D\DebugDraw">
       <UniqueIdentifier>{d29878e3-d49e-4ddf-8497-523cebb81d86}</UniqueIdentifier>
     </Filter>
@@ -386,9 +383,6 @@
     </ClInclude>
     <ClInclude Include="r_constants_cache.h">
       <Filter>Interfaces\Render\Execution &amp; 3D\Shaders\Resources\dx9_R_shader</Filter>
-    </ClInclude>
-    <ClInclude Include="Text_Console.h">
-      <Filter>Interfaces\Render\Execution &amp; 3D\TextConsole</Filter>
     </ClInclude>
     <ClInclude Include="D3DUtils.h">
       <Filter>Interfaces\Render\Execution &amp; 3D\DebugDraw</Filter>
@@ -765,12 +759,6 @@
     </ClCompile>
     <ClCompile Include="r_constants_cache.cpp">
       <Filter>Interfaces\Render\Execution &amp; 3D\Shaders\Resources\dx9_R_shader</Filter>
-    </ClCompile>
-    <ClCompile Include="Text_Console.cpp">
-      <Filter>Interfaces\Render\Execution &amp; 3D\TextConsole</Filter>
-    </ClCompile>
-    <ClCompile Include="Text_Console_WndProc.cpp">
-      <Filter>Interfaces\Render\Execution &amp; 3D\TextConsole</Filter>
     </ClCompile>
     <ClCompile Include="D3DUtils.cpp">
       <Filter>Interfaces\Render\Execution &amp; 3D\DebugDraw</Filter>
