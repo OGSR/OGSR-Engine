@@ -551,7 +551,6 @@ float &CEntityCondition::SConditionChangeV::value(LPCSTR name)
 void CEntityCondition::SConditionChangeV::load(LPCSTR sect, LPCSTR prefix)
 {
 	string256				str;
-	m_fV_Circumspection		= 0.01f;
 	for (int i = 0; i < PARAMS_COUNT; i++)
 	{
 		strconcat				(sizeof(str),str, CCV_NAMES[i],prefix);
