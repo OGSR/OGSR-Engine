@@ -191,7 +191,6 @@ public:
 	_DECLARE_FUNCTION11	(SetPower,			void, float);
 	_DECLARE_FUNCTION11	(SetSatiety,		void, float);
 	_DECLARE_FUNCTION11	(SetRadiation,		void, float);
-	_DECLARE_FUNCTION11	(SetCircumspection,	void, float);
 	_DECLARE_FUNCTION11	(SetMorale,			void, float);
 	_DECLARE_FUNCTION11 (SetMaxPower,		void, float);
 	_DECLARE_FUNCTION11 (SetAlcohol,		void, float);
