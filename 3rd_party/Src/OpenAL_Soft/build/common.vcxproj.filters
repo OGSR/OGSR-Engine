@@ -16,6 +16,9 @@
     <ClCompile Include="..\common\uintmap.c">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\common\alcomplex.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Source Files">

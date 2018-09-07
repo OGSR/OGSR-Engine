@@ -65,6 +65,8 @@ const ALfloat *Resample_bsinc_C(const InterpState *state, const ALfloat *restric
     ALsizei j_f, pi, i;
     ALfloat pf, r;
 
+    ASSUME(m > 0);
+
     src += state->bsinc.l;
     for(i = 0;i < dstlen;i++)
     {
@@ -111,7 +113,6 @@ static inline void ApplyCoeffs(ALsizei Offset, ALfloat (*restrict Values)[2],
 #define MixHrtfBlend MixHrtfBlend_C
 #define MixDirectHrtf MixDirectHrtf_C
 #include "hrtf_inc.c"
-#undef MixHrtf
 
 
 void Mix_C(const ALfloat *data, ALsizei OutChans, ALfloat (*restrict OutBuffer)[BUFFERSIZE],
@@ -121,6 +122,8 @@ void Mix_C(const ALfloat *data, ALsizei OutChans, ALfloat (*restrict OutBuffer)[
     ALfloat gain, delta, step;
     ALsizei c;
 
+    ASSUME(OutChans > 0);
+    ASSUME(BufferSize > 0);
     delta = (Counter > 0) ? 1.0f/(ALfloat)Counter : 0.0f;
 
     for(c = 0;c < OutChans;c++)
@@ -131,13 +134,16 @@ void Mix_C(const ALfloat *data, ALsizei OutChans, ALfloat (*restrict OutBuffer)[
         if(fabsf(step) > FLT_EPSILON)
         {
             ALsizei minsize = mini(BufferSize, Counter);
+            ALfloat step_count = 0.0f;
             for(;pos < minsize;pos++)
             {
-                OutBuffer[c][OutPos+pos] += data[pos]*gain;
-                gain += step;
+                OutBuffer[c][OutPos+pos] += data[pos] * (gain + step*step_count);
+                step_count += 1.0f;
             }
             if(pos == Counter)
                 gain = TargetGains[c];
+            else
+                gain += step*step_count;
             CurrentGains[c] = gain;
         }
 
@@ -157,6 +163,9 @@ void Mix_C(const ALfloat *data, ALsizei OutChans, ALfloat (*restrict OutBuffer)[
 void MixRow_C(ALfloat *OutBuffer, const ALfloat *Gains, const ALfloat (*restrict data)[BUFFERSIZE], ALsizei InChans, ALsizei InPos, ALsizei BufferSize)
 {
     ALsizei c, i;
+
+    ASSUME(InChans > 0);
+    ASSUME(BufferSize > 0);
 
     for(c = 0;c < InChans;c++)
     {

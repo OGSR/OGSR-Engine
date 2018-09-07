@@ -81,7 +81,7 @@
 #  which helps protect against skips when the CPU is under load, but increases
 #  the delay between a sound getting mixed and being heard. Acceptable values
 #  range between 2 and 16.
-periods = 4
+#periods = 3
 
 ## stereo-mode:
 #  Specifies if stereo output is treated as being headphones or speakers. With
@@ -112,8 +112,6 @@ periods = 4
 #  it, while setting true or false will forcefully enable or disable HRTF
 #  respectively.
 hrtf = true
-
-# hrtf_tables = oalsoft_hrtf_44100.mhr
 
 ## default-hrtf:
 #  Specifies the default HRTF to use. When multiple HRTFs are available, this
@@ -170,7 +168,7 @@ hrtf = true
 ## sources:
 #  Sets the maximum number of allocatable sources. Lower values may help for
 #  systems with apps that try to play more sounds than the CPU can handle.
-sources = 512
+#sources = 256
 
 ## slots:
 #  Sets the maximum number of Auxiliary Effect Slots an app can create. A slot
@@ -221,8 +219,9 @@ sources = 512
 ## excludefx: (global)
 #  Sets which effects to exclude, preventing apps from using them. This can
 #  help for apps that try to use effects which are too CPU intensive for the
-#  system to handle. Available effects are: eaxreverb,reverb,chorus,compressor,
-#  distortion,echo,equalizer,flanger,modulator,dedicated,pshifter
+#  system to handle. Available effects are: eaxreverb,reverb,autowah,chorus,
+#  compressor,distortion,echo,equalizer,flanger,modulator,dedicated,pshifter,
+#  fshifter
 #excludefx =
 
 ## default-reverb: (global)
@@ -320,12 +319,6 @@ surround71 =
 #  scale of 4x, etc. Similarly, -6 will be about half, and -12 about 1/4th. A
 #  value of 0 means no change.
 #boost = 0
-
-## emulate-eax: (global)
-#  Allows the standard reverb effect to be used in place of EAX reverb. EAX
-#  reverb processing is a bit more CPU intensive than standard, so this option
-#  allows a simpler effect to be used at the loss of some quality.
-#emulate-eax = false
 
 ##
 ## PulseAudio backend stuff

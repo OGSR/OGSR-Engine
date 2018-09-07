@@ -7,14 +7,14 @@
 #include "alMain.h"
 #include "defs.h"
 
-extern inline void BiquadState_clear(BiquadState *filter);
-extern inline void BiquadState_copyParams(BiquadState *restrict dst, const BiquadState *restrict src);
-extern inline void BiquadState_processPassthru(BiquadState *filter, const ALfloat *restrict src, ALsizei numsamples);
+extern inline void BiquadFilter_clear(BiquadFilter *filter);
+extern inline void BiquadFilter_copyParams(BiquadFilter *restrict dst, const BiquadFilter *restrict src);
+extern inline void BiquadFilter_passthru(BiquadFilter *filter, ALsizei numsamples);
 extern inline ALfloat calc_rcpQ_from_slope(ALfloat gain, ALfloat slope);
 extern inline ALfloat calc_rcpQ_from_bandwidth(ALfloat f0norm, ALfloat bandwidth);
 
 
-void BiquadState_setParams(BiquadState *filter, BiquadType type, ALfloat gain, ALfloat f0norm, ALfloat rcpQ)
+void BiquadFilter_setParams(BiquadFilter *filter, BiquadType type, ALfloat gain, ALfloat f0norm, ALfloat rcpQ)
 {
     ALfloat alpha, sqrtgain_alpha_2;
     ALfloat w0, sin_w0, cos_w0;
@@ -94,40 +94,36 @@ void BiquadState_setParams(BiquadState *filter, BiquadType type, ALfloat gain, A
 }
 
 
-void BiquadState_processC(BiquadState *filter, ALfloat *restrict dst, const ALfloat *restrict src, ALsizei numsamples)
+void BiquadFilter_processC(BiquadFilter *filter, ALfloat *restrict dst, const ALfloat *restrict src, ALsizei numsamples)
 {
+    const ALfloat a1 = filter->a1;
+    const ALfloat a2 = filter->a2;
+    const ALfloat b0 = filter->b0;
+    const ALfloat b1 = filter->b1;
+    const ALfloat b2 = filter->b2;
+    ALfloat z1 = filter->z1;
+    ALfloat z2 = filter->z2;
     ALsizei i;
-    if(LIKELY(numsamples > 1))
-    {
-        ALfloat x0 = filter->x[0];
-        ALfloat x1 = filter->x[1];
-        ALfloat y0 = filter->y[0];
-        ALfloat y1 = filter->y[1];
 
-        for(i = 0;i < numsamples;i++)
-        {
-            dst[i] = filter->b0* src[i] +
-                     filter->b1*x0 + filter->b2*x1 -
-                     filter->a1*y0 - filter->a2*y1;
-            y1 = y0; y0 = dst[i];
-            x1 = x0; x0 = src[i];
-        }
+    ASSUME(numsamples > 0);
 
-        filter->x[0] = x0;
-        filter->x[1] = x1;
-        filter->y[0] = y0;
-        filter->y[1] = y1;
-    }
-    else if(numsamples == 1)
+    /* Processing loop is Transposed Direct Form II. This requires less storage
+     * compared to Direct Form I (only two delay components, instead of a four-
+     * sample history; the last two inputs and outputs), and works better for
+     * floating-point which favors summing similarly-sized values while being
+     * less bothered by overflow.
+     *
+     * See: http://www.earlevel.com/main/2003/02/28/biquads/
+     */
+    for(i = 0;i < numsamples;i++)
     {
-        dst[0] = filter->b0 * src[0] +
-                 filter->b1 * filter->x[0] +
-                 filter->b2 * filter->x[1] -
-                 filter->a1 * filter->y[0] -
-                 filter->a2 * filter->y[1];
-        filter->x[1] = filter->x[0];
-        filter->x[0] = src[0];
-        filter->y[1] = filter->y[0];
-        filter->y[0] = dst[0];
+        ALfloat input = src[i];
+        ALfloat output = input*b0 + z1;
+        z1 = input*b1 - output*a1 + z2;
+        z2 = input*b2 - output*a2;
+        dst[i] = output;
     }
+
+    filter->z1 = z1;
+    filter->z2 = z2;
 }

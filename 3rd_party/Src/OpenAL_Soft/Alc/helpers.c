@@ -124,6 +124,8 @@ DEFINE_PROPERTYKEY(PKEY_AudioEndpoint_GUID, 0x1da5d803, 0xd492, 0x4edd, 0x8c, 0x
 extern inline ALuint NextPowerOf2(ALuint value);
 extern inline size_t RoundUp(size_t value, size_t r);
 extern inline ALint fastf2i(ALfloat f);
+extern inline int float2int(float f);
+extern inline float fast_roundf(float f);
 #ifndef __GNUC__
 #if defined(HAVE_BITSCANFORWARD64_INTRINSIC)
 extern inline int msvc64_ctz64(ALuint64 v);
@@ -136,6 +138,20 @@ extern inline int fallback_ctz64(ALuint64 value);
 #endif
 
 
+#if defined(HAVE_GCC_GET_CPUID) && (defined(__i386__) || defined(__x86_64__) || \
+                                    defined(_M_IX86) || defined(_M_X64))
+typedef unsigned int reg_type;
+static inline void get_cpuid(int f, reg_type *regs)
+{ __get_cpuid(f, &regs[0], &regs[1], &regs[2], &regs[3]); }
+#define CAN_GET_CPUID
+#elif defined(HAVE_CPUID_INTRINSIC) && (defined(__i386__) || defined(__x86_64__) || \
+                                        defined(_M_IX86) || defined(_M_X64))
+typedef int reg_type;
+static inline void get_cpuid(int f, reg_type *regs)
+{ (__cpuid)(regs, f); }
+#define CAN_GET_CPUID
+#endif
+
 int CPUCapFlags = 0;
 
 void FillCPUCaps(int capfilter)
@@ -144,58 +160,13 @@ void FillCPUCaps(int capfilter)
 
 /* FIXME: We really should get this for all available CPUs in case different
  * CPUs have different caps (is that possible on one machine?). */
-#if defined(HAVE_GCC_GET_CPUID) && (defined(__i386__) || defined(__x86_64__) || \
-                                    defined(_M_IX86) || defined(_M_X64))
+#ifdef CAN_GET_CPUID
     union {
-        unsigned int regs[4];
-        char str[sizeof(unsigned int[4])];
-    } cpuinf[3];
+        reg_type regs[4];
+        char str[sizeof(reg_type[4])];
+    } cpuinf[3] = {{ { 0, 0, 0, 0 } }};
 
-    if(!__get_cpuid(0, &cpuinf[0].regs[0], &cpuinf[0].regs[1], &cpuinf[0].regs[2], &cpuinf[0].regs[3]))
-        ERR("Failed to get CPUID\n");
-    else
-    {
-        unsigned int maxfunc = cpuinf[0].regs[0];
-        unsigned int maxextfunc = 0;
-
-        if(__get_cpuid(0x80000000, &cpuinf[0].regs[0], &cpuinf[0].regs[1], &cpuinf[0].regs[2], &cpuinf[0].regs[3]))
-            maxextfunc = cpuinf[0].regs[0];
-        TRACE("Detected max CPUID function: 0x%x (ext. 0x%x)\n", maxfunc, maxextfunc);
-
-        TRACE("Vendor ID: \"%.4s%.4s%.4s\"\n", cpuinf[0].str+4, cpuinf[0].str+12, cpuinf[0].str+8);
-        if(maxextfunc >= 0x80000004 &&
-           __get_cpuid(0x80000002, &cpuinf[0].regs[0], &cpuinf[0].regs[1], &cpuinf[0].regs[2], &cpuinf[0].regs[3]) &&
-           __get_cpuid(0x80000003, &cpuinf[1].regs[0], &cpuinf[1].regs[1], &cpuinf[1].regs[2], &cpuinf[1].regs[3]) &&
-           __get_cpuid(0x80000004, &cpuinf[2].regs[0], &cpuinf[2].regs[1], &cpuinf[2].regs[2], &cpuinf[2].regs[3]))
-            TRACE("Name: \"%.16s%.16s%.16s\"\n", cpuinf[0].str, cpuinf[1].str, cpuinf[2].str);
-
-        if(maxfunc >= 1 &&
-           __get_cpuid(1, &cpuinf[0].regs[0], &cpuinf[0].regs[1], &cpuinf[0].regs[2], &cpuinf[0].regs[3]))
-        {
-            if((cpuinf[0].regs[3]&(1<<25)))
-            {
-                caps |= CPU_CAP_SSE;
-                if((cpuinf[0].regs[3]&(1<<26)))
-                {
-                    caps |= CPU_CAP_SSE2;
-                    if((cpuinf[0].regs[2]&(1<<0)))
-                    {
-                        caps |= CPU_CAP_SSE3;
-                        if((cpuinf[0].regs[2]&(1<<19)))
-                            caps |= CPU_CAP_SSE4_1;
-                    }
-                }
-            }
-        }
-    }
-#elif defined(HAVE_CPUID_INTRINSIC) && (defined(__i386__) || defined(__x86_64__) || \
-                                        defined(_M_IX86) || defined(_M_X64))
-    union {
-        int regs[4];
-        char str[sizeof(int[4])];
-    } cpuinf[3];
-
-    (__cpuid)(cpuinf[0].regs, 0);
+    get_cpuid(0, cpuinf[0].regs);
     if(cpuinf[0].regs[0] == 0)
         ERR("Failed to get CPUID\n");
     else
@@ -203,7 +174,7 @@ void FillCPUCaps(int capfilter)
         unsigned int maxfunc = cpuinf[0].regs[0];
         unsigned int maxextfunc;
 
-        (__cpuid)(cpuinf[0].regs, 0x80000000);
+        get_cpuid(0x80000000, cpuinf[0].regs);
         maxextfunc = cpuinf[0].regs[0];
 
         TRACE("Detected max CPUID function: 0x%x (ext. 0x%x)\n", maxfunc, maxextfunc);
@@ -211,29 +182,23 @@ void FillCPUCaps(int capfilter)
         TRACE("Vendor ID: \"%.4s%.4s%.4s\"\n", cpuinf[0].str+4, cpuinf[0].str+12, cpuinf[0].str+8);
         if(maxextfunc >= 0x80000004)
         {
-            (__cpuid)(cpuinf[0].regs, 0x80000002);
-            (__cpuid)(cpuinf[1].regs, 0x80000003);
-            (__cpuid)(cpuinf[2].regs, 0x80000004);
+            get_cpuid(0x80000002, cpuinf[0].regs);
+            get_cpuid(0x80000003, cpuinf[1].regs);
+            get_cpuid(0x80000004, cpuinf[2].regs);
             TRACE("Name: \"%.16s%.16s%.16s\"\n", cpuinf[0].str, cpuinf[1].str, cpuinf[2].str);
         }
 
         if(maxfunc >= 1)
         {
-            (__cpuid)(cpuinf[0].regs, 1);
+            get_cpuid(1, cpuinf[0].regs);
             if((cpuinf[0].regs[3]&(1<<25)))
-            {
                 caps |= CPU_CAP_SSE;
-                if((cpuinf[0].regs[3]&(1<<26)))
-                {
-                    caps |= CPU_CAP_SSE2;
-                    if((cpuinf[0].regs[2]&(1<<0)))
-                    {
-                        caps |= CPU_CAP_SSE3;
-                        if((cpuinf[0].regs[2]&(1<<19)))
-                            caps |= CPU_CAP_SSE4_1;
-                    }
-                }
-            }
+            if((caps&CPU_CAP_SSE) && (cpuinf[0].regs[3]&(1<<26)))
+                caps |= CPU_CAP_SSE2;
+            if((caps&CPU_CAP_SSE2) && (cpuinf[0].regs[2]&(1<<0)))
+                caps |= CPU_CAP_SSE3;
+            if((caps&CPU_CAP_SSE3) && (cpuinf[0].regs[2]&(1<<19)))
+                caps |= CPU_CAP_SSE4_1;
         }
     }
 #else
@@ -258,22 +223,32 @@ void FillCPUCaps(int capfilter)
         ERR("Failed to open /proc/cpuinfo, cannot check for NEON support\n");
     else
     {
+        al_string features = AL_STRING_INIT_STATIC();
         char buf[256];
+
         while(fgets(buf, sizeof(buf), file) != NULL)
         {
-            size_t len;
-            char *str;
-
             if(strncmp(buf, "Features\t:", 10) != 0)
                 continue;
 
-            len = strlen(buf);
-            while(len > 0 && isspace(buf[len-1]))
-                buf[--len] = 0;
+            alstr_copy_cstr(&features, buf+10);
+            while(VECTOR_BACK(features) != '\n')
+            {
+                if(fgets(buf, sizeof(buf), file) == NULL)
+                    break;
+                alstr_append_cstr(&features, buf);
+            }
+            break;
+        }
+        fclose(file);
+        file = NULL;
 
-            TRACE("Got features string:%s\n", buf+10);
+        if(!alstr_empty(features))
+        {
+            const char *str = alstr_get_cstr(features);
+            while(isspace(str[0])) ++str;
 
-            str = buf;
+            TRACE("Got features string:%s\n", str);
             while((str=strstr(str, "neon")) != NULL)
             {
                 if(isspace(*(str-1)) && (str[4] == 0 || isspace(str[4])))
@@ -281,13 +256,11 @@ void FillCPUCaps(int capfilter)
                     caps |= CPU_CAP_NEON;
                     break;
                 }
-                str++;
+                ++str;
             }
-            break;
         }
 
-        fclose(file);
-        file = NULL;
+        alstr_reset(&features);
     }
 #endif
 
@@ -305,81 +278,44 @@ void FillCPUCaps(int capfilter)
 
 void SetMixerFPUMode(FPUCtl *ctl)
 {
-#ifdef HAVE_FENV_H
-    fegetenv(&ctl->flt_env);
-#ifdef _WIN32
-    /* HACK: A nasty bug in MinGW-W64 causes fegetenv and fesetenv to not save
-     * and restore the FPU rounding mode, so we have to do it manually. Don't
-     * know if this also applies to MSVC.
-     */
-    ctl->round_mode = fegetround();
-#endif
-#if defined(__GNUC__) && defined(HAVE_SSE)
-    /* FIXME: Some fegetenv implementations can get the SSE environment too?
-     * How to tell when it does? */
-    if((CPUCapFlags&CPU_CAP_SSE))
-        __asm__ __volatile__("stmxcsr %0" : "=m" (*&ctl->sse_state));
-#endif
-
-#ifdef FE_TOWARDZERO
-    fesetround(FE_TOWARDZERO);
-#endif
 #if defined(__GNUC__) && defined(HAVE_SSE)
     if((CPUCapFlags&CPU_CAP_SSE))
     {
-        int sseState = ctl->sse_state;
-        sseState |= 0x6000; /* set round-to-zero */
+        __asm__ __volatile__("stmxcsr %0" : "=m" (*&ctl->sse_state));
+        unsigned int sseState = ctl->sse_state;
         sseState |= 0x8000; /* set flush-to-zero */
         if((CPUCapFlags&CPU_CAP_SSE2))
             sseState |= 0x0040; /* set denormals-are-zero */
         __asm__ __volatile__("ldmxcsr %0" : : "m" (*&sseState));
     }
-#endif
 
 #elif defined(HAVE___CONTROL87_2)
 
-    int mode;
-    __control87_2(0, 0, &ctl->state, NULL);
-    __control87_2(_RC_CHOP, _MCW_RC, &mode, NULL);
-#ifdef HAVE_SSE
-    if((CPUCapFlags&CPU_CAP_SSE))
-    {
-        __control87_2(0, 0, NULL, &ctl->sse_state);
-        __control87_2(_RC_CHOP|_DN_FLUSH, _MCW_RC|_MCW_DN, NULL, &mode);
-    }
-#endif
+    __control87_2(0, 0, &ctl->state, &ctl->sse_state);
+    _control87(_DN_FLUSH, _MCW_DN);
 
 #elif defined(HAVE__CONTROLFP)
 
     ctl->state = _controlfp(0, 0);
-    (void)_controlfp(_RC_CHOP, _MCW_RC);
+    _controlfp(_DN_FLUSH, _MCW_DN);
 #endif
 }
 
 void RestoreFPUMode(const FPUCtl *ctl)
 {
-#ifdef HAVE_FENV_H
-    fesetenv(&ctl->flt_env);
-#ifdef _WIN32
-    fesetround(ctl->round_mode);
-#endif
 #if defined(__GNUC__) && defined(HAVE_SSE)
     if((CPUCapFlags&CPU_CAP_SSE))
         __asm__ __volatile__("ldmxcsr %0" : : "m" (*&ctl->sse_state));
-#endif
 
 #elif defined(HAVE___CONTROL87_2)
 
     int mode;
-    __control87_2(ctl->state, _MCW_RC, &mode, NULL);
-#ifdef HAVE_SSE
-    if((CPUCapFlags&CPU_CAP_SSE))
-        __control87_2(ctl->sse_state, _MCW_RC|_MCW_DN, NULL, &mode);
-#endif
+    __control87_2(ctl->state, _MCW_DN, &mode, NULL);
+    __control87_2(ctl->sse_state, _MCW_DN, NULL, &mode);
 
 #elif defined(HAVE__CONTROLFP)
 
-    _controlfp(ctl->state, _MCW_RC);
+    _controlfp(ctl->state, _MCW_DN);
 #endif
 }
 
@@ -748,13 +684,13 @@ void GetProcBinary(al_string *path, al_string *fname)
     size_t pathlen;
 
 #ifdef __FreeBSD__
-    int mib[4] = { CTL_KERN, KERN_PROC_ARGS, getpid() };
-    if(sysctl(mib, 3, NULL, &pathlen, NULL, 0) == -1)
-        WARN("Failed to sysctl kern.procargs.%d: %s\n", mib[2], strerror(errno));
+    int mib[4] = { CTL_KERN, KERN_PROC, KERN_PROC_PATHNAME, -1 };
+    if(sysctl(mib, 4, NULL, &pathlen, NULL, 0) == -1)
+        WARN("Failed to sysctl kern.proc.pathname: %s\n", strerror(errno));
     else
     {
         pathname = malloc(pathlen + 1);
-        sysctl(mib, 3, (void*)pathname, &pathlen, NULL, 0);
+        sysctl(mib, 4, (void*)pathname, &pathlen, NULL, 0);
         pathname[pathlen] = 0;
     }
 #endif
@@ -1169,8 +1105,8 @@ void alstr_copy_range(al_string *str, const al_string_char_type *from, const al_
 void alstr_append_char(al_string *str, const al_string_char_type c)
 {
     size_t len = alstr_length(*str);
-    VECTOR_RESIZE(*str, len, len+2);
-    VECTOR_PUSH_BACK(*str, c);
+    VECTOR_RESIZE(*str, len+1, len+2);
+    VECTOR_BACK(*str) = c;
     VECTOR_ELEM(*str, len+1) = 0;
 }
 
