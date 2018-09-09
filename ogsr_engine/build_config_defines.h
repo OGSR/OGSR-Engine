@@ -229,3 +229,6 @@
 // В этом режиме удаление поршня, в котором указаны <article>, удалит и эти
 // статьи.
 //#define REMOVE_ARTICLES_ON_DISABLE_INFO
+
+// Включает авто коррекцию ширины точек для карты (map_spot) для корректного отображения в режиме 16:10, 16:9
+//#define APPLY_MAP_SPOT_WIDTH_CORRECTION
