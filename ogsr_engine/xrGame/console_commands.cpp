@@ -510,14 +510,6 @@ public:
 	}
 };
 
-class CCC_FlushLog : public IConsole_Command {
-public:
-	CCC_FlushLog(LPCSTR N) : IConsole_Command(N)  { bEmptyArgsHandled = true; };
-	virtual void Execute(LPCSTR /**args/**/) {
-		FlushLog();
-		Msg		("* Log file has been saved successfully!");
-	}
-};
 
 class CCC_FloatBlock : public CCC_Float {
 public:
@@ -1126,8 +1118,6 @@ void CCC_RegisterCommands()
 	CMD1(CCC_ALifeSave,			"save"					);		// save game
 	CMD1(CCC_ALifeLoadFrom,		"load"					);		// load game from ...
 	CMD1(CCC_LoadLastSave,		"load_last_save"		);		// load last saved game from ...
-
-	CMD1(CCC_FlushLog,			"flush"					);		// flush log
 
 #ifndef MASTER_GOLD
 	CMD1(CCC_ALifeTimeFactor,		"al_time_factor"		);		// set time factor

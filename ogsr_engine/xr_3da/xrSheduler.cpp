@@ -300,7 +300,6 @@ void CSheduler::ProcessStep			()
 		}
 		__except(ExceptStackTrace("[CSheduler::ProcessStep] stack trace:\n")) {
 			Msg						("Scheduler tried to update object %s",*T.scheduled_name);
-			FlushLog				();
 			T.Object				= 0;
 			continue;
 		}
@@ -375,7 +374,6 @@ void CSheduler::ProcessStep			()
 		}
 		__except(ExceptStackTrace("[CSheduler::ProcessStep2] stack trace:\n")) {
 			Msg						("Scheduler tried to update object %s",*T.scheduled_name);
-			FlushLog				();
 			T.Object				= 0;
 			continue;
 		}
