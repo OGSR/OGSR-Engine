@@ -174,7 +174,8 @@ void CInventory::Take(CGameObject *pObj, bool bNotActivate, bool strict_placemen
 	default:
 
 #ifdef RUCK_FLAG_PREFERRED
-		bool def_to_slot = !pIItem->RuckDefault();
+		auto pActor      = smart_cast<CActor*>( m_pOwner );
+		bool def_to_slot = pActor ? !pIItem->RuckDefault() : true;
 #else
 		bool def_to_slot = true;
 #endif
