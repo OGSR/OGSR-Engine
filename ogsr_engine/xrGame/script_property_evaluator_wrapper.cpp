@@ -24,22 +24,13 @@ void CScriptPropertyEvaluatorWrapper::setup_static	(CScriptPropertyEvaluator *ev
 
 bool CScriptPropertyEvaluatorWrapper::evaluate		()
 {
-#ifdef CRASH_ON_SCRIPT_BINDER_ERRORS
-	return luabind::call_member<bool>( this, "evaluate" );
-#else
-	try {
+	__try {
 		return luabind::call_member<bool>(this,"evaluate");
 	}
-#ifndef LUABIND_NO_EXCEPTIONS
-	catch(luabind::cast_failed &exception) {
-		ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "!![CScriptPropertyEvaluatorWrapper::evaluate] evaluator [%s] returns value with not a %s type!", m_evaluator_name, exception.info()->name());
-	}
-#endif
-	catch(...) {
-		ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "!![CScriptPropertyEvaluatorWrapper::evaluate] evaluator [%s] returns value with not a bool type!", m_evaluator_name);
+	__except ( ExceptStackTrace( "[CScriptPropertyEvaluatorWrapper::evaluate] stack_trace:\n" ) ) {
+		Msg( "!![CScriptPropertyEvaluatorWrapper::evaluate] Fatal Error in object [%s], evaluator: [%s]", m_object->cName().c_str(), m_evaluator_name );
 	}
 	return false;
-#endif
 }
 
 bool CScriptPropertyEvaluatorWrapper::evaluate_static	(CScriptPropertyEvaluator *evaluator)

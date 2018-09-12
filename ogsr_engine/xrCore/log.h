@@ -16,6 +16,5 @@ void	XRCORE_API				SetLogCB	(LogCallback cb);
 void 							CreateLog	(BOOL no_log = FALSE);
 void 							InitLog		();
 void 							CloseLog	();
-void	XRCORE_API				FlushLog	(); //Надо удалить
 
 extern XRCORE_API xr_vector<std::string>* LogFile;

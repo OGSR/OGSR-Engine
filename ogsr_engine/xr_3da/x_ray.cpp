@@ -320,8 +320,8 @@ struct damn_keys_filter {
 
 #include "xr_ioc_cmd.h"
 
-typedef void DUMMY_STUFF( const void*, const u32&, void* );
-XRCORE_API DUMMY_STUFF* g_temporary_stuff;
+using DUMMY_STUFF = void( const void*, const u32&, void* );
+extern XRCORE_API DUMMY_STUFF* g_temporary_stuff;
 #include "trivial_encryptor.h"
 
 int APIENTRY WinMain_impl(HINSTANCE hInstance,

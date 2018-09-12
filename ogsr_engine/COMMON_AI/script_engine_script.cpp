@@ -124,7 +124,6 @@ void CScriptEngine::script_register(lua_State *L)
 	module(L)[
 		def("log1",			(void(*)(LPCSTR)) &Log),
 		def("fail",			(void(*)(LPCSTR)) &msg_and_fail),
-		def("flush_log",	(void(*)(void)) &FlushLog),
 		def("screenshot",	(void(*)(IRender_interface::ScreenshotMode, LPCSTR)) &take_screenshot),
 
 		class_<enum_exporter<IRender_interface::ScreenshotMode> >("screenshot_modes")
