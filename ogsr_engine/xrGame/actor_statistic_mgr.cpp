@@ -109,6 +109,16 @@ s32 SStatSectionData::GetTotalPoints() const
 
 }
 
+s32 SStatSectionData::GetTotalCounts() const {
+  s32 res = 0;
+  for ( const auto& it : data ) {
+    if ( it.str_value.size() != 0 )
+      return -1;
+    res	+= it.int_count;
+  }
+  return res;
+}
+
 CActorStatisticMgr::CActorStatisticMgr		()
 {
 	m_actor_stats_wrapper = xr_new<CActorStatisticsWrapper>();
@@ -181,4 +191,21 @@ s32 CActorStatisticMgr::GetSectionPoints(const shared_str& key)
 		}
 		return _total;
 	}
+}
+
+s32 CActorStatisticMgr::GetSectionCounts( const shared_str& key ) {
+  if( key != "total" )
+    return GetSection( key ).GetTotalCounts();
+  else {                        // total
+    s32 _total = -1;
+    vStatSectionData& d = GetStorage();
+    for ( const auto& it : d ) {
+      s32 _p = it.GetTotalCounts();
+      if( _p !=-1 ) {
+        if( _total == -1 ) _total = 0;
+        _total += _p;
+      }
+    }
+    return _total;
+  }
 }

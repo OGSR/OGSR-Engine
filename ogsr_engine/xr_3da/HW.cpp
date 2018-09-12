@@ -225,7 +225,6 @@ void		CHW::CreateDevice		(HWND m_hWnd)
 
 	if ( D3DFMT_UNKNOWN == fTarget || ( D3DFMT_UNKNOWN == fDepth ) ) {
 		Msg					("Failed to initialize graphics hardware.\nPlease try to restart the game.");
-		FlushLog			();
 		MessageBox			(NULL,"Failed to initialize graphics hardware.\nPlease try to restart the game.","Error!",MB_OK|MB_ICONERROR);
 		TerminateProcess	(GetCurrentProcess(),0);
 	}
@@ -280,7 +279,6 @@ void		CHW::CreateDevice		(HWND m_hWnd)
 	if (D3DERR_DEVICELOST==R)	{
 		// Fatal error! Cannot create rendering device AT STARTUP !!!
 		Msg					("Failed to initialize graphics hardware.\nPlease try to restart the game.");
-		FlushLog			();
 		MessageBox			(NULL,"Failed to initialize graphics hardware.\nPlease try to restart the game.","Error!",MB_OK|MB_ICONERROR);
 		TerminateProcess	(GetCurrentProcess(),0);
 	};

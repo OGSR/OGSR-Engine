@@ -1,6 +1,5 @@
 #include "stdafx.h"
 
-
 #include "log.h"
 
 #include <sstream> //для std::stringstream
@@ -12,8 +11,6 @@ static std::recursive_mutex logCS;
 static LogCallback			LogCB	 = nullptr;
 xr_vector<std::string>*		LogFile  = nullptr;
 std::ofstream logstream;
-
-void FlushLog() {} //Надо удалить
 
 void AddOne(std::string &split, bool first_line)
 {
@@ -28,7 +25,7 @@ void AddOne(std::string &split, bool first_line)
 #endif
 
 	if (LogCB)
-		LogCB(split.c_str()); //Только в дебаге используется вроде.
+		LogCB(split.c_str()); //Вывод в логкаллбек
 
 	LogFile->push_back(split); //Вывод в консоль
 

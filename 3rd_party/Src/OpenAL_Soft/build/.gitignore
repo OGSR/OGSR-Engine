@@ -1,2 +1,4 @@
 ﻿/native-tools
 *.h
+!config.h
+!version.h

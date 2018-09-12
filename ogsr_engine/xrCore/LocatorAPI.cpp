@@ -15,12 +15,10 @@
 #include "stream_reader.h"
 #include "file_stream_reader.h"
 
-const u32 BIG_FILE_READER_WINDOW_SIZE	= 1024*1024;
+constexpr u32 BIG_FILE_READER_WINDOW_SIZE	= 1024*1024;
 
-#define PROTECTED_BUILD
-
-typedef void DUMMY_STUFF (const void*,const u32&,void*);
-XRCORE_API DUMMY_STUFF	*g_temporary_stuff = 0;
+using DUMMY_STUFF = void( const void*, const u32&, void* );
+XRCORE_API DUMMY_STUFF* g_temporary_stuff = nullptr;
 
 std::unique_ptr<CLocatorAPI> xr_FS;
 
@@ -325,13 +323,7 @@ void CLocatorAPI::ProcessArchive(LPCSTR _path, LPCSTR base_path)
 	while (!hdr->eof())
 	{
 		string_path		name,full;
-#ifndef PROTECTED_BUILD
-		hdr->r_stringZ	(name,sizeof(name));
-		u32 crc			= hdr->r_u32();
-		u32 ptr			= hdr->r_u32();
-		u32 size_real	= hdr->r_u32();
-		u32 size_compr	= hdr->r_u32();
-#else // PROTECTED_BUILD
+
 		string1024		buffer_start;
 		u16				buffer_size	= hdr->r_u16();
 		VERIFY			(buffer_size < sizeof(name) + 4*sizeof(u32));
@@ -355,7 +347,7 @@ void CLocatorAPI::ProcessArchive(LPCSTR _path, LPCSTR base_path)
 
 		u32 ptr			= *(u32*)buffer;
 		buffer			+= sizeof(ptr);
-#endif // PROTECTED_BUILD
+
 		strconcat		(sizeof(full),full,base,name);
 		size_t vfs		= archives.size()-1;
 

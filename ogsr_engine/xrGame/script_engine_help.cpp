@@ -352,7 +352,6 @@ void print_free_functions(lua_State *L, const luabind::object &object, LPCSTR he
 					{
 						// problem detected
 						Msg("! WARN: to many nested levels for export = %d, or self-reference detected ", nest_level);
-						FlushLog();
 						dumper->flush();
 					}
 					nesting_path.pop_back();

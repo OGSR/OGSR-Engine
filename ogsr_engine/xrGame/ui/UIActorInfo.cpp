@@ -115,7 +115,7 @@ void CUIActorInfoWnd::FillPointsInfo			()
 				itm->m_text2->SetTextColor			(InventoryUtilities::GetReputationColor(Actor()->Reputation()));
 			}else
 			{
-				s32 _totl = Actor()->StatisticMgr().GetSectionPoints(itm->m_id);
+				s32 _totl = uiXml.ReadAttribInt( "master_part", i, "show_counts", 0 ) ? Actor()->StatisticMgr().GetSectionCounts( itm->m_id ) : Actor()->StatisticMgr().GetSectionPoints( itm->m_id );
 				
 				if(_totl==-1)
 				{
@@ -202,10 +202,21 @@ void CUIActorInfoWnd::FillPointsDetail(const shared_str& id)
 	UIInfoHeader->GetTitleStatic()->SetTextST	(str);
 
 	SStatSectionData&	section				= Actor()->	StatisticMgr().GetSection(id);
+        if ( uiXml.ReadAttribInt( path, 0, "sort_by_counts", 0 ) ) {
+          std::sort(
+            section.data.begin(), section.data.end(), []( const auto& a, const auto& b ) {
+              if ( a.int_count == b.int_count )
+                return xr_strcmp( a.key, b.key ) < 0;
+              else
+                return a.int_count > b.int_count;
+            }
+          );
+        }
+
 	vStatDetailData::const_iterator it		= section.data.begin();
 	vStatDetailData::const_iterator it_e	= section.data.end();
 
-	int _cntr = 0;
+	int _cntr = 1;
 	string64 buff;
 	for(;it!=it_e;++it,++_cntr)
 	{
