@@ -32,7 +32,8 @@
 
 extern int keyname_to_dik(LPCSTR);
 
-#define ARIAL_FONT_NAME			"arial"
+#define ARIAL14_FONT_NAME		"arial14"
+#define ARIAL21_FONT_NAME		"arial21"
 
 #define MEDIUM_FONT_NAME		"medium"
 #define SMALL_FONT_NAME			"small"
@@ -40,6 +41,7 @@ extern int keyname_to_dik(LPCSTR);
 #define GRAFFITI19_FONT_NAME	"graffiti19"
 #define GRAFFITI22_FONT_NAME	"graffiti22"
 #define GRAFFITI32_FONT_NAME	"graffiti32"
+#define GRAFFITI40_FONT_NAME	"graffiti40"
 #define GRAFFITI50_FONT_NAME	"graffiti50"
 
 #define LETTERICA16_FONT_NAME	"letterica16"
@@ -178,8 +180,7 @@ bool CUIXmlInit::InitStatic(CUIXml& xml_doc, LPCSTR path,
 	InitTexture			(xml_doc, path, index, pWnd);
 	InitTextureOffset	(xml_doc,path,index,pWnd);
 
-	int flag = xml_doc.ReadAttribInt(path, index, "heading", 0);
-	pWnd->EnableHeading( (flag)?true:false);
+	pWnd->EnableHeading(!!xml_doc.ReadAttribInt(path, index, "heading", 0));
 
 	LPCSTR str_flag				= xml_doc.ReadAttrib(path, index, "light_anim",		"");
 	int flag_cyclic				= xml_doc.ReadAttribInt(path, index, "la_cyclic",	1);
@@ -308,11 +309,8 @@ bool CUIXmlInit::Init3tButton(CUIXml& xml_doc, const char* path, int index, CUI3
 	InitTextureOffset	(xml_doc, path, index, pWnd);
 	InitSound			(xml_doc, path, index, pWnd);
 
-  int flag = xml_doc.ReadAttribInt(path, index, "heading", 0);
-  pWnd->EnableHeading((flag) ? true : false);
-
-  bool stretch_flag = xml_doc.ReadAttribInt(path, index, "stretch") ? true : false;
-  pWnd->SetStretchTexture(stretch_flag);
+  pWnd->EnableHeading(!!xml_doc.ReadAttribInt(path, index, "heading", 0));
+  pWnd->SetStretchTexture(!!xml_doc.ReadAttribInt(path, index, "stretch"));
 
 	LPCSTR accel		= xml_doc.ReadAttrib(path, index, "accel", NULL);
 	if(accel)
@@ -671,14 +669,22 @@ bool CUIXmlInit::InitFont(CUIXml &xml_doc, LPCSTR path, int index, u32 &color, C
 		{
 			pFnt = UI()->Font()->pFontGraffiti32Russian;
 		}
-		else if(!xr_strcmp(*font_name, GRAFFITI50_FONT_NAME))
+    else if (!xr_strcmp(*font_name, GRAFFITI40_FONT_NAME))
+    {
+      pFnt = UI()->Font()->pFontGraffiti40Russian;
+    }
+    else if(!xr_strcmp(*font_name, GRAFFITI50_FONT_NAME))
 		{
 			pFnt = UI()->Font()->pFontGraffiti50Russian;
 		}
-		else if(!xr_strcmp(*font_name, "arial_14"))
+		else if(!xr_strcmp(*font_name, ARIAL14_FONT_NAME))
 		{
 			pFnt = UI()->Font()->pFontArial14;
 		}
+    else if (!xr_strcmp(*font_name, ARIAL21_FONT_NAME))
+    {
+      pFnt = UI()->Font()->pFontArial21;
+    }
 		else if(!xr_strcmp(*font_name, MEDIUM_FONT_NAME))
 		{
 			pFnt = UI()->Font()->pFontMedium;
@@ -999,8 +1005,7 @@ bool CUIXmlInit::InitTexture(CUIXml& xml_doc, const char* path, int index, IUISi
 	rect.x2			= rect.x1 + xml_doc.ReadAttribFlt(buf, index, "width", 0);	
 	rect.y2			= rect.y1 + xml_doc.ReadAttribFlt(buf, index, "height", 0);
 
-	bool stretch_flag = xml_doc.ReadAttribInt(path, index, "stretch") ? true : false;
-	pWnd->SetStretchTexture(stretch_flag);
+	pWnd->SetStretchTexture(!!xml_doc.ReadAttribInt(path, index, "stretch"));
 
 	u32 color = GetColor(xml_doc, buf, index, 0xff);
 	pWnd->SetTextureColor(color);
