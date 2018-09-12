@@ -32,8 +32,8 @@
 
 extern int keyname_to_dik(LPCSTR);
 
-#define ARIAL14_FONT_NAME		"arial14"
-#define ARIAL21_FONT_NAME		"arial21"
+#define ARIAL14_FONT_NAME		"arial_14"
+#define ARIAL21_FONT_NAME		"arial_21"
 
 #define MEDIUM_FONT_NAME		"medium"
 #define SMALL_FONT_NAME			"small"
