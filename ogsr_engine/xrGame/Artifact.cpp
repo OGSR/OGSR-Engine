@@ -102,6 +102,8 @@ void CArtefact::Load(LPCSTR section)
 		m_fBleedingRestoreSpeed = pSettings->r_float	(section,"bleeding_restore_speed"	);
 		if(pSettings->section_exist(/**cNameSect(), */pSettings->r_string(section,"hit_absorbation_sect")))
 			m_ArtefactHitImmunities.LoadImmunities(pSettings->r_string(section,"hit_absorbation_sect"),pSettings);
+		m_additional_weight  = READ_IF_EXISTS( pSettings, r_float, section, "additional_inventory_weight",  0.f );
+		m_additional_weight2 = READ_IF_EXISTS( pSettings, r_float, section, "additional_inventory_weight2", 0.f );
 	}
 	m_bCanSpawnZone = !!pSettings->line_exist("artefact_spawn_zones", section);
 

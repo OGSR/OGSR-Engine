@@ -24,6 +24,7 @@
 #include "trade_parameters.h"
 #include "purchase_list.h"
 #include "clsid_game.h"
+#include "Artifact.h"
 
 #include "alife_object_registry.h"
 
@@ -314,6 +315,7 @@ float  CInventoryOwner::MaxCarryWeight () const
 	if(outfit)
 		ret += outfit->m_additional_weight2;
 
+	ret += ArtefactsAddWeight( false );
 	return ret;
 }
 
@@ -557,4 +559,19 @@ float CInventoryOwner::missile_throw_force		()
 bool CInventoryOwner::use_throw_randomness		()
 {
 	return						(true);
+}
+
+
+float CInventoryOwner::ArtefactsAddWeight( bool first ) const {
+  float add_weight = 0.f;
+  for ( const auto &it : inventory().m_belt ) {
+    CArtefact* artefact = smart_cast<CArtefact*>( it );
+#ifdef AF_ZERO_CONDITION
+    if ( artefact && artefact->GetCondition() > 0 )
+#else
+    if ( artefact )
+#endif // AF_ZERO_CONDITION
+      add_weight += first ? artefact->m_additional_weight : artefact->m_additional_weight2;
+  }
+  return add_weight;
 }

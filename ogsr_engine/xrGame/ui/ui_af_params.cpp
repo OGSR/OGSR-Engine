@@ -27,6 +27,8 @@ LPCSTR af_item_sect_names[] = {
 #ifdef AF_PSY_HEALTH
 	"psy_health_restore_speed",
 #endif
+	"additional_inventory_weight",
+	"additional_inventory_weight2",
 	
 	"burn_immunity",
 	"strike_immunity",
@@ -48,6 +50,8 @@ LPCSTR af_item_param_names[] = {
 #ifdef AF_PSY_HEALTH
 	"ui_inv_psy_health",
 #endif
+	"ui_inv_additional_weight",
+	"ui_inv_additional_weight2",
 
 	"ui_inv_outfit_burn_protection",			// "(burn_imm)",
 	"ui_inv_outfit_strike_protection",			// "(strike_imm)",
@@ -111,7 +115,17 @@ void CUIArtefactParams::SetInfo(const shared_str& af_section)
 		if (!_s) continue;
 
 		float					_val;
-		if(i<_max_item_index1)
+		if ( i == _item_additional_inventory_weight ) {
+		  _val = READ_IF_EXISTS( pSettings, r_float, af_section, af_item_sect_names[ i ], 0.f );
+		  if( fis_zero( _val ) ) continue;
+		  float _val2 = READ_IF_EXISTS( pSettings, r_float, af_section, af_item_sect_names[ _item_additional_inventory_weight2 ], 0.f );
+		  if ( fsimilar( _val, _val2 ) ) continue;
+		}
+		else if ( i == _item_additional_inventory_weight2 ) {
+		  _val = READ_IF_EXISTS( pSettings, r_float, af_section, af_item_sect_names[ i ], 0.f );
+		  if( fis_zero( _val ) ) continue;
+		}
+		else if ( i <_max_item_index1 )
 		{
 			float _actor_val	= pSettings->r_float	("actor_condition", af_actor_param_names[i]);
 			_val				= pSettings->r_float	(af_section, af_item_sect_names[i]);
@@ -136,6 +150,8 @@ void CUIArtefactParams::SetInfo(const shared_str& af_section)
 			_val				/= 100.0f;
 			_sn					= "";
 		}
+		else if ( i == _item_additional_inventory_weight || i == _item_additional_inventory_weight2 )
+		  _sn = "";
 
 		LPCSTR _color = (_val>0)?"%c[green]":"%c[red]";
 		

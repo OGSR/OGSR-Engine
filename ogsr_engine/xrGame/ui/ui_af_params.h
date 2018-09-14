@@ -24,6 +24,8 @@ protected:
 #ifdef AF_PSY_HEALTH
 		_item_psy_health_restore_speed,
 #endif
+		_item_additional_inventory_weight,
+		_item_additional_inventory_weight2,
 
 		_max_item_index1,
 

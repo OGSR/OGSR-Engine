@@ -105,7 +105,7 @@ void CActorCondition::UpdateCondition()
 	if (!object().Local() && m_object != Level().CurrentViewEntity())		return;	
 
 	float weight      = object().GetCarryWeight();
-	float max_weight  = object().inventory().GetMaxWeight();
+	float max_weight  = object().inventory().GetMaxWeight() + object().ArtefactsAddWeight( false );
 	float weight_coef = weight / max_weight;
 
 	if ((object().mstate_real&mcAnyMove)) {
@@ -253,7 +253,7 @@ bool CActorCondition::IsCantWalkWeight()
 {
 	if(!GodMode())
 	{
-		float max_w				= m_MaxWalkWeight;
+		float max_w				= m_MaxWalkWeight + object().ArtefactsAddWeight();
 
 		CCustomOutfit* outfit	= m_object->GetOutfit();
 		if(outfit)

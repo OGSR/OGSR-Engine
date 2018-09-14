@@ -131,6 +131,7 @@ public:
 
 	//возвращает текуший разброс стрельбы (в радианах) с учетом движения
 	virtual float GetWeaponAccuracy			() const;
+	virtual float ArtefactsAddWeight ( bool = true ) const;
 	//максимальный переносимы вес
 	virtual float GetCarryWeight			() const;
 	virtual float MaxCarryWeight			() const;
