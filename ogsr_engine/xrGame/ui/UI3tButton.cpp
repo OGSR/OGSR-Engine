@@ -153,6 +153,7 @@ void CUI3tButton::InitTexture(LPCSTR tex_enabled,
 	m_background.InitDisabledState		(tex_disabled);
 	m_background.InitTouchedState		(tex_touched);
 	m_background.InitHighlightedState	(tex_highlighted);
+
 	this->m_bTextureEnable = true;
 }
 
@@ -235,4 +236,14 @@ void CUI3tButton::Update()
 
 	CUIStatic::SetTextColor		(textColor);
 	m_hint.SetTextColor			(hintColor);
+}
+
+void	CUI3tButton::SetStretchTexture(bool stretch_texture) {
+  CUIButton::SetStretchTexture(stretch_texture);
+  m_background.SetStretchTexture(stretch_texture);
+}
+
+void	CUI3tButton::EnableHeading(bool b) {
+  CUIButton::EnableHeading(b);
+  m_background.EnableHeading(b);
 }
