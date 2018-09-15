@@ -214,8 +214,12 @@ void CActor::g_cl_CheckControls(u32 mstate_wf, Fvector &vControlAccel, float &Ju
 
 
 			//уменьшить силу игрока из-за выполненого прыжка
-			if (!GodMode())
+			if ( !GodMode() ) {
+			  if ( Core.Features.test( xrCore::Feature::condition_jump_weight_mod ) )
+			    conditions().ConditionJump( inventory().TotalWeight() / ( inventory().GetMaxWeight() + ArtefactsAddWeight( false ) ) );
+			  else
 				conditions().ConditionJump(inventory().TotalWeight() / MaxCarryWeight());
+			}
 		}
 
 		/*
