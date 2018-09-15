@@ -213,7 +213,7 @@ public:
 	virtual void		UpdateArtefactsOnBelt();
 
 	virtual ActorRestoreParams		ActiveArtefactsOnBelt();
-	virtual float					HitArtefactsOnBelt(float hit_power, ALife::EHitType hit_type);
+	virtual float					HitArtefactsOnBelt( float hit_power, ALife::EHitType hit_type, bool = false );
 
 	virtual void		UpdateArtefactPanel();
 protected:

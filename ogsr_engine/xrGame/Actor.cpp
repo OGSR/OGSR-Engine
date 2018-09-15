@@ -1432,10 +1432,22 @@ void ApplyArtefactEffects(ActorRestoreParams& r, CArtefact*	artefact)
 #endif // AF_PSY_HEALTH
 
 #ifdef OBJECTS_RADIOACTIVE
+
   if (artefact->RadiationRestoreSpeed() < 0)
     r.RadiationRestoreSpeed += artefact->RadiationRestoreSpeed() * k;
+
 #else
-  r.RadiationRestoreSpeed += artefact->RadiationRestoreSpeed() * k;
+
+  if ( artefact->RadiationRestoreSpeed() > 0 && Core.Features.test( xrCore::Feature::af_radiation_immunity_mod ) ) {
+    float new_rs = HitArtefactsOnBelt( artefact->RadiationRestoreSpeed(), ALife::eHitTypeRadiation, true );
+    if ( new_rs > artefact->RadiationRestoreSpeed() )
+      r.RadiationRestoreSpeed += new_rs * k;
+    else
+      r.RadiationRestoreSpeed += artefact->RadiationRestoreSpeed() * k;
+  }
+  else
+    r.RadiationRestoreSpeed += artefact->RadiationRestoreSpeed() * k;
+
 #endif // OBJECTS_RADIOACTIVE
 }
 
@@ -1474,8 +1486,16 @@ ActorRestoreParams CActor::ActiveArtefactsOnBelt()
 #endif
 
 		// только увеличение радиации
-		if (obj->RadiationRestoreSpeed() > 0) {
-			r.RadiationRestoreSpeed += obj->RadiationRestoreSpeed() * k;
+		if ( obj->RadiationRestoreSpeed() > 0 ) {
+		  if ( Core.Features.test( xrCore::Feature::af_radiation_immunity_mod ) ) {
+		    float new_rs = HitArtefactsOnBelt( obj->RadiationRestoreSpeed(), ALife::eHitTypeRadiation, true );
+		    if ( new_rs > obj->RadiationRestoreSpeed() )
+		      r.RadiationRestoreSpeed += new_rs * k;
+		    else
+		      r.RadiationRestoreSpeed += obj->RadiationRestoreSpeed() * k;
+		  }
+		  else
+		    r.RadiationRestoreSpeed += obj->RadiationRestoreSpeed() * k;
 		}
 	}
 #endif // OBJECTS_RADIOACTIVE
@@ -1575,8 +1595,7 @@ void CActor::UpdateArtefactsOnBelt()
 	callback( GameObject::eUpdateArtefactsOnBelt )( f_update_time );
 }
 
-float	CActor::HitArtefactsOnBelt		(float hit_power, ALife::EHitType hit_type)
-{
+float	CActor::HitArtefactsOnBelt( float hit_power, ALife::EHitType hit_type, bool belt_only ) {
 	float res_hit_power_k		= 1.0f;
 	float _af_count				= 0.0f;
 	for(TIItemContainer::iterator it = inventory().m_belt.begin(); 
@@ -1597,8 +1616,7 @@ float	CActor::HitArtefactsOnBelt		(float hit_power, ALife::EHitType hit_type)
 	}
 	// учет иммунитета от шлема
 	PIItem helm = inventory().m_slots[HELMET_SLOT].m_pIItem;
-	if (helm)
-	{
+	if ( helm && !belt_only ) {
 		CArtefact*	helmet = smart_cast<CArtefact*>(helm);
 		if (helmet)
 		{

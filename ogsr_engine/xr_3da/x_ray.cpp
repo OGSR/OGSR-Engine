@@ -22,6 +22,10 @@
 #define READ_IF_EXISTS(ltx,method,section,name,default_value)\
 	((ltx->line_exist(section,name)) ? (ltx->method(section,name)) : (default_value))
 
+#define CORE_FEATURE_SET( feature, section, name )\
+  Core.Features.set( xrCore::Feature::feature, READ_IF_EXISTS( pSettings, r_bool, section, name, false ) )
+
+
 //---------------------------------------------------------------------
 ENGINE_API CInifile* pGameIni = nullptr;
 volatile bool g_bIntroFinished = false;
@@ -88,18 +92,10 @@ void InitConsole	()
 		strcpy_s					(Console->ConfigFile,c_name);
 	}
 
-	Core.Features.set(
-	  xrCore::Feature::equipped_untradable,
-	  READ_IF_EXISTS(
-	    pSettings, r_bool, "dragdrop", "equipped_untradable", false
-	  )
-        );
-	Core.Features.set(
-	  xrCore::Feature::highlight_equipped,
-	  READ_IF_EXISTS(
-	    pSettings, r_bool, "dragdrop", "highlight_equipped",  false
-	  )
-	);
+	CORE_FEATURE_SET( equipped_untradable, "dragdrop", "equipped_untradable" );
+	CORE_FEATURE_SET( highlight_equipped,  "dragdrop", "highlight_equipped"  );
+	CORE_FEATURE_SET( af_radiation_immunity_mod,  "features", "af_radiation_immunity_mod" );
+	CORE_FEATURE_SET( condition_jump_weight_mod,  "features", "condition_jump_weight_mod" );
 }
 
 void InitInput		()

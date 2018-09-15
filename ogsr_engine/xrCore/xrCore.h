@@ -177,6 +177,8 @@ public:
 	enum		Feature {
 	  equipped_untradable = ( 1 << 0 ),
 	  highlight_equipped  = ( 1 << 1 ),
+	  af_radiation_immunity_mod  = ( 1 << 2 ),
+	  condition_jump_weight_mod  = ( 1 << 3 ),
 	};
 
 	void		_initialize	(LPCSTR ApplicationName, LogCallback cb=0, BOOL init_fs=TRUE, LPCSTR fs_fname=0);
