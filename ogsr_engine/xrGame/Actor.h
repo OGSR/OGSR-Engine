@@ -217,6 +217,7 @@ public:
 
 	virtual void		UpdateArtefactPanel();
 protected:
+	void ApplyArtefactEffects(ActorRestoreParams&, CArtefact*);
 	//звук тяжелого дыхания
 	ref_sound			m_HeavyBreathSnd;
 	ref_sound			m_BloodSnd;
