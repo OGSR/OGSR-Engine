@@ -1407,7 +1407,7 @@ void CActor::UpdateArtefactPanel()
 		HUD().GetUI()->UIMainIngameWnd->m_artefactPanel->InitIcons(inventory().m_belt);
 }
 
-void ApplyArtefactEffects(ActorRestoreParams& r, CArtefact*	artefact)
+void CActor::ApplyArtefactEffects(ActorRestoreParams& r, CArtefact*	artefact)
 {
 #ifdef AF_ZERO_CONDITION
   float k = artefact->GetCondition() > 0 ? 1.f : 0.f;
