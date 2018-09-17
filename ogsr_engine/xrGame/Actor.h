@@ -216,7 +216,6 @@ public:
 	virtual float					HitArtefactsOnBelt( float, ALife::EHitType, bool = false );
 
 	virtual void		UpdateArtefactPanel();
-	void ApplyArtefactEffects( ActorRestoreParams&, CArtefact* );
 protected:
 	void ApplyArtefactEffects(ActorRestoreParams&, CArtefact*);
 	//звук тяжелого дыхания
