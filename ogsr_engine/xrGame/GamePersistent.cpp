@@ -171,7 +171,7 @@ void CGamePersistent::UpdateGameType			()
 	m_game_params.m_e_game_type = GAME_SINGLE;
 
 #pragma todo( "KRodin: надо подумать, надо ли тут вылетать вообще. Ќе может ли возникнуть каких-нибудь проблем, если парсер налажал. ќн же вли€ет не только на m_game_type. Ќа данный момент парсер может налажать, если встретит скобочки () в имени сейва." )
-	ASSERT_FMT(!xr_strcmp(m_game_params.m_game_type, "single"), "failed to parse the name of the save, rename it and try to load again.");
+	ASSERT_FMT_DBG(!xr_strcmp(m_game_params.m_game_type, "single"), "!!failed to parse the name of the save, rename it and try to load again.");
 }
 
 void CGamePersistent::OnGameEnd	()

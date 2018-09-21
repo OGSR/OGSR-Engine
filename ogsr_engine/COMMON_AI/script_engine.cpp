@@ -11,7 +11,7 @@
 #include "ai_space.h"
 #include "object_factory.h"
 
-extern void export_classes(lua_State *L);
+void export_classes(lua_State *L);
 
 CScriptEngine::CScriptEngine()
 {
@@ -192,18 +192,18 @@ bool CScriptEngine::process_file_if_exists( const char* file_name, bool warn_if_
 
   script_list_type::iterator it = xray_scripts.find( *file_name ? ( strcmp( file_name, GlobalNamespace ) == 0 ? "_g" : file_name ) : "_g" );
   if ( it != xray_scripts.end() ) {
-    Msg( "* loading script %s.script", file_name );
+    MsgDbg( "* loading script %s.script", file_name );
     m_reload_modules = false;
     return do_file( it->second.c_str(), *file_name ? file_name : GlobalNamespace );
   }
 
   if ( warn_if_not_exist )
-    Msg( "[CScriptEngine::process_file_if_exists] Variable %s not found; No script by this name exists, either.", file_name );
+    MsgDbg( "[CScriptEngine::process_file_if_exists] Variable %s not found; No script by this name exists, either.", file_name );
   else {
-    Msg( "-------------------------" );
-    Msg( "[CScriptEngine::process_file_if_exists] Variable %s not found; No script by this name exists, either.", file_name );
-    print_stack();
-    Msg( "-------------------------" );
+    LogDbg( "-------------------------" );
+    MsgDbg( "[CScriptEngine::process_file_if_exists] Variable %s not found; No script by this name exists, either.", file_name );
+    FuncDbg(print_stack());
+    LogDbg( "-------------------------" );
     add_no_file( file_name, string_length );
   }
 
@@ -288,19 +288,19 @@ bool CScriptEngine::process_file_if_exists(const char* file_name, bool warn_if_n
 		if (!LookupScript(S, file_name))
 		{
 			if (warn_if_not_exist)
-				Msg("[CScriptEngine::process_file_if_exists] Variable %s not found; No script by this name exists, either.", file_name);
+				MsgDbg("[CScriptEngine::process_file_if_exists] Variable %s not found; No script by this name exists, either.", file_name);
 			else
 			{
-				Log("-------------------------");
-				Msg("[CScriptEngine::process_file_if_exists] WARNING: Access to nonexistent variable or loading nonexistent script '%s'", file_name);
-				print_stack();
-				Log("-------------------------");
+				LogDbg("-------------------------");
+				MsgDbg("[CScriptEngine::process_file_if_exists] WARNING: Access to nonexistent variable or loading nonexistent script '%s'", file_name);
+				FuncDbg(print_stack());
+				LogDbg("-------------------------");
 				add_no_file(file_name, string_length);
 			}
 			return false;
 		}
 #ifdef DEBUG
-		Msg("[CScriptEngine::process_file_if_exists] loading script: [%s]", file_name);
+		MsgDbg("[CScriptEngine::process_file_if_exists] loading script: [%s]", file_name);
 #endif
 		m_reload_modules = false;
 		return do_file(S, file_name);

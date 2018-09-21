@@ -137,9 +137,23 @@ DEFINE_VECTOR	(xr_rtoken,RTokenVec,RTokenVecIt);
 #include "log.h"
 #include "xr_trims.h"
 #include "xr_ini.h"
-                             
+
+
+#ifdef OGSR_TOTAL_DBG
+#	define LogDbg Log
+#	define MsgDbg Msg
+#	define FuncDbg(...) __VA_ARGS__
+#	define ASSERT_FMT_DBG ASSERT_FMT
+#else
+#	define LogDbg __noop
+#	define MsgDbg __noop
+#	define FuncDbg __noop
+#	define ASSERT_FMT_DBG(cond, ...) do { if (!(cond)) Msg(__VA_ARGS__); } while(0) //Вылета не будет, просто в лог напишем
+#endif
+
+
 #include "LocatorAPI.h"
-                  
+
 #include "FileSystem.h"
 #include "FTimer.h"
 #include "fastdelegate.h"

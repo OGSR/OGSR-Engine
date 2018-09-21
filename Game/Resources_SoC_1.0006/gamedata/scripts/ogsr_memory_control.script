@@ -26,13 +26,13 @@ function init()
 		function()
 			local memuse = collectgarbage("count")
 			log3("##[%s] MEMORY USAGE: [%d KB]", script_name():upper(), memuse)
-			if memuse > MEMORY_WARNING_AFTER then
+			--[=[if memuse > MEMORY_WARNING_AFTER then
 				collectgarbage("collect")
 				memuse = collectgarbage("count")
 				if memuse > MEMORY_WARNING_AFTER then
 					log3("!![%s] MEMORY LEAK FOUND! MEMORY USAGE: [%d KB]", script_name():upper(), memuse)
 				end
-			end
+			end]=]
 		end,
 		MEMORY_CHECK_INTERVAL
 	)

@@ -22,8 +22,6 @@ XRCORE_API DUMMY_STUFF* g_temporary_stuff = nullptr;
 
 std::unique_ptr<CLocatorAPI> xr_FS;
 
-#define FSLTX "fs.ltx"
-
 struct _open_file
 {
 	union {

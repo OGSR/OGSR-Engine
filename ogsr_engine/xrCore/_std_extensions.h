@@ -133,7 +133,7 @@ IC u32							xr_strlen				( const char* S );
 // dest = S1+S2
 IC char* strconcat( size_t dest_sz, char* dest, const char* S1, const char* S2 ) {
   size_t L1 = strlen( S1 ), L2 = strlen( S2 );
-  ASSERT_FMT( L1 + L2 + 1 <= dest_sz, "buffer overflow" );
+  ASSERT_FMT( L1 + L2 + 1 <= dest_sz, "strconcat buffer overflow. Size: [%u], str: [%s], [%s]", dest_sz, S1, S2 );
 
   memcpy( dest, S1, L1 );
   memcpy( dest + L1, S2, L2 + 1 );
@@ -144,7 +144,7 @@ IC char* strconcat( size_t dest_sz, char* dest, const char* S1, const char* S2 )
 // dest = S1+S2+S3
 IC char* strconcat( size_t dest_sz, char* dest, const char* S1, const char* S2, const char* S3 ) {
   size_t L1 = strlen( S1 ), L2 = strlen( S2 ), L3 = strlen( S3 );
-  ASSERT_FMT( L1 + L2 + L3 + 1 <= dest_sz, "buffer overflow" );
+  ASSERT_FMT( L1 + L2 + L3 + 1 <= dest_sz, "strconcat buffer overflow. Size: [%u], str: [%s], [%s], [%s]", dest_sz, S1, S2, S3 );
 
   memcpy( dest, S1, L1 );
   memcpy( dest + L1, S2, L2 );
@@ -156,7 +156,7 @@ IC char* strconcat( size_t dest_sz, char* dest, const char* S1, const char* S2, 
 // dest = S1+S2+S3+S4
 IC char* strconcat( size_t dest_sz, char* dest, const char* S1, const char* S2, const char* S3, const char* S4 ) {
   size_t L1 = strlen( S1 ), L2 = strlen( S2 ), L3 = strlen( S3 ), L4 = strlen( S4 );
-  ASSERT_FMT( L1 + L2 + L3 + L4 + 1 <= dest_sz, "buffer overflow" );
+  ASSERT_FMT( L1 + L2 + L3 + L4 + 1 <= dest_sz, "strconcat buffer overflow. Size: [%u], str: [%s], [%s], [%s], [%s]", dest_sz, S1, S2, S3, S4 );
 
   memcpy( dest, S1, L1 );
   memcpy( dest + L1, S2, L2 );
@@ -169,7 +169,7 @@ IC char* strconcat( size_t dest_sz, char* dest, const char* S1, const char* S2, 
 // dest = S1+S2+S3+S4+S5
 IC char* strconcat( size_t dest_sz, char* dest, const char* S1, const char* S2, const char* S3, const char* S4, const char* S5 ) {
   size_t L1 = strlen( S1 ), L2 = strlen( S2 ), L3 = strlen( S3 ), L4 = strlen( S4 ), L5 = strlen( S5 );
-  ASSERT_FMT( L1 + L2 + L3 + L4 + L5 + 1 <= dest_sz, "buffer overflow" );
+  ASSERT_FMT( L1 + L2 + L3 + L4 + L5 + 1 <= dest_sz, "strconcat buffer overflow. Size: [%u], str: [%s], [%s], [%s], [%s], [%s]", dest_sz, S1, S2, S3, S4, S5 );
 
   memcpy( dest, S1, L1 );
   memcpy( dest + L1, S2, L2 );
@@ -183,7 +183,7 @@ IC char* strconcat( size_t dest_sz, char* dest, const char* S1, const char* S2, 
 // dest = S1+S2+S3+S4+S5+S6
 IC char* strconcat( size_t dest_sz, char* dest, const char* S1, const char* S2, const char* S3, const char* S4, const char* S5, const char* S6 ) {
   size_t L1 = strlen( S1 ), L2 = strlen( S2 ), L3 = strlen( S3 ), L4 = strlen( S4 ), L5 = strlen( S5 ), L6 = strlen( S6 );
-  ASSERT_FMT( L1 + L2 + L3 + L4 + L5 + L6 + 1 <= dest_sz, "buffer overflow" );
+  ASSERT_FMT( L1 + L2 + L3 + L4 + L5 + L6 + 1 <= dest_sz, "strconcat buffer overflow. Size: [%u], str: [%s], [%s], [%s], [%s], [%s], [%s]", dest_sz, S1, S2, S3, S4, S5, S6 );
 
   memcpy( dest, S1, L1 );
   memcpy( dest + L1, S2, L2 );

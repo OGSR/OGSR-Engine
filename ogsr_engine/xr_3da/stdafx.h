@@ -26,7 +26,6 @@
 // Our headers
 #include "engine.h"
 #include "defines.h"
-#include "../xrCore/log.h"
 #include "device.h"
 #include "fs.h"
 
