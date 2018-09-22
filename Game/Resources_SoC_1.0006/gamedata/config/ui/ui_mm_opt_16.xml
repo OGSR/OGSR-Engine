@@ -668,6 +668,19 @@
 			<options_item entry="r2_sun_limit" group="mm_opt_video_adv"/>
 		</track_r2_sun_limit>
 
+		<cap_r__smap_size x="20" y="5" width="143" height="21">
+			<text font="letterica16" r="215" g="195" b="170">ui_mm_r__smap_size</text>
+		</cap_r__smap_size>
+		<list_r__smap_size x="239" y="0" width="200" height="21">
+			<options_item entry="r__smap_size" group="mm_opt_video_adv"/>
+			<text_color>
+				<e r="216" g="186" b="140"/>
+				<d r="227" g="199" b="178"/>
+			</text_color>
+			<list_font_s r="240" g="217" b="182"/>
+			<list_font	 r="216" g="186" b="140" font="letterica16"/>
+		</list_r__smap_size>			
+
 	</video_adv>
 
 	<tab_sound>

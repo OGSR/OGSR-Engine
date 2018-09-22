@@ -54,62 +54,8 @@ void					CRender::create					()
 	// Check for NULL render target support
 	D3DFORMAT	nullrt	= (D3DFORMAT)MAKEFOURCC('N','U','L','L');
 	o.nullrt			= HW.support	(nullrt,			D3DRTYPE_SURFACE, D3DUSAGE_RENDERTARGET);
-	/*
-	if (o.nullrt)		{
-	Msg				("* NULLRT supported and used");
-	};
-	*/
-	if (o.nullrt)		{
-		Msg				("* NULLRT supported");
-
-		//.	    _tzset			();
-		//.		??? _strdate	( date, 128 );	???
-		//.		??? if (date < 22-march-07)		
-		if (0)
-		{
-			u32 device_id	= HW.Caps.id_device;
-			bool disable_nullrt = false;
-			switch (device_id)	
-			{
-			case 0x190:
-			case 0x191:
-			case 0x192:
-			case 0x193:
-			case 0x194:
-			case 0x197:
-			case 0x19D:
-			case 0x19E:{
-				disable_nullrt = true;	//G80
-				break;
-					   }
-			case 0x400:
-			case 0x401:
-			case 0x402:
-			case 0x403:
-			case 0x404:
-			case 0x405:
-			case 0x40E:
-			case 0x40F:{
-				disable_nullrt = true;	//G84
-				break;
-					   }
-			case 0x420:
-			case 0x421:
-			case 0x422:
-			case 0x423:
-			case 0x424:
-			case 0x42D:
-			case 0x42E:
-			case 0x42F:{
-				disable_nullrt = true;	// G86
-				break;
-					   }
-			}
-			if (disable_nullrt)	o.nullrt=false;
-		};
-		if (o.nullrt)	Msg				("* ...and used");
-	};
-
+	if (o.nullrt)
+		Log("* NULLRT supported and used");
 
 	// SMAP / DST
 	o.HW_smap_FETCH4	= FALSE;
@@ -159,21 +105,17 @@ void					CRender::create					()
 	if (o.nvdbt)		Msg	("* NV-DBT supported and used");
 
 	// options (smap-pool-size)
-	if (strstr(Core.Params,"-smap1536"))	o.smapsize	= 1536;
-	if (strstr(Core.Params,"-smap2048"))	o.smapsize	= 2048;
-	if (strstr(Core.Params,"-smap2560"))	o.smapsize	= 2560;
-	if (strstr(Core.Params,"-smap3072"))	o.smapsize	= 3072;
-	if (strstr(Core.Params,"-smap4096"))	o.smapsize	= 4096;
-	// KD: additional smap resolutions
-	D3DCAPS9 caps;
-	CHK_DX(HW.pDevice->GetDeviceCaps(&caps));
-	u32 video_mem = HW.pDevice->GetAvailableTextureMem();
-	if ((caps.MaxTextureHeight >= 6144) && (video_mem > 512) && strstr(Core.Params,"-smap6144"))
-		o.smapsize	= 6144;
-	if ((caps.MaxTextureHeight >= 8192) && (video_mem > 512) && strstr(Core.Params,"-smap8192"))
-		o.smapsize	= 8192;
+	if (r2_SmapSize >= 1536 && r2_SmapSize <= 4096)
+		o.smapsize = r2_SmapSize;
+	else if (r2_SmapSize > 4096) {
+		D3DCAPS9 caps;
+		CHK_DX(HW.pDevice->GetDeviceCaps(&caps));
+		auto video_mem = HW.pDevice->GetAvailableTextureMem();
+		if (caps.MaxTextureHeight >= r2_SmapSize && video_mem > 512)
+			o.smapsize = r2_SmapSize;
+	}
 
-	Msg("Shadow Map resolution: %dx%d", o.smapsize, o.smapsize);
+	Msg("Shadow Map resolution: %ux%u", o.smapsize, o.smapsize);
 
 	// gloss
 	char*	g			= strstr(Core.Params,"-gloss ");

@@ -59,6 +59,7 @@ local hint_captions = {
 	["r2_actor_shadow"] =       "video_settings_name_56",
 	["r2_glows_use"] =          "video_settings_name_57",
 	["r2_sun_limit"] =          "video_settings_name_58",
+	["r__smap_size"] =          "video_settings_name_59",
 }
 
 local hint_strings = {
@@ -118,9 +119,11 @@ local hint_strings = {
 	["r2_volumetric_fog"] =     "video_settings_desc_55",
 	["r2_glows_use"] =          "video_settings_desc_57",
 	["r2_sun_limit"] =          "video_settings_desc_58",
+	["r__smap_size"] =          "video_settings_desc_59",
 }
 
 local adv_vid_opt_params = {
+	{"r__smap_size",          "list",  1},
 	{"vis_dist",              "track", 0},
 	{"r2_ao",                 "check", 0},
 	{"r2_ao_intensity",       "track", 0},
