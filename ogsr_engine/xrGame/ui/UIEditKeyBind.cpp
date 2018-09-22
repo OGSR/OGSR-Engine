@@ -147,6 +147,7 @@ void CUIEditKeyBind::Register(const char* entry, const char* group)
 {
 	CUIOptionsItem::Register				(entry, group);
 	m_action		= action_name_to_ptr	(entry);
+	ASSERT_FMT(m_action, "Action [%s] not found. Group: [%s]", entry, group);
 }
 
 void CUIEditKeyBind::SetCurrentValue()
