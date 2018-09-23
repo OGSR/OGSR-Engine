@@ -831,50 +831,51 @@ HRESULT	CRender::shader_compile(
 	defines[def_it].Definition = 0;
 	def_it++;
 
-#ifdef USE_SHADER_CACHE
-	char* defs = (char*)Memory.mem_alloc(1024);
+	char* defs = nullptr;
+	if ( ps_r2_pp_flags.test( R2PP_FLAG_SHADER_CACHE ) ) {
+		defs = (char*)Memory.mem_alloc(1024);
 
-	R_ASSERT(defs);
+		R_ASSERT(defs);
 
-	strconcat(1024, defs, defines[0].Name, defines[0].Definition);
+		strconcat(1024, defs, defines[0].Name, defines[0].Definition);
 
-	for (u32 i = 1;; i++) {
-		if (0 == defines[i].Name)	break;
-		strcat(defs, defines[i].Name);
-		strcat(defs, defines[i].Definition);
-	}
-
-	string_path			sh_name;
-	strconcat(sizeof(sh_name), sh_name, "shader_cache\\", name, ('v' == pTarget[0]) ? ".vs" : ".ps");
-	IReader*	R = FS.r_open("$logs$", sh_name);
-	if (R)
-	{
-		//		Msg ("Found saved shader: %s", sh_name);
-		char* saved_defs = (char*)Memory.mem_alloc(1024);
-		R_ASSERT(saved_defs);
-		R->r_stringZ(saved_defs, 1024);
-		//		Msg ("SAVED DEFS: %s", saved_defs);
-		//		Msg ("DEFS: %s", defs);
-		if (!strcmp(defs, saved_defs))
-		{
-			//			Msg ("Got it!");
-			ID3DBlob**                  ppShader = (ID3DBlob**)_ppShader;
-			D3DCreateBlob(R->elapsed(), ppShader);
-			R->r((*ppShader)->GetBufferPointer(), (int)(*ppShader)->GetBufferSize());
-			FS.r_close(R);
-			Memory.mem_free((void*)defs);
-			Memory.mem_free((void*)saved_defs);
-			return D3D_OK;
+		for (u32 i = 1;; i++) {
+			if (0 == defines[i].Name)	break;
+			strcat(defs, defines[i].Name);
+			strcat(defs, defines[i].Definition);
 		}
-		else
+
+		string_path			sh_name;
+		strconcat(sizeof(sh_name), sh_name, "shader_cache\\", name, ('v' == pTarget[0]) ? ".vs" : ".ps");
+		IReader*	R = FS.r_open("$logs$", sh_name);
+		if (R)
 		{
-			Memory.mem_free((void*)saved_defs);
+			//		Msg ("Found saved shader: %s", sh_name);
+			char* saved_defs = (char*)Memory.mem_alloc(1024);
+			R_ASSERT(saved_defs);
+			R->r_stringZ(saved_defs, 1024);
+			//		Msg ("SAVED DEFS: %s", saved_defs);
+			//		Msg ("DEFS: %s", defs);
+			if (!strcmp(defs, saved_defs))
+			{
+				//			Msg ("Got it!");
+				ID3DBlob**                  ppShader = (ID3DBlob**)_ppShader;
+				D3DCreateBlob(R->elapsed(), ppShader);
+				R->r((*ppShader)->GetBufferPointer(), (int)(*ppShader)->GetBufferSize());
+				FS.r_close(R);
+				Memory.mem_free((void*)defs);
+				Memory.mem_free((void*)saved_defs);
+				return D3D_OK;
+			}
+			else
+			{
+				Memory.mem_free((void*)saved_defs);
+			}
 		}
-	}
 
-	//	Msg ("NO SAVED SHADER!!: %s", sh_name);
+		//	Msg ("NO SAVED SHADER!!: %s", sh_name);
+	}	
 
-#endif
 	// 
 	if (0 == xr_strcmp(pFunctionName, "main")) {
 		if ('v' == pTarget[0])			pTarget = D3DXGetVertexShaderProfile(HW.pDevice);	// vertex	"vs_2_a"; //	
@@ -891,15 +892,15 @@ HRESULT	CRender::shader_compile(
 	if (SUCCEEDED(_result))
 	{
 		ID3DBlob*		code = *((ID3DBlob**)_ppShader);
-#ifdef USE_SHADER_CACHE
-		string_path			cname;
-		strconcat(sizeof(cname), cname, "shader_cache\\", name, ('v' == pTarget[0]) ? ".vs" : ".ps");
-		IWriter*			W = FS.w_open("$logs$", cname);
-		W->w_stringZ(defs);
-		W->w(code->GetBufferPointer(), (int)code->GetBufferSize());
-		FS.w_close(W);
-		Memory.mem_free((void*)defs);
-#endif
+		if ( ps_r2_pp_flags.test( R2PP_FLAG_SHADER_CACHE ) ) {
+			string_path			cname;
+			strconcat(sizeof(cname), cname, "shader_cache\\", name, ('v' == pTarget[0]) ? ".vs" : ".ps");
+			IWriter*			W = FS.w_open("$logs$", cname);
+			W->w_stringZ(defs);
+			W->w(code->GetBufferPointer(), (int)code->GetBufferSize());
+			FS.w_close(W);
+			Memory.mem_free((void*)defs);
+		}
 		if (o.disasm)
 		{
 			ID3DBlob*		disasm = 0;
