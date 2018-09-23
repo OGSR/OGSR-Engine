@@ -86,7 +86,7 @@ Flags32			psActorFlags={0};
 //Flags32			psCallbackFlags = { 31 };
 static bool updated;
 
-CActor::CActor() : CEntityAlive()
+CActor::CActor() : CEntityAlive(),current_ik_cam_shift(0)
 {
 	encyclopedia_registry	= xr_new<CEncyclopediaRegistryWrapper	>();
 	game_news_registry		= xr_new<CGameNewsRegistryWrapper		>();
@@ -194,8 +194,12 @@ CActor::CActor() : CEntityAlive()
 
 	m_fDrugPsyProtectionCoeff	= 1.f;
 	m_fDrugRadProtectionCoeff	= 1.f;
-
+	
+	m_loaded_ph_box_id = 0;
 	updated = false;
+
+	// Alex ADD: for smooth crouch fix
+	CurrentHeight = 0.f;
 }
 
 
@@ -281,11 +285,29 @@ void CActor::Load	(LPCSTR section )
 	bb.set	(vBOX_center,vBOX_center); bb.grow(vBOX_size);
 	character_physics_support()->movement()->SetBox		(2,bb);
 
+	if ( pSettings->line_exist( section, "ph_box4_center" ) && pSettings->line_exist( section, "ph_box4_size" ) ) {
+	  vBOX_center = pSettings->r_fvector3( section, "ph_box4_center" );
+	  vBOX_size   = pSettings->r_fvector3( section, "ph_box4_size"   );
+	  bb.set( vBOX_center, vBOX_center ); bb.grow( vBOX_size );
+	  character_physics_support()->movement()->SetBox( 4, bb );
+	}
+	else
+	  character_physics_support()->movement()->SetBox( 4, bb );
+
 	// m_PhysicMovementControl: BOX
 	vBOX_center= pSettings->r_fvector3	(section,"ph_box1_center"	);
 	vBOX_size	= pSettings->r_fvector3	(section,"ph_box1_size"		);
 	bb.set	(vBOX_center,vBOX_center); bb.grow(vBOX_size);
 	character_physics_support()->movement()->SetBox		(1,bb);
+
+	if ( pSettings->line_exist( section, "ph_box3_center" ) && pSettings->line_exist( section, "ph_box3_size" ) ) {
+	  vBOX_center = pSettings->r_fvector3( section, "ph_box3_center" );
+	  vBOX_size   = pSettings->r_fvector3( section, "ph_box3_size"   );
+	  bb.set( vBOX_center, vBOX_center ); bb.grow( vBOX_size );
+	  character_physics_support()->movement()->SetBox( 3, bb );
+	}
+	else
+	  character_physics_support()->movement()->SetBox( 3, bb );
 
 	// m_PhysicMovementControl: BOX
 	vBOX_center= pSettings->r_fvector3	(section,"ph_box0_center"	);
@@ -415,6 +437,8 @@ void CActor::Load	(LPCSTR section )
 	//---------------------------------------------------------------------
 	m_sHeadShotParticle	= READ_IF_EXISTS(pSettings,r_string,section,"HeadShotParticle",0);
 
+	// Alex ADD: for smooth crouch fix
+	CurrentHeight = CameraHeight();	
 }
 
 void CActor::PHHit(float P,Fvector &dir, CObject *who,s16 element,Fvector p_in_object_space, float impulse, ALife::EHitType hit_type /* = ALife::eHitTypeWound */)
