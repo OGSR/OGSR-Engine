@@ -98,7 +98,6 @@ bool CLevel::net_start1				()
 		typedef IGame_Persistent::params params;
 		params							&p = g_pGamePersistent->m_game_params;
 		// Connect
-		ASSERT_FMT(!xr_strcmp(p.m_game_type, "single"), "!!Unsupported game type: [%s]", p.m_game_type);
 		Server = xr_new<xrServer>();
 
 //		if (!strstr(*m_caServerOptions,"/alife")) 

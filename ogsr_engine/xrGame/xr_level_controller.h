@@ -91,6 +91,8 @@ enum	EGameActions
 	kQUICK_SAVE,
 	kQUICK_LOAD,
 
+	kARTEFACT,
+
 	kLASTACTION = u32(-3),
 	kNOTBINDED = u32(-2),
 	kFORCEDWORD	= u32(-1)

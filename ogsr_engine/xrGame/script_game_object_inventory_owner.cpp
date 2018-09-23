@@ -806,7 +806,7 @@ int	CScriptGameObject::animation_slot			() const
 	return			(hud_item->animation_slot());
 }
 
-CScriptGameObject *CScriptGameObject::item_in_slot	(u32 slot_id) const
+CScriptGameObject *CScriptGameObject::item_in_slot	(u8 slot_id) const
 {
 	if (slot_id == NO_ACTIVE_SLOT)
 		return NULL;
@@ -840,7 +840,7 @@ u32	CScriptGameObject::active_slot()
 	return inventory_owner->inventory().GetActiveSlot();
 }
 
-void CScriptGameObject::activate_slot	(u32 slot_id)
+void CScriptGameObject::activate_slot	(u8 slot_id)
 {
 	CInventoryOwner	*inventory_owner = smart_cast<CInventoryOwner*>(&object());
 	if (!inventory_owner) {

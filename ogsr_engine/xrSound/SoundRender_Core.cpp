@@ -598,11 +598,11 @@ bool CSoundRender_Core::EFXTestSupport() {
 
   alGenAuxiliaryEffectSlots( 1, &slot );
   err = alGetError();
-  ASSERT_FMT( err == AL_NO_ERROR, "[OpenAL] EFX error: %s", alGetString( err ) );
+  ASSERT_FMT_DBG( err == AL_NO_ERROR, "[OpenAL] EFX error: %s", alGetString( err ) );
 
   alAuxiliaryEffectSloti( slot, AL_EFFECTSLOT_EFFECT, effect );
   err = alGetError();
-  ASSERT_FMT( err == AL_NO_ERROR, "[OpenAL] EFX error: %s", alGetString( err ) );
+  ASSERT_FMT_DBG( err == AL_NO_ERROR, "[OpenAL] EFX error: %s", alGetString( err ) );
 
   return true;
 }
@@ -766,12 +766,12 @@ void CSoundRender_Core::efx_configure_env_slots() {
     alGenEffects( 1, &effect );
     alEffecti( effect, AL_EFFECT_TYPE, AL_EFFECT_REVERB );
     err = alGetError();
-    ASSERT_FMT( err == AL_NO_ERROR, "[OpenAL] EFX error: %s", alGetString( err ) );
+    ASSERT_FMT_DBG( err == AL_NO_ERROR, "[OpenAL] EFX error: %s", alGetString( err ) );
 
     ALuint slot;
     alGenAuxiliaryEffectSlots( 1, &slot );
     err = alGetError();
-    ASSERT_FMT( err == AL_NO_ERROR, "[OpenAL] EFX error: %s", alGetString( err ) );
+    ASSERT_FMT_DBG( err == AL_NO_ERROR, "[OpenAL] EFX error: %s", alGetString( err ) );
 
     auto E = s_environment->Get( i );
     // http://openal.org/pipermail/openal/2014-March/000083.html
@@ -797,7 +797,7 @@ void CSoundRender_Core::efx_configure_env_slots() {
     alGetError();
     alAuxiliaryEffectSloti( slot, AL_EFFECTSLOT_EFFECT, effect );
     err = alGetError();
-    ASSERT_FMT( err == AL_NO_ERROR, "[OpenAL] EFX error: %s", alGetString( err ) );
+    ASSERT_FMT_DBG( err == AL_NO_ERROR, "[OpenAL] EFX error: %s", alGetString( err ) );
     efx_slots.push_back( slot );
   }
 

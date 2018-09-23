@@ -51,7 +51,7 @@ void CEnvAmbient::load(const shared_str& sect)
 	section				= sect;
 	string_path			tmp;
 	// sounds
-	ASSERT_FMT( pSettings->line_exist( sect, "sounds" ), "CEnvAmbient::load: section '%s' not found", section.c_str() );
+	ASSERT_FMT_DBG( pSettings->line_exist( sect, "sounds" ), "CEnvAmbient::load: section '%s' not found", section.c_str() );
 	if (pSettings->line_exist(sect,"sounds")){
 		Fvector2 t		= pSettings->r_fvector2	(sect,"sound_period");
 		sound_period.set(iFloor(t.x*1000.f),iFloor(t.y*1000.f));
@@ -164,8 +164,8 @@ void CEnvDescriptor::load(float exec_tm, LPCSTR S, CEnvironment* parent)
 	Fvector2 sund = pSettings->r_fvector2(S, "sun_dir");	sun_dir.setHP(deg2rad(sund.y), deg2rad(sund.x));
 	VERIFY2(sun_dir.y<0, "Invalid sun direction settings while loading");
 
-	sun_shafts = READ_IF_EXISTS(pSettings, r_float, S, "sun_shafts", 0.f);
-	sun_shafts_length = READ_IF_EXISTS(pSettings, r_float, S, "sun_shafts_length", 0.f);
+	sun_shafts = READ_IF_EXISTS(pSettings, r_float, S, "sun_shafts", 1.f);
+	sun_shafts_length = READ_IF_EXISTS(pSettings, r_float, S, "sun_shafts_length", 1.f);
 	float rmda = READ_IF_EXISTS(pSettings, r_float, S, "rain_max_drop_angle", 10.f);
 	rain_max_drop_angle = deg2rad(rmda);
 	rain_increase_speed = READ_IF_EXISTS(pSettings, r_float, S, "rain_increase_speed", 1.f);

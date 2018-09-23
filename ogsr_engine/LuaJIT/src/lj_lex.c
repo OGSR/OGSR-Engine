@@ -354,7 +354,32 @@ static int llex(LexState *ls, TValue *tv)
       }
     case END_OF_STREAM:
       return TK_eof;
-    default: {
+	//+RvP, дополнительно используютс€ C-style комментарии
+	case '/':
+		next(ls);
+		if (ls->current == '/') {
+			while (ls->current != '\n' && ls->current != END_OF_STREAM)
+				next(ls);
+			continue;
+		}
+		else if (ls->current == '*') {
+			next(ls);
+			while (ls->current != END_OF_STREAM) {
+				if (ls->current == '*') {
+					next(ls);
+					if (ls->current == '/') {
+						next(ls);
+						break;
+					}
+				}
+				next(ls);
+			}
+			continue;
+		}
+		else
+			return '/';
+	//-RvP
+	default: {
       int c = ls->current;
       next(ls);
       return c;  /* Single-char tokens (+ - / ...). */

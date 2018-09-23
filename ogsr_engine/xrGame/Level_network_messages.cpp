@@ -56,7 +56,7 @@ void CLevel::ClientReceive()
 			game_events->insert		(*P);
 			if (g_bDebugEvents)		ProcessGameEvents();
 			break;
-		case M_EVENT_PACK:
+		case M_EVENT_PACK: {
 			NET_Packet	tmpP;
 			while (!P->r_eof())
 			{
@@ -66,8 +66,8 @@ void CLevel::ClientReceive()
 
 				game_events->insert		(tmpP);
 				if (g_bDebugEvents)		ProcessGameEvents();
-			};			
-			break;
+			};
+			} break;
 		case M_UPDATE:
 			{
 				game->net_import_update	(*P);

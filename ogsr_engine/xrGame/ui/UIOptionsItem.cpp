@@ -84,7 +84,9 @@ char* CUIOptionsItem::GetOptTokenValue()
 
 xr_token* CUIOptionsItem::GetOptToken()
 {
-	return Console->GetXRToken(m_entry.c_str());
+	auto* token = Console->GetXRToken(m_entry.c_str());
+	ASSERT_FMT(token, "Can't find token [%s]", m_entry.c_str());
+	return token;
 }
 
 void CUIOptionsItem::SaveOptTokenValue(const char* val){

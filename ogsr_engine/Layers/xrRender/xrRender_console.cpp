@@ -96,6 +96,19 @@ xr_token							light_shadow_quality_token[] = {
 	{ 0,							0 }
 };
 
+u32 r2_SmapSize = 2048;
+xr_token SmapSizeToken[] = {
+  { "1536x1536",   1536 },
+  { "2048x2048",   2048 },
+  { "2560x2560",   2560 },
+  { "3072x3072",   3072 },
+  { "4096x4096",   4096 },
+  { "6144x6144",   6144 },
+  { "8192x8192",   8192 },
+  { "16384x16384", 16384 },
+  { nullptr, 0 }
+};
+
 // Common
 //int		ps_r__Supersample			= 1		;
 int			ps_r__LightSleepFrames		= 10	;
@@ -664,6 +677,8 @@ void		xrRender_initconsole	()
 	CMD4(CCC_Float, "r2_ao_intensity", &ps_r2_ao_intensity, 0.2, 2.0);
 	CMD3(CCC_Mask, "r2_ao", &ps_r2_ls_flags, R2FLAG_AO);
 	CMD3(CCC_Mask, "r__actor_shadow", &ps_r2_ls_flags, R2FLAG_ACTOR_SHADOW);
+
+	CMD3(CCC_Token, "r__smap_size", &r2_SmapSize, SmapSizeToken);
 
 /*	CMD1(CCC_RWS, "r2_reset_weapon_states");
 	CMD1(CCC_QS, "ogse_quick_save");*/

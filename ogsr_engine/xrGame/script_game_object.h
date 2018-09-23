@@ -546,9 +546,9 @@ public:
 
 			void				make_object_visible_somewhen		(CScriptGameObject *object);
 
-			CScriptGameObject	*item_in_slot						(u32 slot_id) const;
+			CScriptGameObject	*item_in_slot						(u8 slot_id) const;
 			u32					active_slot							();
-			void				activate_slot						(u32 slot_id);
+			void				activate_slot						(u8 slot_id);
 
 			void				SwitchTorch							(bool enable);
 

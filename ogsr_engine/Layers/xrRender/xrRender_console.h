@@ -148,6 +148,9 @@ extern u32			ps_refl_mode;
 
 extern float		ps_r2_ao_intensity;
 extern float		ssa_discard;
+
+extern u32 r2_SmapSize;
+
 enum
 {
 	R2FLAG_DOF_COMMON = (1 << 0),

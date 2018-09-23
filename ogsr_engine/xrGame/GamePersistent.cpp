@@ -171,7 +171,7 @@ void CGamePersistent::UpdateGameType			()
 	m_game_params.m_e_game_type = GAME_SINGLE;
 
 #pragma todo( "KRodin: надо подумать, надо ли тут вылетать вообще. Ќе может ли возникнуть каких-нибудь проблем, если парсер налажал. ќн же вли€ет не только на m_game_type. Ќа данный момент парсер может налажать, если встретит скобочки () в имени сейва." )
-	ASSERT_FMT(!xr_strcmp(m_game_params.m_game_type, "single"), "failed to parse the name of the save, rename it and try to load again.");
+	ASSERT_FMT_DBG(!xr_strcmp(m_game_params.m_game_type, "single"), "!!failed to parse the name of the save, rename it and try to load again.");
 }
 
 void CGamePersistent::OnGameEnd	()
@@ -241,14 +241,13 @@ void CGamePersistent::WeathersUpdate()
 
 void CGamePersistent::start_logo_intro		()
 {
-#if 1//def DEBUG
-	if (0!=strstr(Core.Params,"-nointro")){
+	if (!strstr(Core.Params,"-intro")){
 		m_intro_event			= 0;
 		Console->Show			();
 		Console->Execute		("main_menu on");
 		return;
 	}
-#endif
+
 	if (Device.dwPrecacheFrame==0)
 	{
 		m_intro_event.bind		(this,&CGamePersistent::update_logo_intro);
@@ -272,12 +271,11 @@ void CGamePersistent::update_logo_intro			()
 
 void CGamePersistent::start_game_intro		()
 {
-#if 1//def DEBUG
-	if (0!=strstr(Core.Params,"-nointro")){
+	if (!strstr(Core.Params,"-intro")){
 		m_intro_event			= 0;
 		return;
 	}
-#endif
+
 	if (g_pGameLevel && g_pGameLevel->bReady && Device.dwPrecacheFrame<=2){
 		m_intro_event.bind		(this,&CGamePersistent::update_game_intro);
 		if (0==stricmp(m_game_params.m_new_or_load,"new")){

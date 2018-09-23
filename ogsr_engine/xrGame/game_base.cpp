@@ -166,17 +166,9 @@ game_GameState::game_GameState()
 	m_fETimeFactor				= m_fTimeFactor			;
 }
 
-CLASS_ID game_GameState::getCLASS_ID(LPCSTR game_type_name, bool isServer)
+CLASS_ID game_GameState::getCLASS_ID(LPCSTR, bool isServer)
 {
-	if (isServer)
-		if (!xr_strcmp(game_type_name, "single"))
-			return TEXT2CLSID("SV_SINGL");
-
-	if (!xr_strcmp(game_type_name, "single"))
-		return TEXT2CLSID("CL_SINGL");
-
-	FATAL("Unsupportet game type!");
-	return 0; //fix warning C4715
+	return isServer ? TEXT2CLSID("SV_SINGL") : TEXT2CLSID("CL_SINGL");
 }
 
 void game_GameState::switch_Phase		(u32 new_phase)
