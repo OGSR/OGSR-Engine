@@ -21,9 +21,6 @@
 #	define REMOVE_ALTERNATIVE_KEYBOARD_BINDING
 #endif
 
-// Включает использование шейдерного кэша
-#define USE_SHADER_CACHE
-
 // Другая реализация равнозначных слотов, из xp-dev. Позволяет задавать список
 // допустимых слотов в параметре "slot". Вот так:
 //   slot = 2,3
