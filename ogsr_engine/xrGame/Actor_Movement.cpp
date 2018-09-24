@@ -149,6 +149,10 @@ void CActor::g_cl_ValidateMState(float dt, u32 mstate_wf)
 	};
 };
 
+static float moving_box_delay = 0;
+static bool  crouch_move      = false;
+static bool  crouch_stop      = false;
+
 void CActor::g_cl_CheckControls(u32 mstate_wf, Fvector &vControlAccel, float &Jump, float dt)
 {
 	mstate_old = mstate_real;
@@ -185,22 +189,20 @@ void CActor::g_cl_CheckControls(u32 mstate_wf, Fvector &vControlAccel, float &Ju
 	if (character_physics_support()->movement()->Environment()==CPHMovementControl::peOnGround || character_physics_support()->movement()->Environment()==CPHMovementControl::peAtWall )
 	{
 		// crouch
-		if ((0==(mstate_real&mcCrouch))&&(mstate_wf&mcCrouch))
-		{
-			if(mstate_real&mcClimb)
-			{
-				mstate_wf&=~mcCrouch;
-			}
-			else
-			{
-				character_physics_support()->movement()->EnableCharacter();
-				bool Crouched = false;
-				if (isActorAccelerated(mstate_wf, IsZoomAimingMode()))
-					Crouched = character_physics_support()->movement()->ActivateBoxDynamic(1);
-				else
-					Crouched = character_physics_support()->movement()->ActivateBoxDynamic(2);
-				if (Crouched) mstate_real			|=	mcCrouch;
-			}
+		if ( ( mstate_real & mcCrouch ) == 0 && ( mstate_wf & mcCrouch ) ) {
+                  if ( mstate_real & mcClimb ) {
+                    mstate_wf &= ~mcCrouch;
+                  }
+                  else {
+                    character_physics_support()->movement()->EnableCharacter();
+                    bool Crouched = false;
+                    if ( isActorAccelerated( mstate_wf, IsZoomAimingMode() ) )
+                      Crouched = character_physics_support()->movement()->ActivateBoxDynamic( ( mstate_wf & mcAnyMove ) ? 3 : 1 );
+                    else
+                      Crouched = character_physics_support()->movement()->ActivateBoxDynamic( ( mstate_wf & mcAnyMove ) ? 4 : 2 );
+                    if ( Crouched )
+                      mstate_real |= mcCrouch;
+                  }
 		}
 		// jump
 		m_fJumpTime				-=	dt;
@@ -227,23 +229,64 @@ void CActor::g_cl_CheckControls(u32 mstate_wf, Fvector &vControlAccel, float &Ju
 		Jump				= m_fJumpSpeed;
 		*/
 
-
+     
 		// mask input into "real" state
 		u32 move	= mcAnyMove|mcAccel;
-
-		if (((mstate_real&mcCrouch)))
-		{
-			if (!isActorAccelerated(mstate_real, IsZoomAimingMode()) && isActorAccelerated(mstate_wf, IsZoomAimingMode()))
-			{
-				character_physics_support()->movement()->EnableCharacter();
-				if(!character_physics_support()->movement()->ActivateBoxDynamic(1))move	&=~mcAccel;
-			}
-
-			if (isActorAccelerated(mstate_real, IsZoomAimingMode()) && !isActorAccelerated(mstate_wf, IsZoomAimingMode()))
-			{
-				character_physics_support()->movement()->EnableCharacter();
-				if(character_physics_support()->movement()->ActivateBoxDynamic(2))mstate_real	&=~mcAccel;
-			}
+		
+		if ( mstate_real & mcCrouch ) {
+                  if ( !isActorAccelerated( mstate_real, IsZoomAimingMode() ) && isActorAccelerated( mstate_wf, IsZoomAimingMode() ) ) {
+                    character_physics_support()->movement()->EnableCharacter();
+                    if ( !character_physics_support()->movement()->ActivateBoxDynamic( ( mstate_wf & mcAnyMove ) ? 3 : 1 ) )
+                      move &= ~mcAccel;
+                  }
+                  else if ( isActorAccelerated( mstate_real, IsZoomAimingMode()) && !isActorAccelerated( mstate_wf, IsZoomAimingMode() ) ) {
+                    character_physics_support()->movement()->EnableCharacter();
+                    if ( character_physics_support()->movement()->ActivateBoxDynamic( ( mstate_wf & mcAnyMove ) ? 4 : 2 ) )
+                      mstate_real &= ~mcAccel;
+                  }
+                  else if ( ( mstate_real & mcAnyMove ) && !( mstate_wf & mcAnyMove ) ) {
+                    character_physics_support()->movement()->EnableCharacter();
+                    character_physics_support()->movement()->ActivateBoxDynamic( isActorAccelerated( mstate_wf, IsZoomAimingMode() ) ? 1 : 2 );
+		    moving_box_delay = 0;
+		    crouch_move      = false;
+		    crouch_stop      = false;
+                  }
+                  else if ( moving_box_delay > 0 ) {
+		    moving_box_delay -= dt;
+		  }
+                  else if ( ( mstate_real & mcAnyMove ) && moving_box_delay <= 0 && !crouch_move ) {
+                    character_physics_support()->movement()->EnableCharacter();
+		    if ( isActorAccelerated( mstate_real, IsZoomAimingMode() ) ) {
+		      if ( !character_physics_support()->movement()->ActivateBoxDynamic( 3 ) ) {
+		        character_physics_support()->movement()->ActivateBoxDynamic( 1 );
+                        StopAnyMove();
+                        mstate_wf &= ~mcAnyMove;
+		      }
+		    }
+		    else {
+		      if ( !character_physics_support()->movement()->ActivateBoxDynamic( 4 ) ) {
+		        character_physics_support()->movement()->ActivateBoxDynamic( 2 );
+                        StopAnyMove();
+                        mstate_wf &= ~mcAnyMove;
+                      }
+		    }
+		    moving_box_delay = .1f;
+		    crouch_move      = true;
+		    crouch_stop      = false;
+                  }
+                  else if ( !( mstate_real & mcAnyMove ) && moving_box_delay <= 0 && !crouch_stop ) {
+                    DWORD id = isActorAccelerated( mstate_real, IsZoomAimingMode() ) ? 1 : 2;
+                    character_physics_support()->movement()->EnableCharacter();
+                    character_physics_support()->movement()->ActivateBoxDynamic( id );
+		    moving_box_delay = .1f;
+		    crouch_move      = false;
+		    crouch_stop      = true;
+                  }
+		}
+		else {
+		  moving_box_delay = 0;
+		  crouch_move      = false;
+		  crouch_stop      = false;
 		}
 
 		if ((mstate_wf&mcSprint) && !CanSprint())
@@ -331,6 +374,8 @@ void CActor::g_cl_CheckControls(u32 mstate_wf, Fvector &vControlAccel, float &Ju
 }
 
 #define ACTOR_ANIM_SECT "actor_animation"
+// Alex ADD: smooth crouch fix
+float cam_LookoutSpeed = 2.f;
 
 void CActor::g_Orientate	(u32 mstate_rl, float dt)
 {
@@ -390,7 +435,7 @@ void CActor::g_Orientate	(u32 mstate_rl, float dt)
 			tgt_roll	= 0.0f;
 	}
 	if (!fsimilar(tgt_roll,r_torso_tgt_roll,EPS)){
-		angle_lerp		(r_torso_tgt_roll,tgt_roll,PI_MUL_2,dt);
+		r_torso_tgt_roll = angle_inertion_var(r_torso_tgt_roll, tgt_roll, 0.f, CurrentHeight * PI_MUL_2 * cam_LookoutSpeed, PI_DIV_2, dt);
 		r_torso_tgt_roll= angle_normalize_signed(r_torso_tgt_roll);
 	}
 }

@@ -128,7 +128,7 @@ void CUIArtefactParams::SetInfo(const shared_str& af_section)
 		else if ( i <_max_item_index1 )
 		{
 			float _actor_val	= pSettings->r_float	("actor_condition", af_actor_param_names[i]);
-			_val				= pSettings->r_float	(af_section, af_item_sect_names[i]);
+			_val				= READ_IF_EXISTS( pSettings, r_float, af_section, af_item_sect_names[ i ], 0.f );
 
 			if					(fis_zero(_val))				continue;
 			

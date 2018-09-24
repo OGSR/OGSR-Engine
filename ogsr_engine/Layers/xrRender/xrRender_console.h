@@ -228,6 +228,7 @@ enum
 	R2PP_FLAG_DOF_CONTROL = (1 << 10),
 	R2PP_FLAG_LIGHT_SHADOW_FADE = (1 << 11),
 	R_FLAG_GLOW_USE = (1 << 12),
+	R2PP_FLAG_SHADER_CACHE = (1 << 13),
 };
 
 enum

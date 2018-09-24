@@ -41,6 +41,7 @@
 #include "characterphysicssupport.h"
 #include "game_cl_base_weapon_usage_statistic.h"
 #include "clsid_game.h"
+#include "alife_simulator_header.h"
 
 #ifdef DEBUG
 #	include "debug_renderer.h"
@@ -543,7 +544,7 @@ BOOL CActor::net_Spawn		(CSE_Abstract* DC)
 	ROS()->force_mode	(IRender_ObjectSpecific::TRACE_ALL);
 
 	m_pPhysics_support->in_NetSpawn	(e);
-	character_physics_support()->movement()->ActivateBox	(0);
+	character_physics_support()->movement()->ActivateBox( m_loaded_ph_box_id );
 	if(E->m_holderID!=u16(-1))
 	{ 
 		character_physics_support()->movement()->DestroyCharacter();
@@ -569,8 +570,13 @@ BOOL CActor::net_Spawn		(CSE_Abstract* DC)
 
 	// *** movement state - respawn
 	mstate_wishful			= 0;
-	mstate_real				= 0;
-	mstate_old				= 0;
+	if ( m_loaded_ph_box_id == 1 )
+	  mstate_real = mcCrouch;
+	else if ( m_loaded_ph_box_id == 2 )
+	  mstate_real = mcCrouch|mcAccel;
+	else
+	  mstate_real = 0;
+	mstate_old = mstate_real;
 	m_bJumpKeyPressed		= FALSE;
 
 	NET_SavedAccel.set		(0,0,0);
@@ -1298,6 +1304,7 @@ void CActor::save(NET_Packet &output_packet)
 	inherited::save(output_packet);
 	CInventoryOwner::save(output_packet);
 	output_packet.w_u8(u8(m_bOutBorder));
+	output_packet.w_u8( u8( character_physics_support()->movement()->BoxID() ) );
 }
 
 void CActor::load(IReader &input_packet)
@@ -1305,6 +1312,8 @@ void CActor::load(IReader &input_packet)
 	inherited::load(input_packet);
 	CInventoryOwner::load(input_packet);
 	m_bOutBorder=!!(input_packet.r_u8());
+	if ( ai().get_alife()->header().version() > 5 )
+	  m_loaded_ph_box_id = input_packet.r_u8();
 }
 
 #ifdef DEBUG

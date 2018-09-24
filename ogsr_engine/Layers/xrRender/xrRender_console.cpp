@@ -440,7 +440,7 @@ public:
 //-----------------------------------------------------------------------
 
 Flags32		ps_r2_dof_flags = { 0 };
-Flags32		ps_r2_pp_flags = { 0 };
+Flags32		ps_r2_pp_flags = { R2PP_FLAG_SHADER_CACHE };
 Flags32		ps_service_flags = { 0 };
 Flags32		ps_r2_test_flags = { 0 };
 float		ssa_discard = 3.5f;
@@ -695,4 +695,6 @@ void		xrRender_initconsole	()
 	//	CMD3(CCC_Mask,		"r2_exp_donttest_uns",	&ps_r2_ls_flags,			R2FLAG_EXP_DONT_TEST_UNSHADOWED);
 
 	//	CMD3(CCC_Mask,		"extended_graph_stats",		&ps_service_flags,			S_EXTENDED_GRAPH_STATS);
+
+	CMD3( CCC_Mask, "r2_shader_cache", &ps_r2_pp_flags, R2PP_FLAG_SHADER_CACHE );
 }
