@@ -60,6 +60,7 @@ local hint_captions = {
 	["r2_glows_use"] =          "video_settings_name_57",
 	["r2_sun_limit"] =          "video_settings_name_58",
 	["r__smap_size"] =          "video_settings_name_59",
+	["rs_mt_texload"] =         "video_settings_name_60",
 }
 
 local hint_strings = {
@@ -120,6 +121,7 @@ local hint_strings = {
 	["r2_glows_use"] =          "video_settings_desc_57",
 	["r2_sun_limit"] =          "video_settings_desc_58",
 	["r__smap_size"] =          "video_settings_desc_59",
+	["rs_mt_texload"] =         "video_settings_desc_60",
 }
 
 local adv_vid_opt_params = {
@@ -181,6 +183,7 @@ local adv_vid_opt_params = {
 	{"r2_actor_shadow",       "check", 0},
 	{"r2_glows_use",          "check", 0},
 	{"r2_sun_limit",          "track", 0},
+	{"rs_mt_texload",         "check", 0},
 }
 
 local control_init_funs = {

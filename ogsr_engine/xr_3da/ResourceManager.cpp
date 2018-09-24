@@ -304,7 +304,10 @@ void CResourceManager::DeferredUpload()
 		CTimer timer;
 		timer.Start();
 
-		const size_t nWorkers = TTAPI->threads.size();
+		size_t nWorkers = 0;
+		if ( strstr( Core.Params, "mt_texload" ) || psDeviceFlags.test( rsMTTexLoad ) )
+		{
+		nWorkers = TTAPI->threads.size();
 		const size_t textures_per_worker = m_textures.size() / nWorkers;
 
 		for (const auto& t : m_textures)
@@ -316,8 +319,13 @@ void CResourceManager::DeferredUpload()
 		TTAPI->wait();
 
 		textures_to_load.clear();
+		}
+		else {
+			for (const auto& pair : m_textures)
+				pair.second->Load();
+		}
 
-		Msg("[%s] texture loading time (%zi): [%.2f s.]", __FUNCTION__, m_textures.size(), timer.GetElapsed_sec());
+		Msg( "[%s] texture loading time (%zi) using %u threads: [%.2f s.]", __FUNCTION__, m_textures.size(), nWorkers, timer.GetElapsed_sec() );
 	}
 }
 

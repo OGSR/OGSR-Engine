@@ -556,5 +556,7 @@ if(strstr(Core.Params,"designer"))
 	Fvector		rp_min, rp_max;
 	rp_min.set(0, 0, 0);	rp_max.set(100, 100, 100);
 	CMD4(CCC_Vector3, "r2_rain_params", &ps_r2_rain_params, rp_min, rp_max);
+
+	CMD3( CCC_Mask, "rs_mt_texload", &psDeviceFlags, rsMTTexLoad );
 };
  
