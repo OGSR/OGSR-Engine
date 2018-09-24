@@ -385,30 +385,17 @@ public:
 
 ENGINE_API BOOL r2_sun_static = FALSE;
 
-/*u32				renderer_value=0;
-class CCC_r2 : public CCC_Token
-{
-	typedef CCC_Token inherited;
-public:
-	CCC_r2(LPCSTR N) : inherited(N, &renderer_value, vid_quality_token){renderer_value=0;};
-
-	virtual void	Execute	(LPCSTR args)
-	{
-		inherited::Execute	(args);
-
-		psDeviceFlags.set	(rsR2, (renderer_value>0) );
-		r2_sun_static =		(renderer_value!=2);
-	}
-
-	virtual void	Save	(IWriter *F)	{
-		if( !strstr(Core.Params, "-r2") )
-		{
-			inherited::Save(F);
-		}
-	}
-
-};*/
 //-----------------------------------------------------------------------
+class CCC_r2 : public CCC_Token //Оставлено для совместимости, и только.
+{
+	u32 renderer_value;
+public:
+	CCC_r2(LPCSTR N) : CCC_Token(N, &renderer_value, vid_quality_token) { renderer_value = 0; }
+	virtual void Execute(LPCSTR) {}
+	virtual void Save(IWriter *F) {}
+};
+//-----------------------------------------------------------------------
+
 ENGINE_API float	psHUD_FOV=0.45f;
 
 extern int			psSkeletonUpdate;
@@ -531,7 +518,7 @@ void CCC_Register()
 	CMD2(CCC_Float,		"cam_inert",			&psCamInert);
 	CMD2(CCC_Float,		"cam_slide_inert",		&psCamSlideInert);
 
-//	CMD1(CCC_r2,		"renderer"					);
+	CMD1(CCC_r2,		"renderer"					);
         psSoundRolloff = READ_IF_EXISTS( pSettings, r_float, "sound", "rolloff", psSoundRolloff );
         clamp( psSoundRolloff, EPS_S, 2.f );
 	psSoundOcclusionScale	= pSettings->r_float	("sound","occlusion_scale");clamp(psSoundOcclusionScale,	0.1f,	.5f);

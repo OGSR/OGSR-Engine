@@ -171,10 +171,11 @@ function log3(fmt, ...)
 end
 --==============================================================================================
 function abort(fmt, ...)
+	log1("!!****************************[ABORT]*********************************")
 	log1(debug.traceback())
 	log3(fmt, ...)
-	cmd("flush")
-	fail(tostring(fmt))
+	log1("!!********************************************************************")
+	error(tostring(fmt))
 end
 function ASSERT(cond, ...)
 	if not cond then

@@ -606,7 +606,7 @@
 		<cap_r2_reflections x="5" y="5" width="143" height="21">
 			<text font="letterica16" r="215" g="195" b="170">ui_mm_r2_reflections</text>
 		</cap_r2_reflections>
-		<list_r2_reflections x="249" y="0" width="200" height="21" list_length="4">
+		<list_r2_reflections x="249" y="0" width="190" height="21" list_length="3">
 			<options_item entry="r2_reflections" group="mm_opt_video_adv"/>
 			<text_color>
 				<e r="216" g="186" b="140"/>
@@ -619,7 +619,7 @@
 		<cap_r2_reflections_mode x="5" y="5" width="143" height="21">
 			<text font="letterica16" r="215" g="195" b="170">ui_mm_r2_reflections_mode</text>
 		</cap_r2_reflections_mode>
-		<list_r2_reflections_mode x="249" y="0" width="200" height="21" list_length="4">
+		<list_r2_reflections_mode x="249" y="0" width="190" height="21" list_length="3">
 			<options_item entry="r2_reflections_mode" group="mm_opt_video_adv"/>
 			<text_color>
 				<e r="216" g="186" b="140"/>

@@ -91,7 +91,7 @@ end
 
 
 function main_menu:OnButton_last_save()
-	if not alife() then
+	if not alife() or not ( db.actor_proxy.online and db.actor:alive() ) then
 		self:LoadLastSave()
 		return
 	end

@@ -115,11 +115,11 @@ function options_dialog:InitCallBacks()
 end
 
 function options_dialog:HintRefresh()
-	self.hint_name:SetText(game.translate_string("hint_string1"))
+	self.hint_name:SetText(game.translate_string("hint_name_text"))
 	if self.current_view == 1 then
-		self.hint_caption:SetText(game.translate_string("hint_string2"))
+		self.hint_caption:SetText(game.translate_string("hint_caption_text"))
 	else
-		self.hint_caption:SetText(game.translate_string("hint_string3"))
+		self.hint_caption:SetText(game.translate_string("hint_caption_adv_text"))
 	end
 end
 

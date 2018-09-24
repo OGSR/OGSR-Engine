@@ -28,14 +28,10 @@ void CWeaponBM16::Load	(LPCSTR section)
 	else
 		animGetEx(mhud_zoomed_idle2, "anim_zoomedidle_2");
 
-	animGetEx( mhud_idle_sprint_1, pSettings->line_exist( hud_sect.c_str(), "anim_idle_sprint_1" ) ? "anim_idle_sprint_1" 
-		: "anim_idle_1" );
-	animGetEx( mhud_idle_sprint_2, pSettings->line_exist( hud_sect.c_str(), "anim_idle_sprint_2" ) ? "anim_idle_sprint_2" 
-		: "anim_idle_2" );
-	animGetEx( mhud_idle_moving_1, pSettings->line_exist( hud_sect.c_str(), "anim_idle_moving_1" ) ? "anim_idle_moving_1" 
-		: "anim_idle_1" );
-	animGetEx( mhud_idle_moving_2, pSettings->line_exist( hud_sect.c_str(), "anim_idle_moving_2" ) ? "anim_idle_moving_2" 
-		: "anim_idle_2" );
+	animGetEx( mhud_idle_sprint_1, pSettings->line_exist( hud_sect.c_str(), "anim_idle_sprint_1" ) ? "anim_idle_sprint_1" : pSettings->line_exist( hud_sect.c_str(), "anim_idle_sprint" ) ? "anim_idle_sprint" : "anim_idle" );
+	animGetEx( mhud_idle_sprint_2, pSettings->line_exist( hud_sect.c_str(), "anim_idle_sprint_2" ) ? "anim_idle_sprint_2" : pSettings->line_exist( hud_sect.c_str(), "anim_idle_sprint" ) ? "anim_idle_sprint" : "anim_idle" );
+	animGetEx( mhud_idle_moving_1, pSettings->line_exist( hud_sect.c_str(), "anim_idle_moving_1" ) ? "anim_idle_moving_1" : pSettings->line_exist( hud_sect.c_str(), "anim_idle_moving" ) ? "anim_idle_moving" : "anim_idle" );
+	animGetEx( mhud_idle_moving_2, pSettings->line_exist( hud_sect.c_str(), "anim_idle_moving_2" ) ? "anim_idle_moving_2" : pSettings->line_exist( hud_sect.c_str(), "anim_idle_moving" ) ? "anim_idle_moving" : "anim_idle" );
 
 	animGetEx(mhud_show1, pSettings->line_exist(hud_sect.c_str(), "anim_draw_1") ? "anim_draw_1"
 		: "anim_draw");
