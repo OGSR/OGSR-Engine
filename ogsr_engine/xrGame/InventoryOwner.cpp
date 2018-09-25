@@ -567,7 +567,7 @@ float CInventoryOwner::ArtefactsAddWeight( bool first ) const {
   for ( const auto &it : inventory().m_belt ) {
     CArtefact* artefact = smart_cast<CArtefact*>( it );
 #ifdef AF_ZERO_CONDITION
-    if ( artefact && artefact->GetCondition() > 0 )
+    if ( artefact && !fis_zero( artefact->GetCondition() ) )
 #else
     if ( artefact )
 #endif // AF_ZERO_CONDITION
