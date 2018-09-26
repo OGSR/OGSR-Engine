@@ -1,4 +1,5 @@
 # OGSR Engine [![Build status](https://ci.appveyor.com/api/projects/status/w5yowu9901tphox1?svg=true)](https://ci.appveyor.com/project/KRodinn/ogsr-engine)
+## В проект требуются графические программисты или просто люди, более-менее разбирающиеся в рендере и шейдерах. Если у кого-то есть желание помочь проекту - [пишите мне в ВК](https://vk.com/id409430583) ##
 ![Logo](https://pp.userapi.com/c847218/v847218213/a9398/F7TfxQhSSGs.jpg)
 ### [>>Разработчики<<](https://github.com/KRodinn/OGSR-Engine/graphs/contributors) ### 
 ### [>>Список изменений<<](https://github.com/KRodinn/OGSR-Engine/wiki/Список-изменений) ###
