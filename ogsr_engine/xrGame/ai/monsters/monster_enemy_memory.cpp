@@ -6,6 +6,11 @@
 #include "../../enemy_manager.h"
 #include "../../ai_object_location.h"
 #include "monster_home.h"
+#include "dog/dog.h"
+#include "ai_monster_squad.h"
+#include "ai_monster_squad_manager.h"
+#include "../../actor.h"
+#include "../../actor_memory.h"
 
 CMonsterEnemyMemory::CMonsterEnemyMemory()
 {
@@ -27,10 +32,58 @@ void CMonsterEnemyMemory::init_external(CBaseMonster *M, TTime mem_time)
 void CMonsterEnemyMemory::update() 
 {
 	VERIFY		(monster->g_Alive());
+
+        CMonsterHitMemory& monster_hit_memory = monster->HitMemory;
+        typedef CObjectManager<const CEntityAlive>::OBJECTS objects_list;
+        objects_list const& objects = monster->memory().enemy().objects();
+
+        if ( monster_hit_memory.is_hit() && time() < monster_hit_memory.get_last_hit_time() + 1000 ) {
+          if ( CEntityAlive* enemy = smart_cast<CEntityAlive*>( monster->HitMemory.get_last_hit_object() ) ) {
+            if ( monster->CCustomMonster::useful( &monster->memory().enemy(), enemy ) && monster->Position().distance_to( enemy->Position() ) < monster->get_feel_enemy_who_just_hit_max_distance() ) {
+              add_enemy( enemy );
+              bool const self_is_dog = !!smart_cast<const CAI_Dog*>( monster );
+              if ( self_is_dog ) {
+                CMonsterSquad* const squad = monster_squad().get_squad( monster );
+                squad->set_home_in_danger();
+              }
+            }
+          }
+        }
+
+        if ( monster->SoundMemory.IsRememberSound() ) {
+          SoundElem sound;
+          bool dangerous;
+          monster->SoundMemory.GetSound( sound, dangerous );
+          if ( dangerous && Device.dwTimeGlobal < sound.time + 2000 && Actor() ) {
+            if ( CEntityAlive const* enemy = smart_cast<CEntityAlive const*>( sound.who ) ) {
+              float const xz_dist = monster->Position().distance_to_xz( Actor()->Position() );
+              float const y_dist  = _abs( monster->Position().y - Actor()->Position().y );
+              if ( monster->CCustomMonster::useful( &monster->memory().enemy(), enemy ) && y_dist < 10 && xz_dist < monster->get_feel_enemy_who_made_sound_max_distance() && Actor()->memory().visual().visible_now( monster ) ) {
+                add_enemy( enemy );
+                bool const self_is_dog = !!smart_cast<const CAI_Dog*>( monster );
+                if ( self_is_dog ) {
+                  CMonsterSquad* const squad = monster_squad().get_squad( monster );
+                  squad->set_home_in_danger();
+                }
+              }
+            }
+          }
+        }
+
 	// Обновить врагов
-	for (xr_vector<const CEntityAlive *>::const_iterator I = monster->memory().enemy().objects().begin(); I != monster->memory().enemy().objects().end(); ++I) {
-		if (monster->memory().visual().visible_now(*I)) add_enemy(*I);
-	}
+        for ( const auto& I : monster->memory().enemy().objects() ) {
+          const bool feel_enemy = monster->Position().distance_to( I->Position() ) < monster->get_feel_enemy_max_distance();
+          if ( feel_enemy || monster->memory().visual().visible_now( I ) )
+            add_enemy( I );
+        }
+
+        if ( Actor() ) {
+          float const feel_enemy_max_distance = monster->get_feel_enemy_max_distance();
+          float const xz_dist = monster->Position().distance_to_xz( Actor()->Position() );
+          float const y_dist  = _abs( monster->Position().y - Actor()->Position().y );
+          if ( xz_dist < feel_enemy_max_distance && y_dist < 10 && monster->memory().enemy().is_useful( Actor() ) && Actor()->memory().visual().visible_now( monster ) )
+            add_enemy( Actor() );
+        }
 
 	// удалить устаревших врагов
 	remove_non_actual();

@@ -81,6 +81,10 @@ CBaseMonster::CBaseMonster()
 	Home							= xr_new<CMonsterHome>(this);
 
 	com_man().add_ability			(ControlCom::eComCriticalWound);
+
+	m_feel_enemy_who_made_sound_max_distance = 0;
+	m_feel_enemy_who_just_hit_max_distance   = 0;
+	m_feel_enemy_max_distance                = 0;
 }
 
 

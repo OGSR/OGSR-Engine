@@ -171,5 +171,12 @@ public:
 	void			unlock_corpse			(const CEntityAlive*);
 	////////////////////////////////////////////////////////////////////////////////////////
 
+        bool home_in_danger() { return Device.dwTimeGlobal < m_home_danger_end_tick; }
+        void set_home_in_danger() { m_home_danger_end_tick = Device.dwTimeGlobal + m_home_danger_mode_time; }
 
+private:
+        // danger mode is turns on when monsters hear dangerous sound or get a hit
+        // danger mode turns off after m_danger_mode_time miliseconds
+        u32 m_home_danger_mode_time;
+        u32 m_home_danger_end_tick;
 };

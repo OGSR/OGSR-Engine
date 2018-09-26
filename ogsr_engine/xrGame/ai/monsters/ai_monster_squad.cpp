@@ -2,7 +2,7 @@
 #include "ai_monster_squad.h"
 #include "../../entity.h"
 
-CMonsterSquad::CMonsterSquad() : leader(0) 
+CMonsterSquad::CMonsterSquad() : leader(0), m_home_danger_end_tick(0), m_home_danger_mode_time(8000)
 {
 	m_locked_covers.reserve	(20);
 	m_locked_corpses.reserve(10);
