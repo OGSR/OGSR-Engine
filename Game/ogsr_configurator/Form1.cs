@@ -165,7 +165,7 @@ namespace Configurator
                 {"$fs_root$", Environment.CurrentDirectory + Path.DirectorySeparatorChar}
             };
 
-            using (var f1 = new StreamReader(@"fs.ltx", Encoding.Default))
+            using (var f1 = new StreamReader(@"fsgame.ltx", Encoding.Default))
             {
                 while (!f1.EndOfStream)
                 {
@@ -218,13 +218,6 @@ namespace Configurator
 
         void load_other()
         {
-            /*FileInfo launch = new FileInfo(Application.StartupPath + @"\\launch.ltx");
-            FileInfo launchBuc = new FileInfo(Data.GameDataPath + "buc\\launch.ltx");
-            if (!launch.Exists)
-            {
-                launchBuc.CopyTo(launch.FullName);
-            }*/
-
             List<string> launchParamsList = new List<string>();
             try
             {
@@ -234,49 +227,20 @@ namespace Configurator
                     launchParamsList.Add(f1.ReadLine());
                 }
                 f1.Close();
+
+                string[] k1 = launchParamsList[1].Split('=');
+                lang = k1[1];
             }
             catch (Exception e)
             {
-                MessageBox.Show(e.Message + "458");
-                return;
-            }
-            string[] k1 = launchParamsList[1].Split('=');
-            string[] k2 = launchParamsList[2].Split('=');
-            string[] k3 = launchParamsList[3].Split('=');
-            string k4 = launchParamsList[4];
-
-            lang = k1[1];
-            nointro.Checked = int.Parse(k2[1]) != 0;
-            noprefetch.Checked = int.Parse(k3[1]) != 0;
-            switch (k4)
-            {
-                case "-smap0":
-                    sh_quality.Value = 0;
-                    break;
-                case "-smap2560":
-                    sh_quality.Value = 1;
-                    break;
-                case "-smap3072":
-                    sh_quality.Value = 2;
-                    break;
-                case "-smap4096":
-                    sh_quality.Value = 3;
-                    break;
-                case "-smap8192":
-                    sh_quality.Value = 4;
-                    break;
+                //MessageBox.Show(e.Message);
+                //return;
+                lang = "ru-RU";
             }
             reload_string();
         }
         void load_lang_setting()
         {
-            /*FileInfo launch = new FileInfo(Application.StartupPath + @"\\launch.ltx");
-            FileInfo launchBuc = new FileInfo(Data.GameDataPath + "buc\\launch.ltx");
-            if (!launch.Exists)
-            {
-                launchBuc.CopyTo(launch.FullName);
-            }*/
-
             List<string> launchParamsList = new List<string>();
             try
             {
@@ -286,14 +250,16 @@ namespace Configurator
                     launchParamsList.Add(f1.ReadLine());
                 }
                 f1.Close();
+
+                string[] k1 = launchParamsList[1].Split('=');
+                lang = k1[1];
             }
             catch (Exception e)
             {
-                MessageBox.Show(e.Message + "458");
-                return;
+                //MessageBox.Show(e.Message);
+                //return;
+                lang = "ru-RU";
             }
-            string[] k1 = launchParamsList[1].Split('=');
-            lang = k1[1];
         }
 
         void save_other()
@@ -301,29 +267,7 @@ namespace Configurator
             var launchParamsList = new List<string>();
             launchParamsList.Add("[launch]");
 
-            string ShQuality;
-            switch (sh_quality.Value)
-            {
-                case 1:
-                    ShQuality = "-smap2560";
-                    break;
-                case 2:
-                    ShQuality = "-smap3072";
-                    break;
-                case 3:
-                    ShQuality = "-smap4096";
-                    break;
-                case 4:
-                    ShQuality = "-smap8192";
-                    break;
-                default:
-                    ShQuality = "-smap0";
-                    break;
-            }
             launchParamsList.Add("lang=" + lang);
-            launchParamsList.Add(nointro.Checked ? "nointro=1" : "nointro=0");
-            launchParamsList.Add(noprefetch.Checked ? "noprefetch=1" : "noprefetch=0");
-            launchParamsList.Add(ShQuality);
 
             try
             {
@@ -401,21 +345,20 @@ namespace Configurator
                 MessageBox.Show(ex.ToString());
             }
 
-
-            //если открыта вкладка с сохранениями, то запускаем сразу загрузку сейва
-            if (tabpage.SelectedTab == tabPage12)
-            {
-                if (SavesList.SelectedItems.Count != 0)
-                {
-                    start_string.Text += " -start server(" + SavesList.SelectedItems[0].Text + "/single/alife/load)  ";
-                }
-            }
             StartGame(platform);
         }
 
         private void StartGame(string platform)
         {
-            ExecuteString(platform, start_string.Text);
+            string start_string = "";
+            if (tabpage.SelectedTab == tabPage12)
+            {
+                if (SavesList.SelectedItems.Count != 0)
+                {
+                    start_string = " -start server(" + SavesList.SelectedItems[0].Text + "/single/alife/load)";
+                }
+            }
+            ExecuteString(platform, start_string);
         }
 
         //по двойному клику по сейву запускаем игру
@@ -449,31 +392,7 @@ namespace Configurator
         }
 
         private void reload_string()
-        {
-            start_string.Text = "";
-
-            if (nointro.Checked) start_string.Text += " -nointro";
-            if (noprefetch.Checked) start_string.Text += " -noprefetch";
-
-            switch (sh_quality.Value)
-            {
-                case 1:
-                    start_string.Text = start_string.Text + " -smap2560";
-                    break;
-                case 2:
-                    start_string.Text = start_string.Text + " -smap3072";
-                    break;
-                case 3:
-                    start_string.Text = start_string.Text + " -smap4096";
-                    break;
-                case 4:
-                    start_string.Text = start_string.Text + " -smap8192";
-                    break;
-                default:
-                    start_string.Text = start_string.Text + "";
-                    break;
-            }
-        }
+        {}
 
         //Пересмотреть этот модуль. В таком виде УЖЕ стал нерабочим, т.к. нет используемых там средст для отправки логов.
         #region Лог

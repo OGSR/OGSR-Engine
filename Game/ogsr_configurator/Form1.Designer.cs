@@ -41,7 +41,6 @@
             this.lang_pic_en = new System.Windows.Forms.PictureBox();
             this.lang_pic_ru = new System.Windows.Forms.PictureBox();
             this.button4 = new System.Windows.Forms.Button();
-            this.noprefetch = new System.Windows.Forms.CheckBox();
             this.tabPage4 = new System.Windows.Forms.TabPage();
             this.OtherTabs = new System.Windows.Forms.TabControl();
             this.tabPage8 = new System.Windows.Forms.TabPage();
@@ -80,11 +79,6 @@
             this.SavesList = new System.Windows.Forms.ListView();
             this.columnHeader1 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.columnHeader2 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.string_start = new System.Windows.Forms.GroupBox();
-            this.start_string = new System.Windows.Forms.Label();
-            this.nointro = new System.Windows.Forms.CheckBox();
-            this.teni = new System.Windows.Forms.GroupBox();
-            this.sh_quality = new System.Windows.Forms.TrackBar();
             this.tabPage5 = new System.Windows.Forms.TabPage();
             this.propertyGrid2 = new System.Windows.Forms.PropertyGrid();
             this.richTextBox2 = new System.Windows.Forms.RichTextBox();
@@ -105,9 +99,6 @@
             this.tabPage10.SuspendLayout();
             this.tabPage12.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.savePicture)).BeginInit();
-            this.string_start.SuspendLayout();
-            this.teni.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.sh_quality)).BeginInit();
             this.tabPage5.SuspendLayout();
             this.tabPage2.SuspendLayout();
             this.tabpage.SuspendLayout();
@@ -195,14 +186,6 @@
             this.toolTip1.SetToolTip(this.button4, resources.GetString("button4.ToolTip"));
             this.button4.UseVisualStyleBackColor = true;
             this.button4.Click += new System.EventHandler(this.button4_Click);
-            // 
-            // noprefetch
-            // 
-            resources.ApplyResources(this.noprefetch, "noprefetch");
-            this.noprefetch.Name = "noprefetch";
-            this.toolTip1.SetToolTip(this.noprefetch, resources.GetString("noprefetch.ToolTip"));
-            this.noprefetch.UseVisualStyleBackColor = true;
-            this.noprefetch.CheckedChanged += new System.EventHandler(this.noprefetch_CheckedChanged);
             // 
             // tabPage4
             // 
@@ -420,10 +403,6 @@
             this.tabPage12.Controls.Add(this.button4);
             this.tabPage12.Controls.Add(this.savePicture);
             this.tabPage12.Controls.Add(this.SavesList);
-            this.tabPage12.Controls.Add(this.string_start);
-            this.tabPage12.Controls.Add(this.noprefetch);
-            this.tabPage12.Controls.Add(this.nointro);
-            this.tabPage12.Controls.Add(this.teni);
             resources.ApplyResources(this.tabPage12, "tabPage12");
             this.tabPage12.Name = "tabPage12";
             this.tabPage12.UseVisualStyleBackColor = true;
@@ -458,40 +437,6 @@
             // columnHeader2
             // 
             resources.ApplyResources(this.columnHeader2, "columnHeader2");
-            // 
-            // string_start
-            // 
-            this.string_start.Controls.Add(this.start_string);
-            resources.ApplyResources(this.string_start, "string_start");
-            this.string_start.Name = "string_start";
-            this.string_start.TabStop = false;
-            // 
-            // start_string
-            // 
-            resources.ApplyResources(this.start_string, "start_string");
-            this.start_string.Name = "start_string";
-            // 
-            // nointro
-            // 
-            resources.ApplyResources(this.nointro, "nointro");
-            this.nointro.Name = "nointro";
-            this.nointro.UseVisualStyleBackColor = true;
-            this.nointro.CheckedChanged += new System.EventHandler(this.noprefetch_CheckedChanged);
-            // 
-            // teni
-            // 
-            this.teni.Controls.Add(this.sh_quality);
-            resources.ApplyResources(this.teni, "teni");
-            this.teni.Name = "teni";
-            this.teni.TabStop = false;
-            // 
-            // sh_quality
-            // 
-            this.sh_quality.BackColor = System.Drawing.SystemColors.Window;
-            resources.ApplyResources(this.sh_quality, "sh_quality");
-            this.sh_quality.Maximum = 4;
-            this.sh_quality.Name = "sh_quality";
-            this.sh_quality.Scroll += new System.EventHandler(this.sh_quality_ValueChanged);
             // 
             // tabPage5
             // 
@@ -585,13 +530,7 @@
             this.tabPage1.ResumeLayout(false);
             this.tabPage10.ResumeLayout(false);
             this.tabPage12.ResumeLayout(false);
-            this.tabPage12.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.savePicture)).EndInit();
-            this.string_start.ResumeLayout(false);
-            this.string_start.PerformLayout();
-            this.teni.ResumeLayout(false);
-            this.teni.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.sh_quality)).EndInit();
             this.tabPage5.ResumeLayout(false);
             this.tabPage2.ResumeLayout(false);
             this.tabpage.ResumeLayout(false);
@@ -650,12 +589,6 @@
         private System.Windows.Forms.ListView SavesList;
         private System.Windows.Forms.ColumnHeader columnHeader1;
         private System.Windows.Forms.ColumnHeader columnHeader2;
-        private System.Windows.Forms.GroupBox string_start;
-        private System.Windows.Forms.Label start_string;
-        private System.Windows.Forms.CheckBox noprefetch;
-        private System.Windows.Forms.CheckBox nointro;
-        private System.Windows.Forms.GroupBox teni;
-        private System.Windows.Forms.TrackBar sh_quality;
         private System.Windows.Forms.TabPage tabPage5;
         private System.Windows.Forms.PropertyGrid propertyGrid2;
         private System.Windows.Forms.RichTextBox richTextBox2;

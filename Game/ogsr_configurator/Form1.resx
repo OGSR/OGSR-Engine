@@ -412,10 +412,10 @@
     <value>NoControl</value>
   </data>
   <data name="button4.Location" type="System.Drawing.Point, System.Drawing">
-    <value>448, 135</value>
+    <value>464, 386</value>
   </data>
   <data name="button4.Size" type="System.Drawing.Size, System.Drawing">
-    <value>126, 26</value>
+    <value>126, 42</value>
   </data>
   <data name="button4.TabIndex" type="System.Int32, mscorlib">
     <value>10</value>
@@ -438,38 +438,206 @@
   <data name="&gt;&gt;button4.ZOrder" xml:space="preserve">
     <value>0</value>
   </data>
-  <data name="noprefetch.AutoSize" type="System.Boolean, mscorlib">
-    <value>True</value>
+  <data name="&gt;&gt;OtherTabs.Name" xml:space="preserve">
+    <value>OtherTabs</value>
   </data>
-  <data name="noprefetch.ImeMode" type="System.Windows.Forms.ImeMode, System.Windows.Forms">
-    <value>NoControl</value>
+  <data name="&gt;&gt;OtherTabs.Type" xml:space="preserve">
+    <value>System.Windows.Forms.TabControl, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
-  <data name="noprefetch.Location" type="System.Drawing.Point, System.Drawing">
-    <value>258, 44</value>
+  <data name="&gt;&gt;OtherTabs.Parent" xml:space="preserve">
+    <value>tabPage4</value>
   </data>
-  <data name="noprefetch.Size" type="System.Drawing.Size, System.Drawing">
-    <value>165, 19</value>
+  <data name="&gt;&gt;OtherTabs.ZOrder" xml:space="preserve">
+    <value>0</value>
   </data>
-  <data name="noprefetch.TabIndex" type="System.Int32, mscorlib">
-    <value>7</value>
+  <data name="tabPage4.Location" type="System.Drawing.Point, System.Drawing">
+    <value>4, 24</value>
   </data>
-  <data name="noprefetch.Text" xml:space="preserve">
-    <value>Отключить префетчинг</value>
+  <data name="tabPage4.Padding" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>3, 3, 3, 3</value>
   </data>
-  <data name="noprefetch.ToolTip" xml:space="preserve">
-    <value>Отключение предварительной загрузки в память некоторых текстур и моделей при старте игры. Позволяет ускорить собственно загрузку, однако, в игре могут появиться проседания фпс в определенные моменты.</value>
+  <data name="tabPage4.Size" type="System.Drawing.Size, System.Drawing">
+    <value>590, 269</value>
   </data>
-  <data name="&gt;&gt;noprefetch.Name" xml:space="preserve">
-    <value>noprefetch</value>
+  <data name="tabPage4.TabIndex" type="System.Int32, mscorlib">
+    <value>3</value>
   </data>
-  <data name="&gt;&gt;noprefetch.Type" xml:space="preserve">
+  <data name="tabPage4.Text" xml:space="preserve">
+    <value>Дополнительно</value>
+  </data>
+  <data name="&gt;&gt;tabPage4.Name" xml:space="preserve">
+    <value>tabPage4</value>
+  </data>
+  <data name="&gt;&gt;tabPage4.Type" xml:space="preserve">
+    <value>System.Windows.Forms.TabPage, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;tabPage8.Name" xml:space="preserve">
+    <value>tabPage8</value>
+  </data>
+  <data name="&gt;&gt;tabPage8.Type" xml:space="preserve">
+    <value>System.Windows.Forms.TabPage, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;tabPage8.Parent" xml:space="preserve">
+    <value>OtherTabs</value>
+  </data>
+  <data name="&gt;&gt;tabPage8.ZOrder" xml:space="preserve">
+    <value>0</value>
+  </data>
+  <data name="&gt;&gt;tabPage9.Name" xml:space="preserve">
+    <value>tabPage9</value>
+  </data>
+  <data name="&gt;&gt;tabPage9.Type" xml:space="preserve">
+    <value>System.Windows.Forms.TabPage, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;tabPage9.Parent" xml:space="preserve">
+    <value>OtherTabs</value>
+  </data>
+  <data name="&gt;&gt;tabPage9.ZOrder" xml:space="preserve">
+    <value>1</value>
+  </data>
+  <data name="OtherTabs.Location" type="System.Drawing.Point, System.Drawing">
+    <value>0, 0</value>
+  </data>
+  <data name="OtherTabs.Size" type="System.Drawing.Size, System.Drawing">
+    <value>580, 271</value>
+  </data>
+  <data name="OtherTabs.TabIndex" type="System.Int32, mscorlib">
+    <value>0</value>
+  </data>
+  <data name="&gt;&gt;OtherTabs.Name" xml:space="preserve">
+    <value>OtherTabs</value>
+  </data>
+  <data name="&gt;&gt;OtherTabs.Type" xml:space="preserve">
+    <value>System.Windows.Forms.TabControl, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;OtherTabs.Parent" xml:space="preserve">
+    <value>tabPage4</value>
+  </data>
+  <data name="&gt;&gt;OtherTabs.ZOrder" xml:space="preserve">
+    <value>0</value>
+  </data>
+  <data name="&gt;&gt;search_update.Name" xml:space="preserve">
+    <value>search_update</value>
+  </data>
+  <data name="&gt;&gt;search_update.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Button, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;search_update.Parent" xml:space="preserve">
+    <value>tabPage8</value>
+  </data>
+  <data name="&gt;&gt;search_update.ZOrder" xml:space="preserve">
+    <value>0</value>
+  </data>
+  <data name="&gt;&gt;size_of_file.Name" xml:space="preserve">
+    <value>size_of_file</value>
+  </data>
+  <data name="&gt;&gt;size_of_file.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Label, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;size_of_file.Parent" xml:space="preserve">
+    <value>tabPage8</value>
+  </data>
+  <data name="&gt;&gt;size_of_file.ZOrder" xml:space="preserve">
+    <value>1</value>
+  </data>
+  <data name="&gt;&gt;updating.Name" xml:space="preserve">
+    <value>updating</value>
+  </data>
+  <data name="&gt;&gt;updating.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Button, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;updating.Parent" xml:space="preserve">
+    <value>tabPage8</value>
+  </data>
+  <data name="&gt;&gt;updating.ZOrder" xml:space="preserve">
+    <value>2</value>
+  </data>
+  <data name="&gt;&gt;progressBar1.Name" xml:space="preserve">
+    <value>progressBar1</value>
+  </data>
+  <data name="&gt;&gt;progressBar1.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ProgressBar, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;progressBar1.Parent" xml:space="preserve">
+    <value>tabPage8</value>
+  </data>
+  <data name="&gt;&gt;progressBar1.ZOrder" xml:space="preserve">
+    <value>3</value>
+  </data>
+  <data name="&gt;&gt;label29.Name" xml:space="preserve">
+    <value>label29</value>
+  </data>
+  <data name="&gt;&gt;label29.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Label, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;label29.Parent" xml:space="preserve">
+    <value>tabPage8</value>
+  </data>
+  <data name="&gt;&gt;label29.ZOrder" xml:space="preserve">
+    <value>4</value>
+  </data>
+  <data name="&gt;&gt;label28.Name" xml:space="preserve">
+    <value>label28</value>
+  </data>
+  <data name="&gt;&gt;label28.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Label, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;label28.Parent" xml:space="preserve">
+    <value>tabPage8</value>
+  </data>
+  <data name="&gt;&gt;label28.ZOrder" xml:space="preserve">
+    <value>5</value>
+  </data>
+  <data name="&gt;&gt;Opisanie.Name" xml:space="preserve">
+    <value>Opisanie</value>
+  </data>
+  <data name="&gt;&gt;Opisanie.Type" xml:space="preserve">
+    <value>System.Windows.Forms.RichTextBox, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;Opisanie.Parent" xml:space="preserve">
+    <value>tabPage8</value>
+  </data>
+  <data name="&gt;&gt;Opisanie.ZOrder" xml:space="preserve">
+    <value>6</value>
+  </data>
+  <data name="&gt;&gt;check_update.Name" xml:space="preserve">
+    <value>check_update</value>
+  </data>
+  <data name="&gt;&gt;check_update.Type" xml:space="preserve">
     <value>System.Windows.Forms.CheckBox, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
-  <data name="&gt;&gt;noprefetch.Parent" xml:space="preserve">
-    <value>tabPage12</value>
+  <data name="&gt;&gt;check_update.Parent" xml:space="preserve">
+    <value>tabPage8</value>
   </data>
-  <data name="&gt;&gt;noprefetch.ZOrder" xml:space="preserve">
-    <value>4</value>
+  <data name="&gt;&gt;check_update.ZOrder" xml:space="preserve">
+    <value>7</value>
+  </data>
+  <data name="tabPage8.Location" type="System.Drawing.Point, System.Drawing">
+    <value>4, 22</value>
+  </data>
+  <data name="tabPage8.Padding" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>3, 3, 3, 3</value>
+  </data>
+  <data name="tabPage8.Size" type="System.Drawing.Size, System.Drawing">
+    <value>572, 245</value>
+  </data>
+  <data name="tabPage8.TabIndex" type="System.Int32, mscorlib">
+    <value>0</value>
+  </data>
+  <data name="tabPage8.Text" xml:space="preserve">
+    <value>Обновления</value>
+  </data>
+  <data name="&gt;&gt;tabPage8.Name" xml:space="preserve">
+    <value>tabPage8</value>
+  </data>
+  <data name="&gt;&gt;tabPage8.Type" xml:space="preserve">
+    <value>System.Windows.Forms.TabPage, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;tabPage8.Parent" xml:space="preserve">
+    <value>OtherTabs</value>
+  </data>
+  <data name="&gt;&gt;tabPage8.ZOrder" xml:space="preserve">
+    <value>0</value>
   </data>
   <data name="search_update.ImeMode" type="System.Windows.Forms.ImeMode, System.Windows.Forms">
     <value>NoControl</value>
@@ -693,32 +861,140 @@
   <data name="&gt;&gt;check_update.ZOrder" xml:space="preserve">
     <value>7</value>
   </data>
-  <data name="tabPage8.Location" type="System.Drawing.Point, System.Drawing">
+  <data name="&gt;&gt;button8.Name" xml:space="preserve">
+    <value>button8</value>
+  </data>
+  <data name="&gt;&gt;button8.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Button, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;button8.Parent" xml:space="preserve">
+    <value>tabPage9</value>
+  </data>
+  <data name="&gt;&gt;button8.ZOrder" xml:space="preserve">
+    <value>0</value>
+  </data>
+  <data name="&gt;&gt;saves.Name" xml:space="preserve">
+    <value>saves</value>
+  </data>
+  <data name="&gt;&gt;saves.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ComboBox, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;saves.Parent" xml:space="preserve">
+    <value>tabPage9</value>
+  </data>
+  <data name="&gt;&gt;saves.ZOrder" xml:space="preserve">
+    <value>1</value>
+  </data>
+  <data name="&gt;&gt;send.Name" xml:space="preserve">
+    <value>send</value>
+  </data>
+  <data name="&gt;&gt;send.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Button, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;send.Parent" xml:space="preserve">
+    <value>tabPage9</value>
+  </data>
+  <data name="&gt;&gt;send.ZOrder" xml:space="preserve">
+    <value>2</value>
+  </data>
+  <data name="&gt;&gt;load_log.Name" xml:space="preserve">
+    <value>load_log</value>
+  </data>
+  <data name="&gt;&gt;load_log.Type" xml:space="preserve">
+    <value>System.Windows.Forms.CheckBox, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;load_log.Parent" xml:space="preserve">
+    <value>tabPage9</value>
+  </data>
+  <data name="&gt;&gt;load_log.ZOrder" xml:space="preserve">
+    <value>3</value>
+  </data>
+  <data name="&gt;&gt;button6.Name" xml:space="preserve">
+    <value>button6</value>
+  </data>
+  <data name="&gt;&gt;button6.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Button, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;button6.Parent" xml:space="preserve">
+    <value>tabPage9</value>
+  </data>
+  <data name="&gt;&gt;button6.ZOrder" xml:space="preserve">
+    <value>4</value>
+  </data>
+  <data name="&gt;&gt;file1.Name" xml:space="preserve">
+    <value>file1</value>
+  </data>
+  <data name="&gt;&gt;file1.Type" xml:space="preserve">
+    <value>System.Windows.Forms.TextBox, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;file1.Parent" xml:space="preserve">
+    <value>tabPage9</value>
+  </data>
+  <data name="&gt;&gt;file1.ZOrder" xml:space="preserve">
+    <value>5</value>
+  </data>
+  <data name="&gt;&gt;file_sav_label.Name" xml:space="preserve">
+    <value>file_sav_label</value>
+  </data>
+  <data name="&gt;&gt;file_sav_label.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Label, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;file_sav_label.Parent" xml:space="preserve">
+    <value>tabPage9</value>
+  </data>
+  <data name="&gt;&gt;file_sav_label.ZOrder" xml:space="preserve">
+    <value>6</value>
+  </data>
+  <data name="&gt;&gt;terms_label.Name" xml:space="preserve">
+    <value>terms_label</value>
+  </data>
+  <data name="&gt;&gt;terms_label.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Label, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;terms_label.Parent" xml:space="preserve">
+    <value>tabPage9</value>
+  </data>
+  <data name="&gt;&gt;terms_label.ZOrder" xml:space="preserve">
+    <value>7</value>
+  </data>
+  <data name="&gt;&gt;text.Name" xml:space="preserve">
+    <value>text</value>
+  </data>
+  <data name="&gt;&gt;text.Type" xml:space="preserve">
+    <value>System.Windows.Forms.RichTextBox, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;text.Parent" xml:space="preserve">
+    <value>tabPage9</value>
+  </data>
+  <data name="&gt;&gt;text.ZOrder" xml:space="preserve">
+    <value>8</value>
+  </data>
+  <data name="tabPage9.Location" type="System.Drawing.Point, System.Drawing">
     <value>4, 22</value>
   </data>
-  <data name="tabPage8.Padding" type="System.Windows.Forms.Padding, System.Windows.Forms">
+  <data name="tabPage9.Padding" type="System.Windows.Forms.Padding, System.Windows.Forms">
     <value>3, 3, 3, 3</value>
   </data>
-  <data name="tabPage8.Size" type="System.Drawing.Size, System.Drawing">
+  <data name="tabPage9.Size" type="System.Drawing.Size, System.Drawing">
     <value>572, 245</value>
   </data>
-  <data name="tabPage8.TabIndex" type="System.Int32, mscorlib">
-    <value>0</value>
+  <data name="tabPage9.TabIndex" type="System.Int32, mscorlib">
+    <value>1</value>
   </data>
-  <data name="tabPage8.Text" xml:space="preserve">
-    <value>Обновления</value>
+  <data name="tabPage9.Text" xml:space="preserve">
+    <value>Отправить лог</value>
   </data>
-  <data name="&gt;&gt;tabPage8.Name" xml:space="preserve">
-    <value>tabPage8</value>
+  <data name="&gt;&gt;tabPage9.Name" xml:space="preserve">
+    <value>tabPage9</value>
   </data>
-  <data name="&gt;&gt;tabPage8.Type" xml:space="preserve">
+  <data name="&gt;&gt;tabPage9.Type" xml:space="preserve">
     <value>System.Windows.Forms.TabPage, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
-  <data name="&gt;&gt;tabPage8.Parent" xml:space="preserve">
+  <data name="&gt;&gt;tabPage9.Parent" xml:space="preserve">
     <value>OtherTabs</value>
   </data>
-  <data name="&gt;&gt;tabPage8.ZOrder" xml:space="preserve">
-    <value>0</value>
+  <data name="&gt;&gt;tabPage9.ZOrder" xml:space="preserve">
+    <value>1</value>
   </data>
   <data name="button8.ImeMode" type="System.Windows.Forms.ImeMode, System.Windows.Forms">
     <value>NoControl</value>
@@ -960,75 +1236,6 @@
   <data name="&gt;&gt;text.ZOrder" xml:space="preserve">
     <value>8</value>
   </data>
-  <data name="tabPage9.Location" type="System.Drawing.Point, System.Drawing">
-    <value>4, 22</value>
-  </data>
-  <data name="tabPage9.Padding" type="System.Windows.Forms.Padding, System.Windows.Forms">
-    <value>3, 3, 3, 3</value>
-  </data>
-  <data name="tabPage9.Size" type="System.Drawing.Size, System.Drawing">
-    <value>572, 245</value>
-  </data>
-  <data name="tabPage9.TabIndex" type="System.Int32, mscorlib">
-    <value>1</value>
-  </data>
-  <data name="tabPage9.Text" xml:space="preserve">
-    <value>Отправить лог</value>
-  </data>
-  <data name="&gt;&gt;tabPage9.Name" xml:space="preserve">
-    <value>tabPage9</value>
-  </data>
-  <data name="&gt;&gt;tabPage9.Type" xml:space="preserve">
-    <value>System.Windows.Forms.TabPage, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="&gt;&gt;tabPage9.Parent" xml:space="preserve">
-    <value>OtherTabs</value>
-  </data>
-  <data name="&gt;&gt;tabPage9.ZOrder" xml:space="preserve">
-    <value>1</value>
-  </data>
-  <data name="OtherTabs.Location" type="System.Drawing.Point, System.Drawing">
-    <value>0, 0</value>
-  </data>
-  <data name="OtherTabs.Size" type="System.Drawing.Size, System.Drawing">
-    <value>580, 271</value>
-  </data>
-  <data name="OtherTabs.TabIndex" type="System.Int32, mscorlib">
-    <value>0</value>
-  </data>
-  <data name="&gt;&gt;OtherTabs.Name" xml:space="preserve">
-    <value>OtherTabs</value>
-  </data>
-  <data name="&gt;&gt;OtherTabs.Type" xml:space="preserve">
-    <value>System.Windows.Forms.TabControl, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="&gt;&gt;OtherTabs.Parent" xml:space="preserve">
-    <value>tabPage4</value>
-  </data>
-  <data name="&gt;&gt;OtherTabs.ZOrder" xml:space="preserve">
-    <value>0</value>
-  </data>
-  <data name="tabPage4.Location" type="System.Drawing.Point, System.Drawing">
-    <value>4, 24</value>
-  </data>
-  <data name="tabPage4.Padding" type="System.Windows.Forms.Padding, System.Windows.Forms">
-    <value>3, 3, 3, 3</value>
-  </data>
-  <data name="tabPage4.Size" type="System.Drawing.Size, System.Drawing">
-    <value>590, 269</value>
-  </data>
-  <data name="tabPage4.TabIndex" type="System.Int32, mscorlib">
-    <value>3</value>
-  </data>
-  <data name="tabPage4.Text" xml:space="preserve">
-    <value>Дополнительно</value>
-  </data>
-  <data name="&gt;&gt;tabPage4.Name" xml:space="preserve">
-    <value>tabPage4</value>
-  </data>
-  <data name="&gt;&gt;tabPage4.Type" xml:space="preserve">
-    <value>System.Windows.Forms.TabPage, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
   <data name="RU.AutoSize" type="System.Boolean, mscorlib">
     <value>True</value>
   </data>
@@ -1170,21 +1377,6 @@
   <data name="saveFileDialog1.Title" xml:space="preserve">
     <value>Сохранить обновление</value>
   </data>
-  <data name="team.Anchor" type="System.Windows.Forms.AnchorStyles, System.Windows.Forms">
-    <value>Top, Bottom, Left, Right</value>
-  </data>
-  <data name="team.Location" type="System.Drawing.Point, System.Drawing">
-    <value>0, 0</value>
-  </data>
-  <data name="team.Size" type="System.Drawing.Size, System.Drawing">
-    <value>590, 431</value>
-  </data>
-  <data name="team.TabIndex" type="System.Int32, mscorlib">
-    <value>0</value>
-  </data>
-  <data name="team.Text" xml:space="preserve">
-    <value />
-  </data>
   <data name="&gt;&gt;team.Name" xml:space="preserve">
     <value>team</value>
   </data>
@@ -1224,20 +1416,32 @@
   <data name="&gt;&gt;tabPage11.ZOrder" xml:space="preserve">
     <value>5</value>
   </data>
-  <data name="features.Anchor" type="System.Windows.Forms.AnchorStyles, System.Windows.Forms">
+  <data name="team.Anchor" type="System.Windows.Forms.AnchorStyles, System.Windows.Forms">
     <value>Top, Bottom, Left, Right</value>
   </data>
-  <data name="features.Location" type="System.Drawing.Point, System.Drawing">
+  <data name="team.Location" type="System.Drawing.Point, System.Drawing">
     <value>0, 0</value>
   </data>
-  <data name="features.Size" type="System.Drawing.Size, System.Drawing">
+  <data name="team.Size" type="System.Drawing.Size, System.Drawing">
     <value>590, 431</value>
   </data>
-  <data name="features.TabIndex" type="System.Int32, mscorlib">
+  <data name="team.TabIndex" type="System.Int32, mscorlib">
     <value>0</value>
   </data>
-  <data name="features.Text" xml:space="preserve">
+  <data name="team.Text" xml:space="preserve">
     <value />
+  </data>
+  <data name="&gt;&gt;team.Name" xml:space="preserve">
+    <value>team</value>
+  </data>
+  <data name="&gt;&gt;team.Type" xml:space="preserve">
+    <value>System.Windows.Forms.RichTextBox, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;team.Parent" xml:space="preserve">
+    <value>tabPage11</value>
+  </data>
+  <data name="&gt;&gt;team.ZOrder" xml:space="preserve">
+    <value>0</value>
   </data>
   <data name="&gt;&gt;features.Name" xml:space="preserve">
     <value>features</value>
@@ -1278,20 +1482,32 @@
   <data name="&gt;&gt;tabPage1.ZOrder" xml:space="preserve">
     <value>4</value>
   </data>
-  <data name="about_mod.Anchor" type="System.Windows.Forms.AnchorStyles, System.Windows.Forms">
+  <data name="features.Anchor" type="System.Windows.Forms.AnchorStyles, System.Windows.Forms">
     <value>Top, Bottom, Left, Right</value>
   </data>
-  <data name="about_mod.Location" type="System.Drawing.Point, System.Drawing">
+  <data name="features.Location" type="System.Drawing.Point, System.Drawing">
     <value>0, 0</value>
   </data>
-  <data name="about_mod.Size" type="System.Drawing.Size, System.Drawing">
+  <data name="features.Size" type="System.Drawing.Size, System.Drawing">
     <value>590, 431</value>
   </data>
-  <data name="about_mod.TabIndex" type="System.Int32, mscorlib">
+  <data name="features.TabIndex" type="System.Int32, mscorlib">
     <value>0</value>
   </data>
-  <data name="about_mod.Text" xml:space="preserve">
+  <data name="features.Text" xml:space="preserve">
     <value />
+  </data>
+  <data name="&gt;&gt;features.Name" xml:space="preserve">
+    <value>features</value>
+  </data>
+  <data name="&gt;&gt;features.Type" xml:space="preserve">
+    <value>System.Windows.Forms.RichTextBox, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;features.Parent" xml:space="preserve">
+    <value>tabPage1</value>
+  </data>
+  <data name="&gt;&gt;features.ZOrder" xml:space="preserve">
+    <value>0</value>
   </data>
   <data name="&gt;&gt;about_mod.Name" xml:space="preserve">
     <value>about_mod</value>
@@ -1332,6 +1548,33 @@
   <data name="&gt;&gt;tabPage10.ZOrder" xml:space="preserve">
     <value>3</value>
   </data>
+  <data name="about_mod.Anchor" type="System.Windows.Forms.AnchorStyles, System.Windows.Forms">
+    <value>Top, Bottom, Left, Right</value>
+  </data>
+  <data name="about_mod.Location" type="System.Drawing.Point, System.Drawing">
+    <value>0, 0</value>
+  </data>
+  <data name="about_mod.Size" type="System.Drawing.Size, System.Drawing">
+    <value>590, 431</value>
+  </data>
+  <data name="about_mod.TabIndex" type="System.Int32, mscorlib">
+    <value>0</value>
+  </data>
+  <data name="about_mod.Text" xml:space="preserve">
+    <value />
+  </data>
+  <data name="&gt;&gt;about_mod.Name" xml:space="preserve">
+    <value>about_mod</value>
+  </data>
+  <data name="&gt;&gt;about_mod.Type" xml:space="preserve">
+    <value>System.Windows.Forms.RichTextBox, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;about_mod.Parent" xml:space="preserve">
+    <value>tabPage10</value>
+  </data>
+  <data name="&gt;&gt;about_mod.ZOrder" xml:space="preserve">
+    <value>0</value>
+  </data>
   <data name="savePicture.Anchor" type="System.Windows.Forms.AnchorStyles, System.Windows.Forms">
     <value>Top, Bottom, Left, Right</value>
   </data>
@@ -1339,10 +1582,10 @@
     <value>NoControl</value>
   </data>
   <data name="savePicture.Location" type="System.Drawing.Point, System.Drawing">
-    <value>313, 225</value>
+    <value>357, 107</value>
   </data>
   <data name="savePicture.Size" type="System.Drawing.Size, System.Drawing">
-    <value>271, 229</value>
+    <value>233, 229</value>
   </data>
   <data name="savePicture.SizeMode" type="System.Windows.Forms.PictureBoxSizeMode, System.Windows.Forms">
     <value>Zoom</value>
@@ -1375,10 +1618,10 @@
     <value>150</value>
   </data>
   <data name="SavesList.Location" type="System.Drawing.Point, System.Drawing">
-    <value>6, 225</value>
+    <value>0, 3</value>
   </data>
   <data name="SavesList.Size" type="System.Drawing.Size, System.Drawing">
-    <value>301, 229</value>
+    <value>351, 428</value>
   </data>
   <data name="SavesList.TabIndex" type="System.Int32, mscorlib">
     <value>1</value>
@@ -1394,135 +1637,6 @@
   </data>
   <data name="&gt;&gt;SavesList.ZOrder" xml:space="preserve">
     <value>2</value>
-  </data>
-  <data name="start_string.AutoSize" type="System.Boolean, mscorlib">
-    <value>True</value>
-  </data>
-  <data name="start_string.ImeMode" type="System.Windows.Forms.ImeMode, System.Windows.Forms">
-    <value>NoControl</value>
-  </data>
-  <data name="start_string.Location" type="System.Drawing.Point, System.Drawing">
-    <value>7, 20</value>
-  </data>
-  <data name="start_string.Size" type="System.Drawing.Size, System.Drawing">
-    <value>0, 15</value>
-  </data>
-  <data name="start_string.TabIndex" type="System.Int32, mscorlib">
-    <value>0</value>
-  </data>
-  <data name="&gt;&gt;start_string.Name" xml:space="preserve">
-    <value>start_string</value>
-  </data>
-  <data name="&gt;&gt;start_string.Type" xml:space="preserve">
-    <value>System.Windows.Forms.Label, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="&gt;&gt;start_string.Parent" xml:space="preserve">
-    <value>string_start</value>
-  </data>
-  <data name="&gt;&gt;start_string.ZOrder" xml:space="preserve">
-    <value>0</value>
-  </data>
-  <data name="string_start.Location" type="System.Drawing.Point, System.Drawing">
-    <value>10, 167</value>
-  </data>
-  <data name="string_start.Size" type="System.Drawing.Size, System.Drawing">
-    <value>564, 52</value>
-  </data>
-  <data name="string_start.TabIndex" type="System.Int32, mscorlib">
-    <value>8</value>
-  </data>
-  <data name="string_start.Text" xml:space="preserve">
-    <value>Итоговая строка запуска:</value>
-  </data>
-  <data name="&gt;&gt;string_start.Name" xml:space="preserve">
-    <value>string_start</value>
-  </data>
-  <data name="&gt;&gt;string_start.Type" xml:space="preserve">
-    <value>System.Windows.Forms.GroupBox, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="&gt;&gt;string_start.Parent" xml:space="preserve">
-    <value>tabPage12</value>
-  </data>
-  <data name="&gt;&gt;string_start.ZOrder" xml:space="preserve">
-    <value>3</value>
-  </data>
-  <data name="nointro.AutoSize" type="System.Boolean, mscorlib">
-    <value>True</value>
-  </data>
-  <data name="nointro.ImeMode" type="System.Windows.Forms.ImeMode, System.Windows.Forms">
-    <value>NoControl</value>
-  </data>
-  <data name="nointro.Location" type="System.Drawing.Point, System.Drawing">
-    <value>258, 19</value>
-  </data>
-  <data name="nointro.Size" type="System.Drawing.Size, System.Drawing">
-    <value>258, 19</value>
-  </data>
-  <data name="nointro.TabIndex" type="System.Int32, mscorlib">
-    <value>2</value>
-  </data>
-  <data name="nointro.Text" xml:space="preserve">
-    <value>Запускать игру без начальных заставок</value>
-  </data>
-  <data name="&gt;&gt;nointro.Name" xml:space="preserve">
-    <value>nointro</value>
-  </data>
-  <data name="&gt;&gt;nointro.Type" xml:space="preserve">
-    <value>System.Windows.Forms.CheckBox, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="&gt;&gt;nointro.Parent" xml:space="preserve">
-    <value>tabPage12</value>
-  </data>
-  <data name="&gt;&gt;nointro.ZOrder" xml:space="preserve">
-    <value>5</value>
-  </data>
-  <data name="sh_quality.ImeMode" type="System.Windows.Forms.ImeMode, System.Windows.Forms">
-    <value>NoControl</value>
-  </data>
-  <data name="sh_quality.Location" type="System.Drawing.Point, System.Drawing">
-    <value>6, 27</value>
-  </data>
-  <data name="sh_quality.Size" type="System.Drawing.Size, System.Drawing">
-    <value>188, 45</value>
-  </data>
-  <data name="sh_quality.TabIndex" type="System.Int32, mscorlib">
-    <value>2</value>
-  </data>
-  <data name="&gt;&gt;sh_quality.Name" xml:space="preserve">
-    <value>sh_quality</value>
-  </data>
-  <data name="&gt;&gt;sh_quality.Type" xml:space="preserve">
-    <value>System.Windows.Forms.TrackBar, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="&gt;&gt;sh_quality.Parent" xml:space="preserve">
-    <value>teni</value>
-  </data>
-  <data name="&gt;&gt;sh_quality.ZOrder" xml:space="preserve">
-    <value>0</value>
-  </data>
-  <data name="teni.Location" type="System.Drawing.Point, System.Drawing">
-    <value>10, 10</value>
-  </data>
-  <data name="teni.Size" type="System.Drawing.Size, System.Drawing">
-    <value>200, 88</value>
-  </data>
-  <data name="teni.TabIndex" type="System.Int32, mscorlib">
-    <value>0</value>
-  </data>
-  <data name="teni.Text" xml:space="preserve">
-    <value>Разрешение теней</value>
-  </data>
-  <data name="&gt;&gt;teni.Name" xml:space="preserve">
-    <value>teni</value>
-  </data>
-  <data name="&gt;&gt;teni.Type" xml:space="preserve">
-    <value>System.Windows.Forms.GroupBox, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="&gt;&gt;teni.Parent" xml:space="preserve">
-    <value>tabPage12</value>
-  </data>
-  <data name="&gt;&gt;teni.ZOrder" xml:space="preserve">
-    <value>6</value>
   </data>
   <data name="tabPage12.Location" type="System.Drawing.Point, System.Drawing">
     <value>4, 24</value>
@@ -1550,6 +1664,57 @@
   </data>
   <data name="&gt;&gt;tabPage12.ZOrder" xml:space="preserve">
     <value>2</value>
+  </data>
+  <metadata name="richTextBox2.Locked" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+    <value>True</value>
+  </metadata>
+  <data name="&gt;&gt;propertyGrid2.Name" xml:space="preserve">
+    <value>propertyGrid2</value>
+  </data>
+  <data name="&gt;&gt;propertyGrid2.Type" xml:space="preserve">
+    <value>System.Windows.Forms.PropertyGrid, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;propertyGrid2.Parent" xml:space="preserve">
+    <value>tabPage5</value>
+  </data>
+  <data name="&gt;&gt;propertyGrid2.ZOrder" xml:space="preserve">
+    <value>0</value>
+  </data>
+  <data name="&gt;&gt;richTextBox2.Name" xml:space="preserve">
+    <value>richTextBox2</value>
+  </data>
+  <data name="&gt;&gt;richTextBox2.Type" xml:space="preserve">
+    <value>System.Windows.Forms.RichTextBox, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;richTextBox2.Parent" xml:space="preserve">
+    <value>tabPage5</value>
+  </data>
+  <data name="&gt;&gt;richTextBox2.ZOrder" xml:space="preserve">
+    <value>1</value>
+  </data>
+  <data name="tabPage5.Location" type="System.Drawing.Point, System.Drawing">
+    <value>4, 24</value>
+  </data>
+  <data name="tabPage5.Size" type="System.Drawing.Size, System.Drawing">
+    <value>593, 431</value>
+  </data>
+  <data name="tabPage5.TabIndex" type="System.Int32, mscorlib">
+    <value>10</value>
+  </data>
+  <data name="tabPage5.Text" xml:space="preserve">
+    <value>Графика</value>
+  </data>
+  <data name="&gt;&gt;tabPage5.Name" xml:space="preserve">
+    <value>tabPage5</value>
+  </data>
+  <data name="&gt;&gt;tabPage5.Type" xml:space="preserve">
+    <value>System.Windows.Forms.TabPage, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;tabPage5.Parent" xml:space="preserve">
+    <value>tabpage</value>
+  </data>
+  <data name="&gt;&gt;tabPage5.ZOrder" xml:space="preserve">
+    <value>1</value>
   </data>
   <data name="propertyGrid2.Anchor" type="System.Windows.Forms.AnchorStyles, System.Windows.Forms">
     <value>Top, Bottom, Left, Right</value>
@@ -1602,42 +1767,6 @@
   <data name="&gt;&gt;richTextBox2.ZOrder" xml:space="preserve">
     <value>1</value>
   </data>
-  <data name="tabPage5.Location" type="System.Drawing.Point, System.Drawing">
-    <value>4, 24</value>
-  </data>
-  <data name="tabPage5.Size" type="System.Drawing.Size, System.Drawing">
-    <value>593, 431</value>
-  </data>
-  <data name="tabPage5.TabIndex" type="System.Int32, mscorlib">
-    <value>10</value>
-  </data>
-  <data name="tabPage5.Text" xml:space="preserve">
-    <value>Графика</value>
-  </data>
-  <data name="&gt;&gt;tabPage5.Name" xml:space="preserve">
-    <value>tabPage5</value>
-  </data>
-  <data name="&gt;&gt;tabPage5.Type" xml:space="preserve">
-    <value>System.Windows.Forms.TabPage, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="&gt;&gt;tabPage5.Parent" xml:space="preserve">
-    <value>tabpage</value>
-  </data>
-  <data name="&gt;&gt;tabPage5.ZOrder" xml:space="preserve">
-    <value>1</value>
-  </data>
-  <data name="propertyGrid1.Anchor" type="System.Windows.Forms.AnchorStyles, System.Windows.Forms">
-    <value>Top, Bottom, Left, Right</value>
-  </data>
-  <data name="propertyGrid1.Location" type="System.Drawing.Point, System.Drawing">
-    <value>0, 0</value>
-  </data>
-  <data name="propertyGrid1.Size" type="System.Drawing.Size, System.Drawing">
-    <value>593, 431</value>
-  </data>
-  <data name="propertyGrid1.TabIndex" type="System.Int32, mscorlib">
-    <value>20</value>
-  </data>
   <data name="&gt;&gt;propertyGrid1.Name" xml:space="preserve">
     <value>propertyGrid1</value>
   </data>
@@ -1672,6 +1801,30 @@
     <value>tabpage</value>
   </data>
   <data name="&gt;&gt;tabPage2.ZOrder" xml:space="preserve">
+    <value>0</value>
+  </data>
+  <data name="propertyGrid1.Anchor" type="System.Windows.Forms.AnchorStyles, System.Windows.Forms">
+    <value>Top, Bottom, Left, Right</value>
+  </data>
+  <data name="propertyGrid1.Location" type="System.Drawing.Point, System.Drawing">
+    <value>0, 0</value>
+  </data>
+  <data name="propertyGrid1.Size" type="System.Drawing.Size, System.Drawing">
+    <value>593, 431</value>
+  </data>
+  <data name="propertyGrid1.TabIndex" type="System.Int32, mscorlib">
+    <value>20</value>
+  </data>
+  <data name="&gt;&gt;propertyGrid1.Name" xml:space="preserve">
+    <value>propertyGrid1</value>
+  </data>
+  <data name="&gt;&gt;propertyGrid1.Type" xml:space="preserve">
+    <value>System.Windows.Forms.PropertyGrid, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;propertyGrid1.Parent" xml:space="preserve">
+    <value>tabPage2</value>
+  </data>
+  <data name="&gt;&gt;propertyGrid1.ZOrder" xml:space="preserve">
     <value>0</value>
   </data>
   <data name="tabpage.Anchor" type="System.Windows.Forms.AnchorStyles, System.Windows.Forms">
