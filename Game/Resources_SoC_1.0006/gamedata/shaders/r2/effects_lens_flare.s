@@ -13,4 +13,5 @@ function normal                (shader, t_base, t_second, t_detail)
   shader:sampler        ("s_flare")      :texture  (t_flare): clamp()
   shader:sampler        ("s_glow")       :texture  (t_glow): clamp()
   shader:sampler        ("s_dirt")       :texture  (t_dirt): clamp()
+  shader:sampler        ("s_position")   :texture  ("$user$position"): clamp()
 end
