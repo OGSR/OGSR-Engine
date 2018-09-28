@@ -8,7 +8,7 @@
 
 #pragma once
 
-IC	CSquadHierarchyHolder::CSquadHierarchyHolder									(CTeamHierarchyHolder *team)
+IC CSquadHierarchyHolder::CSquadHierarchyHolder( CTeamHierarchyHolder *team, u32 id )
 {
 	VERIFY						(team);
 	m_team						= team;
@@ -16,6 +16,7 @@ IC	CSquadHierarchyHolder::CSquadHierarchyHolder									(CTeamHierarchyHolder *t
 	m_leader					= 0;
 #endif // SQUAD_HIERARCHY_HOLDER_USE_LEADER
 	SeniorityHierarchy::assign_svector	(m_groups,max_group_count,0);
+        squad_id = id;
 }
 
 #ifdef SQUAD_HIERARCHY_HOLDER_USE_LEADER

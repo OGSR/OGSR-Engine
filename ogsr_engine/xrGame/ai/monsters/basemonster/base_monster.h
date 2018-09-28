@@ -445,6 +445,15 @@ public:
 #endif
 //////////////////////////////////////////////////////////////////////////
 
+ public:
+	float get_feel_enemy_who_just_hit_max_distance () { return m_feel_enemy_who_just_hit_max_distance; }
+	float get_feel_enemy_who_made_sound_max_distance () { return m_feel_enemy_who_made_sound_max_distance; }
+	float get_feel_enemy_max_distance			   () { return m_feel_enemy_max_distance; }
+
+ private:
+	float							m_feel_enemy_who_made_sound_max_distance;
+	float 							m_feel_enemy_who_just_hit_max_distance;
+	float 							m_feel_enemy_max_distance;
 };
 
 #include "base_monster_inline.h"

@@ -40,7 +40,7 @@ class CEntityAlive;
 class CGameObject;
 
 namespace MemorySpace {
-	typedef u32 squad_mask_type;
+	using squad_mask_type = size_t;
 
 	struct CNotYetVisibleObject {
 		const CGameObject			*m_object;

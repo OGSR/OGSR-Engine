@@ -1434,7 +1434,7 @@ void CActor::UpdateArtefactPanel()
 void CActor::ApplyArtefactEffects(ActorRestoreParams& r, CArtefact*	artefact)
 {
 #ifdef AF_ZERO_CONDITION
-  float k = artefact->GetCondition() > 0 ? 1.f : 0.f;
+  float k = fis_zero( artefact->GetCondition() ) ? 0.f : 1.f;
 #else
   float k = 1.f;
 #endif // AF_ZERO_CONDITION
@@ -1497,7 +1497,7 @@ ActorRestoreParams CActor::ActiveArtefactsOnBelt()
 		CInventoryItem *obj = smart_cast<CInventoryItem*>(*it);
 
 #ifdef AF_ZERO_CONDITION
-		float k = obj->GetCondition() > 0 ? 1.f : 0.f;
+		float k = fis_zero( obj->GetCondition() ) ? 0.f : 1.f;
 #else
 		float k = 1.f;
 #endif // AF_ZERO_CONDITION
@@ -1542,7 +1542,7 @@ ActorRestoreParams CActor::ActiveArtefactsOnBelt()
 		if (outfit) {
 
 #ifdef AF_ZERO_CONDITION
-			float k = outfit->GetCondition() > 0 ? 1.f : 0.f;
+			float k = fis_zero( outfit->GetCondition() ) ? 0.f : 1.f;
 #else
 			float k = 1.f;
 #endif // AF_ZERO_CONDITION
@@ -1628,7 +1628,7 @@ float	CActor::HitArtefactsOnBelt( float hit_power, ALife::EHitType hit_type, boo
 		CArtefact*	artefact = smart_cast<CArtefact*>(*it);
 		if(artefact){
 #ifdef AF_ZERO_CONDITION
-			if ( artefact->GetCondition() > 0 ) {
+			if ( !fis_zero( artefact->GetCondition() ) ) {
 				res_hit_power_k	+= artefact->m_ArtefactHitImmunities.AffectHit( 1.0f, hit_type );
 				_af_count += 1.0f;
 			}
@@ -1645,7 +1645,7 @@ float	CActor::HitArtefactsOnBelt( float hit_power, ALife::EHitType hit_type, boo
 		if (helmet)
 		{
 #ifdef AF_ZERO_CONDITION
-			if ( helmet->GetCondition() > 0 ) {
+			if ( !fis_zero( helmet->GetCondition() ) ) {
 				res_hit_power_k += helmet->m_ArtefactHitImmunities.AffectHit( 1.0f, hit_type );
 				_af_count += 1.0f;
 			}

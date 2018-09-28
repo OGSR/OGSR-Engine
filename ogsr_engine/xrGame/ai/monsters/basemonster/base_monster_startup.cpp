@@ -61,6 +61,10 @@ void CBaseMonster::Load(LPCSTR section)
 
 	m_melee_rotation_factor			= READ_IF_EXISTS(pSettings,r_float,section,"Melee_Rotation_Factor", 1.5f);
 	berserk_always					= !!READ_IF_EXISTS(pSettings,r_bool,section,"berserk_always", false);
+
+	m_feel_enemy_who_just_hit_max_distance   = READ_IF_EXISTS( pSettings, r_float, section, "feel_enemy_who_just_hit_max_distance", 20.f );
+	m_feel_enemy_max_distance                = READ_IF_EXISTS( pSettings, r_float, section, "feel_enemy_max_distance", 3.f );
+	m_feel_enemy_who_made_sound_max_distance = READ_IF_EXISTS( pSettings, r_float, section, "feel_enemy_who_made_sound_max_distance", 49.f );
 }
 
 // if sound is absent just do not load that one
