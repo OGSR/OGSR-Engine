@@ -40,6 +40,7 @@ private:
 #endif // SQUAD_HIERARCHY_HOLDER_USE_LEADER
 
 private:
+        u32 group_id;
 	CSquadHierarchyHolder			*m_squad;
 	MEMBER_REGISTRY					m_members;
 	VISIBLE_OBJECTS					*m_visible_objects;
@@ -76,13 +77,14 @@ private:
 			void					unregister_in_group_senses	(CEntity *member);
 
 public:
-	IC								CGroupHierarchyHolder		(CSquadHierarchyHolder *squad);
+                        IC CGroupHierarchyHolder( CSquadHierarchyHolder *squad, u32 );
 	virtual							~CGroupHierarchyHolder		();
 	IC		CAgentManager			&agent_manager				() const;
 	IC		const MEMBER_REGISTRY	&members					() const;
 			void					register_member				(CEntity *member);
 			void					unregister_member			(CEntity *member);
 	IC		CSquadHierarchyHolder	&squad						() const;
+	IC u32 id() const { return group_id; };
 
 #ifdef SQUAD_HIERARCHY_HOLDER_USE_LEADER
 public:

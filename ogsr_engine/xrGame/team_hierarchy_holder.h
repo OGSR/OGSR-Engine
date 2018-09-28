@@ -23,13 +23,15 @@ private:
 private:
 	CSeniorityHierarchyHolder			*m_seniority_manager;
 	mutable SQUAD_REGISTRY				m_squads;
+        u32 team_id;
 
 public:
-	IC									CTeamHierarchyHolder	(CSeniorityHierarchyHolder *m_seniority_manager);
+	IC CTeamHierarchyHolder( CSeniorityHierarchyHolder *m_seniority_manager, u32 );
 	virtual								~CTeamHierarchyHolder	();
 			CSquadHierarchyHolder		&squad					(u32 squad_id) const;
 	IC		CSeniorityHierarchyHolder	&team					() const;
 	IC		const SQUAD_REGISTRY		&squads					() const;
+	IC u32 id() const { return team_id; };
 };
 
 #include "team_hierarchy_holder_inline.h"

@@ -28,6 +28,7 @@ private:
 private:
 	CTeamHierarchyHolder			*m_team;
 	mutable GROUP_REGISTRY			m_groups;
+        u32 squad_id;
 
 #ifdef SQUAD_HIERARCHY_HOLDER_USE_LEADER
 private:
@@ -35,11 +36,12 @@ private:
 #endif // SQUAD_HIERARCHY_HOLDER_USE_LEADER
 
 public:
-	IC								CSquadHierarchyHolder	(CTeamHierarchyHolder *team);
+	IC CSquadHierarchyHolder( CTeamHierarchyHolder *team, u32 );
 	virtual							~CSquadHierarchyHolder	();
 			CGroupHierarchyHolder	&group					(u32 group_id) const;
 	IC		CTeamHierarchyHolder	&team					() const;
 	IC		const GROUP_REGISTRY	&groups					() const;
+	IC u32 id() const { return squad_id; };
 
 #ifdef SQUAD_HIERARCHY_HOLDER_USE_LEADER
 public:

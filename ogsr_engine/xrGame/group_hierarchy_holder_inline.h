@@ -8,7 +8,7 @@
 
 #pragma once
 
-IC	CGroupHierarchyHolder::CGroupHierarchyHolder			(CSquadHierarchyHolder *squad)
+IC CGroupHierarchyHolder::CGroupHierarchyHolder( CSquadHierarchyHolder *squad, u32 id )
 {
 	VERIFY				(squad);
 	m_squad				= squad;
@@ -24,6 +24,7 @@ IC	CGroupHierarchyHolder::CGroupHierarchyHolder			(CSquadHierarchyHolder *squad)
 	m_dwActiveCount		= 0;
 	m_dwAliveCount		= 0;
 	m_dwStandingCount	= 0;
+        group_id = id;
 }
 
 IC	CAgentManager &CGroupHierarchyHolder::agent_manager		() const
