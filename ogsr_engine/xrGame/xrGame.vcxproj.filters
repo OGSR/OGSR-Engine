@@ -6040,6 +6040,9 @@
     <ClInclude Include="InventoryContainer.h">
       <Filter>Core\Client\Objects\inventory\InventoryContainer</Filter>
     </ClInclude>
+    <ClInclude Include="ui\UIPdaSpot.h">
+      <Filter>AI\AScript\ScriptClasses\UI\Common\PdaWnd</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="damage_manager.cpp">
@@ -8861,6 +8864,9 @@
     </ClCompile>
     <ClCompile Include="InventoryContainer.cpp">
       <Filter>Core\Client\Objects\inventory\InventoryContainer</Filter>
+    </ClCompile>
+    <ClCompile Include="ui\UIPdaSpot.cpp">
+      <Filter>AI\AScript\ScriptClasses\UI\Common\PdaWnd</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

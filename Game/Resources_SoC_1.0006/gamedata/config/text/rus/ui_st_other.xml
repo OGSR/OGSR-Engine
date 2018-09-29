@@ -198,4 +198,11 @@
 	<string id="ui_st_patch_download_error">
 		<text>Невозможно скачать патч.</text>
 	</string>
+
+	<string id="st_pda_change_spot_hint">
+		<text>Изменить текст метки</text>
+	</string>
+	<string id="st_pda_delete_spot">
+		<text>Удалить метку</text>
+	</string>
 </string_table>

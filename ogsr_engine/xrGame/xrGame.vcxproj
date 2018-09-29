@@ -424,6 +424,7 @@
     <ClInclude Include="script_rq_result.h" />
     <ClInclude Include="script_vars_storage.h" />
     <ClInclude Include="ui\UIIconParams.h" />
+    <ClInclude Include="ui\UIPdaSpot.h" />
     <ClInclude Include="wrapper_abstract.h" />
     <ClInclude Include="wrapper_abstract_inline.h" />
     <ClInclude Include="action_management_config.h" />
@@ -1671,6 +1672,7 @@
     <ClCompile Include="script_vars_storage.cpp" />
     <ClCompile Include="sound_memory_manager.cpp" />
     <ClCompile Include="ui\UIIconParams.cpp" />
+    <ClCompile Include="ui\UIPdaSpot.cpp" />
     <ClCompile Include="visual_memory_manager.cpp" />
     <ClCompile Include="visual_memory_params.cpp" />
     <ClCompile Include="vision_client.cpp" />

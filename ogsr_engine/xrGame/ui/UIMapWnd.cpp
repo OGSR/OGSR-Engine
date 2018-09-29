@@ -18,6 +18,11 @@
 
 #include "../HUDManager.h"
 
+#include "UIPropertiesBox.h"
+#include "UIListBoxItem.h"
+#include "UIPdaSpot.h"
+#include "map_spot.h"
+
 #include <dinput.h>				//remove me !!!
 #include "..\..\xr_3da\xr_input.h"		//remove me !!!
 
@@ -35,8 +40,10 @@ CUIMapWnd::CUIMapWnd()
 	m_flags.zero			();
 	m_currentZoom			= 1.0f;
 	m_hint					= NULL;
-//.	m_selected_location		= NULL;
 	m_text_hint				= NULL;
+
+	m_UserSpotWnd = nullptr;
+	m_cur_location = nullptr;
 }
 
 CUIMapWnd::~CUIMapWnd()
@@ -205,6 +212,17 @@ void CUIMapWnd::Init(LPCSTR xml_name, LPCSTR start_from)
 	m_ActionPlanner					= xr_new<CMapActionPlanner>();
 	m_ActionPlanner->setup			(this);
 	m_flags.set						(lmFirst,TRUE);
+
+	m_UIPropertiesBox = xr_new<CUIPropertiesBox>();
+	m_UIPropertiesBox->SetAutoDelete(true);
+	m_UIPropertiesBox->Init(0, 0, 300, 300);
+	AttachChild(m_UIPropertiesBox);
+	m_UIPropertiesBox->Hide();
+	m_UIPropertiesBox->SetWindowName("property_box");
+
+	m_UserSpotWnd = xr_new<CUIPdaSpot>();
+	m_UserSpotWnd->SetAutoDelete(true);
+	AttachChild(m_UserSpotWnd);
 }
 
 void CUIMapWnd::Show(bool status)
@@ -238,6 +256,8 @@ void CUIMapWnd::Show(bool status)
 	}
 
 	m_hint->SetOwner		(NULL);
+
+	m_UserSpotWnd->Exit();
 }
 
 
@@ -447,7 +467,28 @@ bool CUIMapWnd::OnMouse(float x, float y, EUIMessages mouse_action)
 
 void CUIMapWnd::SendMessage(CUIWindow* pWnd, s16 msg, void* pData)
 {
-	CUIWndCallback::OnEvent						(pWnd, msg, pData);
+	CUIWndCallback::OnEvent(pWnd, msg, pData);
+
+	if (pWnd == m_UIPropertiesBox && msg == PROPERTY_CLICKED && m_UIPropertiesBox->GetClickedItem())
+	{
+		switch (m_UIPropertiesBox->GetClickedItem()->GetTAG())
+		{
+		// Click on the button 'change spot name'
+		case MAP_CHANGE_SPOT_HINT_ACT:
+		{
+			ShowSettingsWindow(m_cur_location->ObjectID(), m_cur_location->GetLastPosition(), m_cur_location->LevelName());
+			m_cur_location = nullptr;
+			break;
+		}
+		// Click on the button 'remove spot'
+		case MAP_REMOVE_SPOT_ACT:
+		{
+			Level().MapManager().RemoveMapLocation(m_cur_location);
+			m_cur_location = nullptr;
+			break;
+		}
+		}
+	}
 }
 
 CUICustomMap*	CUIMapWnd::GetMapByIdx(u16 idx)
@@ -558,62 +599,7 @@ void CUIMapWnd::OnToolZoomOutClicked(CUIWindow* w, void*)
 	m_flags.set						(lmZoomOut,bPushed);
 	ValidateToolBar					();
 }
-/*
-void CUIMapWnd::OnToolAddSpotClicked	(CUIWindow* w, void*)
-{
-	m_flags.zero		();
-	CUI3tButton* btn = smart_cast<CUI3tButton*>(w);
-	bool bPushed = btn->GetCheck		();
-	m_flags.set							(lmUserSpotAdd,bPushed);
-	ValidateToolBar						();
-}
 
-void CUIMapWnd::OnToolRemoveSpotClicked	(CUIWindow* w, void*)
-{
-	m_flags.zero		();
-	CUI3tButton* btn = smart_cast<CUI3tButton*>(w);
-	bool bPushed = btn->GetCheck		();
-	m_flags.set							(lmUserSpotRemove,bPushed);
-	ValidateToolBar						();
-}
-
-void CUIMapWnd::RemoveSpot			()
-{
-	if(m_selected_location&&m_selected_location->CanBeUserRemoved()){
-		Level().MapManager().RemoveMapLocation(m_selected_location);
-		m_selected_location				= NULL;
-		m_flags.set						(lmUserSpotRemove,FALSE);
-		m_ToolBar[eRemoveSpot]->SetButtonMode(CUIButton::BUTTON_NORMAL);
-	}
-}
-
-
-
-void CUIMapWnd::OnToolHighlightSpotClicked(CUIWindow* w, void*)
-{
-	m_flags.zero		();
-	CUI3tButton* btn = smart_cast<CUI3tButton*>(w);
-	bool bPushed = btn->GetCheck		();
-	m_flags.set							(lmHighlightSpot,bPushed);
-	ValidateToolBar						();
-}
-
-
-void CUIMapWnd::HighlightSpot			()
-{
-	if(m_selected_location){
-		bool b = m_selected_location->PointerEnabled	();
-		Level().MapManager().DisableAllPointers();
-		if(b)
-			m_selected_location->DisablePointer();
-		else
-			m_selected_location->EnablePointer();
-
-		m_ToolBar[eHighlightSpot]->SetButtonMode(CUIButton::BUTTON_NORMAL);
-		m_flags.set						(lmHighlightSpot,FALSE);
-	}
-}
-*/
 void CUIMapWnd::ValidateToolBar			()
 {
 	CUI3tButton* btn	= NULL;
@@ -624,19 +610,6 @@ void CUIMapWnd::ValidateToolBar			()
 	btn					= m_ToolBar[eZoomOut];
 	if(btn)
 		btn->SetCheck	(!!m_flags.test(lmZoomOut));
-/*
-	btn					= m_ToolBar[eAddSpot];
-	if(btn)
-		btn->SetCheck	(!!m_flags.test(lmUserSpotAdd));
-
-	btn					= m_ToolBar[eRemoveSpot];
-	if(btn)
-		btn->SetCheck	(!!m_flags.test(lmUserSpotRemove));
-
-	btn					= m_ToolBar[eHighlightSpot];
-	if(btn)
-		btn->SetCheck	(!!m_flags.test(lmHighlightSpot));
-*/
 }
 
 
@@ -657,28 +630,6 @@ void CUIMapWnd::OnToolActorClicked		(CUIWindow*, void*)
 
 	SetTargetMap				(lm, v2, true);
 }
-/*
-void CUIMapWnd::AddUserSpot			(CUILevelMap* lm)
-{
-	VERIFY(m_flags.test(lmUserSpotAdd) );
-
-	Fvector2 cursor_pos = GetUICursor()->GetPos();
-	Fvector2 _p;lm->GetAbsolutePos(_p);
-	cursor_pos.sub					(_p);
-	Fvector2 p =					lm->ConvertLocalToReal(cursor_pos);
-	Fvector pos;
-	pos.set							(p.x, 0.0f, p.y);
-	shared_str spot					= "user"; 
-	CMapLocation* ml				= Level().MapManager().AddUserLocation(spot, lm->MapName(), pos);
-	CGameTask* t					= Actor()->GameTaskManager().GiveGameTaskToActor("user_task",false);
-	t->m_Objectives[0].object_id	= ml->ObjectID();
-	t->m_Objectives[0].map_location	= spot;
-	ml->SetHint						(t->m_Objectives[0].description);
-	Actor()->GameTaskManager		().SetTaskState(t, 0, eTaskUserDefined);
-
-	m_flags.set						(lmUserSpotAdd, FALSE);
-	m_ToolBar[eAddSpot]->SetButtonMode(CUIButton::BUTTON_NORMAL);
-}*/
 
 bool is_in(const Frect& b1, const Frect& b2){
 	return (b1.x1<b2.x1)&&(b1.x2>b2.x2)&&(b1.y1<b2.y1)&&(b1.y2>b2.y2);
@@ -718,22 +669,6 @@ void CUIMapWnd::HideHint					(CUIWindow* parent)
 		m_hint->SetOwner	(NULL);
 }
 
-/*
-void CUIMapWnd::Select				(CMapLocation* ml)
-{
-	m_selected_location		= NULL;
-
-	if(!ml)		return;
-	if(ml->CanBeSelected())
-		m_selected_location = ml;
-
-	if(!!m_flags.test(lmUserSpotRemove) && ml->CanBeUserRemoved() )
-		RemoveSpot	();
-
-	if(	!!m_flags.test(lmHighlightSpot))
-		HighlightSpot	();
-}*/
-
 void CUIMapWnd::Hint					(const shared_str& text)
 {
 	m_text_hint->SetTextST				(*text);
@@ -743,4 +678,95 @@ void CUIMapWnd::Reset()
 {
 	inherited::Reset			();
 	ResetActionPlanner			();
+}
+
+
+// qweasdd: Following functions from Lost Alpha 
+//Alun: Correct now. All you need is relative mouse position to absolute pos of uilevelmap, then remove widescreen scale on X before local-to-world convert
+bool CUIMapWnd::ConvertCursorPosToMap(Fvector* return_position, CUICustomMap* curr_map)
+{
+	Fvector2 cursor_pos = GetUICursor()->GetCursorPosition();
+	Frect box_rect;
+	curr_map->GetAbsoluteRect(box_rect);
+	if (!box_rect.in(cursor_pos))
+		return false;
+	cursor_pos.sub(box_rect.lt);
+	Frect bound_rect = curr_map->BoundRect();
+	bound_rect.lt.x /= UI()->get_current_kx();
+	bound_rect.rb.x /= UI()->get_current_kx();
+	return_position->x = bound_rect.lt.x + cursor_pos.x / (box_rect.width() / bound_rect.width());
+	return_position->y = 0.f;
+	return_position->z = bound_rect.height() + bound_rect.lt.y - cursor_pos.y / (box_rect.height() / bound_rect.height());
+	return true;
+}
+
+void CUIMapWnd::ShowSettingsWindow(u16 id, Fvector pos, shared_str levelName)
+{
+	m_UserSpotWnd->Init(id, levelName.c_str(), pos, false);
+	m_UserSpotWnd->Show();
+}
+
+CMapLocation* CUIMapWnd::UnderSpot(Fvector RealPosition, CUICustomMap* curr_map)
+{
+	Fvector2 RealPositionXZ;
+	RealPositionXZ.set(RealPosition.x, RealPosition.z);
+	Locations Spots = Level().MapManager().Locations();
+	Fvector2 m_position_on_map;
+	Fvector2 m_position_mouse = curr_map->ConvertRealToLocal(RealPositionXZ, false);
+	float TargetLocationDistance = 100.0f;
+	CMapLocation* ml = nullptr;
+	for (auto it = Spots.begin(); it != Spots.end(); ++it)
+	{
+		if ((*it).location->IsUserDefined())
+		{
+			m_position_on_map = curr_map->ConvertRealToLocal((*it).location->Position(), false);
+			float distance = m_position_on_map.distance_to(m_position_mouse);
+			Fvector2 FvectorSize = (*it).location->SpotSize();
+			float size = (FvectorSize.x + FvectorSize.y) / 2;
+			if ((distance < size) && (distance < TargetLocationDistance))
+			{
+				TargetLocationDistance = distance;
+				ml = (*it).location;
+			}
+		}
+	}
+	return ml;
+}
+
+void CUIMapWnd::CreateSpotWindow(Fvector RealPosition, shared_str map_name)
+{
+	m_UserSpotWnd->Init(u16(-1), map_name.c_str(), RealPosition, true);
+	m_UserSpotWnd->Show();
+}
+
+void CUIMapWnd::ActivatePropertiesBox(CUIWindow* w)
+{
+	m_UIPropertiesBox->RemoveAll();
+
+	CMapSpot* sp = smart_cast<CMapSpot*>(w);
+	if (!sp)
+		return;
+
+	m_cur_location = sp->MapLocation();
+	if (!m_cur_location)
+		return;
+
+	if (sp->MapLocation()->IsUserDefined())
+	{
+		m_UIPropertiesBox->AddItem("st_pda_change_spot_hint", nullptr, MAP_CHANGE_SPOT_HINT_ACT);
+		m_UIPropertiesBox->AddItem("st_pda_delete_spot", nullptr, MAP_REMOVE_SPOT_ACT);
+	}
+
+	if (m_UIPropertiesBox->GetItemsCount() > 0)
+	{
+		m_UIPropertiesBox->AutoUpdateSize();
+
+		Fvector2 cursor_pos;
+		Frect vis_rect;
+
+		GetAbsoluteRect(vis_rect);
+		cursor_pos = GetUICursor()->GetCursorPosition();
+		cursor_pos.sub(vis_rect.lt);
+		m_UIPropertiesBox->Show(vis_rect, cursor_pos);
+	}
 }

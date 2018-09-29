@@ -59,23 +59,19 @@ void CMapSpot::Update()
 #include "Actor.h"
 bool CMapSpot::OnMouseDown		(int mouse_btn)
 {
-/*
-	if(left_button){
-		GetMessageTarget()->SendMessage(this, MAP_SELECT_SPOT);
-		return true;
-	}else
-		return false;
-*/
 	// Real Wolf: Колбек для изменения\удаления меток. 03.08.2014.
 	if (mouse_btn == MOUSE_1)
 	{
 		g_actor->callback(GameObject::eUIMapSpotClick)(
 			m_map_location->ObjectID(), 
-			m_map_location->m_type.c_str(),
+			m_map_location->GetType(),
 			m_map_location->GetHint()
 		);
 		return true;
-	}
+	} else if (mouse_btn == MOUSE_2) {
+		GetMessageTarget()->SendMessage(this, MAP_SELECT_SPOT2);
+		return true;
+	} else
 		return false;
 }
 

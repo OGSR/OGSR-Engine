@@ -1,0 +1,26 @@
+<w>
+	<background x="20" y="55" width="780" height="150">
+		<!--auto_static x="-5" y="0" width="240" height="85" stretch="1">
+			<texture>ui_frame_mainDes</texture>
+		</auto_static-->
+	</background>
+
+	<spot_name_edit x="20" y="55" width="700" height="30">
+		<text font="letterica18" r="240" g="217" b="182"/>
+		<texture>ui_linetext_e</texture>
+	</spot_name_edit>
+
+	<btn_apply x="20" y="85" width="117" height="28">
+      <texture_e>ui_button_ordinary_e</texture_e>
+      <texture_t>ui_button_ordinary_t</texture_t>
+      <texture_h>ui_button_ordinary_h</texture_h>
+      <text>ui_inv_ok</text>
+	</btn_apply>
+
+	<btn_cancel x="602" y="85" width="117" height="28">
+      <texture_e>ui_button_ordinary_e</texture_e>
+      <texture_t>ui_button_ordinary_t</texture_t>
+      <texture_h>ui_button_ordinary_h</texture_h>
+      <text>ui_inv_cancel</text>
+    </btn_cancel>
+</w>

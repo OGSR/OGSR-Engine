@@ -27,6 +27,7 @@
 #include "UIMainIngameWnd.h"
 #include "UITabButton.h"
 #include "../actor.h"
+#include "UIPdaSpot.h"
 
 #define		PDA_XML					"pda.xml"
 u32			g_pda_info_state		= 0;
@@ -398,3 +399,6 @@ void RearrangeTabButtons(CUITabControl* pTab, xr_vector<Fvector2>& vec_sign_plac
 	}
 
 }
+
+//Чтобы нельзя было двигаться при вводе текста метки в ПДА. Другого способа не придумал.
+bool CUIPdaWnd::StopAnyMove() { return this->UIMapWnd->m_UserSpotWnd->IsShown(); }

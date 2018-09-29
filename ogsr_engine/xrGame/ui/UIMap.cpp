@@ -473,27 +473,33 @@ void CUILevelMap::Update()
 #include "../script_game_object.h"
 #include "../Actor.h"
 #include "../UICursor.h"
+#include "../UIGameSP.h"
+#include "../HUDManager.h"
+#include "UiPdaWnd.h"
 
-bool CUILevelMap::OnMouse	(float x, float y, EUIMessages mouse_action)
+bool CUILevelMap::OnMouse(float x, float y, EUIMessages mouse_action)
 {
-	if (inherited::OnMouse(x,y,mouse_action))	return true;
-	if (MapWnd()->GlobalMap()->Locked())		return true;
-/*
-	if (MapWnd()->m_flags.is_any(CUIMapWnd::lmZoomIn+CUIMapWnd::lmZoomOut))	return false;
-
-	if (mouse_action == WINDOW_LBUTTON_DOWN)
-	{
-		if (MapWnd()->m_flags.test(CUIMapWnd::lmUserSpotAdd) )
-			MapWnd()->AddUserSpot(this);
-		else
-		if(fsimilar(MapWnd()->GlobalMap()->GetCurrentZoom(), MapWnd()->GlobalMap()->GetMinZoom(),EPS_L) )
-			MapWnd()->SetTargetMap( this, true );
+	if (inherited::OnMouse(x,y,mouse_action))
 		return true;
-	};
-*/
-	// Real Wolf: Колбек с позицией и названием карты при клике по самой карте. 03.08.2014.
-	if (mouse_action == WINDOW_LBUTTON_DOWN)
-	{
+	if (MapWnd()->GlobalMap()->Locked())
+		return true;
+
+	if (mouse_action == WINDOW_LBUTTON_DB_CLICK) {
+		auto* ui_game_sp = smart_cast<CUIGameSP*>(HUD().GetUI()->UIGame());
+		if (ui_game_sp->PdaMenu->m_pActiveSection == EPdaTabs::eptMap) {
+			Fvector RealPosition;
+			if (MapWnd()->ConvertCursorPosToMap(&RealPosition, this))
+			{
+				CMapLocation* _mapLoc = MapWnd()->UnderSpot(RealPosition, this);
+				if (!_mapLoc)
+				{
+					MapWnd()->CreateSpotWindow(RealPosition, MapName());
+					return true;
+				}
+			}
+		}
+	}
+	else if (mouse_action == WINDOW_LBUTTON_DOWN) { // Real Wolf: Колбек с позицией и названием карты при клике по самой карте. 03.08.2014.
 		Fvector2 cursor_pos =			GetUICursor()->GetCursorPosition();
 		Fvector2 _p; GetAbsolutePos		(_p);
 
@@ -504,10 +510,8 @@ bool CUILevelMap::OnMouse	(float x, float y, EUIMessages mouse_action)
 
 		g_actor->callback(GameObject::eUIMapClick)(pos, MapName().c_str() );
 	}
-
-	if(mouse_action==WINDOW_MOUSE_MOVE && (FALSE==pInput->iGetAsyncBtnState(0)) )
-	{
-		if( MapWnd() )
+	else if (mouse_action == WINDOW_MOUSE_MOVE) {
+		if( MapWnd() && !pInput->iGetAsyncBtnState(0) )
 		{
 			MapWnd()->Hint	(MapName());
 			return			true;
@@ -517,24 +521,28 @@ bool CUILevelMap::OnMouse	(float x, float y, EUIMessages mouse_action)
 	return false;
 }
 
-void	CUILevelMap::SendMessage			(CUIWindow* pWnd, s16 msg, void* pData)
+void CUILevelMap::SendMessage(CUIWindow* pWnd, s16 msg, void* pData)
 {
 	inherited::SendMessage(pWnd, msg, pData);
 
-	if(msg==MAP_SHOW_HINT){
-		CMapSpot* sp =smart_cast<CMapSpot*>(pWnd);VERIFY(sp);
+	switch (msg)
+	{
+	case MAP_SELECT_SPOT2:
+	{
+		auto* ui_game_sp = smart_cast<CUIGameSP*>(HUD().GetUI()->UIGame());
+		if (ui_game_sp->PdaMenu->m_pActiveSection == EPdaTabs::eptMap) //Правильнее было бы проверять там, откуда вызвали, но надо кучу инклудов... Да ну нахер возиться.
+			MapWnd()->ActivatePropertiesBox(pWnd);
+	} break;
+	case MAP_SHOW_HINT:
+	{
+		CMapSpot* sp = smart_cast<CMapSpot*>(pWnd); VERIFY(sp);
 		MapWnd()->ShowHint(pWnd, sp->GetHint());
-	}else
-	if(msg==MAP_HIDE_HINT){
+	} break;
+	case MAP_HIDE_HINT:
 		MapWnd()->HideHint(pWnd);
+		break;
+	default: break;
 	}
-	/*
-	else
-	if(msg==MAP_SELECT_SPOT){
-		CMapSpot* sp =smart_cast<CMapSpot*>(pWnd);VERIFY(sp);
-		MapWnd()->Select(sp->MapLocation());
-	}	
-*/
 }
 
 void CUILevelMap::OnFocusLost			()

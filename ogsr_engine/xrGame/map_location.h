@@ -25,6 +25,7 @@ enum ELocationFlags
 };
 
 protected:
+	LPCSTR m_type;
 	flags32					m_flags;
 	shared_str				m_hint;
 	CMapSpot*				m_level_spot;
@@ -36,6 +37,7 @@ protected:
 	CMapSpot*				m_mini_map_spot_border;
 
 	u16						m_objectID;
+	CSE_ALifeDynamicObject* m_owner_se_object;
 	u16						m_refCount;
 	int						m_ttl;
 	u32						m_actual_time;
@@ -44,6 +46,7 @@ protected:
 
 	struct SCachedValues{
 		u32					m_updatedFrame;
+		GameGraph::_GRAPH_ID m_graphID;
 		Fvector2			m_Position;
 		Fvector2			m_Direction;
 		shared_str			m_LevelName;
@@ -60,7 +63,7 @@ protected :
 	CMapSpotPointer*		GetSpotPointer					(CMapSpot* sp);
 	CMapSpot*				GetSpotBorder					(CMapSpot* sp);
 public:
-							CMapLocation					(LPCSTR type, u16 object_id);
+							CMapLocation					(LPCSTR type, u16 object_id, bool is_user_loc = false);
 	virtual					~CMapLocation					();
 	virtual void			destroy							();
 			LPCSTR			GetHint							();
@@ -69,10 +72,16 @@ public:
 	void					EnablePointer					()					{m_flags.set(ePointerEnabled,TRUE);};
 	void					DisablePointer					()					{m_flags.set(ePointerEnabled,FALSE);};
 
+	LPCSTR GetType() const { return m_type; };
+	Fvector2 SpotSize();
+	IC bool IsUserDefined() const { return !!m_flags.test(eUserDefined); }
+	IC void SetUserDefinedFlag(BOOL state) { m_flags.set(eUserDefined, state); }
+	void InitUserSpot(const shared_str& level_name, const Fvector& pos);
+	void HighlightSpot(bool state, const Fcolor& color);
+
 	bool					SpotEnabled						()					{return !!m_flags.test(eSpotEnabled);};
 	void					EnableSpot						()					{m_flags.set(eSpotEnabled,TRUE);};
 	void					DisableSpot						()					{m_flags.set(eSpotEnabled,FALSE);};
-	bool					IsUserDefined					() const			{return !!m_flags.test(eUserDefined);}
 	virtual void			UpdateMiniMap					(CUICustomMap* map);
 	virtual void			UpdateLevelMap					(CUICustomMap* map);
 
@@ -93,9 +102,6 @@ public:
 	virtual void			load							(IReader &stream);
 	virtual bool			CanBeSelected					()						{return true;}
 	virtual bool			CanBeUserRemoved				()						{return false;}
-
-	// Real Wolf: Для использования типа в дальнейшем. 03.08.2014.
-	shared_str				m_type;
 
 #ifdef DEBUG
 	virtual void			Dump							(){};
@@ -121,31 +127,6 @@ public:
 	virtual void			UpdateMiniMap					(CUICustomMap* map);
 	virtual void			UpdateLevelMap					(CUICustomMap* map);
 
-#ifdef DEBUG
-	virtual void			Dump							();
-#endif
-};
-
-class CUserDefinedMapLocation :public CMapLocation
-{
-	typedef CMapLocation inherited;
-	shared_str				m_level_name;
-	Fvector					m_position;
-public:
-	GameGraph::_GRAPH_ID	m_graph_id;
-							CUserDefinedMapLocation			(LPCSTR type, u16 object_id);
-	virtual					~CUserDefinedMapLocation		();
-	virtual bool			Update							(); //returns actual
-	virtual Fvector2		Position						();
-	virtual Fvector2		Direction						();
-	virtual shared_str		LevelName						();
-
-			void			InitExternal					(const shared_str& level_name, const Fvector& pos);
-	virtual void			save							(IWriter &stream);
-	virtual void			load							(IReader &stream);
-
-	virtual bool			CanBeSelected					()						{return true;}
-	virtual bool			CanBeUserRemoved				()						{return true;}
 #ifdef DEBUG
 	virtual void			Dump							();
 #endif
