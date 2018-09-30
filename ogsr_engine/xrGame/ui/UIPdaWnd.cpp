@@ -399,6 +399,3 @@ void RearrangeTabButtons(CUITabControl* pTab, xr_vector<Fvector2>& vec_sign_plac
 	}
 
 }
-
-//Чтобы нельзя было двигаться при вводе текста метки в ПДА. Другого способа не придумал.
-bool CUIPdaWnd::StopAnyMove() { return this->UIMapWnd->m_UserSpotWnd->IsShown(); }
