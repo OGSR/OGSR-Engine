@@ -70,7 +70,7 @@ public:
 	virtual bool			OnMouse				(float x, float y, EUIMessages mouse_action) {CUIDialogWnd::OnMouse(x,y,mouse_action);return true;} //always true because StopAnyMove() == false
 	
 	void					SetActiveSubdialog	(EPdaTabs section);
-	virtual bool			StopAnyMove			();
+	virtual bool			StopAnyMove			() { return false; }
 
 			void			PdaContentsChanged	( pda_section::part type, bool = true );
 };

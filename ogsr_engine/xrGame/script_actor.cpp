@@ -105,6 +105,7 @@ void CScriptActor::script_register(lua_State *L)
 			.def_readwrite("satiety",					&CActorCondition::m_fSatiety)
 			.def_readwrite("satiety_v",					&CActorCondition::m_fV_Satiety)
 			.def_readwrite("satiety_health_v",			&CActorCondition::m_fV_SatietyHealth)			
+			.def_readwrite("satiety_power_v",			&CActorCondition::m_fV_SatietyPower)			
 		
 			.def_readwrite("max_power_leak_speed",		&CActorCondition::m_fPowerLeakSpeed)			
 			.def_readwrite("jump_power",				&CActorCondition::m_fJumpPower)
