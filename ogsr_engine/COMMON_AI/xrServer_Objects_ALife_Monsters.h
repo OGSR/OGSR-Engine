@@ -116,7 +116,7 @@ add_to_type_list(CSE_ALifeTrader)
 #define script_type_list save_type_list(CSE_ALifeTrader)
 
 SERVER_ENTITY_DECLARE_BEGIN(CSE_ALifeCustomZone,CSE_ALifeSpaceRestrictor)
-	f32								m_maxPower;
+
 	ALife::EHitType					m_tHitType;
 	u32								m_owner_id;
 	u32								m_enabled_time;

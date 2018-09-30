@@ -23,7 +23,7 @@ CSE_ALifeItemWeapon	*CSE_ALifeAnomalousZone::tpfGetBestWeapon(ALife::EHitType &t
 {
 	m_tpCurrentBestWeapon		= 0;
 	m_tTimeID					= ai().alife().time_manager().game_time();
-	fHitPower					= m_maxPower;
+  fHitPower         = 1.0f;//m_maxPower;
 	tHitType					= m_tHitType;
 	return						(m_tpCurrentBestWeapon);
 }
@@ -35,7 +35,7 @@ ALife::EMeetActionType CSE_ALifeAnomalousZone::tfGetActionType(CSE_ALifeSchedula
 
 bool CSE_ALifeAnomalousZone::bfActive()
 {
-	return						(fis_zero(m_maxPower,EPS_L) || !interactive());
+  return !interactive();
 }
 
 CSE_ALifeDynamicObject *CSE_ALifeAnomalousZone::tpfGetBestDetector()

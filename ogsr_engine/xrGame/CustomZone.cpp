@@ -329,9 +329,9 @@ BOOL CCustomZone::net_Spawn(CSE_Abstract* DC)
 	CSE_ALifeCustomZone			*Z = smart_cast<CSE_ALifeCustomZone*>(e);
 	VERIFY						(Z);
 	
-	m_fMaxPower					= Z->m_maxPower;
-	m_fAttenuation				= pSettings->r_float(cNameSect(),"attenuation");
-	m_dwPeriod					= pSettings->r_u32(cNameSect(),"period");
+  m_fMaxPower         = pSettings->r_float(cNameSect(), "max_start_power");
+	m_fAttenuation			= pSettings->r_float(cNameSect(), "attenuation");
+	m_dwPeriod					= pSettings->r_u32(cNameSect(), "period");
 	m_owner_id					= Z->m_owner_id;
 	if(m_owner_id != u32(-1))
 		m_ttl					= Device.dwTimeGlobal + 40000;// 40 sec
