@@ -5,7 +5,7 @@
 #include "UIMapWnd.h"
 
 typedef CActionBase<CUIMapWnd>				WORLD_OPERATOR;
-static const float	map_resize_speed		= 350.f;	// y.e./sec
+static const float	map_resize_speed		= 650.f;	// y.e./sec
 static const float	map_zoom_time			= 0.5f;		// sec
 static const float	min_move_time			= 0.25f;	// sec
 //actions

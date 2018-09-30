@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+#include "stdafx.h"
 #include <dinput.h>
 #include "../HUDManager.h"
 #include "UICustomEdit.h"
@@ -175,6 +175,11 @@ bool CUICustomEdit::OnKeyboard(int dik, EUIMessages keyboard_action)
 	return false;
 }
 
+bool CUICustomEdit::OnKeyboardHold(int dik)
+{
+  return true;
+}
+
 bool CUICustomEdit::KeyPressed(int dik)
 {
 	char out_me = 0;
@@ -310,16 +315,16 @@ void CUICustomEdit::AddChar(CHAR c)
 
 //время для обеспечивания печатания
 //символа при удерживаемой кнопке
-#define HOLD_WAIT_TIME 400
-#define HOLD_REPEAT_TIME 100
+#define HOLD_WAIT_TIME 300
+#define HOLD_REPEAT_TIME 50
 
 void CUICustomEdit::Update()
 {
 	if(m_bInputFocus)
 	{	
-		static u32 last_time; 
+    static u32 last_time;
 
-		u32 cur_time = Device.TimerAsync();
+    u32 cur_time = GetTickCount();
 
 		if(m_iKeyPressAndHold)
 		{

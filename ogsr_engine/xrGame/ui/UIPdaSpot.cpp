@@ -36,6 +36,8 @@ void CUIPdaSpot::Init(u16 spot_id, LPCSTR level_name, Fvector pos, bool main_wnd
 		m_editBox->SetText(ml->GetHint());
 		ml->HighlightSpot(true, Fcolor().set(255.f, 36.f, 0.f, 255.f));
 	}
+
+  m_editBox->CaptureFocus(true);
 }
 
 void CUIPdaSpot::InitControls()
@@ -130,6 +132,8 @@ void CUIPdaSpot::Exit()
 
 bool CUIPdaSpot::OnKeyboard(int dik, EUIMessages keyboard_action)
 {
+  if (base_class::OnKeyboard(dik, keyboard_action)) return true;
+
 	switch (dik)
 	{
 	case DIK_RETURN:
@@ -149,8 +153,7 @@ bool CUIPdaSpot::OnKeyboard(int dik, EUIMessages keyboard_action)
 		}
 	}break;
 	}
-
-	return base_class::OnKeyboard(dik, keyboard_action);
+	
 }
 
 void CUIPdaSpot::SendMessage(CUIWindow* pWnd, s16 msg, void* pData)
