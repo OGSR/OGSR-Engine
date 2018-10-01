@@ -9,6 +9,7 @@
 #include "inventoryowner.h"
 #include "xrserver_objects_alife_items.h"
 #include "../xrNetServer/net_utils.h"
+#include "actor.h"
 
 CInfoDocument::CInfoDocument(void) 
 {
@@ -82,7 +83,8 @@ void CInfoDocument::OnH_A_Chield()
 	
 	//передать информацию содержащуюся в документе
 	//объекту, который поднял документ
-	CInventoryOwner* pInvOwner = smart_cast<CInventoryOwner*>(H_Parent());
+	// CInventoryOwner* pInvOwner = smart_cast<CInventoryOwner*>(H_Parent());
+	CActor* pInvOwner = smart_cast<CActor*>( H_Parent() );
 	if(!pInvOwner) return;
 	
 	//создать и отправить пакет о получении новой информации
