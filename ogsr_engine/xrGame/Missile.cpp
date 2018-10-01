@@ -80,16 +80,16 @@ void CMissile::Load(LPCSTR section)
 	m_vHudThrowDir		= pSettings->r_fvector3(*hud_sect,"throw_dir");
 
 	//загрузить анимации HUD-а
-	m_sAnimShow			= pSettings->r_string(*hud_sect, "anim_show");
-	m_sAnimHide			= pSettings->r_string(*hud_sect, "anim_hide");
-	m_sAnimIdle			= pSettings->r_string(*hud_sect, "anim_idle");
-	m_sAnimIdleMoving	= READ_IF_EXISTS (pSettings, r_string, *hud_sect, "anim_idle_moving", *m_sAnimIdle);
-	m_sAnimIdleSprint	= READ_IF_EXISTS (pSettings, r_string, *hud_sect, "anim_idle_sprint", *m_sAnimIdle);
-	m_sAnimPlaying		= pSettings->r_string(*hud_sect, "anim_playing");
-	m_sAnimThrowBegin	= pSettings->r_string(*hud_sect, "anim_throw_begin");
-	m_sAnimThrowIdle	= pSettings->r_string(*hud_sect, "anim_throw_idle");
-	m_sAnimThrowAct		= pSettings->r_string(*hud_sect, "anim_throw_act");
-	m_sAnimThrowEnd		= pSettings->r_string(*hud_sect, "anim_throw_end");
+	animGetEx( mhud_AnimShow,       "anim_show" );
+	animGetEx( mhud_AnimHide,       "anim_hide" );
+	animGetEx( mhud_AnimIdle,       "anim_idle" );
+	animGetEx( mhud_AnimIdleMoving, pSettings->line_exist( hud_sect.c_str(), "anim_idle_moving" ) ? "anim_idle_moving" : "anim_idle" );
+	animGetEx( mhud_AnimIdleSprint, pSettings->line_exist( hud_sect.c_str(), "anim_idle_sprint" ) ? "anim_idle_sprint" : "anim_idle" );
+	animGetEx( mhud_AnimPlaying,    "anim_playing" );
+	animGetEx( mhud_AnimThrowBegin, "anim_throw_begin" );
+	animGetEx( mhud_AnimThrowIdle,  "anim_throw_idle" );
+	animGetEx( mhud_AnimThrowAct,   "anim_throw_act" );
+	animGetEx( mhud_AnimThrowEnd,   "anim_throw_end" );
 
 	if(pSettings->line_exist(section,"snd_playing"))
 		HUD_SOUND::LoadSound(section,"snd_playing",sndPlaying);
@@ -245,7 +245,7 @@ void CMissile::shedule_Update(u32 dt)
 
 void CMissile::StartIdleAnim()
 {
-	m_pHUD->animDisplay(m_pHUD->animGet(*m_sAnimIdle), TRUE);
+	m_pHUD->animDisplay( mhud_AnimIdle[ 0 ], TRUE );
 }
 
 void CMissile::State(u32 state) 
@@ -255,7 +255,7 @@ void CMissile::State(u32 state)
 	case MS_SHOWING:
         {
 			m_bPending = true;
-			m_pHUD->animPlay(m_pHUD->animGet(*m_sAnimShow), FALSE, this, GetState());
+			m_pHUD->animPlay( mhud_AnimShow[ 0 ], FALSE, this, GetState() );
 		} break;
 	case MS_IDLE:
 		{
@@ -265,7 +265,7 @@ void CMissile::State(u32 state)
 	case MS_HIDING:
 		{
 			m_bPending = true;
-			m_pHUD->animPlay(m_pHUD->animGet(*m_sAnimHide), TRUE, this, GetState());
+			m_pHUD->animPlay( mhud_AnimHide[ 0 ], TRUE, this, GetState() );
 		} break;
 	case MS_HIDDEN:
 		{
@@ -287,27 +287,27 @@ void CMissile::State(u32 state)
 		{
 			m_bPending = true;
 			m_fThrowForce = m_fMinForce;
-			m_pHUD->animPlay(m_pHUD->animGet(*m_sAnimThrowBegin), TRUE, this, GetState());
+			m_pHUD->animPlay( mhud_AnimThrowBegin[ 0 ], TRUE, this, GetState()) ;
 		} break;
 	case MS_READY:
 		{
-			m_pHUD->animPlay(m_pHUD->animGet(*m_sAnimThrowIdle), TRUE, this, GetState());
+			m_pHUD->animPlay( mhud_AnimThrowIdle[ 0 ], TRUE, this, GetState() );
 		} break;
 	case MS_THROW:
 		{
 			m_bPending = true;
 			m_throw = false;
-			m_pHUD->animPlay(m_pHUD->animGet(*m_sAnimThrowAct), TRUE, this, GetState());
+			m_pHUD->animPlay( mhud_AnimThrowAct[ 0 ], TRUE, this, GetState() );
 		} break;
 	case MS_END:
 		{
 			m_bPending = true;
-			m_pHUD->animPlay(m_pHUD->animGet(*m_sAnimThrowEnd), TRUE, this, GetState());
+			m_pHUD->animPlay( mhud_AnimThrowEnd[ 0 ], TRUE, this, GetState() );
 		} break;
 	case MS_PLAYING:
 		{
 			PlaySound(sndPlaying,Position());
-			m_pHUD->animPlay(m_pHUD->animGet(*m_sAnimPlaying), TRUE, this, GetState());
+			m_pHUD->animPlay( mhud_AnimPlaying[ 0 ], TRUE, this, GetState() );
 		} break;
 	}
 }
@@ -741,13 +741,13 @@ void CMissile::PlayAnimIdle( u8 state = MS_IDLE ) {
   VERIFY( GetState() == MS_IDLE );
   switch ( state ) {
   case MS_IDLE_MOVING:
-    m_pHUD->animPlay( m_pHUD->animGet( *m_sAnimIdleMoving ), TRUE, this, GetState() );
+    m_pHUD->animPlay( mhud_AnimIdleMoving[ 0 ], TRUE, this, GetState() );
     break;
   case MS_IDLE_SPRINT:
-    m_pHUD->animPlay( m_pHUD->animGet( *m_sAnimIdleSprint ), TRUE, this, GetState() );
+    m_pHUD->animPlay( mhud_AnimIdleSprint[ 0 ], TRUE, this, GetState() );
     break;
   default:
-    m_pHUD->animPlay( m_pHUD->animGet( *m_sAnimIdle ), TRUE, this, GetState() );
+    m_pHUD->animPlay( mhud_AnimIdle[ 0 ], TRUE, this, GetState() );
     break;
   }
 }
