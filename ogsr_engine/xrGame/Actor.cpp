@@ -437,6 +437,13 @@ void CActor::Load	(LPCSTR section )
 	//---------------------------------------------------------------------
 	m_sHeadShotParticle	= READ_IF_EXISTS(pSettings,r_string,section,"HeadShotParticle",0);
 
+	if ( pSettings->line_exist( section, "lookout_angle" ) ) {
+	  m_fLookoutAngle = pSettings->r_float( section, "lookout_angle" );
+	  m_fLookoutAngle = deg2rad( m_fLookoutAngle );
+	}
+	else
+	  m_fLookoutAngle = ACTOR_LOOKOUT_ANGLE;
+
 	// Alex ADD: for smooth crouch fix
 	CurrentHeight = CameraHeight();	
 }
