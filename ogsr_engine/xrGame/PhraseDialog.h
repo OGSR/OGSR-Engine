@@ -137,7 +137,7 @@ public:
 	void					SetCaption	(LPCSTR str);
 	void					SetPriority	(int val);
 	CPhrase*				GetPhrase(const shared_str& phrase_id);
-	CPhraseScript*	GetPhraseScript() { return &(data()->m_PhraseScript); };
+	CPhraseScript*		GetPhraseScript() { return &(data()->m_PhraseScript); };
 
 	void					SetForceReload(bool value = false) { data()->b_bForceReload = value; }
 	bool					GetForceReload() { return data()->b_bForceReload; }

@@ -227,7 +227,7 @@ void CPhraseDialog::load_shared	(LPCSTR)
 	//заголовок 
 	SetCaption	( pXML->Read(dialog_node, "caption", 0, NULL) );
 
-	SetForceReload( !!pXML->ReadAttribInt(dialog_node, "force_reload", 0) );
+	SetForceReload	( !!pXML->ReadAttribInt(dialog_node, "force_reload", 0) );
 
 	//предикаты начала диалога
 	data()->m_PhraseScript.Load(pXML, dialog_node);
