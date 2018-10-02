@@ -233,10 +233,22 @@ LPCSTR	CPhraseScript::GetScriptText(LPCSTR str_to_translate, const CGameObject* 
 	if (!m_sScriptTextFunc.size())
 		return str_to_translate;
 
-	luabind::functor<const char*> lua_function;
-	bool functor_exists = ai().script_engine().functor(m_sScriptTextFunc.c_str(), lua_function);
-	THROW3(functor_exists, "Cannot find phrase script text ", m_sScriptTextFunc.c_str());
+	std::string ScriptTextString(m_sScriptTextFunc.c_str()); //-V808
+	if (luabind::functor<const char*> lua_function; ai().script_engine().functor(ScriptTextString.c_str(), lua_function)) // Обычный функтор
+		return lua_function(pSpeakerGO1->lua_game_object(), pSpeakerGO2->lua_game_object(), dialog_id, phrase_id);
+	else { // Функтор с аргументами
+		luabind::functor<luabind::object> loadstring_functor;
+		ai().script_engine().functor("loadstring", loadstring_functor);
+		ScriptTextString = "return " + ScriptTextString;
+		luabind::object ret_obj = loadstring_functor(ScriptTextString.c_str()); // Создаём функцию из строки через loadstring
+		auto ret_func = luabind::object_cast<luabind::functor<const char*>>(ret_obj); // Первое возвращённое loadstring значение должно быть функцией
+		ASSERT_FMT_DBG(ret_func, "Loadstring returns nil for code: %s", ScriptTextString.c_str()); // Если это не функция, значит loadstring вернул nil и что-то пошло не так
+		// Вызываем созданную функцию и передаём ей дефолтные аргументы. Они прилетят после аргументов, прописанных явно, если например сделать так:
+		// <script_text>my_script.test_func(123, true, nil, ...)</script_text>
+		// А если не указать '...' - дефолтные аргументы не будут переданы в функцию.
+		if (ret_func)
+			return ret_func(pSpeakerGO1->lua_game_object(), pSpeakerGO2->lua_game_object(), dialog_id, phrase_id);
+	}
 
-	const char* res = functor_exists ? lua_function(pSpeakerGO1->lua_game_object(), pSpeakerGO2->lua_game_object(), dialog_id, phrase_id) : "";
-	return res;
+	return "";
 }
