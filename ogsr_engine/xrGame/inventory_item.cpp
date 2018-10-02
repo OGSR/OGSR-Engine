@@ -162,8 +162,8 @@ void CInventoryItem::Load(LPCSTR section)
             SetSlot( m_slots[ 0 ] );
 	}
 
-#ifndef NEW_WPN_SLOTS
-        // В OGSR, первый и второй оружейные слоты принудительно
+	if (Core.Features.test(xrCore::Feature::forcibly_equivalent_slots)) {
+		// В OGSR, первый и второй оружейные слоты принудительно
         // равнозначны. Что бы сохранить совместимость с этим, если
         // для предмета указан только один слот и это оружейный слот,
         // добавим к нему соотв. второй оружейный слот.
@@ -173,7 +173,7 @@ void CInventoryItem::Load(LPCSTR section)
           else if ( m_slots[ 0 ] == SECOND_WEAPON_SLOT )
             m_slots.push_back( FIRST_WEAPON_SLOT );
         }
-#endif
+	}
 
 	// Description
 	if ( pSettings->line_exist(section, "description") )
