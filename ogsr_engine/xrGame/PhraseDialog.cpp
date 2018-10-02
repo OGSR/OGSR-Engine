@@ -157,13 +157,22 @@ bool CPhraseDialog::SayPhrase (DIALOG_SHARED_PTR& phrase_dialog, const shared_st
 	return phrase_dialog?!phrase_dialog->m_bFinished:true;
 }
 
-LPCSTR CPhraseDialog::GetPhraseText	(const shared_str& phrase_id, bool current_speaking)
+CPhrase* CPhraseDialog::GetPhrase(const shared_str& phrase_id)
 {
-	
 	CPhraseGraph::CVertex* phrase_vertex = data()->m_PhraseGraph.vertex(phrase_id);
 	THROW(phrase_vertex);
 
-	return phrase_vertex->data()->GetText();
+	return phrase_vertex->data();
+}
+
+LPCSTR CPhraseDialog::GetPhraseText	(const shared_str& phrase_id, bool current_speaking)
+{
+	CPhrase* ph = GetPhrase(phrase_id);
+
+	CGameObject*	pSpeakerGO1 = (current_speaking) ? smart_cast<CGameObject*>(FirstSpeaker()) : 0;
+	CGameObject*	pSpeakerGO2 = (current_speaking) ? smart_cast<CGameObject*>(SecondSpeaker()) : 0;
+
+	return ph->m_PhraseScript.GetScriptText(ph->GetText(), pSpeakerGO1, pSpeakerGO2, m_DialogId.c_str(), phrase_id.c_str());
 }
 
 LPCSTR CPhraseDialog::DialogCaption()
@@ -171,17 +180,30 @@ LPCSTR CPhraseDialog::DialogCaption()
 	return data()->m_sCaption.size()?*data()->m_sCaption:GetPhraseText("0");
 }
 
-
 int	 CPhraseDialog::Priority()
 {
 	return data()->m_iPriority;
 }
 
-
 void CPhraseDialog::Load(shared_str dialog_id)
 {
 	m_DialogId = dialog_id;
+
 	inherited_shared::load_shared(m_DialogId, NULL);
+
+	if (GetForceReload())
+	{
+		if (data()->m_sInitFunction.size())
+		{
+			data()->m_PhraseGraph.clear();
+
+			luabind::functor<void> lua_function;
+			bool functor_exists = ai().script_engine().functor(data()->m_sInitFunction.c_str(), lua_function);
+			ASSERT_FMT_DBG(functor_exists, "!![%s] Cannot find precondition [%s]", __FUNCTION__, data()->m_sInitFunction.c_str());
+			if (functor_exists)
+				lua_function(this);
+		}
+	}
 }
 
 #include "script_engine.h"
@@ -200,11 +222,12 @@ void CPhraseDialog::load_shared	(LPCSTR)
 
 	pXML->SetLocalRoot(dialog_node);
 
-
 	SetPriority	( pXML->ReadAttribInt(dialog_node, "priority", 0) );
 
 	//заголовок 
 	SetCaption	( pXML->Read(dialog_node, "caption", 0, NULL) );
+
+	SetForceReload( !!pXML->ReadAttribInt(dialog_node, "force_reload", 0) );
 
 	//предикаты начала диалога
 	data()->m_PhraseScript.Load(pXML, dialog_node);
@@ -213,14 +236,15 @@ void CPhraseDialog::load_shared	(LPCSTR)
 	data()->m_PhraseGraph.clear();
 
 	XML_NODE* phrase_list_node = pXML->NavigateToNode(dialog_node, "phrase_list", 0);
-	if(NULL == phrase_list_node){
-		LPCSTR func = pXML->Read(dialog_node, "init_func", 0, "");
+	if(NULL == phrase_list_node && !GetForceReload()) {
+		data()->m_sInitFunction = pXML->Read(dialog_node, "init_func", 0, "");
 
 		luabind::functor<void> lua_function;
-		bool functor_exists = ai().script_engine().functor(func, lua_function);
-		ASSERT_FMT_DBG(functor_exists, "!![%s] Cannot find precondition [%s]", __FUNCTION__, func);
+		bool functor_exists = ai().script_engine().functor(data()->m_sInitFunction.c_str(), lua_function);
+		ASSERT_FMT_DBG(functor_exists, "!![%s] Cannot find precondition [%s]", __FUNCTION__, data()->m_sInitFunction.c_str());
 		if (functor_exists)
 			lua_function(this);
+
 		return;
 	}
 
