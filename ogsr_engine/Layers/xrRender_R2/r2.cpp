@@ -765,6 +765,7 @@ HRESULT	CRender::shader_compile(
 		sprintf(lmap_shadow_mode, "%d", ps_light_shadow_quality);
 		defines[def_it].Name = "LAMP_SHADOW_FADE_QUALITY";
 		defines[def_it].Definition = lmap_shadow_mode;
+		//Msg("~~[%s] LAMP_SHADOW_FADE_QUALITY: [%s]", __FUNCTION__, defines[def_it].Definition);
 		def_it++;
 	}
 

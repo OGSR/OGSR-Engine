@@ -96,6 +96,8 @@ void InitConsole	()
 	CORE_FEATURE_SET( highlight_equipped,  "dragdrop", "highlight_equipped"  );
 	CORE_FEATURE_SET( af_radiation_immunity_mod,  "features", "af_radiation_immunity_mod" );
 	CORE_FEATURE_SET( condition_jump_weight_mod,  "features", "condition_jump_weight_mod" );
+	CORE_FEATURE_SET( forcibly_equivalent_slots,  "features", "forcibly_equivalent_slots" );
+	CORE_FEATURE_SET( slots_extend_menu,          "features", "slots_extend_menu" );
 }
 
 void InitInput		()

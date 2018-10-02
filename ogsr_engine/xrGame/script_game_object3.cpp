@@ -219,7 +219,7 @@ LPCSTR CScriptGameObject::GetPatrolPathName()
 	if (!stalker) {
 		CScriptEntity	*script_monster = smart_cast<CScriptEntity*>(&object());
 		if (!script_monster) {
-			ai().script_engine().script_log		(ScriptStorage::eLuaMessageTypeError,"CGameObject : cannot access class member GetPatrolPathName!");
+			Msg("!![%s] cannot access class member GetPatrolPathName! Object: [%s]", __FUNCTION__, this->cName().c_str());
 			return		("");
 		}
 		else
