@@ -15,7 +15,7 @@
 #include "UICellItem.h"
 #include "UIListBoxItem.h"
 #include "../CustomOutfit.h"
-
+#include "../string_table.h"
 
 void CUIInventoryWnd::EatItem(PIItem itm)
 {
@@ -34,7 +34,6 @@ void CUIInventoryWnd::ActivatePropertiesBox()
 	// Флаг-признак для невлючения пункта контекстного меню: Dreess Outfit, если костюм уже надет
 	bool bAlreadyDressed = false; 
 
-		
 	UIPropertiesBox.RemoveAll();
 
 	CMedkit*			pMedkit				= smart_cast<CMedkit*>			(CurrentIItem());
@@ -42,19 +41,9 @@ void CUIInventoryWnd::ActivatePropertiesBox()
 	CEatableItem*		pEatableItem		= smart_cast<CEatableItem*>		(CurrentIItem());
 	CCustomOutfit*		pOutfit				= smart_cast<CCustomOutfit*>	(CurrentIItem());
 	CWeapon*			pWeapon				= smart_cast<CWeapon*>			(CurrentIItem());
-	CScope*				pScope				= smart_cast<CScope*>			(CurrentIItem());
-	CSilencer*			pSilencer			= smart_cast<CSilencer*>		(CurrentIItem());
-	CGrenadeLauncher*	pGrenadeLauncher	= smart_cast<CGrenadeLauncher*>	(CurrentIItem());
 	CBottleItem*		pBottleItem			= smart_cast<CBottleItem*>		(CurrentIItem());
     
 	bool b_show = false;
-	bool extend_new_wpn_menu = false;
-
-#ifdef NEW_WPN_SLOTS_EXTEND_MENU
-	extend_new_wpn_menu = true;
-#endif // NEW_WPN_SLOTS_EXTEND_MENU
-
-#ifdef NEW_WPN_SLOTS
 
 	if (!pOutfit && CurrentIItem()->GetSlot() != NO_ACTIVE_SLOT) {
 		auto slots = CurrentIItem()->GetSlots();
@@ -63,55 +52,29 @@ void CUIInventoryWnd::ActivatePropertiesBox()
 			auto slot = slots[i];
 			if (slot != NO_ACTIVE_SLOT && slot != GRENADE_SLOT) {
 				if (!m_pInv->m_slots[slot].m_pIItem || m_pInv->m_slots[slot].m_pIItem != CurrentIItem()) {
-					b_show = true;
-
-					if (multi_slot && extend_new_wpn_menu)
+					if (multi_slot && Core.Features.test(xrCore::Feature::slots_extend_menu))
 					{
-						string256 full_action_text;
-						string16 tmp;
-
-						strconcat(sizeof(full_action_text), full_action_text, "st_move_to_slot_", itoa(slot, tmp, 10));
+						string128 full_action_text = { 0 };
+						strconcat(sizeof(full_action_text), full_action_text, "st_move_to_slot_", std::to_string(slot).c_str());
 						UIPropertiesBox.AddItem(full_action_text, (void*)(__int64)slot, INVENTORY_TO_SLOT_ACTION);
+						b_show = true;
 					}
 					else 
 					{
 						UIPropertiesBox.AddItem("st_move_to_slot", NULL, INVENTORY_TO_SLOT_ACTION);
+						b_show = true;
 						break;
 					}
-				};
-			};
-		};
-	};
-
-#else
-	if (!pOutfit && CurrentIItem()->GetSlot() != NO_ACTIVE_SLOT )
-	{
-		if ((CurrentIItem()->GetSlot() == FIRST_WEAPON_SLOT) || (CurrentIItem()->GetSlot() == SECOND_WEAPON_SLOT))
-		{
-			if (!m_pInv->m_slots[FIRST_WEAPON_SLOT].m_bPersistent && m_pInv->CanPutInSlot(CurrentIItem(), FIRST_WEAPON_SLOT))
-			{
-				UIPropertiesBox.AddItem("st_move_to_slot_1", NULL, INVENTORY_TO_WEAPON_SLOT_1_ACTION);
-				b_show = true;
+				}
 			}
-			if (!m_pInv->m_slots[SECOND_WEAPON_SLOT].m_bPersistent && m_pInv->CanPutInSlot(CurrentIItem(), SECOND_WEAPON_SLOT))
-			{
-				UIPropertiesBox.AddItem("st_move_to_slot_2", NULL, INVENTORY_TO_WEAPON_SLOT_2_ACTION);
-				b_show = true;
-			}
-		}
-		else if (!m_pInv->m_slots[CurrentIItem()->GetSlot()].m_bPersistent && m_pInv->CanPutInSlot(CurrentIItem()))
-		{
-			UIPropertiesBox.AddItem("st_move_to_slot", NULL, INVENTORY_TO_SLOT_ACTION);
-			b_show = true;
 		}
 	}
-#endif
 
 
 	if(CurrentIItem()->Belt() && m_pInv->CanPutInBelt(CurrentIItem()))
 	{
 		UIPropertiesBox.AddItem("st_move_on_belt",  NULL, INVENTORY_TO_BELT_ACTION);
-		b_show			= true;
+		b_show = true;
 	}
 
 	if(CurrentIItem()->Ruck() && m_pInv->CanPutInRuck(CurrentIItem()) && (CurrentIItem()->GetSlot() == NO_ACTIVE_SLOT || !m_pInv->m_slots[CurrentIItem()->GetSlot()].m_bPersistent) )
@@ -126,7 +89,7 @@ void CUIInventoryWnd::ActivatePropertiesBox()
 	if(pOutfit  && !bAlreadyDressed )
 	{
 		UIPropertiesBox.AddItem("st_dress_outfit",  NULL, INVENTORY_TO_SLOT_ACTION);
-		b_show			= true;
+		b_show = true;
 	}
 	
 	//отсоединение аддонов от вещи
@@ -135,17 +98,17 @@ void CUIInventoryWnd::ActivatePropertiesBox()
 		if(pWeapon->GrenadeLauncherAttachable() && pWeapon->IsGrenadeLauncherAttached())
 		{
 			UIPropertiesBox.AddItem("st_detach_gl",  NULL, INVENTORY_DETACH_GRENADE_LAUNCHER_ADDON);
-		b_show			= true;
+			b_show = true;
 		}
 		if(pWeapon->ScopeAttachable() && pWeapon->IsScopeAttached())
 		{
 			UIPropertiesBox.AddItem("st_detach_scope",  NULL, INVENTORY_DETACH_SCOPE_ADDON);
-		b_show			= true;
+			b_show = true;
 		}
 		if(pWeapon->SilencerAttachable() && pWeapon->IsSilencerAttached())
 		{
 			UIPropertiesBox.AddItem("st_detach_silencer",  NULL, INVENTORY_DETACH_SILENCER_ADDON);
-		b_show			= true;
+			b_show = true;
 		}
 		if(smart_cast<CWeaponMagazined*>(pWeapon))
 		{
@@ -167,136 +130,27 @@ void CUIInventoryWnd::ActivatePropertiesBox()
 
 			if(b){
 				UIPropertiesBox.AddItem("st_unload_magazine",  NULL, INVENTORY_UNLOAD_MAGAZINE);
-				b_show			= true;
+				b_show = true;
 			}
 		}
 	}
 	
-	//присоединение аддонов к активному слоту (2 или 3)
-	if (pScope)
-	{
-#ifdef NEW_WPN_SLOTS
-
-		for (u8 i = 0; i < SLOTS_TOTAL; ++i) {
-			PIItem tgt = m_pInv->m_slots[i].m_pIItem;
-			if (tgt && tgt->CanAttach(pScope)) {
-				b_show = true;
-				if (extend_new_wpn_menu)
-				{
-					string256 full_action_text;
-					string16 tmp;
-
-					strconcat(sizeof(full_action_text), full_action_text, "st_attach_scope_to_rifle_", itoa(i, tmp, 10));
-
-					UIPropertiesBox.AddItem(full_action_text, (void*)tgt, INVENTORY_ATTACH_ADDON);
-				}
-				else 
-				{
-					UIPropertiesBox.AddItem("st_attach_scope_to_rifle", (void*)tgt, INVENTORY_ATTACH_ADDON);
-					b_show = true;
-					break;
-				}
-			}
-		};
-
-#else
-		if (m_pInv->m_slots[FIRST_WEAPON_SLOT].m_pIItem != NULL &&
-			m_pInv->m_slots[FIRST_WEAPON_SLOT].m_pIItem->CanAttach(pScope))
-		{
-			PIItem tgt = m_pInv->m_slots[FIRST_WEAPON_SLOT].m_pIItem;
-			UIPropertiesBox.AddItem("st_attach_scope_to_pistol", (void*)tgt, INVENTORY_ATTACH_ADDON);
+	//присоединение аддонов к оружиям в слотах
+	for (u8 i = 0; i < SLOTS_TOTAL; ++i) {
+		PIItem tgt = m_pInv->m_slots[i].m_pIItem;
+		if (tgt && tgt->CanAttach(CurrentIItem())) {
+			string128 trans_str = { 0 };
+			strconcat(sizeof(trans_str), trans_str, "st_attach_addon_to_wpn_in_slot_", std::to_string(i).c_str());
+			string128 str = { 0 };
+			// В локализации должно быть что-то типа 'Прикрепить %s к %s в таком-то слоте'
+			std::snprintf(str, sizeof(str), CStringTable().translate(trans_str).c_str(), CurrentIItem()->m_nameShort.c_str(), tgt->m_nameShort.c_str());
+			UIPropertiesBox.AddItem(str, (void*)tgt, INVENTORY_ATTACH_ADDON);
 			b_show = true;
 		}
-		if (m_pInv->m_slots[SECOND_WEAPON_SLOT].m_pIItem != NULL &&
-			m_pInv->m_slots[SECOND_WEAPON_SLOT].m_pIItem->CanAttach(pScope))
-		{
-			PIItem tgt = m_pInv->m_slots[SECOND_WEAPON_SLOT].m_pIItem;
-			UIPropertiesBox.AddItem("st_attach_scope_to_rifle", (void*)tgt, INVENTORY_ATTACH_ADDON);
-			b_show = true;
-		}
-#endif
-		}
-	else if (pSilencer)
-	{
-#ifdef NEW_WPN_SLOTS
+	}
 
-		for (u8 i = 0; i < SLOTS_TOTAL; ++i) {
-			PIItem tgt = m_pInv->m_slots[i].m_pIItem;
-			if (tgt && tgt->CanAttach(pSilencer)) {
-				b_show = true;
-				if (extend_new_wpn_menu)
-				{
-					string256 full_action_text;
-					string16 tmp;
 
-					strconcat(sizeof(full_action_text), full_action_text, "st_attach_silencer_to_rifle_", itoa(i, tmp, 10));
-
-					UIPropertiesBox.AddItem(full_action_text, (void*)tgt, INVENTORY_ATTACH_ADDON);
-				}
-				else
-				{
-					UIPropertiesBox.AddItem("st_attach_silencer_to_rifle", (void*)tgt, INVENTORY_ATTACH_ADDON);
-					b_show = true;
-					break;
-				}
-			}
-		};
-
-#else
-		if (m_pInv->m_slots[FIRST_WEAPON_SLOT].m_pIItem != NULL &&
-			m_pInv->m_slots[FIRST_WEAPON_SLOT].m_pIItem->CanAttach(pSilencer))
-		{
-			PIItem tgt = m_pInv->m_slots[FIRST_WEAPON_SLOT].m_pIItem;
-			UIPropertiesBox.AddItem("st_attach_silencer_to_pistol", (void*)tgt, INVENTORY_ATTACH_ADDON);
-			b_show = true;
-		}
-		if (m_pInv->m_slots[SECOND_WEAPON_SLOT].m_pIItem != NULL &&
-			m_pInv->m_slots[SECOND_WEAPON_SLOT].m_pIItem->CanAttach(pSilencer))
-		{
-			PIItem tgt = m_pInv->m_slots[SECOND_WEAPON_SLOT].m_pIItem;
-			UIPropertiesBox.AddItem("st_attach_silencer_to_rifle", (void*)tgt, INVENTORY_ATTACH_ADDON);
-			b_show = true;
-		}
-#endif
-		}
-	else if (pGrenadeLauncher)
-	{
-#ifdef NEW_WPN_SLOTS
-
-		for (u8 i = 0; i < SLOTS_TOTAL; ++i) {
-			PIItem tgt = m_pInv->m_slots[i].m_pIItem;
-			if (tgt && tgt->CanAttach(pGrenadeLauncher)) {
-				b_show = true;
-				if (extend_new_wpn_menu)
-				{
-					string256 full_action_text;
-					string16 tmp;
-
-					strconcat(sizeof(full_action_text), full_action_text, "st_attach_gl_to_rifle_", itoa(i, tmp, 10));
-
-					UIPropertiesBox.AddItem(full_action_text, (void*)tgt, INVENTORY_ATTACH_ADDON);
-				}
-				else
-				{
-					UIPropertiesBox.AddItem("st_attach_gl_to_rifle", (void*)tgt, INVENTORY_ATTACH_ADDON);
-					b_show = true;
-					break;
-				}
-			}
-		};
-
-#else
-		if (m_pInv->m_slots[SECOND_WEAPON_SLOT].m_pIItem != NULL &&
-			m_pInv->m_slots[SECOND_WEAPON_SLOT].m_pIItem->CanAttach(pGrenadeLauncher))
-		{
-			PIItem tgt = m_pInv->m_slots[SECOND_WEAPON_SLOT].m_pIItem;
-			UIPropertiesBox.AddItem("st_attach_gl_to_rifle", (void*)tgt, INVENTORY_ATTACH_ADDON);
-			b_show = true;
-		}
-
-#endif
-		}
-	LPCSTR _action = NULL;
+	LPCSTR _action = nullptr;
 
 	if(pMedkit || pAntirad)
 	{
@@ -349,7 +203,6 @@ void CUIInventoryWnd::ProcessPropertiesBoxClicked	()
 	{
 		switch(UIPropertiesBox.GetClickedItem()->GetTAG())
 		{
-#ifdef NEW_WPN_SLOTS
 
                 case INVENTORY_TO_SLOT_ACTION: {
                   auto item  = CurrentIItem();
@@ -376,17 +229,6 @@ void CUIInventoryWnd::ProcessPropertiesBoxClicked	()
                   break;
                 }
 
-#else
-		case INVENTORY_TO_WEAPON_SLOT_1_ACTION:
-			ToSlot(CurrentItem(), FIRST_WEAPON_SLOT, true);
-			break;
-		case INVENTORY_TO_WEAPON_SLOT_2_ACTION:
-			ToSlot(CurrentItem(), SECOND_WEAPON_SLOT, true);
-			break;
-		case INVENTORY_TO_SLOT_ACTION:	
-			ToSlot(CurrentItem(), true);
-			break;
-#endif
 		case INVENTORY_TO_BELT_ACTION:	
 			ToBelt(CurrentItem(),false);
 			break;

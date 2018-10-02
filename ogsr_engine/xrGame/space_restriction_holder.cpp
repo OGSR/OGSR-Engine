@@ -180,9 +180,11 @@ bool try_remove_string				(shared_str &search_string, const shared_str &string_t
 void CSpaceRestrictionHolder::unregister_restrictor			(CSpaceRestrictor *space_restrictor)
 {
 	shared_str				restrictor_id = space_restrictor->cName();
-	RESTRICTIONS::iterator	I = m_restrictions.find(restrictor_id);
-	VERIFY					(I != m_restrictions.end());
-	m_restrictions.erase	(I);
+	auto I = m_restrictions.find(restrictor_id);
+	bool found = I != m_restrictions.end();
+	ASSERT_FMT_DBG(found, "!![" __FUNCTION__ "] restrictor [%s] not found!", restrictor_id.c_str());
+	if (found)
+		m_restrictions.erase(I);
 
 	if (try_remove_string(m_default_out_restrictions,restrictor_id))
 		on_default_restrictions_changed		();

@@ -205,4 +205,17 @@
 	<string id="st_pda_delete_spot">
 		<text>Удалить метку</text>
 	</string>
+
+	<string id="st_move_to_slot_1">
+		<text>переместить в первый слот</text>
+	</string>
+	<string id="st_move_to_slot_2">
+		<text>переместить во второй слот</text>
+	</string>
+	<string id="st_attach_addon_to_wpn_in_slot_1">
+		<text>прикрепить %s к %s в первом слоте</text>
+	</string>
+	<string id="st_attach_addon_to_wpn_in_slot_2">
+		<text>прикрепить %s к %s во втором слоте</text>
+	</string>
 </string_table>
