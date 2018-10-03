@@ -311,6 +311,10 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="XML_Parser\tinyxml.cpp" />
+    <ClCompile Include="XML_Parser\tinyxmlerror.cpp" />
+    <ClCompile Include="XML_Parser\tinyxmlparser.cpp" />
+    <ClCompile Include="XML_Parser\xrXMLParser.cpp" />
     <ClCompile Include="xrCore.cpp" />
     <ClCompile Include="xrMemoryDebug.cpp" />
     <ClCompile Include="xrSkinXW.cpp" />
@@ -347,6 +351,8 @@
     <ClInclude Include="FTimer.h" />
     <ClInclude Include="stacktrace_collector.h" />
     <ClInclude Include="stdafx.h" />
+    <ClInclude Include="XML_Parser\tinyxml.h" />
+    <ClInclude Include="XML_Parser\xrXMLParser.h" />
     <ClInclude Include="xrCore.h" />
     <ClInclude Include="xrCore_platform.h" />
     <ClInclude Include="xrMemoryDebug.h" />

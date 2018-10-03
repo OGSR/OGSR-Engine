@@ -1,27 +1,19 @@
 #pragma once
 
+#include "../xrCore/xrCore.h"
 
-#ifdef XRXMLPARSER_EXPORTS
-	#define XRXMLPARSER_API __declspec(dllexport)
-#else
-	#define XRXMLPARSER_API __declspec(dllimport)
-#endif
-
-
-const LPCSTR GAMEDATA_PATH			= "$game_data$";
-const LPCSTR CONFIG_PATH			= "$game_config$";
-const LPCSTR UI_PATH				= "ui";
-const LPCSTR GAME_PATH				= "gameplay";
-const LPCSTR STRING_TABLE_PATH		= "text";
-
+constexpr LPCSTR GAMEDATA_PATH			= "$game_data$";
+constexpr LPCSTR CONFIG_PATH			= "$game_config$";
+constexpr LPCSTR UI_PATH				= "ui";
+constexpr LPCSTR GAME_PATH				= "gameplay";
+constexpr LPCSTR STRING_TABLE_PATH		= "text";
 
 #include "tinyxml.h"
 
 typedef TiXmlNode		XML_NODE;
 typedef TiXmlAttribute	XML_ATTRIBUTE;
 
-class XRXMLPARSER_API	CXml  
-{
+class XRCORE_API CXml {
 public:
 	string_path			m_xml_file_name;
 						CXml					();
@@ -102,4 +94,3 @@ private:
 	typedef TiXmlElement						XML_ELEM;
 	TiXmlDocument								m_Doc;
 };
-

@@ -49,6 +49,9 @@
     <Filter Include="Compression\lz">
       <UniqueIdentifier>{7497b182-8ea0-4fc8-aef1-7544413b4f18}</UniqueIdentifier>
     </Filter>
+    <Filter Include="XML_Parser">
+      <UniqueIdentifier>{c21187ca-a254-4508-b106-203dce0324bb}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="FTimer.cpp">
@@ -144,6 +147,18 @@
     </ClCompile>
     <ClCompile Include="xrMemoryDebug.cpp">
       <Filter>Memory manager</Filter>
+    </ClCompile>
+    <ClCompile Include="XML_Parser\tinyxml.cpp">
+      <Filter>XML_Parser</Filter>
+    </ClCompile>
+    <ClCompile Include="XML_Parser\tinyxmlerror.cpp">
+      <Filter>XML_Parser</Filter>
+    </ClCompile>
+    <ClCompile Include="XML_Parser\tinyxmlparser.cpp">
+      <Filter>XML_Parser</Filter>
+    </ClCompile>
+    <ClCompile Include="XML_Parser\xrXMLParser.cpp">
+      <Filter>XML_Parser</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -330,6 +345,12 @@
     </ClInclude>
     <ClInclude Include="xrMemoryDebug.h">
       <Filter>Memory manager</Filter>
+    </ClInclude>
+    <ClInclude Include="XML_Parser\tinyxml.h">
+      <Filter>XML_Parser</Filter>
+    </ClInclude>
+    <ClInclude Include="XML_Parser\xrXMLParser.h">
+      <Filter>XML_Parser</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
