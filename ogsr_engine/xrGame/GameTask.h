@@ -33,15 +33,15 @@ class SGameTaskObjective : public IPureSerializeObject<IReader,IWriter>
 	friend struct SGameTaskKey;
 	friend class CGameTaskManager;
 private:
-	ETaskState				task_state;
 	CGameTask*				parent;
-	int						idx;
 	void					SendInfo		(xr_vector<shared_str>&);
 	void					CallAllFuncs	(xr_vector<luabind::functor<bool> >& v);
 	bool					CheckInfo		(xr_vector<shared_str>&);
 	bool					CheckFunctions	(xr_vector<luabind::functor<bool> >& v);
-	void					SetTaskState	(ETaskState new_state);
 public:
+	ETaskState				task_state;
+	int						idx;
+	void					SetTaskState	(ETaskState new_state);
 	SScriptObjectiveHelper	m_pScriptHelper;
 	virtual void			save			(IWriter &stream);
 	virtual void			load			(IReader &stream);
@@ -105,6 +105,7 @@ private:
 							CGameTask				(const CGameTask&){}; //disable copy ctor
 protected:
 	void					Load					(const TASK_ID& id);
+        void sync_task_version();
 public:
 							CGameTask				(const TASK_ID& id);
 							CGameTask				();
@@ -121,6 +122,8 @@ public:
 	ALife::_TIME_ID			m_FinishTime;
 	ALife::_TIME_ID			m_TimeToComplete;
 	u32						m_priority;
+        u32 m_version;
+        u32 m_objectives_version;
 
 // for scripting access
 	void					Load_script				(LPCSTR _id);

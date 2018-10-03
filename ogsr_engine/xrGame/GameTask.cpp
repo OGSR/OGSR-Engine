@@ -17,6 +17,8 @@
 #include "game_object_space.h"
 #include "object_broker.h"
 #include "ui/uitexturemaster.h"
+#include "alife_registry_wrappers.h"
+#include "alife_simulator_header.h"
 
 ALife::_STORY_ID	story_id		(LPCSTR story_id);
 u16					storyId2GameId	(ALife::_STORY_ID);
@@ -64,6 +66,8 @@ CGameTask::CGameTask()
 	m_FinishTime	= 0;
 	m_Title			= NULL;
 	m_ID			= NULL;
+        m_version = 0;
+        m_objectives_version = 0;
 }
 
 void CGameTask::Load(const TASK_ID& id)
@@ -80,6 +84,8 @@ void CGameTask::Load(const TASK_ID& id)
 	g_gameTaskXml->SetLocalRoot		(task_node);
 	m_Title							= g_gameTaskXml->Read(g_gameTaskXml->GetLocalRoot(), "title", 0, NULL);
 	m_priority						= g_gameTaskXml->ReadAttribInt(g_gameTaskXml->GetLocalRoot(), "prio", -1);
+	m_version = g_gameTaskXml->ReadAttribInt( g_gameTaskXml->GetLocalRoot(), "version", 0 );
+	m_objectives_version = g_gameTaskXml->ReadAttribInt( g_gameTaskXml->GetLocalRoot(), "objectives_version", 0 );
 #ifdef DEBUG
 	if(m_priority == u32(-1))
 	{
@@ -559,9 +565,12 @@ void SScriptObjectiveHelper::save(IWriter &stream)
 void SGameTaskKey::save(IWriter &stream)
 {
 	save_data(task_id,						stream);
+        save_data( game_task->m_version, stream );
+        save_data( game_task->m_objectives_version, stream );
 	save_data(game_task->m_ReceiveTime,		stream);
 	save_data(game_task->m_FinishTime,		stream);
 	save_data(game_task->m_TimeToComplete,	stream);
+
 	save_data(game_task->m_Title,			stream);
 
 	u32 cnt	= game_task->m_Objectives.size();
@@ -578,6 +587,13 @@ void SGameTaskKey::load(IReader &stream)
 {
 	load_data(task_id,						stream);
 	game_task = xr_new<CGameTask>			(task_id);
+        u32 load_version = 0;
+        if ( ai().get_alife()->header().version() > 6 ) {
+          load_data( load_version, stream );
+          load_data( game_task->m_objectives_version, stream );
+        }
+        else
+          game_task->m_objectives_version = 0;
 	load_data(game_task->m_ReceiveTime,		stream);
 	load_data(game_task->m_FinishTime,		stream);
 	load_data(game_task->m_TimeToComplete,	stream);
@@ -594,9 +610,28 @@ void SGameTaskKey::load(IReader &stream)
 		load_data(game_task->m_Objectives[i], stream);
 		game_task->m_Objectives[i].parent = game_task;
 	}
+
+        if ( game_task->m_version > load_version )
+          sync_task_version();
 }
 
 void SGameTaskKey::destroy()
 {
 	delete_data(game_task);
+}
+
+
+void SGameTaskKey::sync_task_version() {
+  CGameTask* new_game_task = xr_new<CGameTask>( game_task->m_ID );
+  new_game_task->m_ReceiveTime    = game_task->m_ReceiveTime;
+  new_game_task->m_FinishTime     = game_task->m_FinishTime;
+  new_game_task->m_TimeToComplete = game_task->m_TimeToComplete;
+  if ( new_game_task->m_objectives_version == game_task->m_objectives_version ) {
+    for ( auto& it : game_task->m_Objectives ) {
+      if ( it.idx == new_game_task->m_Objectives.size() ) break;
+      new_game_task->m_Objectives[ it.idx ].task_state = it.TaskState();
+    }
+  }
+  delete_data( game_task );
+  game_task = new_game_task;
 }

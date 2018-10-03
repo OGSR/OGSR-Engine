@@ -28,6 +28,7 @@ struct SGameTaskKey : public IPureSerializeObject<IReader,IWriter>,public IPureD
 	virtual void save								(IWriter &stream);
 	virtual void load								(IReader &stream);
 	virtual void destroy							();
+	void sync_task_version();
 };
 
 DEFINE_VECTOR (SGameTaskKey, GameTasks, GameTasks_it);
