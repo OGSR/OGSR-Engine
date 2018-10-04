@@ -4,7 +4,7 @@
 #include "../../../ai_object_location.h"
 #include "level_graph.h"
 #include "../../../level.h"
-#include "../../../../xrNetServer/net_utils.h"
+#include "../../../../xr_3da/NET_Server_Trash/net_utils.h"
 #include "../../../ai_space.h"
 #include "../../../restricted_object.h"
 #include "../../../actor.h"

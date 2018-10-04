@@ -6,7 +6,7 @@
 #include "stdafx.h"
 #include "BottleItem.h"
 #include "xrmessages.h"
-#include "../xrNetServer/net_utils.h"
+#include "../xr_3da/NET_Server_Trash/net_utils.h"
 #include "entity_alive.h"
 #include "EntityCondition.h"
 

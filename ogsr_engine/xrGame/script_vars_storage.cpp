@@ -10,7 +10,7 @@
 #include "script_vars_storage.h"
 #include "script_net_packet.h"
 #include "script_engine.h"
-#include "../../xrNetServer/NET_utils.h"
+#include "../../xr_3da/NET_Server_Trash/NET_utils.h"
 
 #pragma optimize("gyts", on)
  

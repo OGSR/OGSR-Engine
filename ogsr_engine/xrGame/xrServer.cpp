@@ -12,13 +12,7 @@
 #include "..\xr_3da\IGame_Persistent.h"
 
 #include "..\xr_3da\XR_IOConsole.h"
-//#include "script_engine.h"
 #include "ui/UIInventoryUtilities.h"
-
-#pragma warning(push)
-#pragma warning(disable:4995)
-#include <malloc.h>
-#pragma warning(pop)
 
 xrClientData::xrClientData	():IClient(Device.GetTimerGlobal())
 {
@@ -93,42 +87,10 @@ IClient*	xrServer::client_Find_Get	(ClientID ID)
 	ip_address				cAddress;
 	DWORD	dwPort			= 0;
 
-	if ( !psNET_direct_connect )
-		GetClientAddress( ID, cAddress, &dwPort );
-	else
-		cAddress.set( "127.0.0.1" );
-
-	if ( !psNET_direct_connect )
-	{		
-		for ( u32 i = 0; i < net_Players_disconnected.size(); ++i )
-		{
-			IClient* CLX	= net_Players_disconnected[i];
-
-			if ( CLX->m_cAddress == cAddress )
-			{				
-				net_Players_disconnected.erase( net_Players_disconnected.begin()+i );
-
-				CLX->m_dwPort				= dwPort;
-				CLX->flags.bReconnect		= TRUE;
-				
-				csPlayers.Enter();
-				net_Players.push_back( CLX );
-				net_Players.back()->server = this;
-				csPlayers.Leave();
-
-				Msg							( "# Player found" );
-				return						CLX;
-			};
-		};
-	};
+	cAddress.set( "127.0.0.1" );
 
 	IClient* newCL = client_Create();
 	newCL->ID = ID;
-	if(!psNET_direct_connect)
-	{
-		newCL->m_cAddress	= cAddress;	
-		newCL->m_dwPort		= dwPort;
-	}
 	
 	csPlayers.Enter();
 	net_Players.push_back( newCL );
@@ -269,13 +231,7 @@ void xrServer::Update	()
 
 	PerformCheckClientsForMaxPing	();
 
-	Flush_Clients_Buffers			();
 	csPlayers.Leave					();
-	
-	if( 0==(Device.dwFrame%100) )//once per 100 frames
-	{
-		UpdateBannedList();
-	}
 }
 
 void xrServer::SendUpdatesToAll()
@@ -290,7 +246,7 @@ void xrServer::SendUpdatesToAll()
 		// Initialize process and check for available bandwidth
 		xrClientData*	Client			= (xrClientData*) net_Players	[client];
 		if (!Client->net_Ready)			continue;
-		if ( !HasBandwidth(Client) 
+		if ( false
 
 #ifdef DEBUG
 			&& !g_sv_SendUpdate
@@ -515,7 +471,7 @@ u32 xrServer::OnMessage	(NET_Packet& P, ClientID sender)			// Non-Zero means bro
 			if (!CL->net_PassUpdates)
 				break;
 			//-------------------------------------------------------------------
-			u32 ClientPing = CL->stats.getPing();
+			u32 ClientPing = 0;
 			P.w_seek(P.r_tell()+2, &ClientPing, 4);
 			//-------------------------------------------------------------------
 			if (SV_Client) 
@@ -698,12 +654,12 @@ void xrServer::SendTo_LL			(ClientID ID, void* data, u32 size, u32 dwFlags, u32 
 		// optimize local traffic
 		Level().OnMessage			(data,size);
 	}
-	else 
+	else
 	{
 		IClient* pClient = ID_to_client(ID);
 		if (!pClient) return;
 
-		IPureServer::SendTo_Buf(ID,data,size,dwFlags,dwTimeout);
+		FATAL(""); //Это не должно быть вызвано
 	}
 }
 
@@ -919,7 +875,6 @@ void xrServer::PerformCheckClientsForMaxPing()
 
 			if(Client->m_ping_warn.m_maxPingWarnings >= g_sv_maxPingWarningsCount)
 			{  //kick
-				Level().Server->DisconnectClient		(Client);
 			}else
 			{ //send warning
 				NET_Packet		P;	

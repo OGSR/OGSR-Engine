@@ -10,7 +10,7 @@
 #include "server_entity_wrapper.h"
 #include "xrServer_Objects.h"
 #include "xrmessages.h"
-#include "net_utils.h"
+#include "../../xr_3da/NET_Server_Trash/net_utils.h"
 
 #ifdef AI_COMPILER
 #	include "factory_api.h"

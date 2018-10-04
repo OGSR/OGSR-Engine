@@ -10,7 +10,7 @@
 
 #include "script_export_macroses.h"
 #include "..\editors\xrEProps\xrEProps.h"
-#include "..\xrNetServer\NET_utils.h"
+#include "../xr_3da/NET_Server_Trash\NET_utils.h"
 #include "ai_space.h"
 #include "script_engine.h"
 

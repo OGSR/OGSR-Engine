@@ -20,7 +20,7 @@
 #include "ai_debug.h"
 #include "..\xr_3da\igame_level.h"
 #include "level.h"
-#include "../xrNetServer/net_utils.h"
+#include "../xr_3da/NET_Server_Trash/net_utils.h"
 #include "script_callback_ex.h"
 #include "MathUtils.h"
 #include "game_cl_base_weapon_usage_statistic.h"

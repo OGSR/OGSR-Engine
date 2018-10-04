@@ -9,7 +9,7 @@
 #include "stdafx.h"
 #include "eatable_item.h"
 #include "xrmessages.h"
-#include "../xrNetServer/net_utils.h"
+#include "../xr_3da/NET_Server_Trash/net_utils.h"
 #include "physic_item.h"
 #include "Level.h"
 #include "entity_alive.h"

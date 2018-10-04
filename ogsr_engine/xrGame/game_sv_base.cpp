@@ -523,7 +523,7 @@ void game_sv_GameState::Update		()
 {
 	for (u32 it=0; it<m_server->client_Count(); ++it) {
 		xrClientData*	C			= (xrClientData*)	m_server->client_Get(it);
-		C->ps->ping					= u16(C->stats.getPing());
+		C->ps->ping					= u16(0);
 	}
 }
 

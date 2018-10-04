@@ -5,7 +5,7 @@
 #pragma once
 
 #include "..\xr_3da\igame_level.h"
-#include "../xrNetServer/net_client.h"
+#include "../xr_3da/NET_Server_Trash/net_client.h"
 #include "script_export_space.h"
 #include "..\xr_3da\StatGraph.h"
 #include "xrMessages.h"

@@ -12,7 +12,7 @@
 #include "../../inventory.h"
 #include "xrmessages.h"
 #include "../../shootingobject.h"
-#include "../../../xrNetServer/net_utils.h"
+#include "../../../xr_3da/NET_Server_Trash/net_utils.h"
 #include "level.h"
 #include "../../ai_monster_space.h"
 

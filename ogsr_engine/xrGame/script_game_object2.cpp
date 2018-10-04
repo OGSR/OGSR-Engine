@@ -19,7 +19,7 @@
 #include "InfoPortion.h"
 #include "memory_manager.h"
 #include "ai_phrasedialogmanager.h"
-#include "../xrNetServer/net_utils.h"
+#include "../xr_3da/NET_Server_Trash/net_utils.h"
 #include "xrMessages.h"
 #include "custommonster.h"
 #include "memory_manager.h"

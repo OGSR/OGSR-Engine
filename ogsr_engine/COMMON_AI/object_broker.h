@@ -8,7 +8,7 @@
 
 #pragma once
 
-#include "..\xrNetServer\net_utils.h"
+#include "../xr_3da/NET_Server_Trash\net_utils.h"
 #include <queue>
 #include "object_interfaces.h"
 #include "object_type_traits.h"
