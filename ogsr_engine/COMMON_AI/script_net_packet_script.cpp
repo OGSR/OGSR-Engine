@@ -8,7 +8,7 @@
 
 #include "stdafx.h"
 #include "script_net_packet.h"
-#include "../xrNetServer/net_utils.h"
+#include "../xr_3da/NET_Server_Trash/net_utils.h"
 
 using namespace luabind;
 

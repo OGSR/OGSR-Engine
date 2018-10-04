@@ -13,7 +13,7 @@
 #include "../xr_3da/fbasicvisual.h"
 #include "../xr_3da/skeletonanimated.h"
 #include "ai/stalker/ai_stalker.h"
-#include "../xrNetServer/net_utils.h"
+#include "../xr_3da/NET_Server_Trash/net_utils.h"
 #include "Actor.h"
 #include "Explosive.h"
 #include "inventory_item.h"

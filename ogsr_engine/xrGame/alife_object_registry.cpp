@@ -8,7 +8,7 @@
 
 #include "stdafx.h"
 #include "alife_object_registry.h"
-#include "../xrNetServer/net_utils.h"
+#include "../xr_3da/NET_Server_Trash/net_utils.h"
 #include "ai_debug.h"
 
 CALifeObjectRegistry::CALifeObjectRegistry	(LPCSTR section)

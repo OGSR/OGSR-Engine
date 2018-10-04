@@ -40,10 +40,7 @@ bool	CLevel::net_start_client1				()
 
 bool	CLevel::net_start_client2				()
 {
-	if(psNET_direct_connect)
-	{
-		Server->create_direct_client();
-	}
+	Server->create_direct_client();
 
 	connected_to_server = Connect2Server(*m_caClientOptions);
 	
@@ -54,11 +51,7 @@ bool	CLevel::net_start_client3				()
 {
 	if(connected_to_server){
 		LPCSTR					level_name = NULL;
-		if(psNET_direct_connect)
-		{
-			level_name	= ai().get_alife() ? *name() : Server->level_name( Server->GetConnectOptions() ).c_str();
-		}else
-			level_name	= ai().get_alife() ? *name() : net_SessionName	();
+		level_name	= ai().get_alife() ? *name() : Server->level_name( Server->GetConnectOptions() ).c_str();
 
 		// Determine internal level-ID
 		int						level_id = pApp->Level_ID(level_name);
@@ -96,15 +89,6 @@ bool	CLevel::net_start_client4				()
 		Device.seqFrame.Remove				(g_pNetProcessor);
 		Device.seqFrameMT.Add(g_pNetProcessor,REG_PRIORITY_HIGH	+ 2);
 
-		if(!psNET_direct_connect)
-		{
-			// Waiting for connection/configuration completition
-			CTimer	timer_sync	;	timer_sync.Start	();
-			while	(!net_isCompleted_Connect())	Sleep	(5);
-			Msg		("* connection sync: %d ms", timer_sync.GetElapsed_ms());
-			while	(!net_isCompleted_Sync())	{ ClientReceive(); Sleep(5); }
-		}
-
 		while(!game_configured)			
 		{ 
 			ClientReceive(); 
@@ -112,23 +96,6 @@ bool	CLevel::net_start_client4				()
 				Server->Update()	;
 			Sleep(5); 
 		}
-/*
-		if(psNET_direct_connect)
-		{
-			ClientReceive(); 
-			if(Server)
-					Server->Update()	;
-			Sleep(5);
-		}else
-
-			while(!game_configured)			
-			{ 
-				ClientReceive(); 
-				if(Server)
-					Server->Update()	;
-				Sleep(5); 
-			}
-*/
 		}
 	return true;
 }

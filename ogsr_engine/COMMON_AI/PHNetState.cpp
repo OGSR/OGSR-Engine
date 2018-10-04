@@ -2,7 +2,7 @@
 
 
 #include "PHNetState.h"
-#include "../xrNetServer/NET_utils.h"
+#include "../xr_3da/NET_Server_Trash/NET_utils.h"
 
 //////////////////////////////////////8/////////////////////////////////////////////////////
 

@@ -4,6 +4,19 @@
 
 #pragma once
 
+// you must define ENGINE_BUILD then building the engine itself
+// and not define it if you are about to build DLL
+#ifdef ENGINE_BUILD
+#	define DLL_API			__declspec(dllimport)
+#	define ENGINE_API		__declspec(dllexport)
+#else
+#	define DLL_API			__declspec(dllexport)
+#	define ENGINE_API		__declspec(dllimport)
+#endif
+
+#define ECORE_API
+
+
 #include "engineAPI.h"
 #include "eventAPI.h"
 #include "xrSheduler.h"

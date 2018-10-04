@@ -8,20 +8,7 @@
 
 #pragma warning(disable:4995)
 #include <d3d9.h>
-//#include <dplay8.h>
 #pragma warning(default:4995)
-
-// you must define ENGINE_BUILD then building the engine itself
-// and not define it if you are about to build DLL
-#ifdef ENGINE_BUILD
-#	define DLL_API			__declspec(dllimport)
-#	define ENGINE_API		__declspec(dllexport)
-#else
-#	define DLL_API			__declspec(dllexport)
-#	define ENGINE_API		__declspec(dllimport)
-#endif
-
-#define ECORE_API
 
 // Our headers
 #include "engine.h"

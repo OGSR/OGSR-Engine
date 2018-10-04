@@ -130,6 +130,9 @@
     <Filter Include="Engine\Noise">
       <UniqueIdentifier>{512d64ef-b8f1-4223-bcdc-b738a59ac6eb}</UniqueIdentifier>
     </Filter>
+    <Filter Include="NET_Server_Trash">
+      <UniqueIdentifier>{f8099575-6b7c-4bb8-8acb-2059791c45ca}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h">
@@ -470,6 +473,24 @@
     </ClInclude>
     <ClInclude Include="vismask.h" />
     <ClInclude Include="ShadersExternalData.h" />
+    <ClInclude Include="NET_Server_Trash\client_id.h">
+      <Filter>NET_Server_Trash</Filter>
+    </ClInclude>
+    <ClInclude Include="NET_Server_Trash\NET_Client.h">
+      <Filter>NET_Server_Trash</Filter>
+    </ClInclude>
+    <ClInclude Include="NET_Server_Trash\NET_Messages.h">
+      <Filter>NET_Server_Trash</Filter>
+    </ClInclude>
+    <ClInclude Include="NET_Server_Trash\NET_Server.h">
+      <Filter>NET_Server_Trash</Filter>
+    </ClInclude>
+    <ClInclude Include="NET_Server_Trash\NET_Shared.h">
+      <Filter>NET_Server_Trash</Filter>
+    </ClInclude>
+    <ClInclude Include="NET_Server_Trash\NET_utils.h">
+      <Filter>NET_Server_Trash</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="defines.cpp">
@@ -822,6 +843,12 @@
     </ClCompile>
     <ClCompile Include="..\COMMON\ETextureParams.cpp">
       <Filter>Interfaces\Render\Execution &amp; 3D\Shaders\ShaderManager</Filter>
+    </ClCompile>
+    <ClCompile Include="NET_Server_Trash\NET_Client.cpp">
+      <Filter>NET_Server_Trash</Filter>
+    </ClCompile>
+    <ClCompile Include="NET_Server_Trash\NET_Server.cpp">
+      <Filter>NET_Server_Trash</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

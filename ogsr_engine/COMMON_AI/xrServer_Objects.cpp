@@ -7,7 +7,7 @@
 ////////////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
-#include "../xrNetServer/net_utils.h"
+#include "../xr_3da/NET_Server_Trash/net_utils.h"
 #include "xrServer_Objects.h"
 #include "game_base_space.h"
 

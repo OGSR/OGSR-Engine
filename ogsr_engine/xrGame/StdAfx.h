@@ -3,7 +3,6 @@
 #pragma warning(disable:4995)
 #pragma warning(disable:4577)
 #include "../xr_3da/stdafx.h"
-#include <dplay8.h>
 #pragma warning(default:4995)
 #pragma warning( 4 : 4018 )
 #pragma warning( 4 : 4244 )

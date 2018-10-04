@@ -7,7 +7,7 @@
 #include "std_classes.h"
 
 #include "xr_object.h"
-#include "../xrNetServer/net_utils.h"
+#include "NET_Server_Trash/net_utils.h"
 
 #include "CustomHUD.h"
 

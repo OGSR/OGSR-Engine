@@ -1,7 +1,7 @@
 #pragma once
 #include "uigamecustom.h"
 #include "ui/UIDialogWnd.h"
-#include "../xrNetServer/net_utils.h"
+#include "../xr_3da/NET_Server_Trash/net_utils.h"
 #include "game_graph_space.h"
 
 class CUIInventoryWnd;

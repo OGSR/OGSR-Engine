@@ -342,6 +342,12 @@
     <ClInclude Include="..\COMMON\ETextureParams.h" />
     <ClInclude Include="..\COMMON\std_classes.h" />
     <ClInclude Include="..\xrParticles\psystem.h" />
+    <ClInclude Include="NET_Server_Trash\client_id.h" />
+    <ClInclude Include="NET_Server_Trash\NET_Client.h" />
+    <ClInclude Include="NET_Server_Trash\NET_Messages.h" />
+    <ClInclude Include="NET_Server_Trash\NET_Server.h" />
+    <ClInclude Include="NET_Server_Trash\NET_Shared.h" />
+    <ClInclude Include="NET_Server_Trash\NET_utils.h" />
     <ClInclude Include="r2_shader_exports.h" />
     <ClInclude Include="ShadersExternalData.h" />
     <ClInclude Include="stdafx.h" />
@@ -454,6 +460,8 @@
   <ItemGroup>
     <ClCompile Include="..\COMMON\ETextureParams.cpp" />
     <ClCompile Include="defines.cpp" />
+    <ClCompile Include="NET_Server_Trash\NET_Client.cpp" />
+    <ClCompile Include="NET_Server_Trash\NET_Server.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>

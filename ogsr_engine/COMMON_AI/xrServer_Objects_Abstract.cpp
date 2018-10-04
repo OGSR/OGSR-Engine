@@ -10,7 +10,7 @@
 
 #pragma pack(push,4)
 
-#include "../xrNetServer/net_utils.h"
+#include "../xr_3da/NET_Server_Trash/net_utils.h"
 #include "xrServer_Objects_Abstract.h"
 #include "xrMessages.h"
 

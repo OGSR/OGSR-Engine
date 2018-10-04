@@ -33,7 +33,6 @@ void CLevel::remove_objects	()
 	
 	snd_Events.clear			();
 	for (int i=0; i<6; ++i) {
-		psNET_Flags.set			(NETFLAG_MINIMIZEUPDATES,FALSE);
 		// ugly hack for checks that update is twice on frame
 		// we need it since we do updates for checking network messages
 		++(Device.dwFrame);
@@ -156,7 +155,7 @@ void CLevel::ClientSend()
 	};
 	if (OnClient()) 
 	{
-		Flush_Send_Buffer();
+		FATAL(""); //Это не должно быть вызвано
 		return;
 	}
 	//-------------------------------------------------
@@ -228,16 +227,9 @@ void CLevel::Send		(NET_Packet& P, u32 dwFlags, u32 dwTimeout)
 {
 	if (IsDemoPlay() && m_bDemoStarted) return;
 	// optimize the case when server located in our memory
-	if(psNET_direct_connect){
-		ClientID	_clid;
-		_clid.set	(1);
-		Server->OnMessage	(P,	_clid );
-	}else
-	if (Server && game_configured && OnServer() )
-	{
-		Server->OnMessage	(P,Game().local_svdpnid	);
-	}else											
-		IPureClient::Send	(P,dwFlags,dwTimeout	);
+	ClientID	_clid;
+	_clid.set	(1);
+	Server->OnMessage	(P,	_clid );
 }
 
 void CLevel::net_Update	()
@@ -275,7 +267,7 @@ BOOL			CLevel::Connect2Server				(LPCSTR options)
 	m_bConnectResult			= true	;
 	if (!Connect(options))		return	FALSE;
 	//---------------------------------------------------------------------------
-	if(psNET_direct_connect) m_bConnectResultReceived = true;
+	m_bConnectResultReceived = true;
 	u32 EndTime = GetTickCount() + ConnectionTimeOut;
 	while	(!m_bConnectResultReceived)		{ 
 		ClientReceive	();
@@ -312,14 +304,7 @@ BOOL			CLevel::Connect2Server				(LPCSTR options)
 		return FALSE		;
 	};
 
-	
-	if(psNET_direct_connect)
-		net_Syncronised = TRUE;
-	else
-		net_Syncronize	();
-
-	while (!net_IsSyncronised()) {
-	};
+	net_Syncronised = TRUE;
 
 	//---------------------------------------------------------------------------
 	P.w_begin	(M_CLIENT_REQUEST_CONNECTION_DATA);
@@ -435,17 +420,14 @@ void			CLevel::ClearAllObjects				()
 
 void				CLevel::OnInvalidHost			()
 {
-	IPureClient::OnInvalidHost();
 };
 
 void				CLevel::OnInvalidPassword		()
 {
-	IPureClient::OnInvalidPassword();
 };
 
 void				CLevel::OnSessionFull			()
 {
-	IPureClient::OnSessionFull();
 }
 
 void				CLevel::OnConnectRejected		()

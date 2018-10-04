@@ -82,10 +82,6 @@ void CLevel::g_sv_Spawn		(CSE_Abstract* E)
 	Msg					("* CLIENT: Spawn: %s, ID=%d", *E->s_name, E->ID);
 #endif
 
-	// Optimization for single-player only	- minimize traffic between client and server
-#pragma todo( "KRodin: Посмотреть внимательнее, что это за оптимизация. Может вообще всё там порезать." )
-	psNET_Flags.set(NETFLAG_MINIMIZEUPDATES,TRUE);
-
 	// Client spawn
 //	T.Start		();
 	CObject*	O		= Objects.Create	(*E->s_name);
@@ -109,7 +105,6 @@ void CLevel::g_sv_Spawn		(CSE_Abstract* E)
 			}
 			SetEntity			(O);
 			SetControlEntity	(O);
-//			if (net_Syncronised)net_Syncronize	();	// start sync-thread again
 		}
 
 		if (0xffff != E->ID_Parent)	

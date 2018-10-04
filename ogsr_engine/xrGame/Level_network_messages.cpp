@@ -78,26 +78,8 @@ void CLevel::ClientReceive()
 				// они досылаются через M_UPDATE_OBJECTS
 		case M_UPDATE_OBJECTS:
 			{
-				Objects.net_Import		(P);
-
-				if (OnClient()) UpdateDeltaUpd(timeServer());
-				IClientStatistic pStat = Level().GetStatistic();
-				u32 dTime = 0;
-				
-				if ((Level().timeServer() + pStat.getPing()) < P->timeReceive)
-				{
-					dTime = pStat.getPing();
-				}
-				else
-					dTime = Level().timeServer() - P->timeReceive + pStat.getPing();
-
-				u32 NumSteps = ph_world->CalcNumSteps(dTime);
-				SetNumCrSteps(NumSteps);
+				FATAL(""); //Это не должно быть вызвано
 			}break;
-//		case M_UPDATE_OBJECTS:
-//			{
-//				Objects.net_Import		(P);
-//			}break;
 		//----------- for E3 -----------------------------
 		case M_CL_UPDATE:
 			{
