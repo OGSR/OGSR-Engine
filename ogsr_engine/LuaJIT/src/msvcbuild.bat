@@ -15,13 +15,14 @@
 
 @setlocal
 @set LJCOMPILE=cl /nologo /MP /Zi /c /O2 /W3 /D_CRT_SECURE_NO_DEPRECATE /D_CRT_STDIO_INLINE=__declspec(dllexport)__inline
-@set LJLINK=link /nologo /DEBUG /LARGEADDRESSAWARE /DYNAMICBASE:NO /BASE:"0x34000000" /FIXED
+@set LJLINK=link /nologo /DEBUG
 @set LJMT=mt /nologo
 @set LJLIB=lib /nologo /nodefaultlib
 @set DASMDIR=..\dynasm
 @set DASM=%DASMDIR%\dynasm.lua
-@set LJBINPATH=..\bin\
 @set LJTARGETARCH=%1
+@set DASC=vm_%LJTARGETARCH%.dasc
+@set LJBINPATH=..\bin\
 @if defined LJTARGETARCH (
   @set LJBINPATH=%LJBINPATH%%LJTARGETARCH%\
 )
@@ -46,7 +47,8 @@ if exist minilua.exe.manifest^
 @set DASMFLAGS=-D WIN -D JIT -D FFI
 @set LJARCH=x86
 :X64
-minilua %DASM% -LN %DASMFLAGS% -o host\buildvm_arch.h vm_x86.dasc
+@set LJCOMPILE=%LJCOMPILE% /DLUAJIT_ENABLE_GC64
+minilua %DASM% -LN %DASMFLAGS% -o host\buildvm_arch.h %DASC%
 @if errorlevel 1 goto :BAD
 
 %LJCOMPILE% /I "." /I %DASMDIR% host\buildvm*.c
@@ -71,18 +73,21 @@ buildvm -m vmdef -o jit\vmdef.lua %ALL_LIB%
 buildvm -m folddef -o lj_folddef.h lj_opt_fold.c
 @if errorlevel 1 goto :BAD
 
+@if "%2" neq "debug" goto :NODEBUG
+@shift
+@set LJLINK=%LJLINK% /opt:ref /opt:icf /incremental:no
 :NODEBUG
 @if "%2"=="amalg" goto :AMALGDLL
 @if "%2"=="static" goto :STATIC
-%LJCOMPILE% /MD /DLUA_BUILD_AS_DLL lj_*.c lib_*.c xr_*.c
+%LJCOMPILE% /MD /DLUA_BUILD_AS_DLL lj_*.c lib_*.c
 @if errorlevel 1 goto :BAD
-%LJLINK% /DLL /out:%LJDLLNAME% lj_*.obj lib_*.obj xr_*.obj
+%LJLINK% /DLL /out:%LJDLLNAME% lj_*.obj lib_*.obj
 @if errorlevel 1 goto :BAD
 @goto :MTDLL
 :STATIC
-%LJCOMPILE% lj_*.c lib_*.c xr_*.c
+%LJCOMPILE% lj_*.c lib_*.c
 @if errorlevel 1 goto :BAD
-%LJLIB% /OUT:%LJLIBNAME% lj_*.obj lib_*.obj xr_*.obj
+%LJLIB% /OUT:%LJLIBNAME% lj_*.obj lib_*.obj
 @if errorlevel 1 goto :BAD
 @goto :MTDLL
 :AMALGDLL
@@ -109,7 +114,7 @@ if not exist %LJBINPATH%lua\jit\*.* (
 )
 copy /Y jit\*.* %LJBINPATH%lua\jit\
 
-@del *.obj *.manifest minilua.exe minilua.exp minilua.lib buildvm.exe buildvm.exp buildvm.lib jit\vmdef.lua *.ilk *.pdb 
+@del *.obj *.manifest minilua.exe minilua.exp minilua.lib buildvm.exe buildvm.exp buildvm.lib jit\vmdef.lua *.ilk *.pdb
 @del host\buildvm_arch.h
 @del lj_bcdef.h lj_ffdef.h lj_libdef.h lj_recdef.h lj_folddef.h
 @echo.
