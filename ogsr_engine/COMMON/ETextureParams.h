@@ -30,9 +30,10 @@ struct ECORE_API STextureParams{
 	};
     enum ETBumpMode{
     	tbmResereved	= 0,
-        tbmNone,
-        tbmUse,
-		tbmForceU32	= u32(-1)
+      tbmNone,
+      tbmUse,
+      tbmUseParallax,
+      tbmForceU32	= u32(-1)
     };
     enum ETMaterial{
 		tmOrenNayar_Blin	= 0,

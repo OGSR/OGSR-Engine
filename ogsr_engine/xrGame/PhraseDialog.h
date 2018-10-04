@@ -28,6 +28,10 @@ struct SPhraseDialogData : CSharedResource
 	//произвольное число - приоритет диалога (0 по умолчанию), может быть отрицательным
 	//в окне выбора у актера диалоги будут сортироваться по этому значению от меньшего (снизу) к большему (сверху)
 	int	m_iPriority;
+
+	bool b_bForceReload;
+
+	shared_str m_sInitFunction;
 };
 
 DEFINE_VECTOR(CPhrase*, PHRASE_VECTOR, PHRASE_VECTOR_IT);
@@ -132,6 +136,11 @@ public:
 	CPhrase*				AddPhrase_script	(LPCSTR text, LPCSTR phrase_id, LPCSTR prev_phrase_id, int goodwil_level){return AddPhrase(text, phrase_id, prev_phrase_id, goodwil_level);};
 	void					SetCaption	(LPCSTR str);
 	void					SetPriority	(int val);
+	CPhrase*				GetPhrase(const shared_str& phrase_id);
+	CPhraseScript*		GetPhraseScript() { return &(data()->m_PhraseScript); };
+
+	void					SetForceReload(bool value = false) { data()->b_bForceReload = value; }
+	bool					GetForceReload() { return data()->b_bForceReload; }
 
 protected:
 

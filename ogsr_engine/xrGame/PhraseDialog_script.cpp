@@ -36,10 +36,17 @@ void CPhraseDialogExporter::script_register(lua_State *L)
 	module(L)
 	[
 		class_<CPhrase>("CPhrase")
-		.def("GetPhraseScript",		&CPhrase::GetPhraseScript),
+		.def("GetPhraseScript",		&CPhrase::GetPhraseScript)
+		.def("GetText", &CPhrase::GetText)
+		.def("SetText", &CPhrase::SetText),
 
 		class_<CPhraseDialog>("CPhraseDialog")
-		.def("AddPhrase",			&CPhraseDialog::AddPhrase_script ),
+		.def("AddPhrase",			&CPhraseDialog::AddPhrase_script )
+		.def("SetPriority",		&CPhraseDialog::SetPriority)
+		.def("SetCaption",		&CPhraseDialog::SetCaption)
+		.def("SetForceReload", &CPhraseDialog::SetForceReload)
+		.def("GetPhrase",			&CPhraseDialog::GetPhrase)
+		.def("GetPhraseScript", &CPhraseDialog::GetPhraseScript),
 
 		class_<CPhraseScript>("CPhraseScript")
 		.def("AddPrecondition",		&CPhraseScript::AddPrecondition)
@@ -48,5 +55,6 @@ void CPhraseDialogExporter::script_register(lua_State *L)
 		.def("AddDontHasInfo",		&CPhraseScript::AddDontHasInfo)
 		.def("AddGiveInfo",			&CPhraseScript::AddGiveInfo)
 		.def("AddDisableInfo",		&CPhraseScript::AddDisableInfo)
+		.def("SetScriptText", &CPhraseScript::SetScriptText)
 	];
 }

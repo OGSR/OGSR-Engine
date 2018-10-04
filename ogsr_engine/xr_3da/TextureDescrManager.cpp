@@ -116,9 +116,9 @@ void CTextureDescrMngr::LoadTHM()
  		tp.Clear			();
 		tp.Load				(*F);
 		FS.r_close			(F);
-		if (STextureParams::ttImage		== tp.fmt ||
-			STextureParams::ttTerrain	== tp.fmt ||
-			STextureParams::ttNormalMap	== tp.fmt	)
+		if (STextureParams::ttImage		== tp.type ||
+			STextureParams::ttTerrain	== tp.type ||
+			STextureParams::ttNormalMap	== tp.type)
 		{
 		texture_desc& desc		 = m_texture_details[fn];
 
@@ -145,9 +145,18 @@ void CTextureDescrMngr::LoadTHM()
 
 			desc.m_spec					= xr_new<texture_spec>();
 			desc.m_spec->m_material		= tp.material+tp.material_weight;
+			desc.m_spec->m_parallax = FALSE;
 			
-			if(tp.bump_mode==STextureParams::tbmUse)
-				desc.m_spec->m_bump_name	= tp.bump_name;
+			if (tp.bump_mode == STextureParams::tbmUse)
+			{
+				desc.m_spec->m_bump_name = tp.bump_name;
+			}
+			else if (tp.bump_mode == STextureParams::tbmUseParallax)
+			{
+				desc.m_spec->m_bump_name = tp.bump_name;
+				desc.m_spec->m_parallax = TRUE;
+			}
+
 		}
 	}
 }

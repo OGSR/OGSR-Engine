@@ -20,7 +20,7 @@ CPhraseScript::~CPhraseScript	()
 //загрузка из XML файла
 void CPhraseScript::Load		(CUIXml* uiXml, XML_NODE* phrase_node)
 {
-//	m_sScriptTextFunc = uiXml.Read(phrase_node, "script_text", 0, NULL);
+	m_sScriptTextFunc = uiXml->Read(phrase_node, "script_text", 0, "");
 
 	LoadSequence(uiXml,phrase_node, "precondition",		m_Preconditions);
 	LoadSequence(uiXml,phrase_node, "action",			m_ScriptActions);
@@ -226,4 +226,29 @@ void CPhraseScript::Action( const CGameObject* pSpeakerGO1, const CGameObject* p
         ret_func( pSpeakerGO1->lua_game_object(), pSpeakerGO2->lua_game_object(), dialog_id, phrase_id );
     }
   }
+}
+
+LPCSTR	CPhraseScript::GetScriptText(LPCSTR str_to_translate, const CGameObject* pSpeakerGO1, const CGameObject* pSpeakerGO2, LPCSTR dialog_id, LPCSTR phrase_id)
+{
+	if (!m_sScriptTextFunc.size())
+		return str_to_translate;
+
+	std::string ScriptTextString(m_sScriptTextFunc.c_str()); //-V808
+	if (luabind::functor<const char*> lua_function; ai().script_engine().functor(ScriptTextString.c_str(), lua_function)) // Обычный функтор
+		return lua_function(pSpeakerGO1->lua_game_object(), pSpeakerGO2->lua_game_object(), dialog_id, phrase_id);
+	else { // Функтор с аргументами
+		luabind::functor<luabind::object> loadstring_functor;
+		ai().script_engine().functor("loadstring", loadstring_functor);
+		ScriptTextString = "return " + ScriptTextString;
+		luabind::object ret_obj = loadstring_functor(ScriptTextString.c_str()); // Создаём функцию из строки через loadstring
+		auto ret_func = luabind::object_cast<luabind::functor<const char*>>(ret_obj); // Первое возвращённое loadstring значение должно быть функцией
+		ASSERT_FMT_DBG(ret_func, "Loadstring returns nil for code: %s", ScriptTextString.c_str()); // Если это не функция, значит loadstring вернул nil и что-то пошло не так
+		// Вызываем созданную функцию и передаём ей дефолтные аргументы. Они прилетят после аргументов, прописанных явно, если например сделать так:
+		// <script_text>my_script.test_func(123, true, nil, ...)</script_text>
+		// А если не указать '...' - дефолтные аргументы не будут переданы в функцию.
+		if (ret_func)
+			return ret_func(pSpeakerGO1->lua_game_object(), pSpeakerGO2->lua_game_object(), dialog_id, phrase_id);
+	}
+
+	return "";
 }

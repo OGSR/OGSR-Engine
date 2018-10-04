@@ -30,9 +30,6 @@ public:
 	//вызов с двумя параметрами (dialog, phrase)
 	virtual bool				Precondition	(const CGameObject* pSpeaker1, const CGameObject* pSpeaker2, LPCSTR dialog_id, LPCSTR phrase_id, LPCSTR next_phrase_id) const;
 	virtual void				Action			(const CGameObject* pSpeaker1, const CGameObject* pSpeaker2, LPCSTR dialog_id, LPCSTR phrase_id) const;
-	//текст из скриптовой функции
-//	virtual LPCSTR Text			(LPCSTR original_text, const CGameObject* pSpeaker1, const CGameObject* pSpeaker2, LPCSTR dialog_id, int phrase_num) const;
-//	virtual bool   HasText		() const {return *m_sScriptTextFunc!=NULL;}
 
 
 	DEFINE_VECTOR				(shared_str, PRECONDITION_VECTOR, PRECONDITION_VECTOR_IT);
@@ -48,6 +45,9 @@ public:
 			void				AddDontHasInfo	(LPCSTR str);
 			void				AddGiveInfo		(LPCSTR str);
 			void				AddDisableInfo	(LPCSTR str);
+			void				SetScriptText(LPCSTR str) { m_sScriptTextFunc = str; };
+			LPCSTR			GetScriptText(LPCSTR str_to_translate, const CGameObject* pSpeakerGO1, const CGameObject* pSpeakerGO2, LPCSTR dialog_id, LPCSTR phrase_id);
+
 protected:
 	//загрузка содержания последовательности тагов в контейнер строк 
 	template<class T> 
@@ -57,8 +57,7 @@ protected:
 	virtual bool				CheckInfo		(const CInventoryOwner* pOwner) const;
 	virtual void				TransferInfo	(const CInventoryOwner* pOwner) const;
 
-	//имя скриптовой функции, которая возвращает какой-то текст
-//	shared_str m_sScriptTextFunc;
+	shared_str					m_sScriptTextFunc;
 
 	//скриптовые действия, которые активируется после того как 
 	//говорится фраза
