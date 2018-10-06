@@ -6,9 +6,7 @@
 class CUIDragItem;
 class CUIDragDropListEx;
 class CUICellItem;
-#ifdef SHOW_INV_ITEM_CONDITION
 class CUIProgressBar;
-#endif
 
 class ICustomDrawCell
 {
@@ -30,11 +28,10 @@ protected:
 	ICustomDrawCell*		m_custom_draw;
 	int						m_accelerator;
 	virtual void			UpdateItemText			();
-#ifdef SHOW_INV_ITEM_CONDITION
+
 	CUIProgressBar* 		m_pConditionState;
 	CUIStatic*				m_text; 
 	void					init					();
-#endif
 public:
 							CUICellItem				();
 	virtual					~CUICellItem			();
@@ -66,9 +63,7 @@ public:
 				bool		m_b_already_drawn;
 				bool		m_b_destroy_childs;
 				void ColorizeItems(std::initializer_list<CUIDragDropListEx*>);
-#ifdef SHOW_INV_ITEM_CONDITION
 				void		UpdateConditionProgressBar();
-#endif
 				bool		m_selected;
 				bool		m_select_armament;
 				bool		m_select_equipped;

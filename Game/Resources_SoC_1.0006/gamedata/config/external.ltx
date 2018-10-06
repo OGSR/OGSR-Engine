@@ -17,6 +17,23 @@ forcibly_equivalent_slots = false
 ; Добавляет пункты переместить в каждый доступный слот.
 slots_extend_menu = true
 
+; bobbing effect from lost alpha
+; Для работы требуется секция с названием wpn_bobbing_effector и содержимым, аналогичным bobbing_effector.
+; Полагаю, что если сделать
+; [wpn_bobbing_effector]:bobbing_effector
+; получится нормально.
+wpn_bobbing = false
+
+; Показывать полоску состояния предметов в инвентаре, на его иконке.
+; Включает поддержку аттрибута condition_progress_bar для dragdrop элементов
+; и статиков condition_progess_bar и cell_item_text.
+show_inv_item_condition = false
+
+; Вычисление и использование правильного положения солнца, вместо позиции из погодных конфигов.
+; !Эту опцию желательно использовать в ОГСЕ и прочих модах с полностью скриптовым менеджером погоды!
+; При использовании со стандартным погодным менеджером может получиться эффект "вечной ночи"
+dynamic_sun_movement = false
+
 
 [dragdrop]
 ; цвет подсвеченной иконки

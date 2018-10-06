@@ -302,9 +302,8 @@ void CEnvironment::OnFrame()
 
 	// Igor. Dynamic sun position.
 	//AVO: allow sun to move as defined in configs
-#ifdef DYNAMIC_SUN_MOVEMENT
-        calculate_dynamic_sun_dir();
-#endif
+	if (Core.Features.test(xrCore::Feature::dynamic_sun_movement))
+		calculate_dynamic_sun_dir();
 	//-AVO
 
 /*	if(CurrentEnv.sun_dir.y>0)

@@ -96,9 +96,9 @@ CUIDragItem* CUIInventoryCellItem::CreateDragItem()
 	{
 		if (auto s_child = smart_cast<CUIStatic*>(*it))
 		{
-#ifdef SHOW_INV_ITEM_CONDITION
-			if ( s_child == m_text ) continue;
-#endif
+			if (Core.Features.test(xrCore::Feature::show_inv_item_condition))
+				if ( s_child == m_text ) continue;
+
 			s = xr_new<CUIStatic>();
 			s->SetAutoDelete(true);
 			if ( s_child->GetShader() )
@@ -123,12 +123,11 @@ CUIDragItem* CUIInventoryCellItem::CreateDragItem()
 }
 
 
-#ifdef SHOW_INV_ITEM_CONDITION
 void CUIInventoryCellItem::Update() {
   inherited::Update();
-  UpdateConditionProgressBar();
+  if (Core.Features.test(xrCore::Feature::show_inv_item_condition))
+	  UpdateConditionProgressBar();
 }
-#endif
 
 
 CUIAmmoCellItem::CUIAmmoCellItem(CWeaponAmmo* itm)
@@ -165,20 +164,18 @@ void CUIAmmoCellItem::UpdateItemText()
 		string32				str;
 		sprintf_s					(str,"%d",total);
 
-#ifdef SHOW_INV_ITEM_CONDITION
-		m_text->SetText( str );
-		m_text->Show( true );
-#else
-		SetText					(str);
-#endif
+		if (Core.Features.test(xrCore::Feature::show_inv_item_condition)) {
+			m_text->SetText(str);
+			m_text->Show(true);
+		} else
+			SetText(str);
 	}else
 	{
-#ifdef SHOW_INV_ITEM_CONDITION
-		m_text->SetText( "" );
-		m_text->Show( false );
-#else
-		SetText					("");
-#endif
+		if (Core.Features.test(xrCore::Feature::show_inv_item_condition)) {
+			m_text->SetText("");
+			m_text->Show(false);
+		} else
+			SetText("");
 	}
 }
 

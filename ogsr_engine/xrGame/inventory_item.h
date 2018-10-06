@@ -165,9 +165,8 @@ public:
 			int					GetIconIndex		() const ; 
 			int					GetXPos				() const ;
 			int					GetYPos				() const ;
-#ifdef SHOW_INV_ITEM_CONDITION
+
 			bool GetInvShowCondition() const;
-#endif
 	//---------------------------------------------------------------------
 			float				GetKillMsgXPos		() const ;
 			float				GetKillMsgYPos		() const ;

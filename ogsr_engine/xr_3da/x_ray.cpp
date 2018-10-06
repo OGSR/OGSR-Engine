@@ -98,6 +98,9 @@ void InitConsole	()
 	CORE_FEATURE_SET( condition_jump_weight_mod,  "features", "condition_jump_weight_mod" );
 	CORE_FEATURE_SET( forcibly_equivalent_slots,  "features", "forcibly_equivalent_slots" );
 	CORE_FEATURE_SET( slots_extend_menu,          "features", "slots_extend_menu" );
+	CORE_FEATURE_SET( dynamic_sun_movement,       "features", "dynamic_sun_movement" );
+	CORE_FEATURE_SET( wpn_bobbing,                "features", "wpn_bobbing" );
+	CORE_FEATURE_SET( show_inv_item_condition,    "features", "show_inv_item_condition" );
 }
 
 void InitInput		()

@@ -187,7 +187,7 @@ public:
 	  dbg = ( 1 << 0 ),
 	};
 
-	Flags16		Features;
+	Flags64		Features;
 	enum		Feature {
 	  equipped_untradable = ( 1 << 0 ),
 	  highlight_equipped  = ( 1 << 1 ),
@@ -195,6 +195,9 @@ public:
 	  condition_jump_weight_mod  = ( 1 << 3 ),
 	  forcibly_equivalent_slots  = ( 1 << 4 ),
 	  slots_extend_menu          = ( 1 << 5 ),
+	  dynamic_sun_movement       = ( 1 << 6 ),
+	  wpn_bobbing                = ( 1 << 7 ),
+	  show_inv_item_condition    = ( 1 << 8 ),
 	};
 
 	void		_initialize	(LPCSTR ApplicationName, LogCallback cb=0, BOOL init_fs=TRUE, LPCSTR fs_fname=0);
