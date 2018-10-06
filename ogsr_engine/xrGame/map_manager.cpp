@@ -198,15 +198,12 @@ void CMapManager::RemoveMapLocationByObjectID(u16 id) //call on destroy object
 
 void CMapManager::RemoveMapLocation			(CMapLocation* ml)
 {
-	VERIFY(ml->CanBeUserRemoved());
 	FindLocation key(ml);
-
 	Locations_it it = std::find_if(Locations().begin(),Locations().end(),key);
 	if( it!=Locations().end() ){
 		delete_data				(*it);
 		Locations().erase		(it);
 	}
-
 }
 
 
