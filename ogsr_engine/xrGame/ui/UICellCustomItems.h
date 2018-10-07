@@ -10,9 +10,7 @@ protected:
 	bool						b_auto_drag_childs;
 public:
 								CUIInventoryCellItem		(CInventoryItem* itm);
-#ifdef SHOW_INV_ITEM_CONDITION
 	virtual		void			Update						();
-#endif
 	virtual		bool			EqualTo						(CUICellItem* itm);
 	virtual		CUIDragItem*	CreateDragItem				();
 				CInventoryItem* object						() {return (CInventoryItem*)m_pData;}

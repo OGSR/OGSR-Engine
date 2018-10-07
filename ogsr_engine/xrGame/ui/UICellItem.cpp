@@ -7,13 +7,11 @@
 #include "../object_broker.h"
 #include "UIDragDropListEx.h"
 #include "../WeaponMagazinedWGrenade.h"
-#ifdef SHOW_INV_ITEM_CONDITION
 #include "UIProgressBar.h"
 #include "UIXmlInit.h"
 #include "UIInventoryWnd.h"
 #include "../Weapon.h"
 #include "../CustomOutfit.h"
-#endif
 
 CUICellItem::CUICellItem()
 {
@@ -23,11 +21,11 @@ CUICellItem::CUICellItem()
 	m_b_already_drawn	= false;
 	SetAccelerator		(0);
 	m_b_destroy_childs	= true;
-#ifdef SHOW_INV_ITEM_CONDITION
-	m_text				= NULL;
-	m_pConditionState 	= NULL;
-	init();
-#endif
+	if (Core.Features.test(xrCore::Feature::show_inv_item_condition)) {
+		m_text = NULL;
+		m_pConditionState = NULL;
+		init();
+	}
 	m_selected		= false;
 	m_select_armament	= false;
 	m_select_equipped	= false;
@@ -149,25 +147,27 @@ bool CUICellItem::HasChild(CUICellItem* item)
 
 void CUICellItem::UpdateItemText()
 {
-	string32			str;
-#ifdef SHOW_INV_ITEM_CONDITION
-	if ( ChildsCount() )
-	{
-		sprintf_s				(str,"x%d",ChildsCount()+1);
-		m_text->SetText(str);
-		m_text->Show( true );
-	}else{
-		sprintf_s				(str,"");
-		m_text->Show( false );
+	string32 str;
+	if (Core.Features.test(xrCore::Feature::show_inv_item_condition)) {
+		if (ChildsCount())
+		{
+			sprintf_s(str, "x%d", ChildsCount() + 1);
+			m_text->SetText(str);
+			m_text->Show(true);
+		}
+		else {
+			sprintf_s(str, "");
+			m_text->Show(false);
+		}
 	}
-#else
-	if(ChildsCount())
-		sprintf_s				(str,"x%d",ChildsCount()+1);
-	else
-		sprintf_s				(str,"");
+	else {
+		if (ChildsCount())
+			sprintf_s(str, "x%d", ChildsCount() + 1);
+		else
+			sprintf_s(str, "");
 
-	SetText				(str);
-#endif
+		SetText(str);
+	}
 }
 
 void CUICellItem::SetCustomDraw			(ICustomDrawCell* c){
@@ -177,7 +177,6 @@ void CUICellItem::SetCustomDraw			(ICustomDrawCell* c){
 }
 
 
-#ifdef SHOW_INV_ITEM_CONDITION
 void CUICellItem::init()
 {
 	static CUIXml uiXml;
@@ -232,7 +231,6 @@ void CUICellItem::UpdateConditionProgressBar()
     }
     m_pConditionState->Show(false);
 }
-#endif
 
 
 CUIDragItem::CUIDragItem(CUICellItem* parent)

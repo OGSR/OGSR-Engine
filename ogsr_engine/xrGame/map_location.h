@@ -100,8 +100,6 @@ public:
 
 	virtual void			save							(IWriter &stream);
 	virtual void			load							(IReader &stream);
-	virtual bool			CanBeSelected					()						{return true;}
-	virtual bool			CanBeUserRemoved				()						{return false;}
 
 #ifdef DEBUG
 	virtual void			Dump							(){};

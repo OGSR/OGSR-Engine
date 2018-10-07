@@ -3,8 +3,6 @@
 #include "..\xr_3da\skeletonanimated.h"
 class CHudItem;
 
-#ifdef WPN_BOBBING
-
 #define BOBBING_SECT "wpn_bobbing_effector"
 
 #define CROUCH_FACTOR	0.75f
@@ -38,7 +36,7 @@ class CWeaponBobbing
 		float	m_fSpeedWalk;
 		float	m_fSpeedLimp;
 };
-#endif
+
 
 struct weapon_hud_value: public shared_value
 {
@@ -160,10 +158,8 @@ public:
 	void				dbg_SetShellPoint	(const Fvector &sp)			{((weapon_hud_value*)m_shared_data.get_value())->m_sp_offset.set(sp);}
 #endif
 
-#ifdef WPN_BOBBING
 private:
 	CWeaponBobbing *m_bobbing;
-#endif	
 };
 
 #define		MAX_ANIM_COUNT							8

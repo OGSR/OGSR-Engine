@@ -1167,11 +1167,10 @@ u16 CInventoryItem::bone_count_to_synchronize	() const
 	return 0;
 }
 
-#ifdef SHOW_INV_ITEM_CONDITION
+
 bool CInventoryItem::GetInvShowCondition() const {
   return m_icon_params.show_condition;
 }
-#endif
 
 
 void CInventoryItem::SetLoadedBeltIndex( u8 pos ) {

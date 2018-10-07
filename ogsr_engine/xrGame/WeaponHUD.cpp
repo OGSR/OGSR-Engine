@@ -9,10 +9,9 @@
 #include "..\xr_3da\skeletonanimated.h"
 #include "level.h"
 #include "MathUtils.h"
-#ifdef WPN_BOBBING
 #include "actor.h"
 #include "ActorCondition.h"
-#endif
+
 weapon_hud_container* g_pWeaponHUDContainer=0;
 
 BOOL weapon_hud_value::load(const shared_str& section, CHudItem* owner)
@@ -85,17 +84,15 @@ CWeaponHUD::CWeaponHUD			(CHudItem* pHudItem)
 	m_bHidden					= true;
 	m_bStopAtEndAnimIsRunning	= false;
 	m_pCallbackItem				= NULL;
-#ifdef WPN_BOBBING
-	m_bobbing			= xr_new<CWeaponBobbing>();
-#endif
+	if (Core.Features.test(xrCore::Feature::wpn_bobbing))
+		m_bobbing = xr_new<CWeaponBobbing>();
 	m_Transform.identity		();
 }
 
 CWeaponHUD::~CWeaponHUD()
 {
-#ifdef WPN_BOBBING
-	xr_delete(m_bobbing);
-#endif
+	if (Core.Features.test(xrCore::Feature::wpn_bobbing))
+		xr_delete(m_bobbing);
 }
 
 void CWeaponHUD::Load(LPCSTR section)
@@ -120,9 +117,8 @@ void  CWeaponHUD::net_DestroyHud()
 void CWeaponHUD::UpdatePosition(const Fmatrix& trans)
 {
 	Fmatrix xform = trans;
-#ifdef WPN_BOBBING
-	m_bobbing->Update(xform);
-#endif
+	if (Core.Features.test(xrCore::Feature::wpn_bobbing))
+		m_bobbing->Update(xform);
 	m_Transform.mul				(xform,m_shared_data.get_value()->m_offset);
 	VERIFY						(!fis_zero(DET(m_Transform)));
 }
@@ -205,7 +201,6 @@ MotionID random_anim(MotionSVec& v)
 }
 
 
-#ifdef WPN_BOBBING
 CWeaponBobbing::CWeaponBobbing()
 {
 	Load();
@@ -296,4 +291,3 @@ void CWeaponBobbing::Update(Fmatrix &m)
 		m.j.set(mR.j);
 	}
 }
-#endif
