@@ -116,9 +116,9 @@ void CTextureDescrMngr::LoadTHM()
  		tp.Clear			();
 		tp.Load				(*F);
 		FS.r_close			(F);
-		if (STextureParams::ttImage		== tp.type ||
-			STextureParams::ttTerrain	== tp.type ||
-			STextureParams::ttNormalMap	== tp.type)
+		if (STextureParams::ttImage		== tp.fmt ||
+			STextureParams::ttTerrain	== tp.fmt ||
+			STextureParams::ttNormalMap	== tp.fmt)
 		{
 		texture_desc& desc		 = m_texture_details[fn];
 
