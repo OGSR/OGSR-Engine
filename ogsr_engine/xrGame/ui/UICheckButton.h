@@ -18,6 +18,7 @@ public:
 	virtual void 	Undo					();
 
 	virtual void Init(float x, float y, float width, float height);
+	virtual void InitTexture(LPCSTR tex_name);
 	virtual void SetTextX(float x) {/*do nothing*/}
 
 	//состояние кнопки
@@ -28,6 +29,5 @@ public:
 
 private:
 	bool			b_backup_val;
-	void InitTexture();
 	CUIWindow* m_pDependControl;
 };
