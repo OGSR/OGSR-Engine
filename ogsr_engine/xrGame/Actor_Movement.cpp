@@ -258,14 +258,12 @@ void CActor::g_cl_CheckControls(u32 mstate_wf, Fvector &vControlAccel, float &Ju
                     character_physics_support()->movement()->EnableCharacter();
 		    if ( isActorAccelerated( mstate_real, IsZoomAimingMode() ) ) {
 		      if ( !character_physics_support()->movement()->ActivateBoxDynamic( 3 ) ) {
-		        character_physics_support()->movement()->ActivateBoxDynamic( 1 );
                         StopAnyMove();
                         mstate_wf &= ~mcAnyMove;
 		      }
 		    }
 		    else {
 		      if ( !character_physics_support()->movement()->ActivateBoxDynamic( 4 ) ) {
-		        character_physics_support()->movement()->ActivateBoxDynamic( 2 );
                         StopAnyMove();
                         mstate_wf &= ~mcAnyMove;
                       }
