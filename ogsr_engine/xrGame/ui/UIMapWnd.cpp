@@ -335,7 +335,7 @@ void CUIMapWnd::Draw()
 
 bool CUIMapWnd::OnKeyboardHold(int dik)
 {
-  if (inherited::OnKeyboardHold(dik)) return true;
+	if (inherited::OnKeyboardHold(dik)) return true;
 
 	switch(dik){
 		case DIK_UP:
@@ -361,7 +361,7 @@ bool CUIMapWnd::OnKeyboardHold(int dik)
 
 bool CUIMapWnd::OnKeyboard				(int dik, EUIMessages keyboard_action)
 {
-  if (inherited::OnKeyboard(dik, keyboard_action)) return true;
+	if (inherited::OnKeyboard(dik, keyboard_action)) return true;
 
 	switch(dik){
 		case DIK_NUMPADMINUS:
@@ -377,6 +377,7 @@ bool CUIMapWnd::OnKeyboard				(int dik, EUIMessages keyboard_action)
 				return true;
 			}break;
 	}
+	return false;
 }
 
 bool CUIMapWnd::OnMouse(float x, float y, EUIMessages mouse_action)

@@ -7,8 +7,6 @@
 #include "script_callback_ex.h"
 #include "script_game_object.h"
 
-#pragma optimize("gyts", off)
-
 IInventoryBox::IInventoryBox() : m_items ()
 {
 	m_in_use = false;

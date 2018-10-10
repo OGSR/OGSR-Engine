@@ -11,7 +11,7 @@
 #ifdef DEBUG
 
 #include "UIDebugFonts.h"
-#include "dinput.h"
+#include <dinput.h>
 #include "../hudmanager.h"
 
 

@@ -123,7 +123,7 @@ void gather_info(const char *expression, const char *description, const char *ar
 	LogStackTrace("stack trace:\n");
 }
 
-__declspec(noreturn) void xrDebug::do_exit(const std::string &message)
+void xrDebug::do_exit(const std::string &message)
 {
 	ShowWindow(gGameWindow, SW_HIDE);
 
