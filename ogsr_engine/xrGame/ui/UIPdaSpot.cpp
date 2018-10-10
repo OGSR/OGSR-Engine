@@ -132,7 +132,7 @@ void CUIPdaSpot::Exit()
 
 bool CUIPdaSpot::OnKeyboard(int dik, EUIMessages keyboard_action)
 {
-  if (base_class::OnKeyboard(dik, keyboard_action)) return true;
+	if (base_class::OnKeyboard(dik, keyboard_action)) return true;
 
 	switch (dik)
 	{
@@ -153,7 +153,8 @@ bool CUIPdaSpot::OnKeyboard(int dik, EUIMessages keyboard_action)
 		}
 	}break;
 	}
-	
+
+	return false;
 }
 
 void CUIPdaSpot::SendMessage(CUIWindow* pWnd, s16 msg, void* pData)

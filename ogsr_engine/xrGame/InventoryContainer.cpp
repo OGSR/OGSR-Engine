@@ -10,8 +10,6 @@
 #include "InventoryContainer.h"
 #include "Artifact.h"
 
-#pragma optimize("gyts", off)
-
 CInventoryContainer::CInventoryContainer():
 		CCustomInventoryBox<CInventoryItemObject>()
 {

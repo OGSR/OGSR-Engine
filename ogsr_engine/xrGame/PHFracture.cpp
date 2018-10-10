@@ -6,10 +6,8 @@
 #include "../xr_3da/skeletoncustom.h"
 
 #pragma warning(disable:4995)
-#pragma warning(disable:4267)
 #include "ode/src/joint.h"
 #pragma warning(default:4995)
-#pragma warning(default:4267)
 extern	class CPHWorld	*ph_world;
 static const float torque_factor=10000000.f;
 CPHFracturesHolder::CPHFracturesHolder()

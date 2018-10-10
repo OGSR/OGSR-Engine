@@ -834,7 +834,6 @@ void doBenchmark(LPCSTR name)
 
 u32 calc_progress_color(u32, u32, int, int);
 
-#pragma optimize("g", off)
 void CApplication::load_draw_internal()
 {
 	if (!sh_progress) {
