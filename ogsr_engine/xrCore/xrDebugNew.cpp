@@ -18,11 +18,7 @@ static bool error_after_dialog = false;
 void save_mini_dump( _EXCEPTION_POINTERS* );
 #endif
 
-#ifndef XR_USE_BLACKBOX
-#	include "stacktrace_collector.h"
-#else
-#	include "blackbox\build_stacktrace.h"
-#endif
+#include "stacktrace_collector.h"
 static thread_local StackTraceInfo stackTrace;
 
 void LogStackTrace(const char* header)

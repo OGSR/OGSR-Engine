@@ -1,9 +1,7 @@
 #pragma once
 
-#ifndef XR_USE_BLACKBOX
-
 static constexpr size_t MaxStackTraceDepth = 256u;
-static constexpr size_t MaxFrameLength = 1024u; // 512u;
+static constexpr size_t MaxFrameLength = 4096u;
 
 struct StackTraceInfo {
 	char frames[MaxStackTraceDepth * (MaxFrameLength + 1)];
@@ -19,5 +17,3 @@ void BuildStackTrace(StackTraceInfo& stackTrace);
 inline void BuildStackTrace(EXCEPTION_POINTERS*, StackTraceInfo& stackTrace) {
 	BuildStackTrace(stackTrace);
 }
-
-#endif
