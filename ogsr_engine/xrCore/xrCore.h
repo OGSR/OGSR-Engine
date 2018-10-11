@@ -206,6 +206,11 @@ public:
 	  more_hide_weapon           = ( 1 << 14 ),
 	  keep_inprogress_tasks_only = ( 1 << 15 ),
 	  show_dialog_numbers        = ( 1 << 16 ),
+	  objects_radioactive        = ( 1 << 17 ),
+	  af_zero_condition          = ( 1 << 18 ),
+	  af_satiety                 = ( 1 << 19 ),
+	  af_psy_health              = ( 1 << 20 ),
+	  outfit_af                  = ( 1 << 21 ),
 	};
 
 	void		_initialize	(LPCSTR ApplicationName, LogCallback cb=0, BOOL init_fs=TRUE, LPCSTR fs_fname=0);

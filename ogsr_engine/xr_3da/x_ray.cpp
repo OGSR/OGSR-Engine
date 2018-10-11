@@ -109,6 +109,11 @@ void InitConsole	()
 	CORE_FEATURE_SET( more_hide_weapon,           "features", "more_hide_weapon" );
 	CORE_FEATURE_SET( keep_inprogress_tasks_only, "features", "keep_inprogress_tasks_only" );
 	CORE_FEATURE_SET( show_dialog_numbers,        "features", "show_dialog_numbers" );
+	CORE_FEATURE_SET( objects_radioactive,        "features", "objects_radioactive" );
+	CORE_FEATURE_SET( af_zero_condition,          "features", "af_zero_condition" );
+	CORE_FEATURE_SET( af_satiety,                 "features", "af_satiety" );
+	CORE_FEATURE_SET( af_psy_health,              "features", "af_psy_health" );
+	CORE_FEATURE_SET( outfit_af,                  "features", "outfit_af" );
 }
 
 void InitInput		()

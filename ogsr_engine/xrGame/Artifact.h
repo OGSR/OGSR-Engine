@@ -68,14 +68,7 @@ public:
 
 	bool							m_bCanSpawnZone;
 	float							m_fHealthRestoreSpeed;
-#ifndef OBJECTS_RADIOACTIVE
-#ifdef AF_PSY_HEALTH
-	float m_fPsyHealthRestoreSpeed;
-	virtual float PsyHealthRestoreSpeed() const { return m_fPsyHealthRestoreSpeed; }
-#endif
-	float m_fRadiationRestoreSpeed;
-	virtual float RadiationRestoreSpeed() const { return m_fRadiationRestoreSpeed; }
-#endif
+
 	float 							m_fSatietyRestoreSpeed;
 	float							m_fPowerRestoreSpeed;
 	float							m_fBleedingRestoreSpeed;

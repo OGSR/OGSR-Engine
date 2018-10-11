@@ -24,9 +24,7 @@ LPCSTR af_item_sect_names[] = {
 	"satiety_restore_speed",
 	"power_restore_speed",
 	"bleeding_restore_speed",
-#ifdef AF_PSY_HEALTH
 	"psy_health_restore_speed",
-#endif
 	"additional_inventory_weight",
 	"additional_inventory_weight2",
 	
@@ -47,9 +45,7 @@ LPCSTR af_item_param_names[] = {
 	"ui_inv_satiety",
 	"ui_inv_power",
 	"ui_inv_bleeding",
-#ifdef AF_PSY_HEALTH
 	"ui_inv_psy_health",
-#endif
 	"ui_inv_additional_weight",
 	"ui_inv_additional_weight2",
 
@@ -70,9 +66,7 @@ LPCSTR af_actor_param_names[]={
 	"satiety_v",
 	"satiety_power_v",
 	"wound_incarnation_v",
-#ifdef AF_PSY_HEALTH
 	"psy_health_v"
-#endif
 };
 
 void CUIArtefactParams::InitFromXml(CUIXml& xml_doc)

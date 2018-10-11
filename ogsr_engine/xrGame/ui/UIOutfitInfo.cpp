@@ -27,9 +27,7 @@ LPCSTR _imm_names []={
 	"satiety_restore_speed",
 	"power_restore_speed",
 	"bleeding_restore_speed",
-#ifdef AF_PSY_HEALTH
 	"psy_health_restore_speed",
-#endif
 
 	"burn_immunity",
 	"shock_immunity",
@@ -48,9 +46,7 @@ LPCSTR _imm_st_names[]={
 	"ui_inv_satiety",
 	"ui_inv_power",
 	"ui_inv_bleeding",
-#ifdef AF_PSY_HEALTH
 	"ui_inv_psy_health",
-#endif
 
 	"ui_inv_outfit_burn_protection",
 	"ui_inv_outfit_shock_protection",
@@ -69,9 +65,7 @@ LPCSTR _actor_param_names[] = {
 	"satiety_v",
 	"satiety_power_v",
 	"wound_incarnation_v",
-#ifdef AF_PSY_HEALTH
 	"psy_health_v"
-#endif
 };
 
 void CUIOutfitInfo::InitFromXml(CUIXml& xml_doc)

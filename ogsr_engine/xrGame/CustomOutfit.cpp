@@ -22,18 +22,10 @@ CCustomOutfit::CCustomOutfit()
 
 	m_boneProtection = xr_new<SBoneProtections>();
 
-#ifdef OUTFIT_AF
 	m_fBleedingRestoreSpeed  = 0.f;
 	m_fHealthRestoreSpeed    = 0.f;
 	m_fPowerRestoreSpeed     = 0.f;
 	m_fSatietyRestoreSpeed   = 0.f;
-#ifndef OBJECTS_RADIOACTIVE
-#ifdef AF_PSY_HEALTH
-	m_fPsyHealthRestoreSpeed = 0.f;
-#endif
-	m_fRadiationRestoreSpeed = 0.f;
-#endif
-#endif
 }
 
 CCustomOutfit::~CCustomOutfit() 
@@ -89,18 +81,10 @@ void CCustomOutfit::Load(LPCSTR section)
 
 	m_full_icon_name								= pSettings->r_string(section,"full_icon_name");
 
-#ifdef OUTFIT_AF
 	m_fBleedingRestoreSpeed  = READ_IF_EXISTS( pSettings, r_float, section, "bleeding_restore_speed", 0.f );
 	m_fHealthRestoreSpeed    = READ_IF_EXISTS( pSettings, r_float, section, "health_restore_speed", 0.f );
 	m_fPowerRestoreSpeed     = READ_IF_EXISTS( pSettings, r_float, section, "power_restore_speed", 0.f );
 	m_fSatietyRestoreSpeed   = READ_IF_EXISTS( pSettings, r_float, section, "satiety_restore_speed", 0.f );
-#ifndef OBJECTS_RADIOACTIVE
-#ifdef AF_PSY_HEALTH
-	m_fPsyHealthRestoreSpeed = READ_IF_EXISTS( pSettings, r_float, section, "psy_health_restore_speed", 0.f );
-#endif
-	m_fRadiationRestoreSpeed = READ_IF_EXISTS( pSettings, r_float, section, "radiation_restore_speed", 0.f );
-#endif
-#endif
 }
 
 void CCustomOutfit::Hit(float hit_power, ALife::EHitType hit_type)
