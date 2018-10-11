@@ -80,14 +80,14 @@ void CUIInventoryWnd::InitInventory()
 		m_pUIPistolList->SetItem		(itm);
 	}
 
-#ifdef OGSE_NEW_SLOTS
+	if (Core.Features.test(xrCore::Feature::ogse_new_slots)) {
 	_itm = m_pInv->m_slots[KNIFE_SLOT].m_pIItem;
 	if (_itm)
 	{
 		CUICellItem* itm = create_cell_item(_itm);
 		m_pUIKnifeList->SetItem(itm);
 	}
-#endif
+	}
 
 	_itm								= m_pInv->m_slots[SECOND_WEAPON_SLOT].m_pIItem;
 	if(_itm)
@@ -97,7 +97,8 @@ void CUIInventoryWnd::InitInventory()
 	}
 	_itm = m_pInv->m_slots[APPARATUS_SLOT].m_pIItem;
 
-#ifdef OGSE_NEW_SLOTS
+	if (Core.Features.test(xrCore::Feature::ogse_new_slots)) {
+
 	if (_itm)
 	{
 		CUICellItem* itm = create_cell_item(_itm);
@@ -138,7 +139,8 @@ void CUIInventoryWnd::InitInventory()
 		CUICellItem* itm = create_cell_item(_itm);
 		m_pUIBIODetList->SetItem(itm);
 	}
-#endif
+
+	}
 
 	PIItem _outfit						= m_pInv->m_slots[OUTFIT_SLOT].m_pIItem;
 	CUICellItem* outfit					= (_outfit)?create_cell_item(_outfit):NULL;
@@ -491,18 +493,17 @@ void CUIInventoryWnd::ClearAllLists()
 	m_pUIBeltList->ClearAll					(true);
 	m_pUIOutfitList->ClearAll				(true);
 	m_pUIPistolList->ClearAll				(true);
-#ifdef OGSE_NEW_SLOTS
-	m_pUIKnifeList->ClearAll(true);
-#endif
+	if (Core.Features.test(xrCore::Feature::ogse_new_slots))
+		m_pUIKnifeList->ClearAll(true);
 	m_pUIAutomaticList->ClearAll			(true);
-#ifdef OGSE_NEW_SLOTS
-	m_pUIDetectorList->ClearAll(true);
-	m_pUITorchList->ClearAll(true);
-	m_pUIHelmetList->ClearAll(true);
-	m_pUINightVisionList->ClearAll(true);
-	m_pUIBIODetList->ClearAll(true);
-	m_pUIBinocularList->ClearAll(true);
-#endif
+	if (Core.Features.test(xrCore::Feature::ogse_new_slots)) {
+		m_pUIDetectorList->ClearAll(true);
+		m_pUITorchList->ClearAll(true);
+		m_pUIHelmetList->ClearAll(true);
+		m_pUINightVisionList->ClearAll(true);
+		m_pUIBIODetList->ClearAll(true);
+		m_pUIBinocularList->ClearAll(true);
+	}
 }
 
 

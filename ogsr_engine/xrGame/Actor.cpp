@@ -784,12 +784,11 @@ float CActor::currentFOV()
 		eacFirstEye == cam_active
 		&& pWeapon && pWeapon->IsZoomed()
 		&& (!pWeapon->ZoomTexture() || (!pWeapon->IsRotatingToZoom() && pWeapon->ZoomTexture()))
-	)
-#ifdef OGSE_WPN_ZOOM_SYSTEM
-		return float(atan(tan(g_fov * (0.5 * PI / 180)) / pWeapon->GetZoomFactor()) / (0.5 * PI / 180));
-#else
-		return pWeapon->GetZoomFactor() * 0.75f;
-#endif
+		)
+		if (Core.Features.test(xrCore::Feature::ogse_wpn_zoom_system))
+			return float(atan(tan(g_fov * (0.5 * PI / 180)) / pWeapon->GetZoomFactor()) / (0.5 * PI / 180));
+		else
+			return pWeapon->GetZoomFactor() * 0.75f;
 	else
 		return g_fov;
 }

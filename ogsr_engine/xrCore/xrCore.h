@@ -211,6 +211,15 @@ public:
 	  af_satiety                 = ( 1 << 19 ),
 	  af_psy_health              = ( 1 << 20 ),
 	  outfit_af                  = ( 1 << 21 ),
+	  gd_master_only             = ( 1 << 22 ),
+	  use_legacy_load_screens    = ( 1 << 23 ),
+	  ogse_new_slots             = ( 1 << 24 ),
+	  ogse_wpn_zoom_system       = ( 1 << 25 ),
+	  wpn_cost_include_addons    = ( 1 << 26 ),
+	  lock_reload_in_sprint      = ( 1 << 27 ),
+	  hard_ammo_reload           = ( 1 << 28 ),
+	  engine_ammo_repacker       = ( 1 << 29 ),
+	  ruck_flag_preferred        = ( 1 << 30 ),
 	};
 
 	void		_initialize	(LPCSTR ApplicationName, LogCallback cb=0, BOOL init_fs=TRUE, LPCSTR fs_fname=0);

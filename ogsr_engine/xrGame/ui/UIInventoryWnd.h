@@ -90,7 +90,6 @@ protected:
 	CUIDragDropListEx*			m_pUIAutomaticList;
 	CUIOutfitDragDropList*		m_pUIOutfitList;
 
-#ifdef OGSE_NEW_SLOTS
 	CUIDragDropListEx*			m_pUIKnifeList;
 	CUIDragDropListEx*			m_pUIHelmetList;
 	CUIDragDropListEx*			m_pUIBIODetList;
@@ -98,9 +97,8 @@ protected:
 	CUIDragDropListEx*			m_pUIDetectorList;
 	CUIDragDropListEx*			m_pUITorchList;
 	CUIDragDropListEx*			m_pUIBinocularList;
-#endif
 
-        // alpet: для индексированного доступа
+	// alpet: для индексированного доступа
 	CUIDragDropListEx*			m_slots_array[ SLOTS_TOTAL ];
 
 	void						ClearAllLists				();

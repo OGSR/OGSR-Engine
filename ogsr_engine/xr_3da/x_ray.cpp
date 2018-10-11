@@ -92,8 +92,8 @@ void InitConsole	()
 		strcpy_s					(Console->ConfigFile,c_name);
 	}
 
-	CORE_FEATURE_SET( equipped_untradable, "dragdrop", "equipped_untradable" );
-	CORE_FEATURE_SET( highlight_equipped,  "dragdrop", "highlight_equipped"  );
+	CORE_FEATURE_SET( equipped_untradable,        "dragdrop", "equipped_untradable" );
+	CORE_FEATURE_SET( highlight_equipped,         "dragdrop", "highlight_equipped"  );
 	CORE_FEATURE_SET( af_radiation_immunity_mod,  "features", "af_radiation_immunity_mod" );
 	CORE_FEATURE_SET( condition_jump_weight_mod,  "features", "condition_jump_weight_mod" );
 	CORE_FEATURE_SET( forcibly_equivalent_slots,  "features", "forcibly_equivalent_slots" );
@@ -114,6 +114,15 @@ void InitConsole	()
 	CORE_FEATURE_SET( af_satiety,                 "features", "af_satiety" );
 	CORE_FEATURE_SET( af_psy_health,              "features", "af_psy_health" );
 	CORE_FEATURE_SET( outfit_af,                  "features", "outfit_af" );
+	CORE_FEATURE_SET( gd_master_only,             "features", "gd_master_only" );
+	CORE_FEATURE_SET( use_legacy_load_screens,    "features", "use_legacy_load_screens" );
+	CORE_FEATURE_SET( ogse_new_slots,             "features", "ogse_new_slots" );
+	CORE_FEATURE_SET( ogse_wpn_zoom_system,       "features", "ogse_wpn_zoom_system" );
+	CORE_FEATURE_SET( wpn_cost_include_addons,    "features", "wpn_cost_include_addons" );
+	CORE_FEATURE_SET( lock_reload_in_sprint,      "features", "lock_reload_in_sprint" );
+	CORE_FEATURE_SET( hard_ammo_reload,           "features", "hard_ammo_reload" );
+	CORE_FEATURE_SET( engine_ammo_repacker,       "features", "engine_ammo_repacker" );
+	CORE_FEATURE_SET( ruck_flag_preferred,        "features", "ruck_flag_preferred" );
 }
 
 void InitInput		()
@@ -877,9 +886,7 @@ void CApplication::load_draw_internal()
 	//progress background
 	static float offs = -0.5f;
 
-#ifndef USE_LEGACY_LOAD_SCREENS 
-	if (!hLevelLogo) 
-#endif // !USE_LEGACY_LOAD_SCREENS 
+	if (Core.Features.test(xrCore::Feature::use_legacy_load_screens) || !hLevelLogo)
 	{
 		back_size.set(1024, 768);
 		back_text_coords.lt.set(0, 0); back_text_coords.rb.add(back_text_coords.lt, back_size);
@@ -902,16 +909,18 @@ void CApplication::load_draw_internal()
 	//draw level-specific screenshot
 	if (hLevelLogo)
 	{
-#ifdef USE_LEGACY_LOAD_SCREENS 
-		bw = 512.0f;
-		bh = 256.0f;
+		float bx, by;
+		if (Core.Features.test(xrCore::Feature::use_legacy_load_screens)) {
+			bw = 512.0f;
+			bh = 256.0f;
 
-		float bx = 257.0f;
-		float by = 369.0f;
-#else
-		float bx = 0.0f;
-		float by = 0.0f;
-#endif // !USE_LEGACY_LOAD_SCREENS 
+			bx = 257.0f;
+			by = 369.0f;
+		}
+		else {
+			bx = 0.0f;
+			by = 0.0f;
+		}
 
 		Frect r;
 		r.lt.set(bx, by);
