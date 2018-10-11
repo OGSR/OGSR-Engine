@@ -174,6 +174,7 @@ class XRCORE_API CInifile {
   void     w_bool     ( LPCSTR, LPCSTR, bool   );
 
   void     remove_line ( LPCSTR, LPCSTR );
+  void     remove_section( LPCSTR );
 };
 
 // Main configuration file
