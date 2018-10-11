@@ -168,7 +168,7 @@ hrtf = true
 ## sources:
 #  Sets the maximum number of allocatable sources. Lower values may help for
 #  systems with apps that try to play more sounds than the CPU can handle.
-#sources = 256
+sources = 1024
 
 ## slots:
 #  Sets the maximum number of Auxiliary Effect Slots an app can create. A slot
