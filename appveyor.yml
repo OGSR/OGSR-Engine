@@ -11,8 +11,6 @@ shallow_clone: true
 before_build:
 - cmd: >-
     rem set OGSR_DEPLOY=true
-
-    copy /Y "ogsr_engine\build_config_defines.h" "ogsr_engine\hack.appveyor"
 build:
   project: Engine.sln
   publish_wap: true
