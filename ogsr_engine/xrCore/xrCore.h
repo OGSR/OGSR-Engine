@@ -221,7 +221,9 @@ public:
 	  engine_ammo_repacker       = ( 1 << 29 ),
 	  ruck_flag_preferred        = ( 1 << 30 ),
 	};
-
+	// “.к. enum не позвол€ет использовать более 30 флагов, дальше продолжим таким способом (до 63 должно помочь, потом придумаем ещЄ что-нибудь):
+	//static constexpr u64 next_flag = 1ull << 31;
+	//
 	void		_initialize	(LPCSTR ApplicationName, LogCallback cb=0, BOOL init_fs=TRUE, LPCSTR fs_fname=0);
 	void		_destroy	();
 

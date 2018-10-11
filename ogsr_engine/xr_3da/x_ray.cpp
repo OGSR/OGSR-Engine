@@ -22,8 +22,8 @@
 #define READ_IF_EXISTS(ltx,method,section,name,default_value)\
 	((ltx->line_exist(section,name)) ? (ltx->method(section,name)) : (default_value))
 
-#define CORE_FEATURE_SET( feature, section, name )\
-  Core.Features.set( xrCore::Feature::feature, READ_IF_EXISTS( pSettings, r_bool, section, name, false ) )
+#define CORE_FEATURE_SET( feature, section )\
+  Core.Features.set( xrCore::feature, READ_IF_EXISTS( pSettings, r_bool, section, #feature, false ) )
 
 
 //---------------------------------------------------------------------
@@ -92,37 +92,37 @@ void InitConsole	()
 		strcpy_s					(Console->ConfigFile,c_name);
 	}
 
-	CORE_FEATURE_SET( equipped_untradable,        "dragdrop", "equipped_untradable" );
-	CORE_FEATURE_SET( highlight_equipped,         "dragdrop", "highlight_equipped"  );
-	CORE_FEATURE_SET( af_radiation_immunity_mod,  "features", "af_radiation_immunity_mod" );
-	CORE_FEATURE_SET( condition_jump_weight_mod,  "features", "condition_jump_weight_mod" );
-	CORE_FEATURE_SET( forcibly_equivalent_slots,  "features", "forcibly_equivalent_slots" );
-	CORE_FEATURE_SET( slots_extend_menu,          "features", "slots_extend_menu" );
-	CORE_FEATURE_SET( dynamic_sun_movement,       "features", "dynamic_sun_movement" );
-	CORE_FEATURE_SET( wpn_bobbing,                "features", "wpn_bobbing" );
-	CORE_FEATURE_SET( show_inv_item_condition,    "features", "show_inv_item_condition" );
-	CORE_FEATURE_SET( remove_alt_keybinding,      "features", "remove_alt_keybinding" );
-	CORE_FEATURE_SET( binoc_firing,               "features", "binoc_firing" );
-	CORE_FEATURE_SET( no_mouse_wheel_switch_slot, "features", "no_mouse_wheel_switch_slot" );
-	CORE_FEATURE_SET( stop_anim_playing,          "features", "stop_anim_playing" );
-	CORE_FEATURE_SET( corpses_collision,          "features", "corpses_collision" );
-	CORE_FEATURE_SET( more_hide_weapon,           "features", "more_hide_weapon" );
-	CORE_FEATURE_SET( keep_inprogress_tasks_only, "features", "keep_inprogress_tasks_only" );
-	CORE_FEATURE_SET( show_dialog_numbers,        "features", "show_dialog_numbers" );
-	CORE_FEATURE_SET( objects_radioactive,        "features", "objects_radioactive" );
-	CORE_FEATURE_SET( af_zero_condition,          "features", "af_zero_condition" );
-	CORE_FEATURE_SET( af_satiety,                 "features", "af_satiety" );
-	CORE_FEATURE_SET( af_psy_health,              "features", "af_psy_health" );
-	CORE_FEATURE_SET( outfit_af,                  "features", "outfit_af" );
-	CORE_FEATURE_SET( gd_master_only,             "features", "gd_master_only" );
-	CORE_FEATURE_SET( use_legacy_load_screens,    "features", "use_legacy_load_screens" );
-	CORE_FEATURE_SET( ogse_new_slots,             "features", "ogse_new_slots" );
-	CORE_FEATURE_SET( ogse_wpn_zoom_system,       "features", "ogse_wpn_zoom_system" );
-	CORE_FEATURE_SET( wpn_cost_include_addons,    "features", "wpn_cost_include_addons" );
-	CORE_FEATURE_SET( lock_reload_in_sprint,      "features", "lock_reload_in_sprint" );
-	CORE_FEATURE_SET( hard_ammo_reload,           "features", "hard_ammo_reload" );
-	CORE_FEATURE_SET( engine_ammo_repacker,       "features", "engine_ammo_repacker" );
-	CORE_FEATURE_SET( ruck_flag_preferred,        "features", "ruck_flag_preferred" );
+	CORE_FEATURE_SET( equipped_untradable,        "dragdrop" );
+	CORE_FEATURE_SET( highlight_equipped,         "dragdrop" );
+	CORE_FEATURE_SET( af_radiation_immunity_mod,  "features" );
+	CORE_FEATURE_SET( condition_jump_weight_mod,  "features" );
+	CORE_FEATURE_SET( forcibly_equivalent_slots,  "features" );
+	CORE_FEATURE_SET( slots_extend_menu,          "features" );
+	CORE_FEATURE_SET( dynamic_sun_movement,       "features" );
+	CORE_FEATURE_SET( wpn_bobbing,                "features" );
+	CORE_FEATURE_SET( show_inv_item_condition,    "features" );
+	CORE_FEATURE_SET( remove_alt_keybinding,      "features" );
+	CORE_FEATURE_SET( binoc_firing,               "features" );
+	CORE_FEATURE_SET( no_mouse_wheel_switch_slot, "features" );
+	CORE_FEATURE_SET( stop_anim_playing,          "features" );
+	CORE_FEATURE_SET( corpses_collision,          "features" );
+	CORE_FEATURE_SET( more_hide_weapon,           "features" );
+	CORE_FEATURE_SET( keep_inprogress_tasks_only, "features" );
+	CORE_FEATURE_SET( show_dialog_numbers,        "features" );
+	CORE_FEATURE_SET( objects_radioactive,        "features" );
+	CORE_FEATURE_SET( af_zero_condition,          "features" );
+	CORE_FEATURE_SET( af_satiety,                 "features" );
+	CORE_FEATURE_SET( af_psy_health,              "features" );
+	CORE_FEATURE_SET( outfit_af,                  "features" );
+	CORE_FEATURE_SET( gd_master_only,             "features" );
+	CORE_FEATURE_SET( use_legacy_load_screens,    "features" );
+	CORE_FEATURE_SET( ogse_new_slots,             "features" );
+	CORE_FEATURE_SET( ogse_wpn_zoom_system,       "features" );
+	CORE_FEATURE_SET( wpn_cost_include_addons,    "features" );
+	CORE_FEATURE_SET( lock_reload_in_sprint,      "features" );
+	CORE_FEATURE_SET( hard_ammo_reload,           "features" );
+	CORE_FEATURE_SET( engine_ammo_repacker,       "features" );
+	CORE_FEATURE_SET( ruck_flag_preferred,        "features" );
 }
 
 void InitInput		()
