@@ -189,8 +189,8 @@ public:
 
 	Flags64		Features;
 	enum		Feature {
-	  equipped_untradable = ( 1 << 0 ),
-	  highlight_equipped  = ( 1 << 1 ),
+	  equipped_untradable        = ( 1 << 0 ),
+	  highlight_equipped         = ( 1 << 1 ),
 	  af_radiation_immunity_mod  = ( 1 << 2 ),
 	  condition_jump_weight_mod  = ( 1 << 3 ),
 	  forcibly_equivalent_slots  = ( 1 << 4 ),
@@ -198,6 +198,14 @@ public:
 	  dynamic_sun_movement       = ( 1 << 6 ),
 	  wpn_bobbing                = ( 1 << 7 ),
 	  show_inv_item_condition    = ( 1 << 8 ),
+	  remove_alt_keybinding      = ( 1 << 9 ),
+	  binoc_firing               = ( 1 << 10 ),
+	  no_mouse_wheel_switch_slot = ( 1 << 11 ),
+	  stop_anim_playing          = ( 1 << 12 ),
+	  corpses_collision          = ( 1 << 13 ),
+	  more_hide_weapon           = ( 1 << 14 ),
+	  keep_inprogress_tasks_only = ( 1 << 15 ),
+	  show_dialog_numbers        = ( 1 << 16 ),
 	};
 
 	void		_initialize	(LPCSTR ApplicationName, LogCallback cb=0, BOOL init_fs=TRUE, LPCSTR fs_fname=0);

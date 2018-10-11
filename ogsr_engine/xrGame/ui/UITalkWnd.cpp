@@ -245,9 +245,9 @@ void CUITalkWnd::Draw()
 
 void CUITalkWnd::Show()
 {
-#ifdef MORE_HIDE_WEAPON
-	Actor()->SetWeaponHideState(INV_STATE_BLOCK_ALL, true);
-#endif
+	if (Core.Features.test(xrCore::Feature::more_hide_weapon))
+		Actor()->SetWeaponHideState(INV_STATE_BLOCK_ALL, true);
+
 	InitTalkDialog				();
 	inherited::Show				();
 }
@@ -266,9 +266,10 @@ void CUITalkWnd::Hide()
 	ToTopicMode					();
 
 	if (m_pActor->IsTalking()) m_pActor->StopTalk();
-#ifdef MORE_HIDE_WEAPON
-	m_pActor->SetWeaponHideState(INV_STATE_BLOCK_ALL, false);
-#endif
+
+	if (Core.Features.test(xrCore::Feature::more_hide_weapon))
+		m_pActor->SetWeaponHideState(INV_STATE_BLOCK_ALL, false);
+
 	m_pActor = NULL;
 }
 

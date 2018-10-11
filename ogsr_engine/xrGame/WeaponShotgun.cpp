@@ -13,9 +13,7 @@ CWeaponShotgun::CWeaponShotgun(void) : CWeaponCustomPistol("TOZ34")
     m_eSoundShotBoth		= ESoundTypes(SOUND_TYPE_WEAPON_SHOOTING);
 	m_eSoundClose			= ESoundTypes(SOUND_TYPE_WEAPON_SHOOTING);
 	m_eSoundAddCartridge	= ESoundTypes(SOUND_TYPE_WEAPON_SHOOTING);
-#ifdef SHOTG_EXTRA_AMMO_FIX
-	m_bLockType = true;
-#endif
+	m_bLockType = true; // Запрещает заряжать в дробовики патроны разного типа
 }
 
 CWeaponShotgun::~CWeaponShotgun(void)

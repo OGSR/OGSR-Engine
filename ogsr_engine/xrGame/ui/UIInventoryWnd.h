@@ -32,11 +32,7 @@ public:
 
 	void					InitInventory				();
 	void					InitInventory_delayed		();
-#ifdef MORE_HIDE_WEAPON
-	virtual bool StopAnyMove() { return true; }
-#else
-	virtual bool			StopAnyMove					()					{return false;}
-#endif
+	virtual bool StopAnyMove() { return !!Core.Features.test(xrCore::Feature::more_hide_weapon); }
 
 	virtual void			SendMessage					(CUIWindow *pWnd, s16 msg, void *pData);
 	virtual bool			OnMouse						(float x, float y, EUIMessages mouse_action);

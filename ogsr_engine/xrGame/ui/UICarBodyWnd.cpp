@@ -221,10 +221,10 @@ void CUICarBodyWnd::Hide()
 	inherited::Hide								();
 	if(m_pInventoryBox)
 		m_pInventoryBox->m_in_use				= false;
-#ifdef MORE_HIDE_WEAPON
-	if ( Actor() )
-		Actor()->SetWeaponHideState(INV_STATE_BLOCK_ALL, false);
-#endif
+
+	if (Core.Features.test(xrCore::Feature::more_hide_weapon))
+		if ( Actor() )
+			Actor()->SetWeaponHideState(INV_STATE_BLOCK_ALL, false);
 }
 
 void CUICarBodyWnd::UpdateLists()
@@ -378,9 +378,9 @@ void CUICarBodyWnd::Update()
 
 void CUICarBodyWnd::Show() 
 { 
-#ifdef MORE_HIDE_WEAPON
-	Actor()->SetWeaponHideState(INV_STATE_BLOCK_ALL, true);
-#endif
+	if (Core.Features.test(xrCore::Feature::more_hide_weapon))
+		Actor()->SetWeaponHideState(INV_STATE_BLOCK_ALL, true);
+
 	InventoryUtilities::SendInfoToActor		("ui_car_body");
 	inherited::Show							();
 	SetCurrentItem							(NULL);

@@ -50,9 +50,8 @@ CGameTaskManager::~CGameTaskManager()
 void CGameTaskManager::initialize(u16 id)
 {
 	m_gametasks->registry().init(id);// actor's id
-#ifdef KEEP_INPROGRESS_TASKS_ONLY
-	cleanup();
-#endif
+	if (Core.Features.test(xrCore::Feature::keep_inprogress_tasks_only))
+		cleanup();
 }
 
 GameTasks&	CGameTaskManager::GameTasks	() 

@@ -101,6 +101,14 @@ void InitConsole	()
 	CORE_FEATURE_SET( dynamic_sun_movement,       "features", "dynamic_sun_movement" );
 	CORE_FEATURE_SET( wpn_bobbing,                "features", "wpn_bobbing" );
 	CORE_FEATURE_SET( show_inv_item_condition,    "features", "show_inv_item_condition" );
+	CORE_FEATURE_SET( remove_alt_keybinding,      "features", "remove_alt_keybinding" );
+	CORE_FEATURE_SET( binoc_firing,               "features", "binoc_firing" );
+	CORE_FEATURE_SET( no_mouse_wheel_switch_slot, "features", "no_mouse_wheel_switch_slot" );
+	CORE_FEATURE_SET( stop_anim_playing,          "features", "stop_anim_playing" );
+	CORE_FEATURE_SET( corpses_collision,          "features", "corpses_collision" );
+	CORE_FEATURE_SET( more_hide_weapon,           "features", "more_hide_weapon" );
+	CORE_FEATURE_SET( keep_inprogress_tasks_only, "features", "keep_inprogress_tasks_only" );
+	CORE_FEATURE_SET( show_dialog_numbers,        "features", "show_dialog_numbers" );
 }
 
 void InitInput		()

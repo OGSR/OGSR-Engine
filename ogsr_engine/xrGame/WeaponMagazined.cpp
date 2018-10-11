@@ -184,12 +184,6 @@ void CWeaponMagazined::FireStart		()
 void CWeaponMagazined::FireEnd() 
 {
 	inherited::FireEnd();
-
-#ifndef NO_AUTO_RELOAD_WPN
-	CActor	*actor = smart_cast<CActor*>(H_Parent());
-	if(!iAmmoElapsed && actor && GetState()!=eReload) 
-		Reload();
-#endif
 }
 
 void CWeaponMagazined::Reload() 
@@ -728,12 +722,10 @@ void CWeaponMagazined::switch2_Fire	()
 }
 void CWeaponMagazined::switch2_Empty()
 {
-#ifdef NO_AUTO_RELOAD_WPN
   if ( smart_cast<CActor*>( H_Parent() ) != NULL ) {
     OnEmptyClick();
     return;
   }
-#endif
 
 	OnZoomOut();
 	

@@ -304,9 +304,8 @@ void CUIInventoryWnd::Show()
 	InitInventory			();
 	inherited::Show			();
 
-#ifdef MORE_HIDE_WEAPON
-	Actor()->SetWeaponHideState(INV_STATE_INV_WND, true);
-#endif
+	if (Core.Features.test(xrCore::Feature::more_hide_weapon))
+		Actor()->SetWeaponHideState(INV_STATE_INV_WND, true);
 
 	SendInfoToActor						("ui_inventory");
 
@@ -336,10 +335,9 @@ void CUIInventoryWnd::Hide()
 		m_iCurrentActiveSlot = NO_ACTIVE_SLOT;
 	}
 
-#ifdef MORE_HIDE_WEAPON
-	if ( pActor )
-		pActor->SetWeaponHideState(INV_STATE_INV_WND, false);
-#endif
+	if (Core.Features.test(xrCore::Feature::more_hide_weapon))
+		if ( pActor )
+			pActor->SetWeaponHideState(INV_STATE_INV_WND, false);
 }
 
 void CUIInventoryWnd::AttachAddon(PIItem item_to_upgrade)

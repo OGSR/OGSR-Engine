@@ -152,9 +152,9 @@ void CUIPdaWnd::SendMessage(CUIWindow* pWnd, s16 msg, void* pData)
 
 void CUIPdaWnd::Show()
 {
-#ifdef MORE_HIDE_WEAPON
-	Actor()->SetWeaponHideState(INV_STATE_BLOCK_ALL, true);
-#endif
+	if (Core.Features.test(xrCore::Feature::more_hide_weapon))
+		Actor()->SetWeaponHideState(INV_STATE_BLOCK_ALL, true);
+
 	InventoryUtilities::SendInfoToActor("ui_pda");
 
 	inherited::Show();
@@ -167,9 +167,8 @@ void CUIPdaWnd::Hide()
 	InventoryUtilities::SendInfoToActor("ui_pda_hide");
 	HUD().GetUI()->UIMainIngameWnd->SetFlashIconState_(CUIMainIngameWnd::efiPdaTask, false);
 
-#ifdef MORE_HIDE_WEAPON
-	Actor()->SetWeaponHideState(INV_STATE_BLOCK_ALL, false);
-#endif
+	if (Core.Features.test(xrCore::Feature::more_hide_weapon))
+		Actor()->SetWeaponHideState(INV_STATE_BLOCK_ALL, false);
 }
 
 void CUIPdaWnd::UpdateDateTime()

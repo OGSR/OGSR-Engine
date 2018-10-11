@@ -698,11 +698,12 @@ void CCharacterPhysicsSupport::ActivateShell			( CObject* who )
 	m_eState=esDead;
 	m_flags.set(fl_skeleton_in_shell,TRUE);
 	
-#ifndef CORPSES_COLLISION
-	m_pPhysicsShell->SetIgnoreDynamic();
-	//m_pPhysicsShell->SetPrefereExactIntegration();
-	//m_pPhysicsShell->SetRemoveCharacterCollLADisable();
-#endif
+	if (!Core.Features.test(xrCore::Feature::corpses_collision)) {
+		m_pPhysicsShell->SetIgnoreDynamic();
+		//m_pPhysicsShell->SetPrefereExactIntegration();
+		//m_pPhysicsShell->SetRemoveCharacterCollLADisable();
+	}
+
 	m_pPhysicsShell->SetIgnoreSmall();
 	//end seting params
 
