@@ -12,6 +12,7 @@
 #include "ui\UILabel.h"
 #include "ui\UIKeyBinding.h"
 #include "ui\UIEditBox.h"
+#include "ui\UIEditBoxEx.h"
 #include "ui\UIAnimatedStatic.h"
 #include "ui\UITrackBar.h"
 #include "ui\UIMMShniaga.h"
@@ -86,6 +87,15 @@ CUIEditBox* CScriptXmlInit::InitEditBox(LPCSTR path, CUIWindow* parent){
 	pWnd->SetAutoDelete(true);
 	_attach_child(pWnd, parent);
 //.	if(parent) parent->AttachChild(pWnd);
+	return pWnd;
+}
+
+CUIEditBoxEx* CScriptXmlInit::InitEditBoxEx(LPCSTR path, CUIWindow* parent) {
+	CUIEditBoxEx* pWnd = xr_new<CUIEditBoxEx>();
+	CUIXmlInit::InitEditBoxEx(m_xml, path, 0, pWnd);
+	pWnd->SetAutoDelete(true);
+	_attach_child(pWnd, parent);
+	//.	if(parent) parent->AttachChild(pWnd);
 	return pWnd;
 }
 
@@ -256,14 +266,15 @@ void CScriptXmlInit::script_register(lua_State *L){
 		.def("InitFrame",				&CScriptXmlInit::InitFrame)
 		.def("InitFrameLine",			&CScriptXmlInit::InitFrameLine)
 		.def("InitLabel",				&CScriptXmlInit::InitLabel)
-		.def("InitEditBox",				&CScriptXmlInit::InitEditBox)		
+		.def("InitEditBox",				&CScriptXmlInit::InitEditBox)
+		.def("InitEditBoxEx",				&CScriptXmlInit::InitEditBoxEx)
 		.def("InitStatic",				&CScriptXmlInit::InitStatic)
-		.def("InitAnimStatic",			&CScriptXmlInit::InitAnimStatic)		
+		.def("InitAnimStatic",			&CScriptXmlInit::InitAnimStatic)
 		.def("InitCheck",				&CScriptXmlInit::InitCheck)
 		.def("InitSpinNum",				&CScriptXmlInit::InitSpinNum)
 		.def("InitSpinFlt",				&CScriptXmlInit::InitSpinFlt)
 		.def("InitSpinText",			&CScriptXmlInit::InitSpinText)
-		.def("InitComboBox",			&CScriptXmlInit::InitComboBox)		
+		.def("InitComboBox",			&CScriptXmlInit::InitComboBox)
 		.def("InitButton",				&CScriptXmlInit::InitButton)
 		.def("Init3tButton",			&CScriptXmlInit::Init3tButton)
 		.def("InitList",				&CScriptXmlInit::InitList)

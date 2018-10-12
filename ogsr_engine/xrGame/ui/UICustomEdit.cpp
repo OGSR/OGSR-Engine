@@ -94,7 +94,8 @@ void CUICustomEdit::SetTextColorD(u32 color){
 
 void CUICustomEdit::Init(float x, float y, float width, float height){
 	CUIWindow::Init(x,y,width,height);
-	m_lines.SetWndSize(m_wndSize);
+	m_lines.SetWidth(width - m_textPos.x);
+	m_lines.SetHeight(height - m_textPos.y);
 }
 
 void CUICustomEdit::SetLightAnim(LPCSTR lanim)
@@ -299,10 +300,10 @@ void CUICustomEdit::AddChar(CHAR c)
 {
 	if(xr_strlen(m_lines.GetText()) >= m_max_symb_count)					return;
 
-	float text_length	= m_lines.GetFont()->SizeOf_(m_lines.GetText());
+	float text_length	= m_lines.GetFont()->SizeOf_(m_lines.GetText()) + m_lines.GetFont()->SizeOf_(c) + m_textPos.x;
 	UI()->ClientToScreenScaledWidth		(text_length);
 
-	if (!m_lines.GetTextComplexMode() && (text_length > GetWidth() - 1))	return;
+	if (!m_lines.GetTextComplexMode() && (text_length > m_lines.GetWidth() - 1))	return;
 
 	m_lines.AddCharAtCursor(c);
 	m_lines.ParseText();
@@ -359,32 +360,9 @@ void  CUICustomEdit::Draw()
 	CUIWindow::Draw			();
 	Fvector2				pos;
 	GetAbsolutePos			(pos);
+
+	m_lines.m_bDrawCursor = m_bInputFocus;
 	m_lines.Draw			(pos.x + m_textPos.x, pos.y + m_textPos.y);
-	
-	if(m_bInputFocus)
-	{ //draw cursor here
-		Fvector2							outXY;
-		
-		outXY.x								= 0.0f;
-		float _h				= m_lines.m_pFont->CurrentHeight_();
-		UI()->ClientToScreenScaledHeight(_h);
-		outXY.y								= pos.y + (GetWndSize().y - _h)/2.0f;
-
-		float								_w_tmp;
-		int i								= m_lines.m_iCursorPos;
-		string256							buff;
-		strncpy								(buff,m_lines.m_text.c_str(),i);
-		buff[i]								= 0;
-		_w_tmp								= m_lines.m_pFont->SizeOf_(buff);
-		UI()->ClientToScreenScaledWidth		(_w_tmp);
-		outXY.x								= pos.x + _w_tmp;
-		
-		_w_tmp								= m_lines.m_pFont->SizeOf_("-");
-		UI()->ClientToScreenScaledWidth		(_w_tmp);
-		UI()->ClientToScreenScaled			(outXY);
-
-		m_lines.m_pFont->Out				(outXY.x, outXY.y, "_");
-	}
 }
 
 void CUICustomEdit::SetText(LPCTSTR str)
@@ -408,4 +386,14 @@ void CUICustomEdit::SetNumbersOnly(bool status){
 
 void CUICustomEdit::SetFloatNumbers(bool status){
 	m_bFloatNumbers = status;
+}
+
+void CUICustomEdit::SetTextPosX(float x) {
+	CUILinesOwner::SetTextPosX(x);
+	m_lines.SetWidth(GetWidth() - m_textPos.x);
+}
+
+void CUICustomEdit::SetTextPosY(float y) {
+	CUILinesOwner::SetTextPosY(y);
+	m_lines.SetHeight(GetHeight() - m_textPos.y);
 }

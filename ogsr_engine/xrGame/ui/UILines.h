@@ -77,6 +77,7 @@ protected:
 		float				GetVIndentByAlign							();
 		void				CutFirstColoredTextEntry					(xr_string& entry, u32& color,xr_string& text)	const;
 	CUILine*				ParseTextToColoredLine						(const xr_string& str);
+	void DrawCursor(float x, float y);
 
 	// IUITextControl data
 	typedef xr_string						Text;
@@ -84,6 +85,7 @@ protected:
 	typedef LinesVector::iterator			LinesVector_it;
 	LinesVector				m_lines;	// parsed text
 	float					m_interval; // interval
+	bool m_bDrawCursor;
 
 	Text					m_text;
 

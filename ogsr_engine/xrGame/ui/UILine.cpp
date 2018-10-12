@@ -102,7 +102,7 @@ void CUILine::Clear(){
 	m_subLines.clear();
 }
 
-void CUILine::ProcessNewLines(){
+void CUILine::ProcessNewLines(int& cursorPos){
 #pragma todo("SATAN->SATAN: sometimes working badly (leaves empty lines)")
 	for (u32 i=0; i < m_subLines.size(); i++){
 		StrSize pos = m_subLines[i].m_text.find("\\n");
