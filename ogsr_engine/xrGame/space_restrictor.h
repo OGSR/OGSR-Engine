@@ -81,6 +81,7 @@ IC	bool IsScheduled() { return b_scheduled; }
 	virtual void feel_touch_delete( CObject* );
 	virtual BOOL feel_touch_contact( CObject* );
 	bool         active_contact( u16 ) const;
+	float        distance_to( Fvector& );
 };
 
 #include "space_restrictor_inline.h"

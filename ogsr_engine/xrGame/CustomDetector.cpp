@@ -9,6 +9,7 @@
 #include "cameraEffector.h"
 #include "actor.h"
 #include "ai_sounds.h"
+#include "actorcondition.h"
 
 ZONE_INFO::ZONE_INFO	()
 {
@@ -24,6 +25,7 @@ ZONE_INFO::~ZONE_INFO	()
 CCustomDetector::CCustomDetector(void) 
 {
 	m_bWorking					= false;
+	radiation_snd_time = 0;
 }
 
 CCustomDetector::~CCustomDetector(void) 
@@ -87,6 +89,7 @@ void CCustomDetector::Load(LPCSTR section)
 	} while(true);
 
 	m_ef_detector_type	= pSettings->r_u32(section,"ef_detector_type");
+	m_detect_actor_radiation = READ_IF_EXISTS( pSettings, r_bool, section, "detect_actor_radiation", false );
 }
 
 
@@ -142,7 +145,10 @@ void CCustomDetector::UpdateCL()
 
 		ZONE_TYPE& zone_type = m_ZoneTypeMap[pZone->CLS_ID];
 
-		float dist_to_zone = H_Parent()->Position().distance_to(pZone->Position()) - 0.8f*pZone->Radius();
+		CSpaceRestrictor *pSR = smart_cast<CSpaceRestrictor*>( pZone );
+		float dist_to_zone = pSR->distance_to( H_Parent()->Position() ); //H_Parent()->Position().distance_to(pZone->Position()) - 0.8f*pZone->Radius();
+		if ( dist_to_zone > m_fRadius )
+		  continue;
 		if(dist_to_zone<0) dist_to_zone = 0;
 		
 		float fRelPow = 1.f - dist_to_zone / m_fRadius;
@@ -163,6 +169,8 @@ void CCustomDetector::UpdateCL()
 		else 
 			zone_info.snd_time += Device.dwTimeDelta;
 	}
+
+        update_actor_radiation();
 }
 
 void CCustomDetector::feel_touch_new(CObject* O) 
@@ -307,4 +315,29 @@ void CCustomDetector::UpdateNightVisionMode()
 			}
 		}
 	}
+}
+
+
+void CCustomDetector::update_actor_radiation() {
+  if ( !m_detect_actor_radiation ) return;
+  if ( m_ZoneTypeMap.find( CLSID_Z_RADIO ) == m_ZoneTypeMap.end() ) return;
+  ZONE_TYPE& zone_type = m_ZoneTypeMap[ CLSID_Z_RADIO ];
+
+  float fRelPow = m_pCurrentActor->conditions().GetRadiation();
+  if ( fis_zero( fRelPow ) ) {
+    radiation_snd_time = 0;
+    return;
+  }
+
+  float cur_freq = zone_type.min_freq
+    + ( zone_type.max_freq - zone_type.min_freq )
+    * fRelPow * fRelPow * fRelPow * fRelPow;
+  float current_snd_time = 1000.f * 1.f / cur_freq;
+
+  if ( radiation_snd_time > current_snd_time ) {
+    radiation_snd_time = 0;
+    HUD_SOUND::PlaySound( zone_type.detect_snds, Fvector().set( 0, 0, 0 ), this, true, false );
+  }
+  else
+    radiation_snd_time += Device.dwTimeDelta;
 }
