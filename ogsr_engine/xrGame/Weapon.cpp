@@ -65,11 +65,7 @@ CWeapon::CWeapon(LPCSTR name)
 
 	eHandDependence			= hdNone;
 
-#ifdef OGSE_WPN_ZOOM_SYSTEM
-	m_fZoomFactor = 1.0;
-#else
-	m_fZoomFactor = g_fov;
-#endif
+	m_fZoomFactor = Core.Features.test(xrCore::Feature::ogse_wpn_zoom_system) ? 1.0 : g_fov;
 
 	m_fZoomRotationFactor	= 0.f;
 
@@ -492,9 +488,8 @@ void CWeapon::LoadFireParams		(LPCSTR section, LPCSTR prefix)
 void CWeapon::LoadZoomOffset(LPCSTR section, LPCSTR prefix)
 {
 	string256 full_name;
-#ifdef OGSE_WPN_ZOOM_SYSTEM
-	if (
-		is_second_zoom_offset_enabled //Если включен режим второго прицеливания
+	if (Core.Features.test(xrCore::Feature::ogse_wpn_zoom_system)
+		&& is_second_zoom_offset_enabled //Если включен режим второго прицеливания
 		&& !READ_IF_EXISTS(pSettings, r_bool, *cNameSect(), "disable_second_scope", false) //И второй прицел не запрещён (нужно для поддержки замороченной системы ogse_addons)
 		&& pSettings->line_exist(hud_sect, strconcat(sizeof(full_name), full_name, "second_", prefix, "zoom_offset")) //И в секциии худа есть настройки для второго режима прицеливания
 		&& pSettings->line_exist(hud_sect, strconcat(sizeof(full_name), full_name, "second_", prefix, "zoom_rotate_x"))
@@ -508,7 +503,6 @@ void CWeapon::LoadZoomOffset(LPCSTR section, LPCSTR prefix)
 		//Msg("--Second scope enabled!");
 	}
 	else //В противном случае используем стандартные настройки
-#endif
 	{
 		m_pHUD->SetZoomOffset(pSettings->r_fvector3(hud_sect, strconcat(sizeof(full_name), full_name, prefix, "zoom_offset")));
 		m_pHUD->SetZoomRotateX(pSettings->r_float(hud_sect,   strconcat(sizeof(full_name), full_name, prefix, "zoom_rotate_x")));
@@ -864,11 +858,7 @@ u8 CWeapon::idle_state() {
      return eSubstateIdleSprint;
     }
 	else {
-#ifdef MORE_WPN_IDLE_MOVING_STATES
 		if (actor->is_actor_running() || actor->is_actor_walking() || actor->is_actor_creeping() || actor->is_actor_crouching())
-#else
-		if (actor->is_actor_running())
-#endif
 			return eSubstateIdleMoving;
 	}
 
@@ -978,10 +968,9 @@ bool CWeapon::Action(s32 cmd, u32 flags)
 					return false;
 				}
 									
-#ifdef LOCK_RELOAD_IN_SPRINT
-				if ( ParentIsActor() && g_actor->get_state() & mcSprint )
+				if ( Core.Features.test(xrCore::Feature::lock_reload_in_sprint) && ParentIsActor() && g_actor->get_state() & mcSprint )
 				  return true;
-#endif
+
 				if(flags&CMD_START) 
 				{
 					u32 l_newType = m_ammoType;
@@ -1047,11 +1036,7 @@ bool CWeapon::Action(s32 cmd, u32 flags)
 
 void GetZoomData(const float scope_factor, float& delta, float& min_zoom_factor)
 {
-#ifdef OGSE_WPN_ZOOM_SYSTEM
-	float def_fov = 1.0;
-#else
-	float def_fov = g_fov;
-#endif
+	float def_fov = Core.Features.test(xrCore::Feature::ogse_wpn_zoom_system) ? 1.0 : g_fov;
 	float min_zoom_k = 0.3f;
 	float zoom_step_count = 3.0f;
 	float delta_factor_total = def_fov-scope_factor;
@@ -1066,13 +1051,14 @@ void CWeapon::ZoomInc()
 	float delta, min_zoom_factor;
 	GetZoomData(m_fScopeZoomFactor, delta, min_zoom_factor);
 
-#ifdef OGSE_WPN_ZOOM_SYSTEM
-	m_fZoomFactor += delta;
-	clamp(m_fZoomFactor, min_zoom_factor, m_fScopeZoomFactor);
-#else
-	m_fZoomFactor -= delta;
-	clamp(m_fZoomFactor, m_fScopeZoomFactor, min_zoom_factor);
-#endif
+	if (Core.Features.test(xrCore::Feature::ogse_wpn_zoom_system)) {
+		m_fZoomFactor += delta;
+		clamp(m_fZoomFactor, min_zoom_factor, m_fScopeZoomFactor);
+	}
+	else {
+		m_fZoomFactor -= delta;
+		clamp(m_fZoomFactor, m_fScopeZoomFactor, min_zoom_factor);
+	}
 }
 
 void CWeapon::ZoomDec()
@@ -1443,16 +1429,17 @@ void CWeapon::InitAddons()
 
 float CWeapon::CurrentZoomFactor()
 {
-#ifdef OGSE_WPN_ZOOM_SYSTEM
-	if (is_second_zoom_offset_enabled)
-		return m_fSecondScopeZoomFactor;
-	else if (IsScopeAttached())
-		return m_fScopeZoomFactor;
-	else
-		return m_fIronSightZoomFactor;
-#else
-	return IsScopeAttached() ? m_fScopeZoomFactor : m_fIronSightZoomFactor;
-#endif
+	if (Core.Features.test(xrCore::Feature::ogse_wpn_zoom_system)) {
+		if (is_second_zoom_offset_enabled)
+			return m_fSecondScopeZoomFactor;
+		else if (IsScopeAttached())
+			return m_fScopeZoomFactor;
+		else
+			return m_fIronSightZoomFactor;
+	}
+	else {
+		return IsScopeAttached() ? m_fScopeZoomFactor : m_fIronSightZoomFactor;
+	}
 }
 
 void CWeapon::OnZoomIn()
@@ -1473,11 +1460,9 @@ void CWeapon::OnZoomOut()
 {
 	if(H_Parent() && IsZoomed() && !IsRotatingToZoom() && m_bScopeDynamicZoom)
 		m_fRTZoomFactor = m_fZoomFactor;//store current
-#ifdef OGSE_WPN_ZOOM_SYSTEM
-	m_fZoomFactor = 1.0;
-#else
-	m_fZoomFactor = g_fov;
-#endif
+
+	m_fZoomFactor = Core.Features.test(xrCore::Feature::ogse_wpn_zoom_system) ? 1.0 : g_fov;
+
 	if ( m_bZoomMode ) {
 		m_bZoomMode = false;
 		CActor* pActor = smart_cast<CActor*>(H_Parent());
@@ -1826,17 +1811,14 @@ u32 CWeapon::Cost() const
 {
 	u32 res = m_cost;
 	
-#ifdef WPN_COST_INCLUDE_ADDONS
-
-	if (GrenadeLauncherAttachable() && IsGrenadeLauncherAttached())
-		res += pSettings->r_float(GetGrenadeLauncherName(), "cost");
-	if (ScopeAttachable() && IsScopeAttached())
-		res += pSettings->r_float(GetScopeName(), "cost");
-	if (SilencerAttachable() && IsSilencerAttached())
-		res += pSettings->r_float(GetSilencerName(), "cost");
-
-#endif // WPN_COST_INCLUDE_ADDONS
-
+	if (Core.Features.test(xrCore::Feature::wpn_cost_include_addons)) {
+		if (GrenadeLauncherAttachable() && IsGrenadeLauncherAttached())
+			res += pSettings->r_float(GetGrenadeLauncherName(), "cost");
+		if (ScopeAttachable() && IsScopeAttached())
+			res += pSettings->r_float(GetScopeName(), "cost");
+		if (SilencerAttachable() && IsSilencerAttached())
+			res += pSettings->r_float(GetSilencerName(), "cost");
+	}
 	return res;
 }
 

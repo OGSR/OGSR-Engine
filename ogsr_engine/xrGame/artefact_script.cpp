@@ -24,12 +24,10 @@ void CArtefact::script_register(lua_State *L)
 		class_<CArtefact, CInventoryItemObject>("CArtefact")
 		.def_readwrite("can_spawn_zone"						,			&CArtefact::m_bCanSpawnZone)
 		.def_readwrite("health_restore_speed"				,			&CArtefact::m_fHealthRestoreSpeed)
-#ifndef OBJECTS_RADIOACTIVE
-#ifdef AF_PSY_HEALTH
+
 		.def_readwrite( "psy_health_restore_speed", &CArtefact::m_fPsyHealthRestoreSpeed )
-#endif
 		.def_readwrite("radiation_restore_speed"			,			&CArtefact::m_fRadiationRestoreSpeed)
-#endif
+
 		.def_readwrite("satiety_restore_speed"				,			&CArtefact::m_fSatietyRestoreSpeed)
 		.def_readwrite("power_restore_speed"				,			&CArtefact::m_fPowerRestoreSpeed)
 		.def_readwrite("bleeding_restore_speed"				,			&CArtefact::m_fBleedingRestoreSpeed)		

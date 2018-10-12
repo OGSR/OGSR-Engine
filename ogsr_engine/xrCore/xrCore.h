@@ -189,8 +189,8 @@ public:
 
 	Flags64		Features;
 	enum		Feature {
-	  equipped_untradable = ( 1 << 0 ),
-	  highlight_equipped  = ( 1 << 1 ),
+	  equipped_untradable        = ( 1 << 0 ),
+	  highlight_equipped         = ( 1 << 1 ),
 	  af_radiation_immunity_mod  = ( 1 << 2 ),
 	  condition_jump_weight_mod  = ( 1 << 3 ),
 	  forcibly_equivalent_slots  = ( 1 << 4 ),
@@ -198,8 +198,32 @@ public:
 	  dynamic_sun_movement       = ( 1 << 6 ),
 	  wpn_bobbing                = ( 1 << 7 ),
 	  show_inv_item_condition    = ( 1 << 8 ),
+	  remove_alt_keybinding      = ( 1 << 9 ),
+	  binoc_firing               = ( 1 << 10 ),
+	  no_mouse_wheel_switch_slot = ( 1 << 11 ),
+	  stop_anim_playing          = ( 1 << 12 ),
+	  corpses_collision          = ( 1 << 13 ),
+	  more_hide_weapon           = ( 1 << 14 ),
+	  keep_inprogress_tasks_only = ( 1 << 15 ),
+	  show_dialog_numbers        = ( 1 << 16 ),
+	  objects_radioactive        = ( 1 << 17 ),
+	  af_zero_condition          = ( 1 << 18 ),
+	  af_satiety                 = ( 1 << 19 ),
+	  af_psy_health              = ( 1 << 20 ),
+	  outfit_af                  = ( 1 << 21 ),
+	  gd_master_only             = ( 1 << 22 ),
+	  use_legacy_load_screens    = ( 1 << 23 ),
+	  ogse_new_slots             = ( 1 << 24 ),
+	  ogse_wpn_zoom_system       = ( 1 << 25 ),
+	  wpn_cost_include_addons    = ( 1 << 26 ),
+	  lock_reload_in_sprint      = ( 1 << 27 ),
+	  hard_ammo_reload           = ( 1 << 28 ),
+	  engine_ammo_repacker       = ( 1 << 29 ),
+	  ruck_flag_preferred        = ( 1 << 30 ),
 	};
-
+	// “.к. enum не позвол€ет использовать более 30 флагов, дальше продолжим таким способом (до 63 должно помочь, потом придумаем ещЄ что-нибудь):
+	//static constexpr u64 next_flag = 1ull << 31;
+	//
 	void		_initialize	(LPCSTR ApplicationName, LogCallback cb=0, BOOL init_fs=TRUE, LPCSTR fs_fname=0);
 	void		_destroy	();
 

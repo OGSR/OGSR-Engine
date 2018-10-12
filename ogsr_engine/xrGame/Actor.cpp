@@ -784,12 +784,11 @@ float CActor::currentFOV()
 		eacFirstEye == cam_active
 		&& pWeapon && pWeapon->IsZoomed()
 		&& (!pWeapon->ZoomTexture() || (!pWeapon->IsRotatingToZoom() && pWeapon->ZoomTexture()))
-	)
-#ifdef OGSE_WPN_ZOOM_SYSTEM
-		return float(atan(tan(g_fov * (0.5 * PI / 180)) / pWeapon->GetZoomFactor()) / (0.5 * PI / 180));
-#else
-		return pWeapon->GetZoomFactor() * 0.75f;
-#endif
+		)
+		if (Core.Features.test(xrCore::Feature::ogse_wpn_zoom_system))
+			return float(atan(tan(g_fov * (0.5 * PI / 180)) / pWeapon->GetZoomFactor()) / (0.5 * PI / 180));
+		else
+			return pWeapon->GetZoomFactor() * 0.75f;
 	else
 		return g_fov;
 }
@@ -1440,34 +1439,29 @@ void CActor::UpdateArtefactPanel()
 
 void CActor::ApplyArtefactEffects(ActorRestoreParams& r, CArtefact*	artefact)
 {
-#ifdef AF_ZERO_CONDITION
-  float k = fis_zero( artefact->GetCondition() ) ? 0.f : 1.f;
-#else
-  float k = 1.f;
-#endif // AF_ZERO_CONDITION
+  float k = ( Core.Features.test(xrCore::Feature::af_zero_condition) && fis_zero( artefact->GetCondition() ) ) ? 0.f : 1.f;
+
   r.BleedingRestoreSpeed += artefact->m_fBleedingRestoreSpeed * k;
   r.HealthRestoreSpeed += artefact->m_fHealthRestoreSpeed * k;
   r.PowerRestoreSpeed += artefact->m_fPowerRestoreSpeed * k;
 
-#ifdef AF_SATIETY
-  r.SatietyRestoreSpeed += artefact->m_fSatietyRestoreSpeed * k;
-#endif
+  if (Core.Features.test(xrCore::Feature::af_satiety))
+    r.SatietyRestoreSpeed += artefact->m_fSatietyRestoreSpeed * k;
 
-#ifdef AF_PSY_HEALTH
-#ifdef OBJECTS_RADIOACTIVE
-  if (artefact->PsyHealthRestoreSpeed() > 0)
-    r.PsyHealthRestoreSpeed += artefact->PsyHealthRestoreSpeed() * k;
-#else
-  r.PsyHealthRestoreSpeed += artefact->PsyHealthRestoreSpeed() * k;
-#endif
-#endif // AF_PSY_HEALTH
-
-#ifdef OBJECTS_RADIOACTIVE
-
-  if (artefact->RadiationRestoreSpeed() < 0)
-    r.RadiationRestoreSpeed += artefact->RadiationRestoreSpeed() * k;
-
-#else
+  if (Core.Features.test(xrCore::Feature::af_psy_health)) {
+	  if (Core.Features.test(xrCore::Feature::objects_radioactive)) {
+		  if (artefact->PsyHealthRestoreSpeed() > 0)
+			  r.PsyHealthRestoreSpeed += artefact->PsyHealthRestoreSpeed() * k;
+	  }
+	  else {
+		  r.PsyHealthRestoreSpeed += artefact->PsyHealthRestoreSpeed() * k;
+	  }
+  }
+  if (Core.Features.test(xrCore::Feature::objects_radioactive)) {
+	  if (artefact->RadiationRestoreSpeed() < 0)
+		  r.RadiationRestoreSpeed += artefact->RadiationRestoreSpeed() * k;
+  }
+  else {
 
   if ( artefact->RadiationRestoreSpeed() > 0 && Core.Features.test( xrCore::Feature::af_radiation_immunity_mod ) ) {
     float new_rs = HitArtefactsOnBelt( artefact->RadiationRestoreSpeed(), ALife::eHitTypeRadiation, true );
@@ -1479,7 +1473,7 @@ void CActor::ApplyArtefactEffects(ActorRestoreParams& r, CArtefact*	artefact)
   else
     r.RadiationRestoreSpeed += artefact->RadiationRestoreSpeed() * k;
 
-#endif // OBJECTS_RADIOACTIVE
+  }
 }
 
 ActorRestoreParams CActor::ActiveArtefactsOnBelt()
@@ -1498,24 +1492,20 @@ ActorRestoreParams CActor::ActiveArtefactsOnBelt()
 		}
 	}
 
-#ifdef OBJECTS_RADIOACTIVE
+    if (Core.Features.test(xrCore::Feature::objects_radioactive)) {
+
 	auto &map_all = inventory().m_all;
 	for (TIItemContainer::iterator it = map_all.begin(); map_all.end() != it; ++it) {
 		CInventoryItem *obj = smart_cast<CInventoryItem*>(*it);
 
-#ifdef AF_ZERO_CONDITION
-		float k = fis_zero( obj->GetCondition() ) ? 0.f : 1.f;
-#else
-		float k = 1.f;
-#endif // AF_ZERO_CONDITION
+		float k = ( Core.Features.test(xrCore::Feature::af_zero_condition) && fis_zero( obj->GetCondition() ) ) ? 0.f : 1.f;
 
-#ifdef AF_PSY_HEALTH
-		// только уменьшение пси здоровоья
-		if (obj->PsyHealthRestoreSpeed() < 0) {
-			r.PsyHealthRestoreSpeed += obj->PsyHealthRestoreSpeed() * k;
+		if (Core.Features.test(xrCore::Feature::af_psy_health)) {
+			// только уменьшение пси здоровоья
+			if (obj->PsyHealthRestoreSpeed() < 0) {
+				r.PsyHealthRestoreSpeed += obj->PsyHealthRestoreSpeed() * k;
+			}
 		}
-#endif
-
 		// только увеличение радиации
 		if ( obj->RadiationRestoreSpeed() > 0 ) {
 		  if ( Core.Features.test( xrCore::Feature::af_radiation_immunity_mod ) ) {
@@ -1529,9 +1519,10 @@ ActorRestoreParams CActor::ActiveArtefactsOnBelt()
 		    r.RadiationRestoreSpeed += obj->RadiationRestoreSpeed() * k;
 		}
 	}
-#endif // OBJECTS_RADIOACTIVE
 
-#ifdef OUTFIT_AF
+	}
+
+  if ( Core.Features.test(xrCore::Feature::outfit_af) ) {
 
   PIItem helm = inventory().m_slots[HELMET_SLOT].m_pIItem;
   if (helm)
@@ -1547,41 +1538,38 @@ ActorRestoreParams CActor::ActiveArtefactsOnBelt()
 	if (outfit_item) {
 		CCustomOutfit *outfit = smart_cast<CCustomOutfit*>(outfit_item);
 		if (outfit) {
-
-#ifdef AF_ZERO_CONDITION
-			float k = fis_zero( outfit->GetCondition() ) ? 0.f : 1.f;
-#else
-			float k = 1.f;
-#endif // AF_ZERO_CONDITION
+			float k = ( Core.Features.test(xrCore::Feature::af_zero_condition) && fis_zero( outfit->GetCondition() ) ) ? 0.f : 1.f;
 
 			r.BleedingRestoreSpeed += outfit->m_fBleedingRestoreSpeed * k;
 			r.HealthRestoreSpeed += outfit->m_fHealthRestoreSpeed * k;
 			r.PowerRestoreSpeed += outfit->m_fPowerRestoreSpeed * k;
 
-#ifdef AF_SATIETY
-			r.SatietyRestoreSpeed += outfit->m_fSatietyRestoreSpeed * k;
-#endif
+			if (Core.Features.test(xrCore::Feature::af_satiety))
+				r.SatietyRestoreSpeed += outfit->m_fSatietyRestoreSpeed * k;
 
-#ifdef AF_PSY_HEALTH
-#ifdef OBJECTS_RADIOACTIVE
-			if (outfit->PsyHealthRestoreSpeed() > 0)
-				r.PsyHealthRestoreSpeed += outfit->PsyHealthRestoreSpeed() * k;
-#else
-			r.PsyHealthRestoreSpeed += outfit->PsyHealthRestoreSpeed() * k;
-#endif
-#endif // AF_PSY_HEALTH
+			if (Core.Features.test(xrCore::Feature::af_psy_health)) {
+				if (Core.Features.test(xrCore::Feature::objects_radioactive)) {
+					if (outfit->PsyHealthRestoreSpeed() > 0)
+						r.PsyHealthRestoreSpeed += outfit->PsyHealthRestoreSpeed() * k;
+				}
+				else {
+					r.PsyHealthRestoreSpeed += outfit->PsyHealthRestoreSpeed() * k;
+				}
+			}
 
-#ifdef OBJECTS_RADIOACTIVE
-			if (outfit->RadiationRestoreSpeed() < 0)
+			if (Core.Features.test(xrCore::Feature::objects_radioactive)) {
+				if (outfit->RadiationRestoreSpeed() < 0)
+					r.RadiationRestoreSpeed += outfit->RadiationRestoreSpeed() * k;
+			}
+			else {
 				r.RadiationRestoreSpeed += outfit->RadiationRestoreSpeed() * k;
-#else
-			r.RadiationRestoreSpeed += outfit->RadiationRestoreSpeed() * k;
-#endif // OBJECTS_RADIOACTIVE
+			}
 		}
 	}
-#endif // OUTFIT_AF
 
-	return r;
+  }
+
+  return r;
 }
 
 #define ARTEFACTS_UPDATE_TIME 0.100f
@@ -1634,15 +1622,10 @@ float	CActor::HitArtefactsOnBelt( float hit_power, ALife::EHitType hit_type, boo
 	{
 		CArtefact*	artefact = smart_cast<CArtefact*>(*it);
 		if(artefact){
-#ifdef AF_ZERO_CONDITION
-			if ( !fis_zero( artefact->GetCondition() ) ) {
+			if ( !Core.Features.test(xrCore::Feature::af_zero_condition) || !fis_zero( artefact->GetCondition() ) ) {
 				res_hit_power_k	+= artefact->m_ArtefactHitImmunities.AffectHit( 1.0f, hit_type );
 				_af_count += 1.0f;
 			}
-#else
-			res_hit_power_k	+= artefact->m_ArtefactHitImmunities.AffectHit(1.0f, hit_type);
-			_af_count		+= 1.0f;
-#endif // AF_ZERO_CONDITION
 		}
 	}
 	// учет иммунитета от шлема
@@ -1651,15 +1634,10 @@ float	CActor::HitArtefactsOnBelt( float hit_power, ALife::EHitType hit_type, boo
 		CArtefact*	helmet = smart_cast<CArtefact*>(helm);
 		if (helmet)
 		{
-#ifdef AF_ZERO_CONDITION
-			if ( !fis_zero( helmet->GetCondition() ) ) {
+			if ( !Core.Features.test(xrCore::Feature::af_zero_condition) || !fis_zero( helmet->GetCondition() ) ) {
 				res_hit_power_k += helmet->m_ArtefactHitImmunities.AffectHit( 1.0f, hit_type );
 				_af_count += 1.0f;
 			}
-#else
-			res_hit_power_k += helmet->m_ArtefactHitImmunities.AffectHit(1.0f, hit_type);
-			_af_count += 1.0f;
-#endif // AF_ZERO_CONDITION
 		}
 	}
 

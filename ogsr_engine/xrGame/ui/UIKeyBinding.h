@@ -20,11 +20,7 @@ public:
 protected:
 	void			FillUpList				(CUIXml& xml_doc, LPCSTR path);
 
-#ifdef REMOVE_ALTERNATIVE_KEYBOARD_BINDING
-	CUILabel		m_header[2];
-#else
 	CUILabel		m_header[3];
-#endif
 	CUIFrameWindow	m_frame;
 	CUIScrollView*	m_scroll_wnd;
 };

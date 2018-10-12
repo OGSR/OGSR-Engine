@@ -29,10 +29,10 @@ void CRenderDevice::Initialize()
         // Set the window's initial width
         RECT rc;
         SetRect			( &rc, 0, 0, 640, 480 );
-        AdjustWindowRect( &rc, m_dwWindowStyle, FALSE );
+        AdjustWindowRect( &rc, (DWORD)m_dwWindowStyle, FALSE );
 
         // Create the render window
-		m_hWnd = CreateWindow( wndclass, "S.T.A.L.K.E.R.: Shadow Of Chernobyl", m_dwWindowStyle,
+		m_hWnd = CreateWindow( wndclass, "S.T.A.L.K.E.R.: Shadow Of Chernobyl", (DWORD)m_dwWindowStyle,
                                /*rc.left, rc.top, */CW_USEDEFAULT, CW_USEDEFAULT,
                                (rc.right-rc.left), (rc.bottom-rc.top), 0L,
                                0, hInstance, 0L );

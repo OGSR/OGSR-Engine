@@ -21,9 +21,7 @@ protected:
 		_item_satiety_restore_speed,
 		_item_power_restore_speed,
 		_item_bleeding_restore_speed,
-#ifdef AF_PSY_HEALTH
 		_item_psy_health_restore_speed,
-#endif
 		_item_additional_inventory_weight,
 		_item_additional_inventory_weight2,
 

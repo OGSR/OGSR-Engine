@@ -423,10 +423,8 @@ public:
 		if (!*key)
 			return;
 
-#ifdef REMOVE_ALTERNATIVE_KEYBOARD_BINDING
-		if (m_work_idx > 0)
+		if (Core.Features.test(xrCore::Feature::remove_alt_keybinding) && m_work_idx > 0)
 			return;
-#endif
 
 		if(!bRemapped) {
 			remap_keys	();

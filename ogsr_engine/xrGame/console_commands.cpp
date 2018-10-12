@@ -136,9 +136,9 @@ class CCC_GameDifficulty : public CCC_Token {
 public:
 	CCC_GameDifficulty(LPCSTR N) : CCC_Token(N,(u32*)&g_SingleGameDifficulty,difficulty_type_token)  {};
 	virtual void Execute(LPCSTR args) {
-#ifndef GD_MASTER_ONLY
-		CCC_Token::Execute(args);
-#endif
+		if (!Core.Features.test(xrCore::Feature::gd_master_only))
+			CCC_Token::Execute(args);
+
 		if (g_pGameLevel && Level().game){
 			game_cl_Single* game		= smart_cast<game_cl_Single*>(Level().game); VERIFY(game);
 			game->OnDifficultyChanged	();

@@ -83,9 +83,7 @@ class CUIQuestionItem :public CUIWindow, public CUIWndCallback
 	typedef CUIWindow inherited;
 	float			m_min_height;
 public:
-#ifdef SHOW_DIALOG_NUMBERS
 	CUIStatic*	m_num_text;
-#endif
 	CUI3tButton*	m_text;
 	shared_str		m_s_value;
 					CUIQuestionItem			(CUIXml* xml_doc, LPCSTR path);

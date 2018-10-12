@@ -1,5 +1,3 @@
-/////////////////////////////////////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////////////////////////
 #include "StdAfx.h"
 #include "PHDynamicData.h"
 #include "Physics.h"
@@ -13,19 +11,6 @@
 #include "../xr_3da/skeletoncustom.h"
 #include "PHCollideValidator.h"
 #include "game_object_space.h"
-//#pragma warning(disable:4995)
-//#pragma warning(disable:4267)
-//#include "ode/src/collision_kernel.h"
-//#pragma warning(default:4995)
-//#pragma warning(default:4267)
-///////////////////////////////////////////////////////////////
-///#pragma warning(disable:4995)
-
-//#include "ode/src/joint.h"
-//#include "ode/src/objects.h"
-
-//#pragma warning(default:4995)
-///////////////////////////////////////////////////////////////////
 
 #include "ExtendedGeom.h"
 #include "PHElement.h"

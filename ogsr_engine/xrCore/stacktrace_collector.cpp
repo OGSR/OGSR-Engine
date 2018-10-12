@@ -1,11 +1,10 @@
 #include "stdafx.h"
 
-#ifndef XR_USE_BLACKBOX
-
 //!!! KRodin: It is necessary to disable in the settings of all projects "Frame pointer ommision" (/Oy), otherwise it will not work !!!
 
 #ifdef _M_IX86
-#pragma message( "CaptureStackBackTrace �� x86 �� ������ ����� ���������� ����. ��� �� ���, ��� � ������ ����." )
+// Цитата со стековерфлоу: "под 64 бита люди подумали и сделали так, чтобы стек можно было однозначно развернуть. Под x86 это не всегда возможно. И очень часто функции разворачивания стека "гадают на кофейной гуще"
+#pragma message( "CaptureStackBackTrace на x86 не всегда может развернуть стек. Это не баг, так и должно быть." )
 #endif
 
 #include "stacktrace_collector.h"
@@ -50,7 +49,7 @@ void BuildStackTrace(StackTraceInfo& stackTrace) {
 		DWORD displacement = 0;
 		SymGetLineFromAddr64(processHandle, addr, &displacement, &lineInfo);
 		SymGetModuleInfo64(processHandle, addr, &moduleInfo);
-		auto dst = stackTrace.frames + (MaxFrameLength + 1) * i;
+		char* dst = stackTrace.frames + (MaxFrameLength + 1) * i;
 		std::snprintf(dst, MaxFrameLength + 1, "[%zi]: [%s]: [%s()] at [%s:%u]", framesCount - i, moduleInfo.ImageName, symbolInfo->Name, lineInfo.FileName, lineInfo.LineNumber);
 	}
 
@@ -61,5 +60,3 @@ void BuildStackTrace(StackTraceInfo& stackTrace) {
 }
 
 #pragma optimize("", on)
-
-#endif

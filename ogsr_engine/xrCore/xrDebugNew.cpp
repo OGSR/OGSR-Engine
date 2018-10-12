@@ -18,11 +18,7 @@ static bool error_after_dialog = false;
 void save_mini_dump( _EXCEPTION_POINTERS* );
 #endif
 
-#ifndef XR_USE_BLACKBOX
-#	include "stacktrace_collector.h"
-#else
-#	include "blackbox\build_stacktrace.h"
-#endif
+#include "stacktrace_collector.h"
 static thread_local StackTraceInfo stackTrace;
 
 void LogStackTrace(const char* header)
@@ -123,7 +119,7 @@ void gather_info(const char *expression, const char *description, const char *ar
 	LogStackTrace("stack trace:\n");
 }
 
-__declspec(noreturn) void xrDebug::do_exit(const std::string &message)
+void xrDebug::do_exit(const std::string &message)
 {
 	ShowWindow(gGameWindow, SW_HIDE);
 

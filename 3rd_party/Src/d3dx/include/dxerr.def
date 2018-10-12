@@ -1,4 +1,0 @@
-LIBRARY
-d3d9.dll
-EXPORTS
-DXGetErrorDescriptionA=DXGetErrorDescription9A

@@ -302,7 +302,6 @@
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="blackbox\stacktrace.cpp" />
     <ClCompile Include="FTimer.cpp" />
     <ClCompile Include="stacktrace_collector.cpp" />
     <ClCompile Include="stdafx.cpp">
@@ -345,9 +344,6 @@
     <ClCompile Include="xrSyncronize.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="blackbox\build_stacktrace.h" />
-    <ClInclude Include="blackbox\stacktrace.h" />
-    <ClInclude Include="blackbox\sym_engine.h" />
     <ClInclude Include="FTimer.h" />
     <ClInclude Include="stacktrace_collector.h" />
     <ClInclude Include="stdafx.h" />

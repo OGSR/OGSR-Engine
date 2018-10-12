@@ -184,12 +184,6 @@ void CWeaponMagazined::FireStart		()
 void CWeaponMagazined::FireEnd() 
 {
 	inherited::FireEnd();
-
-#ifndef NO_AUTO_RELOAD_WPN
-	CActor	*actor = smart_cast<CActor*>(H_Parent());
-	if(!iAmmoElapsed && actor && GetState()!=eReload) 
-		Reload();
-#endif
 }
 
 void CWeaponMagazined::Reload() 
@@ -293,11 +287,7 @@ void CWeaponMagazined::UnloadMagazine(bool spawn_ammo)
 	xr_map<LPCSTR, u16>::iterator l_it;
 	for(l_it = l_ammo.begin(); l_ammo.end() != l_it; ++l_it) 
 	{
-#if defined( HARD_AMMO_RELOAD )
-		if ( !forActor && m_pCurrentInventory )
-#else
-		if (m_pCurrentInventory)
-#endif
+		if ( Core.Features.test(xrCore::Feature::hard_ammo_reload) ? (!forActor && m_pCurrentInventory) : m_pCurrentInventory )
 		{
 			CWeaponAmmo *l_pA = smart_cast<CWeaponAmmo*>(m_pCurrentInventory->GetAmmo(l_it->first, forActor));
 			if (l_pA)
@@ -338,28 +328,21 @@ void CWeaponMagazined::ReloadMagazine()
 		bool forActor = ParentIsActor();
 
 		//попытаться найти в инвентаре патроны текущего типа 
-#if defined( HARD_AMMO_RELOAD )
-		if ( forActor )
+		if ( Core.Features.test(xrCore::Feature::hard_ammo_reload) && forActor )
 		  m_pAmmo = smart_cast<CWeaponAmmo*>( m_pCurrentInventory->GetAmmoMaxCurr( *m_ammoTypes[ m_ammoType ], forActor ) );
 		else
 		  m_pAmmo = smart_cast<CWeaponAmmo*>( m_pCurrentInventory->GetAmmo( *m_ammoTypes[ m_ammoType ], forActor ) );
-#else
-		m_pAmmo = smart_cast<CWeaponAmmo*>(m_pCurrentInventory->GetAmmo(*m_ammoTypes[m_ammoType], forActor));
-#endif
 		
 		if(!m_pAmmo && !m_bLockType) 
 		{
 			for(u32 i = 0; i < m_ammoTypes.size(); ++i) 
 			{
 				//проверить патроны всех подходящих типов
-#if defined( HARD_AMMO_RELOAD )
-				if ( forActor )
+				if ( Core.Features.test(xrCore::Feature::hard_ammo_reload) && forActor )
 				  m_pAmmo = smart_cast<CWeaponAmmo*>( m_pCurrentInventory->GetAmmoMaxCurr( *m_ammoTypes[ i ], forActor ) );
 				else
 				  m_pAmmo = smart_cast<CWeaponAmmo*>( m_pCurrentInventory->GetAmmo( *m_ammoTypes[ i ], forActor ) );
-#else
-				m_pAmmo = smart_cast<CWeaponAmmo*>(m_pCurrentInventory->GetAmmo(*m_ammoTypes[i], forActor));
-#endif
+
 				if(m_pAmmo) 
 				{ 
 					m_ammoType = i; 
@@ -373,16 +356,17 @@ void CWeaponMagazined::ReloadMagazine()
 	if(!m_pAmmo && !unlimited_ammo() ) return;
 
 	//разрядить магазин, если загружаем патронами другого типа
-#if defined( HARD_AMMO_RELOAD )
-	if ( !m_bLockType && !m_magazine.empty() )
-	  if ( ( ParentIsActor() && !unlimited_ammo() ) || ( !m_pAmmo || xr_strcmp( m_pAmmo->cNameSect(), *m_magazine.back().m_ammoSect ) ) )
-	    UnloadMagazine();
-#else
-	if(!m_bLockType && !m_magazine.empty() && 
-		(!m_pAmmo || xr_strcmp(m_pAmmo->cNameSect(), 
-					 *m_magazine.back().m_ammoSect)))
-		UnloadMagazine();
-#endif
+	if (Core.Features.test(xrCore::Feature::hard_ammo_reload)) {
+		if (!m_bLockType && !m_magazine.empty())
+			if ((ParentIsActor() && !unlimited_ammo()) || (!m_pAmmo || xr_strcmp(m_pAmmo->cNameSect(), *m_magazine.back().m_ammoSect)))
+				UnloadMagazine();
+	}
+	else {
+		if (!m_bLockType && !m_magazine.empty() &&
+			(!m_pAmmo || xr_strcmp(m_pAmmo->cNameSect(),
+				*m_magazine.back().m_ammoSect)))
+			UnloadMagazine();
+	}
 
 	VERIFY((u32)iAmmoElapsed == m_magazine.size());
 
@@ -407,8 +391,7 @@ void CWeaponMagazined::ReloadMagazine()
 	if(m_pAmmo && !m_pAmmo->m_boxCurr && OnServer()) 
 		m_pAmmo->SetDropManual(TRUE);
 
-#ifdef HARD_AMMO_RELOAD
-	if ( ParentIsActor() && m_pAmmo ) {
+	if (Core.Features.test(xrCore::Feature::hard_ammo_reload) && ParentIsActor() && m_pAmmo ) {
           int box_size = m_pAmmo->m_boxSize;
 	  if ( !m_bLockType && iMagazineSize > iAmmoElapsed && iMagazineSize > box_size ) {
 	    m_bLockType = true;
@@ -422,9 +405,7 @@ void CWeaponMagazined::ReloadMagazine()
 	    m_bLockType = false;
 	  }
 	}
-	else
-#endif
-	if(iMagazineSize > iAmmoElapsed) 
+	else if (iMagazineSize > iAmmoElapsed) 
 	{ 
 		m_bLockType = true; 
 		ReloadMagazine(); 
@@ -728,12 +709,10 @@ void CWeaponMagazined::switch2_Fire	()
 }
 void CWeaponMagazined::switch2_Empty()
 {
-#ifdef NO_AUTO_RELOAD_WPN
   if ( smart_cast<CActor*>( H_Parent() ) != NULL ) {
     OnEmptyClick();
     return;
   }
-#endif
 
 	OnZoomOut();
 	
@@ -799,9 +778,7 @@ bool CWeaponMagazined::Action(s32 cmd, u32 flags)
 	{
 	case kWPN_RELOAD:
 		{
-#ifdef LOCK_RELOAD_IN_SPRINT
-		if (!ParentIsActor() || !(g_actor->get_state() & mcSprint))
-#endif
+		if ( !Core.Features.test(xrCore::Feature::lock_reload_in_sprint) || ( !ParentIsActor() || !(g_actor->get_state() & mcSprint) ) )
 			if(flags&CMD_START) 
 				if(iAmmoElapsed < iMagazineSize || IsMisfire()) 
 					Reload();

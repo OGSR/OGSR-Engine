@@ -5,8 +5,8 @@
 //	Author		: Dmitriy Iassenev
 //	Description : luabind memory allocator template class
 ////////////////////////////////////////////////////////////////////////////
+#include "stdafx.h"
 
-#include <lua.hpp>
 #include <luabind/luabind.hpp>
 
 luabind::memory_allocation_function_pointer		luabind::allocator = 0;

@@ -31,9 +31,6 @@
     <Filter Include="Debug core">
       <UniqueIdentifier>{23456ced-e7e1-452a-8440-c938427340a5}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Debug core\BlackBox">
-      <UniqueIdentifier>{af0208e2-493f-40df-b334-fbc09c6fc455}</UniqueIdentifier>
-    </Filter>
     <Filter Include="shared memory/string library">
       <UniqueIdentifier>{0e8d13db-9b0d-48f5-b89d-80442a752244}</UniqueIdentifier>
     </Filter>
@@ -136,9 +133,6 @@
       <Filter>Compression\lz</Filter>
     </ClCompile>
     <ClCompile Include="xrSyncronize.cpp" />
-    <ClCompile Include="blackbox\stacktrace.cpp">
-      <Filter>Debug core\BlackBox</Filter>
-    </ClCompile>
     <ClCompile Include="stacktrace_collector.cpp">
       <Filter>Debug core</Filter>
     </ClCompile>
@@ -328,15 +322,6 @@
       <Filter>Compression\lz</Filter>
     </ClInclude>
     <ClInclude Include="xrSyncronize.h" />
-    <ClInclude Include="blackbox\build_stacktrace.h">
-      <Filter>Debug core\BlackBox</Filter>
-    </ClInclude>
-    <ClInclude Include="blackbox\stacktrace.h">
-      <Filter>Debug core\BlackBox</Filter>
-    </ClInclude>
-    <ClInclude Include="blackbox\sym_engine.h">
-      <Filter>Debug core\BlackBox</Filter>
-    </ClInclude>
     <ClInclude Include="stacktrace_collector.h">
       <Filter>Debug core</Filter>
     </ClInclude>

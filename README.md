@@ -1,15 +1,15 @@
 # OGSR Engine [![Build status](https://ci.appveyor.com/api/projects/status/w5yowu9901tphox1?svg=true)](https://ci.appveyor.com/project/KRodinn/ogsr-engine)
-## В проект требуются графические программисты или просто люди, более-менее разбирающиеся в рендере и шейдерах. Если у кого-то есть желание помочь проекту - [пишите мне в ВК](https://vk.com/id409430583) ##
+## В проект требуются графические программисты или просто люди, более-менее разбирающиеся в рендере и шейдерах. Если у кого-то есть желание помочь проекту - пишите, наши двери открыты для всех желающих ##
 ![Logo](https://pp.userapi.com/c847218/v847218213/a9398/F7TfxQhSSGs.jpg)
 ### [>>Разработчики<<](https://github.com/KRodinn/OGSR-Engine/graphs/contributors) ### 
 ### [>>Список изменений<<](https://github.com/KRodinn/OGSR-Engine/wiki/Список-изменений) ###
-### [>>Свежий релиз SHOC-версии движка<<](https://github.com/KRodinn/OGSR-Engine/releases/latest) ###
+### [>>Свежий релиз SHOC-версии движка<<](https://github.com/KRodinn/OGSR-Engine/releases) ###
+### [>>OGSR_Resources<< (файлы для запуска движка на OGSE 2.10R, сам движок можно взять уже собранный из релизов по ссылке выше)](https://github.com/KRodinn/OGSE_0693_Optimized/tree/ogsr_engine) ###
 
-### Инструкции по сборке OGSE-версии движка: ###
+### Инструкции по сборке: ###
 * Для сборки требуется Visual Studio 15.5 или выше.
 * Открываете Engine.sln
-* В студии выбираете Сборка -> Собрать решение, предварительно выставив платформу x64 или x86 и конфигурацию Release
-* [OGSR_Resources](https://github.com/KRodinn/OGSE_0693_Optimized/tree/ogsr_engine)  (ставить на OGSE 2.10R)
+* В студии выбираете Сборка -> Собрать решение, предварительно выставив платформу x64 и конфигурацию Release
 ### Благодарим: ###
 * [Im-dex](https://github.com/Im-dex)
 * [xrOxygen](https://github.com/xrOxygen/xray-oxygen)

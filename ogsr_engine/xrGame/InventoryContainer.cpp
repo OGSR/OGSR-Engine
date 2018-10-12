@@ -10,8 +10,6 @@
 #include "InventoryContainer.h"
 #include "Artifact.h"
 
-#pragma optimize("gyts", off)
-
 CInventoryContainer::CInventoryContainer():
 		CCustomInventoryBox<CInventoryItemObject>()
 {
@@ -29,11 +27,8 @@ float CInventoryContainer::RadiationRestoreSpeed() const
 {
 	SItemsInfo info;
 	CalcItems(info);
-#ifdef		OBJECTS_RADIOACTIVE
-	return m_fRadiationRestoreSpeed + info.info[0];
-#else
-	return info.info[0];
-#endif
+
+	return Core.Features.test(xrCore::Feature::objects_radioactive) ? ( m_fRadiationRestoreSpeed + info.info[0] ) : info.info[0];
 }
 
 float CInventoryContainer::Weight() const
@@ -59,19 +54,9 @@ u32	CInventoryContainer::CalcItems	(SItemsInfo &info) const
 			result++;
 			info.weight += itm->Weight();
 			info.cost	+= itm->Cost();
-#ifdef		OBJECTS_RADIOACTIVE
-			CInventoryItem *obj = smart_cast<CInventoryItem*>(itm);
-#else
-			CArtefact  *obj  = smart_cast<CArtefact*>(itm);
-#endif
-			if (obj)
-			{
-				float rsp = obj->RadiationRestoreSpeed();
-				info.info[0] += rsp > 0 ? rsp : 0; // нейтрализаторы радиации из рюкзака не работают (артефакты в т.ч.)
-			}
-
+			float rsp = itm->RadiationRestoreSpeed();
+			info.info[0] += rsp > 0 ? rsp : 0; // нейтрализаторы радиации из рюкзака не работают (артефакты в т.ч.)
 		}
-		
 	}
 
 	return result;

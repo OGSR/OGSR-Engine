@@ -32,11 +32,7 @@ public:
 
 	void					InitInventory				();
 	void					InitInventory_delayed		();
-#ifdef MORE_HIDE_WEAPON
-	virtual bool StopAnyMove() { return true; }
-#else
-	virtual bool			StopAnyMove					()					{return false;}
-#endif
+	virtual bool StopAnyMove() { return !!Core.Features.test(xrCore::Feature::more_hide_weapon); }
 
 	virtual void			SendMessage					(CUIWindow *pWnd, s16 msg, void *pData);
 	virtual bool			OnMouse						(float x, float y, EUIMessages mouse_action);
@@ -94,7 +90,6 @@ protected:
 	CUIDragDropListEx*			m_pUIAutomaticList;
 	CUIOutfitDragDropList*		m_pUIOutfitList;
 
-#ifdef OGSE_NEW_SLOTS
 	CUIDragDropListEx*			m_pUIKnifeList;
 	CUIDragDropListEx*			m_pUIHelmetList;
 	CUIDragDropListEx*			m_pUIBIODetList;
@@ -102,9 +97,8 @@ protected:
 	CUIDragDropListEx*			m_pUIDetectorList;
 	CUIDragDropListEx*			m_pUITorchList;
 	CUIDragDropListEx*			m_pUIBinocularList;
-#endif
 
-        // alpet: для индексированного доступа
+	// alpet: для индексированного доступа
 	CUIDragDropListEx*			m_slots_array[ SLOTS_TOTAL ];
 
 	void						ClearAllLists				();

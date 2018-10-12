@@ -6,10 +6,8 @@
 #include "SoundRender_Target.h"
 #include "SoundRender_Source.h"
 
-#ifdef DYNAMIC_SND_TARGETS
 #include "soundrender_targetA.h"
-XRSOUND_API extern float			psSoundCull				;
-#endif
+XRSOUND_API extern float psSoundCull;
 
 void	CSoundRender_Core::i_start		(CSoundRender_Emitter* E)
 {
@@ -29,7 +27,6 @@ void	CSoundRender_Core::i_start		(CSoundRender_Emitter* E)
 		}
 	}
 
-#ifdef DYNAMIC_SND_TARGETS
 	if ( T->get_emitter() ) {
 	  if ( Ptarget < psSoundCull ) {
 	    T->get_emitter()->cancel();
@@ -50,11 +47,6 @@ void	CSoundRender_Core::i_start		(CSoundRender_Emitter* E)
 	    }
 	  }
 	}
-#else
-	// Stop currently playing
-	if (T->get_emitter())
-		T->get_emitter()->cancel();
-#endif
 
 	// Associate
 	E->target			= T;

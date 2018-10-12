@@ -131,14 +131,12 @@ public:
 	virtual	void				SetCost				(u32 cost) 	{ m_cost = cost; }
 	virtual float				Weight				() const	{ return m_weight;}		
 
-#ifdef OBJECTS_RADIOACTIVE
-#ifdef AF_PSY_HEALTH
+
 	float m_fPsyHealthRestoreSpeed;
 	virtual float PsyHealthRestoreSpeed() const { return m_fPsyHealthRestoreSpeed; }
-#endif
+
 	float m_fRadiationRestoreSpeed;
 	virtual float RadiationRestoreSpeed() const { return m_fRadiationRestoreSpeed; }
-#endif
 
 public:
 	CInventory*					m_pCurrentInventory;

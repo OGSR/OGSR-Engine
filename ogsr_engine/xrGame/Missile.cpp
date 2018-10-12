@@ -198,10 +198,10 @@ u8 CMissile::idle_state() {
 void CMissile::UpdateCL() {
   inherited::UpdateCL();
 
-#ifndef STOP_ANIM_PLAYING
-  if( GetState() == MS_IDLE && m_idle_state == MS_IDLE && m_dwStateTime > PLAYING_ANIM_TIME )
-    OnStateSwitch( MS_PLAYING );
-#endif
+  if (!Core.Features.test(xrCore::Feature::stop_anim_playing)) {
+    if( GetState() == MS_IDLE && m_idle_state == MS_IDLE && m_dwStateTime > PLAYING_ANIM_TIME )
+      OnStateSwitch( MS_PLAYING );
+  }
 
   if ( GetState() == MS_IDLE ) {
     auto state = idle_state();

@@ -230,12 +230,10 @@ void CInventoryScript::script_register(lua_State *L)
 			.def_readonly("item_place"					,			&CInventoryItem::m_eItemPlace)
 			.def_readwrite("item_condition"				,			&CInventoryItem::m_fCondition)
 			.def_readwrite("inv_weight"					,			&CInventoryItem::m_weight)
-#ifdef OBJECTS_RADIOACTIVE
-#ifdef AF_PSY_HEALTH
+
 			.def_readwrite( "psy_health_restore_speed", &CInventoryItem::m_fPsyHealthRestoreSpeed )
-#endif
 			.def_readwrite( "radiation_restore_speed", &CInventoryItem::m_fRadiationRestoreSpeed )
-#endif
+
 			//.property("class_name"						,			&get_lua_class_name)
 			.property("inv_name"						,			&get_item_name, &set_item_name)
 			.property("inv_name_short"					,			&get_item_name_short, &set_item_name_short)

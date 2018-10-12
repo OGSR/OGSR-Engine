@@ -22,8 +22,8 @@
 #define READ_IF_EXISTS(ltx,method,section,name,default_value)\
 	((ltx->line_exist(section,name)) ? (ltx->method(section,name)) : (default_value))
 
-#define CORE_FEATURE_SET( feature, section, name )\
-  Core.Features.set( xrCore::Feature::feature, READ_IF_EXISTS( pSettings, r_bool, section, name, false ) )
+#define CORE_FEATURE_SET( feature, section )\
+  Core.Features.set( xrCore::feature, READ_IF_EXISTS( pSettings, r_bool, section, #feature, false ) )
 
 
 //---------------------------------------------------------------------
@@ -92,15 +92,37 @@ void InitConsole	()
 		strcpy_s					(Console->ConfigFile,c_name);
 	}
 
-	CORE_FEATURE_SET( equipped_untradable, "dragdrop", "equipped_untradable" );
-	CORE_FEATURE_SET( highlight_equipped,  "dragdrop", "highlight_equipped"  );
-	CORE_FEATURE_SET( af_radiation_immunity_mod,  "features", "af_radiation_immunity_mod" );
-	CORE_FEATURE_SET( condition_jump_weight_mod,  "features", "condition_jump_weight_mod" );
-	CORE_FEATURE_SET( forcibly_equivalent_slots,  "features", "forcibly_equivalent_slots" );
-	CORE_FEATURE_SET( slots_extend_menu,          "features", "slots_extend_menu" );
-	CORE_FEATURE_SET( dynamic_sun_movement,       "features", "dynamic_sun_movement" );
-	CORE_FEATURE_SET( wpn_bobbing,                "features", "wpn_bobbing" );
-	CORE_FEATURE_SET( show_inv_item_condition,    "features", "show_inv_item_condition" );
+	CORE_FEATURE_SET( equipped_untradable,        "dragdrop" );
+	CORE_FEATURE_SET( highlight_equipped,         "dragdrop" );
+	CORE_FEATURE_SET( af_radiation_immunity_mod,  "features" );
+	CORE_FEATURE_SET( condition_jump_weight_mod,  "features" );
+	CORE_FEATURE_SET( forcibly_equivalent_slots,  "features" );
+	CORE_FEATURE_SET( slots_extend_menu,          "features" );
+	CORE_FEATURE_SET( dynamic_sun_movement,       "features" );
+	CORE_FEATURE_SET( wpn_bobbing,                "features" );
+	CORE_FEATURE_SET( show_inv_item_condition,    "features" );
+	CORE_FEATURE_SET( remove_alt_keybinding,      "features" );
+	CORE_FEATURE_SET( binoc_firing,               "features" );
+	CORE_FEATURE_SET( no_mouse_wheel_switch_slot, "features" );
+	CORE_FEATURE_SET( stop_anim_playing,          "features" );
+	CORE_FEATURE_SET( corpses_collision,          "features" );
+	CORE_FEATURE_SET( more_hide_weapon,           "features" );
+	CORE_FEATURE_SET( keep_inprogress_tasks_only, "features" );
+	CORE_FEATURE_SET( show_dialog_numbers,        "features" );
+	CORE_FEATURE_SET( objects_radioactive,        "features" );
+	CORE_FEATURE_SET( af_zero_condition,          "features" );
+	CORE_FEATURE_SET( af_satiety,                 "features" );
+	CORE_FEATURE_SET( af_psy_health,              "features" );
+	CORE_FEATURE_SET( outfit_af,                  "features" );
+	CORE_FEATURE_SET( gd_master_only,             "features" );
+	CORE_FEATURE_SET( use_legacy_load_screens,    "features" );
+	CORE_FEATURE_SET( ogse_new_slots,             "features" );
+	CORE_FEATURE_SET( ogse_wpn_zoom_system,       "features" );
+	CORE_FEATURE_SET( wpn_cost_include_addons,    "features" );
+	CORE_FEATURE_SET( lock_reload_in_sprint,      "features" );
+	CORE_FEATURE_SET( hard_ammo_reload,           "features" );
+	CORE_FEATURE_SET( engine_ammo_repacker,       "features" );
+	CORE_FEATURE_SET( ruck_flag_preferred,        "features" );
 }
 
 void InitInput		()
@@ -834,7 +856,6 @@ void doBenchmark(LPCSTR name)
 
 u32 calc_progress_color(u32, u32, int, int);
 
-#pragma optimize("g", off)
 void CApplication::load_draw_internal()
 {
 	if (!sh_progress) {
@@ -865,9 +886,7 @@ void CApplication::load_draw_internal()
 	//progress background
 	static float offs = -0.5f;
 
-#ifndef USE_LEGACY_LOAD_SCREENS 
-	if (!hLevelLogo) 
-#endif // !USE_LEGACY_LOAD_SCREENS 
+	if (Core.Features.test(xrCore::Feature::use_legacy_load_screens) || !hLevelLogo)
 	{
 		back_size.set(1024, 768);
 		back_text_coords.lt.set(0, 0); back_text_coords.rb.add(back_text_coords.lt, back_size);
@@ -890,16 +909,18 @@ void CApplication::load_draw_internal()
 	//draw level-specific screenshot
 	if (hLevelLogo)
 	{
-#ifdef USE_LEGACY_LOAD_SCREENS 
-		bw = 512.0f;
-		bh = 256.0f;
+		float bx, by;
+		if (Core.Features.test(xrCore::Feature::use_legacy_load_screens)) {
+			bw = 512.0f;
+			bh = 256.0f;
 
-		float bx = 257.0f;
-		float by = 369.0f;
-#else
-		float bx = 0.0f;
-		float by = 0.0f;
-#endif // !USE_LEGACY_LOAD_SCREENS 
+			bx = 257.0f;
+			by = 369.0f;
+		}
+		else {
+			bx = 0.0f;
+			by = 0.0f;
+		}
 
 		Frect r;
 		r.lt.set(bx, by);

@@ -172,13 +172,9 @@ void CInventory::Take(CGameObject *pObj, bool bNotActivate, bool strict_placemen
 
 		break;
 	default:
-
-#ifdef RUCK_FLAG_PREFERRED
-		auto pActor      = smart_cast<CActor*>( m_pOwner );
-		bool def_to_slot = pActor ? !pIItem->RuckDefault() : true;
-#else
 		bool def_to_slot = true;
-#endif
+		if (Core.Features.test(xrCore::Feature::ruck_flag_preferred))
+			def_to_slot = smart_cast<CActor*>(m_pOwner) ? !pIItem->RuckDefault() : true;
 
 		if(def_to_slot && CanPutInSlot(pIItem))
 		{
