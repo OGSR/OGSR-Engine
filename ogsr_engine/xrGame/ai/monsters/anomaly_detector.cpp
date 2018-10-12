@@ -21,6 +21,14 @@ void CAnomalyDetector::load(LPCSTR section)
 	m_radius		= READ_IF_EXISTS( pSettings, r_float, section, "Anomaly_Detect_Radius", 15.f );
 	m_time_to_rememeber	= READ_IF_EXISTS( pSettings, r_u32, section, "Anomaly_Detect_Time_Remember", 30000 );
 	m_detect_probability	= READ_IF_EXISTS( pSettings, r_float, section, "Anomaly_Detect_Probability", 1.f );
+
+        m_ignore_clsids.clear();
+        if ( pSettings->line_exist( section, "Anomaly_Detect_Ignore" ) ) {
+          LPCSTR ignore = pSettings->r_string( section, "Anomaly_Detect_Ignore" );
+          string16 temp;
+          for ( u32 i = 0, n = _GetItemCount( ignore ); i < n; ++i )
+            m_ignore_clsids.push_back( TEXT2CLSID( _GetItem( ignore, i, temp ) ) );
+        }
 }
 
 void CAnomalyDetector::reinit()
@@ -84,6 +92,9 @@ void CAnomalyDetector::on_contact(CObject *obj)
 	// if its NOT A restrictor - skip
 	if (custom_zone->restrictor_type() == RestrictionSpace::eRestrictorTypeNone) return;
 
+        if ( std::find( m_ignore_clsids.begin(), m_ignore_clsids.end(), obj->CLS_ID ) != m_ignore_clsids.end() )
+          return;
+        
 	auto it = std::find_if(
 	  m_storage.begin(), m_storage.end(), [ custom_zone ]( const auto it ) {
 	    return it.id == custom_zone->ID();

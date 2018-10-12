@@ -86,6 +86,10 @@ protected:
 	
 	shared_str						m_nightvision_particle;
 
+	float m_detect_actor_radiation;
+	u32  radiation_snd_time;
+	void update_actor_radiation();
+
 protected:
 	u32					m_ef_detector_type;
 

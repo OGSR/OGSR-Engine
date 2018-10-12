@@ -137,9 +137,7 @@ void CUIArtefactParams::SetInfo(const shared_str& af_section)
 
 		}
 		LPCSTR _sn = "%";
-		if(i==_item_radiation_restore_speed 
-			|| i==_item_power_restore_speed
-			|| i==_item_satiety_restore_speed)
+		if(i==_item_radiation_restore_speed || i==_item_power_restore_speed)
 		{
 			_val				/= 100.0f;
 			_sn					= "";

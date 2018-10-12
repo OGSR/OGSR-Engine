@@ -296,6 +296,34 @@ bool CSpaceRestrictor::active_contact( u16 id ) const {
 }
 
 
+float CSpaceRestrictor::distance_to( Fvector& P ) {
+  if ( !actual() ) prepare();
+
+  if ( m_spheres.empty() && m_boxes.empty() )
+    return P.distance_to( m_selfbounds.P );
+
+  float min_dist = flt_max;
+  for ( const auto& it : m_spheres ) {
+    float dist = P.distance_to( it.P ) - it.R;
+    if ( dist < 0 ) return dist;
+    else if ( dist < min_dist )
+      min_dist = dist;
+  }
+
+  for ( const auto& it : m_boxes ) {
+    float max_dist = -flt_max;
+    for ( u32 i = 0; i < PLANE_COUNT; ++i ) {
+      float dist = it.m_planes[ i ].classify( P );
+      if ( dist > max_dist ) max_dist = dist;
+    }
+    if ( max_dist < 0 ) return max_dist;
+    if ( max_dist < min_dist ) min_dist = max_dist;
+  }
+
+  return min_dist;
+}
+
+
 #ifdef DEBUG
 
 #include "customzone.h"

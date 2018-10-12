@@ -662,6 +662,18 @@ void CInifile::remove_line( LPCSTR S, LPCSTR L ) {
 }
 
 
+void CInifile::remove_section( LPCSTR S ) {
+  R_ASSERT( !bReadOnly );
+
+  if ( section_exist( S ) ) {
+    shared_str k( S );
+    const auto I = DATA.find( k );
+    R_ASSERT( I != DATA.end() );
+    DATA.erase( I );
+  }
+}
+
+
 #include <sstream>
 
 std::string CInifile::get_as_string() {

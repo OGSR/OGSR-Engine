@@ -164,8 +164,7 @@ void CUIOutfitInfo::SetItem()
 
 		LPCSTR _sn = "";
 		if (i != _item_radiation_restore_speed
-			&& i != _item_power_restore_speed
-			&& i != _item_satiety_restore_speed)
+			&& i != _item_power_restore_speed)
 		{
 			_val_outfit *= 100.0f;
 			_val_af *= 100.0f;

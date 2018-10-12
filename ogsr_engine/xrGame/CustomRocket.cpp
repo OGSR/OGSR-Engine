@@ -210,6 +210,8 @@ void CCustomRocket::ObjectContactCallback(bool& do_colide,bool bo1,dContact& c ,
 	}
 	VERIFY(material);
 	if(material->Flags.is(SGameMtl::flPassable)) return;
+        // ≈сли материал полностью простреливаемый
+	if( fsimilar( material->fShootFactor, 1.0f, EPS ) ) return;
 
 	if(!l_this||l_this->m_contact.contact) return;
 

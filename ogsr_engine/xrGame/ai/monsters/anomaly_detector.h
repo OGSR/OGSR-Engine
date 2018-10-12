@@ -14,6 +14,7 @@ public:
 	bool					m_forced;
 
 private:
+	xr_vector<CLASS_ID> m_ignore_clsids;
         struct SAnomalyInfo {
           u16  id;
           bool ignored;
