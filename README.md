@@ -3,7 +3,7 @@
 ![Logo](https://pp.userapi.com/c847218/v847218213/a9398/F7TfxQhSSGs.jpg)
 ### [>>Разработчики<<](https://github.com/KRodinn/OGSR-Engine/graphs/contributors) ### 
 ### [>>Список изменений<<](https://github.com/KRodinn/OGSR-Engine/wiki/Список-изменений) ###
-### [>>Свежий релиз SHOC-версии движка<<](https://github.com/KRodinn/OGSR-Engine/releases/latest) ###
+### [>>Свежий релиз SHOC-версии движка<<](https://github.com/KRodinn/OGSR-Engine/releases) ###
 ### [>>OGSR_Resources<< (файлы для запуска движка на OGSE 2.10R, сам движок можно взять уже собранный из релизов по ссылке выше)](https://github.com/KRodinn/OGSE_0693_Optimized/tree/ogsr_engine) ###
 
 ### Инструкции по сборке: ###
