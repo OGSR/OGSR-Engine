@@ -12,7 +12,7 @@ CUIEditBoxEx::CUIEditBoxEx()
 	m_lines.SetTextComplexMode(true);
 	m_lines.SetCutWordsMode(true);
 	m_lines.SetUseNewLineMode(false);
-	m_lines.SetVTextAlignment(valTop);		
+	m_lines.SetVTextAlignment(valTop);
 }
 
 CUIEditBoxEx::~CUIEditBoxEx()

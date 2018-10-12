@@ -64,18 +64,7 @@ BOOL CBulletManager::test_callback(const collide::ray_defs& rd, CObject* object,
 							// попали в актера
 							float hpf				= 1.f;
 							float ahp				= actor->HitProbability();
-#if 1
-#	if 0
-							CObject					*weapon_object = Level().Objects.net_Find	(bullet->weapon_id);
-							if (weapon_object) {
-								CWeapon				*weapon = smart_cast<CWeapon*>(weapon_object);
-								if (weapon) {
-									float fly_dist		= bullet->fly_dist+dist;
-									float dist_factor	= _min(1.f,fly_dist/Level().BulletManager().m_fHPMaxDist);
-									ahp					= dist_factor*weapon->hit_probability() + (1.f-dist_factor)*1.f;
-								}
-							}
-#	else
+
 							float					game_difficulty_hit_probability = actor->HitProbability();
 							CAI_Stalker				*stalker = smart_cast<CAI_Stalker*>(initiator);
 							if (stalker)
@@ -93,17 +82,6 @@ BOOL CBulletManager::test_callback(const collide::ray_defs& rd, CObject* object,
 							}
 
 							ahp						= dist_factor*game_difficulty_hit_probability + (1.f-dist_factor)*1.f;
-#	endif
-#else
-							CAI_Stalker* i_stalker	= smart_cast<CAI_Stalker*>(initiator);
-							// если стрелял сталкер, учитываем - hit_probability_factor сталкерa иначе - 1.0
-							if (i_stalker) {
-								hpf					= i_stalker->SpecificCharacter().hit_probability_factor();
-								float fly_dist		= bullet->fly_dist+dist;
-								float dist_factor	= _min(1.f,fly_dist/Level().BulletManager().m_fHPMaxDist);
-								ahp					= dist_factor*actor->HitProbability() + (1.f-dist_factor)*1.f;
-							}
-#endif
 							if (Random.randF(0.f,1.f)>(ahp*hpf)){ 
 								bRes				= FALSE;	// don't hit actor
 								play_whine			= true;		// play whine sound

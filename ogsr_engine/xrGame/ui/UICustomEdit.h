@@ -65,6 +65,9 @@ public:
 			
 			void	SetLightAnim			(LPCSTR lanim);
 
+			virtual void			SetTextPosX(float x);
+			virtual void			SetTextPosY(float y);
+
 protected:
 
 	bool KeyPressed(int dik);
