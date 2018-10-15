@@ -615,19 +615,12 @@ void CUITradeWnd::FillList	(TIItemContainer& cont, CUIDragDropListEx& dragDropLi
 	for(; it != it_e; ++it)
 	{
 		CInventoryItem* item = *it;
-		CUICellItem* itm = create_cell_item	(item);
-#ifndef COLORIZE_OTHER_TRADE
-		if ( our ) {
-#endif
-                  bool canTrade    = CanMoveToOther( item, our );
-                  bool highlighted = item->m_flags.test( CInventoryItem::FIAlwaysHighlighted );
-                  ColorizeItem( itm, canTrade, highlighted );
-#ifndef COLORIZE_OTHER_TRADE
-		}
-#endif
-		dragDropList.SetItem		(itm);
+		CUICellItem* itm = create_cell_item( item );
+		bool canTrade    = CanMoveToOther( item, our );
+		bool highlighted = item->m_flags.test( CInventoryItem::FIAlwaysHighlighted );
+		ColorizeItem( itm, canTrade, highlighted );
+		dragDropList.SetItem( itm );
 	}
-
 }
 
 bool CUITradeWnd::OnItemStartDrag(CUICellItem* itm)
@@ -787,7 +780,10 @@ void CUITradeWnd::BindDragDropListEnents(CUIDragDropListEx* lst)
 void CUITradeWnd::ColorizeItem(CUICellItem* itm, bool canTrade, bool highlighted)
 {
 	if (!canTrade) {
-		itm->SetColor(CInventoryItem::ClrUntradable);
+		if (Core.Features.test(xrCore::Feature::highlight_cop))
+			itm->m_select_equipped = true;
+		else
+			itm->SetColor(CInventoryItem::ClrUntradable);
 	}
 	else if (highlighted) {
 		itm->SetColor(CInventoryItem::ClrHighlighted);

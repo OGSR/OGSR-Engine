@@ -23,7 +23,7 @@
 	((ltx->line_exist(section,name)) ? (ltx->method(section,name)) : (default_value))
 
 #define CORE_FEATURE_SET( feature, section )\
-  Core.Features.set( xrCore::feature, READ_IF_EXISTS( pSettings, r_bool, section, #feature, false ) )
+  Core.Features.set( xrCore::Feature::feature, READ_IF_EXISTS( pSettings, r_bool, section, #feature, false ) )
 
 
 //---------------------------------------------------------------------
@@ -92,6 +92,8 @@ void InitConsole	()
 		strcpy_s					(Console->ConfigFile,c_name);
 	}
 
+	CORE_FEATURE_SET( colorize_ammo,              "dragdrop" );
+	CORE_FEATURE_SET( highlight_cop,              "dragdrop" );
 	CORE_FEATURE_SET( equipped_untradable,        "dragdrop" );
 	CORE_FEATURE_SET( highlight_equipped,         "dragdrop" );
 	CORE_FEATURE_SET( af_radiation_immunity_mod,  "features" );

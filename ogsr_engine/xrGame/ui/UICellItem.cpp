@@ -333,7 +333,7 @@ void CUICellItem::ColorizeItems( std::initializer_list<CUIDragDropListEx*> args 
 
   for ( auto* DdListEx : args ) {
     DdListEx->clear_select_armament();
-    if ( !DdListEx->colorize_ammo ) continue;
+    if ( !Core.Features.test(xrCore::Feature::colorize_ammo) ) continue;
     for ( u32 i = 0, item_count = DdListEx->ItemsCount(); i < item_count; ++i ) {
       CUICellItem* CellItem = DdListEx->GetItemIdx( i );
       if ( CellItem->GetTextureColor() == Color )
@@ -363,7 +363,7 @@ void CUICellItem::ColorizeItems( std::initializer_list<CUIDragDropListEx*> args 
       auto invitem          = ( CInventoryItem* )CellItem->m_pData;
       if ( invitem && ( std::find( ColorizeSects.begin(), ColorizeSects.end(), invitem->object().cNameSect() ) != ColorizeSects.end() ) ) {
         CellItem->m_select_armament = true;
-        if ( DdListEx->colorize_ammo && CellItem->GetTextureColor() == 0xffffffff )
+        if ( Core.Features.test(xrCore::Feature::colorize_ammo) && CellItem->GetTextureColor() == 0xffffffff )
           CellItem->SetTextureColor( Color );
       }
     }

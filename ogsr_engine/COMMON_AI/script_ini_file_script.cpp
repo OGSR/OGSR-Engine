@@ -70,7 +70,7 @@ void CScriptIniFile::script_register(lua_State *L)
 		def("system_ini", cdecl_cast([] { return reinterpret_cast<CScriptIniFile*>(pSettings); })),
 		def("game_ini",   cdecl_cast([] { return reinterpret_cast<CScriptIniFile*>(pGameIni);  })),
 		def("create_ini_file", cdecl_cast([](const char* ini_string) {
-			return reinterpret_cast<CScriptIniFile*>(
+			return static_cast<CScriptIniFile*>(
 				new CInifile(
 					&IReader((void*)ini_string, strlen(ini_string)),
 					FS.get_path("$game_config$")->m_Path
