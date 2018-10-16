@@ -40,9 +40,7 @@ CUIDragDropListEx::CUIDragDropListEx()
 
 	SetDrawGrid(true);
 
-        colorize_ammo = READ_IF_EXISTS( pSettings, r_bool, "dragdrop", "colorize_ammo", false );
-        highlight_cop = READ_IF_EXISTS( pSettings, r_bool, "dragdrop", "highlight_cop", false );
-	tx = highlight_cop ? 0.25f : 0.5f;
+	tx = Core.Features.test(xrCore::Feature::highlight_cop) ? 0.25f : 0.5f;
 }
 
 CUIDragDropListEx::~CUIDragDropListEx()
@@ -814,7 +812,7 @@ void CUICellContainer::Draw()
 			cpos.add( TopVisibleCell() );
 			CUICell& ui_cell = GetCellAt( cpos );
 			u8 select_mode = 0;
-			if ( m_pParentDragDropList->highlight_cop && !ui_cell.Empty() ) {
+			if ( Core.Features.test(xrCore::Feature::highlight_cop) && !ui_cell.Empty() ) {
 			  if ( ui_cell.m_item->m_selected )
 			    select_mode = 1;
 			  else if ( ui_cell.m_item->m_select_armament )
