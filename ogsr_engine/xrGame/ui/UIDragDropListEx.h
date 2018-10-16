@@ -61,8 +61,6 @@ protected:
 	
 public:
 	static CUIDragItem*		m_drag_item;
-	bool  colorize_ammo;
-	bool  highlight_cop;
 	float tx;
 							CUIDragDropListEx	();
 	virtual					~CUIDragDropListEx	();

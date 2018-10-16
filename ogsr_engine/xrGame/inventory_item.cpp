@@ -24,6 +24,7 @@
 #include "..\xr_3da\IGame_Persistent.h"
 #include "alife_registry_wrappers.h"
 #include "alife_simulator_header.h"
+#include "grenade.h"
 
 #ifdef DEBUG
 #	include "debug_renderer.h"
@@ -1174,7 +1175,7 @@ void CInventoryItem::SetLoadedBeltIndex( u8 pos ) {
 
 
 void CInventoryItem::OnMoveToSlot() {
-  if ( smart_cast<CActor*>( object().H_Parent() ) ) {
+  if ( smart_cast<CActor*>( object().H_Parent() ) && !smart_cast<CGrenade*>( this )) {
     if ( Core.Features.test( xrCore::Feature::equipped_untradable ) ) {
       m_flags.set( FIAlwaysUntradable, TRUE );
       m_flags.set( FIUngroupable,      TRUE );
