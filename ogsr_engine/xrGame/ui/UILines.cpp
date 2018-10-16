@@ -347,6 +347,8 @@ void CUILines::Draw(float x, float y){
 	{
 		if (m_bDrawCursor)
 		{
+			UpdateCursor();
+
 			DrawCursor(x + GetIndentByAlign(), y + GetVIndentByAlign());
 		}
 
@@ -413,19 +415,51 @@ void CUILines::Draw(float x, float y){
 }
 
 void CUILines::DrawCursor(float x, float y) {
-	Fvector2							outXY;
+	Fvector2 outXY;
 
-	outXY.x = 0.0f;
 	float _h = m_pFont->CurrentHeight_();
 	UI()->ClientToScreenScaledHeight(_h);
 	outXY.y = y + (_h + m_interval) * m_cursor_pos.y;
 
-	float								_w_tmp;
-	int i = m_cursor_pos.x;
-	string256							buff;
-	strncpy(buff, m_text.c_str(), i);
-	buff[i] = 0;
-	_w_tmp = m_pFont->SizeOf_(buff);
+	float _w_tmp = 0;
+
+	if (!m_text.empty())
+	{
+		string1024 buff;
+		if (!uFlags.is(flComplexMode))
+		{
+			strncpy(buff, m_text.c_str(), m_cursor_pos.x);
+		}
+		else
+		{
+			strcpy(buff, "");
+
+			CUILine line = m_lines[m_cursor_pos.y];
+
+			int sz = 0;
+			int size = line.m_subLines.size();
+			for (int i = 0; i < size; i++)
+			{
+				const int line_size = (int)line.m_subLines[i].m_text.size();
+				const char* line_text = line.m_subLines[i].m_text.c_str();
+
+				if (sz + line_size < m_cursor_pos.x)
+				{
+					strcat(buff, line_text);
+					sz += line_size;
+				}
+				else
+				{
+					strncat(buff, line_text, m_cursor_pos.x - sz);
+					break;
+				}
+			}
+		}
+
+		buff[m_cursor_pos.x] = 0;
+		_w_tmp = m_pFont->SizeOf_(buff);
+	}
+
 	UI()->ClientToScreenScaledWidth(_w_tmp);
 	outXY.x = x + _w_tmp;
 
@@ -636,7 +670,7 @@ void CUILines::UpdateCursor(){
 		int len = 0;
 		for (int i = 0; i < sz; i++)
 		{
-            int curlen = m_lines[i].GetSize();
+			int curlen = m_lines[i].GetSize();
 			if (m_iCursorPos <= len + curlen)
 			{
 				m_cursor_pos.y = i;
