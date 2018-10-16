@@ -119,6 +119,7 @@ void CActor::g_cl_ValidateMState(float dt, u32 mstate_wf)
 
 	if (mstate_wf != mstate_real){
 		if ((mstate_real&mcCrouch)&&((0==(mstate_wf&mcCrouch)) || mstate_real&mcClimb)){
+			character_physics_support()->movement()->EnableCharacter();
 			if (character_physics_support()->movement()->ActivateBoxDynamic(0)){
 				mstate_real &= ~mcCrouch;
 			}
