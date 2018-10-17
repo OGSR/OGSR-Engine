@@ -67,6 +67,7 @@ public:
 				bool		m_selected;
 				bool		m_select_armament;
 				bool		m_select_equipped;
+				bool		m_select_untradable;
 };
 
 class CUIDragItem: public CUIWindow, public pureRender, public pureFrame

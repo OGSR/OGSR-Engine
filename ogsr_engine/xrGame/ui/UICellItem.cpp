@@ -29,6 +29,7 @@ CUICellItem::CUICellItem()
 	m_selected		= false;
 	m_select_armament	= false;
 	m_select_equipped	= false;
+	m_select_untradable	= false;
 }
 
 CUICellItem::~CUICellItem()

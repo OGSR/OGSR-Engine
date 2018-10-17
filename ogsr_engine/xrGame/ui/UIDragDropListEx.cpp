@@ -40,7 +40,7 @@ CUIDragDropListEx::CUIDragDropListEx()
 
 	SetDrawGrid(true);
 
-	tx = Core.Features.test(xrCore::Feature::highlight_cop) ? 0.25f : 0.5f;
+	tx = Core.Features.test(xrCore::Feature::highlight_cop) ? 0.2f : 0.5f;
 }
 
 CUIDragDropListEx::~CUIDragDropListEx()
@@ -631,9 +631,10 @@ void CUICellContainer::GetTexUVLT(Fvector2& uv, u32 col, u32 row, u8 select_mode
 	switch ( select_mode )
 	{
 	case 0:		uv.set(0.00f, 0.0f);	break;
-	case 1:		uv.set(0.25f, 0.0f);	break;
-	case 2:		uv.set(0.50f, 0.0f);	break;
-	case 3:		uv.set(0.75f, 0.0f);	break;
+	case 1:		uv.set(0.20f, 0.0f);	break;
+	case 2:		uv.set(0.40f, 0.0f);	break;
+	case 3:		uv.set(0.60f, 0.0f);	break;
+	case 4:		uv.set(0.80f, 0.0f);	break;
 	default:	uv.set(0.00f, 0.0f);	break;
 	}
 }
@@ -817,6 +818,8 @@ void CUICellContainer::Draw()
 			    select_mode = 1;
 			  else if ( ui_cell.m_item->m_select_armament )
 			    select_mode = 3;
+			  else if ( ui_cell.m_item->m_select_untradable )
+			    select_mode = 4;
 			  else if ( ui_cell.m_item->m_select_equipped )
 			    select_mode = 2;
 			}
