@@ -53,7 +53,6 @@ public:
 	shared_str				map_hint;
 	shared_str				map_location;
 	u16						object_id;
-	shared_str				article_key;
 	CMapLocation*			LinkedMapLocation	();
 	ETaskState				TaskState			()	{return task_state;};
 	ETaskState				UpdateState			();
@@ -80,7 +79,6 @@ public:
 	void					SetMapHint_script		(LPCSTR _str);
 	void					SetMapLocation_script	(LPCSTR _str);
 	void					SetObjectID_script		(u16 id);
-	void					SetArticleKey_script	(LPCSTR _str);
 
 	void					SetIconName_script		(LPCSTR _str);
 

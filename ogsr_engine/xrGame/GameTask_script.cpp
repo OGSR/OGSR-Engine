@@ -25,7 +25,6 @@ void CGameTask::script_register(lua_State *L)
 				.def("set_map_hint",						&SGameTaskObjective::SetMapHint_script			)
 				.def("set_map_location",					&SGameTaskObjective::SetMapLocation_script		)
 				.def("set_object_id",						&SGameTaskObjective::SetObjectID_script			)
-				.def("set_article_key",						&SGameTaskObjective::SetArticleKey_script		)
 				.def("set_icon_name",						&SGameTaskObjective::SetIconName_script			)
 				.def_readwrite("def_ml_enabled",			&SGameTaskObjective::def_location_enabled		)
 				
@@ -39,7 +38,6 @@ void CGameTask::script_register(lua_State *L)
 				.def("add_on_complete_func",				&SGameTaskObjective::AddOnCompleteFunc_script		)
 				.def("add_on_fail_func",					&SGameTaskObjective::AddOnFailFunc_script			)
 				
-				.def("get_state",							&SGameTaskObjective::TaskState						)
 				.def("get_idx",								&SGameTaskObjective::GetIDX_script					)
 				.def("get_state",							&SGameTaskObjective::TaskState						),
 
@@ -56,10 +54,10 @@ void CGameTask::script_register(lua_State *L)
 #else
 				.def("add_objective",						&CGameTask::AddObjective_script, adopt<2>())
 #endif
-				.def("get_objective",						&CGameTask::GetObjective_script					)
 				.def("get_id",								&CGameTask::GetID_script						)
 				.def("set_id",								&CGameTask::SetID_script						)
-				.def("get_objectives_cnt",					&CGameTask::GetObjectiveSize_script				)
-				
+				.def("get_objective",					&CGameTask::GetObjective_script)
+				.def("get_objectives_cnt",		&CGameTask::GetObjectiveSize_script				)
+
 		];
 }
