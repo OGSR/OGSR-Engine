@@ -779,13 +779,20 @@ void CUITradeWnd::BindDragDropListEnents(CUIDragDropListEx* lst)
 
 void CUITradeWnd::ColorizeItem(CUICellItem* itm, bool canTrade, bool highlighted)
 {
+	bool highlight_cop = Core.Features.test( xrCore::Feature::highlight_cop );
+	if ( Core.Features.test( xrCore::Feature::colorize_untradable ) )
+		highlight_cop = false;
+
 	if (!canTrade) {
-		if (Core.Features.test(xrCore::Feature::highlight_cop))
-			itm->m_select_equipped = true;
+		if ( highlight_cop )
+			itm->m_select_untradable = true;
 		else
 			itm->SetColor(CInventoryItem::ClrUntradable);
 	}
-	else if (highlighted) {
-		itm->SetColor(CInventoryItem::ClrHighlighted);
+	else {
+		if ( highlight_cop )
+			itm->m_select_untradable = false;
+		if ( highlighted )
+			itm->SetColor( CInventoryItem::ClrHighlighted );
 	}
 }
