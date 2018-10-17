@@ -814,14 +814,26 @@ void CUICellContainer::Draw()
 			CUICell& ui_cell = GetCellAt( cpos );
 			u8 select_mode = 0;
 			if ( Core.Features.test(xrCore::Feature::highlight_cop) && !ui_cell.Empty() ) {
-			  if ( ui_cell.m_item->m_selected )
-			    select_mode = 1;
-			  else if ( ui_cell.m_item->m_select_armament )
-			    select_mode = 3;
-			  else if ( ui_cell.m_item->m_select_untradable )
-			    select_mode = 4;
-			  else if ( ui_cell.m_item->m_select_equipped )
-			    select_mode = 2;
+				if (Core.Features.test(xrCore::Feature::select_mode_1342)) { //Опция для людей с особым мнением
+					if (ui_cell.m_item->m_selected)
+						select_mode = 1;
+					else if (ui_cell.m_item->m_select_armament)
+						select_mode = 3;
+					else if (ui_cell.m_item->m_select_untradable)
+						select_mode = 4;
+					else if (ui_cell.m_item->m_select_equipped)
+						select_mode = 2;
+				}
+				else {
+					if (ui_cell.m_item->m_select_armament)
+						select_mode = 3;
+					else if (ui_cell.m_item->m_select_untradable)
+						select_mode = 4;
+					else if (ui_cell.m_item->m_select_equipped)
+						select_mode = 2;
+					else if (ui_cell.m_item->m_selected)
+						select_mode = 1;
+				}
 			}
 
 			Fvector2			tp;

@@ -223,7 +223,8 @@ public:
 	  ruck_flag_preferred        = 1ull << 30,
 	  colorize_ammo              = 1ull << 31,
 	  highlight_cop              = 1ull << 32,
-	  colorize_untradable        = 1ull << 33;
+	  colorize_untradable        = 1ull << 33,
+	  select_mode_1342           = 1ull << 34;
 	};
 
 	void		_initialize	(LPCSTR ApplicationName, LogCallback cb=0, BOOL init_fs=TRUE, LPCSTR fs_fname=0);

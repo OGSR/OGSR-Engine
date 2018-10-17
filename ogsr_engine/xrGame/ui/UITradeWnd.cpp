@@ -569,7 +569,10 @@ void CUITradeWnd::TransferItems(CUIDragDropListEx* pSellList,
 	while(pSellList->ItemsCount())
 	{
 		CUICellItem* itm	=	pSellList->RemoveItem(pSellList->GetItemIdx(0),false);
-		pTrade->TransferItem	((PIItem)itm->m_pData, bBuying);
+		auto InvItm = (PIItem)itm->m_pData;
+		InvItm->m_highlight_equipped = false; //Убираем подсветку после продажи предмета
+		itm->m_select_equipped = false;
+		pTrade->TransferItem	(InvItm, bBuying);
 		pBuyList->SetItem		(itm);
 	}
 
@@ -616,6 +619,8 @@ void CUITradeWnd::FillList	(TIItemContainer& cont, CUIDragDropListEx& dragDropLi
 	{
 		CInventoryItem* item = *it;
 		CUICellItem* itm = create_cell_item( item );
+		if (item->m_highlight_equipped)
+			itm->m_select_equipped = true;
 		bool canTrade    = CanMoveToOther( item, our );
 		bool highlighted = item->m_flags.test( CInventoryItem::FIAlwaysHighlighted );
 		ColorizeItem( itm, canTrade, highlighted );

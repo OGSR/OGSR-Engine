@@ -96,6 +96,7 @@ void InitConsole	()
 	CORE_FEATURE_SET( colorize_untradable,        "dragdrop" );
 	CORE_FEATURE_SET( highlight_cop,              "dragdrop" );
 	CORE_FEATURE_SET( equipped_untradable,        "dragdrop" );
+	CORE_FEATURE_SET( select_mode_1342,           "dragdrop" );
 	CORE_FEATURE_SET( highlight_equipped,         "dragdrop" );
 	CORE_FEATURE_SET( af_radiation_immunity_mod,  "features" );
 	CORE_FEATURE_SET( condition_jump_weight_mod,  "features" );
