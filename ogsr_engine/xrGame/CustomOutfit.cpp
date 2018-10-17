@@ -162,6 +162,7 @@ void	CCustomOutfit::OnMoveToSlot		()
 
 void	CCustomOutfit::OnMoveToRuck		()
 {
+	inherited::OnMoveToRuck();
 	if (m_pCurrentInventory)
 	{
 		CActor* pActor = smart_cast<CActor*> (m_pCurrentInventory->GetOwner());
