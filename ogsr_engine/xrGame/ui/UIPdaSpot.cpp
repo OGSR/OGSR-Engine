@@ -4,7 +4,7 @@
 #include "Level.h"
 #include "map_manager.h"
 #include "map_location.h"
-#include "UIEditBox.h"
+#include "UIEditBoxEx.h"
 #include "UIStatic.h"
 #include "UIXmlInit.h"
 #include "UI3tButton.h"
@@ -55,10 +55,10 @@ void CUIPdaSpot::InitControls()
 	m_background->SetAutoDelete(true);
 	xml_init.InitStatic(uiXml, "background", 0, m_background);
 
-	m_editBox = xr_new<CUIEditBox>();
+	m_editBox = xr_new<CUIEditBoxEx>();
 	AttachChild(m_editBox);
 	m_editBox->SetAutoDelete(true);
-	xml_init.InitEditBox(uiXml, "spot_name_edit", 0, m_editBox);
+	xml_init.InitEditBoxEx(uiXml, "spot_name_edit", 0, m_editBox);
 	m_editBox->CaptureFocus(true);
 
 	m_btn_ok = xr_new<CUI3tButton>();
@@ -80,7 +80,7 @@ void CUIPdaSpot::InitControls()
 
 void CUIPdaSpot::OnAdd(CUIWindow* ui, void* d)
 {
-	MsgDbg("--[%s] adding user location: type: [%s], lname: [%s], pos: [%.5f, %.5f, %.5f]. Text: '%s'", __FUNCTION__, m_spotType.c_str(), m_levelName, m_position.x, m_position.y, m_position.z, m_editBox->GetText());
+	//MsgDbg("--[%s] adding user location: type: [%s], lname: [%s], pos: [%.5f, %.5f, %.5f]. Text: '%s'", __FUNCTION__, m_spotType.c_str(), m_levelName, m_position.x, m_position.y, m_position.z, m_editBox->GetText());
 
 	CMapLocation* ml = Level().MapManager().AddUserLocation(m_spotType, m_levelName, m_position);
 	ml->SetHint(m_editBox->GetText());

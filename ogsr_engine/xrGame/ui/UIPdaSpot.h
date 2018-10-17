@@ -6,7 +6,7 @@
 class CUIXml;
 class CUI3tButton;
 class CUIStatic;
-class CUIEditBox;
+class CUIEditBoxEx;
 class UIHint;
 
 class CUIPdaSpot : public CUIDialogWnd, public CUIWndCallback
@@ -14,7 +14,7 @@ class CUIPdaSpot : public CUIDialogWnd, public CUIWndCallback
 	using base_class = CUIDialogWnd;
 
 	CUIStatic* m_background;
-	CUIEditBox* m_editBox;
+	CUIEditBoxEx* m_editBox;
 	CUI3tButton* m_btn_ok;
 	CUI3tButton* m_btn_cancel;
 
