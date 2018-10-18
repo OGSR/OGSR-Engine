@@ -333,6 +333,7 @@ void CUICellItem::ColorizeItems( std::initializer_list<CUIDragDropListEx*> args 
   u32 Color = READ_IF_EXISTS( pSettings, r_color, "dragdrop", "color_ammo", color_argb( 255, 212, 8, 185 ) ); //Это надо бы читать где-нибудь при старте игры...
 
   for ( auto* DdListEx : args ) {
+    if (!DdListEx) continue;
     DdListEx->clear_select_armament();
     if ( !colorize_ammo) continue;
     for ( u32 i = 0, item_count = DdListEx->ItemsCount(); i < item_count; ++i ) {
@@ -361,6 +362,7 @@ void CUICellItem::ColorizeItems( std::initializer_list<CUIDragDropListEx*> args 
 
   auto ColorizeAmmoAddons = [&] {
 	  for (auto* DdListEx : args) {
+		  if (!DdListEx) continue;
 		  for (u32 i = 0, item_count = DdListEx->ItemsCount(); i < item_count; ++i) {
 			  CUICellItem* CellItem = DdListEx->GetItemIdx(i);
 			  auto invitem = (CInventoryItem*)CellItem->m_pData;
@@ -375,6 +377,7 @@ void CUICellItem::ColorizeItems( std::initializer_list<CUIDragDropListEx*> args 
 
   auto ColorizeWeapons = [&](const shared_str& Sect ) {
 	  for (auto* DdListEx : args) {
+		  if (!DdListEx) continue;
 		  for (u32 i = 0, item_count = DdListEx->ItemsCount(); i < item_count; ++i) {
 			  CUICellItem* CellItem = DdListEx->GetItemIdx(i);
 			  auto invitem = (CInventoryItem*)CellItem->m_pData;

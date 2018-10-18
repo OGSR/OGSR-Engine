@@ -84,10 +84,10 @@ protected:
 	u32					m_iOurTradePrice;
 	u32					m_iOthersTradePrice;
 
-
+public:
 	CUICellItem*		m_pCurrentCellItem;
+protected:
 	TIItemContainer		ruck_list;
-
 
 	void				SetCurrentItem				(CUICellItem* itm);
 	CUICellItem*		CurrentItem					();
