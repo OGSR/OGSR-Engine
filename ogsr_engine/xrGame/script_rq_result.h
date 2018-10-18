@@ -8,9 +8,10 @@ class script_rq_result
 	CScriptGameObject	*object;
 	int 			element;
 	bool 			result;
+	SGameMtl*		mtl;
 	
 public:
-	script_rq_result() { object = nullptr; range = 0.f; element = -1; result = false; };
+	script_rq_result() { object = nullptr; range = 0.f; element = -1; result = false; mtl = nullptr; };
 	void					set_result		(collide::rq_result _res);
 /*	IC CScriptGameObject	*get_object		()		const				{ return object; };
 	IC float				get_range		()		const				{ return range; };*/
