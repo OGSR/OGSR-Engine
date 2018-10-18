@@ -753,6 +753,8 @@ void CUITradeWnd::SetCurrentItem(CUICellItem* itm)
 	
 	if(!m_pCurrentCellItem)		return;
 
+	m_pCurrentCellItem->m_select_armament = true;
+
 	CUIDragDropListEx* owner	= itm->OwnerList();
 	bool bBuying				= (owner==&m_uidata->UIOurBagList) || (owner==&m_uidata->UIOurTradeList);
 

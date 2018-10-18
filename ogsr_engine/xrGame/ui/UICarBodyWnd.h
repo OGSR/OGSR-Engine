@@ -68,9 +68,9 @@ protected:
 	CUICharacterInfo*		m_pUICharacterInfoRight;
 	CUIPropertiesBox*		m_pUIPropertiesBox;
 	CUI3tButton*			m_pUITakeAll;
-
+public:
 	CUICellItem*			m_pCurrentCellItem;
-
+protected:
 	void					UpdateLists					();
 
 	void					ActivatePropertiesBox		();

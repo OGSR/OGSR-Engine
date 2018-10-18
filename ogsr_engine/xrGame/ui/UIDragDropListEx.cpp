@@ -4,6 +4,14 @@
 #include "../object_broker.h"
 #include "UICellItem.h"
 
+#include "UIInventoryWnd.h"
+#include "UITradeWnd.h"
+#include "UICarBodyWnd.h"
+extern CUIWindow* GetInventoryWindow();
+extern CUIWindow* GetTradeWindow();
+extern CUIWindow* GetCarBodyWindow();
+
+
 CUIDragItem* CUIDragDropListEx::m_drag_item = NULL;
 
 void CUICell::Clear()
@@ -873,14 +881,23 @@ void CUICellContainer::Draw()
 
 void CUICellContainer::clear_select_armament()
 {
-	UI_CELLS_VEC_IT itb = m_cells.begin();
-	UI_CELLS_VEC_IT ite = m_cells.end();
-	for ( ; itb != ite; ++itb )
-	{
-		CUICell& cell = (*itb);
-		if ( cell.m_item )
-		{
-			cell.m_item->m_select_armament = false;
+	auto InvWnd     = smart_cast<CUIInventoryWnd*>(GetInventoryWindow());
+	auto TradeWnd   = smart_cast<CUITradeWnd*>(GetTradeWindow());
+	auto CarBodyWnd = smart_cast<CUICarBodyWnd*>(GetCarBodyWindow());
+	for (auto& cell : m_cells) {
+		if (cell.m_item) {
+			if (InvWnd->IsShown()) {
+				if (cell.m_item != InvWnd->m_pCurrentCellItem)
+					cell.m_item->m_select_armament = false;
+			}
+			else if (TradeWnd->IsShown()) {
+				if (cell.m_item != TradeWnd->m_pCurrentCellItem)
+					cell.m_item->m_select_armament = false;
+			}
+			else if (CarBodyWnd->IsShown()) {
+				if (cell.m_item != CarBodyWnd->m_pCurrentCellItem)
+					cell.m_item->m_select_armament = false;
+			}
 		}
 	}
 }

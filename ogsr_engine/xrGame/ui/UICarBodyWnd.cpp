@@ -420,6 +420,7 @@ void CUICarBodyWnd::SetCurrentItem(CUICellItem* itm)
 	m_pUIItemInfo->InitItem(CurrentIItem());
 
 	if (m_pCurrentCellItem) {
+		m_pCurrentCellItem->m_select_armament = true;
 		auto script_obj = CurrentIItem()->object().lua_game_object();
 		g_actor->callback(GameObject::eCellItemSelect)(script_obj);
 	}

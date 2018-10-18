@@ -128,9 +128,9 @@ protected:
 	CUIItemInfo					UIItemInfo;
 
 	CInventory*					m_pInv;
-
+public:
 	CUICellItem*				m_pCurrentCellItem;
-
+protected:
 	bool						DropItem					(PIItem itm, CUIDragDropListEx* lst);
 	bool						TryUseItem					(PIItem itm);
 	//----------------------	-----------------------------------------------
