@@ -17,6 +17,7 @@ struct SBinocVisibleObj{
 	CUIStatic				m_rb;
 	Frect					cur_rect;
 
+	u32					m_visible_time;
 	float					m_upd_speed;
 	Flags8					m_flags;
 	void					create_default			(u32 color);
@@ -44,4 +45,7 @@ protected :
 	float						m_rotating_speed;
 	void	Load				(const shared_str& section);
 	ref_sound					m_snd_found;
+
+	u32   m_min_visible_time;
+	float m_transparency_threshold;
 };

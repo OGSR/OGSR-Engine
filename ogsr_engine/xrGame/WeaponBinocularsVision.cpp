@@ -66,7 +66,7 @@ void SBinocVisibleObj::Draw()
 void SBinocVisibleObj::Update()
 {
 	m_flags.set		(	flVisObjNotValid,TRUE);
-
+        if ( m_visible_time > Device.dwTimeGlobal ) return;
 
 	Fbox		b		= m_object->Visual()->vis.box;
 
@@ -173,7 +173,10 @@ void CBinocularsVision::Update()
 	for (; v_it!=vVisibles.end(); ++v_it)
 	{
 		const CObject*	_object_			= (*v_it).m_object;
-		if (!pActor->memory().visual().visible_right_now(smart_cast<const CGameObject*>(_object_)))
+		const CGameObject* GO = smart_cast<const CGameObject*>(_object_);
+		if ( !pActor->memory().visual().visible_right_now( GO ) )
+			continue;
+		if ( pActor->memory().visual().visible_transparency_threshold( GO ) < m_transparency_threshold )
 			continue;
 
 		CObject* object_ = const_cast<CObject*>(_object_);
@@ -196,6 +199,7 @@ void CBinocularsVision::Update()
 			new_vis_obj->m_object			= object_;
 			new_vis_obj->create_default		(m_frame_color.get());
 			new_vis_obj->m_upd_speed			= m_rotating_speed;
+			new_vis_obj->m_visible_time			= Device.dwTimeGlobal + m_min_visible_time;
 			if(NULL==m_snd_found._feedback())
 				m_snd_found.play_at_pos			(0,Fvector().set(0,0,0),sm_2D);
 		}
@@ -225,6 +229,8 @@ void CBinocularsVision::Load(const shared_str& section)
 	m_rotating_speed	= pSettings->r_float(section,"vis_frame_speed");
 	m_frame_color		= pSettings->r_fcolor(section,"vis_frame_color");
 	m_snd_found.create	(pSettings->r_string(section,"found_snd"),st_Effect,sg_SourceType);
+	m_min_visible_time = READ_IF_EXISTS( pSettings, r_u32, section, "min_visible_time", 0 );
+	m_transparency_threshold = READ_IF_EXISTS( pSettings, r_float, section, "transparency_threshold", 0.f );
 }
 
 void CBinocularsVision::remove_links(CObject *object)

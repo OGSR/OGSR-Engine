@@ -818,3 +818,13 @@ void CVisualMemoryManager::on_requested_spawn	(CObject *object)
 		return;
 	}
 }
+
+
+float CVisualMemoryManager::visible_transparency_threshold( const CGameObject* game_object ) const {
+  if ( m_object )
+    return m_object->feel_vision_get_transparency( game_object );
+  else {
+    VERIFY( m_client );
+    return m_client->feel_vision_get_transparency( game_object );
+  }
+}

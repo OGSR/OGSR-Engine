@@ -102,6 +102,7 @@ public:
 			// this function returns true if and only if 
 			// specified object is visible now
 			bool	visible_right_now		(const CGameObject *game_object) const;
+                        float visible_transparency_threshold( const CGameObject* ) const;
 			// if current_params.m_still_visible_time == 0
 			// this function returns true if and only if 
 			// specified object is visible now

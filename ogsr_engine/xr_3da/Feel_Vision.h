@@ -40,6 +40,7 @@ namespace Feel
 			Fvector				cp_LR_src;
 			Fvector				cp_LR_dst;
 			Fvector				cp_LAST;	// last point found to be visible
+			float trans;
 		};
 		xr_vector<feel_visible_Item>	feel_visible;
 	public:
@@ -63,5 +64,7 @@ namespace Feel
 		}
 		virtual		BOOL			feel_vision_isRelevant	(CObject* O)					= 0;
 		virtual		float			feel_vision_mtl_transp	(CObject* O, u32 element)		= 0;	
+
+		float feel_vision_get_transparency( const CObject* _O ) const;
 	};
 };

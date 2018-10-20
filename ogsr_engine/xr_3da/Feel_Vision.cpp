@@ -47,6 +47,7 @@ namespace Feel {
 		I.Cache.verts[2].set	(0,0,0);
 		I.fuzzy					= -EPS_S;
 		I.cp_LP.set				(0,0,0);
+		I.trans = 1.f;
 	}
 	void	Vision::o_delete	(CObject* O)
 	{
@@ -151,8 +152,8 @@ namespace Feel {
 		RQR.r_clear			();
 		xr_vector<feel_visible_Item>::iterator I=feel_visible.begin(),E=feel_visible.end();
 		for (; I!=E; I++){
-			if (0==I->O->CFORM())	{ I->fuzzy = -1; continue; }
-
+			if (0==I->O->CFORM())	{ I->fuzzy = -1; I->trans = 0.f; continue; }
+			
 			// verify relation
 			if (positive(I->fuzzy) && I->O->Position().similar(I->cp_LR_dst,lr_granularity) && P.similar(I->cp_LR_src,lr_granularity))
 				continue;
@@ -210,6 +211,7 @@ namespace Feel {
 					}
 				}
 //				Log("Vis",feel_params.vis);
+				I->trans = feel_params.vis;
 				if (feel_params.vis<feel_params.vis_threshold){
 					// INVISIBLE, choose next point
 					I->fuzzy				-=	fuzzy_update_novis*dt;
@@ -229,4 +231,12 @@ namespace Feel {
 			}
 		}
 	}
+
+
+  float Vision::feel_vision_get_transparency( const CObject* _O ) const {
+    for ( const auto& it : feel_visible )
+      if ( it.O == _O )
+        return it.trans;
+    return -1.f;
+  }
 };
