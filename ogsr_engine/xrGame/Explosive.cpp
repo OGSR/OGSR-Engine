@@ -363,8 +363,10 @@ void CExplosive::Explode()
 	else SendHits = false;
 
 
+	Fvector frag_coneaxis;
+	frag_coneaxis.set( 0, 1.f, 0 );
 	for(int i = 0; i < m_iFragsNum; ++i){
-		frag_dir.random_dir	();
+		frag_dir.random_dir( frag_coneaxis, PI_DIV_2 );
 		frag_dir.normalize	();
 		
 		CCartridge cartridge;
