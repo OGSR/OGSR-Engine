@@ -10,6 +10,8 @@
 #include "gamepersistent.h"
 #include "mt_config.h"
 #include "game_cl_base_weapon_usage_statistic.h"
+#include <thread>
+#include <mutex>
 
 #ifdef DEBUG
 #	include "debug_renderer.h"
@@ -83,12 +85,10 @@ void SBullet::Init(const Fvector& position,
 //
 
 CBulletManager::CBulletManager()
-#ifdef PROFILE_CRITICAL_SECTIONS
-	:m_Lock(MUTEX_PROFILE_ID(CBulletManager))
-#endif // PROFILE_CRITICAL_SECTIONS
 {
 	m_Bullets.clear			();
-	m_Bullets.reserve		(100);
+	m_Bullets.reserve( 1000 );
+	m_dwTimeRemainder = 0;
 }
 
 CBulletManager::~CBulletManager()
@@ -107,8 +107,6 @@ void CBulletManager::Load		()
 	m_fTracerLengthMin		= pSettings->r_float(BULLET_MANAGER_SECTION, "tracer_length_min");
 
 	m_fGravityConst			= pSettings->r_float(BULLET_MANAGER_SECTION, "gravity_const");
-	m_fAirResistanceK		= pSettings->r_float(BULLET_MANAGER_SECTION, "air_resistance_k");
-
 	m_dwStepTime			= pSettings->r_u32	(BULLET_MANAGER_SECTION, "time_step");
 	m_fMinBulletSpeed		= pSettings->r_float(BULLET_MANAGER_SECTION, "min_bullet_speed");
 	m_fCollisionEnergyMin	= pSettings->r_float(BULLET_MANAGER_SECTION, "collision_energy_min");
@@ -120,14 +118,14 @@ void CBulletManager::Load		()
 	int cnt					= _GetItemCount(whine_sounds);
 	xr_string tmp;
 	for (int k=0; k<cnt; ++k){
-		m_WhineSounds.push_back	(ref_sound());
+		m_WhineSounds.emplace_back();
 		m_WhineSounds.back().create(_GetItem(whine_sounds,k,tmp),st_Effect,sg_SourceType);
 	}
 
 	LPCSTR explode_particles= pSettings->r_string(BULLET_MANAGER_SECTION, "explode_particles");
 	cnt						= _GetItemCount(explode_particles);
 	for (int k=0; k<cnt; ++k)
-		m_ExplodeParticles.push_back	(_GetItem(explode_particles,k,tmp));
+		m_ExplodeParticles.emplace_back(_GetItem(explode_particles,k,tmp));
 }
 
 void CBulletManager::PlayExplodePS		(const Fmatrix& xf, RStringVec& m_ExplodeParticles)
@@ -170,21 +168,18 @@ void CBulletManager::AddBullet(const Fvector& position,
 							   bool SendHit,
 							   bool AimBullet)
 {
-	m_Lock.Enter	();
 	VERIFY		(u16(-1)!=cartridge.bullet_material_idx);
 //	u32 CurID = Level().CurrentControlEntity()->ID();
 //	u32 OwnerID = sender_id;
-	m_Bullets.push_back(SBullet());
+	m_Bullets.emplace_back();
 	SBullet& bullet		= m_Bullets.back();
 	bullet.Init			(position, direction, starting_speed, power, impulse, sender_id, sendersweapon_id, e_hit_type, maximum_distance, cartridge, SendHit);
 	bullet.frame_num	= Device.dwFrame;
 	bullet.flags.aim_bullet	=	AimBullet;
-	m_Lock.Leave	();
 }
 
 void CBulletManager::UpdateWorkload()
 {
-	m_Lock.Enter		()	;
 	u32 delta_time		=	Device.dwTimeDelta + m_dwTimeRemainder;
 	u32 step_num		=	delta_time/m_dwStepTime;
 	m_dwTimeRemainder	=	delta_time%m_dwStepTime;
@@ -216,7 +211,7 @@ void CBulletManager::UpdateWorkload()
 			}
 		}
 	}
-	m_Lock.Leave		();
+	working.unlock();
 }
 
 bool CBulletManager::CalcBullet (collide::rq_results & rq_storage, xr_vector<ISpatial*>& rq_spatial, SBullet* bullet, u32 delta_time)
@@ -279,7 +274,7 @@ bool CBulletManager::CalcBullet (collide::rq_results & rq_storage, xr_vector<ISp
 		bullet->dir.mul(bullet->speed);
 
 		Fvector air_resistance = bullet->dir;
-		air_resistance.mul(-m_fAirResistanceK*delta_time_sec);
+		air_resistance.mul( -bullet->air_resistance * delta_time_sec );
 ///		Msg("Speed - %f; ar - %f, %f", bullet->dir.magnitude(), air_resistance.magnitude(), air_resistance.magnitude()/bullet->dir.magnitude()*100);
 
 		bullet->dir.add(air_resistance);
@@ -420,14 +415,16 @@ void CBulletManager::Render	()
 void CBulletManager::CommitRenderSet		()	// @ the end of frame
 {
 	m_BulletsRendered	= m_Bullets			;
-	if (g_mt_config.test(mtBullets))		{
-		Device.seqParallel.push_back		(fastdelegate::FastDelegate0<>(this,&CBulletManager::UpdateWorkload));
-	} else {
-		UpdateWorkload						();
+	if ( m_Bullets.size() && m_Events.empty() && working.try_lock() ) {
+	  m_thread = std::thread( fastdelegate::FastDelegate0<>( this, &CBulletManager::UpdateWorkload ) );
+	  if ( m_thread.joinable() )
+	    m_thread.detach();
 	}
 }
 void CBulletManager::CommitEvents			()	// @ the start of frame
 {
+	if ( !working.try_lock() ) return;
+	working.unlock();
 	for (u32 _it=0; _it<m_Events.size(); _it++)	{
 		_event&		E	= m_Events[_it];
 		switch (E.Type)
@@ -445,11 +442,14 @@ void CBulletManager::CommitEvents			()	// @ the start of frame
 		}		
 	}
 	m_Events.clear_and_reserve	()	;
+
+	if ( m_Bullets.empty() )
+	  m_dwTimeRemainder = 0;
 }
 
 void CBulletManager::RegisterEvent			(EventType Type, BOOL _dynamic, SBullet* bullet, const Fvector& end_point, collide::rq_result& R, u16 tgt_material)
 {
-	m_Events.push_back	(_event())		;
+	m_Events.emplace_back();
 	_event&	E		= m_Events.back()	;
 	E.Type			= Type				;
 	E.bullet		= *bullet			;

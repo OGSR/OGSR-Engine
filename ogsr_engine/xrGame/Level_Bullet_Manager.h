@@ -112,7 +112,6 @@ protected:
 	RStringVec				m_ExplodeParticles	;
 
 	//список пуль находящихся в данный момент на уровне
-	xrCriticalSection		m_Lock				;
 	BulletVec				m_Bullets			;	// working set, locked
 	BulletVec				m_BulletsRendered	;	// copy for rendering
 	xr_vector<_event>		m_Events			;	
@@ -132,9 +131,6 @@ protected:
 
 	//константа G
 	float					m_fGravityConst;
-	//сопротивление воздуха, процент, который отнимается от скорости
-	//полета пули
-	float					m_fAirResistanceK;
 	//cколько процентов энергии потеряет пуля при столкновении с материалом (при падении под прямым углом)
 	float					m_fCollisionEnergyMin;
 	//сколькол процентов энергии устанется у пули при любом столкновении
@@ -174,6 +170,9 @@ protected:
 	//возвращаем true если пуля продолжает полет
 	bool					CalcBullet			(collide::rq_results & rq_storage, xr_vector<ISpatial*>& rq_spatial, SBullet* bullet, u32 delta_time);
 	void 		__stdcall	UpdateWorkload		();
+
+	std::thread m_thread;
+	std::mutex  working;
 public:
 							CBulletManager		();
 	virtual					~CBulletManager		();
