@@ -338,7 +338,29 @@ void CUIInventoryWnd::Hide()
 	if (Core.Features.test(xrCore::Feature::more_hide_weapon))
 		if ( pActor )
 			pActor->SetWeaponHideState(INV_STATE_INV_WND, false);
+
+	HideSlotsHighlight();
 }
+
+
+void CUIInventoryWnd::HideSlotsHighlight()
+{
+	m_pUIBeltList->is_highlighted = false;
+	for (const auto& DdList : m_slots_array)
+		if (DdList)
+			DdList->is_highlighted = false;
+}
+
+void CUIInventoryWnd::ShowSlotsHighlight(PIItem InvItem)
+{
+	if (InvItem->m_flags.test(CInventoryItem::Fbelt) && !Actor()->inventory().InBelt(InvItem))
+		m_pUIBeltList->is_highlighted = true;
+
+	for (const u8 slot : InvItem->GetSlots())
+		if (auto DdList = m_slots_array[slot]; DdList && (!Actor()->inventory().InSlot(InvItem) || InvItem->GetSlot() != slot))
+			DdList->is_highlighted = true;
+}
+
 
 void CUIInventoryWnd::AttachAddon(PIItem item_to_upgrade)
 {

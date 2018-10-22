@@ -8,6 +8,8 @@
 #include "../script_callback_ex.h"
 #include "../script_game_object.h"
 #include "../Actor.h"
+#include "UIInventoryWnd.h"
+#include "UICursor.h"
 
 #define INV_GRID_WIDTHF			50.0f
 #define INV_GRID_HEIGHTF		50.0f
@@ -63,6 +65,13 @@ CUIInventoryCellItem::~CUIInventoryCellItem()
 void CUIInventoryCellItem::OnFocusReceive()
 {
 	m_selected = true;
+
+	if (auto InvWnd = smart_cast<CUIInventoryWnd*>(this->OwnerList()->GetTop()))
+	{
+		InvWnd->HideSlotsHighlight();
+		InvWnd->ShowSlotsHighlight(object());
+	}
+
 	inherited::OnFocusReceive();
 	auto script_obj = object()->object().lua_game_object();
 	g_actor->callback(GameObject::eCellItemFocus)(script_obj);
@@ -71,6 +80,14 @@ void CUIInventoryCellItem::OnFocusReceive()
 void CUIInventoryCellItem::OnFocusLost()
 {
 	m_selected = false;
+
+	if (auto InvWnd = smart_cast<CUIInventoryWnd*>(this->OwnerList()->GetTop()))
+	{
+		auto CellPos = this->m_pParentList->m_container->PickCell(GetUICursor()->GetCursorPosition());
+		if (!this->m_pParentList->m_container->ValidCell(CellPos) || this->m_pParentList->m_container->GetCellAt(CellPos).Empty())
+			InvWnd->HideSlotsHighlight();
+	}
+
 	inherited::OnFocusLost();	
 	auto script_obj = object()->object().lua_game_object();
 	g_actor->callback(GameObject::eCellItemFocusLost)(script_obj);

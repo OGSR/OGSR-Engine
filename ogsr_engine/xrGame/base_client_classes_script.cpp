@@ -277,7 +277,7 @@ void CObjectScript::script_register		(lua_State *L)
 IRender_Visual* visual_get_child(IRender_Visual	*v, u32 n_child)
 {
 	if (!v) return NULL; // not have visual
-	CKinematics *k = dynamic_cast<CKinematics*> (v);
+	CKinematics *k = smart_cast<CKinematics*> (v);
 	if (!k) return NULL;
 	if (n_child >= k->children.size()) return NULL;
 	return k->children.at(n_child);

@@ -47,6 +47,9 @@ public:
 	virtual void			Show						();
 	virtual void			Hide						();
 
+	void HideSlotsHighlight();
+	void ShowSlotsHighlight(PIItem InvItem);
+
 	void					AddItemToBag				(PIItem pItem);
 
 protected:

@@ -21,7 +21,7 @@ void CStateManagerPsyDog::execute()
 {
 	const CEntityAlive* enemy	= object->EnemyMan.get_enemy();
 
-	if (enemy && dynamic_cast<const CActor*>(enemy) && smart_cast<CPsyDog*>(object)->must_hide()) {
+	if (enemy && smart_cast<const CActor*>(enemy) && smart_cast<CPsyDog*>(object)->must_hide()) {
 		
 		select_state(eStateAttack_Psy); 
 	
