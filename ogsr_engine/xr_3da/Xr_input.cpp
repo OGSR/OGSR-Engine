@@ -191,23 +191,16 @@ bool CInput::get_dik_name(int dik, LPSTR dest_str, int dest_sz)
 	keyname.diph.dwSize			= sizeof(DIPROPSTRING);
 	keyname.diph.dwHeaderSize	= sizeof(DIPROPHEADER);
 	keyname.diph.dwObj			= static_cast<DWORD>(dik);
-	keyname.diph.dwHow			= DIPH_BYOFFSET; // DIPH_BYID; //DIPH_DEVICE;//
+	keyname.diph.dwHow			= DIPH_BYOFFSET;
 	HRESULT hr = pKeyboard->GetProperty(DIPROP_KEYNAME, &keyname.diph);
 	if(FAILED(hr))
 		return false;
 
-	const wchar_t* wct			= keyname.wsz;
-	if(0==wcslen(wct))
-		return					false;
+	const wchar_t* wct = keyname.wsz;
+	if(!wcslen(wct))
+		return false;
 
-	size_t cnt					= wcstombs(dest_str, wct, dest_sz);
-//.	Msg("dik_name for[%d], is w[%S] ch[%s]", dik, wct, dest_str);
-	if(cnt==-1)
-	{
-		Msg("! cant convert dik_name for dik[%d], prop=[%s]", dik, wct);
-		return					false;
-	}
-	return						(cnt!=-1);
+	return WideCharToMultiByte(CP_ACP, 0, keyname.wsz, -1, dest_str, dest_sz, 0, 0) != -1;
 }
 
 BOOL CInput::iGetAsyncKeyState( int dik )
