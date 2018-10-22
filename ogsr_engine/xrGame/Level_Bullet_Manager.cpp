@@ -8,7 +8,6 @@
 #include "game_cl_base.h"
 #include "Actor.h"
 #include "gamepersistent.h"
-#include "mt_config.h"
 #include "game_cl_base_weapon_usage_statistic.h"
 #include <thread>
 #include <mutex>
