@@ -14,7 +14,7 @@
 CScriptEffector::~CScriptEffector	()
 {
 	Msg								("CScriptEffector::~CScriptEffector() called");
-#pragma todo("KRodin: для чего вывод в лог?")
+#pragma todo("KRodin: РґР»СЏ С‡РµРіРѕ РІС‹РІРѕРґ РІ Р»РѕРі?")
 }
 
 BOOL CScriptEffector::Process		(SPPInfo	&pp)

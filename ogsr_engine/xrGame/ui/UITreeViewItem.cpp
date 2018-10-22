@@ -17,10 +17,10 @@
 
 //////////////////////////////////////////////////////////////////////////
 
-// Смещение относительно родителя
+// РЎРјРµС‰РµРЅРёРµ РѕС‚РЅРѕСЃРёС‚РµР»СЊРЅРѕ СЂРѕРґРёС‚РµР»СЏ
 const int				subShift					= 1;
 const char * const		treeItemBackgroundTexture	= "ui\\ui_pda_over_list";
-// Цвет непрочитанного элемента
+// Р¦РІРµС‚ РЅРµРїСЂРѕС‡РёС‚Р°РЅРЅРѕРіРѕ СЌР»РµРјРµРЅС‚Р°
 static const u32		unreadColor					= 0xff00ff00;
 
 //////////////////////////////////////////////////////////////////////////
@@ -56,7 +56,7 @@ void CUITreeViewItem::OnRootChanged()
 	xr_string str;
 	if (isRoot)
 	{
-		// Вставляем после последнего пробела перед текстом знак + или -
+		// Р’СЃС‚Р°РІР»СЏРµРј РїРѕСЃР»Рµ РїРѕСЃР»РµРґРЅРµРіРѕ РїСЂРѕР±РµР»Р° РїРµСЂРµРґ С‚РµРєСЃС‚РѕРј Р·РЅР°Рє + РёР»Рё -
 		str = GetText();
 
 		xr_string::size_type pos = str.find_first_not_of(" ");
@@ -101,7 +101,7 @@ void CUITreeViewItem::OnRootChanged()
 
 void CUITreeViewItem::OnOpenClose()
 {
-	// Если мы не являемся узлом дерева, значит ничего не делаем
+	// Р•СЃР»Рё РјС‹ РЅРµ СЏРІР»СЏРµРјСЃСЏ СѓР·Р»РѕРј РґРµСЂРµРІР°, Р·РЅР°С‡РёС‚ РЅРёС‡РµРіРѕ РЅРµ РґРµР»Р°РµРј
 	if (!isRoot) return;
 
 	xr_string str;
@@ -126,14 +126,14 @@ void CUITreeViewItem::OnOpenClose()
 
 void CUITreeViewItem::Open()
 {
-	// Если не рут или уже открыты, то ничего не делаем
+	// Р•СЃР»Рё РЅРµ СЂСѓС‚ РёР»Рё СѓР¶Рµ РѕС‚РєСЂС‹С‚С‹, С‚Рѕ РЅРёС‡РµРіРѕ РЅРµ РґРµР»Р°РµРј
 	if (!isRoot || isOpened) return;
 	isOpened = true;
 
-	// Изменяем состояние
+	// РР·РјРµРЅСЏРµРј СЃРѕСЃС‚РѕСЏРЅРёРµ
 	OnOpenClose();
 	
-	// Аттачим все подэлементы к родтельскому листбоксу
+	// РђС‚С‚Р°С‡РёРј РІСЃРµ РїРѕРґСЌР»РµРјРµРЅС‚С‹ Рє СЂРѕРґС‚РµР»СЊСЃРєРѕРјСѓ Р»РёСЃС‚Р±РѕРєСЃСѓ
 	CUIListWnd *pList = smart_cast<CUIListWnd*>(GetParent());
 	
 	R_ASSERT(pList);
@@ -151,14 +151,14 @@ void CUITreeViewItem::Open()
 
 void CUITreeViewItem::Close()
 {
-	// Если не рут или уже открыты, то ничего не делаем
+	// Р•СЃР»Рё РЅРµ СЂСѓС‚ РёР»Рё СѓР¶Рµ РѕС‚РєСЂС‹С‚С‹, С‚Рѕ РЅРёС‡РµРіРѕ РЅРµ РґРµР»Р°РµРј
 	if (!isRoot || !isOpened) return;
 	isOpened = false;
 
-	// Изменяем состояние
+	// РР·РјРµРЅСЏРµРј СЃРѕСЃС‚РѕСЏРЅРёРµ
 	OnOpenClose();
 
-	// Детачим все подэлементы
+	// Р”РµС‚Р°С‡РёРј РІСЃРµ РїРѕРґСЌР»РµРјРµРЅС‚С‹
 	CUIListWnd *pList = smart_cast<CUIListWnd*>(GetParent());
 
 	R_ASSERT(pList);
@@ -166,13 +166,13 @@ void CUITreeViewItem::Close()
 
 	int pos;
 
-	// Сначала все закрыть
+	// РЎРЅР°С‡Р°Р»Р° РІСЃРµ Р·Р°РєСЂС‹С‚СЊ
 	for (SubItems_it it = vSubItems.begin(); it != vSubItems.end(); ++it)
 	{
 		(*it)->Close();
 	}
 
-	// Затем все датачим
+	// Р—Р°С‚РµРј РІСЃРµ РґР°С‚Р°С‡РёРј
 	for (SubItems_it it = vSubItems.begin(); it != vSubItems.end(); ++it)
 	{
 		pos = pList->GetItemPos(*it);
@@ -283,8 +283,8 @@ void CUITreeViewItem::SendMessage(CUIWindow* pWnd, s16 msg, void* pData)
 
 CUITreeViewItem * CUITreeViewItem::Find(LPCSTR text) const
 {
-	// Пробегаемся по списку подчиненных элементов, и ищем элемент с заданным текстом
-	// Если среди подч. эл-тов есть root'ы, то ищем рекурсивно в них
+	// РџСЂРѕР±РµРіР°РµРјСЃСЏ РїРѕ СЃРїРёСЃРєСѓ РїРѕРґС‡РёРЅРµРЅРЅС‹С… СЌР»РµРјРµРЅС‚РѕРІ, Рё РёС‰РµРј СЌР»РµРјРµРЅС‚ СЃ Р·Р°РґР°РЅРЅС‹Рј С‚РµРєСЃС‚РѕРј
+	// Р•СЃР»Рё СЃСЂРµРґРё РїРѕРґС‡. СЌР»-С‚РѕРІ РµСЃС‚СЊ root'С‹, С‚Рѕ РёС‰РµРј СЂРµРєСѓСЂСЃРёРІРЅРѕ РІ РЅРёС…
 	CUITreeViewItem *pResult = NULL;
 	xr_string caption;
 
@@ -361,7 +361,7 @@ xr_string CUITreeViewItem::GetHierarchyAsText()
 	xr_string::size_type prevPos = name.size() + 1;
 	name += static_cast<xr_string>("/") + static_cast<xr_string>(GetText());
 
-	// Удаляем мусор: [ +-]
+	// РЈРґР°Р»СЏРµРј РјСѓСЃРѕСЂ: [ +-]
 	xr_string::size_type pos = name.find_first_not_of("/ +-", prevPos);
 	if (xr_string::npos != pos)
 	{
@@ -375,7 +375,7 @@ xr_string CUITreeViewItem::GetHierarchyAsText()
 
 void CUITreeViewItem::MarkArticleAsRead(bool value)
 {
-	// Если элемент рутовый, то мы его маркаем его, и все чилды
+	// Р•СЃР»Рё СЌР»РµРјРµРЅС‚ СЂСѓС‚РѕРІС‹Р№, С‚Рѕ РјС‹ РµРіРѕ РјР°СЂРєР°РµРј РµРіРѕ, Рё РІСЃРµ С‡РёР»РґС‹
 	if (IsRoot())
 	{
 		m_bArticleRead = value;
@@ -392,7 +392,7 @@ void CUITreeViewItem::MarkArticleAsRead(bool value)
 	}
 	else
 	{
-		// Если же нет, то маркаем себя и говорим проверить свой парентовый элемент
+		// Р•СЃР»Рё Р¶Рµ РЅРµС‚, С‚Рѕ РјР°СЂРєР°РµРј СЃРµР±СЏ Рё РіРѕРІРѕСЂРёРј РїСЂРѕРІРµСЂРёС‚СЊ СЃРІРѕР№ РїР°СЂРµРЅС‚РѕРІС‹Р№ СЌР»РµРјРµРЅС‚
 		m_bArticleRead	= value;
 		if(!m_bManualSetColor)
 			SetItemColor();
@@ -404,8 +404,8 @@ void CUITreeViewItem::MarkArticleAsRead(bool value)
 
 void CUITreeViewItem::CheckParentMark(CUITreeViewItem *pOwner)
 {
-	// Берем рута, смотрим на его чилдов, и если среди них есть хоть 1
-	// непрочитанный, то маркаем себя как непрочитанный, и  говорим провериться выше.
+	// Р‘РµСЂРµРј СЂСѓС‚Р°, СЃРјРѕС‚СЂРёРј РЅР° РµРіРѕ С‡РёР»РґРѕРІ, Рё РµСЃР»Рё СЃСЂРµРґРё РЅРёС… РµСЃС‚СЊ С…РѕС‚СЊ 1
+	// РЅРµРїСЂРѕС‡РёС‚Р°РЅРЅС‹Р№, С‚Рѕ РјР°СЂРєР°РµРј СЃРµР±СЏ РєР°Рє РЅРµРїСЂРѕС‡РёС‚Р°РЅРЅС‹Р№, Рё  РіРѕРІРѕСЂРёРј РїСЂРѕРІРµСЂРёС‚СЊСЃСЏ РІС‹С€Рµ.
 	bool f = false;
 	if (pOwner && pOwner->IsRoot())
 	{
@@ -421,7 +421,7 @@ void CUITreeViewItem::CheckParentMark(CUITreeViewItem *pOwner)
 
 		if (!f)
 		{
-			// Если мы тут, то все артиклы прочитанны, и можно маркнуть себя как прочитанная ветвь
+			// Р•СЃР»Рё РјС‹ С‚СѓС‚, С‚Рѕ РІСЃРµ Р°СЂС‚РёРєР»С‹ РїСЂРѕС‡РёС‚Р°РЅРЅС‹, Рё РјРѕР¶РЅРѕ РјР°СЂРєРЅСѓС‚СЊ СЃРµР±СЏ РєР°Рє РїСЂРѕС‡РёС‚Р°РЅРЅР°СЏ РІРµС‚РІСЊ
 			pOwner->m_bArticleRead = true;
 			pOwner->SetItemColor();
 		}
@@ -451,7 +451,7 @@ void CreateTreeBranch(shared_str nesting, shared_str leafName, CUIListWnd *pList
 
 		CUITreeViewItem * operator () (GroupTree_it it, GroupTree &cont, CUITreeViewItem *pItemToIns)
 		{
-			// Вставляем иерархию разделов в энциклопедию
+			// Р’СЃС‚Р°РІР»СЏРµРј РёРµСЂР°СЂС…РёСЋ СЂР°Р·РґРµР»РѕРІ РІ СЌРЅС†РёРєР»РѕРїРµРґРёСЋ
 			CUITreeViewItem *pNewItem = NULL;
 
 			for (GroupTree_it it2 = it; it2 != cont.end(); ++it2)
@@ -473,14 +473,14 @@ void CreateTreeBranch(shared_str nesting, shared_str leafName, CUIListWnd *pList
 	//  Function body
 	//-----------------------------------------------------------------------------
 
-	// Начинаем алгоритм определения группы вещи в иерархии энциклопедии
+	// РќР°С‡РёРЅР°РµРј Р°Р»РіРѕСЂРёС‚Рј РѕРїСЂРµРґРµР»РµРЅРёСЏ РіСЂСѓРїРїС‹ РІРµС‰Рё РІ РёРµСЂР°СЂС…РёРё СЌРЅС†РёРєР»РѕРїРµРґРёРё
 	R_ASSERT(*nesting);
 	R_ASSERT(pListToAdd);
 	R_ASSERT(pLeafFont);
 	R_ASSERT(pRootFont);
 	xr_string group = *nesting;
 
-	// Парсим строку группы для определения вложенности
+	// РџР°СЂСЃРёРј СЃС‚СЂРѕРєСѓ РіСЂСѓРїРїС‹ РґР»СЏ РѕРїСЂРµРґРµР»РµРЅРёСЏ РІР»РѕР¶РµРЅРЅРѕСЃС‚Рё
 	GroupTree					groupTree;
 
 	xr_string::size_type		pos;
@@ -503,11 +503,11 @@ void CreateTreeBranch(shared_str nesting, shared_str leafName, CUIListWnd *pList
 		}
 	}
 
-	// Теперь ищем нет ли затребованных групп уже в наличии
+	// РўРµРїРµСЂСЊ РёС‰РµРј РЅРµС‚ Р»Рё Р·Р°С‚СЂРµР±РѕРІР°РЅРЅС‹С… РіСЂСѓРїРї СѓР¶Рµ РІ РЅР°Р»РёС‡РёРё
 	CUITreeViewItem *pTVItem = NULL, *pTVItemChilds = NULL;
 	bool status = false;
 
-	// Для всех рутовых элементов
+	// Р”Р»СЏ РІСЃРµС… СЂСѓС‚РѕРІС‹С… СЌР»РµРјРµРЅС‚РѕРІ
 	for (int i = 0; i < pListToAdd->GetItemsCount(); ++i)
 	{
 		pTVItem = smart_cast<CUITreeViewItem*>(pListToAdd->GetItem(i));
@@ -519,15 +519,15 @@ void CreateTreeBranch(shared_str nesting, shared_str leafName, CUIListWnd *pList
 		// Remove "+" sign
 		caption.erase(0, 1);
 
-		// Ищем не содержит ли он данной иерархии и добавляем новые элементы если не найдено
+		// РС‰РµРј РЅРµ СЃРѕРґРµСЂР¶РёС‚ Р»Рё РѕРЅ РґР°РЅРЅРѕР№ РёРµСЂР°СЂС…РёРё Рё РґРѕР±Р°РІР»СЏРµРј РЅРѕРІС‹Рµ СЌР»РµРјРµРЅС‚С‹ РµСЃР»Рё РЅРµ РЅР°Р№РґРµРЅРѕ
 		if (0 == xr_strcmp(caption.c_str(), *groupTree.front()))
 		{
-			// Уже содержит. Надо искать глубже
+			// РЈР¶Рµ СЃРѕРґРµСЂР¶РёС‚. РќР°РґРѕ РёСЃРєР°С‚СЊ РіР»СѓР±Р¶Рµ
 			pTVItemChilds = pTVItem;
 			for (GroupTree_it it = groupTree.begin() + 1; it != groupTree.end(); ++it)
 			{
 				pTVItem = pTVItemChilds->Find(*(*it));
-				// Не нашли, надо вставлять хвост списка вложенности
+				// РќРµ РЅР°С€Р»Рё, РЅР°РґРѕ РІСЃС‚Р°РІР»СЏС‚СЊ С…РІРѕСЃС‚ СЃРїРёСЃРєР° РІР»РѕР¶РµРЅРЅРѕСЃС‚Рё
 				if (!pTVItem)
 				{
 					pTVItemChilds = AddTreeTail(it, groupTree, pTVItemChilds);
@@ -541,7 +541,7 @@ void CreateTreeBranch(shared_str nesting, shared_str leafName, CUIListWnd *pList
 		if (status) break;
 	}
 
-	// Прошли все существующее дерево, и не нашли? Тогда добавляем новую иерархию
+	// РџСЂРѕС€Р»Рё РІСЃРµ СЃСѓС‰РµСЃС‚РІСѓСЋС‰РµРµ РґРµСЂРµРІРѕ, Рё РЅРµ РЅР°С€Р»Рё? РўРѕРіРґР° РґРѕР±Р°РІР»СЏРµРј РЅРѕРІСѓСЋ РёРµСЂР°СЂС…РёСЋ
 	if (!pTVItemChilds)
 	{
 		pTVItemChilds = xr_new<CUITreeViewItem>();
@@ -551,15 +551,15 @@ void CreateTreeBranch(shared_str nesting, shared_str leafName, CUIListWnd *pList
 		pTVItemChilds->SetRoot(true);
 		pListToAdd->AddItem<CUITreeViewItem>(pTVItemChilds);
 
-		// Если в списке вложенности 1 элемент, то хвоста нет, и соответственно ничего не добавляем
+		// Р•СЃР»Рё РІ СЃРїРёСЃРєРµ РІР»РѕР¶РµРЅРЅРѕСЃС‚Рё 1 СЌР»РµРјРµРЅС‚, С‚Рѕ С…РІРѕСЃС‚Р° РЅРµС‚, Рё СЃРѕРѕС‚РІРµС‚СЃС‚РІРµРЅРЅРѕ РЅРёС‡РµРіРѕ РЅРµ РґРѕР±Р°РІР»СЏРµРј
 		if (groupTree.size() > 1)
 			pTVItemChilds = AddTreeTail(groupTree.begin() + 1, groupTree, pTVItemChilds);
 	}
 
-	// К этому моменту pTVItemChilds обязательно должна быть не NULL
+	// Рљ СЌС‚РѕРјСѓ РјРѕРјРµРЅС‚Сѓ pTVItemChilds РѕР±СЏР·Р°С‚РµР»СЊРЅРѕ РґРѕР»Р¶РЅР° Р±С‹С‚СЊ РЅРµ NULL
 	R_ASSERT(pTVItemChilds);
 
-	// Cначала проверяем нет ли записи с таким названием, и добавляем если нет
+	// CРЅР°С‡Р°Р»Р° РїСЂРѕРІРµСЂСЏРµРј РЅРµС‚ Р»Рё Р·Р°РїРёСЃРё СЃ С‚Р°РєРёРј РЅР°Р·РІР°РЅРёРµРј, Рё РґРѕР±Р°РІР»СЏРµРј РµСЃР»Рё РЅРµС‚
 	//	if (!pTVItemChilds->Find(*name))
 	//	{
 	pTVItem		= xr_new<CUITreeViewItem>();

@@ -8,7 +8,7 @@
 #pragma warning( 4 : 4244 )
 #pragma warning(disable:4505)
 
-#include "..\xr_3da\ai_script_space.h" //KRodin: ïóñòü ëóà äëÿ ðåíäåðà è ñêðèïòîâ èíèòèòñÿ â îäíîì ìåñòå.
+#include "..\xr_3da\ai_script_space.h" //KRodin: Ð¿ÑƒÑÑ‚ÑŒ Ð»ÑƒÐ° Ð´Ð»Ñ Ñ€ÐµÐ½Ð´ÐµÑ€Ð° Ð¸ ÑÐºÑ€Ð¸Ð¿Ñ‚Ð¾Ð² Ð¸Ð½Ð¸Ñ‚Ð¸Ñ‚ÑÑ Ð² Ð¾Ð´Ð½Ð¾Ð¼ Ð¼ÐµÑÑ‚Ðµ.
 
 // this include MUST be here, since smart_cast is used >1800 times in the project
 #include <smart_cast.h>

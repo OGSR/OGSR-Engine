@@ -94,7 +94,7 @@ IPureClient::IPureClient(CTimer* timer)
 	device_timer			= timer;
 	net_TimeDelta_User		= 0;
 	net_TimeDelta			= 0;
-	net_Syncronised = FALSE; //Добавил инициализацию сюда, тк она хз где была.
+	net_Syncronised = FALSE; //Р”РѕР±Р°РІРёР» РёРЅРёС†РёР°Р»РёР·Р°С†РёСЋ СЃСЋРґР°, С‚Рє РѕРЅР° С…Р· РіРґРµ Р±С‹Р»Р°.
 }
 
 IPureClient::~IPureClient	()
@@ -108,13 +108,13 @@ BOOL IPureClient::Connect	(LPCSTR)
 	return			TRUE;
 }
 
-void IPureClient::Disconnect() //Вызывается при выходе из игры и переходе на другой уровень.
+void IPureClient::Disconnect() //Р’С‹Р·С‹РІР°РµС‚СЃСЏ РїСЂРё РІС‹С…РѕРґРµ РёР· РёРіСЂС‹ Рё РїРµСЂРµС…РѕРґРµ РЅР° РґСЂСѓРіРѕР№ СѓСЂРѕРІРµРЅСЊ.
 {
 	net_Connected = EnmConnectionWait;
 	net_Syncronised = FALSE;
 }
 
-void	IPureClient::OnMessage(void* data, u32 size) //Сюда приходят сообщения из IPureServer::SendTo и IPureServer::SendBroadcast_LL
+void	IPureClient::OnMessage(void* data, u32 size) //РЎСЋРґР° РїСЂРёС…РѕРґСЏС‚ СЃРѕРѕР±С‰РµРЅРёСЏ РёР· IPureServer::SendTo Рё IPureServer::SendBroadcast_LL
 {
 	///Msg("~~[%s] data: [%p], size: [%u]", __FUNCTION__, data, size);
 

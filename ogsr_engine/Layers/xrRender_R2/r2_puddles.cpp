@@ -6,7 +6,7 @@ void SPuddle::make_xform()
 {
 	Fvector scale = {0,0,0};
 	float scale_coeff = radius*0.02f;
-	xform.scale(scale_coeff, scale_coeff, scale_coeff);		// константа - обратный радиус модели (14:05:2014 радиус равен 50)
+	xform.scale(scale_coeff, scale_coeff, scale_coeff);		// РєРѕРЅСЃС‚Р°РЅС‚Р° - РѕР±СЂР°С‚РЅС‹Р№ СЂР°РґРёСѓСЃ РјРѕРґРµР»Рё (14:05:2014 СЂР°РґРёСѓСЃ СЂР°РІРµРЅ 50)
 	xform.translate_over(P);
 }
 
@@ -36,7 +36,7 @@ void	CPuddles::Load()
 		}
 		m_bLoaded = true;
 	}
-	// можно было экспортировать из рендера CModelPool->Instance_Load, да ну нафиг возиться
+	// РјРѕР¶РЅРѕ Р±С‹Р»Рѕ СЌРєСЃРїРѕСЂС‚РёСЂРѕРІР°С‚СЊ РёР· СЂРµРЅРґРµСЂР° CModelPool->Instance_Load, РґР° РЅСѓ РЅР°С„РёРі РІРѕР·РёС‚СЊСЃСЏ
 	string_path		fn;
 	if (!FS.exist(fn, "$game_meshes$", "ogse_puddles.ogf"))
 		Debug.fatal(DEBUG_INFO,"Can't find model ogse_puddles.ogf");
@@ -46,7 +46,7 @@ void	CPuddles::Load()
 	data->r_chunk_safe	(OGF_HEADER,&H,sizeof(H));
 	R_ASSERT2(H.type == MT_NORMAL, "ogse_puddles.ogf must have MT_NORMAL type");
 
-	{	// загрузим меш из модели
+	{	// Р·Р°РіСЂСѓР·РёРј РјРµС€ РёР· РјРѕРґРµР»Рё
 
 		D3DVERTEXELEMENT9	dcl		[MAX_FVF_DECL_SIZE];
 		D3DVERTEXELEMENT9*	vFormat	= 0;

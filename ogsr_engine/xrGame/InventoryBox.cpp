@@ -27,7 +27,7 @@ void IInventoryBox::ProcessEvent(CGameObject *O, NET_Packet& P, u16 type)
 			itm->setVisible		(FALSE);
 			itm->setEnabled		(FALSE);
 
-			// Real Wolf: Коллбек для ящика на получение предмета. 02.08.2014.		
+			// Real Wolf: РљРѕР»Р»Р±РµРє РґР»СЏ СЏС‰РёРєР° РЅР° РїРѕР»СѓС‡РµРЅРёРµ РїСЂРµРґРјРµС‚Р°. 02.08.2014.		
 			if (auto obj = smart_cast<CGameObject*>(itm)) 
 			{
 				O->callback(GameObject::eOnInvBoxItemTake)(obj->lua_game_object());
@@ -84,7 +84,7 @@ CScriptGameObject* IInventoryBox::GetObjectByName(LPCSTR name)
 	{
 		CObject *self = this->object().dcast_CObject();
 		if (result->H_Parent() != self)
-			 return NULL; // объект существует, но не принадлежит сему контейнеру
+			 return NULL; // РѕР±СЉРµРєС‚ СЃСѓС‰РµСЃС‚РІСѓРµС‚, РЅРѕ РЅРµ РїСЂРёРЅР°РґР»РµР¶РёС‚ СЃРµРјСѓ РєРѕРЅС‚РµР№РЅРµСЂСѓ
 	} 
 	else
 	{		
@@ -92,7 +92,7 @@ CScriptGameObject* IInventoryBox::GetObjectByName(LPCSTR name)
 			if (auto obj = objects.net_Find(*it))
 			{
 				if (obj->cName() == s_name)		return smart_cast<CGameObject*>(obj)->lua_game_object();
-				if (obj->cNameSect() == s_name) result = obj; // поиск по секции в качестве резерва
+				if (obj->cNameSect() == s_name) result = obj; // РїРѕРёСЃРє РїРѕ СЃРµРєС†РёРё РІ РєР°С‡РµСЃС‚РІРµ СЂРµР·РµСЂРІР°
 			}
 
 	}

@@ -71,7 +71,7 @@ CCar::CCar()
 	m_exhaust_particles	="vehiclefx\\exhaust_1";
 	m_car_sound			=xr_new<SCarSound>	(this);
 
-	//у машины слотов в инвентаре нет
+	//Сѓ РјР°С€РёРЅС‹ СЃР»РѕС‚РѕРІ РІ РёРЅРІРµРЅС‚Р°СЂРµ РЅРµС‚
 	inventory			= xr_new<CInventory>();
 	inventory->SetSlotsUseful(false);
 	m_doors_torque_factor = 2.f;
@@ -642,7 +642,7 @@ bool CCar::attach_Actor(CGameObject* actor)
 		id=K->LL_BoneID(ini->r_string("car_definition","driver_place"));
 	else
 	{
-#pragma todo( "KRodin: Этот код выдаст ошибку, т.к. в начале функции если есть Owner() происходит выход из функции. Что здесь предполагалось делать?" )
+#pragma todo( "KRodin: Р­С‚РѕС‚ РєРѕРґ РІС‹РґР°СЃС‚ РѕС€РёР±РєСѓ, С‚.Рє. РІ РЅР°С‡Р°Р»Рµ С„СѓРЅРєС†РёРё РµСЃР»Рё РµСЃС‚СЊ Owner() РїСЂРѕРёСЃС…РѕРґРёС‚ РІС‹С…РѕРґ РёР· С„СѓРЅРєС†РёРё. Р§С‚Рѕ Р·РґРµСЃСЊ РїСЂРµРґРїРѕР»Р°РіР°Р»РѕСЃСЊ РґРµР»Р°С‚СЊ?" )
 		Owner()->setVisible(0);
 		id=K->LL_GetBoneRoot();
 	}
@@ -1685,7 +1685,7 @@ void CCar::OnEvent(NET_Packet& P, u16 type)
 	inherited::OnEvent		(P,type);
 	CExplosive::OnEvent		(P,type);
 
-	//обработка сообщений, нужных для работы с багажником машины
+	//РѕР±СЂР°Р±РѕС‚РєР° СЃРѕРѕР±С‰РµРЅРёР№, РЅСѓР¶РЅС‹С… РґР»СЏ СЂР°Р±РѕС‚С‹ СЃ Р±Р°РіР°Р¶РЅРёРєРѕРј РјР°С€РёРЅС‹
 	u16 id;
 	switch (type)
 	{

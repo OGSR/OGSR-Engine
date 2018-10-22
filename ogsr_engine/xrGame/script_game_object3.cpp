@@ -410,7 +410,7 @@ MonsterSpace::EBodyState CScriptGameObject::body_state					() const
 {
 	CAI_Stalker		*stalker = smart_cast<CAI_Stalker*>(&object());
 	if (!stalker) {
-		// KD: для боевки
+		// KD: РґР»СЏ Р±РѕРµРІРєРё
 		CActor *actor = smart_cast<CActor*>(&object());
 		if (!actor)
 		{

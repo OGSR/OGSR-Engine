@@ -29,7 +29,7 @@ class	game_cl_GameState	: public game_GameState, public ISheduled
 {
 	typedef game_GameState	inherited;
 	shared_str							m_game_type_name;
-//	bool								m_bCrosshair;	//был ли показан прицел-курсор HUD перед вызовом меню
+//	bool								m_bCrosshair;	//Р±С‹Р» Р»Рё РїРѕРєР°Р·Р°РЅ РїСЂРёС†РµР»-РєСѓСЂСЃРѕСЂ HUD РїРµСЂРµРґ РІС‹Р·РѕРІРѕРј РјРµРЅСЋ
 protected:
 	u16									m_u16VotingEnabled;	
 	bool								m_bServerControlHits;	

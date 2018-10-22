@@ -195,7 +195,7 @@ void CObjectScript::script_register		(lua_State *L)
 			.def("getEnabled",			&CGameObject::getEnabled)
 //			.def("setEnabled",			&CGameObject::setEnabled)
 			,
-			class_<CGlobalFlags>("global_flags")  // для оптимальности доступа, предполагается в скриптах скопировать элементы этого "класса" в пространство имен _G 
+			class_<CGlobalFlags>("global_flags")  // РґР»СЏ РѕРїС‚РёРјР°Р»СЊРЅРѕСЃС‚Рё РґРѕСЃС‚СѓРїР°, РїСЂРµРґРїРѕР»Р°РіР°РµС‚СЃСЏ РІ СЃРєСЂРёРїС‚Р°С… СЃРєРѕРїРёСЂРѕРІР°С‚СЊ СЌР»РµРјРµРЅС‚С‹ СЌС‚РѕРіРѕ "РєР»Р°СЃСЃР°" РІ РїСЂРѕСЃС‚СЂР°РЅСЃС‚РІРѕ РёРјРµРЅ _G 
 			.enum_("inventory_item")
 			[
 				value("FdropManual"				,				int(CInventoryItem::EIIFlags::FdropManual)),
@@ -291,11 +291,11 @@ CTexture* visual_get_texture(IRender_Visual *child_v, int n_texture)
 
 	n_texture = (n_texture > max_tex_number) ? max_tex_number : n_texture;
 
-	// визуал выстраивается иерархически - есть потомки и предки
+	// РІРёР·СѓР°Р» РІС‹СЃС‚СЂР°РёРІР°РµС‚СЃСЏ РёРµСЂР°СЂС…РёС‡РµСЃРєРё - РµСЃС‚СЊ РїРѕС‚РѕРјРєРё Рё РїСЂРµРґРєРё
 
 	Shader* s = child_v->shader._get();
 
-	if (s && s->E[0]._get()) // обычно в первом элементе находится исчерпывающий список текстур 
+	if (s && s->E[0]._get()) // РѕР±С‹С‡РЅРѕ РІ РїРµСЂРІРѕРј СЌР»РµРјРµРЅС‚Рµ РЅР°С…РѕРґРёС‚СЃСЏ РёСЃС‡РµСЂРїС‹РІР°СЋС‰РёР№ СЃРїРёСЃРѕРє С‚РµРєСЃС‚СѓСЂ 
 	{
 		ShaderElement* E = s->E[0]._get();
 

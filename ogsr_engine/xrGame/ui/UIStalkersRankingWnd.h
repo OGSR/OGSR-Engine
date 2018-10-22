@@ -23,7 +23,7 @@ protected:
 	CUIFrameLineWnd*		UIInfoHeader;
 	CUIFrameLineWnd*		UICharIconHeader;
 	CUIAnimatedStatic*		UIAnimatedIcon;
-	// информация о персонаже
+	// РёРЅС„РѕСЂРјР°С†РёСЏ Рѕ РїРµСЂСЃРѕРЅР°Р¶Рµ
 	CUIWindow*				UICharacterWindow;
 	CUICharacterInfo*		UICharacterInfo;
 	void					FillList			();

@@ -68,7 +68,7 @@ void CScriptBinder::reload			(LPCSTR section)
 	}
 	
 	auto game_object = smart_cast<CGameObject*>(this);
-	if (!game_object) //Объекта нет - значит тут делать нечего.
+	if (!game_object) //РћР±СЉРµРєС‚Р° РЅРµС‚ - Р·РЅР°С‡РёС‚ С‚СѓС‚ РґРµР»Р°С‚СЊ РЅРµС‡РµРіРѕ.
 	{
 		Msg("!![[CScriptBinder::reload] failed cast to CGameObject!");
 		return;

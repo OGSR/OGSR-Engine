@@ -1,4 +1,4 @@
-// Реализация окна с закладками.
+// Р РµР°Р»РёР·Р°С†РёСЏ РѕРєРЅР° СЃ Р·Р°РєР»Р°РґРєР°РјРё.
 
 #include "StdAfx.h"
 #include "UITabControl.h"
@@ -40,7 +40,7 @@ bool CUITabControl::IsChanged(){
 	return GetActiveIndex() != ival;
 }
 
-// добавление кнопки-закладки в список закладок контрола
+// РґРѕР±Р°РІР»РµРЅРёРµ РєРЅРѕРїРєРё-Р·Р°РєР»Р°РґРєРё РІ СЃРїРёСЃРѕРє Р·Р°РєР»Р°РґРѕРє РєРѕРЅС‚СЂРѕР»Р°
 bool CUITabControl::AddItem(const char *pItemName, const char *pTexName, float x, float y, float width, float height)
 {
 	CUITabButton *pNewButton = xr_new<CUITabButton>();
@@ -60,7 +60,7 @@ bool CUITabControl::AddItem(CUITabButton *pButton)
 	pButton->Enable				(true);
 	pButton->SetButtonAsSwitch	(true);
 
-	// Нажимаем кнопку по умолчанию
+	// РќР°Р¶РёРјР°РµРј РєРЅРѕРїРєСѓ РїРѕ СѓРјРѕР»С‡Р°РЅРёСЋ
 	if (m_iPushedIndex == static_cast<int>(m_TabsArr.size() - 1))
         m_TabsArr[m_iPushedIndex]->SendMessage(m_TabsArr[m_iPushedIndex], TAB_CHANGED, NULL);
 
@@ -69,14 +69,14 @@ bool CUITabControl::AddItem(CUITabButton *pButton)
 	return						true;
 }
 
-// Удаление элемента по индексу. Индексы начинаются с Index
+// РЈРґР°Р»РµРЅРёРµ СЌР»РµРјРµРЅС‚Р° РїРѕ РёРЅРґРµРєСЃСѓ. РРЅРґРµРєСЃС‹ РЅР°С‡РёРЅР°СЋС‚СЃСЏ СЃ Index
 void CUITabControl::RemoveItem(u32 Index)
 {
 	R_ASSERT					(m_TabsArr.size() > Index);
 	DetachChild					(m_TabsArr[Index]);
 
-	// Меняем значение заданного элемента, и последнего элемента.
-	// Так как у нас хранятся указатели операция будет проходить быстро.
+	// РњРµРЅСЏРµРј Р·РЅР°С‡РµРЅРёРµ Р·Р°РґР°РЅРЅРѕРіРѕ СЌР»РµРјРµРЅС‚Р°, Рё РїРѕСЃР»РµРґРЅРµРіРѕ СЌР»РµРјРµРЅС‚Р°.
+	// РўР°Рє РєР°Рє Сѓ РЅР°СЃ С…СЂР°РЅСЏС‚СЃСЏ СѓРєР°Р·Р°С‚РµР»Рё РѕРїРµСЂР°С†РёСЏ Р±СѓРґРµС‚ РїСЂРѕС…РѕРґРёС‚СЊ Р±С‹СЃС‚СЂРѕ.
 	TABS_VECTOR::value_type tmp = m_TabsArr[Index];
 	m_TabsArr[Index] = m_TabsArr.back();
 	m_TabsArr.back() = tmp;
@@ -85,7 +85,7 @@ void CUITabControl::RemoveItem(u32 Index)
 	m_TabsArr.pop_back();
 }
 
-// Удаление всех элементов
+// РЈРґР°Р»РµРЅРёРµ РІСЃРµС… СЌР»РµРјРµРЅС‚РѕРІ
 void CUITabControl::RemoveAll()
 {
 	TABS_VECTOR_it it = m_TabsArr.begin();
@@ -96,7 +96,7 @@ void CUITabControl::RemoveAll()
 	m_TabsArr.clear();
 }
 
-// переключение закладок.
+// РїРµСЂРµРєР»СЋС‡РµРЅРёРµ Р·Р°РєР»Р°РґРѕРє.
 void CUITabControl::SendMessage(CUIWindow *pWnd, s16 msg, void *pData)
 {
 	if (TAB_CHANGED == msg)

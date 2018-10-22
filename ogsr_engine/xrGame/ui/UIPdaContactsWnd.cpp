@@ -126,7 +126,7 @@ void CUIPdaContactsWnd::RemoveContact(CPda* pda)
 	}
 }
 
-//óäàëèòü âñå êîíòàêòû èç ñïèñêà
+//ÑƒÐ´Ð°Ð»Ð¸Ñ‚ÑŒ Ð²ÑÐµ ÐºÐ¾Ð½Ñ‚Ð°ÐºÑ‚Ñ‹ Ð¸Ð· ÑÐ¿Ð¸ÑÐºÐ°
 void CUIPdaContactsWnd::RemoveAll()
 {
 	UIListWnd->Clear		();

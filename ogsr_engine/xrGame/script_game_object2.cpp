@@ -52,7 +52,7 @@ void CScriptGameObject::explode	(u32 level_time)
 	else {
 		Fvector normal;
 		explosive->FindNormal(normal);
-		explosive->SetInitiator(explosive->Initiator()); // óñòàíàâëèâàåì èíèöèàòîð òîëüêî åñëè îí íåèçâåñòåí.
+		explosive->SetInitiator(explosive->Initiator()); // ÑƒÑÑ‚Ð°Ð½Ð°Ð²Ð»Ð¸Ð²Ð°ÐµÐ¼ Ð¸Ð½Ð¸Ñ†Ð¸Ð°Ñ‚Ð¾Ñ€ Ñ‚Ð¾Ð»ÑŒÐºÐ¾ ÐµÑÐ»Ð¸ Ð¾Ð½ Ð½ÐµÐ¸Ð·Ð²ÐµÑÑ‚ÐµÐ½.
 		explosive->GenExplodeEvent(object().Position(), normal);
 	}
 }

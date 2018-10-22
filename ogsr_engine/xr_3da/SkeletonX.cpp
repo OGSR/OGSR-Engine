@@ -480,7 +480,7 @@ void CSkeletonX::_Load	(const char* N, IReader *data, u32& dwVertCount)
 		BonesUsed.create	(crc,bids.size(),&*bids.begin());
 	}
 }
-BOOL CSkeletonX::has_visible_bones		() //KRodin: надо б раскомментировать отладочный вывод, псомотреть...
+BOOL CSkeletonX::has_visible_bones		() //KRodin: РЅР°РґРѕ Р± СЂР°СЃРєРѕРјРјРµРЅС‚РёСЂРѕРІР°С‚СЊ РѕС‚Р»Р°РґРѕС‡РЅС‹Р№ РІС‹РІРѕРґ, РїСЃРѕРјРѕС‚СЂРµС‚СЊ...
 {
 	//IRender_Visual*	me	= dynamic_cast<IRender_Visual*>	(this);
 	//Msg	("~ has_visible_bones: mode[%d] - count[%d], name=%s",RenderMode,BonesUsed.size(),me->dbg_name.c_str());	//.

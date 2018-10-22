@@ -79,7 +79,7 @@ void CMissile::Load(LPCSTR section)
 	m_vHudThrowPoint	= pSettings->r_fvector3(*hud_sect,"throw_point");
 	m_vHudThrowDir		= pSettings->r_fvector3(*hud_sect,"throw_dir");
 
-	//загрузить анимации HUD-а
+	//Р·Р°РіСЂСѓР·РёС‚СЊ Р°РЅРёРјР°С†РёРё HUD-Р°
 	animGetEx( mhud_AnimShow,       "anim_show" );
 	animGetEx( mhud_AnimHide,       "anim_hide" );
 	animGetEx( mhud_AnimIdle,       "anim_idle" );

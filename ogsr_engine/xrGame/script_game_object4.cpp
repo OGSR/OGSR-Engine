@@ -1,5 +1,5 @@
 ////////////////////////////////////////////////////////////////////////////
-// script_game_object_trader.ñpp :	ôóíêöèè äëÿ òîðãîâëè è òîðãîâöåâ
+// script_game_object_trader.Ñpp :	Ñ„ÑƒÐ½ÐºÑ†Ð¸Ð¸ Ð´Ð»Ñ Ñ‚Ð¾Ñ€Ð³Ð¾Ð²Ð»Ð¸ Ð¸ Ñ‚Ð¾Ñ€Ð³Ð¾Ð²Ñ†ÐµÐ²
 //////////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
@@ -313,7 +313,7 @@ void CScriptGameObject::UpdateCondition()
 		ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "CEntityAlive : cannot access class member UpdateCondition!");
 		return;
 	}
-        // â CEntityAlive::shedule_Update() âûçîâû èäóò èìåííî â ýòîì ïîðÿäêå
+        // Ð² CEntityAlive::shedule_Update() Ð²Ñ‹Ð·Ð¾Ð²Ñ‹ Ð¸Ð´ÑƒÑ‚ Ð¸Ð¼ÐµÐ½Ð½Ð¾ Ð² ÑÑ‚Ð¾Ð¼ Ð¿Ð¾Ñ€ÑÐ´ÐºÐµ
 	e->conditions().UpdateConditionTime();
 	e->conditions().UpdateCondition();
 	e->conditions().UpdateWounds();

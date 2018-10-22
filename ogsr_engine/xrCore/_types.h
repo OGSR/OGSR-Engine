@@ -33,7 +33,7 @@ constexpr auto type_zero = std::numeric_limits<T>::min();
 template <typename T>
 constexpr auto type_epsilon = std::numeric_limits<T>::epsilon();
 
-// TODO: Избавиться от них
+// TODO: РР·Р±Р°РІРёС‚СЊСЃСЏ РѕС‚ РЅРёС…
 #define type_max(T) type_max<T>
 #define type_min(T) type_min<T>
 #define type_zero(T) type_zero<T>

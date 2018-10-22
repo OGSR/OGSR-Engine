@@ -16,10 +16,10 @@
 #include "ui/UIDialogWnd.h"
 #include "ui/UIInventoryWnd.h"
 
-/* Декларация о стиле экспорта свойств и методов:
-     * Свойства объектов экспортируются по возможности так, как они выглядят в файлах конфигурации (*.ltx), а не так как они названы в исходниках движка
-	 * Методы объектов экспортируются согласно стилю экспорта для game_object, т.е без использования прописных букв. 
-	    Это позволяет сохранить единый стиль программирования в скриптах и отделить новые методы от исконно движковых версии 1.0006.
+/* Р”РµРєР»Р°СЂР°С†РёСЏ Рѕ СЃС‚РёР»Рµ СЌРєСЃРїРѕСЂС‚Р° СЃРІРѕР№СЃС‚РІ Рё РјРµС‚РѕРґРѕРІ:
+     * РЎРІРѕР№СЃС‚РІР° РѕР±СЉРµРєС‚РѕРІ СЌРєСЃРїРѕСЂС‚РёСЂСѓСЋС‚СЃСЏ РїРѕ РІРѕР·РјРѕР¶РЅРѕСЃС‚Рё С‚Р°Рє, РєР°Рє РѕРЅРё РІС‹РіР»СЏРґСЏС‚ РІ С„Р°Р№Р»Р°С… РєРѕРЅС„РёРіСѓСЂР°С†РёРё (*.ltx), Р° РЅРµ С‚Р°Рє РєР°Рє РѕРЅРё РЅР°Р·РІР°РЅС‹ РІ РёСЃС…РѕРґРЅРёРєР°С… РґРІРёР¶РєР°
+	 * РњРµС‚РѕРґС‹ РѕР±СЉРµРєС‚РѕРІ СЌРєСЃРїРѕСЂС‚РёСЂСѓСЋС‚СЃСЏ СЃРѕРіР»Р°СЃРЅРѕ СЃС‚РёР»СЋ СЌРєСЃРїРѕСЂС‚Р° РґР»СЏ game_object, С‚.Рµ Р±РµР· РёСЃРїРѕР»СЊР·РѕРІР°РЅРёСЏ РїСЂРѕРїРёСЃРЅС‹С… Р±СѓРєРІ. 
+	    Р­С‚Рѕ РїРѕР·РІРѕР»СЏРµС‚ СЃРѕС…СЂР°РЅРёС‚СЊ РµРґРёРЅС‹Р№ СЃС‚РёР»СЊ РїСЂРѕРіСЂР°РјРјРёСЂРѕРІР°РЅРёСЏ РІ СЃРєСЂРёРїС‚Р°С… Рё РѕС‚РґРµР»РёС‚СЊ РЅРѕРІС‹Рµ РјРµС‚РѕРґС‹ РѕС‚ РёСЃРєРѕРЅРЅРѕ РґРІРёР¶РєРѕРІС‹С… РІРµСЂСЃРёРё 1.0006.
    Alexander Petrov
 */
 
@@ -90,7 +90,7 @@ void CEntityScript::script_register(lua_State *L)
 			class_<CEntity, CGameObject>("CEntity")
 			,
 			class_<CEntityAlive, CEntity>("CEntityAlive")
-			.property("radiation"						,			&CEntityAlive::g_Radiation, &alive_entity_set_radiation) // доза в %
+			.property("radiation"						,			&CEntityAlive::g_Radiation, &alive_entity_set_radiation) // РґРѕР·Р° РІ %
 			.property("condition"						,           &CEntityAlive::conditions)
 		];
 }
@@ -217,7 +217,7 @@ void get_slots(luabind::object O)
 
 }
 
-void fake_set_slots(CInventoryItem *I, luabind::object T) { } // модифицировать слоты можно, если GetSlots не будет возвращать константу
+void fake_set_slots(CInventoryItem *I, luabind::object T) { } // РјРѕРґРёС„РёС†РёСЂРѕРІР°С‚СЊ СЃР»РѕС‚С‹ РјРѕР¶РЅРѕ, РµСЃР»Рё GetSlots РЅРµ Р±СѓРґРµС‚ РІРѕР·РІСЂР°С‰Р°С‚СЊ РєРѕРЅСЃС‚Р°РЅС‚Сѓ
 
 void CInventoryScript::script_register(lua_State *L)
 {
@@ -445,11 +445,11 @@ void CWeaponScript::script_register(lua_State *L)
 			,
 
 			class_<CWeapon,	CInventoryItemObject>		("CWeapon")
-			// из неэкспортируемого класса CHudItemObject:
+			// РёР· РЅРµСЌРєСЃРїРѕСЂС‚РёСЂСѓРµРјРѕРіРѕ РєР»Р°СЃСЃР° CHudItemObject:
 			.property("state", &CHudItemObject::GetState)
 			.property("next_state", &CHudItemObject::GetNextState)
 			// ============================================================================= //
-			// параметры отдачи влияющие на камеру
+			// РїР°СЂР°РјРµС‚СЂС‹ РѕС‚РґР°С‡Рё РІР»РёСЏСЋС‰РёРµ РЅР° РєР°РјРµСЂСѓ
 			.def_readwrite("cam_max_angle"				,			&CWeapon::camMaxAngle)
 			.def_readwrite("cam_relax_speed"			,			&CWeapon::camRelaxSpeed)
 			.def_readwrite("cam_relax_speed_ai"			,			&CWeapon::camRelaxSpeed_AI)
@@ -490,7 +490,7 @@ void CWeaponScript::script_register(lua_State *L)
 			.def_readwrite("iron_sight_zoom_factor"		,			&CWeapon::m_fIronSightZoomFactor)
 			.def_readwrite("scope_zoom_factor"			,			&CWeapon::m_fScopeZoomFactor)
 			.def_readwrite("zoom_rotation_factor"			,			&CWeapon::m_fZoomRotationFactor)
-			// переменные для подстройки положения аддонов из скриптов:
+			// РїРµСЂРµРјРµРЅРЅС‹Рµ РґР»СЏ РїРѕРґСЃС‚СЂРѕР№РєРё РїРѕР»РѕР¶РµРЅРёСЏ Р°РґРґРѕРЅРѕРІ РёР· СЃРєСЂРёРїС‚РѕРІ:
 			
 			.def_readwrite("grenade_launcher_x"			,			&CWeapon::m_iGrenadeLauncherX)
 			.def_readwrite("grenade_launcher_y"			,			&CWeapon::m_iGrenadeLauncherY)
@@ -515,12 +515,12 @@ void CWeaponScript::script_register(lua_State *L)
 			.def_readwrite("scope_inertion_factor"		,			&CWeapon::m_fScopeInertionFactor)
 
 			.property("ammo_elapsed"					,			&CWeapon::GetAmmoElapsed, &CWeapon::SetAmmoElapsed)
-			.property("const_deviation"					,			&CWeaponScript::FireDeviation)	// отклонение при стрельбе от целика (для непристрелляного оружия).
+			.property("const_deviation"					,			&CWeaponScript::FireDeviation)	// РѕС‚РєР»РѕРЅРµРЅРёРµ РїСЂРё СЃС‚СЂРµР»СЊР±Рµ РѕС‚ С†РµР»РёРєР° (РґР»СЏ РЅРµРїСЂРёСЃС‚СЂРµР»Р»СЏРЅРѕРіРѕ РѕСЂСѓР¶РёСЏ).
 			.def("get_ammo_current"						,			&CWeapon::GetAmmoCurrent)
 			//.def("load_config"						,			&CWeapon::Load)
 			.def("start_fire"							,			&CWeapon::FireStart)
 			.def("stop_fire"							,			&CWeapon::FireEnd)
-			.def("start_fire2"							,			&CWeapon::Fire2Start)			// огонь ножом - правой кнопкой? )
+			.def("start_fire2"							,			&CWeapon::Fire2Start)			// РѕРіРѕРЅСЊ РЅРѕР¶РѕРј - РїСЂР°РІРѕР№ РєРЅРѕРїРєРѕР№? )
 			.def("stop_fire2"							,			&CWeapon::Fire2End)
 			.def("stop_shoothing"						,			&CWeapon::StopShooting)
 			.def("get_particles_xform"					,			&CWeapon::get_ParticlesXFORM)

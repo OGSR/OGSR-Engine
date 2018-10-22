@@ -61,7 +61,7 @@ CBaseMonster::CBaseMonster()
 	EnemyMan.init_external			(this);
 	CorpseMan.init_external			(this);
 
-	// Инициализация параметров анимации	
+	// РРЅРёС†РёР°Р»РёР·Р°С†РёСЏ РїР°СЂР°РјРµС‚СЂРѕРІ Р°РЅРёРјР°С†РёРё	
 
 	StateMan						= 0;
 
@@ -367,13 +367,13 @@ void CBaseMonster::on_kill_enemy(const CEntity *obj)
 {
 	const CEntityAlive *entity	= smart_cast<const CEntityAlive *>(obj);
 	
-	// добавить в список трупов	
+	// РґРѕР±Р°РІРёС‚СЊ РІ СЃРїРёСЃРѕРє С‚СЂСѓРїРѕРІ	
 	CorpseMemory.add_corpse		(entity);
 	
-	// удалить всю информацию о хитах
+	// СѓРґР°Р»РёС‚СЊ РІСЃСЋ РёРЅС„РѕСЂРјР°С†РёСЋ Рѕ С…РёС‚Р°С…
 	HitMemory.remove_hit_info	(entity);
 
-	// удалить всю информацию о звуках
+	// СѓРґР°Р»РёС‚СЊ РІСЃСЋ РёРЅС„РѕСЂРјР°С†РёСЋ Рѕ Р·РІСѓРєР°С…
 	SoundMemory.clear			();
 }
 
@@ -445,7 +445,7 @@ CParticlesObject* CBaseMonster::PlayParticles(const shared_str& name, const Fvec
 {
 	CParticlesObject* ps = CParticlesObject::Create(name.c_str(),auto_remove);
 	
-	// вычислить позицию и направленность партикла
+	// РІС‹С‡РёСЃР»РёС‚СЊ РїРѕР·РёС†РёСЋ Рё РЅР°РїСЂР°РІР»РµРЅРЅРѕСЃС‚СЊ РїР°СЂС‚РёРєР»Р°
 	Fmatrix	matrix; 
 
 	matrix.identity			();

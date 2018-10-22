@@ -1,5 +1,5 @@
 ////////////////////////////////////////////////////////////////////////////
-// script_game_object_inventory_owner.сpp :	функции для inventory owner
+// script_game_object_inventory_owner.СЃpp :	С„СѓРЅРєС†РёРё РґР»СЏ inventory owner
 //////////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
@@ -277,7 +277,7 @@ void CScriptGameObject::DropItem			(CScriptGameObject* pItem)
 	CInventoryOwner* owner = smart_cast<CInventoryOwner*>(&object());
 	CInventoryItem* item = smart_cast<CInventoryItem*>(&pItem->object());
 
-	// Real Wolf: Для ящиков тоже пусть работает. 02.08.2014.
+	// Real Wolf: Р”Р»СЏ СЏС‰РёРєРѕРІ С‚РѕР¶Рµ РїСѓСЃС‚СЊ СЂР°Р±РѕС‚Р°РµС‚. 02.08.2014.
 	auto box = smart_cast<IInventoryBox*>(&object());
 	if( (!box && !owner) || !item){
 		ai().script_engine().script_log		(ScriptStorage::eLuaMessageTypeError,"CScriptGameObject::DropItem non-CInventoryOwner object !!!");
@@ -300,7 +300,7 @@ void CScriptGameObject::DropItemAndTeleport	(CScriptGameObject* pItem, Fvector p
 	CGameObject::u_EventSend		(PP);
 }
 
-//передаче вещи из своего инвентаря в инвентарь партнера
+//РїРµСЂРµРґР°С‡Рµ РІРµС‰Рё РёР· СЃРІРѕРµРіРѕ РёРЅРІРµРЅС‚Р°СЂСЏ РІ РёРЅРІРµРЅС‚Р°СЂСЊ РїР°СЂС‚РЅРµСЂР°
 void CScriptGameObject::TransferItem(CScriptGameObject* pItem, CScriptGameObject* pForWho)
 {
 	if (!pItem || !pForWho) {
@@ -315,13 +315,13 @@ void CScriptGameObject::TransferItem(CScriptGameObject* pItem, CScriptGameObject
 		return ;
 	}
 
-	// выбросить у себя 
+	// РІС‹Р±СЂРѕСЃРёС‚СЊ Сѓ СЃРµР±СЏ 
 	NET_Packet						P;
 	CGameObject::u_EventGen			(P,GE_OWNERSHIP_REJECT, object().ID());
 	P.w_u16							(pIItem->object().ID());
 	CGameObject::u_EventSend		(P);
 
-	// отдать партнеру
+	// РѕС‚РґР°С‚СЊ РїР°СЂС‚РЅРµСЂСѓ
 	CGameObject::u_EventGen			(P,GE_OWNERSHIP_TAKE, pForWho->object().ID());
 	P.w_u16							(pIItem->object().ID());
 	CGameObject::u_EventSend		(P);
@@ -581,7 +581,7 @@ void  CScriptGameObject::SwitchToTrade		()
 {
 	CActor* pActor = smart_cast<CActor*>(&object());	if(!pActor) return;
 
-	//только если находимся в режиме single
+	//С‚РѕР»СЊРєРѕ РµСЃР»Рё РЅР°С…РѕРґРёРјСЃСЏ РІ СЂРµР¶РёРјРµ single
 	CUIGameSP* pGameSP = smart_cast<CUIGameSP*>(HUD().GetUI()->UIGame());
 	if(!pGameSP) return;
 
@@ -884,7 +884,7 @@ bool CScriptGameObject::movement_enabled()
 
 /************************************************** added by Ray Twitty (aka Shadows) START **************************************************/
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
-// получить и задать максимальный вес
+// РїРѕР»СѓС‡РёС‚СЊ Рё Р·Р°РґР°С‚СЊ РјР°РєСЃРёРјР°Р»СЊРЅС‹Р№ РІРµСЃ
 float CScriptGameObject::GetActorMaxWeight() const
 {
 	CActor* pActor = smart_cast<CActor*>(&object());
@@ -903,7 +903,7 @@ void CScriptGameObject::SetActorMaxWeight(float max_weight)
 	}
 	pActor->inventory().SetMaxWeight(max_weight);
 }
-// получить и задать максимальный вес при котором можно ходить
+// РїРѕР»СѓС‡РёС‚СЊ Рё Р·Р°РґР°С‚СЊ РјР°РєСЃРёРјР°Р»СЊРЅС‹Р№ РІРµСЃ РїСЂРё РєРѕС‚РѕСЂРѕРј РјРѕР¶РЅРѕ С…РѕРґРёС‚СЊ
 float CScriptGameObject::GetActorMaxWalkWeight() const
 {
 	CActor* pActor = smart_cast<CActor*>(&object());
@@ -923,7 +923,7 @@ void CScriptGameObject::SetActorMaxWalkWeight(float max_walk_weight)
 	pActor->conditions().m_MaxWalkWeight = max_walk_weight;
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
-// получить и задать доп. вес для костюма
+// РїРѕР»СѓС‡РёС‚СЊ Рё Р·Р°РґР°С‚СЊ РґРѕРї. РІРµСЃ РґР»СЏ РєРѕСЃС‚СЋРјР°
 float CScriptGameObject::GetAdditionalMaxWeight() const
 {
 	CCustomOutfit* outfit = smart_cast<CCustomOutfit*>(&object());
@@ -963,7 +963,7 @@ void CScriptGameObject::SetAdditionalMaxWalkWeight(float add_max_walk_weight)
 
 #include "InventoryBox.h"
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
-// получить суммарный вес инвентаря
+// РїРѕР»СѓС‡РёС‚СЊ СЃСѓРјРјР°СЂРЅС‹Р№ РІРµСЃ РёРЅРІРµРЅС‚Р°СЂСЏ
 float CScriptGameObject::GetTotalWeight() const
 {
 	CInventoryOwner	*inventory_owner = smart_cast<CInventoryOwner*>(&object());
@@ -973,7 +973,7 @@ float CScriptGameObject::GetTotalWeight() const
 	}
 	return				(inventory_owner->inventory().TotalWeight());
 }
-// получить вес предмета
+// РїРѕР»СѓС‡РёС‚СЊ РІРµСЃ РїСЂРµРґРјРµС‚Р°
 float CScriptGameObject::Weight() const
 {
 	CInventoryItem		*inventory_item = smart_cast<CInventoryItem*>(&object());

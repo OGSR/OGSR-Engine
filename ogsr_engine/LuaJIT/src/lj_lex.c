@@ -379,7 +379,7 @@ static LexToken lex_scan(LexState *ls, TValue *tv)
       }
     case LEX_EOF:
       return TK_eof;
-	  //+RvP, дополнительно используются C-style комментарии
+	  //+RvP, РґРѕРїРѕР»РЅРёС‚РµР»СЊРЅРѕ РёСЃРїРѕР»СЊР·СѓСЋС‚СЃСЏ C-style РєРѕРјРјРµРЅС‚Р°СЂРёРё
 	case '/':
 		lex_next(ls);
 		if (ls->c == '/') {

@@ -21,7 +21,7 @@ public:
 	virtual void	OnDrawUI();
 	virtual void	net_Relcase(CObject *object);
 
-	//анимации
+	//Р°РЅРёРјР°С†РёРё
 	virtual bool	TryPlayAnimIdle( u8 );
 	virtual void	PlayAnimShow	();
 	virtual void	PlayAnimIdle	( u8 );

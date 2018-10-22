@@ -54,8 +54,8 @@ extern XRCORE_API HWND gGameWindow;
 XRCORE_API void LogStackTrace(const char* header);
 XRCORE_API void LogStackTrace(const char* header, _EXCEPTION_POINTERS *pExceptionInfo);
 
-// KRodin: отладочный хак для получения стека вызовов, при вызове проблемного кода внутри __try {...}
-// Использовать примерно так:
+// KRodin: РѕС‚Р»Р°РґРѕС‡РЅС‹Р№ С…Р°Рє РґР»СЏ РїРѕР»СѓС‡РµРЅРёСЏ СЃС‚РµРєР° РІС‹Р·РѕРІРѕРІ, РїСЂРё РІС‹Р·РѕРІРµ РїСЂРѕР±Р»РµРјРЅРѕРіРѕ РєРѕРґР° РІРЅСѓС‚СЂРё __try {...}
+// РСЃРїРѕР»СЊР·РѕРІР°С‚СЊ РїСЂРёРјРµСЂРЅРѕ С‚Р°Рє:
 // __except(ExceptStackTrace("stack trace:\n")) {...}
 XRCORE_API LONG DbgLogExceptionFilter(const char* header, _EXCEPTION_POINTERS *pExceptionInfo);
 #define ExceptStackTrace(str) DbgLogExceptionFilter(str, GetExceptionInformation())

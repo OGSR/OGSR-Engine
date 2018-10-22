@@ -83,7 +83,7 @@ ICF static BOOL info_trace_callback(collide::rq_result& result, LPVOID params)
 			return			TRUE;
 		}
 	}else{
-		//ïîëó÷èòü òðåóãîëüíèê è óçíàòü åãî ìàòåðèàë
+		//Ð¿Ð¾Ð»ÑƒÑ‡Ð¸Ñ‚ÑŒ Ñ‚Ñ€ÐµÑƒÐ³Ð¾Ð»ÑŒÐ½Ð¸Ðº Ð¸ ÑƒÐ·Ð½Ð°Ñ‚ÑŒ ÐµÐ³Ð¾ Ð¼Ð°Ñ‚ÐµÑ€Ð¸Ð°Ð»
 		CDB::TRI* T		= Level().ObjectSpace.GetStaticTris()+result.element;
 		if (GMLib.GetMaterialByIdx(T->material)->Flags.is(SGameMtl::flPassable)) 
 			return TRUE;
@@ -114,7 +114,7 @@ void CActor::PickupModeUpdate()
 {
 	if(!m_bPickupMode) return;
 
-	//ïîäáèðàíèå îáúåêòà
+	//Ð¿Ð¾Ð´Ð±Ð¸Ñ€Ð°Ð½Ð¸Ðµ Ð¾Ð±ÑŠÐµÐºÑ‚Ð°
 	if(inventory().m_pTarget && inventory().m_pTarget->Useful() &&
 		m_pUsableObject && m_pUsableObject->nonscript_usable() &&
 		!Level().m_feel_deny.is_object_denied(smart_cast<CGameObject*>(inventory().m_pTarget)) )
@@ -207,7 +207,7 @@ void	CActor::PickupModeUpdate_COD	()
 
 	if (pNearestItem && m_bPickupMode)
 	{
-		//ïîäáèðàíèå îáúåêòà
+		//Ð¿Ð¾Ð´Ð±Ð¸Ñ€Ð°Ð½Ð¸Ðµ Ð¾Ð±ÑŠÐµÐºÑ‚Ð°
 		Game().SendPickUpEvent(ID(), pNearestItem->object().ID());
 		
 		PickupModeOff();

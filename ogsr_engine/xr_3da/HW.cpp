@@ -343,7 +343,7 @@ u32 CHW::selectGPU ()
 UINT CHW::selectRefresh(u32 /*dwWidth*/, u32 /*dwHeight*/, D3DFORMAT /*fmt*/)
 {
 		/*u32 selected = D3DPRESENT_RATE_DEFAULT;
-		 //KRodin: âûêëþ÷àþ, ò.ê. ýòîò êîä ïðåäïîëîæèòåëüíî ïðèâîäèò ê òîðìîçàì â ïîëíîì ðàçðåøåíèè.
+		 //KRodin: Ð²Ñ‹ÐºÐ»ÑŽÑ‡Ð°ÑŽ, Ñ‚.Ðº. ÑÑ‚Ð¾Ñ‚ ÐºÐ¾Ð´ Ð¿Ñ€ÐµÐ´Ð¿Ð¾Ð»Ð¾Ð¶Ð¸Ñ‚ÐµÐ»ÑŒÐ½Ð¾ Ð¿Ñ€Ð¸Ð²Ð¾Ð´Ð¸Ñ‚ Ðº Ñ‚Ð¾Ñ€Ð¼Ð¾Ð·Ð°Ð¼ Ð² Ð¿Ð¾Ð»Ð½Ð¾Ð¼ Ñ€Ð°Ð·Ñ€ÐµÑˆÐµÐ½Ð¸Ð¸.
 		u32 count		= pD3D->GetAdapterModeCount(DevAdapter,fmt);
 		for (u32 I=0; I<count; I++)
 		{
@@ -420,7 +420,7 @@ void CHW::updateWindowProps(HWND m_hWnd)
 	else
 	{
 		SetWindowLongPtr(m_hWnd, GWL_STYLE, dwWindowStyle /*= (WS_POPUP | WS_VISIBLE)*/);
-		//SetWindowLongPtr(m_hWnd, GWL_EXSTYLE, WS_EX_TOPMOST); // Íå èç-çà ýòîãî ëè îêíî â ïîëíîýêðàííîì ðåæèìå ïîä îòëàä÷èêîì íîâîçìîæíî ñâåðíóòü ïðè èñêëþ÷åíèè?
+		//SetWindowLongPtr(m_hWnd, GWL_EXSTYLE, WS_EX_TOPMOST); // ÐÐµ Ð¸Ð·-Ð·Ð° ÑÑ‚Ð¾Ð³Ð¾ Ð»Ð¸ Ð¾ÐºÐ½Ð¾ Ð² Ð¿Ð¾Ð»Ð½Ð¾ÑÐºÑ€Ð°Ð½Ð½Ð¾Ð¼ Ñ€ÐµÐ¶Ð¸Ð¼Ðµ Ð¿Ð¾Ð´ Ð¾Ñ‚Ð»Ð°Ð´Ñ‡Ð¸ÐºÐ¾Ð¼ Ð½Ð¾Ð²Ð¾Ð·Ð¼Ð¾Ð¶Ð½Ð¾ ÑÐ²ÐµÑ€Ð½ÑƒÑ‚ÑŒ Ð¿Ñ€Ð¸ Ð¸ÑÐºÐ»ÑŽÑ‡ÐµÐ½Ð¸Ð¸?
 	}
 
 	ShowCursor(FALSE);

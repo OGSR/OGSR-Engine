@@ -42,7 +42,7 @@
 	- I code in 1600*1200, so some lines may look a bit long..
 	- This version is not as polished as the previous one due to lack of time. The stabbing & sphere queries
 	can still be optimized: for example by trying other atomic overlap tests. I'm using my first ray-AABB
-	code, but the newer one seems better. Tim Schröder's one is good as well. See: www.codercorner.com/RayAABB.cpp
+	code, but the newer one seems better. Tim SchrÑ†der's one is good as well. See: www.codercorner.com/RayAABB.cpp
 	- The trees can easily be compressed even more, I save this for later (lack of time, lack of time!)
 	- I removed various tests before releasing this one:
 		- a separation line, a.k.a. "front" in QuickCD, because gains were unclear
@@ -75,7 +75,7 @@
       standard libraries only rely on Primitive-Primitive and BV-BV tests)
     - Introduces no-leaf trees, i.e. collision trees whose leaf nodes have been removed
     - Supports collision queries on quantized trees (decompressed on-the-fly)
-    - Supports "first contact" or "all contacts" modes (à la RAPID)
+    - Supports "first contact" or "all contacts" modes (Ð° la RAPID)
     - Uses temporal coherence for "first contact" mode (~10 to 20 times faster, useful
       in rigid body simulation during bisection)
     - Limited support for temporal coherence in "all contacts" mode. This provides O(1)

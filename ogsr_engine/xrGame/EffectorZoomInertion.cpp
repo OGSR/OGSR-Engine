@@ -1,5 +1,5 @@
-// EffectorZoomInertion.cpp: инерция(покачивания) оружия в режиме
-//							 приближения
+// EffectorZoomInertion.cpp: РёРЅРµСЂС†РёСЏ(РїРѕРєР°С‡РёРІР°РЅРёСЏ) РѕСЂСѓР¶РёСЏ РІ СЂРµР¶РёРјРµ
+//							 РїСЂРёР±Р»РёР¶РµРЅРёСЏ
 //////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
@@ -9,7 +9,7 @@
 
 #include "Actor.h"
 
- bool __declspec(dllexport)		external_zoom_osc = false; // alpet: флажок внешнего рассчета колебаний прицела (из скриптов).
+ bool __declspec(dllexport)		external_zoom_osc = false; // alpet: С„Р»Р°Р¶РѕРє РІРЅРµС€РЅРµРіРѕ СЂР°СЃСЃС‡РµС‚Р° РєРѕР»РµР±Р°РЅРёР№ РїСЂРёС†РµР»Р° (РёР· СЃРєСЂРёРїС‚РѕРІ).
 
  void switch_zoom_osc (bool bExternal) 
  {
@@ -93,8 +93,8 @@ void CEffectorZoomInertion::SetParams	(float disp)
 	if(m_fFloatSpeed<m_fSpeedMin) 
 		m_fFloatSpeed = m_fSpeedMin;
 
-	//для того, чтоб сразу прошел пересчет направления
-	//движения прицела
+	//РґР»СЏ С‚РѕРіРѕ, С‡С‚РѕР± СЃСЂР°Р·Сѓ РїСЂРѕС€РµР» РїРµСЂРµСЃС‡РµС‚ РЅР°РїСЂР°РІР»РµРЅРёСЏ
+	//РґРІРёР¶РµРЅРёСЏ РїСЂРёС†РµР»Р°
 	if(!fis_zero(old_disp-m_fDispRadius,EPS))
 		m_fEpsilon = 2*m_fDispRadius;
 }
@@ -116,7 +116,7 @@ BOOL CEffectorZoomInertion::Process		(Fvector &p, Fvector &d, Fvector &n,
 {
 	bool camera_moved = false;
 
-	//определяем двигал ли прицелом актер
+	//РѕРїСЂРµРґРµР»СЏРµРј РґРІРёРіР°Р» Р»Рё РїСЂРёС†РµР»РѕРј Р°РєС‚РµСЂ
 	if(!d.similar(m_vOldCameraDir, m_fCameraMoveEpsilon))
 		camera_moved = true;
 

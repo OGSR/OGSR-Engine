@@ -87,7 +87,7 @@ void CHelicopter::UpdateHeliParticles	()
 		if (m_lanim)
 		{
 			int frame;
-			u32 clr					= m_lanim->CalculateBGR(Device.fTimeGlobal,frame); // òþ÷ò¨ð•ðõª ò ¯þ¨üðªõ BGR
+			u32 clr					= m_lanim->CalculateBGR(Device.fTimeGlobal,frame); // Ñ‚ÑŽÑ‡Ñ‚ÐÑ€â€¢Ñ€Ñ…Ð„ Ñ‚ Ð‡ÑŽÐÑŒÑ€Ð„Ñ… BGR
 			Fcolor					fclr;
 			fclr.set				((float)color_get_B(clr),(float)color_get_G(clr),(float)color_get_R(clr),1.f);
 			fclr.mul_rgb			(m_light_brightness/255.f);
@@ -160,8 +160,8 @@ float CHelicopter::GetMaxVelocity()
 //////////////////////Start By JoHnY///////////////////////
 void CHelicopter::SetLinearAcc(float LAcc_fw, float LAcc_bw)
 {
-	m_movement.LinearAcc_fw = LAcc_fw;	//óñêîðåíèå ðàçãîíà
-	m_movement.LinearAcc_bk = LAcc_bw;	//óñêîðåíèå òîðìîæåíèÿ
+	m_movement.LinearAcc_fw = LAcc_fw;	//ÑƒÑÐºÐ¾Ñ€ÐµÐ½Ð¸Ðµ Ñ€Ð°Ð·Ð³Ð¾Ð½Ð°
+	m_movement.LinearAcc_bk = LAcc_bw;	//ÑƒÑÐºÐ¾Ñ€ÐµÐ½Ð¸Ðµ Ñ‚Ð¾Ñ€Ð¼Ð¾Ð¶ÐµÐ½Ð¸Ñ
 
 }
 //////////////////////End By JoHnY/////////////////////////
@@ -232,7 +232,7 @@ void	CHelicopter::Hit							(SHit* pHDS)
 			Log("----Helicopter::Hit(). health=",GetfHealth());
 #endif
 	};
-#pragma todo("KRodin: à ïî÷åìó òîëüêî õèòû îò àêòîðà, ñòàëêåðîâ è àíîìàëèé ïåðåäàþòñÿ â êàëëáåê? Ïî÷åìó áû íå ïåðåäàâàòü õèòû îò ëþáâõ îáúåêòîâ? Íàäî ïîäóìàòü íàä ýòèì.")
+#pragma todo("KRodin: Ð° Ð¿Ð¾Ñ‡ÐµÐ¼Ñƒ Ñ‚Ð¾Ð»ÑŒÐºÐ¾ Ñ…Ð¸Ñ‚Ñ‹ Ð¾Ñ‚ Ð°ÐºÑ‚Ð¾Ñ€Ð°, ÑÑ‚Ð°Ð»ÐºÐµÑ€Ð¾Ð² Ð¸ Ð°Ð½Ð¾Ð¼Ð°Ð»Ð¸Ð¹ Ð¿ÐµÑ€ÐµÐ´Ð°ÑŽÑ‚ÑÑ Ð² ÐºÐ°Ð»Ð»Ð±ÐµÐº? ÐŸÐ¾Ñ‡ÐµÐ¼Ñƒ Ð±Ñ‹ Ð½Ðµ Ð¿ÐµÑ€ÐµÐ´Ð°Ð²Ð°Ñ‚ÑŒ Ñ…Ð¸Ñ‚Ñ‹ Ð¾Ñ‚ Ð»ÑŽÐ±Ð²Ñ… Ð¾Ð±ÑŠÐµÐºÑ‚Ð¾Ð²? ÐÐ°Ð´Ð¾ Ð¿Ð¾Ð´ÑƒÐ¼Ð°Ñ‚ÑŒ Ð½Ð°Ð´ ÑÑ‚Ð¸Ð¼.")
 	if (pHDS->who&&
 		( pHDS->who->CLS_ID==CLSID_OBJECT_ACTOR	||
 		smart_cast<CAI_Stalker*>(pHDS->who)		||

@@ -61,7 +61,7 @@ protected:
 	CUIStatic*				m_pUIOurBagWnd;
 	CUIStatic*				m_pUIOthersBagWnd;
 
-	//информация о персонажах 
+	//РёРЅС„РѕСЂРјР°С†РёСЏ Рѕ РїРµСЂСЃРѕРЅР°Р¶Р°С… 
 	CUIStatic*				m_pUIOurIcon;
 	CUIStatic*				m_pUIOthersIcon;
 	CUICharacterInfo*		m_pUICharacterInfoLeft;
@@ -80,7 +80,7 @@ protected:
 	CUICellItem*			CurrentItem					();
 	PIItem					CurrentIItem				();
 
-	// Взять все
+	// Р’Р·СЏС‚СЊ РІСЃРµ
 	void					TakeAll						();
 	void					MoveItem					(CUICellItem* itm);
 	void					MoveItems					(CUICellItem* itm, bool b_all);

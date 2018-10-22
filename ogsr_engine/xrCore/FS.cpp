@@ -3,7 +3,7 @@
 #include "fs_internal.h"
 
 using DUMMY_STUFF = void( const void*, const u32&, void* );
-XRCORE_API DUMMY_STUFF* g_dummy_stuff = nullptr; //Нужно для xrCompressor. Не удалять!
+XRCORE_API DUMMY_STUFF* g_dummy_stuff = nullptr; //РќСѓР¶РЅРѕ РґР»СЏ xrCompressor. РќРµ СѓРґР°Р»СЏС‚СЊ!
 
 #ifdef DEBUG
 	XRCORE_API	u32								g_file_mapped_memory = 0;
@@ -60,7 +60,7 @@ XRCORE_API void dump_file_mappings	()
 //////////////////////////////////////////////////////////////////////
 
 #include <filesystem>
-void VerifyPath(const std::string_view path) //Проверяет путь до файла. Если папки в пути отсутствуют - создаёт их.
+void VerifyPath(const std::string_view path) //РџСЂРѕРІРµСЂСЏРµС‚ РїСѓС‚СЊ РґРѕ С„Р°Р№Р»Р°. Р•СЃР»Рё РїР°РїРєРё РІ РїСѓС‚Рё РѕС‚СЃСѓС‚СЃС‚РІСѓСЋС‚ - СЃРѕР·РґР°С‘С‚ РёС….
 {
 	const auto lastSepPos = path.find_last_of('\\');
 	const auto foldersPath = (lastSepPos != std::string_view::npos) ? path.substr(0, lastSepPos) : path;

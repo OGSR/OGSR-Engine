@@ -63,7 +63,7 @@ void	game_cl_GameState::net_import_GameTime		(NET_Packet& P)
 
 	//u64 OldTime = Level().GetEnvironmentGameTime();
 	Level().SetEnvironmentGameTimeFactor	(GameEnvironmentTime,EnvironmentTimeFactor);
-	//KRodin: закомментировал для восттановления солнца. Внимание! Установку погоды теперь нужно делать не ранее, чем на первом апдейте. В ОГСЕ проблем быть не должно, там погодный менеджер всё контроллирует.
+	//KRodin: Р·Р°РєРѕРјРјРµРЅС‚РёСЂРѕРІР°Р» РґР»СЏ РІРѕСЃС‚С‚Р°РЅРѕРІР»РµРЅРёСЏ СЃРѕР»РЅС†Р°. Р’РЅРёРјР°РЅРёРµ! РЈСЃС‚Р°РЅРѕРІРєСѓ РїРѕРіРѕРґС‹ С‚РµРїРµСЂСЊ РЅСѓР¶РЅРѕ РґРµР»Р°С‚СЊ РЅРµ СЂР°РЅРµРµ, С‡РµРј РЅР° РїРµСЂРІРѕРј Р°РїРґРµР№С‚Рµ. Р’ РћР“РЎР• РїСЂРѕР±Р»РµРј Р±С‹С‚СЊ РЅРµ РґРѕР»Р¶РЅРѕ, С‚Р°Рј РїРѕРіРѕРґРЅС‹Р№ РјРµРЅРµРґР¶РµСЂ РІСЃС‘ РєРѕРЅС‚СЂРѕР»Р»РёСЂСѓРµС‚.
 	//if (OldTime > GameEnvironmentTime)
 	//	GamePersistent().Environment().Invalidate();
 }
@@ -356,7 +356,7 @@ void game_cl_GameState::set_type_name(LPCSTR s)
 	}
 };
 
-void game_cl_GameState::reset_ui() { //KRodin: Функция правильно работает именно в таком варианте! НЕ ИЗМЕНЯТЬ!
+void game_cl_GameState::reset_ui() { //KRodin: Р¤СѓРЅРєС†РёСЏ РїСЂР°РІРёР»СЊРЅРѕ СЂР°Р±РѕС‚Р°РµС‚ РёРјРµРЅРЅРѕ РІ С‚Р°РєРѕРј РІР°СЂРёР°РЅС‚Рµ! РќР• РР—РњР•РќРЇРўР¬!
   auto h = smart_cast<CHUDManager*>( Level().pHUD );
 
   auto ui = h->GetUI();

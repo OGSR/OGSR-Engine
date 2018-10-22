@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////
-// monster_community.h:	структура представления группировки для монстров
+// monster_community.h:	СЃС‚СЂСѓРєС‚СѓСЂР° РїСЂРµРґСЃС‚Р°РІР»РµРЅРёСЏ РіСЂСѓРїРїРёСЂРѕРІРєРё РґР»СЏ РјРѕРЅСЃС‚СЂРѕРІ
 //							
 //////////////////////////////////////////////////////////////////////////
 
@@ -49,7 +49,7 @@ private:
 	static	void				InitIdToIndex	();
 
 public:
-	//отношение между группами монстров
+	//РѕС‚РЅРѕС€РµРЅРёРµ РјРµР¶РґСѓ РіСЂСѓРїРїР°РјРё РјРѕРЅСЃС‚СЂРѕРІ
 	static int					relation			(MONSTER_COMMUNITY_INDEX from, MONSTER_COMMUNITY_INDEX to);
 	int							relation			(MONSTER_COMMUNITY_INDEX to);
 	static void set_relation( MONSTER_COMMUNITY_ID, MONSTER_COMMUNITY_ID, int );

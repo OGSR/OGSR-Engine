@@ -72,7 +72,7 @@ protected:
 
 	bool				CanMoveToOther				(PIItem, bool);
 
-	//указатели игрока и того с кем торгуем
+	//СѓРєР°Р·Р°С‚РµР»Рё РёРіСЂРѕРєР° Рё С‚РѕРіРѕ СЃ РєРµРј С‚РѕСЂРіСѓРµРј
 	CInventory*			m_pInv;
 	CInventory*			m_pOthersInv;
 	CInventoryOwner*	m_pInvOwner;

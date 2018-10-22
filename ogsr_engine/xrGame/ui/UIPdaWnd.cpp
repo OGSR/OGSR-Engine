@@ -80,7 +80,7 @@ void CUIPdaWnd::Init()
 	AttachChild				(UIMainPdaFrame);
 	xml_init.InitStatic		(uiXml, "background_static", 0, UIMainPdaFrame);
 
-	//Элементы автоматического добавления
+	//Р­Р»РµРјРµРЅС‚С‹ Р°РІС‚РѕРјР°С‚РёС‡РµСЃРєРѕРіРѕ РґРѕР±Р°РІР»РµРЅРёСЏ
 	xml_init.InitAutoStatic	(uiXml, "auto_static", this);
 
 	// Main buttons background
@@ -93,28 +93,28 @@ void CUIPdaWnd::Init()
 	UIMainPdaFrame->AttachChild(UITimerBackground);
 	xml_init.InitFrameLine	(uiXml, "timer_frame_line", 0, UITimerBackground);
 
-	// Oкно карты
+	// OРєРЅРѕ РєР°СЂС‚С‹
 	UIMapWnd				= xr_new<CUIMapWnd>();
 	UIMapWnd->Init			("pda_map.xml","map_wnd");
 
-		// Oкно коммуникaции
+		// OРєРЅРѕ РєРѕРјРјСѓРЅРёРєaС†РёРё
 		UIPdaContactsWnd		= xr_new<CUIPdaContactsWnd>();
 		UIPdaContactsWnd->Init	();
 
 
-		// Oкно новостей
+		// OРєРЅРѕ РЅРѕРІРѕСЃС‚РµР№
 		UIDiaryWnd				= xr_new<CUIDiaryWnd>();
 		UIDiaryWnd->Init		();
 
-		// Окно энциклопедии
+		// РћРєРЅРѕ СЌРЅС†РёРєР»РѕРїРµРґРёРё
 		UIEncyclopediaWnd		= xr_new<CUIEncyclopediaWnd>();
 		UIEncyclopediaWnd->Init	();
 
-		// Окно статистики о актере
+		// РћРєРЅРѕ СЃС‚Р°С‚РёСЃС‚РёРєРё Рѕ Р°РєС‚РµСЂРµ
 		UIActorInfo				= xr_new<CUIActorInfoWnd>();
 		UIActorInfo->Init		();
 
-		// Окно рейтинга сталкеров
+		// РћРєРЅРѕ СЂРµР№С‚РёРЅРіР° СЃС‚Р°Р»РєРµСЂРѕРІ
 		UIStalkersRanking		= xr_new<CUIStalkersRankingWnd>();
 		UIStalkersRanking->Init	();
 

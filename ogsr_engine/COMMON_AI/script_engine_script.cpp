@@ -152,7 +152,7 @@ void CScriptEngine::script_register(lua_State *L)
 		def("bit_not", &bit_not),
 		def("user_name", &user_name),
 		def("time_global", &script_time_global),
-		// функции из ogse.dll
+		// С„СѓРЅРєС†РёРё РёР· ogse.dll
 		def("GetShift", &GetShift),
 		def("GetLAlt", &GetLAlt),
 		def("GetRAlt", &GetRAlt),

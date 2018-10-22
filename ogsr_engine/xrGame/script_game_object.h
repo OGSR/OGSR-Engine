@@ -266,17 +266,17 @@ public:
 			CProjector			*GetProjector			();
 			Fvector				GetCurrentDirection		();
 			bool				IsInvBoxEmpty			();
-	//передача порции информации InventoryOwner
+	//РїРµСЂРµРґР°С‡Р° РїРѕСЂС†РёРё РёРЅС„РѕСЂРјР°С†РёРё InventoryOwner
 			bool				GiveInfoPortion		(LPCSTR info_id);
 			bool				DisableInfoPortion	(LPCSTR info_id);
 			bool				GiveGameNews		(LPCSTR news, LPCSTR texture_name, Frect tex_rect, int delay, int show_time);
 
 			void				AddIconedTalkMessage(LPCSTR text, LPCSTR texture_name, Frect tex_rect, LPCSTR templ_name);
-	//предикаты наличия/отсутствия порции информации у персонажа
+	//РїСЂРµРґРёРєР°С‚С‹ РЅР°Р»РёС‡РёСЏ/РѕС‚СЃСѓС‚СЃС‚РІРёСЏ РїРѕСЂС†РёРё РёРЅС„РѕСЂРјР°С†РёРё Сѓ РїРµСЂСЃРѕРЅР°Р¶Р°
 			bool				HasInfo				(LPCSTR info_id);
 			bool				DontHasInfo			(LPCSTR info_id);
 			xrTime				GetInfoTime			(LPCSTR info_id);
-	//работа с заданиями
+	//СЂР°Р±РѕС‚Р° СЃ Р·Р°РґР°РЅРёСЏРјРё
 			ETaskState			GetGameTaskState	(LPCSTR task_id, int objective_num);
 			void				SetGameTaskState	(ETaskState state, LPCSTR task_id, int objective_num);
 			void				GiveTaskToActor		(CGameTask* t, u32 dt, bool bCheckExisting);
@@ -582,7 +582,7 @@ public:
 			void				invulnerable						(bool invulnerable);
 			
 			/************************************************** added by Ray Twitty (aka Shadows) START **************************************************/	
-			// инвентарь
+			// РёРЅРІРµРЅС‚Р°СЂСЊ
 			float				GetActorMaxWeight					() const;
 			void				SetActorMaxWeight					(float max_weight);
 			float				GetActorMaxWalkWeight				() const;
@@ -676,10 +676,10 @@ public:
 			bool				ZoomMode();
 			void				ResetState();
 
-			// для CEatableItem, используются в реализации радиопротектора
+			// РґР»СЏ CEatableItem, РёСЃРїРѕР»СЊР·СѓСЋС‚СЃСЏ РІ СЂРµР°Р»РёР·Р°С†РёРё СЂР°РґРёРѕРїСЂРѕС‚РµРєС‚РѕСЂР°
 			void				ZeroEffects();
 			void				SetRadiationInfluence(float _rad);
-			// для актора - иммунитеты
+			// РґР»СЏ Р°РєС‚РѕСЂР° - РёРјРјСѓРЅРёС‚РµС‚С‹
 			void				SetDrugRadProtection(float _prot);
 			void				SetDrugPsyProtection(float _prot);
 
@@ -736,8 +736,8 @@ public:
 			void				SetActorJumpSpeed(float _factor);
 			float				GetActorWalkAccel() const;
 			void				SetActorWalkAccel(float _factor);
-			float				GetActorExoFactor() const; 					// влияет на бег в экзе
-			void				SetActorExoFactor(float _factor);		// влияет на бег в экзе
+			float				GetActorExoFactor() const; 					// РІР»РёСЏРµС‚ РЅР° Р±РµРі РІ СЌРєР·Рµ
+			void				SetActorExoFactor(float _factor);		// РІР»РёСЏРµС‚ РЅР° Р±РµРі РІ СЌРєР·Рµ
 			// KD
 
 			// Real Wolf 07.07.2014.
@@ -774,10 +774,10 @@ IC bool test_pushobject(lua_State *L, CGameObject* obj)
 	T *pObj = smart_cast<T*> (obj);
 	if (pObj && get_class_rep<T>(L))
 	{		
-		convert_to_lua<T*>(L, pObj);  // обязательно конвертировать указатель, а не значение. Иначе вызов деструктора при сборке мусора!
+		convert_to_lua<T*>(L, pObj);  // РѕР±СЏР·Р°С‚РµР»СЊРЅРѕ РєРѕРЅРІРµСЂС‚РёСЂРѕРІР°С‚СЊ СѓРєР°Р·Р°С‚РµР»СЊ, Р° РЅРµ Р·РЅР°С‡РµРЅРёРµ. РРЅР°С‡Рµ РІС‹Р·РѕРІ РґРµСЃС‚СЂСѓРєС‚РѕСЂР° РїСЂРё СЃР±РѕСЂРєРµ РјСѓСЃРѕСЂР°!
 		return true;		
 	}
 	return false;
 }
 
-#include "script_game_object_impl.h" // alpet: исправление error LNK2019: unresolved external symbol "public: class CGameObject & __thiscall CScriptGameObject::object(void)const "
+#include "script_game_object_impl.h" // alpet: РёСЃРїСЂР°РІР»РµРЅРёРµ error LNK2019: unresolved external symbol "public: class CGameObject & __thiscall CScriptGameObject::object(void)const "

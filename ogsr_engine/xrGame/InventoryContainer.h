@@ -36,8 +36,8 @@ public:
 	virtual	void					OnEvent								(NET_Packet& P, u16 type);
 	virtual	BOOL					net_Spawn							(CSE_Abstract* DC);
 
-	virtual bool					IsClosed							() const { return !m_opened; };	  // alpet: если закрыт - можно подобрать в инвентарь
-	virtual bool					IsOpened							() const { return m_opened; };	  // alpet: если открыт - в нем можно ковыряться
+	virtual bool					IsClosed							() const { return !m_opened; };	  // alpet: РµСЃР»Рё Р·Р°РєСЂС‹С‚ - РјРѕР¶РЅРѕ РїРѕРґРѕР±СЂР°С‚СЊ РІ РёРЅРІРµРЅС‚Р°СЂСЊ
+	virtual bool					IsOpened							() const { return m_opened; };	  // alpet: РµСЃР»Рё РѕС‚РєСЂС‹С‚ - РІ РЅРµРј РјРѕР¶РЅРѕ РєРѕРІС‹СЂСЏС‚СЊСЃСЏ
 	
 	void							open								();
 	void							close								();

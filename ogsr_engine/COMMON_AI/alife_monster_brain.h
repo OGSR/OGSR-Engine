@@ -57,7 +57,7 @@ public:
 
 public:
 			void update(const bool forced = false);
-			inline void update_script() { this->update(true); }; //œËÌÛ‰ËÚÂÎ¸Ì˚È ‡Ô‰ÂÈÚ ËÁ ÒÍËÔÚÓ‚, ÌÂ Á‡‚ËÒËÚ ÓÚ Ú‡ÈÏ‡ÛÚ‡ ÓÚ ÔÓ¯ÎÓ„Ó ‡Ô‰ÂÈÚ‡.
+			inline void update_script() { this->update(true); }; //–ü—Ä–∏–Ω—É–¥–∏—Ç–µ–ª—å–Ω—ã–π –∞–ø–¥–µ–π—Ç –∏–∑ —Å–∫—Ä–∏–ø—Ç–æ–≤, –Ω–µ –∑–∞–≤–∏—Å–∏—Ç –æ—Ç —Ç–∞–π–º–∞—É—Ç–∞ –æ—Ç –ø—Ä–æ—à–ª–æ–≥–æ –∞–ø–¥–µ–π—Ç–∞.
 
 			bool						perform_attack		();
 			ALife::EMeetActionType		action_type			(CSE_ALifeSchedulable *tpALifeSchedulable, const int &iGroupIndex, const bool &bMutualDetection);

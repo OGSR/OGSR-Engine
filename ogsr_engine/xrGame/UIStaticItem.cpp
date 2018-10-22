@@ -64,7 +64,7 @@ void CUIStaticItem::Init(LPCSTR tex, LPCSTR sh, float left, float top, u32 align
 void CUIStaticItem::Render()
 {
 	VERIFY(g_bRendering);
-	// установить обязательно перед вызовом CustomItem::Render() !!!
+	// СѓСЃС‚Р°РЅРѕРІРёС‚СЊ РѕР±СЏР·Р°С‚РµР»СЊРЅРѕ РїРµСЂРµРґ РІС‹Р·РѕРІРѕРј CustomItem::Render() !!!
 	VERIFY(hShader);
 	RCache.set_Shader			(hShader);
 	if(alpha_ref!=-1)
@@ -110,7 +110,7 @@ void CUIStaticItem::Render()
 void CUIStaticItem::Render(float angle)
 {
 	VERIFY						(g_bRendering);
-	// установить обязательно перед вызовом CustomItem::Render() !!!
+	// СѓСЃС‚Р°РЅРѕРІРёС‚СЊ РѕР±СЏР·Р°С‚РµР»СЊРЅРѕ РїРµСЂРµРґ РІС‹Р·РѕРІРѕРј CustomItem::Render() !!!
 	VERIFY						(hShader);
 	RCache.set_Shader			(hShader);
 	if(alpha_ref!=-1)

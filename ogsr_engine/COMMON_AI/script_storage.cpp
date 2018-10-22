@@ -11,8 +11,8 @@
 #include "script_engine.h"
 #include "ai_space.h"
 
-// KRodin: this не убирать ни в коем случае! Он нужен для того, чтобы классы luabind'а регистрировались внутри модуля в котором находятся, а не в _G
-// см. luabind/src/create_class.cpp
+// KRodin: this РЅРµ СѓР±РёСЂР°С‚СЊ РЅРё РІ РєРѕРµРј СЃР»СѓС‡Р°Рµ! РћРЅ РЅСѓР¶РµРЅ РґР»СЏ С‚РѕРіРѕ, С‡С‚РѕР±С‹ РєР»Р°СЃСЃС‹ luabind'Р° СЂРµРіРёСЃС‚СЂРёСЂРѕРІР°Р»РёСЃСЊ РІРЅСѓС‚СЂРё РјРѕРґСѓР»СЏ РІ РєРѕС‚РѕСЂРѕРј РЅР°С…РѕРґСЏС‚СЃСЏ, Р° РЅРµ РІ _G
+// СЃРј. luabind/src/create_class.cpp
 static constexpr const char* FILE_HEADER = "\
 local function script_name() \
 return '%s' \
@@ -203,14 +203,14 @@ CScriptStorage::~CScriptStorage()
 {
 	//Msg("[CScriptStorage] Closing LuaJIT - start");
 	if (m_virtual_machine)
-		lua_close(m_virtual_machine); //Вот тут закрывается LuaJIT.
+		lua_close(m_virtual_machine); //Р’РѕС‚ С‚СѓС‚ Р·Р°РєСЂС‹РІР°РµС‚СЃСЏ LuaJIT.
 	//Msg("[CScriptStorage] Closing LuaJIT - end");
 	Debug.set_crashhandler(nullptr);
 }
 
 void CScriptStorage::reinit(lua_State *LSVM)
 {
-	if (m_virtual_machine) //Как выяснилось, такое происходит при загрузке игры на этапе старта сервера 
+	if (m_virtual_machine) //РљР°Рє РІС‹СЏСЃРЅРёР»РѕСЃСЊ, С‚Р°РєРѕРµ РїСЂРѕРёСЃС…РѕРґРёС‚ РїСЂРё Р·Р°РіСЂСѓР·РєРµ РёРіСЂС‹ РЅР° СЌС‚Р°РїРµ СЃС‚Р°СЂС‚Р° СЃРµСЂРІРµСЂР° 
 	{
 		//Msg("[CScriptStorage] Found working LuaJIT WM! Close it!");
 		lua_close(m_virtual_machine);
@@ -225,7 +225,7 @@ void CScriptStorage::print_stack()
 	Log(get_lua_traceback(lua()));
 }
 
-void CScriptStorage::script_log(ScriptStorage::ELuaMessageType tLuaMessageType, const char* caFormat, ...) //Используется в очень многих местах //Очень много пишет в лог.
+void CScriptStorage::script_log(ScriptStorage::ELuaMessageType tLuaMessageType, const char* caFormat, ...) //РСЃРїРѕР»СЊР·СѓРµС‚СЃСЏ РІ РѕС‡РµРЅСЊ РјРЅРѕРіРёС… РјРµСЃС‚Р°С… //РћС‡РµРЅСЊ РјРЅРѕРіРѕ РїРёС€РµС‚ РІ Р»РѕРі.
 {
 #ifdef DEBUG
 	va_list marker;
@@ -273,24 +273,24 @@ void CScriptStorage::script_log(ScriptStorage::ELuaMessageType tLuaMessageType, 
 #endif
 }
 
-bool CScriptStorage::load_buffer(lua_State *L, const char* caBuffer, size_t tSize, const char* caScriptName, const char* caNameSpaceName) //KRodin: эта функция форматирует содержимое скрипта используя FILE_HEADER и после этого загружает его в lua
+bool CScriptStorage::load_buffer(lua_State *L, const char* caBuffer, size_t tSize, const char* caScriptName, const char* caNameSpaceName) //KRodin: СЌС‚Р° С„СѓРЅРєС†РёСЏ С„РѕСЂРјР°С‚РёСЂСѓРµС‚ СЃРѕРґРµСЂР¶РёРјРѕРµ СЃРєСЂРёРїС‚Р° РёСЃРїРѕР»СЊР·СѓСЏ FILE_HEADER Рё РїРѕСЃР»Рµ СЌС‚РѕРіРѕ Р·Р°РіСЂСѓР¶Р°РµС‚ РµРіРѕ РІ lua
 {
 	int l_iErrorCode = 0;
-	if (strcmp(GlobalNamespace, caNameSpaceName)) //Все скрипты кроме _G
+	if (strcmp(GlobalNamespace, caNameSpaceName)) //Р’СЃРµ СЃРєСЂРёРїС‚С‹ РєСЂРѕРјРµ _G
 	{
-		//KRodin: обращаться к _G только с большой буквы! Иначе он загрузится ещё раз и это неизвестно к чему приведёт!
-		//Глобальное пространство инитится один раз после запуска луаджита, и никогда больше.
+		//KRodin: РѕР±СЂР°С‰Р°С‚СЊСЃСЏ Рє _G С‚РѕР»СЊРєРѕ СЃ Р±РѕР»СЊС€РѕР№ Р±СѓРєРІС‹! РРЅР°С‡Рµ РѕРЅ Р·Р°РіСЂСѓР·РёС‚СЃСЏ РµС‰С‘ СЂР°Р· Рё СЌС‚Рѕ РЅРµРёР·РІРµСЃС‚РЅРѕ Рє С‡РµРјСѓ РїСЂРёРІРµРґС‘С‚!
+		//Р“Р»РѕР±Р°Р»СЊРЅРѕРµ РїСЂРѕСЃС‚СЂР°РЅСЃС‚РІРѕ РёРЅРёС‚РёС‚СЃСЏ РѕРґРёРЅ СЂР°Р· РїРѕСЃР»Рµ Р·Р°РїСѓСЃРєР° Р»СѓР°РґР¶РёС‚Р°, Рё РЅРёРєРѕРіРґР° Р±РѕР»СЊС€Рµ.
 		if (!strcmp("_g", caNameSpaceName))
 			return false;
-		//KRodin: Переделал, т.к. в оригинале тут происходило нечто, на мой взгляд, странное.
+		//KRodin: РџРµСЂРµРґРµР»Р°Р», С‚.Рє. РІ РѕСЂРёРіРёРЅР°Р»Рµ С‚СѓС‚ РїСЂРѕРёСЃС…РѕРґРёР»Рѕ РЅРµС‡С‚Рѕ, РЅР° РјРѕР№ РІР·РіР»СЏРґ, СЃС‚СЂР°РЅРЅРѕРµ.
 		int buf_len = std::snprintf(nullptr, 0, FILE_HEADER, caNameSpaceName, caNameSpaceName, caBuffer);
 		auto strBuf = std::make_unique<char[]>(buf_len + 1);
 		std::snprintf(strBuf.get(), buf_len + 1, FILE_HEADER, caNameSpaceName, caNameSpaceName, caBuffer);
 		//Log("[CScriptStorage::load_buffer(1)] Loading buffer:");
 		//Log(strBuf.get());
-		l_iErrorCode = luaL_loadbuffer(L, strBuf.get(), buf_len /*+ 1 Нуль-терминатор на конце мешает походу*/, caScriptName);
+		l_iErrorCode = luaL_loadbuffer(L, strBuf.get(), buf_len /*+ 1 РќСѓР»СЊ-С‚РµСЂРјРёРЅР°С‚РѕСЂ РЅР° РєРѕРЅС†Рµ РјРµС€Р°РµС‚ РїРѕС…РѕРґСѓ*/, caScriptName);
 	}
-	else //_G.script и только он.
+	else //_G.script Рё С‚РѕР»СЊРєРѕ РѕРЅ.
 	{
 		//Log("[CScriptStorage::load_buffer(2)] Loading buffer:");
 		//Log(caBuffer);
@@ -299,23 +299,23 @@ bool CScriptStorage::load_buffer(lua_State *L, const char* caBuffer, size_t tSiz
 	if (l_iErrorCode)
 	{
 		print_output(L, caScriptName, l_iErrorCode);
-		R_ASSERT(false); //НЕ ЗАКОММЕНТИРОВАТЬ!
+		R_ASSERT(false); //РќР• Р—РђРљРћРњРњР•РќРўРР РћР’РђРўР¬!
 		return false;
 	}
 	return true;
 }
 
-bool CScriptStorage::do_file(const char* caScriptName, const char* caNameSpaceName) //KRodin: эта функция открывает скрипт с диска и оправляет его содержимое в функцию load_buffer, после этого походу запускает скрипт.
+bool CScriptStorage::do_file(const char* caScriptName, const char* caNameSpaceName) //KRodin: СЌС‚Р° С„СѓРЅРєС†РёСЏ РѕС‚РєСЂС‹РІР°РµС‚ СЃРєСЂРёРїС‚ СЃ РґРёСЃРєР° Рё РѕРїСЂР°РІР»СЏРµС‚ РµРіРѕ СЃРѕРґРµСЂР¶РёРјРѕРµ РІ С„СѓРЅРєС†РёСЋ load_buffer, РїРѕСЃР»Рµ СЌС‚РѕРіРѕ РїРѕС…РѕРґСѓ Р·Р°РїСѓСЃРєР°РµС‚ СЃРєСЂРёРїС‚.
 {
 	string_path l_caLuaFileName;
 	auto l_tpFileReader = FS.r_open(caScriptName);
-	if (!l_tpFileReader) { //заменить на ассерт?
+	if (!l_tpFileReader) { //Р·Р°РјРµРЅРёС‚СЊ РЅР° Р°СЃСЃРµСЂС‚?
 		Msg("!![CScriptStorage::do_file] Cannot open file [%s]", caScriptName);
 		return false;
 	}
-	strconcat(sizeof(l_caLuaFileName), l_caLuaFileName, "@", caScriptName); //KRodin: приводит путь к виду @f:\games\s.t.a.l.k.e.r\gamedata\scripts\***.script
+	strconcat(sizeof(l_caLuaFileName), l_caLuaFileName, "@", caScriptName); //KRodin: РїСЂРёРІРѕРґРёС‚ РїСѓС‚СЊ Рє РІРёРґСѓ @f:\games\s.t.a.l.k.e.r\gamedata\scripts\***.script
 	//
-	//KRodin: исправлено. Теперь содержимое скрипта сразу читается нормально, без мусора на конце.
+	//KRodin: РёСЃРїСЂР°РІР»РµРЅРѕ. РўРµРїРµСЂСЊ СЃРѕРґРµСЂР¶РёРјРѕРµ СЃРєСЂРёРїС‚Р° СЃСЂР°Р·Сѓ С‡РёС‚Р°РµС‚СЃСЏ РЅРѕСЂРјР°Р»СЊРЅРѕ, Р±РµР· РјСѓСЃРѕСЂР° РЅР° РєРѕРЅС†Рµ.
 	auto strBuf = std::make_unique<char[]>(l_tpFileReader->length() + 1);
 	strncpy(strBuf.get(), (const char*)l_tpFileReader->pointer(), l_tpFileReader->length());
 	strBuf.get()[l_tpFileReader->length()] = 0;
@@ -325,17 +325,17 @@ bool CScriptStorage::do_file(const char* caScriptName, const char* caNameSpaceNa
 	if (!loaded)
 		return false;
 
-	int	l_iErrorCode = lua_pcall(lua(), 0, 0, 0); //KRodin: без этого скрипты не работают!
+	int	l_iErrorCode = lua_pcall(lua(), 0, 0, 0); //KRodin: Р±РµР· СЌС‚РѕРіРѕ СЃРєСЂРёРїС‚С‹ РЅРµ СЂР°Р±РѕС‚Р°СЋС‚!
 	if (l_iErrorCode)
 	{
 		print_output(lua(), caScriptName, l_iErrorCode);
-		R_ASSERT(false); //НЕ ЗАКОММЕНТИРОВАТЬ!
+		R_ASSERT(false); //РќР• Р—РђРљРћРњРњР•РќРўРР РћР’РђРўР¬!
 		return false;
 	}
 	return true;
 }
 
-bool CScriptStorage::namespace_loaded(const char* name, bool remove_from_stack) //KRodin: видимо, функция проверяет, загружен ли скрипт.
+bool CScriptStorage::namespace_loaded(const char* name, bool remove_from_stack) //KRodin: РІРёРґРёРјРѕ, С„СѓРЅРєС†РёСЏ РїСЂРѕРІРµСЂСЏРµС‚, Р·Р°РіСЂСѓР¶РµРЅ Р»Рё СЃРєСЂРёРїС‚.
 {
 #ifdef DEBUG
 	int start = lua_gettop(lua());
@@ -462,7 +462,7 @@ luabind::object CScriptStorage::name_space(const char* namespace_name)
 	}
 }
 
-bool CScriptStorage::print_output(lua_State *L, const char* caScriptFileName, int errorCode) //KRodin: вызывается из нескольких мест, в т.ч. из калбеков lua_error, lua_pcall_failed, lua_cast_failed, lua_panic
+bool CScriptStorage::print_output(lua_State *L, const char* caScriptFileName, int errorCode) //KRodin: РІС‹Р·С‹РІР°РµС‚СЃСЏ РёР· РЅРµСЃРєРѕР»СЊРєРёС… РјРµСЃС‚, РІ С‚.С‡. РёР· РєР°Р»Р±РµРєРѕРІ lua_error, lua_pcall_failed, lua_cast_failed, lua_panic
 {
 	auto Prefix = "";
 	if (errorCode) {
@@ -491,7 +491,7 @@ bool CScriptStorage::print_output(lua_State *L, const char* caScriptFileName, in
 
 	auto traceback = get_lua_traceback(L);
 
-	if (!lua_isstring(L, -1)) //НЕ УДАЛЯТЬ! Иначе будут вылeты без лога!
+	if (!lua_isstring(L, -1)) //РќР• РЈР”РђР›РЇРўР¬! РРЅР°С‡Рµ Р±СѓРґСѓС‚ РІС‹Р»eС‚С‹ Р±РµР· Р»РѕРіР°!
 	{
 		Msg("*********************************************************************************");
 		Msg("[print_output(%s)] %s!\n%s", caScriptFileName, Prefix, traceback);

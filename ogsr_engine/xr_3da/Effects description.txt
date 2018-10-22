@@ -61,7 +61,7 @@ In Detail (not sorted by any kind of priority):
 	- Optimized for T&L hardware in the way of grouping primitives to large-size batches
 	- Can handle up to 20,000 polys in one frame on software transformation(PII 450) and up to 80,000 in T&L(GeForce2)
 	- Greatly reduces overdraw - which is the main slowdown on even high-level video boards
-	- Enables to use more texturing effects compared with today“s engines (Even Q3 & Unreal)
+	- Enables to use more texturing effects compared with today–¢s engines (Even Q3 & Unreal)
 * Intelligent hardware state caching technology
 	- Results in speed increasing on bed-written rendering code (not all of the programmers code good, isn't so? :)
 * Dynamically generated textures

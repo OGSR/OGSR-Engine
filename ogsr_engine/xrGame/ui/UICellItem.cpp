@@ -330,7 +330,7 @@ void CUICellItem::ColorizeItems( std::initializer_list<CUIDragDropListEx*> args 
   if (!inventoryitem) return;
 
   bool colorize_ammo = Core.Features.test(xrCore::Feature::colorize_ammo);
-  u32 Color = READ_IF_EXISTS( pSettings, r_color, "dragdrop", "color_ammo", color_argb( 255, 212, 8, 185 ) ); //Это надо бы читать где-нибудь при старте игры...
+  u32 Color = READ_IF_EXISTS( pSettings, r_color, "dragdrop", "color_ammo", color_argb( 255, 212, 8, 185 ) ); //Р­С‚Рѕ РЅР°РґРѕ Р±С‹ С‡РёС‚Р°С‚СЊ РіРґРµ-РЅРёР±СѓРґСЊ РїСЂРё СЃС‚Р°СЂС‚Рµ РёРіСЂС‹...
 
   for ( auto* DdListEx : args ) {
     if (!DdListEx) continue;
@@ -399,7 +399,7 @@ void CUICellItem::ColorizeItems( std::initializer_list<CUIDragDropListEx*> args 
 	  WpnScanner(Wpn);
 	  ColorizeAmmoAddons();
   }
-  else { //Надо подумать, какое условие тут сделать. Аддоны например, могут быть не именно аддонами, а фейк-предметами, например. Лушчше наверно вообще без каких-либо условий.
+  else { //РќР°РґРѕ РїРѕРґСѓРјР°С‚СЊ, РєР°РєРѕРµ СѓСЃР»РѕРІРёРµ С‚СѓС‚ СЃРґРµР»Р°С‚СЊ. РђРґРґРѕРЅС‹ РЅР°РїСЂРёРјРµСЂ, РјРѕРіСѓС‚ Р±С‹С‚СЊ РЅРµ РёРјРµРЅРЅРѕ Р°РґРґРѕРЅР°РјРё, Р° С„РµР№Рє-РїСЂРµРґРјРµС‚Р°РјРё, РЅР°РїСЂРёРјРµСЂ. Р›СѓС€С‡С€Рµ РЅР°РІРµСЂРЅРѕ РІРѕРѕР±С‰Рµ Р±РµР· РєР°РєРёС…-Р»РёР±Рѕ СѓСЃР»РѕРІРёР№.
 	  ColorizeWeapons(inventoryitem->object().cNameSect());
   }
 }

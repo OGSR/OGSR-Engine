@@ -207,7 +207,7 @@ void CUIDiaryWnd::LoadJournalTab			(ARTICLE_DATA::EArticleType _type)
 		}
 	}
 	g_pda_info_state	&=	!pda_section::journal;
-#pragma todo("KRodin: journal æå íå ìîæåò íå áûòü, ÷òî ýòèì êîäîì õîòåëè ñäåëàòü? Ïðîâåðèòü, ðàáî÷èé ëè îí âîîáùå.")
+#pragma todo("KRodin: journal Ð¶Ðµ Ð½Ðµ Ð¼Ð¾Ð¶ÐµÑ‚ Ð½Ðµ Ð±Ñ‹Ñ‚ÑŒ, Ñ‡Ñ‚Ð¾ ÑÑ‚Ð¸Ð¼ ÐºÐ¾Ð´Ð¾Ð¼ Ñ…Ð¾Ñ‚ÐµÐ»Ð¸ ÑÐ´ÐµÐ»Ð°Ñ‚ÑŒ? ÐŸÑ€Ð¾Ð²ÐµÑ€Ð¸Ñ‚ÑŒ, Ñ€Ð°Ð±Ð¾Ñ‡Ð¸Ð¹ Ð»Ð¸ Ð¾Ð½ Ð²Ð¾Ð¾Ð±Ñ‰Ðµ.")
 }
 
 void CUIDiaryWnd::UnloadInfoTab	()
@@ -250,7 +250,7 @@ void CUIDiaryWnd::OnSrcListItemClicked	(CUIWindow* w,void* p)
 		article_info->SetArticle	(m_ArticlesDB[pSelItem->GetValue()]);
 		m_DescrView->AddWindow		(article_info, true);
 
-		// Èñïðàâëåíèå îòîáðàæåíèÿ çåëåíûì öâåòîì ïðî÷èòàííûõ çàïèñåé â äíåâíèêå ÊÏÊ
+		// Ð˜ÑÐ¿Ñ€Ð°Ð²Ð»ÐµÐ½Ð¸Ðµ Ð¾Ñ‚Ð¾Ð±Ñ€Ð°Ð¶ÐµÐ½Ð¸Ñ Ð·ÐµÐ»ÐµÐ½Ñ‹Ð¼ Ñ†Ð²ÐµÑ‚Ð¾Ð¼ Ð¿Ñ€Ð¾Ñ‡Ð¸Ñ‚Ð°Ð½Ð½Ñ‹Ñ… Ð·Ð°Ð¿Ð¸ÑÐµÐ¹ Ð² Ð´Ð½ÐµÐ²Ð½Ð¸ÐºÐµ ÐšÐŸÐš
 		if (!pSelItem->IsArticleReaded())
 		{
 			if (Actor()->encyclopedia_registry->registry().objects_ptr())

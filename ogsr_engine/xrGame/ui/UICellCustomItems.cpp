@@ -32,7 +32,7 @@ bool CUIInventoryCellItem::EqualTo(CUICellItem* itm)
 	CUIInventoryCellItem* ci = smart_cast<CUIInventoryCellItem*>(itm);
 	if(!itm)				return false;
 
-	// Real Wolf: ������ �� ����������� � ���� ������������� ������������ ���������. 12.08.2014.
+	// Real Wolf: Колбек на группировку и само регулирование группировкой предметов. 12.08.2014.
 	auto item1 = (CInventoryItem*)m_pData;
 	auto item2 = (CInventoryItem*)itm->m_pData;
 
@@ -362,12 +362,12 @@ void CUIWeaponCellItem::InitAddon(CUIStatic* s, CIconParams &params, Fvector2 ad
 		if (Heading())
 		{   // h = 250, w = 80, i.x = 300, i.y = 100	
 			if (1 == method)
-			{   // ���� �������� ������� height & width.
+			{   // пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ height & width.
 				expected_size.x = m_cell_size.y * m_grid_size.x;
 				expected_size.y = m_cell_size.x * m_grid_size.y;
 			}
 			if (2 == method)
-			{   // ���� �������� ������� height & width + ���������
+			{   // пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ height & width + пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 				expected_size.x = m_cell_size.y * m_grid_size.y;
 				expected_size.y = m_cell_size.x * m_grid_size.x;
 			}
@@ -390,7 +390,7 @@ void CUIWeaponCellItem::InitAddon(CUIStatic* s, CIconParams &params, Fvector2 ad
 		Fvector2				cell_size;
 		Frect rect = params.original_rect();
 
-		cell_size.x				= rect.width(); // ��� ���������, ��� ������ ��������� 50�50 ������? )
+		cell_size.x				= rect.width(); // это допущение, что ячейки инвентаря 50х50 всегда? )
 		cell_size.y				= rect.height();
 
 		tex_rect.x1				= rect.x1;

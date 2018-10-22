@@ -58,7 +58,7 @@ void CCustomDetector::Load(LPCSTR section)
 	u32 i = 1;
 	string256 temp;
 
-	//загрузить звуки для обозначения различных типов зон
+	//Р·Р°РіСЂСѓР·РёС‚СЊ Р·РІСѓРєРё РґР»СЏ РѕР±РѕР·РЅР°С‡РµРЅРёСЏ СЂР°Р·Р»РёС‡РЅС‹С… С‚РёРїРѕРІ Р·РѕРЅ
 	do 
 	{
 		sprintf_s			(temp, "zone_class_%d", i);
@@ -138,7 +138,7 @@ void CCustomDetector::UpdateCL()
 		ZONE_INFO& zone_info = it->second;
 
 		
-		//такой тип зон не обнаруживается
+		//С‚Р°РєРѕР№ С‚РёРї Р·РѕРЅ РЅРµ РѕР±РЅР°СЂСѓР¶РёРІР°РµС‚СЃСЏ
 		if(m_ZoneTypeMap.find(pZone->CLS_ID) == m_ZoneTypeMap.end() ||
 			!pZone->VisibleByDetector())
 			continue;
@@ -154,7 +154,7 @@ void CCustomDetector::UpdateCL()
 		float fRelPow = 1.f - dist_to_zone / m_fRadius;
 		clamp(fRelPow, 0.f, 1.f);
 
-		//определить текущую частоту срабатывания сигнала
+		//РѕРїСЂРµРґРµР»РёС‚СЊ С‚РµРєСѓС‰СѓСЋ С‡Р°СЃС‚РѕС‚Сѓ СЃСЂР°Р±Р°С‚С‹РІР°РЅРёСЏ СЃРёРіРЅР°Р»Р°
 		zone_info.cur_freq = zone_type.min_freq + 
 			(zone_type.max_freq - zone_type.min_freq) * fRelPow* fRelPow* fRelPow* fRelPow;
 

@@ -8,7 +8,7 @@
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
 
-int		rsDVB_Size = 8192; //4096; //Fixed: (bytes_need<=mSize) && vl_Count //KRodin: óâåëè÷èë åù¸, ò.ê. ó ìåíÿ è ïðè 4096 âûëåòàëî.
+int		rsDVB_Size = 8192; //4096; //Fixed: (bytes_need<=mSize) && vl_Count //KRodin: ÑƒÐ²ÐµÐ»Ð¸Ñ‡Ð¸Ð» ÐµÑ‰Ñ‘, Ñ‚.Ðº. Ñƒ Ð¼ÐµÐ½Ñ Ð¸ Ð¿Ñ€Ð¸ 4096 Ð²Ñ‹Ð»ÐµÑ‚Ð°Ð»Ð¾.
 int		rsDIB_Size = 512;
 
 void _VertexStream::Create	()

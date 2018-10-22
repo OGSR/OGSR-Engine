@@ -73,7 +73,7 @@ void game_PlayerState::resetFlag(u16 f)
 	flags__ &= ~(f);
 }
 
-void	game_PlayerState::net_Export(NET_Packet& P, BOOL Full) //KRodin: НЕ ИЗМЕНЯТЬ! Иначе будет несовместимо по сейвам!
+void	game_PlayerState::net_Export(NET_Packet& P, BOOL Full) //KRodin: РќР• РР—РњР•РќРЇРўР¬! РРЅР°С‡Рµ Р±СѓРґРµС‚ РЅРµСЃРѕРІРјРµСЃС‚РёРјРѕ РїРѕ СЃРµР№РІР°Рј!
 {
 	P.w_u8			(Full ? 1 : 0);
 	if (Full)
@@ -98,7 +98,7 @@ void	game_PlayerState::net_Export(NET_Packet& P, BOOL Full) //KRodin: НЕ ИЗМЕНЯТ
 	P.w_u32			(Device.dwTimeGlobal - DeathTime);
 };
 
-void	game_PlayerState::net_Import(NET_Packet& P) //KRodin: НЕ ИЗМЕНЯТЬ! Иначе будет несовместимо по сейвам!
+void	game_PlayerState::net_Import(NET_Packet& P) //KRodin: РќР• РР—РњР•РќРЇРўР¬! РРЅР°С‡Рµ Р±СѓРґРµС‚ РЅРµСЃРѕРІРјРµСЃС‚РёРјРѕ РїРѕ СЃРµР№РІР°Рј!
 {
 	BOOL	bFullUpdate = !!P.r_u8();
 

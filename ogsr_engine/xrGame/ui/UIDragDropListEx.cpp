@@ -142,7 +142,7 @@ Fvector2 CUIDragDropListEx::GetDragItemPosition()
 
 void CUIDragDropListEx::OnItemStartDragging(CUIWindow* w, void* pData)
 {
-	// Избегаем случая двойного драга. Real Wolf. 12.11.14.
+	// РР·Р±РµРіР°РµРј СЃР»СѓС‡Р°СЏ РґРІРѕР№РЅРѕРіРѕ РґСЂР°РіР°. Real Wolf. 12.11.14.
 	if (m_drag_item)
 		return;
 
@@ -891,7 +891,7 @@ void CUICellContainer::clear_select_armament()
 	auto CarBodyWnd = smart_cast<CUICarBodyWnd*>(TopWnd);
 	CUITradeWnd* TradeWnd = nullptr;
 
-	if (!InvWnd && !CarBodyWnd) { //Окно торговли приаттачено к CUITalkWnd, поэтому придётся извращаться с его поиском
+	if (!InvWnd && !CarBodyWnd) { //РћРєРЅРѕ С‚РѕСЂРіРѕРІР»Рё РїСЂРёР°С‚С‚Р°С‡РµРЅРѕ Рє CUITalkWnd, РїРѕСЌС‚РѕРјСѓ РїСЂРёРґС‘С‚СЃСЏ РёР·РІСЂР°С‰Р°С‚СЊСЃСЏ СЃ РµРіРѕ РїРѕРёСЃРєРѕРј
 		auto Parent = this->GetParent();
 		do {
 			TradeWnd = smart_cast<CUITradeWnd*>(Parent);

@@ -155,9 +155,9 @@ void CPHSkeleton::Update(u32 dt)
 	}
 
 }
-//KRodin: было выяснено, что SaveNetState здесь вызывается, а LoadNetState - нет.
-//В будущем надо подумать, что делать с этим бредом.
-//Как вариант - выпилить эту функцию нафиг. Но тогда может возникнуть проблема с совместимостью сейвов.
+//KRodin: Р±С‹Р»Рѕ РІС‹СЏСЃРЅРµРЅРѕ, С‡С‚Рѕ SaveNetState Р·РґРµСЃСЊ РІС‹Р·С‹РІР°РµС‚СЃСЏ, Р° LoadNetState - РЅРµС‚.
+//Р’ Р±СѓРґСѓС‰РµРј РЅР°РґРѕ РїРѕРґСѓРјР°С‚СЊ, С‡С‚Рѕ РґРµР»Р°С‚СЊ СЃ СЌС‚РёРј Р±СЂРµРґРѕРј.
+//РљР°Рє РІР°СЂРёР°РЅС‚ - РІС‹РїРёР»РёС‚СЊ СЌС‚Сѓ С„СѓРЅРєС†РёСЋ РЅР°С„РёРі. РќРѕ С‚РѕРіРґР° РјРѕР¶РµС‚ РІРѕР·РЅРёРєРЅСѓС‚СЊ РїСЂРѕР±Р»РµРјР° СЃ СЃРѕРІРјРµСЃС‚РёРјРѕСЃС‚СЊСЋ СЃРµР№РІРѕРІ.
 void CPHSkeleton::SaveNetState(NET_Packet& P)
 {
 	//Msg("!!Called [CPHSkeleton::SaveNetState]");
@@ -224,7 +224,7 @@ void CPHSkeleton::SaveNetState(NET_Packet& P)
 	}
 }
 
-void CPHSkeleton::LoadNetState(NET_Packet& P) //Вообще никогда не вызывается.
+void CPHSkeleton::LoadNetState(NET_Packet& P) //Р’РѕРѕР±С‰Рµ РЅРёРєРѕРіРґР° РЅРµ РІС‹Р·С‹РІР°РµС‚СЃСЏ.
 {
 	Msg("!!Called [CPHSkeleton::LoadNetState]");
 }

@@ -97,11 +97,11 @@ bool CStateBloodsuckerVampireExecuteAbstract::check_start_conditions()
 {
 	const CEntityAlive	*enemy = object->EnemyMan.get_enemy();
 	
-	// проверить дистанцию
+	// РїСЂРѕРІРµСЂРёС‚СЊ РґРёСЃС‚Р°РЅС†РёСЋ
 	float dist		= object->MeleeChecker.distance_to_enemy	(enemy);
 	if ((dist > VAMPIRE_MAX_DIST) || (dist < VAMPIRE_MIN_DIST))	return false;
 
-	// проверить направление на врага
+	// РїСЂРѕРІРµСЂРёС‚СЊ РЅР°РїСЂР°РІР»РµРЅРёРµ РЅР° РІСЂР°РіР°
 	if (!object->control().direction().is_face_target(enemy, PI_DIV_6)) return false;
 
 	return true;
@@ -135,7 +135,7 @@ void CStateBloodsuckerVampireExecuteAbstract::execute_vampire_continue()
 	
 	object->sound().play(CAI_Bloodsucker::eVampireSucking);
 
-	// проверить на грави удар
+	// РїСЂРѕРІРµСЂРёС‚СЊ РЅР° РіСЂР°РІРё СѓРґР°СЂ
 	if (time_vampire_started + VAMPIRE_TIME_HOLD < Device.dwTimeGlobal) {
 		m_action = eActionFire;
 	}

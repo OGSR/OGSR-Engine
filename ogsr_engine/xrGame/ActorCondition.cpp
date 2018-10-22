@@ -65,7 +65,7 @@ void CActorCondition::LoadCondition(LPCSTR entity_section)
 	m_fAccelK					= pSettings->r_float(section,"accel_k");
 	m_fSprintK					= pSettings->r_float(section,"sprint_k");
 
-	//ïîðîã ñèëû è çäîðîâüÿ ìåíüøå êîòîðîãî àêòåð íà÷èíàåò õðîìàòü
+	//Ð¿Ð¾Ñ€Ð¾Ð³ ÑÐ¸Ð»Ñ‹ Ð¸ Ð·Ð´Ð¾Ñ€Ð¾Ð²ÑŒÑ Ð¼ÐµÐ½ÑŒÑˆÐµ ÐºÐ¾Ñ‚Ð¾Ñ€Ð¾Ð³Ð¾ Ð°ÐºÑ‚ÐµÑ€ Ð½Ð°Ñ‡Ð¸Ð½Ð°ÐµÑ‚ Ñ…Ñ€Ð¾Ð¼Ð°Ñ‚ÑŒ
 	m_fLimpingHealthBegin		= pSettings->r_float(section,	"limping_health_begin");
 	m_fLimpingHealthEnd			= pSettings->r_float(section,	"limping_health_end");
 	R_ASSERT					(m_fLimpingHealthBegin<=m_fLimpingHealthEnd);
@@ -94,7 +94,7 @@ void CActorCondition::LoadCondition(LPCSTR entity_section)
 }
 
 
-//âû÷èñëåíèå ïàðàìåòðîâ ñ õîäîì âðåìåíè
+//Ð²Ñ‹Ñ‡Ð¸ÑÐ»ÐµÐ½Ð¸Ðµ Ð¿Ð°Ñ€Ð°Ð¼ÐµÑ‚Ñ€Ð¾Ð² Ñ Ñ…Ð¾Ð´Ð¾Ð¼ Ð²Ñ€ÐµÐ¼ÐµÐ½Ð¸
 #include "UI.h"
 #include "HUDManager.h"
 
@@ -190,7 +190,7 @@ void CActorCondition::UpdateSatiety()
 
 	}
 		
-	//ñûòîñòü óâåëè÷èâàåò çäîðîâüå òîëüêî åñëè íåò îòêðûòûõ ðàí
+	//ÑÑ‹Ñ‚Ð¾ÑÑ‚ÑŒ ÑƒÐ²ÐµÐ»Ð¸Ñ‡Ð¸Ð²Ð°ÐµÑ‚ Ð·Ð´Ð¾Ñ€Ð¾Ð²ÑŒÐµ Ñ‚Ð¾Ð»ÑŒÐºÐ¾ ÐµÑÐ»Ð¸ Ð½ÐµÑ‚ Ð¾Ñ‚ÐºÑ€Ñ‹Ñ‚Ñ‹Ñ… Ñ€Ð°Ð½
 	if(!m_bIsBleeding)
 	{
 		m_fDeltaHealth += CanBeHarmed() ? 
@@ -198,7 +198,7 @@ void CActorCondition::UpdateSatiety()
 					: 0;
 	}
 
-	//êîýôôèöèåíòû óìåíüøåíèÿ âîññòàíîâëåíèÿ ñèëû îò ñûòîòè è ðàäèàöèè
+	//ÐºÐ¾ÑÑ„Ñ„Ð¸Ñ†Ð¸ÐµÐ½Ñ‚Ñ‹ ÑƒÐ¼ÐµÐ½ÑŒÑˆÐµÐ½Ð¸Ñ Ð²Ð¾ÑÑÑ‚Ð°Ð½Ð¾Ð²Ð»ÐµÐ½Ð¸Ñ ÑÐ¸Ð»Ñ‹ Ð¾Ñ‚ ÑÑ‹Ñ‚Ð¾Ñ‚Ð¸ Ð¸ Ñ€Ð°Ð´Ð¸Ð°Ñ†Ð¸Ð¸
 	float radiation_power_k		= 1.f;
 	float satiety_power_k		= 1.f;
 			
@@ -215,7 +215,7 @@ CWound* CActorCondition::ConditionHit(SHit* pHDS)
 	return inherited::ConditionHit(pHDS);
 }
 
-//weight - "óäåëüíûé" âåñ îò 0..1
+//weight - "ÑƒÐ´ÐµÐ»ÑŒÐ½Ñ‹Ð¹" Ð²ÐµÑ Ð¾Ñ‚ 0..1
 void CActorCondition::ConditionJump(float weight)
 {
 	float power			=	m_fJumpPower;

@@ -144,7 +144,7 @@ void CScriptActor::script_register(lua_State *L)
 			.def("get_wound_total_size",				&get_wound_total_size)
 			//.property("class_name",						&get_lua_class_name)
 			,
-			class_ <CActorConditionObject, bases<CActorCondition, CEntityCondition>>("CActorCondition") // нормальное наследование свойств происходит через Ж (
+			class_ <CActorConditionObject, bases<CActorCondition, CEntityCondition>>("CActorCondition") // РЅРѕСЂРјР°Р»СЊРЅРѕРµ РЅР°СЃР»РµРґРѕРІР°РЅРёРµ СЃРІРѕР№СЃС‚РІ РїСЂРѕРёСЃС…РѕРґРёС‚ С‡РµСЂРµР· Р– (
 			,
 			class_<CPHMovementControl>("CPHMovementControl")
 			.def_readwrite("ph_mass", &CPHMovementControl::fMass)
@@ -205,9 +205,9 @@ void CScriptActor::script_register(lua_State *L)
 			.def("is_actor_moving",						&CActor::is_actor_moving)
 			.def( "UpdateArtefactsOnBelt", &CActor::UpdateArtefactsOnBelt )
 			,
-			class_<CActorObject, bases<CActor, CEntityAlive>>("CActor")	// хак с наследованием нужен для переопределения свойств. Luabind не поддерживает property getters override			
+			class_<CActorObject, bases<CActor, CEntityAlive>>("CActor")	// С…Р°Рє СЃ РЅР°СЃР»РµРґРѕРІР°РЅРёРµРј РЅСѓР¶РµРЅ РґР»СЏ РїРµСЂРµРѕРїСЂРµРґРµР»РµРЅРёСЏ СЃРІРѕР№СЃС‚РІ. Luabind РЅРµ РїРѕРґРґРµСЂР¶РёРІР°РµС‚ property getters override			
 			
-// #pragma todo(" alpet : понять почему затирается свойство class_name для объекта актора. CInventoryOwner?")
+// #pragma todo(" alpet : РїРѕРЅСЏС‚СЊ РїРѕС‡РµРјСѓ Р·Р°С‚РёСЂР°РµС‚СЃСЏ СЃРІРѕР№СЃС‚РІРѕ class_name РґР»СЏ РѕР±СЉРµРєС‚Р° Р°РєС‚РѕСЂР°. CInventoryOwner?")
 			
 		];		
 }

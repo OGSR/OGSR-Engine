@@ -1,6 +1,6 @@
 #pragma once
 
-//KRodin: это инклудить только здесь и нигде больше!
+//KRodin: СЌС‚Рѕ РёРЅРєР»СѓРґРёС‚СЊ С‚РѕР»СЊРєРѕ Р·РґРµСЃСЊ Рё РЅРёРіРґРµ Р±РѕР»СЊС€Рµ!
 #if __has_include("..\build_config_overrides\build_config_defines.h")
 #	include "..\build_config_overrides\build_config_defines.h"
 #else
@@ -51,7 +51,7 @@
 // Warnings
 #pragma warning (disable : 4251 )		// object needs DLL interface
 #pragma warning (disable : 4201 )		// nonstandard extension used : nameless struct/union
-#pragma warning (disable : 4100 )		// unreferenced formal parameter //TODO: Надо б убрать игнор и всё поправить.
+#pragma warning (disable : 4100 )		// unreferenced formal parameter //TODO: РќР°РґРѕ Р± СѓР±СЂР°С‚СЊ РёРіРЅРѕСЂ Рё РІСЃС‘ РїРѕРїСЂР°РІРёС‚СЊ.
 #pragma warning (disable : 4127 )		// conditional expression is constant
 #pragma warning (disable : 4714 )		// __forceinline not inlined
 #ifdef _M_AMD64
@@ -148,7 +148,7 @@ DEFINE_VECTOR	(xr_rtoken,RTokenVec,RTokenVecIt);
 #	define LogDbg __noop
 #	define MsgDbg __noop
 #	define FuncDbg __noop
-#	define ASSERT_FMT_DBG(cond, ...) do { if (!(cond)) Msg(__VA_ARGS__); } while(0) //Вылета не будет, просто в лог напишем
+#	define ASSERT_FMT_DBG(cond, ...) do { if (!(cond)) Msg(__VA_ARGS__); } while(0) //Р’С‹Р»РµС‚Р° РЅРµ Р±СѓРґРµС‚, РїСЂРѕСЃС‚Рѕ РІ Р»РѕРі РЅР°РїРёС€РµРј
 #endif
 
 
