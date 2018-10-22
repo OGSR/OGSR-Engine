@@ -52,7 +52,7 @@ void CActionPlanner<CScriptGameObject>::script_register(lua_State *L)
 			.def("current_action",				&CScriptActionPlanner::current_action)
 			.def("initialized",					&CScriptActionPlanner::initialized)
 			.def("set_goal_world_state",		&set_goal_world_state)
-			//KRodin: Выключено до починки. Если этот метод вызвать - повиснет sheduler непися, да ещё и если после этого сохраниться - будут битые сейвы.
+			//KRodin: Р’С‹РєР»СЋС‡РµРЅРѕ РґРѕ РїРѕС‡РёРЅРєРё. Р•СЃР»Рё СЌС‚РѕС‚ РјРµС‚РѕРґ РІС‹Р·РІР°С‚СЊ - РїРѕРІРёСЃРЅРµС‚ sheduler РЅРµРїРёСЃСЏ, РґР° РµС‰С‘ Рё РµСЃР»Рё РїРѕСЃР»Рµ СЌС‚РѕРіРѕ СЃРѕС…СЂР°РЅРёС‚СЊСЃСЏ - Р±СѓРґСѓС‚ Р±РёС‚С‹Рµ СЃРµР№РІС‹.
 			//.def("clear",						&CScriptActionPlanner::clear)
 #ifdef LOG_ACTION
 			.def("show",						&CScriptActionPlanner::show)

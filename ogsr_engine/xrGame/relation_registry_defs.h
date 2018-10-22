@@ -1,6 +1,6 @@
 //////////////////////////////////////////////////////////////////////////
-// relation_registry_defs.h:	реестр для хранения данных об отношении персонажа к 
-//								другим персонажам
+// relation_registry_defs.h:	СЂРµРµСЃС‚СЂ РґР»СЏ С…СЂР°РЅРµРЅРёСЏ РґР°РЅРЅС‹С… РѕР± РѕС‚РЅРѕС€РµРЅРёРё РїРµСЂСЃРѕРЅР°Р¶Р° Рє 
+//								РґСЂСѓРіРёРј РїРµСЂСЃРѕРЅР°Р¶Р°Рј
 //////////////////////////////////////////////////////////////////////////
 
 #pragma once
@@ -8,7 +8,7 @@
 #include "object_interfaces.h"
 
 
-//структура, описывающая отношение одного персонажа к другому или к группировке
+//СЃС‚СЂСѓРєС‚СѓСЂР°, РѕРїРёСЃС‹РІР°СЋС‰Р°СЏ РѕС‚РЅРѕС€РµРЅРёРµ РѕРґРЅРѕРіРѕ РїРµСЂСЃРѕРЅР°Р¶Р° Рє РґСЂСѓРіРѕРјСѓ РёР»Рё Рє РіСЂСѓРїРїРёСЂРѕРІРєРµ
 struct SRelation
 {
 	SRelation();
@@ -16,7 +16,7 @@ struct SRelation
 	CHARACTER_GOODWILL		Goodwill		() const							{return m_iGoodwill;};
 	void					SetGoodwill		(CHARACTER_GOODWILL new_goodwill)	{m_iGoodwill = new_goodwill;};
 private:
-	//благосклонность
+	//Р±Р»Р°РіРѕСЃРєР»РѕРЅРЅРѕСЃС‚СЊ
 	CHARACTER_GOODWILL m_iGoodwill;
 };
 
@@ -24,7 +24,7 @@ DEFINE_MAP(u16,							SRelation, PERSONAL_RELATION_MAP, PERSONAL_RELATION_MAP_IT
 DEFINE_MAP(CHARACTER_COMMUNITY_INDEX,	SRelation, COMMUNITY_RELATION_MAP, COMMUNITY_RELATION_MAP_IT);
 
 
-//структура, существует для каждого персонажа в игре
+//СЃС‚СЂСѓРєС‚СѓСЂР°, СЃСѓС‰РµСЃС‚РІСѓРµС‚ РґР»СЏ РєР°Р¶РґРѕРіРѕ РїРµСЂСЃРѕРЅР°Р¶Р° РІ РёРіСЂРµ
 struct RELATION_DATA : public IPureSerializeObject<IReader,IWriter>
 {
 	virtual void clear();
@@ -32,9 +32,9 @@ struct RELATION_DATA : public IPureSerializeObject<IReader,IWriter>
 	virtual void load (IReader&);
 	virtual void save (IWriter&);
 
-	//личные отношения
+	//Р»РёС‡РЅС‹Рµ РѕС‚РЅРѕС€РµРЅРёСЏ
 	PERSONAL_RELATION_MAP personal; 
 	std::vector<u16> reverse_personal;
-	//отношения с группировками
+	//РѕС‚РЅРѕС€РµРЅРёСЏ СЃ РіСЂСѓРїРїРёСЂРѕРІРєР°РјРё
 	COMMUNITY_RELATION_MAP communities;
 };

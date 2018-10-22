@@ -47,9 +47,9 @@ private:
 	Ivector2				m_orig_cell_capacity;
 	bool					m_bConditionProgBarVisible;
 
-protected:
-	
+public:
 	CUICellContainer*		m_container;
+protected:
 	CUIScrollBar*			m_vScrollBar;
 
 	void	__stdcall		OnScrollV				(CUIWindow* w, void* pData);
@@ -125,6 +125,7 @@ public:
 	virtual		bool		OnMouse				(float x, float y, EUIMessages mouse_action);
 	virtual		void		SendMessage			(CUIWindow* pWnd, s16 msg, void* pData = NULL);
 
+	bool is_highlighted;
 };
 
 class CUICellContainer :public CUIWindow
@@ -162,8 +163,10 @@ protected:
 	IC const	Ivector2&		CellsSpacing		()								{return m_cellSpacing;};	
 				void			SetCellsSpacing		(const Ivector2& new_sz);
 				Ivector2		TopVisibleCell		();
+public:
 				CUICell&		GetCellAt			(const Ivector2& pos);
 				Ivector2		PickCell			(const Fvector2& abs_pos);
+protected:
 				Ivector2		GetItemPos			(CUICellItem* itm);
 				Ivector2		FindFreeCell		(const Ivector2& size);
 				bool			HasFreeSpace		(const Ivector2& size);
@@ -174,8 +177,9 @@ protected:
 
 				void			PlaceItemAtPos		(CUICellItem* itm, Ivector2& cell_pos);
 				CUICellItem*	RemoveItem			(CUICellItem* itm, bool force_root);
+public:
 				bool			ValidCell			(const Ivector2& pos) const;
-
+protected:
 				void			Grow				();
 				void			Shrink				();
 				void			ClearAll			(bool bDestroy);

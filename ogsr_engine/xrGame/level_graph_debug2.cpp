@@ -81,8 +81,8 @@ void CLevelGraph::draw_nodes	()
 	RCache.set_Shader	(sh_debug);
 	F->SetColor			(color_rgba(255,255,255,255));
 
-	// если включён ai_dbg_frustum раскрасить ноды по light
-	// иначе раскрашивать по cover
+	// РµСЃР»Рё РІРєР»СЋС‡С‘РЅ ai_dbg_frustum СЂР°СЃРєСЂР°СЃРёС‚СЊ РЅРѕРґС‹ РїРѕ light
+	// РёРЅР°С‡Рµ СЂР°СЃРєСЂР°С€РёРІР°С‚СЊ РїРѕ cover
 	bool			b_light = false;
 	
 	//////////////////////////////////////////////////////////////////////////

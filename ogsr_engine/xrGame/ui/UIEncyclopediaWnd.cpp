@@ -196,7 +196,7 @@ void CUIEncyclopediaWnd::SetCurrentArtice(CUITreeViewItem *pTVItem)
 
 	if(!pTVItem) return;
 
-	// для начала проверим, что нажатый элемент не рутовый
+	// РґР»СЏ РЅР°С‡Р°Р»Р° РїСЂРѕРІРµСЂРёРј, С‡С‚Рѕ РЅР°Р¶Р°С‚С‹Р№ СЌР»РµРјРµРЅС‚ РЅРµ СЂСѓС‚РѕРІС‹Р№
 	if (!pTVItem->IsRoot())
 	{
 
@@ -205,7 +205,7 @@ void CUIEncyclopediaWnd::SetCurrentArtice(CUITreeViewItem *pTVItem)
 		article_info->SetArticle	(m_ArticlesDB[pTVItem->GetValue()]);
 		UIInfoList->AddWindow		(article_info, true);
 
-		// Пометим как прочитанную
+		// РџРѕРјРµС‚РёРј РєР°Рє РїСЂРѕС‡РёС‚Р°РЅРЅСѓСЋ
 		if (!pTVItem->IsArticleReaded())
 		{
 			if(Actor()->encyclopedia_registry->registry().objects_ptr())
@@ -232,14 +232,14 @@ void CUIEncyclopediaWnd::AddArticle(shared_str article_id, bool bReaded)
 		if(m_ArticlesDB[i]->Id() == article_id) return;
 	}
 
-	// Добавляем элемент
+	// Р”РѕР±Р°РІР»СЏРµРј СЌР»РµРјРµРЅС‚
 	m_ArticlesDB.resize(m_ArticlesDB.size() + 1);
 	CEncyclopediaArticle*& a = m_ArticlesDB.back();
 	a = xr_new<CEncyclopediaArticle>();
 	a->Load(article_id);
 
 
-	// Теперь создаем иерархию вещи по заданному пути
+	// РўРµРїРµСЂСЊ СЃРѕР·РґР°РµРј РёРµСЂР°СЂС…РёСЋ РІРµС‰Рё РїРѕ Р·Р°РґР°РЅРЅРѕРјСѓ РїСѓС‚Рё
 
 	CreateTreeBranch(a->data()->group, a->data()->name, UIIdxList, m_ArticlesDB.size() - 1, 
 		m_pTreeRootFont, m_uTreeRootColor, m_pTreeItemFont, m_uTreeItemColor, bReaded);

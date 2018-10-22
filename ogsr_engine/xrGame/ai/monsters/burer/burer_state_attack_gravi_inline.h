@@ -94,14 +94,14 @@ void CStateBurerAttackGraviAbstract::critical_finalize()
 TEMPLATE_SPECIALIZATION
 bool CStateBurerAttackGraviAbstract::check_start_conditions()
 {
-	// îáðàáîòàòü îáúåêòû
+	// Ð¾Ð±Ñ€Ð°Ð±Ð¾Ñ‚Ð°Ñ‚ÑŒ Ð¾Ð±ÑŠÐµÐºÑ‚Ñ‹
 	float dist = object->Position().distance_to(object->EnemyMan.get_enemy()->Position());
 	if (dist < GOOD_DISTANCE_FOR_GRAVI) return false;
 	if (!object->EnemyMan.see_enemy_now()) return false; 
 	if (!object->control().direction().is_face_target(object->EnemyMan.get_enemy(), deg(45))) return false;
 	if (object->com_man().ta_is_active()) return false;
 
-	// âñ¸ îê, ìîæíî íà÷àòü ãðàâè àòàêó
+	// Ð²ÑÑ‘ Ð¾Ðº, Ð¼Ð¾Ð¶Ð½Ð¾ Ð½Ð°Ñ‡Ð°Ñ‚ÑŒ Ð³Ñ€Ð°Ð²Ð¸ Ð°Ñ‚Ð°ÐºÑƒ
 	return true;
 }
 
@@ -127,7 +127,7 @@ void CStateBurerAttackGraviAbstract::ExecuteGraviStart()
 TEMPLATE_SPECIALIZATION
 void CStateBurerAttackGraviAbstract::ExecuteGraviContinue()
 {
-	// ïðîâåðèòü íà ãðàâè óäàð
+	// Ð¿Ñ€Ð¾Ð²ÐµÑ€Ð¸Ñ‚ÑŒ Ð½Ð° Ð³Ñ€Ð°Ð²Ð¸ ÑƒÐ´Ð°Ñ€
 
 	float dist = object->Position().distance_to(object->EnemyMan.get_enemy()->Position());
 	float time_to_hold = (abs(dist - GOOD_DISTANCE_FOR_GRAVI)/GOOD_DISTANCE_FOR_GRAVI);

@@ -73,7 +73,7 @@ void CScanningAbilityAbstract::schedule_update()
 	CActor *scan_obj	= smart_cast<CActor *>(Level().CurrentEntity());
 	if (!scan_obj)		return;
 
-	// проверка на активность
+	// РїСЂРѕРІРµСЂРєР° РЅР° Р°РєС‚РёРІРЅРѕСЃС‚СЊ
 	if (state == eStateNotActive) {
 		if (scan_obj->Position().distance_to(object->Position()) < scan_radius) state = eStateScanning;
 	}
@@ -81,11 +81,11 @@ void CScanningAbilityAbstract::schedule_update()
 	if (state == eStateNotActive) return;
 
 	if (state == eStateScanning) {
-		// обновить scan_value
+		// РѕР±РЅРѕРІРёС‚СЊ scan_value
 		float vel = get_velocity(scan_obj);
 		if ( vel > velocity_threshold) {
 			
-			// трейсить не чаще, чем scan_trace_time_freq
+			// С‚СЂРµР№СЃРёС‚СЊ РЅРµ С‡Р°С‰Рµ, С‡РµРј scan_trace_time_freq
 			if (time_last_trace + u32(1000 / scan_trace_time_freq) < Device.dwTimeGlobal) {
 				time_last_trace = Device.dwTimeGlobal;
 				scan_value		+= vel;
@@ -94,10 +94,10 @@ void CScanningAbilityAbstract::schedule_update()
 			if (sound_scan._feedback()) sound_scan.set_position(scan_obj->Position());
 			else {
 				if (object->can_scan) {
-					// играть звук
+					// РёРіСЂР°С‚СЊ Р·РІСѓРє
 					::Sound->play_at_pos(sound_scan, 0, scan_obj->Position());
 				
-					// постпроцесс
+					// РїРѕСЃС‚РїСЂРѕС†РµСЃСЃ
 					// TODO: make this postprocess with static check (only one for all scanners)
 					Actor()->Cameras().AddPPEffector(xr_new<CMonsterEffector>(m_effector_info, m_effector_time, m_effector_time_attack, m_effector_time_release));
 

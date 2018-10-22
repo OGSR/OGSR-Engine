@@ -95,7 +95,7 @@ CInventory *get_obj_inventory(CScriptGameObject *script_obj)
 }
 
 
-// alpet: получение визуала для худа оружия
+// alpet: РїРѕР»СѓС‡РµРЅРёРµ РІРёР·СѓР°Р»Р° РґР»СЏ С…СѓРґР° РѕСЂСѓР¶РёСЏ
 
 CSE_ALifeDynamicObject* CScriptGameObject::alife_object() const
 {
@@ -105,7 +105,7 @@ CSE_ALifeDynamicObject* CScriptGameObject::alife_object() const
 CWeaponHUD*  CScriptGameObject::GetWeaponHUD() const
 {
 	CGameObject *obj = &this->object();
-	CWeapon *wpn = dynamic_cast<CWeapon*> (obj);
+	CWeapon *wpn = smart_cast<CWeapon*>(obj);
 	if (!wpn) return NULL;
 
 	return wpn->GetHUD();
@@ -121,7 +121,7 @@ IRender_Visual* CScriptGameObject::GetWeaponHUD_Visual() const
 void CScriptGameObject::LoadWeaponHUD_Visual(LPCSTR wpn_hud_section)
 {
 	CGameObject *obj = &this->object();
-	CWeapon *wpn = dynamic_cast<CWeapon*> (obj);
+	CWeapon *wpn = smart_cast<CWeapon*>(obj);
 	if (!wpn) return;
 
 	wpn->GetHUD()->Load(wpn_hud_section);
@@ -140,10 +140,10 @@ void lua_pushgameobject(lua_State *L, CGameObject *obj)
 
 	obj->lua_game_object()->set_lua_state(L);
 
-	// базовые классы в иерархии должны быть добавлены последними
+	// Р±Р°Р·РѕРІС‹Рµ РєР»Р°СЃСЃС‹ РІ РёРµСЂР°СЂС…РёРё РґРѕР»Р¶РЅС‹ Р±С‹С‚СЊ РґРѕР±Р°РІР»РµРЅС‹ РїРѕСЃР»РµРґРЅРёРјРё
 	if (smart_cast<CInventoryItem*>(obj))
 	{
-		if (// наследнички CInventoryItem 
+		if (// РЅР°СЃР»РµРґРЅРёС‡РєРё CInventoryItem 
 			test_pushobject<CTorch>						(L, obj) ||						
 			test_pushobject<CArtefact>					(L, obj) ||			
 			test_pushobject<CEatableItemObject>			(L, obj) ||
@@ -231,7 +231,7 @@ lua_State* active_vm(CGameObject *obj = NULL) // deprecated
 
 		CGameObject *ref = lua_togameobject(L, i);
 		if (member && obj && ref == obj && strstr(member, "interface"))
-			return L;   // иногда работает при использовании iterate_inventory из вызова LuaSafeCall
+			return L;   // РёРЅРѕРіРґР° СЂР°Р±РѕС‚Р°РµС‚ РїСЂРё РёСЃРїРѕР»СЊР·РѕРІР°РЅРёРё iterate_inventory РёР· РІС‹Р·РѕРІР° LuaSafeCall
 	}
 
 	lua_getfield(L, LUA_REGISTRYINDEX, "active_vm");	
@@ -251,7 +251,7 @@ lua_State* active_vm(CGameObject *obj = NULL) // deprecated
 	return L;
 }
 
-LPCSTR script_object_class_name(lua_State *L) // для raw-функции. Так-же см. get_lua_class_name для raw-свойства.
+LPCSTR script_object_class_name(lua_State *L) // РґР»СЏ raw-С„СѓРЅРєС†РёРё. РўР°Рє-Р¶Рµ СЃРј. get_lua_class_name РґР»СЏ raw-СЃРІРѕР№СЃС‚РІР°.
 {
 	using namespace luabind::detail;
 
@@ -269,7 +269,7 @@ LPCSTR script_object_class_name(lua_State *L) // для raw-функции. Так-же см. get
 }
 
 
-// alpet: получение произвольного объекта движка по ID  или game_object
+// alpet: РїРѕР»СѓС‡РµРЅРёРµ РїСЂРѕРёР·РІРѕР»СЊРЅРѕРіРѕ РѕР±СЉРµРєС‚Р° РґРІРёР¶РєР° РїРѕ ID  РёР»Рё game_object
 void dynamic_engine_object(lua_State *L)
 {	
 	using namespace luabind::detail;

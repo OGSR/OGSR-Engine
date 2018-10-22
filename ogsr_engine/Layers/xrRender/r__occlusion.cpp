@@ -76,7 +76,7 @@ u32		R_occlusion::occq_get		(u32&	ID		)
 	CTimer	T;
 	T.Start	();
 	Device.Statistic->RenderDUMP_Wait.Begin	();
-#pragma todo("KRodin: â ñòðîêå ñî while â ðåäêèõ ñëó÷àÿõ ïðîñèõîäèò èñêëþ÷åíèå 0xC0000005 íà äâèæêàõ îáîèõ ðàçðÿäíîñòåé. Ïîïûòàëñÿ çàôèêñèòü âûøå, íî íå ôàêò, ÷òî ïîìîæåò.")
+#pragma todo("KRodin: Ð² ÑÑ‚Ñ€Ð¾ÐºÐµ ÑÐ¾ while Ð² Ñ€ÐµÐ´ÐºÐ¸Ñ… ÑÐ»ÑƒÑ‡Ð°ÑÑ… Ð¿Ñ€Ð¾ÑÐ¸Ñ…Ð¾Ð´Ð¸Ñ‚ Ð¸ÑÐºÐ»ÑŽÑ‡ÐµÐ½Ð¸Ðµ 0xC0000005 Ð½Ð° Ð´Ð²Ð¸Ð¶ÐºÐ°Ñ… Ð¾Ð±Ð¾Ð¸Ñ… Ñ€Ð°Ð·Ñ€ÑÐ´Ð½Ð¾ÑÑ‚ÐµÐ¹. ÐŸÐ¾Ð¿Ñ‹Ñ‚Ð°Ð»ÑÑ Ð·Ð°Ñ„Ð¸ÐºÑÐ¸Ñ‚ÑŒ Ð²Ñ‹ÑˆÐµ, Ð½Ð¾ Ð½Ðµ Ñ„Ð°ÐºÑ‚, Ñ‡Ñ‚Ð¾ Ð¿Ð¾Ð¼Ð¾Ð¶ÐµÑ‚.")
 	while	((hr=used[ID].Q->GetData(&fragments,sizeof(fragments),D3DGETDATA_FLUSH))==S_FALSE) {
 		if (!SwitchToThread())			Sleep(ps_r2_wait_sleep);
 		if (T.GetElapsed_ms() > 500)	{

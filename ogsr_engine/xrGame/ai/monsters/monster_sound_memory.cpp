@@ -56,7 +56,7 @@ void CMonsterSoundMemory::HearSound(const SoundElem &s)
 	if (DOOR_OPENING			<= s.type) return;
 	if ((s.type == MONSTER_WALKING) && !s.who) return;
 
-	// поиск в массиве звука
+	// РїРѕРёСЃРє РІ РјР°СЃСЃРёРІРµ Р·РІСѓРєР°
 	xr_vector<SoundElem>::iterator it;
 
 	bool b_sound_replaced = false;
@@ -86,7 +86,7 @@ void CMonsterSoundMemory::GetSound(SoundElem &s, bool &bDangerous)
 {
 	VERIFY(!Sounds.empty());
 
-	// возврат самого опасного
+	// РІРѕР·РІСЂР°С‚ СЃР°РјРѕРіРѕ РѕРїР°СЃРЅРѕРіРѕ
 	s = GetSound();
 
 	if (s.type > WEAPON_EMPTY_CLICKING) bDangerous = false;
@@ -109,13 +109,13 @@ struct pred_remove_nonactual_sounds {
 
 	bool operator() (const SoundElem &x) {
 
-		// удалить звуки от объектов, перешедших в оффлайн	
+		// СѓРґР°Р»РёС‚СЊ Р·РІСѓРєРё РѕС‚ РѕР±СЉРµРєС‚РѕРІ, РїРµСЂРµС€РµРґС€РёС… РІ РѕС„С„Р»Р°Р№РЅ	
 		if (x.who && x.who->getDestroy()) return true;
 
-		// удалить 'старые' звуки
+		// СѓРґР°Р»РёС‚СЊ 'СЃС‚Р°СЂС‹Рµ' Р·РІСѓРєРё
 		if (x.time < new_time)	return true;
 
-		// удалить звуки от неживых объектов
+		// СѓРґР°Р»РёС‚СЊ Р·РІСѓРєРё РѕС‚ РЅРµР¶РёРІС‹С… РѕР±СЉРµРєС‚РѕРІ
 		if (x.who) {
 			const CEntityAlive *pE = smart_cast<const CEntityAlive*> (x.who);
 			if (pE && !pE->g_Alive()) return true;
@@ -128,7 +128,7 @@ struct pred_remove_nonactual_sounds {
 
 void CMonsterSoundMemory::UpdateHearing()
 {
-	// удаление устаревших звуков
+	// СѓРґР°Р»РµРЅРёРµ СѓСЃС‚Р°СЂРµРІС€РёС… Р·РІСѓРєРѕРІ
 	Sounds.erase	(
 		std::remove_if(
 			Sounds.begin(),
@@ -140,7 +140,7 @@ void CMonsterSoundMemory::UpdateHearing()
 		Sounds.end()
 	);
 
-	// пересчитать value
+	// РїРµСЂРµСЃС‡РёС‚Р°С‚СЊ value
 	for (xr_vector<SoundElem>::iterator I = Sounds.begin(); I != Sounds.end(); ++I) I->CalcValue(Device.dwTimeGlobal, monster->Position());
 
 	// update help sound
@@ -179,7 +179,7 @@ struct pred_remove_relcase {
 
 void CMonsterSoundMemory::remove_links(CObject *O)
 {
-	// удаление устаревших звуков
+	// СѓРґР°Р»РµРЅРёРµ СѓСЃС‚Р°СЂРµРІС€РёС… Р·РІСѓРєРѕРІ
 	Sounds.erase	(
 		std::remove_if(
 			Sounds.begin(),

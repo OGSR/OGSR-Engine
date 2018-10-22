@@ -36,8 +36,8 @@ public:
 	bool						ZoomOut			();
 
 	CUIStatic&					Background		()									{return m_background;};
-	CUIStatic&					ClipFrame		()									{return m_clipFrame; }; // alpet: для экспорта в скрипты
-	CUIStatic&					Compass			()									{return m_compass; }; // alpet: для экспорта в скрипты
+	CUIStatic&					ClipFrame		()									{return m_clipFrame; }; // alpet: РґР»СЏ СЌРєСЃРїРѕСЂС‚Р° РІ СЃРєСЂРёРїС‚С‹
+	CUIStatic&					Compass			()									{return m_compass; }; // alpet: РґР»СЏ СЌРєСЃРїРѕСЂС‚Р° РІ СЃРєСЂРёРїС‚С‹
 
 	void						SetupCurrentMap	();
 };

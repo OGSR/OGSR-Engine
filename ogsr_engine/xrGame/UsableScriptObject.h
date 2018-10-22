@@ -9,12 +9,12 @@ public:
 							~CUsableScriptObject	();
 		virtual bool		use						(CGameObject* who_use);
 	
-		//строчка появляющаяся при наведении на объект (если NULL, то нет)
+		//СЃС‚СЂРѕС‡РєР° РїРѕСЏРІР»СЏСЋС‰Р°СЏСЃСЏ РїСЂРё РЅР°РІРµРґРµРЅРёРё РЅР° РѕР±СЉРµРєС‚ (РµСЃР»Рё NULL, С‚Рѕ РЅРµС‚)
 		virtual LPCSTR		tip_text				();
 		void				set_tip_text			(LPCSTR new_text);
 		virtual void		set_tip_text_default	();
 
-		//можно ли использовать объект стандартным (не скриптовым) образом
+		//РјРѕР¶РЅРѕ Р»Рё РёСЃРїРѕР»СЊР·РѕРІР°С‚СЊ РѕР±СЉРµРєС‚ СЃС‚Р°РЅРґР°СЂС‚РЅС‹Рј (РЅРµ СЃРєСЂРёРїС‚РѕРІС‹Рј) РѕР±СЂР°Р·РѕРј
 		bool				nonscript_usable		();
 		void				set_nonscript_usable	(bool usable);
 private:

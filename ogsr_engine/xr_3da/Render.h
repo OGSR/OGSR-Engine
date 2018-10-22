@@ -28,7 +28,7 @@ public:
 		REFLECTED	= 4,
 	};
 public:
-	// alpet: для сохраняемости конфигурации источников света
+	// alpet: РґР»СЏ СЃРѕС…СЂР°РЅСЏРµРјРѕСЃС‚Рё РєРѕРЅС„РёРіСѓСЂР°С†РёРё РёСЃС‚РѕС‡РЅРёРєРѕРІ СЃРІРµС‚Р°
 	virtual float					get_cone			()									= 0;
 	virtual Fcolor					get_color			()									= 0;
 	virtual float					get_range			()									= 0;	
@@ -129,7 +129,7 @@ public:
 	virtual u32						get_width			()									= 0;
 	virtual u32						get_height			()									= 0;
 	virtual ~IRender_Target()		{};
-	virtual void phase_rain() = 0;		// KD: так делать не надо! переделай потом!
+	virtual void phase_rain() = 0;		// KD: С‚Р°Рє РґРµР»Р°С‚СЊ РЅРµ РЅР°РґРѕ! РїРµСЂРµРґРµР»Р°Р№ РїРѕС‚РѕРј!
 };
 
 //////////////////////////////////////////////////////////////////////////
@@ -247,8 +247,8 @@ public:
 	virtual void					Calculate				()											= 0;
 	virtual void					Render					()											= 0;
 
-	virtual void BeforeWorldRender() = 0; //--#SM+#-- Перед рендерингом мира
-	virtual void AfterWorldRender() = 0; //--#SM+#-- После рендеринга мира (до UI)
+	virtual void BeforeWorldRender() = 0; //--#SM+#-- РџРµСЂРµРґ СЂРµРЅРґРµСЂРёРЅРіРѕРј РјРёСЂР°
+	virtual void AfterWorldRender() = 0; //--#SM+#-- РџРѕСЃР»Рµ СЂРµРЅРґРµСЂРёРЅРіР° РјРёСЂР° (РґРѕ UI)
 
 	virtual void					Screenshot				(ScreenshotMode mode=SM_NORMAL, LPCSTR name = 0) = 0;
 

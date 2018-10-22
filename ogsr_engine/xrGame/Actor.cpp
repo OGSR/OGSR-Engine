@@ -115,7 +115,7 @@ CActor::CActor() : CEntityAlive(),current_ik_cam_shift(0)
 	fPrevCamPos				= 0.0f;
 	vPrevCamDir.set			(0.f,0.f,1.f);
 	fCurAVelocity			= 0.0f;
-	// эффекторы
+	// СЌС„С„РµРєС‚РѕСЂС‹
 	pCamBobbing				= 0;
 	m_pSleepEffector		= NULL;
 	m_pSleepEffectorPP		= NULL;
@@ -152,7 +152,7 @@ CActor::CActor() : CEntityAlive(),current_ik_cam_shift(0)
 	Device.seqRender.Add	(this,REG_PRIORITY_LOW);
 #endif
 
-	//разрешить использование пояса в inventory
+	//СЂР°Р·СЂРµС€РёС‚СЊ РёСЃРїРѕР»СЊР·РѕРІР°РЅРёРµ РїРѕСЏСЃР° РІ inventory
 	inventory().SetBeltUseful(true);
 
 	m_pPersonWeLookingAt	= NULL;
@@ -361,11 +361,11 @@ void CActor::Load	(LPCSTR section )
 
 	character_physics_support()->in_Load		(section);
 	
-	//загрузить параметры эффектора
+	//Р·Р°РіСЂСѓР·РёС‚СЊ РїР°СЂР°РјРµС‚СЂС‹ СЌС„С„РµРєС‚РѕСЂР°
 //	LoadShootingEffector	("shooting_effector");
 	LoadSleepEffector		("sleep_effector");
 
-	//загрузить параметры смещения firepoint
+	//Р·Р°РіСЂСѓР·РёС‚СЊ РїР°СЂР°РјРµС‚СЂС‹ СЃРјРµС‰РµРЅРёСЏ firepoint
 	m_vMissileOffset	= pSettings->r_fvector3(section,"missile_throw_offset");
 
 	//Weapons				= xr_new<CWeaponList> (this);
@@ -393,7 +393,7 @@ void CActor::Load	(LPCSTR section )
 		m_HeavyBreathSnd.create	(pSettings->r_string(section,"heavy_breath_snd"), st_Effect,SOUND_TYPE_MONSTER_INJURING);
 		m_BloodSnd.create		(pSettings->r_string(section,"heavy_blood_snd"), st_Effect,SOUND_TYPE_MONSTER_INJURING);
 	}
-	if (this == Level().CurrentEntity()) //--#SM+#-- Сбрасываем режим рендеринга в дефолтный [reset some render flags]
+	if (this == Level().CurrentEntity()) //--#SM+#-- РЎР±СЂР°СЃС‹РІР°РµРј СЂРµР¶РёРј СЂРµРЅРґРµСЂРёРЅРіР° РІ РґРµС„РѕР»С‚РЅС‹Р№ [reset some render flags]
 	{
 		g_pGamePersistent->m_pGShaderConstants.m_blender_mode.set(0.f, 0.f, 0.f, 0.f);
 	}
@@ -406,7 +406,7 @@ void CActor::Load	(LPCSTR section )
 	// sheduler
 	shedule.t_min				= shedule.t_max = 1;
 
-	// настройки дисперсии стрельбы
+	// РЅР°СЃС‚СЂРѕР№РєРё РґРёСЃРїРµСЂСЃРёРё СЃС‚СЂРµР»СЊР±С‹
 	m_fDispBase					= pSettings->r_float		(section,"disp_base"		 );
 	m_fDispBase					= deg2rad(m_fDispBase);
 
@@ -694,7 +694,7 @@ void CActor::Die(CObject* who)
 		};
 
 
-		///!!! чистка пояса
+		///!!! С‡РёСЃС‚РєР° РїРѕСЏСЃР°
 		TIItemContainer &l_blist = inventory().m_belt;
 		while (!l_blist.empty())	
 			inventory().Ruck(l_blist.front());
@@ -850,7 +850,7 @@ void CActor::UpdateCL	()
 		{
 			float fire_disp_full = pWeapon->GetFireDispersion(true);
 
-			if (!Device.m_SecondViewport.IsSVPFrame()) //--#SM+#-- +SecondVP+ Чтобы перекрестие не скакало из за смены FOV (Sin!) [fix for crosshair shaking while SecondVP]
+			if (!Device.m_SecondViewport.IsSVPFrame()) //--#SM+#-- +SecondVP+ Р§С‚РѕР±С‹ РїРµСЂРµРєСЂРµСЃС‚РёРµ РЅРµ СЃРєР°РєР°Р»Рѕ РёР· Р·Р° СЃРјРµРЅС‹ FOV (Sin!) [fix for crosshair shaking while SecondVP]
 				HUD().SetCrosshairDisp(fire_disp_full, 0.02f);
 
 			HUD().ShowCrosshair(pWeapon->use_crosshair());
@@ -858,10 +858,10 @@ void CActor::UpdateCL	()
 			psHUD_Flags.set( HUD_CROSSHAIR_RT2, pWeapon->show_crosshair() );
 			psHUD_Flags.set( HUD_DRAW_RT,		pWeapon->show_indicators() );
 
-			// Обновляем двойной рендер от оружия [Update SecondVP with weapon data]
+			// РћР±РЅРѕРІР»СЏРµРј РґРІРѕР№РЅРѕР№ СЂРµРЅРґРµСЂ РѕС‚ РѕСЂСѓР¶РёСЏ [Update SecondVP with weapon data]
 			pWeapon->UpdateSecondVP();	//--#SM+#-- +SecondVP+
 			
-			// Обновляем информацию об оружии в шейдерах
+			// РћР±РЅРѕРІР»СЏРµРј РёРЅС„РѕСЂРјР°С†РёСЋ РѕР± РѕСЂСѓР¶РёРё РІ С€РµР№РґРµСЂР°С…
 			g_pGamePersistent->m_pGShaderConstants.hud_params.x = pWeapon->GetZRotatingFactor(); //--#SM+#--
 			g_pGamePersistent->m_pGShaderConstants.hud_params.y = pWeapon->GetSecondVP_FovFactor(); //--#SM+#--
 		}
@@ -874,10 +874,10 @@ void CActor::UpdateCL	()
 			HUD().SetCrosshairDisp(0.f);
 			HUD().ShowCrosshair(false);
 
-			// Очищаем информацию об оружии в шейдерах
+			// РћС‡РёС‰Р°РµРј РёРЅС„РѕСЂРјР°С†РёСЋ РѕР± РѕСЂСѓР¶РёРё РІ С€РµР№РґРµСЂР°С…
 			g_pGamePersistent->m_pGShaderConstants.hud_params.set(0.f, 0.f, 0.f, 0.f); //--#SM+#--
 
-			// Отключаем второй вьюпорт  [Turn off SecondVP]
+			// РћС‚РєР»СЋС‡Р°РµРј РІС‚РѕСЂРѕР№ РІСЊСЋРїРѕСЂС‚  [Turn off SecondVP]
 			// + CWeapon::UpdateSecondVP();
 			Device.m_SecondViewport.SetSVPActive(false); //--#SM+#-- +SecondVP+
 		}
@@ -910,12 +910,12 @@ void CActor::shedule_Update	(u32 DT)
 {
 	setSVU(OnServer());
 
-	//установить режим показа HUD для текущего активного слота
+	//СѓСЃС‚Р°РЅРѕРІРёС‚СЊ СЂРµР¶РёРј РїРѕРєР°Р·Р° HUD РґР»СЏ С‚РµРєСѓС‰РµРіРѕ Р°РєС‚РёРІРЅРѕРіРѕ СЃР»РѕС‚Р°
 	CHudItem* pHudItem = smart_cast<CHudItem*>(inventory().ActiveItem());	
 	if(pHudItem) 
 		pHudItem->SetHUDmode(HUDview());
 
-	//обновление инвентаря
+	//РѕР±РЅРѕРІР»РµРЅРёРµ РёРЅРІРµРЅС‚Р°СЂСЏ
 	if ( !updated )
           inventory().RestoreBeltOrder();
 	UpdateInventoryOwner			(DT);
@@ -1045,7 +1045,7 @@ void CActor::shedule_Update	(u32 DT)
 
 	inherited::shedule_Update	(DT);
 
-	//эффектор включаемый при ходьбе
+	//СЌС„С„РµРєС‚РѕСЂ РІРєР»СЋС‡Р°РµРјС‹Р№ РїСЂРё С…РѕРґСЊР±Рµ
 	if (!pCamBobbing)
 	{
 		pCamBobbing = xr_new<CEffectorBobbing>	();
@@ -1053,7 +1053,7 @@ void CActor::shedule_Update	(u32 DT)
 	}
 	pCamBobbing->SetState						(mstate_real, conditions().IsLimping(), IsZoomAimingMode());
 
-	//звук тяжелого дыхания при уталости и хромании
+	//Р·РІСѓРє С‚СЏР¶РµР»РѕРіРѕ РґС‹С…Р°РЅРёСЏ РїСЂРё СѓС‚Р°Р»РѕСЃС‚Рё Рё С…СЂРѕРјР°РЅРёРё
 	if(this==Level().CurrentControlEntity())
 	{
 		if(conditions().IsLimping() && g_Alive())
@@ -1090,10 +1090,10 @@ void CActor::shedule_Update	(u32 DT)
 				m_BloodSnd.stop();
 	}
 	
-	//если в режиме HUD, то сама модель актера не рисуется
+	//РµСЃР»Рё РІ СЂРµР¶РёРјРµ HUD, С‚Рѕ СЃР°РјР° РјРѕРґРµР»СЊ Р°РєС‚РµСЂР° РЅРµ СЂРёСЃСѓРµС‚СЃСЏ
 	if(!character_physics_support()->IsRemoved())
 										setVisible				(!HUDview	());
-	//что актер видит перед собой
+	//С‡С‚Рѕ Р°РєС‚РµСЂ РІРёРґРёС‚ РїРµСЂРµРґ СЃРѕР±РѕР№
 	collide::rq_result& RQ = HUD().GetCurrentRayQuery();
 	
 
@@ -1151,7 +1151,7 @@ void CActor::shedule_Update	(u32 DT)
 
 //	UpdateSleep									();
 
-	//для свойст артефактов, находящихся на поясе
+	//РґР»СЏ СЃРІРѕР№СЃС‚ Р°СЂС‚РµС„Р°РєС‚РѕРІ, РЅР°С…РѕРґСЏС‰РёС…СЃСЏ РЅР° РїРѕСЏСЃРµ
 	UpdateArtefactsOnBelt						();
 	m_pPhysics_support->in_shedule_Update		(DT);
 
@@ -1433,7 +1433,7 @@ void CActor::OnItemBelt		(CInventoryItem *inventory_item, EItemPlace previous_pl
 
 void CActor::UpdateArtefactPanel()
 {
-	if (Level().CurrentViewEntity() && Level().CurrentViewEntity() == this) //Оно надо вообще без мультиплеера?
+	if (Level().CurrentViewEntity() && Level().CurrentViewEntity() == this) //РћРЅРѕ РЅР°РґРѕ РІРѕРѕР±С‰Рµ Р±РµР· РјСѓР»СЊС‚РёРїР»РµРµСЂР°?
 		HUD().GetUI()->UIMainIngameWnd->m_artefactPanel->InitIcons(inventory().m_belt);
 }
 
@@ -1501,12 +1501,12 @@ ActorRestoreParams CActor::ActiveArtefactsOnBelt()
 		float k = ( Core.Features.test(xrCore::Feature::af_zero_condition) && fis_zero( obj->GetCondition() ) ) ? 0.f : 1.f;
 
 		if (Core.Features.test(xrCore::Feature::af_psy_health)) {
-			// только уменьшение пси здоровоья
+			// С‚РѕР»СЊРєРѕ СѓРјРµРЅСЊС€РµРЅРёРµ РїСЃРё Р·РґРѕСЂРѕРІРѕСЊСЏ
 			if (obj->PsyHealthRestoreSpeed() < 0) {
 				r.PsyHealthRestoreSpeed += obj->PsyHealthRestoreSpeed() * k;
 			}
 		}
-		// только увеличение радиации
+		// С‚РѕР»СЊРєРѕ СѓРІРµР»РёС‡РµРЅРёРµ СЂР°РґРёР°С†РёРё
 		if ( obj->RadiationRestoreSpeed() > 0 ) {
 		  if ( Core.Features.test( xrCore::Feature::af_radiation_immunity_mod ) ) {
 		    float new_rs = HitArtefactsOnBelt( obj->RadiationRestoreSpeed(), ALife::eHitTypeRadiation, true );
@@ -1628,7 +1628,7 @@ float	CActor::HitArtefactsOnBelt( float hit_power, ALife::EHitType hit_type, boo
 			}
 		}
 	}
-	// учет иммунитета от шлема
+	// СѓС‡РµС‚ РёРјРјСѓРЅРёС‚РµС‚Р° РѕС‚ С€Р»РµРјР°
 	PIItem helm = inventory().m_slots[HELMET_SLOT].m_pIItem;
 	if ( helm && !belt_only ) {
 		CArtefact*	helmet = smart_cast<CArtefact*>(helm);
@@ -1762,11 +1762,11 @@ bool CActor::can_attach			(const CInventoryItem *inventory_item) const
 	if (!item || /*!item->enabled() ||*/ !item->can_be_attached())
 		return			(false);
 
-	//можно ли присоединять объекты такого типа
+	//РјРѕР¶РЅРѕ Р»Рё РїСЂРёСЃРѕРµРґРёРЅСЏС‚СЊ РѕР±СЉРµРєС‚С‹ С‚Р°РєРѕРіРѕ С‚РёРїР°
 	if( m_attach_item_sections.end() == std::find(m_attach_item_sections.begin(),m_attach_item_sections.end(),inventory_item->object().cNameSect()) )
 		return false;
 
-	//если уже есть присоединненый объет такого типа 
+	//РµСЃР»Рё СѓР¶Рµ РµСЃС‚СЊ РїСЂРёСЃРѕРµРґРёРЅРЅРµРЅС‹Р№ РѕР±СЉРµС‚ С‚Р°РєРѕРіРѕ С‚РёРїР° 
 	if(attached(inventory_item->object().cNameSect()))
 		return false;
 
@@ -1927,25 +1927,25 @@ bool CActor::is_actor_moving() {
 
 void CActor::RepackAmmo() {
   xr_vector<CWeaponAmmo*> _ammo;
-  // заполняем массив неполными пачками
+  // Р·Р°РїРѕР»РЅСЏРµРј РјР°СЃСЃРёРІ РЅРµРїРѕР»РЅС‹РјРё РїР°С‡РєР°РјРё
   for ( PIItem& _pIItem : inventory().m_ruck ) {
     CWeaponAmmo* pAmmo = smart_cast<CWeaponAmmo*>( _pIItem );
     if ( pAmmo && pAmmo->m_boxCurr < pAmmo->m_boxSize )
       _ammo.push_back( pAmmo );
   }
   while ( !_ammo.empty() ) {
-    shared_str asect = _ammo[ 0 ]->cNameSect(); // текущая секция
-    u16 box_size     = _ammo[ 0 ]->m_boxSize; // размер пачки
+    shared_str asect = _ammo[ 0 ]->cNameSect(); // С‚РµРєСѓС‰Р°СЏ СЃРµРєС†РёСЏ
+    u16 box_size     = _ammo[ 0 ]->m_boxSize; // СЂР°Р·РјРµСЂ РїР°С‡РєРё
     u32 cnt          = 0;
     u16 cart_cnt     = 0;
-    // считаем кол=во патронов текущей секции
+    // СЃС‡РёС‚Р°РµРј РєРѕР»=РІРѕ РїР°С‚СЂРѕРЅРѕРІ С‚РµРєСѓС‰РµР№ СЃРµРєС†РёРё
     for ( CWeaponAmmo* ammo : _ammo ) {
       if ( asect == ammo->cNameSect() ) {
         cnt = cnt + ammo->m_boxCurr;
         cart_cnt++;
       }
     }
-    // если больше одной неполной пачки, то перепаковываем
+    // РµСЃР»Рё Р±РѕР»СЊС€Рµ РѕРґРЅРѕР№ РЅРµРїРѕР»РЅРѕР№ РїР°С‡РєРё, С‚Рѕ РїРµСЂРµРїР°РєРѕРІС‹РІР°РµРј
     if ( cart_cnt > 1 ) {
       for ( CWeaponAmmo* ammo : _ammo ) {
         if ( asect == ammo->cNameSect() ) {
@@ -1963,7 +1963,7 @@ void CActor::RepackAmmo() {
         }
       }
     }
-    //чистим массив от обработанных пачек
+    //С‡РёСЃС‚РёРј РјР°СЃСЃРёРІ РѕС‚ РѕР±СЂР°Р±РѕС‚Р°РЅРЅС‹С… РїР°С‡РµРє
     _ammo.erase( std::remove_if( _ammo.begin(), _ammo.end(), [asect]( CWeaponAmmo* a ) { return a->cNameSect() == asect; } ), _ammo.end() );
   }
 }

@@ -171,10 +171,10 @@ BOOL CBaseMonster::net_Spawn (CSE_Abstract* DC)
 
 	CSE_Abstract							*e	= (CSE_Abstract*)(DC);
 #ifndef PRIQUEL
-	m_pPhysics_support->in_NetSpawn			(e);//ýòîò âûççîâ ñ ïîñëóäóþùèìè íå ñâÿçàí, 
-												//íî òàì åñòü õàê - çàïóñê àíèìàöèè íà âñÿêèé ñëó÷àé åñëè íèêòî áîëüøå åå íå çàïóñòèë 
-												//ïîýòîìó â îñíîâíîé âåðñèè íà âñÿêèé ñëó÷àé ïóñòü áóäåò çäåñü, 
-												//íî äëÿ animation movement controllr îí äîëæåí áûòü â êîíöå ÷òîáû çíàòü ÷òî îí ñîçäàëñÿ íà ñïîíå
+	m_pPhysics_support->in_NetSpawn			(e);//ÑÑ‚Ð¾Ñ‚ Ð²Ñ‹Ð·Ð·Ð¾Ð² Ñ Ð¿Ð¾ÑÐ»ÑƒÐ´ÑƒÑŽÑ‰Ð¸Ð¼Ð¸ Ð½Ðµ ÑÐ²ÑÐ·Ð°Ð½, 
+												//Ð½Ð¾ Ñ‚Ð°Ð¼ ÐµÑÑ‚ÑŒ Ñ…Ð°Ðº - Ð·Ð°Ð¿ÑƒÑÐº Ð°Ð½Ð¸Ð¼Ð°Ñ†Ð¸Ð¸ Ð½Ð° Ð²ÑÑÐºÐ¸Ð¹ ÑÐ»ÑƒÑ‡Ð°Ð¹ ÐµÑÐ»Ð¸ Ð½Ð¸ÐºÑ‚Ð¾ Ð±Ð¾Ð»ÑŒÑˆÐµ ÐµÐµ Ð½Ðµ Ð·Ð°Ð¿ÑƒÑÑ‚Ð¸Ð» 
+												//Ð¿Ð¾ÑÑ‚Ð¾Ð¼Ñƒ Ð² Ð¾ÑÐ½Ð¾Ð²Ð½Ð¾Ð¹ Ð²ÐµÑ€ÑÐ¸Ð¸ Ð½Ð° Ð²ÑÑÐºÐ¸Ð¹ ÑÐ»ÑƒÑ‡Ð°Ð¹ Ð¿ÑƒÑÑ‚ÑŒ Ð±ÑƒÐ´ÐµÑ‚ Ð·Ð´ÐµÑÑŒ, 
+												//Ð½Ð¾ Ð´Ð»Ñ animation movement controllr Ð¾Ð½ Ð´Ð¾Ð»Ð¶ÐµÐ½ Ð±Ñ‹Ñ‚ÑŒ Ð² ÐºÐ¾Ð½Ñ†Ðµ Ñ‡Ñ‚Ð¾Ð±Ñ‹ Ð·Ð½Ð°Ñ‚ÑŒ Ñ‡Ñ‚Ð¾ Ð¾Ð½ ÑÐ¾Ð·Ð´Ð°Ð»ÑÑ Ð½Ð° ÑÐ¿Ð¾Ð½Ðµ
 #endif
 
 	R_ASSERT2								(ai().get_level_graph() && ai().get_cross_table() && (ai().level_graph().level_id() != u32(-1)),"There is no AI-Map, level graph, cross table, or graph is not compiled into the game graph!");
@@ -226,7 +226,7 @@ BOOL CBaseMonster::net_Spawn (CSE_Abstract* DC)
 
 void CBaseMonster::net_Destroy()
 {
-	// ôóíêöèÿ äîëæåíà áûòü âûçâàíà ïåðåä inherited
+	// Ñ„ÑƒÐ½ÐºÑ†Ð¸Ñ Ð´Ð¾Ð»Ð¶ÐµÐ½Ð° Ð±Ñ‹Ñ‚ÑŒ Ð²Ñ‹Ð·Ð²Ð°Ð½Ð° Ð¿ÐµÑ€ÐµÐ´ inherited
 	if (m_controlled) m_controlled->on_destroy	();
 	if (StateMan) StateMan->critical_finalize	();
 

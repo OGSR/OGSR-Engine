@@ -65,14 +65,14 @@ IC float	_sin	(float x)		{ return sinf(x); }
 IC float	_cos	(float x)		{ return cosf(x); }
 IC BOOL		_valid	(const float x)
 {
-	// check for: Signaling NaN, Quiet NaN, Negative infinity ( ñINF), Positive infinity (+INF), Negative denormalized, Positive denormalized
+	// check for: Signaling NaN, Quiet NaN, Negative infinity ( ‚ÄìINF), Positive infinity (+INF), Negative denormalized, Positive denormalized
 	int			cls			= _fpclass		(double(x));
 	if (cls&(_FPCLASS_SNAN+_FPCLASS_QNAN+_FPCLASS_NINF+_FPCLASS_PINF+_FPCLASS_ND+_FPCLASS_PD))	
 		return	false;	
 
 	/*	*****other cases are*****
 	_FPCLASS_NN Negative normalized non-zero 
-	_FPCLASS_NZ Negative zero ( ñ 0) 
+	_FPCLASS_NZ Negative zero ( ‚Äì 0) 
 	_FPCLASS_PZ Positive 0 (+0) 
 	_FPCLASS_PN Positive normalized non-zero 
 	*/
@@ -87,14 +87,14 @@ IC double	_sin	(double x)		{ return sin(x); }
 IC double	_cos	(double x)		{ return cos(x); }
 IC BOOL		_valid	(const double x)
 {
-	// check for: Signaling NaN, Quiet NaN, Negative infinity ( ñINF), Positive infinity (+INF), Negative denormalized, Positive denormalized
+	// check for: Signaling NaN, Quiet NaN, Negative infinity ( ‚ÄìINF), Positive infinity (+INF), Negative denormalized, Positive denormalized
 	int			cls			= _fpclass		(x);
 	if (cls&(_FPCLASS_SNAN+_FPCLASS_QNAN+_FPCLASS_NINF+_FPCLASS_PINF+_FPCLASS_ND+_FPCLASS_PD))	
 		return false;	
 
 	/*	*****other cases are*****
 	_FPCLASS_NN Negative normalized non-zero 
-	_FPCLASS_NZ Negative zero ( ñ 0) 
+	_FPCLASS_NZ Negative zero ( ‚Äì 0) 
 	_FPCLASS_PZ Positive 0 (+0) 
 	_FPCLASS_PN Positive normalized non-zero 
 	*/
@@ -220,7 +220,7 @@ XRCORE_API	char*				timestamp				(string64& dest);
 extern XRCORE_API u32			crc32					(const void* P, u32 len);
 
 
-//KRodin: ¬Ò∏ ˜ÚÓ ÌËÊÂ - ‚ÁˇÚÓ ËÁ «œ.
+//KRodin: –í—Å—ë —á—Ç–æ –Ω–∏–∂–µ - –≤–∑—è—Ç–æ –∏–∑ –ó–ü.
 IC int xr_strcpy(LPSTR destination, size_t const destination_size, LPCSTR source)
 {
 	return strncpy_s(destination, destination_size, source, destination_size);

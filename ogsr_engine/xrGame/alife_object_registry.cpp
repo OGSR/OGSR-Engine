@@ -65,7 +65,7 @@ void CALifeObjectRegistry::save				(IWriter &memory_stream, CSE_ALifeDynamicObje
 
 void CALifeObjectRegistry::save				(IWriter &memory_stream)
 {
-	// alpet: êîëáåê ïåðåä ñîõðàíåíèåì âñåõ îáúåêòîâ 18.10.2014 :)
+	// alpet: ÐºÐ¾Ð»Ð±ÐµÐº Ð¿ÐµÑ€ÐµÐ´ ÑÐ¾Ñ…Ñ€Ð°Ð½ÐµÐ½Ð¸ÐµÐ¼ Ð²ÑÐµÑ… Ð¾Ð±ÑŠÐµÐºÑ‚Ð¾Ð² 18.10.2014 :)
 	if (g_actor)
 		g_actor->callback(GameObject::eBeforeSave)();
 
@@ -97,7 +97,7 @@ void CALifeObjectRegistry::save				(IWriter &memory_stream)
 	
 	Msg							("* %d objects are successfully saved",object_count);
 
-	// Real Wolf: êîëáåê ïîñëå ñîõðàíåíèÿ âñåõ îáúåêòîâ. 01.08.2014.
+	// Real Wolf: ÐºÐ¾Ð»Ð±ÐµÐº Ð¿Ð¾ÑÐ»Ðµ ÑÐ¾Ñ…Ñ€Ð°Ð½ÐµÐ½Ð¸Ñ Ð²ÑÐµÑ… Ð¾Ð±ÑŠÐµÐºÑ‚Ð¾Ð². 01.08.2014.
 	if (g_actor)
 		g_actor->callback(GameObject::ePostSave)();
 }

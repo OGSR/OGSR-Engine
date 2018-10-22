@@ -107,8 +107,8 @@ void xrServer::Process_event	(NET_Packet& P, ClientID sender)
 		{
 			u16					id_entity;
 			P.r_u16				(id_entity);
-			CSE_Abstract*		e_parent	= receiver;	// êòî çàáèğàåò (äëÿ ñâîèõ íóæä)
-			CSE_Abstract*		e_entity	= game->get_entity_from_eid	(id_entity);	// êòî îòäàåò
+			CSE_Abstract*		e_parent	= receiver;	// ĞºÑ‚Ğ¾ Ğ·Ğ°Ğ±Ğ¸Ñ€Ğ°ĞµÑ‚ (Ğ´Ğ»Ñ ÑĞ²Ğ¾Ğ¸Ñ… Ğ½ÑƒĞ¶Ğ´)
+			CSE_Abstract*		e_entity	= game->get_entity_from_eid	(id_entity);	// ĞºÑ‚Ğ¾ Ğ¾Ñ‚Ğ´Ğ°ĞµÑ‚
 			if (!e_entity)		break;
 			if (0xffff != e_entity->ID_Parent)	break;						// this item already taken
 			xrClientData*		c_parent	= e_parent->owner;
@@ -138,7 +138,7 @@ void xrServer::Process_event	(NET_Packet& P, ClientID sender)
 		u16							id_src;
 		P.r_u16						(id_src);
 		
-		CSE_Abstract				*e_dest = receiver;	// êòî óìåğ
+		CSE_Abstract				*e_dest = receiver;	// ĞºÑ‚Ğ¾ ÑƒĞ¼ĞµÑ€
 		// this is possible when hit event is sent before destroy event
 		if (!e_dest)
 			break;
@@ -168,12 +168,12 @@ void xrServer::Process_event	(NET_Packet& P, ClientID sender)
 			xrClientData *l_pC	= ID_to_client(sender);
 			VERIFY				(game && l_pC);
 
-			CSE_Abstract*		e_dest		= receiver;	// êòî óìåğ
+			CSE_Abstract*		e_dest		= receiver;	// ĞºÑ‚Ğ¾ ÑƒĞ¼ĞµÑ€
 			// this is possible when hit event is sent before destroy event
 			if (!e_dest)
 				break;
 
-			CSE_Abstract*		e_src		= game->get_entity_from_eid	(id_src	);	// êòî óáèë
+			CSE_Abstract*		e_src		= game->get_entity_from_eid	(id_src	);	// ĞºÑ‚Ğ¾ ÑƒĞ±Ğ¸Ğ»
 			if (!e_src) {
 				xrClientData*	C = (xrClientData*)	game->get_client(id_src);
 				if (C) e_src = C->owner;
@@ -183,7 +183,7 @@ void xrServer::Process_event	(NET_Packet& P, ClientID sender)
 
 			game->on_death		(e_dest,e_src);
 
-			xrClientData*		c_src		= e_src->owner;				// êëèåíò, ÷åé şíèò óáèë
+			xrClientData*		c_src		= e_src->owner;				// ĞºĞ»Ğ¸ĞµĞ½Ñ‚, Ñ‡ĞµĞ¹ ÑĞ½Ğ¸Ñ‚ ÑƒĞ±Ğ¸Ğ»
 
 			if (c_src->owner->ID == id_src) {
 				// Main unit

@@ -171,7 +171,7 @@ using xr_multimap = std::multimap<K, V, P, allocator>;
 
 #endif
 
-#define mk_pair std::make_pair //TODO: Везде заменить, а это убрать.
+#define mk_pair std::make_pair //TODO: Р’РµР·РґРµ Р·Р°РјРµРЅРёС‚СЊ, Р° СЌС‚Рѕ СѓР±СЂР°С‚СЊ.
 
 struct pred_str {	
 	bool operator()(const char* x, const char* y) const { return std::strcmp(x, y) < 0; }

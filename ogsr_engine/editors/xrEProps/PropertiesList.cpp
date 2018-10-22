@@ -45,7 +45,7 @@ void TProperties::ClearParams(TElTreeItem* node)
 {
 	if (node){
     	FATAL("ClearParams - node");
-    	//S êîãäà áóäóò âñå èòåìû óäàëèòü ó êàæäîãî
+    	//S ĞºĞ¾Ğ³Ğ´Ğ° Ğ±ÑƒĞ´ÑƒÑ‚ Ğ²ÑĞµ Ğ¸Ñ‚ĞµĞ¼Ñ‹ ÑƒĞ´Ğ°Ğ»Ğ¸Ñ‚ÑŒ Ñƒ ĞºĞ°Ğ¶Ğ´Ğ¾Ğ³Ğ¾
 /*
 //s
     	for (TElTreeItem* item=node; item; item=item->GetNext()){
@@ -724,7 +724,7 @@ void __fastcall TProperties::tvPropertiesMouseDown(TObject *Sender,
     	if ((HC==1)&&(Button==mbLeft)){
 //        	Log("Shift",(int)Shift.Contains(ssDouble));
             PropItem* prop = (PropItem*)item->Tag;
-            // Ïğîâåğèòü ÷òîáû íå íàæèìàòü 2 ğàçà äëÿ êíîïîê
+            // ĞŸÑ€Ğ¾Ğ²ĞµÑ€Ğ¸Ñ‚ÑŒ Ñ‡Ñ‚Ğ¾Ğ±Ñ‹ Ğ½Ğµ Ğ½Ğ°Ğ¶Ğ¸Ğ¼Ğ°Ñ‚ÑŒ 2 Ñ€Ğ°Ğ·Ğ° Ğ´Ğ»Ñ ĞºĞ½Ğ¾Ğ¿Ğ¾Ğº
             if (prop&&(PROP_BUTTON==prop->type)) m_FirstClickItem=item;
             if (m_FirstClickItem==item){
 				if (!prop||(prop&&!prop->Enabled())) return;
@@ -1189,7 +1189,7 @@ void TProperties::CancelLWNumber()
 
 void TProperties::HideLWNumber()
 {
-	// ïîñëåäîâàòåëüíîñòü âàæíà (ìîæåò áûòü 2 Apply)
+	// Ğ¿Ğ¾ÑĞ»ĞµĞ´Ğ¾Ğ²Ğ°Ñ‚ĞµĞ»ÑŒĞ½Ğ¾ÑÑ‚ÑŒ Ğ²Ğ°Ğ¶Ğ½Ğ° (Ğ¼Ğ¾Ğ¶ĞµÑ‚ Ğ±Ñ‹Ñ‚ÑŒ 2 Apply)
     seNumber->Tag	= 0;
     if (seNumber->Visible&&Visible) 	tvProperties->SetFocus();
     seNumber->Hide	();
@@ -1298,7 +1298,7 @@ void TProperties::CancelLWText()
 
 void TProperties::HideLWText()
 {
-	// ïîñëåäîâàòåëüíîñòü âàæíà (ìîæåò áûòü 2 Apply)
+	// Ğ¿Ğ¾ÑĞ»ĞµĞ´Ğ¾Ğ²Ğ°Ñ‚ĞµĞ»ÑŒĞ½Ğ¾ÑÑ‚ÑŒ Ğ²Ğ°Ğ¶Ğ½Ğ° (Ğ¼Ğ¾Ğ¶ĞµÑ‚ Ğ±Ñ‹Ñ‚ÑŒ 2 Apply)
     edText->Tag		= 0;
     if (edText->Visible&&Visible) 	tvProperties->SetFocus();
     edText->Hide	();
@@ -1500,7 +1500,7 @@ void TProperties::CancelSCText()
 
 void TProperties::HideSCText()
 {
-	// ïîñëåäîâàòåëüíîñòü âàæíà (ìîæåò áûòü 2 Apply)
+	// Ğ¿Ğ¾ÑĞ»ĞµĞ´Ğ¾Ğ²Ğ°Ñ‚ĞµĞ»ÑŒĞ½Ğ¾ÑÑ‚ÑŒ Ğ²Ğ°Ğ¶Ğ½Ğ° (Ğ¼Ğ¾Ğ¶ĞµÑ‚ Ğ±Ñ‹Ñ‚ÑŒ 2 Apply)
     hkShortcut->Tag		= 0;
     if (hkShortcut->Visible&&Visible) 	tvProperties->SetFocus();
     hkShortcut->Hide	();

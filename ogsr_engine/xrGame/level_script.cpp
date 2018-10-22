@@ -97,7 +97,7 @@ LPCSTR get_weather	()
 
 void set_weather	(LPCSTR weather_name, bool /*forced*/)
 {
-	//KRodin: погоду теперь всегда надо обновлять форсировано, иначе она почему-то не обновляется.
+	//KRodin: РїРѕРіРѕРґСѓ С‚РµРїРµСЂСЊ РІСЃРµРіРґР° РЅР°РґРѕ РѕР±РЅРѕРІР»СЏС‚СЊ С„РѕСЂСЃРёСЂРѕРІР°РЅРѕ, РёРЅР°С‡Рµ РѕРЅР° РїРѕС‡РµРјСѓ-С‚Рѕ РЅРµ РѕР±РЅРѕРІР»СЏРµС‚СЃСЏ.
 	return			(g_pGamePersistent->Environment().SetWeather(weather_name, true /*forced*/));
 }
 
@@ -641,9 +641,9 @@ void set_ignore_game_state_update()
 
 void SetEnvDescData(LPCSTR section_1, LPCSTR section_2, float exec_time_1, float exec_time_2)
 {
-	// в общем, какой тут смысл. Скрипт берет на себя все, кроме установки текущей погоды.
-	// устанавливается погода двумя дескрипторами, соответственно, чтоб не тащить за собой кучу всего, 
-	// единомоментно загружен минимум погодных дескрипторов. Остальные подгружаются по необходимости.
+	// РІ РѕР±С‰РµРј, РєР°РєРѕР№ С‚СѓС‚ СЃРјС‹СЃР». РЎРєСЂРёРїС‚ Р±РµСЂРµС‚ РЅР° СЃРµР±СЏ РІСЃРµ, РєСЂРѕРјРµ СѓСЃС‚Р°РЅРѕРІРєРё С‚РµРєСѓС‰РµР№ РїРѕРіРѕРґС‹.
+	// СѓСЃС‚Р°РЅР°РІР»РёРІР°РµС‚СЃСЏ РїРѕРіРѕРґР° РґРІСѓРјСЏ РґРµСЃРєСЂРёРїС‚РѕСЂР°РјРё, СЃРѕРѕС‚РІРµС‚СЃС‚РІРµРЅРЅРѕ, С‡С‚РѕР± РЅРµ С‚Р°С‰РёС‚СЊ Р·Р° СЃРѕР±РѕР№ РєСѓС‡Сѓ РІСЃРµРіРѕ, 
+	// РµРґРёРЅРѕРјРѕРјРµРЅС‚РЅРѕ Р·Р°РіСЂСѓР¶РµРЅ РјРёРЅРёРјСѓРј РїРѕРіРѕРґРЅС‹С… РґРµСЃРєСЂРёРїС‚РѕСЂРѕРІ. РћСЃС‚Р°Р»СЊРЅС‹Рµ РїРѕРґРіСЂСѓР¶Р°СЋС‚СЃСЏ РїРѕ РЅРµРѕР±С…РѕРґРёРјРѕСЃС‚Рё.
 	CEnvironment &env = g_pGamePersistent->Environment(); 
 														  
 	env.SetWeather("ogse_script_weather", true);
@@ -714,19 +714,19 @@ void AdvanceGameTime(u32 _ms)
 }
 
 //
-void send_event_key_press(int dik) //Нажатие клавиши
+void send_event_key_press(int dik) //РќР°Р¶Р°С‚РёРµ РєР»Р°РІРёС€Рё
 {
 	Level().IR_OnKeyboardPress(dik);
 }
-void send_event_key_release(int dik) //Отпускание клавиши
+void send_event_key_release(int dik) //РћС‚РїСѓСЃРєР°РЅРёРµ РєР»Р°РІРёС€Рё
 {
 	Level().IR_OnKeyboardRelease(dik);
 }
-void send_event_key_hold(int dik) //Удержание клавиши.
+void send_event_key_hold(int dik) //РЈРґРµСЂР¶Р°РЅРёРµ РєР»Р°РІРёС€Рё.
 {
 	Level().IR_OnKeyboardHold(dik);
 }
-void send_event_mouse_wheel(int vol) //Вращение колеса мыши
+void send_event_mouse_wheel(int vol) //Р’СЂР°С‰РµРЅРёРµ РєРѕР»РµСЃР° РјС‹С€Рё
 {
 	Level().IR_OnMouseWheel(vol);
 }
@@ -1023,7 +1023,7 @@ void CLevel::script_register(lua_State *L)
 		def("clear_personal_goodwill",			&g_clear_personal_goodwill),
 		def("clear_personal_relations",			&g_clear_personal_relations)
 	];
-	//установка параметров для шейдеров из скриптов
+	//СѓСЃС‚Р°РЅРѕРІРєР° РїР°СЂР°РјРµС‚СЂРѕРІ РґР»СЏ С€РµР№РґРµСЂРѕРІ РёР· СЃРєСЂРёРїС‚РѕРІ
 	module(L)
 		[
 			def("set_artefact_slot", &g_set_artefact_position),

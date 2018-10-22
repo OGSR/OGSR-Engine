@@ -162,7 +162,7 @@ CMapLocation* CMapManager::AddUserLocation(const shared_str& spot_type, const sh
 	u16 _id = Level().Server->PerformIDgen(0xffff);
 	CMapLocation* l = xr_new<CMapLocation>(spot_type.c_str(), _id, true);
 	l->InitUserSpot(level_name, position);
-#pragma todo("KRodin: на данный момент юзерские метки используют дефицитные ID объектов. В конструктор класса CMapLocation можно смело отправлять u16(-1), а вот хранилище Locations() я бы трогать побоялся, т.к. не уверен, что из него не достают ID и что-то там с ним делают. В идеале конечно надо это всё перепилить.")
+#pragma todo("KRodin: РЅР° РґР°РЅРЅС‹Р№ РјРѕРјРµРЅС‚ СЋР·РµСЂСЃРєРёРµ РјРµС‚РєРё РёСЃРїРѕР»СЊР·СѓСЋС‚ РґРµС„РёС†РёС‚РЅС‹Рµ ID РѕР±СЉРµРєС‚РѕРІ. Р’ РєРѕРЅСЃС‚СЂСѓРєС‚РѕСЂ РєР»Р°СЃСЃР° CMapLocation РјРѕР¶РЅРѕ СЃРјРµР»Рѕ РѕС‚РїСЂР°РІР»СЏС‚СЊ u16(-1), Р° РІРѕС‚ С…СЂР°РЅРёР»РёС‰Рµ Locations() СЏ Р±С‹ С‚СЂРѕРіР°С‚СЊ РїРѕР±РѕСЏР»СЃСЏ, С‚.Рє. РЅРµ СѓРІРµСЂРµРЅ, С‡С‚Рѕ РёР· РЅРµРіРѕ РЅРµ РґРѕСЃС‚Р°СЋС‚ ID Рё С‡С‚Рѕ-С‚Рѕ С‚Р°Рј СЃ РЅРёРј РґРµР»Р°СЋС‚. Р’ РёРґРµР°Р»Рµ РєРѕРЅРµС‡РЅРѕ РЅР°РґРѕ СЌС‚Рѕ РІСЃС‘ РїРµСЂРµРїРёР»РёС‚СЊ.")
 	Locations().emplace_back(SLocationKey(spot_type, _id));
 	Locations().back().location = l;
 	return l;

@@ -1,5 +1,5 @@
 ////////////////////////////////////////////////////////////////////////////
-//	Module 		: data_storage_bucket_list_øòäøòó.h
+//	Module 		: data_storage_bucket_list_ÑˆÑ‚Ğ´ÑˆÑ‚Ñƒ.h
 //	Created 	: 21.03.2002
 //  Modified 	: 26.02.2004
 //	Author		: Dmitriy Iassenev

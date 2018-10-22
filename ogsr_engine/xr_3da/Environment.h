@@ -191,7 +191,7 @@ private:
 	void					StopWFX			();
 	void calculate_dynamic_sun_dir();
 public:
-	// KD: âðåìåíàÿ øòóêà äëÿ ñêðèïòîâîé ïîãîäû
+	// KD: Ð²Ñ€ÐµÐ¼ÐµÐ½Ð°Ñ ÑˆÑ‚ÑƒÐºÐ° Ð´Ð»Ñ ÑÐºÑ€Ð¸Ð¿Ñ‚Ð¾Ð²Ð¾Ð¹ Ð¿Ð¾Ð³Ð¾Ð´Ñ‹
 	void					ForceReselectEnvs();
 	static bool sort_env_pred	(const CEnvDescriptor* x, const CEnvDescriptor* y)
 	{	return x->exec_time < y->exec_time;	}

@@ -239,7 +239,7 @@ distance = max(distance,AL_REFERENCE_DISTANCE);
 distance = min(distance,AL_MAX_DISTANCE);
 gain = AL_REFERENCE_DISTANCE / (AL_REFERENCE_DISTANCE +
  AL_ROLLOFF_FACTOR *
- (distance – AL_REFERENCE_DISTANCE));
+ (distance â€“ AL_REFERENCE_DISTANCE));
 */
 float CSoundRender_Emitter::calc_dist_gain( float dist ) {
   if ( dist < p_source.min_distance )

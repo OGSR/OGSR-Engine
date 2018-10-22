@@ -7,9 +7,6 @@
 #include "UIInventoryWnd.h"
 #include "UITradeWnd.h"
 #include "UICarBodyWnd.h"
-extern CUIWindow* GetInventoryWindow();
-extern CUIWindow* GetTradeWindow();
-extern CUIWindow* GetCarBodyWindow();
 
 
 CUIDragItem* CUIDragDropListEx::m_drag_item = NULL;
@@ -23,7 +20,7 @@ void CUICell::Clear()
 
 CUIDragDropListEx::CUIDragDropListEx()
 {
-
+	is_highlighted = false;
 	m_flags.zero				();
 	m_container					= xr_new<CUICellContainer>(this);
 	m_vScrollBar				= xr_new<CUIScrollBar>();
@@ -48,7 +45,7 @@ CUIDragDropListEx::CUIDragDropListEx()
 
 	SetDrawGrid(true);
 
-	tx = Core.Features.test(xrCore::Feature::highlight_cop) ? 0.2f : 0.5f;
+	tx = Core.Features.test(xrCore::Feature::highlight_cop) ? 0.125f : 0.5f;
 }
 
 CUIDragDropListEx::~CUIDragDropListEx()
@@ -140,12 +137,12 @@ void CUIDragDropListEx::DestroyDragItem()
 
 Fvector2 CUIDragDropListEx::GetDragItemPosition()
 {
-	return m_drag_item->GetPosition();
+	return GetUICursor()->GetCursorPosition(); //m_drag_item->GetPosition();
 }
 
 void CUIDragDropListEx::OnItemStartDragging(CUIWindow* w, void* pData)
 {
-	// Èçáåãàåì ñëó÷àÿ äâîéíîãî äðàãà. Real Wolf. 12.11.14.
+	// Ð˜Ð·Ð±ÐµÐ³Ð°ÐµÐ¼ ÑÐ»ÑƒÑ‡Ð°Ñ Ð´Ð²Ð¾Ð¹Ð½Ð¾Ð³Ð¾ Ð´Ñ€Ð°Ð³Ð°. Real Wolf. 12.11.14.
 	if (m_drag_item)
 		return;
 
@@ -638,11 +635,14 @@ void CUICellContainer::GetTexUVLT(Fvector2& uv, u32 col, u32 row, u8 select_mode
 {
 	switch ( select_mode )
 	{
-	case 0:		uv.set(0.00f, 0.0f);	break;
-	case 1:		uv.set(0.20f, 0.0f);	break;
-	case 2:		uv.set(0.40f, 0.0f);	break;
-	case 3:		uv.set(0.60f, 0.0f);	break;
-	case 4:		uv.set(0.80f, 0.0f);	break;
+	case 0:		uv.set(0.00f,  0.0f);	break;
+	case 1:		uv.set(0.125f, 0.0f);	break;
+	case 2:		uv.set(0.250f, 0.0f);	break;
+	case 3:		uv.set(0.375f, 0.0f);	break;
+	case 4:		uv.set(0.500f, 0.0f);	break;
+	case 5:		uv.set(0.625f, 0.0f);	break;
+	case 6:		uv.set(0.750f, 0.0f);	break;
+	case 7:		uv.set(0.875f, 0.0f);	break;
 	default:	uv.set(0.00f, 0.0f);	break;
 	}
 }
@@ -821,26 +821,31 @@ void CUICellContainer::Draw()
 			cpos.add( TopVisibleCell() );
 			CUICell& ui_cell = GetCellAt( cpos );
 			u8 select_mode = 0;
-			if ( Core.Features.test(xrCore::Feature::highlight_cop) && !ui_cell.Empty() ) {
-				if (Core.Features.test(xrCore::Feature::select_mode_1342)) { //Îïöèÿ äëÿ ëþäåé ñ îñîáûì ìíåíèåì
-					if (ui_cell.m_item->m_selected)
-						select_mode = 1;
-					else if (ui_cell.m_item->m_select_armament)
-						select_mode = 3;
-					else if (ui_cell.m_item->m_select_untradable)
-						select_mode = 4;
-					else if (ui_cell.m_item->m_select_equipped)
-						select_mode = 2;
+			if (Core.Features.test(xrCore::Feature::highlight_cop)) {
+				if (this->m_pParentDragDropList->is_highlighted) {
+					select_mode = 5;
 				}
-				else {
-					if (ui_cell.m_item->m_select_armament)
-						select_mode = 3;
-					else if (ui_cell.m_item->m_select_untradable)
-						select_mode = 4;
-					else if (ui_cell.m_item->m_select_equipped)
-						select_mode = 2;
-					else if (ui_cell.m_item->m_selected)
-						select_mode = 1;
+				else if (!ui_cell.Empty()) {
+					if (Core.Features.test(xrCore::Feature::select_mode_1342)) {
+						if (ui_cell.m_item->m_selected)
+							select_mode = 1;
+						else if (ui_cell.m_item->m_select_armament)
+							select_mode = 3;
+						else if (ui_cell.m_item->m_select_untradable)
+							select_mode = 4;
+						else if (ui_cell.m_item->m_select_equipped)
+							select_mode = 2;
+					}
+					else {
+						if (ui_cell.m_item->m_select_armament)
+							select_mode = 3;
+						else if (ui_cell.m_item->m_select_untradable)
+							select_mode = 4;
+						else if (ui_cell.m_item->m_select_equipped)
+							select_mode = 2;
+						else if (ui_cell.m_item->m_selected)
+							select_mode = 1;
+					}
 				}
 			}
 
@@ -881,20 +886,30 @@ void CUICellContainer::Draw()
 
 void CUICellContainer::clear_select_armament()
 {
-	auto InvWnd     = smart_cast<CUIInventoryWnd*>(GetInventoryWindow());
-	auto TradeWnd   = smart_cast<CUITradeWnd*>(GetTradeWindow());
-	auto CarBodyWnd = smart_cast<CUICarBodyWnd*>(GetCarBodyWindow());
+	auto TopWnd = this->GetTop();
+	auto InvWnd = smart_cast<CUIInventoryWnd*>(TopWnd);
+	auto CarBodyWnd = smart_cast<CUICarBodyWnd*>(TopWnd);
+	CUITradeWnd* TradeWnd = nullptr;
+
+	if (!InvWnd && !CarBodyWnd) { //ÐžÐºÐ½Ð¾ Ñ‚Ð¾Ñ€Ð³Ð¾Ð²Ð»Ð¸ Ð¿Ñ€Ð¸Ð°Ñ‚Ñ‚Ð°Ñ‡ÐµÐ½Ð¾ Ðº CUITalkWnd, Ð¿Ð¾ÑÑ‚Ð¾Ð¼Ñƒ Ð¿Ñ€Ð¸Ð´Ñ‘Ñ‚ÑÑ Ð¸Ð·Ð²Ñ€Ð°Ñ‰Ð°Ñ‚ÑŒÑÑ Ñ ÐµÐ³Ð¾ Ð¿Ð¾Ð¸ÑÐºÐ¾Ð¼
+		auto Parent = this->GetParent();
+		do {
+			TradeWnd = smart_cast<CUITradeWnd*>(Parent);
+			Parent = Parent->GetParent();
+		} while (!TradeWnd);
+	}
+
 	for (auto& cell : m_cells) {
 		if (cell.m_item) {
-			if (InvWnd->IsShown()) {
+			if (InvWnd && InvWnd->IsShown()) {
 				if (cell.m_item != InvWnd->m_pCurrentCellItem)
 					cell.m_item->m_select_armament = false;
 			}
-			else if (TradeWnd->IsShown()) {
+			else if (TradeWnd && TradeWnd->IsShown()) {
 				if (cell.m_item != TradeWnd->m_pCurrentCellItem)
 					cell.m_item->m_select_armament = false;
 			}
-			else if (CarBodyWnd->IsShown()) {
+			else if (CarBodyWnd && CarBodyWnd->IsShown()) {
 				if (cell.m_item != CarBodyWnd->m_pCurrentCellItem)
 					cell.m_item->m_select_armament = false;
 			}

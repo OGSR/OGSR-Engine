@@ -797,7 +797,7 @@ BOOL CGameObject::net_SaveRelevant	()
 	return	(CScriptBinder::net_SaveRelevant());
 }
 
-//игровое имя объекта
+//РёРіСЂРѕРІРѕРµ РёРјСЏ РѕР±СЉРµРєС‚Р°
 LPCSTR CGameObject::Name () const
 {
 	return	(*cName());
@@ -858,7 +858,7 @@ CScriptCallbackEx<void>& CGameObject::callback(GameObject::ECallbackType type) c
 {
 	if (auto it = m_callbacks.find(type); it != m_callbacks.end())
 		return (*it).second->m_callback;
-	else //KRodin: вот по-нормальному, надо возвращать nullptr и проверять в вызывающей функции, есть ли каллбек вообще. Но это кучу функций переделать надо, поэтому буду возвращать фейковый каллбек.
+	else //KRodin: РІРѕС‚ РїРѕ-РЅРѕСЂРјР°Р»СЊРЅРѕРјСѓ, РЅР°РґРѕ РІРѕР·РІСЂР°С‰Р°С‚СЊ nullptr Рё РїСЂРѕРІРµСЂСЏС‚СЊ РІ РІС‹Р·С‹РІР°СЋС‰РµР№ С„СѓРЅРєС†РёРё, РµСЃС‚СЊ Р»Рё РєР°Р»Р»Р±РµРє РІРѕРѕР±С‰Рµ. РќРѕ СЌС‚Рѕ РєСѓС‡Сѓ С„СѓРЅРєС†РёР№ РїРµСЂРµРґРµР»Р°С‚СЊ РЅР°РґРѕ, РїРѕСЌС‚РѕРјСѓ Р±СѓРґСѓ РІРѕР·РІСЂР°С‰Р°С‚СЊ С„РµР№РєРѕРІС‹Р№ РєР°Р»Р»Р±РµРє.
 		return m_callbacks.at(GameObject::eDummy)->m_callback;
 }
 
@@ -894,7 +894,7 @@ void	CGameObject::UpdateXFORM(const Fmatrix &upd)
 	if (pK)
 	{
 		pK->vis.sphere.P = upd.c;		
-		pK->CalculateBones_Invalidate();	 // позволит объекту быстрее объявиться в новой точке			
+		pK->CalculateBones_Invalidate();	 // РїРѕР·РІРѕР»РёС‚ РѕР±СЉРµРєС‚Сѓ Р±С‹СЃС‚СЂРµРµ РѕР±СЉСЏРІРёС‚СЊСЃСЏ РІ РЅРѕРІРѕР№ С‚РѕС‡РєРµ			
 	}
 
 	// OnChangePosition processing
@@ -940,7 +940,7 @@ void	CGameObject::		destroy_anim_mov_ctrl()
 	xr_delete( m_anim_mov_ctrl );
 }
 
-///////////////////Перенесено из ai_object_location_impl.h////////////////////////
+///////////////////РџРµСЂРµРЅРµСЃРµРЅРѕ РёР· ai_object_location_impl.h////////////////////////
 IC	void CAI_ObjectLocation::init()
 {
 	if (ai().get_level_graph())

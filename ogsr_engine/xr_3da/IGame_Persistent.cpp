@@ -102,12 +102,12 @@ void IGame_Persistent::Disconnect	()
 
 	// Kill object - save memory
 	ObjectPool.clear();
-	Render->models_Clear(TRUE); // У нас вызывается ещё и в CLevel::remove_objects() Если что - убрать оттуда, пусть будет тут.
+	Render->models_Clear(TRUE); // РЈ РЅР°СЃ РІС‹Р·С‹РІР°РµС‚СЃСЏ РµС‰С‘ Рё РІ CLevel::remove_objects() Р•СЃР»Рё С‡С‚Рѕ - СѓР±СЂР°С‚СЊ РѕС‚С‚СѓРґР°, РїСѓСЃС‚СЊ Р±СѓРґРµС‚ С‚СѓС‚.
 }
 
 void IGame_Persistent::OnGameStart()
 {
-//KRodin: префетчинг выключен ввиду своей бесполезности и прожорливости.
+//KRodin: РїСЂРµС„РµС‚С‡РёРЅРі РІС‹РєР»СЋС‡РµРЅ РІРІРёРґСѓ СЃРІРѕРµР№ Р±РµСЃРїРѕР»РµР·РЅРѕСЃС‚Рё Рё РїСЂРѕР¶РѕСЂР»РёРІРѕСЃС‚Рё.
 /*
 	LoadTitle								("st_prefetching_objects");
 	if (strstr(Core.Params,"-noprefetch"))	return;

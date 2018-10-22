@@ -387,7 +387,7 @@ void CSoundRender_Core::set_geometry_env(IReader* I)
 	R_ASSERT(realCform.version == CFORM_CURRENT_VERSION);
 	auto verts = (Fvector*)geom->pointer();
 	auto tris = (CDB::TRI*)(verts + realCform.vertcount);
-#ifndef _M_X64 //KRodin: а к чему вообще этот битодроч здесь? Лично мне совершенно не понятно, что он делает.
+#ifndef _M_X64 //KRodin: Р° Рє С‡РµРјСѓ РІРѕРѕР±С‰Рµ СЌС‚РѕС‚ Р±РёС‚РѕРґСЂРѕС‡ Р·РґРµСЃСЊ? Р›РёС‡РЅРѕ РјРЅРµ СЃРѕРІРµСЂС€РµРЅРЅРѕ РЅРµ РїРѕРЅСЏС‚РЅРѕ, С‡С‚Рѕ РѕРЅ РґРµР»Р°РµС‚.
 	for (u32 it=0; it<realCform.facecount; it++)
 	{
 		CDB::TRI*	T	= tris+it;

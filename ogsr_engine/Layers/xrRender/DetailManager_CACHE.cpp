@@ -57,7 +57,7 @@ void 	CDetailManager::cache_Task		(int gx, int gz, Slot* D)
 	for (u32 i=0; i<dm_obj_in_slot; i++)	{
 		D->G[i].id			= DS.r_id	(i);
 		for (u32 clr=0; clr<D->G[i].items.size(); clr++)
-			if (D->G[i].items[clr])	// KD: çàòû÷êà. Ïðè÷èíà ïîÿâëåíèÿ íóëåâûõ óêàçàòåëåé íåÿñíà
+			if (D->G[i].items[clr])	// KD: Ð·Ð°Ñ‚Ñ‹Ñ‡ÐºÐ°. ÐŸÑ€Ð¸Ñ‡Ð¸Ð½Ð° Ð¿Ð¾ÑÐ²Ð»ÐµÐ½Ð¸Ñ Ð½ÑƒÐ»ÐµÐ²Ñ‹Ñ… ÑƒÐºÐ°Ð·Ð°Ñ‚ÐµÐ»ÐµÐ¹ Ð½ÐµÑÑÐ½Ð°
 				poolSI.destroy(D->G[i].items[clr]);
 		D->G[i].items.clear	();
 	}

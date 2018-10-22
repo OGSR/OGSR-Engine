@@ -456,8 +456,8 @@ void CSheduler::Update				()
 	Msg								("SCHEDULER: PROCESS STEP FINISHED %d",Device.dwFrame);
 #endif // DEBUG_SCHEDULER
 //#ifdef ECO_RENDER
-	// занимать до 50 мс в кадре (клинч неписей вероятен, если много в
-	// онлайне объектов).
+	// Р·Р°РЅРёРјР°С‚СЊ РґРѕ 50 РјСЃ РІ РєР°РґСЂРµ (РєР»РёРЅС‡ РЅРµРїРёСЃРµР№ РІРµСЂРѕСЏС‚РµРЅ, РµСЃР»Рё РјРЅРѕРіРѕ РІ
+	// РѕРЅР»Р°Р№РЅРµ РѕР±СЉРµРєС‚РѕРІ).
 //	clamp							(psShedulerTarget,3.f,50.f);
 //#else
 	clamp							(psShedulerTarget,3.f,66.f);

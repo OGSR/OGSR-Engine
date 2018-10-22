@@ -80,7 +80,7 @@
 #define		r2_RT_volumetric	"$user$volumetric"		// ---
 // KD end
 
-static constexpr const char* r2_RT_secondVP = "$user$viewport2"; // --#SM+#-- +SecondVP+ Хранит картинку со второго вьюпорта
+static constexpr const char* r2_RT_secondVP = "$user$viewport2"; // --#SM+#-- +SecondVP+ РҐСЂР°РЅРёС‚ РєР°СЂС‚РёРЅРєСѓ СЃРѕ РІС‚РѕСЂРѕРіРѕ РІСЊСЋРїРѕСЂС‚Р°
 
 #define		JITTER(a) r2_jitter #a
 

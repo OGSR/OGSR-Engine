@@ -67,7 +67,7 @@ public:
 		FIHiddenForInventory = (1 << 14),
 		FIAlwaysHighlighted = (1 << 15),
 	};
-	//KRodin: если захочется поменять - можно вытащить значения в build_config_defines
+	//KRodin: РµСЃР»Рё Р·Р°С…РѕС‡РµС‚СЃСЏ РїРѕРјРµРЅСЏС‚СЊ - РјРѕР¶РЅРѕ РІС‹С‚Р°С‰РёС‚СЊ Р·РЅР°С‡РµРЅРёСЏ РІ build_config_defines
 	enum EIIColors : u32 {
 		ClrUntradable  = color_argb(255, 124, 0, 0),
 		ClrHighlighted = color_argb(255, 0, 128, 0),
@@ -89,19 +89,19 @@ public:
 	
 	virtual void				OnEvent				(NET_Packet& P, u16 type);
 	
-	virtual bool				Useful				() const;									// !!! Переопределить. (см. в Inventory.cpp)
+	virtual bool				Useful				() const;									// !!! РџРµСЂРµРѕРїСЂРµРґРµР»РёС‚СЊ. (СЃРј. РІ Inventory.cpp)
 	virtual bool				Attach				(PIItem pIItem, bool b_send_event) {return false;}
 	virtual bool				Detach				(PIItem pIItem) {return false;}
-	//при детаче спаунится новая вещь при заданно названии секции
+	//РїСЂРё РґРµС‚Р°С‡Рµ СЃРїР°СѓРЅРёС‚СЃСЏ РЅРѕРІР°СЏ РІРµС‰СЊ РїСЂРё Р·Р°РґР°РЅРЅРѕ РЅР°Р·РІР°РЅРёРё СЃРµРєС†РёРё
 	virtual bool				Detach				(const char* item_section_name, bool b_spawn_item);
 	virtual bool				CanAttach			(PIItem pIItem) {return false;}
 	virtual bool				CanDetach			(LPCSTR item_section_name) {return false;}
 
 	virtual EHandDependence		HandDependence		()	const	{return hd1Hand;};
 	virtual bool				IsSingleHanded		()	const	{return true;};	
-	virtual bool				Activate			();									// !!! Переопределить. (см. в Inventory.cpp)
-	virtual void				Deactivate			();								// !!! Переопределить. (см. в Inventory.cpp)
-	virtual bool				Action				(s32 cmd, u32 flags) {return false;}	// true если известная команда, иначе false
+	virtual bool				Activate			();									// !!! РџРµСЂРµРѕРїСЂРµРґРµР»РёС‚СЊ. (СЃРј. РІ Inventory.cpp)
+	virtual void				Deactivate			();								// !!! РџРµСЂРµРѕРїСЂРµРґРµР»РёС‚СЊ. (СЃРј. РІ Inventory.cpp)
+	virtual bool				Action				(s32 cmd, u32 flags) {return false;}	// true РµСЃР»Рё РёР·РІРµСЃС‚РЅР°СЏ РєРѕРјР°РЅРґР°, РёРЅР°С‡Рµ false
 
 	virtual bool				IsHidden			()	const	{return true;}
 	virtual bool				IsHiding			()	const	{return false;}
@@ -179,7 +179,7 @@ public:
                         u8                      selected_slot;
                         const xr_vector<u8>&    GetSlots()     { return m_slots;      }
                         const LPCSTR            GetSlotsSect() { return m_slots_sect; }
-                        void                    SetSlot(u8 slot); // alpet: реально это SelectSlot
+                        void                    SetSlot(u8 slot); // alpet: СЂРµР°Р»СЊРЅРѕ СЌС‚Рѕ SelectSlot
                         virtual u8              GetSlot() const;
                         u32                     GetSlotsCount() const { return m_slots.size(); }
                         bool                    IsPlaceable (u8 min_slot, u8 max_slot);

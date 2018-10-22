@@ -65,7 +65,7 @@ float CAI_Stalker::GetWeaponAccuracy	() const
 {
 	float				base = PI/180.f;
 	
-	//влияние ранга на меткость
+	//РІР»РёСЏРЅРёРµ СЂР°РЅРіР° РЅР° РјРµС‚РєРѕСЃС‚СЊ
 	base				*= m_fRankDisperison;
 
 	if (!movement().path_completed()) {
@@ -190,7 +190,7 @@ void			CAI_Stalker::Hit					(SHit* pHDS)
 
 //	pHDS->power						*= .1f;
 
-	//хит может меняться в зависимости от ранга (новички получают больше хита, чем ветераны)
+	//С…РёС‚ РјРѕР¶РµС‚ РјРµРЅСЏС‚СЊСЃСЏ РІ Р·Р°РІРёСЃРёРјРѕСЃС‚Рё РѕС‚ СЂР°РЅРіР° (РЅРѕРІРёС‡РєРё РїРѕР»СѓС‡Р°СЋС‚ Р±РѕР»СЊС€Рµ С…РёС‚Р°, С‡РµРј РІРµС‚РµСЂР°РЅС‹)
 	SHit							HDS = *pHDS;
 	HDS.power						*= m_fRankImmunity;
 	if (m_boneHitProtection && HDS.hit_type == ALife::eHitTypeFireWound){

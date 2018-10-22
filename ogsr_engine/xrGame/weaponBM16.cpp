@@ -22,7 +22,7 @@ void CWeaponBM16::Load	(LPCSTR section)
 
 	animGetEx( mhud_zoomed_idle1, "anim_zoomed_idle_1" );
 
-	// ÷òî áû ìîæíî áûëî íîðìàëüíûå èìåíà â êîíôèãàõ þçàòü
+	// Ñ‡Ñ‚Ð¾ Ð±Ñ‹ Ð¼Ð¾Ð¶Ð½Ð¾ Ð±Ñ‹Ð»Ð¾ Ð½Ð¾Ñ€Ð¼Ð°Ð»ÑŒÐ½Ñ‹Ðµ Ð¸Ð¼ÐµÐ½Ð° Ð² ÐºÐ¾Ð½Ñ„Ð¸Ð³Ð°Ñ… ÑŽÐ·Ð°Ñ‚ÑŒ
 	if (pSettings->line_exist(hud_sect.c_str(), "anim_zoomed_idle_2"))
 		animGetEx( mhud_zoomed_idle2, "anim_zoomed_idle_2" );
 	else

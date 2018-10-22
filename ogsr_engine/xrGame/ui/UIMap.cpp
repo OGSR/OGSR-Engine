@@ -499,7 +499,7 @@ bool CUILevelMap::OnMouse(float x, float y, EUIMessages mouse_action)
 			}
 		}
 	}
-	else if (mouse_action == WINDOW_LBUTTON_DOWN) { // Real Wolf: Êîëáåê ñ ïîçèöèåé è íàçâàíèåì êàðòû ïðè êëèêå ïî ñàìîé êàðòå. 03.08.2014.
+	else if (mouse_action == WINDOW_LBUTTON_DOWN) { // Real Wolf: ÐšÐ¾Ð»Ð±ÐµÐº Ñ Ð¿Ð¾Ð·Ð¸Ñ†Ð¸ÐµÐ¹ Ð¸ Ð½Ð°Ð·Ð²Ð°Ð½Ð¸ÐµÐ¼ ÐºÐ°Ñ€Ñ‚Ñ‹ Ð¿Ñ€Ð¸ ÐºÐ»Ð¸ÐºÐµ Ð¿Ð¾ ÑÐ°Ð¼Ð¾Ð¹ ÐºÐ°Ñ€Ñ‚Ðµ. 03.08.2014.
 		Fvector2 cursor_pos =			GetUICursor()->GetCursorPosition();
 		Fvector2 _p; GetAbsolutePos		(_p);
 
@@ -530,7 +530,7 @@ void CUILevelMap::SendMessage(CUIWindow* pWnd, s16 msg, void* pData)
 	case MAP_SELECT_SPOT2:
 	{
 		auto* ui_game_sp = smart_cast<CUIGameSP*>(HUD().GetUI()->UIGame());
-		if (ui_game_sp->PdaMenu->m_pActiveSection == EPdaTabs::eptMap) //Ïðàâèëüíåå áûëî áû ïðîâåðÿòü òàì, îòêóäà âûçâàëè, íî íàäî êó÷ó èíêëóäîâ... Äà íó íàõåð âîçèòüñÿ.
+		if (ui_game_sp->PdaMenu->m_pActiveSection == EPdaTabs::eptMap) //ÐŸÑ€Ð°Ð²Ð¸Ð»ÑŒÐ½ÐµÐµ Ð±Ñ‹Ð»Ð¾ Ð±Ñ‹ Ð¿Ñ€Ð¾Ð²ÐµÑ€ÑÑ‚ÑŒ Ñ‚Ð°Ð¼, Ð¾Ñ‚ÐºÑƒÐ´Ð° Ð²Ñ‹Ð·Ð²Ð°Ð»Ð¸, Ð½Ð¾ Ð½Ð°Ð´Ð¾ ÐºÑƒÑ‡Ñƒ Ð¸Ð½ÐºÐ»ÑƒÐ´Ð¾Ð²... Ð”Ð° Ð½Ñƒ Ð½Ð°Ñ…ÐµÑ€ Ð²Ð¾Ð·Ð¸Ñ‚ÑŒÑÑ.
 			MapWnd()->ActivatePropertiesBox(pWnd);
 	} break;
 	case MAP_SHOW_HINT:

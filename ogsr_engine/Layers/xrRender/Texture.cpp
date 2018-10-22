@@ -25,7 +25,7 @@ void fix_texture_name(LPSTR fn)
 
 int get_texture_load_lod(LPCSTR /*fn*/)
 {
-	/* //KRodin: âûêëþ÷àþ, èáî â 2ê18 ýòî íàôèã íå íóæíî.
+	/* //KRodin: Ð²Ñ‹ÐºÐ»ÑŽÑ‡Ð°ÑŽ, Ð¸Ð±Ð¾ Ð² 2Ðº18 ÑÑ‚Ð¾ Ð½Ð°Ñ„Ð¸Ð³ Ð½Ðµ Ð½ÑƒÐ¶Ð½Ð¾.
 	CInifile::Sect& sect	= pSettings->r_section("reduce_lod_texture_list");
 
 	for(const auto &it : sect.Data )

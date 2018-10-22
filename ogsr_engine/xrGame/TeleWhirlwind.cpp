@@ -55,7 +55,7 @@ void CTeleWhirlwind::set_throw_power(float throw_pow)
 void CTeleWhirlwind::draw_out_impact(Fvector& dir,float& val)
 {
 	VERIFY2(m_saved_impacts.size(),"NO IMPACTS ADDED!");
-	// Áóäåò âûëåò, åñëè âåêòîð ïóñòîé, à ïóñòûì îí áûâàåò. Ïðîñòî äîáàâèì ïðîâåðêó. Real Wolf.
+	// Ð‘ÑƒÐ´ÐµÑ‚ Ð²Ñ‹Ð»ÐµÑ‚, ÐµÑÐ»Ð¸ Ð²ÐµÐºÑ‚Ð¾Ñ€ Ð¿ÑƒÑÑ‚Ð¾Ð¹, Ð° Ð¿ÑƒÑÑ‚Ñ‹Ð¼ Ð¾Ð½ Ð±Ñ‹Ð²Ð°ÐµÑ‚. ÐŸÑ€Ð¾ÑÑ‚Ð¾ Ð´Ð¾Ð±Ð°Ð²Ð¸Ð¼ Ð¿Ñ€Ð¾Ð²ÐµÑ€ÐºÑƒ. Real Wolf.
 	if (0==m_saved_impacts.size()) return;
 	dir.set(m_saved_impacts[0].force);
 	val=dir.magnitude();
@@ -71,7 +71,7 @@ static bool RemovePred(CTelekineticObject *tele_object)
 
 void CTeleWhirlwind::clear_notrelevant()
 {
-	//óáðàòü âñå îáúåòû ñî ñòàðûìè ïàðàìåòðàìè
+	//ÑƒÐ±Ñ€Ð°Ñ‚ÑŒ Ð²ÑÐµ Ð¾Ð±ÑŠÐµÑ‚Ñ‹ ÑÐ¾ ÑÑ‚Ð°Ñ€Ñ‹Ð¼Ð¸ Ð¿Ð°Ñ€Ð°Ð¼ÐµÑ‚Ñ€Ð°Ð¼Ð¸
 	objects.erase	(
 		std::remove_if(
 			objects.begin(),
@@ -136,7 +136,7 @@ void		CTeleWhirlwindObject::		release					()
 	float magnitude	= dir_inv.magnitude();
 	
 
-	// âêëþ÷èòü ãðàâèòàöèþ 
+	// Ð²ÐºÐ»ÑŽÑ‡Ð¸Ñ‚ÑŒ Ð³Ñ€Ð°Ð²Ð¸Ñ‚Ð°Ñ†Ð¸ÑŽ 
 	//Fvector zer;zer.set(0,0,0);
 	//object->m_pPhysicsShell->set_LinearVel(zer);
 	object->m_pPhysicsShell->set_ApplyByGravity(TRUE);

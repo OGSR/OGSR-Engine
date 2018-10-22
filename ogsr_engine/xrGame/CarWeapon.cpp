@@ -222,7 +222,7 @@ void CCarWeapon::FireEnd()
 
 void CCarWeapon::OnShot()
 {
-#pragma todo("KRodin: à ìîæåò òóò ñðàçó âîçâðàùàòü id ñòðåëÿþùåãî, à íå ìàøèíû?")
+#pragma todo("KRodin: Ð° Ð¼Ð¾Ð¶ÐµÑ‚ Ñ‚ÑƒÑ‚ ÑÑ€Ð°Ð·Ñƒ Ð²Ð¾Ð·Ð²Ñ€Ð°Ñ‰Ð°Ñ‚ÑŒ id ÑÑ‚Ñ€ÐµÐ»ÑÑŽÑ‰ÐµÐ³Ð¾, Ð° Ð½Ðµ Ð¼Ð°ÑˆÐ¸Ð½Ñ‹?")
 	FireBullet				(	m_fire_pos, m_fire_dir, fireDispersionBase, *m_Ammo, 
 								m_object->ID(), m_object->ID(), SendHitAllowed(m_object));
 

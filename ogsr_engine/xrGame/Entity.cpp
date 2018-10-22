@@ -89,7 +89,7 @@ void CEntity::Die(CObject* who)
 	}
 }
 
-//обновление состояния
+//РѕР±РЅРѕРІР»РµРЅРёРµ СЃРѕСЃС‚РѕСЏРЅРёСЏ
 float CEntity::CalcCondition(float hit)
 {
 
@@ -153,7 +153,7 @@ void CEntity::Load		(LPCSTR section)
 #pragma todo("Jim to Dima: no specific figures or comments needed")	
 	m_fMorale			= 66.f;
 
-	//время убирания тела с уровня
+	//РІСЂРµРјСЏ СѓР±РёСЂР°РЅРёСЏ С‚РµР»Р° СЃ СѓСЂРѕРІРЅСЏ
 	m_dwBodyRemoveTime	= READ_IF_EXISTS(pSettings,r_u32,section,"body_remove_time",BODY_REMOVE_TIME);
 	//////////////////////////////////////
 }

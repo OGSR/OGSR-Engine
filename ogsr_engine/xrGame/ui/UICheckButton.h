@@ -21,7 +21,7 @@ public:
 	virtual void InitTexture(LPCSTR tex_name);
 	virtual void SetTextX(float x) {/*do nothing*/}
 
-	//состояние кнопки
+	//СЃРѕСЃС‚РѕСЏРЅРёРµ РєРЅРѕРїРєРё
 	bool GetCheck()					{return m_eButtonState == BUTTON_PUSHED;}
 	void SetCheck(bool ch)			{m_eButtonState = ch ? BUTTON_PUSHED : BUTTON_NORMAL;}
 

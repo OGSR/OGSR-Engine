@@ -426,7 +426,7 @@ void CLevel::OnFrame	()
 	m_ph_commander->update				();
 	m_ph_commander_scripts->update		();
 
-	//просчитать полет пуль
+	//РїСЂРѕСЃС‡РёС‚Р°С‚СЊ РїРѕР»РµС‚ РїСѓР»СЊ
 	Device.Statistic->TEST0.Begin		();
 	BulletManager().CommitRenderSet		();
 	Device.Statistic->TEST0.End			();
@@ -465,14 +465,14 @@ void CLevel::OnRender()
 	
 	Game().OnRender();
 
-	//отрисовать трассы пуль
+	//РѕС‚СЂРёСЃРѕРІР°С‚СЊ С‚СЂР°СЃСЃС‹ РїСѓР»СЊ
 	//Device.Statistic->TEST1.Begin();
 	BulletManager().Render();
 	//Device.Statistic->TEST1.End();
 
 	Render->AfterWorldRender(); //--#SM+#-- +SecondVP+
 
-	//отрисовать интерфейc пользователя
+	//РѕС‚СЂРёСЃРѕРІР°С‚СЊ РёРЅС‚РµСЂС„РµР№c РїРѕР»СЊР·РѕРІР°С‚РµР»СЏ
 	HUD().RenderUI();
 
 	draw_wnds_rects();

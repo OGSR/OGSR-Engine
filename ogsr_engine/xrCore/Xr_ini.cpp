@@ -15,7 +15,7 @@ void CInifile::Destroy( CInifile* ini ) {
 }
 
 
-//Тело функций Inifile
+//РўРµР»Рѕ С„СѓРЅРєС†РёР№ Inifile
 XRCORE_API void _parse( LPSTR dest, LPCSTR src ) {
   if ( src ) {
     bool bInsideSTR = false;

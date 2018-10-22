@@ -214,7 +214,7 @@ void CHUDManager::Render_Actor_Shadow()	// added by KD
 }
 extern void draw_wnds_rects();
 extern ENGINE_API BOOL bShowPauseString;
-//отрисовка элементов интерфейса
+//РѕС‚СЂРёСЃРѕРІРєР° СЌР»РµРјРµРЅС‚РѕРІ РёРЅС‚РµСЂС„РµР№СЃР°
 #include "string_table.h"
 void  CHUDManager::RenderUI()
 {
@@ -284,11 +284,11 @@ void CHUDManager::OnScreenRatioChanged()
 
 	pUI->UIMainIngameWnd				= xr_new<CUIMainIngameWnd>	();
 	pUI->UIMainIngameWnd->Init			();
-	pUI->UIMainIngameWnd->OnConnected(); //Перезагружаем здесь миникарту, чтобы она не пропадала при изменении разрешения экрана.
+	pUI->UIMainIngameWnd->OnConnected(); //РџРµСЂРµР·Р°РіСЂСѓР¶Р°РµРј Р·РґРµСЃСЊ РјРёРЅРёРєР°СЂС‚Сѓ, С‡С‚РѕР±С‹ РѕРЅР° РЅРµ РїСЂРѕРїР°РґР°Р»Р° РїСЂРё РёР·РјРµРЅРµРЅРёРё СЂР°Р·СЂРµС€РµРЅРёСЏ СЌРєСЂР°РЅР°.
 	pUI->UnLoad							();
 	pUI->Load							(pUI->UIGame());
 	if (auto act = Actor())
-		act->UpdateArtefactPanel(); //Обновляем панель с артами на худе
+		act->UpdateArtefactPanel(); //РћР±РЅРѕРІР»СЏРµРј РїР°РЅРµР»СЊ СЃ Р°СЂС‚Р°РјРё РЅР° С…СѓРґРµ
 }
 
 void CHUDManager::OnDisconnected()

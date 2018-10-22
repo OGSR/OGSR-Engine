@@ -5,7 +5,7 @@
 
 void CIconParams::Load(const shared_str item_section)
 {
-	section		= READ_IF_EXISTS(pSettings, r_string, item_section, "icon_section", item_section);	// ìîæíî âñå îïèñàíèÿ èêîíîê ïîòîì ñãðóäèòü â îòäåëüíûé ôàéë
+	section		= READ_IF_EXISTS(pSettings, r_string, item_section, "icon_section", item_section);	// Ð¼Ð¾Ð¶Ð½Ð¾ Ð²ÑÐµ Ð¾Ð¿Ð¸ÑÐ°Ð½Ð¸Ñ Ð¸ÐºÐ¾Ð½Ð¾Ðº Ð¿Ð¾Ñ‚Ð¾Ð¼ ÑÐ³Ñ€ÑƒÐ´Ð¸Ñ‚ÑŒ Ð² Ð¾Ñ‚Ð´ÐµÐ»ÑŒÐ½Ñ‹Ð¹ Ñ„Ð°Ð¹Ð»
 	icon_group  = READ_IF_EXISTS(pSettings, r_u32, section, "icon_group", 0);	
 	name		= READ_IF_EXISTS(pSettings, r_string, section, "icon_name", NULL);	
 	grid_width	= pSettings->r_float(section, "inv_grid_width");
