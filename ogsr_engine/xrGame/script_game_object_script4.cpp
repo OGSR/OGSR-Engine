@@ -105,7 +105,7 @@ CSE_ALifeDynamicObject* CScriptGameObject::alife_object() const
 CWeaponHUD*  CScriptGameObject::GetWeaponHUD() const
 {
 	CGameObject *obj = &this->object();
-	CWeapon *wpn = dynamic_cast<CWeapon*> (obj);
+	CWeapon *wpn = smart_cast<CWeapon*>(obj);
 	if (!wpn) return NULL;
 
 	return wpn->GetHUD();
@@ -121,7 +121,7 @@ IRender_Visual* CScriptGameObject::GetWeaponHUD_Visual() const
 void CScriptGameObject::LoadWeaponHUD_Visual(LPCSTR wpn_hud_section)
 {
 	CGameObject *obj = &this->object();
-	CWeapon *wpn = dynamic_cast<CWeapon*> (obj);
+	CWeapon *wpn = smart_cast<CWeapon*>(obj);
 	if (!wpn) return;
 
 	wpn->GetHUD()->Load(wpn_hud_section);
