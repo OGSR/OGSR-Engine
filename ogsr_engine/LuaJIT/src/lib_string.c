@@ -737,6 +737,10 @@ LUALIB_API int luaopen_string(lua_State *L)
   GCtab *mt;
   global_State *g;
   LJ_LIB_REG(L, LUA_STRLIBNAME, string);
+#if defined(LUA_COMPAT_GFIND) && !LJ_52
+  lua_getfield(L, -1, "gmatch");
+  lua_setfield(L, -2, "gfind");
+#endif
   mt = lj_tab_new(L, 0, 1);
   /* NOBARRIER: basemt is a GC root. */
   g = G(L);
@@ -745,4 +749,3 @@ LUALIB_API int luaopen_string(lua_State *L)
   mt->nomm = (uint8_t)(~(1u<<MM_index));
   return 1;
 }
-

@@ -5,9 +5,6 @@ log1("--LUA version: ["..(jit.version or _VERSION).."]")
 FFI = require('ffi') --Делать только здесь и только один раз!
 --==============================================================================================
 math.randomseed(os.time())
---==============================================================================================
-if not string.gfind then string.gfind = string.gmatch end
-if not math.mod then math.mod = math.fmod end
 --====================================[LuaFileSystem]===========================================
 --lfs.dll должен быть в папке bin.
 --xpcall(function() require("lfs") end, log1)
