@@ -44,10 +44,7 @@ public:
 
 protected:
 	CInventoryOwner*		m_pOurObject;
-
-	CInventoryOwner*		m_pOthersObject;
-	IInventoryBox*			m_pInventoryBox;
-
+	
 	CUIDragDropListEx*		m_pUIOurBagList;
 	CUIDragDropListEx*		m_pUIOthersBagList;
 
@@ -70,6 +67,10 @@ protected:
 	CUI3tButton*			m_pUITakeAll;
 public:
 	CUICellItem*			m_pCurrentCellItem;
+
+	CInventoryOwner*		m_pOthersObject;
+	IInventoryBox*			m_pInventoryBox;
+
 protected:
 	void					UpdateLists					();
 
