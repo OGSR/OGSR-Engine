@@ -263,9 +263,12 @@ CUIDialogWnd* main_input_receiver()
 #include "ui/UIInventoryWnd.h"
 #include "ui/UITradeWnd.h"
 #include "ui/UITalkWnd.h"
-#include "uigamesp.h"
+#include "ui/UICarBodyWnd.h"
+#include "UIGameSP.h"
 #include "HUDManager.h"
 #include "HUDTarget.h"
+#include "InventoryBox.h"
+
 CUIWindow* GetInventoryWindow()
 {
 	CUIGameSP* pGameSP = smart_cast<CUIGameSP*>(HUD().GetUI()->UIGame());
@@ -284,13 +287,13 @@ CUIWindow* GetTalkWindow()
 	if (!pGameSP) return nullptr;
 	return (CUIWindow*)pGameSP->TalkMenu;
 }
-CGameObject* GetSecondTalker()
+CScriptGameObject* GetSecondTalker()
 {
 	CUIGameSP* pGameSP = smart_cast<CUIGameSP*>(HUD().GetUI()->UIGame());
 	if (!pGameSP) return nullptr;
 	CUITalkWnd* wnd = pGameSP->TalkMenu;
 	if (wnd == nullptr) return nullptr;
-	return smart_cast<CGameObject*>(wnd->GetSecondTalker());
+	return smart_cast<CGameObject*>(wnd->GetSecondTalker())->lua_game_object();
 }
 CUIWindow* GetPdaWindow()
 {
@@ -304,6 +307,17 @@ CUIWindow* GetCarBodyWindow()
 	if (!pGameSP) return nullptr;
 	return (CUIWindow*)pGameSP->UICarBodyMenu;
 }
+CScriptGameObject* GetCarBodyTarget()
+{
+	CUIGameSP* pGameSP = smart_cast<CUIGameSP*>(HUD().GetUI()->UIGame());
+	if (!pGameSP) return nullptr;
+	CUICarBodyWnd* wnd = pGameSP->UICarBodyMenu;
+	if (wnd == nullptr) return nullptr;
+	if (wnd->m_pOthersObject != nullptr) return smart_cast<CGameObject*>(wnd->m_pOthersObject)->lua_game_object();
+	if (wnd->m_pInventoryBox != nullptr) return (wnd->m_pInventoryBox->object().lua_game_object());
+	return nullptr;
+}
+
 
 CUIWindow* GetUIChangeLevelWnd()
 {
@@ -958,6 +972,7 @@ void CLevel::script_register(lua_State *L)
 		def("get_pda_wnd",						&GetPdaWindow),
 		def("get_car_body_wnd",					&GetCarBodyWindow),
 		def("get_second_talker",				&GetSecondTalker),
+		def("get_car_body_target",				&GetCarBodyTarget),
 		def("get_change_level_wnd",				&GetUIChangeLevelWnd),
 
 		def("ray_query",						&PerformRayQuery),

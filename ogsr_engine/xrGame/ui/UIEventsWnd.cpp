@@ -204,72 +204,54 @@ bool CUIEventsWnd::GetDescriptionMode		()
 
 void CUIEventsWnd::ShowDescription			(CGameTask* t, int idx)
 {
-	if(GetDescriptionMode()){//map
+	if(GetDescriptionMode())
+	{//map
 		SGameTaskObjective& o		= t->Objective(idx);
 		CMapLocation* ml			= o.LinkedMapLocation();
 
 		if(ml&&ml->SpotEnabled())
 			m_UIMapWnd->SetTargetMap(ml->LevelName(), ml->Position(), true);
-	}else
+
+		int sz = m_ListWnd->GetSize();
+
+		for (int i = 0; i < sz; ++i)
+		{
+			CUITaskItem* itm = (CUITaskItem*)m_ListWnd->GetItem(i);
+
+			if ((itm->GameTask() == t) && (itm->ObjectiveIdx() == idx))
+				itm->MarkSelected(true);
+			else
+				itm->MarkSelected(false);
+		}
+	}
+	else
 	{//articles
 		SGameTaskObjective& o		= t->Objective(0);
-		idx							= 0;
 
 		m_UITaskInfoWnd->ClearAll	();
 
 		if(Actor()->encyclopedia_registry->registry().objects_ptr())
 		{
-			string512	need_group;
-			if (0==idx){ //Это условие всегда истинно //-V547
-				strcpy(need_group,*t->m_ID);
-			}
-			else if(o.article_key.size())
-			{
-				sprintf_s(need_group, "%s/%s", *t->m_ID, *o.article_key);
-			}
-			else
-			{
-				sprintf_s(need_group, "%s/%d", *t->m_ID, idx);
-			}
-
 			ARTICLE_VECTOR::const_iterator it		= Actor()->encyclopedia_registry->registry().objects_ptr()->begin();
 
 			for(; it != Actor()->encyclopedia_registry->registry().objects_ptr()->end(); ++it)
 			{
 				if (ARTICLE_DATA::eTaskArticle == it->article_type)
 				{
-					CEncyclopediaArticle	A;
-					A.Load					(it->article_id);
+					CEncyclopediaArticle A;
+					A.Load(it->article_id);
 
-					const shared_str& group = A.data()->group;
-
-					if( strstr(group.c_str(), need_group)== group.c_str() )
+					if(t->m_ID == A.data()->group)
 					{
-						u32 sz			= xr_strlen(need_group);
-						if ( group.size()== sz || group.c_str()[sz]=='/' )
-							m_UITaskInfoWnd->AddArticle(&A);
-					}else
-					if(o.article_id.size() && it->article_id ==o.article_id)
+						m_UITaskInfoWnd->AddArticle(&A);
+					}
+					else if(o.article_id.size() && it->article_id == o.article_id)
 					{
-						CEncyclopediaArticle			A;
-						A.Load							(it->article_id);
-						m_UITaskInfoWnd->AddArticle		(&A);
+						m_UITaskInfoWnd->AddArticle(&A);
 					}
 				}
 			}
 		}
-	}
-
-	int sz			= m_ListWnd->GetSize		();
-
-	for(int i=0; i<sz;++i)
-	{
-		CUITaskItem* itm			= (CUITaskItem*)m_ListWnd->GetItem(i);
-
-		if((itm->GameTask()==t) && (itm->ObjectiveIdx()==idx) )	
-			itm->MarkSelected		(true);
-		else
-			itm->MarkSelected		(false);
 	}
 }
 

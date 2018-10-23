@@ -112,11 +112,6 @@ void CGameTask::Load(const TASK_ID& id)
 			objective.article_id		= tag_text;
 
 //.
-		tag_text						= g_gameTaskXml->ReadAttrib(l_root, "key", NULL);
-		if(tag_text)
-			objective.article_key		= tag_text;
-
-//.
 		if(i==0)
 		{
 			objective.icon_texture_name		= g_gameTaskXml->Read(g_gameTaskXml->GetLocalRoot(), "icon", 0, NULL);
@@ -396,11 +391,6 @@ void SGameTaskObjective::SetIconName_script(LPCSTR _str)
 	icon_rect			= CUITextureMaster::GetTextureRect(icon_texture_name.c_str());
 	icon_rect.rb.sub	(icon_rect.rb, icon_rect.lt);
 	icon_texture_name	= CUITextureMaster::GetTextureFileName(icon_texture_name.c_str());
-}
-
-void SGameTaskObjective::SetArticleKey_script(LPCSTR _str)
-{
-	article_key = _str;
 }
 
 void SGameTaskObjective::AddCompleteInfo_script(LPCSTR _str)
