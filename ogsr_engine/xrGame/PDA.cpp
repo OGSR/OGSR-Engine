@@ -11,6 +11,8 @@
 
 #include "specific_character.h"
 #include "alife_registry_wrappers.h"
+#include "UIGameSP.h"
+#include "ui/UIPDAWnd.h"
 
 
 CPda::CPda(void)						
@@ -45,7 +47,6 @@ void CPda::net_Destroy()
 	inherited::net_Destroy		();
 	TurnOff						();
 	feel_touch.clear			();
-	UpdateActiveContacts		();
 }
 
 void CPda::Load(LPCSTR section) 
@@ -71,13 +72,33 @@ void CPda::shedule_Update(u32 dt)
 			return;
 		}
 
+                m_changed = false;
 		feel_touch_update(Position(),m_fRadius);
 		UpdateActiveContacts	();
+
+                if ( m_changed ) {
+                  if ( HUD().GetUI() ) {
+                    CUIGameSP* pGameSP = smart_cast<CUIGameSP*>( HUD().GetUI()->UIGame() );
+                    if ( pGameSP )
+                      pGameSP->PdaMenu->PdaContentsChanged( pda_section::contacts );
+                  }
+                  m_changed = false;
+                }
 	}
 }
 
 void CPda::UpdateActiveContacts	()
 {
+	if ( !m_changed ) {
+          for ( auto& it : m_active_contacts ) {
+            CEntityAlive* pEA = smart_cast<CEntityAlive*>( it );
+            if ( !pEA->g_Alive() ) {
+              m_changed = true;
+              break;
+            }
+          }
+	}
+
 	m_active_contacts.clear_not_free();
 	xr_vector<CObject*>::iterator it= feel_touch.begin();
 	for(;it!=feel_touch.end();++it){
@@ -93,6 +114,7 @@ void CPda::feel_touch_new(CObject* O)
 	CInventoryOwner* pOwner					= smart_cast<CInventoryOwner*>( H_Parent() );VERIFY(pOwner);
 
 	pOwner->NewPdaContact					(pNewContactInvOwner);
+        m_changed = true;
 }
 
 void CPda::feel_touch_delete(CObject* O) 
@@ -102,6 +124,7 @@ void CPda::feel_touch_delete(CObject* O)
 	CInventoryOwner* pOwner					= smart_cast<CInventoryOwner*>( H_Parent() );VERIFY(pOwner);
 
 	pOwner->LostPdaContact					(pLostContactInvOwner);
+        m_changed = true;
 }
 
 BOOL CPda::feel_touch_contact(CObject* O) 
@@ -206,4 +229,26 @@ LPCSTR		CPda::Name				()
 CPda* CPda::GetPdaFromOwner(CObject* owner)
 {
 	return smart_cast<CInventoryOwner*>(owner)->GetPDA			();
+}
+
+
+void CPda::TurnOn() {
+  m_bTurnedOff = false;
+  m_changed    = true;
+}
+
+
+void CPda::TurnOff() {
+  m_bTurnedOff = true;
+  m_active_contacts.clear();
+}
+
+
+void CPda::net_Relcase( CObject *O ) {
+  inherited::net_Relcase( O );
+  if ( m_active_contacts.size() && !Level().is_removing_objects() ) {
+      const auto I = std::find( m_active_contacts.begin(), m_active_contacts.end(), O );
+      if ( I != m_active_contacts.end() )
+        m_active_contacts.erase( I );
+  }
 }
