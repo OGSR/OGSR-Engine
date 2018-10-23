@@ -81,25 +81,25 @@ public:
 	static u32	GetColor				(CUIXml& xml_doc, const char* path, int index, u32 def_clr);
 public:
 
-	// Функция чтения алайна из xml файла и применения его к координатам.
-	// Return true если для данного окна есть выравнивание
+	// Р¤СѓРЅРєС†РёСЏ С‡С‚РµРЅРёСЏ Р°Р»Р°Р№РЅР° РёР· xml С„Р°Р№Р»Р° Рё РїСЂРёРјРµРЅРµРЅРёСЏ РµРіРѕ Рє РєРѕРѕСЂРґРёРЅР°С‚Р°Рј.
+	// Return true РµСЃР»Рё РґР»СЏ РґР°РЅРЅРѕРіРѕ РѕРєРЅР° РµСЃС‚СЊ РІС‹СЂР°РІРЅРёРІР°РЅРёРµ
 	static bool					InitAlignment(CUIXml &xml_doc, const char *path,
 											  int index, float &x, float &y,CUIWindow* pWnd);
 
-	// Автоматическая инициализация статических элеменитов
-	// Чтобы вернуть указатели на созданые статики (нам бывает необходимо прятать их, например)
-	// создадим тип - вектор указателей на статики
+	// РђРІС‚РѕРјР°С‚РёС‡РµСЃРєР°СЏ РёРЅРёС†РёР°Р»РёР·Р°С†РёСЏ СЃС‚Р°С‚РёС‡РµСЃРєРёС… СЌР»РµРјРµРЅРёС‚РѕРІ
+	// Р§С‚РѕР±С‹ РІРµСЂРЅСѓС‚СЊ СѓРєР°Р·Р°С‚РµР»Рё РЅР° СЃРѕР·РґР°РЅС‹Рµ СЃС‚Р°С‚РёРєРё (РЅР°Рј Р±С‹РІР°РµС‚ РЅРµРѕР±С…РѕРґРёРјРѕ РїСЂСЏС‚Р°С‚СЊ РёС…, РЅР°РїСЂРёРјРµСЂ)
+	// СЃРѕР·РґР°РґРёРј С‚РёРї - РІРµРєС‚РѕСЂ СѓРєР°Р·Р°С‚РµР»РµР№ РЅР° СЃС‚Р°С‚РёРєРё
 	typedef		xr_vector<CUIStatic*>	StaticsVec;
 	typedef		StaticsVec::iterator	StaticsVec_it;
 
 	static StaticsVec InitAutoStatic	(CUIXml& xml_doc, const char* tag_name, CUIWindow* pParentWnd);
 	static StaticsVec InitAutoStaticGroup(CUIXml& xml_doc, LPCSTR path, int index, CUIWindow* pParentWnd);
 
-	// Функции для пересчета координат для применения выравнивания
+	// Р¤СѓРЅРєС†РёРё РґР»СЏ РїРµСЂРµСЃС‡РµС‚Р° РєРѕРѕСЂРґРёРЅР°С‚ РґР»СЏ РїСЂРёРјРµРЅРµРЅРёСЏ РІС‹СЂР°РІРЅРёРІР°РЅРёСЏ
 	// Params:
-	// 1. align - выравнивание (см. EUIItemAlign)
-	// 2. coord - координата к которй будет примененно выравнивание
-	// Return: измененная координата
+	// 1. align - РІС‹СЂР°РІРЅРёРІР°РЅРёРµ (СЃРј. EUIItemAlign)
+	// 2. coord - РєРѕРѕСЂРґРёРЅР°С‚Р° Рє РєРѕС‚РѕСЂР№ Р±СѓРґРµС‚ РїСЂРёРјРµРЅРµРЅРЅРѕ РІС‹СЂР°РІРЅРёРІР°РЅРёРµ
+	// Return: РёР·РјРµРЅРµРЅРЅР°СЏ РєРѕРѕСЂРґРёРЅР°С‚Р°
 	static float					ApplyAlignX(float coord, u32 align);
 	static float					ApplyAlignY(float coord, u32 align);
 	static void						ApplyAlign(float &x, float &y, u32 align);

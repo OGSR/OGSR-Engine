@@ -95,7 +95,7 @@ void CRenderDevice::End		(void)
 			Resources->DestroyNecessaryTextures				();
 			Memory.mem_compact								();
 			Msg												("* MEMORY USAGE: %d K",Memory.mem_usage()/1024);
-			xrRender_apply_tf(); //KRodin: âîò ýòî íàäî äåëàòü èìåííî çäåñü, è íèãäå áîëüøå! Èíà÷å íå ðàáîòàåò.
+			xrRender_apply_tf(); //KRodin: Ð²Ð¾Ñ‚ ÑÑ‚Ð¾ Ð½Ð°Ð´Ð¾ Ð´ÐµÐ»Ð°Ñ‚ÑŒ Ð¸Ð¼ÐµÐ½Ð½Ð¾ Ð·Ð´ÐµÑÑŒ, Ð¸ Ð½Ð¸Ð³Ð´Ðµ Ð±Ð¾Ð»ÑŒÑˆÐµ! Ð˜Ð½Ð°Ñ‡Ðµ Ð½Ðµ Ñ€Ð°Ð±Ð¾Ñ‚Ð°ÐµÑ‚.
 		}
 	}
 
@@ -104,7 +104,7 @@ void CRenderDevice::End		(void)
 	RCache.OnFrameEnd	();
     CHK_DX(HW.pDevice->EndScene());
 
-	if (!Device.m_SecondViewport.IsSVPFrame() && !Device.m_SecondViewport.m_bCamReady) //--#SM+#-- +SecondVP+ Íå âûâîäèì êàäð èç âòîðîãî âüþïîðòà íà ýêðàí (íà ïðàêòèêå ó íàñ ýêðàííàÿ êàðòèíêà îáíîâëÿåòñÿ ìèíèìóì â äâà ðàçà ðåæå) [don't flush image into display for SecondVP-frame]
+	if (!Device.m_SecondViewport.IsSVPFrame() && !Device.m_SecondViewport.m_bCamReady) //--#SM+#-- +SecondVP+ ÐÐµ Ð²Ñ‹Ð²Ð¾Ð´Ð¸Ð¼ ÐºÐ°Ð´Ñ€ Ð¸Ð· Ð²Ñ‚Ð¾Ñ€Ð¾Ð³Ð¾ Ð²ÑŒÑŽÐ¿Ð¾Ñ€Ñ‚Ð° Ð½Ð° ÑÐºÑ€Ð°Ð½ (Ð½Ð° Ð¿Ñ€Ð°ÐºÑ‚Ð¸ÐºÐµ Ñƒ Ð½Ð°Ñ ÑÐºÑ€Ð°Ð½Ð½Ð°Ñ ÐºÐ°Ñ€Ñ‚Ð¸Ð½ÐºÐ° Ð¾Ð±Ð½Ð¾Ð²Ð»ÑÐµÑ‚ÑÑ Ð¼Ð¸Ð½Ð¸Ð¼ÑƒÐ¼ Ð² Ð´Ð²Ð° Ñ€Ð°Ð·Ð° Ñ€ÐµÐ¶Ðµ) [don't flush image into display for SecondVP-frame]
 		HW.pDevice->Present(nullptr, nullptr, nullptr, nullptr);
 }
 

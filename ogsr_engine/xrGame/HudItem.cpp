@@ -1,6 +1,6 @@
 //////////////////////////////////////////////////////////////////////
-// HudItem.cpp: класс родитель для всех предметов имеющих
-//				собственный HUD (CWeapon, CMissile etc)
+// HudItem.cpp: РєР»Р°СЃСЃ СЂРѕРґРёС‚РµР»СЊ РґР»СЏ РІСЃРµС… РїСЂРµРґРјРµС‚РѕРІ РёРјРµСЋС‰РёС…
+//				СЃРѕР±СЃС‚РІРµРЅРЅС‹Р№ HUD (CWeapon, CMissile etc)
 //////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
@@ -45,7 +45,7 @@ DLL_Pure *CHudItem::_construct	()
 
 void CHudItem::Load(LPCSTR section)
 {
-	//загрузить hud, если он нужен
+	//Р·Р°РіСЂСѓР·РёС‚СЊ hud, РµСЃР»Рё РѕРЅ РЅСѓР¶РµРЅ
 	if(pSettings->line_exist(section,"hud"))
 		hud_sect		= pSettings->r_string		(section,"hud");
 
@@ -56,7 +56,7 @@ void CHudItem::Load(LPCSTR section)
 			m_bInertionAllow = !!pSettings->r_bool(*hud_sect, "allow_inertion");
 	}else{
 		m_pHUD = NULL;
-		//если hud не задан, но задан слот, то ошибка
+		//РµСЃР»Рё hud РЅРµ Р·Р°РґР°РЅ, РЅРѕ Р·Р°РґР°РЅ СЃР»РѕС‚, С‚Рѕ РѕС€РёР±РєР°
 		R_ASSERT2(item().GetSlot() == NO_ACTIVE_SLOT, "active slot is set, but hud for food item is not available");
 	}
 

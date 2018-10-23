@@ -39,7 +39,7 @@ public:
 	virtual const Fmatrix&	get_ParticlesXFORM()	;
 
 	//////////////////////////////////////////////////
-	// непосредственно обработка стрельбы
+	// РЅРµРїРѕСЃСЂРµРґСЃС‚РІРµРЅРЅРѕ РѕР±СЂР°Р±РѕС‚РєР° СЃС‚СЂРµР»СЊР±С‹
 	//////////////////////////////////////////////////
 protected:
 	virtual	void			FireStart	();
@@ -52,10 +52,10 @@ protected:
 	shared_str					m_sAmmoType;
 	CCartridge				m_CurrentAmmo;
 
-	//звук стрельбы
+	//Р·РІСѓРє СЃС‚СЂРµР»СЊР±С‹
 	HUD_SOUND				sndShot;
 
-	//для отдачи
+	//РґР»СЏ РѕС‚РґР°С‡Рё
 	float					camRelaxSpeed;
 	float					camMaxAngle;
 

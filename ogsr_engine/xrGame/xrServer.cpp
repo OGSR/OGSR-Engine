@@ -659,7 +659,7 @@ void xrServer::SendTo_LL			(ClientID ID, void* data, u32 size, u32 dwFlags, u32 
 		IClient* pClient = ID_to_client(ID);
 		if (!pClient) return;
 
-		FATAL(""); //Это не должно быть вызвано
+		FATAL(""); //Р­С‚Рѕ РЅРµ РґРѕР»Р¶РЅРѕ Р±С‹С‚СЊ РІС‹Р·РІР°РЅРѕ
 	}
 }
 

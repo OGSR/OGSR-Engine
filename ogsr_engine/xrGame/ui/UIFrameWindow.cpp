@@ -78,7 +78,7 @@ void CUIFrameWindow::FrameClip(const Frect parentAbsR)
 	using std::max;
 	VERIFY(g_bRendering);
 
-	// Если нет границ клиппанья, то скипаем
+	// Р•СЃР»Рё РЅРµС‚ РіСЂР°РЅРёС† РєР»РёРїРїР°РЅСЊСЏ, С‚Рѕ СЃРєРёРїР°РµРј
 	if (!GetParent()) return;
 
 	Frect		ourAbsR;
@@ -93,7 +93,7 @@ void CUIFrameWindow::FrameClip(const Frect parentAbsR)
 
 	m_UIWndFrame.UpdateSize();
 
-	// Проверяем на видимость фрейма
+	// РџСЂРѕРІРµСЂСЏРµРј РЅР° РІРёРґРёРјРѕСЃС‚СЊ С„СЂРµР№РјР°
 	if (   max(ourAbsR.right, parentAbsR.left) == parentAbsR.left
 		|| min(ourAbsR.left, parentAbsR.right) == parentAbsR.right
 		|| min(ourAbsR.top, parentAbsR.bottom) == parentAbsR.bottom

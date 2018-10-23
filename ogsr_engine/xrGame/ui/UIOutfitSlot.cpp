@@ -10,7 +10,8 @@ CUIOutfitDragDropList::CUIOutfitDragDropList()
 {
 	m_background				= xr_new<CUIStatic>();
 	m_background->SetAutoDelete	(true);
-//	AttachChild					(m_background);
+	if (Core.Features.test(xrCore::Feature::old_outfit_slot_style))
+		AttachChild(m_background);
 	m_default_outfit			= "npc_icon_without_outfit";
 }
 
@@ -95,9 +96,10 @@ CUICellItem* CUIOutfitDragDropList::RemoveItem(CUICellItem* itm, bool force_root
 	return								ci;
 }
 
-
 void CUIOutfitDragDropList::Draw()
 {
-//	m_background->Draw					();
-	inherited::Draw						();
+	if (Core.Features.test(xrCore::Feature::old_outfit_slot_style))
+		m_background->Draw();
+	else
+		inherited::Draw();
 }

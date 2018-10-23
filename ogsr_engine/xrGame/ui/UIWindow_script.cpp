@@ -23,14 +23,14 @@ CGameFont* GetFontMedium()
 CGameFont* GetFontDI()
 {return mngr().pFontDI;}
 /*
-	//заголовочный шрифт
+	//Р·Р°РіРѕР»РѕРІРѕС‡РЅС‹Р№ С€СЂРёС„С‚
 CGameFont* GetFontHeaderRussian()
 {return mngr().pFontHeaderRussian;}
 
 CGameFont* GetFontHeaderEurope()
 {return mngr().pFontHeaderEurope;}
 */
-//шрифты для интерфейса
+//С€СЂРёС„С‚С‹ РґР»СЏ РёРЅС‚РµСЂС„РµР№СЃР°
 CGameFont* GetFontGraffiti19Russian()
 {return mngr().pFontGraffiti19Russian;}
 CGameFont* GetFontGraffiti22Russian()

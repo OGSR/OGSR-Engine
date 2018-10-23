@@ -268,7 +268,7 @@ void			ISpatial_DB::insert		(ISpatial* S)
 	} else {
 		// Object outside our DB, put it into root node and hack bounds
 		// Object will reinsert itself until fits into "real", "controlled" space
-		if (0 == m_root)	// KD: временная затычка - непонятно, почему может не быть кости
+		if (0 == m_root)	// KD: РІСЂРµРјРµРЅРЅР°СЏ Р·Р°С‚С‹С‡РєР° - РЅРµРїРѕРЅСЏС‚РЅРѕ, РїРѕС‡РµРјСѓ РјРѕР¶РµС‚ РЅРµ Р±С‹С‚СЊ РєРѕСЃС‚Рё
 		{
 			m_root = _node_create();		
 			m_root->_init(NULL);

@@ -55,7 +55,7 @@ u32	CInventoryContainer::CalcItems	(SItemsInfo &info) const
 			info.weight += itm->Weight();
 			info.cost	+= itm->Cost();
 			float rsp = itm->RadiationRestoreSpeed();
-			info.info[0] += rsp > 0 ? rsp : 0; // нейтрализаторы радиации из рюкзака не работают (артефакты в т.ч.)
+			info.info[0] += rsp > 0 ? rsp : 0; // РЅРµР№С‚СЂР°Р»РёР·Р°С‚РѕСЂС‹ СЂР°РґРёР°С†РёРё РёР· СЂСЋРєР·Р°РєР° РЅРµ СЂР°Р±РѕС‚Р°СЋС‚ (Р°СЂС‚РµС„Р°РєС‚С‹ РІ С‚.С‡.)
 		}
 	}
 
@@ -64,7 +64,7 @@ u32	CInventoryContainer::CalcItems	(SItemsInfo &info) const
 
 bool CInventoryContainer::CanTrade() const
 {	
-	if (!IsEmpty()) // продавать можно только пустым
+	if (!IsEmpty()) // РїСЂРѕРґР°РІР°С‚СЊ РјРѕР¶РЅРѕ С‚РѕР»СЊРєРѕ РїСѓСЃС‚С‹Рј
 		return false;
 	return inherited::CanTrade();
 }

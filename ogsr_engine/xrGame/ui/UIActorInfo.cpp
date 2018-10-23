@@ -35,7 +35,7 @@ void CUIActorInfoWnd::Init()
 
 	xml_init.InitWindow						(uiXml, "main_wnd", 0, this);
 
-	// Декоративное оформление
+	// Р”РµРєРѕСЂР°С‚РёРІРЅРѕРµ РѕС„РѕСЂРјР»РµРЅРёРµ
 	UICharIconFrame							= xr_new<CUIFrameWindow>();	UICharIconFrame->SetAutoDelete	(true);
 	xml_init.InitFrameWindow				(uiXml, "chicon_frame_window", 0, UICharIconFrame);
 	AttachChild								(UICharIconFrame);
@@ -72,7 +72,7 @@ void CUIActorInfoWnd::Init()
 	UICharacterWindow->AttachChild			(UICharacterInfo);
 	UICharacterInfo->Init					(0,0,UICharacterWindow->GetWidth(), UICharacterWindow->GetHeight(), ACTOR_CHARACTER_XML);
 
-	//Элементы автоматического добавления
+	//Р­Р»РµРјРµРЅС‚С‹ Р°РІС‚РѕРјР°С‚РёС‡РµСЃРєРѕРіРѕ РґРѕР±Р°РІР»РµРЅРёСЏ
 	xml_init.InitAutoStatic					(uiXml, "right_auto_static", UICharIconFrame);
 	xml_init.InitAutoStatic					(uiXml, "left_auto_static",  UIInfoFrame);
 

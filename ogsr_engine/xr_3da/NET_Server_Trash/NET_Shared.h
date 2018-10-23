@@ -1,7 +1,7 @@
 #pragma once
 #include "../Engine.h"
 
-//Дефайны директплея, надо убрать.
+//Р”РµС„Р°Р№РЅС‹ РґРёСЂРµРєС‚РїР»РµСЏ, РЅР°РґРѕ СѓР±СЂР°С‚СЊ.
 #define DPNSEND_GUARANTEED 0x0008
 #define DPNSEND_NOCOMPLETE 0x0002
 #define DPNSEND_NONSEQUENTIAL 0x0010

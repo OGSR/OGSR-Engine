@@ -93,7 +93,7 @@ IC	float CGameGraph::distance										(const _GRAPH_ID tGraphID0, const _GRAPH_
 	for ( ; i != e; ++i)
 		if (value(tGraphID0,i) == tGraphID1)
 			return				(edge_weight(i));
-#pragma todo("KD: не всегда построенный путь для монстра валидный. Пока вывожу в лог и сбрасываю путь в вызвавшей функции.")
+#pragma todo("KD: РЅРµ РІСЃРµРіРґР° РїРѕСЃС‚СЂРѕРµРЅРЅС‹Р№ РїСѓС‚СЊ РґР»СЏ РјРѕРЅСЃС‚СЂР° РІР°Р»РёРґРЅС‹Р№. РџРѕРєР° РІС‹РІРѕР¶Сѓ РІ Р»РѕРі Рё СЃР±СЂР°СЃС‹РІР°СЋ РїСѓС‚СЊ РІ РІС‹Р·РІР°РІС€РµР№ С„СѓРЅРєС†РёРё.")
 //	R_ASSERT2					(false,"There is no proper graph point neighbour!");
 	Msg("There is no way to get distance from vertex %d to vertex %d!!!", tGraphID0, tGraphID1);
 	return						(_GRAPH_ID(-1));

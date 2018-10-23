@@ -2,8 +2,8 @@
 
 #include "log.h"
 
-#include <sstream> //для std::stringstream
-#include <fstream> //для std::ofstream
+#include <sstream> //РґР»СЏ std::stringstream
+#include <fstream> //РґР»СЏ std::ofstream
 
 static string_path			logFName = "engine.log";
 static BOOL 				no_log	 = TRUE;
@@ -20,14 +20,14 @@ void AddOne(std::string &split, bool first_line)
 	std::lock_guard<decltype(logCS)> lock(logCS);
 
 #ifdef DEBUG
-	OutputDebugString(split.c_str()); //Вывод в отладчик студии?
+	OutputDebugString(split.c_str()); //Р’С‹РІРѕРґ РІ РѕС‚Р»Р°РґС‡РёРє СЃС‚СѓРґРёРё?
 	OutputDebugString("\n");
 #endif
 
 	if (LogCB)
-		LogCB(split.c_str()); //Вывод в логкаллбек
+		LogCB(split.c_str()); //Р’С‹РІРѕРґ РІ Р»РѕРіРєР°Р»Р»Р±РµРє
 
-	LogFile->push_back(split); //Вывод в консоль
+	LogFile->push_back(split); //Р’С‹РІРѕРґ РІ РєРѕРЅСЃРѕР»СЊ
 
 	if (!logstream.is_open()) return;
 
@@ -44,7 +44,7 @@ void AddOne(std::string &split, bool first_line)
 		split = "\n" + split;
 	}
 
-	//Вывод в лог-файл
+	//Р’С‹РІРѕРґ РІ Р»РѕРі-С„Р°Р№Р»
 	logstream << split;
 	logstream.flush();
 }
@@ -53,33 +53,33 @@ void Log(const char* s)
 {
 	std::string str(s);
 
-	if (str.empty()) return; //Строка пуста - выходим
+	if (str.empty()) return; //РЎС‚СЂРѕРєР° РїСѓСЃС‚Р° - РІС‹С…РѕРґРёРј
 
 	bool not_first_line = false;
 	bool have_color = false;
 	auto color_s = str.front();
-	if ( //Ищем в начале строки цветовой код
-		color_s == '-' //Зелёный
-		|| color_s == '~' //Жёлтый
-		|| color_s == '!' //Красный
-		|| color_s == '*' //Серый
-		|| color_s == '#' //Бирюзовый
+	if ( //РС‰РµРј РІ РЅР°С‡Р°Р»Рµ СЃС‚СЂРѕРєРё С†РІРµС‚РѕРІРѕР№ РєРѕРґ
+		color_s == '-' //Р—РµР»С‘РЅС‹Р№
+		|| color_s == '~' //Р–С‘Р»С‚С‹Р№
+		|| color_s == '!' //РљСЂР°СЃРЅС‹Р№
+		|| color_s == '*' //РЎРµСЂС‹Р№
+		|| color_s == '#' //Р‘РёСЂСЋР·РѕРІС‹Р№
 	) have_color = true;
 
 	std::stringstream ss(str);
-	for (std::string item; std::getline(ss, item);) //Разбиваем текст по "\n"
+	for (std::string item; std::getline(ss, item);) //Р Р°Р·Р±РёРІР°РµРј С‚РµРєСЃС‚ РїРѕ "\n"
 	{
 		if (not_first_line && have_color)
 		{
 			item = ' ' + item;
-			item = color_s + item; //Если надо, перед каждой строкой вставляем спец-символ цвета, чтобы в консоли цветными были все строки текста, а не только первая.
+			item = color_s + item; //Р•СЃР»Рё РЅР°РґРѕ, РїРµСЂРµРґ РєР°Р¶РґРѕР№ СЃС‚СЂРѕРєРѕР№ РІСЃС‚Р°РІР»СЏРµРј СЃРїРµС†-СЃРёРјРІРѕР» С†РІРµС‚Р°, С‡С‚РѕР±С‹ РІ РєРѕРЅСЃРѕР»Рё С†РІРµС‚РЅС‹РјРё Р±С‹Р»Рё РІСЃРµ СЃС‚СЂРѕРєРё С‚РµРєСЃС‚Р°, Р° РЅРµ С‚РѕР»СЊРєРѕ РїРµСЂРІР°СЏ.
 		}
 		AddOne(item, !not_first_line);
 		not_first_line = true;
 	}
 }
 
-void __cdecl Msg(const char *format, ...) //KRodin: Убрал ограничение на размер буфера
+void __cdecl Msg(const char *format, ...) //KRodin: РЈР±СЂР°Р» РѕРіСЂР°РЅРёС‡РµРЅРёРµ РЅР° СЂР°Р·РјРµСЂ Р±СѓС„РµСЂР°
 {
 	va_list args;
 	va_start(args, format);
@@ -89,7 +89,7 @@ void __cdecl Msg(const char *format, ...) //KRodin: Убрал ограничение на размер 
 	Log(strBuf.get());
 }
 
-void Log(const char *msg, const char *dop) { //Надо убрать
+void Log(const char *msg, const char *dop) { //РќР°РґРѕ СѓР±СЂР°С‚СЊ
 	char buf[1024];
 	if (dop)
 		std::snprintf(buf,sizeof(buf),"%s %s",msg,dop);
@@ -98,7 +98,7 @@ void Log(const char *msg, const char *dop) { //Надо убрать
 	Log(buf);
 }
 
-void Log(const char *msg, u32 dop) { //Надо убрать
+void Log(const char *msg, u32 dop) { //РќР°РґРѕ СѓР±СЂР°С‚СЊ
 	char buf[1024];
 	std::snprintf(buf,sizeof(buf),"%s %d",msg,dop);
 	Log(buf);
@@ -159,7 +159,7 @@ void CreateLog(BOOL nl)
 			if (FS.path_exist("$logs$"))
 				FS.update_path(logFName, "$logs$", logFName);
 
-			logstream.imbue(std::locale("")); //В некоторых случаях вместо русских букв в лог выводятся иероглифы. Попробуем установить логу локаль, может поможет.
+			logstream.imbue(std::locale("")); //Р’ РЅРµРєРѕС‚РѕСЂС‹С… СЃР»СѓС‡Р°СЏС… РІРјРµСЃС‚Рѕ СЂСѓСЃСЃРєРёС… Р±СѓРєРІ РІ Р»РѕРі РІС‹РІРѕРґСЏС‚СЃСЏ РёРµСЂРѕРіР»РёС„С‹. РџРѕРїСЂРѕР±СѓРµРј СѓСЃС‚Р°РЅРѕРІРёС‚СЊ Р»РѕРіСѓ Р»РѕРєР°Р»СЊ, РјРѕР¶РµС‚ РїРѕРјРѕР¶РµС‚.
 			VerifyPath(logFName);
 			logstream.open(logFName);
 		}

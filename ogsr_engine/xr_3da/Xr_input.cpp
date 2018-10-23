@@ -217,7 +217,7 @@ void CInput::MouseUpdate( )
 {
 #	pragma push_macro("FIELD_OFFSET")
 #	undef FIELD_OFFSET
-#	define FIELD_OFFSET offsetof // Фиксим warning C4644 - просто переводим макрос из винсдк на использование стандартного оффсетофа.
+#	define FIELD_OFFSET offsetof // Р¤РёРєСЃРёРј warning C4644 - РїСЂРѕСЃС‚Рѕ РїРµСЂРµРІРѕРґРёРј РјР°РєСЂРѕСЃ РёР· РІРёРЅСЃРґРє РЅР° РёСЃРїРѕР»СЊР·РѕРІР°РЅРёРµ СЃС‚Р°РЅРґР°СЂС‚РЅРѕРіРѕ РѕС„С„СЃРµС‚РѕС„Р°.
 
 	HRESULT hr;
 	DWORD dwElements	= MOUSEBUFFERSIZE;

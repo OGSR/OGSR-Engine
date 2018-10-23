@@ -78,9 +78,9 @@ public:
 class CWeaponHUD
 {
 	friend class CWeaponScript;
-	//родительский объект HUD
+	//СЂРѕРґРёС‚РµР»СЊСЃРєРёР№ РѕР±СЉРµРєС‚ HUD
 	CHudItem*			m_pParentWeapon;		
-	//флаг, если hud спрятан не показывается
+	//С„Р»Р°Рі, РµСЃР»Рё hud СЃРїСЂСЏС‚Р°РЅ РЅРµ РїРѕРєР°Р·С‹РІР°РµС‚СЃСЏ
 	bool				m_bHidden;
 	bool				m_bVisible;
 
@@ -89,7 +89,7 @@ class CWeaponHUD
 	//shared HUD data
 	shared_weapon_hud	m_shared_data;
 
-	//таймеры для проигрывания анимаций
+	//С‚Р°Р№РјРµСЂС‹ РґР»СЏ РїСЂРѕРёРіСЂС‹РІР°РЅРёСЏ Р°РЅРёРјР°С†РёР№
 	u32					m_dwAnimTime;
 	u32					m_dwAnimEndTime;
 	bool				m_bStopAtEndAnimIsRunning;
@@ -97,10 +97,10 @@ class CWeaponHUD
 //	CInventoryItem*		m_pCallbackItem;
 	CHudItem*			m_pCallbackItem;
 
-	//остановление таймера текущей анимации, и вызов callback
+	//РѕСЃС‚Р°РЅРѕРІР»РµРЅРёРµ С‚Р°Р№РјРµСЂР° С‚РµРєСѓС‰РµР№ Р°РЅРёРјР°С†РёРё, Рё РІС‹Р·РѕРІ callback
 	void				StopCurrentAnim	();
 
-	//поворот и смещение для режима приближения
+	//РїРѕРІРѕСЂРѕС‚ Рё СЃРјРµС‰РµРЅРёРµ РґР»СЏ СЂРµР¶РёРјР° РїСЂРёР±Р»РёР¶РµРЅРёСЏ
 	float				m_fZoomRotateX;
 	float				m_fZoomRotateY;
 	Fvector				m_fZoomOffset;
@@ -142,7 +142,7 @@ public:
 
 	void				Visible			(bool val){m_bVisible=val;}
 	
-	//обновление HUD должно вызываться на каждом кадре
+	//РѕР±РЅРѕРІР»РµРЅРёРµ HUD РґРѕР»Р¶РЅРѕ РІС‹Р·С‹РІР°С‚СЊСЃСЏ РЅР° РєР°Р¶РґРѕРј РєР°РґСЂРµ
 	void				Update			();
 
 	void				StopCurrentAnimWithoutCallback	();

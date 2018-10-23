@@ -19,7 +19,7 @@ str_value*	str_container::dock		(str_c value)
 	// calc len
 	u32		s_len				= xr_strlen(value);
 	u32		s_len_with_zero		= (u32)s_len+1;
-	//VERIFY	(HEADER+s_len_with_zero < 4096); //Çà÷åì? Ñòðîêè âïîëíå ìîãóò áûòü äëèíîé â ðàçû áîëüøå.
+	//VERIFY	(HEADER+s_len_with_zero < 4096); //Ð—Ð°Ñ‡ÐµÐ¼? Ð¡Ñ‚Ñ€Ð¾ÐºÐ¸ Ð²Ð¿Ð¾Ð»Ð½Ðµ Ð¼Ð¾Ð³ÑƒÑ‚ Ð±Ñ‹Ñ‚ÑŒ Ð´Ð»Ð¸Ð½Ð¾Ð¹ Ð² Ñ€Ð°Ð·Ñ‹ Ð±Ð¾Ð»ÑŒÑˆÐµ.
 
 	// setup find structure
 	string16	header;

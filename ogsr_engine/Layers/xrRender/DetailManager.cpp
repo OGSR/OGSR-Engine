@@ -229,7 +229,7 @@ void CDetailManager::UpdateVisibleM()
 	// Initialize 'vis' and 'cache'
 	// Collect objects for rendering
 	Device.Statistic->RenderDUMP_DT_VIS.Begin();
-	g_pGamePersistent->m_pGShaderConstants.m_blender_mode.w = 1.0f; //--#SM+#-- Флаг начала рендера травы [begin of grass render]
+	g_pGamePersistent->m_pGShaderConstants.m_blender_mode.w = 1.0f; //--#SM+#-- Р¤Р»Р°Рі РЅР°С‡Р°Р»Р° СЂРµРЅРґРµСЂР° С‚СЂР°РІС‹ [begin of grass render]
 
 	for (u32 _mz = 0; _mz<dm_current_cache1_line; _mz++) {
 		for (u32 _mx = 0; _mx<dm_current_cache1_line; _mx++) {
@@ -313,7 +313,7 @@ void CDetailManager::UpdateVisibleM()
 		}
 	}
 
-	g_pGamePersistent->m_pGShaderConstants.m_blender_mode.w = 0.0f; //--#SM+#-- Флаг конца рендера травы [end of grass render]
+	g_pGamePersistent->m_pGShaderConstants.m_blender_mode.w = 0.0f; //--#SM+#-- Р¤Р»Р°Рі РєРѕРЅС†Р° СЂРµРЅРґРµСЂР° С‚СЂР°РІС‹ [end of grass render]
 	Device.Statistic->RenderDUMP_DT_VIS.End();
 }
 
@@ -344,7 +344,7 @@ u32 reset_frame = 0;
 void __stdcall	CDetailManager::MT_CALC		()
 {
 	if (reset_frame == Device.dwFrame)	return;
-	// проверки
+	// РїСЂРѕРІРµСЂРєРё
 	if (0 == RImplementation.Details)		return;	// possibly deleted
 	if (!psDeviceFlags.is(rsDetails))	return;
 	if (0 == dtFS)						return;

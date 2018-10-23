@@ -172,7 +172,7 @@ const CCoverPoint *CMonsterCoverManager::find_cover(const Fvector &position, flo
 	return				point;
 }
 
-// íàéòè ëó÷øèé êîâåð îòíîñèòåëüíî "position"
+// Ð½Ð°Ð¹Ñ‚Ð¸ Ð»ÑƒÑ‡ÑˆÐ¸Ð¹ ÐºÐ¾Ð²ÐµÑ€ Ð¾Ñ‚Ð½Ð¾ÑÐ¸Ñ‚ÐµÐ»ÑŒÐ½Ð¾ "position"
 const CCoverPoint *CMonsterCoverManager::find_cover(const Fvector &src_pos, const Fvector &dest_pos, float min_pos_distance, float	max_pos_distance, float deviation)
 {
 	m_ce_best->setup	(m_object, dest_pos, min_pos_distance,max_pos_distance,deviation);

@@ -393,8 +393,8 @@ class cl_detector	: public R_constant_setup {
 };	static cl_detector		binder_detector;
 
 //////////////////////////////////////////////////
-//KRodin: разгрести, и выкинуть то что не используется!
-// SM_TODO: RCache.hemi заменить на более "логичное" место
+//KRodin: СЂР°Р·РіСЂРµСЃС‚Рё, Рё РІС‹РєРёРЅСѓС‚СЊ С‚Рѕ С‡С‚Рѕ РЅРµ РёСЃРїРѕР»СЊР·СѓРµС‚СЃСЏ!
+// SM_TODO: RCache.hemi Р·Р°РјРµРЅРёС‚СЊ РЅР° Р±РѕР»РµРµ "Р»РѕРіРёС‡РЅРѕРµ" РјРµСЃС‚Рѕ
 static class cl_hud_params : public R_constant_setup //--#SM+#--
 {
 	virtual void setup(R_constant* C) { RCache.set_c(C, g_pGamePersistent->m_pGShaderConstants.hud_params); }
@@ -410,7 +410,7 @@ static class cl_blend_mode : public R_constant_setup //--#SM+#--
 	virtual void setup(R_constant* C) { RCache.set_c(C, g_pGamePersistent->m_pGShaderConstants.m_blender_mode); }
 } binder_blend_mode;
 
-/*/Три класса ниже - для тепловизора походу.
+/*/РўСЂРё РєР»Р°СЃСЃР° РЅРёР¶Рµ - РґР»СЏ С‚РµРїР»РѕРІРёР·РѕСЂР° РїРѕС…РѕРґСѓ.
 class cl_camo_data : public R_constant_setup //--#SM+#--
 {
 	virtual void setup(R_constant* C) { RCache.hemi.c_camo_data = C; }

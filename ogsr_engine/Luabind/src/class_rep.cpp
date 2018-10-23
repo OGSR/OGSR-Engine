@@ -1047,7 +1047,7 @@ int luabind::detail::class_rep::construct_lua_class_callback(lua_State* L)
 	// TODO: lua_call may invoke longjump! make sure we don't have any memory leaks!
 	// we don't have any stack objects here
 	lua_call(L, args, 0);
-	//KRodin: попытка исправить утечку памяти.
+	//KRodin: РїРѕРїС‹С‚РєР° РёСЃРїСЂР°РІРёС‚СЊ СѓС‚РµС‡РєСѓ РїР°РјСЏС‚Рё.
 	lua_pushstring(L, "super");
 	lua_pushnil(L);
 	lua_settable(L, LUA_GLOBALSINDEX);
@@ -1485,7 +1485,7 @@ const class_rep::property_map& luabind::detail::class_rep::properties() const
 	return m_getters;
 }
 
-const class_rep::property_map& luabind::detail::class_rep::properties_rw() const  //KRodin: добавлено для совместимости с script_engine_help
+const class_rep::property_map& luabind::detail::class_rep::properties_rw() const  //KRodin: РґРѕР±Р°РІР»РµРЅРѕ РґР»СЏ СЃРѕРІРјРµСЃС‚РёРјРѕСЃС‚Рё СЃ script_engine_help
 {
 	return m_setters;
 }

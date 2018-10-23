@@ -15,7 +15,7 @@ void export_classes(lua_State *L);
 
 CScriptEngine::CScriptEngine()
 {
-	//KRodin: luabind_allocator инитится в ResourceManager_Scripting.cpp, т.к там luabind инитится раньше всего.
+	//KRodin: luabind_allocator РёРЅРёС‚РёС‚СЃСЏ РІ ResourceManager_Scripting.cpp, С‚.Рє С‚Р°Рј luabind РёРЅРёС‚РёС‚СЃСЏ СЂР°РЅСЊС€Рµ РІСЃРµРіРѕ.
 	//
 	m_stack_level = 0;
 	m_reload_modules = false;
@@ -70,7 +70,7 @@ void lua_cast_failed( lua_State* L, LUABIND_TYPE_INFO info )
   const char* info_name = info->name();
 #endif
   Msg( "!![%s] LUA error: cannot cast lua value to [%s]", __FUNCTION__, info_name );
-  //FATAL("[%s] LUA error: cannot cast lua value to [%s]", __FUNCTION__, info_name); //KRodin: Тут наверное вылетать не надо.
+  //FATAL("[%s] LUA error: cannot cast lua value to [%s]", __FUNCTION__, info_name); //KRodin: РўСѓС‚ РЅР°РІРµСЂРЅРѕРµ РІС‹Р»РµС‚Р°С‚СЊ РЅРµ РЅР°РґРѕ.
 }
 #endif
 
@@ -94,7 +94,7 @@ void CScriptEngine::setup_auto_load()
 {
 	lua_pushstring(lua(), GlobalNamespace);
 	lua_gettable(lua(), LUA_GLOBALSINDEX);
-	int value_index = lua_gettop(lua());  // alpet: во избежания оставления в стеке лишней метатаблицы
+	int value_index = lua_gettop(lua());  // alpet: РІРѕ РёР·Р±РµР¶Р°РЅРёСЏ РѕСЃС‚Р°РІР»РµРЅРёСЏ РІ СЃС‚РµРєРµ Р»РёС€РЅРµР№ РјРµС‚Р°С‚Р°Р±Р»РёС†С‹
 	luaL_newmetatable(lua(), "XRAY_AutoLoadMetaTable");
 	lua_pushstring(lua(), "__index");
 	lua_pushcfunction(lua(), auto_load);
@@ -126,33 +126,33 @@ void CScriptEngine::setup_auto_load()
 void CScriptEngine::init()
 {
 	//Msg("[CScriptEngine::init] Starting LuaJIT!");
-	lua_State* LSVM = luaL_newstate(); //Запускаем LuaJIT. Память себе он выделит сам.
+	lua_State* LSVM = luaL_newstate(); //Р—Р°РїСѓСЃРєР°РµРј LuaJIT. РџР°РјСЏС‚СЊ СЃРµР±Рµ РѕРЅ РІС‹РґРµР»РёС‚ СЃР°Рј.
 	R_ASSERT2(LSVM, "! ERROR : Cannot initialize LUA VM!");
 	reinit(LSVM);
 #ifdef LUABIND_09
 	luabind::disable_super_deprecation();
 #endif
-	luabind::open(LSVM); //Запуск луабинда
-	//--------------Установка калбеков------------------//
+	luabind::open(LSVM); //Р—Р°РїСѓСЃРє Р»СѓР°Р±РёРЅРґР°
+	//--------------РЈСЃС‚Р°РЅРѕРІРєР° РєР°Р»Р±РµРєРѕРІ------------------//
 #ifdef LUABIND_NO_EXCEPTIONS
 	luabind::set_error_callback(lua_error);
 	luabind::set_cast_failed_callback(lua_cast_failed);
 #endif
-	luabind::set_pcall_callback(lua_pcall_failed); //KRodin: НЕ ЗАКОММЕНТИРОВАТЬ НИ В КОЕМ СЛУЧАЕ!!!
+	luabind::set_pcall_callback(lua_pcall_failed); //KRodin: РќР• Р—РђРљРћРњРњР•РќРўРР РћР’РђРўР¬ РќР Р’ РљРћР•Рњ РЎР›РЈР§РђР•!!!
 	lua_atpanic(LSVM, lua_panic);
 	//-----------------------------------------------------//
-	export_classes(LSVM); //Тут регистрируются все движковые функции, импортированные в скрипты
-	luaL_openlibs(LSVM); //Инициализация функций LuaJIT
-	setup_auto_load(); //Построение метатаблицы
+	export_classes(LSVM); //РўСѓС‚ СЂРµРіРёСЃС‚СЂРёСЂСѓСЋС‚СЃСЏ РІСЃРµ РґРІРёР¶РєРѕРІС‹Рµ С„СѓРЅРєС†РёРё, РёРјРїРѕСЂС‚РёСЂРѕРІР°РЅРЅС‹Рµ РІ СЃРєСЂРёРїС‚С‹
+	luaL_openlibs(LSVM); //РРЅРёС†РёР°Р»РёР·Р°С†РёСЏ С„СѓРЅРєС†РёР№ LuaJIT
+	setup_auto_load(); //РџРѕСЃС‚СЂРѕРµРЅРёРµ РјРµС‚Р°С‚Р°Р±Р»РёС†С‹
 	bool save = m_reload_modules;
 	m_reload_modules = true;
-	process_file_if_exists(GlobalNamespace, false); //Компиляция _G.script
+	process_file_if_exists(GlobalNamespace, false); //РљРѕРјРїРёР»СЏС†РёСЏ _G.script
 	m_reload_modules = save;
 
 	m_stack_level = lua_gettop(LSVM); //?
 
-	register_script_classes(); //Походу, запуск class_registrator.script
-	object_factory().register_script(); //Регистрация классов
+	register_script_classes(); //РџРѕС…РѕРґСѓ, Р·Р°РїСѓСЃРє class_registrator.script
+	object_factory().register_script(); //Р РµРіРёСЃС‚СЂР°С†РёСЏ РєР»Р°СЃСЃРѕРІ
 	//Msg("[CScriptEngine::init] LuaJIT Started!");
 }
 
@@ -175,16 +175,16 @@ void CScriptEngine::parse_script_namespace(const char *name, char *ns, u32 nsSiz
 
 
 #ifdef LOAD_SCRIPTS_SUBDIRS
-// KRodin: Функция проверяет существует ли скрипт на диске. Если
-// существует - отправляет его в do_file. Вызывается из process_file,
-// auto_load и не только.
+// KRodin: Р¤СѓРЅРєС†РёСЏ РїСЂРѕРІРµСЂСЏРµС‚ СЃСѓС‰РµСЃС‚РІСѓРµС‚ Р»Рё СЃРєСЂРёРїС‚ РЅР° РґРёСЃРєРµ. Р•СЃР»Рё
+// СЃСѓС‰РµСЃС‚РІСѓРµС‚ - РѕС‚РїСЂР°РІР»СЏРµС‚ РµРіРѕ РІ do_file. Р’С‹Р·С‹РІР°РµС‚СЃСЏ РёР· process_file,
+// auto_load Рё РЅРµ С‚РѕР»СЊРєРѕ.
 bool CScriptEngine::process_file_if_exists( const char* file_name, bool warn_if_not_exist ) {
   if ( !m_reload_modules && ( *file_name && namespace_loaded( file_name ) ) )
     return true;
 
   u32 string_length = xr_strlen( file_name );
-  // Это походу для оптимизации только, чтоб типа если один раз
-  // убедились что файла нет, постоянно не проверять, есть ли он.
+  // Р­С‚Рѕ РїРѕС…РѕРґСѓ РґР»СЏ РѕРїС‚РёРјРёР·Р°С†РёРё С‚РѕР»СЊРєРѕ, С‡С‚РѕР± С‚РёРїР° РµСЃР»Рё РѕРґРёРЅ СЂР°Р·
+  // СѓР±РµРґРёР»РёСЃСЊ С‡С‚Рѕ С„Р°Р№Р»Р° РЅРµС‚, РїРѕСЃС‚РѕСЏРЅРЅРѕ РЅРµ РїСЂРѕРІРµСЂСЏС‚СЊ, РµСЃС‚СЊ Р»Рё РѕРЅ.
   if ( !warn_if_not_exist && no_file_exists( file_name, string_length ) ) {
     ++m_last_no_file_cnt;
     return false;
@@ -277,10 +277,10 @@ bool LookupScript(string_path &fname, const char* base)
 	return false;
 }
 
-bool CScriptEngine::process_file_if_exists(const char* file_name, bool warn_if_not_exist) //KRodin: Функция проверяет существует ли скрипт на диске. Если существует - отправляет его в do_file. Вызывается из process_file, auto_load и не только.
+bool CScriptEngine::process_file_if_exists(const char* file_name, bool warn_if_not_exist) //KRodin: Р¤СѓРЅРєС†РёСЏ РїСЂРѕРІРµСЂСЏРµС‚ СЃСѓС‰РµСЃС‚РІСѓРµС‚ Р»Рё СЃРєСЂРёРїС‚ РЅР° РґРёСЃРєРµ. Р•СЃР»Рё СЃСѓС‰РµСЃС‚РІСѓРµС‚ - РѕС‚РїСЂР°РІР»СЏРµС‚ РµРіРѕ РІ do_file. Р’С‹Р·С‹РІР°РµС‚СЃСЏ РёР· process_file, auto_load Рё РЅРµ С‚РѕР»СЊРєРѕ.
 {
 	u32 string_length = strlen(file_name);
-	if (!warn_if_not_exist && no_file_exists(file_name, string_length)) //Это походу для оптимизации только, чтоб типа если один раз убедились что файла нет, постоянно не проверять, есть ли он.
+	if (!warn_if_not_exist && no_file_exists(file_name, string_length)) //Р­С‚Рѕ РїРѕС…РѕРґСѓ РґР»СЏ РѕРїС‚РёРјРёР·Р°С†РёРё С‚РѕР»СЊРєРѕ, С‡С‚РѕР± С‚РёРїР° РµСЃР»Рё РѕРґРёРЅ СЂР°Р· СѓР±РµРґРёР»РёСЃСЊ С‡С‚Рѕ С„Р°Р№Р»Р° РЅРµС‚, РїРѕСЃС‚РѕСЏРЅРЅРѕ РЅРµ РїСЂРѕРІРµСЂСЏС‚СЊ, РµСЃС‚СЊ Р»Рё РѕРЅ.
 		return false;
 	if (m_reload_modules || (*file_name && !namespace_loaded(file_name)))
 	{

@@ -59,7 +59,7 @@ void CMapSpot::Update()
 #include "Actor.h"
 bool CMapSpot::OnMouseDown		(int mouse_btn)
 {
-	// Real Wolf: Êîëáåê äëÿ èçìåíåíèÿ\óäàëåíèÿ ìåòîê. 03.08.2014.
+	// Real Wolf: ÐšÐ¾Ð»Ð±ÐµÐº Ð´Ð»Ñ Ð¸Ð·Ð¼ÐµÐ½ÐµÐ½Ð¸Ñ\ÑƒÐ´Ð°Ð»ÐµÐ½Ð¸Ñ Ð¼ÐµÑ‚Ð¾Ðº. 03.08.2014.
 	if (mouse_btn == MOUSE_1)
 	{
 		g_actor->callback(GameObject::eUIMapSpotClick)(

@@ -113,31 +113,31 @@ protected:
 														float trace_dist, float wallmark_size,
 														SHADER_VECTOR& wallmarks_vector);
 
-	//информация о кровавых отметках на стенах, общая для всех CEntityAlive
+	//РёРЅС„РѕСЂРјР°С†РёСЏ Рѕ РєСЂРѕРІР°РІС‹С… РѕС‚РјРµС‚РєР°С… РЅР° СЃС‚РµРЅР°С…, РѕР±С‰Р°СЏ РґР»СЏ РІСЃРµС… CEntityAlive
 	static SHADER_VECTOR*		m_pBloodMarksVector;
 	static float				m_fBloodMarkSizeMax;
 	static float				m_fBloodMarkSizeMin;
 	static float				m_fBloodMarkDistance;
 	static float				m_fNominalHit;
 
-	//текстурки капель крови
+	//С‚РµРєСЃС‚СѓСЂРєРё РєР°РїРµР»СЊ РєСЂРѕРІРё
 	static SHADER_VECTOR*		m_pBloodDropsVector;
-	//список ран с которых капает кровь
+	//СЃРїРёСЃРѕРє СЂР°РЅ СЃ РєРѕС‚РѕСЂС‹С… РєР°РїР°РµС‚ РєСЂРѕРІСЊ
 	
 	DEFINE_VECTOR				(CWound*, WOUND_VECTOR, WOUND_VECTOR_IT);
 	WOUND_VECTOR				m_BloodWounds;
-	//размер раны, чтоб начала капать кровь
+	//СЂР°Р·РјРµСЂ СЂР°РЅС‹, С‡С‚РѕР± РЅР°С‡Р°Р»Р° РєР°РїР°С‚СЊ РєСЂРѕРІСЊ
 	static float				m_fStartBloodWoundSize;
-	//размер раны, чтоб остановить кровь
+	//СЂР°Р·РјРµСЂ СЂР°РЅС‹, С‡С‚РѕР± РѕСЃС‚Р°РЅРѕРІРёС‚СЊ РєСЂРѕРІСЊ
 	static float				m_fStopBloodWoundSize;
 	static float				m_fBloodDropSize;
 
-	//обновление ран, и рисование отметок от капающей крови
+	//РѕР±РЅРѕРІР»РµРЅРёРµ СЂР°РЅ, Рё СЂРёСЃРѕРІР°РЅРёРµ РѕС‚РјРµС‚РѕРє РѕС‚ РєР°РїР°СЋС‰РµР№ РєСЂРѕРІРё
 	virtual void				StartBloodDrops			(CWound* pWound);
 	virtual void				UpdateBloodDrops		();
 
 
-	//отношения между существами и персонажами в зоне
+	//РѕС‚РЅРѕС€РµРЅРёСЏ РјРµР¶РґСѓ СЃСѓС‰РµСЃС‚РІР°РјРё Рё РїРµСЂСЃРѕРЅР°Р¶Р°РјРё РІ Р·РѕРЅРµ
 public:
 	virtual	ALife::ERelationType tfGetRelationType	(const CEntityAlive *tpEntityAlive) const;
 	virtual	bool				 is_relation_enemy	(const CEntityAlive *tpEntityAlive) const;	

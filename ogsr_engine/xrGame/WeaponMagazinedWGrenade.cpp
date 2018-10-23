@@ -218,14 +218,14 @@ void CWeaponMagazinedWGrenade::OnShot		()
 		
 		AddShotEffector		();
 		
-		//партиклы огня вылета гранаты из подствольника
+		//РїР°СЂС‚РёРєР»С‹ РѕРіРЅСЏ РІС‹Р»РµС‚Р° РіСЂР°РЅР°С‚С‹ РёР· РїРѕРґСЃС‚РІРѕР»СЊРЅРёРєР°
 		StartFlameParticles2();
 	} 
 	else inherited::OnShot();
 }
-//переход в режим подствольника или выход из него
-//если мы в режиме стрельбы очередями, переключиться
-//на одиночные, а уже потом на подствольник
+//РїРµСЂРµС…РѕРґ РІ СЂРµР¶РёРј РїРѕРґСЃС‚РІРѕР»СЊРЅРёРєР° РёР»Рё РІС‹С…РѕРґ РёР· РЅРµРіРѕ
+//РµСЃР»Рё РјС‹ РІ СЂРµР¶РёРјРµ СЃС‚СЂРµР»СЊР±С‹ РѕС‡РµСЂРµРґСЏРјРё, РїРµСЂРµРєР»СЋС‡РёС‚СЊСЃСЏ
+//РЅР° РѕРґРёРЅРѕС‡РЅС‹Рµ, Р° СѓР¶Рµ РїРѕС‚РѕРј РЅР° РїРѕРґСЃС‚РІРѕР»СЊРЅРёРє
 bool CWeaponMagazinedWGrenade::SwitchMode() 
 {
 	bool bUsefulStateToSwitch = ((eIdle==GetState())||(eHidden==GetState())||(eMisfire==GetState())||(eMagEmpty==GetState())) && (!IsPending());
@@ -301,7 +301,7 @@ void CWeaponMagazinedWGrenade::state_Fire(float dt)
 {
 	VERIFY(fTimeToFire>0.f);
 
-	//режим стрельбы подствольника
+	//СЂРµР¶РёРј СЃС‚СЂРµР»СЊР±С‹ РїРѕРґСЃС‚РІРѕР»СЊРЅРёРєР°
 	if(m_bGrenadeMode)
 	{
 		fTime					-=dt;
@@ -352,7 +352,7 @@ void CWeaponMagazinedWGrenade::state_Fire(float dt)
 		UpdateSounds			();
 		if(m_iShotNum == m_iQueueSize) FireEnd();
 	} 
-	//режим стрельбы очередями
+	//СЂРµР¶РёРј СЃС‚СЂРµР»СЊР±С‹ РѕС‡РµСЂРµРґСЏРјРё
 	else inherited::state_Fire(dt);
 }
 
@@ -360,7 +360,7 @@ void CWeaponMagazinedWGrenade::SwitchState(u32 S)
 {
 	inherited::SwitchState(S);
 	
-	//стрельнуть из подствольника
+	//СЃС‚СЂРµР»СЊРЅСѓС‚СЊ РёР· РїРѕРґСЃС‚РІРѕР»СЊРЅРёРєР°
 	if(m_bGrenadeMode && GetState() == eIdle && S == eFire && getRocketCount() ) 
 	{
 		Fvector						p1, d; 
@@ -475,7 +475,7 @@ void CWeaponMagazinedWGrenade::ReloadMagazine()
 {
 	inherited::ReloadMagazine();
 
-	//перезарядка подствольного гранатомета
+	//РїРµСЂРµР·Р°СЂСЏРґРєР° РїРѕРґСЃС‚РІРѕР»СЊРЅРѕРіРѕ РіСЂР°РЅР°С‚РѕРјРµС‚Р°
 	if(iAmmoElapsed && !getRocketCount() && m_bGrenadeMode) 
 	{
 //.		shared_str fake_grenade_name = pSettings->r_string(*m_pAmmo->cNameSect(), "fake_grenade_name");
@@ -566,7 +566,7 @@ bool CWeaponMagazinedWGrenade::Attach(PIItem pIItem, bool b_send_event)
 
 		CRocketLauncher::m_fLaunchSpeed = pGrenadeLauncher->GetGrenadeVel();
 
- 		//уничтожить подствольник из инвентаря
+ 		//СѓРЅРёС‡С‚РѕР¶РёС‚СЊ РїРѕРґСЃС‚РІРѕР»СЊРЅРёРє РёР· РёРЅРІРµРЅС‚Р°СЂСЏ
 		if(b_send_event)
 		{
 //.			pIItem->Drop();
@@ -640,7 +640,7 @@ float CWeaponMagazinedWGrenade::CurrentZoomFactor()
 		return inherited::CurrentZoomFactor();
 }
 
-//виртуальные функции для проигрывания анимации HUD
+//РІРёСЂС‚СѓР°Р»СЊРЅС‹Рµ С„СѓРЅРєС†РёРё РґР»СЏ РїСЂРѕРёРіСЂС‹РІР°РЅРёСЏ Р°РЅРёРјР°С†РёРё HUD
 void CWeaponMagazinedWGrenade::PlayAnimShow()
 {
 	VERIFY(GetState()==eShowing);
@@ -724,7 +724,7 @@ void CWeaponMagazinedWGrenade::PlayAnimShoot()
 	VERIFY(GetState()==eFire || GetState()==eFire2);
 	if(this->m_bGrenadeMode)
 	{
-		//анимация стрельбы из подствольника
+		//Р°РЅРёРјР°С†РёСЏ СЃС‚СЂРµР»СЊР±С‹ РёР· РїРѕРґСЃС‚РІРѕР»СЊРЅРёРєР°
 		m_pHUD->animPlay(random_anim(mhud_shots_g),TRUE,this, GetState());
 	}
 	else
@@ -795,7 +795,7 @@ void CWeaponMagazinedWGrenade::net_Export(NET_Packet& P)
 	P.w_u16( (u16)m_magazine2.size() );
 }
 
-void CWeaponMagazinedWGrenade::net_Import(NET_Packet& P) //Этот и все подобные методы вообще не вызываются в в синглплеере, походу.
+void CWeaponMagazinedWGrenade::net_Import(NET_Packet& P) //Р­С‚РѕС‚ Рё РІСЃРµ РїРѕРґРѕР±РЅС‹Рµ РјРµС‚РѕРґС‹ РІРѕРѕР±С‰Рµ РЅРµ РІС‹Р·С‹РІР°СЋС‚СЃСЏ РІ РІ СЃРёРЅРіР»РїР»РµРµСЂРµ, РїРѕС…РѕРґСѓ.
 {
 	u8 _data = P.r_u8();
 	bool NewMode = !!(_data & 0x1);

@@ -101,7 +101,7 @@ protected:
 	CUIDragDropListEx*			m_pUITorchList;
 	CUIDragDropListEx*			m_pUIBinocularList;
 
-	// alpet: для индексированного доступа
+	// alpet: РґР»СЏ РёРЅРґРµРєСЃРёСЂРѕРІР°РЅРЅРѕРіРѕ РґРѕСЃС‚СѓРїР°
 	CUIDragDropListEx*			m_slots_array[ SLOTS_TOTAL ];
 
 	void						ClearAllLists				();
@@ -126,7 +126,7 @@ protected:
 
 	CUIPropertiesBox			UIPropertiesBox;
 	
-	//информация о персонаже
+	//РёРЅС„РѕСЂРјР°С†РёСЏ Рѕ РїРµСЂСЃРѕРЅР°Р¶Рµ
 	CUIOutfitInfo				UIOutfitInfo;
 	CUIItemInfo					UIItemInfo;
 

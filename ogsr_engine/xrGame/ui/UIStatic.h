@@ -143,8 +143,8 @@ public:
 	Frect		GetSelfClipRect				();
 	Frect		GetClipperRect				();	
 
-	// Анализируем текст на помещаемость его по длинне в заданную ширину, и если нет, то всталяем 
-	// "\n" реализуем таким образом wordwrap
+	// РђРЅР°Р»РёР·РёСЂСѓРµРј С‚РµРєСЃС‚ РЅР° РїРѕРјРµС‰Р°РµРјРѕСЃС‚СЊ РµРіРѕ РїРѕ РґР»РёРЅРЅРµ РІ Р·Р°РґР°РЅРЅСѓСЋ С€РёСЂРёРЅСѓ, Рё РµСЃР»Рё РЅРµС‚, С‚Рѕ РІСЃС‚Р°Р»СЏРµРј 
+	// "\n" СЂРµР°Р»РёР·СѓРµРј С‚Р°РєРёРј РѕР±СЂР°Р·РѕРј wordwrap
 //	static void PreprocessText				(STRING &str, float width, CGameFont *pFont);
 	enum EElipsisPosition
 	{
@@ -175,7 +175,7 @@ public:
 	CUILines*				m_pLines;
 protected:
 	bool			m_bEnableTextHighlighting;
-		// Цвет подсветки
+		// Р¦РІРµС‚ РїРѕРґСЃРІРµС‚РєРё
 	u32				m_HighlightColor;
 
 	// this array of color will be useful in CUI3tButton class
@@ -195,11 +195,11 @@ protected:
 	bool			m_bHeading;
 	float			m_fHeading;
 
-    // Для вывода текстуры с обрезанием по маске используем CUIFrameWindow
+    // Р”Р»СЏ РІС‹РІРѕРґР° С‚РµРєСЃС‚СѓСЂС‹ СЃ РѕР±СЂРµР·Р°РЅРёРµРј РїРѕ РјР°СЃРєРµ РёСЃРїРѕР»СЊР·СѓРµРј CUIFrameWindow
 	CUIFrameWindow	*m_pMask;
 	Fvector2		m_TextureOffset;
 
-	// Обрезка надписи
+	// РћР±СЂРµР·РєР° РЅР°РґРїРёСЃРё
 	EElipsisPosition	m_ElipsisPos;
 	void Elipsis(const Frect &rect, EElipsisPosition elipsisPos);
 	int	m_iElipsisIndent;

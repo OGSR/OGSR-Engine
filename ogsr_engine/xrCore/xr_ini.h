@@ -61,15 +61,15 @@ class XRCORE_API CInifile {
     return r_clsid( S.c_str(), L );
   }
 
-  LPCSTR   r_string   ( LPCSTR, LPCSTR ); // оставляет кавычки
+  LPCSTR   r_string   ( LPCSTR, LPCSTR ); // РѕСЃС‚Р°РІР»СЏРµС‚ РєР°РІС‹С‡РєРё
   LPCSTR   r_string   ( const shared_str& S, LPCSTR L ) {
     return r_string( S.c_str(), L );
-  } // оставляет кавычки
+  } // РѕСЃС‚Р°РІР»СЏРµС‚ РєР°РІС‹С‡РєРё
 
-  shared_str r_string_wb ( LPCSTR, LPCSTR ); // убирает кавычки
+  shared_str r_string_wb ( LPCSTR, LPCSTR ); // СѓР±РёСЂР°РµС‚ РєР°РІС‹С‡РєРё
   shared_str r_string_wb ( const shared_str& S, LPCSTR L ) {
     return r_string_wb( S.c_str(), L );
-  } // убирает кавычки
+  } // СѓР±РёСЂР°РµС‚ РєР°РІС‹С‡РєРё
 
   u8       r_u8       ( LPCSTR, LPCSTR );
   u8       r_u8       ( const shared_str& S, LPCSTR L ) {

@@ -30,7 +30,7 @@ void SCRIPT_VAR::release()
 
 	if (LUA_TTABLE == sv.eff_type())
 	{		
-		sv.T->release(); // могут остаться ссылки в скриптах
+		sv.T->release(); // РјРѕРіСѓС‚ РѕСЃС‚Р°С‚СЊСЃСЏ СЃСЃС‹Р»РєРё РІ СЃРєСЂРёРїС‚Р°С…
 		return;
 	}
 
@@ -44,7 +44,7 @@ void SCRIPT_VAR::release()
 		xr_free(sv.data);	
 }
 
-void* SCRIPT_VAR::smart_alloc(int new_type, u32 cb) // схема автоматического выделения памяти
+void* SCRIPT_VAR::smart_alloc(int new_type, u32 cb) // СЃС…РµРјР° Р°РІС‚РѕРјР°С‚РёС‡РµСЃРєРѕРіРѕ РІС‹РґРµР»РµРЅРёСЏ РїР°РјСЏС‚Рё
 {
 	// autodetect embedded var-size
 	switch (new_type & 0xffff)
@@ -57,7 +57,7 @@ void* SCRIPT_VAR::smart_alloc(int new_type, u32 cb) // схема автоматического выд
 
 	size = cb;
 
-	if (type & SVT_ALLOCATED) // если старая переменная была аллоцирована в памяти
+	if (type & SVT_ALLOCATED) // РµСЃР»Рё СЃС‚Р°СЂР°СЏ РїРµСЂРµРјРµРЅРЅР°СЏ Р±С‹Р»Р° Р°Р»Р»РѕС†РёСЂРѕРІР°РЅР° РІ РїР°РјСЏС‚Рё
 	{
 		if (size > SMALL_VAR_SIZE)
 			data = xr_realloc(data, size);
@@ -152,7 +152,7 @@ int  CScriptVarsTable::load(IReader  &memory_stream)
 				sv.data = xr_malloc(sv.size);
 				memory_stream.r(sv.data, sv.size);
 
-				if (LUA_TSTRING == sv.eff_type() && -1 == *(int*)sv.data) // явный выход за пределы чтения
+				if (LUA_TSTRING == sv.eff_type() && -1 == *(int*)sv.data) // СЏРІРЅС‹Р№ РІС‹С…РѕРґ Р·Р° РїСЂРµРґРµР»С‹ С‡С‚РµРЅРёСЏ
 					Msg("!#WARN: probably string load failed = %s ", (LPCSTR) sv.data);
 
 			}
@@ -271,7 +271,7 @@ CScriptVarsTable *lua_tosvt(lua_State *L, int index)
 }
 
 
-int script_vars_dump (lua_State *L, CScriptVarsTable *svt, bool unpack) // дамп имен и значений переменных в таблицу
+int script_vars_dump (lua_State *L, CScriptVarsTable *svt, bool unpack) // РґР°РјРї РёРјРµРЅ Рё Р·РЅР°С‡РµРЅРёР№ РїРµСЂРµРјРµРЅРЅС‹С… РІ С‚Р°Р±Р»РёС†Сѓ
 {	
 	if (svt)
 	{
@@ -305,7 +305,7 @@ int script_vars_dump (lua_State *L, CScriptVarsTable *svt, bool unpack) // дамп 
 
 	return 1;
 }
-int script_vars_dump(lua_State *L) // дамп имен и значений переменных в таблицу
+int script_vars_dump(lua_State *L) // РґР°РјРї РёРјРµРЅ Рё Р·РЅР°С‡РµРЅРёР№ РїРµСЂРµРјРµРЅРЅС‹С… РІ С‚Р°Р±Р»РёС†Сѓ
 {
 	CScriptVarsTable *svt = lua_tosvt(L, 1);	
 	return script_vars_dump (L, svt, !!lua_toboolean(L, 2));
@@ -337,23 +337,23 @@ int CScriptVarsTable::assign(lua_State *L,  int index)
 	int save_top = lua_gettop(L);
 	is_array = false;
 		
-	int count = lua_objlen(L, index); // сколько в array части таблицы элементов (непрерывный набор ключей от 1 до X)
+	int count = lua_objlen(L, index); // СЃРєРѕР»СЊРєРѕ РІ array С‡Р°СЃС‚Рё С‚Р°Р±Р»РёС†С‹ СЌР»РµРјРµРЅС‚РѕРІ (РЅРµРїСЂРµСЂС‹РІРЅС‹Р№ РЅР°Р±РѕСЂ РєР»СЋС‡РµР№ РѕС‚ 1 РґРѕ X)
 	string16 tmp;
-	// предварительное прочесывание как массива выстраивает индексы от 1 до count
+	// РїСЂРµРґРІР°СЂРёС‚РµР»СЊРЅРѕРµ РїСЂРѕС‡РµСЃС‹РІР°РЅРёРµ РєР°Рє РјР°СЃСЃРёРІР° РІС‹СЃС‚СЂР°РёРІР°РµС‚ РёРЅРґРµРєСЃС‹ РѕС‚ 1 РґРѕ count
 	for (int i = 1; i <= count; i++)		
 	{
 		is_array = true;
 		lua_pushinteger (L, i);
 		lua_gettable(L, index);
 		set(L, itoa(i, tmp, 10), lua_gettop(L), LUA_TNUMBER);
-		lua_pop(L, 1); // извлечь значение из стека	
+		lua_pop(L, 1); // РёР·РІР»РµС‡СЊ Р·РЅР°С‡РµРЅРёРµ РёР· СЃС‚РµРєР°	
 	}
 	lua_settop(L, save_top);						
-	lua_pushnil(L);  // начало перебора таблицы
+	lua_pushnil(L);  // РЅР°С‡Р°Р»Рѕ РїРµСЂРµР±РѕСЂР° С‚Р°Р±Р»РёС†С‹
 	while (lua_next(L, index) != 0)
 	{
 		set(L, -2, -1);
-		lua_pop(L, 1); // извлечь значение из стека	
+		lua_pop(L, 1); // РёР·РІР»РµС‡СЊ Р·РЅР°С‡РµРЅРёРµ РёР· СЃС‚РµРєР°	
 	}				
 	lua_settop(L, save_top);
 	return size();
@@ -379,7 +379,7 @@ void CScriptVarsTable::get(lua_State *L, LPCSTR k, bool unpack)
 			string4096 msg;
 			sprintf_s (msg, 4096, "$#CONTEXT: CScriptVarsTable::get this = 0x%p   name = %s (ref_count=%d), key = %s, from\n %s ",				    
 					 				(void*)this, name ? name : "NULL", this->ref_count, k ? k : "NULL", *from);
-			MsgCB(msg); // WARN: имплементация этой функции должна быть из последней ревизии с 4-кебибайтными буферами
+			MsgCB(msg); // WARN: РёРјРїР»РµРјРµРЅС‚Р°С†РёСЏ СЌС‚РѕР№ С„СѓРЅРєС†РёРё РґРѕР»Р¶РЅР° Р±С‹С‚СЊ РёР· РїРѕСЃР»РµРґРЅРµР№ СЂРµРІРёР·РёРё СЃ 4-РєРµР±РёР±Р°Р№С‚РЅС‹РјРё Р±СѓС„РµСЂР°РјРё
 			
 		}
 */
@@ -449,7 +449,7 @@ void CScriptVarsTable::set(lua_State *L, int key_index, int value_index)
 		tk = lua_toboolean(L, key_index) ? "true" : "false";	break;
 	case LUA_TNUMBER: 
 		tk = itoa(lua_tointeger(L, key_index), tmp, 10); 	    break;
-	case LUA_TSTRING: // конвертирование не строковых значений в строки, поставит в тупик lua_next
+	case LUA_TSTRING: // РєРѕРЅРІРµСЂС‚РёСЂРѕРІР°РЅРёРµ РЅРµ СЃС‚СЂРѕРєРѕРІС‹С… Р·РЅР°С‡РµРЅРёР№ РІ СЃС‚СЂРѕРєРё, РїРѕСЃС‚Р°РІРёС‚ РІ С‚СѓРїРёРє lua_next
 		tk = lua_tostring(L, key_index); 						break;										
 	}
 
@@ -457,7 +457,7 @@ void CScriptVarsTable::set(lua_State *L, int key_index, int value_index)
 
 	if (tk)
 	{
-		is_array &= (LUA_TNUMBER == kt);  // если это массив с нулевым и отрицательным ключом				
+		is_array &= (LUA_TNUMBER == kt);  // РµСЃР»Рё СЌС‚Рѕ РјР°СЃСЃРёРІ СЃ РЅСѓР»РµРІС‹Рј Рё РѕС‚СЂРёС†Р°С‚РµР»СЊРЅС‹Рј РєР»СЋС‡РѕРј				
 		if (push_val)
 			lua_pushvalue(L, value_index);
 		set(L, tk, lua_gettop(L), kt);
@@ -513,12 +513,12 @@ void CScriptVarsTable::set(lua_State *L, LPCSTR k, int index, int key_type)
 	{
 		const char *s = lua_tostring(L, index);
 		char *dst = (char*)sv.smart_alloc(new_type, xr_strlen(s) + 1);
-		strcpy_s(dst, sv.size, s); // компактное хранение строк до 7 символов		
+		strcpy_s(dst, sv.size, s); // РєРѕРјРїР°РєС‚РЅРѕРµ С…СЂР°РЅРµРЅРёРµ СЃС‚СЂРѕРє РґРѕ 7 СЃРёРјРІРѕР»РѕРІ		
 		break;
 	}
 	case LUA_TTABLE:
 	{		
-		// сохранение таблицы в хранимую переменную (нативное представление)
+		// СЃРѕС…СЂР°РЅРµРЅРёРµ С‚Р°Р±Р»РёС†С‹ РІ С…СЂР°РЅРёРјСѓСЋ РїРµСЂРµРјРµРЅРЅСѓСЋ (РЅР°С‚РёРІРЅРѕРµ РїСЂРµРґСЃС‚Р°РІР»РµРЅРёРµ)
 		if (new_type != sv.type)
 		{
 			sv.release();
@@ -544,7 +544,7 @@ void CScriptVarsTable::set(lua_State *L, LPCSTR k, int index, int key_type)
 		object_rep* rep = is_class_object(L, index);
 		if (rep && strstr(rep->crep()->name(), "net_packet"))
 		{
-			sv.smart_alloc(LUA_TNETPACKET); // избежание утечек памяти
+			sv.smart_alloc(LUA_TNETPACKET); // РёР·Р±РµР¶Р°РЅРёРµ СѓС‚РµС‡РµРє РїР°РјСЏС‚Рё
 			NET_Packet *src = (NET_Packet *)rep->ptr();
 			sv.size = src->B.count;			
 			sv.P = xr_new<NET_Packet>();
@@ -559,7 +559,7 @@ void CScriptVarsTable::set(lua_State *L, LPCSTR k, int index, int key_type)
 			sv.size = lua_tointeger(L, index + 1);
 		else
 			sv.size = lua_objlen(L, index);
-		void *dst = sv.smart_alloc(new_type, sv.size); // избежание утечек памяти		
+		void *dst = sv.smart_alloc(new_type, sv.size); // РёР·Р±РµР¶Р°РЅРёРµ СѓС‚РµС‡РµРє РїР°РјСЏС‚Рё		
 		memcpy_s(dst, sv.size, lua_touserdata(L, index), sv.size);
 		break;
 	}
@@ -582,7 +582,7 @@ int script_vars_assign(lua_State *L)
 	return 0;
 }
 
-int script_vars_index(lua_State *L) // чтение переменной из скриптов по строковому индексу
+int script_vars_index(lua_State *L) // С‡С‚РµРЅРёРµ РїРµСЂРµРјРµРЅРЅРѕР№ РёР· СЃРєСЂРёРїС‚РѕРІ РїРѕ СЃС‚СЂРѕРєРѕРІРѕРјСѓ РёРЅРґРµРєСЃСѓ
 {
 	CScriptVarsTable *svt = lua_tosvt(L, 1);
 
@@ -606,7 +606,7 @@ int script_vars_release(lua_State *L)
 	return 0;
 }
 
-int script_vars_new_index(lua_State *L) // запись переменной из скриптов по строковому индексу
+int script_vars_new_index(lua_State *L) // Р·Р°РїРёСЃСЊ РїРµСЂРµРјРµРЅРЅРѕР№ РёР· СЃРєСЂРёРїС‚РѕРІ РїРѕ СЃС‚СЂРѕРєРѕРІРѕРјСѓ РёРЅРґРµРєСЃСѓ
 {
 	CScriptVarsTable *svt = lua_tosvt(L, 1);	
 	svt->set(L, 2, 3);
@@ -619,7 +619,7 @@ int lua_pushsvt(lua_State *L, CScriptVarsTable *T)
 	sv->type = LUA_TTABLE;
 	sv->size = 4;
 	sv->T = T;	
-	T->add_ref();  // регистрация выдачи экземпляра в lua
+	T->add_ref();  // СЂРµРіРёСЃС‚СЂР°С†РёСЏ РІС‹РґР°С‡Рё СЌРєР·РµРјРїР»СЏСЂР° РІ lua
 	int value_index = lua_gettop(L);
 	luaL_getmetatable(L, "GMT_SCRIPT_VARS");
 	int mt = lua_gettop(L);
@@ -639,9 +639,9 @@ int lua_pushsvt(lua_State *L, CScriptVarsTable *T)
 	return 1;
 }
 
-int script_vars_create(lua_State *L) // создание таблицы переменных и опциональное заполнение из второго аргумента
+int script_vars_create(lua_State *L) // СЃРѕР·РґР°РЅРёРµ С‚Р°Р±Р»РёС†С‹ РїРµСЂРµРјРµРЅРЅС‹С… Рё РѕРїС†РёРѕРЅР°Р»СЊРЅРѕРµ Р·Р°РїРѕР»РЅРµРЅРёРµ РёР· РІС‚РѕСЂРѕРіРѕ Р°СЂРіСѓРјРµРЅС‚Р°
 {
-	CScriptVarsTable *svt = xr_new<CScriptVarsTable>(); // здесь добавлять ссылку не надо, т.к. объект нигде не сохраняется!
+	CScriptVarsTable *svt = xr_new<CScriptVarsTable>(); // Р·РґРµСЃСЊ РґРѕР±Р°РІР»СЏС‚СЊ СЃСЃС‹Р»РєСѓ РЅРµ РЅР°РґРѕ, С‚.Рє. РѕР±СЉРµРєС‚ РЅРёРіРґРµ РЅРµ СЃРѕС…СЂР°РЅСЏРµС‚СЃСЏ!
 	if (lua_isstring(L, 1))
 		svt->set_name(lua_tostring(L, 1));
 
@@ -651,7 +651,7 @@ int script_vars_create(lua_State *L) // создание таблицы переменных и опциональн
 	return lua_pushsvt(L, svt);	
 }
 
-int script_vars_export(lua_State *L)  // сохранение таблицы переменных в нет-пакет
+int script_vars_export(lua_State *L)  // СЃРѕС…СЂР°РЅРµРЅРёРµ С‚Р°Р±Р»РёС†С‹ РїРµСЂРµРјРµРЅРЅС‹С… РІ РЅРµС‚-РїР°РєРµС‚
 {
 	CMemoryWriter stream;
 	CScriptVarsTable *svt = lua_tosvt(L, 1);	
@@ -668,13 +668,13 @@ int script_vars_export(lua_State *L)  // сохранение таблицы переменных в нет-пак
 	return 1;
 }
 
-int script_vars_import(lua_State *L) // загрузка таблицы переменных из нет-пакета 
+int script_vars_import(lua_State *L) // Р·Р°РіСЂСѓР·РєР° С‚Р°Р±Р»РёС†С‹ РїРµСЂРµРјРµРЅРЅС‹С… РёР· РЅРµС‚-РїР°РєРµС‚Р° 
 {
 	CScriptVarsTable *svt = NULL;
 	if (lua_isuserdata(L, 1))
 		svt = lua_tosvt(L, 1);
 	if (!svt)
-		svt = xr_new<CScriptVarsTable>(); // здесь добавлять ссылку не надо, т.к. объект нигде не сохраняется!
+		svt = xr_new<CScriptVarsTable>(); // Р·РґРµСЃСЊ РґРѕР±Р°РІР»СЏС‚СЊ СЃСЃС‹Р»РєСѓ РЅРµ РЅР°РґРѕ, С‚.Рє. РѕР±СЉРµРєС‚ РЅРёРіРґРµ РЅРµ СЃРѕС…СЂР°РЅСЏРµС‚СЃСЏ!
 
 	if (lua_isstring(L, 1))
 		svt->set_name(lua_tostring(L, 1));

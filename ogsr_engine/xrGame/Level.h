@@ -154,7 +154,7 @@ private:
 	bool						m_bConnectResult;
 	xr_string					m_sConnectResult;
 public:	
-	void						OnGameSpyChallenge(NET_Packet* P) //KRodin: удалить, если не вызывается!
+	void						OnGameSpyChallenge(NET_Packet* P) //KRodin: СѓРґР°Р»РёС‚СЊ, РµСЃР»Рё РЅРµ РІС‹Р·С‹РІР°РµС‚СЃСЏ!
 	{
 		Msg("!!Called OnGameSpyChallenge!");
 	}
@@ -278,17 +278,17 @@ public:
 	CLevel();
 	virtual ~CLevel();
 
-	//названияе текущего уровня
+	//РЅР°Р·РІР°РЅРёСЏРµ С‚РµРєСѓС‰РµРіРѕ СѓСЂРѕРІРЅСЏ
 	virtual shared_str			name				() const;
 	virtual void				GetLevelInfo		( CServerInfo* si );
 
 	//gets the time from the game simulation
 	
-	//возвращает время в милисекундах относительно начала игры
+	//РІРѕР·РІСЂР°С‰Р°РµС‚ РІСЂРµРјСЏ РІ РјРёР»РёСЃРµРєСѓРЅРґР°С… РѕС‚РЅРѕСЃРёС‚РµР»СЊРЅРѕ РЅР°С‡Р°Р»Р° РёРіСЂС‹
 	ALife::_TIME_ID		GetGameTime				();
-	//возвращает время для энвайронмента в милисекундах относительно начала игры
+	//РІРѕР·РІСЂР°С‰Р°РµС‚ РІСЂРµРјСЏ РґР»СЏ СЌРЅРІР°Р№СЂРѕРЅРјРµРЅС‚Р° РІ РјРёР»РёСЃРµРєСѓРЅРґР°С… РѕС‚РЅРѕСЃРёС‚РµР»СЊРЅРѕ РЅР°С‡Р°Р»Р° РёРіСЂС‹
 	ALife::_TIME_ID		GetEnvironmentGameTime	();
-	//игровое время в отформатированном виде
+	//РёРіСЂРѕРІРѕРµ РІСЂРµРјСЏ РІ РѕС‚С„РѕСЂРјР°С‚РёСЂРѕРІР°РЅРЅРѕРј РІРёРґРµ
 	void				GetGameDateTime			(u32& year, u32& month, u32& day, u32& hours, u32& mins, u32& secs, u32& milisecs);
 
 	float				GetGameTimeFactor		();
@@ -311,7 +311,7 @@ public:
 	CMapManager&			MapManager					()	{return *m_map_manager;}
 //	CFogOfWarMngr&			FogOfWarMngr				()	{return *m_pFogOfWarMngr;}
 
-	//работа с пулями
+	//СЂР°Р±РѕС‚Р° СЃ РїСѓР»СЏРјРё
 protected:	
 	CBulletManager*		m_pBulletManager;
 public:

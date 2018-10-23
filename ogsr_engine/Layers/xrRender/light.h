@@ -113,7 +113,7 @@ public:
 	virtual void	set_texture				(LPCSTR name);
 	virtual void	set_lsf_params(float _speed, float _amount, float _jit) { LSF.speed = _speed; LSF.amount = _amount; LSF.smap_jitter = _jit; }
 	//
-	// alpet: для сохраняемости конфигурации источников света
+	// alpet: РґР»СЏ СЃРѕС…СЂР°РЅСЏРµРјРѕСЃС‚Рё РєРѕРЅС„РёРіСѓСЂР°С†РёРё РёСЃС‚РѕС‡РЅРёРєРѕРІ СЃРІРµС‚Р°
 	virtual float							get_cone() { return cone; }
 	virtual Fcolor							get_color() { return color; }
 	virtual float							get_range() { return range; }

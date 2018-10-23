@@ -110,7 +110,7 @@ void game_sv_GameState::script_register(lua_State *L)
 	.def("get_id_2_eid",		&game_sv_GameState::get_id_2_eid)
 
 	.def("get_option_i",		&game_sv_GameState::get_option_i)
-	//.def("get_option_s",		&game_sv_GameState::get_option_s) //KRodin: походу проблема в том, что новый луабинд не может преобразовать тип string64& который эта функция возвращает.
+	//.def("get_option_s",		&game_sv_GameState::get_option_s) //KRodin: РїРѕС…РѕРґСѓ РїСЂРѕР±Р»РµРјР° РІ С‚РѕРј, С‡С‚Рѕ РЅРѕРІС‹Р№ Р»СѓР°Р±РёРЅРґ РЅРµ РјРѕР¶РµС‚ РїСЂРµРѕР±СЂР°Р·РѕРІР°С‚СЊ С‚РёРї string64& РєРѕС‚РѕСЂС‹Р№ СЌС‚Р° С„СѓРЅРєС†РёСЏ РІРѕР·РІСЂР°С‰Р°РµС‚.
 	.def("u_EventSend",			&game_sv_GameState::u_EventSend)
 
 	.def("GenerateGameMessage",	&game_sv_GameState::GenerateGameMessage)

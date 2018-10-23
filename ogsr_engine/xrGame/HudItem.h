@@ -1,6 +1,6 @@
 //////////////////////////////////////////////////////////////////////
-// HudItem.h: класс предок для всех предметов имеющих
-//			  собственный HUD (CWeapon, CMissile etc)
+// HudItem.h: РєР»Р°СЃСЃ РїСЂРµРґРѕРє РґР»СЏ РІСЃРµС… РїСЂРµРґРјРµС‚РѕРІ РёРјРµСЋС‰РёС…
+//			  СЃРѕР±СЃС‚РІРµРЅРЅС‹Р№ HUD (CWeapon, CMissile etc)
 //////////////////////////////////////////////////////////////////////
 
 #pragma once
@@ -15,7 +15,7 @@ class CInventoryItem;
 #include "weaponHUD.h"
 
 class CHudItem {
-protected: //чтоб нельзя было вызвать на прямую
+protected: //С‡С‚РѕР± РЅРµР»СЊР·СЏ Р±С‹Р»Рѕ РІС‹Р·РІР°С‚СЊ РЅР° РїСЂСЏРјСѓСЋ
 	CHudItem(void);
 	virtual ~CHudItem(void);
 	virtual DLL_Pure*_construct			();
@@ -30,7 +30,7 @@ public:
 	virtual void	PlaySound			(HUD_SOUND& snd, const Fvector& position);
 										
 	///////////////////////////////////////////////
-	// общие функции HUD
+	// РѕР±С‰РёРµ С„СѓРЅРєС†РёРё HUD
 	///////////////////////////////////////////////
 
 	IC void			SetHUDmode			(BOOL H)		{	hud_mode = H;								}
@@ -39,7 +39,7 @@ public:
 	virtual bool	IsPending			()		const	{   return m_bPending;}
 	virtual void	StopHUDSounds		()				{};
 	
-	//для предачи команд владельцем
+	//РґР»СЏ РїСЂРµРґР°С‡Рё РєРѕРјР°РЅРґ РІР»Р°РґРµР»СЊС†РµРј
 	virtual bool	Action				(s32 cmd, u32 flags);
 	virtual void	onMovementChanged	(ACTOR_DEFS::EMoveCommand cmd)				{};
 
@@ -50,9 +50,9 @@ public:
 
 	IC		void	SetState			(u32 v)				{m_state = v;}
 	IC		void	SetNextState		(u32 v)				{m_nextState = v;}
-	//посылка сообщения на сервер о смене состояния оружия 
+	//РїРѕСЃС‹Р»РєР° СЃРѕРѕР±С‰РµРЅРёСЏ РЅР° СЃРµСЂРІРµСЂ Рѕ СЃРјРµРЅРµ СЃРѕСЃС‚РѕСЏРЅРёСЏ РѕСЂСѓР¶РёСЏ 
 	virtual void	SwitchState			(u32 S);
-	//прием сообщения с сервера и его обработка
+	//РїСЂРёРµРј СЃРѕРѕР±С‰РµРЅРёСЏ СЃ СЃРµСЂРІРµСЂР° Рё РµРіРѕ РѕР±СЂР°Р±РѕС‚РєР°
 	virtual void	OnStateSwitch		(u32 S);
 	virtual void	OnEvent				(NET_Packet& P, u16 type);
 
@@ -83,9 +83,9 @@ public:
 
 	virtual void	UpdateHudPosition	();
 	
-	//просчет инерции для HUD 
+	//РїСЂРѕСЃС‡РµС‚ РёРЅРµСЂС†РёРё РґР»СЏ HUD 
 	virtual void	UpdateHudInertion		(Fmatrix& hud_trans);
-	//просчет дополнительных вычислений (переопределяется в потомках)
+	//РїСЂРѕСЃС‡РµС‚ РґРѕРїРѕР»РЅРёС‚РµР»СЊРЅС‹С… РІС‹С‡РёСЃР»РµРЅРёР№ (РїРµСЂРµРѕРїСЂРµРґРµР»СЏРµС‚СЃСЏ РІ РїРѕС‚РѕРјРєР°С…)
 	virtual void	UpdateHudAdditonal		(Fmatrix&);
 
 
@@ -96,7 +96,7 @@ public:
 	CWeaponHUD*		GetHUD				() {return m_pHUD;}
 
 protected:
-	//TRUE - оружие занято, выполнением некоторого действия
+	//TRUE - РѕСЂСѓР¶РёРµ Р·Р°РЅСЏС‚Рѕ, РІС‹РїРѕР»РЅРµРЅРёРµРј РЅРµРєРѕС‚РѕСЂРѕРіРѕ РґРµР№СЃС‚РІРёСЏ
 	bool					m_bPending;
 
 	CWeaponHUD*				m_pHUD;
@@ -104,14 +104,14 @@ protected:
 	shared_str				hud_sect;
 	bool					m_bRenderHud;
 
-	//время нахождения в текущем состоянии
+	//РІСЂРµРјСЏ РЅР°С…РѕР¶РґРµРЅРёСЏ РІ С‚РµРєСѓС‰РµРј СЃРѕСЃС‚РѕСЏРЅРёРё
 	u32						m_dwStateTime;
 
-	//кадры момента пересчета XFORM и FirePos
+	//РєР°РґСЂС‹ РјРѕРјРµРЅС‚Р° РїРµСЂРµСЃС‡РµС‚Р° XFORM Рё FirePos
 	u32						dwFP_Frame;
 	u32						dwXF_Frame;
 
-	//вкл/выкл инерции (временное, с плавным возвращением оружия в состояние без инерции)
+	//РІРєР»/РІС‹РєР» РёРЅРµСЂС†РёРё (РІСЂРµРјРµРЅРЅРѕРµ, СЃ РїР»Р°РІРЅС‹Рј РІРѕР·РІСЂР°С‰РµРЅРёРµРј РѕСЂСѓР¶РёСЏ РІ СЃРѕСЃС‚РѕСЏРЅРёРµ Р±РµР· РёРЅРµСЂС†РёРё)
 	void					StartHudInertion();
 	void					StopHudInertion();
 private:

@@ -67,18 +67,18 @@ protected:
 	void					UpdatePosition					(const Fmatrix& trans);
 	void					spawn_fake_missile				();
 
-	//инициализация если вещь в активном слоте или спрятана на OnH_B_Chield
+	//РёРЅРёС†РёР°Р»РёР·Р°С†РёСЏ РµСЃР»Рё РІРµС‰СЊ РІ Р°РєС‚РёРІРЅРѕРј СЃР»РѕС‚Рµ РёР»Рё СЃРїСЂСЏС‚Р°РЅР° РЅР° OnH_B_Chield
 	virtual void			OnActiveItem		();
 	virtual void			OnHiddenItem		();
 
-	//для сети
+	//РґР»СЏ СЃРµС‚Рё
 	virtual void			StartIdleAnim		();
 	virtual void			net_Relcase			(CObject* O );
 protected:
 
 	bool					m_throw;
 	
-	//время уничтожения
+	//РІСЂРµРјСЏ СѓРЅРёС‡С‚РѕР¶РµРЅРёСЏ
 	u32						m_dwDestroyTime;
 	u32						m_dwDestroyTimeMax;
 
@@ -87,21 +87,21 @@ protected:
 
 	CMissile				*m_fake_missile;
 
-	//параметры броска
+	//РїР°СЂР°РјРµС‚СЂС‹ Р±СЂРѕСЃРєР°
 	
 	float m_fMinForce, m_fConstForce, m_fMaxForce, m_fForceGrowSpeed;
 //private:
 	bool					m_constpower;
 	float					m_fThrowForce;
 protected:
-	//относительная точка и направление вылета гранаты
+	//РѕС‚РЅРѕСЃРёС‚РµР»СЊРЅР°СЏ С‚РѕС‡РєР° Рё РЅР°РїСЂР°РІР»РµРЅРёРµ РІС‹Р»РµС‚Р° РіСЂР°РЅР°С‚С‹
 	Fvector					m_vThrowPoint;
 	Fvector					m_vThrowDir;
-	//для HUD
+	//РґР»СЏ HUD
 	Fvector					m_vHudThrowPoint;
 	Fvector					m_vHudThrowDir;
 
-	//имена анимаций
+	//РёРјРµРЅР° Р°РЅРёРјР°С†РёР№
 	MotionSVec				mhud_AnimShow;
 	MotionSVec				mhud_AnimHide;
 	MotionSVec				mhud_AnimIdle;
@@ -113,7 +113,7 @@ protected:
 	MotionSVec				mhud_AnimThrowAct;
 	MotionSVec				mhud_AnimThrowEnd;
 
-	//звук анимации "играния"
+	//Р·РІСѓРє Р°РЅРёРјР°С†РёРё "РёРіСЂР°РЅРёСЏ"
 	HUD_SOUND				sndPlaying;
 
 	u8   m_idle_state;

@@ -243,8 +243,8 @@ int rain_timer_params::Update(BOOL state, bool need_raypick)
 						rain_timestamp += last_rain_duration - rain_timer - _min(rain_drop_time, last_rain_duration);
 					last_rain_duration = 0;
 				}
-				// проверяем, не отрицателен ли дождевой таймер, если отрицателен - обнуляем
-				// такое может быть при первом кадре с дождем, если до этого дождь уже как-то раз был в текущей игровой сессии
+				// РїСЂРѕРІРµСЂСЏРµРј, РЅРµ РѕС‚СЂРёС†Р°С‚РµР»РµРЅ Р»Рё РґРѕР¶РґРµРІРѕР№ С‚Р°Р№РјРµСЂ, РµСЃР»Рё РѕС‚СЂРёС†Р°С‚РµР»РµРЅ - РѕР±РЅСѓР»СЏРµРј
+				// С‚Р°РєРѕРµ РјРѕР¶РµС‚ Р±С‹С‚СЊ РїСЂРё РїРµСЂРІРѕРј РєР°РґСЂРµ СЃ РґРѕР¶РґРµРј, РµСЃР»Рё РґРѕ СЌС‚РѕРіРѕ РґРѕР¶РґСЊ СѓР¶Рµ РєР°Рє-С‚Рѕ СЂР°Р· Р±С‹Р» РІ С‚РµРєСѓС‰РµР№ РёРіСЂРѕРІРѕР№ СЃРµСЃСЃРёРё
 				if (rain_timer < 0)
 					rain_timer = 0;
 				rain_timer = Device.fTimeGlobal - rain_timestamp;
@@ -371,7 +371,7 @@ void	CEffect_Rain::Render	()
 		if (one.dwTime_Hit<Device.dwTimeGlobal)		Hit (one.Phit);
 		if (one.dwTime_Life<Device.dwTimeGlobal)	Born(one,source_radius);
 
-// последняя дельта ??
+// РїРѕСЃР»РµРґРЅСЏСЏ РґРµР»СЊС‚Р° ??
 //.		float xdt		= float(one.dwTime_Hit-Device.dwTimeGlobal)/1000.f;
 //.		float dt		= Device.fTimeDelta;//xdt<Device.fTimeDelta?xdt:Device.fTimeDelta;
 		float dt		= Device.fTimeDelta;

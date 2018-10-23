@@ -107,7 +107,7 @@ BOOL CLevel::Load_GameSpecific_After()
 			Sounds_Random_Enabled	= FALSE;
 		}
 
-		// Ñáðàñûâàåì ñîñòîÿíèÿ äîæäÿ ïðè çàãðóçêå óðîâíÿ âî èçáåæàíèå ïðîïàæè çâóêà. Real Wolf.
+		// Ð¡Ð±Ñ€Ð°ÑÑ‹Ð²Ð°ÐµÐ¼ ÑÐ¾ÑÑ‚Ð¾ÑÐ½Ð¸Ñ Ð´Ð¾Ð¶Ð´Ñ Ð¿Ñ€Ð¸ Ð·Ð°Ð³Ñ€ÑƒÐ·ÐºÐµ ÑƒÑ€Ð¾Ð²Ð½Ñ Ð²Ð¾ Ð¸Ð·Ð±ÐµÐ¶Ð°Ð½Ð¸Ðµ Ð¿Ñ€Ð¾Ð¿Ð°Ð¶Ð¸ Ð·Ð²ÑƒÐºÐ°. Real Wolf.
 		if (g_pGamePersistent->pEnvironment)
 			g_pGamePersistent->pEnvironment->Invalidate();
 		

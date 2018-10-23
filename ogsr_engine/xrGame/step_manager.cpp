@@ -77,7 +77,7 @@ void CStepManager::on_animation_start(MotionID motion_id, CBlend *blend)
 
 	m_time_anim_started = Device.dwTimeGlobal; 
 	
-	// искать текущую анимацию в STEPS_MAP
+	// РёСЃРєР°С‚СЊ С‚РµРєСѓС‰СѓСЋ Р°РЅРёРјР°С†РёСЋ РІ STEPS_MAP
 	STEPS_MAP_IT it = m_steps_map.find(motion_id);
 	if (it == m_steps_map.end()) {
 		m_step_info.disable = true;
@@ -108,24 +108,24 @@ void CStepManager::update()
 	SGameMtlPair* mtl_pair		= m_object->material().get_current_pair();
 	if (!mtl_pair)				return;
 
-	// получить параметры шага
+	// РїРѕР»СѓС‡РёС‚СЊ РїР°СЂР°РјРµС‚СЂС‹ С€Р°РіР°
 	SStepParam	&step		= m_step_info.params;
 	u32		cur_time		= Device.dwTimeGlobal;
 
-	// время одного цикла анимации
+	// РІСЂРµРјСЏ РѕРґРЅРѕРіРѕ С†РёРєР»Р° Р°РЅРёРјР°С†РёРё
 	float cycle_anim_time	= get_blend_time() / step.cycles;
 
-	// пройти по всем ногам и проверить время
+	// РїСЂРѕР№С‚Рё РїРѕ РІСЃРµРј РЅРѕРіР°Рј Рё РїСЂРѕРІРµСЂРёС‚СЊ РІСЂРµРјСЏ
 	for (u32 i=0; i<m_legs_count; i++) {
 
-		// если событие уже обработано для этой ноги, то skip
+		// РµСЃР»Рё СЃРѕР±С‹С‚РёРµ СѓР¶Рµ РѕР±СЂР°Р±РѕС‚Р°РЅРѕ РґР»СЏ СЌС‚РѕР№ РЅРѕРіРё, С‚Рѕ skip
 		if (m_step_info.activity[i].handled && (m_step_info.activity[i].cycle == m_step_info.cur_cycle)) continue;
 
-		// вычислить смещённое время шага в соответствии с параметрами анимации ходьбы
+		// РІС‹С‡РёСЃР»РёС‚СЊ СЃРјРµС‰С‘РЅРЅРѕРµ РІСЂРµРјСЏ С€Р°РіР° РІ СЃРѕРѕС‚РІРµС‚СЃС‚РІРёРё СЃ РїР°СЂР°РјРµС‚СЂР°РјРё Р°РЅРёРјР°С†РёРё С…РѕРґСЊР±С‹
 		u32 offset_time = m_time_anim_started + u32(1000 * (cycle_anim_time * (m_step_info.cur_cycle-1) + cycle_anim_time * step.step[i].time));
 		if (offset_time <= cur_time){
 
-			// Играть звук
+			// РРіСЂР°С‚СЊ Р·РІСѓРє
 			if (!mtl_pair->StepSounds.empty() && is_on_ground() ) 
 			{
 				Fvector sound_pos = m_object->Position();
@@ -133,21 +133,21 @@ void CStepManager::update()
 				GET_RANDOM(mtl_pair->StepSounds).play_no_feedback(m_object,0,0,&sound_pos,&m_step_info.params.step[i].power);
 			}
 
-			// Играть партиклы
+			// РРіСЂР°С‚СЊ РїР°СЂС‚РёРєР»С‹
 			if (!mtl_pair->CollideParticles.empty())	{
 				LPCSTR ps_name = *mtl_pair->CollideParticles[::Random.randI(0,mtl_pair->CollideParticles.size())];
 
-				//отыграть партиклы столкновения материалов
+				//РѕС‚С‹РіСЂР°С‚СЊ РїР°СЂС‚РёРєР»С‹ СЃС‚РѕР»РєРЅРѕРІРµРЅРёСЏ РјР°С‚РµСЂРёР°Р»РѕРІ
 				CParticlesObject* ps = CParticlesObject::Create(ps_name,TRUE);
 
-				// вычислить позицию и направленность партикла
+				// РІС‹С‡РёСЃР»РёС‚СЊ РїРѕР·РёС†РёСЋ Рё РЅР°РїСЂР°РІР»РµРЅРЅРѕСЃС‚СЊ РїР°СЂС‚РёРєР»Р°
 				Fmatrix pos; 
 
-				// установить направление
+				// СѓСЃС‚Р°РЅРѕРІРёС‚СЊ РЅР°РїСЂР°РІР»РµРЅРёРµ
 				pos.k.set(Fvector().set(0.0f,1.0f,0.0f));
 				Fvector::generate_orthonormal_basis(pos.k, pos.j, pos.i);
 
-				// установить позицию
+				// СѓСЃС‚Р°РЅРѕРІРёС‚СЊ РїРѕР·РёС†РёСЋ
 				pos.c.set(get_foot_position(ELegType(i)));
 
 				ps->UpdateParent(pos,Fvector().set(0.f,0.f,0.f));
@@ -157,17 +157,17 @@ void CStepManager::update()
 			// Play Camera FXs
 			event_on_step();
 
-			// обновить поле handle
+			// РѕР±РЅРѕРІРёС‚СЊ РїРѕР»Рµ handle
 			m_step_info.activity[i].handled	= true;
 			m_step_info.activity[i].cycle	= m_step_info.cur_cycle;
 		}
 	}
 
-	// определить текущий цикл
+	// РѕРїСЂРµРґРµР»РёС‚СЊ С‚РµРєСѓС‰РёР№ С†РёРєР»
 	if (m_step_info.cur_cycle < step.cycles) m_step_info.cur_cycle = 1 + u8(float(cur_time - m_time_anim_started) / (1000.f * cycle_anim_time));
 
-	// если анимация циклическая...
-	u32 time_anim_end = m_time_anim_started + u32(get_blend_time() * 1000);		// время завершения работы анимации
+	// РµСЃР»Рё Р°РЅРёРјР°С†РёСЏ С†РёРєР»РёС‡РµСЃРєР°СЏ...
+	u32 time_anim_end = m_time_anim_started + u32(get_blend_time() * 1000);		// РІСЂРµРјСЏ Р·Р°РІРµСЂС€РµРЅРёСЏ СЂР°Р±РѕС‚С‹ Р°РЅРёРјР°С†РёРё
 	if (!m_blend->stop_at_end && (time_anim_end < cur_time)) {
 		
 		m_time_anim_started		= time_anim_end;
@@ -222,7 +222,7 @@ void CStepManager::reload_foot_bones()
 		load_foot_bones(pSettings->r_section(pSettings->r_string(*m_object->cNameSect(),"foot_bones")));
 	}
 
-	// проверка на соответсвие
+	// РїСЂРѕРІРµСЂРєР° РЅР° СЃРѕРѕС‚РІРµС‚СЃРІРёРµ
 	int count = 0;
 	for (u32 i = 0; i < MAX_LEGS_COUNT; i++) 
 		if (m_foot_bones[i] != BI_NONE) count++;

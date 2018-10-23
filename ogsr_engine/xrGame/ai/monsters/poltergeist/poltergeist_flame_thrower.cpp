@@ -157,11 +157,11 @@ void CPolterFlame::update_schedule()
 					// start here
 					m_state_scanning = true;
 
-					// èãðàòü çâóê
+					// Ð¸Ð³Ñ€Ð°Ñ‚ÑŒ Ð·Ð²ÑƒÐº
 					//m_scan_sound.play_at_pos(m_object, get_head_position(Actor()),sm_2D);
 					::Sound->play_at_pos(m_scan_sound, 0, Actor()->Position());
 
-					// ïîñòïðîöåññ
+					// Ð¿Ð¾ÑÑ‚Ð¿Ñ€Ð¾Ñ†ÐµÑÑ
 					Actor()->Cameras().AddPPEffector(xr_new<CMonsterEffector>(m_scan_effector_info, m_scan_effector_time, m_scan_effector_time_attack, m_scan_effector_time_release));
 				}
 				
@@ -233,7 +233,7 @@ void CPolterFlame::update_schedule()
 
 	// remove all flames in state stop
 	
-	// óäàëèòü âñå ýëåìåíòû, âûïîëíåíèå êîòîðûõ çàêîí÷åíî
+	// ÑƒÐ´Ð°Ð»Ð¸Ñ‚ÑŒ Ð²ÑÐµ ÑÐ»ÐµÐ¼ÐµÐ½Ñ‚Ñ‹, Ð²Ñ‹Ð¿Ð¾Ð»Ð½ÐµÐ½Ð¸Ðµ ÐºÐ¾Ñ‚Ð¾Ñ€Ñ‹Ñ… Ð·Ð°ÐºÐ¾Ð½Ñ‡ÐµÐ½Ð¾
 	m_flames.erase	(
 		std::remove_if(
 			m_flames.begin(),
@@ -265,7 +265,7 @@ void CPolterFlame::on_destroy()
 	FLAME_ELEMS_IT I = m_flames.begin();
 	FLAME_ELEMS_IT E = m_flames.end();
 
-	// Ïðîéòè ïî âñåì îáúåêòàì è ïðîâåðèòü íà õèò âðàãà
+	// ÐŸÑ€Ð¾Ð¹Ñ‚Ð¸ Ð¿Ð¾ Ð²ÑÐµÐ¼ Ð¾Ð±ÑŠÐµÐºÑ‚Ð°Ð¼ Ð¸ Ð¿Ñ€Ð¾Ð²ÐµÑ€Ð¸Ñ‚ÑŒ Ð½Ð° Ñ…Ð¸Ñ‚ Ð²Ñ€Ð°Ð³Ð°
 	for ( ;I != E; ++I) {
 		if ((*I)->sound._feedback()) (*I)->sound.stop();
 		if ((*I)->particles_object) CParticlesObject::Destroy((*I)->particles_object);

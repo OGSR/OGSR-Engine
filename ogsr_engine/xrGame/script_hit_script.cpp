@@ -40,29 +40,29 @@ void CScriptHit::script_register(lua_State *L)
 			.def(								constructor<const CScriptHit *>())
 			.def("bone",						&CScriptHit::set_bone_name)
 		,
-		//KRodin: экспортировал класс SHit в скрипты. Нужно для каллбека entity_alive_before_hit.
-		//Сделано по образу и подобию движка X-Ray Extensions.
+		//KRodin: СЌРєСЃРїРѕСЂС‚РёСЂРѕРІР°Р» РєР»Р°СЃСЃ SHit РІ СЃРєСЂРёРїС‚С‹. РќСѓР¶РЅРѕ РґР»СЏ РєР°Р»Р»Р±РµРєР° entity_alive_before_hit.
+		//РЎРґРµР»Р°РЅРѕ РїРѕ РѕР±СЂР°Р·Сѓ Рё РїРѕРґРѕР±РёСЋ РґРІРёР¶РєР° X-Ray Extensions.
 		class_<SHit>("SHit")
 		.def(constructor<>())
 		.def_readwrite("time", &SHit::Time)
 		.def_readwrite("packet_type", &SHit::PACKET_TYPE)
 		.def_readwrite("dest_id", &SHit::DestID)
 		.def_readwrite("power", &SHit::power)
-		.def_readwrite("dir", &SHit::dir) //Вектор
-		.property("who", &SHit::get_hit_initiator, &SHit::set_hit_initiator) //Сделал так, чтобы тут можно было передавать и получать скриптовые клиентские объекты.
+		.def_readwrite("dir", &SHit::dir) //Р’РµРєС‚РѕСЂ
+		.property("who", &SHit::get_hit_initiator, &SHit::set_hit_initiator) //РЎРґРµР»Р°Р» С‚Р°Рє, С‡С‚РѕР±С‹ С‚СѓС‚ РјРѕР¶РЅРѕ Р±С‹Р»Рѕ РїРµСЂРµРґР°РІР°С‚СЊ Рё РїРѕР»СѓС‡Р°С‚СЊ СЃРєСЂРёРїС‚РѕРІС‹Рµ РєР»РёРµРЅС‚СЃРєРёРµ РѕР±СЉРµРєС‚С‹.
 		.def_readwrite("who_id", &SHit::whoID)
 		.def_readwrite("weapon_id", &SHit::weaponID)
 		.def_readwrite("bone_id", &SHit::boneID)
-		.def_readwrite("p_in_bone_space", &SHit::p_in_bone_space) //Вектор
+		.def_readwrite("p_in_bone_space", &SHit::p_in_bone_space) //Р’РµРєС‚РѕСЂ
 		.def_readwrite("impulse", &SHit::impulse)
 		.def_readwrite("hit_type", &SHit::hit_type)
 		.def_readwrite("ap", &SHit::ap)
 		.def_readwrite("aim_bullet", &SHit::aim_bullet)
 		.def_readwrite("bullet_id", &SHit::BulletID)
 		.def_readwrite("sender_id", &SHit::SenderID)
-		.def_readwrite("ignore_hit", &SHit::ignore_flag) //Флаг игнорирования хита. Если скриптово установить его в true, хит нанесён не будет.
-		// Начальное значение хита, до обработок всякими
-		// защитами артефактов и броней.
+		.def_readwrite("ignore_hit", &SHit::ignore_flag) //Р¤Р»Р°Рі РёРіРЅРѕСЂРёСЂРѕРІР°РЅРёСЏ С…РёС‚Р°. Р•СЃР»Рё СЃРєСЂРёРїС‚РѕРІРѕ СѓСЃС‚Р°РЅРѕРІРёС‚СЊ РµРіРѕ РІ true, С…РёС‚ РЅР°РЅРµСЃС‘РЅ РЅРµ Р±СѓРґРµС‚.
+		// РќР°С‡Р°Р»СЊРЅРѕРµ Р·РЅР°С‡РµРЅРёРµ С…РёС‚Р°, РґРѕ РѕР±СЂР°Р±РѕС‚РѕРє РІСЃСЏРєРёРјРё
+		// Р·Р°С‰РёС‚Р°РјРё Р°СЂС‚РµС„Р°РєС‚РѕРІ Рё Р±СЂРѕРЅРµР№.
 		.def_readonly( "full_power", &SHit::full_power )
 	];
 }

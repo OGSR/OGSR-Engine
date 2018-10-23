@@ -1,6 +1,6 @@
 ///////////////////////////////////////////////////////////////
 // PhraseScript.h
-// классы для связи диалогов со скриптами
+// РєР»Р°СЃСЃС‹ РґР»СЏ СЃРІСЏР·Рё РґРёР°Р»РѕРіРѕРІ СЃРѕ СЃРєСЂРёРїС‚Р°РјРё
 ///////////////////////////////////////////////////////////////
 
 
@@ -21,13 +21,13 @@ public:
 	CPhraseScript				();
 	virtual ~CPhraseScript		();
 	
-	//загрузка из XML файла
+	//Р·Р°РіСЂСѓР·РєР° РёР· XML С„Р°Р№Р»Р°
 	virtual void Load			(CUIXml* ui_xml, XML_NODE* phrase_node);
 
-	//вызов с одним параметром (info_portion)
+	//РІС‹Р·РѕРІ СЃ РѕРґРЅРёРј РїР°СЂР°РјРµС‚СЂРѕРј (info_portion)
 	virtual bool				Precondition	(const CGameObject* pSpeaker, LPCSTR dialog_id, LPCSTR phrase_id) const;
 	virtual void				Action			(const CGameObject* pSpeaker, LPCSTR dialog_id, LPCSTR phrase_id) const;
-	//вызов с двумя параметрами (dialog, phrase)
+	//РІС‹Р·РѕРІ СЃ РґРІСѓРјСЏ РїР°СЂР°РјРµС‚СЂР°РјРё (dialog, phrase)
 	virtual bool				Precondition	(const CGameObject* pSpeaker1, const CGameObject* pSpeaker2, LPCSTR dialog_id, LPCSTR phrase_id, LPCSTR next_phrase_id) const;
 	virtual void				Action			(const CGameObject* pSpeaker1, const CGameObject* pSpeaker2, LPCSTR dialog_id, LPCSTR phrase_id) const;
 
@@ -49,18 +49,18 @@ public:
 			LPCSTR			GetScriptText(LPCSTR str_to_translate, const CGameObject* pSpeakerGO1, const CGameObject* pSpeakerGO2, LPCSTR dialog_id, LPCSTR phrase_id);
 
 protected:
-	//загрузка содержания последовательности тагов в контейнер строк 
+	//Р·Р°РіСЂСѓР·РєР° СЃРѕРґРµСЂР¶Р°РЅРёСЏ РїРѕСЃР»РµРґРѕРІР°С‚РµР»СЊРЅРѕСЃС‚Рё С‚Р°РіРѕРІ РІ РєРѕРЅС‚РµР№РЅРµСЂ СЃС‚СЂРѕРє 
 	template<class T> 
 		void					LoadSequence		(CUIXml* ui_xml, XML_NODE* phrase_node, LPCSTR tag, T&  str_vector);
 
-	//манипуляции с информацией во время вызовов Precondition и Action 
+	//РјР°РЅРёРїСѓР»СЏС†РёРё СЃ РёРЅС„РѕСЂРјР°С†РёРµР№ РІРѕ РІСЂРµРјСЏ РІС‹Р·РѕРІРѕРІ Precondition Рё Action 
 	virtual bool				CheckInfo		(const CInventoryOwner* pOwner) const;
 	virtual void				TransferInfo	(const CInventoryOwner* pOwner) const;
 
 	shared_str					m_sScriptTextFunc;
 
-	//скриптовые действия, которые активируется после того как 
-	//говорится фраза
+	//СЃРєСЂРёРїС‚РѕРІС‹Рµ РґРµР№СЃС‚РІРёСЏ, РєРѕС‚РѕСЂС‹Рµ Р°РєС‚РёРІРёСЂСѓРµС‚СЃСЏ РїРѕСЃР»Рµ С‚РѕРіРѕ РєР°Рє 
+	//РіРѕРІРѕСЂРёС‚СЃСЏ С„СЂР°Р·Р°
 	DEFINE_VECTOR				(shared_str, ACTION_NAME_VECTOR, ACTION_NAME_VECTOR_IT);
 	ACTION_NAME_VECTOR			m_ScriptActions;
 	
@@ -69,12 +69,12 @@ protected:
 	INFO_VECTOR					m_GiveInfo;
 	INFO_VECTOR					m_DisableInfo;
 
-	//список скриптовых предикатов, выполнение, которых необходимо
-	//для того чтоб фраза стала доступной
+	//СЃРїРёСЃРѕРє СЃРєСЂРёРїС‚РѕРІС‹С… РїСЂРµРґРёРєР°С‚РѕРІ, РІС‹РїРѕР»РЅРµРЅРёРµ, РєРѕС‚РѕСЂС‹С… РЅРµРѕР±С…РѕРґРёРјРѕ
+	//РґР»СЏ С‚РѕРіРѕ С‡С‚РѕР± С„СЂР°Р·Р° СЃС‚Р°Р»Р° РґРѕСЃС‚СѓРїРЅРѕР№
 	DEFINE_VECTOR				(shared_str, PRECONDITION_VECTOR, PRECONDITION_VECTOR_IT);
 
 	PRECONDITION_VECTOR			m_Preconditions;
-	//проверка наличия/отсутствия информации
+	//РїСЂРѕРІРµСЂРєР° РЅР°Р»РёС‡РёСЏ/РѕС‚СЃСѓС‚СЃС‚РІРёСЏ РёРЅС„РѕСЂРјР°С†РёРё
 	INFO_VECTOR					m_HasInfo;
 	INFO_VECTOR					m_DontHasInfo;
 };

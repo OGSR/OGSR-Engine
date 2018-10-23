@@ -155,7 +155,7 @@ void CLevel::ClientSend()
 	};
 	if (OnClient()) 
 	{
-		FATAL(""); //Ýòî íå äîëæíî áûòü âûçâàíî
+		FATAL(""); //Ð­Ñ‚Ð¾ Ð½Ðµ Ð´Ð¾Ð»Ð¶Ð½Ð¾ Ð±Ñ‹Ñ‚ÑŒ Ð²Ñ‹Ð·Ð²Ð°Ð½Ð¾
 		return;
 	}
 	//-------------------------------------------------
@@ -327,7 +327,7 @@ void			CLevel::OnConnectResult				(NET_Packet*	P)
 	// multiple results can be sent during connection they should be "AND-ed"
 	m_bConnectResultReceived	= true;
 	u8	result					= P->r_u8();
-	/*u8  res1					=*/ P->r_u8(); //Îñòàâëåíî äëÿ ñîâìåñòèìîñòè ñåéâîâ
+	/*u8  res1					=*/ P->r_u8(); //ÐžÑÑ‚Ð°Ð²Ð»ÐµÐ½Ð¾ Ð´Ð»Ñ ÑÐ¾Ð²Ð¼ÐµÑÑ‚Ð¸Ð¼Ð¾ÑÑ‚Ð¸ ÑÐµÐ¹Ð²Ð¾Ð²
 	string128 ResultStr			;	
 	P->r_stringZ(ResultStr)		;
 	if (!result)				

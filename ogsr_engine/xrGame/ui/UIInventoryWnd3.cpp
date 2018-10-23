@@ -32,7 +32,7 @@ void CUIInventoryWnd::EatItem(PIItem itm)
 #include "../Antirad.h"
 void CUIInventoryWnd::ActivatePropertiesBox()
 {
-	// Флаг-признак для невлючения пункта контекстного меню: Dreess Outfit, если костюм уже надет
+	// Р¤Р»Р°Рі-РїСЂРёР·РЅР°Рє РґР»СЏ РЅРµРІР»СЋС‡РµРЅРёСЏ РїСѓРЅРєС‚Р° РєРѕРЅС‚РµРєСЃС‚РЅРѕРіРѕ РјРµРЅСЋ: Dreess Outfit, РµСЃР»Рё РєРѕСЃС‚СЋРј СѓР¶Рµ РЅР°РґРµС‚
 	bool bAlreadyDressed = false; 
 
 	UIPropertiesBox.RemoveAll();
@@ -93,7 +93,7 @@ void CUIInventoryWnd::ActivatePropertiesBox()
 		b_show = true;
 	}
 	
-	//отсоединение аддонов от вещи
+	//РѕС‚СЃРѕРµРґРёРЅРµРЅРёРµ Р°РґРґРѕРЅРѕРІ РѕС‚ РІРµС‰Рё
 	if(pWeapon)
 	{
 		if(pWeapon->GrenadeLauncherAttachable() && pWeapon->IsGrenadeLauncherAttached())
@@ -136,7 +136,7 @@ void CUIInventoryWnd::ActivatePropertiesBox()
 		}
 	}
 	
-	//присоединение аддонов к оружиям в слотах
+	//РїСЂРёСЃРѕРµРґРёРЅРµРЅРёРµ Р°РґРґРѕРЅРѕРІ Рє РѕСЂСѓР¶РёСЏРј РІ СЃР»РѕС‚Р°С…
         static std::regex addon_re( R"(\{ADDON\})" );
         static std::regex wpn_re( R"(\{WPN\})" );
 	for (u8 i = 0; i < SLOTS_TOTAL; ++i) {
@@ -145,7 +145,7 @@ void CUIInventoryWnd::ActivatePropertiesBox()
 			string128 trans_str = { 0 };
 			strconcat(sizeof(trans_str), trans_str, "st_attach_addon_to_wpn_in_slot_", std::to_string(i).c_str());
 			string128 str = { 0 };
-			// В локализации должно быть что-то типа 'Прикрепить %s к %s в таком-то слоте'
+			// Р’ Р»РѕРєР°Р»РёР·Р°С†РёРё РґРѕР»Р¶РЅРѕ Р±С‹С‚СЊ С‡С‚Рѕ-С‚Рѕ С‚РёРїР° 'РџСЂРёРєСЂРµРїРёС‚СЊ %s Рє %s РІ С‚Р°РєРѕРј-С‚Рѕ СЃР»РѕС‚Рµ'
 			std::snprintf(str, sizeof(str), CStringTable().translate(trans_str).c_str(), CurrentIItem()->m_nameShort.c_str(), tgt->m_nameShort.c_str());
                         std::string s( str );
                         s = std::regex_replace( s, addon_re, CurrentIItem()->m_nameShort.c_str() );
@@ -212,7 +212,7 @@ void CUIInventoryWnd::ProcessPropertiesBoxClicked	()
 
                 case INVENTORY_TO_SLOT_ACTION: {
                   auto item  = CurrentIItem();
-				  // Явно указали слот в меню
+				  // РЇРІРЅРѕ СѓРєР°Р·Р°Р»Рё СЃР»РѕС‚ РІ РјРµРЅСЋ
 				  void* d = UIPropertiesBox.GetClickedItem()->GetData();
 				  if (d) 
 				  {
@@ -221,9 +221,9 @@ void CUIInventoryWnd::ProcessPropertiesBoxClicked	()
 					  if (ToSlot(CurrentItem(), true))
 						  return;
 				  }
-				  // Пытаемся найти свободный слот из списка разрешенных.
-				  // Если его нету, то принудительно займет первый слот,
-				  // указанный в списке.
+				  // РџС‹С‚Р°РµРјСЃСЏ РЅР°Р№С‚Рё СЃРІРѕР±РѕРґРЅС‹Р№ СЃР»РѕС‚ РёР· СЃРїРёСЃРєР° СЂР°Р·СЂРµС€РµРЅРЅС‹С….
+				  // Р•СЃР»Рё РµРіРѕ РЅРµС‚Сѓ, С‚Рѕ РїСЂРёРЅСѓРґРёС‚РµР»СЊРЅРѕ Р·Р°Р№РјРµС‚ РїРµСЂРІС‹Р№ СЃР»РѕС‚,
+				  // СѓРєР°Р·Р°РЅРЅС‹Р№ РІ СЃРїРёСЃРєРµ.
                   auto slots = item->GetSlots();
                   for ( u8 i = 0; i < (u8)slots.size(); ++i ) {
                     item->SetSlot( slots[ i ] );

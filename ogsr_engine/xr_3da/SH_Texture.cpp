@@ -164,7 +164,7 @@ void CTexture::Load()
 void CTexture::Load(LPCSTR name)
 {
 	if (flags.bLoaded)
-		return; //на всякий случай.
+		return; //РЅР° РІСЃСЏРєРёР№ СЃР»СѓС‡Р°Р№.
 
 	flags.bLoaded					= true;
 	desc_cache						= 0;

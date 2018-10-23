@@ -44,7 +44,7 @@ public:
 	virtual void		Reset						();
 protected:
 	u32					prevArticlesCount;
-	// Элементы графического оформления
+	// Р­Р»РµРјРµРЅС‚С‹ РіСЂР°С„РёС‡РµСЃРєРѕРіРѕ РѕС„РѕСЂРјР»РµРЅРёСЏ
 	CUIFrameWindow*		UIEncyclopediaIdxBkg;
 	CUIFrameWindow*		UIEncyclopediaInfoBkg;
 	CUIFrameLineWnd*	UIEncyclopediaIdxHeader;
@@ -52,7 +52,7 @@ protected:
 	CUIAnimatedStatic*	UIAnimation;
 	CUIStatic*			UIArticleHeader;
 
-	// Хранилище статей
+	// РҐСЂР°РЅРёР»РёС‰Рµ СЃС‚Р°С‚РµР№
 	typedef xr_vector<CEncyclopediaArticle*>			ArticlesDB;
 	typedef ArticlesDB::iterator						ArticlesDB_it;
 

@@ -1,6 +1,6 @@
 #pragma once
 
-#define FTIMER_USE_STD_CHRONO //Маловероятно, но вдруг проблемы будут, мало ли что.
+#define FTIMER_USE_STD_CHRONO //РњР°Р»РѕРІРµСЂРѕСЏС‚РЅРѕ, РЅРѕ РІРґСЂСѓРі РїСЂРѕР±Р»РµРјС‹ Р±СѓРґСѓС‚, РјР°Р»Рѕ Р»Рё С‡С‚Рѕ.
 
 #ifdef FTIMER_USE_STD_CHRONO
 

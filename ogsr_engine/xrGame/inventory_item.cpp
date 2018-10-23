@@ -109,7 +109,7 @@ CInventoryItem::~CInventoryItem()
 {
 	delete_data			(m_net_updateData);
 
-        ASSERT_FMT( (int)m_slots.size() >= 0, "m_slots.size() returned negative value inside destructor!" ); // alpet: äëÿ äåòåêòà ïîâðåæäåíèÿ îáúåêòà
+        ASSERT_FMT( (int)m_slots.size() >= 0, "m_slots.size() returned negative value inside destructor!" ); // alpet: Ð´Ð»Ñ Ð´ÐµÑ‚ÐµÐºÑ‚Ð° Ð¿Ð¾Ð²Ñ€ÐµÐ¶Ð´ÐµÐ½Ð¸Ñ Ð¾Ð±ÑŠÐµÐºÑ‚Ð°
 
 	bool B_GOOD			= (	!m_pCurrentInventory || 
 							(std::find(	m_pCurrentInventory->m_all.begin(),m_pCurrentInventory->m_all.end(), this)==m_pCurrentInventory->m_all.end()) );
@@ -153,7 +153,7 @@ void CInventoryItem::Load(LPCSTR section)
             m_slots.clear(); // full override!
           for ( int i = 0; i < count; ++i ) {
             u8 slot = u8( atoi( _GetItem( m_slots_sect, i, buf ) ) );
-            // âìåñòî std::find(m_slots.begin(), m_slots.end(), slot) == m_slots.end() èñïîëüçóåòñÿ !IsPlaceable
+            // Ð²Ð¼ÐµÑÑ‚Ð¾ std::find(m_slots.begin(), m_slots.end(), slot) == m_slots.end() Ð¸ÑÐ¿Ð¾Ð»ÑŒÐ·ÑƒÐµÑ‚ÑÑ !IsPlaceable
             if ( slot < SLOTS_TOTAL && !IsPlaceable( slot, slot ) )
               m_slots.push_back( slot );
           }
@@ -162,10 +162,10 @@ void CInventoryItem::Load(LPCSTR section)
 	}
 
 	if (Core.Features.test(xrCore::Feature::forcibly_equivalent_slots)) {
-		// Â OGSR, ïåðâûé è âòîðîé îðóæåéíûå ñëîòû ïðèíóäèòåëüíî
-        // ðàâíîçíà÷íû. ×òî áû ñîõðàíèòü ñîâìåñòèìîñòü ñ ýòèì, åñëè
-        // äëÿ ïðåäìåòà óêàçàí òîëüêî îäèí ñëîò è ýòî îðóæåéíûé ñëîò,
-        // äîáàâèì ê íåìó ñîîòâ. âòîðîé îðóæåéíûé ñëîò.
+		// Ð’ OGSR, Ð¿ÐµÑ€Ð²Ñ‹Ð¹ Ð¸ Ð²Ñ‚Ð¾Ñ€Ð¾Ð¹ Ð¾Ñ€ÑƒÐ¶ÐµÐ¹Ð½Ñ‹Ðµ ÑÐ»Ð¾Ñ‚Ñ‹ Ð¿Ñ€Ð¸Ð½ÑƒÐ´Ð¸Ñ‚ÐµÐ»ÑŒÐ½Ð¾
+        // Ñ€Ð°Ð²Ð½Ð¾Ð·Ð½Ð°Ñ‡Ð½Ñ‹. Ð§Ñ‚Ð¾ Ð±Ñ‹ ÑÐ¾Ñ…Ñ€Ð°Ð½Ð¸Ñ‚ÑŒ ÑÐ¾Ð²Ð¼ÐµÑÑ‚Ð¸Ð¼Ð¾ÑÑ‚ÑŒ Ñ ÑÑ‚Ð¸Ð¼, ÐµÑÐ»Ð¸
+        // Ð´Ð»Ñ Ð¿Ñ€ÐµÐ´Ð¼ÐµÑ‚Ð° ÑƒÐºÐ°Ð·Ð°Ð½ Ñ‚Ð¾Ð»ÑŒÐºÐ¾ Ð¾Ð´Ð¸Ð½ ÑÐ»Ð¾Ñ‚ Ð¸ ÑÑ‚Ð¾ Ð¾Ñ€ÑƒÐ¶ÐµÐ¹Ð½Ñ‹Ð¹ ÑÐ»Ð¾Ñ‚,
+        // Ð´Ð¾Ð±Ð°Ð²Ð¸Ð¼ Ðº Ð½ÐµÐ¼Ñƒ ÑÐ¾Ð¾Ñ‚Ð². Ð²Ñ‚Ð¾Ñ€Ð¾Ð¹ Ð¾Ñ€ÑƒÐ¶ÐµÐ¹Ð½Ñ‹Ð¹ ÑÐ»Ð¾Ñ‚.
         if ( GetSlotsCount() == 1 ) {
           if ( m_slots[ 0 ] == FIRST_WEAPON_SLOT )
             m_slots.push_back( SECOND_WEAPON_SLOT );
@@ -186,7 +186,7 @@ void CInventoryItem::Load(LPCSTR section)
 
 
 
-	//âðåìÿ óáèðàíèÿ îáúåêòà ñ óðîâíÿ
+	//Ð²Ñ€ÐµÐ¼Ñ ÑƒÐ±Ð¸Ñ€Ð°Ð½Ð¸Ñ Ð¾Ð±ÑŠÐµÐºÑ‚Ð° Ñ ÑƒÑ€Ð¾Ð²Ð½Ñ
 	m_dwItemRemoveTime			= READ_IF_EXISTS(pSettings, r_u32, section,"item_remove_time",			ITEM_REMOVE_TIME);
 
 	m_flags.set					(FAllowSprint,READ_IF_EXISTS	(pSettings, r_bool, section,"sprint_allowed",			TRUE));
@@ -375,9 +375,9 @@ void CInventoryItem::OnEvent (NET_Packet& P, u16 type)
 	}
 }
 
-//ïðîöåññ îòñîåäèíåíèÿ âåùè çàêëþ÷àåòñÿ â ñïàóíå íîâîé âåùè 
-//â èíâåíòàðå è óñòàíîâêå ñîîòâåòñòâóþùèõ ôëàãîâ â ðîäèòåëüñêîì
-//îáúåêòå, ïîýòîìó ôóíêöèÿ äîëæíà áûòü ïåðåîïðåäåëåíà
+//Ð¿Ñ€Ð¾Ñ†ÐµÑÑ Ð¾Ñ‚ÑÐ¾ÐµÐ´Ð¸Ð½ÐµÐ½Ð¸Ñ Ð²ÐµÑ‰Ð¸ Ð·Ð°ÐºÐ»ÑŽÑ‡Ð°ÐµÑ‚ÑÑ Ð² ÑÐ¿Ð°ÑƒÐ½Ðµ Ð½Ð¾Ð²Ð¾Ð¹ Ð²ÐµÑ‰Ð¸ 
+//Ð² Ð¸Ð½Ð²ÐµÐ½Ñ‚Ð°Ñ€Ðµ Ð¸ ÑƒÑÑ‚Ð°Ð½Ð¾Ð²ÐºÐµ ÑÐ¾Ð¾Ñ‚Ð²ÐµÑ‚ÑÑ‚Ð²ÑƒÑŽÑ‰Ð¸Ñ… Ñ„Ð»Ð°Ð³Ð¾Ð² Ð² Ñ€Ð¾Ð´Ð¸Ñ‚ÐµÐ»ÑŒÑÐºÐ¾Ð¼
+//Ð¾Ð±ÑŠÐµÐºÑ‚Ðµ, Ð¿Ð¾ÑÑ‚Ð¾Ð¼Ñƒ Ñ„ÑƒÐ½ÐºÑ†Ð¸Ñ Ð´Ð¾Ð»Ð¶Ð½Ð° Ð±Ñ‹Ñ‚ÑŒ Ð¿ÐµÑ€ÐµÐ¾Ð¿Ñ€ÐµÐ´ÐµÐ»ÐµÐ½Ð°
 bool CInventoryItem::Detach(const char* item_section_name, bool b_spawn_item) 
 {
 	if (OnClient()) return true;
@@ -448,7 +448,7 @@ BOOL CInventoryItem::net_Spawn			(CSE_Abstract* DC)
 
 void CInventoryItem::net_Destroy		()
 {
-	//èíâåíòàðü êîòîðîìó ìû ïðèíàäëåæàëè
+	//Ð¸Ð½Ð²ÐµÐ½Ñ‚Ð°Ñ€ÑŒ ÐºÐ¾Ñ‚Ð¾Ñ€Ð¾Ð¼Ñƒ Ð¼Ñ‹ Ð¿Ñ€Ð¸Ð½Ð°Ð´Ð»ÐµÐ¶Ð°Ð»Ð¸
 //.	m_pCurrentInventory = NULL;
 }
 
@@ -712,7 +712,7 @@ void CInventoryItem::CalculateInterpolationParams()
 		for (u32 k=0; k<3; k++)
 		{
 			P0[k] = c*(c*(c*p->SCoeff[k][0]+p->SCoeff[k][1])+p->SCoeff[k][2])+p->SCoeff[k][3];
-			P1[k] = (c*c*p->SCoeff[k][0]*3+c*p->SCoeff[k][1]*2+p->SCoeff[k][2])/3; // ñîêðîñòü èç ôîðìóëû â 3 ðàçà ïðåâûøàåò ñêîðîñòü ïðè ðàñ÷åòå êîýôôèöèåíòîâ !!!!
+			P1[k] = (c*c*p->SCoeff[k][0]*3+c*p->SCoeff[k][1]*2+p->SCoeff[k][2])/3; // ÑÐ¾ÐºÑ€Ð¾ÑÑ‚ÑŒ Ð¸Ð· Ñ„Ð¾Ñ€Ð¼ÑƒÐ»Ñ‹ Ð² 3 Ñ€Ð°Ð·Ð° Ð¿Ñ€ÐµÐ²Ñ‹ÑˆÐ°ÐµÑ‚ ÑÐºÐ¾Ñ€Ð¾ÑÑ‚ÑŒ Ð¿Ñ€Ð¸ Ñ€Ð°ÑÑ‡ÐµÑ‚Ðµ ÐºÐ¾ÑÑ„Ñ„Ð¸Ñ†Ð¸ÐµÐ½Ñ‚Ð¾Ð² !!!!
 		};
 		P0.set(p->IStartPos);
 		P1.add(p->IStartPos);

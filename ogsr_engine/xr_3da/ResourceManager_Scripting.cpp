@@ -89,7 +89,7 @@ bool print_output(const char* caScriptFileName, int errorCode)
 		}
 	}
 	auto traceback = get_lua_traceback(LSVM);
-	if (!lua_isstring(LSVM, -1)) //НЕ УДАЛЯТЬ! Иначе будут вылeты без лога!
+	if (!lua_isstring(LSVM, -1)) //РќР• РЈР”РђР›РЇРўР¬! РРЅР°С‡Рµ Р±СѓРґСѓС‚ РІС‹Р»eС‚С‹ Р±РµР· Р»РѕРіР°!
 	{
 		Msg("*********************************************************************************");
 		Msg("[ResourceManager_Scripting.print_output(%s)] %s!\n%s", caScriptFileName, Prefix, traceback);
@@ -105,17 +105,17 @@ bool print_output(const char* caScriptFileName, int errorCode)
 
 bool load_buffer(const char* caBuffer, size_t tSize, const char* caScriptName, const char* caNameSpaceName)
 {
-	//KRodin: Переделал, т.к. в оригинале тут происходило нечто, на мой взгляд, странное.
+	//KRodin: РџРµСЂРµРґРµР»Р°Р», С‚.Рє. РІ РѕСЂРёРіРёРЅР°Р»Рµ С‚СѓС‚ РїСЂРѕРёСЃС…РѕРґРёР»Рѕ РЅРµС‡С‚Рѕ, РЅР° РјРѕР№ РІР·РіР»СЏРґ, СЃС‚СЂР°РЅРЅРѕРµ.
 	int buf_len = std::snprintf(nullptr, 0, FILE_HEADER, caNameSpaceName, caNameSpaceName, caBuffer);
 	auto strBuf = std::make_unique<char[]>(buf_len + 1);
 	std::snprintf(strBuf.get(), buf_len + 1, FILE_HEADER, caNameSpaceName, caNameSpaceName, caBuffer);
 	//Log("[CResourceManager::load_buffer] Loading buffer:");
 	//Log(strBuf.get());
-	int l_iErrorCode = luaL_loadbuffer(LSVM, strBuf.get(), buf_len /*+ 1 Нуль-терминатор на конце мешает походу*/, caScriptName);
+	int l_iErrorCode = luaL_loadbuffer(LSVM, strBuf.get(), buf_len /*+ 1 РќСѓР»СЊ-С‚РµСЂРјРёРЅР°С‚РѕСЂ РЅР° РєРѕРЅС†Рµ РјРµС€Р°РµС‚ РїРѕС…РѕРґСѓ*/, caScriptName);
 	if (l_iErrorCode)
 	{
 		print_output(caScriptName, l_iErrorCode);
-		R_ASSERT(false); //НЕ ЗАКОММЕНТИРОВАТЬ!
+		R_ASSERT(false); //РќР• Р—РђРљРћРњРњР•РќРўРР РћР’РђРўР¬!
 		return false;
 	}
 	return true;
@@ -125,13 +125,13 @@ bool do_file(const char* caScriptName, const char* caNameSpaceName)
 {
 	string_path l_caLuaFileName;
 	auto l_tpFileReader = FS.r_open(caScriptName);
-	if (!l_tpFileReader) { //заменить на ассерт?
+	if (!l_tpFileReader) { //Р·Р°РјРµРЅРёС‚СЊ РЅР° Р°СЃСЃРµСЂС‚?
 		Msg("!![CResourceManager::do_file] Cannot open file [%s]", caScriptName);
 		return false;
 	}
-	strconcat(sizeof(l_caLuaFileName), l_caLuaFileName, "@", caScriptName); //KRodin: приводит путь к виду @f:\games\s.t.a.l.k.e.r\gamedata\scripts\class_registrator.script
+	strconcat(sizeof(l_caLuaFileName), l_caLuaFileName, "@", caScriptName); //KRodin: РїСЂРёРІРѕРґРёС‚ РїСѓС‚СЊ Рє РІРёРґСѓ @f:\games\s.t.a.l.k.e.r\gamedata\scripts\class_registrator.script
 	//
-	//KRodin: исправлено. Теперь содержимое скрипта сразу читается нормально, без мусора на конце.
+	//KRodin: РёСЃРїСЂР°РІР»РµРЅРѕ. РўРµРїРµСЂСЊ СЃРѕРґРµСЂР¶РёРјРѕРµ СЃРєСЂРёРїС‚Р° СЃСЂР°Р·Сѓ С‡РёС‚Р°РµС‚СЃСЏ РЅРѕСЂРјР°Р»СЊРЅРѕ, Р±РµР· РјСѓСЃРѕСЂР° РЅР° РєРѕРЅС†Рµ.
 	auto strBuf = std::make_unique<char[]>(l_tpFileReader->length() + 1);
 	strncpy(strBuf.get(), (const char*)l_tpFileReader->pointer(), l_tpFileReader->length());
 	strBuf.get()[l_tpFileReader->length()] = 0;
@@ -139,11 +139,11 @@ bool do_file(const char* caScriptName, const char* caNameSpaceName)
 	load_buffer(strBuf.get(), (size_t)l_tpFileReader->length(), l_caLuaFileName, caNameSpaceName);
 	FS.r_close(l_tpFileReader);
 
-	int	l_iErrorCode = lua_pcall(LSVM, 0, 0, 0); //KRodin: без этого скрипты не работают!
+	int	l_iErrorCode = lua_pcall(LSVM, 0, 0, 0); //KRodin: Р±РµР· СЌС‚РѕРіРѕ СЃРєСЂРёРїС‚С‹ РЅРµ СЂР°Р±РѕС‚Р°СЋС‚!
 	if (l_iErrorCode)
 	{
 		print_output(caScriptName, l_iErrorCode);
-		R_ASSERT(false); //НЕ ЗАКОММЕНТИРОВАТЬ!
+		R_ASSERT(false); //РќР• Р—РђРљРћРњРњР•РќРўРР РћР’РђРўР¬!
 		return false;
 	}
 	return true;
@@ -261,10 +261,10 @@ void lua_cast_failed(lua_State *L, LUABIND_TYPE_INFO info)
 	print_output("[ResourceManager.lua_cast_failed]", LUA_ERRRUN);
 #ifdef LUABIND_09
 	Msg("LUA error: cannot cast lua value to %s", info.name());
-	//Debug.fatal(DEBUG_INFO, "LUA error: cannot cast lua value to %s", info.name()); //KRodin: Тут наверное вылетать не надо.
+	//Debug.fatal(DEBUG_INFO, "LUA error: cannot cast lua value to %s", info.name()); //KRodin: РўСѓС‚ РЅР°РІРµСЂРЅРѕРµ РІС‹Р»РµС‚Р°С‚СЊ РЅРµ РЅР°РґРѕ.
 #else
 	Msg("LUA error: cannot cast lua value to %s", info->name());
-	//Debug.fatal(DEBUG_INFO, "LUA error: cannot cast lua value to %s", info->name()); //KRodin: Тут наверное вылетать не надо.
+	//Debug.fatal(DEBUG_INFO, "LUA error: cannot cast lua value to %s", info->name()); //KRodin: РўСѓС‚ РЅР°РІРµСЂРЅРѕРµ РІС‹Р»РµС‚Р°С‚СЊ РЅРµ РЅР°РґРѕ.
 #endif
 }
 #endif
@@ -286,7 +286,7 @@ int lua_panic(lua_State *L)
 }
 
 #ifndef LUABIND_09
-static void *__cdecl luabind_allocator(luabind::memory_allocation_function_parameter, const void *pointer, size_t const size) //Раньше всего инитится здесь, поэтому пусть здесь и будет
+static void *__cdecl luabind_allocator(luabind::memory_allocation_function_parameter, const void *pointer, size_t const size) //Р Р°РЅСЊС€Рµ РІСЃРµРіРѕ РёРЅРёС‚РёС‚СЃСЏ Р·РґРµСЃСЊ, РїРѕСЌС‚РѕРјСѓ РїСѓСЃС‚СЊ Р·РґРµСЃСЊ Рё Р±СѓРґРµС‚
 {
 	if (!size)
 	{
@@ -366,25 +366,25 @@ void CResourceManager::LS_Load()
 {
 	//**************************************************************//
 	//Msg("[CResourceManager] Starting LuaJIT");
-	R_ASSERT2(!LSVM, "! LuaJIT is already running"); //На всякий случай
+	R_ASSERT2(!LSVM, "! LuaJIT is already running"); //РќР° РІСЃСЏРєРёР№ СЃР»СѓС‡Р°Р№
 	//
 #ifdef LUABIND_09
 	luabind::disable_super_deprecation();
 #else
-	luabind::allocator = &luabind_allocator; //Аллокатор инитится только здесь и только один раз!
+	luabind::allocator = &luabind_allocator; //РђР»Р»РѕРєР°С‚РѕСЂ РёРЅРёС‚РёС‚СЃСЏ С‚РѕР»СЊРєРѕ Р·РґРµСЃСЊ Рё С‚РѕР»СЊРєРѕ РѕРґРёРЅ СЂР°Р·!
 	luabind::allocator_parameter = nullptr;
 #endif
-	LSVM = luaL_newstate(); //Запускаем LuaJIT. Память себе он выделит сам.
-	luaL_openlibs(LSVM); //Инициализация функций LuaJIT
-	R_ASSERT2(LSVM, "! ERROR : Cannot initialize LUA VM!"); //Надо проверить, случается ли такое.
-	luabind::open(LSVM); //Запуск луабинда
+	LSVM = luaL_newstate(); //Р—Р°РїСѓСЃРєР°РµРј LuaJIT. РџР°РјСЏС‚СЊ СЃРµР±Рµ РѕРЅ РІС‹РґРµР»РёС‚ СЃР°Рј.
+	luaL_openlibs(LSVM); //РРЅРёС†РёР°Р»РёР·Р°С†РёСЏ С„СѓРЅРєС†РёР№ LuaJIT
+	R_ASSERT2(LSVM, "! ERROR : Cannot initialize LUA VM!"); //РќР°РґРѕ РїСЂРѕРІРµСЂРёС‚СЊ, СЃР»СѓС‡Р°РµС‚СЃСЏ Р»Рё С‚Р°РєРѕРµ.
+	luabind::open(LSVM); //Р—Р°РїСѓСЃРє Р»СѓР°Р±РёРЅРґР°
 	//
-	//--------------Установка калбеков------------------//
+	//--------------РЈСЃС‚Р°РЅРѕРІРєР° РєР°Р»Р±РµРєРѕРІ------------------//
 #ifdef LUABIND_NO_EXCEPTIONS
-	luabind::set_error_callback(LuaError); //Калбек на ошибки.
+	luabind::set_error_callback(LuaError); //РљР°Р»Р±РµРє РЅР° РѕС€РёР±РєРё.
 	luabind::set_cast_failed_callback(lua_cast_failed);
 #endif
-	luabind::set_pcall_callback(lua_pcall_failed); //KRodin: НЕ ЗАКОММЕНТИРОВАТЬ НИ В КОЕМ СЛУЧАЕ!!!
+	luabind::set_pcall_callback(lua_pcall_failed); //KRodin: РќР• Р—РђРљРћРњРњР•РќРўРР РћР’РђРўР¬ РќР Р’ РљРћР•Рњ РЎР›РЈР§РђР•!!!
 	lua_atpanic(LSVM, lua_panic);
 	//Msg("[CResourceManager] LuaJIT Started!");
 	//-----------------------------------------------------//

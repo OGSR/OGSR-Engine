@@ -51,7 +51,7 @@ bool CControlAnimationBase::accel_chain_get(float cur_speed, EMotionAnim target_
 	VELOCITY_CHAIN_VEC_IT B = m_accel.chain.begin(), I;
 	VELOCITY_CHAIN_VEC_IT E = m_accel.chain.end();
 
-	// ïğîéòè ïî âñåì Chain-âåêòîğàì
+	// Ğ¿Ñ€Ğ¾Ğ¹Ñ‚Ğ¸ Ğ¿Ğ¾ Ğ²ÑĞµĞ¼ Chain-Ğ²ĞµĞºÑ‚Ğ¾Ñ€Ğ°Ğ¼
 	for (I = B; I != E; I++) {
 		SEQ_VECTOR_IT	IT_B		= I->begin(), IT;
 		SEQ_VECTOR_IT	IT_E		= I->end();
@@ -60,7 +60,7 @@ bool CControlAnimationBase::accel_chain_get(float cur_speed, EMotionAnim target_
 
 		bool		  found		= false;
 
-		// Ïğîéòè ïî òåêóùåìó âåêòîğó
+		// ĞŸÑ€Ğ¾Ğ¹Ñ‚Ğ¸ Ğ¿Ğ¾ Ñ‚ĞµĞºÑƒÑ‰ĞµĞ¼Ñƒ Ğ²ĞµĞºÑ‚Ğ¾Ñ€Ñƒ
 		for (IT = IT_B; IT != IT_E; IT++) {
 
 			SAnimItem			*item_it = m_anim_storage[*IT];
@@ -100,7 +100,7 @@ bool CControlAnimationBase::accel_chain_test()
 #ifdef DEBUG
 	string256 error_msg;
 #endif
-	// ïğîéòè ïî âñåì Chain-âåêòîğàì
+	// Ğ¿Ñ€Ğ¾Ğ¹Ñ‚Ğ¸ Ğ¿Ğ¾ Ğ²ÑĞµĞ¼ Chain-Ğ²ĞµĞºÑ‚Ğ¾Ñ€Ğ°Ğ¼
 	for (VELOCITY_CHAIN_VEC_IT I = m_accel.chain.begin(); I != m_accel.chain.end(); I++) {
 
 		VERIFY2(I->size() >= 2, error_msg);
@@ -109,7 +109,7 @@ bool CControlAnimationBase::accel_chain_test()
 		SAnimItem *anim_to;
 		VERIFY(anim_from);
 
-		// Ïğîéòè ïî òåêóùåìó âåêòîğó
+		// ĞŸÑ€Ğ¾Ğ¹Ñ‚Ğ¸ Ğ¿Ğ¾ Ñ‚ĞµĞºÑƒÑ‰ĞµĞ¼Ñƒ Ğ²ĞµĞºÑ‚Ğ¾Ñ€Ñƒ
 		for (SEQ_VECTOR_IT IT = I->begin() + 1; IT != I->end(); IT++) {
 			anim_to = m_anim_storage[*IT];
 #ifdef DEBUG
@@ -137,8 +137,8 @@ bool CControlAnimationBase::accel_check_braking(float before_interval, float nom
 	braking_dist += before_interval;
 	if (m_man->path_builder().is_path_end(braking_dist))				return (braking_mode = true);
 
-	// ïğîâåğèòü òî÷êè ïóòè, ãäå íåîáõîäèìî îñòàíîâèòüñÿ
-	float dist = 0.f;	// äèñòàíöèÿ äî íàéäåííîé òî÷êè	
+	// Ğ¿Ñ€Ğ¾Ğ²ĞµÑ€Ğ¸Ñ‚ÑŒ Ñ‚Ğ¾Ñ‡ĞºĞ¸ Ğ¿ÑƒÑ‚Ğ¸, Ğ³Ğ´Ğµ Ğ½ĞµĞ¾Ğ±Ñ…Ğ¾Ğ´Ğ¸Ğ¼Ğ¾ Ğ¾ÑÑ‚Ğ°Ğ½Ğ¾Ğ²Ğ¸Ñ‚ÑŒÑÑ
+	float dist = 0.f;	// Ğ´Ğ¸ÑÑ‚Ğ°Ğ½Ñ†Ğ¸Ñ Ğ´Ğ¾ Ğ½Ğ°Ğ¹Ğ´ĞµĞ½Ğ½Ğ¾Ğ¹ Ñ‚Ğ¾Ñ‡ĞºĞ¸	
 	for (u32 i=m_man->path_builder().detail().curr_travel_point_index()+1; i < m_man->path_builder().detail().path().size(); i++) {
 		dist += m_man->path_builder().detail().path()[i].position.distance_to(m_man->path_builder().detail().path()[i-1].position);
 

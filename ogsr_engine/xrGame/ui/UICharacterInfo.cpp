@@ -274,19 +274,23 @@ void CUICharacterInfo::Update()
 		}else
 			UpdateRelation();
 
+		/* Не вижу смысла подкрашивать картинку
 		if(m_icons[eUIIcon]){
 			CSE_ALifeCreatureAbstract*		pCreature = smart_cast<CSE_ALifeCreatureAbstract*>(T);
 			if(pCreature && !pCreature->g_Alive())
 				m_icons[eUIIcon]->SetColor	(color_argb(255,255,160,160));
-		}
+		}*/
 	}
 }
 
 void CUICharacterInfo::ClearInfo()
 {
+	m_ownerID = u16(-1);
+
 	ResetAllStrings	();
 	
 	if (m_icons[eUIIcon]) {
+		//m_icons[eUIIcon]->SetColor(0xffffffff);
 		m_icons[eUIIcon]->GetUIStaticItem().SetOriginalRect(	8*ICON_GRID_WIDTH,0,
 			float(CHAR_ICON_WIDTH*ICON_GRID_WIDTH),
 			float(CHAR_ICON_HEIGHT*ICON_GRID_HEIGHT));

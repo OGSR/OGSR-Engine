@@ -42,7 +42,7 @@ public:
 
 		// recurse
 		float	c_R		= n_R/2;
-#pragma todo("KRodin: внутри цикла в редких случаях происходит исключение. Если верить минидампам, конечный кадр стека находится в строке выше: if (0==(S->spatial.type&mask))	continue;. Попробую запускать walk в безопасном режиме и при ошибках просто прекращать цикл.")
+#pragma todo("KRodin: РІРЅСѓС‚СЂРё С†РёРєР»Р° РІ СЂРµРґРєРёС… СЃР»СѓС‡Р°СЏС… РїСЂРѕРёСЃС…РѕРґРёС‚ РёСЃРєР»СЋС‡РµРЅРёРµ. Р•СЃР»Рё РІРµСЂРёС‚СЊ РјРёРЅРёРґР°РјРїР°Рј, РєРѕРЅРµС‡РЅС‹Р№ РєР°РґСЂ СЃС‚РµРєР° РЅР°С…РѕРґРёС‚СЃСЏ РІ СЃС‚СЂРѕРєРµ РІС‹С€Рµ: if (0==(S->spatial.type&mask))	continue;. РџРѕРїСЂРѕР±СѓСЋ Р·Р°РїСѓСЃРєР°С‚СЊ walk РІ Р±РµР·РѕРїР°СЃРЅРѕРј СЂРµР¶РёРјРµ Рё РїСЂРё РѕС€РёР±РєР°С… РїСЂРѕСЃС‚Рѕ РїСЂРµРєСЂР°С‰Р°С‚СЊ С†РёРєР».")
 		for (u32 octant=0; octant<8; octant++)
 		{
 			if (0==N->children[octant])	continue;
@@ -51,8 +51,8 @@ public:
 				walk(N->children[octant], c_C, c_R, fmask);
 			}
 			catch (...) {
-				Msg("!![ISpatial_q_frustum.walk] error in children node №%u", octant);
-				//N->children[octant] = nullptr; //Не уверен, что надо, посмотрим.
+				Msg("!![ISpatial_q_frustum.walk] error in children node в„–%u", octant);
+				//N->children[octant] = nullptr; //РќРµ СѓРІРµСЂРµРЅ, С‡С‚Рѕ РЅР°РґРѕ, РїРѕСЃРјРѕС‚СЂРёРј.
 				continue;
 			}
 		}

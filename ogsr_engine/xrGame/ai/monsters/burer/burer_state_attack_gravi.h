@@ -27,7 +27,7 @@ public:
 		virtual bool		check_completion		();
 
 private:
-				// выполнять состояние
+				// РІС‹РїРѕР»РЅСЏС‚СЊ СЃРѕСЃС‚РѕСЏРЅРёРµ
 				void		ExecuteGraviStart		();
 				void		ExecuteGraviContinue	();
 				void		ExecuteGraviFire		();

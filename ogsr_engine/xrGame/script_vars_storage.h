@@ -11,8 +11,8 @@
 
 
 #define		LUA_TNETPACKET		0x00000100
-#define		SVT_ARRAY_TABLE		0x00020000    // используются только численные индексы
-#define		SVT_ARRAY_ZEROK		0x00040000    // нестандартный массив с нулевым индексом
+#define		SVT_ARRAY_TABLE		0x00020000    // РёСЃРїРѕР»СЊР·СѓСЋС‚СЃСЏ С‚РѕР»СЊРєРѕ С‡РёСЃР»РµРЅРЅС‹Рµ РёРЅРґРµРєСЃС‹
+#define		SVT_ARRAY_ZEROK		0x00040000    // РЅРµСЃС‚Р°РЅРґР°СЂС‚РЅС‹Р№ РјР°СЃСЃРёРІ СЃ РЅСѓР»РµРІС‹Рј РёРЅРґРµРєСЃРѕРј
 #define		SVT_KEY_BOOLEAN		0x00100000   
 #define		SVT_KEY_NUMERIC		0x00300000	  
 #define		SVT_KEY_MASK		0x00F00000
@@ -48,7 +48,7 @@ typedef struct _SCRIPT_VAR
 
 typedef xr_map<shared_str, SCRIPT_VAR> SCRIPT_VARS_MAP;
 
-class CScriptVarsTable // таблица переменных
+class CScriptVarsTable // С‚Р°Р±Р»РёС†Р° РїРµСЂРµРјРµРЅРЅС‹С…
 {
 private:
 	

@@ -269,7 +269,7 @@ namespace luabind { namespace detail
 		};
 
 		const map_class<const char*, callback, ltstr>& properties() const;
-		const map_class<const char*, callback, ltstr>& properties_rw() const; //KRodin: добавлено для совместимости с script_engine_help
+		const map_class<const char*, callback, ltstr>& properties_rw() const; //KRodin: РґРѕР±Р°РІР»РµРЅРѕ РґР»СЏ СЃРѕРІРјРµСЃС‚РёРјРѕСЃС‚Рё СЃ script_engine_help
 		typedef map_class<const char*, callback, ltstr> property_map;
 
 		int holder_alignment() const

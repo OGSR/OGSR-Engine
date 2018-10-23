@@ -166,7 +166,7 @@ BOOL pick_bone(T_buffer vertices, CKinematics* Parent, CKinematics::pick_result 
 		}
 		float u, v;
 		r.dist = flt_max;
-		if (CDB::TestRayTri(S, D, r.tri, u, v, r.dist, true) && (r.dist<dist)) { //KRodin: fixed! Èìåííî èç-çà ïðîñòåéøåé îøèáêè â ýòîé ñòðîêå íå ðàáîòàëè âîëëìàðêè íà äèíàìè÷åñêèõ îáúåêòàõ.
+		if (CDB::TestRayTri(S, D, r.tri, u, v, r.dist, true) && (r.dist<dist)) { //KRodin: fixed! Ð˜Ð¼ÐµÐ½Ð½Ð¾ Ð¸Ð·-Ð·Ð° Ð¿Ñ€Ð¾ÑÑ‚ÐµÐ¹ÑˆÐµÐ¹ Ð¾ÑˆÐ¸Ð±ÐºÐ¸ Ð² ÑÑ‚Ð¾Ð¹ ÑÑ‚Ñ€Ð¾ÐºÐµ Ð½Ðµ Ñ€Ð°Ð±Ð¾Ñ‚Ð°Ð»Ð¸ Ð²Ð¾Ð»Ð»Ð¼Ð°Ñ€ÐºÐ¸ Ð½Ð° Ð´Ð¸Ð½Ð°Ð¼Ð¸Ñ‡ÐµÑÐºÐ¸Ñ… Ð¾Ð±ÑŠÐµÐºÑ‚Ð°Ñ….
 			r.normal.mknormal(r.tri[0], r.tri[1], r.tri[2]);
 			return TRUE;
 		};

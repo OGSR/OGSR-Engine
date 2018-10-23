@@ -70,7 +70,7 @@ void CActor::OnEvent		(NET_Packet& P, u16 type)
 							HUD().GetUI()->UIGame()->ReInitShownUI();
 				};
 				
-				//äîáàâèòü îòñîåäèíåííûé àääîí â èíâåíòàðü
+				//Ð´Ð¾Ð±Ð°Ð²Ð¸Ñ‚ÑŒ Ð¾Ñ‚ÑÐ¾ÐµÐ´Ð¸Ð½ÐµÐ½Ð½Ñ‹Ð¹ Ð°Ð´Ð´Ð¾Ð½ Ð² Ð¸Ð½Ð²ÐµÐ½Ñ‚Ð°Ñ€ÑŒ
 				if(pGameSP)
 				{
 					if(pGameSP->MainInputReceiver() == pGameSP->InventoryMenu)

@@ -23,7 +23,7 @@ void CPhysicsShellHolder::net_Destroy()
 	//remove calls
 	CPHSriptReqGObjComparer cmpr(this);
 	Level().ph_commander_scripts().remove_calls(&cmpr);
-	//удалить партиклы из ParticlePlayer
+	//СѓРґР°Р»РёС‚СЊ РїР°СЂС‚РёРєР»С‹ РёР· ParticlePlayer
 	CParticlesPlayer::net_DestroyParticles		();
 	inherited::net_Destroy						();
 	b_sheduled									=	false;
@@ -251,7 +251,7 @@ void CPhysicsShellHolder::OnChangeVisual()
 void CPhysicsShellHolder::UpdateCL	()
 {
 	inherited::UpdateCL	();
-	//обновить присоединенные партиклы
+	//РѕР±РЅРѕРІРёС‚СЊ РїСЂРёСЃРѕРµРґРёРЅРµРЅРЅС‹Рµ РїР°СЂС‚РёРєР»С‹
 	UpdateParticles		();
 }
 float CPhysicsShellHolder::EffectiveGravity()
@@ -356,7 +356,7 @@ void CPhysicsShellHolder::PHLoadState(IReader &P)
 		_low = P.r_u64();
 		K->LL_SetBoneRoot(P.r_u16());
 	}
-	else //Скорее всего K есть всегда, но на всякий случай.
+	else //РЎРєРѕСЂРµРµ РІСЃРµРіРѕ K РµСЃС‚СЊ РІСЃРµРіРґР°, РЅРѕ РЅР° РІСЃСЏРєРёР№ СЃР»СѓС‡Р°Р№.
 	{
 		P.r_u64();
 		P.r_u16();

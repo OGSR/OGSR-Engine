@@ -272,8 +272,8 @@ public:
 	virtual void					Render						();
 	virtual void					Screenshot					(ScreenshotMode mode=SM_NORMAL, LPCSTR name = 0);
 	virtual void					OnFrame						();
-	virtual void BeforeWorldRender(); //--#SM+#-- +SecondVP+ Вызывается перед началом рендера мира и пост-эффектов
-	virtual void AfterWorldRender();  //--#SM+#-- +SecondVP+ Вызывается после рендера мира и перед UI
+	virtual void BeforeWorldRender(); //--#SM+#-- +SecondVP+ Р’С‹Р·С‹РІР°РµС‚СЃСЏ РїРµСЂРµРґ РЅР°С‡Р°Р»РѕРј СЂРµРЅРґРµСЂР° РјРёСЂР° Рё РїРѕСЃС‚-СЌС„С„РµРєС‚РѕРІ
+	virtual void AfterWorldRender();  //--#SM+#-- +SecondVP+ Р’С‹Р·С‹РІР°РµС‚СЃСЏ РїРѕСЃР»Рµ СЂРµРЅРґРµСЂР° РјРёСЂР° Рё РїРµСЂРµРґ UI
 
 	// Render mode
 	virtual void					rmNear						();

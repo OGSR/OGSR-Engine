@@ -438,7 +438,7 @@ bool CLocatorAPI::Recurse		(const char* path)
 		strcpy_s(full_path,sizeof(full_path), path);
 		strcat(full_path, sFile.name);
 
-		// загоняем в вектор для того *.db* приходили в сортированном порядке
+		// Р·Р°РіРѕРЅСЏРµРј РІ РІРµРєС‚РѕСЂ РґР»СЏ С‚РѕРіРѕ *.db* РїСЂРёС…РѕРґРёР»Рё РІ СЃРѕСЂС‚РёСЂРѕРІР°РЅРЅРѕРј РїРѕСЂСЏРґРєРµ
 		if(!ignore_name(sFile.name) && !ignore_path(full_path))
 			rec_files.push_back(sFile);
 
@@ -452,7 +452,7 @@ bool CLocatorAPI::Recurse		(const char* path)
 	}
 	else
 	{
-		// загоняем в вектор для того *.db* приходили в сортированном порядке
+		// Р·Р°РіРѕРЅСЏРµРј РІ РІРµРєС‚РѕСЂ РґР»СЏ С‚РѕРіРѕ *.db* РїСЂРёС…РѕРґРёР»Рё РІ СЃРѕСЂС‚РёСЂРѕРІР°РЅРЅРѕРј РїРѕСЂСЏРґРєРµ
 		if(!ignore_name(sFile.name))
 			rec_files.push_back(sFile);
 
@@ -726,7 +726,7 @@ xr_vector<char*>* CLocatorAPI::file_list_open			(const char* _path, u32 flags)
 {
 	R_ASSERT		(_path);
 	VERIFY			(flags);
-	// проверить нужно ли пересканировать пути
+	// РїСЂРѕРІРµСЂРёС‚СЊ РЅСѓР¶РЅРѕ Р»Рё РїРµСЂРµСЃРєР°РЅРёСЂРѕРІР°С‚СЊ РїСѓС‚Рё
 	check_pathes	();
 
 	string_path		N;
@@ -785,7 +785,7 @@ int CLocatorAPI::file_list(FS_FileSet& dest, LPCSTR path, u32 flags, LPCSTR mask
 {
 	R_ASSERT		(path);
 	VERIFY			(flags);
-	// проверить нужно ли пересканировать пути
+	// РїСЂРѕРІРµСЂРёС‚СЊ РЅСѓР¶РЅРѕ Р»Рё РїРµСЂРµСЃРєР°РЅРёСЂРѕРІР°С‚СЊ РїСѓС‚Рё
     check_pathes	();
                
 	string_path		N;
@@ -904,7 +904,7 @@ void CLocatorAPI::check_cached_files	(LPSTR fname, const file &desc, LPCSTR &sou
 	// Use
 	source_name		= &fname_copy[0];
 	strcpy_s		(fname_copy,sizeof(fname_copy),fname);
-	strcpy_s		(fname,sizeof(fname),fname_in_cache); //Это бред какой-то. Но функция никогда не вызывается по сути. //-V579
+	strcpy_s		(fname,sizeof(fname),fname_in_cache); //Р­С‚Рѕ Р±СЂРµРґ РєР°РєРѕР№-С‚Рѕ. РќРѕ С„СѓРЅРєС†РёСЏ РЅРёРєРѕРіРґР° РЅРµ РІС‹Р·С‹РІР°РµС‚СЃСЏ РїРѕ СЃСѓС‚Рё. //-V579
 }
 
 void CLocatorAPI::file_from_cache_impl	(IReader *&R, LPSTR fname, const file &desc)
@@ -1082,7 +1082,7 @@ void CLocatorAPI::copy_file_to_build	(T *&r, LPCSTR source_name)
 
 bool CLocatorAPI::check_for_file	(LPCSTR path, LPCSTR _fname, string_path& fname, const file *&desc)
 {
-	// проверить нужно ли пересканировать пути
+	// РїСЂРѕРІРµСЂРёС‚СЊ РЅСѓР¶РЅРѕ Р»Рё РїРµСЂРµСЃРєР°РЅРёСЂРѕРІР°С‚СЊ РїСѓС‚Рё
     check_pathes			();
 
 	// correct path
@@ -1198,7 +1198,7 @@ void	CLocatorAPI::w_close(IWriter* &S)
 
 CLocatorAPI::files_it CLocatorAPI::file_find_it(LPCSTR fname)
 {
-	// проверить нужно ли пересканировать пути
+	// РїСЂРѕРІРµСЂРёС‚СЊ РЅСѓР¶РЅРѕ Р»Рё РїРµСЂРµСЃРєР°РЅРёСЂРѕРІР°С‚СЊ РїСѓС‚Рё
     check_pathes	();
 
 	file			desc_f;
@@ -1353,7 +1353,7 @@ void CLocatorAPI::update_path(xr_string& dest, LPCSTR initial, LPCSTR src)
 
 u32 CLocatorAPI::get_file_age(LPCSTR nm)
 {
-	// проверить нужно ли пересканировать пути
+	// РїСЂРѕРІРµСЂРёС‚СЊ РЅСѓР¶РЅРѕ Р»Рё РїРµСЂРµСЃРєР°РЅРёСЂРѕРІР°С‚СЊ РїСѓС‚Рё
     check_pathes	();
 
 	files_it I 		= file_find_it(nm);
@@ -1362,7 +1362,7 @@ u32 CLocatorAPI::get_file_age(LPCSTR nm)
 
 void CLocatorAPI::set_file_age(LPCSTR nm, u32 age)
 {
-	// проверить нужно ли пересканировать пути
+	// РїСЂРѕРІРµСЂРёС‚СЊ РЅСѓР¶РЅРѕ Р»Рё РїРµСЂРµСЃРєР°РЅРёСЂРѕРІР°С‚СЊ РїСѓС‚Рё
     check_pathes	();
 
     // set file

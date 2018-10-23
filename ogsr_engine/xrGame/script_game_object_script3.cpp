@@ -270,17 +270,17 @@ class_<CScriptGameObject> script_register_game_object2(class_<CScriptGameObject>
 		.def("critically_wounded",			&CScriptGameObject::critically_wounded)
 		
 		/************************************************** added by Ray Twitty (aka Shadows) START **************************************************/
-		// фонарь
-		/* alpet: с разрешение автора утащено в torch_script.cpp. Исходный вариант остался в ревизии 110 на xp-dev.com
+		// С„РѕРЅР°СЂСЊ
+		/* alpet: СЃ СЂР°Р·СЂРµС€РµРЅРёРµ Р°РІС‚РѕСЂР° СѓС‚Р°С‰РµРЅРѕ РІ torch_script.cpp. РСЃС…РѕРґРЅС‹Р№ РІР°СЂРёР°РЅС‚ РѕСЃС‚Р°Р»СЃСЏ РІ СЂРµРІРёР·РёРё 110 РЅР° xp-dev.com
 		.def("enable_torch",				&CScriptGameObject::EnableTorch)
 		.def("switch_torch",				&CScriptGameObject::SwitchTorch)
 		.def("torch_enabled",				&CScriptGameObject::TorchEnabled)
-		// ПНВ
+		// РџРќР’
 		.def("enable_night_vision",			&CScriptGameObject::EnableNightVision)
 		.def("switch_night_vision",			&CScriptGameObject::SwitchNightVision)
 		.def("night_vision_enabled",		&CScriptGameObject::NightVisionEnabled)
 		//*/
-		// инвентарь
+		// РёРЅРІРµРЅС‚Р°СЂСЊ
 		.def("get_actor_max_weight",			&CScriptGameObject::GetActorMaxWeight)
 		.def("set_actor_max_weight",			&CScriptGameObject::SetActorMaxWeight)
 		.def("get_actor_max_walk_weight",		&CScriptGameObject::GetActorMaxWalkWeight)
@@ -415,10 +415,10 @@ class_<CScriptGameObject> script_register_game_object2(class_<CScriptGameObject>
 		.def("zoom_mode", &CScriptGameObject::ZoomMode)
 		.def("reset_state", &CScriptGameObject::ResetState)
 
-			// для CEatableItem
+			// РґР»СЏ CEatableItem
 		.def("zero_effects",			&CScriptGameObject::ZeroEffects)
 		.def("set_radiation_influence", &CScriptGameObject::SetRadiationInfluence)
-			// для актора - иммунитеты
+			// РґР»СЏ Р°РєС‚РѕСЂР° - РёРјРјСѓРЅРёС‚РµС‚С‹
 		.def("set_additional_radiation_protection", &CScriptGameObject::SetDrugRadProtection)
 		.def("set_additional_telepatic_protection", &CScriptGameObject::SetDrugPsyProtection)
 

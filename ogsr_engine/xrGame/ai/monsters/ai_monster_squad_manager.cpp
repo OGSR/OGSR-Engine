@@ -26,7 +26,7 @@ void CMonsterSquadManager::register_member(u8 team_id, u8 squad_id, u8 group_id,
 {
 	CMonsterSquad *pSquad;
 
-	// íåò team - ñîçäàòü team, squad è group
+	// Ð½ÐµÑ‚ team - ÑÐ¾Ð·Ð´Ð°Ñ‚ÑŒ team, squad Ð¸ group
 	if (team_id >= team.size()) { 
 		team.resize							(team_id + 1);
 		team[team_id].resize				(squad_id + 1);
@@ -38,7 +38,7 @@ void CMonsterSquadManager::register_member(u8 team_id, u8 squad_id, u8 group_id,
 		pSquad								= xr_new<CMonsterSquad>();
 		team[team_id][squad_id][group_id]	= pSquad;
 
-	// åñòü team, íåò squad - ñîçäàòü squad
+	// ÐµÑÑ‚ÑŒ team, Ð½ÐµÑ‚ squad - ÑÐ¾Ð·Ð´Ð°Ñ‚ÑŒ squad
 	} else if (squad_id >= team[team_id].size()) { 
 		
 		team[team_id].resize				(squad_id + 1);
@@ -50,7 +50,7 @@ void CMonsterSquadManager::register_member(u8 team_id, u8 squad_id, u8 group_id,
 		pSquad								= xr_new<CMonsterSquad>();
 		team[team_id][squad_id][group_id]	= pSquad;
 
-	// åñòü team, squad, íåò group 
+	// ÐµÑÑ‚ÑŒ team, squad, Ð½ÐµÑ‚ group 
 	} else if (group_id >= team[team_id][squad_id].size()) { 
 		
 		u32 prev_size						= team[team_id][squad_id].size();

@@ -1086,7 +1086,7 @@ struct STraceBorderQParams
 	{
 		m_movement=movement		;
 	}
-	STraceBorderQParams& operator = (STraceBorderQParams& p) {VERIFY(FALSE);return p;} //Ýòà ôóíêöèÿ â äåáàãå äîëæíà âûëåòàòü ÷òî-ëè? //-V790
+	STraceBorderQParams& operator = (STraceBorderQParams& p) {VERIFY(FALSE);return p;} //Ð­Ñ‚Ð° Ñ„ÑƒÐ½ÐºÑ†Ð¸Ñ Ð² Ð´ÐµÐ±Ð°Ð³Ðµ Ð´Ð¾Ð»Ð¶Ð½Ð° Ð²Ñ‹Ð»ÐµÑ‚Ð°Ñ‚ÑŒ Ñ‡Ñ‚Ð¾-Ð»Ð¸? //-V790
 };
 
 BOOL CPHMovementControl::BorderTraceCallback(collide::rq_result& result, LPVOID params)
@@ -1097,7 +1097,7 @@ BOOL CPHMovementControl::BorderTraceCallback(collide::rq_result& result, LPVOID 
 	if(result.O){
 		return true;
 	}else{
-		//ïîëó÷èòü òðåóãîëüíèê è óçíàòü åãî ìàòåðèàë
+		//Ð¿Ð¾Ð»ÑƒÑ‡Ð¸Ñ‚ÑŒ Ñ‚Ñ€ÐµÑƒÐ³Ð¾Ð»ÑŒÐ½Ð¸Ðº Ð¸ ÑƒÐ·Ð½Ð°Ñ‚ÑŒ ÐµÐ³Ð¾ Ð¼Ð°Ñ‚ÐµÑ€Ð¸Ð°Ð»
 		T				= Level().ObjectSpace.GetStaticTris()+result.element;
 		mtl_idx			= T->material;
 	}

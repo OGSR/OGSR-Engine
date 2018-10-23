@@ -24,29 +24,29 @@ class CUIPdaWnd: public CUIDialogWnd
 private:
 	typedef CUIDialogWnd	inherited;
 protected:
-	//элементы декоративного интерфейса
+	//СЌР»РµРјРµРЅС‚С‹ РґРµРєРѕСЂР°С‚РёРІРЅРѕРіРѕ РёРЅС‚РµСЂС„РµР№СЃР°
 	CUIFrameLineWnd*		UIMainButtonsBackground;
 	CUIFrameLineWnd*		UITimerBackground;
 
-	// кнопки PDA
+	// РєРЅРѕРїРєРё PDA
 	CUITabControl*			UITabControl;
 
-	// Установить игровое время
+	// РЈСЃС‚Р°РЅРѕРІРёС‚СЊ РёРіСЂРѕРІРѕРµ РІСЂРµРјСЏ
 	void					UpdateDateTime					();
 	void					DrawUpdatedSections				();
 protected:
-	// Бэкграунд
+	// Р‘СЌРєРіСЂР°СѓРЅРґ
 	CUIStatic*				UIMainPdaFrame;
 	CUIStatic*				m_updatedSectionImage;
 	CUIStatic*				m_oldSectionImage;
 
-	// Текущий активный диалог
+	// РўРµРєСѓС‰РёР№ Р°РєС‚РёРІРЅС‹Р№ РґРёР°Р»РѕРі
 	CUIWindow*				m_pActiveDialog;
 	xr_vector<Fvector2>		m_sign_places_main;
 
 public:
 	EPdaTabs				m_pActiveSection;
-	// Поддиалоги PDA
+	// РџРѕРґРґРёР°Р»РѕРіРё PDA
 	CUIMapWnd*				UIMapWnd;
 	CUIPdaContactsWnd*		UIPdaContactsWnd;
 	CUIEncyclopediaWnd*		UIEncyclopediaWnd;

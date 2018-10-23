@@ -314,9 +314,9 @@ void CWeapon::Load		(LPCSTR section)
 	iMagazineSize		= pSettings->r_s32		(section,"ammo_mag_size"	);
 	
 	////////////////////////////////////////////////////
-	// дисперсия стрельбы
+	// РґРёСЃРїРµСЂСЃРёСЏ СЃС‚СЂРµР»СЊР±С‹
 
-	//подбрасывание камеры во время отдачи
+	//РїРѕРґР±СЂР°СЃС‹РІР°РЅРёРµ РєР°РјРµСЂС‹ РІРѕ РІСЂРµРјСЏ РѕС‚РґР°С‡Рё
 	camMaxAngle			= pSettings->r_float		(section,"cam_max_angle"	); 
 	camMaxAngle			= deg2rad					(camMaxAngle);
 	camRelaxSpeed		= pSettings->r_float		(section,"cam_relax_speed"	); 
@@ -370,7 +370,7 @@ void CWeapon::Load		(LPCSTR section)
 	m_fMaxRadius		= pSettings->r_float		(section,"max_radius");
 
 
-	// информация о возможных апгрейдах и их визуализации в инвентаре
+	// РёРЅС„РѕСЂРјР°С†РёСЏ Рѕ РІРѕР·РјРѕР¶РЅС‹С… Р°РїРіСЂРµР№РґР°С… Рё РёС… РІРёР·СѓР°Р»РёР·Р°С†РёРё РІ РёРЅРІРµРЅС‚Р°СЂРµ
 	m_eScopeStatus			 = (ALife::EWeaponAddonStatus)pSettings->r_s32(section,"scope_status");
 	m_eSilencerStatus		 = (ALife::EWeaponAddonStatus)pSettings->r_s32(section,"silencer_status");
 	m_eGrenadeLauncherStatus = (ALife::EWeaponAddonStatus)pSettings->r_s32(section,"grenade_launcher_status");
@@ -421,13 +421,13 @@ void CWeapon::Load		(LPCSTR section)
 	else
 		m_sWpn_launcher_bone = wpn_launcher_def_bone;
 
-    m_fSecondVP_FovFactor = 0.0f; //Можно и из конфига прицела читать и наоборот! Пока так.
+    m_fSecondVP_FovFactor = 0.0f; //РњРѕР¶РЅРѕ Рё РёР· РєРѕРЅС„РёРіР° РїСЂРёС†РµР»Р° С‡РёС‚Р°С‚СЊ Рё РЅР°РѕР±РѕСЂРѕС‚! РџРѕРєР° С‚Р°Рє.
 	m_fScopeInertionFactor = m_fControlInertionFactor;
 
 	InitAddons();
 
 	//////////////////////////////////////
-	//время убирания оружия с уровня
+	//РІСЂРµРјСЏ СѓР±РёСЂР°РЅРёСЏ РѕСЂСѓР¶РёСЏ СЃ СѓСЂРѕРІРЅСЏ
 	if(pSettings->line_exist(section,"weapon_remove_time"))
 		m_dwWeaponRemoveTime = pSettings->r_u32(section,"weapon_remove_time");
 	else
@@ -489,12 +489,12 @@ void CWeapon::LoadZoomOffset(LPCSTR section, LPCSTR prefix)
 {
 	string256 full_name;
 	if (Core.Features.test(xrCore::Feature::ogse_wpn_zoom_system)
-		&& is_second_zoom_offset_enabled //Если включен режим второго прицеливания
-		&& !READ_IF_EXISTS(pSettings, r_bool, *cNameSect(), "disable_second_scope", false) //И второй прицел не запрещён (нужно для поддержки замороченной системы ogse_addons)
-		&& pSettings->line_exist(hud_sect, strconcat(sizeof(full_name), full_name, "second_", prefix, "zoom_offset")) //И в секциии худа есть настройки для второго режима прицеливания
+		&& is_second_zoom_offset_enabled //Р•СЃР»Рё РІРєР»СЋС‡РµРЅ СЂРµР¶РёРј РІС‚РѕСЂРѕРіРѕ РїСЂРёС†РµР»РёРІР°РЅРёСЏ
+		&& !READ_IF_EXISTS(pSettings, r_bool, *cNameSect(), "disable_second_scope", false) //Р РІС‚РѕСЂРѕР№ РїСЂРёС†РµР» РЅРµ Р·Р°РїСЂРµС‰С‘РЅ (РЅСѓР¶РЅРѕ РґР»СЏ РїРѕРґРґРµСЂР¶РєРё Р·Р°РјРѕСЂРѕС‡РµРЅРЅРѕР№ СЃРёСЃС‚РµРјС‹ ogse_addons)
+		&& pSettings->line_exist(hud_sect, strconcat(sizeof(full_name), full_name, "second_", prefix, "zoom_offset")) //Р РІ СЃРµРєС†РёРёРё С…СѓРґР° РµСЃС‚СЊ РЅР°СЃС‚СЂРѕР№РєРё РґР»СЏ РІС‚РѕСЂРѕРіРѕ СЂРµР¶РёРјР° РїСЂРёС†РµР»РёРІР°РЅРёСЏ
 		&& pSettings->line_exist(hud_sect, strconcat(sizeof(full_name), full_name, "second_", prefix, "zoom_rotate_x"))
 		&& pSettings->line_exist(hud_sect, strconcat(sizeof(full_name), full_name, "second_", prefix, "zoom_rotate_y"))
-	) { //Используем настройки для второго режима прицеливания
+	) { //РСЃРїРѕР»СЊР·СѓРµРј РЅР°СЃС‚СЂРѕР№РєРё РґР»СЏ РІС‚РѕСЂРѕРіРѕ СЂРµР¶РёРјР° РїСЂРёС†РµР»РёРІР°РЅРёСЏ
 		m_pHUD->SetZoomOffset(pSettings->r_fvector3(hud_sect, strconcat(sizeof(full_name), full_name, "second_", prefix, "zoom_offset")));
 		m_pHUD->SetZoomRotateX(pSettings->r_float(hud_sect,   strconcat(sizeof(full_name), full_name, "second_", prefix, "zoom_rotate_x")));
 		m_pHUD->SetZoomRotateY(pSettings->r_float(hud_sect,   strconcat(sizeof(full_name), full_name, "second_", prefix, "zoom_rotate_y")));
@@ -502,7 +502,7 @@ void CWeapon::LoadZoomOffset(LPCSTR section, LPCSTR prefix)
 		is_second_zoom_offset_enabled = true;
 		//Msg("--Second scope enabled!");
 	}
-	else //В противном случае используем стандартные настройки
+	else //Р’ РїСЂРѕС‚РёРІРЅРѕРј СЃР»СѓС‡Р°Рµ РёСЃРїРѕР»СЊР·СѓРµРј СЃС‚Р°РЅРґР°СЂС‚РЅС‹Рµ РЅР°СЃС‚СЂРѕР№РєРё
 	{
 		m_pHUD->SetZoomOffset(pSettings->r_fvector3(hud_sect, strconcat(sizeof(full_name), full_name, prefix, "zoom_offset")));
 		m_pHUD->SetZoomRotateX(pSettings->r_float(hud_sect,   strconcat(sizeof(full_name), full_name, prefix, "zoom_rotate_x")));
@@ -511,7 +511,7 @@ void CWeapon::LoadZoomOffset(LPCSTR section, LPCSTR prefix)
 		is_second_zoom_offset_enabled = false;
 		//Msg("~~Second scope disabled!");
 	}
-	//Зум фактор обновлять здесь необходимо. second_soom_factor поддерживается.
+	//Р—СѓРј С„Р°РєС‚РѕСЂ РѕР±РЅРѕРІР»СЏС‚СЊ Р·РґРµСЃСЊ РЅРµРѕР±С…РѕРґРёРјРѕ. second_soom_factor РїРѕРґРґРµСЂР¶РёРІР°РµС‚СЃСЏ.
 	auto wpn_w_gl = smart_cast<CWeaponMagazinedWGrenade*>(this);
 	if (wpn_w_gl)
 		m_fZoomFactor = wpn_w_gl->CurrentZoomFactor();
@@ -521,10 +521,10 @@ void CWeapon::LoadZoomOffset(LPCSTR section, LPCSTR prefix)
 	if(pSettings->line_exist(hud_sect, "zoom_rotate_time"))
 		m_fZoomRotateTime = pSettings->r_float(hud_sect,"zoom_rotate_time");
 
-	callback(GameObject::eOnSecondScopeSwitch)(is_second_zoom_offset_enabled); //Для нормальной поддержки скриптовых оружейных наворотов ОГСЕ
+	callback(GameObject::eOnSecondScopeSwitch)(is_second_zoom_offset_enabled); //Р”Р»СЏ РЅРѕСЂРјР°Р»СЊРЅРѕР№ РїРѕРґРґРµСЂР¶РєРё СЃРєСЂРёРїС‚РѕРІС‹С… РѕСЂСѓР¶РµР№РЅС‹С… РЅР°РІРѕСЂРѕС‚РѕРІ РћР“РЎР•
 }
 
-void CWeapon::UpdateZoomOffset() //Собрал все манипуляции с зум оффсетом сюда, чтоб были в одном месте.
+void CWeapon::UpdateZoomOffset() //РЎРѕР±СЂР°Р» РІСЃРµ РјР°РЅРёРїСѓР»СЏС†РёРё СЃ Р·СѓРј РѕС„С„СЃРµС‚РѕРј СЃСЋРґР°, С‡С‚РѕР± Р±С‹Р»Рё РІ РѕРґРЅРѕРј РјРµСЃС‚Рµ.
 {
 	if (m_bZoomEnabled && m_pHUD) {
 		auto wpn_w_gl = smart_cast<CWeaponMagazinedWGrenade*>(this);
@@ -589,7 +589,7 @@ void CWeapon::net_Destroy	()
 {
 	inherited::net_Destroy	();
 
-	//удалить объекты партиклов
+	//СѓРґР°Р»РёС‚СЊ РѕР±СЉРµРєС‚С‹ РїР°СЂС‚РёРєР»РѕРІ
 	StopFlameParticles	();
 	StopFlameParticles2	();
 	StopLight			();
@@ -751,7 +751,7 @@ void CWeapon::OnH_B_Independent	(bool just_before_destroy)
 	if (m_pHUD)
 		m_pHUD->Hide			();
 
-	//завершить принудительно все процессы что шли
+	//Р·Р°РІРµСЂС€РёС‚СЊ РїСЂРёРЅСѓРґРёС‚РµР»СЊРЅРѕ РІСЃРµ РїСЂРѕС†РµСЃСЃС‹ С‡С‚Рѕ С€Р»Рё
 	FireEnd();
 	m_bPending = false;
 	SwitchState(eIdle);
@@ -781,7 +781,7 @@ void CWeapon::OnH_A_Chield		()
 void CWeapon::OnActiveItem ()
 {
 	inherited::OnActiveItem		();
-	//если мы занружаемся и оружие было в руках
+	//РµСЃР»Рё РјС‹ Р·Р°РЅСЂСѓР¶Р°РµРјСЃСЏ Рё РѕСЂСѓР¶РёРµ Р±С‹Р»Рѕ РІ СЂСѓРєР°С…
 	SetState					(eIdle);
 	SetNextState				(eIdle);
 	if (m_pHUD) m_pHUD->Show	();
@@ -806,45 +806,45 @@ void CWeapon::OnH_B_Chield		()
 	m_set_next_ammoType_on_reload	= u32(-1);
 }
 
-static float state_time = 0;				// таймер нахождения оружия в текущем состоянии
-static float state_time_heat = 0;			// таймер нагрева оружия
-static float previous_heating = 0;		// "нагретость" оружия в предыдущем состоянии
+static float state_time = 0;				// С‚Р°Р№РјРµСЂ РЅР°С…РѕР¶РґРµРЅРёСЏ РѕСЂСѓР¶РёСЏ РІ С‚РµРєСѓС‰РµРј СЃРѕСЃС‚РѕСЏРЅРёРё
+static float state_time_heat = 0;			// С‚Р°Р№РјРµСЂ РЅР°РіСЂРµРІР° РѕСЂСѓР¶РёСЏ
+static float previous_heating = 0;		// "РЅР°РіСЂРµС‚РѕСЃС‚СЊ" РѕСЂСѓР¶РёСЏ РІ РїСЂРµРґС‹РґСѓС‰РµРј СЃРѕСЃС‚РѕСЏРЅРёРё
 
 #include "WeaponBinoculars.h"
 void CWeapon::UpdateWeaponParams()
 {
-#pragma todo("KD: переделать к чертовой матери этот тихий ужас")
+#pragma todo("KD: РїРµСЂРµРґРµР»Р°С‚СЊ Рє С‡РµСЂС‚РѕРІРѕР№ РјР°С‚РµСЂРё СЌС‚РѕС‚ С‚РёС…РёР№ СѓР¶Р°СЃ")
 	if (!IsHidden()) {
-		w_states.x = m_fZoomRotationFactor;			//x = zoom mode, y - текущее состояние, z - старое состояние
+		w_states.x = m_fZoomRotationFactor;			//x = zoom mode, y - С‚РµРєСѓС‰РµРµ СЃРѕСЃС‚РѕСЏРЅРёРµ, z - СЃС‚Р°СЂРѕРµ СЃРѕСЃС‚РѕСЏРЅРёРµ
 		if ( psActorFlags.test( AF_DOF_SCOPE ) && !( IsZoomed() && !IsRotatingToZoom() && ZoomTexture() ) )
 		  w_states.x = 0.f;
-		if (w_states.y != GetState())	// первый апдейт или стейт изменился
+		if (w_states.y != GetState())	// РїРµСЂРІС‹Р№ Р°РїРґРµР№С‚ РёР»Рё СЃС‚РµР№С‚ РёР·РјРµРЅРёР»СЃСЏ
 		{
-			w_states.z = w_states.y;						// записываем старое состояние
-			state_time_heat = state_time = Device.fTimeGlobal;	// инитим счетчики времени
-			previous_heating = w_timers.z;				// сохраняем "нагретость" оружия
-			w_timers.y = w_timers.x;						// записываем время нахождения в предыдущем состоянии
-			w_states.y = (float)GetState();				// обновляем состояние
+			w_states.z = w_states.y;						// Р·Р°РїРёСЃС‹РІР°РµРј СЃС‚Р°СЂРѕРµ СЃРѕСЃС‚РѕСЏРЅРёРµ
+			state_time_heat = state_time = Device.fTimeGlobal;	// РёРЅРёС‚РёРј СЃС‡РµС‚С‡РёРєРё РІСЂРµРјРµРЅРё
+			previous_heating = w_timers.z;				// СЃРѕС…СЂР°РЅСЏРµРј "РЅР°РіСЂРµС‚РѕСЃС‚СЊ" РѕСЂСѓР¶РёСЏ
+			w_timers.y = w_timers.x;						// Р·Р°РїРёСЃС‹РІР°РµРј РІСЂРµРјСЏ РЅР°С…РѕР¶РґРµРЅРёСЏ РІ РїСЂРµРґС‹РґСѓС‰РµРј СЃРѕСЃС‚РѕСЏРЅРёРё
+			w_states.y = (float)GetState();				// РѕР±РЅРѕРІР»СЏРµРј СЃРѕСЃС‚РѕСЏРЅРёРµ
 		}
-		// флаг бинокля в руках (в этом режиме не нужно размытие)
+		// С„Р»Р°Рі Р±РёРЅРѕРєР»СЏ РІ СЂСѓРєР°С… (РІ СЌС‚РѕРј СЂРµР¶РёРјРµ РЅРµ РЅСѓР¶РЅРѕ СЂР°Р·РјС‹С‚РёРµ)
 		auto bino = smart_cast<CWeaponBinoculars*>(this);
 		if (clsid() == CLSID_OBJECT_W_BINOCULAR || bino)
 			w_states.w = 0;
 		else
 			w_states.w = 1;
-		if ((w_states.y == eFire) || (w_states.y == eFire2))	//стреляем, значит оружие греется
+		if ((w_states.y == eFire) || (w_states.y == eFire2))	//СЃС‚СЂРµР»СЏРµРј, Р·РЅР°С‡РёС‚ РѕСЂСѓР¶РёРµ РіСЂРµРµС‚СЃСЏ
 		{
 			w_timers.z = Device.fTimeGlobal - state_time_heat + previous_heating;
 		}
-		else		// не стреляем - оружие охлаждается
+		else		// РЅРµ СЃС‚СЂРµР»СЏРµРј - РѕСЂСѓР¶РёРµ РѕС…Р»Р°Р¶РґР°РµС‚СЃСЏ
 		{
-			if (w_timers.z > EPS)		// оружие все еще нагрето
+			if (w_timers.z > EPS)		// РѕСЂСѓР¶РёРµ РІСЃРµ РµС‰Рµ РЅР°РіСЂРµС‚Рѕ
 			{
 				float tm = state_time_heat + previous_heating - Device.fTimeGlobal;
 				w_timers.z = (tm<EPS) ? 0.f : tm;
 			}
 		}
-		w_timers.x = Device.fTimeGlobal - state_time;		// обновляем таймер текущего состояния
+		w_timers.x = Device.fTimeGlobal - state_time;		// РѕР±РЅРѕРІР»СЏРµРј С‚Р°Р№РјРµСЂ С‚РµРєСѓС‰РµРіРѕ СЃРѕСЃС‚РѕСЏРЅРёСЏ
 		::Render->set_thermovision_data(&w_timers, &w_states);
 	}
 }
@@ -870,13 +870,13 @@ void CWeapon::UpdateCL		()
 {
 	inherited::UpdateCL		();
 	UpdateHUDAddonsVisibility();
-	//подсветка от выстрела
+	//РїРѕРґСЃРІРµС‚РєР° РѕС‚ РІС‹СЃС‚СЂРµР»Р°
 	UpdateLight				();
 
 	if (ParentIsActor())
-		UpdateWeaponParams();	// параметры для рендера оружия в режиме тепловидения
+		UpdateWeaponParams();	// РїР°СЂР°РјРµС‚СЂС‹ РґР»СЏ СЂРµРЅРґРµСЂР° РѕСЂСѓР¶РёСЏ РІ СЂРµР¶РёРјРµ С‚РµРїР»РѕРІРёРґРµРЅРёСЏ
 
-	//нарисовать партиклы
+	//РЅР°СЂРёСЃРѕРІР°С‚СЊ РїР°СЂС‚РёРєР»С‹
 	UpdateFlameParticles	();
 	UpdateFlameParticles2	();
 	
@@ -896,16 +896,16 @@ void CWeapon::UpdateCL		()
 
 void CWeapon::renderable_Render		()
 {
-	//KRodin: чтоб ствол в руках актора не был виден внутри 3D прицела.
+	//KRodin: С‡С‚РѕР± СЃС‚РІРѕР» РІ СЂСѓРєР°С… Р°РєС‚РѕСЂР° РЅРµ Р±С‹Р» РІРёРґРµРЅ РІРЅСѓС‚СЂРё 3D РїСЂРёС†РµР»Р°.
 	if (Device.m_SecondViewport.IsSVPFrame() && this->m_fZoomRotationFactor > 0.05f)
 		return;
 
 	UpdateXForm				();
 
-	//нарисовать подсветку
+	//РЅР°СЂРёСЃРѕРІР°С‚СЊ РїРѕРґСЃРІРµС‚РєСѓ
 	RenderLight				();	
 
-	//если мы в режиме снайперки, то сам HUD рисовать не надо
+	//РµСЃР»Рё РјС‹ РІ СЂРµР¶РёРјРµ СЃРЅР°Р№РїРµСЂРєРё, С‚Рѕ СЃР°Рј HUD СЂРёСЃРѕРІР°С‚СЊ РЅРµ РЅР°РґРѕ
 	if(IsZoomed() && !IsRotatingToZoom() && ZoomTexture())
 		m_bRenderHud = false;
 	else
@@ -949,7 +949,7 @@ bool CWeapon::Action(s32 cmd, u32 flags)
 	{
 		case kWPN_FIRE: 
 			{
-				//если оружие чем-то занято, то ничего не делать
+				//РµСЃР»Рё РѕСЂСѓР¶РёРµ С‡РµРј-С‚Рѕ Р·Р°РЅСЏС‚Рѕ, С‚Рѕ РЅРёС‡РµРіРѕ РЅРµ РґРµР»Р°С‚СЊ
 				{				
 					if(flags&CMD_START) 
 					{
@@ -1023,7 +1023,7 @@ bool CWeapon::Action(s32 cmd, u32 flags)
 			else
 				return false;
 		}
-		case kSWITCH_SCOPE: //KRodin: заюзаем эту кнопку, один хрен она только в мультиплеере нужна, а он вырезан.
+		case kSWITCH_SCOPE: //KRodin: Р·Р°СЋР·Р°РµРј СЌС‚Сѓ РєРЅРѕРїРєСѓ, РѕРґРёРЅ С…СЂРµРЅ РѕРЅР° С‚РѕР»СЊРєРѕ РІ РјСѓР»СЊС‚РёРїР»РµРµСЂРµ РЅСѓР¶РЅР°, Р° РѕРЅ РІС‹СЂРµР·Р°РЅ.
 		{
 			if (flags&CMD_START)
 			{
@@ -1138,7 +1138,7 @@ int CWeapon::GetAmmoCurrent(bool use_item_to_spawn) const
 	int l_count = iAmmoElapsed;
 	if(!m_pCurrentInventory) return l_count;
 
-	//чтоб не делать лишних пересчетов
+	//С‡С‚РѕР± РЅРµ РґРµР»Р°С‚СЊ Р»РёС€РЅРёС… РїРµСЂРµСЃС‡РµС‚РѕРІ
 	if(m_pCurrentInventory->ModifyFrame()<=m_dwAmmoCurrentCalcFrame)
 		return l_count + iAmmoCurrent;
 
@@ -1893,8 +1893,8 @@ void CWeapon::StateSwitchCallback(GameObject::ECallbackType actor_type, GameObje
 	}
 }
 
-// Обновление необходимости включения второго вьюпорта +SecondVP+
-// Вызывается только для активного оружия игрока
+// РћР±РЅРѕРІР»РµРЅРёРµ РЅРµРѕР±С…РѕРґРёРјРѕСЃС‚Рё РІРєР»СЋС‡РµРЅРёСЏ РІС‚РѕСЂРѕРіРѕ РІСЊСЋРїРѕСЂС‚Р° +SecondVP+
+// Р’С‹Р·С‹РІР°РµС‚СЃСЏ С‚РѕР»СЊРєРѕ РґР»СЏ Р°РєС‚РёРІРЅРѕРіРѕ РѕСЂСѓР¶РёСЏ РёРіСЂРѕРєР°
 void CWeapon::UpdateSecondVP()
 {
 	// + CActor::UpdateCL();
@@ -1911,19 +1911,19 @@ void CWeapon::UpdateSecondVP()
 	CInventoryOwner* inv_owner = EA->cast_inventory_owner();
 
 	bool b_is_active_item = inv_owner && (inv_owner->m_inventory->ActiveItem() == this);
-	R_ASSERT(b_is_active_item); // Эта функция должна вызываться только для оружия в руках нашего игрока
+	R_ASSERT(b_is_active_item); // Р­С‚Р° С„СѓРЅРєС†РёСЏ РґРѕР»Р¶РЅР° РІС‹Р·С‹РІР°С‚СЊСЃСЏ С‚РѕР»СЊРєРѕ РґР»СЏ РѕСЂСѓР¶РёСЏ РІ СЂСѓРєР°С… РЅР°С€РµРіРѕ РёРіСЂРѕРєР°
 
-	bool bCond_1 = m_fZoomRotationFactor > 0.05f;    // Мы должны целиться
-	bool bCond_2 = m_fSecondVP_FovFactor > 0.0f;     // В конфиге должен быть прописан фактор зума (scope_lense_fov_factor) больше чем 0
-	bool bCond_3 = pActor->cam_Active() == pActor->cam_FirstEye(); // Мы должны быть от 1-го лица
+	bool bCond_1 = m_fZoomRotationFactor > 0.05f;    // РњС‹ РґРѕР»Р¶РЅС‹ С†РµР»РёС‚СЊСЃСЏ
+	bool bCond_2 = m_fSecondVP_FovFactor > 0.0f;     // Р’ РєРѕРЅС„РёРіРµ РґРѕР»Р¶РµРЅ Р±С‹С‚СЊ РїСЂРѕРїРёСЃР°РЅ С„Р°РєС‚РѕСЂ Р·СѓРјР° (scope_lense_fov_factor) Р±РѕР»СЊС€Рµ С‡РµРј 0
+	bool bCond_3 = pActor->cam_Active() == pActor->cam_FirstEye(); // РњС‹ РґРѕР»Р¶РЅС‹ Р±С‹С‚СЊ РѕС‚ 1-РіРѕ Р»РёС†Р°
 	auto wpn_w_gl = smart_cast<CWeaponMagazinedWGrenade*>(this);
-	bool bCond_4 = ( !wpn_w_gl || !wpn_w_gl->m_bGrenadeMode );     // Мы не должны быть в режиме подствольника
-	bool bCond_5 = !is_second_zoom_offset_enabled; // Мы не должны быть в режиме второго прицеливания.
+	bool bCond_4 = ( !wpn_w_gl || !wpn_w_gl->m_bGrenadeMode );     // РњС‹ РЅРµ РґРѕР»Р¶РЅС‹ Р±С‹С‚СЊ РІ СЂРµР¶РёРјРµ РїРѕРґСЃС‚РІРѕР»СЊРЅРёРєР°
+	bool bCond_5 = !is_second_zoom_offset_enabled; // РњС‹ РЅРµ РґРѕР»Р¶РЅС‹ Р±С‹С‚СЊ РІ СЂРµР¶РёРјРµ РІС‚РѕСЂРѕРіРѕ РїСЂРёС†РµР»РёРІР°РЅРёСЏ.
 
 	Device.m_SecondViewport.SetSVPActive(bCond_1 && bCond_2 && bCond_3 && bCond_4 && bCond_5);
 }
 
-// Чувствительность мышкии с оружием в руках во время прицеливания
+// Р§СѓРІСЃС‚РІРёС‚РµР»СЊРЅРѕСЃС‚СЊ РјС‹С€РєРёРё СЃ РѕСЂСѓР¶РёРµРј РІ СЂСѓРєР°С… РІРѕ РІСЂРµРјСЏ РїСЂРёС†РµР»РёРІР°РЅРёСЏ
 float CWeapon::GetControlInertionFactor() const
 {
 	if (IsScopeAttached() && IsZoomed())

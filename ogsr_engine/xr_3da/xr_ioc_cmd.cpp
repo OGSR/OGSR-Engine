@@ -386,7 +386,7 @@ public:
 ENGINE_API BOOL r2_sun_static = FALSE;
 
 //-----------------------------------------------------------------------
-class CCC_r2 : public CCC_Token //Оставлено для совместимости, и только.
+class CCC_r2 : public CCC_Token //РћСЃС‚Р°РІР»РµРЅРѕ РґР»СЏ СЃРѕРІРјРµСЃС‚РёРјРѕСЃС‚Рё, Рё С‚РѕР»СЊРєРѕ.
 {
 	u32 renderer_value;
 public:
@@ -490,7 +490,7 @@ void CCC_Register()
 	CMD1(CCC_SND_Restart,"snd_restart"			);
 	CMD3(CCC_Mask,		"snd_acceleration",		&psSoundFlags,		ss_Hardware	);
 	CMD3(CCC_Mask,		"snd_efx",				&psSoundFlags,		ss_EAX		);
-	CMD4(CCC_Integer, "snd_targets", &psSoundTargets, 32, 1024); //--#SM+#-- Максимальный лимит одновременно играющихы звуков. Оригинал: 4 - 32. + SoundRender_Core.cpp
+	CMD4(CCC_Integer, "snd_targets", &psSoundTargets, 32, 1024); //--#SM+#-- РњР°РєСЃРёРјР°Р»СЊРЅС‹Р№ Р»РёРјРёС‚ РѕРґРЅРѕРІСЂРµРјРµРЅРЅРѕ РёРіСЂР°СЋС‰РёС…С‹ Р·РІСѓРєРѕРІ. РћСЂРёРіРёРЅР°Р»: 4 - 32. + SoundRender_Core.cpp
 	CMD4(CCC_Integer,	"snd_cache_size",		&psSoundCacheSizeMB,4,32		);
 
 #ifdef DEBUG

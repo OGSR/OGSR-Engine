@@ -426,7 +426,7 @@ void CEnvironment::calculate_dynamic_sun_dir()
 }
 
 
-// KD: временая штука для скриптовой погоды
+// KD: РІСЂРµРјРµРЅР°СЏ С€С‚СѓРєР° РґР»СЏ СЃРєСЂРёРїС‚РѕРІРѕР№ РїРѕРіРѕРґС‹
 void CEnvironment::ForceReselectEnvs() {
   CEnvDescriptor** current_env_desc0 = &( *CurrentWeather )[ 0 ];
   CEnvDescriptor** current_env_desc1 = &( *CurrentWeather )[ 1 ];

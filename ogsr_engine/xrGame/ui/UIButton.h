@@ -15,7 +15,7 @@ public:
 	virtual bool	OnMouse					(float x, float y, EUIMessages mouse_action);
 	virtual void	OnClick					();
 
-	//прорисовка окна
+	//РїСЂРѕСЂРёСЃРѕРІРєР° РѕРєРЅР°
 	virtual void	DrawTexture				();
 	virtual void	DrawText				();
 	virtual void	DrawHighlightedText		();
@@ -25,37 +25,37 @@ public:
 	virtual bool	OnKeyboard				(int dik, EUIMessages keyboard_action);
 	virtual void	OnFocusLost				();
 
-	//режимы в которых можно нажимать кнопку
-	typedef enum{NORMAL_PRESS, //кнопка нажимается при 
-							   //нажатии и отпускании на ней мыши
-				 DOWN_PRESS    //сразу при нажатии
+	//СЂРµР¶РёРјС‹ РІ РєРѕС‚РѕСЂС‹С… РјРѕР¶РЅРѕ РЅР°Р¶РёРјР°С‚СЊ РєРЅРѕРїРєСѓ
+	typedef enum{NORMAL_PRESS, //РєРЅРѕРїРєР° РЅР°Р¶РёРјР°РµС‚СЃСЏ РїСЂРё 
+							   //РЅР°Р¶Р°С‚РёРё Рё РѕС‚РїСѓСЃРєР°РЅРёРё РЅР° РЅРµР№ РјС‹С€Рё
+				 DOWN_PRESS    //СЃСЂР°Р·Сѓ РїСЂРё РЅР°Р¶Р°С‚РёРё
 			} E_PRESS_MODE;
 
 
-	//заново подготовить состояние
+	//Р·Р°РЅРѕРІРѕ РїРѕРґРіРѕС‚РѕРІРёС‚СЊ СЃРѕСЃС‚РѕСЏРЅРёРµ
     virtual void	Reset					();
 
 
-	//подсвечен ли текст на кнопке
-	// принудительная подсветка
+	//РїРѕРґСЃРІРµС‡РµРЅ Р»Рё С‚РµРєСЃС‚ РЅР° РєРЅРѕРїРєРµ
+	// РїСЂРёРЅСѓРґРёС‚РµР»СЊРЅР°СЏ РїРѕРґСЃРІРµС‚РєР°
 	virtual void	HighlightItem			(bool bHighlight)			{m_bCursorOverWindow = bHighlight; }
 
-	//состояния в которых находится кнопка
-	typedef enum{BUTTON_NORMAL, //кнопка никак не затрагивается
-		BUTTON_PUSHED, //в нажатом сотоянии
-		BUTTON_UP      //при удерживаемой кнопки мыши 
+	//СЃРѕСЃС‚РѕСЏРЅРёСЏ РІ РєРѕС‚РѕСЂС‹С… РЅР°С…РѕРґРёС‚СЃСЏ РєРЅРѕРїРєР°
+	typedef enum{BUTTON_NORMAL, //РєРЅРѕРїРєР° РЅРёРєР°Рє РЅРµ Р·Р°С‚СЂР°РіРёРІР°РµС‚СЃСЏ
+		BUTTON_PUSHED, //РІ РЅР°Р¶Р°С‚РѕРј СЃРѕС‚РѕСЏРЅРёРё
+		BUTTON_UP      //РїСЂРё СѓРґРµСЂР¶РёРІР°РµРјРѕР№ РєРЅРѕРїРєРё РјС‹С€Рё 
 	} E_BUTTON_STATE;
 
-	// Установка состояния кнопки: утоплена, не утоплена
+	// РЈСЃС‚Р°РЅРѕРІРєР° СЃРѕСЃС‚РѕСЏРЅРёСЏ РєРЅРѕРїРєРё: СѓС‚РѕРїР»РµРЅР°, РЅРµ СѓС‚РѕРїР»РµРЅР°
 	void				SetButtonMode			(E_BUTTON_STATE eBtnState)	{ m_eButtonState = eBtnState; }
 	E_BUTTON_STATE		GetButtonsState			()							{ return m_eButtonState;}
 
-	// Поведение кнопки как переключателя реализовано пока только в режиме NORMAL_PRESS
+	// РџРѕРІРµРґРµРЅРёРµ РєРЅРѕРїРєРё РєР°Рє РїРµСЂРµРєР»СЋС‡Р°С‚РµР»СЏ СЂРµР°Р»РёР·РѕРІР°РЅРѕ РїРѕРєР° С‚РѕР»СЊРєРѕ РІ СЂРµР¶РёРјРµ NORMAL_PRESS
 	void				SetButtonAsSwitch		(bool bAsSwitch)			{ m_bIsSwitch = bAsSwitch; }
 
-	// Работа с акселератором
-	// Код акселератора берется из файла dinput.h, из DirectX SDK.
-	// Например: кнопка A - код 0x1E(DIK_A)
+	// Р Р°Р±РѕС‚Р° СЃ Р°РєСЃРµР»РµСЂР°С‚РѕСЂРѕРј
+	// РљРѕРґ Р°РєСЃРµР»РµСЂР°С‚РѕСЂР° Р±РµСЂРµС‚СЃСЏ РёР· С„Р°Р№Р»Р° dinput.h, РёР· DirectX SDK.
+	// РќР°РїСЂРёРјРµСЂ: РєРЅРѕРїРєР° A - РєРѕРґ 0x1E(DIK_A)
 	void				SetAccelerator			(int iAccel, int idx)	{VERIFY(idx==0||idx==1); m_uAccelerator[idx] = iAccel; }
 	const int			GetAccelerator			(int idx) const			{VERIFY(idx==0||idx==1); return m_uAccelerator[idx]; }
 	IC bool				IsAccelerator			(int iAccel) const		{return (m_uAccelerator[0]==iAccel)||(m_uAccelerator[1]==iAccel) ;}
