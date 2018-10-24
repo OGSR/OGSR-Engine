@@ -108,6 +108,7 @@ void CPoltergeist::Load(LPCSTR section)
 		m_tele->load	(section);
 	}
 	
+	m_dead_always_visible = READ_IF_EXISTS( pSettings, r_bool, section, "dead_always_visible", false );
 }
 
 void CPoltergeist::reload(LPCSTR section)
@@ -222,7 +223,7 @@ void CPoltergeist::net_Destroy()
 
 void CPoltergeist::Die(CObject* who)
 {
-	if (m_tele) {
+	if ( m_tele || m_dead_always_visible ) {
 		if (state_invisible) {
 			setVisible(true);
 
