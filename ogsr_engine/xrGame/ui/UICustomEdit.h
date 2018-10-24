@@ -3,33 +3,6 @@
 #include "UILines.h"
 #include "UIWindow.h"
 
-enum ELang
-{
-	eEng = 0,
-	eRus,
-	eFra,
-};
-struct Lt
-{
-	CHAR plain;
-	CHAR capital;
-	Lt() = default;
-	Lt(CHAR _capital, CHAR _plain) :plain(_plain), capital(_capital) {};
-};
-struct SLetter
-{
-	Lt US, NOT_US;
-	SLetter() = default;
-	SLetter(Lt _US, Lt _NOT_US) :US(_US), NOT_US(_NOT_US) {};
-	CHAR GetChar(bool _alt_lang, bool _shift)
-	{
-		if (_alt_lang == false)
-			return _shift ? US.capital : US.plain;
-		else
-			return _shift ? NOT_US.capital : NOT_US.plain;
-	}
-};
-
 class CUICustomEdit : public CUIWindow, public CUILinesOwner {
 	u32				m_max_symb_count;
 public:
@@ -53,8 +26,8 @@ public:
 	virtual void	Draw			();
 
 			void	CaptureFocus	(bool bCapture) { m_bInputFocus = bCapture; }
-	virtual	void	SetText			(LPCSTR str);
-	virtual LPCSTR	GetText();
+	virtual	void	SetText			(const char* str);
+	virtual const char*	GetText();
 			void	SetMaxCharCount	(u32 cnt)			{m_max_symb_count = cnt;}
 	virtual void	Enable			(bool status);
 			void	SetNumbersOnly	(bool status);
@@ -63,6 +36,7 @@ public:
 			void	SetDbClickMode	(bool mode = true)	{m_bFocusByDbClick = mode;}
 			void	SetCursorColor	(u32 color)			{m_lines.SetCursorColor(color);}
 			
+			//Какой-то недодел
 			void	SetLightAnim			(LPCSTR lanim);
 
 			virtual void			SetTextPosX(float x);
@@ -73,11 +47,9 @@ protected:
 	bool KeyPressed(int dik);
 	bool KeyReleased(int dik);
 
-	virtual void AddChar(CHAR c);
+	virtual void AddChar(char c);
 
 	bool m_bInputFocus;
-	bool m_bShift;
-	bool m_bAlt;
 
 	bool m_bNumbersOnly;
 	bool m_bFloatNumbers;
@@ -93,5 +65,3 @@ protected:
 
 	CLAItem*				m_lanim;
 };
-
-extern bool g_alternate_lang;

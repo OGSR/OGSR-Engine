@@ -709,14 +709,7 @@ void g_set_detector_params(int _one, int _two)
 {
 	shader_exports->set_detector_params(Ivector2().set(_one, _two));
 }
-void g_set_input_language(bool _is_alternate)
-{
-	g_alternate_lang = _is_alternate;
-}
-bool g_get_input_language()
-{
-	return g_alternate_lang;
-}
+
 #include "game_sv_single.h"
 void AdvanceGameTime(u32 _ms)
 {
@@ -1045,8 +1038,6 @@ void CLevel::script_register(lua_State *L)
 			def("set_anomaly_slot", &g_set_anomaly_position),
 			def("set_detector_mode", &g_set_detector_params),
 			def("SetEnvDescData", &SetEnvDescData),
-			def("set_input_language", &g_set_input_language),
-			def("get_input_language", &g_get_input_language),
 			def("update_inventory_window", &update_inventory_window),
 			def("update_inventory_weight", &update_inventory_weight),
 
