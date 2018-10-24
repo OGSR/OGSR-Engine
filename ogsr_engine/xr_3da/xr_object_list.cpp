@@ -172,42 +172,42 @@ void CObjectList::Update		(bool bForce)
 	// Destroy
 	if (!destroy_queue.empty()) 
 	{
-		// Info
-		for (xr_vector<CObject*>::iterator oit=objects_active.begin(); oit!=objects_active.end(); oit++)
-			for (int it = destroy_queue.size()-1; it>=0; it--){	
-				(*oit)->net_Relcase		(destroy_queue[it]);
-			}
-		for (xr_vector<CObject*>::iterator oit=objects_sleeping.begin(); oit!=objects_sleeping.end(); oit++)
-			for (int it = destroy_queue.size()-1; it>=0; it--)	(*oit)->net_Relcase	(destroy_queue[it]);
+          // Info
+          for ( const  auto& oit : objects_active )
+            for ( int it = destroy_queue.size() - 1; it >= 0; it-- )
+              oit->net_Relcase( destroy_queue[ it ] );
+          for ( const  auto& oit : objects_sleeping )
+            for ( int it = destroy_queue.size() - 1; it >= 0; it-- )
+              oit->net_Relcase( destroy_queue[ it ] );
 
-		for (int it = destroy_queue.size()-1; it>=0; it--)	Sound->object_relcase	(destroy_queue[it]);
-		
-		CCustomHUD			&hud = *g_pGameLevel->pHUD;
-		RELCASE_CALLBACK_VEC::iterator It	= m_relcase_callbacks.begin();
-		RELCASE_CALLBACK_VEC::iterator Ite	= m_relcase_callbacks.end();
-		for(;It!=Ite; ++It)	{
-			VERIFY			(*(*It).m_ID==(It-m_relcase_callbacks.begin()));
-			xr_vector<CObject*>::iterator dIt	= destroy_queue.begin();
-			xr_vector<CObject*>::iterator dIte	= destroy_queue.end();
-			for (;dIt!=dIte; ++dIt) {
-				(*It).m_Callback(*dIt);
-				hud.net_Relcase	(*dIt);
-			}
-		}
+          for ( int it = destroy_queue.size() - 1; it >= 0; it-- )
+            Sound->object_relcase( destroy_queue[ it ] );
 
-		// Destroy
-		for (int it = destroy_queue.size()-1; it>=0; it--)
-		{
-			CObject*		O	= destroy_queue[it];
-//			Msg				("Object [%x]", O);
+          CCustomHUD &hud = *g_pGameLevel->pHUD;
+          RELCASE_CALLBACK_VEC::iterator It  = m_relcase_callbacks.begin();
+          RELCASE_CALLBACK_VEC::iterator Ite = m_relcase_callbacks.end();
+          for( ; It != Ite; ++It ) {
+            VERIFY( *(*It).m_ID == ( It - m_relcase_callbacks.begin() ) );
+            xr_vector<CObject*>::iterator dIt  = destroy_queue.begin();
+            xr_vector<CObject*>::iterator dIte = destroy_queue.end();
+            for ( ; dIt != dIte; ++dIt ) {
+              (*It).m_Callback( *dIt );
+              hud.net_Relcase( *dIt );
+            }
+          }
+
+          // Destroy
+          for ( int it = destroy_queue.size() - 1; it >= 0; it-- ) {
+            CObject* O = destroy_queue[ it ];
+            //Msg( "Object [%x]", O );
 #ifdef DEBUG
-			Msg				("Destroying object[%x] [%d][%s] frame[%d]",O, O->ID(),*O->cName(), Device.dwFrame);
+            Msg( "Destroying object[%x] [%d][%s] frame[%d]", O, O->ID(), O->cName().c_str(), Device.dwFrame );
 #endif // DEBUG
-			O->net_Destroy	( );
-			Destroy			(O);
-		}
-		destroy_queue.clear	();
-	}
+            O->net_Destroy();
+            Destroy( O );
+          }
+          destroy_queue.clear();
+        }
 }
 
 void CObjectList::net_Register		(CObject* O)

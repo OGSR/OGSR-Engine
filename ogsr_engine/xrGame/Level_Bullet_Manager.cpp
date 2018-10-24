@@ -9,7 +9,6 @@
 #include "Actor.h"
 #include "gamepersistent.h"
 #include "game_cl_base_weapon_usage_statistic.h"
-#include <thread>
 #include <mutex>
 
 #ifdef DEBUG
@@ -88,6 +87,7 @@ CBulletManager::CBulletManager()
 	m_Bullets.clear			();
 	m_Bullets.reserve( 1000 );
 	m_dwTimeRemainder = 0;
+        m_thread.initialize( 1 );
 }
 
 CBulletManager::~CBulletManager()
@@ -415,15 +415,12 @@ void CBulletManager::CommitRenderSet		()	// @ the end of frame
 {
 	m_BulletsRendered	= m_Bullets			;
 	if ( m_Bullets.size() && m_Events.empty() && working.try_lock() ) {
-	  m_thread = std::thread( fastdelegate::FastDelegate0<>( this, &CBulletManager::UpdateWorkload ) );
-	  if ( m_thread.joinable() )
-	    m_thread.detach();
+          m_thread.threads[ 0 ]->addJob( [=] { UpdateWorkload(); } );
 	}
 }
 void CBulletManager::CommitEvents			()	// @ the start of frame
 {
 	if ( !working.try_lock() ) return;
-	working.unlock();
 	for (u32 _it=0; _it<m_Events.size(); _it++)	{
 		_event&		E	= m_Events[_it];
 		switch (E.Type)
@@ -444,6 +441,7 @@ void CBulletManager::CommitEvents			()	// @ the start of frame
 
 	if ( m_Bullets.empty() )
 	  m_dwTimeRemainder = 0;
+	working.unlock();
 }
 
 void CBulletManager::RegisterEvent			(EventType Type, BOOL _dynamic, SBullet* bullet, const Fvector& end_point, collide::rq_result& R, u16 tgt_material)

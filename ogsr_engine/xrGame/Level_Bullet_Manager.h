@@ -170,8 +170,8 @@ protected:
 	bool					CalcBullet			(collide::rq_results & rq_storage, xr_vector<ISpatial*>& rq_spatial, SBullet* bullet, u32 delta_time);
 	void 		__stdcall	UpdateWorkload		();
 
-	std::thread m_thread;
-	std::mutex  working;
+	ThreadPool m_thread;
+	std::mutex working;
 public:
 							CBulletManager		();
 	virtual					~CBulletManager		();
