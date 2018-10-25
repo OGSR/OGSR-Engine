@@ -3,6 +3,7 @@
 
 #include "particle_actions_collection.h"
 #include "particle_effect.h"
+#include <mutex>
 
 using namespace PAPI;
 
@@ -1754,40 +1755,51 @@ void PATurbulence::Execute(ParticleEffect *effect, float dt)
 	if ( ! p_cnt )
 		return;
 
-	size_t nWorkers = TTAPI->threads.size();
-
-	//Is how it is in Shadow of Chernobyl and Clear Sky source and does seem to run better then * 20. Only 20% CPU usage.
-	//KRodin: ВНИМАНИЕ, НЕ МЕНЯТЬ!!! Пусть вот так и остаётся. Тесты показывают, что это самый оптимальный вариант.
-	if ( p_cnt < nWorkers * 64 )
-		nWorkers = 1;
-
-	TES_PARAMS* tesParams = (TES_PARAMS*) _alloca( sizeof(TES_PARAMS) * nWorkers ); //-V630
-
-	// Give ~1% more for the last worker
-	// to minimize wait in final spin
-	u32 nSlice = p_cnt / 128; 
-
-	u32 nStep = u32( ( p_cnt - nSlice ) / nWorkers );
-	//u32 nStep = ( p_cnt / nWorkers );
-
-	//Msg( "Trb: %u" , nStep );
-
-	for ( u32 i = 0 ; i < nWorkers ; ++i ) {
-		tesParams[i].p_from = i * nStep;
-		tesParams[i].p_to = ( i == ( nWorkers - 1 ) ) ? p_cnt : ( tesParams[i].p_from + nStep );
-
-		tesParams[i].effect = effect;
-		tesParams[i].offset = offset;
-		tesParams[i].age = age;
-		tesParams[i].epsilon = epsilon;
-		tesParams[i].frequency = frequency;
-		tesParams[i].octaves = octaves;
-		tesParams[i].magnitude = magnitude;
-
-		TTAPI->threads[i]->addJob([=] { PATurbulenceExecuteStream(&tesParams[i]); });
-	}
-
-	TTAPI->wait();
+        size_t nWorkers = TTAPI->threads.size();
+        size_t nStep    = p_cnt / 64;
+        if ( nStep > nWorkers ) nStep = nWorkers;
+        if ( nStep < 2 ) {
+          TES_PARAMS tesParams;
+          tesParams.p_from    = 0;
+          tesParams.p_to      = p_cnt;
+          tesParams.effect    = effect;
+          tesParams.offset    = offset;
+          tesParams.age       = age;
+          tesParams.epsilon   = epsilon;
+          tesParams.frequency = frequency;
+          tesParams.octaves   = octaves;
+          tesParams.magnitude = magnitude;
+          PATurbulenceExecuteStream( &tesParams );
+        }
+        else {
+          static std::mutex working;
+          u32    cur_cnt  = 0;
+          for ( size_t i = 0; i < nStep; ++i ) {
+            TTAPI->threads[ i ]->addJob(
+              [&] {
+                TES_PARAMS tesParams;
+                tesParams.effect    = effect;
+                tesParams.offset    = offset;
+                tesParams.age       = age;
+                tesParams.epsilon   = epsilon;
+                tesParams.frequency = frequency;
+                tesParams.octaves   = octaves;
+                tesParams.magnitude = magnitude;
+                while ( true ) {
+                  working.lock();
+                  if ( cur_cnt == p_cnt ) break;
+                  tesParams.p_from    = cur_cnt;
+                  tesParams.p_to      = cur_cnt + 1;
+                  ++cur_cnt;
+                  working.unlock();
+                  PATurbulenceExecuteStream( &tesParams );
+                }
+                working.unlock();
+              }
+            );
+          }
+          TTAPI->wait();
+        }
 }
 
 
