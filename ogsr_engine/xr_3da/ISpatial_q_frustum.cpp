@@ -51,7 +51,7 @@ public:
 				walk(N->children[octant], c_C, c_R, fmask);
 			}
 			catch (...) {
-				Msg("!![ISpatial_q_frustum.walk] error in children node №%u", octant);
+				Msg("!![ISpatial_q_frustum.walk] error in children node [%u]", octant);
 				//N->children[octant] = nullptr; //Не уверен, что надо, посмотрим.
 				continue;
 			}

@@ -137,6 +137,7 @@ bool CUIPdaSpot::OnKeyboard(int dik, EUIMessages keyboard_action)
 	switch (dik)
 	{
 	case DIK_RETURN:
+	case DIK_NUMPADENTER:
 	{
 		if (IsShown())
 		{

@@ -74,7 +74,7 @@ function actor_binder:net_spawn(data)
 	cmd("r2_sun_depth_near_bias -0.0001")
 	cmd("r2_sun_depth_near_scale 1.00004")
 	cmd("r2_sun_focus on")
-	cmd("r2_sun_near_border 1.")
+	cmd("r2_sun_near_border 3.")
 	-- избавляемся от пересвета поверхностей
 	cmd("r2_ls_bloom_threshold 1.") --блум
 	cmd("r2_sun_lumscale 1.") --мультипликатор цвета солнца (идиотская настройка)
