@@ -115,7 +115,7 @@ namespace Configurator
                 // test end
 
                 // защита от удаления/отсутствия локализации
-                if (!File.Exists(Environment.CurrentDirectory + "\\gamedata.db_xlocale"))
+                if (!File.Exists(Environment.CurrentDirectory + "\\gamedata.db_xlocale") && File.Exists(Environment.CurrentDirectory + "\\localization\\" + lang + "\\gamedata.db_xlocale"))
                     File.Copy(Environment.CurrentDirectory + "\\localization\\" + lang + "\\gamedata.db_xlocale", Environment.CurrentDirectory + "\\gamedata.db_xlocale", true);
 
                 ApplyButton.Enabled = false;
@@ -303,7 +303,7 @@ namespace Configurator
 
         private void OgseLinkLinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
         {
-            Process.Start("https://github.com/KRodinn/OGSR-Engine");
+            Process.Start("https://github.com/OGSR");
         }
 
         private void ExitButtonClick(object sender, EventArgs e)

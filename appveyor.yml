@@ -1,5 +1,4 @@
 version: 1.0.{build}
-skip_tags: true
 image: Previous Visual Studio 2017
 configuration:
 - Debug
@@ -8,9 +7,6 @@ platform:
 - x86
 - x64
 shallow_clone: true
-before_build:
-- cmd: >-
-    rem set OGSR_DEPLOY=true
 build:
   project: Engine.sln
   publish_wap: true
@@ -40,7 +36,8 @@ deploy:
 - provider: GitHub
   auth_token:
     secure: eeav3SIAQE4q9s4J76hKDxnCZiZefvs2p3bZbYKHpIv5SKQqpUBKT0QkOGvd3FZ+
+  repository: OGSR/OGSR-Engine
   artifact: Release
   force_update: true
   on:
-    ogsr_deploy: true
+    appveyor_repo_tag: true
