@@ -99,7 +99,7 @@ void CUIStatic::InitEx(LPCSTR tex_name, LPCSTR sh_name, float x, float y, float 
 
 void CUIStatic::Init(float x, float y, float width, float height){
 	CUIWindow::Init(x,y,width,height);
-	m_xxxRect.set(x,y,x+width,y+height);
+	m_originalSizeRect.set(x,y,x+width,y+height);
 }
 
 void CUIStatic::InitTexture(LPCSTR texture){
@@ -237,58 +237,75 @@ void CUIStatic::Update()
 	//update light animation if defined
 	if (m_lanim_clr.m_lanim)
 	{
-		if(m_lanim_clr.m_lanim_start_time<0.0f)		ResetClrAnimation	();
+		if (m_lanim_clr.m_lanim_start_time < 0.0f)
+		{
+			ResetClrAnimation();
+		}
+
 		float t = Device.dwTimeContinual/1000.0f;
 
 		if (t < m_lanim_clr.m_lanim_start_time)	// consider animation delay
 			return;
 
-		if(m_lanim_clr.m_lanimFlags.test(LA_CYCLIC) || t-m_lanim_clr.m_lanim_start_time < m_lanim_clr.m_lanim->Length_sec()){
-
+		if (m_lanim_clr.m_lanimFlags.test(LA_CYCLIC) || 
+			t - m_lanim_clr.m_lanim_start_time < m_lanim_clr.m_lanim->Length_sec())
+		{
 			int frame;
-			u32 clr					= m_lanim_clr.m_lanim->CalculateRGB(t-m_lanim_clr.m_lanim_start_time,frame);
+			u32 clr = m_lanim_clr.m_lanim->CalculateRGB(t - m_lanim_clr.m_lanim_start_time, frame);
 
-			if(m_lanim_clr.m_lanimFlags.test(LA_TEXTURECOLOR))
-				if(m_lanim_clr.m_lanimFlags.test(LA_ONLYALPHA))
-					SetColor				(subst_alpha(GetColor(), color_get_A(clr)));
+			if (m_lanim_clr.m_lanimFlags.test(LA_TEXTURECOLOR))
+				if (m_lanim_clr.m_lanimFlags.test(LA_ONLYALPHA))
+					SetColor(subst_alpha(GetColor(), color_get_A(clr)));
 				else
-					SetColor				(clr);
+					SetColor(clr);
 
-			if(m_lanim_clr.m_lanimFlags.test(LA_TEXTCOLOR))
-				if(m_lanim_clr.m_lanimFlags.test(LA_ONLYALPHA))
-					SetTextColor				(subst_alpha(GetTextColor(), color_get_A(clr)));
+			if (m_lanim_clr.m_lanimFlags.test(LA_TEXTCOLOR))
+				if (m_lanim_clr.m_lanimFlags.test(LA_ONLYALPHA))
+					SetTextColor(subst_alpha(GetTextColor(), color_get_A(clr)));
 				else
-					SetTextColor				(clr);
-			
+					SetTextColor(clr);
+		}
+		else if (!m_lanim_clr_completed)
+		{
+			SetColor(m_originalColor);
+			SetTextColor(m_originalTextColor);
+
+			m_lanim_clr_completed = true;
 		}
 	}
 	
 	if(m_lanim_xform.m_lanim)
 	{
-		if(m_lanim_xform.m_lanim_start_time<0.0f){
+		if (m_lanim_xform.m_lanim_start_time < 0.0f)
+		{
 			ResetXformAnimation();
 		}
+
 		float t = Device.dwTimeContinual/1000.0f;
 
-		if(	m_lanim_xform.m_lanimFlags.test(LA_CYCLIC) || 
-			t - m_lanim_xform.m_lanim_start_time < m_lanim_xform.m_lanim->Length_sec() )
+		if (m_lanim_xform.m_lanimFlags.test(LA_CYCLIC) ||
+			t - m_lanim_xform.m_lanim_start_time < m_lanim_xform.m_lanim->Length_sec())
 		{
 			int frame;
-			u32 clr				= m_lanim_xform.m_lanim->CalculateRGB(t-m_lanim_xform.m_lanim_start_time,frame);
-			
-			EnableHeading_int	(true);
-			float heading		= (PI_MUL_2/255.0f) * color_get_A(clr);
-			SetHeading			(heading);
+			u32 clr = m_lanim_xform.m_lanim->CalculateRGB(t - m_lanim_xform.m_lanim_start_time, frame);
 
-			float _value		= (float)color_get_R(clr);
-			
-			float f_scale		= _value / 64.0f;
+			EnableHeading_int(true);
+			float heading = (PI_MUL_2 / 255.0f) * color_get_A(clr);
+			SetHeading(heading);
+
+			float _value = (float)color_get_R(clr);
+
+			float f_scale = _value / 64.0f;
 			Fvector2 _sz;
-			_sz.set				(m_xxxRect.width()*f_scale, m_xxxRect.height()*f_scale );
-			SetWndSize			(_sz);
-		}else{
-			EnableHeading_int	( !!m_lanim_xform.m_lanimFlags.test(1<<4) );
-			SetWndSize			(Fvector2().set(m_xxxRect.width(),m_xxxRect.height()));
+			_sz.set(m_originalSizeRect.width()*f_scale, m_originalSizeRect.height()*f_scale*UI()->get_current_kx());
+			SetWndSize(_sz);
+		}
+		else if (!m_lanim_xform_completed)
+		{
+			EnableHeading_int(!!m_lanim_xform.m_lanimFlags.test(1 << 4));
+			SetWndSize(Fvector2().set(m_originalSizeRect.width(), m_originalSizeRect.height()));
+
+			m_lanim_xform_completed = true;
 		}
 	}
 }
@@ -296,11 +313,23 @@ void CUIStatic::Update()
 void CUIStatic::ResetXformAnimation()
 {
 	m_lanim_xform.m_lanim_start_time = Device.dwTimeContinual/1000.0f;
+
+	float x = GetWndPos().x;
+	float y = GetWndPos().y;
+	m_originalSizeRect.set(x, y, x + GetWidth(), y + GetHeight());
+
+	m_lanim_xform_completed = false;
+
 }
 
 void CUIStatic::ResetClrAnimation()
 {
 	m_lanim_clr.m_lanim_start_time = Device.dwTimeContinual/1000.0f + m_lanim_clr.m_lanim_delay_time/1000.0f;
+
+	m_originalColor = GetColor();
+	m_originalTextColor = GetTextColor();
+
+	m_lanim_clr_completed = false;
 }
 
 void CUIStatic::SetClrAnimDelay(float delay){
@@ -593,36 +622,6 @@ void CUIStatic::AdjustWidthToText()
 	float _len		= m_pLines->GetFont()->SizeOf_(m_pLines->GetText());
 	UI()->ClientToScreenScaledWidth(_len);
 	SetWidth		(_len);
-}
-
-void CUIStatic::RescaleRelative2Rect(const Frect& r){
-	SetStretchTexture(true);
-	Frect my_r = m_xxxRect;
-	float h_rel = my_r.width()/r.width();
-	float v_rel = my_r.height()/r.height();
-
-	if (ui_core::is_16_9_mode())
-	{
-		h_rel	*= (3.0f/4.0f);
-	}
-	
-	float w;
-	float h;
-	if (h_rel < v_rel){
-		w = r.width()*h_rel;
-		h = r.height()*h_rel;
-	}
-	else{
-		w = r.width()*v_rel;
-		h = r.height()*v_rel;
-	}
-
-
-	my_r.x1 += (m_xxxRect.width() - w)/2;
-	my_r.y1 += (m_xxxRect.height() - h)/2;
-	my_r.x2 = my_r.x1 + w;
-	my_r.y2 = my_r.y1 + h;
-	SetWndRect(my_r);
 }
 
 void CUIStatic::SetTextST				(LPCSTR str_id)

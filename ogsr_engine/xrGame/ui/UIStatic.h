@@ -27,6 +27,9 @@ private:
 	typedef CUIWindow inherited;
 	lanim_cont				m_lanim_clr;
 	lanim_cont				m_lanim_xform;
+	bool	m_lanim_clr_completed;
+	bool	m_lanim_xform_completed;
+
 	void					EnableHeading_int		(bool b)				{m_bHeading = b;}
 
 	shared_str				m_texture;
@@ -41,8 +44,6 @@ public:
 	virtual void	Init					(float x, float y, float width, float height);
 	virtual void	Draw					();
 	virtual void	Update					();
-	//
-			void	RescaleRelative2Rect(const Frect& r);	//need to save proportions of texture			
 
 	// IUISingleTextureOwner--------------------------------------------------------------------------------
 	virtual void		CreateShader				(const char* tex, const char* sh = "hud\\default");
@@ -205,8 +206,12 @@ protected:
 	int	m_iElipsisIndent;
 	Frect	m_ClipRect;
 
-//private:
-	Frect	m_xxxRect; // need by RescaleRelative2Rect(Frect& r). it is initializes only once in Init(x,y,width,height)
+private:
+	Frect	m_originalSizeRect;
+
+	u32 m_originalColor;
+	u32 m_originalTextColor;
+
 
 public:
 	DECLARE_SCRIPT_REGISTER_FUNCTION

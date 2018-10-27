@@ -29,11 +29,6 @@ void CMapSpot::Load(CUIXml* xml, LPCSTR path)
   SetWidth(GetWidth() * UI()->get_current_kx() );
   SetStretchTexture(true);
 
-  // used for animations so we need to fix width
-  float x = GetWndPos().x;
-  float y = GetWndPos().y;
-  m_xxxRect.set(x, y, x + GetWidth(), y + GetHeight());
-
 	m_originSize		= GetWndSize();
 }
 
