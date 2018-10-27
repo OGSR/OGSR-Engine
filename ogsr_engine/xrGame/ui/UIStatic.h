@@ -207,7 +207,7 @@ protected:
 	Frect	m_ClipRect;
 
 private:
-	Frect	m_originalSizeRect; // need by RescaleRelative2Rect(Frect& r). it is initializes only once in Init(x,y,width,height)
+	Frect	m_originalSizeRect;
 
 	u32 m_originalColor;
 	u32 m_originalTextColor;
