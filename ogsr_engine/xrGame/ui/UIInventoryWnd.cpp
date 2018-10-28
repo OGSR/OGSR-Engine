@@ -38,7 +38,10 @@ using namespace InventoryUtilities;
 
 CUIInventoryWnd*	g_pInvWnd = NULL;
 
-CUIInventoryWnd::CUIInventoryWnd()
+CUIInventoryWnd::CUIInventoryWnd() : 
+	m_pUIBagList(nullptr), m_pUIBeltList(nullptr), m_pUIPistolList(nullptr), m_pUIAutomaticList(nullptr),
+	m_pUIKnifeList(nullptr), m_pUIHelmetList(nullptr), m_pUIBIODetList(nullptr), m_pUINightVisionList(nullptr),
+	m_pUIDetectorList(nullptr), m_pUITorchList(nullptr), m_pUIBinocularList(nullptr), m_pUIOutfitList(nullptr)
 {
 	m_iCurrentActiveSlot				= NO_ACTIVE_SLOT;
 	UIRank								= NULL;
