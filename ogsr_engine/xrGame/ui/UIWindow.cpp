@@ -169,13 +169,12 @@ void CUIWindow::Draw()
 		if(!(*it)->IsShown()) continue;
 		(*it)->Draw();
 	}
-#ifdef DEBUG
+
 	if(g_show_wnd_rect2){
 		Frect r;
 		GetAbsoluteRect(r);
 		add_rect_to_draw(r);
 	}
-#endif
 }
 
 void CUIWindow::Draw(float x, float y){
@@ -193,13 +192,13 @@ void CUIWindow::Update()
 		Frect				r;
 		GetAbsoluteRect		(r);
 		cursor_on_window	= !!r.in(temp);
-#ifndef NDEBUG
+
 		if(cursor_on_window&&g_show_wnd_rect){
 			Frect r;
 			GetAbsoluteRect(r);
 			add_rect_to_draw(r);
 		}
-#endif
+
 		// RECEIVE and LOST focus
 		if(m_bCursorOverWindow != cursor_on_window)
 		{

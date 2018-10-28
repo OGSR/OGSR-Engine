@@ -1,6 +1,6 @@
-# OGSR Engine [![Build status](https://ci.appveyor.com/api/projects/status/w5yowu9901tphox1?svg=true)](https://ci.appveyor.com/project/KRodinn/ogsr-engine)
-## В проект требуются графические программисты или просто люди, более-менее разбирающиеся в рендере и шейдерах. Если у кого-то есть желание помочь проекту - пишите, наши двери открыты для всех желающих ##
-![Logo](https://pp.userapi.com/c847218/v847218213/a9398/F7TfxQhSSGs.jpg)
+# OGSR Engine [![Build status](https://ci.appveyor.com/api/projects/status/w5yowu9901tphox1/branch/main?svg=true)](https://ci.appveyor.com/project/KRodinn/ogsr-engine/branch/main)
+![Logo](https://i.imgur.com/OYK6UOt.png)
+## В проект требуются графические программисты или просто люди, более-менее разбирающиеся в рендере и шейдерах. Если у кого-то есть желание помочь проекту - пишите, наши двери открыты для всех желающих. ##
 ### [>>Разработчики<<](https://github.com/OGSR/OGSR-Engine/graphs/contributors) ### 
 ### [>>Список изменений<<](https://github.com/OGSR/OGSR-Engine/wiki/Список-изменений) ###
 ### [>>Свежий релиз SHOC-версии движка<<](https://github.com/OGSR/OGSR-Engine/releases) ###
