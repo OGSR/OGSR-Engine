@@ -282,13 +282,13 @@ void CShootingObject::LoadFlameParticles (LPCSTR section, LPCSTR prefix)
 void CShootingObject::OnShellDrop	(const Fvector& play_pos,
 									 const Fvector& parent_vel)
 {
-	if (auto wpn = smart_cast<CWeapon*>(this))
-	{
-		if (auto actor = smart_cast<CActor*>(wpn->H_Parent()))
-		{
-			actor->callback(GameObject::eOnWpnShellDrop)(wpn->lua_game_object(), play_pos, parent_vel);
-		}
-	}
+        if ( ParentIsActor() ) {
+          auto wpn = smart_cast<CGameObject*>( this );
+          if ( wpn )
+            Actor()->callback( GameObject::eOnWpnShellDrop )( wpn->lua_game_object(), play_pos, parent_vel );
+        }
+        else if ( Core.Features.test( xrCore::Feature::npc_simplified_shooting ) )
+          return;
 
 	if(!m_sShellParticles) return;
 	if( Device.vCameraPosition.distance_to_sqr(play_pos)>2*2 ) return;
@@ -308,6 +308,7 @@ void CShootingObject::OnShellDrop	(const Fvector& play_pos,
 void CShootingObject::StartSmokeParticles	(const Fvector& play_pos,
 											const Fvector& parent_vel)
 {
+	if ( !ParentIsActor() && Core.Features.test( xrCore::Feature::npc_simplified_shooting ) ) return;
 	CParticlesObject* pSmokeParticles = NULL;
 	StartParticles(pSmokeParticles, *m_sSmokeParticlesCurrent, play_pos, parent_vel, true);
 }

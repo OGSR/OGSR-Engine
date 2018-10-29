@@ -128,6 +128,7 @@ void InitConsole	()
 	CORE_FEATURE_SET( engine_ammo_repacker,       "features" );
 	CORE_FEATURE_SET( ruck_flag_preferred,        "features" );
 	CORE_FEATURE_SET( old_outfit_slot_style,      "features" );
+	CORE_FEATURE_SET( npc_simplified_shooting,    "features" );
 }
 
 void InitInput		()
