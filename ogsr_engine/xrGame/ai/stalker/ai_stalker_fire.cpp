@@ -730,8 +730,10 @@ bool CAI_Stalker::fire_make_sense		()
 // shot effector stuff
 void CAI_Stalker::on_weapon_shot_start		(CWeapon *weapon)
 {
+  if ( !Core.Features.test( xrCore::Feature::npc_simplified_shooting ) ) {
 	weapon_shot_effector().SetRndSeed	(m_weapon_shot_random_seed);
 	weapon_shot_effector().Shot			(weapon->camDispersion + weapon->camDispersionInc*float(weapon->ShotsFired()));
+  }
 }
 
 void CAI_Stalker::on_weapon_shot_stop		(CWeapon *weapon)

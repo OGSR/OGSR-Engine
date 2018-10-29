@@ -160,6 +160,7 @@ void CStateBurerAttackTeleAbstract::FindFreeObjects(xr_vector<CObject*> &tpObjec
 			(obj->m_pPhysicsShell->getMass() > object->m_tele_object_max_mass) || 
 			(obj == object) || 
 			object->CTelekinesis::is_active_object(obj) || 
+			( pSettings->line_exist( obj->cNameSect().c_str(), "ph_heavy" ) && pSettings->r_bool( obj->cNameSect().c_str(), "ph_heavy" ) ) ||
 			!obj->m_pPhysicsShell->get_ApplyByGravity()) continue;
 
 		tele_objects.push_back(obj);

@@ -31,7 +31,8 @@ void script_rq_result::script_register( lua_State *L ) {
     .def_readonly( "range",   &script_rq_result::range )
     .def_readonly( "object",  &script_rq_result::object )
     .def_readonly( "element", &script_rq_result::element )
-    .def_readonly( "result",  &script_rq_result::result ),
+    .def_readonly( "result",  &script_rq_result::result )
+    .def_readonly( "mtl",     &script_rq_result::mtl ),
 
     class_<SGameMtl>( "SGameMtl" )
     .def_readonly( "m_Name",       &SGameMtl::m_Name )

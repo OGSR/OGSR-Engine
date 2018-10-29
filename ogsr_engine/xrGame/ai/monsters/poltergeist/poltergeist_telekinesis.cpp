@@ -178,6 +178,7 @@ void CPolterTele::tele_find_objects(xr_vector<CObject*> &objects, const Fvector 
 			(obj->m_pPhysicsShell->getMass() > m_pmt_object_max_mass) || 
 			(obj == m_object) || 
 			m_object->CTelekinesis::is_active_object(obj) || 
+			( pSettings->line_exist( obj->cNameSect().c_str(), "ph_heavy" ) && pSettings->r_bool( obj->cNameSect().c_str(), "ph_heavy" ) ) ||
 			!obj->m_pPhysicsShell->get_ApplyByGravity()) continue;
 
 		
