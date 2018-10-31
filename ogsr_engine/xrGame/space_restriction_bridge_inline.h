@@ -24,7 +24,8 @@ template <typename T>
 IC	u32	CSpaceRestrictionBridge::accessible_nearest	(T restriction, const Fvector &position, Fvector &result, bool out_restriction)
 {
 #pragma todo("Dima to Dima : _Warning : this place can be optimized in case of a slowdown")
-	VERIFY							(initialized());
+	VERIFY(initialized());
+	ASSERT_FMT( restriction, "[%s]:[%s] restriction is nullptr! Something strange! Most likely a problem due to crooked scripts!", __FUNCTION__, name().c_str() );
 #ifdef CRASH_ON_INVALID_VERTEX_ID
 	ASSERT_FMT( !restriction->border().empty(), "[%s]: %s has border().empty()", __FUNCTION__, name().c_str() );
 	ASSERT_FMT( !restriction->accessible_neighbour_border(restriction,out_restriction).empty(), "[%s]: %s has accessible_neighbour_border().empty()", __FUNCTION__, name().c_str() );

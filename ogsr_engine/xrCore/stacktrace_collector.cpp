@@ -32,6 +32,8 @@ void BuildStackTrace(StackTraceInfo& stackTrace) {
 
 	const auto processHandle = GetCurrentProcess();
 	const BOOL SymInit = SymInitialize(processHandle, nullptr, TRUE);
+	if (!SymInit)
+		Msg("!![%s] SymInitialize failed. Error: [%s]", __FUNCTION__, Debug.error2string(GetLastError()));
 
 	const auto framesCount = CaptureStackBackTrace(1, MaxStackTraceDepth, stack, nullptr);
 	auto symbolInfo = reinterpret_cast<SYMBOL_INFO*>(&symbol);
