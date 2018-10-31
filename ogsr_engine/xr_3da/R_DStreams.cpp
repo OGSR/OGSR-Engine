@@ -39,9 +39,11 @@ void* _VertexStream::Lock	( u32 vl_Count, u32 Stride, u32& vOffset )
 	dbg_lock			++;
 #endif
 
+	R_ASSERT(vl_Count, "Missing or invalid texture! vl_Coun=0.");
+
 	// Ensure there is enough space in the VB for this data
 	u32	bytes_need		= vl_Count*Stride;
-	ASSERT_FMT((bytes_need <= mSize) && vl_Count, "Not enought space in VertexBuffer! Requested: %d, vl_Count: %d.", bytes_need, vl_Count);
+	ASSERT_FMT(bytes_need <= mSize, "Not enought space in VertexBuffer! Requested: %d.", bytes_need);
 
 	// Vertex-local info
 	u32 vl_mSize		= mSize/Stride;
