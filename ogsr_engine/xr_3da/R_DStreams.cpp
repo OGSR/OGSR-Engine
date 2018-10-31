@@ -8,7 +8,7 @@
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
 
-int		rsDVB_Size = 8192; //4096; //Fixed: (bytes_need<=mSize) && vl_Count //KRodin: увеличил ещё, т.к. у меня и при 4096 вылетало.
+int		rsDVB_Size = 16384; // 8192 //4096; //Fixed: (bytes_need<=mSize) && vl_Count //KRodin: увеличил ещё, т.к. у меня и при 4096 вылетало.
 int		rsDIB_Size = 512;
 
 void _VertexStream::Create	()
@@ -41,7 +41,7 @@ void* _VertexStream::Lock	( u32 vl_Count, u32 Stride, u32& vOffset )
 
 	// Ensure there is enough space in the VB for this data
 	u32	bytes_need		= vl_Count*Stride;
-	R_ASSERT			((bytes_need<=mSize) && vl_Count);
+	ASSERT_FMT((bytes_need <= mSize) && vl_Count, "Not enought space in VertexBuffer! Requested: %d, vl_Count: %d.", bytes_need, vl_Count);
 
 	// Vertex-local info
 	u32 vl_mSize		= mSize/Stride;

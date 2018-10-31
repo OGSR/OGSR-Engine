@@ -203,6 +203,7 @@ void CUICharacterInfo::InitCharacter(u16 id)
 			pItem->SetWidth					(pUIBio->GetDesiredChildWidth());
 			pItem->SetText					(*(chInfo.Bio()));
 			pItem->AdjustHeightToText		();
+			pItem->SetTextComplexMode(true);
 			pUIBio->AddWindow				(pItem, true);
 		}
 	}
