@@ -75,6 +75,7 @@ public:
 	void					UpdateConditionTime		();
 	IC void					SetConditionDeltaTime	(float DeltaTime) { m_fDeltaTime = DeltaTime; };
 
+	virtual void					UpdatePower();
 	
 	//скорость потери крови из всех открытых ран 
 	float					BleedingSpeed			();
@@ -90,7 +91,6 @@ public:
 	void					ClearWounds();
 protected:
 	void					UpdateHealth			();
-	void					UpdatePower				();
 	void					UpdateSatiety			(float k=1.0f);
 	void					UpdateRadiation			(float k=1.0f);
 	void					UpdatePsyHealth			(float k=1.0f);
