@@ -85,10 +85,22 @@ void CActorCondition::LoadCondition(LPCSTR entity_section)
 	m_fPowerLeakSpeed			= pSettings->r_float(section,"max_power_leak_speed");
 	
 	m_fV_Alcohol				= pSettings->r_float(section,"alcohol_v");
+	m_fV_Power = READ_IF_EXISTS(pSettings, r_float, section, "power_v", 0.0f);
 
 	m_fV_Satiety				= pSettings->r_float(section,"satiety_v");		
 	m_fV_SatietyPower			= pSettings->r_float(section,"satiety_power_v");
 	m_fV_SatietyHealth			= pSettings->r_float(section,"satiety_health_v");
+
+	m_fSatietyLightLimit = READ_IF_EXISTS(pSettings, r_float, section, "satiety_light_limit", 0.0f);
+	clamp(m_fSatietyLightLimit, 0.0f, 1.0f);
+
+	m_fSatietyCriticalLimit = READ_IF_EXISTS(pSettings, r_float, section, "satiety_critical_limit", 0.0f);
+	clamp(m_fSatietyCriticalLimit, 0.0f, 1.0f);
+
+	if (m_fSatietyCriticalLimit > m_fSatietyLightLimit)
+	{
+		m_fSatietyCriticalLimit = m_fSatietyLightLimit;
+	}
 	
 	m_MaxWalkWeight					= pSettings->r_float(section,"max_walk_weight");
 }
@@ -115,59 +127,58 @@ void CActorCondition::UpdateCondition()
 		ConditionStand(weight_coef);
 	}
 	
-		float k_max_power = 1.0f;
+	float k_max_power = 1.0f;
 
-		if( true )
-		{
-			float base_w = object().MaxCarryWeight();
+	if( true )
+	{
+		float base_w = object().MaxCarryWeight();
 /*
-			CCustomOutfit* outfit	= m_object->GetOutfit();
-			if(outfit)
-				base_w += outfit->m_additional_weight2;
+		CCustomOutfit* outfit	= m_object->GetOutfit();
+		if(outfit)
+			base_w += outfit->m_additional_weight2;
 */
 
-			k_max_power = 1.0f + _min(weight,base_w)/base_w + _max(0.0f, (weight-base_w)/10.0f);
-		}else
-			k_max_power = 1.0f;
-		
-		SetMaxPower		(GetMaxPower() - m_fPowerLeakSpeed*m_fDeltaTime*k_max_power);
-
+		k_max_power = 1.0f + _min(weight,base_w)/base_w + _max(0.0f, (weight-base_w)/10.0f);
+	}else
+		k_max_power = 1.0f;
+	
+	SetMaxPower		(GetMaxPower() - m_fPowerLeakSpeed*m_fDeltaTime*k_max_power);
 
 	m_fAlcohol		+= m_fV_Alcohol*m_fDeltaTime;
 	clamp			(m_fAlcohol,			0.0f,		1.0f);
 
-		CEffectorCam* ce = Actor()->Cameras().GetCamEffector((ECamEffectorType)effAlcohol);
-		if	((m_fAlcohol>0.0001f) ){
-			if(!ce){
-				AddEffector(m_object,effAlcohol, "effector_alcohol", GET_KOEFF_FUNC(this, &CActorCondition::GetAlcohol));
-			}
-		}else{
-			if(ce)
-				RemoveEffector(m_object,effAlcohol);
+	CEffectorCam* ce = Actor()->Cameras().GetCamEffector((ECamEffectorType)effAlcohol);
+	if	((m_fAlcohol>0.0001f) ){
+		if(!ce){
+			AddEffector(m_object,effAlcohol, "effector_alcohol", GET_KOEFF_FUNC(this, &CActorCondition::GetAlcohol));
 		}
+	}else{
+		if(ce)
+			RemoveEffector(m_object,effAlcohol);
+	}
 
-		
-		CEffectorPP* ppe = object().Cameras().GetPPEffector((EEffectorPPType)effPsyHealth);
-		
-		string64			pp_sect_name;
-		shared_str ln		= Level().name();
-		strconcat			(sizeof(pp_sect_name),pp_sect_name, "effector_psy_health", "_", *ln);
-		if(!pSettings->section_exist(pp_sect_name))
-			strcpy_s			(pp_sect_name, "effector_psy_health");
+	CEffectorPP* ppe = object().Cameras().GetPPEffector((EEffectorPPType)effPsyHealth);
+	
+	string64			pp_sect_name;
+	shared_str ln		= Level().name();
+	strconcat			(sizeof(pp_sect_name),pp_sect_name, "effector_psy_health", "_", *ln);
+	if(!pSettings->section_exist(pp_sect_name))
+		strcpy_s			(pp_sect_name, "effector_psy_health");
 
-		if	( !fsimilar(GetPsyHealth(), 1.0f, 0.05f) )
+	if	( !fsimilar(GetPsyHealth(), 1.0f, 0.05f) )
+	{
+		if(!ppe)
 		{
-			if(!ppe)
-			{
-				AddEffector(m_object,effPsyHealth, pp_sect_name, GET_KOEFF_FUNC(this, &CActorCondition::GetPsy));
-			}
-		}else
-		{
-			if(ppe)
-				RemoveEffector(m_object,effPsyHealth);
+			AddEffector(m_object,effPsyHealth, pp_sect_name, GET_KOEFF_FUNC(this, &CActorCondition::GetPsy));
 		}
-		if(fis_zero(GetPsyHealth()))
-			health() =0.0f;
+	}else
+	{
+		if(ppe)
+			RemoveEffector(m_object,effPsyHealth);
+	}
+
+	if(fis_zero(GetPsyHealth()))
+		health() =0.0f;
 
 	UpdateSatiety				();
 
@@ -180,34 +191,46 @@ void CActorCondition::UpdateCondition()
 void CActorCondition::UpdateSatiety()
 {
 	float k = 1.0f;
-	if(m_fSatiety>0)
+	if (m_fSatiety > 0)
 	{
-		m_fSatiety -=	m_fV_Satiety*
-						k*
-						m_fDeltaTime;
-	
-		clamp			(m_fSatiety,		0.0f,		1.0f);
-
-	}
-		
-	//сытость увеличивает здоровье только если нет открытых ран
-	if(!m_bIsBleeding)
-	{
-		m_fDeltaHealth += CanBeHarmed() ? 
-					(m_fV_SatietyHealth*(m_fSatiety>0.0f?1.f:-1.f)*m_fDeltaTime)
-					: 0;
+		m_fSatiety -= m_fV_Satiety *
+			k *
+			m_fDeltaTime;
+		clamp(m_fSatiety, 0.0f, 1.0f);
 	}
 
-	//коэффициенты уменьшения восстановления силы от сытоти и радиации
-	float radiation_power_k		= 1.f;
-	float satiety_power_k		= 1.f;
-			
-	m_fDeltaPower += m_fV_SatietyPower*
-				radiation_power_k*
-				satiety_power_k*
-				m_fDeltaTime;
+	float satiety_health_koef = 1;
+	float satiety_power_koef = 1;
+
+	if (m_fSatietyLightLimit > 0) {
+		if (m_fSatiety < m_fSatietyLightLimit) {
+			satiety_power_koef = m_fSatiety / m_fSatietyLightLimit;
+
+			const float critical_k = m_fSatietyCriticalLimit / m_fSatietyLightLimit;
+			satiety_health_koef = (m_fSatiety / m_fSatietyLightLimit - critical_k) / (m_fSatiety >= m_fSatietyCriticalLimit ? 1 - critical_k : critical_k);
+		}
+	}
+	else {
+		if (fis_zero(m_fSatiety))
+		{
+			satiety_health_koef = -1;
+		}
+	}
+
+	if (m_bIsBleeding && satiety_health_koef > 0)
+	{
+		satiety_health_koef = 0;
+	}
+
+	m_fDeltaHealth += m_fV_SatietyHealth * satiety_health_koef * m_fDeltaTime;
+	m_fDeltaPower += m_fV_SatietyPower * satiety_power_koef * m_fDeltaTime;
 }
 
+void CActorCondition::UpdatePower()
+{
+	m_fPower += m_fV_Power * m_fDeltaTime;
+	clamp(m_fPower, 0.0f, 1.0f);
+}
 
 CWound* CActorCondition::ConditionHit(SHit* pHDS)
 {
