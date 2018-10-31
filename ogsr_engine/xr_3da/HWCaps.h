@@ -21,7 +21,7 @@ public:
 	{
 		u32	dwRegisters		: 16;
 		u32 dwInstructions	: 16;
-		u32	dwStages		: 4;		// number of tex-stages
+		u32	dwStages		: 5;		// number of tex-stages
 		u32	dwMRT_count		: 4;
 		u32 b_MRT_mixdepth	: 1;
 		u32	bNonPow2		: 1;
