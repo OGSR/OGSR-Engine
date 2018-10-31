@@ -39,7 +39,7 @@ void* _VertexStream::Lock	( u32 vl_Count, u32 Stride, u32& vOffset )
 	dbg_lock			++;
 #endif
 
-	R_ASSERT(vl_Count, "Missing or invalid texture! vl_Coun=0.");
+	R_ASSERT(vl_Count, "Missing or invalid texture! vl_Count=0.");
 
 	// Ensure there is enough space in the VB for this data
 	u32	bytes_need		= vl_Count*Stride;
