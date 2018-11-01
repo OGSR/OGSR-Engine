@@ -51,14 +51,16 @@ public:
 	virtual bool		IsCantWalkWeight			();
 	virtual bool		IsCantSprint				() const;
 
-			void		ConditionJump				(float weight);
-			void		ConditionWalk				(float weight, bool accel, bool sprint);
-			void		ConditionStand				(float weight);
-			
-			float	xr_stdcall	GetAlcohol			()	{return m_fAlcohol;}
-			float	xr_stdcall	GetPsy				()	{return 1.0f-GetPsyHealth();}
-			float				GetSatiety			()  {return m_fSatiety;}
-			void				SetMaxWalkWeight	(float _weight) { m_MaxWalkWeight = _weight; }
+	virtual void		UpdatePower();
+
+	void		ConditionJump				(float weight);
+	void		ConditionWalk				(float weight, bool accel, bool sprint);
+	void		ConditionStand				(float weight);
+	
+	float	xr_stdcall	GetAlcohol			()	{return m_fAlcohol;}
+	float	xr_stdcall	GetPsy				()	{return 1.0f-GetPsyHealth();}
+	float				GetSatiety			()  {return m_fSatiety;}
+	void				SetMaxWalkWeight	(float _weight) { m_MaxWalkWeight = _weight; }
 
 public:
 	IC		CActor		&object						() const
@@ -75,11 +77,14 @@ protected:
 	float m_fV_Alcohol;
 //--
 	float m_fSatiety;
+	float m_fSatietyLightLimit;
+	float m_fSatietyCriticalLimit;
 	float m_fV_Satiety;
 	float m_fV_SatietyPower;
 	float m_fV_SatietyHealth;
 //--
 	float m_fPowerLeakSpeed;
+	float m_fV_Power;
 
 	float m_fJumpPower;
 	float m_fStandPower;
