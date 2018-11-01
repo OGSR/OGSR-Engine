@@ -125,6 +125,9 @@ void CUIWindow::script_register(lua_State *L)
 		.def("GetHeight",				&CUIWindow::GetHeight)
 		.def("SetHeight",				&CUIWindow::SetHeight)
 
+		.def("GetPosTop", &CUIWindow::GetPosTop)
+		.def("GetPosLeft",				&CUIWindow::GetPosLeft)
+
 		.def("Enable",					&CUIWindow::Enable)
 		.def("IsEnabled",				&CUIWindow::IsEnabled)
 		.def("Show",					&CUIWindow::Show)
