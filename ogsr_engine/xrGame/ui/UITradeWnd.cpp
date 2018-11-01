@@ -696,11 +696,19 @@ void CUITradeWnd::MoveItems(CUICellItem* itm, bool b_all)
 		CUIDragDropListEx* to = nullptr;
 
 		if (old_owner == &m_uidata->UIOurBagList)
+		{
+			if (!CanMoveToOther((PIItem)itm->m_pData, true)) return;
+
 			to = &m_uidata->UIOurTradeList;
+		}
 		else if (old_owner == &m_uidata->UIOurTradeList)
 			to = &m_uidata->UIOurBagList;
 		else if (old_owner == &m_uidata->UIOthersBagList)
+		{
+			if (!CanMoveToOther((PIItem)itm->m_pData, false)) return;
+
 			to = &m_uidata->UIOthersTradeList;
+		}
 		else if (old_owner == &m_uidata->UIOthersTradeList)
 			to = &m_uidata->UIOthersBagList;
 
