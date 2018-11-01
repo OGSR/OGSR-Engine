@@ -1179,3 +1179,19 @@ void CScriptGameObject::SetIIFlags	(flags16 flags)
 
 	inventory_item->m_flags = flags;
 }
+
+
+void CScriptGameObject::IterateBelt( luabind::functor<void> functor, luabind::object object ) {
+  auto inventory_owner = smart_cast<CInventoryOwner*>( &this->object() );
+  ASSERT_FMT( inventory_owner, "[%s]: %s not an CInventoryOwner", __FUNCTION__, this->object() );
+  for ( const auto& it : inventory_owner->inventory().m_belt )
+    functor( object, it->object().lua_game_object() );
+}
+
+
+void CScriptGameObject::IterateRuck( luabind::functor<void> functor, luabind::object object ) {
+  auto inventory_owner = smart_cast<CInventoryOwner*>( &this->object() );
+  ASSERT_FMT( inventory_owner, "[%s]: %s not an CInventoryOwner", __FUNCTION__, this->object() );
+  for ( const auto& it : inventory_owner->inventory().m_ruck )
+    functor( object, it->object().lua_game_object() );
+}
