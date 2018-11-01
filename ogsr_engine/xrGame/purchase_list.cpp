@@ -24,11 +24,11 @@ void CPurchaseList::process	(CInifile &ini_file, LPCSTR section, CInventoryOwner
 	const CGameObject		&game_object = smart_cast<const CGameObject &>(owner);
 	CInifile::Sect			&S = ini_file.r_section(section);
 	for ( const auto &I : S.Data ) {
-		VERIFY3				(I.second.size(),"PurchaseList : cannot handle lines in section without values",section);
+		ASSERT_FMT( I.second.size(), "!![%s] : cannot handle lines in section without values: [%s], first param: [%s]", __FUNCTION__ , section, I.first.c_str() );
+		ASSERT_FMT( _GetItemCount(I.second.c_str()) > 1, "!![%s] : Invalid second parameter in section [%s], first param: [%s]", __FUNCTION__, section, I.first.c_str() );
 
-		string256			temp0, temp1;
-		THROW3				(_GetItemCount(I.second.c_str()) == 2,"Invalid parameters in section",section);
-		process				(
+		string256 temp0, temp1;
+		process(
 			game_object,
 			I.first,
 			atoi(_GetItem(I.second.c_str(),0,temp0)),
