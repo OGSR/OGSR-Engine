@@ -561,10 +561,11 @@ BOOL CActor::net_Spawn		(CSE_Abstract* DC)
 	unaffected_r_torso.pitch= r_torso.pitch;
 	unaffected_r_torso.roll	= r_torso.roll;
 
-	if( psActorFlags.test(AF_PSP) )
-		cam_Set					(eacLookAt);
-	else
-		cam_Set					(eacFirstEye);
+	// KRodin: это, мне кажется, лишнее.
+	//if( psActorFlags.test(AF_PSP) )
+	//	cam_Set(eacLookAt);
+	//else
+		cam_Set(eacFirstEye);
 
 	cam_Active()->Set		(-E->o_torso.yaw,E->o_torso.pitch,0);//E->o_Angle.z);
 

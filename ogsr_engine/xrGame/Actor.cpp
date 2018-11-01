@@ -94,7 +94,7 @@ CActor::CActor() : CEntityAlive(),current_ik_cam_shift(0)
 	cameras[eacFirstEye]	= xr_new<CCameraFirstEye>				(this);
 	cameras[eacFirstEye]->Load("actor_firsteye_cam");
 
-	if(strstr(Core.Params,"-psp"))
+	if constexpr ( true /*strstr(Core.Params,"-psp")*/ )
 		psActorFlags.set(AF_PSP, TRUE);
 	else
 		psActorFlags.set(AF_PSP, FALSE);
@@ -398,10 +398,11 @@ void CActor::Load	(LPCSTR section )
 		g_pGamePersistent->m_pGShaderConstants.m_blender_mode.set(0.f, 0.f, 0.f, 0.f);
 	}
 
-	if( psActorFlags.test(AF_PSP) )
-		cam_Set					(eacLookAt);
-	else
-		cam_Set					(eacFirstEye);
+	// KRodin: это, мне кажется, лишнее.
+	//if( psActorFlags.test(AF_PSP) )
+	//	cam_Set(eacLookAt);
+	//else
+		cam_Set(eacFirstEye);
 
 	// sheduler
 	shedule.t_min				= shedule.t_max = 1;
