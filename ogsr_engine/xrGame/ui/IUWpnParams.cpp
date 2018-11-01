@@ -87,7 +87,13 @@ void CUIWpnParams::SetInfo(const shared_str& wpn_section)
 	m_progressHandling.SetProgressPos	(g_lua_wpn_params->m_functorHandling(*wpn_section));
 }
 
-bool CUIWpnParams::Check(CPhysicsShellHolder& obj/*const shared_str& wpn_section*/){
+bool CUIWpnParams::Check(CPhysicsShellHolder& obj/*const shared_str& wpn_section*/)
+{
+	if (!READ_IF_EXISTS(pSettings, r_bool, obj.cNameSect(), "show_wpn_properties", true)) // allow to suppress default wpn params
+	{
+		return false;
+	}
+
 	if (pSettings->line_exist(obj.cNameSect(), "fire_dispersion_base"))
 	{
 		/*
