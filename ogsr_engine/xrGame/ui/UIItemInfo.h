@@ -10,7 +10,7 @@ class CUIWpnParams;
 class CUIArtefactParams;
 class CPhysicsShellHolder;
 
-extern const char * const 		fieldsCaptionColor;
+//extern const char * const 		fieldsCaptionColor;
 
 class CUIItemInfo: public CUIWindow
 {
@@ -31,8 +31,10 @@ public:
 	void				Init				(float x, float y, float width, float height, LPCSTR xml_name);
 	void				Init				(LPCSTR xml_name);
 	void				InitItem			(CInventoryItem* pInvItem);
-	void				TryAddWpnInfo		(CPhysicsShellHolder& obj/*const shared_str& wpn_section*/);
-	void				TryAddArtefactInfo	(const shared_str& af_section);
+
+	void				TryAddWpnInfo		(CPhysicsShellHolder& obj);
+	void				TryAddArtefactInfo(const shared_str& af_section);
+	void				TryAddCustomInfo(CPhysicsShellHolder& obj);
 
 	virtual void		Draw				();
 	bool				m_b_force_drawing;
@@ -44,6 +46,7 @@ public:
 	CUIProgressBar*		UICondProgresBar;
 	CUIWpnParams*		UIWpnParams;
 	CUIArtefactParams*	UIArtefactParams;
+	CUIWindow*		UICustomParams;
 
 	Fvector2			UIItemImageSize; 
 	CUIStatic*			UIItemImage;

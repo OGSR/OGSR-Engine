@@ -26,6 +26,7 @@ CUIItemInfo::CUIItemInfo()
 	UIDesc						= NULL;
 	UIWpnParams					= NULL;
 	UIArtefactParams			= NULL;
+	UICustomParams = NULL;
 	UIName						= NULL;
 	m_pInvItem					= NULL;
 	m_b_force_drawing			= false;
@@ -35,6 +36,7 @@ CUIItemInfo::~CUIItemInfo()
 {
 	xr_delete					(UIWpnParams);
 	xr_delete					(UIArtefactParams);
+	xr_delete					(UICustomParams);
 }
 
 void CUIItemInfo::Init(LPCSTR xml_name){
@@ -97,14 +99,19 @@ void CUIItemInfo::Init(LPCSTR xml_name){
 	if(uiXml.NavigateToNode("descr_list",0))
 	{
 		UIWpnParams						= xr_new<CUIWpnParams>();
+		UIWpnParams->InitFromXml(uiXml);
+
 		UIArtefactParams				= xr_new<CUIArtefactParams>();
-		UIWpnParams->InitFromXml		(uiXml);
 		UIArtefactParams->InitFromXml	(uiXml);
+
+		UICustomParams = xr_new<CUIWindow>();
+
 		UIDesc							= xr_new<CUIScrollView>(); 
 		AttachChild						(UIDesc);		
 		UIDesc->SetAutoDelete			(true);
-		m_desc_info.bShowDescrText		= !!uiXml.ReadAttribInt("descr_list",0,"only_text_info", 1);
 		xml_init.InitScrollView			(uiXml, "descr_list", 0, UIDesc);
+
+		m_desc_info.bShowDescrText = !!uiXml.ReadAttribInt("descr_list", 0, "only_text_info", 1);
 		xml_init.InitFont				(uiXml, "descr_list:font", 0, m_desc_info.uDescClr, m_desc_info.pDescFont);
 	}	
 
@@ -160,10 +167,11 @@ void CUIItemInfo::InitItem(CInventoryItem* pInvItem)
 
 	if(UIDesc)
 	{
-		UIDesc->Clear						();
-		VERIFY								(0==UIDesc->GetSize());
-		TryAddWpnInfo						(pInvItem->object()/*.cNameSect()*/);
-		TryAddArtefactInfo					(pInvItem->object().cNameSect());
+		UIDesc->Clear();
+		VERIFY(0 == UIDesc->GetSize());
+		TryAddWpnInfo(pInvItem->object());
+		TryAddArtefactInfo(pInvItem->object().cNameSect());
+		TryAddCustomInfo(pInvItem->object());
 		if(m_desc_info.bShowDescrText)
 		{
 			CUIStatic* pItem					= xr_new<CUIStatic>();
@@ -197,20 +205,41 @@ void CUIItemInfo::InitItem(CInventoryItem* pInvItem)
 	}
 }
 
-void CUIItemInfo::TryAddWpnInfo (CPhysicsShellHolder &obj/*const shared_str& wpn_section*/){
-	if (UIWpnParams->Check(obj/*wpn_section*/))
+void CUIItemInfo::TryAddWpnInfo (CPhysicsShellHolder &obj)
+{
+	if (UIWpnParams->Check(obj))
 	{
 		UIWpnParams->SetInfo(obj.cNameSect());
 		UIDesc->AddWindow(UIWpnParams,false);
 	}
 }
 
-void CUIItemInfo::TryAddArtefactInfo	(const shared_str& af_section)
+void CUIItemInfo::TryAddArtefactInfo(const shared_str& af_section)
 {
 	if (UIArtefactParams->Check(af_section))
 	{
 		UIArtefactParams->SetInfo(af_section);
 		UIDesc->AddWindow(UIArtefactParams, false);
+	}
+}
+
+#include "script_game_object.h"
+
+void CUIItemInfo::TryAddCustomInfo(CPhysicsShellHolder& obj)
+{
+	UICustomParams->DetachAll();
+
+	if (!!pSettings->line_exist("engine_callbacks", "ui_item_info_callback"))
+	{
+		const LPCSTR callback = pSettings->r_string("engine_callbacks", "ui_item_info_callback");
+
+		if (luabind::functor<bool> lua_function; ai().script_engine().functor(callback, lua_function))
+		{
+			if (lua_function(obj.lua_game_object(), UICustomParams))
+			{
+				UIDesc->AddWindow(UICustomParams, false);
+			}
+		}
 	}
 }
 
