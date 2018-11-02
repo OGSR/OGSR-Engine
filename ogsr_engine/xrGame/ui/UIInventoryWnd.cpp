@@ -50,6 +50,7 @@ CUIInventoryWnd::CUIInventoryWnd() :
 
 	g_pInvWnd							= this;	
 	m_b_need_reinit						= false;
+	m_b_need_update_stats = true;
 	Hide								();	
 }
 
@@ -288,14 +289,20 @@ void CUIInventoryWnd::Update()
 
 		CInventoryOwner* pOurInvOwner	= smart_cast<CInventoryOwner*>(pEntityAlive);
 		u32 _money						= pOurInvOwner->get_money();
+
 		// update money
 		string64						sMoney;
 		sprintf_s							(sMoney,"%d RU", _money);
 		UIMoneyWnd.SetText				(sMoney);
 
-		// update outfit parameters
-		CCustomOutfit* outfit			= smart_cast<CCustomOutfit*>(pOurInvOwner->inventory().m_slots[OUTFIT_SLOT].m_pIItem);		
-		UIOutfitInfo.Update				(outfit);		
+		if (m_b_need_update_stats)
+		{
+			// update outfit parameters
+			CCustomOutfit* outfit = smart_cast<CCustomOutfit*>(pOurInvOwner->inventory().m_slots[OUTFIT_SLOT].m_pIItem);
+			UIOutfitInfo.Update(outfit);
+
+			m_b_need_update_stats = false;
+		}
 	}
 
 	UIStaticTimeString.SetText(*InventoryUtilities::GetGameTimeAsString(InventoryUtilities::etpTimeToMinutes));
@@ -427,6 +434,7 @@ void	CUIInventoryWnd::SendEvent_Item2Slot			(PIItem	pItem)
 	P.w_u16							(pItem->object().ID());
 	pItem->object().u_EventSend		(P);
 	g_pInvWnd->PlaySnd				(eInvItemToSlot);
+	m_b_need_update_stats = true;
 };
 
 void	CUIInventoryWnd::SendEvent_Item2Belt			(PIItem	pItem)
@@ -436,6 +444,7 @@ void	CUIInventoryWnd::SendEvent_Item2Belt			(PIItem	pItem)
 	P.w_u16							(pItem->object().ID());
 	pItem->object().u_EventSend		(P);
 	g_pInvWnd->PlaySnd				(eInvItemToBelt);
+	m_b_need_update_stats = true;
 };
 
 void	CUIInventoryWnd::SendEvent_Item2Ruck			(PIItem	pItem)
@@ -444,8 +453,8 @@ void	CUIInventoryWnd::SendEvent_Item2Ruck			(PIItem	pItem)
 	pItem->object().u_EventGen		(P, GEG_PLAYER_ITEM2RUCK, pItem->object().H_Parent()->ID());
 	P.w_u16							(pItem->object().ID());
 	pItem->object().u_EventSend		(P);
-
 	g_pInvWnd->PlaySnd				(eInvItemToRuck);
+	m_b_need_update_stats = true;
 };
 
 void	CUIInventoryWnd::SendEvent_Item_Drop(PIItem	pItem)
@@ -460,6 +469,7 @@ void	CUIInventoryWnd::SendEvent_Item_Drop(PIItem	pItem)
 		pItem->object().u_EventSend(P);
 	}
 	g_pInvWnd->PlaySnd				(eInvDropItem);
+	m_b_need_update_stats = true;
 };
 
 void	CUIInventoryWnd::SendEvent_Item_Eat			(PIItem	pItem)
@@ -470,7 +480,6 @@ void	CUIInventoryWnd::SendEvent_Item_Eat			(PIItem	pItem)
 	P.w_u16							(pItem->object().ID());
 	pItem->object().u_EventSend		(P);
 };
-
 
 void CUIInventoryWnd::BindDragDropListEnents(CUIDragDropListEx* lst)
 {
