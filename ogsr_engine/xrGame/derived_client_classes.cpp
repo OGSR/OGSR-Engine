@@ -229,6 +229,8 @@ void CInventoryScript::script_register(lua_State *L)
 			.def_readonly("item_place"					,			&CInventoryItem::m_eItemPlace)
 			.def_readwrite("item_condition"				,			&CInventoryItem::m_fCondition)
 			.def_readwrite("inv_weight"					,			&CInventoryItem::m_weight)
+			.def_readwrite( "m_flags", &CInventoryItem::m_flags )
+			.def_readwrite( "always_ungroupable", &CInventoryItem::m_always_ungroupable )
 
 			.def_readwrite( "psy_health_restore_speed", &CInventoryItem::m_fPsyHealthRestoreSpeed )
 			.def_readwrite( "radiation_restore_speed", &CInventoryItem::m_fRadiationRestoreSpeed )

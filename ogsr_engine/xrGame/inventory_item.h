@@ -290,6 +290,7 @@ public:
  public:
         u8   GetLoadedBeltIndex() { return loaded_belt_index; };
 	bool m_highlight_equipped;
+	bool m_always_ungroupable;
 };
 
 #include "inventory_item_inline.h"

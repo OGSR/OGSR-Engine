@@ -103,6 +103,7 @@ CInventoryItem::CInventoryItem()
 
 	loaded_belt_index = (u8)(-1);
 	m_highlight_equipped = false;
+	m_always_ungroupable = false;
 }
 
 CInventoryItem::~CInventoryItem() 
@@ -195,6 +196,7 @@ void CInventoryItem::Load(LPCSTR section)
 
 	m_fPsyHealthRestoreSpeed = READ_IF_EXISTS( pSettings, r_float, section,	"psy_health_restore_speed", 0.f );
 	m_fRadiationRestoreSpeed = READ_IF_EXISTS( pSettings, r_float, section,	"radiation_restore_speed", 0.f );
+	m_always_ungroupable = READ_IF_EXISTS( pSettings, r_bool, section, "always_ungroupable", false );
 }
 
 
