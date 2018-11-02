@@ -229,7 +229,7 @@ void CUIItemInfo::TryAddCustomInfo(CPhysicsShellHolder& obj)
 {
 	UICustomParams->DetachAll();
 
-	if (!!pSettings->line_exist("engine_callbacks", "ui_item_info_callback"))
+	if (pSettings->line_exist("engine_callbacks", "ui_item_info_callback"))
 	{
 		const LPCSTR callback = pSettings->r_string("engine_callbacks", "ui_item_info_callback");
 
