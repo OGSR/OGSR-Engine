@@ -36,6 +36,8 @@ bool CUIInventoryCellItem::EqualTo(CUICellItem* itm)
 	auto item1 = (CInventoryItem*)m_pData;
 	auto item2 = (CInventoryItem*)itm->m_pData;
 
+	if ( item1->m_always_ungroupable || item2->m_always_ungroupable )
+		return false;
 	if (item1->m_flags.test(CInventoryItem::FIUngroupable) || item2->m_flags.test(CInventoryItem::FIUngroupable) )
 		return false;
 
