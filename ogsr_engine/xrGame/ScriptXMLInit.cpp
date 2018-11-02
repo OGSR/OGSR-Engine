@@ -23,13 +23,16 @@ using namespace luabind;
 
 void _attach_child(CUIWindow* _child, CUIWindow* _parent)
 {
-	if(!_parent)	return;
+	if(!_parent)	
+		return;
+
 	CUIScrollView* _parent_scroll = smart_cast<CUIScrollView*>(_parent);
 	if(_parent_scroll)
 		_parent_scroll->AddWindow	(_child, true);
 	else
 		_parent->AttachChild		(_child);
 }
+
 CScriptXmlInit::CScriptXmlInit(){
 
 }
@@ -47,10 +50,17 @@ void CScriptXmlInit::ParseFile(LPCSTR xml_file){
 	m_xml.Init(CONFIG_PATH, UI_PATH, xml_file);
 }
 
+void CScriptXmlInit::ParseShTexInfo(LPCSTR xml_file){
+	CUITextureMaster::ParseShTexInfo(xml_file);
+}
+
 void CScriptXmlInit::InitWindow(LPCSTR path, int index, CUIWindow* pWnd){
 	CUIXmlInit::InitWindow(m_xml, path, index, pWnd);
 }
 
+void CScriptXmlInit::InitAutoStaticGroup(LPCSTR path, CUIWindow* pWnd){
+	CUIXmlInit::InitAutoStaticGroup(m_xml, path, 0, pWnd);
+}
 
 CUIFrameWindow*	CScriptXmlInit::InitFrame(LPCSTR path, CUIWindow* parent){
 	CUIFrameWindow* pWnd = xr_new<CUIFrameWindow>();
@@ -108,11 +118,6 @@ CUIStatic* CScriptXmlInit::InitStatic(LPCSTR path, CUIWindow* parent){
 	return pWnd;
 }
 
-void CScriptXmlInit::InitAutoStaticGroup(LPCSTR path, CUIWindow* pWnd)
-{
-	CUIXmlInit::InitAutoStaticGroup(m_xml, path, 0, pWnd);
-}
-
 CUIStatic* CScriptXmlInit::InitAnimStatic(LPCSTR path, CUIWindow* parent){
 	CUIAnimatedStatic* pWnd = xr_new<CUIAnimatedStatic>();
 	CUIXmlInit::InitAnimatedStatic(m_xml, path, 0, pWnd);
@@ -130,7 +135,6 @@ CUIScrollView* CScriptXmlInit::InitScrollView(LPCSTR path, CUIWindow* parent){
 //.	if(parent) parent->AttachChild(pWnd);
 	return pWnd;
 }
-
 
 
 CUICheckButton* CScriptXmlInit::InitCheck(LPCSTR path, CUIWindow* parent){
@@ -214,10 +218,6 @@ CUITabControl* CScriptXmlInit::InitTab(LPCSTR path, CUIWindow* parent){
 	_attach_child(pWnd, parent);
 //.	if(parent) parent->AttachChild(pWnd);
 	return pWnd;	
-}
-
-void CScriptXmlInit::ParseShTexInfo(LPCSTR xml_file){
-	CUITextureMaster::ParseShTexInfo(xml_file);
 }
 
 CUIMMShniaga* CScriptXmlInit::InitMMShniaga(LPCSTR path, CUIWindow* parent){

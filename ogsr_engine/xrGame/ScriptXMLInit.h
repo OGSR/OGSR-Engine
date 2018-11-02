@@ -39,8 +39,9 @@ public:
 
 	void ParseFile		(LPCSTR xml_file);
 	void ParseShTexInfo	(LPCSTR xml_file);
+
 	void InitWindow		(LPCSTR path, int index, CUIWindow* pWnd);
-	//void InitList		(LPCSTR path, int index, CUIListWnd* pWnd);
+	void InitAutoStaticGroup(LPCSTR path, CUIWindow* pWnd);
 
 	CUIListWnd*			InitList(LPCSTR path, CUIWindow* parent);
 	CUIFrameWindow*		InitFrame(LPCSTR path, CUIWindow* parent);
@@ -63,7 +64,7 @@ public:
 	CUIWindow*			InitKeyBinding(LPCSTR path, CUIWindow* parent);
 	CUIScrollView*		InitScrollView(LPCSTR path, CUIWindow* parent);
 	CUIProgressBar*		InitProgressBar(LPCSTR path, CUIWindow* parent);
-	void				InitAutoStaticGroup(LPCSTR path, CUIWindow* pWnd);
+
 protected:
 	CUIXml	m_xml;
 };
