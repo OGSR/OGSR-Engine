@@ -26,7 +26,6 @@ CUIItemInfo::CUIItemInfo()
 	UIDesc						= NULL;
 	UIWpnParams					= NULL;
 	UIArtefactParams			= NULL;
-	UICustomParams = NULL;
 	UIName						= NULL;
 	m_pInvItem					= NULL;
 	m_b_force_drawing			= false;
@@ -36,7 +35,6 @@ CUIItemInfo::~CUIItemInfo()
 {
 	xr_delete					(UIWpnParams);
 	xr_delete					(UIArtefactParams);
-	xr_delete					(UICustomParams);
 }
 
 void CUIItemInfo::Init(LPCSTR xml_name){
@@ -103,9 +101,7 @@ void CUIItemInfo::Init(LPCSTR xml_name){
 
 		UIArtefactParams				= xr_new<CUIArtefactParams>();
 		UIArtefactParams->InitFromXml	(uiXml);
-
-		UICustomParams = xr_new<CUIWindow>();
-
+		
 		UIDesc							= xr_new<CUIScrollView>(); 
 		AttachChild						(UIDesc);		
 		UIDesc->SetAutoDelete			(true);
@@ -227,18 +223,12 @@ void CUIItemInfo::TryAddArtefactInfo(const shared_str& af_section)
 
 void CUIItemInfo::TryAddCustomInfo(CPhysicsShellHolder& obj)
 {
-	UICustomParams->DetachAll();
-
 	if (pSettings->line_exist("engine_callbacks", "ui_item_info_callback"))
 	{
 		const LPCSTR callback = pSettings->r_string("engine_callbacks", "ui_item_info_callback");
-
-		if (luabind::functor<bool> lua_function; ai().script_engine().functor(callback, lua_function))
+		if (luabind::functor<void> lua_function; ai().script_engine().functor(callback, lua_function))
 		{
-			if (lua_function(obj.lua_game_object(), UICustomParams))
-			{
-				UIDesc->AddWindow(UICustomParams, false);
-			}
+			lua_function(UIDesc, obj.lua_game_object());
 		}
 	}
 }
