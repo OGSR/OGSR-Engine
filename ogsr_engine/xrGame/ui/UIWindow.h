@@ -103,6 +103,9 @@ public:
 			void			SetWndRect_script(float x, float y, float width, float height)		{CUISimpleWindow::SetWndRect(x,y,width,height);}
 			void			SetWndRect_script(Frect rect)										{CUISimpleWindow::SetWndRect(rect);}
 
+			IC		float			GetPosLeft()							const { return m_wndPos.x; }
+			IC		float			GetPosTop()							const { return m_wndPos.y; }
+
 	//прорисовка окна
 	virtual void			Draw				();
 	virtual void			Draw				(float x, float y);
