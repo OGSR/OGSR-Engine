@@ -855,6 +855,15 @@ u32 vertex_count() {
 }
 
 
+void disable_vertex( u32 vertex_id ) {
+  ai().level_graph().set_mask( vertex_id );
+
+}
+void enable_vertex( u32 vertex_id ) {
+  ai().level_graph().clear_mask( vertex_id );
+}
+
+
 #pragma optimize("s",on)
 void CLevel::script_register(lua_State *L)
 {
@@ -995,6 +1004,8 @@ void CLevel::script_register(lua_State *L)
 		def( "patrol_path_remove", &patrol_path_remove ),
 		def( "valid_vertex_id",	valid_vertex_id ),
 		def( "vertex_count",	vertex_count ),
+		def( "disable_vertex",	disable_vertex ),
+		def( "enable_vertex",	enable_vertex ),
 		//--#SM+# Begin --
 		def("set_blender_mode_main", &set_blender_mode_main),
 		def("get_blender_mode_main", &get_blender_mode_main),
