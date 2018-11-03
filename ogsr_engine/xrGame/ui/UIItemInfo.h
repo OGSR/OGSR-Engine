@@ -46,7 +46,6 @@ public:
 	CUIProgressBar*		UICondProgresBar;
 	CUIWpnParams*		UIWpnParams;
 	CUIArtefactParams*	UIArtefactParams;
-	CUIWindow*		UICustomParams;
 
 	Fvector2			UIItemImageSize; 
 	CUIStatic*			UIItemImage;

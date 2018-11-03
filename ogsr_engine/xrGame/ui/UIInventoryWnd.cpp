@@ -288,14 +288,15 @@ void CUIInventoryWnd::Update()
 
 		CInventoryOwner* pOurInvOwner	= smart_cast<CInventoryOwner*>(pEntityAlive);
 		u32 _money						= pOurInvOwner->get_money();
+
 		// update money
 		string64						sMoney;
 		sprintf_s							(sMoney,"%d RU", _money);
 		UIMoneyWnd.SetText				(sMoney);
 
 		// update outfit parameters
-		CCustomOutfit* outfit			= smart_cast<CCustomOutfit*>(pOurInvOwner->inventory().m_slots[OUTFIT_SLOT].m_pIItem);		
-		UIOutfitInfo.Update				(outfit);		
+		CCustomOutfit* outfit = smart_cast<CCustomOutfit*>(pOurInvOwner->inventory().m_slots[OUTFIT_SLOT].m_pIItem);
+		UIOutfitInfo.Update(outfit);
 	}
 
 	UIStaticTimeString.SetText(*InventoryUtilities::GetGameTimeAsString(InventoryUtilities::etpTimeToMinutes));
@@ -444,7 +445,6 @@ void	CUIInventoryWnd::SendEvent_Item2Ruck			(PIItem	pItem)
 	pItem->object().u_EventGen		(P, GEG_PLAYER_ITEM2RUCK, pItem->object().H_Parent()->ID());
 	P.w_u16							(pItem->object().ID());
 	pItem->object().u_EventSend		(P);
-
 	g_pInvWnd->PlaySnd				(eInvItemToRuck);
 };
 
@@ -470,7 +470,6 @@ void	CUIInventoryWnd::SendEvent_Item_Eat			(PIItem	pItem)
 	P.w_u16							(pItem->object().ID());
 	pItem->object().u_EventSend		(P);
 };
-
 
 void CUIInventoryWnd::BindDragDropListEnents(CUIDragDropListEx* lst)
 {

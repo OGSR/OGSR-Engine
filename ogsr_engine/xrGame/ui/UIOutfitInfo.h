@@ -10,7 +10,6 @@ struct ActorRestoreParams;
 
 class CUIOutfitInfo : public CUIWindow
 {
-CCustomOutfit*		m_outfit;
 public:
 					CUIOutfitInfo			();
 	virtual			~CUIOutfitInfo			();
@@ -18,7 +17,7 @@ public:
 			void 	Update					(CCustomOutfit* outfit);	
 			void 	InitFromXml				(CUIXml& xml_doc);
 protected:
-	void			SetItem					();
+
 	float			GetArtefactParam		(ActorRestoreParams params, u32 i);
 
 	CUIScrollView*	m_listWnd;

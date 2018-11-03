@@ -111,6 +111,7 @@ void CUIWindow::script_register(lua_State *L)
 		.def("AttachChild",				&CUIWindow::AttachChild, adopt<2>())
 #endif
 		.def("DetachChild",				&CUIWindow::DetachChild)
+		.def("DetachAll",				&CUIWindow::DetachAll)
 		.def("SetAutoDelete",			&CUIWindow::SetAutoDelete)
 		.def("IsAutoDelete",			&CUIWindow::IsAutoDelete)
 
