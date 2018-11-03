@@ -491,14 +491,14 @@ void iterate_sounds					(LPCSTR prefix, u32 max_count, const CScriptCallbackEx<v
 	}
 }
 
-void iterate_sounds1				(LPCSTR prefix, u32 max_count, luabind::functor<void> functor)
+void iterate_sounds1(LPCSTR prefix, u32 max_count, const luabind::functor<void>& functor)
 {
 	CScriptCallbackEx<void>		temp;
 	temp.set					(functor);
 	iterate_sounds				(prefix,max_count,temp);
 }
 
-void iterate_sounds2				(LPCSTR prefix, u32 max_count, luabind::object object, luabind::functor<void> functor)
+void iterate_sounds2(LPCSTR prefix, u32 max_count, const luabind::object& object, const luabind::functor<void>& functor)
 {
 	CScriptCallbackEx<void>		temp;
 	temp.set					(functor,object);
