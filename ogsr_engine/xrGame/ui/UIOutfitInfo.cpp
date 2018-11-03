@@ -124,24 +124,18 @@ void CUIOutfitInfo::Update(CCustomOutfit* outfit)
 
 	auto artefactEffects = Actor()->ActiveArtefactsOnBelt();
 
-	// hack: we cannot use m_listWnd->Clear(); here because it will cause ScrollToBegin 
-	// and this will prevent list from scrolling because it get called every update
-	// but we need to first clean all elements in list to prevent it from mixing during changing of outfits
 	for (u32 i = _item_start; i < _max_item_index; ++i)
 	{
 		CUIStatic* _s = m_items[i];
 
 		if (!_s) continue;
+
+		// hack: we cannot use m_listWnd->Clear(); here because it will cause ScrollToBegin 
+		// and this will prevent list from scrolling because it get called every update
+		// but we need to first clean all elements in list to prevent it from mixing during changing of outfits
 
 		if (_s->GetParent() != NULL)
 			m_listWnd->RemoveWindow(_s);
-	}
-
-	for (u32 i = _item_start; i < _max_item_index; ++i)
-	{
-		CUIStatic* _s = m_items[i];
-
-		if (!_s) continue;
 
 		float _val_outfit = 0.0f;
 		float _val_af = 0.0f;
