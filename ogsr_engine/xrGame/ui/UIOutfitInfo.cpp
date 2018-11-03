@@ -95,13 +95,6 @@ void CUIOutfitInfo::InitFromXml(CUIXml& xml_doc)
 
 }
 
-void CUIOutfitInfo::Update(CCustomOutfit* outfit)
-{
-	m_outfit				= outfit;
-
-	SetItem();
-}
-
 float CUIOutfitInfo::GetArtefactParam(ActorRestoreParams params, u32 i)
 {
 	float r = 0;
@@ -123,20 +116,21 @@ float CUIOutfitInfo::GetArtefactParam(ActorRestoreParams params, u32 i)
 	return r;
 }
 
-void CUIOutfitInfo::SetItem()
+#include "script_game_object.h"
+
+void CUIOutfitInfo::Update(CCustomOutfit* outfit)
 {
 	string128 _buff;
 
 	auto artefactEffects = Actor()->ActiveArtefactsOnBelt();
+
+	m_listWnd->Clear();
 
 	for (u32 i = _item_start; i < _max_item_index; ++i)
 	{
 		CUIStatic* _s = m_items[i];
 
 		if (!_s) continue;
-
-		if (_s->GetParent() != NULL)
-			m_listWnd->RemoveWindow(_s);
 
 		float _val_outfit = 0.0f;
 		float _val_af = 0.0f;
@@ -150,7 +144,7 @@ void CUIOutfitInfo::SetItem()
 		}
 		else
 		{
-			_val_outfit = m_outfit ? m_outfit->GetDefHitTypeProtection(ALife::EHitType(i - _max_item_index1)) : 1.0f;
+			_val_outfit = outfit ? outfit->GetDefHitTypeProtection(ALife::EHitType(i - _max_item_index1)) : 1.0f;
 			_val_outfit = 1.0f - _val_outfit;
 
 			_val_af = Actor()->HitArtefactsOnBelt(1.0f, ALife::EHitType(i - _max_item_index1));
@@ -191,7 +185,15 @@ void CUIOutfitInfo::SetItem()
 
 		_s->SetText(_buff);
 
-		if (_s->GetParent() == NULL)
-			m_listWnd->AddWindow(_s, false);
+		m_listWnd->AddWindow(_s, false);
+	}
+
+	if (pSettings->line_exist("engine_callbacks", "ui_actor_info_callback"))
+	{
+		const LPCSTR callback = pSettings->r_string("engine_callbacks", "ui_actor_info_callback");
+		if (luabind::functor<void> lua_function; ai().script_engine().functor(callback, lua_function))
+		{
+			lua_function(m_listWnd, outfit ? outfit->lua_game_object() : nullptr);
+		}
 	}
 }
