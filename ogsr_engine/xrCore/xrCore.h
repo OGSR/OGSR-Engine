@@ -226,7 +226,8 @@ public:
 	  colorize_untradable        = 1ull << 33,
 	  select_mode_1342           = 1ull << 34,
 	  old_outfit_slot_style      = 1ull << 35,
-	  npc_simplified_shooting    = 1ull << 36;
+	  npc_simplified_shooting    = 1ull << 36,
+	  actor_thirst               = 1ull << 37;
 	};
 
 	void		_initialize	(LPCSTR ApplicationName, LogCallback cb=0, BOOL init_fs=TRUE, LPCSTR fs_fname=0);

@@ -48,6 +48,7 @@ public:
 	virtual float			GetSatiety				() 					{return 0.f; }
 	virtual float xr_stdcall	GetAlcohol				()					{return 0.f; }
 	IC float 				GetEntityMorale			() const			{return m_fEntityMorale;}
+	virtual IC float				GetThirst() const { return 1.0f; }
 
 	IC float 				GetHealthLost			() const			{return m_fHealthLost;}
 
@@ -59,6 +60,7 @@ public:
 	void 					ChangeRadiation			(float value);
 	void 					ChangePsyHealth			(float value);
 	virtual void 			ChangeAlcohol			(float value){};
+	virtual void			ChangeThirst(const float value) {};
 
 	IC void					MaxPower				()					{m_fPower = m_fPowerMax;};
 	IC void					SetMaxPower				(float val)			{m_fPowerMax = val; clamp(m_fPowerMax,0.1f,1.0f);};

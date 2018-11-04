@@ -26,12 +26,14 @@ private:
 			eWeaponJammedReached			=(1<<5),
 			ePhyHealthMinReached			=(1<<6),
 			eCantWalkWeight					=(1<<7),
+			eCriticalThirstReached = (1 << 8),
 			};
 	Flags16											m_condition_flags;
 private:
 	CActor*											m_object;
 	void				UpdateTutorialThresholds	();
 	void 				UpdateSatiety				();
+	void				UpdateThirst();
 public:
 						CActorCondition				(CActor *object);
 	virtual				~CActorCondition			(void);
@@ -44,6 +46,7 @@ public:
 
 	virtual void 		ChangeAlcohol				(float value);
 	virtual void 		ChangeSatiety				(float value);
+	virtual void		ChangeThirst				(float value);
 
 	// хромание при потере сил и здоровья
 	virtual	bool		IsLimping					() const;
@@ -60,6 +63,7 @@ public:
 	float	xr_stdcall	GetAlcohol			()	{return m_fAlcohol;}
 	float	xr_stdcall	GetPsy				()	{return 1.0f-GetPsyHealth();}
 	float				GetSatiety			()  {return m_fSatiety;}
+	float				GetThirst() { return m_fThirst; }
 	void				SetMaxWalkWeight	(float _weight) { m_MaxWalkWeight = _weight; }
 
 public:
@@ -83,6 +87,15 @@ protected:
 	float m_fV_SatietyPower;
 	float m_fV_SatietyHealth;
 //--
+
+	float m_fThirst;
+	float m_fThirstLightLimit;
+	float m_fThirstCriticalLimit;
+	float m_fV_Thirst;
+	float m_fV_ThirstPower;
+	float m_fV_ThirstHealth;
+
+
 	float m_fPowerLeakSpeed;
 	float m_fV_Power;
 

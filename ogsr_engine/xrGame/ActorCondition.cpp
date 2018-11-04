@@ -38,6 +38,7 @@ CActorCondition::CActorCondition(CActor *object) :
 	m_fSprintK					= 0.f;
 	m_fAlcohol					= 0.f;
 	m_fSatiety					= 1.0f;
+	m_fThirst						= 1.0f;
 
 	VERIFY						(object);
 	m_object					= object;
@@ -100,6 +101,24 @@ void CActorCondition::LoadCondition(LPCSTR entity_section)
 	if (m_fSatietyCriticalLimit > m_fSatietyLightLimit)
 	{
 		m_fSatietyCriticalLimit = m_fSatietyLightLimit;
+	}
+
+	if (Core.Features.test(xrCore::Feature::actor_thirst))
+	{
+		m_fThirstLightLimit = READ_IF_EXISTS(pSettings, r_float, section, "thirst_light_limit", 0.0f);
+		clamp(m_fThirstLightLimit, 0.0f, 1.0f);
+
+		m_fThirstCriticalLimit = READ_IF_EXISTS(pSettings, r_float, section, "thirst_critical_limit", 0.0f);
+		clamp(m_fThirstCriticalLimit, 0.0f, 1.0f);
+
+		if (m_fThirstCriticalLimit > m_fThirstLightLimit)
+		{
+			m_fThirstCriticalLimit = m_fThirstLightLimit;
+		}
+
+		m_fV_Thirst = pSettings->r_float(section, "thirst_v");
+		m_fV_ThirstPower = pSettings->r_float(section, "thirst_power_v");
+		m_fV_ThirstHealth = pSettings->r_float(section, "thirst_health_v");
 	}
 	
 	m_MaxWalkWeight					= pSettings->r_float(section,"max_walk_weight");
@@ -182,6 +201,9 @@ void CActorCondition::UpdateCondition()
 
 	UpdateSatiety				();
 
+	if (Core.Features.test(xrCore::Feature::actor_thirst))
+		UpdateThirst();
+
 	inherited::UpdateCondition	();
 
 	UpdateTutorialThresholds();
@@ -190,12 +212,9 @@ void CActorCondition::UpdateCondition()
 
 void CActorCondition::UpdateSatiety()
 {
-	float k = 1.0f;
 	if (m_fSatiety > 0)
 	{
-		m_fSatiety -= m_fV_Satiety *
-			k *
-			m_fDeltaTime;
+		m_fSatiety -= m_fV_Satiety * m_fDeltaTime;
 		clamp(m_fSatiety, 0.0f, 1.0f);
 	}
 
@@ -225,6 +244,22 @@ void CActorCondition::UpdateSatiety()
 	m_fDeltaHealth += m_fV_SatietyHealth * satiety_health_koef * m_fDeltaTime;
 	m_fDeltaPower += m_fV_SatietyPower * satiety_power_koef * m_fDeltaTime;
 }
+
+void CActorCondition::UpdateThirst()
+{
+	if (m_fThirst > 0)
+	{
+		m_fThirst -= m_fV_Thirst * m_fDeltaTime;
+		clamp(m_fThirst, 0.0f, 1.0f);
+	}
+
+	float thirst_health_koef = (m_fThirst - m_fThirstLightLimit) / (m_fThirst >= m_fThirstLightLimit ? 1 - m_fThirstLightLimit : m_fThirstLightLimit);
+	float thirst_power_koef = m_fThirst;
+
+	m_fDeltaHealth += m_fV_ThirstHealth * thirst_health_koef * m_fDeltaTime;
+	m_fDeltaPower += m_fV_ThirstPower * thirst_power_koef * m_fDeltaTime;
+}
+
 
 void CActorCondition::UpdatePower()
 {
@@ -317,6 +352,11 @@ void CActorCondition::save(NET_Packet &output_packet)
 	save_data			(m_fAlcohol, output_packet);
 	save_data			(m_condition_flags, output_packet);
 	save_data			(m_fSatiety, output_packet);
+	if (Core.Features.test(xrCore::Feature::actor_thirst))
+	{
+		save_data(m_fThirst, output_packet);
+	}
+
 }
 
 void CActorCondition::load(IReader &input_packet)
@@ -325,6 +365,10 @@ void CActorCondition::load(IReader &input_packet)
 	load_data			(m_fAlcohol, input_packet);
 	load_data			(m_condition_flags, input_packet);
 	load_data			(m_fSatiety, input_packet);
+	if (Core.Features.test(xrCore::Feature::actor_thirst))
+	{
+		load_data(m_fThirst, input_packet);
+	}
 }
 
 void CActorCondition::reinit	()
@@ -332,6 +376,7 @@ void CActorCondition::reinit	()
 	inherited::reinit	();
 	m_bLimping					= false;
 	m_fSatiety					= 1.f;
+	m_fThirst = 1.f;
 }
 
 void CActorCondition::ChangeAlcohol	(float value)
@@ -345,6 +390,13 @@ void CActorCondition::ChangeSatiety(float value)
 	clamp		(m_fSatiety, 0.0f, 1.0f);
 }
 
+void CActorCondition::ChangeThirst(float value)
+{
+	m_fThirst += value;
+	clamp(m_fThirst, 0.0f, 1.0f);
+}
+
+
 void CActorCondition::UpdateTutorialThresholds()
 {
 	string256						cb_name;
@@ -355,8 +407,12 @@ void CActorCondition::UpdateTutorialThresholds()
 	static float _cRadiation		= pSettings->r_float("tutorial_conditions_thresholds","radiation");
 	static float _cWpnCondition		= pSettings->r_float("tutorial_conditions_thresholds","weapon_jammed");
 	static float _cPsyHealthThr		= pSettings->r_float("tutorial_conditions_thresholds","psy_health");
+	static float _cThirst = 0.0f;
 
-
+	if (Core.Features.test(xrCore::Feature::actor_thirst))
+	{
+		_cThirst = pSettings->r_float("tutorial_conditions_thresholds", "thirst");
+	}
 
 	bool b = true;
 	if(b && !m_condition_flags.test(eCriticalPowerReached) && GetPower()<_cPowerThr){
@@ -383,6 +439,15 @@ void CActorCondition::UpdateTutorialThresholds()
 		strcpy_s(cb_name,"_G.on_actor_satiety");
 	}
 
+	if (Core.Features.test(xrCore::Feature::actor_thirst))
+	{
+		if (b && !m_condition_flags.test(eCriticalThirstReached) && GetThirst() < _cThirst) {
+			m_condition_flags.set(eCriticalThirstReached, true);
+			b = false;
+			xr_strcpy(cb_name, "_G.on_actor_thirst");
+		}
+	}
+
 	if(b && !m_condition_flags.test(eCriticalRadiationReached) && GetRadiation()>_cRadiation){
 		m_condition_flags.set			(eCriticalRadiationReached, TRUE);
 		b=false;
@@ -390,13 +455,11 @@ void CActorCondition::UpdateTutorialThresholds()
 	}
 
 	if(b && !m_condition_flags.test(ePhyHealthMinReached) && GetPsyHealth()>_cPsyHealthThr){
-//.		m_condition_flags.set			(ePhyHealthMinReached, TRUE);
 		b=false;
 		strcpy_s(cb_name,"_G.on_actor_psy");
 	}
 
 	if(b && !m_condition_flags.test(eCantWalkWeight)){
-//.		m_condition_flags.set			(eCantWalkWeight, TRUE);
 		b=false;
 		strcpy_s(cb_name,"_G.on_actor_cant_walk_weight");
 	}
