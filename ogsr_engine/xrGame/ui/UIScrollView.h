@@ -44,7 +44,7 @@ public:
 	virtual void	Update				();
 			void	AddWindow			(CUIWindow* pWnd, bool auto_delete);
 			void	RemoveWindow		(CUIWindow* pWnd);
-			void	Clear				();
+			void	Clear				(bool scrollToTop = true);
 			void	ScrollToBegin		();
 			void	ScrollToEnd			();
 			bool	GetVertFlip			()									{return !!m_flags.test(eVertFlip);}

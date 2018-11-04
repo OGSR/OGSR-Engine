@@ -124,7 +124,7 @@ void CUIOutfitInfo::Update(CCustomOutfit* outfit)
 
 	auto artefactEffects = Actor()->ActiveArtefactsOnBelt();
 
-	m_listWnd->Clear();
+	m_listWnd->Clear(false); // clear existing items and do not scroll to top
 
 	for (u32 i = _item_start; i < _max_item_index; ++i)
 	{
