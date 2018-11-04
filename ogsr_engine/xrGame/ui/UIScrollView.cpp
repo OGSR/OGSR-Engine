@@ -244,7 +244,7 @@ int CUIScrollView::GetMaxScrollPos()
 }
 int CUIScrollView::GetCurrentScrollPos()
 {
-	return m_VScrollBar->GetMinRange();
+	return m_VScrollBar->GetScrollPos();
 }
 
 void CUIScrollView::SetScrollPos(int value)

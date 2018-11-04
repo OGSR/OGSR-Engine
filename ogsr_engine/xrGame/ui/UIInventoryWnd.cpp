@@ -50,7 +50,7 @@ CUIInventoryWnd::CUIInventoryWnd() :
 
 	g_pInvWnd							= this;	
 	m_b_need_reinit						= false;
-	m_b_need_update_stats = true;
+	m_b_need_update_stats = false;
 	Hide								();	
 }
 
@@ -322,6 +322,8 @@ void CUIInventoryWnd::Show()
 
 	Update								();
 	PlaySnd								(eInvSndOpen);
+
+	m_b_need_update_stats = true;
 
 	if (Core.Features.test(xrCore::Feature::engine_ammo_repacker) && !Core.Features.test(xrCore::Feature::hard_ammo_reload))
 		if (auto pActor = Actor())
