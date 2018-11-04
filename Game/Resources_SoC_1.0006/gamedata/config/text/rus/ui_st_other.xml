@@ -218,4 +218,15 @@
 	<string id="st_attach_addon_to_wpn_in_slot_2">
 		<text>прикрепить %s к %s во втором слоте</text>
 	</string>
+	
+	<string id="kb_cam_1">
+		<text>Вид от первого лица</text>
+	</string>
+	<string id="kb_cam_2">
+		<text>Вид от третьего лица</text>
+	</string>
+	<string id="kb_cam_3">
+		<text>Вид от третьего лица (freelook)</text>
+	</string>
+
 </string_table>
