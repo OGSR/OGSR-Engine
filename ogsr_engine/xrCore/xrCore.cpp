@@ -19,8 +19,9 @@ static u32	init_counter	= 0;
 
 void xrCore::_initialize	(LPCSTR _ApplicationName, LogCallback cb, BOOL init_fs, LPCSTR fs_fname)
 {
-	strcpy_s					(ApplicationName,_ApplicationName);
+	strcpy_s(ApplicationName, _ApplicationName);
 	if (0==init_counter) {
+
 #ifdef XRCORE_STATIC	
 		_clearfp();
 #ifdef _M_IX86
@@ -32,30 +33,24 @@ void xrCore::_initialize	(LPCSTR _ApplicationName, LogCallback cb, BOOL init_fs,
 #endif
 
 		strcpy_s(Params, sizeof(Params), GetCommandLine());
+#pragma todo("KRodin: надо подумать, нужно ли приводить коммандлайн к нижнему регистру")
 		_strlwr_s(Params, sizeof(Params));
 
-		if (!strstr(Params, "-editor"))
-			CoInitializeEx(nullptr, COINIT_MULTITHREADED);
+		CoInitializeEx(nullptr, COINIT_MULTITHREADED);
 
 		if (strstr(Params, "-dbg" ) )
 			ParamFlags.set(ParamFlag::dbg, TRUE);
 
-		string_path		fn,dr,di;
-
 		// application path
-        GetModuleFileName(GetModuleHandle(MODULE_NAME),fn,sizeof(fn));
-        _splitpath		(fn,dr,di,0,0);
-        strconcat		(sizeof(ApplicationPath),ApplicationPath,dr,di);
+		string_path fn, dr, di;
+		GetModuleFileName(nullptr, fn, sizeof(fn));
+		_splitpath(fn, dr, di, nullptr, nullptr);
+		strconcat(sizeof(ApplicationPath), ApplicationPath, dr, di);
 
-		// working path
-        if( strstr(Params,"-wf") )
-        {
-            string_path				c_name;
-            sscanf					(strstr(Core.Params,"-wf ")+4,"%[^ ] ",c_name);
-            SetCurrentDirectory     (c_name);
-
-        }
-		GetCurrentDirectory(sizeof(WorkingPath),WorkingPath);
+		// KRodin: рабочий каталог для процесса надо устанавливать принудительно в папку с движком, независимо откуда запустили.
+		// Иначе начинаются чудеса типа игнорирования движком символов для стектрейсинга.
+		SetCurrentDirectory(ApplicationPath);
+		GetCurrentDirectory(sizeof(WorkingPath), WorkingPath);
 
 		// User/Comp Name
 		DWORD	sz_user		= sizeof(UserName);
@@ -92,6 +87,8 @@ void xrCore::_initialize	(LPCSTR _ApplicationName, LogCallback cb, BOOL init_fs,
 		if (strlen(APPVEYOR_BUILD_VERSION))
 			Log("[AppVeyor] build version: [" APPVEYOR_BUILD_VERSION "], repo: [" APPVEYOR_REPO_NAME "]");
 
+		Msg("Working Directory: [%s]", WorkingPath);
+
 		EFS._initialize		();
 #ifdef DEBUG
 		Msg					("CRT heap 0x%08x",_get_heap_handle());
@@ -114,8 +111,8 @@ void xrCore::_destroy		()
 		xr_EFS.reset();
 
 		Memory._destroy		();
-		if (!strstr(Core.Params, "-editor"))
-			CoUninitialize();
+
+		CoUninitialize();
 	}
 }
 

@@ -58,9 +58,6 @@ ENGINE_API	bool			g_bBenchmark	= false;
 string512	g_sBenchmarkName;
 
 
-ENGINE_API	string512		g_sLaunchOnExit_params;
-ENGINE_API	string512		g_sLaunchOnExit_app;
-// -------------------------------------------
 // startup point
 void InitEngine		()
 {
@@ -392,9 +389,6 @@ int APIENTRY WinMain_impl(HINSTANCE hInstance,
 	// AVI
 	g_bIntroFinished = true;
 
-	g_sLaunchOnExit_app[0]		= NULL;
-	g_sLaunchOnExit_params[0]	= NULL;
-
 	LPCSTR						fsgame_ltx_name = "-fsltx ";
 	string_path					fsgame = "";
 	if (strstr(lpCmdLine, fsgame_ltx_name)) {
@@ -437,31 +431,12 @@ int APIENTRY WinMain_impl(HINSTANCE hInstance,
 			xr_delete					(pTmp);
 		}
 
-
 		InitInput					( );
 		Engine.External.Initialize	( );
 		Console->Execute			("stat_memory");
 		Startup	 					( );
 		Core._destroy				( );
 
-		char* _args[3];
-		// check for need to execute something external
-		if (/*xr_strlen(g_sLaunchOnExit_params) && */xr_strlen(g_sLaunchOnExit_app) ) 
-		{
-			string4096 ModuleFileName = "";		
-			GetModuleFileName(NULL, ModuleFileName, 4096);
-
-			string4096 ModuleFilePath		= "";
-			char* ModuleName				= NULL;
-			GetFullPathName					(ModuleFileName, 4096, ModuleFilePath, &ModuleName);
-			ModuleName[0]					= 0;
-			strcat							(ModuleFilePath, g_sLaunchOnExit_app);
-			_args[0] 						= g_sLaunchOnExit_app;
-			_args[1] 						= g_sLaunchOnExit_params;
-			_args[2] 						= NULL;		
-			
-			_spawnv							(_P_NOWAIT, _args[0], _args);//, _envvar);
-		}
 #ifdef NO_MULTI_INSTANCES
 		// Delete application presence mutex
 		CloseHandle( hCheckPresenceMutex );

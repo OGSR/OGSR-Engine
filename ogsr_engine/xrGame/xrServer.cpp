@@ -85,7 +85,6 @@ void		xrServer::client_Replicate	()
 IClient*	xrServer::client_Find_Get	(ClientID ID)
 {
 	ip_address				cAddress;
-	DWORD	dwPort			= 0;
 
 	cAddress.set( "127.0.0.1" );
 
