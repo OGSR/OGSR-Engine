@@ -161,12 +161,11 @@ void xrServer::Process_event	(NET_Packet& P, ClientID sender)
 	case GE_DIE:
 		{
 			// Parse message
-			u16					id_dest		=	destination, id_src;
+			u16 id_src;
 			P.r_u16				(id_src);
 
 
-			xrClientData *l_pC	= ID_to_client(sender);
-			VERIFY				(game && l_pC);
+			VERIFY				(game && ID_to_client(sender));
 
 			CSE_Abstract*		e_dest		= receiver;	// кто умер
 			// this is possible when hit event is sent before destroy event
