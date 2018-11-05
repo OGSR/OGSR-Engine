@@ -19,17 +19,14 @@ void save_mini_dump( _EXCEPTION_POINTERS* );
 #endif
 
 #include "stacktrace_collector.h"
-static thread_local StackTraceInfo stackTrace;
+#include <sstream>
 
 void LogStackTrace(const char* header)
 {
-	Log(header);
 	__try
 	{
 		Log("*********************************************************************************");
-		BuildStackTrace(stackTrace);
-		for (size_t i = 0; i < stackTrace.count; ++i)
-			Log(stackTrace[i]);
+		Log(BuildStackTrace(header));
 		Log("*********************************************************************************");
 	}
 	__finally{}
@@ -37,17 +34,13 @@ void LogStackTrace(const char* header)
 
 void LogStackTrace(const char* header, _EXCEPTION_POINTERS *pExceptionInfo)
 {
-	Msg("!![LogStackTrace] ExceptionCode is [%x]", pExceptionInfo->ExceptionRecord->ExceptionCode);
-	Log(header);
 	__try
 	{
 		Log("*********************************************************************************");
+		Msg("!![" __FUNCTION__ "] ExceptionCode is [%x]", pExceptionInfo->ExceptionRecord->ExceptionCode);
 		auto save = *pExceptionInfo->ContextRecord;
-		BuildStackTrace(pExceptionInfo, stackTrace);
+		Log(BuildStackTrace(header, pExceptionInfo->ContextRecord));
 		*pExceptionInfo->ContextRecord = save;
-
-		for (size_t i = 0; i < stackTrace.count; ++i)
-			Log(stackTrace[i]);
 		Log("*********************************************************************************");
 	}
 	__finally {}

@@ -462,12 +462,12 @@
 			<options_item entry="r2_gloss_factor" group="mm_opt_video_adv"/>
 		</track_r2_gloss_factor>
 
-<!-- 		<cap_r2_sun_near_border x="5" y="5" width="143" height="21">
+ 		<cap_r2_sun_near_border x="5" y="5" width="143" height="21">
 			<text font="letterica16" r="215" g="195" b="170">ui_mm_r2_sun_near_border</text>
 		</cap_r2_sun_near_border>
 		<track_r2_sun_near_border x="249" y="0" width="190" height="21" invert="0" step="0.1">
 			<options_item entry="r2_sun_near_border" group="mm_opt_video_adv"/>
-		</track_r2_sun_near_border>	 -->
+		</track_r2_sun_near_border>
 		
 		<cap_r2_true_sun_shadows x="5" y="5" width="143" height="21">
 			<text font="letterica16" r="215" g="195" b="170">ui_mm_r2_true_sun_shadows</text>

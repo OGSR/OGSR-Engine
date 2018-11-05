@@ -618,7 +618,7 @@ void SGameTaskKey::sync_task_version() {
   new_game_task->m_TimeToComplete = game_task->m_TimeToComplete;
   if ( new_game_task->m_objectives_version == game_task->m_objectives_version ) {
     for ( auto& it : game_task->m_Objectives ) {
-      if ( it.idx == new_game_task->m_Objectives.size() ) break;
+      if ( u32(it.idx) == new_game_task->m_Objectives.size() ) break;
       new_game_task->m_Objectives[ it.idx ].task_state = it.TaskState();
     }
   }
