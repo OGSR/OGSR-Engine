@@ -46,7 +46,6 @@
 #include <time.h>
 #define ALIGN(a) alignas(a)
 #include <sys\utime.h>
-#define MODULE_NAME "xrCore.dll"
 
 // Warnings
 #pragma warning (disable : 4251 )		// object needs DLL interface
