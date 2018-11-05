@@ -10,6 +10,9 @@
 #pragma comment(lib, "dbghelp.lib")
 
 
+constexpr u16 MaxFuncNameLength = 4096, maxFramesCount = 512;
+
+
 bool symEngineInitialized = false;
 
 bool InitializeSymbolEngine()
@@ -43,7 +46,7 @@ void DeinitializeSymbolEngine()
 #	define MACHINE_TYPE IMAGE_FILE_MACHINE_I386
 #endif
 
-std::stringstream BuildStackTrace(const char* header, PCONTEXT threadCtx, u16 maxFramesCount)
+std::stringstream BuildStackTrace(const char* header, PCONTEXT threadCtx)
 {
 	static std::mutex dbghelpMutex;
 	std::lock_guard<std::mutex> lock(dbghelpMutex);
@@ -55,7 +58,7 @@ std::stringstream BuildStackTrace(const char* header, PCONTEXT threadCtx, u16 ma
 	if (!InitializeSymbolEngine())
 	{
 		const auto LastErr = GetLastError();
-		Msg("!![%s] InitializeSymbolEngine failed with error: [%d], descr: [%s]", __FUNCTION__, LastErr, Debug.error2string(LastErr));
+		traceResult << "[" << __FUNCTION__ << "] InitializeSymbolEngine failed with error: [" << LastErr << "], descr: [" << Debug.error2string(LastErr) << "]";
 		return traceResult;
 	}
 
@@ -87,19 +90,22 @@ std::stringstream BuildStackTrace(const char* header, PCONTEXT threadCtx, u16 ma
 			break;
 
 		// Module name
-		string512 formatBuff = { 0 };
-		auto hModule = (HINSTANCE)SymGetModuleBase(GetCurrentProcess(), lpstackFrame->AddrPC.Offset);
-		if (hModule && GetModuleFileName(hModule, formatBuff, sizeof(formatBuff)))
-			traceResult << "Module: [" << formatBuff << "]";
+		IMAGEHLP_MODULE moduleInfo = { 0 };
+		moduleInfo.SizeOfStruct = sizeof(moduleInfo);
+
+		result = SymGetModuleInfo(GetCurrentProcess(), lpstackFrame->AddrPC.Offset, &moduleInfo);
+
+		if (result)
+			traceResult << "Module: [" << moduleInfo.ImageName << "]";
 
 		// Address
 		traceResult << ", AddrPC.Offset: [" << reinterpret_cast<const void*>(lpstackFrame->AddrPC.Offset) << "]";
 
 		// Function info
-		BYTE arrSymBuffer[512] = { 0 };
-		auto functionInfo = reinterpret_cast<PIMAGEHLP_SYMBOL>(arrSymBuffer);
+		BYTE arrSymBuffer[MaxFuncNameLength] = { 0 };
+		auto functionInfo = reinterpret_cast<PIMAGEHLP_SYMBOL>(&arrSymBuffer);
 		functionInfo->SizeOfStruct = sizeof(*functionInfo);
-		functionInfo->MaxNameLength = sizeof(arrSymBuffer) - sizeof(*functionInfo) + 1;
+		functionInfo->MaxNameLength = sizeof(arrSymBuffer) - offsetof(IMAGEHLP_SYMBOL, Name);
 		DWORD_PTR dwFunctionOffset = 0;
 
 		result = SymGetSymFromAddr(GetCurrentProcess(), lpstackFrame->AddrPC.Offset, &dwFunctionOffset, functionInfo);
@@ -138,12 +144,12 @@ std::stringstream BuildStackTrace(const char* header, PCONTEXT threadCtx, u16 ma
 }
 
 
-std::stringstream BuildStackTrace(const char* header, u16 maxFramesCount)
+std::stringstream BuildStackTrace(const char* header)
 {
 	CONTEXT currentThreadCtx = { 0 };
 
 	RtlCaptureContext(&currentThreadCtx); // GetThreadContext cann't be used on the current thread 
 	currentThreadCtx.ContextFlags = CONTEXT_FULL;
 
-	return BuildStackTrace(header, &currentThreadCtx, maxFramesCount);
+	return BuildStackTrace(header, &currentThreadCtx);
 }
