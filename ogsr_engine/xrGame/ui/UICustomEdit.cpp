@@ -202,7 +202,7 @@ bool CUICustomEdit::KeyPressed(int dik)
 			State[VK_SHIFT] = 0x80;
 		auto layout = GetKeyboardLayout(GetWindowThreadProcessId(gGameWindow, nullptr));
 		u16 symbol;
-		if (ToAsciiEx(MapVirtualKeyEx(dik, 1, layout), dik, State, &symbol, 0, layout) == 1)
+		if (ToAsciiEx(MapVirtualKeyEx(dik, MAPVK_VSC_TO_VK, layout), dik, State, &symbol, 0, layout) == 1)
 			out_me = (char)symbol;
 	}
 

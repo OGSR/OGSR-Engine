@@ -84,14 +84,15 @@ void Log(const char* s)
 	Log(std::move(ss));
 }
 
-void __cdecl Msg(const char *format, ...) //KRodin: Убрал ограничение на размер буфера
+void __cdecl Msg(const char *format, ...)
 {
+	string4096 strBuf;
 	va_list args;
 	va_start(args, format);
-	int buf_len = std::vsnprintf(nullptr, 0, format, args);
-	auto strBuf = std::make_unique<char[]>(buf_len + 1);
-	std::vsnprintf(strBuf.get(), buf_len + 1, format, args);
-	Log(strBuf.get());
+	int buf_len = std::vsnprintf(strBuf, sizeof(strBuf), format, args);
+	va_end(args);
+	if (buf_len > 0)
+		Log(strBuf);
 }
 
 void Log(const char *msg, const char *dop) { //Надо убрать

@@ -223,13 +223,13 @@ void xrDebug::fail(const char *e1, const char *e2, const char *e3, const char *e
 
 void __cdecl xrDebug::fatal(const char *file, int line, const char *function, const char* F, ...)
 {
+	string4096 strBuf;
 	va_list args;
 	va_start(args, F);
-	int buf_len = std::vsnprintf(nullptr, 0, F, args);
-	auto strBuf = std::make_unique<char[]>(buf_len + 1);
-	std::vsnprintf(strBuf.get(), buf_len + 1, F, args);
+	std::vsnprintf(strBuf, sizeof(strBuf), F, args);
+	va_end(args);
 
-	backend("FATAL ERROR", strBuf.get(), nullptr, nullptr, file, line, function);
+	backend("FATAL ERROR", strBuf, nullptr, nullptr, file, line, function);
 }
 
 int out_of_memory_handler	(size_t size)
