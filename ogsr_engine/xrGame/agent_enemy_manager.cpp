@@ -455,10 +455,10 @@ void CAgentEnemyManager::assign_wounded			()
 		}
 	}
 
-	u32						combat_member_count = population(object().member().combat_mask());
+	squad_mask_type combat_member_count = population(object().member().combat_mask());
 	VERIFY					(combat_member_count == object().member().combat_members().size());
 
-	u32						population_level = 0;
+	squad_mask_type population_level = 0;
 	while (population(assigned) < combat_member_count) {
 		CMemberEnemy		*enemy = 0;
 		const CAI_Stalker	*processor = 0;

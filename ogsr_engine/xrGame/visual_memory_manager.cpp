@@ -27,6 +27,8 @@
 #include "client_spawn_manager.h"
 #include "client_spawn_manager.h"
 #include "memory_manager.h"
+#include "alife_registry_wrappers.h"
+#include "alife_simulator_header.h"
 
 #ifndef MASTER_GOLD
 #	include "clsid_game.h"
@@ -707,7 +709,7 @@ void CVisualMemoryManager::save	(NET_Packet &packet) const
 #ifdef USE_FIRST_LEVEL_TIME
 		packet.w_u32			((Device.dwTimeGlobal >= (*I).m_level_time) ? (Device.dwTimeGlobal - (*I).m_first_level_time) : 0);
 #endif // USE_FIRST_LEVEL_TIME
-		packet.w_u32			((*I).m_visible.flags);
+		packet.w_u64			((*I).m_visible.flags);
 	}
 }
 
@@ -761,7 +763,7 @@ void CVisualMemoryManager::load	(IReader &packet)
 		object.m_first_level_time	= packet.r_u32();
 		object.m_first_level_time	= Device.dwTimeGlobal - (*I).m_first_level_time;
 #endif // USE_FIRST_LEVEL_TIME
-		object.m_visible.assign		(packet.r_u32());
+		object.m_visible.assign( ai().get_alife()->header().version() < 8 ? (squad_mask_type)packet.r_u32() : packet.r_u64() );
 
 		if (object.m_object) {
 			add_visible_object		(object);
