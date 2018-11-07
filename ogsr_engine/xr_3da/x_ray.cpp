@@ -17,7 +17,6 @@
 #include "resource.h"
 #include "LightAnimLibrary.h"
 #include "ispatial.h"
-#include <process.h>
 
 #define READ_IF_EXISTS(ltx,method,section,name,default_value)\
 	((ltx->line_exist(section,name)) ? (ltx->method(section,name)) : (default_value))
@@ -897,7 +896,6 @@ void CApplication::load_draw_internal()
 
 		u32 v_cnt = 40;
 		pv = (FVF::TL*)RCache.Vertex.Lock(2 * (v_cnt + 1), ll_hGeom2.stride(), Offset);
-		FVF::TL* _pv = pv;
 		float pos_delta = back_coords.width() / v_cnt;
 		float tc_delta = back_text_coords.width() / v_cnt;
 		u32 clr = C;
@@ -907,7 +905,6 @@ void CApplication::load_draw_internal()
 			pv->set(back_coords.lt.x + pos_delta * idx + offs, back_coords.rb.y + offs, 0 + EPS_S, 1, clr, back_text_coords.lt.x + tc_delta * idx, back_text_coords.rb.y);	pv++;
 			pv->set(back_coords.lt.x + pos_delta * idx + offs, back_coords.lt.y + offs, 0 + EPS_S, 1, clr, back_text_coords.lt.x + tc_delta * idx, back_text_coords.lt.y);	pv++;
 		}
-		VERIFY(u32(pv - _pv) == 2 * (v_cnt + 1));
 		RCache.Vertex.Unlock(2 * (v_cnt + 1), ll_hGeom2.stride());
 
 		RCache.set_Geometry(ll_hGeom2);

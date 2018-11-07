@@ -41,8 +41,8 @@ class CUIWeaponCellItem :public CUIInventoryCellItem
 	typedef  CUIInventoryCellItem	inherited;
 public:
 	enum eAddonType{	eSilencer=0, eScope, eLauncher, eMaxAddon};
-protected:
 	CUIStatic*					m_addons					[eMaxAddon];
+protected:
 	Fvector2					m_addon_offset				[eMaxAddon];
 	void						CreateIcon					(eAddonType, CIconParams &params);
 	void						DestroyIcon					(eAddonType);

@@ -112,10 +112,9 @@ std::stringstream BuildStackTrace(const char* header, PCONTEXT threadCtx)
 
 		if (result)
 		{
+			traceResult << ", Fun: [" << functionInfo->Name << "()]";
 			if (dwFunctionOffset)
-				traceResult << ", Fun: [" << functionInfo->Name << "()] + [" << dwFunctionOffset << " byte(s)]";
-			else
-				traceResult << ", Fun: [" << functionInfo->Name << "()]";
+				traceResult << " + [" << dwFunctionOffset << " byte(s)]";
 		}
 
 		// Source info
@@ -127,10 +126,9 @@ std::stringstream BuildStackTrace(const char* header, PCONTEXT threadCtx)
 
 		if (result)
 		{
+			traceResult << ", File-->Line: [" << sourceInfo.FileName << "-->" << sourceInfo.LineNumber << "]";
 			if (dwLineOffset)
-				traceResult << ", File-->Line: [" << sourceInfo.FileName << "-->" << sourceInfo.LineNumber << "] + [" << dwLineOffset << " byte(s)]";
-			else
-				traceResult << ", File-->Line: [" << sourceInfo.FileName << "-->" << sourceInfo.LineNumber << "]";
+				traceResult << " + [" << dwLineOffset << " byte(s)]";
 		}
 
 		traceResult << "\n";
