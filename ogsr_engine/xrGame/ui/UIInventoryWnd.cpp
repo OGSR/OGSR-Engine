@@ -166,21 +166,21 @@ void CUIInventoryWnd::Init()
 
 	}
 
-        for ( u8 i = 0; i < SLOTS_TOTAL; i++ )
-          m_slots_array[ i ] = NULL;
-        m_slots_array[ OUTFIT_SLOT        ] = m_pUIOutfitList;
-		if (Core.Features.test(xrCore::Feature::ogse_new_slots))
-			m_slots_array[ KNIFE_SLOT         ] = m_pUIKnifeList;
-        m_slots_array[ FIRST_WEAPON_SLOT  ] = m_pUIPistolList;
-        m_slots_array[ SECOND_WEAPON_SLOT ] = m_pUIAutomaticList;
-		if (Core.Features.test(xrCore::Feature::ogse_new_slots)) {
-			m_slots_array[APPARATUS_SLOT] = m_pUIBinocularList;
-			m_slots_array[HELMET_SLOT] = m_pUIHelmetList;
-			m_slots_array[BIODETECTOR_SLOT] = m_pUIBIODetList;
-			m_slots_array[NIGHT_VISION_SLOT] = m_pUINightVisionList;
-			m_slots_array[DETECTOR_SLOT] = m_pUIDetectorList;
-			m_slots_array[TORCH_SLOT] = m_pUITorchList;
-		}
+	for ( u8 i = 0; i < SLOTS_TOTAL; i++ )
+		m_slots_array[ i ] = NULL;
+	m_slots_array[ OUTFIT_SLOT        ] = m_pUIOutfitList;
+	if (Core.Features.test(xrCore::Feature::ogse_new_slots))
+		m_slots_array[ KNIFE_SLOT         ] = m_pUIKnifeList;
+	m_slots_array[ FIRST_WEAPON_SLOT  ] = m_pUIPistolList;
+	m_slots_array[ SECOND_WEAPON_SLOT ] = m_pUIAutomaticList;
+	if (Core.Features.test(xrCore::Feature::ogse_new_slots)) {
+		m_slots_array[APPARATUS_SLOT] = m_pUIBinocularList;
+		m_slots_array[HELMET_SLOT] = m_pUIHelmetList;
+		m_slots_array[BIODETECTOR_SLOT] = m_pUIBIODetList;
+		m_slots_array[NIGHT_VISION_SLOT] = m_pUINightVisionList;
+		m_slots_array[DETECTOR_SLOT] = m_pUIDetectorList;
+		m_slots_array[TORCH_SLOT] = m_pUITorchList;
+	}
 
 	//pop-up menu
 	AttachChild							(&UIPropertiesBox);
