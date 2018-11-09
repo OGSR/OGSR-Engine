@@ -50,6 +50,7 @@ CUIInventoryWnd::CUIInventoryWnd() :
 
 	g_pInvWnd							= this;	
 	m_b_need_reinit						= false;
+	m_b_need_update_stats = false;
 	Hide								();	
 }
 
@@ -165,21 +166,21 @@ void CUIInventoryWnd::Init()
 
 	}
 
-        for ( u8 i = 0; i < SLOTS_TOTAL; i++ )
-          m_slots_array[ i ] = NULL;
-        m_slots_array[ OUTFIT_SLOT        ] = m_pUIOutfitList;
-		if (Core.Features.test(xrCore::Feature::ogse_new_slots))
-			m_slots_array[ KNIFE_SLOT         ] = m_pUIKnifeList;
-        m_slots_array[ FIRST_WEAPON_SLOT  ] = m_pUIPistolList;
-        m_slots_array[ SECOND_WEAPON_SLOT ] = m_pUIAutomaticList;
-		if (Core.Features.test(xrCore::Feature::ogse_new_slots)) {
-			m_slots_array[APPARATUS_SLOT] = m_pUIBinocularList;
-			m_slots_array[HELMET_SLOT] = m_pUIHelmetList;
-			m_slots_array[BIODETECTOR_SLOT] = m_pUIBIODetList;
-			m_slots_array[NIGHT_VISION_SLOT] = m_pUINightVisionList;
-			m_slots_array[DETECTOR_SLOT] = m_pUIDetectorList;
-			m_slots_array[TORCH_SLOT] = m_pUITorchList;
-		}
+	for ( u8 i = 0; i < SLOTS_TOTAL; i++ )
+		m_slots_array[ i ] = NULL;
+	m_slots_array[ OUTFIT_SLOT        ] = m_pUIOutfitList;
+	if (Core.Features.test(xrCore::Feature::ogse_new_slots))
+		m_slots_array[ KNIFE_SLOT         ] = m_pUIKnifeList;
+	m_slots_array[ FIRST_WEAPON_SLOT  ] = m_pUIPistolList;
+	m_slots_array[ SECOND_WEAPON_SLOT ] = m_pUIAutomaticList;
+	if (Core.Features.test(xrCore::Feature::ogse_new_slots)) {
+		m_slots_array[APPARATUS_SLOT] = m_pUIBinocularList;
+		m_slots_array[HELMET_SLOT] = m_pUIHelmetList;
+		m_slots_array[BIODETECTOR_SLOT] = m_pUIBIODetList;
+		m_slots_array[NIGHT_VISION_SLOT] = m_pUINightVisionList;
+		m_slots_array[DETECTOR_SLOT] = m_pUIDetectorList;
+		m_slots_array[TORCH_SLOT] = m_pUITorchList;
+	}
 
 	//pop-up menu
 	AttachChild							(&UIPropertiesBox);
@@ -294,9 +295,14 @@ void CUIInventoryWnd::Update()
 		sprintf_s							(sMoney,"%d RU", _money);
 		UIMoneyWnd.SetText				(sMoney);
 
-		// update outfit parameters
-		CCustomOutfit* outfit = smart_cast<CCustomOutfit*>(pOurInvOwner->inventory().m_slots[OUTFIT_SLOT].m_pIItem);
-		UIOutfitInfo.Update(outfit);
+		if (m_b_need_update_stats)
+		{
+			// update outfit parameters
+			CCustomOutfit* outfit = smart_cast<CCustomOutfit*>(pOurInvOwner->inventory().m_slots[OUTFIT_SLOT].m_pIItem);
+			UIOutfitInfo.Update(outfit);
+
+			m_b_need_update_stats = false;
+		}
 	}
 
 	UIStaticTimeString.SetText(*InventoryUtilities::GetGameTimeAsString(InventoryUtilities::etpTimeToMinutes));
@@ -316,6 +322,8 @@ void CUIInventoryWnd::Show()
 
 	Update								();
 	PlaySnd								(eInvSndOpen);
+
+	m_b_need_update_stats = true;
 
 	if (Core.Features.test(xrCore::Feature::engine_ammo_repacker) && !Core.Features.test(xrCore::Feature::hard_ammo_reload))
 		if (auto pActor = Actor())
@@ -428,6 +436,7 @@ void	CUIInventoryWnd::SendEvent_Item2Slot			(PIItem	pItem)
 	P.w_u16							(pItem->object().ID());
 	pItem->object().u_EventSend		(P);
 	g_pInvWnd->PlaySnd				(eInvItemToSlot);
+	m_b_need_update_stats = true;
 };
 
 void	CUIInventoryWnd::SendEvent_Item2Belt			(PIItem	pItem)
@@ -437,6 +446,7 @@ void	CUIInventoryWnd::SendEvent_Item2Belt			(PIItem	pItem)
 	P.w_u16							(pItem->object().ID());
 	pItem->object().u_EventSend		(P);
 	g_pInvWnd->PlaySnd				(eInvItemToBelt);
+	m_b_need_update_stats = true;
 };
 
 void	CUIInventoryWnd::SendEvent_Item2Ruck			(PIItem	pItem)
@@ -446,6 +456,7 @@ void	CUIInventoryWnd::SendEvent_Item2Ruck			(PIItem	pItem)
 	P.w_u16							(pItem->object().ID());
 	pItem->object().u_EventSend		(P);
 	g_pInvWnd->PlaySnd				(eInvItemToRuck);
+	m_b_need_update_stats = true;
 };
 
 void	CUIInventoryWnd::SendEvent_Item_Drop(PIItem	pItem)
@@ -460,6 +471,7 @@ void	CUIInventoryWnd::SendEvent_Item_Drop(PIItem	pItem)
 		pItem->object().u_EventSend(P);
 	}
 	g_pInvWnd->PlaySnd				(eInvDropItem);
+	m_b_need_update_stats = true;
 };
 
 void	CUIInventoryWnd::SendEvent_Item_Eat			(PIItem	pItem)

@@ -141,7 +141,6 @@ CLevel::CLevel():IPureClient	(Device.GetTimerGlobal())
 //	m_aDemoData.clear();
 //	m_bDemoStarted	= FALSE;
 
-	Msg("%s", Core.Params);
 	/*
 	if (strstr(Core.Params,"-tdemo ") || strstr(Core.Params,"-tdemof ")) {		
 		string1024				f_name;

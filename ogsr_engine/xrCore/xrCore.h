@@ -46,7 +46,6 @@
 #include <time.h>
 #define ALIGN(a) alignas(a)
 #include <sys\utime.h>
-#define MODULE_NAME "xrCore.dll"
 
 // Warnings
 #pragma warning (disable : 4251 )		// object needs DLL interface
@@ -227,7 +226,9 @@ public:
 	  select_mode_1342           = 1ull << 34,
 	  old_outfit_slot_style      = 1ull << 35,
 	  npc_simplified_shooting    = 1ull << 36,
-	  actor_thirst               = 1ull << 37;
+	  restore_sun_fix            = 1ull << 37,
+	  use_trade_deficit_factor   = 1ull << 38,
+	  actor_thirst               = 1ull << 39;
 	};
 
 	void		_initialize	(LPCSTR ApplicationName, LogCallback cb=0, BOOL init_fs=TRUE, LPCSTR fs_fname=0);

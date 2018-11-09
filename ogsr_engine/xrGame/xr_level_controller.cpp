@@ -206,7 +206,7 @@ void initialize_bindings()
 
 		size_t id = actions.size();
 
-		for (int i = 0; i < action_count; ++i) 
+		for (u32 i = 0; i < action_count; ++i) 
 		{
 			pSettings->r_line(keyboard_section, i, &name, &value);
 			
@@ -225,7 +225,7 @@ void initialize_bindings()
 	nL.export_name = NULL;
 	actions.push_back(nL);
 
-	for (int idx = 0; idx < actions.size(); ++idx)
+	for (size_t idx = 0; idx < actions.size(); ++idx)
 	{
 		if (actions[idx].id != kLASTACTION)
 		{
@@ -365,15 +365,13 @@ int get_action_dik(EGameActions _action_id)
 
 EGameActions get_binded_action(int _dik)
 {
-	for(int idx=0; idx<g_key_bindings.size(); ++idx)
+	for (const auto& binding : g_key_bindings)
 	{
-		_binding*	binding = &g_key_bindings[idx];
-
-		if(binding->m_keyboard[0] && binding->m_keyboard[0]->dik==_dik)
-			return binding->m_action->id;
+		if(binding.m_keyboard[0] && binding.m_keyboard[0]->dik==_dik)
+			return binding.m_action->id;
 		
-		if(binding->m_keyboard[1] && binding->m_keyboard[1]->dik==_dik)
-			return binding->m_action->id;
+		if(binding.m_keyboard[1] && binding.m_keyboard[1]->dik==_dik)
+			return binding.m_action->id;
 	}
 	return kNOTBINDED;
 }
@@ -446,8 +444,7 @@ public:
 
 		curr_pbinding->m_keyboard[m_work_idx]= pkeyboard;
 			
-		{
-			for(int idx=0; idx<g_key_bindings.size(); ++idx)
+			for(size_t idx=0; idx<g_key_bindings.size(); ++idx)
 			{
 				_binding*	binding			= &g_key_bindings[idx];
 
@@ -460,7 +457,6 @@ public:
 				if(binding->m_keyboard[1]==pkeyboard)
 					binding->m_keyboard[1]=NULL;
 			}
-		}
 
 
 		CStringTable::ReparseKeyBindings();
@@ -470,17 +466,9 @@ public:
 		if(m_work_idx==0)
 			F->w_printf		("unbindall\r\n");
 
-		for(int idx=0; idx<g_key_bindings.size();++idx)
-		{
-			_binding* pbinding = &g_key_bindings[idx];
-			if( pbinding->m_keyboard[m_work_idx] )
-			{
-				F->w_printf("%s %s %s\r\n", 
-							cName, 
-							pbinding->m_action->action_name,
-							pbinding->m_keyboard[m_work_idx]->key_name);
-			}
-		}
+		for (const auto& pbinding : g_key_bindings)
+			if( pbinding.m_keyboard[m_work_idx] )
+				F->w_printf("%s %s %s\r\n", cName, pbinding.m_action->action_name, pbinding.m_keyboard[m_work_idx]->key_name);
 	}
 };
 
@@ -508,11 +496,8 @@ public:
 
 	virtual void Execute(LPCSTR args) {
 		Log("- --- Action list start ---");
-		for(int idx=0; idx<g_key_bindings.size();++idx)
-		{
-			_binding* pbinding = &g_key_bindings[idx];
-			Log("-", pbinding->m_action->action_name);
-		}
+		for (const auto& pbinding : g_key_bindings)
+			Log("-", pbinding.m_action->action_name);
 		Log("- --- Action list end   ---");
 	}
 };
@@ -525,11 +510,10 @@ public:
 
 	virtual void Execute(LPCSTR args) 
 	{
-		for(int idx=0; idx<g_key_bindings.size();++idx)
+		for (auto& pbinding : g_key_bindings)
 		{
-			_binding* pbinding		= &g_key_bindings[idx];
-			pbinding->m_keyboard[0]	= NULL;
-			pbinding->m_keyboard[1]	= NULL;
+			pbinding.m_keyboard[0] = NULL;
+			pbinding.m_keyboard[1] = NULL;
 		}
 
 		bindConsoleCmds.clear();
@@ -553,13 +537,12 @@ public:
 		Log				("- --- Bind list start ---");
 		string512		buff;			
 		
-		for(int idx=0; idx<g_key_bindings.size();++idx)
+		for (const auto& pbinding : g_key_bindings)
 		{
-			_binding* pbinding		= &g_key_bindings[idx];
 			sprintf_s		(buff,"[%s] primary is[%s] secondary is[%s]",
-						pbinding->m_action->action_name,
-						(pbinding->m_keyboard[0])?pbinding->m_keyboard[0]->key_local_name.c_str():"NULL",
-						(pbinding->m_keyboard[1])?pbinding->m_keyboard[1]->key_local_name.c_str():"NULL");
+						pbinding.m_action->action_name,
+						(pbinding.m_keyboard[0])?pbinding.m_keyboard[0]->key_local_name.c_str():"NULL",
+						(pbinding.m_keyboard[1])?pbinding.m_keyboard[1]->key_local_name.c_str():"NULL");
 			Log		(buff);
 		}
 		Log				("- --- Bind list end   ---");

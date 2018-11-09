@@ -35,7 +35,6 @@ void CMonsterEnemyMemory::update()
 
         CMonsterHitMemory& monster_hit_memory = monster->HitMemory;
         typedef CObjectManager<const CEntityAlive>::OBJECTS objects_list;
-        objects_list const& objects = monster->memory().enemy().objects();
 
         if ( monster_hit_memory.is_hit() && time() < monster_hit_memory.get_last_hit_time() + 1000 ) {
           if ( CEntityAlive* enemy = smart_cast<CEntityAlive*>( monster->HitMemory.get_last_hit_object() ) ) {

@@ -19,17 +19,14 @@ void save_mini_dump( _EXCEPTION_POINTERS* );
 #endif
 
 #include "stacktrace_collector.h"
-static thread_local StackTraceInfo stackTrace;
+#include <sstream>
 
 void LogStackTrace(const char* header)
 {
-	Log(header);
 	__try
 	{
 		Log("*********************************************************************************");
-		BuildStackTrace(stackTrace);
-		for (size_t i = 0; i < stackTrace.count; ++i)
-			Log(stackTrace[i]);
+		Log(BuildStackTrace(header));
 		Log("*********************************************************************************");
 	}
 	__finally{}
@@ -37,17 +34,13 @@ void LogStackTrace(const char* header)
 
 void LogStackTrace(const char* header, _EXCEPTION_POINTERS *pExceptionInfo)
 {
-	Msg("!![LogStackTrace] ExceptionCode is [%x]", pExceptionInfo->ExceptionRecord->ExceptionCode);
-	Log(header);
 	__try
 	{
 		Log("*********************************************************************************");
+		Msg("!![" __FUNCTION__ "] ExceptionCode is [%x]", pExceptionInfo->ExceptionRecord->ExceptionCode);
 		auto save = *pExceptionInfo->ContextRecord;
-		BuildStackTrace(pExceptionInfo, stackTrace);
+		Log(BuildStackTrace(header, pExceptionInfo->ContextRecord));
 		*pExceptionInfo->ContextRecord = save;
-
-		for (size_t i = 0; i < stackTrace.count; ++i)
-			Log(stackTrace[i]);
 		Log("*********************************************************************************");
 	}
 	__finally {}
@@ -230,13 +223,13 @@ void xrDebug::fail(const char *e1, const char *e2, const char *e3, const char *e
 
 void __cdecl xrDebug::fatal(const char *file, int line, const char *function, const char* F, ...)
 {
+	string4096 strBuf;
 	va_list args;
 	va_start(args, F);
-	int buf_len = std::vsnprintf(nullptr, 0, F, args);
-	auto strBuf = std::make_unique<char[]>(buf_len + 1);
-	std::vsnprintf(strBuf.get(), buf_len + 1, F, args);
+	std::vsnprintf(strBuf, sizeof(strBuf), F, args);
+	va_end(args);
 
-	backend("FATAL ERROR", strBuf.get(), nullptr, nullptr, file, line, function);
+	backend("FATAL ERROR", strBuf, nullptr, nullptr, file, line, function);
 }
 
 int out_of_memory_handler	(size_t size)

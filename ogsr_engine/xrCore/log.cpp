@@ -49,9 +49,9 @@ void AddOne(std::string &split, bool first_line)
 	logstream.flush();
 }
 
-void Log(const char* s)
+void Log(std::stringstream&& ss)
 {
-	std::string str(s);
+	std::string str = ss.str();
 
 	if (str.empty()) return; //Строка пуста - выходим
 
@@ -66,7 +66,6 @@ void Log(const char* s)
 		|| color_s == '#' //Бирюзовый
 	) have_color = true;
 
-	std::stringstream ss(str);
 	for (std::string item; std::getline(ss, item);) //Разбиваем текст по "\n"
 	{
 		if (not_first_line && have_color)
@@ -79,14 +78,21 @@ void Log(const char* s)
 	}
 }
 
-void __cdecl Msg(const char *format, ...) //KRodin: Убрал ограничение на размер буфера
+void Log(const char* s)
 {
+	std::stringstream ss(s);
+	Log(std::move(ss));
+}
+
+void __cdecl Msg(const char *format, ...)
+{
+	string4096 strBuf;
 	va_list args;
 	va_start(args, format);
-	int buf_len = std::vsnprintf(nullptr, 0, format, args);
-	auto strBuf = std::make_unique<char[]>(buf_len + 1);
-	std::vsnprintf(strBuf.get(), buf_len + 1, format, args);
-	Log(strBuf.get());
+	int buf_len = std::vsnprintf(strBuf, sizeof(strBuf), format, args);
+	va_end(args);
+	if (buf_len > 0)
+		Log(strBuf);
 }
 
 void Log(const char *msg, const char *dop) { //Надо убрать

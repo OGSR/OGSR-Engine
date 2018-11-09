@@ -17,7 +17,6 @@
 #include "resource.h"
 #include "LightAnimLibrary.h"
 #include "ispatial.h"
-#include <process.h>
 
 #define READ_IF_EXISTS(ltx,method,section,name,default_value)\
 	((ltx->line_exist(section,name)) ? (ltx->method(section,name)) : (default_value))
@@ -58,9 +57,6 @@ ENGINE_API	bool			g_bBenchmark	= false;
 string512	g_sBenchmarkName;
 
 
-ENGINE_API	string512		g_sLaunchOnExit_params;
-ENGINE_API	string512		g_sLaunchOnExit_app;
-// -------------------------------------------
 // startup point
 void InitEngine		()
 {
@@ -129,6 +125,8 @@ void InitConsole	()
 	CORE_FEATURE_SET( ruck_flag_preferred,        "features" );
 	CORE_FEATURE_SET( old_outfit_slot_style,      "features" );
 	CORE_FEATURE_SET( npc_simplified_shooting,    "features" );
+	CORE_FEATURE_SET( restore_sun_fix,            "features" );
+	CORE_FEATURE_SET( use_trade_deficit_factor,   "features" );
 	CORE_FEATURE_SET( actor_thirst,               "features" );
 }
 
@@ -236,6 +234,10 @@ void Startup					( )
 static INT_PTR CALLBACK logDlgProc( HWND hw, UINT msg, WPARAM wp, LPARAM lp )
 {
 	switch( msg ){
+		case WM_INITDIALOG:
+			if (auto hBMP = LoadImage(nullptr, "splash.bmp", IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE))
+				SendDlgItemMessage(hw, IDC_STATIC, STM_SETIMAGE, IMAGE_BITMAP, reinterpret_cast<LPARAM>(hBMP));
+			break;
 		case WM_DESTROY:
 			break;
 		case WM_CLOSE:
@@ -393,9 +395,6 @@ int APIENTRY WinMain_impl(HINSTANCE hInstance,
 	// AVI
 	g_bIntroFinished = true;
 
-	g_sLaunchOnExit_app[0]		= NULL;
-	g_sLaunchOnExit_params[0]	= NULL;
-
 	LPCSTR						fsgame_ltx_name = "-fsltx ";
 	string_path					fsgame = "";
 	if (strstr(lpCmdLine, fsgame_ltx_name)) {
@@ -438,31 +437,12 @@ int APIENTRY WinMain_impl(HINSTANCE hInstance,
 			xr_delete					(pTmp);
 		}
 
-
 		InitInput					( );
 		Engine.External.Initialize	( );
 		Console->Execute			("stat_memory");
 		Startup	 					( );
 		Core._destroy				( );
 
-		char* _args[3];
-		// check for need to execute something external
-		if (/*xr_strlen(g_sLaunchOnExit_params) && */xr_strlen(g_sLaunchOnExit_app) ) 
-		{
-			string4096 ModuleFileName = "";		
-			GetModuleFileName(NULL, ModuleFileName, 4096);
-
-			string4096 ModuleFilePath		= "";
-			char* ModuleName				= NULL;
-			GetFullPathName					(ModuleFileName, 4096, ModuleFilePath, &ModuleName);
-			ModuleName[0]					= 0;
-			strcat							(ModuleFilePath, g_sLaunchOnExit_app);
-			_args[0] 						= g_sLaunchOnExit_app;
-			_args[1] 						= g_sLaunchOnExit_params;
-			_args[2] 						= NULL;		
-			
-			_spawnv							(_P_NOWAIT, _args[0], _args);//, _envvar);
-		}
 #ifdef NO_MULTI_INSTANCES
 		// Delete application presence mutex
 		CloseHandle( hCheckPresenceMutex );
@@ -911,6 +891,31 @@ void CApplication::load_draw_internal()
 
 		RCache.set_Geometry(ll_hGeom);
 		RCache.Render(D3DPT_TRIANGLELIST, Offset, 0, 4, 0, 2);
+
+		//progress bar
+		back_size.set(268, 37);
+		back_text_coords.lt.set(0, 768); back_text_coords.rb.add(back_text_coords.lt, back_size);
+		back_coords.lt.set(379, 726); back_coords.rb.add(back_coords.lt, back_size);
+
+		back_coords.lt.mul(k); back_coords.rb.mul(k);
+
+		back_text_coords.lt.x /= tsz.x; back_text_coords.lt.y /= tsz.y; back_text_coords.rb.x /= tsz.x; back_text_coords.rb.y /= tsz.y;
+
+		u32 v_cnt = 40;
+		pv = (FVF::TL*)RCache.Vertex.Lock(2 * (v_cnt + 1), ll_hGeom2.stride(), Offset);
+		float pos_delta = back_coords.width() / v_cnt;
+		float tc_delta = back_text_coords.width() / v_cnt;
+		u32 clr = C;
+
+		for (u32 idx = 0; idx < v_cnt + 1; ++idx) {
+			clr = calc_progress_color(idx, v_cnt, load_stage, max_load_stage);
+			pv->set(back_coords.lt.x + pos_delta * idx + offs, back_coords.rb.y + offs, 0 + EPS_S, 1, clr, back_text_coords.lt.x + tc_delta * idx, back_text_coords.rb.y);	pv++;
+			pv->set(back_coords.lt.x + pos_delta * idx + offs, back_coords.lt.y + offs, 0 + EPS_S, 1, clr, back_text_coords.lt.x + tc_delta * idx, back_text_coords.lt.y);	pv++;
+		}
+		RCache.Vertex.Unlock(2 * (v_cnt + 1), ll_hGeom2.stride());
+
+		RCache.set_Geometry(ll_hGeom2);
+		RCache.Render(D3DPT_TRIANGLESTRIP, Offset, 2 * v_cnt);
 	}
 
 	//draw level-specific screenshot

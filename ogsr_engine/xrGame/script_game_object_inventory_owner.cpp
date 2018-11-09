@@ -208,7 +208,7 @@ void CScriptGameObject::ForEachInventoryItems(const luabind::functor<void> &func
 }
 
 //1
-void CScriptGameObject::IterateInventory	(luabind::functor<void> functor, luabind::object object)
+void CScriptGameObject::IterateInventory( const luabind::functor<void>& functor, const luabind::object& object)
 {
 	CInventoryOwner			*inventory_owner = smart_cast<CInventoryOwner*>(&this->object());
 	if (!inventory_owner) {
@@ -1181,17 +1181,17 @@ void CScriptGameObject::SetIIFlags	(flags16 flags)
 }
 
 
-void CScriptGameObject::IterateBelt( luabind::functor<void> functor, luabind::object object ) {
+void CScriptGameObject::IterateBelt( const luabind::functor<void>& functor, const luabind::object& object ) {
   auto inventory_owner = smart_cast<CInventoryOwner*>( &this->object() );
-  ASSERT_FMT( inventory_owner, "[%s]: %s not an CInventoryOwner", __FUNCTION__, this->object() );
+  ASSERT_FMT( inventory_owner, "[%s]: %s not an CInventoryOwner", __FUNCTION__, this->object().Name() );
   for ( const auto& it : inventory_owner->inventory().m_belt )
     functor( object, it->object().lua_game_object() );
 }
 
 
-void CScriptGameObject::IterateRuck( luabind::functor<void> functor, luabind::object object ) {
+void CScriptGameObject::IterateRuck( const luabind::functor<void>& functor, const luabind::object& object ) {
   auto inventory_owner = smart_cast<CInventoryOwner*>( &this->object() );
-  ASSERT_FMT( inventory_owner, "[%s]: %s not an CInventoryOwner", __FUNCTION__, this->object() );
+  ASSERT_FMT( inventory_owner, "[%s]: %s not an CInventoryOwner", __FUNCTION__, this->object().Name());
   for ( const auto& it : inventory_owner->inventory().m_ruck )
     functor( object, it->object().lua_game_object() );
 }

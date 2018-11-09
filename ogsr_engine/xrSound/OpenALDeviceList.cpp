@@ -142,8 +142,8 @@ void ALDeviceList::Enumerate()
 			minorVersion,
 			(GetDeviceName(i)==m_defaultDeviceName)? "(default)":"" );
 	}
-	if (!strstr(Core.Params, "-editor"))
-		CoInitializeEx (NULL, COINIT_MULTITHREADED);
+
+	CoInitializeEx(nullptr, COINIT_MULTITHREADED);
 }
 
 void ALDeviceList::SelectBestDevice()

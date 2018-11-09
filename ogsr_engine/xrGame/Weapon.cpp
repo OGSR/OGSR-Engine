@@ -65,7 +65,7 @@ CWeapon::CWeapon(LPCSTR name)
 
 	eHandDependence			= hdNone;
 
-	m_fZoomFactor = Core.Features.test(xrCore::Feature::ogse_wpn_zoom_system) ? 1.0 : g_fov;
+	m_fZoomFactor = Core.Features.test(xrCore::Feature::ogse_wpn_zoom_system) ? 1.f : g_fov;
 
 	m_fZoomRotationFactor	= 0.f;
 
@@ -1036,7 +1036,7 @@ bool CWeapon::Action(s32 cmd, u32 flags)
 
 void GetZoomData(const float scope_factor, float& delta, float& min_zoom_factor)
 {
-	float def_fov = Core.Features.test(xrCore::Feature::ogse_wpn_zoom_system) ? 1.0 : g_fov;
+	float def_fov = Core.Features.test(xrCore::Feature::ogse_wpn_zoom_system) ? 1.f : g_fov;
 	float min_zoom_k = 0.3f;
 	float zoom_step_count = 3.0f;
 	float delta_factor_total = def_fov-scope_factor;
@@ -1461,7 +1461,7 @@ void CWeapon::OnZoomOut()
 	if(H_Parent() && IsZoomed() && !IsRotatingToZoom() && m_bScopeDynamicZoom)
 		m_fRTZoomFactor = m_fZoomFactor;//store current
 
-	m_fZoomFactor = Core.Features.test(xrCore::Feature::ogse_wpn_zoom_system) ? 1.0 : g_fov;
+	m_fZoomFactor = Core.Features.test(xrCore::Feature::ogse_wpn_zoom_system) ? 1.f : g_fov;
 
 	if ( m_bZoomMode ) {
 		m_bZoomMode = false;
@@ -1813,11 +1813,11 @@ u32 CWeapon::Cost() const
 	
 	if (Core.Features.test(xrCore::Feature::wpn_cost_include_addons)) {
 		if (GrenadeLauncherAttachable() && IsGrenadeLauncherAttached())
-			res += pSettings->r_float(GetGrenadeLauncherName(), "cost");
+			res += pSettings->r_u32(GetGrenadeLauncherName(), "cost");
 		if (ScopeAttachable() && IsScopeAttached())
-			res += pSettings->r_float(GetScopeName(), "cost");
+			res += pSettings->r_u32(GetScopeName(), "cost");
 		if (SilencerAttachable() && IsSilencerAttached())
-			res += pSettings->r_float(GetSilencerName(), "cost");
+			res += pSettings->r_u32(GetSilencerName(), "cost");
 	}
 	return res;
 }

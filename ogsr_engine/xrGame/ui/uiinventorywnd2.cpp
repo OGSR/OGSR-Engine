@@ -57,6 +57,7 @@ void CUIInventoryWnd::SendMessage(CUIWindow *pWnd, s16 msg, void *pData)
 void CUIInventoryWnd::InitInventory_delayed()
 {
 	m_b_need_reinit = true;
+	m_b_need_update_stats = true;
 }
 
 void CUIInventoryWnd::InitInventory() 

@@ -44,7 +44,7 @@ void CUIScrollView::Init				()
 	m_pad->SetWndPos			(0.0f,0.0f);
 	if (!m_VScrollBar)
 	{
-        m_VScrollBar				= xr_new<CUIScrollBar>();m_VScrollBar->SetAutoDelete(true);
+		m_VScrollBar				= xr_new<CUIScrollBar>();m_VScrollBar->SetAutoDelete(true);
 		AttachChild					(m_VScrollBar);
 		Register					(m_VScrollBar);
 		AddCallback					("scroll_v",	SCROLLBAR_VSCROLL, CUIWndCallback::void_function (this, &CUIScrollView::OnScrollV) );
@@ -57,8 +57,6 @@ void CUIScrollView::Init				()
 	m_VScrollBar->SetWindowName		("scroll_v");
 	m_VScrollBar->SetStepSize		(_max(1,iFloor(GetHeight()/10)));
 	m_VScrollBar->SetPageSize		(iFloor(GetHeight()));
-	
-
 }
 
 void CUIScrollView::SetScrollBarProfile(LPCSTR profile){
@@ -79,13 +77,14 @@ void CUIScrollView::RemoveWindow		(CUIWindow* pWnd)
 	m_flags.set			(eNeedRecalc,TRUE);
 }
 
-void CUIScrollView::Clear				()
+void CUIScrollView::Clear				(bool scrollToTop)
 {
 	m_pad->DetachAll	();
+
 	m_flags.set			(eNeedRecalc,TRUE);
-	
-	m_flags.set			(eNeedRecalc,TRUE);
-	ScrollToBegin		();
+
+	if (scrollToTop) 
+		ScrollToBegin		();
 }
 
 void CUIScrollView::Update				()
@@ -143,12 +142,13 @@ void CUIScrollView::RecalcSize			()
 
 void CUIScrollView::UpdateScroll		()
 {
-
 	Fvector2 w_pos					= m_pad->GetWndPos();
-	m_VScrollBar->SetHeight(GetHeight());
-	m_VScrollBar->SetRange		(0,iFloor(m_pad->GetHeight()*Scroll2ViewV()));
 
-	m_VScrollBar->SetScrollPos	(iFloor(-w_pos.y));
+	m_VScrollBar->SetHeight(GetHeight());
+	m_VScrollBar->SetRange(0, iFloor(m_pad->GetHeight()*Scroll2ViewV()));
+
+	int value = iFloor(-w_pos.y);
+	SetScrollPos(value);
 }
 
 float CUIScrollView::Scroll2ViewV	(){
@@ -244,14 +244,29 @@ int CUIScrollView::GetMaxScrollPos()
 }
 int CUIScrollView::GetCurrentScrollPos()
 {
-	return m_VScrollBar->GetMinRange();
+	return m_VScrollBar->GetScrollPos();
 }
 
 void CUIScrollView::SetScrollPos(int value)
 {
-	clamp(value,GetMinScrollPos(),GetMaxScrollPos());
+	// eInverseDir do not use scrollbar at all.
+	// that should fix issues with scroll for normal mode
+	if (!m_flags.test(eInverseDir))
+	{
+		if (GetMaxScrollPos() < GetHeight())
+		{
+			value = 1;
+		}
+		else
+		{
+			clamp(value, GetMinScrollPos(), GetMaxScrollPos());
+		}
+	}
 	m_VScrollBar->SetScrollPos(value);
-	OnScrollV(NULL,NULL);
+	if (!m_flags.test(eInverseDir))
+	{
+		OnScrollV(NULL, NULL);
+	}
 }
 
 void CUIScrollView::ScrollToBegin		()
