@@ -125,7 +125,6 @@ void InitConsole	()
 	CORE_FEATURE_SET( ruck_flag_preferred,        "features" );
 	CORE_FEATURE_SET( old_outfit_slot_style,      "features" );
 	CORE_FEATURE_SET( npc_simplified_shooting,    "features" );
-	CORE_FEATURE_SET( npc_simplified_shooting,    "features" );
 	CORE_FEATURE_SET( restore_sun_fix,            "features" );
 	CORE_FEATURE_SET( use_trade_deficit_factor,   "features" );
 }
