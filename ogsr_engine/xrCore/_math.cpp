@@ -111,8 +111,9 @@ void _initialize_cpu()
 		CPU::ID.family, CPU::ID.model, CPU::ID.stepping
 	);
 
-	if (strstr(Core.Params, "-x86"))
-		CPU::ID.clearFeatures();
+	// WTF???
+	//if (strstr(Core.Params, "-x86"))
+	//	CPU::ID.clearFeatures();
 
 	string256 features;
 	strcpy_s(features, sizeof(features), "RDTSC");

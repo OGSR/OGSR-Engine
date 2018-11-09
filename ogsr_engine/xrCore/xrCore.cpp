@@ -33,8 +33,6 @@ void xrCore::_initialize	(LPCSTR _ApplicationName, LogCallback cb, BOOL init_fs,
 #endif
 
 		strcpy_s(Params, sizeof(Params), GetCommandLine());
-#pragma todo("KRodin: надо подумать, нужно ли приводить коммандлайн к нижнему регистру")
-		_strlwr_s(Params, sizeof(Params));
 
 		CoInitializeEx(nullptr, COINIT_MULTITHREADED);
 
@@ -88,6 +86,7 @@ void xrCore::_initialize	(LPCSTR _ApplicationName, LogCallback cb, BOOL init_fs,
 			Log("[AppVeyor] build version: [" APPVEYOR_BUILD_VERSION "], repo: [" APPVEYOR_REPO_NAME "]");
 
 		Msg("Working Directory: [%s]", WorkingPath);
+		Msg("CommandLine: [%s]", Core.Params);
 
 		EFS._initialize		();
 #ifdef DEBUG
