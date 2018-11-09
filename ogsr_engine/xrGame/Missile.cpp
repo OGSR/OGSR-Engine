@@ -188,7 +188,7 @@ u8 CMissile::idle_state() {
   if ( actor )
     if ( actor->get_state() & mcSprint )
       return MS_IDLE_SPRINT;
-    else if ( actor->is_actor_running() )
+    else if ( actor->is_actor_running() || actor->is_actor_walking() || actor->is_actor_creeping() || actor->is_actor_crouching() )
       return MS_IDLE_MOVING;
 
   return MS_IDLE;
