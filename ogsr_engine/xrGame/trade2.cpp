@@ -176,23 +176,14 @@ u32	CTrade::GetItemPrice(PIItem pItem, bool b_buying)
 
 	clamp					(relation_factor,0.f,1.f);
 
-	const SInventoryOwner	*_partner = 0;
 	bool					buying = true;
 	bool					is_actor = (pThis.type == TT_ACTOR) || (pPartner.type == TT_ACTOR);
 	if (is_actor) {
-//.		buying				= (pPartner.type == TT_ACTOR);
 		buying				= b_buying;
-		_partner			= &(buying ? pThis : pPartner);
 	}
-	else {
-		// rare case
-		_partner			= &pPartner;
-	}
-//.	const SInventoryOwner	&partner = *_partner;
 
 	// computing action factor
 	const CTradeFactors		*p_trade_factors;
-
 
 	if (buying){
 		if( ! pThis.inv_owner->trade_parameters().enabled(CTradeParameters::action_buy(0),pItem->object().cNameSect()) ) return 0;
@@ -228,20 +219,45 @@ u32	CTrade::GetItemPrice(PIItem pItem, bool b_buying)
 	);
 	
 	// computing deficit_factor
-#if 0
-	float					deficit_factor = partner.inv_owner->deficit_factor(pItem->object().cNameSect());
-#else
-	float					deficit_factor = 1.f;
-#endif
+	float deficit_factor = 1.f;
+	if (Core.Features.test(xrCore::Feature::use_trade_deficit_factor)) {
+		deficit_factor = pThis.inv_owner->deficit_factor(pItem->object().cNameSect());
 
-	// total price calculation
-	u32						result = 
-		iFloor	(
+		clamp(deficit_factor,
+			READ_IF_EXISTS(pSettings, r_float, "trade", "min_deficit_factor", 1),
+			READ_IF_EXISTS(pSettings, r_float, "trade", "max_deficit_factor", 1)
+		);
+	}
+
+	const float						original_result =
 			base_cost*
 			condition_factor*
-			action_factor*
-			deficit_factor
-		);
+			action_factor
+		;
 
-	return					(result);
+	// total price calculation
+	float						result = 
+			original_result*
+			deficit_factor
+		;
+
+	const char* price_callback = b_buying ? "trade_get_buy_price" : "trade_get_sell_price";
+
+	// use some script discounts
+	if (pSettings->line_exist("engine_callbacks", price_callback))
+	{
+		const char* callback = pSettings->r_string("engine_callbacks", price_callback);
+		if (luabind::functor<float>	lua_function;  ai().script_engine().functor(callback, lua_function))
+		{
+			result = lua_function(
+				smart_cast<const CGameObject*>(pThis.inv_owner)->lua_game_object(), // trader
+				pItem->object().cNameSect().c_str(), // item section
+				result, // total price calculated by engine
+				original_result, // price without deficit_factor
+				deficit_factor // current deficit_factor
+			);
+		}
+	}
+
+	return iFloor(result);
 }

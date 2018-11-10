@@ -130,6 +130,22 @@ void CUICarBodyWnd::Init()
 
 	BindDragDropListEnents			(m_pUIOurBagList);
 	BindDragDropListEnents			(m_pUIOthersBagList);
+
+	//Load sounds
+	if (uiXml.NavigateToNode("action_sounds", 0))
+	{
+		XML_NODE* stored_root = uiXml.GetLocalRoot();
+		uiXml.SetLocalRoot(uiXml.NavigateToNode("action_sounds", 0));
+
+		::Sound->create(sounds[eInvSndOpen], uiXml.Read("snd_open", 0, NULL), st_Effect, sg_SourceType);
+		::Sound->create(sounds[eInvSndClose], uiXml.Read("snd_close", 0, NULL), st_Effect, sg_SourceType);
+		::Sound->create(sounds[eInvProperties], uiXml.Read("snd_properties", 0, NULL), st_Effect, sg_SourceType);
+		::Sound->create(sounds[eInvDropItem], uiXml.Read("snd_drop_item", 0, NULL), st_Effect, sg_SourceType);
+		::Sound->create(sounds[eInvDetachAddon], uiXml.Read("snd_detach_addon", 0, NULL), st_Effect, sg_SourceType);
+		::Sound->create(sounds[eInvItemUse], uiXml.Read("snd_item_use", 0, NULL), st_Effect, sg_SourceType);
+
+		uiXml.SetLocalRoot(stored_root);
+	}
 }
 
 void CUICarBodyWnd::InitCarBody(CInventoryOwner* pOur, IInventoryBox* pInvBox)
@@ -225,6 +241,8 @@ void CUICarBodyWnd::Hide()
 	if (Core.Features.test(xrCore::Feature::more_hide_weapon))
 		if ( Actor() )
 			Actor()->SetWeaponHideState(INV_STATE_BLOCK_ALL, false);
+
+	PlaySnd(eInvSndClose);
 }
 
 void CUICarBodyWnd::UpdateLists()
@@ -300,16 +318,19 @@ void CUICarBodyWnd::SendMessage(CUIWindow *pWnd, s16 msg, void *pData)
 				{
 					auto wpn = smart_cast<CWeapon*>(CurrentIItem());
 					wpn->Detach(wpn->GetScopeName().c_str(), true);
+					PlaySnd(eInvDetachAddon);
 				}break;
 				case INVENTORY_DETACH_SILENCER_ADDON:
 				{
 					auto wpn = smart_cast<CWeapon*>(CurrentIItem());
 					wpn->Detach(wpn->GetSilencerName().c_str(), true);
+					PlaySnd(eInvDetachAddon);
 				}break;
 				case INVENTORY_DETACH_GRENADE_LAUNCHER_ADDON:
 				{
 					auto wpn = smart_cast<CWeapon*>(CurrentIItem());
 					wpn->Detach(wpn->GetGrenadeLauncherName().c_str(), true);
+					PlaySnd(eInvDetachAddon);
 				}break;
 				case INVENTORY_MOVE_ACTION:
 				{
@@ -389,6 +410,8 @@ void CUICarBodyWnd::Show()
 	if (Core.Features.test(xrCore::Feature::engine_ammo_repacker) && !Core.Features.test(xrCore::Feature::hard_ammo_reload))
 		if (auto pActor = Actor())
 			pActor->RepackAmmo();
+
+	PlaySnd(eInvSndOpen);
 }
 
 void CUICarBodyWnd::DisableAll()
@@ -579,6 +602,8 @@ void CUICarBodyWnd::DropItemsfromCell(bool b_all)
 	SetCurrentItem(NULL);
 
 	InventoryUtilities::UpdateWeight(*m_pUIOurBagWnd);
+
+	PlaySnd(eInvDropItem);
 }
 
 #include "../xr_level_controller.h"
@@ -724,6 +749,8 @@ void CUICarBodyWnd::ActivatePropertiesBox()
 		cursor_pos						= GetUICursor()->GetCursorPosition();
 		cursor_pos.sub					(vis_rect.lt);
 		m_pUIPropertiesBox->Show		(vis_rect, cursor_pos);
+
+		PlaySnd(eInvProperties);
 	}
 }
 
@@ -746,6 +773,8 @@ void CUICarBodyWnd::EatItem()
 	CGameObject::u_EventGen		(P, GEG_PLAYER_ITEM_EAT, Actor()->ID());
 	P.w_u16						(CurrentIItem()->object().ID());
 	CGameObject::u_EventSend	(P);
+
+	PlaySnd(eInvItemUse);
 }
 
 bool CUICarBodyWnd::OnItemStartDrag(CUICellItem* itm)
@@ -883,4 +912,10 @@ void CUICarBodyWnd::BindDragDropListEnents(CUIDragDropListEx* lst)
 	lst->m_f_item_db_click			= CUIDragDropListEx::DRAG_DROP_EVENT(this,&CUICarBodyWnd::OnItemDbClick);
 	lst->m_f_item_selected			= CUIDragDropListEx::DRAG_DROP_EVENT(this,&CUICarBodyWnd::OnItemSelected);
 	lst->m_f_item_rbutton_click		= CUIDragDropListEx::DRAG_DROP_EVENT(this,&CUICarBodyWnd::OnItemRButtonClick);
+}
+
+void CUICarBodyWnd::PlaySnd(eInventorySndAction a)
+{
+	if (sounds[a]._handle())
+		sounds[a].play(NULL, sm_2D);
 }

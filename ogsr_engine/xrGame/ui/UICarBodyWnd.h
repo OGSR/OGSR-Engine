@@ -97,4 +97,17 @@ protected:
 	bool					TransferItem				(PIItem itm, CInventoryOwner* owner_from, CInventoryOwner* owner_to, bool b_check);
 	void					BindDragDropListEnents		(CUIDragDropListEx* lst);
 
+	enum eInventorySndAction {
+		eInvSndOpen = 0,
+		eInvSndClose,
+		eInvProperties,
+		eInvDropItem,
+		eInvDetachAddon,
+		eInvItemUse,
+		eInvSndMax
+	};
+
+	ref_sound					sounds[eInvSndMax];
+	void						PlaySnd(eInventorySndAction a);
+
 };
