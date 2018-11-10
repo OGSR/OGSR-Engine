@@ -226,7 +226,8 @@ public:
 	  select_mode_1342           = 1ull << 34,
 	  old_outfit_slot_style      = 1ull << 35,
 	  npc_simplified_shooting    = 1ull << 36,
-	  restore_sun_fix            = 1ull << 37;
+	  restore_sun_fix            = 1ull << 37,
+	  use_trade_deficit_factor   = 1ull << 38;
 	};
 
 	void		_initialize	(LPCSTR ApplicationName, LogCallback cb=0, BOOL init_fs=TRUE, LPCSTR fs_fname=0);
