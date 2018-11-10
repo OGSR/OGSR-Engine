@@ -101,8 +101,8 @@ public:
 		ewiWound,
 		ewiStarvation,
 		ewiPsyHealth,
-		ewiInvincible,
 		ewiThirst,
+		ewiInvincible,
 //		ewiSleep,
 //		ewiArtefact,
 	};

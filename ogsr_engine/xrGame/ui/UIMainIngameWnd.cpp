@@ -91,7 +91,7 @@ DLL_API CUIMainIngameWnd* GetMainIngameWindow()
 	return NULL;
 }
 
-	CUIStatic * warn_icon_list[7] = { NULL, NULL, NULL, NULL, NULL, NULL, NULL };
+	CUIStatic * warn_icon_list[8] = { NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL };
 	
 	// alpet: для возможности внешнего контроля иконок (используется в NLC6 вместо типичных индикаторов). Никак не влияет на игру для остальных модов.
 	bool __declspec(dllexport) external_icon_ctrl = false;
@@ -141,8 +141,8 @@ CUIMainIngameWnd::CUIMainIngameWnd()
 	warn_icon_list[ewiWound]		= &UIWoundIcon;
 	warn_icon_list[ewiStarvation]	= &UIStarvationIcon;
 	warn_icon_list[ewiPsyHealth]	= &UIPsyHealthIcon;
+	warn_icon_list[ewiThirst] = &UIThirstIcon;
 	warn_icon_list[ewiInvincible]	= &UIInvincibleIcon;
-	warn_icon_list[ewiThirst]       = &UIThirstIcon;
 }
 
 #include "UIProgressShape.h"
@@ -263,13 +263,13 @@ void CUIMainIngameWnd::Init()
 		"wounds",
 		"starvation",
 		"fatigue",
-		"invincible",
 		"thirst",
+		"invincible",
 	};
 
 	// Загружаем пороговые значения для индикаторов
 	EWarningIcons j = ewiWeaponJammed;
-	while (j < Core.Features.test(xrCore::Feature::actor_thirst) ? ewiThirst : ewiInvincible)
+	while (j < (Core.Features.test(xrCore::Feature::actor_thirst) ? ewiInvincible : ewiThirst))
 	{
 		// Читаем данные порогов для каждого индикатора
 		shared_str cfgRecord = pSettings->r_string("main_ingame_indicators_thresholds", *warningStrings[static_cast<int>(j) - 1]);
@@ -456,7 +456,7 @@ void CUIMainIngameWnd::Update()
 
 		EWarningIcons i					= ewiWeaponJammed;
 
-		while (!external_icon_ctrl && i < Core.Features.test(xrCore::Feature::actor_thirst) ? ewiThirst : ewiInvincible)
+		while (!external_icon_ctrl && i < (Core.Features.test(xrCore::Feature::actor_thirst) ? ewiInvincible : ewiThirst))
 		{
 			float value = 0;
 			switch (i)
