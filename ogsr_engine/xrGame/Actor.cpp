@@ -1449,6 +1449,9 @@ void CActor::ApplyArtefactEffects(ActorRestoreParams& r, CArtefact*	artefact)
   if (Core.Features.test(xrCore::Feature::af_satiety))
     r.SatietyRestoreSpeed += artefact->m_fSatietyRestoreSpeed * k;
 
+	if (Core.Features.test(xrCore::Feature::actor_thirst))
+		r.ThirstRestoreSpeed += artefact->m_fThirstRestoreSpeed * k;
+
   if (Core.Features.test(xrCore::Feature::af_psy_health)) {
 	  if (Core.Features.test(xrCore::Feature::objects_radioactive)) {
 		  if (artefact->PsyHealthRestoreSpeed() > 0)
@@ -1548,6 +1551,9 @@ ActorRestoreParams CActor::ActiveArtefactsOnBelt()
 			if (Core.Features.test(xrCore::Feature::af_satiety))
 				r.SatietyRestoreSpeed += outfit->m_fSatietyRestoreSpeed * k;
 
+			if (Core.Features.test(xrCore::Feature::actor_thirst))
+				r.ThirstRestoreSpeed += outfit->m_fThirstRestoreSpeed * k;
+
 			if (Core.Features.test(xrCore::Feature::af_psy_health)) {
 				if (Core.Features.test(xrCore::Feature::objects_radioactive)) {
 					if (outfit->PsyHealthRestoreSpeed() > 0)
@@ -1605,6 +1611,9 @@ void CActor::UpdateArtefactsOnBelt()
 
 	if (!fis_zero(effects.SatietyRestoreSpeed))
 		conditions().ChangeSatiety(effects.SatietyRestoreSpeed * f_update_time);
+
+	if (!fis_zero(effects.ThirstRestoreSpeed))
+		conditions().ChangeThirst(effects.ThirstRestoreSpeed * f_update_time);
 
 	if (!fis_zero(effects.PsyHealthRestoreSpeed))
 		conditions().ChangePsyHealth(effects.PsyHealthRestoreSpeed * f_update_time);

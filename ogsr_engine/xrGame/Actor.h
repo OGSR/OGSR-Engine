@@ -68,6 +68,7 @@ struct ActorRestoreParams
 	float	SatietyRestoreSpeed;
 	float	RadiationRestoreSpeed;
 	float	PsyHealthRestoreSpeed;
+	float	ThirstRestoreSpeed;
 };
 
 class	CActor: 
