@@ -256,15 +256,14 @@ void CUIMainIngameWnd::Init()
 		UIThirstIcon.Show(false);
 	}
 
-	shared_str warningStrings[7] = 
-	{	
+	shared_str warningStrings[6] =
+	{
 		"jammed",
 		"radiation",
 		"wounds",
 		"starvation",
-		"fatigue",
+		"fatigue", // PsyHealth ???
 		"thirst",
-		"invincible",
 	};
 
 	// Загружаем пороговые значения для индикаторов
