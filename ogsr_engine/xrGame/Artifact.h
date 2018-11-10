@@ -69,7 +69,7 @@ public:
 	bool							m_bCanSpawnZone;
 
 	float							m_fHealthRestoreSpeed;
-	float 						m_fSatietyRestoreSpeed;
+	float							m_fSatietyRestoreSpeed;
 	float							m_fPowerRestoreSpeed;
 	float							m_fBleedingRestoreSpeed;
 	float							m_fThirstRestoreSpeed;

@@ -1447,7 +1447,7 @@ void CActor::ApplyArtefactEffects(ActorRestoreParams& r, CArtefact*	artefact)
   r.PowerRestoreSpeed += artefact->m_fPowerRestoreSpeed * k;
 
   if (Core.Features.test(xrCore::Feature::af_satiety))
-    r.SatietyRestoreSpeed += artefact->m_fSatietyRestoreSpeed * k;
+		r.SatietyRestoreSpeed += artefact->m_fSatietyRestoreSpeed * k;
 
 	if (Core.Features.test(xrCore::Feature::actor_thirst))
 		r.ThirstRestoreSpeed += artefact->m_fThirstRestoreSpeed * k;
