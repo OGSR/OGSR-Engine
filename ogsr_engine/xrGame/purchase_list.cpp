@@ -26,7 +26,7 @@ void CPurchaseList::process	(CInifile &ini_file, LPCSTR section, CInventoryOwner
 
 	if (pSettings->line_exist("engine_callbacks", "trade_purchase_item_process"))
 	{
-		const LPCSTR callback = pSettings->r_string("engine_callbacks", "trade_purchase_item_process");
+		const char* callback = pSettings->r_string("engine_callbacks", "trade_purchase_item_process");
 		if (!ai().script_engine().functor(callback, lua_function))
 		{
 			Msg("Cannot get engine callback %s!", pSettings->r_string("engine_callbacks", "trade_purchase_item_process"));
@@ -52,7 +52,7 @@ void CPurchaseList::process	(CInifile &ini_file, LPCSTR section, CInventoryOwner
 
 #include "script_game_object.h"
 
-void CPurchaseList::process	(const CGameObject &owner, const shared_str &name, const u32 &count, const float &probability, luabind::functor<void> lua_function)
+void CPurchaseList::process	(const CGameObject &owner, const shared_str &name, const u32 &count, const float &probability, luabind::functor<void>& lua_function)
 {
 	VERIFY3					(count,"Invalid count for section in the purchase list",*name);
 	VERIFY3					(!fis_zero(probability,EPS_S),"Invalid probability for section in the purchase list",*name);
