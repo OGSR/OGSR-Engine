@@ -91,7 +91,7 @@ DLL_API CUIMainIngameWnd* GetMainIngameWindow()
 	return NULL;
 }
 
-	CUIStatic * warn_icon_list[8] = { NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL };
+	CUIStatic * warn_icon_list[7] = { NULL, NULL, NULL, NULL, NULL, NULL, NULL };
 	
 	// alpet: для возможности внешнего контроля иконок (используется в NLC6 вместо типичных индикаторов). Никак не влияет на игру для остальных модов.
 	bool __declspec(dllexport) external_icon_ctrl = false;
@@ -142,8 +142,7 @@ CUIMainIngameWnd::CUIMainIngameWnd()
 	warn_icon_list[ewiStarvation]	= &UIStarvationIcon;
 	warn_icon_list[ewiPsyHealth]	= &UIPsyHealthIcon;
 	warn_icon_list[ewiInvincible]	= &UIInvincibleIcon;
-	warn_icon_list[ewiThirst] = &UIThirstIcon;
-	//warn_icon_list[ewiArtefact]		= &UIArtefactIcon;
+	warn_icon_list[ewiThirst]       = &UIThirstIcon;
 }
 
 #include "UIProgressShape.h"
@@ -236,12 +235,6 @@ void CUIMainIngameWnd::Init()
 	xml_init.InitStatic		(uiXml, "starvation_static", 0, &UIStarvationIcon);
 	UIStarvationIcon.Show	(false);
 
-	if (Core.Features.test(xrCore::Feature::actor_thirst))
-	{
-		xml_init.InitStatic(uiXml, "thirst_static", 0, &UIThirstIcon);
-		UIThirstIcon.Show(false);
-	}
-
 	xml_init.InitStatic		(uiXml, "psy_health_static", 0, &UIPsyHealthIcon);
 	UIPsyHealthIcon.Show	(false);
 
@@ -257,9 +250,12 @@ void CUIMainIngameWnd::Init()
 	xml_init.InitStatic			(uiXml, "invincible_static", 0, &UIInvincibleIcon);
 	UIInvincibleIcon.Show		(false);
 
-	//xml_init.InitStatic		(uiXml, "artefact_static", 0, &UIArtefactIcon);
-	//UIArtefactIcon.Show		(false);
-	
+	if (Core.Features.test(xrCore::Feature::actor_thirst))
+	{
+		xml_init.InitStatic(uiXml, "thirst_static", 0, &UIThirstIcon);
+		UIThirstIcon.Show(false);
+	}
+
 	shared_str warningStrings[7] = 
 	{	
 		"jammed",
@@ -1008,7 +1004,7 @@ void CUIMainIngameWnd::SetWarningIconColor(EWarningIcons icon, const u32 cl)
 		SetWarningIconColor		(&UIStarvationIcon, cl);
 		if (bMagicFlag) break;
 	case ewiThirst:
-		SetWarningIconColor(&UIThirstIcon, cl);
+		SetWarningIconColor     (&UIThirstIcon, cl);
 		if (bMagicFlag) break;
 	case ewiPsyHealth:
 		SetWarningIconColor		(&UIPsyHealthIcon, cl);
@@ -1017,9 +1013,6 @@ void CUIMainIngameWnd::SetWarningIconColor(EWarningIcons icon, const u32 cl)
 		SetWarningIconColor		(&UIInvincibleIcon, cl);
 		if (bMagicFlag) break;
 		break;
-	//case ewiArtefact:
-	//	SetWarningIconColor		(&UIArtefactIcon, cl);
-	//	break;
 
 	default:
 		R_ASSERT(!"Unknown warning icon type");

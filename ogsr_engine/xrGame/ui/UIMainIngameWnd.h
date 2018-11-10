@@ -78,9 +78,9 @@ protected:
 	CUIStatic			UIRadiaitionIcon;
 	CUIStatic			UIWoundIcon;
 	CUIStatic			UIStarvationIcon;
-	CUIStatic			UIThirstIcon;
 	CUIStatic			UIPsyHealthIcon;
 	CUIStatic			UIInvincibleIcon;
+	CUIStatic			UIThirstIcon;
 //	CUIStatic			UISleepIcon;
 //	CUIStatic			UIArtefactIcon;
 

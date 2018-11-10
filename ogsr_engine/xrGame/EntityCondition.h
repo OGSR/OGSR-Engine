@@ -122,7 +122,6 @@ protected:
 	float m_fEntityMorale;			//мораль
 
 	//максимальные величины
-	//	float m_fSatietyMax;
 	float m_fPowerMax;
 	float m_fRadiationMax;
 	float m_fPsyHealthMax;

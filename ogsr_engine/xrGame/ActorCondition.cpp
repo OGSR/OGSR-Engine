@@ -253,8 +253,28 @@ void CActorCondition::UpdateThirst()
 		clamp(m_fThirst, 0.0f, 1.0f);
 	}
 
-	float thirst_health_koef = (m_fThirst - m_fThirstLightLimit) / (m_fThirst >= m_fThirstLightLimit ? 1 - m_fThirstLightLimit : m_fThirstLightLimit);
-	float thirst_power_koef = m_fThirst;
+	float thirst_health_koef = 1;
+	float thirst_power_koef = 1;
+
+	if (m_fThirstLightLimit > 0) {
+		if (m_fThirst < m_fThirstLightLimit) {
+			thirst_power_koef = m_fThirst / m_fThirstLightLimit;
+
+			const float critical_k = m_fThirstCriticalLimit / m_fThirstLightLimit;
+			thirst_health_koef = (m_fThirst / m_fThirstLightLimit - critical_k) / (m_fThirst >= m_fThirstCriticalLimit ? 1 - critical_k : critical_k);
+		}
+	}
+	else {
+		if (fis_zero(m_fThirst))
+		{
+			thirst_health_koef = -1;
+		}
+	}
+
+	if (m_bIsBleeding && thirst_health_koef > 0)
+	{
+		thirst_health_koef = 0;
+	}
 
 	m_fDeltaHealth += m_fV_ThirstHealth * thirst_health_koef * m_fDeltaTime;
 	m_fDeltaPower += m_fV_ThirstPower * thirst_power_koef * m_fDeltaTime;
