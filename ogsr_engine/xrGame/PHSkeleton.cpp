@@ -155,11 +155,36 @@ void CPHSkeleton::Update(u32 dt)
 	}
 
 }
-//KRodin: было выяснено, что SaveNetState здесь вызывается, а LoadNetState - нет.
-//В будущем надо подумать, что делать с этим бредом.
-//Как вариант - выпилить эту функцию нафиг. Но тогда может возникнуть проблема с совместимостью сейвов.
+
+// SaveNetState() вызывается при создании сейва из
+//
+// CCharacterPhysicsSupport::in_NetSave()
+//
+// который вызывается из
+//
+// CAI_Stalker::net_Save() и CBaseMonster::net_Save()
+//
+// А это, в свою очерень, вызывается по цепочке из
+//
+// CLevel::ClientSave()
+// CLevel::Objects_net_Save()
+//
+// ну и т.д. А заполненный нетпакет в результате попадает в
+//
+// CSE_PHSkeleton::load()
+//
+// Вот такая вот сложная цепочка. А LoadNetState(), который был ниже,
+// действительно нигде не использовался. Какой-то кусок старого
+// кода. То, что в нем было, делает CSE_PHSkeleton::load().
 void CPHSkeleton::SaveNetState(NET_Packet& P)
 {
+	SyncNetState();
+/* Весь этот код больше не нужен, но оставляю его на всякий
+   случай. Вместо того, что бы окольными путями записывать данные в
+   нетпакет, который потом прочитает CSE_PHSkeleton::load(), мы может
+   поместить все напрямую в CSE_PHSkeleton, что и делает
+   SyncNetState().
+
 	//Msg("!!Called [CPHSkeleton::SaveNetState]");
 
 	CPhysicsShellHolder* obj=PPhysicsShellHolder();
@@ -222,19 +247,19 @@ void CPHSkeleton::SaveNetState(NET_Packet& P)
 		obj->PHGetSyncItem(i)->get_State(state);
 		state.net_Save(P,min,max);
 	}
+*/
 }
 
-void CPHSkeleton::LoadNetState(NET_Packet& P) //Вообще никогда не вызывается.
-{
-	Msg("!!Called [CPHSkeleton::LoadNetState]");
-}
+void CPHSkeleton::RestoreNetState( CSE_PHSkeleton* po ) {
+	auto obj = PPhysicsShellHolder();
+	if ( !obj ) return;
+	auto se_obj = obj->alife_object();
+	if ( !se_obj ) return;
 
-void CPHSkeleton::RestoreNetState(CSE_PHSkeleton* po)
-{
+	po = smart_cast<CSE_PHSkeleton*>( se_obj );
 	VERIFY( po );
 	if(!po->_flags.test(CSE_PHSkeleton::flSavedData))
 		return;
-	CPhysicsShellHolder* obj=PPhysicsShellHolder();
 	PHNETSTATE_VECTOR& saved_bones=po->saved_bones.bones;
 
 	if(obj->PPhysicsShell()&&obj->PPhysicsShell()->isActive())
@@ -444,4 +469,54 @@ void CPHSkeleton::InitServerObject(CSE_Abstract * D)
 void	CPHSkeleton::SetNotNeedSave		()
 {
 	m_flags.set(CSE_PHSkeleton::flNotSave,TRUE);
+}
+
+
+void CPHSkeleton::SyncNetState() {
+  auto obj = PPhysicsShellHolder();
+  if ( !obj ) return;
+  auto se_obj = obj->alife_object();
+  if ( !se_obj ) return;
+
+  m_flags.set( CSE_PHSkeleton::flSavedData, TRUE );
+  if ( obj->PPhysicsShell() && obj->PPhysicsShell()->isActive() )
+    m_flags.set( CSE_PHSkeleton::flActive, obj->PPhysicsShell()->isEnabled() );
+
+  auto po = smart_cast<CSE_PHSkeleton*>( se_obj );
+  ASSERT_FMT( po, "[%s]: %s is not CSE_PHSkeleton", __FUNCTION__, obj->Name_script() );
+  po->_flags.assign( m_flags.get() );
+
+  auto& saved_bones = po->saved_bones;
+  u16 bones_number  = obj->PHGetSyncItemsNumber();
+  auto K = smart_cast<CKinematics*>( obj->Visual() );
+  if ( K ) {
+    saved_bones.bones_mask = K->LL_GetBonesVisible();
+    saved_bones.root_bone  = K->LL_GetBoneRoot();
+  }
+  else {
+    saved_bones.bones_mask.set( u64( -1 ), bones_number > 64 ? u64( -1 ) : 0 );
+    saved_bones.root_bone = 0;
+  }
+
+  Fvector min, max;
+  min.set(  F_MAX,  F_MAX,  F_MAX );
+  max.set( -F_MAX, -F_MAX, -F_MAX );
+  saved_bones.bones.clear();
+
+  for ( u16 i = 0; i < bones_number; i++ ) {
+    SPHNetState state;
+    obj->PHGetSyncItem( i )->get_State( state );
+    Fvector& p = state.position;
+    if ( p.x < min.x ) min.x = p.x;
+    if ( p.y < min.y ) min.y = p.y;
+    if ( p.z < min.z ) min.z = p.z;
+    if ( p.x > max.x ) max.x = p.x;
+    if ( p.y > max.y ) max.y = p.y;
+    if ( p.z > max.z ) max.z = p.z;
+    saved_bones.bones.push_back( state );
+  }
+
+  min.sub( 2.f * EPS_L );
+  max.add( 2.f * EPS_L );
+  saved_bones.set_min_max( min, max );
 }
