@@ -1299,7 +1299,7 @@ bool CSE_ALifeCar::can_save() const
 void CSE_ALifeCar::load(NET_Packet &tNetPacket)
 {
 	inherited1::load(tNetPacket);
-	inherited2::load(tNetPacket);
+	inherited2::load(tNetPacket); // CSE_PHSkeleton::load
 
 }
 

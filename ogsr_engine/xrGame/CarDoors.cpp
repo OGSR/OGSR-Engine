@@ -611,6 +611,11 @@ void CCar::SDoor::SaveNetState(NET_Packet& P)
 	ds.write(P);
 }
 
+void CCar::SDoor::SaveNetState( CSE_ALifeCar::SDoorState& ds ) {
+  ds.health     = Health();
+  ds.open_state = u8(state);
+}
+
 void CCar::SDoor::RestoreNetState(const CSE_ALifeCar::SDoorState& a_state)
 {
 	eState lstate=eState(a_state.open_state);

@@ -270,10 +270,14 @@ BOOL CCar::net_SaveRelevant()
 	//return !m_explosion_flags.test(CExplosive::flExploding)&&!CExplosive::IsExploded()&&!CPHDestroyable::Destroyed()&&!b_exploded;
 }
 
-void CCar::SaveNetState(NET_Packet& P)
-{
 
-	CPHSkeleton::SaveNetState	   (P);
+void CCar::SaveNetState( NET_Packet& P ) {
+  CPHSkeleton::SaveNetState( P );
+  SyncNetState();
+
+/* Все перенесено в SyncNetState(), который синхронизирует напрямую в
+   серверный объект.
+
 	P.w_vec3(Position());
 	Fvector Angle;
 	XFORM().getXYZ(Angle);
@@ -296,7 +300,9 @@ void CCar::SaveNetState(NET_Packet& P)
 			i->second.SaveNetState(P);
 	}
 	P.w_float(GetfHealth());
+*/
 }
+
 
 bool CCar::IsLightsOn()
 {
@@ -311,33 +317,51 @@ void CCar::SwitchLights()
 	m_lights.SwitchHeadLights();
 }
 
-void CCar::RestoreNetState(CSE_PHSkeleton* po)
-{
-	if(!po->_flags.test(CSE_PHSkeleton::flSavedData))return;
-	CPHSkeleton::RestoreNetState(po);
-	
-	CSE_ALifeCar* co=smart_cast<CSE_ALifeCar*>(po);
 
-	{
-		xr_map<u16,SDoor>::iterator i,e;
-		xr_vector<CSE_ALifeCar::SDoorState>::iterator		ii=co->door_states.begin();
-		i=m_doors.begin();
-		e=m_doors.end();
-		for(;i!=e;++i,++ii)
-		{
-			i->second.RestoreNetState(*ii);
-		}
-	}
-	{
-		xr_map<u16,SWheel>::iterator i,e;
-		xr_vector<CSE_ALifeCar::SWheelState>::iterator		ii=co->wheel_states.begin();
-		i=m_wheels_map.begin();
-		e=m_wheels_map.end();
-		for(;i!=e;++i,++ii)
-		{
-			i->second.RestoreNetState(*ii);
-		}
-	}
+void CCar::RestoreNetState( CSE_PHSkeleton* po ) {
+  auto obj = PPhysicsShellHolder();
+  if ( !obj ) return;
+  auto se_obj = obj->alife_object();
+  if ( !se_obj ) return;
+
+  po = smart_cast<CSE_PHSkeleton*>( se_obj );
+  ASSERT_FMT( po, "[%s]: %s is not CSE_PHSkeleton", __FUNCTION__, obj->Name_script() );
+  if( !po->_flags.test( CSE_PHSkeleton::flSavedData ) )
+    return;
+  CPHSkeleton::RestoreNetState( po );
+
+  CSE_ALifeCar* co = smart_cast<CSE_ALifeCar*>( se_obj );
+  ASSERT_FMT( co, "[%s]: %s is not CSE_ALifeCar", __FUNCTION__, obj->Name_script() );
+  if ( co->door_states.size() == m_doors.size() ) {
+/* восстановление состояния дверей отключено, пусть в дефолтном состоянии
+   всегда будут
+
+    int i = 0;
+    for ( auto& it : m_doors ) {
+      const auto& ds = co->door_states.at( i++ );
+      it.second.RestoreNetState( ds );
+    }
+*/
+  }
+  else
+    Msg( "~ [%s]: [%s] has different state in m_doors[%u] door_states[%u] Visual[%s]", __FUNCTION__, obj->Name_script(), m_doors.size(), co->door_states.size(), obj->cNameVisual().c_str() );
+  co->door_states.clear();
+
+  if ( co->wheel_states.size() == m_wheels_map.size() ) {
+/* восстановление состояния колес отключено, пусть в дефолтном состоянии
+   всегда будут
+
+    int i = 0;
+    for ( auto& it : m_wheels_map ) {
+      const auto& ws = co->wheel_states.at( i++ );
+      it.second.RestoreNetState( ws );
+    }
+*/
+  }
+  else
+    Msg( "~ [%s]: [%s] has different state in m_wheels_map[%u] wheel_states[%u] Visual[%s]", __FUNCTION__, obj->Name_script(), m_wheels_map.size(), co->wheel_states.size(), obj->cNameVisual().c_str() );
+  co->wheel_states.clear();
+
 	//as later may kill diable/enable state save it;
 	bool enable = PPhysicsShell()->isEnabled();
 /////////////////////////////////////////////////////////////////////////
@@ -378,6 +402,8 @@ void CCar::RestoreNetState(CSE_PHSkeleton* po)
 	else PPhysicsShell()->Disable();
 	PPhysicsShell()->GetGlobalTransformDynamic(&XFORM());
 }
+
+
 void CCar::SetDefaultNetState(CSE_PHSkeleton* po)
 {
 	if(po->_flags.test(CSE_PHSkeleton::flSavedData))return;
@@ -2039,3 +2065,34 @@ Fvector	CCar::		ExitVelocity				()
 	return v;
 }
 
+
+void CCar::SyncNetState() {
+  auto obj = PPhysicsShellHolder();
+  if ( !obj ) return;
+  auto se_obj = obj->alife_object();
+  if ( !se_obj ) return;
+
+  auto co = smart_cast<CSE_ALifeCar*>( se_obj );
+  ASSERT_FMT( co, "[%s]: %s is not CSE_ALifeCar", __FUNCTION__, obj->Name_script() );
+
+  co->o_Position = Position();
+  Fvector Angle;
+  XFORM().getXYZ( Angle );
+  co->o_Angle = Angle;
+
+  co->door_states.clear();
+  for ( auto& it : m_doors ) {
+    CSE_ALifeCar::SDoorState ds;
+    it.second.SaveNetState( ds );
+    co->door_states.push_back( ds );
+  }
+
+  co->wheel_states.clear();
+  for ( auto& it : m_wheels_map ) {
+    CSE_ALifeCar::SWheelState ws;
+    it.second.SaveNetState( ws );
+    co->wheel_states.push_back( ws );
+  }
+
+  co->health = GetfHealth();
+}

@@ -168,6 +168,7 @@ public:
 				void			Load									(LPCSTR section);
 				void 			RestoreNetState							(const CSE_ALifeCar::SWheelState& a_state)														;
 				void 			SaveNetState							(NET_Packet& P)																					;
+				void SaveNetState( CSE_ALifeCar::SWheelState& );
 				void 			ApplyDriveAxisVel						(float vel)																						;
 				void 			ApplyDriveAxisTorque					(float torque)																					;
 				void 			ApplyDriveAxisVelTorque					(float vel,float torque)																		;
@@ -308,6 +309,7 @@ virtual void ApplyDamage(u16 level);
 		void PlaceInUpdate();
 		void RemoveFromUpdate();
 		void SaveNetState(NET_Packet& P);
+		void SaveNetState( CSE_ALifeCar::SDoorState& );
 		void RestoreNetState(const CSE_ALifeCar::SDoorState& a_state);
 		void SetDefaultNetState();
 		enum eState
@@ -607,6 +609,7 @@ protected:
 			void					SaveNetState						(NET_Packet& P)																	;
 	virtual	void					RestoreNetState						(CSE_PHSkeleton* po)															;
 			void					SetDefaultNetState					(CSE_PHSkeleton* po)															;
+	void SyncNetState();
 
 	
 public:
