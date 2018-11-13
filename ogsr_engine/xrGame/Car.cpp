@@ -362,45 +362,46 @@ void CCar::RestoreNetState( CSE_PHSkeleton* po ) {
     Msg( "~ [%s]: [%s] has different state in m_wheels_map[%u] wheel_states[%u] Visual[%s]", __FUNCTION__, obj->Name_script(), m_wheels_map.size(), co->wheel_states.size(), obj->cNameVisual().c_str() );
   co->wheel_states.clear();
 
-	//as later may kill diable/enable state save it;
-	bool enable = PPhysicsShell()->isEnabled();
-/////////////////////////////////////////////////////////////////////////
-	Fmatrix restored_form;
-	PPhysicsShell()->GetGlobalTransformDynamic(&restored_form);
-/////////////////////////////////////////////////////////////////////
-	Fmatrix inv ,replace,sof;
-	sof.setXYZ(co->o_Angle.x,co->o_Angle.y,co->o_Angle.z);
-	sof.c.set(co->o_Position);
-	inv.set(restored_form);
-	inv.invert();
-	replace.mul(sof,inv);
-////////////////////////////////////////////////////////////////////
-	{
-		
-		PKinematics(Visual())->CalculateBones_Invalidate();
-		PKinematics(Visual())->CalculateBones();
-		PPhysicsShell()->DisableCollision();
-		CPHActivationShape activation_shape;//Fvector start_box;m_PhysicMovementControl.Box().getsize(start_box);
+  // as later may kill diable/enable state save it;
+  bool enable = PPhysicsShell()->isEnabled();
 
-		Fvector center;Center(center);
-		Fvector obj_size;BoundingBox().getsize(obj_size);
-		get_box(PPhysicsShell(),restored_form,obj_size,center);
-		replace.transform(center);
-		activation_shape.Create(center,obj_size,this);
-		activation_shape.set_rotation(sof);
-		activation_shape.Activate(obj_size,1,1.f,M_PI/8.f);
-		Fvector dd;
-		dd.sub(activation_shape.Position(),center);
-		activation_shape.Destroy();
-		sof.c.add(dd);
-		PPhysicsShell()->EnableCollision();
-	}
-////////////////////////////////////////////////////////////////////
-	replace.mul(sof,inv);
-	PPhysicsShell()->TransformPosition(replace);
-	if(enable)PPhysicsShell()->Enable();
-	else PPhysicsShell()->Disable();
-	PPhysicsShell()->GetGlobalTransformDynamic(&XFORM());
+  Fmatrix restored_form;
+  PPhysicsShell()->GetGlobalTransformDynamic( &restored_form );
+
+  Fmatrix inv, replace, sof;
+  sof.setXYZ( co->o_Angle.x, co->o_Angle.y, co->o_Angle.z );
+  sof.c.set( co->o_Position );
+  inv.set( restored_form );
+  inv.invert();
+  replace.mul( sof, inv );
+
+  {
+    PKinematics( Visual() )->CalculateBones_Invalidate();
+    PKinematics( Visual() )->CalculateBones();
+    PPhysicsShell()->DisableCollision();
+    CPHActivationShape activation_shape; //Fvector start_box;m_PhysicMovementControl.Box().getsize(start_box);
+
+    Fvector center;   Center( center );
+    Fvector obj_size; BoundingBox().getsize( obj_size );
+    get_box( PPhysicsShell(), restored_form, obj_size, center );
+    replace.transform( center );
+    activation_shape.Create( center, obj_size, this );
+    activation_shape.set_rotation( sof );
+    activation_shape.Activate( obj_size, 1, 1.f, M_PI/8.f );
+    Fvector dd;
+    dd.sub( activation_shape.Position(), center );
+    activation_shape.Destroy();
+    sof.c.add( dd );
+    PPhysicsShell()->EnableCollision();
+  }
+
+  replace.mul( sof, inv );
+  PPhysicsShell()->TransformPosition( replace );
+  if ( enable )
+    PPhysicsShell()->Enable();
+  else
+    PPhysicsShell()->Disable();
+  PPhysicsShell()->GetGlobalTransformDynamic( &XFORM() );
 }
 
 
