@@ -201,14 +201,14 @@ void CDialogHolder::StartStopMenu(CUIDialogWnd* pDialog, bool bDoHideIndicators)
 	
 }
 
-void CDialogHolder::OnFrame	()
-{
-	xr_vector<dlgItem>::iterator it = m_dialogsToRender.begin();
-	for(; it!=m_dialogsToRender.end();++it)
-		if((*it).enabled && (*it).wnd->IsEnabled())
-			(*it).wnd->Update();
 
+void CDialogHolder::OnFrame() {
+  xr_vector<dlgItem>::iterator it = m_dialogsToRender.begin();
+  for ( ; it != m_dialogsToRender.end(); ++it )
+    if ( (*it).enabled && (*it).wnd->IsEnabled() )
+      (*it).wnd->Update();
 }
+
 
 void CDialogHolder::shedule_Update( u32 dt ) {
   ISheduled::shedule_Update( dt );

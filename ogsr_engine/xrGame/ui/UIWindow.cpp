@@ -182,38 +182,37 @@ void CUIWindow::Draw(float x, float y){
 	Draw			();
 }
 
-void CUIWindow::Update()
-{
-	if (GetUICursor()->IsVisible())
-	{
-		bool cursor_on_window;
 
-		Fvector2			temp = GetUICursor()->GetCursorPosition();
-		Frect				r;
-		GetAbsoluteRect		(r);
-		cursor_on_window	= !!r.in(temp);
+void CUIWindow::Update() {
+  if ( GetUICursor()->IsVisible() ) {
+    bool cursor_on_window;
 
-		if(cursor_on_window&&g_show_wnd_rect){
-			Frect r;
-			GetAbsoluteRect(r);
-			add_rect_to_draw(r);
-		}
+    Fvector2 temp = GetUICursor()->GetCursorPosition();
+    Frect    r;
+    GetAbsoluteRect( r );
+    cursor_on_window = !!r.in( temp );
 
-		// RECEIVE and LOST focus
-		if(m_bCursorOverWindow != cursor_on_window)
-		{
-			if(cursor_on_window)
-				OnFocusReceive();			
-			else
-				OnFocusLost();			
-		}
-	}
-	
-	for(WINDOW_LIST_it it = m_ChildWndList.begin(); m_ChildWndList.end()!=it; ++it){
-		if(!(*it)->IsShown()) continue;
-			(*it)->Update();
-	}
+    if( cursor_on_window && g_show_wnd_rect ) {
+      Frect r;
+      GetAbsoluteRect( r );
+      add_rect_to_draw( r );
+    }
+
+    // RECEIVE and LOST focus
+    if( m_bCursorOverWindow != cursor_on_window ) {
+      if ( cursor_on_window )
+        OnFocusReceive();
+      else
+        OnFocusLost();
+    }
+  }
+
+  for ( WINDOW_LIST_it it = m_ChildWndList.begin(); m_ChildWndList.end()!=it; ++it ) {
+    if( !(*it)->IsShown() ) continue;
+    (*it)->Update();
+  }
 }
+
 
 void CUIWindow::AttachChild(CUIWindow* pChild)
 {
