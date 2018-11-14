@@ -207,10 +207,9 @@ void CUIWindow::Update() {
     }
   }
 
-  for ( WINDOW_LIST_it it = m_ChildWndList.begin(); m_ChildWndList.end()!=it; ++it ) {
-    if( !(*it)->IsShown() ) continue;
-    (*it)->Update();
-  }
+  for ( auto& it : m_ChildWndList )
+    if ( it->IsShown() )
+      it->Update();
 }
 
 
