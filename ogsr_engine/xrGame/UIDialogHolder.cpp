@@ -51,6 +51,12 @@ void CDialogHolder::StartMenu (CUIDialogWnd* pDialog, bool bDoHideIndicators)
 {
 	R_ASSERT						( !pDialog->IsShown() );
 
+        if ( MainInputReceiver() && GetUICursor()->IsVisible() ) {
+          // предыдущий диалог теряет фокус
+          MainInputReceiver()->UpdateFocus( true );
+          MainInputReceiver()->CommitFocus( true );
+        }
+
 	AddDialogToRender				(pDialog);
 	SetMainInputReceiver			(pDialog, false);
 
@@ -79,10 +85,10 @@ void CDialogHolder::StartMenu (CUIDialogWnd* pDialog, bool bDoHideIndicators)
 		if ( A && pDialog->StopAnyMove() )
 		{
 			A->StopAnyMove				();
-			A->PickupModeOff			();
 		};
 		if(A)
 		{	
+			A->PickupModeOff			();
 			A->IR_OnKeyboardRelease		(kWPN_ZOOM);
 			A->IR_OnKeyboardRelease		(kWPN_FIRE);
 		}
@@ -96,6 +102,11 @@ void CDialogHolder::StopMenu (CUIDialogWnd* pDialog)
 
 	if( MainInputReceiver()==pDialog )
 	{
+          if ( GetUICursor()->IsVisible() ) {
+            // текущий диалог теряет фокус
+            pDialog->UpdateFocus( true );
+            pDialog->CommitFocus( true );
+          }
 		if(UseIndicators())
 		{
 			bool b					= !!m_input_receivers.back().m_flags.test(recvItem::eCrosshair);
@@ -203,6 +214,15 @@ void CDialogHolder::StartStopMenu(CUIDialogWnd* pDialog, bool bDoHideIndicators)
 
 
 void CDialogHolder::OnFrame() {
+  if ( MainInputReceiver() && GetUICursor()->IsVisible() ) {
+    MainInputReceiver()->UpdateFocus();
+    // Сначала генерируем события потери фокуса
+    MainInputReceiver()->CommitFocus( true  );
+    // и только потом генерируем события получения фокуса, что бы всегда
+    // потеря фокуса обрабатывалась первой, а не как получится.
+    MainInputReceiver()->CommitFocus( false );
+  }
+
   for ( auto& it : m_dialogsToRender )
     if ( it.enabled && it.wnd->IsEnabled() )
       it.wnd->Update();

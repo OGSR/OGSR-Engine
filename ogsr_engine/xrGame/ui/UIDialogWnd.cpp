@@ -15,6 +15,7 @@ CUIDialogWnd:: CUIDialogWnd()
 {
 	m_pHolder		= NULL;
 	m_bWorkInPause	= false;
+	u32 m_dwLastClickTime = 0;
 	Hide			();
 }
 
@@ -60,6 +61,8 @@ bool CUIDialogWnd::IR_OnKeyboardHold(int dik)
 	return false;
 }
 
+#define DOUBLE_CLICK_TIME 250
+
 bool CUIDialogWnd::IR_OnKeyboardPress(int dik)
 {
 	if(!IR_process()) return false;
@@ -68,6 +71,12 @@ bool CUIDialogWnd::IR_OnKeyboardPress(int dik)
 	{
 		Fvector2 cp = GetUICursor()->GetCursorPosition();
 		EUIMessages action = (dik==MOUSE_1)?WINDOW_LBUTTON_DOWN :(dik==MOUSE_2)?WINDOW_RBUTTON_DOWN:WINDOW_CBUTTON_DOWN;
+		if ( action == WINDOW_LBUTTON_DOWN ) {
+		  u32 dwCurTime = Device.dwTimeContinual;
+		  if ( dwCurTime - m_dwLastClickTime < DOUBLE_CLICK_TIME )
+		    action = WINDOW_LBUTTON_DB_CLICK;
+		  m_dwLastClickTime = dwCurTime;
+		}
 		if (OnMouse(cp.x,cp.y, action))
             return true;
 	}

@@ -111,6 +111,7 @@ CUIWindow::CUIWindow()
     Show					(true);
 	Enable					(true);
 	m_bCursorOverWindow		= false;
+	m_bCursorOverWindowChanged	= false;
 	m_bClickable			= false;
 	m_bPP					= false;
 	m_dwFocusReceiveTime	= 0;
@@ -183,30 +184,48 @@ void CUIWindow::Draw(float x, float y){
 }
 
 
-void CUIWindow::Update() {
-  if ( GetUICursor()->IsVisible() ) {
-    bool cursor_on_window;
-
+void CUIWindow::UpdateFocus( bool focus_lost ) {
+  bool cursor_on_window;
+  if ( focus_lost ) {
+    cursor_on_window = false;
+  }
+  else {
     Fvector2 temp = GetUICursor()->GetCursorPosition();
     Frect    r;
     GetAbsoluteRect( r );
     cursor_on_window = !!r.in( temp );
-
-    if( cursor_on_window && g_show_wnd_rect ) {
-      Frect r;
-      GetAbsoluteRect( r );
-      add_rect_to_draw( r );
-    }
-
-    // RECEIVE and LOST focus
-    if( m_bCursorOverWindow != cursor_on_window ) {
-      if ( cursor_on_window )
-        OnFocusReceive();
-      else
-        OnFocusLost();
-    }
   }
 
+  if ( cursor_on_window && g_show_wnd_rect ) {
+    Frect r;
+    GetAbsoluteRect( r );
+    add_rect_to_draw( r );
+  }
+
+  // RECEIVE and LOST focus
+  m_bCursorOverWindowChanged = ( m_bCursorOverWindow != cursor_on_window );
+  for ( auto& it : m_ChildWndList )
+    if ( it->IsShown() )
+      it->UpdateFocus( focus_lost );
+}
+
+
+void CUIWindow::CommitFocus( bool focus_lost ) {
+  if ( m_bCursorOverWindowChanged && m_bCursorOverWindow == focus_lost ) {
+    if ( m_bCursorOverWindow )
+      OnFocusLost();
+    else
+      OnFocusReceive();
+    m_bCursorOverWindowChanged = false;
+  }
+
+  for ( auto& it : m_ChildWndList )
+    if ( it->IsShown() )
+      it->CommitFocus( focus_lost );
+}
+
+
+void CUIWindow::Update() {
   for ( auto& it : m_ChildWndList )
     if ( it->IsShown() )
       it->Update();
@@ -276,21 +295,6 @@ bool CUIWindow::OnMouse(float x, float y, EUIMessages mouse_action)
 
 	cursor_pos.x = x;
 	cursor_pos.y = y;
-
-
-	if( WINDOW_LBUTTON_DOWN == mouse_action )
-	{
-		static u32 _last_db_click_frame		= 0;
-		u32 dwCurTime						= Device.dwTimeContinual;
-
-		if( (_last_db_click_frame!=Device.dwFrame) && (dwCurTime-m_dwLastClickTime < DOUBLE_CLICK_TIME) )
-		{
-            mouse_action			= WINDOW_LBUTTON_DB_CLICK;
-			_last_db_click_frame	= Device.dwFrame;
-		}
-
-		m_dwLastClickTime = dwCurTime;
-	}
 
 	if(GetParent()== NULL)
 	{

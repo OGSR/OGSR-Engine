@@ -58,6 +58,8 @@ public:
 	virtual void 			OnMouseUp			(int mouse_btn);
 	virtual void 			OnFocusReceive		();
 	virtual void 			OnFocusLost			();
+	virtual void UpdateFocus( bool = false );
+	virtual void CommitFocus( bool = false );
 			bool 			HasChildMouseHandler();
 
 	//захватить/освободить мышь окном
@@ -177,9 +179,6 @@ protected:
 	// Последняя позиция мышки
 	Fvector2 cursor_pos;
 
-	//время прошлого клика мышки
-	//для определения DoubleClick
-	u32						m_dwLastClickTime;
 	u32						m_dwFocusReceiveTime;
 
 	//флаг автоматического удаления во время вызова деструктора
@@ -192,6 +191,7 @@ protected:
 
 	// Если курсор над окном
 	bool					m_bCursorOverWindow;
+	bool					m_bCursorOverWindowChanged;
 	bool					m_bClickable;
 
 #ifdef DEBUG
