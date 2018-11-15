@@ -56,6 +56,7 @@ public:
 	virtual		CUIDragItem* CreateDragItem			();
 
 	CUIDragDropListEx*		OwnerList				()						{return m_pParentList;}
+	static CUICellItem*		m_mouse_selected_item;
 				void		SetOwnerList			(CUIDragDropListEx* p);
 				void		SetCustomDraw			(ICustomDrawCell* c);
 				void*		m_pData;
