@@ -68,6 +68,7 @@ CGameTask::CGameTask()
 	m_ID			= NULL;
         m_version = 0;
         m_objectives_version = 0;
+	m_show_all_objectives = false;
 }
 
 void CGameTask::Load(const TASK_ID& id)
@@ -86,6 +87,7 @@ void CGameTask::Load(const TASK_ID& id)
 	m_priority						= g_gameTaskXml->ReadAttribInt(g_gameTaskXml->GetLocalRoot(), "prio", -1);
 	m_version = g_gameTaskXml->ReadAttribInt( g_gameTaskXml->GetLocalRoot(), "version", 0 );
 	m_objectives_version = g_gameTaskXml->ReadAttribInt( g_gameTaskXml->GetLocalRoot(), "objectives_version", 0 );
+	m_show_all_objectives = !!g_gameTaskXml->ReadAttribInt( g_gameTaskXml->GetLocalRoot(), "show_all_objectives", 0 );
 #ifdef DEBUG
 	if(m_priority == u32(-1))
 	{
