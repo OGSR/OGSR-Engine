@@ -184,6 +184,11 @@ void CUIWindow::Draw(float x, float y){
 }
 
 
+bool CUIWindow::CapturesFocusToo() {
+  return m_pMouseCapturer ? m_pMouseCapturer->CapturesFocusToo() : true;
+}
+
+
 void CUIWindow::UpdateFocus( bool focus_lost ) {
   bool cursor_on_window;
   if ( focus_lost ) {
@@ -194,7 +199,8 @@ void CUIWindow::UpdateFocus( bool focus_lost ) {
     Frect    r;
     GetAbsoluteRect( r );
     cursor_on_window = !!r.in( temp );
-    if ( !m_pMouseCapturer && !cursor_on_window ) focus_lost = true;
+    if ( !cursor_on_window && ( !m_pMouseCapturer || !m_pMouseCapturer->CapturesFocusToo() ) )
+      focus_lost = true;
   }
 
   if ( cursor_on_window && g_show_wnd_rect ) {
@@ -205,7 +211,7 @@ void CUIWindow::UpdateFocus( bool focus_lost ) {
 
   // RECEIVE and LOST focus
   m_bCursorOverWindowChanged = ( m_bCursorOverWindow != cursor_on_window );
-  if ( m_pMouseCapturer )
+  if ( m_pMouseCapturer && m_pMouseCapturer->CapturesFocusToo() )
     m_pMouseCapturer->UpdateFocus( focus_lost );
   else
     for ( auto& it : m_ChildWndList )

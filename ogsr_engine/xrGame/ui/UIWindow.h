@@ -60,6 +60,7 @@ public:
 	virtual void 			OnFocusLost			();
 	virtual void UpdateFocus( bool = false );
 	virtual void CommitFocus( bool = false );
+	virtual bool CapturesFocusToo();
 			bool 			HasChildMouseHandler();
 
 	//захватить/освободить мышь окном

@@ -92,4 +92,5 @@ public:
 				void		SetBackList				(CUIDragDropListEx*l);
 	CUIDragDropListEx*		BackList				()							{return m_back_list;}
 				Fvector2	GetPosition				();
+	virtual bool CapturesFocusToo() { return false; };
 };
