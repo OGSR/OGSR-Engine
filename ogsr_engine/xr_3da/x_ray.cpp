@@ -127,6 +127,7 @@ void InitConsole	()
 	CORE_FEATURE_SET( npc_simplified_shooting,    "features" );
 	CORE_FEATURE_SET( restore_sun_fix,            "features" );
 	CORE_FEATURE_SET( use_trade_deficit_factor,   "features" );
+	CORE_FEATURE_SET( show_objectives_ondemand,   "features" );
 }
 
 void InitInput		()
