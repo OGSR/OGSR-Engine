@@ -194,6 +194,7 @@ void CUIWindow::UpdateFocus( bool focus_lost ) {
     Frect    r;
     GetAbsoluteRect( r );
     cursor_on_window = !!r.in( temp );
+    if ( !m_pMouseCapturer && !cursor_on_window ) focus_lost = true;
   }
 
   if ( cursor_on_window && g_show_wnd_rect ) {
@@ -204,9 +205,11 @@ void CUIWindow::UpdateFocus( bool focus_lost ) {
 
   // RECEIVE and LOST focus
   m_bCursorOverWindowChanged = ( m_bCursorOverWindow != cursor_on_window );
-  for ( auto& it : m_ChildWndList )
-    if ( it->IsShown() )
-      it->UpdateFocus( focus_lost );
+  if ( m_pMouseCapturer )
+    m_pMouseCapturer->UpdateFocus( focus_lost );
+  else
+    for ( auto& it : m_ChildWndList )
+      if ( it->IsShown() ) it->UpdateFocus( focus_lost );
 }
 
 
@@ -286,8 +289,6 @@ void CUIWindow::GetAbsoluteRect(Frect& r)
 //реакция на мышь
 //координаты курсора всегда, кроме начального вызова 
 //задаются относительно текущего окна
-
-#define DOUBLE_CLICK_TIME 250
 
 bool CUIWindow::OnMouse(float x, float y, EUIMessages mouse_action)
 {	
