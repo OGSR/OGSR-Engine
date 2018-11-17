@@ -425,7 +425,7 @@ void CUILines::DrawCursor(float x, float y) {
 
 	if (!m_text.empty())
 	{
-		string1024 buff;
+		string4096 buff;
 		if (!uFlags.is(flComplexMode))
 		{
 			strncpy(buff, m_text.c_str(), m_cursor_pos.x);
