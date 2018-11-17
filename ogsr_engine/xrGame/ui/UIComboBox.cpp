@@ -188,14 +188,14 @@ void CUIComboBox::ShowList(bool bShow)
 
 		m_eState			= LIST_EXPANDED;
 
-		GetParent()->SetCapture(this, true);
+		GetParent()->SetMouseCapture(this, true);
 	}
 	else
 	{
 		m_list.Show			(false);
 		m_frameWnd.Show		(false);
 		SetHeight			(m_frameLine.GetHeight());
-		GetParent()->SetCapture(this, false);
+		GetParent()->SetMouseCapture(this, false);
 
 		m_eState			= LIST_FONDED;
 	}
