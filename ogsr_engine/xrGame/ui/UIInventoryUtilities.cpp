@@ -22,16 +22,15 @@
 #define MAP_ICONS		 "ui\\ui_icons_map"
 #define MP_CHAR_ICONS	 "ui\\ui_models_multiplayer"
 
-const LPCSTR relationsLtxSection	= "game_relations";
-const LPCSTR ratingField			= "rating_names";
-const LPCSTR reputationgField		= "reputation_names";
-const LPCSTR goodwillField			= "goodwill_names";
+constexpr LPCSTR relationsLtxSection	= "game_relations";
+constexpr LPCSTR ratingField			= "rating_names";
+constexpr LPCSTR reputationgField		= "reputation_names";
+constexpr LPCSTR goodwillField			= "goodwill_names";
 
 ref_shader	g_BuyMenuShader			= NULL;
 ref_shader	g_EquipmentIconsShader[EQUIPMENT_MAX_ICONS] = { NULL, NULL, NULL, NULL };
 ref_shader	g_MPCharIconsShader		= NULL;
 ref_shader	g_tmpWMShader			= NULL;
-static CUIStatic*	GetUIStatic				();
 
 typedef				std::pair<CHARACTER_RANK_VALUE, shared_str>	CharInfoStringID;
 DEF_MAP				(CharInfoStrings, CHARACTER_RANK_VALUE, shared_str);

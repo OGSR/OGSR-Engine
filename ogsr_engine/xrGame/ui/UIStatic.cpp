@@ -247,12 +247,27 @@ void CUIStatic::Update()
 		if (t < m_lanim_clr.m_lanim_start_time)	// consider animation delay
 			return;
 
+		u32 clr = 0;
+		bool apply = false;
+
 		if (m_lanim_clr.m_lanimFlags.test(LA_CYCLIC) || 
 			t - m_lanim_clr.m_lanim_start_time < m_lanim_clr.m_lanim->Length_sec())
 		{
 			int frame;
-			u32 clr = m_lanim_clr.m_lanim->CalculateRGB(t - m_lanim_clr.m_lanim_start_time, frame);
+			clr = m_lanim_clr.m_lanim->CalculateRGB(t - m_lanim_clr.m_lanim_start_time, frame);
+			apply = true;
+		}
+		else if (!m_lanim_clr_completed)
+		{
+			int frame = m_lanim_clr.m_lanim->LastKeyFrame();
+			clr = m_lanim_clr.m_lanim->InterpolateRGB(frame);
+			apply = true;
 
+			m_lanim_clr_completed = true;
+		}
+
+		if (apply)
+		{
 			if (m_lanim_clr.m_lanimFlags.test(LA_TEXTURECOLOR))
 				if (m_lanim_clr.m_lanimFlags.test(LA_ONLYALPHA))
 					SetColor(subst_alpha(GetColor(), color_get_A(clr)));
@@ -264,13 +279,6 @@ void CUIStatic::Update()
 					SetTextColor(subst_alpha(GetTextColor(), color_get_A(clr)));
 				else
 					SetTextColor(clr);
-		}
-		else if (!m_lanim_clr_completed)
-		{
-			SetColor(m_originalColor);
-			SetTextColor(m_originalTextColor);
-
-			m_lanim_clr_completed = true;
 		}
 	}
 	
@@ -325,9 +333,6 @@ void CUIStatic::ResetXformAnimation()
 void CUIStatic::ResetClrAnimation()
 {
 	m_lanim_clr.m_lanim_start_time = Device.dwTimeContinual/1000.0f + m_lanim_clr.m_lanim_delay_time/1000.0f;
-
-	m_originalColor = GetColor();
-	m_originalTextColor = GetTextColor();
 
 	m_lanim_clr_completed = false;
 }

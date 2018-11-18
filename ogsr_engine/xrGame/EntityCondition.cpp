@@ -534,7 +534,7 @@ void CEntityCondition::load	(IReader &input_packet)
 	}
 }
 
-const LPCSTR CCV_NAMES[7]  = {
+constexpr LPCSTR CCV_NAMES[]  = {
 	"radiation_v",  "radiation_health_v",	"morale_v", "psy_health_v",
 	"bleeding_v",	"wound_incarnation_v",  "health_restore_v" };
 

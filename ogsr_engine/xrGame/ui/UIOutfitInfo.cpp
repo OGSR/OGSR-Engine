@@ -190,7 +190,7 @@ void CUIOutfitInfo::Update(CCustomOutfit* outfit)
 
 	if (pSettings->line_exist("engine_callbacks", "ui_actor_info_callback"))
 	{
-		const LPCSTR callback = pSettings->r_string("engine_callbacks", "ui_actor_info_callback");
+		const char* callback = pSettings->r_string("engine_callbacks", "ui_actor_info_callback");
 		if (luabind::functor<void> lua_function; ai().script_engine().functor(callback, lua_function))
 		{
 			lua_function(m_listWnd, outfit ? outfit->lua_game_object() : nullptr);
