@@ -209,10 +209,6 @@ protected:
 private:
 	Frect	m_originalSizeRect;
 
-	u32 m_originalColor;
-	u32 m_originalTextColor;
-
-
 public:
 	DECLARE_SCRIPT_REGISTER_FUNCTION
 };
