@@ -14,6 +14,8 @@
 #include "../CustomOutfit.h"
 #include "UICellCustomItems.h"
 
+CUICellItem* CUICellItem::m_mouse_selected_item = nullptr;
+
 CUICellItem::CUICellItem()
 {
 	m_pParentList		= NULL;
@@ -52,23 +54,33 @@ void CUICellItem::Draw()
 
 bool CUICellItem::OnMouse(float x, float y, EUIMessages mouse_action)
 {
-	if(mouse_action == WINDOW_LBUTTON_DOWN){
-		GetMessageTarget()->SendMessage(this, DRAG_DROP_ITEM_SELECTED, NULL);
+	if ( mouse_action == WINDOW_LBUTTON_DOWN )
+	{
+		//GetMessageTarget()->SendMessage( this, DRAG_DROP_ITEM_LBUTTON_CLICK, NULL );
+		GetMessageTarget()->SendMessage( this, DRAG_DROP_ITEM_SELECTED, NULL );
+		m_mouse_selected_item = this;
 		return false;
-	}else
-	if(mouse_action == WINDOW_MOUSE_MOVE && pInput->iGetAsyncBtnState(0)){
-		GetMessageTarget()->SendMessage(this, DRAG_DROP_ITEM_DRAG, NULL);
+	}
+	else if ( mouse_action == WINDOW_MOUSE_MOVE )
+	{
+		if ( pInput->iGetAsyncBtnState(0) && m_mouse_selected_item && m_mouse_selected_item == this )
+		{
+			GetMessageTarget()->SendMessage( this, DRAG_DROP_ITEM_DRAG, NULL );
+			return true;
+		}
+	}
+	else if ( mouse_action == WINDOW_LBUTTON_DB_CLICK )
+	{
+		GetMessageTarget()->SendMessage( this, DRAG_DROP_ITEM_DB_CLICK, NULL );
 		return true;
-	}else
-	if(mouse_action==WINDOW_LBUTTON_DB_CLICK){
-		GetMessageTarget()->SendMessage(this, DRAG_DROP_ITEM_DB_CLICK, NULL);
-		return true;
-	}else
-	if(mouse_action==WINDOW_RBUTTON_DOWN){
-		GetMessageTarget()->SendMessage(this, DRAG_DROP_ITEM_RBUTTON_CLICK, NULL);
+	}
+	else if ( mouse_action == WINDOW_RBUTTON_DOWN )
+	{
+		GetMessageTarget()->SendMessage( this, DRAG_DROP_ITEM_RBUTTON_CLICK, NULL );
 		return true;
 	}
 	
+	m_mouse_selected_item = NULL;
 	return false;
 };
 
