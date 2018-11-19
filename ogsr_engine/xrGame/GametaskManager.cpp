@@ -29,9 +29,10 @@ struct FindTaskByID{
 	}
 };
 
-bool task_prio_pred(const SGameTaskKey& k1, const SGameTaskKey& k2)
-{
-	return k1.game_task->m_priority < k2.game_task->m_priority;
+bool task_prio_pred( const SGameTaskKey& k1, const SGameTaskKey& k2 ) {
+  if ( k1.game_task->m_priority == k2.game_task->m_priority )
+    return k1.game_task->m_ReceiveTime < k2.game_task->m_ReceiveTime;
+  return k1.game_task->m_priority < k2.game_task->m_priority;
 }
 
 CGameTaskManager::CGameTaskManager()
