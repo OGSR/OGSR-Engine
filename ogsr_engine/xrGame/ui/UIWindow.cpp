@@ -256,7 +256,7 @@ void CUIWindow::DetachChild(CUIWindow* pChild)
 		return;
 	
 	if(m_pMouseCapturer == pChild)
-		SetCapture(pChild, false);
+		SetMouseCapture(pChild, false);
 
 	SafeRemoveChild(pChild);
 	pChild->SetParent(NULL);
@@ -423,12 +423,12 @@ void CUIWindow::OnFocusLost()
 //о том, что окно хочет захватить мышь,
 //все сообщения от нее будут направляться только
 //ему в независимости от того где мышь
-void CUIWindow::SetCapture(CUIWindow *pChildWindow, bool capture_status)
+void CUIWindow::SetMouseCapture(CUIWindow *pChildWindow, bool capture_status)
 {
 	if(NULL != GetParent())
 	{
 		if(m_pOrignMouseCapturer == NULL || m_pOrignMouseCapturer == pChildWindow)
-			GetParent()->SetCapture(this, capture_status);
+			GetParent()->SetMouseCapture(this, capture_status);
 	}
 
 	if(capture_status)

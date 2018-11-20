@@ -11,6 +11,7 @@
 #include "UIComboBox.h"
 #include "UITextureMaster.h"
 #include "UIScrollBar.h"
+#include <dinput.h>
 
 #define CB_HEIGHT 23.0f
 #define BTN_SIZE  23.0f
@@ -64,11 +65,11 @@ void CUIComboBox::Init(float x, float y, float width){
 
 	// height of list equal to height of ONE element
 	float item_height					= CUITextureMaster::GetTextureHeight("ui_cb_listline_b");
-	m_list.Init							(0, CB_HEIGHT, width, item_height*m_iListHeight);
+	m_list.Init							(0, CB_HEIGHT, width, item_height*m_iListHeight + 1); // to fix issue with 1px scroll - add 1 px to height
 	m_list.Init							();
 	m_list.SetTextColor					(m_textColor[0]);
 	m_list.SetSelectionTexture			("ui_cb_listline");
-	m_list.SetItemHeight				(CUITextureMaster::GetTextureHeight("ui_cb_listline_b"));
+	m_list.SetItemHeight				(item_height);
 	// frame(texture) for list
 	m_frameWnd.Init						(0,  CB_HEIGHT, width, m_list.GetItemHeight()*m_iListHeight);
 	m_frameWnd.InitTexture				("ui_cb_listbox");
@@ -182,14 +183,17 @@ void CUIComboBox::ShowList(bool bShow)
 
 		m_eState			= LIST_EXPANDED;
 
-		GetParent()->SetCapture(this, true);
+		GetParent()->SetMouseCapture(this, true);
+		GetParent()->SetKeyboardCapture(this, true);
 	}
 	else
 	{
 		m_list.Show			(false);
 		m_frameWnd.Show		(false);
 		SetHeight			(m_frameLine.GetHeight());
-		GetParent()->SetCapture(this, false);
+
+		GetParent()->SetMouseCapture(this, false);
+		GetParent()->SetKeyboardCapture(this, false);
 
 		m_eState			= LIST_FONDED;
 	}
@@ -225,6 +229,26 @@ void CUIComboBox::OnFocusReceive()
 	CUIWindow::OnFocusReceive();
     if (m_bIsEnabled)
         SetState(S_Highlighted);
+}
+
+bool CUIComboBox::OnKeyboard(int dik, EUIMessages keyboard_action)
+{
+	if (CUIWindow::OnKeyboard(dik, keyboard_action))
+		return true;
+
+	switch (dik)
+	{
+	case DIK_ESCAPE:
+	{
+		if (m_eState == LIST_EXPANDED)
+		{
+			ShowList(false);
+			return true;
+		}
+	}break;
+	}
+
+	return false;
 }
 
 bool CUIComboBox::OnMouse(float x, float y, EUIMessages mouse_action){
