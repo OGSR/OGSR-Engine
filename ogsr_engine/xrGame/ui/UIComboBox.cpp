@@ -101,14 +101,14 @@ CUIListBoxItem* CUIComboBox::AddItem_(LPCSTR str)
 void CUIComboBox::OnListItemSelect()
 {
 	m_text.SetText			(m_list.GetSelectedText());    
-	CUIListBoxItem* itm		= m_list.GetSelectedItem();
+	//CUIListBoxItem* itm		= m_list.GetSelectedItem();
 	
 	int bk_itoken_id		= m_itoken_id;
 	
-	m_itoken_id				= (int)(__int64)itm->GetData();
+	m_itoken_id = m_list.GetSelectedIDX(); // (int)(__int64)itm->GetData();
 	ShowList				(false);
 
-	if(bk_itoken_id!=m_itoken_id)
+	if(bk_itoken_id != m_itoken_id)
 	{
 		SaveValue		();
 		GetMessageTarget()->SendMessage(this, LIST_ITEM_SELECT, NULL);
@@ -132,31 +132,25 @@ void CUIComboBox::SetCurrentValue()
 	m_list.SetSelectedText( cur_val );
 	
 	CUIListBoxItem* itm	= m_list.GetSelectedItem();
-	if(itm)
-		m_itoken_id			= (int)(__int64)itm->GetData();
+	if (itm)
+		m_itoken_id = m_list.GetSelectedIDX(); // (int)(__int64)itm->GetData();
 	else
-		m_itoken_id			= 1; //first
+		m_itoken_id			= 0; //1; //first
 }
 
 void CUIComboBox::SaveValue()
 {
 	CUIOptionsItem::SaveValue	();
 	xr_token* tok				= GetOptToken();
-	LPCSTR	cur_val				= get_token_name(tok, m_itoken_id);
+	const char*	cur_val			= tok[m_itoken_id].name;
 	SaveOptTokenValue			(cur_val);
 }
 
 bool CUIComboBox::IsChanged()
 {
-	return				(m_backup_itoken_id != m_itoken_id);
-/*
-	xr_token* tok		= GetOptToken();
-	LPCSTR	cur_val		= get_token_name(tok, m_itoken_id);
+	//if (m_backup_itoken_id != m_itoken_id) Msg("~~[%s] m_backup_itoken_id: [%d], m_itoken_id: [%d]", __FUNCTION__, m_backup_itoken_id, m_itoken_id);
 
-	bool bChanged		= (0 != xr_strcmp(GetOptTokenValue(), cur_val));
-
-	return				bChanged;
-*/
+	return m_backup_itoken_id != m_itoken_id;
 }
 
 LPCSTR CUIComboBox::GetText()
@@ -167,8 +161,8 @@ LPCSTR CUIComboBox::GetText()
 void CUIComboBox::SetItem(int idx)
 {
 	m_list.SetSelectedIDX	(idx);
-	CUIListBoxItem* itm		= m_list.GetSelectedItem();
-	m_itoken_id				= (int)(__int64)itm->GetData();
+	//CUIListBoxItem* itm		= m_list.GetSelectedItem();
+	m_itoken_id = idx; // (int)(__int64)itm->GetData();
 
 	m_text.SetText			(m_list.GetSelectedText());
 	
@@ -325,4 +319,3 @@ void CUIComboBox::Undo()
 	SaveValue			();
 	SetCurrentValue		();
 }
-
