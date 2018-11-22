@@ -166,8 +166,8 @@ void CWeaponShotgun::UpdateCL()
 
 void CWeaponShotgun::switch2_Fire	()
 {
+	m_bPending = true;
 	inherited::switch2_Fire	();
-	bWorking = false;
 }
 
 void CWeaponShotgun::switch2_Fire2	()
@@ -176,6 +176,8 @@ void CWeaponShotgun::switch2_Fire2	()
 
 	if (fTime<=0)
 	{
+		m_bPending = true;
+
 		// Fire
 		Fvector						p1, d; 
 		p1.set	(get_LastFP()); 
