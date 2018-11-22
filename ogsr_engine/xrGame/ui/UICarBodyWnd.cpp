@@ -15,6 +15,7 @@
 #include "UICellItem.h"
 #include "UICellItemFactory.h"
 #include "../WeaponMagazined.h"
+#include "../WeaponMagazinedWGrenade.h"
 #include "../Actor.h"
 #include "../eatable_item.h"
 #include "../alife_registry_wrappers.h"
@@ -306,12 +307,24 @@ void CUICarBodyWnd::SendMessage(CUIWindow *pWnd, s16 msg, void *pData)
 					break;
 				case INVENTORY_UNLOAD_MAGAZINE:
 				{
-					CUICellItem * itm = CurrentItem();
-					(smart_cast<CWeaponMagazined*>((CWeapon*)itm->m_pData))->UnloadMagazine();
-					for(u32 i=0; i<itm->ChildsCount(); ++i)
+					auto ProcessUnload = [](void* pWpn) {
+						auto WpnMagaz = static_cast<CWeaponMagazined*>(pWpn);
+						WpnMagaz->UnloadMagazine();
+						if (auto WpnMagazWgl = smart_cast<CWeaponMagazinedWGrenade*>(WpnMagaz))
+						{
+							WpnMagazWgl->PerformSwitchGL();
+							WpnMagazWgl->UnloadMagazine();
+							WpnMagazWgl->PerformSwitchGL();
+						}
+					};
+
+					auto itm = CurrentItem();
+					ProcessUnload(itm->m_pData);
+
+					for (u32 i = 0; i < itm->ChildsCount(); ++i) //Что это? Подозреваю что недодел какой-то.
 					{
-						CUICellItem * child_itm			= itm->Child(i);
-						(smart_cast<CWeaponMagazined*>((CWeapon*)child_itm->m_pData))->UnloadMagazine();
+						auto child_itm = itm->Child(i);
+						ProcessUnload(child_itm->m_pData);
 					}
 				}break;
 				case INVENTORY_DETACH_SCOPE_ADDON:
@@ -684,15 +697,17 @@ void CUICarBodyWnd::ActivatePropertiesBox()
 		}
 		if (smart_cast<CWeaponMagazined*>(pWeapon))
 		{
-			bool b = (0 != pWeapon->GetAmmoElapsed());
+			auto WpnMagazWgl = smart_cast<CWeaponMagazinedWGrenade*>(pWeapon);
+			bool b = pWeapon->GetAmmoElapsed() > 0 || ( WpnMagazWgl && !WpnMagazWgl->m_magazine2.empty() );
 
-			if (!b)
+			if (!b) //Какой-то недодел походу
 			{
 				CUICellItem * itm = CurrentItem();
 				for (u32 i = 0; i<itm->ChildsCount(); ++i)
 				{
 					pWeapon = smart_cast<CWeaponMagazined*>((CWeapon*)itm->Child(i)->m_pData);
-					if (pWeapon->GetAmmoElapsed())
+					auto WpnMagazWgl = smart_cast<CWeaponMagazinedWGrenade*>(pWeapon);
+					if (pWeapon->GetAmmoElapsed() > 0 || (WpnMagazWgl && !WpnMagazWgl->m_magazine2.empty()))
 					{
 						b = true;
 						break;
