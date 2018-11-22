@@ -184,27 +184,24 @@ void CUIListWnd::DetachChild(CUIWindow* pChild)
 	inherited::DetachChild	(pChild);
 }
 
-void CUIListWnd::RemoveAll()
-{
-	if(m_ItemList.empty()) return;
-		
-	while(!m_ItemList.empty())
-	{
-		DetachChild(m_ItemList.front());
-	}
 
-	m_iFirstShownIndex = 0;
-	
-	
-	UpdateList();
-	Reset();
+void CUIListWnd::RemoveAll() {
+  if( m_ItemList.empty() ) return;
 
-	//обновить полосу прокрутки
-	m_ScrollBar->SetRange(0,0);
-	m_ScrollBar->SetPageSize(0);
-	m_ScrollBar->SetScrollPos(s16(m_iFirstShownIndex));
+  while( !m_ItemList.empty() ) {
+    DetachChild( m_ItemList.front() );
+  }
 
-	UpdateScrollBar();
+  m_iFirstShownIndex = 0;
+  UpdateList();
+  Reset();
+
+  //обновить полосу прокрутки
+  m_ScrollBar->SetRange( 0, 0 );
+  m_ScrollBar->SetPageSize( 0 );
+  m_ScrollBar->SetScrollPos( s16( m_iFirstShownIndex ) );
+
+  UpdateScrollBar();
 }
 
 
