@@ -47,8 +47,12 @@ void CWeaponBM16::Load	(LPCSTR section)
 
 void CWeaponBM16::PlayReloadSound()
 {
-	if(m_magazine.size()==1)	PlaySound	(m_sndReload1,get_LastFP());
-	else						PlaySound	(sndReload,get_LastFP());
+	bool b_both = HaveCartridgeInInventory(2);
+
+	if(m_magazine.size()==1 || !b_both)	
+		PlaySound	(m_sndReload1,get_LastFP());
+	else
+		PlaySound	(sndReload,get_LastFP());
 }
 
 void CWeaponBM16::PlayAnimShoot()
