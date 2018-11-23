@@ -143,7 +143,24 @@ void CUIEventsWnd::ReloadList(bool bClearOnly)
 			m_ListWnd->AddWindow			(pTaskItem,true);
 		}else
 */
-		for (u16 i = 0; i < task->m_Objectives.size(); ++i)
+		u16 visible_objectives;
+		if ( task->m_show_all_objectives ) {
+		  visible_objectives = task->m_Objectives.size();
+		}
+		else {
+		  visible_objectives = 0;
+		  for ( u16 i = 0; i < task->m_Objectives.size(); i++ ) {
+		    auto& it = task->m_Objectives.at( i );
+		    if ( it.TaskState() != eTaskStateInProgress )
+		      visible_objectives = i + 1;
+		  }
+		  if ( visible_objectives < 2 )
+		    visible_objectives = 2;
+		  else if ( visible_objectives < task->m_Objectives.size() )
+		    visible_objectives++;
+		}
+
+		for ( u16 i = 0; i < visible_objectives; ++i )
 		{
 			if(i==0){
 				pTaskItem					= xr_new<CUITaskRootItem>(this);

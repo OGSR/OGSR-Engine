@@ -34,13 +34,12 @@ protected:
 
 	void				state_Attacking				(float dt);
 
-	virtual void		KnifeStrike					(const Fvector& pos, const Fvector& dir);
+	virtual void		KnifeStrike					(u32 state, const Fvector& pos, const Fvector& dir);
 
 	float				fWallmarkSize;
 	u16					knife_material_idx;
 
 protected:	
-	ALife::EHitType		m_eHitType;
 
 	ALife::EHitType		m_eHitType_1;
 	//float				fHitPower_1;
@@ -50,7 +49,6 @@ protected:
 	ALife::EHitType		m_eHitType_2;
 	//float				fHitPower_2;
 	Fvector4			fvHitPower_2;
-	float				fCurrentHit;
 	float				fHitImpulse_2;
 protected:
 	virtual void		LoadFireParams					(LPCSTR section, LPCSTR prefix);

@@ -53,10 +53,14 @@ void CWeaponPistol::Load	(LPCSTR section)
 	animGetEx( mhud_pistol_r.mhud_close,        "anim_close", "_r" );
 	animGetEx( mhud_pistol_r.mhud_show_empty,   "anim_draw_empty", "_r" );
 	animGetEx( mhud_pistol_r.mhud_reload_empty, "anim_reload_empty", "_r" );
+
+	animGetEx( mhud_pistol_r.mhud_idle_sprint_empty, pSettings->line_exist(hud_sect.c_str(), "anim_idle_sprint_empty") ? "anim_idle_sprint_empty" : pSettings->line_exist(hud_sect.c_str(), "anim_idle_sprint") ? "anim_idle_sprint" : "anim_idle");
+	animGetEx( mhud_pistol_r.mhud_idle_moving_empty, pSettings->line_exist(hud_sect.c_str(), "anim_idle_moving_empty") ? "anim_idle_moving_empty" : pSettings->line_exist(hud_sect.c_str(), "anim_idle_moving") ? "anim_idle_sprint" : "anim_idle");
+
 	animGetEx( wm_mhud_r.mhud_idle,             "anim_idle", "_r" );
 	animGetEx( wm_mhud_r.mhud_reload,           "anim_reload", "_r" );
 	animGetEx( wm_mhud_r.mhud_show,             "anim_draw", "_r" );
-	animGetEx( wm_mhud_r.mhud_hide,             "anim_holster", "_r" );
+	animGetEx( wm_mhud_r.mhud_hide,             "anim_holster", "_r" ); // not used ???
 	animGetEx( wm_mhud_r.mhud_shots,            "anim_shoot", "_r" );
 
 	if(IsZoomEnabled()){

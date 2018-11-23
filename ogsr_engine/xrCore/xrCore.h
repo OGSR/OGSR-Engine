@@ -228,7 +228,8 @@ public:
 	  npc_simplified_shooting    = 1ull << 36,
 	  restore_sun_fix            = 1ull << 37,
 	  use_trade_deficit_factor   = 1ull << 38,
-	  actor_thirst               = 1ull << 39;
+	  show_objectives_ondemand   = 1ull << 39;
+	  actor_thirst               = 1ull << 40;
 	};
 
 	void		_initialize	(LPCSTR ApplicationName, LogCallback cb=0, BOOL init_fs=TRUE, LPCSTR fs_fname=0);

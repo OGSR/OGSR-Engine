@@ -139,6 +139,11 @@ old_outfit_slot_style = true
 ; max_deficit_factor          = 1     ;максимально возможный дефицит при расчете цены на товар. при 1 - не будет влиять на цену.
 ;use_trade_deficit_factor = true
 
+; В ПДА, для каждого задания будут показываться только следующее
+; подзадание и все предыдущие. Т.е. подзадания будут открываться по
+; мере выполнения.
+;show_objectives_ondemand = true
+
 [dragdrop]
 ; цвет подкрашенной иконки выбранного предмета/патронов/аддонов/оружия
 color_ammo = 0, 128, 0, 255 ;RGBA
@@ -169,3 +174,38 @@ select_mode_1342 = true
 [user_spots]
 ; Переопределить тип метки, используемой для пользовательских меток на карте. По умолчанию используется red_location
 ;spot_type = red_location
+
+
+[engine_callbacks]
+; ui_item_info_callback( UIDesc ) вызывается перед заполнением статика
+; описания предмета в инвентаре. UIDesc - это SCrollView, в который
+; можно добавлять свои статики.
+;ui_item_info_callback = engine_callbacks.ui_item_info_callback
+
+; ui_actor_info_callback( list, obj ) вызывается при обновлении
+; outfit_info в инвентаре ГГ. list - CUIScrollView (xml
+; outfit_info:scroll_view in inventory_new.xml). obj - текущий костюм
+; ГГ, если нету - nil.
+;ui_actor_info_callback = engine_callbacks.ui_actor_info_callback
+
+; trade_purchase_item_process( npc, sobj ) вызывается для каждого
+; созданного предмета при обновлении ассортимента торговца. npc -
+; trader, sobj - серверный объект предмета. Вариант использования:
+; включать аддоны для оружия и подобное для торгуемых вещей.
+;trade_purchase_item_process = engine_callbacks.trade_purchase_item_process
+
+; trade_get_buy_price для расчета цены покупки и trade_get_sell_price
+; для расчета цены продажи торговцем. По аналогии с коллбеками из
+; ЗП. Позволяют изменять цены динамически, и не плодить постоянно
+; новые секции для sell_condition и buy_condition.
+;
+; Сигнатура: (npc, section, result, original, deficit_factor)
+;
+; npc            - объект торговец
+; section        - секция предмета
+; result         - конечная цена которую рассчитал движок
+; original       - цена без учета дефицита
+; deficit_factor - факто дефицита рассчитанный движком, с учетом
+; ограничений min\max
+;trade_get_buy_price  = engine_callbacks.trade_get_buy_price
+;trade_get_sell_price = engine_callbacks.trade_get_sell_price

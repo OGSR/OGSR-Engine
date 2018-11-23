@@ -320,6 +320,11 @@ void CALifeSimulator__teleport_object(CALifeSimulator *self, u16 ID, Fvector _po
 	self->teleport_object(ID, _gvid, _lvid, _pos);
 }
 
+void FAKE_CALifeSimulator__teleport_object(CALifeSimulator*, const char*, Fvector, u32, GameGraph::_GRAPH_ID, u16)
+{
+	FATAL("INCORRECT ARGUMENTS! Must be: alife():teleport_object(id, position, lvid, gvid)");
+}
+
 LPCSTR get_level_name							(const CALifeSimulator *self, int level_id)
 {
 	LPCSTR								result = *ai().game_graph().header().level((GameGraph::_LEVEL_ID)level_id).name();
@@ -429,6 +434,7 @@ void CALifeSimulator::script_register			(lua_State *L)
 			.def("dont_has_info",			&dont_has_info)
 			.def("switch_distance",			&CALifeSimulator::switch_distance)
 			.def("set_switch_distance",		&CALifeSimulator::set_switch_distance)
+			.def("teleport_object",			&FAKE_CALifeSimulator__teleport_object)
 			.def("teleport_object",			&CALifeSimulator__teleport_object)
 			.def("assign_story_id",			&CALifeSimulator__assign_story_id)
 			.def("use_ai_locations",		&CALifeSimulator__use_ai_locations)

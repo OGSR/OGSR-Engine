@@ -25,17 +25,9 @@
   Core.Features.set( xrCore::Feature::feature, READ_IF_EXISTS( pSettings, r_bool, section, #feature, false ) )
 
 
-//---------------------------------------------------------------------
 ENGINE_API CInifile* pGameIni = nullptr;
-volatile bool g_bIntroFinished = false;
 int max_load_stage = 0;
 
-#define NO_MULTI_INSTANCES
-
-//---------------------------------------------------------------------
-// 2446363
-// umbt@ukr.net
-//////////////////////////////////////////////////////////////////////////
 struct _SoundProcessor	: public pureFrame
 {
 	virtual void OnFrame	( )
@@ -47,7 +39,6 @@ struct _SoundProcessor	: public pureFrame
 	}
 }	SoundProcessor;
 
-//////////////////////////////////////////////////////////////////////////
 // global variables
 ENGINE_API	CApplication*	pApp			= NULL;
 static		HWND			logoWindow		= NULL;
@@ -61,7 +52,6 @@ string512	g_sBenchmarkName;
 void InitEngine		()
 {
 	Engine.Initialize			( );
-	while (!g_bIntroFinished)	Sleep	(100);
 	Device.Initialize			( );
 }
 
@@ -127,6 +117,7 @@ void InitConsole	()
 	CORE_FEATURE_SET( npc_simplified_shooting,    "features" );
 	CORE_FEATURE_SET( restore_sun_fix,            "features" );
 	CORE_FEATURE_SET( use_trade_deficit_factor,   "features" );
+	CORE_FEATURE_SET( show_objectives_ondemand,   "features" );
 	CORE_FEATURE_SET( actor_thirst,               "features" );
 }
 
@@ -143,8 +134,6 @@ void destroyInput	()
 void InitSound		()
 {
 	CSound_manager_interface::_create					(u64(Device.m_hWnd));
-//	Msg				("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-//	ref_sound*	x	= 
 }
 void destroySound	()
 {
@@ -356,30 +345,25 @@ using DUMMY_STUFF = void( const void*, const u32&, void* );
 extern XRCORE_API DUMMY_STUFF* g_temporary_stuff;
 #include "trivial_encryptor.h"
 
-int APIENTRY WinMain_impl(HINSTANCE hInstance,
-                     HINSTANCE hPrevInstance,
-                     char *    lpCmdLine,
-                     int       nCmdShow)
+int APIENTRY WinMain_impl(HINSTANCE hInstance, HINSTANCE hPrevInstance, char* lpCmdLine, int nCmdShow )
 {
-//	foo();
-	// Check for another instance
-#ifdef NO_MULTI_INSTANCES
-	#define STALKER_PRESENCE_MUTEX "STALKER-SoC"
-	
 	HANDLE hCheckPresenceMutex = INVALID_HANDLE_VALUE;
-	hCheckPresenceMutex = OpenMutex( READ_CONTROL , FALSE ,  STALKER_PRESENCE_MUTEX );
-	if ( hCheckPresenceMutex == NULL ) {
-		// New mutex
-		hCheckPresenceMutex = CreateMutex( NULL , FALSE , STALKER_PRESENCE_MUTEX );
-		if ( hCheckPresenceMutex == NULL )
-			// Shit happens
-			return 2;
-	} else {
-		// Already running
-		CloseHandle( hCheckPresenceMutex );
-		return 1;
+	if (!strstr(lpCmdLine, "-multi_instances")) { // Check for another instance
+		constexpr const char* STALKER_PRESENCE_MUTEX = "STALKER-SoC";
+		hCheckPresenceMutex = OpenMutex(READ_CONTROL, FALSE, STALKER_PRESENCE_MUTEX);
+		if (hCheckPresenceMutex == nullptr) {
+			// New mutex
+			hCheckPresenceMutex = CreateMutex(nullptr, FALSE, STALKER_PRESENCE_MUTEX);
+			if (hCheckPresenceMutex == nullptr)
+				// Shit happens
+				return 2;
+		}
+		else {
+			// Already running
+			CloseHandle(hCheckPresenceMutex);
+			return 1;
+		}
 	}
-#endif
 
 	//SetThreadAffinityMask		(GetCurrentThread(),1);
 
@@ -391,9 +375,6 @@ int APIENTRY WinMain_impl(HINSTANCE hInstance,
 		logoInsertPos = HWND_NOTOPMOST;
 	}
 	SetWindowPos(logoWindow, logoInsertPos, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE | SWP_SHOWWINDOW);
-
-	// AVI
-	g_bIntroFinished = true;
 
 	LPCSTR						fsgame_ltx_name = "-fsltx ";
 	string_path					fsgame = "";
@@ -443,14 +424,12 @@ int APIENTRY WinMain_impl(HINSTANCE hInstance,
 		Startup	 					( );
 		Core._destroy				( );
 
-#ifdef NO_MULTI_INSTANCES
-		// Delete application presence mutex
-		CloseHandle( hCheckPresenceMutex );
-#endif
+		if (!strstr(lpCmdLine, "-multi_instances")) // Delete application presence mutex
+			CloseHandle(hCheckPresenceMutex);
 	}
 	// here damn_keys_filter class instanse will be destroyed
 
-	return						0;
+	return 0;
 }
 
 int stack_overflow_exception_filter	(int exception_code)
@@ -494,19 +473,11 @@ LPCSTR _GetFontTexName (LPCSTR section)
 	int def_idx		= 1;//default 1024x768
 	int idx			= def_idx;
 
-#if 0
-	u32 w = Device.dwWidth;
-
-	if(w<=800)		idx = 0;
-	else if(w<=1280)idx = 1;
-	else 			idx = 2;
-#else
 	u32 h = Device.dwHeight;
 
 	if(h<=600)		idx = 0;
 	else if(h<=900)	idx = 1;
 	else 			idx = 2;
-#endif
 
 
 	while(idx>=0){
@@ -585,8 +556,6 @@ CApplication::~CApplication()
 	Engine.Event.Handler_Detach	(eStart,this);
 	Engine.Event.Handler_Detach	(eQuit,this);
 }
-
-extern CRenderDevice Device;
 
 void CApplication::OnEvent(EVENT E, u64 P1, u64 P2)
 {

@@ -178,7 +178,7 @@ public:
 
                         u8                      selected_slot;
                         const xr_vector<u8>&    GetSlots()     { return m_slots;      }
-                        const LPCSTR            GetSlotsSect() { return m_slots_sect; }
+                        const char*            GetSlotsSect() { return m_slots_sect; }
                         void                    SetSlot(u8 slot); // alpet: реально это SelectSlot
                         virtual u8              GetSlot() const;
                         u32                     GetSlotsCount() const { return m_slots.size(); }

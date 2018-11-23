@@ -14,6 +14,7 @@ CWeaponShotgun::CWeaponShotgun(void) : CWeaponCustomPistol("TOZ34")
 	m_eSoundClose			= ESoundTypes(SOUND_TYPE_WEAPON_SHOOTING);
 	m_eSoundAddCartridge	= ESoundTypes(SOUND_TYPE_WEAPON_SHOOTING);
 	m_bLockType = true; // Запрещает заряжать в дробовики патроны разного типа
+	m_stop_triStateReload = false;
 }
 
 CWeaponShotgun::~CWeaponShotgun(void)
@@ -166,8 +167,8 @@ void CWeaponShotgun::UpdateCL()
 
 void CWeaponShotgun::switch2_Fire	()
 {
+	m_bPending = true;
 	inherited::switch2_Fire	();
-	bWorking = false;
 }
 
 void CWeaponShotgun::switch2_Fire2	()
@@ -176,6 +177,8 @@ void CWeaponShotgun::switch2_Fire2	()
 
 	if (fTime<=0)
 	{
+		m_bPending = true;
+
 		// Fire
 		Fvector						p1, d; 
 		p1.set	(get_LastFP()); 
@@ -251,10 +254,9 @@ bool CWeaponShotgun::Action			(s32 cmd, u32 flags)
 
 	if(	m_bTriStateReload && GetState()==eReload &&
 		cmd==kWPN_FIRE && flags&CMD_START &&
-		m_sub_state==eSubstateReloadInProcess		)//остановить перезагрузку
+		(m_sub_state==eSubstateReloadInProcess	|| m_sub_state == eSubstateReloadBegin) )//остановить перезагрузку
 	{
-		AddCartridge(1);
-		m_sub_state = eSubstateReloadEnd;
+		m_stop_triStateReload = true;
 		return true;
 	}
 
@@ -290,7 +292,7 @@ void CWeaponShotgun::OnAnimationEnd(u32 state)
 		}break;
 
 		case eSubstateReloadInProcess:{
-			if( 0 != AddCartridge(1) ){
+			if( 0 != AddCartridge(1) || m_stop_triStateReload){
 				m_sub_state = eSubstateReloadEnd;
 			}
 			SwitchState(eReload);
@@ -307,6 +309,8 @@ void CWeaponShotgun::OnAnimationEnd(u32 state)
 void CWeaponShotgun::Reload() 
 {
 	if(m_bTriStateReload){
+		m_stop_triStateReload = false;
+		OnZoomOut();
 		TriStateReload();
 	}else
 		inherited::Reload();

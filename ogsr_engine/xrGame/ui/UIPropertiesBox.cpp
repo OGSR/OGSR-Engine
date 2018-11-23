@@ -97,7 +97,7 @@ void CUIPropertiesBox::Show(const Frect& parent_rect, const Fvector2& point)
 
 	ResetAll						();
 
-	GetParent()->SetCapture			(this, true);
+	GetParent()->SetMouseCapture			(this, true);
 	m_pOrignMouseCapturer			= this;
 	m_UIListWnd.Reset();
 }
@@ -110,7 +110,7 @@ void CUIPropertiesBox::Hide()
 	m_pMouseCapturer = NULL;
 	
 	if(GetParent()->GetMouseCapturer() == this)
-		GetParent()->SetCapture(this, false);
+		GetParent()->SetMouseCapture(this, false);
 }
 
 bool CUIPropertiesBox::OnMouse(float x, float y, EUIMessages mouse_action)

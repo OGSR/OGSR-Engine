@@ -41,9 +41,12 @@ bool CUITrackBar::OnMouse(float x, float y, EUIMessages mouse_action)
 	if (m_bCursorOverWindow)
 	{
 		if (pInput->iGetAsyncBtnState(0))
+		{
 			UpdatePosRelativeToMouse();
+			return true;
+		}
 	}
-	return true;
+	return false;
 }
 
 void CUITrackBar::Init(float x, float y, float width, float height){

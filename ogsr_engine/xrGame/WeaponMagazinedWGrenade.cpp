@@ -228,7 +228,7 @@ void CWeaponMagazinedWGrenade::OnShot		()
 //на одиночные, а уже потом на подствольник
 bool CWeaponMagazinedWGrenade::SwitchMode() 
 {
-	bool bUsefulStateToSwitch = ((eIdle==GetState())||(eHidden==GetState())||(eMisfire==GetState())||(eMagEmpty==GetState())) && (!IsPending());
+	bool bUsefulStateToSwitch = ((eIdle==GetState())||(eHidden==GetState())||(eMisfire==GetState())||(eMagEmpty==GetState()));
 
 	if(!bUsefulStateToSwitch)
 		return false;
@@ -493,10 +493,13 @@ void CWeaponMagazinedWGrenade::OnStateSwitch(u32 S)
 	{
 	case eSwitch:
 		{
-			if( !SwitchMode() ){
+		if (!IsPending())
+		{
+			if (!SwitchMode()) {
 				SwitchState(eIdle);
 				return;
 			}
+		}
 		}break;
 	}
 	

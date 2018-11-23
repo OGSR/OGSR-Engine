@@ -241,12 +241,12 @@ u32	CTrade::GetItemPrice(PIItem pItem, bool b_buying)
 			deficit_factor
 		;
 
-	const LPCSTR price_callback = b_buying ? "trade_get_buy_price" : "trade_get_sell_price";
+	const char* price_callback = b_buying ? "trade_get_buy_price" : "trade_get_sell_price";
 
 	// use some script discounts
 	if (pSettings->line_exist("engine_callbacks", price_callback))
 	{
-		const LPCSTR callback = pSettings->r_string("engine_callbacks", price_callback);
+		const char* callback = pSettings->r_string("engine_callbacks", price_callback);
 		if (luabind::functor<float>	lua_function;  ai().script_engine().functor(callback, lua_function))
 		{
 			result = lua_function(

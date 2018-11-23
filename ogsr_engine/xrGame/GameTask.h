@@ -122,6 +122,7 @@ public:
 	u32						m_priority;
         u32 m_version;
         u32 m_objectives_version;
+	bool m_show_all_objectives;
 
 // for scripting access
 	void					Load_script				(LPCSTR _id);

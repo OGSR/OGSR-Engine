@@ -225,7 +225,7 @@ void CUIItemInfo::TryAddCustomInfo(CPhysicsShellHolder& obj)
 {
 	if (pSettings->line_exist("engine_callbacks", "ui_item_info_callback"))
 	{
-		const LPCSTR callback = pSettings->r_string("engine_callbacks", "ui_item_info_callback");
+		const char* callback = pSettings->r_string("engine_callbacks", "ui_item_info_callback");
 		if (luabind::functor<void> lua_function; ai().script_engine().functor(callback, lua_function))
 		{
 			lua_function(UIDesc, obj.lua_game_object());

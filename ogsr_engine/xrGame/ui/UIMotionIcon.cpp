@@ -2,7 +2,7 @@
 #include "UIMainIngameWnd.h"
 #include "UIMotionIcon.h"
 #include "UIXmlInit.h"
-const LPCSTR MOTION_ICON_XML = "motion_icon.xml";
+constexpr LPCSTR MOTION_ICON_XML = "motion_icon.xml";
 
 CUIMotionIcon::CUIMotionIcon()
 {

@@ -178,6 +178,10 @@ void CCar::SWheel::SaveNetState(NET_Packet& P)
 	ws.write(P);
 }
 
+void CCar::SWheel::SaveNetState( CSE_ALifeCar::SWheelState& ws ) {
+  ws.health = Health();
+}
+
 void CCar::SWheel::RestoreNetState(const CSE_ALifeCar::SWheelState& a_state)
 {
 	SetHealth(a_state.health);

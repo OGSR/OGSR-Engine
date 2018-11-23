@@ -309,6 +309,11 @@ float CEntityCondition::HitPowerEffect(float power_loss)
 
 CWound* CEntityCondition::AddWound(float hit_power, ALife::EHitType hit_type, u16 element)
 {
+	if ( element == BI_NONE ) {
+	  Msg( "! [%s]: %s: BI_NONE -> 0", __FUNCTION__, m_object->cName().c_str() );
+	  element = 0;
+	}
+
 	//максимальное число косточек 64
 	VERIFY(element  < 64 || BI_NONE == element);
 
@@ -529,7 +534,7 @@ void CEntityCondition::load	(IReader &input_packet)
 	}
 }
 
-const LPCSTR CCV_NAMES[7]  = {
+constexpr LPCSTR CCV_NAMES[]  = {
 	"radiation_v",  "radiation_health_v",	"morale_v", "psy_health_v",
 	"bleeding_v",	"wound_incarnation_v",  "health_restore_v" };
 

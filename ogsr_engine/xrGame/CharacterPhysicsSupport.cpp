@@ -980,3 +980,8 @@ void CCharacterPhysicsSupport::on_destroy_anim_mov_ctrl	()
 						CreateCharacter();
 	anim_mov_state.active = false;
 }
+
+
+void CCharacterPhysicsSupport::SyncNetState() {
+  CPHSkeleton::SyncNetState();
+}
