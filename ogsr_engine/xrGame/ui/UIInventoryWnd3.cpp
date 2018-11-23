@@ -117,14 +117,14 @@ void CUIInventoryWnd::ActivatePropertiesBox()
 			auto WpnMagazWgl = smart_cast<CWeaponMagazinedWGrenade*>(pWeapon);
 			bool b = pWeapon->GetAmmoElapsed() > 0 || ( WpnMagazWgl && !WpnMagazWgl->m_magazine2.empty() );
 
-			if(!b) //Какой-то недодел походу
+			if(!b)
 			{
 				CUICellItem * itm = CurrentItem();
 				for(u32 i=0; i<itm->ChildsCount(); ++i)
 				{
-					pWeapon = smart_cast<CWeaponMagazined*>((CWeapon*)itm->Child(i)->m_pData);
-					auto WpnMagazWgl = smart_cast<CWeaponMagazinedWGrenade*>(pWeapon);
-					if(pWeapon->GetAmmoElapsed() > 0 || ( WpnMagazWgl && !WpnMagazWgl->m_magazine2.empty() ))
+					auto pWeaponChild = static_cast<CWeaponMagazined*>(itm->Child(i)->m_pData);
+					auto WpnMagazWglChild = smart_cast<CWeaponMagazinedWGrenade*>(pWeaponChild);
+					if (pWeaponChild->GetAmmoElapsed() > 0 || ( WpnMagazWglChild && !WpnMagazWglChild->m_magazine2.empty() ))
 					{
 						b = true;
 						break;
@@ -285,7 +285,7 @@ void CUIInventoryWnd::ProcessPropertiesBoxClicked	()
 				auto itm = CurrentItem();
 				ProcessUnload(itm->m_pData);
 
-				for (u32 i = 0; i < itm->ChildsCount(); ++i) //Что это? Подозреваю что недодел какой-то.
+				for (u32 i = 0; i < itm->ChildsCount(); ++i)
 				{
 					auto child_itm = itm->Child(i);
 					ProcessUnload(child_itm->m_pData);
