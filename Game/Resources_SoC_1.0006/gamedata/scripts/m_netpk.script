@@ -1674,6 +1674,7 @@ end
 --/  in: function | table
 --/  out: boolean (succes flag)
 function net_cse_abstract:setCallback(callback)
+  ASSERT( false, "! [%s]: setCallback() DEPRECATED!!!", script_name() )
 	local lua_type = type(callback)
 	if lua_type ~= 'table' and lua_type ~= 'function' then return nil end --/>
 	self.obj.cb_netpk = function(sobj, packet) --/< set master-callback function
