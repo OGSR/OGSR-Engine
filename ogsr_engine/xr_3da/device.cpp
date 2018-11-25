@@ -209,7 +209,7 @@ void CRenderDevice::Run			()
 
 				// FPS Lock
 				static constexpr u32 menuFPSlimit  = 60;
-				static constexpr u32 pauseFPSlimit = 30;
+				static constexpr u32 pauseFPSlimit = 60;
 				u32 curFPSLimit = IsMainMenuActive() ? menuFPSlimit : Device.Paused() ? pauseFPSlimit : g_dwFPSlimit;
 
 				if ( curFPSLimit > 0 )

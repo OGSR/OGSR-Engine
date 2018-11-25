@@ -9,7 +9,7 @@
 #define MS_READY	4
 #define MS_THROW	5
 #define MS_END		6
-#define MS_EMPTY	7
+#define MS_EMPTY	7 // not used at all?
 #define MS_HIDING	8
 #define MS_PLAYING	9
 #define MS_IDLE_SPRINT	10
