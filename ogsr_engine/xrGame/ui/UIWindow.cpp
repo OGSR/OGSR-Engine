@@ -102,8 +102,7 @@ CUIWindow::CUIWindow()
 //.	m_dbg_flag.zero			();
 	m_pFont					= NULL;
 	m_pParentWnd			= NULL;
-	m_pMouseCapturer		= NULL;
-	m_pOrignMouseCapturer	= NULL;
+	Reset();
 	m_pMessageTarget		= NULL;
 	m_pKeyboardCapturer		=  NULL;
 	SetWndRect				(0,0,0,0);
@@ -185,7 +184,7 @@ void CUIWindow::Draw(float x, float y){
 
 
 bool CUIWindow::CapturesFocusToo() {
-  return m_pMouseCapturer ? m_pMouseCapturer->CapturesFocusToo() : true;
+  return GetMouseCapturer() ? GetMouseCapturer()->CapturesFocusToo() : true;
 }
 
 
@@ -199,7 +198,7 @@ void CUIWindow::UpdateFocus( bool focus_lost ) {
     Frect    r;
     GetAbsoluteRect( r );
     cursor_on_window = !!r.in( temp );
-    if ( !cursor_on_window && ( !m_pMouseCapturer || !m_pMouseCapturer->CapturesFocusToo() ) )
+    if ( !cursor_on_window && ( !GetMouseCapturer() || !GetMouseCapturer()->CapturesFocusToo() ) )
       focus_lost = true;
   }
 
@@ -211,8 +210,8 @@ void CUIWindow::UpdateFocus( bool focus_lost ) {
 
   // RECEIVE and LOST focus
   m_bCursorOverWindowChanged = ( m_bCursorOverWindow != cursor_on_window );
-  if ( m_pMouseCapturer && m_pMouseCapturer->CapturesFocusToo() )
-    m_pMouseCapturer->UpdateFocus( focus_lost );
+  if ( GetMouseCapturer() && GetMouseCapturer()->CapturesFocusToo() )
+    GetMouseCapturer()->UpdateFocus( focus_lost );
   else
     for ( auto& it : m_ChildWndList )
       if ( it->IsShown() ) it->UpdateFocus( focus_lost );
@@ -255,7 +254,7 @@ void CUIWindow::DetachChild(CUIWindow* pChild)
 	if(NULL==pChild)
 		return;
 	
-	if(m_pMouseCapturer == pChild)
+	if( GetMouseCapturer() == pChild )
 		SetMouseCapture(pChild, false);
 
 	SafeRemoveChild(pChild);
@@ -315,10 +314,10 @@ bool CUIWindow::OnMouse(float x, float y, EUIMessages mouse_action)
 
 	//если есть дочернее окно,захватившее мышь, то
 	//сообщение направляем ему сразу
-	if(m_pMouseCapturer)
+	if( GetMouseCapturer() )
 	{
-		m_pMouseCapturer->OnMouse(cursor_pos.x - m_pMouseCapturer->GetWndRect().left, 
-								  cursor_pos.y - m_pMouseCapturer->GetWndRect().top, 
+		GetMouseCapturer()->OnMouse(cursor_pos.x - GetMouseCapturer()->GetWndRect().left, 
+								  cursor_pos.y - GetMouseCapturer()->GetWndRect().top, 
 								  mouse_action);
 		return true;
 	}
@@ -423,26 +422,32 @@ void CUIWindow::OnFocusLost()
 //о том, что окно хочет захватить мышь,
 //все сообщения от нее будут направляться только
 //ему в независимости от того где мышь
-void CUIWindow::SetMouseCapture(CUIWindow *pChildWindow, bool capture_status)
-{
-	if(NULL != GetParent())
-	{
-		if(m_pOrignMouseCapturer == NULL || m_pOrignMouseCapturer == pChildWindow)
-			GetParent()->SetMouseCapture(this, capture_status);
-	}
+void CUIWindow::SetMouseCapture( CUIWindow *pChildWindow, bool capture_status ) {
+  if ( GetParent() ) {
+    if ( !m_pOrignMouseCapturer || m_pOrignMouseCapturer == pChildWindow )
+      GetParent()->SetMouseCapture( this, capture_status );
+  }
 
-	if(capture_status)
-	{
-		//оповестить дочернее окно о потере фокуса мыши
-		if(NULL!=m_pMouseCapturer)
-			m_pMouseCapturer->SendMessage(this, WINDOW_MOUSE_CAPTURE_LOST);
+  if ( capture_status ) {
+    //оповестить дочернее окно о потере фокуса мыши
+    if ( m_pMouseCapturer && m_pMouseCapturer != pChildWindow )
+      m_pMouseCapturer->SendMessage( this, WINDOW_MOUSE_CAPTURE_LOST );
+    m_pMouseCapturer = pChildWindow;
+  }
+  else {
+    ASSERT_FMT(
+      ( m_pMouseCapturer && m_pMouseCapturer == pChildWindow ),
+      "[%s]: %s trying to reset m_pMouseCapturers[%s]",
+      __FUNCTION__, pChildWindow->WindowName().c_str(),
+      m_pMouseCapturer ? m_pMouseCapturer->WindowName().c_str() : ""
+    );
+    m_pMouseCapturer = nullptr;
+  }
+}
 
-		m_pMouseCapturer = pChildWindow;
-	}
-	else
-	{
-			m_pMouseCapturer = NULL;
-	}
+
+CUIWindow* CUIWindow::GetMouseCapturer() {
+  return m_pMouseCapturer;
 }
 
 
@@ -582,11 +587,13 @@ void CUIWindow::BringAllToTop()
 	}
 }
 
+
 //для перевода окна и потомков в исходное состояние
-void CUIWindow::Reset()
-{
-	m_pOrignMouseCapturer = m_pMouseCapturer = NULL;
+void CUIWindow::Reset() {
+  m_pOrignMouseCapturer = m_pMouseCapturer = nullptr;
 }
+
+
 void CUIWindow::ResetAll()
 {
 //.	m_dbg_flag.set(128,TRUE);

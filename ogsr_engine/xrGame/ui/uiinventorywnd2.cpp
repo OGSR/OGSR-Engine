@@ -71,7 +71,7 @@ void CUIInventoryWnd::InitInventory()
 
 	UIPropertiesBox.Hide		();
 	ClearAllLists				();
-	m_pMouseCapturer			= NULL;
+	CUIWindow::Reset();
 	SetCurrentItem				(NULL);
 
 	//Slots
