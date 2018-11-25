@@ -47,7 +47,10 @@ void CActor::IR_OnKeyboardPress(int cmd)
 	{
 	case kWPN_FIRE:
 		{
-			mstate_wishful &=~mcSprint;
+			u16 slot = inventory().GetActiveSlot();
+			if (inventory().ActiveItem() && slot != BOLT_SLOT && slot != GRENADE_SLOT) { // BOLT should not stop actor, grenades handled in CGrenade::Throw
+				mstate_wishful &=~mcSprint;
+			}
 			//-----------------------------
 			if (OnServer())
 			{

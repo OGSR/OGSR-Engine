@@ -6,8 +6,6 @@
 #include "Actor.h"
 #include "level.h"
 #include "xr_level_controller.h"
-#include "game_cl_base.h"
-#include "..\xr_3da\skeletonanimated.h"
 #include "gamemtllib.h"
 #include "level_bullet_manager.h"
 #include "ai_sounds.h"
@@ -71,74 +69,94 @@ void CWeaponKnife::OnStateSwitch	(u32 S)
 		switch2_Hidden	();
 		break;
 	case eFire:
-		{
-			//-------------------------------------------
-			m_eHitType		= m_eHitType_1;
-			//fHitPower		= fHitPower_1;
-			if (ParentIsActor())
-			{
-				fCurrentHit		= fvHitPower_1[g_SingleGameDifficulty];
-			}
-			else
-			{
-				fCurrentHit		= fvHitPower_1[egdMaster];
-			}
-			fHitImpulse		= fHitImpulse_1;
-			//-------------------------------------------
-			switch2_Attacking	(S);
-		}break;
 	case eFire2:
 		{
-			//-------------------------------------------
-			m_eHitType		= m_eHitType_2;
-			//fHitPower		= fHitPower_2;
-			if (ParentIsActor())
-			{
-				fCurrentHit		= fvHitPower_2[g_SingleGameDifficulty];
-			}
-			else
-			{
-				fCurrentHit		= fvHitPower_2[egdMaster];
-			}
-			fHitImpulse		= fHitImpulse_2;
-			//-------------------------------------------
 			switch2_Attacking	(S);
 		}break;
 	}
 }
 	
 
-void CWeaponKnife::KnifeStrike(const Fvector& pos, const Fvector& dir)
+void CWeaponKnife::KnifeStrike(u32 state, const Fvector& pos, const Fvector& dir)
 {
-	CCartridge						cartridge; 
-	cartridge.m_buckShot			= 1;				
-	cartridge.m_impair				= 1;
-	cartridge.m_kDisp				= 1;
-	cartridge.m_kHit				= 1;
-	cartridge.m_kImpulse			= 1;
-	cartridge.m_kPierce				= 1;
-	cartridge.m_flags.set			(CCartridge::cfTracer, FALSE);
-	cartridge.m_flags.set			(CCartridge::cfRicochet, FALSE);
-	cartridge.fWallmarkSize			= fWallmarkSize;
-	cartridge.bullet_material_idx	= knife_material_idx;
+	ALife::EHitType		cur_eHitType = ALife::eHitTypeBurn;
+	float				cur_fHitImpulse = 0;
+	float				cur_fHit = 0;
+	bool apply = false;
 
-	while(m_magazine.size() < 2)	m_magazine.push_back(cartridge);
-	iAmmoElapsed					= m_magazine.size();
-	bool SendHit					= SendHitAllowed(H_Parent());
+	switch (state)
+	{
+	case eFire:
+	{
+		//-------------------------------------------
+		cur_eHitType = m_eHitType_1;
+		//fHitPower		= fHitPower_1;
+		if (ParentIsActor())
+		{
+			cur_fHit = fvHitPower_1[g_SingleGameDifficulty];
+		}
+		else
+		{
+			cur_fHit = fvHitPower_1[egdMaster];
+		}
+		cur_fHitImpulse = fHitImpulse_1;
+		apply = true;
+		//-------------------------------------------
+	}break;
+	case eFire2:
+	{
+		//-------------------------------------------
+		cur_eHitType = m_eHitType_2;
+		//fHitPower		= fHitPower_2;
+		if (ParentIsActor())
+		{
+			cur_fHit = fvHitPower_2[g_SingleGameDifficulty];
+		}
+		else
+		{
+			cur_fHit = fvHitPower_2[egdMaster];
+		}
+		cur_fHitImpulse = fHitImpulse_2;
+		apply = true;
+		//-------------------------------------------
+	}break;
+	}	
 
-	PlaySound						(m_sndShot,pos);
+	if (apply)
+	{
+		CCartridge						cartridge;
+		cartridge.m_buckShot = 1;
+		cartridge.m_impair = 1;
+		cartridge.m_kDisp = 1;
+		cartridge.m_kHit = 1;
+		cartridge.m_kImpulse = 1;
+		cartridge.m_kPierce = 1;
+		cartridge.m_flags.set(CCartridge::cfTracer, FALSE);
+		cartridge.m_flags.set(CCartridge::cfRicochet, FALSE);
+		cartridge.fWallmarkSize = fWallmarkSize;
+		cartridge.bullet_material_idx = knife_material_idx;
 
-	Level().BulletManager().AddBullet(	pos, 
-										dir, 
-										m_fStartBulletSpeed, 
-										fCurrentHit, 
-										fHitImpulse, 
-										H_Parent()->ID(), 
-										ID(), 
-										m_eHitType, 
-										fireDistance, 
-										cartridge, 
-										SendHit);
+		while (m_magazine.size() < 2)	
+			m_magazine.push_back(cartridge);
+
+		iAmmoElapsed = m_magazine.size();
+
+		const bool send_hit = SendHitAllowed(H_Parent());
+
+		PlaySound(m_sndShot, pos);
+
+		Level().BulletManager().AddBullet(pos,
+			dir,
+			m_fStartBulletSpeed,
+			cur_fHit,
+			cur_fHitImpulse,
+			H_Parent()->ID(),
+			ID(),
+			cur_eHitType,
+			fireDistance,
+			cartridge,
+			send_hit);
+	}
 }
 
 
@@ -164,16 +182,18 @@ void CWeaponKnife::OnAnimationEnd(u32 state)
 
 				if(H_Parent()) 
 					smart_cast<CEntity*>(H_Parent())->g_fireParams(this, p1,d);
-				else break;
+				else 
+					break;
 
-				KnifeStrike(p1,d);
+				KnifeStrike(state, p1,d);
 			} 
 			else 
 				SwitchState(eIdle);
 		}break;
 	case eShowing:
 	case eIdle:	
-		SwitchState(eIdle);		break;	
+		SwitchState(eIdle);
+		break;	
 	}
 }
 
@@ -185,13 +205,13 @@ void CWeaponKnife::switch2_Attacking	(u32 state)
 {
 	if(m_bPending)	return;
 
+	m_attackStart = true;
+	m_bPending = true;
+
 	if(state==eFire)
 		m_pHUD->animPlay(random_anim(mhud_attack),		FALSE, this, state);
 	else //eFire2
 		m_pHUD->animPlay(random_anim(mhud_attack2),		FALSE, this, state);
-
-	m_attackStart	= true;
-	m_bPending		= true;
 
 	StateSwitchCallback(GameObject::eOnActorWeaponFire, GameObject::eOnNPCWeaponFire);
 }
@@ -235,6 +255,11 @@ void CWeaponKnife::Fire2Start ()
 {
 	inherited::Fire2Start();
 	SwitchState(eFire2);
+
+	if (ParentIsActor())
+	{
+		Actor()->set_state_wishful(Actor()->get_state_wishful() & (~mcSprint));
+	}
 }
 
 
@@ -243,7 +268,6 @@ bool CWeaponKnife::Action(s32 cmd, u32 flags)
 	if(inherited::Action(cmd, flags)) return true;
 	switch(cmd) 
 	{
-
 		case kWPN_ZOOM : 
 			if(flags&CMD_START) Fire2Start();
 			else Fire2End();

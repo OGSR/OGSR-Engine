@@ -64,6 +64,8 @@ protected:
 	MotionSVec		mhud_add_cartridge;
 	MotionSVec		mhud_close;
 
+	bool			m_stop_triStateReload;
+
 	DECLARE_SCRIPT_REGISTER_FUNCTION
 };
 add_to_type_list(CWeaponShotgun)
