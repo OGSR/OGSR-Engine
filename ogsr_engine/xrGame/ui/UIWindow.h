@@ -66,7 +66,7 @@ public:
 	//захватить/освободить мышь окном
 	//сообщение посылается дочерним окном родительскому
 	void					SetMouseCapture			(CUIWindow* pChildWindow, bool capture_status);
-	CUIWindow*				GetMouseCapturer	()													{return m_pMouseCapturer;}
+	CUIWindow*				GetMouseCapturer();
 
 	//окошко, которому пересылаются сообщения,
 	//если NULL, то шлем на GetParent()
@@ -161,7 +161,7 @@ protected:
 	CUIWindow*				m_pParentWnd;
 
 	//дочернее окно которое, захватило ввод мыши
-	CUIWindow*				m_pMouseCapturer;
+	CUIWindow* m_pMouseCapturer;
 	
 	//кто изначально иницировал
 	//захват фокуса, только он теперь
