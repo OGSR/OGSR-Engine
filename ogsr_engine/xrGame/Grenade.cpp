@@ -140,6 +140,16 @@ void CGrenade::Throw()
 		pGrenade->SetInitiator( H_Parent()->ID() );
 	}
 	inherited::Throw			();
+
+	if (m_pCurrentInventory->GetOwner())
+	{
+		CActor* pActor = smart_cast<CActor*>(m_pCurrentInventory->GetOwner());
+		if (pActor)
+		{
+			Actor()->set_state_wishful(Actor()->get_state_wishful() & (~mcSprint));
+		}
+	}
+
 	m_fake_missile->processing_activate();//@sliph
 	m_thrown = true;
 	
@@ -238,39 +248,46 @@ bool CGrenade::Action(s32 cmd, u32 flags)
 		{
             if(flags&CMD_START) 
 			{
-				if(m_pCurrentInventory)
+				const u32 state = GetState();
+				if (state == MS_HIDDEN
+					|| state == MS_IDLE
+					|| state == MS_PLAYING
+					|| state == MS_IDLE_SPRINT
+					|| state == MS_IDLE_MOVING)
 				{
-					TIItemContainer::iterator it = m_pCurrentInventory->m_ruck.begin();
-					TIItemContainer::iterator it_e = m_pCurrentInventory->m_ruck.end();
-				/*	for(;it!=it_e;++it) 
+					if (m_pCurrentInventory)
 					{
-						CGrenade *pGrenade = smart_cast<CGrenade*>(*it);
-						if(pGrenade && xr_strcmp(pGrenade->cNameSect(), cNameSect())) 
+						TIItemContainer::iterator it = m_pCurrentInventory->m_ruck.begin();
+						TIItemContainer::iterator it_e = m_pCurrentInventory->m_ruck.end();
+						/*	for(;it!=it_e;++it)
+							{
+								CGrenade *pGrenade = smart_cast<CGrenade*>(*it);
+								if(pGrenade && xr_strcmp(pGrenade->cNameSect(), cNameSect()))
+								{
+									m_pCurrentInventory->Ruck(this);
+									m_pCurrentInventory->SetActiveSlot(NO_ACTIVE_SLOT);
+									m_pCurrentInventory->Slot(pGrenade);
+									return true;
+								}
+							}*/
+						xr_map<shared_str, CGrenade *> tmp; tmp.insert(mk_pair(cNameSect(), this));
+						for (; it != it_e; ++it)
 						{
-							m_pCurrentInventory->Ruck(this);
-							m_pCurrentInventory->SetActiveSlot(NO_ACTIVE_SLOT);
-							m_pCurrentInventory->Slot(pGrenade);
-							return true;
+							CGrenade *pGrenade = smart_cast<CGrenade*>(*it);
+							if (pGrenade && (tmp.find(pGrenade->cNameSect()) == tmp.end()))
+								tmp.insert(mk_pair(pGrenade->cNameSect(), pGrenade));
 						}
-					}*/
-					xr_map<shared_str, CGrenade *> tmp; tmp.insert(mk_pair(cNameSect(), this));
-					for (; it != it_e; ++it)
-					{
-						CGrenade *pGrenade = smart_cast<CGrenade*>(*it);
-						if (pGrenade && (tmp.find(pGrenade->cNameSect()) == tmp.end()))
-							tmp.insert(mk_pair(pGrenade->cNameSect(), pGrenade));
+						xr_map<shared_str, CGrenade *>::iterator curr_it = tmp.find(cNameSect());
+						curr_it++;
+						CGrenade *tgt;
+						if (curr_it != tmp.end())
+							tgt = curr_it->second;
+						else
+							tgt = tmp.begin()->second;
+						m_pCurrentInventory->Ruck(this);
+						m_pCurrentInventory->SetActiveSlot(NO_ACTIVE_SLOT);
+						m_pCurrentInventory->Slot(tgt);
 					}
-					xr_map<shared_str, CGrenade *>::iterator curr_it = tmp.find(cNameSect());
-					curr_it++;
-					CGrenade *tgt;
-					if (curr_it != tmp.end())
-						tgt = curr_it->second;
-					else
-						tgt = tmp.begin()->second;
-					m_pCurrentInventory->Ruck(this);
-					m_pCurrentInventory->SetActiveSlot(NO_ACTIVE_SLOT);
-					m_pCurrentInventory->Slot(tgt);
-					return true;
 				}
 			}
 			return true;

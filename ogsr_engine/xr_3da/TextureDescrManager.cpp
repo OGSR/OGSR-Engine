@@ -29,18 +29,24 @@ void fix_texture_thm_name(LPSTR fn)
 }
 void CTextureDescrMngr::LoadLTX()
 {
-	string_path				fname;		
-	FS.update_path			(fname,"$game_textures$","textures.ltx");
-
-	if (FS.exist(fname))
+	FS_FileSet				flist;
+	FS.file_list(flist, "$game_textures$", FS_ListFiles | FS_RootOnly, "*textures*.ltx");
+	Msg("count of *textures*.ltx files=%d", flist.size());
+	FS_FileSetIt It = flist.begin();
+	FS_FileSetIt It_e = flist.end();
+	string_path				fn;
+	for (; It != It_e; ++It)
 	{
-		CInifile			ini(fname);
+		FS.update_path(fn, "$game_textures$", (*It).name.c_str());
+		CInifile			ini(fn);
 		if (ini.section_exist("association"))
 		{
 			CInifile::Sect& data	= ini.r_section("association");
 			for ( const auto &item : data.Data )	
 			{
 				texture_desc& desc		= m_texture_details[item.first];
+				if (desc.m_assoc)
+					xr_delete(desc.m_assoc);
 				desc.m_assoc			= xr_new<texture_assoc>();
 
 				string_path				T;
@@ -68,6 +74,8 @@ void CTextureDescrMngr::LoadLTX()
 			for ( const auto &item : sect.Data )	
 			{
 				texture_desc& desc		= m_texture_details[item.first];
+				if (desc.m_spec)
+					xr_delete(desc.m_spec);
 				desc.m_spec				= xr_new<texture_spec>();
 
 				string_path				bmode, bparallax;
