@@ -350,6 +350,7 @@ bool CUIWindow::OnMouse(float x, float y, EUIMessages mouse_action)
 	for(; it!=m_ChildWndList.rend(); ++it)
 	{
 		CUIWindow* w	= (*it);
+		if ( !w->IsShown() ) continue;
 		Frect wndRect	= w->GetWndRect();
 		if (wndRect.in(cursor_pos) )
 		{
@@ -437,7 +438,7 @@ void CUIWindow::SetMouseCapture( CUIWindow *pChildWindow, bool capture_status ) 
   else {
     ASSERT_FMT(
       ( m_pMouseCapturer && m_pMouseCapturer == pChildWindow ),
-      "[%s]: %s trying to reset m_pMouseCapturers[%s]",
+      "[%s]: %s trying to reset m_pMouseCapturer[%s]",
       __FUNCTION__, pChildWindow->WindowName().c_str(),
       m_pMouseCapturer ? m_pMouseCapturer->WindowName().c_str() : ""
     );
