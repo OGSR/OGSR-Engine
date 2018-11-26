@@ -29,11 +29,11 @@ bool CUIScrollBox::OnMouse(float x, float y, EUIMessages mouse_action)
 
 	bool im_capturer = (GetParent()->GetMouseCapturer()==this);
 
-	if(mouse_action == WINDOW_LBUTTON_DOWN)
+	if ( mouse_action == WINDOW_LBUTTON_DOWN && !im_capturer )
 	{
 		GetParent()->SetMouseCapture(this, true);
 	}
-	else if(mouse_action == WINDOW_LBUTTON_UP)
+	else if ( mouse_action == WINDOW_LBUTTON_UP && im_capturer )
 	{		
 		GetParent()->SetMouseCapture(this, false);
 	}

@@ -57,6 +57,7 @@ void CUIScrollView::Init				()
 	m_VScrollBar->SetWindowName		("scroll_v");
 	m_VScrollBar->SetStepSize		(_max(1,iFloor(GetHeight()/10)));
 	m_VScrollBar->SetPageSize		(iFloor(GetHeight()));
+	m_VScrollBar->Show( false );
 }
 
 void CUIScrollView::SetScrollBarProfile(LPCSTR profile){
@@ -142,6 +143,11 @@ void CUIScrollView::RecalcSize			()
 
 void CUIScrollView::UpdateScroll		()
 {
+	if ( NeedShowScrollBar() )
+	  m_VScrollBar->Show( true  );
+	else
+	  m_VScrollBar->Show( false );
+
 	Fvector2 w_pos					= m_pad->GetWndPos();
 
 	m_VScrollBar->SetHeight(GetHeight());
