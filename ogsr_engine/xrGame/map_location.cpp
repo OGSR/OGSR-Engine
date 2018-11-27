@@ -82,7 +82,7 @@ void CMapLocation::LoadSpot(LPCSTR type, bool bReload)
 //	strconcat(path_base,"map_spots:",type);
 	strcpy_s		(path_base,type);
 	R_ASSERT3		(g_uiSpotXml->NavigateToNode(path_base,0), "XML node not found in file map_spots.xml", path_base);
-	LPCSTR s		= g_uiSpotXml->ReadAttrib(path_base, 0, "hint", "no hint");
+	LPCSTR s		= g_uiSpotXml->ReadAttrib( path_base, 0, "hint", "" );
 	SetHint			(s);
 	
 	// Real Wolf. 03.08.2014.
