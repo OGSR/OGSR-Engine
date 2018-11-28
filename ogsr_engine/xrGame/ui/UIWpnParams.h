@@ -17,7 +17,7 @@ public:
 	virtual						~CUIWpnParams			();
 
 	void 						InitFromXml				(CUIXml& xml_doc);
-	void 						SetInfo					(const shared_str& wnp_section);
+	void 						SetInfo					(CPhysicsShellHolder &obj/*const shared_str& wpn_section*/);
 	bool 						Check					(CPhysicsShellHolder &obj/*const shared_str& wpn_section*/);
 
 protected:
