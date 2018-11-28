@@ -860,30 +860,33 @@ void CApplication::load_draw_internal()
 		RCache.set_Geometry(ll_hGeom);
 		RCache.Render(D3DPT_TRIANGLELIST, Offset, 0, 4, 0, 2);
 
-		//progress bar
-		back_size.set(268, 37);
-		back_text_coords.lt.set(0, 768); back_text_coords.rb.add(back_text_coords.lt, back_size);
-		back_coords.lt.set(379, 726); back_coords.rb.add(back_coords.lt, back_size);
+		if (Core.Features.test(xrCore::Feature::use_legacy_load_screens))
+		{
+			//progress bar
+			back_size.set(268, 37);
+			back_text_coords.lt.set(0, 768); back_text_coords.rb.add(back_text_coords.lt, back_size);
+			back_coords.lt.set(379, 726); back_coords.rb.add(back_coords.lt, back_size);
 
-		back_coords.lt.mul(k); back_coords.rb.mul(k);
+			back_coords.lt.mul(k); back_coords.rb.mul(k);
 
-		back_text_coords.lt.x /= tsz.x; back_text_coords.lt.y /= tsz.y; back_text_coords.rb.x /= tsz.x; back_text_coords.rb.y /= tsz.y;
+			back_text_coords.lt.x /= tsz.x; back_text_coords.lt.y /= tsz.y; back_text_coords.rb.x /= tsz.x; back_text_coords.rb.y /= tsz.y;
 
-		u32 v_cnt = 40;
-		pv = (FVF::TL*)RCache.Vertex.Lock(2 * (v_cnt + 1), ll_hGeom2.stride(), Offset);
-		float pos_delta = back_coords.width() / v_cnt;
-		float tc_delta = back_text_coords.width() / v_cnt;
-		u32 clr = C;
+			u32 v_cnt = 40;
+			pv = (FVF::TL*)RCache.Vertex.Lock(2 * (v_cnt + 1), ll_hGeom2.stride(), Offset);
+			float pos_delta = back_coords.width() / v_cnt;
+			float tc_delta = back_text_coords.width() / v_cnt;
+			u32 clr = C;
 
-		for (u32 idx = 0; idx < v_cnt + 1; ++idx) {
-			clr = calc_progress_color(idx, v_cnt, load_stage, max_load_stage);
-			pv->set(back_coords.lt.x + pos_delta * idx + offs, back_coords.rb.y + offs, 0 + EPS_S, 1, clr, back_text_coords.lt.x + tc_delta * idx, back_text_coords.rb.y);	pv++;
-			pv->set(back_coords.lt.x + pos_delta * idx + offs, back_coords.lt.y + offs, 0 + EPS_S, 1, clr, back_text_coords.lt.x + tc_delta * idx, back_text_coords.lt.y);	pv++;
+			for (u32 idx = 0; idx < v_cnt + 1; ++idx) {
+				clr = calc_progress_color(idx, v_cnt, load_stage, max_load_stage);
+				pv->set(back_coords.lt.x + pos_delta * idx + offs, back_coords.rb.y + offs, 0 + EPS_S, 1, clr, back_text_coords.lt.x + tc_delta * idx, back_text_coords.rb.y);	pv++;
+				pv->set(back_coords.lt.x + pos_delta * idx + offs, back_coords.lt.y + offs, 0 + EPS_S, 1, clr, back_text_coords.lt.x + tc_delta * idx, back_text_coords.lt.y);	pv++;
+			}
+			RCache.Vertex.Unlock(2 * (v_cnt + 1), ll_hGeom2.stride());
+
+			RCache.set_Geometry(ll_hGeom2);
+			RCache.Render(D3DPT_TRIANGLESTRIP, Offset, 2 * v_cnt);
 		}
-		RCache.Vertex.Unlock(2 * (v_cnt + 1), ll_hGeom2.stride());
-
-		RCache.set_Geometry(ll_hGeom2);
-		RCache.Render(D3DPT_TRIANGLESTRIP, Offset, 2 * v_cnt);
 	}
 
 	//draw level-specific screenshot
