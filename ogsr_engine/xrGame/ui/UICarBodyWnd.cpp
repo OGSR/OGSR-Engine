@@ -657,7 +657,7 @@ bool CUICarBodyWnd::OnMouse(float x, float y, EUIMessages mouse_action)
 
 	CUIWindow::OnMouse(x, y, mouse_action);
 
-	return true; // always returns true, because ::StopAnyMove() == true;
+	return false;
 }
 
 #include "../Medkit.h"
