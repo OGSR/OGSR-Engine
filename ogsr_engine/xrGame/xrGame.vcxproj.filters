@@ -8559,13 +8559,13 @@
     <ClCompile Include="ui\UICharacterInfo.cpp">
       <Filter>AI\AScript\ScriptClasses\UI\Common\CharacterInfo</Filter>
     </ClCompile>
-    <ClCompile Include="ui\IUWpnParams.cpp">
-      <Filter>AI\AScript\ScriptClasses\UI\Common\ItemInfo</Filter>
-    </ClCompile>
     <ClCompile Include="ui\ui_af_params.cpp">
       <Filter>AI\AScript\ScriptClasses\UI\Common\ItemInfo</Filter>
     </ClCompile>
     <ClCompile Include="ui\UIItemInfo.cpp">
+      <Filter>AI\AScript\ScriptClasses\UI\Common\ItemInfo</Filter>
+    </ClCompile>
+    <ClCompile Include="ui\UIWpnParams.cpp">
       <Filter>AI\AScript\ScriptClasses\UI\Common\ItemInfo</Filter>
     </ClCompile>
     <ClCompile Include="ui\UIOutfitInfo.cpp">
@@ -8867,6 +8867,9 @@
     </ClCompile>
     <ClCompile Include="ui\UIPdaSpot.cpp">
       <Filter>AI\AScript\ScriptClasses\UI\Common\PdaWnd</Filter>
+    </ClCompile>
+    <ClCompile Include="ui\UIWpnParams.cpp">
+      <Filter>AI\AScript\ScriptClasses\UI\Common\ItemInfo</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
