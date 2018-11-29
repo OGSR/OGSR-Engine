@@ -2505,7 +2505,7 @@
     <ClCompile Include="ui\UIEditKeyBind.cpp" />
     <ClCompile Include="ui\UIKeyBinding.cpp" />
     <ClCompile Include="ui\UICharacterInfo.cpp" />
-    <ClCompile Include="ui\IUWpnParams.cpp" />
+    <ClCompile Include="ui\UIWpnParams.cpp" />
     <ClCompile Include="ui\ui_af_params.cpp" />
     <ClCompile Include="ui\UIItemInfo.cpp" />
     <ClCompile Include="ui\UIOutfitInfo.cpp" />

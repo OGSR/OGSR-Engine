@@ -315,7 +315,7 @@ void CUIDragDropListEx::ReinitScroll()
 }
 
 #include "../xr_3da/xr_input.h"
-#include "../level.h"
+#include "../Level.h"
 
 bool CUIDragDropListEx::OnMouse(float x, float y, EUIMessages mouse_action)
 {

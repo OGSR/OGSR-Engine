@@ -28,4 +28,6 @@ public:
 
 	virtual BOOL UsedAI_Locations() {return FALSE;}
 	virtual IDamageSource*	cast_IDamageSource			()	{return this;}
+
+	virtual bool StopSprintOnFire() { return false; }
 };

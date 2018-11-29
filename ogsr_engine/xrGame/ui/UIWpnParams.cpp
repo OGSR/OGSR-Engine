@@ -1,12 +1,12 @@
-#include "stdafx.h"
+#include "StdAfx.h"
 #include "UIWpnParams.h"
 #include "UIXmlInit.h"
-#include "../level.h"
-#include "../game_base_space.h"
+#include "../Level.h"
 #include "../ai_space.h"
 #include "../script_engine.h"
 #include "../PhysicsShellHolder.h"
 #include "clsid_game.h"
+#include "script_game_object.h"
 
 struct SLuaWpnParams{
 	luabind::functor<float>		m_functorRPM;
@@ -55,7 +55,9 @@ CUIWpnParams::~CUIWpnParams()
 }
 
 void CUIWpnParams::InitFromXml(CUIXml& xml_doc){
-	if (!xml_doc.NavigateToNode("wpn_params", 0))	return;
+	if (!xml_doc.NavigateToNode("wpn_params", 0))	
+		return;
+
 	CUIXmlInit::InitWindow			(xml_doc, "wpn_params", 0, this);
 
 	CUIXmlInit::InitStatic			(xml_doc, "wpn_params:cap_accuracy",		0, &m_textAccuracy);
@@ -72,19 +74,19 @@ void CUIWpnParams::InitFromXml(CUIXml& xml_doc){
 	m_progressDamage.SetRange		(0, 100);
 	m_progressHandling.SetRange		(0, 100);
 	m_progressRPM.SetRange			(0, 100);
-
 }
 
-void CUIWpnParams::SetInfo(const shared_str& wpn_section)
+void CUIWpnParams::SetInfo(CPhysicsShellHolder& obj/*const shared_str& wpn_section*/)
 {
-
 	if(!g_lua_wpn_params)
 		g_lua_wpn_params = xr_new<SLuaWpnParams>();
 
-	m_progressRPM.SetProgressPos		(g_lua_wpn_params->m_functorRPM(*wpn_section));
-	m_progressAccuracy.SetProgressPos	(g_lua_wpn_params->m_functorAccuracy(*wpn_section));
-	m_progressDamage.SetProgressPos	(g_lua_wpn_params->m_functorDamage(*wpn_section));
-	m_progressHandling.SetProgressPos	(g_lua_wpn_params->m_functorHandling(*wpn_section));
+	const shared_str& wpn_section = obj.cNameSect();
+
+	m_progressRPM.SetProgressPos		(g_lua_wpn_params->m_functorRPM(*wpn_section, obj.lua_game_object()));
+	m_progressAccuracy.SetProgressPos	(g_lua_wpn_params->m_functorAccuracy(*wpn_section, obj.lua_game_object()));
+	m_progressDamage.SetProgressPos		(g_lua_wpn_params->m_functorDamage(*wpn_section, obj.lua_game_object()));
+	m_progressHandling.SetProgressPos	(g_lua_wpn_params->m_functorHandling(*wpn_section, obj.lua_game_object()));
 }
 
 bool CUIWpnParams::Check(CPhysicsShellHolder& obj/*const shared_str& wpn_section*/)

@@ -205,7 +205,7 @@ void CUIItemInfo::TryAddWpnInfo (CPhysicsShellHolder &obj)
 {
 	if (UIWpnParams->Check(obj))
 	{
-		UIWpnParams->SetInfo(obj.cNameSect());
+		UIWpnParams->SetInfo(obj);
 		UIDesc->AddWindow(UIWpnParams,false);
 	}
 }
