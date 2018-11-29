@@ -8868,9 +8868,6 @@
     <ClCompile Include="ui\UIPdaSpot.cpp">
       <Filter>AI\AScript\ScriptClasses\UI\Common\PdaWnd</Filter>
     </ClCompile>
-    <ClCompile Include="ui\UIWpnParams.cpp">
-      <Filter>AI\AScript\ScriptClasses\UI\Common\ItemInfo</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <CustomBuildStep Include="Explosive.h">
