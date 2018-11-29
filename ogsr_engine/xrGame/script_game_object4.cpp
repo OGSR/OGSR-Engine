@@ -717,3 +717,19 @@ void CScriptGameObject::play_hud_animation( LPCSTR anim, bool mix_in ) {
 void CScriptGameObject::play_hud_animation( LPCSTR anim ) {
 	play_hud_animation( anim, true );
 }
+
+
+void CScriptGameObject::addFeelTouch( float radius, const luabind::object& lua_object, const luabind::functor<void>& new_delete ) {
+  const luabind::functor<bool> contact;
+  addFeelTouch( radius, lua_object, new_delete, contact );
+}
+
+void CScriptGameObject::addFeelTouch( float radius, const luabind::object& lua_object, const luabind::functor<void>& new_delete, const luabind::functor<bool>& contact ) {
+  CGameObject* GO = smart_cast<CGameObject*>( &object() );
+  GO->addFeelTouch( radius, lua_object, new_delete, contact );
+}
+
+void CScriptGameObject::removeFeelTouch( const luabind::object& lua_object, const luabind::functor<void>& new_delete, const luabind::functor<bool>& contact ) {
+  CGameObject* GO = smart_cast<CGameObject*>( &object() );
+  GO->removeFeelTouch( lua_object, new_delete, contact );
+}

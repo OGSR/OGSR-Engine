@@ -170,8 +170,10 @@ void CBulletManager::AddBullet(const Fvector& position,
 	VERIFY		(u16(-1)!=cartridge.bullet_material_idx);
 //	u32 CurID = Level().CurrentControlEntity()->ID();
 //	u32 OwnerID = sender_id;
+	bullets.lock();
 	m_Bullets.emplace_back();
 	SBullet& bullet		= m_Bullets.back();
+	bullets.unlock();
 	bullet.Init			(position, direction, starting_speed, power, impulse, sender_id, sendersweapon_id, e_hit_type, maximum_distance, cartridge, SendHit);
 	bullet.frame_num	= Device.dwFrame;
 	bullet.flags.aim_bullet	=	AimBullet;
@@ -186,8 +188,14 @@ void CBulletManager::UpdateWorkload()
 	rq_storage.r_clear			();
 	rq_spatial.clear_not_free	();
 
-	for(int k=m_Bullets.size()-1; k>=0; k--){
+	bullets.lock();
+	int k = m_Bullets.size() - 1;
+	bullets.unlock();
+
+	for ( ; k >= 0; k-- ) {
+		bullets.lock();
 		SBullet& bullet = m_Bullets[k];
+		bullets.unlock();
 		//для пули пущенной на этом же кадре считаем только 1 шаг
 		//(хотя по теории вообще ничего считать на надо)
 		//который пропустим на следующем кадре, 
@@ -204,8 +212,6 @@ void CBulletManager::UpdateWorkload()
 			if(!CalcBullet(rq_storage,rq_spatial,&bullet, m_dwStepTime)){
 				collide::rq_result res;
 				RegisterEvent(EVENT_REMOVE, FALSE, &bullet, Fvector().set(0, 0, 0), res, (u16)k);
-//				m_Bullets[k] = m_Bullets.back();
-//				m_Bullets.pop_back();
 				break;
 			}
 		}

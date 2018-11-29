@@ -171,7 +171,7 @@ protected:
 	void 		__stdcall	UpdateWorkload		();
 
 	ThreadPool m_thread;
-	std::mutex working;
+	std::mutex bullets, working;
 public:
 							CBulletManager		();
 	virtual					~CBulletManager		();
