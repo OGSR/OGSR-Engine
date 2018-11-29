@@ -245,11 +245,7 @@ void CSpaceRestrictor::shedule_Update( u32 dt ) {
 void CSpaceRestrictor::feel_touch_new( CObject *tpObject ) {
   if ( IsScheduled() ) {
     CGameObject *l_tpGameObject = smart_cast<CGameObject*>( tpObject );
-    if ( !l_tpGameObject )
-      return;
-    CEntityAlive* pEntityAlive = smart_cast<CEntityAlive*>( l_tpGameObject );
-    if ( pEntityAlive )
-      callback( GameObject::eZoneEnter )( lua_game_object(), l_tpGameObject->lua_game_object() );
+    callback( GameObject::eZoneEnter )( lua_game_object(), l_tpGameObject->lua_game_object() );
   }
 }
 
@@ -257,34 +253,23 @@ void CSpaceRestrictor::feel_touch_new( CObject *tpObject ) {
 void CSpaceRestrictor::feel_touch_delete( CObject *tpObject ) {
   if ( IsScheduled() ) {
     CGameObject *l_tpGameObject = smart_cast<CGameObject*>( tpObject );
-    if ( !l_tpGameObject || l_tpGameObject->getDestroy() )
-      return;
-    CEntityAlive* pEntityAlive = smart_cast<CEntityAlive*>( l_tpGameObject );
-    if ( pEntityAlive )
-      callback( GameObject::eZoneExit )( lua_game_object(), l_tpGameObject->lua_game_object() );
+    callback( GameObject::eZoneExit )( lua_game_object(), l_tpGameObject->lua_game_object() );
   }
 }
 
 
 void CSpaceRestrictor::net_Relcase( CObject *O ) {
   if ( IsScheduled() && !Level().is_removing_objects() ) {
-    CGameObject *l_tpGameObject = smart_cast<CGameObject*>( O );
-    if ( !l_tpGameObject )
-      return;
-    CEntityAlive* pEntityAlive = smart_cast<CEntityAlive*>( l_tpGameObject );
-    if ( pEntityAlive ) {
-      const auto I = std::find( feel_touch.begin(), feel_touch.end(), O );
-      if ( I != feel_touch.end() ) {
-        callback( GameObject::eZoneExit )( lua_game_object(), l_tpGameObject->lua_game_object() );
-      }
-    }
+    feel_touch_relcase2( O );
   }
   inherited::net_Relcase( O );
 }
 
 
 BOOL CSpaceRestrictor::feel_touch_contact( CObject* O ) {
-  return ( (CCF_Shape*)CFORM() )->Contact( O );
+  if ( smart_cast<CEntityAlive*>( O ) )
+    return ( (CCF_Shape*)CFORM() )->Contact( O );
+  return FALSE;
 }
 
 

@@ -1,20 +1,20 @@
-#ifndef xr_iniH
-#define xr_iniH
+#pragma once
 
 class   CInifile;
 struct  xr_token;
 
-
 class XRCORE_API CInifile {
  public:
-  typedef std::pair<shared_str, shared_str> Item;
+  using Item = std::pair<shared_str, shared_str>;
   struct XRCORE_API Sect {
     shared_str Name;
-    std::unordered_map<shared_str, shared_str> Data;
+    string_unordered_map<shared_str, shared_str> Data;
     std::vector<Item> Unordered;
-    BOOL line_exist ( LPCSTR, LPCSTR* = 0 );
+    BOOL line_exist ( LPCSTR, LPCSTR* = nullptr );
   };
-  typedef std::unordered_map<shared_str, Sect*> Root;
+  using Root = string_unordered_map<shared_str, Sect*>;
+
+  static_assert(std::is_same_v<Root::key_equal, string_hash::transparent_key_equal>, "Invalid key_equal"); //Нужная проверка в будущем, не убирать!
 
   // factorisation
   static CInifile* Create  ( LPCSTR, BOOL = TRUE );
@@ -179,6 +179,3 @@ class XRCORE_API CInifile {
 
 // Main configuration file
 extern XRCORE_API CInifile *pSettings;
-
-
-#endif //__XR_INI_H__

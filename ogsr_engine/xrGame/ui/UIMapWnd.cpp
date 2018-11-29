@@ -472,9 +472,10 @@ void CUIMapWnd::SendMessage(CUIWindow* pWnd, s16 msg, void* pData)
 {
 	CUIWndCallback::OnEvent(pWnd, msg, pData);
 
-	if (pWnd == m_UIPropertiesBox && msg == PROPERTY_CLICKED && m_UIPropertiesBox->GetClickedItem())
+	if ( pWnd == m_UIPropertiesBox && msg == PROPERTY_CLICKED )
 	{
-		switch (m_UIPropertiesBox->GetClickedItem()->GetTAG())
+		CUIListBoxItem* item = (CUIListBoxItem*)pData;
+		switch ( item->GetTAG() )
 		{
 		// Click on the button 'change spot name'
 		case MAP_CHANGE_SPOT_HINT_ACT:
@@ -486,6 +487,7 @@ void CUIMapWnd::SendMessage(CUIWindow* pWnd, s16 msg, void* pData)
 		// Click on the button 'remove spot'
 		case MAP_REMOVE_SPOT_ACT:
 		{
+			HideHint( (CUIWindow*)item->GetData() );
 			Level().MapManager().RemoveMapLocation(m_cur_location);
 			m_cur_location = nullptr;
 			break;
@@ -756,8 +758,8 @@ void CUIMapWnd::ActivatePropertiesBox(CUIWindow* w)
 
 	if (sp->MapLocation()->IsUserDefined())
 	{
-		m_UIPropertiesBox->AddItem("st_pda_change_spot_hint", nullptr, MAP_CHANGE_SPOT_HINT_ACT);
-		m_UIPropertiesBox->AddItem("st_pda_delete_spot", nullptr, MAP_REMOVE_SPOT_ACT);
+		m_UIPropertiesBox->AddItem("st_pda_change_spot_hint", w, MAP_CHANGE_SPOT_HINT_ACT);
+		m_UIPropertiesBox->AddItem("st_pda_delete_spot", w, MAP_REMOVE_SPOT_ACT);
 	}
 
 	if (m_UIPropertiesBox->GetItemsCount() > 0)
