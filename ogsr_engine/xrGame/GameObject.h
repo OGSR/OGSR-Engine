@@ -11,6 +11,7 @@
 #include "script_binder.h"
 #include "Hit.h"
 #include "script_callback_ex.h"
+#include "..\xr_3da\feel_touch.h"
 
 class CPhysicsShell;
 class CSE_Abstract;
@@ -49,6 +50,15 @@ class CScriptCallbackEx;
 struct GOCallbackInfo {
 	CScriptCallbackEx<void> m_callback;
 };
+
+
+struct FeelTouchAddon {
+  Feel::Touch             feel_touch;
+  float                   radius;
+  CScriptCallbackEx<bool> feel_touch_contact;
+  CScriptCallbackEx<void> feel_touch_new_delete;
+};
+
 
 class CGameObject : 
 	public CObject, 
@@ -283,4 +293,14 @@ public:
 	virtual void			UpdateXFORM(const Fmatrix &upd); // alpet: для обновления позиции и направления
 	virtual float			GetHealth() const  { return -1;  } // alpet: для универсального доступа к переменным класса вроде fHealth
 	virtual void			SetHealth(float h) { }
+
+protected:
+  std::vector<FeelTouchAddon*> feel_touch_addons;
+  bool feel_touch_changed, feel_touch_processing;
+  void FeelTouchAddonsUpdate();
+  void FeelTouchAddonsRelcase( CObject* );
+
+public:
+  void addFeelTouch( float, const luabind::object&, const luabind::functor<void>&, const luabind::functor<bool>& );
+  void removeFeelTouch( const luabind::object&, const luabind::functor<void>&, const luabind::functor<bool>& );
 };

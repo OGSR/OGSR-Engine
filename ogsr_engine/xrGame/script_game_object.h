@@ -755,6 +755,10 @@ public:
 			void play_hud_animation (LPCSTR anim, bool mix_in);
 			void play_hud_animation (LPCSTR anim);
 
+			void addFeelTouch( float, const luabind::object&, const luabind::functor<void>& );
+			void addFeelTouch( float, const luabind::object&, const luabind::functor<void>&, const luabind::functor<bool>& );
+			void removeFeelTouch( const luabind::object&, const luabind::functor<void>&, const luabind::functor<bool>& );
+
 	DECLARE_SCRIPT_REGISTER_FUNCTION
 };
 add_to_type_list(CScriptGameObject)
