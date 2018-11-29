@@ -297,8 +297,8 @@ void CGlowManager::render_selected() {
 
       u32 C   = iFloor( G.fade * scale * ( 1 - ( dist_sq / dlim2 ) ) );
       u32 clr = color_rgba( C, C, C, C );
-      Fvector gp;
-      gp.mad( G.position, dir, G.radius * scale );
+      //Fvector gp;
+      //gp.mad( G.position, dir, G.radius * scale );
       FillSprite( pv, G.position, G.radius, clr );
     }
     int vCount = int( pv - pvs );

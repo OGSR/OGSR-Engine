@@ -230,7 +230,9 @@ function options_dialog:OnSimplyGraphic()
 end
 
 function options_dialog:OnKeyboard(dik, keyboard_action)
-	CUIScriptWnd.OnKeyboard( self, dik, keyboard_action )
+	if CUIScriptWnd.OnKeyboard( self, dik, keyboard_action ) then
+		return true
+	end
 	if keyboard_action == ui_events.WINDOW_KEY_PRESSED then
 		if dik_to_bind(dik) == key_bindings.kQUIT then
 			if self.dlg_video_adv:IsShown() then
@@ -242,8 +244,9 @@ function options_dialog:OnKeyboard(dik, keyboard_action)
 				self.owner:Show(true)
 			end
 			self:HintRefresh()
-		end	
+		end
+		return true
 	end
 
-	return true
+	return false
 end

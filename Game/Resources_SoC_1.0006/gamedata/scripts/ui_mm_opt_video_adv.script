@@ -193,7 +193,7 @@ local control_init_funs = {
 }
 
 
-class "opt_video_adv" (CUIScriptWnd)
+class "opt_video_adv" (CUIWindow)
 function opt_video_adv:__init() super()
 end
 
@@ -219,8 +219,8 @@ function opt_video_adv:InitControls(x, y, xml, handler)
 		local _st = xml:InitStatic("video_adv:templ_item", self.scroll_v)
 		xml:InitStatic("video_adv:cap_"..opt, _st)
 		local ctl = xml[control_init_funs[ctr_type]](xml, "video_adv:"..ctr_type.."_"..opt, _st)
-		self:Register(_st, "video_adv_cap_"..opt)
-		self:AddCallback(
+		handler:Register(_st, "video_adv_cap_"..opt)
+		handler:AddCallback(
 			"video_adv_cap_"..opt,
 			ui_events.STATIC_FOCUS_RECEIVED,
 			function()
@@ -230,8 +230,8 @@ function opt_video_adv:InitControls(x, y, xml, handler)
 		)
 
 		if need_restart == 1 then
-			self:Register(ctl, "video_adv:"..ctr_type.."_"..opt)
-			self:AddCallback(
+			handler:Register(ctl, "video_adv:"..ctr_type.."_"..opt)
+			handler:AddCallback(
 				"video_adv:"..ctr_type.."_"..opt,
 				ctr_type == "list" and ui_events.LIST_ITEM_SELECT or ui_events.BUTTON_CLICKED,
 				function()

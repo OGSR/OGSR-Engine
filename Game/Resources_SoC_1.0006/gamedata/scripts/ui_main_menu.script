@@ -183,7 +183,7 @@ function main_menu:close_and_delete_menu()
 	if self.save_dlg then self.save_dlg:ClearCallbacks() self.save_dlg = nil end
 	if self.load_dlg then self.load_dlg:ClearCallbacks() self.load_dlg = nil end
 	if self.opt_dlg then
-		if self.opt_dlg.dlg_video_adv then self.opt_dlg.dlg_video_adv:ClearCallbacks() end
+		if self.opt_dlg.dlg_video_adv then self.opt_dlg.dlg_video_adv = nil end
 		self.opt_dlg:ClearCallbacks() self.opt_dlg = nil
 	end
 	self:ClearCallbacks() --main_menu удаляется движком, но для надёжности и ему каллбеки удалим.
