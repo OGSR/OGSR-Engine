@@ -1005,7 +1005,10 @@ void CGameObject::addFeelTouch( float radius, const luabind::object& lua_object,
   if ( contact )
     feel_touch_contact.set( contact, lua_object );
   for ( auto& ft : feel_touch_addons ) {
-    if ( ft->feel_touch_new_delete == feel_touch_new_delete && ft->feel_touch_contact == feel_touch_contact ) {
+    if (
+      ft->feel_touch_new_delete == feel_touch_new_delete
+      && ( !contact || ft->feel_touch_contact == feel_touch_contact )
+    ) {
       ft->radius = radius;
       return;
     }
@@ -1027,7 +1030,10 @@ void CGameObject::removeFeelTouch( const luabind::object& lua_object, const luab
     feel_touch_contact.set( contact, lua_object );
   if ( feel_touch_processing ) {
     for ( auto& ft : feel_touch_addons ) {
-      if ( ft->feel_touch_new_delete == feel_touch_new_delete && ft->feel_touch_contact == feel_touch_contact ) {
+      if (
+        ft->feel_touch_new_delete == feel_touch_new_delete
+        && ( !contact || ft->feel_touch_contact == feel_touch_contact )
+      ) {
         ft->radius = -1;
         feel_touch_changed = true;
         break;
@@ -1039,7 +1045,10 @@ void CGameObject::removeFeelTouch( const luabind::object& lua_object, const luab
       std::remove_if(
         feel_touch_addons.begin(), feel_touch_addons.end(),
         [&]( auto& ft ) {
-          if ( ft->feel_touch_new_delete == feel_touch_new_delete && ft->feel_touch_contact == feel_touch_contact ) {
+          if (
+            ft->feel_touch_new_delete == feel_touch_new_delete
+            && ( !contact || ft->feel_touch_contact == feel_touch_contact )
+          ) {
             xr_delete( ft );
             return true;
           }
@@ -1064,8 +1073,9 @@ void CGameObject::FeelTouchAddonsUpdate() {
         ft->feel_touch_new_delete( GO->lua_game_object(), is_new );
       },
       [&]( const auto O ) -> bool {
+        CGameObject* GO = smart_cast<CGameObject*>( O );
+        if ( !GO ) return false;
         if ( ft->feel_touch_contact ) {
-          CGameObject* GO = smart_cast<CGameObject*>( O );
           return ft->feel_touch_contact( GO->lua_game_object() );
         }
         else

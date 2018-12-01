@@ -507,7 +507,7 @@ public:
 			bool				attachable_item_enabled	() const;
 			// CustomZone
 			void				EnableAnomaly			();
-			void				DisableAnomaly			();
+			void				DisableAnomaly( bool = false );
 			float				GetAnomalyPower			();
 			void				SetAnomalyPower			(float p);
 			
@@ -757,6 +757,7 @@ public:
 
 			void addFeelTouch( float, const luabind::object&, const luabind::functor<void>& );
 			void addFeelTouch( float, const luabind::object&, const luabind::functor<void>&, const luabind::functor<bool>& );
+			void removeFeelTouch( const luabind::object&, const luabind::functor<void>& );
 			void removeFeelTouch( const luabind::object&, const luabind::functor<void>&, const luabind::functor<bool>& );
 
 	DECLARE_SCRIPT_REGISTER_FUNCTION

@@ -437,6 +437,7 @@ class_<CScriptGameObject> script_register_game_object2(class_<CScriptGameObject>
 
 		.def( "add_feel_touch",    ( void ( CScriptGameObject::* )( float, const luabind::object&, const luabind::functor<void>&, const luabind::functor<bool>& ) )( &CScriptGameObject::addFeelTouch ) )
 		.def( "add_feel_touch",    ( void ( CScriptGameObject::* )( float, const luabind::object&, const luabind::functor<void>& ) )( &CScriptGameObject::addFeelTouch ) )
-		.def( "remove_feel_touch", &CScriptGameObject::removeFeelTouch )
+		.def( "remove_feel_touch", ( void ( CScriptGameObject::* )( const luabind::object&, const luabind::functor<void>&, const luabind::functor<bool>& ) )( &CScriptGameObject::removeFeelTouch ) )
+		.def( "remove_feel_touch", ( void ( CScriptGameObject::* )( const luabind::object&, const luabind::functor<void>& ) )( &CScriptGameObject::removeFeelTouch ) )
 	;
 }

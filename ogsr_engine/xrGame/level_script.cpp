@@ -864,6 +864,11 @@ void enable_vertex( u32 vertex_id ) {
 }
 
 
+bool is_accessible_vertex_id( u32 level_vertex_id ) {
+  return ai().level_graph().is_accessible( level_vertex_id );
+}
+
+
 #pragma optimize("s",on)
 void CLevel::script_register(lua_State *L)
 {
@@ -1006,6 +1011,7 @@ void CLevel::script_register(lua_State *L)
 		def( "vertex_count",	vertex_count ),
 		def( "disable_vertex",	disable_vertex ),
 		def( "enable_vertex",	enable_vertex ),
+		def( "is_accessible_vertex_id", &is_accessible_vertex_id ),
 		//--#SM+# Begin --
 		def("set_blender_mode_main", &set_blender_mode_main),
 		def("get_blender_mode_main", &get_blender_mode_main),

@@ -729,6 +729,11 @@ void CScriptGameObject::addFeelTouch( float radius, const luabind::object& lua_o
   GO->addFeelTouch( radius, lua_object, new_delete, contact );
 }
 
+void CScriptGameObject::removeFeelTouch( const luabind::object& lua_object, const luabind::functor<void>& new_delete ) {
+  const luabind::functor<bool> contact;
+  removeFeelTouch( lua_object, new_delete, contact );
+}
+
 void CScriptGameObject::removeFeelTouch( const luabind::object& lua_object, const luabind::functor<void>& new_delete, const luabind::functor<bool>& contact ) {
   CGameObject* GO = smart_cast<CGameObject*>( &object() );
   GO->removeFeelTouch( lua_object, new_delete, contact );

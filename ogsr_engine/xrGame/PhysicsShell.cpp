@@ -204,6 +204,8 @@ void ApplySpawnIniToPhysicShell(CInifile* ini,CPhysicsShell* physics_shell,bool 
 			{
 				physics_shell->SetIgnoreRagDoll();
 			}
+			if ( ini->line_exist( "collide","ignore_dynamic" ) )
+			  physics_shell->SetIgnoreDynamic();
 
 #ifdef ANIMATED_PHYSICS_OBJECT_SUPPORT
 			//If need, then show here that it is needed to ignore collisions with "animated_object"
