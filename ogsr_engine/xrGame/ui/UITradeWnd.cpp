@@ -482,7 +482,6 @@ bool CUITradeWnd::OnKeyboard(int dik, EUIMessages keyboard_action)
 
 bool CUITradeWnd::OnMouse(float x, float y, EUIMessages mouse_action)
 {
-	//вызов дополнительного меню по правой кнопке
 	if (mouse_action == WINDOW_RBUTTON_DOWN)
 	{
 		if (m_pUIPropertiesBox->IsShown())

@@ -97,12 +97,11 @@ void CUIInventoryCellItem::OnFocusLost()
 
 bool CUIInventoryCellItem::OnMouse(float x, float y, EUIMessages action)
 {
-	inherited::OnMouse(x, y, action);
+	bool r = inherited::OnMouse(x, y, action);
 
-	//if (m_bCursorOverWindow)
 	g_actor->callback(GameObject::eOnCellItemMouse)(object()->object().lua_game_object(), x, y, action);
 
-	return false;
+	return r;
 }
 
 CUIDragItem* CUIInventoryCellItem::CreateDragItem()
