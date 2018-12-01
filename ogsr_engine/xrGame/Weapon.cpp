@@ -1034,22 +1034,24 @@ bool CWeapon::Action(s32 cmd, u32 flags)
 	return false;
 }
 
-void GetZoomData(const float scope_factor, float& delta, float& min_zoom_factor)
+void CWeapon::GetZoomData(const float scope_factor, float& delta, float& min_zoom_factor)
 {
-	float def_fov = Core.Features.test(xrCore::Feature::ogse_wpn_zoom_system) ? 1.f : g_fov;
 	float min_zoom_k = 0.3f;
-	float zoom_step_count = 3.0f;
+	float zoom_step_count = 4.0f;
+
+	float def_fov = Core.Features.test(xrCore::Feature::ogse_wpn_zoom_system) ? 1.f : g_fov;
 	float delta_factor_total = def_fov-scope_factor;
 	VERIFY(delta_factor_total>0);
 	min_zoom_factor = def_fov-delta_factor_total*min_zoom_k;
 	delta = (delta_factor_total*(1-min_zoom_k) )/zoom_step_count;
-
 }
 
 void CWeapon::ZoomInc()
 {
 	float delta, min_zoom_factor;
 	GetZoomData(m_fScopeZoomFactor, delta, min_zoom_factor);
+
+	float currentZoomFactor = m_fZoomFactor;
 
 	if (Core.Features.test(xrCore::Feature::ogse_wpn_zoom_system)) {
 		m_fZoomFactor += delta;
@@ -1058,6 +1060,11 @@ void CWeapon::ZoomInc()
 	else {
 		m_fZoomFactor -= delta;
 		clamp(m_fZoomFactor, m_fScopeZoomFactor, min_zoom_factor);
+	}
+
+	if (!fsimilar(currentZoomFactor, m_fZoomFactor))
+	{
+		OnZoomChanged();
 	}
 }
 
@@ -1066,6 +1073,8 @@ void CWeapon::ZoomDec()
 	float delta, min_zoom_factor;
 	GetZoomData(m_fScopeZoomFactor, delta, min_zoom_factor);
 
+	float currentZoomFactor = m_fZoomFactor;
+
 	if (Core.Features.test(xrCore::Feature::ogse_wpn_zoom_system)) {
 		m_fZoomFactor -= delta;
 		clamp(m_fZoomFactor, min_zoom_factor, m_fScopeZoomFactor);
@@ -1073,6 +1082,11 @@ void CWeapon::ZoomDec()
 	else {
 		m_fZoomFactor += delta;
 		clamp(m_fZoomFactor, m_fScopeZoomFactor, min_zoom_factor);
+	}
+
+	if (!fsimilar(currentZoomFactor, m_fZoomFactor))
+	{
+		OnZoomChanged();
 	}
 }
 

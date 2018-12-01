@@ -52,6 +52,7 @@ CWeaponMagazined::~CWeaponMagazined()
 	HUD_SOUND::DestroySound(sndEmptyClick);
 	HUD_SOUND::DestroySound(sndReload);
 	HUD_SOUND::DestroySound(sndFireModes);
+	HUD_SOUND::DestroySound(sndZoomChange);
 	if (m_binoc_vision)
 		xr_delete(m_binoc_vision);
 }
@@ -65,6 +66,7 @@ void CWeaponMagazined::StopHUDSounds		()
 	HUD_SOUND::StopSound(sndEmptyClick);
 	HUD_SOUND::StopSound(sndReload);
 	HUD_SOUND::StopSound(sndFireModes);
+	HUD_SOUND::StopSound(sndZoomChange);
 
 	HUD_SOUND::StopSound(sndShot);
 //.	if(sndShot.enable && sndShot.snd.feedback)
@@ -101,6 +103,8 @@ void CWeaponMagazined::Load	(LPCSTR section)
 	HUD_SOUND::LoadSound(section,"snd_reload"	, sndReload		, m_eSoundReload		);
 	if ( pSettings->line_exist( section, "snd_fire_modes" ) )
 		HUD_SOUND::LoadSound( section, "snd_fire_modes", sndFireModes, m_eSoundEmptyClick );
+	if ( pSettings->line_exist( section, "snd_zoom_change" ) )
+		HUD_SOUND::LoadSound( section, "snd_zoom_change", sndZoomChange, m_eSoundEmptyClick );
 	
 	m_pSndShotCurrent = &sndShot;
 		
@@ -520,6 +524,7 @@ void CWeaponMagazined::UpdateSounds	()
 	if (sndReload.playing		()) sndReload.set_position		(get_LastFP());
 	if (sndEmptyClick.playing	())	sndEmptyClick.set_position	(get_LastFP());
 	if (sndFireModes.playing	())	sndFireModes.set_position	(get_LastFP());
+	if (sndZoomChange.playing	())	sndZoomChange.set_position	(get_LastFP());
 }
 
 void CWeaponMagazined::state_Fire	(float dt)
@@ -1004,9 +1009,12 @@ void CWeaponMagazined::InitAddons()
 	}
 
 	if (m_bScopeDynamicZoom)
-    {
-		m_fRTZoomFactor = m_fScopeZoomFactor;
-    }
+	{
+		float delta, min_zoom_factor;
+		GetZoomData(m_fScopeZoomFactor, delta, min_zoom_factor);
+
+		m_fRTZoomFactor = min_zoom_factor; // set minimal zoom by default
+	}
 
 	if(IsSilencerAttached() && SilencerAttachable())
 	{		
@@ -1178,6 +1186,11 @@ void CWeaponMagazined::OnZoomOut		()
 		}
 	}
 
+}
+
+void CWeaponMagazined::OnZoomChanged()
+{
+	PlaySound(sndZoomChange, get_LastFP());
 }
 
 //переключение режимов стрельбы одиночными и очередями
