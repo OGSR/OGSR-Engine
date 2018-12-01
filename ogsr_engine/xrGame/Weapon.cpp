@@ -1066,13 +1066,14 @@ void CWeapon::ZoomDec()
 	float delta, min_zoom_factor;
 	GetZoomData(m_fScopeZoomFactor, delta, min_zoom_factor);
 
-#ifdef OGSE_WPN_ZOOM_SYSTEM
-	m_fZoomFactor -= delta;
-	clamp(m_fZoomFactor, min_zoom_factor, m_fScopeZoomFactor);
-#else
-	m_fZoomFactor += delta;
-	clamp(m_fZoomFactor, m_fScopeZoomFactor, min_zoom_factor);
-#endif
+	if (Core.Features.test(xrCore::Feature::ogse_wpn_zoom_system)) {
+		m_fZoomFactor -= delta;
+		clamp(m_fZoomFactor, min_zoom_factor, m_fScopeZoomFactor);
+	}
+	else {
+		m_fZoomFactor += delta;
+		clamp(m_fZoomFactor, m_fScopeZoomFactor, min_zoom_factor);
+	}
 }
 
 void CWeapon::SpawnAmmo(u32 boxCurr, LPCSTR ammoSect, u32 ParentID) 

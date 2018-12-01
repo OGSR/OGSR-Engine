@@ -1,20 +1,20 @@
-#include "stdafx.h"
+#include "StdAfx.h"
 #include "controller_psy_hit.h"
-#include "../BaseMonster/base_monster.h"
+#include "../basemonster/base_monster.h"
 #include "controller.h"
 #include "../control_animation_base.h"
-#include "../control_direction_base.h"
-#include "../control_movement_base.h"
-#include "../../../level.h"
-#include "../../../actor.h"
+#include "../../../Level.h"
+#include "../../../Actor.h"
 #include "../../../ActorEffector.h"
 #include "../../../../xr_3da/CameraBase.h"
-#include "../../../CharacterPhysicsSupport.h"
 #include "../../../level_debug.h"
+#include "../../../CharacterPhysicsSupport.h"
 
 void CControllerPsyHit::load(LPCSTR section)
 {
 	m_min_tube_dist = pSettings->r_float(section,"tube_min_dist");
+	m_disable_camera_effect = !!pSettings->r_bool(section, "tube_disable_camera_effect");;
+	m_disable_actor_block = !!pSettings->r_bool(section, "tube_disable_actor_block");;
 }
 
 void CControllerPsyHit::reinit()
@@ -35,9 +35,13 @@ bool CControllerPsyHit::check_start_conditions()
 {
 	if (is_active())				return false;	
 	if (m_man->is_captured_pure())	return false;
-	
-	if (Actor()->Cameras().GetCamEffector(eCEControllerPsyHit))	
-									return false;
+
+	// opt
+	if (!m_disable_camera_effect)
+	{
+		if (Actor()->Cameras().GetCamEffector(eCEControllerPsyHit))
+			return false;
+	}
 
 	if (m_object->Position().distance_to(Actor()->Position()) < m_min_tube_dist) 
 									return false;
@@ -204,40 +208,48 @@ void CControllerPsyHit::death_glide_start()
 		return;
 	}
 
-	// Start effector
-	VERIFY(!Actor()->Cameras().GetCamEffector(eCEControllerPsyHit));
-	
-	Fvector src_pos		= Actor()->cam_Active()->vPosition;
-	Fvector target_pos	= m_object->Position();
-	target_pos.y		+= 1.2f;
-	
-	Fvector				dir;
-	dir.sub				(target_pos,src_pos);
-	
-	float dist			= dir.magnitude();
-	dir.normalize		();
+	// opt
+	if (!m_disable_camera_effect)
+	{
+		// Start effector
+		VERIFY(!Actor()->Cameras().GetCamEffector(eCEControllerPsyHit));
 
-	target_pos.mad		(src_pos,dir,dist-4.8f);
-	
-	Actor()->Cameras().AddCamEffector(xr_new<CControllerPsyHitCamEffector>(eCEControllerPsyHit, src_pos,target_pos, m_man->animation().motion_time(m_stage[1], m_object->Visual())));
-	smart_cast<CController *>(m_object)->draw_fire_particles();
+		Fvector src_pos = Actor()->cam_Active()->vPosition;
+		Fvector target_pos = m_object->Position();
+		target_pos.y += 1.2f;
 
-	dir.sub(src_pos,target_pos);
-	dir.normalize();
-	float h,p;
-	dir.getHP(h,p);
-	dir.setHP(h,p+PI_DIV_3);
-	Actor()->character_physics_support()->movement()->ApplyImpulse(dir,Actor()->GetMass() * 530.f);
+		Fvector				dir;
+		dir.sub(target_pos, src_pos);
+
+		float dist = dir.magnitude();
+		dir.normalize();
+
+		target_pos.mad(src_pos, dir, dist - 4.8f);
+
+		Actor()->Cameras().AddCamEffector(xr_new<CControllerPsyHitCamEffector>(eCEControllerPsyHit, src_pos, target_pos, m_man->animation().motion_time(m_stage[1], m_object->Visual())));
+		smart_cast<CController *>(m_object)->draw_fire_particles();
+
+		dir.sub(src_pos, target_pos);
+		dir.normalize();
+		float h, p;
+		dir.getHP(h, p);
+		dir.setHP(h, p + PI_DIV_3);
+		Actor()->character_physics_support()->movement()->ApplyImpulse(dir, Actor()->GetMass() * 530.f);
+	}
 
 	set_sound_state					(eStart);
 
-	NET_Packet			P;
-	Actor()->u_EventGen	(P, GEG_PLAYER_WEAPON_HIDE_STATE, Actor()->ID());
-	P.w_u32				(INV_STATE_BLOCK_ALL);
-	P.w_u8				(u8(true));
-	Actor()->u_EventSend(P);
-	
-	m_blocked			= true;
+	// opt 2
+	if (!m_disable_actor_block)
+	{
+		NET_Packet			P;
+		Actor()->u_EventGen	(P, GEG_PLAYER_WEAPON_HIDE_STATE, Actor()->ID());
+		P.w_u32				(INV_STATE_BLOCK_ALL);
+		P.w_u8				(u8(true));
+		Actor()->u_EventSend(P);
+		
+		m_blocked			= true;
+	}
 
 	//////////////////////////////////////////////////////////////////////////
 	// set direction
@@ -251,14 +263,16 @@ void CControllerPsyHit::death_glide_start()
 
 void CControllerPsyHit::death_glide_end()
 {
-	// Stop camera effector
+	// opt
+	if (!m_disable_camera_effect)
+	{
+		// Stop camera effector
+		VERIFY(Actor()->Cameras().GetCamEffector(eCEControllerPsyHit));
+		Actor()->Cameras().RemoveCamEffector(eCEControllerPsyHit);
+	}
 
-	VERIFY(Actor()->Cameras().GetCamEffector(eCEControllerPsyHit));
-	Actor()->Cameras().RemoveCamEffector(eCEControllerPsyHit);
 	CController *monster = smart_cast<CController *>(m_object);
 	monster->draw_fire_particles();
-
-
 	monster->m_sound_tube_hit_left.play_at_pos(Actor(), Fvector().set(-1.f, 0.f, 1.f), sm_2D);
 	monster->m_sound_tube_hit_right.play_at_pos(Actor(), Fvector().set(1.f, 0.f, 1.f), sm_2D);
 
