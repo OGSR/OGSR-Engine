@@ -656,10 +656,10 @@ void CScriptGameObject::EnableAnomaly()
 	zone->ZoneEnable();
 }
 
-void CScriptGameObject::DisableAnomaly()
+void CScriptGameObject::DisableAnomaly( bool keep_update )
 {
 	CCustomZone		*zone = smart_cast<CCustomZone*>(&object()); THROW(zone);
-	zone->ZoneDisable();
+	zone->ZoneDisable( keep_update );
 }
 
 float CScriptGameObject::GetAnomalyPower()

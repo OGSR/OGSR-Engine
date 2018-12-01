@@ -61,6 +61,7 @@ CCustomZone::CCustomZone(void)
 	m_b_always_fastmode			= FALSE;
 	
 	m_bBornOnBlowoutFlag		= false;
+	m_keep_update = false;
 }
 
 CCustomZone::~CCustomZone(void) 
@@ -581,7 +582,9 @@ void CCustomZone::shedule_Update(u32 dt)
 
 		if (!o_fastmode)		UpdateWorkload	(dt);
 
-	};
+	}
+	else if ( m_keep_update )
+	  inherited::shedule_Update( dt );
 
 	UpdateOnOffState	();
 }
@@ -1198,9 +1201,9 @@ void CCustomZone::ZoneEnable()
 	SwitchZoneState(eZoneStateIdle);
 };
 
-void CCustomZone::ZoneDisable()
-{
-	SwitchZoneState(eZoneStateDisabled);
+void CCustomZone::ZoneDisable( bool keep_update ) {
+  m_keep_update = keep_update;
+  SwitchZoneState( eZoneStateDisabled );
 };
 
 

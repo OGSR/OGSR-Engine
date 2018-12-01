@@ -130,6 +130,7 @@ protected:
 	
 
 	EZoneState			m_eZoneState;
+	bool m_keep_update;
 
 
 	//текущее время пребывания зоны в определенном состоянии 
@@ -164,7 +165,7 @@ protected:
 public:
 				bool		IsEnabled					()	{return m_eZoneState != eZoneStateDisabled; };
 				void		ZoneEnable					();	
-				void		ZoneDisable					();
+				void		ZoneDisable( bool = false );
 	EZoneState				ZoneState					() {return m_eZoneState;}
 protected:
 
