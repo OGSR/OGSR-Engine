@@ -91,39 +91,39 @@ DLL_API CUIMainIngameWnd* GetMainIngameWindow()
 	return NULL;
 }
 
-	CUIStatic * warn_icon_list[8] = { NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL };
-	
-	// alpet: для возможности внешнего контроля иконок (используется в NLC6 вместо типичных индикаторов). Никак не влияет на игру для остальных модов.
-	bool __declspec(dllexport) external_icon_ctrl = false;
+CUIStatic * warn_icon_list[8] = { NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL };
 
-	// позволяет расцветить иконку или изменить её размер
-	bool __declspec(dllexport) SetupGameIcon(u32 icon, u32 cl, float width, float height)
+// alpet: для возможности внешнего контроля иконок (используется в NLC6 вместо типичных индикаторов). Никак не влияет на игру для остальных модов.
+bool __declspec(dllexport) external_icon_ctrl = false;
+
+// позволяет расцветить иконку или изменить её размер
+bool __declspec(dllexport) SetupGameIcon(u32 icon, u32 cl, float width, float height)
+{
+	CUIMainIngameWnd *window = GetMainIngameWindow();
+	if (!window)
 	{
-		CUIMainIngameWnd *window = GetMainIngameWindow();
-		if (!window)
-		{
-			Msg("SetupGameIcon failed due GetMainIngameWindow() returned NULL");
-			return false;
-		}
-
-		CUIStatic *sIcon = warn_icon_list[icon & 7];
-		
-		if (sIcon)
-		{			
-			if (width > 0 && height > 0)
-			{
-				sIcon->SetWidth (width);
-				sIcon->SetHeight (height);
-				sIcon->SetStretchTexture(cl > 0);
-			}
-			else 
-				window->SetWarningIconColor((CUIMainIngameWnd::EWarningIcons)icon, cl);
-
-			external_icon_ctrl = true;
-			return true;
-		}
+		Msg("SetupGameIcon failed due GetMainIngameWindow() returned NULL");
 		return false;
 	}
+
+	CUIStatic *sIcon = warn_icon_list[icon & 7];
+	
+	if (sIcon)
+	{			
+		if (width > 0 && height > 0)
+		{
+			sIcon->SetWidth (width);
+			sIcon->SetHeight (height);
+			sIcon->SetStretchTexture(cl > 0);
+		}
+		else 
+			window->SetWarningIconColor((CUIMainIngameWnd::EWarningIcons)icon, cl);
+
+		external_icon_ctrl = true;
+		return true;
+	}
+	return false;
+}
 
 CUIMainIngameWnd::CUIMainIngameWnd()
 {
@@ -1134,7 +1134,11 @@ void CUIMainIngameWnd::UpdatePickUpItem	()
 {
 	if (!m_pPickUpItem || !Level().CurrentViewEntity() || Level().CurrentViewEntity()->CLS_ID != CLSID_OBJECT_ACTOR) 
 	{
-//		UIPickUpItemIcon.Show(false);
+		if (UIPickUpItemIcon.IsShown())
+		{
+			UIPickUpItemIcon.Show(false);
+		}
+
 		return;
 	};
 	if (UIPickUpItemIcon.IsShown()) return;
