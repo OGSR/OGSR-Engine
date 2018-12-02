@@ -13,8 +13,8 @@
 void CControllerPsyHit::load(LPCSTR section)
 {
 	m_min_tube_dist = pSettings->r_float(section,"tube_min_dist");
-	m_disable_camera_effect = !!pSettings->r_bool(section, "tube_disable_camera_effect");;
-	m_disable_actor_block = !!pSettings->r_bool(section, "tube_disable_actor_block");;
+	m_disable_camera_effect = !!READ_IF_EXISTS(pSettings, r_bool, section, "tube_disable_camera_effect", false);
+	m_disable_actor_block = !!READ_IF_EXISTS(pSettings, r_bool, section, "tube_disable_actor_block", false);
 }
 
 void CControllerPsyHit::reinit()
