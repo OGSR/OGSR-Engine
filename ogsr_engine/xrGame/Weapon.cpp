@@ -1934,8 +1934,9 @@ void CWeapon::UpdateSecondVP()
 	auto wpn_w_gl = smart_cast<CWeaponMagazinedWGrenade*>(this);
 	bool bCond_4 = ( !wpn_w_gl || !wpn_w_gl->m_bGrenadeMode );     // Мы не должны быть в режиме подствольника
 	bool bCond_5 = !is_second_zoom_offset_enabled; // Мы не должны быть в режиме второго прицеливания.
+	bool bCond_6 = IsScopeAttached(); // есть прицел на оружии
 
-	Device.m_SecondViewport.SetSVPActive(bCond_1 && bCond_2 && bCond_3 && bCond_4 && bCond_5);
+	Device.m_SecondViewport.SetSVPActive(bCond_1 && bCond_2 && bCond_3 && bCond_4 && bCond_5 && bCond_6);
 }
 
 // Чувствительность мышкии с оружием в руках во время прицеливания
