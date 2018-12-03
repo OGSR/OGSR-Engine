@@ -31,7 +31,7 @@ void	CSoundRender_Core::i_start		(CSoundRender_Emitter* E)
 	  if ( Ptarget < psSoundCull ) {
 	    T->get_emitter()->cancel();
 	  }
-	  else if ( s_targets.size() < psSoundTargetsAutoMax ) {
+	  else if ( s_targets.size() < u32(psSoundTargetsAutoMax) ) {
 	    Msg( "! SOUND: OpenAL: increasing max_targets to %u", s_targets.size() + 1 );
 	    CSoundRender_Target* T2 = xr_new<CSoundRender_TargetA>();
 	    if ( T2->_initialize() ) {

@@ -4,8 +4,8 @@
 
 #include <sstream> //для std::stringstream
 #include <fstream> //для std::ofstream
+#include <iomanip> //для std::strftime
 
-static string_path			logFName = "engine.log";
 static BOOL 				no_log	 = TRUE;
 static std::recursive_mutex logCS;
 static LogCallback			LogCB	 = nullptr;
@@ -33,11 +33,14 @@ void AddOne(std::string &split, bool first_line)
 
 	if (first_line)
 	{
-		SYSTEMTIME lt;
-		GetLocalTime(&lt);
-		char buf[64];
-		std::snprintf(buf, 64, "\n[%02d.%02d.%02d %02d:%02d:%02d.%03d] ", lt.wDay, lt.wMonth, lt.wYear % 100, lt.wHour, lt.wMinute, lt.wSecond, lt.wMilliseconds);
-		split = buf + split;
+		string64 buf, curTime;
+		using namespace std::chrono;
+		const auto now = system_clock::now();
+		const auto time = system_clock::to_time_t(now);
+		const auto ms = duration_cast<milliseconds>(now.time_since_epoch()) - duration_cast<seconds>(now.time_since_epoch());
+		std::strftime(buf, sizeof(buf), "%d.%m.%y %H:%M:%S", std::localtime(&time));
+		sprintf_s(curTime, sizeof(curTime), "\n[%s.%03lld] ", buf, ms.count());
+		split = curTime + split;
 	}
 	else
 	{
@@ -142,11 +145,6 @@ void SetLogCB(LogCallback cb)
 	LogCB = cb;
 }
 
-const char* log_name()
-{
-	return logFName;
-}
-
 void InitLog()
 {
 	R_ASSERT(!LogFile);
@@ -159,19 +157,30 @@ void CreateLog(BOOL nl)
 
 	if (!no_log)
 	{
-		strconcat(sizeof(logFName), logFName, Core.ApplicationName, "_", Core.UserName, ".log");
+		string_path logFName = { 0 };
+		if (strstr(Core.Params, "-unique_logs")) {
+			string32 TimeBuf;
+			using namespace std::chrono;
+			const auto now = system_clock::now();
+			const auto time = system_clock::to_time_t(now);
+			std::strftime(TimeBuf, sizeof(TimeBuf), "%d-%m-%y_%H-%M-%S", std::localtime(&time));
+
+			strconcat(sizeof(logFName), logFName, Core.ApplicationName, "_", Core.UserName, "_", TimeBuf, ".log");
+		}
+		else {
+			strconcat(sizeof(logFName), logFName, Core.ApplicationName, "_", Core.UserName, ".log");
+		}
 
 		__try {
 			if (FS.path_exist("$logs$"))
 				FS.update_path(logFName, "$logs$", logFName);
 
-			logstream.imbue(std::locale("")); //В некоторых случаях вместо русских букв в лог выводятся иероглифы. Попробуем установить логу локаль, может поможет.
+			logstream.imbue(std::locale(""));
 			VerifyPath(logFName);
 			logstream.open(logFName);
 		}
 		__except (EXCEPTION_EXECUTE_HANDLER) {
-			MessageBox(nullptr, "Can't create log file!", "Error", MB_ICONERROR);
-			abort();
+			Debug.do_exit("Can't create log file!");
 		}
 
 		for (u32 it = 0; it < LogFile->size(); it++)
