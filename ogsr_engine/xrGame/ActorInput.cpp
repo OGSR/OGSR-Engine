@@ -344,95 +344,70 @@ bool CActor::use_Holder				(CHolderCustom* holder)
 	}
 }
 
-void CActor::ActorUse()
-{
-	//mstate_real = 0;
-	PickupModeOn();
+void CActor::ActorUse() {
+  if ( m_pUsableObject ) m_pUsableObject->use( this );
+  if ( HUD().GetUI()->MainInputReceiver() ) return;
 
-		
-	if (m_holder)
-	{
-		CGameObject*	GO			= smart_cast<CGameObject*>(m_holder);
-		NET_Packet		P;
-		CGameObject::u_EventGen		(P, GEG_PLAYER_DETACH_HOLDER, ID());
-		P.w_u32						(GO->ID());
-		CGameObject::u_EventSend	(P);
-		return;
-	}
+  if ( m_holder ) {
+    CGameObject*  GO = smart_cast<CGameObject*>( m_holder );
+    NET_Packet    P;
+    CGameObject::u_EventGen( P, GEG_PLAYER_DETACH_HOLDER, ID() );
+    P.w_u32( GO->ID() );
+    CGameObject::u_EventSend( P );
+    return;
+  }
 				
-	if(character_physics_support()->movement()->PHCapture())
-		character_physics_support()->movement()->PHReleaseObject();
+  else if ( character_physics_support()->movement()->PHCapture() ) {
+    character_physics_support()->movement()->PHReleaseObject();
+    return;
+  }
 
-	
+  else if ( m_pInvBoxWeLookingAt && m_pInvBoxWeLookingAt->object().nonscript_usable() && m_pInvBoxWeLookingAt->IsOpened() ) {
+    // если контейнер открыт
+    CUIGameSP* pGameSP = smart_cast<CUIGameSP*>( HUD().GetUI()->UIGame() );
+    if ( pGameSP ) pGameSP->StartCarBody( this, m_pInvBoxWeLookingAt );
+    return;
+  }
+  
+  else if ( !m_pUsableObject || m_pUsableObject->nonscript_usable() ) {
+    if ( m_pPersonWeLookingAt ) {
+      CEntityAlive* pEntityAliveWeLookingAt = smart_cast<CEntityAlive*>( m_pPersonWeLookingAt );
+      VERIFY( pEntityAliveWeLookingAt );
+      if ( pEntityAliveWeLookingAt->g_Alive() ) {
+        TryToTalk();
+        return;
+      }
+      //обыск трупа
+      else if ( !Level().IR_GetKeyState( DIK_LSHIFT ) ) {
+        //только если находимся в режиме single
+        CUIGameSP* pGameSP = smart_cast<CUIGameSP*>( HUD().GetUI()->UIGame() );
+        if ( pGameSP ) pGameSP->StartCarBody( this, m_pPersonWeLookingAt );
+        return;
+      }
+    }
 
-	if(m_pUsableObject)m_pUsableObject->use(this);
-	
-	if(m_pInvBoxWeLookingAt && m_pInvBoxWeLookingAt->object().nonscript_usable())
-	{
-		// если контейнер открыт
-		if (m_pInvBoxWeLookingAt->IsOpened())
-		{
+    collide::rq_result& RQ      = HUD().GetCurrentRayQuery();
+    CPhysicsShellHolder* object = smart_cast<CPhysicsShellHolder*>( RQ.O );
+    if ( object ) {
+      if ( Level().IR_GetKeyState( DIK_LSHIFT ) ) {
+        bool b_allow = !!pSettings->line_exist( "ph_capture_visuals", object->cNameVisual() );
+        if ( b_allow ) {
+          character_physics_support()->movement()->PHCaptureObject( object, (u16)RQ.element );
+        }
+        return;
+      }
+      else if ( smart_cast<CHolderCustom*>( object ) ) {
+        NET_Packet P;
+        CGameObject::u_EventGen( P, GEG_PLAYER_ATTACH_HOLDER, ID() );
+        P.w_u32( object->ID() );
+        CGameObject::u_EventSend( P );
+        return;
+      }
+    }
+  }
 
-			CUIGameSP* pGameSP = smart_cast<CUIGameSP*>(HUD().GetUI()->UIGame());
-			if (pGameSP) pGameSP->StartCarBody(this, m_pInvBoxWeLookingAt);
-			PickupModeOff();
-			return;
-		}
-	}
-
-	if(!m_pUsableObject||m_pUsableObject->nonscript_usable())
-	{
-		if(m_pPersonWeLookingAt)
-		{
-			CEntityAlive* pEntityAliveWeLookingAt = 
-				smart_cast<CEntityAlive*>(m_pPersonWeLookingAt);
-
-			VERIFY(pEntityAliveWeLookingAt);
-
-				if(pEntityAliveWeLookingAt->g_Alive())
-				{
-					TryToTalk();
-				}
-				//обыск трупа
-				else  if(!Level().IR_GetKeyState(DIK_LSHIFT))
-				{
-					//только если находимся в режиме single
-					CUIGameSP* pGameSP = smart_cast<CUIGameSP*>(HUD().GetUI()->UIGame());
-					if(pGameSP)pGameSP->StartCarBody(this, m_pPersonWeLookingAt );
-				}
-		}
-
-		collide::rq_result& RQ = HUD().GetCurrentRayQuery();
-		CPhysicsShellHolder* object = smart_cast<CPhysicsShellHolder*>(RQ.O);
-		u16 element = BI_NONE;
-		if(object) 
-			element = (u16)RQ.element;
-
-		if(object && Level().IR_GetKeyState(DIK_LSHIFT))
-		{
-			bool b_allow = !!pSettings->line_exist("ph_capture_visuals",object->cNameVisual());
-			if(b_allow && !character_physics_support()->movement()->PHCapture())
-			{
-				character_physics_support()->movement()->PHCaptureObject(object,element);
-
-			}
-
-		}
-		else
-		{
-			if (object && smart_cast<CHolderCustom*>(object))
-			{
-					NET_Packet		P;
-					CGameObject::u_EventGen		(P, GEG_PLAYER_ATTACH_HOLDER, ID());
-					P.w_u32						(object->ID());
-					CGameObject::u_EventSend	(P);
-					return;
-			}
-
-		}
-	}
-
-
+  PickupModeOn();
+  PickupModeUpdate_COD();
 }
 BOOL CActor::HUDview				( )const 
 { 
