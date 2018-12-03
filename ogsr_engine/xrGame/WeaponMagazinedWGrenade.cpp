@@ -590,8 +590,6 @@ bool CWeaponMagazinedWGrenade::Detach(const char* item_section_name, bool b_spaw
 	   0 != (m_flagsAddOnState&CSE_ALifeItemWeapon::eWeaponAddonGrenadeLauncher) &&
 	   !xr_strcmp(*m_sGrenadeLauncherName, item_section_name))
 	{
-		m_flagsAddOnState &= ~CSE_ALifeItemWeapon::eWeaponAddonGrenadeLauncher;
-
 		// https://github.com/revolucas/CoC-Xray/pull/5/commits/9ca73da34a58ceb48713b1c67608198c6af26db2
 		// Now we need to unload GL's magazine
 		if (!m_bGrenadeMode)
@@ -600,6 +598,8 @@ bool CWeaponMagazinedWGrenade::Detach(const char* item_section_name, bool b_spaw
 		}
 		UnloadMagazine();
 		PerformSwitchGL();
+
+		m_flagsAddOnState &= ~CSE_ALifeItemWeapon::eWeaponAddonGrenadeLauncher;
 
 		UpdateAddonsVisibility();
 		return CInventoryItemObject::Detach(item_section_name, b_spawn_item);

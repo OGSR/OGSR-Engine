@@ -312,9 +312,12 @@ void CUICarBodyWnd::SendMessage(CUIWindow *pWnd, s16 msg, void *pData)
 						WpnMagaz->UnloadMagazine();
 						if (auto WpnMagazWgl = smart_cast<CWeaponMagazinedWGrenade*>(WpnMagaz))
 						{
-							WpnMagazWgl->PerformSwitchGL();
-							WpnMagazWgl->UnloadMagazine();
-							WpnMagazWgl->PerformSwitchGL();
+							if (WpnMagazWgl->IsGrenadeLauncherAttached())
+							{
+								WpnMagazWgl->PerformSwitchGL();
+								WpnMagazWgl->UnloadMagazine();
+								WpnMagazWgl->PerformSwitchGL();
+							}
 						}
 					};
 
