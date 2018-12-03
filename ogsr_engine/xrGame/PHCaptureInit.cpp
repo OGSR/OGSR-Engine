@@ -85,7 +85,7 @@ CPHCapture::CPHCapture	(CPHCharacter   *a_character, CPhysicsShellHolder	*a_tage
 		
 
 
-	m_taget_element					=m_taget_object->m_pPhysicsShell->NearestToPoint(m_capture_bone->mTransform.c);
+	m_taget_element = m_taget_object->m_pPhysicsShell->NearestToPoint( GetCapturePosition() );
 
 	Init(ini);
 
@@ -217,10 +217,8 @@ CPHCapture::CPHCapture(CPHCharacter   *a_character,CPhysicsShellHolder	*a_taget_
 void CPHCapture::Init(CInifile* ini)
 {
 	Fvector dir;
-	Fvector capture_bone_position;
-	capture_bone_position.set(m_capture_bone->mTransform.c);
+	Fvector capture_bone_position = GetCapturePosition();
 	b_character_feedback=true;
-	(m_character->PhysicsRefObject())->XFORM().transform_tiny(capture_bone_position);
 
 
 	m_taget_element->GetGlobalPositionDynamic(&dir);
@@ -289,6 +287,7 @@ void CPHCapture::Release()
 		m_taget_element->set_DynamicLimits();
 	}
 
+	b_failed = false;
 	e_state=cstReleased;
 	b_collide=true;
 	CActor* A=smart_cast<CActor*>(m_character->PhysicsRefObject());

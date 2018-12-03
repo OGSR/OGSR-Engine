@@ -56,7 +56,6 @@ private:
 			void ReleasedUpdate();
 			void ReleaseInCallBack();
 			void Init(CInifile* ini);
-
 			void Deactivate();
 			void CreateBody();
 			bool Invalid(){return 
@@ -70,6 +69,8 @@ static void object_contactCallbackFun(bool& do_colide,bool bo1,dContact& c,SGame
 ///////////CPHObject/////////////////////////////
 	virtual void PhDataUpdate(dReal step);
 	virtual void PhTune(dReal step);
+
+	Fvector GetCapturePosition();
 
 public:
 	CPhysicsShellHolder*  taget_object() const { return m_taget_object; };

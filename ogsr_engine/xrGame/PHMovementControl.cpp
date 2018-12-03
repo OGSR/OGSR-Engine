@@ -39,7 +39,7 @@ CPHMovementControl::CPHMovementControl(CObject* parent)
 #endif
 
 	m_material			=0;
-	m_capture			=NULL;
+	m_capture			= nullptr;
 	b_exect_position	=true;
 	m_start_index		=0;
 	eOldEnvironment =	peInAir;
@@ -79,6 +79,7 @@ CPHMovementControl::~CPHMovementControl(void)
 		m_character->Destroy();
 	DeleteCharacterObject();
 	xr_delete(m_capture);
+
 }
 
 //static Fvector old_pos={0,0,0};
@@ -904,7 +905,10 @@ Fmatrix CPHMovementControl::PHCaptureGetNearestElemTransform(CPhysicsShellHolder
 
 void CPHMovementControl::PHReleaseObject()
 {
-	if(m_capture) m_capture->Release();
+	if(m_capture) {
+		m_capture->Release();
+		xr_delete(m_capture);
+	}
 }
 
 void	CPHMovementControl::DestroyCharacter()
