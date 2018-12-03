@@ -32,10 +32,10 @@ void CMapSpot::Load(CUIXml* xml, LPCSTR path)
 	m_originSize		= GetWndSize();
 }
 
-LPCSTR CMapSpot::GetHint() 
+LPCSTR CMapSpot::GetHint()
 {
-	return MapLocation()->GetHint();
-};
+	return MapLocation() ? MapLocation()->GetHint() : nullptr;
+}
 
 void CMapSpot::Update()
 {
