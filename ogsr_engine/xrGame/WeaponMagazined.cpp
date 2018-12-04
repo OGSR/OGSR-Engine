@@ -316,7 +316,6 @@ void CWeaponMagazined::ReloadMagazine()
 	//только разных типов патронов
 //	static bool l_lockType = false;
 	if (!m_bLockType) {
-		m_ammoName	= NULL;
 		m_pAmmo		= NULL;
 	}
 	
@@ -387,7 +386,6 @@ void CWeaponMagazined::ReloadMagazine()
 		l_cartridge.m_LocalAmmoType = u8(m_ammoType);
 		m_magazine.push_back(l_cartridge);
 	}
-	m_ammoName = (m_pAmmo) ? m_pAmmo->m_nameShort : NULL;
 
 	VERIFY((u32)iAmmoElapsed == m_magazine.size());
 

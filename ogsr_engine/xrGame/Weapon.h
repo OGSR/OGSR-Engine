@@ -475,7 +475,6 @@ public:
 
 	CWeaponAmmo*			m_pAmmo;
 	u32						m_ammoType;
-	shared_str				m_ammoName;
 	BOOL					m_bHasTracers;
 	u8						m_u8TracerColorID;
 	u32						m_set_next_ammoType_on_reload;

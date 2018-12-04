@@ -112,10 +112,7 @@ void CWeaponMagazinedWGrenade::Load	(LPCSTR section)
 			_GetItem				(S,it,_ammoItem);
 			m_ammoTypes2.push_back	(_ammoItem);
 		}
-		m_ammoName2 = pSettings->r_string(*m_ammoTypes2[0],"inv_name_short");
 	}
-	else
-		m_ammoName2 = 0;
 
 	iMagazineSize2 = iMagazineSize;
 }
@@ -148,17 +145,28 @@ BOOL CWeaponMagazinedWGrenade::net_Spawn(CSE_Abstract* DC)
 	m_ammoType2   = m_ammoType2   > 0 ? m_ammoType2   : wgl->ammo_type2;
 	iAmmoElapsed2 = iAmmoElapsed2 > 0 ? iAmmoElapsed2 : wgl->a_elapsed2;
 
+	//Msg("~~[%s][%s] net_Spawn", __FUNCTION__, this->Name());
+
 	if (wgl->m_bGrenadeMode) // m_bGrenadeMode enabled
 	{
-		m_ammoTypes.swap(m_ammoTypes2);
 		m_bGrenadeMode = true;
+
+		m_fZoomFactor = this->CurrentZoomFactor();
+
 		iMagazineSize = 1;
+
+		m_ammoTypes.swap(m_ammoTypes2);
+
+		UpdateZoomOffset();
+
+		Actor()->callback(GameObject::eOnActorWeaponSwitchGL)(lua_game_object());
 
 		// reloading
 		m_DefaultCartridge.Load(*m_ammoTypes[m_ammoType], u8(m_ammoType));
 		u32 mag_sz = m_magazine.size();
 		m_magazine.clear();
-		while (mag_sz--) m_magazine.push_back(m_DefaultCartridge);
+		while (mag_sz--) 
+			m_magazine.push_back(m_DefaultCartridge);
 
 		m_DefaultCartridge2.Load(*m_ammoTypes2[m_ammoType2], u8(m_ammoType2));
 		//mag_sz = m_magazine2.size();
@@ -169,6 +177,7 @@ BOOL CWeaponMagazinedWGrenade::net_Spawn(CSE_Abstract* DC)
 	else
 	{
 		ASSERT_FMT( m_ammoType2 < m_ammoTypes2.size(), "Ammo type [%u] not found in weapon [%s]. Something strange...", m_ammoType2, this->cName().c_str() );
+
 		m_DefaultCartridge2.Load(m_ammoTypes2.at(m_ammoType2).c_str(), u8(m_ammoType2));
 		while ((u32)iAmmoElapsed2 > m_magazine2.size())
 			m_magazine2.push_back(m_DefaultCartridge2);
@@ -260,7 +269,6 @@ void  CWeaponMagazinedWGrenade::PerformSwitchGL()
 	m_ammoTypes.swap	(m_ammoTypes2);
 
 	swap				(m_ammoType,m_ammoType2);
-	swap				(m_ammoName,m_ammoName2);
 	
 	swap				(m_DefaultCartridge, m_DefaultCartridge2);
 
@@ -607,9 +615,6 @@ bool CWeaponMagazinedWGrenade::Detach(const char* item_section_name, bool b_spaw
 	else
 		return inherited::Detach(item_section_name, b_spawn_item);
 }
-
-
-
 
 void CWeaponMagazinedWGrenade::InitAddons()
 {	

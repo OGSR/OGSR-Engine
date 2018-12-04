@@ -61,7 +61,6 @@ CWeapon::CWeapon(LPCSTR name)
 	iAmmoElapsed			= -1;
 	iMagazineSize			= -1;
 	m_ammoType				= 0;
-	m_ammoName				= NULL;
 
 	eHandDependence			= hdNone;
 
@@ -305,10 +304,7 @@ void CWeapon::Load		(LPCSTR section)
 			_GetItem				(S,it,_ammoItem);
 			m_ammoTypes.push_back	(_ammoItem);
 		}
-		m_ammoName = pSettings->r_string(*m_ammoTypes[0],"inv_name_short");
 	}
-	else
-		m_ammoName = 0;
 
 	iAmmoElapsed		= pSettings->r_s32		(section,"ammo_elapsed"		);
 	iMagazineSize		= pSettings->r_s32		(section,"ammo_mag_size"	);
