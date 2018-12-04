@@ -1008,10 +1008,17 @@ void CWeaponMagazined::InitAddons()
 
 	if (m_bScopeDynamicZoom)
 	{
-		float delta, min_zoom_factor;
-		GetZoomData(m_fScopeZoomFactor, delta, min_zoom_factor);
+		if (Core.Features.test(xrCore::Feature::ogse_wpn_zoom_system)) 
+		{
+			float delta, min_zoom_factor;
+			GetZoomData(m_fScopeZoomFactor, delta, min_zoom_factor);
 
-		m_fRTZoomFactor = min_zoom_factor; // set minimal zoom by default
+			m_fRTZoomFactor = min_zoom_factor; // set minimal zoom by default for ogse mode
+		}
+		else
+		{
+			m_fRTZoomFactor = m_fScopeZoomFactor;
+		}
 	}
 
 	if(IsSilencerAttached() && SilencerAttachable())
