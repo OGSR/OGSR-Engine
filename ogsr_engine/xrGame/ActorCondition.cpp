@@ -117,7 +117,7 @@ void CActorCondition::UpdateCondition()
 	if (!object().Local() && m_object != Level().CurrentViewEntity())		return;	
 
 	float weight      = object().GetCarryWeight();
-	float max_weight  = weight;
+	float max_weight;
 	if (Core.Features.test(xrCore::Feature::condition_jump_weight_mod))
 		max_weight = object().inventory().GetMaxWeight() + object().ArtefactsAddWeight(false);
 	else
