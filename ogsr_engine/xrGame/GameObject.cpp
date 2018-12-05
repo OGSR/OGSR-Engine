@@ -757,12 +757,11 @@ void VisualCallback	(CKinematics *tpKinematics)
 		(*I)						(tpKinematics);
 }
 
-CScriptGameObject *CGameObject::lua_game_object		() const
+CScriptGameObject *CGameObject::lua_game_object() const
 {
-#ifdef DEBUG
 	if (!m_spawned)
-		Msg							("! you are trying to use a destroyed object [%x]",this);
-#endif
+		Msg("!! [%s] you are trying to use a destroyed object [%x]", __FUNCTION__, this);
+
 	THROW							(m_spawned);
 	if (!m_lua_game_object)
 		m_lua_game_object			= xr_new<CScriptGameObject>(const_cast<CGameObject*>(this));
