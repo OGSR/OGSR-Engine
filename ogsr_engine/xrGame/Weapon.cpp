@@ -61,7 +61,6 @@ CWeapon::CWeapon(LPCSTR name)
 	iAmmoElapsed			= -1;
 	iMagazineSize			= -1;
 	m_ammoType				= 0;
-	m_ammoName				= NULL;
 
 	eHandDependence			= hdNone;
 
@@ -305,10 +304,7 @@ void CWeapon::Load		(LPCSTR section)
 			_GetItem				(S,it,_ammoItem);
 			m_ammoTypes.push_back	(_ammoItem);
 		}
-		m_ammoName = pSettings->r_string(*m_ammoTypes[0],"inv_name_short");
 	}
-	else
-		m_ammoName = 0;
 
 	iAmmoElapsed		= pSettings->r_s32		(section,"ammo_elapsed"		);
 	iMagazineSize		= pSettings->r_s32		(section,"ammo_mag_size"	);
@@ -1034,22 +1030,24 @@ bool CWeapon::Action(s32 cmd, u32 flags)
 	return false;
 }
 
-void GetZoomData(const float scope_factor, float& delta, float& min_zoom_factor)
+void CWeapon::GetZoomData(const float scope_factor, float& delta, float& min_zoom_factor)
 {
-	float def_fov = Core.Features.test(xrCore::Feature::ogse_wpn_zoom_system) ? 1.f : g_fov;
 	float min_zoom_k = 0.3f;
-	float zoom_step_count = 3.0f;
+	float zoom_step_count = 4.0f;
+
+	float def_fov = Core.Features.test(xrCore::Feature::ogse_wpn_zoom_system) ? 1.f : g_fov;
 	float delta_factor_total = def_fov-scope_factor;
 	VERIFY(delta_factor_total>0);
 	min_zoom_factor = def_fov-delta_factor_total*min_zoom_k;
 	delta = (delta_factor_total*(1-min_zoom_k) )/zoom_step_count;
-
 }
 
 void CWeapon::ZoomInc()
 {
 	float delta, min_zoom_factor;
 	GetZoomData(m_fScopeZoomFactor, delta, min_zoom_factor);
+
+	float currentZoomFactor = m_fZoomFactor;
 
 	if (Core.Features.test(xrCore::Feature::ogse_wpn_zoom_system)) {
 		m_fZoomFactor += delta;
@@ -1058,6 +1056,11 @@ void CWeapon::ZoomInc()
 	else {
 		m_fZoomFactor -= delta;
 		clamp(m_fZoomFactor, m_fScopeZoomFactor, min_zoom_factor);
+	}
+
+	if (!fsimilar(currentZoomFactor, m_fZoomFactor))
+	{
+		OnZoomChanged();
 	}
 }
 
@@ -1066,6 +1069,8 @@ void CWeapon::ZoomDec()
 	float delta, min_zoom_factor;
 	GetZoomData(m_fScopeZoomFactor, delta, min_zoom_factor);
 
+	float currentZoomFactor = m_fZoomFactor;
+
 	if (Core.Features.test(xrCore::Feature::ogse_wpn_zoom_system)) {
 		m_fZoomFactor -= delta;
 		clamp(m_fZoomFactor, min_zoom_factor, m_fScopeZoomFactor);
@@ -1073,6 +1078,11 @@ void CWeapon::ZoomDec()
 	else {
 		m_fZoomFactor += delta;
 		clamp(m_fZoomFactor, m_fScopeZoomFactor, min_zoom_factor);
+	}
+
+	if (!fsimilar(currentZoomFactor, m_fZoomFactor))
+	{
+		OnZoomChanged();
 	}
 }
 
@@ -1920,8 +1930,9 @@ void CWeapon::UpdateSecondVP()
 	auto wpn_w_gl = smart_cast<CWeaponMagazinedWGrenade*>(this);
 	bool bCond_4 = ( !wpn_w_gl || !wpn_w_gl->m_bGrenadeMode );     // Мы не должны быть в режиме подствольника
 	bool bCond_5 = !is_second_zoom_offset_enabled; // Мы не должны быть в режиме второго прицеливания.
+	bool bCond_6 = IsScopeAttached(); // есть прицел на оружии
 
-	Device.m_SecondViewport.SetSVPActive(bCond_1 && bCond_2 && bCond_3 && bCond_4 && bCond_5);
+	Device.m_SecondViewport.SetSVPActive(bCond_1 && bCond_2 && bCond_3 && bCond_4 && bCond_5 && bCond_6);
 }
 
 // Чувствительность мышкии с оружием в руках во время прицеливания

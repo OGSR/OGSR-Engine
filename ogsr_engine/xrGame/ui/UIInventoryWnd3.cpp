@@ -276,9 +276,12 @@ void CUIInventoryWnd::ProcessPropertiesBoxClicked	()
 					WpnMagaz->UnloadMagazine();
 					if (auto WpnMagazWgl = smart_cast<CWeaponMagazinedWGrenade*>(WpnMagaz))
 					{
-						WpnMagazWgl->PerformSwitchGL();
-						WpnMagazWgl->UnloadMagazine();
-						WpnMagazWgl->PerformSwitchGL();
+						if (WpnMagazWgl->IsGrenadeLauncherAttached())
+						{
+							WpnMagazWgl->PerformSwitchGL();
+							WpnMagazWgl->UnloadMagazine();
+							WpnMagazWgl->PerformSwitchGL();
+						}
 					}
 				};
 
