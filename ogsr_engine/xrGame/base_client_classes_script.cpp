@@ -518,3 +518,10 @@ void CResourceManagerScript::script_register(lua_State *L)
 	];
 }
 // alpet ======================== SCRIPT_TEXTURE_CONTROL END =========== 
+
+
+void CPHCaptureScript::script_register( lua_State *L ) {
+  module( L ) [
+    class_<CPHCapture>( "CPHCapture" )
+  ];
+}

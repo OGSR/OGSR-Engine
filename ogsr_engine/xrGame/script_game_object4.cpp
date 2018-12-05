@@ -23,6 +23,7 @@
 #include "WeaponKnife.h"
 
 #include "HangingLamp.h"
+#include "CharacterPhysicsSupport.h"
 
 //////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////
@@ -737,4 +738,44 @@ void CScriptGameObject::removeFeelTouch( const luabind::object& lua_object, cons
 void CScriptGameObject::removeFeelTouch( const luabind::object& lua_object, const luabind::functor<void>& new_delete, const luabind::functor<bool>& contact ) {
   CGameObject* GO = smart_cast<CGameObject*>( &object() );
   GO->removeFeelTouch( lua_object, new_delete, contact );
+}
+
+
+void CScriptGameObject::PHCaptureObject( CScriptGameObject* obj, LPCSTR capture_bone ) {
+  auto ps = smart_cast<CPhysicsShellHolder*>( &(obj->object()) );
+  ASSERT_FMT( ps, "[%s]: %s not a CPhysicsShellHolder", __FUNCTION__, obj->cName().c_str() );
+  auto EA = smart_cast<CEntityAlive*>( &object() );
+  ASSERT_FMT( EA, "[%s]: %s not a CEntityAlive", __FUNCTION__, cName().c_str() );
+  EA->character_physics_support()->movement()->PHCaptureObject( ps, capture_bone );
+}
+
+void CScriptGameObject::PHCaptureObject( CScriptGameObject* obj ) {
+  PHCaptureObject( obj, nullptr );
+}
+
+
+void CScriptGameObject::PHCaptureObject( CScriptGameObject* obj, u16 bone, LPCSTR capture_bone ) {
+  auto ps = smart_cast<CPhysicsShellHolder*>( &(obj->object()) );
+  ASSERT_FMT( ps, "[%s]: %s not a CPhysicsShellHolder", __FUNCTION__, obj->cName().c_str() );
+  auto EA = smart_cast<CEntityAlive*>( &object() );
+  ASSERT_FMT( EA, "[%s]: %s not a CEntityAlive", __FUNCTION__, cName().c_str() );
+  EA->character_physics_support()->movement()->PHCaptureObject( ps, bone, capture_bone );
+}
+
+void CScriptGameObject::PHCaptureObject( CScriptGameObject* obj, u16 bone ) {
+  PHCaptureObject( obj, bone, nullptr );
+}
+
+
+void CScriptGameObject::PHReleaseObject() {
+  auto EA = smart_cast<CEntityAlive*>( &object() );
+  ASSERT_FMT( EA, "[%s]: %s not a CEntityAlive", __FUNCTION__, cName().c_str() );
+  EA->character_physics_support()->movement()->PHReleaseObject();
+}
+
+
+CPHCapture* CScriptGameObject::PHCapture() {
+  auto EA = smart_cast<CEntityAlive*>( &object() );
+  ASSERT_FMT( EA, "[%s]: %s not a CEntityAlive", __FUNCTION__, cName().c_str() );
+  return EA->character_physics_support()->movement()->PHCapture();
 }

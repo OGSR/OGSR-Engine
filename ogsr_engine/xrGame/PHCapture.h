@@ -12,8 +12,8 @@ class CPHCharacter;
 class CPHCapture : public CPHUpdateObject
 {
 public:
-					CPHCapture	(CPHCharacter     *a_character,CPhysicsShellHolder	  *a_taget_object);
-					CPHCapture	(CPHCharacter     *a_character,CPhysicsShellHolder	  *a_taget_object,u16 a_taget_elemrnt);
+				CPHCapture( CPHCharacter*, CPhysicsShellHolder*, LPCSTR = nullptr );
+				CPHCapture( CPHCharacter*, CPhysicsShellHolder*, u16, LPCSTR = nullptr );
 virtual				~CPHCapture							();
 
 

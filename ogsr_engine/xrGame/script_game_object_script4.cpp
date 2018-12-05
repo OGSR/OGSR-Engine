@@ -349,6 +349,14 @@ class_<CScriptGameObject> script_register_game_object3(class_<CScriptGameObject>
 		.def("get_weapon_hud",				&CScriptGameObject::GetWeaponHUD)
 		.def("get_hud_visual",				&CScriptGameObject::GetWeaponHUD_Visual)
 		.def("load_hud_visual",				&CScriptGameObject::LoadWeaponHUD_Visual)
+
+		.def( "ph_capture_object", ( void ( CScriptGameObject::* )( CScriptGameObject* ) )( &CScriptGameObject::PHCaptureObject ) )
+		.def( "ph_capture_object", ( void ( CScriptGameObject::* )( CScriptGameObject*, LPCSTR ) )( &CScriptGameObject::PHCaptureObject ) )
+		.def( "ph_capture_object", ( void ( CScriptGameObject::* )( CScriptGameObject*, u16  ) )( &CScriptGameObject::PHCaptureObject ) )
+		.def( "ph_capture_object", ( void ( CScriptGameObject::* )( CScriptGameObject*, u16, LPCSTR ) )( &CScriptGameObject::PHCaptureObject ) )
+		.def( "ph_release_object", &CScriptGameObject::PHReleaseObject )
+		.def( "ph_capture",        &CScriptGameObject::PHCapture )
+
 		.property("inventory",				&get_obj_inventory)
 		.property("immunities",				&get_obj_immunities)
 		.property("is_alive",				&get_obj_alive)
