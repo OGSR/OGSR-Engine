@@ -1,10 +1,9 @@
 // Weapon.h: interface for the CWeapon class.
 #pragma once
 
+#include "WeaponAmmo.h"
 #include "PhysicsShell.h"
-#include "weaponammo.h"
 #include "PHShellCreator.h"
-
 #include "ShootingObject.h"
 #include "hud_item_object.h"
 #include "Actor_Flags.h"
@@ -112,7 +111,7 @@ public:
 public:
 	virtual bool			Action(s32 cmd, u32 flags);
 
-//////////////////////////////////////////////////////////////////////////
+	//////////////////////////////////////////////////////////////////////////
 //  Weapon state
 //////////////////////////////////////////////////////////////////////////
 public:
@@ -260,6 +259,7 @@ protected:
 public:
 
 	IC bool					IsZoomEnabled		()	const	{return m_bZoomEnabled;}
+	void					GetZoomData			(float scope_factor, float& delta, float& min_zoom_factor);
 	virtual	void			ZoomInc				();
 	virtual	void			ZoomDec				();
 	virtual void			OnZoomIn			();
@@ -267,6 +267,8 @@ public:
 			bool			IsZoomed			()	const	{return m_bZoomMode;};
 	CUIStaticItem*			ZoomTexture			();	
 			bool			ZoomHideCrosshair	()			{return m_bHideCrosshairInZoom || ZoomTexture();}
+
+	virtual void			OnZoomChanged		() {}
 
 	IC float				GetZoomFactor		() const		{	return m_fZoomFactor;	}
 	virtual	float			CurrentZoomFactor	();
@@ -473,7 +475,6 @@ public:
 
 	CWeaponAmmo*			m_pAmmo;
 	u32						m_ammoType;
-	shared_str				m_ammoName;
 	BOOL					m_bHasTracers;
 	u8						m_u8TracerColorID;
 	u32						m_set_next_ammoType_on_reload;

@@ -27,6 +27,7 @@ protected:
 	HUD_SOUND		sndEmptyClick;
 	HUD_SOUND		sndReload;
 	HUD_SOUND		sndFireModes;
+	HUD_SOUND		sndZoomChange;
 	//звук текущего выстрела
 	HUD_SOUND*		m_pSndShotCurrent;
 
@@ -172,6 +173,7 @@ protected:
 public:
 	virtual void	OnZoomIn			();
 	virtual void	OnZoomOut			();
+	virtual void	OnZoomChanged		();
 	virtual	void	OnNextFireMode		();
 	virtual	void	OnPrevFireMode		();
 	virtual bool	HasFireModes		() { return m_bHasDifferentFireModes; };
