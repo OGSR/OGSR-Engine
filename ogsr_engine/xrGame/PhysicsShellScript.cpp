@@ -32,6 +32,7 @@ void CPhysicsShell::script_register(lua_State *L)
 			.def("get_linear_vel",				&CPhysicsShell::get_LinearVel)
 			.def("get_angular_vel",				&CPhysicsShell::get_AngularVel)
 			.def( "set_ignore_dynamic", &CPhysicsShell::SetIgnoreDynamic )
+			.def( "set_ignore_static",  &CPhysicsShell::SetIgnoreStatic  )
 		];
 }
 

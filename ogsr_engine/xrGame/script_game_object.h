@@ -21,6 +21,10 @@
 #include "ai_space.h"
 #include "script_engine.h"
 
+#include "Physics.h"
+#include "PHCharacter.h"
+#include "PHCapture.h"
+
 enum EPdaMsg;
 enum ESoundTypes;
 enum ETaskState;
@@ -759,6 +763,13 @@ public:
 			void addFeelTouch( float, const luabind::object&, const luabind::functor<void>&, const luabind::functor<bool>& );
 			void removeFeelTouch( const luabind::object&, const luabind::functor<void>& );
 			void removeFeelTouch( const luabind::object&, const luabind::functor<void>&, const luabind::functor<bool>& );
+
+			void PHCaptureObject( CScriptGameObject* );
+			void PHCaptureObject( CScriptGameObject*, LPCSTR );
+			void PHCaptureObject( CScriptGameObject*, u16 );
+			void PHCaptureObject( CScriptGameObject*, u16, LPCSTR );
+			void PHReleaseObject();
+			CPHCapture* PHCapture();
 
 	DECLARE_SCRIPT_REGISTER_FUNCTION
 };

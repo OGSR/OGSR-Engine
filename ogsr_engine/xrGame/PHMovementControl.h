@@ -29,8 +29,8 @@ static const int path_few_point=10;
 public:
 CElevatorState			*ElevatorState  ();
 void 					in_shedule_Update( u32 DT );
-void					PHCaptureObject(CPhysicsShellHolder* object);
-void					PHCaptureObject(CPhysicsShellHolder* object,u16 element);
+void					PHCaptureObject( CPhysicsShellHolder* object, LPCSTR = nullptr );
+void					PHCaptureObject( CPhysicsShellHolder* object,u16 element, LPCSTR = nullptr );
 CPHCapture*				PHCapture		(){return m_capture;}
 CPHCharacter*			PHCharacter		(){return m_character;}
 void					PHReleaseObject	();

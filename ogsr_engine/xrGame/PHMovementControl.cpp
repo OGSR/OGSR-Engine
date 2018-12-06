@@ -39,7 +39,7 @@ CPHMovementControl::CPHMovementControl(CObject* parent)
 #endif
 
 	m_material			=0;
-	m_capture			=NULL;
+	m_capture			= nullptr;
 	b_exect_position	=true;
 	m_start_index		=0;
 	eOldEnvironment =	peInAir;
@@ -79,6 +79,7 @@ CPHMovementControl::~CPHMovementControl(void)
 		m_character->Destroy();
 	DeleteCharacterObject();
 	xr_delete(m_capture);
+
 }
 
 //static Fvector old_pos={0,0,0};
@@ -858,25 +859,16 @@ void	CPHMovementControl::AllocateCharacterObject(CharacterType type)
 #endif
 }
 
-void	CPHMovementControl::PHCaptureObject(CPhysicsShellHolder* object)
-{
-if(m_capture) return;
-
-if(!object||!object->PPhysicsShell()||!object->m_pPhysicsShell->isActive()) return;
-m_capture=xr_new<CPHCapture>(m_character,
-							 object
-							 );
+void CPHMovementControl::PHCaptureObject( CPhysicsShellHolder* object, LPCSTR capture_bone ) {
+  if ( m_capture ) return;
+  if ( !object || !object->PPhysicsShell() || !object->m_pPhysicsShell->isActive() ) return;
+  m_capture = xr_new<CPHCapture>( m_character, object, capture_bone );
 }
 
-void	CPHMovementControl::PHCaptureObject(CPhysicsShellHolder* object,u16 element)
-{
-	if(m_capture) return;
-
-	if(!object||!object->PPhysicsShell()||!object->PPhysicsShell()->isActive()) return;
-	m_capture=xr_new<CPHCapture>(m_character,
-		object,
-		element
-		);
+void CPHMovementControl::PHCaptureObject( CPhysicsShellHolder* object, u16 element, LPCSTR capture_bone ) {
+  if ( m_capture ) return;
+  if ( !object || !object->PPhysicsShell() || !object->PPhysicsShell()->isActive() ) return;
+  m_capture=xr_new<CPHCapture>( m_character, object, element, capture_bone );
 }
 
 Fvector CPHMovementControl::PHCaptureGetNearestElemPos(const CPhysicsShellHolder* object)
@@ -904,7 +896,10 @@ Fmatrix CPHMovementControl::PHCaptureGetNearestElemTransform(CPhysicsShellHolder
 
 void CPHMovementControl::PHReleaseObject()
 {
-	if(m_capture) m_capture->Release();
+	if(m_capture) {
+		m_capture->Release();
+		xr_delete(m_capture);
+	}
 }
 
 void	CPHMovementControl::DestroyCharacter()
