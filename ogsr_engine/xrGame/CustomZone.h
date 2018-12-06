@@ -256,6 +256,8 @@ protected:
 	float					m_fIdleLightHeight;
 	float					m_fIdleLightRangeDelta;
 	CLAItem*				m_pIdleLAnim;
+	bool					bIdleLightShadow;
+	bool					bIdleLightVolumetric;
 
 	void					StartIdleLight				();
 	void					StopIdleLight				();
