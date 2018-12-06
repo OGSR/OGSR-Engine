@@ -388,45 +388,43 @@ void CEntityAlive::BloodyWallmarks (float P, const Fvector &dir, s16 element,
 
 }
 
-void CEntityAlive::PlaceBloodWallmark(const Fvector& dir, const Fvector& start_pos, 
-									  float trace_dist, float wallmark_size,
-									  SHADER_VECTOR& wallmarks_vector)
+void CEntityAlive::PlaceBloodWallmark(const Fvector& dir, const Fvector& start_pos, float trace_dist, float wallmark_size, SHADER_VECTOR& wallmarks_vector)
 {
-	collide::rq_result	result;
-	BOOL				reach_wall = 
-		Level().ObjectSpace.RayPick(
-			start_pos,
-			dir,
-			trace_dist, 
-			collide::rqtBoth,
-			result,
-			this
-		)
-		&&
-		!result.O;
+	collide::rq_result result;
 
-	//если кровь долетела до статического объекта
-	if(reach_wall)
-	{
-		CDB::TRI*	pTri	= Level().ObjectSpace.GetStaticTris()+result.element;
-		SGameMtl*	pMaterial = GMLib.GetMaterialByIdx(pTri->material);
+	if ( !Level().ObjectSpace.RayPick( start_pos, dir, trace_dist, collide::rqtBoth, result, this ) )
+		return;
+
+	//вычислить точку попадания
+	Fvector end_point;
+	end_point.set(0,0,0);
+	end_point.mad(start_pos, dir, result.range);
+
+	ref_shader wallmarkShader = wallmarks_vector[::Random.randI(wallmarks_vector.size())];
+
+	if(result.O) { // Dynamic object
+		const auto pK = smart_cast<CKinematics*>(result.O->Visual());
+		if (!pK)
+			return;
+
+		const auto& bone_data = pK->LL_GetData((u16)result.element);
+		auto pMaterial = GMLib.GetMaterialByIdx(bone_data.game_mtl_idx);
+
+		if (pMaterial->Flags.is(SGameMtl::flBloodmark))
+			::Render->add_SkeletonWallmark(&result.O->renderable.xform, pK, wallmarkShader, end_point, dir, wallmark_size);
+
+	}
+	else { //если кровь долетела до статического объекта
+		auto pTri = Level().ObjectSpace.GetStaticTris()+result.element;
+		auto pMaterial = GMLib.GetMaterialByIdx(pTri->material);
 
 		if(pMaterial->Flags.is(SGameMtl::flBloodmark))
 		{
 			//вычислить нормаль к пораженной поверхности
-			Fvector*	pVerts	= Level().ObjectSpace.GetStaticVerts();
+			auto pVerts	= Level().ObjectSpace.GetStaticVerts();
 
-			//вычислить точку попадания
-			Fvector end_point;
-			end_point.set(0,0,0);
-			end_point.mad(start_pos, dir, result.range);
-
-			ref_shader wallmarkShader = wallmarks_vector[::Random.randI(wallmarks_vector.size())];
-
-			{
-				//добавить отметку на материале
-				::Render->add_StaticWallmark(wallmarkShader, end_point, wallmark_size, pTri, pVerts);
-			}
+			//добавить отметку на материале
+			::Render->add_StaticWallmark( wallmarkShader, end_point, wallmark_size, pTri, pVerts );
 		}
 	}
 }

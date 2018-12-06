@@ -14,7 +14,7 @@ public:
 				~CWalmarkManager	()																																					;
 		void	Load				(LPCSTR section)																																	;
 		void	Clear				()																																					;
-		void	AddWallmark			(const Fvector& dir, const Fvector& start_pos, float range, float wallmark_size,SHADER_VECTOR& wallmarks_vector,int t)								;
+//		void	AddWallmark			(const Fvector& dir, const Fvector& start_pos, float range, float wallmark_size,SHADER_VECTOR& wallmarks_vector,int t)								;
 //		void	PlaceWallmark		(const Fvector& dir, const Fvector& start_pos, float trace_dist, float wallmark_size,SHADER_VECTOR& wallmarks_vector,CObject* ignore_obj)			;
 //		void	PlaceWallmark		(const Fvector& dir, const Fvector& start_pos, float trace_dist, float wallmark_size,CObject* ignore_obj)											;
 //		void	PlaceWallmarks		( const Fvector& start_pos, float trace_dist, float wallmark_size,SHADER_VECTOR& wallmarks_vector,CObject* ignore_obj)								;
