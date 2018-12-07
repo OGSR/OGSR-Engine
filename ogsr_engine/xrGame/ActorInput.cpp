@@ -396,7 +396,7 @@ void CActor::ActorUse() {
         }
         return;
       }
-      else if ( smart_cast<CHolderCustom*>( object ) ) {
+      else if ( smart_cast<CHolderCustom*>( object ) && RQ.range < inventory().GetTakeDist() ) {
         NET_Packet P;
         CGameObject::u_EventGen( P, GEG_PLAYER_ATTACH_HOLDER, ID() );
         P.w_u32( object->ID() );

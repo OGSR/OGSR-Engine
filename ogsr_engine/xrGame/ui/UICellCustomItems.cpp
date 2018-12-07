@@ -75,8 +75,12 @@ void CUIInventoryCellItem::OnFocusReceive()
 	}
 
 	inherited::OnFocusReceive();
-	auto script_obj = object()->object().lua_game_object();
-	g_actor->callback(GameObject::eCellItemFocus)(script_obj);
+
+	if (object()->object().m_spawned)
+	{
+		auto script_obj = object()->object().lua_game_object();
+		g_actor->callback(GameObject::eCellItemFocus)(script_obj);
+	}
 }
 
 void CUIInventoryCellItem::OnFocusLost()
@@ -90,9 +94,13 @@ void CUIInventoryCellItem::OnFocusLost()
 			InvWnd->HideSlotsHighlight();
 	}
 
-	inherited::OnFocusLost();	
-	auto script_obj = object()->object().lua_game_object();
-	g_actor->callback(GameObject::eCellItemFocusLost)(script_obj);
+	inherited::OnFocusLost();
+
+	if (object()->object().m_spawned)
+	{
+		auto script_obj = object()->object().lua_game_object();
+		g_actor->callback(GameObject::eCellItemFocusLost)(script_obj);
+	}
 }
 
 bool CUIInventoryCellItem::OnMouse(float x, float y, EUIMessages action)

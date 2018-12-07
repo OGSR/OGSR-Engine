@@ -66,7 +66,6 @@ class CGameObject :
 	public CScriptBinder
 {
 	typedef CObject inherited;
-	bool							m_spawned;
 	Flags32							m_server_flags;
 	CAI_ObjectLocation				*m_ai_location;
 	ALife::_STORY_ID				m_story_id;
@@ -107,6 +106,7 @@ public:
 
 public:
 	CInifile				*m_ini_file;
+	bool							m_spawned;
 
 	// Utilities
 	static void				u_EventGen			(NET_Packet& P, u32 type, u32 dest	);

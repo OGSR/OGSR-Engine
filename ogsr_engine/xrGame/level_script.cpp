@@ -350,6 +350,14 @@ float GetTargetDist()
 	return ((CHUDManager *)g_hud)->GetTarget()->GetDist();
 }
 
+script_rq_result GetCurrentRayQuery()
+{
+	collide::rq_result& RQ = HUD().GetCurrentRayQuery();
+	script_rq_result res;
+	res.set_result(RQ);
+	return res;
+}
+
 CScriptGameObject *GetTargetObj()
 {
 	CObject *obj = ((CHUDManager *)g_hud)->GetTarget()->GetObj();
@@ -992,6 +1000,7 @@ void CLevel::script_register(lua_State *L)
 		
 		def("get_target_dist",					&GetTargetDist),
 		def("get_target_obj",					&GetTargetObj),
+		def("get_current_ray_query",			&GetCurrentRayQuery),
 		//
 		def("send_event_key_press", &send_event_key_press),
 		def("send_event_key_release", &send_event_key_release),
