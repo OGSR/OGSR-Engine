@@ -85,9 +85,9 @@ private:
 	collide::rq_results		m_rq_results;
 
 private:
-	DEFINE_VECTOR						(ref_sound,SoundVec,SoundVecIt);
-	DEFINE_VECTOR						(SBullet,BulletVec,BulletVecIt);
-	typedef std::pair<float,float>		_hit		;
+	using BulletVec = std::vector<SBullet>;
+	using _hit = std::pair<float,float>;
+
 	friend	CLevel;
 
 	enum EventType {
@@ -108,12 +108,12 @@ private:
 		u16					tgt_material;
 	};
 protected:
-	SoundVec				m_WhineSounds		;
+	std::vector<ref_sound>	m_WhineSounds;
 	RStringVec				m_ExplodeParticles	;
 
 	BulletVec				m_Bullets			;	// working set, locked
 	BulletVec				m_BulletsRendered	;	// copy for rendering
-	xr_vector<_event>		m_Events			;	
+	std::vector<_event>		m_Events			;	
 
 	//остаток времени, который не был учтен на предыдущем кадре
 	u32						m_dwTimeRemainder;
@@ -168,10 +168,10 @@ protected:
 	//скорость и положение с учетом гравитации и ветра
 	//возвращаем true если пуля продолжает полет
 	bool					CalcBullet			(collide::rq_results & rq_storage, xr_vector<ISpatial*>& rq_spatial, SBullet* bullet, u32 delta_time);
-	void 		__stdcall	UpdateWorkload		();
+	void UpdateWorkload();
 
 	ThreadPool m_thread;
-	std::mutex bullets, working;
+	std::recursive_mutex bullets, working;
 public:
 							CBulletManager		();
 	virtual					~CBulletManager		();

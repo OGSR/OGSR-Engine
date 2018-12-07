@@ -120,7 +120,7 @@ const char* xrCore::GetEngineVersion() {
 	if (strlen(APPVEYOR_BUILD_VERSION))
 		std::snprintf(buff, sizeof(buff), APPVEYOR_BUILD_VERSION " (%s) from repo: [" APPVEYOR_REPO_NAME "]", GetBuildConfiguration());
 	else
-		std::snprintf(buff, sizeof(buff), "1.0007 (%s) [OGSR Engine]", GetBuildConfiguration()); //KRodin: I don't know what it's better to write here...
+		std::snprintf(buff, sizeof(buff), "1.0007 [OGSR Engine %s (build: " __DATE__ " " __TIME__ ")]", GetBuildConfiguration());
 	return buff;
 }
 

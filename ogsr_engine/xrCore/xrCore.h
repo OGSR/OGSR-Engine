@@ -235,7 +235,7 @@ public:
 	void		_initialize	(LPCSTR ApplicationName, LogCallback cb=0, BOOL init_fs=TRUE, LPCSTR fs_fname=0);
 	void		_destroy	();
 
-	static constexpr const char* GetBuildConfiguration();
+	constexpr const char* GetBuildConfiguration();
 	const char* GetEngineVersion();
 };
 extern XRCORE_API xrCore Core;

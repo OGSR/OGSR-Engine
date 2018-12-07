@@ -17,7 +17,7 @@ void AddOne(std::string &split, bool first_line)
 	if (!LogFile)
 		return;
 
-	std::lock_guard<decltype(logCS)> lock(logCS);
+	std::scoped_lock<decltype(logCS)> lock(logCS);
 
 #ifdef DEBUG
 	OutputDebugString(split.c_str()); //Вывод в отладчик студии?

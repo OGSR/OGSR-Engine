@@ -49,7 +49,7 @@ void DeinitializeSymbolEngine()
 std::stringstream BuildStackTrace(const char* header, PCONTEXT threadCtx)
 {
 	static std::mutex dbghelpMutex;
-	std::lock_guard<std::mutex> lock(dbghelpMutex);
+	std::scoped_lock<decltype(dbghelpMutex)> lock(dbghelpMutex);
 
 	std::stringstream traceResult;
 	traceResult << header;
