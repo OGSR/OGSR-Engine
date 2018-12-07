@@ -76,7 +76,7 @@ void CUIInventoryCellItem::OnFocusReceive()
 
 	inherited::OnFocusReceive();
 
-	if (object()->object().getReady())
+	if (object()->object().m_spawned)
 	{
 		auto script_obj = object()->object().lua_game_object();
 		g_actor->callback(GameObject::eCellItemFocus)(script_obj);
@@ -96,7 +96,7 @@ void CUIInventoryCellItem::OnFocusLost()
 
 	inherited::OnFocusLost();
 
-	if (object()->object().getReady())
+	if (object()->object().m_spawned)
 	{
 		auto script_obj = object()->object().lua_game_object();
 		g_actor->callback(GameObject::eCellItemFocusLost)(script_obj);
