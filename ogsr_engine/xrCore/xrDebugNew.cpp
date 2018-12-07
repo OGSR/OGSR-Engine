@@ -129,7 +129,7 @@ void xrDebug::do_exit(const std::string &message)
 void xrDebug::backend(const char *expression, const char *description, const char *argument0, const char *argument1, const char *file, int line, const char *function)
 {
 	static std::recursive_mutex CS;
-	std::lock_guard<decltype(CS)> lock(CS);
+	std::scoped_lock<decltype(CS)> lock(CS);
 
 	string4096 assertion_info;
 	gather_info(expression, description, argument0, argument1, file, line, function, assertion_info);

@@ -29,8 +29,8 @@ function main_menu:InitControls()
 	self:Register(self.message_box, "msg_box")	
 
 	local ver = xml:InitStatic("static_version", self)
-	local mm = _G.main_menu.get_main_menu()
-	ver:SetText("ver. "..mm:GetGSVer())
+	ver:SetText("ver. " .. _G.main_menu.get_main_menu():GetGSVer())
+	ver:SetTextColor(255, 255, 0, 0)
 end
 
 function main_menu:Show(...)
