@@ -118,6 +118,9 @@ void CGameObject::net_Destroy	()
 #endif
 
 	VERIFY					(m_spawned);
+	if (!m_spawned)
+		Msg("!![%s] Already destroyed object detected: [%s]", __FUNCTION__, this->cName().c_str());
+
 	if(animation_movement_controlled())
 					destroy_anim_mov_ctrl	();
 
@@ -213,6 +216,9 @@ void VisualCallback(CKinematics *tpKinematics);
 BOOL CGameObject::net_Spawn		(CSE_Abstract*	DC)
 {
 	VERIFY							(!m_spawned);
+	if (m_spawned)
+		Msg("!![%s] Already spawned object detected: [%s]", __FUNCTION__, this->cName().c_str());
+
 	m_spawned						= true;
 	m_spawn_time					= Device.dwFrame;
 	CSE_Abstract					*E = (CSE_Abstract*)DC;
