@@ -15,6 +15,9 @@
 #include "../../../xr_3da/NET_Server_Trash/net_utils.h"
 #include "level.h"
 #include "../../ai_monster_space.h"
+#include "../../stalker_planner.h"
+#include "../../script_game_object.h"
+#include "../../stalker_decision_space.h"
 
 using namespace StalkerSpace;
 using namespace MonsterSpace;
@@ -91,6 +94,8 @@ void CAI_Stalker::OnEvent		(NET_Packet& P, u16 type)
 void CAI_Stalker::feel_touch_new				(CObject* O)
 {
 //	Msg					("FEEL_TOUCH::NEW : %s",*O->cName());
+	if ( !brain().CStalkerPlanner::m_storage.property( StalkerDecisionSpace::eWorldPropertyItems ) )
+		return;
 	if (!g_Alive())		return;
 	if (Remote())		return;
 	if ((O->spatial.type | STYPE_VISIBLEFORAI) != O->spatial.type) return;
@@ -100,7 +105,7 @@ void CAI_Stalker::feel_touch_new				(CObject* O)
 
 	if (!wounded() && !critically_wounded() && I && I->useful_for_NPC() && can_take(I)) {
 #ifndef SILENCE
-		Msg("Taking item %s (%d)!",*I->cName(),I->ID());
+		Msg("Taking item %s (%d)!",I->object().cName().c_str(),I->object().ID());
 #endif
 		NET_Packet		P;
 		u_EventGen		(P,GE_OWNERSHIP_TAKE,ID());
