@@ -2,7 +2,6 @@
 #include "anomaly_detector.h"
 #include "../../CustomMonster.h"
 #include "../../restricted_object.h"
-#include "../../customzone.h"
 #include "../../level.h"
 #include "../../space_restriction_manager.h"
 #include "../../movement_manager.h"
@@ -43,7 +42,7 @@ void CAnomalyDetector::reinit()
 void CAnomalyDetector::update_schedule()
 {
 	if (m_active)
-		m_object->feel_touch_update(m_object->Position(), m_radius);
+		feel_touch_update(m_object->Position(), m_radius);
 
 	if (m_storage.empty()) 
 		return;
@@ -65,8 +64,9 @@ void CAnomalyDetector::update_schedule()
 	// remove old restrictions
 	temp_in_restrictors.clear();
 	for ( ANOMALY_INFO_VEC_IT it = m_storage.begin(); it != m_storage.end(); it++ ) {
-	  if ( it->time_registered + m_time_to_rememeber < time() && !it->ignored )
+	  if ( it->time_registered + m_time_to_rememeber < time() && !it->ignored ) {
 	    temp_in_restrictors.push_back( it->id );
+	  }
 	}
 	m_object->movement().restrictions().remove_restrictions(temp_out_restrictors,temp_in_restrictors);
 
@@ -82,19 +82,28 @@ void CAnomalyDetector::update_schedule()
 	);
 }
 
-void CAnomalyDetector::on_contact(CObject *obj)
+
+BOOL CAnomalyDetector::feel_touch_contact( CObject* obj )
 {
-	if (!m_active) return;
-	
 	CCustomZone	*custom_zone = smart_cast<CCustomZone*>(obj);
-	if (!custom_zone) return;
+	if (!custom_zone) return FALSE;
 	
 	// if its NOT A restrictor - skip
-	if (custom_zone->restrictor_type() == RestrictionSpace::eRestrictorTypeNone) return;
+	if (custom_zone->restrictor_type() == RestrictionSpace::eRestrictorTypeNone) return FALSE;
 
         if ( std::find( m_ignore_clsids.begin(), m_ignore_clsids.end(), obj->CLS_ID ) != m_ignore_clsids.end() )
-          return;
+          return FALSE;
+
+	on_contact( obj );
+
+	return FALSE;
+}
         
+
+void CAnomalyDetector::on_contact( CObject* obj ) {
+	CCustomZone	*custom_zone = smart_cast<CCustomZone*>(obj);
+	ASSERT_FMT( custom_zone, "[%s]: %s not a CCUstomZone", __FUNCTION__, obj->cName().c_str() );
+
 	auto it = std::find_if(
 	  m_storage.begin(), m_storage.end(), [ custom_zone ]( const auto it ) {
 	    return it.id == custom_zone->ID();

@@ -820,8 +820,6 @@ BOOL CCustomMonster::feel_touch_on_contact	(CObject *O)
 
 BOOL CCustomMonster::feel_touch_contact		(CObject *O)
 {
-	m_anomaly_detector->on_contact(O);
-
 	CCustomZone	*custom_zone = smart_cast<CCustomZone*>(O);
 	if (!custom_zone)
 		return	(TRUE);
