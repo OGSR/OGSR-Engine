@@ -5,5 +5,6 @@ function normal		(shader, t_base, t_second, t_detail)
 			: blend		(true,blend.srcalpha,blend.one)
 			: aref 		(true,2)
 			: sorting	(3, false)
-    shader:sampler 	("s_base")		:texture        (t_base)		:clamp()
+	shader:sampler("s_base"):texture(t_base):clamp()
+	shader:sampler("s_position"):texture("$user$position"):clamp()
 end
