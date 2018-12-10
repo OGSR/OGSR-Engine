@@ -7,6 +7,8 @@
 #include "ogse_functions.h"
 #include "ogse_config.h"
 
+uniform float4x4 mVPTexgen;
+
 float3 	unpack_normal	(float3 v)	{ return 2*v-1;			}
 float3 	unpack_bx2	(float3 v)	{ return 2*v-1; 		}
 float3 	unpack_bx4	(float3 v)	{ return 4*v-2; 		}
