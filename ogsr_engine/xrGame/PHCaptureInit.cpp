@@ -255,7 +255,13 @@ void CPHCapture::Init(CInifile* ini)
 	if(A)
 	{
 		A->SetWeaponHideState(INV_STATE_BLOCK_ALL,true);
+		hard_mode = true;
 	}
+	else
+		hard_mode = false;
+
+	auto ps = m_taget_object->PPhysicsShell();
+	ps->applyForce( 0, pool_force_factor * ph_world->Gravity() * ps->getMass(), 0 );
 }
 
 void CPHCapture::Release()

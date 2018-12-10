@@ -22,10 +22,12 @@ void				Release								();
 void				net_Relcase							(CObject* O);
 
 public:
+  bool hard_mode;
 float				m_capture_force;
 float				m_capture_distance;
 float				m_pull_distance;
 u32					m_capture_time;
+float				m_pull_force;
 
 protected:
 CPHCharacter		*m_character;
@@ -36,7 +38,6 @@ dJointID			m_ajoint;
 dJointFeedback		m_joint_feedback;
 Fvector				m_capture_pos;
 float				m_back_force;
-float				m_pull_force;
 u32					m_time_start;
 CBoneInstance		*m_capture_bone;
 dBodyID				m_body;

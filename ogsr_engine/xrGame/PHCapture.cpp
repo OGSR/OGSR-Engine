@@ -210,7 +210,7 @@ void CPHCapture::CapturedUpdate()
 	}
 
 	CActor* A = smart_cast<CActor*>( m_character->PhysicsRefObject() );
-	if ( !m_taget_element->isActive() || ( !A && dDOT( m_joint_feedback.f2, m_joint_feedback.f2 ) > m_capture_force*m_capture_force ) )
+	if ( !m_taget_element->isActive() || ( !hard_mode && dDOT( m_joint_feedback.f2, m_joint_feedback.f2 ) > m_capture_force*m_capture_force ) )
 	{
 		Release();
 		return;
