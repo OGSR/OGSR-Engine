@@ -204,12 +204,19 @@ extern ECORE_API float r_ssaDISCARD;
 
 void CDetailManager::UpdateVisibleM()
 {
+	// KRodin: Фикс мерцания и прочих глюков травы при активном двойном рендеринге. Это важно, не убирать!
+	if (Device.m_SecondViewport.IsSVPFrame())
+		return;
+
+	// Clean up
+	for (auto& vec : m_visibles)
+		for (auto& vis : vec)
+			vis.clear_not_free();
+
 	Fvector		EYE = Device.vCameraPosition;
 
 	CFrustum	View;
-	//	View.CreateFromMatrix		(Device.mFullTransform, FRUSTUM_P_LRTB + FRUSTUM_P_FAR);
-	/* KD: there is some bug: frustrum created from full transform matrix seems to be broken in some frames, so we should use saved frustrum from render interface*/
-	View = RImplementation.ViewBase;
+	View.CreateFromMatrix(Device.mFullTransform, FRUSTUM_P_LRTB + FRUSTUM_P_FAR);
 
 	float fade_limit = dm_current_fade;	
 	fade_limit = fade_limit*fade_limit;
@@ -218,13 +225,6 @@ void CDetailManager::UpdateVisibleM()
 	float fade_start = 0.f;		fade_start = fade_start*fade_start;
 	float fade_range = fade_limit - fade_start;
 	float		r_ssaCHEAP = 140 * r_ssaDISCARD;//16*r_ssaDISCARD;
-
-												//clear 'vis'
-	for (int i = 0; i != 3; i++) {
-		vis_list& list = m_visibles[i];
-		for (u32 j = 0; j != list.size(); j++)
-			list[j].clear_not_free();
-	}
 
 	// Initialize 'vis' and 'cache'
 	// Collect objects for rendering
