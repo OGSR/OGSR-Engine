@@ -240,9 +240,8 @@ void CPHCapture::Init(CInifile* ini)
 	m_capture_force			=ini->r_float("capture","capture_force");				//capture force
 	m_capture_time			=ini->r_u32("capture","time_limit")*1000;				//time;		
 	m_time_start			=Device.dwTimeGlobal;
-	float max_pull_force    =ini->r_float("capture","pull_force");					//pull force
-	m_pull_force			=pool_force_factor*ph_world->Gravity()*m_taget_element->PhysicsShell()->getMass();
-	if(m_pull_force>max_pull_force) m_pull_force=max_pull_force;
+	auto ps = m_taget_object->PPhysicsShell();
+	m_pull_force = pool_force_factor * ph_world->Gravity() * ps->getMass()
 
 
 
@@ -260,8 +259,7 @@ void CPHCapture::Init(CInifile* ini)
 	else
 		hard_mode = false;
 
-	auto ps = m_taget_object->PPhysicsShell();
-	ps->applyForce( 0, pool_force_factor * ph_world->Gravity() * ps->getMass(), 0 );
+	ps->applyForce( 0, m_pull_force, 0 );
 }
 
 void CPHCapture::Release()
