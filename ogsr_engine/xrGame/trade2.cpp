@@ -61,7 +61,7 @@ bool CTrade::CanTrade()
 	return true;
 }
 
-void CTrade::TransferItem(CInventoryItem* pItem, bool bBuying)
+void CTrade::TransferItem(CInventoryItem* pItem, bool bBuying, bool change_money )
 {
 	// сумма сделки учитывая ценовой коэффициент
 	// актер цену не говорит никогда, все делают за него
@@ -88,20 +88,24 @@ void CTrade::TransferItem(CInventoryItem* pItem, bool bBuying)
 	P.w_u16					(pItem->object().ID());
 	O1->u_EventSend			(P);
 
-	if(bBuying)
+        if ( change_money ) {
+          if ( bBuying )
 		pPartner.inv_owner->set_money( pPartner.inv_owner->get_money() + dwTransferMoney, false );
-	else
+          else
 		pThis.inv_owner->set_money( pThis.inv_owner->get_money() + dwTransferMoney, false );
+        }
 
 	// взять у партнера
 	O2->u_EventGen			(P,GE_TRADE_BUY,O2->ID());
 	P.w_u16					(pItem->object().ID());
 	O2->u_EventSend			(P);
 
-	if(bBuying)
+        if ( change_money ) {
+          if ( bBuying )
 		pThis.inv_owner->set_money( pThis.inv_owner->get_money() - dwTransferMoney, false );
 	else
 		pPartner.inv_owner->set_money( pPartner.inv_owner->get_money() - dwTransferMoney, false );
+        }
 
 
 	CAI_Trader* pTrader		= NULL;
