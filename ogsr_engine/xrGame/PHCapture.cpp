@@ -266,7 +266,7 @@ void CPHCapture::object_contactCallbackFun(bool& do_colide,bool bo1,dContact& c,
 			{
 				do_colide = false;
 				capture->m_taget_element->Enable();
-				if(capture->e_state==CPHCapture::cstReleased) capture->ReleaseInCallBack();
+				if(capture->e_state==cstReleased) capture->ReleaseInCallBack();
 			}
 			
 		}
@@ -284,7 +284,7 @@ void CPHCapture::object_contactCallbackFun(bool& do_colide,bool bo1,dContact& c,
 			{
 				do_colide = false;
 				capture->m_taget_element->Enable();
-				if(capture->e_state==CPHCapture::cstReleased) capture->ReleaseInCallBack();
+				if(capture->e_state==cstReleased) capture->ReleaseInCallBack();
 			}
 			
 		}

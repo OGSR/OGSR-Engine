@@ -6,6 +6,12 @@
 #include "gameobject.h"
 #include "physicsshellholder.h"
 
+enum EPHCaptureState {
+  cstPulling,
+  cstCaptured,
+  cstReleased
+};
+
 class CPhysicShellHolder;
 class CPHCharacter;
 
@@ -23,6 +29,7 @@ void				net_Relcase							(CObject* O);
 
 public:
   bool hard_mode;
+  EPHCaptureState e_state;
 float				m_capture_force;
 float				m_capture_distance;
 float				m_pull_distance;
@@ -48,13 +55,6 @@ bool				b_disabled;
 bool				b_character_feedback;
 
 private:
-	enum 
-	{
-	 cstPulling,
-	 cstCaptured,
-	 cstReleased
-	} e_state;
-
 			void PullingUpdate();
 			void CapturedUpdate();
 			void ReleasedUpdate();
