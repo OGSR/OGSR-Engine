@@ -241,7 +241,7 @@ void CPHCapture::Init(CInifile* ini)
 	m_capture_time			=ini->r_u32("capture","time_limit")*1000;				//time;		
 	m_time_start			=Device.dwTimeGlobal;
 	auto ps = m_taget_object->PPhysicsShell();
-	m_pull_force = pool_force_factor * ph_world->Gravity() * ps->getMass()
+	m_pull_force = pool_force_factor * ph_world->Gravity() * ps->getMass();
 
 
 
