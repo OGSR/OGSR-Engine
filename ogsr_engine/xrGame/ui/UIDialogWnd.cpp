@@ -15,7 +15,6 @@ CUIDialogWnd:: CUIDialogWnd()
 {
 	m_pHolder		= NULL;
 	m_bWorkInPause	= false;
-	u32 m_dwLastClickTime = 0;
 	Hide			();
 }
 

@@ -549,7 +549,7 @@ void CUITradeWnd::UpdatePrices()
 	m_iOthersTradePrice = CalcItemsPrice	(&m_uidata->UIOthersTradeList,	m_pOthersTrade, false);
 
 	if ( !m_pOthersInvOwner->InfinitiveMoney() ) {
-          int others_money = (int)m_pOthersInvOwner->get_money();
+          u32 others_money = m_pOthersInvOwner->get_money();
           if ( others_zero_trade && m_iOurTradePrice > others_money )
             m_iOurTradePrice = others_money;
 	}

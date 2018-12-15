@@ -387,3 +387,7 @@ bool CPhysicsShellHolder::register_schedule	() const
 {
 	return					(b_sheduled);
 }
+
+bool CPhysicsShellHolder::ActorCanCapture() const {
+	return !!pSettings->line_exist("ph_capture_visuals", this->cNameVisual().c_str());
+}
