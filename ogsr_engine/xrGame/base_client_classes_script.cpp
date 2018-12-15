@@ -523,9 +523,19 @@ void CResourceManagerScript::script_register(lua_State *L)
 void CPHCaptureScript::script_register( lua_State *L ) {
   module( L ) [
     class_<CPHCapture>( "CPHCapture" )
+    .def_readonly( "e_state", &CPHCapture::e_state )
     .def_readwrite( "capture_force", &CPHCapture::m_capture_force )
     .def_readwrite( "distance",      &CPHCapture::m_capture_distance )
+    .def_readwrite( "hard_mode",     &CPHCapture::hard_mode )
     .def_readwrite( "pull_distance", &CPHCapture::m_pull_distance )
-    .def_readwrite( "time_limit",    &CPHCapture::m_capture_time )
+    .def_readwrite( "pull_force",    &CPHCapture::m_pull_force )
+    .def_readwrite( "time_limit",    &CPHCapture::m_capture_time ),
+
+    class_<enum_exporter<EPHCaptureState>>( "ph_capture" )
+    .enum_( "ph_capture" ) [
+      value( "pulling",  int( EPHCaptureState::cstPulling  ) ),
+      value( "captured", int( EPHCaptureState::cstCaptured ) ),
+      value( "released", int( EPHCaptureState::cstReleased ) )
+    ]
   ];
 }

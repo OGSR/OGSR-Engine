@@ -15,6 +15,7 @@
 #include "enemy_manager.h"
 #include "actor.h"
 #include "object_broker.h"
+#include "script_game_object.h"
 
 struct CDangerPredicate {
 	const CObject	*m_object;
@@ -90,6 +91,12 @@ CDangerManager::~CDangerManager		()
 
 void CDangerManager::Load			(LPCSTR section)
 {
+  if (
+    pSettings->section_exist( "engine_callbacks" )
+    && pSettings->line_exist( "engine_callbacks", "danger_on_before_add" )
+  ) {
+    on_before_add = pSettings->r_string( "engine_callbacks", "danger_on_before_add" );
+  }
 }
 
 void CDangerManager::reinit			()
@@ -240,6 +247,12 @@ void CDangerManager::add			(const CVisibleObject &object)
 
 	const CEntityAlive		*obj = smart_cast<const CEntityAlive*>(object.m_object);
 	if (obj && !obj->g_Alive() && (obj->killer_id() != ALife::_OBJECT_ID(-1))) {
+          if ( !on_before_add.empty() ) {
+            luabind::functor<bool> funct;
+            if ( ai().script_engine().functor( on_before_add.c_str(), funct ) )
+              if ( !funct( m_object->lua_game_object(), object, obj->Position(), object.m_level_time, CDangerObject::eDangerTypeFreshEntityCorpse, CDangerObject::eDangerPerceiveTypeVisual ) )
+                return;
+          }
 		add					(CDangerObject(obj,obj->Position(),object.m_level_time,CDangerObject::eDangerTypeFreshEntityCorpse,CDangerObject::eDangerPerceiveTypeVisual));
 		return;
 	}
@@ -253,11 +266,23 @@ void CDangerManager::add			(const CSoundObject &object)
 	const CEntityAlive		*obj = smart_cast<const CEntityAlive*>(object.m_object);
 	
 	if ((object.m_sound_type & SOUND_TYPE_BULLET_HIT) == SOUND_TYPE_BULLET_HIT) {
+          if ( !on_before_add.empty() ) {
+            luabind::functor<bool> funct;
+            if ( ai().script_engine().functor( on_before_add.c_str(), funct ) )
+              if ( !funct( m_object->lua_game_object(), object, object.m_object_params.m_position, object.m_level_time, CDangerObject::eDangerTypeBulletRicochet, CDangerObject::eDangerPerceiveTypeSound ) )
+                return;
+          }
 		add					(CDangerObject(obj,object.m_object_params.m_position,object.m_level_time,CDangerObject::eDangerTypeBulletRicochet,CDangerObject::eDangerPerceiveTypeSound));
 		return;
 	}
 
 	if ((object.m_sound_type & SOUND_TYPE_WEAPON_SHOOTING) == SOUND_TYPE_WEAPON_SHOOTING) {
+          if ( !on_before_add.empty() ) {
+            luabind::functor<bool> funct;
+            if ( ai().script_engine().functor( on_before_add.c_str(), funct ) )
+              if ( !funct( m_object->lua_game_object(), object, object.m_object_params.m_position, object.m_level_time, CDangerObject::eDangerTypeAttackSound, CDangerObject::eDangerPerceiveTypeSound ) )
+                return;
+          }
 		add					(CDangerObject(obj,object.m_object_params.m_position,object.m_level_time,CDangerObject::eDangerTypeAttackSound,CDangerObject::eDangerPerceiveTypeSound));
 		return;
 	}
@@ -269,17 +294,36 @@ void CDangerManager::add			(const CSoundObject &object)
 			if (actor && !m_object->is_relation_enemy(actor))
 				do_add		= false;
 		}
-		if (do_add)
+		if ( do_add ) {
+                  if ( !on_before_add.empty() ) {
+                    luabind::functor<bool> funct;
+                    if ( ai().script_engine().functor( on_before_add.c_str(), funct ) )
+                      if ( !funct( m_object->lua_game_object(), object, object.m_object_params.m_position, object.m_level_time, CDangerObject::eDangerTypeEntityAttacked, CDangerObject::eDangerPerceiveTypeSound ) )
+                        return;
+                  }
 			add				(CDangerObject(obj,object.m_object_params.m_position,object.m_level_time,CDangerObject::eDangerTypeEntityAttacked,CDangerObject::eDangerPerceiveTypeSound));
+                }
 		return;
 	}
 
 	if ((object.m_sound_type & SOUND_TYPE_DYING) == SOUND_TYPE_DYING) {
+          if ( !on_before_add.empty() ) {
+            luabind::functor<bool> funct;
+            if ( ai().script_engine().functor( on_before_add.c_str(), funct ) )
+              if ( !funct( m_object->lua_game_object(), object, object.m_object_params.m_position, object.m_level_time, CDangerObject::eDangerTypeEntityDeath, CDangerObject::eDangerPerceiveTypeSound ) )
+                return;
+          }
 		add					(CDangerObject(obj,object.m_object_params.m_position,object.m_level_time,CDangerObject::eDangerTypeEntityDeath,CDangerObject::eDangerPerceiveTypeSound));
 		return;
 	}
 
 	if (obj && m_object->is_relation_enemy(obj)) {
+          if ( !on_before_add.empty() ) {
+            luabind::functor<bool> funct;
+            if ( ai().script_engine().functor( on_before_add.c_str(), funct ) )
+              if ( !funct( m_object->lua_game_object(), object, object.m_object_params.m_position, object.m_level_time, CDangerObject::eDangerTypeEnemySound, CDangerObject::eDangerPerceiveTypeSound ) )
+                return;
+          }
 		add					(CDangerObject(obj,object.m_object_params.m_position,object.m_level_time,CDangerObject::eDangerTypeEnemySound,CDangerObject::eDangerPerceiveTypeSound));
 		return;
 	}
@@ -297,6 +341,12 @@ void CDangerManager::add			(const CHitObject &object)
 		return;
 
 	const CEntityAlive		*obj = smart_cast<const CEntityAlive*>(object.m_object);
+        if ( !on_before_add.empty() ) {
+          luabind::functor<bool> funct;
+          if ( ai().script_engine().functor( on_before_add.c_str(), funct ) )
+            if ( !funct( m_object->lua_game_object(), object, obj->Position(), object.m_level_time, CDangerObject::eDangerTypeAttacked, CDangerObject::eDangerPerceiveTypeHit ) )
+              return;
+        }
 	add						(CDangerObject(obj,obj->Position(),object.m_level_time,CDangerObject::eDangerTypeAttacked,CDangerObject::eDangerPerceiveTypeHit));
 }
 

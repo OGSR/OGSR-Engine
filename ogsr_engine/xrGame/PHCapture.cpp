@@ -209,8 +209,7 @@ void CPHCapture::CapturedUpdate()
 		m_taget_element->Enable();
 	}
 
-	CActor* A = smart_cast<CActor*>( m_character->PhysicsRefObject() );
-	if ( !m_taget_element->isActive() || ( !A && dDOT( m_joint_feedback.f2, m_joint_feedback.f2 ) > m_capture_force*m_capture_force ) )
+	if ( !m_taget_element->isActive() || ( !hard_mode && dDOT( m_joint_feedback.f2, m_joint_feedback.f2 ) > m_capture_force*m_capture_force ) )
 	{
 		Release();
 		return;
@@ -267,7 +266,7 @@ void CPHCapture::object_contactCallbackFun(bool& do_colide,bool bo1,dContact& c,
 			{
 				do_colide = false;
 				capture->m_taget_element->Enable();
-				if(capture->e_state==CPHCapture::cstReleased) capture->ReleaseInCallBack();
+				if(capture->e_state==cstReleased) capture->ReleaseInCallBack();
 			}
 			
 		}
@@ -285,7 +284,7 @@ void CPHCapture::object_contactCallbackFun(bool& do_colide,bool bo1,dContact& c,
 			{
 				do_colide = false;
 				capture->m_taget_element->Enable();
-				if(capture->e_state==CPHCapture::cstReleased) capture->ReleaseInCallBack();
+				if(capture->e_state==cstReleased) capture->ReleaseInCallBack();
 			}
 			
 		}
