@@ -1236,7 +1236,8 @@ void CCC_RegisterCommands()
 	CMD3(CCC_Mask,			"g_god",				&psActorFlags,	AF_GODMODE	);
 	CMD3(CCC_Mask,			"g_unlimitedammo",		&psActorFlags,	AF_UNLIMITEDAMMO);
 	CMD3(CCC_Mask,			"g_ammunition_on_belt",	&psActorFlags,	AF_AMMO_ON_BELT);
-	CMD1(CCC_TimeFactor,	"time_factor");		
+	CMD3(CCC_Mask,			"g_3d_scopes",			&psActorFlags,	AF_3D_SCOPES);
+	CMD1(CCC_TimeFactor,	"time_factor")	
 //#endif // MASTER_GOLD
 
 	CMD3(CCC_Mask,		"g_autopickup",			&psActorFlags,	AF_AUTOPICKUP);
