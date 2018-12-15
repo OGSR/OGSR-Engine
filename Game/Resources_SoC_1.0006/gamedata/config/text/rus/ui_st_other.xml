@@ -229,4 +229,11 @@
 		<text>Вид от третьего лица (freelook)</text>
 	</string>
 
+	<string id="inventory_item_use_or_drag">
+		<text>Поднять предмет ($$ACTION_USE$$) \n Перетащить предмет (SHIFT+$$ACTION_USE$$)</text>
+	</string>
+	<string id="game_object_drag">
+		<text>Перетащить предмет (SHIFT+$$ACTION_USE$$)</text>
+	</string>
+
 </string_table>

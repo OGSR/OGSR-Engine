@@ -143,13 +143,13 @@ void CUIEventsWnd::ReloadList(bool bClearOnly)
 			m_ListWnd->AddWindow			(pTaskItem,true);
 		}else
 */
-		u16 visible_objectives;
+		u32 visible_objectives;
 		if ( task->m_show_all_objectives ) {
 		  visible_objectives = task->m_Objectives.size();
 		}
 		else {
 		  visible_objectives = 0;
-		  for ( u16 i = 0; i < task->m_Objectives.size(); i++ ) {
+		  for ( u32 i = 0; i < task->m_Objectives.size(); i++ ) {
 		    auto& it = task->m_Objectives.at( i );
 		    if ( it.TaskState() != eTaskStateInProgress )
 		      visible_objectives = i + 1;
@@ -160,14 +160,14 @@ void CUIEventsWnd::ReloadList(bool bClearOnly)
 		    visible_objectives++;
 		}
 
-		for ( u16 i = 0; i < visible_objectives; ++i )
+		for ( u32 i = 0; i < visible_objectives; ++i )
 		{
 			if(i==0){
 				pTaskItem					= xr_new<CUITaskRootItem>(this);
 			}else{
 				pTaskItem					= xr_new<CUITaskSubItem>(this);
 			}
-			pTaskItem->SetGameTask			(task, i);
+			pTaskItem->SetGameTask			(task, (u16)i);
 			m_ListWnd->AddWindow			(pTaskItem,true);
 		}
 

@@ -374,8 +374,13 @@ void CLocatorAPI::ProcessOne	(const char* path, const _finddata_t& F)
 		Register	(N,0xffffffff,0,0,F.size,F.size,(u32)F.time_write);
 		Recurse		(N);
 	} else {
-		if (strext(N) && 0==strncmp(strext(N),".db",3))		ProcessArchive	(N);
-		else												Register		(N,0xffffffff,0,0,F.size,F.size,(u32)F.time_write);
+		if (strext(N) && 0 == strncmp(strext(N), ".db", 3)) {
+			Msg("--Found base arch: [%s], size: [%u]", N, F.size);
+			ProcessArchive(N);
+		}
+		else {
+			Register(N, 0xffffffff, 0, 0, F.size, F.size, (u32)F.time_write);
+		}
 	}
 }
 
@@ -1206,10 +1211,8 @@ CLocatorAPI::files_it CLocatorAPI::file_find_it(LPCSTR fname)
 	VERIFY			(xr_strlen(fname)*sizeof(char) < sizeof(file_name));
 	strcpy_s		(file_name,sizeof(file_name),fname);
 	desc_f.name		= file_name;
-//	desc_f.name		= xr_strlwr(xr_strdup(fname));
-    files_it I		= files.find(desc_f);
-//	xr_free			(desc_f.name);
-	return			(I);
+
+	return files.find(desc_f);
 }
 
 BOOL CLocatorAPI::dir_delete(LPCSTR path,LPCSTR nm,BOOL remove_files)
@@ -1500,7 +1503,7 @@ void CLocatorAPI::ProcessExternalArch()
 	string_path		full_mod_name, _path;
 	for( ;it!=it_e; ++it)
 	{
-		Msg					("--found external arch %s",(*it).name.c_str());
+		Msg("--Found external arch: [%s], size: [%u]", (*it).name.c_str(), (*it).size);
 		update_path			(full_mod_name,"$mod_dir$",(*it).name.c_str());
 
 		FS_Path* pFSRoot		= FS.get_path("$fs_root$");
