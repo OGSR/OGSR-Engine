@@ -957,12 +957,15 @@ void CWeaponMagazined::InitAddons()
 			m_fScopeZoomFactor = pSettings->r_float	(*m_sScopeName, "scope_zoom_factor");
 			m_bScopeDynamicZoom = !!READ_IF_EXISTS(pSettings, r_bool, *m_sScopeName, "scope_dynamic_zoom", false);
 
-			shared_str scope_tex_name;
-			scope_tex_name = pSettings->r_string(*m_sScopeName, "scope_texture");
+			shared_str scope_tex_name = READ_IF_EXISTS(pSettings, r_string, *m_sScopeName, "scope_texture", "");
 
 			if(m_UIScope) xr_delete(m_UIScope);
-			m_UIScope = xr_new<CUIStaticItem>();
-			m_UIScope->Init(*scope_tex_name, "hud\\scope", 0, 0, alNone);
+
+			if (scope_tex_name.size() > 0)
+			{
+				m_UIScope = xr_new<CUIStaticItem>();
+				m_UIScope->Init(*scope_tex_name, "hud\\scope", 0, 0, alNone);
+			}
 
 			m_fSecondVP_FovFactor = READ_IF_EXISTS(pSettings, r_float, *m_sScopeName, "scope_lense_fov_factor", 0.0f);
 			m_fScopeInertionFactor = READ_IF_EXISTS(pSettings, r_float, *m_sScopeName, "scope_inertion_factor", m_fControlInertionFactor);
@@ -972,12 +975,15 @@ void CWeaponMagazined::InitAddons()
 			m_fScopeZoomFactor = pSettings->r_float(cNameSect(), "scope_zoom_factor");
 			m_bScopeDynamicZoom = smart_cast<CWeaponBinoculars*>(this) != nullptr || !!READ_IF_EXISTS(pSettings, r_bool, cNameSect(), "scope_dynamic_zoom", false);
 
-			shared_str scope_tex_name;
-			scope_tex_name = pSettings->r_string(cNameSect(), "scope_texture");
+			shared_str scope_tex_name = READ_IF_EXISTS(pSettings, r_string, cNameSect(), "scope_texture", "");
 
 			if(m_UIScope) xr_delete(m_UIScope);
-			m_UIScope = xr_new<CUIStaticItem>();
-			m_UIScope->Init(*scope_tex_name, "hud\\scope", 0, 0, alNone);
+
+			if (scope_tex_name.size() > 0)
+			{
+				m_UIScope = xr_new<CUIStaticItem>();
+				m_UIScope->Init(*scope_tex_name, "hud\\scope", 0, 0, alNone);
+			}
 
 			m_fSecondVP_FovFactor = READ_IF_EXISTS(pSettings, r_float, cNameSect(), "scope_lense_fov_factor", 0.0f);
 			m_fScopeInertionFactor = READ_IF_EXISTS(pSettings, r_float, cNameSect(), "scope_inertion_factor", m_fControlInertionFactor);
