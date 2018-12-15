@@ -19,11 +19,9 @@ CUIInventoryCellItem::CUIInventoryCellItem(CInventoryItem* itm)
 	m_pData											= (void*)itm;
 	itm->m_cell_item								= this;
 
-	inherited::SetShader							(itm->m_icon_params.get_shader());
+	itm->m_icon_params.set_shader( this );
 
 	m_grid_size.set									(itm->GetGridWidth(),itm->GetGridHeight());
-	inherited::SetOriginalRect						(itm->m_icon_params.original_rect());
-	inherited::SetStretchTexture					(true);
 	b_auto_drag_childs = true;
 }
 
@@ -252,8 +250,7 @@ void CUIWeaponCellItem::CreateIcon(eAddonType t, CIconParams &params)
 	m_addons[t]					= xr_new<CUIStatic>();	
 	m_addons[t]->SetAutoDelete	(true);
 	AttachChild					(m_addons[t]);
-	m_addons[t]->SetShader		(params.get_shader());
-	m_addons[t]->SetOriginalRect(params.original_rect());
+	params.set_shader( m_addons[ t ] );
 }
 
 void CUIWeaponCellItem::DestroyIcon(eAddonType t)

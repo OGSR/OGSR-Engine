@@ -21,8 +21,7 @@ void CUIArtefactPanel::InitIcons(const TIItemContainer& artefacts)
 	{
 		const auto artefact = smart_cast<CArtefact*>(art);
 		if ( artefact ) {
-			auto& rect = artefact->m_icon_params.original_rect();
-			m_vRects.push_back(rect);
+			m_vRects.push_back( &( artefact->m_icon_params ) );
 		}
 	}
 }
@@ -41,12 +40,13 @@ void CUIArtefactPanel::Draw(){
 	
 	float _s			= m_cell_size.x/m_cell_size.y;
 
-	for (const auto& r : m_vRects)
+	for ( const auto& params : m_vRects )
 	{
+		params->set_shader( &m_si );
+		const auto& r = params->original_rect();
 		iHeight = m_fScale*(r.bottom - r.top);
 		iWidth  = _s*m_fScale*(r.right - r.left);
 
-		m_si.SetOriginalRect(r.left, r.top, r.width(), r.height());
 		m_si.SetRect(0, 0, iWidth, iHeight);
 
 		m_si.SetPos(x, y);

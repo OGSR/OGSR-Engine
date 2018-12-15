@@ -361,9 +361,7 @@ void CUIMainIngameWnd::SetAmmoIcon (const shared_str& sect_name)
 	CIconParams icon_params(sect_name);
 	Frect rect = icon_params.original_rect();
 
-	UIWeaponIcon.SetShader		(icon_params.get_shader());
-	UIWeaponIcon.GetUIStaticItem().SetOriginalRect(rect);
-	UIWeaponIcon.SetStretchTexture(true);
+	icon_params.set_shader( &UIWeaponIcon );
 
 	int iGridWidth = (int)round(rect.width());
 
@@ -1121,9 +1119,7 @@ CUIStatic* init_addon(
 	
 	CIconParams     params(sect);
 	Frect rect = params.original_rect();			
-	addon->SetStretchTexture(true);
-	addon->SetShader(params.get_shader());
-	addon->SetOriginalRect		(rect);
+	params.set_shader( addon );
 	addon->SetWndRect(pos.x, pos.y, rect.width()*scale*scale_x, rect.height()*scale);
 	addon->SetColor(color_rgba(255, 255, 255, 192));
 
@@ -1157,10 +1153,7 @@ void CUIMainIngameWnd::UpdatePickUpItem	()
 	float scale = scale_x<scale_y?scale_x:scale_y;
 
 	
-	UIPickUpItemIcon.GetUIStaticItem().SetShader(params.get_shader());
-	UIPickUpItemIcon.GetUIStaticItem().SetOriginalRect(rect);
-
-	UIPickUpItemIcon.SetStretchTexture(true);
+	params.set_shader( &UIPickUpItemIcon );
 
 	UIPickUpItemIcon.SetWidth(rect.width()*scale*UI()->get_current_kx());
 	UIPickUpItemIcon.SetHeight(rect.height()*scale);

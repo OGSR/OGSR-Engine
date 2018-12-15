@@ -1,4 +1,6 @@
 #pragma once
+#include "UIStatic.h"
+#include "../UIStaticItem.h"
 
 class CIconParams {
 protected:
@@ -26,4 +28,6 @@ public:
   void        Load( const shared_str item_section );
   ref_shader& get_shader() const;
   Frect&      original_rect() const;
+  void        set_shader( CUIStatic* );
+  void        set_shader( CUIStaticItem* );
 };

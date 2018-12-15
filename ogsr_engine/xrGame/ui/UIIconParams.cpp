@@ -30,3 +30,16 @@ Frect& CIconParams::original_rect() const {
   rect.y2 = rect.y1 + INV_GRID_HEIGHT * grid_height;
   return rect;
 }
+
+
+void CIconParams::set_shader( CUIStatic* img ) {
+  img->SetShader( get_shader() );
+  img->GetUIStaticItem().SetOriginalRect( original_rect() );
+  img->SetStretchTexture( true );
+}
+
+
+void CIconParams::set_shader( CUIStaticItem* img ) {
+  img->SetShader( get_shader() );
+  img->SetOriginalRect( original_rect() );
+}
