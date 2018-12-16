@@ -146,7 +146,7 @@ old_outfit_slot_style = true
 
 ; Подбирать можно только предметы, которые находятся на виду. Т.е. не
 ; подбирать предметы из закрытых шкафчиков.
-;pickup_check_overlaped = true
+pickup_check_overlaped = true
 
 [dragdrop]
 ; цвет подкрашенной иконки выбранного предмета/патронов/аддонов/оружия
@@ -213,3 +213,11 @@ select_mode_1342 = true
 ; ограничений min\max
 ;trade_get_buy_price  = engine_callbacks.trade_get_buy_price
 ;trade_get_sell_price = engine_callbacks.trade_get_sell_price
+
+; Вызывается движком из CDangerManager::add() и разрешает или
+; запрещает добавлять этот danger. Возвращаемое значение, true/false,
+; показывает, можно или нельзя добавлять этот danger.
+;
+; on_before_add( npc, mem_obj, pos, lvl_time, danger_type, perceive_type )
+;
+;danger_on_before_add = dsh_danger.on_before_add

@@ -345,7 +345,6 @@ bool CActor::use_Holder				(CHolderCustom* holder)
 }
 
 void CActor::ActorUse() {
-  if ( m_pUsableObject ) m_pUsableObject->use( this );
   if ( HUD().GetUI()->MainInputReceiver() ) return;
 
   if ( m_holder ) {
@@ -356,13 +355,15 @@ void CActor::ActorUse() {
     CGameObject::u_EventSend( P );
     return;
   }
-				
-  else if ( character_physics_support()->movement()->PHCapture() ) {
+
+  if ( character_physics_support()->movement()->PHCapture() ) {
     character_physics_support()->movement()->PHReleaseObject();
     return;
   }
 
-  else if ( m_pInvBoxWeLookingAt && m_pInvBoxWeLookingAt->object().nonscript_usable() && m_pInvBoxWeLookingAt->IsOpened() ) {
+  if ( m_pUsableObject ) m_pUsableObject->use( this );
+
+  if ( m_pInvBoxWeLookingAt && m_pInvBoxWeLookingAt->object().nonscript_usable() && m_pInvBoxWeLookingAt->IsOpened() ) {
     // если контейнер открыт
     CUIGameSP* pGameSP = smart_cast<CUIGameSP*>( HUD().GetUI()->UIGame() );
     if ( pGameSP ) pGameSP->StartCarBody( this, m_pInvBoxWeLookingAt );
@@ -390,8 +391,8 @@ void CActor::ActorUse() {
     CPhysicsShellHolder* object = smart_cast<CPhysicsShellHolder*>( RQ.O );
     if ( object ) {
       if ( Level().IR_GetKeyState( DIK_LSHIFT ) ) {
-        bool b_allow = !!pSettings->line_exist( "ph_capture_visuals", object->cNameVisual() );
-        if ( b_allow ) {
+        if ( object->ActorCanCapture() ) {
+          //Msg("--[%s] Actor Captured object: [%s]", __FUNCTION__, object->cName().c_str());
           character_physics_support()->movement()->PHCaptureObject( object, (u16)RQ.element );
         }
         return;
