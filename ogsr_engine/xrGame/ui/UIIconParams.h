@@ -23,6 +23,7 @@ public:
     grid_width = grid_height = 0.f;
     show_condition = false;
   }
+  CIconParams( LPCSTR );
   CIconParams( const shared_str section ) { Load( section ); }
 
   void        Load( const shared_str item_section );

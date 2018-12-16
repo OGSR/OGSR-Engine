@@ -9,6 +9,7 @@
 #include "UIMMShniaga.h"
 #include "UITextureMaster.h"
 #include "UIScrollView.h"
+#include "UIIconParams.h"
 
 CFontManager& mngr(){
 	return *(UI()->Font());
@@ -202,6 +203,11 @@ void CUIWindow::script_register(lua_State *L)
 		.def("GetMaxScrollPos",			&CUIScrollView::GetMaxScrollPos)
 		.def("GetCurrentScrollPos",		&CUIScrollView::GetCurrentScrollPos)
 		.def("SetScrollPos",			&CUIScrollView::SetScrollPos),
+
+		class_<CIconParams>( "CIconParams" )
+		.def( constructor<LPCSTR>() )
+		.def( "original_rect", &CIconParams::original_rect )
+		.def( "set_shader",    ( void( CIconParams::* )( CUIStatic* ) ) &CIconParams::set_shader ),
 
 
 //		.def("",						&CUIFrameLineWnd::)
