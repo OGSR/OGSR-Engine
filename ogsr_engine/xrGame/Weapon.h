@@ -524,6 +524,8 @@ public:
 	void UpdateSecondVP(); //
 	float GetZRotatingFactor() const { return m_fZoomRotationFactor; }    //--#SM+#--
 	float GetSecondVP_FovFactor() const { return m_fSecondVP_FovFactor; } //--#SM+#--
+	bool SecondVPEnabled();
+
 	void SwitchScope();
 };
 

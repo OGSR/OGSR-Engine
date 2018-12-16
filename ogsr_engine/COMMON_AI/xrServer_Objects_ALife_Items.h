@@ -138,7 +138,7 @@ SERVER_ENTITY_DECLARE_BEGIN(CSE_ALifeItemWeapon,CSE_ALifeItem)
 		eWeaponAddonMagazine = 0x10,
 		eWeaponAddonScopeMount = 0x20,
 
-		eVisUpdatesActivated = 0x40,
+		//eVisUpdatesActivated = 0x40,
 		eForcedNotexScope = 0x80
 	};
 

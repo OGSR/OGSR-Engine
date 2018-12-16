@@ -33,9 +33,12 @@ CMainMenu::CMainMenu()
 	m_startDialog = NULL;
 	m_screenshotFrame = u32(-1);
 	g_pGamePersistent->m_pMainMenu = this;
-	if (Device.b_is_Ready)			OnDeviceCreate();
+	if (Device.b_is_Ready)			
+		OnDeviceCreate();
+
 	ReadTextureInfo();
 	CUIXmlInit::InitColorDefs();
+
 	g_btnHint = NULL;
 	m_deactivated_frame = 0;
 
@@ -86,6 +89,7 @@ void CMainMenu::Activate(bool bActivate)
 {
 	if (!!m_Flags.test(flActive) == bActivate)		return;
 	if (m_Flags.test(flGameSaveScreenshot))		return;
+
 	if ((m_screenshotFrame == Device.dwFrame) ||
 		(m_screenshotFrame == Device.dwFrame - 1) ||
 		(m_screenshotFrame == Device.dwFrame + 1))	return;
@@ -173,7 +177,8 @@ void CMainMenu::Activate(bool bActivate)
 		if (m_Flags.test(flNeedVidRestart))
 		{
 			m_Flags.set(flNeedVidRestart, FALSE);
-			Console->Execute("vid_restart");
+			//Console->Execute("vid_restart");
+			Device.PreCache(20);
 		}
 	}
 }
