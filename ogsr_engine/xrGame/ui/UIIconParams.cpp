@@ -24,7 +24,7 @@ void CIconParams::Load( const shared_str item_section ) {
 
 
 ref_shader& CIconParams::get_shader() const {
-  return  InventoryUtilities::GetEquipmentIconsShader( icon_group );
+  return InventoryUtilities::GetEquipmentIconsShader( icon_group );
 }
 
 
