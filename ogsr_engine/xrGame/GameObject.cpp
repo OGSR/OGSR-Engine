@@ -289,6 +289,8 @@ BOOL CGameObject::net_Spawn		(CSE_Abstract*	DC)
 		else
 			spatial.type				= (spatial.type | STYPE_VISIBLEFORAI) ^ STYPE_VISIBLEFORAI;
 	}
+	if ( pSettings->line_exist( cNameSect(), "use_ai_locations" ) )
+	  SetUseAI_Locations( !!pSettings->r_bool( cNameSect(), "use_ai_locations" ) );
 
 	reload						(*cNameSect());
 	CScriptBinder::reload	(*cNameSect());
