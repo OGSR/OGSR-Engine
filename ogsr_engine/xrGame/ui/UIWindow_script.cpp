@@ -9,6 +9,7 @@
 #include "UIMMShniaga.h"
 #include "UITextureMaster.h"
 #include "UIScrollView.h"
+#include "UIIconParams.h"
 
 CFontManager& mngr(){
 	return *(UI()->Font());
@@ -64,6 +65,11 @@ LPCSTR	get_texture_name(LPCSTR icon_name)
 TEX_INFO	get_texture_info(LPCSTR name, LPCSTR def_name)
 {
 	return CUITextureMaster::FindItem(name, def_name);
+}
+
+
+LPCSTR CIconParams__get_name( CIconParams* self ) {
+  return self->name.c_str();
 }
 
 
@@ -202,6 +208,17 @@ void CUIWindow::script_register(lua_State *L)
 		.def("GetMaxScrollPos",			&CUIScrollView::GetMaxScrollPos)
 		.def("GetCurrentScrollPos",		&CUIScrollView::GetCurrentScrollPos)
 		.def("SetScrollPos",			&CUIScrollView::SetScrollPos),
+
+		class_<CIconParams>( "CIconParams" )
+		.def( constructor<LPCSTR>() )
+		.def_readonly( "icon_group",  &CIconParams::icon_group  )
+		.def_readonly( "grid_width",  &CIconParams::grid_width  )
+		.def_readonly( "grid_height", &CIconParams::grid_height )
+		.def_readonly( "grid_x",      &CIconParams::grid_x      )
+		.def_readonly( "grid_y",      &CIconParams::grid_x      )
+		.property( "icon_name", &CIconParams__get_name )
+		.def( "original_rect", &CIconParams::original_rect )
+		.def( "set_shader",    ( void( CIconParams::* )( CUIStatic* ) ) &CIconParams::set_shader ),
 
 
 //		.def("",						&CUIFrameLineWnd::)

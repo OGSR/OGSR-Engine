@@ -877,6 +877,75 @@ bool is_accessible_vertex_id( u32 level_vertex_id ) {
 }
 
 
+IC Fvector construct_position( u32 level_vertex_id, float x, float z ) {
+  return Fvector().set( x, ai().level_graph().vertex_plane_y( level_vertex_id, x, z ), z );
+}
+
+IC bool CSpaceRestrictionBase_inside( Fsphere m_sphere, const Fvector &position, const float &radius ) {
+  Fsphere sphere;
+  sphere.P = position;
+  sphere.R = radius;
+  return sphere.intersect( m_sphere );
+}
+
+bool CSpaceRestrictionBase_inside( Fsphere m_sphere, u32 level_vertex_id, bool partially_inside, float radius = EPS_L ) {
+  const Fvector &position = ai().level_graph().vertex_position( level_vertex_id );
+  float offset = ai().level_graph().header().cell_size() * .5f - EPS_L;
+  if ( partially_inside )
+    return (
+      CSpaceRestrictionBase_inside( m_sphere, construct_position( level_vertex_id, position.x + offset, position.z + offset ), radius ) || 
+      CSpaceRestrictionBase_inside( m_sphere, construct_position( level_vertex_id, position.x + offset, position.z - offset ), radius ) ||
+      CSpaceRestrictionBase_inside( m_sphere, construct_position( level_vertex_id, position.x - offset, position.z + offset ), radius ) || 
+      CSpaceRestrictionBase_inside( m_sphere, construct_position( level_vertex_id, position.x - offset, position.z - offset ), radius ) ||
+      CSpaceRestrictionBase_inside( m_sphere, Fvector().set( position.x, position.y, position.z ), radius )
+    );
+  else
+    return (
+      CSpaceRestrictionBase_inside( m_sphere, construct_position( level_vertex_id, position.x + offset, position.z + offset ), radius ) &&
+      CSpaceRestrictionBase_inside( m_sphere, construct_position( level_vertex_id, position.x + offset, position.z - offset ), radius ) &&
+      CSpaceRestrictionBase_inside( m_sphere, construct_position( level_vertex_id, position.x - offset, position.z + offset ), radius ) &&
+      CSpaceRestrictionBase_inside( m_sphere, construct_position( level_vertex_id, position.x - offset, position.z - offset ), radius ) &&
+      CSpaceRestrictionBase_inside( m_sphere, Fvector().set( position.x, position.y, position.z ), radius )
+    );
+}
+
+void iterate_vertices_inside( Fvector P, float R, bool partially_inside, const luabind::functor<void>& funct ) {
+  Fvector start, dest;
+  start.sub( Fvector().set( 0, 0, 0 ), Fvector().set( R, 0.f, R ) );
+  dest.add(  Fvector().set( 0, 0, 0 ), Fvector().set( R, 0.f, R ) );
+  start.add( P );
+  dest.add(  P );
+  Fsphere m_sphere;
+  m_sphere.P = P;
+  m_sphere.R = R;
+  ai().level_graph().iterate_vertices(
+    start, dest,
+    [&]( const auto& vertex ) {
+      if ( CSpaceRestrictionBase_inside( m_sphere, ai().level_graph().vertex_id( &vertex ), partially_inside ) )
+        funct( ai().level_graph().vertex_id( &vertex ) );
+    }
+  );
+}
+
+void iterate_vertices_border( Fvector P, float R, const luabind::functor<void>& funct ) {
+  Fvector start, dest;
+  start.sub( Fvector().set( 0, 0, 0 ), Fvector().set( R, 0.f, R ) );
+  dest.add(  Fvector().set( 0, 0, 0 ), Fvector().set( R, 0.f, R ) );
+  start.add( P );
+  dest.add(  P );
+  Fsphere m_sphere;
+  m_sphere.P = P;
+  m_sphere.R = R;
+  ai().level_graph().iterate_vertices(
+    start, dest,
+    [&]( const auto& vertex ) {
+      if ( CSpaceRestrictionBase_inside( m_sphere, ai().level_graph().vertex_id( &vertex ), true ) && !CSpaceRestrictionBase_inside( m_sphere, ai().level_graph().vertex_id( &vertex ),false ) )
+        funct( ai().level_graph().vertex_id( &vertex ) );
+    }
+  );
+}
+
+
 #pragma optimize("s",on)
 void CLevel::script_register(lua_State *L)
 {
@@ -1021,6 +1090,8 @@ void CLevel::script_register(lua_State *L)
 		def( "disable_vertex",	disable_vertex ),
 		def( "enable_vertex",	enable_vertex ),
 		def( "is_accessible_vertex_id", &is_accessible_vertex_id ),
+		def( "iterate_vertices_inside", &iterate_vertices_inside ),
+		def( "iterate_vertices_border", &iterate_vertices_border ),
 		//--#SM+# Begin --
 		def("set_blender_mode_main", &set_blender_mode_main),
 		def("get_blender_mode_main", &get_blender_mode_main),

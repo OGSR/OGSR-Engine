@@ -361,7 +361,10 @@ void CActor::ActorUse() {
     return;
   }
 
-  if ( m_pUsableObject ) m_pUsableObject->use( this );
+  if ( m_pUsableObject ) {
+    m_pUsableObject->use( this );
+    if ( HUD().GetUI()->MainInputReceiver() ) return;
+  }
 
   if ( m_pInvBoxWeLookingAt && m_pInvBoxWeLookingAt->object().nonscript_usable() && m_pInvBoxWeLookingAt->IsOpened() ) {
     // если контейнер открыт
