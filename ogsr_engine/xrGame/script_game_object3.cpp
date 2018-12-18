@@ -1070,3 +1070,12 @@ const char* CScriptGameObject::GetVisualName() const
 
 	return *object().cNameVisual();
 }
+
+
+const CCoverPoint *CScriptGameObject::angle_cover( const Fvector &position, float radius, const Fvector &enemy_position, float min_enemy_distance, float max_enemy_distance, u32 enemy_vertex_id ) {
+  CAI_Stalker *stalker = smart_cast<CAI_Stalker*>( &object() );
+  ASSERT_FMT( stalker, "[%s]: %s not a CAI_Stalker", __FUNCTION__, object().cName().c_str() );
+  stalker->m_ce_angle->setup( enemy_position, min_enemy_distance, max_enemy_distance, enemy_vertex_id );
+  const CCoverPoint *point = ai().cover_manager().best_cover( position, radius, *stalker->m_ce_angle );
+  return point;
+}
