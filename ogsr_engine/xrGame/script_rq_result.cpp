@@ -16,6 +16,13 @@ void script_rq_result::set_result(collide::rq_result _res)
 		CGameObject *obj = smart_cast<CGameObject *>(_res.O);
 		if (obj)
 			object = obj->lua_game_object();
+
+		const auto pK = smart_cast<CKinematics*>(_res.O->Visual());
+		if (pK)
+		{
+			const auto& bone_data = pK->LL_GetData((u16)_res.element);
+			mtl = GMLib.GetMaterialByIdx(bone_data.game_mtl_idx);
+		}
 	}
 	else {
 	  CDB::TRI* T = Level().ObjectSpace.GetStaticTris() + element;
