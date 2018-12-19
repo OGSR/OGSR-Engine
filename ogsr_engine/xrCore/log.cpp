@@ -172,8 +172,14 @@ void CreateLog(BOOL nl)
 		}
 
 		__try {
-			if (FS.path_exist("$logs$"))
+			if (FS.path_exist("$logs$")) {
 				FS.update_path(logFName, "$logs$", logFName);
+			}
+			else { //Для компрессора
+				string_path temp;
+				strcpy_s(temp, sizeof(temp), logFName);
+				strconcat(sizeof(logFName), logFName, "logs\\", temp);
+			}
 
 			logstream.imbue(std::locale(""));
 			VerifyPath(logFName);
@@ -183,12 +189,8 @@ void CreateLog(BOOL nl)
 			Debug.do_exit("Can't create log file!");
 		}
 
-		for (u32 it = 0; it < LogFile->size(); it++)
-		{
-			auto str = (*LogFile)[it];
-			str = "\n" + str;
-			logstream << str;
-		}
+		for (const auto& str : *LogFile)
+			logstream << "\n" << str;
 
 		logstream.flush();
 	}

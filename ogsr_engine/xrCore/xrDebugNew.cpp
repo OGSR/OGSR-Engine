@@ -25,9 +25,9 @@ void LogStackTrace(const char* header)
 {
 	__try
 	{
-		Log("*********************************************************************************");
+		Log("********************************************************************************");
 		Log(BuildStackTrace(header));
-		Log("*********************************************************************************");
+		Log("********************************************************************************");
 	}
 	__finally{}
 }
@@ -36,12 +36,12 @@ void LogStackTrace(const char* header, _EXCEPTION_POINTERS *pExceptionInfo)
 {
 	__try
 	{
-		Log("*********************************************************************************");
+		Log("********************************************************************************");
 		Msg("!![" __FUNCTION__ "] ExceptionCode is [%x]", pExceptionInfo->ExceptionRecord->ExceptionCode);
 		auto save = *pExceptionInfo->ContextRecord;
 		Log(BuildStackTrace(header, pExceptionInfo->ContextRecord));
 		*pExceptionInfo->ContextRecord = save;
-		Log("*********************************************************************************");
+		Log("********************************************************************************");
 	}
 	__finally {}
 }
@@ -109,7 +109,7 @@ void gather_info(const char *expression, const char *description, const char *ar
 	buffer += sprintf(buffer, "See log file for detailed information\r\n");
 #endif
 #endif
-	LogStackTrace("stack trace:\n");
+	LogStackTrace("!!stack trace:\n");
 }
 
 void xrDebug::do_exit(const std::string &message)
@@ -361,7 +361,7 @@ LONG WINAPI UnhandledFilter(_EXCEPTION_POINTERS *pExceptionInfo)
 		if (*error_message)
 			Msg("\n%s", error_message);
 
-		LogStackTrace("Unhandled exception stack trace:\n", pExceptionInfo);
+		LogStackTrace("!!Unhandled exception stack trace:\n", pExceptionInfo);
 
 #ifdef USE_OWN_ERROR_MESSAGE_WINDOW
 		ShowWindow(gGameWindow, SW_HIDE);

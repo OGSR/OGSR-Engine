@@ -374,7 +374,7 @@ void CLocatorAPI::ProcessOne	(const char* path, const _finddata_t& F)
 		Register	(N,0xffffffff,0,0,F.size,F.size,(u32)F.time_write);
 		Recurse		(N);
 	} else {
-		if (strext(N) && 0 == strncmp(strext(N), ".db", 3)) {
+		if (!m_Flags.is(flTargetFolderOnly) && strext(N) && 0 == strncmp(strext(N), ".db", 3)) {
 			Msg("--Found base arch: [%s], size: [%u]", N, F.size);
 			ProcessArchive(N);
 		}
@@ -638,7 +638,8 @@ void CLocatorAPI::_initialize	(u32 flags, LPCSTR target_folder, LPCSTR fs_name)
 		R_ASSERT		(path_exist("$app_data_root$"));
 	};
 		
-	ProcessExternalArch		();
+	if (!m_Flags.is(flTargetFolderOnly))
+		ProcessExternalArch();
 
 
 	u32	M2			= Memory.mem_usage();
