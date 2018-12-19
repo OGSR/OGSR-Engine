@@ -394,21 +394,6 @@ void CompressList(LPCSTR in_name, xr_vector<char*>* list, xr_vector<char*>* fl_l
 	}
 }
 
-void ProcessNormal(LPCSTR tgt_name, BOOL bFast)
-{
-	// collect files
-	auto list = FS.file_list_open("$target_folder$", FS_ListFiles);
-	R_ASSERT2(list, "Unable to open folder!!!");
-	// collect folders
-	auto fl_list = FS.file_list_open("$target_folder$", FS_ListFolders);
-	R_ASSERT2(fl_list, "Unable to open folder!!!");
-	// compress
-	CompressList(tgt_name, list, fl_list, bFast, TRUE, 0);
-	// free lists
-	FS.file_list_close(fl_list);
-	FS.file_list_close(list);
-}
-
 
 void ProcessFolder(xr_vector<char*>& list, LPCSTR path)
 {
