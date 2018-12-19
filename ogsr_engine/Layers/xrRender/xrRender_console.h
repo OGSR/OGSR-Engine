@@ -183,20 +183,20 @@ enum
 
 	R2FLAG_EXP_MT_CALC = (1 << 17),		// no console command, but used in details and hom render
 
-										// added by kd
-										R2FLAG_SOFT_WATER = (1 << 18),
-										R2FLAG_SOFT_PARTICLES = (1 << 19),
-										R2FLAG_TRUE_SHADOWS = (1 << 20),
-										R2FLAG_BLOODMARKS = (1 << 21),
-										R2FLAG_DETAIL_BUMP_DEBUG = (1 << 22),
-										R2FLAG_FOG_VOLUME = (1 << 23),
-										R2FLAG_GBUFFER_OPT = (1 << 24),
-										R2FLAG_LENS_FLARES = (1 << 25),
-										R2FLAG_LENS_DIRT = (1 << 26),
-										R2FLAG_WET_SURFACES = (1 << 27),
-										R2FLAG_PUDDLES = (1 << 28),
-										R2FLAG_AO = (1 << 29),
-										R2FLAG_ACTOR_SHADOW = (1 << 30),
+	// added by kd
+	R2FLAG_SOFT_WATER = (1 << 18),
+	R2FLAG_SOFT_PARTICLES = (1 << 19),
+	R2FLAG_TRUE_SHADOWS = (1 << 20),
+	R2FLAG_BLOODMARKS = (1 << 21),
+	R2FLAG_DETAIL_BUMP_DEBUG = (1 << 22),
+	R2FLAG_FOG_VOLUME = (1 << 23),
+	R2FLAG_GBUFFER_OPT = (1 << 24),
+	R2FLAG_LENS_FLARES = (1 << 25),
+	R2FLAG_LENS_DIRT = (1 << 26),
+	R2FLAG_WET_SURFACES = (1 << 27),
+	R2FLAG_PUDDLES = (1 << 28),
+	R2FLAG_AO = (1 << 29),
+	R2FLAG_ACTOR_SHADOW = (1 << 30),
 };
 
 // enum for my test stuff :)
@@ -206,6 +206,7 @@ enum
 	R2FLAG_PCSS = (1 << 1),
 	R2FLAG_HW_INSTANSING = (1 << 2),
 	R2FLAG_REPROJECT = (1 << 3),
+	R2FLAG_DISABLE_HOM = (1 << 4),
 };
 
 enum
