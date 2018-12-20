@@ -69,7 +69,7 @@ bool testSKIP(LPCSTR path)
 	return false;
 }
 
-bool testVFS(LPCSTR path, BOOL bFast)
+bool testVFS(LPCSTR path)
 {
 	if (bStoreFiles)
 		return true;
@@ -77,14 +77,11 @@ bool testVFS(LPCSTR path, BOOL bFast)
 	string256 p_ext;
 	_splitpath(path, 0, 0, 0, p_ext);
 
-	static std::vector<const char*> cFast = {
-		".xml", ".ltx" , ".script"
-	};
 	static std::vector<const char*> cCompress = {
 		".xml", ".ltx" , ".script", ".ogf", ".dds", ".ogg" , ".xr", ".spawn", ".cform", ".details" , ".ai", ".omf"//, ".geom", ".geomx" //Закомментированое сжимать нельзя
 	};
 
-	for (const char* it : (bFast ? cFast : cCompress))
+	for (const char* it : cCompress)
 		if (!stricmp(p_ext, it))
 			return false;
 
@@ -204,7 +201,7 @@ void Compress(LPCSTR path, LPCSTR base, BOOL bFast)
 	}
 	else
 	{
-		if (testVFS(path, bFast))
+		if (testVFS(path))
 		{
 			filesVFS++;
 
@@ -285,6 +282,8 @@ void Compress(LPCSTR path, LPCSTR base, BOOL bFast)
 
 void OpenPack(LPCSTR tgt_folder, int num)
 {
+	t_compress.Start();
+
 	VERIFY(0 == fs);
 
 	string_path fname;
@@ -624,8 +623,6 @@ int __cdecl main(int argc, char* argv[])
 	Log("\n");
 	Msg("--Compressing files (%s)...", folder);
 	Log("\n");
-
-	t_compress.Start();
 
 	BOOL bFast = 0 != strstr(params, "-fast");
 
