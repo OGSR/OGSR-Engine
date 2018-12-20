@@ -155,6 +155,9 @@ void CPoltergeist::Hide()
 	character_physics_support()->movement()->DestroyCharacter();
 
 	ability()->on_hide	();
+
+	if ( pSettings->line_exist( cNameSect().c_str(), "invisible_immunities_sect" ) )
+	  conditions().LoadImmunities( pSettings->r_string( cNameSect().c_str(), "invisible_immunities_sect"), pSettings );
 }
 
 void CPoltergeist::Show()
@@ -172,6 +175,9 @@ void CPoltergeist::Show()
 	character_physics_support()->movement()->CreateCharacter();
 	
 	ability()->on_show	();
+
+	if ( pSettings->line_exist( cNameSect().c_str(), "invisible_immunities_sect" ) )
+	  conditions().LoadImmunities( pSettings->r_string( cNameSect().c_str(), "immunities_sect"), pSettings );
 }
 
 void CPoltergeist::UpdateCL()
