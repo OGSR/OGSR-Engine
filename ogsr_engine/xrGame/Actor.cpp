@@ -88,8 +88,8 @@ static Fbox		bbCrouchBox;
 static Fvector	vFootCenter;
 static Fvector	vFootExt;
 
-Flags32			psActorFlags={0};
-//Flags32			psCallbackFlags = { 31 };
+Flags32			psActorFlags={ AF_3D_SCOPES };
+
 static bool updated;
 
 CActor::CActor() : CEntityAlive(),current_ik_cam_shift(0)
