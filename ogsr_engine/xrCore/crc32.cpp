@@ -55,8 +55,17 @@ private:
 	}
 };
 
-u32				crc32(const void* P, u32 len)
+
+using CRC32Func = DWORD(WINAPI*)(DWORD dwInitial, const BYTE* pData, INT iLen);
+auto hDLL = GetModuleHandle("ntdll.dll");
+auto RtlComputeCrc32 = (CRC32Func)GetProcAddress(hDLL, "RtlComputeCrc32");
+
+
+u32 crc32(const void* P, u32 len)
 {
+	if (RtlComputeCrc32)
+		return RtlComputeCrc32(0, reinterpret_cast<const BYTE*>(P), len);
+
 	Crc32Initializer::init();
 
 	// Pass a text string to this function and it will return the CRC. 
@@ -80,39 +89,3 @@ u32				crc32(const void* P, u32 len)
 	// Exclusive OR the result with the beginning value. 
 	return ulCRC ^ 0xffffffff;
 }
-
-/*
-u32				crc32(const void* P, u32 len, u32 starting_crc)
-{
-	Crc32Initializer::init();
-
-	u32		ulCRC = 0xffffffff ^ starting_crc;
-	u8*		buffer = (u8*)P;
-
-	while (len--)
-		ulCRC = (ulCRC >> 8) ^ crc32_table[(ulCRC & 0xFF) ^ *buffer++];
-
-	return ulCRC ^ 0xffffffff;
-}
-
-u32				path_crc32(const char* path, u32 len)
-{
-	Crc32Initializer::init();
-
-	u32		ulCRC = 0xffffffff;
-	u8*		buffer = (u8*)path;
-
-	while (len--)
-	{
-		const u8 c = *buffer;
-		if (c != '/' && c != '\\')
-		{
-			ulCRC = (ulCRC >> 8) ^ crc32_table[(ulCRC & 0xFF) ^ *buffer];
-		}
-
-		++buffer;
-	}
-
-	return ulCRC ^ 0xffffffff;
-}
-*/

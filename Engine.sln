@@ -78,6 +78,10 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "bsincgen", "3rd_party\Src\O
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "bin2h", "3rd_party\Src\OpenAL_Soft\build\bin2h.vcxproj", "{D855D853-4BDD-373D-B791-B99079645217}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "xrCompress", "ogsr_engine\xrCompress\xrCompress.vcxproj", "{EF76867B-6EB8-4DC0-A1D6-E964FAD6FC7B}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Utils", "Utils", "{1C3F1496-7953-4B6D-83C2-19D0DB6A06DD}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -238,6 +242,10 @@ Global
 		{D855D853-4BDD-373D-B791-B99079645217}.Release|x64.Build.0 = Release|Win32
 		{D855D853-4BDD-373D-B791-B99079645217}.Release|x86.ActiveCfg = Release|Win32
 		{D855D853-4BDD-373D-B791-B99079645217}.Release|x86.Build.0 = Release|Win32
+		{EF76867B-6EB8-4DC0-A1D6-E964FAD6FC7B}.Debug|x64.ActiveCfg = Release|x64
+		{EF76867B-6EB8-4DC0-A1D6-E964FAD6FC7B}.Debug|x86.ActiveCfg = Release|x64
+		{EF76867B-6EB8-4DC0-A1D6-E964FAD6FC7B}.Release|x64.ActiveCfg = Release|x64
+		{EF76867B-6EB8-4DC0-A1D6-E964FAD6FC7B}.Release|x86.ActiveCfg = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -257,6 +265,7 @@ Global
 		{5EF926E4-7015-3860-A71D-2018860D4E07} = {1D0D59BF-4644-47DB-B3A6-B29B0886D6D5}
 		{0523FE04-37AD-34C3-8E1B-9FA43C92A442} = {1D0D59BF-4644-47DB-B3A6-B29B0886D6D5}
 		{D855D853-4BDD-373D-B791-B99079645217} = {1D0D59BF-4644-47DB-B3A6-B29B0886D6D5}
+		{EF76867B-6EB8-4DC0-A1D6-E964FAD6FC7B} = {1C3F1496-7953-4B6D-83C2-19D0DB6A06DD}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {1F9B04CC-5248-4AE5-97B7-66A0D0E5AA5E}
