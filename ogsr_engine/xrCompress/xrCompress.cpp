@@ -285,6 +285,8 @@ void Compress(LPCSTR path, LPCSTR base, BOOL bFast)
 
 void OpenPack(LPCSTR tgt_folder, int num)
 {
+	t_compress.Start();
+
 	VERIFY(0 == fs);
 
 	string_path fname;
@@ -624,8 +626,6 @@ int __cdecl main(int argc, char* argv[])
 	Log("\n");
 	Msg("--Compressing files (%s)...", folder);
 	Log("\n");
-
-	t_compress.Start();
 
 	BOOL bFast = 0 != strstr(params, "-fast");
 
