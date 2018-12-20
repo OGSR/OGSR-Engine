@@ -12,6 +12,7 @@ enum{
 		AF_DOF_SCOPE		=(1<<8),
 		AF_AMMO_ON_BELT		=(1<<9),
 		AF_3D_SCOPES		=(1<<10),
+		AF_ZONES_DBG		=(1<<11),
 };
 
 enum {

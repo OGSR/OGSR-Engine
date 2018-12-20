@@ -38,12 +38,12 @@
 #include "clsid_game.h"
 #include "MainMenu.h"
 #include "../xr_3da/XR_IOConsole.h"
-#include <functional>
+#include "Debug_Renderer.h"
+#include "Actor_Flags.h"
 
 #ifdef DEBUG
 #	include "level_debug.h"
 #	include "ai/stalker/ai_stalker.h"
-#	include "debug_renderer.h"
 #	include "physicobject.h"
 #endif
 
@@ -99,8 +99,8 @@ CLevel::CLevel():IPureClient	(Device.GetTimerGlobal())
 		m_space_restriction_manager = xr_new<CSpaceRestrictionManager>();
 		m_client_spawn_manager		= xr_new<CClientSpawnManager>();
 
-	#ifdef DEBUG
 		m_debug_renderer			= xr_new<CDebugRenderer>();
+	#ifdef DEBUG
 		m_level_debug				= xr_new<CLevelDebug>();
 	#endif
 
@@ -210,9 +210,7 @@ CLevel::~CLevel()
 	
 	xr_delete					(m_client_spawn_manager);
 	
-#ifdef DEBUG
 	xr_delete					(m_debug_renderer);
-#endif
 
 	xr_delete					(game);
 	xr_delete					(game_events);
@@ -476,12 +474,23 @@ void CLevel::OnRender()
 
 	draw_wnds_rects();
 
+#ifndef DEBUG
 
-#ifdef DEBUG
+	if (psActorFlags.test(AF_ZONES_DBG))
+	{
+		for (u32 I = 0; I < Level().Objects.o_count(); I++) {
+			auto _O = Level().Objects.o_get_by_iterator(I);
+			auto space_restrictor = smart_cast<CSpaceRestrictor*>(_O);
+			if (space_restrictor)
+				space_restrictor->OnRender();
+		}
+	}
+
+#else
+
 	ph_world->OnRender	();
-#endif
 
-#ifdef DEBUG
+
 	if (ai().get_level_graph())
 		ai().level_graph().render();
 
@@ -539,9 +548,7 @@ void CLevel::OnRender()
 		HUD().Font().pFontStat->SetHeight	(8.0f);
 		//---------------------------------------------------------------------
 	}
-#endif
 
-#ifdef DEBUG
 	if (bDebug) {
 		DBG().draw_object_info				();
 		DBG().draw_text						();
@@ -571,6 +578,7 @@ void CLevel::OnRender()
 			stalker->dbg_draw_visibility_rays	();
 		}
 	}
+
 #endif
 }
 

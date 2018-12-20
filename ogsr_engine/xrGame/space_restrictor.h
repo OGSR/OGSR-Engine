@@ -63,10 +63,7 @@ public:
 	IC RestrictionSpace::ERestrictorTypes restrictor_type() const; 
 	IC void change_restrictor_type( RestrictionSpace::ERestrictorTypes ); 
 
-public:
-#ifdef DEBUG
-	virtual void				OnRender			();
-#endif
+	virtual void OnRender();
 
 private:
 	bool b_scheduled;

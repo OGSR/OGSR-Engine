@@ -160,7 +160,7 @@ void CConsole::OnRender	()
 		ypos-=LDIST;
 		if (ypos<-1.f) break;
 
-		auto ls = (*LogFile)[i];
+		auto& ls = (*LogFile)[i];
 		if (!ls.c_str())
 			continue;
 		switch (ls.front()) {
@@ -537,7 +537,7 @@ void CConsole::SelectCommand()
 	int		p,k;
 	BOOL	found=false;
 	for (p=LogFile->size()-1, k=0; p>=0; p--) {
-		auto str = (*LogFile)[p];
+		auto& str = (*LogFile)[p];
 		if (!str.c_str())
 			continue;
 		if (str.front() == '~') {
