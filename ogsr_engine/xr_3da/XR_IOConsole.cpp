@@ -79,7 +79,7 @@ void CConsole::OnFrame	()
 	cur_time+=fDelta;
 	rep_time+=fDelta*fAccel;
 	if (cur_time>0.1f) { cur_time-=0.1f; bCursor=!bCursor;	}
-	if (rep_time>0.1f) { rep_time-=0.1f; bRepeat=true;	fAccel+=0.4f;	}
+	if (rep_time>0.15f) { rep_time-=0.15f; bRepeat=true;	fAccel+=0.4f;	}
 /*
 	cur_time+=Device.fTimeDelta;
 	rep_time+=Device.fTimeDelta*fAccel;
