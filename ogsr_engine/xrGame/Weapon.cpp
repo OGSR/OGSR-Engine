@@ -1948,14 +1948,14 @@ void CWeapon::UpdateSecondVP()
 	Device.m_SecondViewport.SetSVPActive(bCond_1 && bCond_3 && SecondVPEnabled());
 }
 
-bool CWeapon::SecondVPEnabled()
+bool CWeapon::SecondVPEnabled() const
 {
-	CActor* pActor = smart_cast<CActor*>(H_Parent());
+	const CActor* pActor = smart_cast<const CActor*>(H_Parent());
 	if (!pActor)
 		return false;
 	
 	bool bCond_2 = m_fSecondVP_FovFactor > 0.0f;     // В конфиге должен быть прописан фактор зума (scope_lense_fov_factor) больше чем 0
-	auto wpn_w_gl = smart_cast<CWeaponMagazinedWGrenade*>(this);
+	auto wpn_w_gl = smart_cast<const CWeaponMagazinedWGrenade*>(this);
 	bool bCond_4 = (!wpn_w_gl || !wpn_w_gl->m_bGrenadeMode);     // Мы не должны быть в режиме подствольника
 	bool bCond_5 = !is_second_zoom_offset_enabled; // Мы не должны быть в режиме второго прицеливания.
 	bool bcond_6 = psActorFlags.test(AF_3D_SCOPES);
@@ -1969,7 +1969,7 @@ float CWeapon::GetControlInertionFactor() const
 	// если в режиме ПГ - не будем применять m_fScopeInertionFactor
 	auto wpn_w_gl = smart_cast<const CWeaponMagazinedWGrenade*>(this);
 
-	if (IsZoomed() && (!wpn_w_gl || !wpn_w_gl->m_bGrenadeMode))
+	if (IsZoomed() && (!wpn_w_gl || !wpn_w_gl->m_bGrenadeMode) && SecondVPEnabled())
 		return m_fScopeInertionFactor;
 
 	float fInertionFactor = inherited::GetControlInertionFactor();

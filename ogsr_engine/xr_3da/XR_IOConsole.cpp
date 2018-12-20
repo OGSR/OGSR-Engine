@@ -79,7 +79,7 @@ void CConsole::OnFrame	()
 	cur_time+=fDelta;
 	rep_time+=fDelta*fAccel;
 	if (cur_time>0.1f) { cur_time-=0.1f; bCursor=!bCursor;	}
-	if (rep_time>0.2f) { rep_time-=0.2f; bRepeat=true;	fAccel+=0.2f;	}
+	if (rep_time>0.1f) { rep_time-=0.1f; bRepeat=true;	fAccel+=0.4f;	}
 /*
 	cur_time+=Device.fTimeDelta;
 	rep_time+=Device.fTimeDelta*fAccel;
@@ -90,8 +90,9 @@ void CConsole::OnFrame	()
 
 void out_font(CGameFont* pFont, LPCSTR text, float& pos_y)
 {
+	float screen_width = float(Device.dwWidth);
 	float str_length = pFont->SizeOf_(text);
-	if(str_length>1024.0f)
+	if(str_length> screen_width)
 	{
 		float _l			= 0.0f;
 		int _sz				= 0;
@@ -103,7 +104,7 @@ void out_font(CGameFont* pFont, LPCSTR text, float& pos_y)
 			_one_line[_ln+_sz]			= text[_sz];
 			_one_line[_ln+_sz+1]		= 0;
 			float _t					= pFont->SizeOf_(_one_line+_ln);
-			if(_t > 1024.0f)
+			if(_t > screen_width)
 			{
 				out_font				(pFont, text+_sz, pos_y);
 				pos_y					-= LDIST;
@@ -141,9 +142,8 @@ void CConsole::OnRender	()
 
 	CHK_DX	(HW.pDevice->Clear(1,&R,D3DCLEAR_TARGET,D3DCOLOR_XRGB(32,32,32),1,0));
 
-	float dwMaxY=float(Device.dwHeight);
 	// float dwMaxX=float(Device.dwWidth/2);
-	if (bGame) { fMaxY=0.f; dwMaxY/=2; } else fMaxY=1.f;
+	if (bGame) { fMaxY=0.f; } else fMaxY=1.f;
 
 	char		buf	[MAX_LEN+5];
 	strcpy_s		(buf,ioc_prompt);
@@ -188,6 +188,11 @@ void CConsole::OnRender	()
 			pFont->SetColor(color_rgba(0  ,222, 205  ,145));
 			out_font		(pFont,&ls[2],ypos);
 //.			pFont->OutI  (-1.f,ypos,"%s",&ls[2]);
+			break;
+		case '>':
+			pFont->SetColor(color_rgba(128, 128, 255, 255));
+			out_font(pFont, &ls[2], ypos);
+			//.			pFont->OutI  (-1.f,ypos,"%s",&ls[2]);
 			break;
 		default:
 			pFont->SetColor(color_rgba(255,255,255, 255));
@@ -465,7 +470,7 @@ outloop:
 	if (converted[0]==' ')	strcpy_s(editor,&(converted[1]));
 	else					strcpy_s(editor,converted);
 	if (editor[0]==0)		return;
-	if (RecordCommands)		Log("~",editor);
+	if (RecordCommands)		Log(">",editor);
 	
 	// split into cmd/params
 	editor[j++  ]	=	' ';
@@ -515,6 +520,8 @@ void CConsole::Show			()
 	editor[0]				= 0;
 	rep_time				= 0;
 	fAccel					= 1.0f;
+	cmd_delta				= 0;
+	old_cmd_delta			= 0;
 
 	IR_Capture				( );
 	Device.seqRender.Add	(this, 1);
@@ -536,21 +543,27 @@ void CConsole::SelectCommand()
 {
 	int		p,k;
 	BOOL	found=false;
-	for (p=LogFile->size()-1, k=0; p>=0; p--) {
+	for (p = LogFile->size() - 1, k = 0; p >= 0; p--) {
 		auto str = (*LogFile)[p];
 		if (!str.c_str())
 			continue;
-		if (str.front() == '~') {
+
+		if (str.front() == '>') {
 			k--;
-			if (k==cmd_delta) {
+			if (k == cmd_delta) {
 				strcpy_s(editor, &str[2]);
-				found=true;
+				found = true;
 			}
 		}
 	}
 	if (!found) {
-		if (cmd_delta>old_cmd_delta) editor[0]=0;
-		cmd_delta=old_cmd_delta;
+		if (cmd_delta == 0)
+		{
+			editor[0] = 0;
+			old_cmd_delta = 0;
+		}
+		else
+			cmd_delta=old_cmd_delta;
 
 	} else {
 		old_cmd_delta=cmd_delta;
