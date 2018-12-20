@@ -7,8 +7,7 @@
 ////////////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
-#ifdef DEBUG
-#	include "debug_renderer.h"
+#include "debug_renderer.h"
 
 CDebugRenderer::CDebugRenderer		()
 {
@@ -156,4 +155,3 @@ void CDebugRenderer::draw_ellipse	(const Fmatrix &matrix, const u32 &color)
 
 	add_lines	((Fvector*)&vertices[0],&pairs[0],sizeof(pairs)/sizeof(float),color);
 }
-#endif

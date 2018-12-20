@@ -13,8 +13,6 @@ void CBackend::dbg_DIP(D3DPRIMITIVETYPE pt, ref_geom geom, u32 baseV, u32 startV
 	RCache.Render			(pt,baseV,startV,countV,startI,PC);
 }
 
-#ifdef DEBUG
-
 void CBackend::dbg_Draw			(D3DPRIMITIVETYPE T, FVF::L* pVerts, int vcnt, u16* pIdx, int pcnt)
 {
 	OnFrameEnd					();
@@ -30,6 +28,8 @@ void CBackend::dbg_Draw			(D3DPRIMITIVETYPE T, FVF::L* pVerts, int pcnt)
 	CHK_DX(HW.pDevice->SetFVF	(FVF::F_L));
 	CHK_DX(HW.pDevice->DrawPrimitiveUP(T, pcnt, pVerts, sizeof(FVF::L)	));
 }
+
+#ifdef DEBUG
 
 #define RGBA_GETALPHA(rgb)      ((rgb) >> 24)
 void CBackend::dbg_DrawOBB		(Fmatrix& T, Fvector& half_dim, u32 C)
