@@ -156,8 +156,8 @@ void CPoltergeist::Hide()
 
 	ability()->on_hide	();
 
-	if ( pSettings->line_exist( cNameSect().c_str(), "invisible_immunities_sect" ) )
-	  conditions().LoadImmunities( pSettings->r_string( cNameSect().c_str(), "invisible_immunities_sect"), pSettings );
+	if ( pSettings->line_exist( cNameSect().c_str(), "visible_immunities_sect" ) )
+	  conditions().LoadImmunities( pSettings->r_string( cNameSect().c_str(), "immunities_sect" ), pSettings );
 }
 
 void CPoltergeist::Show()
@@ -176,8 +176,8 @@ void CPoltergeist::Show()
 	
 	ability()->on_show	();
 
-	if ( pSettings->line_exist( cNameSect().c_str(), "invisible_immunities_sect" ) )
-	  conditions().LoadImmunities( pSettings->r_string( cNameSect().c_str(), "immunities_sect"), pSettings );
+	if ( pSettings->line_exist( cNameSect().c_str(), "visible_immunities_sect" ) )
+	  conditions().LoadImmunities( pSettings->r_string( cNameSect().c_str(), "visible_immunities_sect" ), pSettings );
 }
 
 void CPoltergeist::UpdateCL()
