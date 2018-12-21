@@ -582,6 +582,8 @@ int __cdecl main(int argc, char* argv[])
 	Core._initialize("xrCompress", LogCB, FALSE);
 
 	Log("\n");
+	Log("--OGSR Engine x64 Compressor [ https://github.com/OGSR/OGSR-Engine ]");
+	Log("\n");
 
 	LPCSTR params = GetCommandLine();
 
