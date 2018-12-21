@@ -225,7 +225,7 @@ void CHOM::Render_DB			(CFrustum& base)
 
 void CHOM::Render		(CFrustum& base)
 {
-	if (!bEnabled)		return;
+	if (!bEnabled || ps_r2_test_flags.test(R2FLAG_DISABLE_HOM))		return;
 	
 	Device.Statistic->RenderCALC_HOM.Begin	();
 	Raster.clear		();
@@ -272,21 +272,21 @@ IC	BOOL	_visible	(Fbox& B, Fmatrix& m_xform_01)
 
 BOOL CHOM::visible		(Fbox3& B)
 {
-	if (!bEnabled)							return TRUE;
+	if (!bEnabled || ps_r2_test_flags.test(R2FLAG_DISABLE_HOM))							return TRUE;
 	if (B.contains(Device.vCameraPosition))	return TRUE;
 	return _visible		(B,m_xform_01)		;
 }
 
 BOOL CHOM::visible		(Fbox2& B, float depth)
 {
-	if (!bEnabled)		return TRUE;
+	if (!bEnabled || ps_r2_test_flags.test(R2FLAG_DISABLE_HOM))		return TRUE;
 	return Raster.test	(B.min.x,B.min.y,B.max.x,B.max.y,depth);
 }
 
 BOOL CHOM::visible		(vis_data& vis)
 {
 	if (Device.dwFrame<vis.hom_frame)	return TRUE;				// not at this time :)
-	if (!bEnabled)						return TRUE;				// return - everything visible
+	if (!bEnabled || ps_r2_test_flags.test(R2FLAG_DISABLE_HOM))						return TRUE;				// return - everything visible
 	
 	// Now, the test time comes
 	// 0. The object was hidden, and we must prove that each frame	- test		| frame-old, tested-new, hom_res = false;
@@ -318,7 +318,7 @@ BOOL CHOM::visible		(vis_data& vis)
 
 BOOL CHOM::visible		(sPoly& P)
 {
-	if (!bEnabled)		return TRUE;
+	if (!bEnabled || ps_r2_test_flags.test(R2FLAG_DISABLE_HOM))		return TRUE;
 
 	// Find min/max points of xformed-box
 	Fvector2	min,max;

@@ -537,8 +537,9 @@ void		xrRender_initconsole	()
 
 #ifdef DEBUG
 	CMD3(CCC_Mask,		"r2_use_nvdbt",			&ps_r2_ls_flags,			R2FLAG_USE_NVDBT);
-	CMD3(CCC_Mask,		"r2_mt",				&ps_r2_ls_flags,			R2FLAG_EXP_MT_CALC);
 #endif // DEBUG
+
+	CMD3(CCC_Mask,		"r2_mt",				&ps_r2_ls_flags,			R2FLAG_EXP_MT_CALC);
 
 	CMD3(CCC_Mask,		"r2_sun",				&ps_r2_ls_flags,			R2FLAG_SUN		);
 	CMD3(CCC_Mask,		"r2_sun_details",		&ps_r2_ls_flags,			R2FLAG_SUN_DETAILS);
@@ -633,6 +634,7 @@ void		xrRender_initconsole	()
 	//	CMD3(CCC_Mask,		"r2_hwi",				&ps_r2_test_flags,			R2FLAG_HW_INSTANSING);
 	CMD3(CCC_Mask, "r2_volumetric_fog", &ps_r2_ls_flags, R2FLAG_FOG_VOLUME);
 	//	CMD3(CCC_Mask,		"r2_reproject",			&ps_r2_test_flags,			R2FLAG_REPROJECT);
+	CMD3(CCC_Mask,		"r2_disable_hom",			&ps_r2_test_flags, R2FLAG_DISABLE_HOM);
 
 	CMD4(CCC_detail_radius, "r__detail_radius", &ps_r__detail_radius, 49, 250);
 	CMD3(CCC_Mask, "r2_detail_bump", &ps_r2_ls_flags, R2FLAG_DETAIL_BUMP_DEBUG);
