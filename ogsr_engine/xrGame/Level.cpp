@@ -511,7 +511,7 @@ void CLevel::OnRender()
 				physic_object->OnRender();
 
 			CSpaceRestrictor	*space_restrictor = smart_cast<CSpaceRestrictor*>	(_O);
-			if (space_restrictor)
+			if (space_restrictor && psActorFlags.test(AF_ZONES_DBG))
 				space_restrictor->OnRender();
 			CClimableObject		*climable		  = smart_cast<CClimableObject*>	(_O);
 			if(climable)

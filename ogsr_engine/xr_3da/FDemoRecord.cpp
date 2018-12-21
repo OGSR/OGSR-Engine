@@ -333,7 +333,7 @@ void CDemoRecord::IR_OnKeyboardPress	(int dik)
 	if (dik == DIK_ESCAPE)	fLifeTime				= -1;
 	if (dik == DIK_RETURN)
 	{	
-		if ( g_pGameLevel->CurrentEntity() && Core.ParamFlags.test( xrCore::ParamFlag::dbg ) )
+		if ( g_pGameLevel->CurrentEntity() )
 		{
 			g_pGameLevel->CurrentEntity()->ForceTransform(m_Camera);
 			fLifeTime		= -1; 
