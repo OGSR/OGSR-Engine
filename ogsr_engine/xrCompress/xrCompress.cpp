@@ -21,6 +21,11 @@
 
 constexpr u32 XRP_MAX_SIZE_DEF = 1900; // Дефолтный максимальный размер создаваемого архива в МБ. Более ~1900 выставлять не рекомендую, т.к. архивы более 2гб двиг не поддерживает.
 
+static const std::vector<const char*> NoCompress = { //Расширения файлов, которые нельзя сжимать.
+	".geom", ".geomx", ".ogm"
+};
+
+
 using DUMMY_STUFF = void(const void*, const u32&, void*);
 extern XRCORE_API DUMMY_STUFF *g_temporary_stuff;
 extern XRCORE_API DUMMY_STUFF *g_dummy_stuff;
@@ -56,7 +61,7 @@ std::vector<std::string> exclude_exts;
 
 bool testSKIP(LPCSTR path)
 {
-	string256 p_name, p_ext;
+	string_path p_name, p_ext;
 	_splitpath(path, 0, 0, p_name, p_ext);
 
 	if (!stricmp(p_name, "build"))
@@ -74,18 +79,14 @@ bool testVFS(LPCSTR path)
 	if (bStoreFiles)
 		return true;
 
-	string256 p_ext;
+	string_path p_ext;
 	_splitpath(path, 0, 0, 0, p_ext);
 
-	static std::vector<const char*> cCompress = {
-		".xml", ".ltx" , ".script", ".ogf", ".dds", ".ogg" , ".xr", ".spawn", ".cform", ".details" , ".ai", ".omf"//, ".geom", ".geomx" //Закомментированое сжимать нельзя
-	};
-
-	for (const char* it : cCompress)
+	for (const char* it : NoCompress)
 		if (!stricmp(p_ext, it))
-			return false;
+			return true;
 
-	return true;
+	return false;
 }
 
 bool testEqual(LPCSTR path, IReader* base)
@@ -156,7 +157,7 @@ void Compress(LPCSTR path, LPCSTR base, BOOL bFast)
 	if (testSKIP(path))
 	{
 		filesSKIP++;
-		Msg("~~[%s] - SKIP", path);
+		Msg("!![%s] - SKIP", path);
 		return;
 	}
 
@@ -180,7 +181,7 @@ void Compress(LPCSTR path, LPCSTR base, BOOL bFast)
 	bytesSRC += src->length();
 
 	u32 c_crc32 = crc32(src->pointer(), src->length());
-	//Msg("--CRC32 for [%s] pointer: [%x], length: [%d] is: [%u]", fn, src->pointer(), src->length(), c_crc32);
+	//Msg("CRC32 for [%s] pointer: [%x], length: [%d] is: [%u]", fn, src->pointer(), src->length(), c_crc32);
 
 	size_t c_ptr = 0;
 	u32 c_size_real = 0;
@@ -188,7 +189,7 @@ void Compress(LPCSTR path, LPCSTR base, BOOL bFast)
 	u32 a_tests = 0;
 
 	ALIAS* A = testALIAS(src, c_crc32, a_tests);
-	//Msg("%3da ", a_tests); //?
+
 	if (A)
 	{
 		filesALIAS++;
@@ -309,7 +310,6 @@ void ClosePack()
 	fs->close_chunk();
 	// save list
 	bytesDST = fs->tell();
-	//Log("...Writing pack desc");
 
 	DUMMY_STUFF* _dummy_stuff_tmp;
 	if (MOD_COMPRESS) {
@@ -322,12 +322,10 @@ void ClosePack()
 	if (MOD_COMPRESS)
 		g_dummy_stuff = _dummy_stuff_tmp;
 
-	//Msg("--Data size: [%u]. Desc size: [%u]", bytesDST, fs_desc.size());
-
 	FS.w_close(fs);
 
 	Log("\n");
-	Msg("--Files total/skipped/VFS/aliased: [%d/%d/%d/%d]\nOveral: [%dKB / %dKB], [%3.1f%%]\nElapsed time: [%d:%d]\nCompression speed: [%3.1f Mb/s]\n",
+	Msg("Files total/skipped/VFS/aliased: [%d/%d/%d/%d]\nOveral: [%dKB / %dKB], [%3.1f%%]\nElapsed time: [%d:%d]\nCompression speed: [%3.1f Mb/s]",
 		filesTOTAL, filesSKIP, filesVFS, filesALIAS,
 		bytesDST / 1024, bytesSRC / 1024,
 		100.f*float(bytesDST) / float(bytesSRC),
@@ -335,13 +333,14 @@ void ClosePack()
 		(t_compress.GetElapsed_ms() / 1000) % 60,
 		float((float(bytesDST) / float(1024 * 1024)) / (t_compress.GetElapsed_sec()))
 	);
+	Log("\n");
 
 	for (auto& it : aliases)
 		xr_free(it.second.path);
 	aliases.clear();
 }
 
-void CompressList(LPCSTR in_name, xr_vector<char*>* list, xr_vector<char*>* fl_list, BOOL bFast, BOOL make_pack, LPCSTR copy_path)
+void CompressList(LPCSTR in_name, xr_vector<char*>* list, xr_vector<char*>* fl_list, BOOL bFast)
 {
 	if (!list->empty() && in_name && in_name[0]) {
 		string256 caption;
@@ -351,8 +350,7 @@ void CompressList(LPCSTR in_name, xr_vector<char*>* list, xr_vector<char*>* fl_l
 		_splitpath(in_name, 0, 0, tgt_folder, 0);
 
 		int pack_num = 0;
-		if (make_pack)
-			OpenPack(tgt_folder, pack_num++);
+		OpenPack(tgt_folder, pack_num++);
 
 		for (char* it : *fl_list)
 			write_file_header(it, 0, 0, 0, 0);
@@ -364,26 +362,14 @@ void CompressList(LPCSTR in_name, xr_vector<char*>* list, xr_vector<char*>* fl_l
 			count++;
 			sprintf(caption, "Compress files: %d/%d - %d%%", count, list->size(), (count * 100) / list->size());
 			SetWindowText(GetConsoleWindow(), caption);
-			if (make_pack) {
-				if (fs->tell() > XRP_MAX_SIZE) {
-					ClosePack();
-					OpenPack(tgt_folder, pack_num++);
-				}
-				Compress(it, in_name, bFast);
+			if (fs->tell() > XRP_MAX_SIZE) {
+				ClosePack();
+				OpenPack(tgt_folder, pack_num++);
 			}
-			if (copy_path && copy_path[0]) {
-				string_path		src_fn, dst_fn;
-				strconcat(sizeof(src_fn), src_fn, in_name, "\\", it);
-				strconcat(sizeof(dst_fn), dst_fn, copy_path, tgt_folder, "\\", it);
-				Log(" + COPY");
-				int age = FS.get_file_age(src_fn);
-				FS.file_copy(src_fn, dst_fn);
-				FS.set_file_age(dst_fn, age);
-			}
+			Compress(it, in_name, bFast);
 		}
 
-		if (make_pack)
-			ClosePack();
+		ClosePack();
 
 		xr_free(c_heap);
 		//***main process***: END
@@ -398,18 +384,14 @@ void ProcessFolder(xr_vector<char*>& list, LPCSTR path)
 {
 	auto i_list = FS.file_list_open("$target_folder$", path, FS_ListFiles | FS_RootOnly);
 	if (!i_list) {
-		Log("!!ERROR: Unable to open file list:", path);
+		Msg("!!ERROR: Unable to open file list: [%s]", path);
 		return;
 	}
 
 	for (char* it : *i_list) {
-		xr_string tmp_path = xr_string(path) + xr_string(it);
-		if (!testSKIP(tmp_path.c_str())) {
-			list.push_back(xr_strdup(tmp_path.c_str()));
-		}
-		else {
-			Msg("!!-f: %s", tmp_path.c_str());
-		}
+		string_path buf;
+		strconcat(sizeof(buf), buf, path, it);
+		list.push_back(xr_strdup(buf));
 	}
 	FS.file_list_close(i_list);
 }
@@ -438,7 +420,6 @@ bool IsFolderAccepted(CInifile& ltx, LPCSTR path, BOOL& recurse)
 
 void ProcessLTX(LPCSTR tgt_name, LPCSTR params, BOOL bFast)
 {
-	xr_string ltx_name;
 	LPCSTR ltx_nm = strstr(params, ".ltx");
 	VERIFY(ltx_nm != 0);
 	string_path ltx_fn;
@@ -459,11 +440,9 @@ void ProcessLTX(LPCSTR tgt_name, LPCSTR params, BOOL bFast)
 	ASSERT_FMT(FS.exist(ltx_fn) && FS.exist(ltx_fn, "$app_root$", tmp), "ERROR: Can't find ltx file: [%s]", ltx_fn);
 
 	CInifile ltx(ltx_fn);
-	Msg("~~Processing LTX [%s]...", ltx_fn);
+	Msg("Processing LTX [%s]...", ltx_fn);
 	Log("\n");
 
-	BOOL make_pack = ltx.line_exist("options", "make_pack") ? ltx.r_bool("options", "make_pack") : TRUE;
-	LPCSTR copy_path = ltx.line_exist("options", "copy_path") ? ltx.r_string("options", "copy_path") : 0;
 	if (ltx.line_exist("options", "exclude_exts"))
 	{
 		std::string input(ltx.r_string("options", "exclude_exts"));
@@ -507,19 +486,20 @@ void ProcessLTX(LPCSTR tgt_name, LPCSTR params, BOOL bFast)
 				}
 
 				for (char* it : *i_fl_list) {
-					xr_string tmp_path = xr_string(path) + xr_string(it);
-					bool val = IsFolderAccepted(ltx, tmp_path.c_str(), efRecurse);
+					string_path tmp_path;
+					strconcat(sizeof(tmp_path), tmp_path, path, it);
+					bool val = IsFolderAccepted(ltx, tmp_path, efRecurse);
 					if (val)
 					{
-						fl_list.push_back(xr_strdup(tmp_path.c_str()));
-						Msg("--+F: %s", tmp_path.c_str());
+						fl_list.push_back(xr_strdup(tmp_path));
+						Msg("--+F: %s", tmp_path);
 						// collect files
 						if (ifRecurse)
-							ProcessFolder(list, tmp_path.c_str());
+							ProcessFolder(list, tmp_path);
 					}
 					else
 					{
-						Msg("!!-F: %s", tmp_path.c_str());
+						Msg("!!-F: %s", tmp_path);
 					}
 				}
 				FS.file_list_close(i_fl_list);
@@ -542,7 +522,7 @@ void ProcessLTX(LPCSTR tgt_name, LPCSTR params, BOOL bFast)
 
 	Log("\n");
 
-	CompressList(tgt_name, &list, &fl_list, bFast, make_pack, copy_path);
+	CompressList(tgt_name, &list, &fl_list, bFast);
 
 	// free
 	for (char* it : list)
@@ -582,7 +562,7 @@ int __cdecl main(int argc, char* argv[])
 	Core._initialize("xrCompress", LogCB, FALSE);
 
 	Log("\n");
-	Log("--OGSR Engine x64 Compressor [ https://github.com/OGSR/OGSR-Engine ]");
+	Log("OGSR Engine x64 Compressor [ https://github.com/OGSR/OGSR-Engine ]");
 	Log("\n");
 
 	LPCSTR params = GetCommandLine();
@@ -623,7 +603,7 @@ int __cdecl main(int argc, char* argv[])
 	FS._initialize(CLocatorAPI::flTargetFolderOnly | CLocatorAPI::flScanAppRoot, folder);
 
 	Log("\n");
-	Msg("--Compressing files (%s)...", folder);
+	Msg("Compressing files [%s]...", folder);
 	Log("\n");
 
 	BOOL bFast = 0 != strstr(params, "-fast");
