@@ -8,7 +8,6 @@
 
 #include "stdafx.h"
 
-#ifdef DEBUG
 #ifndef AI_COMPILER
 
 #include "level_graph.h"
@@ -25,6 +24,42 @@
 
 #include "debug_renderer.h"
 
+
+void CLevelGraph::render()
+{
+#ifndef DEBUG
+	draw_nodes();
+	draw_restrictions();
+
+#else 
+	if (psAI_Flags.test(aiDrawGameGraph)) {
+		//		if (psHUD_Flags.test(HUD_DRAW))
+		draw_game_graph();
+	}
+
+	if (!bDebug && !psAI_Flags.test(aiMotion))
+		return;
+
+	if (bDebug && psAI_Flags.test(aiDebug))
+		draw_nodes();
+
+	draw_restrictions();
+
+	if (psAI_Flags.test(aiCover))
+		draw_covers();
+
+	if (!psHUD_Flags.test(HUD_DRAW))
+		return;
+
+	if (psAI_Flags.test(aiMotion))
+		draw_objects();
+
+	draw_debug_node();
+#endif
+}
+
+#ifdef DEBUG
+
 void CLevelGraph::setup_current_level	(const int &level_id)
 {
 	if (m_current_level_id == level_id)
@@ -32,35 +67,6 @@ void CLevelGraph::setup_current_level	(const int &level_id)
 
 	m_current_actual		= false;
 	m_current_level_id		= level_id;
-}
-
-void CLevelGraph::render	()
-{
-	if (psAI_Flags.test(aiDrawGameGraph)) {
-//		if (psHUD_Flags.test(HUD_DRAW))
-			draw_game_graph	();
-	}
-
-	if (!bDebug && !psAI_Flags.test(aiMotion))
-		return;
-
-	if (bDebug && psAI_Flags.test(aiDebug))
-		draw_nodes			();
-
-	draw_restrictions		();
-
-	if (psAI_Flags.test(aiCover))
-		draw_covers			();
-
-	if (!psHUD_Flags.test(HUD_DRAW))
-		return;
-
-	if (psAI_Flags.test(aiMotion))
-		draw_objects		();
-
-#ifdef DEBUG
-	draw_debug_node			();
-#endif
 }
 
 void modify							(const int &vertex_id, Fbox &bounding_box)
