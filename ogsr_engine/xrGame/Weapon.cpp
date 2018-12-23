@@ -1228,6 +1228,11 @@ BOOL CWeapon::CheckForMisfire	()
 {
 	if (OnClient()) return FALSE;
 
+	if ( Core.Features.test( xrCore::Feature::npc_simplified_shooting ) ) {
+	  CActor *actor = smart_cast<CActor*>( H_Parent() );
+	  if ( !actor ) return FALSE;
+	}
+
 	float rnd = ::Random.randF(0.f,1.f);
 	float mp = GetConditionMisfireProbability();
 	if(rnd < mp)
