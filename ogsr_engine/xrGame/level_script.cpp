@@ -830,17 +830,6 @@ float get_blender_mode_main() //--#SM+#--
 	return g_pGamePersistent->m_pGShaderConstants.m_blender_mode.x;
 }
 
-float set_blender_mode_second(float blender_num = 0.f) //--#SM+#--
-{
-	g_pGamePersistent->m_pGShaderConstants.m_blender_mode.y = blender_num;
-	return g_pGamePersistent->m_pGShaderConstants.m_blender_mode.y;
-}
-
-float get_blender_mode_second() //--#SM+#--
-{
-	return g_pGamePersistent->m_pGShaderConstants.m_blender_mode.y;
-}
-
 Fmatrix get_shader_params() //--#SM+#--
 {
 	return g_pGamePersistent->m_pGShaderConstants.m_script_params;
@@ -1095,8 +1084,6 @@ void CLevel::script_register(lua_State *L)
 		//--#SM+# Begin --
 		def("set_blender_mode_main", &set_blender_mode_main),
 		def("get_blender_mode_main", &get_blender_mode_main),
-		def("set_blender_mode_second", &set_blender_mode_second),
-		def("get_blender_mode_second", &get_blender_mode_second),
 		def("set_shader_params", &set_shader_params),
 		def("get_shader_params", &get_shader_params)
 		//--#SM+# End --
