@@ -12,12 +12,16 @@ xr_token							qpreset_token							[ ]={
 	{ "Extreme",					4											},
 	{ 0,							0											}
 };
+
 u32			ps_Render_mode = 0;
 xr_token							render_mode_token[] = {
 	{ "Normal",						0 },
 	{ "Thermal",					1 },
 	{ 0,							0 }
 };
+u32 GetRenderMode() {
+	return Device.m_SecondViewport.IsSVPFrame() ? ( g_pGamePersistent->m_pGShaderConstants.m_blender_mode.x == 2.f ? R2RM_THERMAL : R2RM_NORMAL ) : ps_Render_mode;
+}
 
 u32			ps_ssao_mode = 0;
 xr_token							ssao_mode_token[] = {

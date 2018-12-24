@@ -15,8 +15,6 @@
     <ProjectGuid>{1B71D5DF-C005-4B3F-822A-345255173F0B}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>lzo</RootNamespace>
-    <WindowsTargetPlatformVersion>
-    </WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">

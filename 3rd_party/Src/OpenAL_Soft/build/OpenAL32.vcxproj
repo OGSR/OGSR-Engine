@@ -12,8 +12,6 @@
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{5EF926E4-7015-3860-A71D-2018860D4E07}</ProjectGuid>
-    <WindowsTargetPlatformVersion>
-    </WindowsTargetPlatformVersion>
     <Keyword>Win32Proj</Keyword>
     <Platform>Win32</Platform>
     <ProjectName>OpenAL32</ProjectName>
@@ -176,7 +174,6 @@ if %errorlevel% neq 0 goto :VCEnd</Command>
       <Outputs>bsinc_inc.h</Outputs>
       <LinkObjects>false</LinkObjects>
     </CustomBuild>
-	
     <CustomBuild Include="default-44100.mhr.h.rule">
       <Message>Generating default-44100.mhr.h</Message>
       <Command>setlocal
@@ -192,7 +189,6 @@ if %errorlevel% neq 0 goto :VCEnd</Command>
       <Outputs>default-44100.mhr.h</Outputs>
       <LinkObjects>false</LinkObjects>
     </CustomBuild>
-	
     <CustomBuild Include="default-48000.mhr.h.rule">
       <Message>Generating default-48000.mhr.h</Message>
       <Command>setlocal

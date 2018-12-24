@@ -8,7 +8,6 @@
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{0523FE04-37AD-34C3-8E1B-9FA43C92A442}</ProjectGuid>
-    <WindowsTargetPlatformVersion></WindowsTargetPlatformVersion>
     <Keyword>Win32Proj</Keyword>
     <Platform>Win32</Platform>
     <ProjectName>bsincgen</ProjectName>
