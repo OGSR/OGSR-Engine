@@ -43,6 +43,8 @@ void CCoverEvaluatorCloseToEnemy::evaluate			(const CCoverPoint *cover_point, fl
 	if (enemy_distance >= m_best_value)
 		return;
 
+	if ( m_callback && !m_callback( cover_point ) ) return;
+
 	m_selected				= cover_point;
 	m_best_value			= enemy_distance;
 	//m_best_distance		= my_distance;
@@ -73,6 +75,8 @@ void CCoverEvaluatorFarFromEnemy::evaluate			(const CCoverPoint *cover_point, fl
 //	float					cover_value = ai().level_graph().cover_in_direction(y,cover_point->level_vertex_id());
 	if (enemy_distance <= -m_best_value)
 		return;
+
+	if ( m_callback && !m_callback( cover_point ) ) return;
 
 	m_selected				= cover_point;
 	m_best_value			= -enemy_distance;
@@ -110,6 +114,8 @@ void CCoverEvaluatorBest::evaluate			(const CCoverPoint *cover_point, float weig
 	if ((value > m_best_value) || ((value == m_best_value) && (cover_point > m_selected)))
 		return;
 
+	if ( m_callback && !m_callback( cover_point ) ) return;
+
 	m_selected				= cover_point;
 	m_best_value			= value;
 }
@@ -143,6 +149,8 @@ void CCoverEvaluatorBestByTime::evaluate		(const CCoverPoint *cover_point, float
 
 	if (value >= m_best_value)
 		return;
+
+	if ( m_callback && !m_callback( cover_point ) ) return;
 
 	m_selected				= cover_point;
 	m_best_value			= value;
@@ -187,6 +195,8 @@ void CCoverEvaluatorAngle::evaluate			(const CCoverPoint *cover_point, float wei
 	if (cos_a < m_best_alpha)
 		return;
 
+	if ( m_callback && !m_callback( cover_point ) ) return;
+
 	m_selected				= cover_point;
 	m_best_alpha			= cos_a;
 }
@@ -204,6 +214,8 @@ void CCoverEvaluatorSafe::evaluate			(const CCoverPoint *cover_point, float weig
 	if (cover_value >= m_best_value)
 		return;
 
+	if ( m_callback && !m_callback( cover_point ) ) return;
+
 	m_selected				= cover_point;
 	m_best_value			= cover_value;
 }
@@ -212,9 +224,9 @@ void CCoverEvaluatorSafe::evaluate			(const CCoverPoint *cover_point, float weig
 // CCoverEvaluatorRandomGame
 //////////////////////////////////////////////////////////////////////////
 
-void CCoverEvaluatorRandomGame::setup		(GameGraph::_GRAPH_ID game_vertex_id, float max_distance)
+void CCoverEvaluatorRandomGame::setup( GameGraph::_GRAPH_ID game_vertex_id, float max_distance, const std::function<bool( const CCoverPoint* )>& callback )
 {
-	inherited::setup		();
+	inherited::setup( callback );
 	
 	m_actuality				= m_actuality && (m_game_vertex_id == game_vertex_id);
 	m_game_vertex_id		= game_vertex_id;
@@ -229,6 +241,8 @@ void CCoverEvaluatorRandomGame::evaluate	(const CCoverPoint *cover_point, float 
 	if (m_start_position.distance_to_sqr(cover_point->position()) >= m_max_distance_sqr)
 		if (ai().cross_table().vertex(cover_point->level_vertex_id()).game_vertex_id() != m_game_vertex_id)
 			return;
+
+	if ( m_callback && !m_callback( cover_point ) ) return;
 
 	m_covers.push_back		(cover_point);
 }
@@ -245,9 +259,9 @@ void CCoverEvaluatorRandomGame::finalize	()
 // CCoverEvaluatorAmbush
 //////////////////////////////////////////////////////////////////////////
 
-void CCoverEvaluatorAmbush::setup			(const Fvector &my_position, const Fvector &enemy_position, float min_enemy_distance)
+void CCoverEvaluatorAmbush::setup( const Fvector &my_position, const Fvector &enemy_position, float min_enemy_distance, const std::function<bool( const CCoverPoint* )>& callback )
 {
-	inherited::setup		();
+	inherited::setup( callback );
 
 //	m_actuality				= m_actuality && m_my_position.similar(my_position);
 	m_my_position			= my_position;
@@ -283,6 +297,8 @@ void CCoverEvaluatorAmbush::evaluate		(const CCoverPoint *cover_point, float wei
 	float					value = cover_from_enemy/cover_from_myself;
 	if (value >= m_best_value)
 		return;
+
+	if ( m_callback && !m_callback( cover_point ) ) return;
 
 	m_selected				= cover_point;
 	m_best_value			= value;

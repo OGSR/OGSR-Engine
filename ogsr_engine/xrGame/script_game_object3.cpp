@@ -47,34 +47,64 @@ namespace MemorySpace {
 const CCoverPoint *CScriptGameObject::best_cover	(const Fvector &position, const Fvector &enemy_position, float radius, float min_enemy_distance, float max_enemy_distance)
 {
 	CAI_Stalker		*stalker = smart_cast<CAI_Stalker*>(&object());
-	if (!stalker) {
-		ai().script_engine().script_log		(ScriptStorage::eLuaMessageTypeError,"CGameObject : cannot access class member best_cover!");
-		return		(0);
-	}
+	ASSERT_FMT( stalker, "[%s]: %s not a CAI_Stalker", __FUNCTION__, object().cName().c_str() );
 	stalker->m_ce_best->setup(enemy_position,min_enemy_distance,max_enemy_distance,0.f);
 	const CCoverPoint	*point = ai().cover_manager().best_cover(position,radius,*stalker->m_ce_best);
 	return			(point);
 }
 
+const CCoverPoint *CScriptGameObject::best_cover( const Fvector &position, const Fvector &enemy_position, float radius, float min_enemy_distance, float max_enemy_distance, const luabind::functor<bool>& callback ) {
+  CAI_Stalker *stalker = smart_cast<CAI_Stalker*>( &object() );
+  ASSERT_FMT( stalker, "[%s]: %s not a CAI_Stalker", __FUNCTION__, object().cName().c_str() );
+  stalker->m_ce_best->setup(
+    enemy_position, min_enemy_distance, max_enemy_distance, 0.f,
+    [&]( const auto point ) -> bool {
+      return callback( point );
+    }
+  );
+  const CCoverPoint *point = ai().cover_manager().best_cover( position, radius, *stalker->m_ce_best );
+  return point;
+}
+
 const CCoverPoint *CScriptGameObject::safe_cover	(const Fvector &position, float radius, float min_distance)
 {
 	CAI_Stalker		*stalker = smart_cast<CAI_Stalker*>(&object());
-	if (!stalker) {
-		ai().script_engine().script_log		(ScriptStorage::eLuaMessageTypeError,"CGameObject : cannot access class member best_cover!");
-		return		(0);
-	}
+	ASSERT_FMT( stalker, "[%s]: %s not a CAI_Stalker", __FUNCTION__, object().cName().c_str() );
 	stalker->m_ce_safe->setup(min_distance);
 	const CCoverPoint	*point = ai().cover_manager().best_cover(position,radius,*stalker->m_ce_safe);
 	return			(point);
 }
 
+const CCoverPoint *CScriptGameObject::safe_cover( const Fvector &position, float radius, float min_distance, const luabind::functor<bool>& callback ) {
+  CAI_Stalker *stalker = smart_cast<CAI_Stalker*>( &object() );
+  ASSERT_FMT( stalker, "[%s]: %s not a CAI_Stalker", __FUNCTION__, object().cName().c_str() );
+  stalker->m_ce_safe->setup(
+    min_distance,
+    [&]( const auto point ) -> bool {
+      return callback( point );
+    }
+  );
+  const CCoverPoint *point = ai().cover_manager().best_cover( position, radius, *stalker->m_ce_safe );
+  return point;
+}
+
 const CCoverPoint *CScriptGameObject::ambush_cover( const Fvector &position, const Fvector &enemy_position, float radius, float min_distance ) {
   CAI_Stalker *stalker = smart_cast<CAI_Stalker*>(&object());
-  if ( !stalker ) {
-    ai().script_engine().script_log( ScriptStorage::eLuaMessageTypeError, "CGameObject : cannot access class member best_cover!" );
-    return 0;
-  }
+  ASSERT_FMT( stalker, "[%s]: %s not a CAI_Stalker", __FUNCTION__, object().cName().c_str() );
   stalker->m_ce_ambush->setup( position, enemy_position, min_distance );
+  const CCoverPoint *point = ai().cover_manager().best_cover( position, radius, *stalker->m_ce_ambush );
+  return point;
+}
+
+const CCoverPoint *CScriptGameObject::ambush_cover( const Fvector &position, const Fvector &enemy_position, float radius, float min_distance, const luabind::functor<bool>& callback ) {
+  CAI_Stalker *stalker = smart_cast<CAI_Stalker*>(&object());
+  ASSERT_FMT( stalker, "[%s]: %s not a CAI_Stalker", __FUNCTION__, object().cName().c_str() );
+  stalker->m_ce_ambush->setup(
+    position, enemy_position, min_distance,
+    [&]( const auto point ) -> bool {
+      return callback( point );
+    }
+  );
   const CCoverPoint *point = ai().cover_manager().best_cover( position, radius, *stalker->m_ce_ambush );
   return point;
 }
@@ -1076,6 +1106,19 @@ const CCoverPoint *CScriptGameObject::angle_cover( const Fvector &position, floa
   CAI_Stalker *stalker = smart_cast<CAI_Stalker*>( &object() );
   ASSERT_FMT( stalker, "[%s]: %s not a CAI_Stalker", __FUNCTION__, object().cName().c_str() );
   stalker->m_ce_angle->setup( enemy_position, min_enemy_distance, max_enemy_distance, enemy_vertex_id );
+  const CCoverPoint *point = ai().cover_manager().best_cover( position, radius, *stalker->m_ce_angle );
+  return point;
+}
+
+const CCoverPoint *CScriptGameObject::angle_cover( const Fvector &position, float radius, const Fvector &enemy_position, float min_enemy_distance, float max_enemy_distance, u32 enemy_vertex_id, const luabind::functor<bool>& callback ) {
+  CAI_Stalker *stalker = smart_cast<CAI_Stalker*>( &object() );
+  ASSERT_FMT( stalker, "[%s]: %s not a CAI_Stalker", __FUNCTION__, object().cName().c_str() );
+  stalker->m_ce_angle->setup(
+    enemy_position, min_enemy_distance, max_enemy_distance, enemy_vertex_id,
+    [&]( const auto point ) -> bool {
+      return callback( point );
+    }
+  );
   const CCoverPoint *point = ai().cover_manager().best_cover( position, radius, *stalker->m_ce_angle );
   return point;
 }
