@@ -107,24 +107,18 @@ void CRender::Screenshot		(IRender_interface::ScreenshotMode mode, LPCSTR name)
 			break;
 		case IRender_interface::SM_NORMAL:
 			{
-				string64			t_stemp;
-				string_path			buf;
-				sprintf_s			(buf,sizeof(buf),"ss_%s_%s_(%s).png",Core.UserName,timestamp(t_stemp),(g_pGameLevel)?g_pGameLevel->name().c_str():"mainmenu");
-				ID3DXBuffer*		saved	= 0;
-				CHK_DX				(D3DXSaveSurfaceToFileInMemory (&saved,D3DXIFF_PNG,pFB,0,0));
-				IWriter*		fs	= FS.w_open	("$screenshots$",buf); R_ASSERT(fs);
-				fs->w				(saved->GetBufferPointer(),saved->GetBufferSize());
-				FS.w_close			(fs);
-				_RELEASE			(saved);
-				if (strstr(Core.Params,"-ss_tga"))	{ // hq
-					sprintf_s			(buf,sizeof(buf),"ssq_%s_%s_(%s).tga",Core.UserName,timestamp(t_stemp),(g_pGameLevel)?g_pGameLevel->name().c_str():"mainmenu");
-					ID3DXBuffer*		saved	= 0;
-					CHK_DX				(D3DXSaveSurfaceToFileInMemory (&saved,D3DXIFF_TGA,pFB,0,0));
-					IWriter*		fs	= FS.w_open	("$screenshots$",buf); R_ASSERT(fs);
-					fs->w				(saved->GetBufferPointer(),saved->GetBufferSize());
-					FS.w_close			(fs);
-					_RELEASE			(saved);
-				}
+				bool UsePNG = !!strstr(Core.Params, "-ss_png");
+				bool UseTGA = !!strstr(Core.Params, "-ss_tga");
+				string64 t_stemp;
+				string_path buf;
+				sprintf_s(buf, sizeof(buf), "ss_%s_%s_(%s).%s", Core.UserName, timestamp(t_stemp), g_pGameLevel ? g_pGameLevel->name().c_str() : "mainmenu", UsePNG ? "png" : UseTGA ? "tga" : "jpg");
+				ID3DXBuffer* saved = nullptr;
+				CHK_DX(D3DXSaveSurfaceToFileInMemory(&saved, UsePNG ? D3DXIFF_PNG : UseTGA ? D3DXIFF_TGA : D3DXIFF_JPG, pFB, nullptr, nullptr));
+				IWriter* fs = FS.w_open("$screenshots$", buf);
+				R_ASSERT(fs);
+				fs->w(saved->GetBufferPointer(), saved->GetBufferSize());
+				FS.w_close(fs);
+				_RELEASE(saved);
 			}
 			break;
 		case IRender_interface::SM_FOR_LEVELMAP:
