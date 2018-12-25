@@ -231,11 +231,17 @@ void CHudItem::UpdateHudInertion		(Fmatrix& hud_trans)
 		m_last_dir.mad	(diff_dir,TENDTO_SPEED*Device.fTimeDelta);
 		origin.mad		(diff_dir,ORIGIN_OFFSET);
 
-		// pitch compensation
-		float pitch		= angle_normalize_signed(xform.k.getP());
-		origin.mad		(xform.k,	-pitch * PITCH_OFFSET_D);
-		origin.mad		(xform.i,	-pitch * PITCH_OFFSET_R);
-		origin.mad		(xform.j,	-pitch * PITCH_OFFSET_N);
+		CActor* pActor = smart_cast<CActor*>(object().H_Parent());
+
+		// что бы инерция не ломала прицеливание - не будем сдвигать оружие
+		if (!pActor->IsZoomAimingMode())
+		{
+			// pitch compensation
+			float pitch = angle_normalize_signed(xform.k.getP());
+			origin.mad(xform.k, -pitch * PITCH_OFFSET_D);
+			origin.mad(xform.i, -pitch * PITCH_OFFSET_R);
+			origin.mad(xform.j, -pitch * PITCH_OFFSET_N);
+		}
 
 		// calc moving inertion
 	}
