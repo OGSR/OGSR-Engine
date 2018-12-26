@@ -109,7 +109,9 @@ extern Flags32		ps_r2_dof_flags;
 extern u32			ps_ssao_mode;
 extern u32			ps_aa_mode;
 extern u32			ps_sunshafts_mode;
+
 extern u32			ps_Render_mode;
+extern u32 GetRenderMode();
 
 extern u32			ps_ssao_quality;
 extern u32			ps_aa_quality;

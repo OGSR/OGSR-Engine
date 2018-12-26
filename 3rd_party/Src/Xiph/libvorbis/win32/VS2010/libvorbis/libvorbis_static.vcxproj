@@ -14,8 +14,6 @@
     <ProjectGuid>{0F3163C6-FAE6-4FBD-BF88-037EB0420DAF}</ProjectGuid>
     <RootNamespace>libvorbis</RootNamespace>
     <Keyword>Win32Proj</Keyword>
-    <WindowsTargetPlatformVersion>
-    </WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">

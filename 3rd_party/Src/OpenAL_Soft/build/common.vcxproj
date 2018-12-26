@@ -12,8 +12,6 @@
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{FF359A96-2502-3362-8FB6-A0E40B35A2B0}</ProjectGuid>
-    <WindowsTargetPlatformVersion>
-    </WindowsTargetPlatformVersion>
     <Keyword>Win32Proj</Keyword>
     <Platform>Win32</Platform>
     <ProjectName>common</ProjectName>

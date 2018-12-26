@@ -35,7 +35,7 @@ void	CRenderTarget::phase_combine	()
 	t_LUM_src->surface_set		(rt_LUM_pool[gpu_id*2+0]->pSurface);
 	t_LUM_dest->surface_set		(rt_LUM_pool[gpu_id*2+1]->pSurface);
 
-	if (!_menu_pp && ps_r2_pp_flags.test(R2PP_FLAG_SSAO) && R2RM_NORMAL == ps_Render_mode)			phase_ssao();
+	if (!_menu_pp && ps_r2_pp_flags.test(R2PP_FLAG_SSAO) && R2RM_NORMAL == GetRenderMode())			phase_ssao();
 
 	// low/hi RTs
 	u_setrt				( rt_Generic_0,rt_Generic_1,0,HW.pBaseZB );
@@ -144,7 +144,7 @@ void	CRenderTarget::phase_combine	()
 		RCache.Render				(D3DPT_TRIANGLELIST,Offset,0,4,0,2);
 	}
 
-	if (!_menu_pp && R2RM_NORMAL == ps_Render_mode && ps_r2_ls_flags.test(R2FLAG_PUDDLES) && Puddles->m_bLoaded)				phase_puddles();
+	if (!_menu_pp && R2RM_NORMAL == GetRenderMode() && ps_r2_ls_flags.test(R2FLAG_PUDDLES) && Puddles->m_bLoaded)				phase_puddles();
 
 	// Forward rendering
 	//{
@@ -184,7 +184,7 @@ void	CRenderTarget::phase_combine	()
 	if (_menu_pp)			PP_Complex	= FALSE;
 
 	// KD: bunch of posteffects.
-	if (R2RM_NORMAL == ps_Render_mode)
+	if (R2RM_NORMAL == GetRenderMode())
 	{
 		if (!_menu_pp)
 		{
@@ -204,7 +204,7 @@ void	CRenderTarget::phase_combine	()
 				&& ps_r2_pp_flags.test(R2PP_FLAG_RAIN_DROPS_CONTROL))	phase_rain_drops();
 		}
 	}
-	else if (R2RM_THERMAL == ps_Render_mode)
+	else if (R2RM_THERMAL == GetRenderMode())
 	{
 		phase_thermal_vision();
 		//	PP-if required

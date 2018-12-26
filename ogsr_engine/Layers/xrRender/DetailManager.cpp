@@ -213,107 +213,135 @@ void CDetailManager::UpdateVisibleM()
 		for (auto& vis : vec)
 			vis.clear_not_free();
 
-	Fvector		EYE = Device.vCameraPosition;
+	Fvector EYE = Device.vCameraPositionSaved;
 
-	CFrustum	View;
-	View.CreateFromMatrix(Device.mFullTransform, FRUSTUM_P_LRTB + FRUSTUM_P_FAR);
+	CFrustum View;
+	View.CreateFromMatrix(Device.mFullTransformSaved, FRUSTUM_P_LRTB + FRUSTUM_P_FAR);
 
-	float fade_limit = dm_current_fade;	
-	fade_limit = fade_limit*fade_limit;
-
-	//	float fade_start			= 1.f;		fade_start=fade_start*fade_start;
-	float fade_start = 0.f;		fade_start = fade_start*fade_start;
+	float fade_limit = dm_fade;
+	fade_limit = fade_limit * fade_limit;
+	float fade_start = 1.f;
+	fade_start = fade_start * fade_start;
 	float fade_range = fade_limit - fade_start;
-	float		r_ssaCHEAP = 140 * r_ssaDISCARD;//16*r_ssaDISCARD;
+	float r_ssaCHEAP = 16 * r_ssaDISCARD;
 
 	// Initialize 'vis' and 'cache'
 	// Collect objects for rendering
 	Device.Statistic->RenderDUMP_DT_VIS.Begin();
-	g_pGamePersistent->m_pGShaderConstants.m_blender_mode.w = 1.0f; //--#SM+#-- Флаг начала рендера травы [begin of grass render]
-
-	for (u32 _mz = 0; _mz<dm_current_cache1_line; _mz++) {
-		for (u32 _mx = 0; _mx<dm_current_cache1_line; _mx++) {
+	for (u32 _mz = 0; _mz < dm_cache1_line; _mz++)
+	{
+		for (u32 _mx = 0; _mx < dm_cache1_line; _mx++)
+		{
 			CacheSlot1& MS = cache_level1[_mz][_mx];
-			if (MS.empty)		continue;
-
+			if (MS.empty)
+			{
+				continue;
+			}
 			u32 mask = 0xff;
 			u32 res = View.testSAABB(MS.vis.sphere.P, MS.vis.sphere.R, MS.vis.box.data(), mask);
-			if (fcvNone == res)						 	continue;	// invisible-view frustum
-																	// test slots
-			for (int _i = 0; _i<dm_cache1_count*dm_cache1_count; _i++) {
-				Slot*	PS = *MS.slots[_i];
-				Slot& 	S = *PS;
+			if (fcvNone == res)
+			{
+				continue; // invisible-view frustum
+			}
+			// test slots
+
+			u32 dwCC = dm_cache1_count * dm_cache1_count;
+
+			for (u32 _i = 0; _i < dwCC; _i++)
+			{
+				Slot* PS = *MS.slots[_i];
+				Slot& S = *PS;
+
+				//if (_i+1<dwCC);
+				//    _mm_prefetch((char*)*MS.slots[_i+1], _MM_HINT_T1);
 
 				// if slot empty - continue
-				if (S.empty)	continue;
+				if (S.empty)
+				{
+					continue;
+				}
 
-				if (!RImplementation.HOM.visible(S.vis))	continue;	// invisible-occlusion
-																		// if upper test = fcvPartial - test inner slots
-																		// KD - if slot is far far away - do not test it.
-																		//				if () {
-				if (fcvPartial == res) {
+				// if upper test = fcvPartial - test inner slots
+				if (fcvPartial == res)
+				{
 					u32 _mask = mask;
 					u32 _res = View.testSAABB(S.vis.sphere.P, S.vis.sphere.R, S.vis.box.data(), _mask);
-					if (fcvNone == _res)						continue;	// invisible-view frustum
+					if (fcvNone == _res)
+					{
+						continue; // invisible-view frustum
+					}
 				}
-				//				}
+
+				if (!RImplementation.HOM.visible(S.vis))
+				{
+					continue; // invisible-occlusion
+				}
 
 				// Add to visibility structures
-				if (Device.dwFrame>S.frame) {
-					// Calc fade factor	(per slot)
-					float	dist_sq = EYE.distance_to_sqr(S.vis.sphere.P);
-					if (dist_sq>fade_limit)				continue;
-					float	alpha = (dist_sq<fade_start) ? 0.f : (dist_sq - fade_start) / fade_range;
-					float	alpha_i = 1.f - alpha;
-					float	dist_sq_rcp = 1.f / dist_sq;
+				if (Device.dwFrame > S.frame)
+				{
+					// Calc fade factor (per slot)
+					float dist_sq = EYE.distance_to_sqr(S.vis.sphere.P);
+					if (dist_sq > fade_limit)
+						continue;
+					float alpha = (dist_sq < fade_start) ? 0.f : (dist_sq - fade_start) / fade_range;
+					float alpha_i = 1.f - alpha;
+					float dist_sq_rcp = 1.f / dist_sq;
 
-					S.frame = Device.dwFrame + ::Random.randI(15, 30);
-					for (int sp_id = 0; sp_id<dm_obj_in_slot; sp_id++) {
-						SlotPart&			sp = S.G[sp_id];
-						if (sp.id == DetailSlot::ID_Empty)	continue;
+					S.frame = Device.dwFrame + Random.randI(15, 30);
+					for (int sp_id = 0; sp_id < dm_obj_in_slot; sp_id++)
+					{
+						SlotPart& sp = S.G[sp_id];
+						if (sp.id == DetailSlot::ID_Empty)
+							continue;
 
-						sp.r_items[0].clear_not_free();
-						sp.r_items[1].clear_not_free();
-						sp.r_items[2].clear_not_free();
+						sp.r_items[0].clear();
+						sp.r_items[1].clear();
+						sp.r_items[2].clear();
 
-						float				R = objects[sp.id]->bv_sphere.R;
-						float				Rq_drcp = R*R*dist_sq_rcp;	// reordered expression for 'ssa' calc
+						float R = objects[sp.id]->bv_sphere.R;
+						float Rq_drcp = R * R * dist_sq_rcp; // reordered expression for 'ssa' calc
 
-						SlotItem **siIT = std::data( sp.items ), **siEND = std::data( sp.items ) + std::size( sp.items );
-						u32 si_idx = 0;
-						for (; siIT != siEND; siIT++) {
-							if (!(*siIT))
+						for (auto &siIT : sp.items)
+						{
+							SlotItem& Item = *siIT;
+							float scale = Item.scale_calculated = Item.scale * alpha_i;
+							float ssa = scale * scale * Rq_drcp;
+							if (ssa < r_ssaDISCARD)
 							{
-								/*#pragma todo				("Don't forget to remove this in release!")
-								Msg("[DETAILS MANAGER]: SlotItem ptr is broken! siIT=%d, *siIT=%d in mz=%d, mx=%d, _i=%d, sp_id=%d, si_idx=%d", (u32)siIT, (u32)(*siIT), _mz, _mx, _i, sp_id, si_idx);*/
 								continue;
 							}
-							SlotItem& Item = *(*siIT);
-							float   scale = Item.scale_calculated = Item.scale*alpha_i;
-							float	ssa = scale*scale*Rq_drcp;
-							if (ssa < r_ssaDISCARD) continue;
-							u32		vis_id = 0;
-							if (ssa > r_ssaCHEAP)	vis_id = Item.vis_ID;
+							u32 vis_id = 0;
+							if (ssa > r_ssaCHEAP)
+								vis_id = Item.vis_ID;
 
-							sp.r_items[vis_id].push_back(*siIT);
+							sp.r_items[vis_id].push_back(siIT);
 
-							++si_idx;
-							//2							visible[vis_id][sp.id].push_back(&Item);
+							// 2 visible[vis_id][sp.id].push_back(&Item);
 						}
 					}
 				}
-				for (int sp_id = 0; sp_id<dm_obj_in_slot; sp_id++) {
-					SlotPart&			sp = S.G[sp_id];
-					if (sp.id == DetailSlot::ID_Empty)	continue;
-					if (!sp.r_items[0].empty()) m_visibles[0][sp.id].push_back(&sp.r_items[0]);
-					if (!sp.r_items[1].empty()) m_visibles[1][sp.id].push_back(&sp.r_items[1]);
-					if (!sp.r_items[2].empty()) m_visibles[2][sp.id].push_back(&sp.r_items[2]);
+				for (int sp_id = 0; sp_id < dm_obj_in_slot; sp_id++)
+				{
+					SlotPart& sp = S.G[sp_id];
+					if (sp.id == DetailSlot::ID_Empty)
+						continue;
+					if (!sp.r_items[0].empty())
+					{
+						m_visibles[0][sp.id].push_back(&sp.r_items[0]);
+					}
+					if (!sp.r_items[1].empty())
+					{
+						m_visibles[1][sp.id].push_back(&sp.r_items[1]);
+					}
+					if (!sp.r_items[2].empty())
+					{
+						m_visibles[2][sp.id].push_back(&sp.r_items[2]);
+					}
 				}
 			}
 		}
 	}
-
-	g_pGamePersistent->m_pGShaderConstants.m_blender_mode.w = 0.0f; //--#SM+#-- Флаг конца рендера травы [end of grass render]
 	Device.Statistic->RenderDUMP_DT_VIS.End();
 }
 
