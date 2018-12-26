@@ -119,6 +119,7 @@ void InitConsole	()
 	CORE_FEATURE_SET( use_trade_deficit_factor,   "features" );
 	CORE_FEATURE_SET( show_objectives_ondemand,   "features" );
 	CORE_FEATURE_SET( pickup_check_overlaped,     "features" );
+	CORE_FEATURE_SET( wallmarks_on_static_only,   "features" );
 }
 
 void InitInput		()
