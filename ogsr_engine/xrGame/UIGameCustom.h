@@ -65,8 +65,6 @@ public:
 	const GAME_WEATHERS&		GetGameWeathers	();
 };
 
-extern CMapListHelper	gMapListHelper;
-
 class CUIGameCustom :public DLL_Pure, public ISheduled
 {
 	typedef ISheduled inherited;
