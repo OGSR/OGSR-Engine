@@ -64,21 +64,16 @@ CInput::CInput						( BOOL bExclusive, int deviceForInit)
 
 	Debug.set_on_dialog				(&on_error_dialog);
 
-#ifdef ENGINE_BUILD
 	Device.seqAppActivate.Add		(this);
 	Device.seqAppDeactivate.Add		(this);
 	Device.seqFrame.Add				(this, REG_PRIORITY_HIGH);
-#endif
 }
 
 CInput::~CInput(void)
 {
-#ifdef ENGINE_BUILD
 	Device.seqFrame.Remove			(this);
 	Device.seqAppDeactivate.Remove	(this);
 	Device.seqAppActivate.Remove	(this);
-#endif
-	//_______________________
 
 	// Unacquire and release the device's interfaces
 	if( pMouse ){

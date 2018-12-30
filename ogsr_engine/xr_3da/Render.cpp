@@ -12,3 +12,6 @@ IRender_Light::~IRender_Light	()			{
 IRender_Glow::~IRender_Glow		()			{	
 	::Render->glow_destroy		(this	);	
 }
+
+ENGINE_API Fvector4 w_states = { 0,0,0,1 };
+ENGINE_API Fvector3 w_timers = { 0,0,0 };

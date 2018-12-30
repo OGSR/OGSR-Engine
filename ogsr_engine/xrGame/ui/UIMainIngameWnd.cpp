@@ -94,10 +94,10 @@ DLL_API CUIMainIngameWnd* GetMainIngameWindow()
 CUIStatic * warn_icon_list[8] = { NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL };
 
 // alpet: для возможности внешнего контроля иконок (используется в NLC6 вместо типичных индикаторов). Никак не влияет на игру для остальных модов.
-bool __declspec(dllexport) external_icon_ctrl = false;
+bool external_icon_ctrl = false;
 
 // позволяет расцветить иконку или изменить её размер
-bool __declspec(dllexport) SetupGameIcon(u32 icon, u32 cl, float width, float height)
+bool SetupGameIcon(u32 icon, u32 cl, float width, float height)
 {
 	CUIMainIngameWnd *window = GetMainIngameWindow();
 	if (!window)

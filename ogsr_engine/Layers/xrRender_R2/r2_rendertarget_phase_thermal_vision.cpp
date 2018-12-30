@@ -1,8 +1,6 @@
 #include "stdafx.h"
 
 static u32 previous_weapon_state = 0;
-Fvector4 w_states = { 0,0,0,1 };
-Fvector3 w_timers = { 0,0,0 };
 void CRenderTarget::phase_thermal_vision()
 {
 	u32 Offset;

@@ -205,6 +205,7 @@ void set_current_thread_name(const char* threadName) { prctl(PR_SET_NAME, thread
 #endif
 
 
+/* Не используется
 void spline1	( float t, Fvector *p, Fvector *ret )
 {
 	float     t2  = t * t;
@@ -227,7 +228,6 @@ void spline1	( float t, Fvector *p, Fvector *ret )
 	}
 }
 
-/* Не используется
 void spline2( float t, Fvector *p, Fvector *ret )
 {
 	float	s= 1.0f - t;

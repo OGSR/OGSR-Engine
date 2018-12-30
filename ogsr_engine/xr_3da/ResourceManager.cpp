@@ -15,7 +15,7 @@
 #include "blenders\blender_recorder.h"
 
 
-void fix_texture_name(LPSTR fn)
+ENGINE_API void fix_texture_name(LPSTR fn)
 {
 	LPSTR _ext = strext(fn);
 	if(  _ext					&&

@@ -3,6 +3,16 @@
 #include "stdafx.h"
 #include "..\xrRender\xrRender_console.h"
 
+#ifdef XRRENDER_R2_STATIC
+
+void AttachR2()
+{
+	::Render = &RImplementation;
+	xrRender_initconsole();
+}
+
+#else
+
 BOOL APIENTRY DllMain( HANDLE hModule, 
                        DWORD  ul_reason_for_call, 
                        LPVOID lpReserved
@@ -22,3 +32,5 @@ BOOL APIENTRY DllMain( HANDLE hModule,
 	}
 	return TRUE;
 }
+
+#endif

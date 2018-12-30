@@ -24,7 +24,7 @@ void xrCore::_initialize	(LPCSTR _ApplicationName, LogCallback cb, BOOL init_fs,
 	strcpy_s(ApplicationName, _ApplicationName);
 	if (0==init_counter) {
 
-#ifdef XRCORE_STATIC	
+#ifdef XRCORE_STATIC
 		_clearfp();
 #ifdef _M_IX86
 		_controlfp(_PC_53, MCW_PC);
@@ -32,6 +32,22 @@ void xrCore::_initialize	(LPCSTR _ApplicationName, LogCallback cb, BOOL init_fs,
 		_controlfp(_RC_CHOP, MCW_RC);
 		_controlfp(_RC_NEAR, MCW_RC);
 		_controlfp(_MCW_EM, MCW_EM);
+		/*
+			По сути это не рекомендуемый Microsoft, но повсеместно используемый способ повышения точности
+			соблюдения и измерения временных интревалов функциями Sleep, QueryPerformanceCounter,
+			timeGetTime и GetTickCount.
+			Функция действует на всю операционную систему в целом (!) и нет необходимости вызывать её при
+			старте нового потока. Вызов timeEndPeriod специалисты Microsoft считают обязательным.
+			Есть подозрения, что Windows сама устанавливает максимальную точность при старте таких
+			приложений как, например, игры. Тогда есть шанс, что вызов timeBeginPeriod здесь бессмысленен.
+			Недостатком данного способа является то, что он приводит к общему замедлению работы как
+			текущего приложения, так и всей операционной системы.
+			Ещё можно посмотреть ссылки:
+			https://msdn.microsoft.com/en-us/library/vs/alm/dd757624(v=vs.85).aspx
+			https://users.livejournal.com/-winnie/151099.html
+			https://github.com/tebjan/TimerTool
+		*/
+		timeBeginPeriod(1);
 #endif
 
 		strcpy_s(Params, sizeof(Params), GetCommandLine());
@@ -116,6 +132,11 @@ void xrCore::_destroy		()
 		Memory._destroy		();
 
 		CoUninitialize();
+
+#ifdef XRCORE_STATIC
+		_clearfp();
+		timeEndPeriod(1);
+#endif
 	}
 }
 

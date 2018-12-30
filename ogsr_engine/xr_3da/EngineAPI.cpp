@@ -27,13 +27,31 @@ CEngineAPI::~CEngineAPI()
 {
 }
 
+#ifdef XRGAME_STATIC
+extern "C" {
+	DLL_Pure* xrFactory_Create(CLASS_ID clsid);
+	void xrFactory_Destroy(DLL_Pure* O);
+}
+#endif
+
 void CEngineAPI::Initialize()
 {
+#ifdef XRRENDER_R2_STATIC
+	void AttachR2();
+	AttachR2();
+#else
 	constexpr const char* r2_name = "xrRender.dll";
 	Msg("--Loading DLL: [%s]", r2_name);
 	hRender = LoadLibrary(r2_name);
 	ASSERT_FMT(hRender, "Failed render loading. Error: [%s]", Debug.error2string(GetLastError()));
+#endif
 
+#ifdef XRGAME_STATIC
+	pCreate = &xrFactory_Create;
+	pDestroy = &xrFactory_Destroy;
+	void AttachGame();
+	AttachGame();
+#else
 	constexpr const char* g_name = "xrGame.dll";
 	Msg("--Loading DLL: [%s]", g_name);
 	hGame = LoadLibrary(g_name);
@@ -42,6 +60,7 @@ void CEngineAPI::Initialize()
 	R_ASSERT(pCreate);
 	pDestroy = (Factory_Destroy*)GetProcAddress(hGame, "xrFactory_Destroy");
 	R_ASSERT(pDestroy);
+#endif
 }
 
 void CEngineAPI::Destroy()

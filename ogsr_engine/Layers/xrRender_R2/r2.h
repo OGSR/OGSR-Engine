@@ -283,7 +283,6 @@ public:
 	// KD: need to know, what R2 phase is active now
 	virtual u32						active_phase				()	{return phase;};
 	virtual BOOL					is_sun						();
-	void							set_thermovision_data		(Fvector* w_timers, Fvector4* w_states);
 	virtual BOOL					is_required_lens_dirt		();
 
 	// Constructor/destructor/loader
@@ -292,8 +291,8 @@ public:
 };
 
 extern CRender						RImplementation;
-extern Fvector4 w_states;
-extern Fvector3 w_timers;
+extern ENGINE_API Fvector4 w_states;
+extern ENGINE_API Fvector3 w_timers;
 /*extern rain_timer_params *rain_timers_raycheck;
 extern rain_timer_params *rain_timers;
 extern Fvector4 *rain_params;*/

@@ -1,9 +1,7 @@
 #include "stdafx.h"
 #include "..\xrRender\xrRender_console.h"
 
-extern Fvector du_cone_vertices[DU_CONE_NUMVERTEX];
-
-extern int reset_frame;
+//extern int reset_frame;
 
 void CRenderTarget::accum_spot(light* L)
 {

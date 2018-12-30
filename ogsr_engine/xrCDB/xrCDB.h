@@ -1,9 +1,11 @@
 #pragma once
 
-#ifdef XRCDB_EXPORTS
-#define XRCDB_API __declspec(dllexport)
+#ifdef XRCDB_STATIC
+#	define XRCDB_API
+#elif defined XRCDB_EXPORTS
+#	define XRCDB_API __declspec(dllexport)
 #else
-#define XRCDB_API __declspec(dllimport)
+#	define XRCDB_API __declspec(dllimport)
 #endif
 
 #define ALIGN(a) alignas(a)

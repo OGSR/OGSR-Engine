@@ -9,7 +9,7 @@
 
 #include "Actor.h"
 
- bool __declspec(dllexport)		external_zoom_osc = false; // alpet: флажок внешнего рассчета колебаний прицела (из скриптов).
+ bool external_zoom_osc = false; // alpet: флажок внешнего рассчета колебаний прицела (из скриптов).
 
  void switch_zoom_osc (bool bExternal) 
  {

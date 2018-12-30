@@ -36,8 +36,8 @@
 #define WEAPON_REMOVE_TIME		60000
 #define ROTATION_TIME			0.25f
 
-Fvector4 w_states = { 0,0,0,1 };
-Fvector3 w_timers = { 0,0,0 };
+extern ENGINE_API Fvector4 w_states;
+extern ENGINE_API Fvector3 w_timers;
 
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
@@ -827,8 +827,7 @@ void CWeapon::UpdateWeaponParams()
 			w_states.y = (float)GetState();				// обновляем состояние
 		}
 		// флаг бинокля в руках (в этом режиме не нужно размытие)
-		auto bino = smart_cast<CWeaponBinoculars*>(this);
-		if (clsid() == CLSID_OBJECT_W_BINOCULAR || bino)
+		if (smart_cast<CWeaponBinoculars*>(this))
 			w_states.w = 0;
 		else
 			w_states.w = 1;
@@ -845,7 +844,6 @@ void CWeapon::UpdateWeaponParams()
 			}
 		}
 		w_timers.x = Device.fTimeGlobal - state_time;		// обновляем таймер текущего состояния
-		::Render->set_thermovision_data(&w_timers, &w_states);
 	}
 }
 
@@ -1505,7 +1503,6 @@ void CWeapon::OnZoomOut()
 		CActor* pActor = smart_cast<CActor*>(H_Parent());
 		if ( pActor ) {
 			w_states.set( 0.f, 0.f, 0.f, 1.f );
-			::Render->set_thermovision_data( &w_timers, &w_states );
 			pActor->callback(GameObject::eOnActorWeaponZoomOut)(lua_game_object());
 		}
 	}

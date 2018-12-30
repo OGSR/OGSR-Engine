@@ -114,7 +114,7 @@ CObjectSpace::~CObjectSpace	( )
 #endif
 }
 //----------------------------------------------------------------------
-IC int	CObjectSpace::GetNearest	( xr_vector<CObject*>&	q_nearest, const Fvector &point, float range, CObject* ignore_object )
+int	CObjectSpace::GetNearest	( xr_vector<CObject*>&	q_nearest, const Fvector &point, float range, CObject* ignore_object )
 {
 	// Query objects
 	q_nearest.clear_not_free		( );
@@ -136,7 +136,7 @@ IC int	CObjectSpace::GetNearest	( xr_vector<CObject*>&	q_nearest, const Fvector 
 	return q_nearest.size();
 }
 //----------------------------------------------------------------------
-IC int   CObjectSpace::GetNearest( xr_vector<CObject*>&	q_nearest, ICollisionForm* obj, float range)
+int   CObjectSpace::GetNearest( xr_vector<CObject*>&	q_nearest, ICollisionForm* obj, float range)
 {
 	CObject*	O		= obj->Owner	();
 	return				GetNearest( q_nearest, O->spatial.sphere.P, range + O->spatial.sphere.R, O );

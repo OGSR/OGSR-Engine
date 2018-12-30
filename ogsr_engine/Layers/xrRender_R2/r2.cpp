@@ -865,11 +865,6 @@ HRESULT	CRender::shader_compile(
 	return		_result;
 }
 
-void CRender::set_thermovision_data(Fvector* _w_timers, Fvector4* _w_states)
-{
-	w_states.set(*_w_states);
-	w_timers.set(*_w_timers);
-}
 BOOL CRender::is_required_lens_dirt() 
 {
 	return ps_r2_pp_flags.test(R2PP_FLAG_LENS_DIRT_CONTROL); 

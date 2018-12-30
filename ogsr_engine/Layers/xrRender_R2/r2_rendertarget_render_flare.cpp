@@ -6,15 +6,8 @@
 #define BLEND_DEC_SPEED 4.0f
 
 extern int reset_frame;
-inline void	blend_lerp(float& cur, float tgt, float speed, float dt)
-{
-	float diff = tgt - cur;
-	float diff_a = abs(diff);
-	if (diff_a < EPS_S)	return;
-	float mot = speed*dt;
-	if (mot>diff_a) mot = diff_a;
-	cur += (diff / diff_a)*mot;
-}
+ENGINE_API void blend_lerp(float& cur, float tgt, float speed, float dt);
+
 BOOL RayPick_LF(const Fvector& s, const Fvector& d, float& range, collide::rq_target tgt)
 {
 	BOOL bRes 			= TRUE;
