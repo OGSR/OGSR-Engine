@@ -35,7 +35,7 @@ void CPolterSpecialAbility::load(LPCSTR section)
 
 void CPolterSpecialAbility::update_schedule()
 {
-	if (m_object->g_Alive()) {
+	if ( m_object->g_Alive() && m_object->is_hidden() ) {
 		if (!m_sound_base._feedback()) m_sound_base.play_at_pos(m_object, m_object->Position());
 		else m_sound_base.set_position(m_object->Position());
 	}
@@ -54,6 +54,7 @@ void CPolterSpecialAbility::on_show()
 {
 	if (m_particles_object)			CParticlesObject::Destroy(m_particles_object);
 	if (m_particles_object_electro) CParticlesObject::Destroy(m_particles_object_electro);
+	m_sound_base.stop();
 }
 
 void CPolterSpecialAbility::update_frame()
@@ -71,6 +72,7 @@ void CPolterSpecialAbility::on_die()
 
 	CParticlesObject::Destroy		(m_particles_object_electro);
 	CParticlesObject::Destroy		(m_particles_object);
+	m_sound_base.stop();
 }
 
 void CPolterSpecialAbility::on_hit(SHit* pHDS)

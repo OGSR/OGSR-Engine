@@ -429,14 +429,15 @@ void CShootingObject::FireBullet(const Fvector& pos,
 	Fvector dir;
 	random_dir(dir,shot_dir,fire_disp);
 
-	if (constDeviation.pitch != 0 || constDeviation.yaw != 0) // WARN: при больших значениях девиации стрелок может отсрелить себе голову!
-	{
+        if ( !Core.Features.test( xrCore::Feature::npc_simplified_shooting ) || ParentIsActor() )
+	  if ( !fis_zero( constDeviation.pitch ) || !fis_zero( constDeviation.yaw ) ) {
+	    // WARN: при больших значениях девиации стрелок может отсрелить себе голову!
 		float dir_yaw, dir_pitch;
 		dir.getHP(dir_yaw, dir_pitch);
 		dir_pitch += constDeviation.pitch;		
 		dir_yaw += constDeviation.yaw;
 		dir.setHP(dir_yaw, dir_pitch);
-	}
+	  }
 
 	m_vCurrentShootDir = dir;
 	m_vCurrentShootPos = pos;

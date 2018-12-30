@@ -388,6 +388,17 @@ bool CPhysicsShellHolder::register_schedule	() const
 	return					(b_sheduled);
 }
 
+
+#include <filesystem>
+
 bool CPhysicsShellHolder::ActorCanCapture() const {
-	return !!pSettings->line_exist("ph_capture_visuals", this->cNameVisual().c_str());
+  if ( pSettings->line_exist( "ph_capture_visuals", cNameVisual().c_str() ) )
+    return true;
+  std::filesystem::path p = cNameVisual().c_str();
+  while ( p.has_parent_path() ) {
+    p = p.parent_path();
+    if ( pSettings->line_exist( "ph_capture_visuals", p.string().c_str() ) )
+      return true;
+  }
+  return false;
 }

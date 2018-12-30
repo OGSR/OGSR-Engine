@@ -394,6 +394,7 @@ void CEntityAlive::PlaceBloodWallmark(const Fvector& dir, const Fvector& start_p
 
 	if ( !Level().ObjectSpace.RayPick( start_pos, dir, trace_dist, collide::rqtBoth, result, this ) )
 		return;
+	if ( result.O && Core.Features.test( xrCore::Feature::wallmarks_on_static_only ) ) return;
 
 	//вычислить точку попадания
 	Fvector end_point;

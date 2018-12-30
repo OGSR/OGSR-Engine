@@ -17,6 +17,10 @@
 //возвращает 1, если оружие в отличном состоянии и >1 если повреждено
 float CWeapon::GetConditionDispersionFactor() const
 {
+	if ( Core.Features.test( xrCore::Feature::npc_simplified_shooting ) ) {
+	  const CActor* actor = smart_cast<const CActor*>( H_Parent() );
+	  if ( !actor ) return 1.f;
+	}
 	return (1.f + fireDispersionConditionFactor*(1.f-GetCondition()));
 }
 
