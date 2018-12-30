@@ -17,7 +17,6 @@
 
 constexpr u32 BIG_FILE_READER_WINDOW_SIZE	= 1024*1024;
 
-using DUMMY_STUFF = void( const void*, const u32&, void* );
 XRCORE_API DUMMY_STUFF* g_temporary_stuff = nullptr;
 
 std::unique_ptr<CLocatorAPI> xr_FS;
@@ -621,12 +620,16 @@ void CLocatorAPI::_initialize	(u32 flags, LPCSTR target_folder, LPCSTR fs_name)
 			FS_Path* P			= xr_new<FS_Path>((p_it!=pathes.end())?p_it->second->m_Path:root,lp_add,lp_def,lp_capt,fl);
 			bNoRecurse			= !(fl&FS_Path::flRecurse);
 #ifdef RESTRICT_GAMEDATA
+#if __has_include("..\build_config_overrides\trivial_encryptor_ovr.h")
+#error Something strange...
+#endif
 			bool restricted = false;
 			if ( ( xr_strcmp( id, "$game_config$" ) == 0 || xr_strcmp( id, "$game_scripts$" ) == 0 ) )
 				restricted = !Core.ParamFlags.test( xrCore::ParamFlag::dbg );
 			if ( !restricted )
-#endif
+#elif !__has_include("..\build_config_overrides\trivial_encryptor_ovr.h")
 			Recurse				(P->m_Path);
+#endif
 			I					= pathes.insert(mk_pair(xr_strdup(id),P));
 #ifndef DEBUG
 			m_Flags.set			(flCacheFiles,FALSE);
@@ -638,9 +641,10 @@ void CLocatorAPI::_initialize	(u32 flags, LPCSTR target_folder, LPCSTR fs_name)
 		R_ASSERT		(path_exist("$app_data_root$"));
 	};
 		
+#if !__has_include("..\build_config_overrides\trivial_encryptor_ovr.h")
 	if (!m_Flags.is(flTargetFolderOnly))
 		ProcessExternalArch();
-
+#endif
 
 	u32	M2			= Memory.mem_usage();
 	Msg				("FS: %d files cached, %dKb memory used.",files.size(),(M2-M1)/1024);

@@ -26,10 +26,6 @@ static const std::vector<const char*> NoCompress = { //Расширения фа
 };
 
 
-using DUMMY_STUFF = void(const void*, const u32&, void*);
-extern XRCORE_API DUMMY_STUFF *g_temporary_stuff;
-extern XRCORE_API DUMMY_STUFF *g_dummy_stuff;
-
 bool bStoreFiles = false;
 bool MOD_COMPRESS = false;
 

@@ -341,10 +341,6 @@ struct damn_keys_filter {
 
 #include "xr_ioc_cmd.h"
 
-using DUMMY_STUFF = void( const void*, const u32&, void* );
-extern XRCORE_API DUMMY_STUFF* g_temporary_stuff;
-#include "trivial_encryptor.h"
-
 int APIENTRY WinMain_impl(HINSTANCE hInstance, HINSTANCE hPrevInstance, char* lpCmdLine, int nCmdShow )
 {
 	HANDLE hCheckPresenceMutex = INVALID_HANDLE_VALUE;
@@ -382,8 +378,6 @@ int APIENTRY WinMain_impl(HINSTANCE hInstance, HINSTANCE hPrevInstance, char* lp
 		int						sz = xr_strlen(fsgame_ltx_name);
 		sscanf					(strstr(lpCmdLine,fsgame_ltx_name)+sz,"%[^ ] ",fsgame);
 	}
-
-	g_temporary_stuff			= &trivial_encryptor::decode;
 	
 	Core._initialize			("xray",NULL, TRUE, fsgame[0] ? fsgame : NULL);
 	InitSettings				();

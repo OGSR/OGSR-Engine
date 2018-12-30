@@ -2,7 +2,6 @@
 
 #include "fs_internal.h"
 
-using DUMMY_STUFF = void( const void*, const u32&, void* );
 XRCORE_API DUMMY_STUFF* g_dummy_stuff = nullptr; //Нужно для xrCompressor. Не удалять!
 
 #ifdef DEBUG
