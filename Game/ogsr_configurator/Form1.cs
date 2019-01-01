@@ -371,7 +371,7 @@ namespace Configurator
 
         public void ExecuteString(string platform, string param)
         {
-            string engine_path = @"bin_" + platform + "\\XR_3DA.exe";
+            string engine_path = @"bin_" + platform + "\\xrEngine.exe";
             try
             {
                 var p = new Process { StartInfo = new ProcessStartInfo(engine_path, param) };
