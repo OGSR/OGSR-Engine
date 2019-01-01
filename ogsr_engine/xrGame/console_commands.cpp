@@ -310,6 +310,8 @@ public:
 		g_pGameLevel->Cameras().AddCamEffector(xr_new<CDemoRecord> (fn));
 	}
 };
+
+/*
 class CCC_DemoPlay : public IConsole_Command
 {
 public:
@@ -335,6 +337,7 @@ public:
 		  }
 	  }
 };
+*/
 
 bool valid_file_name(LPCSTR file_name)
 {
@@ -1146,7 +1149,7 @@ void CCC_RegisterCommands()
 //#endif // DEBUG
 
 	// Demo
-	CMD1(CCC_DemoPlay,			"demo_play"				);
+	//CMD1(CCC_DemoPlay,			"demo_play"				); //TODO: Надо дорезать, тк частично там уже вырезано, и в любом случае команда не работает.
 	CMD1(CCC_DemoRecord,		"demo_record"			);
 
 #ifndef MASTER_GOLD
