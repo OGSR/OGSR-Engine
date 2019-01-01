@@ -13,6 +13,7 @@
 #include "phworld.h"
 #include "phactivationshape.h"
 #include "phvalide.h"
+#include "PHElement.h"
 CPhysicsShellHolder::CPhysicsShellHolder()
 {
 	init();
@@ -392,6 +393,9 @@ bool CPhysicsShellHolder::register_schedule	() const
 #include <filesystem>
 
 bool CPhysicsShellHolder::ActorCanCapture() const {
+  if ( !m_pPhysicsShell ) return false;
+  for ( const auto it : m_pPhysicsShell->Elements() )
+    if ( it->isFixed() ) return false;
   if ( pSettings->line_exist( "ph_capture_visuals", cNameVisual().c_str() ) )
     return true;
   std::filesystem::path p = cNameVisual().c_str();

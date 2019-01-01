@@ -627,8 +627,12 @@ void CLocatorAPI::_initialize	(u32 flags, LPCSTR target_folder, LPCSTR fs_name)
 			if ( ( xr_strcmp( id, "$game_config$" ) == 0 || xr_strcmp( id, "$game_scripts$" ) == 0 ) )
 				restricted = !Core.ParamFlags.test( xrCore::ParamFlag::dbg );
 			if ( !restricted )
-#elif !__has_include("..\build_config_overrides\trivial_encryptor_ovr.h")
-			Recurse				(P->m_Path);
+				Recurse(P->m_Path);
+#elif __has_include("..\build_config_overrides\trivial_encryptor_ovr.h")
+			if (!strcmp(id, "$app_data_root$") || !strcmp(id, "$game_saves$") || !strcmp(id, "$logs$") || !strcmp(id, "$screenshots$"))
+				Recurse(P->m_Path);
+#else
+			Recurse(P->m_Path);
 #endif
 			I					= pathes.insert(mk_pair(xr_strdup(id),P));
 #ifndef DEBUG
