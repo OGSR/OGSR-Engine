@@ -103,6 +103,7 @@ public:
     {
         ID						= -1;
 		m_Name					= "unknown";
+		m_Desc					= "";
         Flags.zero				();
         // factors
         fFlotationFactor		= 1.f;
