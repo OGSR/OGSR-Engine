@@ -37,7 +37,7 @@ CALifeMonsterPatrolPathManager::CALifeMonsterPatrolPathManager	(object_type *obj
 
 void CALifeMonsterPatrolPathManager::path						(const shared_str &path_name)
 {
-	path					(ai().patrol_paths().path(path_name));
+	path( ai().patrol_paths().safe_path( path_name ) );
 }
 
 const CALifeMonsterPatrolPathManager::_GRAPH_ID &CALifeMonsterPatrolPathManager::target_game_vertex_id	() const

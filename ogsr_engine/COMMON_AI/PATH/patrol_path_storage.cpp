@@ -11,6 +11,9 @@
 #include "patrol_path.h"
 #include "patrol_point.h"
 #include "levelgamedef.h"
+#include "ai_space.h"
+#include "level_graph.h"
+#include "game_graph.h"
 
 CPatrolPathStorage::~CPatrolPathStorage		()
 {
@@ -127,4 +130,26 @@ void CPatrolPathStorage::remove_path( shared_str patrol_name ) {
 void CPatrolPathStorage::add_path( shared_str patrol_name, CPatrolPath *path ) {
   remove_path( patrol_name );
   m_registry.insert( std::make_pair( patrol_name, path ) );
+}
+
+
+const CPatrolPath* CPatrolPathStorage::safe_path( shared_str patrol_name, bool no_assert, bool on_level ) const {
+  auto it = m_registry.find( patrol_name );
+  if ( it == m_registry.end() )
+    return path( patrol_name, no_assert );
+
+  for ( auto& it2 : (*it).second->vertices() ) {
+    auto& pp = it2.second->data();
+    if ( on_level || ( ai().game_graph().valid_vertex_id( pp.m_game_vertex_id ) && ai().game_graph().vertex( pp.m_game_vertex_id )->level_id() == ai().level_graph().level_id() ) ) {
+      if ( !ai().level_graph().valid_vertex_id( pp.m_level_vertex_id ) ) {
+        u32 prev_vertex_id = pp.m_level_vertex_id;
+        pp.m_level_vertex_id = ai().level_graph().vertex( pp.m_position );
+        Msg( "* [%s]: path[%s] pp[%s] level_vertex_id[%u] -> %u", __FUNCTION__, patrol_name.c_str(), pp.m_name.c_str(), prev_vertex_id, pp.m_level_vertex_id );
+      }
+    }
+    else
+      return path( patrol_name, no_assert );
+  }
+
+  return path( patrol_name, no_assert );
 }
