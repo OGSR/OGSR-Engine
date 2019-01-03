@@ -70,14 +70,14 @@ protected:
 	shared_str		m_sTeleParticlesBig;
 	shared_str		m_sTeleParticlesSmall;
 };
-
-class CGraviZone	: public CBaseGraviZone
-{
-	typedef		CBaseGraviZone				inherited;
-	CTelekinesis m_telekinesis;
-protected:
-	virtual CTelekinesis& Telekinesis()						{return m_telekinesis;}
-public:
-						CGraviZone		(void)			{}
-	virtual				~CGraviZone		(void)			{}
-};
+//
+//class CGraviZone	: public CBaseGraviZone
+//{
+//	typedef		CBaseGraviZone				inherited;
+//	CTelekinesis m_telekinesis;
+//protected:
+//	virtual CTelekinesis& Telekinesis()						{return m_telekinesis;}
+//public:
+//						CGraviZone		(void)			{}
+//	virtual				~CGraviZone		(void)			{}
+//};

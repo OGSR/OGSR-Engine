@@ -1316,13 +1316,13 @@ void CCustomZone::ThrowOutArtefact(CArtefact* pArtefact)
 
 }
 
-void CCustomZone::PrefetchArtefacts()
-{
-	if (FALSE==m_zone_flags.test(eSpawnBlowoutArtefacts) || m_ArtefactSpawn.empty()) return;
-
-	for(u32 i = m_SpawnedArtefacts.size(); i < PREFETCHED_ARTEFACTS_NUM; ++i)
-		SpawnArtefact();
-}
+//void CCustomZone::PrefetchArtefacts()
+//{
+//	if (FALSE==m_zone_flags.test(eSpawnBlowoutArtefacts) || m_ArtefactSpawn.empty()) return;
+//
+//	for(u32 i = m_SpawnedArtefacts.size(); i < PREFETCHED_ARTEFACTS_NUM; ++i)
+//		SpawnArtefact();
+//}
 
 void CCustomZone::StartWind()
 {

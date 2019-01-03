@@ -438,7 +438,11 @@ void CWeapon::Load		(LPCSTR section)
 
 	m_bHideCrosshairInZoom = true;
 	if(pSettings->line_exist(hud_sect, "zoom_hide_crosshair"))
-		m_bHideCrosshairInZoom = !!pSettings->r_bool(hud_sect, "zoom_hide_crosshair");	
+		m_bHideCrosshairInZoom = !!pSettings->r_bool(hud_sect, "zoom_hide_crosshair");
+
+	m_bZoomInertionAllow = false;
+	if (pSettings->line_exist(hud_sect, "allow_zoom_inertion"))
+		m_bZoomInertionAllow = !!pSettings->r_bool(hud_sect, "allow_zoom_inertion");
 
 	//////////////////////////////////////////////////////////
 
@@ -1485,7 +1489,10 @@ void CWeapon::OnZoomIn()
 	else
 		m_fZoomFactor = CurrentZoomFactor();
 
-	StopHudInertion();
+	if (UseScopeTexture() || !m_bZoomInertionAllow)
+	{
+		StopHudInertion();
+	}
 
 	CActor* pActor = smart_cast<CActor*>(H_Parent());
 	if ( pActor )
@@ -1507,7 +1514,10 @@ void CWeapon::OnZoomOut()
 		}
 	}
 
-	StartHudInertion();
+	if (UseScopeTexture() || !m_bZoomInertionAllow)
+	{
+		StartHudInertion();
+	}
 }
 
 bool CWeapon::UseScopeTexture() {

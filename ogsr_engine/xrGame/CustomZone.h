@@ -334,7 +334,7 @@ protected:
 	//выброс артефактов из зоны
 					void	ThrowOutArtefact			(CArtefact* pArtefact);
 	
-					void	PrefetchArtefacts			();
+					//void	PrefetchArtefacts			();
 	virtual BOOL		AlwaysTheCrow		();
 
 protected:

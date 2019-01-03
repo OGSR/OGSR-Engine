@@ -40,6 +40,7 @@ private:
 	float		m_fAngSpeed1;
 	float		m_fAngSpeed2;
 	float		m_fAngSpeed3;
+	bool		m_bShowInfo;
 
 	void		MakeCubeMapFace			(Fvector &D, Fvector &N);
 	void		MakeLevelMapProcess		();
