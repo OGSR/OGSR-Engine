@@ -217,7 +217,7 @@ void SHeliMovementState::goPatrolByPatrolPath (LPCSTR path_name, int start_idx)
 	patrol_begin_idx = start_idx;
 	patrol_path_name = path_name;
 
-	currPatrolPath		= ai().patrol_paths().path(patrol_path_name);
+	currPatrolPath		= ai().patrol_paths().safe_path( patrol_path_name, false, true );
 	need_to_del_path	= false;
 	currPatrolVertex	= currPatrolPath->vertex(patrol_begin_idx);
 
@@ -294,7 +294,7 @@ void SHeliMovementState::load(IReader &input_packet)
 	onPointRangeDist	=		input_packet.r_float();
 
 	if(type==eMovPatrolPath){
-		currPatrolPath	= ai().patrol_paths().path(patrol_path_name);
+		currPatrolPath	= ai().patrol_paths().safe_path( patrol_path_name, false, true );
 		int idx = input_packet.r_s32();
 		currPatrolVertex =  currPatrolPath->vertex(idx);
 	}

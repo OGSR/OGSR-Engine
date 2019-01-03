@@ -40,6 +40,8 @@ public:
 	IC		const PATROL_REGISTRY	&patrol_paths		() const;
 	void add_path( shared_str, CPatrolPath* );
 	void remove_path( shared_str );
+
+  const CPatrolPath* safe_path( shared_str, bool = false, bool = false ) const;
 };
 
 #include "patrol_path_storage_inline.h"
