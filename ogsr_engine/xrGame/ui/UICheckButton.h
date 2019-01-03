@@ -23,7 +23,11 @@ public:
 
 	//состояние кнопки
 	bool GetCheck()					{return m_eButtonState == BUTTON_PUSHED;}
-	void SetCheck(bool ch)			{m_eButtonState = ch ? BUTTON_PUSHED : BUTTON_NORMAL;}
+	void SetCheck(bool ch)
+	{
+		m_eButtonState = ch ? BUTTON_PUSHED : BUTTON_NORMAL;
+		GetMessageTarget()->SendMessage(this, ch ? CHECK_BUTTON_SET : CHECK_BUTTON_RESET);
+	}
 
 	void SetDependControl(CUIWindow* pWnd);
 

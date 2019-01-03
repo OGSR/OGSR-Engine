@@ -237,9 +237,8 @@ void CUIWindow::script_register(lua_State *L)
 				value("WINDOW_LBUTTON_DB_CLICK",		int(WINDOW_LBUTTON_DB_CLICK)),
 				value("WINDOW_KEY_PRESSED",				int(WINDOW_KEY_PRESSED)),
 				value("WINDOW_KEY_RELEASED",			int(WINDOW_KEY_RELEASED)),
-				value("WINDOW_MOUSE_CAPTURE_LOST",		int(WINDOW_MOUSE_CAPTURE_LOST )),
+				value("WINDOW_MOUSE_CAPTURE_LOST",		int(WINDOW_MOUSE_CAPTURE_LOST)),
 				value("WINDOW_KEYBOARD_CAPTURE_LOST",	int(WINDOW_KEYBOARD_CAPTURE_LOST)),
-
 
 	// CUIStatic
 				value("STATIC_FOCUS_RECEIVED",			int(STATIC_FOCUS_RECEIVED)),
@@ -251,14 +250,17 @@ void CUIWindow::script_register(lua_State *L)
 				
 	// CUITabControl
 				value("TAB_CHANGED",					int(TAB_CHANGED)),
+
+	// CUICustomEdit
+				value("EDIT_TEXT_CHANGED",				int(EDIT_TEXT_CHANGED)),
 				value("EDIT_TEXT_COMMIT",				int(EDIT_TEXT_COMMIT)),
 				
-
 	// CUICheckButton
 				value("CHECK_BUTTON_SET",				int(CHECK_BUTTON_SET)),
 				value("CHECK_BUTTON_RESET",				int(CHECK_BUTTON_RESET)),
 				
 	// CUIRadioButton
+#pragma todo("KRodin: ивент RADIOBUTTON_SET нигде не вызывается. Надо доделать по необходимости.")
 				value("RADIOBUTTON_SET",				int(RADIOBUTTON_SET)),
 
 	// CUIdragDropItem
@@ -278,9 +280,6 @@ void CUIWindow::script_register(lua_State *L)
 				value("LIST_ITEM_CLICKED",				int(LIST_ITEM_CLICKED)),
 				value("LIST_ITEM_SELECT",				int(LIST_ITEM_SELECT)),
 	
-	// CUIInteractiveItem
-				value("INTERACTIVE_ITEM_CLICK",			int(INTERACTIVE_ITEM_CLICK)),
-
 	// UIPropertiesBox
 				value("PROPERTY_CLICKED",				int(PROPERTY_CLICKED)),
 
@@ -292,30 +291,16 @@ void CUIWindow::script_register(lua_State *L)
 				value("MESSAGE_BOX_QUIT_GAME_CLICKED",	int(MESSAGE_BOX_QUIT_GAME_CLICKED)),
 				value("MESSAGE_BOX_QUIT_WIN_CLICKED",	int(MESSAGE_BOX_QUIT_WIN_CLICKED)),
 
-				value("EDIT_TEXT_CHANGED",				int(EDIT_TEXT_CHANGED)),
-				value("EDIT_TEXT_COMMIT",				int(EDIT_TEXT_COMMIT)),
 	// CUITalkDialogWnd
 				value("TALK_DIALOG_TRADE_BUTTON_CLICKED",	int(TALK_DIALOG_TRADE_BUTTON_CLICKED)),
 				value("TALK_DIALOG_QUESTION_CLICKED",		int(TALK_DIALOG_QUESTION_CLICKED)),
 
-
-
-	// CUIPdaDialogWnd
-				value("PDA_DIALOG_WND_BACK_BUTTON_CLICKED",			int(PDA_DIALOG_WND_BACK_BUTTON_CLICKED)),
-				value("PDA_DIALOG_WND_MESSAGE_BUTTON_CLICKED",		int(PDA_DIALOG_WND_MESSAGE_BUTTON_CLICKED)),
-
 	// CUIPdaContactsWnd
+#pragma todo("KRodin: ивент PDA_CONTACTS_WND_CONTACT_SELECTED нигде не вызывается. Надо доделать по необходимости. Хотя я не очень представляю, для чего он может понадобиться в скриптах.")
 				value("PDA_CONTACTS_WND_CONTACT_SELECTED",			int(PDA_CONTACTS_WND_CONTACT_SELECTED)),
 
 	// CUITradeWnd
 				value("TRADE_WND_CLOSED",							int(TRADE_WND_CLOSED)),
-
-	// CUISleepWnd
-//				value("SLEEP_WND_PERFORM_BUTTON_CLICKED",			int(SLEEP_WND_PERFORM_BUTTON_CLICKED)),
-
-	// CUIOutfitSlot
-				value("UNDRESS_OUTFIT",								int(UNDRESS_OUTFIT)),
-				value("OUTFIT_RETURNED_BACK",						int(OUTFIT_RETURNED_BACK)),
 
 	// CUIInventroyWnd
 				value("INVENTORY_DROP_ACTION",						int(INVENTORY_DROP_ACTION)),
