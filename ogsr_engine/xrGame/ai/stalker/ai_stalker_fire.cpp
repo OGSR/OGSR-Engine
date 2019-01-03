@@ -218,7 +218,7 @@ void			CAI_Stalker::Hit					(SHit* pHDS)
 		}
 
 		const CEntityAlive	*entity_alive = smart_cast<const CEntityAlive*>(pHDS->initiator());
-		if (entity_alive && !wounded()) {
+		if ( entity_alive && !wounded() && !fis_zero( pHDS->damage() ) ) {
 			if (is_relation_enemy(entity_alive))
 				sound().play		(eStalkerSoundInjuring);
 //			else
