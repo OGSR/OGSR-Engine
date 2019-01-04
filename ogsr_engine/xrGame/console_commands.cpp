@@ -1110,7 +1110,6 @@ void CCC_RegisterCommands()
 	CMD3(CCC_Mask,				"g_always_run",			&psActorFlags,	AF_ALWAYSRUN);
 	CMD1(CCC_GameDifficulty,	"g_game_difficulty"		);
 
-	CMD3(CCC_Mask,				"g_backrun",			&psActorFlags,	AF_RUN_BACKWARD);
 	CMD3(CCC_Mask,				"g_dof_scope",			&psActorFlags,	AF_DOF_SCOPE);
 
 	// alife
@@ -1242,8 +1241,6 @@ void CCC_RegisterCommands()
 	CMD3(CCC_Mask,			"g_3d_scopes",			&psActorFlags,	AF_3D_SCOPES);
 	CMD1(CCC_TimeFactor,	"time_factor")	
 //#endif // MASTER_GOLD
-
-	CMD3(CCC_Mask,		"g_autopickup",			&psActorFlags,	AF_AUTOPICKUP);
 
 	CMD3(CCC_Mask,		"g_music_tracks",		&psActorFlags,	AF_MUSIC_TRACKS);
 

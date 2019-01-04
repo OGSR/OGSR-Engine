@@ -2,11 +2,11 @@
 
 enum{
 		AF_GODMODE			=(1<<0),
-		AF_INVISIBLE		=(1<<1),
+		//		=(1<<1),
 		AF_ALWAYSRUN		=(1<<2),
 		AF_UNLIMITEDAMMO	=(1<<3),
-		AF_RUN_BACKWARD		=(1<<4),
-		AF_AUTOPICKUP		=(1<<5),
+		//		=(1<<4),
+		//		=(1<<5),
 		AF_PSP				=(1<<6),
 		AF_MUSIC_TRACKS		=(1<<7),
 		AF_DOF_SCOPE		=(1<<8),
