@@ -486,6 +486,12 @@ void CLevel::OnRender()
 		}
 	}
 
+	if (psActorFlags.test(AF_VERTEX_DBG))
+	{
+		if (ai().get_level_graph())
+			ai().level_graph().render();
+	}
+
 #else
 
 	ph_world->OnRender	();

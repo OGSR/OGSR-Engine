@@ -254,6 +254,7 @@ protected:
 	//модификатор изменения FOV во втором вьюпорте при зуме
 	float m_fSecondVP_FovFactor; 
 	bool			m_bHideCrosshairInZoom;
+	bool			m_bZoomInertionAllow;
 
 	float			m_fScopeInertionFactor;
 public:

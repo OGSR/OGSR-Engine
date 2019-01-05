@@ -266,8 +266,18 @@ void CUIWindow::DetachChild(CUIWindow* pChild)
 
 void CUIWindow::DetachAll()
 {
-	while( !m_ChildWndList.empty() ){
-		DetachChild( m_ChildWndList.back() );	
+	size_t processed = 0;
+	auto iter = m_ChildWndList.rbegin();
+	while (iter != m_ChildWndList.rend()) {
+		const auto size = m_ChildWndList.size();
+		DetachChild(*(iter++));
+		if (size != m_ChildWndList.size()) {
+			iter = m_ChildWndList.rbegin();
+			std::advance(iter, processed);
+		}
+		else {
+			processed++;
+		}
 	}
 }
 

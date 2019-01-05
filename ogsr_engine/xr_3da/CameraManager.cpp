@@ -145,6 +145,7 @@ CEffectorCam* CCameraManager::GetCamEffector(ECamEffectorType type)
 
 CEffectorCam* CCameraManager::AddCamEffector(CEffectorCam* ef)
 {
+	R_ASSERT(ef != nullptr);
 	m_EffectorsCam_added_deffered.push_back(ef);
 	return m_EffectorsCam_added_deffered.back();
 }
@@ -234,38 +235,48 @@ void CCameraManager::Update(const Fvector& P, const Fvector& D, const Fvector& N
 
 	// Effector
 	BOOL bOverlapped			= FALSE;
-	if (m_EffectorsCam.size())
+
+	if (!m_EffectorsCam.empty())
 	{
-		auto r_it = m_EffectorsCam.rbegin();
-		while (r_it != m_EffectorsCam.rend())
+		auto ProcessCameraEffector = [&](CEffectorCam* eff)
 		{
-			CEffectorCam* eff		= *r_it;
-			if(eff->Valid() && eff->Process(vPosition,vDirection,vNormal,fFov,fFar,fAspect))
+			if (eff->Valid() && eff->Process(vPosition, vDirection, vNormal, fFov, fFar, fAspect))
 			{
-				bOverlapped		|= eff->Overlapped();
-				++r_it;
-			}else
+				bOverlapped |= eff->Overlapped();
+			}
+			else
 			{
-				if(eff->AllowProcessingIfInvalid())
+				if (eff->AllowProcessingIfInvalid())
 				{
-					eff->ProcessIfInvalid(vPosition,vDirection,vNormal,fFov,fFar,fAspect);
-					bOverlapped		|= eff->Overlapped();
+					eff->ProcessIfInvalid(vPosition, vDirection, vNormal, fFov, fFar, fAspect);
+					bOverlapped |= eff->Overlapped();
 				}
 
-				// Dereferencing reverse iterator returns previous element of the list, r_it.base() returns current element
-				// So, we should use base()-1 iterator to delete just processed element. 'Previous' element would be 
-				// automatically changed after deletion, so r_it would dereferencing to another value, no need to change it
-				auto r_to_del = r_it.base();
-				m_EffectorsCam.erase(--r_to_del);
+				auto it = std::find(m_EffectorsCam.begin(), m_EffectorsCam.end(), eff);
+				m_EffectorsCam.erase(it);
 				xr_delete(eff);
 			}
+		};
+
+		size_t processed = 0;
+		auto iter = m_EffectorsCam.rbegin();
+		while (iter != m_EffectorsCam.rend()) {
+			const auto size = m_EffectorsCam.size();
+			ProcessCameraEffector(*(iter++));
+			if (size != m_EffectorsCam.size()) {
+				iter = m_EffectorsCam.rbegin();
+				std::advance(iter, processed);
+			}
+			else {
+				processed++;
+			}
 		}
-		
+
 		// Normalize
-		vDirection.normalize	();
-		vNormal.normalize		();
-		vRight.crossproduct		(vNormal,vDirection);
-		vNormal.crossproduct	(vDirection,vRight);
+		vDirection.normalize();
+		vNormal.normalize();
+		vRight.crossproduct(vNormal, vDirection);
+		vNormal.crossproduct(vDirection, vRight);
 	}
 
 	pp_affected.validate		("before applying pp");

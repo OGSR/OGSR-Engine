@@ -1,8 +1,6 @@
 #pragma once
 
-//////////////////////////////////////////////////////////////////////////
-
-enum EUIMessages
+enum EUIMessages : s16
 {
 	// CUIWindow
 	WINDOW_LBUTTON_DOWN = 0,

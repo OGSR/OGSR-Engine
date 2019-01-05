@@ -1110,7 +1110,6 @@ void CCC_RegisterCommands()
 	CMD3(CCC_Mask,				"g_always_run",			&psActorFlags,	AF_ALWAYSRUN);
 	CMD1(CCC_GameDifficulty,	"g_game_difficulty"		);
 
-	CMD3(CCC_Mask,				"g_backrun",			&psActorFlags,	AF_RUN_BACKWARD);
 	CMD3(CCC_Mask,				"g_dof_scope",			&psActorFlags,	AF_DOF_SCOPE);
 
 	// alife
@@ -1243,13 +1242,12 @@ void CCC_RegisterCommands()
 	CMD1(CCC_TimeFactor,	"time_factor")	
 //#endif // MASTER_GOLD
 
-	CMD3(CCC_Mask,		"g_autopickup",			&psActorFlags,	AF_AUTOPICKUP);
-
 	CMD3(CCC_Mask,		"g_music_tracks",		&psActorFlags,	AF_MUSIC_TRACKS);
 
 	CMD1(CCC_LuaHelp, "lua_help");
 
 	CMD3(CCC_Mask, "g_zones_dbg", &psActorFlags, AF_ZONES_DBG);
+	CMD3(CCC_Mask, "g_vertex_dbg", &psActorFlags, AF_VERTEX_DBG);
 
 #ifdef DEBUG
 	CMD3(CCC_Mask,		"dbg_draw_actor_alive",		&dbg_net_Draw_Flags,	(1<<0));

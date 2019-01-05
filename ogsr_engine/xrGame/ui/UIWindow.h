@@ -2,9 +2,6 @@
 #include "../xr_level_controller.h"
 class CUIWindow;
 
-template <typename T, typename allocator = xalloc<T>>
-using ui_list = std::list<T, allocator>;
-
 #include "UIMessages.h"
 #include "../script_export_space.h"
 #include "uiabstract.h"
@@ -132,7 +129,7 @@ public:
 																				else
 																					return  m_pParentWnd->GetFont();}
 
-	using WINDOW_LIST = ui_list<CUIWindow*>;
+	using WINDOW_LIST = xr_list<CUIWindow*>;
 	using WINDOW_LIST_it = WINDOW_LIST::iterator;
 
 	WINDOW_LIST&			GetChildWndList		()							{return m_ChildWndList; }
