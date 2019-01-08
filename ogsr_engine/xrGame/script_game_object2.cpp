@@ -449,3 +449,14 @@ u32 CScriptGameObject::location_on_path				(float distance, Fvector *location)
 	VERIFY									(location);
 	return									(monster->movement().detail().location_on_path(monster,distance,*location));
 }
+
+
+void CScriptGameObject::explode_initiator( u16 who_id ) {
+  ASSERT_FMT( !object().H_Parent(), "[%s]: cannot explode %s with parent", __FUNCTION__, cName().c_str() );
+  CExplosive* explosive = smart_cast<CExplosive*>( &object() );
+  ASSERT_FMT( explosive, "[%s]: %s not a CExplosive", __FUNCTION__, cName().c_str() );
+  Fvector normal;
+  explosive->FindNormal( normal );
+  explosive->SetInitiator( who_id );
+  explosive->GenExplodeEvent( object().Position(), normal );
+}
