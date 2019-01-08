@@ -1282,6 +1282,9 @@ void CLocatorAPI::file_delete(LPCSTR path, LPCSTR nm)
 
 void CLocatorAPI::file_copy(LPCSTR src, LPCSTR dest)
 {
+#if  __has_include("..\build_config_overrides\trivial_encryptor_ovr.h")
+	FATAL("Mamkin Hacker Detected");
+#else
 	if (exist(src)){
         IReader* S		= r_open(src);
         if (S){
@@ -1293,6 +1296,7 @@ void CLocatorAPI::file_copy(LPCSTR src, LPCSTR dest)
             r_close		(S);
         }
 	}
+#endif
 }
 
 void CLocatorAPI::file_rename(LPCSTR src, LPCSTR dest, bool bOwerwrite)

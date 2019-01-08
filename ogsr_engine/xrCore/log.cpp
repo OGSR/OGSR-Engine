@@ -157,7 +157,7 @@ void CreateLog(BOOL nl)
 
 	if (!no_log)
 	{
-		string_path logFName = { 0 };
+		string_path logFName;
 		if (strstr(Core.Params, "-unique_logs")) {
 			string32 TimeBuf;
 			using namespace std::chrono;
