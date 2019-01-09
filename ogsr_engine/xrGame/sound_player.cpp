@@ -33,16 +33,17 @@ CSoundPlayer::~CSoundPlayer			()
 void CSoundPlayer::clear			()
 {
 	m_sounds.clear					();
-	
-	xr_vector<CSoundSingle>::iterator	I = m_playing_sounds.begin();
-	xr_vector<CSoundSingle>::iterator	E = m_playing_sounds.end();
-	for ( ; I != E; ++I)
-		(*I).destroy				();
-
-	m_playing_sounds.clear			();
-
+	clear_playing_sounds();
 	m_sound_mask					= 0;
 }
+
+
+void CSoundPlayer::clear_playing_sounds() {
+  for ( auto& it : m_playing_sounds )
+    it.destroy();
+  m_playing_sounds.clear();
+}
+
 
 void CSoundPlayer::reinit			()
 {

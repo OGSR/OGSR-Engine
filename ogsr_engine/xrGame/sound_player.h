@@ -152,6 +152,8 @@ public:
 	IC		bool		active_sound_type			(u32 synchro_mask) const;
 	IC		void		sound_prefix				(const shared_str &sound_prefix);
 	IC	const shared_str &sound_prefix				() const;
+
+  void clear_playing_sounds();
 };
 
 #include "sound_player_inline.h"
