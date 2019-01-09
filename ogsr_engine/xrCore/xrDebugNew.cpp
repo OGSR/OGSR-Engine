@@ -25,6 +25,8 @@ void LogStackTrace(const char* header)
 {
 	__try
 	{
+		if (auto pCrashHandler = Debug.get_crashhandler())
+			pCrashHandler();
 		Log("********************************************************************************");
 		Log(BuildStackTrace(header));
 		Log("********************************************************************************");
@@ -36,6 +38,8 @@ void LogStackTrace(const char* header, _EXCEPTION_POINTERS *pExceptionInfo)
 {
 	__try
 	{
+		if (auto pCrashHandler = Debug.get_crashhandler())
+			pCrashHandler();
 		Log("********************************************************************************");
 		Msg("!![" __FUNCTION__ "] ExceptionCode is [%x]", pExceptionInfo->ExceptionRecord->ExceptionCode);
 		auto save = *pExceptionInfo->ContextRecord;
@@ -133,10 +137,6 @@ void xrDebug::backend(const char *expression, const char *description, const cha
 
 	string4096 assertion_info;
 	gather_info(expression, description, argument0, argument1, file, line, function, assertion_info);
-
-	auto pCrashHandler = this->get_crashhandler();
-	if (pCrashHandler)
-		pCrashHandler();
 
 /* KRodin: у меня этот способ не работает - происходит исключение внутри функции save_mini_dump(). Если сильно надо будет тут получать минидампы - придумать другой способ.
 #ifdef USE_OWN_MINI_DUMP
@@ -352,10 +352,6 @@ LONG WINAPI UnhandledFilter(_EXCEPTION_POINTERS *pExceptionInfo)
 {
 	if (!error_after_dialog)
 	{
-		auto pCrashHandler = Debug.get_crashhandler();
-		if (pCrashHandler)
-			pCrashHandler();
-
 		string1024 error_message;
 		format_message(error_message, sizeof(error_message));
 		if (*error_message)
