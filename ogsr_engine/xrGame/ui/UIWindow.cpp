@@ -127,10 +127,9 @@ CUIWindow::~CUIWindow()
 {
 	VERIFY( !(GetParent()&&IsAutoDelete()) );
 
-	CUIWindow* parent	= GetParent();
-	bool ad				= IsAutoDelete();
-	if( parent && !ad )
-		parent->CUIWindow::DetachChild( this );
+	CUIWindow* parent = GetParent();
+	if( parent )
+		parent->DetachChild( this, true );
 
 	DetachAll();
 
@@ -249,9 +248,9 @@ void CUIWindow::AttachChild(CUIWindow* pChild)
 	m_ChildWndList.push_back(pChild);
 }
 
-void CUIWindow::DetachChild(CUIWindow* pChild)
+void CUIWindow::DetachChild(CUIWindow* pChild, bool from_destructor)
 {
-	if(NULL==pChild)
+	if(!pChild)
 		return;
 	
 	if( GetMouseCapturer() == pChild )
@@ -260,7 +259,12 @@ void CUIWindow::DetachChild(CUIWindow* pChild)
 	SafeRemoveChild(pChild);
 	pChild->SetParent(NULL);
 
-	if(pChild->IsAutoDelete())
+	if (from_destructor && pChild->IsAutoDelete()) {
+		Msg("!![" __FUNCTION__ "] detaching autodelete window from destructor : [%s]", pChild->WindowName_script());
+		//LogStackTrace("");
+	}
+
+	if(pChild->IsAutoDelete() && !from_destructor)
 		xr_delete(pChild);
 }
 
@@ -497,13 +501,9 @@ bool CUIWindow::OnKeyboardHold(int dik)
 			return true;
 
 	for (auto it = m_ChildWndList.rbegin(); it != m_ChildWndList.rend(); ++it)
-	{
-		auto wnd = (*it);
-		if (wnd)
-			if (wnd->IsEnabled())
-				if (wnd->OnKeyboardHold(dik))
-					return true;
-	}
+		if ((*it)->IsEnabled())
+			if ((*it)->OnKeyboardHold(dik))
+				return true;
 
 	return false;
 }

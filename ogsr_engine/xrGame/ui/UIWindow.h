@@ -22,7 +22,7 @@ public:
 	////////////////////////////////////
 	//работа с дочерними и родительскими окнами
 	virtual void			AttachChild			(CUIWindow* pChild);
-	virtual void			DetachChild			(CUIWindow* pChild);
+	virtual void			DetachChild			(CUIWindow* pChild, bool from_destructor = false);
 	virtual bool			IsChild				(CUIWindow* pChild) const;
 	virtual void			DetachAll			();
 	int						GetChildNum			()								{return m_ChildWndList.size();} 
