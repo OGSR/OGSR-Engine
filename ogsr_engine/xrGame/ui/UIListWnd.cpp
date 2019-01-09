@@ -175,13 +175,13 @@ CUIListItem* CUIListWnd::GetItem(int index)
 }
 
 
-void CUIListWnd::DetachChild(CUIWindow* pChild)
+void CUIListWnd::DetachChild(CUIWindow* pChild, bool from_destructor)
 {
 	LIST_ITEM_LIST_it it = std::find(m_ItemList.begin(),m_ItemList.end(),pChild);
 	if(it!=m_ItemList.end())
 		m_ItemList.erase(it);
 
-	inherited::DetachChild	(pChild);
+	inherited::DetachChild(pChild, from_destructor);
 }
 
 
