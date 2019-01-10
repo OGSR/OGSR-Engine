@@ -223,12 +223,7 @@ void		CHW::CreateDevice		(HWND m_hWnd)
 		fDepth  = selectDepthStencil(fTarget);
 	}
 
-	if ( D3DFMT_UNKNOWN == fTarget || ( D3DFMT_UNKNOWN == fDepth ) ) {
-		Msg					("Failed to initialize graphics hardware.\nPlease try to restart the game.");
-		MessageBox			(NULL,"Failed to initialize graphics hardware.\nPlease try to restart the game.","Error!",MB_OK|MB_ICONERROR);
-		TerminateProcess	(GetCurrentProcess(),0);
-	}
-
+	CHECK_OR_EXIT( D3DFMT_UNKNOWN != fTarget && D3DFMT_UNKNOWN != fDepth, "Failed to initialize graphics hardware.\nPlease try to restart the game.");
 
     // Set up the presentation parameters
 	D3DPRESENT_PARAMETERS&	P	= DevPP;
@@ -276,13 +271,10 @@ void		CHW::CreateDevice		(HWND m_hWnd)
 										&P,
 										&pDevice );
 	}
-	if (D3DERR_DEVICELOST==R)	{
-		// Fatal error! Cannot create rendering device AT STARTUP !!!
-		Msg					("Failed to initialize graphics hardware.\nPlease try to restart the game.");
-		MessageBox			(NULL,"Failed to initialize graphics hardware.\nPlease try to restart the game.","Error!",MB_OK|MB_ICONERROR);
-		TerminateProcess	(GetCurrentProcess(),0);
-	};
-	R_CHK		(R);
+
+	CHECK_OR_EXIT(D3DERR_DEVICELOST != R, "Failed to initialize graphics hardware.\nPlease try to restart the game.");
+
+	R_CHK(R);
 
 	_SHOW_REF	("* CREATE: DeviceREF:",HW.pDevice);
 	switch (GPU)

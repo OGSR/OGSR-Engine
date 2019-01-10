@@ -459,7 +459,9 @@ int APIENTRY WinMain(HINSTANCE hInstance,
 		FATAL				("stack overflow");
 	}
 
-	return					(0);
+	ExitFromWinMain = true;
+
+	return 0;
 }
 
 LPCSTR _GetFontTexName (LPCSTR section)
