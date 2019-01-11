@@ -11,6 +11,7 @@ int( WINAPIV* __vsnprintf )( char*, size_t, const char*, va_list ) = _vsnprintf;
 
 XRCORE_API xrDebug Debug;
 XRCORE_API HWND gGameWindow = nullptr;
+XRCORE_API bool ExitFromWinMain = false;
 
 static bool error_after_dialog = false;
 
@@ -125,7 +126,7 @@ void xrDebug::do_exit(const std::string &message)
 	MessageBox(gGameWindow, message.c_str(), "Error", MB_OK | MB_ICONERROR | MB_SYSTEMMODAL);
 
 	if ( !IsDebuggerPresent() )
-		exit(-1); //TerminateProcess( GetCurrentProcess(), 1 );
+		quick_exit(EXIT_FAILURE);
 	else
 		DEBUG_INVOKE;
 }
@@ -169,7 +170,7 @@ void xrDebug::backend(const char *expression, const char *description, const cha
 		get_on_dialog()(false);
 #endif
 	if ( !IsDebuggerPresent() )
-		exit(-1); //TerminateProcess( GetCurrentProcess(), 1 );
+		quick_exit(EXIT_FAILURE);
 	else
 		DEBUG_INVOKE;
 }
@@ -499,6 +500,8 @@ static void termination_handler(int signal)
 
 void xrDebug::_initialize()
 {
+	std::atexit([] { R_ASSERT(ExitFromWinMain, "Unexpected application exit!"); });
+
 	std::set_terminate( _terminate );
 
 	_set_abort_behavior(0, _WRITE_ABORT_MSG | _CALL_REPORTFAULT);
@@ -522,7 +525,6 @@ void xrDebug::_initialize()
 
 #ifdef USE_OWN_ERROR_MESSAGE_WINDOW
 	// Выключаем окно "Прекращена работа программы...". У нас своё окно для сообщений об ошибках есть.
-	auto prevMode = SetErrorMode(SEM_NOGPFAULTERRORBOX);
-	SetErrorMode(prevMode | SEM_NOGPFAULTERRORBOX);
+	SetErrorMode(GetErrorMode() | SEM_NOGPFAULTERRORBOX);
 #endif
 }
