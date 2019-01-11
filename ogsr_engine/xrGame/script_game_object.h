@@ -777,6 +777,9 @@ public:
 			void PHReleaseObject();
 			CPHCapture* PHCapture();
 
+	bool throw_target( const Fvector&, CScriptGameObject* = nullptr );
+	bool throw_target( const Fvector&, u32 const, CScriptGameObject* = nullptr );
+
 	DECLARE_SCRIPT_REGISTER_FUNCTION
 };
 add_to_type_list(CScriptGameObject)

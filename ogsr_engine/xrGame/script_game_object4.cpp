@@ -779,3 +779,33 @@ CPHCapture* CScriptGameObject::PHCapture() {
   ASSERT_FMT( EA, "[%s]: %s not a CEntityAlive", __FUNCTION__, cName().c_str() );
   return EA->character_physics_support()->movement()->PHCapture();
 }
+
+
+bool CScriptGameObject::throw_target( const Fvector& position, CScriptGameObject* throw_ignore_object ) {
+  CAI_Stalker *stalker = smart_cast<CAI_Stalker*>( &object() );
+  ASSERT_FMT( stalker, "[%s]: %s not a CAI_Stalker", __FUNCTION__, object().cName().c_str() );
+  CObject* obj;
+  if ( throw_ignore_object ) {
+    obj = smart_cast<CObject*>( &(throw_ignore_object->object()) );
+    ASSERT_FMT( obj, "[%s]: %s not a CObject", __FUNCTION__, throw_ignore_object->cName().c_str() );
+  }
+  else
+    obj = nullptr;
+  stalker->throw_target( position, obj );
+  return stalker->throw_enabled();
+}
+
+
+bool CScriptGameObject::throw_target( const Fvector& position, u32 const vertex_id, CScriptGameObject* throw_ignore_object ) {
+  CAI_Stalker *stalker = smart_cast<CAI_Stalker*>( &object() );
+  ASSERT_FMT( stalker, "[%s]: %s not a CAI_Stalker", __FUNCTION__, object().cName().c_str() );
+  CObject* obj;
+  if ( throw_ignore_object ) {
+    obj = smart_cast<CObject*>( &(throw_ignore_object->object()) );
+    ASSERT_FMT( obj, "[%s]: %s not a CObject", __FUNCTION__, throw_ignore_object->cName().c_str() );
+  }
+  else
+    obj = nullptr;
+  stalker->throw_target( position, vertex_id, obj );
+  return stalker->throw_enabled();
+}

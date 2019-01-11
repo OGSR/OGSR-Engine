@@ -357,6 +357,9 @@ class_<CScriptGameObject> script_register_game_object3(class_<CScriptGameObject>
 		.def( "ph_release_object", &CScriptGameObject::PHReleaseObject )
 		.def( "ph_capture",        &CScriptGameObject::PHCapture )
 
+		.def( "throw_target", ( bool ( CScriptGameObject::* )( const Fvector&, CScriptGameObject* ) )( &CScriptGameObject::throw_target ) )
+		.def( "throw_target", ( bool ( CScriptGameObject::* )( const Fvector&, u32 const, CScriptGameObject* ) )( &CScriptGameObject::throw_target ) )
+
 		.property("inventory",				&get_obj_inventory)
 		.property("immunities",				&get_obj_immunities)
 		.property("is_alive",				&get_obj_alive)
