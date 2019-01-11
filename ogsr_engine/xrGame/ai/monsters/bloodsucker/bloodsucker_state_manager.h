@@ -9,4 +9,6 @@ class CStateManagerBloodsucker : public CMonsterStateManager<CAI_Bloodsucker> {
 public:
 					CStateManagerBloodsucker	(CAI_Bloodsucker *monster); 
 	virtual void	execute						();
+	virtual void	update						();
+			bool	check_vampire				();
 };

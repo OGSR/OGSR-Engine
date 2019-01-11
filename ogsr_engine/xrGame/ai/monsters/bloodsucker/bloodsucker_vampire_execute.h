@@ -33,6 +33,8 @@ private:
 			void		execute_vampire_hit				();
 
 			void		look_head						();
+			void		show_hud						();
+			void		cleanup							();
 };
 
 #include "bloodsucker_vampire_execute_inline.h"

@@ -4,7 +4,6 @@
 #include "../states/state_hide_from_point.h"
 #include "bloodsucker_vampire_approach.h"
 #include "bloodsucker_vampire_hide.h"
-#include "clsid_game.h"
 
 #define TEMPLATE_SPECIALIZATION template <\
 	typename _Object\
@@ -27,15 +26,13 @@ TEMPLATE_SPECIALIZATION
 void CStateBloodsuckerVampireAbstract::reinit()
 {
 	inherited::reinit	();
-	
-	m_time_last_vampire	= 0;
 }
 
 TEMPLATE_SPECIALIZATION
 void CStateBloodsuckerVampireAbstract::initialize()
 {
 	inherited::initialize						();
-	object->start_invisible_predator			();
+	object->set_visibility_state				(CAI_Bloodsucker::partial_visibility);
 
 	enemy	= object->EnemyMan.get_enemy		();
 
@@ -86,8 +83,8 @@ void CStateBloodsuckerVampireAbstract::finalize()
 {
 	inherited::finalize();
 
-	object->stop_invisible_predator	();
-	m_time_last_vampire				= Device.dwTimeGlobal;
+	object->set_visibility_state	(CAI_Bloodsucker::full_visibility);
+	CAI_Bloodsucker::m_time_last_vampire				= Device.dwTimeGlobal;
 }
 
 TEMPLATE_SPECIALIZATION
@@ -95,8 +92,8 @@ void CStateBloodsuckerVampireAbstract::critical_finalize()
 {
 	inherited::critical_finalize	();
 	
-	object->stop_invisible_predator	();
-	m_time_last_vampire				= Device.dwTimeGlobal;
+	object->set_visibility_state	(CAI_Bloodsucker::full_visibility);
+	CAI_Bloodsucker::m_time_last_vampire				= Device.dwTimeGlobal;
 }
 
 TEMPLATE_SPECIALIZATION
@@ -107,7 +104,7 @@ bool CStateBloodsuckerVampireAbstract::check_start_conditions()
 	
 	// является ли враг актером
 	const CEntityAlive *enemy = object->EnemyMan.get_enemy();
-	if (enemy->CLS_ID != CLSID_OBJECT_ACTOR)		return false;
+	if (!smart_cast<CActor const*>(enemy))			return false;
 	if (!object->EnemyMan.see_enemy_now())			return false;
 	if (object->CControlledActor::is_controlling())	return false;
 
@@ -115,7 +112,7 @@ bool CStateBloodsuckerVampireAbstract::check_start_conditions()
 	VERIFY(actor);
 	if (actor->input_external_handler_installed()) return false;
 
-	if (m_time_last_vampire + object->m_vampire_min_delay > Device.dwTimeGlobal) return false;
+	if (CAI_Bloodsucker::m_time_last_vampire + object->m_vampire_min_delay > Device.dwTimeGlobal) return false;
 
 	return true;
 }
@@ -164,4 +161,3 @@ void CStateBloodsuckerVampireAbstract::setup_substates()
 
 #undef TEMPLATE_SPECIALIZATION
 #undef CStateBloodsuckerVampireAbstract
-
