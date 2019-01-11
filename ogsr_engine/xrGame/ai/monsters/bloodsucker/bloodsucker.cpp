@@ -717,17 +717,6 @@ CBaseMonster::SDebugInfo CAI_Bloodsucker::show_debug_info()
 	return CBaseMonster::SDebugInfo();
 }
 
-// Lain: added
-void   CAI_Bloodsucker::add_debug_info (debug::text_tree& root_s)
-{
-	typedef debug::text_tree TextTree;
-	TextTree& general_s = root_s.find_or_add("General");
-
-	TextTree& current_visual_s = general_s.add_line("Predator_Visual");
-	current_visual_s.add_line(m_visual_predator);
-	CBaseMonster::add_debug_info(root_s);
-}
-
 #ifdef DEBUG
 void CAI_Bloodsucker::debug_on_key(int key)
 {
