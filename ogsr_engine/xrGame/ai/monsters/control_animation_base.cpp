@@ -517,7 +517,10 @@ void CControlAnimationBase::check_hit(MotionID motion, float time_perc)
 
 	if (!m_object->EnemyMan.see_enemy_now()) should_hit = false;
 
-	if (should_hit) m_object->HitEntity(enemy, params.hit_power, params.impulse, params.impulse_dir);
+	if (should_hit) {
+		m_object->HitEntity(enemy, params.hit_power, params.impulse, params.impulse_dir);
+		m_object->on_attack_on_run_hit(); // to count attacks
+	}
 
 	m_object->MeleeChecker.on_hit_attempt(should_hit);
 }
