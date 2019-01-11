@@ -16,6 +16,7 @@ class	CStateBloodsuckerVampireExecute : public CState<_Object> {
 	u32					time_vampire_started;
 	
 	bool				m_effector_activated;
+	bool				m_health_loss_activated;
 
 public:
 						CStateBloodsuckerVampireExecute	(_Object *obj) : inherited(obj) {}
