@@ -164,9 +164,6 @@ public:
 #ifdef DEBUG
 	virtual CBaseMonster::SDebugInfo show_debug_info();
 
-	// Lain: added 
-	virtual void add_debug_info  (debug::text_tree& root_s);
-
 #ifdef DEBUG
 			void debug_on_key						(int key);
 #endif
