@@ -589,7 +589,7 @@ int __cdecl main(int argc, char* argv[])
 		);
 
 		Core._destroy();
-		return 3;
+		goto EXIT;
 	}
 
 	string_path folder;
@@ -609,5 +609,8 @@ int __cdecl main(int argc, char* argv[])
 	ProcessLTX(argv[1], p + 4, bFast);
 
 	Core._destroy();
+
+EXIT:
+	ExitFromWinMain = true;
 	return 0;
 }
