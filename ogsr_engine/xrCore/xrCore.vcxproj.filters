@@ -337,6 +337,9 @@
     <ClInclude Include="XML_Parser\xrXMLParser.h">
       <Filter>XML_Parser</Filter>
     </ClInclude>
+    <ClInclude Include="_vector3d_ext.h">
+      <Filter>Math</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <CustomBuildStep Include="FileSystem.h">

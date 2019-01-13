@@ -76,6 +76,7 @@ void CFracture::Load(LPCSTR section)
 	anim().accel_chain_test		();
 #endif
 
+	PostLoad					(section);
 }
 
 void CFracture::CheckSpecParams(u32 spec_params)

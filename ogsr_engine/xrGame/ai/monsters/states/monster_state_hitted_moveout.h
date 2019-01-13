@@ -20,6 +20,7 @@ public:
 	virtual	void	initialize					();
 	virtual void	execute						();
 	virtual bool 	check_completion			();
+	virtual void		remove_links					(CObject* object) { inherited::remove_links(object);}
 
 private:
 			void	select_target				();

@@ -128,6 +128,54 @@ void CControlAnimationBase::update()
 	}
 }
 
+void CControlAnimationBase::clear_override_animation ()
+{
+	m_override_animation		=	eAnimUndefined;
+	m_override_animation_index	=	(u32)-1;
+}
+
+void CControlAnimationBase::set_override_animation (EMotionAnim anim, u32 index)
+{
+	if ( m_override_animation == anim )
+		return;
+
+	if ( anim != eAnimUndefined )
+	{
+		VERIFY2						(m_override_animation == eAnimUndefined, 
+									"animation already overriden, call clear_override_animation");
+	}
+
+	m_override_animation		=	anim;
+	m_override_animation_index	=	index;
+}
+
+void CControlAnimationBase::set_override_animation (pcstr name)
+{
+	for (	u32 anim_type	=	0;
+				anim_type	<	m_anim_storage.size();
+			  ++anim_type	)
+	{
+		SAnimItem const * const anim_item	=	m_anim_storage[anim_type];
+
+		if ( !anim_item )
+			continue;
+
+		pcstr anim_name						=	anim_item->target_name.c_str();
+		if ( strstr(name, anim_name ? anim_name : "") == name )
+		{
+			pcstr const anim_index_string	=	name + anim_item->target_name.size();
+
+			u32 anim_index			=	0;
+			sscanf						(anim_index_string, "%d", &anim_index);
+			set_override_animation		((EMotionAnim)anim_type, anim_index);
+
+			return;
+		}
+	}
+	
+	NODEFAULT;
+}
+
 
 //////////////////////////////////////////////////////////////////////////
 // SelectAnimation
@@ -135,6 +183,13 @@ void CControlAnimationBase::update()
 // Out:	установить анимацию в cur_anim_info().motion
 void CControlAnimationBase::SelectAnimation()
 {
+	// Lain: added
+	if ( m_override_animation != eAnimUndefined )
+ 	{
+ 		SetCurAnim(m_override_animation);
+		return;
+	}
+
 	EAction							action = m_tAction;
 	if (m_object->control().path_builder().is_moving_on_path() && m_object->path().enabled()) action = GetActionFromPath();
 

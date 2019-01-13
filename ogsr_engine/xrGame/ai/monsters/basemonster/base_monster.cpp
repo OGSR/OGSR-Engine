@@ -559,3 +559,53 @@ void CBaseMonster::OnEvent(NET_Packet& P, u16 type)
 }
 
 
+//-------------------------------------------------------------------
+// CBaseMonster's  Atack on Move
+//-------------------------------------------------------------------
+
+bool   CBaseMonster::can_attack_on_move()
+{
+	return m_attack_on_move_params.enabled;
+}
+
+float   CBaseMonster::get_attack_on_move_max_go_close_time()
+{
+	return m_attack_on_move_params.max_go_close_time;
+}
+
+float   CBaseMonster::get_attack_on_move_far_radius()
+{
+	float radius	=	m_attack_on_move_params.far_radius;
+	clamp				(radius, 0.f, 100.f);
+	return				radius;
+}
+
+float   CBaseMonster::get_attack_on_move_attack_radius()
+{
+	return m_attack_on_move_params.attack_radius;
+}
+
+float   CBaseMonster::get_attack_on_move_update_side_period()
+{
+	return m_attack_on_move_params.update_side_period;
+}
+
+float   CBaseMonster::get_attack_on_move_prediction_factor()
+{
+	return m_attack_on_move_params.prediction_factor;
+}
+
+float   CBaseMonster::get_attack_on_move_prepare_radius()
+{
+	return m_attack_on_move_params.prepare_radius;
+}
+
+float   CBaseMonster::get_attack_on_move_prepare_time()
+{
+	return m_attack_on_move_params.prepare_time;
+}
+
+bool CBaseMonster::is_jumping()
+{
+	return m_com_manager.is_jumping();
+}

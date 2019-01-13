@@ -16,6 +16,9 @@
 #include "../state_manager.h"
 #include "../controlled_entity.h"
 #include "../monster_cover_manager.h"
+#include "../control_animation_base.h"
+#include "../monster_velocity_space.h"
+#include "../control_movement_base.h"
 #include "../monster_home.h"
 #include "../../../ai_object_location.h"
 #include "../../../level.h"
@@ -25,6 +28,22 @@
 #include "../../../xrServer.h"
 #include "../../../inventory_item.h"
 #include "xrServer_Objects_ALife.h"
+
+namespace detail
+{
+namespace base_monster
+{
+	const float aom_far_radius							=	9;
+	const float aom_prepare_radius						=	7;
+	const float aom_prepare_time						=	0;
+	const float aom_attack_radius						=	0.6f;
+	const float aom_update_side_period					=	4000;
+	const float aom_prediction_factor					=	1.3f;
+
+
+} // namespace base_monster
+
+} // namespace detail
 
 void CBaseMonster::Load(LPCSTR section)
 {
@@ -65,6 +84,67 @@ void CBaseMonster::Load(LPCSTR section)
 	m_feel_enemy_who_just_hit_max_distance   = READ_IF_EXISTS( pSettings, r_float, section, "feel_enemy_who_just_hit_max_distance", 20.f );
 	m_feel_enemy_max_distance                = READ_IF_EXISTS( pSettings, r_float, section, "feel_enemy_max_distance", 3.f );
 	m_feel_enemy_who_made_sound_max_distance = READ_IF_EXISTS( pSettings, r_float, section, "feel_enemy_who_made_sound_max_distance", 49.f );
+}
+
+void CBaseMonster::PostLoad (LPCSTR section)
+{
+	//------------------------------------
+	// Atack On Move (AOM) Parameters
+	//------------------------------------
+	attack_on_move_params_t& aom			=	m_attack_on_move_params;
+
+	aom.enabled								=	(READ_IF_EXISTS(pSettings, r_bool, section, 
+												"aom_enabled", FALSE)) != 0;
+	aom.far_radius							=	READ_IF_EXISTS(pSettings, r_float, section, 
+												"aom_far_radius", detail::base_monster::aom_far_radius);
+	aom.attack_radius						=	READ_IF_EXISTS(pSettings, r_float, section, 
+												"aom_attack_radius", detail::base_monster::aom_attack_radius);
+	aom.update_side_period					=	READ_IF_EXISTS(pSettings, r_float, section, 
+												"aom_update_side_period", 
+												detail::base_monster::aom_update_side_period);
+	aom.prediction_factor					=	READ_IF_EXISTS(pSettings, r_float, section, 
+												"aom_prediction_factor", 
+												detail::base_monster::aom_prediction_factor);
+	aom.prepare_time						=	READ_IF_EXISTS(pSettings, r_float, section, 
+												"aom_prepare_time", 
+												detail::base_monster::aom_prepare_time);
+	aom.prepare_radius						=	READ_IF_EXISTS(pSettings, r_float, section, 
+												"aom_prepare_radius", 
+												detail::base_monster::aom_prepare_radius);
+	aom.max_go_close_time					=	READ_IF_EXISTS(pSettings, r_float, section, 
+												"aom_max_go_close_time", 8.f);
+
+	if ( aom.enabled )
+	{
+		SVelocityParam&	velocity_run		=	move().get_velocity(MonsterMovement::eVelocityParameterRunNormal);
+
+		pcstr	attack_on_move_anim_l		=	READ_IF_EXISTS(pSettings, r_string, section, 
+																"aom_animation_left", "stand_attack_run_");
+		anim().AddAnim (eAnimAttackOnRunLeft, attack_on_move_anim_l, -1, &velocity_run, PS_STAND);
+		pcstr	attack_on_move_anim_r		=	READ_IF_EXISTS(pSettings, r_string, section, 
+																"aom_animation_right", "stand_attack_run_");
+		anim().AddAnim (eAnimAttackOnRunRight, attack_on_move_anim_r, -1, &velocity_run, PS_STAND);
+	}
+
+	//------------------------------------
+	// Anti-Aim ability
+	//------------------------------------
+/*
+	if ( pSettings->line_exist(section, "anti_aim_effectors") )
+	{
+		SVelocityParam&	velocity_stand		=	move().get_velocity(MonsterMovement::eVelocityParameterStand);
+
+		m_anti_aim							=	xr_new<anti_aim_ability>(this);
+		control().add							(m_anti_aim,  ControlCom::eAntiAim);
+
+		pcstr	anti_aim_animation			=	READ_IF_EXISTS(pSettings, r_string, section, 
+												"anti_aim_animation", "stand_attack_");
+		anim().AddAnim							(eAnimAntiAimAbility, anti_aim_animation, -1, 
+												&velocity_stand, PS_STAND);
+		m_anti_aim->load_from_ini				(pSettings, section);
+	}
+*/
+
 }
 
 // if sound is absent just do not load that one

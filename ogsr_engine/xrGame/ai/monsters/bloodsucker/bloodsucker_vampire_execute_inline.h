@@ -15,35 +15,6 @@
 //#define VAMPIRE_MIN_DIST		0.5f
 //#define VAMPIRE_MAX_DIST		1.f
 
-inline
-float	dotproduct(const Fvector& v1, const Fvector& v2)
-{
-	return		v1.x*v2.x + v1.y*v2.y + v1.z*v2.z;
-}
-
-inline
-float   angle_between_vectors(Fvector const &v1, Fvector const &v2)
-{
-	float const mag1 = v1.magnitude();
-	float const mag2 = v2.magnitude();
-	float const epsilon = 1e-6f;
-	if (mag1 < epsilon || mag2 < epsilon)
-	{
-		return 0.f;
-	}
-
-	float angle_cos = dotproduct(v1, v2) / (mag1*mag2);
-	if (angle_cos < -1.f)
-	{
-		angle_cos = -1.f;
-	}
-	else if (angle_cos > +1.f)
-	{
-		angle_cos = +1.f;
-	}
-	return					acosf(angle_cos);
-}
-
 TEMPLATE_SPECIALIZATION
 void CStateBloodsuckerVampireExecuteAbstract::initialize()
 {
@@ -162,7 +133,8 @@ void CStateBloodsuckerVampireExecuteAbstract::cleanup()
 
 	if (m_health_loss_activated) {
 		const CEntityAlive	*enemy = object->EnemyMan.get_enemy();
-		enemy->conditions().GetChangeValues().m_fV_HealthRestore += object->m_vampire_loss_health_speed;
+		if ( enemy )
+			enemy->conditions().GetChangeValues().m_fV_HealthRestore += object->m_vampire_loss_health_speed;
 		m_health_loss_activated = false;
 	}
 

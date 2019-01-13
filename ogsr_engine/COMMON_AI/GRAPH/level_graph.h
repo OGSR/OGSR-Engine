@@ -200,6 +200,8 @@ public:
 	IC		bool	valid_vertex_position		(const Fvector &position) const;
 			bool	neighbour_in_direction		(const Fvector &direction, u32 start_vertex_id) const;
 
+	IC		CVertex* vertices					() { return m_nodes; }
+
 #ifndef AI_COMPILER
 private:
 	ref_shader			sh_debug;

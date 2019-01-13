@@ -123,6 +123,7 @@ void CAI_PseudoDog::Load(LPCSTR section)
 	anim().accel_chain_test		();
 #endif
 
+	PostLoad					(section);
 }
 
 

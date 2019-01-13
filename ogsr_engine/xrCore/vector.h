@@ -76,6 +76,7 @@ template <class T> struct _quaternion;
 
 #include "_color.h"
 #include "_vector3d.h"
+#include "_vector3d_ext.h"
 #include "_vector2.h"
 #include "_vector4.h"
 #include "_matrix.h"

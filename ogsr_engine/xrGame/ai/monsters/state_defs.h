@@ -59,6 +59,7 @@ enum EMonsterState {
 	eStateAttack_HomePoint_Hide		= eStateAttack | 22,
 	eStateAttack_HomePoint_Camp		= eStateAttack | 23,
 	eStateAttack_HomePoint_LookOpenPlace = eStateAttack | 24,
+	eStateAttack_Attack_On_Run		= eStateAttack | 25,
 
 	// -------------------------------------------------------------
 

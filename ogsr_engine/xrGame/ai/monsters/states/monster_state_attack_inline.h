@@ -3,6 +3,7 @@
 #include "monster_state_attack_melee.h"
 #include "monster_state_attack_run.h"
 #include "monster_state_attack_run_attack.h"
+#include "monster_state_attack_on_run.h"
 #include "state_hide_from_point.h"
 #include "monster_state_find_enemy.h"
 #include "monster_state_steal.h"
@@ -26,6 +27,7 @@ CStateMonsterAttackAbstract::CStateMonsterAttack(_Object *obj) : inherited(obj)
 	add_state	(eStateAttack_Run,				xr_new<CStateMonsterAttackRun<_Object> >		(obj));
 	add_state	(eStateAttack_Melee,			xr_new<CStateMonsterAttackMelee<_Object> >		(obj));
 	add_state	(eStateAttack_RunAttack,		xr_new<CStateMonsterAttackRunAttack<_Object> >	(obj));
+	add_state	(eStateAttack_Attack_On_Run,	xr_new<CStateMonsterAttackOnRun<_Object> >		(obj));
 	add_state	(eStateAttack_RunAway,			xr_new<CStateMonsterHideFromPoint<_Object> >	(obj));
 	add_state	(eStateAttack_FindEnemy,		xr_new<CStateMonsterFindEnemy<_Object> >		(obj));	
 	add_state	(eStateAttack_Steal,			xr_new<CStateMonsterSteal<_Object> >			(obj));	
@@ -39,6 +41,7 @@ CStateMonsterAttackAbstract::CStateMonsterAttack(_Object *obj, state_ptr state_r
 	add_state	(eStateAttack_Run,				state_run);
 	add_state	(eStateAttack_Melee,			state_melee);
 	add_state	(eStateAttack_RunAttack,		xr_new<CStateMonsterAttackRunAttack<_Object> >	(obj));
+	add_state	(eStateAttack_Attack_On_Run,	xr_new<CStateMonsterAttackOnRun<_Object> >		(obj));
 	add_state	(eStateAttack_RunAway,			xr_new<CStateMonsterHideFromPoint<_Object> >	(obj));
 	add_state	(eStateAttack_FindEnemy,		xr_new<CStateMonsterFindEnemy<_Object> >		(obj));	
 	add_state	(eStateAttack_Steal,			xr_new<CStateMonsterSteal<_Object> >			(obj));	
@@ -71,6 +74,7 @@ void CStateMonsterAttackAbstract::execute()
 {
 
 	bool selected = false;
+	bool	can_attack_on_move		=	object->can_attack_on_move();
 	
 	if (check_home_point()) {
 		select_state	(eStateAttack_MoveToHomePoint);
@@ -87,8 +91,11 @@ void CStateMonsterAttackAbstract::execute()
 	} else if (check_run_away_state()) {
 		select_state	(eStateAttack_RunAway);
 		selected		= true;
-	} else if (check_run_attack_state()) {
+	} else if (!can_attack_on_move && check_run_attack_state()) {
 		select_state	(eStateAttack_RunAttack);
+		selected		= true;
+	} else if ( can_attack_on_move ) {
+		select_state	(eStateAttack_Attack_On_Run);
 		selected		= true;
 	}
 	

@@ -216,7 +216,7 @@ void CAI_Bloodsucker::Load(LPCSTR section)
 	m_visibility_state						=	unset;
 	m_visibility_state_last_changed_time	=	0;
 
-	//PostLoad							(section);
+	PostLoad							(section);
 }
 
 void CAI_Bloodsucker::reinit()

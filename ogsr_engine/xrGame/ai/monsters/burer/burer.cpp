@@ -152,6 +152,7 @@ void CBurer::Load(LPCSTR section)
 	anim().accel_chain_test		();
 #endif
 
+	PostLoad					(section);
 }
 
 void CBurer::shedule_Update(u32 dt)

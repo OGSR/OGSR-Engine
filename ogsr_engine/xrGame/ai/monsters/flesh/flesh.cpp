@@ -102,6 +102,7 @@ void CAI_Flesh::Load(LPCSTR section)
 	anim().accel_chain_test		();
 #endif
 
+	PostLoad					(section);
 }
 
 // возвращает true, если после выполнения этой функции необходимо прервать обработку

@@ -159,4 +159,11 @@ EMonsterState CStateAbstract::get_state_type()
 	return ( (state == eStateUnknown) ? EMonsterState(current_substate) : state);
 }
 
+TEMPLATE_SPECIALIZATION
+void CStateAbstract::remove_links	(CObject* object)
+{
+	for ( auto& it : substates )
+		it.second->remove_links	(object);
+}
+
 #undef TEMPLATE_SPECIALIZATION

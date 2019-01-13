@@ -14,6 +14,7 @@ public:
 
 	virtual void	reselect_state						();
 	virtual void	setup_substates						();
+	virtual void		remove_links					(CObject* object) { inherited::remove_links(object);}
 
 private:
 			Fvector	get_target_position					();

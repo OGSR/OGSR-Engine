@@ -18,6 +18,7 @@ public:
 	virtual				~CStateControllerPanic	();
 
 	virtual void		reselect_state			();
+	virtual void		remove_links					(CObject* object) { inherited::remove_links(object);}
 };
 
 #include "controller_state_panic_inline.h"

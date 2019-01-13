@@ -351,6 +351,7 @@
     <ClInclude Include="_types.h" />
     <ClInclude Include="_vector2.h" />
     <ClInclude Include="_vector3d.h" />
+    <ClInclude Include="_vector3d_ext.h" />
     <ClInclude Include="_vector4.h" />
     <ClInclude Include="vector.h" />
     <ClInclude Include="cpuid.h" />

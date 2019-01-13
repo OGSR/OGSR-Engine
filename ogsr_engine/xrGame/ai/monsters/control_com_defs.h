@@ -29,6 +29,7 @@ namespace ControlCom {
 
 		eComCustom1,
 		eComCriticalWound,
+		eAntiAim,
 		
 		eControllersCount,
 

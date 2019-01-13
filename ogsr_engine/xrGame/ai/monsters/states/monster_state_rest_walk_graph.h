@@ -10,6 +10,7 @@ public:
 	virtual				~CStateMonsterRestWalkGraph	();
 
 	virtual	void		execute					();
+	virtual void		remove_links					(CObject* object) { inherited::remove_links(object);}
 };
 
 #include "monster_state_rest_walk_graph_inline.h"

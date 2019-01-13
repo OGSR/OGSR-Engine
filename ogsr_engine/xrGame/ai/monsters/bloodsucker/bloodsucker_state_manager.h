@@ -11,4 +11,5 @@ public:
 	virtual void	execute						();
 	virtual void	update						();
 			bool	check_vampire				();
+	virtual void	remove_links		(CObject* object) { inherited::remove_links(object);}
 };

@@ -21,6 +21,7 @@ public:
 
 	virtual	void		reselect_state			();
 	virtual	void		setup_substates			();
+	virtual void		remove_links					(CObject* object) { inherited::remove_links(object);}
 };
 
 #include "monster_state_home_point_attack_inline.h"

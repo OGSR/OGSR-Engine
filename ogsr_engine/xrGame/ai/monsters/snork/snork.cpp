@@ -87,6 +87,7 @@ void CSnork::Load(LPCSTR section)
 	anim().accel_chain_test		();
 #endif
 
+	PostLoad					(section);
 }
 
 void CSnork::reinit()

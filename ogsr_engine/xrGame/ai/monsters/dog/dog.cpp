@@ -111,6 +111,7 @@ void CAI_Dog::Load(LPCSTR section)
 	anim().accel_chain_test		();
 #endif
 
+	PostLoad					(section);
 }
 
 void CAI_Dog::reinit()

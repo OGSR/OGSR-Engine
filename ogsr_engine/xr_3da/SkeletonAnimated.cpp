@@ -173,6 +173,25 @@ void	CKinematicsAnimated::LL_CloseCycle(u16 part, u8 mask_channel /*= (1<<0)*/)
 	//blend_cycles[part].clear	(); // ?
 }
 
+float CKinematicsAnimated::get_animation_length (MotionID motion_ID)
+{
+	VERIFY							( motion_ID.slot<m_Motions.size() );
+
+	SMotionsSlot& slot			=	m_Motions[motion_ID.slot];
+
+	VERIFY							( LL_GetBoneRoot() < slot.bone_motions.size() );
+
+	MotionVec*	bone_motions	=	slot.bone_motions[LL_GetBoneRoot()];
+
+	VERIFY							(motion_ID.idx < bone_motions->size());
+
+    CMotionDef* const m_def		=	slot.motions.motion_def(motion_ID.idx);
+	
+	float const	anim_speed		=	m_def ? m_def->Speed() : 1.f;
+
+	return							bone_motions->at(motion_ID.idx).GetLength() / anim_speed;
+}
+
 void CKinematicsAnimated::IBlendSetup(CBlend& B,u16 part,u8 channel, MotionID motion_ID, BOOL  bMixing, float blendAccrue, float blendFalloff, float Speed, BOOL noloop, PlayCallback Callback, LPVOID CallbackParam)
 {
 	VERIFY(B.channel<MAX_CHANNELS);

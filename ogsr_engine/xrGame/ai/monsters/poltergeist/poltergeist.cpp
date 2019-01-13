@@ -109,6 +109,7 @@ void CPoltergeist::Load(LPCSTR section)
 	}
 	
 	m_dead_always_visible = READ_IF_EXISTS( pSettings, r_bool, section, "dead_always_visible", false );
+	PostLoad					(section);
 }
 
 void CPoltergeist::reload(LPCSTR section)

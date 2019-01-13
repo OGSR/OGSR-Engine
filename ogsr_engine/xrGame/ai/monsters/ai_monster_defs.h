@@ -198,6 +198,9 @@ enum EMotionAnim {
 	eAnimGraviPrepare,
 	eAnimGraviFire,
 
+	eAnimAttackOnRunLeft,
+	eAnimAttackOnRunRight,
+
 	eAnimCount,
 	eAnimUndefined			= u32(-1)
 };
@@ -351,6 +354,9 @@ struct SCurrentAnimationInfo {
 
 	float			speed_change_vel;
 	CBlend			*blend;
+
+	void		set_motion (EMotionAnim	new_motion);
+	EMotionAnim	get_motion () const { return motion; }
 };
 
 
