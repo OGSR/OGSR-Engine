@@ -16,7 +16,7 @@ xrCompress "gamedata" -ltx xrCompress_Cfg.ltx -unique_logs
 
 Настройки игнорируемых файлов и тд. находятся в xrCompress_Cfg.ltx
 
-Отключено сжатие файлов level.geom, level.geomx и прочие нюансы учтены.
+Отключено сжатие файлов *.geom, *.geomx, *.ogm и прочие нюансы учтены.
 
 
 Архивы gamedata.db_pack_#0, gamedata.db_pack_#1, ... и тд. создадутся в папке "!Ready\"

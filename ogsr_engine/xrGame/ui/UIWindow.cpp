@@ -256,8 +256,19 @@ void CUIWindow::DetachChild(CUIWindow* pChild, bool from_destructor)
 	if( GetMouseCapturer() == pChild )
 		SetMouseCapture(pChild, false);
 
-	SafeRemoveChild(pChild);
-	pChild->SetParent(NULL);
+	__try {
+		SafeRemoveChild(pChild);
+	}
+	__except (ExceptStackTrace("Exception catched in SafeRemoveChild(pChild);")) {
+		FATAL("");
+	}
+
+	__try {
+		pChild->SetParent(NULL);
+	}
+	__except (ExceptStackTrace("Exception catched in pChild->SetParent(NULL);")) {
+		FATAL("");
+	}
 
 	if (from_destructor && pChild->IsAutoDelete()) {
 		Msg("!![" __FUNCTION__ "] detaching autodelete window from destructor : [%s]", pChild->WindowName_script());
