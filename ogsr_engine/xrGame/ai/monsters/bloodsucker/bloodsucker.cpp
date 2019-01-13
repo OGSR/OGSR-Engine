@@ -158,7 +158,7 @@ void CAI_Bloodsucker::Load(LPCSTR section)
 	anim().LinkAction(ACT_EAT,			eAnimEat);
 	anim().LinkAction(ACT_SLEEP,		eAnimSleep);
 	anim().LinkAction(ACT_REST,			eAnimSitIdle);
-	anim().LinkAction(ACT_DRAG,			eAnimWalkBkwd);
+	//anim().LinkAction(ACT_DRAG,			eAnimWalkBkwd);
 	anim().LinkAction(ACT_ATTACK,		eAnimAttack);
 	anim().LinkAction(ACT_STEAL,		eAnimSteal);
 	anim().LinkAction(ACT_LOOK_AROUND,	eAnimLookAround); 
