@@ -21,12 +21,18 @@ void script_rq_result::set_result(collide::rq_result _res)
 		if (pK)
 		{
 			const auto& bone_data = pK->LL_GetData((u16)_res.element);
-			mtl = GMLib.GetMaterialByIdx(bone_data.game_mtl_idx);
+			if (bone_data.game_mtl_idx < GMLib.CountMaterial())
+			{
+				mtl = GMLib.GetMaterialByIdx(bone_data.game_mtl_idx);
+			}
 		}
 	}
 	else {
 	  CDB::TRI* T = Level().ObjectSpace.GetStaticTris() + element;
-	  mtl = GMLib.GetMaterialByIdx( T->material );
+	  if (T->material < GMLib.CountMaterial())
+	  {
+		  mtl = GMLib.GetMaterialByIdx(T->material);
+	  }
 	}
 }
 

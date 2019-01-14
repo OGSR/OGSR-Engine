@@ -4,9 +4,6 @@
 #include "../../../CameraEffector.h"
 #include "../../../../xr_3da/cameramanager.h"
 
-//////////////////////////////////////////////////////////////////////////
-// Vampire Postprocess Effector
-//////////////////////////////////////////////////////////////////////////
 class CVampirePPEffector : public CEffectorPP {
 	typedef CEffectorPP inherited;	
 
@@ -33,7 +30,7 @@ class CVampireCameraEffector : public CEffectorCam {
 
 public:
 					CVampireCameraEffector	(float time, const Fvector &src, const Fvector &tgt);
-	virtual	BOOL	Process					(Fvector &p, Fvector &d, Fvector &n, float& fFov, float& fFar, float& fAspect);
+	virtual	BOOL	Process(Fvector &p, Fvector &d, Fvector &n, float& fFov, float& fFar, float& fAspect);
 };
 
 
