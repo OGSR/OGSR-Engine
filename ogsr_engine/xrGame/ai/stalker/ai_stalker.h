@@ -496,6 +496,10 @@ private:
 	u32									m_last_throw_time;
 	u32									m_throw_time_interval;
 
+#ifdef DEBUG
+	xr_vector<Fvector>					m_throw_picks;
+#endif // DEBUG
+
 public:
 	IC		const bool					&throw_enabled						();
 
