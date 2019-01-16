@@ -8,6 +8,12 @@
 //#include "control_animation_base.h"
 //#endif
 
+void SAnimationPart::set_motion (MotionID const& m) 
+{ 
+	VERIFY						 (m.valid());
+	motion						= m;
+}
+
 void CControlAnimation::reinit()
 {
 	inherited::reinit			();

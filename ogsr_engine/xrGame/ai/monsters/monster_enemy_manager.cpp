@@ -187,6 +187,11 @@ bool CMonsterEnemyManager::see_enemy_now()
 	return (monster->memory().visual().visible_right_now(enemy)); 
 }
 
+bool CMonsterEnemyManager::see_enemy_now(const CEntityAlive* enemy)
+{
+	return monster->memory().visual().visible_right_now(enemy); 
+}
+
 bool CMonsterEnemyManager::enemy_see_me_now()
 {
 	if (Actor() == enemy) {

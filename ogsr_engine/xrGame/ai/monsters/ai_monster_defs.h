@@ -201,6 +201,8 @@ enum EMotionAnim {
 	eAnimAttackOnRunLeft,
 	eAnimAttackOnRunRight,
 
+	eAnimAntiAimAbility,
+
 	eAnimCount,
 	eAnimUndefined			= u32(-1)
 };
