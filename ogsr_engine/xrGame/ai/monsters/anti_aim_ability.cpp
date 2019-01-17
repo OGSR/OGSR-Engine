@@ -256,10 +256,12 @@ float   anti_aim_ability::calculate_angle () const
 
 	return std::max							(0.f, deviation - max_deviation);
 }
+/*
 #ifdef DEBUG
 #include "../../level_debug.h"
 #include "../../debug_text_tree.h"
 #endif
+*/
 
 bool   anti_aim_ability::check_update_condition () const
 {
@@ -278,11 +280,13 @@ bool   anti_aim_ability::check_update_condition () const
 
 void   anti_aim_ability::update_schedule ()
 {
+/*
 #ifdef DEBUG_STATE
  	DBG().get_text_tree().clear			();
  	debug::text_tree& text_tree		=	DBG().get_text_tree().find_or_add("ActorView");
  	text_tree.add_line					("detection_level", m_detection_level);
 #endif // #ifdef DEBUG_STATE
+*/
 
 	if ( !check_update_condition() )
 	{
@@ -297,9 +301,11 @@ void   anti_aim_ability::update_schedule ()
 
 	if ( is_active() )
 	{
+/*
 #ifdef DEBUG_STATE
 		text_tree.add_line				("state", "activated");
 #endif // #ifdef DEBUG_STATE
+*/
 
 		if ( Device.dwTimeGlobal < m_animation_hit_tick )
 		{
@@ -318,15 +324,19 @@ void   anti_aim_ability::update_schedule ()
 
 	if ( Device.dwTimeGlobal < m_last_activated_tick + (TTime)(m_timeout*1000) )
 	{
+/*
 #ifdef DEBUG_STATE
 		text_tree.add_line				("state", "colddown");
 #endif // #ifdef DEBUG_STATE
+*/
 		return;
 	}
 
+/*
 #ifdef DEBUG_STATE
 	text_tree.add_line					("state", "deactivated");
 #endif // #ifdef DEBUG_STATE
+*/
 
 	if ( m_last_detection_tick == 0 )
 	{

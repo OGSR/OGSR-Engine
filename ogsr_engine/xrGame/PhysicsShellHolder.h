@@ -55,6 +55,8 @@ public:
 
 
 
+	virtual bool		ActivationSpeedOverriden (Fvector& dest, bool clear_override) { return false; }
+
 	IC CPhysicsShell	*&PPhysicsShell				()		
 	{
 		return m_pPhysicsShell;

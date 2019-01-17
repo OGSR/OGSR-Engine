@@ -197,6 +197,10 @@ enum EMotionAnim {
 	eAnimTeleFire,
 	eAnimGraviPrepare,
 	eAnimGraviFire,
+	eAnimShieldStart,
+	eAnimShieldContinue,
+
+	eAnimTelekinesis,
 
 	eAnimAttackOnRunLeft,
 	eAnimAttackOnRunRight,
