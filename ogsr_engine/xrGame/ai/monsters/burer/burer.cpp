@@ -166,15 +166,22 @@ void CBurer::Load(LPCSTR section)
 	anim().AddAnim(eAnimDie,			"stand_die_",			-1, &velocity_none,		PS_STAND); //, 	"fx_stand_f", "fx_stand_b", "fx_stand_l", "fx_stand_r");
 
 #pragma todo( "dsh: вернуть закомментированные анимации обратно, когда они появятся" )
-	anim().AddAnim(eAnimShieldStart,	"stand_tele_"/*"stand_shield_"*/,		-1, &velocity_turn,		PS_STAND); //, 	"fx_stand_f", "fx_stand_b", "fx_stand_l", "fx_stand_r");
-	anim().AddAnim(eAnimShieldContinue,	"stand_tele_"/*"stand_shield_idle_"*/,	-1, &velocity_turn,		PS_STAND); //, 	"fx_stand_f", "fx_stand_b", "fx_stand_l", "fx_stand_r");
+        pcstr shield_anim_start = READ_IF_EXISTS( pSettings, r_string, section, "shield_animation_start", "stand_tele_"/*"stand_shield_"*/ );
+	anim().AddAnim( eAnimShieldStart, shield_anim_start, -1, &velocity_turn, PS_STAND ); //, 	"fx_stand_f", "fx_stand_b", "fx_stand_l", "fx_stand_r");
+        pcstr shield_anim_cont = READ_IF_EXISTS( pSettings, r_string, section, "shield_animation_cont", "stand_tele_"/*"stand_shield_idle_"*/ );
+	anim().AddAnim( eAnimShieldContinue, shield_anim_cont, -1, &velocity_turn, PS_STAND ); //, 	"fx_stand_f", "fx_stand_b", "fx_stand_l", "fx_stand_r");
 
-	anim().AddAnim(eAnimTeleFire,		"stand_tele_"/*"stand_power_attack_"*/,	-1, &velocity_turn,		PS_STAND); //, 	"fx_stand_f", "fx_stand_b", "fx_stand_l", "fx_stand_r");
-	anim().AddAnim(eAnimTelekinesis,	"stand_tele_"/*"telekinesis_"*/,			-1, &velocity_turn,		PS_STAND); //, 	"fx_stand_f", "fx_stand_b", "fx_stand_l", "fx_stand_r");
-	anim().AddAnim(eAnimGraviFire,		"stand_gravi_"/*"stand_power_attack_"*/,	-1, &velocity_turn,		PS_STAND); //, 	"fx_stand_f", "fx_stand_b", "fx_stand_l", "fx_stand_r");
+        pcstr tele_anim_fire = READ_IF_EXISTS( pSettings, r_string, section, "tele_animation_fire", "stand_tele_"/*"stand_power_attack_"*/ );
+	anim().AddAnim( eAnimTeleFire, tele_anim_fire, -1, &velocity_turn, PS_STAND ); //, 	"fx_stand_f", "fx_stand_b", "fx_stand_l", "fx_stand_r");
+        pcstr tele_anim_tele = READ_IF_EXISTS( pSettings, r_string, section, "tele_animation_tele", "stand_tele_"/*"telekinesis_"*/ );
+	anim().AddAnim( eAnimTelekinesis, tele_anim_tele, -1, &velocity_turn, PS_STAND ); //, 	"fx_stand_f", "fx_stand_b", "fx_stand_l", "fx_stand_r");
+        pcstr gravi_anim_fire = READ_IF_EXISTS( pSettings, r_string, section, "gravi_animation_fire", "stand_gravi_"/*"stand_power_attack_"*/ );
+	anim().AddAnim( eAnimGraviFire, gravi_anim_fire, -1, &velocity_turn, PS_STAND ); //, 	"fx_stand_f", "fx_stand_b", "fx_stand_l", "fx_stand_r");
 
-	anim().AddAnim(eAnimRunTurnLeft,	"stand_run_fwd_"/*"stand_run_fwd_turn_left_"*/,	-	1, &velocity_run,	PS_STAND);
-	anim().AddAnim(eAnimRunTurnRight,	"stand_run_fwd_"/*"stand_run_fwd_turn_right_"*/,	-1, &velocity_run,	PS_STAND);
+        pcstr run_anim_tl = READ_IF_EXISTS( pSettings, r_string, section, "run_animation_tl", "stand_run_fwd_"/*"stand_run_fwd_turn_left_"*/ );
+	anim().AddAnim( eAnimRunTurnLeft, run_anim_tl, -1, &velocity_run, PS_STAND );
+        pcstr run_anim_tr = READ_IF_EXISTS( pSettings, r_string, section, "run_animation_tr", "stand_run_fwd_"/*"stand_run_fwd_turn_right_"*/ );
+	anim().AddAnim( eAnimRunTurnRight, run_anim_tr, -1, &velocity_run, PS_STAND );
 
 // 	anim().AddAnim(eAnimScared,			"stand_scared_",		-1, &velocity_none,		PS_STAND); //, 	"fx_stand_f", "fx_stand_b", "fx_stand_l", "fx_stand_r");
 // 	anim().AddAnim(eAnimSteal,			"stand_steal_",			-1, &velocity_steal,	PS_STAND); //, 	"fx_stand_f", "fx_stand_b", "fx_stand_l", "fx_stand_r");
