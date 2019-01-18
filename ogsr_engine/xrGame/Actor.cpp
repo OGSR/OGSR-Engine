@@ -1982,3 +1982,8 @@ void CActor::RepackAmmo() {
     _ammo.erase( std::remove_if( _ammo.begin(), _ammo.end(), [asect]( CWeaponAmmo* a ) { return a->cNameSect() == asect; } ), _ammo.end() );
   }
 }
+
+bool CActor::unlimited_ammo()
+{
+	return !!psActorFlags.test(AF_UNLIMITEDAMMO);
+}

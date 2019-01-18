@@ -1832,7 +1832,10 @@ void CWeapon::OnDrawUI()
 
 bool CWeapon::unlimited_ammo() 
 { 
-	return psActorFlags.test(AF_UNLIMITEDAMMO) && m_DefaultCartridge.m_flags.test(CCartridge::cfCanBeUnlimited); 
+	if (m_pCurrentInventory)
+		return inventory_owner().unlimited_ammo() && m_DefaultCartridge.m_flags.test(CCartridge::cfCanBeUnlimited);
+	else
+		return false;
 };
 
 LPCSTR	CWeapon::GetCurrentAmmo_ShortName	()

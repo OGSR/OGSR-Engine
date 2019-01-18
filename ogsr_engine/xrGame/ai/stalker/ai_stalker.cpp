@@ -1051,3 +1051,8 @@ void CAI_Stalker::on_after_change_team			()
 		
 	agent_manager().member().register_in_combat	(this);
 }
+
+bool CAI_Stalker::unlimited_ammo()
+{
+	return infinite_ammo() && CObjectHandler::planner().object().g_Alive();
+}

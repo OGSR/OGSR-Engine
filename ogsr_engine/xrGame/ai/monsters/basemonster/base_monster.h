@@ -67,6 +67,7 @@ public:
 	virtual CBaseMonster*				cast_base_monster			()	{return this;}
 
 	virtual CInventoryOwner				*cast_inventory_owner		() {return this;}
+	virtual bool						unlimited_ammo				() {return false;}
 	virtual CGameObject*				cast_game_object			() {return this;}
 
 public:

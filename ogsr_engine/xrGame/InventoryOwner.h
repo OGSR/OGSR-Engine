@@ -190,6 +190,7 @@ public:
 	IC		const u32			&ammo_in_box_to_spawn	() const {return m_ammo_in_box_to_spawn;}
 
 public:
+	virtual bool				unlimited_ammo			()	= 0;
 	virtual	void				on_weapon_shot_start	(CWeapon *weapon);
 	virtual	void				on_weapon_shot_stop		(CWeapon *weapon);
 	virtual	void				on_weapon_hide			(CWeapon *weapon);

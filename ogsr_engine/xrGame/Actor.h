@@ -204,6 +204,8 @@ public:
 	virtual void						g_PerformDrop		();
 
 
+	virtual bool						unlimited_ammo			();
+
 	virtual bool						NeedToDestroyObject()  const;
 	virtual ALife::_TIME_ID				TimePassedAfterDeath() const;
 
