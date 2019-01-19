@@ -325,23 +325,23 @@ u32 CHW::selectGPU ()
 	} else return D3DCREATE_SOFTWARE_VERTEXPROCESSING;
 }
 
-UINT CHW::selectRefresh(u32 /*dwWidth*/, u32 /*dwHeight*/, D3DFORMAT /*fmt*/)
+UINT CHW::selectRefresh(u32 dwWidth, u32 dwHeight, D3DFORMAT fmt)
 {
-		/*u32 selected = D3DPRESENT_RATE_DEFAULT;
-		 //KRodin: выключаю, т.к. этот код предположительно приводит к тормозам в полном разрешении.
-		u32 count		= pD3D->GetAdapterModeCount(DevAdapter,fmt);
-		for (u32 I=0; I<count; I++)
-		{
-			D3DDISPLAYMODE	Mode;
-			pD3D->EnumAdapterModes(DevAdapter,fmt,I,&Mode);
-			if (Mode.Width==dwWidth && Mode.Height==dwHeight)
-			{
-				if (Mode.RefreshRate>selected) selected = Mode.RefreshRate;
-			}
-		}
-		
-		return selected;*/
-	return D3DPRESENT_RATE_DEFAULT;
+	if (psDeviceFlags.is(rsRefresh60hz))
+		return D3DPRESENT_RATE_DEFAULT;
+
+	UINT selected = D3DPRESENT_RATE_DEFAULT;
+	UINT count = pD3D->GetAdapterModeCount(DevAdapter, fmt);
+	for (UINT I = 0; I < count; I++)
+	{
+		D3DDISPLAYMODE Mode;
+		pD3D->EnumAdapterModes(DevAdapter, fmt, I, &Mode);
+		if (Mode.Width == dwWidth && Mode.Height == dwHeight)
+			if (Mode.RefreshRate > selected)
+				selected = Mode.RefreshRate;
+	}
+
+	return selected;
 }
 
 BOOL	CHW::support	(D3DFORMAT fmt, DWORD type, DWORD usage)

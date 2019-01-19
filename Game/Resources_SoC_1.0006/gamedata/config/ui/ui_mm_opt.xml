@@ -440,7 +440,14 @@
 		<check_vsync x="249" y="0" width="30" height="21">
 			<options_item entry="rs_v_sync" group="mm_opt_video_adv"/>
 		</check_vsync>
-		
+
+		<cap_60hz x="5" y="5" width="143" height="21">
+			<text font="letterica16" r="215" g="195" b="170">ui_mm_60_hz</text>
+		</cap_60hz>
+		<check_60hz x="249" y="0" width="30" height="21">
+			<options_item entry="rs_refresh_60hz" group="mm_opt_video_adv"/>
+		</check_60hz>
+
 		<cap_r2_sun_near x="5" y="5" width="143" height="21">
 			<text font="letterica16" r="215" g="195" b="170">ui_mm_r2_sun_near</text>
 		</cap_r2_sun_near>
