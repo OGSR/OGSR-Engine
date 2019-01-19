@@ -18,12 +18,14 @@ void CWeaponCustomPistol::switch2_Fire()
 {
 	if (GetCurrentFireMode() == 1) 
 	{
-		m_bFireSingleShot = true;
-		bWorking = false;
-		m_iShotNum = 0;
-		m_bStopedAfterQueueFired = false;
+		{
+			m_bFireSingleShot = true;
+			bWorking = true;
+			m_iShotNum = 0;
+			m_bStopedAfterQueueFired = false;
 
-		StateSwitchCallback(GameObject::eOnActorWeaponStartFiring, GameObject::eOnNPCWeaponStartFiring);
+			StateSwitchCallback(GameObject::eOnActorWeaponStartFiring, GameObject::eOnNPCWeaponStartFiring);
+		}
 	}
 	else 
 	{
@@ -33,10 +35,10 @@ void CWeaponCustomPistol::switch2_Fire()
 
 void CWeaponCustomPistol::FireEnd() 
 {
-	if (fTime <= 0 && GetCurrentFireMode() == 1)
-	{
-		m_bPending = false;
-	}
+	//if (fTime <= 0 && GetCurrentFireMode() == 1)
+	//{
+	//	m_bPending = false;
+	//}
 
 	inherited::FireEnd();
 }
