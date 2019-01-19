@@ -115,29 +115,22 @@ void	CHW::DestroyDevice	()
 	
 	free_vid_mode_list		();
 }
-void	CHW::selectResolution	(u32 &dwWidth, u32 &dwHeight, BOOL bWindowed)
+
+void CHW::selectResolution(u32 &dwWidth, u32 &dwHeight, BOOL bWindowed)
 {
-	fill_vid_mode_list			(this);
+	fill_vid_mode_list(this);
 
-	if(bWindowed)
-	{
-		dwWidth		= psCurrentVidMode[0];
-		dwHeight	= psCurrentVidMode[1];
-	}else //check
-	{
-		string64					buff;
-		sprintf_s					(buff,sizeof(buff),"%dx%d",psCurrentVidMode[0],psCurrentVidMode[1]);
-		
-		if(_ParseItem(buff,vid_mode_token)==u32(-1)) //not found
-		{ //select safe
-			sprintf_s				(buff,sizeof(buff),"vid_mode %s",vid_mode_token[0].name);
-			Console->Execute		(buff);
-		}
+	string64 buff;
+	sprintf_s(buff, sizeof(buff), "%dx%d", psCurrentVidMode[0], psCurrentVidMode[1]);
 
-		dwWidth						= psCurrentVidMode[0];
-		dwHeight					= psCurrentVidMode[1];
+	if (_ParseItem(buff, vid_mode_token) == u32(-1)) //not found
+	{ //select safe
+		sprintf_s(buff, sizeof(buff), "vid_mode %s", vid_mode_token[0].name);
+		Console->Execute(buff);
 	}
 
+	dwWidth = psCurrentVidMode[0];
+	dwHeight = psCurrentVidMode[1];
 }
 
 void		CHW::CreateDevice		(HWND m_hWnd)
