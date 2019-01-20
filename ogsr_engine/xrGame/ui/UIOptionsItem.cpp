@@ -100,6 +100,7 @@ void CUIOptionsItem::SaveValue(){
 		m_entry == "rs_fullscreen" ||	
 		m_entry == "r__supersample" || 
 		m_entry == "rs_v_sync" ||
+		m_entry == "rs_refresh_60hz" ||
 		m_entry == "texture_lod" ||
 		// KD: additional options
 		m_entry == "r2_mblur" ||

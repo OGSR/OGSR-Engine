@@ -56,15 +56,16 @@ private:
 };
 
 
+/*
 using CRC32Func = DWORD(WINAPI*)(DWORD dwInitial, const BYTE* pData, INT iLen);
 auto hDLL = GetModuleHandle("ntdll.dll");
 auto RtlComputeCrc32 = (CRC32Func)GetProcAddress(hDLL, "RtlComputeCrc32");
-
+*/
 
 u32 crc32(const void* P, u32 len)
 {
-	if (RtlComputeCrc32)
-		return RtlComputeCrc32(0, reinterpret_cast<const BYTE*>(P), len);
+	//if (RtlComputeCrc32)
+	//	return RtlComputeCrc32(0, reinterpret_cast<const BYTE*>(P), len);
 
 	Crc32Initializer::init();
 
