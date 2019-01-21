@@ -780,6 +780,8 @@ public:
 	bool throw_target( const Fvector&, CScriptGameObject* = nullptr );
 	bool throw_target( const Fvector&, u32 const, CScriptGameObject* = nullptr );
 
+	void g_fireParams( const CScriptGameObject*, Fvector&, Fvector& );
+
 	DECLARE_SCRIPT_REGISTER_FUNCTION
 };
 add_to_type_list(CScriptGameObject)

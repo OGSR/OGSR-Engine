@@ -809,3 +809,12 @@ bool CScriptGameObject::throw_target( const Fvector& position, u32 const vertex_
   stalker->throw_target( position, vertex_id, obj );
   return stalker->throw_enabled();
 }
+
+
+void CScriptGameObject::g_fireParams( const CScriptGameObject* pHudItem, Fvector& P, Fvector& D ) {
+  auto E = smart_cast<CEntity*>( &object() );
+  ASSERT_FMT( E, "[%s]: %s not a CEntity", __FUNCTION__, object().cName().c_str() );
+  const auto item = smart_cast<const CHudItem*>( &(pHudItem->object()) );
+  ASSERT_FMT( item, "[%s]: %s not a CHudItem", __FUNCTION__, pHudItem->object().cName().c_str() );
+  E->g_fireParams( item, P, D );
+}

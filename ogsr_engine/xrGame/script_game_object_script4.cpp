@@ -360,6 +360,8 @@ class_<CScriptGameObject> script_register_game_object3(class_<CScriptGameObject>
 		.def( "throw_target", ( bool ( CScriptGameObject::* )( const Fvector&, CScriptGameObject* ) )( &CScriptGameObject::throw_target ) )
 		.def( "throw_target", ( bool ( CScriptGameObject::* )( const Fvector&, u32 const, CScriptGameObject* ) )( &CScriptGameObject::throw_target ) )
 
+		.def( "g_fireParams", &CScriptGameObject::g_fireParams )
+
 		.property("inventory",				&get_obj_inventory)
 		.property("immunities",				&get_obj_immunities)
 		.property("is_alive",				&get_obj_alive)
