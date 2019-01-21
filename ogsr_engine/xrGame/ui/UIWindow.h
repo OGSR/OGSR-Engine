@@ -129,7 +129,7 @@ public:
 																				else
 																					return  m_pParentWnd->GetFont();}
 
-	using WINDOW_LIST = xr_list<CUIWindow*>;
+	using WINDOW_LIST = std::list<CUIWindow*>;
 	using WINDOW_LIST_it = WINDOW_LIST::iterator;
 
 	WINDOW_LIST&			GetChildWndList		()							{return m_ChildWndList; }
@@ -148,7 +148,6 @@ public:
 	IC bool					CursorOverWindow	() const					{ return m_bCursorOverWindow; }
 
 protected:
-	IC void					SafeRemoveChild(CUIWindow* child)				{WINDOW_LIST_it it = std::find(m_ChildWndList.begin(),m_ChildWndList.end(),child); if(it!=m_ChildWndList.end())m_ChildWndList.erase(it);};
 
 	shared_str				m_windowName;
 	//список дочерних окон
