@@ -633,6 +633,7 @@ public:
 
 			void				SwitchProjector(bool _on);
 			void				ChangeBleeding(float _delta);
+			void				AddWound(float hit_power, int hit_type, u16 element);
 			float				GetItemWeight();
 			u32					InvBoxCount();
 			void				OpenInvBox(CScriptGameObject *object);
