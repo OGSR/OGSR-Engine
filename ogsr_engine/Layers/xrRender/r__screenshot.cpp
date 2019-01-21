@@ -35,8 +35,8 @@ void CRender::Screenshot		(IRender_interface::ScreenshotMode mode, LPCSTR name)
 	if (!Device.b_is_Ready)			return;
 
 	// Create temp-surface
-	IDirect3DSurface9*	pFB;
-	D3DLOCKED_RECT		D;
+	IDirect3DSurface9*	pFB = nullptr;
+	D3DLOCKED_RECT		D = { 0 };
 	HRESULT				hr;
 	hr = HW.pDevice->CreateOffscreenPlainSurface(Device.dwWidth, Device.dwHeight, HW.DevPP.BackBufferFormat,
 		D3DPOOL_SYSTEMMEM, &pFB, NULL);
@@ -49,24 +49,37 @@ void CRender::Screenshot		(IRender_interface::ScreenshotMode mode, LPCSTR name)
 	if (FAILED(hr))
 		goto _end_;
 
-	// Image processing (gamma-correct)
-	u32* pPixel		= (u32*)D.pBits;
-	u32* pEnd		= pPixel+(Device.dwWidth*Device.dwHeight);
-	D3DGAMMARAMP	G;
-	Device.Gamma.GenLUT	(G);
-	for (int i=0; i<256; i++) {
-		G.red	[i]	/= 256;
-		G.green	[i]	/= 256;
-		G.blue	[i]	/= 256;
+	u32* pPixel = (u32*)D.pBits;
+	u32* pEnd = pPixel + (Device.dwWidth*Device.dwHeight);
+
+	if (mode != IRender_interface::SM_FOR_GAMESAVE && psDeviceFlags.test(rsFullscreen))
+	{
+		D3DGAMMARAMP G = { 0 };
+		Device.Gamma.GenLUT(G);
+		for (int i = 0; i < 256; i++)
+		{
+			G.red[i] /= 256;
+			G.green[i] /= 256;
+			G.blue[i] /= 256;
+		}
+
+		// Apply gamma correction and kill aplha
+		for (; pPixel != pEnd; ++pPixel)
+		{
+			u32 p = *pPixel;
+			*pPixel = color_xrgb(G.red[color_get_R(p)], G.green[color_get_G(p)], G.blue[color_get_B(p)]);
+		}
 	}
-	for (;pPixel!=pEnd; pPixel++)	{
-		u32 p = *pPixel;
-		*pPixel = color_xrgb	(
-			G.red	[color_get_R(p)],
-			G.green	[color_get_G(p)],
-			G.blue	[color_get_B(p)]
-			);
+	else
+	{
+		// Just kill alpha
+		for (; pPixel != pEnd; ++pPixel)
+		{
+			u32 p = *pPixel;
+			*pPixel = color_xrgb(color_get_R(p), color_get_G(p), color_get_B(p));
+		}
 	}
+
 	hr					= pFB->UnlockRect();
 	if(hr!=D3D_OK)		goto _end_;
 

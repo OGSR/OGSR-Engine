@@ -334,7 +334,7 @@ SAAParam &CControlAnimationBase::AA_GetParams(MotionID motion, float time_perc)
 EPState	CControlAnimationBase::GetState (EMotionAnim a)
 {
 	// найти анимацию 
-	ASSERT_FMT( a < m_anim_storage.size(), "[%s]: %s: a[%u] m_anim_storage.size[%u]", __FUNCTION__, m_object->cName().c_str(), a, m_anim_storage.size() );
+	ASSERT_FMT( u32(a) < m_anim_storage.size(), "[%s]: %s: a[%u] m_anim_storage.size[%u]", __FUNCTION__, m_object->cName().c_str(), a, m_anim_storage.size() );
 	SAnimItem *item_it = m_anim_storage[a];
 	ASSERT_FMT( item_it, "[%s]: %s: m_anim_storage[%u] is NULL", __FUNCTION__, m_object->cName().c_str(), a ); //VERIFY(item_it);
 

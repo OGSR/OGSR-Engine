@@ -256,19 +256,15 @@ void CUIWindow::DetachChild(CUIWindow* pChild, bool from_destructor)
 	if( GetMouseCapturer() == pChild )
 		SetMouseCapture(pChild, false);
 
-	__try {
-		SafeRemoveChild(pChild);
+	try {
+		m_ChildWndList.remove(pChild);
 	}
-	__except (ExceptStackTrace("Exception catched in SafeRemoveChild(pChild);")) {
-		FATAL("");
+	catch(...)
+	{
+		ASSERT_FMT(std::find(m_ChildWndList.begin(), m_ChildWndList.end(), pChild) == m_ChildWndList.end(), "Can't remove pointer [%x] from m_ChildWndList", pChild);
 	}
 
-	__try {
-		pChild->SetParent(NULL);
-	}
-	__except (ExceptStackTrace("Exception catched in pChild->SetParent(NULL);")) {
-		FATAL("");
-	}
+	pChild->SetParent(NULL);
 
 	if (from_destructor && pChild->IsAutoDelete()) {
 		Msg("!![" __FUNCTION__ "] detaching autodelete window from destructor : [%s]", pChild->WindowName_script());
@@ -281,18 +277,8 @@ void CUIWindow::DetachChild(CUIWindow* pChild, bool from_destructor)
 
 void CUIWindow::DetachAll()
 {
-	size_t processed = 0;
-	auto iter = m_ChildWndList.rbegin();
-	while (iter != m_ChildWndList.rend()) {
-		const auto size = m_ChildWndList.size();
-		DetachChild(*(iter++));
-		if (size != m_ChildWndList.size()) {
-			iter = m_ChildWndList.rbegin();
-			std::advance(iter, processed);
-		}
-		else {
-			processed++;
-		}
+	while (!m_ChildWndList.empty()) {
+		DetachChild(m_ChildWndList.back());
 	}
 }
 
@@ -582,15 +568,11 @@ CUIWindow* CUIWindow::GetChildMouseHandler(){
 bool CUIWindow::BringToTop(CUIWindow* pChild)
 {
 	//найти окно в списке
-/*	WINDOW_LIST_it it = std::find(m_ChildWndList.begin(), 
-										m_ChildWndList.end(), 
-										pChild);
-*/
 	if( !IsChild(pChild) ) return false;
 
 	//удалить со старого места
-	SafeRemoveChild(pChild);
-//	m_ChildWndList.remove(pChild);
+	m_ChildWndList.remove(pChild);
+
 	//поместить на вершину списка
 	m_ChildWndList.push_back(pChild);
 
