@@ -18,14 +18,12 @@ void CWeaponCustomPistol::switch2_Fire()
 {
 	if (GetCurrentFireMode() == 1) 
 	{
-		{
-			m_bFireSingleShot = true;
-			bWorking = true;
-			m_iShotNum = 0;
-			m_bStopedAfterQueueFired = false;
+		m_bFireSingleShot = true;
+		bWorking = true;
+		m_iShotNum = 0;
+		m_bStopedAfterQueueFired = false;
 
-			StateSwitchCallback(GameObject::eOnActorWeaponStartFiring, GameObject::eOnNPCWeaponStartFiring);
-		}
+		StateSwitchCallback(GameObject::eOnActorWeaponStartFiring, GameObject::eOnNPCWeaponStartFiring);
 	}
 	else 
 	{
