@@ -19,7 +19,7 @@ void CWeaponCustomPistol::switch2_Fire()
 	if (GetCurrentFireMode() == 1) 
 	{
 		m_bFireSingleShot = true;
-		bWorking = false;
+		bWorking = true;
 		m_iShotNum = 0;
 		m_bStopedAfterQueueFired = false;
 
@@ -33,10 +33,10 @@ void CWeaponCustomPistol::switch2_Fire()
 
 void CWeaponCustomPistol::FireEnd() 
 {
-	if (fTime <= 0 && GetCurrentFireMode() == 1)
-	{
-		m_bPending = false;
-	}
+	//if (fTime <= 0 && GetCurrentFireMode() == 1)
+	//{
+	//	m_bPending = false;
+	//}
 
 	inherited::FireEnd();
 }
