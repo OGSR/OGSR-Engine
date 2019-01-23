@@ -369,9 +369,9 @@ void CWeaponShotgun::switch2_AddCartgidge	()
 
 void CWeaponShotgun::switch2_EndReload	()
 {
-	m_bPending = false;
 	PlaySound			(m_sndClose,get_LastFP());
 	PlayAnimCloseWeapon	();
+	m_bPending = true;
 }
 
 void CWeaponShotgun::PlayAnimOpenWeapon()

@@ -2001,10 +2001,7 @@ bool CWeapon::SecondVPEnabled() const
 // Чувствительность мышкии с оружием в руках во время прицеливания
 float CWeapon::GetControlInertionFactor() const
 {
-	// если в режиме ПГ - не будем применять m_fScopeInertionFactor
-	auto wpn_w_gl = smart_cast<const CWeaponMagazinedWGrenade*>(this);
-
-	if (IsZoomed() && (!wpn_w_gl || !wpn_w_gl->m_bGrenadeMode) && SecondVPEnabled())
+	if (IsZoomed() && SecondVPEnabled())
 		return m_fScopeInertionFactor;
 
 	float fInertionFactor = inherited::GetControlInertionFactor();

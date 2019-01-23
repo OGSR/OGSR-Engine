@@ -330,6 +330,16 @@ void CScriptGameObject::ChangeBleeding(float _delta)
 	e->conditions().ChangeBleeding(_delta);
 }
 
+void CScriptGameObject::AddWound(float hit_power, int hit_type, u16 element)
+{
+	CEntityAlive						*e = smart_cast<CEntityAlive*>(&object());
+	if (!e) {
+		ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "CEntityAlive : cannot access class member AddWound!");
+		return;
+	}
+	e->conditions().AddWound(hit_power, ALife::EHitType(hit_type), element);
+}
+
 float CScriptGameObject::GetItemWeight()
 {
 	CInventoryItem						*e = smart_cast<CInventoryItem*>(&object());

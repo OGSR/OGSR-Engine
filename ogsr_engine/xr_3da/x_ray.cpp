@@ -158,10 +158,20 @@ void destroyEngine	()
 
 void execUserScript				( )
 {
-// Execute script
-
 	Console->Execute			("unbindall");
-	Console->ExecuteScript		(Console->ConfigFile);
+
+	if (FS.exist("$app_data_root$", Console->ConfigFile))
+	{
+		Console->ExecuteScript(Console->ConfigFile);
+	}
+	else
+	{
+		string_path default_full_name;
+
+		FS.update_path(default_full_name, "$game_config$", "rspec_default.ltx");
+
+		Console->ExecuteScript(default_full_name);
+	}
 }
 
 void Startup					( )

@@ -370,6 +370,7 @@ class_<CScriptGameObject> script_register_game_object2(class_<CScriptGameObject>
 		.def("set_camera_direction", &CScriptGameObject::SetActorCamDir)
 		.def("update_condition", &CScriptGameObject::UpdateCondition)
 		.def("heal_wounds", &CScriptGameObject::ChangeBleeding)
+		.def("add_wounds", &CScriptGameObject::AddWound)
 		.def("get_weight", &CScriptGameObject::GetItemWeight)
 		.def("inv_box_count", &CScriptGameObject::InvBoxCount)
 		.def("open_inventory_box", &CScriptGameObject::OpenInvBox)

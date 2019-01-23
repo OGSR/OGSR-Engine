@@ -235,6 +235,18 @@ inline decltype(auto) get_last_write_time_string(const stdfs::path& file)
 	return ss.str();
 }
 
+//Время последнего изменения файла в формате [02:01:2018 14:03:32]
+inline decltype(auto) get_last_write_time_string_short(const stdfs::path& file)
+{
+	const auto ftime = stdfs::last_write_time(file);
+	const auto cftime = decltype(ftime)::clock::to_time_t(ftime);
+	std::stringstream ss;
+	ss.imbue(std::locale("")); //Устанавливаем системную локаль потоку, чтоб месяц/день недели были на системном языке.
+	ss << std::put_time(std::localtime(&cftime), "[%d:%m:%Y %T]");
+	return ss.str();
+}
+
+
 #pragma optimize("s",on)
 void script_register_stdfs(lua_State *L)
 {
@@ -251,6 +263,7 @@ void script_register_stdfs(lua_State *L)
 			.property("extension", &get_extension)
 			.property("last_write_time", &get_last_write_time)
 			.property("last_write_time_string", &get_last_write_time_string)
+			.property("last_write_time_string_short", &get_last_write_time_string_short)
 	];
 }
 ////////////////////////////////////////////////////////////////////////////////////////////
