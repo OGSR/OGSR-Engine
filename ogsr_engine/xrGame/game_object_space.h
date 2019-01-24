@@ -114,6 +114,8 @@ namespace GameObject {
 		eOnInvBoxItemTake,
 		eOnInvBoxItemDrop,
 		eOnInvBoxOpen,
+		
+		eSelectPdaContact,
 
 		eDummy = u32(-1),
 	};
