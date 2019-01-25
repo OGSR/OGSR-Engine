@@ -198,7 +198,7 @@ void SActorState::Create(CKinematicsAnimated* K, LPCSTR base)
 	m_torso[11].Create(K,base,"_12");
 	m_torso[12].Create(K,base,"_13");
 	
-	m_torso_idle	= K->ID_Cycle(strconcat(sizeof(buf),buf,base,"_torso_0_aim_0"));
+	m_torso_idle	= K->ID_Cycle(strconcat(sizeof(buf),buf,base,"_torso_5_aim_0"));
 	m_head_idle		= K->ID_Cycle("head_idle_0");
 	jump_begin		= K->ID_Cycle(strconcat(sizeof(buf),buf,base,"_jump_begin"));
 	jump_idle		= K->ID_Cycle(strconcat(sizeof(buf),buf,base,"_jump_idle"));

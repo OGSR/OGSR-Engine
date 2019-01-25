@@ -1445,6 +1445,14 @@ void CActor::OnItemBelt		(CInventoryItem *inventory_item, EItemPlace previous_pl
 	UpdateArtefactPanel();
 }
 
+void CActor::OnItemSlot(CInventoryItem* inventory_item, EItemPlace previous_place)
+{
+	CInventoryOwner::OnItemSlot(inventory_item, previous_place);
+
+	if (previous_place == eItemPlaceBelt)
+		UpdateArtefactPanel();
+}
+
 
 void CActor::UpdateArtefactPanel()
 {
