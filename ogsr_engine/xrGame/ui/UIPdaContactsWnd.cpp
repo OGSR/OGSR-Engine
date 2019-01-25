@@ -151,6 +151,7 @@ CUIPdaContactItem::~CUIPdaContactItem()
 extern CSE_ALifeTraderAbstract* ch_info_get_from_id (u16 id);
 
 #include "UICharacterInfo.h"
+#include "..\game_object_space.h"
 
 void CUIPdaContactItem::SetSelected	(bool b)
 {
@@ -162,6 +163,8 @@ void CUIPdaContactItem::SetSelected	(bool b)
 		chInfo.Init					(T);
 
 		ADD_TEXT_TO_VIEW2( *(chInfo.Bio()), m_cw->UIDetailsWnd);
+
+		g_actor->callback(GameObject::eSelectPdaContact)(UIInfo->OwnerID());
 	}
 }
 

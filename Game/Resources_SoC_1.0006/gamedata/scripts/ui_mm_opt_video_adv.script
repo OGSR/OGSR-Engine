@@ -1,6 +1,12 @@
 -- Меню расширенных настроек графики для Теней Чернобыля.
 -- Перенесено из OGSE. Cпециально для использования с движком OGSR.
 
+local hint_colors = {
+	["green"]  = { 255, 0, 128, 0 },
+	["yellow"] = { 255, 186, 149, 0 },
+	["red"]    = { 255, 255, 0, 0 },
+}
+
 local hint_captions = {
 	["cam_inert"] =             "video_settings_name_1",
 	["vis_dist"] =              "video_settings_name_2",
@@ -62,6 +68,8 @@ local hint_captions = {
 	["r2_sun_limit"] =          "video_settings_name_58",
 	["r__smap_size"] =          "video_settings_name_59",
 	["rs_mt_texload"] =         "video_settings_name_60",
+	["fov"] =                   "video_settings_name_61",
+	["hud_fov"] =               "video_settings_name_62",
 }
 
 local hint_strings = {
@@ -124,69 +132,73 @@ local hint_strings = {
 	["r2_sun_limit"] =          "video_settings_desc_58",
 	["r__smap_size"] =          "video_settings_desc_59",
 	["rs_mt_texload"] =         "video_settings_desc_60",
+	["fov"] =                   "video_settings_desc_61",
+	["hud_fov"] =               "video_settings_desc_62",
 }
 
 local adv_vid_opt_params = {
-	{"r__smap_size",          "list",  1},
-	{"vis_dist",              "track", 0},
-	{"r2_ao",                 "check", 0},
-	{"r2_ao_intensity",       "track", 0},
-	{"r2_ssao",               "list",  0},
-	{"r2_ssao_mode",          "list",  0},
-	{"r2_steep_parallax",     "list",  1},
-	{"r2_dof",                "check", 0},
-	{"r2_dof_reload",         "check", 0},
-	{"r2_dof_zoom",           "check", 0},
-	{"r2_dof_quality",        "list",  0},
-	{"geometry_lod",          "track", 0},
-	{"detail_density",        "track", 0},
-	{"detail_distance",       "track", 0},
+	{ "fov",                   "track", 0, hint_colors.green  },
+	{ "hud_fov",               "track", 0, hint_colors.green  },
+	{ "r__smap_size",          "list",  1, hint_colors.red    },
+	{ "vis_dist",              "track", 0, hint_colors.yellow },
+	{ "r2_ao",                 "check", 0, hint_colors.green  },
+	{ "r2_ao_intensity",       "track", 0, hint_colors.green  },
+	{ "r2_ssao",               "list",  0, hint_colors.yellow },
+	{ "r2_ssao_mode",          "list",  0, hint_colors.yellow },
+	{ "r2_steep_parallax",     "list",  1, hint_colors.red    },
+	{ "r2_dof",                "check", 0, hint_colors.yellow },
+	{ "r2_dof_reload",         "check", 0, hint_colors.yellow },
+	{ "r2_dof_zoom",           "check", 0, hint_colors.yellow },
+	{ "r2_dof_quality",        "list",  0, hint_colors.yellow },
+	{ "geometry_lod",          "track", 0, hint_colors.green  },
+	{ "detail_density",        "track", 0, hint_colors.red    },
+	{ "detail_distance",       "track", 0, hint_colors.red    },
 --	{"r2_details_opt",        "check", 1},
-	{"r2_soft_water",         "check", 1},
-	{"r2_soft_particles",     "check", 1},
-	{"r__bloodmarks",         "check", 0},
-	{"texture_lod",           "track", 0},
-	{"aniso",                 "track", 0},
-	{"r2_aa",                 "list",  0},
-	{"r2_aa_mode",            "list",  0},
+	{ "r2_soft_water",         "check", 1, hint_colors.green  },
+	{ "r2_soft_particles",     "check", 1, hint_colors.green  },
+	{ "r__bloodmarks",         "check", 0, hint_colors.green  },
+	{ "texture_lod",           "track", 0, hint_colors.green  },
+	{ "aniso",                 "track", 0, hint_colors.green  },
+	{ "r2_aa",                 "list",  0, hint_colors.yellow },
+	{ "r2_aa_mode",            "list",  0, hint_colors.yellow },
 --	{"ssample",               "track", 0},
-	{"r2_sun",                "check", 0},
-	{"r2_sun_details",        "check", 0},
-	{"r2_detail_bump",        "check", 1},
-	{"r2_sunshafts",          "list",  0},
-	{"r2_sunshafts_mode",     "list",  0},
-	{"light_distance",        "track", 0},
-	{"npc_torch",             "check", 0},
-	{"particles_distance",    "track", 0},
-	{"vsync",                 "check", 0},
-	{"60hz",                  "check", 0},
-	{"r2_sun_near",           "track", 0},
-	{"r2_tf_mipbias",         "track", 0},
-	{"r2_gloss_factor",       "track", 0},
-	{"r2_sun_near_border",    "track", 0},
-	{"r2_true_sun_shadows",   "check", 0},
-	{"r2_soft_shadows",       "list",  1},
-	{"r2_lights_shadow_fade", "list",  0},
-	{"r2_tonemap",            "check", 0},
-	{"r2_tonemap_middlegray", "track", 0},
---	{"r2_sun_lumscale",       "track", 0},
-	{"r2_sun_lumscale_amb",   "track", 0},
-	{"cam_inert",             "track", 0},
-	{"r2_lens_flare",         "check", 0},
-	{"r2_lens_dirt",          "check", 0},
-	{"r2_rain_drops",         "check", 0},
-	{"r2_puddles",            "check", 1},
-	{"r2_wet_surfaces",       "check", 1},
-	{"r2_volumetric_lights",  "check", 0},
-	{"r2_reflections",        "list",  1},
-	{"r2_reflections_mode",   "list",  1},
---	{"r2_gbuffer_opt",        "check", 1},
-	{"r2_image_sharpening",   "track", 0},
-	{"r2_volumetric_fog",     "check", 0},
-	{"r2_actor_shadow",       "check", 0},
-	{"r2_glows_use",          "check", 0},
-	{"r2_sun_limit",          "track", 0},
-	{"rs_mt_texload",         "check", 1},
+	{ "r2_sun",                "check", 0, hint_colors.yellow },
+	{ "r2_sun_details",        "check", 0, hint_colors.red    },
+	{ "r2_detail_bump",        "check", 1, hint_colors.yellow },
+	{ "r2_sunshafts",          "list",  0, hint_colors.red    },
+	{ "r2_sunshafts_mode",     "list",  0, hint_colors.red    },
+	{ "light_distance",        "track", 0, hint_colors.red    },
+	{ "npc_torch",             "check", 0, hint_colors.green  },
+	{ "particles_distance",    "track", 0, hint_colors.red    },
+	{ "vsync",                 "check", 0, hint_colors.green  },
+	{ "60hz",                  "check", 0, hint_colors.green  },
+	{ "r2_sun_near",           "track", 0, hint_colors.red    },
+	{ "r2_tf_mipbias",         "track", 0, hint_colors.green  },
+	{ "r2_gloss_factor",       "track", 0, hint_colors.green  },
+	{ "r2_sun_near_border",    "track", 0, hint_colors.green  },
+	{ "r2_true_sun_shadows",   "check", 0, hint_colors.yellow },
+	{ "r2_soft_shadows",       "list",  1, hint_colors.red    },
+	{ "r2_lights_shadow_fade", "list",  0, hint_colors.yellow },
+	{ "r2_tonemap",            "check", 0, hint_colors.green  },
+	{ "r2_tonemap_middlegray", "track", 0, hint_colors.green  },
+--	{ "r2_sun_lumscale",       "track", 0, hint_colors.green  },
+	{ "r2_sun_lumscale_amb",   "track", 0, hint_colors.green  },
+	{ "cam_inert",             "track", 0, hint_colors.green  },
+	{ "r2_lens_flare",         "check", 0, hint_colors.green  },
+	{ "r2_lens_dirt",          "check", 0, hint_colors.green  },
+	{ "r2_rain_drops",         "check", 0, hint_colors.green  },
+	{ "r2_puddles",            "check", 1, hint_colors.green  },
+	{ "r2_wet_surfaces",       "check", 1, hint_colors.green  },
+	{ "r2_volumetric_lights",  "check", 0, hint_colors.green  },
+	{ "r2_reflections",        "list",  1, hint_colors.red    },
+	{ "r2_reflections_mode",   "list",  1, hint_colors.red    },
+--	{ "r2_gbuffer_opt",        "check", 1},
+	{ "r2_image_sharpening",   "track", 0, hint_colors.green  },
+	{ "r2_volumetric_fog",     "check", 0, hint_colors.green  },
+	{ "r2_actor_shadow",       "check", 0, hint_colors.green  },
+	{ "r2_glows_use",          "check", 0, hint_colors.green  },
+	{ "r2_sun_limit",          "track", 0, hint_colors.yellow },
+	{ "rs_mt_texload",         "check", 1, hint_colors.green  },
 }
 
 local control_init_funs = {
@@ -217,10 +229,13 @@ function opt_video_adv:InitControls(x, y, xml, handler)
 	-- который инвертирует порядок элементов, что в свою очередь сделано для того, чтобы визуально первые элементы
 	-- добавлялись последними, что в свою очередь позволяет раскрывающимся спискам перекрывать элементы, расположенные ниже по списку
 	for i = #adv_vid_opt_params, 1, -1 do
-		local opt, ctr_type, need_restart = unpack(adv_vid_opt_params[i])
+		local opt, ctr_type, need_restart, color = unpack(adv_vid_opt_params[i])
 
 		local _st = xml:InitStatic("video_adv:templ_item", self.scroll_v)
-		xml:InitStatic("video_adv:cap_"..opt, _st)
+		local _st2 = xml:InitStatic("video_adv:cap_"..opt, _st)
+		if color then
+			_st2:SetTextColor(unpack(color))
+		end
 		local ctl = xml[control_init_funs[ctr_type]](xml, "video_adv:"..ctr_type.."_"..opt, _st)
 		handler:Register(_st, "video_adv_cap_"..opt)
 		handler:AddCallback(
