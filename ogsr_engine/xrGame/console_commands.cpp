@@ -302,6 +302,9 @@ public:
 
 		Console->Hide();
 		
+		if (MainMenu()->IsActive())
+			MainMenu()->Activate(false);
+
 		string_path		fn_; 
 		strconcat		(sizeof(fn_),fn_, args, ".xrdemo");
 		string_path		fn;
