@@ -24,7 +24,7 @@ void CAnomalyDetector::load(LPCSTR section)
         m_ignore_clsids.clear();
         if ( pSettings->line_exist( section, "Anomaly_Detect_Ignore" ) ) {
           LPCSTR ignore = pSettings->r_string( section, "Anomaly_Detect_Ignore" );
-          string16 temp;
+          string64 temp;
           for ( u32 i = 0, n = _GetItemCount( ignore ); i < n; ++i )
             m_ignore_clsids.push_back( TEXT2CLSID( _GetItem( ignore, i, temp ) ) );
         }
