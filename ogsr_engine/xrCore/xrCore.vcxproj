@@ -319,7 +319,6 @@
     <ClCompile Include="rt_compressor.cpp" />
     <ClCompile Include="rt_compressor9.cpp" />
     <ClCompile Include="LzHuf.cpp" />
-    <ClCompile Include="xrSyncronize.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="FTimer.h" />
