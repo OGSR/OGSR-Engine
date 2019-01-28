@@ -122,11 +122,13 @@ void InitConsole	()
 	CORE_FEATURE_SET( wallmarks_on_static_only,   "features" );
 }
 
-void InitInput		()
+void InitInput()
 {
-	BOOL bCaptureInput			= !strstr(Core.Params,"-i");
+	bool exclusive_mode = DINPUT_ENABLE_EXCLUSIVE_MODE;
+	if (strstr(Core.Params, "-switch_exclusive_dinput"))
+		exclusive_mode = !exclusive_mode;
 
-	pInput						= xr_new<CInput>		(bCaptureInput);
+	pInput = xr_new<CInput>(exclusive_mode);
 }
 void destroyInput	()
 {
