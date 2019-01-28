@@ -148,9 +148,6 @@ void xrDebug::backend(const char *expression, const char *description, const cha
 #ifdef USE_OWN_ERROR_MESSAGE_WINDOW
 	ShowWindow(gGameWindow, SW_HIDE);
 
-	if (get_on_dialog())
-		get_on_dialog()	(true);
-
 	auto endline = "\r\n";
 	auto buffer = assertion_info + xr_strlen(assertion_info);
 	buffer += sprintf(buffer, "%sPress OK to abort execution%s", endline, endline);
@@ -166,8 +163,6 @@ void xrDebug::backend(const char *expression, const char *description, const cha
 		MB_OK | MB_ICONERROR | MB_SYSTEMMODAL
 	);
 
-	if (get_on_dialog())
-		get_on_dialog()(false);
 #endif
 	if ( !IsDebuggerPresent() )
 		quick_exit(EXIT_FAILURE);
@@ -365,13 +360,7 @@ LONG WINAPI UnhandledFilter(_EXCEPTION_POINTERS *pExceptionInfo)
 
 		while (ShowCursor(TRUE) < 0);
 
-		if (Debug.get_on_dialog())
-			Debug.get_on_dialog()(true);
-
 		MessageBox(gGameWindow, "Fatal error occured\n\nPress OK to abort program execution", "FATAL ERROR", MB_OK | MB_ICONERROR | MB_SYSTEMMODAL);
-
-		if (Debug.get_on_dialog())
-			Debug.get_on_dialog()(false);
 #endif
 	}
 

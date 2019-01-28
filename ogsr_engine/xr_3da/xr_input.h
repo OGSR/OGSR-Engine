@@ -59,6 +59,7 @@ private:
 
 	void						MouseUpdate					( );
 	void						KeyUpdate					( );
+	bool is_exclusive_mode;
 
 public:
 	sxr_mouse					mouse_property;
@@ -75,7 +76,7 @@ public:
 	BOOL						iGetAsyncBtnState			( int btn );
 	void						iGetLastMouseDelta			( Ivector2& p )	{ p.set(offs[0],offs[1]); }
 
-	CInput						( BOOL bExclusive = true, int deviceForInit = default_key);
+	CInput						(bool bExclusive = DINPUT_ENABLE_EXCLUSIVE_MODE, int deviceForInit = default_key);
 	~CInput						( );
 
 	virtual void				OnFrame						(void);
@@ -85,8 +86,12 @@ public:
 	IInputReceiver*				CurrentIR					();
 
 public:
-			void				exclusive_mode				(const bool &exclusive);
-			bool				get_dik_name				(int dik, LPSTR dest, int dest_sz);
+	bool get_dik_name(int dik, LPSTR dest, int dest_sz);
+
+	// Возвращает символ по коду клавиши. Учитывается переключение языка, зажатый shift и caps lock
+	// ( caps lock учитывается только в неэксклюзивном режиме, из-за его особенностей )
+	// В случае неудачи функция возвращает 0.
+	char DikToChar(int dik);
 };
 
-extern ENGINE_API CInput *		pInput;
+extern ENGINE_API CInput* pInput;
