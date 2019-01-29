@@ -16,6 +16,7 @@
 #include "../../../squad_hierarchy_holder.h"
 #include "../../../group_hierarchy_holder.h"
 #include "../../../phdestroyable.h"
+#include "../../../../xr_3da/skeletonanimated.h"
 #include "../../../../xr_3da/skeletoncustom.h"
 #include "../../../detail_path_manager.h"
 #include "../../../hudmanager.h"
@@ -41,6 +42,7 @@
 #include "../../../ai_object_location.h"
 #include "../../../ai_space.h"
 #include "script_engine.h"
+#include "../anti_aim_ability.h"
 
 CBaseMonster::CBaseMonster()
 {
@@ -85,11 +87,14 @@ CBaseMonster::CBaseMonster()
 	m_feel_enemy_who_made_sound_max_distance = 0;
 	m_feel_enemy_who_just_hit_max_distance   = 0;
 	m_feel_enemy_max_distance                = 0;
+
+	m_anti_aim								=	nullptr;
 }
 
 
 CBaseMonster::~CBaseMonster()
 {
+	xr_delete(m_anti_aim);
 	xr_delete(m_pPhysics_support);
 	xr_delete(m_corpse_cover_evaluator);
 	xr_delete(m_enemy_cover_evaluator);
@@ -122,6 +127,14 @@ void CBaseMonster::UpdateCL()
 void CBaseMonster::shedule_Update(u32 dt)
 {
 	inherited::shedule_Update	(dt);
+
+	update_eyes_visibility		();
+
+	if ( m_anti_aim )
+	{
+		m_anti_aim->update_schedule();
+	}
+
 	control().update_schedule	();
 
 	Morale.update_schedule		(dt);
@@ -142,6 +155,11 @@ void CBaseMonster::shedule_Update(u32 dt)
 void CBaseMonster::Die(CObject* who)
 {
 	if (StateMan) StateMan->critical_finalize();
+
+	if ( m_anti_aim )
+	{
+		m_anti_aim->on_monster_death ();
+	}
 
 	inherited::Die(who);
         sound().clear_playing_sounds();
@@ -608,4 +626,61 @@ float   CBaseMonster::get_attack_on_move_prepare_time()
 bool CBaseMonster::is_jumping()
 {
 	return m_com_manager.is_jumping();
+}
+
+void CBaseMonster::update_eyes_visibility ()
+{
+	if ( !m_left_eye_bone_name )
+	{
+		return;
+	}
+
+	CKinematics* const skeleton	=	smart_cast<CKinematics*>(Visual());
+	if ( !skeleton )
+	{
+		return;
+	}
+
+	u16 const left_eye_bone_id	=	skeleton->LL_BoneID(m_left_eye_bone_name);
+	u16 const right_eye_bone_id	=	skeleton->LL_BoneID(m_right_eye_bone_name);
+
+	R_ASSERT						(left_eye_bone_id != u16(-1) && right_eye_bone_id != u16(-1));
+
+	bool eyes_visible			=	!g_Alive() || get_screen_space_coverage_diagonal() > 0.05f;
+
+	bool const was_visible		=	!!skeleton->LL_GetBoneVisible	(left_eye_bone_id);
+	skeleton->LL_SetBoneVisible		(left_eye_bone_id, eyes_visible, true);
+	skeleton->LL_SetBoneVisible		(right_eye_bone_id, eyes_visible, true);
+
+	if ( !was_visible && eyes_visible )
+	{
+		skeleton->CalculateBones_Invalidate();
+		skeleton->CalculateBones		();
+	}
+}
+
+float CBaseMonster::get_screen_space_coverage_diagonal()
+{
+	Fbox		b		= Visual()->vis.box;
+
+	Fmatrix				xform;
+	xform.mul			(Device.mFullTransform,XFORM());
+	Fvector2	mn		={flt_max,flt_max},mx={flt_min,flt_min};
+
+	for (u32 k=0; k<8; ++k)
+	{
+		Fvector p;
+		b.getpoint		(k,p);
+		xform.transform	(p);
+		mn.x			= std::min(mn.x,p.x);
+		mn.y			= std::min(mn.y,p.y);
+		mx.x			= std::max(mx.x,p.x);
+		mx.y			= std::max(mx.y,p.y);
+	}
+
+	float const width	=	mx.x - mn.x;
+	float const height	=	mx.y - mn.y;
+
+	float const	average_diagonal	=	_sqrt(width * height);
+	return				average_diagonal;
 }

@@ -9,6 +9,7 @@
 #include "stdafx.h"
 #include "script_engine.h"
 #include "ai_space.h"
+#include "../../xr_3da/xr_input.h"
 
 bool editor() { return false; }
 
@@ -101,19 +102,19 @@ void take_screenshot(IRender_interface::ScreenshotMode mode, LPCSTR name)
 
 bool GetShift() 
 {
-	return (GetAsyncKeyState(VK_SHIFT) & 0x8000) != 0;
+	return !!pInput->iGetAsyncKeyState(DIK_LSHIFT) || !!pInput->iGetAsyncKeyState(DIK_RSHIFT);
 }
 bool GetLAlt() 
 {
-	return (GetAsyncKeyState(VK_LMENU) & 0x8000) != 0;
+	return !!pInput->iGetAsyncKeyState(DIK_LMENU);
 }
 bool GetRAlt() 
 {
-	return (GetAsyncKeyState(VK_RMENU) & 0x8000) != 0;
+	return !!pInput->iGetAsyncKeyState(DIK_RMENU);
 }
 bool GetAlt() 
 {
-	return (GetAsyncKeyState(VK_MENU) & 0x8000) != 0;
+	return !!pInput->iGetAsyncKeyState(DIK_LMENU) || !!pInput->iGetAsyncKeyState(DIK_RMENU);
 }
 
 using namespace luabind;

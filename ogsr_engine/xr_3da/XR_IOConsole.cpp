@@ -210,7 +210,7 @@ void CConsole::OnPressKey(int dik, BOOL bHold)
 
 	switch (dik) {
 	case DIK_GRAVE:
-		if (bShift) { strcat(editor,"~"); break; }
+		if (bShift) { strcat_s(editor,"~"); break; }
 	case DIK_ESCAPE:
 		if (!bHold) {
 			if  ( g_pGameLevel || 
@@ -254,131 +254,6 @@ void CConsole::OnPressKey(int dik, BOOL bHold)
 	case DIK_RSHIFT:
 		bShift = true;
 		break;
-	case DIK_1:
-		if (bShift) strcat(editor,"!");
-		else		strcat(editor,"1");
-		break;
-	case DIK_2:
-		if (bShift) strcat(editor,"@");
-		else		strcat(editor,"2");
-		break;
-	case DIK_3:
-		if (bShift) strcat(editor,"#");
-		else		strcat(editor,"3");
-		break;
-	case DIK_4:
-		if (bShift) strcat(editor,"$");
-		else		strcat(editor,"4");
-		break;
-	case DIK_5:
-		if (bShift) strcat(editor,"%");
-		else		strcat(editor,"5");
-		break;
-	case DIK_6:
-		if (bShift) strcat(editor,"^");
-		else		strcat(editor,"6");
-		break;
-	case DIK_7:
-		if (bShift) strcat(editor,"&");
-		else		strcat(editor,"7");
-		break;
-	case DIK_8:
-		if (bShift) strcat(editor,"*");
-		else		strcat(editor,"8");
-		break;
-	case DIK_9:
-		if (bShift) strcat(editor,"(");
-		else		strcat(editor,"9");
-		break;
-	case DIK_0:
-		if (bShift) strcat(editor,")");
-		else		strcat(editor,"0");
-		break;
-
-/* numeric keyboard*/
-	case DIK_NUMPAD1: strcat(editor, "1"); break;
-	case DIK_NUMPAD2: strcat(editor, "2"); break;
-	case DIK_NUMPAD3: strcat(editor, "3"); break;
-	case DIK_NUMPAD4: strcat(editor, "4"); break;
-	case DIK_NUMPAD5: strcat(editor, "5"); break;
-	case DIK_NUMPAD6: strcat(editor, "6"); break;
-	case DIK_NUMPAD7: strcat(editor, "7"); break;
-	case DIK_NUMPAD8: strcat(editor, "8"); break;
-	case DIK_NUMPAD9: strcat(editor, "9"); break;
-	case DIK_NUMPAD0: strcat(editor, "0"); break;
-	case DIK_SUBTRACT:	strcat(editor, "-"); break;
-	case DIK_ADD:		strcat(editor, "+"); break;
-	case DIK_DECIMAL:	strcat(editor, "."); break;
-	case DIK_DIVIDE:	strcat(editor, "/"); break;
-	case DIK_MULTIPLY:	strcat(editor, "*"); break;
-
-	case DIK_A:	strcat(editor,"a");	break;
-	case DIK_B:	strcat(editor,"b");	break;
-	case DIK_C:	strcat(editor,"c");	break;
-	case DIK_D:	strcat(editor,"d");	break;
-	case DIK_E:	strcat(editor,"e");	break;
-	case DIK_F:	strcat(editor,"f");	break;
-	case DIK_G:	strcat(editor,"g");	break;
-	case DIK_H:	strcat(editor,"h");	break;
-	case DIK_I:	strcat(editor,"i");	break;
-	case DIK_J:	strcat(editor,"j");	break;
-	case DIK_K:	strcat(editor,"k");	break;
-	case DIK_L:	strcat(editor,"l");	break;
-	case DIK_M:	strcat(editor,"m");	break;
-	case DIK_N:	strcat(editor,"n");	break;
-	case DIK_O:	strcat(editor,"o");	break;
-	case DIK_P:	strcat(editor,"p");	break;
-	case DIK_Q:	strcat(editor,"q");	break;
-	case DIK_R:	strcat(editor,"r");	break;
-	case DIK_S:	strcat(editor,"s");	break;
-	case DIK_T:	strcat(editor,"t");	break;
-	case DIK_U:	strcat(editor,"u");	break;
-	case DIK_V:	strcat(editor,"v");	break;
-	case DIK_W:	strcat(editor,"w");	break;
-	case DIK_X:	strcat(editor,"x");	break;
-	case DIK_Y:	strcat(editor,"y");	break;
-	case DIK_Z:	strcat(editor,"z");	break;
-	case DIK_SPACE:		strcat(editor," "); break;
-	case DIK_BACKSLASH:
-		if (bShift) strcat(editor,"|");  
-		else		strcat(editor,"\\");
-		break;
-	case DIK_LBRACKET:
-		if (bShift) strcat(editor,"{");  
-		else		strcat(editor,"[");
-		break;
-	case DIK_RBRACKET:
-		if (bShift) strcat(editor,"}");
-		else		strcat(editor,"]");
-		break;
-	case DIK_APOSTROPHE:
-		if (bShift) strcat(editor,"\"");
-		else		strcat(editor,"'");
-		break;
-	case DIK_COMMA:
-		if (bShift) strcat(editor,"<");
-		else		strcat(editor,",");
-		break;
-	case DIK_PERIOD:
-		if (bShift) strcat(editor,">");
-		else		strcat(editor,".");
-		break;
-	case DIK_EQUALS:
-		if (bShift) strcat(editor,"+");
-		else		strcat(editor,"=");
-		break;
-	case DIK_MINUS:
-		if (bShift) strcat(editor,"_");
-		else		strcat(editor,"-");
-		break;
-	case DIK_SEMICOLON:
-		if (bShift) strcat(editor,":");
-		else		strcat(editor,";");
-		break;
-	case DIK_SLASH:
-		if (bShift) strcat(editor,"?");
-		else		strcat(editor,"/");
-		break;
 	case DIK_RETURN:
 	case DIK_NUMPADENTER:
 		ExecuteCommand( true );
@@ -405,6 +280,12 @@ void CConsole::OnPressKey(int dik, BOOL bHold)
 		}
 		break;
 	default:
+		char symbol = pInput->DikToChar(dik);
+		if (symbol) {
+			auto ptr = (char*)_alloca(2 * sizeof(char));
+			ptr[0] = symbol; ptr[1] = 0;
+			strcat_s(editor, ptr);
+		}
 		break;
 	}
 	u32	clip	= MAX_LEN-8;

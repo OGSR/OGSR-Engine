@@ -69,7 +69,7 @@ CEnvironment::~CEnvironment	()
 	OnDeviceDestroy			();
 }
 
-void CEnvironment::Invalidate()
+void CEnvironment::Invalidate(bool inv_flare)
 {
 	bWFX					= false;
 	Current[0]				= 0;
@@ -78,7 +78,7 @@ void CEnvironment::Invalidate()
 		eff_Rain->snd_Ambient.stop();
 		eff_Rain->InvalidateState();
 	}
-	if (eff_LensFlare)
+	if (eff_LensFlare && inv_flare)
 		eff_LensFlare->Invalidate();
 }
 
@@ -137,7 +137,9 @@ void CEnvironment::SetWeather(shared_str name, bool forced)
 			CurrentWeather		= &it->second;
 			CurrentWeatherName	= it->first;
 		}
-		if (forced)			{SelectEnvs(fGameTime);	}
+		if (forced) {
+			ForceReselectEnvs(); //SelectEnvs(fGameTime); //KRodin: Так сделано специально, не менять!
+		}
 #ifdef WEATHER_LOGGING
 		Msg					("Starting Cycle: %s [%s]",*name,forced?"forced":"deferred");
 #endif

@@ -411,6 +411,7 @@
     <ClInclude Include="..\COMMON_AI\random32.h" />
     <ClInclude Include="..\COMMON_AI\server_entity_wrapper.h" />
     <ClInclude Include="..\COMMON_AI\server_entity_wrapper_inline.h" />
+    <ClInclude Include="ai\monsters\anti_aim_ability.h" />
     <ClInclude Include="ai\monsters\states\monster_state_attack_on_run.h" />
     <ClInclude Include="ai\monsters\states\monster_state_attack_on_run_inline.h" />
     <ClInclude Include="ai\weighted_random.h" />
@@ -1647,6 +1648,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\COMMON_AI\random32.cpp" />
+    <ClCompile Include="ai\monsters\anti_aim_ability.cpp" />
     <ClCompile Include="ai\weighted_random.cpp" />
     <ClCompile Include="damage_manager.cpp" />
     <ClCompile Include="action_base_script.cpp" />

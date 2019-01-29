@@ -64,7 +64,13 @@ void CSoundRender_CoreA::_initialize	(u64 window)
 
 
     // OpenAL device
-    pDevice						= alcOpenDevice		(deviceDesc.name.c_str());
+    //pDevice						= alcOpenDevice		(deviceDesc.name.c_str());
+    // alcOpenDevice can fail without any visible reason. Just try several times
+    for (DWORD i = 0; i < 100; ++i)
+    {
+	    pDevice = alcOpenDevice(deviceDesc.name.c_str());
+        if (pDevice != nullptr) break;
+    }
 	if (pDevice == NULL){
 		Log						("[OpenAL] Failed to create device.");
 		bPresent				= FALSE;

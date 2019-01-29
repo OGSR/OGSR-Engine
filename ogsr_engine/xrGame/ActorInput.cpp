@@ -344,6 +344,7 @@ bool CActor::use_Holder				(CHolderCustom* holder)
 	}
 }
 
+extern bool g_bDisableAllInput;
 void CActor::ActorUse() {
   if ( HUD().GetUI()->MainInputReceiver() ) return;
 
@@ -363,7 +364,7 @@ void CActor::ActorUse() {
 
   if ( m_pUsableObject ) {
     m_pUsableObject->use( this );
-    if ( HUD().GetUI()->MainInputReceiver() ) return;
+    if ( g_bDisableAllInput || HUD().GetUI()->MainInputReceiver() ) return;
   }
 
   if ( m_pInvBoxWeLookingAt && m_pInvBoxWeLookingAt->object().nonscript_usable() && m_pInvBoxWeLookingAt->IsOpened() ) {

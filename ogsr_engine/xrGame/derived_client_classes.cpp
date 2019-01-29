@@ -532,6 +532,8 @@ void CWeaponScript::script_register(lua_State *L)
 			.def("get_particles_xform"					,			&CWeapon::get_ParticlesXFORM)
 			.def("get_fire_point"						,			&CWeapon::get_CurrentFirePoint)
 			.def("get_fire_point2"						,			&CWeapon::get_CurrentFirePoint2)
+			.def( "get_fire_direction"						,			&CWeapon::get_LastFD )
+			.def( "ready_to_kill"						,			&CWeapon::ready_to_kill )
 
 			,
 			class_<CWeaponMagazined, CWeapon>			("CWeaponMagazined")

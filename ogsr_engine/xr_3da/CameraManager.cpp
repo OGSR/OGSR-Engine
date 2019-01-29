@@ -180,6 +180,30 @@ CEffectorPP* CCameraManager::GetPPEffector(EEffectorPPType type)
 	return 0;
 }
 
+ECamEffectorType CCameraManager::RequestCamEffectorId()
+{
+    ECamEffectorType index = (ECamEffectorType)effCustomEffectorStartID;
+
+    while (GetCamEffector(index))
+    {
+        index = (ECamEffectorType)(index + 1);
+    }
+
+    return index;
+}
+
+EEffectorPPType CCameraManager::RequestPPEffectorId()
+{
+    EEffectorPPType index = (EEffectorPPType)effCustomEffectorStartID;
+
+    while (GetPPEffector(index))
+    {
+        index = (EEffectorPPType)(index + 1);
+    }
+
+    return index;
+}
+
 CEffectorPP* CCameraManager::AddPPEffector(CEffectorPP* ef) 
 {
 	RemovePPEffector				(ef->Type());

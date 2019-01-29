@@ -115,18 +115,19 @@ void InitConsole	()
 	CORE_FEATURE_SET( ruck_flag_preferred,        "features" );
 	CORE_FEATURE_SET( old_outfit_slot_style,      "features" );
 	CORE_FEATURE_SET( npc_simplified_shooting,    "features" );
-	CORE_FEATURE_SET( restore_sun_fix,            "features" );
 	CORE_FEATURE_SET( use_trade_deficit_factor,   "features" );
 	CORE_FEATURE_SET( show_objectives_ondemand,   "features" );
 	CORE_FEATURE_SET( pickup_check_overlaped,     "features" );
 	CORE_FEATURE_SET( wallmarks_on_static_only,   "features" );
 }
 
-void InitInput		()
+void InitInput()
 {
-	BOOL bCaptureInput			= !strstr(Core.Params,"-i");
+	bool exclusive_mode = DINPUT_ENABLE_EXCLUSIVE_MODE;
+	if (strstr(Core.Params, "-switch_exclusive_dinput"))
+		exclusive_mode = !exclusive_mode;
 
-	pInput						= xr_new<CInput>		(bCaptureInput);
+	pInput = xr_new<CInput>(exclusive_mode);
 }
 void destroyInput	()
 {

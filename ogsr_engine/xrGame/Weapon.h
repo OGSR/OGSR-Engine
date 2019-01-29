@@ -528,6 +528,14 @@ public:
 	bool SecondVPEnabled() const;
 
 	void SwitchScope();
+
+private:
+	Fvector					m_overriden_activation_speed;
+	bool					m_activation_speed_is_overriden;
+	virtual bool			ActivationSpeedOverriden	(Fvector& dest, bool clear_override);
+
+public:
+	virtual void			SetActivationSpeedOverride	(Fvector const& speed);
 };
 
 extern float default_fov;// = 67.5f;

@@ -44,6 +44,8 @@ class CMonsterCoverManager;
 
 class CMonsterHome;
 
+class anti_aim_ability;
+
 class CBaseMonster : public CCustomMonster, public CStepManager, public CInventoryOwner 
 {
 	typedef	CCustomMonster								inherited;
@@ -65,6 +67,7 @@ public:
 	virtual CBaseMonster*				cast_base_monster			()	{return this;}
 
 	virtual CInventoryOwner				*cast_inventory_owner		() {return this;}
+	virtual bool						unlimited_ammo				() {return false;}
 	virtual CGameObject*				cast_game_object			() {return this;}
 
 public:
@@ -133,7 +136,8 @@ public:
 
 	virtual bool			IsTalkEnabled					() {return false;}
 
-	virtual void			HitEntity						(const CEntity *pEntity, float fDamage, float impulse, Fvector &dir);
+	virtual void			HitEntity						(const CEntity* pEntity, float fDamage, float impulse, Fvector &dir, 
+															 ALife::EHitType hit_type = ALife::eHitTypeWound, bool draw_hit_marks = true);
 	virtual	void			HitEntityInJump					(const CEntity *pEntity) {}
 
 	virtual	void			on_before_sell					(CInventoryItem *item);
@@ -223,6 +227,9 @@ protected:
 
 // members
 public:
+	void			set_force_anti_aim	(bool force_anti_aim) { m_force_anti_aim = force_anti_aim; }
+	bool 			get_force_anti_aim	() const { return m_force_anti_aim; }
+
 	// --------------------------------------------------------------------------------------
 	// Monster Settings 
 	ref_smem<SMonsterSettings>	m_base_settings;
@@ -283,6 +290,9 @@ public:
 	// Home
 	CMonsterHome			*Home;
 
+
+private:
+	bool					m_force_anti_aim;
 
 //	//-----------------------------------------------------------------
 //	// Spawn Inventory Item
@@ -491,6 +501,25 @@ public:
 
 protected:
 	attack_on_move_params_t			m_attack_on_move_params;
+
+protected:
+//-------------------------------------------------------------------
+// CBaseMonster's  Anti-Aim Ability
+//-------------------------------------------------------------------
+	anti_aim_ability*				m_anti_aim;
+
+private:
+	pcstr							m_head_bone_name;
+	pcstr							m_left_eye_bone_name;
+	pcstr							m_right_eye_bone_name;
+
+public:
+	pcstr							get_head_bone_name	()	const { return m_head_bone_name; }
+	anti_aim_ability*				get_anti_aim		() { return m_anti_aim; }
+
+private:
+	void							update_eyes_visibility ();
+	float							get_screen_space_coverage_diagonal ();
 };
 
 #include "base_monster_inline.h"

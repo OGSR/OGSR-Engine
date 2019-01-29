@@ -197,9 +197,15 @@ enum EMotionAnim {
 	eAnimTeleFire,
 	eAnimGraviPrepare,
 	eAnimGraviFire,
+	eAnimShieldStart,
+	eAnimShieldContinue,
+
+	eAnimTelekinesis,
 
 	eAnimAttackOnRunLeft,
 	eAnimAttackOnRunRight,
+
+	eAnimAntiAimAbility,
 
 	eAnimCount,
 	eAnimUndefined			= u32(-1)

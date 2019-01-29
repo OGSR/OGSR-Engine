@@ -63,10 +63,8 @@ void	game_cl_GameState::net_import_GameTime		(NET_Packet& P)
 
 	u64 OldTime = Level().GetEnvironmentGameTime();
 	Level().SetEnvironmentGameTimeFactor	(GameEnvironmentTime,EnvironmentTimeFactor);
-	
-	if (!Core.Features.test(xrCore::Feature::restore_sun_fix))
-		if (OldTime > GameEnvironmentTime)
-			GamePersistent().Environment().Invalidate();
+	if (OldTime > GameEnvironmentTime)
+		GamePersistent().Environment().Invalidate(false);
 }
 
 void	game_cl_GameState::net_import_state	(NET_Packet& P)

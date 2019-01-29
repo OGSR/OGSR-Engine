@@ -15,6 +15,9 @@ struct SAnimationPart {
 		actual				= true;
 		time_started		= 0;
 	}
+
+	void			set_motion (MotionID const& m);
+	MotionID const&	get_motion () const { return motion; }
 };
 
 struct SControlAnimationData : public ControlCom::IComData {

@@ -1627,6 +1627,26 @@ void CWeapon::create_physic_shell()
 	CPhysicsShellHolder::create_physic_shell();
 }
 
+bool CWeapon::ActivationSpeedOverriden(Fvector& dest, bool clear_override)
+{
+	if (m_activation_speed_is_overriden)
+	{
+		if (clear_override)
+			m_activation_speed_is_overriden	= false;
+
+		dest = m_overriden_activation_speed;
+		return true;
+	}
+	
+	return false;
+}
+
+void CWeapon::SetActivationSpeedOverride(Fvector const& speed)
+{
+	m_overriden_activation_speed = speed;
+	m_activation_speed_is_overriden = true;
+}
+
 void CWeapon::activate_physic_shell()
 {
 	CPhysicsShellHolder::activate_physic_shell();
@@ -1812,7 +1832,10 @@ void CWeapon::OnDrawUI()
 
 bool CWeapon::unlimited_ammo() 
 { 
-	return psActorFlags.test(AF_UNLIMITEDAMMO) && m_DefaultCartridge.m_flags.test(CCartridge::cfCanBeUnlimited); 
+	if (m_pCurrentInventory)
+		return inventory_owner().unlimited_ammo() && m_DefaultCartridge.m_flags.test(CCartridge::cfCanBeUnlimited);
+	else
+		return false;
 };
 
 LPCSTR	CWeapon::GetCurrentAmmo_ShortName	()

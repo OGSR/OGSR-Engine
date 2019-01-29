@@ -55,6 +55,7 @@ public:
 	virtual bool		IsCantWalkWeight			();
 	virtual bool		IsCantSprint				();
 
+	void		PowerHit					(float power, bool apply_outfit);
 	virtual void		UpdatePower();
 
 	void		ConditionJump				(float weight);

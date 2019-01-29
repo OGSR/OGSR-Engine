@@ -28,6 +28,7 @@
 #include "../../../xrServer.h"
 #include "../../../inventory_item.h"
 #include "xrServer_Objects_ALife.h"
+#include "../anti_aim_ability.h"
 
 namespace detail
 {
@@ -49,6 +50,10 @@ void CBaseMonster::Load(LPCSTR section)
 {
 	// load parameters from ".ltx" file
 	inherited::Load					(section);
+
+	m_head_bone_name				= READ_IF_EXISTS(pSettings,r_string,section, "bone_head", "bip01_head");
+	m_left_eye_bone_name			= READ_IF_EXISTS(pSettings,r_string,section, "bone_eye_left", 0);
+	m_right_eye_bone_name			= READ_IF_EXISTS(pSettings,r_string,section, "bone_eye_right", 0);
 
 	m_corpse_cover_evaluator		= xr_new<CMonsterCorpseCoverEvaluator>	(&movement().restrictions());
 	m_enemy_cover_evaluator			= xr_new<CCoverEvaluatorFarFromEnemy>	(&movement().restrictions());
@@ -84,6 +89,8 @@ void CBaseMonster::Load(LPCSTR section)
 	m_feel_enemy_who_just_hit_max_distance   = READ_IF_EXISTS( pSettings, r_float, section, "feel_enemy_who_just_hit_max_distance", 20.f );
 	m_feel_enemy_max_distance                = READ_IF_EXISTS( pSettings, r_float, section, "feel_enemy_max_distance", 3.f );
 	m_feel_enemy_who_made_sound_max_distance = READ_IF_EXISTS( pSettings, r_float, section, "feel_enemy_who_made_sound_max_distance", 49.f );
+
+	m_force_anti_aim						=	false;
 }
 
 void CBaseMonster::PostLoad (LPCSTR section)
@@ -129,7 +136,6 @@ void CBaseMonster::PostLoad (LPCSTR section)
 	//------------------------------------
 	// Anti-Aim ability
 	//------------------------------------
-/*
 	if ( pSettings->line_exist(section, "anti_aim_effectors") )
 	{
 		SVelocityParam&	velocity_stand		=	move().get_velocity(MonsterMovement::eVelocityParameterStand);
@@ -143,7 +149,6 @@ void CBaseMonster::PostLoad (LPCSTR section)
 												&velocity_stand, PS_STAND);
 		m_anti_aim->load_from_ini				(pSettings, section);
 	}
-*/
 
 }
 

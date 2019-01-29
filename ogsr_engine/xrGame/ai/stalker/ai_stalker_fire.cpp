@@ -942,11 +942,16 @@ static float throw_select_pick_time			(
 }
 
 
-IC BOOL throw_query_callback				(collide::rq_result& result, LPVOID params)
-{
-	*(float*)params					= result.range;
-	return							(false);
+IC BOOL throw_query_callback( collide::rq_result& result, LPVOID params ) {
+  *(float*)params = result.range;
+  if ( !result.O ) {
+    CDB::TRI* T = Level().ObjectSpace.GetStaticTris() + result.element;
+    if ( GMLib.GetMaterialByIdx( T->material )->Flags.is( SGameMtl::flPassable ) )
+      return TRUE;
+  }
+  return FALSE;
 }
+
 
 bool CAI_Stalker::throw_check_error			(
 		float low,
