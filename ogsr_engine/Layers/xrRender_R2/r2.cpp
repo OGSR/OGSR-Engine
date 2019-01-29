@@ -774,18 +774,14 @@ HRESULT	CRender::shader_compile(
 	defines[def_it].Definition = 0;
 	def_it++;
 
-	char* defs = nullptr;
+	string1024 defs = { 0 };
 	if ( ps_r2_pp_flags.test( R2PP_FLAG_SHADER_CACHE ) ) {
-		defs = (char*)Memory.mem_alloc(1024);
-
-		R_ASSERT(defs);
-
-		strconcat(1024, defs, defines[0].Name, defines[0].Definition);
+		strconcat(sizeof(defs), defs, defines[0].Name, defines[0].Definition);
 
 		for (u32 i = 1;; i++) {
 			if (0 == defines[i].Name)	break;
-			strcat(defs, defines[i].Name);
-			strcat(defs, defines[i].Definition);
+			strcat_s(defs, defines[i].Name);
+			strcat_s(defs, defines[i].Definition);
 		}
 
 		string_path			sh_name;
@@ -794,9 +790,8 @@ HRESULT	CRender::shader_compile(
 		if (R)
 		{
 			//		Msg ("Found saved shader: %s", sh_name);
-			char* saved_defs = (char*)Memory.mem_alloc(1024);
-			R_ASSERT(saved_defs);
-			R->r_stringZ(saved_defs, 1024);
+			string1024 saved_defs = { 0 };
+			R->r_stringZ(saved_defs, sizeof(saved_defs));
 			//		Msg ("SAVED DEFS: %s", saved_defs);
 			//		Msg ("DEFS: %s", defs);
 			if (!strcmp(defs, saved_defs))
@@ -806,13 +801,7 @@ HRESULT	CRender::shader_compile(
 				D3DCreateBlob(R->elapsed(), ppShader);
 				R->r((*ppShader)->GetBufferPointer(), (int)(*ppShader)->GetBufferSize());
 				FS.r_close(R);
-				Memory.mem_free((void*)defs);
-				Memory.mem_free((void*)saved_defs);
 				return D3D_OK;
-			}
-			else
-			{
-				Memory.mem_free((void*)saved_defs);
 			}
 		}
 
@@ -842,7 +831,6 @@ HRESULT	CRender::shader_compile(
 			W->w_stringZ(defs);
 			W->w(code->GetBufferPointer(), (int)code->GetBufferSize());
 			FS.w_close(W);
-			Memory.mem_free((void*)defs);
 		}
 		if (o.disasm)
 		{
@@ -865,11 +853,6 @@ HRESULT	CRender::shader_compile(
 	return		_result;
 }
 
-void CRender::set_thermovision_data(Fvector* _w_timers, Fvector4* _w_states)
-{
-	w_states.set(*_w_states);
-	w_timers.set(*_w_timers);
-}
 BOOL CRender::is_required_lens_dirt() 
 {
 	return ps_r2_pp_flags.test(R2PP_FLAG_LENS_DIRT_CONTROL); 

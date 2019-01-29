@@ -109,6 +109,7 @@ void CPoltergeist::Load(LPCSTR section)
 	}
 	
 	m_dead_always_visible = READ_IF_EXISTS( pSettings, r_bool, section, "dead_always_visible", false );
+	PostLoad					(section);
 }
 
 void CPoltergeist::reload(LPCSTR section)
@@ -155,6 +156,9 @@ void CPoltergeist::Hide()
 	character_physics_support()->movement()->DestroyCharacter();
 
 	ability()->on_hide	();
+
+	if ( pSettings->line_exist( cNameSect().c_str(), "visible_immunities_sect" ) )
+	  conditions().LoadImmunities( pSettings->r_string( cNameSect().c_str(), "immunities_sect" ), pSettings );
 }
 
 void CPoltergeist::Show()
@@ -172,6 +176,9 @@ void CPoltergeist::Show()
 	character_physics_support()->movement()->CreateCharacter();
 	
 	ability()->on_show	();
+
+	if ( pSettings->line_exist( cNameSect().c_str(), "visible_immunities_sect" ) )
+	  conditions().LoadImmunities( pSettings->r_string( cNameSect().c_str(), "visible_immunities_sect" ), pSettings );
 }
 
 void CPoltergeist::UpdateCL()

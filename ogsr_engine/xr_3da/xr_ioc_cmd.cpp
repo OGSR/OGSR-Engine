@@ -448,6 +448,7 @@ void CCC_Register()
 
 	CMD3( CCC_Mask, "rs_fullscreen", &psDeviceFlags, rsFullscreen );
 	CMD3( CCC_Mask, "rs_v_sync", &psDeviceFlags, rsVSync );
+	CMD3( CCC_Mask, "rs_refresh_60hz", &psDeviceFlags, rsRefresh60hz );
 	CMD3( CCC_Mask, "rs_always_active", &psDeviceFlags, rsAlwaysActive );
 	CMD3( CCC_Token, "r_fps_lock", &g_dwFPSlimit, FpsLockToken );
 
@@ -460,7 +461,6 @@ void CCC_Register()
 #ifdef DEBUG
 	CMD3(CCC_Mask,		"rs_cam_pos",			&psDeviceFlags,		rsCameraPos				);
 	CMD3(CCC_Mask,		"rs_occ_draw",			&psDeviceFlags,		rsOcclusionDraw			);
-	CMD3(CCC_Mask,		"rs_occ_stats",			&psDeviceFlags,		rsOcclusionStats		);
 	CMD4(CCC_Integer,	"rs_skeleton_update",	&psSkeletonUpdate,	2,		128	);
 #endif // DEBUG
 
@@ -491,6 +491,7 @@ void CCC_Register()
 	CMD3(CCC_Mask,		"snd_acceleration",		&psSoundFlags,		ss_Hardware	);
 	CMD3(CCC_Mask,		"snd_efx",				&psSoundFlags,		ss_EAX		);
 	CMD4(CCC_Integer, "snd_targets", &psSoundTargets, 32, 1024); //--#SM+#-- Максимальный лимит одновременно играющихы звуков. Оригинал: 4 - 32. + SoundRender_Core.cpp
+	CMD4(CCC_Integer, "snd_targets_auto_max", &psSoundTargetsAutoMax, 64, 1024);
 	CMD4(CCC_Integer,	"snd_cache_size",		&psSoundCacheSizeMB,4,32		);
 
 #ifdef DEBUG

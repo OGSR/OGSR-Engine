@@ -1,9 +1,9 @@
 # OGSR Engine [![Build status](https://ci.appveyor.com/api/projects/status/w5yowu9901tphox1/branch/main?svg=true)](https://ci.appveyor.com/project/KRodinn/ogsr-engine/branch/main)
 ![Logo](https://i.imgur.com/OYK6UOt.png)
-## В проект требуются графические программисты или просто люди, более-менее разбирающиеся в рендере и шейдерах. Если у кого-то есть желание помочь проекту - пишите, наши двери открыты для всех желающих. ##
 ### [>>Разработчики<<](https://github.com/OGSR/OGSR-Engine/graphs/contributors) ### 
 ### [>>Список изменений<<](https://github.com/OGSR/OGSR-Engine/wiki/Список-изменений) ###
 ### [>>Свежий релиз SHOC-версии движка<<](https://github.com/OGSR/OGSR-Engine/releases) ###
+#### Для того, чтобы движок работал с WW-версией SHOC - используйте специальный ключ запуска ` -steam` ####
 ### [>>OGSR_Resources<< (файлы для запуска движка на OGSE 2.10R, сам движок можно взять уже собранный из релизов по ссылке выше)](https://github.com/OGSR/OGSR-Resources/tree/ogsr_engine) ###
 
 ### Инструкции по сборке: ###

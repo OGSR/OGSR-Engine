@@ -176,7 +176,7 @@ IC BOOL material_callback(collide::rq_result& result, LPVOID params)
 	return (fp->vis>fp->vis_threshold); 
 }
 
-void	blend_lerp	(float& cur, float tgt, float speed, float dt)
+ENGINE_API void blend_lerp(float& cur, float tgt, float speed, float dt)
 {
 	float diff		= tgt - cur;
 	float diff_a	= _abs(diff);

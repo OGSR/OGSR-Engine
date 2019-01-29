@@ -30,8 +30,16 @@ char *dbg_action_name_table[] = {
 		"ACT_JUMP"
 };	
 
+void   SCurrentAnimationInfo::set_motion (EMotionAnim new_motion)
+{
+	motion = new_motion;
+}
+
 CControlAnimationBase::CControlAnimationBase()
 {
+	m_override_animation		=	eAnimUndefined;
+	m_override_animation_index	=	(u32)-1;
+
 	init_anim_storage	();
 }
 
@@ -81,6 +89,8 @@ void CControlAnimationBase::reinit()
 	braking_mode				= false;
 
 	m_state_attack				= false;
+	m_override_animation		= eAnimUndefined;
+	m_override_animation_index	= (u32)-1;
 }
 
 void CControlAnimationBase::on_start_control(ControlCom::EControlType type)
@@ -116,6 +126,72 @@ void CControlAnimationBase::on_event(ControlCom::EEventType type, ControlCom::IE
 	}
 }
 
+float CControlAnimationBase::get_animation_length (EMotionAnim anim, u32 index) const
+{
+	MotionID	motion;
+	float		length;
+	bool		res						=	get_animation_info(anim, index, motion, length);
+	R_ASSERT								(res);
+	return									length;
+}
+
+bool CControlAnimationBase::get_animation_info (EMotionAnim anim, u32 index, MotionID& motion, float& length) const
+{
+	SAnimItem*				anim_it		=	m_anim_storage[anim];
+	if ( !anim_it )
+	{
+		return								false;
+	}
+
+	string128 index_string_buffer;
+	string128 animation_name_buffer;
+	strconcat(sizeof(animation_name_buffer), animation_name_buffer, *anim_it->target_name, itoa(index, index_string_buffer, 10));
+
+	CKinematicsAnimated*	animated	=	smart_cast<CKinematicsAnimated*>(m_object->Visual());
+	if ( !animated )
+	{
+		return								false;
+	}
+
+	motion								=	animated->ID_Cycle_Safe(animation_name_buffer);
+
+	length								=	animated->get_animation_length(motion);
+	return									true;
+}
+
+float CControlAnimationBase::get_animation_hit_time (EMotionAnim anim, u32 index) const
+{
+	float const error_default_return_value	=	0.5f;
+	float		animation_time;
+	MotionID	motion;
+	bool		res				=	get_animation_info (anim, index, motion, animation_time);
+	VERIFY							(res);
+	if ( !res )
+	{
+		return						error_default_return_value;
+	}
+
+	for ( AA_VECTOR::const_iterator it	=	m_attack_anims.begin(); 
+									it	!=	m_attack_anims.end(); 
+									++it )
+	{
+		if ( it->motion == motion )
+		{
+			return it->time * animation_time;
+		}
+	}
+
+	VERIFY							( false );
+	return							error_default_return_value;
+}
+
+u32 CControlAnimationBase::get_animation_variants_count (EMotionAnim anim) const
+{
+	SAnimItem *anim_it = m_anim_storage[anim];
+	VERIFY(anim_it);
+	return anim_it->count;
+}
+
 void CControlAnimationBase::select_animation(bool anim_end)
 {
 	// start new animation
@@ -132,12 +208,20 @@ void CControlAnimationBase::select_animation(bool anim_end)
 	m_object->ForceFinalAnimation();
 
 	// получить элемент SAnimItem, соответствующий текущей анимации
-	SAnimItem *anim_it = m_anim_storage[cur_anim_info().motion];
+	SAnimItem *anim_it = m_anim_storage[cur_anim_info().get_motion()];
 	VERIFY(anim_it);
 
 	// определить необходимый индекс
 	int index;
-	if (-1 != anim_it->spec_id) index = anim_it->spec_id;
+	if ( m_override_animation == cur_anim_info().get_motion()
+							&&
+		 m_override_animation_index != (u32)-1 )
+	{
+		VERIFY							(anim_it->count != 0);
+		VERIFY							(m_override_animation_index < anim_it->count);
+		index						=	m_override_animation_index;
+	}
+	else if (-1 != anim_it->spec_id) index = anim_it->spec_id;
 	else {
 		VERIFY(anim_it->count != 0);
 		index = ::Random.randI(anim_it->count);
@@ -250,8 +334,9 @@ SAAParam &CControlAnimationBase::AA_GetParams(MotionID motion, float time_perc)
 EPState	CControlAnimationBase::GetState (EMotionAnim a)
 {
 	// найти анимацию 
+	ASSERT_FMT( u32(a) < m_anim_storage.size(), "[%s]: %s: a[%u] m_anim_storage.size[%u]", __FUNCTION__, m_object->cName().c_str(), a, m_anim_storage.size() );
 	SAnimItem *item_it = m_anim_storage[a];
-	VERIFY(item_it);
+	ASSERT_FMT( item_it, "[%s]: %s: m_anim_storage[%u] is NULL", __FUNCTION__, m_object->cName().c_str(), a ); //VERIFY(item_it);
 
 	return item_it->pos_state;
 }
@@ -517,7 +602,10 @@ void CControlAnimationBase::check_hit(MotionID motion, float time_perc)
 
 	if (!m_object->EnemyMan.see_enemy_now()) should_hit = false;
 
-	if (should_hit) m_object->HitEntity(enemy, params.hit_power, params.impulse, params.impulse_dir);
+	if (should_hit) {
+		m_object->HitEntity(enemy, params.hit_power, params.impulse, params.impulse_dir);
+		m_object->on_attack_on_run_hit(); // to count attacks
+	}
 
 	m_object->MeleeChecker.on_hit_attempt(should_hit);
 }

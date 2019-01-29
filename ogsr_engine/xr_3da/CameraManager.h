@@ -2,6 +2,8 @@
 
 #include "CameraDefs.h"
 
+#define effCustomEffectorStartID 10000
+
 struct ENGINE_API SPPInfo {
 	struct SColor{
 		float r, g, b;
@@ -117,12 +119,16 @@ public:
 	CEffectorCam*			GetCamEffector			(ECamEffectorType		type);
 	void					RemoveCamEffector		(ECamEffectorType		type);
 
+    ECamEffectorType RequestCamEffectorId();
+    EEffectorPPType RequestPPEffectorId();
 	CEffectorPP*			GetPPEffector			(EEffectorPPType	type);
 	CEffectorPP*			AddPPEffector			(CEffectorPP*		ef);
 	void					RemovePPEffector		(EEffectorPPType	type);
 
 	IC Fvector				Pos					()	const { return vPosition;	}
+	IC Fvector				Position				()	const { return vPosition;	}
 	IC Fvector				Dir					()	const { return vDirection;}
+	IC Fvector				Direction				()	const { return vDirection;}
 	IC Fvector				Up					()	const { return vNormal;	}
 	IC Fvector				Right				()	const { return vRight;	}
 	

@@ -57,6 +57,7 @@ void CUIScrollView::Init				()
 	m_VScrollBar->SetWindowName		("scroll_v");
 	m_VScrollBar->SetStepSize		(_max(1,iFloor(GetHeight()/10)));
 	m_VScrollBar->SetPageSize		(iFloor(GetHeight()));
+	m_VScrollBar->Show( false );
 }
 
 void CUIScrollView::SetScrollBarProfile(LPCSTR profile){
@@ -142,6 +143,11 @@ void CUIScrollView::RecalcSize			()
 
 void CUIScrollView::UpdateScroll		()
 {
+	if ( NeedShowScrollBar() )
+	  m_VScrollBar->Show( true  );
+	else
+	  m_VScrollBar->Show( false );
+
 	Fvector2 w_pos					= m_pad->GetWndPos();
 
 	m_VScrollBar->SetHeight(GetHeight());
@@ -203,17 +209,32 @@ void CUIScrollView::OnScrollV			(CUIWindow*, void*)
 	m_pad->SetWndPos			(w_pos.x,float(-s_pos));
 }
 
+#include "../xr_3da/xr_input.h"
+#include "../Level.h"
+
 bool CUIScrollView::OnMouse(float x, float y, EUIMessages mouse_action)
 {
 	if(inherited::OnMouse(x,y,mouse_action)) return true;
 
+	bool with_shift = (Level().IR_GetKeyState(DIK_LSHIFT));
+
 	switch (mouse_action){
 		case WINDOW_MOUSE_WHEEL_UP:
 			m_VScrollBar->TryScrollDec();
+			if (with_shift)
+			{
+				m_VScrollBar->TryScrollDec();
+				m_VScrollBar->TryScrollDec();
+			}
 			return true;
 		break;
 		case WINDOW_MOUSE_WHEEL_DOWN:
 			m_VScrollBar->TryScrollInc();
+			if (with_shift)
+			{
+				m_VScrollBar->TryScrollInc();
+				m_VScrollBar->TryScrollInc();
+			}
 			return true;
 		break;
 		case WINDOW_MOUSE_MOVE:

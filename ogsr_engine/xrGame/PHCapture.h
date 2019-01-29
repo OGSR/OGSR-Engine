@@ -6,20 +6,36 @@
 #include "gameobject.h"
 #include "physicsshellholder.h"
 
+enum EPHCaptureState {
+  cstPulling,
+  cstCaptured,
+  cstReleased
+};
+
 class CPhysicShellHolder;
 class CPHCharacter;
 
 class CPHCapture : public CPHUpdateObject
 {
 public:
-					CPHCapture	(CPHCharacter     *a_character,CPhysicsShellHolder	  *a_taget_object);
-					CPHCapture	(CPHCharacter     *a_character,CPhysicsShellHolder	  *a_taget_object,u16 a_taget_elemrnt);
+				CPHCapture( CPHCharacter*, CPhysicsShellHolder*, LPCSTR = nullptr );
+				CPHCapture( CPHCharacter*, CPhysicsShellHolder*, u16, LPCSTR = nullptr );
 virtual				~CPHCapture							();
 
 
 bool				Failed								(){return b_failed;};
 void				Release								();
 void				net_Relcase							(CObject* O);
+
+public:
+  bool hard_mode;
+  EPHCaptureState e_state;
+float				m_capture_force;
+float				m_capture_distance;
+float				m_pull_distance;
+u32					m_capture_time;
+float				m_pull_force;
+
 protected:
 CPHCharacter		*m_character;
 CPhysicsElement*	m_taget_element;
@@ -29,11 +45,6 @@ dJointID			m_ajoint;
 dJointFeedback		m_joint_feedback;
 Fvector				m_capture_pos;
 float				m_back_force;
-float				m_pull_force;
-float				m_capture_force;
-float				m_capture_distance;
-float				m_pull_distance;
-u32					m_capture_time;
 u32					m_time_start;
 CBoneInstance		*m_capture_bone;
 dBodyID				m_body;
@@ -44,19 +55,11 @@ bool				b_disabled;
 bool				b_character_feedback;
 
 private:
-	enum 
-	{
-	 cstPulling,
-	 cstCaptured,
-	 cstReleased
-	} e_state;
-
 			void PullingUpdate();
 			void CapturedUpdate();
 			void ReleasedUpdate();
 			void ReleaseInCallBack();
 			void Init(CInifile* ini);
-
 			void Deactivate();
 			void CreateBody();
 			bool Invalid(){return 
@@ -70,6 +73,8 @@ static void object_contactCallbackFun(bool& do_colide,bool bo1,dContact& c,SGame
 ///////////CPHObject/////////////////////////////
 	virtual void PhDataUpdate(dReal step);
 	virtual void PhTune(dReal step);
+
+	Fvector GetCapturePosition();
 
 public:
 	CPhysicsShellHolder*  taget_object() const { return m_taget_object; };

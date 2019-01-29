@@ -130,6 +130,7 @@ protected:
 	
 
 	EZoneState			m_eZoneState;
+	bool m_keep_update;
 
 
 	//текущее время пребывания зоны в определенном состоянии 
@@ -164,7 +165,7 @@ protected:
 public:
 				bool		IsEnabled					()	{return m_eZoneState != eZoneStateDisabled; };
 				void		ZoneEnable					();	
-				void		ZoneDisable					();
+				void		ZoneDisable( bool = false );
 	EZoneState				ZoneState					() {return m_eZoneState;}
 protected:
 
@@ -255,6 +256,8 @@ protected:
 	float					m_fIdleLightHeight;
 	float					m_fIdleLightRangeDelta;
 	CLAItem*				m_pIdleLAnim;
+	bool					bIdleLightShadow;
+	bool					bIdleLightVolumetric;
 
 	void					StartIdleLight				();
 	void					StopIdleLight				();
@@ -331,7 +334,7 @@ protected:
 	//выброс артефактов из зоны
 					void	ThrowOutArtefact			(CArtefact* pArtefact);
 	
-					void	PrefetchArtefacts			();
+					//void	PrefetchArtefacts			();
 	virtual BOOL		AlwaysTheCrow		();
 
 protected:

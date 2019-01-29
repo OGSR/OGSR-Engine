@@ -209,7 +209,7 @@ void CRenderDevice::Run			()
 
 				// FPS Lock
 				static constexpr u32 menuFPSlimit  = 60;
-				static constexpr u32 pauseFPSlimit = 30;
+				static constexpr u32 pauseFPSlimit = 60;
 				u32 curFPSLimit = IsMainMenuActive() ? menuFPSlimit : Device.Paused() ? pauseFPSlimit : g_dwFPSlimit;
 
 				if ( curFPSLimit > 0 )
@@ -250,6 +250,15 @@ void CRenderDevice::Run			()
 				RCache.set_xform_view		( mView				);
 				RCache.set_xform_project	( mProject			);
 				D3DXMatrixInverse			( (D3DXMATRIX*)&mInvFullTransform, 0, (D3DXMATRIX*)&mFullTransform);
+
+				vCameraPositionSaved = vCameraPosition;
+				vCameraDirectionSaved = vCameraDirection;
+				vCameraTopSaved = vCameraTop;
+				vCameraRightSaved = vCameraRight;
+
+				mFullTransformSaved = mFullTransform;
+				mViewSaved = mView;
+				mProjectSaved = mProject;
 
 				// *** Resume threads
 				// Capture end point - thread must run only ONE cycle

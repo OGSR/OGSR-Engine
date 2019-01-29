@@ -2,6 +2,7 @@
 #include "UIWindow.h"
 #include "../UIStaticItem.h"
 #include "../inventory_space.h"
+#include "UIIconParams.h"
 
 class CUIXml;
 class CArtefact;
@@ -19,6 +20,6 @@ public:
 protected:
 	float						m_fScale;
 	Fvector2					m_cell_size;
-	xr_vector<Frect>            m_vRects;
+	xr_vector<CIconParams*>      m_vRects;
 	CUIStaticItem               m_si;
 };

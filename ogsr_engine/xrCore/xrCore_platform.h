@@ -30,3 +30,10 @@
 #include <windows.h>
 #include <windowsx.h>
 #pragma warning(pop)
+
+// KRodin: фикс, чтобы intellisense нормально работал с многочисленными методами типа CUIWindow::SendMessage и тп.
+#ifdef __INTELLISENSE__
+#	ifdef SendMessage
+#		undef SendMessage
+#	endif
+#endif

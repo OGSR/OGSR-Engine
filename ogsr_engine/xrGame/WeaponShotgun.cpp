@@ -369,9 +369,9 @@ void CWeaponShotgun::switch2_AddCartgidge	()
 
 void CWeaponShotgun::switch2_EndReload	()
 {
-	m_bPending = false;
 	PlaySound			(m_sndClose,get_LastFP());
 	PlayAnimCloseWeapon	();
+	m_bPending = true;
 }
 
 void CWeaponShotgun::PlayAnimOpenWeapon()
@@ -455,7 +455,6 @@ u8 CWeaponShotgun::AddCartridge		(u8 cnt)
 		m_magazine.push_back(l_cartridge);
 //		m_fCurrentCartirdgeDisp = l_cartridge.m_kDisp;
 	}
-	m_ammoName = (m_pAmmo) ? m_pAmmo->m_nameShort : NULL;
 
 	VERIFY((u32)iAmmoElapsed == m_magazine.size());
 

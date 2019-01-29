@@ -2,9 +2,6 @@
 #include "../xr_level_controller.h"
 class CUIWindow;
 
-template <typename T, typename allocator = xalloc<T>>
-using ui_list = std::list<T, allocator>;
-
 #include "UIMessages.h"
 #include "../script_export_space.h"
 #include "uiabstract.h"
@@ -25,7 +22,7 @@ public:
 	////////////////////////////////////
 	//работа с дочерними и родительскими окнами
 	virtual void			AttachChild			(CUIWindow* pChild);
-	virtual void			DetachChild			(CUIWindow* pChild);
+	virtual void			DetachChild			(CUIWindow* pChild, bool from_destructor = false);
 	virtual bool			IsChild				(CUIWindow* pChild) const;
 	virtual void			DetachAll			();
 	int						GetChildNum			()								{return m_ChildWndList.size();} 
@@ -66,7 +63,7 @@ public:
 	//захватить/освободить мышь окном
 	//сообщение посылается дочерним окном родительскому
 	void					SetMouseCapture			(CUIWindow* pChildWindow, bool capture_status);
-	CUIWindow*				GetMouseCapturer	()													{return m_pMouseCapturer;}
+	CUIWindow*				GetMouseCapturer();
 
 	//окошко, которому пересылаются сообщения,
 	//если NULL, то шлем на GetParent()
@@ -132,7 +129,7 @@ public:
 																				else
 																					return  m_pParentWnd->GetFont();}
 
-	using WINDOW_LIST = ui_list<CUIWindow*>;
+	using WINDOW_LIST = std::list<CUIWindow*>;
 	using WINDOW_LIST_it = WINDOW_LIST::iterator;
 
 	WINDOW_LIST&			GetChildWndList		()							{return m_ChildWndList; }
@@ -151,7 +148,6 @@ public:
 	IC bool					CursorOverWindow	() const					{ return m_bCursorOverWindow; }
 
 protected:
-	IC void					SafeRemoveChild(CUIWindow* child)				{WINDOW_LIST_it it = std::find(m_ChildWndList.begin(),m_ChildWndList.end(),child); if(it!=m_ChildWndList.end())m_ChildWndList.erase(it);};
 
 	shared_str				m_windowName;
 	//список дочерних окон
@@ -161,7 +157,7 @@ protected:
 	CUIWindow*				m_pParentWnd;
 
 	//дочернее окно которое, захватило ввод мыши
-	CUIWindow*				m_pMouseCapturer;
+	CUIWindow* m_pMouseCapturer;
 	
 	//кто изначально иницировал
 	//захват фокуса, только он теперь

@@ -20,7 +20,7 @@ local this; \
 module('%s', package.seeall, function(m) this = m end); \
 %s";
 
-const char* get_lua_traceback(lua_State *L)
+static const char* get_lua_traceback(lua_State *L)
 {
 #if LUAJIT_VERSION_NUM < 20000
 	static char buffer[32768]; // global buffer
@@ -253,9 +253,9 @@ void LuaError(lua_State* L)
 }
 
 #ifdef LUABIND_09
-void lua_cast_failed(lua_State *L, const luabind::type_id& info)
+static void lua_cast_failed(lua_State *L, const luabind::type_id& info)
 #else
-void lua_cast_failed(lua_State *L, LUABIND_TYPE_INFO info)
+static void lua_cast_failed(lua_State *L, LUABIND_TYPE_INFO info)
 #endif
 {
 	print_output("[ResourceManager.lua_cast_failed]", LUA_ERRRUN);

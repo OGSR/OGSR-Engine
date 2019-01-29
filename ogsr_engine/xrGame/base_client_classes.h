@@ -12,6 +12,9 @@
 #include "script_export_space.h"
 #include "xrServer_Space.h"
 #include "ai/monsters/anomaly_detector.h"
+#include "Physics.h"
+#include "PHCharacter.h"
+#include "PHCapture.h"
 
 class DLL_Pure;
 class ISpatial;
@@ -125,3 +128,8 @@ typedef class_exporter<CTexture> CTextureScript;
 add_to_type_list(CTextureScript)
 #undef script_type_list
 #define script_type_list save_type_list(CTextureScript)
+
+typedef class_exporter<CPHCapture> CPHCaptureScript;
+add_to_type_list( CPHCaptureScript )
+#undef script_type_list
+#define script_type_list save_type_list( CPHCaptureScript )

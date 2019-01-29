@@ -36,8 +36,8 @@
 #define WEAPON_REMOVE_TIME		60000
 #define ROTATION_TIME			0.25f
 
-Fvector4 w_states = { 0,0,0,1 };
-Fvector3 w_timers = { 0,0,0 };
+extern ENGINE_API Fvector4 w_states;
+extern ENGINE_API Fvector3 w_timers;
 
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
@@ -61,7 +61,6 @@ CWeapon::CWeapon(LPCSTR name)
 	iAmmoElapsed			= -1;
 	iMagazineSize			= -1;
 	m_ammoType				= 0;
-	m_ammoName				= NULL;
 
 	eHandDependence			= hdNone;
 
@@ -305,10 +304,7 @@ void CWeapon::Load		(LPCSTR section)
 			_GetItem				(S,it,_ammoItem);
 			m_ammoTypes.push_back	(_ammoItem);
 		}
-		m_ammoName = pSettings->r_string(*m_ammoTypes[0],"inv_name_short");
 	}
-	else
-		m_ammoName = 0;
 
 	iAmmoElapsed		= pSettings->r_s32		(section,"ammo_elapsed"		);
 	iMagazineSize		= pSettings->r_s32		(section,"ammo_mag_size"	);
@@ -442,7 +438,11 @@ void CWeapon::Load		(LPCSTR section)
 
 	m_bHideCrosshairInZoom = true;
 	if(pSettings->line_exist(hud_sect, "zoom_hide_crosshair"))
-		m_bHideCrosshairInZoom = !!pSettings->r_bool(hud_sect, "zoom_hide_crosshair");	
+		m_bHideCrosshairInZoom = !!pSettings->r_bool(hud_sect, "zoom_hide_crosshair");
+
+	m_bZoomInertionAllow = false;
+	if (pSettings->line_exist(hud_sect, "allow_zoom_inertion"))
+		m_bZoomInertionAllow = !!pSettings->r_bool(hud_sect, "allow_zoom_inertion");
 
 	//////////////////////////////////////////////////////////
 
@@ -647,8 +647,10 @@ void CWeapon::net_Import(NET_Packet& P)
 
 	if (H_Parent() && H_Parent()->Remote())
 	{
-		if (Zoom) OnZoomIn();
-		else OnZoomOut();
+		if (Zoom) 
+			OnZoomIn();
+		else 
+			OnZoomOut();
 	};
 	switch (wstate)
 	{	
@@ -811,9 +813,11 @@ static float state_time_heat = 0;			// таймер нагрева оружия
 static float previous_heating = 0;		// "нагретость" оружия в предыдущем состоянии
 
 #include "WeaponBinoculars.h"
+
 void CWeapon::UpdateWeaponParams()
 {
 #pragma todo("KD: переделать к чертовой матери этот тихий ужас")
+
 	if (!IsHidden()) {
 		w_states.x = m_fZoomRotationFactor;			//x = zoom mode, y - текущее состояние, z - старое состояние
 		if ( psActorFlags.test( AF_DOF_SCOPE ) && !( IsZoomed() && !IsRotatingToZoom() && ZoomTexture() ) )
@@ -827,8 +831,7 @@ void CWeapon::UpdateWeaponParams()
 			w_states.y = (float)GetState();				// обновляем состояние
 		}
 		// флаг бинокля в руках (в этом режиме не нужно размытие)
-		auto bino = smart_cast<CWeaponBinoculars*>(this);
-		if (clsid() == CLSID_OBJECT_W_BINOCULAR || bino)
+		if (smart_cast<CWeaponBinoculars*>(this))
 			w_states.w = 0;
 		else
 			w_states.w = 1;
@@ -845,7 +848,6 @@ void CWeapon::UpdateWeaponParams()
 			}
 		}
 		w_timers.x = Device.fTimeGlobal - state_time;		// обновляем таймер текущего состояния
-		::Render->set_thermovision_data(&w_timers, &w_states);
 	}
 }
 
@@ -1014,10 +1016,21 @@ bool CWeapon::Action(s32 cmd, u32 flags)
 		case kWPN_ZOOM_INC:
 		case kWPN_ZOOM_DEC:
 		{
-			if (IsZoomEnabled() && IsZoomed() && m_bScopeDynamicZoom && IsScopeAttached() && (flags&CMD_START))
+			if (IsZoomEnabled() && IsZoomed() && m_bScopeDynamicZoom && IsScopeAttached() && !is_second_zoom_offset_enabled && (flags&CMD_START))
 			{
-				if (cmd == kWPN_ZOOM_INC)  ZoomInc();
-				else					ZoomDec();
+				// если в режиме ПГ - не будем давать использовать динамический зум
+				auto wpn_w_gl = smart_cast<CWeaponMagazinedWGrenade*>(this);
+				if (wpn_w_gl && wpn_w_gl->m_bGrenadeMode)
+					return false;
+
+				if (cmd == kWPN_ZOOM_INC)  
+					ZoomInc();
+				else
+					ZoomDec();
+
+				if (H_Parent() && !IsRotatingToZoom())
+					m_fRTZoomFactor = m_fZoomFactor; //store current
+
 				return true;
 			}
 			else
@@ -1034,22 +1047,24 @@ bool CWeapon::Action(s32 cmd, u32 flags)
 	return false;
 }
 
-void GetZoomData(const float scope_factor, float& delta, float& min_zoom_factor)
+void CWeapon::GetZoomData(const float scope_factor, float& delta, float& min_zoom_factor)
 {
-	float def_fov = Core.Features.test(xrCore::Feature::ogse_wpn_zoom_system) ? 1.f : g_fov;
 	float min_zoom_k = 0.3f;
-	float zoom_step_count = 3.0f;
+	float zoom_step_count = 4.0f;
+
+	float def_fov = Core.Features.test(xrCore::Feature::ogse_wpn_zoom_system) ? 1.f : g_fov;
 	float delta_factor_total = def_fov-scope_factor;
 	VERIFY(delta_factor_total>0);
 	min_zoom_factor = def_fov-delta_factor_total*min_zoom_k;
 	delta = (delta_factor_total*(1-min_zoom_k) )/zoom_step_count;
-
 }
 
 void CWeapon::ZoomInc()
 {
 	float delta, min_zoom_factor;
 	GetZoomData(m_fScopeZoomFactor, delta, min_zoom_factor);
+
+	float currentZoomFactor = m_fZoomFactor;
 
 	if (Core.Features.test(xrCore::Feature::ogse_wpn_zoom_system)) {
 		m_fZoomFactor += delta;
@@ -1059,6 +1074,11 @@ void CWeapon::ZoomInc()
 		m_fZoomFactor -= delta;
 		clamp(m_fZoomFactor, m_fScopeZoomFactor, min_zoom_factor);
 	}
+
+	if (!fsimilar(currentZoomFactor, m_fZoomFactor))
+	{
+		OnZoomChanged();
+	}
 }
 
 void CWeapon::ZoomDec()
@@ -1066,13 +1086,21 @@ void CWeapon::ZoomDec()
 	float delta, min_zoom_factor;
 	GetZoomData(m_fScopeZoomFactor, delta, min_zoom_factor);
 
-#ifdef OGSE_WPN_ZOOM_SYSTEM
-	m_fZoomFactor -= delta;
-	clamp(m_fZoomFactor, min_zoom_factor, m_fScopeZoomFactor);
-#else
-	m_fZoomFactor += delta;
-	clamp(m_fZoomFactor, m_fScopeZoomFactor, min_zoom_factor);
-#endif
+	float currentZoomFactor = m_fZoomFactor;
+
+	if (Core.Features.test(xrCore::Feature::ogse_wpn_zoom_system)) {
+		m_fZoomFactor -= delta;
+		clamp(m_fZoomFactor, min_zoom_factor, m_fScopeZoomFactor);
+	}
+	else {
+		m_fZoomFactor += delta;
+		clamp(m_fZoomFactor, m_fScopeZoomFactor, min_zoom_factor);
+	}
+
+	if (!fsimilar(currentZoomFactor, m_fZoomFactor))
+	{
+		OnZoomChanged();
+	}
 }
 
 void CWeapon::SpawnAmmo(u32 boxCurr, LPCSTR ammoSect, u32 ParentID) 
@@ -1201,6 +1229,11 @@ float CWeapon::GetConditionMisfireProbability() const
 BOOL CWeapon::CheckForMisfire	()
 {
 	if (OnClient()) return FALSE;
+
+	if ( Core.Features.test( xrCore::Feature::npc_simplified_shooting ) ) {
+	  CActor *actor = smart_cast<CActor*>( H_Parent() );
+	  if ( !actor ) return FALSE;
+	}
 
 	float rnd = ::Random.randF(0.f,1.f);
 	float mp = GetConditionMisfireProbability();
@@ -1432,6 +1465,8 @@ float CWeapon::CurrentZoomFactor()
 	if (Core.Features.test(xrCore::Feature::ogse_wpn_zoom_system)) {
 		if (is_second_zoom_offset_enabled)
 			return m_fSecondScopeZoomFactor;
+		else if (SecondVPEnabled())
+			return 1; // no fov zoom when use second vp
 		else if (IsScopeAttached())
 			return m_fScopeZoomFactor;
 		else
@@ -1445,11 +1480,19 @@ float CWeapon::CurrentZoomFactor()
 void CWeapon::OnZoomIn()
 {
 	m_bZoomMode = true;
-	if ( m_bScopeDynamicZoom )
+
+	// если в режиме ПГ - не будем давать включать динамический зум
+	auto wpn_w_gl = smart_cast<CWeaponMagazinedWGrenade*>(this);
+
+	if ( m_bScopeDynamicZoom && (!wpn_w_gl || !wpn_w_gl->m_bGrenadeMode))
 		m_fZoomFactor = m_fRTZoomFactor;
 	else
 		m_fZoomFactor = CurrentZoomFactor();
-	StopHudInertion();
+
+	if (UseScopeTexture() || !m_bZoomInertionAllow)
+	{
+		StopHudInertion();
+	}
 
 	CActor* pActor = smart_cast<CActor*>(H_Parent());
 	if ( pActor )
@@ -1458,26 +1501,30 @@ void CWeapon::OnZoomIn()
 
 void CWeapon::OnZoomOut()
 {
-	if(H_Parent() && IsZoomed() && !IsRotatingToZoom() && m_bScopeDynamicZoom)
-		m_fRTZoomFactor = m_fZoomFactor;//store current
-
 	m_fZoomFactor = Core.Features.test(xrCore::Feature::ogse_wpn_zoom_system) ? 1.f : g_fov;
 
 	if ( m_bZoomMode ) {
+
 		m_bZoomMode = false;
+
 		CActor* pActor = smart_cast<CActor*>(H_Parent());
 		if ( pActor ) {
 			w_states.set( 0.f, 0.f, 0.f, 1.f );
-			::Render->set_thermovision_data( &w_timers, &w_states );
 			pActor->callback(GameObject::eOnActorWeaponZoomOut)(lua_game_object());
 		}
 	}
 
-	StartHudInertion();
+	if (UseScopeTexture() || !m_bZoomInertionAllow)
+	{
+		StartHudInertion();
+	}
 }
 
 bool CWeapon::UseScopeTexture() {
-	return (( GetAddonsState() & CSE_ALifeItemWeapon::eForcedNotexScope ) == 0) && !is_second_zoom_offset_enabled;
+	return (( GetAddonsState() & CSE_ALifeItemWeapon::eForcedNotexScope ) == 0) 
+		&& !is_second_zoom_offset_enabled
+		&& !SecondVPEnabled()
+		&& m_UIScope; // только если есть текстура прицела - для простого создания коллиматоров
 };
 
 CUIStaticItem* CWeapon::ZoomTexture()
@@ -1578,6 +1625,26 @@ void CWeapon::reload			(LPCSTR section)
 void CWeapon::create_physic_shell()
 {
 	CPhysicsShellHolder::create_physic_shell();
+}
+
+bool CWeapon::ActivationSpeedOverriden(Fvector& dest, bool clear_override)
+{
+	if (m_activation_speed_is_overriden)
+	{
+		if (clear_override)
+			m_activation_speed_is_overriden	= false;
+
+		dest = m_overriden_activation_speed;
+		return true;
+	}
+	
+	return false;
+}
+
+void CWeapon::SetActivationSpeedOverride(Fvector const& speed)
+{
+	m_overriden_activation_speed = speed;
+	m_activation_speed_is_overriden = true;
 }
 
 void CWeapon::activate_physic_shell()
@@ -1765,7 +1832,10 @@ void CWeapon::OnDrawUI()
 
 bool CWeapon::unlimited_ammo() 
 { 
-	return psActorFlags.test(AF_UNLIMITEDAMMO) && m_DefaultCartridge.m_flags.test(CCartridge::cfCanBeUnlimited); 
+	if (m_pCurrentInventory)
+		return inventory_owner().unlimited_ammo() && m_DefaultCartridge.m_flags.test(CCartridge::cfCanBeUnlimited);
+	else
+		return false;
 };
 
 LPCSTR	CWeapon::GetCurrentAmmo_ShortName	()
@@ -1836,7 +1906,7 @@ void CWeapon::Show		()
 
 bool CWeapon::show_crosshair()
 {
-	return !IsZoomed();
+	return ! ( IsZoomed() && ZoomHideCrosshair() );
 }
 
 bool CWeapon::show_indicators()
@@ -1898,35 +1968,40 @@ void CWeapon::StateSwitchCallback(GameObject::ECallbackType actor_type, GameObje
 void CWeapon::UpdateSecondVP()
 {
 	// + CActor::UpdateCL();
-	//
-	CObject* O = H_Parent();
-	if (!O)
-		return ;
-	CEntityAlive* EA = smart_cast<CEntityAlive*>(O);
-	if (!EA)
-		return;
-	CActor* pActor = EA->cast_actor();
+	CActor* pActor = smart_cast<CActor*>(H_Parent());
 	if (!pActor)
 		return;
-	CInventoryOwner* inv_owner = EA->cast_inventory_owner();
+
+	CInventoryOwner* inv_owner = pActor->cast_inventory_owner();
 
 	bool b_is_active_item = inv_owner && (inv_owner->m_inventory->ActiveItem() == this);
 	R_ASSERT(b_is_active_item); // Эта функция должна вызываться только для оружия в руках нашего игрока
 
 	bool bCond_1 = m_fZoomRotationFactor > 0.05f;    // Мы должны целиться
-	bool bCond_2 = m_fSecondVP_FovFactor > 0.0f;     // В конфиге должен быть прописан фактор зума (scope_lense_fov_factor) больше чем 0
 	bool bCond_3 = pActor->cam_Active() == pActor->cam_FirstEye(); // Мы должны быть от 1-го лица
-	auto wpn_w_gl = smart_cast<CWeaponMagazinedWGrenade*>(this);
-	bool bCond_4 = ( !wpn_w_gl || !wpn_w_gl->m_bGrenadeMode );     // Мы не должны быть в режиме подствольника
-	bool bCond_5 = !is_second_zoom_offset_enabled; // Мы не должны быть в режиме второго прицеливания.
 
-	Device.m_SecondViewport.SetSVPActive(bCond_1 && bCond_2 && bCond_3 && bCond_4 && bCond_5);
+	Device.m_SecondViewport.SetSVPActive(bCond_1 && bCond_3 && SecondVPEnabled());
+}
+
+bool CWeapon::SecondVPEnabled() const
+{
+	const CActor* pActor = smart_cast<const CActor*>(H_Parent());
+	if (!pActor)
+		return false;
+	
+	bool bCond_2 = m_fSecondVP_FovFactor > 0.0f;     // В конфиге должен быть прописан фактор зума (scope_lense_fov_factor) больше чем 0
+	auto wpn_w_gl = smart_cast<const CWeaponMagazinedWGrenade*>(this);
+	bool bCond_4 = (!wpn_w_gl || !wpn_w_gl->m_bGrenadeMode);     // Мы не должны быть в режиме подствольника
+	bool bCond_5 = !is_second_zoom_offset_enabled; // Мы не должны быть в режиме второго прицеливания.
+	bool bcond_6 = psActorFlags.test(AF_3D_SCOPES);
+
+	return bCond_2 && bCond_4 && bCond_5 && bcond_6;
 }
 
 // Чувствительность мышкии с оружием в руках во время прицеливания
 float CWeapon::GetControlInertionFactor() const
 {
-	if (IsScopeAttached() && IsZoomed())
+	if (IsZoomed() && SecondVPEnabled())
 		return m_fScopeInertionFactor;
 
 	float fInertionFactor = inherited::GetControlInertionFactor();

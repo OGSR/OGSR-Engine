@@ -13,12 +13,7 @@
 #include "encyclopedia_article.h"
 #include "ui/UIEventsWnd.h"
 
-#pragma warning(push)
-#pragma warning(disable:4995)
-#include <malloc.h>
-#pragma warning(pop)
-
-shared_str	g_active_task_id			= "";
+shared_str	g_active_task_id;
 u16			g_active_task_objective_id	= u16(-1);
 
 struct FindTaskByID{

@@ -1,6 +1,8 @@
 #pragma once
 
-#ifdef XRSOUND_EXPORTS
+#ifdef XRSOUND_STATIC
+#	define XRSOUND_API
+#elif defined XRSOUND_EXPORTS
 	#define XRSOUND_API __declspec(dllexport)
 #else
 	#define XRSOUND_API __declspec(dllimport)
@@ -27,6 +29,7 @@ XRSOUND_API extern float			psSoundRolloff			;
 XRSOUND_API extern float			psSoundOcclusionScale	;
 XRSOUND_API extern Flags32			psSoundFlags			;
 XRSOUND_API extern int				psSoundTargets			;
+XRSOUND_API extern int				psSoundTargetsAutoMax;
 XRSOUND_API extern int				psSoundCacheSizeMB		;
 
 // Flags

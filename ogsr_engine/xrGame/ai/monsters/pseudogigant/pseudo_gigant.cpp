@@ -164,6 +164,8 @@ void CPseudoGigant::Load(LPCSTR section)
 	read_delay				(section,"HugeKick_MinMaxDelay",	m_threaten_delay_min,	m_threaten_delay_max);
 
 	m_time_kick_actor_slow_down	= pSettings->r_u32(section,"HugeKick_Time_SlowDown");
+
+	PostLoad					(section);
 }
 
 void CPseudoGigant::reinit()

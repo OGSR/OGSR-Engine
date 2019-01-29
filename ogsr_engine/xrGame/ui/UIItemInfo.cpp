@@ -184,13 +184,11 @@ void CUIItemInfo::InitItem(CInventoryItem* pInvItem)
 	if(UIItemImage)
 	{
 		// Загружаем картинку
-		UIItemImage->SetShader				(pInvItem->m_icon_params.get_shader());
+		pInvItem->m_icon_params.set_shader( UIItemImage );
 
 		Frect rect = pInvItem->m_icon_params.original_rect();
-		UIItemImage->GetUIStaticItem().SetOriginalRect(rect);
 		UIItemImage->TextureOn				();
 		UIItemImage->ClipperOn				();
-		UIItemImage->SetStretchTexture		(true);
 		Frect v_r							= {	0.0f, 0.0f, 
 												rect.width(), rect.height()};
 		v_r.x2 *= UI()->get_current_kx();
@@ -205,7 +203,7 @@ void CUIItemInfo::TryAddWpnInfo (CPhysicsShellHolder &obj)
 {
 	if (UIWpnParams->Check(obj))
 	{
-		UIWpnParams->SetInfo(obj.cNameSect());
+		UIWpnParams->SetInfo(obj);
 		UIDesc->AddWindow(UIWpnParams,false);
 	}
 }

@@ -65,6 +65,15 @@
 #include "location_manager.h"
 #include "PHCapture.h"
 
+// Tip for action for object we're looking at
+constexpr const char* m_sCarCharacterUseAction        = "car_character_use";
+constexpr const char* m_sCharacterUseAction           = "character_use";
+constexpr const char* m_sDeadCharacterUseAction       = "dead_character_use";
+constexpr const char* m_sDeadCharacterUseOrDragAction = "dead_character_use_or_drag";
+constexpr const char* m_sInventoryItemUseAction       = "inventory_item_use";
+constexpr const char* m_sInventoryItemUseOrDragAction = "inventory_item_use_or_drag";
+constexpr const char* m_sGameObjectDragAction         = "game_object_drag";
+
 const u32		patch_frames	= 50;
 const float		respawn_delay	= 1.f;
 const float		respawn_auto	= 7.f;
@@ -74,16 +83,13 @@ static float ICoincidenced = 0;
 
 
 //skeleton
-
-
-
 static Fbox		bbStandBox;
 static Fbox		bbCrouchBox;
 static Fvector	vFootCenter;
 static Fvector	vFootExt;
 
-Flags32			psActorFlags={0};
-//Flags32			psCallbackFlags = { 31 };
+Flags32			psActorFlags={ AF_3D_SCOPES };
+
 static bool updated;
 
 CActor::CActor() : CEntityAlive(),current_ik_cam_shift(0)
@@ -166,7 +172,7 @@ CActor::CActor() : CEntityAlive(),current_ik_cam_shift(0)
 
 	m_bZoomAimingMode		= false;
 
-	m_sDefaultObjAction		= NULL;
+	m_sDefaultObjAction		= nullptr;
 
 	m_fSprintFactor			= 4.f;
 
@@ -429,12 +435,6 @@ void CActor::Load	(LPCSTR section )
 	m_AutoPickUp_AABB_Offset		= READ_IF_EXISTS(pSettings,r_fvector3,section,"AutoPickUp_AABB_offs",Fvector().set(0, 0, 0));
 
 	CStringTable string_table;
-	m_sCharacterUseAction			= "character_use";
-	m_sDeadCharacterUseAction		= "dead_character_use";
-	m_sDeadCharacterUseOrDragAction	= "dead_character_use_or_drag";
-	m_sCarCharacterUseAction		= "car_character_use";
-	m_sInventoryItemUseAction		= "inventory_item_use";
-	m_sInventoryBoxUseAction		= "inventory_box_use";
 	//---------------------------------------------------------------------
 	m_sHeadShotParticle	= READ_IF_EXISTS(pSettings,r_string,section,"HeadShotParticle",0);
 
@@ -932,7 +932,7 @@ void CActor::shedule_Update	(u32 DT)
 
 	if(m_holder || !getEnabled() || !Ready())
 	{
-		m_sDefaultObjAction				= NULL;
+		m_sDefaultObjAction = nullptr;
 		inherited::shedule_Update		(DT);
 	
 /*		if (OnServer())
@@ -1098,52 +1098,66 @@ void CActor::shedule_Update	(u32 DT)
 	collide::rq_result& RQ = HUD().GetCurrentRayQuery();
 	
 
-	if(!input_external_handler_installed() && RQ.O &&  RQ.range<inventory().GetTakeDist()) 
+	if(!input_external_handler_installed() && RQ.O && RQ.range<inventory().GetTakeDist()) 
 	{
-		m_pObjectWeLookingAt			= smart_cast<CGameObject*>(RQ.O);
-		
-		CGameObject						*game_object = smart_cast<CGameObject*>(RQ.O);
-		m_pUsableObject					= smart_cast<CUsableScriptObject*>(game_object);
-		m_pInvBoxWeLookingAt			= smart_cast<IInventoryBox*>(game_object);
-		inventory().m_pTarget			= smart_cast<PIItem>(game_object);
-		m_pPersonWeLookingAt			= smart_cast<CInventoryOwner*>(game_object);
-		m_pVehicleWeLookingAt			= smart_cast<CHolderCustom*>(game_object);
-		CEntityAlive* pEntityAlive		= smart_cast<CEntityAlive*>(game_object);
-		
-			if (m_pUsableObject && m_pUsableObject->tip_text())
+		m_pObjectWeLookingAt  = smart_cast<CGameObject*>(RQ.O);
+		m_pUsableObject	      = smart_cast<CUsableScriptObject*>(RQ.O);
+		m_pInvBoxWeLookingAt  = smart_cast<IInventoryBox*>(RQ.O);
+		inventory().m_pTarget = smart_cast<PIItem>(RQ.O);
+		m_pPersonWeLookingAt  = smart_cast<CInventoryOwner*>(RQ.O);
+		m_pVehicleWeLookingAt = smart_cast<CHolderCustom*>(RQ.O);
+		auto pEntityAlive     = smart_cast<CEntityAlive*>(RQ.O);
+		auto ph_shell_holder  = smart_cast<CPhysicsShellHolder*>(RQ.O);
+
+		bool b_allow_drag = ph_shell_holder && ph_shell_holder->ActorCanCapture();
+
+		if (HUD().GetUI()->MainInputReceiver() || m_holder || character_physics_support()->movement()->PHCapture())
+		{
+			m_sDefaultObjAction = nullptr;
+		}
+		else if (m_pUsableObject && m_pUsableObject->tip_text())
+		{
+			m_sDefaultObjAction = CStringTable().translate(m_pUsableObject->tip_text()).c_str();
+		}
+		else if (pEntityAlive)
+		{
+			if (m_pPersonWeLookingAt && pEntityAlive->g_Alive())
 			{
-				m_sDefaultObjAction = CStringTable().translate( m_pUsableObject->tip_text() );
+				m_sDefaultObjAction = m_sCharacterUseAction;
 			}
+			else if (!pEntityAlive->g_Alive())
+			{
+				if (b_allow_drag)
+					m_sDefaultObjAction = m_sDeadCharacterUseOrDragAction;
+				else
+					m_sDefaultObjAction = m_sDeadCharacterUseAction;
+			}
+		}
+		else if (m_pVehicleWeLookingAt)
+		{
+			m_sDefaultObjAction = m_sCarCharacterUseAction;
+		}
+		else if (inventory().m_pTarget && inventory().m_pTarget->CanTake())
+		{
+			if (b_allow_drag)
+				m_sDefaultObjAction = m_sInventoryItemUseOrDragAction;
 			else
-			{
-				if (m_pPersonWeLookingAt && pEntityAlive->g_Alive())
-					m_sDefaultObjAction = m_sCharacterUseAction;
-
-				else if (pEntityAlive && !pEntityAlive->g_Alive())
-				{
-					bool b_allow_drag = !!pSettings->line_exist("ph_capture_visuals",pEntityAlive->cNameVisual());
-				
-					if(b_allow_drag)
-						m_sDefaultObjAction = m_sDeadCharacterUseOrDragAction;
-					else
-						m_sDefaultObjAction = m_sDeadCharacterUseAction;
-
-				}else if (m_pVehicleWeLookingAt)
-					m_sDefaultObjAction = m_sCarCharacterUseAction;
-
-				else if (inventory().m_pTarget && inventory().m_pTarget->CanTake() )
-					m_sDefaultObjAction = m_sInventoryItemUseAction;
-//.				else if (m_pInvBoxWeLookingAt)
-//.					m_sDefaultObjAction = m_sInventoryBoxUseAction;
-				else 
-					m_sDefaultObjAction = NULL;
-			}
+				m_sDefaultObjAction = m_sInventoryItemUseAction;
+		}
+		else if (b_allow_drag)
+		{
+			m_sDefaultObjAction = m_sGameObjectDragAction;
+		}
+		else
+		{
+			m_sDefaultObjAction = nullptr;
+		}
 	}
-	else 
+	else
 	{
 		inventory().m_pTarget	= NULL;
 		m_pPersonWeLookingAt	= NULL;
-		m_sDefaultObjAction		= NULL;
+		m_sDefaultObjAction		= nullptr;
 		m_pUsableObject			= NULL;
 		m_pObjectWeLookingAt	= NULL;
 		m_pVehicleWeLookingAt	= NULL;
@@ -1429,6 +1443,14 @@ void CActor::OnItemBelt		(CInventoryItem *inventory_item, EItemPlace previous_pl
 	CInventoryOwner::OnItemBelt(inventory_item, previous_place);
 
 	UpdateArtefactPanel();
+}
+
+void CActor::OnItemSlot(CInventoryItem* inventory_item, EItemPlace previous_place)
+{
+	CInventoryOwner::OnItemSlot(inventory_item, previous_place);
+
+	if (previous_place == eItemPlaceBelt)
+		UpdateArtefactPanel();
 }
 
 
@@ -1976,4 +1998,9 @@ void CActor::RepackAmmo() {
     //чистим массив от обработанных пачек
     _ammo.erase( std::remove_if( _ammo.begin(), _ammo.end(), [asect]( CWeaponAmmo* a ) { return a->cNameSect() == asect; } ), _ammo.end() );
   }
+}
+
+bool CActor::unlimited_ammo()
+{
+	return !!psActorFlags.test(AF_UNLIMITEDAMMO);
 }

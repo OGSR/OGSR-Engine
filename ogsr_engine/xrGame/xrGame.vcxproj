@@ -21,33 +21,31 @@
   <PropertyGroup Label="Globals">
     <ProjectGuid>{200652A6-043E-4634-8837-87983B3BD5E0}</ProjectGuid>
     <RootNamespace>xrGame</RootNamespace>
-    <WindowsTargetPlatformVersion>
-    </WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
-    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseOfMfc>false</UseOfMfc>
     <CharacterSet>MultiByte</CharacterSet>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <PlatformToolset>v141</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
-    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseOfMfc>false</UseOfMfc>
     <CharacterSet>MultiByte</CharacterSet>
     <WholeProgramOptimization>false</WholeProgramOptimization>
     <PlatformToolset>v141</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
-    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseOfMfc>false</UseOfMfc>
     <CharacterSet>MultiByte</CharacterSet>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <PlatformToolset>v141</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
-    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseOfMfc>false</UseOfMfc>
     <CharacterSet>MultiByte</CharacterSet>
     <WholeProgramOptimization>false</WholeProgramOptimization>
@@ -59,22 +57,22 @@
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
     <Import Project="$(VCTargetsPath)Microsoft.CPP.UpgradeFromVC71.props" />
-    <Import Project="..\Engine_properties.props" />
+    <Import Project="..\Engine_lib_properties.props" />
   </ImportGroup>
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
     <Import Project="$(VCTargetsPath)Microsoft.CPP.UpgradeFromVC71.props" />
-    <Import Project="..\Engine_properties.props" />
+    <Import Project="..\Engine_lib_properties.props" />
   </ImportGroup>
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
     <Import Project="$(VCTargetsPath)Microsoft.CPP.UpgradeFromVC71.props" />
-    <Import Project="..\Engine_properties.props" />
+    <Import Project="..\Engine_lib_properties.props" />
   </ImportGroup>
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
     <Import Project="$(VCTargetsPath)Microsoft.CPP.UpgradeFromVC71.props" />
-    <Import Project="..\Engine_properties.props" />
+    <Import Project="..\Engine_lib_properties.props" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup>
@@ -100,7 +98,7 @@
       <OmitFramePointers>false</OmitFramePointers>
       <EnableFiberSafeOptimizations>true</EnableFiberSafeOptimizations>
       <WholeProgramOptimization>false</WholeProgramOptimization>
-      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_USRDLL;XRGAME_EXPORTS;dSINGLE;MSVC;_SECURE_SCL=0;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>XRGAME_STATIC;XRENGINE_STATIC;XRCORE_STATIC;XRCDB_STATIC;XRSOUND_STATIC;XR_PARTICLES_STATIC;LUABIND_STATIC;WIN32;NDEBUG;_WINDOWS;_USRDLL;XRGAME_EXPORTS;dSINGLE;MSVC;_SECURE_SCL=0;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <StringPooling>true</StringPooling>
       <ExceptionHandling>
       </ExceptionHandling>
@@ -144,7 +142,7 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <LinkTimeCodeGeneration>
       </LinkTimeCodeGeneration>
-      <AdditionalDependencies>XR_3DA.lib;ode.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>xrEngine.lib;ode.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -163,7 +161,7 @@
       <OmitFramePointers>false</OmitFramePointers>
       <EnableFiberSafeOptimizations>false</EnableFiberSafeOptimizations>
       <WholeProgramOptimization>false</WholeProgramOptimization>
-      <PreprocessorDefinitions>WIN32;_WINDOWS;_USRDLL;XRGAME_EXPORTS;dSINGLE;MSVC;_SECURE_SCL=0;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>XRGAME_STATIC;XRENGINE_STATIC;XRCORE_STATIC;XRCDB_STATIC;XRSOUND_STATIC;XR_PARTICLES_STATIC;LUABIND_STATIC;WIN32;_WINDOWS;_USRDLL;XRGAME_EXPORTS;dSINGLE;MSVC;_SECURE_SCL=0;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <StringPooling>false</StringPooling>
       <ExceptionHandling>
       </ExceptionHandling>
@@ -210,7 +208,7 @@
       </EnableCOMDATFolding>
       <LinkTimeCodeGeneration>
       </LinkTimeCodeGeneration>
-      <AdditionalDependencies>XR_3DA.lib;ode.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>xrEngine.lib;ode.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -228,7 +226,7 @@
       <OmitFramePointers>false</OmitFramePointers>
       <EnableFiberSafeOptimizations>true</EnableFiberSafeOptimizations>
       <WholeProgramOptimization>false</WholeProgramOptimization>
-      <PreprocessorDefinitions>NDEBUG;_WINDOWS;_USRDLL;XRGAME_EXPORTS;dSINGLE;MSVC;_SECURE_SCL=0;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>XRGAME_STATIC;XRENGINE_STATIC;XRCORE_STATIC;XRCDB_STATIC;XRSOUND_STATIC;XR_PARTICLES_STATIC;LUABIND_STATIC;NDEBUG;_WINDOWS;_USRDLL;XRGAME_EXPORTS;dSINGLE;MSVC;_SECURE_SCL=0;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <StringPooling>true</StringPooling>
       <ExceptionHandling>
       </ExceptionHandling>
@@ -269,7 +267,7 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <LinkTimeCodeGeneration>
       </LinkTimeCodeGeneration>
-      <AdditionalDependencies>XR_3DA.lib;ode.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>xrEngine.lib;ode.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -287,7 +285,7 @@
       <OmitFramePointers>false</OmitFramePointers>
       <EnableFiberSafeOptimizations>false</EnableFiberSafeOptimizations>
       <WholeProgramOptimization>false</WholeProgramOptimization>
-      <PreprocessorDefinitions>_WINDOWS;_USRDLL;XRGAME_EXPORTS;dSINGLE;MSVC;_SECURE_SCL=0;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>XRGAME_STATIC;XRENGINE_STATIC;XRCORE_STATIC;XRCDB_STATIC;XRSOUND_STATIC;XR_PARTICLES_STATIC;LUABIND_STATIC;_WINDOWS;_USRDLL;XRGAME_EXPORTS;dSINGLE;MSVC;_SECURE_SCL=0;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <StringPooling>false</StringPooling>
       <ExceptionHandling>
       </ExceptionHandling>
@@ -331,7 +329,7 @@
       </EnableCOMDATFolding>
       <LinkTimeCodeGeneration>
       </LinkTimeCodeGeneration>
-      <AdditionalDependencies>XR_3DA.lib;ode.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>xrEngine.lib;ode.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -413,6 +411,10 @@
     <ClInclude Include="..\COMMON_AI\random32.h" />
     <ClInclude Include="..\COMMON_AI\server_entity_wrapper.h" />
     <ClInclude Include="..\COMMON_AI\server_entity_wrapper_inline.h" />
+    <ClInclude Include="ai\monsters\anti_aim_ability.h" />
+    <ClInclude Include="ai\monsters\states\monster_state_attack_on_run.h" />
+    <ClInclude Include="ai\monsters\states\monster_state_attack_on_run_inline.h" />
+    <ClInclude Include="ai\weighted_random.h" />
     <ClInclude Include="derived_client_classes.h" />
     <ClInclude Include="InventoryContainer.h" />
     <ClInclude Include="mt_config.h" />
@@ -1646,6 +1648,8 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\COMMON_AI\random32.cpp" />
+    <ClCompile Include="ai\monsters\anti_aim_ability.cpp" />
+    <ClCompile Include="ai\weighted_random.cpp" />
     <ClCompile Include="damage_manager.cpp" />
     <ClCompile Include="action_base_script.cpp" />
     <ClCompile Include="derived_client_classes.cpp" />
@@ -2505,7 +2509,7 @@
     <ClCompile Include="ui\UIEditKeyBind.cpp" />
     <ClCompile Include="ui\UIKeyBinding.cpp" />
     <ClCompile Include="ui\UICharacterInfo.cpp" />
-    <ClCompile Include="ui\IUWpnParams.cpp" />
+    <ClCompile Include="ui\UIWpnParams.cpp" />
     <ClCompile Include="ui\ui_af_params.cpp" />
     <ClCompile Include="ui\UIItemInfo.cpp" />
     <ClCompile Include="ui\UIOutfitInfo.cpp" />
@@ -2611,10 +2615,10 @@
       <Project>{ccca7859-eb86-493e-9b53-c4235f45b3c5}</Project>
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
     </ProjectReference>
-    <ProjectReference Include="..\xr_3da\XR_3DA.vcxproj">
+    <!--ProjectReference Include="..\xr_3da\XR_3DA.vcxproj">
       <Project>{2578c6d8-660d-48ae-9322-7422f8664f06}</Project>
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
-    </ProjectReference>
+    </ProjectReference-->
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

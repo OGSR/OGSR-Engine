@@ -185,6 +185,7 @@ void CUIComboBox::ShowList(bool bShow)
 
 		GetParent()->SetMouseCapture(this, true);
 		GetParent()->SetKeyboardCapture(this, true);
+		m_pOrignMouseCapturer = this;
 	}
 	else
 	{
@@ -192,6 +193,7 @@ void CUIComboBox::ShowList(bool bShow)
 		m_frameWnd.Show		(false);
 		SetHeight			(m_frameLine.GetHeight());
 
+		m_pOrignMouseCapturer = nullptr;
 		GetParent()->SetMouseCapture(this, false);
 		GetParent()->SetKeyboardCapture(this, false);
 

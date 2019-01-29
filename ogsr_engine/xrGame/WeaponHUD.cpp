@@ -29,6 +29,14 @@ BOOL weapon_hud_value::load(const shared_str& section, CHudItem* owner)
 	LPCSTR visual_name			= pSettings->r_string(section, "visual");
 	m_animations				= smart_cast<CKinematicsAnimated*>(::Render->model_Create(visual_name));
 
+	m_bAllowBobbing = true;
+
+	if (Core.Features.test(xrCore::Feature::wpn_bobbing))
+	{
+		if (pSettings->line_exist(section, "allow_bobbing"))
+			m_bAllowBobbing = pSettings->r_bool(section, "allow_bobbing");
+	}
+
 	// fire bone	
 	if(smart_cast<CWeapon*>(owner)){
 		LPCSTR fire_bone		= pSettings->r_string					(section,"fire_bone");
@@ -117,8 +125,10 @@ void  CWeaponHUD::net_DestroyHud()
 void CWeaponHUD::UpdatePosition(const Fmatrix& trans)
 {
 	Fmatrix xform = trans;
-	if (Core.Features.test(xrCore::Feature::wpn_bobbing))
+	if (Core.Features.test(xrCore::Feature::wpn_bobbing) && m_shared_data.get_value()->m_bAllowBobbing)
+	{
 		m_bobbing->Update(xform);
+	}
 	m_Transform.mul				(xform,m_shared_data.get_value()->m_offset);
 	VERIFY						(!fis_zero(DET(m_Transform)));
 }

@@ -59,6 +59,7 @@ enum EMonsterState {
 	eStateAttack_HomePoint_Hide		= eStateAttack | 22,
 	eStateAttack_HomePoint_Camp		= eStateAttack | 23,
 	eStateAttack_HomePoint_LookOpenPlace = eStateAttack | 24,
+	eStateAttack_Attack_On_Run		= eStateAttack | 25,
 
 	// -------------------------------------------------------------
 
@@ -168,12 +169,14 @@ enum EMonsterState {
 	eStateBurerAttack_RunAround		= eStateCustom | eStateAttack | 8,
 	eStateBurerAttack_FaceEnemy		= eStateCustom | eStateAttack | 9,
 	eStateBurerAttack_Melee			= eStateCustom | eStateAttack | 10,
+	eStateBurerAttack_Shield		= eStateCustom | eStateAttack | 11,
+	eStateBurerAttack_AntiAim		= eStateCustom | eStateAttack | 12,
 	
-	eStatePredator_MoveToCover		= eStateCustom | eStateAttack | 11,
-	eStatePredator_LookOpenPlace	= eStateCustom | eStateAttack | 12,
-	eStatePredator_Camp				= eStateCustom | eStateAttack | 13,
+	eStatePredator_MoveToCover		= eStateCustom | eStateAttack | 13,
+	eStatePredator_LookOpenPlace	= eStateCustom | eStateAttack | 14,
+	eStatePredator_Camp				= eStateCustom | eStateAttack | 15,
 
-	eStatePredator					= eStateCustom | eStateAttack | 14,
+	eStatePredator					= eStateCustom | eStateAttack | 16,
 
 	// -------------------------------------------------------------
 

@@ -82,7 +82,9 @@
 
 // this define is set if we're currently building a luabind file
 // select import or export depending on it
-#ifdef LUABIND_BUILDING
+#ifdef LUABIND_STATIC
+#	define LUABIND_API
+#elif defined LUABIND_BUILDING
 #	define LUABIND_API 		__declspec(dllexport)
 #else
 #	define LUABIND_API		__declspec(dllimport)

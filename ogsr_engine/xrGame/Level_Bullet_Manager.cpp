@@ -9,7 +9,6 @@
 #include "Actor.h"
 #include "gamepersistent.h"
 #include "game_cl_base_weapon_usage_statistic.h"
-#include <mutex>
 
 #ifdef DEBUG
 #	include "debug_renderer.h"
@@ -84,10 +83,9 @@ void SBullet::Init(const Fvector& position,
 
 CBulletManager::CBulletManager()
 {
-	m_Bullets.clear			();
 	m_Bullets.reserve( 1000 );
 	m_dwTimeRemainder = 0;
-        m_thread.initialize( 1 );
+	m_thread.initialize( 1 );
 }
 
 CBulletManager::~CBulletManager()
@@ -148,10 +146,10 @@ void CBulletManager::PlayWhineSound(SBullet* bullet, CObject* object, const Fvec
 	bullet->m_whine_snd.play_at_pos					(object,pos);
 }
 
-void CBulletManager::Clear		()
+void CBulletManager::Clear() //Вызывается при загрузке и дестрое уровня
 {
-	m_Bullets.clear			();
-	m_Events.clear			();
+	m_Bullets.clear();
+	m_Events.clear();
 }
 
 void CBulletManager::AddBullet(const Fvector& position,
@@ -170,8 +168,10 @@ void CBulletManager::AddBullet(const Fvector& position,
 	VERIFY		(u16(-1)!=cartridge.bullet_material_idx);
 //	u32 CurID = Level().CurrentControlEntity()->ID();
 //	u32 OwnerID = sender_id;
+	bullets.lock();
 	m_Bullets.emplace_back();
 	SBullet& bullet		= m_Bullets.back();
+	bullets.unlock();
 	bullet.Init			(position, direction, starting_speed, power, impulse, sender_id, sendersweapon_id, e_hit_type, maximum_distance, cartridge, SendHit);
 	bullet.frame_num	= Device.dwFrame;
 	bullet.flags.aim_bullet	=	AimBullet;
@@ -179,6 +179,8 @@ void CBulletManager::AddBullet(const Fvector& position,
 
 void CBulletManager::UpdateWorkload()
 {
+	std::scoped_lock<decltype(working)> lock(working);
+
 	u32 delta_time		=	Device.dwTimeDelta + m_dwTimeRemainder;
 	u32 step_num		=	delta_time/m_dwStepTime;
 	m_dwTimeRemainder	=	delta_time%m_dwStepTime;
@@ -186,8 +188,14 @@ void CBulletManager::UpdateWorkload()
 	rq_storage.r_clear			();
 	rq_spatial.clear_not_free	();
 
-	for(int k=m_Bullets.size()-1; k>=0; k--){
+	bullets.lock();
+	int k = m_Bullets.size() - 1;
+	bullets.unlock();
+
+	for ( ; k >= 0; k-- ) {
+		bullets.lock();
 		SBullet& bullet = m_Bullets[k];
+		bullets.unlock();
 		//для пули пущенной на этом же кадре считаем только 1 шаг
 		//(хотя по теории вообще ничего считать на надо)
 		//который пропустим на следующем кадре, 
@@ -204,13 +212,10 @@ void CBulletManager::UpdateWorkload()
 			if(!CalcBullet(rq_storage,rq_spatial,&bullet, m_dwStepTime)){
 				collide::rq_result res;
 				RegisterEvent(EVENT_REMOVE, FALSE, &bullet, Fvector().set(0, 0, 0), res, (u16)k);
-//				m_Bullets[k] = m_Bullets.back();
-//				m_Bullets.pop_back();
 				break;
 			}
 		}
 	}
-	working.unlock();
 }
 
 bool CBulletManager::CalcBullet (collide::rq_results & rq_storage, xr_vector<ISpatial*>& rq_spatial, SBullet* bullet, u32 delta_time)
@@ -348,12 +353,12 @@ void CBulletManager::Render	()
 										vOffset);
 	FVF::LIT	*start		=	verts;
 
-	for(BulletVecIt it = m_BulletsRendered.begin(); it!=m_BulletsRendered.end(); it++){
-		SBullet* bullet					= &(*it);
-		if(!bullet->flags.allow_tracer)	continue;
-		if (!bullet->flags.skipped_frame)  continue;
+	for(auto& bullet : m_BulletsRendered)
+	{
+		if(!bullet.flags.allow_tracer)	continue;
+		if (!bullet.flags.skipped_frame)  continue;
 
-		float length	= bullet->speed*float(m_dwStepTime)/1000.f;//dist.magnitude();
+		float length	= bullet.speed*float(m_dwStepTime)/1000.f;//dist.magnitude();
 
 		if(length<m_fTracerLengthMin) continue;
 
@@ -361,7 +366,7 @@ void CBulletManager::Render	()
 			length			= m_fTracerLengthMax;
 
 		float width			= m_fTracerWidth;
-		float dist2segSqr = SqrDistancePointToSegment(Device.vCameraPosition, bullet->pos, Fvector().mul(bullet->dir, length));
+		float dist2segSqr = SqrDistancePointToSegment(Device.vCameraPosition, bullet.pos, Fvector().mul(bullet.dir, length));
 		//---------------------------------------------
 		float MaxDistSqr = 1.0f;
 		float MinDistSqr = 0.09f;
@@ -371,9 +376,9 @@ void CBulletManager::Render	()
 
 			width *= _sqrt(dist2segSqr/MaxDistSqr);//*MaxDistWidth/0.08f;			
 		}
-		if (Device.vCameraPosition.distance_to_sqr(bullet->pos)<(length*length))
+		if (Device.vCameraPosition.distance_to_sqr(bullet.pos)<(length*length))
 		{
-			length = Device.vCameraPosition.distance_to(bullet->pos) - 0.3f;
+			length = Device.vCameraPosition.distance_to(bullet.pos) - 0.3f;
 		}
 		/*
 		//---------------------------------------------
@@ -393,8 +398,8 @@ void CBulletManager::Render	()
 
 
 		Fvector center;
-		center.mad				(bullet->pos, bullet->dir,  -length*.5f);
-		tracers.Render			(verts, bullet->pos, center, bullet->dir, length, width, bullet->m_u8ColorID);
+		center.mad				(bullet.pos, bullet.dir,  -length*.5f);
+		tracers.Render			(verts, bullet.pos, center, bullet.dir, length, width, bullet.m_u8ColorID);
 	}
 
 	u32 vCount					= (u32)(verts-start);
@@ -413,16 +418,18 @@ void CBulletManager::Render	()
 
 void CBulletManager::CommitRenderSet		()	// @ the end of frame
 {
-	m_BulletsRendered	= m_Bullets			;
-	if ( m_Bullets.size() && m_Events.empty() && working.try_lock() ) {
+	m_BulletsRendered = m_Bullets;
+	//Msg("!![%s] size of m_BulletsRendered: [%u], m_Bullets: [%u], m_events: [%u]", __FUNCTION__, m_BulletsRendered.size(), m_Bullets.size(), m_Events.size());
+	if ( !m_Bullets.empty() && m_Events.empty() && working.try_lock() ) {
           m_thread.threads[ 0 ]->addJob( [=] { UpdateWorkload(); } );
+          working.unlock();
 	}
 }
 void CBulletManager::CommitEvents			()	// @ the start of frame
 {
 	if ( !working.try_lock() ) return;
-	for (u32 _it=0; _it<m_Events.size(); _it++)	{
-		_event&		E	= m_Events[_it];
+	for ( auto& E : m_Events )
+	{
 		switch (E.Type)
 		{
 		case EVENT_HIT:
@@ -432,12 +439,14 @@ void CBulletManager::CommitEvents			()	// @ the start of frame
 			}break;
 		case EVENT_REMOVE:
 			{
+				bullets.lock();
 				m_Bullets[E.tgt_material] = m_Bullets.back();
 				m_Bullets.pop_back();
+				bullets.unlock();
 			}break;
 		}		
 	}
-	m_Events.clear_and_reserve	()	;
+	m_Events.clear();
 
 	if ( m_Bullets.empty() )
 	  m_dwTimeRemainder = 0;

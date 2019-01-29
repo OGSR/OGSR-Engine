@@ -12,7 +12,7 @@
 extern	class CPHWorld	*ph_world;
 ///////////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////////
-CPHCapture::CPHCapture	(CPHCharacter   *a_character, CPhysicsShellHolder	*a_taget_object)
+CPHCapture::CPHCapture( CPHCharacter* a_character, CPhysicsShellHolder* a_taget_object, LPCSTR capture_bone )
 {
 	CPHUpdateObject::Activate();
 
@@ -79,20 +79,21 @@ CPHCapture::CPHCapture	(CPHCharacter   *a_character, CPhysicsShellHolder	*a_tage
 		b_failed=true;
 		return;
 	}
-	u16 capture_bone_id=p_kinematics->LL_BoneID(ini->r_string("capture","bone"));
+
+	u16 capture_bone_id = p_kinematics->LL_BoneID( capture_bone ? capture_bone : ini->r_string( "capture", "bone" ) );
 	R_ASSERT2(capture_bone_id!=BI_NONE,"wrong capture bone");
 	m_capture_bone=&p_kinematics->LL_GetBoneInstance(capture_bone_id);
 		
 
 
-	m_taget_element					=m_taget_object->m_pPhysicsShell->NearestToPoint(m_capture_bone->mTransform.c);
+	m_taget_element = m_taget_object->m_pPhysicsShell->NearestToPoint( GetCapturePosition() );
 
 	Init(ini);
 
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
-CPHCapture::CPHCapture(CPHCharacter   *a_character,CPhysicsShellHolder	*a_taget_object,u16 a_taget_element)
+CPHCapture::CPHCapture( CPHCharacter* a_character, CPhysicsShellHolder* a_taget_object, u16 a_taget_element, LPCSTR capture_bone )
 {
 
 	CPHUpdateObject::Activate();
@@ -166,7 +167,7 @@ CPHCapture::CPHCapture(CPHCharacter   *a_character,CPhysicsShellHolder	*a_taget_
 		return;
 	}
 	
-	u16 capture_bone_id=p_kinematics->LL_BoneID(ini->r_string("capture","bone"));
+	u16 capture_bone_id = p_kinematics->LL_BoneID( capture_bone ? capture_bone : ini->r_string( "capture", "bone" ) );
 	R_ASSERT2(capture_bone_id!=BI_NONE,"wrong capture bone");
 	m_capture_bone=&p_kinematics->LL_GetBoneInstance(capture_bone_id);
 		
@@ -217,10 +218,8 @@ CPHCapture::CPHCapture(CPHCharacter   *a_character,CPhysicsShellHolder	*a_taget_
 void CPHCapture::Init(CInifile* ini)
 {
 	Fvector dir;
-	Fvector capture_bone_position;
-	capture_bone_position.set(m_capture_bone->mTransform.c);
+	Fvector capture_bone_position = GetCapturePosition();
 	b_character_feedback=true;
-	(m_character->PhysicsRefObject())->XFORM().transform_tiny(capture_bone_position);
 
 
 	m_taget_element->GetGlobalPositionDynamic(&dir);
@@ -241,9 +240,8 @@ void CPHCapture::Init(CInifile* ini)
 	m_capture_force			=ini->r_float("capture","capture_force");				//capture force
 	m_capture_time			=ini->r_u32("capture","time_limit")*1000;				//time;		
 	m_time_start			=Device.dwTimeGlobal;
-	float max_pull_force    =ini->r_float("capture","pull_force");					//pull force
-	m_pull_force			=pool_force_factor*ph_world->Gravity()*m_taget_element->PhysicsShell()->getMass();
-	if(m_pull_force>max_pull_force) m_pull_force=max_pull_force;
+	auto ps = m_taget_object->PPhysicsShell();
+	m_pull_force = pool_force_factor * ph_world->Gravity() * ps->getMass();
 
 
 
@@ -256,7 +254,12 @@ void CPHCapture::Init(CInifile* ini)
 	if(A)
 	{
 		A->SetWeaponHideState(INV_STATE_BLOCK_ALL,true);
+		hard_mode = true;
 	}
+	else
+		hard_mode = false;
+
+	ps->applyForce( 0, m_pull_force, 0 );
 }
 
 void CPHCapture::Release()
@@ -289,6 +292,7 @@ void CPHCapture::Release()
 		m_taget_element->set_DynamicLimits();
 	}
 
+	b_failed = false;
 	e_state=cstReleased;
 	b_collide=true;
 	CActor* A=smart_cast<CActor*>(m_character->PhysicsRefObject());

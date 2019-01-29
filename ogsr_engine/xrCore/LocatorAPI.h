@@ -166,3 +166,7 @@ public:
 
 extern XRCORE_API std::unique_ptr<CLocatorAPI> xr_FS;
 #define FS (*xr_FS)
+
+using DUMMY_STUFF = void(const void*, const u32&, void*);
+extern XRCORE_API DUMMY_STUFF* g_dummy_stuff;
+extern XRCORE_API DUMMY_STUFF* g_temporary_stuff;

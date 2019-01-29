@@ -52,6 +52,7 @@ CWeaponMagazined::~CWeaponMagazined()
 	HUD_SOUND::DestroySound(sndEmptyClick);
 	HUD_SOUND::DestroySound(sndReload);
 	HUD_SOUND::DestroySound(sndFireModes);
+	HUD_SOUND::DestroySound(sndZoomChange);
 	if (m_binoc_vision)
 		xr_delete(m_binoc_vision);
 }
@@ -65,6 +66,7 @@ void CWeaponMagazined::StopHUDSounds		()
 	HUD_SOUND::StopSound(sndEmptyClick);
 	HUD_SOUND::StopSound(sndReload);
 	HUD_SOUND::StopSound(sndFireModes);
+	HUD_SOUND::StopSound(sndZoomChange);
 
 	HUD_SOUND::StopSound(sndShot);
 //.	if(sndShot.enable && sndShot.snd.feedback)
@@ -101,6 +103,8 @@ void CWeaponMagazined::Load	(LPCSTR section)
 	HUD_SOUND::LoadSound(section,"snd_reload"	, sndReload		, m_eSoundReload		);
 	if ( pSettings->line_exist( section, "snd_fire_modes" ) )
 		HUD_SOUND::LoadSound( section, "snd_fire_modes", sndFireModes, m_eSoundEmptyClick );
+	if ( pSettings->line_exist( section, "snd_zoom_change" ) )
+		HUD_SOUND::LoadSound( section, "snd_zoom_change", sndZoomChange, m_eSoundEmptyClick );
 	
 	m_pSndShotCurrent = &sndShot;
 		
@@ -312,7 +316,6 @@ void CWeaponMagazined::ReloadMagazine()
 	//только разных типов патронов
 //	static bool l_lockType = false;
 	if (!m_bLockType) {
-		m_ammoName	= NULL;
 		m_pAmmo		= NULL;
 	}
 	
@@ -383,7 +386,6 @@ void CWeaponMagazined::ReloadMagazine()
 		l_cartridge.m_LocalAmmoType = u8(m_ammoType);
 		m_magazine.push_back(l_cartridge);
 	}
-	m_ammoName = (m_pAmmo) ? m_pAmmo->m_nameShort : NULL;
 
 	VERIFY((u32)iAmmoElapsed == m_magazine.size());
 
@@ -520,6 +522,7 @@ void CWeaponMagazined::UpdateSounds	()
 	if (sndReload.playing		()) sndReload.set_position		(get_LastFP());
 	if (sndEmptyClick.playing	())	sndEmptyClick.set_position	(get_LastFP());
 	if (sndFireModes.playing	())	sndFireModes.set_position	(get_LastFP());
+	if (sndZoomChange.playing	())	sndZoomChange.set_position	(get_LastFP());
 }
 
 void CWeaponMagazined::state_Fire	(float dt)
@@ -954,12 +957,15 @@ void CWeaponMagazined::InitAddons()
 			m_fScopeZoomFactor = pSettings->r_float	(*m_sScopeName, "scope_zoom_factor");
 			m_bScopeDynamicZoom = !!READ_IF_EXISTS(pSettings, r_bool, *m_sScopeName, "scope_dynamic_zoom", false);
 
-			shared_str scope_tex_name;
-			scope_tex_name = pSettings->r_string(*m_sScopeName, "scope_texture");
+			shared_str scope_tex_name = READ_IF_EXISTS(pSettings, r_string, *m_sScopeName, "scope_texture", "");
 
 			if(m_UIScope) xr_delete(m_UIScope);
-			m_UIScope = xr_new<CUIStaticItem>();
-			m_UIScope->Init(*scope_tex_name, "hud\\scope", 0, 0, alNone);
+
+			if (scope_tex_name.size() > 0)
+			{
+				m_UIScope = xr_new<CUIStaticItem>();
+				m_UIScope->Init(*scope_tex_name, "hud\\scope", 0, 0, alNone);
+			}
 
 			m_fSecondVP_FovFactor = READ_IF_EXISTS(pSettings, r_float, *m_sScopeName, "scope_lense_fov_factor", 0.0f);
 			m_fScopeInertionFactor = READ_IF_EXISTS(pSettings, r_float, *m_sScopeName, "scope_inertion_factor", m_fControlInertionFactor);
@@ -969,12 +975,15 @@ void CWeaponMagazined::InitAddons()
 			m_fScopeZoomFactor = pSettings->r_float(cNameSect(), "scope_zoom_factor");
 			m_bScopeDynamicZoom = smart_cast<CWeaponBinoculars*>(this) != nullptr || !!READ_IF_EXISTS(pSettings, r_bool, cNameSect(), "scope_dynamic_zoom", false);
 
-			shared_str scope_tex_name;
-			scope_tex_name = pSettings->r_string(cNameSect(), "scope_texture");
+			shared_str scope_tex_name = READ_IF_EXISTS(pSettings, r_string, cNameSect(), "scope_texture", "");
 
 			if(m_UIScope) xr_delete(m_UIScope);
-			m_UIScope = xr_new<CUIStaticItem>();
-			m_UIScope->Init(*scope_tex_name, "hud\\scope", 0, 0, alNone);
+
+			if (scope_tex_name.size() > 0)
+			{
+				m_UIScope = xr_new<CUIStaticItem>();
+				m_UIScope->Init(*scope_tex_name, "hud\\scope", 0, 0, alNone);
+			}
 
 			m_fSecondVP_FovFactor = READ_IF_EXISTS(pSettings, r_float, cNameSect(), "scope_lense_fov_factor", 0.0f);
 			m_fScopeInertionFactor = READ_IF_EXISTS(pSettings, r_float, cNameSect(), "scope_inertion_factor", m_fControlInertionFactor);
@@ -1004,9 +1013,19 @@ void CWeaponMagazined::InitAddons()
 	}
 
 	if (m_bScopeDynamicZoom)
-    {
-		m_fRTZoomFactor = m_fScopeZoomFactor;
-    }
+	{
+		if (Core.Features.test(xrCore::Feature::ogse_wpn_zoom_system)) 
+		{
+			float delta, min_zoom_factor;
+			GetZoomData(m_fScopeZoomFactor, delta, min_zoom_factor);
+
+			m_fRTZoomFactor = min_zoom_factor; // set minimal zoom by default for ogse mode
+		}
+		else
+		{
+			m_fRTZoomFactor = m_fScopeZoomFactor;
+		}
+	}
 
 	if(IsSilencerAttached() && SilencerAttachable())
 	{		
@@ -1178,6 +1197,11 @@ void CWeaponMagazined::OnZoomOut		()
 		}
 	}
 
+}
+
+void CWeaponMagazined::OnZoomChanged()
+{
+	PlaySound(sndZoomChange, get_LastFP());
 }
 
 //переключение режимов стрельбы одиночными и очередями

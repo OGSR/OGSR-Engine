@@ -1,8 +1,10 @@
 #pragma once
+#include "..\xr_3da\feel_touch.h"
+#include "../../customzone.h"
 
 class CCustomMonster;
 
-class CAnomalyDetector {
+class CAnomalyDetector : public Feel::Touch {
 	CCustomMonster			*m_object;
 
 public:
@@ -41,7 +43,8 @@ public:
 	void		reinit				();
 
 	void		update_schedule		();
-	void		on_contact			(CObject *obj);
+	void		on_contact( CObject* );
+	virtual BOOL feel_touch_contact( CObject* );
 	
 	void		activate( bool = false );
 	void		deactivate( bool = false );

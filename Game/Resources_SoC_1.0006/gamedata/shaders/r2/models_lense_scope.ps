@@ -1,16 +1,13 @@
 #include "common.h"
 
 // Глобальные параметры шейдеров --#SM+#--
-uniform float4x4 m_script_params; 
+
+//uniform float4x4 m_script_params; //Не используется, зарезервировано на будущее.
 
 uniform	float4 m_hud_params; // zoom_rotate_factor, secondVP_zoom_factor, NULL, NULL
-uniform	float4 m_blender_mode; // x\y = [0 - default, 1 - night vision, 2 - thermal vision]; x - основной вьюпорт, y - второй впьюпорт, z = [0.0f / 1.0f - выключен или включён двойной ренденр], w = [0 - идёт рендер обычного объекта, 1 - идёт рендер детальных объектов (трава, мусор)]
+uniform	float4 m_blender_mode; // x = [0 - default, 1 - night vision, 2 - thermal vision]; y - зарезервировано на будущее; z = [0.0f / 1.0f - выключен или включён двойной рендер]; w - зарезервировано на будущее.
 
 uniform sampler2D s_vp2;
-
-uniform sampler2D s_skymap;
-uniform samplerCUBE	s_env0;
-uniform samplerCUBE	s_env1;
 
 // Активен-ли двойной рендер --#SM+#--
 inline bool isSecondVPActive() //TODO: Вынести отсюда?

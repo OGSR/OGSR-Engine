@@ -93,6 +93,21 @@ SRotation& get_actor_orientation(CActor *pActor)
 
 //extern LPCSTR get_lua_class_name(luabind::object O);
 
+bool IsLimping(CActorCondition *C)
+{
+	return C->m_condition_flags.test(CActorCondition::eLimping);
+}
+
+bool IsCantWalk(CActorCondition *C)
+{
+	return C->m_condition_flags.test(CActorCondition::eCantWalk);
+}
+
+bool IsCantSprint(CActorCondition *C)
+{
+	return C->m_condition_flags.test(CActorCondition::eCantSprint);
+}
+
 void CScriptActor::script_register(lua_State *L)
 {
 	module(L)
@@ -136,9 +151,9 @@ void CScriptActor::script_register(lua_State *L)
 			.def_readwrite("cant_spint_power_end",		&CActorCondition::m_fCantSprintPowerEnd)
 			.def_readwrite("limping_health_begin",		&CActorCondition::m_fLimpingHealthBegin)
 			.def_readwrite("limping_health_end",		&CActorCondition::m_fLimpingHealthEnd)	
-			.def_readonly("limping",					&CActorCondition::m_bLimping)
-			.def_readonly("cant_walk",					&CActorCondition::m_bCantWalk)
-			.def_readonly("cant_sprint",				&CActorCondition::m_bCantSprint)
+			.property("limping",						&IsLimping)
+			.property("cant_walk",						&IsCantWalk)
+			.property("cant_sprint",					&IsCantSprint)
 			.property("radiation_v",					&get_change_v <&SConditionChangeV::m_fV_Radiation>			,				&set_change_v <&SConditionChangeV::m_fV_Radiation>)
 			.property("psy_health_v",					&get_change_v <&SConditionChangeV::m_fV_PsyHealth>			,				&set_change_v <&SConditionChangeV::m_fV_PsyHealth>)
 			.property("morale_v",						&get_change_v <&SConditionChangeV::m_fV_EntityMorale>		,				&set_change_v <&SConditionChangeV::m_fV_EntityMorale>)

@@ -79,7 +79,7 @@ void CConsole::OnFrame	()
 	cur_time+=fDelta;
 	rep_time+=fDelta*fAccel;
 	if (cur_time>0.1f) { cur_time-=0.1f; bCursor=!bCursor;	}
-	if (rep_time>0.2f) { rep_time-=0.2f; bRepeat=true;	fAccel+=0.2f;	}
+	if (rep_time>0.15f) { rep_time-=0.15f; bRepeat=true;	fAccel+=0.4f;	}
 /*
 	cur_time+=Device.fTimeDelta;
 	rep_time+=Device.fTimeDelta*fAccel;
@@ -90,8 +90,9 @@ void CConsole::OnFrame	()
 
 void out_font(CGameFont* pFont, LPCSTR text, float& pos_y)
 {
+	float screen_width = float(Device.dwWidth);
 	float str_length = pFont->SizeOf_(text);
-	if(str_length>1024.0f)
+	if(str_length> screen_width)
 	{
 		float _l			= 0.0f;
 		int _sz				= 0;
@@ -103,7 +104,7 @@ void out_font(CGameFont* pFont, LPCSTR text, float& pos_y)
 			_one_line[_ln+_sz]			= text[_sz];
 			_one_line[_ln+_sz+1]		= 0;
 			float _t					= pFont->SizeOf_(_one_line+_ln);
-			if(_t > 1024.0f)
+			if(_t > screen_width)
 			{
 				out_font				(pFont, text+_sz, pos_y);
 				pos_y					-= LDIST;
@@ -141,9 +142,8 @@ void CConsole::OnRender	()
 
 	CHK_DX	(HW.pDevice->Clear(1,&R,D3DCLEAR_TARGET,D3DCOLOR_XRGB(32,32,32),1,0));
 
-	float dwMaxY=float(Device.dwHeight);
 	// float dwMaxX=float(Device.dwWidth/2);
-	if (bGame) { fMaxY=0.f; dwMaxY/=2; } else fMaxY=1.f;
+	if (bGame) { fMaxY=0.f; } else fMaxY=1.f;
 
 	char		buf	[MAX_LEN+5];
 	strcpy_s		(buf,ioc_prompt);
@@ -160,7 +160,7 @@ void CConsole::OnRender	()
 		ypos-=LDIST;
 		if (ypos<-1.f) break;
 
-		auto ls = (*LogFile)[i];
+		auto& ls = (*LogFile)[i];
 		if (!ls.c_str())
 			continue;
 		switch (ls.front()) {
@@ -189,6 +189,11 @@ void CConsole::OnRender	()
 			out_font		(pFont,&ls[2],ypos);
 //.			pFont->OutI  (-1.f,ypos,"%s",&ls[2]);
 			break;
+		case '>':
+			pFont->SetColor(color_rgba(128, 128, 255, 255));
+			out_font(pFont, &ls[2], ypos);
+			//.			pFont->OutI  (-1.f,ypos,"%s",&ls[2]);
+			break;
 		default:
 			pFont->SetColor(color_rgba(255,255,255, 255));
 			out_font		(pFont,ls.c_str(),ypos);
@@ -205,7 +210,7 @@ void CConsole::OnPressKey(int dik, BOOL bHold)
 
 	switch (dik) {
 	case DIK_GRAVE:
-		if (bShift) { strcat(editor,"~"); break; }
+		if (bShift) { strcat_s(editor,"~"); break; }
 	case DIK_ESCAPE:
 		if (!bHold) {
 			if  ( g_pGameLevel || 
@@ -249,131 +254,6 @@ void CConsole::OnPressKey(int dik, BOOL bHold)
 	case DIK_RSHIFT:
 		bShift = true;
 		break;
-	case DIK_1:
-		if (bShift) strcat(editor,"!");
-		else		strcat(editor,"1");
-		break;
-	case DIK_2:
-		if (bShift) strcat(editor,"@");
-		else		strcat(editor,"2");
-		break;
-	case DIK_3:
-		if (bShift) strcat(editor,"#");
-		else		strcat(editor,"3");
-		break;
-	case DIK_4:
-		if (bShift) strcat(editor,"$");
-		else		strcat(editor,"4");
-		break;
-	case DIK_5:
-		if (bShift) strcat(editor,"%");
-		else		strcat(editor,"5");
-		break;
-	case DIK_6:
-		if (bShift) strcat(editor,"^");
-		else		strcat(editor,"6");
-		break;
-	case DIK_7:
-		if (bShift) strcat(editor,"&");
-		else		strcat(editor,"7");
-		break;
-	case DIK_8:
-		if (bShift) strcat(editor,"*");
-		else		strcat(editor,"8");
-		break;
-	case DIK_9:
-		if (bShift) strcat(editor,"(");
-		else		strcat(editor,"9");
-		break;
-	case DIK_0:
-		if (bShift) strcat(editor,")");
-		else		strcat(editor,"0");
-		break;
-
-/* numeric keyboard*/
-	case DIK_NUMPAD1: strcat(editor, "1"); break;
-	case DIK_NUMPAD2: strcat(editor, "2"); break;
-	case DIK_NUMPAD3: strcat(editor, "3"); break;
-	case DIK_NUMPAD4: strcat(editor, "4"); break;
-	case DIK_NUMPAD5: strcat(editor, "5"); break;
-	case DIK_NUMPAD6: strcat(editor, "6"); break;
-	case DIK_NUMPAD7: strcat(editor, "7"); break;
-	case DIK_NUMPAD8: strcat(editor, "8"); break;
-	case DIK_NUMPAD9: strcat(editor, "9"); break;
-	case DIK_NUMPAD0: strcat(editor, "0"); break;
-	case DIK_SUBTRACT:	strcat(editor, "-"); break;
-	case DIK_ADD:		strcat(editor, "+"); break;
-	case DIK_DECIMAL:	strcat(editor, "."); break;
-	case DIK_DIVIDE:	strcat(editor, "/"); break;
-	case DIK_MULTIPLY:	strcat(editor, "*"); break;
-
-	case DIK_A:	strcat(editor,"a");	break;
-	case DIK_B:	strcat(editor,"b");	break;
-	case DIK_C:	strcat(editor,"c");	break;
-	case DIK_D:	strcat(editor,"d");	break;
-	case DIK_E:	strcat(editor,"e");	break;
-	case DIK_F:	strcat(editor,"f");	break;
-	case DIK_G:	strcat(editor,"g");	break;
-	case DIK_H:	strcat(editor,"h");	break;
-	case DIK_I:	strcat(editor,"i");	break;
-	case DIK_J:	strcat(editor,"j");	break;
-	case DIK_K:	strcat(editor,"k");	break;
-	case DIK_L:	strcat(editor,"l");	break;
-	case DIK_M:	strcat(editor,"m");	break;
-	case DIK_N:	strcat(editor,"n");	break;
-	case DIK_O:	strcat(editor,"o");	break;
-	case DIK_P:	strcat(editor,"p");	break;
-	case DIK_Q:	strcat(editor,"q");	break;
-	case DIK_R:	strcat(editor,"r");	break;
-	case DIK_S:	strcat(editor,"s");	break;
-	case DIK_T:	strcat(editor,"t");	break;
-	case DIK_U:	strcat(editor,"u");	break;
-	case DIK_V:	strcat(editor,"v");	break;
-	case DIK_W:	strcat(editor,"w");	break;
-	case DIK_X:	strcat(editor,"x");	break;
-	case DIK_Y:	strcat(editor,"y");	break;
-	case DIK_Z:	strcat(editor,"z");	break;
-	case DIK_SPACE:		strcat(editor," "); break;
-	case DIK_BACKSLASH:
-		if (bShift) strcat(editor,"|");  
-		else		strcat(editor,"\\");
-		break;
-	case DIK_LBRACKET:
-		if (bShift) strcat(editor,"{");  
-		else		strcat(editor,"[");
-		break;
-	case DIK_RBRACKET:
-		if (bShift) strcat(editor,"}");
-		else		strcat(editor,"]");
-		break;
-	case DIK_APOSTROPHE:
-		if (bShift) strcat(editor,"\"");
-		else		strcat(editor,"'");
-		break;
-	case DIK_COMMA:
-		if (bShift) strcat(editor,"<");
-		else		strcat(editor,",");
-		break;
-	case DIK_PERIOD:
-		if (bShift) strcat(editor,">");
-		else		strcat(editor,".");
-		break;
-	case DIK_EQUALS:
-		if (bShift) strcat(editor,"+");
-		else		strcat(editor,"=");
-		break;
-	case DIK_MINUS:
-		if (bShift) strcat(editor,"_");
-		else		strcat(editor,"-");
-		break;
-	case DIK_SEMICOLON:
-		if (bShift) strcat(editor,":");
-		else		strcat(editor,";");
-		break;
-	case DIK_SLASH:
-		if (bShift) strcat(editor,"?");
-		else		strcat(editor,"/");
-		break;
 	case DIK_RETURN:
 	case DIK_NUMPADENTER:
 		ExecuteCommand( true );
@@ -400,6 +280,12 @@ void CConsole::OnPressKey(int dik, BOOL bHold)
 		}
 		break;
 	default:
+		char symbol = pInput->DikToChar(dik);
+		if (symbol) {
+			auto ptr = (char*)_alloca(2 * sizeof(char));
+			ptr[0] = symbol; ptr[1] = 0;
+			strcat_s(editor, ptr);
+		}
 		break;
 	}
 	u32	clip	= MAX_LEN-8;
@@ -465,7 +351,7 @@ outloop:
 	if (converted[0]==' ')	strcpy_s(editor,&(converted[1]));
 	else					strcpy_s(editor,converted);
 	if (editor[0]==0)		return;
-	if (RecordCommands)		Log("~",editor);
+	if (RecordCommands)		Log(">",editor);
 	
 	// split into cmd/params
 	editor[j++  ]	=	' ';
@@ -515,6 +401,8 @@ void CConsole::Show			()
 	editor[0]				= 0;
 	rep_time				= 0;
 	fAccel					= 1.0f;
+	cmd_delta				= 0;
+	old_cmd_delta			= 0;
 
 	IR_Capture				( );
 	Device.seqRender.Add	(this, 1);
@@ -537,20 +425,26 @@ void CConsole::SelectCommand()
 	int		p,k;
 	BOOL	found=false;
 	for (p=LogFile->size()-1, k=0; p>=0; p--) {
-		auto str = (*LogFile)[p];
+		auto& str = (*LogFile)[p];
 		if (!str.c_str())
 			continue;
-		if (str.front() == '~') {
+
+		if (str.front() == '>') {
 			k--;
-			if (k==cmd_delta) {
+			if (k == cmd_delta) {
 				strcpy_s(editor, &str[2]);
-				found=true;
+				found = true;
 			}
 		}
 	}
 	if (!found) {
-		if (cmd_delta>old_cmd_delta) editor[0]=0;
-		cmd_delta=old_cmd_delta;
+		if (cmd_delta == 0)
+		{
+			editor[0] = 0;
+			old_cmd_delta = 0;
+		}
+		else
+			cmd_delta=old_cmd_delta;
 
 	} else {
 		old_cmd_delta=cmd_delta;

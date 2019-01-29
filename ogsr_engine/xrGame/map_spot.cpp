@@ -26,21 +26,22 @@ void CMapSpot::Load(CUIXml* xml, LPCSTR path)
 	int i = xml->ReadAttribInt(path, 0, "scale", 0);
 	m_bScale			= (i==1);
 
-  SetWidth(GetWidth() * UI()->get_current_kx() );
-  SetStretchTexture(true);
+	SetWidth(GetWidth() * UI()->get_current_kx() );
+	SetStretchTexture(true);
 
 	m_originSize		= GetWndSize();
 }
 
-LPCSTR CMapSpot::GetHint() 
+LPCSTR CMapSpot::GetHint()
 {
 	return MapLocation()->GetHint();
-};
+}
 
 void CMapSpot::Update()
 {
 	inherited::Update();
-	if(m_bCursorOverWindow){
+	LPCSTR h = GetHint();
+	if ( m_bCursorOverWindow && h && xr_strlen( h ) ) {
 		VERIFY(m_dwFocusReceiveTime>=0);
 		if( Device.dwTimeGlobal>(m_dwFocusReceiveTime+500) ){
 			GetMessageTarget()->SendMessage(this, MAP_SHOW_HINT, NULL);
@@ -74,7 +75,9 @@ bool CMapSpot::OnMouseDown		(int mouse_btn)
 void CMapSpot::OnFocusLost		()
 {
 	inherited::OnFocusLost		();
-	GetMessageTarget()->SendMessage(this, MAP_HIDE_HINT, NULL);
+	LPCSTR h = GetHint();
+	if ( h && xr_strlen( h ) )
+	  GetMessageTarget()->SendMessage( this, MAP_HIDE_HINT, NULL );
 }
 
 

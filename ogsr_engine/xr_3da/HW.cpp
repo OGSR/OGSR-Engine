@@ -115,29 +115,22 @@ void	CHW::DestroyDevice	()
 	
 	free_vid_mode_list		();
 }
-void	CHW::selectResolution	(u32 &dwWidth, u32 &dwHeight, BOOL bWindowed)
+
+void CHW::selectResolution(u32 &dwWidth, u32 &dwHeight, BOOL bWindowed)
 {
-	fill_vid_mode_list			(this);
+	fill_vid_mode_list(this);
 
-	if(bWindowed)
-	{
-		dwWidth		= psCurrentVidMode[0];
-		dwHeight	= psCurrentVidMode[1];
-	}else //check
-	{
-		string64					buff;
-		sprintf_s					(buff,sizeof(buff),"%dx%d",psCurrentVidMode[0],psCurrentVidMode[1]);
-		
-		if(_ParseItem(buff,vid_mode_token)==u32(-1)) //not found
-		{ //select safe
-			sprintf_s				(buff,sizeof(buff),"vid_mode %s",vid_mode_token[0].name);
-			Console->Execute		(buff);
-		}
+	string64 buff;
+	sprintf_s(buff, sizeof(buff), "%dx%d", psCurrentVidMode[0], psCurrentVidMode[1]);
 
-		dwWidth						= psCurrentVidMode[0];
-		dwHeight					= psCurrentVidMode[1];
+	if (_ParseItem(buff, vid_mode_token) == u32(-1)) //not found
+	{ //select safe
+		sprintf_s(buff, sizeof(buff), "vid_mode %s", vid_mode_token[0].name);
+		Console->Execute(buff);
 	}
 
+	dwWidth = psCurrentVidMode[0];
+	dwHeight = psCurrentVidMode[1];
 }
 
 void		CHW::CreateDevice		(HWND m_hWnd)
@@ -223,12 +216,7 @@ void		CHW::CreateDevice		(HWND m_hWnd)
 		fDepth  = selectDepthStencil(fTarget);
 	}
 
-	if ( D3DFMT_UNKNOWN == fTarget || ( D3DFMT_UNKNOWN == fDepth ) ) {
-		Msg					("Failed to initialize graphics hardware.\nPlease try to restart the game.");
-		MessageBox			(NULL,"Failed to initialize graphics hardware.\nPlease try to restart the game.","Error!",MB_OK|MB_ICONERROR);
-		TerminateProcess	(GetCurrentProcess(),0);
-	}
-
+	CHECK_OR_EXIT( D3DFMT_UNKNOWN != fTarget && D3DFMT_UNKNOWN != fDepth, "Failed to initialize graphics hardware.\nPlease try to restart the game.");
 
     // Set up the presentation parameters
 	D3DPRESENT_PARAMETERS&	P	= DevPP;
@@ -276,13 +264,10 @@ void		CHW::CreateDevice		(HWND m_hWnd)
 										&P,
 										&pDevice );
 	}
-	if (D3DERR_DEVICELOST==R)	{
-		// Fatal error! Cannot create rendering device AT STARTUP !!!
-		Msg					("Failed to initialize graphics hardware.\nPlease try to restart the game.");
-		MessageBox			(NULL,"Failed to initialize graphics hardware.\nPlease try to restart the game.","Error!",MB_OK|MB_ICONERROR);
-		TerminateProcess	(GetCurrentProcess(),0);
-	};
-	R_CHK		(R);
+
+	CHECK_OR_EXIT(D3DERR_DEVICELOST != R, "Failed to initialize graphics hardware.\nPlease try to restart the game.");
+
+	R_CHK(R);
 
 	_SHOW_REF	("* CREATE: DeviceREF:",HW.pDevice);
 	switch (GPU)
@@ -340,23 +325,23 @@ u32 CHW::selectGPU ()
 	} else return D3DCREATE_SOFTWARE_VERTEXPROCESSING;
 }
 
-UINT CHW::selectRefresh(u32 /*dwWidth*/, u32 /*dwHeight*/, D3DFORMAT /*fmt*/)
+UINT CHW::selectRefresh(u32 dwWidth, u32 dwHeight, D3DFORMAT fmt)
 {
-		/*u32 selected = D3DPRESENT_RATE_DEFAULT;
-		 //KRodin: выключаю, т.к. этот код предположительно приводит к тормозам в полном разрешении.
-		u32 count		= pD3D->GetAdapterModeCount(DevAdapter,fmt);
-		for (u32 I=0; I<count; I++)
-		{
-			D3DDISPLAYMODE	Mode;
-			pD3D->EnumAdapterModes(DevAdapter,fmt,I,&Mode);
-			if (Mode.Width==dwWidth && Mode.Height==dwHeight)
-			{
-				if (Mode.RefreshRate>selected) selected = Mode.RefreshRate;
-			}
-		}
-		
-		return selected;*/
-	return D3DPRESENT_RATE_DEFAULT;
+	if (psDeviceFlags.is(rsRefresh60hz))
+		return D3DPRESENT_RATE_DEFAULT;
+
+	UINT selected = D3DPRESENT_RATE_DEFAULT;
+	UINT count = pD3D->GetAdapterModeCount(DevAdapter, fmt);
+	for (UINT I = 0; I < count; I++)
+	{
+		D3DDISPLAYMODE Mode;
+		pD3D->EnumAdapterModes(DevAdapter, fmt, I, &Mode);
+		if (Mode.Width == dwWidth && Mode.Height == dwHeight)
+			if (Mode.RefreshRate > selected)
+				selected = Mode.RefreshRate;
+	}
+
+	return selected;
 }
 
 BOOL	CHW::support	(D3DFORMAT fmt, DWORD type, DWORD usage)

@@ -8,7 +8,6 @@
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{D855D853-4BDD-373D-B791-B99079645217}</ProjectGuid>
-    <WindowsTargetPlatformVersion></WindowsTargetPlatformVersion>
     <Keyword>Win32Proj</Keyword>
     <Platform>Win32</Platform>
     <ProjectName>bin2h</ProjectName>

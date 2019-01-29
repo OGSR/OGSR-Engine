@@ -9,8 +9,8 @@ class CCharacterPhysicsSupport;
 class CBurerFastGravi;
 
 class CBurer :	public CBaseMonster,
-				public CTelekinesis,
-				public CScanningAbility<CBurer> {
+				public CTelekinesis 
+{
 
 	typedef		CBaseMonster				inherited;
 
@@ -18,9 +18,6 @@ private:
 	xr_vector<CObject*>	m_nearest;
 
 public:
-	typedef		CScanningAbility<CBurer>	TScanner;
-
-
 	static		bool	can_scan;
 
 				u32		last_hit_frame;
@@ -80,25 +77,46 @@ public:
 	};	
 	//////////////////////////////////////////////////////////////////////////
 
+	struct gravi_params
+	{
+		float	speed;
+		u32		cooldown;
+		float	min_dist;
+		float	max_dist;
+		float	step;
+		TTime	time_to_hold;
+		float	radius;
+		float	impulse_to_objects;
+		float	impulse_to_enemy;
+		float	hit_power;
 
-
-	u32		m_gravi_speed;
-	u32		m_gravi_step;
-	u32		m_gravi_time_to_hold;
-	float	m_gravi_radius;
-	float	m_gravi_impulse_to_objects;
-	float	m_gravi_impulse_to_enemy;
-	float	m_gravi_hit_power;
-	
+	}		m_gravi;
 
 	u32		m_tele_max_handled_objects;
 	u32		m_tele_time_to_hold;
+	u32		m_tele_max_time;
 	float	m_tele_object_min_mass;
 	float	m_tele_object_max_mass;
 	float	m_tele_find_radius;
+	float	m_tele_min_distance;
+	float	m_tele_max_distance;
+	float	m_tele_raise_speed;
+	float	m_tele_fly_velocity;
+	float	m_tele_object_height;
 
+	float	m_weight_to_stamina_hit;
+	float	m_weapon_drop_stamina_k;
+	float	m_runaway_distance;
+	float	m_normal_distance;
+	TTime	m_max_runaway_time;
+	
+	float	m_weapon_drop_velocity;
 
+	TTime	m_shield_cooldown;
+	TTime	m_shield_time;
 	bool	m_shield_active;
+	LPCSTR	m_shield_keep_particle;
+	TTime	m_shield_keep_particle_period;
 	LPCSTR	particle_fire_shield;
 
 	CBurerFastGravi	*m_fast_gravi;
@@ -112,6 +130,7 @@ public:
 	virtual void	reload				(LPCSTR section);
 
 	virtual void	Load				(LPCSTR section);
+	virtual void	PostLoad			(LPCSTR section);
 
 	virtual void	net_Destroy			();
 	virtual void	net_Relcase			(CObject *O);
@@ -130,26 +149,33 @@ public:
 			void	StartTeleObjectParticle(CGameObject *pO);
 			void	StopTeleObjectParticle(CGameObject *pO);
 
-			void	ActivateShield		() {m_shield_active = true;}
-			void	DeactivateShield	() {m_shield_active = false;}
+			void	ActivateShield		();
+			void	DeactivateShield	();
+
+			bool	need_shotmark () const { return !m_shield_active; }
 
 	virtual bool	ability_distant_feel() {return true;}
-
-	virtual void	on_scanning			();
-	virtual void	on_scan_success		();
-
-public:
-	SAnimationTripleData	anim_triple_gravi;
-	SAnimationTripleData	anim_triple_tele;
-
+	virtual	char*	get_monster_class_name () { return "burer"; }
 
 #ifdef DEBUG
 	virtual CBaseMonster::SDebugInfo show_debug_info();
 #endif
 
+			void			set_force_gravi_attack (bool force_gravi) { m_force_gravi_attack = force_gravi; }
+			bool			get_force_gravi_attack () const { return m_force_gravi_attack; }
+
+
+private:
+			bool			m_force_gravi_attack;
+
+	void xr_stdcall			StaminaHit			();
 
 	DECLARE_SCRIPT_REGISTER_FUNCTION
+
+			void	face_enemy					();
 };
+
+bool   actor_is_reloading_weapon ();
 
 add_to_type_list(CBurer)
 #undef script_type_list

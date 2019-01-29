@@ -179,27 +179,15 @@ void CSpaceRestriction::merge_in_out_restrictions	()
 	STOP_PROFILE;
 }
 
-CSpaceRestriction::CBaseRestrictionPtr CSpaceRestriction::merge	(CBaseRestrictionPtr bridge, const RESTRICTIONS &temp_restrictions) const
+CSpaceRestriction::CBaseRestrictionPtr CSpaceRestriction::merge(CBaseRestrictionPtr bridge, const RESTRICTIONS &temp_restrictions) const
 {
-	u32								acc_length = xr_strlen(*bridge->name()) + 1;
-	{
-		RESTRICTIONS::const_iterator	I = temp_restrictions.begin();
-		RESTRICTIONS::const_iterator	E = temp_restrictions.end();
-		for ( ; I != E; ++I)
-			acc_length					+= xr_strlen(*(*I)->name()) + 1;
-	}
-	
-	LPSTR							S = xr_alloc<char>(acc_length);
-	S[0]							= 0;
-	shared_str						temp = bridge->name();
-	RESTRICTIONS::const_iterator	I = temp_restrictions.begin();
-	RESTRICTIONS::const_iterator	E = temp_restrictions.end();
-	for ( ; I != E; ++I)
-		temp						= strconcat(acc_length,S,*temp,",",*(*I)->name());
+	string4096 S;
+	shared_str temp = bridge->name();
 
-	xr_free							(S);
+	for (const auto& I : temp_restrictions)
+		temp = strconcat(sizeof(S), S, temp.c_str(), ",", I->name().c_str());
 
-	return							(m_space_restriction_manager->restriction(temp));
+	return m_space_restriction_manager->restriction(temp);
 }
 
 #ifdef USE_FREE_IN_RESTRICTIONS

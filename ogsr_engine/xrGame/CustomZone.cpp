@@ -61,6 +61,7 @@ CCustomZone::CCustomZone(void)
 	m_b_always_fastmode			= FALSE;
 	
 	m_bBornOnBlowoutFlag		= false;
+	m_keep_update = false;
 }
 
 CCustomZone::~CCustomZone(void) 
@@ -266,6 +267,8 @@ void CCustomZone::Load(LPCSTR section)
 		LPCSTR light_anim = pSettings->r_string(section,"idle_light_anim");
 		m_pIdleLAnim	 = LALib.FindItem(light_anim);
 		m_fIdleLightHeight = pSettings->r_float(section,"idle_light_height");
+		bIdleLightShadow = READ_IF_EXISTS(pSettings, r_bool, section, "idle_light_shadow", true);
+		bIdleLightVolumetric = READ_IF_EXISTS(pSettings, r_bool, section, "idle_light_volumetric", true);
 	}
 
 
@@ -310,7 +313,7 @@ void CCustomZone::Load(LPCSTR section)
 
 		R_ASSERT3(!fis_zero(total_probability), "The probability of artefact spawn is zero!",*cName());
 		//нормализировать вероятности
-		for(i=0; i<m_ArtefactSpawn.size(); ++i)
+		for(u32 i=0; i<m_ArtefactSpawn.size(); ++i)
 		{
 			m_ArtefactSpawn[i].probability = m_ArtefactSpawn[i].probability/total_probability;
 		}
@@ -348,7 +351,8 @@ BOOL CCustomZone::net_Spawn(CSE_Abstract* DC)
 	if ( m_zone_flags.test(eIdleLight) )
 	{
 		m_pIdleLight = ::Render->light_create();
-		m_pIdleLight->set_shadow(true);
+		m_pIdleLight->set_shadow(bIdleLightShadow);
+		m_pIdleLight->set_volumetric(bIdleLightVolumetric);
 	}
 	else
 		m_pIdleLight = NULL;
@@ -581,7 +585,9 @@ void CCustomZone::shedule_Update(u32 dt)
 
 		if (!o_fastmode)		UpdateWorkload	(dt);
 
-	};
+	}
+	else if ( m_keep_update )
+	  inherited::shedule_Update( dt );
 
 	UpdateOnOffState	();
 }
@@ -1198,9 +1204,9 @@ void CCustomZone::ZoneEnable()
 	SwitchZoneState(eZoneStateIdle);
 };
 
-void CCustomZone::ZoneDisable()
-{
-	SwitchZoneState(eZoneStateDisabled);
+void CCustomZone::ZoneDisable( bool keep_update ) {
+  m_keep_update = keep_update;
+  SwitchZoneState( eZoneStateDisabled );
 };
 
 
@@ -1310,13 +1316,13 @@ void CCustomZone::ThrowOutArtefact(CArtefact* pArtefact)
 
 }
 
-void CCustomZone::PrefetchArtefacts()
-{
-	if (FALSE==m_zone_flags.test(eSpawnBlowoutArtefacts) || m_ArtefactSpawn.empty()) return;
-
-	for(u32 i = m_SpawnedArtefacts.size(); i < PREFETCHED_ARTEFACTS_NUM; ++i)
-		SpawnArtefact();
-}
+//void CCustomZone::PrefetchArtefacts()
+//{
+//	if (FALSE==m_zone_flags.test(eSpawnBlowoutArtefacts) || m_ArtefactSpawn.empty()) return;
+//
+//	for(u32 i = m_SpawnedArtefacts.size(); i < PREFETCHED_ARTEFACTS_NUM; ++i)
+//		SpawnArtefact();
+//}
 
 void CCustomZone::StartWind()
 {

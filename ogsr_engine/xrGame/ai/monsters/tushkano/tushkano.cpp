@@ -78,6 +78,7 @@ void CTushkano::Load(LPCSTR section)
 	anim().accel_chain_test		();
 #endif
 
+	PostLoad					(section);
 }
 
 void CTushkano::CheckSpecParams(u32 spec_params)

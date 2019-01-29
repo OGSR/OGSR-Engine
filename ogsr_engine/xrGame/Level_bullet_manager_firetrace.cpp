@@ -181,8 +181,8 @@ void CBulletManager::FireShotmark (SBullet* bullet, const Fvector& vDir, const F
 		particle_dir		 = vDir;
 		particle_dir.invert	();
 
-		//на текущем актере отметок не ставим
-		if(Level().CurrentEntity() && Level().CurrentEntity()->ID() == R.O->ID()) return;
+		//на текущем актере отметок не ставим // KRodin: А ПОЧЕМУ БЫ И НЕТ?
+		if ( Level().CurrentEntity() && Level().CurrentEntity()->ID() == R.O->ID() && Core.Features.test( xrCore::Feature::wallmarks_on_static_only ) ) return;
 
 		ref_shader* pWallmarkShader = (!mtl_pair || mtl_pair->CollideMarks.empty())?
 						NULL:&mtl_pair->CollideMarks[::Random.randI(0,mtl_pair->CollideMarks.size())];;

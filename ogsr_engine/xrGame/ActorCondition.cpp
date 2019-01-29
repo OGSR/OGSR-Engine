@@ -136,7 +136,12 @@ void CActorCondition::UpdateCondition()
 	if (!object().Local() && m_object != Level().CurrentViewEntity())		return;	
 
 	float weight      = object().GetCarryWeight();
-	float max_weight  = object().inventory().GetMaxWeight() + object().ArtefactsAddWeight( false );
+	float max_weight;
+	if (Core.Features.test(xrCore::Feature::condition_jump_weight_mod))
+		max_weight = object().inventory().GetMaxWeight() + object().ArtefactsAddWeight(false);
+	else
+		max_weight = object().MaxCarryWeight();
+
 	float weight_coef = weight / max_weight;
 
 	if ((object().mstate_real&mcAnyMove)) {
@@ -293,6 +298,12 @@ CWound* CActorCondition::ConditionHit(SHit* pHDS)
 	return inherited::ConditionHit(pHDS);
 }
 
+void CActorCondition::PowerHit(float power, bool apply_outfit)
+{
+	m_fPower			-=	apply_outfit ? HitPowerEffect(power) : power;
+	clamp					(m_fPower, 0.f, 1.f);
+}
+
 //weight - "удельный" вес от 0..1
 void CActorCondition::ConditionJump(float weight)
 {
@@ -316,13 +327,13 @@ void CActorCondition::ConditionStand(float weight)
 }
 
 
-bool CActorCondition::IsCantWalk() const
+bool CActorCondition::IsCantWalk()
 {
 	if(m_fPower< m_fCantWalkPowerBegin)
-		m_bCantWalk		= true;
+		m_condition_flags.set(eCantWalk, TRUE);
 	else if(m_fPower > m_fCantWalkPowerEnd)
-		m_bCantWalk		= false;
-	return				m_bCantWalk;
+		m_condition_flags.set(eCantWalk, FALSE);
+	return m_condition_flags.test(eCantWalk);
 }
 
 #include "CustomOutfit.h"
@@ -347,22 +358,22 @@ bool CActorCondition::IsCantWalkWeight()
 	return false;
 }
 
-bool CActorCondition::IsCantSprint() const
+bool CActorCondition::IsCantSprint()
 {
-	if(m_fPower< m_fCantSprintPowerBegin)
-		m_bCantSprint	= true;
-	else if(m_fPower > m_fCantSprintPowerEnd)
-		m_bCantSprint	= false;
-	return				m_bCantSprint;
+	if (m_fPower < m_fCantSprintPowerBegin)
+		m_condition_flags.set(eCantSprint, TRUE);
+	else if (m_fPower > m_fCantSprintPowerEnd)
+		m_condition_flags.set(eCantSprint, FALSE);
+	return m_condition_flags.test(eCantSprint);
 }
 
-bool CActorCondition::IsLimping() const
+bool CActorCondition::IsLimping()
 {
-	if(m_fPower< m_fLimpingPowerBegin || GetHealth() < m_fLimpingHealthBegin)
-		m_bLimping = true;
-	else if(m_fPower > m_fLimpingPowerEnd && GetHealth() > m_fLimpingHealthEnd)
-		m_bLimping = false;
-	return m_bLimping;
+	if (m_fPower < m_fLimpingPowerBegin || GetHealth() < m_fLimpingHealthBegin)
+		m_condition_flags.set(eLimping, TRUE);
+	else if (m_fPower > m_fLimpingPowerEnd && GetHealth() > m_fLimpingHealthEnd)
+		m_condition_flags.set(eLimping, FALSE);
+	return m_condition_flags.test(eLimping);
 }
 extern bool g_bShowHudInfo;
 
@@ -394,8 +405,11 @@ void CActorCondition::load(IReader &input_packet)
 void CActorCondition::reinit	()
 {
 	inherited::reinit	();
-	m_bLimping					= false;
-	m_fSatiety					= 1.f;
+	m_condition_flags.set(eLimping, FALSE);
+	m_condition_flags.set(eCantWalk, FALSE);
+	m_condition_flags.set(eCantSprint, FALSE);
+	m_fSatiety = 1.f;
+	m_fAlcohol = 0.f;
 	m_fThirst = 1.f;
 }
 
@@ -474,7 +488,8 @@ void CActorCondition::UpdateTutorialThresholds()
 		strcpy_s(cb_name,"_G.on_actor_radiation");
 	}
 
-	if(b && !m_condition_flags.test(ePhyHealthMinReached) && GetPsyHealth()>_cPsyHealthThr){
+	if(b && !m_condition_flags.test(ePhyHealthMinReached) && GetPsyHealth()<_cPsyHealthThr){
+		m_condition_flags.set			(ePhyHealthMinReached, TRUE);
 		b=false;
 		strcpy_s(cb_name,"_G.on_actor_psy");
 	}

@@ -28,8 +28,8 @@ enum {
 	rsDisableObjectsAsCrows			= (1ul<<11ul),
 
 	rsOcclusionDraw					= (1ul<<12ul),
-	rsOcclusionStats				= (1ul<<13ul),
-	rsMTTexLoad				= (1ul<<14ul),
+	rsRefresh60hz					= (1ul<<13ul),
+	rsMTTexLoad						= (1ul<<14ul),
 
 	rsCameraPos						= (1ul<<18ul),
 	rsR2							= (1ul<<19ul),

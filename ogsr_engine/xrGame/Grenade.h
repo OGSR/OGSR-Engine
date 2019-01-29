@@ -49,6 +49,7 @@ public:
 
 	virtual void			Deactivate							();
 	virtual void			GetBriefInfo						(xr_string& str_name, xr_string& icon_sect_name, xr_string& str_count);
+	virtual bool			StopSprintOnFire() { return false; }
 protected:
 	ALife::_TIME_ID			m_dwGrenadeRemoveTime;
 	ALife::_TIME_ID			m_dwGrenadeIndependencyTime;
@@ -68,4 +69,14 @@ public:
 	virtual CHudItem		*cast_hud_item						()	{return this;}
 	virtual CGameObject		*cast_game_object					()	{return this;}
 	virtual IDamageSource	*cast_IDamageSource					()	{return CExplosive::cast_IDamageSource();}
+
+	typedef					fastdelegate::FastDelegate< void (CGrenade*) >	destroy_callback;
+	void					set_destroy_callback				(destroy_callback callback) 
+																{ m_destroy_callback = callback; }
+	void					DestroyCalbackClear()
+	{
+		m_destroy_callback.clear();
+	}
+private:
+	destroy_callback		m_destroy_callback;
 };

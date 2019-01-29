@@ -13,6 +13,7 @@
 #include "..\xr_3da\IGame_Persistent.h"
 #include "level_graph.h"
 #include "ai_space.h"
+#include "actor.h"
 
 #define	FASTMODE_DISTANCE (50.f)	//distance to camera from sphere, when zone switches to fast update sequence
 
@@ -67,6 +68,7 @@ CArtefact::CArtefact(void)
 	m_sParticlesName			= NULL;
 	m_pTrailLight				= NULL;
 	m_activationObj				= NULL;
+	m_idle_state				= eIdle;
 }
 
 
@@ -104,7 +106,8 @@ void CArtefact::Load(LPCSTR section)
 
 
 	animGetEx( m_anim_idle,        "anim_idle" );
-	animGetEx( m_anim_idle_sprint, "anim_idle_sprint" );
+	animGetEx( m_anim_idle_moving, pSettings->line_exist(hud_sect.c_str(), "anim_idle_moving") ? "anim_idle_moving" : "anim_idle");
+	animGetEx( m_anim_idle_sprint, pSettings->line_exist(hud_sect.c_str(), "anim_idle_sprint") ? "anim_idle_sprint" : "anim_idle");
 	animGetEx( m_anim_hide,        "anim_hide" );
 	animGetEx( m_anim_show,        "anim_show" );
 	animGetEx( m_anim_activate,    "anim_activate" );
@@ -182,7 +185,32 @@ void CArtefact::UpdateCL		()
 	inherited::UpdateCL			();
 	
 	if (o_fastmode || m_activationObj)
-		UpdateWorkload			(Device.dwTimeDelta);	
+		UpdateWorkload			(Device.dwTimeDelta);
+
+	if (GetState() == eIdle) {
+		auto state = idle_state();
+		if (m_idle_state != state) {
+			m_idle_state = state;
+			SwitchState(eIdle);
+		}
+	}
+	else
+		m_idle_state = eIdle;
+}
+
+u8 CArtefact::idle_state() {
+	CActor *actor = smart_cast<CActor*>(H_Parent());
+
+	if (actor)
+		if (actor->get_state() & mcSprint) {
+			return eSubstateIdleSprint;
+		}
+		else {
+			if (actor->is_actor_running() || actor->is_actor_walking() || actor->is_actor_creeping() || actor->is_actor_crouching())
+				return eSubstateIdleMoving;
+		}
+
+	return eIdle;
 }
 
 void CArtefact::UpdateWorkload		(u32 dt) 
@@ -363,8 +391,11 @@ bool CArtefact::Action(s32 cmd, u32 flags)
 
 void CArtefact::onMovementChanged	(ACTOR_DEFS::EMoveCommand cmd)
 {
-	if( (cmd == ACTOR_DEFS::mcSprint)&&(GetState()==eIdle)  )
-		PlayAnimIdle		();
+	if ((cmd == ACTOR_DEFS::mcSprint) && (GetState() == eIdle))
+	{
+		m_idle_state = eSubstateIdleSprint;
+		PlayAnimIdle(m_idle_state);
+	}
 }
 
 void CArtefact::OnStateSwitch		(u32 S)
@@ -385,14 +416,23 @@ void CArtefact::OnStateSwitch		(u32 S)
 		}break;
 	case eIdle:
 		{
-			PlayAnimIdle();
+			PlayAnimIdle(m_idle_state);
 		}break;
 	};
 }
 
-void CArtefact::PlayAnimIdle()
+void CArtefact::PlayAnimIdle(u8 state)
 {
-	m_pHUD->animPlay(random_anim(m_anim_idle),		FALSE, NULL, eIdle);
+	switch (state) {
+	case eSubstateIdleMoving:
+		m_pHUD->animPlay(random_anim(m_anim_idle_moving), TRUE, this, GetState());
+		break;
+	case eSubstateIdleSprint:
+		m_pHUD->animPlay(random_anim(m_anim_idle_sprint), TRUE, this, GetState());
+		break;
+	default:
+		m_pHUD->animPlay(random_anim(m_anim_idle), TRUE, this, GetState());
+	}
 }
 
 void CArtefact::OnAnimationEnd		(u32 state)
@@ -429,7 +469,12 @@ u16	CArtefact::bone_count_to_synchronize	() const
 	return CInventoryItem::object().PHGetSyncItemsNumber();
 }
 
-
+void CArtefact::GetBriefInfo(xr_string& str_name, xr_string& icon_sect_name, xr_string& str_count)
+{
+	str_name = NameShort();
+	str_count = "";
+	icon_sect_name = *cNameSect();
+}
 
 //---SArtefactActivation----
 SArtefactActivation::SArtefactActivation(CArtefact* af,u32 owner_id)

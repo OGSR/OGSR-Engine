@@ -46,7 +46,7 @@ void CUIPropertiesBox::SendMessage(CUIWindow *pWnd, s16 msg, void *pData)
 	{
 		if(msg == LIST_ITEM_CLICKED)
 		{
-			GetMessageTarget()->SendMessage	(this, PROPERTY_CLICKED);
+			GetMessageTarget()->SendMessage( this, PROPERTY_CLICKED, pData );
 			Hide							();
 		}
 	}
@@ -106,8 +106,7 @@ void CUIPropertiesBox::Hide()
 {
 	CUIWindow::Show(false);
 	CUIWindow::Enable(false);
-
-	m_pMouseCapturer = NULL;
+	CUIWindow::Reset();
 	
 	if(GetParent()->GetMouseCapturer() == this)
 		GetParent()->SetMouseCapture(this, false);

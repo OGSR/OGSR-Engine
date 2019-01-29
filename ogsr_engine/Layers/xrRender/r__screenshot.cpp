@@ -35,8 +35,8 @@ void CRender::Screenshot		(IRender_interface::ScreenshotMode mode, LPCSTR name)
 	if (!Device.b_is_Ready)			return;
 
 	// Create temp-surface
-	IDirect3DSurface9*	pFB;
-	D3DLOCKED_RECT		D;
+	IDirect3DSurface9*	pFB = nullptr;
+	D3DLOCKED_RECT		D = { 0 };
 	HRESULT				hr;
 	hr = HW.pDevice->CreateOffscreenPlainSurface(Device.dwWidth, Device.dwHeight, HW.DevPP.BackBufferFormat,
 		D3DPOOL_SYSTEMMEM, &pFB, NULL);
@@ -49,24 +49,37 @@ void CRender::Screenshot		(IRender_interface::ScreenshotMode mode, LPCSTR name)
 	if (FAILED(hr))
 		goto _end_;
 
-	// Image processing (gamma-correct)
-	u32* pPixel		= (u32*)D.pBits;
-	u32* pEnd		= pPixel+(Device.dwWidth*Device.dwHeight);
-	D3DGAMMARAMP	G;
-	Device.Gamma.GenLUT	(G);
-	for (int i=0; i<256; i++) {
-		G.red	[i]	/= 256;
-		G.green	[i]	/= 256;
-		G.blue	[i]	/= 256;
+	u32* pPixel = (u32*)D.pBits;
+	u32* pEnd = pPixel + (Device.dwWidth*Device.dwHeight);
+
+	if (mode != IRender_interface::SM_FOR_GAMESAVE && psDeviceFlags.test(rsFullscreen))
+	{
+		D3DGAMMARAMP G = { 0 };
+		Device.Gamma.GenLUT(G);
+		for (int i = 0; i < 256; i++)
+		{
+			G.red[i] /= 256;
+			G.green[i] /= 256;
+			G.blue[i] /= 256;
+		}
+
+		// Apply gamma correction and kill aplha
+		for (; pPixel != pEnd; ++pPixel)
+		{
+			u32 p = *pPixel;
+			*pPixel = color_xrgb(G.red[color_get_R(p)], G.green[color_get_G(p)], G.blue[color_get_B(p)]);
+		}
 	}
-	for (;pPixel!=pEnd; pPixel++)	{
-		u32 p = *pPixel;
-		*pPixel = color_xrgb	(
-			G.red	[color_get_R(p)],
-			G.green	[color_get_G(p)],
-			G.blue	[color_get_B(p)]
-			);
+	else
+	{
+		// Just kill alpha
+		for (; pPixel != pEnd; ++pPixel)
+		{
+			u32 p = *pPixel;
+			*pPixel = color_xrgb(color_get_R(p), color_get_G(p), color_get_B(p));
+		}
 	}
+
 	hr					= pFB->UnlockRect();
 	if(hr!=D3D_OK)		goto _end_;
 
@@ -107,24 +120,18 @@ void CRender::Screenshot		(IRender_interface::ScreenshotMode mode, LPCSTR name)
 			break;
 		case IRender_interface::SM_NORMAL:
 			{
-				string64			t_stemp;
-				string_path			buf;
-				sprintf_s			(buf,sizeof(buf),"ss_%s_%s_(%s).png",Core.UserName,timestamp(t_stemp),(g_pGameLevel)?g_pGameLevel->name().c_str():"mainmenu");
-				ID3DXBuffer*		saved	= 0;
-				CHK_DX				(D3DXSaveSurfaceToFileInMemory (&saved,D3DXIFF_PNG,pFB,0,0));
-				IWriter*		fs	= FS.w_open	("$screenshots$",buf); R_ASSERT(fs);
-				fs->w				(saved->GetBufferPointer(),saved->GetBufferSize());
-				FS.w_close			(fs);
-				_RELEASE			(saved);
-				if (strstr(Core.Params,"-ss_tga"))	{ // hq
-					sprintf_s			(buf,sizeof(buf),"ssq_%s_%s_(%s).tga",Core.UserName,timestamp(t_stemp),(g_pGameLevel)?g_pGameLevel->name().c_str():"mainmenu");
-					ID3DXBuffer*		saved	= 0;
-					CHK_DX				(D3DXSaveSurfaceToFileInMemory (&saved,D3DXIFF_TGA,pFB,0,0));
-					IWriter*		fs	= FS.w_open	("$screenshots$",buf); R_ASSERT(fs);
-					fs->w				(saved->GetBufferPointer(),saved->GetBufferSize());
-					FS.w_close			(fs);
-					_RELEASE			(saved);
-				}
+				bool UsePNG = !!strstr(Core.Params, "-ss_png");
+				bool UseTGA = !!strstr(Core.Params, "-ss_tga");
+				string64 t_stemp;
+				string_path buf;
+				sprintf_s(buf, sizeof(buf), "ss_%s_%s_(%s).%s", Core.UserName, timestamp(t_stemp), g_pGameLevel ? g_pGameLevel->name().c_str() : "mainmenu", UsePNG ? "png" : UseTGA ? "tga" : "jpg");
+				ID3DXBuffer* saved = nullptr;
+				CHK_DX(D3DXSaveSurfaceToFileInMemory(&saved, UsePNG ? D3DXIFF_PNG : UseTGA ? D3DXIFF_TGA : D3DXIFF_JPG, pFB, nullptr, nullptr));
+				IWriter* fs = FS.w_open("$screenshots$", buf);
+				R_ASSERT(fs);
+				fs->w(saved->GetBufferPointer(), saved->GetBufferSize());
+				FS.w_close(fs);
+				_RELEASE(saved);
 			}
 			break;
 		case IRender_interface::SM_FOR_LEVELMAP:

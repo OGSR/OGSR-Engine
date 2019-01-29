@@ -132,3 +132,41 @@ IC	const CAI_Stalker::CRITICAL_WOUND_WEIGHTS &CAI_Stalker::critical_wound_weight
 	VERIFY					(!m_critical_wound_weights.empty());
 	return					(m_critical_wound_weights);
 }
+
+IC	const bool &CAI_Stalker::throw_enabled						()
+{
+	if (!m_throw_actual)
+		update_throw_params	();
+
+	return					(m_throw_enabled);
+}
+
+IC	const u32 &CAI_Stalker::last_throw_time						() const
+{
+	return					(m_last_throw_time);
+}
+
+IC	const bool &CAI_Stalker::can_throw_grenades					() const
+{
+	return					(m_can_throw_grenades);
+}
+
+IC	void CAI_Stalker::can_throw_grenades						(const bool &value)
+{
+	m_can_throw_grenades	= value;
+}
+
+IC	const u32 &CAI_Stalker::throw_time_interval					() const
+{
+	return					(m_throw_time_interval);
+}
+
+IC	void CAI_Stalker::throw_time_interval						(const u32 &value)
+{
+	m_throw_time_interval	= value;
+}
+
+IC	const Fvector &CAI_Stalker::throw_target					() const
+{
+	return					(m_throw_target_position);
+}

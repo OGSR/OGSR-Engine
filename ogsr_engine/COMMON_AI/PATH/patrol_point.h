@@ -17,6 +17,7 @@ class CGameGraph;
 #include "game_graph_space.h"
 
 class CPatrolPoint : public IPureSerializeObject<IReader,IWriter> {
+  friend class CPatrolPathStorage;
   friend class CPatrolPointScript;
 protected:
 	shared_str							m_name;

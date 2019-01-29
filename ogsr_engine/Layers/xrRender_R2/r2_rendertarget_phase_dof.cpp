@@ -1,6 +1,5 @@
 #include "stdafx.h"
 #include "..\xrRender\xrRender_console.h"
-extern Fvector4 w_states;
 void CRenderTarget::phase_dof()
 {
 //	BEGIN_PERF_EVENT(D3DCOLOR_XRGB(0,255,255), L"DOF");

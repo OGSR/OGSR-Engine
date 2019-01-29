@@ -1,9 +1,11 @@
 #pragma once
 
-#ifdef XR_PARTICLES_EXPORTS
-	#define PARTICLES_API __declspec(dllexport)
+#ifdef XR_PARTICLES_STATIC
+#	define PARTICLES_API
+#elif defined XR_PARTICLES_EXPORTS
+#	define PARTICLES_API __declspec(dllexport)
 #else
-	#define PARTICLES_API __declspec(dllimport)
+#	define PARTICLES_API __declspec(dllimport)
 #endif
 
 // Actually this must be < sqrt(MAXFLOAT) since we store this value squared.

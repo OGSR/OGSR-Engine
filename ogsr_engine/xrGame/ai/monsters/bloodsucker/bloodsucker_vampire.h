@@ -6,8 +6,6 @@ class	CStateBloodsuckerVampire : public CState<_Object> {
 	typedef CState<_Object>		inherited;
 	typedef CState<_Object>*	state_ptr;
 
-	u32					m_time_last_vampire;
-
 	const CEntityAlive *enemy;
 
 public:
@@ -24,6 +22,7 @@ public:
 
 	virtual void		setup_substates					();
 	virtual void		check_force_state				();
+	virtual void		remove_links					(CObject* object) { inherited::remove_links(object);}
 };
 
 #include "bloodsucker_vampire_inline.h"

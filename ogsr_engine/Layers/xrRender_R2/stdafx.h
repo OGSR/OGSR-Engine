@@ -18,16 +18,6 @@
 #define		R_R2	2
 #define		RENDER	R_R2
 
-// you must define ENGINE_BUILD then building the engine itself
-// and not define it if you are about to build DLL
-#ifdef	ENGINE_BUILD
-#	define DLL_API			__declspec(dllimport)
-#	define ENGINE_API		__declspec(dllexport)
-#else
-#	define DLL_API			__declspec(dllexport)
-#	define ENGINE_API		__declspec(dllimport)
-#endif
-
 #include "..\..\xr_3da\resourcemanager.h"
 #include "..\..\xr_3da\vis_common.h"
 #include "..\..\xr_3da\render.h"

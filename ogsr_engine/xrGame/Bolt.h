@@ -25,7 +25,10 @@ public:
 	virtual bool Useful() const;
     virtual void Destroy();
     virtual void activate_physic_shell	();
+	virtual void GetBriefInfo(xr_string& str_name, xr_string& icon_sect_name, xr_string& str_count);
 
 	virtual BOOL UsedAI_Locations() {return FALSE;}
 	virtual IDamageSource*	cast_IDamageSource			()	{return this;}
+
+	virtual bool StopSprintOnFire() { return false; }
 };

@@ -47,8 +47,9 @@ bool CCoverEvaluatorBase::inertia						(float radius)
 	return					(time_criteria && radius_criteria);// && (radius_criteria || m_selected));
 }
 
-IC	void CCoverEvaluatorBase::setup						()
+IC	void CCoverEvaluatorBase::setup( const std::function<bool( const CCoverPoint* )>& callback )
 {
+	m_callback = callback;
 	m_initialized			= true;
 }
 
@@ -119,9 +120,9 @@ IC	void CCoverEvaluatorCloseToEnemy::initialize(const Fvector &start_position, b
 	m_current_distance		= m_start_position.distance_to(m_enemy_position);
 }
 
-IC	void CCoverEvaluatorCloseToEnemy::setup		(const Fvector &enemy_position, float min_enemy_distance, float	max_enemy_distance, float deviation)
+IC	void CCoverEvaluatorCloseToEnemy::setup( const Fvector &enemy_position, float min_enemy_distance, float	max_enemy_distance, float deviation, const std::function<bool( const CCoverPoint* )>& callback )
 {
-	inherited::setup		();
+	inherited::setup( callback );
 	
 //	m_actuality				= m_actuality && m_enemy_position.similar(enemy_position,10.f);
 	m_enemy_position		= enemy_position;
@@ -148,9 +149,9 @@ IC	CCoverEvaluatorAngle::CCoverEvaluatorAngle	(CRestrictedObject *object) : inhe
 	m_level_vertex_id	= u32(-1);
 }
 
-IC	void CCoverEvaluatorAngle::setup		(const Fvector &enemy_position, float min_enemy_distance, float	max_enemy_distance, u32 level_vertex_id)
+IC	void CCoverEvaluatorAngle::setup( const Fvector &enemy_position, float min_enemy_distance, float max_enemy_distance, u32 level_vertex_id, const std::function<bool( const CCoverPoint* )>& callback )
 {
-	inherited::setup		(enemy_position,min_enemy_distance,max_enemy_distance);
+	inherited::setup( enemy_position, min_enemy_distance, max_enemy_distance, 0.f, callback );
 	m_actuality				= m_actuality && (m_level_vertex_id == level_vertex_id);
 	m_level_vertex_id		= level_vertex_id;
 }
@@ -180,9 +181,9 @@ IC	CCoverEvaluatorSafe::CCoverEvaluatorSafe	(CRestrictedObject *object) : inheri
 	m_min_distance			= flt_max;
 }
 
-IC	void CCoverEvaluatorSafe::setup		(float min_distance)
+IC	void CCoverEvaluatorSafe::setup( float min_distance, const std::function<bool( const CCoverPoint* )>& callback )
 {
-	inherited::setup		();
+	inherited::setup( callback );
 	m_actuality				= m_actuality && fsimilar(m_min_distance,min_distance);
 	m_min_distance			= min_distance;
 }

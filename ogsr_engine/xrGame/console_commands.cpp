@@ -302,6 +302,9 @@ public:
 
 		Console->Hide();
 		
+		if (MainMenu()->IsActive())
+			MainMenu()->Activate(false);
+
 		string_path		fn_; 
 		strconcat		(sizeof(fn_),fn_, args, ".xrdemo");
 		string_path		fn;
@@ -310,6 +313,8 @@ public:
 		g_pGameLevel->Cameras().AddCamEffector(xr_new<CDemoRecord> (fn));
 	}
 };
+
+
 class CCC_DemoPlay : public IConsole_Command
 {
 public:
@@ -335,6 +340,7 @@ public:
 		  }
 	  }
 };
+
 
 bool valid_file_name(LPCSTR file_name)
 {
@@ -1107,7 +1113,6 @@ void CCC_RegisterCommands()
 	CMD3(CCC_Mask,				"g_always_run",			&psActorFlags,	AF_ALWAYSRUN);
 	CMD1(CCC_GameDifficulty,	"g_game_difficulty"		);
 
-	CMD3(CCC_Mask,				"g_backrun",			&psActorFlags,	AF_RUN_BACKWARD);
 	CMD3(CCC_Mask,				"g_dof_scope",			&psActorFlags,	AF_DOF_SCOPE);
 
 	// alife
@@ -1142,7 +1147,7 @@ void CCC_RegisterCommands()
 
 //#ifdef DEBUG
 	CMD4(CCC_Float,				"hud_fov",				&psHUD_FOV,		0.1f,	1.0f);
-	CMD4(CCC_Float,				"fov",					&g_fov,			5.0f,	180.0f);
+	CMD4(CCC_Float,				"fov",					&g_fov,			5.0f,	140.0f);
 //#endif // DEBUG
 
 	// Demo
@@ -1236,18 +1241,21 @@ void CCC_RegisterCommands()
 	CMD3(CCC_Mask,			"g_god",				&psActorFlags,	AF_GODMODE	);
 	CMD3(CCC_Mask,			"g_unlimitedammo",		&psActorFlags,	AF_UNLIMITEDAMMO);
 	CMD3(CCC_Mask,			"g_ammunition_on_belt",	&psActorFlags,	AF_AMMO_ON_BELT);
-	CMD1(CCC_TimeFactor,	"time_factor");		
+	CMD3(CCC_Mask,			"g_3d_scopes",			&psActorFlags,	AF_3D_SCOPES);
+	CMD3(CCC_Mask,			"g_crosshair_dbg",		&psActorFlags,	AF_CROSSHAIR_DBG);
+	CMD1(CCC_TimeFactor,	"time_factor")	
 //#endif // MASTER_GOLD
-
-	CMD3(CCC_Mask,		"g_autopickup",			&psActorFlags,	AF_AUTOPICKUP);
 
 	CMD3(CCC_Mask,		"g_music_tracks",		&psActorFlags,	AF_MUSIC_TRACKS);
 
 	CMD1(CCC_LuaHelp, "lua_help");
+
+	CMD3(CCC_Mask, "g_zones_dbg", &psActorFlags, AF_ZONES_DBG);
+	CMD3(CCC_Mask, "g_vertex_dbg", &psActorFlags, AF_VERTEX_DBG);
+
 #ifdef DEBUG
 	CMD3(CCC_Mask,		"dbg_draw_actor_alive",		&dbg_net_Draw_Flags,	(1<<0));
 	CMD3(CCC_Mask,		"dbg_draw_actor_dead",		&dbg_net_Draw_Flags,	(1<<1));
-	CMD3(CCC_Mask,		"dbg_draw_customzone",		&dbg_net_Draw_Flags,	(1<<2));
 	CMD3(CCC_Mask,		"dbg_draw_teamzone",		&dbg_net_Draw_Flags,	(1<<3));
 	CMD3(CCC_Mask,		"dbg_draw_invitem",			&dbg_net_Draw_Flags,	(1<<4));
 	CMD3(CCC_Mask,		"dbg_draw_actor_phys",		&dbg_net_Draw_Flags,	(1<<5));

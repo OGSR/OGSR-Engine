@@ -60,11 +60,11 @@ struct ECORE_API SGameMtl
 protected:
 	int 				ID; 	// auto number
 public:
-	enum{
-    	flBreakable		= (1ul<<0ul),
+	enum {
+//		flBreakable		= (1ul<<0ul),
 //		flShootable 	= (1ul<<1ul),
         flBounceable	= (1ul<<2ul),
-        flSkidmark		= (1ul<<3ul),
+//      flSkidmark		= (1ul<<3ul),
         flBloodmark		= (1ul<<4ul),
         flClimable		= (1ul<<5ul),
 //		flWalkOn		= (1ul<<6ul), // obsolette
@@ -76,8 +76,8 @@ public:
 		flActorObstacle	= (1ul<<12ul),
 
         flInjurious		= (1ul<<28ul),// flInjurious = fInjuriousSpeed > 0.f
-		flShootable 	= (1ul<<29ul),
-        flTransparent	= (1ul<<30ul),
+//		flShootable 	= (1ul<<29ul),
+//		flTransparent	= (1ul<<30ul),
         flSlowDown		= (1ul<<31ul) // flSlowDown = (fFlotationFactor<1.f)
     };
 public:
@@ -103,6 +103,7 @@ public:
     {
         ID						= -1;
 		m_Name					= "unknown";
+		m_Desc					= "";
         Flags.zero				();
         // factors
         fFlotationFactor		= 1.f;

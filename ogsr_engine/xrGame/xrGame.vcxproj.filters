@@ -2131,6 +2131,12 @@
     <Filter Include="Core\Client\Objects\inventory\InventoryContainer">
       <UniqueIdentifier>{b72c5438-5c04-4b55-acd5-7c7610097b03}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Core\Common\Random">
+      <UniqueIdentifier>{2e4d27b3-7e36-4625-8195-23559853ad3b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Core\Common\Random\weighted">
+      <UniqueIdentifier>{89a59ffb-4cd8-4f1c-915c-f9746f5b1213}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="mt_config.h">
@@ -6043,6 +6049,18 @@
     <ClInclude Include="ui\UIPdaSpot.h">
       <Filter>AI\AScript\ScriptClasses\UI\Common\PdaWnd</Filter>
     </ClInclude>
+    <ClInclude Include="ai\monsters\states\monster_state_attack_on_run.h">
+      <Filter>AI\AMonsters\common\monster states\Attack</Filter>
+    </ClInclude>
+    <ClInclude Include="ai\monsters\states\monster_state_attack_on_run_inline.h">
+      <Filter>AI\AMonsters\common\monster states\Attack</Filter>
+    </ClInclude>
+    <ClInclude Include="ai\weighted_random.h">
+      <Filter>Core\Common\Random\weighted</Filter>
+    </ClInclude>
+    <ClInclude Include="ai\monsters\anti_aim_ability.h">
+      <Filter>AI\AMonsters\common\components</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="damage_manager.cpp">
@@ -8559,13 +8577,13 @@
     <ClCompile Include="ui\UICharacterInfo.cpp">
       <Filter>AI\AScript\ScriptClasses\UI\Common\CharacterInfo</Filter>
     </ClCompile>
-    <ClCompile Include="ui\IUWpnParams.cpp">
-      <Filter>AI\AScript\ScriptClasses\UI\Common\ItemInfo</Filter>
-    </ClCompile>
     <ClCompile Include="ui\ui_af_params.cpp">
       <Filter>AI\AScript\ScriptClasses\UI\Common\ItemInfo</Filter>
     </ClCompile>
     <ClCompile Include="ui\UIItemInfo.cpp">
+      <Filter>AI\AScript\ScriptClasses\UI\Common\ItemInfo</Filter>
+    </ClCompile>
+    <ClCompile Include="ui\UIWpnParams.cpp">
       <Filter>AI\AScript\ScriptClasses\UI\Common\ItemInfo</Filter>
     </ClCompile>
     <ClCompile Include="ui\UIOutfitInfo.cpp">
@@ -8867,6 +8885,12 @@
     </ClCompile>
     <ClCompile Include="ui\UIPdaSpot.cpp">
       <Filter>AI\AScript\ScriptClasses\UI\Common\PdaWnd</Filter>
+    </ClCompile>
+    <ClCompile Include="ai\weighted_random.cpp">
+      <Filter>Core\Common\Random\weighted</Filter>
+    </ClCompile>
+    <ClCompile Include="ai\monsters\anti_aim_ability.cpp">
+      <Filter>AI\AMonsters\common\components</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

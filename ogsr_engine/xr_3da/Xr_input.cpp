@@ -1,6 +1,5 @@
 #include "stdafx.h"
 
-
 #include "xr_input.h"
 #include "IInputReceiver.h"
 
@@ -15,18 +14,9 @@ ENGINE_API Flags32	psMouseInvert		= {FALSE};
 #define KEYBOARDBUFFERSIZE		64
 #define _KEYDOWN(name,key)		( name[key] & 0x80 )
 
-static bool g_exclusive	= true;
-void on_error_dialog			(bool before)
+CInput::CInput(bool bExclusive, int deviceForInit)
 {
-	if (!pInput || !g_exclusive)
-		return;
-
-	pInput->exclusive_mode		(!before);
-}
-
-CInput::CInput						( BOOL bExclusive, int deviceForInit)
-{
-	g_exclusive							= !!bExclusive;
+	is_exclusive_mode = bExclusive;
 
 	Log("Starting INPUT device...");
 
@@ -52,33 +42,26 @@ CInput::CInput						( BOOL bExclusive, int deviceForInit)
 	if (deviceForInit & keyboard_device_key)
 		CHK_DX(CreateInputDevice(
 		&pKeyboard, 	GUID_SysKeyboard, 	&c_dfDIKeyboard,
-		((bExclusive)?DISCL_EXCLUSIVE:DISCL_NONEXCLUSIVE) | DISCL_FOREGROUND,
+		( is_exclusive_mode ? DISCL_EXCLUSIVE : DISCL_NONEXCLUSIVE ) | DISCL_FOREGROUND,
 		KEYBOARDBUFFERSIZE ));
 
 	// MOUSE
 	if (deviceForInit & mouse_device_key)
 		CHK_DX(CreateInputDevice(
 		&pMouse,		GUID_SysMouse,		&c_dfDIMouse2,
-		((bExclusive)?DISCL_EXCLUSIVE:DISCL_NONEXCLUSIVE) | DISCL_FOREGROUND | DISCL_NOWINKEY,
+		( is_exclusive_mode ? DISCL_EXCLUSIVE : DISCL_NONEXCLUSIVE ) | DISCL_FOREGROUND | DISCL_NOWINKEY,
 		MOUSEBUFFERSIZE ));
 
-	Debug.set_on_dialog				(&on_error_dialog);
-
-#ifdef ENGINE_BUILD
 	Device.seqAppActivate.Add		(this);
 	Device.seqAppDeactivate.Add		(this);
 	Device.seqFrame.Add				(this, REG_PRIORITY_HIGH);
-#endif
 }
 
 CInput::~CInput(void)
 {
-#ifdef ENGINE_BUILD
 	Device.seqFrame.Remove			(this);
 	Device.seqAppDeactivate.Remove	(this);
 	Device.seqAppActivate.Remove	(this);
-#endif
-	//_______________________
 
 	// Unacquire and release the device's interfaces
 	if( pMouse ){
@@ -168,10 +151,15 @@ void CInput::KeyUpdate	( )
 	{
 		key					= od[i].dwOfs;
 		KBState[key]		= od[i].dwData & 0x80;
-		if ( KBState[key])	
-			cbStack.back()->IR_OnKeyboardPress	( key );
-		if (!KBState[key])	
-			cbStack.back()->IR_OnKeyboardRelease	( key );
+		if (KBState[key]) {
+			if (this->is_exclusive_mode && (key == DIK_LSHIFT || key == DIK_RSHIFT) && (this->iGetAsyncKeyState(DIK_LMENU) || this->iGetAsyncKeyState(DIK_RMENU)))
+				PostMessage(gGameWindow, WM_INPUTLANGCHANGEREQUEST, 2, 0); //Переключили язык. В эксклюзивном режиме это обязательно для правильной работы функции DikToChar
+
+			cbStack.back()->IR_OnKeyboardPress(key);
+		}
+		else {
+			cbStack.back()->IR_OnKeyboardRelease(key);
+		}
 	}
 	for (i = 0; i < COUNT_KB_BUTTONS; i++ )
 		if (KBState[i]) 
@@ -205,12 +193,12 @@ bool CInput::get_dik_name(int dik, LPSTR dest_str, int dest_sz)
 
 BOOL CInput::iGetAsyncKeyState( int dik )
 {
-	return !!KBState[dik];
+	return KBState[dik];
 }
 
 BOOL CInput::iGetAsyncBtnState( int btn )
 {
-	return !!mouseState[btn];
+	return mouseState[btn];
 }
 
 void CInput::MouseUpdate( )
@@ -424,15 +412,45 @@ IInputReceiver*	 CInput::CurrentIR()
 		return NULL;
 }
 
-void CInput::exclusive_mode			(const bool &exclusive)
+char CInput::DikToChar(int dik)
 {
-	pKeyboard->SetCooperativeLevel	(
-		Device.m_hWnd, 
-		(exclusive ? DISCL_EXCLUSIVE : DISCL_NONEXCLUSIVE) | DISCL_FOREGROUND
-	);
+	switch (dik)
+	{
+	// Эти клавиши через ToAscii не обработать, поэтому пропишем явно
+	case DIK_NUMPAD0: return '0';
+	case DIK_NUMPAD1: return '1';
+	case DIK_NUMPAD2: return '2';
+	case DIK_NUMPAD3: return '3';
+	case DIK_NUMPAD4: return '4';
+	case DIK_NUMPAD5: return '5';
+	case DIK_NUMPAD6: return '6';
+	case DIK_NUMPAD7: return '7';
+	case DIK_NUMPAD8: return '8';
+	case DIK_NUMPAD9: return '9';
+	case DIK_NUMPADSLASH: return '/';
+	case DIK_NUMPADPERIOD: return '.';
+	//
+	default:
+		u8 State[256] = {};
+		if (this->is_exclusive_mode) { // GetKeyboardState в данном случае не используем, потому что оно очень глючно работает в эксклюзивном режиме
+			if (this->iGetAsyncKeyState(DIK_LSHIFT) || this->iGetAsyncKeyState(DIK_RSHIFT))
+				State[VK_SHIFT] = 0x80; //Для получения правильных символов при зажатом shift
+		}
+		else {
+			if (!GetKeyboardState(State))
+				return 0;
+		}
+		u16 symbol;
+		if (this->is_exclusive_mode) {
+			auto layout = GetKeyboardLayout(GetWindowThreadProcessId(gGameWindow, nullptr));
+			if (ToAsciiEx(MapVirtualKeyEx(dik, MAPVK_VSC_TO_VK, layout), dik, State, &symbol, 0, layout) == 1)
+				return static_cast<char>(symbol);
+		}
+		else {
+			if (ToAscii(MapVirtualKey(dik, MAPVK_VSC_TO_VK), dik, State, &symbol, 0) == 1)
+				return static_cast<char>(symbol);
+		}
+	}
 
-	pMouse->SetCooperativeLevel		(
-		Device.m_hWnd, 
-		(exclusive ? DISCL_EXCLUSIVE : DISCL_NONEXCLUSIVE) | DISCL_FOREGROUND | DISCL_NOWINKEY
-	);
+	return 0;
 }

@@ -74,10 +74,8 @@ void CEncyclopediaArticle::load_shared	(LPCSTR)
 
 	if(ltx)
 	{
-		CIconParams params(ltx);
-
-		data()->image.SetShader(params.get_shader());
-		data()->image.GetUIStaticItem().SetOriginalRect(params.original_rect());
+		CIconParams params( ltx );
+		params.set_shader( &( data()->image ) );
 		data()->image.ClipperOn();
 		data()->image.TextureAvailable(true);
 	}

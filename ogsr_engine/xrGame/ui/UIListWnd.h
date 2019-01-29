@@ -33,7 +33,7 @@ public:
 	virtual void	 SendMessage			(CUIWindow *pWnd, s16 msg, void* pData);
 	virtual void	 Draw					();
 	virtual void	 Update					();
-	virtual void	 DetachChild			(CUIWindow* pChild);
+	virtual void	 DetachChild			(CUIWindow* pChild, bool from_destructor = false);
 			void	SetScrollBarProfile		(LPCSTR profile)		{m_scrollbar_profile=profile;};
 
 	// Добавление элементов в листбокс

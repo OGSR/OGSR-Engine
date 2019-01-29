@@ -8,7 +8,7 @@
 
 #include "stdafx.h"
 
-#ifdef DEBUG
+
 #ifndef AI_COMPILER
 
 #include "level_graph.h"
@@ -133,6 +133,9 @@ void CLevelGraph::draw_nodes	()
 					if (linked[t]==Nid) { bHL = TRUE; CT = CH; break; }
 				}
 			}
+			if (!m_access_mask[Nid]){
+				CT = D3DCOLOR_XRGB(255, 0, 0);
+			}
 
 			// unpack plane
 			Fplane PL; Fvector vNorm;
@@ -218,6 +221,7 @@ void CLevelGraph::draw_restrictions	()
 	}
 }
 
+#ifdef DEBUG
 void CLevelGraph::draw_covers	()
 {
 	float					half_size = ai().level_graph().header().cell_size()*.5f;

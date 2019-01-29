@@ -76,12 +76,14 @@ ICF static BOOL info_trace_callback(collide::rq_result& result, LPVOID params)
 {
 	BOOL& bOverlaped	= *(BOOL*)params;
 	if(result.O){
-		if (Level().CurrentEntity()!=result.O){	
-//			bOverlaped		= TRUE;
-			return			TRUE;//FALSE;
-		}else{
-			return			TRUE;
-		}
+          if ( Level().CurrentEntity() == result.O ) {
+            //ignore self-actor
+            return TRUE;
+          }
+          else {
+            if ( !Core.Features.test( xrCore::Feature::pickup_check_overlaped ) )
+              return TRUE;
+          }
 	}else{
 		//получить треугольник и узнать его материал
 		CDB::TRI* T		= Level().ObjectSpace.GetStaticTris()+result.element;
@@ -114,17 +116,6 @@ void CActor::PickupModeUpdate()
 {
 	if(!m_bPickupMode) return;
 
-	//подбирание объекта
-	if(inventory().m_pTarget && inventory().m_pTarget->Useful() &&
-		m_pUsableObject && m_pUsableObject->nonscript_usable() &&
-		!Level().m_feel_deny.is_object_denied(smart_cast<CGameObject*>(inventory().m_pTarget)) )
-	{
-		NET_Packet P;
-		u_EventGen(P,GE_OWNERSHIP_TAKE, ID());
-		P.w_u16(inventory().m_pTarget->object().ID());
-		u_EventSend(P);
-	}
-
 	//. ????? GetNearest ?????
 	feel_touch_update	(Position(), /*inventory().GetTakeDist()*/m_fPickupInfoRadius);
 	
@@ -146,6 +137,22 @@ void	CActor::PickupModeUpdate_COD	()
 		HUD().GetUI()->UIMainIngameWnd->SetPickUpItem(NULL);
 		return;
 	};
+
+	//подбирание объекта
+        if (
+          inventory().m_pTarget && inventory().m_pTarget->Useful()
+          && m_pUsableObject && m_pUsableObject->nonscript_usable()
+          && !Level().m_feel_deny.is_object_denied( smart_cast<CGameObject*>( inventory().m_pTarget ) )
+        ) {
+	  CInventoryItem* pNearestItem = inventory().m_pTarget;
+          if ( m_bPickupMode ) {
+            Game().SendPickUpEvent( ID(), pNearestItem->object().ID() );
+            PickupModeOff();
+            pNearestItem = nullptr;
+          }
+          HUD().GetUI()->UIMainIngameWnd->SetPickUpItem( pNearestItem );
+          return;
+	}
 	
 	CFrustum frustum;
 	frustum.CreateFromMatrix(Device.mFullTransform,FRUSTUM_P_LRTB|FRUSTUM_P_FAR);
@@ -203,15 +210,17 @@ void	CActor::PickupModeUpdate_COD	()
 				pNearestItem = NULL;
 	}
 
-	HUD().GetUI()->UIMainIngameWnd->SetPickUpItem(pNearestItem);
 
-	if (pNearestItem && m_bPickupMode)
-	{
-		//подбирание объекта
-		Game().SendPickUpEvent(ID(), pNearestItem->object().ID());
-		
-		PickupModeOff();
-	}
+        if ( pNearestItem ) {
+          if ( m_bPickupMode ) {
+            //подбирание объекта
+                Game().SendPickUpEvent(ID(), pNearestItem->object().ID());
+                PickupModeOff();
+                pNearestItem = nullptr;
+          }
+        }
+
+        HUD().GetUI()->UIMainIngameWnd->SetPickUpItem( pNearestItem );
 };
 
 void CActor::PickupInfoDraw(CObject* object)

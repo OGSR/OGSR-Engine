@@ -17,6 +17,7 @@ public:
 	virtual	void		execute							();
 
 	virtual bool		check_completion				();
+	virtual void		remove_links					(CObject* object) { inherited::remove_links(object);}
 };
 
 #include "state_move_to_point_inline.h"

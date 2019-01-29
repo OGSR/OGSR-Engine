@@ -129,7 +129,7 @@ void CUIDragDropListEx::DestroyDragItem()
 	if(m_selected_item && m_drag_item && m_drag_item->ParentItem()==m_selected_item)
 	{
 		VERIFY(GetParent()->GetMouseCapturer()==m_drag_item);
-		GetParent()->SetMouseCapture				(NULL, false);
+		GetParent()->SetMouseCapture( m_drag_item, false );
 
 		delete_data							(m_drag_item);
 	}
@@ -315,7 +315,7 @@ void CUIDragDropListEx::ReinitScroll()
 }
 
 #include "../xr_3da/xr_input.h"
-#include "../level.h"
+#include "../Level.h"
 
 bool CUIDragDropListEx::OnMouse(float x, float y, EUIMessages mouse_action)
 {

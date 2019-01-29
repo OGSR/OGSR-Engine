@@ -1,6 +1,6 @@
 #include "stdafx.h"
 
-Fvector du_cone_vertices[DU_CONE_NUMVERTEX]=
+constexpr Fvector du_cone_vertices[DU_CONE_NUMVERTEX]=
 {
 	0.0000f,    0.0000f, 0.0000f,
 	0.5000f,   0.0000f,	 1.0000f,
@@ -21,7 +21,8 @@ Fvector du_cone_vertices[DU_CONE_NUMVERTEX]=
 	0.4619f,   -0.1913f, 1.0000f,
 	0.0000f,   0.0000f,	 1.0000f+EPS_L
 };
-u16 du_cone_faces[DU_CONE_NUMFACES*3]=
+
+constexpr u16 du_cone_faces[DU_CONE_NUMFACES*3]=
 {
 	0,	2,	1,
 	0,	3,	2,

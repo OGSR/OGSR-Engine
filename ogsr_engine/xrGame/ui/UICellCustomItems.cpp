@@ -19,11 +19,9 @@ CUIInventoryCellItem::CUIInventoryCellItem(CInventoryItem* itm)
 	m_pData											= (void*)itm;
 	itm->m_cell_item								= this;
 
-	inherited::SetShader							(itm->m_icon_params.get_shader());
+	itm->m_icon_params.set_shader( this );
 
 	m_grid_size.set									(itm->GetGridWidth(),itm->GetGridHeight());
-	inherited::SetOriginalRect						(itm->m_icon_params.original_rect());
-	inherited::SetStretchTexture					(true);
 	b_auto_drag_childs = true;
 }
 
@@ -75,8 +73,12 @@ void CUIInventoryCellItem::OnFocusReceive()
 	}
 
 	inherited::OnFocusReceive();
-	auto script_obj = object()->object().lua_game_object();
-	g_actor->callback(GameObject::eCellItemFocus)(script_obj);
+
+	if (object()->object().m_spawned)
+	{
+		auto script_obj = object()->object().lua_game_object();
+		g_actor->callback(GameObject::eCellItemFocus)(script_obj);
+	}
 }
 
 void CUIInventoryCellItem::OnFocusLost()
@@ -90,19 +92,22 @@ void CUIInventoryCellItem::OnFocusLost()
 			InvWnd->HideSlotsHighlight();
 	}
 
-	inherited::OnFocusLost();	
-	auto script_obj = object()->object().lua_game_object();
-	g_actor->callback(GameObject::eCellItemFocusLost)(script_obj);
+	inherited::OnFocusLost();
+
+	if (object()->object().m_spawned)
+	{
+		auto script_obj = object()->object().lua_game_object();
+		g_actor->callback(GameObject::eCellItemFocusLost)(script_obj);
+	}
 }
 
 bool CUIInventoryCellItem::OnMouse(float x, float y, EUIMessages action)
 {
-	inherited::OnMouse(x, y, action);
+	bool r = inherited::OnMouse(x, y, action);
 
-	//if (m_bCursorOverWindow)
 	g_actor->callback(GameObject::eOnCellItemMouse)(object()->object().lua_game_object(), x, y, action);
 
-	return false;
+	return r;
 }
 
 CUIDragItem* CUIInventoryCellItem::CreateDragItem()
@@ -245,8 +250,7 @@ void CUIWeaponCellItem::CreateIcon(eAddonType t, CIconParams &params)
 	m_addons[t]					= xr_new<CUIStatic>();	
 	m_addons[t]->SetAutoDelete	(true);
 	AttachChild					(m_addons[t]);
-	m_addons[t]->SetShader		(params.get_shader());
-	m_addons[t]->SetOriginalRect(params.original_rect());
+	params.set_shader( m_addons[ t ] );
 }
 
 void CUIWeaponCellItem::DestroyIcon(eAddonType t)

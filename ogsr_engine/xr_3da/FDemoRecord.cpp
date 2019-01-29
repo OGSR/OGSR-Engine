@@ -60,6 +60,12 @@ CDemoRecord::CDemoRecord(const char *name,float life_time) : CEffectorCam(cefDem
 		m_fAngSpeed1	= pSettings->r_float("demo_record","ang_speed1");
 		m_fAngSpeed2	= pSettings->r_float("demo_record","ang_speed2");
 		m_fAngSpeed3	= pSettings->r_float("demo_record","ang_speed3");
+
+		m_bShowInfo = true;
+		if (pSettings->line_exist("demo_record", "show_info"))
+		{
+			m_bShowInfo = pSettings->r_bool("demo_record", "show_info");
+		}
 	} else {
 		fLifeTime = -1;
 	}
@@ -248,7 +254,7 @@ BOOL CDemoRecord::Process(Fvector &P, Fvector &D, Fvector &N, float& fFov, float
 		P.set(m_Camera.c);
 		fAspect = 1.f;
 	}else{
-		if (psHUD_Flags.test(HUD_DRAW)){
+		if (psHUD_Flags.test(HUD_DRAW) && m_bShowInfo){
 			if ((Device.dwTimeGlobal/750)%3!=0) {
 //				pApp->pFontSystem->SetSizeI	(0.02f);
 				pApp->pFontSystem->SetColor	(color_rgba(255,0,0,255));
@@ -277,9 +283,11 @@ BOOL CDemoRecord::Process(Fvector &P, Fvector &D, Fvector &N, float& fFov, float
 		m_vAngularVelocity.lerp	(m_vAngularVelocity,m_vR,0.3f);
 
 		float speed = m_fSpeed1, ang_speed = m_fAngSpeed1;
+
 		if (Console->IR_GetKeyState(DIK_LSHIFT))		{ speed=m_fSpeed0; ang_speed=m_fAngSpeed0;}
 		else if (Console->IR_GetKeyState(DIK_LALT))		{ speed=m_fSpeed2; ang_speed=m_fAngSpeed2;}
 		else if (Console->IR_GetKeyState(DIK_LCONTROL)) { speed=m_fSpeed3; ang_speed=m_fAngSpeed3;}
+
 		m_vT.mul				(m_vVelocity, Device.fTimeDelta * speed);
 		m_vR.mul				(m_vAngularVelocity, Device.fTimeDelta * ang_speed);
 
@@ -333,7 +341,7 @@ void CDemoRecord::IR_OnKeyboardPress	(int dik)
 	if (dik == DIK_ESCAPE)	fLifeTime				= -1;
 	if (dik == DIK_RETURN)
 	{	
-		if ( g_pGameLevel->CurrentEntity() && Core.ParamFlags.test( xrCore::ParamFlag::dbg ) )
+		if ( g_pGameLevel->CurrentEntity() )
 		{
 			g_pGameLevel->CurrentEntity()->ForceTransform(m_Camera);
 			fLifeTime		= -1; 
@@ -357,12 +365,14 @@ void CDemoRecord::IR_OnKeyboardHold	(int dik)
 	// rotate	
 	case DIK_NUMPAD2:	m_vR.x -= 1.0f; break; // Pitch Down
 	case DIK_NUMPAD8:	m_vR.x += 1.0f; break; // Pitch Up
+
 	case DIK_E:	
 	case DIK_NUMPAD6:	m_vR.y += 1.0f; break; // Turn Left
 	case DIK_Q:	
 	case DIK_NUMPAD4:	m_vR.y -= 1.0f; break; // Turn Right
-	case DIK_NUMPAD9:	m_vR.z -= 2.0f; break; // Turn Right
-	case DIK_NUMPAD7:	m_vR.z += 2.0f; break; // Turn Right
+
+	case DIK_NUMPAD9:	m_vR.z -= 2.0f; break;
+	case DIK_NUMPAD7:	m_vR.z += 2.0f; break;
 	}
 }
 

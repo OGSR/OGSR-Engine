@@ -241,7 +241,7 @@ public:
 	void					UpdateAmbient		();
 	CEnvAmbient*			AppendEnvAmb		(const shared_str& sect);
 
-	void					Invalidate			();
+	void					Invalidate			(bool inv_flare = true);
 public:
 							CEnvironment		();
 							~CEnvironment		();

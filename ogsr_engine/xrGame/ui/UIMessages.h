@@ -1,8 +1,6 @@
 #pragma once
 
-//////////////////////////////////////////////////////////////////////////
-
-enum EUIMessages
+enum EUIMessages : s16
 {
 	// CUIWindow
 	WINDOW_LBUTTON_DOWN = 0,
@@ -65,9 +63,6 @@ enum EUIMessages
 	LIST_ITEM_UNSELECT,
 	LIST_ITEM_FOCUS_RECEIVED,
 
-	// CUIInteractiveItem
-	INTERACTIVE_ITEM_CLICK,
-
 	// UIPropertiesBox
 	PROPERTY_CLICKED,
 
@@ -86,22 +81,12 @@ enum EUIMessages
 	// CUIPdaWnd
 	PDA_OPEN_ENCYCLOPEDIA_ARTICLE,
 	PDA_ENCYCLOPEDIA_HAS_ARTICLE,
-	// CUIPdaDialogWnd
-	PDA_DIALOG_WND_BACK_BUTTON_CLICKED,
-	PDA_DIALOG_WND_MESSAGE_BUTTON_CLICKED,
 
 	// CUIPdaContactsWnd
 	PDA_CONTACTS_WND_CONTACT_SELECTED,
 
 	// CUITradeWnd
 	TRADE_WND_CLOSED,
-
-	// CUISleepWnd
-//	SLEEP_WND_PERFORM_BUTTON_CLICKED,
-
-	// CUIOutfitSlot
-	UNDRESS_OUTFIT,
-	OUTFIT_RETURNED_BACK,
 
 	// CUIInventroyWnd
 	INVENTORY_DROP_ACTION,

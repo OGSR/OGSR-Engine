@@ -61,6 +61,11 @@ CGameObject::~CGameObject		()
 	VERIFY						(!m_spawned);
 	xr_delete					(m_ai_location);
 	m_callbacks.clear();
+
+        for ( auto& ft : feel_touch_addons ) {
+          xr_delete( ft );
+        }
+        feel_touch_addons.clear();
 }
 
 CSE_ALifeDynamicObject* CGameObject::alife_object() const
@@ -113,6 +118,9 @@ void CGameObject::net_Destroy	()
 #endif
 
 	VERIFY					(m_spawned);
+	if (!m_spawned)
+		Msg("!![%s] Already destroyed object detected: [%s]", __FUNCTION__, this->cName().c_str());
+
 	if(animation_movement_controlled())
 					destroy_anim_mov_ctrl	();
 
@@ -208,6 +216,9 @@ void VisualCallback(CKinematics *tpKinematics);
 BOOL CGameObject::net_Spawn		(CSE_Abstract*	DC)
 {
 	VERIFY							(!m_spawned);
+	if (m_spawned)
+		Msg("!![%s] Already spawned object detected: [%s]", __FUNCTION__, this->cName().c_str());
+
 	m_spawned						= true;
 	m_spawn_time					= Device.dwFrame;
 	CSE_Abstract					*E = (CSE_Abstract*)DC;
@@ -278,6 +289,8 @@ BOOL CGameObject::net_Spawn		(CSE_Abstract*	DC)
 		else
 			spatial.type				= (spatial.type | STYPE_VISIBLEFORAI) ^ STYPE_VISIBLEFORAI;
 	}
+	if ( pSettings->line_exist( cNameSect(), "use_ai_locations" ) )
+	  SetUseAI_Locations( !!pSettings->r_bool( cNameSect(), "use_ai_locations" ) );
 
 	reload						(*cNameSect());
 	CScriptBinder::reload	(*cNameSect());
@@ -752,12 +765,11 @@ void VisualCallback	(CKinematics *tpKinematics)
 		(*I)						(tpKinematics);
 }
 
-CScriptGameObject *CGameObject::lua_game_object		() const
+CScriptGameObject *CGameObject::lua_game_object() const
 {
-#ifdef DEBUG
 	if (!m_spawned)
-		Msg							("! you are trying to use a destroyed object [%x]",this);
-#endif
+		Msg("!! [%s] you are trying to use a destroyed object [%x]", __FUNCTION__, this);
+
 	THROW							(m_spawned);
 	if (!m_lua_game_object)
 		m_lua_game_object			= xr_new<CScriptGameObject>(const_cast<CGameObject*>(this));
@@ -788,7 +800,7 @@ void CGameObject::shedule_Update	(u32 dt)
 {
 	// Msg							("-SUB-:[%x][%s] CGameObject::shedule_Update",smart_cast<void*>(this),*cName());
 	inherited::shedule_Update	(dt);
-	
+        FeelTouchAddonsUpdate();
 	CScriptBinder::shedule_Update(dt);
 }
 
@@ -851,6 +863,7 @@ u32	CGameObject::ef_detector_type		() const
 void CGameObject::net_Relcase			(CObject* O)
 {
 	inherited::net_Relcase		(O);
+        FeelTouchAddonsRelcase( O );
 	CScriptBinder::net_Relcase	(O);
 }
 
@@ -990,3 +1003,118 @@ IC	void CAI_ObjectLocation::init()
 	return				(ai().level_graph().vertex(m_level_vertex_id));
 }
 //////////////////////////////////////////////////////////////////////////////////
+
+
+void CGameObject::addFeelTouch( float radius, const luabind::object& lua_object, const luabind::functor<void>& new_delete, const luabind::functor<bool>& contact ) {
+  CScriptCallbackEx<bool> feel_touch_contact;
+  CScriptCallbackEx<void> feel_touch_new_delete;
+  feel_touch_new_delete.set( new_delete, lua_object );
+  if ( contact )
+    feel_touch_contact.set( contact, lua_object );
+  for ( auto& ft : feel_touch_addons ) {
+    if (
+      ft->feel_touch_new_delete == feel_touch_new_delete
+      && ( !contact || ft->feel_touch_contact == feel_touch_contact )
+    ) {
+      ft->radius = radius;
+      return;
+    }
+  }
+  FeelTouchAddon* ft = xr_new<FeelTouchAddon>();
+  feel_touch_addons.push_back( ft );
+  ft->radius = radius;
+  ft->feel_touch_new_delete = feel_touch_new_delete;
+  if ( contact )
+    ft->feel_touch_contact = feel_touch_contact;
+}
+
+
+void CGameObject::removeFeelTouch( const luabind::object& lua_object, const luabind::functor<void>& new_delete, const luabind::functor<bool>& contact ) {
+  CScriptCallbackEx<bool> feel_touch_contact;
+  CScriptCallbackEx<void> feel_touch_new_delete;
+  feel_touch_new_delete.set( new_delete, lua_object );
+  if ( contact )
+    feel_touch_contact.set( contact, lua_object );
+  if ( feel_touch_processing ) {
+    for ( auto& ft : feel_touch_addons ) {
+      if (
+        ft->feel_touch_new_delete == feel_touch_new_delete
+        && ( !contact || ft->feel_touch_contact == feel_touch_contact )
+      ) {
+        ft->radius = -1;
+        feel_touch_changed = true;
+        break;
+      }
+    }
+  }
+  else {
+    feel_touch_addons.erase(
+      std::remove_if(
+        feel_touch_addons.begin(), feel_touch_addons.end(),
+        [&]( auto& ft ) {
+          if (
+            ft->feel_touch_new_delete == feel_touch_new_delete
+            && ( !contact || ft->feel_touch_contact == feel_touch_contact )
+          ) {
+            xr_delete( ft );
+            return true;
+          }
+          return false;
+        }
+      ),
+      feel_touch_addons.end()
+    );
+  }
+}
+
+
+void CGameObject::FeelTouchAddonsUpdate() {
+  feel_touch_changed    = false;
+  feel_touch_processing = true;
+  for ( auto& ft : feel_touch_addons ) {
+    if ( ft->radius <= 0 ) continue;
+    ft->feel_touch.feel_touch_update(
+      Position(), ft->radius,
+      [&]( const auto O, bool is_new ) {
+        CGameObject* GO = smart_cast<CGameObject*>( O );
+        ft->feel_touch_new_delete( GO->lua_game_object(), is_new );
+      },
+      [&]( const auto O ) -> bool {
+        CGameObject* GO = smart_cast<CGameObject*>( O );
+        if ( !GO ) return false;
+        if ( ft->feel_touch_contact ) {
+          return ft->feel_touch_contact( GO->lua_game_object() );
+        }
+        else
+          return smart_cast<CEntityAlive*>( O ) ? true : false;
+      }
+    );
+  }
+  feel_touch_processing = false;
+  if ( feel_touch_changed ) {
+    feel_touch_addons.erase(
+      std::remove_if(
+        feel_touch_addons.begin(), feel_touch_addons.end(),
+        []( auto& ft ) {
+          return ft->radius < 0;
+        }
+      ),
+      feel_touch_addons.end()
+    );
+    feel_touch_changed = false;
+  }
+}
+
+
+void CGameObject::FeelTouchAddonsRelcase( CObject* O ) {
+  if ( Level().is_removing_objects() ) return;
+  for ( auto& ft : feel_touch_addons ) {
+    ft->feel_touch.feel_touch_relcase2(
+      O,
+      [&]( const auto O, bool is_new ) {
+        CGameObject* GO = smart_cast<CGameObject*>( O );
+        ft->feel_touch_new_delete( GO->lua_game_object(), is_new );
+      }
+    );
+  }
+}

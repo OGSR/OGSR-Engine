@@ -322,7 +322,10 @@ void CControlManagerCustom::load_jump_data(LPCSTR s1, LPCSTR s2, LPCSTR s3, LPCS
 	m_jump->setup_data().force_factor = -1.f;
 }
 
-
+bool CControlManagerCustom::is_jumping ()
+{
+	return m_jump && m_jump->is_active();
+}
 
 void CControlManagerCustom::jump(const SControlJumpData &ta)
 {

@@ -1,6 +1,6 @@
 #include "stdafx.h"
 
-Fvector du_sphere_vertices[DU_SPHERE_NUMVERTEX]=
+constexpr Fvector du_sphere_vertices[DU_SPHERE_NUMVERTEX]=
 {
 	0.0000f,	1.0000f, 	0.0000f,
 		0.8944f,	0.4472f, 	0.0000f,
@@ -96,7 +96,7 @@ Fvector du_sphere_vertices[DU_SPHERE_NUMVERTEX]=
 		0.5927f,	-0.8054f,	0.0000
 };
 
-u16 du_sphere_faces[DU_SPHERE_NUMFACES*3]={
+constexpr u16 du_sphere_faces[DU_SPHERE_NUMFACES*3]={
 	14,	12,    0,
 		72,   13,   12,
 		14,   72,   12,

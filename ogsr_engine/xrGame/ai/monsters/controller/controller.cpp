@@ -237,6 +237,8 @@ void CController::Load(LPCSTR section)
 	m_tube_at_once		= !!pSettings->r_bool(section,"tube_at_once");
 
 	m_aura->load		(section);
+
+	PostLoad					(section);
 }
 
 void CController::load_friend_community_overrides(LPCSTR section)

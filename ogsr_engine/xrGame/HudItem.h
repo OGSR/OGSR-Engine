@@ -119,6 +119,17 @@ private:
 	bool					m_bInertionAllow;
 protected:
 	u32						m_animation_slot;
+
+	// отклонение модели от "курса" из за инерции во время движения
+	float m_origin_offset;
+	// скорость возврата худ модели в нужное положение
+	float m_tendto_speed;
+
+	// отклонение модели от "курса" из за инерции во время движения с прицеливанием
+	float m_zoom_origin_offset;
+	// скорость возврата худ модели в нужное положение во время прицеливания
+	float m_zoom_tendto_speed;
+
 public:
 	IC		u32				animation_slot			()	{	return m_animation_slot;}
 

@@ -28,6 +28,12 @@ public:
   static type m_alphabet_back[ alphabet_size ];
 
   static IC void initialize() {
+#if __has_include("..\build_config_overrides\trivial_encryptor_ovr.h")
+#     include "..\build_config_overrides\trivial_encryptor_ovr.h"
+      m_table_iterations = M_TABLE_ITERATIONS;
+      m_table_seed = M_TABLE_SEED;
+      m_encrypt_seed = M_ENCRYPT_SEED;
+#else
     if ( !strstr( GetCommandLine(), "-steam" ) ) {
       m_table_iterations = 2048;
       m_table_seed       = 20091958;
@@ -37,7 +43,7 @@ public:
       m_table_seed       = 6011979;
       m_encrypt_seed     = 24031979;
     }
-
+#endif
     auto m_alphabet = ( type* )_alloca( sizeof( type ) * alphabet_size );
 
     for ( u32 i = 0; i < alphabet_size; ++i )

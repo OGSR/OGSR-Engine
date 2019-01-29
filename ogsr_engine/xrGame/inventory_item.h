@@ -230,6 +230,8 @@ public:
 
 	virtual	float				GetControlInertionFactor(	) const			{return m_fControlInertionFactor;};
 
+	virtual bool				StopSprintOnFire() { return true; }
+
 protected:
 	virtual void				UpdateXForm	();
 			

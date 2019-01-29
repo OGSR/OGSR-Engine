@@ -21,6 +21,10 @@
 #include "ai_space.h"
 #include "script_engine.h"
 
+#include "Physics.h"
+#include "PHCharacter.h"
+#include "PHCapture.h"
+
 enum EPdaMsg;
 enum ESoundTypes;
 enum ETaskState;
@@ -299,7 +303,7 @@ public:
 			void				IterateRuck     ( const luabind::functor<void>& functor, const luabind::object& object );
 			void				MarkItemDropped		(CScriptGameObject *item);
 			bool				MarkedDropped		(CScriptGameObject *item);
-			void				UnloadMagazine		();
+			void				UnloadMagazine		(bool spawn_ammo = false);
 
 			void				DropItem			(CScriptGameObject* pItem);
 			void				DropItemAndTeleport	(CScriptGameObject* pItem, Fvector position);
@@ -401,6 +405,7 @@ public:
 			Fvector					memory_position	(const CScriptGameObject &lua_game_object);
 			CScriptGameObject		*best_weapon	();
 			void					explode			(u32 level_time);
+			void explode_initiator( u16 );
 			CScriptGameObject		*GetEnemy		() const;
 			CScriptGameObject		*GetCorpse		() const;
 			CScriptSoundInfo		GetSoundInfo	();
@@ -478,8 +483,13 @@ public:
 			int					active_sound_count		();
 			int					active_sound_count		(bool only_playing);
 			const CCoverPoint	*best_cover				(const Fvector &position, const Fvector &enemy_position, float radius, float min_enemy_distance, float max_enemy_distance);
+			const CCoverPoint	*best_cover( const Fvector &position, const Fvector &enemy_position, float radius, float min_enemy_distance, float max_enemy_distance, const luabind::functor<bool>& );
 			const CCoverPoint	*safe_cover				(const Fvector &position, float radius, float min_distance);
+			const CCoverPoint	*safe_cover( const Fvector &position, float radius, float min_distance, const luabind::functor<bool>& );
 			const CCoverPoint	*ambush_cover				(const Fvector &position, const Fvector &enemy_position, float radius, float min_distance);
+			const CCoverPoint	*ambush_cover( const Fvector &position, const Fvector &enemy_position, float radius, float min_distance, const luabind::functor<bool>& );
+			const CCoverPoint	*angle_cover( const Fvector&, float, const Fvector&, float, float, u32 );
+			const CCoverPoint	*angle_cover( const Fvector&, float, const Fvector&, float, float, u32, const luabind::functor<bool>& );
 			CScriptIniFile		*spawn_ini				() const;
 			bool				active_zone_contact		(u16 id);
 
@@ -509,7 +519,7 @@ public:
 			bool				attachable_item_enabled	() const;
 			// CustomZone
 			void				EnableAnomaly			();
-			void				DisableAnomaly			();
+			void				DisableAnomaly( bool = false );
 			float				GetAnomalyPower			();
 			void				SetAnomalyPower			(float p);
 			
@@ -625,6 +635,7 @@ public:
 
 			void				SwitchProjector(bool _on);
 			void				ChangeBleeding(float _delta);
+			void				AddWound(float hit_power, int hit_type, u16 element);
 			float				GetItemWeight();
 			u32					InvBoxCount();
 			void				OpenInvBox(CScriptGameObject *object);
@@ -756,6 +767,23 @@ public:
 
 			void play_hud_animation (LPCSTR anim, bool mix_in);
 			void play_hud_animation (LPCSTR anim);
+
+			void addFeelTouch( float, const luabind::object&, const luabind::functor<void>& );
+			void addFeelTouch( float, const luabind::object&, const luabind::functor<void>&, const luabind::functor<bool>& );
+			void removeFeelTouch( const luabind::object&, const luabind::functor<void>& );
+			void removeFeelTouch( const luabind::object&, const luabind::functor<void>&, const luabind::functor<bool>& );
+
+			void PHCaptureObject( CScriptGameObject* );
+			void PHCaptureObject( CScriptGameObject*, LPCSTR );
+			void PHCaptureObject( CScriptGameObject*, u16 );
+			void PHCaptureObject( CScriptGameObject*, u16, LPCSTR );
+			void PHReleaseObject();
+			CPHCapture* PHCapture();
+
+	bool throw_target( const Fvector&, CScriptGameObject* = nullptr );
+	bool throw_target( const Fvector&, u32 const, CScriptGameObject* = nullptr );
+
+	void g_fireParams( const CScriptGameObject*, Fvector&, Fvector& );
 
 	DECLARE_SCRIPT_REGISTER_FUNCTION
 };

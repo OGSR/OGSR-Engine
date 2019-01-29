@@ -185,7 +185,8 @@ public:
 	
 	virtual void OnItemRuck		(CInventoryItem *inventory_item, EItemPlace previous_place);
 	virtual void OnItemBelt		(CInventoryItem *inventory_item, EItemPlace previous_place);
-	
+	virtual void OnItemSlot		(CInventoryItem *inventory_item, EItemPlace previous_place);
+
 	virtual void OnItemDrop		(CInventoryItem *inventory_item);
 	virtual void OnItemDropUpdate ();
 
@@ -204,6 +205,8 @@ public:
 	virtual float						Radius				() const;
 	virtual void						g_PerformDrop		();
 
+
+	virtual bool						unlimited_ammo			();
 
 	virtual bool						NeedToDestroyObject()  const;
 	virtual ALife::_TIME_ID				TimePassedAfterDeath() const;
@@ -399,7 +402,7 @@ public:
 
 	CGameObject*			ObjectWeLookingAt			() {return m_pObjectWeLookingAt;}
 	CInventoryOwner*		PersonWeLookingAt			() {return m_pPersonWeLookingAt;}
-	LPCSTR					GetDefaultActionForObject	() {return *m_sDefaultObjAction;}
+	LPCSTR					GetDefaultActionForObject	() {return m_sDefaultObjAction;}
 //.	void					AddFollower					(u16 id);
 //.	void					RemoveFollower				(u16 id);
 //.	void					SendCmdToFollowers			(int cmd);
@@ -415,13 +418,7 @@ protected:
 	IInventoryBox*			m_pInvBoxWeLookingAt;
 
 	// Tip for action for object we're looking at
-	shared_str				m_sDefaultObjAction;
-	shared_str				m_sCharacterUseAction;
-	shared_str				m_sDeadCharacterUseAction;
-	shared_str				m_sDeadCharacterUseOrDragAction;
-	shared_str				m_sCarCharacterUseAction;
-	shared_str				m_sInventoryItemUseAction;
-	shared_str				m_sInventoryBoxUseAction;
+	const char*				m_sDefaultObjAction;
 
 	//режим подбирания предметов
 	bool					m_bPickupMode;

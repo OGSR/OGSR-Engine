@@ -200,10 +200,22 @@ public:
 	IC		bool	valid_vertex_position		(const Fvector &position) const;
 			bool	neighbour_in_direction		(const Fvector &direction, u32 start_vertex_id) const;
 
-#ifdef DEBUG
-#	ifndef AI_COMPILER
+	IC		CVertex* vertices					() { return m_nodes; }
+
+#ifndef AI_COMPILER
 private:
 	ref_shader			sh_debug;
+
+public:
+		void		render();
+
+#ifndef DEBUG
+
+private:
+		void		draw_nodes();
+		void		draw_restrictions();
+
+#else
 
 private:
 	int					m_current_level_id;
@@ -230,8 +242,6 @@ private:
 			void		draw_objects			();
 			void		draw_debug_node			();
 
-public:
-			void		render					();
 #	endif
 #endif
 };

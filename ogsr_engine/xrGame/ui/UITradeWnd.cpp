@@ -74,6 +74,8 @@ struct CUITradeInternal{
 	SDrawStaticStruct*	UIDealMsg;
 };
 
+bool others_zero_trade;
+
 CUITradeWnd::CUITradeWnd()
 	:	m_bDealControlsVisible	(false),
 		m_pTrade(NULL),
@@ -84,6 +86,7 @@ CUITradeWnd::CUITradeWnd()
 	Init();
 	Hide();
 	SetCurrentItem			(NULL);
+        others_zero_trade = !!READ_IF_EXISTS( pSettings, r_bool, "trade", "others_zero_trade", false );
 }
 
 CUITradeWnd::~CUITradeWnd()
@@ -455,6 +458,10 @@ void CUITradeWnd::PerformTrade()
 		
 		TransferItems		(&m_uidata->UIOurTradeList,		&m_uidata->UIOthersBagList, m_pOthersTrade,	true);
 		TransferItems		(&m_uidata->UIOthersTradeList,	&m_uidata->UIOurBagList,	m_pOthersTrade,	false);
+                if ( others_zero_trade ) {
+                  m_pOthersTrade->pThis.inv_owner->set_money( others_money, true );
+                  m_pOthersTrade->pPartner.inv_owner->set_money( our_money, true );
+                }
 	}else
 	{
 		if(others_money<0)
@@ -482,7 +489,6 @@ bool CUITradeWnd::OnKeyboard(int dik, EUIMessages keyboard_action)
 
 bool CUITradeWnd::OnMouse(float x, float y, EUIMessages mouse_action)
 {
-	//вызов дополнительного меню по правой кнопке
 	if (mouse_action == WINDOW_RBUTTON_DOWN)
 	{
 		if (m_pUIPropertiesBox->IsShown())
@@ -542,9 +548,14 @@ void CUITradeWnd::UpdatePrices()
 	m_iOurTradePrice	= CalcItemsPrice	(&m_uidata->UIOurTradeList,		m_pOthersTrade, true);
 	m_iOthersTradePrice = CalcItemsPrice	(&m_uidata->UIOthersTradeList,	m_pOthersTrade, false);
 
+	if ( !m_pOthersInvOwner->InfinitiveMoney() ) {
+          u32 others_money = m_pOthersInvOwner->get_money();
+          if ( others_zero_trade && m_iOurTradePrice > others_money )
+            m_iOurTradePrice = others_money;
+	}
 
 	string256				buf;
-	sprintf_s					(buf, "%d RU", m_iOurTradePrice);
+	sprintf_s( buf, "%d RU", m_iOurTradePrice );
 	m_uidata->UIOurPriceCaption.GetPhraseByIndex(2)->str = buf;
 	sprintf_s					(buf, "%d RU", m_iOthersTradePrice);
 	m_uidata->UIOthersPriceCaption.GetPhraseByIndex(2)->str = buf;
@@ -553,8 +564,8 @@ void CUITradeWnd::UpdatePrices()
 	m_uidata->UIOurMoneyStatic.SetText(buf);
 
 	if(!m_pOthersInvOwner->InfinitiveMoney()){
-		sprintf_s					(buf, "%d RU", m_pOthersInvOwner->get_money());
-		m_uidata->UIOtherMoneyStatic.SetText(buf);
+          sprintf_s( buf, "%d RU", (int)m_pOthersInvOwner->get_money() );
+          m_uidata->UIOtherMoneyStatic.SetText(buf);
 	}else
 	{
 		m_uidata->UIOtherMoneyStatic.SetText("---");
@@ -572,12 +583,14 @@ void CUITradeWnd::TransferItems(CUIDragDropListEx* pSellList,
 		auto InvItm = (PIItem)itm->m_pData;
 		InvItm->m_highlight_equipped = false; //Убираем подсветку после продажи предмета
 		itm->m_select_equipped = false;
-		pTrade->TransferItem	(InvItm, bBuying);
+		pTrade->TransferItem( InvItm, bBuying, !others_zero_trade );
 		pBuyList->SetItem		(itm);
 	}
 
-	pTrade->pThis.inv_owner->set_money ( pTrade->pThis.inv_owner->get_money(), true );
-	pTrade->pPartner.inv_owner->set_money( pTrade->pPartner.inv_owner->get_money(), true );
+        if ( !others_zero_trade ) {
+          pTrade->pThis.inv_owner->set_money ( pTrade->pThis.inv_owner->get_money(), true );
+          pTrade->pPartner.inv_owner->set_money( pTrade->pPartner.inv_owner->get_money(), true );
+        }
 }
 
 void CUITradeWnd::UpdateLists(EListType mode)

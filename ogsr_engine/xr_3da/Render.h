@@ -260,7 +260,6 @@ public:
 
 	// KD: need to know, what R2 phase is active now
 	virtual u32						active_phase			()											= 0;
-	virtual void					set_thermovision_data(Fvector* w_timers, Fvector4* w_states)			= 0;
 	virtual BOOL					is_sun() = 0;
 	virtual BOOL					is_required_lens_dirt() = 0;
 	// Constructor/destructor

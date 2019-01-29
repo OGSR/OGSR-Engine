@@ -175,36 +175,33 @@ CUIListItem* CUIListWnd::GetItem(int index)
 }
 
 
-void CUIListWnd::DetachChild(CUIWindow* pChild)
+void CUIListWnd::DetachChild(CUIWindow* pChild, bool from_destructor)
 {
 	LIST_ITEM_LIST_it it = std::find(m_ItemList.begin(),m_ItemList.end(),pChild);
 	if(it!=m_ItemList.end())
 		m_ItemList.erase(it);
 
-	inherited::DetachChild	(pChild);
+	inherited::DetachChild(pChild, from_destructor);
 }
 
-void CUIListWnd::RemoveAll()
-{
-	if(m_ItemList.empty()) return;
-		
-	while(!m_ItemList.empty())
-	{
-		DetachChild(m_ItemList.front());
-	}
 
-	m_iFirstShownIndex = 0;
-	
-	
-	UpdateList();
-	Reset();
+void CUIListWnd::RemoveAll() {
+  if( m_ItemList.empty() ) return;
 
-	//обновить полосу прокрутки
-	m_ScrollBar->SetRange(0,0);
-	m_ScrollBar->SetPageSize(0);
-	m_ScrollBar->SetScrollPos(s16(m_iFirstShownIndex));
+  while( !m_ItemList.empty() ) {
+    DetachChild( m_ItemList.front() );
+  }
 
-	UpdateScrollBar();
+  m_iFirstShownIndex = 0;
+  UpdateList();
+  Reset();
+
+  //обновить полосу прокрутки
+  m_ScrollBar->SetRange( 0, 0 );
+  m_ScrollBar->SetPageSize( 0 );
+  m_ScrollBar->SetScrollPos( s16( m_iFirstShownIndex ) );
+
+  UpdateScrollBar();
 }
 
 
@@ -470,20 +467,35 @@ int CUIListWnd::FindItemWithValue(int iValue)
 	return -1;
 }
 
+#include "../xr_3da/xr_input.h"
+#include "../Level.h"
 
 bool CUIListWnd::OnMouse(float x, float y, EUIMessages mouse_action)
 {
-	switch(mouse_action){
+	bool with_shift = (Level().IR_GetKeyState(DIK_LSHIFT));
+
+	switch (mouse_action) 
+	{
 	case WINDOW_LBUTTON_DB_CLICK:
 		break;
 	case WINDOW_MOUSE_WHEEL_DOWN:
-			m_ScrollBar->TryScrollInc	();
-			return						true;
-			break;
+		m_ScrollBar->TryScrollInc();
+		if (with_shift)
+		{
+			m_ScrollBar->TryScrollInc();
+			m_ScrollBar->TryScrollInc();
+		}
+		return						true;
+		break;
 	case WINDOW_MOUSE_WHEEL_UP:
+		m_ScrollBar->TryScrollDec();
+		if (with_shift)
+		{
 			m_ScrollBar->TryScrollDec();
-			return						true;
-			break;
+			m_ScrollBar->TryScrollDec();
+		}
+		return						true;
+		break;
 	}
 
 	return inherited::OnMouse(x, y, mouse_action);

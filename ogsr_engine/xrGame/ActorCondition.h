@@ -16,7 +16,7 @@ class CActor;
 
 class CActorCondition: public CEntityCondition {
 	friend class CScriptActor;
-private:
+public:
 	typedef CEntityCondition inherited;
 	enum {	eCriticalPowerReached			=(1<<0),
 			eCriticalMaxPowerReached		=(1<<1),
@@ -26,7 +26,12 @@ private:
 			eWeaponJammedReached			=(1<<5),
 			ePhyHealthMinReached			=(1<<6),
 			eCantWalkWeight					=(1<<7),
-			eCriticalThirstReached          =(1<<8),
+
+			eLimping = (1 << 8),
+			eCantWalk = (1 << 9),
+			eCantSprint = (1 << 10),
+
+			eCriticalThirstReached          =(1<<11),
 			};
 	Flags16											m_condition_flags;
 private:
@@ -49,11 +54,12 @@ public:
 	virtual void		ChangeThirst				(float value);
 
 	// хромание при потере сил и здоровья
-	virtual	bool		IsLimping					() const;
-	virtual bool		IsCantWalk					() const;
+	virtual	bool		IsLimping					();
+	virtual bool		IsCantWalk					();
 	virtual bool		IsCantWalkWeight			();
-	virtual bool		IsCantSprint				() const;
+	virtual bool		IsCantSprint				();
 
+	void		PowerHit					(float power, bool apply_outfit);
 	virtual void		UpdatePower();
 
 	void		ConditionJump				(float weight);
@@ -109,11 +115,6 @@ protected:
 	float m_fAccelK;
 	float m_fSprintK;
 	
-
-	mutable bool m_bLimping;
-	mutable bool m_bCantWalk;
-	mutable bool m_bCantSprint;
-
 	//порог силы и здоровья меньше которого актер начинает хромать
 	float m_fLimpingPowerBegin;
 	float m_fLimpingPowerEnd;

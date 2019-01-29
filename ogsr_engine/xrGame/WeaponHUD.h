@@ -48,6 +48,7 @@ public:
 	Fvector				m_sp_offset;
 
 	Fmatrix				m_offset;
+	bool				m_bAllowBobbing;
 public:
 	virtual				~weapon_hud_value		();
 	BOOL				load					(const shared_str& section, CHudItem* owner);

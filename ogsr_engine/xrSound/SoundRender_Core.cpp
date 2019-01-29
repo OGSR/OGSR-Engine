@@ -12,6 +12,7 @@
 #pragma warning(pop)
 
 int	psSoundTargets = 256; //--#SM+#--
+int	psSoundTargetsAutoMax = 1024;
 Flags32	psSoundFlags			= {ss_Hardware | ss_EAX};
 float	psSoundOcclusionScale	= 0.5f;
 float	psSoundCull				= 0.01f;
@@ -28,7 +29,7 @@ CSoundRender_Core*				SoundRender = 0;
 CSound_manager_interface*		Sound		= 0;
 
 
-std::unordered_map <std::string, EFXEAXREVERBPROPERTIES> efx_reverb_presets = {
+string_unordered_map<std::string, EFXEAXREVERBPROPERTIES> efx_reverb_presets = {
   { "generic", EFX_REVERB_PRESET_GENERIC },
   { "paddedcell", EFX_REVERB_PRESET_PADDEDCELL },
   { "room", EFX_REVERB_PRESET_ROOM },

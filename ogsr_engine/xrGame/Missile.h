@@ -123,6 +123,7 @@ protected:
 protected:
 			void			setup_throw_params		();
 public:
+	Fvector const&			throw_point_offset		() const {return m_vThrowPoint;}
 	virtual void			activate_physic_shell	();
 	virtual void			setup_physic_shell		();
 	virtual void			create_physic_shell		();

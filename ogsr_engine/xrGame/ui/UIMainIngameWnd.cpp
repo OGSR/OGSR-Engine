@@ -91,39 +91,39 @@ DLL_API CUIMainIngameWnd* GetMainIngameWindow()
 	return NULL;
 }
 
-	CUIStatic * warn_icon_list[8] = { NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL };
-	
-	// alpet: для возможности внешнего контроля иконок (используется в NLC6 вместо типичных индикаторов). Никак не влияет на игру для остальных модов.
-	bool __declspec(dllexport) external_icon_ctrl = false;
+CUIStatic * warn_icon_list[8] = { NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL };
 
-	// позволяет расцветить иконку или изменить её размер
-	bool __declspec(dllexport) SetupGameIcon(u32 icon, u32 cl, float width, float height)
+// alpet: для возможности внешнего контроля иконок (используется в NLC6 вместо типичных индикаторов). Никак не влияет на игру для остальных модов.
+bool external_icon_ctrl = false;
+
+// позволяет расцветить иконку или изменить её размер
+bool SetupGameIcon(u32 icon, u32 cl, float width, float height)
+{
+	CUIMainIngameWnd *window = GetMainIngameWindow();
+	if (!window)
 	{
-		CUIMainIngameWnd *window = GetMainIngameWindow();
-		if (!window)
-		{
-			Msg("SetupGameIcon failed due GetMainIngameWindow() returned NULL");
-			return false;
-		}
-
-		CUIStatic *sIcon = warn_icon_list[icon & 7];
-		
-		if (sIcon)
-		{			
-			if (width > 0 && height > 0)
-			{
-				sIcon->SetWidth (width);
-				sIcon->SetHeight (height);
-				sIcon->SetStretchTexture(cl > 0);
-			}
-			else 
-				window->SetWarningIconColor((CUIMainIngameWnd::EWarningIcons)icon, cl);
-
-			external_icon_ctrl = true;
-			return true;
-		}
+		Msg("SetupGameIcon failed due GetMainIngameWindow() returned NULL");
 		return false;
 	}
+
+	CUIStatic *sIcon = warn_icon_list[icon & 7];
+	
+	if (sIcon)
+	{			
+		if (width > 0 && height > 0)
+		{
+			sIcon->SetWidth (width);
+			sIcon->SetHeight (height);
+			sIcon->SetStretchTexture(cl > 0);
+		}
+		else 
+			window->SetWarningIconColor((CUIMainIngameWnd::EWarningIcons)icon, cl);
+
+		external_icon_ctrl = true;
+		return true;
+	}
+	return false;
+}
 
 CUIMainIngameWnd::CUIMainIngameWnd()
 {
@@ -364,9 +364,7 @@ void CUIMainIngameWnd::SetAmmoIcon (const shared_str& sect_name)
 	CIconParams icon_params(sect_name);
 	Frect rect = icon_params.original_rect();
 
-	UIWeaponIcon.SetShader		(icon_params.get_shader());
-	UIWeaponIcon.GetUIStaticItem().SetOriginalRect(rect);
-	UIWeaponIcon.SetStretchTexture(true);
+	icon_params.set_shader( &UIWeaponIcon );
 
 	int iGridWidth = (int)round(rect.width());
 
@@ -1127,9 +1125,7 @@ CUIStatic* init_addon(
 	
 	CIconParams     params(sect);
 	Frect rect = params.original_rect();			
-	addon->SetStretchTexture(true);
-	addon->SetShader(params.get_shader());
-	addon->SetOriginalRect		(rect);
+	params.set_shader( addon );
 	addon->SetWndRect(pos.x, pos.y, rect.width()*scale*scale_x, rect.height()*scale);
 	addon->SetColor(color_rgba(255, 255, 255, 192));
 
@@ -1140,7 +1136,11 @@ void CUIMainIngameWnd::UpdatePickUpItem	()
 {
 	if (!m_pPickUpItem || !Level().CurrentViewEntity() || Level().CurrentViewEntity()->CLS_ID != CLSID_OBJECT_ACTOR) 
 	{
-//		UIPickUpItemIcon.Show(false);
+		if (UIPickUpItemIcon.IsShown())
+		{
+			UIPickUpItemIcon.Show(false);
+		}
+
 		return;
 	};
 	if (UIPickUpItemIcon.IsShown()) return;
@@ -1159,10 +1159,7 @@ void CUIMainIngameWnd::UpdatePickUpItem	()
 	float scale = scale_x<scale_y?scale_x:scale_y;
 
 	
-	UIPickUpItemIcon.GetUIStaticItem().SetShader(params.get_shader());
-	UIPickUpItemIcon.GetUIStaticItem().SetOriginalRect(rect);
-
-	UIPickUpItemIcon.SetStretchTexture(true);
+	params.set_shader( &UIPickUpItemIcon );
 
 	UIPickUpItemIcon.SetWidth(rect.width()*scale*UI()->get_current_kx());
 	UIPickUpItemIcon.SetHeight(rect.height()*scale);

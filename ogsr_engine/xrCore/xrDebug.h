@@ -3,22 +3,17 @@
 #define DEBUG_INVOKE __debugbreak()
 
 typedef	void		crashhandler		(void);
-typedef	void		on_dialog			(bool before);
 
 class XRCORE_API	xrDebug
 {
 private:
 	crashhandler*	handler = nullptr;
-	on_dialog*		m_on_dialog = nullptr;
 
 public:
 	void			_initialize			();
 	
 	crashhandler*	get_crashhandler() const { return handler; };
 	void			set_crashhandler	(crashhandler* handler)	{ this->handler = handler; };
-
-	on_dialog*		get_on_dialog() const { return m_on_dialog;	}
-	void			set_on_dialog		(on_dialog* on_dialog)		{ m_on_dialog = on_dialog;	}
 
 	const char* DXerror2string(const HRESULT code) const;
 	const char* error2string(const DWORD code) const;
@@ -50,6 +45,7 @@ IC	std::string __cdecl	make_string		(const char* format,...)
 
 extern XRCORE_API xrDebug Debug;
 extern XRCORE_API HWND gGameWindow;
+extern XRCORE_API bool ExitFromWinMain;
 
 XRCORE_API void LogStackTrace(const char* header);
 XRCORE_API void LogStackTrace(const char* header, _EXCEPTION_POINTERS *pExceptionInfo);

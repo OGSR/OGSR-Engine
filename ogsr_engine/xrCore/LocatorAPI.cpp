@@ -17,7 +17,6 @@
 
 constexpr u32 BIG_FILE_READER_WINDOW_SIZE	= 1024*1024;
 
-using DUMMY_STUFF = void( const void*, const u32&, void* );
 XRCORE_API DUMMY_STUFF* g_temporary_stuff = nullptr;
 
 std::unique_ptr<CLocatorAPI> xr_FS;
@@ -374,8 +373,13 @@ void CLocatorAPI::ProcessOne	(const char* path, const _finddata_t& F)
 		Register	(N,0xffffffff,0,0,F.size,F.size,(u32)F.time_write);
 		Recurse		(N);
 	} else {
-		if (strext(N) && 0==strncmp(strext(N),".db",3))		ProcessArchive	(N);
-		else												Register		(N,0xffffffff,0,0,F.size,F.size,(u32)F.time_write);
+		if (!m_Flags.is(flTargetFolderOnly) && strext(N) && 0 == strncmp(strext(N), ".db", 3)) {
+			Msg("--Found base arch: [%s], size: [%u]", N, F.size);
+			ProcessArchive(N);
+		}
+		else {
+			Register(N, 0xffffffff, 0, 0, F.size, F.size, (u32)F.time_write);
+		}
 	}
 }
 
@@ -616,12 +620,20 @@ void CLocatorAPI::_initialize	(u32 flags, LPCSTR target_folder, LPCSTR fs_name)
 			FS_Path* P			= xr_new<FS_Path>((p_it!=pathes.end())?p_it->second->m_Path:root,lp_add,lp_def,lp_capt,fl);
 			bNoRecurse			= !(fl&FS_Path::flRecurse);
 #ifdef RESTRICT_GAMEDATA
+#if __has_include("..\build_config_overrides\trivial_encryptor_ovr.h")
+#error Something strange...
+#endif
 			bool restricted = false;
 			if ( ( xr_strcmp( id, "$game_config$" ) == 0 || xr_strcmp( id, "$game_scripts$" ) == 0 ) )
 				restricted = !Core.ParamFlags.test( xrCore::ParamFlag::dbg );
 			if ( !restricted )
+				Recurse(P->m_Path);
+#elif __has_include("..\build_config_overrides\trivial_encryptor_ovr.h")
+			if (!strcmp(id, "$app_data_root$") || !strcmp(id, "$game_saves$") || !strcmp(id, "$logs$") || !strcmp(id, "$screenshots$"))
+				Recurse(P->m_Path);
+#else
+			Recurse(P->m_Path);
 #endif
-			Recurse				(P->m_Path);
 			I					= pathes.insert(mk_pair(xr_strdup(id),P));
 #ifndef DEBUG
 			m_Flags.set			(flCacheFiles,FALSE);
@@ -633,8 +645,10 @@ void CLocatorAPI::_initialize	(u32 flags, LPCSTR target_folder, LPCSTR fs_name)
 		R_ASSERT		(path_exist("$app_data_root$"));
 	};
 		
-	ProcessExternalArch		();
-
+#if !__has_include("..\build_config_overrides\trivial_encryptor_ovr.h")
+	if (!m_Flags.is(flTargetFolderOnly))
+		ProcessExternalArch();
+#endif
 
 	u32	M2			= Memory.mem_usage();
 	Msg				("FS: %d files cached, %dKb memory used.",files.size(),(M2-M1)/1024);
@@ -1206,10 +1220,8 @@ CLocatorAPI::files_it CLocatorAPI::file_find_it(LPCSTR fname)
 	VERIFY			(xr_strlen(fname)*sizeof(char) < sizeof(file_name));
 	strcpy_s		(file_name,sizeof(file_name),fname);
 	desc_f.name		= file_name;
-//	desc_f.name		= xr_strlwr(xr_strdup(fname));
-    files_it I		= files.find(desc_f);
-//	xr_free			(desc_f.name);
-	return			(I);
+
+	return files.find(desc_f);
 }
 
 BOOL CLocatorAPI::dir_delete(LPCSTR path,LPCSTR nm,BOOL remove_files)
@@ -1270,6 +1282,9 @@ void CLocatorAPI::file_delete(LPCSTR path, LPCSTR nm)
 
 void CLocatorAPI::file_copy(LPCSTR src, LPCSTR dest)
 {
+#if  __has_include("..\build_config_overrides\trivial_encryptor_ovr.h")
+	FATAL("Mamkin Hacker Detected");
+#else
 	if (exist(src)){
         IReader* S		= r_open(src);
         if (S){
@@ -1281,6 +1296,7 @@ void CLocatorAPI::file_copy(LPCSTR src, LPCSTR dest)
             r_close		(S);
         }
 	}
+#endif
 }
 
 void CLocatorAPI::file_rename(LPCSTR src, LPCSTR dest, bool bOwerwrite)
@@ -1500,7 +1516,7 @@ void CLocatorAPI::ProcessExternalArch()
 	string_path		full_mod_name, _path;
 	for( ;it!=it_e; ++it)
 	{
-		Msg					("--found external arch %s",(*it).name.c_str());
+		Msg("--Found external arch: [%s], size: [%u]", (*it).name.c_str(), (*it).size);
 		update_path			(full_mod_name,"$mod_dir$",(*it).name.c_str());
 
 		FS_Path* pFSRoot		= FS.get_path("$fs_root$");

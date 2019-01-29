@@ -2,7 +2,6 @@
 
 #include "fs_internal.h"
 
-using DUMMY_STUFF = void( const void*, const u32&, void* );
 XRCORE_API DUMMY_STUFF* g_dummy_stuff = nullptr; //Нужно для xrCompressor. Не удалять!
 
 #ifdef DEBUG
@@ -14,7 +13,7 @@ XRCORE_API DUMMY_STUFF* g_dummy_stuff = nullptr; //Нужно для xrCompresso
 
 void register_file_mapping			(void *address, const u32 &size, LPCSTR file_name)
 {
-	std::lock_guard<decltype( g_file_mappings_Mutex )> lock( g_file_mappings_Mutex );
+	std::scoped_lock<decltype( g_file_mappings_Mutex )> lock( g_file_mappings_Mutex );
 
 	FILE_MAPPINGS::const_iterator	I = g_file_mappings.find(*(u32*)&address);
 	VERIFY							(I == g_file_mappings.end());
@@ -26,7 +25,7 @@ void register_file_mapping			(void *address, const u32 &size, LPCSTR file_name)
 
 void unregister_file_mapping		(void *address, const u32 &size)
 {
-	std::lock_guard<decltype( g_file_mappings_Mutex )> lock( g_file_mappings_Mutex );
+	std::scoped_lock<decltype( g_file_mappings_Mutex )> lock( g_file_mappings_Mutex );
 
 	FILE_MAPPINGS::iterator			I = g_file_mappings.find(*(u32*)&address);
 	VERIFY							(I != g_file_mappings.end());
@@ -39,7 +38,7 @@ void unregister_file_mapping		(void *address, const u32 &size)
 
 XRCORE_API void dump_file_mappings	()
 {
-	std::lock_guard<decltype( g_file_mappings_Mutex )> lock( g_file_mappings_Mutex );
+	std::scoped_lock<decltype( g_file_mappings_Mutex )> lock( g_file_mappings_Mutex );
 
 	Msg								("* active file mappings (%d):",g_file_mappings.size());
 

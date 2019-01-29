@@ -29,19 +29,8 @@ wpn_bobbing = false
 ; и статиков condition_progess_bar и cell_item_text.
 show_inv_item_condition = false
 
-; Включить фикс восстанавливающий солнце.
-; Как побочный эффект при включении - может возникать необновление погоды, чтобы его избежать нужно устанавливать погоду не ранее чем на первом апдейте актора, примерно так:
-;	level.add_call(
-;		function() return true end,
-;		function() level.set_weather(что-то там) end
-;	)
-; Либо, что ещё лучше, использовать скриптовый погодный менеджер из ОГСЕ.
-restore_sun_fix = true
-
 ; Вычисление и использование правильного положения солнца, вместо позиции из погодных конфигов.
-; !Эту опцию желательно использовать в ОГСЕ и прочих модах с полностью скриптовым менеджером погоды!
-; При использовании со стандартным погодным менеджером может получиться эффект "вечной ночи"
-dynamic_sun_movement = false
+dynamic_sun_movement = true
 
 ; Убирает возможность назначать альтернативные кнопки. Т.е. убирает второй
 ; столбец в настройках и отключает консольную команду bind_sec.
@@ -144,6 +133,18 @@ old_outfit_slot_style = true
 ; мере выполнения.
 ;show_objectives_ondemand = true
 
+; Подбирать можно только предметы, которые находятся на виду. Т.е. не
+; подбирать предметы из закрытых шкафчиков.
+pickup_check_overlaped = true
+
+; Рисовать кровь от попаданий только на геометрии, не на динамических объектах.
+;wallmarks_on_static_only = true
+
+; Упрощенный режим стрельбы сталкеров. Не будут рисоваться партиклы гильз, дыма
+; и при стрельбе у них не будет отдачи. Соотв. стрелять они будут точнее.
+npc_simplified_shooting = false
+
+
 [dragdrop]
 ; цвет подкрашенной иконки выбранного предмета/патронов/аддонов/оружия
 color_ammo = 0, 128, 0, 255 ;RGBA
@@ -209,3 +210,11 @@ select_mode_1342 = true
 ; ограничений min\max
 ;trade_get_buy_price  = engine_callbacks.trade_get_buy_price
 ;trade_get_sell_price = engine_callbacks.trade_get_sell_price
+
+; Вызывается движком из CDangerManager::add() и разрешает или
+; запрещает добавлять этот danger. Возвращаемое значение, true/false,
+; показывает, можно или нельзя добавлять этот danger.
+;
+; on_before_add( npc, mem_obj, pos, lvl_time, danger_type, perceive_type )
+;
+;danger_on_before_add = dsh_danger.on_before_add

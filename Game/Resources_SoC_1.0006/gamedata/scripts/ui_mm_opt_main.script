@@ -13,7 +13,7 @@ function options_dialog:__init() super()
 
 	self:InitControls()
 	self:InitCallBacks()
-	self:UpdateControls()
+	self:UpdateOptValues()
 end
 
 function options_dialog:__finalize()
@@ -73,29 +73,23 @@ function options_dialog:InitControls()
 	self:Register(self.tab, "tab")
 end
 
-function options_dialog:UpdateControls()
-	local opt = COptionsManager()
-
-	opt:SetCurrentValues("mm_opt_video_preset")
-	opt:SaveBackupValues("mm_opt_video_preset")
-
-	opt:SetCurrentValues("mm_opt_video")
-	opt:SaveBackupValues("mm_opt_video")
-
-	opt:SetCurrentValues("mm_opt_video_adv")
-	opt:SaveBackupValues("mm_opt_video_adv")
-
-	opt:SetCurrentValues("mm_opt_gameplay")
-	opt:SaveBackupValues("mm_opt_gameplay")
-
-	opt:SetCurrentValues("mm_opt_sound")
-	opt:SaveBackupValues("mm_opt_sound")
-
-	opt:SetCurrentValues("mm_opt_controls")
-	opt:SaveBackupValues("mm_opt_controls")
-
-	opt:SetCurrentValues("key_binding")
-	opt:SaveBackupValues("key_binding")
+function options_dialog:UpdateOptValues(flag) --true - применить настройки, false - отменить настройки, nil - просто обновить дефолтные значения
+	local OptMgr = COptionsManager()
+	local opt_tbl = {"mm_opt_video_preset", "mm_opt_video", "mm_opt_video_adv", "mm_opt_gameplay", "mm_opt_sound", "mm_opt_controls", "key_binding"}
+	for _, opt_name in ipairs(opt_tbl) do
+		if flag == true then
+			OptMgr:SaveValues(opt_name)
+		elseif flag == false then
+			OptMgr:UndoGroup(opt_name)
+		end
+	end
+	if flag == true then
+		OptMgr:OptionsPostAccept()
+	end
+	for _, opt_name in ipairs(opt_tbl) do
+		OptMgr:SetCurrentValues(opt_name)
+		OptMgr:SaveBackupValues(opt_name)
+	end
 end
 
 function options_dialog:InitCallBacks()
@@ -138,24 +132,7 @@ function options_dialog:OnPresetChanged()
 end
 
 function options_dialog:OnBtnAccept()
-	local opt = COptionsManager()
-	opt:SaveValues("mm_opt_video_preset")
-	opt:SaveValues("key_binding")
-	opt:SaveValues("mm_opt_video")
-	opt:SaveValues("mm_opt_video_adv")
-	opt:SaveValues("mm_opt_gameplay")
-	opt:SaveValues("mm_opt_sound")
-	opt:SaveValues("mm_opt_controls")
-
-	opt:OptionsPostAccept()
-
-	opt:SaveBackupValues("mm_opt_video_preset")
-	opt:SaveBackupValues("mm_opt_video")
-	opt:SaveBackupValues("mm_opt_video_adv")
-	opt:SaveBackupValues("mm_opt_gameplay")
-	opt:SaveBackupValues("mm_opt_sound")
-	opt:SaveBackupValues("mm_opt_controls")
-	opt:SaveBackupValues("key_binding")
+	self:UpdateOptValues(true)
 
 	self:GetHolder():start_stop_menu(self, true)
 	self.owner:Show(true)
@@ -166,24 +143,7 @@ function options_dialog:OnBtnAccept()
 end
 
 function options_dialog:OnBtnCancel()
-	local opt = COptionsManager()
-	opt:UndoGroup("mm_opt_video_preset")
-	opt:UndoGroup("mm_opt_video")
-	opt:UndoGroup("mm_opt_video_adv")
-	opt:UndoGroup("mm_opt_sound")
-	opt:UndoGroup("mm_opt_gameplay")
-	opt:UndoGroup("mm_opt_controls")
-	opt:UndoGroup("key_binding")
-
-	opt:OptionsPostAccept()
-
-	opt:SaveBackupValues("mm_opt_video_preset")
-	opt:SaveBackupValues("mm_opt_video")
-	opt:SaveBackupValues("mm_opt_video_adv")
-	opt:SaveBackupValues("mm_opt_gameplay")
-	opt:SaveBackupValues("mm_opt_sound")
-	opt:SaveBackupValues("mm_opt_controls")
-	opt:SaveBackupValues("key_binding")
+	self:UpdateOptValues(false)
 
 	self:GetHolder():start_stop_menu(self, true)
 	self.owner:Show(true)
@@ -230,7 +190,9 @@ function options_dialog:OnSimplyGraphic()
 end
 
 function options_dialog:OnKeyboard(dik, keyboard_action)
-	CUIScriptWnd.OnKeyboard( self, dik, keyboard_action )
+	if CUIScriptWnd.OnKeyboard( self, dik, keyboard_action ) then
+		return true
+	end
 	if keyboard_action == ui_events.WINDOW_KEY_PRESSED then
 		if dik_to_bind(dik) == key_bindings.kQUIT then
 			if self.dlg_video_adv:IsShown() then
@@ -242,8 +204,9 @@ function options_dialog:OnKeyboard(dik, keyboard_action)
 				self.owner:Show(true)
 			end
 			self:HintRefresh()
-		end	
+		end
+		return true
 	end
 
-	return true
+	return false
 end

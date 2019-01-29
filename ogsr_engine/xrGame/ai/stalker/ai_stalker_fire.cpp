@@ -112,7 +112,7 @@ void CAI_Stalker::g_fireParams(const CHudItem* pHudItem, Fvector& P, Fvector& D)
 		if (missile) {
 			update_throw_params	();
 			P			= m_throw_position;
-			D			= m_throw_direction;
+			D			= Fvector().set(m_throw_velocity).normalize();
 			VERIFY		(!fis_zero(D.square_magnitude()));
 			return;
 		}
@@ -218,7 +218,7 @@ void			CAI_Stalker::Hit					(SHit* pHDS)
 		}
 
 		const CEntityAlive	*entity_alive = smart_cast<const CEntityAlive*>(pHDS->initiator());
-		if (entity_alive && !wounded()) {
+		if ( entity_alive && !wounded() && !fis_zero( pHDS->damage() ) ) {
 			if (is_relation_enemy(entity_alive))
 				sound().play		(eStalkerSoundInjuring);
 //			else
@@ -826,15 +826,221 @@ bool CAI_Stalker::use_throw_randomness		()
 float CAI_Stalker::missile_throw_force		() 
 {
 	update_throw_params		();
-	VERIFY					(_valid(m_throw_force));
-	return					(m_throw_force);
+	return					(m_throw_velocity.magnitude());
 }
 
-void CAI_Stalker::throw_target				(const Fvector &position)
+void CAI_Stalker::compute_throw_miss		( u32 const vertex_id )
 {
-	float					distance_to_sqr = position.distance_to_sqr(m_throw_target);
+	float const throw_miss_radius		= ::Random.randF(2.f,5.f);
+	u32 const try_count					= 6;
+
+	CLevelGraph const& level_graph		= ai().level_graph();
+	for (u32 i = 0; i < try_count; ++i) {
+		Fvector const direction			= Fvector().random_dir();
+		Fvector const check_position	= Fvector().mad( m_throw_target_position, direction, throw_miss_radius );
+		u32 const check_vertex_id		= level_graph.check_position_in_direction(vertex_id, m_throw_target_position, check_position);
+		if ( !level_graph.valid_vertex_id(check_vertex_id) )
+			continue;
+
+		m_throw_target_position			= check_position;
+		return;
+	}
+}
+
+void CAI_Stalker::throw_target_impl			(const Fvector &position, CObject *throw_ignore_object )
+{
+	float					distance_to_sqr = position.distance_to_sqr(m_throw_target_position);
 	m_throw_actual			= m_throw_actual && (distance_to_sqr < _sqr(.1f));
-	m_throw_target			= position;
+	m_throw_target_position	= position;
+	m_throw_ignore_object	= throw_ignore_object;
+}
+
+void CAI_Stalker::throw_target				(const Fvector &position, CObject *throw_ignore_object )
+{
+	throw_target_impl		( position, throw_ignore_object );
+}
+
+void CAI_Stalker::throw_target				(const Fvector &position, u32 const vertex_id, CObject *throw_ignore_object )
+{
+	throw_target_impl		( position, throw_ignore_object );
+	compute_throw_miss		( vertex_id );
+}
+
+static void throw_position					(Fvector &result, const Fvector &start_position, const Fvector &velocity, const Fvector &gravity, const float &time)
+{
+	// result = start_position + velocity*t + gravity*t^2/2
+	result.mad(
+		start_position,
+		velocity,
+		time
+	).mad(
+		gravity,
+		_sqr(time)*.5f
+	);
+}
+
+inline static float throw_max_error_time	(
+		float t0,
+		float t1
+	)
+{
+	return					( (t1 + t0)*.5f );
+}
+
+static float throw_pick_error				(
+		float low,
+		float high,
+		const Fvector &position,
+		const Fvector &velocity,
+		const Fvector &gravity
+	)
+{
+	float					max_error_time = throw_max_error_time(low, high);
+	
+	Fvector					start;
+	throw_position			(start, position, velocity, gravity, low);
+
+	Fvector					target;
+	throw_position			(target, position, velocity, gravity, high);
+
+	Fvector					max_error;
+	throw_position			(max_error, position, velocity, gravity, max_error_time);
+
+	Fvector					start_to_max_error = Fvector().sub(max_error,start);
+	float					magnitude = start_to_max_error.magnitude();
+	start_to_max_error.mul	(1.f/magnitude);
+	Fvector					start_to_target = Fvector().sub(target,start).normalize();
+	float					cosine_alpha = start_to_max_error.dotproduct(start_to_target);
+	float					sine_alpha = _sqrt(1.f - _sqr(cosine_alpha));
+	return					(magnitude*sine_alpha);
+}
+
+static float throw_select_pick_time			(
+		const float &start_low,
+		float high,
+		const Fvector &start,
+		const Fvector &velocity,
+		const Fvector &gravity,
+		const float &epsilon
+	)
+{
+	float					low = start_low;
+	float					check_time = high;
+	float					time_epsilon = .1f / velocity.magnitude();
+	while (!fsimilar(low, high, time_epsilon)) {
+		float				distance = throw_pick_error(start_low, check_time, start, velocity, gravity);
+		
+		if (distance < epsilon)
+			low				= check_time;
+		else
+			high			= check_time;
+
+		check_time			= (low + high)*.5f;
+	}
+	
+	return					(low);
+}
+
+
+IC BOOL throw_query_callback( collide::rq_result& result, LPVOID params ) {
+  *(float*)params = result.range;
+  if ( !result.O ) {
+    CDB::TRI* T = Level().ObjectSpace.GetStaticTris() + result.element;
+    if ( GMLib.GetMaterialByIdx( T->material )->Flags.is( SGameMtl::flPassable ) )
+      return TRUE;
+  }
+  return FALSE;
+}
+
+
+bool CAI_Stalker::throw_check_error			(
+		float low,
+		float high,
+		const Fvector &position,
+		const Fvector &velocity,
+		const Fvector &gravity
+	)
+{
+	Fvector					start;
+	throw_position			(start, position, velocity, gravity, low);
+
+	Fvector					target;
+	throw_position			(target, position, velocity, gravity, high);
+
+	Fvector					start_to_target = Fvector().sub(target,start);
+	float					distance = start_to_target.magnitude();
+
+	if (distance < .01f)
+		return				(false);
+
+	start_to_target.mul		(1.f/distance);
+	collide::ray_defs		ray_defs(start,start_to_target,distance,CDB::OPT_CULL,collide::rqtBoth);
+
+	float					range = distance;
+
+	BOOL					previous_enabled = getEnabled();
+	setEnabled				(FALSE);
+	
+	BOOL					throw_ignore_object_enabled = FALSE;
+	if (m_throw_ignore_object) {
+		throw_ignore_object_enabled			= m_throw_ignore_object->getEnabled();
+		m_throw_ignore_object->setEnabled	(FALSE);
+	}
+
+	Level().ObjectSpace.RayQuery	(rq_storage,ray_defs,throw_query_callback,&range,NULL,this);
+
+	if (m_throw_ignore_object)
+		m_throw_ignore_object->setEnabled	(throw_ignore_object_enabled);
+
+	setEnabled				(previous_enabled);
+
+	if (range < distance)
+		m_throw_collide_position.mad	(start,start_to_target,range);
+
+	return					(range == distance);
+}
+
+void CAI_Stalker::check_throw_trajectory	(const float &throw_time)
+{
+	m_throw_enabled			= false;
+
+#ifdef DEBUG
+	m_throw_picks.resize	(1);
+	m_throw_picks.front()	= m_throw_position;
+#endif // DEBUG
+
+	const Fvector			gravity = Fvector().set(0.f, -ph_world->Gravity(), 0.f);
+	const float				epsilon = .1f;
+
+	float					low = 0.f;
+	const float				high = throw_time;
+	for (;;) {
+		float				time = 
+			throw_select_pick_time(low, high, m_throw_position, m_throw_velocity, gravity, epsilon);
+
+#ifdef DEBUG
+		{
+			Fvector					temp;
+			throw_position			(temp, m_throw_position, m_throw_velocity, gravity, time);
+			m_throw_picks.push_back	(temp);
+		}
+#endif // DEBUG
+
+		if (!throw_check_error(low, time, m_throw_position, m_throw_velocity, gravity)) {
+			if (fsimilar(time,high) && m_throw_collide_position.similar(m_throw_target_position,.2f))
+				break;
+
+			return;
+		}
+
+		if (fsimilar(time,high))
+			break;
+
+		low					= time;
+	}
+
+	m_throw_collide_position= Fvector().set(flt_max,flt_max,flt_max);
+	m_throw_enabled			= true;
 }
 
 void CAI_Stalker::update_throw_params		()
@@ -842,7 +1048,7 @@ void CAI_Stalker::update_throw_params		()
 	if (m_throw_actual) {
 		if (m_computed_object_position.similar(Position())) {
 			if (m_computed_object_direction.similar(Direction())) {
-				VERIFY		(_valid(m_throw_force));
+				VERIFY		(_valid(m_throw_velocity));
 				return;
 			}
 		}
@@ -852,16 +1058,46 @@ void CAI_Stalker::update_throw_params		()
 	m_computed_object_position	= Position();
 	m_computed_object_direction	= Direction();
 
+#if 0
 	m_throw_position		= eye_matrix.c;
+#else
+	m_throw_position		= Position();
+	m_throw_position.y		+= 2.f;
+#endif
+
+/*
+	static float const distances[] = {
+		30.f, 40.f, 50.f, 60.f
+	};
+	VERIFY					(g_SingleGameDifficulty < sizeof(distances)/sizeof(distances[0]));
+	float const max_distance= distances[g_SingleGameDifficulty];
+*/
 
 	// computing velocity with minimum magnitude
-	Fvector					velocity;
-	velocity.sub			(m_throw_target,m_throw_position);
-	float					time = ThrowMinVelTime(velocity,ph_world->Gravity());
-	TransferenceToThrowVel	(velocity,time,ph_world->Gravity());
-	m_throw_force			= velocity.magnitude();
-	m_throw_direction		= velocity.normalize();
-	VERIFY					(_valid(m_throw_force));
+	m_throw_velocity.sub	(m_throw_target_position,m_throw_position);
+/*
+	if (m_throw_velocity.magnitude() > max_distance) {
+		m_throw_enabled		= false;
+
+#ifdef DEBUG
+		m_throw_picks.clear	();
+#endif // DEBUG
+		return;
+	}
+*/
+
+	float					time = ThrowMinVelTime(m_throw_velocity,ph_world->Gravity());
+	TransferenceToThrowVel	(m_throw_velocity,time,ph_world->Gravity());
+
+	check_throw_trajectory	(time);
+
+	//m_throw_velocity.mul(::Random.randF(.99f,1.01f));
+}
+
+void CAI_Stalker::on_throw_completed		()
+{
+	// agent_manager().member().on_throw_completed	();
+	m_last_throw_time		= Device.dwTimeGlobal;
 }
 
 bool CAI_Stalker::critically_wounded		()

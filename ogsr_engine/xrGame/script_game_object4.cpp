@@ -23,6 +23,7 @@
 #include "WeaponKnife.h"
 
 #include "HangingLamp.h"
+#include "CharacterPhysicsSupport.h"
 
 //////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////
@@ -327,6 +328,16 @@ void CScriptGameObject::ChangeBleeding(float _delta)
 		return;
 	}
 	e->conditions().ChangeBleeding(_delta);
+}
+
+void CScriptGameObject::AddWound(float hit_power, int hit_type, u16 element)
+{
+	CEntityAlive						*e = smart_cast<CEntityAlive*>(&object());
+	if (!e) {
+		ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "CEntityAlive : cannot access class member AddWound!");
+		return;
+	}
+	e->conditions().AddWound(hit_power, ALife::EHitType(hit_type), element);
 }
 
 float CScriptGameObject::GetItemWeight()
@@ -716,4 +727,104 @@ void CScriptGameObject::play_hud_animation( LPCSTR anim, bool mix_in ) {
 
 void CScriptGameObject::play_hud_animation( LPCSTR anim ) {
 	play_hud_animation( anim, true );
+}
+
+
+void CScriptGameObject::addFeelTouch( float radius, const luabind::object& lua_object, const luabind::functor<void>& new_delete ) {
+  const luabind::functor<bool> contact;
+  addFeelTouch( radius, lua_object, new_delete, contact );
+}
+
+void CScriptGameObject::addFeelTouch( float radius, const luabind::object& lua_object, const luabind::functor<void>& new_delete, const luabind::functor<bool>& contact ) {
+  CGameObject* GO = smart_cast<CGameObject*>( &object() );
+  GO->addFeelTouch( radius, lua_object, new_delete, contact );
+}
+
+void CScriptGameObject::removeFeelTouch( const luabind::object& lua_object, const luabind::functor<void>& new_delete ) {
+  const luabind::functor<bool> contact;
+  removeFeelTouch( lua_object, new_delete, contact );
+}
+
+void CScriptGameObject::removeFeelTouch( const luabind::object& lua_object, const luabind::functor<void>& new_delete, const luabind::functor<bool>& contact ) {
+  CGameObject* GO = smart_cast<CGameObject*>( &object() );
+  GO->removeFeelTouch( lua_object, new_delete, contact );
+}
+
+
+void CScriptGameObject::PHCaptureObject( CScriptGameObject* obj, LPCSTR capture_bone ) {
+  auto ps = smart_cast<CPhysicsShellHolder*>( &(obj->object()) );
+  ASSERT_FMT( ps, "[%s]: %s not a CPhysicsShellHolder", __FUNCTION__, obj->cName().c_str() );
+  auto EA = smart_cast<CEntityAlive*>( &object() );
+  ASSERT_FMT( EA, "[%s]: %s not a CEntityAlive", __FUNCTION__, cName().c_str() );
+  EA->character_physics_support()->movement()->PHCaptureObject( ps, capture_bone );
+}
+
+void CScriptGameObject::PHCaptureObject( CScriptGameObject* obj ) {
+  PHCaptureObject( obj, nullptr );
+}
+
+
+void CScriptGameObject::PHCaptureObject( CScriptGameObject* obj, u16 bone, LPCSTR capture_bone ) {
+  auto ps = smart_cast<CPhysicsShellHolder*>( &(obj->object()) );
+  ASSERT_FMT( ps, "[%s]: %s not a CPhysicsShellHolder", __FUNCTION__, obj->cName().c_str() );
+  auto EA = smart_cast<CEntityAlive*>( &object() );
+  ASSERT_FMT( EA, "[%s]: %s not a CEntityAlive", __FUNCTION__, cName().c_str() );
+  EA->character_physics_support()->movement()->PHCaptureObject( ps, bone, capture_bone );
+}
+
+void CScriptGameObject::PHCaptureObject( CScriptGameObject* obj, u16 bone ) {
+  PHCaptureObject( obj, bone, nullptr );
+}
+
+
+void CScriptGameObject::PHReleaseObject() {
+  auto EA = smart_cast<CEntityAlive*>( &object() );
+  ASSERT_FMT( EA, "[%s]: %s not a CEntityAlive", __FUNCTION__, cName().c_str() );
+  EA->character_physics_support()->movement()->PHReleaseObject();
+}
+
+
+CPHCapture* CScriptGameObject::PHCapture() {
+  auto EA = smart_cast<CEntityAlive*>( &object() );
+  ASSERT_FMT( EA, "[%s]: %s not a CEntityAlive", __FUNCTION__, cName().c_str() );
+  return EA->character_physics_support()->movement()->PHCapture();
+}
+
+
+bool CScriptGameObject::throw_target( const Fvector& position, CScriptGameObject* throw_ignore_object ) {
+  CAI_Stalker *stalker = smart_cast<CAI_Stalker*>( &object() );
+  ASSERT_FMT( stalker, "[%s]: %s not a CAI_Stalker", __FUNCTION__, object().cName().c_str() );
+  CObject* obj;
+  if ( throw_ignore_object ) {
+    obj = smart_cast<CObject*>( &(throw_ignore_object->object()) );
+    ASSERT_FMT( obj, "[%s]: %s not a CObject", __FUNCTION__, throw_ignore_object->cName().c_str() );
+  }
+  else
+    obj = nullptr;
+  stalker->throw_target( position, obj );
+  return stalker->throw_enabled();
+}
+
+
+bool CScriptGameObject::throw_target( const Fvector& position, u32 const vertex_id, CScriptGameObject* throw_ignore_object ) {
+  CAI_Stalker *stalker = smart_cast<CAI_Stalker*>( &object() );
+  ASSERT_FMT( stalker, "[%s]: %s not a CAI_Stalker", __FUNCTION__, object().cName().c_str() );
+  CObject* obj;
+  if ( throw_ignore_object ) {
+    obj = smart_cast<CObject*>( &(throw_ignore_object->object()) );
+    ASSERT_FMT( obj, "[%s]: %s not a CObject", __FUNCTION__, throw_ignore_object->cName().c_str() );
+  }
+  else
+    obj = nullptr;
+  stalker->throw_target( position, vertex_id, obj );
+  return stalker->throw_enabled();
+}
+
+
+void CScriptGameObject::g_fireParams( const CScriptGameObject* pHudItem, Fvector& P, Fvector& D ) {
+  auto E = smart_cast<CEntity*>( &object() );
+  ASSERT_FMT( E, "[%s]: %s not a CEntity", __FUNCTION__, object().cName().c_str() );
+  const auto item = smart_cast<const CHudItem*>( &(pHudItem->object()) );
+  ASSERT_FMT( item, "[%s]: %s not a CHudItem", __FUNCTION__, pHudItem->object().cName().c_str() );
+  E->g_fireParams( item, P, D );
 }

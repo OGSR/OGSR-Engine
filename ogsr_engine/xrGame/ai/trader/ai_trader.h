@@ -126,6 +126,7 @@ public:
 		VERIFY				(m_sound_player);
 		return				(*m_sound_player);
 	}
+	virtual bool			unlimited_ammo			()	{return false;};
 	virtual bool			natural_weapon			() const {return false;}
 	virtual bool			natural_detector		() const {return false;}
 	virtual bool			AllowItemToTrade 		(CInventoryItem const * item, EItemPlace place) const;

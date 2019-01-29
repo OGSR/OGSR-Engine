@@ -38,6 +38,8 @@ public:
 	//for smart_cast
 	virtual CArtefact*				cast_artefact						()		{return this;}
 
+	u8								idle_state();
+
 protected:
 	virtual void					UpdateCLChild						()		{};
 
@@ -54,6 +56,8 @@ protected:
 	ref_light						m_pTrailLight;
 	Fcolor							m_TrailLightColor;
 	float							m_fTrailLightRange;
+
+	u8								m_idle_state;
 protected:
 	virtual void					UpdateLights();
 	
@@ -82,6 +86,7 @@ public:
 protected:
 	MotionSVec						m_anim_idle;
 	MotionSVec						m_anim_idle_sprint;
+	MotionSVec						m_anim_idle_moving;
 	MotionSVec						m_anim_hide;
 	MotionSVec						m_anim_show;
 	MotionSVec						m_anim_activate;
@@ -93,7 +98,11 @@ public:
 		eHidden,
 		eActivating,
 	};
-	virtual	void					PlayAnimIdle		();
+	enum EAFHudSubStates {
+		eSubstateIdleMoving = 1,
+		eSubstateIdleSprint,
+	};
+	virtual	void					PlayAnimIdle		(u8 state);
 public:
 	virtual void					Hide				();
 	virtual void					Show				();
@@ -104,6 +113,7 @@ public:
 	virtual void					OnAnimationEnd		(u32 state);
 	virtual bool					IsHidden			()	const	{return GetState()==eHidden;}
 	virtual u16						bone_count_to_synchronize	() const;
+	virtual void					GetBriefInfo(xr_string& str_name, xr_string& icon_sect_name, xr_string& str_count);
 
 	// optimization FAST/SLOW mode
 public:						

@@ -192,4 +192,5 @@ public:
 	virtual	CEntityCondition*		cast_entity_condition()					{ return this; }
 	static  void					script_register(lua_State *L);
 	virtual float					GetParamByName		(LPCSTR name);
+	IC SConditionChangeV&			GetChangeValues() { return m_change_v; }
 };

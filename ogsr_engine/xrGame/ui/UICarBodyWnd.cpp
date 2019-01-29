@@ -312,9 +312,12 @@ void CUICarBodyWnd::SendMessage(CUIWindow *pWnd, s16 msg, void *pData)
 						WpnMagaz->UnloadMagazine();
 						if (auto WpnMagazWgl = smart_cast<CWeaponMagazinedWGrenade*>(WpnMagaz))
 						{
-							WpnMagazWgl->PerformSwitchGL();
-							WpnMagazWgl->UnloadMagazine();
-							WpnMagazWgl->PerformSwitchGL();
+							if (WpnMagazWgl->IsGrenadeLauncherAttached())
+							{
+								WpnMagazWgl->PerformSwitchGL();
+								WpnMagazWgl->UnloadMagazine();
+								WpnMagazWgl->PerformSwitchGL();
+							}
 						}
 					};
 
@@ -626,8 +629,11 @@ bool CUICarBodyWnd::OnKeyboard(int dik, EUIMessages keyboard_action)
 	if (m_b_need_update)
 		return true;
 
-	if (m_pUIPropertiesBox->GetVisible())
-		m_pUIPropertiesBox->OnKeyboard(dik, keyboard_action);
+	if (keyboard_action == WINDOW_KEY_PRESSED)
+	{
+		if (m_pUIPropertiesBox->GetVisible())
+			m_pUIPropertiesBox->OnKeyboard(dik, keyboard_action);
+	}
 
 	if(keyboard_action==WINDOW_KEY_PRESSED && is_binded(kUSE, dik)) 
 	{
@@ -645,7 +651,6 @@ bool CUICarBodyWnd::OnMouse(float x, float y, EUIMessages mouse_action)
 	if (m_b_need_update)
 		return true;
 
-	//вызов дополнительного меню по правой кнопке
 	if (mouse_action == WINDOW_RBUTTON_DOWN)
 	{
 		if (m_pUIPropertiesBox->IsShown())
@@ -655,9 +660,12 @@ bool CUICarBodyWnd::OnMouse(float x, float y, EUIMessages mouse_action)
 		}
 	}
 
-	CUIWindow::OnMouse(x, y, mouse_action);
+	if (CUIWindow::OnMouse(x, y, mouse_action))
+	{
+		return  true;
+	}
 
-	return true; // always returns true, because ::StopAnyMove() == true;
+	return false;
 }
 
 #include "../Medkit.h"

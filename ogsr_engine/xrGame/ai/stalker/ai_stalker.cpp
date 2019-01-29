@@ -152,11 +152,19 @@ void CAI_Stalker::reinit			()
 	m_computed_object_position		= Fvector().set(flt_max,flt_max,flt_max);
 	m_computed_object_direction		= Fvector().set(flt_max,flt_max,flt_max);
 
-	m_throw_target					= Fvector().set(flt_max,flt_max,flt_max);
+	m_throw_target_position = Fvector().set(flt_max, flt_max, flt_max);
+	m_throw_ignore_object = nullptr;
 
-	m_throw_force					= flt_max;
-	m_throw_position				= Fvector().set(flt_max,flt_max,flt_max);
-	m_throw_direction				= Fvector().set(flt_max,flt_max,flt_max);
+	m_throw_position = Fvector().set(flt_max, flt_max, flt_max);
+	m_throw_velocity = Fvector().set(flt_max, flt_max, flt_max);
+
+	m_throw_collide_position = Fvector().set(flt_max, flt_max, flt_max);
+	m_throw_enabled = false;
+
+	m_last_throw_time = 0;
+
+	m_can_throw_grenades = true;
+	m_throw_time_interval = 20000;
 
 	brain().CStalkerPlanner::m_storage.set_property	(StalkerDecisionSpace::eWorldPropertyCriticallyWounded,	false);
 
@@ -1042,4 +1050,9 @@ void CAI_Stalker::on_after_change_team			()
 		return;
 		
 	agent_manager().member().register_in_combat	(this);
+}
+
+bool CAI_Stalker::unlimited_ammo()
+{
+	return infinite_ammo() && CObjectHandler::planner().object().g_Alive();
 }

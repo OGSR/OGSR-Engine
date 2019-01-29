@@ -187,39 +187,32 @@ bool CScriptGameObject::IsTradeEnabled		()
 
 void CScriptGameObject::ForEachInventoryItems(const luabind::functor<void> &functor)
 {
-	CInventoryOwner* owner = smart_cast<CInventoryOwner*>(&object());
+	auto owner = smart_cast<CInventoryOwner*>(&object());
 	if(!owner){
-		ai().script_engine().script_log		(ScriptStorage::eLuaMessageTypeError,"CScriptGameObject::ForEachInventoryItems non-CInventoryOwner object !!!");
+		ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError,"CScriptGameObject::ForEachInventoryItems non-CInventoryOwner object !!!");
 		return;
 	}
 	
-	CInventory* pInv = &owner->inventory();
 	TIItemContainer item_list;
-	pInv->AddAvailableItems(item_list, true);
+	owner->inventory().AddAvailableItems(item_list, true);
 
-	TIItemContainer::iterator it;
-	for(it =  item_list.begin(); item_list.end() != it; ++it) 
-	{
-		CGameObject* inv_go = smart_cast<CGameObject*>(*it);
-		if( inv_go ){
-			functor(inv_go->lua_game_object(),this);
-		}
-	}
+	for (const auto* it : item_list)
+		if (!it->object().getDestroy())
+			functor(it->object().lua_game_object(), this);
 }
 
 //1
 void CScriptGameObject::IterateInventory( const luabind::functor<void>& functor, const luabind::object& object)
 {
-	CInventoryOwner			*inventory_owner = smart_cast<CInventoryOwner*>(&this->object());
+	auto inventory_owner = smart_cast<CInventoryOwner*>(&this->object());
 	if (!inventory_owner) {
-		ai().script_engine().script_log		(ScriptStorage::eLuaMessageTypeError,"CScriptGameObject::IterateInventory non-CInventoryOwner object !!!");
+		ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError,"CScriptGameObject::IterateInventory non-CInventoryOwner object !!!");
 		return;
 	}
 
-	TIItemContainer::iterator	I = inventory_owner->inventory().m_all.begin();
-	TIItemContainer::iterator	E = inventory_owner->inventory().m_all.end();
-	for ( ; I != E; ++I)
-		functor				(object,(*I)->object().lua_game_object());
+	for (const auto* it : inventory_owner->inventory().m_all)
+		if (!it->object().getDestroy())
+			functor(object, it->object().lua_game_object());
 }
 
 void CScriptGameObject::MarkItemDropped		(CScriptGameObject *item)
@@ -256,7 +249,7 @@ bool CScriptGameObject::MarkedDropped		(CScriptGameObject *item)
 	return					(!!inventory_item->GetDropManual());
 }
 
-void CScriptGameObject::UnloadMagazine		()
+void CScriptGameObject::UnloadMagazine		(bool spawn_ammo)
 {
 	CWeaponMagazined		*weapon_magazined = smart_cast<CWeaponMagazined*>(&object());
 	if (!weapon_magazined) {
@@ -268,7 +261,7 @@ void CScriptGameObject::UnloadMagazine		()
 	if (stalker && stalker->hammer_is_clutched())
 		return;
 
-	weapon_magazined->UnloadMagazine	(false);
+	weapon_magazined->UnloadMagazine	(spawn_ammo);
 }
 //
 
@@ -1184,14 +1177,16 @@ void CScriptGameObject::SetIIFlags	(flags16 flags)
 void CScriptGameObject::IterateBelt( const luabind::functor<void>& functor, const luabind::object& object ) {
   auto inventory_owner = smart_cast<CInventoryOwner*>( &this->object() );
   ASSERT_FMT( inventory_owner, "[%s]: %s not an CInventoryOwner", __FUNCTION__, this->object().Name() );
-  for ( const auto& it : inventory_owner->inventory().m_belt )
-    functor( object, it->object().lua_game_object() );
+  for ( const auto* it : inventory_owner->inventory().m_belt )
+    if ( !it->object().getDestroy() )
+      functor( object, it->object().lua_game_object() );
 }
 
 
 void CScriptGameObject::IterateRuck( const luabind::functor<void>& functor, const luabind::object& object ) {
   auto inventory_owner = smart_cast<CInventoryOwner*>( &this->object() );
   ASSERT_FMT( inventory_owner, "[%s]: %s not an CInventoryOwner", __FUNCTION__, this->object().Name());
-  for ( const auto& it : inventory_owner->inventory().m_ruck )
-    functor( object, it->object().lua_game_object() );
+  for ( const auto* it : inventory_owner->inventory().m_ruck )
+    if ( !it->object().getDestroy() )
+      functor( object, it->object().lua_game_object() );
 }

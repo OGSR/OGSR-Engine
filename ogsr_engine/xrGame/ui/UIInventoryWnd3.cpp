@@ -56,7 +56,7 @@ void CUIInventoryWnd::ActivatePropertiesBox()
 				if (!m_pInv->m_slots[slot].m_pIItem || m_pInv->m_slots[slot].m_pIItem != CurrentIItem()) {
 					if (multi_slot && Core.Features.test(xrCore::Feature::slots_extend_menu))
 					{
-						string128 full_action_text = { 0 };
+						string128 full_action_text;
 						strconcat(sizeof(full_action_text), full_action_text, "st_move_to_slot_", std::to_string(slot).c_str());
 						UIPropertiesBox.AddItem(full_action_text, (void*)(__int64)slot, INVENTORY_TO_SLOT_ACTION);
 						b_show = true;
@@ -145,7 +145,7 @@ void CUIInventoryWnd::ActivatePropertiesBox()
 	for (u8 i = 0; i < SLOTS_TOTAL; ++i) {
 		PIItem tgt = m_pInv->m_slots[i].m_pIItem;
 		if (tgt && tgt->CanAttach(CurrentIItem())) {
-			string128 trans_str = { 0 };
+			string128 trans_str;
 			strconcat(sizeof(trans_str), trans_str, "st_attach_addon_to_wpn_in_slot_", std::to_string(i).c_str());
 			string128 str = { 0 };
 			// В локализации должно быть что-то типа 'Прикрепить %s к %s в таком-то слоте'
@@ -276,9 +276,12 @@ void CUIInventoryWnd::ProcessPropertiesBoxClicked	()
 					WpnMagaz->UnloadMagazine();
 					if (auto WpnMagazWgl = smart_cast<CWeaponMagazinedWGrenade*>(WpnMagaz))
 					{
-						WpnMagazWgl->PerformSwitchGL();
-						WpnMagazWgl->UnloadMagazine();
-						WpnMagazWgl->PerformSwitchGL();
+						if (WpnMagazWgl->IsGrenadeLauncherAttached())
+						{
+							WpnMagazWgl->PerformSwitchGL();
+							WpnMagazWgl->UnloadMagazine();
+							WpnMagazWgl->PerformSwitchGL();
+						}
 					}
 				};
 

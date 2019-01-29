@@ -261,6 +261,7 @@ public:
 			bool						ready_to_detour			();
 			void						update_best_item_info	();
 	virtual float						GetWeaponAccuracy		() const;
+	virtual bool						unlimited_ammo			();
 	virtual	void						spawn_supplies			();
 	IC		CAgentManager				&agent_manager			() const;
 	
@@ -484,18 +485,54 @@ private:
 	Fvector								m_computed_object_position;
 	Fvector								m_computed_object_direction;
 	// target parameters
-	Fvector								m_throw_target;
+	Fvector								m_throw_target_position;
+	CObject								*m_throw_ignore_object;
 	// computed
-	float								m_throw_force;
 	Fvector								m_throw_position;
-	Fvector								m_throw_direction;
+	Fvector								m_throw_velocity;
+	// collision prediction
+	Fvector								m_throw_collide_position;
+	bool								m_throw_enabled;
+
+	u32									m_last_throw_time;
+	u32									m_throw_time_interval;
+
+#ifdef DEBUG
+	xr_vector<Fvector>					m_throw_picks;
+#endif // DEBUG
+
+public:
+	IC		const bool					&throw_enabled						();
+
+private:
+	bool								m_can_throw_grenades;
+
+public:
+	IC		const bool					&can_throw_grenades					() const;
+	IC		void						can_throw_grenades					(const bool &value);
+
+private:
+			bool						throw_check_error					(
+											float low,
+											float high,
+											const Fvector &start,
+											const Fvector &velocity,
+											const Fvector &gravity
+										);
+			void						check_throw_trajectory				(const float &throw_time);
+			void						throw_target_impl					(const Fvector &position, CObject *throw_ignore_object );
+			void						compute_throw_miss					( u32 const vertex_id );
 
 public:
 	virtual	bool						use_default_throw_force				();
 	virtual	float						missile_throw_force					(); 
 	virtual	bool						use_throw_randomness				();
-			void						throw_target						(const Fvector &position); 
+			void						throw_target						(const Fvector &position, CObject *throw_ignore_object = nullptr );
+			void						throw_target						(const Fvector &position, u32 const vertex_id, CObject *throw_ignore_object = nullptr );
+	IC		const Fvector				&throw_target						() const;
 			void						update_throw_params					(); 
+			void						on_throw_completed					();
+	IC		const u32					&last_throw_time					() const;
 
 #ifdef DEBUG
 public:
@@ -547,6 +584,10 @@ public:
 
 private:
 	bool	m_can_select_items;
+
+public:
+	IC		const u32					&throw_time_interval						() const;
+	IC		void						throw_time_interval							(const u32 &value);
 
 public:
 	DECLARE_SCRIPT_REGISTER_FUNCTION

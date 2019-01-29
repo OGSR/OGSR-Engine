@@ -21,6 +21,7 @@ public:
 	virtual void		check_force_state		();
 	virtual	void		reselect_state			();
 	virtual	void		setup_substates			();
+	virtual void		remove_links					(CObject* object) { inherited::remove_links(object);}
 
 };
 

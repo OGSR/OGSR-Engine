@@ -104,6 +104,7 @@ void CChimera::Load(LPCSTR section)
 	anim().accel_chain_test		();
 #endif
 
+	PostLoad					(section);
 	//*****************************************************************************
 
 	m_fsVelocityWalkUpper.Load	(section, "Velocity_Walk_Upper");

@@ -13,6 +13,7 @@
 #include "phworld.h"
 #include "phactivationshape.h"
 #include "phvalide.h"
+#include "PHElement.h"
 CPhysicsShellHolder::CPhysicsShellHolder()
 {
 	init();
@@ -157,7 +158,15 @@ void CPhysicsShellHolder::activate_physic_shell()
 //	XFORM().set					(l_p1);
 	correct_spawn_pos();
 
-m_pPhysicsShell->set_LinearVel(l_fw);
+	Fvector overriden_vel;
+	if ( ActivationSpeedOverriden (overriden_vel, true) )
+	{
+		m_pPhysicsShell->set_LinearVel(overriden_vel);
+	}
+	else
+	{
+		m_pPhysicsShell->set_LinearVel(l_fw);
+	}
 	m_pPhysicsShell->GetGlobalTransformDynamic(&XFORM());
 }
 
@@ -386,4 +395,22 @@ void CPhysicsShellHolder::PHLoadState(IReader &P)
 bool CPhysicsShellHolder::register_schedule	() const
 {
 	return					(b_sheduled);
+}
+
+
+#include <filesystem>
+
+bool CPhysicsShellHolder::ActorCanCapture() const {
+  if ( !m_pPhysicsShell ) return false;
+  for ( const auto it : m_pPhysicsShell->Elements() )
+    if ( it->isFixed() ) return false;
+  if ( pSettings->line_exist( "ph_capture_visuals", cNameVisual().c_str() ) )
+    return true;
+  std::filesystem::path p = cNameVisual().c_str();
+  while ( p.has_parent_path() ) {
+    p = p.parent_path();
+    if ( pSettings->line_exist( "ph_capture_visuals", p.string().c_str() ) )
+      return true;
+  }
+  return false;
 }

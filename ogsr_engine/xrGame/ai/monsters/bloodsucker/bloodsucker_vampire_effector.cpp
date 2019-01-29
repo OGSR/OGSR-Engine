@@ -1,10 +1,6 @@
 #include "stdafx.h"
 #include "bloodsucker_vampire_effector.h"
 
-//////////////////////////////////////////////////////////////////////////
-// Vampire Postprocess Effector
-//////////////////////////////////////////////////////////////////////////
-
 CVampirePPEffector::CVampirePPEffector(const SPPInfo &ppi, float life_time) :
 	inherited(EEffectorPPType(eCEHit), life_time)
 {
@@ -25,11 +21,13 @@ BOOL CVampirePPEffector::Process(SPPInfo& pp)
 	float time_past_perc = (m_total - fLifeTime) / m_total;
 	
 	float factor;
-	if (time_past_perc < TIME_ATTACK) {
+	if (time_past_perc < TIME_ATTACK) 
+	{
 		factor = 0.75f * time_past_perc / TIME_ATTACK;
-	} else if (time_past_perc > (1 - TIME_ATTACK)) {
+	} else if (time_past_perc > (1 - TIME_ATTACK)) 
+	{
 		factor = 0.75f * (1-time_past_perc) / TIME_ATTACK;
-	} else {	
+	} else {
 		float time_past_sine_perc = (time_past_perc - TIME_ATTACK) * (1 / ( 1 - TIME_ATTACK + TIME_ATTACK));
 		factor = 0.5f + 0.25f * _sin(PERC_TO_RAD(time_past_sine_perc));
 	}
@@ -72,7 +70,10 @@ CVampireCameraEffector::CVampireCameraEffector(float time, const Fvector &src, c
 
 BOOL CVampireCameraEffector::Process(Fvector &p, Fvector &d, Fvector &n, float& fFov, float& fFar, float& fAspect)
 {
-	fLifeTime -= Device.fTimeDelta; if(fLifeTime<0) return FALSE;
+	fLifeTime -= Device.fTimeDelta;
+
+	if(fLifeTime<0) 
+		return FALSE;
 
 	// процент оставшегося времени
 	float time_left_perc = fLifeTime / m_time_total;
@@ -82,7 +83,7 @@ BOOL CVampireCameraEffector::Process(Fvector &p, Fvector &d, Fvector &n, float& 
 	Mdef.identity		();
 	Mdef.j.set			(n);
 	Mdef.k.set			(d);
-	Mdef.i.crossproduct	(n,d);
+	Mdef.i.crossproduct	(n, d);
 	Mdef.c.set			(p);
 
 	
@@ -123,11 +124,11 @@ BOOL CVampireCameraEffector::Process(Fvector &p, Fvector &d, Fvector &n, float& 
 	//////////////////////////////////////////////////////////////////////////
 
 	// Установить углы смещения
-	Fmatrix		R;
-	R.setHPB	(dangle_current.x,dangle_current.y,dangle_current.z);
+	Fmatrix			R;
+	R.setHPB		(dangle_current.x,dangle_current.y,dangle_current.z);
 
-	Fmatrix		mR;
-	mR.mul		(Mdef,R);
+	Fmatrix			mR;
+	mR.mul			(Mdef,R);
 
 	d.set		(mR.k);
 	n.set		(mR.j);

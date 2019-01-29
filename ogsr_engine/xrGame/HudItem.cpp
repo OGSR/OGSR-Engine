@@ -25,6 +25,11 @@ CHudItem::CHudItem(void)
 
 	m_bInertionEnable	= true;
 	m_bInertionAllow	= true;
+
+	m_origin_offset = 0.;
+	m_tendto_speed = 0.;
+	m_zoom_origin_offset = 0.;
+	m_zoom_tendto_speed = 0.;
 }
 
 CHudItem::~CHudItem(void)
@@ -43,6 +48,12 @@ DLL_Pure *CHudItem::_construct	()
 	return				(m_object);
 }
 
+static const float ORIGIN_OFFSET = -0.05f;
+static const float TENDTO_SPEED = 5.f;
+
+static const float ZOOM_ORIGIN_OFFSET = -0.01f;
+static const float ZOOM_TENDTO_SPEED = 5.f;
+
 void CHudItem::Load(LPCSTR section)
 {
 	//загрузить hud, если он нужен
@@ -52,8 +63,16 @@ void CHudItem::Load(LPCSTR section)
 	if(*hud_sect){
 		m_pHUD			= xr_new<CWeaponHUD> (this);
 		m_pHUD->Load	(*hud_sect);
+
 		if(pSettings->line_exist(*hud_sect, "allow_inertion")) 
 			m_bInertionAllow = !!pSettings->r_bool(*hud_sect, "allow_inertion");
+
+		m_origin_offset = READ_IF_EXISTS(pSettings, r_float, *hud_sect, "inertion_origin_offset", ORIGIN_OFFSET);
+		m_tendto_speed = READ_IF_EXISTS(pSettings, r_float, *hud_sect, "inertion_tendto_speed", TENDTO_SPEED);
+
+		m_zoom_origin_offset = READ_IF_EXISTS(pSettings, r_float, *hud_sect, "inertion_zoom_origin_offset", ZOOM_ORIGIN_OFFSET);
+		m_zoom_tendto_speed = READ_IF_EXISTS(pSettings, r_float, *hud_sect, "inertion_zoom_tendto_speed", ZOOM_TENDTO_SPEED);
+
 	}else{
 		m_pHUD = NULL;
 		//если hud не задан, но задан слот, то ошибка
@@ -201,8 +220,6 @@ void CHudItem::StopHudInertion()
 static const float PITCH_OFFSET_R	= 0.017f;
 static const float PITCH_OFFSET_N	= 0.012f;
 static const float PITCH_OFFSET_D	= 0.02f;
-static const float ORIGIN_OFFSET	= -0.05f;
-static const float TENDTO_SPEED		= 5.f;
 
 void CHudItem::UpdateHudInertion		(Fmatrix& hud_trans)
 {
@@ -218,8 +235,10 @@ void CHudItem::UpdateHudInertion		(Fmatrix& hud_trans)
 		diff_dir.sub						(xform.k, m_last_dir);
 
 		// clamp by PI_DIV_2
-		Fvector last;						last.normalize_safe(m_last_dir);
+		Fvector last;						
+		last.normalize_safe(m_last_dir);
 		float dot							= last.dotproduct(xform.k);
+
 		if (dot<EPS){
 			Fvector v0;
 			v0.crossproduct			(m_last_dir,xform.k);
@@ -227,17 +246,27 @@ void CHudItem::UpdateHudInertion		(Fmatrix& hud_trans)
 			diff_dir.sub			(xform.k, m_last_dir);
 		}
 
-		// tend to forward
-		m_last_dir.mad	(diff_dir,TENDTO_SPEED*Device.fTimeDelta);
-		origin.mad		(diff_dir,ORIGIN_OFFSET);
+		CActor* pActor = smart_cast<CActor*>(object().H_Parent());
+		if (!pActor->IsZoomAimingMode())
+		{
+			// tend to forward
+			m_last_dir.mad(diff_dir, m_tendto_speed*Device.fTimeDelta);
+			origin.mad(diff_dir, m_origin_offset);
 
-		// pitch compensation
-		float pitch		= angle_normalize_signed(xform.k.getP());
-		origin.mad		(xform.k,	-pitch * PITCH_OFFSET_D);
-		origin.mad		(xform.i,	-pitch * PITCH_OFFSET_R);
-		origin.mad		(xform.j,	-pitch * PITCH_OFFSET_N);
+			// pitch compensation
+			float pitch = angle_normalize_signed(xform.k.getP());
+			origin.mad(xform.k, -pitch * PITCH_OFFSET_D);
+			origin.mad(xform.i, -pitch * PITCH_OFFSET_R);
+			origin.mad(xform.j, -pitch * PITCH_OFFSET_N);
+		}
+		else // в режиме прицеливания
+		{
+			// tend to forward
+			m_last_dir.mad(diff_dir, m_zoom_tendto_speed*Device.fTimeDelta);
+			origin.mad(diff_dir, m_zoom_origin_offset);
 
-		// calc moving inertion
+			// что бы не ломал прицеливание - не будем сдвигать оружие
+		}
 	}
 }
 

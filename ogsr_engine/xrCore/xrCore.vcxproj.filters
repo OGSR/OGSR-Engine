@@ -132,7 +132,6 @@
     <ClCompile Include="LzHuf.cpp">
       <Filter>Compression\lz</Filter>
     </ClCompile>
-    <ClCompile Include="xrSyncronize.cpp" />
     <ClCompile Include="stacktrace_collector.cpp">
       <Filter>Debug core</Filter>
     </ClCompile>
@@ -336,6 +335,9 @@
     </ClInclude>
     <ClInclude Include="XML_Parser\xrXMLParser.h">
       <Filter>XML_Parser</Filter>
+    </ClInclude>
+    <ClInclude Include="_vector3d_ext.h">
+      <Filter>Math</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

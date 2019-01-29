@@ -27,9 +27,7 @@ class	CPHCommander;
 class	CLevelDebug;
 class	CLevelSoundManager;
 
-#ifdef DEBUG
-	class	CDebugRenderer;
-#endif
+class CDebugRenderer;
 
 extern float g_fov;
 
@@ -73,10 +71,8 @@ protected:
 	CSeniorityHierarchyHolder	*m_seniority_hierarchy_holder;
 	// client spawn_manager
 	CClientSpawnManager			*m_client_spawn_manager;
-#ifdef DEBUG
 	// debug renderer
 	CDebugRenderer				*m_debug_renderer;
-#endif
 
 	CPHCommander				*m_ph_commander;
 	CPHCommander				*m_ph_commander_scripts;
@@ -267,9 +263,7 @@ public:
 	IC CSpaceRestrictionManager		&space_restriction_manager	();
 	IC CSeniorityHierarchyHolder	&seniority_holder			();
 	IC CClientSpawnManager			&client_spawn_manager		();
-#ifdef DEBUG
 	IC CDebugRenderer				&debug_renderer				();
-#endif
 
 	IC CPHCommander					&ph_commander				();
 	IC CPHCommander					&ph_commander_scripts		();
@@ -372,13 +366,11 @@ IC CClientSpawnManager &CLevel::client_spawn_manager()
 	return				(*m_client_spawn_manager);
 }
 
-#ifdef DEBUG
 IC CDebugRenderer &CLevel::debug_renderer()
 {
 	VERIFY				(m_debug_renderer);
 	return				(*m_debug_renderer);
 }
-#endif
 
 IC CPHCommander	& CLevel::ph_commander()
 {

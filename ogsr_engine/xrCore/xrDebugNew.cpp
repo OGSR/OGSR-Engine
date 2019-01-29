@@ -11,6 +11,7 @@ int( WINAPIV* __vsnprintf )( char*, size_t, const char*, va_list ) = _vsnprintf;
 
 XRCORE_API xrDebug Debug;
 XRCORE_API HWND gGameWindow = nullptr;
+XRCORE_API bool ExitFromWinMain = false;
 
 static bool error_after_dialog = false;
 
@@ -25,9 +26,11 @@ void LogStackTrace(const char* header)
 {
 	__try
 	{
-		Log("*********************************************************************************");
+		if (auto pCrashHandler = Debug.get_crashhandler())
+			pCrashHandler();
+		Log("********************************************************************************");
 		Log(BuildStackTrace(header));
-		Log("*********************************************************************************");
+		Log("********************************************************************************");
 	}
 	__finally{}
 }
@@ -36,12 +39,14 @@ void LogStackTrace(const char* header, _EXCEPTION_POINTERS *pExceptionInfo)
 {
 	__try
 	{
-		Log("*********************************************************************************");
+		if (auto pCrashHandler = Debug.get_crashhandler())
+			pCrashHandler();
+		Log("********************************************************************************");
 		Msg("!![" __FUNCTION__ "] ExceptionCode is [%x]", pExceptionInfo->ExceptionRecord->ExceptionCode);
 		auto save = *pExceptionInfo->ContextRecord;
 		Log(BuildStackTrace(header, pExceptionInfo->ContextRecord));
 		*pExceptionInfo->ContextRecord = save;
-		Log("*********************************************************************************");
+		Log("********************************************************************************");
 	}
 	__finally {}
 }
@@ -109,7 +114,7 @@ void gather_info(const char *expression, const char *description, const char *ar
 	buffer += sprintf(buffer, "See log file for detailed information\r\n");
 #endif
 #endif
-	LogStackTrace("stack trace:\n");
+	LogStackTrace("!!stack trace:\n");
 }
 
 void xrDebug::do_exit(const std::string &message)
@@ -121,7 +126,7 @@ void xrDebug::do_exit(const std::string &message)
 	MessageBox(gGameWindow, message.c_str(), "Error", MB_OK | MB_ICONERROR | MB_SYSTEMMODAL);
 
 	if ( !IsDebuggerPresent() )
-		exit(-1); //TerminateProcess( GetCurrentProcess(), 1 );
+		quick_exit(EXIT_FAILURE);
 	else
 		DEBUG_INVOKE;
 }
@@ -129,14 +134,10 @@ void xrDebug::do_exit(const std::string &message)
 void xrDebug::backend(const char *expression, const char *description, const char *argument0, const char *argument1, const char *file, int line, const char *function)
 {
 	static std::recursive_mutex CS;
-	std::lock_guard<decltype(CS)> lock(CS);
+	std::scoped_lock<decltype(CS)> lock(CS);
 
 	string4096 assertion_info;
 	gather_info(expression, description, argument0, argument1, file, line, function, assertion_info);
-
-	auto pCrashHandler = this->get_crashhandler();
-	if (pCrashHandler)
-		pCrashHandler();
 
 /* KRodin: у меня этот способ не работает - происходит исключение внутри функции save_mini_dump(). Если сильно надо будет тут получать минидампы - придумать другой способ.
 #ifdef USE_OWN_MINI_DUMP
@@ -146,9 +147,6 @@ void xrDebug::backend(const char *expression, const char *description, const cha
 */
 #ifdef USE_OWN_ERROR_MESSAGE_WINDOW
 	ShowWindow(gGameWindow, SW_HIDE);
-
-	if (get_on_dialog())
-		get_on_dialog()	(true);
 
 	auto endline = "\r\n";
 	auto buffer = assertion_info + xr_strlen(assertion_info);
@@ -165,11 +163,9 @@ void xrDebug::backend(const char *expression, const char *description, const cha
 		MB_OK | MB_ICONERROR | MB_SYSTEMMODAL
 	);
 
-	if (get_on_dialog())
-		get_on_dialog()(false);
 #endif
 	if ( !IsDebuggerPresent() )
-		exit(-1); //TerminateProcess( GetCurrentProcess(), 1 );
+		quick_exit(EXIT_FAILURE);
 	else
 		DEBUG_INVOKE;
 }
@@ -352,29 +348,19 @@ LONG WINAPI UnhandledFilter(_EXCEPTION_POINTERS *pExceptionInfo)
 {
 	if (!error_after_dialog)
 	{
-		auto pCrashHandler = Debug.get_crashhandler();
-		if (pCrashHandler)
-			pCrashHandler();
-
 		string1024 error_message;
 		format_message(error_message, sizeof(error_message));
 		if (*error_message)
 			Msg("\n%s", error_message);
 
-		LogStackTrace("Unhandled exception stack trace:\n", pExceptionInfo);
+		LogStackTrace("!!Unhandled exception stack trace:\n", pExceptionInfo);
 
 #ifdef USE_OWN_ERROR_MESSAGE_WINDOW
 		ShowWindow(gGameWindow, SW_HIDE);
 
 		while (ShowCursor(TRUE) < 0);
 
-		if (Debug.get_on_dialog())
-			Debug.get_on_dialog()(true);
-
 		MessageBox(gGameWindow, "Fatal error occured\n\nPress OK to abort program execution", "FATAL ERROR", MB_OK | MB_ICONERROR | MB_SYSTEMMODAL);
-
-		if (Debug.get_on_dialog())
-			Debug.get_on_dialog()(false);
 #endif
 	}
 
@@ -503,6 +489,8 @@ static void termination_handler(int signal)
 
 void xrDebug::_initialize()
 {
+	std::atexit([] { R_ASSERT(ExitFromWinMain, "Unexpected application exit!"); });
+
 	std::set_terminate( _terminate );
 
 	_set_abort_behavior(0, _WRITE_ABORT_MSG | _CALL_REPORTFAULT);
@@ -526,7 +514,6 @@ void xrDebug::_initialize()
 
 #ifdef USE_OWN_ERROR_MESSAGE_WINDOW
 	// Выключаем окно "Прекращена работа программы...". У нас своё окно для сообщений об ошибках есть.
-	auto prevMode = SetErrorMode(SEM_NOGPFAULTERRORBOX);
-	SetErrorMode(prevMode | SEM_NOGPFAULTERRORBOX);
+	SetErrorMode(GetErrorMode() | SEM_NOGPFAULTERRORBOX);
 #endif
 }

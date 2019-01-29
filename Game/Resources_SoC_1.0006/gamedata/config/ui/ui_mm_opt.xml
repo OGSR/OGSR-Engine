@@ -440,7 +440,14 @@
 		<check_vsync x="249" y="0" width="30" height="21">
 			<options_item entry="rs_v_sync" group="mm_opt_video_adv"/>
 		</check_vsync>
-		
+
+		<cap_60hz x="5" y="5" width="143" height="21">
+			<text font="letterica16" r="215" g="195" b="170">ui_mm_60_hz</text>
+		</cap_60hz>
+		<check_60hz x="249" y="0" width="30" height="21">
+			<options_item entry="rs_refresh_60hz" group="mm_opt_video_adv"/>
+		</check_60hz>
+
 		<cap_r2_sun_near x="5" y="5" width="143" height="21">
 			<text font="letterica16" r="215" g="195" b="170">ui_mm_r2_sun_near</text>
 		</cap_r2_sun_near>
@@ -683,6 +690,20 @@
 		<check_rs_mt_texload x="249" y="0" width="30" height="21">
 			<options_item entry="rs_mt_texload" group="mm_opt_video_adv"/>
 		</check_rs_mt_texload>
+
+		<cap_fov x="5" y="5" width="143" height="21">
+			<text font="letterica16" r="215" g="195" b="170">ui_mm_fov</text>
+		</cap_fov>
+		<track_fov x="249" y="0" width="190" height="21" invert="0" step="2">
+			<options_item entry="fov" group="mm_opt_video_adv"/>
+		</track_fov>
+
+		<cap_hud_fov x="5" y="5" width="143" height="21">
+			<text font="letterica16" r="215" g="195" b="170">ui_mm_hud_fov</text>
+		</cap_hud_fov>
+		<track_hud_fov x="249" y="0" width="190" height="21" invert="0" step="0.01">
+			<options_item entry="hud_fov" group="mm_opt_video_adv"/>
+		</track_hud_fov>
 
 
 		<btn_to_simply x="342" y="325" width="111" height="29">

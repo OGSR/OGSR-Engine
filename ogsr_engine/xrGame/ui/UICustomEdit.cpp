@@ -1,5 +1,5 @@
 #include "stdafx.h"
-#include <dinput.h>
+#include "../../xr_3da/xr_input.h"
 #include "UICustomEdit.h"
 #include "../../xr_3da/LightAnimLibrary.h"
 
@@ -176,34 +176,8 @@ bool CUICustomEdit::KeyPressed(int dik)
 		m_lines.DelChar();
 		bChanged = true;
 		break;
-	case DIK_LSHIFT:
-	case DIK_RSHIFT:
-		if ((GetAsyncKeyState(VK_MENU) & 0x8000) != 0)
-			PostMessage(gGameWindow, WM_INPUTLANGCHANGEREQUEST, 2, 0); //Переключили язык
-		break;
-	// Эти клавиши через ToAsciiEx не обработать, поэтому пропишем явно
-	case DIK_NUMPAD0: out_me = '0'; break;
-	case DIK_NUMPAD1: out_me = '1'; break;
-	case DIK_NUMPAD2: out_me = '2'; break;
-	case DIK_NUMPAD3: out_me = '3'; break;
-	case DIK_NUMPAD4: out_me = '4'; break;
-	case DIK_NUMPAD5: out_me = '5'; break;
-	case DIK_NUMPAD6: out_me = '6'; break;
-	case DIK_NUMPAD7: out_me = '7'; break;
-	case DIK_NUMPAD8: out_me = '8'; break;
-	case DIK_NUMPAD9: out_me = '9'; break;
-	case DIK_NUMPADSLASH: out_me = '/'; break;
-	case DIK_NUMPADPERIOD: out_me = '.'; break;
-	//
 	default:
-		// GetKeyboardState не используем, потому что оно очень глючно работает
-		u8 State[256] = { 0 };
-		if ((GetAsyncKeyState(VK_SHIFT) & 0x8000) != 0) //Для получения правильных символов при зажатом шифте
-			State[VK_SHIFT] = 0x80;
-		auto layout = GetKeyboardLayout(GetWindowThreadProcessId(gGameWindow, nullptr));
-		u16 symbol;
-		if (ToAsciiEx(MapVirtualKeyEx(dik, MAPVK_VSC_TO_VK, layout), dik, State, &symbol, 0, layout) == 1)
-			out_me = (char)symbol;
+		out_me = pInput->DikToChar(dik);
 	}
 
 	if (out_me)
