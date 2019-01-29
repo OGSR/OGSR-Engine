@@ -37,6 +37,7 @@ u32					m_capture_time;
 float				m_pull_force;
 
 protected:
+  LPCSTR m_capture_section;
 CPHCharacter		*m_character;
 CPhysicsElement*	m_taget_element;
 CPhysicsShellHolder*	m_taget_object;
