@@ -19,12 +19,7 @@ struct		RPoint
 	u32		BlockTime;
 	RPoint(){P.set(.0f,0.f,.0f);A.set(.0f,0.f,.0f); TimeToUnfreeze = 0; Blocked = false;}
 	bool	operator ==		(const u32& ID)	const			{ return (Blocked && BlockedByID == ID);		}
-	DECLARE_SCRIPT_REGISTER_FUNCTION_STRUCT
 };
-
-add_to_type_list(RPoint)
-#undef script_type_list
-#define script_type_list save_type_list(RPoint)
 
 struct Bonus_Money_Struct {
 	s32		Money;
@@ -104,12 +99,7 @@ public:
 
 	s32					LastBuyAcount;
 	bool				m_bClearRun;
-	DECLARE_SCRIPT_REGISTER_FUNCTION_STRUCT
 };
-
-add_to_type_list(game_PlayerState)
-#undef script_type_list
-#define script_type_list save_type_list(game_PlayerState)
 
 
 struct	game_TeamState
@@ -183,8 +173,4 @@ public:
 				void				SetEnvironmentGameTimeFactor		(ALife::_TIME_ID GameTime, const float fTimeFactor);
 	virtual		void				SetEnvironmentGameTimeFactor		(const float fTimeFactor);
 
-	DECLARE_SCRIPT_REGISTER_FUNCTION
 };
-add_to_type_list(game_GameState)
-#undef script_type_list
-#define script_type_list save_type_list(game_GameState)

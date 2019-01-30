@@ -8058,16 +8058,10 @@
     <ClCompile Include="game_base.cpp">
       <Filter>Core\Server\Games</Filter>
     </ClCompile>
-    <ClCompile Include="game_base_script.cpp">
-      <Filter>Core\Server\Games</Filter>
-    </ClCompile>
     <ClCompile Include="game_cl_single.cpp">
       <Filter>Core\Server\Games\client\single</Filter>
     </ClCompile>
     <ClCompile Include="game_cl_base.cpp">
-      <Filter>Core\Server\Games\client\base</Filter>
-    </ClCompile>
-    <ClCompile Include="game_cl_base_script.cpp">
       <Filter>Core\Server\Games\client\base</Filter>
     </ClCompile>
     <ClCompile Include="game_cl_base_weapon_usage_statistic.cpp">
