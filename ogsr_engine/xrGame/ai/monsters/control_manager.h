@@ -55,6 +55,12 @@ public:
 					// capturing/releasing
 					void	capture						(CControl_Com*, ControlCom::EControlType); // who, type
 					void	release						(CControl_Com*, ControlCom::EControlType); // who, type
+					bool	check_capturer				(CControl_Com *com, ControlCom::EControlType type);
+
+					// Lain: added
+			        CControl_Com* get_capturer          (ControlCom::EControlType type);
+					ControlCom::EControlType com_type   (CControl_Com*);
+
 
 					void	capture_pure				(CControl_Com*);
 					void	release_pure				(CControl_Com*);
@@ -90,7 +96,6 @@ public:
 					bool	build_path_line				(CControl_Com*, const Fvector &target, u32 node, u32 vel_mask);
 		
 private:
-	ControlCom::EControlType	com_type					(CControl_Com*);
 
 		bool				is_pure						(CControl_Com*);
 		bool				is_base						(CControl_Com*);

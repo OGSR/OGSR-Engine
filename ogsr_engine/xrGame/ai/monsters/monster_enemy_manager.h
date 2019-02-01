@@ -69,5 +69,14 @@ public:
 	u32					get_enemy_vertex_enemy_last_seen	() {return enemy_vertex_enemy_last_seen;}
 
 	u32					see_enemy_duration			();
+
+private:
+	const CEntityAlive	*m_script_enemy;
+
+public:
+	const CEntityAlive *get_script_enemy			() {return m_script_enemy;}
+	void				script_enemy				();
+	void				script_enemy				(const CEntityAlive &enemy);
+	void				remove_links				(CObject* O);
 };
 

@@ -34,6 +34,10 @@ void CMonsterEnemyManager::init_external(CBaseMonster *M)
 
 void CMonsterEnemyManager::update()
 {
+	if (m_script_enemy && (m_script_enemy->getDestroy() || !m_script_enemy->g_Alive()))
+	{
+		script_enemy();
+	}
 	if (forced) {
 		// проверить валидность force-объекта
 		if (!enemy || enemy->getDestroy() || !enemy->g_Alive()) {
@@ -41,7 +45,11 @@ void CMonsterEnemyManager::update()
 			return;
 		}
 	} else {
-		enemy = monster->EnemyMemory.get_enemy();
+		if (m_script_enemy ){
+			enemy = m_script_enemy;
+		}else{
+			enemy = monster->EnemyMemory.get_enemy();
+		}
 		
 		if (enemy) {
 			SMonsterEnemy enemy_info	= monster->EnemyMemory.get_enemy_info();
@@ -173,6 +181,8 @@ void CMonsterEnemyManager::reinit()
 
 	m_time_updated				= 0;
 	m_time_start_see_enemy		= 0;
+
+	script_enemy				();
 }
 
 
@@ -254,3 +264,28 @@ u32 CMonsterEnemyManager::see_enemy_duration()
 	return ((m_time_start_see_enemy == 0) ? 0 : (time() - m_time_start_see_enemy));
 }
 
+void CMonsterEnemyManager::script_enemy	()
+{
+	m_script_enemy		= 0;
+}
+
+void CMonsterEnemyManager::script_enemy	(const CEntityAlive &enemy)
+{
+	m_script_enemy		= &enemy;
+}
+
+void CMonsterEnemyManager::remove_links (CObject* O)
+{
+	if ( enemy == O )
+	{
+		enemy			= NULL;
+	}
+	if ( prev_enemy == O )
+	{
+		prev_enemy		= NULL;
+	}
+	if ( m_script_enemy	==	O )
+	{
+		m_script_enemy	= NULL;
+	}
+}

@@ -164,6 +164,7 @@ public:
 	virtual void			SetScriptControl				(const bool bScriptControl, shared_str caSciptName);
 
 
+	virtual void			SetEnemy						(const CEntityAlive *sent);
 	bool					m_force_real_speed;
 	bool					m_script_processing_active;
 	bool					m_script_state_must_execute;
@@ -260,6 +261,11 @@ public:
 
 	CMonsterEnemyManager	EnemyMan;
 	CMonsterCorpseManager	CorpseMan;
+
+	const CEntityAlive		*EatedCorpse;
+	// Lain: added
+	bool                    check_eated_corpse_draggable();
+	virtual bool			is_base_monster_with_enemy	() { return EnemyMan.get_enemy() != NULL; }
 
 	bool					hear_dangerous_sound;
 	bool					hear_interesting_sound;

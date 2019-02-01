@@ -371,6 +371,16 @@ void CControlManagerCustom::jump(const Fvector &position)
 	m_man->activate		(ControlCom::eControlJump);
 }
 
+void CControlManagerCustom::script_capture(ControlCom::EControlType type)
+{
+	if (!m_man->check_start_conditions(type)) return;
+	m_man->capture		(this, type);
+}
+
+void CControlManagerCustom::script_release(ControlCom::EControlType type)
+{
+	if (m_man->check_capturer(this, type)) m_man->release		(this, type);
+}
 
 void CControlManagerCustom::script_jump(const Fvector &position, float factor)
 {
@@ -612,5 +622,8 @@ void CControlManagerCustom::critical_wound(LPCSTR anim)
 }
 //////////////////////////////////////////////////////////////////////////
 
-
-
+void CControlManagerCustom::remove_links (CObject * object)
+{
+	if ( m_jump )
+		m_jump->remove_links(object);
+}

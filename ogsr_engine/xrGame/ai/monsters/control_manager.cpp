@@ -242,6 +242,24 @@ void CControl_Manager::capture(CControl_Com *com, ControlCom::EControlType type)
 	com->cing()->on_start_control	(type);
 }
 
+bool CControl_Manager::check_capturer(CControl_Com *com, ControlCom::EControlType type)
+{
+	CControl_Com *target = m_control_elems[type];
+	CControl_Com *capturer = target->ced()->capturer();
+	return	(capturer == com);
+}
+
+CControl_Com*   CControl_Manager::get_capturer (ControlCom::EControlType type)
+{
+	CControl_Com* target = m_control_elems[type];
+	if ( !target || !target->ced() )
+	{
+		return 0;
+	}
+
+	return target->ced()->capturer();
+}
+
 void CControl_Manager::release(CControl_Com *com, ControlCom::EControlType type)  // who, type
 {
 	CControl_Com *target = m_control_elems[type];

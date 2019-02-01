@@ -25,6 +25,7 @@ public:
 	void				remove_links			(CObject *O);
 
 	void				add_corpse				(const CEntityAlive *corpse);
+	bool                is_valid_corpse			(const CEntityAlive *corpse);
 
 private:
 	void				remove_non_actual		();

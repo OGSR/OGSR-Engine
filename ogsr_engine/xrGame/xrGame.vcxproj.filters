@@ -2137,6 +2137,12 @@
     <Filter Include="Core\Common\Random\weighted">
       <UniqueIdentifier>{89a59ffb-4cd8-4f1c-915c-f9746f5b1213}</UniqueIdentifier>
     </Filter>
+    <Filter Include="AI\AMonsters\common\steering behaviours">
+      <UniqueIdentifier>{1036db8a-0ca3-40b1-abac-5e2fbe996b25}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="AI\AMonsters\common\monster states\Group Monsters Home">
+      <UniqueIdentifier>{6494b30e-7ee7-44e3-903a-93f5da438769}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="mt_config.h">
@@ -6061,6 +6067,108 @@
     <ClInclude Include="ai\monsters\anti_aim_ability.h">
       <Filter>AI\AMonsters\common\components</Filter>
     </ClInclude>
+    <ClInclude Include="steering_behaviour.h">
+      <Filter>AI\AMonsters\common\steering behaviours</Filter>
+    </ClInclude>
+    <ClInclude Include="steering_behaviour_alignment.h">
+      <Filter>AI\AMonsters\common\steering behaviours</Filter>
+    </ClInclude>
+    <ClInclude Include="steering_behaviour_base.h">
+      <Filter>AI\AMonsters\common\steering behaviours</Filter>
+    </ClInclude>
+    <ClInclude Include="steering_behaviour_base_inline.h">
+      <Filter>AI\AMonsters\common\steering behaviours</Filter>
+    </ClInclude>
+    <ClInclude Include="steering_behaviour_cohesion.h">
+      <Filter>AI\AMonsters\common\steering behaviours</Filter>
+    </ClInclude>
+    <ClInclude Include="steering_behaviour_manager.h">
+      <Filter>AI\AMonsters\common\steering behaviours</Filter>
+    </ClInclude>
+    <ClInclude Include="steering_behaviour_separation.h">
+      <Filter>AI\AMonsters\common\steering behaviours</Filter>
+    </ClInclude>
+    <ClInclude Include="ai\monsters\group_states\group_state_attack.h">
+      <Filter>AI\AMonsters\common\monster states\Group Monsters Home</Filter>
+    </ClInclude>
+    <ClInclude Include="ai\monsters\group_states\group_state_attack_inline.h">
+      <Filter>AI\AMonsters\common\monster states\Group Monsters Home</Filter>
+    </ClInclude>
+    <ClInclude Include="ai\monsters\group_states\group_state_attack_run.h">
+      <Filter>AI\AMonsters\common\monster states\Group Monsters Home</Filter>
+    </ClInclude>
+    <ClInclude Include="ai\monsters\group_states\group_state_attack_run_inline.h">
+      <Filter>AI\AMonsters\common\monster states\Group Monsters Home</Filter>
+    </ClInclude>
+    <ClInclude Include="ai\monsters\group_states\group_state_custom.h">
+      <Filter>AI\AMonsters\common\monster states\Group Monsters Home</Filter>
+    </ClInclude>
+    <ClInclude Include="ai\monsters\group_states\group_state_custom_inline.h">
+      <Filter>AI\AMonsters\common\monster states\Group Monsters Home</Filter>
+    </ClInclude>
+    <ClInclude Include="ai\monsters\group_states\group_state_eat.h">
+      <Filter>AI\AMonsters\common\monster states\Group Monsters Home</Filter>
+    </ClInclude>
+    <ClInclude Include="ai\monsters\group_states\group_state_eat_drag.h">
+      <Filter>AI\AMonsters\common\monster states\Group Monsters Home</Filter>
+    </ClInclude>
+    <ClInclude Include="ai\monsters\group_states\group_state_eat_drag_inline.h">
+      <Filter>AI\AMonsters\common\monster states\Group Monsters Home</Filter>
+    </ClInclude>
+    <ClInclude Include="ai\monsters\group_states\group_state_eat_eat.h">
+      <Filter>AI\AMonsters\common\monster states\Group Monsters Home</Filter>
+    </ClInclude>
+    <ClInclude Include="ai\monsters\group_states\group_state_eat_eat_inline.h">
+      <Filter>AI\AMonsters\common\monster states\Group Monsters Home</Filter>
+    </ClInclude>
+    <ClInclude Include="ai\monsters\group_states\group_state_eat_inline.h">
+      <Filter>AI\AMonsters\common\monster states\Group Monsters Home</Filter>
+    </ClInclude>
+    <ClInclude Include="ai\monsters\group_states\group_state_hear_danger_sound.h">
+      <Filter>AI\AMonsters\common\monster states\Group Monsters Home</Filter>
+    </ClInclude>
+    <ClInclude Include="ai\monsters\group_states\group_state_hear_danger_sound_inline.h">
+      <Filter>AI\AMonsters\common\monster states\Group Monsters Home</Filter>
+    </ClInclude>
+    <ClInclude Include="ai\monsters\group_states\group_state_home_point_attack.h">
+      <Filter>AI\AMonsters\common\monster states\Group Monsters Home</Filter>
+    </ClInclude>
+    <ClInclude Include="ai\monsters\group_states\group_state_home_point_attack_inline.h">
+      <Filter>AI\AMonsters\common\monster states\Group Monsters Home</Filter>
+    </ClInclude>
+    <ClInclude Include="ai\monsters\group_states\group_state_panic.h">
+      <Filter>AI\AMonsters\common\monster states\Group Monsters Home</Filter>
+    </ClInclude>
+    <ClInclude Include="ai\monsters\group_states\group_state_panic_inline.h">
+      <Filter>AI\AMonsters\common\monster states\Group Monsters Home</Filter>
+    </ClInclude>
+    <ClInclude Include="ai\monsters\group_states\group_state_panic_run.h">
+      <Filter>AI\AMonsters\common\monster states\Group Monsters Home</Filter>
+    </ClInclude>
+    <ClInclude Include="ai\monsters\group_states\group_state_panic_run_inline.h">
+      <Filter>AI\AMonsters\common\monster states\Group Monsters Home</Filter>
+    </ClInclude>
+    <ClInclude Include="ai\monsters\group_states\group_state_rest.h">
+      <Filter>AI\AMonsters\common\monster states\Group Monsters Home</Filter>
+    </ClInclude>
+    <ClInclude Include="ai\monsters\group_states\group_state_rest_idle.h">
+      <Filter>AI\AMonsters\common\monster states\Group Monsters Home</Filter>
+    </ClInclude>
+    <ClInclude Include="ai\monsters\group_states\group_state_rest_idle_inline.h">
+      <Filter>AI\AMonsters\common\monster states\Group Monsters Home</Filter>
+    </ClInclude>
+    <ClInclude Include="ai\monsters\group_states\group_state_rest_inline.h">
+      <Filter>AI\AMonsters\common\monster states\Group Monsters Home</Filter>
+    </ClInclude>
+    <ClInclude Include="ai\monsters\group_states\group_state_squad_move_to_radius.h">
+      <Filter>AI\AMonsters\common\monster states\Group Monsters Home</Filter>
+    </ClInclude>
+    <ClInclude Include="ai\monsters\group_states\group_state_squad_move_to_radius_inline.h">
+      <Filter>AI\AMonsters\common\monster states\Group Monsters Home</Filter>
+    </ClInclude>
+    <ClInclude Include="ai\monsters\group_states\state_adapter.h">
+      <Filter>AI\AMonsters\common\monster states\Group Monsters Home</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="damage_manager.cpp">
@@ -8891,6 +8999,9 @@
     </ClCompile>
     <ClCompile Include="ai\monsters\anti_aim_ability.cpp">
       <Filter>AI\AMonsters\common\components</Filter>
+    </ClCompile>
+    <ClCompile Include="steering_behaviour.cpp">
+      <Filter>AI\AMonsters\common\steering behaviours</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

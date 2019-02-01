@@ -50,6 +50,12 @@ bool CControlJump::check_start_conditions()
 	return true;
 }
 
+void CControlJump::remove_links	(CObject* object)
+{
+	if ( m_data.target_object == object )
+		m_data.target_object	=	NULL;
+}
+
 void CControlJump::activate()
 {
 	m_man->capture_pure	(this);

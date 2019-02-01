@@ -97,6 +97,8 @@ public:
 
 SControlJumpData	&setup_data				() {return m_data;}
 
+	void			remove_links			(CObject* object);
+
 private:	
 			// service routines		
 			// build path after jump 

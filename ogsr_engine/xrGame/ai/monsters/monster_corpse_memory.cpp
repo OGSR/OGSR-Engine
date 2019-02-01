@@ -54,6 +54,12 @@ void CMonsterCorpseMemory::add_corpse(const CEntityAlive *corpse)
 	}
 }
 
+bool CMonsterCorpseMemory::is_valid_corpse (const CEntityAlive *corpse)
+{
+	CORPSE_MAP_IT it = m_objects.find(corpse);
+	return it != m_objects.end();
+}
+
 void CMonsterCorpseMemory::remove_non_actual() 
 {
 	TTime cur_time = Device.dwTimeGlobal;

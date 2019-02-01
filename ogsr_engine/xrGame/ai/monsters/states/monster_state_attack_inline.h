@@ -65,7 +65,7 @@ void CStateMonsterAttackAbstract::initialize()
 	m_time_start_behinder				= 0;
 }
 
-#define FIND_ENEMY_DELAY	6000
+#define FIND_ENEMY_DELAY	12000
 
 
 

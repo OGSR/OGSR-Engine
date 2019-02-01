@@ -74,6 +74,8 @@ public:
 	bool		is_jumping				();
 	
 	void		script_jump				(const Fvector &position, float factor);
+	void		script_capture			(ControlCom::EControlType type);
+	void		script_release			(ControlCom::EControlType type);
 
 	//-------------------------------------------------------------------------------
 	// Rotation Jump
@@ -85,6 +87,8 @@ public:
 	void		set_threaten_data		(LPCSTR anim, float time) {m_threaten_anim = anim; m_threaten_time = time;}
 
 	void		critical_wound			(LPCSTR anim);
+
+	void		remove_links			(CObject * object);
 
 private:
 

@@ -84,6 +84,8 @@ CBaseMonster::CBaseMonster()
 
 	com_man().add_ability			(ControlCom::eComCriticalWound);
 
+	EatedCorpse								=	NULL;
+
 	m_feel_enemy_who_made_sound_max_distance = 0;
 	m_feel_enemy_who_just_hit_max_distance   = 0;
 	m_feel_enemy_max_distance                = 0;
@@ -113,6 +115,11 @@ CBaseMonster::~CBaseMonster()
 
 void CBaseMonster::UpdateCL()
 {
+	if ( EatedCorpse && !CorpseMemory.is_valid_corpse(EatedCorpse) )
+	{
+		EatedCorpse = NULL;
+	}
+
 	inherited::UpdateCL();
 	
 	if (g_Alive()) {
@@ -323,8 +330,33 @@ void CBaseMonster::TranslateActionToPathParams()
 	case ACT_SLEEP:
 	case ACT_REST:
 	case ACT_LOOK_AROUND:
-	case ACT_ATTACK:
 		bEnablePath = false;
+		break;
+	case ACT_ATTACK:
+		if ( !can_attack_on_move() )
+		{
+			bEnablePath = false;
+		}
+		else
+		{
+			if (m_bDamaged) {
+				vel_mask = MonsterMovement::eVelocityParamsRunDamaged;
+				des_mask = MonsterMovement::eVelocityParameterRunDamaged;
+			} else {
+				vel_mask = MonsterMovement::eVelocityParamsRun;
+				des_mask = MonsterMovement::eVelocityParameterRunNormal;
+			}
+		}
+		break;
+
+	case ACT_HOME_WALK_GROWL:
+		vel_mask = MonsterMovement::eVelocityParamsWalkGrowl;
+		des_mask = MonsterMovement::eVelocityParameterWalkGrowl;
+		break;
+
+	case ACT_HOME_WALK_SMELLING:
+		vel_mask = MonsterMovement::eVelocityParamsWalkSmelling;
+		des_mask = MonsterMovement::eVelocityParameterWalkSmelling;
 		break;
 
 	case ACT_WALK_FWD:
@@ -430,6 +462,8 @@ void CBaseMonster::net_Relcase(CObject *O)
 {
 	inherited::net_Relcase(O);
 
+	StateMan->remove_links			(O);
+
 	// TODO: do not clear, remove only object O
 	if (g_Alive()) {
 		EnemyMemory.remove_links	(O);
@@ -437,8 +471,8 @@ void CBaseMonster::net_Relcase(CObject *O)
 		CorpseMemory.remove_links	(O);
 		HitMemory.remove_hit_info	(O);
 
-		EnemyMan.reinit				();
-		CorpseMan.reinit			();
+		EnemyMan.remove_links		(O);
+		CorpseMan.remove_links		(O);
 
 		UpdateMemory				();
 		
@@ -576,6 +610,28 @@ void CBaseMonster::OnEvent(NET_Packet& P, u16 type)
 	}
 }
 
+// Lain: added
+bool   CBaseMonster::check_eated_corpse_draggable()
+{
+	const CEntity* p_corpse = EatedCorpse;
+	if ( !p_corpse || !p_corpse->Visual() )
+	{
+		return false;
+	}
+	
+	if ( CKinematics* K = p_corpse->Visual()->dcast_PKinematics() )
+	{
+/*
+		if ( CInifile* ini = K->LL_UserData() )
+		{
+			return ini->section_exist("capture_used_bones") && ini->line_exist("capture_used_bones", "bones");
+		}
+*/
+		return true;
+	}
+
+	return false;	
+}
 
 //-------------------------------------------------------------------
 // CBaseMonster's  Atack on Move

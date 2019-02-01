@@ -53,7 +53,7 @@ void CMonsterSquadManager::register_member(u8 team_id, u8 squad_id, u8 group_id,
 	// есть team, squad, нет group 
 	} else if (group_id >= team[team_id][squad_id].size()) { 
 		
-		u32 prev_size						= team[team_id][squad_id].size();
+		u32 prev_size						= (u32)team[team_id][squad_id].size();
 		team[team_id][squad_id].resize		(group_id + 1);
 
 		for (u32 i = prev_size; i < group_id; i++)

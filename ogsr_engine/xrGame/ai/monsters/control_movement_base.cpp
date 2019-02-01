@@ -21,6 +21,8 @@ void CControlMovementBase::load(LPCSTR section)
 {
 	load_velocity	(section, "Velocity_Stand",			eVelocityParameterStand);
 	load_velocity	(section, "Velocity_WalkFwdNormal",	eVelocityParameterWalkNormal);
+	load_velocity	(section, "Velocity_WalkSmelling",	eVelocityParameterWalkSmelling);
+	load_velocity	(section, "Velocity_WalkGrowl",		eVelocityParameterWalkGrowl);
 	load_velocity	(section, "Velocity_RunFwdNormal",	eVelocityParameterRunNormal);
 	load_velocity	(section, "Velocity_WalkFwdDamaged",eVelocityParameterWalkDamaged);
 	load_velocity	(section, "Velocity_RunFwdDamaged",	eVelocityParameterRunDamaged);

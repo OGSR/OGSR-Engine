@@ -405,6 +405,8 @@ EAction CControlAnimationBase::VelocityIndex2Action(u32 velocity_index)
 		case MonsterMovement::eVelocityParameterRunDamaged:		return ACT_RUN;
 		case MonsterMovement::eVelocityParameterSteal:			return ACT_STEAL;
 		case MonsterMovement::eVelocityParameterDrag:			return ACT_DRAG;
+		case MonsterMovement::eVelocityParameterWalkSmelling:	return ACT_HOME_WALK_SMELLING;
+		case MonsterMovement::eVelocityParameterWalkGrowl:		return ACT_HOME_WALK_GROWL;
 		case MonsterMovement::eVelocityParameterInvisible:		return ACT_RUN;
 	}
 
