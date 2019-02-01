@@ -2334,10 +2334,8 @@
     <ClCompile Include="xrServer.cpp" />
     <ClCompile Include="xrServer_balance.cpp" />
     <ClCompile Include="game_base.cpp" />
-    <ClCompile Include="game_base_script.cpp" />
     <ClCompile Include="game_cl_single.cpp" />
     <ClCompile Include="game_cl_base.cpp" />
-    <ClCompile Include="game_cl_base_script.cpp" />
     <ClCompile Include="game_cl_base_weapon_usage_statistic.cpp" />
     <ClCompile Include="game_sv_base.cpp" />
     <ClCompile Include="game_sv_base_console_vars.cpp" />
