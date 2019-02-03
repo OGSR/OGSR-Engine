@@ -1,8 +1,9 @@
 //---------------------------------------------------------------------------
 #include 	"stdafx.h"
 
+#include	<filesystem>
 
-#include 	"SkeletonCustom.h"
+#include	"SkeletonCustom.h"
 #include	"SkeletonX.h"
 #include	"fmesh.h"
 #include	"Render.h"
@@ -201,10 +202,10 @@ void	CKinematics::Load(const char* N, IReader *data, u32 dwFlags)
 	IReader* LD 	= data->open_chunk(OGF_S_LODS);
     if (LD)
 	{
-        string_path		short_name;
-        strcpy_s		(short_name,sizeof(short_name),N);
+        //string_path		short_name;
+        //strcpy_s		(short_name,sizeof(short_name),N);
 
-        if (strext(short_name)) *strext(short_name)=0;
+        //if (strext(short_name)) *strext(short_name)=0;
         // From stream
 		{
 			string_path		lod_name;
@@ -222,10 +223,28 @@ void	CKinematics::Load(const char* N, IReader *data, u32 dwFlags)
         LD->close	();
     }
 
-	// User data
-	IReader* UD 	= data->open_chunk(OGF_S_USERDATA);
-    pUserData		= UD?xr_new<CInifile>(UD,FS.get_path("$game_config$")->m_Path):0;
-    if (UD)			UD->close();
+	string_path ini_path, model_path;
+	strcpy_s(model_path, N);
+	if (strext(model_path)) 
+		*strext(model_path) = 0;
+	strcat_s(ini_path, model_path);
+	strcat_s(ini_path, ".ltx");
+	
+	// try to read custom user data for module from ltx file
+	IReader* UD = FS.r_open("$game_meshes$", ini_path);
+	pUserData = UD ? xr_new<CInifile>(UD, FS.get_path("$game_config$")->m_Path) : 0;
+	if (UD)
+		UD->close();
+
+	// read user data from model if no custom found
+	if (!pUserData)
+	{
+		// User data
+		UD = data->open_chunk(OGF_S_USERDATA);
+		pUserData = UD ? xr_new<CInifile>(UD, FS.get_path("$game_config$")->m_Path) : 0;
+		if (UD)
+			UD->close();
+	}
 
 	// Globals
 	bone_map_N		= xr_new<accel>		();
