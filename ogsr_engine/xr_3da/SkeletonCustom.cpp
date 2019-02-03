@@ -1,8 +1,6 @@
 //---------------------------------------------------------------------------
 #include 	"stdafx.h"
 
-#include	<filesystem>
-
 #include	"SkeletonCustom.h"
 #include	"SkeletonX.h"
 #include	"fmesh.h"
