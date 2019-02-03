@@ -459,6 +459,7 @@
     <ClInclude Include="steering_behaviour_cohesion.h" />
     <ClInclude Include="steering_behaviour_manager.h" />
     <ClInclude Include="steering_behaviour_separation.h" />
+    <ClInclude Include="trajectories.h" />
     <ClInclude Include="ui\UIIconParams.h" />
     <ClInclude Include="ui\UIPdaSpot.h" />
     <ClInclude Include="wrapper_abstract.h" />
@@ -1710,6 +1711,7 @@
     <ClCompile Include="script_vars_storage.cpp" />
     <ClCompile Include="sound_memory_manager.cpp" />
     <ClCompile Include="steering_behaviour.cpp" />
+    <ClCompile Include="trajectories.cpp" />
     <ClCompile Include="ui\UIIconParams.cpp" />
     <ClCompile Include="ui\UIPdaSpot.cpp" />
     <ClCompile Include="visual_memory_manager.cpp" />

@@ -44,6 +44,7 @@ void					SetActorMovable(bool v){if(m_character)m_character->SetActorMovable(v);
 void					SetForcedPhysicsControl(bool v){if(m_character)m_character->SetForcedPhysicsControl(v);}
 bool					ForcedPhysicsControl(){return m_character&&m_character->ForcedPhysicsControl();}
 void					UpdateObjectBox(CPHCharacter *ach);
+void					VirtualMoveTo		( const Fvector	&in_pos, Fvector &out_pos );
 enum					JumpType 
 {
 						jtStrait, //end point before uppermost point

@@ -153,6 +153,9 @@
     <ClCompile Include="XML_Parser\xrXMLParser.cpp">
       <Filter>XML_Parser</Filter>
     </ClCompile>
+    <ClCompile Include="string_concatenations.cpp">
+      <Filter>Math\Extensions</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="FTimer.h">
@@ -338,6 +341,9 @@
     </ClInclude>
     <ClInclude Include="_vector3d_ext.h">
       <Filter>Math</Filter>
+    </ClInclude>
+    <ClInclude Include="string_concatenations.h">
+      <Filter>Math\Extensions</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

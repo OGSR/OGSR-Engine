@@ -72,8 +72,12 @@ TEMPLATE_SPECIALIZATION
 Fvector	CStateMonsterHearInterestingSoundAbstract::get_target_position()
 {
 	Fvector snd_pos = object->SoundMemory.GetSound().position;
-	if (!object->Home->has_home() || object->Home->at_home(snd_pos)) return snd_pos;
-		
+	if (!object->Home->has_home() )
+		return snd_pos;
+
+	if (object->Home->at_home(snd_pos))
+		return snd_pos;
+
 	return ai().level_graph().vertex_position(object->Home->get_place());
 }
 

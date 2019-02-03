@@ -34,6 +34,7 @@ void CMonsterEnemyManager::init_external(CBaseMonster *M)
 
 void CMonsterEnemyManager::update()
 {
+
 	if (m_script_enemy && (m_script_enemy->getDestroy() || !m_script_enemy->g_Alive()))
 	{
 		script_enemy();
@@ -194,7 +195,7 @@ void CMonsterEnemyManager::add_enemy(const CEntityAlive *enemy)
 
 bool CMonsterEnemyManager::see_enemy_now()
 {
-	return (monster->memory().visual().visible_right_now(enemy)); 
+	return monster->memory().visual().visible_right_now(enemy); 
 }
 
 bool CMonsterEnemyManager::see_enemy_now(const CEntityAlive* enemy)
@@ -202,13 +203,29 @@ bool CMonsterEnemyManager::see_enemy_now(const CEntityAlive* enemy)
 	return monster->memory().visual().visible_right_now(enemy); 
 }
 
+bool CMonsterEnemyManager::see_enemy_recently()
+{
+	return see_enemy_recently(enemy); 
+}
+
+bool CMonsterEnemyManager::see_enemy_recently(const CEntityAlive* enemy)
+{
+	return monster->memory().visual().visible_now(enemy); 
+}
+
 bool CMonsterEnemyManager::enemy_see_me_now()
 {
-	if (Actor() == enemy) {
+	if ( Actor() == enemy ) 
+	{
 		return (Actor()->memory().visual().visible_right_now(monster)); 
-	} else {
+	}
+	else 
+	{
 		CCustomMonster *cm = const_cast<CEntityAlive*>(enemy)->cast_custom_monster();
-		if (cm) return (cm->memory().visual().visible_right_now(monster));
+		if ( cm ) 
+		{
+			return cm->memory().visual().visible_right_now(monster);
+		}
 	}
 
 	return false; 
@@ -217,7 +234,9 @@ bool CMonsterEnemyManager::enemy_see_me_now()
 bool CMonsterEnemyManager::is_faced(const CEntityAlive *object0, const CEntityAlive *object1)
 {
 	if (object0->Position().distance_to(object1->Position()) > object0->ffGetRange())
-		return		(false);
+	{
+		return false;
+	}
 
 	float			yaw1, pitch1, yaw2, pitch2, fYawFov, fPitchFov, fRange;
 	Fvector			tPosition = object0->Position();
@@ -244,6 +263,11 @@ bool CMonsterEnemyManager::is_faced(const CEntityAlive *object0, const CEntityAl
 bool CMonsterEnemyManager::is_enemy(const CEntityAlive *obj) 
 {
 	return ((monster->g_Team() != obj->g_Team()) && monster->is_relation_enemy(obj) && obj->g_Alive());
+}
+
+const Fvector&   CMonsterEnemyManager::get_enemy_position () 
+{
+	return position;
 }
 
 void CMonsterEnemyManager::transfer_enemy(CBaseMonster *friend_monster)

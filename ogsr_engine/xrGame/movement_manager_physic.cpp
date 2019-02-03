@@ -14,6 +14,10 @@
 #include "custommonster.h"
 #include "IColisiondamageInfo.h"
 #include "profiler.h"
+
+// Lain: added 
+#include "steering_behaviour.h"
+
 #ifdef DEBUG
 #		include "PHDebug.h"
 #		define	DBG_PH_MOVE_CONDITIONS(c)				c

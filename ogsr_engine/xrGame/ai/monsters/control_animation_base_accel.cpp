@@ -48,20 +48,20 @@ bool CControlAnimationBase::accel_chain_get(float cur_speed, EMotionAnim target_
 {
 	VERIFY2(_abs(cur_speed)<1000, "CControlAnimationBase cur_speed too big");
 
-	VELOCITY_CHAIN_VEC_IT B = m_accel.chain.begin(), I;
-	VELOCITY_CHAIN_VEC_IT E = m_accel.chain.end();
+    auto B = m_accel.chain.begin();
+    auto E = m_accel.chain.end();
 
 	// пройти по всем Chain-векторам
-	for (I = B; I != E; I++) {
-		SEQ_VECTOR_IT	IT_B		= I->begin(), IT;
-		SEQ_VECTOR_IT	IT_E		= I->end();
-		SEQ_VECTOR_IT	best_anim	= IT_E;
+	for (auto I = B; I != E; I++) {
+        auto	IT_B		= I->begin();
+        auto	IT_E		= I->end();
+        auto	best_anim	= IT_E;
 		SVelocityParam	*best_param	= 0;
 
 		bool		  found		= false;
 
 		// Пройти по текущему вектору
-		for (IT = IT_B; IT != IT_E; IT++) {
+		for (auto IT = IT_B; IT != IT_E; IT++) {
 
 			SAnimItem			*item_it = m_anim_storage[*IT];
 			VERIFY(item_it);
@@ -97,11 +97,10 @@ bool CControlAnimationBase::accel_chain_get(float cur_speed, EMotionAnim target_
 
 bool CControlAnimationBase::accel_chain_test()
 {
-#ifdef DEBUG
 	string256 error_msg;
-#endif
+
 	// пройти по всем Chain-векторам
-	for (VELOCITY_CHAIN_VEC_IT I = m_accel.chain.begin(); I != m_accel.chain.end(); I++) {
+	for (auto I = m_accel.chain.begin(); I != m_accel.chain.end(); I++) {
 
 		VERIFY2(I->size() >= 2, error_msg);
 
@@ -110,15 +109,15 @@ bool CControlAnimationBase::accel_chain_test()
 		VERIFY(anim_from);
 
 		// Пройти по текущему вектору
-		for (SEQ_VECTOR_IT IT = I->begin() + 1; IT != I->end(); IT++) {
+		for (auto IT = I->begin() + 1; IT != I->end(); IT++) {
 			anim_to = m_anim_storage[*IT];
-#ifdef DEBUG
+
 			float from	=	anim_from->velocity.velocity.linear * anim_from->velocity.max_factor;
 			float to	=	anim_to->velocity.velocity.linear * anim_to->velocity.min_factor;
 
-			sprintf_s(error_msg,"Incompatible speed ranges. Monster[%s] From animation  [%s] To animation [%s]",*m_object->cName(),*anim_from->target_name, *anim_to->target_name);
+			xr_sprintf(error_msg,"Incompatible speed ranges. Monster[%s] From animation  [%s] To animation [%s]",*m_object->cName(),*anim_from->target_name, *anim_to->target_name);
  			VERIFY2(to < from, error_msg);
-#endif
+
 			anim_from = anim_to;
 		}
 	}

@@ -82,7 +82,12 @@ public:
 	void		HearSound				(const SoundElem &s);
 	void		HearSound				(const CObject* who, int eType, const Fvector &Position, float power, TTime time);
 	IC	bool	IsRememberSound			() {return (!Sounds.empty());}		
-	void		GetSound				(SoundElem &s, bool &bDangerous);	// возвращает самый опасный звук
+	
+	// Lain: added
+	int         GetNumSounds            () {return u32(Sounds.size());}
+	void        GetFirstSound           (SoundElem& s, bool& bDangerous);
+
+	void		GetSound				(SoundElem& s, bool& bDangerous);	// возвращает самый опасный звук
 	SoundElem	&GetSound				();
 	bool		get_sound_from_object	(const CObject* who, SoundElem	&value);	
 

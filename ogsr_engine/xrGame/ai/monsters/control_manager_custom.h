@@ -12,6 +12,7 @@ class CControlRotationJump;
 class CControlRunAttack;
 class CControlThreaten;
 class CControlCriticalWound;
+class CEntityAlive;
 
 class CControlManagerCustom : public CControl_ComBase {
 	typedef					CControl_ComBase	inherited;
@@ -28,7 +29,7 @@ class CControlManagerCustom : public CControl_ComBase {
 	CControlMeleeJump		*m_melee_jump;
 	CControlCriticalWound	*m_critical_wound;
 
-	DEFINE_VECTOR			(SControlRotationJumpData, ROT_JUMP_DATA_VEC, ROT_JUMP_DATA_VEC_IT);
+	using ROT_JUMP_DATA_VEC = xr_vector<SControlRotationJumpData>;
 	ROT_JUMP_DATA_VEC		m_rot_jump_data;
 	
 	SControlMeleeJumpData	m_melee_jump_data;
@@ -68,15 +69,22 @@ public:
 	//-------------------------------------------------------------------------------
 	// Jump
 	void		jump					(CObject *obj, const SControlJumpData &ta);
-	void		jump					(const SControlJumpData &ta);
+	bool		jump					(const SControlJumpData &ta);
 	void		jump					(const Fvector &position);
 	void		load_jump_data			(LPCSTR s1, LPCSTR s2, LPCSTR s3, LPCSTR s4, u32 vel_mask_prepare, u32 vel_mask_ground, u32 flags);
 	bool		is_jumping				();
+
+	bool		check_if_jump_possible	(Fvector const&		target, bool full_check);
+	bool		jump_if_possible		(Fvector const&		target, 
+										 CEntityAlive*		target_object,
+										 bool 				use_target_direction,
+										 bool				use_velocity_bounce	=	true,
+										 bool				check_possibility	=	true);
+
 	
 	void		script_jump				(const Fvector &position, float factor);
 	void		script_capture			(ControlCom::EControlType type);
 	void		script_release			(ControlCom::EControlType type);
-
 	//-------------------------------------------------------------------------------
 	// Rotation Jump
 	void		add_rotation_jump_data	(LPCSTR left1,LPCSTR left2,LPCSTR right1,LPCSTR right2, float angle, u32 flags = 0);
@@ -90,6 +98,7 @@ public:
 
 	void		remove_links			(CObject * object);
 
+	CControlJump*	get_jump_control	() { return m_jump; }
 private:
 
 	void		check_attack_jump		();

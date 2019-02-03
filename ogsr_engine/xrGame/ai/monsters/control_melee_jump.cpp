@@ -67,7 +67,7 @@ void CControlMeleeJump::activate()
 	SControlAnimationData		*ctrl_data = (SControlAnimationData*)m_man->data(this, ControlCom::eControlAnimation); 
 	VERIFY						(ctrl_data);
 
-	ctrl_data->global.motion	= motion;
+	ctrl_data->global.set_motion (motion);
 	ctrl_data->global.actual	= false;
 }
 

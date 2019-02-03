@@ -77,6 +77,7 @@ public:
 	virtual		bool			step_single						(dReal	step)					;
 				void			reinit_single					()								;
 				void			step_prediction					(float time)					;
+	void step(float time);
 	virtual 	void 			PhDataUpdate					(dReal	step)					=0;
 	virtual 	void 			PhTune							(dReal	step)					=0;
 	virtual		void 			spatial_move					()								;

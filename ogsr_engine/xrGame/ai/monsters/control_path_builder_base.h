@@ -27,19 +27,29 @@ class CControlPathBuilderBase : public CControl_ComBase {
     // build path members
 	// -----------------------------------------------------------
 
-	struct STarget {
-		Fvector		position;
-		u32			node;
+	class STarget {
+		Fvector		_position;
+		u32			_node;
+	public:
+					STarget()
+		{
+			_position.set( -FLT_MAX, -FLT_MAX, -FLT_MAX );
+			_node  =u32(-1);
+		}
 		void		init		() {
-			position.set	(0.f,0.f,0.f);
-			node			= u32(-1);
+			_position.set	(0.f,0.f,0.f);
+			_node			= u32(-1);
 		}
 
 		void		set			(const Fvector &pos, u32 vertex) {
-			position.set	(pos);
-			node			= vertex;
+			_position.set	(pos);
+			_node			= vertex;
 		}
-
+		IC	const Fvector	&position	()const				{ return _position; }
+		//IC		  Fvector	&position	()					{ return _position; }
+		IC	u32				node		()const				{ return _node;		}
+		IC	void			set_node	( u32 node_ )		{ _node = node_ ;	}
+		IC	void			set_position( const Fvector	&p ){ _position.set(p);	}
 	} m_target_set, m_target_found;
 
 	u32			m_time;					// время перестроения пути
@@ -124,13 +134,15 @@ public:
 	IC	void		set_use_covers			(bool val = true);
 	IC	void		set_distance_to_end		(float dist);
 
-
 		void		prepare_builder			();
 		void		detour_graph_points		(u32 game_graph_vertex_id = u32(-1));
 	IC	void		set_generic_parameters	();
+	
 
-		Fvector		get_target_found		() {return m_target_found.position;}
-		Fvector		get_target_set			() {return m_target_set.position;}
+		bool		is_target_actual		() const {return m_target_actual;}
+		Fvector		get_target_found		() {return m_target_found.position();}
+		u32			get_target_found_node	() const {return m_target_found.node();}
+		Fvector		get_target_set			() {return m_target_set.position();}
 
 		// -------------------------------------------------------------------
 		// Services

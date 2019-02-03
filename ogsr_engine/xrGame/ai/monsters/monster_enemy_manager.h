@@ -7,6 +7,7 @@ class CMonsterEnemyManager {
 	CBaseMonster		*monster;
 
 	const CEntityAlive	*enemy;
+	
 	Fvector				position;
 	u32					vertex;
 	u32					time_last_seen;
@@ -30,7 +31,7 @@ class CMonsterEnemyManager {
 
 	u32					m_time_updated;
 	u32					m_time_start_see_enemy;
-	
+
 public:
 						CMonsterEnemyManager		(); 
 						~CMonsterEnemyManager		();
@@ -44,7 +45,7 @@ public:
 
 	const CEntityAlive *get_enemy					() {return enemy;}
 	EDangerType			get_danger_type				() {return danger_type;}
-	const Fvector		&get_enemy_position			() {return position;}
+	const Fvector		&get_enemy_position			();
 	u32					get_enemy_vertex			() {return vertex;}
 	TTime				get_enemy_time_last_seen	() {return time_last_seen;}
 
@@ -52,6 +53,8 @@ public:
 	
 	bool				see_enemy_now				();
 	bool                see_enemy_now               (const CEntityAlive* enemy);
+	bool				see_enemy_recently			();
+	bool				see_enemy_recently			(const CEntityAlive* enemy);
 	bool				enemy_see_me_now			();
 
 	// вернуть количество врагов

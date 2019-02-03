@@ -118,7 +118,7 @@ void CControlRotationJump::stop_at_once()
 	SControlAnimationData		*ctrl_data = (SControlAnimationData*)m_man->data(this, ControlCom::eControlAnimation); 
 	VERIFY						(ctrl_data);
 
-	ctrl_data->global.motion	= m_right_side ? m_data.anim_stop_rs : m_data.anim_stop_ls;
+	ctrl_data->global.set_motion (m_right_side ? m_data.anim_stop_rs : m_data.anim_stop_ls);
 	ctrl_data->global.actual	= false;
 }
 
@@ -176,7 +176,7 @@ void CControlRotationJump::build_line_first()
 		SControlAnimationData		*ctrl_data = (SControlAnimationData*)m_man->data(this, ControlCom::eControlAnimation); 
 		VERIFY						(ctrl_data);
 
-		ctrl_data->global.motion	= m_right_side ? m_data.anim_stop_rs : m_data.anim_stop_ls;
+		ctrl_data->global.set_motion (m_right_side ? m_data.anim_stop_rs : m_data.anim_stop_ls);
 		ctrl_data->global.actual	= false;
 	}
 }
@@ -248,7 +248,7 @@ void CControlRotationJump::build_line_second()
 		SControlAnimationData		*ctrl_data = (SControlAnimationData*)m_man->data(this, ControlCom::eControlAnimation); 
 		VERIFY						(ctrl_data);
 
-		ctrl_data->global.motion	= m_right_side ? m_data.anim_run_rs : m_data.anim_run_ls;
+		ctrl_data->global.set_motion (m_right_side ? m_data.anim_run_rs : m_data.anim_run_ls);
 		ctrl_data->global.actual	= false;
 	}
 }

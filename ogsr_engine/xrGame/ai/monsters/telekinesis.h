@@ -9,7 +9,8 @@
 class CTelekinesis : public CPHUpdateObject {
 
 protected:
-	DEFINE_VECTOR(CTelekineticObject*,TELE_OBJECTS,TELE_OBJECTS_IT);
+	using TELE_OBJECTS = xr_vector<CTelekineticObject*>;
+    using TELE_OBJECTS_IT = TELE_OBJECTS::iterator;
 	TELE_OBJECTS			objects;
 	xr_vector<CObject*>		m_nearest;
 	bool					active;
@@ -47,7 +48,7 @@ virtual		void	clear_notrelevant   ();
 
 
 			// вернуть активность телекинеза
-			bool	is_active			() {return active;}
+			bool	is_active			() const {return active;}
 
 			// вернуть активность объекта		
 			bool	is_active_object	(CPhysicsShellHolder *obj);
@@ -56,7 +57,7 @@ virtual		void	clear_notrelevant   ();
 			u32		get_objects_count	();
 
 			// вернуть количество контролируемых объектов (всех)
-			u32		get_objects_total_count() {return objects.size();}
+			u32		get_objects_total_count() {return u32(objects.size());}
 
 
 			// вернуть объект по индексу в массиве

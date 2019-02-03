@@ -24,6 +24,7 @@
 #include "../ai_monster_shared_data.h"
 #include "../monster_sound_defs.h"
 #include "../../../inventoryowner.h"
+#include "../ai_monster_squad.h"
 
 class CCharacterPhysicsSupport;
 class CMonsterCorpseCoverEvaluator;
@@ -43,6 +44,10 @@ class CControlDirectionBase;
 class CMonsterCoverManager;
 
 class CMonsterHome;
+
+// Lain: added
+class CMonsterSquad;
+class squad_grouping_behaviour;
 
 class anti_aim_ability;
 
@@ -466,12 +471,27 @@ public:
 
 	bool							is_jumping		();
 
- public:
+//-------------------------------------------------------------------
+// CBaseMonster's      Steering Behaviour
+//-------------------------------------------------------------------
+public:
+	steering_behaviour::manager*    get_steer_manager ();
+
 	float get_feel_enemy_who_just_hit_max_distance () { return m_feel_enemy_who_just_hit_max_distance; }
 	float get_feel_enemy_who_made_sound_max_distance () { return m_feel_enemy_who_made_sound_max_distance; }
 	float get_feel_enemy_max_distance			   () { return m_feel_enemy_max_distance; }
+	virtual bool  can_use_agressive_jump (const CObject*) { return false; }
 
  private:
+	steering_behaviour::manager*    m_steer_manager;
+	squad_grouping_behaviour*       m_grouping_behaviour; // freed by manager
+
+	void							update_enemy_accessible_and_at_home_info ();
+	// updates position by applying little "pushing" force
+	// so that monsters rarely intersect
+	void							update_pos_by_grouping_behaviour (); 
+	TTime 							m_last_grouping_behaviour_update_tick;
+
 	float							m_feel_enemy_who_made_sound_max_distance;
 	float 							m_feel_enemy_who_just_hit_max_distance;
 	float 							m_feel_enemy_max_distance;
@@ -526,6 +546,13 @@ public:
 private:
 	void							update_eyes_visibility ();
 	float							get_screen_space_coverage_diagonal ();
+
+	TTime							m_first_tick_enemy_inaccessible;
+	TTime							m_last_tick_enemy_inaccessible;
+	TTime							m_first_tick_object_not_at_home;
+
+public:
+	virtual bool					run_home_point_when_enemy_inaccessible () const { return true; }
 };
 
 #include "base_monster_inline.h"

@@ -2143,6 +2143,9 @@
     <Filter Include="AI\AMonsters\common\monster states\Group Monsters Home">
       <UniqueIdentifier>{6494b30e-7ee7-44e3-903a-93f5da438769}</UniqueIdentifier>
     </Filter>
+    <Filter Include="AI\AMonsters\common\trajectories">
+      <UniqueIdentifier>{0c00f8de-5e1e-4bbc-9dd6-618042b0b19b}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="mt_config.h">
@@ -6169,6 +6172,9 @@
     <ClInclude Include="ai\monsters\group_states\state_adapter.h">
       <Filter>AI\AMonsters\common\monster states\Group Monsters Home</Filter>
     </ClInclude>
+    <ClInclude Include="trajectories.h">
+      <Filter>AI\AMonsters\common\trajectories</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="damage_manager.cpp">
@@ -9002,6 +9008,9 @@
     </ClCompile>
     <ClCompile Include="steering_behaviour.cpp">
       <Filter>AI\AMonsters\common\steering behaviours</Filter>
+    </ClCompile>
+    <ClCompile Include="trajectories.cpp">
+      <Filter>AI\AMonsters\common\trajectories</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

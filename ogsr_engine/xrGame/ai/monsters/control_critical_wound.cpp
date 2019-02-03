@@ -18,7 +18,7 @@ void CControlCriticalWound::activate()
 
 	SControlAnimationData		*ctrl_anim = (SControlAnimationData*)m_man->data(this, ControlCom::eControlAnimation); 
 	VERIFY						(ctrl_anim);
-	ctrl_anim->global.motion	= skel->ID_Cycle_Safe(m_data.animation);
+	ctrl_anim->global.set_motion ( skel->ID_Cycle_Safe(m_data.animation) );
 	ctrl_anim->global.actual	= false;
 }
 

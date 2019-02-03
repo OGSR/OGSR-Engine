@@ -40,7 +40,7 @@ void CControlRunAttack::activate()
 	SControlAnimationData		*ctrl_anim = (SControlAnimationData*)m_man->data(this, ControlCom::eControlAnimation); 
 	VERIFY						(ctrl_anim);
 
-	ctrl_anim->global.motion	= smart_cast<CKinematicsAnimated*>(m_object->Visual())->ID_Cycle_Safe("stand_attack_run_0");
+	ctrl_anim->global.set_motion ( smart_cast<CKinematicsAnimated*>(m_object->Visual())->ID_Cycle_Safe("stand_attack_run_0") );
 	ctrl_anim->global.actual	= false;
 }
 
@@ -85,7 +85,8 @@ void CControlRunAttack::on_event(ControlCom::EEventType type, ControlCom::IEvent
 	case ControlCom::eventAnimationStart: // handle blend params
 		{
 			// set animation speed
-			VERIFY((SControlAnimationData*)m_man->data(this, ControlCom::eControlAnimation));
+			SControlAnimationData	*ctrl_data_anim = (SControlAnimationData*)m_man->data(this, ControlCom::eControlAnimation); 
+			VERIFY					(ctrl_data_anim);
 
 			CBlend					*blend = m_man->animation().current_blend();
 			VERIFY					(blend);

@@ -88,7 +88,6 @@ void CControlPathBuilderBase::on_stop_control(ControlCom::EControlType type)
 
 void CControlPathBuilderBase::detour_graph_points(u32 game_graph_vertex_id)
 {
-	
 	m_game_graph_target_vertex	= game_graph_vertex_id;
 	set_game_path_type			();
 }
@@ -103,10 +102,12 @@ void CControlPathBuilderBase::set_dest_direction(const Fvector &dir)
 void CControlPathBuilderBase::set_target_accessible(STarget &target, const Fvector &position)
 {
 	if (!m_man->path_builder().accessible(position)) {
-		target.node			= m_man->path_builder().restrictions().accessible_nearest(position, target.position);
+		Fvector new_position;
+		target.set_node	( m_man->path_builder().restrictions().accessible_nearest( position, new_position ) );
+		target.set_position( new_position );
 	} else {
-		target.node			= u32(-1);
-		target.position		= position;
+		target.set_node	( u32(-1) );
+		target.set_position	( position );
 	}
 }
 
@@ -140,7 +141,7 @@ void CControlPathBuilderBase::on_path_updated()
 		m_man->path_builder().detail().actual() && 
 		m_man->path_builder().enabled() && 
 		// конечный путь?
-		m_target_set.node != m_object->ai_location().level_vertex_id() && m_target_actual) {
+		m_target_set.node() != m_object->ai_location().level_vertex_id() && m_target_actual) {
 			m_failed	= true;
 		}
 
