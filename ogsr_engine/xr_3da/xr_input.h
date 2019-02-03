@@ -92,6 +92,8 @@ public:
 	// ( caps lock учитывается только в неэксклюзивном режиме, из-за его особенностей )
 	// В случае неудачи функция возвращает 0.
 	char DikToChar(int dik);
+
+	void clip_cursor(bool clip);
 };
 
 extern ENGINE_API CInput* pInput;
