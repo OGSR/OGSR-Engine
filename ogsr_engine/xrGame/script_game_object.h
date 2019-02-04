@@ -790,6 +790,10 @@ public:
 
 	void g_fireParams( const CScriptGameObject*, Fvector&, Fvector& );
 
+	float stalker_disp_base();
+	void  stalker_disp_base( float );
+	void  stalker_disp_base( float, float );
+
 	DECLARE_SCRIPT_REGISTER_FUNCTION
 };
 add_to_type_list(CScriptGameObject)

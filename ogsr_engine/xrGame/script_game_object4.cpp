@@ -828,3 +828,22 @@ void CScriptGameObject::g_fireParams( const CScriptGameObject* pHudItem, Fvector
   ASSERT_FMT( item, "[%s]: %s not a CHudItem", __FUNCTION__, pHudItem->object().cName().c_str() );
   E->g_fireParams( item, P, D );
 }
+
+
+float CScriptGameObject::stalker_disp_base() {
+  CAI_Stalker *stalker = smart_cast<CAI_Stalker*>( &object() );
+  ASSERT_FMT( stalker, "[%s]: %s not a CAI_Stalker", __FUNCTION__, object().cName().c_str() );
+  return stalker->m_fDispBase;
+}
+
+void CScriptGameObject::stalker_disp_base( float disp ) {
+  CAI_Stalker *stalker = smart_cast<CAI_Stalker*>( &object() );
+  ASSERT_FMT( stalker, "[%s]: %s not a CAI_Stalker", __FUNCTION__, object().cName().c_str() );
+  stalker->m_fDispBase = disp;
+}
+
+void CScriptGameObject::stalker_disp_base( float range, float maxr ) {
+  CAI_Stalker *stalker = smart_cast<CAI_Stalker*>( &object() );
+  ASSERT_FMT( stalker, "[%s]: %s not a CAI_Stalker", __FUNCTION__, object().cName().c_str() );
+  stalker->m_fDispBase = asin( maxr / range );
+}

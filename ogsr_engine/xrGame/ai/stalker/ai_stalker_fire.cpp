@@ -71,27 +71,27 @@ float CAI_Stalker::GetWeaponAccuracy	() const
 	if (!movement().path_completed()) {
 		if (movement().movement_type() == eMovementTypeWalk)
 			if (movement().body_state() == eBodyStateStand)
-				return		(base*m_disp_walk_stand);
+				return m_fDispBase + base * m_disp_walk_stand;
 			else
-				return		(base*m_disp_walk_crouch);
+				return m_fDispBase + base * m_disp_walk_crouch;
 		else
 			if (movement().movement_type() == eMovementTypeRun)
 				if (movement().body_state() == eBodyStateStand)
-					return	(base*m_disp_run_stand);
+					return m_fDispBase + base * m_disp_run_stand;
 				else
-					return	(base*m_disp_run_crouch);
+					return m_fDispBase + base * m_disp_run_crouch;
 	}
 	
 	if (movement().body_state() == eBodyStateStand)
 		if (zoom_state())
-			return			(base*m_disp_stand_stand);
+			return m_fDispBase + base * m_disp_stand_stand;
 		else
-			return			(base*m_disp_stand_stand_zoom);
+			return m_fDispBase + base * m_disp_stand_stand_zoom;
 	else
 		if (zoom_state())
-			return			(base*m_disp_stand_crouch);
+			return m_fDispBase + base * m_disp_stand_crouch;
 		else
-			return			(base*m_disp_stand_crouch_zoom);
+			return m_fDispBase + base * m_disp_stand_crouch_zoom;
 }
 
 void CAI_Stalker::g_fireParams(const CHudItem* pHudItem, Fvector& P, Fvector& D)
