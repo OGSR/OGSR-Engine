@@ -18,9 +18,6 @@
 #include "LightAnimLibrary.h"
 #include "ispatial.h"
 
-#define READ_IF_EXISTS(ltx,method,section,name,default_value)\
-	((ltx->line_exist(section,name)) ? (ltx->method(section,name)) : (default_value))
-
 #define CORE_FEATURE_SET( feature, section )\
   Core.Features.set( xrCore::Feature::feature, READ_IF_EXISTS( pSettings, r_bool, section, #feature, false ) )
 
@@ -115,7 +112,6 @@ void InitConsole	()
 	CORE_FEATURE_SET( ruck_flag_preferred,        "features" );
 	CORE_FEATURE_SET( old_outfit_slot_style,      "features" );
 	CORE_FEATURE_SET( npc_simplified_shooting,    "features" );
-	CORE_FEATURE_SET( restore_sun_fix,            "features" );
 	CORE_FEATURE_SET( use_trade_deficit_factor,   "features" );
 	CORE_FEATURE_SET( show_objectives_ondemand,   "features" );
 	CORE_FEATURE_SET( pickup_check_overlaped,     "features" );

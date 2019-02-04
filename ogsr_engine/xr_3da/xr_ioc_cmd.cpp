@@ -16,10 +16,6 @@
 #include "xr_object.h"
 
 #include <regex>
-#include <string>
-
-#define READ_IF_EXISTS(ltx,method,section,name,default_value)\
-	((ltx->line_exist(section,name)) ? (ltx->method(section,name)) : (default_value))
 
 xr_token							snd_freq_token							[ ]={
 	{ "22khz",						sf_22K										},

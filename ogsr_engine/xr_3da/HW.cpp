@@ -8,6 +8,7 @@
 #pragma warning(default:4995)
 #include "HW.h"
 #include "xr_IOconsole.h"
+#include "xr_input.h"
 
 #pragma comment( lib, "d3d9.lib" )
 
@@ -408,12 +409,9 @@ void CHW::updateWindowProps(HWND m_hWnd)
 		//SetWindowLongPtr(m_hWnd, GWL_EXSTYLE, WS_EX_TOPMOST); // Не из-за этого ли окно в полноэкранном режиме под отладчиком новозможно свернуть при исключении?
 	}
 
-	ShowCursor(FALSE);
 	SetForegroundWindow( m_hWnd );
 
-	RECT winRect;
-	GetWindowRect( m_hWnd, &winRect );
-	ClipCursor( &winRect );
+	pInput->clip_cursor(true);
 }
 
 

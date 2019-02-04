@@ -3,6 +3,7 @@
 #include "ResourceManager.h"
 #include "render.h"
 #include "IGame_Persistent.h"
+#include "xr_input.h"
 
 void CRenderDevice::_Destroy	(BOOL bKeepTextures)
 {
@@ -25,8 +26,8 @@ void CRenderDevice::Destroy	(void) {
 
 	Log("Destroying Direct3D...");
 
-	ShowCursor(TRUE);
-	ClipCursor(nullptr);
+	pInput->clip_cursor(false);
+
 	HW.Validate					();
 
 	_Destroy					(FALSE);
@@ -59,7 +60,8 @@ void CRenderDevice::Reset		(bool precache)
 #endif // DEBUG
 	bool b_16_before	= (float)dwWidth/(float)dwHeight > (1024.0f/768.0f+0.01f);
 
-	ShowCursor				(TRUE);
+	pInput->clip_cursor(false);
+
 	u32 tm_start			= TimerAsync();
 	if (g_pGamePersistent){
 
@@ -86,11 +88,8 @@ void CRenderDevice::Reset		(bool precache)
 	u32 tm_end				= TimerAsync();
 	Msg						("*** RESET [%d ms]",tm_end-tm_start);
 
-	ShowCursor(FALSE);
-	RECT winRect;
-	GetWindowRect(m_hWnd, &winRect);
-	ClipCursor(&winRect);
-		
+	pInput->clip_cursor(true);
+	
 	seqDeviceReset.Process(rp_DeviceReset);
 
 	bool b_16_after	= (float)dwWidth/(float)dwHeight > (1024.0f/768.0f+0.01f);

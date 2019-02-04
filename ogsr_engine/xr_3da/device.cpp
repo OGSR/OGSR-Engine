@@ -17,6 +17,7 @@
 #include "render.h"
 #include "XR_IOConsole.h"
 #include "IGame_Persistent.h"
+#include "xr_input.h"
 
 ENGINE_API CRenderDevice Device;
 ENGINE_API BOOL g_bRendering = FALSE; 
@@ -415,17 +416,7 @@ void CRenderDevice::OnWM_Activate(WPARAM wParam, LPARAM lParam)
 	const BOOL bActive = ((fActive != WA_INACTIVE) && (!fMinimized)) ? TRUE : FALSE;
 	const BOOL isGameActive = (psDeviceFlags.is(rsAlwaysActive) || bActive) ? TRUE : FALSE;
 
-	if (bActive) {
-		ShowCursor(FALSE);
-		if (m_hWnd) {
-			RECT winRect;
-			GetWindowRect(m_hWnd, &winRect);
-			ClipCursor(&winRect);
-		}
-	} else {
-		while (ShowCursor(TRUE) < 0);
-		ClipCursor(nullptr);
-	}
+	pInput->clip_cursor(fActive != WA_INACTIVE);
 
 	if (isGameActive != Device.b_is_Active)
 	{

@@ -454,3 +454,38 @@ char CInput::DikToChar(int dik)
 
 	return 0;
 }
+
+// https://stackoverflow.com/a/36827574
+void CInput::clip_cursor(bool clip)
+{
+	if (clip) {
+		ShowCursor(FALSE);
+		if (Device.m_hWnd) {
+			RECT rect;
+			GetClientRect(Device.m_hWnd, &rect);
+
+			POINT ul;
+			ul.x = rect.left;
+			ul.y = rect.top;
+
+			POINT lr;
+			lr.x = rect.right;
+			lr.y = rect.bottom;
+
+			MapWindowPoints(Device.m_hWnd, nullptr, &ul, 1);
+			MapWindowPoints(Device.m_hWnd, nullptr, &lr, 1);
+
+			rect.left = ul.x;
+			rect.top = ul.y;
+
+			rect.right = lr.x;
+			rect.bottom = lr.y;
+
+			ClipCursor(&rect);
+		}
+	}
+	else {
+		while (ShowCursor(TRUE) < 0);
+		ClipCursor(nullptr);
+	}
+}

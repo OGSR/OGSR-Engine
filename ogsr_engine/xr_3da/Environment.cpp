@@ -69,16 +69,16 @@ CEnvironment::~CEnvironment	()
 	OnDeviceDestroy			();
 }
 
-void CEnvironment::Invalidate()
+void CEnvironment::Invalidate(bool inv_effs)
 {
 	bWFX					= false;
 	Current[0]				= 0;
 	Current[1]				= 0;
-	if (eff_Rain) {
-		eff_Rain->snd_Ambient.stop();
+
+	if (eff_Rain && inv_effs)
 		eff_Rain->InvalidateState();
-	}
-	if (eff_LensFlare)
+
+	if (eff_LensFlare && inv_effs)
 		eff_LensFlare->Invalidate();
 }
 
@@ -132,12 +132,16 @@ void CEnvironment::SetWeather(shared_str name, bool forced)
 		}
         R_ASSERT3			(it!=WeatherCycles.end(),"Invalid weather name.",*name);
 		CurrentCycleName	= it->first;
-		if (forced)			{Invalidate();			}
+		if (forced) {
+			Invalidate();
+		}
 		if (!bWFX){
 			CurrentWeather		= &it->second;
 			CurrentWeatherName	= it->first;
 		}
-		if (forced)			{SelectEnvs(fGameTime);	}
+		if (forced) {
+			SelectEnvs(fGameTime);
+		}
 #ifdef WEATHER_LOGGING
 		Msg					("Starting Cycle: %s [%s]",*name,forced?"forced":"deferred");
 #endif
@@ -293,7 +297,7 @@ void CEnvironment::OnFrame()
 	EM.sky_color.set		( 0,0,0 );
 	EM.hemi_color.set		( 0,0,0 );
 	Fvector	view			= Device.vCameraPosition;
-	float	mpower			= 1;
+	float mpower = READ_IF_EXISTS(pSettings, r_float, "features", "environment_mpower", 0.f);
 	for (xr_vector<CEnvModifier>::iterator mit=Modifiers.begin(); mit!=Modifiers.end(); mit++)
 		mpower				+= EM.sum(*mit,view);
 
@@ -436,5 +440,5 @@ void CEnvironment::ForceReselectEnvs() {
     *current_env_desc1 = tmp_desc;
   }
   SelectEnvs( CurrentWeather, Current[ 0 ], Current[ 1 ], fGameTime );
-  eff_Rain->set_state( CEffect_Rain::States::stIdle );
+  //eff_Rain->InvalidateState(); //Тоже самое делается в CEnvironment::Invalidate, здесь не нужно.
 }

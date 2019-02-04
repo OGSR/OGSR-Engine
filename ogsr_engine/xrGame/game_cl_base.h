@@ -11,18 +11,6 @@ class	CUIGameCustom;
 class	CUI;
 class	CUIDialogWnd;
 
-struct SZoneMapEntityData{
-	Fvector	pos;
-	u32		color;
-	SZoneMapEntityData(){pos.set(.0f,.0f,.0f);color = 0xff00ff00;}
-	DECLARE_SCRIPT_REGISTER_FUNCTION_STRUCT
-};
-add_to_type_list(SZoneMapEntityData)
-#undef script_type_list
-#define script_type_list save_type_list(SZoneMapEntityData)
-
-//#include "game_cl_base_weapon_usage_statistic.h"
-
 struct WeaponUsageStatistic;
 
 class	game_cl_GameState	: public game_GameState, public ISheduled
@@ -93,8 +81,6 @@ public:
 				ClientID			GetClientIDByOrderID	(u32 id);
 				u32					GetPlayersCount			() const {return players.size();};
 	virtual		CUIGameCustom*		createGameUI			(){return NULL;};
-	virtual		void				GetMapEntities			(xr_vector<SZoneMapEntityData>& dst)	{};
-
 
 				void				StartStopMenu			(CUIDialogWnd* pDialog, bool bDoHideIndicators);
 	virtual		void				shedule_Update			(u32 dt);
