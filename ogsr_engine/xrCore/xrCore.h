@@ -240,6 +240,13 @@ public:
 	constexpr const char* GetBuildConfiguration();
 	const char* GetEngineVersion();
 };
+
+//Borland class dll interface
+#define	_BCL			__stdcall
+
+//Borland global function dll interface
+#define	_BGCL			__stdcall
+
 extern XRCORE_API xrCore Core;
 
 #include "Utils/thread_pool.hpp"

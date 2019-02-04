@@ -117,15 +117,19 @@ void CPHObject::Collide()
 	if(CPHCollideValidator::DoCollideStatic(*this)) CollideStatic(dSpacedGeom(),this);
 	m_flags.set(st_dirty,FALSE);
 }
-void	CPHObject::		CollideDynamics					()
+void	CPHObject::CollideDynamics()
 {
-	g_SpatialSpacePhysic->q_box				(ph_world->r_spatial,0,STYPE_PHYSIC,spatial.sphere.P,AABB);
-	qResultVec& result=ph_world->r_spatial	;
-	qResultIt i=result.begin(),e=result.end();
-	for(;i!=e;++i)	{
-		CPHObject* obj2=static_cast<CPHObject*>(*i);
-		if(obj2==this || !obj2->m_flags.test(st_dirty))		continue;
-		if(CPHCollideValidator::DoCollide(*this,*obj2)) NearCallback(this,obj2,dSpacedGeom(),obj2->dSpacedGeom());
+	g_SpatialSpacePhysic->q_box(ph_world->r_spatial, 0, STYPE_PHYSIC, spatial.sphere.P, AABB);
+	qResultVec& result = ph_world->r_spatial;
+	auto i = result.begin(), e = result.end();
+	for (; i != e; ++i) {
+		CPHObject* obj2 = static_cast<CPHObject*>(*i);
+
+		if (obj2 == this || !obj2->m_flags.test(st_dirty))
+			continue;
+
+		if (CPHCollideValidator::DoCollide(*this, *obj2))
+			NearCallback(this, obj2, dSpacedGeom(), obj2->dSpacedGeom());
 	}
 }
 void	CPHObject::reinit_single()

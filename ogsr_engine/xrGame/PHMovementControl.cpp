@@ -1237,3 +1237,9 @@ void CPHMovementControl::VirtualMoveTo(const Fvector	&in_pos, Fvector &out_pos)
 	m_character->GetPosition(out_pos);
 	VERIFY(_valid(out_pos));
 }
+
+bool CPHMovementControl::PhysicsOnlyMode()
+{
+	return m_character && m_character->b_exist && m_character->IsEnabled() &&
+		(m_character->JumpState() || m_character->ForcedPhysicsControl());
+}
