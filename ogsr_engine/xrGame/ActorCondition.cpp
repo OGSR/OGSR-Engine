@@ -272,13 +272,13 @@ void CActorCondition::ConditionStand(float weight)
 }
 
 
-bool CActorCondition::IsCantWalk() const
+bool CActorCondition::IsCantWalk()
 {
 	if(m_fPower< m_fCantWalkPowerBegin)
-		m_bCantWalk		= true;
+		m_condition_flags.set(eCantWalk, TRUE);
 	else if(m_fPower > m_fCantWalkPowerEnd)
-		m_bCantWalk		= false;
-	return				m_bCantWalk;
+		m_condition_flags.set(eCantWalk, FALSE);
+	return m_condition_flags.test(eCantWalk);
 }
 
 #include "CustomOutfit.h"
@@ -303,22 +303,22 @@ bool CActorCondition::IsCantWalkWeight()
 	return false;
 }
 
-bool CActorCondition::IsCantSprint() const
+bool CActorCondition::IsCantSprint()
 {
-	if(m_fPower< m_fCantSprintPowerBegin)
-		m_bCantSprint	= true;
-	else if(m_fPower > m_fCantSprintPowerEnd)
-		m_bCantSprint	= false;
-	return				m_bCantSprint;
+	if (m_fPower < m_fCantSprintPowerBegin)
+		m_condition_flags.set(eCantSprint, TRUE);
+	else if (m_fPower > m_fCantSprintPowerEnd)
+		m_condition_flags.set(eCantSprint, FALSE);
+	return m_condition_flags.test(eCantSprint);
 }
 
-bool CActorCondition::IsLimping() const
+bool CActorCondition::IsLimping()
 {
-	if(m_fPower< m_fLimpingPowerBegin || GetHealth() < m_fLimpingHealthBegin)
-		m_bLimping = true;
-	else if(m_fPower > m_fLimpingPowerEnd && GetHealth() > m_fLimpingHealthEnd)
-		m_bLimping = false;
-	return m_bLimping;
+	if (m_fPower < m_fLimpingPowerBegin || GetHealth() < m_fLimpingHealthBegin)
+		m_condition_flags.set(eLimping, TRUE);
+	else if (m_fPower > m_fLimpingPowerEnd && GetHealth() > m_fLimpingHealthEnd)
+		m_condition_flags.set(eLimping, FALSE);
+	return m_condition_flags.test(eLimping);
 }
 extern bool g_bShowHudInfo;
 
@@ -341,8 +341,11 @@ void CActorCondition::load(IReader &input_packet)
 void CActorCondition::reinit	()
 {
 	inherited::reinit	();
-	m_bLimping					= false;
-	m_fSatiety					= 1.f;
+	m_condition_flags.set(eLimping, FALSE);
+	m_condition_flags.set(eCantWalk, FALSE);
+	m_condition_flags.set(eCantSprint, FALSE);
+	m_fSatiety = 1.f;
+	m_fAlcohol = 0.f;
 }
 
 void CActorCondition::ChangeAlcohol	(float value)
@@ -400,8 +403,8 @@ void CActorCondition::UpdateTutorialThresholds()
 		strcpy_s(cb_name,"_G.on_actor_radiation");
 	}
 
-	if(b && !m_condition_flags.test(ePhyHealthMinReached) && GetPsyHealth()>_cPsyHealthThr){
-//.		m_condition_flags.set			(ePhyHealthMinReached, TRUE);
+	if(b && !m_condition_flags.test(ePhyHealthMinReached) && GetPsyHealth()<_cPsyHealthThr){
+		m_condition_flags.set			(ePhyHealthMinReached, TRUE);
 		b=false;
 		strcpy_s(cb_name,"_G.on_actor_psy");
 	}

@@ -26,20 +26,32 @@ CRestrictedObject::~CRestrictedObject		()
 {
 }
 
-IC	void construct_string					(LPSTR result, const xr_vector<ALife::_OBJECT_ID> &restrictions)
+IC	void construct_string(LPSTR result, xr_vector<ALife::_OBJECT_ID> &restrictions)
 {
-	u32		count = xr_strlen(result) ? _GetItemCount(result) : 0;
-	xr_vector<ALife::_OBJECT_ID>::const_iterator	I = restrictions.begin();
-	xr_vector<ALife::_OBJECT_ID>::const_iterator	E = restrictions.end();
-	for ( ; I != E; ++I) {
-		CSE_ALifeDynamicObject	*object = ai().alife().objects().object(*I);
-		if (ai().game_graph().vertex(object->m_tGraphID)->level_id() != ai().level_graph().level_id())
-			continue;
+	u32 count = xr_strlen(result) ? _GetItemCount(result) : 0;
 
-		if (count)
-			strcat(result,",");
-		strcat(result,object->name_replace());
-		++count;
+	xr_vector<ALife::_OBJECT_ID>::const_iterator iter;
+	for (iter = restrictions.begin(); iter != restrictions.end();) 
+	{
+		CSE_ALifeDynamicObject	*object = ai().alife().objects().object(*iter);
+		if (object)
+		{
+			if (ai().game_graph().vertex(object->m_tGraphID)->level_id() == ai().level_graph().level_id())
+			{
+				if (count)
+					strcat(result, ",");
+
+				strcat(result, object->name_replace());
+				++count;
+			}
+
+			++iter;
+		}
+		else
+		{
+			Msg("Removing invalid restriction with ID=%d!", *iter);
+			iter = restrictions.erase(iter);
+		}
 	}
 }
 
