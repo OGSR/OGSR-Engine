@@ -27,30 +27,9 @@ void	CSoundRender_Core::i_start		(CSoundRender_Emitter* E)
 		}
 	}
 
-	if ( T->get_emitter() ) {
-	  if ( Ptarget < psSoundCull ) {
-	    T->get_emitter()->cancel();
-	  }
-	  else if ( s_targets.size() < u32(psSoundTargetsAutoMax) ) {
-	    Msg( "! SOUND: OpenAL: increasing max_targets to %u", s_targets.size() + 1 );
-	    CSoundRender_Target* T2 = xr_new<CSoundRender_TargetA>();
-	    if ( T2->_initialize() ) {
-	      s_targets.push_back( T2 );
-	      T = T2;
-	    }
-	    else {
-	      Msg( "! SOUND: OpenAL: can't increase max_targets from %u", s_targets.size() );
-	      T2->_destroy();
-	      xr_delete( T2 );
-	      // Stop currently playing
-	      T->get_emitter()->cancel();
-	    }
-	  }
-	  else {
-	    Msg( "! [%s]: max_targets_auto_max[%u] limit reached, s_targets[%u]", __FUNCTION__, psSoundTargetsAutoMax, s_targets.size() );
-	    T->get_emitter()->cancel();
-	  }
-	}
+	// Stop currently playing
+	if (T->get_emitter())
+		T->get_emitter()->cancel();
 
 	// Associate
 	E->target			= T;

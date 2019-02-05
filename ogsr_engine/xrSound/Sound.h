@@ -29,7 +29,6 @@ XRSOUND_API extern float			psSoundRolloff			;
 XRSOUND_API extern float			psSoundOcclusionScale	;
 XRSOUND_API extern Flags32			psSoundFlags			;
 XRSOUND_API extern int				psSoundTargets			;
-XRSOUND_API extern int				psSoundTargetsAutoMax;
 XRSOUND_API extern int				psSoundCacheSizeMB		;
 
 // Flags
