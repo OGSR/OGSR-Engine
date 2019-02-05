@@ -65,6 +65,16 @@ private:
 #endif
 */
 
+  pcstr anim_extra_1;
+  pcstr anim_extra_2;
+  pcstr anim_extra_3;
+  pcstr anim_extra_4;
+  pcstr anim_extra_5;
+  pcstr anim_extra_6;
+  pcstr anim_extra_7;
+  pcstr anim_extra_10;
+  pcstr anim_extra_11;
+
 	DECLARE_SCRIPT_REGISTER_FUNCTION
 };
 

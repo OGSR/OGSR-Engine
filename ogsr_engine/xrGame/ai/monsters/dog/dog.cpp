@@ -127,8 +127,10 @@ void CAI_Dog::Load(LPCSTR section)
 /////////////mob home
 
 #pragma todo( "dsh: вернуть закомментированные анимации обратно, когда они появятся" )
-	anim().AddAnim(eAnimHomeWalkSmelling,	"stand_walk_fwd_"/*"stand_walk_smelling_"*/,	-1,	&velocity_walk_smell,	PS_STAND);
-	anim().AddAnim(eAnimHomeWalkGrowl,		"stand_walk_fwd_"/*"stand_growl_walk_"*/,	-1, &velocity_walk_growl,	PS_STAND);
+        pcstr anim_str = READ_IF_EXISTS( pSettings, r_string, section, "anim_stand_walk_smelling", "stand_walk_fwd_"/*"stand_walk_smelling_"*/ );
+	anim().AddAnim(eAnimHomeWalkSmelling,	anim_str,	-1,	&velocity_walk_smell,	PS_STAND);
+        anim_str = READ_IF_EXISTS( pSettings, r_string, section, "anim_stand_growl_walk", "stand_walk_fwd_"/*"stand_growl_walk_"*/ );
+	anim().AddAnim(eAnimHomeWalkGrowl,		anim_str,	-1, &velocity_walk_growl,	PS_STAND);
 
 /////////////end mob home
 
@@ -163,7 +165,17 @@ void CAI_Dog::Load(LPCSTR section)
 
 	/////////////end mob home
 
-	
+#pragma todo( "dsh: вернуть закомментированные анимации обратно, когда они появятся" )
+        anim_extra_1  = READ_IF_EXISTS( pSettings, r_string, section, "anim_extra_1",  "stand_idle_1"/*"stand_idle_smelling_up_0"*/ );
+        anim_extra_2  = READ_IF_EXISTS( pSettings, r_string, section, "anim_extra_2",  "stand_idle_1"/*"stand_idle_smelling_down_0"*/ );
+        anim_extra_3  = READ_IF_EXISTS( pSettings, r_string, section, "anim_extra_3",  "stand_idle_1"/*"stand_idle_smelling_look_around_0"*/ );
+        anim_extra_4  = READ_IF_EXISTS( pSettings, r_string, section, "anim_extra_4",  "stand_idle_1"/*"stand_idle_dig_ground_0"*/ );
+        anim_extra_5  = READ_IF_EXISTS( pSettings, r_string, section, "anim_extra_5",  "stand_idle_1"/*"stand_idle_howl_0"*/ );
+        anim_extra_6  = READ_IF_EXISTS( pSettings, r_string, section, "anim_extra_6",  "stand_idle_1"/*"stand_growl_idle_0"*/ );
+        anim_extra_7  = READ_IF_EXISTS( pSettings, r_string, section, "anim_extra_7",  "stand_idle_1"/*"stand_idle_shake_0"*/ );
+        anim_extra_10 = READ_IF_EXISTS( pSettings, r_string, section, "anim_extra_10", "stand_idle_1"/*"sit_idle_1"*/ );
+        anim_extra_11 = READ_IF_EXISTS( pSettings, r_string, section, "anim_extra_11", "stand_idle_1"/*"sit_idle_2"*/ );
+
 /*
 #ifdef DEBUG	
 	anim().accel_chain_test		();
@@ -312,18 +324,17 @@ LPCSTR CAI_Dog::get_current_animation()
 {
 	switch(current_anim)
 	{
-#pragma todo( "dsh: вернуть закомментированные анимации обратно, когда они появятся" )
-	// case 1:  return "stand_idle_smelling_up_0";			//Нюхает вверх
-	// case 2:  return "stand_idle_smelling_down_0";		//Нюхает вниз
-	// case 3:  return "stand_idle_smelling_look_around_0";	//Нюхает по кругу
-	// case 4:  return "stand_idle_dig_ground_0";			//Обнюховает и роет землю
-	// case 5:  return "stand_idle_howl_0";					//Воет
-	// case 6:  return "stand_growl_idle_0";				//Рычит стоя
-	// case 7:  return "stand_idle_shake_0";				//Отряхивается !!!!!
+	case 1:  return anim_extra_1;			//Нюхает вверх
+	case 2:  return anim_extra_2;		//Нюхает вниз
+	case 3:  return anim_extra_3;	//Нюхает по кругу
+	case 4:  return anim_extra_4;			//Обнюховает и роет землю
+	case 5:  return anim_extra_5;					//Воет
+	case 6:  return anim_extra_6;				//Рычит стоя
+	case 7:  return anim_extra_7;				//Отряхивается !!!!!
 	case 8:  return "stand_sit_down_0";				//Садиться
 	case 9:  return "sit_idle_0";				//Cидит
-	case 10: return "sit_idle_0"/*"sit_idle_1"*/;				//Чухается сидя
-	case 11: return "sit_idle_0"/*"sit_idle_2"*/;				//Оглядывается сидя
+	case 10: return anim_extra_10;				//Чухается сидя
+	case 11: return anim_extra_11;				//Оглядывается сидя
 	case 12: return "sit_stand_up_0";				//Встает
 	case 13: return "sit_lie_down_0";			//Ложится
 	case 14: return "lie_to_sit_0";				//Подымается
@@ -337,8 +348,10 @@ void CAI_Dog::reload(LPCSTR section)
 {
 	inherited::reload (section);
 #pragma todo( "dsh: вернуть закомментированные анимации обратно, когда они появятся" )
-	//com_man().load_jump_data(0, "jump_ataka_01", "jump_ataka_02", "jump_ataka_03",
-	com_man().load_jump_data( 0, 0, "jump_right_0", 0,
+        pcstr jump_ataka_01 = READ_IF_EXISTS( pSettings, r_string, section, "anim_jump_ataka_01", 0/*"jump_ataka_01"*/ );
+        pcstr jump_ataka_02 = READ_IF_EXISTS( pSettings, r_string, section, "anim_jump_ataka_02", "jump_right_0"/*"jump_ataka_02"*/ );
+        pcstr jump_ataka_03 = READ_IF_EXISTS( pSettings, r_string, section, "anim_jump_ataka_03", 0/*"jump_ataka_03"*/ );
+	com_man().load_jump_data( 0, jump_ataka_01, jump_ataka_02, jump_ataka_02,
 	 						 MonsterMovement::eVelocityParameterRunNormal,
 						     MonsterMovement::eVelocityParameterRunNormal, 0);
 }
