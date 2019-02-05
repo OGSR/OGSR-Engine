@@ -329,7 +329,7 @@ void CBaseMonster::shedule_Update(u32 dt)
 {
 	inherited::shedule_Update	(dt);
 
-	update_eyes_visibility		();
+	// update_eyes_visibility		();
 
 	if ( m_anti_aim )
 	{
