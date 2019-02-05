@@ -500,14 +500,14 @@
 <!-- 		<cap_r2_sun_lumscale x="5" y="5" width="143" height="21">
 			<text font="letterica16" r="215" g="195" b="170">ui_mm_r2_sun_lumscale</text>
 		</cap_r2_sun_lumscale>
-		<track_r2_sun_lumscale x="249" y="0" width="190" height="21" invert="0" step="0.5">
+		<track_r2_sun_lumscale x="249" y="0" width="190" height="21" invert="0" step="0.1">
 			<options_item entry="r2_sun_lumscale" group="mm_opt_video_adv"/>
 		</track_r2_sun_lumscale>	 -->
 
 		<cap_r2_sun_lumscale_amb x="5" y="5" width="143" height="21">
 			<text font="letterica16" r="215" g="195" b="170">ui_mm_r2_sun_lumscale_amb</text>
 		</cap_r2_sun_lumscale_amb>
-		<track_r2_sun_lumscale_amb x="249" y="0" width="190" height="21" invert="0" step="0.5">
+		<track_r2_sun_lumscale_amb x="249" y="0" width="190" height="21" invert="0" step="0.1">
 			<options_item entry="r2_sun_lumscale_amb" group="mm_opt_video_adv"/>
 		</track_r2_sun_lumscale_amb>
 

@@ -14,6 +14,7 @@ enum{
 		AF_3D_SCOPES		=(1<<10),
 		AF_ZONES_DBG		=(1<<11),
 		AF_VERTEX_DBG		=(1<<12),
+		AF_CROSSHAIR_DBG	=(1<<13),
 };
 
 enum {
