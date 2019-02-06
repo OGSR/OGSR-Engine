@@ -4,9 +4,11 @@
 #include "control_com_defs.h"
 
 // Lain: added
+/*
 #ifdef DEBUG
 #include "debug_text_tree.h"
 #endif
+*/
 
 template<typename _Object>
 class CState {
@@ -41,9 +43,11 @@ public:
 	virtual bool		check_control_start_conditions	(ControlCom::EControlType type);
 
 	// Lain: added
+/*
 	#ifdef DEBUG
 	virtual void		add_debug_info          (debug::text_tree& root_s);
 	#endif
+*/
 
 protected:
 			void 		select_state			(u32 new_state_id);	

@@ -4,9 +4,11 @@
 #include "BaseMonster/base_monster.h"
 
 // Lain: added
+/*
 #ifdef DEBUG
 #include "../../debug_text_tree.h"
 #endif
+*/
 
 enum EActiveComAction {
 	eRemove			= u32(0),
@@ -241,7 +243,8 @@ void CControl_Manager::capture(CControl_Com *com, ControlCom::EControlType type)
 	
 	// 1. Check if can capture
 	CControl_Com *capturer = target->ced()->capturer();
-	
+
+/*
 	#ifdef DEBUG
 		if ( capturer && !is_base(capturer) )
 		{
@@ -261,6 +264,7 @@ void CControl_Manager::capture(CControl_Com *com, ControlCom::EControlType type)
 
 		VERIFY(!capturer || is_base(capturer));
 	#endif
+*/
 
 	if (target->is_active()) {
 		target->ced()->on_release						();
@@ -299,8 +303,7 @@ CControl_Com*   CControl_Manager::get_capturer (ControlCom::EControlType type)
 void CControl_Manager::release(CControl_Com *com, ControlCom::EControlType type)  // who, type
 {
 	CControl_Com *target = m_control_elems[type];
-	CControl_Com *capturer = target->ced()->capturer();
-	VERIFY	(capturer == com);
+	VERIFY(target->ced()->capturer() == com);
 
 	// select new capture if there is a base controller
     auto it = m_base_elems.find(type);
@@ -422,8 +425,7 @@ bool CControl_Manager::check_start_conditions(ControlCom::EControlType type)
 
 bool CControl_Manager::build_path_line(CControl_Com *com, const Fvector &target, u32 node, u32 vel_mask)
 {
-	CControl_Com *path		= m_control_elems[ControlCom::eControlPath];
-	VERIFY					(com == path->ced()->capturer());
+	VERIFY(com == m_control_elems[ControlCom::eControlPath]->ced()->capturer());
 
 	return (path_builder().build_special(target, node, vel_mask));
 }
@@ -442,6 +444,7 @@ void CControl_Manager::check_active_com(CControl_Com *com, bool b_add)
 }
 
 // Lain: made secure
+/*
 #ifdef DEBUG
 
 void CControl_Manager::add_debug_info(debug::text_tree& root_s)
@@ -466,3 +469,4 @@ void CControl_Manager::add_debug_info(debug::text_tree& root_s)
 	}
 }
 #endif //DEBUG
+*/

@@ -10,6 +10,7 @@
 #include "../control_movement_base.h"
 #include "../../../PHMovementControl.h"
 
+/*
 #ifdef _DEBUG
 #	include <dinput.h>
 #	include "../../../actor.h"
@@ -18,6 +19,7 @@
 #	include "cover_point.h"
 #	include "../monster_cover_manager.h"
 #endif
+*/
 
 
 
@@ -143,6 +145,7 @@ void CSnork::UpdateCL()
 	//find_geometry	();
 	//////////////////////////////////////////////////////////////////////////
 	
+/*
 #ifdef _DEBUG
 	// test 
 	CObject *obj = Level().CurrentEntity();
@@ -160,6 +163,7 @@ void CSnork::UpdateCL()
 		DBG().level_info(this).add_item	(Position(),pos,COLOR_GREEN);
 	}
 #endif
+*/
 
 }
 
@@ -311,6 +315,7 @@ void CSnork::on_activate_control(ControlCom::EControlType type)
 //////////////////////////////////////////////////////////////////////////
 
 
+/*
 #ifdef DEBUG
 #include "Actor.h"
 #include "ai_object_location.h"
@@ -325,4 +330,4 @@ void CSnork::debug_on_key(int key)
 	}
 }
 #endif
-
+*/

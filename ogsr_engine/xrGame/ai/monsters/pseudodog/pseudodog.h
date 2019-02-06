@@ -40,9 +40,11 @@ public:
 
 	virtual IStateManagerBase *create_state_manager	();
 private:
+/*
 #ifdef DEBUG	
 	virtual void	debug_on_key		(int key);
 #endif
+*/
 
 	DECLARE_SCRIPT_REGISTER_FUNCTION
 };

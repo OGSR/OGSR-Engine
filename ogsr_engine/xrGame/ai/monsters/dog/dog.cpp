@@ -351,7 +351,7 @@ void CAI_Dog::reload(LPCSTR section)
         pcstr jump_ataka_01 = READ_IF_EXISTS( pSettings, r_string, section, "anim_jump_ataka_01", 0/*"jump_ataka_01"*/ );
         pcstr jump_ataka_02 = READ_IF_EXISTS( pSettings, r_string, section, "anim_jump_ataka_02", "jump_right_0"/*"jump_ataka_02"*/ );
         pcstr jump_ataka_03 = READ_IF_EXISTS( pSettings, r_string, section, "anim_jump_ataka_03", 0/*"jump_ataka_03"*/ );
-	com_man().load_jump_data( 0, jump_ataka_01, jump_ataka_02, jump_ataka_02,
+	com_man().load_jump_data( 0, jump_ataka_01, jump_ataka_02, jump_ataka_03,
 	 						 MonsterMovement::eVelocityParameterRunNormal,
 						     MonsterMovement::eVelocityParameterRunNormal, 0);
 }

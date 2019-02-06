@@ -467,6 +467,7 @@ void CBurer::net_Relcase(CObject *O)
 	TTelekinesis::remove_links	(O);
 }
 
+/*
 #ifdef DEBUG
 CBaseMonster::SDebugInfo CBurer::show_debug_info()
 {
@@ -480,6 +481,7 @@ CBaseMonster::SDebugInfo CBurer::show_debug_info()
 	return CBaseMonster::SDebugInfo();
 }
 #endif
+*/
 
 void   CBurer::face_enemy ()
 {

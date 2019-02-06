@@ -15,9 +15,11 @@
 #include "level_graph.h"
 #include "../../ai_object_location.h"
 #include "../../CharacterPhysicsSupport.h"
+/*
 #ifdef DEBUG
 #include "../../level_debug.h"
 #endif
+*/
 
 #include "../../trajectories.h"
 #include "../../PHWorld.h"
@@ -550,12 +552,14 @@ bool CControlJump::jump_intersect_geometry (Fvector const & target, CObject * co
 	collide::rq_results	temp_rq_results;
 	xr_vector<trajectory_pick> *	pass_jump_picks		=	NULL;
 	xr_vector<Fvector> *	pass_collide_tris	=	NULL;
+/*
 #ifdef DEBUG		
 	xr_vector<trajectory_pick>	jump_picks;
 	pass_jump_picks		=	&jump_picks;
 	xr_vector<Fvector>		collide_tris;
 	pass_collide_tris	=	&collide_tris;
 #endif // #ifdef DEBUG		
+*/
 
 	Fvector const sizes	=	{ 0.8f, 1.4f, 0.8f };
 
@@ -578,18 +582,22 @@ bool CControlJump::jump_intersect_geometry (Fvector const & target, CObject * co
 										 pass_collide_tris,
 										 sizes) )
 	{
+/*
 #ifdef DEBUG		
 		m_object->m_jump_picks			=	jump_picks;
 		m_object->m_jump_collide_tris	=	collide_tris;
 #endif // #ifdef DEBUG		
+*/
 
 		return						true;
 	}
 
+/*
 #ifdef DEBUG
 	m_object->m_jump_picks				=	jump_picks;
 	m_object->m_jump_collide_tris		=	collide_tris;
 #endif // #ifdef DEBUG
+*/
 	
 	return							false;
 }

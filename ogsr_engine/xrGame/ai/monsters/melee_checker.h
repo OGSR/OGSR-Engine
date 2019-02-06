@@ -39,10 +39,12 @@ public:
 	IC		bool	can_start_melee			(const CEntity *enemy);
 	IC		bool	should_stop_melee		(const CEntity *enemy);
 
+/*
 #ifdef DEBUG
 	IC		float	dbg_as_min_dist			(){return m_as_min_dist;}
 	IC		float	dbg_as_step				(){return m_as_step;}
 #endif
+*/
 
 };
 

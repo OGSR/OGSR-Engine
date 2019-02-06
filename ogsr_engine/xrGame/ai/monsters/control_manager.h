@@ -7,9 +7,11 @@
 #include "control_movement.h"
 
 // Lain: added
+/*
 #ifdef DEBUG
 namespace debug { class text_tree; }
 #endif
+*/
 
 class CBaseMonster;
 class CControl_Com;
@@ -100,9 +102,11 @@ public:
 					bool	build_path_line				(CControl_Com*, const Fvector &target, u32 node, u32 vel_mask);
 
 					// Lain: added
+/*
 					#ifdef DEBUG
 					void    add_debug_info              (debug::text_tree& root_s);
 					#endif
+*/
 		
 private:
 

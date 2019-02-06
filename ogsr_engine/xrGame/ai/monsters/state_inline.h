@@ -52,7 +52,8 @@ void CStateAbstract::execute()
 	// если состояние не выбрано, перевыбрать
 	if (current_substate == u32(-1)) {
 		reselect_state();
-		
+
+/*
 		#ifdef DEBUG
 		// Lain: added
 			if ( current_substate == u32(-1) )
@@ -67,6 +68,7 @@ void CStateAbstract::execute()
 				VERIFY(current_substate != u32(-1)); 
 			}
 		#endif
+*/
 	}
 
 	// выполнить текущее состояние
@@ -155,6 +157,7 @@ void CStateAbstract::fill_data_with	(void *ptr_src, u32 size)
     std::memcpy(_data, ptr_src, size);
 }
 
+/*
 #ifdef DEBUG
 
 TEMPLATE_SPECIALIZATION
@@ -187,6 +190,7 @@ void   CStateAbstract::add_debug_info (debug::text_tree& root_s)
 }
 
 #endif
+*/
 
 TEMPLATE_SPECIALIZATION
 CStateAbstract *CStateAbstract::get_state_current()
