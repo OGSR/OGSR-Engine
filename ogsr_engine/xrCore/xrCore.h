@@ -241,10 +241,10 @@ public:
 };
 
 //Borland class dll interface
-#define	_BCL			__stdcall
+#define	_BCL
 
 //Borland global function dll interface
-#define	_BGCL			__stdcall
+#define	_BGCL
 
 extern XRCORE_API xrCore Core;
 
