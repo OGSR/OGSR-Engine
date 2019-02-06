@@ -17,10 +17,10 @@ public:
 
 	virtual void	initialize				();
 	virtual void	execute					();
+	virtual void	remove_links			(CObject* object) { inherited::remove_links(object);}
 
 	virtual bool 	check_completion		();
 	virtual bool 	check_start_conditions	();
-	virtual void		remove_links					(CObject* object) { inherited::remove_links(object);}
 
 private:
 			void	select_target_point		();
