@@ -11,7 +11,7 @@
 #include "../../../PHMovementControl.h"
 
 /*
-#ifdef _DEBUG
+#ifdef DEBUG
 #	include <dinput.h>
 #	include "../../../actor.h"
 #	include "../../../ai_object_location.h"
@@ -146,7 +146,7 @@ void CSnork::UpdateCL()
 	//////////////////////////////////////////////////////////////////////////
 	
 /*
-#ifdef _DEBUG
+#ifdef DEBUG
 	// test 
 	CObject *obj = Level().CurrentEntity();
 	if (!obj) return;

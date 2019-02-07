@@ -10,7 +10,7 @@
 #include "../../../PHMovementControl.h"
 #include "../../../CharacterPhysicsSupport.h"
 /*
-#ifdef _DEBUG
+#ifdef DEBUG
 #	include "../../../level.h"
 #	include "../../../level_debug.h"
 #endif
@@ -139,7 +139,7 @@ void CStateMonsterEatAbstract::setup_substates()
 		} else nearest_bone_pos = object->character_physics_support()->movement()->PHCaptureGetNearestElemPos(corpse);
 
 /*
-#ifdef _DEBUG
+#ifdef DEBUG
 		DBG().level_info(this).clear		();
 		Fvector pos1;
 		pos1.set(nearest_bone_pos);

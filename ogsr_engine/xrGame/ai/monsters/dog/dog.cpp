@@ -17,7 +17,7 @@
 #include "../../../actor.h"
 
 /*
-#ifdef _DEBUG
+#ifdef DEBUG
 #	include <dinput.h>
 #endif
 */
