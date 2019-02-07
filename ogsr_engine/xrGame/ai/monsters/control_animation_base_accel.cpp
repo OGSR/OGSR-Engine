@@ -97,8 +97,9 @@ bool CControlAnimationBase::accel_chain_get(float cur_speed, EMotionAnim target_
 
 bool CControlAnimationBase::accel_chain_test()
 {
+#ifdef DEBUG
 	string256 error_msg;
-
+#endif
 	// пройти по всем Chain-векторам
 	for (auto I = m_accel.chain.begin(); I != m_accel.chain.end(); I++) {
 
@@ -111,13 +112,13 @@ bool CControlAnimationBase::accel_chain_test()
 		// Пройти по текущему вектору
 		for (auto IT = I->begin() + 1; IT != I->end(); IT++) {
 			anim_to = m_anim_storage[*IT];
-
+#ifdef DEBUG
 			float from	=	anim_from->velocity.velocity.linear * anim_from->velocity.max_factor;
 			float to	=	anim_to->velocity.velocity.linear * anim_to->velocity.min_factor;
 
-			xr_sprintf(error_msg,"Incompatible speed ranges. Monster[%s] From animation  [%s] To animation [%s]",*m_object->cName(),*anim_from->target_name, *anim_to->target_name);
+			sprintf_s(error_msg,"Incompatible speed ranges. Monster[%s] From animation  [%s] To animation [%s]",*m_object->cName(),*anim_from->target_name, *anim_to->target_name);
  			VERIFY2(to < from, error_msg);
-
+#endif
 			anim_from = anim_to;
 		}
 	}
