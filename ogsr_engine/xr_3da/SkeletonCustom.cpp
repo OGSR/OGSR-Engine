@@ -221,8 +221,8 @@ void	CKinematics::Load(const char* N, IReader *data, u32 dwFlags)
         LD->close	();
     }
 
-	string_path ini_path, model_path;
-	strcpy_s(model_path, N);
+	string_path ini_path = {}, model_path = {};
+	strcat_s(model_path, N);
 	if (strext(model_path)) 
 		*strext(model_path) = 0;
 	strcat_s(ini_path, model_path);
