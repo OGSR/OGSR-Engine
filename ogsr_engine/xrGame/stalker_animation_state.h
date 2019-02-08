@@ -32,5 +32,3 @@ public:
 	virtual			~CStalkerAnimationState	();
 			void	Load					(CKinematicsAnimated *kinematics, LPCSTR base_name);
 };
-
-#include "stalker_animation_state_inline.h"
