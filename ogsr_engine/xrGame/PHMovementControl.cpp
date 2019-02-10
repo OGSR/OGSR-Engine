@@ -1161,3 +1161,85 @@ void CPHMovementControl::SetPathDir( const Fvector& v)
 	VERIFY2				( _abs(_vPathDir.x)<1000," incorrect SetPathDir ");
 
 }
+
+static const u32 move_steps_max_num = 20;
+static const float move_velocity = 1.f;
+
+static const float fmove_steps_max_num = move_steps_max_num;
+void CPHMovementControl::VirtualMoveTo(const Fvector	&in_pos, Fvector &out_pos)
+{
+	VERIFY(CharacterExist());
+	VERIFY(_valid(in_pos));
+
+	class ph_character_state_save
+	{
+	public:
+		ph_character_state_save(CPHCharacter* character) : character_(character),
+			saved_callback_(character->ObjectContactCallBack())
+		{
+			character_->get_State(sv_state);
+			///////////////////////////////////////
+			character_->SetObjectContactCallback(virtual_move_collide_callback);
+			character_->SetObjectContactCallbackData(static_cast<CPHObject*> (character));
+			character_->SwitchOFFInitContact();
+			character_->SetApplyGravity(FALSE);
+		}
+
+		~ph_character_state_save()
+		{
+			character_->SetObjectContactCallback(saved_callback_);
+			character_->SwitchInInitContact();
+			character_->SetApplyGravity(TRUE);
+			character_->SetObjectContactCallbackData(nullptr);
+			character_->set_State(sv_state);
+		}
+
+	private:
+		SPHNetState				  sv_state;
+		CPHCharacter*             character_;
+		ObjectContactCallbackFun* saved_callback_;
+
+	} cleanup(m_character);
+
+
+
+	const Fvector displacement = Fvector().sub(in_pos, vPosition);
+	const float dist = displacement.magnitude();
+	if (fis_zero(dist))
+	{
+		out_pos.set(in_pos);
+		return;
+	}
+
+	float		move_time = dist / move_velocity;
+	float		n = move_time / fixed_step;
+	float		fsteps_num = ceil(n);
+	u32			steps_num = iCeil(n);
+	clamp(fsteps_num, 0.f, fmove_steps_max_num);
+	clamp<u32>(steps_num, u32(0), move_steps_max_num);
+
+
+	move_time = fixed_step * fsteps_num;
+	const float		calc_velocity = dist / move_time;
+	const float		force = calc_velocity * m_character->Mass() / fixed_step;
+	const Fvector	vforce = Fvector().mul(displacement, force / dist);
+
+
+	m_character->Enable();
+
+	for (u32 i = 0; i < steps_num; ++i)
+	{
+		m_character->SetVelocity(Fvector().set(0, 0, 0));
+		m_character->setForce(vforce);
+		m_character->step(fixed_step);
+	}
+
+	m_character->GetPosition(out_pos);
+	VERIFY(_valid(out_pos));
+}
+
+bool CPHMovementControl::PhysicsOnlyMode()
+{
+	return m_character && m_character->b_exist && m_character->IsEnabled() &&
+		(m_character->JumpState() || m_character->ForcedPhysicsControl());
+}

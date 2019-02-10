@@ -25,6 +25,7 @@ struct SStateDataAction {
 struct SStateDataMoveToPoint {
 	Fvector				point;
 	u32					vertex;
+	Fvector             target_direction;
 	
 	bool				accelerated;
 	bool				braking;
@@ -36,6 +37,7 @@ struct SStateDataMoveToPoint {
 
 	SStateDataMoveToPoint() {
 		point.set			(0.f,0.f,0.f);
+		target_direction.set(0.f,0.f,0.f);
 		vertex				= u32(-1);
 		accelerated			= false;
 		completion_dist		= 0.f;

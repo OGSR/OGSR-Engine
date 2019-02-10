@@ -82,6 +82,15 @@ void CMonsterSoundMemory::HearSound(const CObject* who, int eType, const Fvector
 	HearSound(s);
 } 
 
+// Lain: added
+void   CMonsterSoundMemory::GetFirstSound (SoundElem& s, bool& bDangerous)
+{
+	VERIFY(!Sounds.empty());
+	s = *Sounds.begin();
+	if (s.type > WEAPON_EMPTY_CLICKING) bDangerous = false;
+	else bDangerous = true;
+}
+
 void CMonsterSoundMemory::GetSound(SoundElem &s, bool &bDangerous)
 {
 	VERIFY(!Sounds.empty());
@@ -95,7 +104,7 @@ void CMonsterSoundMemory::GetSound(SoundElem &s, bool &bDangerous)
 
 SoundElem &CMonsterSoundMemory::GetSound()
 {
-	VERIFY(!Sounds.empty());
+	VERIFY ( !Sounds.empty() );
 
 	xr_vector<SoundElem>::iterator it = std::max_element(Sounds.begin(), Sounds.end());
 	return (*it);

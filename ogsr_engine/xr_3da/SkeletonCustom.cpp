@@ -221,11 +221,10 @@ void	CKinematics::Load(const char* N, IReader *data, u32 dwFlags)
         LD->close	();
     }
 
-	string_path ini_path = {}, model_path = {};
-	strcat_s(model_path, N);
-	if (strext(model_path)) 
-		*strext(model_path) = 0;
-	strcat_s(ini_path, model_path);
+	string_path ini_path;
+	strcpy_s(ini_path, N);
+	if (strext(ini_path)) 
+		*strext(ini_path) = 0;
 	strcat_s(ini_path, ".ltx");
 	
 	// try to read custom user data for module from ltx file
@@ -310,6 +309,7 @@ void	CKinematics::Load(const char* N, IReader *data, u32 dwFlags)
     // IK data
 	IReader* IKD 	= data->open_chunk(OGF_S_IKDATA);
     if (IKD){
+        bool fix_cop_joints = pUserData ? READ_IF_EXISTS( pUserData, r_bool, "compat", "fix_cop_joints", false ) : false;
         for (u32 i=0; i<bones->size(); i++) {
             CBoneData*	B 	= (*bones)[i];
             u16 vers		= (u16)IKD->r_u32();
@@ -323,6 +323,15 @@ void	CKinematics::Load(const char* N, IReader *data, u32 dwFlags)
             B->bind_transform.translate_over(vT);
 	        B->mass			= IKD->r_float();
     	    IKD->r_fvector3	(B->center_of_mass);
+            if ( fix_cop_joints ) {
+              // https://bitbucket.org/stalker/xray_re-tools/commits/209b9014129ceeb7d92375a77f60835553266bf1
+              for ( auto& it : B->IK_data.limits ) {
+                Fvector2 vec = it.limit;
+                float tmp  = vec.x;
+                it.limit.x = -vec.y;
+                it.limit.y = -tmp;
+              }
+            }
         }
         // calculate model to bone converting matrix
         (*bones)[LL_GetBoneRoot()]->CalculateM2B(Fidentity);

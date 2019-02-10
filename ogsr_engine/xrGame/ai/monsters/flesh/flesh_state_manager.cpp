@@ -16,12 +16,18 @@
 #include "../states/monster_state_hitted.h"
 #include "../states/monster_state_controlled.h"
 #include "../states/monster_state_help_sound.h"
+#include "../group_states/group_state_home_point_attack.h"
 
 CStateManagerFlesh::CStateManagerFlesh(CAI_Flesh *monster) : inherited(monster)
 {
 	add_state(eStateRest,					xr_new<CStateMonsterRest<CAI_Flesh> >				(monster));
 	add_state(eStatePanic,					xr_new<CStateMonsterPanic<CAI_Flesh> >				(monster));
-	add_state(eStateAttack,					xr_new<CStateMonsterAttack<CAI_Flesh> >				(monster));
+
+ 	CStateMonsterAttackMoveToHomePoint<CAI_Flesh>* move2home = 
+ 		xr_new<CStateMonsterAttackMoveToHomePoint<CAI_Flesh> >(monster);
+ 
+ 	add_state(eStateAttack,					xr_new<CStateMonsterAttack<CAI_Flesh> >				(monster, move2home));
+	
 	add_state(eStateEat,					xr_new<CStateMonsterEat<CAI_Flesh> >				(monster));
 	add_state(eStateHearInterestingSound,	xr_new<CStateMonsterHearInterestingSound<CAI_Flesh> >(monster));
 	add_state(eStateHearDangerousSound,		xr_new<CStateMonsterHearDangerousSound<CAI_Flesh> >	(monster));
@@ -40,10 +46,8 @@ void CStateManagerFlesh::execute()
 		const CEntityAlive* enemy	= object->EnemyMan.get_enemy();
 
 		if (enemy) {
-			switch (object->EnemyMan.get_danger_type()) {
-				case eStrong:	state_id = eStatePanic; break;
-				case eWeak:		state_id = eStateAttack; break;
-			}
+			state_id = object->EnemyMan.get_danger_type() == eStrong &&
+					   !object->HitMemory.is_hit() ? eStatePanic : eStateAttack;
 
 		} else if (object->HitMemory.is_hit()) {
 			state_id = eStateHitted;

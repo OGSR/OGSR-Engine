@@ -363,7 +363,6 @@
     <ClCompile Include="OPC_AABBCollider.cpp" />
     <ClCompile Include="OPC_AABBTree.cpp" />
     <ClCompile Include="OPC_Collider.cpp" />
-    <ClCompile Include="OPC_Common.cpp" />
     <ClCompile Include="OPC_Container.cpp" />
     <ClCompile Include="OPC_Matrix3x3.cpp" />
     <ClCompile Include="OPC_Matrix4x4.cpp" />
@@ -374,7 +373,6 @@
     <ClCompile Include="OPC_Plane.cpp" />
     <ClCompile Include="OPC_PlanesCollider.cpp" />
     <ClCompile Include="OPC_Point.cpp" />
-    <ClCompile Include="OPC_Ray.cpp" />
     <ClCompile Include="OPC_RayCollider.cpp" />
     <ClCompile Include="OPC_SphereCollider.cpp" />
     <ClCompile Include="OPC_TreeBuilders.cpp" />

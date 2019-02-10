@@ -14,6 +14,9 @@ struct SControlJumpData : public ControlCom::IComData {
 		eGlideOnPrepareFailed		= u32(1) << 3,  // if not set then cannot start jump
 		eGlidePlayAnimOnce			= u32(1) << 4,
 		eGroundSkip					= u32(1) << 5,
+		eUseTargetPosition			= u32(1) << 6,
+		eDontUseVelocityBounce		= u32(1) << 7,
+		eUseAutoAim					= u32(1) << 8,
 	};
 	
 	flags32					flags;
@@ -60,6 +63,8 @@ class CControlJump : public CControl_ComCustom<SControlJumpData> {
 	float			m_max_distance;
 	float			m_max_angle;
 	float			m_max_height;
+	float			m_auto_aim_factor;
+	Fvector			m_jump_start_pos;
 
 	// run-time params
 	u32				m_time_next_allowed;
@@ -68,6 +73,8 @@ class CControlJump : public CControl_ComCustom<SControlJumpData> {
 	float			m_blend_speed;			// current anim blend speed
 	Fvector			m_target_position;		// save target position for internal needs
 
+	u32				m_last_saved_pos_time;
+	Fvector			m_last_saved_pos;
 
 	// state flags
 	bool			m_object_hitted;
@@ -76,6 +83,8 @@ class CControlJump : public CControl_ComCustom<SControlJumpData> {
 	// animation
 	EStateAnimJump	m_anim_state_prev;
 	EStateAnimJump	m_anim_state_current;
+
+	u32				m_last_time_added_impulse;
 
 public:
 	virtual void	load					(LPCSTR section);
@@ -86,18 +95,31 @@ public:
 	virtual void	on_event				(ControlCom::EEventType, ControlCom::IEventData*);
 
 
+			float	relative_time			();
+			bool	in_auto_aim				();
+			float	get_auto_aim_factor		() const { return m_auto_aim_factor; }
+			Fvector get_jump_start_pos		() const { return m_jump_start_pos; }
 	// process jump
 	virtual void	update_frame			();
 
 	// check for distance and angle difference
 	virtual	bool	can_jump				(CObject *target);
 
+	bool			can_jump				(Fvector const& target, bool const aggressive_jump);
+	bool			jump_intersect_geometry (Fvector const & target, CObject * ignored_object);
+
 	// stop/break jump and all of jumping states
 	virtual void	stop					();
 
+	float			get_max_distance		() const { return m_max_distance; }
+	float			get_min_distance		() const { return m_min_distance; }
+
 SControlJumpData	&setup_data				() {return m_data;}
 
+	void			remove_links			(CObject* object);
+
 private:	
+			void	calculate_jump_time (Fvector const & target, bool check_force_factor);
 			// service routines		
 			// build path after jump 
 			void	grounding			();

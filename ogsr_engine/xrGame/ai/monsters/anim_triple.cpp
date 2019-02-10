@@ -83,27 +83,26 @@ void CAnimationTriple::select_next_state()
 {
 	if (m_current_state == eStateNone) {
 		STripleAnimEventData		event(m_current_state);
-		m_man->notify				(ControlCom::eventTAChange, &event);
+		m_man->notify(ControlCom::eventTAChange, &event);
 		return;
 	}
-	
-	if ((m_current_state == eStateExecute) && 
-		m_data.execute_once && 
-		(m_previous_state == eStateExecute)) 
+
+	if ((m_current_state == eStateExecute) &&
+		m_data.execute_once &&
+		(m_previous_state == eStateExecute))
 		return;
 
-	play_selected	();
+	play_selected();
 
 	// raise event
-	if ((m_current_state != eStateExecute) || 
-		((m_current_state == eStateExecute) && (m_previous_state != eStateExecute))) {
-		
-		STripleAnimEventData	event	(m_current_state);
-		m_man->notify			(ControlCom::eventTAChange, &event);
+	if ((m_current_state != eStateExecute) || m_previous_state != eStateExecute)
+	{
+		STripleAnimEventData event(m_current_state);
+		m_man->notify(ControlCom::eventTAChange, &event);
 	}
 
 	m_previous_state = m_current_state;
-	if (m_current_state != eStateExecute) 
+	if (m_current_state != eStateExecute)
 		m_current_state = EStateAnimTriple(m_current_state + 1);
 }
 
@@ -113,6 +112,6 @@ void CAnimationTriple::play_selected()
 	SControlAnimationData		*ctrl_data = (SControlAnimationData*)m_man->data(this, ControlCom::eControlAnimation); 
 	VERIFY						(ctrl_data);
 	
-	ctrl_data->global.motion	= m_data.pool[m_current_state];
+	ctrl_data->global.set_motion (m_data.pool[m_current_state]);
 	ctrl_data->global.actual	= false;
 }

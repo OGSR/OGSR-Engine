@@ -9,9 +9,11 @@
 #include "../control_animation_base.h"
 #include "../control_movement_base.h"
 
+/*
 #ifdef DEBUG
 #include <dinput.h>
 #endif
+*/
 
 
 CZombie::CZombie()
@@ -208,6 +210,7 @@ void CZombie::fake_death_stand_up()
 }
 
 
+/*
 #ifdef DEBUG
 void CZombie::debug_on_key(int key)
 {
@@ -225,3 +228,4 @@ void CZombie::debug_on_key(int key)
 	}
 }
 #endif
+*/

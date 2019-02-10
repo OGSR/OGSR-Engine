@@ -122,8 +122,8 @@ void CControlAnimationBase::update()
 	SelectVelocities	();
 
 	// применить
-	if (prev_motion	!= cur_anim_info().motion) {
-		prev_motion	= cur_anim_info().motion;
+	if (prev_motion	!= cur_anim_info().get_motion()) {
+		prev_motion	= cur_anim_info().get_motion();
 		select_animation();
 	}
 }
@@ -176,7 +176,6 @@ void CControlAnimationBase::set_override_animation (pcstr name)
 	NODEFAULT;
 }
 
-
 //////////////////////////////////////////////////////////////////////////
 // SelectAnimation
 // In:	path, target_yaw, m_tAction
@@ -191,13 +190,19 @@ void CControlAnimationBase::SelectAnimation()
 	}
 
 	EAction							action = m_tAction;
-	if (m_object->control().path_builder().is_moving_on_path() && m_object->path().enabled()) action = GetActionFromPath();
 
-	cur_anim_info().motion			= m_tMotions[action].anim;
+	if (m_object->control().path_builder().is_moving_on_path() && 
+		m_object->path().enabled()) 
+	{
+									action = GetActionFromPath();
+	}
 
-	m_object->CheckSpecParams		(spec_params);	
-	if (prev_motion	!= cur_anim_info().motion) 
-		if (CheckTransition(prev_motion, cur_anim_info().motion)) return;
+	cur_anim_info().set_motion( m_tMotions[action].anim );
+
+	m_object->CheckSpecParams		(spec_params);
+
+	if (prev_motion	!= cur_anim_info().get_motion()) 
+		if (CheckTransition(prev_motion, cur_anim_info().get_motion())) return;
 
 	CheckReplacedAnim				();
 	SetTurnAnimation				();
@@ -214,7 +219,7 @@ void CControlAnimationBase::SetTurnAnimation()
 	bool turn_left = true;
 	if (from_right(yaw_target, yaw_current)) turn_left = false; 
 
-	EPState	anim_state = GetState(cur_anim_info().motion);
+	EPState	anim_state = GetState(cur_anim_info().get_motion());
 	if (IsStandCurAnim() && (anim_state == PS_STAND) && (!fis_zero(delta_yaw))) {
 		m_object->SetTurnAnimation(turn_left);
 		return;
@@ -258,7 +263,7 @@ void CControlAnimationBase::SelectVelocities()
 		path_vel.set(_abs(current_velocity.linear_velocity), current_velocity.real_angular_velocity);
 	}
 
-	SAnimItem *item_it = m_anim_storage[cur_anim_info().motion];
+	SAnimItem *item_it = m_anim_storage[cur_anim_info().get_motion()];
 	VERIFY(item_it);
 	
 	// получить скорости движения по анимации
@@ -295,8 +300,8 @@ void CControlAnimationBase::SelectVelocities()
 		EMotionAnim new_anim;
 		float		a_speed;
 
-		if (accel_chain_get(m_man->movement().real_velocity(), cur_anim_info().motion, new_anim, a_speed)) {
-			cur_anim_info().motion			= new_anim;
+		if (accel_chain_get(m_man->movement().real_velocity(), cur_anim_info().get_motion(), new_anim, a_speed)) {
+			cur_anim_info().set_motion(new_anim);
 			
 			if (a_speed < 0.5f) a_speed		+= 0.5f;
 
@@ -312,7 +317,7 @@ void CControlAnimationBase::SelectVelocities()
 	if (m_object->state_invisible) 
 		m_object->dir().set_heading_speed(path_vel.angular);
 	else { 
-		item_it = m_anim_storage[cur_anim_info().motion];
+		item_it = m_anim_storage[cur_anim_info().get_motion()];
 		VERIFY(item_it);
 		
 		// Melee?

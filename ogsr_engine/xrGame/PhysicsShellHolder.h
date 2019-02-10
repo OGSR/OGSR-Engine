@@ -11,6 +11,7 @@ class CPHSkeleton;
 class CCharacterPhysicsSupport;
 class ICollisionDamageInfo;
 class CIKLimbsController;
+class CPHCapture;
 
 struct SCollisionHitCallback
 {
@@ -116,4 +117,7 @@ public:
 public:
 	virtual bool			register_schedule	() const;
 	bool ActorCanCapture() const;
+
+public://IPhysicsShellHolder
+	CPHCapture*				_BCL					PHCapture							()						;
 };

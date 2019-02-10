@@ -13,9 +13,11 @@
 #include "../../Actor_Memory.h"
 #include "../../visual_memory_manager.h"
 
+/*
 #ifdef DEBUG
 extern bool show_restrictions(CRestrictedObject *object);
 #endif
+*/
 
 CControlPathBuilder::CControlPathBuilder(CCustomMonster *monster) : CMovementManager(monster)
 {
@@ -138,7 +140,8 @@ bool CControlPathBuilder::build_special(const Fvector &target, u32 node, u32 vel
 		node = ai().level_graph().check_position_in_direction(object().ai_location().level_vertex_id(),object().Position(),target);
 		restrictions().remove_border();
 
-		if (!ai().level_graph().valid_vertex_id(node) || !accessible(node)) return false;
+		if (!ai().level_graph().valid_vertex_id(node) || !accessible(node)) 
+			return false;
 	}
 
 	enable_movement						(true);
@@ -159,7 +162,8 @@ bool CControlPathBuilder::build_special(const Fvector &target, u32 node, u32 vel
 	update_path							();	
 
 	// check if path built successfully
-	if (!path_completed() && (detail().time_path_built() >= Device.dwTimeGlobal))	return true;
+	if (!path_completed() && (detail().time_path_built() >= Device.dwTimeGlobal))	
+		return true;
 
 	return false;
 }
@@ -171,22 +175,27 @@ bool CControlPathBuilder::build_special(const Fvector &target, u32 node, u32 vel
 bool CControlPathBuilder::is_path_end(float dist_to_end)
 {
 	if (!is_path_built())			return false;
-	if (path_completed())			return true;
-	if (!is_moving_on_path())		return true;
-
+	//if (path_completed())			return true;
+	if ( !is_moving_on_path() )
+		return true;
+	
 	u32 cur_point_idx	= detail().curr_travel_point_index();
-	u32	path_size		= detail().path().size();
-	if (path_size < 2)					return true;
-	if (cur_point_idx + 1 >= path_size)	return true;
-
+	size_t	path_size	= detail().path().size();
+	if (path_size < 2)
+		return true;
+	if (cur_point_idx + 1 >= path_size)	
+		return true;
+	
 	// count distance from current object position to the path end
 	float cur_dist_to_end = object().Position().distance_to(detail().path()[detail().curr_travel_point_index()+1].position);
 	for (u32 i=detail().curr_travel_point_index()+1; i<detail().path().size()-1; i++) {		
 		cur_dist_to_end += detail().path()[i].position.distance_to(detail().path()[i+1].position);
-		if (cur_dist_to_end > dist_to_end) break;
+		if (cur_dist_to_end > dist_to_end) 
+			break;
 	}
 
-	if ((cur_dist_to_end < dist_to_end)) return true;
+	if ((cur_dist_to_end < dist_to_end)) 
+		return true;
 	return false;
 }
 
@@ -217,6 +226,7 @@ void CControlPathBuilder::fix_position(const Fvector &pos, u32 node, Fvector &re
 	res_pos.set	(pos);
 	res_pos.y	= ai().level_graph().vertex_plane_y(node,res_pos.x,res_pos.z);
 
+/*
 #ifdef DEBUG		
 	if (!accessible(res_pos)) {
 		u32	level_vertex_id = restrictions().accessible_nearest(Fvector().set(res_pos),res_pos);
@@ -227,6 +237,7 @@ void CControlPathBuilder::fix_position(const Fvector &pos, u32 node, Fvector &re
 		VERIFY3((level_vertex_id == node) || show_restrictions(m_restricted_object),"Invalid restrictions (see log for details) for object ",*(CControl_Com::m_object->cName()));
 	}
 #endif
+*/
 }
 
 bool CControlPathBuilder::is_moving_on_path()
@@ -262,30 +273,27 @@ void CControlPathBuilder::make_inactual()
 	enable_movement(!enabled());
 }
 
-bool CControlPathBuilder::can_use_distributed_compuations (u32 option) const
+bool CControlPathBuilder::can_use_distributed_computations (u32 option) const
 {	
+	if (!g_actor)
+		return true;
+
+	VERIFY(Actor());
+	VERIFY(inherited_com::m_object);
 	if (Actor()->memory().visual().visible_right_now(inherited_com::m_object)) return false;
-	return inherited::can_use_distributed_compuations(option);
+	return inherited::can_use_distributed_computations(option);
 }
 
-u32	 CControlPathBuilder::find_nearest_vertex				(const u32 &level_vertex_id, const Fvector &target_position, const float &range)
+u32	 CControlPathBuilder::find_nearest_vertex(const u32 &level_vertex_id, const Fvector &target_position, const float &range)
 {
-	xr_vector<u32>	temp;
+	xr_vector<u32> temp;
 
-	ai().graph_engine().search	(
-		ai().level_graph(),
-		level_vertex_id,
-		level_vertex_id,
-		&temp,
-		GraphEngineSpace::CNearestVertexParameters(
-			target_position,
-			range
-		)
-	);
+	ai().graph_engine().search(ai().level_graph(), level_vertex_id, level_vertex_id,
+		&temp, GraphEngineSpace::CNearestVertexParameters(target_position, range));
 
-	VERIFY			(!temp.empty());
-	VERIFY			(temp.size() == 1);
-	return			(temp.front());
+	VERIFY(!temp.empty());
+	VERIFY(temp.size() == 1);
+	return (temp.front());
 }
 
 bool CControlPathBuilder::is_path_built()

@@ -9,7 +9,7 @@ void CMonsterSquad::ProcessIdle()
 	VERIFY(leader && !leader->getDestroy());
 
 	// Выделить элементы с общими врагами и состянием атаки 
-	for (MEMBER_GOAL_MAP_IT it_goal = m_goals.begin(); it_goal != m_goals.end(); it_goal++) {
+	for (auto it_goal = m_goals.begin(); it_goal != m_goals.end(); it_goal++) {
 		SMemberGoal goal = it_goal->second;
 		if ((goal.type == MG_Rest) || (goal.type == MG_WalkGraph)) {
 			m_temp_entities.push_back(it_goal->first);
@@ -43,7 +43,7 @@ void CMonsterSquad::Idle_AssignAction(ENTITY_VEC &members)
 		
 		front.clear();	back.clear();	left.clear();	right.clear();
 
-		for (ENTITY_VEC_IT IT = members.begin(); IT != members.end(); IT++) {
+		for (auto IT = members.begin(); IT != members.end(); IT++) {
 			if ((*IT) == leader) continue;
 			
 			front.push_back	(*IT);
@@ -86,7 +86,7 @@ void CMonsterSquad::Idle_AssignAction(ENTITY_VEC &members)
 			random_dir.random_dir	();
 			random_r				= Random.randF(CIRCLE_RADIUS_MIN, CIRCLE_RADIUS_MAX);
 
-			CEntity *entity = 0;
+			const CEntity *entity = 0;
 			switch (cur_type) {
 				case 0: // front
 					entity = front.back	(); front.pop_back();
@@ -128,7 +128,7 @@ void CMonsterSquad::Idle_AssignAction(ENTITY_VEC &members)
 	
 	} else if (goal.type == MG_Rest) {
 		// пересчитать положение в команде в соответствие с целью лидера
-		for (ENTITY_VEC_IT it = members.begin(); it != members.end(); it++) {
+		for (auto it = members.begin(); it != members.end(); it++) {
 			if ((*it) == leader) continue;
 
 			SSquadCommand command;

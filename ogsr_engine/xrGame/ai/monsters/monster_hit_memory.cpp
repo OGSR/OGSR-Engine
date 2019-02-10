@@ -38,7 +38,7 @@ void CMonsterHitMemory::add_hit(CObject *who, EHitSide side)
 	new_hit_info.side		= side;
 	new_hit_info.position	= monster->Position();
 
-	MONSTER_HIT_VECTOR_IT it = std::find(m_hits.begin(), m_hits.end(), who);
+    auto it = std::find(m_hits.begin(), m_hits.end(), who);
 
 	if (it == m_hits.end()) m_hits.push_back(new_hit_info);
 	else *it = new_hit_info;

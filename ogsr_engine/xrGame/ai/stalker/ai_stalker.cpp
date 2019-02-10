@@ -229,6 +229,9 @@ void CAI_Stalker::reload			(LPCSTR section)
 	if (!already_dead())
 		movement().reload			(section);
 
+	m_fDispBase = READ_IF_EXISTS( pSettings, r_float, section, "disp_base", 0.f );
+	m_fDispBase = deg2rad( m_fDispBase );
+
 	m_disp_walk_stand				= pSettings->r_float(section,"disp_walk_stand");
 	m_disp_walk_crouch				= pSettings->r_float(section,"disp_walk_crouch");
 	m_disp_run_stand				= pSettings->r_float(section,"disp_run_stand");

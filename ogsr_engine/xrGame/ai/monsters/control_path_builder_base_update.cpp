@@ -31,7 +31,7 @@ void CControlPathBuilderBase::update_target_point()
 	if (!target_point_need_update())						return; 
 
 	STarget saved_target;
-	saved_target.set(m_target_found.position, m_target_found.node);
+	saved_target.set(m_target_found.position(), m_target_found.node());
 
 	if (global_failed())
 		find_target_point_failed	();
@@ -42,7 +42,7 @@ void CControlPathBuilderBase::update_target_point()
 
 	//-----------------------------------------------------------------------
 	// postprocess target_point
-	if (m_target_found.node == saved_target.node) {
+	if (m_target_found.node() == saved_target.node()) {
 		// level_path останется актуальным - сбросить актуальность
 		m_reset_actuality = true;
 	}
@@ -62,8 +62,8 @@ void CControlPathBuilderBase::set_path_builder_params()
 
 	ctrl_data->use_dest_orientation		= m_use_dest_orient;
 	ctrl_data->dest_orientation			= m_dest_dir;
-	ctrl_data->target_node				= m_target_found.node;
-	ctrl_data->target_position			= m_target_found.position;
+	ctrl_data->target_node				= m_target_found.node();
+	ctrl_data->target_position			= m_target_found.position();
 	ctrl_data->try_min_time				= m_try_min_time;
 	ctrl_data->enable					= m_enable;
 	ctrl_data->path_type				= m_path_type;

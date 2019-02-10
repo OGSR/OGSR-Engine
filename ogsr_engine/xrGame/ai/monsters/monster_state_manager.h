@@ -17,6 +17,9 @@ public:
 
 	virtual	EMonsterState get_state_type	();
 
+	virtual bool	check_control_start_conditions (ControlCom::EControlType type) 
+											{ return inherited::check_control_start_conditions(type); }
+
 protected:
 			bool	can_eat					();
 			bool	check_state				(u32 state_id);

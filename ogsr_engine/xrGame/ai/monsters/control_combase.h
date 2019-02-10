@@ -12,6 +12,7 @@ class CControl_ComControlling;
 class CControl_Com {
 public:
 					CControl_Com			()											{m_inited = false;}
+	virtual			~CControl_Com			()											{}
 	// common routines
 			void	init_external			(CControl_Manager *cm, CBaseMonster *obj)	{m_man = cm; m_object = obj;}
 	virtual void	load					(LPCSTR section)							{}
@@ -70,6 +71,7 @@ private:
 // Controlling
 class CControl_ComControlling {
 public:
+	virtual ~CControl_ComControlling		() {}
 	virtual	void	reinit					() {}
 
 	// initialize/finalize controlling com
@@ -80,7 +82,7 @@ public:
 	virtual void	on_event				(ControlCom::EEventType, ControlCom::IEventData*)	{}
 
 protected:
-	DEFINE_VECTOR			(CControl_Com*, CONTROLLERS_VECTOR, CONTROLLERS_VECTOR_IT);
+	using CONTROLLERS_VECTOR = xr_vector<CControl_Com*>;
 	CONTROLLERS_VECTOR		m_controlled;
 };
 

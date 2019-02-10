@@ -77,5 +77,12 @@ bool CStateMonsterEatingAbstract::check_completion()
 	return false;
 }
 
+TEMPLATE_SPECIALIZATION
+void CStateMonsterEatingAbstract::remove_links	(CObject* object)
+{
+	if (corpse == object)
+		corpse				= 0;
+}
+
 #undef TEMPLATE_SPECIALIZATION
 #undef CStateMonsterEatingAbstract

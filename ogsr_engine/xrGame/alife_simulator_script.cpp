@@ -20,6 +20,20 @@
 #include "xrServer.h"
 #include "level.h"
 
+namespace detail
+{
+
+	bool object_exists_in_alife_registry(u32 id)
+	{
+		if (ai().get_alife())
+		{
+			return ai().alife().objects().object((ALife::_OBJECT_ID)id, true) != nullptr;
+		}
+		return false;
+	}
+
+} // detail
+
 using namespace luabind;
 
 typedef xr_map<shared_str,int> STORY_PAIRS;

@@ -1260,6 +1260,14 @@ void CPHSimpleCharacter::SetObjectContactCallback(ObjectContactCallbackFun* call
 	dGeomUserDataSetObjectContactCallback(m_wheel,callback);
 }
 
+void CPHSimpleCharacter::SetObjectContactCallbackData(void* data)
+{
+	VERIFY(b_exist);
+	dGeomUserDataSetCallbackData(m_hat, data);
+	dGeomUserDataSetCallbackData(m_geom_shell, data);
+	dGeomUserDataSetCallbackData(m_wheel, data);
+}
+
 void CPHSimpleCharacter::AddObjectContactCallback(ObjectContactCallbackFun* callback)
 {
 

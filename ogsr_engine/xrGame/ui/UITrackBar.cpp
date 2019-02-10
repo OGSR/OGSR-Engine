@@ -1,7 +1,6 @@
 #include "StdAfx.h"
 
 #include "UITrackBar.h"
-//.#include "UITrackButton.h"
 #include "UIFrameLineWnd.h"
 #include "UI3tButton.h"
 #include "UITextureMaster.h"

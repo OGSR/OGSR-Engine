@@ -69,3 +69,10 @@ void CMonsterCorpseManager::reinit()
 	time_last_seen	= 0;
 }
 
+void   CMonsterCorpseManager::remove_links (CObject* O)
+{
+	if ( corpse == O )
+	{
+		corpse		= NULL;
+	}
+}

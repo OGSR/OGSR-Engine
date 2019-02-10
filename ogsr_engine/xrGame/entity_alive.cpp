@@ -58,6 +58,10 @@ CEntityAlive::CEntityAlive()
 
 	m_ef_weapon_type		= u32(-1);
 	m_ef_detector_type		= u32(-1);
+	b_eating				= false;
+	m_use_timeout			= 5000;
+	m_used_time				= Device.dwTimeGlobal;
+	m_squad_index			= u8(-1);
 
 	m_material_manager		= 0;
 }
@@ -676,6 +680,25 @@ void CEntityAlive::PHGetLinearVell(Fvector& velocity)
 		inherited::PHGetLinearVell(velocity);
 
 }
+
+void CEntityAlive::set_lock_corpse(bool b_l_corpse)
+{
+	if (b_eating && !b_l_corpse)
+		m_used_time = Device.dwTimeGlobal;
+
+	b_eating = b_l_corpse;
+}
+
+bool CEntityAlive::is_locked_corpse()
+{
+	if (!b_eating)
+	{
+		if (m_used_time + m_use_timeout > Device.dwTimeGlobal)
+			return true;
+	}
+	return b_eating;
+}
+
 CIKLimbsController*	CEntityAlive::character_ik_controller()
 {
 	if(character_physics_support())

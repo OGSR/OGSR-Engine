@@ -20,6 +20,9 @@ public:
 	bool				is_hit					() {return !m_hits.empty();}
 	bool				is_hit					(CObject *pO);
 
+	// Lain: added
+	int                 get_num_hits            () {return u32(m_hits.size()); }
+
 	void				add_hit					(CObject *who, EHitSide side);
 	
 	Fvector				get_last_hit_dir		();

@@ -195,6 +195,14 @@ IC char* strconcat( size_t dest_sz, char* dest, const char* S1, const char* S2, 
   return dest;
 }
 
+template<typename StrType, typename... Args>
+inline char* xr_strconcat(StrType& dest, Args... args) {
+    static_assert(std::is_array_v<StrType>);
+    static_assert(std::is_same_v<std::remove_extent_t<StrType>, char>);
+    dest[0] = 0;
+    (strcat_s(dest, args), ...);
+    return &dest[0];
+}
 
 // return pointer to ".ext"
 IC char*						strext					( const char* S )

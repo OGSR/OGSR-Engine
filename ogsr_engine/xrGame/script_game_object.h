@@ -246,8 +246,15 @@ public:
 
 	// CBaseMonster
 			void				skip_transfer_enemy		(bool val);
-			void				set_home				(LPCSTR name, float r_min, float r_max, bool aggressive);
-			void set_home( CPatrolPath*, float, float, bool );
+  void set_home( LPCSTR name, float r_min, float r_max, bool aggressive, float middle_radius );
+  void set_home( LPCSTR, float, float, bool );
+  void set_home( LPCSTR, float, float );
+  void set_home( CPatrolPath*, float, float, bool, float );
+  void set_home( CPatrolPath*, float, float, bool );
+  void set_home( CPatrolPath*, float, float );
+  void set_home( u32, float, float, bool, float );
+  void set_home( u32, float, float, bool );
+  void set_home( u32, float, float );
 			bool at_home();
 			bool at_home( Fvector );
 			void				remove_home				();
@@ -782,6 +789,10 @@ public:
 	bool throw_target( const Fvector&, u32 const, CScriptGameObject* = nullptr );
 
 	void g_fireParams( const CScriptGameObject*, Fvector&, Fvector& );
+
+	float stalker_disp_base();
+	void  stalker_disp_base( float );
+	void  stalker_disp_base( float, float );
 
 	DECLARE_SCRIPT_REGISTER_FUNCTION
 };

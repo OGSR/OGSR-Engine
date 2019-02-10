@@ -64,11 +64,11 @@ void CBurer::reload(LPCSTR section)
 	// add specific sounds
 	sound().add				(pSettings->r_string(section,"sound_gravi_attack"),	DEFAULT_SAMPLE_COUNT,	
 							SOUND_TYPE_MONSTER_ATTACKING,	MonsterSound::eHighPriority + 2,	
-							u32(MonsterSound::eBaseChannel),	eMonsterSoundGraviAttack, "bip01_head");
+							u32(MonsterSound::eBaseChannel),	eMonsterSoundGraviAttack, get_head_bone_name());
 
 	sound().add				(pSettings->r_string(section,"sound_tele_attack"),	DEFAULT_SAMPLE_COUNT,	
 							SOUND_TYPE_MONSTER_ATTACKING,	MonsterSound::eHighPriority + 3,	
-							u32(MonsterSound::eBaseChannel),	eMonsterSoundTeleAttack, "bip01_head");
+							u32(MonsterSound::eBaseChannel),	eMonsterSoundTeleAttack, get_head_bone_name());
 }
 
 void CBurer::ActivateShield () 
@@ -467,6 +467,7 @@ void CBurer::net_Relcase(CObject *O)
 	TTelekinesis::remove_links	(O);
 }
 
+/*
 #ifdef DEBUG
 CBaseMonster::SDebugInfo CBurer::show_debug_info()
 {
@@ -480,6 +481,7 @@ CBaseMonster::SDebugInfo CBurer::show_debug_info()
 	return CBaseMonster::SDebugInfo();
 }
 #endif
+*/
 
 void   CBurer::face_enemy ()
 {

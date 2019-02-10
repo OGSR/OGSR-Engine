@@ -115,8 +115,9 @@ public:
 	bool		CheckTransition			(EMotionAnim from, EMotionAnim to);
 
 	void		SetSpecParams			(u32 param) {spec_params |= param;}
-	void		SetCurAnim				(EMotionAnim a) {cur_anim_info().motion = a;}
-	EMotionAnim	GetCurAnim				() {return  cur_anim_info().motion;} 
+	void		SetCurAnim				(EMotionAnim a);
+
+	EMotionAnim	GetCurAnim				() {return  cur_anim_info().get_motion();} 
 
 	// работа с анимациями атак
 	void		AA_reload				(LPCSTR section);
@@ -214,6 +215,7 @@ public:
 	void					set_animation_speed	();
 
 	void					check_hit			(MotionID motion, float time_perc);
+
 	float					get_animation_length	(EMotionAnim anim, u32 index) const; // anim must exist
 	bool					get_animation_info		(EMotionAnim anim, u32 index, MotionID& motion, float& length) const;
 	float					get_animation_hit_time	(EMotionAnim anim, u32 index) const;
