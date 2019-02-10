@@ -5,15 +5,9 @@
 #include "PHCharacter.h"
 #include "MathUtils.h"
 
-#ifdef DEBUG
-#	include "debug_renderer.h"
-#	include "level.h"
-#	include "PHDebug.h"
-#endif
-
-#ifdef DEBUG
-#	include "debug_renderer.h"
-#endif
+#include "debug_renderer.h"
+#include "level.h"
+#include "PHDebug.h"
 
 static const float down_leader_extension_tolerance=0.2f;
 static const float up_leader_extension_tolerance=0.0f;
@@ -68,13 +62,12 @@ void CPHLeaderGeomShell::near_callback	(CPHObject* obj)
 }
 
 
-	CClimableObject::CClimableObject		()
+CClimableObject::CClimableObject		()
 {
 	m_pStaticShell=NULL;
 }
-	CClimableObject::~CClimableObject	()
+CClimableObject::~CClimableObject	()
 {
-
 }
 void CClimableObject::	Load				( LPCSTR section)
 {
@@ -350,14 +343,16 @@ void CClimableObject::ObjectContactCallback(bool&	do_colide,bool bo1,dContact& c
 	if(!this_object->BeforeLadder(ch,-0.1f)) do_colide=false;
 	
 }
-#ifdef DEBUG
-extern	Flags32	dbg_net_Draw_Flags;
+
+//extern	Flags32	dbg_net_Draw_Flags;
 void CClimableObject ::OnRender()
 {
-	if (!dbg_net_Draw_Flags.test(1<<10)&&!ph_dbg_draw_mask.test(phDbgLadder)) return;
+	//if (!dbg_net_Draw_Flags.test(1 << 10) && !ph_dbg_draw_mask.test(phDbgLadder)) return;
 
-	Fmatrix form;m_box.xform_get(form);
+	//Fmatrix form;
+	//m_box.xform_get(form);
 	//form.mulA(XFORM());
+
 	Level().debug_renderer().draw_obb(XFORM(),m_box.m_halfsize,D3DCOLOR_XRGB(0,0,255));
 	Fvector p1,p2,d;
 	d.set(m_axis);
@@ -376,4 +371,3 @@ void CClimableObject ::OnRender()
 	p2.set(XFORM().c);
 	Level().debug_renderer().draw_line(Fidentity,p1,p2,D3DCOLOR_XRGB(0,255,0));
 }
-#endif
