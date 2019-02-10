@@ -42,9 +42,6 @@
     <ClCompile Include="OPC_Collider.cpp">
       <Filter>Opcode</Filter>
     </ClCompile>
-    <ClCompile Include="OPC_Common.cpp">
-      <Filter>Opcode</Filter>
-    </ClCompile>
     <ClCompile Include="OPC_Container.cpp">
       <Filter>Opcode</Filter>
     </ClCompile>
@@ -73,9 +70,6 @@
       <Filter>Opcode</Filter>
     </ClCompile>
     <ClCompile Include="OPC_Point.cpp">
-      <Filter>Opcode</Filter>
-    </ClCompile>
-    <ClCompile Include="OPC_Ray.cpp">
       <Filter>Opcode</Filter>
     </ClCompile>
     <ClCompile Include="OPC_RayCollider.cpp">

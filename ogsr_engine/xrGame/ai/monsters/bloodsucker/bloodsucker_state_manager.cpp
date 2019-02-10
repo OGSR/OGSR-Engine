@@ -17,7 +17,6 @@
 
 #include "bloodsucker_vampire.h"
 #include "bloodsucker_predator.h"
-#include "bloodsucker_attack_state.h"
 
 
 CStateManagerBloodsucker::CStateManagerBloodsucker(CAI_Bloodsucker *monster) : inherited(monster)

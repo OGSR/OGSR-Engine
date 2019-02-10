@@ -399,7 +399,6 @@
     <ClInclude Include="thunderbolt.h" />
     <ClInclude Include="xr_efflensflare.h" />
     <ClInclude Include="CameraBase.h" />
-    <ClInclude Include="CameraDebug.h" />
     <ClInclude Include="CameraDefs.h" />
     <ClInclude Include="CameraManager.h" />
     <ClInclude Include="Effector.h" />
@@ -520,10 +519,8 @@
     <ClCompile Include="xr_efflensflare.cpp" />
     <ClCompile Include="CameraBase.cpp" />
     <ClCompile Include="CameraManager.cpp" />
-    <ClCompile Include="Effector.cpp" />
     <ClCompile Include="EffectorPP.cpp" />
     <ClCompile Include="xr_area.cpp" />
-    <ClCompile Include="xr_area_query.cpp" />
     <ClCompile Include="xr_area_raypick.cpp" />
     <ClCompile Include="xr_collide_form.cpp" />
     <ClCompile Include="Envelope.cpp" />

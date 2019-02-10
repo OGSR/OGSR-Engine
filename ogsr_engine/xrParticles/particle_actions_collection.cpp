@@ -1,9 +1,7 @@
 #include "stdafx.h"
 
-
 #include "particle_actions_collection.h"
 #include "particle_effect.h"
-#include <mutex>
 
 using namespace PAPI;
 

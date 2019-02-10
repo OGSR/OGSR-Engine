@@ -12,7 +12,6 @@ class CScriptCallbackEx;
 
 
 class CActor;
-//class CUIActorSleepVideoPlayer;
 
 class CActorCondition: public CEntityCondition {
 	friend class CScriptActor;

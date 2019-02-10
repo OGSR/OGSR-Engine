@@ -48,7 +48,7 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="cl_intersect.h">
+    <ClInclude Include="..\..\COMMON\cl_intersect.h">
       <Filter>Kernel</Filter>
     </ClInclude>
     <ClInclude Include="stdafx.h">
@@ -387,9 +387,6 @@
       <Filter>Lights</Filter>
     </ClCompile>
     <ClCompile Include="..\xrRender\Light_Package.cpp">
-      <Filter>Lights</Filter>
-    </ClCompile>
-    <ClCompile Include="Light_Render_Direct.cpp">
       <Filter>Lights</Filter>
     </ClCompile>
     <ClCompile Include="Light_Render_Direct_ComputeXFS.cpp">
