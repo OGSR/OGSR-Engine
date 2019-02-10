@@ -29,10 +29,14 @@ public:
 	virtual bool	check_start_conditions	(ControlCom::EControlType type);
 	virtual void	on_activate_control		(ControlCom::EControlType);
 
+	virtual bool	run_home_point_when_enemy_inaccessible () const { return false; }
+
+/*
 private:
 #ifdef DEBUG	
 	virtual void	debug_on_key		(int key);
 #endif
+*/
 
 public:
 

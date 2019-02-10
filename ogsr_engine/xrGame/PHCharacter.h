@@ -127,6 +127,7 @@ virtual	const Fvector&	CamDir								()const														=0 ;
 virtual		Fvector		GetAcceleration						()															=0 ;
 virtual		void		SetPosition							(Fvector pos)												=0 ;
 virtual		void		SetApplyGravity						(BOOL flag)						{ dBodySetGravityMode(m_body,flag); }
+	virtual void SetObjectContactCallbackData(void* callback) = 0;
 virtual		void		SetObjectContactCallback			(ObjectContactCallbackFun* callback)						=0 ;
 virtual		void		SetWheelContactCallback				(ObjectContactCallbackFun* callback)						=0 ;
 virtual		ObjectContactCallbackFun* ObjectContactCallBack	()															{return NULL;}
@@ -162,8 +163,11 @@ virtual		void		CutVelocity							(float l_limit,float a_limit)								;
 virtual		u16				get_elements_number				()															{return 1;};
 virtual		CPHSynchronize	*get_element_sync				(u16 element)												{VERIFY(element==0);return static_cast<CPHSynchronize*>(this);};		
 virtual		CElevatorState	*ElevatorState					()															=0;
+public:
+	virtual void step(float dt) = 0;//{ step( dt ); }
+public:
 			CPHCharacter									(void)														;
 virtual		~CPHCharacter									(void)														;
 };
 
-
+void			virtual_move_collide_callback(bool& do_collide, bool bo1, dContact& c, SGameMtl* material_1, SGameMtl* material_2);

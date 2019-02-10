@@ -43,5 +43,3 @@ bool CStateMonsterAttackMeleeAbstract::check_completion()
 {
 	return (object->MeleeChecker.should_stop_melee(object->EnemyMan.get_enemy()));
 }
-
-

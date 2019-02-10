@@ -49,7 +49,7 @@ void CAnimationSequencer::play_selected()
 	SControlAnimationData		*ctrl_data = (SControlAnimationData*)m_man->data(this, ControlCom::eControlAnimation); 
 	VERIFY						(ctrl_data);
 
-	ctrl_data->global.motion	= m_data.motions[m_index];
+	ctrl_data->global.set_motion (m_data.motions[m_index]);
 	ctrl_data->global.actual	= false;
 }
 

@@ -10,9 +10,9 @@ public:
 
 	virtual void		initialize				();
 	virtual	void		execute					();
+	virtual void		remove_links			(CObject* object) { inherited::remove_links(object);}
 
 	virtual bool		check_completion		();
-	virtual void		remove_links					(CObject* object) { inherited::remove_links(object);}
 };
 
 #include "monster_state_panic_run_inline.h"

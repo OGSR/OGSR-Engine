@@ -92,7 +92,7 @@ void CTelekinesis::deactivate(CPhysicsShellHolder *obj)
 void CTelekinesis::remove_object		(CPhysicsShellHolder *obj)
 {
 	// найти объект
-	TELE_OBJECTS_IT it = std::find_if(objects.begin(), objects.end(), SFindPred(obj));
+    auto it = std::find_if(objects.begin(), objects.end(), SFindPred(obj));
 	if (it == objects.end()) return;
 	//remove from list, delete...
 	remove_object(it);

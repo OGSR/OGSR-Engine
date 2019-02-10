@@ -14,6 +14,8 @@
 #include "phactivationshape.h"
 #include "phvalide.h"
 #include "PHElement.h"
+#include "PHMovementControl.h"
+#include "CharacterPhysicsSupport.h"
 CPhysicsShellHolder::CPhysicsShellHolder()
 {
 	init();
@@ -413,4 +415,15 @@ bool CPhysicsShellHolder::ActorCanCapture() const {
       return true;
   }
   return false;
+}
+
+CPHCapture*	CPhysicsShellHolder::PHCapture()
+{
+	CCharacterPhysicsSupport* ph_sup = character_physics_support();
+	if( !ph_sup )
+		return nullptr;
+	CPHMovementControl	*mov = ph_sup->movement();
+	if( !mov )
+		return nullptr;
+	return mov->PHCapture();
 }

@@ -261,6 +261,11 @@ void CUICharacterInfo::UpdateRelation()
 		}
 }
 
+namespace detail
+{ // helper function implemented in file alife_simulator.cpp
+	bool object_exists_in_alife_registry (u32 id);
+} // namespace detail
+
 void CUICharacterInfo::Update()
 {
 	inherited::Update();
@@ -268,7 +273,8 @@ void CUICharacterInfo::Update()
 
 	if(hasOwner() && (m_bForceUpdate||(Device.dwFrame%100==0))  ){
 		m_bForceUpdate = false;
-		CSE_ALifeTraderAbstract* T = ch_info_get_from_id	(m_ownerID);
+		CSE_ALifeTraderAbstract* T = detail::object_exists_in_alife_registry(m_ownerID) ?
+									 ch_info_get_from_id(m_ownerID) : NULL;
 		if (NULL==T){
 			m_ownerID = u16(-1);
 			return;

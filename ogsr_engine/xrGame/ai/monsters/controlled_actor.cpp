@@ -107,6 +107,11 @@ bool CControlledActor::is_turning()
 	return (!m_turned_yaw || !m_turned_pitch);
 }
 
+bool CControlledActor::is_installed()
+{
+	return !!m_actor;
+}
+
 bool CControlledActor::authorized(int cmd)
 {
 	if (cmd == kWPN_1)		return true;

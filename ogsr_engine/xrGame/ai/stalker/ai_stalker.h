@@ -103,6 +103,8 @@ private:
 	SBoneProtections*				m_boneHitProtection;
 
 	// weapon dispersion
+public:
+	float							m_fDispBase;
 private:
 	float							m_disp_walk_stand;
 	float							m_disp_walk_crouch;

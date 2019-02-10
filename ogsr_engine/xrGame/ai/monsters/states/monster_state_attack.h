@@ -9,19 +9,20 @@ protected:
 	typedef CState<_Object>		inherited;
 	typedef CState<_Object>*	state_ptr;
 
-	u32		m_time_next_run_away;
-	u32		m_time_start_check_behinder;
-	u32		m_time_start_behinder;
+	u32					m_time_next_run_away;
+	u32					m_time_start_check_behinder;
+	u32					m_time_start_behinder;
 
 public:
 						CStateMonsterAttack		(_Object *obj);
+						CStateMonsterAttack		(_Object *obj, state_ptr state_move2home);
 						CStateMonsterAttack		(_Object *obj, state_ptr state_run, state_ptr state_melee);
 	virtual				~CStateMonsterAttack	();
 	
 	virtual void		initialize				();
 	virtual	void		execute					();
 	virtual void		setup_substates			();
-	virtual void		remove_links					(CObject* object) { inherited::remove_links(object);}
+	virtual void		remove_links			(CObject* object) { inherited::remove_links(object);}
 
 protected:
 			bool		check_steal_state		();

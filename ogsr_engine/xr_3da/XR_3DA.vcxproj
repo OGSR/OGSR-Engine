@@ -521,6 +521,7 @@
     <ClCompile Include="CameraManager.cpp" />
     <ClCompile Include="EffectorPP.cpp" />
     <ClCompile Include="xr_area.cpp" />
+    <ClCompile Include="xr_area_query.cpp" />
     <ClCompile Include="xr_area_raypick.cpp" />
     <ClCompile Include="xr_collide_form.cpp" />
     <ClCompile Include="Envelope.cpp" />

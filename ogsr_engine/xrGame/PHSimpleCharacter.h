@@ -158,6 +158,7 @@ public:
 	virtual		bool		UpdateRestrictionType				(CPHCharacter* ach);
 	//get-set
 	virtual		void		SetObjectContactCallback			(ObjectContactCallbackFun* callback);
+	virtual		void SetObjectContactCallbackData(void* data);
 	virtual		void		SetWheelContactCallback				(ObjectContactCallbackFun* callback);
 private:
 				void		RemoveObjectContactCallback			(ObjectContactCallbackFun* callback);
@@ -225,6 +226,8 @@ private:
 IC	void 		FootProcess							(dContact* c,bool &do_collide ,bool bo);
 IC	void		foot_material_update				(u16	tri_material,u16	foot_material_idx);
 	static void	TestPathCallback(bool& do_colide,bool bo1,dContact& c,SGameMtl * /*material_1*/,SGameMtl * /*material_2*/);
+private:
+	virtual	void step(float dt) { CPHObject::step(dt); }
 public:	
 #ifdef DEBUG
 	virtual		void		OnRender							()					;

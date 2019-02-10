@@ -589,6 +589,9 @@
     <ClCompile Include="xr_area.cpp">
       <Filter>Game API\Collision</Filter>
     </ClCompile>
+    <ClCompile Include="xr_area_query.cpp">
+      <Filter>Game API\Collision</Filter>
+    </ClCompile>
     <ClCompile Include="xr_area_raypick.cpp">
       <Filter>Game API\Collision</Filter>
     </ClCompile>

@@ -27,7 +27,7 @@ void CMovementManager::process_level_path()
 
 	switch (m_path_state) {
 		case ePathStateBuildLevelPath : {
-			if (can_use_distributed_compuations(mtLevelPath)) {
+			if (can_use_distributed_computations(mtLevelPath)) {
 				level_path_builder().setup(
 					object().ai_location().level_vertex_id(),
 					level_dest_vertex_id()
@@ -63,7 +63,7 @@ void CMovementManager::process_level_path()
 			detail().set_start_position(object().Position());
 			detail().set_start_direction(Fvector().setHP(-m_body.current.yaw,0));
 
-			if (can_use_distributed_compuations(mtDetailPath)) {
+			if (can_use_distributed_computations(mtDetailPath)) {
 				detail_path_builder().setup(
 					level_path().path(),
 					level_path().intermediate_index()

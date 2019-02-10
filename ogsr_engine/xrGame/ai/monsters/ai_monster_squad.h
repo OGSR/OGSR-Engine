@@ -1,10 +1,16 @@
 #pragma once 
+
+// Lain:
+#include "../../steering_behaviour.h"
+
 class CEntity;
 class CEntityAlive;
+class CBaseMonster;
 //////////////////////////////////////////////////////////////////////////
 // Member local goal notification
 //////////////////////////////////////////////////////////////////////////
-enum EMemberGoalType {
+enum EMemberGoalType 
+{
 	MG_AttackEnemy,				// entity
 	MG_PanicFromEnemy,			// entity
 	MG_InterestingSound,		// position
@@ -14,7 +20,8 @@ enum EMemberGoalType {
 	MG_None,
 };
 
-struct SMemberGoal {
+struct SMemberGoal 
+{
 	EMemberGoalType		type;
 	CEntity				*entity;
 	Fvector				position;
@@ -29,7 +36,8 @@ struct SMemberGoal {
 //////////////////////////////////////////////////////////////////////////
 // Squad command 
 //////////////////////////////////////////////////////////////////////////
-enum ESquadCommandType { 
+enum ESquadCommandType 
+{ 
 	SC_EXPLORE,
 	SC_ATTACK,
 	SC_THREATEN,
@@ -41,24 +49,29 @@ enum ESquadCommandType {
 	SC_NONE,
 };
 
-struct SSquadCommand {
+struct SSquadCommand
+{
 	ESquadCommandType	type;	// тип команды
 
-	CEntity		*entity;
-	Fvector		position;
-	u32			node;
-	Fvector		direction;
+	const CEntity		*entity;
+	Fvector				position;
+	u32					node;
+	Fvector				direction;
 
 };
 
 
 /////////////////////////////////////////////////////////////////////////////////////////
 // MonsterSquad Class
-class CMonsterSquad {
-	CEntity				*leader;
+class CMonsterSquad 
+{
+public:
+	using MEMBER_COMMAND_MAP = xr_map<const CEntity* , SSquadCommand>;
+    using MEMBER_COMMAND_MAP_IT = MEMBER_COMMAND_MAP::iterator;
 
-	DEFINE_MAP		(CEntity*, SMemberGoal,		MEMBER_GOAL_MAP,	MEMBER_GOAL_MAP_IT);
-	DEFINE_MAP		(CEntity*, SSquadCommand,	MEMBER_COMMAND_MAP, MEMBER_COMMAND_MAP_IT);
+private:
+	CEntity				*leader;
+	using MEMBER_GOAL_MAP = xr_map<CEntity* , SMemberGoal>;
 
 	// карта целей членов группы (обновляется со стороны объекта)
 	MEMBER_GOAL_MAP		m_goals;
@@ -66,10 +79,10 @@ class CMonsterSquad {
 	// карта комманд членов группы (обновляется со стороны squad manager)
 	MEMBER_COMMAND_MAP	m_commands;
 
-	DEFINE_VECTOR	(u32, NODES_VECTOR, NODES_VECTOR_IT);
+	using NODES_VECTOR = xr_vector<u32>;
 	NODES_VECTOR	m_locked_covers;
 
-	DEFINE_VECTOR	(const CEntityAlive*, CORPSES_VECTOR, CORPSES_VECTOR_IT);
+	using CORPSES_VECTOR = xr_vector<const CEntityAlive*>;
 	CORPSES_VECTOR	m_locked_corpses;
 
 public:
@@ -79,10 +92,11 @@ public:
 
 	// -----------------------------------------------------------------
 
-	void		RegisterMember		(CEntity *pE);
-	void		RemoveMember		(CEntity *pE);
+	void			RegisterMember		(CEntity *pE);
+	void			RemoveMember		(CEntity *pE);
 
-	bool		SquadActive			();
+	bool			SquadActive			();
+	u8		     	squad_alife_count	();
 
 	// -----------------------------------------------------------------
 
@@ -90,10 +104,10 @@ public:
 	CEntity			*GetLeader			() {return leader;}
 
 	// -----------------------------------------------------------------
-	
-	void			UpdateGoal			(CEntity *pE, const SMemberGoal	&goal);
-	void			UpdateCommand		(CEntity *pE, const SSquadCommand &com);
 
+	void			UpdateGoal			(CEntity *pE, const SMemberGoal	&goal);
+	void			InformSquadAboutEnemy	(CEntityAlive const * const enemy);
+	void			UpdateCommand		(const CEntity *pE, const SSquadCommand &com);
 	
 	void			GetGoal				(CEntity *pE, SMemberGoal &goal);
 	void			GetCommand			(CEntity *pE, SSquadCommand &com);
@@ -103,26 +117,29 @@ public:
 	// -----------------------------------------------------------------
 	
 	
-	void		UpdateSquadCommands	();	
-
-	void		remove_links			(CObject *O);
+	void			UpdateSquadCommands	();	
+	
+	void			remove_links			(CObject *O);
 	
 	// return count of monsters in radius for object
-	u8			get_count				(const CEntity *object, float radius);
+	u8				get_count				(const CEntity *object, float radius);
+	void			set_squad_index			(const CEntity *m_enemy);
+	void			set_rat_squad_index		(const CEntity *m_enemy);
+	u8				get_index				(CEntity *m_object) const;
 
 
 	///////////////////////////////////////////////////////////////////////////////////////
 	//  Общие данные
 	//////////////////////////////////////////////////////////////////////////////////////
 	
-	DEFINE_VECTOR	(CEntity*, ENTITY_VEC,	ENTITY_VEC_IT);	
+	using ENTITY_VEC = xr_vector<CEntity*>;
 	ENTITY_VEC		m_temp_entities;
 	
 	///////////////////////////////////////////////////////////////////////////////////////
 	//  Атака группой монстров
 	//////////////////////////////////////////////////////////////////////////////////////
 	
-	DEFINE_MAP		(CEntity*, ENTITY_VEC,	ENEMY_MAP, ENEMY_MAP_IT);
+	using ENEMY_MAP = xr_map<const CEntity* , ENTITY_VEC>;
 	
 	ENEMY_MAP		m_enemy_map;
 
@@ -138,7 +155,11 @@ public:
 	xr_vector<_elem>	lines;
 	// ------------
 
-	void			Attack_AssignTargetDir			(ENTITY_VEC &members, CEntity *enemy);
+	void			Attack_AssignTargetDir			(ENTITY_VEC&   members  , const CEntity *enemy);
+
+	void			get_index_in_squad				(ENTITY_VEC &members, const CEntity *m_enemy) const;
+	void			get_index_in_rat_squad			(ENTITY_VEC &members, const CEntity *m_enemy);
+
 
 	////////////////////////////////////////////////////////////////////////////////////////
 
@@ -171,12 +192,38 @@ public:
 	void			unlock_corpse			(const CEntityAlive*);
 	////////////////////////////////////////////////////////////////////////////////////////
 
-        bool home_in_danger() { return Device.dwTimeGlobal < m_home_danger_end_tick; }
-        void set_home_in_danger() { m_home_danger_end_tick = Device.dwTimeGlobal + m_home_danger_mode_time; }
+	// Lain: added
+	MEMBER_COMMAND_MAP* get_commands   () { return &m_commands; }
+	bool            home_in_danger     () { return Device.dwTimeGlobal < m_home_danger_end_tick; }
+	void            set_home_in_danger () { m_home_danger_end_tick = Device.dwTimeGlobal + m_home_danger_mode_time; }
 
 private:
-        // danger mode is turns on when monsters hear dangerous sound or get a hit
-        // danger mode turns off after m_danger_mode_time miliseconds
-        u32 m_home_danger_mode_time;
-        u32 m_home_danger_end_tick;
+	// danger mode is turns on when monsters hear dangerous sound or get a hit
+	// danger mode turns off after m_danger_mode_time miliseconds
+	u32              m_home_danger_mode_time;
+	u32              m_home_danger_end_tick;
+
+	void			assign_monsters_target_dirs (ENTITY_VEC&   members, const CEntity *enemy);
+	Fvector         calc_monster_target_dir     (CBaseMonster* monster, const CEntity* enemy);
+};
+
+class squad_grouping_behaviour : public steering_behaviour::grouping::params
+{
+public:
+	squad_grouping_behaviour(CEntity* self,
+	                         Fvector cohesion_factor,
+		                     Fvector separate_factor,
+		                     float   max_separate_range);
+
+	void         set_squad       (CMonsterSquad* squad);
+	virtual void first_nearest   (Fvector& v);
+	virtual bool nomore_nearest  ();
+	virtual void next_nearest    (Fvector& v);
+
+	virtual bool update();
+
+private:
+	CMonsterSquad*                       squad;
+	CMonsterSquad::MEMBER_COMMAND_MAP_IT it_cur;
+	CEntity*                             self;
 };

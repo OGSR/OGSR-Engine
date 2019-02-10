@@ -176,6 +176,8 @@ private:
 		Fvector			P1,P2;
 #endif
 
+public:
+	virtual bool					run_home_point_when_enemy_inaccessible () const { return false; }
 
 	DECLARE_SCRIPT_REGISTER_FUNCTION
 };

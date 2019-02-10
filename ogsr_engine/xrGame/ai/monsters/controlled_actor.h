@@ -26,6 +26,7 @@ public:
 
 			void	look_point			(const Fvector &point);
 			bool	is_turning			();
+			bool    is_installed		();
 
 			void	frame_update		();
 			bool	is_controlling		() {return m_actor != 0;}
