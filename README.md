@@ -1,4 +1,4 @@
-# OGSR Engine [![Build status](https://ci.appveyor.com/api/projects/status/w5yowu9901tphox1/branch/main?svg=true)](https://ci.appveyor.com/project/KRodinn/ogsr-engine/branch/main)
+# OGSR Engine [![Build status](https://ci.appveyor.com/api/projects/status/mpktoskmr2y2s60l/branch/main?svg=true)](https://ci.appveyor.com/project/OGSR/ogsr-engine/branch/main)
 ![Logo](https://i.imgur.com/OYK6UOt.png)
 ### [>>Разработчики<<](https://github.com/OGSR/OGSR-Engine/graphs/contributors) ### 
 ### [>>Список изменений<<](https://github.com/OGSR/OGSR-Engine/wiki/Список-изменений) ###

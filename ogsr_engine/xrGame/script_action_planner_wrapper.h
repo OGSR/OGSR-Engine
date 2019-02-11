@@ -17,5 +17,3 @@ public:
 	virtual void		update						();
 	static	void		update_static				(CScriptActionPlanner *planner);
 };
-
-#include "script_action_planner_wrapper_inline.h"

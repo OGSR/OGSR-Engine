@@ -280,7 +280,7 @@
     <ClInclude Include="Blender_ssao.h" />
     <ClInclude Include="Blender_sunshafts.h" />
     <ClInclude Include="Blender_volumetric.h" />
-    <ClInclude Include="cl_intersect.h" />
+    <ClInclude Include="..\..\COMMON\cl_intersect.h" />
     <ClInclude Include="r2_fog_volumes.h" />
     <ClInclude Include="r2_puddles.h" />
     <ClInclude Include="stdafx.h" />
@@ -416,7 +416,6 @@
     <ClCompile Include="..\xrRender\Light_DB.cpp" />
     <ClCompile Include="light_GI.cpp" />
     <ClCompile Include="..\xrRender\Light_Package.cpp" />
-    <ClCompile Include="Light_Render_Direct.cpp" />
     <ClCompile Include="Light_Render_Direct_ComputeXFS.cpp" />
     <ClCompile Include="light_smapvis.cpp" />
     <ClCompile Include="light_vis.cpp" />

@@ -41,9 +41,6 @@
     <ClCompile Include="noise.cpp">
       <Filter>PAPI</Filter>
     </ClCompile>
-    <ClCompile Include="particle_actions.cpp">
-      <Filter>PAPI</Filter>
-    </ClCompile>
     <ClCompile Include="particle_actions_collection.cpp">
       <Filter>PAPI</Filter>
     </ClCompile>
@@ -51,9 +48,6 @@
       <Filter>PAPI</Filter>
     </ClCompile>
     <ClCompile Include="particle_core.cpp">
-      <Filter>PAPI</Filter>
-    </ClCompile>
-    <ClCompile Include="particle_effect.cpp">
       <Filter>PAPI</Filter>
     </ClCompile>
     <ClCompile Include="particle_manager.cpp">

@@ -37,5 +37,3 @@ public:
 	virtual void	create_box2sphere_physic_shell	();
 	virtual void	create_physic_shell				();
 };
-
-#include "physic_item_inline.h"

@@ -441,12 +441,10 @@
     <ClInclude Include="ai\monsters\group_states\state_adapter.h" />
     <ClInclude Include="ai\monsters\states\monster_state_attack_on_run.h" />
     <ClInclude Include="ai\monsters\states\monster_state_attack_on_run_inline.h" />
-    <ClInclude Include="ai\weighted_random.h" />
     <ClInclude Include="derived_client_classes.h" />
     <ClInclude Include="InventoryContainer.h" />
     <ClInclude Include="mt_config.h" />
     <ClInclude Include="damage_manager.h" />
-    <ClInclude Include="damage_manager_inline.h" />
     <ClInclude Include="DamageSource.h" />
     <ClInclude Include="script_actor.h" />
     <ClInclude Include="script_game_object_impl.h" />
@@ -474,7 +472,6 @@
     <ClInclude Include="action_planner.h" />
     <ClInclude Include="action_planner_inline.h" />
     <ClInclude Include="script_action_planner_wrapper.h" />
-    <ClInclude Include="script_action_planner_wrapper_inline.h" />
     <ClInclude Include="action_planner_script.h" />
     <ClInclude Include="action_planner_script_inline.h" />
     <ClInclude Include="action_planner_action.h" />
@@ -567,7 +564,6 @@
     <ClInclude Include="operator_condition.h" />
     <ClInclude Include="operator_condition_inline.h" />
     <ClInclude Include="script_world_property.h" />
-    <ClInclude Include="script_world_property_inline.h" />
     <ClInclude Include="setup_manager.h" />
     <ClInclude Include="setup_manager_inline.h" />
     <ClInclude Include="sight_manager.h" />
@@ -647,18 +643,12 @@
     <ClInclude Include="alife_simulator_inline.h" />
     <ClInclude Include="..\COMMON_AI\alife_space.h" />
     <ClInclude Include="alife_interaction_manager.h" />
-    <ClInclude Include="alife_interaction_manager_inline.h" />
     <ClInclude Include="alife_communication_manager.h" />
-    <ClInclude Include="alife_communication_manager_inline.h" />
-    <ClInclude Include="alife_communication_space.h" />
     <ClInclude Include="alife_combat_manager.h" />
-    <ClInclude Include="alife_combat_manager_inline.h" />
     <ClInclude Include="..\COMMON_AI\alife_human_brain.h" />
     <ClInclude Include="..\COMMON_AI\alife_human_brain_inline.h" />
-    <ClInclude Include="..\COMMON_AI\alife_human_brain_save.h" />
     <ClInclude Include="alife_human_object_handler.h" />
     <ClInclude Include="alife_human_object_handler_inline.h" />
-    <ClInclude Include="alife_human_object_handler_save.h" />
     <ClInclude Include="..\COMMON_AI\alife_monster_brain.h" />
     <ClInclude Include="..\COMMON_AI\alife_monster_brain_inline.h" />
     <ClInclude Include="alife_monster_movement_manager.h" />
@@ -907,19 +897,12 @@
     <ClInclude Include="ai\Monsters\Bloodsucker\bloodsucker_alien.h" />
     <ClInclude Include="ai\Monsters\Bloodsucker\bloodsucker_predator.h" />
     <ClInclude Include="ai\Monsters\Bloodsucker\bloodsucker_predator_inline.h" />
-    <ClInclude Include="ai\Monsters\Bloodsucker\bloodsucker_predator_lite.h" />
-    <ClInclude Include="ai\Monsters\Bloodsucker\bloodsucker_predator_lite_inline.h" />
-    <ClInclude Include="ai\Monsters\Bloodsucker\bloodsucker_attack_state.h" />
-    <ClInclude Include="ai\Monsters\Bloodsucker\bloodsucker_attack_state_hide.h" />
-    <ClInclude Include="ai\Monsters\Bloodsucker\bloodsucker_attack_state_hide_inline.h" />
-    <ClInclude Include="ai\Monsters\Bloodsucker\bloodsucker_attack_state_inline.h" />
     <ClInclude Include="ai\Monsters\Boar\boar.h" />
     <ClInclude Include="ai\Monsters\Boar\boar_state_manager.h" />
     <ClInclude Include="AI\Crow\ai_crow.h" />
     <ClInclude Include="ai\Monsters\Flesh\flesh.h" />
     <ClInclude Include="ai\Monsters\Flesh\flesh_state_manager.h" />
     <ClInclude Include="ai\Monsters\Pseudodog\pseudodog.h" />
-    <ClInclude Include="ai\Monsters\Pseudodog\pseudodog_psi_effector.h" />
     <ClInclude Include="ai\Monsters\Pseudodog\pseudodog_state_manager.h" />
     <ClInclude Include="ai\Monsters\Pseudodog\psy_dog.h" />
     <ClInclude Include="ai\Monsters\Pseudodog\psy_dog_aura.h" />
@@ -974,7 +957,6 @@
     <ClInclude Include="ai\Monsters\Fracture\fracture_state_manager.h" />
     <ClInclude Include="ai\Monsters\Snork\snork.h" />
     <ClInclude Include="ai\Monsters\Snork\snork_state_manager.h" />
-    <ClInclude Include="ai\Monsters\Snork\snork_jump.h" />
     <ClInclude Include="ai\Monsters\Controller\controller.h" />
     <ClInclude Include="ai\Monsters\Controller\controller_psy_aura.h" />
     <ClInclude Include="ai\Monsters\Controller\controller_state_manager.h" />
@@ -1001,7 +983,6 @@
     <ClInclude Include="ai\Monsters\Controller\controller_animation.h" />
     <ClInclude Include="ai\Monsters\Controller\controller_direction.h" />
     <ClInclude Include="ai\Monsters\Controller\controller_psy_hit.h" />
-    <ClInclude Include="ai\Monsters\Controller\controller_psy_hit_effector.h" />
     <ClInclude Include="ai\Monsters\Cat\cat.h" />
     <ClInclude Include="ai\Monsters\Cat\cat_state_manager.h" />
     <ClInclude Include="ai\Monsters\Tushkano\tushkano.h" />
@@ -1027,7 +1008,6 @@
     <ClInclude Include="stalker_animation_script.h" />
     <ClInclude Include="stalker_animation_script_inline.h" />
     <ClInclude Include="stalker_animation_state.h" />
-    <ClInclude Include="stalker_animation_state_inline.h" />
     <ClInclude Include="cover_evaluators.h" />
     <ClInclude Include="cover_evaluators_inline.h" />
     <ClInclude Include="stalker_decision_space.h" />
@@ -1046,7 +1026,6 @@
     <ClInclude Include="stalker_kill_wounded_planner.h" />
     <ClInclude Include="stalker_kill_wounded_actions.h" />
     <ClInclude Include="stalker_danger_planner.h" />
-    <ClInclude Include="stalker_danger_planner_inline.h" />
     <ClInclude Include="stalker_danger_unknown_planner.h" />
     <ClInclude Include="stalker_danger_unknown_actions.h" />
     <ClInclude Include="stalker_danger_in_direction_planner.h" />
@@ -1059,7 +1038,6 @@
     <ClInclude Include="stalker_death_planner.h" />
     <ClInclude Include="stalker_death_actions.h" />
     <ClInclude Include="stalker_property_evaluators.h" />
-    <ClInclude Include="stalker_property_evaluators_inline.h" />
     <ClInclude Include="stalker_movement_manager.h" />
     <ClInclude Include="stalker_movement_manager_inline.h" />
     <ClInclude Include="stalker_movement_manager_space.h" />
@@ -1201,7 +1179,6 @@
     <ClInclude Include="actor_input_handler.h" />
     <ClInclude Include="ActorAnimation.h" />
     <ClInclude Include="ActorCondition.h" />
-    <ClInclude Include="ActorFollowers.h" />
     <ClInclude Include="actor_memory.h" />
     <ClInclude Include="Entity.h" />
     <ClInclude Include="entity_alive.h" />
@@ -1284,7 +1261,6 @@
     <ClInclude Include="purchase_list.h" />
     <ClInclude Include="purchase_list_inline.h" />
     <ClInclude Include="physic_item.h" />
-    <ClInclude Include="physic_item_inline.h" />
     <ClInclude Include="ShootingObject.h" />
     <ClInclude Include="Weapon.h" />
     <ClInclude Include="WeaponAmmo.h" />
@@ -1443,7 +1419,6 @@
     <ClInclude Include="game_cl_base.h" />
     <ClInclude Include="game_cl_base_weapon_usage_statistic.h" />
     <ClInclude Include="game_sv_base.h" />
-    <ClInclude Include="game_sv_base_console_vars.h" />
     <ClInclude Include="game_sv_event_queue.h" />
     <ClInclude Include="xr_time.h" />
     <ClInclude Include="game_sv_single.h" />
@@ -1489,7 +1464,6 @@
     <ClInclude Include="DisablingParams.h" />
     <ClInclude Include="PHDisabling.h" />
     <ClInclude Include="PHActorCharacter.h" />
-    <ClInclude Include="PHActorCharacterInline.h" />
     <ClInclude Include="PHAICharacter.h" />
     <ClInclude Include="PHCapture.h" />
     <ClInclude Include="PHMovementControl.h" />
@@ -1684,7 +1658,6 @@
   <ItemGroup>
     <ClCompile Include="..\COMMON_AI\random32.cpp" />
     <ClCompile Include="ai\monsters\anti_aim_ability.cpp" />
-    <ClCompile Include="ai\weighted_random.cpp" />
     <ClCompile Include="damage_manager.cpp" />
     <ClCompile Include="action_base_script.cpp" />
     <ClCompile Include="derived_client_classes.cpp" />
@@ -1794,7 +1767,6 @@
     <ClCompile Include="alife_monster_patrol_path_manager_script.cpp" />
     <ClCompile Include="alife_object.cpp" />
     <ClCompile Include="alife_online_offline_group.cpp" />
-    <ClCompile Include="alife_online_offline_group_brain.cpp" />
     <ClCompile Include="alife_smart_zone.cpp" />
     <ClCompile Include="alife_trader.cpp" />
     <ClCompile Include="alife_trader_abstract.cpp" />
@@ -1901,7 +1873,6 @@
     <ClCompile Include="ai\Monsters\Flesh\flesh_state_manager.cpp" />
     <ClCompile Include="ai\Monsters\Flesh\flesh_script.cpp" />
     <ClCompile Include="ai\Monsters\Pseudodog\pseudodog.cpp" />
-    <ClCompile Include="ai\Monsters\Pseudodog\pseudodog_psi_effector.cpp" />
     <ClCompile Include="ai\Monsters\Pseudodog\pseudodog_state_manager.cpp" />
     <ClCompile Include="ai\Monsters\Pseudodog\psy_dog.cpp" />
     <ClCompile Include="ai\Monsters\Pseudodog\psy_dog_aura.cpp" />
@@ -1933,7 +1904,6 @@
     <ClCompile Include="ai\Monsters\Fracture\fracture_script.cpp" />
     <ClCompile Include="ai\Monsters\Snork\snork.cpp" />
     <ClCompile Include="ai\Monsters\Snork\snork_state_manager.cpp" />
-    <ClCompile Include="ai\Monsters\Snork\snork_jump.cpp" />
     <ClCompile Include="ai\Monsters\Snork\snork_script.cpp" />
     <ClCompile Include="ai\Monsters\Controller\controller.cpp" />
     <ClCompile Include="ai\Monsters\Controller\controller_psy_aura.cpp" />
@@ -1942,7 +1912,6 @@
     <ClCompile Include="ai\Monsters\Controller\controller_animation.cpp" />
     <ClCompile Include="ai\Monsters\Controller\controller_direction.cpp" />
     <ClCompile Include="ai\Monsters\Controller\controller_psy_hit.cpp" />
-    <ClCompile Include="ai\Monsters\Controller\controller_psy_hit_effector.cpp" />
     <ClCompile Include="ai\Monsters\Cat\cat.cpp" />
     <ClCompile Include="ai\Monsters\Cat\cat_state_manager.cpp" />
     <ClCompile Include="ai\Monsters\Cat\cat_script.cpp" />
@@ -2105,7 +2074,6 @@
     <ClCompile Include="cameralook.cpp" />
     <ClCompile Include="ActorEffector.cpp" />
     <ClCompile Include="ActorEffector_script.cpp" />
-    <ClCompile Include="CameraEffector.cpp" />
     <ClCompile Include="EffectorBobbing.cpp" />
     <ClCompile Include="EffectorFall.cpp" />
     <ClCompile Include="SleepEffector.cpp" />
@@ -2123,7 +2091,6 @@
     <ClCompile Include="Level.cpp" />
     <ClCompile Include="Level_input.cpp" />
     <ClCompile Include="Level_load.cpp" />
-    <ClCompile Include="level_map_locations.cpp" />
     <ClCompile Include="Level_network.cpp" />
     <ClCompile Include="Level_network_Demo.cpp" />
     <ClCompile Include="Level_network_messages.cpp" />
@@ -2158,7 +2125,6 @@
     <ClCompile Include="ActorAnimation.cpp" />
     <ClCompile Include="ActorCameras.cpp" />
     <ClCompile Include="ActorCondition.cpp" />
-    <ClCompile Include="ActorFollowers.cpp" />
     <ClCompile Include="ActorInput.cpp" />
     <ClCompile Include="ActorMountedWeapon.cpp" />
     <ClCompile Include="ActorVehicle.cpp" />
@@ -2375,7 +2341,6 @@
     <ClCompile Include="game_cl_base.cpp" />
     <ClCompile Include="game_cl_base_weapon_usage_statistic.cpp" />
     <ClCompile Include="game_sv_base.cpp" />
-    <ClCompile Include="game_sv_base_console_vars.cpp" />
     <ClCompile Include="game_sv_base_script.cpp" />
     <ClCompile Include="game_sv_event_queue.cpp" />
     <ClCompile Include="xr_time.cpp" />
@@ -2430,7 +2395,6 @@
     <ClCompile Include="PHInterpolation.cpp" />
     <ClCompile Include="PHContactBodyEffector.cpp" />
     <ClCompile Include="..\COMMON_AI\PHNetState.cpp" />
-    <ClCompile Include="..\COMMON_AI\PHSynchronize.cpp" />
     <ClCompile Include="PHMoveStorage.cpp" />
     <ClCompile Include="DisablingParams.cpp" />
     <ClCompile Include="PHDisabling.cpp" />
@@ -2472,9 +2436,7 @@
     <ClCompile Include="tri-colliderknoopc\dcTriListCollider.cpp">
       <ExcludedFromBuild>true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="tri-colliderknoopc\dSortTriPrimitive.cpp" />
     <ClCompile Include="tri-colliderknoopc\dTriBox.cpp" />
-    <ClCompile Include="tri-colliderKNoOPC\dTriCallideK.cpp" />
     <ClCompile Include="tri-colliderknoopc\dTriCylinder.cpp" />
     <ClCompile Include="tri-colliderKNoOPC\dTriList.cpp" />
     <ClCompile Include="tri-colliderknoopc\dTriSphere.cpp" />
@@ -2594,7 +2556,6 @@
     <ClCompile Include="ui\UIComboBox_script.cpp" />
     <ClCompile Include="ui\UI_IB_Static.cpp" />
     <ClCompile Include="ui\UITrackBar.cpp" />
-    <ClCompile Include="ui\UITrackButton.cpp" />
     <ClCompile Include="ui\UIFrameLine.cpp" />
     <ClCompile Include="UIFrameRect.cpp" />
     <ClCompile Include="ui\UIScrollView.cpp" />
@@ -2603,7 +2564,6 @@
     <ClCompile Include="ui\UILine.cpp" />
     <ClCompile Include="ui\UILines.cpp" />
     <ClCompile Include="ui\UISubLine.cpp" />
-    <ClCompile Include="ui\UIVideoPlayerWnd.cpp" />
     <ClCompile Include="ui\UICellCustomItems.cpp" />
     <ClCompile Include="ui\UICellItem.cpp" />
     <ClCompile Include="ui\UICellItemFactory.cpp" />
@@ -2618,7 +2578,6 @@
     <ClCompile Include="ui\UIListWnd.cpp" />
     <ClCompile Include="ui\UIListWnd_script.cpp" />
     <ClCompile Include="ui\UIListItemEx.cpp" />
-    <ClCompile Include="ContextMenu.cpp" />
     <ClCompile Include="HitMarker.cpp" />
     <ClCompile Include="HUDManager.cpp" />
     <ClCompile Include="UIGameCustom.cpp" />

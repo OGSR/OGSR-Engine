@@ -4,7 +4,6 @@
 #include "HitMarker.h"
 #include "UI.h"
 
-class CContextMenu;
 class CHUDTarget;
 
 struct CFontManager :public pureDeviceReset			{

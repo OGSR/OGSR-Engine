@@ -526,9 +526,6 @@
     <Filter Include="AI\AMonsters\common\monster states\Steal">
       <UniqueIdentifier>{e7f5dbed-8399-4db1-bfc4-4a77e46eed91}</UniqueIdentifier>
     </Filter>
-    <Filter Include="AI\AMonsters\common\monster states\Hunt">
-      <UniqueIdentifier>{2c2b1bb6-6c26-4aae-a04c-6d42f78d572b}</UniqueIdentifier>
-    </Filter>
     <Filter Include="AI\AMonsters\common\monster states\Controlled">
       <UniqueIdentifier>{d29cbb79-6ec3-4179-8bef-1795d2802894}</UniqueIdentifier>
     </Filter>
@@ -591,9 +588,6 @@
     </Filter>
     <Filter Include="AI\AMonsters\common\components\Event Handler\Custom Events">
       <UniqueIdentifier>{b02ded14-6758-4996-8380-7e427d354bd1}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="AI\AMonsters\common\components\Debug">
-      <UniqueIdentifier>{dffde734-0e6d-4043-8a9b-0220265d00b5}</UniqueIdentifier>
     </Filter>
     <Filter Include="AI\AMonsters\common\components\Melee Checker">
       <UniqueIdentifier>{950980d8-afb0-417f-a101-3aa259fecd3d}</UniqueIdentifier>
@@ -688,9 +682,6 @@
     <Filter Include="AI\AMonsters\monsters\Bloodsucker\Predator State">
       <UniqueIdentifier>{871c6479-b5fd-40f3-988a-003ffe6e055f}</UniqueIdentifier>
     </Filter>
-    <Filter Include="AI\AMonsters\monsters\Bloodsucker\Attack">
-      <UniqueIdentifier>{2b81a829-2e7f-4fb2-8701-3d628c16b97b}</UniqueIdentifier>
-    </Filter>
     <Filter Include="AI\AMonsters\monsters\Boar">
       <UniqueIdentifier>{f8c2684d-0acf-4466-8cb9-77f857fae7cc}</UniqueIdentifier>
     </Filter>
@@ -777,9 +768,6 @@
     </Filter>
     <Filter Include="AI\AMonsters\monsters\Snork">
       <UniqueIdentifier>{ae5731e2-5653-49ef-b88f-4165409d23b9}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="AI\AMonsters\monsters\Snork\Special Jump">
-      <UniqueIdentifier>{0332f936-d700-489a-a14e-d47cce829e6e}</UniqueIdentifier>
     </Filter>
     <Filter Include="AI\AMonsters\monsters\Snork\Script">
       <UniqueIdentifier>{3bd76564-38b3-499f-be2c-af262f03099f}</UniqueIdentifier>
@@ -1462,9 +1450,6 @@
     <Filter Include="Core\Client\Objects\items &amp; weapons\Weapons\Custom Weapon\Pistol">
       <UniqueIdentifier>{4f7fc632-8f2d-495b-b3c0-e52efde9ced6}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Core\Client\Objects\items &amp; weapons\Weapons\Custom Weapon\Grenades &amp; Missiles">
-      <UniqueIdentifier>{5d4622d7-dcee-45a4-a668-b0e76259941c}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Core\Client\Objects\items &amp; weapons\Weapons\Custom Weapon\Automatic">
       <UniqueIdentifier>{0c55b50b-f3dc-4ce9-a4c9-1d5e8805fa91}</UniqueIdentifier>
     </Filter>
@@ -1635,9 +1620,6 @@
     </Filter>
     <Filter Include="Core\Client\Objects\searchlight">
       <UniqueIdentifier>{ada95cb5-5418-4ac9-9984-2d5af0942787}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Core\Client\Objects\searchlight\Trade">
-      <UniqueIdentifier>{3a55f86c-d979-48cd-a2f8-1781a70d2db2}</UniqueIdentifier>
     </Filter>
     <Filter Include="Core\Client\Objects\zones">
       <UniqueIdentifier>{7bf8b061-c2de-4d9f-b55f-cc210a52d2dd}</UniqueIdentifier>
@@ -2131,11 +2113,11 @@
     <Filter Include="Core\Client\Objects\inventory\InventoryContainer">
       <UniqueIdentifier>{b72c5438-5c04-4b55-acd5-7c7610097b03}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Core\Common\Random">
-      <UniqueIdentifier>{2e4d27b3-7e36-4625-8195-23559853ad3b}</UniqueIdentifier>
+    <Filter Include="Core\Client\Objects\Trade">
+      <UniqueIdentifier>{3a55f86c-d979-48cd-a2f8-1781a70d2db2}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Core\Common\Random\weighted">
-      <UniqueIdentifier>{89a59ffb-4cd8-4f1c-915c-f9746f5b1213}</UniqueIdentifier>
+    <Filter Include="Core\Client\Objects\items &amp; weapons\Weapons\Custom Weapon\Grenades &amp; Missiles">
+      <UniqueIdentifier>{5d4622d7-dcee-45a4-a668-b0e76259941c}</UniqueIdentifier>
     </Filter>
     <Filter Include="AI\AMonsters\common\steering behaviours">
       <UniqueIdentifier>{1036db8a-0ca3-40b1-abac-5e2fbe996b25}</UniqueIdentifier>
@@ -2152,9 +2134,6 @@
       <Filter>AI</Filter>
     </ClInclude>
     <ClInclude Include="damage_manager.h">
-      <Filter>AI\AComponents\DamageManager</Filter>
-    </ClInclude>
-    <ClInclude Include="damage_manager_inline.h">
       <Filter>AI\AComponents\DamageManager</Filter>
     </ClInclude>
     <ClInclude Include="DamageSource.h">
@@ -2194,9 +2173,6 @@
       <Filter>AI\AComponents\DecisionManagement\ActionManagement\ActionPlanner</Filter>
     </ClInclude>
     <ClInclude Include="script_action_planner_wrapper.h">
-      <Filter>AI\AComponents\DecisionManagement\ActionManagement\ActionPlanner\ScriptActionPlannerWrapper</Filter>
-    </ClInclude>
-    <ClInclude Include="script_action_planner_wrapper_inline.h">
       <Filter>AI\AComponents\DecisionManagement\ActionManagement\ActionPlanner\ScriptActionPlannerWrapper</Filter>
     </ClInclude>
     <ClInclude Include="action_planner_script.h">
@@ -2475,9 +2451,6 @@
     <ClInclude Include="script_world_property.h">
       <Filter>AI\AComponents\ProblemSolver\operator_condition\ScriptWorldProperty</Filter>
     </ClInclude>
-    <ClInclude Include="script_world_property_inline.h">
-      <Filter>AI\AComponents\ProblemSolver\operator_condition\ScriptWorldProperty</Filter>
-    </ClInclude>
     <ClInclude Include="setup_manager.h">
       <Filter>AI\AComponents\SetupManager</Filter>
     </ClInclude>
@@ -2715,22 +2688,10 @@
     <ClInclude Include="alife_interaction_manager.h">
       <Filter>AI\ALife\interaction_manager</Filter>
     </ClInclude>
-    <ClInclude Include="alife_interaction_manager_inline.h">
-      <Filter>AI\ALife\interaction_manager</Filter>
-    </ClInclude>
     <ClInclude Include="alife_communication_manager.h">
       <Filter>AI\ALife\interaction_manager\communication_manager</Filter>
     </ClInclude>
-    <ClInclude Include="alife_communication_manager_inline.h">
-      <Filter>AI\ALife\interaction_manager\communication_manager</Filter>
-    </ClInclude>
-    <ClInclude Include="alife_communication_space.h">
-      <Filter>AI\ALife\interaction_manager\communication_manager</Filter>
-    </ClInclude>
     <ClInclude Include="alife_combat_manager.h">
-      <Filter>AI\ALife\interaction_manager\combat_manager</Filter>
-    </ClInclude>
-    <ClInclude Include="alife_combat_manager_inline.h">
       <Filter>AI\ALife\interaction_manager\combat_manager</Filter>
     </ClInclude>
     <ClInclude Include="..\COMMON_AI\alife_human_brain.h">
@@ -2739,16 +2700,10 @@
     <ClInclude Include="..\COMMON_AI\alife_human_brain_inline.h">
       <Filter>AI\ALife\interaction_manager\server_entities\human\brain</Filter>
     </ClInclude>
-    <ClInclude Include="..\COMMON_AI\alife_human_brain_save.h">
-      <Filter>AI\ALife\interaction_manager\server_entities\human\brain</Filter>
-    </ClInclude>
     <ClInclude Include="alife_human_object_handler.h">
       <Filter>AI\ALife\interaction_manager\server_entities\human\object_handler</Filter>
     </ClInclude>
     <ClInclude Include="alife_human_object_handler_inline.h">
-      <Filter>AI\ALife\interaction_manager\server_entities\human\object_handler</Filter>
-    </ClInclude>
-    <ClInclude Include="alife_human_object_handler_save.h">
       <Filter>AI\ALife\interaction_manager\server_entities\human\object_handler</Filter>
     </ClInclude>
     <ClInclude Include="..\COMMON_AI\alife_monster_brain.h">
@@ -3495,24 +3450,6 @@
     <ClInclude Include="ai\Monsters\Bloodsucker\bloodsucker_predator_inline.h">
       <Filter>AI\AMonsters\monsters\Bloodsucker\Predator State</Filter>
     </ClInclude>
-    <ClInclude Include="ai\Monsters\Bloodsucker\bloodsucker_predator_lite.h">
-      <Filter>AI\AMonsters\monsters\Bloodsucker\Predator State</Filter>
-    </ClInclude>
-    <ClInclude Include="ai\Monsters\Bloodsucker\bloodsucker_predator_lite_inline.h">
-      <Filter>AI\AMonsters\monsters\Bloodsucker\Predator State</Filter>
-    </ClInclude>
-    <ClInclude Include="ai\Monsters\Bloodsucker\bloodsucker_attack_state.h">
-      <Filter>AI\AMonsters\monsters\Bloodsucker\Attack</Filter>
-    </ClInclude>
-    <ClInclude Include="ai\Monsters\Bloodsucker\bloodsucker_attack_state_hide.h">
-      <Filter>AI\AMonsters\monsters\Bloodsucker\Attack</Filter>
-    </ClInclude>
-    <ClInclude Include="ai\Monsters\Bloodsucker\bloodsucker_attack_state_hide_inline.h">
-      <Filter>AI\AMonsters\monsters\Bloodsucker\Attack</Filter>
-    </ClInclude>
-    <ClInclude Include="ai\Monsters\Bloodsucker\bloodsucker_attack_state_inline.h">
-      <Filter>AI\AMonsters\monsters\Bloodsucker\Attack</Filter>
-    </ClInclude>
     <ClInclude Include="ai\Monsters\Boar\boar.h">
       <Filter>AI\AMonsters\monsters\Boar</Filter>
     </ClInclude>
@@ -3529,9 +3466,6 @@
       <Filter>AI\AMonsters\monsters\Flesh</Filter>
     </ClInclude>
     <ClInclude Include="ai\Monsters\Pseudodog\pseudodog.h">
-      <Filter>AI\AMonsters\monsters\PseudoDog</Filter>
-    </ClInclude>
-    <ClInclude Include="ai\Monsters\Pseudodog\pseudodog_psi_effector.h">
       <Filter>AI\AMonsters\monsters\PseudoDog</Filter>
     </ClInclude>
     <ClInclude Include="ai\Monsters\Pseudodog\pseudodog_state_manager.h">
@@ -3696,9 +3630,6 @@
     <ClInclude Include="ai\Monsters\Snork\snork_state_manager.h">
       <Filter>AI\AMonsters\monsters\Snork</Filter>
     </ClInclude>
-    <ClInclude Include="ai\Monsters\Snork\snork_jump.h">
-      <Filter>AI\AMonsters\monsters\Snork\Special Jump</Filter>
-    </ClInclude>
     <ClInclude Include="ai\Monsters\Controller\controller.h">
       <Filter>AI\AMonsters\monsters\Controller</Filter>
     </ClInclude>
@@ -3777,9 +3708,6 @@
     <ClInclude Include="ai\Monsters\Controller\controller_psy_hit.h">
       <Filter>AI\AMonsters\monsters\Controller\Psy hit</Filter>
     </ClInclude>
-    <ClInclude Include="ai\Monsters\Controller\controller_psy_hit_effector.h">
-      <Filter>AI\AMonsters\monsters\Controller\Psy hit</Filter>
-    </ClInclude>
     <ClInclude Include="ai\Monsters\Cat\cat.h">
       <Filter>AI\AMonsters\monsters\Cat</Filter>
     </ClInclude>
@@ -3855,9 +3783,6 @@
     <ClInclude Include="stalker_animation_state.h">
       <Filter>AI\AMonsters\humans\stalker\AnimationManager\state</Filter>
     </ClInclude>
-    <ClInclude Include="stalker_animation_state_inline.h">
-      <Filter>AI\AMonsters\humans\stalker\AnimationManager\state</Filter>
-    </ClInclude>
     <ClInclude Include="cover_evaluators.h">
       <Filter>AI\AMonsters\humans\stalker\CoverEvaluators</Filter>
     </ClInclude>
@@ -3912,9 +3837,6 @@
     <ClInclude Include="stalker_danger_planner.h">
       <Filter>AI\AMonsters\humans\stalker\DecisionMaker\actions\danger</Filter>
     </ClInclude>
-    <ClInclude Include="stalker_danger_planner_inline.h">
-      <Filter>AI\AMonsters\humans\stalker\DecisionMaker\actions\danger</Filter>
-    </ClInclude>
     <ClInclude Include="stalker_danger_unknown_planner.h">
       <Filter>AI\AMonsters\humans\stalker\DecisionMaker\actions\danger\actions\unknown</Filter>
     </ClInclude>
@@ -3949,9 +3871,6 @@
       <Filter>AI\AMonsters\humans\stalker\DecisionMaker\actions\death\actions</Filter>
     </ClInclude>
     <ClInclude Include="stalker_property_evaluators.h">
-      <Filter>AI\AMonsters\humans\stalker\DecisionMaker\properties</Filter>
-    </ClInclude>
-    <ClInclude Include="stalker_property_evaluators_inline.h">
       <Filter>AI\AMonsters\humans\stalker\DecisionMaker\properties</Filter>
     </ClInclude>
     <ClInclude Include="stalker_movement_manager.h">
@@ -4377,9 +4296,6 @@
     <ClInclude Include="ActorCondition.h">
       <Filter>Core\Client\Objects\actor\base</Filter>
     </ClInclude>
-    <ClInclude Include="ActorFollowers.h">
-      <Filter>Core\Client\Objects\actor\base</Filter>
-    </ClInclude>
     <ClInclude Include="actor_memory.h">
       <Filter>Core\Client\Objects\actor\base\memory</Filter>
     </ClInclude>
@@ -4626,9 +4542,6 @@
     <ClInclude Include="physic_item.h">
       <Filter>Core\Client\Objects\inventory\PhysicItem</Filter>
     </ClInclude>
-    <ClInclude Include="physic_item_inline.h">
-      <Filter>Core\Client\Objects\inventory\PhysicItem</Filter>
-    </ClInclude>
     <ClInclude Include="ShootingObject.h">
       <Filter>Core\Client\Objects\items &amp; weapons\Weapons\Custom Weapon\Weapon Generic</Filter>
     </ClInclude>
@@ -4867,7 +4780,7 @@
       <Filter>Core\Client\Objects\searchlight</Filter>
     </ClInclude>
     <ClInclude Include="trade.h">
-      <Filter>Core\Client\Objects\searchlight\Trade</Filter>
+      <Filter>Core\Client\Objects\Trade</Filter>
     </ClInclude>
     <ClInclude Include="CustomZone.h">
       <Filter>Core\Client\Objects\zones\CustomZone</Filter>
@@ -5091,9 +5004,6 @@
     <ClInclude Include="game_sv_base.h">
       <Filter>Core\Server\Games\server</Filter>
     </ClInclude>
-    <ClInclude Include="game_sv_base_console_vars.h">
-      <Filter>Core\Server\Games\server</Filter>
-    </ClInclude>
     <ClInclude Include="game_sv_event_queue.h">
       <Filter>Core\Server\Games\server</Filter>
     </ClInclude>
@@ -5227,9 +5137,6 @@
       <Filter>Core\Client\Objects\physics\Base\Objects\Disabling</Filter>
     </ClInclude>
     <ClInclude Include="PHActorCharacter.h">
-      <Filter>Core\Client\Objects\physics\Base\Objects\PhyMove\ActorCaracter</Filter>
-    </ClInclude>
-    <ClInclude Include="PHActorCharacterInline.h">
       <Filter>Core\Client\Objects\physics\Base\Objects\PhyMove\ActorCaracter</Filter>
     </ClInclude>
     <ClInclude Include="PHAICharacter.h">
@@ -6064,9 +5971,6 @@
     <ClInclude Include="ai\monsters\states\monster_state_attack_on_run_inline.h">
       <Filter>AI\AMonsters\common\monster states\Attack</Filter>
     </ClInclude>
-    <ClInclude Include="ai\weighted_random.h">
-      <Filter>Core\Common\Random\weighted</Filter>
-    </ClInclude>
     <ClInclude Include="ai\monsters\anti_aim_ability.h">
       <Filter>AI\AMonsters\common\components</Filter>
     </ClInclude>
@@ -6474,9 +6378,6 @@
     <ClCompile Include="alife_online_offline_group.cpp">
       <Filter>AI\ALife\interaction_manager\server_entities\online_offline_group</Filter>
     </ClCompile>
-    <ClCompile Include="alife_online_offline_group_brain.cpp">
-      <Filter>AI\ALife\interaction_manager\server_entities\online_offline_group\brain</Filter>
-    </ClCompile>
     <ClCompile Include="alife_smart_zone.cpp">
       <Filter>AI\ALife\interaction_manager\server_entities\smart_zone</Filter>
     </ClCompile>
@@ -6792,9 +6693,6 @@
     <ClCompile Include="ai\Monsters\Pseudodog\pseudodog.cpp">
       <Filter>AI\AMonsters\monsters\PseudoDog</Filter>
     </ClCompile>
-    <ClCompile Include="ai\Monsters\Pseudodog\pseudodog_psi_effector.cpp">
-      <Filter>AI\AMonsters\monsters\PseudoDog</Filter>
-    </ClCompile>
     <ClCompile Include="ai\Monsters\Pseudodog\pseudodog_state_manager.cpp">
       <Filter>AI\AMonsters\monsters\PseudoDog</Filter>
     </ClCompile>
@@ -6888,9 +6786,6 @@
     <ClCompile Include="ai\Monsters\Snork\snork_state_manager.cpp">
       <Filter>AI\AMonsters\monsters\Snork</Filter>
     </ClCompile>
-    <ClCompile Include="ai\Monsters\Snork\snork_jump.cpp">
-      <Filter>AI\AMonsters\monsters\Snork\Special Jump</Filter>
-    </ClCompile>
     <ClCompile Include="ai\Monsters\Snork\snork_script.cpp">
       <Filter>AI\AMonsters\monsters\Snork\Script</Filter>
     </ClCompile>
@@ -6913,9 +6808,6 @@
       <Filter>AI\AMonsters\monsters\Controller\Base Controllers\Direction</Filter>
     </ClCompile>
     <ClCompile Include="ai\Monsters\Controller\controller_psy_hit.cpp">
-      <Filter>AI\AMonsters\monsters\Controller\Psy hit</Filter>
-    </ClCompile>
-    <ClCompile Include="ai\Monsters\Controller\controller_psy_hit_effector.cpp">
       <Filter>AI\AMonsters\monsters\Controller\Psy hit</Filter>
     </ClCompile>
     <ClCompile Include="ai\Monsters\Cat\cat.cpp">
@@ -7374,9 +7266,6 @@
     <ClCompile Include="ActorEffector_script.cpp">
       <Filter>Core\Client\Effectors\Actor</Filter>
     </ClCompile>
-    <ClCompile Include="CameraEffector.cpp">
-      <Filter>Core\Client\Effectors\Actor</Filter>
-    </ClCompile>
     <ClCompile Include="EffectorBobbing.cpp">
       <Filter>Core\Client\Effectors\Actor</Filter>
     </ClCompile>
@@ -7426,9 +7315,6 @@
       <Filter>Core\Client\Level</Filter>
     </ClCompile>
     <ClCompile Include="Level_load.cpp">
-      <Filter>Core\Client\Level</Filter>
-    </ClCompile>
-    <ClCompile Include="level_map_locations.cpp">
       <Filter>Core\Client\Level</Filter>
     </ClCompile>
     <ClCompile Include="Level_network.cpp">
@@ -7531,9 +7417,6 @@
       <Filter>Core\Client\Objects\actor\base</Filter>
     </ClCompile>
     <ClCompile Include="ActorCondition.cpp">
-      <Filter>Core\Client\Objects\actor\base</Filter>
-    </ClCompile>
-    <ClCompile Include="ActorFollowers.cpp">
       <Filter>Core\Client\Objects\actor\base</Filter>
     </ClCompile>
     <ClCompile Include="ActorInput.cpp">
@@ -7996,10 +7879,10 @@
       <Filter>Core\Client\Objects\searchlight</Filter>
     </ClCompile>
     <ClCompile Include="trade.cpp">
-      <Filter>Core\Client\Objects\searchlight\Trade</Filter>
+      <Filter>Core\Client\Objects\Trade</Filter>
     </ClCompile>
     <ClCompile Include="trade2.cpp">
-      <Filter>Core\Client\Objects\searchlight\Trade</Filter>
+      <Filter>Core\Client\Objects\Trade</Filter>
     </ClCompile>
     <ClCompile Include="CustomZone.cpp">
       <Filter>Core\Client\Objects\zones\CustomZone</Filter>
@@ -8184,9 +8067,6 @@
     <ClCompile Include="game_sv_base.cpp">
       <Filter>Core\Server\Games\server</Filter>
     </ClCompile>
-    <ClCompile Include="game_sv_base_console_vars.cpp">
-      <Filter>Core\Server\Games\server</Filter>
-    </ClCompile>
     <ClCompile Include="game_sv_base_script.cpp">
       <Filter>Core\Server\Games\server</Filter>
     </ClCompile>
@@ -8349,9 +8229,6 @@
     <ClCompile Include="..\COMMON_AI\PHNetState.cpp">
       <Filter>Core\Client\Objects\physics\Base\Objects\PHNet</Filter>
     </ClCompile>
-    <ClCompile Include="..\COMMON_AI\PHSynchronize.cpp">
-      <Filter>Core\Client\Objects\physics\Base\Objects\PHNet</Filter>
-    </ClCompile>
     <ClCompile Include="PHMoveStorage.cpp">
       <Filter>Core\Client\Objects\physics\Base\Objects\MoveStorage</Filter>
     </ClCompile>
@@ -8469,13 +8346,7 @@
     <ClCompile Include="tri-colliderknoopc\dcTriListCollider.cpp">
       <Filter>Core\Client\Objects\physics\Colliders\Tri-Collider</Filter>
     </ClCompile>
-    <ClCompile Include="tri-colliderknoopc\dSortTriPrimitive.cpp">
-      <Filter>Core\Client\Objects\physics\Colliders\Tri-Collider</Filter>
-    </ClCompile>
     <ClCompile Include="tri-colliderknoopc\dTriBox.cpp">
-      <Filter>Core\Client\Objects\physics\Colliders\Tri-Collider</Filter>
-    </ClCompile>
-    <ClCompile Include="tri-colliderKNoOPC\dTriCallideK.cpp">
       <Filter>Core\Client\Objects\physics\Colliders\Tri-Collider</Filter>
     </ClCompile>
     <ClCompile Include="tri-colliderknoopc\dTriCylinder.cpp">
@@ -8835,9 +8706,6 @@
     <ClCompile Include="ui\UITrackBar.cpp">
       <Filter>AI\AScript\ScriptClasses\UI\UIWindows\TrackBar</Filter>
     </ClCompile>
-    <ClCompile Include="ui\UITrackButton.cpp">
-      <Filter>AI\AScript\ScriptClasses\UI\UIWindows\TrackBar</Filter>
-    </ClCompile>
     <ClCompile Include="ui\UIFrameLine.cpp">
       <Filter>AI\AScript\ScriptClasses\UI\UIWindows\Frames</Filter>
     </ClCompile>
@@ -8861,9 +8729,6 @@
     </ClCompile>
     <ClCompile Include="ui\UISubLine.cpp">
       <Filter>AI\AScript\ScriptClasses\UI\UIWindows\Lines</Filter>
-    </ClCompile>
-    <ClCompile Include="ui\UIVideoPlayerWnd.cpp">
-      <Filter>AI\AScript\ScriptClasses\UI\UIWindows\VideoPlayer</Filter>
     </ClCompile>
     <ClCompile Include="ui\UICellCustomItems.cpp">
       <Filter>AI\AScript\ScriptClasses\UI\UIWindows\DragDrop2</Filter>
@@ -8906,9 +8771,6 @@
     </ClCompile>
     <ClCompile Include="ui\UIListItemEx.cpp">
       <Filter>AI\AScript\ScriptClasses\UI\UIWindows\ListBox\Ex</Filter>
-    </ClCompile>
-    <ClCompile Include="ContextMenu.cpp">
-      <Filter>AI\AScript\ScriptClasses\UI\HUD</Filter>
     </ClCompile>
     <ClCompile Include="HitMarker.cpp">
       <Filter>AI\AScript\ScriptClasses\UI\HUD</Filter>
@@ -8993,9 +8855,6 @@
     </ClCompile>
     <ClCompile Include="ui\UIPdaSpot.cpp">
       <Filter>AI\AScript\ScriptClasses\UI\Common\PdaWnd</Filter>
-    </ClCompile>
-    <ClCompile Include="ai\weighted_random.cpp">
-      <Filter>Core\Common\Random\weighted</Filter>
     </ClCompile>
     <ClCompile Include="ai\monsters\anti_aim_ability.cpp">
       <Filter>AI\AMonsters\common\components</Filter>
