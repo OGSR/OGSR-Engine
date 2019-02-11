@@ -9,6 +9,8 @@
 #include "../xr_3da/skeletoncustom.h"
 #include "Actor.h"
 #include "Inventory.h"
+#include "ai/stalker/ai_stalker.h"
+#include "ai/monsters/BaseMonster/base_monster.h"
 extern	class CPHWorld	*ph_world;
 ///////////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////////
@@ -65,12 +67,25 @@ CPHCapture::CPHCapture( CPHCharacter* a_character, CPhysicsShellHolder* a_taget_
 		return;
 	}
 
-	CInifile* ini;
-	auto A = smart_cast<CActor*>( m_character->PhysicsRefObject() );
-	if ( A && pSettings->section_exist( "actor_capture" ) ) {
-	  ini = pSettings;
-	  m_capture_section = "actor_capture";
+	CInifile* ini = nullptr;
+	if ( smart_cast<CActor*>( m_character->PhysicsRefObject() ) ) {
+          if ( pSettings->section_exist( "actor_capture" ) ) {
+            ini = pSettings;
+            m_capture_section = "actor_capture";
+          }
 	}
+        else if ( smart_cast<CAI_Stalker*>( m_character->PhysicsRefObject() ) ) {
+          if ( pSettings->section_exist( "stalker_capture" ) ) {
+            ini = pSettings;
+            m_capture_section = "stalker_capture";
+          }
+        }
+        else if ( smart_cast<CBaseMonster*>( m_character->PhysicsRefObject() ) ) {
+          if ( pSettings->section_exist( "monster_capture" ) ) {
+            ini = pSettings;
+            m_capture_section = "monster_capture";
+          }
+        }
 	else {
 	  ini = p_kinematics->LL_UserData();
 	  m_capture_section = "capture";
@@ -155,12 +170,25 @@ CPHCapture::CPHCapture( CPHCharacter* a_character, CPhysicsShellHolder* a_taget_
 		return;
 	}
 
-	CInifile* ini;
-	auto A = smart_cast<CActor*>( m_character->PhysicsRefObject() );
-	if ( A && pSettings->section_exist( "actor_capture" ) ) {
-	  ini = pSettings;
-	  m_capture_section = "actor_capture";
+	CInifile* ini = nullptr;
+	if ( smart_cast<CActor*>( m_character->PhysicsRefObject() ) ) {
+          if ( pSettings->section_exist( "actor_capture" ) ) {
+            ini = pSettings;
+            m_capture_section = "actor_capture";
+          }
 	}
+        else if ( smart_cast<CAI_Stalker*>( m_character->PhysicsRefObject() ) ) {
+          if ( pSettings->section_exist( "stalker_capture" ) ) {
+            ini = pSettings;
+            m_capture_section = "stalker_capture";
+          }
+        }
+        else if ( smart_cast<CBaseMonster*>( m_character->PhysicsRefObject() ) ) {
+          if ( pSettings->section_exist( "monster_capture" ) ) {
+            ini = pSettings;
+            m_capture_section = "monster_capture";
+          }
+        }
 	else {
 	  ini = p_kinematics->LL_UserData();
 	  m_capture_section = "capture";
