@@ -756,7 +756,7 @@ void CScriptGameObject::PHCaptureObject( CScriptGameObject* obj, LPCSTR capture_
   ASSERT_FMT( ps, "[%s]: %s not a CPhysicsShellHolder", __FUNCTION__, obj->cName().c_str() );
   auto EA = smart_cast<CEntityAlive*>( &object() );
   ASSERT_FMT( EA, "[%s]: %s not a CEntityAlive", __FUNCTION__, cName().c_str() );
-  EA->character_physics_support()->movement()->PHCaptureObject( ps, capture_bone );
+  EA->character_physics_support()->movement()->PHCaptureObject( ps, capture_bone, true );
 }
 
 void CScriptGameObject::PHCaptureObject( CScriptGameObject* obj ) {
@@ -769,7 +769,7 @@ void CScriptGameObject::PHCaptureObject( CScriptGameObject* obj, u16 bone, LPCST
   ASSERT_FMT( ps, "[%s]: %s not a CPhysicsShellHolder", __FUNCTION__, obj->cName().c_str() );
   auto EA = smart_cast<CEntityAlive*>( &object() );
   ASSERT_FMT( EA, "[%s]: %s not a CEntityAlive", __FUNCTION__, cName().c_str() );
-  EA->character_physics_support()->movement()->PHCaptureObject( ps, bone, capture_bone );
+  EA->character_physics_support()->movement()->PHCaptureObject( ps, bone, capture_bone, true );
 }
 
 void CScriptGameObject::PHCaptureObject( CScriptGameObject* obj, u16 bone ) {

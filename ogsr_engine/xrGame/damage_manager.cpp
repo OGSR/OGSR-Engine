@@ -82,7 +82,7 @@ void CDamageManager::load_section(LPCSTR section,CInifile* ini)
 		if (xr_strcmp(i.first.c_str(),"default")) { // read all except default line
 			VERIFY					(m_object);
 			int						bone = kinematics->LL_BoneID(i.first);
-			R_ASSERT2				(BI_NONE != bone, i.first.c_str());
+			ASSERT_FMT( bone != BI_NONE, "[%s]: bone '%s' not found in %s[%s] visual[%s]", __FUNCTION__, i.first.c_str(), m_object->cName().c_str(), section, m_object->cNameVisual().c_str() );
 			CBoneInstance			&bone_instance = kinematics->LL_GetBoneInstance(u16(bone));
 			bone_instance.set_param	(0,(float)atof(_GetItem(i.second.c_str(),0,buffer)));
 			bone_instance.set_param	(1,(float)atoi(_GetItem(i.second.c_str(),1,buffer)));

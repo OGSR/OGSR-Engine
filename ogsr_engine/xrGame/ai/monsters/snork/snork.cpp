@@ -57,7 +57,6 @@ void CSnork::Load(LPCSTR section)
 	SVelocityParam &velocity_steal		= move().get_velocity(MonsterMovement::eVelocityParameterSteal);
 	//SVelocityParam &velocity_drag		= move().get_velocity(MonsterMovement::eVelocityParameterDrag);
 
-#pragma todo( "dsh: вернуть закомментированные анимации обратно, когда они появятся" )
 	bool use_cop_anims = READ_IF_EXISTS( pSettings, r_bool, section, "use_cop_anims", false );
 	if ( use_cop_anims ) {
           anim().AddAnim( eAnimStandIdle,      "stand_idle_",         -1, &velocity_none, PS_STAND, "stand_fx_f", "stand_fx_b", "stand_fx_l", "stand_fx_r" );
@@ -75,8 +74,8 @@ void CSnork::Load(LPCSTR section)
           anim().AddAnim(eAnimEat,             "stand_eat_",          -1, &velocity_none, PS_STAND, "stand_fx_f", "stand_fx_b", "stand_fx_l", "stand_fx_r" );
           anim().AddAnim(eAnimCheckCorpse,     "stand_check_corpse_", -1, &velocity_none, PS_STAND, "stand_fx_f", "stand_fx_b", "stand_fx_l", "stand_fx_r" );
 
-          anim().AddAnim( eAnimRunTurnLeft,    "run_look_left_",      -1, &velocity_run, PS_STAND, "stand_fx_f", "stand_fx_b", "stand_fx_l", "stand_fx_r" );
-          anim().AddAnim( eAnimRunTurnRight,   "run_look_right_",     -1, &velocity_run, PS_STAND, "stand_fx_f", "stand_fx_b", "stand_fx_l", "stand_fx_r" );
+          anim().AddAnim( eAnimRunTurnLeft,    "stand_run_look_left_",  -1, &velocity_run, PS_STAND, "stand_fx_f", "stand_fx_b", "stand_fx_l", "stand_fx_r" );
+          anim().AddAnim( eAnimRunTurnRight,   "stand_run_look_right_", -1, &velocity_run, PS_STAND, "stand_fx_f", "stand_fx_b", "stand_fx_l", "stand_fx_r" );
 	}
 	else {
           anim().AddAnim( eAnimStandIdle,      "stand_idle_",         -1, &velocity_none, PS_STAND );

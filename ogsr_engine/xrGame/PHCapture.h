@@ -18,8 +18,8 @@ class CPHCharacter;
 class CPHCapture : public CPHUpdateObject
 {
 public:
-				CPHCapture( CPHCharacter*, CPhysicsShellHolder*, LPCSTR = nullptr );
-				CPHCapture( CPHCharacter*, CPhysicsShellHolder*, u16, LPCSTR = nullptr );
+				CPHCapture( CPHCharacter*, CPhysicsShellHolder*, LPCSTR = nullptr, bool = false );
+				CPHCapture( CPHCharacter*, CPhysicsShellHolder*, u16, LPCSTR = nullptr, bool = false );
 virtual				~CPHCapture							();
 
 
@@ -28,7 +28,7 @@ void				Release								();
 void				net_Relcase							(CObject* O);
 
 public:
-  bool hard_mode;
+  bool m_hard_mode;
   EPHCaptureState e_state;
 float				m_capture_force;
 float				m_capture_distance;

@@ -9,10 +9,12 @@
 #include "../xr_3da/skeletoncustom.h"
 #include "Actor.h"
 #include "Inventory.h"
+#include "ai/stalker/ai_stalker.h"
+#include "ai/monsters/BaseMonster/base_monster.h"
 extern	class CPHWorld	*ph_world;
 ///////////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////////
-CPHCapture::CPHCapture( CPHCharacter* a_character, CPhysicsShellHolder* a_taget_object, LPCSTR capture_bone )
+CPHCapture::CPHCapture( CPHCharacter* a_character, CPhysicsShellHolder* a_taget_object, LPCSTR capture_bone, bool hard_mode )
 {
 	CPHUpdateObject::Activate();
 
@@ -25,6 +27,7 @@ CPHCapture::CPHCapture( CPHCharacter* a_character, CPhysicsShellHolder* a_taget_
 	b_disabled				=false;	
 	b_character_feedback	=false;
 	e_state					=cstPulling;
+	m_hard_mode = hard_mode;
 	
 	if(!a_taget_object							||
 	   !a_taget_object->m_pPhysicsShell			||
@@ -64,12 +67,25 @@ CPHCapture::CPHCapture( CPHCharacter* a_character, CPhysicsShellHolder* a_taget_
 		return;
 	}
 
-	CInifile* ini;
-	auto A = smart_cast<CActor*>( m_character->PhysicsRefObject() );
-	if ( A && pSettings->section_exist( "actor_capture" ) ) {
-	  ini = pSettings;
-	  m_capture_section = "actor_capture";
+	CInifile* ini = nullptr;
+	if ( smart_cast<CActor*>( m_character->PhysicsRefObject() ) ) {
+          if ( pSettings->section_exist( "actor_capture" ) ) {
+            ini = pSettings;
+            m_capture_section = "actor_capture";
+          }
 	}
+        else if ( smart_cast<CAI_Stalker*>( m_character->PhysicsRefObject() ) ) {
+          if ( pSettings->section_exist( "stalker_capture" ) ) {
+            ini = pSettings;
+            m_capture_section = "stalker_capture";
+          }
+        }
+        else if ( smart_cast<CBaseMonster*>( m_character->PhysicsRefObject() ) ) {
+          if ( pSettings->section_exist( "monster_capture" ) ) {
+            ini = pSettings;
+            m_capture_section = "monster_capture";
+          }
+        }
 	else {
 	  ini = p_kinematics->LL_UserData();
 	  m_capture_section = "capture";
@@ -102,7 +118,7 @@ CPHCapture::CPHCapture( CPHCharacter* a_character, CPhysicsShellHolder* a_taget_
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
-CPHCapture::CPHCapture( CPHCharacter* a_character, CPhysicsShellHolder* a_taget_object, u16 a_taget_element, LPCSTR capture_bone )
+CPHCapture::CPHCapture( CPHCharacter* a_character, CPhysicsShellHolder* a_taget_object, u16 a_taget_element, LPCSTR capture_bone, bool hard_mode )
 {
 
 	CPHUpdateObject::Activate();
@@ -115,6 +131,7 @@ CPHCapture::CPHCapture( CPHCharacter* a_character, CPhysicsShellHolder* a_taget_
 	b_character_feedback	=false;
 	m_taget_object			=NULL;
 	m_character				=NULL;
+	m_hard_mode = hard_mode;
 	if(!a_taget_object								||
 	   !a_taget_object->m_pPhysicsShell				||
 	   !a_taget_object->m_pPhysicsShell->isActive()	||
@@ -153,12 +170,25 @@ CPHCapture::CPHCapture( CPHCharacter* a_character, CPhysicsShellHolder* a_taget_
 		return;
 	}
 
-	CInifile* ini;
-	auto A = smart_cast<CActor*>( m_character->PhysicsRefObject() );
-	if ( A && pSettings->section_exist( "actor_capture" ) ) {
-	  ini = pSettings;
-	  m_capture_section = "actor_capture";
+	CInifile* ini = nullptr;
+	if ( smart_cast<CActor*>( m_character->PhysicsRefObject() ) ) {
+          if ( pSettings->section_exist( "actor_capture" ) ) {
+            ini = pSettings;
+            m_capture_section = "actor_capture";
+          }
 	}
+        else if ( smart_cast<CAI_Stalker*>( m_character->PhysicsRefObject() ) ) {
+          if ( pSettings->section_exist( "stalker_capture" ) ) {
+            ini = pSettings;
+            m_capture_section = "stalker_capture";
+          }
+        }
+        else if ( smart_cast<CBaseMonster*>( m_character->PhysicsRefObject() ) ) {
+          if ( pSettings->section_exist( "monster_capture" ) ) {
+            ini = pSettings;
+            m_capture_section = "monster_capture";
+          }
+        }
 	else {
 	  ini = p_kinematics->LL_UserData();
 	  m_capture_section = "capture";
@@ -245,7 +275,7 @@ void CPHCapture::Init(CInifile* ini)
 
 
 	m_pull_distance = ini->r_float( m_capture_section, "pull_distance" );
-	if(dir.magnitude()>m_pull_distance)
+	if(!m_hard_mode && dir.magnitude()>m_pull_distance)
 	{
 		m_taget_object=NULL;
 		b_failed=true;
@@ -272,10 +302,10 @@ void CPHCapture::Init(CInifile* ini)
 	if(A)
 	{
 		A->SetWeaponHideState(INV_STATE_BLOCK_ALL,true);
-		hard_mode = true;
+		m_hard_mode = true;
 	}
-	else
-		hard_mode = false;
+	else if ( !m_hard_mode )
+		m_hard_mode = false;
 
 	ps->applyForce( 0, m_pull_force, 0 );
 }

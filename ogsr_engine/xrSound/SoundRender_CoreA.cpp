@@ -70,6 +70,7 @@ void CSoundRender_CoreA::_initialize	(u64 window)
     {
 	    pDevice = alcOpenDevice(deviceDesc.name.c_str());
         if (pDevice != nullptr) break;
+        Sleep( 10 );
     }
 	if (pDevice == NULL){
 		Log						("[OpenAL] Failed to create device.");
