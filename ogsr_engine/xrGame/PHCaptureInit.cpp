@@ -76,10 +76,6 @@ CPHCapture::CPHCapture( CPHCharacter* a_character, CPhysicsShellHolder* a_taget_
 		ini = pSettings;
 		m_capture_section = "stalker_capture";
 	}
-	else if (smart_cast<CBaseMonster*>(m_character->PhysicsRefObject()) && pSettings->section_exist("monster_capture")) {
-		ini = pSettings;
-		m_capture_section = "monster_capture";
-	}
 	else {
 		ini = p_kinematics->LL_UserData();
 		m_capture_section = "capture";
@@ -172,10 +168,6 @@ CPHCapture::CPHCapture( CPHCharacter* a_character, CPhysicsShellHolder* a_taget_
 	else if (smart_cast<CAI_Stalker*>(m_character->PhysicsRefObject()) && pSettings->section_exist("stalker_capture")) {
 		ini = pSettings;
 		m_capture_section = "stalker_capture";
-	}
-	else if (smart_cast<CBaseMonster*>(m_character->PhysicsRefObject()) && pSettings->section_exist("monster_capture")) {
-		ini = pSettings;
-		m_capture_section = "monster_capture";
 	}
 	else {
 		ini = p_kinematics->LL_UserData();
