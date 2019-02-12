@@ -226,37 +226,18 @@ select_mode_1342 = true
 
 
 ; Переопределение секции [capture] из визуалов брони для актора.
-;[actor_capture]
-;bone           = bip01_tail ; bone for capture
-;; distance - less this distance between bone and capture taget object is
-;; captured
-;distance       = 0.3
-;time_limit     = 3     ; max time for trying to capture object "sec"
-;pull_force     = 8000  ; max force used to bring the taget to capture bone
-;pull_distance  = 1.4   ; max distance taget can be puled
-;velocity_scale = 1 ;0.022 ; velocity scale for pulling 1- normal
-;capture_force  = 6500  ; max force for holding tagett
+; А то в этих визуалах такой бардак. У некоторых даже и кастомной даты нет.
+[actor_capture]
+bone           = bip01_tail ; bone for capture
+distance       = 0.3   ; less this distance between bone and capture taget object is captured
+time_limit     = 3     ; max time for trying to capture object "sec"
+pull_distance  = 1.4   ; max distance target can be pulled
+pull_force_factor = 4  ; force factor that applied to target to pull
+velocity_scale = 1 ;0.022 ; velocity scale for pulling 1- normal
+capture_force  = 6500  ; max force for holding tagett
 
 ; Тоже самое для сталкеров
-;[stalker_capture]
-;bone           = bip01_tail ; bone for capture
-;; distance - less this distance between bone and capture taget object is
-;; captured
-;distance       = 0.3
-;time_limit     = 3     ; max time for trying to capture object "sec"
-;pull_force     = 8000  ; max force used to bring the taget to capture bone
-;pull_distance  = 1.4   ; max distance taget can be puled
-;velocity_scale = 1 ;0.022 ; velocity scale for pulling 1- normal
-;capture_force  = 6500  ; max force for holding tagett
+[stalker_capture]:actor_capture
 
 ; и для мутантов
-;[monster_capture]
-;bone           = bip01_tail ; bone for capture
-;; distance - less this distance between bone and capture taget object is
-;; captured
-;distance       = 0.3
-;time_limit     = 3     ; max time for trying to capture object "sec"
-;pull_force     = 8000  ; max force used to bring the taget to capture bone
-;pull_distance  = 1.4   ; max distance taget can be puled
-;velocity_scale = 1 ;0.022 ; velocity scale for pulling 1- normal
-;capture_force  = 6500  ; max force for holding tagett
+[monster_capture]:actor_capture
