@@ -35,10 +35,8 @@ namespace MonsterMovement {
 	};
 
 	enum EMovementParametersChimera {
-		eChimeraVelocityParameterUpperWalkFwd		= eVelocityParameterCustom << 1,
+		eChimeraVelocityParameterPrepare			= eVelocityParameterCustom << 1,
 		eChimeraVelocityParameterJumpGround			= eVelocityParameterCustom << 2,
-	
-		eChimeraVelocityParamsUpperWalkFwd			= eVelocityParameterStand | eChimeraVelocityParameterUpperWalkFwd,
 	};
 
 	enum EMovementParametersSnork {
