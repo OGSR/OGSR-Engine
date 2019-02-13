@@ -308,7 +308,7 @@ public:
 			void				IterateRuck     ( const luabind::functor<void>& functor, const luabind::object& object );
 			void				MarkItemDropped		(CScriptGameObject *item);
 			bool				MarkedDropped		(CScriptGameObject *item);
-			void				UnloadMagazine		(bool spawn_ammo = false);
+			void				UnloadMagazine		(bool spawn_ammo = false, bool unload_gl = false);
 
 			void				DropItem			(CScriptGameObject* pItem);
 			void				DropItemAndTeleport	(CScriptGameObject* pItem, Fvector position);
