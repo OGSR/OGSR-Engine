@@ -36,15 +36,15 @@ void CControlJump::reinit()
 
 void CControlJump::load(LPCSTR section)
 {
-	m_delay_after_jump				= pSettings->r_u32	(section,"jump_delay");
-	m_jump_factor					= pSettings->r_float(section,"jump_factor");
-	m_trace_ground_range			= pSettings->r_float(section,"jump_ground_trace_range");
-	m_hit_trace_range				= pSettings->r_float(section,"jump_hit_trace_range");
-	m_build_line_distance			= pSettings->r_float(section,"jump_build_line_distance");
-	m_min_distance					= pSettings->r_float(section,"jump_min_distance");
-	m_max_distance					= pSettings->r_float(section,"jump_max_distance");
-	m_max_angle						= pSettings->r_float(section,"jump_max_angle");
-	m_max_height					= pSettings->r_float(section,"jump_max_height");
+	m_delay_after_jump    = READ_IF_EXISTS( pSettings, r_u32,   section, "jump_delay", 3000 );
+	m_jump_factor         = READ_IF_EXISTS( pSettings, r_float, section, "jump_factor", 1.f );
+	m_trace_ground_range  = READ_IF_EXISTS( pSettings, r_float, section, "jump_ground_trace_range", 1.f );
+	m_hit_trace_range     = READ_IF_EXISTS( pSettings, r_float, section, "jump_hit_trace_range", 2.f );
+	m_build_line_distance = READ_IF_EXISTS( pSettings, r_float, section, "jump_build_line_distance", 1.f );
+	m_min_distance        = READ_IF_EXISTS( pSettings, r_float, section, "jump_min_distance", 4.f );
+	m_max_distance        = READ_IF_EXISTS( pSettings, r_float, section, "jump_max_distance", 7.f );
+	m_max_angle           = READ_IF_EXISTS( pSettings, r_float, section, "jump_max_angle", 0.1f );
+	m_max_height          = READ_IF_EXISTS( pSettings, r_float, section, "jump_max_height", 2.5f );
 	
 	m_auto_aim_factor				= 0.f;
 

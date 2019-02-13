@@ -32,9 +32,7 @@ CAI_Dog::CAI_Dog()
 	m_smelling_count	= Random.randI(3);
 	CControlled::init_external	(this);
 
-        bool cop_dogs = READ_IF_EXISTS( pSettings, r_bool, "features", "cop_dogs", false );
-        if ( cop_dogs )
-          com_man().add_ability(ControlCom::eControlJump);
+	com_man().add_ability(ControlCom::eControlJump);
     com_man().add_ability(ControlCom::eControlRotationJump);
 //	com_man().add_ability(ControlCom::eControlMeleeJump);
 }
