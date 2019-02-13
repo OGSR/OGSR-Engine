@@ -91,39 +91,6 @@ void*  FileDownload(LPCSTR fn, u32* pdwSize)
 	return buf;
 }
 
-typedef char MARK[9];
-IC void mk_mark(MARK& M, const char* S)
-{	strncpy(M,S,8); }
-
-void  FileCompress	(const char *fn, const char* sign, void* data, u32 size)
-{
-	MARK M; mk_mark(M,sign);
-
-	int H	= open(fn,O_BINARY|O_CREAT|O_WRONLY|O_TRUNC,S_IREAD|S_IWRITE);
-	R_ASSERT2(H>0,fn);
-	_write	(H,&M,8);
-	_writeLZ(H,data,size);
-	_close	(H);
-}
-
-void*  FileDecompress	(const char *fn, const char* sign, u32* size)
-{
-	MARK M,F; mk_mark(M,sign);
-
-	int	H = open	(fn,O_BINARY|O_RDONLY);
-	R_ASSERT2(H>0,fn);
-	_read	(H,&F,8);
-	if (strncmp(M,F,8)!=0)		{
-		F[8]=0;		Msg("FATAL: signatures doesn't match, file(%s) / requested(%s)",F,sign);
-	}
-    R_ASSERT(strncmp(M,F,8)==0);
-
-	void* ptr = 0; u32 SZ;
-	SZ = _readLZ (H, ptr, filelength(H)-8);
-	_close	(H);
-	if (size) *size = SZ;
-	return ptr;
-}
 
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
@@ -372,45 +339,7 @@ CFileReader::CFileReader(const char *name)
 CFileReader::~CFileReader()
 {	xr_free(data);	};
 //---------------------------------------------------
-// compressed stream
-CCompressedReader::CCompressedReader(const char *name, const char *sign)
-{
-    data	= (char *)FileDecompress(name,sign,(u32*)&Size);
-    Pos		= 0;
-}
-CCompressedReader::~CCompressedReader()
-{	xr_free(data);	};
 
-
-CVirtualFileRW::CVirtualFileRW(const char *cFileName) 
-{
-	// Open the file
-	hSrcFile		= CreateFile(cFileName, GENERIC_READ|GENERIC_WRITE, FILE_SHARE_READ, 0, OPEN_EXISTING, 0, 0);
-	R_ASSERT3		(hSrcFile!=INVALID_HANDLE_VALUE,cFileName,Debug.error2string(GetLastError()));
-	Size			= (int)GetFileSize(hSrcFile, NULL);
-	R_ASSERT3		(Size,cFileName,Debug.error2string(GetLastError()));
-
-	hSrcMap			= CreateFileMapping (hSrcFile, 0, PAGE_READWRITE, 0, 0, 0);
-	R_ASSERT3		(hSrcMap!=INVALID_HANDLE_VALUE,cFileName,Debug.error2string(GetLastError()));
-
-	data			= (char*)MapViewOfFile (hSrcMap, FILE_MAP_ALL_ACCESS, 0, 0, 0);
-	R_ASSERT3		(data,cFileName,Debug.error2string(GetLastError()));
-
-#ifdef DEBUG
-	register_file_mapping	(data,Size,cFileName);
-#endif // DEBUG
-}
-
-CVirtualFileRW::~CVirtualFileRW() 
-{
-#ifdef DEBUG
-	unregister_file_mapping	(data,Size);
-#endif // DEBUG
-
-	UnmapViewOfFile ((void*)data);
-	CloseHandle		(hSrcMap);
-	CloseHandle		(hSrcFile);
-}
 
 CVirtualFileReader::CVirtualFileReader(const char *cFileName) 
 {

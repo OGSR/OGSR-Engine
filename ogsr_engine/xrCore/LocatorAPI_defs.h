@@ -1,6 +1,3 @@
-#ifndef LocatorAPI_defsH
-#define LocatorAPI_defsH
-
 #pragma once
 
 enum FS_List
@@ -34,8 +31,6 @@ public:
 //.	void		_update		(xr_string& dest, LPCSTR src) const;
 	void		_set		(LPSTR add);
 	void		_set_root	(LPSTR root);
-
-    void __stdcall rescan_path_cb	();
 };
 
 struct 				_finddata64i32_t;
@@ -62,5 +57,3 @@ public:
 DEFINE_SET		(FS_File,FS_FileSet,FS_FileSetIt);
 
 extern bool	XRCORE_API PatternMatch(LPCSTR s, LPCSTR mask);
-
-#endif //LocatorAPI_defsH

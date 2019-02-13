@@ -126,9 +126,6 @@
     <ClCompile Include="rt_compressor.cpp">
       <Filter>Compression\rt</Filter>
     </ClCompile>
-    <ClCompile Include="rt_compressor9.cpp">
-      <Filter>Compression\rt</Filter>
-    </ClCompile>
     <ClCompile Include="LzHuf.cpp">
       <Filter>Compression\lz</Filter>
     </ClCompile>

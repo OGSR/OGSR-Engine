@@ -53,7 +53,7 @@
 #pragma warning (disable : 4100 )		// unreferenced formal parameter //TODO: Надо б убрать игнор и всё поправить.
 #pragma warning (disable : 4127 )		// conditional expression is constant
 #pragma warning (disable : 4714 )		// __forceinline not inlined
-#ifdef _M_AMD64
+#ifdef _M_X64
 #pragma warning (disable : 4512 )
 #endif
 
