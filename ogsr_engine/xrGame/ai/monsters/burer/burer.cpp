@@ -165,7 +165,6 @@ void CBurer::Load(LPCSTR section)
 
 	anim().AddAnim(eAnimDie,			"stand_die_",			-1, &velocity_none,		PS_STAND); //, 	"fx_stand_f", "fx_stand_b", "fx_stand_l", "fx_stand_r");
 
-#pragma todo( "dsh: вернуть закомментированные анимации обратно, когда они появятся" )
         pcstr shield_anim_start = READ_IF_EXISTS( pSettings, r_string, section, "shield_animation_start", "stand_tele_"/*"stand_shield_"*/ );
 	anim().AddAnim( eAnimShieldStart, shield_anim_start, -1, &velocity_turn, PS_STAND ); //, 	"fx_stand_f", "fx_stand_b", "fx_stand_l", "fx_stand_r");
         pcstr shield_anim_cont = READ_IF_EXISTS( pSettings, r_string, section, "shield_animation_cont", "stand_tele_"/*"stand_shield_idle_"*/ );
