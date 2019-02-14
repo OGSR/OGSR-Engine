@@ -1,7 +1,7 @@
 #pragma once
 
 // integer math on floats
-#ifdef _M_AMD64
+#ifdef _M_X64
 IC bool negative(const float f) { return f < 0; }
 IC bool positive(const float f) { return f >= 0; }
 IC void set_negative(float& f) { f = -fabsf(f); }

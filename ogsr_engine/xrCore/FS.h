@@ -290,12 +290,3 @@ public:
 	// iterators
 	IReader*		open_chunk_iterator		(u32& ID, IReader* previous=NULL);	// NULL=first
 };
-
-class XRCORE_API CVirtualFileRW : public IReader
-{
-private:
-	void	*hSrcFile, *hSrcMap;
-public:
-			CVirtualFileRW		(const char *cFileName);
-	virtual ~CVirtualFileRW		();
-};

@@ -60,7 +60,6 @@ private:
 	void						ProcessArchive	(LPCSTR path, LPCSTR base_path=NULL);
 	void						ProcessOne		(LPCSTR path, const _finddata_t& F);
 	bool						Recurse			(LPCSTR path);	
-//	bool						CheckExistance	(LPCSTR path);
 
 	files_it					file_find_it	(LPCSTR n);
 public:
@@ -150,7 +149,6 @@ public:
     LPCSTR						update_path			(string_path& dest, LPCSTR initial, LPCSTR src);
 
 	int							file_list			(FS_FileSet& dest, LPCSTR path, u32 flags=FS_ListFiles, LPCSTR mask=0);
-//.    void						update_path			(xr_string& dest, LPCSTR initial, LPCSTR src);
 
 	// 
 	void						register_archieve	(LPCSTR path);

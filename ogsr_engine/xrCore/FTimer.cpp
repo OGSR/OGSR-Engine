@@ -2,8 +2,6 @@
 
 XRCORE_API BOOL g_bEnableStatGather = FALSE;
 
-#ifdef FTIMER_USE_STD_CHRONO
-
 void CStatTimer::FrameStart() {
 	accum = Duration();
 	count = 0;
@@ -39,28 +37,3 @@ void pauseMngr::UnRegister(CTimer_paused& t) {
 	if (it != m_timers.end())
 		m_timers.erase(it);
 }
-
-#else
-
-CStatTimer::CStatTimer()
-{
-	accum = 0;
-	result = 0.f;
-	count = 0;
-}
-
-void CStatTimer::FrameStart()
-{
-	accum = 0;
-	count = 0;
-}
-void CStatTimer::FrameEnd()
-{
-	float _time = 1000.f*float(double(accum) / double(CPU::qpc_freq));
-	if (_time > result) result = _time;
-	else result = 0.99f*result + 0.01f*_time;
-}
-
-XRCORE_API pauseMngr g_pauseMngr;
-
-#endif

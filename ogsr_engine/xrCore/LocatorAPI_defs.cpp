@@ -93,18 +93,7 @@ LPCSTR FS_Path::_update(string_path& dest, LPCSTR src)const
 	strconcat			(sizeof(dest), dest, m_Path, temp);
 	return xr_strlwr	(dest);
 }
-/*
-void FS_Path::_update(xr_string& dest, LPCSTR src)const
-{
-    R_ASSERT(src);
-    dest			= xr_string(m_Path)+src;
-    xr_strlwr		(dest);
-}*/
-void FS_Path::rescan_path_cb	()
-{
-	m_Flags.set(flNeedRescan,TRUE);
-    FS.m_Flags.set(CLocatorAPI::flNeedRescan,TRUE);
-}
+
 
 bool XRCORE_API PatternMatch(LPCSTR s, LPCSTR mask)
 {
