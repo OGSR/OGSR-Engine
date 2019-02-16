@@ -12,7 +12,7 @@ enum EPHCaptureState {
   cstReleased
 };
 
-class CPhysicShellHolder;
+class CPhysicsShellHolder;
 class CPHCharacter;
 
 class CPHCapture : public CPHUpdateObject
