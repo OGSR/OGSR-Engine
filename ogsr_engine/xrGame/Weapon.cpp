@@ -87,6 +87,8 @@ CWeapon::CWeapon(LPCSTR name)
 	m_ef_weapon_type		= u32(-1);
 	m_UIScope				= NULL;
 	m_set_next_ammoType_on_reload = u32(-1);
+
+	m_activation_speed_is_overriden = false;
 }
 
 CWeapon::~CWeapon		()
@@ -1489,7 +1491,7 @@ void CWeapon::OnZoomIn()
 	else
 		m_fZoomFactor = CurrentZoomFactor();
 
-	if (UseScopeTexture() || !m_bZoomInertionAllow)
+	if (!m_bZoomInertionAllow)
 	{
 		StopHudInertion();
 	}
@@ -1514,10 +1516,7 @@ void CWeapon::OnZoomOut()
 		}
 	}
 
-	if (UseScopeTexture() || !m_bZoomInertionAllow)
-	{
-		StartHudInertion();
-	}
+	StartHudInertion();
 }
 
 bool CWeapon::UseScopeTexture() {
@@ -1981,7 +1980,7 @@ bool CWeapon::SecondVPEnabled() const
 // Чувствительность мышкии с оружием в руках во время прицеливания
 float CWeapon::GetControlInertionFactor() const
 {
-	if (IsZoomed() && SecondVPEnabled())
+	if (IsZoomed() && SecondVPEnabled() && !IsRotatingToZoom())
 		return m_fScopeInertionFactor;
 
 	float fInertionFactor = inherited::GetControlInertionFactor();

@@ -654,6 +654,7 @@ public:
 			float				GetMaxWeight() const;
 			float				GetMaxWalkWeight() const;
 			float				GetInventoryWeight() const;
+			u32					CalcItemPrice(CScriptGameObject *item, bool b_buying) const;
 
 			float GetShapeRadius() const;
 
