@@ -847,3 +847,18 @@ void CScriptGameObject::stalker_disp_base( float range, float maxr ) {
   ASSERT_FMT( stalker, "[%s]: %s not a CAI_Stalker", __FUNCTION__, object().cName().c_str() );
   stalker->m_fDispBase = asin( maxr / range );
 }
+
+
+void CScriptGameObject::DropItemAndThrow( CScriptGameObject* pItem, Fvector speed ) {
+  auto owner = smart_cast<CInventoryOwner*>( &object() );
+  ASSERT_FMT( owner, "[%s]: %s not a CInventoryOwner", __FUNCTION__, object().cName().c_str() );
+
+  auto item  = smart_cast<CPhysicsShellHolder*>( &pItem->object() );
+  ASSERT_FMT( item, "[%s]: %s not a CPhysicsShellHolder", __FUNCTION__, pItem->object().cName().c_str() );
+
+  item->SetActivationSpeedOverride( speed );
+  NET_Packet P;
+  CGameObject::u_EventGen( P, GE_OWNERSHIP_REJECT, object().ID() );
+  P.w_u16( pItem->object().ID() );
+  CGameObject::u_EventSend( P );
+}

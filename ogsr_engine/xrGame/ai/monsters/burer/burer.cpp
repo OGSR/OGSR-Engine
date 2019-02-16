@@ -261,7 +261,8 @@ void xr_stdcall CBurer::StaminaHit ()
 		{
 			dir.y					=	-dir.y;
 		}
-		active_weapon->SetActivationSpeedOverride ( normalize(dir) * m_weapon_drop_velocity );
+		auto item = smart_cast<CPhysicsShellHolder*>( Actor()->inventory().ActiveItem() );
+		item->SetActivationSpeedOverride ( normalize(dir) * m_weapon_drop_velocity );
 
 		if ( !Actor()->inventory().Action((u16)kDROP, CMD_STOP) )
 		{
