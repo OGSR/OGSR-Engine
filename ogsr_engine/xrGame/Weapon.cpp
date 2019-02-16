@@ -87,8 +87,6 @@ CWeapon::CWeapon(LPCSTR name)
 	m_ef_weapon_type		= u32(-1);
 	m_UIScope				= NULL;
 	m_set_next_ammoType_on_reload = u32(-1);
-
-	m_activation_speed_is_overriden = false;
 }
 
 CWeapon::~CWeapon		()
