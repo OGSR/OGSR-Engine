@@ -2,8 +2,6 @@
 
 #include "phsimplecharacter.h"
 
-class CPhysicsShellHolder;
-
 struct SPHCharacterRestrictor
 {
 							SPHCharacterRestrictor							(CPHCharacter::ERestrictionType Ttype)
