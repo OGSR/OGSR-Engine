@@ -243,8 +243,9 @@ bool CWeaponShotgun::Action			(s32 cmd, u32 flags)
 			}
 			else
 				Fire2End();
+
+			return true;
 		}
-		return true;
 		}
 	}
 
@@ -332,8 +333,7 @@ void CWeaponShotgun::OnStateSwitch	(u32 S)
 
 	CWeapon::OnStateSwitch(S);
 
-	if ( m_magazine.size() == (u32)iMagazineSize || !HaveCartridgeInInventory(1) ) {
-			switch2_EndReload		();
+	if ( m_magazine.size() >= (u32)iMagazineSize || !HaveCartridgeInInventory(1) ) {
 			m_sub_state = eSubstateReloadEnd;
 	};
 
@@ -344,8 +344,8 @@ void CWeaponShotgun::OnStateSwitch	(u32 S)
 			switch2_StartReload	();
 		break;
 	case eSubstateReloadInProcess:
-			if( HaveCartridgeInInventory(1) )
-				switch2_AddCartgidge	();
+		if( HaveCartridgeInInventory(1) )
+			switch2_AddCartgidge	();
 		break;
 	case eSubstateReloadEnd:
 			switch2_EndReload		();
@@ -399,7 +399,9 @@ bool CWeaponShotgun::HaveCartridgeInInventory		(u8 cnt)
 		if (m_set_next_ammoType_on_reload != u32(-1)) {
 			m_ammoType = m_set_next_ammoType_on_reload;
 			m_set_next_ammoType_on_reload = u32(-1);
-			if (!m_magazine.empty()) UnloadMagazine();
+
+			if (!m_magazine.empty()) 
+				UnloadMagazine();
 		}
 
 		bool forActor = ParentIsActor();
@@ -413,6 +415,7 @@ bool CWeaponShotgun::HaveCartridgeInInventory		(u8 cnt)
 			{
 				//проверить патроны всех подходящих типов
 				m_pAmmo = smart_cast<CWeaponAmmo*>(m_pCurrentInventory->GetAmmo(*m_ammoTypes[i], forActor));
+
 				if(m_pAmmo) 
 				{ 
 					m_ammoType = i; 
@@ -431,19 +434,18 @@ u8 CWeaponShotgun::AddCartridge		(u8 cnt)
 	if(m_set_next_ammoType_on_reload != u32(-1)){
 		m_ammoType						= m_set_next_ammoType_on_reload;
 		m_set_next_ammoType_on_reload	= u32(-1);
-
 	}
 
-	if( !HaveCartridgeInInventory(1) )
-		return 0;
+	if(m_magazine.size() >= (u32)iMagazineSize || !HaveCartridgeInInventory(1) )
+		return cnt;
 
 	VERIFY((u32)iAmmoElapsed == m_magazine.size());
 
-
 	if (m_DefaultCartridge.m_LocalAmmoType != m_ammoType)
 		m_DefaultCartridge.Load(*m_ammoTypes[m_ammoType], u8(m_ammoType));
+
 	CCartridge l_cartridge = m_DefaultCartridge;
-	while(cnt)// && m_pAmmo->Get(l_cartridge)) 
+	while(cnt && m_magazine.size() < (u32)iMagazineSize)// && m_pAmmo->Get(l_cartridge)) 
 	{
 		if (!unlimited_ammo())
 		{
@@ -453,7 +455,6 @@ u8 CWeaponShotgun::AddCartridge		(u8 cnt)
 		++iAmmoElapsed;
 		l_cartridge.m_LocalAmmoType = u8(m_ammoType);
 		m_magazine.push_back(l_cartridge);
-//		m_fCurrentCartirdgeDisp = l_cartridge.m_kDisp;
 	}
 
 	VERIFY((u32)iAmmoElapsed == m_magazine.size());
