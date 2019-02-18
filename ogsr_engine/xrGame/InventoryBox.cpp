@@ -18,6 +18,7 @@ void IInventoryBox::ProcessEvent(CGameObject *O, NET_Packet& P, u16 type)
 	switch (type)
 	{
 	case GE_OWNERSHIP_TAKE:
+	case GE_TRANSFER_TAKE:
 		{
 			u16 id;
             P.r_u16(id);
@@ -40,6 +41,7 @@ void IInventoryBox::ProcessEvent(CGameObject *O, NET_Packet& P, u16 type)
 
 		}break;
 	case GE_OWNERSHIP_REJECT:
+	case GE_TRANSFER_REJECT:
 		{
 			u16 id;
             P.r_u16(id);
@@ -47,7 +49,11 @@ void IInventoryBox::ProcessEvent(CGameObject *O, NET_Packet& P, u16 type)
 			xr_vector<u16>::iterator it;
 			it = std::find(m_items.begin(),m_items.end(),id); VERIFY(it!=m_items.end());
 			m_items.erase		(it);
-			itm->H_SetParent	(NULL,!P.r_eof() && P.r_u8());
+
+			bool just_before_destroy = !P.r_eof() && P.r_u8();
+			bool dont_create_shell = (type == GE_TRADE_SELL) || (type == GE_TRANSFER_REJECT) || just_before_destroy;
+
+			itm->H_SetParent	(NULL, dont_create_shell);
 
 			if (auto obj = smart_cast<CGameObject*>(itm))
 			{

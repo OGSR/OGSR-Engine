@@ -81,17 +81,14 @@ void xrServer::Process_event	(NET_Packet& P, ClientID sender)
 		break;
 	case GE_TRADE_BUY:
 	case GE_OWNERSHIP_TAKE:
+	case GE_TRANSFER_TAKE:
 		{
 			Process_event_ownership	(P,sender,timestamp,destination);
 			VERIFY					(verify_entities());
 		}break;
-	case GE_OWNERSHIP_TAKE_MP_FORCED:
-		{
-			Process_event_ownership	(P,sender,timestamp,destination,TRUE);
-			VERIFY					(verify_entities());
-		}break;
 	case GE_TRADE_SELL:
 	case GE_OWNERSHIP_REJECT:
+	case GE_TRANSFER_REJECT:
 	case GE_LAUNCH_ROCKET:
 		{
 			Process_event_reject	(P,sender,timestamp,destination,P.r_u16());
