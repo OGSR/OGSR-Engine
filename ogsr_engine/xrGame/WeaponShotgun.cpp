@@ -253,7 +253,7 @@ bool CWeaponShotgun::Action			(s32 cmd, u32 flags)
 	if(inherited::Action(cmd, flags)) return true;
 
 	if(	m_bTriStateReload && GetState()==eReload &&
-		cmd==kWPN_FIRE && flags&CMD_START &&
+		( cmd == kWPN_FIRE || cmd == kWPN_NEXT ) && flags&CMD_START &&
 		(m_sub_state==eSubstateReloadInProcess	|| m_sub_state == eSubstateReloadBegin) )//остановить перезагрузку
 	{
 		m_stop_triStateReload = true;
