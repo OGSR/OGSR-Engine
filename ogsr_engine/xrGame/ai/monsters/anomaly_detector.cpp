@@ -62,7 +62,7 @@ void CAnomalyDetector::update_schedule()
 	m_object->movement().restrictions().add_restrictions(temp_out_restrictors,temp_in_restrictors);
 
 	// remove old restrictions
-	temp_in_restrictors.clear();
+	temp_in_restrictors.clear_and_free();
 	for ( ANOMALY_INFO_VEC_IT it = m_storage.begin(); it != m_storage.end(); it++ ) {
 	  if ( it->time_registered + m_time_to_rememeber < time() && !it->ignored ) {
 	    temp_in_restrictors.push_back( it->id );
@@ -85,14 +85,16 @@ void CAnomalyDetector::update_schedule()
 
 BOOL CAnomalyDetector::feel_touch_contact( CObject* obj )
 {
-	CCustomZone	*custom_zone = smart_cast<CCustomZone*>(obj);
+	auto custom_zone = smart_cast<CCustomZone*>(obj);
 	if (!custom_zone) return FALSE;
 	
 	// if its NOT A restrictor - skip
 	if (custom_zone->restrictor_type() == RestrictionSpace::eRestrictorTypeNone) return FALSE;
 
-        if ( std::find( m_ignore_clsids.begin(), m_ignore_clsids.end(), obj->CLS_ID ) != m_ignore_clsids.end() )
-          return FALSE;
+	if (!custom_zone->IsEnabled()) return FALSE;
+
+	if ( std::find( m_ignore_clsids.begin(), m_ignore_clsids.end(), obj->CLS_ID ) != m_ignore_clsids.end() )
+		return FALSE;
 
 	on_contact( obj );
 
@@ -101,11 +103,11 @@ BOOL CAnomalyDetector::feel_touch_contact( CObject* obj )
         
 
 void CAnomalyDetector::on_contact( CObject* obj ) {
-	CCustomZone	*custom_zone = smart_cast<CCustomZone*>(obj);
+	auto custom_zone = smart_cast<CCustomZone*>(obj);
 	ASSERT_FMT( custom_zone, "[%s]: %s not a CCUstomZone", __FUNCTION__, obj->cName().c_str() );
 
 	auto it = std::find_if(
-	  m_storage.begin(), m_storage.end(), [ custom_zone ]( const auto it ) {
+	  m_storage.begin(), m_storage.end(), [ custom_zone ]( const auto& it ) {
 	    return it.id == custom_zone->ID();
 	  }
 	);
@@ -128,7 +130,7 @@ void CAnomalyDetector::on_contact( CObject* obj ) {
 	  info.ignored         = false;
 	  info.time_registered = 0;
 	}
-	m_storage.push_back	(info);
+	m_storage.emplace_back(std::move(info));
 }
 
 
@@ -161,7 +163,7 @@ void CAnomalyDetector::remove_all_restrictions() {
 
 void CAnomalyDetector::remove_restriction( u16 id ) {
   auto it = std::find_if(
-    m_storage.begin(), m_storage.end(), [ id ]( const auto it ) {
+    m_storage.begin(), m_storage.end(), [ id ]( const auto& it ) {
       return it.id == id;
     }
   );
