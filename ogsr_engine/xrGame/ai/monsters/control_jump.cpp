@@ -321,8 +321,10 @@ void CControlJump::update_frame()
 		SControlMovementData		*ctrl_move = (SControlMovementData*)m_man->data(this, ControlCom::eControlMovement); 
 		VERIFY						(ctrl_move);
 
-		ctrl_move->velocity_target	= m_object->move().get_velocity_from_path();
-		ctrl_move->acc				= flt_max;
+                if ( ctrl_move ) {
+                  ctrl_move->velocity_target = m_object->move().get_velocity_from_path();
+                  ctrl_move->acc             = flt_max;
+                }
 		//---------------------------------------------------------------------------------------------------------------------------------
 	}
 

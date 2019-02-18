@@ -160,6 +160,7 @@ enum EMotionAnim {
 
 	eAnimLookAround,
 
+	eAnimPrepareAttack,
 	eAnimJump,
 	eAnimSteal,
 
@@ -221,6 +222,8 @@ enum EMotionAnim {
 	eAnimAttackOnRunRight,
 
 	eAnimAntiAimAbility,
+	eAnimFastStandTurnLeft,
+	eAnimFastStandTurnRight,
 
 	eAnimCount,
 	eAnimUndefined			= u32(-1)

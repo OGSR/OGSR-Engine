@@ -88,6 +88,7 @@ void CPhysicsShellHolder::init			()
 {
 	m_pPhysicsShell				=	NULL		;
 	b_sheduled					=	false		;
+	m_activation_speed_is_overriden = false;
 }
 void CPhysicsShellHolder::correct_spawn_pos()
 {
@@ -154,6 +155,10 @@ void CPhysicsShellHolder::activate_physic_shell()
 	{
 		smart_cast<CKinematics*>(H_Parent()->Visual())->CalculateBones_Invalidate	();
 		smart_cast<CKinematics*>(H_Parent()->Visual())->CalculateBones	();
+		Fvector dir = H_Parent()->Direction();
+		if ( dir.y < 0.f )
+		   dir.y = -dir.y;
+		l_fw.set( normalize( dir ) * 2.f );
 	}
 	smart_cast<CKinematics*>(Visual())->CalculateBones_Invalidate	();
 	smart_cast<CKinematics*>(Visual())->CalculateBones();
@@ -426,4 +431,24 @@ CPHCapture*	CPhysicsShellHolder::PHCapture()
 	if( !mov )
 		return nullptr;
 	return mov->PHCapture();
+}
+
+bool CPhysicsShellHolder::ActivationSpeedOverriden(Fvector& dest, bool clear_override)
+{
+	if (m_activation_speed_is_overriden)
+	{
+		if (clear_override)
+			m_activation_speed_is_overriden	= false;
+
+		dest = m_overriden_activation_speed;
+		return true;
+	}
+	
+	return false;
+}
+
+void CPhysicsShellHolder::SetActivationSpeedOverride(Fvector const& speed)
+{
+	m_overriden_activation_speed = speed;
+	m_activation_speed_is_overriden = true;
 }

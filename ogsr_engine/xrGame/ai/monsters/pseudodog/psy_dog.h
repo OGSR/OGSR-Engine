@@ -17,15 +17,14 @@ class CPsyDog : public CAI_PseudoDog {
 	CActor			*m_enemy;
 
 	// externals
-	u8				m_phantoms_max;
-	u8				m_phantoms_min;
-	u32				m_time_phantom_appear;
-	
-	//internals
-	u32				m_time_last_phantom_appear;
-
+	u8				m_max_phantoms_count;
+	u32				m_time_phantom_respawn;
 	LPCSTR			m_phantom_section;
 
+	static u32 const s_phantom_immediate_respawn_flag	=	0;
+	static u32 const s_phantom_alive_flag				=	1;
+
+	TTime*			m_phantoms_die_time;
 
 public:
 						CPsyDog				();
@@ -43,7 +42,7 @@ public:
 		virtual IStateManagerBase *create_state_manager	();
 
 				u8		get_phantoms_count	();
-				bool	must_hide			() {return (get_phantoms_count() < m_phantoms_min);}
+				bool	must_hide			() {return get_phantoms_count() == 0;}
 private:
 				bool	spawn_phantom		();
 				void	delete_phantom		(CPsyDogPhantom*);

@@ -56,7 +56,8 @@ void CPsyDogAura::reinit()
 
 void CPsyDogAura::update_schedule()
 {
-	if (!m_object->g_Alive()) return;
+	if (!m_object->g_Alive()) 
+		return;
 
 	if ( !m_actor->g_Alive() ) {
 	  if ( active() ) {
@@ -89,18 +90,18 @@ void CPsyDogAura::update_schedule()
 			ENEMIES_MAP::const_iterator E = (*it)->EnemyMemory.get_memory().end();
 			for (; I != E; ++I) {
 				if (I->first == m_actor) {
-					m_time_phantom_saw_actor = I->second.time;
-					break;
+					m_time_phantom_saw_actor = std::max(m_time_phantom_saw_actor, I->second.time);
 				}
 			}
 		}
 
-		if (m_time_phantom_saw_actor == time()) break;
+		if (m_time_phantom_saw_actor == time()) 
+			break;
 	}
 
-	bool const close_to_actor = m_actor ? m_object->Position().distance_to(m_actor->Position()) < 30 : false;
-	bool const need_be_active = ((m_time_actor_saw_phantom + 2000 > time()) || 
-		(m_time_phantom_saw_actor + 10000 > time())) && close_to_actor;
+	bool const close_to_actor	=	m_actor ? m_object->Position().distance_to(m_actor->Position()) < 30 : false;
+	bool const need_be_active	=	((m_time_actor_saw_phantom + 2000 > time()) || 
+									(m_time_phantom_saw_actor + 10000 > time())) && close_to_actor;
 	if (active()) {
 		if (!need_be_active) {
 			m_effector->switch_off	();

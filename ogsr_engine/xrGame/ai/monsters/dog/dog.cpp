@@ -126,7 +126,6 @@ void CAI_Dog::Load(LPCSTR section)
 
 /////////////mob home
 
-#pragma todo( "dsh: вернуть закомментированные анимации обратно, когда они появятся" )
         pcstr anim_str = READ_IF_EXISTS( pSettings, r_string, section, "anim_stand_walk_smelling", "stand_walk_fwd_"/*"stand_walk_smelling_"*/ );
 	anim().AddAnim(eAnimHomeWalkSmelling,	anim_str,	-1,	&velocity_walk_smell,	PS_STAND);
         anim_str = READ_IF_EXISTS( pSettings, r_string, section, "anim_stand_growl_walk", "stand_walk_fwd_"/*"stand_growl_walk_"*/ );
@@ -165,7 +164,6 @@ void CAI_Dog::Load(LPCSTR section)
 
 	/////////////end mob home
 
-#pragma todo( "dsh: вернуть закомментированные анимации обратно, когда они появятся" )
         anim_extra_1  = READ_IF_EXISTS( pSettings, r_string, section, "anim_extra_1",  "stand_idle_1"/*"stand_idle_smelling_up_0"*/ );
         anim_extra_2  = READ_IF_EXISTS( pSettings, r_string, section, "anim_extra_2",  "stand_idle_1"/*"stand_idle_smelling_down_0"*/ );
         anim_extra_3  = READ_IF_EXISTS( pSettings, r_string, section, "anim_extra_3",  "stand_idle_1"/*"stand_idle_smelling_look_around_0"*/ );
@@ -347,7 +345,6 @@ LPCSTR CAI_Dog::get_current_animation()
 void CAI_Dog::reload(LPCSTR section)
 {
 	inherited::reload (section);
-#pragma todo( "dsh: вернуть закомментированные анимации обратно, когда они появятся" )
         pcstr jump_ataka_01 = READ_IF_EXISTS( pSettings, r_string, section, "anim_jump_ataka_01", 0/*"jump_ataka_01"*/ );
         pcstr jump_ataka_02 = READ_IF_EXISTS( pSettings, r_string, section, "anim_jump_ataka_02", "jump_right_0"/*"jump_ataka_02"*/ );
         pcstr jump_ataka_03 = READ_IF_EXISTS( pSettings, r_string, section, "anim_jump_ataka_03", 0/*"jump_ataka_03"*/ );
