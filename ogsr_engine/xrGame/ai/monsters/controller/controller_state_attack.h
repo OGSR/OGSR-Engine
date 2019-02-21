@@ -10,7 +10,7 @@ protected:
 	typedef CState<_Object>*	state_ptr;
 
 public:
-						CStateControllerAttack	(_Object *obj, state_ptr state_run, state_ptr state_melee);
+						CStateControllerAttack	(_Object *obj);
 	virtual				~CStateControllerAttack	() {}
 
 	virtual void		initialize				();
@@ -20,7 +20,8 @@ public:
 	virtual void		execute					();
 	virtual void		setup_substates			();
 	virtual void		check_force_state		();
-	virtual void		remove_links					(CObject* object) { inherited::remove_links(object);}
+	virtual void		remove_links			(CObject * ) {}
+			bool		check_home_point		();
 };
 
 #include "controller_state_attack_inline.h"

@@ -29,6 +29,8 @@
 #include "../../../inventory_item.h"
 #include "xrServer_Objects_ALife.h"
 #include "../anti_aim_ability.h"
+#include "../../../actor.h"
+#include "../../../actorcondition.h"
 
 namespace detail
 {
@@ -110,6 +112,15 @@ void CBaseMonster::Load(LPCSTR section)
 
 		get_steer_manager()->add				( xr_new<steering_behaviour::grouping>(m_grouping_behaviour) );
 	}
+
+	//------------------------------------
+	// Auras
+	//------------------------------------
+
+	m_psy_aura.load_from_ini					(pSettings, section);
+	m_radiation_aura.load_from_ini				(pSettings, section, true);
+	m_fire_aura.load_from_ini					(pSettings, section);
+	m_base_aura.load_from_ini					(pSettings, section);
 
 	m_force_anti_aim						=	false;
 }
@@ -338,6 +349,13 @@ BOOL CBaseMonster::net_Spawn (CSE_Abstract* DC)
 //			}
 //		}
 //	}
+
+	if ( !fis_zero( m_psy_aura.max_distance() ) )
+	  Actor()->conditions().set_monsters_aura_radius( m_psy_aura.max_distance() );
+	if ( !fis_zero( m_radiation_aura.max_distance() ) )
+	  Actor()->conditions().set_monsters_aura_radius( m_radiation_aura.max_distance() );
+	if ( !fis_zero( m_fire_aura.max_distance() ) )
+	  Actor()->conditions().set_monsters_aura_radius( m_fire_aura.max_distance() );
 
 	return(TRUE);
 }

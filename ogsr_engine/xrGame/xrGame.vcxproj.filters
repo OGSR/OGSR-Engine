@@ -6079,6 +6079,12 @@
     <ClInclude Include="trajectories.h">
       <Filter>AI\AMonsters\common\trajectories</Filter>
     </ClInclude>
+    <ClInclude Include="ai\monsters\monster_aura.h">
+      <Filter>AI\AMonsters\common\components</Filter>
+    </ClInclude>
+    <ClInclude Include="ai\monsters\controller\controller_psy_hit_effector.h">
+      <Filter>AI\AMonsters\monsters\Controller\Psy hit</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="damage_manager.cpp">
@@ -8864,6 +8870,12 @@
     </ClCompile>
     <ClCompile Include="trajectories.cpp">
       <Filter>AI\AMonsters\common\trajectories</Filter>
+    </ClCompile>
+    <ClCompile Include="ai\monsters\monster_aura.cpp">
+      <Filter>AI\AMonsters\common\components</Filter>
+    </ClCompile>
+    <ClCompile Include="ai\monsters\controller\controller_psy_hit_effector.cpp">
+      <Filter>AI\AMonsters\monsters\Controller\Psy hit</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

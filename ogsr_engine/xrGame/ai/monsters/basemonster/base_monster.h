@@ -23,6 +23,7 @@
 #include "../control_manager_custom.h"
 #include "../ai_monster_shared_data.h"
 #include "../monster_sound_defs.h"
+#include "../monster_aura.h"
 #include "../../../inventoryowner.h"
 #include "../ai_monster_squad.h"
 
@@ -527,6 +528,21 @@ public:
 
 protected:
 	attack_on_move_params_t			m_attack_on_move_params;
+
+//-------------------------------------------------------------------
+// CBaseMonster's  Auras
+//-------------------------------------------------------------------
+public:
+	float							get_psy_influence			();
+	float							get_radiation_influence		();
+	float							get_fire_influence			();
+	void							play_detector_sound			();
+
+private:
+	monster_aura					m_psy_aura;
+	monster_aura					m_radiation_aura;
+	monster_aura					m_fire_aura;
+	monster_aura					m_base_aura;
 
 protected:
 //-------------------------------------------------------------------
