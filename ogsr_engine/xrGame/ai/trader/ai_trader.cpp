@@ -172,6 +172,7 @@ void CAI_Trader::OnEvent		(NET_Packet& P, u16 type)
 	switch (type) {
 		case GE_TRADE_BUY:
 		case GE_OWNERSHIP_TAKE:
+		case GE_TRANSFER_TAKE:
 			P.r_u16		(id);
 			Obj = Level().Objects.net_Find	(id);
 			if(inventory().CanTakeItem(smart_cast<CInventoryItem*>(Obj))){
@@ -187,13 +188,15 @@ void CAI_Trader::OnEvent		(NET_Packet& P, u16 type)
 			break;
 		case GE_TRADE_SELL:
 		case GE_OWNERSHIP_REJECT:
+		case GE_TRANSFER_REJECT:
 			{
 				P.r_u16		(id);
 				Obj = Level().Objects.net_Find	(id);
 				bool just_before_destroy	= !P.r_eof() && P.r_u8();
+				bool dont_create_shell = (type == GE_TRADE_SELL) || (type == GE_TRANSFER_REJECT) || just_before_destroy;
 				Obj->SetTmpPreDestroy				(just_before_destroy);
 				if(inventory().DropItem(smart_cast<CGameObject*>(Obj))) 
-					Obj->H_SetParent(0, just_before_destroy);
+					Obj->H_SetParent(0, dont_create_shell);
 			}break;
 		case GE_TRANSFER_AMMO:
 			break;

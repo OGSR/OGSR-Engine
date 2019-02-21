@@ -220,7 +220,10 @@ void CBurer::Load(LPCSTR section)
 void CBurer::PostLoad (LPCSTR section)
 {
 	inherited::PostLoad						(section);
-	m_anti_aim->set_callback				(anti_aim_ability::hit_callback(this, &CBurer::StaminaHit));
+	if (m_anti_aim)
+	{
+		m_anti_aim->set_callback(anti_aim_ability::hit_callback(this, &CBurer::StaminaHit));
+	}
 }
 
 void CBurer::shedule_Update(u32 dt)
