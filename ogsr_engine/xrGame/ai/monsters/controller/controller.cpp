@@ -42,9 +42,11 @@
 #include "controller_psy_aura.h"
 #include "../../../hudmanager.h"
 
-#ifdef _DEBUG
+/*
+#ifdef DEBUG
 #	include <dinput.h>
 #endif
+*/
 
 const u32	_pmt_psy_attack_delay		= 2000;
 const float	_pmt_psy_attack_min_angle	= deg(5);
@@ -73,10 +75,12 @@ CController::CController()
 
 	control().add		(m_psy_hit,  ControlCom::eComCustom1);
 
-#ifdef _DEBUG	
+/*
+#ifdef DEBUG	
 	P1.set(0.f,0.f,0.f);
 	P2.set(0.f,0.f,0.f);
 #endif
+*/
 }
 
 CController::~CController()
@@ -673,6 +677,7 @@ bool    CController::tube_ready () const
 	return m_psy_hit && m_psy_hit->tube_ready();
 }
 
+/*
 #ifdef DEBUG
 CBaseMonster::SDebugInfo CController::show_debug_info()
 {
@@ -756,6 +761,4 @@ void CController::debug_on_key(int key)
 	}
 }
 #endif
-
-
-
+*/
