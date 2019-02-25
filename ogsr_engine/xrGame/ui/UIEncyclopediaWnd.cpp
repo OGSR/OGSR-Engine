@@ -156,7 +156,7 @@ if(	m_flags.test(eNeedReload )){
 void CUIEncyclopediaWnd::ReloadArticles()
 {
 	m_flags.set(eNeedReload, TRUE);
-	if ( Actor()->encyclopedia_registry->registry().objects_ptr()->size() < prevArticlesCount ) {
+	if (Actor() && Actor()->encyclopedia_registry->registry().objects_ptr()->size() < prevArticlesCount ) {
 	  DeleteArticles();
 	  prevArticlesCount = 0;
 	}
