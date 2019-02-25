@@ -250,13 +250,13 @@ void CPHSkeleton::SaveNetState(NET_Packet& P)
 */
 }
 
-void CPHSkeleton::RestoreNetState( CSE_PHSkeleton* po ) {
+void CPHSkeleton::RestoreNetState( CSE_PHSkeleton* /*po*/ ) {
 	auto obj = PPhysicsShellHolder();
 	if ( !obj ) return;
 	auto se_obj = obj->alife_object();
 	if ( !se_obj ) return;
 
-	po = smart_cast<CSE_PHSkeleton*>( se_obj );
+	auto po = smart_cast<CSE_PHSkeleton*>( se_obj );
 	VERIFY( po );
 	if(!po->_flags.test(CSE_PHSkeleton::flSavedData))
 		return;
