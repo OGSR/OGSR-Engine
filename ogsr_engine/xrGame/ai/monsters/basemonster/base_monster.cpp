@@ -44,7 +44,10 @@
 #include "script_engine.h"
 #include "../anti_aim_ability.h"
 
-CBaseMonster::CBaseMonster()
+CBaseMonster::CBaseMonster() :	m_psy_aura(this, "psy"), 
+								m_fire_aura(this, "fire"), 
+								m_radiation_aura(this, "radiation"), 
+								m_base_aura(this, "base")
 {
 	m_pPhysics_support=xr_new<CCharacterPhysicsSupport>(CCharacterPhysicsSupport::etBitting,this);
 	
@@ -336,6 +339,11 @@ void CBaseMonster::shedule_Update(u32 dt)
 		m_anti_aim->update_schedule();
 	}
 
+	m_psy_aura.update_schedule();
+	m_fire_aura.update_schedule();
+	m_base_aura.update_schedule();
+	m_radiation_aura.update_schedule();
+
 	control().update_schedule	();
 
 	Morale.update_schedule		(dt);
@@ -356,6 +364,11 @@ void CBaseMonster::shedule_Update(u32 dt)
 void CBaseMonster::Die(CObject* who)
 {
 	if (StateMan) StateMan->critical_finalize();
+
+	m_psy_aura.on_monster_death();
+	m_radiation_aura.on_monster_death();
+	m_fire_aura.on_monster_death();
+	m_base_aura.on_monster_death();
 
 	if ( m_anti_aim )
 	{
@@ -768,7 +781,9 @@ void CBaseMonster::OnEvent(NET_Packet& P, u16 type)
 
 	u16			id;
 	switch (type){
+	case GE_TRADE_BUY:
 	case GE_OWNERSHIP_TAKE:
+	case GE_TRANSFER_TAKE:
 		{
 			P.r_u16		(id);
 			CObject		*O	= Level().Objects.net_Find	(id);
@@ -784,18 +799,20 @@ void CBaseMonster::OnEvent(NET_Packet& P, u16 type)
 		break;
 		}
 	case GE_TRADE_SELL:
-
 	case GE_OWNERSHIP_REJECT:
+	case GE_TRANSFER_REJECT:
 		{
 			P.r_u16		(id);
 			CObject* O	= Level().Objects.net_Find	(id);
 			VERIFY		(O);
 
 			bool just_before_destroy	= !P.r_eof() && P.r_u8();
+			bool dont_create_shell = (type == GE_TRADE_SELL) || (type == GE_TRANSFER_REJECT) || just_before_destroy;
+
 			O->SetTmpPreDestroy				(just_before_destroy);
 			if (inventory().DropItem(smart_cast<CGameObject*>(O)) && !O->getDestroy()) 
 			{
-				O->H_SetParent	(0,just_before_destroy);
+				O->H_SetParent	(0, dont_create_shell);
 				feel_touch_deny	(O,2000);
 			}
 		}
@@ -881,6 +898,34 @@ float   CBaseMonster::get_attack_on_move_prepare_radius()
 float   CBaseMonster::get_attack_on_move_prepare_time()
 {
 	return m_attack_on_move_params.prepare_time;
+}
+
+float   CBaseMonster::get_psy_influence ()
+{
+	if ( g_Alive() || m_psy_aura.enable_for_dead() )
+	  return m_psy_aura.calculate();
+	return 0.f;
+}
+
+float   CBaseMonster::get_radiation_influence ()
+{
+	if ( g_Alive() || m_radiation_aura.enable_for_dead() )
+	  return m_radiation_aura.calculate();
+	return 0.f;
+}
+
+float   CBaseMonster::get_fire_influence ()
+{
+	if ( g_Alive() || m_fire_aura.enable_for_dead() )
+	  return m_fire_aura.calculate();
+	return 0.f;
+}
+
+void   CBaseMonster::play_detector_sound()
+{
+	m_psy_aura.play_detector_sound();
+	m_radiation_aura.play_detector_sound();
+	m_fire_aura.play_detector_sound();
 }
 
 bool CBaseMonster::is_jumping()

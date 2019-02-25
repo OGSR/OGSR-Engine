@@ -338,7 +338,7 @@ void				game_cl_GameState::OnSwitchPhase			(u32 old_phase, u32 new_phase)
 	}	
 }
 
-void				game_cl_GameState::SendPickUpEvent		(u16 ID_who, u16 ID_what)
+void game_cl_GameState::SendPickUpEvent(u16 ID_who, u16 ID_what)
 {
 	NET_Packet P;
 	u_EventGen(P,GE_OWNERSHIP_TAKE, ID_who);

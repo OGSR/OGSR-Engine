@@ -24,6 +24,8 @@
 
 #include "HangingLamp.h"
 #include "CharacterPhysicsSupport.h"
+#include "ai/monsters/controller/controller.h"
+#include "ai/monsters/controller/controller_psy_hit.h"
 
 //////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////
@@ -861,4 +863,11 @@ void CScriptGameObject::DropItemAndThrow( CScriptGameObject* pItem, Fvector spee
   CGameObject::u_EventGen( P, GE_OWNERSHIP_REJECT, object().ID() );
   P.w_u16( pItem->object().ID() );
   CGameObject::u_EventSend( P );
+}
+
+
+bool CScriptGameObject::controller_psy_hit_active() {
+  auto controller = smart_cast<CController*>( &object() );
+  ASSERT_FMT( controller, "[%s]: %s not a CController", __FUNCTION__, object().cName().c_str() );
+  return controller->m_psy_hit->is_active();
 }

@@ -122,9 +122,11 @@ class CControllerPsyHitCamEffector :public CEffectorCam {
 	Fvector				m_position_source;
 	Fvector				m_direction;
 	float				m_distance;
+	float				m_base_fov;
+	float				m_dest_fov;
 
 public:
-						CControllerPsyHitCamEffector	(ECamEffectorType type, const Fvector &src_pos, const Fvector &target_pos, float time);
+						CControllerPsyHitCamEffector	(ECamEffectorType type, const Fvector &src_pos, const Fvector &target_pos, float time, float base_fov, float dest_fov);
 	virtual	BOOL		Process							(Fvector &p, Fvector &d, Fvector &n, float& fFov, float& fFar, float& fAspect);
 };
 //////////////////////////////////////////////////////////////////////////

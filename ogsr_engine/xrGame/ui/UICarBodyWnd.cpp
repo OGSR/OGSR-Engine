@@ -891,7 +891,7 @@ void move_item (u16 from_id, u16 to_id, u16 what_id)
 {
 	NET_Packet P;
 	CGameObject::u_EventGen					(	P,
-												GE_OWNERSHIP_REJECT,
+												GE_TRANSFER_REJECT,
 												from_id
 											);
 
@@ -900,7 +900,7 @@ void move_item (u16 from_id, u16 to_id, u16 what_id)
 
 	//другому инвентарю - взять вещь 
 	CGameObject::u_EventGen					(	P,
-												GE_OWNERSHIP_TAKE,
+												GE_TRANSFER_TAKE,
 												to_id
 											);
 	P.w_u16									(what_id);

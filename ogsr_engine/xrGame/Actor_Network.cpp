@@ -42,6 +42,7 @@
 #include "game_cl_base_weapon_usage_statistic.h"
 #include "clsid_game.h"
 #include "alife_simulator_header.h"
+#include "actorcondition.h"
 
 #ifdef DEBUG
 #	include "debug_renderer.h"
@@ -746,6 +747,7 @@ void CActor::net_Relcase	(CObject* O)
 
 	memory().remove_links(O);
 	m_pPhysics_support->in_NetRelcase(O);
+	conditions().net_Relcase( O );
 }
 
 BOOL	CActor::net_Relevant		()				// relevant for export to server
