@@ -44,7 +44,10 @@
 #include "script_engine.h"
 #include "../anti_aim_ability.h"
 
-CBaseMonster::CBaseMonster()
+CBaseMonster::CBaseMonster() :	m_psy_aura(this, "psy"), 
+								m_fire_aura(this, "fire"), 
+								m_radiation_aura(this, "radiation"), 
+								m_base_aura(this, "base")
 {
 	m_pPhysics_support=xr_new<CCharacterPhysicsSupport>(CCharacterPhysicsSupport::etBitting,this);
 	
@@ -336,6 +339,11 @@ void CBaseMonster::shedule_Update(u32 dt)
 		m_anti_aim->update_schedule();
 	}
 
+	m_psy_aura.update_schedule();
+	m_fire_aura.update_schedule();
+	m_base_aura.update_schedule();
+	m_radiation_aura.update_schedule();
+
 	control().update_schedule	();
 
 	Morale.update_schedule		(dt);
@@ -356,6 +364,11 @@ void CBaseMonster::shedule_Update(u32 dt)
 void CBaseMonster::Die(CObject* who)
 {
 	if (StateMan) StateMan->critical_finalize();
+
+	m_psy_aura.on_monster_death();
+	m_radiation_aura.on_monster_death();
+	m_fire_aura.on_monster_death();
+	m_base_aura.on_monster_death();
 
 	if ( m_anti_aim )
 	{
@@ -885,6 +898,34 @@ float   CBaseMonster::get_attack_on_move_prepare_radius()
 float   CBaseMonster::get_attack_on_move_prepare_time()
 {
 	return m_attack_on_move_params.prepare_time;
+}
+
+float   CBaseMonster::get_psy_influence ()
+{
+	if ( g_Alive() || m_psy_aura.enable_for_dead() )
+	  return m_psy_aura.calculate();
+	return 0.f;
+}
+
+float   CBaseMonster::get_radiation_influence ()
+{
+	if ( g_Alive() || m_radiation_aura.enable_for_dead() )
+	  return m_radiation_aura.calculate();
+	return 0.f;
+}
+
+float   CBaseMonster::get_fire_influence ()
+{
+	if ( g_Alive() || m_fire_aura.enable_for_dead() )
+	  return m_fire_aura.calculate();
+	return 0.f;
+}
+
+void   CBaseMonster::play_detector_sound()
+{
+	m_psy_aura.play_detector_sound();
+	m_radiation_aura.play_detector_sound();
+	m_fire_aura.play_detector_sound();
 }
 
 bool CBaseMonster::is_jumping()

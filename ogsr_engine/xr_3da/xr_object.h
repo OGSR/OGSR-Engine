@@ -77,7 +77,7 @@ public:
 		void							MakeMeCrow_internal	();
 		void							MakeMeCrow			();
 
-	ICF	void							IAmNotACrowAnyMore	()					{ Props.crow = false;	}
+	ICF	void							IAmNotACrowAnyMore	()					{ Props.crow = 0;	}
 	virtual BOOL						AlwaysTheCrow		()					{ return FALSE; }
 
 	// Network

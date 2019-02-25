@@ -50,23 +50,29 @@ void CControllerAnimation::on_stop_control	(ControlCom::EControlType type)
 
 void CControllerAnimation::on_event(ControlCom::EEventType type, ControlCom::IEventData *data)
 {
-	switch (type) {
-	case ControlCom::eventAnimationEnd:			select_animation();			break;
-	case ControlCom::eventTorsoAnimationEnd:	
-		m_wait_torso_anim_end	= false;
-		select_torso_animation	();
-		break;
-	case ControlCom::eventLegsAnimationEnd:		select_legs_animation();	break;
-	case ControlCom::eventAnimationSignal:	
+	switch (type) 
+	{
+		case ControlCom::eventAnimationEnd:			
 		{
-			SAnimationSignalEventData *event_data = (SAnimationSignalEventData *)data;
-			if (event_data->event_id == CControlAnimation::eAnimationHit) {
-				if (event_data->motion == m_torso[eTorsoPsyAttack])
-					m_controller->psy_fire();
-				else
-					check_hit(event_data->motion,event_data->time_perc);	break;
-			}
+			 select_animation(true);
+			 m_state_attack = false;
+			 break;
 		}
+		case ControlCom::eventTorsoAnimationEnd:	
+			m_wait_torso_anim_end	= false;
+			select_torso_animation	();
+			break;
+		case ControlCom::eventLegsAnimationEnd:		select_legs_animation();	break;
+		case ControlCom::eventAnimationSignal:	
+			{
+				SAnimationSignalEventData *event_data = (SAnimationSignalEventData *)data;
+				if (event_data->event_id == CControlAnimation::eAnimationHit) {
+					if (event_data->motion == m_torso[eTorsoPsyAttack])
+						m_controller->psy_fire();
+					else
+						check_hit(event_data->motion,event_data->time_perc);	break;
+				}
+			}
 	}
 }
 
@@ -149,11 +155,11 @@ void CControllerAnimation::add_path_rotation(ELegsActionType action, float angle
 	rot.angle		= angle;
 	rot.legs_motion	= type;
 
-	PATH_ROTATIONS_MAP_IT map_it = m_path_rotations.find(action);
+    auto map_it = m_path_rotations.find(action);
 	if (map_it == m_path_rotations.end()) {
 		PATH_ROTATIONS_VEC vec;
 		vec.push_back(rot);
-		m_path_rotations.insert(mk_pair(action, vec));
+		m_path_rotations.insert(std::make_pair(action, vec));
 	} else {
 		map_it->second.push_back(rot);
 	}
@@ -215,7 +221,7 @@ void CControllerAnimation::select_torso_animation()
 	}
 	
 	if ((ctrl_data->torso.get_motion() != target_motion) || m_wait_torso_anim_end) {
-		ctrl_data->torso.set_motion( target_motion );
+		ctrl_data->torso.set_motion(target_motion);
 		ctrl_data->torso.actual	= false;
 	}
 
@@ -236,7 +242,7 @@ void CControllerAnimation::select_legs_animation()
 	
 	} else {
 		// else select standing animation
-		for (LEGS_MOTION_MAP_IT it = m_legs.begin(); it != m_legs.end(); it++) {
+		for (auto it = m_legs.begin(); it != m_legs.end(); it++) {
 			if ((it->first & m_current_legs_action) == m_current_legs_action) {
 				legs_action		= it->first;
 				break;
@@ -265,9 +271,9 @@ CControllerAnimation::SPathRotations CControllerAnimation::get_path_rotation(flo
 
 	diff = angle_normalize(diff);
 
-	PATH_ROTATIONS_VEC_IT it_best = m_path_rotations[m_current_legs_action].begin();
+    auto it_best = m_path_rotations[m_current_legs_action].begin();
 	float best_diff = flt_max;
-	for (PATH_ROTATIONS_VEC_IT it = m_path_rotations[m_current_legs_action].begin(); it != m_path_rotations[m_current_legs_action].end(); it++) {
+	for (auto it = m_path_rotations[m_current_legs_action].begin(); it != m_path_rotations[m_current_legs_action].end(); it++) {
 		float angle_diff = angle_normalize(it->angle);
 
 		float cur_diff = angle_difference(angle_diff, diff);
@@ -353,7 +359,7 @@ void CControllerAnimation::on_switch_controller()
 		select_torso_animation	();
 		select_legs_animation	();
 	} else {
-		select_animation		();
+		select_animation		(true);
 	}
 }
 

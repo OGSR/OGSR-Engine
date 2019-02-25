@@ -373,10 +373,14 @@ void CControlJump::grounding()
 	{
 		stop						();
 	}
-	else 
+	else
 	{ 
 		SControlPathBuilderData		*ctrl_path = (SControlPathBuilderData*)m_man->data(this, ControlCom::eControlPath); 
 		VERIFY						(ctrl_path);
+		if ( !ctrl_path ) {
+		  stop();
+		  return;
+		}
 		ctrl_path->enable			= true;
 		m_man->lock					(this, ControlCom::eControlPath);
 

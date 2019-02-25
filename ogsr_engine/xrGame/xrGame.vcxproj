@@ -412,6 +412,7 @@
     <ClInclude Include="..\COMMON_AI\server_entity_wrapper.h" />
     <ClInclude Include="..\COMMON_AI\server_entity_wrapper_inline.h" />
     <ClInclude Include="ai\monsters\anti_aim_ability.h" />
+    <ClInclude Include="ai\monsters\controller\controller_psy_hit_effector.h" />
     <ClInclude Include="ai\monsters\group_states\group_state_attack.h" />
     <ClInclude Include="ai\monsters\group_states\group_state_attack_inline.h" />
     <ClInclude Include="ai\monsters\group_states\group_state_attack_run.h" />
@@ -439,6 +440,7 @@
     <ClInclude Include="ai\monsters\group_states\group_state_squad_move_to_radius.h" />
     <ClInclude Include="ai\monsters\group_states\group_state_squad_move_to_radius_inline.h" />
     <ClInclude Include="ai\monsters\group_states\state_adapter.h" />
+    <ClInclude Include="ai\monsters\monster_aura.h" />
     <ClInclude Include="ai\monsters\states\monster_state_attack_on_run.h" />
     <ClInclude Include="ai\monsters\states\monster_state_attack_on_run_inline.h" />
     <ClInclude Include="derived_client_classes.h" />
@@ -1658,6 +1660,8 @@
   <ItemGroup>
     <ClCompile Include="..\COMMON_AI\random32.cpp" />
     <ClCompile Include="ai\monsters\anti_aim_ability.cpp" />
+    <ClCompile Include="ai\monsters\controller\controller_psy_hit_effector.cpp" />
+    <ClCompile Include="ai\monsters\monster_aura.cpp" />
     <ClCompile Include="damage_manager.cpp" />
     <ClCompile Include="action_base_script.cpp" />
     <ClCompile Include="derived_client_classes.cpp" />

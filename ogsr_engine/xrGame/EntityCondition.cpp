@@ -484,14 +484,6 @@ void CEntityCondition::UpdateEntityMorale()
 	}
 }
 
-
-bool CEntityCondition::IsLimping() const
-{
-	if (!m_use_limping_state)
-		return	(false);
-	return (m_fPower*GetHealth() <= m_limping_threshold);
-}
-
 void CEntityCondition::save	(NET_Packet &output_packet)
 {
 	u8 is_alive	= (GetHealth()>0.f)?1:0;

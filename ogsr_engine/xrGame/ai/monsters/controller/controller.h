@@ -2,6 +2,7 @@
 #include "../BaseMonster/base_monster.h"
 #include "../anim_triple.h"
 #include "script_export_space.h"
+#include "../controlled_actor.h"
 
 class CControllerAnimation;
 class CControllerDirection;
@@ -9,7 +10,9 @@ class SndShockEffector;
 class CControllerPsyHit;
 class CControllerAura;
 
-class CController : public CBaseMonster {
+class CController : public CBaseMonster,
+					public CControlledActor 
+{
 	typedef		CBaseMonster	inherited;
 
 	u8					m_max_controlled_number;
@@ -33,18 +36,6 @@ class CController : public CBaseMonster {
 	u32					m_psy_fire_delay;
 
 	bool				m_tube_at_once;
-
-	
-	//////////////////////////////////////////////////////////////////////////
-	// PsyAura
-	CControllerAura		*m_aura;
-	
-	struct SAuraSound {
-		ref_sound	left;
-		ref_sound	right;
-	} aura_sound;
-	SAuraSound		*current_aura_sound;
-	
 
 public:	
 	float			aura_radius;
@@ -132,13 +123,17 @@ public:
 
 			void	tube_fire					();
 			bool	can_tube_fire				();
-			u32		m_time_last_tube;
 			
-			float	m_psy_hit_damage;
 			float	m_tube_damage;
+			u32		m_tube_condition_see_duration ;
+			u32		m_tube_condition_min_delay    ;
+			float   m_tube_condition_min_distance ;
 
 			void	set_psy_fire_delay_zero		();
 			void	set_psy_fire_delay_default	();
+
+			float	get_tube_min_distance		() const { return m_tube_condition_min_distance; }
+			bool	tube_ready					() const;
 
 	//-------------------------------------------------------------------
 
@@ -158,12 +153,19 @@ public:
 	} m_mental_state;
 
 	void				set_mental_state			(EMentalState state);
+	virtual void		HitEntity					(const CEntity *pEntity, float fDamage, 
+													 float impulse, Fvector &dir, ALife::EHitType hit_type, bool draw_hit_marks);
 
 public:
 	virtual bool		use_center_to_aim			() const {return true;}
 
 	SAnimationTripleData anim_triple_control;
 
+private:
+	float				m_stamina_hit;
+
+
+/*
 #ifdef DEBUG
 	virtual CBaseMonster::SDebugInfo show_debug_info();
 
@@ -175,10 +177,10 @@ private:
 
 		Fvector			P1,P2;
 #endif
+*/
 
 public:
 	virtual bool					run_home_point_when_enemy_inaccessible () const { return false; }
-
 	DECLARE_SCRIPT_REGISTER_FUNCTION
 };
 

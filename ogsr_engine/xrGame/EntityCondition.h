@@ -51,8 +51,6 @@ public:
 
 	IC float 				GetHealthLost			() const			{return m_fHealthLost;}
 
-	virtual bool 			IsLimping				() const;
-
 	virtual void			ChangeSatiety			(float value)		{};
 	void 					ChangeHealth			(float value);
 	void 					ChangePower				(float value);

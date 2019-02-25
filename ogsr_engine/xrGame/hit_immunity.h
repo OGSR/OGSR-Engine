@@ -16,6 +16,7 @@ public:
 
 	virtual void LoadImmunities (LPCSTR section,CInifile* ini);
 
+	float		GetHitImmunity	(ALife::EHitType hit_type) const				{return m_HitTypeK[hit_type];}
 	virtual float AffectHit		(float power, ALife::EHitType hit_type);
 
 protected:
