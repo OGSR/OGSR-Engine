@@ -27,6 +27,7 @@ class CBlend;
 #define ASP_ATTACK_RUN			(1 << 11)
 #define ASP_PSI_ATTACK			(1 << 12)
 #define ASP_UPPER_STATE			(1 << 13)
+#define ASP_MOVE_SMELLING		(1 << 14)
 
 #define AA_FLAG_ATTACK_RAT		(1 << 0)			// аттака крыс?
 #define AA_FLAG_FIRE_ANYWAY		(1 << 1)			// трассировка не нужна
@@ -159,6 +160,7 @@ enum EMotionAnim {
 
 	eAnimLookAround,
 
+	eAnimPrepareAttack,
 	eAnimJump,
 	eAnimSteal,
 
@@ -202,10 +204,26 @@ enum EMotionAnim {
 
 	eAnimTelekinesis,
 
+	//mob home animations
+	/*eAnimHomeIdleDigGround,
+	eAnimHomeIdleHowl,
+	eAnimHomeIdleShake,
+	eAnimHomeIdleSmellingUp,
+	eAnimHomeIdleSmellingDown,
+	eAnimHomeIdleSmellingLookAround,
+	eAnimHomeIdleGrowl,*/
+	eAnimHomeWalkGrowl,
+	eAnimHomeWalkSmelling,
+	
+	
+	//end mob home animations
+
 	eAnimAttackOnRunLeft,
 	eAnimAttackOnRunRight,
 
 	eAnimAntiAimAbility,
+	eAnimFastStandTurnLeft,
+	eAnimFastStandTurnRight,
 
 	eAnimCount,
 	eAnimUndefined			= u32(-1)
@@ -226,6 +244,8 @@ enum EAction {
 	ACT_ATTACK,
 	ACT_STEAL,
 	ACT_LOOK_AROUND,
+	ACT_HOME_WALK_GROWL,
+	ACT_HOME_WALK_SMELLING,
 	ACT_NONE		= u32(-1)
 };
 

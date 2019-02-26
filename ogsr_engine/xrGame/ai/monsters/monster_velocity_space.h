@@ -14,7 +14,11 @@ namespace MonsterMovement {
 		eVelocityParameterDrag			= u32(1) <<  8,
 		eVelocityParameterInvisible		= u32(1) <<	 9,
 		eVelocityParameterRunAttack		= u32(1) <<	 10,
+		eVelocityParameterWalkSmelling	= u32(1) <<	 11,
+		eVelocityParameterWalkGrowl		= u32(1) <<	 12,
 
+		eVelocityParamsWalkGrowl		= eVelocityParameterStand		| eVelocityParameterWalkGrowl,
+		eVelocityParamsWalkSmelling		= eVelocityParameterStand		| eVelocityParameterWalkSmelling,
 		eVelocityParamsWalk				= eVelocityParameterStand		| eVelocityParameterWalkNormal,
 		eVelocityParamsWalkDamaged		= eVelocityParameterStand		| eVelocityParameterWalkDamaged,
 		eVelocityParamsRun				= eVelocityParameterStand		| eVelocityParameterWalkNormal	| eVelocityParameterRunNormal,
@@ -31,10 +35,8 @@ namespace MonsterMovement {
 	};
 
 	enum EMovementParametersChimera {
-		eChimeraVelocityParameterUpperWalkFwd		= eVelocityParameterCustom << 1,
+		eChimeraVelocityParameterPrepare			= eVelocityParameterCustom << 1,
 		eChimeraVelocityParameterJumpGround			= eVelocityParameterCustom << 2,
-	
-		eChimeraVelocityParamsUpperWalkFwd			= eVelocityParameterStand | eChimeraVelocityParameterUpperWalkFwd,
 	};
 
 	enum EMovementParametersSnork {

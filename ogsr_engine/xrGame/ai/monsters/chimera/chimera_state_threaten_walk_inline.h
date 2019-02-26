@@ -10,8 +10,6 @@ void CStateChimeraThreatenWalkAbstract::initialize()
 {
 	inherited::initialize();
 
-	object->SetUpperState	();
-
 	data.point				= object->EnemyMan.get_enemy_position	();
 	data.vertex				= object->EnemyMan.get_enemy_vertex		();
 

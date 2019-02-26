@@ -11,10 +11,11 @@
 #include "script_callback_ex.h"
 #include "script_game_object.h"
 #include "game_object_space.h"
-#include "ui\UIVideoPlayerWnd.h"
 #include "script_callback_ex.h"
 #include "object_broker.h"
 #include "weapon.h"
+#include "PDA.h"
+#include "ai/monsters/BaseMonster/base_monster.h"
 
 #define MAX_SATIETY					1.0f
 #define START_SATIETY				0.5f
@@ -44,10 +45,15 @@ CActorCondition::CActorCondition(CActor *object) :
 	m_object					= object;
 	m_condition_flags.zero		();
 
+	m_f_time_affected = Device.fTimeGlobal;
+
+        monsters_feel_touch  = xr_new<Feel::Touch>();
+	monsters_aura_radius = 0.f;
 }
 
 CActorCondition::~CActorCondition(void)
 {
+	xr_delete( monsters_feel_touch );
 }
 
 void CActorCondition::LoadCondition(LPCSTR entity_section)
@@ -212,8 +218,119 @@ void CActorCondition::UpdateCondition()
 	inherited::UpdateCondition	();
 
 	UpdateTutorialThresholds();
+
+	AffectDamage_InjuriousMaterialAndMonstersInfluence();
 }
 
+void CActorCondition::AffectDamage_InjuriousMaterialAndMonstersInfluence()
+{
+	float one = 0.1f;
+	float tg  = Device.fTimeGlobal;
+	if ( m_f_time_affected + one > tg )
+	{
+		return;
+	}
+
+	clamp( m_f_time_affected, tg - (one * 3), tg );
+
+	float psy_influence					=	0;
+	float fire_influence				=	0;
+	float radiation_influence			=	GetInjuriousMaterialDamage(); // Get Radiation from Material
+
+	// Add Radiation and Psy Level from Monsters
+	monsters_feel_touch->feel_touch_update(
+	  object().Position(), monsters_aura_radius,
+	  {},
+	  [&]( const auto O ) -> bool {
+	    const auto monster = smart_cast<CBaseMonster*>( O );
+	    return monster ? true : false;
+	  }
+	);
+	for ( const auto& it : monsters_feel_touch->feel_touch ) {
+	  const auto monster = smart_cast<CBaseMonster*>( it );
+	  if ( !monster ) continue;
+	  psy_influence       += monster->get_psy_influence();
+	  radiation_influence += monster->get_radiation_influence();
+	  fire_influence      += monster->get_fire_influence();
+	}
+/*
+	CPda* const pda						=	m_object->GetPDA();
+
+	if ( pda )
+	{
+		using monsters = xr_vector<CObject*>;
+
+		for ( monsters::const_iterator	it	=	pda->feel_touch.begin();
+										it	!=	pda->feel_touch.end();
+										++it )
+		{
+			CBaseMonster* const	monster		=	smart_cast<CBaseMonster*>(*it);
+			if ( !monster || !monster->g_Alive() ) continue;
+
+			psy_influence					+=	monster->get_psy_influence();
+			radiation_influence				+=	monster->get_radiation_influence();
+			fire_influence					+=	monster->get_fire_influence();
+		}
+	}
+*/
+
+	struct 
+	{
+		ALife::EHitType	type;
+		float			value;
+
+	} hits[]		=	{	{ ALife::eHitTypeRadiation, radiation_influence	*	one },
+							{ ALife::eHitTypeTelepatic, psy_influence		*	one }, 
+							{ ALife::eHitTypeBurn,		fire_influence		*	one }	};
+
+ 	NET_Packet	np;
+
+	while ( m_f_time_affected + one < tg )
+	{
+		m_f_time_affected			+=	one;
+
+		for (auto & hit : hits)
+		{
+			float			damage	=	hit.value;
+			ALife::EHitType	type	=	hit.type;
+
+			if ( damage > EPS )
+			{
+				SHit HDS = SHit(damage, 
+//.								0.0f, 
+								Fvector().set(0,1,0), 
+								nullptr, 
+								BI_NONE, 
+								Fvector().set(0,0,0), 
+								0.0f, 
+								type, 
+								0.0f, 
+								false);
+
+				HDS.GenHeader(GE_HIT, m_object->ID());
+				HDS.Write_Packet( np );
+				CGameObject::u_EventSend( np );
+			}
+
+		} // for
+
+	}//while
+}
+
+#include "characterphysicssupport.h"
+float CActorCondition::GetInjuriousMaterialDamage()
+{
+/*
+	u16 mat_injurios = m_object->character_physics_support()->movement()->injurious_material_idx();
+
+	if(mat_injurios!=GAMEMTL_NONE_IDX)
+	{
+		const SGameMtl* mtl		= GMLib.GetMaterialByIdx(mat_injurios);
+		return					mtl->fInjuriousSpeed;
+	}else
+*/
+		return 0.0f;
+}
 
 void CActorCondition::UpdateSatiety()
 {
@@ -513,4 +630,10 @@ void CActorCondition::UpdateTutorialThresholds()
 		R_ASSERT							(ai().script_engine().functor<LPCSTR>(cb_name,fl));
 		fl									();
 	}
+}
+
+
+void CActorCondition::net_Relcase( CObject* O ) {
+  if ( Level().is_removing_objects() ) return;
+  monsters_feel_touch->feel_touch_relcase( O );
 }

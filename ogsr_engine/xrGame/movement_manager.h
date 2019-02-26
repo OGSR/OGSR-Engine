@@ -234,7 +234,7 @@ public:
 			bool	distance_to_destination_greater	(const float &distance_to_check) const;
 
 	IC		bool	wait_for_distributed_computation			() const;
-	virtual	bool	can_use_distributed_compuations				(u32 option) const;
+	virtual	bool	can_use_distributed_computations				(u32 option) const;
 			
 			void	clear_path				();
 
@@ -254,6 +254,13 @@ public:
 
 public:
 	virtual	void					on_restrictions_change		();
+
+protected:
+			bool					move_along_path				() const;
+
+protected:
+			Fvector					path_position				(const float &time_to_check);
+			Fvector					path_position				(const float &velocity, const Fvector &position, const float &time_delta, u32 &current_travel_point, float &dist, float &dist_to_target, Fvector &dir_to_target);
 };
 
 #include "movement_manager_inline.h"

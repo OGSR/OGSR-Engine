@@ -318,6 +318,10 @@ CEntity *CBaseMonster::GetCurrentCorpse()
 
 	return (corpse);
 }
+void CBaseMonster::SetEnemy(const CEntityAlive *sent)
+{
+	EnemyMan.script_enemy(*sent);
+}
 
 void CBaseMonster::SetScriptControl(const bool bScriptControl, shared_str caScriptName)
 {

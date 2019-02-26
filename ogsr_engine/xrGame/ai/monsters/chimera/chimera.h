@@ -2,31 +2,45 @@
 #include "../BaseMonster/base_monster.h"
 #include "script_export_space.h"
 
-class CChimera : public CBaseMonster {
-	typedef		CBaseMonster	inherited;
+class CChimera : public CBaseMonster 
+{
+public:
+							CChimera					();
+	virtual					~CChimera					();	
 
-	bool		b_upper_state;
+	virtual void			Load						(LPCSTR section);
+	virtual void			reinit						();
+	virtual	void			UpdateCL					();
 
+	virtual void			CheckSpecParams				(u32 spec_params);
+	virtual void			HitEntityInJump				(const CEntity *pEntity);
+	virtual void			jump						(Fvector const &position, float factor);
+
+private:
+	virtual EAction			CustomVelocityIndex2Action	(u32 velocity_index);
+
+	typedef					CBaseMonster				inherited;
 	
-	SVelocityParam		m_fsVelocityWalkUpper;
-	SVelocityParam		m_fsVelocityJumpGround;
-	SVelocityParam		m_fsVelocityRunAttack;
+	SVelocityParam 			m_velocity_rotate;
+	SVelocityParam 			m_velocity_jump_start;
+
+	struct attack_params
+	{
+		float				attack_radius;
+		TTime				prepare_jump_timeout;
+		TTime				attack_jump_timeout;
+		TTime				stealth_timeout;
+		float				force_attack_distance;
+		u32					num_attack_jumps;
+		u32					num_prepare_jumps;
+	};
+
+	attack_params			m_attack_params;
 
 public:
-					CChimera			();
-	virtual			~CChimera			();	
+	attack_params const&	get_attack_params			() const { return m_attack_params; }
 
-	virtual void	Load				(LPCSTR section);
-	virtual void	reinit				();
-	virtual	void	UpdateCL			();
 
-	virtual	void	SetTurnAnimation			(bool turn_left);
-	virtual void	CheckSpecParams				(u32 spec_params);
-	virtual	EAction	CustomVelocityIndex2Action	(u32 velocity_index);
-	virtual	void	TranslateActionToPathParams ();
-	virtual void	HitEntityInJump				(const CEntity *pEntity);
-
-	IC		void	SetUpperState				(bool state = true) {b_upper_state = state;}
 	
 	DECLARE_SCRIPT_REGISTER_FUNCTION
 };

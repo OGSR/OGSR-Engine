@@ -1489,7 +1489,7 @@ void CWeapon::OnZoomIn()
 	else
 		m_fZoomFactor = CurrentZoomFactor();
 
-	if (UseScopeTexture() || !m_bZoomInertionAllow)
+	if (!m_bZoomInertionAllow)
 	{
 		StopHudInertion();
 	}
@@ -1514,10 +1514,7 @@ void CWeapon::OnZoomOut()
 		}
 	}
 
-	if (UseScopeTexture() || !m_bZoomInertionAllow)
-	{
-		StartHudInertion();
-	}
+	StartHudInertion();
 }
 
 bool CWeapon::UseScopeTexture() {
@@ -1625,26 +1622,6 @@ void CWeapon::reload			(LPCSTR section)
 void CWeapon::create_physic_shell()
 {
 	CPhysicsShellHolder::create_physic_shell();
-}
-
-bool CWeapon::ActivationSpeedOverriden(Fvector& dest, bool clear_override)
-{
-	if (m_activation_speed_is_overriden)
-	{
-		if (clear_override)
-			m_activation_speed_is_overriden	= false;
-
-		dest = m_overriden_activation_speed;
-		return true;
-	}
-	
-	return false;
-}
-
-void CWeapon::SetActivationSpeedOverride(Fvector const& speed)
-{
-	m_overriden_activation_speed = speed;
-	m_activation_speed_is_overriden = true;
 }
 
 void CWeapon::activate_physic_shell()
@@ -2001,7 +1978,7 @@ bool CWeapon::SecondVPEnabled() const
 // Чувствительность мышкии с оружием в руках во время прицеливания
 float CWeapon::GetControlInertionFactor() const
 {
-	if (IsZoomed() && SecondVPEnabled())
+	if (IsZoomed() && SecondVPEnabled() && !IsRotatingToZoom())
 		return m_fScopeInertionFactor;
 
 	float fInertionFactor = inherited::GetControlInertionFactor();

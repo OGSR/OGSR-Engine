@@ -191,9 +191,19 @@ bool CInput::get_dik_name(int dik, LPSTR dest_str, int dest_sz)
 	return WideCharToMultiByte(CP_ACP, 0, keyname.wsz, -1, dest_str, dest_sz, 0, 0) != -1;
 }
 
-BOOL CInput::iGetAsyncKeyState( int dik )
+BOOL CInput::iGetAsyncKeyState(int dik)
 {
-	return KBState[dik];
+	//KRodin: да-да, я знаю, что этот код ужасен.
+	switch (dik)
+	{
+	case DIK_LMENU:    return GetAsyncKeyState(VK_LMENU) & 0x8000;
+	case DIK_RMENU:    return GetAsyncKeyState(VK_RMENU) & 0x8000;
+	case DIK_TAB:      return GetAsyncKeyState(VK_TAB) & 0x8000;
+	case DIK_LCONTROL: return GetAsyncKeyState(VK_LCONTROL) & 0x8000;
+	case DIK_RCONTROL: return GetAsyncKeyState(VK_RCONTROL) & 0x8000;
+	case DIK_DELETE:   return GetAsyncKeyState(VK_DELETE) & 0x8000;
+	default:           return KBState[dik];
+	}
 }
 
 BOOL CInput::iGetAsyncBtnState( int btn )
@@ -453,4 +463,39 @@ char CInput::DikToChar(int dik)
 	}
 
 	return 0;
+}
+
+// https://stackoverflow.com/a/36827574
+void CInput::clip_cursor(bool clip)
+{
+	if (clip) {
+		ShowCursor(FALSE);
+		if (Device.m_hWnd) {
+			RECT rect;
+			GetClientRect(Device.m_hWnd, &rect);
+
+			POINT ul;
+			ul.x = rect.left;
+			ul.y = rect.top;
+
+			POINT lr;
+			lr.x = rect.right;
+			lr.y = rect.bottom;
+
+			MapWindowPoints(Device.m_hWnd, nullptr, &ul, 1);
+			MapWindowPoints(Device.m_hWnd, nullptr, &lr, 1);
+
+			rect.left = ul.x;
+			rect.top = ul.y;
+
+			rect.right = lr.x;
+			rect.bottom = lr.y;
+
+			ClipCursor(&rect);
+		}
+	}
+	else {
+		while (ShowCursor(TRUE) < 0);
+		ClipCursor(nullptr);
+	}
 }

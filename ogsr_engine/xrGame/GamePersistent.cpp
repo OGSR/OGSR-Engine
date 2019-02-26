@@ -271,10 +271,7 @@ void CGamePersistent::update_logo_intro			()
 
 void CGamePersistent::start_game_intro		()
 {
-	if (!strstr(Core.Params,"-intro")){
-		m_intro_event			= 0;
-		return;
-	}
+
 
 	if (g_pGameLevel && g_pGameLevel->bReady && Device.dwPrecacheFrame<=2){
 		m_intro_event.bind		(this,&CGamePersistent::update_game_intro);

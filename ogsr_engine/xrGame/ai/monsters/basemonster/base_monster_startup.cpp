@@ -29,6 +29,8 @@
 #include "../../../inventory_item.h"
 #include "xrServer_Objects_ALife.h"
 #include "../anti_aim_ability.h"
+#include "../../../actor.h"
+#include "../../../actorcondition.h"
 
 namespace detail
 {
@@ -89,6 +91,36 @@ void CBaseMonster::Load(LPCSTR section)
 	m_feel_enemy_who_just_hit_max_distance   = READ_IF_EXISTS( pSettings, r_float, section, "feel_enemy_who_just_hit_max_distance", 20.f );
 	m_feel_enemy_max_distance                = READ_IF_EXISTS( pSettings, r_float, section, "feel_enemy_max_distance", 3.f );
 	m_feel_enemy_who_made_sound_max_distance = READ_IF_EXISTS( pSettings, r_float, section, "feel_enemy_who_made_sound_max_distance", 49.f );
+	
+	//------------------------------------
+	// Steering Behaviour 
+	//------------------------------------
+	float    separate_factor				=	READ_IF_EXISTS(pSettings, r_float, section, 
+												"separate_factor", 0.f);
+	float    separate_range					=	READ_IF_EXISTS(pSettings, r_float, section, 
+												"separate_range" , 0.f);
+	
+	if ( (separate_factor > 0.0001f) && (separate_range > 0.01f) )
+	{
+		m_steer_manager						=	xr_new<steering_behaviour::manager>();
+
+		m_grouping_behaviour				=	xr_new<squad_grouping_behaviour>
+												(this, 
+												 Fvector3().set(0.f, 0.f, 0.f), 
+												 Fvector3().set(0.f, separate_factor, 0.f), 
+												 separate_range);
+
+		get_steer_manager()->add				( xr_new<steering_behaviour::grouping>(m_grouping_behaviour) );
+	}
+
+	//------------------------------------
+	// Auras
+	//------------------------------------
+
+	m_psy_aura.load_from_ini					(pSettings, section);
+	m_radiation_aura.load_from_ini				(pSettings, section, true);
+	m_fire_aura.load_from_ini					(pSettings, section);
+	m_base_aura.load_from_ini					(pSettings, section);
 
 	m_force_anti_aim						=	false;
 }
@@ -152,10 +184,16 @@ void CBaseMonster::PostLoad (LPCSTR section)
 
 }
 
+steering_behaviour::manager*   CBaseMonster::get_steer_manager ()
+{
+	VERIFY(m_steer_manager);
+	return m_steer_manager; 
+}
+
 // if sound is absent just do not load that one
 #define LOAD_SOUND(sound_name,_type,_prior,_mask,_int_type)		\
 	if (pSettings->line_exist(section,sound_name))						\
-		sound().add(pSettings->r_string(section,sound_name), DEFAULT_SAMPLE_COUNT,_type,_prior,u32(_mask),_int_type,"bip01_head");
+		sound().add(pSettings->r_string(section,sound_name), DEFAULT_SAMPLE_COUNT,_type,_prior,u32(_mask),_int_type,m_head_bone_name);
 
 void CBaseMonster::reload	(LPCSTR section)
 {
@@ -246,6 +284,12 @@ void CBaseMonster::reinit()
 	m_show_debug_info				= 0;
 #endif 
 	
+
+	m_first_tick_enemy_inaccessible		= 0;
+	m_last_tick_enemy_inaccessible		= 0;
+	m_first_tick_object_not_at_home		= 0;
+
+	anim().clear_override_animation	();
 }
 
 
@@ -305,6 +349,13 @@ BOOL CBaseMonster::net_Spawn (CSE_Abstract* DC)
 //			}
 //		}
 //	}
+
+	if ( !fis_zero( m_psy_aura.max_distance() ) )
+	  Actor()->conditions().set_monsters_aura_radius( m_psy_aura.max_distance() );
+	if ( !fis_zero( m_radiation_aura.max_distance() ) )
+	  Actor()->conditions().set_monsters_aura_radius( m_radiation_aura.max_distance() );
+	if ( !fis_zero( m_fire_aura.max_distance() ) )
+	  Actor()->conditions().set_monsters_aura_radius( m_fire_aura.max_distance() );
 
 	return(TRUE);
 }

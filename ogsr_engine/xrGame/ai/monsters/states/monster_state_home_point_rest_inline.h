@@ -12,7 +12,7 @@ TEMPLATE_SPECIALIZATION
 void CStateMonsterRestMoveToHomePointAbstract::initialize()
 {
 	inherited::initialize	();
-	m_target_node			= object->Home->get_place();
+	m_target_node			= object->Home->get_place_in_mid_home();
 }
 
 TEMPLATE_SPECIALIZATION
@@ -32,7 +32,7 @@ void CStateMonsterRestMoveToHomePointAbstract::execute()
 TEMPLATE_SPECIALIZATION
 bool CStateMonsterRestMoveToHomePointAbstract::check_start_conditions()
 {
-	return (!object->Home->at_home());
+	return (!object->Home->at_mid_home(object->Position()));
 }
 
 TEMPLATE_SPECIALIZATION

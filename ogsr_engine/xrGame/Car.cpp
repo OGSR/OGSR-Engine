@@ -318,13 +318,13 @@ void CCar::SwitchLights()
 }
 
 
-void CCar::RestoreNetState( CSE_PHSkeleton* po ) {
+void CCar::RestoreNetState( CSE_PHSkeleton* /*po*/ ) {
   auto obj = PPhysicsShellHolder();
   if ( !obj ) return;
   auto se_obj = obj->alife_object();
   if ( !se_obj ) return;
 
-  po = smart_cast<CSE_PHSkeleton*>( se_obj );
+  auto po = smart_cast<CSE_PHSkeleton*>( se_obj );
   ASSERT_FMT( po, "[%s]: %s is not CSE_PHSkeleton", __FUNCTION__, obj->Name_script() );
   if( !po->_flags.test( CSE_PHSkeleton::flSavedData ) )
     return;
@@ -1717,6 +1717,7 @@ void CCar::OnEvent(NET_Packet& P, u16 type)
 	switch (type)
 	{
 	case GE_OWNERSHIP_TAKE:
+	case GE_TRANSFER_TAKE:
 		{
 			P.r_u16		(id);
 			CObject* O	= Level().Objects.net_Find	(id);
@@ -1735,15 +1736,19 @@ void CCar::OnEvent(NET_Packet& P, u16 type)
 			}
 		}break;
 	case GE_OWNERSHIP_REJECT:
+	case GE_TRANSFER_REJECT:
 		{
 			P.r_u16		(id);
 			CObject* O	= Level().Objects.net_Find	(id);
 
-			bool just_before_destroy		= !P.r_eof() && P.r_u8();
+			bool just_before_destroy = !P.r_eof() && P.r_u8();
+			bool dont_create_shell = (type == GE_TRADE_SELL) || (type == GE_TRANSFER_REJECT) || just_before_destroy;
+
 			O->SetTmpPreDestroy				(just_before_destroy);
+
 			if(GetInventory()->DropItem(smart_cast<CGameObject*>(O))) 
 			{
-				O->H_SetParent(0, just_before_destroy);
+				O->H_SetParent(0, dont_create_shell);
 			}
 		}break;
 	}

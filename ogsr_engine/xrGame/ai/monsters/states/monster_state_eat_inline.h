@@ -9,10 +9,12 @@
 #include "../../../PhysicsShell.h"
 #include "../../../PHMovementControl.h"
 #include "../../../CharacterPhysicsSupport.h"
+/*
 #ifdef DEBUG
 #	include "../../../level.h"
 #	include "../../../level_debug.h"
 #endif
+*/
 
 #define TEMPLATE_SPECIALIZATION template <\
 	typename _Object\
@@ -78,8 +80,12 @@ void CStateMonsterEatAbstract::reselect_state()
 	if (prev_substate == eStateEat_CorpseApproachRun) { select_state(eStateEat_CheckCorpse); return; }
 	
 	if (prev_substate == eStateEat_CheckCorpse) { 
-		if (object->ability_can_drag()) select_state(eStateEat_Drag);
-		else {							
+		if ( object->ability_can_drag() )
+		{
+			select_state(eStateEat_Drag);
+		}
+		else 
+		{							
 			if (get_state(eStateEat_Eat)->check_start_conditions())
 				select_state(eStateEat_Eat);					
 			else 
@@ -132,6 +138,7 @@ void CStateMonsterEatAbstract::setup_substates()
 			nearest_bone_pos	= corpse->Position(); 
 		} else nearest_bone_pos = object->character_physics_support()->movement()->PHCaptureGetNearestElemPos(corpse);
 
+/*
 #ifdef DEBUG
 		DBG().level_info(this).clear		();
 		Fvector pos1;
@@ -140,6 +147,7 @@ void CStateMonsterEatAbstract::setup_substates()
 
 		DBG().level_info(this).add_item		(nearest_bone_pos, pos1, COLOR_GREEN);
 #endif
+*/
 		SStateDataMoveToPoint data;
 		data.point			= nearest_bone_pos;
 		data.vertex			= u32(-1);
@@ -252,6 +260,13 @@ TEMPLATE_SPECIALIZATION
 bool CStateMonsterEatAbstract::hungry()
 {
 	return ((m_time_last_eat == 0) || (m_time_last_eat + TIME_NOT_HUNGRY < time()));
+}
+
+TEMPLATE_SPECIALIZATION
+void CStateMonsterEatAbstract::remove_links	(CObject* object)
+{
+	if (corpse == object)
+		corpse	= 0;
 }
 
 #undef TEMPLATE_SPECIALIZATION

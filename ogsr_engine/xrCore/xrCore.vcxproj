@@ -317,7 +317,6 @@
     <ClCompile Include="xrsharedmem.cpp" />
     <ClCompile Include="xrstring.cpp" />
     <ClCompile Include="rt_compressor.cpp" />
-    <ClCompile Include="rt_compressor9.cpp" />
     <ClCompile Include="LzHuf.cpp" />
   </ItemGroup>
   <ItemGroup>

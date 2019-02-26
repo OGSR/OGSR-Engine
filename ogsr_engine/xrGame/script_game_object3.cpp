@@ -1000,6 +1000,28 @@ float CScriptGameObject::GetInventoryWeight() const
 	return e->GetCarryWeight();
 }
 
+#include "trade.h"
+
+u32 CScriptGameObject::CalcItemPrice(CScriptGameObject *item, bool b_buying) const
+{
+	auto inventory_owner = smart_cast<CInventoryOwner*>(&object());
+	if (!inventory_owner)
+	{
+		Msg("!!CInventoryOwner : cannot access class member CalcItemPrice!");
+		return 0;
+	}
+	auto inventory_item = smart_cast<CInventoryItem*>(&item->object());
+	if (!inventory_item) {
+		ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "CScriptGameObject::CalcItemPrice non-CInventoryItem object !!!");
+		return 0;
+	}
+
+	inventory_owner->GetTrade()->SetPartner(Actor());
+	const u32 item_price = inventory_owner->GetTrade()->GetItemPrice(inventory_item, b_buying);
+	inventory_owner->GetTrade()->RemovePartner();
+	return item_price;
+}
+
 float CScriptGameObject::GetShapeRadius() const
 {
 	if (!g_pGameLevel)

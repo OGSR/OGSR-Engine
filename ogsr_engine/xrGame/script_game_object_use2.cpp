@@ -86,15 +86,49 @@ void CScriptGameObject::skip_transfer_enemy(bool val)
 }
 
 
-void CScriptGameObject::set_home(LPCSTR name, float r_min, float r_max, bool aggressive)
-{
-	CBaseMonster *monster = smart_cast<CBaseMonster *>(&object());
-	if (monster) monster->Home->setup(name,r_min,r_max,aggressive);
+void CScriptGameObject::set_home( LPCSTR name, float r_min, float r_max, bool aggressive, float middle_radius ) {
+  CBaseMonster *monster = smart_cast<CBaseMonster *>( &object() );
+  if ( monster ) monster->Home->setup( name, r_min, r_max, aggressive, middle_radius );
 }
 
-void CScriptGameObject::set_home( CPatrolPath* path , float r_min, float r_max, bool aggressive ) {
+void CScriptGameObject::set_home( LPCSTR name, float r_min, float r_max, bool aggressive ) {
+  CBaseMonster *monster = smart_cast<CBaseMonster *>( &object() );
+  if ( monster ) monster->Home->setup( name, r_min, r_max, aggressive );
+}
+
+void CScriptGameObject::set_home( LPCSTR name, float r_min, float r_max ) {
+  CBaseMonster *monster = smart_cast<CBaseMonster *>( &object() );
+  if ( monster ) monster->Home->setup( name, r_min, r_max );
+}
+
+void CScriptGameObject::set_home( CPatrolPath* path, float r_min, float r_max, bool aggressive, float middle_radius ) {
+  CBaseMonster *monster = smart_cast<CBaseMonster *>( &object() );
+  if ( monster ) monster->Home->setup( path, r_min, r_max, aggressive, middle_radius );
+}
+
+void CScriptGameObject::set_home( CPatrolPath* path, float r_min, float r_max, bool aggressive ) {
   CBaseMonster *monster = smart_cast<CBaseMonster *>( &object() );
   if ( monster ) monster->Home->setup( path, r_min, r_max, aggressive );
+}
+
+void CScriptGameObject::set_home( CPatrolPath* path, float r_min, float r_max ) {
+  CBaseMonster *monster = smart_cast<CBaseMonster *>( &object() );
+  if ( monster ) monster->Home->setup( path, r_min, r_max );
+}
+
+void CScriptGameObject::set_home( u32 lv_ID, float r_min, float r_max, bool aggressive, float middle_radius ) {
+  CBaseMonster *monster = smart_cast<CBaseMonster *>( &object() );
+  if ( monster ) monster->Home->setup( lv_ID, r_min, r_max, aggressive, middle_radius );
+}
+
+void CScriptGameObject::set_home( u32 lv_ID, float r_min, float r_max, bool aggressive ) {
+  CBaseMonster *monster = smart_cast<CBaseMonster *>( &object() );
+  if ( monster ) monster->Home->setup( lv_ID, r_min, r_max, aggressive );
+}
+
+void CScriptGameObject::set_home( u32 lv_ID, float r_min, float r_max ) {
+  CBaseMonster *monster = smart_cast<CBaseMonster *>( &object() );
+  if ( monster ) monster->Home->setup( lv_ID, r_min, r_max );
 }
 
 void CScriptGameObject::remove_home()

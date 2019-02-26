@@ -1102,7 +1102,7 @@ void	CCustomZone::OnEvent (NET_Packet& P, u16 type)
                  CArtefact *artefact = smart_cast<CArtefact*>(Level().Objects.net_Find(id)); 
 				 if(artefact)
 				 {
-					 bool			just_before_destroy = !P.r_eof() && P.r_u8();
+					bool just_before_destroy = !P.r_eof() && P.r_u8();
 					artefact->H_SetParent(NULL,just_before_destroy);
 					if (!just_before_destroy)
 						ThrowOutArtefact(artefact);

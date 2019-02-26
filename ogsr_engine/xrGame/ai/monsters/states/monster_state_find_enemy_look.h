@@ -27,9 +27,9 @@ public:
 	virtual	void		initialize					();	
 	virtual	void		reselect_state				();
 	virtual bool		check_completion			();
+	virtual void		remove_links				(CObject* object) { inherited::remove_links(object);}
 
 	virtual void		setup_substates				();
-	virtual void		remove_links					(CObject* object) { inherited::remove_links(object);}
 };
 
 #include "monster_state_find_enemy_look_inline.h"

@@ -40,8 +40,6 @@ public:
 							CTrade					(CInventoryOwner	*p_io);
 							~CTrade					();
 
-	
-
 	bool					CanTrade				();
 	
 	void					StartTrade				(CInventoryOwner* pInvOwner);
@@ -60,9 +58,10 @@ public:
 	u32						GetItemPrice			(CInventoryItem* pItem, bool b_buying);
 
 	void					UpdateTrade				();
+
+	bool					SetPartner(CEntity *p);
+	void					RemovePartner();
 private:
-	bool					SetPartner				(CEntity *p);
-	void					RemovePartner			();
 
 	CInventory&				GetTradeInv				(SInventoryOwner owner);
 };

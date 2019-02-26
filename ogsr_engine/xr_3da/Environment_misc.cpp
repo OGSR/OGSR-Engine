@@ -8,8 +8,6 @@
 #include "resourcemanager.h"
 
 #define DEF_TREE_AMPLITUDE_INTENSITY 0.01f
-#define READ_IF_EXISTS(ltx,method,section,name,default_value)\
-	((ltx->line_exist(section,name)) ? (ltx->method(section,name)) : (default_value))
 
 //-----------------------------------------------------------------------------
 // Environment modifier

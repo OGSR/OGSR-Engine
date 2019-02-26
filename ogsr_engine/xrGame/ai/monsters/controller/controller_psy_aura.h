@@ -36,29 +36,16 @@ class CControllerAura : public CPPEffectorCustomController<CPPEffectorController
 	u32					m_time_last_update;
 
 	SAuraSound			aura_sound;
-
 	float				aura_radius;
-	float				aura_damage;
-
+	
 	u32					m_time_fake_aura;
-
 
 	u32					m_time_fake_aura_duration;
 	u32					m_time_fake_aura_delay;
 	float				m_fake_max_add_dist;
 	float				m_fake_min_add_dist;
 
-
-	// hits
-	enum {
-		eNone,
-		eEffectoring,
-		eHit
-	} m_hit_state;
-
 	u32					m_time_started;
-	u32					m_pmt_hit_delay;
-	u32					m_pmt_pp_hit_delay;
 
 
 public:

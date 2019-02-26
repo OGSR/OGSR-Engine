@@ -121,7 +121,7 @@ void CMovementManager::process_game_path()
 				);
 			}
 
-			if (can_use_distributed_compuations(mtLevelPath)) {
+			if (can_use_distributed_computations(mtLevelPath)) {
 				level_path_builder().setup(
 					object().ai_location().level_vertex_id(),
 					dest_level_vertex_id
@@ -164,7 +164,7 @@ void CMovementManager::process_game_path()
 				)
 			);
 
-			if (can_use_distributed_compuations(mtDetailPath)) {
+			if (can_use_distributed_computations(mtDetailPath)) {
 				detail_path_builder().setup(
 					level_path().path(),
 					level_path().intermediate_index()

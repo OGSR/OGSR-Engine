@@ -189,13 +189,13 @@ protected	:
 	Fvector*		value;
 	Fvector			min,max;
 public		:
-	CCC_Vector3(LPCSTR N, Fvector* V, const Fvector _min, const Fvector _max) :
+	CCC_Vector3(LPCSTR N, Fvector* V, const Fvector& _min, const Fvector& _max) :
 	  IConsole_Command(N),
 	  value(V)
 	{
 		min.set(_min);
 		max.set(_max);
-	};
+	}
 
 	virtual void	Execute	(LPCSTR args)
 	{
@@ -226,13 +226,13 @@ protected:
 	Fvector4*		value;
 	Fvector4			min, max;
 public:
-	CCC_Vector4(LPCSTR N, Fvector4* V, const Fvector4 _min, const Fvector4 _max) :
+	CCC_Vector4(LPCSTR N, Fvector4* V, const Fvector4& _min, const Fvector4& _max) :
 		IConsole_Command(N),
 		value(V)
 	{
 		min.set(_min);
 		max.set(_max);
-	};
+	}
 
 	virtual void	Execute(LPCSTR args)
 	{

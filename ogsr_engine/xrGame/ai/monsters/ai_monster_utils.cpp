@@ -5,6 +5,7 @@
 #include "../../ai_space.h"
 #include "level_graph.h"
 #include "../../../xr_3da/skeletoncustom.h"
+#include "basemonster/base_monster.h"
 
 // проверить, находится ли объект entity на ноде
 // возвращает позицию объекта, если он находится на ноде, или центр его ноды
@@ -39,4 +40,15 @@ Fvector get_bone_position	(CObject *object, LPCSTR bone_name)
 	global_transform.mul	(object->XFORM(),bone.mTransform);
 
 	return	(global_transform.c);
+}
+
+Fvector get_head_position(CObject *object) 
+{
+	pcstr bone_name		=	"bip01_head";
+	if ( CBaseMonster* monster = smart_cast<CBaseMonster*>(object) )
+	{
+		bone_name		=	monster->get_head_bone_name();
+	}
+
+	return get_bone_position(object, bone_name);
 }

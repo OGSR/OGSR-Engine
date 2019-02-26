@@ -10,8 +10,6 @@ void CStateChimeraThreatenStealAbstract::initialize()
 {
 	inherited::initialize();
 	
-	object->SetUpperState	(false);
-
 	data.action.action		= ACT_STEAL;
 	
 	data.accelerated		= true;
@@ -27,7 +25,6 @@ TEMPLATE_SPECIALIZATION
 void CStateChimeraThreatenStealAbstract::finalize()
 {
 	inherited::finalize();
-	object->SetUpperState	();
 }
 
 

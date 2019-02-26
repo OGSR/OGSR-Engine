@@ -7,6 +7,7 @@
 #include "cl_intersect.h"
 #include "tri-colliderKNoOPC\__aabb_tri.h"
 #include "ode/src/util.h"
+#include "gamemtllib.h"
 
 CPHCharacter::CPHCharacter(void):
   CPHDisablingTranslational()
@@ -148,3 +149,32 @@ void CPHCharacter::CutVelocity(float l_limit,float /*a_limit*/)
 	}
 }
 
+
+void	virtual_move_collide_callback(bool& do_collide, bool bo1, dContact& c, SGameMtl* material_1, SGameMtl* material_2)
+{
+	if (!do_collide)
+		return;
+	do_collide = false;
+	SGameMtl* oposite_matrial = bo1 ? material_1 : material_2;
+	if (oposite_matrial->Flags.test(SGameMtl::flPassable))
+		return;
+
+	dxGeomUserData	*my_data = retrieveGeomUserData(bo1 ? c.geom.g1 : c.geom.g2);
+	dxGeomUserData	*oposite_data = retrieveGeomUserData(bo1 ? c.geom.g2 : c.geom.g1);
+	VERIFY(my_data);
+	if (oposite_data && oposite_data->ph_ref_object == my_data->ph_ref_object)
+		return;
+
+	c.surface.mu = 0;
+	c.surface.soft_cfm = 0.01f;
+	dJointID contact_joint = dJointCreateContact(0, ContactGroup, &c);//dJointCreateContactSpecial(0, ContactGroup, &c);
+	CPHObject* obj = (CPHObject*)my_data->callback_data;
+	VERIFY(obj);
+
+	obj->Island().DActiveIsland()->ConnectJoint(contact_joint);
+
+	if (bo1)
+		dJointAttach(contact_joint, dGeomGetBody(c.geom.g1), 0);
+	else
+		dJointAttach(contact_joint, 0, dGeomGetBody(c.geom.g2));
+}

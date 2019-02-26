@@ -39,19 +39,25 @@ void CMonsterCorpseMemory::update()
 
 void CMonsterCorpseMemory::add_corpse(const CEntityAlive *corpse)
 {
+	if (const_cast<CEntityAlive *>(corpse)->is_locked_corpse()) return;
 	SMonsterCorpse corpse_info;
 	corpse_info.position	= corpse->Position();
 	corpse_info.vertex		= corpse->ai_location().level_vertex_id();
 	corpse_info.time		= Device.dwTimeGlobal;
-
 	CORPSE_MAP_IT it = m_objects.find(corpse);
 	if (it != m_objects.end()) {
 		// обновить данные о враге
 		it->second = corpse_info;
 	} else {
 		// добавить врага в список объектов
-		m_objects.insert(mk_pair(corpse, corpse_info));
+		m_objects.insert(std::make_pair(corpse, corpse_info));
 	}
+}
+
+bool CMonsterCorpseMemory::is_valid_corpse (const CEntityAlive *corpse)
+{
+	CORPSE_MAP_IT it = m_objects.find(corpse);
+	return it != m_objects.end();
 }
 
 void CMonsterCorpseMemory::remove_non_actual() 
@@ -64,19 +70,34 @@ void CMonsterCorpseMemory::remove_non_actual()
 		nit = it; ++nit;
 		// проверить условия удаления
 		if (!it->first					|| 
-			it->first->g_Alive()		|| 
+			it->first->g_Alive()		||
 			it->first->getDestroy()		||
 			(it->second.time + time_memory < cur_time) || 
 			(it->first->m_fFood < 1)	 
-			) 
+			)
+		{
 			m_objects.erase (it);
+
+			// Lain: fixed by adding "continue"
+			continue;
+		}
+		
+		if ( const_cast<CEntityAlive *>(it->first)->is_locked_corpse() ) 
+		{
+			m_objects.erase (it);
+			continue;
+		}
 	}
 }
 
 const CEntityAlive *CMonsterCorpseMemory::get_corpse()
 {
 	CORPSE_MAP_IT	it = find_best_corpse();
-	if (it != m_objects.end()) return it->first;
+	if (it != m_objects.end()) {
+		if (const_cast<CEntityAlive *>(it->first)->is_locked_corpse()) return (0);
+
+		return it->first;
+	}
 	return (0);
 }
 

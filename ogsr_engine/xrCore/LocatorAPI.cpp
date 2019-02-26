@@ -1361,11 +1361,6 @@ LPCSTR CLocatorAPI::update_path(string_path& dest, LPCSTR initial, LPCSTR src)
 {
     return get_path(initial)->_update(dest,src);
 }
-/*
-void CLocatorAPI::update_path(xr_string& dest, LPCSTR initial, LPCSTR src)
-{
-    return get_path(initial)->_update(dest,src);
-}*/
 
 u32 CLocatorAPI::get_file_age(LPCSTR nm)
 {

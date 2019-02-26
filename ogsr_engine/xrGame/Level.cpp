@@ -483,6 +483,10 @@ void CLevel::OnRender()
 			auto space_restrictor = smart_cast<CSpaceRestrictor*>(_O);
 			if (space_restrictor)
 				space_restrictor->OnRender();
+
+			auto climable = smart_cast<CClimableObject*>(_O);
+			if (climable)
+				climable->OnRender();
 		}
 	}
 

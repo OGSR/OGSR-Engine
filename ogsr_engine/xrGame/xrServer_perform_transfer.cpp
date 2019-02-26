@@ -22,7 +22,7 @@ void xrServer::Perform_transfer(NET_Packet &PR, NET_Packet &PT,	CSE_Abstract* wh
 	C.erase					(c);
 	PR.w_begin				(M_EVENT);
 	PR.w_u32				(time);
-	PR.w_u16				(GE_OWNERSHIP_REJECT);
+	PR.w_u16				(GE_TRANSFER_REJECT);
 	PR.w_u16				(from->ID);
 	PR.w_u16				(what->ID);
 
@@ -31,7 +31,7 @@ void xrServer::Perform_transfer(NET_Packet &PR, NET_Packet &PT,	CSE_Abstract* wh
 	to->children.push_back	(what->ID);
 	PT.w_begin				(M_EVENT);
 	PT.w_u32				(time+1);
-	PT.w_u16				(GE_OWNERSHIP_TAKE);
+	PT.w_u16				(GE_TRANSFER_TAKE);
 	PT.w_u16				(to->ID);
 	PT.w_u16				(what->ID);
 

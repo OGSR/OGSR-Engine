@@ -248,8 +248,15 @@ public:
 
 	// CBaseMonster
 			void				skip_transfer_enemy		(bool val);
-			void				set_home				(LPCSTR name, float r_min, float r_max, bool aggressive);
-			void set_home( CPatrolPath*, float, float, bool );
+  void set_home( LPCSTR name, float r_min, float r_max, bool aggressive, float middle_radius );
+  void set_home( LPCSTR, float, float, bool );
+  void set_home( LPCSTR, float, float );
+  void set_home( CPatrolPath*, float, float, bool, float );
+  void set_home( CPatrolPath*, float, float, bool );
+  void set_home( CPatrolPath*, float, float );
+  void set_home( u32, float, float, bool, float );
+  void set_home( u32, float, float, bool );
+  void set_home( u32, float, float );
 			bool at_home();
 			bool at_home( Fvector );
 			void				remove_home				();
@@ -303,10 +310,11 @@ public:
 			void				IterateRuck     ( const luabind::functor<void>& functor, const luabind::object& object );
 			void				MarkItemDropped		(CScriptGameObject *item);
 			bool				MarkedDropped		(CScriptGameObject *item);
-			void				UnloadMagazine		(bool spawn_ammo = false);
+			void				UnloadMagazine		(bool spawn_ammo = false, bool unload_gl = false);
 
 			void				DropItem			(CScriptGameObject* pItem);
 			void				DropItemAndTeleport	(CScriptGameObject* pItem, Fvector position);
+			void				DropItemAndThrow( CScriptGameObject*, Fvector );
 			void				ForEachInventoryItems(const luabind::functor<void> &functor);
 			void				TransferItem		(CScriptGameObject* pItem, CScriptGameObject* pForWho);
 			void				TransferMoney		(int money, CScriptGameObject* pForWho);
@@ -648,6 +656,7 @@ public:
 			float				GetMaxWeight() const;
 			float				GetMaxWalkWeight() const;
 			float				GetInventoryWeight() const;
+			u32					CalcItemPrice(CScriptGameObject *item, bool b_buying) const;
 
 			float GetShapeRadius() const;
 
@@ -784,6 +793,12 @@ public:
 	bool throw_target( const Fvector&, u32 const, CScriptGameObject* = nullptr );
 
 	void g_fireParams( const CScriptGameObject*, Fvector&, Fvector& );
+
+	float stalker_disp_base();
+	void  stalker_disp_base( float );
+	void  stalker_disp_base( float, float );
+
+	bool controller_psy_hit_active();
 
 	DECLARE_SCRIPT_REGISTER_FUNCTION
 };

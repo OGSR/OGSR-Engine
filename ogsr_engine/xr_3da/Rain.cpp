@@ -181,14 +181,18 @@ void	CEffect_Rain::OnFrame	()
 				snd_Ambient.stop();
 			return;
 		}
-		state					= stWorking;
-		snd_Ambient.play		(0,sm_Looped);
-		snd_Ambient.set_range	(source_offset,source_offset*2.f);
-	break;
+		if (snd_Ambient._feedback()) {
+			snd_Ambient.stop();
+			return;
+		}
+		snd_Ambient.play(0, sm_Looped);
+		snd_Ambient.set_range(source_offset, source_offset * 2.f);
+		state = stWorking;
+		break;
 	case stWorking:
 		if (factor<EPS_L){
-			state				= stIdle;
-			snd_Ambient.stop	();
+			snd_Ambient.stop();
+			state = stIdle;
 			return;
 		}
 		break;

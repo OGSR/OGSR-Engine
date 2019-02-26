@@ -29,8 +29,8 @@ static const int path_few_point=10;
 public:
 CElevatorState			*ElevatorState  ();
 void 					in_shedule_Update( u32 DT );
-void					PHCaptureObject( CPhysicsShellHolder* object, LPCSTR = nullptr );
-void					PHCaptureObject( CPhysicsShellHolder* object,u16 element, LPCSTR = nullptr );
+void					PHCaptureObject( CPhysicsShellHolder* object, LPCSTR = nullptr, bool = false );
+void					PHCaptureObject( CPhysicsShellHolder* object,u16 element, LPCSTR = nullptr, bool = false );
 CPHCapture*				PHCapture		(){return m_capture;}
 CPHCharacter*			PHCharacter		(){return m_character;}
 void					PHReleaseObject	();
@@ -44,6 +44,7 @@ void					SetActorMovable(bool v){if(m_character)m_character->SetActorMovable(v);
 void					SetForcedPhysicsControl(bool v){if(m_character)m_character->SetForcedPhysicsControl(v);}
 bool					ForcedPhysicsControl(){return m_character&&m_character->ForcedPhysicsControl();}
 void					UpdateObjectBox(CPHCharacter *ach);
+void					VirtualMoveTo		( const Fvector	&in_pos, Fvector &out_pos );
 enum					JumpType 
 {
 						jtStrait, //end point before uppermost point
@@ -56,7 +57,8 @@ void					Jump(const Fvector &end_point, float time);
 float					Jump(const Fvector &end_point);
 bool					JumpState(){return (m_character&&m_character->b_exist&&m_character->IsEnabled()&&m_character->JumpState());};
 ///
-bool					PhyssicsOnlyMode(){return m_character&& m_character->b_exist&&m_character->IsEnabled()&&(m_character->JumpState()||m_character->ForcedPhysicsControl());}
+bool					PhysicsOnlyMode();
+bool					PhyssicsOnlyMode() { return PhysicsOnlyMode(); }
 void					GetJumpMinVelParam(Fvector &min_vel,float &time,JumpType &type,const Fvector &end_point);	//returns vector of velocity of jump with minimal start speed
 																													//in min_vel and correspondent jump time in time
 float					JumpMinVelTime(const Fvector &end_point); // return time of jump with min start speed

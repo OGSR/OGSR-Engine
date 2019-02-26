@@ -70,7 +70,6 @@ enum {
 enum {
 	GE_RESPAWN,
 	GE_OWNERSHIP_TAKE,			// DUAL: Client request for ownership of an item
-	GE_OWNERSHIP_TAKE_MP_FORCED,
 	GE_OWNERSHIP_REJECT,		// DUAL: Client request ownership rejection
 	GE_TRANSFER_AMMO,			// DUAL: Take ammo out of weapon for our weapon
 	GE_HIT,						//
@@ -83,9 +82,6 @@ enum {
 	GE_ADD_RESTRICTION,
 	GE_REMOVE_RESTRICTION,
 	GE_REMOVE_ALL_RESTRICTIONS,
-
-	GE_BUY,
-
 
 	GE_INFO_TRANSFER,			//transfer _new_ info on PDA
 	
@@ -136,6 +132,9 @@ enum {
 
 	GE_FREEZE_OBJECT,
 	GE_LAUNCH_ROCKET,
+
+	GE_TRANSFER_TAKE,
+	GE_TRANSFER_REJECT,
 
 	GE_FORCEDWORD				= u32(-1)
 };

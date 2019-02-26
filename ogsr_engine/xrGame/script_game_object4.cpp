@@ -24,6 +24,8 @@
 
 #include "HangingLamp.h"
 #include "CharacterPhysicsSupport.h"
+#include "ai/monsters/controller/controller.h"
+#include "ai/monsters/controller/controller_psy_hit.h"
 
 //////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////
@@ -756,7 +758,7 @@ void CScriptGameObject::PHCaptureObject( CScriptGameObject* obj, LPCSTR capture_
   ASSERT_FMT( ps, "[%s]: %s not a CPhysicsShellHolder", __FUNCTION__, obj->cName().c_str() );
   auto EA = smart_cast<CEntityAlive*>( &object() );
   ASSERT_FMT( EA, "[%s]: %s not a CEntityAlive", __FUNCTION__, cName().c_str() );
-  EA->character_physics_support()->movement()->PHCaptureObject( ps, capture_bone );
+  EA->character_physics_support()->movement()->PHCaptureObject( ps, capture_bone, true );
 }
 
 void CScriptGameObject::PHCaptureObject( CScriptGameObject* obj ) {
@@ -769,7 +771,7 @@ void CScriptGameObject::PHCaptureObject( CScriptGameObject* obj, u16 bone, LPCST
   ASSERT_FMT( ps, "[%s]: %s not a CPhysicsShellHolder", __FUNCTION__, obj->cName().c_str() );
   auto EA = smart_cast<CEntityAlive*>( &object() );
   ASSERT_FMT( EA, "[%s]: %s not a CEntityAlive", __FUNCTION__, cName().c_str() );
-  EA->character_physics_support()->movement()->PHCaptureObject( ps, bone, capture_bone );
+  EA->character_physics_support()->movement()->PHCaptureObject( ps, bone, capture_bone, true );
 }
 
 void CScriptGameObject::PHCaptureObject( CScriptGameObject* obj, u16 bone ) {
@@ -827,4 +829,45 @@ void CScriptGameObject::g_fireParams( const CScriptGameObject* pHudItem, Fvector
   const auto item = smart_cast<const CHudItem*>( &(pHudItem->object()) );
   ASSERT_FMT( item, "[%s]: %s not a CHudItem", __FUNCTION__, pHudItem->object().cName().c_str() );
   E->g_fireParams( item, P, D );
+}
+
+
+float CScriptGameObject::stalker_disp_base() {
+  CAI_Stalker *stalker = smart_cast<CAI_Stalker*>( &object() );
+  ASSERT_FMT( stalker, "[%s]: %s not a CAI_Stalker", __FUNCTION__, object().cName().c_str() );
+  return stalker->m_fDispBase;
+}
+
+void CScriptGameObject::stalker_disp_base( float disp ) {
+  CAI_Stalker *stalker = smart_cast<CAI_Stalker*>( &object() );
+  ASSERT_FMT( stalker, "[%s]: %s not a CAI_Stalker", __FUNCTION__, object().cName().c_str() );
+  stalker->m_fDispBase = disp;
+}
+
+void CScriptGameObject::stalker_disp_base( float range, float maxr ) {
+  CAI_Stalker *stalker = smart_cast<CAI_Stalker*>( &object() );
+  ASSERT_FMT( stalker, "[%s]: %s not a CAI_Stalker", __FUNCTION__, object().cName().c_str() );
+  stalker->m_fDispBase = asin( maxr / range );
+}
+
+
+void CScriptGameObject::DropItemAndThrow( CScriptGameObject* pItem, Fvector speed ) {
+  auto owner = smart_cast<CInventoryOwner*>( &object() );
+  ASSERT_FMT( owner, "[%s]: %s not a CInventoryOwner", __FUNCTION__, object().cName().c_str() );
+
+  auto item  = smart_cast<CPhysicsShellHolder*>( &pItem->object() );
+  ASSERT_FMT( item, "[%s]: %s not a CPhysicsShellHolder", __FUNCTION__, pItem->object().cName().c_str() );
+
+  item->SetActivationSpeedOverride( speed );
+  NET_Packet P;
+  CGameObject::u_EventGen( P, GE_OWNERSHIP_REJECT, object().ID() );
+  P.w_u16( pItem->object().ID() );
+  CGameObject::u_EventSend( P );
+}
+
+
+bool CScriptGameObject::controller_psy_hit_active() {
+  auto controller = smart_cast<CController*>( &object() );
+  ASSERT_FMT( controller, "[%s]: %s not a CController", __FUNCTION__, object().cName().c_str() );
+  return controller->m_psy_hit->is_active();
 }

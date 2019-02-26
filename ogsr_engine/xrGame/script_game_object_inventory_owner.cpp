@@ -35,6 +35,7 @@
 #include "ai/stalker/ai_stalker.h"
 #include "Torch.h"
 #include "customoutfit.h"
+#include "WeaponMagazinedWGrenade.h"
 
 bool CScriptGameObject::GiveInfoPortion(LPCSTR info_id)
 {
@@ -249,21 +250,30 @@ bool CScriptGameObject::MarkedDropped		(CScriptGameObject *item)
 	return					(!!inventory_item->GetDropManual());
 }
 
-void CScriptGameObject::UnloadMagazine		(bool spawn_ammo)
+void CScriptGameObject::UnloadMagazine(bool spawn_ammo, bool unload_gl)
 {
-	CWeaponMagazined		*weapon_magazined = smart_cast<CWeaponMagazined*>(&object());
+	auto weapon_magazined = smart_cast<CWeaponMagazined*>(&object());
 	if (!weapon_magazined) {
-		ai().script_engine().script_log		(ScriptStorage::eLuaMessageTypeError,"CScriptGameObject::UnloadMagazine non-CWeaponMagazined object !!!");
+		ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError,"CScriptGameObject::UnloadMagazine non-CWeaponMagazined object !!!");
 		return;
 	}
 
-	CAI_Stalker				*stalker = smart_cast<CAI_Stalker*>(weapon_magazined->H_Parent());
+	auto stalker = smart_cast<CAI_Stalker*>(weapon_magazined->H_Parent());
 	if (stalker && stalker->hammer_is_clutched())
 		return;
 
-	weapon_magazined->UnloadMagazine	(spawn_ammo);
+	weapon_magazined->UnloadMagazine(spawn_ammo);
+	if (unload_gl)
+	{
+		auto WpnMagazWgl = smart_cast<CWeaponMagazinedWGrenade*>(weapon_magazined);
+		if (WpnMagazWgl && WpnMagazWgl->IsGrenadeLauncherAttached())
+		{
+			WpnMagazWgl->PerformSwitchGL();
+			WpnMagazWgl->UnloadMagazine(spawn_ammo);
+			WpnMagazWgl->PerformSwitchGL();
+		}
+	}
 }
-//
 
 void CScriptGameObject::DropItem			(CScriptGameObject* pItem)
 {
@@ -310,12 +320,12 @@ void CScriptGameObject::TransferItem(CScriptGameObject* pItem, CScriptGameObject
 
 	// выбросить у себя 
 	NET_Packet						P;
-	CGameObject::u_EventGen			(P,GE_OWNERSHIP_REJECT, object().ID());
+	CGameObject::u_EventGen			(P,GE_TRANSFER_REJECT, object().ID());
 	P.w_u16							(pIItem->object().ID());
 	CGameObject::u_EventSend		(P);
 
 	// отдать партнеру
-	CGameObject::u_EventGen			(P,GE_OWNERSHIP_TAKE, pForWho->object().ID());
+	CGameObject::u_EventGen			(P,GE_TRANSFER_TAKE, pForWho->object().ID());
 	P.w_u16							(pIItem->object().ID());
 	CGameObject::u_EventSend		(P);
 }

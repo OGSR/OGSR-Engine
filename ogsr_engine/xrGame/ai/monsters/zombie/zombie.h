@@ -52,9 +52,11 @@ public:
 	bool			fake_death_fall_down	(); //return true if everything is ok
 	void			fake_death_stand_up		();
 
+/*
 #ifdef DEBUG
 	virtual void	debug_on_key			(int key);
 #endif
+*/
 
 
 	DECLARE_SCRIPT_REGISTER_FUNCTION

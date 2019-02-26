@@ -64,11 +64,11 @@ void CBurer::reload(LPCSTR section)
 	// add specific sounds
 	sound().add				(pSettings->r_string(section,"sound_gravi_attack"),	DEFAULT_SAMPLE_COUNT,	
 							SOUND_TYPE_MONSTER_ATTACKING,	MonsterSound::eHighPriority + 2,	
-							u32(MonsterSound::eBaseChannel),	eMonsterSoundGraviAttack, "bip01_head");
+							u32(MonsterSound::eBaseChannel),	eMonsterSoundGraviAttack, get_head_bone_name());
 
 	sound().add				(pSettings->r_string(section,"sound_tele_attack"),	DEFAULT_SAMPLE_COUNT,	
 							SOUND_TYPE_MONSTER_ATTACKING,	MonsterSound::eHighPriority + 3,	
-							u32(MonsterSound::eBaseChannel),	eMonsterSoundTeleAttack, "bip01_head");
+							u32(MonsterSound::eBaseChannel),	eMonsterSoundTeleAttack, get_head_bone_name());
 }
 
 void CBurer::ActivateShield () 
@@ -165,7 +165,6 @@ void CBurer::Load(LPCSTR section)
 
 	anim().AddAnim(eAnimDie,			"stand_die_",			-1, &velocity_none,		PS_STAND); //, 	"fx_stand_f", "fx_stand_b", "fx_stand_l", "fx_stand_r");
 
-#pragma todo( "dsh: вернуть закомментированные анимации обратно, когда они появятся" )
         pcstr shield_anim_start = READ_IF_EXISTS( pSettings, r_string, section, "shield_animation_start", "stand_tele_"/*"stand_shield_"*/ );
 	anim().AddAnim( eAnimShieldStart, shield_anim_start, -1, &velocity_turn, PS_STAND ); //, 	"fx_stand_f", "fx_stand_b", "fx_stand_l", "fx_stand_r");
         pcstr shield_anim_cont = READ_IF_EXISTS( pSettings, r_string, section, "shield_animation_cont", "stand_tele_"/*"stand_shield_idle_"*/ );
@@ -221,7 +220,10 @@ void CBurer::Load(LPCSTR section)
 void CBurer::PostLoad (LPCSTR section)
 {
 	inherited::PostLoad						(section);
-	m_anti_aim->set_callback				(anti_aim_ability::hit_callback(this, &CBurer::StaminaHit));
+	if (m_anti_aim)
+	{
+		m_anti_aim->set_callback(anti_aim_ability::hit_callback(this, &CBurer::StaminaHit));
+	}
 }
 
 void CBurer::shedule_Update(u32 dt)
@@ -262,7 +264,8 @@ void xr_stdcall CBurer::StaminaHit ()
 		{
 			dir.y					=	-dir.y;
 		}
-		active_weapon->SetActivationSpeedOverride ( normalize(dir) * m_weapon_drop_velocity );
+		auto item = smart_cast<CPhysicsShellHolder*>( Actor()->inventory().ActiveItem() );
+		item->SetActivationSpeedOverride ( normalize(dir) * m_weapon_drop_velocity );
 
 		if ( !Actor()->inventory().Action((u16)kDROP, CMD_STOP) )
 		{
@@ -467,6 +470,7 @@ void CBurer::net_Relcase(CObject *O)
 	TTelekinesis::remove_links	(O);
 }
 
+/*
 #ifdef DEBUG
 CBaseMonster::SDebugInfo CBurer::show_debug_info()
 {
@@ -480,6 +484,7 @@ CBaseMonster::SDebugInfo CBurer::show_debug_info()
 	return CBaseMonster::SDebugInfo();
 }
 #endif
+*/
 
 void   CBurer::face_enemy ()
 {

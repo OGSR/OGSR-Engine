@@ -337,11 +337,9 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="noise.cpp" />
-    <ClCompile Include="particle_actions.cpp" />
     <ClCompile Include="particle_actions_collection.cpp" />
     <ClCompile Include="particle_actions_collection_io.cpp" />
     <ClCompile Include="particle_core.cpp" />
-    <ClCompile Include="particle_effect.cpp" />
     <ClCompile Include="particle_manager.cpp" />
   </ItemGroup>
   <ItemGroup>

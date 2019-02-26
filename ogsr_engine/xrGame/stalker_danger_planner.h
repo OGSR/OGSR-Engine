@@ -27,5 +27,3 @@ public:
 	virtual void		update					();
 	virtual void		finalize				();
 };
-
-#include "stalker_danger_planner_inline.h"

@@ -11,6 +11,7 @@ class CPHSkeleton;
 class CCharacterPhysicsSupport;
 class ICollisionDamageInfo;
 class CIKLimbsController;
+class CPHCapture;
 
 struct SCollisionHitCallback
 {
@@ -54,8 +55,6 @@ public:
 	CPhysicsShellHolder							();
 
 
-
-	virtual bool		ActivationSpeedOverriden (Fvector& dest, bool clear_override) { return false; }
 
 	IC CPhysicsShell	*&PPhysicsShell				()		
 	{
@@ -116,4 +115,15 @@ public:
 public:
 	virtual bool			register_schedule	() const;
 	bool ActorCanCapture() const;
+
+public://IPhysicsShellHolder
+	CPHCapture*				_BCL					PHCapture							()						;
+
+private:
+	Fvector					m_overriden_activation_speed;
+	bool					m_activation_speed_is_overriden;
+
+public:
+	virtual bool			ActivationSpeedOverriden	(Fvector& dest, bool clear_override);
+	virtual void			SetActivationSpeedOverride	(Fvector const& speed);
 };

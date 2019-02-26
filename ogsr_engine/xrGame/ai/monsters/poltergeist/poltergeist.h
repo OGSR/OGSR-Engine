@@ -82,6 +82,9 @@ public:
 
 			void	EnableHide				(){m_disable_hide = false;}
 			void	DisableHide				(){m_disable_hide = true;}
+
+public:
+	virtual bool	run_home_point_when_enemy_inaccessible () const { return false; }
 	
 private:
 			void	Hide					();

@@ -45,5 +45,3 @@ public:
 /**/
 			void					kill_entity					(CSE_ALifeMonsterAbstract	*l_tpALifeMonsterAbstract,	const GameGraph::_GRAPH_ID &l_tGraphID,					CSE_ALifeSchedulable *schedulable);
 };
-
-#include "alife_combat_manager_inline.h"

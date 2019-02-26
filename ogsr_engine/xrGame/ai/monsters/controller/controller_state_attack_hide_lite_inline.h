@@ -72,9 +72,11 @@ bool CStateControllerHideLiteAbstract::check_completion()
 TEMPLATE_SPECIALIZATION
 void CStateControllerHideLiteAbstract::select_target_point()
 {
+/*
 #ifdef DEBUG
 	DBG().level_info(this).clear();
 #endif
+*/
 
 	const CCoverPoint	*point = object->CoverMan->find_cover(object->EnemyMan.get_enemy_position(),10.f,30.f);
 	//VERIFY(point);

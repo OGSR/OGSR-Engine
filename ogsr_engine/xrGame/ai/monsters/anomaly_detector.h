@@ -16,7 +16,7 @@ public:
 	bool					m_forced;
 
 private:
-	xr_vector<CLASS_ID> m_ignore_clsids;
+	std::vector<CLASS_ID> m_ignore_clsids;
         struct SAnomalyInfo {
           u16  id;
           bool ignored;
@@ -32,8 +32,9 @@ private:
 		}
 	};
 
-	DEFINE_VECTOR			(SAnomalyInfo, ANOMALY_INFO_VEC, ANOMALY_INFO_VEC_IT);
-	ANOMALY_INFO_VEC		m_storage;
+	using ANOMALY_INFO_VEC = std::vector<SAnomalyInfo>;
+	using ANOMALY_INFO_VEC_IT = ANOMALY_INFO_VEC::iterator;
+	ANOMALY_INFO_VEC m_storage;
 
 public:
 				CAnomalyDetector	(CCustomMonster *monster);

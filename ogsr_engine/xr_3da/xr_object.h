@@ -77,7 +77,7 @@ public:
 		void							MakeMeCrow_internal	();
 		void							MakeMeCrow			();
 
-	ICF	void							IAmNotACrowAnyMore	()					{ Props.crow = false;	}
+	ICF	void							IAmNotACrowAnyMore	()					{ Props.crow = 0;	}
 	virtual BOOL						AlwaysTheCrow		()					{ return FALSE; }
 
 	// Network
@@ -120,7 +120,7 @@ public:
 	virtual BOOL						renderable_ShadowReceive	()			{ return TRUE;						}
 
 	// Accessors and converters
-	ICF IRender_Visual*					Visual				()					{ return renderable.visual;			}
+	ICF IRender_Visual*					Visual				() const			{ return renderable.visual;			}
 	ICF ICollisionForm*					CFORM				() const			{ return collidable.model;			}
 	virtual		CObject*				dcast_CObject		()					{ return this;						}
 	virtual		IRenderable*			dcast_Renderable	()					{ return this;						}

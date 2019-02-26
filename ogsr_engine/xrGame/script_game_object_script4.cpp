@@ -362,6 +362,13 @@ class_<CScriptGameObject> script_register_game_object3(class_<CScriptGameObject>
 
 		.def( "g_fireParams", &CScriptGameObject::g_fireParams )
 
+		.def( "stalker_disp_base", ( float ( CScriptGameObject::* )() )( &CScriptGameObject::stalker_disp_base ) )
+		.def( "stalker_disp_base", ( void  ( CScriptGameObject::* )( float ) )( &CScriptGameObject::stalker_disp_base ) )
+		.def( "stalker_disp_base", ( void  ( CScriptGameObject::* )( float, float ) )( &CScriptGameObject::stalker_disp_base ) )
+
+		.def( "drop_item_and_throw", &CScriptGameObject::DropItemAndThrow )
+		.def( "controller_psy_hit_active", &CScriptGameObject::controller_psy_hit_active )
+
 		.property("inventory",				&get_obj_inventory)
 		.property("immunities",				&get_obj_immunities)
 		.property("is_alive",				&get_obj_alive)

@@ -37,7 +37,7 @@ void CControlPathBuilderBase::prepare_builder()
 void CControlPathBuilderBase::set_target_point(const Fvector &position, u32 node)
 {
 	// обновить актуальность
-	m_target_actual = m_target_actual && (m_target_set.position.similar(position) && (m_target_set.node == node));
+	m_target_actual = m_target_actual && (m_target_set.position().similar(position) && (m_target_set.node() == node));
 
 	// установить позицию
 	m_target_set.set	(position,node);
@@ -56,7 +56,7 @@ void CControlPathBuilderBase::set_target_point(u32 node)
 void CControlPathBuilderBase::set_retreat_from_point(const Fvector &position)
 {
 	// обновить актуальность
-	m_target_actual = m_target_actual && (m_target_set.position.similar(position));
+	m_target_actual = m_target_actual && (m_target_set.position().similar(position));
 
 	// установить позицию
 	m_target_set.set	(position,u32(-1));	

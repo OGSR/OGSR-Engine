@@ -63,7 +63,6 @@ TEMPLATE_SPECIALIZATION
 void CStateChimeraThreatenAbstract::initialize()
 {
 	inherited::initialize	();
-	object->SetUpperState	();
 }
 
 TEMPLATE_SPECIALIZATION
@@ -96,7 +95,6 @@ TEMPLATE_SPECIALIZATION
 void CStateChimeraThreatenAbstract::finalize()
 {
 	inherited::finalize		();
-	object->SetUpperState	(false);
 	m_last_time_threaten	 = Device.dwTimeGlobal;
 }
 
@@ -104,7 +102,6 @@ TEMPLATE_SPECIALIZATION
 void CStateChimeraThreatenAbstract::critical_finalize()
 {
 	inherited::critical_finalize();
-	object->SetUpperState	(false);
 	m_last_time_threaten	 = Device.dwTimeGlobal;
 }
 

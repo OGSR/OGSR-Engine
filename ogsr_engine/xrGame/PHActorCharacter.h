@@ -1,7 +1,7 @@
 #pragma once
+
 #include "phsimplecharacter.h"
-#include "PHActorCharacterInline.h"
-class CPhysicShellHolder;
+
 struct SPHCharacterRestrictor
 {
 							SPHCharacterRestrictor							(CPHCharacter::ERestrictionType Ttype)

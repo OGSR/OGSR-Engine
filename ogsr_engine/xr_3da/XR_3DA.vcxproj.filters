@@ -97,9 +97,6 @@
     <Filter Include="Interfaces\Render\Execution &amp; 3D\Shaders\ShaderManager">
       <UniqueIdentifier>{eaa06b63-826a-439f-99cc-f66aff920564}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Interfaces\Render\Execution &amp; 3D\Shaders\ShaderManager\doug_lea_memory_allocator">
-      <UniqueIdentifier>{0b704914-093a-4f13-b45f-e96f8b1b6a51}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Interfaces\Render\Execution &amp; 3D\Shaders\Resources">
       <UniqueIdentifier>{86d6a0b6-0759-488f-b804-a9b0094989af}</UniqueIdentifier>
     </Filter>
@@ -211,9 +208,6 @@
       <Filter>Game API\Environment\Effects</Filter>
     </ClInclude>
     <ClInclude Include="CameraBase.h">
-      <Filter>Game API\Cameras</Filter>
-    </ClInclude>
-    <ClInclude Include="CameraDebug.h">
       <Filter>Game API\Cameras</Filter>
     </ClInclude>
     <ClInclude Include="CameraDefs.h">
@@ -587,9 +581,6 @@
       <Filter>Game API\Cameras</Filter>
     </ClCompile>
     <ClCompile Include="CameraManager.cpp">
-      <Filter>Game API\Cameras</Filter>
-    </ClCompile>
-    <ClCompile Include="Effector.cpp">
       <Filter>Game API\Cameras</Filter>
     </ClCompile>
     <ClCompile Include="EffectorPP.cpp">

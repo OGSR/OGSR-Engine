@@ -1,8 +1,7 @@
 //---------------------------------------------------------------------------
 #include 	"stdafx.h"
 
-
-#include 	"SkeletonCustom.h"
+#include	"SkeletonCustom.h"
 #include	"SkeletonX.h"
 #include	"fmesh.h"
 #include	"Render.h"
@@ -201,10 +200,10 @@ void	CKinematics::Load(const char* N, IReader *data, u32 dwFlags)
 	IReader* LD 	= data->open_chunk(OGF_S_LODS);
     if (LD)
 	{
-        string_path		short_name;
-        strcpy_s		(short_name,sizeof(short_name),N);
+        //string_path		short_name;
+        //strcpy_s		(short_name,sizeof(short_name),N);
 
-        if (strext(short_name)) *strext(short_name)=0;
+        //if (strext(short_name)) *strext(short_name)=0;
         // From stream
 		{
 			string_path		lod_name;
@@ -222,10 +221,27 @@ void	CKinematics::Load(const char* N, IReader *data, u32 dwFlags)
         LD->close	();
     }
 
-	// User data
-	IReader* UD 	= data->open_chunk(OGF_S_USERDATA);
-    pUserData		= UD?xr_new<CInifile>(UD,FS.get_path("$game_config$")->m_Path):0;
-    if (UD)			UD->close();
+	string_path ini_path;
+	strcpy_s(ini_path, N);
+	if (strext(ini_path)) 
+		*strext(ini_path) = 0;
+	strcat_s(ini_path, ".ltx");
+	
+	// try to read custom user data for module from ltx file
+	IReader* UD = FS.r_open("$game_meshes$", ini_path);
+	pUserData = UD ? xr_new<CInifile>(UD, FS.get_path("$game_config$")->m_Path) : 0;
+	if (UD)
+		UD->close();
+
+	// read user data from model if no custom found
+	if (!pUserData)
+	{
+		// User data
+		UD = data->open_chunk(OGF_S_USERDATA);
+		pUserData = UD ? xr_new<CInifile>(UD, FS.get_path("$game_config$")->m_Path) : 0;
+		if (UD)
+			UD->close();
+	}
 
 	// Globals
 	bone_map_N		= xr_new<accel>		();
@@ -293,6 +309,7 @@ void	CKinematics::Load(const char* N, IReader *data, u32 dwFlags)
     // IK data
 	IReader* IKD 	= data->open_chunk(OGF_S_IKDATA);
     if (IKD){
+        bool fix_cop_joints = pUserData ? READ_IF_EXISTS( pUserData, r_bool, "compat", "fix_cop_joints", false ) : false;
         for (u32 i=0; i<bones->size(); i++) {
             CBoneData*	B 	= (*bones)[i];
             u16 vers		= (u16)IKD->r_u32();
@@ -306,6 +323,15 @@ void	CKinematics::Load(const char* N, IReader *data, u32 dwFlags)
             B->bind_transform.translate_over(vT);
 	        B->mass			= IKD->r_float();
     	    IKD->r_fvector3	(B->center_of_mass);
+            if ( fix_cop_joints ) {
+              // https://bitbucket.org/stalker/xray_re-tools/commits/209b9014129ceeb7d92375a77f60835553266bf1
+              for ( auto& it : B->IK_data.limits ) {
+                Fvector2 vec = it.limit;
+                float tmp  = vec.x;
+                it.limit.x = -vec.y;
+                it.limit.y = -tmp;
+              }
+            }
         }
         // calculate model to bone converting matrix
         (*bones)[LL_GetBoneRoot()]->CalculateM2B(Fidentity);

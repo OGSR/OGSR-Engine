@@ -209,7 +209,7 @@ void CPHCapture::CapturedUpdate()
 		m_taget_element->Enable();
 	}
 
-	if ( !m_taget_element->isActive() || ( !hard_mode && dDOT( m_joint_feedback.f2, m_joint_feedback.f2 ) > m_capture_force*m_capture_force ) )
+	if ( !m_taget_element->isActive() || ( !m_hard_mode && dDOT( m_joint_feedback.f2, m_joint_feedback.f2 ) > m_capture_force*m_capture_force ) )
 	{
 		Release();
 		return;
@@ -244,51 +244,49 @@ void CPHCapture::ReleaseInCallBack()
 	b_collide=true;
 }
 
-
-void CPHCapture::object_contactCallbackFun(bool& do_colide,bool bo1,dContact& c,SGameMtl * /*material_1*/,SGameMtl * /*material_2*/)
+void CPHCapture::object_contactCallbackFun(bool& do_colide, bool bo1, dContact& c, SGameMtl * /*material_1*/, SGameMtl * /*material_2*/)
 {
-
 	dxGeomUserData *l_pUD1 = NULL;
 	dxGeomUserData *l_pUD2 = NULL;
 	l_pUD1 = retrieveGeomUserData(c.geom.g1);
 	l_pUD2 = retrieveGeomUserData(c.geom.g2);
 
-	if(! l_pUD1) return;
-	if(!l_pUD2) return;
+	if (!l_pUD1)
+		return;
 
-	CEntityAlive* capturer=smart_cast<CEntityAlive*>(l_pUD1->ph_ref_object);
-	if(capturer)
+	if (!l_pUD2)
+		return;
+
+	CPhysicsShellHolder* capturer = (l_pUD1->ph_ref_object);
+	if (capturer)
 	{
-		CPHCapture* capture=capturer->character_physics_support()->movement()->PHCapture();
-		if(capture)
+		CPHCapture* capture = capturer->PHCapture();
+		if (capture)
 		{
-			if(capture->m_taget_element->PhysicsRefObject()==l_pUD2->ph_ref_object)
+			if (capture->m_taget_element->PhysicsRefObject() == l_pUD2->ph_ref_object)
 			{
 				do_colide = false;
 				capture->m_taget_element->Enable();
-				if(capture->e_state==cstReleased) capture->ReleaseInCallBack();
+				if (capture->e_state == cstReleased)
+					capture->ReleaseInCallBack();
 			}
-			
 		}
-
-
 	}
 
-	capturer=smart_cast<CEntityAlive*>(l_pUD2->ph_ref_object);
-	if(capturer)
+	capturer = l_pUD2->ph_ref_object;
+	if (capturer)
 	{
-		CPHCapture* capture=capturer->character_physics_support()->movement()->PHCapture();
-		if(capture)
+		CPHCapture* capture = capturer->PHCapture();
+		if (capture)
 		{
-			if(capture->m_taget_element->PhysicsRefObject()==l_pUD1->ph_ref_object)
+			if (capture->m_taget_element->PhysicsRefObject() == l_pUD1->ph_ref_object)
 			{
 				do_colide = false;
 				capture->m_taget_element->Enable();
-				if(capture->e_state==cstReleased) capture->ReleaseInCallBack();
+				if (capture->e_state == cstReleased)
+					capture->ReleaseInCallBack();
 			}
-			
 		}
-
 	}
 }
 void CPHCapture::net_Relcase(CObject* O)
