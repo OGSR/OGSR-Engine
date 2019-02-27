@@ -522,13 +522,8 @@ void	CActor::Hit							(SHit* pHDS)
 
 	
 	//slow actor, only when he gets hit
-	if(HDS.hit_type == ALife::eHitTypeWound || HDS.hit_type == ALife::eHitTypeStrike)
-	{
-		hit_slowmo				= HDS.damage();
-		clamp					(hit_slowmo,0.0f,1.f);
-	}
-	else
-		hit_slowmo = 0.f;
+	hit_slowmo = conditions().HitSlowmo(pHDS);
+
 	//---------------------------------------------------------------
 	if (Level().CurrentViewEntity() == this && HDS.hit_type == ALife::eHitTypeFireWound)
 	{
@@ -537,14 +532,13 @@ void	CActor::Hit							(SHit* pHDS)
 		HitSector(pLastHitter, pLastHittingWeapon);
 	};
 
-	if ((mstate_real&mcSprint) && Level().CurrentControlEntity() == this && 
-		HDS.hit_type != ALife::eHitTypeTelepatic &&
-		HDS.hit_type != ALife::eHitTypeRadiation 
-		)
+	if ((mstate_real&mcSprint) && Level().CurrentControlEntity() == this && conditions().DisableSprint(pHDS))
 	{
-//		mstate_real	&=~mcSprint;
-		mstate_wishful	&=~mcSprint;
-	};
+		bool const is_special_burn_hit_2_self = (pHDS->who == this) && (pHDS->boneID == BI_NONE) &&
+			(pHDS->hit_type == ALife::eHitTypeBurn);
+		if (!is_special_burn_hit_2_self)
+			mstate_wishful &= ~mcSprint;
+	}
 
 	HitMark(HDS.damage(), HDS.dir, HDS.who, HDS.bone(), HDS.p_in_bone_space, HDS.impulse, HDS.hit_type);
 
@@ -755,13 +749,14 @@ void CActor::g_Physics(Fvector& _accel, float jump, float dt)
 		if (character_physics_support()->movement()->gcontact_Was)
 			Cameras().AddCamEffector		(xr_new<CEffectorFall> (character_physics_support()->movement()->gcontact_Power));
 		if (!fis_zero(character_physics_support()->movement()->gcontact_HealthLost))	{
-			const ICollisionDamageInfo* di=character_physics_support()->movement()->CollisionDamageInfo();
+			ICollisionDamageInfo* di=character_physics_support()->movement()->CollisionDamageInfo();
+			bool b_hit_initiated = di->GetAndResetInitiated();
 			Fvector hdir;di->HitDir(hdir);
 			SetHitInfo(this, NULL, 0, Fvector().set(0, 0, 0), hdir);
 			//				Hit	(m_PhysicMovementControl->gcontact_HealthLost,hdir,di->DamageInitiator(),m_PhysicMovementControl->ContactBone(),di->HitPos(),0.f,ALife::eHitTypeStrike);//s16(6 + 2*::Random.randI(0,2))
 			if (Level().CurrentControlEntity() == this)
 			{
-				SHit HDS = SHit(character_physics_support()->movement()->gcontact_HealthLost,hdir,di->DamageInitiator(),character_physics_support()->movement()->ContactBone(),di->HitPos(),0.f,di->HitType());
+				SHit HDS = SHit(character_physics_support()->movement()->gcontact_HealthLost,hdir,di->DamageInitiator(),character_physics_support()->movement()->ContactBone(),di->HitPos(),0.f,di->HitType(), 0.0f, b_hit_initiated);
 //				Hit(&HDS);
 
 				NET_Packet	l_P;

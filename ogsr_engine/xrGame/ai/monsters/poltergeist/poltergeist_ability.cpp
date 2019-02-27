@@ -5,7 +5,6 @@
 #include "../../../material_manager.h"
 #include "../../../level_debug.h"
 
-
 CPolterSpecialAbility::CPolterSpecialAbility(CPoltergeist *polter)
 {
 	m_object					= polter;
@@ -46,8 +45,9 @@ void CPolterSpecialAbility::on_hide()
 	VERIFY(m_particles_object == 0);
 	if (!m_object->g_Alive())
 		return;
-	m_particles_object			= m_object->PlayParticles	(m_particles_hidden, m_object->Position(),Fvector().set(0.0f,0.1f,0.0f), false);
-	m_particles_object_electro	= m_object->PlayParticles	(m_particles_idle, m_object->Position(),Fvector().set(0.0f,0.1f,0.0f), false);
+
+ 	m_particles_object			= m_object->PlayParticles	(m_particles_hidden, m_object->Position(),Fvector().set(0.0f,0.1f,0.0f), false);
+ 	m_particles_object_electro	= m_object->PlayParticles	(m_particles_idle, m_object->Position(),Fvector().set(0.0f,0.1f,0.0f), false);
 }
 
 void CPolterSpecialAbility::on_show()
@@ -99,8 +99,6 @@ void CPolterSpecialAbility::on_hit(SHit* pHDS)
 //////////////////////////////////////////////////////////////////////////
 // Other
 //////////////////////////////////////////////////////////////////////////
-
-
 #define IMPULSE					10.f
 #define IMPULSE_RADIUS			5.f
 #define TRACE_DISTANCE			10.f
@@ -108,12 +106,11 @@ void CPolterSpecialAbility::on_hit(SHit* pHDS)
 
 void CPoltergeist::PhysicalImpulse	(const Fvector &position)
 {
-	m_nearest.clear_not_free		();
+	m_nearest.clear		();
 	Level().ObjectSpace.GetNearest	(m_nearest,position, IMPULSE_RADIUS, NULL); 
-	//xr_vector<CObject*> &m_nearest = Level().ObjectSpace.q_nearest;
 	if (m_nearest.empty())			return;
 	
-	u32 index = Random.randI		(m_nearest.size());
+	u32 index = Random.randI		((u32)m_nearest.size());
 	
 	CPhysicsShellHolder  *obj = smart_cast<CPhysicsShellHolder *>(m_nearest[index]);
 	if (!obj || !obj->m_pPhysicsShell) return;
@@ -123,21 +120,25 @@ void CPoltergeist::PhysicalImpulse	(const Fvector &position)
 	dir.normalize();
 	
 	CPhysicsElement* E=obj->m_pPhysicsShell->get_ElementByStoreOrder(u16(Random.randI(obj->m_pPhysicsShell->get_ElementsNumber())));
-	//E->applyImpulse(dir,IMPULSE * obj->m_pPhysicsShell->getMass());
 	E->applyImpulse(dir,IMPULSE * E->getMass());
 }
 
+#pragma warning(push)
+#pragma warning(disable: 4267)
 void CPoltergeist::StrangeSounds(const Fvector &position)
 {
 	if (m_strange_sound._feedback()) return;
 	
-	for (u32 i = 0; i < TRACE_ATTEMPT_COUNT; i++) {
+	for (u32 i = 0; i < TRACE_ATTEMPT_COUNT; i++) 
+	{
 		Fvector dir;
 		dir.random_dir();
 
 		collide::rq_result	l_rq;
-		if (Level().ObjectSpace.RayPick(position, dir, TRACE_DISTANCE, collide::rqtStatic, l_rq, NULL)) {
-			if (l_rq.range < TRACE_DISTANCE) {
+		if (Level().ObjectSpace.RayPick(position, dir, TRACE_DISTANCE, collide::rqtStatic, l_rq, nullptr)) 
+		{
+			if (l_rq.range < TRACE_DISTANCE) 
+			{
 
 				// Получить пару материалов
 				CDB::TRI*	pTri	= Level().ObjectSpace.GetStaticTris() + l_rq.element;
@@ -145,7 +146,8 @@ void CPoltergeist::StrangeSounds(const Fvector &position)
 				if (!mtl_pair) continue;
 
 				// Играть звук
-				if (!mtl_pair->CollideSounds.empty()) {
+				if (!mtl_pair->CollideSounds.empty()) 
+				{
 					CLONE_MTL_SOUND(m_strange_sound, mtl_pair, CollideSounds);
 					Fvector pos;
 					pos.mad(position, dir, ((l_rq.range - 0.1f > 0) ? l_rq.range - 0.1f  : l_rq.range));
@@ -156,4 +158,4 @@ void CPoltergeist::StrangeSounds(const Fvector &position)
 		}
 	}
 }
-
+#pragma warning(pop)

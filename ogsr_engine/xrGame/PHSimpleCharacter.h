@@ -37,6 +37,7 @@ protected:
 				u16						m_obj_id;
 				float					m_dmc_signum;
 				enum{ctStatic,ctObject}	m_dmc_type;
+		bool is_initiated;
 		mutable	float					m_contact_velocity;
 	};							
 	SCollisionDamageInfo		m_collision_damage_info;
@@ -138,6 +139,7 @@ public:
 	virtual		EEnvironment	 		CheckInvironment				()					;
 	virtual		void			 		GroundNormal					(Fvector &norm)		;
 	virtual		const ICollisionDamageInfo	*CollisionDamageInfo ()const {return this;}
+	virtual			  ICollisionDamageInfo	*CollisionDamageInfo() { return this; }
 private:
 	virtual		float			 	ContactVelocity				()const				{return m_collision_damage_info.ContactVelocity();}
 	virtual		void			 	HitDir							(Fvector& dir)const	{return m_collision_damage_info.HitDir(dir);}
@@ -145,6 +147,9 @@ private:
 	virtual		u16				 	DamageInitiatorID				()const				;
 	virtual		CObject			 	*DamageInitiator				()const				;
 	virtual		ALife::EHitType	 	HitType							()const				;
+	virtual		void SetInitiated();
+	virtual		bool IsInitiated()const;
+	virtual		bool GetAndResetInitiated();
 	virtual SCollisionHitCallback	*HitCallback					()const				;
 	virtual		void				Reinit							()					{m_collision_damage_info.Reinit();};
 public:

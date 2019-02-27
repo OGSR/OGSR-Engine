@@ -12,5 +12,8 @@ public:
 		virtual ALife::EHitType			HitType						()				const						=0;
 		virtual SCollisionHitCallback	*HitCallback				()				const						=0;
 		virtual void					Reinit						()											=0;
+		virtual void SetInitiated() = 0;
+		virtual bool IsInitiated() const = 0;
+		virtual bool GetAndResetInitiated() = 0;
 };
 #endif
