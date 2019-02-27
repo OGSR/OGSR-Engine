@@ -22,6 +22,64 @@ float	psCamSlideInert	= 0.25f;
 SPPInfo		pp_identity;
 SPPInfo		pp_zero;
 
+SPPInfo& SPPInfo::add(const SPPInfo& ppi)
+{
+	blur += ppi.blur;
+	gray += ppi.gray;
+	duality.h += ppi.duality.h;
+	duality.v += ppi.duality.v;
+
+	noise.intensity = std::max(noise.intensity, ppi.noise.intensity);
+	noise.grain = std::max(noise.grain, ppi.noise.grain);
+	noise.fps = std::max(noise.fps, ppi.noise.fps);
+	color_base += ppi.color_base;
+	color_gray += ppi.color_gray;
+	color_add += ppi.color_add;
+
+	if (ppi.cm_tex1.size())
+	{
+		if (cm_tex1.size())
+		{
+			cm_tex2 = ppi.cm_tex1;
+			cm_interpolate = 1.0f - cm_influence / (cm_influence + ppi.cm_influence);
+		}
+		else
+		{
+			cm_tex1 = ppi.cm_tex1;
+			cm_influence = ppi.cm_influence;
+			cm_interpolate = 0.0f;
+		}
+		cm_influence = std::max(cm_influence, ppi.cm_influence);
+	}
+
+	return *this;
+}
+
+SPPInfo& SPPInfo::sub(const SPPInfo& ppi)
+{
+	blur -= ppi.blur;
+	gray -= ppi.gray;
+	duality.h -= ppi.duality.h;
+	duality.v -= ppi.duality.v;
+	color_base -= ppi.color_base;
+	color_gray -= ppi.color_gray;
+	color_add -= ppi.color_add;
+
+	return *this;
+}
+
+SPPInfo::SPPInfo()
+{
+	blur = gray = duality.h = duality.v = 0;
+	noise.intensity = 0;
+	noise.grain = 1;
+	noise.fps = 10;
+	color_base.set(.5f, .5f, .5f);
+	color_gray.set(.333f, .333f, .333f);
+	color_add.set(0.f, 0.f, 0.f);
+	cm_influence = 0.0f;
+	cm_interpolate = 0.0f;
+}
 void SPPInfo::normalize() 
 {
 	/*
@@ -305,26 +363,34 @@ void CCameraManager::Update(const Fvector& P, const Fvector& D, const Fvector& N
 
 	pp_affected.validate		("before applying pp");
 	// EffectorPP
-	int		_count	= 0;
-	if(m_EffectorsPP.size()) {
-		pp_affected = pp_identity;
-		for(int i = m_EffectorsPP.size()-1; i >= 0; i--) {
-			CEffectorPP* eff	= m_EffectorsPP[i];
-			SPPInfo l_PPInf		= pp_zero;
-			if((eff->Valid())&&eff->Process(l_PPInf)) 
-			{
-				++_count;
-				pp_affected			+= l_PPInf;
-				pp_affected			-= pp_identity;
-				pp_affected.validate("in cycle");
-			}else 
-				RemovePPEffector(eff->Type());
-		}
-		if (0==_count)	pp_affected				= pp_identity;
-		else			pp_affected.normalize	();
-	} else {
-		pp_affected		=	pp_identity;
-	}
+    int _count = 0;
+    if (m_EffectorsPP.size()) {
+        bool b = false;
+        pp_affected = pp_identity;
+        for (int i = int(m_EffectorsPP.size()) - 1; i >= 0; --i) {
+            auto* eff = m_EffectorsPP[i];
+            SPPInfo l_PPInf = pp_zero;
+            if (eff->Valid() && eff->Process(l_PPInf)) {
+                ++_count;
+                if (!b) {
+                    pp_affected.add(l_PPInf);
+                    pp_affected.sub(pp_identity);
+                    pp_affected.validate("in cycle");
+                }
+                if (!eff->bOverlap) {
+                    b = true;
+                    pp_affected = l_PPInf;
+                }
+            } else
+                RemovePPEffector(eff->Type());
+        }
+        if (0 == _count)
+            pp_affected = pp_identity;
+        else
+            pp_affected.normalize();
+    } else {
+        pp_affected = pp_identity;
+    }
 
 	if( !positive(pp_affected.noise.grain) ) pp_affected.noise.grain = pp_identity.noise.grain;
 	
@@ -388,6 +454,10 @@ void CCameraManager::ApplyDevice (float _viewport_near)
 		T->set_color_base			(pp_affected.color_base);
 		T->set_color_gray			(pp_affected.color_gray);
 		T->set_color_add			(pp_affected.color_add);
+
+		T->set_cm_imfluence(pp_affected.cm_influence);
+		T->set_cm_interpolate(pp_affected.cm_interpolate);
+		T->set_cm_textures(pp_affected.cm_tex1, pp_affected.cm_tex2);
 	}
 }
 
@@ -404,6 +474,9 @@ void CCameraManager::ResetPP()
 	T->set_color_base		(pp_identity.color_base);
 	T->set_color_gray		(pp_identity.color_gray);
 	T->set_color_add		(pp_identity.color_add);
+	T->set_cm_imfluence(0.0f);
+	T->set_cm_interpolate(1.0f);
+	T->set_cm_textures("", "");
 }
 
 void CCameraManager::Dump()
