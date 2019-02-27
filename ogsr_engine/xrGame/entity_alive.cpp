@@ -438,10 +438,12 @@ void CEntityAlive::PlaceBloodWallmark(const Fvector& dir, const Fvector& start_p
 
 void CEntityAlive::StartFireParticles(CWound* pWound)
 {
+/*
 	if ( pWound->GetBoneNum() == BI_NONE ) {
 	  Msg( "! [%s]: %s: can't handle BI_NONE", __FUNCTION__, cName().c_str() );
 	  return;
 	}
+*/
 
 	if(pWound->TypeSize(ALife::eHitTypeBurn)>m_fStartBurnWoundSize)
 	{
