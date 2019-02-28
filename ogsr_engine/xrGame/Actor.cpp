@@ -854,7 +854,7 @@ void CActor::UpdateCL	()
 			if (!Device.m_SecondViewport.IsSVPFrame()) //--#SM+#-- +SecondVP+ Чтобы перекрестие не скакало из за смены FOV (Sin!) [fix for crosshair shaking while SecondVP]
 				HUD().SetCrosshairDisp(fire_disp_full, 0.02f);
 
-			HUD().ShowCrosshair(pWeapon->use_crosshair());
+			HUD().ShowCrosshair(!psHUD_Flags.test(HUD_CROSSHAIR_BUILD) && pWeapon->use_crosshair());
 
 			psHUD_Flags.set( HUD_CROSSHAIR_RT2, pWeapon->show_crosshair() );
 			psHUD_Flags.set( HUD_DRAW_RT,		pWeapon->show_indicators() );

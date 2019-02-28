@@ -13,6 +13,7 @@ ENGINE_API extern Flags32		psHUD_Flags;
 #define HUD_CROSSHAIR_DYNAMIC	(1<<7)
 #define HUD_CROSSHAIR_RT2		(1<<9)
 #define HUD_DRAW_RT				(1<<10)
+#define HUD_CROSSHAIR_BUILD		(1<<11) // старый стиль курсора
 
 class ENGINE_API IRender_Visual;
 class CUI;
