@@ -449,9 +449,9 @@ void CActor::Load	(LPCSTR section )
 	CurrentHeight = CameraHeight();	
 }
 
-void CActor::PHHit(float P,Fvector &dir, CObject *who,s16 element,Fvector p_in_object_space, float impulse, ALife::EHitType hit_type /* = ALife::eHitTypeWound */)
+void CActor::PHHit(SHit& H)
 {
-	m_pPhysics_support->in_Hit(P,dir,who,element,p_in_object_space,impulse,hit_type,!g_Alive());
+	m_pPhysics_support->in_Hit(H,!g_Alive());
 }
 
 struct playing_pred

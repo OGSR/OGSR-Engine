@@ -5232,6 +5232,9 @@
     <ClInclude Include="CharacterPhysicsSupport.h">
       <Filter>Core\Client\Objects\physics\CharacterSupport</Filter>
     </ClInclude>
+    <ClInclude Include="death_anims.h">
+      <Filter>Core\Client\Objects\physics\CharacterSupport</Filter>
+    </ClInclude>
     <ClInclude Include="interactive_motion.h">
       <Filter>Core\Client\Objects\physics\CharacterSupport</Filter>
     </ClInclude>
@@ -8344,6 +8347,9 @@
       <Filter>Core\Client\Objects\physics\CharacterSupport</Filter>
     </ClCompile>
     <ClCompile Include="CharacterPhysicsSupport.cpp">
+      <Filter>Core\Client\Objects\physics\CharacterSupport</Filter>
+    </ClCompile>
+    <ClCompile Include="death_anims.cpp">
       <Filter>Core\Client\Objects\physics\CharacterSupport</Filter>
     </ClCompile>
     <ClCompile Include="interactive_motion.cpp">
