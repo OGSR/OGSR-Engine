@@ -62,7 +62,7 @@ private:
 	CPHMovementControl					*m_PhysicMovementControl																															;
 	CPHSoundPlayer						m_ph_sound_player																																	;
 	CIKLimbsController					*m_ik_controller																																	;
-	SCollisionHitCallback				*m_collision_hit_callback;
+	ICollisionHitCallback				*m_collision_hit_callback;
 	character_hit_animation_controller	m_hit_animations;
 
 	interactive_motion					*m_interactive_motion;
@@ -146,8 +146,8 @@ IC		CIKLimbsController				*ik_controller					()	{return	m_ik_controller;}
 		void							on_create_anim_mov_ctrl			();
 		void							on_destroy_anim_mov_ctrl		();
 		void							PHGetLinearVell					(Fvector& velocity);
-		SCollisionHitCallback*			get_collision_hit_callback		();
-		bool							set_collision_hit_callback		(SCollisionHitCallback* cc);
+		ICollisionHitCallback*			get_collision_hit_callback		();
+		void							set_collision_hit_callback		(ICollisionHitCallback* cc);
 /////////////////////////////////////////////////////////////////
 		CCharacterPhysicsSupport& operator = (CCharacterPhysicsSupport& /**asup/**/){R_ASSERT2(false,"Can not assign it");}
 		void SyncNetState();

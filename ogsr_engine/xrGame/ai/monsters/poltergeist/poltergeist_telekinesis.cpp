@@ -47,6 +47,8 @@ void CPolterTele::update_schedule()
 {
 	inherited::update_schedule();
 
+	if (!m_object->g_Alive() || !Actor() || !Actor()->g_Alive()) return;
+
 	Fvector const actor_pos				=	Actor()->Position();
 	float const dist2actor				=	actor_pos.distance_to(m_object->Position());
 
@@ -192,8 +194,8 @@ void CPolterTele::tele_find_objects(xr_vector<CObject*> &objects, const Fvector 
 			(obj == m_object) || 
 			m_object->CTelekinesis::is_active_object(obj) || 
 			( pSettings->line_exist( obj->cNameSect().c_str(), "ph_heavy" ) && pSettings->r_bool( obj->cNameSect().c_str(), "ph_heavy" ) ) ||
+			obj->hasFixedBones() ||
 			!obj->m_pPhysicsShell->get_ApplyByGravity()) continue;
-
 		
 		Fvector center;
 		Actor()->Center(center);
@@ -264,14 +266,14 @@ bool CPolterTele::tele_raise_objects()
 
 	return false;
 }
-struct _SCollisionHitCallback:
-	public SCollisionHitCallback
+struct SCollisionHitCallback:
+	public ICollisionHitCallback
 
 {
 //	CollisionHitCallbackFun				*m_collision_hit_callback																																						;
 	CPhysicsShellHolder *m_object;
 	float m_pmt_object_collision_damage;
-	_SCollisionHitCallback( CPhysicsShellHolder *object, float pmt_object_collision_damage ):
+	SCollisionHitCallback( CPhysicsShellHolder *object, float pmt_object_collision_damage ):
 	m_object(object), m_pmt_object_collision_damage( pmt_object_collision_damage )
 	{
 		VERIFY( object );
@@ -298,10 +300,27 @@ void CPolterTele::tele_fire_objects()
 			CPhysicsShellHolder		*hobj = tele_object.get_object();
 			
 			VERIFY( hobj );
-			hobj->set_collision_hit_callback( xr_new<_SCollisionHitCallback>( hobj, m_pmt_object_collision_damage ) );
+			hobj->set_collision_hit_callback( xr_new<SCollisionHitCallback>( hobj, m_pmt_object_collision_damage ) );
 			m_object->CTelekinesis::fire_t	(tele_object.get_object(),enemy_pos, tele_object.get_object()->Position().distance_to(enemy_pos) / m_pmt_fly_velocity);
 			return;
 		}
 	}
 }
 
+
+void CPolterTele::on_destroy() {
+  inherited::on_destroy();
+  deactivate();
+}
+
+void CPolterTele::on_die() {
+  inherited::on_die();
+  deactivate();
+}
+
+void CPolterTele::deactivate() {
+  m_object->CTelekinesis::deactivate();	
+  m_state = eWait;
+  m_time  = time();
+  m_time_next = 0;
+}

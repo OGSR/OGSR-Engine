@@ -724,18 +724,20 @@ CPHSoundPlayer* CEntityAlive::ph_sound_player()
 	}
 }
 
-SCollisionHitCallback*	CEntityAlive::	get_collision_hit_callback		()
+ICollisionHitCallback* CEntityAlive::get_collision_hit_callback()
 {
-  CCharacterPhysicsSupport *cs=character_physics_support();
-  if(cs)return cs->get_collision_hit_callback();
-  else return false;
+	CCharacterPhysicsSupport *pCPS = character_physics_support();
+	if (pCPS)
+		return pCPS->get_collision_hit_callback();
+
+	return nullptr;
 }
 
-bool					CEntityAlive::	set_collision_hit_callback		(SCollisionHitCallback *cc)
+void CEntityAlive::set_collision_hit_callback(ICollisionHitCallback *cc)
 {
-	CCharacterPhysicsSupport* cs=character_physics_support();
-	if(cs)return cs->set_collision_hit_callback(cc);
-	else return false;
+	CCharacterPhysicsSupport* pCPS = character_physics_support();
+	if (pCPS)
+		pCPS->set_collision_hit_callback(cc);
 }
 
 void CEntityAlive::net_Relcase	(CObject *object)

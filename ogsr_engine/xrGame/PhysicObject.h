@@ -16,7 +16,7 @@ class CPhysicObject :
 	typedef CPhysicsShellHolder inherited;
 	EPOType					m_type					;
 	float					m_mass					;
-	SCollisionHitCallback	*m_collision_hit_callback;
+	ICollisionHitCallback	*m_collision_hit_callback;
 private:
 	//Creating
 			void	CreateBody			(CSE_ALifeObjectPhysic	*po)													;
@@ -37,8 +37,8 @@ public:
 	virtual void						net_Save						(NET_Packet& P)																	;
 	virtual	BOOL						net_SaveRelevant				()																				;
 	virtual BOOL						UsedAI_Locations				()																				;
-	virtual SCollisionHitCallback		*get_collision_hit_callback		()																				;
-	virtual bool						set_collision_hit_callback		(SCollisionHitCallback *cc)														;
+	virtual ICollisionHitCallback		*get_collision_hit_callback		()																				;
+	virtual void						set_collision_hit_callback		(ICollisionHitCallback *cc)														;
 protected:
 	virtual void						SpawnInitPhysics				(CSE_Abstract	*D)																;
 	virtual void						RunStartupAnim					(CSE_Abstract	*D)																;

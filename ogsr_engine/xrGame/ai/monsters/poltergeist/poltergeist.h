@@ -324,6 +324,8 @@ public:
 	virtual void	load							(LPCSTR section);
 	virtual void	update_schedule					();
 	virtual void	update_frame					();
+	virtual void	on_destroy					();
+	virtual void	on_die						();
 
 private:
 			void	tele_find_objects				(xr_vector<CObject*> &objects, const Fvector &pos);
@@ -331,5 +333,7 @@ private:
 			void	tele_fire_objects				();
 
 			bool	trace_object					(CObject *obj, const Fvector &target);
+
+	void deactivate();
 };
 

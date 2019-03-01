@@ -62,6 +62,7 @@ IC bool is_imotion(interactive_motion *im)
 
 CCharacterPhysicsSupport::~CCharacterPhysicsSupport()
 {
+	set_collision_hit_callback(nullptr);
 	if(m_flags.test(fl_skeleton_in_shell))
 	{
 		if(m_physics_skeleton)m_physics_skeleton->Deactivate();
@@ -806,21 +807,14 @@ void		 CCharacterPhysicsSupport::in_NetRelcase(CObject* O)
 	}
 }
  
-bool CCharacterPhysicsSupport::set_collision_hit_callback(SCollisionHitCallback* cc)
+void CCharacterPhysicsSupport::set_collision_hit_callback(ICollisionHitCallback* cc)
 {
-	if(!cc)
-	{
-		m_collision_hit_callback=NULL;
-		return true;
-	}
-	if(m_pPhysicsShell)
-	{
-		VERIFY2(cc->m_collision_hit_callback!=0,"No callback function");
-		m_collision_hit_callback=cc;
-		return true;
-	}else return false;
+
+	xr_delete(m_collision_hit_callback);
+	m_collision_hit_callback = cc;
+
 }
-SCollisionHitCallback * CCharacterPhysicsSupport::get_collision_hit_callback()
+ICollisionHitCallback * CCharacterPhysicsSupport::get_collision_hit_callback()
 {
 	return m_collision_hit_callback;
 }

@@ -13,27 +13,11 @@ class ICollisionDamageInfo;
 class CIKLimbsController;
 class CPHCapture;
 
-struct SCollisionHitCallback
+class ICollisionHitCallback
 {
-	typedef								void					CollisionHitCallbackFun		(CGameObject* obj,float min_cs,float max_cs,float &cs,float &hl,const ICollisionDamageInfo* di,SCollisionHitCallback* slf)		;
-	CollisionHitCallbackFun				*m_collision_hit_callback																																						;
-	void								*m_data																																											;
-	SCollisionHitCallback()
-	{
-		m_collision_hit_callback		=NULL;
-		m_data							=NULL;
-	}
-	SCollisionHitCallback(CollisionHitCallbackFun* cc,void* data)
-	{
-		VERIFY(cc);
-		m_collision_hit_callback=cc;
-		m_data=data;
-	}
-	void call(CGameObject* obj,float min_cs,float max_cs,float &cs,float &hl,const ICollisionDamageInfo* di)
-	{
-		VERIFY(m_collision_hit_callback);
-		m_collision_hit_callback(obj,min_cs,max_cs,cs,hl,di,this);
-	}
+public:
+	virtual	void call(CPhysicsShellHolder* obj, float min_cs, float max_cs, float &cs, float &hl, ICollisionDamageInfo* di) = 0;
+	virtual	~ICollisionHitCallback() {}
 };
 class CPhysicsShellHolder:  public CGameObject,
 							public CParticlesPlayer
@@ -75,8 +59,8 @@ public:
 	virtual	CCharacterPhysicsSupport	*character_physics_support	()							{return NULL;}
 	virtual	CCharacterPhysicsSupport	*character_physics_support	() const					{return NULL;}
 	virtual	CIKLimbsController			*character_ik_controller	()							{return NULL;}
-	virtual SCollisionHitCallback		*get_collision_hit_callback ()							{return NULL;}
-	virtual bool						set_collision_hit_callback	(SCollisionHitCallback *cc)	{return false;}
+	virtual ICollisionHitCallback		*get_collision_hit_callback ()							{return NULL;}
+	virtual void						set_collision_hit_callback	(ICollisionHitCallback *cc)	{;}
 	virtual void						enable_notificate			()							{;}
 public:
 
@@ -115,6 +99,7 @@ public:
 public:
 	virtual bool			register_schedule	() const;
 	bool ActorCanCapture() const;
+	bool hasFixedBones() const;
 
 public://IPhysicsShellHolder
 	CPHCapture*				_BCL					PHCapture							()						;

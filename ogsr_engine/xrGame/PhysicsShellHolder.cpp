@@ -408,9 +408,7 @@ bool CPhysicsShellHolder::register_schedule	() const
 #include <filesystem>
 
 bool CPhysicsShellHolder::ActorCanCapture() const {
-  if ( !m_pPhysicsShell ) return false;
-  for ( const auto it : m_pPhysicsShell->Elements() )
-    if ( it->isFixed() ) return false;
+  if ( !m_pPhysicsShell || hasFixedBones() ) return false;
   if ( pSettings->line_exist( "ph_capture_visuals", cNameVisual().c_str() ) )
     return true;
   std::filesystem::path p = cNameVisual().c_str();
@@ -421,6 +419,13 @@ bool CPhysicsShellHolder::ActorCanCapture() const {
   }
   return false;
 }
+
+bool CPhysicsShellHolder::hasFixedBones() const {
+  for ( const auto it : m_pPhysicsShell->Elements() )
+    if ( it->isFixed() ) return true;
+  return false;
+}
+
 
 CPHCapture*	CPhysicsShellHolder::PHCapture()
 {

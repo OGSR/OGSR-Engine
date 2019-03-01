@@ -1770,7 +1770,7 @@ CElevatorState*	CPHSimpleCharacter::ElevatorState()
 	return &m_elevator_state;
 }
 
-SCollisionHitCallback*	CPHSimpleCharacter::HitCallback					()const	
+ICollisionHitCallback*	CPHSimpleCharacter::HitCallback					()const	
 {
 	return m_collision_damage_info.m_hit_callback;
 }
@@ -1863,3 +1863,4 @@ bool	CPHSimpleCharacter::	TouchRestrictor	(ERestrictionType rttype)
 	b_collision_restrictor_touch=true;
 	return rttype==RestrictionType();
 }
+

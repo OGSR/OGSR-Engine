@@ -33,7 +33,7 @@ protected:
 			IC	const Fvector&			HitPos						()				const					{return cast_fv(m_damege_contact.geom.pos);}
 				void					Reinit						()										;
 				dContact				m_damege_contact;
-				SCollisionHitCallback	*m_hit_callback;
+				ICollisionHitCallback	*m_hit_callback;
 				u16						m_obj_id;
 				float					m_dmc_signum;
 				enum{ctStatic,ctObject}	m_dmc_type;
@@ -150,7 +150,7 @@ private:
 	virtual		void SetInitiated();
 	virtual		bool IsInitiated()const;
 	virtual		bool GetAndResetInitiated();
-	virtual SCollisionHitCallback	*HitCallback					()const				;
+	virtual ICollisionHitCallback	*HitCallback					()const				;
 	virtual		void				Reinit							()					{m_collision_damage_info.Reinit();};
 public:
 	//Creating
