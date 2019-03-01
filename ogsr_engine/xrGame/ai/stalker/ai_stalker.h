@@ -205,7 +205,7 @@ public:
 	virtual void						renderable_Render					();
 	virtual void						Exec_Look							(float dt);
 	virtual	void						Hit									(SHit* pHDS);
-	virtual	void						PHHit								(float P,Fvector &dir, CObject *who,s16 element,Fvector p_in_object_space, float impulse, ALife::EHitType hit_type = ALife::eHitTypeWound);
+	virtual	void						PHHit								(SHit& H);
 	virtual BOOL						feel_vision_isRelevant				(CObject* who);
 	virtual float						Radius								() const;
 #ifdef DEBUG

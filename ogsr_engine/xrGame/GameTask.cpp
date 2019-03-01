@@ -470,62 +470,60 @@ void SGameTaskObjective::ChangeStateCallback()
 
 void SGameTaskObjective::save(IWriter &stream)
 {
-		save_data(idx,					stream);
-		save_data(task_state,			stream);
+	save_data(idx,					stream);
+	save_data(task_state,			stream);
 
-		save_data(description,			stream);
-		save_data(map_location,			stream);
-		save_data(object_id,			stream);
-		save_data(task_state,			stream);
-		save_data(def_location_enabled,	stream);
-		save_data(map_hint,				stream);
-		save_data(icon_texture_name,	stream);
-		save_data(icon_rect,			stream);
-		save_data(article_id,			stream);
+	save_data(description,			stream);
+	save_data(map_location,			stream);
+	save_data(object_id,			stream);
+	save_data(task_state,			stream);
+	save_data(def_location_enabled,	stream);
+	save_data(map_hint,				stream);
+	save_data(icon_texture_name,	stream);
+	save_data(icon_rect,			stream);
+	save_data(article_id,			stream);
 
-		save_data(m_completeInfos,		stream);
-		save_data(m_failInfos,			stream);
-		save_data(m_infos_on_complete,	stream);
-		save_data(m_infos_on_fail,		stream);
+	save_data(m_completeInfos,		stream);
+	save_data(m_failInfos,			stream);
+	save_data(m_infos_on_complete,	stream);
+	save_data(m_infos_on_fail,		stream);
 
-		bool b_script					= m_pScriptHelper.not_empty();
-		save_data(b_script,				stream);
-		if(b_script)
-			save_data(m_pScriptHelper,	stream);
-
+	bool b_script					= m_pScriptHelper.not_empty();
+	save_data(b_script,				stream);
+	if(b_script)
+		save_data(m_pScriptHelper,	stream);
 }
 
 void SGameTaskObjective::load(IReader &stream)
 {
-		load_data(idx,					stream);
-		load_data(task_state,			stream);
+	load_data(idx,					stream);
+	load_data(task_state,			stream);
 
-		load_data(description,			stream);
-		load_data(map_location,			stream);
-		load_data(object_id,			stream);
-		load_data(task_state,			stream);
-		load_data(def_location_enabled,	stream);
-		load_data(map_hint,				stream);
-		load_data(icon_texture_name,	stream);
-		load_data(icon_rect,			stream);
-		load_data(article_id,			stream);
+	load_data(description,			stream);
+	load_data(map_location,			stream);
+	load_data(object_id,			stream);
+	load_data(task_state,			stream);
+	load_data(def_location_enabled,	stream);
+	load_data(map_hint,				stream);
+	load_data(icon_texture_name,	stream);
+	load_data(icon_rect,			stream);
+	load_data(article_id,			stream);
 
-		load_data(m_completeInfos,		stream);
-		load_data(m_failInfos,			stream);
-		load_data(m_infos_on_complete,	stream);
-		load_data(m_infos_on_fail,		stream);
+	load_data(m_completeInfos,		stream);
+	load_data(m_failInfos,			stream);
+	load_data(m_infos_on_complete,	stream);
+	load_data(m_infos_on_fail,		stream);
 
+	bool b_script;
+	load_data(b_script,				stream); //-V614
+	if(b_script){
+		load_data(m_pScriptHelper,	stream);
 
-		bool b_script;
-		load_data(b_script,				stream); //-V614
-		if(b_script){
-			load_data(m_pScriptHelper,	stream);
-
-			m_pScriptHelper.init_functors	(m_pScriptHelper.m_s_complete_lua_functions,	m_complete_lua_functions);
-			m_pScriptHelper.init_functors	(m_pScriptHelper.m_s_fail_lua_functions,		m_fail_lua_functions);
-			m_pScriptHelper.init_functors	(m_pScriptHelper.m_s_lua_functions_on_complete, m_lua_functions_on_complete);
-			m_pScriptHelper.init_functors	(m_pScriptHelper.m_s_lua_functions_on_fail,		m_lua_functions_on_fail);
-		}
+		m_pScriptHelper.init_functors	(m_pScriptHelper.m_s_complete_lua_functions,	m_complete_lua_functions);
+		m_pScriptHelper.init_functors	(m_pScriptHelper.m_s_fail_lua_functions,		m_fail_lua_functions);
+		m_pScriptHelper.init_functors	(m_pScriptHelper.m_s_lua_functions_on_complete, m_lua_functions_on_complete);
+		m_pScriptHelper.init_functors	(m_pScriptHelper.m_s_lua_functions_on_fail,		m_lua_functions_on_fail);
+	}
 }
 
 void SScriptObjectiveHelper::init_functors(xr_vector<shared_str>& v_src, xr_vector<luabind::functor<bool> >& v_dest)
@@ -536,78 +534,77 @@ void SScriptObjectiveHelper::init_functors(xr_vector<shared_str>& v_src, xr_vect
 
 	for(u32 idx=0 ;it!=it_e;++it,++idx)
 	{
-			bool functor_exists		= ai().script_engine().functor(*(*it) ,v_dest[idx]);
-			ASSERT_FMT_DBG( functor_exists, "[%s]: Cannot find script function described in task objective: %s", __FUNCTION__, (*it).c_str() );
+		bool functor_exists		= ai().script_engine().functor(*(*it) ,v_dest[idx]);
+		ASSERT_FMT_DBG( functor_exists, "[%s]: Cannot find script function described in task objective: %s", __FUNCTION__, (*it).c_str() );
 	}
 }
 
 void SScriptObjectiveHelper::load(IReader &stream)
 {
-		load_data(m_s_complete_lua_functions,		stream);
-		load_data(m_s_fail_lua_functions,			stream);
-		load_data(m_s_lua_functions_on_complete,	stream);
-		load_data(m_s_lua_functions_on_fail,		stream);
+	load_data(m_s_complete_lua_functions,		stream);
+	load_data(m_s_fail_lua_functions,			stream);
+	load_data(m_s_lua_functions_on_complete,	stream);
+	load_data(m_s_lua_functions_on_fail,		stream);
 }
 
 void SScriptObjectiveHelper::save(IWriter &stream)
 {
-		save_data(m_s_complete_lua_functions,		stream);
-		save_data(m_s_fail_lua_functions,			stream);
-		save_data(m_s_lua_functions_on_complete,	stream);
-		save_data(m_s_lua_functions_on_fail,		stream);
+	save_data(m_s_complete_lua_functions,		stream);
+	save_data(m_s_fail_lua_functions,			stream);
+	save_data(m_s_lua_functions_on_complete,	stream);
+	save_data(m_s_lua_functions_on_fail,		stream);
 }
 
 void SGameTaskKey::save(IWriter &stream)
 {
-	save_data(task_id,						stream);
-        save_data( game_task->m_version, stream );
-        save_data( game_task->m_objectives_version, stream );
-	save_data(game_task->m_ReceiveTime,		stream);
-	save_data(game_task->m_FinishTime,		stream);
-	save_data(game_task->m_TimeToComplete,	stream);
+	save_data(task_id, stream);
+	save_data(game_task->m_version, stream);
+	save_data(game_task->m_objectives_version, stream);
+	save_data(game_task->m_ReceiveTime, stream);
+	save_data(game_task->m_FinishTime, stream);
+	save_data(game_task->m_TimeToComplete, stream);
 
-	save_data(game_task->m_Title,			stream);
+	save_data(game_task->m_Title, stream);
 
-	u32 cnt	= game_task->m_Objectives.size();
+	u32 cnt = game_task->m_Objectives.size();
 	save_data(cnt, stream);
 
-	OBJECTIVE_VECTOR_IT it		= game_task->m_Objectives.begin();
-	OBJECTIVE_VECTOR_IT it_e	= game_task->m_Objectives.end();
-	for(;it!=it_e;++it)
+	OBJECTIVE_VECTOR_IT it = game_task->m_Objectives.begin();
+	OBJECTIVE_VECTOR_IT it_e = game_task->m_Objectives.end();
+	for (; it != it_e; ++it)
 		save_data(*it, stream);
-
 }
 
 void SGameTaskKey::load(IReader &stream)
 {
-	load_data(task_id,						stream);
-	game_task = xr_new<CGameTask>			(task_id);
-        u32 load_version = 0;
-        if ( ai().get_alife()->header().version() > 6 ) {
-          load_data( load_version, stream );
-          load_data( game_task->m_objectives_version, stream );
-        }
-        else
-          game_task->m_objectives_version = 0;
-	load_data(game_task->m_ReceiveTime,		stream);
-	load_data(game_task->m_FinishTime,		stream);
-	load_data(game_task->m_TimeToComplete,	stream);
+	load_data(task_id, stream);
+	game_task = xr_new<CGameTask>(task_id);
+	u32 load_version = 0;
+	if (ai().get_alife()->header().version() > 6) {
+		load_data(load_version, stream);
+		load_data(game_task->m_objectives_version, stream);
+	}
+	else
+		game_task->m_objectives_version = 0;
+	load_data(game_task->m_ReceiveTime, stream);
+	load_data(game_task->m_FinishTime, stream);
+	load_data(game_task->m_TimeToComplete, stream);
 
-	load_data(game_task->m_Title,			stream);
+	load_data(game_task->m_Title, stream);
 
 	u32 cnt;
 	load_data(cnt, stream); //-V614
 
-	if(cnt>game_task->m_Objectives.size())
+	if (cnt > game_task->m_Objectives.size())
 		game_task->m_Objectives.resize(cnt);
 
-	for(u32 i=0; i<cnt; ++i){
+	for (u32 i = 0; i < cnt; ++i) {
 		load_data(game_task->m_Objectives[i], stream);
 		game_task->m_Objectives[i].parent = game_task;
 	}
 
-        if ( game_task->m_version > load_version )
-          sync_task_version();
+	if (game_task->m_version > load_version)
+		sync_task_version();
 }
 
 void SGameTaskKey::destroy()
@@ -615,18 +612,17 @@ void SGameTaskKey::destroy()
 	delete_data(game_task);
 }
 
-
 void SGameTaskKey::sync_task_version() {
-  CGameTask* new_game_task = xr_new<CGameTask>( game_task->m_ID );
-  new_game_task->m_ReceiveTime    = game_task->m_ReceiveTime;
-  new_game_task->m_FinishTime     = game_task->m_FinishTime;
-  new_game_task->m_TimeToComplete = game_task->m_TimeToComplete;
-  if ( new_game_task->m_objectives_version == game_task->m_objectives_version ) {
-    for ( auto& it : game_task->m_Objectives ) {
-      if ( u32(it.idx) == new_game_task->m_Objectives.size() ) break;
-      new_game_task->m_Objectives[ it.idx ].task_state = it.TaskState();
-    }
-  }
-  delete_data( game_task );
-  game_task = new_game_task;
+	CGameTask* new_game_task = xr_new<CGameTask>(game_task->m_ID);
+	new_game_task->m_ReceiveTime = game_task->m_ReceiveTime;
+	new_game_task->m_FinishTime = game_task->m_FinishTime;
+	new_game_task->m_TimeToComplete = game_task->m_TimeToComplete;
+	if (new_game_task->m_objectives_version == game_task->m_objectives_version) {
+		for (auto& it : game_task->m_Objectives) {
+			if (u32(it.idx) == new_game_task->m_Objectives.size()) break;
+			new_game_task->m_Objectives[it.idx].task_state = it.TaskState();
+		}
+	}
+	delete_data(game_task);
+	game_task = new_game_task;
 }

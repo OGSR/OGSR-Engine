@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#include <numeric>
 #include "UIGameCustom.h"
 #include "ui.h"
 #include "level.h"
@@ -11,6 +12,7 @@
 void Remove_all_statics()
 {
 	delete_data(HUD().GetUI()->UIGame()->m_custom_statics);
+	delete_data(HUD().GetUI()->UIGame()->m_custom_statics_sorted);
 }
 
 struct predicate_remove_stat {
@@ -35,6 +37,7 @@ CUIGameCustom::~CUIGameCustom()
 	delete_data				(m_pgameCaptions);
 	shedule_unregister		();
 	delete_data				(m_custom_statics);
+	delete_data				(m_custom_statics_sorted);
 	delete_data				(m_msgs_xml);
 }
 
@@ -63,15 +66,33 @@ void CUIGameCustom::OnFrame()
 		),
 		m_custom_statics.end()
 	);
+
+	UpdateStaticPriorityIndex();
+}
+
+void CUIGameCustom::UpdateStaticPriorityIndex()
+{
+	if (m_custom_statics_sorted.size() != m_custom_statics.size())
+	{
+		m_custom_statics_sorted.resize(m_custom_statics.size());
+
+		std::iota(m_custom_statics_sorted.begin(), m_custom_statics_sorted.end(), 0);
+		std::sort(m_custom_statics_sorted.begin(), m_custom_statics_sorted.end(), [this](auto lhs, auto rhs) {
+			return m_custom_statics[lhs].m_priority < m_custom_statics[rhs].m_priority;
+		});
+	}
 }
 
 void CUIGameCustom::Render()
 {
 	GameCaptions()->Draw();
-	st_vec::iterator it = m_custom_statics.begin();
-	for(;it!=m_custom_statics.end();++it)
-		(*it).Draw();
 
+	if (!m_custom_statics_sorted.empty())
+	{
+		auto it = m_custom_statics_sorted.begin();
+		for (; it != m_custom_statics_sorted.end(); ++it)
+			m_custom_statics[*it].Draw();
+	}
 }
 
 bool CUIGameCustom::IR_OnKeyboardPress(int dik) 
@@ -96,7 +117,6 @@ bool CUIGameCustom::IR_OnMouseWheel			(int direction)
 void CUIGameCustom::AddDialogToRender(CUIWindow* pDialog)
 {
 	HUD().GetUI()->AddDialogToRender(pDialog);
-
 }
 
 void CUIGameCustom::RemoveDialogToRender(CUIWindow* pDialog)
@@ -148,6 +168,9 @@ SDrawStaticStruct* CUIGameCustom::AddCustomStatic			(LPCSTR id, bool bSingleInst
 	float ttl						= m_msgs_xml->ReadAttribFlt(id, 0, "ttl", -1);
 	if(ttl>0.0f)
 		sss.m_endTime				= Device.fTimeGlobal + ttl;
+	sss.m_priority					= m_msgs_xml->ReadAttribFlt(id, 0, "priority", 0);
+
+	UpdateStaticPriorityIndex();
 
 	return &sss;
 }
@@ -167,9 +190,10 @@ void CUIGameCustom::RemoveCustomStatic		(LPCSTR id)
 	if(it!=m_custom_statics.end()){
 		xr_delete((*it).m_static);
 		m_custom_statics.erase(it);
+
+		UpdateStaticPriorityIndex();
 	}
 }
-
 
 #include "ui/UIGameTutorial.h"
 
@@ -178,18 +202,19 @@ extern CUISequencer* g_tutorial2;
 
 void CUIGameCustom::reset_ui()
 {
-	if(g_tutorial2)
-	{ 
-		g_tutorial2->Destroy	();
-		xr_delete				(g_tutorial2);
+	if (g_tutorial2)
+	{
+		g_tutorial2->Destroy();
+		xr_delete(g_tutorial2);
 	}
 
-	if(g_tutorial)
+	if (g_tutorial)
 	{
-		g_tutorial->Destroy	();
+		g_tutorial->Destroy();
 		xr_delete(g_tutorial);
 	}
 }
+
 SDrawStaticStruct::SDrawStaticStruct	()
 {
 	m_static	= NULL;
@@ -220,5 +245,3 @@ void SDrawStaticStruct::Update()
 	else
 		m_static->Update();
 }
-
-xr_token		game_types[];

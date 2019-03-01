@@ -449,9 +449,9 @@ void CActor::Load	(LPCSTR section )
 	CurrentHeight = CameraHeight();	
 }
 
-void CActor::PHHit(float P,Fvector &dir, CObject *who,s16 element,Fvector p_in_object_space, float impulse, ALife::EHitType hit_type /* = ALife::eHitTypeWound */)
+void CActor::PHHit(SHit& H)
 {
-	m_pPhysics_support->in_Hit(P,dir,who,element,p_in_object_space,impulse,hit_type,!g_Alive());
+	m_pPhysics_support->in_Hit(H,!g_Alive());
 }
 
 struct playing_pred
@@ -849,7 +849,7 @@ void CActor::UpdateCL	()
 			if (!Device.m_SecondViewport.IsSVPFrame()) //--#SM+#-- +SecondVP+ Чтобы перекрестие не скакало из за смены FOV (Sin!) [fix for crosshair shaking while SecondVP]
 				HUD().SetCrosshairDisp(fire_disp_full, 0.02f);
 
-			HUD().ShowCrosshair(pWeapon->use_crosshair());
+			HUD().ShowCrosshair(!psHUD_Flags.test(HUD_CROSSHAIR_BUILD) && pWeapon->use_crosshair());
 
 			psHUD_Flags.set( HUD_CROSSHAIR_RT2, pWeapon->show_crosshair() );
 			psHUD_Flags.set( HUD_DRAW_RT,		pWeapon->show_indicators() );

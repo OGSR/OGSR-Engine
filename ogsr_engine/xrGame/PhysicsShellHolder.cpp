@@ -63,17 +63,17 @@ BOOL CPhysicsShellHolder::net_Spawn				(CSE_Abstract*	DC)
 	return ret;
 }
 
-void	CPhysicsShellHolder::PHHit(float P,Fvector &dir, CObject *who,s16 element,Fvector p_in_object_space, float impulse, ALife::EHitType hit_type /* ALife::eHitTypeWound*/)
+void	CPhysicsShellHolder::PHHit(SHit& H)
 {
-	if(impulse>0)
-		if(m_pPhysicsShell) m_pPhysicsShell->applyHit(p_in_object_space,dir,impulse,element,hit_type);
+	if(H.impulse>0)
+		if(m_pPhysicsShell) m_pPhysicsShell->applyHit(H.p_in_bone_space,H.dir,H.impulse,H.boneID,H.type());
 }
 
 //void	CPhysicsShellHolder::Hit(float P, Fvector &dir, CObject* who, s16 element,
 //						 Fvector p_in_object_space, float impulse, ALife::EHitType hit_type)
 void	CPhysicsShellHolder::Hit					(SHit* pHDS)
 {
-	PHHit(pHDS->damage(),pHDS->dir,pHDS->who,pHDS->boneID,pHDS->p_in_bone_space,pHDS->impulse,pHDS->hit_type);
+	PHHit(*pHDS);
 }
 
 void CPhysicsShellHolder::create_physic_shell	()

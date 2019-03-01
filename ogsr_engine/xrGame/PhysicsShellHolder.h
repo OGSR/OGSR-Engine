@@ -71,7 +71,7 @@ public:
 			void			PHSaveState			(NET_Packet &P);
 			void			PHLoadState			(IReader &P);
 	virtual f32				GetMass				();
-	virtual	void			PHHit				(float P,Fvector &dir, CObject *who,s16 element,Fvector p_in_object_space, float impulse, ALife::EHitType hit_type=ALife::eHitTypeWound);
+	virtual	void			PHHit				(SHit& H);
 	virtual	void			Hit					(SHit* pHDS);
 ///////////////////////////////////////////////////////////////////////
 	virtual u16				PHGetSyncItemsNumber();
