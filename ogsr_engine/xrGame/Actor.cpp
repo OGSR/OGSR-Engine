@@ -206,6 +206,8 @@ CActor::CActor() : CEntityAlive(),current_ik_cam_shift(0)
 
 	// Alex ADD: for smooth crouch fix
 	CurrentHeight = 0.f;
+
+        hit_slowmo = 0.f;
 }
 
 
@@ -354,6 +356,8 @@ void CActor::Load	(LPCSTR section )
 
 	m_fWalk_StrafeFactor		= READ_IF_EXISTS(pSettings, r_float, section, "walk_strafe_coef", 1.0f);
 	m_fRun_StrafeFactor			= READ_IF_EXISTS(pSettings, r_float, section, "run_strafe_coef", 1.0f);
+
+	m_hit_slowmo_jump = READ_IF_EXISTS( pSettings, r_bool, section, "hit_slowmo_jump", false );
 
 	m_fExoFactor = 1.0f;
 

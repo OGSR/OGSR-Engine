@@ -239,6 +239,7 @@ protected:
 	// Death
 	float					hit_slowmo;
 	float					hit_probability;
+	bool m_hit_slowmo_jump;
 
 	// media
 	SndShockEffector*		m_sndShockEffector;
