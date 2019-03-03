@@ -142,7 +142,7 @@ void CGameTask::Load(const TASK_ID& id)
 //*
 		LPCSTR ddd;
 		ddd								= g_gameTaskXml->Read(l_root, "map_location_hidden", 0, NULL);
-		if(ddd)
+		if ( ddd || !m_show_all_objectives )
 			objective.def_location_enabled = false;
 
 		bool b1,b2;
