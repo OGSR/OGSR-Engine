@@ -16,6 +16,8 @@
 #include "PHElement.h"
 #include "PHMovementControl.h"
 #include "CharacterPhysicsSupport.h"
+#include "Actor.h"
+
 CPhysicsShellHolder::CPhysicsShellHolder()
 {
 	init();
@@ -408,7 +410,7 @@ bool CPhysicsShellHolder::register_schedule	() const
 #include <filesystem>
 
 bool CPhysicsShellHolder::ActorCanCapture() const {
-  if ( !m_pPhysicsShell || hasFixedBones() ) return false;
+  if ( !m_pPhysicsShell || hasFixedBones() || Actor()->is_actor_climb() || Actor()->is_actor_climbing()) return false;
   if ( pSettings->line_exist( "ph_capture_visuals", cNameVisual().c_str() ) )
     return true;
   std::filesystem::path p = cNameVisual().c_str();
