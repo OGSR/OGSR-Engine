@@ -107,7 +107,7 @@ float4 	main (float2 tc : TEXCOORD0, float4 tcJ : TEXCOORD1 ) : COLOR
 	//	Normalize dot product to
 //	fSturation	= 0.5*fSturation+0.5;
 	//	Map saturation to 0.2..1
-	fSturation	= 0.80*fSturation+0.20;
+	fSturation	= 0.20*fSturation+0.80;
 
 	res		*= fSturation;
 
