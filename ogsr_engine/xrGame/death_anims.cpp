@@ -23,8 +23,14 @@ rnd_motion*	rnd_motion::setup(CKinematicsAnimated* k, const char* s)
 		string64 n;
 		_GetItem(s, i, n);
 		MotionID m = k->LL_MotionID(n);
-		ASSERT_FMT(m.valid(), "motion: %s not found!", n);
-		motions.push_back(m);
+		if (m.valid())
+		{
+			motions.push_back(m);
+		}
+#ifdef	DEBUG
+		else
+			Msg("death_anims: motion: %s not found!", n);
+#endif
 	}
 	return this;
 }
