@@ -107,12 +107,18 @@ void CSoundRender_TargetA::update()
 	ALint processed, state;
 
 	/* Get relevant source info */
+	alGetError();
 	alGetSourcei(pSource, AL_SOURCE_STATE, &state);
+	ALenum err = alGetError();
+	if ( err != AL_NO_ERROR ) {
+	  Msg( "!![%s] Error checking source state: %s", __FUNCTION__, alGetString( err ) );
+	  return;
+	}
 	alGetSourcei(pSource, AL_BUFFERS_PROCESSED, &processed);
-	if (alGetError() != AL_NO_ERROR)
-	{
-		Msg("!![%s]Error checking source state!", __FUNCTION__);
-		return;
+	err = alGetError();
+	if ( err != AL_NO_ERROR ) {
+	  Msg( "!![%s] Error checking source state: %s", __FUNCTION__, alGetString( err ) );
+	  return;
 	}
 
 	while (processed > 0)
