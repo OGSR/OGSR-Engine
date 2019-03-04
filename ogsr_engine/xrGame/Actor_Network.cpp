@@ -572,9 +572,9 @@ BOOL CActor::net_Spawn		(CSE_Abstract* DC)
 
 	// *** movement state - respawn
 	mstate_wishful			= 0;
-	if ( m_loaded_ph_box_id == 1 )
+	if ( m_loaded_ph_box_id == 1 || m_loaded_ph_box_id == 3 )
 	  mstate_real = mcCrouch;
-	else if ( m_loaded_ph_box_id == 2 )
+	else if ( m_loaded_ph_box_id == 2 || m_loaded_ph_box_id == 4 )
 	  mstate_real = mcCrouch|mcAccel;
 	else
 	  mstate_real = 0;
