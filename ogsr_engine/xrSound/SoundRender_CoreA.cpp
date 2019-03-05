@@ -92,12 +92,12 @@ void CSoundRender_CoreA::_initialize	(u64 window)
 		return;
 	}
     
-    // clear errors
-	alGetError					();
-	alcGetError					(pDevice);
-    
     // Set active context
     AC_CHK				        (alcMakeContextCurrent(pContext));
+    
+    // clear errors
+	alGetError					();
+	//alcGetError					(pDevice);
 
     // initialize listener
     A_CHK				        (alListener3f		(AL_POSITION,0.f,0.f,0.f));

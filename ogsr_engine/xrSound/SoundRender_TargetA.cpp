@@ -26,6 +26,10 @@ BOOL	CSoundRender_TargetA::_initialize		()
     // initialize buffer
     alGetError();
 	A_CHK(alGenBuffers	(sdef_target_count, pBuffers));	
+    if ( ALenum error = alGetError() != AL_NO_ERROR ) {
+      Msg( "!![%s] alGenBuffers: %s", __FUNCTION__, alGetString( error ) );
+      return FALSE;
+    }
     alGenSources		(1, &pSource);
     ALenum error		= alGetError();
     if (AL_NO_ERROR==error){
@@ -67,11 +71,20 @@ void	CSoundRender_TargetA::start			(CSoundRender_Emitter* E)
 
 void	CSoundRender_TargetA::render		()
 {
+	alGetError();
 	for (u32 buf_idx=0; buf_idx<sdef_target_count; buf_idx++)
 		fill_block	(pBuffers[buf_idx]);
+        if ( ALenum error = alGetError() != AL_NO_ERROR ) {
+          Msg( "!![%s] alBufferData: %s", __FUNCTION__, alGetString( error ) );
+          return;
+        }
 
 	A_CHK			(alSourceQueueBuffers	(pSource, sdef_target_count, pBuffers));	
 	A_CHK			(alSourcePlay			(pSource));
+        if ( ALenum error = alGetError() != AL_NO_ERROR ) {
+          Msg( "!![%s] alSourcePlay: %s", __FUNCTION__, alGetString( error ) );
+          return;
+        }
 
     inherited::render();
 }
@@ -92,12 +105,23 @@ void	CSoundRender_TargetA::rewind			()
 {
 	inherited::rewind();
 
+	alGetError();
 	A_CHK			(alSourceStop(pSource));
 	A_CHK			(alSourcei	(pSource, AL_BUFFER,   NULL));
+        if ( ALenum error = alGetError() != AL_NO_ERROR ) {
+          Msg( "!![%s] alSourceStop: %s", __FUNCTION__, alGetString( error ) );
+          return;
+        }
 	for (u32 buf_idx=0; buf_idx<sdef_target_count; buf_idx++)
 		fill_block	(pBuffers[buf_idx]);
+        if ( ALenum error = alGetError() != AL_NO_ERROR ) {
+          Msg( "!![%s] alBufferData: %s", __FUNCTION__, alGetString( error ) );
+          return;
+        }
 	A_CHK			(alSourceQueueBuffers	(pSource, sdef_target_count, pBuffers));	
 	A_CHK			(alSourcePlay			(pSource));
+        if ( ALenum error = alGetError() != AL_NO_ERROR )
+          Msg( "!![%s] alSourcePlay: %s", __FUNCTION__, alGetString( error ) );
 }
 
 void CSoundRender_TargetA::update()
@@ -117,7 +141,7 @@ void CSoundRender_TargetA::update()
 	alGetSourcei(pSource, AL_BUFFERS_PROCESSED, &processed);
 	err = alGetError();
 	if ( err != AL_NO_ERROR ) {
-	  Msg( "!![%s] Error checking source state: %s", __FUNCTION__, alGetString( err ) );
+	  Msg( "!![%s] Error checking buffers processed: %s", __FUNCTION__, alGetString( err ) );
 	  return;
 	}
 
@@ -160,6 +184,7 @@ void	CSoundRender_TargetA::fill_parameters()
 	CSoundRender_Emitter* SE = pEmitter; VERIFY(SE);
 #endif
 	inherited::fill_parameters();
+	alGetError();
 
     // 3D params
 	VERIFY2(pEmitter,SE->source->file_name());
@@ -196,6 +221,9 @@ void	CSoundRender_TargetA::fill_parameters()
         A_CHK(alSourcef	(pSource, AL_PITCH,				_pitch));
     }
 	VERIFY2(pEmitter,SE->source->file_name());
+
+    if ( ALenum error = alGetError() != AL_NO_ERROR )
+      Msg( "!![%s]: %s", __FUNCTION__, alGetString( error ) );
 }
 
 void	CSoundRender_TargetA::fill_block	(ALuint BufferID)
