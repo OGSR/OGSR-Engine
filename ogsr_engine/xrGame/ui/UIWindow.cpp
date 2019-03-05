@@ -248,13 +248,29 @@ void CUIWindow::AttachChild(CUIWindow* pChild)
 	m_ChildWndList.push_back(pChild);
 }
 
+void CUIWindow::DoDetachChild(CUIWindow* pChild, bool from_destructor)
+{
+	if(!pChild)
+		return;
+
+	if( GetMouseCapturer() == pChild )
+		SetMouseCapture(pChild, false);
+
+	pChild->SetParent(NULL);
+
+	if (from_destructor && pChild->IsAutoDelete()) {
+		Msg("!![" __FUNCTION__ "] detaching autodelete window from destructor : [%s]", pChild->WindowName_script());
+		//LogStackTrace("");
+	}
+
+	if(pChild->IsAutoDelete() && !from_destructor)
+		xr_delete(pChild);
+}
+
 void CUIWindow::DetachChild(CUIWindow* pChild, bool from_destructor)
 {
 	if(!pChild)
 		return;
-	
-	if( GetMouseCapturer() == pChild )
-		SetMouseCapture(pChild, false);
 
 	auto it = std::find(m_ChildWndList.begin(), m_ChildWndList.end(), pChild);
 	if (it != m_ChildWndList.end())
@@ -271,22 +287,15 @@ void CUIWindow::DetachChild(CUIWindow* pChild, bool from_destructor)
 		catch (...) {}
 	}
 
-	pChild->SetParent(NULL);
-
-	if (from_destructor && pChild->IsAutoDelete()) {
-		Msg("!![" __FUNCTION__ "] detaching autodelete window from destructor : [%s]", pChild->WindowName_script());
-		//LogStackTrace("");
-	}
-
-	if(pChild->IsAutoDelete() && !from_destructor)
-		xr_delete(pChild);
+	DoDetachChild( pChild, from_destructor );
 }
 
 void CUIWindow::DetachAll()
 {
-	while (!m_ChildWndList.empty()) {
-		DetachChild(m_ChildWndList.back());
-	}
+  auto tmp_m_ChildWndList = m_ChildWndList;
+  m_ChildWndList.clear();
+  for ( CUIWindow* pChild : tmp_m_ChildWndList )
+    DoDetachChild( pChild );
 }
 
 void CUIWindow::GetAbsoluteRect(Frect& r) 
