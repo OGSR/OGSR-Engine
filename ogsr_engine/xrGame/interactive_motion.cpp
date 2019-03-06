@@ -19,13 +19,20 @@ void interactive_motion::init()
 
 void interactive_motion::setup(LPCSTR m,CPhysicsShell *s)
 {
-	
 	VERIFY(s);
 	motion = smart_cast<CKinematicsAnimated*>(s->PKinematics())->LL_MotionID(m);
 	if(motion.valid())
 		flags.set(fl_use_death_motion,TRUE);
-
 }
+
+void interactive_motion::setup(MotionID m, CPhysicsShell *s)
+{
+	VERIFY(s);
+	motion = m;
+	if (motion.valid())
+		flags.set(fl_use_death_motion, TRUE);
+}
+
 
 void interactive_motion::anim_callback(CBlend *B)
 {

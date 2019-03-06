@@ -71,6 +71,7 @@ CPHMovementControl::CPHMovementControl(CObject* parent)
 	m_dwCurBox			=	0xffffffff;
 	fCollisionDamageFactor=1.f;
 	in_dead_area_count	=0;
+	block_damage_step_end = u64(-1);
 }
 
 CPHMovementControl::~CPHMovementControl(void)
@@ -119,44 +120,30 @@ void CPHMovementControl::in_shedule_Update(u32 DT)
 
 void CPHMovementControl::Calculate(Fvector& vAccel,const Fvector& camDir,float /**ang_speed/**/,float jump,float /**dt/**/,bool /**bLight/**/)
 {
-	Fvector previous_position;previous_position.set(vPosition);
+	Fvector previous_position; previous_position.set(vPosition);
 	m_character->IPosition(vPosition);
-	if(bExernalImpulse)
+
+	if (bExernalImpulse)
 	{
-		
 		vAccel.add(vExternalImpulse);
 		m_character->ApplyForce(vExternalImpulse);
-		vExternalImpulse.set(0.f,0.f,0.f);
-		
-		bExernalImpulse=false;
+		vExternalImpulse.set(0.f, 0.f, 0.f);
+
+		bExernalImpulse = false;
 	}
-	//vAccel.y=jump;
-	float mAccel=vAccel.magnitude();
+
+	float mAccel = vAccel.magnitude();
 	m_character->SetCamDir(camDir);
-	m_character->SetMaximumVelocity(mAccel/10.f);
-	//if(!fis_zero(mAccel))vAccel.mul(1.f/mAccel);
+	m_character->SetMaximumVelocity(mAccel / 10.f);
 	m_character->SetAcceleration(vAccel);
-	if(!fis_zero(jump)) m_character->Jump(vAccel);
-	
-	m_character->GetSavedVelocity(vVelocity); 
-	fActualVelocity=vVelocity.magnitude();
-	//Msg("saved avel %f", fActualVelocity);
-	gcontact_Was=m_character->ContactWas();
-	fContactSpeed=0.f;
-	const ICollisionDamageInfo* di=m_character->CollisionDamageInfo();
- 	{
-		fContactSpeed=di->ContactVelocity();
+	if (!fis_zero(jump)) m_character->Jump(vAccel);
 
-		gcontact_Power				= fContactSpeed/fMaxCrashSpeed;
+	m_character->GetSavedVelocity(vVelocity);
+	fActualVelocity = vVelocity.magnitude();
+	gcontact_Was = m_character->ContactWas();
 
-		gcontact_HealthLost			= 0;
-		if (fContactSpeed>fMinCrashSpeed) 
-		{
-				gcontact_HealthLost = 
-				((fContactSpeed-fMinCrashSpeed))/(fMaxCrashSpeed-fMinCrashSpeed);
-		}
-
-	}
+	//////
+	UpdateCollisionDamage();
 	if(m_character->LastMaterialIDX()!=u16(-1))
 	{
 		const SGameMtl *last_material=GMLib.GetMaterialByIdx(m_character->LastMaterialIDX());
@@ -166,15 +153,46 @@ void CPHMovementControl::Calculate(Fvector& vAccel,const Fvector& camDir,float /
 		}
 	}
 
-	//CPhysicsShellHolder * O=di->DamageObject();
-	//SCollisionHitCallback* cc= O ? O->get_collision_hit_callback() : NULL;
-	const ICollisionDamageInfo	*cdi=CollisionDamageInfo();
-	if(cdi->HitCallback())cdi->HitCallback()->call(static_cast<CGameObject*>(m_character->PhysicsRefObject()),fMinCrashSpeed,fMaxCrashSpeed,fContactSpeed,gcontact_HealthLost,CollisionDamageInfo());
-	
+	ICollisionDamageInfo	*cdi = CollisionDamageInfo();
+	if (cdi->HitCallback())
+		cdi->HitCallback()->call((m_character->PhysicsRefObject()), fMinCrashSpeed, fMaxCrashSpeed, fContactSpeed, gcontact_HealthLost, CollisionDamageInfo());
+	////////
+
 	TraceBorder(previous_position);
 	CheckEnvironment(vPosition);
-	bSleep=false;
+	bSleep = false;
 	m_character->Reinit();
+}
+
+void CPHMovementControl::UpdateCollisionDamage()
+{
+	//reset old
+	fContactSpeed = 0.f;
+	gcontact_HealthLost = 0;
+	gcontact_Power = 0;
+	const ICollisionDamageInfo* di = m_character->CollisionDamageInfo();
+	fContactSpeed = di->ContactVelocity();
+
+	if (block_damage_step_end != u64(-1))
+	{
+		if (ph_world->StepsNum() < block_damage_step_end)
+		{
+			fContactSpeed = 0.f;
+			return;
+		}
+		else
+			block_damage_step_end = u64(-1);
+	}
+
+	// calc new
+	gcontact_Power = fContactSpeed / fMaxCrashSpeed;
+	if (fContactSpeed > fMinCrashSpeed)
+	{
+		gcontact_HealthLost =
+			((fContactSpeed - fMinCrashSpeed)) / (fMaxCrashSpeed - fMinCrashSpeed);
+		// VERIFY(m_character);
+		//m_character->SetHitType(DefineCollisionHitType(m_character->LastMaterialIDX()));
+	}
 }
 
 void CPHMovementControl::Calculate(const xr_vector<DetailPathManager::STravelPathPoint>& path,float speed,  u32& travel_point,  float& precision  )
@@ -1242,4 +1260,10 @@ bool CPHMovementControl::PhysicsOnlyMode()
 {
 	return m_character && m_character->b_exist && m_character->IsEnabled() &&
 		(m_character->JumpState() || m_character->ForcedPhysicsControl());
+}
+
+void CPHMovementControl::BlockDamageSet(u64 steps_num)
+{
+	block_damage_step_end = ph_world->StepsNum() + steps_num;
+	UpdateCollisionDamage();//reset all saved values
 }

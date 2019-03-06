@@ -3,8 +3,8 @@
 #include "../../../PhysicsShellHolder.h"
 #include "../../../level.h"
 #include "../../../actor.h"
-
-CPolterTele::CPolterTele(CPoltergeist *polter) : inherited (polter)
+#include "../../../IColisiondamageInfo.h"
+CPolterTele::CPolterTele(CPoltergeist *polter) : inherited (polter),m_pmt_object_collision_damage(0.5f)
 {
 }
 
@@ -15,7 +15,6 @@ CPolterTele::~CPolterTele()
 void CPolterTele::load(LPCSTR section)
 {
 	inherited::load(section);
-
 
 	m_pmt_radius						= READ_IF_EXISTS(pSettings,r_float,section,	"Tele_Find_Radius",					10.f);
 	m_pmt_object_min_mass				= READ_IF_EXISTS(pSettings,r_float,section,	"Tele_Object_Min_Mass",				40.f);
@@ -30,15 +29,18 @@ void CPolterTele::load(LPCSTR section)
 	m_pmt_raise_speed					= READ_IF_EXISTS(pSettings,r_float,section,	"Tele_Raise_Speed",					3.f);
 	m_pmt_raise_time_to_wait_in_objects	= READ_IF_EXISTS(pSettings,r_u32,section,	"Tele_Delay_Between_Objects_Raise_Time", 500);
 	m_pmt_fly_velocity					= READ_IF_EXISTS(pSettings,r_float,section, "Tele_Fly_Velocity",				30.f);
-
+	m_pmt_object_collision_damage		= READ_IF_EXISTS(pSettings,r_float,section, "Tele_Collision_Damage",			0.5f);
 	::Sound->create						(m_sound_tele_hold,		pSettings->r_string(section,"sound_tele_hold"),	st_Effect,SOUND_TYPE_WORLD);
 	::Sound->create						(m_sound_tele_throw,	pSettings->r_string(section,"sound_tele_throw"),st_Effect,SOUND_TYPE_WORLD);
 
+	m_state								= 	eWait;
+	m_time								= 	0;
+	m_time_next							= 	0;
+}
 
-	m_state								= eWait;
-	m_time								= 0;
-	m_time_next							= 0;
-
+void CPolterTele::update_frame()
+{
+	inherited::update_frame();
 }
 
 void CPolterTele::update_schedule()
@@ -46,7 +48,18 @@ void CPolterTele::update_schedule()
 	inherited::update_schedule();
 
 	if (!m_object->g_Alive() || !Actor() || !Actor()->g_Alive()) return;
-	if (Actor()->Position().distance_to(m_object->Position()) > m_pmt_distance) return;
+
+	Fvector const actor_pos				=	Actor()->Position();
+	float const dist2actor				=	actor_pos.distance_to(m_object->Position());
+
+	if ( dist2actor > m_pmt_distance ) 
+		return;
+
+	if ( m_object->get_current_detection_level() < m_object->get_detection_success_level() )
+		return;
+
+	if ( m_object->get_actor_ignore() )
+		return;
 
 	switch (m_state) {
 	case eStartRaiseObjects:	
@@ -67,7 +80,8 @@ void CPolterTele::update_schedule()
 
 		break;
 	case eRaisingObjects:
-		if (m_time + m_pmt_time_to_hold > time()) break;
+		if (m_time + m_pmt_time_to_hold > time()) 
+			break;
 		
 		m_time				= time();
 		m_time_next		= 0;
@@ -93,7 +107,6 @@ void CPolterTele::update_schedule()
 		break;
 	}
 }
-
 
 //////////////////////////////////////////////////////////////////////////
 // Выбор подходящих объектов для телекинеза
@@ -150,6 +163,9 @@ bool CPolterTele::trace_object(CObject *obj, const Fvector &target)
 	dir.sub			(target, trace_from);
 	
 	range			= dir.magnitude();
+	if ( range < 0.0001f )
+		return false;
+
 	dir.normalize	();
 
 	collide::rq_result	l_rq;
@@ -160,10 +176,9 @@ bool CPolterTele::trace_object(CObject *obj, const Fvector &target)
 	return false;
 }
 
-
 void CPolterTele::tele_find_objects(xr_vector<CObject*> &objects, const Fvector &pos) 
 {
-	m_nearest.clear_not_free		();
+	m_nearest.clear		();
 	Level().ObjectSpace.GetNearest	(m_nearest, pos, m_pmt_radius, NULL);
 
 	for (u32 i=0;i<m_nearest.size();i++) {
@@ -179,8 +194,8 @@ void CPolterTele::tele_find_objects(xr_vector<CObject*> &objects, const Fvector 
 			(obj == m_object) || 
 			m_object->CTelekinesis::is_active_object(obj) || 
 			( pSettings->line_exist( obj->cNameSect().c_str(), "ph_heavy" ) && pSettings->r_bool( obj->cNameSect().c_str(), "ph_heavy" ) ) ||
+			obj->hasFixedBones() ||
 			!obj->m_pPhysicsShell->get_ApplyByGravity()) continue;
-
 		
 		Fvector center;
 		Actor()->Center(center);
@@ -189,7 +204,6 @@ void CPolterTele::tele_find_objects(xr_vector<CObject*> &objects, const Fvector 
 			objects.push_back(obj);
 	}
 }
-
 
 bool CPolterTele::tele_raise_objects()
 {
@@ -252,6 +266,28 @@ bool CPolterTele::tele_raise_objects()
 
 	return false;
 }
+struct SCollisionHitCallback:
+	public ICollisionHitCallback
+
+{
+//	CollisionHitCallbackFun				*m_collision_hit_callback																																						;
+	CPhysicsShellHolder *m_object;
+	float m_pmt_object_collision_damage;
+	SCollisionHitCallback( CPhysicsShellHolder *object, float pmt_object_collision_damage ):
+	m_object(object), m_pmt_object_collision_damage( pmt_object_collision_damage )
+	{
+		VERIFY( object );
+	}
+	void call( CPhysicsShellHolder* obj, float min_cs, float max_cs, float &cs, float &hl, ICollisionDamageInfo* di )
+	{
+		
+		if( cs > min_cs*0.5f )
+			hl = m_pmt_object_collision_damage;
+		VERIFY( m_object );
+		di->SetInitiated();
+		m_object->set_collision_hit_callback( 0 );//delete this!!
+	}
+};
 
 void CPolterTele::tele_fire_objects()
 {
@@ -261,9 +297,30 @@ void CPolterTele::tele_fire_objects()
 		if ((tele_object.get_state() == TS_Raise) || (tele_object.get_state() == TS_Keep))  {
 			Fvector					enemy_pos;
 			enemy_pos				= get_head_position(Actor());
+			CPhysicsShellHolder		*hobj = tele_object.get_object();
+			
+			VERIFY( hobj );
+			hobj->set_collision_hit_callback( xr_new<SCollisionHitCallback>( hobj, m_pmt_object_collision_damage ) );
 			m_object->CTelekinesis::fire_t	(tele_object.get_object(),enemy_pos, tele_object.get_object()->Position().distance_to(enemy_pos) / m_pmt_fly_velocity);
 			return;
 		}
 	}
 }
 
+
+void CPolterTele::on_destroy() {
+  inherited::on_destroy();
+  deactivate();
+}
+
+void CPolterTele::on_die() {
+  inherited::on_die();
+  deactivate();
+}
+
+void CPolterTele::deactivate() {
+  m_object->CTelekinesis::deactivate();	
+  m_state = eWait;
+  m_time  = time();
+  m_time_next = 0;
+}

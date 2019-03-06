@@ -19,6 +19,7 @@
 #include "ai/stalker/ai_stalker.h"
 #include "interactive_motion.h"
 #include "animation_movement_controller.h"
+
 //const float default_hinge_friction = 5.f;//gray_wolf comment
 #ifdef DEBUG
 #	include "PHDebug.h"
@@ -62,6 +63,7 @@ IC bool is_imotion(interactive_motion *im)
 
 CCharacterPhysicsSupport::~CCharacterPhysicsSupport()
 {
+	set_collision_hit_callback(nullptr);
 	if(m_flags.test(fl_skeleton_in_shell))
 	{
 		if(m_physics_skeleton)m_physics_skeleton->Deactivate();
@@ -186,6 +188,7 @@ void CCharacterPhysicsSupport::in_NetSpawn(CSE_Abstract* e)
 
 	CPHDestroyable::Init();//this zerows colbacks !!;
 	CKinematicsAnimated*ka= smart_cast<CKinematicsAnimated*>(m_EntityAlife.Visual());
+	m_death_anims.setup(ka, m_EntityAlife.cNameSect().c_str(), pSettings);
 	if(!m_EntityAlife.g_Alive())
 	{
 		
@@ -373,11 +376,14 @@ bool is_similar(const Fmatrix &m0,const Fmatrix &m1,float param)
 			*/
 }
 
-void CCharacterPhysicsSupport::KillHit(CObject *who, ALife::EHitType hit_type, float &impulse)
+#include "stalker_movement_manager.h"
+
+void CCharacterPhysicsSupport::KillHit(SHit& H)
 {
 	TestForWounded();
 	Fmatrix prev_pose;prev_pose.set(mXFORM);
-	ActivateShell(who);
+	ActivateShell(H.who);
+
 #ifdef DEBUG
 	if(Type() == etStalker && xr_strcmp(dbg_stalker_death_anim, "none") != 0)
 	{	
@@ -393,18 +399,28 @@ void CCharacterPhysicsSupport::KillHit(CObject *who, ALife::EHitType hit_type, f
 	}
 #endif
 
-	if(is_imotion(m_interactive_motion))
-				m_interactive_motion->play(m_pPhysicsShell);
+	float hit_angle = 0;
+	MotionID m = m_death_anims.motion(m_EntityAlife, H, hit_angle);
 
-	if (!m_was_wounded)
+	CAI_Stalker* const	holder = m_EntityAlife.cast_stalker();
+	if (holder && (holder->wounded())) //  || holder->movement().current_params().cover()
+		m = MotionID();
+
+	if (m.valid())
 	{
-		impulse*=(hit_type==ALife::eHitTypeExplosion ? 1.f : skel_fatal_impulse_factor);
+		xr_delete(m_interactive_motion);
+		m_interactive_motion = xr_new<imotion_position>();
+		m_interactive_motion->setup(m, m_pPhysicsShell);
 	}
+
+	if(is_imotion(m_interactive_motion))
+		m_interactive_motion->play(m_pPhysicsShell);
+
 	if(!is_imotion(m_interactive_motion))
 		m_flags.set(fl_block_hit,TRUE);
 }
 
-void CCharacterPhysicsSupport::in_Hit(float P,Fvector &dir, CObject *who,s16 element,Fvector p_in_object_space, float impulse,ALife::EHitType hit_type ,bool is_killing)
+void CCharacterPhysicsSupport::in_Hit(SHit& H, bool is_killing)
 {
 	if(m_EntityAlife.use_simplified_visual	())	return;
 	if(m_flags.test(fl_block_hit))
@@ -416,24 +432,29 @@ void CCharacterPhysicsSupport::in_Hit(float P,Fvector &dir, CObject *who,s16 ele
 	}
 
 	is_killing=is_killing||(m_eState==esAlive&&!m_EntityAlife.g_Alive());
-	if(m_EntityAlife.g_Alive()&&is_killing&&hit_type==ALife::eHitTypeExplosion&&P>70.f)
+	if(m_EntityAlife.g_Alive()&&is_killing&&H.type()==ALife::eHitTypeExplosion&&H.power>70.f)
 		CPHDestroyable::Destroy();
 
-	if((!m_EntityAlife.g_Alive()||is_killing)&&!fis_zero(m_shot_up_factor)&&hit_type!=ALife::eHitTypeExplosion)
+	if((!m_EntityAlife.g_Alive()||is_killing)&&!fis_zero(m_shot_up_factor)&&H.type()!=ALife::eHitTypeExplosion)
 	{
-		dir.y+=m_shot_up_factor;
-		dir.normalize();
+		H.dir.y+=m_shot_up_factor;
+		H.dir.normalize();
 	}
 
 	if(!m_pPhysicsShell&&is_killing)
 	{
-		KillHit(who, hit_type, impulse);
+		KillHit(H);
+
+		if (!m_was_wounded)
+		{
+			H.impulse *= (H.type() == ALife::eHitTypeExplosion ? 1.f : skel_fatal_impulse_factor);
+		}
 	}
 
 	if(!(m_pPhysicsShell&&m_pPhysicsShell->isActive()))
 	{
 		if(!is_killing&&m_EntityAlife.g_Alive())
-			m_PhysicMovementControl->ApplyHit(dir,impulse,hit_type);
+			m_PhysicMovementControl->ApplyHit(H.dir,H.impulse,H.type());
 
 #ifdef USE_SMART_HITS
 		if(Type()==etStalker)
@@ -443,7 +464,7 @@ void CCharacterPhysicsSupport::in_Hit(float P,Fvector &dir, CObject *who,s16 ele
 #endif // USE_SMART_HITS
 
 	}else 
-		m_pPhysicsShell->applyHit(p_in_object_space,dir,impulse,element,hit_type);
+		m_pPhysicsShell->applyHit(H.p_in_bone_space,H.dir,H.impulse,H.boneID,H.type());
 }
 
 
@@ -735,8 +756,8 @@ void CCharacterPhysicsSupport::ActivateShell			( CObject* who )
 }
 void CCharacterPhysicsSupport::in_ChangeVisual()
 {
-	
-	if(!m_physics_skeleton&&!m_pPhysicsShell) return;
+	if(!m_physics_skeleton&&!m_pPhysicsShell) 
+		return;
 
 	if(m_pPhysicsShell)
 	{
@@ -748,10 +769,19 @@ void CCharacterPhysicsSupport::in_ChangeVisual()
 			xr_delete(m_physics_skeleton)			;
 		}
 		CreateSkeleton(m_physics_skeleton);
-		if(m_pPhysicsShell)m_pPhysicsShell->Deactivate();
+		if(m_pPhysicsShell)
+			m_pPhysicsShell->Deactivate();
 		xr_delete(m_pPhysicsShell);
 		ActivateShell(NULL);
 	}
+
+	CKinematicsAnimated* ka = smart_cast<CKinematicsAnimated*>(m_EntityAlife.Visual());
+	if (ka)
+	{
+		m_death_anims.setup(ka, m_EntityAlife.cNameSect().c_str(), pSettings);
+	}
+
+
 	if(m_ik_controller)
 	{
 		DestroyIKController();
@@ -806,21 +836,14 @@ void		 CCharacterPhysicsSupport::in_NetRelcase(CObject* O)
 	}
 }
  
-bool CCharacterPhysicsSupport::set_collision_hit_callback(SCollisionHitCallback* cc)
+void CCharacterPhysicsSupport::set_collision_hit_callback(ICollisionHitCallback* cc)
 {
-	if(!cc)
-	{
-		m_collision_hit_callback=NULL;
-		return true;
-	}
-	if(m_pPhysicsShell)
-	{
-		VERIFY2(cc->m_collision_hit_callback!=0,"No callback function");
-		m_collision_hit_callback=cc;
-		return true;
-	}else return false;
+
+	xr_delete(m_collision_hit_callback);
+	m_collision_hit_callback = cc;
+
 }
-SCollisionHitCallback * CCharacterPhysicsSupport::get_collision_hit_callback()
+ICollisionHitCallback * CCharacterPhysicsSupport::get_collision_hit_callback()
 {
 	return m_collision_hit_callback;
 }

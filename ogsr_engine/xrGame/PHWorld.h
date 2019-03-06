@@ -92,6 +92,9 @@ IC	bool						Processing						()							{return b_processing;}
 	u32							CalcNumSteps					(u32 dTime)					;
 	u16							ObjectsNumber					()							;
 	u16							UpdateObjectsNumber				()							;
+
+	inline u64 &StepsNum() { return m_steps_num; }
+
 	void						NetRelcase						(CPhysicsShell* s)			;
 	void						AddCall							(CPHCondition*c,CPHAction*a);
 #ifdef DEBUG

@@ -14,13 +14,11 @@
 #include "../control_movement_base.h"
 #include "../control_path_builder_base.h"
 #include "../../../PhysicsShell.h"
-
-#define HEIGHT_CHANGE_VELOCITY	0.5f
-#define HEIGHT_CHANGE_MIN_TIME	3000
-#define HEIGHT_CHANGE_MAX_TIME	10000
-#define HEIGHT_MIN				0.4f
-#define HEIGHT_MAX				2.0f
-
+#include "../../../actor.h"
+#include "../../../actor_memory.h"
+#include "../../../visual_memory_manager.h"
+#include "ActorEffector.h"
+#include "../../../ActorCondition.h"
 
 CPoltergeist::CPoltergeist()
 {
@@ -30,10 +28,13 @@ CPoltergeist::CPoltergeist()
 	
 	m_flame						= 0;
 	m_tele						= 0;
+	m_actor_ignore				= false;
 }
 
 CPoltergeist::~CPoltergeist()
 {
+	remove_pp_effector	();
+
 	xr_delete		(StateMan);
 	xr_delete		(m_flame);
 	xr_delete		(m_tele);
@@ -95,8 +96,20 @@ void CPoltergeist::Load(LPCSTR section)
 	anim().accel_chain_test		();
 #endif
 
-	READ_IF_EXISTS(pSettings,r_u32,section,"PsyAura_Fake_Delay", 8000);
-	READ_IF_EXISTS(pSettings,r_float,section,"PsyAura_Fake_MaxAddDist", 90.f);
+	//READ_IF_EXISTS(pSettings,r_u32,section,"PsyAura_Fake_Delay", 8000);
+	//READ_IF_EXISTS(pSettings,r_float,section,"PsyAura_Fake_MaxAddDist", 90.f);
+
+	m_height_change_velocity = READ_IF_EXISTS(pSettings,r_float,section,"Height_Change_Velocity", 0.5f);
+	m_height_change_min_time = READ_IF_EXISTS(pSettings,r_u32,section,"Height_Change_Min_Time", 3000);
+	m_height_change_max_time = READ_IF_EXISTS(pSettings,r_u32,section,"Height_Change_Max_Time", 10000);
+	m_height_min			 = READ_IF_EXISTS(pSettings,r_float,section,"Height_Min", 0.4f);
+	m_height_max			 = READ_IF_EXISTS(pSettings,r_float,section,"Height_Max", 2.f);
+
+	m_fly_around_level		 = READ_IF_EXISTS(pSettings,r_float,section,"detection_fly_around_level", 5.f);
+	m_fly_around_distance	 = READ_IF_EXISTS(pSettings,r_float,section,"detection_fly_around_distance", 15.f);
+
+	m_fly_around_change_direction_time	 
+							 = READ_IF_EXISTS(pSettings,r_float,section,"detection_fly_around_change_direction_time", 7);
 
 	LPCSTR polter_type = pSettings->r_string(section,"type");
 	
@@ -107,9 +120,115 @@ void CPoltergeist::Load(LPCSTR section)
 		m_tele			= xr_new<CPolterTele>(this);
 		m_tele->load	(section);
 	}
-	
+
+	m_detection_pp_effector_name		= READ_IF_EXISTS(pSettings,r_string,section, "detection_pp_effector_name",		"");
+	m_detection_near_range_factor		= READ_IF_EXISTS(pSettings,r_float,section, "detection_near_range_factor",		2.f);
+	m_detection_far_range_factor		= READ_IF_EXISTS(pSettings,r_float,section, "detection_far_range_factor",		1.f);
+	m_detection_speed_factor			= READ_IF_EXISTS(pSettings,r_float,section, "detection_speed_factor",			1.f);
+	m_detection_loose_speed				= READ_IF_EXISTS(pSettings,r_float,section, "detection_loose_speed",			5.f);
+	m_detection_far_range				= READ_IF_EXISTS(pSettings,r_float,section, "detection_far_range",				20.f);
+	m_detection_success_level			= READ_IF_EXISTS(pSettings,r_float,section, "detection_success_level",			4.f);
+	m_detection_max_level				= READ_IF_EXISTS(pSettings,r_float,section, "detection_max_level",				100.f);
+
+	m_current_detection_level			= 	0;
+	m_last_detection_time				= 	0;
+	m_detection_pp_type_index			= 	0;
+
 	m_dead_always_visible = READ_IF_EXISTS( pSettings, r_bool, section, "dead_always_visible", false );
-	PostLoad					(section);
+	PostLoad					(section);	
+}
+
+float   CPoltergeist::get_post_process_factor () const
+{
+	float 	factor						=	m_current_detection_level / m_detection_success_level;
+	clamp									(factor, 0.f, 1.f);
+	return									factor;
+}
+
+bool   CPoltergeist::check_work_condition () const
+{
+	return									g_Alive() && 
+											Actor()				&&
+											Actor()->g_Alive();
+}
+
+void   CPoltergeist::remove_pp_effector ()
+{
+	if ( m_detection_pp_type_index != 0 && Actor() )
+	{
+		RemoveEffector					(Actor(), m_detection_pp_type_index);
+		m_detection_pp_type_index	=	0;
+	}
+}
+
+void   CPoltergeist::update_detection ()
+{
+	if ( !check_work_condition() ) 
+	{
+		remove_pp_effector();
+		return;
+	}
+
+	//-------------------------------------------------------------------
+	// calculate detection level and turn on/off post processing effect
+	//-------------------------------------------------------------------
+	Fvector const actor_pos				=	Actor()->Position();
+	float const dist2actor				=	actor_pos.distance_to(Position());
+
+	float const time_passed_sec			=	float(Device.dwTimeGlobal - m_last_detection_time) / 1000.f;
+	m_last_detection_time				=	Device.dwTimeGlobal;
+	
+	if ( !get_actor_ignore() &&
+		  time_passed_sec > 0.f &&
+		  time_passed_sec < 2.f && 
+		  dist2actor < get_detection_far_range() )
+	{
+		float const relative_range		=	dist2actor / get_detection_far_range();
+		float const range_factor		=	relative_range * get_detection_far_range_factor() +
+											(1.f-relative_range) * get_detection_near_range_factor();
+
+		float const speed_factor		=	get_detection_speed_factor();
+		float const raw_speed			=	m_last_actor_pos.distance_to(actor_pos) / time_passed_sec;
+
+ 		float const speed				=	powf(1.f + raw_speed, speed_factor) - 1.f;
+
+		float const actor_psy_immunity	=	Actor()->conditions().GetHitImmunity(ALife::eHitTypeTelepatic);
+		m_current_detection_level		+=	time_passed_sec * 0.03f * actor_psy_immunity * range_factor * speed;
+	}
+
+	m_current_detection_level			-=	time_passed_sec * get_detection_loose_speed();
+	m_current_detection_level			=	(m_current_detection_level < 0) ? 0.f : m_current_detection_level;
+
+	if ( m_current_detection_level > m_detection_max_level )
+		m_current_detection_level		=	m_detection_max_level;
+
+	if ( time_passed_sec != 0.f )
+		m_last_actor_pos				=	actor_pos;
+
+	Actor()->SetActorVisibility			(ID(), get_post_process_factor());
+
+	if ( m_current_detection_level > 0.01f && m_detection_pp_effector_name && m_detection_pp_effector_name[0] )
+	{
+		if ( !m_detection_pp_type_index )
+		{
+			for (	m_detection_pp_type_index		=	(u32)effPoltergeistTeleDetectStartEffect; 
+					Actor()->Cameras().GetPPEffector	((EEffectorPPType)m_detection_pp_type_index); 
+					++m_detection_pp_type_index ) { ; }
+	
+			AddEffector						(Actor(), m_detection_pp_type_index, m_detection_pp_effector_name, 
+											GET_KOEFF_FUNC(this, &CPoltergeist::get_post_process_factor));
+		}
+	}
+	else if ( m_detection_pp_type_index != 0 )
+	{
+		RemoveEffector									(Actor(), m_detection_pp_type_index);
+		m_detection_pp_type_index					=	0;
+	}
+}
+
+bool CPoltergeist::detected_enemy ()
+{
+	return		get_current_detection_level() > m_fly_around_level;
 }
 
 void CPoltergeist::reload(LPCSTR section)
@@ -131,18 +250,19 @@ void CPoltergeist::reinit()
 	Energy::set_auto_activate();
 	Energy::set_auto_deactivate();
 	Energy::enable();
+	m_actor_ignore		= false;
 
 	// start hidden
 	state_invisible						= true;	
 	setVisible							(false);
-	
-	m_current_position = Position		();
-	character_physics_support()->movement()->DestroyCharacter();
+ 	m_current_position = Position		();
+ 	character_physics_support()->movement()->DestroyCharacter();
 	
 	m_height							= 0.3f;
 	time_height_updated					= 0;
-	
-	EnableHide							();
+	m_actor_ignore						= false;
+
+	EnableHide(); // DisableHide();
 }
 
 void CPoltergeist::Hide()
@@ -181,12 +301,28 @@ void CPoltergeist::Show()
 	  conditions().LoadImmunities( pSettings->r_string( cNameSect().c_str(), "visible_immunities_sect" ), pSettings );
 }
 
+void CPoltergeist::renderable_Render()
+{
+	Visual()->getVisData().hom_frame = Device.dwFrame;
+	inherited::renderable_Render();
+}
+
 void CPoltergeist::UpdateCL()
 {
+	update_detection();
 	inherited::UpdateCL();
-	def_lerp(m_height, target_height, HEIGHT_CHANGE_VELOCITY, client_update_fdelta());
+
+	def_lerp(m_height, target_height, m_height_change_velocity, client_update_fdelta());
 	
 	ability()->update_frame	();
+
+	if ( Actor()->memory().visual().visible_now(this) && 
+		 Actor()->Position().distance_to(Position()) < 85.f )
+	{
+		MakeMeCrow					();
+	}
+	
+	//	Visual()->getVisData().hom_frame = Device.dwFrame;
 }
 
 void CPoltergeist::ForceFinalAnimation()
@@ -198,6 +334,11 @@ void CPoltergeist::ForceFinalAnimation()
 
 void CPoltergeist::shedule_Update(u32 dt)
 {
+	if ( !check_work_condition() ) 
+	{
+		remove_pp_effector();
+	}
+
 	inherited::shedule_Update(dt);
 	CTelekinesis::schedule_update();
 	Energy::schedule_update();
@@ -210,13 +351,15 @@ void CPoltergeist::shedule_Update(u32 dt)
 
 BOOL CPoltergeist::net_Spawn (CSE_Abstract* DC) 
 {
-	if (!inherited::net_Spawn(DC)) return(FALSE);
-
+	if (!inherited::net_Spawn(DC)) 
+		return(FALSE);
+	VERIFY(character_physics_support());
+	VERIFY(character_physics_support()->movement());
+	character_physics_support()->movement()->DestroyCharacter();
 	// спаунится нивидимым
 	setVisible		(false);
 	ability()->on_hide();
 	
-
 	return			(TRUE);
 }
 
@@ -230,33 +373,36 @@ void CPoltergeist::net_Destroy()
 
 void CPoltergeist::Die(CObject* who)
 {
-	if ( m_tele || m_dead_always_visible ) {
-		if (state_invisible) {
-			setVisible(true);
-
-			if (PPhysicsShell()) {
-				Fmatrix M;
-				M.set							(XFORM());
-				M.translate_over				(m_current_position);
-				PPhysicsShell()->SetTransform	(M);
-			} else 
-				Position() = m_current_position;
-		}
-	}
+ 	if ( ( m_tele || m_dead_always_visible ) && state_invisible )
+	{
+ 		setVisible(true);
+ 
+ 		if (PPhysicsShell()) 
+		{
+ 			Fmatrix M;
+ 			M.set							(XFORM());
+ 			M.translate_over				(m_current_position);
+ 			PPhysicsShell()->SetTransform	(M);
+ 		} 
+		else Position() = m_current_position;
+ 	}
 
 	inherited::Die				(who);
 	Energy::disable				();
-
 	ability()->on_die			();
 }
 
 void CPoltergeist::Hit(SHit* pHDS)
 {
 	ability()->on_hit(pHDS);
+	
+	if ( pHDS->who == Actor() )
+	{
+		m_current_detection_level	=	m_detection_max_level;
+	}
+	
 	inherited::Hit(pHDS);
 }
-
-
 
 void CPoltergeist::UpdateHeight()
 {
@@ -265,8 +411,8 @@ void CPoltergeist::UpdateHeight()
 	u32 cur_time = Device.dwTimeGlobal;
 	
 	if (time_height_updated < cur_time)	{
-		time_height_updated = cur_time + Random.randI(HEIGHT_CHANGE_MIN_TIME,HEIGHT_CHANGE_MAX_TIME);
-		target_height		= Random.randF(HEIGHT_MIN, HEIGHT_MAX);		
+		time_height_updated = cur_time + Random.randI(m_height_change_min_time,m_height_change_max_time);
+		target_height		= Random.randF(m_height_min, m_height_max);		
 	}
 }
 
@@ -305,6 +451,35 @@ void CPoltergeist::net_Relcase(CObject *O)
 	CTelekinesis::remove_links	(O);
 }
 
+float	CPoltergeist::get_detection_near_range_factor ()
+{
+	return m_detection_near_range_factor;
+}
+
+float	CPoltergeist::get_detection_far_range_factor	() 
+{
+	return m_detection_far_range_factor;
+}
+
+float	CPoltergeist::get_detection_speed_factor	() 
+{
+	return m_detection_speed_factor;
+}
+
+float	CPoltergeist::get_detection_loose_speed () 
+{
+	return m_detection_loose_speed;
+}
+
+float	CPoltergeist::get_detection_far_range() 
+{
+	return m_detection_far_range;
+}
+
+float	CPoltergeist::get_detection_success_level () 
+{
+	return m_detection_success_level;
+}
 
 #ifdef DEBUG
 CBaseMonster::SDebugInfo CPoltergeist::show_debug_info()

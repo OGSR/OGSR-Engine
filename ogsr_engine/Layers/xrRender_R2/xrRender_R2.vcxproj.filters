@@ -46,6 +46,9 @@
     <Filter Include="Glow">
       <UniqueIdentifier>{281d5f0c-a6ce-48e7-bd04-9ae5564b8228}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Core_Target\ColorMap">
+      <UniqueIdentifier>{987dc907-b4f8-4836-ae11-c21e40742d88}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\COMMON\cl_intersect.h">
@@ -284,6 +287,9 @@
     </ClInclude>
     <ClInclude Include="..\xrRender\dxGlowManager.h">
       <Filter>Glow</Filter>
+    </ClInclude>
+    <ClInclude Include="..\xrRender\ColorMapManager.h">
+      <Filter>Core_Target\ColorMap</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -667,6 +673,9 @@
     </ClCompile>
     <ClCompile Include="..\xrRender\dxGlowManager.cpp">
       <Filter>Glow</Filter>
+    </ClCompile>
+    <ClCompile Include="..\xrRender\ColorMapManager.cpp">
+      <Filter>Core_Target\ColorMap</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

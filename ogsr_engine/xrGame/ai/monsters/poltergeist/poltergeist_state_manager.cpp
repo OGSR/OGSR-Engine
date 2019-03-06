@@ -21,7 +21,6 @@ CStateManagerPoltergeist::CStateManagerPoltergeist(CPoltergeist *obj) : inherite
 {
 	add_state(eStateRest,					xr_new<CPoltergeistStateRest<CPoltergeist> > (obj));
 	add_state(eStateEat,					xr_new<CStateMonsterEat<CPoltergeist> >(obj));
-	add_state(eStateAttack,					xr_new<CStateMonsterAttack<CPoltergeist> >(obj));
 	add_state(eStateAttack_AttackHidden,	xr_new<CStatePoltergeistAttackHidden<CPoltergeist> > (obj));
 	add_state(eStatePanic,					xr_new<CStateMonsterPanic<CPoltergeist> >(obj));
 	add_state(eStateHitted,					xr_new<CStateMonsterHitted<CPoltergeist> >(obj));
@@ -46,6 +45,15 @@ void CStateManagerPoltergeist::reinit()
 void CStateManagerPoltergeist::execute()
 {
 	u32 state_id = u32(-1);
+
+	if ( object->EnemyMan.get_enemy() && object->detected_enemy() )
+	{
+		state_id = eStateAttack_AttackHidden;
+	}
+	else
+	{
+		state_id = eStateRest;
+	}
 
 	//const CEntityAlive* enemy	= object->EnemyMan.get_enemy();
 
@@ -85,8 +93,7 @@ void CStateManagerPoltergeist::execute()
 	//if ((prev_substate == eStateEat) && (state_id != eStateEat)) 
 	//	object->EnableHide();
 
-	state_id = eStateRest;
-	
+
 	select_state(state_id); 
 
 	// выполнить текущее состояние

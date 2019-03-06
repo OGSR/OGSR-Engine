@@ -94,6 +94,7 @@ public:
 			bool		ActorMovable						()															{return b_actor_movable;}
 			void		SetActorMovable						(bool v)													{b_actor_movable=v;}
 virtual		const ICollisionDamageInfo	*CollisionDamageInfo()const														=0;
+	virtual ICollisionDamageInfo	*CollisionDamageInfo() = 0;
 virtual		void		Reinit								()															=0;
 void					SetPLastMaterialIDX					(u16* p)													{p_lastMaterialIDX=p;}													
 const	u16				&LastMaterialIDX					()const														{return *p_lastMaterialIDX;}

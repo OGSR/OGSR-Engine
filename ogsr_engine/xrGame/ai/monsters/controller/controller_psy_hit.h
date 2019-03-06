@@ -24,6 +24,8 @@ class CControllerPsyHit : public CControl_ComCustom<> {
 
 
 	float				m_min_tube_dist;
+	bool				m_disable_camera_effect;
+	bool				m_disable_actor_block;
 
 	// internal flag if weapon was hidden
 	bool				m_blocked;

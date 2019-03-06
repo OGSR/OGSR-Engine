@@ -20,6 +20,7 @@ struct SDrawStaticStruct :public IPureDestroyableObject{
 	virtual	void	destroy			();
 	CUIStatic*		m_static;
 	float			m_endTime;
+	int				m_priority;
 	shared_str		m_name;
 	void			Draw();
 	void			Update();
@@ -77,8 +78,10 @@ protected:
 	CUICaption*			GameCaptions			() {return m_pgameCaptions;}
 	CUICaption*			m_pgameCaptions;
 	CUIXml*				m_msgs_xml;
+	void				UpdateStaticPriorityIndex();
 public:
 	st_vec										m_custom_statics;
+	xr_vector<st_vec::size_type>				m_custom_statics_sorted;
 	virtual void		SetClGame				(game_cl_GameState* g){};
 
 	virtual				float					shedule_Scale		();

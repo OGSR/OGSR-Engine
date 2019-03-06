@@ -128,6 +128,9 @@ public:
 	virtual void					set_color_add		(u32	f)							= 0;
 	virtual u32						get_width			()									= 0;
 	virtual u32						get_height			()									= 0;
+	virtual void					set_cm_imfluence	(float	f)							= 0;
+	virtual void					set_cm_interpolate	(float	f)							= 0;
+	virtual void					set_cm_textures		(const shared_str &tex0, const shared_str &tex1)= 0;
 	virtual ~IRender_Target()		{};
 	virtual void phase_rain() = 0;		// KD: так делать не надо! переделай потом!
 };
