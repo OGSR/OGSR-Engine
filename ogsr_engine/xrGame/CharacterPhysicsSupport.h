@@ -4,14 +4,15 @@
 
 #include "alife_space.h"
 #include "PHSkeleton.h"
-#include "Entity_Alive.h"
+#include "entity_alive.h"
 #include "PHSoundPlayer.h"
-#include "Phdestroyable.h"
+#include "PHDestroyable.h"
 #include "character_hit_animations.h"
+#include "PHMovementControl.h"
+#include "death_anims.h"
 
 
 class CPhysicsShell;
-class CPHMovementControl;
 class CIKLimbsController;
 class interactive_motion;
 
@@ -62,8 +63,9 @@ private:
 	CPHMovementControl					*m_PhysicMovementControl																															;
 	CPHSoundPlayer						m_ph_sound_player																																	;
 	CIKLimbsController					*m_ik_controller																																	;
-	SCollisionHitCallback				*m_collision_hit_callback;
+	ICollisionHitCallback				*m_collision_hit_callback;
 	character_hit_animation_controller	m_hit_animations;
+	death_anims							m_death_anims;
 
 	interactive_motion					*m_interactive_motion;
 //skeleton modell(!share?)
@@ -124,6 +126,7 @@ virtual CPhysicsShellHolder*			PPhysicsShellHolder				()	{return m_EntityAlife.P
 virtual bool							CanRemoveObject					();
 public:
 IC		CPHMovementControl				*movement						()	{return m_PhysicMovementControl;}
+virtual		const Fvector				MovementVelocity()				{ return m_PhysicMovementControl->GetVelocity(); }
 IC		CPHSoundPlayer					*ph_sound_player				()	{return &m_ph_sound_player;}
 IC		CIKLimbsController				*ik_controller					()	{return	m_ik_controller;}
 		void							SetRemoved						();
@@ -140,14 +143,14 @@ IC		CIKLimbsController				*ik_controller					()	{return	m_ik_controller;}
 		void							in_NetRelcase					(CObject* O)																										;
 		void 							in_Init							()																													;
 		void 							in_Load							(LPCSTR section)																									;
-		void 							in_Hit							(float P,Fvector &dir, CObject *who, s16 element,Fvector p_in_object_space, float impulse,ALife::EHitType hit_type ,bool is_killing=false);
+		void 							in_Hit							(SHit& H, bool is_killing=false);
 		void							in_NetSave						(NET_Packet& P)																										;
 		void							in_ChangeVisual					();
 		void							on_create_anim_mov_ctrl			();
 		void							on_destroy_anim_mov_ctrl		();
 		void							PHGetLinearVell					(Fvector& velocity);
-		SCollisionHitCallback*			get_collision_hit_callback		();
-		bool							set_collision_hit_callback		(SCollisionHitCallback* cc);
+		ICollisionHitCallback*			get_collision_hit_callback		();
+		void							set_collision_hit_callback		(ICollisionHitCallback* cc);
 /////////////////////////////////////////////////////////////////
 		CCharacterPhysicsSupport& operator = (CCharacterPhysicsSupport& /**asup/**/){R_ASSERT2(false,"Can not assign it");}
 		void SyncNetState();
@@ -157,7 +160,7 @@ private:
 		void 							CreateSkeleton					(CPhysicsShell* &pShell)																							;
 		void 							CreateSkeleton					();
 		void 							ActivateShell					(CObject* who)																										;
-		void							KillHit							(CObject* who, ALife::EHitType hit_type, float &impulse)																										;
+		void							KillHit							(SHit& H)																										;
 static	void							DeathAnimCallback				(CBlend *B)																											;
 		void							CreateIKController				()																													;
 		void							DestroyIKController				()																													;

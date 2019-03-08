@@ -8,8 +8,10 @@ class CPhysicsShellHolder;
 class CStateManagerPoltergeist;
 class CPoltergeisMovementManager;
 class CPolterSpecialAbility;
+class CPolterTele;
 
 //////////////////////////////////////////////////////////////////////////
+
 
 class CPoltergeist :	public CBaseMonster ,
 						public CTelekinesis,
@@ -19,6 +21,7 @@ class CPoltergeist :	public CBaseMonster ,
 	typedef		CEnergyHolder	Energy;
 
 	friend class CPoltergeisMovementManager;
+	friend class CPolterTele;
 
 	float					m_height;
 	bool					m_disable_hide;
@@ -30,6 +33,23 @@ class CPoltergeist :	public CBaseMonster ,
 	CPolterSpecialAbility	*m_flame;
 	CPolterSpecialAbility	*m_tele;
 
+	bool					m_actor_ignore;
+
+	TTime					m_last_detection_time;
+	Fvector					m_last_actor_pos;
+	char const*				m_detection_pp_effector_name;
+	u32						m_detection_pp_type_index;
+	float					m_detection_near_range_factor;
+	float					m_detection_far_range_factor;
+	float					m_detection_far_range;
+	float					m_detection_speed_factor;
+	float					m_detection_loose_speed;
+	float					m_current_detection_level;
+	float					m_detection_success_level;
+	float					m_detection_max_level;
+
+public:
+	bool					m_detect_without_sight;
 
 public:
 					CPoltergeist		();
@@ -46,6 +66,9 @@ public:
 	virtual void	UpdateCL			();
 	virtual	void	shedule_Update		(u32 dt);
 
+			void	set_actor_ignore	(bool const actor_ignore) { m_actor_ignore = actor_ignore; }
+			bool	get_actor_ignore	() const { return m_actor_ignore; }
+
 	virtual void	Die					(CObject* who);
 
 	virtual CMovementManager *create_movement_manager();
@@ -56,10 +79,16 @@ public:
 	virtual	void	on_deactivate		();
 	virtual	void	Hit					(SHit* pHDS);
 
+			bool	detected_enemy		();
+			float	get_fly_around_distance	() const { return m_fly_around_distance; }
+			float	get_fly_around_change_direction_time() const { return m_fly_around_change_direction_time; }
+
+	virtual	void	renderable_Render	();
 
 	IC		CPolterSpecialAbility		*ability() {return (m_flame ? m_flame : m_tele);}
 	
 	
+
 	IC		bool	is_hidden			() {return state_invisible;}
 
 	
@@ -90,13 +119,36 @@ private:
 			void	Hide					();
 			void	Show					();
 
+			float	m_height_change_velocity;
+			u32		m_height_change_min_time;
+			u32		m_height_change_max_time;
+			float	m_height_min;
+			float	m_height_max;
+			
+			float	m_fly_around_level;
+			float	m_fly_around_distance;
+			float	m_fly_around_change_direction_time;
+
+			float	get_current_detection_level			() const { return m_current_detection_level; }
+			bool	check_work_condition				() const;
+			void    remove_pp_effector					();
+			void	update_detection					();
+
+			float	get_detection_near_range_factor		();
+			float	get_detection_far_range_factor		();
+			float	get_detection_loose_speed			();
+			float	get_detection_far_range				();
+			float	get_detection_speed_factor			();
+			float	get_detection_success_level			();
+			float	xr_stdcall	get_post_process_factor	() const;
 
 public:
 #ifdef DEBUG
 			virtual CBaseMonster::SDebugInfo show_debug_info();
 #endif
+	
 
-
+			friend class CPolterFlame;
 	DECLARE_SCRIPT_REGISTER_FUNCTION
 };
 
@@ -208,7 +260,7 @@ public:
 
 
 private:
-	DEFINE_VECTOR			(SFlameElement*, FLAME_ELEMS_VEC, FLAME_ELEMS_IT);
+	using FLAME_ELEMS_VEC = xr_vector<SFlameElement*>;
 	FLAME_ELEMS_VEC			m_flames;
 
 public:	
@@ -250,9 +302,10 @@ class CPolterTele : public CPolterSpecialAbility {
 	float				m_pmt_raise_speed;
 	float				m_pmt_fly_velocity;
 
+	float				m_pmt_object_collision_damage;
+
 	ref_sound			m_sound_tele_hold;
 	ref_sound			m_sound_tele_throw;
-
 
 	enum ETeleState {
 		eStartRaiseObjects,
@@ -265,17 +318,22 @@ class CPolterTele : public CPolterSpecialAbility {
 	u32					m_time_next;
 
 public:	
-					CPolterTele					(CPoltergeist *polter);
-	virtual			~CPolterTele				();
+					CPolterTele						(CPoltergeist *polter);
+	virtual			~CPolterTele					();
 
-	virtual void	load						(LPCSTR section);
-	virtual void	update_schedule				();
+	virtual void	load							(LPCSTR section);
+	virtual void	update_schedule					();
+	virtual void	update_frame					();
+	virtual void	on_destroy					();
+	virtual void	on_die						();
 
 private:
-			void	tele_find_objects			(xr_vector<CObject*> &objects, const Fvector &pos);
-			bool	tele_raise_objects			();
-			void	tele_fire_objects			();
+			void	tele_find_objects				(xr_vector<CObject*> &objects, const Fvector &pos);
+			bool	tele_raise_objects				();
+			void	tele_fire_objects				();
 
-			bool	trace_object				(CObject *obj, const Fvector &target);
+			bool	trace_object					(CObject *obj, const Fvector &target);
+
+	void deactivate();
 };
 

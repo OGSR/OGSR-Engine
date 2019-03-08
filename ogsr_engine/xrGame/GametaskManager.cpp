@@ -75,7 +75,9 @@ CGameTask* CGameTaskManager::GiveGameTaskToActor(const TASK_ID& id, u32 timeToCo
 
 CGameTask*	CGameTaskManager::GiveGameTaskToActor(CGameTask* t, u32 timeToComplete, bool bCheckExisting)
 {
-	if(bCheckExisting && HasGameTask(t->m_ID)) return NULL;
+	if(bCheckExisting && HasGameTask(t->m_ID)) 
+		return NULL;
+
 	m_flags.set					(eChanged, TRUE);
 
 	GameTasks().push_back				(SGameTaskKey(t->m_ID) );
@@ -101,9 +103,10 @@ CGameTask*	CGameTaskManager::GiveGameTaskToActor(CGameTask* t, u32 timeToComplet
 			}
 		}
 
-		if(obj->object_id!=u16(-1) && obj->map_location.size() && obj->def_location_enabled){
+		if(obj->object_id!=u16(-1) && obj->map_location.size() && obj->def_location_enabled ){
 			CMapLocation* ml =	Level().MapManager().AddMapLocation(obj->map_location, obj->object_id);
-			if(obj->map_hint.size())	ml->SetHint(obj->map_hint);
+			if(obj->map_hint.size())
+				ml->SetHint(obj->map_hint);
 			ml->DisablePointer			();
 			ml->SetSerializable			(true);
 		}
@@ -129,14 +132,18 @@ CGameTask*	CGameTaskManager::GiveGameTaskToActor(CGameTask* t, u32 timeToComplet
 
 void CGameTaskManager::SetTaskState(CGameTask* t, u16 objective_num, ETaskState state)
 {
+
+	SGameTaskObjective* o = &t->Objective(objective_num);
+	if (o->TaskState() == state)
+		return;
+
 	m_flags.set						(eChanged, TRUE);
 	bool isRoot =					(objective_num==0);
-	SGameTaskObjective* o			= &t->Objective(objective_num);
 
 	CMapLocation* ml				= o->LinkedMapLocation();
 	bool bActive					= ActiveObjective()==o;
 
-	if(((state==eTaskStateFail)||(state==eTaskStateCompleted)) && ml ){
+	if((state==eTaskStateFail||state==eTaskStateCompleted) && ml){
 		Level().MapManager().RemoveMapLocation(o->map_location, o->object_id);
 		o->map_location				= NULL;
 		o->object_id				= u16(-1);
@@ -148,22 +155,41 @@ void CGameTaskManager::SetTaskState(CGameTask* t, u16 objective_num, ETaskState 
 	if( (isRoot || !t->HasInProgressObjective()) && (ActiveTask()==t) )
 	{
 		SetActiveTask					("", 1 );
-	}else
-		if(!isRoot && bActive && objective_num != (t->m_Objectives.size()-1) ){//not last
-			SetActiveTask					(t->m_ID, objective_num+1 );
-		}
+	}
+	//not last
+	else if(!isRoot && bActive && objective_num < (t->m_Objectives.size()-1) )
+	{
+		SetActiveTask					(t->m_ID, objective_num + 1 );
+	}
 
-
-	if(isRoot){//setState for task and all sub-tasks
-		
+	//setState for task and all sub-tasks
+	if(isRoot)
+	{
 		for(u16 i=0; i<t->m_Objectives.size();++i)
 			if( t->Objective(i).TaskState()==eTaskStateInProgress )
 				SetTaskState(t,i,state);
 	}
-	
-	if(0 == objective_num && eTaskStateCompleted == state || eTaskStateFail == state)
-		t->m_FinishTime = Level().GetGameTime();
+	else if (state == eTaskStateCompleted && objective_num < (t->m_Objectives.size() - 1))
+	{
+		// enable hidden locations for next objective
+		SGameTaskObjective& obj = t->Objective(objective_num + 1);
 
+		if (!obj.def_location_enabled &&
+			obj.TaskState() == eTaskStateInProgress)
+		{
+			if (obj.object_id != u16(-1) && *obj.map_location)
+			{
+				CMapLocation* ml = Level().MapManager().AddMapLocation(obj.map_location, obj.object_id);
+				if (obj.map_hint.size())
+					ml->SetHint(obj.map_hint);
+				ml->DisablePointer();
+				ml->SetSerializable(true);
+			}
+		}
+	}
+	
+	if(isRoot && eTaskStateCompleted == state || eTaskStateFail == state)
+		t->m_FinishTime = Level().GetGameTime();
 
 	CUIGameSP* pGameSP = smart_cast<CUIGameSP*>(HUD().GetUI()->UIGame());
 	if(pGameSP) {
@@ -203,7 +229,7 @@ void CGameTaskManager::UpdateTasks						()
 
 			ETaskState state = obj.UpdateState();
 
-			if( (state==eTaskStateFail || state==eTaskStateCompleted))
+			if(state==eTaskStateFail || state==eTaskStateCompleted)
 				SetTaskState(t, i, state);
 		}
 	}
@@ -220,7 +246,7 @@ void CGameTaskManager::UpdateTasks						()
 			ml->EnablePointer();
 	}
 
-	if(	m_flags.test(eChanged) )
+	if(m_flags.test(eChanged))
 		UpdateActiveTask	();
 }
 
@@ -240,21 +266,6 @@ void CGameTaskManager::UpdateActiveTask				()
 
 		for(u32 i=0; i<t->m_Objectives.size() ;++i)
 		{
-			SGameTaskObjective& obj				= t->Objective(i);
-
-			//1-st enable hidden locations
-			if(	(!obj.def_location_enabled)							&& 
-				(obj.TaskState()==eTaskStateInProgress)				&& 
-				(t->Objective(i-1).TaskState()==eTaskStateCompleted) )
-			{
-				if(obj.object_id!=u16(-1) && *obj.map_location)
-				{
-					CMapLocation* ml			= Level().MapManager().AddMapLocation(obj.map_location, obj.object_id);
-					if(obj.map_hint.size())		ml->SetHint(obj.map_hint);
-					ml->DisablePointer			();
-					ml->SetSerializable			(true);
-				}
-			}
 			bHasSpotPointer = bHasSpotPointer || (ActiveObjective()==&t->Objective(i));
 		}
 	}

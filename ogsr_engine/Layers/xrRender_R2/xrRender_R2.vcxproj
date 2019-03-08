@@ -264,6 +264,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="..\xrRender\ColorMapManager.h" />
     <ClInclude Include="..\xrRender\DetailFormat.h" />
     <ClInclude Include="..\xrRender\dxGlowManager.h" />
     <ClInclude Include="..\xrRender\light.h" />
@@ -346,6 +347,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\COMMON\tga.cpp" />
+    <ClCompile Include="..\xrRender\ColorMapManager.cpp" />
     <ClCompile Include="..\xrRender\dxGlowManager.cpp" />
     <ClCompile Include="blender_aa.cpp" />
     <ClCompile Include="blender_blur.cpp" />

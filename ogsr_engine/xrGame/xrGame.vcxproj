@@ -1497,6 +1497,7 @@
     <ClInclude Include="PHImpact.h" />
     <ClInclude Include="character_hit_animations.h" />
     <ClInclude Include="CharacterPhysicsSupport.h" />
+    <ClInclude Include="death_anims.h" />
     <ClInclude Include="interactive_motion.h" />
     <ClInclude Include="tri-colliderKNoOPC\__aabb_tri.h" />
     <ClInclude Include="tri-colliderknoopc\dcTriangle.h" />
@@ -2436,6 +2437,7 @@
     <ClCompile Include="PHSimpleCallsScript.cpp" />
     <ClCompile Include="character_hit_animations.cpp" />
     <ClCompile Include="CharacterPhysicsSupport.cpp" />
+    <ClCompile Include="death_anims.cpp" />
     <ClCompile Include="interactive_motion.cpp" />
     <ClCompile Include="tri-colliderknoopc\dcTriListCollider.cpp">
       <ExcludedFromBuild>true</ExcludedFromBuild>

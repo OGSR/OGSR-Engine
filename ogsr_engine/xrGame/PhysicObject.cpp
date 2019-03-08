@@ -272,24 +272,14 @@ void CPhysicObject::InitServerObject(CSE_Abstract * D)
 	if(!l_tpALifePhysicObject)return;
 	l_tpALifePhysicObject->type			= u32(m_type);
 }
-SCollisionHitCallback*	CPhysicObject::	get_collision_hit_callback ()	
+ICollisionHitCallback*	CPhysicObject::	get_collision_hit_callback ()	
 {
 	return m_collision_hit_callback;
 }
-bool					CPhysicObject::	set_collision_hit_callback	(SCollisionHitCallback *cc)	
+void CPhysicObject::set_collision_hit_callback(ICollisionHitCallback *cc)
 {
-	if(!cc)
-	{
-		m_collision_hit_callback=NULL;
-		return true;
-	}
-	if(PPhysicsShell())
-	{
-		VERIFY2(cc->m_collision_hit_callback!=0,"No callback function");
-		m_collision_hit_callback=cc;
-		return true;
-	}
-	else return false;
+	xr_delete(m_collision_hit_callback);
+	m_collision_hit_callback = cc;
 }
 
 //////////////////////////////////////////////////////////////////////////

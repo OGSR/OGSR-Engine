@@ -25,6 +25,7 @@
 
 #include "inventory_item.h"
 #include "inventory.h"
+#include "monster_community.h"
 
 u32 C_ON_ENEMY		D3DCOLOR_XRGB(0xff,0,0);
 u32 C_ON_NEUTRAL	D3DCOLOR_XRGB(0xff,0xff,0x80);
@@ -84,7 +85,7 @@ void CHUDTarget::Load		()
 
 float	CHUDTarget::GetDist()
 {
-		return RQ.range;
+	return RQ.range;
 }
 
 CObject	*CHUDTarget::GetObj()
@@ -130,7 +131,8 @@ void CHUDTarget::CursorOnFrame ()
 
 }
 
-extern ENGINE_API BOOL g_bRendering; 
+extern ENGINE_API BOOL g_bRendering;
+
 void CHUDTarget::Render()
 {
 	VERIFY		(g_bRendering);
@@ -167,24 +169,33 @@ void CHUDTarget::Render()
 			CEntityAlive*	pCurEnt = smart_cast<CEntityAlive*>	(Level().CurrentEntity());
 			PIItem			l_pI	= smart_cast<PIItem>		(RQ.O);
 
+			CInventoryOwner* our_inv_owner		= smart_cast<CInventoryOwner*>(pCurEnt);
+			if (/*psHUD_Flags.test(HUD_INFO_MONSTER) &&*/ E && E->g_Alive() && E->cast_base_monster())
 			{
-				CInventoryOwner* our_inv_owner		= smart_cast<CInventoryOwner*>(pCurEnt);
-				if (E && E->g_Alive() && !E->cast_base_monster())
-				{
-//.					CInventoryOwner* our_inv_owner		= smart_cast<CInventoryOwner*>(pCurEnt);
-					CInventoryOwner* others_inv_owner	= smart_cast<CInventoryOwner*>(E);
+				int relation = MONSTER_COMMUNITY::relation(pCurEnt->monster_community->index(), E->monster_community->index());
 
-					if(our_inv_owner && others_inv_owner){
+				if (relation > 0)
+					C = C_ON_FRIEND;
+				else if (relation == 0)
+					C = C_ON_NEUTRAL;
+				else
+					C = C_ON_ENEMY;
+			}
+			else if (E && E->g_Alive() && !E->cast_base_monster())
+			{
+				CInventoryOwner* others_inv_owner	= smart_cast<CInventoryOwner*>(E);
 
-						switch(RELATION_REGISTRY().GetRelationType(others_inv_owner, our_inv_owner))
-						{
-						case ALife::eRelationTypeEnemy:
-							C = C_ON_ENEMY; break;
-						case ALife::eRelationTypeNeutral:
-							C = C_ON_NEUTRAL; break;
-						case ALife::eRelationTypeFriend:
-							C = C_ON_FRIEND; break;
-						}
+				if(our_inv_owner && others_inv_owner){
+
+					switch(RELATION_REGISTRY().GetRelationType(others_inv_owner, our_inv_owner))
+					{
+					case ALife::eRelationTypeEnemy:
+						C = C_ON_ENEMY; break;
+					case ALife::eRelationTypeNeutral:
+						C = C_ON_NEUTRAL; break;
+					case ALife::eRelationTypeFriend:
+						C = C_ON_FRIEND; break;
+					}
 
 					if (fuzzyShowInfo>0.5f){
 						CStringTable	strtbl		;
@@ -192,21 +203,19 @@ void CHUDTarget::Render()
 						F->OutNext	("%s", *strtbl.translate(others_inv_owner->Name()) );
 						F->OutNext	("%s", *strtbl.translate(others_inv_owner->CharacterInfo().Community().id()) );
 					}
-					}
+				}
 
+				fuzzyShowInfo += SHOW_INFO_SPEED*Device.fTimeDelta;
+			}
+			else 
+				if (l_pI && our_inv_owner && RQ.range < 2.0f*our_inv_owner->inventory().GetTakeDist())
+				{
+					if (fuzzyShowInfo>0.5f){
+						F->SetColor	(subst_alpha(C,u8(iFloor(255.f*(fuzzyShowInfo-0.5f)*2.f))));
+						F->OutNext	("%s",l_pI->Name/*Complex*/());
+					}
 					fuzzyShowInfo += SHOW_INFO_SPEED*Device.fTimeDelta;
 				}
-				else 
-					if (l_pI && our_inv_owner && RQ.range < 2.0f*our_inv_owner->inventory().GetTakeDist())
-					{
-						if (fuzzyShowInfo>0.5f){
-							F->SetColor	(subst_alpha(C,u8(iFloor(255.f*(fuzzyShowInfo-0.5f)*2.f))));
-							F->OutNext	("%s",l_pI->Name/*Complex*/());
-						}
-						fuzzyShowInfo += SHOW_INFO_SPEED*Device.fTimeDelta;
-					}
-			}
-
 		}else{
 			fuzzyShowInfo -= HIDE_INFO_SPEED*Device.fTimeDelta;
 		}

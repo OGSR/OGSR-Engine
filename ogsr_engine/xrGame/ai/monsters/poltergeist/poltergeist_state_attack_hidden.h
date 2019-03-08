@@ -8,24 +8,25 @@ protected:
 	typedef CState<_Object>		inherited;
 	typedef CState<_Object>*	state_ptr;
 
-	struct {
-		Fvector point;
-		u32		node;
-	} m_target;
-
-
 public:
-					CStatePoltergeistAttackHidden	(_Object *obj) : inherited(obj) {}
+					CStatePoltergeistAttackHidden	(_Object *obj);
 	virtual			~CStatePoltergeistAttackHidden	() {}
 
 
 	virtual void	initialize				();
 	virtual void	execute					();
-	virtual void		remove_links					(CObject* object) { inherited::remove_links(object);}
+	virtual void	remove_links			(CObject* object) { inherited::remove_links(object);}
+
+			bool	check_home_point		();
 
 private:
+			void	select_target_for_move	();
 
-			void	select_target_point		();
+			u32		m_fly_side_select_tick;
+			float	m_fly_radius_factor;
+			bool	m_fly_left;
+			Fvector	m_target;
+			u32		m_target_vertex;
 };
 
 #include "poltergeist_state_attack_hidden_inline.h"

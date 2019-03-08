@@ -289,7 +289,7 @@ public:
 			void					MoveStep			();
 
 	virtual	void					Hit					(SHit* pHDS);
-	virtual void					PHHit				(float P,Fvector &dir, CObject *who,s16 element,Fvector p_in_object_space, float impulse, ALife::EHitType hit_type);
+	virtual void					PHHit				(SHit& H);
 	//CEntity
 	virtual void					HitSignal			(float P, Fvector &local_dir,	CObject* who, s16 element){;}
 	virtual void					HitImpulse			(float P, Fvector &vWorldDir, 	Fvector& vLocalDir){;}

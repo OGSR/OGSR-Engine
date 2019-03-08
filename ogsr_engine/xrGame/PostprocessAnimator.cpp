@@ -85,11 +85,7 @@ void        CPostprocessAnimator::Load                            (LPCSTR name)
        if (!xr_strcmp (ext,POSTPROCESS_FILE_EXTENSION))
           {
           IReader* F = FS.r_open (full_path);
-#ifdef DEBUG
-		  u32 dwVersion =
-#endif
-          F->r_u32();
-          VERIFY (dwVersion == POSTPROCESS_FILE_VERSION);
+	  u32 dwVersion = F->r_u32();
           //load base color
           VERIFY (m_Params[0]);
           m_Params[0]->load (*F);
@@ -120,6 +116,12 @@ void        CPostprocessAnimator::Load                            (LPCSTR name)
           //load noise fps
           VERIFY (m_Params[9]);
           m_Params[9]->load (*F);
+	if (dwVersion >= 0x0002)
+	{
+		VERIFY(m_Params[10]);
+		m_Params[10]->load(*F);
+		F->r_stringZ(m_EffectorParams.cm_tex1);
+	}
           //close reader
           FS.r_close (F);
           }
@@ -279,6 +281,8 @@ void        CPostprocessAnimator::Create                          ()
     VERIFY (m_Params[8]);
     m_Params[9] = xr_new<CPostProcessValue> (&m_EffectorParams.noise.fps);          //noise fps
     VERIFY (m_Params[9]);
+    m_Params[10] = xr_new<CPostProcessValue> (&m_EffectorParams.cm_influence);          //noise fps
+    VERIFY (m_Params[10]);
 }
 
 #ifdef _PP_EDITOR_
@@ -302,6 +306,9 @@ void        CPostprocessAnimator::Save                            (LPCSTR name)
     m_Params[7]->save (*W);
     m_Params[8]->save (*W);
     m_Params[9]->save (*W);
+    m_Params[10]->save(*W);
+
+    W->w_stringZ(m_EffectorParams.cm_tex1);
     FS.w_close (W);
 
 }
@@ -341,7 +348,10 @@ void        CPostprocessAnimator::ResetParam                      (pp_params par
            case pp_noise_f:
                 m_Params[9] = xr_new<CPostProcessValue>  (&m_EffectorParams.noise.fps);         //noise fps
                 break;
-           }
+           case pp_cm_influence:
+                m_Params[10] = xr_new<CPostProcessValue>  (&m_EffectorParams.cm_influence);
+                break;
+          }
     VERIFY (m_Params[param]);
 }
 

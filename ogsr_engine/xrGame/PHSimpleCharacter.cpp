@@ -1652,7 +1652,14 @@ void	CPHSimpleCharacter::	AddControlVel						(const Fvector& vel)
 	m_acceleration.add(vel);
 	 m_max_velocity+=vel.magnitude();
 }
-
+void	CPHSimpleCharacter::SetInitiated()
+{
+	m_collision_damage_info.is_initiated = true;
+}
+bool	CPHSimpleCharacter::IsInitiated()const
+{
+	return m_collision_damage_info.is_initiated;
+}
 u16 CPHSimpleCharacter::DamageInitiatorID()const
 {
 		u16 ret=u16(-1);//m_collision_damage_info.DamageInitiatorID();
@@ -1726,8 +1733,15 @@ void CPHSimpleCharacter::SCollisionDamageInfo::Reinit()
 	m_obj_id =u16(-1);
 	m_hit_callback=NULL;
 	m_contact_velocity=0;
+	is_initiated = false;
 	//float					m_dmc_signum;
 	//enum{ctStatic,ctObject}	m_dmc_type;
+}
+bool				CPHSimpleCharacter::GetAndResetInitiated()
+{
+	bool ret = m_collision_damage_info.is_initiated;
+	m_collision_damage_info.is_initiated = false;
+	return ret;
 }
 void CPHSimpleCharacter::GetSmothedVelocity(Fvector& vvel)
 {
@@ -1756,7 +1770,7 @@ CElevatorState*	CPHSimpleCharacter::ElevatorState()
 	return &m_elevator_state;
 }
 
-SCollisionHitCallback*	CPHSimpleCharacter::HitCallback					()const	
+ICollisionHitCallback*	CPHSimpleCharacter::HitCallback					()const	
 {
 	return m_collision_damage_info.m_hit_callback;
 }
@@ -1849,3 +1863,4 @@ bool	CPHSimpleCharacter::	TouchRestrictor	(ERestrictionType rttype)
 	b_collision_restrictor_touch=true;
 	return rttype==RestrictionType();
 }
+

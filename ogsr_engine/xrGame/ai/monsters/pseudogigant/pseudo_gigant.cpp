@@ -231,9 +231,11 @@ void CPseudoGigant::on_threaten_execute()
 	for (u32 i=0;i<m_nearest.size();i++) {
 		CPhysicsShellHolder  *obj = smart_cast<CPhysicsShellHolder *>(m_nearest[i]);
 		if (
-		  !obj || !obj->m_pPhysicsShell ||
-		  ( obj->spawn_ini() && obj->spawn_ini()->section_exist( "ph_heavy" ) ) || 
-		  ( pSettings->line_exist( obj->cNameSect().c_str(), "ph_heavy" ) && pSettings->r_bool( obj->cNameSect().c_str(), "ph_heavy" ) )
+                    !obj ||
+                    !obj->PPhysicsShell() ||
+                    ( obj->spawn_ini() && obj->spawn_ini()->section_exist( "ph_heavy" ) ) || 
+                    ( pSettings->line_exist( obj->cNameSect().c_str(), "ph_heavy" ) && pSettings->r_bool( obj->cNameSect().c_str(), "ph_heavy" ) ) ||
+                    obj->hasFixedBones()
 		) continue;
 
 		Fvector dir;
