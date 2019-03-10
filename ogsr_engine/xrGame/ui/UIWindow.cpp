@@ -272,19 +272,12 @@ void CUIWindow::DetachChild(CUIWindow* pChild, bool from_destructor)
 	if(!pChild)
 		return;
 
-	auto it = std::find(m_ChildWndList.begin(), m_ChildWndList.end(), pChild);
-	if (it != m_ChildWndList.end())
+	try {
+		m_ChildWndList.remove(pChild);
+	}
+	catch(...)
 	{
-		// KRodin: я знаю, что этот костыль ужасен.
-		auto to_delete = new decltype(m_ChildWndList)();
-		to_delete->splice(to_delete->begin(), m_ChildWndList, it);
-		//ASSERT_FMT(std::find(m_ChildWndList.begin(), m_ChildWndList.end(), pChild) == m_ChildWndList.end(), "Can't remove pointer [%x] from m_ChildWndList", pChild);
-		//ASSERT_FMT(std::find(to_delete->begin(), to_delete->end(), pChild) != to_delete->end(), "Can't remove pointer [%x] from m_ChildWndList (2)", pChild);
-		//ASSERT_FMT(to_delete->size() == 1, "");
-		try {
-			delete to_delete;
-		}
-		catch (...) {}
+		ASSERT_FMT(std::find(m_ChildWndList.begin(), m_ChildWndList.end(), pChild) == m_ChildWndList.end(), "Can't remove pointer [%x] from m_ChildWndList", pChild);
 	}
 
 	DoDetachChild( pChild, from_destructor );
