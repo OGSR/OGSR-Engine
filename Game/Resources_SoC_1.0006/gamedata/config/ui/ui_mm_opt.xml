@@ -794,6 +794,11 @@
 			<text font="letterica16" r="215" g="195" b="170">ui_mm_ammunition_on_belt</text>
 		</check_ammunition_on_belt>
 
+		<check_build_crosshair x="20" y="255" width="243" height="21">
+			<options_item entry="hud_crosshair_build" group="mm_opt_gameplay"/>
+			<text font="letterica16" r="215" g="195" b="170">ui_mm_build_crosshair</text>
+		</check_build_crosshair>
+
 	</tab_gameplay>
 	<tab_controls>
 		<cap_mousesens x="20" y="25" width="150" height="21">

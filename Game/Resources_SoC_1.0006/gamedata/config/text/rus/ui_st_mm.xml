@@ -502,6 +502,9 @@
 	<string id="ui_mm_tips">
 		<text>Распознавание НПС</text>
 	</string>
+	<string id="ui_mm_build_crosshair">
+		<text>Круглый курсор, как в билдах</text>
+	</string>
 	<!-- Окно "Управление" -->
 	<string id="ui_mm_controls">
 		<text>Управление</text>
