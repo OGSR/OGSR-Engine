@@ -168,7 +168,7 @@ SDrawStaticStruct* CUIGameCustom::AddCustomStatic			(LPCSTR id, bool bSingleInst
 	float ttl						= m_msgs_xml->ReadAttribFlt(id, 0, "ttl", -1);
 	if(ttl>0.0f)
 		sss.m_endTime				= Device.fTimeGlobal + ttl;
-	sss.m_priority					= m_msgs_xml->ReadAttribFlt(id, 0, "priority", 0);
+	sss.m_priority					= m_msgs_xml->ReadAttribInt(id, 0, "priority");
 
 	UpdateStaticPriorityIndex();
 

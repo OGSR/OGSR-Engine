@@ -125,13 +125,13 @@ size_t mem_usage_impl( u32* pBlocksUsed, u32* pBlocksFree ) {
   case _HEAPEND:
     break;
   case _HEAPBADPTR:
-    FATAL( "bad pointer to heap" );
+    Msg( "!![%s] bad pointer to heap", __FUNCTION__ );
     break;
   case _HEAPBADBEGIN:
-    FATAL( "bad start of heap" );
+    Msg( "!![%s] bad start of heap", __FUNCTION__ );
     break;
   case _HEAPBADNODE:
-    FATAL( "bad node in heap" );
+    Msg( "!![%s] bad node in heap", __FUNCTION__ );
     break;
   }
   return total;

@@ -212,8 +212,7 @@ void CObjectScript::script_register		(lua_State *L)
 				value("FIsQuestItem"			,				int(CInventoryItem::EIIFlags::FIsQuestItem)),
 				value("FIAlwaysUntradable"		,				int(CInventoryItem::EIIFlags::FIAlwaysUntradable)),
 				value("FIUngroupable"			,				int(CInventoryItem::EIIFlags::FIUngroupable)),
-				value("FIHiddenForInventory"	,				int(CInventoryItem::EIIFlags::FIHiddenForInventory)),
-				value("FIAlwaysHighlighted"		,				int(CInventoryItem::EIIFlags::FIAlwaysHighlighted))
+				value("FIHiddenForInventory"	,				int(CInventoryItem::EIIFlags::FIHiddenForInventory))
 			]
 			.enum_("se_object_flags")
 			[

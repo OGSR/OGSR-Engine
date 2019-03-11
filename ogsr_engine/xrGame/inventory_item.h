@@ -65,13 +65,9 @@ public:
 		FIAlwaysUntradable = (1 << 12),
 		FIUngroupable = (1 << 13),
 		FIHiddenForInventory = (1 << 14),
-		FIAlwaysHighlighted = (1 << 15),
 	};
-	//KRodin: если захочется поменять - можно вытащить значения в build_config_defines
-	enum EIIColors : u32 {
-		ClrUntradable  = color_argb(255, 124, 0, 0),
-		ClrHighlighted = color_argb(255, 0, 128, 0),
-	};
+	const u32 ClrEquipped   = READ_IF_EXISTS(pSettings, r_color, "dragdrop", "color_equipped", color_argb(255, 255, 225, 0));
+	const u32 ClrUntradable = READ_IF_EXISTS(pSettings, r_color, "dragdrop", "color_untradable", color_argb(255, 124, 0, 0));
 	Flags16						m_flags;
 	CIconParams					m_icon_params;
 public:

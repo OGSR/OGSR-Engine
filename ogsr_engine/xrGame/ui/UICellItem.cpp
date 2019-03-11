@@ -339,16 +339,16 @@ void CUICellItem::Update()
 }
 
 void CUICellItem::ColorizeItems( std::initializer_list<CUIDragDropListEx*> args ) {
-  auto inventoryitem = (CInventoryItem*)this->m_pData;
+  auto inventoryitem = reinterpret_cast<CInventoryItem*>(this->m_pData);
   if (!inventoryitem) return;
 
-  bool colorize_ammo = Core.Features.test(xrCore::Feature::colorize_ammo);
-  u32 Color = READ_IF_EXISTS( pSettings, r_color, "dragdrop", "color_ammo", color_argb( 255, 212, 8, 185 ) ); //Это надо бы читать где-нибудь при старте игры...
+  static const bool colorize_ammo = Core.Features.test(xrCore::Feature::colorize_ammo);
+  static const u32 Color = READ_IF_EXISTS( pSettings, r_color, "dragdrop", "color_ammo", color_argb( 255, 0, 128, 0) );
 
   auto ProcessColorize = [](CUICellItem* Itm, u32 Clr) {
 	  Itm->SetTextureColor(Clr);
 	  if (auto WpnCell = smart_cast<CUIWeaponCellItem*>(Itm))
-		  for (auto Child : WpnCell->m_addons)
+		  for (auto* Child : WpnCell->m_addons)
 			  if (Child)
 				  Child->SetTextureColor(Clr);
   };
@@ -359,8 +359,14 @@ void CUICellItem::ColorizeItems( std::initializer_list<CUIDragDropListEx*> args 
     if ( !colorize_ammo) continue;
     for ( u32 i = 0, item_count = DdListEx->ItemsCount(); i < item_count; ++i ) {
       CUICellItem* CellItem = DdListEx->GetItemIdx( i );
-	  if (CellItem->GetTextureColor() == Color)
-		  ProcessColorize(CellItem, 0xffffffff);
+	  if (CellItem->GetTextureColor() == Color) {
+		  if (CellItem->m_select_untradable)
+			  ProcessColorize(CellItem, reinterpret_cast<CInventoryItem*>(CellItem->m_pData)->ClrUntradable);
+		  else if (CellItem->m_select_equipped)
+			  ProcessColorize(CellItem, reinterpret_cast<CInventoryItem*>(CellItem->m_pData)->ClrEquipped);
+		  else
+			  ProcessColorize(CellItem, 0xffffffff);
+	  }
     }
   }
 
@@ -386,10 +392,10 @@ void CUICellItem::ColorizeItems( std::initializer_list<CUIDragDropListEx*> args 
 		  if (!DdListEx) continue;
 		  for (u32 i = 0, item_count = DdListEx->ItemsCount(); i < item_count; ++i) {
 			  CUICellItem* CellItem = DdListEx->GetItemIdx(i);
-			  auto invitem = (CInventoryItem*)CellItem->m_pData;
+			  auto invitem = reinterpret_cast<CInventoryItem*>(CellItem->m_pData);
 			  if (invitem && std::find(ColorizeSects.begin(), ColorizeSects.end(), invitem->object().cNameSect()) != ColorizeSects.end()) {
 				  CellItem->m_select_armament = true;
-				  if (colorize_ammo && CellItem->GetTextureColor() == 0xffffffff)
+				  if (colorize_ammo)
 					  ProcessColorize(CellItem, Color);
 			  }
 		  }
@@ -401,13 +407,13 @@ void CUICellItem::ColorizeItems( std::initializer_list<CUIDragDropListEx*> args 
 		  if (!DdListEx) continue;
 		  for (u32 i = 0, item_count = DdListEx->ItemsCount(); i < item_count; ++i) {
 			  CUICellItem* CellItem = DdListEx->GetItemIdx(i);
-			  auto invitem = (CInventoryItem*)CellItem->m_pData;
+			  auto invitem = reinterpret_cast<CInventoryItem*>(CellItem->m_pData);
 			  if (invitem) {
 				  if (auto Wpn = smart_cast<CWeaponMagazined*>(invitem)) {
 					  WpnScanner(Wpn);
 					  if (std::find(ColorizeSects.begin(), ColorizeSects.end(), Sect) != ColorizeSects.end()) {
 						  CellItem->m_select_armament = true;
-						  if (colorize_ammo && CellItem->GetTextureColor() == 0xffffffff)
+						  if (colorize_ammo)
 							  ProcessColorize(CellItem, Color);
 					  }
 				  }
@@ -417,7 +423,7 @@ void CUICellItem::ColorizeItems( std::initializer_list<CUIDragDropListEx*> args 
   };
 
   //Подкраска выбранного предмета
-  if (colorize_ammo && this->m_select_armament && this->GetTextureColor() == 0xffffffff)
+  if (colorize_ammo && this->m_select_armament)
 	  ProcessColorize(this, Color);
 
   if (auto Wpn = smart_cast<CWeaponMagazined*>(inventoryitem)) {

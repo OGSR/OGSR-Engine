@@ -214,8 +214,7 @@ void CControllerPsyHit::death_glide_start()
 	if (!m_disable_camera_effect)
 	{
 		// Start effector
-		CEffectorCam* ce = Actor()->Cameras().GetCamEffector(eCEControllerPsyHit);
-		VERIFY(!ce);
+		VERIFY(!Actor()->Cameras().GetCamEffector(eCEControllerPsyHit));
 
 		Fvector src_pos = Actor()->cam_Active()->vPosition;
 		Fvector target_pos = m_object->Position();
