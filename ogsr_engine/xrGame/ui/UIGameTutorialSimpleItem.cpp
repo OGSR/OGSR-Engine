@@ -14,6 +14,8 @@
 #include "UITalkWnd.h"
 #include "UICarBodyWnd.h"
 
+#pragma optimize("", off) //KRodin: добавлено специально, не убирать!
+
 extern ENGINE_API BOOL bShowPauseString;
 
 //-----------------------------------------------------------------------------
