@@ -274,12 +274,11 @@ void CUIWindow::DetachChild(CUIWindow* pChild, bool from_destructor)
 	if(!pChild)
 		return;
 
-	try {
+	__try {
 		m_ChildWndList.remove(pChild);
 	}
-	catch(...)
-	{
-		ASSERT_FMT(std::find(m_ChildWndList.begin(), m_ChildWndList.end(), pChild) == m_ChildWndList.end(), "Can't remove pointer [%x] from m_ChildWndList", pChild);
+	__except (ExceptStackTrace("Exception catched in m_ChildWndList.remove(pChild)")) {
+		FATAL("Exception catched in m_ChildWndList.remove(pChild)! Please send logs and minidumps to the engine developers!");
 	}
 
 	DoDetachChild( pChild, from_destructor );

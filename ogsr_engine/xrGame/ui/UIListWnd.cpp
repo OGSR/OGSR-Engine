@@ -3,6 +3,8 @@
 //.#include "uiscrollbar.h"
 #include "UIFrameLineWnd.h"
 
+#pragma optimize("", off) //KRodin: добавлено специально, не убирать!
+
 //. #define				ACTIVE_BACKGROUND			"ui\\ui_pop_up_active_back"
 //. #define				ACTIVE_BACKGROUND_WIDTH		16
 //. #define				ACTIVE_BACKGROUND_HEIGHT	16
