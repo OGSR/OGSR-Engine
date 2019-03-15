@@ -832,7 +832,7 @@ void	CActor::OnChangeVisual()
 		m_current_torso_blend		= NULL;
 		m_current_jump_blend		= NULL;
 
-        CStepManager::reload(*cNameSect());
+		CStepManager::reload(*cNameSect());
 	}
 };
 

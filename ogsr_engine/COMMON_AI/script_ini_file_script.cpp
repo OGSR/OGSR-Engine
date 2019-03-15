@@ -31,8 +31,8 @@ bool r_line(CScriptIniFile *self, LPCSTR S, int L, std::string &N, std::string &
 
 void iterate_sections(CScriptIniFile *self, const luabind::functor<void>& functor)
 {
-  for (const auto& it : self->sections())
-    functor(it.first.c_str());
+	for (const auto& it : self->sections())
+		functor(it.first.c_str());
 }
 
 using namespace luabind;
