@@ -3,9 +3,9 @@
 
 CRGD5::CRGD5(void)
 {
-	m_flags.set				(Fbelt, TRUE);
-	m_weight				= .1f;
-	SetSlot( GRENADE_SLOT );
+	//m_flags.set				(Fbelt, TRUE);
+	//m_weight				= .1f;
+	SetSlot(GRENADE_SLOT);
 }
 
 CRGD5::~CRGD5(void)
