@@ -38,6 +38,8 @@ void CStepManager::reload(LPCSTR section)
 	LPCSTR				anim_name, val;
 	string16			cur_elem;
 
+	m_steps_map.clear();
+
 	CKinematicsAnimated	*skeleton_animated = smart_cast<CKinematicsAnimated*>(m_object->Visual());
 
 	for (u32 i=0; pSettings->r_line(anim_section,i,&anim_name,&val); ++i) {
