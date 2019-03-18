@@ -256,13 +256,15 @@ protected:
 	bool			m_bHideCrosshairInZoom;
 	bool			m_bZoomInertionAllow;
 
+	bool m_bUseScopeZoom		= false;
+	bool m_bUseScopeGrenadeZoom		= false;
+
 	float			m_fScopeInertionFactor;
 public:
 
 	IC bool					IsZoomEnabled		()	const	{return m_bZoomEnabled;}
 	void					GetZoomData			(float scope_factor, float& delta, float& min_zoom_factor);
-	virtual	void			ZoomInc				();
-	virtual	void			ZoomDec				();
+	virtual	void			ZoomChange			(bool inc);
 	virtual void			OnZoomIn			();
 	virtual void			OnZoomOut			();
 			bool			IsZoomed			()	const	{return m_bZoomMode;};
@@ -369,6 +371,8 @@ protected:
 	virtual void			AddShotEffector		();
 	virtual void			RemoveShotEffector	();
 	virtual	void			ClearShotEffector	();
+
+	bool			IsGrenadeMode() const;
 
 public:
 	//текущая дисперсия (в радианах) оружия с учетом используемого патрона
@@ -523,8 +527,8 @@ public:
 	void UpdateZoomOffset();
 	//
 	void UpdateSecondVP(); //
-	float GetZRotatingFactor() const { return m_fZoomRotationFactor; }    //--#SM+#--
-	float GetSecondVP_FovFactor() const { return m_fSecondVP_FovFactor; } //--#SM+#--
+	float GetZRotatingFactor() const { return m_fZoomRotationFactor; } //--#SM+#--
+	float GetSecondVPFov() const; //--#SM+#--
 	bool SecondVPEnabled() const;
 
 	void SwitchScope();
