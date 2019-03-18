@@ -68,8 +68,8 @@ public:
 	
 	float	xr_stdcall	GetAlcohol			()	{return m_fAlcohol;}
 	float	xr_stdcall	GetPsy				()	{return 1.0f-GetPsyHealth();}
-	float				GetSatiety			()  {return m_fSatiety;}
-	float				GetThirst() { return m_fThirst; }
+	float				GetSatiety			()	{return m_fSatiety;}
+	float				GetThirst			()	{return m_fThirst;}
 	void				SetMaxWalkWeight	(float _weight) { m_MaxWalkWeight = _weight; }
 
 	void		AffectDamage_InjuriousMaterialAndMonstersInfluence();

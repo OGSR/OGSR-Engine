@@ -376,20 +376,20 @@ void CActorCondition::UpdateThirst()
 	}
 
 	float thirst_health_koef = 1;
-	float thirst_power_koef = 1;
+	float thirst_power_koef = 0;
 
 	if (m_fThirstLightLimit > 0) {
 		if (m_fThirst < m_fThirstLightLimit) {
-			thirst_health_koef = m_fThirst / m_fThirstLightLimit;
+			thirst_power_koef = (1 - m_fThirst / m_fThirstLightLimit) * -1;
 
 			const float critical_k = m_fThirstCriticalLimit / m_fThirstLightLimit;
-			thirst_power_koef = (m_fThirst / m_fThirstLightLimit - critical_k) / (m_fThirst >= m_fThirstCriticalLimit ? 1 - critical_k : critical_k);
+			thirst_health_koef = (m_fThirst / m_fThirstLightLimit - critical_k) / (m_fThirst >= m_fThirstCriticalLimit ? 1 - critical_k : critical_k);
 		}
 	}
 	else {
 		if (fis_zero(m_fThirst))
 		{
-			thirst_power_koef = -1;
+			thirst_health_koef = -1;
 		}
 	}
 

@@ -77,7 +77,7 @@ class_<CScriptGameObject> script_register_game_object1(class_<CScriptGameObject>
 		.property("morale",					&CScriptGameObject::GetMorale,			&CScriptGameObject::SetMorale)
 // KD
 		.property("alcohol",				&CScriptGameObject::GetAlcohol,			&CScriptGameObject::SetAlcohol)
-		.property("thirst",					&CScriptGameObject::GetThirst,			&CScriptGameObject::ChangeThirst)
+		.property("thirst",					&CScriptGameObject::GetThirst,			&CScriptGameObject::SetThirst)
 		.property("max_power",				&CScriptGameObject::GetMaxPower,		&CScriptGameObject::SetMaxPower)
 
 			// Actor State

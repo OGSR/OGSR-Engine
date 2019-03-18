@@ -45,10 +45,10 @@ public:
 	IC float				GetPower				() const			{return m_fPower;}	
 	IC float				GetRadiation			() const			{return m_fRadiation;}
 	IC float				GetPsyHealth			() const			{return m_fPsyHealth;}
-	virtual float			GetSatiety				() 					{return 0.f; }
-	virtual float xr_stdcall	GetAlcohol				()					{return 0.f; }
 	IC float 				GetEntityMorale			() const			{return m_fEntityMorale;}
-	virtual IC float				GetThirst() const { return 1.0f; }
+	virtual float xr_stdcall	GetAlcohol			() { return 0.f; }
+	virtual float			GetSatiety				() { return 0.f; }
+	virtual float			GetThirst				() { return 0.f; }
 
 	IC float 				GetHealthLost			() const			{return m_fHealthLost;}
 
