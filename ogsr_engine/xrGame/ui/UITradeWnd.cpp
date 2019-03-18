@@ -634,9 +634,8 @@ void CUITradeWnd::FillList	(TIItemContainer& cont, CUIDragDropListEx& dragDropLi
 		CUICellItem* itm = create_cell_item( item );
 		if (item->m_highlight_equipped)
 			itm->m_select_equipped = true;
-		bool canTrade    = CanMoveToOther( item, our );
-		bool highlighted = item->m_flags.test( CInventoryItem::FIAlwaysHighlighted );
-		ColorizeItem( itm, canTrade, highlighted );
+		bool canTrade = CanMoveToOther( item, our );
+		ColorizeItem( itm, canTrade, itm->m_select_equipped );
 		dragDropList.SetItem( itm );
 	}
 }
@@ -807,20 +806,17 @@ void CUITradeWnd::BindDragDropListEnents(CUIDragDropListEx* lst)
 
 void CUITradeWnd::ColorizeItem(CUICellItem* itm, bool canTrade, bool highlighted)
 {
-	bool highlight_cop = Core.Features.test( xrCore::Feature::highlight_cop );
-	if ( Core.Features.test( xrCore::Feature::colorize_untradable ) )
-		highlight_cop = false;
+	static const bool highlight_cop_enabled = !Core.Features.test(xrCore::Feature::colorize_untradable); //Это опция для Dsh, не убирать!
 
 	if (!canTrade) {
-		if ( highlight_cop )
+		if ( highlight_cop_enabled )
 			itm->m_select_untradable = true;
-		else
-			itm->SetColor(CInventoryItem::ClrUntradable);
+		itm->SetColor(reinterpret_cast<CInventoryItem*>(itm->m_pData)->ClrUntradable);
 	}
 	else {
-		if ( highlight_cop )
+		if ( highlight_cop_enabled )
 			itm->m_select_untradable = false;
 		if ( highlighted )
-			itm->SetColor( CInventoryItem::ClrHighlighted );
+			itm->SetColor(reinterpret_cast<CInventoryItem*>(itm->m_pData)->ClrEquipped);
 	}
 }

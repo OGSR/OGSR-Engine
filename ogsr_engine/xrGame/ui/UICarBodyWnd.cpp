@@ -260,10 +260,11 @@ void CUICarBodyWnd::UpdateLists()
 	for(const auto& inv_item : ruck_list)
 	{
 		CUICellItem* itm = create_cell_item(inv_item);
-		if (inv_item->m_flags.test(CInventoryItem::FIAlwaysHighlighted))
-			itm->SetColor(CInventoryItem::ClrHighlighted);
-		if ( inv_item->m_highlight_equipped )
-		  itm->m_select_equipped = true;
+		if (inv_item->m_highlight_equipped)
+		{
+			itm->m_select_equipped = true;
+			itm->SetColor(reinterpret_cast<CInventoryItem*>(itm->m_pData)->ClrEquipped);
+		}
 		m_pUIOurBagList->SetItem(itm);
 	}
 

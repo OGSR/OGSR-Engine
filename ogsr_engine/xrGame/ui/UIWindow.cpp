@@ -6,6 +6,8 @@
 #include "../UICursor.h"
 #include "../MainMenu.h"
 
+#pragma optimize("", off) //KRodin: добавлено специально, не убирать!
+
 //#define LOG_ALL_WNDS
 #ifdef LOG_ALL_WNDS
 	int ListWndCount = 0;
@@ -248,28 +250,13 @@ void CUIWindow::AttachChild(CUIWindow* pChild)
 	m_ChildWndList.push_back(pChild);
 }
 
-void CUIWindow::DetachChild(CUIWindow* pChild, bool from_destructor)
+void CUIWindow::DoDetachChild(CUIWindow* pChild, bool from_destructor)
 {
 	if(!pChild)
 		return;
-	
+
 	if( GetMouseCapturer() == pChild )
 		SetMouseCapture(pChild, false);
-
-	auto it = std::find(m_ChildWndList.begin(), m_ChildWndList.end(), pChild);
-	if (it != m_ChildWndList.end())
-	{
-		// KRodin: я знаю, что этот костыль ужасен.
-		auto to_delete = new decltype(m_ChildWndList)();
-		to_delete->splice(to_delete->begin(), m_ChildWndList, it);
-		//ASSERT_FMT(std::find(m_ChildWndList.begin(), m_ChildWndList.end(), pChild) == m_ChildWndList.end(), "Can't remove pointer [%x] from m_ChildWndList", pChild);
-		//ASSERT_FMT(std::find(to_delete->begin(), to_delete->end(), pChild) != to_delete->end(), "Can't remove pointer [%x] from m_ChildWndList (2)", pChild);
-		//ASSERT_FMT(to_delete->size() == 1, "");
-		try {
-			delete to_delete;
-		}
-		catch (...) {}
-	}
 
 	pChild->SetParent(NULL);
 
@@ -282,11 +269,27 @@ void CUIWindow::DetachChild(CUIWindow* pChild, bool from_destructor)
 		xr_delete(pChild);
 }
 
+void CUIWindow::DetachChild(CUIWindow* pChild, bool from_destructor)
+{
+	if(!pChild)
+		return;
+
+	__try {
+		m_ChildWndList.remove(pChild);
+	}
+	__except (ExceptStackTrace("Exception catched in m_ChildWndList.remove(pChild)")) {
+		FATAL("Exception catched in m_ChildWndList.remove(pChild)! Please send logs and minidumps to the engine developers!");
+	}
+
+	DoDetachChild( pChild, from_destructor );
+}
+
 void CUIWindow::DetachAll()
 {
-	while (!m_ChildWndList.empty()) {
-		DetachChild(m_ChildWndList.back());
-	}
+  auto tmp_m_ChildWndList = m_ChildWndList;
+  m_ChildWndList.clear();
+  for ( CUIWindow* pChild : tmp_m_ChildWndList )
+    DoDetachChild( pChild );
 }
 
 void CUIWindow::GetAbsoluteRect(Frect& r) 

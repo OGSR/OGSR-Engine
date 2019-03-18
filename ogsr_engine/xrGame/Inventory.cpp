@@ -311,19 +311,17 @@ bool CInventory::Slot(PIItem pIItem, bool bNotActivate)
 	it = std::find(m_belt.begin(), m_belt.end(), pIItem);
 	if(m_belt.end() != it) m_belt.erase(it);
 
-
-
 	if (( (m_iActiveSlot==pIItem->GetSlot())||(m_iActiveSlot==NO_ACTIVE_SLOT) && m_iNextActiveSlot==NO_ACTIVE_SLOT) && (!bNotActivate))
-		Activate				(pIItem->GetSlot());
+		Activate(pIItem->GetSlot());
 
-	
-	m_pOwner->OnItemSlot		(pIItem, pIItem->m_eItemPlace);
-	pIItem->m_eItemPlace		= eItemPlaceSlot;
-	pIItem->OnMoveToSlot		();
+	auto PrevPlace = pIItem->m_eItemPlace;
+	pIItem->m_eItemPlace = eItemPlaceSlot;
+	m_pOwner->OnItemSlot(pIItem, PrevPlace);
+	pIItem->OnMoveToSlot();
 	
 	pIItem->object().processing_activate();
 
-	return						true;
+	return true;
 }
 
 bool CInventory::Belt(PIItem pIItem) 

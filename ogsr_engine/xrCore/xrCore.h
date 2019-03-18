@@ -226,7 +226,7 @@ public:
 	  select_mode_1342           = 1ull << 34,
 	  old_outfit_slot_style      = 1ull << 35,
 	  npc_simplified_shooting    = 1ull << 36,
-	  //            = 1ull << 37, //! Место свободно !
+	  autoreload_wpn             = 1ull << 37,
 	  use_trade_deficit_factor   = 1ull << 38,
 	  show_objectives_ondemand   = 1ull << 39,
 	  pickup_check_overlaped     = 1ull << 40,

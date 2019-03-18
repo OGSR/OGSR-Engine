@@ -29,6 +29,7 @@
 #include "game_object_space.h"
 #include "alife_simulator.h"
 #include "alife_object_registry.h"
+#include "Car.h"
 
 #include "ai_object_location.h"
 
@@ -647,6 +648,7 @@ void CGameObject::renderable_Render	()
 	inherited::renderable_Render();
 	::Render->set_Transform		(&XFORM());
 	::Render->add_Visual		(Visual());
+	Visual()->getVisData().hom_frame = Device.dwFrame;
 }
 
 /*
@@ -1086,7 +1088,7 @@ void CGameObject::FeelTouchAddonsUpdate() {
           return ft->feel_touch_contact( GO->lua_game_object() );
         }
         else
-          return smart_cast<CEntityAlive*>( O ) ? true : false;
+          return ( smart_cast<CEntityAlive*>( O ) || smart_cast<CCar*>( O ) ) ? true : false;
       }
     );
   }

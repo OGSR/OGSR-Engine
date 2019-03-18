@@ -11,6 +11,8 @@
 #include "UIInventoryWnd.h"
 #include "UICursor.h"
 
+#pragma optimize("", off) //KRodin: добавлено специально, не убирать!
+
 #define INV_GRID_WIDTHF			50.0f
 #define INV_GRID_HEIGHTF		50.0f
 

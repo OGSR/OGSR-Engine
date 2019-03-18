@@ -308,7 +308,7 @@ void CALifeSimulator__assign_story_id(CALifeSimulator *self, ALife::_OBJECT_ID _
 	}
 #endif
 
-	if (!(ai().alife().story_objects().object(_story_id)))
+	if (!(ai().alife().story_objects().object(_story_id, true)))
 	{
 		obj->m_story_id = _story_id;
 		self->add_story_object(obj, _story_id);

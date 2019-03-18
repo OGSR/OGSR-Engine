@@ -632,6 +632,27 @@ void CActorCondition::UpdateTutorialThresholds()
 	}
 }
 
+bool CActorCondition::DisableSprint(SHit* pHDS)
+{
+	return	(pHDS->hit_type != ALife::eHitTypeTelepatic)	&& 
+			(pHDS->hit_type != ALife::eHitTypeChemicalBurn)	&&
+			(pHDS->hit_type != ALife::eHitTypeBurn)			&&
+			(pHDS->hit_type != ALife::eHitTypeRadiation)	;
+}
+
+float CActorCondition::HitSlowmo(SHit* pHDS)
+{
+	float ret;
+	if(pHDS->hit_type==ALife::eHitTypeWound || pHDS->hit_type==ALife::eHitTypeStrike )
+	{
+		ret						= pHDS->damage();
+		clamp					(ret,0.0f,1.f);
+	}else
+		ret						= 0.0f;
+
+	return ret;	
+}
+
 
 void CActorCondition::net_Relcase( CObject* O ) {
   if ( Level().is_removing_objects() ) return;

@@ -16,6 +16,8 @@
 #include "PHElement.h"
 #include "PHMovementControl.h"
 #include "CharacterPhysicsSupport.h"
+#include "Actor.h"
+
 CPhysicsShellHolder::CPhysicsShellHolder()
 {
 	init();
@@ -63,17 +65,17 @@ BOOL CPhysicsShellHolder::net_Spawn				(CSE_Abstract*	DC)
 	return ret;
 }
 
-void	CPhysicsShellHolder::PHHit(float P,Fvector &dir, CObject *who,s16 element,Fvector p_in_object_space, float impulse, ALife::EHitType hit_type /* ALife::eHitTypeWound*/)
+void	CPhysicsShellHolder::PHHit(SHit& H)
 {
-	if(impulse>0)
-		if(m_pPhysicsShell) m_pPhysicsShell->applyHit(p_in_object_space,dir,impulse,element,hit_type);
+	if(H.impulse>0)
+		if(m_pPhysicsShell) m_pPhysicsShell->applyHit(H.p_in_bone_space,H.dir,H.impulse,H.boneID,H.type());
 }
 
 //void	CPhysicsShellHolder::Hit(float P, Fvector &dir, CObject* who, s16 element,
 //						 Fvector p_in_object_space, float impulse, ALife::EHitType hit_type)
 void	CPhysicsShellHolder::Hit					(SHit* pHDS)
 {
-	PHHit(pHDS->damage(),pHDS->dir,pHDS->who,pHDS->boneID,pHDS->p_in_bone_space,pHDS->impulse,pHDS->hit_type);
+	PHHit(*pHDS);
 }
 
 void CPhysicsShellHolder::create_physic_shell	()
@@ -408,9 +410,7 @@ bool CPhysicsShellHolder::register_schedule	() const
 #include <filesystem>
 
 bool CPhysicsShellHolder::ActorCanCapture() const {
-  if ( !m_pPhysicsShell ) return false;
-  for ( const auto it : m_pPhysicsShell->Elements() )
-    if ( it->isFixed() ) return false;
+  if ( !m_pPhysicsShell || hasFixedBones() || Actor()->is_actor_climb() || Actor()->is_actor_climbing()) return false;
   if ( pSettings->line_exist( "ph_capture_visuals", cNameVisual().c_str() ) )
     return true;
   std::filesystem::path p = cNameVisual().c_str();
@@ -421,6 +421,13 @@ bool CPhysicsShellHolder::ActorCanCapture() const {
   }
   return false;
 }
+
+bool CPhysicsShellHolder::hasFixedBones() const {
+  for ( const auto it : m_pPhysicsShell->Elements() )
+    if ( it->isFixed() ) return true;
+  return false;
+}
+
 
 CPHCapture*	CPhysicsShellHolder::PHCapture()
 {

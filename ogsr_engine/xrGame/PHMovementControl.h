@@ -45,6 +45,7 @@ void					SetForcedPhysicsControl(bool v){if(m_character)m_character->SetForcedPh
 bool					ForcedPhysicsControl(){return m_character&&m_character->ForcedPhysicsControl();}
 void					UpdateObjectBox(CPHCharacter *ach);
 void					VirtualMoveTo		( const Fvector	&in_pos, Fvector &out_pos );
+void					BlockDamageSet		( u64 steps_num );
 enum					JumpType 
 {
 						jtStrait, //end point before uppermost point
@@ -100,6 +101,7 @@ private:
 
 	u32					trying_times[4];
 	Fvector				trying_poses[4];
+	u64					block_damage_step_end;
 	DWORD				m_dwCurBox;
 
 	float				fMass;
@@ -268,6 +270,7 @@ public:
 	ObjectContactCallbackFun* ObjectContactCallback(){if(m_character)return m_character->ObjectContactCallBack();else return NULL; }
 	u16					ContactBone				(){return m_character->ContactBone();}
 	const ICollisionDamageInfo	*CollisionDamageInfo ()const {VERIFY(m_character);return m_character->CollisionDamageInfo ();}
+	ICollisionDamageInfo	*CollisionDamageInfo () {VERIFY(m_character);return m_character->CollisionDamageInfo ();}
 	void				GetDesiredPos			(Fvector& dpos)
 	{	
 		m_character->GetDesiredPosition(dpos);
@@ -278,5 +281,7 @@ public:
 	}
 	CPHMovementControl(CObject* parent);
 	~CPHMovementControl(void);
+private:
+	void				UpdateCollisionDamage	( );
 };
 #endif

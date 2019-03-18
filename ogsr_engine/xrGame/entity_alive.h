@@ -92,8 +92,8 @@ public:
 	virtual void							PHGetLinearVell				(Fvector& velocity)		;
 	virtual CPHSoundPlayer*					ph_sound_player				()						;
 	virtual	CIKLimbsController				*character_ik_controller	()						;
-	virtual SCollisionHitCallback			*get_collision_hit_callback	()						;
-	virtual bool							set_collision_hit_callback	(SCollisionHitCallback *cc);
+	virtual ICollisionHitCallback			*get_collision_hit_callback	()						;
+	virtual void							set_collision_hit_callback	(ICollisionHitCallback *cc);
 protected:
 	DEFINE_VECTOR				(CWound*, WOUND_VECTOR, WOUND_VECTOR_IT);
 	WOUND_VECTOR				m_ParticleWounds;

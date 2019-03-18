@@ -195,7 +195,7 @@ public:
 
 	virtual void						Die				(CObject* who);
 	virtual	void						Hit				(SHit* pHDS);
-	virtual	void						PHHit			(float P,Fvector &dir, CObject *who,s16 element,Fvector p_in_object_space, float impulse, ALife::EHitType hit_type /* = ALife::eHitTypeWound */);
+	virtual	void						PHHit			(SHit& H);
 	virtual void						HitSignal		(float P, Fvector &vLocalDir,	CObject* who, s16 element);
 			void						HitSector		(CObject* who, CObject* weapon);
 			void						HitMark			(float P, Fvector dir,			CObject* who, s16 element, Fvector position_in_bone_space, float impulse,  ALife::EHitType hit_type);
@@ -240,6 +240,7 @@ protected:
 	// Death
 	float					hit_slowmo;
 	float					hit_probability;
+	bool m_hit_slowmo_jump;
 
 	// media
 	SndShockEffector*		m_sndShockEffector;

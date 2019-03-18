@@ -17,6 +17,8 @@
 void CControllerPsyHit::load(LPCSTR section)
 {
 	m_min_tube_dist = READ_IF_EXISTS( pSettings, r_float, section, "tube_condition_min_distance", 10.f );
+	m_disable_camera_effect = !!READ_IF_EXISTS(pSettings, r_bool, section, "tube_disable_camera_effect", false);
+	m_disable_actor_block = !!READ_IF_EXISTS(pSettings, r_bool, section, "tube_disable_actor_block", false);
 }
 
 void CControllerPsyHit::reinit()
@@ -51,8 +53,8 @@ bool CControllerPsyHit::check_start_conditions()
 
 	if (m_man->is_captured_pure())	
 		return false;
-	
-	if (Actor()->Cameras().GetCamEffector(eCEControllerPsyHit))	
+
+	if (Actor()->Cameras().GetCamEffector(eCEControllerPsyHit))
 		return						false;
 
 	if ( !see_enemy() )
@@ -196,60 +198,70 @@ void CControllerPsyHit::death_glide_start()
 		m_man->deactivate(this);
 		return;
 	}
-	
-	HUD().GetUI()->HideGameIndicators();
 
-	if ( CController* controller = smart_cast<CController*>(m_object) )
+	// opt 2
+	if (!m_disable_actor_block)
 	{
-		controller->CControlledActor::install	();
-		controller->CControlledActor::dont_need_turn();
+		HUD().GetUI()->HideGameIndicators();
+
+		if (CController* controller = smart_cast<CController*>(m_object))
+		{
+			controller->CControlledActor::install();
+			controller->CControlledActor::dont_need_turn();
+		}
 	}
 
-	// Start effector
-	CEffectorCam* ce = Actor()->Cameras().GetCamEffector(eCEControllerPsyHit);
-	VERIFY(!ce);
-	
-	Fvector src_pos		= Actor()->cam_Active()->vPosition;
-	Fvector target_pos	= m_object->Position();
-	target_pos.y		+= 1.2f;
-	
-	Fvector				dir;
-	dir.sub				(target_pos,src_pos);
-	
-	float dist			= dir.magnitude();
-	dir.normalize		();
+	if (!m_disable_camera_effect)
+	{
+		// Start effector
+		VERIFY(!Actor()->Cameras().GetCamEffector(eCEControllerPsyHit));
+
+		Fvector src_pos = Actor()->cam_Active()->vPosition;
+		Fvector target_pos = m_object->Position();
+		target_pos.y += 1.2f;
+
+		Fvector				dir;
+		dir.sub(target_pos, src_pos);
+
+		float dist = dir.magnitude();
+		dir.normalize();
 
 
-	float const actor_psy_immunity	=	Actor()->conditions().GetHitImmunity(ALife::eHitTypeTelepatic);
+		float const actor_psy_immunity = Actor()->conditions().GetHitImmunity(ALife::eHitTypeTelepatic);
 
-	target_pos.mad		(src_pos,dir, 0.01f + actor_psy_immunity*(dist-4.8f) );
+		target_pos.mad(src_pos, dir, 0.01f + actor_psy_immunity * (dist - 4.8f));
 
 
-	float const base_fov	=	g_fov;
-	float const dest_fov	=	g_fov - (g_fov-10.f)*actor_psy_immunity;
-	
-	Actor()->Cameras().AddCamEffector(xr_new<CControllerPsyHitCamEffector>(eCEControllerPsyHit, src_pos,target_pos, 
-										m_man->animation().motion_time(m_stage[1], m_object->Visual()),
-										base_fov, dest_fov));
+		float const base_fov = g_fov;
+		float const dest_fov = g_fov - (g_fov - 10.f)*actor_psy_immunity;
 
-	smart_cast<CController *>(m_object)->draw_fire_particles();
+		Actor()->Cameras().AddCamEffector(xr_new<CControllerPsyHitCamEffector>(eCEControllerPsyHit, src_pos, target_pos,
+			m_man->animation().motion_time(m_stage[1], m_object->Visual()),
+			base_fov, dest_fov));
 
-	dir.sub(src_pos,target_pos);
-	dir.normalize();
-	float h,p;
-	dir.getHP(h,p);
-	dir.setHP(h,p+PI_DIV_3);
-	Actor()->character_physics_support()->movement()->ApplyImpulse(dir,Actor()->GetMass() * 530.f);
+		smart_cast<CController *>(m_object)->draw_fire_particles();
+
+		dir.sub(src_pos, target_pos);
+		dir.normalize();
+		float h, p;
+		dir.getHP(h, p);
+		dir.setHP(h, p + PI_DIV_3);
+		Actor()->character_physics_support()->movement()->ApplyImpulse(dir, Actor()->GetMass() * 530.f);
+	}
 
 	set_sound_state					(eStart);
 
-	NET_Packet			P;
-	Actor()->u_EventGen	(P, GEG_PLAYER_WEAPON_HIDE_STATE, Actor()->ID());
-	P.w_u32				(INV_STATE_BLOCK_ALL);
-	P.w_u8				(u8(true));
-	Actor()->u_EventSend(P);
-	
-	m_blocked			= true;
+	// opt 2
+	if (!m_disable_actor_block)
+	{
+		NET_Packet			P;
+		Actor()->u_EventGen(P, GEG_PLAYER_WEAPON_HIDE_STATE, Actor()->ID());
+		P.w_u32(INV_STATE_BLOCK_ALL);
+		P.w_u8(u8(true));
+		Actor()->u_EventSend(P);
+
+		m_blocked = true;
+	}
 
 	//////////////////////////////////////////////////////////////////////////
 	// set direction

@@ -29,6 +29,12 @@ bool r_line(CScriptIniFile *self, LPCSTR S, int L, std::string &N, std::string &
 	return			(true);
 }
 
+void iterate_sections(CScriptIniFile *self, const luabind::functor<void>& functor)
+{
+	for (const auto& it : self->sections())
+		functor(it.first.c_str());
+}
+
 using namespace luabind;
 #pragma optimize("s",on)
 void CScriptIniFile::script_register(lua_State *L)
@@ -64,6 +70,7 @@ void CScriptIniFile::script_register(lua_State *L)
 #else
 			.def("r_line",			&::r_line, out_value<4>() + out_value<5>())
 #endif
+            .def("iterate_sections", &iterate_sections)
 		,
 #pragma warning(push)
 #pragma warning(disable:4238 4239)

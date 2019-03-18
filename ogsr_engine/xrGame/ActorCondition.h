@@ -85,6 +85,9 @@ public:
 	virtual void			load					(IReader &input_packet);
 	float	m_MaxWalkWeight;
 
+	bool	DisableSprint							(SHit* pHDS);
+	float	HitSlowmo								(SHit* pHDS);
+
 protected:
 	float m_fAlcohol;
 	float m_fV_Alcohol;

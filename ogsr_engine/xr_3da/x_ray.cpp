@@ -117,6 +117,7 @@ void InitConsole	()
 	CORE_FEATURE_SET( pickup_check_overlaped,     "features" );
 	CORE_FEATURE_SET( wallmarks_on_static_only,   "features" );
 	CORE_FEATURE_SET( actor_thirst,               "features" );
+	CORE_FEATURE_SET( autoreload_wpn,             "features" );
 }
 
 void InitInput()

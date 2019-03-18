@@ -4,10 +4,10 @@
 #include "../../../ai_object_location.h"
 #include "level_graph.h"
 #include "../../../level.h"
-#include "../../../../xr_3da/NET_Server_Trash/net_utils.h"
 #include "../../../ai_space.h"
 #include "../../../restricted_object.h"
 #include "../../../actor.h"
+#include "../../../actorEffector.h"
 #include "../ai_monster_effector.h"
 
 CPolterFlame::CPolterFlame(CPoltergeist *polter) : inherited (polter)
@@ -17,8 +17,6 @@ CPolterFlame::CPolterFlame(CPoltergeist *polter) : inherited (polter)
 CPolterFlame::~CPolterFlame()
 {
 }
-
-
 
 void CPolterFlame::load(LPCSTR section) 
 {
@@ -143,46 +141,8 @@ void CPolterFlame::update_schedule()
 {
 	inherited::update_schedule();
 
-	//---------------------------------------------------------------------
-	// Update Scanner
-	
-	if (m_object->g_Alive()) {
-		
-		// check the start of scanning
-		if (!m_state_scanning && !m_object->EnemyMan.get_enemy()) {
-			// check radius
-			if (Actor()->Position().distance_to(m_object->Position()) < m_scan_radius) {
-				// check timing
-				if (m_scan_next_time < time()) {
-					// start here
-					m_state_scanning = true;
-
-					// играть звук
-					//m_scan_sound.play_at_pos(m_object, get_head_position(Actor()),sm_2D);
-					::Sound->play_at_pos(m_scan_sound, 0, Actor()->Position());
-
-					// постпроцесс
-					Actor()->Cameras().AddPPEffector(xr_new<CMonsterEffector>(m_scan_effector_info, m_scan_effector_time, m_scan_effector_time_attack, m_scan_effector_time_release));
-				}
-				
-			}
-		} 
-		// check stop of scanning (it currently scans)
-		else {
-			if (!m_scan_sound._feedback()) {
-				// stop here
-				m_state_scanning = false;
-				
-				// count next scan time
-				m_scan_next_time = time() + Random.randI(m_scan_delay_min,m_scan_delay_max);
-			}
-		}
-	}
-	//---------------------------------------------------------------------
-
-
 	// check all flames
-	for (FLAME_ELEMS_IT it = m_flames.begin();it != m_flames.end();it++) {
+	for (auto it = m_flames.begin();it != m_flames.end();it++) {
 		SFlameElement *elem = *it;
 	
 		// test switches to states
@@ -243,27 +203,32 @@ void CPolterFlame::update_schedule()
 		m_flames.end()
 	);
 	
+	bool const detected	=	m_object->get_current_detection_level() >= m_object->get_detection_success_level();
+
+	CEntityAlive const* enemy	=	Actor();
 	// check if we can create another flame
-	if (m_object->g_Alive() && m_object->EnemyMan.get_enemy() && (m_flames.size() < m_count)) {
+	if ( m_object->g_Alive() && 
+		 enemy && 
+		 m_flames.size() < m_count &&
+		 !m_object->get_actor_ignore() && 
+		 detected ) {
 		// check aura radius and accessibility
-		float dist = m_object->EnemyMan.get_enemy()->Position().distance_to(m_object->Position());
-		if ((dist < m_pmt_aura_radius) && m_object->control().path_builder().accessible(m_object->EnemyMan.get_enemy()->Position())) {
+		float dist = enemy->Position().distance_to(m_object->Position());
+		if ((dist < m_pmt_aura_radius) && m_object->control().path_builder().accessible(enemy->Position())) {
 			// check timing
 			if (m_time_flame_started + m_delay < time()) {
-				create_flame(m_object->EnemyMan.get_enemy());
+				create_flame(enemy);
 			}
 		}
 	}
-
-	
-
 }
+
 void CPolterFlame::on_destroy()
 {
 	inherited::on_destroy();
 
-	FLAME_ELEMS_IT I = m_flames.begin();
-	FLAME_ELEMS_IT E = m_flames.end();
+    auto I = m_flames.begin();
+    auto E = m_flames.end();
 
 	// Пройти по всем объектам и проверить на хит врага
 	for ( ;I != E; ++I) {

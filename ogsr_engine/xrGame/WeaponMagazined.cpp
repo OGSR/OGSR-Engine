@@ -188,6 +188,12 @@ void CWeaponMagazined::FireStart		()
 void CWeaponMagazined::FireEnd() 
 {
 	inherited::FireEnd();
+
+	if (Core.Features.test(xrCore::Feature::autoreload_wpn)) {
+		auto actor = smart_cast<CActor*>(H_Parent());
+		if (!iAmmoElapsed && actor && GetState() != eReload)
+			Reload();
+	}
 }
 
 void CWeaponMagazined::Reload() 
@@ -712,7 +718,7 @@ void CWeaponMagazined::switch2_Fire	()
 }
 void CWeaponMagazined::switch2_Empty()
 {
-  if ( smart_cast<CActor*>( H_Parent() ) != NULL ) {
+  if ( !Core.Features.test(xrCore::Feature::autoreload_wpn) && smart_cast<CActor*>( H_Parent() ) ) {
     OnEmptyClick();
     return;
   }
