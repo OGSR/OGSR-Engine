@@ -688,7 +688,7 @@ void CAI_Stalker::UpdateCL()
 
 void CAI_Stalker ::PHHit(SHit& H)
 {
-	m_pPhysics_support->in_Hit(H,!g_Alive());
+	m_pPhysics_support->in_Hit( H, false );
 }
 
 CPHDestroyable*		CAI_Stalker::		ph_destroyable	()						

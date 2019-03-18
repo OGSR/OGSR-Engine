@@ -198,6 +198,7 @@ struct pred_stri {
 #define DEFINE_STACK(T,N)			typedef xr_stack< T > N;
 
 #include "FixedVector.h"
+#include "buffer_vector.h"
 
 // auxilary definition
 DEFINE_VECTOR(bool,boolVec,boolIt);

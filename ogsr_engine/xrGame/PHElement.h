@@ -52,7 +52,8 @@ class CPHElement	:
 		flUpdate				=	1<<2,
 		flWasEnabledBeforeFreeze=	1<<3,
 		flEnabledOnStep			=	1<<4,
-		flFixed					=	1<<5
+		flFixed					=	1<<5,
+		flAnimated				=	1<<6
 	};
 //	bool						was_enabled_before_freeze;
 //	bool						bUpdate;					//->to shell ??		//st
@@ -84,6 +85,9 @@ public:
 	virtual void						add_Shape								(const SBoneShape& shape);														//aux
 	virtual void						add_Shape								(const SBoneShape& shape,const Fmatrix& offset);								//aux
 	virtual CODEGeom*					last_geom								(){return CPHGeometryOwner::last_geom();}										//aux
+	virtual CODEGeom*					geometry								( u16 i ){ return CPHGeometryOwner::Geom( i ); }
+	virtual	void						add_geom								( CODEGeom* g );
+	virtual	void						remove_geom								( CODEGeom* g );
 	virtual bool						has_geoms								(){return CPHGeometryOwner::has_geoms();}
 	virtual void						set_ContactCallback						(ContactCallbackFun* callback);													//aux (may not be)
 	virtual void						set_ObjectContactCallback				(ObjectContactCallbackFun* callback);											//called anywhere ph state influent
@@ -102,6 +106,7 @@ public:
 	virtual void						get_Extensions							(const Fvector& axis,float center_prg,float& lo_ext, float& hi_ext);			//aux
 	virtual	void						get_MaxAreaDir							(Fvector& dir){CPHGeometryOwner::get_MaxAreaDir(dir);}
 	virtual float						getRadius								();
+	virtual	void						GetPointVel								( Fvector	 &res_vel, const Fvector & point ) const;
 ////////////////////////////////////////////////////Mass/////////////////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 private:
@@ -138,15 +143,18 @@ public:																																				//
 			void						Enable									()	;																			//aux
 	virtual bool						isEnabled								()	{return isActive()&&dBodyIsEnabled(m_body);}
 	virtual	bool						isFullActive							()	{return isActive()&&!m_flags.test(flActivating);}
-	virtual	bool						isActive								()	{return !!m_flags.test(flActive);}
+	virtual	bool						isActive								() const	{return !!m_flags.test(flActive);}
 	virtual void						Freeze									()	;																			//
 	virtual void						UnFreeze								()	;																			//
 	virtual bool						EnabledStateOnStep						()  {return dBodyIsEnabled(m_body)||m_flags.test(flEnabledOnStep);}							//
 ////////////////////////////////////////////////Updates///////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 			bool						AnimToVel								( float dt, float l_limit,float a_limit );
-			void						BoneGlPos								(Fmatrix &m,CBoneInstance* B);
-			void						ToBonePos								(CBoneInstance* B);
+	void						BoneGlPos(Fmatrix &m, const Fmatrix &BoneTransform)const;
+	void						ToBonePos(const CBoneInstance* B, motion_history_state history_state);
+	void						ToBonePos(const Fmatrix &BoneTransform, motion_history_state history_state);
+	void						ActivatingPos(const Fmatrix &BoneTransform);
+	void						CalculateBoneTransform(Fmatrix &bone_transform)const;
 
 			void						SetBoneCallbackOverwrite				(bool v);
 			void						BonesCallBack							(CBoneInstance* B);																//called from updateCL visual influent
@@ -172,6 +180,7 @@ public:																																				//
 	virtual void						set_DynamicLimits				(float l_limit=default_l_limit,float w_limit=default_w_limit);							//aux (may not be)
 	virtual void						set_DynamicScales				(float l_scale=default_l_scale,float w_scale=default_w_scale);							//aux (may not be)
 	virtual	void						Fix								();
+	virtual	void						SetAnimated						( bool v );
 	virtual	void						ReleaseFixed					();
 	virtual bool						isFixed							(){return !!(m_flags.test(flFixed));}
 	virtual void						applyForce						(const Fvector& dir, float val);															//aux
@@ -182,8 +191,8 @@ public:																																				//
 	virtual void						applyGravityAccel				(const Fvector& accel);
 	virtual void						getForce						(Fvector& force);
 	virtual void						getTorque						(Fvector& torque);
-	virtual void						get_LinearVel					(Fvector& velocity);															//aux
-	virtual void						get_AngularVel					(Fvector& velocity);															//aux
+	virtual void						get_LinearVel					(Fvector& velocity) const;															//aux
+	virtual void						get_AngularVel					(Fvector& velocity)	const;															//aux
 	virtual void						set_LinearVel					(const Fvector& velocity);														//called anywhere ph state influent
 	virtual void						set_AngularVel					(const Fvector& velocity);														//called anywhere ph state influent
 	virtual void						setForce						(const Fvector& force);															//
@@ -198,8 +207,8 @@ public:																																				//
 	virtual	void						net_Export						(NET_Packet& P)				  ;
 ///////////////////////////////////////////////////Position///////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	virtual void						SetTransform					(const Fmatrix& m0);															//
-	virtual void						TransformPosition				(const Fmatrix &form);
+	virtual void						SetTransform(const Fmatrix& m0, motion_history_state history_state);															//
+	virtual void						TransformPosition(const Fmatrix &form, motion_history_state history_state);
 	virtual void						getQuaternion					(Fquaternion& quaternion);														//
 	virtual void						setQuaternion					(const Fquaternion& quaternion);												//
 	virtual void						SetGlobalPositionDynamic		(const Fvector& position);														//
@@ -232,11 +241,13 @@ IC			void						MulB43InverceLocalForm			(Fmatrix&)	;
 			void						PassEndGeoms							(u16 from,u16 to,CPHElement* dest);										//aux
 ////////////////////////////////////////////////////Build/Activate////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	virtual void						Activate				(const Fmatrix& m0, float dt01, const Fmatrix& m2,bool disable=false);					//some isues not to be aux
-	virtual void						Activate				(const Fmatrix &transform,const Fvector& lin_vel,const Fvector& ang_vel,bool disable=false);//some isues not to be aux
-	virtual void						Activate				(bool disable=false);									//some isues not to be aux
-	virtual void						Activate				(const Fmatrix& start_from, bool disable=false);										//some isues not to be aux
+	virtual void						Activate(const Fmatrix& m0, float dt01, const Fmatrix& m2, bool disable = false);					//some isues not to be aux
+	virtual void						Activate(const Fmatrix &transform, const Fvector& lin_vel, const Fvector& ang_vel, bool disable = false);//some isues not to be aux
+	virtual void						Activate(bool disable = false, bool not_set_bone_callbacks = false);									//some isues not to be aux
+	virtual void						Activate(const Fmatrix& start_from, bool disable = false);										//some isues not to be aux
 	virtual void						Deactivate				();																						//aux																																			//aux
+	void						SetBoneCallback();
+	void						ClearBoneCallback();
 			void						CreateSimulBase			();//create body & cpace																//aux
 			void						ReInitDynamics			(const Fmatrix &shift_pivot,float density);												//set body & geom positions					
 			void						PresetActive			();																						//

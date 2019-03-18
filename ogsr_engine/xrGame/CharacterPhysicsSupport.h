@@ -10,13 +10,16 @@
 #include "character_hit_animations.h"
 #include "PHMovementControl.h"
 #include "death_anims.h"
-
+#include "character_shell_control.h"
+#include "physicsshell.h"
+#include "animation_utils.h"
 
 class CPhysicsShell;
 class CIKLimbsController;
 class interactive_motion;
-
-
+class interactive_animation;
+class physics_shell_animated;
+class activating_character_delay;
 
 class CCharacterPhysicsSupport :
 public CPHSkeleton,
@@ -47,6 +50,7 @@ private:
 		fl_skeleton_in_shell		=1<<1,
 		fl_specific_bonce_demager	=1<<2,
 		fl_block_hit				=1<<3,
+		fl_use_hit_anims			=1<<4
 	};
 
 	struct	animation_movement_state{ 
@@ -66,39 +70,22 @@ private:
 	ICollisionHitCallback				*m_collision_hit_callback;
 	character_hit_animation_controller	m_hit_animations;
 	death_anims							m_death_anims;
-
+	float								m_BonceDamageFactor;
 	interactive_motion					*m_interactive_motion;
-//skeleton modell(!share?)
-	float								skel_airr_lin_factor																																;
-	float								skel_airr_ang_factor																																;
-	float								hinge_force_factor1																																	;
-	float								skel_fatal_impulse_factor																															;
-	float								skel_ddelay																																			;
-	float								skel_remain_time																																	;	
-/////////////////////////////////////////////////
-	//bool								b_death_anim_on																																		;
-	//bool								b_skeleton_in_shell																																	;
+	character_shell_control				m_character_shell_control;
+	interactive_animation				*m_interactive_animation;
+	physics_shell_animated				*m_physics_shell_animated;
+	activating_character_delay			*m_collision_activating_delay;
+	xr_vector<CODEGeom*>				m_weapon_geoms;
+	xr_vector<anim_bone_fix*>			m_weapon_bone_fixes;
+	CPhysicsElement						*m_weapon_attach_bone;
+	CPhysicsShellHolder					*m_active_item_obj;
+	SHit								m_sv_hit;
+	u32									m_hit_valide_time;
+	u32									m_physics_shell_animated_time_destroy;
+
 ///////////////////////////////////////////////////////////////////////////
-	float								m_shot_up_factor																																	;
-	float								m_after_death_velocity_factor																														;
-	float								m_BonceDamageFactor																																	;
-	//gray_wolf>Переменные для поддержки изменяющегося трения у персонажей во время смерти
-	float								skeleton_skin_ddelay;
-	float								skeleton_skin_remain_time;
-	float								skeleton_skin_friction_start;
-	float								skeleton_skin_friction_end;
-	float								skeleton_skin_ddelay_after_wound;
-	float								skeleton_skin_remain_time_after_wound;
-	bool								m_was_wounded;
-	float								m_Pred_Time;//Для вычисления дельта времени между пересчётами сопротивления в джоинтах и коэффициента NPC
-	float								m_time_delta;
-	float								pelvis_factor_low_pose_detect;
-	BOOL								character_have_wounded_state;
-	//gray_wolf<
 public:
-	//gray_wolf>
-	float								m_curr_skin_friction_in_death;
-	//gray_wolf<
 EType Type()
 	{
 		return m_eType;
@@ -126,50 +113,78 @@ virtual CPhysicsShellHolder*			PPhysicsShellHolder				()	{return m_EntityAlife.P
 virtual bool							CanRemoveObject					();
 public:
 IC		CPHMovementControl				*movement						()	{return m_PhysicMovementControl;}
+IC	const	CPHMovementControl			*movement						( ) const{ return m_PhysicMovementControl; }
 virtual		const Fvector				MovementVelocity()				{ return m_PhysicMovementControl->GetVelocity(); }
 IC		CPHSoundPlayer					*ph_sound_player				()	{return &m_ph_sound_player;}
 IC		CIKLimbsController				*ik_controller					()	{return	m_ik_controller;}
+		bool							interactive_motion		();
+		bool							can_drop_active_weapon	();
 		void							SetRemoved						();
 		bool							IsRemoved						(){return m_eState==esRemoved;}
 		bool							IsSpecificDamager				()																{return !!m_flags.test(fl_specific_bonce_demager)	;}
 		float							BonceDamageFactor				(){return m_BonceDamageFactor;}
 		void							set_movement_position			( const Fvector &pos );
+		void							ForceTransform					( const Fmatrix &m);
+		void							set_use_hit_anims		(bool v) noexcept	{ m_flags.set( fl_use_hit_anims, (BOOL)v );}
 //////////////////base hierarchi methods///////////////////////////////////////////////////
+		void							CreateCharacterSafe				();
 		void							CreateCharacter					();
+		bool							CollisionCorrectObjPos			();
+
 		void 							in_UpdateCL()																																		;
 		void 							in_shedule_Update				( u32 DT )																											;
 		void 							in_NetSpawn						(CSE_Abstract* e)																									;
 		void 							in_NetDestroy					()																													;
+		void							destroy_imotion					( );
 		void							in_NetRelcase					(CObject* O)																										;
 		void 							in_Init							()																													;
 		void 							in_Load							(LPCSTR section)																									;
 		void 							in_Hit							(SHit& H, bool is_killing=false);
 		void							in_NetSave						(NET_Packet& P)																										;
 		void							in_ChangeVisual					();
+		void							in_Die							( );
 		void							on_create_anim_mov_ctrl			();
 		void							on_destroy_anim_mov_ctrl		();
 		void							PHGetLinearVell					(Fvector& velocity);
 		ICollisionHitCallback*			get_collision_hit_callback		();
 		void							set_collision_hit_callback		(ICollisionHitCallback* cc);
+		void							run_interactive					( CBlend* B );
+		void							update_interactive_anims		( );
+IC		physics_shell_animated			*animation_collision			( ){ return m_physics_shell_animated; }
+IC		const physics_shell_animated	*animation_collision			( )const{ return m_physics_shell_animated; }
+		void							create_animation_collision		( );
+		void							destroy_animation_collision		( );
+		u16								PHGetSyncItemsNumber			( );
+		CPHSynchronize*					PHGetSyncItem					(u16 item);
+private:
+		void							update_animation_collision		( );
+public:
+		bool							has_shell_collision_place		( const CPhysicsShellHolder* obj ) const;
+		virtual void					on_child_shell_activate			( CPhysicsShellHolder* obj );
 /////////////////////////////////////////////////////////////////
+		void							SyncNetState					();
 		CCharacterPhysicsSupport& operator = (CCharacterPhysicsSupport& /**asup/**/){R_ASSERT2(false,"Can not assign it");}
-		void SyncNetState();
 								CCharacterPhysicsSupport				(EType atype,CEntityAlive* aentity)																					;
 virtual							~CCharacterPhysicsSupport				()																													;
 private:
 		void 							CreateSkeleton					(CPhysicsShell* &pShell)																							;
-		void 							CreateSkeleton					();
+
 		void 							ActivateShell					(CObject* who)																										;
+		void							CreateShell						( CObject* who, Fvector& dp, Fvector & velocity  )																	;
+		void							AddActiveWeaponCollision		();
+		void							bone_chain_disable				(u16 bone, u16 r_bone, CKinematics &K);
+		void							bone_fix_clear					();
+		void							EndActivateFreeShell			( CObject* who, const Fvector& inital_entity_position, const Fvector& dp, const Fvector & velocity )				;
 		void							KillHit							(SHit& H)																										;
 static	void							DeathAnimCallback				(CBlend *B)																											;
 		void							CreateIKController				()																													;
 		void							DestroyIKController				()																													;
-		void							CollisionCorrectObjPos			(const Fvector& start_from,bool character_create=false);
+		bool							CollisionCorrectObjPos			(const Fvector& start_from,bool character_create=false);
+
 		void							FlyTo							(const	Fvector &disp);
-		void							TestForWounded					();
-IC		void							UpdateFrictionAndJointResistanse();
 IC		void							UpdateDeathAnims				();
-IC		void							CalculateTimeDelta				();
 IC		bool							DoCharacterShellCollide			();
+		void							UpdateCollisionActivatingDellay ( );
+		void							SpawnCharacterCreate			( );
 };
 #endif  //CHARACTER_PHYSICS_SUPPORT

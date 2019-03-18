@@ -438,7 +438,7 @@ void CAI_Crow::HitImpulse	(float	/**amount/**/,		Fvector& /**vWorldDir/**/, Fvec
 //---------------------------------------------------------------------
 void CAI_Crow::CreateSkeleton()
 {
-	m_pPhysicsShell=P_build_SimpleShell(this,0.3f,false);
+	m_pPhysicsShell=P_build_Shell(this,false,(BONE_P_MAP*)0);//P_build_SimpleShell(this,0.3f,false);
 	m_pPhysicsShell->SetMaterial(smart_cast<CKinematics*>(Visual())->LL_GetData(smart_cast<CKinematics*>(Visual())->LL_GetBoneRoot()).game_mtl_idx);
 }
 

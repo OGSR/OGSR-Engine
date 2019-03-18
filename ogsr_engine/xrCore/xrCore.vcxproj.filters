@@ -336,6 +336,12 @@
     <ClInclude Include="_vector3d_ext.h">
       <Filter>Math</Filter>
     </ClInclude>
+    <ClInclude Include="buffer_vector.h">
+      <Filter>Math\Extensions</Filter>
+    </ClInclude>
+    <ClInclude Include="buffer_vector_inline.h">
+      <Filter>Math\Extensions</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <CustomBuildStep Include="FileSystem.h">

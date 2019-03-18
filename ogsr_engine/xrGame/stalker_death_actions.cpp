@@ -17,6 +17,7 @@
 #include "inventory.h"
 #include "weapon.h"
 #include "clsid_game.h"
+#include "characterphysicssupport.h"
 #include "xr_level_controller.h"
 
 using namespace StalkerDecisionSpace;
@@ -44,6 +45,9 @@ bool CStalkerActionDead::fire			() const
 
 	if (!object().hammer_is_clutched())
 		return							(false);
+
+	if (!object().character_physics_support()->can_drop_active_weapon())
+		return							(true);
 
 	if (Device.dwTimeGlobal - object().GetLevelDeathTime() > 500)
 		return							(false);
@@ -85,6 +89,9 @@ void CStalkerActionDead::execute		()
 	object().movement().enable_movement(false);
 
 	if (fire())
+		return;
+
+	if (!object().character_physics_support()->can_drop_active_weapon())
 		return;
 
 	typedef xr_vector<CInventorySlot>	SLOTS;

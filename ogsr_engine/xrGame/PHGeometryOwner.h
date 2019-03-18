@@ -14,7 +14,9 @@ protected:
 		GEOM_STORAGE			m_geoms;					//e			
 		//bl
 		bool					b_builded;
+private:
 		dSpaceID				m_group;					//e					//bl
+protected:
 		Fvector					m_mass_center;				//e ??				//bl
 		CPhysicsShellHolder*	m_phys_ref_object;			//->to shell ??		//bl
 		float					m_volume;					//e ??				//bl
@@ -30,6 +32,13 @@ public:
 		void						add_Shape								(const SBoneShape& shape,const Fmatrix& offset);								//aux
 		CODEGeom*					last_geom								(){if(m_geoms.empty())return NULL; return m_geoms.back();}						//aux
 		bool						has_geoms								(){return !m_geoms.empty();}
+		void						add_geom								( CODEGeom* g );	
+		void						remove_geom								( CODEGeom* g );
+protected:
+		void						group_add								( CODEGeom& g );	
+		void						group_remove							( CODEGeom& g );
+public:
+	
 		void						set_ContactCallback						(ContactCallbackFun* callback);													//aux (may not be)
 		void						set_ObjectContactCallback				(ObjectContactCallbackFun* callback);											//called anywhere ph state influent
 		void						add_ObjectContactCallback				(ObjectContactCallbackFun* callback);											//called anywhere ph state influent
@@ -47,6 +56,9 @@ public:
 		CODEGeom*					GeomByBoneID							(u16 bone_id);
 		u16							numberOfGeoms							();																				//aux
 		dGeomID						dSpacedGeometry							();																				//aux
+protected:
+	IC	dSpaceID group_space() { return m_group; }
+public:
 		Fvector						get_mc_data								();																				//aux
 		Fvector						get_mc_geoms							();																				//aux
 		void						get_mc_kinematics						(CKinematics* K,Fvector& mc,float& mass);
@@ -59,10 +71,12 @@ const	Fvector&					local_mass_Center						()		{return m_mass_center;}											
 		void						setStaticForm							(const Fmatrix& form);
 		void						setPosition								(const Fvector& pos);
 		void						clear_cashed_tries						();
+	void clear_motion_history(bool set_unspecified);
 		void						get_mc_vs_transform						(Fvector& mc,const Fmatrix& m);
 protected:
 		void						build									();
-		void						CreateSimulBase							();
+		void						CreateGroupSpace						();
+		void						DestroyGroupSpace						();
 		void						destroy									();
 		void						build_Geom								(CODEGeom&	V);																	//aux
 		void						build_Geom								(u16 i);							

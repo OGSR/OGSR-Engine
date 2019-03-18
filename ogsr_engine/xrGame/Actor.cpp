@@ -455,7 +455,7 @@ void CActor::Load	(LPCSTR section )
 
 void CActor::PHHit(SHit& H)
 {
-	m_pPhysics_support->in_Hit(H,!g_Alive());
+	m_pPhysics_support->in_Hit( H, false );
 }
 
 struct playing_pred

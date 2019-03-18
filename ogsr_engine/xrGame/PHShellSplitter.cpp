@@ -303,8 +303,8 @@ shell_root CPHShellSplitterHolder::ElementSingleSplit(const element_fracture &sp
 				//m_pShell->PlaceBindToElForms();
 				
 				K->LL_GetBindTransform(bones_bind_forms);
-				el1->SetTransform(bones_bind_forms[el1->m_SelfID]);
-				el2->SetTransform(bones_bind_forms[el2->m_SelfID]);
+				el1->SetTransform(bones_bind_forms[el1->m_SelfID], mh_unspecified);
+				el2->SetTransform(bones_bind_forms[el2->m_SelfID], mh_unspecified);
 				joint->ReattachFirstElement(split_elem.first);
 
 				dVectorSet(const_cast<dReal*>(dBodyGetPosition(body1)),safe_pos1);

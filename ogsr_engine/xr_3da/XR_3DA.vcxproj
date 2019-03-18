@@ -364,6 +364,7 @@
     <ClInclude Include="..\COMMON\ETextureParams.h" />
     <ClInclude Include="..\COMMON\std_classes.h" />
     <ClInclude Include="..\xrParticles\psystem.h" />
+    <ClInclude Include="Animation.h" />
     <ClInclude Include="NET_Server_Trash\client_id.h" />
     <ClInclude Include="NET_Server_Trash\NET_Client.h" />
     <ClInclude Include="NET_Server_Trash\NET_Messages.h" />
@@ -480,6 +481,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\COMMON\ETextureParams.cpp" />
+    <ClCompile Include="Animation.cpp" />
     <ClCompile Include="defines.cpp" />
     <ClCompile Include="NET_Server_Trash\NET_Client.cpp" />
     <ClCompile Include="NET_Server_Trash\NET_Server.cpp" />

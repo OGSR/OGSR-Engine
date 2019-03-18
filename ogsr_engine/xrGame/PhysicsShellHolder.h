@@ -37,6 +37,7 @@ public:
 
 
 	CPhysicsShellHolder							();
+	virtual	~CPhysicsShellHolder						();
 
 
 
@@ -49,6 +50,7 @@ public:
 	{
 		return this;
 	}
+	virtual	const CPhysicsShellHolder*physics_collision			()							;
 	virtual CPHDestroyable				*ph_destroyable				()							{return NULL;}
 	virtual CPHCollisionDamageReceiver	*PHCollisionDamageReceiver	()							{return NULL;}
 	virtual CPHSkeleton					*PHSkeleton					()							{return NULL;}
@@ -95,14 +97,29 @@ public:
 	//для наследования CParticlesPlayer
 	virtual void			UpdateCL			();
 			void			correct_spawn_pos	();
-
+protected:
+	virtual	bool			has_shell_collision_place( const CPhysicsShellHolder* obj ) const;
+	virtual void			on_child_shell_activate	 ( CPhysicsShellHolder* obj );
 public:
 	virtual bool			register_schedule	() const;
 	bool ActorCanCapture() const;
 	bool hasFixedBones() const;
 
 public://IPhysicsShellHolder
-	CPHCapture*				_BCL					PHCapture							()						;
+	virtual	Fmatrix&				ObjectXFORM							()						;
+	virtual	Fvector&				ObjectPosition						()						;
+	virtual	LPCSTR					ObjectName							()		const			;
+	virtual	LPCSTR					ObjectNameVisual					()		const			;
+	virtual	LPCSTR					ObjectNameSect						()		const			;
+	virtual	bool					ObjectGetDestroy					()		const			;
+	virtual ICollisionHitCallback*			ObjectGetCollisionHitCallback		()						;
+	virtual	u16					ObjectID							()		const			;
+	virtual	ICollisionForm*				ObjectCollisionModel				()						;
+	//virtual	IRenderVisual*			ObjectVisual						()						;
+	virtual	CKinematics*				ObjectKinematics					()						;
+	CPhysicsShell*&					ObjectPPhysicsShell					()						;
+	virtual bool					has_parent_object					()						;
+	CPHCapture*					PHCapture							()						;
 
 private:
 	Fvector					m_overriden_activation_speed;

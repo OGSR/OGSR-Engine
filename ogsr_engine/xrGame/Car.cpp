@@ -396,7 +396,7 @@ void CCar::RestoreNetState( CSE_PHSkeleton* /*po*/ ) {
   }
 
   replace.mul( sof, inv );
-  PPhysicsShell()->TransformPosition( replace );
+  PPhysicsShell()->TransformPosition( replace, mh_clear );
   if ( enable )
     PPhysicsShell()->Enable();
   else

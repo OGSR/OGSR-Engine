@@ -6088,6 +6088,30 @@
     <ClInclude Include="ai\monsters\controller\controller_psy_hit_effector.h">
       <Filter>AI\AMonsters\monsters\Controller\Psy hit</Filter>
     </ClInclude>
+    <ClInclude Include="character_shell_control.h">
+      <Filter>Core\Client\Objects\physics\CharacterSupport</Filter>
+    </ClInclude>
+    <ClInclude Include="IActivationShape.h">
+      <Filter>Core\Client\Objects\physics\ActivationBox</Filter>
+    </ClInclude>
+    <ClInclude Include="ActivatingCharCollisionDelay.h">
+      <Filter>Core\Client\Objects\physics\CharacterSupport</Filter>
+    </ClInclude>
+    <ClInclude Include="animation_utils.h">
+      <Filter>Core\Client\Objects\physics\CharacterSupport</Filter>
+    </ClInclude>
+    <ClInclude Include="imotion_position.h">
+      <Filter>Core\Client\Objects\physics\CharacterSupport</Filter>
+    </ClInclude>
+    <ClInclude Include="character_hit_animations_params.h">
+      <Filter>Core\Client\Objects\physics\CharacterSupport</Filter>
+    </ClInclude>
+    <ClInclude Include="interactive_animation.h">
+      <Filter>Core\Client\Objects\physics\CharacterSupport</Filter>
+    </ClInclude>
+    <ClInclude Include="physics_shell_animated.h">
+      <Filter>Core\Client\Objects\physics\CharacterSupport</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="damage_manager.cpp">
@@ -8882,6 +8906,27 @@
     </ClCompile>
     <ClCompile Include="ai\monsters\controller\controller_psy_hit_effector.cpp">
       <Filter>AI\AMonsters\monsters\Controller\Psy hit</Filter>
+    </ClCompile>
+    <ClCompile Include="character_shell_control.cpp">
+      <Filter>Core\Client\Objects\physics\CharacterSupport</Filter>
+    </ClCompile>
+    <ClCompile Include="IActivationShape.cpp">
+      <Filter>Core\Client\Objects\physics\ActivationBox</Filter>
+    </ClCompile>
+    <ClCompile Include="ActivatingCharCollisionDelay.cpp">
+      <Filter>Core\Client\Objects\physics\CharacterSupport</Filter>
+    </ClCompile>
+    <ClCompile Include="animation_utils.cpp">
+      <Filter>Core\Client\Objects\physics\CharacterSupport</Filter>
+    </ClCompile>
+    <ClCompile Include="imotion_position.cpp">
+      <Filter>Core\Client\Objects\physics\CharacterSupport</Filter>
+    </ClCompile>
+    <ClCompile Include="interactive_animation.cpp">
+      <Filter>Core\Client\Objects\physics\CharacterSupport</Filter>
+    </ClCompile>
+    <ClCompile Include="physics_shell_animated.cpp">
+      <Filter>Core\Client\Objects\physics\CharacterSupport</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

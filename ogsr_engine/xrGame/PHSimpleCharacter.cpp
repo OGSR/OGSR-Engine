@@ -177,6 +177,7 @@ CPHSimpleCharacter::CPHSimpleCharacter()
 	m_collision_damage_factor=1.f;
 	b_collision_restrictor_touch=false;
 	b_foot_mtl_check	=true	;
+	b_non_interactive = false;
 }
 
 
@@ -529,6 +530,13 @@ void CPHSimpleCharacter::PhDataUpdate(dReal /**step/**/){
 		-linear_velocity[1]*l_air,
 		-linear_velocity[2]*l_air
 		);
+
+	if (b_non_interactive)
+	{
+		Disable();
+		dBodySetPosition(m_body, m_last_move.x, m_last_move.y, m_last_move.z);
+	}
+
 	m_last_move.sub(cast_fv(dBodyGetPosition(m_body)),m_last_move);
 	m_last_move.mul(1.f/fixed_step);
 	VERIFY2(dBodyStateValide(m_body),"WRONG BODYSTATE IN PhDataUpdate");
@@ -1864,3 +1872,7 @@ bool	CPHSimpleCharacter::	TouchRestrictor	(ERestrictionType rttype)
 	return rttype==RestrictionType();
 }
 
+void		CPHSimpleCharacter::SetNonInteractive(bool v)
+{
+	b_non_interactive = v;
+}

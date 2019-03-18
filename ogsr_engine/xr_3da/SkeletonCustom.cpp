@@ -181,6 +181,21 @@ void CBoneData::CalculateM2B(const Fmatrix& parent)
     m2b_transform.invert	();            
 }
 
+CBoneData&	CBoneData::GetChild(u16 id)
+{
+	return *children[id];
+}
+
+const CBoneData&	CBoneData::GetChild(u16 id)const
+{
+	return *children[id];
+}
+
+u16	CBoneData::GetNumChildren()const
+{
+	return (u16)children.size();
+}
+
 CSkeletonX* CKinematics::LL_GetChild	(u32 idx)
 {
 	IRender_Visual*	V	= children[idx];

@@ -43,19 +43,24 @@ CPhysicsJoint*				P_create_Joint			(CPhysicsJoint::enumType type ,CPhysicsElemen
 }
 
 
-CPhysicsShell*				P_build_Shell			(CGameObject* obj,bool not_active_state,BONE_P_MAP* bone_map)
+CPhysicsShell*	__stdcall P_build_Shell			( CPhysicsShellHolder* obj, bool not_active_state, BONE_P_MAP* bone_map, bool not_set_bone_callbacks )
 {
-	CKinematics* pKinematics=smart_cast<CKinematics*>(obj->Visual());
+	VERIFY( obj );
+	//phys_shell_verify_object_model( *obj );
+	//IRenderVisual*	V = obj->ObjectVisual();
+	//CKinematics* pKinematics=smart_cast<CKinematics*>(V);
+	//CKinematics* pKinematics	=  V->dcast_PKinematics			();
+	CKinematics* pKinematics	= obj->ObjectKinematics();
 
 	CPhysicsShell* pPhysicsShell		= P_create_Shell();
 #ifdef DEBUG
-	pPhysicsShell->dbg_obj=smart_cast<CPhysicsShellHolder*>(obj);
+	pPhysicsShell->dbg_obj=obj;
 #endif
 	pPhysicsShell->build_FromKinematics(pKinematics,bone_map);
 
-	pPhysicsShell->set_PhysicsRefObject(smart_cast<CPhysicsShellHolder*>(obj));
-	pPhysicsShell->mXFORM.set(obj->XFORM());
-	pPhysicsShell->Activate(not_active_state);//,
+	pPhysicsShell->set_PhysicsRefObject( obj );
+	pPhysicsShell->mXFORM.set( obj->ObjectXFORM() );
+	pPhysicsShell->Activate( not_active_state, not_set_bone_callbacks );//,
 	//m_pPhysicsShell->SmoothElementsInertia(0.3f);
 	pPhysicsShell->SetAirResistance();//0.0014f,1.5f
 
@@ -80,10 +85,11 @@ void	fix_bones(LPCSTR	fixed_bones,CPhysicsShell* shell )
 				E->Fix();
 		}
 }
-CPhysicsShell*				P_build_Shell			(CGameObject* obj,bool not_active_state,BONE_P_MAP* p_bone_map,LPCSTR	fixed_bones)
+CPhysicsShell*	P_build_Shell( CPhysicsShellHolder* obj, bool not_active_state,BONE_P_MAP* p_bone_map, LPCSTR	fixed_bones )
 {
-	CPhysicsShell* pPhysicsShell;
-	CKinematics* pKinematics=smart_cast<CKinematics*>(obj->Visual());
+	CPhysicsShell* pPhysicsShell = 0;
+	//CKinematics* pKinematics=smart_cast<CKinematics*>(obj->ObjectVisual());
+	CKinematics* pKinematics=obj->ObjectKinematics();
 	if(fixed_bones)
 	{
 
@@ -118,11 +124,13 @@ CPhysicsShell*				P_build_Shell			(CGameObject* obj,bool not_active_state,BONE_P
 	return pPhysicsShell;
 }
 
-CPhysicsShell*				P_build_Shell			(CGameObject* obj,bool not_active_state,LPCSTR	fixed_bones)
+CPhysicsShell*	P_build_Shell( CPhysicsShellHolder* obj, bool not_active_state, LPCSTR	fixed_bones )
 {
 	U16Vec f_bones;
 	if(fixed_bones){
-		CKinematics* K		= smart_cast<CKinematics*>(obj->Visual());
+		//CKinematics* K		= smart_cast<CKinematics*>(obj->ObjectVisual());
+		CKinematics* K		=obj->ObjectKinematics();
+		VERIFY( K );
 		int count =			_GetItemCount(fixed_bones);
 		for (int i=0 ;i<count; ++i){
 			string64		fixed_bone;
@@ -135,19 +143,21 @@ CPhysicsShell*				P_build_Shell			(CGameObject* obj,bool not_active_state,LPCSTR
 }
 
 static BONE_P_MAP bone_map=BONE_P_MAP();
-CPhysicsShell*				P_build_Shell			(CGameObject* obj,bool not_active_state,U16Vec& fixed_bones)
+CPhysicsShell*	P_build_Shell	( CPhysicsShellHolder* obj, bool not_active_state, U16Vec& fixed_bones )
 {
 	bone_map.clear			();
-	CPhysicsShell*			pPhysicsShell;
+	CPhysicsShell*			pPhysicsShell = 0;
 	if(!fixed_bones.empty())
-		for (U16It it=fixed_bones.begin(); it!=fixed_bones.end(); it++)
-			bone_map.insert(mk_pair(*it,physicsBone()));
-	pPhysicsShell=P_build_Shell(obj,not_active_state,&bone_map);
+		for ( U16It it=fixed_bones.begin(); it!=fixed_bones.end(); it++ )
+			bone_map.insert( mk_pair( *it, physicsBone() ) );
+	pPhysicsShell=P_build_Shell( obj, not_active_state, &bone_map );
 
 	// fix bones
-	BONE_P_PAIR_IT i=bone_map.begin(),e=bone_map.end();
-	if(i!=e) pPhysicsShell->SetPrefereExactIntegration();
-	for(;i!=e;i++){
+	BONE_P_PAIR_IT i=bone_map.begin(), e=bone_map.end();
+	if( i!=e ) 
+		pPhysicsShell->SetPrefereExactIntegration();
+	for(;i!=e;i++)
+	{
 		CPhysicsElement* fixed_element=i->second.element;
 		//R_ASSERT2(fixed_element,"fixed bone has no physics");
 		if(!fixed_element) continue;
@@ -156,19 +166,24 @@ CPhysicsShell*				P_build_Shell			(CGameObject* obj,bool not_active_state,U16Vec
 	return pPhysicsShell;
 }
 
-CPhysicsShell*	P_build_SimpleShell(CGameObject* obj,float mass,bool not_active_state)
+CPhysicsShell*	P_build_SimpleShell( CPhysicsShellHolder* obj, float mass, bool not_active_state )
 {
 	CPhysicsShell* pPhysicsShell		= P_create_Shell();
 #ifdef DEBUG
-	pPhysicsShell->dbg_obj=smart_cast<CPhysicsShellHolder*>(obj);
+	pPhysicsShell->dbg_obj=(obj);
 #endif
-	Fobb obb; obj->Visual()->vis.box.get_CD(obb.m_translate,obb.m_halfsize); obb.m_rotate.identity();
-	CPhysicsElement* E = P_create_Element(); R_ASSERT(E); E->add_Box(obb);
-	pPhysicsShell->add_Element(E);
-	pPhysicsShell->setMass(mass);
-	pPhysicsShell->set_PhysicsRefObject(smart_cast<CPhysicsShellHolder*>(obj));
-	if(!obj->H_Parent())
-		pPhysicsShell->Activate(obj->XFORM(),0,obj->XFORM(),not_active_state);
+	//Fobb obb; obj->ObjectVisual()->getVisData().box.get_CD( obb.m_translate, obb.m_halfsize );
+	VERIFY( obj );
+	VERIFY( obj->ObjectKinematics() );
+
+	Fobb obb; obj->ObjectKinematics()->GetBox().get_CD( obb.m_translate, obb.m_halfsize );
+	obb.m_rotate.identity();
+	CPhysicsElement* E = P_create_Element(); R_ASSERT( E ); E->add_Box( obb );
+	pPhysicsShell->add_Element( E );
+	pPhysicsShell->setMass( mass );
+	pPhysicsShell->set_PhysicsRefObject( obj );
+	if( !obj->has_parent_object() )
+		pPhysicsShell->Activate( obj->ObjectXFORM(), 0, obj->ObjectXFORM(), not_active_state );
 	return pPhysicsShell;
 }
 
@@ -240,4 +255,89 @@ void	get_box(CPhysicsShell*	shell,const	Fmatrix& form,	Fvector&	sz,Fvector&	c)
 		shell->get_Extensions(ax,0,lo,hi);
 		sz[i]=hi-lo;c.add(Fvector().mul(ax,(lo+hi)/2));
 	}
+}
+
+void __stdcall	destroy_physics_shell( CPhysicsShell* &p )
+{
+	if (p)
+		p->Deactivate();
+	xr_delete(p);
+}
+
+bool bone_has_pysics( CKinematics& K, u16 bone_id )
+{
+	
+	//CBoneData	* pBonedata1 = &K.LL_GetData( bone_id );
+	//CBoneData	* pBonedata2 = K.LL_GetBoneData( bone_id );
+	
+	//u32	sz = sizeof(vecBones);
+	//u32	sz1=  sizeof(pBonedata1->children);
+
+	//	VERIFY(pBonedata1 == pBonedata2);
+	return K.LL_GetBoneVisible( bone_id ) && shape_is_physic( K.GetBoneData( bone_id ).get_shape() );
+}
+
+bool has_physics_collision_shapes( CKinematics& K )
+{
+	u16 nbb = K.LL_BoneCount();
+	for(u16 i = 0; i < nbb; ++i )
+		if( bone_has_pysics( K, i ) )
+			return true;
+	return false;
+}
+
+void	phys_shell_verify_model( CKinematics& K )
+{
+	//IRenderVisual* V = K.dcast_RenderVisual();
+	//VERIFY( V );
+	VERIFY2( has_physics_collision_shapes( K ), make_string( "Can not create physics shell for model %s because it has no physics collision shapes set", K.getDebugName().c_str() ) );
+}
+
+bool __stdcall	can_create_phys_shell( string1024 &reason, CPhysicsShellHolder& O )
+{
+	xr_strcpy(reason, "ok" );
+	bool result = true;
+	CKinematics* K		=O.ObjectKinematics();
+	if(!K)
+	{
+		xr_strcpy( reason,	make_string( "Can not create physics shell for object %s, model %s is not skeleton", O.ObjectName(), O.ObjectNameVisual() ).c_str() );
+		return false;
+	}
+	if(!has_physics_collision_shapes( *K ))
+	{
+		xr_strcpy( reason,	make_string( "Can not create physics shell for object %s, model %s has no physics collision shapes set", O.ObjectName(), O.ObjectNameVisual() ).c_str() );
+		return false;
+	}
+	if(!_valid( O.ObjectXFORM() ))
+	{
+		xr_strcpy( reason, make_string( "create physics shell: object matrix is not valid" ).c_str() );
+		return false;
+	}
+	if(!valid_pos( O.ObjectXFORM().c, phBoundaries ))
+	{
+#ifdef	DEBUG
+		xr_strcpy( reason, dbg_valide_pos_string( O.ObjectXFORM().c, &O, "create physics shell" ).c_str() );
+#else
+		xr_strcpy( reason, make_string( "create physics shell: object position is not valid" ).c_str() );
+#endif
+		return false;
+	}
+	return result;
+}
+
+void	StaticEnvironmentCB(bool& do_colide, bool bo1, dContact& c, SGameMtl* material_1, SGameMtl* material_2)
+{
+	dJointID contact_joint = dJointCreateContact(0, ContactGroup, &c);
+
+	if (bo1)
+	{
+		((CPHIsland*)(retrieveGeomUserData(c.geom.g1)->callback_data))->DActiveIsland()->ConnectJoint(contact_joint);
+		dJointAttach(contact_joint, dGeomGetBody(c.geom.g1), 0);
+	}
+	else
+	{
+		((CPHIsland*)(retrieveGeomUserData(c.geom.g2)->callback_data))->DActiveIsland()->ConnectJoint(contact_joint);
+		dJointAttach(contact_joint, 0, dGeomGetBody(c.geom.g2));
+	}
+	do_colide = false;
 }

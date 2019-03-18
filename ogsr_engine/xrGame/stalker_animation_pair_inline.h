@@ -8,15 +8,16 @@
 
 #pragma once
 
-IC	CStalkerAnimationPair::CStalkerAnimationPair	()
+IC	CStalkerAnimationPair::CStalkerAnimationPair	() :
+	m_step_dependence			(false),
+	m_global_animation			(false),
+	m_callback_on_collision		(false)
 {
 #ifdef DEBUG
 	m_object_name				= "unassigned";
 	m_animation_type_name		= "unassigned";
 #endif
 	reset						();
-	m_step_dependence			= false;
-	m_global_animation			= false;
 }
 
 IC	void CStalkerAnimationPair::reset				()
@@ -114,4 +115,14 @@ IC	void CStalkerAnimationPair::remove_callback		(const CALLBACK_ID &callback)
 IC	bool CStalkerAnimationPair::need_update			() const
 {
 	return						(!m_callbacks.empty());
+}
+
+IC	void CStalkerAnimationPair::callback_on_collision	(bool const &value)
+{
+	m_callback_on_collision		= value;
+}
+
+IC	bool CStalkerAnimationPair::callback_on_collision	() const
+{
+	return						(m_callback_on_collision);
 }

@@ -15,12 +15,28 @@
 #include "phvalide.h"
 #include "PHElement.h"
 #include "PHMovementControl.h"
+#include "iActivationShape.h"
 #include "CharacterPhysicsSupport.h"
 #include "Actor.h"
 
 CPhysicsShellHolder::CPhysicsShellHolder()
 {
 	init();
+}
+CPhysicsShellHolder::	~CPhysicsShellHolder						()
+{
+	VERIFY ( !m_pPhysicsShell );
+//#ifndef MASTER_GOLD
+	//R_ASSERT( !m_pPhysicsShell );
+//#endif
+	destroy_physics_shell( m_pPhysicsShell );
+}
+const CPhysicsShellHolder*CPhysicsShellHolder::physics_collision	()
+{
+	CCharacterPhysicsSupport	*char_support = character_physics_support();
+	if( char_support )
+		char_support->create_animation_collision();
+	return this;
 }
 
 void CPhysicsShellHolder::net_Destroy()
@@ -92,6 +108,20 @@ void CPhysicsShellHolder::init			()
 	b_sheduled					=	false		;
 	m_activation_speed_is_overriden = false;
 }
+bool	 CPhysicsShellHolder::has_shell_collision_place( const CPhysicsShellHolder* obj ) const
+{
+	if(character_physics_support())
+			return character_physics_support()->has_shell_collision_place( obj );
+	return false;
+}
+void	CPhysicsShellHolder::on_child_shell_activate ( CPhysicsShellHolder* obj )
+{
+	
+	if(character_physics_support())
+		character_physics_support()->on_child_shell_activate ( obj );
+
+}
+
 void CPhysicsShellHolder::correct_spawn_pos()
 {
 	VERIFY								(PPhysicsShell());
@@ -100,11 +130,11 @@ void CPhysicsShellHolder::correct_spawn_pos()
 	Fvector								c;
 	get_box								(PPhysicsShell(),XFORM(),size,c);
 
-	CPHActivationShape					activation_shape;
-	activation_shape.Create				(c,size,this);
-	activation_shape.set_rotation		(XFORM());
 	PPhysicsShell()->DisableCollision	();
-	activation_shape.Activate			(size,1,1.f,M_PI/8.f);
+
+	Fvector								ap = Fvector().set(0,0,0);
+	ActivateShapePhysShellHolder		( this, XFORM(), size, c, ap );
+
 ////	VERIFY								(valid_pos(activation_shape.Position(),phBoundaries));
 //	if (!valid_pos(activation_shape.Position(),phBoundaries)) {
 //		CPHActivationShape				activation_shape;
@@ -116,24 +146,11 @@ void CPhysicsShellHolder::correct_spawn_pos()
 
 	PPhysicsShell()->EnableCollision	();
 
-	Fvector								ap = activation_shape.Position();
-#ifdef DEBUG
-	if (!valid_pos(ap,phBoundaries)) {
-		Msg("not valid position	%f,%f,%f",ap.x,ap.y,ap.z);
-		Msg("size	%f,%f,%f",size.x,size.y,size.z);
-		Msg("Object: %s",Name());
-		Msg("Visual: %s",*(cNameVisual()));
-		Msg("Object	pos	%f,%f,%f",Position().x,Position().y,Position().z);
-	}
-#endif // DEBUG
-	VERIFY								(valid_pos(activation_shape.Position(),phBoundaries));
-	
 	Fmatrix								trans;
 	trans.identity						();
 	trans.c.sub							(ap,c);
-	PPhysicsShell()->TransformPosition	(trans);
+	PPhysicsShell()->TransformPosition	(trans, mh_clear );
 	PPhysicsShell()->GetGlobalTransformDynamic(&XFORM());
-	activation_shape.Destroy			();
 }
 
 void CPhysicsShellHolder::activate_physic_shell()
@@ -177,6 +194,15 @@ void CPhysicsShellHolder::activate_physic_shell()
 		m_pPhysicsShell->set_LinearVel(l_fw);
 	}
 	m_pPhysicsShell->GetGlobalTransformDynamic(&XFORM());
+
+	if(H_Parent()&&H_Parent()->Visual())
+	{
+		smart_cast<CKinematics*>(H_Parent()->Visual())->CalculateBones_Invalidate	();
+		smart_cast<CKinematics*>(H_Parent()->Visual())->CalculateBones	(TRUE);
+	}
+	CPhysicsShellHolder* P = smart_cast<CPhysicsShellHolder*>( H_Parent() );
+	if( P )
+		P->on_child_shell_activate( this );
 }
 
 void CPhysicsShellHolder::setup_physic_shell	()
@@ -191,9 +217,7 @@ void CPhysicsShellHolder::setup_physic_shell	()
 
 void CPhysicsShellHolder::deactivate_physics_shell()
 {
-	if (m_pPhysicsShell)
-		m_pPhysicsShell->Deactivate	();
-	xr_delete(m_pPhysicsShell);
+	destroy_physics_shell( m_pPhysicsShell );
 }
 void CPhysicsShellHolder::PHSetMaterial(u16 m)
 {
@@ -406,6 +430,57 @@ bool CPhysicsShellHolder::register_schedule	() const
 	return					(b_sheduled);
 }
 
+Fmatrix& CPhysicsShellHolder::ObjectXFORM()
+{
+	return XFORM();
+}
+
+Fvector& CPhysicsShellHolder::ObjectPosition()
+{
+	return Position();
+}
+
+LPCSTR CPhysicsShellHolder::ObjectName()const
+{
+	return cName().c_str();
+}
+
+LPCSTR CPhysicsShellHolder::ObjectNameVisual()const
+{
+	return cNameVisual().c_str();
+}
+
+LPCSTR CPhysicsShellHolder::ObjectNameSect()const
+{
+	return cNameSect().c_str();
+}
+
+bool CPhysicsShellHolder::ObjectGetDestroy()const
+{
+	return !!getDestroy();
+}
+
+ICollisionHitCallback* CPhysicsShellHolder::ObjectGetCollisionHitCallback()
+{
+	return get_collision_hit_callback ();
+}
+
+u16	CPhysicsShellHolder::ObjectID()const
+{
+	return ID();
+}
+
+ICollisionForm* CPhysicsShellHolder::ObjectCollisionModel()
+{
+	return collidable.model;
+}
+
+
+CKinematics	*CPhysicsShellHolder::ObjectKinematics()
+{
+	VERIFY(Visual());
+	return Visual()->dcast_PKinematics();
+}
 
 #include <filesystem>
 
@@ -428,6 +503,15 @@ bool CPhysicsShellHolder::hasFixedBones() const {
   return false;
 }
 
+CPhysicsShell*& CPhysicsShellHolder::ObjectPPhysicsShell()
+{
+	return PPhysicsShell();
+}
+
+bool CPhysicsShellHolder::has_parent_object()
+{
+	return !!H_Parent();
+}
 
 CPHCapture*	CPhysicsShellHolder::PHCapture()
 {

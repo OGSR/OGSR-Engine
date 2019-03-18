@@ -24,7 +24,7 @@ private:
 	MotionID							all_shift_down;
 	MotionID							hit_downl;
 	MotionID							hit_downr;
-	static	const	u16					num_anims = 7;
-	mutable u32							block_times[num_anims];
+	static	const	u16					num_anims = 9;
+	mutable CBlend*						block_blends[num_anims];
 	//
 };

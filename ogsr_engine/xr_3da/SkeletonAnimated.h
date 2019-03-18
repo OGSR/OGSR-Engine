@@ -3,6 +3,7 @@
 #define SkeletonAnimatedH
 
 #include		"skeletoncustom.h"
+#include		"animation.h"
 #include		"skeletonmotions.h"
 
 // consts
@@ -16,6 +17,23 @@ class 	ENGINE_API CKinematicsAnimated;
 class   ENGINE_API CBoneInstanceAnimated;
 struct	ENGINE_API CKey;
 class	ENGINE_API CInifile;
+
+struct IterateBlendsCallback
+{
+	virtual	void	operator () ( CBlend &B ) = 0;
+};
+struct IUpdateTracksCallback
+{
+	virtual	bool	operator () ( float dt, CKinematicsAnimated& k ) = 0;
+};
+
+struct SKeyTable
+{
+	CKey				keys						[MAX_CHANNELS][MAX_BLENDED];	//all keys 
+	CBlend				*blends						[MAX_CHANNELS][MAX_BLENDED];	//blend pointers
+	int					chanel_blend_conts			[MAX_CHANNELS]	;				//channel counts
+	SKeyTable			()							{ std::fill_n( chanel_blend_conts, MAX_CHANNELS, 0 ); }
+};
 
 struct MotionID {
 private:
@@ -75,14 +93,123 @@ public:
 	float			speed;
 
 	BOOL			playing;
+	BOOL			stop_at_end_callback;
 	BOOL			stop_at_end;
 	BOOL			fall_at_end;
 	PlayCallback	Callback;
 	void*			CallbackParam;
 	
 	u32				dwFrame;
-
+	
 	u32				mem_usage			(){ return sizeof(*this); }
+IC	ECurvature		blend_state			(  )const { return blend ;}
+IC	void			set_free_state		( ){ blend = eFREE_SLOT; }
+IC	void			set_accrue_state	( ){ blend = eAccrue; }
+IC	void			set_falloff_state	( ){ blend = eFalloff; }
+IC	void			set					( const CBlend &r ){ *this = r; }
+
+IC void CBlend::update_play( float dt, PlayCallback _Callback )
+{
+
+	float pow_dt = dt;
+	if( pow_dt < 0.f )
+	{
+		pow_dt = 0;
+		if( stop_at_end )
+		{
+			VERIFY( blendAccrue>0.f );
+			pow_dt = timeCurrent + dt - 1.f/blendAccrue;
+			clamp( pow_dt, dt, 0.f );
+		}
+	}
+	
+	blendAmount 		+= pow_dt*blendAccrue*blendPower;
+
+	clamp				( blendAmount, 0.f, blendPower); 
+
+
+	if( !update_time( dt ) )//reached end 
+		return;
+
+	if ( _Callback &&  stop_at_end_callback )	
+		_Callback( this );		// callback only once
+
+	stop_at_end_callback		= FALSE;
+
+	if( fall_at_end )
+	{
+		blend = eFalloff;
+		blendFalloff = 2.f;
+		//blendAccrue = timeCurrent;
+	}
+	return ;
+}
+
+IC	bool CBlend::update_time			( float dt )
+{
+	if (!playing) 
+			return false;
+	float quant = dt*speed;
+	timeCurrent += quant; // stop@end - time is not going
+
+	bool	running_fwrd	=  ( quant > 0 );
+	float	const pEND_EPS	=	SAMPLE_SPF+EPS;
+	bool	at_end			=	running_fwrd && ( timeCurrent > ( timeTotal- pEND_EPS) );
+	bool	at_begin		=	!running_fwrd && ( timeCurrent < 0.f );
+	
+	if( !stop_at_end )
+	{
+		if( at_begin )
+			timeCurrent+= timeTotal;
+		if( at_end )
+			timeCurrent -= ( timeTotal- pEND_EPS);
+		VERIFY( timeCurrent>=0.f );
+		return false;
+	}
+	if( !at_end && !at_begin )
+					return false;
+
+	if( at_end )
+	{
+		timeCurrent	= timeTotal- pEND_EPS;		// stop@end - time frozen at the end
+		if( timeCurrent<0.f ) timeCurrent =0.f; 
+	}
+	else
+		timeCurrent	= 0.f;
+
+	VERIFY( timeCurrent>=0.f );
+	return true;
+}
+
+IC bool CBlend::update_falloff( float dt )
+{
+	update_time( dt );
+	
+	blendAmount 		-= dt*blendFalloff*blendPower;
+
+	bool ret			= blendAmount<=0;
+	clamp				( blendAmount, 0.f, blendPower);
+	return ret;
+}
+
+IC bool CBlend::update( float dt, PlayCallback _Callback )
+{
+	switch (blend) 
+	{
+		case eFREE_SLOT: 
+			NODEFAULT;
+		case eAccrue:
+			update_play( dt, _Callback );
+			break;
+		case eFalloff:
+			if( update_falloff( dt ) )
+				return true;
+			break;
+		default: 
+			NODEFAULT;
+	}
+	return false;
+}
 };
 typedef svector<CBlend*,MAX_BLENDED*MAX_CHANNELS>	BlendSVec;//*MAX_CHANNELS
 typedef BlendSVec::iterator							BlendSVecIt;
@@ -132,9 +259,13 @@ private:
 
 public: 
 	// Calculation
+	void						LL_BuldBoneMatrixDequatize	( const CBoneData* bd, u8 channel_mask,  SKeyTable& keys );
+	void						LL_BoneMatrixBuild			( CBoneInstance &bi, const Fmatrix *parent, const SKeyTable& keys );
 private:
+
+virtual	void					BuildBoneMatrix				( const CBoneData* bd, CBoneInstance &bi, const Fmatrix *parent, u8 mask_channel = (1<<0) );
 			void				BoneChain_Calculate		(const CBoneData* bd, CBoneInstance &bi,u8 channel_mask, bool ignore_callbacks);
-			void				CLBone					(const CBoneData* bd, CBoneInstance &bi, const Fmatrix *parent,const CBlendInstance::BlendSVec &Blend, u8 mask_channel = (1<<0));
+			void				CLBone				(const CBoneData* bd, CBoneInstance &bi, const Fmatrix *parent, u8 mask_channel = (1<<0));
 public:
 	virtual void				Bone_Calculate			(CBoneData* bd, Fmatrix* parent);
 			void				Bone_GetAnimPos			(Fmatrix& pos,u16 id, u8 channel_mask, bool ignore_callbacks);
@@ -153,11 +284,12 @@ private:
 
     CPartition*									m_Partition;
 
+	IUpdateTracksCallback						*m_update_tracks_callback;
 	// Blending
 	svector<CBlend, MAX_BLENDED_POOL>			blend_pool;
 	BlendSVec									blend_cycles[MAX_PARTS];
 	BlendSVec									blend_fx;
-	float										channel_factors[MAX_CHANNELS];
+	animation::channels							channels;
 protected:
 	// internal functions
 	virtual void				IBoneInstances_Create	();
@@ -175,6 +307,13 @@ public:
 	std::pair<LPCSTR,LPCSTR>	LL_MotionDefName_dbg	(MotionID	ID);
 //	LPCSTR						LL_MotionDefName_dbg	(LPVOID		ptr);
 #endif
+	u32							LL_PartBlendsCount			( u32 bone_part_id );
+	CBlend						*LL_PartBlend				( u32 bone_part_id, u32 n );
+	void						LL_IterateBlends			( IterateBlendsCallback &callback );
+
+	void						SetUpdateTracksCalback		( IUpdateTracksCallback	*callback );
+	IUpdateTracksCallback		*GetUpdateTracksCalback		( ){ return m_update_tracks_callback; }
+
 	u16							LL_MotionsSlotCount(){return (u16)m_Motions.size();}
 	const shared_motions&		LL_MotionsSlot	(u16 idx){return m_Motions[idx].motions;}
 
@@ -196,6 +335,8 @@ public:
 	                                                                
 	// Main functionality
 	void						UpdateTracks	();								// Update motions
+	void						LL_UpdateTracks	( float dt, bool b_force, bool leave_blends );						// Update motions
+	void						LL_UpdateFxTracks( float dt );
 	void						DestroyCycle	(CBlend &B);
 
 	// cycles
@@ -218,6 +359,7 @@ public:
 	virtual void				Spawn			();
 	virtual	CKinematicsAnimated*	dcast_PKinematicsAnimated	()				{ return this;	}
 	virtual						~CKinematicsAnimated	();
+								CKinematicsAnimated		();
 
 	virtual u32					mem_usage		(bool bInstance)
 	{

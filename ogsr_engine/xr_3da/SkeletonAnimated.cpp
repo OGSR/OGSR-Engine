@@ -63,6 +63,18 @@ std::pair<LPCSTR,LPCSTR> CKinematicsAnimated::LL_MotionDefName_dbg	(MotionID ID)
 	for (_I	= s_mots.motion_map()->begin(); _I!=_E; ++_I)	if (_I->second==ID.idx) return std::make_pair(*_I->first,*s_mots.id());
 	return std::make_pair((LPCSTR)0,(LPCSTR)0);
 }
+
+u32	CKinematicsAnimated::LL_PartBlendsCount	( u32 bone_part_id )
+{
+	return blend_cycle(bone_part_id).size();
+}
+
+CBlend*	CKinematicsAnimated::LL_PartBlend	( u32 bone_part_id, u32 n  )
+{
+	if( LL_PartBlendsCount(bone_part_id)<=n )
+		return 0;
+	return blend_cycle(bone_part_id)[ n ];
+}
 /*
 LPCSTR CKinematicsAnimated::LL_MotionDefName_dbg	(LPVOID ptr)
 {
@@ -147,7 +159,7 @@ void	CKinematicsAnimated::LL_FadeCycle(u16 part, float falloff, u8 mask_channel 
 			continue;
 		B.blend				= CBlend::eFalloff;
 		B.blendFalloff		= falloff;
-		if (B.stop_at_end)  B.playing = FALSE;		// callback не должен приходить!
+		if (B.stop_at_end)  B.stop_at_end_callback = FALSE;		// callback не должен приходить!
 	}
 }
 void	CKinematicsAnimated::LL_CloseCycle(u16 part, u8 mask_channel /*= (1<<0)*/)
@@ -197,11 +209,13 @@ void CKinematicsAnimated::IBlendSetup(CBlend& B,u16 part,u8 channel, MotionID mo
 	VERIFY(B.channel<MAX_CHANNELS);
 	// Setup blend params
 	if (bMixing)	{
-		B.blend		= CBlend::eAccrue;
+		//B.blend		= CBlend::eAccrue;
+		B.set_accrue_state();
 		B.blendAmount	= EPS_S;
 	} else {
 		//B.blend		= CBlend::eFixed;
-		B.blend		= CBlend::eAccrue;
+		//B.blend		= CBlend::eAccrue;
+		B.set_accrue_state();
 		B.blendAmount	= 1;
 	}
 	B.blendAccrue	= blendAccrue;
@@ -214,15 +228,17 @@ void CKinematicsAnimated::IBlendSetup(CBlend& B,u16 part,u8 channel, MotionID mo
 	B.bone_or_part	= part;
 	B.stop_at_end	= noloop;
 	B.playing		= TRUE;
+	B.stop_at_end_callback = TRUE;
 	B.Callback		= Callback;
 	B.CallbackParam= CallbackParam;
 
 	B.channel		= channel;
-	B.fall_at_end	= B.stop_at_end && (channel != 0);
+	B.fall_at_end	= B.stop_at_end && (channel > 1);
 }
 void CKinematicsAnimated::IFXBlendSetup(CBlend &B, MotionID motion_ID, float blendAccrue, float blendFalloff,float Power ,float Speed,u16 bone)
 {
-	B.blend		= CBlend::eAccrue;
+	//B.blend			= CBlend::eAccrue;
+	B.set_accrue_state();
 	B.blendAmount	= EPS_S;
 	B.blendAccrue	= blendAccrue;
 	B.blendFalloff	= blendFalloff;
@@ -234,6 +250,7 @@ void CKinematicsAnimated::IFXBlendSetup(CBlend &B, MotionID motion_ID, float ble
 	B.bone_or_part	= bone;
 
 	B.playing		= TRUE;
+	B.stop_at_end_callback = TRUE;
 	B.stop_at_end	= FALSE;
 	//
 	B.Callback		= 0;
@@ -383,107 +400,77 @@ IC bool UpdateFalloffBlend(CBlend &B,float dt)
 	B.blendAmount 		-= dt*B.blendFalloff*B.blendPower;
 	return B.blendAmount<=0;
 }
-void CKinematicsAnimated::UpdateTracks	()
+void CKinematicsAnimated::LL_UpdateTracks( float dt, bool b_force, bool leave_blends )
 {
-	_DBG_SINGLE_USE_MARKER;
-	if (Update_LastTime==Device.dwTimeGlobal) return;
-	u32 DT	= Device.dwTimeGlobal-Update_LastTime;
-	if (DT>66) DT=66;
-	float dt = float(DT)/1000.f;
-	Update_LastTime 	= Device.dwTimeGlobal;
-
 	BlendSVecIt I,E;
-
 	// Cycles
-	for (u16 part=0; part<MAX_PARTS; part++){
-		if (0==m_Partition->part(part).Name)	continue;
-
+	for (u16 part=0; part<MAX_PARTS; part++)
+	{
+		if (0==m_Partition->part(part).Name)
+			continue;
 		I = blend_cycles[part].begin(); E = blend_cycles[part].end();
 		for (; I!=E; I++)
 		{
 			CBlend& B = *(*I);
-			if (B.dwFrame==Device.dwFrame)	continue;
-			B.dwFrame		=	Device.dwFrame;
-			UpdateBlendTime(B,dt);
-			switch (B.blend) 
+			if ( !b_force && B.dwFrame == Device.dwFrame )
+					continue;
+			B.dwFrame =	Device.dwFrame;
+			if( B.update( dt, B.Callback ) && !leave_blends )
 			{
-			case CBlend::eFREE_SLOT: 
-				NODEFAULT;
-/*
-			case CBlend::eFixed:	
-				if(UpdatePlayBlend(B,dt)&&B.fall_at_end)
-				{
-						B.blend = CBlend::eFalloff;
-						B.blendFalloff = 2.f;
-				}
-				break;
-*/
-			case CBlend::eAccrue:
-
-				if( UpdatePlayBlend( B, dt ) )
-				{
-					if(B.fall_at_end)
-					{
-						B.blend = CBlend::eFalloff;
-						B.blendFalloff = 2.f;
-					} //else if(B.blendAmount==B.blendPower)
-						//B.blend			= CBlend::eFixed;
-				}
-
-				break;
-			case CBlend::eFalloff:
-				if(UpdateFalloffBlend(B,dt))
-				{
-					DestroyCycle(B);
-					blend_cycles[part].erase(I);
-					E = blend_cycles[part].end(); I--; 
-				}
-				break;
-			default: 
-				NODEFAULT;
+				DestroyCycle( B );
+				blend_cycles[part].erase( I );
+				E = blend_cycles[part].end(); I--; 
 			}
+			//else{
+			//	CMotionDef* m_def						= m_Motions[B.motionID.slot].motions.motion_def(B.motionID.idx);
+			//	float timeCurrent						= B.timeCurrent;
+			//	xr_vector<motion_marks>::iterator it	= m_def->marks.begin();
+			//	xr_vector<motion_marks>::iterator it_e	= m_def->marks.end();
+			//	for(;it!=it_e; ++it)
+			//	{
+			//		if( (*it).pick_mark(timeCurrent) )
+			//	}
+			//}
 		}
 	}
 	
-	// FX
+	LL_UpdateFxTracks(dt);
+}
+void	CKinematicsAnimated::LL_UpdateFxTracks( float dt )
+{
+		// FX
+	BlendSVecIt I,E;
 	I = blend_fx.begin(); E = blend_fx.end();
 	for (; I!=E; I++)
 	{
 		CBlend& B = *(*I);
-		if (!B.playing)	continue;
-		B.timeCurrent += dt*B.speed;
-		switch (B.blend) 
+		if ( !B.stop_at_end_callback )
+		{
+			B.playing =FALSE;
+			continue;
+		}
+		//B.timeCurrent += dt*B.speed;
+		B.update_time( dt );
+		switch (B.blend_state()) 
 		{
 		case CBlend::eFREE_SLOT: 
 			NODEFAULT;
-/*
-		case CBlend::eFixed:
-			{
-//				B.blendAmount = B.blendPower; 
-//				// calc time to falloff
-//				float time2falloff = B.timeTotal - 1/(B.blendFalloff*B.speed);
-//				if (B.timeCurrent >= time2falloff) {
-//					// switch to falloff
-//					B.blend		= CBlend::eFalloff;
-//				}
-//
-				B.blend		= CBlend::eFalloff;
-			}
-			break;
-*/
+
 		case CBlend::eAccrue:
             B.blendAmount 	+= dt*B.blendAccrue*B.blendPower*B.speed;
 			if (B.blendAmount>=B.blendPower) {
 				// switch to fixed
 				B.blendAmount	= B.blendPower;
-				B.blend			= CBlend::eFalloff;//CBlend::eFixed;
+				//B.blend			= CBlend::eFalloff;//CBlend::eFixed;
+				B.set_falloff_state();
 			}
 			break;
 		case CBlend::eFalloff:
 			B.blendAmount 	-= dt*B.blendFalloff*B.blendPower*B.speed;
 			if (B.blendAmount<=0) {
 				// destroy fx
-				B.blend = CBlend::eFREE_SLOT;
+				//B.blend = CBlend::eFREE_SLOT;
+				B.set_free_state();
 				Bone_Motion_Stop((*bones)[B.bone_or_part],*I);
 				blend_fx.erase(I); 
 				E=blend_fx.end(); I--; 
@@ -492,6 +479,23 @@ void CKinematicsAnimated::UpdateTracks	()
 		default: NODEFAULT;
 		}
 	}
+}
+void CKinematicsAnimated::UpdateTracks	()
+{
+	_DBG_SINGLE_USE_MARKER;
+	if (Update_LastTime==Device.dwTimeGlobal) return;
+	u32 DT	= Device.dwTimeGlobal-Update_LastTime;
+	if (DT>66) DT=66;
+	float dt = float(DT)/1000.f;
+	
+	if( GetUpdateTracksCalback()  )
+	{
+		if( ( *GetUpdateTracksCalback() )( float(Device.dwTimeGlobal-Update_LastTime)/1000.f, *this ) )
+					Update_LastTime = Device.dwTimeGlobal;
+		return;
+	}
+	Update_LastTime 	= Device.dwTimeGlobal;
+	LL_UpdateTracks	( dt, false, false );
 }
 
 void CKinematicsAnimated::Release()
@@ -515,6 +519,15 @@ void CKinematicsAnimated::Release()
 CKinematicsAnimated::~CKinematicsAnimated	()
 {
 	IBoneInstances_Destroy	();
+}
+CKinematicsAnimated::CKinematicsAnimated(): 
+	CKinematics(), 
+	blend_instances	( NULL) ,
+    m_Partition	( NULL ),
+	m_update_tracks_callback( 0 ),
+	Update_LastTime ( 0 )
+{
+	
 }
 
 void	CKinematicsAnimated::IBoneInstances_Create()
@@ -555,15 +568,16 @@ void CKinematicsAnimated::Spawn	()
 
 	for (u32 i=0; i<bones->size(); i++)
 		blend_instances[i].construct();
+	m_update_tracks_callback = 0;
+	channels.init();
 }
 void CKinematicsAnimated::ChannelFactorsStartup()
 {
-	for (u8 i=0;MAX_CHANNELS>i;++i)
-		channel_factors[i] = 1.f;
+	channels.init();
 }
 void	CKinematicsAnimated::LL_SetChannelFactor (u16	channel,float factor)
 {
-	channel_factors[channel] = factor;
+	channels.set_factor( channel, factor );
 }
 void CKinematicsAnimated::IBlend_Startup	()
 {
@@ -855,13 +869,10 @@ IC void Dequantize(CKey& K,const CBlend& BD,const CMotion& M)
 	}
 }
 
-
-
-
-IC void MixInterlerp( CKey &Result, const CKey	*R, const float* BA, int b_count )
+IC void MixInterlerp( CKey &Result, const CKey	*R, const CBlend* const BA[MAX_BLENDED], int b_count )
 {
 
-	VERIFY(MAX_BLENDED>=b_count);
+	VERIFY( MAX_BLENDED >= b_count );
 	switch (b_count)
 	{
 	case 0:
@@ -870,51 +881,25 @@ IC void MixInterlerp( CKey &Result, const CKey	*R, const float* BA, int b_count 
 		break;
 	case 1: 
 		Result			= R[0];
-		/*
-		if(Result.T.y>10000){
-		Log("1");
-		Log("BLEND_INST",BLEND_INST.Blend.size());
-		Log("Bone",LL_BoneName_dbg(SelfID));
-		Msg("Result.Q %f,%f,%f,%f",Result.Q.x,Result.Q.y,Result.Q.z,Result.Q.w);
-		Log("Result.T",Result.T);
-		VERIFY(0);
-		}
-		*/
 		break;
 	case 2:
 		{
-			float w0 = BA[0];
-			float w1 = BA[1];
+			float w0 = BA[0]->blendAmount;
+			float w1 = BA[1]->blendAmount;
 			float ws = w0+w1;
 			float w;
 			if (fis_zero(ws))	w = 0;
 			else				w = w1/ws;
-#ifdef DEBUG
-			//.					if (fis_zero(w0+w1) || (!_valid(w))){
-			//.						Debug.fatal		(DEBUG_INFO,"TO ALEXMX VERY IMPORTANT: (TOTAL: %f) w: %f, w0: %f, w1: %f, ws:%f, BIS: %d",w0+w1,w,w0,w1,ws,BLEND_INST.Blend.size());
-			//.					}
-#endif
+
 			KEY_Interp	(Result,R[0],R[1], clampr(w,0.f,1.f));
-			/*
-			if(Result.T.y>10000){
-			Log("2");
-			Log("BLEND_INST",BLEND_INST.Blend.size());
-			Log("Bone",LL_BoneName_dbg(SelfID));
-			Msg("Result.Q %f,%f,%f,%f",Result.Q.x,Result.Q.y,Result.Q.z,Result.Q.w);
-			Log("Result.T",Result.T);
-			Log("parent",*parent);
-			VERIFY(0);
-			}
-			*/
 		}
 		break;
 	default:
 		{
-			//int 	count 	= Blend.size();
 			float   total 	= 0;
 			ConsistantKey		S[MAX_BLENDED];
 			for (int i=0; i<b_count; i++)					
-				S[i].set	(R+i,BA[i]);
+				S[i].set	( R+i, BA[i]->blendAmount );
 
 			std::sort	(S,S+b_count);
 			CKey		tmp;
@@ -927,12 +912,6 @@ IC void MixInterlerp( CKey &Result, const CKey	*R, const float* BA, int b_count 
 				else d	= S[cnt].w/total;
 
 				clampr(d,0.f,1.f);
-
-#ifdef DEBUG
-				//.						if ((total==0) || (!_valid(S[cnt].w/total))){
-				//.							Debug.fatal		(DEBUG_INFO,"TO ALEXMX VERY IMPORTANT: (TOTAL: %f) w: %f, total: %f, count: %d, real count: %d",total,S[cnt].w,total,count,BLEND_INST.Blend.size());
-				//.						}
-#endif
 
 				KEY_Interp	(Result,tmp, *S[cnt].K, d );
 				tmp 		= Result;
@@ -1075,163 +1054,58 @@ IC void MixAdd(CKey &Result,const CKey	*R,const float* BA,int b_count)
 	MixinAdd(Result,R,BA,b_count);
 }
 
-IC void MixChannels(CKey &Result,const CKey	*R,const float* BA,int b_count)
+IC void process_single_channel( CKey &Result,const animation::channel_def &ch, const CKey *R, const CBlend* const BA[MAX_BLENDED], int b_count )
 {
-	VERIFY(b_count>0);
-	//Result.Q.set(R[0].Q);
-	//Result.T.set(R[0].T);
-	Result = R[0];
-	++R;++BA;--b_count;
-	//BA[0] = 1;
-	MixinAdd(Result,R,BA,b_count);
+
+	MixInterlerp( Result, R, BA, b_count );
+	VERIFY( _valid( Result.T ) );
+	VERIFY( _valid( Result.Q ) );
 }
 
-
-// calculate single bone with key blending and callbck calling
-void CKinematicsAnimated::CLBone(const CBoneData* bd,CBoneInstance& BONE_INST,const Fmatrix *parent,const CBlendInstance::BlendSVec &Blend, u8 channel_mask /*= (1<<0)*/)
+IC void MixChannels(CKey &Result,const CKey	*R,const animation::channel_def* BA,int b_count)
 {
-	u16 SelfID		= bd->GetSelfID();
-	if (LL_GetBoneVisible(SelfID)){
-		if (BONE_INST.Callback_overwrite){
-			if (BONE_INST.Callback)	BONE_INST.Callback(&BONE_INST);
+	VERIFY(b_count>0);
+	Result = R[0];
+
+	float	lerp_factor_sum = 0.f;
+	for ( int i=1; i<b_count; i++ )
+		switch( BA[i].rule.extern_ )
+	{
+		case animation::add:	
+			key_mad( Result, CKey( Result ), R[i], BA[i].factor ); break;
+
+		case animation::lerp:
+			lerp_factor_sum +=BA[i].factor;
+			KEY_Interp	(Result,CKey( Result ),R[i], BA[i].factor/lerp_factor_sum ); break;
+		default: NODEFAULT;
+	}
+	VERIFY( _valid( Result.T ) );
+	VERIFY( _valid( Result.Q ) );
+}
+
+void CKinematicsAnimated::CLBone( const CBoneData* bd, CBoneInstance &bi, const Fmatrix *parent, u8 channel_mask /*= (1<<0)*/)
+{
+	
+	u16							SelfID				= bd->GetSelfID();
+
+	if ( LL_GetBoneVisible(SelfID) ){
+		if ( bi.callback_overwrite() ){
+			if ( bi.callback() )	bi.callback()( &bi );
 		} else {
 
-			CKey				R[MAX_CHANNELS][MAX_BLENDED];	//all keys 
-			CKey				BK[MAX_CHANNELS][MAX_BLENDED];	//base keys
-			float				BA[MAX_CHANNELS][MAX_BLENDED];	//all factors
-
-			int					b_counts[MAX_CHANNELS]	= {0,0,0,0}; //channel counts
-			//float				BCA[MAX_CHANNELS]		= {0,0,0,0}; //channel factors
-	
-			BlendSVecCIt		BI;
-			for (BI=Blend.begin(); BI!=Blend.end(); BI++)
+			BuildBoneMatrix( bd, bi, parent, channel_mask );
+#ifndef MASTER_GOLD
+			R_ASSERT2( _valid( bi.mTransform ), "anim kils bone matrix" ); 
+#endif // #ifndef MASTER_GOLD
+			if (bi.callback())
 			{
-				CBlend*			B		 =	*BI;
-				int				&b_count =	b_counts[B->channel];
-				CKey*			D		 =	&R[B->channel][b_count];
-				if(!(channel_mask&(1<<B->channel)))
-					continue;
-				u8	channel					=  B->channel;
-				BA[channel][b_count]		=  B->blendAmount;
-				//BCA[channel]				+= B->blendAmount;
-				CMotion			&M			=*LL_GetMotion(B->motionID,SelfID);
-				Dequantize(*D,*B,M);
-
-				QR2Quat( M._keysR[0], BK[channel][b_count].Q	);
-
-				if(M.test_flag(flTKeyPresent))
-				{
-					if(M.test_flag(flTKey16IsBit))
-						QT16_2T(M._keysT16[0] ,M ,BK[channel][b_count].T );
-					else
-						QT8_2T(M._keysT8[0] ,M ,BK[channel][b_count].T );
-				} else
-					BK[channel][b_count].T.set(M._initT);
-
-				++b_count;
-			///               PSGP.blerp				(D,&K1,&K2,delta);
+				bi.callback()(&bi);
+#ifndef MASTER_GOLD
+				R_ASSERT_FORMAT(_valid( bi.mTransform ), "callback kils bone matrix bone: %s ", bd->name.c_str()); 
+#endif // #ifndef MASTER_GOLD
 			}
-
-			// Blend them together
-			CKey	channels[MAX_CHANNELS];
-			float	BC		[MAX_CHANNELS];
-			u16			ch_count = 0;
-
-			for(u16 j= 0;MAX_CHANNELS>j;++j)
-			{
-				if(j!=0&&b_counts[j]==0)
-					continue;
-				//data for channel mix cycle based on ch_count
-				CKey	&C		=	channels[ch_count];
-						BC[ch_count]	=	channel_factors[j];//3.f;//BCA[j]*
-				
-				if(j != 0)
-					keys_substruct(R[j],BK[j],b_counts[j]);
-				MixInterlerp( C, R[j], BA[j], b_counts[j] );
-
-				++ch_count;
-			}
-			CKey	Result;
-			//Mix channels
-			//MixInterlerp(Result,channels,BCA,ch_count);
-			MixChannels( Result, channels,  BC, ch_count );
-			Fmatrix					RES;
-			RES.mk_xform			(Result.Q,Result.T);
-			BONE_INST.mTransform.mul_43(*parent,RES);
-#ifdef DEBUG
-		
-		if(!check_scale(RES))
-		{
-			VERIFY(check_scale(BONE_INST.mTransform));
 		}
-/*		
-		if(!is_similar(BONE_INST.mPrevTransform,RES,0.3f))
-		{
-			Msg("bone %s",*bd->name)	;
-		}
-		BONE_INST.mPrevTransform.set(RES);
-*/
-#endif
-
-			/*
-			if(BONE_INST.mTransform.c.y>10000)
-			{
-			Log("BLEND_INST",BLEND_INST.Blend.size());
-			Log("Bone",LL_BoneName_dbg(SelfID));
-			Msg("Result.Q %f,%f,%f,%f",Result.Q.x,Result.Q.y,Result.Q.z,Result.Q.w);
-			Log("Result.T",Result.T);
-			Log("lp parent",(u32)parent);
-			Log("parent",*parent);
-			Log("RES",RES);
-			Log("mT",BONE_INST.mTransform);
-
-			CBlend*			B		=	*BI;
-			CMotion&		M		=	*LL_GetMotion(B->motionID,SelfID);
-			float			time	=	B->timeCurrent*float(SAMPLE_FPS);
-			u32				frame	=	iFloor(time);
-			u32				count	=	M.get_count();
-			float			delta	=	time-float(frame);
-
-			Log("flTKeyPresent",M.test_flag(flTKeyPresent));
-			Log("M._initT",M._initT);
-			Log("M._sizeT",M._sizeT);
-
-			// translate
-			if (M.test_flag(flTKeyPresent))
-			{
-			CKeyQT*	K1t	= &M._keysT[(frame+0)%count];
-			CKeyQT*	K2t	= &M._keysT[(frame+1)%count];
-
-			Fvector T1,T2,Dt;
-			T1.x		= float(K1t->x)*M._sizeT.x+M._initT.x;
-			T1.y		= float(K1t->y)*M._sizeT.y+M._initT.y;
-			T1.z		= float(K1t->z)*M._sizeT.z+M._initT.z;
-			T2.x		= float(K2t->x)*M._sizeT.x+M._initT.x;
-			T2.y		= float(K2t->y)*M._sizeT.y+M._initT.y;
-			T2.z		= float(K2t->z)*M._sizeT.z+M._initT.z;
-
-			Dt.lerp	(T1,T2,delta);
-
-			Msg("K1t %d,%d,%d",K1t->x,K1t->y,K1t->z);
-			Msg("K2t %d,%d,%d",K2t->x,K2t->y,K2t->z);
-
-			Log("count",count);
-			Log("frame",frame);
-			Log("T1",T1);
-			Log("T2",T2);
-			Log("delta",delta);
-			Log("Dt",Dt);
-
-			}else
-			{
-			D->T.set	(M._initT);
-			}
-			VERIFY(0);
-			}
-			*/
-			if (BONE_INST.Callback)		BONE_INST.Callback(&BONE_INST);
-		}
-		BONE_INST.mRenderTransform.mul_43(BONE_INST.mTransform,bd->m2b_transform);
+		bi.mRenderTransform.mul_43(bi.mTransform,bd->m2b_transform);
 	}
 }
 
@@ -1241,51 +1115,206 @@ void	CKinematicsAnimated::Bone_GetAnimPos(Fmatrix& pos,u16 id,u8 mask_channel, b
 	BoneChain_Calculate(&LL_GetData(id),bi,mask_channel,ignore_callbacks);
 	pos.set(bi.mTransform);
 }
+
 void CKinematicsAnimated::Bone_Calculate(CBoneData* bd, Fmatrix *parent)
 {
-	u16 SelfID					= bd->GetSelfID();
-	CBlendInstance& BLEND_INST	= LL_GetBlendInstance(SelfID);
-	CBoneInstance& BONE_INST	= LL_GetBoneInstance(SelfID);
-	CLBone(bd,BONE_INST,parent,BLEND_INST.blend_vector(),u8(-1));
+
+	u16							SelfID				= bd->GetSelfID();
+	CBoneInstance				&BONE_INST			= LL_GetBoneInstance(SelfID);
+	CLBone( bd, BONE_INST, parent, u8(-1) );
 	// Calculate children
 	for (xr_vector<CBoneData*>::iterator C=bd->children.begin(); C!=bd->children.end(); C++)
-		Bone_Calculate(*C,&BONE_INST.mTransform);
+		Bone_Calculate( *C, &BONE_INST.mTransform );
+
 }
 
 void	CKinematicsAnimated::BoneChain_Calculate		(const CBoneData* bd, CBoneInstance &bi, u8 mask_channel, bool ignore_callbacks)
 {
 	u16 SelfID					= bd->GetSelfID();
-	CBlendInstance& BLEND_INST	= LL_GetBlendInstance(SelfID);
-	CBlendInstance::BlendSVec &Blend = BLEND_INST.blend_vector();
+	//CBlendInstance& BLEND_INST	= LL_GetBlendInstance(SelfID);
+	//CBlendInstance::BlendSVec &Blend = BLEND_INST.blend_vector();
 //ignore callbacks
-	BoneCallback bc = bi.Callback;
-	BOOL		 ow = bi.Callback_overwrite;
+    CBoneInstance::BoneCallback bc = bi.callback();
+	BOOL		 ow = bi.callback_overwrite();
 	if(ignore_callbacks)
 	{
-		bi.Callback	= 0;
-		bi.Callback_overwrite =0;
+		bi.set_callback( bi.callback_type(), 0, bi.callback_param(), 0 );
+
 	}
-//
 	if(SelfID==LL_GetBoneRoot())
 	{
-		CLBone(bd, bi, &Fidentity, Blend, mask_channel);
-//restore callback	
-		bi.Callback	= bc;
-		bi.Callback_overwrite =ow;
-//
+		CLBone( bd, bi, &Fidentity, mask_channel );
+		//restore callback	
+		bi.set_callback( bi.callback_type(), bc, bi.callback_param(), ow );
 		return;
 	}
 	u16 ParentID				= bd->GetParentID();
+	R_ASSERT( ParentID != BI_NONE );
 	CBoneData* ParrentDT		= &LL_GetData(ParentID);
 	CBoneInstance parrent_bi	= LL_GetBoneInstance(ParentID);
 	BoneChain_Calculate(ParrentDT, parrent_bi, mask_channel, ignore_callbacks);
-	CLBone(bd, bi, &parrent_bi.mTransform, Blend, mask_channel);
-//restore callback	
-	bi.Callback	= bc;
-	bi.Callback_overwrite =ow;
-//
+	CLBone( bd, bi, &parrent_bi.mTransform, mask_channel );
+	//restore callback
+	bi.set_callback( bi.callback_type(), bc, bi.callback_param(), ow );
+
 }
+
+void	CKinematicsAnimated::LL_BuldBoneMatrixDequatize( const CBoneData* bd, u8 channel_mask, SKeyTable	&keys )
+{
+		u16							SelfID				= bd->GetSelfID();
+		CBlendInstance				&BLEND_INST			= LL_GetBlendInstance(SelfID);
+const	CBlendInstance::BlendSVec	&Blend				= BLEND_INST.blend_vector();
+		CKey						BK[MAX_CHANNELS][MAX_BLENDED];	//base keys
+		BlendSVecCIt				BI;
+		for (BI=Blend.begin(); BI!=Blend.end(); BI++)
+		{
+			CBlend*			B		 =	*BI;
+			int				&b_count =	keys.chanel_blend_conts[B->channel];
+			CKey*			D		 =	&keys.keys[B->channel][b_count];
+			if(!(channel_mask&(1<<B->channel)))
+				continue;
+			u8	channel								=  B->channel;
+			//keys.blend_factors[channel][b_count]	=  B->blendAmount;
+			keys.blends[channel][b_count]			=  B;
+			CMotion			&M						= *LL_GetMotion(B->motionID,SelfID);
+			Dequantize(*D,*B,M);
+			QR2Quat( M._keysR[0], BK[channel][b_count].Q	);
+			if(M.test_flag(flTKeyPresent))
+            {
+            	if(M.test_flag(flTKey16IsBit))
+					QT16_2T(M._keysT16[0] ,M ,BK[channel][b_count].T );
+                else
+					QT8_2T(M._keysT8[0] ,M ,BK[channel][b_count].T );
+			}else
+				BK[channel][b_count].T.set(M._initT);
+			++b_count;
+		}
+		for(u16 j= 0;MAX_CHANNELS>j;++j)
+			if( channels.rule(j).extern_ == animation::add )
+				keys_substruct( keys.keys[j], BK[j], keys.chanel_blend_conts[j] );
+}
+
+// calculate single bone with key blending 
+void	CKinematicsAnimated::LL_BoneMatrixBuild	( CBoneInstance &bi, const Fmatrix *parent, const SKeyTable	&keys )
+{
+	// Blend them together
+	CKey					channel_keys[MAX_CHANNELS];
+	animation::channel_def	BC			[MAX_CHANNELS];
+	u16						ch_count = 0;
+
+	for(u16 j= 0;MAX_CHANNELS>j;++j)
+	{
+		if(j!=0&&keys.chanel_blend_conts[j]==0)
+			continue;
+		//data for channel mix cycle based on ch_count
+		channels.get_def ( j, BC[ch_count]	);
+		process_single_channel( channel_keys[ch_count], BC[ch_count], keys.keys[j], keys.blends[j], keys.chanel_blend_conts[j] );
+		++ch_count;
+	}
+	CKey	Result;
+	//Mix channels
+	MixChannels( Result, channel_keys,  BC, ch_count );
+	
+	Fmatrix					RES;
+	RES.mk_xform			(Result.Q,Result.T);
+	bi.mTransform.mul_43	(*parent,RES);
+#ifdef DEBUG
+#ifndef _EDITOR
+		if(!check_scale(RES))
+		{
+			VERIFY(check_scale(bi.mTransform));
+		}
+		VERIFY( _valid( bi.mTransform ) );
+		Fbox dbg_box;
+		float box_size = 100000.f;
+		dbg_box.set( -box_size, -box_size, -box_size, box_size, box_size, box_size );
+		//VERIFY(dbg_box.contains(bi.mTransform.c));
+		VERIFY_FORMAT( dbg_box.contains(bi.mTransform.c), "model: %s has strange bone position, matrix : %s", getDebugName().c_str(), get_string(bi.mTransform).c_str());
+
+		//if(!is_similar(PrevTransform,RES,0.3f))
+		//{
+		//	Msg("bone %s",*bd->name)	;
+		//}
+		//BONE_INST.mPrevTransform.set(RES);
+#endif
+#endif
+}
+
+void	CKinematicsAnimated::BuildBoneMatrix			( const CBoneData* bd, CBoneInstance &bi, const Fmatrix *parent, u8 channel_mask /*= (1<<0)*/ )
+{
+			
+			//CKey				R						[MAX_CHANNELS][MAX_BLENDED];	//all keys 
+			//float				BA						[MAX_CHANNELS][MAX_BLENDED];	//all factors
+			//int				b_counts				[MAX_CHANNELS]	= {0,0,0,0}; //channel counts
+			SKeyTable	keys;
+			LL_BuldBoneMatrixDequatize( bd, channel_mask, keys );
+
+			LL_BoneMatrixBuild( bi, parent, keys );
+
+			/*
+			if(bi.mTransform.c.y>10000)
+			{
+			Log("BLEND_INST",BLEND_INST.Blend.size());
+			Log("Bone",LL_BoneName_dbg(SelfID));
+			Msg("Result.Q %f,%f,%f,%f",Result.Q.x,Result.Q.y,Result.Q.z,Result.Q.w);
+			Log("Result.T",Result.T);
+			Log("lp parent",(u32)parent);
+			Log("parent",*parent);
+			Log("RES",RES);
+			Log("mT",bi.mTransform);
+			CBlend*			B		=	*BI;
+			CMotion&		M		=	*LL_GetMotion(B->motionID,SelfID);
+			float			time	=	B->timeCurrent*float(SAMPLE_FPS);
+			u32				frame	=	iFloor(time);
+			u32				count	=	M.get_count();
+			float			delta	=	time-float(frame);
+			Log("flTKeyPresent",M.test_flag(flTKeyPresent));
+			Log("M._initT",M._initT);
+			Log("M._sizeT",M._sizeT);
+			// translate
+			if (M.test_flag(flTKeyPresent))
+			{
+			CKeyQT*	K1t	= &M._keysT[(frame+0)%count];
+			CKeyQT*	K2t	= &M._keysT[(frame+1)%count];
+			Fvector T1,T2,Dt;
+			T1.x		= float(K1t->x)*M._sizeT.x+M._initT.x;
+			T1.y		= float(K1t->y)*M._sizeT.y+M._initT.y;
+			T1.z		= float(K1t->z)*M._sizeT.z+M._initT.z;
+			T2.x		= float(K2t->x)*M._sizeT.x+M._initT.x;
+			T2.y		= float(K2t->y)*M._sizeT.y+M._initT.y;
+			T2.z		= float(K2t->z)*M._sizeT.z+M._initT.z;
+			Dt.lerp	(T1,T2,delta);
+			Msg("K1t %d,%d,%d",K1t->x,K1t->y,K1t->z);
+			Msg("K2t %d,%d,%d",K2t->x,K2t->y,K2t->z);
+			Log("count",count);
+			Log("frame",frame);
+			Log("T1",T1);
+			Log("T2",T2);
+			Log("delta",delta);
+			Log("Dt",Dt);
+			}else
+			{
+			D->T.set	(M._initT);
+			}
+			VERIFY(0);
+			}
+			*/
+
+}
+
 void CKinematicsAnimated::OnCalculateBones		()
 {
 	UpdateTracks	()	;
+}
+
+void	CKinematicsAnimated::SetUpdateTracksCalback	( IUpdateTracksCallback	*callback )
+{
+	m_update_tracks_callback = callback;
+}
+
+void	CKinematicsAnimated::LL_IterateBlends( IterateBlendsCallback &callback )
+{
+	CBlend *I=blend_pool.begin(), *E=blend_pool.end();
+	for (; I!=E; I++)
+		if (I->blend_state() != CBlend::eFREE_SLOT) callback(*I);
 }

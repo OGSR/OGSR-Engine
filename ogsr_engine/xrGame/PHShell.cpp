@@ -322,6 +322,20 @@ CPHSynchronize*	CPHShell::get_ElementSync			  (u16 element)
 	return smart_cast<CPHSynchronize*>(elements[element]);
 }
 
+CPhysicsElement* CPHShell::get_PhysicsParrentElement( u16 bone_id )
+{
+	VERIFY( PKinematics() );
+	CPhysicsElement* E		= get_Element( bone_id );
+	u16 bid					= bone_id;
+	while( !E && bid !=  PKinematics()->LL_GetBoneRoot() )
+	{
+		CBoneData	&bd =	PKinematics()->LL_GetData( bid );
+					bid =	bd.GetParentID();
+		E =			get_Element( bid );
+	}
+	return E;
+}
+
 CPhysicsElement* CPHShell::get_Element(u16 bone_id)
 {
 	if(m_pKinematics&& isActive())
@@ -384,17 +398,15 @@ void  CPHShell::StataticRootBonesCallBack			(CBoneInstance* B){
 }
 
 
-void CPHShell::SetTransform	(const Fmatrix& m0){
-
+void CPHShell::SetTransform(const Fmatrix& m0, motion_history_state history_state)
+{
 	mXFORM.set(m0);
-	ELEMENT_I i=elements.begin();
-	for( ;elements.end() != i; ++i)
-	{
-		(*i)->SetTransform(m0);
-	}
+
+	for (CPHElement* it : elements)
+		it->SetTransform(m0, history_state);
+
 	spatial_move();
 }
-
 
 void CPHShell::Enable()
 {
@@ -485,13 +497,13 @@ void CPHShell::SetMaterial(u16 m)
 	}
 }
 
-void CPHShell::get_LinearVel(Fvector& velocity)
+void CPHShell::get_LinearVel(Fvector& velocity) const
 {
 
 	(*elements.begin())->get_LinearVel(velocity);
 }
 
-void CPHShell::get_AngularVel(Fvector& velocity)
+void CPHShell::get_AngularVel(Fvector& velocity) const
 {
 
 	(*elements.begin())->get_AngularVel(velocity);
@@ -510,22 +522,23 @@ void	CPHShell::set_AngularVel(const Fvector& velocity)
 }
 
 
-void CPHShell::TransformPosition(const Fmatrix &form)
+void CPHShell::TransformPosition(const Fmatrix &form, motion_history_state history_state)
 {
-	ELEMENT_I i=elements.begin(),e=elements.end();
-	for(;i!=e;i++) (*i)->TransformPosition(form);
+	for (CPHElement* it : elements) 
+		it->TransformPosition(form, history_state);
 }
 
 void CPHShell::SetGlTransformDynamic(const Fmatrix &form)
 {
 	VERIFY(isActive());
 	VERIFY(_valid(form));
-	Fmatrix current,replace;
+	Fmatrix current, replace;
 	GetGlobalTransformDynamic(&current);
 	current.invert();
-	replace.mul(form,current);
-	TransformPosition(replace);
+	replace.mul(form, current);
+	TransformPosition(replace, mh_clear);
 }
+
 void CPHShell::SmoothElementsInertia(float k)
 {
 	dMass m_avrg;
@@ -612,10 +625,18 @@ void CPHShell::ClearBreakInfo()
 	}	
 	xr_delete(m_spliter_holder);
 }
+
+	
 ICF bool no_physics_shape(const SBoneShape& shape)
 {
 	return shape.type==SBoneShape::stNone||shape.flags.test(SBoneShape::sfNoPhysics);
 }
+
+bool shape_is_physic( const SBoneShape& shape )
+{
+	return !no_physics_shape( shape );
+}
+
 void CPHShell::AddElementRecursive(CPhysicsElement* root_e, u16 id,Fmatrix global_parent,u16 element_number,bool* vis_check)
 {
 
@@ -1066,7 +1087,7 @@ void CPHShell::ResetCallbacksRecursive(u16 id,u16 element, VisMask &mask)
 void CPHShell::EnabledCallbacks(BOOL val)
 {
 	if (val){	
-		SetCallbacks(BonesCallback);
+		SetCallbacks();
 		// set callback owervrite in used bones
 		ELEMENT_I i,e;
 		i=elements.begin(); e=elements.end();
@@ -1077,38 +1098,89 @@ void CPHShell::EnabledCallbacks(BOOL val)
 	}else		ZeroCallbacks();
 }
 
-static u16 element_position_in_set_calbacks=u16(-1);
-static BoneCallbackFun* bones_callback;//temp ror SetCallbacksRecursive
-void CPHShell::SetCallbacks(BoneCallbackFun* callback)
+template< typename T>
+void for_each_bone_id(CKinematics &K, T op)
 {
-	element_position_in_set_calbacks=u16(-1);
-	bones_callback=callback;
-	SetCallbacksRecursive(m_pKinematics->LL_GetBoneRoot(),element_position_in_set_calbacks);
+	u16 bn = K.LL_BoneCount();
+	for (u16 i = 0; i < bn; ++i)
+		op(i);
 }
 
-void CPHShell::SetCallbacksRecursive(u16 id,u16 element)
+CPHElement* get_physics_parent(CKinematics &k, u16 id)
 {
-	//if(elements.size()==element)	return;
-	CBoneInstance& B	= m_pKinematics->LL_GetBoneInstance(u16(id));
-	CBoneData& bone_data= m_pKinematics->LL_GetData(u16(id));
-	SJointIKData& joint_data=bone_data.IK_data;
-	VisMask mask = m_pKinematics->LL_GetBonesVisible();
-	if(mask.is(id))
+	VERIFY(BI_NONE != id);
+
+	while (true)
 	{
-		if((no_physics_shape(bone_data.shape)||joint_data.type==jtRigid)	&& element!=u16(-1)){
-			B.set_callback(bctPhysics,0,cast_PhysicsElement(elements[element]));
-		}else{
+		CBoneInstance	& B = k.LL_GetBoneInstance(u16(id));
+		const CBoneData		& bone_data = k.GetBoneData(u16(id));
+		if (B.callback_type() == bctPhysics && B.callback_param())
+			return cast_PHElement(B.callback_param());
+
+		if (k.LL_GetBoneRoot() == id)
+			return nullptr;
+
+		id = bone_data.GetParentID();
+
+		if (BI_NONE == id)
+			return nullptr;
+	}
+}
+
+static u16 element_position_in_set_calbacks = u16(-1);
+
+void CPHShell::SetCallbacks()
+{
+	std::for_each(elements.begin(), elements.end(), [](CPHElement* e) { e->SetBoneCallback(); });
+
+	struct set_bone_reference
+	{
+		CKinematics &K;
+		set_bone_reference(CKinematics &K_) : K(K_) {}
+		set_bone_reference(set_bone_reference&& other) noexcept : K(other.K) {}
+		set_bone_reference(const set_bone_reference& other1) = delete;
+		set_bone_reference& operator=(const set_bone_reference& other1) = delete;
+
+		void operator() (u16 id) const
+		{
+			CBoneInstance &bi = K.LL_GetBoneInstance(id);
+			if (!bi.callback() || bi.callback_type() != bctPhysics)
+			{
+				CPHElement *root_e = get_physics_parent(K, id);
+				if (root_e && K.LL_GetBoneVisible(id))
+					bi.set_callback(bctPhysics, nullptr, cast_PhysicsElement(root_e));
+			}
+		}
+	};
+	for_each_bone_id(*PKinematics(), set_bone_reference(*PKinematics()));
+}
+
+void CPHShell::SetCallbacksRecursive(u16 id, u16 element)
+{
+	VERIFY(false);
+	CBoneInstance& B = m_pKinematics->LL_GetBoneInstance(u16(id));
+	const CBoneData& bone_data = m_pKinematics->GetBoneData(u16(id));
+	const SJointIKData& joint_data = bone_data.get_IK_data();
+	VisMask mask = m_pKinematics->LL_GetBonesVisible();
+
+	if (mask.is(id))
+	{
+		if ((no_physics_shape(bone_data.get_shape()) || joint_data.type == jtRigid) && element != u16(-1)) 
+		{
+			B.set_callback(bctPhysics, 0, cast_PhysicsElement(elements[element]));
+		}
+		else 
+		{
 			element_position_in_set_calbacks++;
-			element=element_position_in_set_calbacks;
-			R_ASSERT2(element<elements.size(),"Out of elements!!");
-			//if(elements.size()==element)	return;
-			B.set_callback(bctPhysics,bones_callback,cast_PhysicsElement(elements[element]));
-			//B.Callback_overwrite=TRUE;
+			element = element_position_in_set_calbacks;
+			R_ASSERT2(element<elements.size(), "Out of elements!!");
+			B.set_callback(bctPhysics, BonesCallback, cast_PhysicsElement(elements[element]));
 		}
 	}
 
-	for (vecBonesIt it=bone_data.children.begin(); it!=bone_data.children.end(); ++it)
-		SetCallbacksRecursive((*it)->GetSelfID(),element);
+	u16	num_children = bone_data.GetNumChildren();
+	for (u16 i = 0; i<num_children; ++i)
+		SetCallbacksRecursive(bone_data.GetChild(i).GetSelfID(), element);
 }
 
 void CPHShell::ZeroCallbacks()
@@ -1635,14 +1707,11 @@ void	CPHShell::		SetBonesCallbacksOverwrite(bool v)
 }
 
 
-void		CPHShell::	ToAnimBonesPositions	()
+void CPHShell::ToAnimBonesPositions(motion_history_state history_state)
 {
 	VERIFY(PKinematics());
-	ELEMENT_I i,e;
-	i=elements.begin(); e=elements.end();
-	for( ;i!=e;++i)	
-		(*i)->ToBonePos(&PKinematics()->LL_GetBoneInstance((*i)->m_SelfID));
-	
+	for (CPHElement* it : elements)
+		it->ToBonePos(&PKinematics()->LL_GetBoneInstance(it->m_SelfID), history_state);
 }
 
 bool	CPHShell::		AnimToVelocityState		( float dt, float l_limit, float a_limit )
@@ -1653,4 +1722,13 @@ bool	CPHShell::		AnimToVelocityState		( float dt, float l_limit, float a_limit )
 	for( ;i!=e;++i)
 		ret  =(*i)->AnimToVel(dt,l_limit,a_limit) && ret;
 	return ret;	
+}
+
+void	CPHShell::SetAnimated( bool v )
+{
+	ELEMENT_I i, e;
+	i = elements.begin(); e=elements.end();
+	for( ; i!=e; ++i )
+		(*i)->SetAnimated( v );
+	
 }

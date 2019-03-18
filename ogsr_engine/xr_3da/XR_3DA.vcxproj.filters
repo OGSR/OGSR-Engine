@@ -485,6 +485,9 @@
     <ClInclude Include="NET_Server_Trash\NET_utils.h">
       <Filter>NET_Server_Trash</Filter>
     </ClInclude>
+    <ClInclude Include="Animation.h">
+      <Filter>Interfaces\Render\Visuals\Skeleton</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="defines.cpp">
@@ -840,6 +843,9 @@
     </ClCompile>
     <ClCompile Include="NET_Server_Trash\NET_Server.cpp">
       <Filter>NET_Server_Trash</Filter>
+    </ClCompile>
+    <ClCompile Include="Animation.cpp">
+      <Filter>Interfaces\Render\Visuals\Skeleton</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

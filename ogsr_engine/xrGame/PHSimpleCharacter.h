@@ -116,6 +116,7 @@ protected:
 	bool	b_death_pos					;
 	bool	b_foot_mtl_check			;
 	dReal	m_friction_factor;
+	bool	b_non_interactive;
 
 public:
 							CPHSimpleCharacter					()									;
@@ -210,6 +211,7 @@ public:
 	virtual		void		SetMas								(dReal mass)		;
 	virtual		float		Mass								()					{return m_mass;};
 	virtual		void		SetPhysicsRefObject					(CPhysicsShellHolder* ref_object);
+	virtual		void		SetNonInteractive(bool v);
 
 	virtual		void		CaptureObject						(dBodyID body,const dReal* anchor);
 	virtual		void		CapturedSetPosition					(const dReal* position);

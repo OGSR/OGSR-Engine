@@ -65,7 +65,7 @@ element_fracture CPHFracturesHolder::SplitFromEnd(CPHElement* element,u16 fractu
 	Fmatrix shell_form;
 	element->PHShell()->GetGlobalTransformDynamic(&shell_form);
 	current_transtform.mulA_43	(shell_form);
-	new_element->SetTransform	(current_transtform);
+	new_element->SetTransform(current_transtform, mh_unspecified);
 
 
 	//dBodyID new_element_body=new_element->get_body();

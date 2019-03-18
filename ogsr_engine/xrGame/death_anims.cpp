@@ -3,6 +3,7 @@
 #include "../xr_3da/IGame_Level.h"
 
 #include "death_anims.h"
+#include "animation_utils.h"
 #include "CharacterPhysicsSupport.h"
 #include "Weapon.h"
 #include "WeaponShotgun.h"
@@ -184,21 +185,6 @@ Fvector& global_hit_position(Fvector &gp, CEntityAlive& ea, const SHit& H)
 
 #pragma warning(push)
 #pragma warning(disable: 4273)
-
-bool find_in_parents(const u16 bone_to_find, const u16 from_bone, CKinematics &ca)
-{
-	const u16 root = ca.LL_GetBoneRoot();
-
-	for (u16 bi = from_bone; bi != root && bi != BI_NONE; )
-	{
-		const CBoneData &bd = ca.LL_GetData(bi);
-		if (bi == bone_to_find)
-			return true;
-		bi = bd.GetParentID();
-	}
-
-	return false;
-}
 
 inline bool is_bone_head(CKinematics &K, u16 bone)
 {

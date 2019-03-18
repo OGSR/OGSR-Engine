@@ -1,10 +1,15 @@
 #pragma once
 
 #define DEBUG_INFO __FILE__,__LINE__,__FUNCTION__
+#define _TRE(arg)	arg
 
 //KRodin: Добавил ASSERT как в скриптах, с поддержкой форматирования строки и неограниченным кол-вом аргументов.
 #define FATAL(...) Debug.fatal(DEBUG_INFO, __VA_ARGS__)
 #define ASSERT_FMT(expr, ...) do { \
+	if (!(expr)) \
+		FATAL(__VA_ARGS__); \
+} while(0)
+#define R_ASSERT_FORMAT(expr, ...) do { \
 	if (!(expr)) \
 		FATAL(__VA_ARGS__); \
 } while(0)
@@ -36,10 +41,12 @@
 #	define NODEFAULT FATAL("nodefault reached")
 #	define VERIFY R_ASSERT
 #	define CHK_DX R_CHK
+#	define VERIFY_FORMAT(expr, format, ...) do {static bool ignore_always = false; if (!ignore_always && !(expr)) {string1024 msg; xr_sprintf(msg, format, __VA_ARGS__); ::Debug.fail(_TRE(#expr), msg, DEBUG_INFO,ignore_always);}} while(0)
 #else
 #	define NODEFAULT __assume(0)
 #	define VERIFY(...) ((void)0)
 #	define CHK_DX(a) a
+#	define VERIFY_FORMAT(expr, format, ...) do {} while(0)
 #endif
 
 #define VERIFY2 VERIFY

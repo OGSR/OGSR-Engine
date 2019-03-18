@@ -21,7 +21,6 @@ typedef xr_vector<CBoneData*>		vecBones;
 typedef vecBones::iterator			vecBonesIt;
 
 // callback
-typedef void (* BoneCallback)		(CBoneInstance* P);
 typedef void (* UpdateCallback)		(CKinematics*	P);
 
 // MT-locker
@@ -35,6 +34,9 @@ struct	UCalc_mtlock	{
 class ENGINE_API		CBoneInstance
 {
 public:
+    typedef void  __stdcall BoneCallbackFunction(CBoneInstance* P);
+    typedef		BoneCallbackFunction*		BoneCallback;
+
 	// data
 	Fmatrix				mTransform;							// final x-form matrix (local to model)
 	Fmatrix				mRenderTransform;					// final x-form matrix (model_base -> bone -> model)
@@ -44,7 +46,12 @@ public:
 	float				param			[MAX_BONE_PARAMS];	// 
 	u32					Callback_type;						//
 	// methods
+	inline	BoneCallback __stdcall callback() { return  Callback; }
+	inline	void* __stdcall callback_param() { return Callback_Param; }
+	inline	BOOL __stdcall callback_overwrite() { return Callback_overwrite; }					// performance hint - don't calc anims
+	inline	u32 __stdcall callback_type() { return Callback_type; }
 	void				construct		();
+	inline void __stdcall set_callback_overwrite(BOOL v) { Callback_overwrite = v; }
 	void				set_callback	(u32 Type, BoneCallback C, void* Param, BOOL overwrite=FALSE);
 	void				reset_callback	();
 	void				set_param		(u32 idx, float data);
@@ -97,7 +104,11 @@ public:
 	}
 	// Calculation
 	void				CalculateM2B	(const Fmatrix& Parent);
-
+				CBoneData&		GetChild			( u16 id )			;
+		const	CBoneData&		GetChild			( u16 id )	const	;
+				u16				GetNumChildren		( )			const	;
+		const	SJointIKData&	get_IK_data			( )			const	{return	IK_data;}
+		const	SBoneShape&		get_shape			( )			const	{return shape;}
 	virtual u32			mem_usage		()
 	{
 		u32 sz			= sizeof(*this)+sizeof(vecBones::value_type)*children.size();
@@ -252,12 +263,35 @@ public:
     CInifile*					LL_UserData			(){return pUserData;}
 	accel*						LL_Bones			(){return bone_map_N;}
 	ICF CBoneInstance&			LL_GetBoneInstance	(u16 bone_id)		{	VERIFY(bone_id<LL_BoneCount()); VERIFY(bone_instances); return bone_instances[bone_id];	}
-	CBoneData&					LL_GetData			(u16 bone_id)		{	VERIFY(bone_id<LL_BoneCount()); VERIFY(bones);			return *((*bones)[bone_id]);	}
+	CBoneData&					LL_GetData			(u16 bone_id)
+    {
+    	VERIFY(bone_id<LL_BoneCount());
+        VERIFY(bones);
+        CBoneData& bd =  *((*bones)[bone_id]) ;
+        return bd;
+    }
+
+	virtual	const CBoneData&	GetBoneData(u16 bone_id) const
+	{
+		VERIFY(bone_id<LL_BoneCount());
+        VERIFY(bones);
+        CBoneData& bd =  *((*bones)[bone_id]) ;
+        return bd;
+	}
+	CBoneData*	LL_GetBoneData		(u16 bone_id)
+	{
+		
+		VERIFY(bone_id<LL_BoneCount());
+        VERIFY(bones);
+        CBoneData* bd =  ((*bones)[bone_id]) ;
+        return bd;
+	}
 	u16							LL_BoneCount		()					{	return u16(bones->size());										}
 	u16							LL_VisibleBoneCount()					{ return visimask.count();/*u64 F=visimask.flags&((u64(1)<<u64(LL_BoneCount()))-1); return (u16)btwCount1(F); */ }
 	ICF Fmatrix&				LL_GetTransform		(u16 bone_id)		{	return LL_GetBoneInstance(bone_id).mTransform;					}
 	ICF Fmatrix&				LL_GetTransform_R	(u16 bone_id)		{	return LL_GetBoneInstance(bone_id).mRenderTransform;			}	// rendering only
 	Fobb&						LL_GetBox			(u16 bone_id)		{	VERIFY(bone_id<LL_BoneCount());	return (*bones)[bone_id]->obb;	}
+	const Fbox&				GetBox				()const				{	return vis.box ;}
 	void						LL_GetBindTransform (xr_vector<Fmatrix>& matrices);
     int 						LL_GetBoneGroups 	(xr_vector<xr_vector<u16> >& groups);
 
@@ -274,6 +308,13 @@ public:
 	virtual void				CalculateBones				(BOOL bForceExact	=	FALSE);		// Recalculate skeleton
 	void						CalculateBones_Invalidate	();
 	void						Callback					(UpdateCallback C, void* Param)		{	Update_Callback	= C; Update_Callback_Param	= Param;	}
+
+	//	Callback: data manipulation
+	virtual void					SetUpdateCallback(UpdateCallback pCallback) {Update_Callback = pCallback;}
+	virtual void					SetUpdateCallbackParam(void* pCallbackParam) {Update_Callback_Param = pCallbackParam;}
+
+	virtual UpdateCallback			GetUpdateCallback() { return Update_Callback;}
+	virtual void*					GetUpdateCallbackParam() { return Update_Callback_Param;}
 
 	// debug
 #ifdef DEBUG
