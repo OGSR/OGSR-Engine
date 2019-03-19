@@ -103,6 +103,7 @@ class ENGINE_API CCameraManager
 	EffectorPPVec			m_EffectorsPP;
 
 	float					fFov;
+	float					fFovSecond;
 	float					fFar;
 	float					fAspect;
 	bool					m_bAutoApply;

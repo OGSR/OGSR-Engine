@@ -372,6 +372,9 @@ void CWeapon::Load		(LPCSTR section)
 	m_eGrenadeLauncherStatus = (ALife::EWeaponAddonStatus)pSettings->r_s32(section,"grenade_launcher_status");
 
 	m_bZoomEnabled = !!pSettings->r_bool(section,"zoom_enabled");
+	m_bUseScopeZoom = !!READ_IF_EXISTS(pSettings, r_bool, section, "use_scope_zoom", false);
+	m_bUseScopeGrenadeZoom = !!READ_IF_EXISTS(pSettings, r_bool, section, "use_scope_grenade_zoom", false);
+
 	m_fZoomRotateTime = ROTATION_TIME;
 	m_bScopeDynamicZoom = false;
 	m_fScopeZoomFactor = 0;
@@ -511,13 +514,11 @@ void CWeapon::LoadZoomOffset(LPCSTR section, LPCSTR prefix)
 		is_second_zoom_offset_enabled = false;
 		//Msg("~~Second scope disabled!");
 	}
+
 	//Зум фактор обновлять здесь необходимо. second_soom_factor поддерживается.
-	auto wpn_w_gl = smart_cast<CWeaponMagazinedWGrenade*>(this);
-	if (wpn_w_gl)
-		m_fZoomFactor = wpn_w_gl->CurrentZoomFactor();
-	else
-		m_fZoomFactor = this->CurrentZoomFactor();
+	m_fZoomFactor = this->CurrentZoomFactor();
 	//
+
 	if(pSettings->line_exist(hud_sect, "zoom_rotate_time"))
 		m_fZoomRotateTime = pSettings->r_float(hud_sect,"zoom_rotate_time");
 
@@ -526,21 +527,31 @@ void CWeapon::LoadZoomOffset(LPCSTR section, LPCSTR prefix)
 
 void CWeapon::UpdateZoomOffset() //Собрал все манипуляции с зум оффсетом сюда, чтоб были в одном месте.
 {
-	if (m_bZoomEnabled && m_pHUD) {
-		auto wpn_w_gl = smart_cast<CWeaponMagazinedWGrenade*>(this);
-		if (wpn_w_gl) {
-			if (wpn_w_gl->m_bGrenadeMode)
-				LoadZoomOffset(*hud_sect, "grenade_");
+	if (m_bZoomEnabled && m_pHUD)
+	{
+		const bool has_gl = GrenadeLauncherAttachable() && IsGrenadeLauncherAttached();
+		const bool has_scope = ScopeAttachable() && IsScopeAttached();
+
+		if (IsGrenadeMode())
+		{
+			if (m_bUseScopeGrenadeZoom && has_scope)
+				LoadZoomOffset(*hud_sect, "scope_grenade_");
 			else
-			{
-				if ( GrenadeLauncherAttachable() && IsGrenadeLauncherAttached() )
-					LoadZoomOffset(*hud_sect, "grenade_normal_");
-				else
-					LoadZoomOffset(*hud_sect, "");
-			}
+				LoadZoomOffset(*hud_sect, "grenade_");
 		}
-		else {
-			LoadZoomOffset(*hud_sect, "");
+		else if (has_gl)
+		{
+			if (m_bUseScopeZoom && has_scope)
+				LoadZoomOffset(*hud_sect, "scope_grenade_normal_");
+			else
+				LoadZoomOffset(*hud_sect, "grenade_normal_");
+		}
+		else
+		{
+			if (m_bUseScopeZoom && has_scope)
+				LoadZoomOffset(*hud_sect, "scope_");
+			else
+				LoadZoomOffset(*hud_sect, "");
 		}
 	}
 }
@@ -1019,17 +1030,10 @@ bool CWeapon::Action(s32 cmd, u32 flags)
 			if (IsZoomEnabled() && IsZoomed() && m_bScopeDynamicZoom && IsScopeAttached() && !is_second_zoom_offset_enabled && (flags&CMD_START))
 			{
 				// если в режиме ПГ - не будем давать использовать динамический зум
-				auto wpn_w_gl = smart_cast<CWeaponMagazinedWGrenade*>(this);
-				if (wpn_w_gl && wpn_w_gl->m_bGrenadeMode)
+				if (IsGrenadeMode())
 					return false;
 
-				if (cmd == kWPN_ZOOM_INC)  
-					ZoomInc();
-				else
-					ZoomDec();
-
-				if (H_Parent() && !IsRotatingToZoom())
-					m_fRTZoomFactor = m_fZoomFactor; //store current
+				ZoomChange(cmd == kWPN_ZOOM_INC);
 
 				return true;
 			}
@@ -1059,45 +1063,45 @@ void CWeapon::GetZoomData(const float scope_factor, float& delta, float& min_zoo
 	delta = (delta_factor_total*(1-min_zoom_k) )/zoom_step_count;
 }
 
-void CWeapon::ZoomInc()
+void CWeapon::ZoomChange(bool inc)
 {
-	float delta, min_zoom_factor;
-	GetZoomData(m_fScopeZoomFactor, delta, min_zoom_factor);
+	bool wasChanged = false;
 
-	float currentZoomFactor = m_fZoomFactor;
-
-	if (Core.Features.test(xrCore::Feature::ogse_wpn_zoom_system)) {
-		m_fZoomFactor += delta;
-		clamp(m_fZoomFactor, min_zoom_factor, m_fScopeZoomFactor);
-	}
-	else {
-		m_fZoomFactor -= delta;
-		clamp(m_fZoomFactor, m_fScopeZoomFactor, min_zoom_factor);
-	}
-
-	if (!fsimilar(currentZoomFactor, m_fZoomFactor))
+	if (SecondVPEnabled())
 	{
-		OnZoomChanged();
+		float delta, min_zoom_factor;
+		GetZoomData(m_fSecondVP_FovFactor, delta, min_zoom_factor);
+
+		const float currentZoomFactor = m_fRTZoomFactor;
+
+		m_fRTZoomFactor += delta * (inc ? 1 : -1);
+		clamp(m_fRTZoomFactor, min_zoom_factor, m_fSecondVP_FovFactor);
+
+		wasChanged = !fsimilar(currentZoomFactor, m_fRTZoomFactor);
 	}
-}
+	else
+	{
+		float delta, min_zoom_factor;
+		GetZoomData(m_fScopeZoomFactor, delta, min_zoom_factor);
 
-void CWeapon::ZoomDec()
-{
-	float delta, min_zoom_factor;
-	GetZoomData(m_fScopeZoomFactor, delta, min_zoom_factor);
+		const float currentZoomFactor = m_fZoomFactor;
 
-	float currentZoomFactor = m_fZoomFactor;
+		if (Core.Features.test(xrCore::Feature::ogse_wpn_zoom_system)) {
+			m_fZoomFactor += delta * (inc ? 1 : -1);
+			clamp(m_fZoomFactor, min_zoom_factor, m_fScopeZoomFactor);
+		}
+		else {
+			m_fZoomFactor -= delta * (inc ? 1 : -1);
+			clamp(m_fZoomFactor, m_fScopeZoomFactor, min_zoom_factor);
+		}
 
-	if (Core.Features.test(xrCore::Feature::ogse_wpn_zoom_system)) {
-		m_fZoomFactor -= delta;
-		clamp(m_fZoomFactor, min_zoom_factor, m_fScopeZoomFactor);
+		wasChanged = !fsimilar(currentZoomFactor, m_fZoomFactor);
+
+		if (H_Parent() && !IsRotatingToZoom() && !SecondVPEnabled())
+			m_fRTZoomFactor = m_fZoomFactor; //store current
 	}
-	else {
-		m_fZoomFactor += delta;
-		clamp(m_fZoomFactor, m_fScopeZoomFactor, min_zoom_factor);
-	}
 
-	if (!fsimilar(currentZoomFactor, m_fZoomFactor))
+	if (wasChanged)
 	{
 		OnZoomChanged();
 	}
@@ -1482,9 +1486,7 @@ void CWeapon::OnZoomIn()
 	m_bZoomMode = true;
 
 	// если в режиме ПГ - не будем давать включать динамический зум
-	auto wpn_w_gl = smart_cast<CWeaponMagazinedWGrenade*>(this);
-
-	if ( m_bScopeDynamicZoom && (!wpn_w_gl || !wpn_w_gl->m_bGrenadeMode))
+	if ( m_bScopeDynamicZoom && !IsGrenadeMode() && !SecondVPEnabled())
 		m_fZoomFactor = m_fRTZoomFactor;
 	else
 		m_fZoomFactor = CurrentZoomFactor();
@@ -1961,14 +1963,9 @@ void CWeapon::UpdateSecondVP()
 }
 
 bool CWeapon::SecondVPEnabled() const
-{
-	const CActor* pActor = smart_cast<const CActor*>(H_Parent());
-	if (!pActor)
-		return false;
-	
+{	
 	bool bCond_2 = m_fSecondVP_FovFactor > 0.0f;     // В конфиге должен быть прописан фактор зума (scope_lense_fov_factor) больше чем 0
-	auto wpn_w_gl = smart_cast<const CWeaponMagazinedWGrenade*>(this);
-	bool bCond_4 = (!wpn_w_gl || !wpn_w_gl->m_bGrenadeMode);     // Мы не должны быть в режиме подствольника
+	bool bCond_4 = !IsGrenadeMode();     // Мы не должны быть в режиме подствольника
 	bool bCond_5 = !is_second_zoom_offset_enabled; // Мы не должны быть в режиме второго прицеливания.
 	bool bcond_6 = psActorFlags.test(AF_3D_SCOPES);
 
@@ -1983,4 +1980,20 @@ float CWeapon::GetControlInertionFactor() const
 
 	float fInertionFactor = inherited::GetControlInertionFactor();
 	return fInertionFactor;
+}
+
+float CWeapon::GetSecondVPFov() const
+{
+	float fov_factor = m_fSecondVP_FovFactor;
+	if (m_bScopeDynamicZoom)
+	{
+		fov_factor = m_fRTZoomFactor;
+	}
+	return float(atan(tan(g_fov * (0.5 * PI / 180)) / fov_factor) / (0.5 * PI / 180)); //-V595
+}
+
+bool CWeapon::IsGrenadeMode() const
+{
+	const auto wpn_w_gl = smart_cast<const CWeaponMagazinedWGrenade*>(this);
+	return wpn_w_gl && wpn_w_gl->m_bGrenadeMode;
 }

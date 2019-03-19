@@ -1004,9 +1004,22 @@ void CWeaponMagazined::InitAddons()
 		if (IsZoomEnabled())
 		{
 			m_fScopeZoomFactor = pSettings->r_float(cNameSect(), "scope_zoom_factor");
-
 			// for weapon without any scope - scope_zoom_factor will overrider ironsight_zoom_factor
-			m_fIronSightZoomFactor = m_fScopeZoomFactor; 
+			m_fIronSightZoomFactor = m_fScopeZoomFactor;
+
+			m_bScopeDynamicZoom = !!READ_IF_EXISTS(pSettings, r_bool, cNameSect(), "scope_dynamic_zoom", false);
+
+			// to force weapon always use texture scope if available
+			if (READ_IF_EXISTS(pSettings, r_bool, cNameSect(), "force_scope_texture", false))
+			{
+				shared_str scope_tex_name = READ_IF_EXISTS(pSettings, r_string, cNameSect(), "scope_texture", "");
+
+				if (scope_tex_name.size() > 0)
+				{
+					m_UIScope = xr_new<CUIStaticItem>();
+					m_UIScope->Init(*scope_tex_name, "hud\\scope", 0, 0, alNone);
+				}
+			}
 
 			m_fSecondVP_FovFactor = READ_IF_EXISTS(pSettings, r_float, cNameSect(), "scope_lense_fov_factor", 0.0f);
 			m_fScopeInertionFactor = READ_IF_EXISTS(pSettings, r_float, cNameSect(), "scope_inertion_factor", m_fControlInertionFactor);
@@ -1020,16 +1033,26 @@ void CWeaponMagazined::InitAddons()
 
 	if (m_bScopeDynamicZoom)
 	{
-		if (Core.Features.test(xrCore::Feature::ogse_wpn_zoom_system)) 
+		if (SecondVPEnabled())
 		{
 			float delta, min_zoom_factor;
-			GetZoomData(m_fScopeZoomFactor, delta, min_zoom_factor);
+			GetZoomData(m_fSecondVP_FovFactor, delta, min_zoom_factor);
 
-			m_fRTZoomFactor = min_zoom_factor; // set minimal zoom by default for ogse mode
+			m_fRTZoomFactor = min_zoom_factor;
 		}
 		else
 		{
-			m_fRTZoomFactor = m_fScopeZoomFactor;
+			if (Core.Features.test(xrCore::Feature::ogse_wpn_zoom_system))
+			{
+				float delta, min_zoom_factor;
+				GetZoomData(m_fScopeZoomFactor, delta, min_zoom_factor);
+
+				m_fRTZoomFactor = min_zoom_factor; // set minimal zoom by default for ogse mode
+			}
+			else
+			{
+				m_fRTZoomFactor = m_fScopeZoomFactor;
+			}
 		}
 	}
 
@@ -1061,6 +1084,8 @@ void CWeaponMagazined::InitAddons()
 
 	inherited::InitAddons();
 	callback(GameObject::eOnAddonInit)(1);
+
+	UpdateZoomOffset();
 }
 
 void CWeaponMagazined::ApplySilencerKoeffs	()
