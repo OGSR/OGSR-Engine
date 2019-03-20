@@ -65,7 +65,7 @@ LPCSTR _actor_param_names[] = {
 	"satiety_health_v",
 	"radiation_v",
 	"satiety_v",
-	"thrist_v",
+	"thirst_v",
 	"satiety_power_v",
 	"wound_incarnation_v",
 	"psy_health_v"
