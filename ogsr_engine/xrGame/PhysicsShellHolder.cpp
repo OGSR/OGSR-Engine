@@ -46,8 +46,12 @@ void CPhysicsShellHolder::net_Destroy()
 	Level().ph_commander_scripts().remove_calls(&cmpr);
 	//удалить партиклы из ParticlePlayer
 	CParticlesPlayer::net_DestroyParticles		();
+	CCharacterPhysicsSupport	*char_support = character_physics_support();
+	if( char_support )
+		char_support->destroy_imotion();
 	inherited::net_Destroy						();
 	b_sheduled									=	false;
+
 	deactivate_physics_shell						();
 	xr_delete									(m_pPhysicsShell);
 }
@@ -282,11 +286,17 @@ void	CPhysicsShellHolder::PHFreeze()
 void CPhysicsShellHolder::OnChangeVisual()
 {
 	inherited::OnChangeVisual();
-	if (0==renderable.visual) 
+
+	if (nullptr==renderable.visual) 
 	{
+		CCharacterPhysicsSupport	*char_support = character_physics_support();
+		if( char_support )
+			char_support->destroy_imotion();
+		
+		VERIFY( !character_physics_support() || !character_physics_support()->interactive_motion());
 		if(m_pPhysicsShell)m_pPhysicsShell->Deactivate();
 		xr_delete(m_pPhysicsShell);
-		VERIFY(0==m_pPhysicsShell);
+		VERIFY(nullptr==m_pPhysicsShell);
 	}
 }
 
