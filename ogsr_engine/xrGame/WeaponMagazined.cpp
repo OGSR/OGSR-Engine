@@ -967,7 +967,7 @@ void CWeaponMagazined::InitAddons()
 
 			if(m_UIScope) xr_delete(m_UIScope);
 
-			if (scope_tex_name.size() > 0)
+			if (scope_tex_name.size() > 0 && !m_bUseScopeZoom)
 			{
 				m_UIScope = xr_new<CUIStaticItem>();
 				m_UIScope->Init(*scope_tex_name, "hud\\scope", 0, 0, alNone);
