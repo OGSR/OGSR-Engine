@@ -420,7 +420,10 @@ void CWeapon::Load		(LPCSTR section)
 	else
 		m_sWpn_launcher_bone = wpn_launcher_def_bone;
 
-    m_fSecondVP_FovFactor = 0.0f; //Можно и из конфига прицела читать и наоборот! Пока так.
+	//Можно и из конфига прицела читать и наоборот! Пока так.
+	m_fSecondVPZoomFactor = 0.0f;
+	m_fZoomHudFov = 0.0f;
+	m_fSecondVPHudFov = 0.0f;
 	m_fScopeInertionFactor = m_fControlInertionFactor;
 
 	InitAddons();
@@ -1053,14 +1056,11 @@ bool CWeapon::Action(s32 cmd, u32 flags)
 
 void CWeapon::GetZoomData(const float scope_factor, float& delta, float& min_zoom_factor)
 {
-	float min_zoom_k = 0.3f;
-	float zoom_step_count = 4.0f;
-
 	float def_fov = Core.Features.test(xrCore::Feature::ogse_wpn_zoom_system) ? 1.f : g_fov;
 	float delta_factor_total = def_fov-scope_factor;
 	VERIFY(delta_factor_total>0);
-	min_zoom_factor = def_fov-delta_factor_total*min_zoom_k;
-	delta = (delta_factor_total*(1-min_zoom_k) )/zoom_step_count;
+	min_zoom_factor = def_fov-delta_factor_total*m_fMinZoomK;
+	delta = (delta_factor_total*(1-m_fMinZoomK) )/m_fZoomStepCount;
 }
 
 void CWeapon::ZoomChange(bool inc)
@@ -1070,12 +1070,12 @@ void CWeapon::ZoomChange(bool inc)
 	if (SecondVPEnabled())
 	{
 		float delta, min_zoom_factor;
-		GetZoomData(m_fSecondVP_FovFactor, delta, min_zoom_factor);
+		GetZoomData(m_fSecondVPZoomFactor, delta, min_zoom_factor);
 
 		const float currentZoomFactor = m_fRTZoomFactor;
 
 		m_fRTZoomFactor += delta * (inc ? 1 : -1);
-		clamp(m_fRTZoomFactor, min_zoom_factor, m_fSecondVP_FovFactor);
+		clamp(m_fRTZoomFactor, min_zoom_factor, m_fSecondVPZoomFactor);
 
 		wasChanged = !fsimilar(currentZoomFactor, m_fRTZoomFactor);
 	}
@@ -1470,7 +1470,7 @@ float CWeapon::CurrentZoomFactor()
 		if (is_second_zoom_offset_enabled)
 			return m_fSecondScopeZoomFactor;
 		else if (SecondVPEnabled())
-			return 1; // no fov zoom when use second vp
+			return 1; // no change to main fov zoom when use second vp
 		else if (IsScopeAttached())
 			return m_fScopeZoomFactor;
 		else
@@ -1964,7 +1964,7 @@ void CWeapon::UpdateSecondVP()
 
 bool CWeapon::SecondVPEnabled() const
 {	
-	bool bCond_2 = m_fSecondVP_FovFactor > 0.0f;     // В конфиге должен быть прописан фактор зума (scope_lense_fov_factor) больше чем 0
+	bool bCond_2 = m_fSecondVPZoomFactor > 0.0f;     // В конфиге должен быть прописан фактор зума (scope_lense_fov_factor) больше чем 0
 	bool bCond_4 = !IsGrenadeMode();     // Мы не должны быть в режиме подствольника
 	bool bCond_5 = !is_second_zoom_offset_enabled; // Мы не должны быть в режиме второго прицеливания.
 	bool bcond_6 = psActorFlags.test(AF_3D_SCOPES);
@@ -1984,7 +1984,7 @@ float CWeapon::GetControlInertionFactor() const
 
 float CWeapon::GetSecondVPFov() const
 {
-	float fov_factor = m_fSecondVP_FovFactor;
+	float fov_factor = m_fSecondVPZoomFactor;
 	if (m_bScopeDynamicZoom)
 	{
 		fov_factor = m_fRTZoomFactor;
@@ -1996,4 +1996,27 @@ bool CWeapon::IsGrenadeMode() const
 {
 	const auto wpn_w_gl = smart_cast<const CWeaponMagazinedWGrenade*>(this);
 	return wpn_w_gl && wpn_w_gl->m_bGrenadeMode;
+}
+
+// Получить HUD FOV от текущего оружия игрока
+float CWeapon::GetHudFov()
+{
+	if (m_fZoomRotationFactor > 0.0f)
+	{
+		if (SecondVPEnabled() && m_fSecondVPHudFov > 0.0f)
+		{
+			// В линзе зума
+			float fDiff = psHUD_FOV_def - m_fSecondVPHudFov;
+			return m_fSecondVPHudFov + (fDiff * (1 - m_fZoomRotationFactor));
+		}
+		if (!UseScopeTexture() && m_fZoomHudFov > 0.0f)
+		{
+			// В процессе зума
+			float fDiff = psHUD_FOV_def - m_fZoomHudFov;
+			return m_fZoomHudFov + (fDiff * (1 - m_fZoomRotationFactor));
+		}
+	}
+
+	// От бедра	 
+	return psHUD_FOV_def;
 }
