@@ -5,7 +5,6 @@ uniform sampler2D s_distort;
 uniform sampler2D s_sunshafts;
 uniform sampler2D s_mblur;
 uniform sampler2D s_dof;
-uniform sampler2D s_rain_drops;
 uniform half4 		e_barrier;	// x=norm(.8f), y=depth(.1f), z=clr
 uniform half4 		e_weights;	// x=norm, y=depth, z=clr
 uniform half4 		e_kernel;	// x=norm, y=depth, z=clr
@@ -74,10 +73,7 @@ half4 main(combine I):COLOR {
 #ifdef USE_DOF
 	postprocess += tex2D(s_dof, center).xyz;
 #endif
-#ifdef USE_RAINDROPS
-	postprocess += tex2D(s_rain_drops, center).xyz;
-#endif
-	
+
 	img += postprocess;
 	
 	#ifdef USE_DISTORT
