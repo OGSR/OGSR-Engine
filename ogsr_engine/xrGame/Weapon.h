@@ -21,6 +21,12 @@ class CWeaponMagazined;
 class CParticlesObject;
 class CUIStaticItem;
 
+ENGINE_API extern float psHUD_FOV;
+ENGINE_API extern float psHUD_FOV_def;
+
+constexpr float def_min_zoom_k = 0.3f;
+constexpr float def_zoom_step_count = 4.0f;
+
 class CWeapon : public CHudItemObject,
 				public CShootingObject
 {
@@ -229,9 +235,10 @@ protected:
 //	для режима приближения и снайперского прицела
 ///////////////////////////////////////////////////
 protected:
-	// разрешение регулирования приближения. Real Wolf.
+	//разрешение регулирования приближения. Real Wolf.
 	bool			m_bScopeDynamicZoom;
-	float			m_fRTZoomFactor; //run-time zoom factor
+	//run-time zoom factor
+	float			m_fRTZoomFactor;
 	//разрешение режима приближения
 	bool			m_bZoomEnabled;
 	//текущий фактор приближения
@@ -251,15 +258,24 @@ protected:
 	//от 0 до 1, показывает насколько процентов
 	//мы перемещаем HUD  
 	float			m_fZoomRotationFactor;
-	//модификатор изменения FOV во втором вьюпорте при зуме
-	float m_fSecondVP_FovFactor; 
+	//коэффициент увеличения во втором вьюпорте при зуме
+	float			m_fSecondVPZoomFactor;
+	//прятать перекрестие в режиме прицеливания
 	bool			m_bHideCrosshairInZoom;
+	//разрешить инерцию оружия в режиме прицеливания
 	bool			m_bZoomInertionAllow;
+	//Целевой HUD FOV при зуме
+	float			m_fZoomHudFov;
+	//Целевой HUD FOV для линзы
+	float			m_fSecondVPHudFov;
 
-	bool m_bUseScopeZoom		= false;
+	bool m_bUseScopeZoom			= false;
 	bool m_bUseScopeGrenadeZoom		= false;
 	bool m_bUseScopeDOF = true;
 	bool m_bScopeShowIndicators = true;
+
+	float m_fMinZoomK			= def_min_zoom_k;
+	float m_fZoomStepCount		= def_zoom_step_count;
 
 	float			m_fScopeInertionFactor;
 public:
@@ -532,6 +548,7 @@ public:
 	float GetZRotatingFactor() const { return m_fZoomRotationFactor; } //--#SM+#--
 	float GetSecondVPFov() const; //--#SM+#--
 	bool SecondVPEnabled() const;
+	float GetHudFov();
 
 	void SwitchScope();
 };
