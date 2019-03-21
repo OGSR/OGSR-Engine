@@ -161,6 +161,7 @@ CCameraManager::CCameraManager(bool bApplyOnUpdate)
 	vNormal.set						(0,1,0);
 
 	fFov							= 90;
+	fFovSecond						= 0;
 	fFar							= 100;
 	fAspect							= 1.f;
 
@@ -315,6 +316,25 @@ void CCameraManager::Update(const Fvector& P, const Fvector& D, const Fvector& N
 	fFar						= fFar*dst		+ fFAR_Dest*src;
 	fAspect						= fAspect*dst	+ (fASPECT_Dest*aspect)*src;
 
+	if (Device.m_SecondViewport.IsSVPActive())
+	{
+		float fov = g_pGamePersistent->m_pGShaderConstants.hud_params.y;  //-V595
+
+		// что бы изначально прицел включался быстро, а при изменении приближения был эффект наезда камеры
+		if (fis_zero(fFovSecond))
+		{
+			fFovSecond = fov;
+		}
+		else
+		{
+			fFovSecond = fFovSecond * dst + fov * src;
+		}
+	}
+	else
+	{
+		fFovSecond = 0;
+	}
+
 	// Effector
 	BOOL bOverlapped			= FALSE;
 
@@ -421,7 +441,7 @@ void CCameraManager::ApplyDevice (float _viewport_near)
 	if (Device.m_SecondViewport.IsSVPFrame())
 	{
 		// Для второго вьюпорта FOV выставляем здесь
-		Device.fFOV = float(atan(tan(Device.fFOV * (0.5 * PI / 180)) / g_pGamePersistent->m_pGShaderConstants.hud_params.y) / (0.5 * PI / 180)); //-V595
+		Device.fFOV = fFovSecond;
 
 		// Предупреждаем что мы изменили настройки камеры
 		Device.m_SecondViewport.m_bCamReady = true;
@@ -430,8 +450,9 @@ void CCameraManager::ApplyDevice (float _viewport_near)
 	{
 		Device.m_SecondViewport.m_bCamReady = false;
 	}
-	Device.mProject.build_projection(deg2rad(Device.fFOV), fAspect, _viewport_near, fFar);
 	//--#SM+# End--
+
+	Device.mProject.build_projection(deg2rad(Device.fFOV), fAspect, _viewport_near, fFar);
 
 	if( g_pGamePersistent && g_pGamePersistent->m_pMainMenu->IsActive() )
 		ResetPP					();
