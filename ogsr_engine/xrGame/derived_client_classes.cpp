@@ -517,7 +517,7 @@ void CWeaponScript::script_register(lua_State *L)
 			.def("switch_scope"							,			&CWeapon::SwitchScope)
 			.def_readwrite("scope_inertion_factor"		,			&CWeapon::m_fScopeInertionFactor)
 
-			.def_readwrite("scope_lense_fov_factor",				&CWeapon::m_fSecondVP_FovFactor)
+			.def_readwrite("scope_lense_fov_factor",				&CWeapon::m_fSecondVPZoomFactor)
 			.def("second_vp_enabled",								&CWeapon::SecondVPEnabled)
 
 			.property("ammo_elapsed"					,			&CWeapon::GetAmmoElapsed, &CWeapon::SetAmmoElapsed)
