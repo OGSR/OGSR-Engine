@@ -258,6 +258,8 @@ protected:
 
 	bool m_bUseScopeZoom		= false;
 	bool m_bUseScopeGrenadeZoom		= false;
+	bool m_bUseScopeDOF = true;
+	bool m_bScopeShowIndicators = true;
 
 	float			m_fScopeInertionFactor;
 public:
