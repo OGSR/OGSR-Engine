@@ -9,6 +9,21 @@
 
 uniform float4x4 mVPTexgen;
 
+///////////////////////////////////// SWM /////////////////////////////////////
+uniform	float4 m_blender_mode; // x = [0 - default, 1 - night vision, 2 - thermal vision]; y = [0.0f / 1.0f - происходит ли в данный момент рендеринг картинки для прицела]; z = [0.0f / 1.0f - выключен или включён двойной рендер]; w - зарезервировано на будущее.
+
+// Активен-ли двойной рендер
+inline bool isSecondVPActive()
+{
+	return (m_blender_mode.z == 1.f);
+}
+
+inline bool IsSVPFrame()
+{
+	return (m_blender_mode.y == 1.f);
+}
+///////////////////////////////////////////////////////////////////////////////
+
 float3 	unpack_normal	(float3 v)	{ return 2*v-1;			}
 float3 	unpack_bx2	(float3 v)	{ return 2*v-1; 		}
 float3 	unpack_bx4	(float3 v)	{ return 4*v-2; 		}
