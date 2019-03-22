@@ -141,8 +141,8 @@ CUIMainIngameWnd::CUIMainIngameWnd()
 	warn_icon_list[ewiWound]		= &UIWoundIcon;
 	warn_icon_list[ewiStarvation]	= &UIStarvationIcon;
 	warn_icon_list[ewiPsyHealth]	= &UIPsyHealthIcon;
-	warn_icon_list[ewiInvincible]	= &UIInvincibleIcon;	
-	warn_icon_list[ewiArtefact]		= &UIArtefactIcon;
+	warn_icon_list[ewiThirst] = &UIThirstIcon;
+	warn_icon_list[ewiInvincible]	= &UIInvincibleIcon;
 }
 
 #include "UIProgressShape.h"
@@ -231,12 +231,12 @@ void CUIMainIngameWnd::Init()
 	xml_init.InitScrollView		(uiXml, "icons_scroll_view", 0, m_UIIcons);
 	AttachChild					(m_UIIcons);
 
-	// Загружаем иконки 
-		xml_init.InitStatic		(uiXml, "starvation_static", 0, &UIStarvationIcon);
-		UIStarvationIcon.Show	(false);
+// Загружаем иконки 
+	xml_init.InitStatic		(uiXml, "starvation_static", 0, &UIStarvationIcon);
+	UIStarvationIcon.Show	(false);
 
-		xml_init.InitStatic		(uiXml, "psy_health_static", 0, &UIPsyHealthIcon);
-		UIPsyHealthIcon.Show	(false);
+	xml_init.InitStatic		(uiXml, "psy_health_static", 0, &UIPsyHealthIcon);
+	UIPsyHealthIcon.Show	(false);
 
 	xml_init.InitStatic			(uiXml, "weapon_jammed_static", 0, &UIWeaponJammedIcon);
 	UIWeaponJammedIcon.Show		(false);
@@ -250,22 +250,25 @@ void CUIMainIngameWnd::Init()
 	xml_init.InitStatic			(uiXml, "invincible_static", 0, &UIInvincibleIcon);
 	UIInvincibleIcon.Show		(false);
 
-	xml_init.InitStatic		(uiXml, "artefact_static", 0, &UIArtefactIcon);
-	UIArtefactIcon.Show		(false);
-	
-	shared_str warningStrings[6] = 
-	{	
+	if (Core.Features.test(xrCore::Feature::actor_thirst))
+	{
+		xml_init.InitStatic(uiXml, "thirst_static", 0, &UIThirstIcon);
+		UIThirstIcon.Show(false);
+	}
+
+	shared_str warningStrings[6] =
+	{
 		"jammed",
 		"radiation",
 		"wounds",
 		"starvation",
-		"fatigue",
-		"invincible"
+		"fatigue", // PsyHealth ???
+		"thirst",
 	};
 
 	// Загружаем пороговые значения для индикаторов
 	EWarningIcons j = ewiWeaponJammed;
-	while (j < ewiInvincible)
+	while (j < (Core.Features.test(xrCore::Feature::actor_thirst) ? ewiInvincible : ewiThirst))
 	{
 		// Читаем данные порогов для каждого индикатора
 		shared_str cfgRecord = pSettings->r_string("main_ingame_indicators_thresholds", *warningStrings[static_cast<int>(j) - 1]);
@@ -450,7 +453,7 @@ void CUIMainIngameWnd::Update()
 
 		EWarningIcons i					= ewiWeaponJammed;
 
-		while (!external_icon_ctrl && i < ewiInvincible)
+		while (!external_icon_ctrl && i < (Core.Features.test(xrCore::Feature::actor_thirst) ? ewiInvincible : ewiThirst))
 		{
 			float value = 0;
 			switch (i)
@@ -468,7 +471,10 @@ void CUIMainIngameWnd::Update()
 				break;
 			case ewiStarvation:
 				value = 1 - m_pActor->conditions().GetSatiety();
-				break;		
+				break;
+			case ewiThirst:
+				value = 1 - m_pActor->conditions().GetThirst();
+				break;
 			case ewiPsyHealth:
 				value = 1 - m_pActor->conditions().GetPsyHealth();
 				break;
@@ -993,16 +999,16 @@ void CUIMainIngameWnd::SetWarningIconColor(EWarningIcons icon, const u32 cl)
 		if (bMagicFlag) break;
 	case ewiStarvation:
 		SetWarningIconColor		(&UIStarvationIcon, cl);
-		if (bMagicFlag) break;	
+		if (bMagicFlag) break;
+	case ewiThirst:
+		SetWarningIconColor     (&UIThirstIcon, cl);
+		if (bMagicFlag) break;
 	case ewiPsyHealth:
 		SetWarningIconColor		(&UIPsyHealthIcon, cl);
 		if (bMagicFlag) break;
 	case ewiInvincible:
 		SetWarningIconColor		(&UIInvincibleIcon, cl);
 		if (bMagicFlag) break;
-		break;
-	case ewiArtefact:
-		SetWarningIconColor		(&UIArtefactIcon, cl);
 		break;
 
 	default:
