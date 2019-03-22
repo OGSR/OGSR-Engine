@@ -22,6 +22,7 @@ LPCSTR af_item_sect_names[] = {
 	"health_restore_speed",
 	"radiation_restore_speed",
 	"satiety_restore_speed",
+	"thirst_restore_speed",
 	"power_restore_speed",
 	"bleeding_restore_speed",
 	"psy_health_restore_speed",
@@ -64,6 +65,7 @@ LPCSTR af_actor_param_names[]={
 	"satiety_health_v",
 	"radiation_v",
 	"satiety_v",
+	"thirst_v",
 	"satiety_power_v",
 	"wound_incarnation_v",
 	"psy_health_v"

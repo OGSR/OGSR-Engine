@@ -57,4 +57,5 @@ public:
 	float m_fHealthRestoreSpeed;
 	float m_fPowerRestoreSpeed;
 	float m_fSatietyRestoreSpeed;
+	float m_fThirstRestoreSpeed;
 };
