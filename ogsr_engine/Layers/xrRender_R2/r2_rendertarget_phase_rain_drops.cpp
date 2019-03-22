@@ -1,9 +1,5 @@
 #include "stdafx.h"
 #include "..\xrRender\xrRender_console.h"
-#include "..\..\xr_3da\Rain.h"
-
-/*rain_timer_params *rain_timers_raycheck = nullptr;
-rain_timer_params *rain_timers = nullptr;*/
 
 void CRenderTarget::phase_rain_drops()
 {
@@ -57,7 +53,7 @@ void CRenderTarget::phase_rain_drops()
 				steps_finished = 0;
 			}
 
-			if (steps_finished < steps_count) {
+			if (steps_finished < (steps_count + 1)) {
 				static u32 last_update = Device.dwTimeGlobal;
 				if (Device.dwTimeGlobal > (last_update + change_step)) {
 					last_update = Device.dwTimeGlobal;
@@ -82,10 +78,19 @@ void CRenderTarget::phase_rain_drops()
 		}
 	};
 
-	//Msg("[%s] rain_timers_raycheck: %f,%f,%f", __FUNCTION__, rain_timers_raycheck->timer.x, rain_timers_raycheck->timer.y, rain_timers_raycheck->timer.z);
-	update_rain_drops_factor(!!fis_zero(rain_timers_raycheck->timer.y)); //Когда актор в укрытии - y больше нуля. По этому признаку и будем определять. Да, по уму надо переделать но мне лень.
-	//Msg("[%s] rain_drops_factor: [%f]", __FUNCTION__, rain_drops_factor);
-	RCache.set_c("c_timers", rain_timers_raycheck->timer.x, rain_timers_raycheck->timer.y, rain_timers_raycheck->timer.z, rain_drops_factor);
+	static bool actor_in_hideout = true;
+	static u32 last_ray_pick_time = Device.dwTimeGlobal;
+	if (Device.dwTimeGlobal > (last_ray_pick_time + 1000)) { //Апдейт рейтрейса - раз в секунду. Чаще апдейтить нет смысла.
+		last_ray_pick_time = Device.dwTimeGlobal;
+
+		collide::rq_result RQ;
+		actor_in_hideout = !!g_pGameLevel->ObjectSpace.RayPick(Device.vCameraPosition, Fvector().set(0, 1, 0), 50.f, collide::rqtBoth, RQ, g_pGameLevel->CurrentViewEntity());
+	}
+
+	update_rain_drops_factor(!actor_in_hideout);
+
+	//Msg("[%s] rain_drops_factor: [%f], rain_density: [%f]", __FUNCTION__, rain_drops_factor, g_pGamePersistent->Environment().CurrentEnv.rain_density);
+	RCache.set_c("c_timers", 0.f, 0.f, 0.f, rain_drops_factor);
 
 	RCache.set_Geometry(g_KD);
 	RCache.Render(D3DPT_TRIANGLELIST, Offset, 0, 4, 0, 2);
