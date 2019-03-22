@@ -273,6 +273,7 @@ protected:
 	bool m_bUseScopeGrenadeZoom		= false;
 	bool m_bUseScopeDOF = true;
 	bool m_bScopeShowIndicators = true;
+	bool m_bIgnoreScopeTexture = false;
 
 	float m_fMinZoomK			= def_min_zoom_k;
 	float m_fZoomStepCount		= def_zoom_step_count;

@@ -376,6 +376,7 @@ void CWeapon::Load		(LPCSTR section)
 	m_bUseScopeGrenadeZoom = !!READ_IF_EXISTS(pSettings, r_bool, section, "use_scope_grenade_zoom", false);
 	m_bUseScopeDOF = !!READ_IF_EXISTS( pSettings, r_bool, section, "use_scope_dof", true );
 	m_bScopeShowIndicators = !!READ_IF_EXISTS( pSettings, r_bool, section, "scope_show_indicators", true );
+	m_bIgnoreScopeTexture = !!READ_IF_EXISTS( pSettings, r_bool, section, "ignore_scope_texture", false );
 
 	m_fZoomRotateTime = ROTATION_TIME;
 	m_bScopeDynamicZoom = false;
