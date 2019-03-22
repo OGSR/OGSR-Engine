@@ -68,9 +68,13 @@ void CRenderTarget::phase_rain_drops()
 					else { //плавное понижение интенсивности капель.
 						rain_drops_factor -= step_rain_factor_change;
 					}
-					rain_drops_factor = std::clamp(rain_drops_factor, 0.f, factor);
 				}
 			}
+			else if (act_on_rain) { //Если актор не находится в укрытии - синхронизируем rain_drops_factor с интенсивностью дождя
+				rain_drops_factor = std::max(rain_drops_factor, factor);
+			}
+
+			rain_drops_factor = std::clamp(rain_drops_factor, 0.f, factor); //Уравниваем, чтобы не было превышения
 		}
 		else {
 			steps_finished = 0;
@@ -79,7 +83,7 @@ void CRenderTarget::phase_rain_drops()
 	};
 
 	//Msg("[%s] rain_timers_raycheck: %f,%f,%f", __FUNCTION__, rain_timers_raycheck->timer.x, rain_timers_raycheck->timer.y, rain_timers_raycheck->timer.z);
-	update_rain_drops_factor(fis_zero(rain_timers_raycheck->timer.y)); //Когда актор в укрытии - y больше нуля. По этому признаку и будем определять. Да, по уму надо переделать но мне лень.
+	update_rain_drops_factor(!!fis_zero(rain_timers_raycheck->timer.y)); //Когда актор в укрытии - y больше нуля. По этому признаку и будем определять. Да, по уму надо переделать но мне лень.
 	//Msg("[%s] rain_drops_factor: [%f]", __FUNCTION__, rain_drops_factor);
 	RCache.set_c("c_timers", rain_timers_raycheck->timer.x, rain_timers_raycheck->timer.y, rain_timers_raycheck->timer.z, rain_drops_factor);
 
