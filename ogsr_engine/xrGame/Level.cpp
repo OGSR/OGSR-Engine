@@ -40,6 +40,7 @@
 #include "../xr_3da/XR_IOConsole.h"
 #include "Debug_Renderer.h"
 #include "Actor_Flags.h"
+#include "level_changer.h"
 
 #ifdef DEBUG
 #	include "level_debug.h"
@@ -483,6 +484,10 @@ void CLevel::OnRender()
 			auto space_restrictor = smart_cast<CSpaceRestrictor*>(_O);
 			if (space_restrictor)
 				space_restrictor->OnRender();
+
+			auto level_changer = smart_cast<CLevelChanger*>(_O);
+			if (level_changer)
+				level_changer->OnRender();
 
 			auto climable = smart_cast<CClimableObject*>(_O);
 			if (climable)
