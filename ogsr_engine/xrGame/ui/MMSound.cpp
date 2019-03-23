@@ -12,7 +12,6 @@ CMMSound::~CMMSound(){
 
 void CMMSound::Init(CUIXml& xml_doc, LPCSTR path){
 	string256 _path;	
-	m_bRandom = xml_doc.ReadAttribInt(path, 0, "random")? true : false;
 
 	int nodes_num	= xml_doc.GetNodesNum(path, 0, "menu_music");
 
@@ -77,7 +76,7 @@ void CMMSound::music_Play(){
 }
 
 void CMMSound::music_Update(){
-	if (Device.Paused()) return;
+
 	if (0==m_music_l._feedback() || 0==m_music_r._feedback())
 		music_Play();
 }
