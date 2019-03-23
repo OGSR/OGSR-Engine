@@ -85,8 +85,6 @@ protected:
 //	CUIStatic			UIArtefactIcon;
 
 	CUIScrollView*		m_UIIcons;
-	CUIWindow*			m_pMPChatWnd;
-	CUIWindow*			m_pMPLogWnd;
 public:	
 	CUIArtefactPanel*    m_artefactPanel;
 	
