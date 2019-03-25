@@ -99,13 +99,11 @@ public:
 		ewiWound,
 		ewiStarvation,
 		ewiPsyHealth,
-		ewiThirst,
 		ewiInvincible,
+		ewiThirst,
 //		ewiSleep,
 //		ewiArtefact,
 	};
-
-	void				SetMPChatLog					(CUIWindow* pChat, CUIWindow* pLog);
 
 	// Задаем цвет соответствующей иконке
 	void				SetWarningIconColor				(EWarningIcons icon, const u32 cl);
