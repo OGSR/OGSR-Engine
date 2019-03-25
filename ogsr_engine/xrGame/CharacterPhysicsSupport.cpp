@@ -1011,6 +1011,8 @@ void CCharacterPhysicsSupport::in_NetRelcase(CObject* O)
 		c->net_Relcase(O);
 	}
 
+	m_PhysicMovementControl->NetRelcase(O);
+
 	if (m_sv_hit.is_valide() && m_sv_hit.initiator() == O)
 		m_sv_hit = SHit();
 }

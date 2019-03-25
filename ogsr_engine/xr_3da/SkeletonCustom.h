@@ -109,6 +109,8 @@ public:
 				u16				GetNumChildren		( )			const	;
 		const	SJointIKData&	get_IK_data			( )			const	{return	IK_data;}
 		const	SBoneShape&		get_shape			( )			const	{return shape;}
+		const	Fvector&		get_center_of_mass	( )			const	{return center_of_mass;}
+		float				get_mass			( )			const	{return mass;}
 	virtual u32			mem_usage		()
 	{
 		u32 sz			= sizeof(*this)+sizeof(vecBones::value_type)*children.size();

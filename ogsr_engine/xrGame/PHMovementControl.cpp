@@ -1341,3 +1341,12 @@ void CPHMovementControl::BlockDamageSet(u64 steps_num)
 	block_damage_step_end = ph_world->StepsNum() + steps_num;
 	UpdateCollisionDamage();//reset all saved values
 }
+
+void CPHMovementControl::NetRelcase(CObject* O)
+{
+	CPhysicsShellHolder *sh = smart_cast<CPhysicsShellHolder *>(O);
+	if (!sh)
+		return;
+	if (m_character)
+		m_character->NetRelcase(sh);
+}

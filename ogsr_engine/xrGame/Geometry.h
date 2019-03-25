@@ -46,7 +46,7 @@ public:
 				void		set_static_ref_form	(const Fmatrix& form)												 ;		//for built
 	virtual		void		get_max_area_dir_bt	(Fvector& dir)														=0;
 	virtual		float		radius				()																	=0;
-	virtual		void		get_extensions_bt	(const Fvector& axis,float center_prg,float& lo_ext, float& hi_ext) =0;
+	virtual		void		get_Extensions(const Fvector& axis, float center_prg, float& lo_ext, float& hi_ext)const = 0;
 				void		clear_cashed_tries	()																	  ;
 	IC			dGeomID		geom()
 	{
@@ -145,7 +145,7 @@ public:
 //	virtual					~CBoxGeom			(const Fobb& box)													;
 	virtual		float		volume				()																	;
 	virtual		float		radius				()																	;
-	virtual		void		get_extensions_bt	(const Fvector& axis,float center_prg,float& lo_ext, float& hi_ext) ;
+	virtual		void		get_Extensions(const Fvector& axis, float center_prg, float& lo_ext, float& hi_ext)const;
 	virtual		void		get_max_area_dir_bt	(Fvector& dir)														;
 	virtual		void		get_mass			(dMass& m)															;//unit dencity mass;
 virtual const	Fvector&	local_center		()																	;
@@ -163,7 +163,7 @@ public:
 							CSphereGeom			(const Fsphere& sphere)												;
 	virtual		float		volume				()																	;
 	virtual		float		radius				()																	;
-	virtual		void		get_extensions_bt	(const Fvector& axis,float center_prg,float& lo_ext, float& hi_ext) ;
+	virtual		void		get_Extensions(const Fvector& axis, float center_prg, float& lo_ext, float& hi_ext)const;
 	virtual		void		get_max_area_dir_bt	(Fvector& dir)													  {};
 	virtual		void		get_mass			(dMass& m)															;//unit dencity mass;
 virtual const	Fvector&	local_center		()																	;
@@ -180,7 +180,7 @@ public:
 							CCylinderGeom		(const Fcylinder& cyl)												;
 	virtual		float		volume				()																	;
 	virtual		float		radius				()																	;
-	virtual		void		get_extensions_bt	(const Fvector& axis,float center_prg,float& lo_ext, float& hi_ext) ;
+	virtual		void		get_Extensions(const Fvector& axis, float center_prg, float& lo_ext, float& hi_ext)const;
 	virtual		void		get_max_area_dir_bt	(Fvector& dir)													  {};
 virtual const	Fvector&	local_center		()																	;
 	virtual		void		get_mass			(dMass& m)															;//unit dencity mass;

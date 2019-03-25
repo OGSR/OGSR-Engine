@@ -18,6 +18,7 @@ class CPHSimpleCharacter :
 	ICollisionDamageInfo
 {
 	friend class CScriptActor;
+	typedef CPHCharacter	inherited;
 private:
 	collide::rq_results		RQR;
 
@@ -181,7 +182,7 @@ public:
 	virtual	const Fvector&	CamDir								()const				{return m_cam_dir;}
 	virtual		void		SetMaterial							(u16 material)		;
 	virtual		void		SetPosition							(Fvector pos)		;
-	virtual		void		GetVelocity							(Fvector& vvel)		;
+	virtual		void GetVelocity(Fvector& vvel)const;
 	virtual		void		GetSmothedVelocity					(Fvector& vvel)		;
 	virtual		void		SetVelocity							(Fvector vel)		;
 	virtual		void		SetAirControlFactor					(float factor)		{m_air_control_factor=factor;}
@@ -234,7 +235,12 @@ IC	void 		FootProcess							(dContact* c,bool &do_collide ,bool bo);
 IC	void		foot_material_update				(u16	tri_material,u16	foot_material_idx);
 	static void	TestPathCallback(bool& do_colide,bool bo1,dContact& c,SGameMtl * /*material_1*/,SGameMtl * /*material_2*/);
 private:
+	virtual	void Freeze() { CPHObject::Freeze(); }
+	virtual	void UnFreeze() { CPHObject::UnFreeze(); }
 	virtual	void step(float dt) { CPHObject::step(dt); }
+	virtual	void collision_disable() { CPHObject::collision_disable(); }
+	virtual	void collision_enable() { CPHObject::collision_enable(); }
+	virtual	void NetRelcase(CPhysicsShellHolder* O);
 public:	
 #ifdef DEBUG
 	virtual		void		OnRender							()					;

@@ -284,6 +284,9 @@ public:
 	}
 	CPHMovementControl(CObject* parent);
 	~CPHMovementControl(void);
+
+	CPHCharacter		*character				()	{		return m_character; };
+	void				NetRelcase				( CObject* O );
 private:
 	void				UpdateCollisionDamage	( );
 	bool				MakeJumpPath			(xr_vector<DetailPathManager::STravelPathPoint> & out_path, 

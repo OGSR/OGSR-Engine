@@ -1230,9 +1230,9 @@ void	CPHElement::set_DisableParams				(const SAllDDOParams& params)
 
 
 
-void CPHElement::get_Extensions(const Fvector& axis,float center_prg,float& lo_ext, float& hi_ext)
+void CPHElement::get_Extensions(const Fvector& axis, float center_prg, float& lo_ext, float& hi_ext) const
 {
-	CPHGeometryOwner::get_Extensions(axis,center_prg,lo_ext,hi_ext);
+	CPHGeometryOwner::get_Extensions(axis, center_prg, lo_ext, hi_ext);
 }
 
 const Fvector& CPHElement::mass_Center()
@@ -1410,7 +1410,7 @@ CPHFracture& CPHElement::Fracture(u16 num)
 	R_ASSERT2(m_fratures_holder,"no fractures!");
 	return m_fratures_holder->Fracture(num);
 }
-u16	CPHElement::numberOfGeoms()
+u16	CPHElement::numberOfGeoms()const
 {
 	return CPHGeometryOwner::numberOfGeoms();
 }

@@ -121,7 +121,7 @@ public:
 	virtual void			setDensity				(float M)									;
 	virtual float			getDensity				()											;
 	virtual float			getVolume				()											;
-	virtual	void			get_Extensions			(const Fvector& axis,float center_prg,float& lo_ext, float& hi_ext);
+	virtual	void get_Extensions(const Fvector& axis, float center_prg, float& lo_ext, float& hi_ext) const;
 	virtual void			applyForce				(const Fvector& dir, float val)				;
 	virtual void			applyForce				(float x,float y,float z)					;
 	virtual void			applyImpulse			(const Fvector& dir, float val)				;

@@ -100,10 +100,10 @@ public:
 	virtual CPhysicsShellHolder*		PhysicsRefObject						(){return m_phys_ref_object;}													//aux
 	virtual void						SetMaterial								(u16 m);																		//aux
 	virtual void						SetMaterial								(LPCSTR m){CPHGeometryOwner::SetMaterial(m);}									//aux
-	virtual u16							numberOfGeoms							();																				//aux
+	virtual u16							numberOfGeoms()const;																				//aux
 	virtual const Fvector&				local_mass_Center						()		{return CPHGeometryOwner::local_mass_Center();}							//aux
 	virtual float						getVolume								()		{return CPHGeometryOwner::get_volume();}								//aux
-	virtual void						get_Extensions							(const Fvector& axis,float center_prg,float& lo_ext, float& hi_ext);			//aux
+	virtual void						get_Extensions(const Fvector& axis, float center_prg, float& lo_ext, float& hi_ext) const;			//aux
 	virtual	void						get_MaxAreaDir							(Fvector& dir){CPHGeometryOwner::get_MaxAreaDir(dir);}
 	virtual float						getRadius								();
 	virtual	void						GetPointVel								( Fvector	 &res_vel, const Fvector & point ) const;

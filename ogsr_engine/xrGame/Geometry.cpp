@@ -425,17 +425,16 @@ void CODEGeom::get_final_tx(dGeomID g,const dReal*	&p,const dReal*	&R,dReal * bu
 		p=dGeomGetPosition(g);
 	}
 }
-void CBoxGeom::get_extensions_bt(const Fvector& axis,float center_prg,float& lo_ext, float& hi_ext)
+void CBoxGeom::get_Extensions(const Fvector& axis, float center_prg, float& lo_ext, float& hi_ext) const
 {
-
-	VERIFY			(m_geom_transform)	;
-	const dReal	*rot	=NULL			;
-	const dReal	*pos	=NULL			;
-	dVector3	p						;
-	dMatrix3	r						;
-	dGeomID		g		=geometry_bt()	;
-	get_final_tx_bt(pos,rot,p,r)		;
-	GetBoxExtensions(g,cast_fp(axis),pos,rot,center_prg,&lo_ext,&hi_ext);	
+	VERIFY(m_geom_transform);
+	const dReal	*rot = NULL;
+	const dReal	*pos = NULL;
+	dVector3	p;
+	dMatrix3	r;
+	dGeomID		g = geometry_bt();
+	get_final_tx_bt(pos, rot, p, r);
+	GetBoxExtensions(g, cast_fp(axis), pos, rot, center_prg, &lo_ext, &hi_ext);
 }
 
 void CBoxGeom::get_max_area_dir_bt(Fvector& dir)
@@ -553,16 +552,16 @@ float CSphereGeom::radius()
 	return m_sphere.R;
 }
 
-void CSphereGeom::get_extensions_bt(const Fvector& axis,float center_prg,float& lo_ext, float& hi_ext)
+void CSphereGeom::get_Extensions(const Fvector& axis, float center_prg, float& lo_ext, float& hi_ext)const
 {
-	VERIFY			(m_geom_transform)	;
-	const dReal	*rot	=NULL			;
-	const dReal	*pos	=NULL			;
-	dVector3	p						;
-	dMatrix3	r						;
-	dGeomID		g		=geometry_bt()	;
-	get_final_tx_bt(pos,rot,p,r)		;
-	GetSphereExtensions(g,cast_fp(axis),pos,center_prg,&lo_ext,&hi_ext);	
+	VERIFY(m_geom_transform);
+	const dReal	*rot = NULL;
+	const dReal	*pos = NULL;
+	dVector3	p;
+	dMatrix3	r;
+	dGeomID		g = geometry_bt();
+	get_final_tx_bt(pos, rot, p, r);
+	GetSphereExtensions(g, cast_fp(axis), pos, center_prg, &lo_ext, &hi_ext);
 }
 const Fvector& CSphereGeom::local_center()
 {
@@ -621,16 +620,16 @@ float CCylinderGeom::radius()
 	return m_cylinder.m_radius;
 }
 
-void CCylinderGeom::get_extensions_bt(const Fvector& axis,float center_prg,float& lo_ext, float& hi_ext)
+void CCylinderGeom::get_Extensions(const Fvector& axis, float center_prg, float& lo_ext, float& hi_ext)const
 {
-	VERIFY			(m_geom_transform)	;
-	const dReal	*rot	=NULL			;
-	const dReal	*pos	=NULL			;
-	dVector3	p						;
-	dMatrix3	r						;
-	dGeomID		g		=geometry_bt()	;
-	get_final_tx_bt(pos,rot,p,r)		;
-	GetCylinderExtensions(g,cast_fp(axis),pos,rot,center_prg,&lo_ext,&hi_ext);	
+	VERIFY(m_geom_transform);
+	const dReal	*rot = NULL;
+	const dReal	*pos = NULL;
+	dVector3	p;
+	dMatrix3	r;
+	dGeomID		g = geometry_bt();
+	get_final_tx_bt(pos, rot, p, r);
+	GetCylinderExtensions(g, cast_fp(axis), pos, rot, center_prg, &lo_ext, &hi_ext);
 }
 const Fvector& CCylinderGeom::local_center()
 {

@@ -4,6 +4,7 @@
 #include "PHDynamicData.h"
 #include "Physics.h"
 #include "ExtendedGeom.h"
+#include "PhysicsShellHolder.h"
 #include "cl_intersect.h"
 #include "tri-colliderKNoOPC\__aabb_tri.h"
 #include "ode/src/util.h"
@@ -149,6 +150,23 @@ void CPHCharacter::CutVelocity(float l_limit,float /*a_limit*/)
 	}
 }
 
+const	Fmatrix&	CPHCharacter::XFORM() const
+{
+	return m_phys_ref_object->ObjectXFORM();//>renderable.xform;
+}
+void			CPHCharacter::get_LinearVel(Fvector& velocity) const
+{
+	GetVelocity(velocity);
+}
+void			CPHCharacter::get_AngularVel(Fvector& velocity) const
+{
+	velocity.set(0, 0, 0);
+}
+
+const	Fvector	&CPHCharacter::mass_Center() const
+{
+	return	cast_fv(dBodyGetLinearVel(m_body));
+}
 
 void	virtual_move_collide_callback(bool& do_collide, bool bo1, dContact& c, SGameMtl* material_1, SGameMtl* material_2)
 {

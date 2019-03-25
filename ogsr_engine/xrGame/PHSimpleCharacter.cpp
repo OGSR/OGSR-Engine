@@ -1061,14 +1061,14 @@ void	 CPHSimpleCharacter::	GetPreviousPosition					(Fvector& pos)
 	VERIFY(!ph_world->Processing());
 	m_body_interpolation.GetPosition(pos,0);
 }
-void CPHSimpleCharacter::GetVelocity(Fvector& vvel){
-	if(!b_exist){
-
-		vvel.set(m_safe_velocity[0],m_safe_velocity[1],m_safe_velocity[2]);
-		return ;
+void CPHSimpleCharacter::GetVelocity(Fvector& vvel) const
+{
+	if (!b_exist) {
+		vvel.set(m_safe_velocity[0], m_safe_velocity[1], m_safe_velocity[2]);
+		return;
 	}
-	const dReal* vel=dBodyGetLinearVel(m_body);
-	dVectorSet((dReal*)&vvel,vel);
+	const dReal* vel = dBodyGetLinearVel(m_body);
+	dVectorSet((dReal*)&vvel, vel);
 	return;
 }
 
@@ -1875,4 +1875,10 @@ bool	CPHSimpleCharacter::	TouchRestrictor	(ERestrictionType rttype)
 void		CPHSimpleCharacter::SetNonInteractive(bool v)
 {
 	b_non_interactive = v;
+}
+
+void		CPHSimpleCharacter::NetRelcase(CPhysicsShellHolder* O)
+{
+	inherited::NetRelcase(O);
+	m_elevator_state.NetRelcase(O);
 }

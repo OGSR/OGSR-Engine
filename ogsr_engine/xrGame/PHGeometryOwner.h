@@ -54,7 +54,7 @@ public:
 		void						SetMaterial								(LPCSTR m){SetMaterial(GMLib.GetMaterialIdx(m));}								//aux
 	IC	CODEGeom*					Geom									(u16 num)		{R_ASSERT2 (num<m_geoms.size(),"out of range"); return m_geoms[num]; }
 		CODEGeom*					GeomByBoneID							(u16 bone_id);
-		u16							numberOfGeoms							();																				//aux
+	u16 numberOfGeoms() const;																				//aux
 		dGeomID						dSpacedGeometry							();																				//aux
 protected:
 	IC	dSpaceID group_space() { return m_group; }
@@ -65,7 +65,7 @@ public:
 		void						calc_volume_data						();																				//aux
 const	Fvector&					local_mass_Center						()		{return m_mass_center;}													//aux
 		float						get_volume								()		{calc_volume_data();return m_volume;};									//aux
-		void						get_Extensions							(const Fvector& axis,float center_prg,float& lo_ext, float& hi_ext);			//aux
+	void get_Extensions(const Fvector& axis, float center_prg, float& lo_ext, float& hi_ext) const;			//aux
 		void						get_MaxAreaDir							(Fvector& dir);
 		float						getRadius								();	
 		void						setStaticForm							(const Fmatrix& form);
@@ -86,5 +86,19 @@ protected:
 virtual								~CPHGeometryOwner						();
 private:
 };
+
+template< typename geometry_type >
+void t_get_extensions(const xr_vector<geometry_type*>& geoms, const Fvector& axis, float center_prg, float& lo_ext, float& hi_ext)
+{
+	lo_ext = dInfinity; hi_ext = -dInfinity;
+	xr_vector<geometry_type*>::const_iterator i = geoms.begin(), e = geoms.end();
+	for (; i != e; ++i)
+	{
+		float temp_lo_ext, temp_hi_ext;
+		(*i)->get_Extensions(axis, center_prg, temp_lo_ext, temp_hi_ext);
+		if (lo_ext > temp_lo_ext)lo_ext = temp_lo_ext;
+		if (hi_ext < temp_hi_ext)hi_ext = temp_hi_ext;
+	}
+}
 
 #endif

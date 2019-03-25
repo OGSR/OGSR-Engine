@@ -386,3 +386,12 @@ bool CElevatorState::StateSwitchInertion(Estate new_state)
 	if(m_etable[m_state][new_state].dist<p.magnitude()||m_etable[m_state][new_state].time<Device.dwTimeGlobal-m_start_time) return true;
 	else return false;
 }
+
+void CElevatorState::NetRelcase(CPhysicsShellHolder* O)
+{
+	if (!O || !m_ladder || O != m_ladder->cast_CPhysicsShellHolder())
+		return;
+
+	m_state = clbNoLadder;
+	m_ladder = NULL;
+}

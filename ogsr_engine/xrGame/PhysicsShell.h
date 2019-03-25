@@ -72,7 +72,7 @@ public:
 	virtual		float			getMass									()																														= 0;
 	virtual		float			getDensity								()																														= 0;
 	virtual		float			getVolume								()																														= 0;
-	virtual		void			get_Extensions							(const Fvector& axis,float center_prg,float& lo_ext, float& hi_ext)														= 0;
+	virtual		void			get_Extensions(const Fvector& axis, float center_prg, float& lo_ext, float& hi_ext)	const = 0;
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	virtual		void			applyForce								(const Fvector& dir, float val)																							= 0;
 	virtual		void			applyForce								(float x,float y,float z)																								= 0;
@@ -142,7 +142,7 @@ public:
 	virtual		u16								setGeomFracturable						(CPHFracture &fracture)																								= 0;
 	virtual		CPHFracture						&Fracture								(u16 num)																											= 0;
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	virtual		u16								numberOfGeoms							()																													= 0;
+	virtual		u16								numberOfGeoms()const = 0;
 	virtual				dBodyID					get_body								()																													= 0;
 	virtual		const	Fvector					&mass_Center							()																													= 0;
 	virtual		const	Fvector					&local_mass_Center						()																													= 0;
