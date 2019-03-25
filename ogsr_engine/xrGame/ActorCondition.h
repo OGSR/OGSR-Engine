@@ -58,6 +58,7 @@ public:
 	virtual bool		IsCantWalk					();
 	virtual bool		IsCantWalkWeight			();
 	virtual bool		IsCantSprint				();
+	virtual bool		IsCantJump					(float weight);
 
 	void		PowerHit					(float power, bool apply_outfit);
 	virtual void		UpdatePower();
@@ -120,6 +121,8 @@ protected:
 	float m_fOverweightJumpK;
 	float m_fAccelK;
 	float m_fSprintK;
+
+	bool m_bJumpRequirePower;
 
 	float	m_f_time_affected;
 	
