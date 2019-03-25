@@ -1988,10 +1988,21 @@ bool CWeapon::SecondVPEnabled() const
 // Чувствительность мышкии с оружием в руках во время прицеливания
 float CWeapon::GetControlInertionFactor() const
 {
-	if (IsZoomed() && SecondVPEnabled() && !IsRotatingToZoom())
-		return m_fScopeInertionFactor;
-
 	float fInertionFactor = inherited::GetControlInertionFactor();
+
+	if (IsZoomed() && SecondVPEnabled() && !IsRotatingToZoom())
+	{
+		if (m_bScopeDynamicZoom)
+		{
+			const float delta_factor_total = 1 - m_fSecondVPZoomFactor;
+			float min_zoom_factor = 1 + delta_factor_total * m_fMinZoomK;
+			float k = (m_fRTZoomFactor - min_zoom_factor) / (m_fSecondVPZoomFactor - min_zoom_factor);
+			return (m_fScopeInertionFactor - fInertionFactor) * k + fInertionFactor;
+		}
+		else
+			return m_fScopeInertionFactor;
+	}
+
 	return fInertionFactor;
 }
 
