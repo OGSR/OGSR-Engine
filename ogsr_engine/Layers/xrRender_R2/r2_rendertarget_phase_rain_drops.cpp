@@ -3,44 +3,28 @@
 
 void CRenderTarget::phase_rain_drops()
 {
-	u32 Offset;
-	Fvector2 p0,p1;
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	static float rain_drops_factor = 0.f;
+	static u32 steps_finished = 0;
 
-	// common 
-	RCache.set_CullMode		( CULL_NONE )	;
-	RCache.set_Stencil		( FALSE		)	;
+	// Чтобы по команде r2_rain_drops_control off/on эффект перезапускался.
+	static bool saved_rain_drops_control = false;
+	bool current_rain_drops_control = !!ps_r2_pp_flags.test(R2PP_FLAG_RAIN_DROPS_CONTROL);
+	if (saved_rain_drops_control != current_rain_drops_control) {
+		saved_rain_drops_control = current_rain_drops_control;
 
-	struct v_simple	{
-		Fvector4	p;
-		Fvector2	uv0;
-	};
+		rain_drops_factor = 0.f;
+		steps_finished = 0;
+	}
 
-	float	_w					= float(Device.dwWidth);
-	float	_h					= float(Device.dwHeight);
-	p0.set						(.5f/_w, .5f/_h);
-	p1.set						((_w+.5f)/_w, (_h+.5f)/_h );
-
-	// Set RT's
-	u_setrt(rt_Generic_0,0,0,HW.pBaseZB);
-
-	// Fill vertex buffer
-	v_simple* pv					= (v_simple*) RCache.Vertex.Lock	(4,g_KD->vb_stride,Offset);
-		pv->p.set(EPS,			float(_h+EPS),	EPS,1.f); pv->uv0.set(p0.x, p1.y);pv++;
-		pv->p.set(EPS,			EPS,			EPS,1.f); pv->uv0.set(p0.x, p0.y);pv++;
-		pv->p.set(float(_w+EPS),float(_h+EPS),	EPS,1.f); pv->uv0.set(p1.x, p1.y);pv++;
-		pv->p.set(float(_w+EPS),EPS,			EPS,1.f); pv->uv0.set(p1.x, p0.y);pv++;
-	RCache.Vertex.Unlock		(4,g_KD->vb_stride);
-
-	// Draw COLOR
-	RCache.set_Element			(s_rain_drops->E[0]);
+	if (!current_rain_drops_control)
+		return;
 
 	// Функция рассчитывает интенсивность эффекта капель на худе. В шейдере нормально рассчитать слишком муторно, проще посчитать здесь и получить в шейдере через c_timers.w
-	static float rain_drops_factor = 0.f;
 	auto update_rain_drops_factor = [](bool act_on_rain)
 	{
-		static u32 steps_finished = 0;
-		float factor = g_pGamePersistent->Environment().CurrentEnv.rain_density;
-		if (!fis_zero(factor))
+		float rain_factor = g_pGamePersistent->Environment().CurrentEnv.rain_density;
+		if (!fis_zero(rain_factor))
 		{
 			// В данном варианте настроек - при выходе из укрытия в шторм, капли заработают на полную мощность за 20 секунд. При заходе в укрытие - эффект отключится так же через 20 секунд.
 			constexpr u32 change_step = 200; //Интервал в миллисекундах между ступенями изменения rain_drops_factor
@@ -67,10 +51,10 @@ void CRenderTarget::phase_rain_drops()
 				}
 			}
 			else if (act_on_rain) { //Если актор не находится в укрытии - синхронизируем rain_drops_factor с интенсивностью дождя
-				rain_drops_factor = std::max(rain_drops_factor, factor);
+				rain_drops_factor = std::max(rain_drops_factor, rain_factor);
 			}
 
-			rain_drops_factor = std::clamp(rain_drops_factor, 0.f, factor); //Уравниваем, чтобы не было превышения
+			rain_drops_factor = std::clamp(rain_drops_factor, 0.f, rain_factor); //Уравниваем, чтобы не было превышения
 		}
 		else {
 			steps_finished = 0;
@@ -90,6 +74,39 @@ void CRenderTarget::phase_rain_drops()
 	update_rain_drops_factor(!actor_in_hideout);
 
 	//Msg("[%s] rain_drops_factor: [%f], rain_density: [%f]", __FUNCTION__, rain_drops_factor, g_pGamePersistent->Environment().CurrentEnv.rain_density);
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+	u32 Offset;
+	Fvector2 p0, p1;
+
+	// common 
+	RCache.set_CullMode(CULL_NONE);
+	RCache.set_Stencil(FALSE);
+
+	struct v_simple {
+		Fvector4	p;
+		Fvector2	uv0;
+	};
+
+	float	_w = float(Device.dwWidth);
+	float	_h = float(Device.dwHeight);
+	p0.set(.5f / _w, .5f / _h);
+	p1.set((_w + .5f) / _w, (_h + .5f) / _h);
+
+	// Set RT's
+	u_setrt(rt_Generic_0, 0, 0, HW.pBaseZB);
+
+	// Fill vertex buffer
+	v_simple* pv = (v_simple*)RCache.Vertex.Lock(4, g_KD->vb_stride, Offset);
+	pv->p.set(EPS, float(_h + EPS), EPS, 1.f); pv->uv0.set(p0.x, p1.y); pv++;
+	pv->p.set(EPS, EPS, EPS, 1.f); pv->uv0.set(p0.x, p0.y); pv++;
+	pv->p.set(float(_w + EPS), float(_h + EPS), EPS, 1.f); pv->uv0.set(p1.x, p1.y); pv++;
+	pv->p.set(float(_w + EPS), EPS, EPS, 1.f); pv->uv0.set(p1.x, p0.y); pv++;
+	RCache.Vertex.Unlock(4, g_KD->vb_stride);
+
+	// Draw COLOR
+	RCache.set_Element(s_rain_drops->E[0]);
+
 	RCache.set_c("c_timers", 0.f, 0.f, 0.f, rain_drops_factor);
 
 	RCache.set_Geometry(g_KD);

@@ -200,8 +200,8 @@ void	CRenderTarget::phase_combine	()
 			if (ps_r2_pp_flags.test(R2PP_FLAG_DOF))						phase_dof();
 			if (ps_r2_pp_flags.test(R2PP_FLAG_MBLUR))					phase_motion_blur();
 			// screen space "eyes" effects
-			if (ps_r2_pp_flags.test(R2PP_FLAG_RAIN_DROPS)
-				&& ps_r2_pp_flags.test(R2PP_FLAG_RAIN_DROPS_CONTROL))	phase_rain_drops();
+			if (ps_r2_pp_flags.test(R2PP_FLAG_RAIN_DROPS))
+				phase_rain_drops();
 		}
 	}
 	else if (R2RM_THERMAL == GetRenderMode())
