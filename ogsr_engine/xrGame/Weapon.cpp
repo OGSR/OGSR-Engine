@@ -87,6 +87,8 @@ CWeapon::CWeapon(LPCSTR name)
 	m_ef_weapon_type		= u32(-1);
 	m_UIScope				= NULL;
 	m_set_next_ammoType_on_reload = u32(-1);
+
+	m_nearwall_last_hud_fov = psHUD_FOV_def;
 }
 
 CWeapon::~CWeapon		()
@@ -392,7 +394,6 @@ void CWeapon::Load		(LPCSTR section)
 		m_iScopeY = pSettings->r_s32(section,"scope_y");
 	}
 
-    
 	if(m_eSilencerStatus == ALife::eAddonAttachable)
 	{
 		m_sSilencerName = pSettings->r_string(section,"silencer_name");
@@ -400,7 +401,6 @@ void CWeapon::Load		(LPCSTR section)
 		m_iSilencerY = pSettings->r_s32(section,"silencer_y");
 	}
 
-    
 	if(m_eGrenadeLauncherStatus == ALife::eAddonAttachable)
 	{
 		m_sGrenadeLauncherName = pSettings->r_string(section,"grenade_launcher_name");
@@ -465,16 +465,26 @@ void CWeapon::Load		(LPCSTR section)
 	}
 	
 	m_highlightAddons.clear();
-	if ( pSettings->line_exist( section, "highlight_addons" ) ) {
-	  LPCSTR S = pSettings->r_string( section, "highlight_addons" );
-	  if ( S && S[ 0 ] ) {
-	    string128 _addonItem;
-	    int count = _GetItemCount( S );
-	    for ( int it = 0; it < count; ++it ) {
-	      _GetItem( S, it, _addonItem );
-	      m_highlightAddons.push_back( _addonItem );
-	    }
-	  }
+	if (pSettings->line_exist(section, "highlight_addons")) {
+		LPCSTR S = pSettings->r_string(section, "highlight_addons");
+		if (S && S[0]) {
+			string128 _addonItem;
+			int count = _GetItemCount(S);
+			for (int it = 0; it < count; ++it) {
+				_GetItem(S, it, _addonItem);
+				m_highlightAddons.push_back(_addonItem);
+			}
+		}
+	}
+
+	m_nearwall_on = READ_IF_EXISTS(pSettings, r_bool, section, "nearwall_on", false);
+	if (m_nearwall_on)
+	{
+		// Параметры изменения HUD FOV когда игрок стоит вплотную к стене
+		m_nearwall_target_hud_fov = READ_IF_EXISTS(pSettings, r_float, section, "nearwall_target_hud_fov", 0.27f);
+		m_nearwall_dist_min = READ_IF_EXISTS(pSettings, r_float, section, "nearwall_dist_min", 0.5f);
+		m_nearwall_dist_max = READ_IF_EXISTS(pSettings, r_float, section, "nearwall_dist_max", 1.f);
+		m_nearwall_speed_mod = READ_IF_EXISTS(pSettings, r_float, section, "nearwall_speed_mod", 10.f);
 	}
 }
 
@@ -781,6 +791,7 @@ void CWeapon::OnH_B_Independent	(bool just_before_destroy)
 	m_fZoomRotationFactor	= 0.f;
 	UpdateXForm					();
 
+	m_nearwall_last_hud_fov = psHUD_FOV_def;
 }
 
 void CWeapon::OnH_A_Independent	()
@@ -823,6 +834,8 @@ void CWeapon::OnH_B_Chield		()
 
 	OnZoomOut					();
 	m_set_next_ammoType_on_reload	= u32(-1);
+
+	m_nearwall_last_hud_fov = psHUD_FOV_def;
 }
 
 static float state_time = 0;				// таймер нахождения оружия в текущем состоянии
@@ -1978,10 +1991,21 @@ bool CWeapon::SecondVPEnabled() const
 // Чувствительность мышкии с оружием в руках во время прицеливания
 float CWeapon::GetControlInertionFactor() const
 {
-	if (IsZoomed() && SecondVPEnabled() && !IsRotatingToZoom())
-		return m_fScopeInertionFactor;
-
 	float fInertionFactor = inherited::GetControlInertionFactor();
+
+	if (IsZoomed() && SecondVPEnabled() && !IsRotatingToZoom())
+	{
+		if (m_bScopeDynamicZoom)
+		{
+			const float delta_factor_total = 1 - m_fSecondVPZoomFactor;
+			float min_zoom_factor = 1 + delta_factor_total * m_fMinZoomK;
+			float k = (m_fRTZoomFactor - min_zoom_factor) / (m_fSecondVPZoomFactor - min_zoom_factor);
+			return (m_fScopeInertionFactor - fInertionFactor) * k + fInertionFactor;
+		}
+		else
+			return m_fScopeInertionFactor;
+	}
+
 	return fInertionFactor;
 }
 
@@ -2004,22 +2028,45 @@ bool CWeapon::IsGrenadeMode() const
 // Получить HUD FOV от текущего оружия игрока
 float CWeapon::GetHudFov()
 {
+	// Рассчитываем HUD FOV от бедра (с учётом упирания в стены)
+	if (m_nearwall_on && ParentIsActor() && Level().CurrentViewEntity() == H_Parent())
+	{
+		// Получаем расстояние от камеры до точки в прицеле
+		collide::rq_result& RQ = HUD().GetCurrentRayQuery();
+		float dist = RQ.range;
+
+		// Интерполируем расстояние в диапазон от 0 (min) до 1 (max)
+		clamp(dist, m_nearwall_dist_min, m_nearwall_dist_max);
+		float fDistanceMod = ((dist - m_nearwall_dist_min) / (m_nearwall_dist_max - m_nearwall_dist_min)); // 0.f ... 1.f
+
+		 // Рассчитываем базовый HUD FOV от бедра
+		float fBaseFov = psHUD_FOV_def;
+		clamp(fBaseFov, 0.0f, FLT_MAX);
+
+		// Плавно высчитываем итоговый FOV от бедра
+		float src = m_nearwall_speed_mod * Device.fTimeDelta;
+		clamp(src, 0.f, 1.f);
+
+		float fTrgFov = m_nearwall_target_hud_fov + fDistanceMod * (fBaseFov - m_nearwall_target_hud_fov);
+		m_nearwall_last_hud_fov = m_nearwall_last_hud_fov * (1 - src) + fTrgFov * src;
+	}
+
 	if (m_fZoomRotationFactor > 0.0f)
 	{
 		if (SecondVPEnabled() && m_fSecondVPHudFov > 0.0f)
 		{
 			// В линзе зума
-			float fDiff = psHUD_FOV_def - m_fSecondVPHudFov;
+			float fDiff = m_nearwall_last_hud_fov - m_fSecondVPHudFov;
 			return m_fSecondVPHudFov + (fDiff * (1 - m_fZoomRotationFactor));
 		}
 		if (!UseScopeTexture() && m_fZoomHudFov > 0.0f)
 		{
 			// В процессе зума
-			float fDiff = psHUD_FOV_def - m_fZoomHudFov;
+			float fDiff = m_nearwall_last_hud_fov - m_fZoomHudFov;
 			return m_fZoomHudFov + (fDiff * (1 - m_fZoomRotationFactor));
 		}
 	}
 
 	// От бедра	 
-	return psHUD_FOV_def;
+	return m_nearwall_last_hud_fov;
 }

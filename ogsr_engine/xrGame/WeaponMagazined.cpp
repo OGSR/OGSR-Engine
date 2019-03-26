@@ -767,6 +767,8 @@ void CWeaponMagazined::switch2_Hidden()
 
 	signal_HideComplete		();
 	RemoveShotEffector		();
+
+	m_nearwall_last_hud_fov = psHUD_FOV_def;
 }
 void CWeaponMagazined::switch2_Showing()
 {
@@ -970,6 +972,7 @@ void CWeaponMagazined::InitZoomParams(LPCSTR section, bool useTexture)
 		m_bScopeDynamicZoom = false;
 
 	m_fScopeInertionFactor = READ_IF_EXISTS(pSettings, r_float, section, "scope_inertion_factor", m_fControlInertionFactor);
+	clamp(m_fScopeInertionFactor, m_fControlInertionFactor, m_fScopeInertionFactor);
 
 	m_fScopeZoomFactor = pSettings->r_float(section, "scope_zoom_factor");
 	m_fSecondVPZoomFactor = READ_IF_EXISTS(pSettings, r_float, section, "scope_lense_fov_factor", 0.0f);

@@ -85,8 +85,6 @@ protected:
 //	CUIStatic			UIArtefactIcon;
 
 	CUIScrollView*		m_UIIcons;
-	CUIWindow*			m_pMPChatWnd;
-	CUIWindow*			m_pMPLogWnd;
 public:	
 	CUIArtefactPanel*    m_artefactPanel;
 	
@@ -101,13 +99,11 @@ public:
 		ewiWound,
 		ewiStarvation,
 		ewiPsyHealth,
-		ewiThirst,
 		ewiInvincible,
+		ewiThirst,
 //		ewiSleep,
 //		ewiArtefact,
 	};
-
-	void				SetMPChatLog					(CUIWindow* pChat, CUIWindow* pLog);
 
 	// Задаем цвет соответствующей иконке
 	void				SetWarningIconColor				(EWarningIcons icon, const u32 cl);

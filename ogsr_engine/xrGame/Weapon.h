@@ -527,6 +527,16 @@ protected:
 	// therefore we should hold them by ourself :-((
 	float					m_addon_holder_range_modifier;
 	float					m_addon_holder_fov_modifier;
+
+	float m_nearwall_last_hud_fov;
+
+	float m_nearwall_target_hud_fov = 0.f;
+	float m_nearwall_dist_max = 0.f;
+	float m_nearwall_dist_min = 0.f;
+	float m_nearwall_speed_mod = 0.f;
+
+	bool m_nearwall_on = false;
+
 public:
 	virtual	void			modify_holder_params		(float &range, float &fov) const;
 	virtual bool			use_crosshair				()	const {return true;}
@@ -553,5 +563,3 @@ public:
 
 	void SwitchScope();
 };
-
-extern float default_fov;// = 67.5f;
