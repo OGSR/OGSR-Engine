@@ -53,7 +53,9 @@ void CPHWorld::OnRender()
 	PH_DBG_Render();
 }
 #endif
-CPHWorld::CPHWorld()
+CPHWorld::CPHWorld() : 
+	m_default_contact_shotmark(nullptr),
+	m_default_character_contact_shotmark(nullptr)
 {
 	disable_count=0;
 	m_frame_time=0.f;
@@ -435,29 +437,37 @@ void CPHWorld::RemoveFreezedObject(PH_OBJECT_I i)
 {
 	m_freezed_objects.erase(i);
 }
+
 void CPHWorld::Freeze()
 {
-	R_ASSERT2(!b_world_freezed,"already freezed!!!");
+	R_ASSERT2(!b_world_freezed, "already freezed!!!");
 	m_freezed_objects.move_items(m_objects);
-	PH_OBJECT_I iter=m_freezed_objects.begin(),
-		e=	m_freezed_objects.end()	;
-	
-	for(; e != iter;++iter)
+
+	PH_OBJECT_I iter = m_freezed_objects.begin(),
+		e = m_freezed_objects.end();
+
+	for (; e != iter; ++iter)
 		(*iter)->FreezeContent();
+
 	m_freezed_update_objects.move_items(m_update_objects);
-	b_world_freezed=true;
+
+	b_world_freezed = true;
 }
+
 void CPHWorld::UnFreeze()
 {
-	R_ASSERT2(b_world_freezed,"is not freezed!!!");
-	PH_OBJECT_I iter=m_freezed_objects.begin(),
-		e=	m_freezed_objects.end()	;
-	for(; e != iter;++iter)
+	R_ASSERT2(b_world_freezed, "is not freezed!!!");
+	PH_OBJECT_I iter = m_freezed_objects.begin(),
+		e = m_freezed_objects.end();
+	for (; e != iter; ++iter)
 		(*iter)->UnFreezeContent();
+
 	m_objects.move_items(m_freezed_objects);
+
 	m_update_objects.move_items(m_freezed_update_objects);
-	b_world_freezed=false;
+	b_world_freezed = false;
 }
+
 bool CPHWorld::IsFreezed()
 {
 	return b_world_freezed;
@@ -477,6 +487,13 @@ void CPHWorld::NetRelcase(CPhysicsShell *s)
 {
 	CPHReqComparerHasShell c(s);
 	m_commander->remove_calls(&c);
+	PH_UPDATE_OBJECT_I	i_update_object;
+	for (i_update_object = m_update_objects.begin(); m_update_objects.end() != i_update_object;)
+	{
+		CPHUpdateObject* obj = (*i_update_object);
+		++i_update_object;
+		obj->NetRelcase(s);
+	}
 }
 void CPHWorld::AddCall(CPHCondition*c,CPHAction*a)
 {

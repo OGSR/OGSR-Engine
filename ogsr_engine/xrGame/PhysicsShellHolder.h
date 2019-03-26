@@ -120,6 +120,7 @@ public://IPhysicsShellHolder
 	CPhysicsShell*&					ObjectPPhysicsShell					()						;
 	virtual bool					has_parent_object					()						;
 	CPHCapture*					PHCapture							()						;
+	virtual CPHSoundPlayer*				ObjectPhSoundPlayer() { if (m_pPhysicsShell) return ph_sound_player(); else return nullptr; }
 
 private:
 	Fvector					m_overriden_activation_speed;

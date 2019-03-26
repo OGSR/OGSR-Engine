@@ -9,6 +9,9 @@ class	CPHScriptObjectActionN			;
 class	CPHScriptGameObjectCondition	;
 class	CPHScriptGameObjectAction		;
 class	CPHConstForceAction				;
+class	CPHLiquidParticlesPlayCall		;
+class	CPHLiquidParticlesCondition		;
+class	CPHFindLiquidParticlesComparer	;
 class	CPHReqComparerV
 {
 	public: 
@@ -21,4 +24,8 @@ class	CPHReqComparerV
 		virtual		bool compare(const	CPHScriptGameObjectAction* v)	const		{return false;}
 		virtual		bool compare(const	CPHScriptGameObjectCondition* v)const		{return false;}
 		virtual		bool compare(const	CPHConstForceAction* v)			const		{return false;}
+
+		virtual		bool compare(const	CPHLiquidParticlesPlayCall* v)	const		{return false;}
+		virtual		bool compare(const	CPHLiquidParticlesCondition* v)	const		{return false;}
+		virtual		bool compare(const	CPHFindLiquidParticlesComparer* v)const		{return false;}
 };

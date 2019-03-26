@@ -216,63 +216,63 @@ void CPHShell::PresetActive()
 	}
 }
 
-
-
-void CPHShell::Deactivate(){
+void CPHShell::Deactivate()
+{
+	VERIFY(ph_world);
+	ph_world->NetRelcase(this);
 
 #ifdef ANIMATED_PHYSICS_OBJECT_SUPPORT
 	if (m_pPhysicsShellAnimatorC)
 	{
-		xr_delete<CPhysicsShellAnimator>(m_pPhysicsShellAnimatorC); 
+		VERIFY(PhysicsRefObject());
+		PhysicsRefObject()->ObjectProcessingDeactivate();
+		xr_delete<CPhysicsShellAnimator>(m_pPhysicsShellAnimatorC);
 	}
 #endif
 
-	if(!isActive())return;
-	R_ASSERT2(!ph_world->Processing(),"can not deactivate physics shell during physics processing!!!");
-	R_ASSERT2(!ph_world->IsFreezed(),"can not deactivate physics shell when ph world is freezed!!!");
-	R_ASSERT2(!CPHObject::IsFreezed(),"can not deactivate freezed !!!");
+	if (!isActive())
+		return;
+
+	R_ASSERT2(!ph_world->Processing(), "can not deactivate physics shell during physics processing!!!");
+	R_ASSERT2(!ph_world->IsFreezed(), "can not deactivate physics shell when ph world is freezed!!!");
+	R_ASSERT2(!CPHObject::IsFreezed(), "can not deactivate freezed !!!");
 	ZeroCallbacks();
 	VERIFY(ph_world&&ph_world->Exist());
-	if(isFullActive())
+	if (isFullActive())
 	{
 		vis_update_deactivate();
+
+		// Giperion: Why that was written?
+		// UPDATE: Shell should be updated last time.
+		// Related to ObjectCounter.
+		// If you comment out - check out CInventory::Take assert inside pIItem->object().processing_deactivate();
+		// Still this routine can crash when trying play a sound
 		CPHObject::activate();
 		ph_world->Freeze();
 		CPHObject::UnFreeze();
 		ph_world->StepTouch();
 		ph_world->UnFreeze();
-		//Fmatrix m;
-		//InterpolateGlobalTransform(&m);
 	}
 	spatial_unregister();
-	
+
 	vis_update_activate();
-	//if(ref_object && !CPHObject::is_active() && m_active_count == 0)
-	//{
-	//	ref_object->processing_activate();
-	//}
+
 	DisableObject();
 	CPHObject::remove_from_recently_deactivated();
-	
 
-	ELEMENT_I i;
-	for(i=elements.begin();elements.end() != i;++i)
+	for (auto i = elements.begin(); elements.end() != i; ++i)
 		(*i)->Deactivate();
 
-	JOINT_I j;
-	for(j=joints.begin();joints.end() != j;++j)
+	for (auto j = joints.begin(); joints.end() != j; ++j)
 		(*j)->Deactivate();
 
-	
-
-	if(m_space) {
+	if (m_space) {
 		dSpaceDestroy(m_space);
-		m_space=NULL;
+		m_space = NULL;
 	}
-	//bActive=false;
-	//bActivating=false;
-	m_flags.set(flActivating,FALSE);
-	m_flags.set(flActive,FALSE);
+
+	m_flags.set(flActivating, FALSE);
+	m_flags.set(flActive, FALSE);
 	m_traced_geoms.clear();
 	CPHObject::UnsetRayMotions();
 }

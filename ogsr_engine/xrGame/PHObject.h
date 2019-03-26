@@ -121,7 +121,8 @@ IC			const _flags<CLClassBits>&	collide_class_bits 	()const 								{return m_co
 
 
 
-class CPHUpdateObject 
+class CPhysicsShell;
+class CPHUpdateObject
 {
 	DECLARE_PHLIST_ITEM(CPHUpdateObject)
 	bool				b_activated																	;
@@ -134,6 +135,7 @@ public:
 IC	bool			IsActive		()																{return b_activated;}
 	virtual void	PhDataUpdate	(dReal step)													=0;
 	virtual void	PhTune			(dReal step)													=0;
+	virtual void	NetRelcase(CPhysicsShell *s) {};
 };
 
 DEFINE_PHITEM_LIST(CPHObject,PH_OBJECT_STORAGE,PH_OBJECT_I)

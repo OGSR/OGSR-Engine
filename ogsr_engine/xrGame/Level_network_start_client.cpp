@@ -83,6 +83,9 @@ bool	CLevel::net_start_client4				()
 		ph_world							= xr_new<CPHWorld>();
 		ph_world->Create					();
 
+	ph_world->set_default_contact_shotmark(ContactShotMark);
+	ph_world->set_default_character_contact_shotmark(CharacterContactShotMark);
+
 		// Send network to single or multithreaded mode
 		// *note: release version always has "mt_*" enabled
 		Device.seqFrameMT.Remove			(g_pNetProcessor);

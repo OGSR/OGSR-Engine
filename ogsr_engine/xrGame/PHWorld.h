@@ -58,6 +58,12 @@ public:
 	float						m_update_time												;
 	u16							disable_count												;
 	float						m_gravity													;
+
+private:
+	ContactCallbackFun * m_default_contact_shotmark;
+	ContactCallbackFun *m_default_character_contact_shotmark;
+public:
+
 								CPHWorld						()							;
 	virtual						~CPHWorld						(){}						;
 
@@ -94,6 +100,12 @@ IC	bool						Processing						()							{return b_processing;}
 	u16							UpdateObjectsNumber				()							;
 
 	inline u64 &StepsNum() { return m_steps_num; }
+
+	inline ContactCallbackFun *default_contact_shotmark() { return m_default_contact_shotmark; }
+	inline ContactCallbackFun *default_character_contact_shotmark() { return m_default_character_contact_shotmark; }
+
+	inline void set_default_contact_shotmark(ContactCallbackFun	*f) { m_default_contact_shotmark = f; }
+	inline void set_default_character_contact_shotmark(ContactCallbackFun	*f) { m_default_character_contact_shotmark = f; }
 
 	void						NetRelcase						(CPhysicsShell* s)			;
 	void						AddCall							(CPHCondition*c,CPHAction*a);

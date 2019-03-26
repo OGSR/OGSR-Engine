@@ -326,7 +326,7 @@ void CPHSimpleCharacter::Create(dVector3 sizes){
 	{
 		SetObjectContactCallback(m_object_contact_callback);
 	}
-	SetStaticContactCallBack(CharacterContactShotMark);
+	SetStaticContactCallBack(ph_world->default_character_contact_shotmark());
 	m_elevator_state.SetCharacter(static_cast<CPHCharacter*>(this));
 	CPHObject::activate();
 	spatial_register();

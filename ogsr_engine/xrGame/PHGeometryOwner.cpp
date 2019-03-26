@@ -1,6 +1,8 @@
 #include "stdafx.h"
 #include "PHGeometryOwner.h"
 #include "..\xr_3da\skeletonanimated.h"
+#include "phworld.h"
+#include "level.h"
 
 CPHGeometryOwner::CPHGeometryOwner()
 {
@@ -9,7 +11,7 @@ CPHGeometryOwner::CPHGeometryOwner()
 	VERIFY(ph_world);
 	m_volume = 0.f;
 
-	contact_callback = ContactShotMark;
+	contact_callback = ph_world->default_contact_shotmark();
 	object_contact_callback = nullptr;
 	ul_material = GMLib.GetMaterialIdx("objects\\small_box");
 	m_group = nullptr;
