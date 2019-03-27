@@ -41,13 +41,15 @@ CActorCondition::CActorCondition(CActor *object) :
 	m_fSatiety					= 1.0f;
 	m_fThirst					= 1.0f;
 
+	m_bJumpRequirePower			= false;
+
 	VERIFY						(object);
 	m_object					= object;
 	m_condition_flags.zero		();
 
 	m_f_time_affected = Device.fTimeGlobal;
 
-        monsters_feel_touch  = xr_new<Feel::Touch>();
+	monsters_feel_touch  = xr_new<Feel::Touch>();
 	monsters_aura_radius = 0.f;
 }
 
@@ -71,6 +73,8 @@ void CActorCondition::LoadCondition(LPCSTR entity_section)
 	m_fOverweightJumpK			= pSettings->r_float(section,"overweight_jump_k");
 	m_fAccelK					= pSettings->r_float(section,"accel_k");
 	m_fSprintK					= pSettings->r_float(section,"sprint_k");
+
+	m_bJumpRequirePower			= READ_IF_EXISTS(pSettings, r_bool, section, "jump_require_power", false);
 
 	//порог силы и здоровья меньше которого актер начинает хромать
 	m_fLimpingHealthBegin		= pSettings->r_float(section,	"limping_health_begin");
@@ -482,6 +486,18 @@ bool CActorCondition::IsCantSprint()
 	else if (m_fPower > m_fCantSprintPowerEnd)
 		m_condition_flags.set(eCantSprint, FALSE);
 	return m_condition_flags.test(eCantSprint);
+}
+
+bool CActorCondition::IsCantJump(float weight)
+{
+	if (!m_bJumpRequirePower)
+	{
+		return false;
+	}
+
+	float power = m_fJumpPower;
+	power += m_fJumpWeightPower * weight*(weight > 1.f ? m_fOverweightJumpK : 1.f);
+	return m_fPower < HitPowerEffect(power);
 }
 
 bool CActorCondition::IsLimping()

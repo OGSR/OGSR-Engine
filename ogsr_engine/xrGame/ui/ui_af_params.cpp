@@ -44,6 +44,7 @@ LPCSTR af_item_param_names[] = {
 	"ui_inv_health",
 	"ui_inv_radiation",
 	"ui_inv_satiety",
+	"ui_inv_thirst",
 	"ui_inv_power",
 	"ui_inv_bleeding",
 	"ui_inv_psy_health",

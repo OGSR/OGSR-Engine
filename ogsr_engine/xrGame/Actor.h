@@ -449,7 +449,7 @@ public:
 	void					UpdateMotionIcon		(u32 mstate_rl);
 
 	bool					CanAccelerate			();
-	bool					CanJump					();
+	bool					CanJump					(float weight);
 	bool					CanMove					();
 	float					CameraHeight			();
 	float					CurrentHeight;

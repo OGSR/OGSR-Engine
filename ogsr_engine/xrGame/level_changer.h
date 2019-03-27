@@ -37,4 +37,6 @@ public:
 	virtual BOOL		feel_touch_contact	(CObject* O);
 
 	virtual bool		IsVisibleForZones() { return false;		}
+
+	void OnRender();
 };
