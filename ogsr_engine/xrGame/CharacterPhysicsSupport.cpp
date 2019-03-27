@@ -691,8 +691,63 @@ void CCharacterPhysicsSupport::on_child_shell_activate(CPhysicsShellHolder* obj)
 	if (!has_shell_collision_place(obj))
 		return;
 	VERIFY(obj->PPhysicsShell());
+	RemoveActiveWeaponCollision	();
 }
 
+
+void	CCharacterPhysicsSupport::	RemoveActiveWeaponCollision		()
+{
+	
+
+	VERIFY( m_pPhysicsShell );
+	VERIFY( m_weapon_attach_bone );
+	VERIFY( !m_weapon_geoms.empty() );
+	xr_vector<CODEGeom*>::iterator ii =m_weapon_geoms.begin(), ee = m_weapon_geoms.end();
+	Fmatrix m0;
+	(*ii)->get_xform( m0 );
+	CPhysicsElement* root = m_active_item_obj->PPhysicsShell()->get_ElementByStoreOrder( 0 );
+	CODEGeom *rg = root->geometry( 0 );
+	VERIFY( rg );
+	Fmatrix m1;
+	rg->get_xform( m1 );
+
+	Fmatrix me;
+	root->GetGlobalTransformDynamic( &me );
+
+	Fmatrix m1_to_e = Fmatrix().mul_43( Fmatrix().invert( m1 ), me );
+
+	Fmatrix m0e = Fmatrix().mul_43( m0, m1_to_e );
+	root->SetTransform( m0e, mh_unspecified );
+
+	for( ;ii!=ee; ++ii )
+	{
+		CODEGeom *g  =(*ii);
+
+		//g->dbg_draw( 0.01f, D3DCOLOR_XRGB( 0, 0, 255 ), Flags32() );
+
+		m_weapon_attach_bone->remove_geom( g );
+		g->destroy();
+		xr_delete(g);
+	}
+
+
+	//m_active_item_obj->PPhysicsShell()->dbg_draw_geometry( 0.2f, D3DCOLOR_XRGB( 255, 0, 100 ) );
+	
+	Fvector a_vel, l_vel;
+	const Fvector& mc = root->mass_Center();
+	//dBodyGetPointVel( m_weapon_attach_bone->get_body(),mc.x, mc.y, mc.z, cast_fp(l_vel) );
+	m_weapon_attach_bone->GetPointVel( l_vel, mc );
+	m_weapon_attach_bone->get_AngularVel( a_vel );
+	
+	root->set_AngularVel( a_vel );
+	root->set_LinearVel( l_vel );
+	
+	m_weapon_geoms.clear();
+	m_weapon_attach_bone = 0;
+	m_active_item_obj	= 0;
+
+	bone_fix_clear();
+}
 void CCharacterPhysicsSupport::bone_fix_clear()
 {
 	xr_vector<anim_bone_fix*>::iterator i = m_weapon_bone_fixes.begin(), e = m_weapon_bone_fixes.end();

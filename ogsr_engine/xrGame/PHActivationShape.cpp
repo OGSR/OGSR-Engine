@@ -29,121 +29,119 @@ static	float erp				=1.f;
 #else
 #define	CHECK_POS(pos,msg,br)				
 #endif
-void	ActivateTestDepthCallback (bool& do_colide,bool bo1,dContact& c,SGameMtl* material_1,SGameMtl* material_2)
-{
-	
-	if(do_colide&&!material_1->Flags.test(SGameMtl::flPassable) &&!material_2->Flags.test(SGameMtl::flPassable))
-	{
-		float& depth=c.geom.depth;
-		float test_depth=depth;
-		save_max(max_depth,test_depth);
-		c.surface.mu*=friction_factor;
- 
-		c.surface.soft_cfm=cfm;
-		c.surface.soft_erp=erp;
-		
-	}
 
+static void	ActivateTestDepthCallback(bool& do_colide, bool bo1, dContact& c, SGameMtl* material_1, SGameMtl* material_2)
+{
+	if (!do_colide || material_1->Flags.test(SGameMtl::flPassable) || material_2->Flags.test(SGameMtl::flPassable))
+		return;
+
+	float& depth = c.geom.depth;
+	float test_depth = depth;
+	save_max(max_depth, test_depth);
+	c.surface.mu *= friction_factor;
+	c.surface.soft_cfm = cfm;
+	c.surface.soft_erp = erp;
 }
-void	StaticEnvironment (bool& do_colide,bool bo1,dContact& c,SGameMtl* material_1,SGameMtl* material_2)
-{
-	dJointID contact_joint	= dJointCreateContact(0, ContactGroup, &c);
 
-	if(bo1)
+void	StaticEnvironment(bool& do_colide, bool bo1, dContact& c, SGameMtl* material_1, SGameMtl* material_2)
+{
+	dJointID contact_joint = dJointCreateContact(0, ContactGroup, &c);
+
+	if (bo1)
 	{
 		((CPHActivationShape*)(retrieveGeomUserData(c.geom.g1)->callback_data))->DActiveIsland()->ConnectJoint(contact_joint);
-		dJointAttach			(contact_joint, dGeomGetBody(c.geom.g1), 0);
+		dJointAttach(contact_joint, dGeomGetBody(c.geom.g1), 0);
 	}
 	else
 	{
 		((CPHActivationShape*)(retrieveGeomUserData(c.geom.g2)->callback_data))->DActiveIsland()->ConnectJoint(contact_joint);
-		dJointAttach			(contact_joint, 0, dGeomGetBody(c.geom.g2));
+		dJointAttach(contact_joint, 0, dGeomGetBody(c.geom.g2));
 	}
-	do_colide=false;
+	do_colide = false;
 }
-void  GetMaxDepthCallback (bool& do_colide,bool bo1,dContact& c,SGameMtl* material_1,SGameMtl* material_2)
+void  GetMaxDepthCallback(bool& do_colide, bool bo1, dContact& c, SGameMtl* material_1, SGameMtl* material_2)
 {
+	if (!do_colide || material_1->Flags.test(SGameMtl::flPassable) || material_2->Flags.test(SGameMtl::flPassable))
+		return;
 
-	if(do_colide&&!material_1->Flags.test(SGameMtl::flPassable) &&!material_2->Flags.test(SGameMtl::flPassable))
-	{
-		float& depth=c.geom.depth;
-		float test_depth=depth;
-		//save_max(max_depth,test_depth);
-		max_depth+=test_depth;
-	}
-	//do_colide=false;
+	float& depth = c.geom.depth;
+	float test_depth = depth;
+
+	max_depth += test_depth;
 }
 
 void RestoreVelocityState(V_PH_WORLD_STATE& state)
 {
-	V_PH_WORLD_STATE::iterator i=state.begin(),e=state.end();	
-	for(;e!=i;++i)
+	V_PH_WORLD_STATE::iterator i = state.begin(), e = state.end();
+	for (; e != i; ++i)
 	{
-		CPHSynchronize& sync=*i->first;
-		SPHNetState&	old_s	=i->second;
-		SPHNetState new_s;sync.get_State(new_s);
+		CPHSynchronize& sync = *i->first;
+		SPHNetState&	old_s = i->second;
+		SPHNetState new_s; sync.get_State(new_s);
 		new_s.angular_vel.set(old_s.angular_vel);
 		new_s.linear_vel.set(old_s.linear_vel);
-		new_s.enabled=old_s.enabled;
+		new_s.enabled = old_s.enabled;
 		sync.set_State(new_s);
 	}
 }
 
 CPHActivationShape::CPHActivationShape()
 {
-	m_geom=NULL;
-	m_body=NULL;
+	m_geom = NULL;
+	m_body = NULL;
 	m_flags.zero();
-	m_flags.set(flFixedRotation,TRUE);
+	m_flags.set(flFixedRotation, TRUE);
 }
 CPHActivationShape::~CPHActivationShape()
 {
-	VERIFY(!m_body&&!m_geom);
+	VERIFY(!m_body && !m_geom);
 }
-void	CPHActivationShape::Create(const Fvector start_pos,const Fvector start_size,CPhysicsShellHolder* ref_obj,EType _type/*=etBox*/,u16	flags)
+void	CPHActivationShape::Create(const Fvector start_pos, const Fvector start_size, CPhysicsShellHolder* ref_obj, EType _type/*=etBox*/, u16	flags)
 {
 	VERIFY(ref_obj);
-	m_body			=	dBodyCreate	(0)												;
+	R_ASSERT(_valid(start_pos));
+	R_ASSERT(_valid(start_size));
+
+	m_body = dBodyCreate(0);
 	dMass m;
-	dMassSetSphere(&m,1.f,100000.f);
-	dMassAdjust(&m,1.f);
-	dBodySetMass(m_body,&m);
-	switch(_type)
+	dMassSetSphere(&m, 1.f, 100000.f);
+	dMassAdjust(&m, 1.f);
+	dBodySetMass(m_body, &m);
+	switch (_type)
 	{
 	case etBox:
-	m_geom			=	dCreateBox	(0,start_size.x,start_size.y,start_size.z)		;
-	break;
+		m_geom = dCreateBox(0, start_size.x, start_size.y, start_size.z);
+		break;
 
 	case etSphere:
-	m_geom			=	dCreateSphere	(0,start_size.x);
-	break;
+		m_geom = dCreateSphere(0, start_size.x);
+		break;
 	};
 
-	dGeomCreateUserData				(m_geom)										;
-	dGeomUserDataSetObjectContactCallback(m_geom,ActivateTestDepthCallback)			;
-	dGeomUserDataSetPhysicsRefObject(m_geom,ref_obj)								;
-	dGeomSetBody					(m_geom,m_body)									;
-	dBodySetPosition				(m_body,start_pos.x,start_pos.y,start_pos.z)	;
-	Island()		.AddBody		(m_body)										;
-	dBodyEnable						(m_body)										;
-	m_safe_state					.create(m_body)									;
-	spatial_register				()												;
-	m_flags.set(flags,TRUE);
+	dGeomCreateUserData(m_geom);
+	dGeomUserDataSetObjectContactCallback(m_geom, ActivateTestDepthCallback);
+	dGeomUserDataSetPhysicsRefObject(m_geom, ref_obj);
+	dGeomSetBody(m_geom, m_body);
+	dBodySetPosition(m_body, start_pos.x, start_pos.y, start_pos.z);
+	Island().AddBody(m_body);
+	dBodyEnable(m_body);
+	m_safe_state.create(m_body);
+	spatial_register();
+	m_flags.set(flags, TRUE);
 }
-void CPHActivationShape::	Destroy	()
+void CPHActivationShape::Destroy()
 {
-	VERIFY(m_geom&&m_body)				;
-	spatial_unregister		()			;
-	CPHObject::deactivate	()			;
-	dGeomDestroyUserData	(m_geom)	;
-	dGeomDestroy			(m_geom)	;
-	m_geom					=NULL		;
-	dBodyDestroy			(m_body)	;
-	m_body					=NULL		;
+	VERIFY(m_geom&&m_body);
+	spatial_unregister();
+	CPHObject::deactivate();
+	dGeomDestroyUserData(m_geom);
+	dGeomDestroy(m_geom);
+	m_geom = NULL;
+	dBodyDestroy(m_body);
+	m_body = NULL;
 }
-bool	CPHActivationShape::	Activate							(const Fvector need_size,u16 steps,float max_displacement,float max_rotation,bool	un_freeze_later/*	=false*/)										
+bool	CPHActivationShape::Activate(const Fvector need_size, u16 steps, float max_displacement, float max_rotation, bool	un_freeze_later/*	=false*/)
 {
-
 #ifdef	DEBUG 
 	if(ph_dbg_draw_mask.test(phDbgDrawDeathActivationBox))
 	{
@@ -158,74 +156,77 @@ bool	CPHActivationShape::	Activate							(const Fvector need_size,u16 steps,floa
 	CPHObject::activate();
 	ph_world->Freeze();
 	UnFreeze();
-	max_depth=0.f;
+	max_depth = 0.f;
 
-	dGeomUserDataSetObjectContactCallback(m_geom,GetMaxDepthCallback)			;
-	//ph_world->Step();
-	ph_world->StepTouch();	
-	u16		num_it =15;
-	float	fnum_it=float(num_it);
-	float	fnum_steps=float(steps);
-	float	fnum_steps_r=1.f/fnum_steps;
-	float	resolve_depth=0.01f;
-	float	max_vel=max_depth/fnum_it*fnum_steps_r/fixed_step;
-	float	limit_l_vel=_max(_max(need_size.x,need_size.y),need_size.z)/fnum_it*fnum_steps_r/fixed_step;
-	if(limit_l_vel>default_l_limit)limit_l_vel=default_l_limit;
-	if(max_vel>limit_l_vel)
-			max_vel=limit_l_vel;
+	dGeomUserDataSetObjectContactCallback(m_geom, GetMaxDepthCallback);
 
-	float	max_a_vel=max_rotation/fnum_it*fnum_steps_r/fixed_step;
-	if(max_a_vel>default_w_limit)
-					max_a_vel=default_w_limit;
+	ph_world->StepTouch();
+	u16		num_it = 15;
+	float	fnum_it = float(num_it);
+	float	fnum_steps = float(steps);
+	float	fnum_steps_r = 1.f / fnum_steps;
+	float	resolve_depth = 0.01f;
+	float	max_vel = max_depth / fnum_it * fnum_steps_r / fixed_step;
+	float	limit_l_vel = std::max(std::max(need_size.x, need_size.y), need_size.z) / fnum_it * fnum_steps_r / fixed_step;
+
+	if (limit_l_vel > default_l_limit)
+		limit_l_vel = default_l_limit;
+
+	if (max_vel > limit_l_vel)
+		max_vel = limit_l_vel;
+
+	float	max_a_vel = max_rotation / fnum_it * fnum_steps_r / fixed_step;
+
+	if (max_a_vel > default_w_limit)
+		max_a_vel = default_w_limit;
+
 	//ph_world->CutVelocity(0.f,0.f);
-	dGeomUserDataSetCallbackData(m_geom,this);
-	dGeomUserDataSetObjectContactCallback(m_geom,ActivateTestDepthCallback)			;
-	if(m_flags.test(flStaticEnvironment))dGeomUserDataAddObjectContactCallback(m_geom,StaticEnvironment);
-	max_depth=0.f;
+	dGeomUserDataSetCallbackData(m_geom, this);
+	dGeomUserDataSetObjectContactCallback(m_geom, ActivateTestDepthCallback);
+	if (m_flags.test(flStaticEnvironment))
+		dGeomUserDataAddObjectContactCallback(m_geom, StaticEnvironment);
+	max_depth = 0.f;
 	
 	Fvector from_size;
-	Fvector step_size,size;
-	dGeomBoxGetLengths(m_geom,cast_fp(from_size));
-	step_size.sub(need_size,from_size);
+	Fvector step_size, size;
+	dGeomBoxGetLengths(m_geom, cast_fp(from_size));
+	step_size.sub(need_size, from_size);
 	step_size.mul(fnum_steps_r);
 	size.set(from_size);
-	bool ret=false;
+	bool ret = false;
 	V_PH_WORLD_STATE temp_state;
 	ph_world->GetState(temp_state);
-	for(int m=0;steps>m;++m)
+	for (int m = 0; steps > m; ++m)
 	{
-		//float param =fnum_steps_r*(1+m);
-		//InterpolateBox(id,param);
 		size.add(step_size);
-		dGeomBoxSetLengths(m_geom,size.x,size.y,size.z);
-		u16		attempts=10;
-		do{
-		
-			ret=false;
-			for(int i=0;num_it>i;++i)
+		dGeomBoxSetLengths(m_geom, size.x, size.y, size.z);
+		u16		attempts = 10;
+		do {
+			ret = false;
+			for (int i = 0; num_it > i; ++i)
 			{
-				max_depth=0.f;
+				max_depth = 0.f;
 				ph_world->Step();
-				CHECK_POS(Position(),"pos after ph_world->Step()",false);
-				ph_world->CutVelocity(max_vel,max_a_vel);
-				CHECK_POS(Position(),"pos after CutVelocity",true);
-				//if(m==0&&i==0)ph_world->GetState(temp_state);
-				if(max_depth	<	resolve_depth) 
+				CHECK_POS(Position(), "pos after ph_world->Step()", false);
+				ph_world->CutVelocity(max_vel, max_a_vel);
+				CHECK_POS(Position(), "pos after CutVelocity", true);
+
+				if (max_depth < resolve_depth)
 				{
-						ret=true;
-						break;
+					ret = true;
+					break;
 				}
 			}
 			attempts--;
-		}while(!ret&&attempts>0);
+		} while (!ret&&attempts > 0);
 #ifdef	DEBUG
 		Msg("correction attempts %d",10-attempts);
 #endif
 	
 	}
 	RestoreVelocityState(temp_state);
-	CHECK_POS(Position(),"pos after RestoreVelocityState(temp_state);",true);
-	if(!un_freeze_later)ph_world->UnFreeze();
+	CHECK_POS(Position(), "pos after RestoreVelocityState(temp_state);", true);
+	if (!un_freeze_later)ph_world->UnFreeze();
 #ifdef	DEBUG 
 	if(ph_dbg_draw_mask.test(phDbgDrawDeathActivationBox))
 	{
@@ -239,35 +240,33 @@ bool	CPHActivationShape::	Activate							(const Fvector need_size,u16 steps,floa
 #endif
 	return ret;
 }
-const Fvector&	CPHActivationShape::	Position							()																
+const Fvector&	CPHActivationShape::Position()
 {
 	return cast_fv(dBodyGetPosition(m_body));
 }
-void	CPHActivationShape::	Size								(Fvector &size)																
+void	CPHActivationShape::Size(Fvector &size)
 {
-	dGeomBoxGetLengths(m_geom,cast_fp(size));
+	dGeomBoxGetLengths(m_geom, cast_fp(size));
 }
 
-void	CPHActivationShape::	PhDataUpdate						(dReal step)												
+void	CPHActivationShape::PhDataUpdate(dReal step)
 {
 	m_safe_state.new_state(m_body);
 }
-void	CPHActivationShape::	PhTune								(dReal step)												
+void	CPHActivationShape::PhTune(dReal step)
 {
-
 }
-dGeomID	CPHActivationShape::	dSpacedGeom							()															
+dGeomID	CPHActivationShape::dSpacedGeom()
 {
 	return m_geom;
 }
-void	CPHActivationShape::	get_spatial_params					()															
+void	CPHActivationShape::get_spatial_params()
 {
-	spatialParsFromDGeom(m_geom,spatial.sphere.P,AABB,spatial.sphere.R);
+	spatialParsFromDGeom(m_geom, spatial.sphere.P, AABB, spatial.sphere.R);
 }
 
-void	CPHActivationShape::	InitContact							(dContact* c,bool& do_collide,u16 ,u16 )
+void	CPHActivationShape::InitContact(dContact* c, bool& do_collide, u16, u16)
 {
-
 }
 
 void CPHActivationShape::CutVelocity(float l_limit,float /*a_limit*/)

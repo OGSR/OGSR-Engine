@@ -18,7 +18,6 @@
 #include "iActivationShape.h"
 #include "CharacterPhysicsSupport.h"
 #include "Actor.h"
-
 CPhysicsShellHolder::CPhysicsShellHolder()
 {
 	init();
@@ -26,9 +25,6 @@ CPhysicsShellHolder::CPhysicsShellHolder()
 CPhysicsShellHolder::	~CPhysicsShellHolder						()
 {
 	VERIFY ( !m_pPhysicsShell );
-//#ifndef MASTER_GOLD
-	//R_ASSERT( !m_pPhysicsShell );
-//#endif
 	destroy_physics_shell( m_pPhysicsShell );
 }
 const CPhysicsShellHolder*CPhysicsShellHolder::physics_collision	()
@@ -73,6 +69,7 @@ BOOL CPhysicsShellHolder::net_Spawn				(CSE_Abstract*	DC)
 	if(PPhysicsShell()&&PPhysicsShell()->isFullActive())
 	{
 		PPhysicsShell()->GetGlobalTransformDynamic(&XFORM());
+		PPhysicsShell()->mXFORM = XFORM();
 		switch (EEnableState(st_enable_state))
 		{
 		case stEnable		:	PPhysicsShell()->Enable()	;break;
@@ -80,22 +77,29 @@ BOOL CPhysicsShellHolder::net_Spawn				(CSE_Abstract*	DC)
 		case stNotDefitnite	:								;break;
 		}
 		ApplySpawnIniToPhysicShell(pSettings,PPhysicsShell(),false);
+
+
 		st_enable_state=(u8)stNotDefitnite;
 	}
 	return ret;
 }
 
-void	CPhysicsShellHolder::PHHit(SHit& H)
+void	CPhysicsShellHolder::PHHit( SHit &H )
 {
-	if(H.impulse>0)
-		if(m_pPhysicsShell) m_pPhysicsShell->applyHit(H.p_in_bone_space,H.dir,H.impulse,H.boneID,H.type());
+	if ( H.phys_impulse() >0 )
+		if(m_pPhysicsShell) m_pPhysicsShell->applyHit(H.bone_space_position(),H.direction(),H.phys_impulse(),H.bone(),H.type());
 }
 
 //void	CPhysicsShellHolder::Hit(float P, Fvector &dir, CObject* who, s16 element,
 //						 Fvector p_in_object_space, float impulse, ALife::EHitType hit_type)
 void	CPhysicsShellHolder::Hit					(SHit* pHDS)
 {
-	PHHit(*pHDS);
+	bool const is_special_burn_hit_2_self	=	(pHDS->who == this) && (pHDS->boneID == BI_NONE) && 
+												(pHDS->hit_type == ALife::eHitTypeBurn);
+	if ( !is_special_burn_hit_2_self )
+	{
+		PHHit(*pHDS);
+	}
 }
 
 void CPhysicsShellHolder::create_physic_shell	()
@@ -129,11 +133,21 @@ void	CPhysicsShellHolder::on_child_shell_activate ( CPhysicsShellHolder* obj )
 void CPhysicsShellHolder::correct_spawn_pos()
 {
 	VERIFY								(PPhysicsShell());
+	
+	if( H_Parent() )
+	{
+		CPhysicsShellHolder	* P = smart_cast<CPhysicsShellHolder*>(H_Parent());
+		if( P && P->has_shell_collision_place(this) )
+			return;
+	}
 
 	Fvector								size;
 	Fvector								c;
 	get_box								(PPhysicsShell(),XFORM(),size,c);
 
+	R_ASSERT_FORMAT(_valid(c),			"object: %s model: %s ", cName().c_str(), cNameVisual().c_str());
+	R_ASSERT_FORMAT(_valid(size),		"object: %s model: %s ", cName().c_str(), cNameVisual().c_str());
+	R_ASSERT_FORMAT(_valid(XFORM()),	"object: %s model: %s ", cName().c_str(), cNameVisual().c_str());
 	PPhysicsShell()->DisableCollision	();
 
 	Fvector								ap = Fvector().set(0,0,0);
@@ -147,14 +161,19 @@ void CPhysicsShellHolder::correct_spawn_pos()
 //		activation_shape.Activate		(size,1,1.f,M_PI/8.f);
 ////		VERIFY							(valid_pos(activation_shape.Position(),phBoundaries));
 //	}
-
+	
 	PPhysicsShell()->EnableCollision	();
 
+	
+
+
+	
 	Fmatrix								trans;
 	trans.identity						();
 	trans.c.sub							(ap,c);
 	PPhysicsShell()->TransformPosition	(trans, mh_clear );
 	PPhysicsShell()->GetGlobalTransformDynamic(&XFORM());
+
 }
 
 void CPhysicsShellHolder::activate_physic_shell()
@@ -177,14 +196,15 @@ void CPhysicsShellHolder::activate_physic_shell()
 	if(H_Parent()&&H_Parent()->Visual())
 	{
 		smart_cast<CKinematics*>(H_Parent()->Visual())->CalculateBones_Invalidate	();
-		smart_cast<CKinematics*>(H_Parent()->Visual())->CalculateBones	();
+		smart_cast<CKinematics*>(H_Parent()->Visual())->CalculateBones	(TRUE);
 		Fvector dir = H_Parent()->Direction();
 		if ( dir.y < 0.f )
 		   dir.y = -dir.y;
 		l_fw.set( normalize( dir ) * 2.f );
 	}
 	smart_cast<CKinematics*>(Visual())->CalculateBones_Invalidate	();
-	smart_cast<CKinematics*>(Visual())->CalculateBones();
+	smart_cast<CKinematics*>(Visual())->CalculateBones(TRUE);
+
 //	XFORM().set					(l_p1);
 	correct_spawn_pos();
 
@@ -215,8 +235,12 @@ void CPhysicsShellHolder::setup_physic_shell	()
 	create_physic_shell			();
 	m_pPhysicsShell->Activate	(XFORM(),0,XFORM());
 	smart_cast<CKinematics*>(Visual())->CalculateBones_Invalidate	();
-	smart_cast<CKinematics*>(Visual())->CalculateBones();
+	smart_cast<CKinematics*>(Visual())->CalculateBones(TRUE);
+		
+	ApplySpawnIniToPhysicShell(spawn_ini(),PPhysicsShell(),false);
+	correct_spawn_pos();
 	m_pPhysicsShell->GetGlobalTransformDynamic(&XFORM());
+
 }
 
 void CPhysicsShellHolder::deactivate_physics_shell()
