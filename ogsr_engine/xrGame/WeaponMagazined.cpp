@@ -159,6 +159,7 @@ void CWeaponMagazined::Load	(LPCSTR section)
 		m_bHasDifferentFireModes = false;
 
 	m_bVision = !!READ_IF_EXISTS(pSettings, r_bool, section, "vision_present", false);
+	m_fire_zoomout_time = READ_IF_EXISTS( pSettings, r_u32, section, "fire_zoomout_time", u32(-1) );
 }
 
 void CWeaponMagazined::FireStart		()
@@ -500,6 +501,9 @@ void CWeaponMagazined::UpdateCL			()
 			{
 				fTime			-=	dt;
 			}
+
+			if ( m_fire_zoomout_time != u32(-1) && IsZoomed() && m_dwStateTime > m_fire_zoomout_time )
+			  OnZoomOut();
 
 			break;
 		case eMisfire:		state_Misfire	(dt);	break;
