@@ -44,6 +44,7 @@ public:
 	virtual	void						load				(IReader &stream);
 	virtual	void						save				(IWriter &stream);
 			CPatrolPoint				&load_raw			(const CLevelGraph *level_graph, const CGameLevelCrossTable *cross, const CGameGraph *game_graph, IReader &stream);
+			CPatrolPoint				&load_ini			(CInifile::Sect& section, LPSTR prefix);
 	IC		const Fvector				&position			() const;
 	IC		const u32					&level_vertex_id	(const CLevelGraph *level_graph, const CGameLevelCrossTable *cross, const CGameGraph *game_graph) const;
 	IC		const GameGraph::_GRAPH_ID	&game_vertex_id		(const CLevelGraph *level_graph, const CGameLevelCrossTable *cross, const CGameGraph *game_graph) const;
