@@ -1016,6 +1016,7 @@ void CWeaponMagazined::InitAddons()
 			m_iScopeY = pSettings->r_s32(cNameSect(), "scope_y");
 
 			InitZoomParams(*m_sScopeName, !m_bIgnoreScopeTexture);
+			m_fZoomHudFov = READ_IF_EXISTS( pSettings, r_float, cNameSect().c_str(), "scope_zoom_hud_fov", m_fZoomHudFov );
 		}
 		else if(m_eScopeStatus == ALife::eAddonPermanent)
 		{
