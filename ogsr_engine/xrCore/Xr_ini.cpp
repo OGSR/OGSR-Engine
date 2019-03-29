@@ -68,6 +68,18 @@ BOOL CInifile::Sect::line_exist( LPCSTR L, LPCSTR* val ) {
   return FALSE;
 }
 
+LPCSTR CInifile::Sect::r_string( LPCSTR L ) {
+	if (!L || !strlen(L)) //--#SM+#-- [fix for one of "xrDebug - Invalid handler" error log]
+		Msg("!![ERROR] CInifile::Sect::r_string: S = [%s], L = [%s]", Name.c_str(), L);
+
+	shared_str k(L);
+	const auto A = Data.find(k);
+	if (A != Data.end())
+		return A->second.c_str();
+	else
+		Debug.fatal(DEBUG_INFO, "Can't find variable %s in [%s]", L, Name.c_str());
+	return 0;
+}
 
 CInifile::CInifile( IReader* F, LPCSTR path ) {
   fName      = 0;
@@ -324,7 +336,6 @@ CInifile::Sect& CInifile::r_section( LPCSTR S ) {
     Debug.fatal( DEBUG_INFO, "Can't open section '%s'", S );
   return  *I->second;
 }
-
 
 LPCSTR CInifile::r_string ( LPCSTR S, LPCSTR L ) {
   if ( !S || !L || !strlen( S ) || !strlen( L ) ) //--#SM+#-- [fix for one of "xrDebug - Invalid handler" error log]

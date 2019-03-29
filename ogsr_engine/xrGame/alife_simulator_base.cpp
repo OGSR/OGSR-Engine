@@ -304,17 +304,18 @@ void CALifeSimulatorBase::append_item_vector(OBJECT_VECTOR &tObjectVector, ITEM_
 void CALifeSimulatorBase::assign_death_position(CSE_ALifeCreatureAbstract *tpALifeCreatureAbstract, GameGraph::_GRAPH_ID tGraphID, CSE_ALifeSchedulable *tpALifeSchedulable)
 {
 	tpALifeCreatureAbstract->fHealth		= 0;
-	
-	if (tpALifeSchedulable) {
-		CSE_ALifeAnomalousZone				*l_tpALifeAnomalousZone = smart_cast<CSE_ALifeAnomalousZone*>(tpALifeSchedulable);
-		if (l_tpALifeAnomalousZone) {
-			spawns().assign_artefact_position(l_tpALifeAnomalousZone,tpALifeCreatureAbstract);
-			CSE_ALifeMonsterAbstract		*l_tpALifeMonsterAbstract = smart_cast<CSE_ALifeMonsterAbstract*>(tpALifeCreatureAbstract);
-			if (l_tpALifeMonsterAbstract)
-				l_tpALifeMonsterAbstract->m_tPrevGraphID = l_tpALifeMonsterAbstract->m_tNextGraphID = l_tpALifeMonsterAbstract->m_tGraphID;
-			return;
-		}
-	}
+
+	// tpALifeSchedulable всегда 0
+	//if (tpALifeSchedulable) {
+	//	CSE_ALifeAnomalousZone				*l_tpALifeAnomalousZone = smart_cast<CSE_ALifeAnomalousZone*>(tpALifeSchedulable);
+	//	if (l_tpALifeAnomalousZone) {
+	//		spawns().assign_artefact_position(l_tpALifeAnomalousZone,tpALifeCreatureAbstract);
+	//		CSE_ALifeMonsterAbstract		*l_tpALifeMonsterAbstract = smart_cast<CSE_ALifeMonsterAbstract*>(tpALifeCreatureAbstract);
+	//		if (l_tpALifeMonsterAbstract)
+	//			l_tpALifeMonsterAbstract->m_tPrevGraphID = l_tpALifeMonsterAbstract->m_tNextGraphID = l_tpALifeMonsterAbstract->m_tGraphID;
+	//		return;
+	//	}
+	//}
 
 	CGameGraph::const_spawn_iterator		i, e;
 	ai().game_graph().begin_spawn			(tGraphID,i,e);

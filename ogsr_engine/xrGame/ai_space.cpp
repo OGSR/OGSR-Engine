@@ -200,6 +200,11 @@ void CAI_Space::patrol_path_storage		(IReader &stream)
 	m_patrol_path_storage->load		(stream);
 }
 
+void CAI_Space::patrol_path_storage_ini(CInifile &way_inifile)
+{
+	m_patrol_path_storage->append_from_ini(way_inifile);
+}
+
 void CAI_Space::set_alife				(CALifeSimulator *alife_simulator)
 {
 	VERIFY					((!m_alife_simulator && alife_simulator) || (m_alife_simulator && !alife_simulator));
