@@ -691,7 +691,7 @@ void CCharacterPhysicsSupport::on_child_shell_activate(CPhysicsShellHolder* obj)
 	if (!has_shell_collision_place(obj))
 		return;
 	VERIFY(obj->PPhysicsShell());
-	RemoveActiveWeaponCollision	();
+	//RemoveActiveWeaponCollision	();
 }
 
 
@@ -949,7 +949,7 @@ void	CCharacterPhysicsSupport::CreateShell(CObject* who, Fvector& dp, Fvector & 
 	m_pPhysicsShell->SetRemoveCharacterCollLADisable();
 
 	m_pPhysicsShell->SetIgnoreSmall();
-	AddActiveWeaponCollision();
+	//AddActiveWeaponCollision();
 }
 
 void	CCharacterPhysicsSupport::EndActivateFreeShell(CObject* who, const Fvector& inital_entity_position, const Fvector& dp, const Fvector & velocity)
