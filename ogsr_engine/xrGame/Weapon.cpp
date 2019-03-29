@@ -2059,7 +2059,7 @@ float CWeapon::GetHudFov()
 			float fDiff = m_nearwall_last_hud_fov - m_fSecondVPHudFov;
 			return m_fSecondVPHudFov + (fDiff * (1 - m_fZoomRotationFactor));
 		}
-		if (!UseScopeTexture() && m_fZoomHudFov > 0.0f)
+		if (/*!UseScopeTexture()*/IsScopeAttached() && m_fZoomHudFov > 0.0f)
 		{
 			// В процессе зума
 			float fDiff = m_nearwall_last_hud_fov - m_fZoomHudFov;
