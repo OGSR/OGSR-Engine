@@ -1,9 +1,6 @@
-# Auto detect text files and perform LF normalization
-* text=auto
-
 # Custom
-*.script text linguist-language=Lua
-*.ltx    text linguist-language=INI
-*.ps     text linguist-language=HLSL
-*.vs     text linguist-language=HLSL
-*.s      text linguist-language=Lua
+*.script text=crlf linguist-language=Lua
+*.ltx    text=crlf linguist-language=INI
+*.ps     text=crlf linguist-language=HLSL diff=astextplain
+*.vs     text=crlf linguist-language=HLSL
+*.s      text=crlf linguist-language=Lua
