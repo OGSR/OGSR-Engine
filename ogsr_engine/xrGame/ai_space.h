@@ -44,6 +44,7 @@ private:
 			void						unload					(bool reload = false);
 			void						patrol_path_storage_raw	(IReader &stream);
 			void						patrol_path_storage		(IReader &stream);
+			void						patrol_path_storage_ini	(CInifile &way_inifile);
 			void						set_alife				(CALifeSimulator *alife_simulator);
 
 #ifdef PRIQUEL

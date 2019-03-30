@@ -11,6 +11,7 @@ class XRCORE_API CInifile {
     string_unordered_map<shared_str, shared_str> Data;
     std::vector<Item> Unordered;
     BOOL line_exist ( LPCSTR, LPCSTR* = nullptr );
+	LPCSTR r_string( LPCSTR );
   };
   using Root = string_unordered_map<shared_str, Sect*>;
 

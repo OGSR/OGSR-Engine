@@ -142,7 +142,7 @@ void CGameTask::Load(const TASK_ID& id)
 //*
 		LPCSTR ddd;
 		ddd								= g_gameTaskXml->Read(l_root, "map_location_hidden", 0, NULL);
-		if ( ddd || !m_show_all_objectives )
+		if ( (ddd || !m_show_all_objectives) && i > 1) // первая точка в квесте не может быть скрытая
 			objective.def_location_enabled = false;
 
 		bool b1,b2;
