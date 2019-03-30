@@ -42,7 +42,7 @@ CPatrolPath	&CPatrolPath::load_raw	(const CLevelGraph *level_graph, const CGameL
 
 CPatrolPath	&CPatrolPath::load_ini(CInifile::Sect& section)
 {
-	const LPCSTR points = section.r_string("points");
+	const char* points = section.r_string("points");
 	const int vertex_count = _GetItemCount(points);
 
 	string16 prefix;
@@ -62,7 +62,7 @@ CPatrolPath	&CPatrolPath::load_ini(CInifile::Sect& section)
 
 		if (section.line_exist(full_name))
 		{
-			const LPCSTR links = section.r_string(full_name);
+			const char* links = section.r_string(full_name);
 			const int links_count = _GetItemCount(links);
 
 			string32 link;
