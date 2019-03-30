@@ -105,12 +105,12 @@ CPatrolPoint &CPatrolPoint::load_ini(CInifile::Sect& section, LPSTR prefix)
 {
 	string256 full_name;
 
-	m_name				= section.r_string(strconcat(sizeof(full_name), full_name, prefix, ":", "name"));
-	m_position			= r_fvector3(section, strconcat(sizeof(full_name), full_name, prefix, ":", "position"));
-	m_level_vertex_id	= strtol(section.r_string(strconcat(sizeof(full_name), full_name, prefix, ":", "level_vertex_id")), nullptr, 10);
-	m_game_vertex_id	= strtol(section.r_string(strconcat(sizeof(full_name), full_name, prefix, ":", "game_vertex_id")), nullptr, 10);
+	m_name				= section.r_string(xr_strconcat(full_name, prefix, ":", "name"));
+	m_position			= r_fvector3(section, xr_strconcat(full_name, prefix, ":", "position"));
+	m_level_vertex_id	= strtol(section.r_string(xr_strconcat(full_name, prefix, ":", "level_vertex_id")), nullptr, 10);
+	m_game_vertex_id	= strtol(section.r_string(xr_strconcat(full_name, prefix, ":", "game_vertex_id")), nullptr, 10);
 
-	strconcat(sizeof(full_name), full_name, prefix, ":", "flags");
+	xr_strconcat(full_name, prefix, ":", "flags");
 
 	if (section.line_exist(full_name))
 		m_flags = strtol(section.r_string(full_name), nullptr, 16);

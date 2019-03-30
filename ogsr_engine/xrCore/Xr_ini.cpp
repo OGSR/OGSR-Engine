@@ -77,7 +77,7 @@ LPCSTR CInifile::Sect::r_string( LPCSTR L ) {
 	if (A != Data.end())
 		return A->second.c_str();
 	else
-		Debug.fatal(DEBUG_INFO, "Can't find variable %s in [%s]", L, Name.c_str());
+		FATAL("Can't find variable %s in [%s]", L, Name.c_str());
 	return 0;
 }
 
@@ -174,7 +174,7 @@ void CInifile::Load ( IReader* F, LPCSTR path ) {
       if ( Current ) {
         auto I = DATA.find( Current->Name );
         if ( I != DATA.end() )
-          Debug.fatal( DEBUG_INFO, "Duplicate section '%s' found.", Current->Name.c_str() );
+          FATAL( "Duplicate section '%s' found.", Current->Name.c_str() );
         DATA.insert({ Current->Name, Current });
       }
       Current = xr_new<Sect>();
@@ -233,7 +233,7 @@ void CInifile::Load ( IReader* F, LPCSTR path ) {
   if ( Current ) {
     auto I = DATA.find( Current->Name );
     if ( I != DATA.end() )
-      Debug.fatal( DEBUG_INFO, "Duplicate section '%s' found.", Current->Name.c_str() );
+      FATAL( "Duplicate section '%s' found.", Current->Name.c_str() );
     DATA.insert({ Current->Name, Current });
   }
 }
@@ -333,7 +333,7 @@ CInifile::Sect& CInifile::r_section( LPCSTR S ) {
   shared_str k = strlwr( section );
   const auto I = DATA.find( k );
   if ( I == DATA.end() )
-    Debug.fatal( DEBUG_INFO, "Can't open section '%s'", S );
+    FATAL( "Can't open section '%s'", S );
   return  *I->second;
 }
 
@@ -347,7 +347,7 @@ LPCSTR CInifile::r_string ( LPCSTR S, LPCSTR L ) {
   if ( A != I.Data.end() )
     return A->second.c_str();
   else
-    Debug.fatal( DEBUG_INFO, "Can't find variable %s in [%s]", L, S );
+    FATAL( "Can't find variable %s in [%s]", L, S );
   return 0;
 }
 
