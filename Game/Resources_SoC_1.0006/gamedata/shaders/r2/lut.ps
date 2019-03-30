@@ -1,0 +1,78 @@
+#include "common.h"
+////////////////////
+uniform float lut_control;
+////////////////////
+uniform sampler2D s_lut_1;
+uniform sampler2D s_lut_2;
+uniform sampler2D s_lut_3;
+uniform sampler2D s_lut_4;
+uniform sampler2D s_lut_5;
+////////////////////
+
+float4 main(p_screen I) : COLOR
+{
+    float3 cImage =  tex2D(s_image, I.tc0.xy).xyz;
+	float3 sample1;	
+	float3 sample2;
+    float lutWidth = 16.0f;
+    float2 lutOffset = float2(0.5f / 256.0f, 0.5f / lutWidth);
+    float lutScale = (lutWidth - 1.0) / lutWidth; 
+	//saturate to make sure in 0-1 range
+	cImage = saturate(cImage);
+
+	float3 lutTC = cImage * lutScale;
+
+	float blue = floor(cImage.b * 14.9999f) / lutWidth;
+	float frac = (cImage.b - blue) * lutWidth;
+
+////////////////first sample
+	lutTC.x = blue + cImage.r * lutScale / lutWidth;
+	float sample1_tex
+	if (lut_control.x >= 1.)
+	{		
+		sample1 = tex2D(s_lut_1, lutOffset + lutTC.xy).rgb;
+	}
+	if (lut_control.x == 2.)
+	{		
+		sample1 = tex2D(s_lut_2, lutOffset + lutTC.xy).rgb;
+	}
+	if (lut_control.x == 3.)
+	{		
+		sample1 = tex2D(s_lut_3, lutOffset + lutTC.xy).rgb;
+	}
+	if (lut_control.x == 4.)
+	{		
+		sample1 = tex2D(s_lut_4, lutOffset + lutTC.xy).rgb;
+	}
+	if (lut_control.x == 5.)
+	{		
+		sample1 = tex2D(s_lut_5, lutOffset + lutTC.xy).rgb;
+	}
+
+///////////////second sample	
+	lutTC.x += 1.0f / 16.0f;
+	
+	if (lut_control.x >= 1.)
+	{		
+		sample2 = tex2D(s_lut_1, lutOffset + lutTC.xy).rgb;
+	}
+	if (lut_control.x == 2.)
+	{		
+		sample2 = tex2D(s_lut_2, lutOffset + lutTC.xy).rgb;
+	}
+	if (lut_control.x == 3.)
+	{		
+		sample2 = tex2D(s_lut_3, lutOffset + lutTC.xy).rgb;
+	}
+	if (lut_control.x == 4.)
+	{		
+		sample2 = tex2D(s_lut_4, lutOffset + lutTC.xy).rgb;
+	}
+	if (lut_control.x == 5.)
+	{		
+		sample2 = tex2D(s_lut_5, lutOffset + lutTC.xy).rgb;
+	}
+///////////////	
+	cImage = lerp(sample1, sample2, frac);
+	return float4(cImage, 1);	
+}

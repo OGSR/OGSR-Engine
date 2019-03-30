@@ -182,25 +182,19 @@ struct combine {
 
 void        tonemap              (out float4 low, out float4 high, float3 rgb, float scale)
 {
-        rgb     =      	rgb*scale       ;
-#ifdef	USE_BRANCHING		// ps_3_0
-        low		=       rgb.xyzz		;
-        high	=		low/def_hdr		;        // 8x dynamic range
-#else
-        low		=       float4           (rgb,           0 )	;
-        high	=       float4       	(rgb/def_hdr,   0 )	;		// 8x dynamic range
-#endif
+	rgb		=	rgb*scale;
+	const float fWhiteIntensity = 1.33;
+	const float fWhiteIntensitySQR = fWhiteIntensity*fWhiteIntensity;
+	low		=	( (rgb*(1+rgb/fWhiteIntensitySQR)) / (rgb+1) ).xyzz;
+	high	=	rgb.xyzz/def_hdr;	// 8x dynamic range
 }
 void        tonemap_sky              (out float4 low, out float4 high, float3 rgb, float scale)
 {
-        rgb     =      	rgb*scale       ;
-#ifdef	USE_BRANCHING		// ps_3_0
-        low		=       rgb.xyzz		;
-        high	=		low/def_sky_hdr		;        // 8x dynamic range
-#else
-        low		=       float4           (rgb,           0 )	;
-        high	=       float4       	(rgb/def_sky_hdr,   0 )	;		// 8x dynamic range
-#endif
+	rgb		=	rgb*scale;
+	const float fWhiteIntensity = 1.33;
+	const float fWhiteIntensitySQR = fWhiteIntensity*fWhiteIntensity;
+	low		=	( (rgb*(1+rgb/fWhiteIntensitySQR)) / (rgb+1) ).xyzz;
+	high	=	rgb.xyzz/def_hdr;	// 8x dynamic range
 }
 float4		combine_bloom        (float3  low, float4 high)	{
         return        float4(low + high.xyz*high.a, 1.f);

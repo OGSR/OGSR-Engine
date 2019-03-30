@@ -274,6 +274,7 @@
     <ClInclude Include="Blender_flare.h" />
     <ClInclude Include="Blender_fog_volume.h" />
     <ClInclude Include="Blender_ikvision.h" />
+    <ClInclude Include="blender_lut.h" />
     <ClInclude Include="Blender_mblur.h" />
     <ClInclude Include="Blender_rain_drops.h" />
     <ClInclude Include="Blender_reflections.h" />
@@ -354,6 +355,7 @@
     <ClCompile Include="blender_dof.cpp" />
     <ClCompile Include="blender_fog_volume.cpp" />
     <ClCompile Include="blender_ikvision.cpp" />
+    <ClCompile Include="blender_lut.cpp" />
     <ClCompile Include="blender_mblur.cpp" />
     <ClCompile Include="blender_rain_drops.cpp" />
     <ClCompile Include="blender_reflections.cpp" />
@@ -368,6 +370,7 @@
     <ClCompile Include="r2_rendertarget_phase_aa.cpp" />
     <ClCompile Include="r2_rendertarget_phase_blur.cpp" />
     <ClCompile Include="r2_rendertarget_phase_dof.cpp" />
+    <ClCompile Include="r2_rendertarget_phase_lut.cpp" />
     <ClCompile Include="r2_rendertarget_phase_motion_blur.cpp" />
     <ClCompile Include="r2_rendertarget_phase_puddles.cpp" />
     <ClCompile Include="r2_rendertarget_phase_rain_drops.cpp" />

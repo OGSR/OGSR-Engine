@@ -28,6 +28,7 @@ public:
 	IBlender*					b_bloom;
 	IBlender*					b_luminance;
 	IBlender*					b_combine;
+	IBlender*					b_lut;
 #ifdef DEBUG
 	struct		dbg_line_t		{
 		Fvector	P0,P1;
@@ -212,6 +213,7 @@ public:
 	//	ref_shader					s_volumetric;
 	ref_shader					s_combine_volumetric;
 	ref_shader					s_accum_volumetric;
+	ref_shader					s_lut;
 	// geometry
 	ref_geom					g_KD;
 	ref_geom					g_Test_AA;
@@ -319,6 +321,7 @@ public:
 	void						phase_rain				();
 	void						phase_accumulator_reflected		();
 	void						phase_accumulator_volumetric	();
+	void						phase_lut 	       ();
 	void						accum_direct_volumetric	(u32 sub_phase, Fmatrix& m_shadow);
 	void						prepare_simple_quad		(ref_rt& DEST_RT, ref_selement& SHADER, u32& Offset, float downscale);
 	void						prepare_simple_quad		(ref_rt& DEST_RT, ref_selement& SHADER, u32& Offset, u32 width, u32 height, float downscale);
