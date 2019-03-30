@@ -395,6 +395,11 @@ bool is_level_present()
 	return (!!g_pGameLevel);
 }
 
+bool is_removing_objects_script()
+{
+	return Level().is_removing_objects();
+}
+
 CPHCall* add_call(const luabind::functor<bool> &condition,const luabind::functor<void> &action)
 {
 	luabind::functor<bool>		_condition = condition;
@@ -970,6 +975,7 @@ void CLevel::script_register(lua_State *L)
 	[
 		// obsolete\deprecated
 		def("object_by_id",						get_object_by_id),
+		def("is_removing_objects",				is_removing_objects_script),
 #ifdef DEBUG
 		def("debug_object",						get_object_by_name),
 		def("debug_actor",						tpfGetActor),
