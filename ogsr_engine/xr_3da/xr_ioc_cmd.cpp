@@ -17,19 +17,6 @@
 
 #include <regex>
 
-xr_token							snd_freq_token							[ ]={
-	{ "22khz",						sf_22K										},
-	{ "44khz",						sf_44K										},
-	{ 0,							0											}
-};
-xr_token							snd_model_token							[ ]={
-	{ "Default",					0											},
-	{ "Normal",						1											},
-	{ "Light",						2											},
-	{ "High",						3											},
-	{ 0,							0											}
-};
-
 extern xr_token*							vid_mode_token;
 
 xr_token							vid_quality_token							[ ]={
@@ -304,7 +291,49 @@ public :
 
 
 };
+
 //-----------------------------------------------------------------------
+
+class CCC_soundDevice : public CCC_Token
+{
+	using inherited = CCC_Token;
+public:
+	CCC_soundDevice(LPCSTR N) :inherited(N, &snd_device_id, nullptr) {};
+	virtual ~CCC_soundDevice() = default;
+
+	void Execute(LPCSTR args) override
+	{
+		GetToken();
+		if (!tokens)
+			return;
+		inherited::Execute(args);
+	}
+
+	void Status(TStatus& S) override
+	{
+		GetToken();
+		if (!tokens)
+			return;
+		inherited::Status(S);
+	}
+
+	xr_token* GetToken() override
+	{
+		tokens = snd_devices_token;
+		return inherited::GetToken();
+	}
+
+	void Save(IWriter *F) override
+	{
+		GetToken();
+		if (!tokens)
+			return;
+		inherited::Save(F);
+	}
+};
+
+//-----------------------------------------------------------------------
+
 class CCC_SND_Restart : public IConsole_Command
 {
 public:
@@ -480,10 +509,9 @@ void CCC_Register()
 	CMD1(CCC_VID_Reset, "vid_restart"			);
 	
 	// Sound
+	CMD1(CCC_soundDevice, "snd_device");
 	CMD2(CCC_Float,		"snd_volume_eff",		&psSoundVEffects);
 	CMD2(CCC_Float,		"snd_volume_music",		&psSoundVMusic);
-//.	CMD3(CCC_Token,		"snd_freq",				&psSoundFreq,		snd_freq_token			);
-//.	CMD3(CCC_Token,		"snd_model",			&psSoundModel,		snd_model_token			);
 	CMD1(CCC_SND_Restart,"snd_restart"			);
 	CMD3(CCC_Mask,		"snd_acceleration",		&psSoundFlags,		ss_Hardware	);
 	CMD3(CCC_Mask,		"snd_efx",				&psSoundFlags,		ss_EAX		);

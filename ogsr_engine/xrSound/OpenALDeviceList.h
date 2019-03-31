@@ -3,48 +3,43 @@
 #include <al.h>
 #include <alc.h>
 
-static constexpr const char* AL_GENERIC_HARDWARE = "Generic Hardware";
-static constexpr const char* AL_GENERIC_SOFTWARE = "Generic Software";
-static constexpr const char* AL_SOFT = "OpenAL Soft";
+#define AL_GENERIC_HARDWARE "Generic Hardware"
+#define AL_GENERIC_SOFTWARE "Generic Software"
 
-struct ALDeviceDesc{
-	xr_string			name;
+struct ALDeviceDesc {
+	string256			name;
 	int					minor_ver;
 	int					major_ver;
-	struct{
-		u8				selected	:1;
-		u8				xram		:1;
-		u8				eax			:1;
-		u8				efx			:1;
-		u8				eax_unwanted:1;
+	union ESndProps
+	{
+		struct {
+			u16				selected : 1;
+			u16				eax : 3;
+			u16				efx : 1;
+			u16				xram : 1;
+			u16				eax_unwanted : 1;
+
+			u16				unused : 9;
+		};
+		u16 storage;
 	};
-	ALDeviceDesc(LPCSTR nm, int mn, int mj) { name = nm; minor_ver = mn; major_ver = mj; selected = false; xram = false; eax = false; efx = false; eax_unwanted = true; }
+	ESndProps				props;
+	ALDeviceDesc(LPCSTR nm, int mn, int mj) { xr_strcpy(name, nm); minor_ver = mn; major_ver = mj; props.storage = 0; props.eax_unwanted = true; }
 };
 
 class ALDeviceList
 {
 private:
 	xr_vector<ALDeviceDesc>	m_devices;
-	xr_string			m_defaultDeviceName;
-	int					m_defaultDeviceIndex;
-	int					m_filterIndex;
-	void				Enumerate				();
+	string256			m_defaultDeviceName;
+	void				Enumerate();
 public:
-						ALDeviceList			();
-						~ALDeviceList			();
+	ALDeviceList();
+	~ALDeviceList();
 
-	bool IS_OpenAL_Soft = false; //Чтобы можно было менять dll-ку без необходимости пересборки движка.
-	int					GetNumDevices			()				{return m_devices.size();}
-	const ALDeviceDesc&	GetDeviceDesc			(int index)		{return m_devices[index];}
-	const xr_string&	GetDeviceName			(int index)		{return m_devices[index].name;}
-	void				GetDeviceVersion		(int index, int *major, int *minor);
-	int					GetDefaultDevice		()				{return m_defaultDeviceIndex;};
-	void				FilterDevicesMinVer		(int major, int minor);
-	void				FilterDevicesMaxVer		(int major, int minor);
-	void				FilterDevicesXRAMOnly	();
-	void				ResetFilters			();
-	int					GetFirstFilteredDevice	();
-	int					GetNextFilteredDevice	();
-	void				SelectBestDevice		();
+	u32					GetNumDevices() { return m_devices.size(); }
+	const ALDeviceDesc&	GetDeviceDesc(u32 index) { return m_devices[index]; }
+	LPCSTR				GetDeviceName(u32 index);
+	void				GetDeviceVersion(u32 index, int *major, int *minor);
+	void				SelectBestDevice();
 };
-

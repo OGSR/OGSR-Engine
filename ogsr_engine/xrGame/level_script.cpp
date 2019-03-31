@@ -793,24 +793,6 @@ void change_level( GameGraph::_GRAPH_ID game_vertex_id, u32 level_vertex_id, Fve
 }
 
 
-void setEFXPreset( LPCSTR preset ) {
-  ::Sound->setEFXPreset( preset );
-}
-
-void unsetEFXPreset() {
-  ::Sound->unsetEFXPreset();
-}
-
-
-void setEFXEAXPreset( LPCSTR preset ) {
-  ::Sound->setEFXEAXPreset( preset );
-}
-
-void unsetEFXEAXPreset() {
-  ::Sound->unsetEFXEAXPreset();
-}
-
-
 void set_cam_inert( float v ) {
   psCamInert = v;
   clamp( psCamInert, 0.0f, 1.0f );
@@ -1083,10 +1065,6 @@ void CLevel::script_register(lua_State *L)
 		def("send_event_mouse_wheel", &send_event_mouse_wheel),
 
 		def( "change_level", &change_level ),
-		def( "set_efx_preset", &setEFXPreset ),
-		def( "unset_efx_preset", &unsetEFXPreset ),
-		def( "set_efx_eax_preset", &setEFXEAXPreset ),
-		def( "unset_efx_eax_preset", &unsetEFXEAXPreset ),
 		def( "set_cam_inert", &set_cam_inert ),
 		def( "set_monster_relation", &set_monster_relation ),
 		def( "patrol_path_add", &patrol_path_add ),
