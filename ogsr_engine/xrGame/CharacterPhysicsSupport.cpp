@@ -691,7 +691,7 @@ void CCharacterPhysicsSupport::on_child_shell_activate(CPhysicsShellHolder* obj)
 	if (!has_shell_collision_place(obj))
 		return;
 	VERIFY(obj->PPhysicsShell());
-	//RemoveActiveWeaponCollision	();
+	RemoveActiveWeaponCollision	();
 }
 
 
@@ -788,7 +788,7 @@ void	CCharacterPhysicsSupport::AddActiveWeaponCollision()
 	CInventoryOwner*inv_owner = smart_cast<CInventoryOwner*>(&m_EntityAlife);
 	VERIFY(inv_owner);
 	PIItem active_weapon_item = inv_owner->inventory().ActiveItem();
-	if (!active_weapon_item)
+	if ( !active_weapon_item || !active_weapon_item->object().alife_object() )
 		return;
 	int bl = -1, br = -1, br2 = -1;
 	m_EntityAlife.g_WeaponBones(bl, br, br2);
@@ -949,7 +949,7 @@ void	CCharacterPhysicsSupport::CreateShell(CObject* who, Fvector& dp, Fvector & 
 	m_pPhysicsShell->SetRemoveCharacterCollLADisable();
 
 	m_pPhysicsShell->SetIgnoreSmall();
-	//AddActiveWeaponCollision();
+	AddActiveWeaponCollision();
 }
 
 void	CCharacterPhysicsSupport::EndActivateFreeShell(CObject* who, const Fvector& inital_entity_position, const Fvector& dp, const Fvector & velocity)
