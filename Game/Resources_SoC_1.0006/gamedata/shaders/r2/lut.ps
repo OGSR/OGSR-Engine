@@ -8,26 +8,32 @@ uniform sampler2D s_lut_3;
 uniform sampler2D s_lut_4;
 uniform sampler2D s_lut_5;
 ////////////////////
-
+//A CE3 Lookup table shader. 
+//Ported to Oxygen by Sir Lancevrot.
+//Ported to OGSR by LVutner.
+////////////////////
 float4 main(p_screen I) : COLOR
 {
     float3 cImage =  tex2D(s_image, I.tc0.xy).xyz;
 	float3 sample1;	
 	float3 sample2;
-    float lutWidth = 16.0f;
-    float2 lutOffset = float2(0.5f / 256.0f, 0.5f / lutWidth);
-    float lutScale = (lutWidth - 1.0) / lutWidth; 
+	
+    float lutWidth = 256.0f;
+	float lutHeight = 16.0f;
+	
+    float2 lutOffset = float2(0.5f / lutWidth, 0.5f / lutHeight);
+    float lutScale = (lutHeight - 1.0) / lutHeight; 
 	//saturate to make sure in 0-1 range
 	cImage = saturate(cImage);
 
 	float3 lutTC = cImage * lutScale;
 
-	float blue = floor(cImage.b * 14.9999f) / lutWidth;
-	float frac = (cImage.b - blue) * lutWidth;
+	float blue = floor(cImage.b * 14.9999f) / lutHeight;
+	float frac = (cImage.b - blue) * lutHeight;
 
 ////////////////first sample
-	lutTC.x = blue + cImage.r * lutScale / lutWidth;
-	float sample1_tex
+	lutTC.x = blue + cImage.r * lutScale / lutHeight;
+
 	if (lut_control.x >= 1.)
 	{		
 		sample1 = tex2D(s_lut_1, lutOffset + lutTC.xy).rgb;
@@ -50,7 +56,7 @@ float4 main(p_screen I) : COLOR
 	}
 
 ///////////////second sample	
-	lutTC.x += 1.0f / 16.0f;
+	lutTC.x += 1.0f / lutHeight;
 	
 	if (lut_control.x >= 1.)
 	{		
