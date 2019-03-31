@@ -1001,7 +1001,6 @@ void CWeaponMagazined::InitAddons()
 	// Прицел
 	m_fIronSightZoomFactor = READ_IF_EXISTS(pSettings, r_float, cNameSect(), "ironsight_zoom_factor", 50.0f);
 	m_fSecondScopeZoomFactor = READ_IF_EXISTS(pSettings, r_float, cNameSect(), "second_scope_zoom_factor", m_fIronSightZoomFactor);
-	//
 
 	if(IsScopeAttached())
 	{
@@ -1012,6 +1011,9 @@ void CWeaponMagazined::InitAddons()
 			m_iScopeY = pSettings->r_s32(cNameSect(), "scope_y");
 
 			InitZoomParams(*m_sScopeName, true);
+
+			m_fZoomHudFov = READ_IF_EXISTS(pSettings, r_float, cNameSect(), "scope_zoom_hud_fov", m_fZoomHudFov);
+			m_fSecondVPHudFov = READ_IF_EXISTS(pSettings, r_float, cNameSect(), "scope_lense_hud_fov", m_fSecondVPHudFov);
 		}
 		else if(m_eScopeStatus == ALife::eAddonPermanent)
 		{
@@ -1031,7 +1033,6 @@ void CWeaponMagazined::InitAddons()
 
 			// for weapon without any scope - scope_zoom_factor will overrider ironsight_zoom_factor
 			m_fIronSightZoomFactor = m_fScopeZoomFactor;
-
 		}
 		else 
 		{
@@ -1073,7 +1074,6 @@ void CWeaponMagazined::InitAddons()
 		m_sSmokeParticlesCurrent = m_sSilencerSmokeParticles;
 		m_pSndShotCurrent = &sndSilencerShot;
 
-
 		//сила выстрела
 		LoadFireParams	(*cNameSect(), "");
 
@@ -1090,6 +1090,7 @@ void CWeaponMagazined::InitAddons()
 
 		//сила выстрела
 		LoadFireParams	(*cNameSect(), "");
+
 		//подсветка от выстрела
 		LoadLights		(*cNameSect(), "");
 	}

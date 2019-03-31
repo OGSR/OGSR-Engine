@@ -54,6 +54,38 @@ void CPatrolPathStorage::load_raw			(const CLevelGraph *level_graph, const CGame
 	chunk->close				();
 }
 
+void CPatrolPathStorage::append_from_ini(CInifile &way_inifile)
+{
+	PATROL_REGISTRY::value_type	pair;
+
+	int i = 0;
+	int r = 0;
+	for (const auto &it : way_inifile.sections())
+	{
+		const shared_str patrol_name = it.first;
+
+		if (m_registry.erase(patrol_name))
+		{
+			r++;
+		}
+
+		m_registry.insert(
+			std::make_pair(
+				patrol_name,
+				&xr_new<CPatrolPath>(
+					patrol_name
+					)->load_ini(
+						*it.second
+					)
+			)
+		);
+
+		i++;
+	}
+
+	Msg("Loaded %d items from custom_waypoints, %d from all.spawn was replaced!", i, r);
+}
+
 void CPatrolPathStorage::load				(IReader &stream)
 {
 	IReader						*chunk;
