@@ -536,6 +536,7 @@ void		xrRender_initconsole	()
 	CMD4(CCC_Float,		"r2_zfill_depth",		&ps_r2_zfill,				.001f,	.5f		);
 	CMD3(CCC_Mask,		"r2_allow_r1_lights",	&ps_r2_ls_flags,			R2FLAG_R1LIGHTS	);
 
+
 	//- Mad Max
 	CMD4(CCC_Float,		"r2_gloss_factor",		&ps_r2_gloss_factor,		.0f,	10.f	);
 	//- Mad Max
@@ -641,6 +642,8 @@ void		xrRender_initconsole	()
 	CMD3(CCC_Mask, "r2_volumetric_fog", &ps_r2_ls_flags, R2FLAG_FOG_VOLUME);
 	//	CMD3(CCC_Mask,		"r2_reproject",			&ps_r2_test_flags,			R2FLAG_REPROJECT);
 	CMD3(CCC_Mask,		"r2_disable_hom",			&ps_r2_test_flags, R2FLAG_DISABLE_HOM);
+
+	CMD3(CCC_Mask,		"r2_lut",		&ps_r2_pp_flags,			R2PP_FLAG_LUT);
 
 	CMD4(CCC_detail_radius, "r__detail_radius", &ps_r__detail_radius, 49, 250);
 	CMD3(CCC_Mask, "r2_detail_bump", &ps_r2_ls_flags, R2FLAG_DETAIL_BUMP_DEBUG);

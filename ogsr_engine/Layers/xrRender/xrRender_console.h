@@ -233,6 +233,7 @@ enum
 	R2PP_FLAG_LIGHT_SHADOW_FADE = (1 << 11),
 	R_FLAG_GLOW_USE = (1 << 12),
 	R2PP_FLAG_SHADER_CACHE = (1 << 13),
+	R2PP_FLAG_LUT = (1 << 14),
 };
 
 enum

@@ -193,7 +193,7 @@ void	CRenderTarget::phase_combine	()
 			//			if (ps_r2_pp_flags.test(R2PP_FLAG_SUPERSAMPLING_AA))	phase_downsample	();
 			// screen space "volume" effects
 			if (ps_r2_pp_flags.test(R2PP_FLAG_AA))						phase_aa();
-			phase_lut();
+			if (ps_r2_pp_flags.test(R2PP_FLAG_LUT))						phase_lut();
 			phase_wet_reflections();
 			if (ps_r2_pp_flags.test(R2PP_FLAG_SUNSHAFTS)
 				&& (ps_sunshafts_mode == R2SS_SCREEN_SPACE))			phase_sunshafts();

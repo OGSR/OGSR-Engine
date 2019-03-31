@@ -768,7 +768,11 @@ HRESULT	CRender::shader_compile(
 		//Msg("~~[%s] LAMP_SHADOW_FADE_QUALITY: [%s]", __FUNCTION__, defines[def_it].Definition);
 		def_it++;
 	}
-
+	if (ps_r2_ls_flags.test(R2PP_FLAG_LUT)) {
+		defines[def_it].Name = "USE_LUT";
+		defines[def_it].Definition = "1";
+		def_it++;
+	}
 	// finish
 	defines[def_it].Name = 0;
 	defines[def_it].Definition = 0;
