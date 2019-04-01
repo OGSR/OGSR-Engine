@@ -5,6 +5,7 @@
 
 #define AL_GENERIC_HARDWARE "Generic Hardware"
 #define AL_GENERIC_SOFTWARE "Generic Software"
+#define AL_SOFT "OpenAL Soft"
 
 struct ALDeviceDesc {
 	string256			name;
@@ -42,4 +43,5 @@ public:
 	LPCSTR				GetDeviceName(u32 index);
 	void				GetDeviceVersion(u32 index, int *major, int *minor);
 	void				SelectBestDevice();
+	bool IS_OpenAL_Soft = false;
 };

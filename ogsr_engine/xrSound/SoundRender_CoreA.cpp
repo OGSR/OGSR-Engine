@@ -150,6 +150,7 @@ void CSoundRender_CoreA::_initialize(int stage)
 			T = xr_new<CSoundRender_TargetA>();
 			if (T->_initialize())
 			{
+				T->alsoft_flag = pDeviceList->IS_OpenAL_Soft;
 				s_targets.push_back(T);
 			}
 			else

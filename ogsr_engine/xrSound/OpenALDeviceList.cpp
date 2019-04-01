@@ -202,8 +202,10 @@ void ALDeviceList::SelectBestDevice()
 	}
 	if (GetNumDevices() == 0)
 		Msg("SOUND: Can't select device. List empty");
-	else
+	else {
 		Msg("SOUND: Selected device is %s", GetDeviceName(snd_device_id));
+		IS_OpenAL_Soft = !stricmp(GetDeviceName(snd_device_id), AL_SOFT);
+	}
 }
 
 /*

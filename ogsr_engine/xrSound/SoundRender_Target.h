@@ -9,6 +9,7 @@ protected:
 	BOOL						rendering;
 public:
 	float						priority;
+	bool alsoft_flag = false;
 protected:
 	OggVorbis_File				ovf;
 	IReader*					wave;
