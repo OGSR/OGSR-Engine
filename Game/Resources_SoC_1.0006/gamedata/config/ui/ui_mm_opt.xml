@@ -720,11 +720,8 @@
 		<cap_musicvolume x="20" y="45" width="143" height="21">
 			<text font="letterica16" r="215" g="195" b="170">ui_mm_music_volume</text>
 		</cap_musicvolume>
-		<_cap_soundquality x="20" y="70" width="143" height="21">
-			<text font="letterica16" r="215" g="195" b="170">ui_mm_sound_quality</text>
-		</_cap_soundquality>
 		
-		<check_eax x="20" y="70" width="143" height="21">
+		<check_eax x="20" y="95" width="143" height="21">
 			<options_item entry="snd_efx" group="mm_opt_sound"/>
 			<text font="letterica16" r="215" g="195" b="170">ui_mm_eax</text>
 		</check_eax>
@@ -735,10 +732,20 @@
 		<track_musicvolume x="194" y="40" width="245" height="21">
 			<options_item entry="snd_volume_music" group="mm_opt_sound"/>
 		</track_musicvolume>		
-		<_list_soundquality x="194" y="70" width="245" height="21">
-			<options_item entry="snd_freq" group="mm_opt_sound"/>
-		</_list_soundquality>
-		
+
+		<cap_snd_device x="20" y="70" width="143" height="21">
+            <text font="letterica16" r="215" g="195" b="170">ui_mm_snd_device</text>
+        </cap_snd_device>
+        <list_snd_device x="194" y="65" width="245" height="21" always_show_scroll="1">
+            <options_item entry="snd_device" group="mm_opt_sound"/>
+			<text_color>
+				<e r="216" g="186" b="140"/>
+				<d r="227" g="199" b="178"/>
+			</text_color>
+			<list_font_s r="240" g="217" b="182"/>
+			<list_font	 r="216" g="186" b="140" font="letterica16"/>
+        </list_snd_device>
+
 		<btn_default_set x="342" y="325" width="111" height="29">
 			<text align="c" font="letterica16" r="188" g="153" b="123">ui_mm_default</text>	
 			<texture>ui_button_ordinary</texture>			

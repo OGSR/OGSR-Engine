@@ -461,6 +461,9 @@
 	<string id="ui_mm_master_volume">
 		<text>Громкость</text>
 	</string>
+	<string id="ui_mm_snd_device">
+		<text>Звуковое устройство</text>
+	</string>
 	<string id="ui_mm_eax">
 		<text>EAX</text>
 	</string>
