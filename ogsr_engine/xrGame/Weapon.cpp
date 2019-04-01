@@ -850,7 +850,7 @@ void CWeapon::UpdateWeaponParams()
 
 	if (!IsHidden()) {
 		w_states.x = m_fZoomRotationFactor;			//x = zoom mode, y - текущее состояние, z - старое состояние
-		if ( psActorFlags.test( AF_DOF_SCOPE ) && !( IsZoomed() && !IsRotatingToZoom() && IsScopeAttached() && m_bUseScopeDOF ) )
+		if ( psActorFlags.test( AF_DOF_SCOPE ) && !( IsZoomed() && !IsRotatingToZoom() && IsScopeAttached() && !IsGrenadeMode() && m_bUseScopeDOF ) )
 		  w_states.x = 0.f;
 		if (w_states.y != GetState())	// первый апдейт или стейт изменился
 		{
@@ -2059,7 +2059,7 @@ float CWeapon::GetHudFov()
 			float fDiff = m_nearwall_last_hud_fov - m_fSecondVPHudFov;
 			return m_fSecondVPHudFov + (fDiff * (1 - m_fZoomRotationFactor));
 		}
-		if (/*!UseScopeTexture()*/IsScopeAttached() && m_fZoomHudFov > 0.0f)
+		if (IsScopeAttached() && !IsGrenadeMode() && m_fZoomHudFov > 0.0f)
 		{
 			// В процессе зума
 			float fDiff = m_nearwall_last_hud_fov - m_fZoomHudFov;
