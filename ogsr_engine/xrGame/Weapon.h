@@ -264,6 +264,8 @@ protected:
 	bool			m_bHideCrosshairInZoom;
 	//разрешить инерцию оружия в режиме прицеливания
 	bool			m_bZoomInertionAllow;
+	// или в режиме прицеливания через оптику
+	bool			m_bScopeZoomInertionAllow;
 	//Целевой HUD FOV при зуме
 	float			m_fZoomHudFov;
 	//Целевой HUD FOV для линзы

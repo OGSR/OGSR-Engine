@@ -452,6 +452,7 @@ void CWeapon::Load		(LPCSTR section)
 	m_bZoomInertionAllow = false;
 	if (pSettings->line_exist(hud_sect, "allow_zoom_inertion"))
 		m_bZoomInertionAllow = !!pSettings->r_bool(hud_sect, "allow_zoom_inertion");
+	m_bScopeZoomInertionAllow = READ_IF_EXISTS( pSettings, r_bool, hud_sect, "allow_scope_zoom_inertion", m_bZoomInertionAllow );
 
 	//////////////////////////////////////////////////////////
 
@@ -1507,10 +1508,12 @@ void CWeapon::OnZoomIn()
 	else
 		m_fZoomFactor = CurrentZoomFactor();
 
-	if (!m_bZoomInertionAllow)
-	{
-		StopHudInertion();
+	if ( IsScopeAttached() && !IsGrenadeMode() ) {
+		if ( !m_bScopeZoomInertionAllow )
+			StopHudInertion();
 	}
+	else if (!m_bZoomInertionAllow)
+		StopHudInertion();
 
 	CActor* pActor = smart_cast<CActor*>(H_Parent());
 	if ( pActor )
