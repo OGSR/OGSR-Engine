@@ -213,6 +213,8 @@ void CCar::SpawnInitPhysics	(CSE_Abstract	*D)
 	//PPhysicsShell()->add_ObjectContactCallback(ActorObstacleCallback);
 	SetDefaultNetState				(so);
 	CPHUpdateObject::Activate       ();
+
+	m_pPhysicsShell->applyImpulse(Fvector().set(0,-1.f,0), 0.1);// хит по физ. оболочке, чтобы не висела в воздухе
 }
 
 void	CCar::net_Destroy()

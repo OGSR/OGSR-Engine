@@ -52,13 +52,13 @@ public:
 
 	IC float 				GetHealthLost			() const			{return m_fHealthLost;}
 
-	virtual void			ChangeSatiety			(float value)		{};
 	void 					ChangeHealth			(float value);
 	void 					ChangePower				(float value);
 	void 					ChangeRadiation			(float value);
 	void 					ChangePsyHealth			(float value);
+	virtual void			ChangeSatiety			(float value){};
 	virtual void 			ChangeAlcohol			(float value){};
-	virtual void			ChangeThirst(const float value) {};
+	virtual void			ChangeThirst			(float value){};
 
 	IC void					MaxPower				()					{m_fPower = m_fPowerMax;};
 	IC void					SetMaxPower				(float val)			{m_fPowerMax = val; clamp(m_fPowerMax,0.1f,1.0f);};
