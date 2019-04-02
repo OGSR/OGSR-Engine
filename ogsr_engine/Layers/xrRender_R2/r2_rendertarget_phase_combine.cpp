@@ -193,6 +193,7 @@ void	CRenderTarget::phase_combine	()
 			//			if (ps_r2_pp_flags.test(R2PP_FLAG_SUPERSAMPLING_AA))	phase_downsample	();
 			// screen space "volume" effects
 			if (ps_r2_pp_flags.test(R2PP_FLAG_AA))						phase_aa();
+			if (ps_r2_pp_flags.test(R2PP_FLAG_LUT))						phase_lut();
 			phase_wet_reflections();
 			if (ps_r2_pp_flags.test(R2PP_FLAG_SUNSHAFTS)
 				&& (ps_sunshafts_mode == R2SS_SCREEN_SPACE))			phase_sunshafts();
@@ -268,6 +269,7 @@ void	CRenderTarget::phase_combine	()
 		RCache.set_c				("m_current",	m_current);
 		RCache.set_c				("m_previous",	m_previous);
 		RCache.set_c				("m_blur",		m_blur_scale.x,m_blur_scale.y, 0,0);*/
+		RCache.set_c				("lut_control",	ps_r2_lut_control, ps_r2_lut_control, ps_r2_lut_control,0);
 		RCache.set_c("c_color_grading", ps_r2_color_grading_params);
 		RCache.set_Geometry			(g_aa_AA);
 		RCache.Render				(D3DPT_TRIANGLELIST,Offset,0,4,0,2);

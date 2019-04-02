@@ -156,7 +156,10 @@
       <FixedBaseAddress>false</FixedBaseAddress>
     </Link>
     <PostBuildEvent>
-      <Command>copy /Y "$(SolutionDir)\Game\dlls\dbghelp_$(PlatformShortName).dll" "$(OutDir)dbghelp.dll"</Command>
+      <Command>
+        copy /Y "$(SolutionDir)\3rd_party\Src\OpenAL_Soft\bin\$(PlatformShortName)\soft_oal.dll" "$(OutDir)soft_oal.dll"
+        copy /Y "$(SolutionDir)\Game\dlls\dbghelp_$(PlatformShortName).dll" "$(OutDir)dbghelp.dll"
+      </Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -225,7 +228,10 @@
       <FixedBaseAddress>false</FixedBaseAddress>
     </Link>
     <PostBuildEvent>
-      <Command>copy /Y "$(SolutionDir)\Game\dlls\dbghelp_$(PlatformShortName).dll" "$(OutDir)dbghelp.dll"</Command>
+      <Command>
+        copy /Y "$(SolutionDir)\3rd_party\Src\OpenAL_Soft\bin\$(PlatformShortName)\soft_oal.dll" "$(OutDir)soft_oal.dll"
+        copy /Y "$(SolutionDir)\Game\dlls\dbghelp_$(PlatformShortName).dll" "$(OutDir)dbghelp.dll"
+      </Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -288,7 +294,10 @@
       <FixedBaseAddress>false</FixedBaseAddress>
     </Link>
     <PostBuildEvent>
-      <Command>copy /Y "$(SolutionDir)\Game\dlls\dbghelp_$(PlatformShortName).dll" "$(OutDir)dbghelp.dll"</Command>
+      <Command>
+        copy /Y "$(SolutionDir)\3rd_party\Src\OpenAL_Soft\bin\$(PlatformShortName)\soft_oal.dll" "$(OutDir)soft_oal.dll"
+        copy /Y "$(SolutionDir)\Game\dlls\dbghelp_$(PlatformShortName).dll" "$(OutDir)dbghelp.dll"
+      </Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -354,7 +363,10 @@
       <FixedBaseAddress>false</FixedBaseAddress>
     </Link>
     <PostBuildEvent>
-      <Command>copy /Y "$(SolutionDir)\Game\dlls\dbghelp_$(PlatformShortName).dll" "$(OutDir)dbghelp.dll"</Command>
+      <Command>
+        copy /Y "$(SolutionDir)\3rd_party\Src\OpenAL_Soft\bin\$(PlatformShortName)\soft_oal.dll" "$(OutDir)soft_oal.dll"
+        copy /Y "$(SolutionDir)\Game\dlls\dbghelp_$(PlatformShortName).dll" "$(OutDir)dbghelp.dll"
+      </Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>

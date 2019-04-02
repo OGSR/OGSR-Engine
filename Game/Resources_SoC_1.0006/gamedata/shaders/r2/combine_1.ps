@@ -101,7 +101,7 @@ _out       main                ( _input I )
 
 //		light.xyz = clamp(light.xyz, float3(0,0,0), float3(1.5,1.5,1.5));
         float4         C           = D*light;                                                        // rgb.gloss * light(diffuse.specular)
-        float3         spec        = C.www         + hspecular;        // replicated specular
+        float3         spec        = C.www*L.rgb+hspecular;        // replicated specular
 #ifdef         USE_SUPER_SPECULAR
                       spec      = (C.rgb*.5h + .5h)*C.w + hspecular        ;
 #endif

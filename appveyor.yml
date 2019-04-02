@@ -4,7 +4,6 @@ configuration:
 - Debug
 - Release
 platform:
-- x86
 - x64
 shallow_clone: true
 build:

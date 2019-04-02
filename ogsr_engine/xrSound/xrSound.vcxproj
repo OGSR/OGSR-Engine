@@ -277,7 +277,6 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="..\COMMON\cl_intersect.h" />
     <ClInclude Include="Sound.h" />
     <ClInclude Include="SoundRender.h" />
     <ClInclude Include="stdafx.h" />
