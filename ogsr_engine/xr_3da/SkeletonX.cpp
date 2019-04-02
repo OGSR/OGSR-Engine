@@ -245,7 +245,8 @@ void CSkeletonX::_Render	(ref_geom& hGeom, u32 vCount, u32 iOffset, u32 pCount)
 			u32						count	= RMS_bonecount;
 			for (u32 mid = 0; mid<count; mid++)	{
 				Fmatrix&	M				= Parent->LL_GetTransform_R				(u16(mid));
-				if (strstr(Core.Params, "-enable_qt_skinning"))
+				static bool qt_skin_enabled = !!strstr(Core.Params, "-enable_qt_skinning");
+				if (qt_skin_enabled)
 				{
 					u32 id = mid * 2;
 

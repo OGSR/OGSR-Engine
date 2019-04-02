@@ -43,28 +43,28 @@ public:
 	u32						_stat_hit;
 	u32						_stat_miss;
 private:
-	void					move2top	(cache_line* line);					// move one line to TOP-priority
-	void					disconnect	();									// disconnect from CATs
-	void					format		();									// format structure (like filesystem)
+	void					move2top(cache_line* line);					// move one line to TOP-priority
+	void					disconnect();									// disconnect from CATs
+	void					format();									// format structure (like filesystem)
 public:
-	BOOL					request		(cache_cat& cat, u32 id);			// TRUE=need to fill, FALSE=cached info avail
-	void					purge		();									// discard all contents of cache
+	BOOL					request(cache_cat& cat, u32 id);			// TRUE=need to fill, FALSE=cached info avail
+	void					purge();									// discard all contents of cache
 
-	void*					get_dataptr	(cache_cat& cat, u32 id)			{ id%=cat.size; return c_storage[cat.table[id]].data;			} //.
-	u32						get_linesize()									{ return _line;													}
+	void*					get_dataptr(cache_cat& cat, u32 id) { id %= cat.size; return c_storage[cat.table[id]].data; } //.
+	u32						get_linesize() { return _line; }
 
-	void					cat_create	(cache_cat& cat, u32 bytes);
-	void					cat_destroy	(cache_cat& cat);
+	void					cat_create(cache_cat& cat, u32 bytes);
+	void					cat_destroy(cache_cat& cat);
 
-	void					initialize	(u32 _total_kb_approx, u32 bytes_per_line);
-	void					destroy		();
+	void					initialize(u32 _total_kb_approx, u32 bytes_per_line);
+	void					destroy();
 
-	void					stats_clear	()
+	void					stats_clear()
 	{
-		_stat_hit			= 0;
-		_stat_miss			= 0;
+		_stat_hit = 0;
+		_stat_miss = 0;
 	}
 
-	CSoundRender_Cache		();
-	~CSoundRender_Cache		();
+	CSoundRender_Cache();
+	~CSoundRender_Cache();
 };
