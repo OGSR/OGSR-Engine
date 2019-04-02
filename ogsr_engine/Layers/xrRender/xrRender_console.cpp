@@ -708,4 +708,5 @@ void		xrRender_initconsole	()
 	//	CMD3(CCC_Mask,		"extended_graph_stats",		&ps_service_flags,			S_EXTENDED_GRAPH_STATS);
 
 	CMD3( CCC_Mask, "r2_shader_cache", &ps_r2_pp_flags, R2PP_FLAG_SHADER_CACHE );
+	CMD3( CCC_Mask, "r2_ignore_actor_torch", &ps_r2_pp_flags, R2PP_FLAG_IGNORE_ACTOR_TORCH );
 }
