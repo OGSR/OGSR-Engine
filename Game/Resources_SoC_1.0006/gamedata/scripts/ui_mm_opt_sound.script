@@ -7,7 +7,7 @@ end
 function opt_sound:__finalize()
 end
 
-function opt_sound:InitControls(x, y, xml)
+function opt_sound:InitControls(x, y, xml, handler)
 	self:Init(x, y, 738, 416)
 	self:SetAutoDelete(true)
 
@@ -16,8 +16,21 @@ function opt_sound:InitControls(x, y, xml)
 	xml:InitStatic("tab_sound:cap_mastervolume", self)
 	xml:InitStatic("tab_sound:cap_musicvolume", self)
 
-	xml:InitCheck("tab_sound:check_eax", self)
-
 	xml:InitTrackBar("tab_sound:track_musicvolume", self)
 	xml:InitTrackBar("tab_sound:track_mastervolume", self)
+
+	self.message_box = CUIMessageBoxEx()
+	local need_restart_wnd = function()
+		self.message_box:Init("message_box_restart_game")
+		handler:GetHolder():start_stop_menu(self.message_box, true)
+	end
+
+	xml:InitStatic("tab_sound:cap_snd_device", self)
+	local ctl = xml:InitComboBox("tab_sound:list_snd_device", self)
+	handler:Register(ctl, "tab_sound:list_snd_device")
+	handler:AddCallback( "tab_sound:list_snd_device", ui_events.LIST_ITEM_SELECT, need_restart_wnd )
+
+	local ctl = xml:InitCheck("tab_sound:check_eax", self)
+	handler:Register(ctl, "tab_sound:check_eax")
+	handler:AddCallback( "tab_sound:check_eax", ui_events.BUTTON_CLICKED, need_restart_wnd )
 end
