@@ -65,6 +65,7 @@ protected:
 	CUICharacterInfo*		m_pUICharacterInfoRight;
 	CUIPropertiesBox*		m_pUIPropertiesBox;
 	CUI3tButton*			m_pUITakeAll;
+
 public:
 	CUICellItem*			m_pCurrentCellItem;
 
@@ -84,7 +85,7 @@ protected:
 	// Взять все
 	void					TakeAll						();
 	void					MoveItem					(CUICellItem* itm);
-	void					MoveItems					(CUICellItem* itm, bool b_all);
+	void					MoveItems					(CUICellItem* itm);
 	void					DropItemsfromCell			(bool b_all);
 
 

@@ -183,10 +183,10 @@ void CUITradeWnd::Init()
 
 	m_uidata->UIDealMsg					= NULL;
 
-	BindDragDropListEnents				(&m_uidata->UIOurBagList);
-	BindDragDropListEnents				(&m_uidata->UIOthersBagList);
-	BindDragDropListEnents				(&m_uidata->UIOurTradeList);
-	BindDragDropListEnents				(&m_uidata->UIOthersTradeList);
+	BindDragDropListEvents				(&m_uidata->UIOurBagList);
+	BindDragDropListEvents				(&m_uidata->UIOthersBagList);
+	BindDragDropListEvents				(&m_uidata->UIOurTradeList);
+	BindDragDropListEvents				(&m_uidata->UIOthersTradeList);
 }
 
 void CUITradeWnd::InitTrade(CInventoryOwner* pOur, CInventoryOwner* pOthers)
@@ -235,7 +235,10 @@ void CUITradeWnd::SendMessage(CUIWindow *pWnd, s16 msg, void *pData)
 					void* d = m_pUIPropertiesBox->GetClickedItem()->GetData();
 					bool b_all = (d == (void*)33);
 
-					MoveItems(CurrentItem(), b_all);
+					if (b_all)
+						MoveItems(CurrentItem());
+					else
+						MoveItem(CurrentItem());
 				}break;
 			}
 		}
@@ -668,7 +671,7 @@ bool CUITradeWnd::OnItemDrop(CUICellItem* itm)
 		return false;
 
 	if (Level().IR_GetKeyState(DIK_LSHIFT)) {
-		MoveItems(itm, true);
+		MoveItems(itm);
 	}
 	else {
 		MoveItem(itm);
@@ -682,7 +685,7 @@ bool CUITradeWnd::OnItemDbClick(CUICellItem* itm)
 	SetCurrentItem						(itm);
 
 	if (Level().IR_GetKeyState(DIK_LSHIFT)) {
-		MoveItems(itm, true);
+		MoveItems(itm);
 	}
 	else {
 		MoveItem(itm);
@@ -691,52 +694,51 @@ bool CUITradeWnd::OnItemDbClick(CUICellItem* itm)
 	return true;
 }
 
-void CUITradeWnd::MoveItems(CUICellItem* itm, bool b_all)
+void CUITradeWnd::MoveItems(CUICellItem* itm)
 {
 	if (!itm)
 	{
 		return;
 	}
 
-	if (b_all)
+	//Msg("Move all items %d", cnt);
+
+	CUIDragDropListEx* old_owner = itm->OwnerList();
+	CUIDragDropListEx* to = nullptr;
+
+	if (old_owner == &m_uidata->UIOurBagList)
 	{
-		u32 cnt = itm->ChildsCount();
+		if (!CanMoveToOther((PIItem)itm->m_pData, true)) return;
 
-		//Msg("Move all items %d", cnt);
+		to = &m_uidata->UIOurTradeList;
+	}
+	else if (old_owner == &m_uidata->UIOurTradeList)
+		to = &m_uidata->UIOurBagList;
+	else if (old_owner == &m_uidata->UIOthersBagList)
+	{
+		if (!CanMoveToOther((PIItem)itm->m_pData, false)) return;
 
-		CUIDragDropListEx* old_owner = itm->OwnerList();
-		CUIDragDropListEx* to = nullptr;
+		to = &m_uidata->UIOthersTradeList;
+	}
+	else if (old_owner == &m_uidata->UIOthersTradeList)
+		to = &m_uidata->UIOthersBagList;
 
-		if (old_owner == &m_uidata->UIOurBagList)
-		{
-			if (!CanMoveToOther((PIItem)itm->m_pData, true)) return;
+	R_ASSERT(to != nullptr);
 
-			to = &m_uidata->UIOurTradeList;
-		}
-		else if (old_owner == &m_uidata->UIOurTradeList)
-			to = &m_uidata->UIOurBagList;
-		else if (old_owner == &m_uidata->UIOthersBagList)
-		{
-			if (!CanMoveToOther((PIItem)itm->m_pData, false)) return;
+	u32 cnt = itm->ChildsCount();
+	for (u32 i = 0; i < cnt; ++i)
+	{
+		CUICellItem* child_itm = itm->PopChild();
 
-			to = &m_uidata->UIOthersTradeList;
-		}
-		else if (old_owner == &m_uidata->UIOthersTradeList)
-			to = &m_uidata->UIOthersBagList;
+		//Msg("MoveAllItems child ... %d", i);
 
-		R_ASSERT( to != nullptr );
-
-		for (u32 i = 0; i < cnt; ++i) 
-		{
-			CUICellItem* child_itm = itm->PopChild();
-
-			//Msg("MoveAllItems child ... %d", i);
-
-			to->SetItem(child_itm);
-		}
+		to->SetItem(child_itm);
 	}
 
-	MoveItem(itm);
+	CUICellItem* _itm = old_owner->RemoveItem(itm, true);
+	to->SetItem(_itm);
+
+	SetCurrentItem(NULL);
 }
 
 bool CUITradeWnd::MoveItem(CUICellItem* itm) 
@@ -795,7 +797,7 @@ void CUITradeWnd::SwitchToTalk()
 	GetMessageTarget()->SendMessage		(this, TRADE_WND_CLOSED);
 }
 
-void CUITradeWnd::BindDragDropListEnents(CUIDragDropListEx* lst)
+void CUITradeWnd::BindDragDropListEvents(CUIDragDropListEx* lst)
 {
 	lst->m_f_item_drop				= CUIDragDropListEx::DRAG_DROP_EVENT(this,&CUITradeWnd::OnItemDrop);
 	lst->m_f_item_start_drag		= CUIDragDropListEx::DRAG_DROP_EVENT(this,&CUITradeWnd::OnItemStartDrag);
