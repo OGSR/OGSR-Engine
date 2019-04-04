@@ -29,14 +29,16 @@ struct	UCalc_mtlock	{
 	~UCalc_mtlock()		{ UCalc_Mutex.Leave(); }
 };
 
+// callback
+typedef void  __stdcall BoneCallbackFunction(CBoneInstance* P);
+typedef		BoneCallbackFunction*		BoneCallback;
+
+
 //*** Bone Instance *******************************************************************************
 #pragma pack(push,8)
 class ENGINE_API		CBoneInstance
 {
 public:
-    typedef void  __stdcall BoneCallbackFunction(CBoneInstance* P);
-    typedef		BoneCallbackFunction*		BoneCallback;
-
 	// data
 	Fmatrix				mTransform;							// final x-form matrix (local to model)
 	Fmatrix				mRenderTransform;					// final x-form matrix (model_base -> bone -> model)
@@ -201,7 +203,14 @@ public:
 #ifdef DEBUG
 	BOOL						dbg_single_use_marker;
 #endif
-	virtual void				Bone_Calculate		(CBoneData* bd, Fmatrix* parent);
+			void				Bone_Calculate		(CBoneData* bd, Fmatrix* parent);
+			void				CLBone				(const CBoneData* bd, CBoneInstance &bi, const Fmatrix *parent, u8 mask_channel = (1<<0));
+
+			void				BoneChain_Calculate	(const CBoneData* bd, CBoneInstance &bi,u8 channel_mask, bool ignore_callbacks);
+			void				Bone_GetAnimPos		(Fmatrix& pos,u16 id, u8 channel_mask, bool ignore_callbacks);
+
+
+	virtual	void				BuildBoneMatrix		( const CBoneData* bd, CBoneInstance &bi, const Fmatrix *parent, u8 mask_channel = (1<<0) );
 	virtual void				OnCalculateBones	(){}
 public:
 	typedef xr_vector<std::pair<shared_str,u16> >	accel;

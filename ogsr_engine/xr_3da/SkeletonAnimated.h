@@ -211,6 +211,13 @@ IC bool CBlend::update( float dt, PlayCallback _Callback )
 	return false;
 }
 };
+
+class IBlendDestroyCallback
+{
+	public:
+		virtual void BlendDestroy( CBlend& blend )	= 0;
+};
+
 typedef svector<CBlend*,MAX_BLENDED*MAX_CHANNELS>	BlendSVec;//*MAX_CHANNELS
 typedef BlendSVec::iterator							BlendSVecIt;
 typedef BlendSVec::const_iterator					BlendSVecCIt;
@@ -262,13 +269,10 @@ public:
 	void						LL_BuldBoneMatrixDequatize	( const CBoneData* bd, u8 channel_mask,  SKeyTable& keys );
 	void						LL_BoneMatrixBuild			( CBoneInstance &bi, const Fmatrix *parent, const SKeyTable& keys );
 private:
-
+	
 virtual	void					BuildBoneMatrix				( const CBoneData* bd, CBoneInstance &bi, const Fmatrix *parent, u8 mask_channel = (1<<0) );
-			void				BoneChain_Calculate		(const CBoneData* bd, CBoneInstance &bi,u8 channel_mask, bool ignore_callbacks);
-			void				CLBone				(const CBoneData* bd, CBoneInstance &bi, const Fmatrix *parent, u8 mask_channel = (1<<0));
 public:
-	virtual void				Bone_Calculate			(CBoneData* bd, Fmatrix* parent);
-			void				Bone_GetAnimPos			(Fmatrix& pos,u16 id, u8 channel_mask, bool ignore_callbacks);
+
 	virtual void				OnCalculateBones		();
 private:
 	u32											Update_LastTime;
@@ -284,6 +288,7 @@ private:
 
     CPartition*									m_Partition;
 
+	IBlendDestroyCallback						*m_blend_destroy_callback;
 	IUpdateTracksCallback						*m_update_tracks_callback;
 	// Blending
 	svector<CBlend, MAX_BLENDED_POOL>			blend_pool;
@@ -321,6 +326,8 @@ public:
 	IC CMotion*					LL_GetRootMotion(MotionID id){return &m_Motions[id.slot].bone_motions[iRoot]->at(id.idx);}
 	IC CMotion*					LL_GetMotion	(MotionID id, u16 bone_id){return &m_Motions[id.slot].bone_motions[bone_id]->at(id.idx);}
 
+	virtual IBlendDestroyCallback	*GetBlendDestroyCallback	( );
+	virtual void					SetBlendDestroyCallback		( IBlendDestroyCallback	*cb );
 	// Low level interface
 	MotionID					LL_MotionID		(LPCSTR B);
 	u16							LL_PartID		(LPCSTR B);

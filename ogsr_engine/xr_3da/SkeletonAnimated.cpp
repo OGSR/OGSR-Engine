@@ -16,7 +16,7 @@ void		CBlendInstance::construct()
 }
 void		CBlendInstance::blend_add	(CBlend* H)
 {	
-	if (Blend.size()==MAX_BLENDED)	{
+	if ( Blend.size() == MAX_BLENDED )	{
 		if(H->fall_at_end)
 						return;
 		BlendSVecIt _d	= Blend.begin();
@@ -25,7 +25,7 @@ void		CBlendInstance::blend_add	(CBlend* H)
 		Blend.erase		(_d);
 	}
 	VERIFY (Blend.size()<MAX_BLENDED);
-	Blend.push_back(H);	
+	Blend.push_back(H);
 }
 void		CBlendInstance::blend_remove	(CBlend* H)
 {
@@ -122,8 +122,8 @@ MotionID CKinematicsAnimated::ID_Cycle_Safe(LPCSTR  N)
 {
 	MotionID motion_ID;
 	for (int k=int(m_Motions.size())-1; k>=0; --k){
-    	shared_motions* s_mots	= &m_Motions[k].motions;
-		accel_map::iterator I 	= s_mots->cycle()->find(LPSTR(N));
+    	shared_motions* s_mots			= &m_Motions[k].motions;
+		accel_map::const_iterator I 	= s_mots->cycle()->find(LPSTR(N));
 		if (I!=s_mots->cycle()->end())	{	motion_ID.set(u16(k),I->second); break;}
     }
     return motion_ID;
@@ -137,8 +137,8 @@ MotionID CKinematicsAnimated::ID_Cycle_Safe(shared_str  N)
 {
 	MotionID motion_ID;
 	for (int k=int(m_Motions.size())-1; k>=0; --k){
-		shared_motions* s_mots	= &m_Motions[k].motions;
-		accel_map::iterator I 	= s_mots->cycle()->find(N);
+		shared_motions* s_mots			= &m_Motions[k].motions;
+		accel_map::const_iterator I 	= s_mots->cycle()->find(N);
 		if (I!=s_mots->cycle()->end())	{	motion_ID.set(u16(k),I->second); break;}
 	}
 	return motion_ID;
@@ -157,8 +157,10 @@ void	CKinematicsAnimated::LL_FadeCycle(u16 part, float falloff, u8 mask_channel 
 		CBlend& B			= *Blend[I];
 		if(!(mask_channel&(1<<B.channel)))
 			continue;
-		B.blend				= CBlend::eFalloff;
+		//B.blend				= CBlend::eFalloff;
+		B.set_falloff_state();
 		B.blendFalloff		= falloff;
+		//B.blendAccrue		= B.timeCurrent;
 		if (B.stop_at_end)  B.stop_at_end_callback = FALSE;		// callback не должен приходить!
 	}
 }
@@ -173,7 +175,8 @@ void	CKinematicsAnimated::LL_CloseCycle(u16 part, u8 mask_channel /*= (1<<0)*/)
 		CBlend& B = *(*I);
 		if(!(mask_channel&(1<<B.channel)))
 					continue;
-		B.blend = CBlend::eFREE_SLOT;
+		//B.blend = CBlend::eFREE_SLOT;
+		B.set_free_state();
 		
 		CPartDef& P	= (*m_Partition)[B.bone_or_part];
 		for (u32 i=0; i<P.bones.size(); i++)
@@ -224,13 +227,13 @@ void CKinematicsAnimated::IBlendSetup(CBlend& B,u16 part,u8 channel, MotionID mo
 	B.speed			= Speed;
 	B.motionID		= motion_ID;
 	B.timeCurrent	= 0;
-	B.timeTotal	= m_Motions[B.motionID.slot].bone_motions[LL_GetBoneRoot()]->at(motion_ID.idx).GetLength();
+	B.timeTotal		= m_Motions[B.motionID.slot].bone_motions[LL_GetBoneRoot()]->at(motion_ID.idx).GetLength();
 	B.bone_or_part	= part;
 	B.stop_at_end	= noloop;
 	B.playing		= TRUE;
 	B.stop_at_end_callback = TRUE;
 	B.Callback		= Callback;
-	B.CallbackParam= CallbackParam;
+	B.CallbackParam = CallbackParam;
 
 	B.channel		= channel;
 	B.fall_at_end	= B.stop_at_end && (channel > 1);
@@ -246,7 +249,7 @@ void CKinematicsAnimated::IFXBlendSetup(CBlend &B, MotionID motion_ID, float ble
 	B.speed			= Speed;
 	B.motionID		= motion_ID;
 	B.timeCurrent	= 0;
-	B.timeTotal	= m_Motions[B.motionID.slot].bone_motions[bone]->at(motion_ID.idx).GetLength();
+	B.timeTotal		= m_Motions[B.motionID.slot].bone_motions[bone]->at(motion_ID.idx).GetLength();
 	B.bone_or_part	= bone;
 
 	B.playing		= TRUE;
@@ -365,10 +368,13 @@ CBlend*	CKinematicsAnimated::LL_PlayFX		(u16 bone, MotionID motion_ID, float ble
 
 void	CKinematicsAnimated::DestroyCycle	(CBlend &B)
 {
-	B.blend 		= CBlend::eFREE_SLOT;
-	CPartDef& P		= m_Partition->part(B.bone_or_part);
-	for (u32 i=0; i<P.bones.size(); i++)
-		Bone_Motion_Stop_IM((*bones)[P.bones[i]],&B);
+	if( GetBlendDestroyCallback	( ) )
+			GetBlendDestroyCallback	( )->BlendDestroy( B );
+	//B.blend 		= CBlend::eFREE_SLOT;
+	B.set_free_state( );
+	const CPartDef& P		= m_Partition->part( B.bone_or_part );
+	for ( u32 i=0; i<P.bones.size(); i++ )
+		Bone_Motion_Stop_IM( (*bones)[P.bones[i]], &B );
 }
 
 IC void UpdateBlendTime(CBlend &B,float dt)
@@ -400,6 +406,7 @@ IC bool UpdateFalloffBlend(CBlend &B,float dt)
 	B.blendAmount 		-= dt*B.blendFalloff*B.blendPower;
 	return B.blendAmount<=0;
 }
+
 void CKinematicsAnimated::LL_UpdateTracks( float dt, bool b_force, bool leave_blends )
 {
 	BlendSVecIt I,E;
@@ -524,6 +531,7 @@ CKinematicsAnimated::CKinematicsAnimated():
 	CKinematics(), 
 	blend_instances	( NULL) ,
     m_Partition	( NULL ),
+	m_blend_destroy_callback( 0 ),
 	m_update_tracks_callback( 0 ),
 	Update_LastTime ( 0 )
 {
@@ -570,6 +578,7 @@ void CKinematicsAnimated::Spawn	()
 		blend_instances[i].construct();
 	m_update_tracks_callback = 0;
 	channels.init();
+
 }
 void CKinematicsAnimated::ChannelFactorsStartup()
 {
@@ -582,14 +591,23 @@ void	CKinematicsAnimated::LL_SetChannelFactor (u16	channel,float factor)
 void CKinematicsAnimated::IBlend_Startup	()
 {
 	_DBG_SINGLE_USE_MARKER;
-	CBlend B;
-	ZeroMemory( &B, sizeof( B ) );
-	B.blend				= CBlend::eFREE_SLOT;
-	blend_pool.clear	();
-        u32 i=0;
-	for (i=0; i<MAX_BLENDED_POOL; i++)
-		blend_pool.push_back(B);
+	CBlend B; ZeroMemory(&B,sizeof(B));
+	//B.blend				= CBlend::eFREE_SLOT;
 
+	B.set_free_state();
+
+#ifdef	DEBUG
+	B.set_falloff_state();
+#endif
+
+	blend_pool.clear	();
+	for (u32 i=0; i<MAX_BLENDED_POOL; i++)
+	{
+		blend_pool.push_back(B);
+#ifdef	DEBUG
+		blend_pool.back().set_free_state();
+#endif
+	}
 	// cycles+fx clear
 	for (i=0; i<MAX_PARTS; i++)
 		blend_cycles[i].clear();
@@ -603,7 +621,7 @@ CBlend*	CKinematicsAnimated::IBlend_Create	()
 	_DBG_SINGLE_USE_MARKER;
 	CBlend *I=blend_pool.begin(), *E=blend_pool.end();
 	for (; I!=E; I++)
-		if (I->blend == CBlend::eFREE_SLOT) return I;
+		if (I->blend_state() == CBlend::eFREE_SLOT) return I;
 	FATAL("Too many blended motions requisted");
 	return 0;
 }
@@ -617,55 +635,88 @@ void CKinematicsAnimated::Load(const char* N, IReader *data, u32 dwFlags)
 	Update_LastTime 	= 0;
 
 	// Load animation
-    if (data->find_chunk(OGF_S_MOTION_REFS)){
+    if (data->find_chunk(OGF_S_MOTION_REFS))
+    {
     	string_path		items_nm;
         data->r_stringZ	(items_nm,sizeof(items_nm));
         u32 set_cnt		= _GetItemCount(items_nm);
         R_ASSERT		(set_cnt<MAX_ANIM_SLOT);
 		m_Motions.reserve(set_cnt);
     	string_path		nm;
-        for (u32 k=0; k<set_cnt; k++){
+        for (u32 k=0; k<set_cnt; ++k)
+        {
         	_GetItem	(items_nm,k,nm);
-            strcat		(nm,".omf");
+            xr_strcat		(nm,".omf");
             string_path	fn;
             if (!FS.exist(fn, "$level$", nm))
+            {
                 if (!FS.exist(fn, "$game_meshes$", nm))
-                    FATAL("Can't find motion file '%s'",nm);
+                {
+#ifdef _EDITOR
+                    Msg			("!Can't find motion file '%s'.",nm);
+                    return;
+#else
+                    Debug.fatal	(DEBUG_INFO,"Can't find motion file '%s'.",nm);
+#endif
+                }
+            }
             // Check compatibility
             m_Motions.push_back				(SMotionsSlot());
+            bool create_res = true;
             if( !g_pMotionsContainer->has(nm) ) //optimize fs operations
 			{
 				IReader* MS						= FS.r_open(fn);
-				m_Motions.back().motions.create	(nm,MS,bones);
+				create_res = m_Motions.back().motions.create	(nm,MS,bones);
 				FS.r_close						(MS);
 			}
-			m_Motions.back().motions.create	(nm,NULL,bones);
+            if(create_res)
+				m_Motions.back().motions.create	(nm,NULL,bones);
+            else{
+            	m_Motions.pop_back	();
+                Msg					("! error in model [%s]. Unable to load motion file '%s'.", N, nm);
+                }
     	}
-    } else
-	if (data->find_chunk(OGF_S_MOTION_REFS2))
-	{
-		u32 set_cnt = data->r_u32();
+    }else
+    if (data->find_chunk(OGF_S_MOTION_REFS2))
+    {
+		u32 set_cnt		= data->r_u32();
 		m_Motions.reserve(set_cnt);
-		string_path		nm;
-		for (u32 k = 0; k<set_cnt; ++k)
-		{
-			data->r_stringZ(nm, sizeof(nm));
-			strcat(nm, ".omf");
-			string_path	fn;
-			if (!FS.exist(fn, "$level$", nm))
-				if (!FS.exist(fn, "$game_meshes$", nm))
-					FATAL("Can't find motion file '%s'", nm);
-			// Check compatibility
-			m_Motions.push_back(SMotionsSlot());
-			if (!g_pMotionsContainer->has(nm)) //optimize fs operations
+    	string_path		nm;
+        for (u32 k=0; k<set_cnt; ++k)
+        {
+			data->r_stringZ	(nm,sizeof(nm));
+            xr_strcat			(nm,".omf");
+            string_path	fn;
+            if (!FS.exist(fn, "$level$", nm))
+            {
+                if (!FS.exist(fn, "$game_meshes$", nm))
+                {
+#ifdef _EDITOR
+                    Msg			("!Can't find motion file '%s'.",nm);
+                    return;
+#else
+                    Debug.fatal	(DEBUG_INFO,"Can't find motion file '%s'.",nm);
+#endif
+                }
+            }
+            // Check compatibility
+            m_Motions.push_back				(SMotionsSlot());
+            bool create_res = true;
+            if( !g_pMotionsContainer->has(nm) ) //optimize fs operations
 			{
-				IReader* MS = FS.r_open(fn);
-				m_Motions.back().motions.create(nm, MS, bones);
-				FS.r_close(MS);
+				IReader* MS						= FS.r_open(fn);
+				create_res = m_Motions.back().motions.create	(nm,MS,bones);
+				FS.r_close						(MS);
 			}
-			m_Motions.back().motions.create(nm, NULL, bones);
-		}
-	}	else{
+            if(create_res)
+				m_Motions.back().motions.create	(nm,NULL,bones);
+            else{
+            	m_Motions.pop_back	();
+                Msg					("! error in model [%s]. Unable to load motion file '%s'.", N, nm);
+                }
+    	}
+    }else    
+	{
 		string_path	nm;
 		strconcat			(sizeof(nm),nm,N,".ogf");
 		m_Motions.push_back(SMotionsSlot());
@@ -675,6 +726,7 @@ void CKinematicsAnimated::Load(const char* N, IReader *data, u32 dwFlags)
     R_ASSERT				(m_Motions.size());
 
     m_Partition				= m_Motions[0].motions.partition();
+	//m_Partition->load		(this,N);
     
 	// initialize motions
 	for (MotionsSlotVecIt m_it=m_Motions.begin(); m_it!=m_Motions.end(); m_it++){
@@ -1101,82 +1153,6 @@ IC void MixChannels(CKey &Result,const CKey	*R,const animation::channel_def* BA,
 	VERIFY( _valid( Result.Q ) );
 }
 
-void CKinematicsAnimated::CLBone( const CBoneData* bd, CBoneInstance &bi, const Fmatrix *parent, u8 channel_mask /*= (1<<0)*/)
-{
-	
-	u16							SelfID				= bd->GetSelfID();
-
-	if ( LL_GetBoneVisible(SelfID) ){
-		if ( bi.callback_overwrite() ){
-			if ( bi.callback() )	bi.callback()( &bi );
-		} else {
-
-			BuildBoneMatrix( bd, bi, parent, channel_mask );
-#ifndef MASTER_GOLD
-			R_ASSERT2( _valid( bi.mTransform ), "anim kils bone matrix" ); 
-#endif // #ifndef MASTER_GOLD
-			if (bi.callback())
-			{
-				bi.callback()(&bi);
-#ifndef MASTER_GOLD
-				R_ASSERT_FORMAT(_valid( bi.mTransform ), "callback kils bone matrix bone: %s ", bd->name.c_str()); 
-#endif // #ifndef MASTER_GOLD
-			}
-		}
-		bi.mRenderTransform.mul_43(bi.mTransform,bd->m2b_transform);
-	}
-}
-
-void	CKinematicsAnimated::Bone_GetAnimPos(Fmatrix& pos,u16 id,u8 mask_channel, bool ignore_callbacks)
-{
-	CBoneInstance bi = LL_GetBoneInstance(id);
-	BoneChain_Calculate(&LL_GetData(id),bi,mask_channel,ignore_callbacks);
-	pos.set(bi.mTransform);
-}
-
-void CKinematicsAnimated::Bone_Calculate(CBoneData* bd, Fmatrix *parent)
-{
-
-	u16							SelfID				= bd->GetSelfID();
-	CBoneInstance				&BONE_INST			= LL_GetBoneInstance(SelfID);
-	CLBone( bd, BONE_INST, parent, u8(-1) );
-	// Calculate children
-	for (xr_vector<CBoneData*>::iterator C=bd->children.begin(); C!=bd->children.end(); C++)
-		Bone_Calculate( *C, &BONE_INST.mTransform );
-
-}
-
-void	CKinematicsAnimated::BoneChain_Calculate		(const CBoneData* bd, CBoneInstance &bi, u8 mask_channel, bool ignore_callbacks)
-{
-	u16 SelfID					= bd->GetSelfID();
-	//CBlendInstance& BLEND_INST	= LL_GetBlendInstance(SelfID);
-	//CBlendInstance::BlendSVec &Blend = BLEND_INST.blend_vector();
-//ignore callbacks
-    CBoneInstance::BoneCallback bc = bi.callback();
-	BOOL		 ow = bi.callback_overwrite();
-	if(ignore_callbacks)
-	{
-		bi.set_callback( bi.callback_type(), 0, bi.callback_param(), 0 );
-
-	}
-	if(SelfID==LL_GetBoneRoot())
-	{
-		CLBone( bd, bi, &Fidentity, mask_channel );
-		//restore callback	
-		bi.set_callback( bi.callback_type(), bc, bi.callback_param(), ow );
-		return;
-	}
-	u16 ParentID				= bd->GetParentID();
-	R_ASSERT( ParentID != BI_NONE );
-	CBoneData* ParrentDT		= &LL_GetData(ParentID);
-	CBoneInstance parrent_bi	= LL_GetBoneInstance(ParentID);
-	BoneChain_Calculate(ParrentDT, parrent_bi, mask_channel, ignore_callbacks);
-	CLBone( bd, bi, &parrent_bi.mTransform, mask_channel );
-	//restore callback
-	bi.set_callback( bi.callback_type(), bc, bi.callback_param(), ow );
-
-}
-
 void	CKinematicsAnimated::LL_BuldBoneMatrixDequatize( const CBoneData* bd, u8 channel_mask, SKeyTable	&keys )
 {
 		u16							SelfID				= bd->GetSelfID();
@@ -1232,7 +1208,7 @@ void	CKinematicsAnimated::LL_BoneMatrixBuild	( CBoneInstance &bi, const Fmatrix 
 	CKey	Result;
 	//Mix channels
 	MixChannels( Result, channel_keys,  BC, ch_count );
-	
+
 	Fmatrix					RES;
 	RES.mk_xform			(Result.Q,Result.T);
 	bi.mTransform.mul_43	(*parent,RES);
@@ -1247,7 +1223,7 @@ void	CKinematicsAnimated::LL_BoneMatrixBuild	( CBoneInstance &bi, const Fmatrix 
 		float box_size = 100000.f;
 		dbg_box.set( -box_size, -box_size, -box_size, box_size, box_size, box_size );
 		//VERIFY(dbg_box.contains(bi.mTransform.c));
-		VERIFY_FORMAT( dbg_box.contains(bi.mTransform.c), "model: %s has strange bone position, matrix : %s", getDebugName().c_str(), get_string(bi.mTransform).c_str());
+		VERIFY2( dbg_box.contains(bi.mTransform.c), ( make_string( "model: %s has strange bone position, matrix : ", getDebugName().c_str() ) + get_string( bi.mTransform ) ).c_str() );
 
 		//if(!is_similar(PrevTransform,RES,0.3f))
 		//{
@@ -1324,10 +1300,19 @@ void CKinematicsAnimated::OnCalculateBones		()
 {
 	UpdateTracks	()	;
 }
+IBlendDestroyCallback* CKinematicsAnimated::GetBlendDestroyCallback	( )
+{
+	return m_blend_destroy_callback;
+}
 
 void	CKinematicsAnimated::SetUpdateTracksCalback	( IUpdateTracksCallback	*callback )
 {
 	m_update_tracks_callback = callback;
+}
+
+void	CKinematicsAnimated::SetBlendDestroyCallback		( IBlendDestroyCallback	*cb )
+{
+	m_blend_destroy_callback = cb;
 }
 
 void	CKinematicsAnimated::LL_IterateBlends( IterateBlendsCallback &callback )
