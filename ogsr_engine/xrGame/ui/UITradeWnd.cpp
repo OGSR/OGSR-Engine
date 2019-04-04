@@ -738,6 +738,8 @@ void CUITradeWnd::MoveItems(CUICellItem* itm)
 	CUICellItem* _itm = old_owner->RemoveItem(itm, true);
 	to->SetItem(_itm);
 
+	UpdatePrices();
+
 	SetCurrentItem(NULL);
 }
 
