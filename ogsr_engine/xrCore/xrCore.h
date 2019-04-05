@@ -7,6 +7,10 @@
 #	include "..\build_config_defines.h"
 #endif
 
+#ifndef DEBUG
+#	define MASTER_GOLD
+#endif // DEBUG
+
 #pragma warning(disable:4595)
 #pragma warning(disable:4996)
 #pragma warning(disable:4530)
