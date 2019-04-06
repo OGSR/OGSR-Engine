@@ -5,7 +5,7 @@
 #include "stdafx.h"
 
 #include "DetailManager.h"
-#include "cl_intersect.h"
+#include "..\..\xr_3da\cl_intersect.h"
 
 const float dbgOffset			= 0.f;
 const int	dbgItems			= 128;
