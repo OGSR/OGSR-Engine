@@ -208,6 +208,7 @@ public:
 	virtual		void 					SetAxisDirVsSecondElement	(const Fvector& orientation,const int axis_num)									=0;
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	virtual		void 					SetAnchor					(const float x,const float y,const float z)										=0;
+	virtual		void					SetJointFudgefactorActive	( float factor )																=0;
 	virtual		void 					SetAnchorVsFirstElement		(const float x,const float y,const float z)										=0;
 	virtual		void 					SetAnchorVsSecondElement	(const float x,const float y,const float z)										=0;
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -218,6 +219,8 @@ public:
 	virtual		void 					SetLimits					(const float low,const float high,const int axis_num)							=0;
 	virtual		void 					SetLimitsVsFirstElement		(const float low,const float high,const int axis_num)							=0;
 	virtual		void 					SetLimitsVsSecondElement	(const float low,const float high,const int axis_num)							=0;
+	virtual		void					SetHiLimitDynamic			(int axis_num, float limit )													=0;
+	virtual		void					SetLoLimitDynamic			(int axis_num, float limit )													=0;
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	virtual		void 					SetBreakable				(float force, float torque)										  				=0;
 	virtual		CPHJointDestroyInfo		*JointDestroyInfo			()																  				=0;
@@ -225,6 +228,7 @@ public:
 	virtual		void					SetForceAndVelocity			(const float force,const float velocity=0.f,const int axis_num=-1)				=0;
 	virtual		void					GetMaxForceAndVelocity		(float &force,float &velocity,int axis_num)						  				=0;
 	virtual		float					GetAxisAngle				(int axis_num)													  				=0;
+	virtual		float					GetAxisAngleRate			(int axis_num)																	=0;
 	virtual		dJointID				GetDJoint					()																  				=0;
 	virtual		void 					GetAxisSDfactors			(float& spring_factor,float& damping_factor,int axis_num)		  				=0;
 	virtual		void 					GetJointSDfactors			(float& spring_factor,float& damping_factor)					  				=0;
@@ -232,6 +236,10 @@ public:
 	virtual		void 					GetAxisDir					(int num,Fvector& axis,eVs& vs)									  				=0;
 	virtual		void 					GetAxisDirDynamic			(int num,Fvector& axis)											  				=0;
 	virtual		void 					GetAnchorDynamic			(Fvector& anchor)												  				=0;
+	virtual		bool					IsWheelJoint				()																				=0;
+	virtual		bool					IsHingeJoint				()																				=0;
+	virtual		void 					SetForce					(const float force,const int axis_num=-1)										=0;
+	virtual		void 					SetVelocity					(const float velocity=0.f,const int axis_num=-1)								=0;
 	DECLARE_SCRIPT_REGISTER_FUNCTION
 };
 add_to_type_list(CPhysicsJoint)

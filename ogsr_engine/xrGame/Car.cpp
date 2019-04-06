@@ -71,7 +71,7 @@ CCar::CCar()
 	m_exhaust_particles	="vehiclefx\\exhaust_1";
 	m_car_sound			=xr_new<SCarSound>	(this);
 
-	//у машины слотов в инвентаре нет
+	//ó ìàøèíû ñëîòîâ â èíâåíòàðå íåò
 	inventory			= xr_new<CInventory>();
 	inventory->SetSlotsUseful(false);
 	m_doors_torque_factor = 2.f;
@@ -124,7 +124,7 @@ void CCar::reload		(LPCSTR section)
 void CCar::cb_Steer			(CBoneInstance* B)
 {
 	VERIFY2(fsimilar(DET(B->mTransform),1.f,DET_CHECK_EPS),"Bones receive returns 0 matrix");
-	CCar*	C			= static_cast<CCar*>(B->Callback_Param);
+	CCar*	C			= static_cast<CCar*>(B->callback_param());
 	Fmatrix m;
 
 
@@ -159,13 +159,13 @@ BOOL	CCar::net_Spawn				(CSE_Abstract* DC)
 	BOOL							R = inherited::net_Spawn(DC);
 
 	PKinematics(Visual())->CalculateBones_Invalidate();
-	PKinematics(Visual())->CalculateBones();
+	PKinematics(Visual())->CalculateBones(TRUE);
 
 	CPHSkeleton::Spawn(e);
 	setEnabled						(TRUE);
 	setVisible						(TRUE);
 	PKinematics(Visual())->CalculateBones_Invalidate();
-	PKinematics(Visual())->CalculateBones();
+	PKinematics(Visual())->CalculateBones(TRUE);
 	m_fSaveMaxRPM					= m_max_rpm;
 	SetfHealth						(co->health);
 
@@ -208,7 +208,7 @@ void CCar::SpawnInitPhysics	(CSE_Abstract	*D)
 	CreateSkeleton					(D);//creates m_pPhysicsShell & fill in bone_map
 	CKinematics *K					=smart_cast<CKinematics*>(Visual());
 	K->CalculateBones_Invalidate();//this need to call callbacks
-	K->CalculateBones	();
+	K->CalculateBones	(TRUE);
 	Init							();//inits m_driving_wheels,m_steering_wheels,m_breaking_wheels values using recieved in ParceDefinitions & from bone_map
 	//PPhysicsShell()->add_ObjectContactCallback(ActorObstacleCallback);
 	SetDefaultNetState				(so);
@@ -364,49 +364,48 @@ void CCar::RestoreNetState( CSE_PHSkeleton* /*po*/ ) {
     Msg( "~ [%s]: [%s] has different state in m_wheels_map[%u] wheel_states[%u] Visual[%s]", __FUNCTION__, obj->Name_script(), m_wheels_map.size(), co->wheel_states.size(), obj->cNameVisual().c_str() );
   co->wheel_states.clear();
 
-  // as later may kill diable/enable state save it;
-  bool enable = PPhysicsShell()->isEnabled();
+/*
+	//as later may kill diable/enable state save it;
+	bool enable = PPhysicsShell()->isEnabled();
+/////////////////////////////////////////////////////////////////////////
+	Fmatrix restored_form;
+	PPhysicsShell()->GetGlobalTransformDynamic(&restored_form);
+/////////////////////////////////////////////////////////////////////
+	Fmatrix inv ,replace,sof;
+	sof.setXYZ(co->o_Angle.x,co->o_Angle.y,co->o_Angle.z);
+	sof.c.set(co->o_Position);
+	inv.set(restored_form);
+	inv.invert();
+	replace.mul(sof,inv);
+////////////////////////////////////////////////////////////////////
+	{
+		
+		PKinematics(Visual())->CalculateBones_Invalidate();
+		PKinematics(Visual())->CalculateBones();
+		PPhysicsShell()->DisableCollision();
+		CPHActivationShape activation_shape;//Fvector start_box;m_PhysicMovementControl.Box().getsize(start_box);
 
-  Fmatrix restored_form;
-  PPhysicsShell()->GetGlobalTransformDynamic( &restored_form );
-
-  Fmatrix inv, replace, sof;
-  sof.setXYZ( co->o_Angle.x, co->o_Angle.y, co->o_Angle.z );
-  sof.c.set( co->o_Position );
-  inv.set( restored_form );
-  inv.invert();
-  replace.mul( sof, inv );
-
-  {
-    PKinematics( Visual() )->CalculateBones_Invalidate();
-    PKinematics( Visual() )->CalculateBones();
-    PPhysicsShell()->DisableCollision();
-    CPHActivationShape activation_shape; //Fvector start_box;m_PhysicMovementControl.Box().getsize(start_box);
-
-    Fvector center;   Center( center );
-    Fvector obj_size; BoundingBox().getsize( obj_size );
-    get_box( PPhysicsShell(), restored_form, obj_size, center );
-    replace.transform( center );
-    activation_shape.Create( center, obj_size, this );
-    activation_shape.set_rotation( sof );
-    activation_shape.Activate( obj_size, 1, 1.f, M_PI/8.f );
-    Fvector dd;
-    dd.sub( activation_shape.Position(), center );
-    activation_shape.Destroy();
-    sof.c.add( dd );
-    PPhysicsShell()->EnableCollision();
-  }
-
-  replace.mul( sof, inv );
-  PPhysicsShell()->TransformPosition( replace, mh_clear );
-  if ( enable )
-    PPhysicsShell()->Enable();
-  else
-    PPhysicsShell()->Disable();
-  PPhysicsShell()->GetGlobalTransformDynamic( &XFORM() );
+		Fvector center;Center(center);
+		Fvector obj_size;BoundingBox().getsize(obj_size);
+		get_box(PPhysicsShell(),restored_form,obj_size,center);
+		replace.transform(center);
+		activation_shape.Create(center,obj_size,this);
+		activation_shape.set_rotation(sof);
+		activation_shape.Activate(obj_size,1,1.f,M_PI/8.f);
+		Fvector dd;
+		dd.sub(activation_shape.Position(),center);
+		activation_shape.Destroy();
+		sof.c.add(dd);
+		PPhysicsShell()->EnableCollision();
+	}
+////////////////////////////////////////////////////////////////////
+	replace.mul(sof,inv);
+	PPhysicsShell()->TransformPosition(replace);
+	if(enable)PPhysicsShell()->Enable();
+	else PPhysicsShell()->Disable();
+	PPhysicsShell()->GetGlobalTransformDynamic(&XFORM());
+	*/
 }
-
-
 void CCar::SetDefaultNetState(CSE_PHSkeleton* po)
 {
 	if(po->_flags.test(CSE_PHSkeleton::flSavedData))return;
@@ -541,7 +540,7 @@ void	CCar::net_Import			(NET_Packet& P)
 //	P.w_u32 (NumItems);
 }
 
-void	CCar::OnHUDDraw				(CCustomHUD* /**hud/**/)
+void	CCar::OnHUDDraw				(CCustomHUD* /**hud*/)
 {
 #ifdef DEBUG
 	Fvector velocity;
@@ -573,7 +572,7 @@ void	CCar::Hit							(SHit* pHDS)
 	DoorHit(HDS.damage(),HDS.bone(),HDS.hit_type);
 	float hitScale=1.f,woundScale=1.f;
 	if(HDS.hit_type!=ALife::eHitTypeStrike) CDamageManager::HitScale(HDS.bone(), hitScale, woundScale);
-	HDS.power *= m_HitTypeK[HDS.hit_type]*hitScale;
+	HDS.power *= GetHitImmunity(HDS.hit_type)*hitScale;
 
 	inherited::Hit(&HDS);
 	if(!CDelayedActionFuse::isActive())
@@ -670,7 +669,7 @@ bool CCar::attach_Actor(CGameObject* actor)
 	if(ini->line_exist("car_definition","driver_place"))
 		id=K->LL_BoneID(ini->r_string("car_definition","driver_place"));
 	else
-	{
+	{	
 #pragma todo( "KRodin: Этот код выдаст ошибку, т.к. в начале функции если есть Owner() происходит выход из функции. Что здесь предполагалось делать?" )
 		Owner()->setVisible(0);
 		id=K->LL_GetBoneRoot();
@@ -825,7 +824,7 @@ void CCar::ParseDefinitions()
 	string32 rat_num;
 	for(int i=1;true;++i)
 	{
-		sprintf_s(rat_num,"N%d",i);
+		xr_sprintf(rat_num,"N%d",i);
 		if(!ini->line_exist("transmission_gear_ratio",rat_num)) break;
 		Fvector gear_rat=ini->r_fvector3("transmission_gear_ratio",rat_num);
 		gear_rat[0]*=main_gear_ratio;
@@ -867,16 +866,18 @@ void CCar::CreateSkeleton(CSE_Abstract	*po)
 {
 
 	if (!Visual()) return;
-	CKinematicsAnimated* K = smart_cast<CKinematicsAnimated*>(Visual());
-	if(K)
+	IRender_Visual *pVis = Visual();
+	CKinematics* pK = smart_cast<CKinematics*>(pVis);
+	CKinematicsAnimated* pKA = smart_cast<CKinematicsAnimated*>(pVis);
+	if(pKA)
 	{
-		K->PlayCycle		("idle");
-		K->CalculateBones	();
+		pKA->PlayCycle		("idle");
+		pK->CalculateBones	(TRUE);
 	}
-
+	//phys_shell_verify_object_model ( *this );
 #pragma todo(" replace below by P_build_Shell or call inherited")
 	m_pPhysicsShell		= P_create_Shell();
-	m_pPhysicsShell->build_FromKinematics(smart_cast<CKinematics*>(Visual()),&bone_map);
+	m_pPhysicsShell->build_FromKinematics(pK,&bone_map);
 	m_pPhysicsShell->set_PhysicsRefObject(this);
 	m_pPhysicsShell->mXFORM.set(XFORM());
 	m_pPhysicsShell->Activate(true);
@@ -884,7 +885,7 @@ void CCar::CreateSkeleton(CSE_Abstract	*po)
 	m_pPhysicsShell->SetPrefereExactIntegration();
 
 	ApplySpawnIniToPhysicShell(&po->spawn_ini(),m_pPhysicsShell,false);
-	ApplySpawnIniToPhysicShell(smart_cast<CKinematics*>(Visual())->LL_UserData(),m_pPhysicsShell,false);
+	ApplySpawnIniToPhysicShell(pK->LL_UserData(),m_pPhysicsShell,false);
 }
 
 void CCar::Init()
@@ -1396,7 +1397,9 @@ void CCar::PhTune(dReal step)
 	for(u16 i=PPhysicsShell()->get_ElementsNumber();i!=0;i--)	
 	{
 		CPhysicsElement* e=PPhysicsShell()->get_ElementByStoreOrder(i-1);
-		if(e->isActive()&&e->isEnabled())dBodyAddForce(e->get_body(),0,e->getMass()*AntiGravityAccel(),0);
+		if(e->isActive()&&e->isEnabled())
+			e->applyForce( 0, e->getMass()*AntiGravityAccel(), 0 );
+			//dBodyAddForce(e->get_body(),0,e->getMass()*AntiGravityAccel(),0);
 	}
 }
 float CCar::EffectiveGravity()
@@ -1844,13 +1847,13 @@ void CCar::CarExplode()
 	if(CPHDestroyable::CanDestroy())
 		CPHDestroyable::Destroy(ID(),"physic_destroyable_object");	
 }
-//void CCar::object_contactCallbackFun(bool& do_colide,dContact& c,SGameMtl * /*material_1*/,SGameMtl * /*material_2*/)
+//void CCar::object_contactCallbackFun(bool& do_colide,dContact& c,SGameMtl * ,SGameMtl * )
 //{
 //
 //	dxGeomUserData *l_pUD1 = NULL;
 //	dxGeomUserData *l_pUD2 = NULL;
-//	l_pUD1 = retrieveGeomUserData(c.geom.g1);
-//	l_pUD2 = retrieveGeomUserData(c.geom.g2);
+//	l_pUD1 = PHRetrieveGeomUserData(c.geom.g1);
+//	l_pUD2 = PHRetrieveGeomUserData(c.geom.g2);
 //
 //	if(! l_pUD1) return;
 //	if(!l_pUD2) return;
@@ -2069,7 +2072,8 @@ Fvector	CCar::		ExitVelocity				()
 	if(!P||!P->isActive())return Fvector().set(0,0,0);
 	CPhysicsElement *E=P->get_ElementByStoreOrder(0);
 	Fvector v=ExitPosition();
-	dBodyGetPointVel(E->get_body(),v.x,v.y,v.z,cast_fp(v));
+	E->GetPointVel( v, v );
+	//dBodyGetPointVel(E->get_body(),v.x,v.y,v.z,cast_fp(v));
 	return v;
 }
 
