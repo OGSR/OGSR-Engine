@@ -71,7 +71,7 @@ u32 GetNVGpuNum()
 
 u32 GetATIGpuNum()
 {
-#pragma todo("подключить ADL")
+#pragma todo("РїРѕРґРєР»СЋС‡РёС‚СЊ ADL")
 	//int iGpuNum = AtiMultiGPUAdapters();
 	int iGpuNum = 1;
 

@@ -82,9 +82,9 @@ xr_token							qminmax_sm_token					[ ]={
 	{ 0,							0												}
 };
 
-//	“Off”
-//	“DX10.0 style [Standard]”
-//	“DX10.1 style [Higher quality]”
+//	â€œOffâ€
+//	â€œDX10.0 style [Standard]â€
+//	â€œDX10.1 style [Higher quality]â€
 
 // Common
 extern int			psSkeletonUpdate;

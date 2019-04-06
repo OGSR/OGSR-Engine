@@ -178,11 +178,11 @@ void	generate_jitter	(DWORD*	dest, u32 elem_count)
 }
 
 #if _MSC_FULL_VER >= 191100000 && _MSC_FULL_VER <= 191225830
-// èç-çà ñòðîêè: fs = powf(ls*1.01f, 128.f); âîçíèêàåò ICE
+// Ð¸Ð·-Ð·Ð° ÑÑ‚Ñ€Ð¾ÐºÐ¸: fs = powf(ls*1.01f, 128.f); Ð²Ð¾Ð·Ð½Ð¸ÐºÐ°ÐµÑ‚ ICE
 // fatal error C1001 : An internal error has occurred in the compiler.
 // (compiler file 'f:\dd\vctools\compiler\utc\src\p2\main.c', line 256)
-// 15.5.1 - îøèáêà òàê è íå èñïðàâëåíà
-// äëÿ èñïðàâëåíèÿ îòêëþ÷àþ îïòèìèçàöèþ
+// 15.5.1 - Ð¾ÑˆÐ¸Ð±ÐºÐ° Ñ‚Ð°Ðº Ð¸ Ð½Ðµ Ð¸ÑÐ¿Ñ€Ð°Ð²Ð»ÐµÐ½Ð°
+// Ð´Ð»Ñ Ð¸ÑÐ¿Ñ€Ð°Ð²Ð»ÐµÐ½Ð¸Ñ Ð¾Ñ‚ÐºÐ»ÑŽÑ‡Ð°ÑŽ Ð¾Ð¿Ñ‚Ð¸Ð¼Ð¸Ð·Ð°Ñ†Ð¸ÑŽ
 #define POW_128_BUG
 #elif _MSC_VER == 1911 || _MSC_VER == 1912
 #define stringize(s) _stringize(s)
