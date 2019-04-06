@@ -629,8 +629,6 @@ void CWeaponMagazinedWGrenade::InitAddons()
 		{
 			CRocketLauncher::m_fLaunchSpeed = pSettings->r_float(*m_sGrenadeLauncherName,"grenade_vel");
 		}
-
-		UpdateZoomOffset();
 	}
 
 	callback(GameObject::eOnAddonInit)(2);

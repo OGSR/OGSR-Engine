@@ -62,28 +62,6 @@ BOOL CLevel::Load_GameSpecific_After()
 			::Sound->set_geometry_env(F);
 			FS.r_close				(F);
 		}
-		else
-			::Sound->unset_geometry_env();
-
-		CInifile& gameLtx = *pGameIni;
-		::Sound->unsetEFXPreset();
-		::Sound->unsetEFXEAXPreset();
-		if ( gameLtx.section_exist( Level().name() ) ) {
-		  if ( gameLtx.line_exist( Level().name(), "efx_reverb_preset" ) ) {
-		    LPCSTR preset = gameLtx.r_string( Level().name(), "efx_reverb_preset" );
-		    if ( preset && preset[ 0 ] ) {
-		      Msg("- Set EFX preset to '%s'", preset );
-		      ::Sound->setEFXPreset( preset );
-		    }
-		  }
-		  else if ( gameLtx.line_exist( Level().name(), "efx_eax_preset" ) ) {
-		    LPCSTR preset = gameLtx.r_string( Level().name(), "efx_eax_preset" );
-		    if ( preset && preset[ 0 ] ) {
-		      Msg("- Set EFX EAX preset to '%s'", preset );
-		      ::Sound->setEFXEAXPreset( preset );
-		    }
-		  }
-		}
 
 		// loading SOM
 		if (FS.exist(fn_game, "$level$", "level.som")) {
@@ -91,8 +69,6 @@ BOOL CLevel::Load_GameSpecific_After()
 			::Sound->set_geometry_som(F);
 			FS.r_close				(F);
 		}
-		else
-			::Sound->unset_geometry_som();
 
 		// loading random (around player) sounds
 		if (pSettings->section_exist("sounds_random")){ 

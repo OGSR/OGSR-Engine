@@ -1,28 +1,22 @@
 #include "common.h"
-
+#include "vignette.h"
+//////////////////////////////////////////////////////////
 uniform sampler2D s_distort;
 uniform sampler2D s_flares;
-
 uniform sampler2D s_ssao;
 uniform sampler2D s_vol;
 uniform sampler2D s_rain;
 uniform sampler2D s_sunshafts;
-uniform sampler2D s_sunshafts0;/*
-uniform sampler2D s_refl;
-uniform sampler2D s_rmap;
-*/
-float vignette(float2 center) {
-	float dist = distance(center, float2(0.5,0.5));
-	float gain = DDOF_FSTOP;
-	dist = smoothstep(1 + gain, DDOF_VIGNOUT+gain, dist);
-	return saturate(dist);
-}
+uniform sampler2D s_sunshafts0;
+
 uniform float4 c_color_grading; // xyz - color, w - density
+//////////////////////////////////////////////////////////
 #define EPSDEPTH 0.001
 float4 main(combine I):COLOR 
 {
 	float2 tc0 = I.tc0.xy;
 	float depth = get_depth(tc0);//tex2D(s_position,tc0).xyz;
+	
 	#ifdef USE_DISTORT
 		float4 distort = tex2D(s_distort, tc0);
 		float2 offset = (distort.xy-.5h)*def_distort;
@@ -32,13 +26,10 @@ float4 main(combine I):COLOR
 	#else
 		float2 center = tc0;
 	#endif
-	
-	float3 img = tex2D(s_image,center).xyz;
-	float4 bloom = tex2D(s_bloom,center);
 
-//	float Rp = get_depth(center)/120;
-//	return float4(Rp,Rp,Rp,1);
-//	return tex2D(s_sunshafts, center);
+	float3 img = tex2D(s_image,center).xyz;
+	
+	float4 bloom = tex2D(s_bloom,center);
 
 	#if defined(USE_LENS_FLARES) || defined(USE_LENS_DIRT)
 		float4 flares = tex2D(s_flares,center);
@@ -50,10 +41,6 @@ float4 main(combine I):COLOR
 		img = lerp(img,blurred,distort.z);
 	#endif
 	
-	#ifdef USE_CONTRAST_FILTER
-		float3 highcontrast=img.xyz*img.xyz;
-		img.xyz=lerp(img.xyz,highcontrast,CONTRAST_FILTER_COEF);
-	#endif
 		
 	// color grading
 	float fLum = dot(img.xyz, COLOR_GRADING_LUMINANCE)*2;
@@ -66,18 +53,21 @@ float4 main(combine I):COLOR
 	cColor = lerp( cColor, cMax, saturate( fLum - 0.5 ) * 2.0 );
 
 	img.xyz = saturate(lerp( img.xyz, cColor.xyz , saturate( fLum * c_color_grading.w ) ));
+	// color grading end
+
+	#ifdef USE_CONTRAST_FILTER
+		float3 highcontrast=img.xyz*img.xyz;
+		img.xyz=lerp(img.xyz,highcontrast,CONTRAST_FILTER_COEF);
+	#endif
 	
 	#ifdef IMAGE_SHARPENING
 		float4 blur = tex2D(s_blur, center);
 		img = lerp(blur.xyz, img, 1.0 + IMAGE_SHARPENING);
 	#endif
 
-//	img = lerp(img, bloom.xyz, 0.2*saturate(pos.z/30)*ogse_c_rain.w);
-
-	
-#ifdef DDOF_VIGNETTING
-	img *= vignette(center);
-#endif
+	#ifdef USE_VIGNETTE
+		img *= vignette(center);
+	#endif
 
 	return combine_bloom(img,bloom);
 }

@@ -63,9 +63,6 @@
     <ClInclude Include="SoundRender_Cache.h">
       <Filter>Cache</Filter>
     </ClInclude>
-    <ClInclude Include="..\COMMON\cl_intersect.h">
-      <Filter>Kernel</Filter>
-    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="guids.cpp">

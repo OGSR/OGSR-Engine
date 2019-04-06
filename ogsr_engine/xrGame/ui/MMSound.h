@@ -25,6 +25,5 @@ protected:
 	ref_sound		m_music_r;
 	ref_sound		m_whell;
 	ref_sound		m_whell_click;
-	bool			m_bRandom;
 	xr_vector<xr_string>m_play_list;
 };

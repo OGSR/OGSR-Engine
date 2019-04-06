@@ -94,6 +94,34 @@ CPatrolPoint &CPatrolPoint::load_raw						(const CLevelGraph *level_graph, const
 	return				(*this);
 }
 
+Fvector3 r_fvector3(CInifile::Sect& section, LPCSTR L) {
+	LPCSTR   C = section.r_string(L);
+	Fvector3 V = { 0.f, 0.f, 0.f };
+	sscanf(C, "%f,%f,%f", &V.x, &V.y, &V.z);
+	return V;
+}
+
+CPatrolPoint &CPatrolPoint::load_ini(CInifile::Sect& section, LPSTR prefix)
+{
+	string256 full_name;
+
+	m_name				= section.r_string(xr_strconcat(full_name, prefix, ":", "name"));
+	m_position			= r_fvector3(section, xr_strconcat(full_name, prefix, ":", "position"));
+	m_level_vertex_id	= strtol(section.r_string(xr_strconcat(full_name, prefix, ":", "level_vertex_id")), nullptr, 10);
+	m_game_vertex_id	= strtol(section.r_string(xr_strconcat(full_name, prefix, ":", "game_vertex_id")), nullptr, 10);
+
+	xr_strconcat(full_name, prefix, ":", "flags");
+
+	if (section.line_exist(full_name))
+		m_flags = strtol(section.r_string(full_name), nullptr, 16);
+
+#ifdef DEBUG
+	m_initialized = true;
+#endif
+	// correct_position(level_graph, cross, game_graph); ???
+	return				(*this);
+}
+
 void CPatrolPoint::load										(IReader &stream)
 {
 	load_data			(m_name,stream);

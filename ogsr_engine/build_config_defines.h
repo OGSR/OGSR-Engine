@@ -34,9 +34,6 @@
 // Для переключения режима без пересборки движка есть специальный ключ запуска "-switch_exclusive_dinput"
 #define DINPUT_ENABLE_EXCLUSIVE_MODE false
 
-// эффект Доплера для звука из xp-dev
-//#define SND_DOPPLER_EFFECT
-
 // Изменяет принцип работы дуплета для оружия на классе CWeaponShotgun
 // Вместо дуплета по кнопке прицеливания, дуплет можно включить\выключить скриптом 
 // Вкдючить\выключить - wpn:get_weapon_sg():switch_duplet()
