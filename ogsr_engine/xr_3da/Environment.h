@@ -50,6 +50,7 @@ public:
 	Fvector3			hemi_color;
 
 	void				load		(IReader*		fs);
+	void				load_ini	(CInifile::Sect& section);
 	float				sum			(CEnvModifier&	_another, Fvector3& view);
 };
 

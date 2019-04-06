@@ -81,6 +81,30 @@ LPCSTR CInifile::Sect::r_string( LPCSTR L ) {
 	return 0;
 }
 
+float CInifile::Sect::r_float( LPCSTR L ) {
+	LPCSTR C = r_string(L);
+	return float(atof(C));
+}
+
+u32 CInifile::Sect::r_u32( LPCSTR L ) {
+	LPCSTR C = r_string(L);
+	return u32(atoi(C));
+}
+
+Fvector3 CInifile::Sect::r_fvector3( LPCSTR L ) {
+	LPCSTR   C = r_string(L);
+	Fvector3 V = { 0.f, 0.f, 0.f };
+	sscanf(C, "%f,%f,%f", &V.x, &V.y, &V.z);
+	return V;
+}
+
+Ivector2 CInifile::Sect::r_ivector2( LPCSTR L ) {
+	LPCSTR   C = r_string(L);
+	Ivector2 V = { 0, 0 };
+	sscanf(C, "%d,%d", &V.x, &V.y);
+	return V;
+}
+
 CInifile::CInifile( IReader* F, LPCSTR path ) {
   fName      = 0;
   bReadOnly  = true;
