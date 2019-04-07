@@ -496,7 +496,7 @@ void CSkeletonX_ext::_Load_hw	(Fvisual& V, void *	_verts_)
 //-----------------------------------------------------------------------------------------------------
 // Wallmarks
 //-----------------------------------------------------------------------------------------------------
-#include "cl_intersect.h"
+#include "..\..\xr_3da\cl_intersect.h"
 void CSkeletonX_ext::_CollectBoneFaces(Fvisual* V, u32 iBase, u32 iCount)
 {
 	u16* indices		= 0;

@@ -13,8 +13,6 @@
 #include "xrServer_Objects_ALife_Items.h"
 #include "clsid_game.h"
 
-#include "bone.h"
-
 #ifdef XRGAME_EXPORTS
 #	ifdef DEBUG
 #		define PHPH_DEBUG

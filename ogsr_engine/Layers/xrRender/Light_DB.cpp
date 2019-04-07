@@ -1,6 +1,6 @@
 #include "StdAfx.h"
-#include "_d3d_extensions.h"
-#include "xrLevel.h"
+#include "..\..\xr_3da\_d3d_extensions.h"
+#include "..\..\xr_3da\xrLevel.h"
 #include "light_db.h"
 
 CLight_DB::CLight_DB()
