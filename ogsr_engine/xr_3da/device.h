@@ -41,6 +41,26 @@ public:
 
 class ENGINE_API CRenderDeviceData
 {
+public:
+	class ENGINE_API CSecondVPParams //--#SM+#-- +SecondVP+
+	{
+	public:
+		bool m_bCamReady; // Флаг готовности камеры (FOV, позиция, и т.п) к рендеру второго вьюпорта
+	private:
+		bool m_bIsActive;  // Флаг активации рендера во второй вьюпорт
+		u8   m_FrameDelay; // На каком кадре с момента прошлого рендера во второй вьюпорт мы начнём новый (не может быть меньше 2 - каждый второй кадр, чем больше тем более низкий FPS во втором вьюпорте)
+	public:
+		IC bool IsSVPActive() { return m_bIsActive; }
+		void    SetSVPActive(bool bState);
+		bool    IsSVPFrame();
+
+		IC u8 GetSVPFrameDelay() { return m_FrameDelay; }
+		void  SetSVPFrameDelay(u8 iDelay)
+		{
+			m_FrameDelay = iDelay;
+			clamp<u8>(m_FrameDelay, 2, u8(-1));
+		}
+	};
 
 public:
 	u32										dwWidth;
@@ -171,6 +191,8 @@ public:
 	CRegistrator	<pureFrame			>			seqFrameMT;
 	CRegistrator	<pureDeviceReset	>			seqDeviceReset;
 	xr_vector		<fastdelegate::FastDelegate0<> >	seqParallel;
+
+	CSecondVPParams m_SecondViewport; //--#SM+#-- +SecondVP+
 
 	// Dependent classes
 	//CResourceManager*						Resources;
