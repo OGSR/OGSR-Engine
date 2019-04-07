@@ -1,20 +1,20 @@
 #include "stdafx.h"
+#pragma once
 
 #include "Rain.h"
 #include "igame_persistent.h"
 #include "environment.h"
 
-#include "render.h"
-#include "igame_level.h"
-#include "xr_area.h"
-#include "xr_object.h"
-#include "XR_IOConsole.h"
-#include "xr_ioc_cmd.h"
+#ifdef _EDITOR
+    #include "ui_toolscustom.h"
+#else
+    #include "render.h"
+	#include "igame_level.h"
+	//#include "../xrcdb/xr_area.h" //KRodin: по-моему, это не нужно.
+	#include "xr_object.h"
+#endif
 
-rain_timer_params *rain_timers_raycheck = NULL;
-rain_timer_params *rain_timers = NULL;
-Fvector4 *rain_params = NULL;
-
+//	Warning: duplicated in dxRainRender
 static const int	max_desired_items	= 2500;
 static const float	source_radius		= 12.5f;
 static const float	source_offset		= 40.f;
@@ -27,20 +27,6 @@ static const float	drop_max_angle		= deg2rad(10.f);
 static const float	drop_max_wind_vel	= 20.0f;
 static const float	drop_speed_min		= 40.f;
 static const float	drop_speed_max		= 80.f;
-
-template<class T>
-inline T lerp(T a1, T a2, T v)
-{
-	return (a1 + (a2 - a1) * v);
-}
-template <typename T>
-inline T saturate(T v)
-{
-	clamp(v, (T)0, (T)1);
-	return v;
-}
-
-Fvector4 wet_params;
 
 const int	max_particles		= 1000;
 const int	particles_cache		= 400;
@@ -56,6 +42,8 @@ CEffect_Rain::CEffect_Rain()
 	
 	snd_Ambient.create				("ambient\\rain",st_Effect,sg_Undefined);
 
+	//	Moced to p_Render constructor
+	/*
 	IReader*	F					= FS.r_open("$game_meshes$","dm\\rain.dm"); 
 	VERIFY3							(F,"Can't open file.","dm\\rain.dm");
 	DM_Drop							= ::Render->model_CreateDM		(F);
@@ -64,15 +52,9 @@ CEffect_Rain::CEffect_Rain()
 	SH_Rain.create					("effects\\rain","fx\\fx_rain");
 	hGeom_Rain.create				(FVF::F_LIT, RCache.Vertex.Buffer(), RCache.QuadIB);
 	hGeom_Drops.create				(D3DFVF_XYZ | D3DFVF_DIFFUSE | D3DFVF_TEX1, RCache.Vertex.Buffer(), RCache.Index.Buffer());
+	*/
 	p_create						();
-	FS.r_close						(F);
-
-	if (!rain_timers_raycheck)
-		rain_timers_raycheck = xr_new<rain_timer_params>();
-	if (!rain_timers)
-		rain_timers = xr_new<rain_timer_params>();
-	if (!rain_params)
-		rain_params = xr_new<Fvector4>();
+	//FS.r_close						(F);
 }
 
 CEffect_Rain::~CEffect_Rain()
@@ -81,26 +63,20 @@ CEffect_Rain::~CEffect_Rain()
 
 	// Cleanup
 	p_destroy						();
-	::Render->model_Delete			(DM_Drop);
-
-	if (rain_timers_raycheck)
-		xr_delete(rain_timers_raycheck);
-	if (rain_timers)
-		xr_delete(rain_timers);
-	if (rain_params)
-		xr_delete(rain_params);
+	//	Moved to p_Render destructor
+	//::Render->model_Delete			(DM_Drop);
 }
 
 // Born
 void	CEffect_Rain::Born		(Item& dest, float radius)
 {
-/*	Fvector		axis;	
+	Fvector		axis;	
     axis.set			(0,-1,0);
 	float gust			= g_pGamePersistent->Environment().wind_strength_factor/10.f;
-	float k				= g_pGamePersistent->Environment().CurrentEnv.wind_velocity*gust/drop_max_wind_vel;
+	float k				= g_pGamePersistent->Environment().CurrentEnv->wind_velocity*gust/drop_max_wind_vel;
 	clamp				(k,0.f,1.f);
 	float	pitch		= drop_max_angle*k-PI_DIV_2;
-    axis.setHP			(g_pGamePersistent->Environment().CurrentEnv.wind_direction,pitch);
+    axis.setHP			(g_pGamePersistent->Environment().CurrentEnv->wind_direction,pitch);
     
 	Fvector&	view	= Device.vCameraPosition;
 	float		angle	= ::Random.randF	(0,PI_MUL_2);
@@ -113,44 +89,26 @@ void	CEffect_Rain::Born		(Item& dest, float radius)
 	dest.fSpeed			= ::Random.randF	(drop_speed_min,drop_speed_max);
 
 	float height		= max_distance;
-	RenewItem			(dest,height,RayPick(dest.P,dest.D,height,collide::rqtBoth));*/
-	CEnvironment &env = g_pGamePersistent->Environment();
-	float angle = env.wind_strength_factor * 0.1f * env.CurrentEnv.wind_velocity * 0.05f;
-	clamp(angle, 0.0f, 1.0f);
-	float vert_angle = env.CurrentEnv.rain_max_drop_angle * angle - 0.5f * M_PI;
-	//	Msg("wind_strength_factor = %f, wind_velocity = %f, angle = %f, vert_angle = %f", env.wind_strength_factor, env.CurrentEnv.wind_velocity, angle, 180 * vert_angle / M_PI);
-	_vector3<float> axis;
-	axis.setHP(env.CurrentEnv.wind_direction, vert_angle);
-
-	dest.D.random_dir(axis, deg2rad(3.f));
-	float v12 = 2 * M_PI * ::Random.randI() / 32767.0f; // 0.0 - 2*pi
-	radius *= sqrt(::Random.randI() / 32767.0f); //  0.0 - 1.0
-
-	_vector3<float>&	view = Device.vCameraPosition;
-	dest.P.set(
-		cos(v12) * radius + view.x - dest.D.x * source_offset,
-		view.y + source_offset,
-		sin(v12) * radius + view.z - dest.D.z * source_offset);
-
-	dest.fSpeed = ::Random.randF(drop_speed_min, drop_speed_max);
-	float max_dist = max_distance;
-	int ray_pick_res = RayPick(dest.P, dest.D, max_dist, collide::rqtBoth);
-	RenewItem(dest, max_dist, ray_pick_res);
+	RenewItem			(dest,height,RayPick(dest.P,dest.D,height,collide::rqtBoth));
 }
 
 BOOL CEffect_Rain::RayPick(const Fvector& s, const Fvector& d, float& range, collide::rq_target tgt)
 {
 	BOOL bRes 			= TRUE;
+#ifdef _EDITOR
+    Tools->RayPick		(s,d,range);
+#else
 	collide::rq_result	RQ;
 	CObject* E 			= g_pGameLevel->CurrentViewEntity();
 	bRes 				= g_pGameLevel->ObjectSpace.RayPick( s,d,range,tgt,RQ,E);	
     if (bRes) range 	= RQ.range;
+#endif
     return bRes;
 }
 
 void CEffect_Rain::RenewItem(Item& dest, float height, BOOL bHit)
 {
-	dest.uv_set			= ::Random.randI(2);
+	dest.uv_set			= Random.randI(2);
     if (bHit){
 		dest.dwTime_Life= Device.dwTimeGlobal + iFloor(1000.f*height/dest.fSpeed) - Device.dwTimeDelta;
 		dest.dwTime_Hit	= Device.dwTimeGlobal + iFloor(1000.f*height/dest.fSpeed) - Device.dwTimeDelta;
@@ -164,186 +122,81 @@ void CEffect_Rain::RenewItem(Item& dest, float height, BOOL bHit)
 
 void	CEffect_Rain::OnFrame	()
 {
+#ifndef _EDITOR
 	if (!g_pGameLevel)			return;
+#endif
+
+#ifdef DEDICATED_SERVER
+	return;
+#endif
 
 	// Parse states
-	float	factor				= g_pGamePersistent->Environment().CurrentEnv.rain_density;
-	float	hemi_factor			= 1.f;
+	float	factor				= g_pGamePersistent->Environment().CurrentEnv->rain_density;
+	static float hemi_factor	= 0.f;
+#ifndef _EDITOR
 	CObject* E 					= g_pGameLevel->CurrentViewEntity();
 	if (E&&E->renderable_ROS())
-		hemi_factor				= 1.f-2.0f*(0.3f-_min(_min(1.f,E->renderable_ROS()->get_luminocity_hemi()),0.3f));
+	{
+//		hemi_factor				= 1.f-2.0f*(0.3f-_min(_min(1.f,E->renderable_ROS()->get_luminocity_hemi()),0.3f));
+		float* hemi_cube		= E->renderable_ROS()->get_luminocity_hemi_cube();
+		float hemi_val			= _max(hemi_cube[0],hemi_cube[1]);
+		hemi_val				= _max(hemi_val, hemi_cube[2]);
+		hemi_val				= _max(hemi_val, hemi_cube[3]);
+		hemi_val				= _max(hemi_val, hemi_cube[5]);
+		
+//		float f					= 0.9f*hemi_factor + 0.1f*hemi_val;
+		float f					= hemi_val;
+		float t					= Device.fTimeDelta;
+		clamp					(t, 0.001f, 1.0f);
+		hemi_factor				= hemi_factor*(1.0f-t) + f*t;
+	}
+#endif
 
 	switch (state)
 	{
 	case stIdle:		
-		if ( factor < EPS_L ) {
-			if ( snd_Ambient._feedback() )
-				snd_Ambient.stop();
-			return;
-		}
-		if (snd_Ambient._feedback()) {
-			snd_Ambient.stop();
-			return;
-		}
-		snd_Ambient.play(0, sm_Looped);
-		snd_Ambient.set_range(source_offset, source_offset * 2.f);
-		state = stWorking;
-		break;
+		if (factor<EPS_L)		return;
+		state					= stWorking;
+		snd_Ambient.play		(0,sm_Looped);
+		snd_Ambient.set_position(Fvector().set(0,0,0));
+		snd_Ambient.set_range	(source_offset,source_offset*2.f);
+	break;
 	case stWorking:
 		if (factor<EPS_L){
-			snd_Ambient.stop();
-			state = stIdle;
+			state				= stIdle;
+			snd_Ambient.stop	();
 			return;
 		}
 		break;
 	}
 
 	// ambient sound
-	if (snd_Ambient._feedback()){
-		Fvector					sndP;
-		sndP.mad				(Device.vCameraPosition,Fvector().set(0,1,0),source_offset);
-		snd_Ambient.set_position(sndP);
-		snd_Ambient.set_volume	(1.1f*factor*hemi_factor);
+	if (snd_Ambient._feedback())
+	{
+//		Fvector					sndP;
+//		sndP.mad				(Device.vCameraPosition,Fvector().set(0,1,0),source_offset);
+//		snd_Ambient.set_position(sndP);
+		snd_Ambient.set_volume	(_max(0.1f,factor) * hemi_factor );
 	}
 }
 
-enum
-{
-	NO_RAIN,
-	IS_RAIN,
-};
-BOOL rain_timer_params::RayPick(const Fvector& s, const Fvector& d, float& range, collide::rq_target tgt)
-{
-	BOOL bRes = TRUE;
-	collide::rq_result	RQ;
-	CObject* E = g_pGameLevel->CurrentViewEntity();
-	bRes = g_pGameLevel->ObjectSpace.RayPick(s, d, range, tgt, RQ, E);
-	if (bRes) range = RQ.range;
-	return bRes;
-}
-int rain_timer_params::Update(BOOL state, bool need_raypick)
-{
-	float	factor = g_pGamePersistent->Environment().CurrentEnv.rain_density;
-	if (factor>EPS_L)
-	{
-		// is raining	
-		if (state)
-		{
-			// effect is enabled
-			Fvector P, D;
-			P = Device.vCameraPosition;	// cam position
-			D.set(0, 1, 0);				// direction to sky
-			float max_dist = max_distance;
-			if (!need_raypick || !RayPick(P, D, max_dist, collide::rqtBoth))
-			{
-				// under the sky
-				if (!not_first_frame)
-				{
-					// first frame
-					not_first_frame = TRUE;
-					rain_drop_time = rain_drop_time_basic / factor;		// speed of getting wet
-					rain_timestamp = Device.fTimeGlobal;
-					if (rain_timer > EPS)
-						rain_timestamp += last_rain_duration - rain_timer - _min(rain_drop_time, last_rain_duration);
-					last_rain_duration = 0;
-				}
-				// проверяем, не отрицателен ли дождевой таймер, если отрицателен - обнуляем
-				// такое может быть при первом кадре с дождем, если до этого дождь уже как-то раз был в текущей игровой сессии
-				if (rain_timer < 0)
-					rain_timer = 0;
-				rain_timer = Device.fTimeGlobal - rain_timestamp;
-			}
-			else
-			{
-				// under the cover. but may be it just appear
-				if (rain_timer > EPS)
-				{
-					// yes, actor was under the sky recently
-					float delta = rain_timer - (Device.fTimeGlobal - previous_frame_time);
-					rain_timer = (delta>0) ? delta : 0;
-					if (not_first_frame)
-					{
-						// first update since rain was stopped
-						not_first_frame = FALSE;
-						last_rain_duration = Device.fTimeGlobal - rain_timestamp;
-					}
-				}
-			}
-		}
-		else
-		{
-			// effect is disabled, reset all
-			not_first_frame = FALSE;
-			last_rain_duration = 0;
-			rain_timer = 0;
-			rain_timestamp = Device.fTimeGlobal;
-		}
-		previous_frame_time = Device.fTimeGlobal;
-		timer.set(rain_timer, last_rain_duration, rain_drop_time);
-		return IS_RAIN;
-	}
-	else
-	{
-		// no rain. but may be it just stop
-		if (rain_timer > EPS)
-		{
-			// yes, it has been raining recently
-			// so decrease timer
-			float delta = rain_timer - (Device.fTimeGlobal - previous_frame_time);
-			rain_timer = (delta>0) ? delta : 0;
-			if (not_first_frame)
-			{
-				// first update since rain was stopped
-				not_first_frame = FALSE;
-				last_rain_duration = Device.fTimeGlobal - rain_timestamp;
-			}
-			previous_frame_time = Device.fTimeGlobal;
-		}
-		timer.set(rain_timer, last_rain_duration, rain_drop_time);
-		return NO_RAIN;
-	}
-}
-static bool rain_flag = false;
-static float start_timer = 0.0;
 //#include "xr_input.h"
 void	CEffect_Rain::Render	()
 {
+#ifndef _EDITOR
 	if (!g_pGameLevel)			return;
+#endif
 
-	::Render->getTarget()->phase_rain();
+	m_pRender->Render(*this);
 
-	float	factor				= g_pGamePersistent->Environment().CurrentEnv.rain_density;
+	/*
+	float	factor				= g_pGamePersistent->Environment().CurrentEnv->rain_density;
+	if (factor<EPS_L)			return;
 
-	rain_timers->Update(true/*ps_r2_test_flags.test(R2FLAG_RAIN_MAP & R2FLAG_WET_SURFACES)*/, false);
-	//rain params update
-	{
-
-		rain_params->x = (rain_timers->timer.x - rain_timers->timer.y) / ps_r2_rain_params.x
-			+ lerp<float>(0, saturate(rain_timers->timer.y / ps_r2_rain_params.x), saturate(rain_timers->timer.y));
-		rain_params->y = (rain_timers->timer.x - rain_timers->timer.y) / ps_r2_rain_params.y
-			+ lerp<float>(0, saturate(rain_timers->timer.y / ps_r2_rain_params.y), saturate(rain_timers->timer.y));
-		rain_params->z = (rain_timers->timer.x - rain_timers->timer.y) / ps_r2_rain_params.z
-			+ lerp<float>(0, saturate(rain_timers->timer.y / ps_r2_rain_params.z), saturate(rain_timers->timer.y));
-		rain_params->w = factor;
-	}
-	if (rain_params->x > EPS) phase_rmap();
-	//	Msg("rain_params: %f,%f,%f,%f", wet_params.x, wet_params.y, wet_params.z, wet_params.w);
-
-	if (NO_RAIN == rain_timers_raycheck->Update(/*ps_r2_pp_flags.test(R2PP_FLAG_RAIN_DROPS)*/true, true)) {
-		rain_flag = false;
-		return;
-	}
-	if (!rain_flag) {
-		start_timer = Device.fTimeGlobal;
-		rain_flag = true;
-	}
-
-//	u32 desired_items			= iFloor	(0.5f*(1.f+factor)*float(max_desired_items));
-	u32 desired_items = iFloor(saturate(g_pGamePersistent->Environment().CurrentEnv.rain_increase_speed*factor*factor)*float(max_desired_items));
-	if (0 == desired_items) return;
+	u32 desired_items			= iFloor	(0.5f*(1.f+factor)*float(max_desired_items));
 	// visual
 	float		factor_visual	= factor/2.f+.5f;
-	Fvector3	f_rain_color	= g_pGamePersistent->Environment().CurrentEnv.rain_color;
+	Fvector3	f_rain_color	= g_pGamePersistent->Environment().CurrentEnv->rain_color;
 	u32			u_rain_color	= color_rgba_f(f_rain_color.x,f_rain_color.y,f_rain_color.z,factor_visual);
 
 	// born _new_ if needed
@@ -534,6 +387,7 @@ void	CEffect_Rain::Render	()
 			RCache.Render			(D3DPT_TRIANGLELIST,v_offset,0,vCount_Lock,i_offset,dwNumPrimitives);
 		}
 	}
+	*/
 }
 
 // startup _new_ particle system
@@ -543,11 +397,14 @@ void	CEffect_Rain::Hit		(Fvector& pos)
 	Particle*	P	= p_allocate();
 	if (0==P)	return;
 
+	const Fsphere &bv_sphere = m_pRender->GetDropBounds();
+
 	P->time						= particles_time;
 	P->mXForm.rotateY			(::Random.randF(PI_MUL_2));
 	P->mXForm.translate_over	(pos);
-	P->mXForm.transform_tiny	(P->bounds.P,DM_Drop->bv_sphere.P);
-	P->bounds.R					= DM_Drop->bv_sphere.R;
+	P->mXForm.transform_tiny	(P->bounds.P, bv_sphere.P);
+	P->bounds.R					= bv_sphere.R;
+
 }
 
 // initialize particles pool
@@ -626,12 +483,4 @@ void	CEffect_Rain::p_free(Particle* P)
 {
 	p_remove	(P,particle_active);
 	p_insert	(P,particle_idle);
-}
-
-void	CEffect_Rain::phase_rmap()
-{
-/*	if (!ps_r2_test_flags.test(R2FLAG_RAIN_MAP) || !(::Render->o.HW_smap)) return;
-	::Render->getTarget()->render_rain_near();*/
-	//	RImplementation.render_rain();
-	//	RImplementation.Target->rmap_blend			();
 }

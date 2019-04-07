@@ -15,7 +15,6 @@ ENGINE_API extern Flags32		psHUD_Flags;
 #define HUD_DRAW_RT				(1<<10)
 #define HUD_CROSSHAIR_BUILD		(1<<11) // старый стиль курсора
 
-class ENGINE_API IRender_Visual;
 class CUI;
 
 class ENGINE_API CCustomHUD:

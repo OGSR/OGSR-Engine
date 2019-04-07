@@ -89,6 +89,8 @@ public:
 			u32						GameType			() {return m_game_params.m_e_game_type;};
 	virtual void					Statistics			(CGameFont* F)  = 0;
 	virtual	void					LoadTitle			(LPCSTR str){}
+
+	virtual bool					CanBePaused() { return true; }
 };
 
 class IMainMenu

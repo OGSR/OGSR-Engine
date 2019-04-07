@@ -2,15 +2,22 @@
 //
 //////////////////////////////////////////////////////////////////////
 
+#ifndef RainH
+#define RainH
 #pragma once
 
-#include "xr_collide_defs.h"
+//KRodin: заменил инклуд, если буду переносить файлы в CDB - вернуть обратно.
+#include "xr_collide_defs.h" //#include "../xrcdb/xr_collide_defs.h"
 
 //refs
 class ENGINE_API IRender_DetailModel;
 
+#include "../Include/xrRender/FactoryPtr.h"
+#include "../Include/xrRender/RainRender.h"
+//
 class ENGINE_API CEffect_Rain
 {
+	friend class dxRainRender;
 private:
 	struct	Item
 	{
@@ -33,13 +40,15 @@ private:
 		Fsphere			bounds;
 		float			time;
 	};
-public:
 	enum	States
 	{
 		stIdle		= 0,
 		stWorking
 	};
 private:
+	// Visualization	(rain) and (drops)
+	FactoryPtr<IRainRender>	m_pRender;
+	/*
 	// Visualization	(rain)
 	ref_shader						SH_Rain;
 	ref_geom						hGeom_Rain;
@@ -47,6 +56,7 @@ private:
 	// Visualization	(drops)
 	IRender_DetailModel*			DM_Drop;
 	ref_geom						hGeom_Drops;
+	*/
 	
 	// Data and logic
 	xr_vector<Item>					items;
@@ -57,11 +67,9 @@ private:
 	Particle*						particle_active;
 	Particle*						particle_idle;
 
-public:
 	// Sounds
 	ref_sound						snd_Ambient;
 
-private:
 	// Utilities
 	void							p_create		();
 	void							p_destroy		();
@@ -83,31 +91,6 @@ public:
 
 	void							Render			();
 	void							OnFrame			();
-	void							phase_rmap		();
-	void							set_state		(States _state) {	state = _state;	};
-	void							InvalidateState	()		{state = stIdle;}
-};
-class rain_timer_params
-{
-public:
-	Fvector		timer;
-	bool		not_first_frame;
-	float		rain_timestamp;
-	float		rain_drop_time_basic;
-	float		previous_frame_time;
-	float		last_rain_duration;
-	float		rain_drop_time;
-	float		rain_timer;
-
-	rain_timer_params() :not_first_frame(FALSE), rain_timestamp(0), rain_drop_time_basic(20.0), previous_frame_time(0), last_rain_duration(0), rain_drop_time(0), rain_timer(0) { timer.set(0.0, 0.0, 0.0); };
-	IC void SetDropTime(float time)
-	{
-		rain_drop_time_basic = time;
-	}
-	int Update(BOOL state, bool need_raypick);
-	BOOL RayPick(const Fvector& s, const Fvector& d, float& range, collide::rq_target tgt);
 };
 
-ENGINE_API extern rain_timer_params *rain_timers_raycheck;
-ENGINE_API extern rain_timer_params *rain_timers;
-ENGINE_API extern Fvector4 *rain_params;
+#endif //RainH

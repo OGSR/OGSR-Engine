@@ -1,9 +1,14 @@
 #ifndef xr_efflensflareH
 #define xr_efflensflareH
 
-#include "xr_collide_defs.h"
+//KRodin: заменил инклуд, если буду переносить файлы в CDB - вернуть обратно.
+#include "xr_collide_defs.h" //#include "../xrcdb/xr_collide_defs.h"
+
+#include "../Include/xrRender/FactoryPtr.h"
+#include "../Include/xrRender/LensFlareRender.h"
 
 class ENGINE_API CInifile;
+class ENGINE_API CEnvironment;
 
 class ENGINE_API CLensFlareDescriptor
 {
@@ -15,7 +20,8 @@ public:
     	float			fPosition;
         shared_str			texture;
         shared_str			shader;
-        ref_shader		hShader;
+		FactoryPtr<IFlareRender>	m_pRender;
+        //ref_shader		hShader;
     	SFlare()		{ fOpacity = fRadius = fPosition = 0; }
 	};
     struct SSource: public SFlare
@@ -44,7 +50,7 @@ public:
 	void				SetGradient		(float fMaxRadius, float fOpacity, LPCSTR tex_name, LPCSTR sh_name);
     void				SetSource		(float fRadius, BOOL ign_color, LPCSTR tex_name, LPCSTR sh_name);
     void				AddFlare		(float fRadius, float fOpacity, float fPosition, LPCSTR tex_name, LPCSTR sh_name);
-    ref_shader			CreateShader	(LPCSTR tex_name, LPCSTR sh_name);
+    //ref_shader			CreateShader	(LPCSTR tex_name, LPCSTR sh_name);
 
 	shared_str			section;
 public:
@@ -53,13 +59,23 @@ public:
 	void 				OnDeviceCreate	();
 	void 				OnDeviceDestroy	();
 };
-DEFINE_VECTOR(CLensFlareDescriptor,LensFlareDescVec,LensFlareDescIt); 
+DEFINE_VECTOR(CLensFlareDescriptor*,LensFlareDescVec,LensFlareDescIt); 
 
 
 class ENGINE_API CLensFlare
 {
+	friend class dxLensFlareRender;
+public:
+	enum
+	{
+		MAX_RAYS	= 5
+	};
+
 private:
 	collide::rq_results	r_dest;
+#ifndef _EDITOR
+	collide::ray_cache	m_ray_cache[MAX_RAYS];
+#endif
 
 protected:
 	float				fBlend;
@@ -74,32 +90,36 @@ protected:
     Fcolor				LightColor;
 	float				fGradientValue;
 
-	ref_geom			hGeom;
+	FactoryPtr<ILensFlareRender>	m_pRender;
+	//ref_geom			hGeom;
 
     LensFlareDescVec	m_Palette;
 	CLensFlareDescriptor* m_Current;
 
+//. #ifdef DEBUG
+public:
     enum LFState{
         lfsNone,
         lfsIdle,
     	lfsHide,
         lfsShow,
     };
+//. #endif // DEBUG
+
+protected:
     LFState				m_State;
     float				m_StateBlend;
 
 public:
-	collide::ray_cache	m_ray_cache;
-public:
 						CLensFlare		();
 	virtual				~CLensFlare		();
 
-	void				OnFrame			(int id);
+	void				OnFrame			(shared_str id);
     void __fastcall		Render			(BOOL bSun, BOOL bFlares, BOOL bGradient);
 	void 				OnDeviceCreate	();         
 	void 				OnDeviceDestroy	();
 
-    int					AppendDef		(CInifile* pIni, LPCSTR sect);
+    shared_str			AppendDef		(CEnvironment& environment, CInifile* pIni, LPCSTR sect);
 
 	void				Invalidate		(){m_State=lfsNone;}
 };

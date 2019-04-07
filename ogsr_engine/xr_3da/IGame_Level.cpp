@@ -23,12 +23,16 @@ IGame_Level::IGame_Level	()
 	pHUD						= NULL;
 }
 
-#include "resourcemanager.h"
+//#include "resourcemanager.h"
 
 IGame_Level::~IGame_Level	()
 {
+#pragma todo("KRodin: а нафиг оно надо вообще?")
+	/*
 	if(strstr(Core.Params,"-nes_texture_storing") )
 		Device.Resources->StoreNecessaryTextures();
+	*/
+
 //.	DEL_INSTANCE				( pHUD			);
 	xr_delete					( pLevel		);
 

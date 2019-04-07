@@ -373,6 +373,7 @@
     <ClInclude Include="bone.h" />
     <ClInclude Include="cl_intersect.h" />
     <ClInclude Include="..\xrParticles\psystem.h" />
+    <ClInclude Include="GameMtlLib.h" />
     <ClInclude Include="NET_Server_Trash\client_id.h" />
     <ClInclude Include="NET_Server_Trash\NET_Client.h" />
     <ClInclude Include="NET_Server_Trash\NET_Messages.h" />
@@ -380,6 +381,7 @@
     <ClInclude Include="NET_Server_Trash\NET_Shared.h" />
     <ClInclude Include="NET_Server_Trash\NET_utils.h" />
     <ClInclude Include="ShadersExternalData.h" />
+    <ClInclude Include="SkeletonMotionDefs.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="trivial_encryptor.h" />
     <ClInclude Include="vismask.h" />
@@ -451,7 +453,10 @@
     <ClInclude Include="perlin.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="bone.cpp" />
     <ClCompile Include="defines.cpp" />
+    <ClCompile Include="GameMtlLib.cpp" />
+    <ClCompile Include="GameMtlLib_Engine.cpp" />
     <ClCompile Include="NET_Server_Trash\NET_Client.cpp" />
     <ClCompile Include="NET_Server_Trash\NET_Server.cpp" />
     <ClCompile Include="stdafx.cpp">

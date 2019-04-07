@@ -1,10 +1,24 @@
 //---------------------------------------------------------------------------
 #include "stdafx.h"
-
+#pragma hdrstop
 
 #include "GameMtlLib.h"
+//#include "../include/xrapi/xrapi.h"
 
 CGameMtlLibrary GMLib;
+//CSound_manager_interface*	Sound = NULL;
+#ifdef	_EDITOR
+CGameMtlLibrary*			PGMLib = NULL;
+#endif
+CGameMtlLibrary::	CGameMtlLibrary		()
+	{
+	    material_index 		= 0;
+	    material_pair_index = 0;
+#ifndef _EDITOR
+        material_count	    = 0;
+#endif
+		PGMLib = &GMLib;
+    }
 
 void SGameMtl::Load(IReader& fs)
 {
@@ -32,11 +46,20 @@ void SGameMtl::Load(IReader& fs)
     fVisTransparencyFactor	= fs.r_float();
     fSndOcclusionFactor		= fs.r_float();
 
+
+	if(fs.find_chunk(GAMEMTL_CHUNK_FACTORS_MP))
+	    fShootFactorMP	    = fs.r_float();
+    else
+	    fShootFactorMP	    = fShootFactor;
+
 	if(fs.find_chunk(GAMEMTL_CHUNK_FLOTATION))
 	    fFlotationFactor	= fs.r_float();
 
     if(fs.find_chunk(GAMEMTL_CHUNK_INJURIOUS))
     	fInjuriousSpeed		= fs.r_float();
+    
+	if(fs.find_chunk(GAMEMTL_CHUNK_DENSITY))
+    	fDensityFactor		= fs.r_float();
 }
 
 void CGameMtlLibrary::Load()
@@ -49,7 +72,7 @@ void CGameMtlLibrary::Load()
 
     R_ASSERT			(material_pairs.empty());
     R_ASSERT			(materials.empty());
-    		
+
 	IReader*	F		= FS.r_open(name);
     IReader& fs			= *F;
 
@@ -90,6 +113,7 @@ void CGameMtlLibrary::Load()
         OBJ->close		();
     }
 
+#ifndef _EDITOR
 	material_count		= (u32)materials.size();
     material_pairs_rt.resize(material_count*material_count,0);
     for (GameMtlPairIt p_it=material_pairs.begin(); material_pairs.end() != p_it; ++p_it){
@@ -99,6 +123,7 @@ void CGameMtlLibrary::Load()
 	    material_pairs_rt[idx0]=S;
 	    material_pairs_rt[idx1]=S;
     }
+#endif
 
 /*
 	for (GameMtlPairIt p_it=material_pairs.begin(); material_pairs.end() != p_it; ++p_it){
@@ -147,7 +172,7 @@ LPCSTR SGameMtlPair::dbg_Name()
 	static string256 nm;
 	SGameMtl* M0 = GMLib.GetMaterialByID(GetMtl0());
 	SGameMtl* M1 = GMLib.GetMaterialByID(GetMtl1());
-	sprintf_s(nm,"Pair: %s - %s",*M0->m_Name,*M1->m_Name);
+	xr_sprintf(nm,sizeof(nm),"Pair: %s - %s",*M0->m_Name,*M1->m_Name);
 	return nm;
 }
 #endif

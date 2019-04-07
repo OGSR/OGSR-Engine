@@ -474,3 +474,9 @@ void CGamePersistent::LoadTitle(LPCSTR str)
 	pApp->LoadTitleInt	(buff);
 //	pApp->LoadTitleInt(str);
 }
+
+bool CGamePersistent::CanBePaused()
+{
+#pragma todo("KRodin: не уверен, что проверка правильная. Пока пусть так будет.")
+	return GameID() == GAME_SINGLE;
+}

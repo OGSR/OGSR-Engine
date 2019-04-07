@@ -335,6 +335,8 @@
     <ClInclude Include="bone.h" />
     <ClInclude Include="cl_intersect.h" />
     <ClInclude Include="xrSkinXW.hpp" />
+    <ClInclude Include="GameMtlLib.h" />
+    <ClInclude Include="SkeletonMotionDefs.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="defines.cpp">
@@ -566,6 +568,9 @@
       <Filter>NET_Server_Trash</Filter>
     </ClCompile>
     <ClCompile Include="xrSkinXW.cpp" />
+    <ClCompile Include="bone.cpp" />
+    <ClCompile Include="GameMtlLib_Engine.cpp" />
+    <ClCompile Include="GameMtlLib.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="resource.rc">
