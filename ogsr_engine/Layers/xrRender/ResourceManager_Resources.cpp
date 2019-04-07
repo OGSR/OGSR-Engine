@@ -2,7 +2,7 @@
 #pragma hdrstop
 
 #pragma warning(disable:4995)
-#include <d3dx/d3dx9.h>
+#include <d3dx9.h>
 #ifndef _EDITOR
 #include "../../xr_3da/render.h"
 #endif
