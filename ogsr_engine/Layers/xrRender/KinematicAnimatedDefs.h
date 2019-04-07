@@ -3,7 +3,7 @@
 
 #pragma once
 
-#include	"../../xrEngine/SkeletonMotionDefs.h"
+#include	"../../xr_3da/SkeletonMotionDefs.h"
 // consts
 const	u32		MAX_BLENDED			=	16;
 const	u32		MAX_CHANNELS		=	4;

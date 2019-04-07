@@ -8,7 +8,7 @@
 #include <d3dx/d3dx9.h>
 #pragma warning(default:4995)
 #include "HW.h"
-#include "../../xrEngine/XR_IOConsole.h"
+#include "../../xr_3da/XR_IOConsole.h"
 
 #ifndef _EDITOR
 	void	fill_vid_mode_list			(CHW* _hw);

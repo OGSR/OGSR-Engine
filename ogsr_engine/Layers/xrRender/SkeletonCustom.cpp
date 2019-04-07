@@ -4,9 +4,9 @@
 
 #include 	"SkeletonCustom.h"
 #include	"SkeletonX.h"
-#include	"../../xrEngine/fmesh.h"
+#include	"../../xr_3da/fmesh.h"
 #ifndef _EDITOR
-#include	"../../xrEngine/Render.h"
+#include	"../../xr_3da/Render.h"
 #endif
 int			psSkeletonUpdate	= 32;
 xrCriticalSection	UCalc_Mutex

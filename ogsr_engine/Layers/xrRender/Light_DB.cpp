@@ -1,8 +1,8 @@
 #include "StdAfx.h"
-#include "../../xrEngine/_d3d_extensions.h"
-#include "../../xrEngine/xrLevel.h"
-#include "../../xrEngine/igame_persistent.h"
-#include "../../xrEngine/environment.h"
+#include "../../xr_3da/_d3d_extensions.h"
+#include "../../xr_3da/xrLevel.h"
+#include "../../xr_3da/igame_persistent.h"
+#include "../../xr_3da/environment.h"
 #include "../../utils/xrLC_Light/R_light.h"
 #include "light_db.h"
 

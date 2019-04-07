@@ -4,7 +4,7 @@
 
 #include "..\..\Include\xrRender\StatGraphRender.h"
 
-#include "../../xrEngine/StatGraph.h"
+#include "../../xr_3da/StatGraph.h"
 
 class dxStatGraphRender : public IStatGraphRender
 {

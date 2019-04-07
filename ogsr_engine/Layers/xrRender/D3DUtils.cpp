@@ -3,7 +3,7 @@
 #include "stdafx.h"
 #pragma hdrstop
 
-#include "../../xrEngine/gamefont.h"
+#include "../../xr_3da/gamefont.h"
 #include "d3dutils.h"
 #include "du_box.h"
 #include "du_sphere.h"

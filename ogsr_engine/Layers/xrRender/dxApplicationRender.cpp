@@ -1,8 +1,8 @@
 #include "stdafx.h"
 
 #include "dxApplicationRender.h"
-#include "../../xrEngine/x_ray.h"
-#include "../../xrEngine/GameFont.h"
+#include "../../xr_3da/x_ray.h"
+#include "../../xr_3da/GameFont.h"
 
 void draw_multiline_text(CGameFont* F, float fTargetWidth, LPCSTR pszText);
 

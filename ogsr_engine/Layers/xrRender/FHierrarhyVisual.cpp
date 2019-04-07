@@ -6,9 +6,9 @@
 #pragma hdrstop
 
 #include "FHierrarhyVisual.h"
-#include "../../xrEngine/Fmesh.h"
+#include "../../xr_3da/Fmesh.h"
 #ifndef _EDITOR
-#include "../../xrEngine/render.h"
+#include "../../xr_3da/render.h"
 #else
 #include "../../Include/xrAPI/xrAPI.h"
 #endif

@@ -10,14 +10,14 @@
 #pragma warning(default:4995)
 
 #ifndef _EDITOR
-	#include	"../../xrEngine/Render.h"
+	#include	"../../xr_3da/Render.h"
 #else
 	#include "../../Include/xrAPI/xrAPI.h"
 #endif
 
 #include "SkeletonX.h"
 #include "SkeletonCustom.h"
-#include "../../xrEngine/fmesh.h"
+#include "../../xr_3da/fmesh.h"
 #include "../../xrCPU_Pipe/xrCPU_Pipe.h"
 
 shared_str	s_bones_array_const;

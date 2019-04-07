@@ -2,7 +2,7 @@
 #define	KinematicsAnimated_included
 #pragma once
 
-#include "../../xrEngine/SkeletonMotions.h"
+#include "../../xr_3da/SkeletonMotions.h"
 #include "animation_blend.h"
 #include "../../layers/xrrender/KinematicAnimatedDefs.h"
 

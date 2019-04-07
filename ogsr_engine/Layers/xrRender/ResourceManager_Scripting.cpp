@@ -1,13 +1,13 @@
 #include "stdafx.h"
 #pragma hdrstop
 
-#include	"../../xrEngine/Render.h"
+#include	"../../xr_3da/Render.h"
 #include	"ResourceManager.h"
 #include	"tss.h"
 #include	"blenders\blender.h"
 #include	"blenders\blender_recorder.h"
-#include	"../../xrEngine/ai_script_space.h"
-#include	"../../xrEngine/ai_script_lua_extension.h"
+#include	"../../xr_3da/ai_script_space.h"
+#include	"../../xr_3da/ai_script_lua_extension.h"
 #include	"luabind/return_reference_to_policy.hpp"
 
 #include	"dxRenderDeviceRender.h"

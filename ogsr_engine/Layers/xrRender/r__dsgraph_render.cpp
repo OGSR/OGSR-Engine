@@ -1,10 +1,10 @@
 #include "stdafx.h"
 
-#include "../../xrEngine/render.h"
-#include "../../xrEngine/irenderable.h"
-#include "../../xrEngine/igame_persistent.h"
-#include "../../xrEngine/environment.h"
-#include "../../xrEngine/CustomHUD.h"
+#include "../../xr_3da/render.h"
+#include "../../xr_3da/irenderable.h"
+#include "../../xr_3da/igame_persistent.h"
+#include "../../xr_3da/environment.h"
+#include "../../xr_3da/CustomHUD.h"
 
 #include "FBasicVisual.h"
 
@@ -720,7 +720,7 @@ void	R_dsgraph_structure::r_dsgraph_render_subspace	(IRender_Sector* _sector, CF
 
 #include "fhierrarhyvisual.h"
 #include "SkeletonCustom.h"
-#include "../../xrEngine/fmesh.h"
+#include "../../xr_3da/fmesh.h"
 #include "flod.h"
 
 void	R_dsgraph_structure::r_dsgraph_render_R1_box	(IRender_Sector* _S, Fbox& BB, int sh)

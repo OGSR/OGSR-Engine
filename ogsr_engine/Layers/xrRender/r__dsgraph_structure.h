@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../../xrEngine/render.h"
+#include "../../xr_3da/render.h"
 #include "../../xrcdb/ispatial.h"
 #include "r__dsgraph_types.h"
 #include "r__sector.h"

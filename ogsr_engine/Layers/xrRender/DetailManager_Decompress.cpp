@@ -67,7 +67,7 @@ bool det_render_debug = false;
 #endif
 #endif
 
-#include "../../xrEngine/gamemtllib.h"
+#include "../../xr_3da/gamemtllib.h"
 
 //#define		DBG_SWITCHOFF_RANDOMIZE
 void		CDetailManager::cache_Decompress(Slot* S)

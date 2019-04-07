@@ -15,8 +15,8 @@
 #	include "igame_persistent.h"
 #	include "environment.h"
 #else
-#	include "../../xrEngine/igame_persistent.h"
-#	include "../../xrEngine/environment.h"
+#	include "../../xr_3da/igame_persistent.h"
+#	include "../../xr_3da/environment.h"
 #   include <xmmintrin.h>
 #endif
 

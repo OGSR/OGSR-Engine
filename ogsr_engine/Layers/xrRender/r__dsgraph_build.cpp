@@ -2,8 +2,8 @@
 
 #include "fhierrarhyvisual.h"
 #include "SkeletonCustom.h"
-#include "../../xrEngine/fmesh.h"
-#include "../../xrEngine/irenderable.h"
+#include "../../xr_3da/fmesh.h"
+#include "../../xr_3da/irenderable.h"
 
 #include "flod.h"
 #include "particlegroup.h"

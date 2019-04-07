@@ -4,7 +4,7 @@
 
 #include		"skeletoncustom.h"
 #include		"animation.h"
-#include		"../../xrEngine/SkeletonMotions.h"
+#include		"../../xr_3da/SkeletonMotions.h"
 
 #include		"../../Include/xrRender/KinematicsAnimated.h"
 

@@ -4,8 +4,8 @@
 #include "ModelPool.h"
 
 #ifndef _EDITOR
-	#include "../../xrEngine/IGame_Persistent.h"
-    #include "../../xrEngine/fmesh.h"
+	#include "../../xr_3da/IGame_Persistent.h"
+    #include "../../xr_3da/fmesh.h"
     #include "fhierrarhyvisual.h"
     #include "SkeletonAnimated.h"
 	#include "fvisual.h"
