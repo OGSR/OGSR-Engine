@@ -80,7 +80,7 @@ public:
 
 	virtual void					UpdateGameType		() {};
 
-	virtual void					RegisterModel		(IRender_Visual* V) = 0;
+	virtual void					RegisterModel		(IRenderVisual* V) = 0;
 	virtual	float					MtlTransparent		(u32 mtl_idx) = 0;
 
 	IGame_Persistent				();

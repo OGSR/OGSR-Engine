@@ -647,7 +647,7 @@ void CIKLimb::Collide( SIKCollideData &cld, CGameObject *O, const Fmatrix &foot,
 			cld.clamp_down = R.range > pick_dist + EPS_L;
 		} else {
 			
-			IRender_Visual* V =R.O->Visual();
+			IRenderVisual* V =R.O->Visual();
 			if( V )
 			{
 				CKinematics *K = V->dcast_PKinematics( );

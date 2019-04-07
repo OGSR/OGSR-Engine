@@ -33,7 +33,7 @@ void CObject::cNameVisual_set	(shared_str N)
 	// replace model
 	if (*N && N[0]) 
 	{
-		IRender_Visual			*old_v = renderable.visual;
+		IRenderVisual			*old_v = renderable.visual;
 		
 		NameVisual				= N;
 		renderable.visual		= Render->model_Create	(*N);

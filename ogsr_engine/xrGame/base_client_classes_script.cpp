@@ -273,7 +273,7 @@ void CObjectScript::script_register		(lua_State *L)
 
 // alpet ======================== SCRIPT_TEXTURE_CONTROL BEGIN =========== 
 
-IRender_Visual* visual_get_child(IRender_Visual	*v, u32 n_child)
+IRenderVisual* visual_get_child(IRenderVisual	*v, u32 n_child)
 {
 	if (!v) return NULL; // not have visual
 	CKinematics *k = smart_cast<CKinematics*> (v);
@@ -282,7 +282,7 @@ IRender_Visual* visual_get_child(IRender_Visual	*v, u32 n_child)
 	return k->children.at(n_child);
 }
 
-CTexture* visual_get_texture(IRender_Visual *child_v, int n_texture)
+CTexture* visual_get_texture(IRenderVisual *child_v, int n_texture)
 {
 	if (!child_v) return NULL; // not have visual
 
@@ -326,9 +326,9 @@ void IRender_VisualScript::script_register(lua_State *L)
 {
 	module(L)
 	[
-		class_<IRender_Visual>("IRender_Visual")
+		class_<IRenderVisual>("IRenderVisual")
 			.def(constructor<>())
-			.def("dcast_PKinematicsAnimated",&IRender_Visual::dcast_PKinematicsAnimated)
+			.def("dcast_PKinematicsAnimated",&IRenderVisual::dcast_PKinematicsAnimated)
 			.def("child", &visual_get_child)
 
 			.def("get_texture", &visual_get_texture)
@@ -405,7 +405,7 @@ void FHierrarhyVisualScript::script_register		(lua_State *L)
 {
 	module(L)
 		[
-			class_<FHierrarhyVisual, IRender_Visual>("FHierrarhyVisual")
+			class_<FHierrarhyVisual, IRenderVisual>("FHierrarhyVisual")
 			//			.def(constructor<>())
 		];
 }
@@ -462,8 +462,8 @@ void CPatrolPathScript::script_register( lua_State *L ) {
 
 CTexture* script_object_get_texture(CScriptGameObject *script_obj, u32 n_child, u32 n_texture)
 {
-	IRender_Visual* v = script_obj->object().Visual();
-	IRender_Visual* child_v = visual_get_child(v, n_child);
+	IRenderVisual* v = script_obj->object().Visual();
+	IRenderVisual* child_v = visual_get_child(v, n_child);
 	return visual_get_texture(child_v, n_texture);
 }
 

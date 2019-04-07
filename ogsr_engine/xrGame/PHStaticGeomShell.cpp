@@ -63,7 +63,7 @@ CPHStaticGeomShell* P_BuildStaticGeomShell(CGameObject* obj,ObjectContactCallbac
 CPHStaticGeomShell* P_BuildStaticGeomShell(CGameObject* obj,ObjectContactCallbackFun* object_contact_callback)
 {
 	Fobb			b;
-	IRender_Visual* V=obj->Visual();
+	IRenderVisual* V=obj->Visual();
 	R_ASSERT2(V,"need visual to build");
 
 	smart_cast<CKinematics*>(V)->CalculateBones	();		//. bForce - was TRUE
