@@ -1,7 +1,5 @@
 #pragma once
 
-#include "../xrCore/xrCore.h"
-
 constexpr LPCSTR GAMEDATA_PATH			= "$game_data$";
 constexpr LPCSTR CONFIG_PATH			= "$game_config$";
 constexpr LPCSTR UI_PATH				= "ui";

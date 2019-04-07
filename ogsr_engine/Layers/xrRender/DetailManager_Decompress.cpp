@@ -1,7 +1,7 @@
 #include "stdafx.h"
 
 #include "DetailManager.h"
-#include "cl_intersect.h"
+#include "..\..\xr_3da\cl_intersect.h"
 
 //--------------------------------------------------- Decompression
 IC float	Interpolate			(float* base,		u32 x, u32 y, u32 size)

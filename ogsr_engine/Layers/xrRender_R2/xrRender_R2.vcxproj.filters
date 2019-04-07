@@ -51,7 +51,7 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\COMMON\cl_intersect.h">
+    <ClInclude Include="..\..\xr_3da\cl_intersect.h">
       <Filter>Kernel</Filter>
     </ClInclude>
     <ClInclude Include="stdafx.h">
@@ -671,7 +671,7 @@
     <ClCompile Include="r2_puddles.cpp">
       <Filter>Core</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\COMMON\tga.cpp">
+    <ClCompile Include="..\xrRender\tga.cpp">
       <Filter>Core</Filter>
     </ClCompile>
     <ClCompile Include="..\xrRender\dxGlowManager.cpp">

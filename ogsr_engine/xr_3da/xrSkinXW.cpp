@@ -1,7 +1,6 @@
 #include "stdafx.h"
 
-#include "..\xr_3da\stdafx.h"
-#include "..\xr_3da\SkeletonX.h"
+#include "SkeletonX.h"
 #include "xrSkinXW.hpp"
 
 #ifndef _M_X64

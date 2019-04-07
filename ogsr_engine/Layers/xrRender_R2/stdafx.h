@@ -21,7 +21,7 @@
 #include "..\..\xr_3da\resourcemanager.h"
 #include "..\..\xr_3da\vis_common.h"
 #include "..\..\xr_3da\render.h"
-#include "_d3d_extensions.h"
+#include "..\..\xr_3da\_d3d_extensions.h"
 #include "..\..\xr_3da\igame_level.h"
 #include "..\..\xr_3da\blenders\blender.h"
 #include "..\..\xr_3da\blenders\blender_clsid.h"
