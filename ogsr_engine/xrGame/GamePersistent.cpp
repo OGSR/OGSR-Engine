@@ -469,10 +469,40 @@ void CGamePersistent::OnRenderPPUI_PP()
 #include "../xr_3da/x_ray.h"
 void CGamePersistent::LoadTitle(LPCSTR str)
 {
-	string512			buff;
+	/*string512			buff;
 	sprintf_s				(buff, "%s", CStringTable().translate(str).c_str());
-	pApp->LoadTitleInt	(buff);
-//	pApp->LoadTitleInt(str);
+	pApp->LoadTitleInt	(buff);*/
+#pragma todo("KRodin: придумать тут что нибудь.")
+
+	pApp->LoadStage();
+	/*if (change_tip)
+	{
+		string512				buff;
+		u8						tip_num;
+		luabindex::functor<u8>	m_functor;
+		bool is_single = !xr_strcmp(m_game_params.m_game_type, "single");
+		if (is_single)
+		{
+			R_ASSERT(ai().script_engine().functor("loadscreen.get_tip_number", m_functor));
+			tip_num = m_functor(map_name.c_str());
+		}
+		else
+		{
+			R_ASSERT(ai().script_engine().functor("loadscreen.get_mp_tip_number", m_functor));
+			tip_num = m_functor(map_name.c_str());
+		}
+		//		tip_num = 83;
+		xr_sprintf(buff, "%s%d:", CStringTable().translate("ls_tip_number").c_str(), tip_num);
+		shared_str				tmp = buff;
+
+		if (is_single)
+			xr_sprintf(buff, "ls_tip_%d", tip_num);
+		else
+			xr_sprintf(buff, "ls_mp_tip_%d", tip_num);
+
+		pApp->LoadTitleInt(CStringTable().translate("ls_header").c_str(), tmp.c_str(), CStringTable().translate(buff).c_str());
+	}*/
+
 }
 
 bool CGamePersistent::CanBePaused()

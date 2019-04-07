@@ -4,6 +4,9 @@
 // refs
 class ENGINE_API CGameFont;
 
+#include "../Include/xrRender/FactoryPtr.h"
+#include "../Include/xrRender/ApplicationRender.h"
+
 // definition
 class ENGINE_API CApplication	:
 	public pureFrame,
@@ -17,14 +20,8 @@ class ENGINE_API CApplication	:
 	};
 	string256				app_title;
 private:
-//	ref_shader				ll_hLogo;
-//	ref_shader				ll_hLogo1;
-	ref_shader				hLevelLogo;
-	ref_geom				ll_hGeom;
-	ref_geom				ll_hGeom2;
+	FactoryPtr<IApplicationRender>	m_pRender;
 
-	ref_shader				sh_progress;
-//	ref_shader				sh_progress2;
 	int						load_stage;
 
 	u32						ll_dwReference;
@@ -46,12 +43,12 @@ public:
 	void					Level_Set			(u32 ID);
 
 	// Loading
-	void					LoadBegin			();
-	void					LoadEnd				();
-	void					LoadTitleInt		(LPCSTR str);
-	void					SetLoadLogo			(ref_shader NewLoadLogo);
-	void					LoadSwitch			();
-	void					LoadDraw			();
+	void					LoadBegin();
+	void					LoadEnd();
+	void					LoadTitleInt(LPCSTR str1, LPCSTR str2, LPCSTR str3);
+	void					LoadStage();
+	void					LoadSwitch();
+	void					LoadDraw();
 
 	virtual	void			OnEvent				(EVENT E, u64 P1, u64 P2);
 
