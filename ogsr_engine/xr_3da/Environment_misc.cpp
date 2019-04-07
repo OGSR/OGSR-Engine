@@ -14,7 +14,6 @@
 //-----------------------------------------------------------------------------
 void	CEnvModifier::load	(IReader* fs)
 {
-//	Fvector			dummy;
 	fs->r_fvector3	(position);
 	radius			= fs->r_float	();
 	power			= fs->r_float	();
@@ -25,6 +24,20 @@ void	CEnvModifier::load	(IReader* fs)
 	fs->r_fvector3	(sky_color);
 	fs->r_fvector3	(hemi_color);
 }
+
+void	CEnvModifier::load_ini(CInifile::Sect& section)
+{
+	position = section.r_fvector3("position");
+	radius = section.r_float("radius");
+	power = section.r_float("power");
+	far_plane = section.r_float("far_plane");
+	fog_color = section.r_fvector3("fog_color");
+	fog_density = section.r_float("fog_density");
+	ambient = section.r_fvector3("ambient");
+	sky_color = section.r_fvector3("sky_color");
+	hemi_color = section.r_fvector3("hemi_color");
+}
+
 float	CEnvModifier::sum	(CEnvModifier& M, Fvector3& view)
 {
 	float	_dist_sq	=	view.distance_to_sqr(M.position);
@@ -332,24 +345,38 @@ CEnvAmbient* CEnvironment::AppendEnvAmb		(const shared_str& sect)
 	return Ambients.back();
 }
 
-void	CEnvironment::mods_load			()
+void	CEnvironment::mods_load()
 {
-	Modifiers.clear_and_free			();
+	Modifiers.clear_and_free();
 	string_path							path;
-	if (FS.exist(path,"$level$","level.env_mod"))	
+
+	if (FS.exist(path, "$level$", "level.env_mod"))
 	{
-		IReader*	fs	= FS.r_open		(path);
-		u32			id	= 0;
-		while		(fs->find_chunk(id))	
+		IReader*	fs = FS.r_open(path);
+		u32			id = 0;
+		while (fs->find_chunk(id))
 		{
 			CEnvModifier		E;
-			E.load				(fs);
-			Modifiers.push_back	(E);
-			id					++;
+			E.load(fs);
+			Modifiers.push_back(E);
+			id++;
 		}
-		FS.r_close	(fs);
+		FS.r_close(fs);
+	}
+
+	if (FS.exist(path, "$level$", "level.env_mod.ltx"))
+	{
+		CInifile ltXfile = CInifile(path);
+
+		for (const auto &it : ltXfile.sections())
+		{
+			CEnvModifier		E;
+			E.load_ini(*it.second);
+			Modifiers.push_back(E);
+		}
 	}
 }
+
 void	CEnvironment::mods_unload		()
 {
 	Modifiers.clear_and_free			();

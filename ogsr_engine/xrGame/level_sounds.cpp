@@ -11,6 +11,7 @@
 void SStaticSound::Load(IReader& F)
 {
 	R_ASSERT				(F.find_chunk(0));
+
 	xr_string				wav_name;
 	F.r_stringZ				(wav_name);
 	m_Source.create			(wav_name.c_str(),st_Effect,sg_SourceType);
@@ -25,6 +26,20 @@ void SStaticSound::Load(IReader& F)
 	m_PauseTime.y			= F.r_u32();
 	m_NextTime				= 0;
 	m_StopTime				= 0;
+}
+
+void SStaticSound::LoadIni(CInifile::Sect& section)
+{
+	LPCSTR wav_name = section.r_string("sound_name");
+	m_Source.create(wav_name, st_Effect, sg_SourceType);
+	m_Position = section.r_fvector3("position");
+	m_Volume = section.r_float("volume");
+	m_Freq = section.r_float("frequency");
+	m_ActiveTime = section.r_ivector2("active_time");
+	m_PlayTime = section.r_ivector2("play_time");
+	m_PauseTime = section.r_ivector2("pause_time");
+	m_NextTime = 0;
+	m_StopTime = 0;
 }
 
 #include "..\xrSound\SoundRender_Core.h"
@@ -127,14 +142,25 @@ void CLevelSoundManager::Load()
 	// static level sounds
  	VERIFY(m_StaticSounds.empty());
 	string_path fn;
+
 	if (FS.exist(fn, "$level$", "level.snd_static")) {
-		IReader *F		= FS.r_open	(fn);
+		IReader *F = FS.r_open(fn);
 		u32				chunk = 0;
-		for (IReader *OBJ = F->open_chunk_iterator(chunk); OBJ; OBJ = F->open_chunk_iterator(chunk,OBJ)) {
-			m_StaticSounds.push_back	(SStaticSound());
-			m_StaticSounds.back().Load	(*OBJ);
+		for (IReader *OBJ = F->open_chunk_iterator(chunk); OBJ; OBJ = F->open_chunk_iterator(chunk, OBJ)) {
+			m_StaticSounds.push_back(SStaticSound());
+			m_StaticSounds.back().Load(*OBJ);
 		}
-		FS.r_close				(F);
+		FS.r_close(F);
+	}
+
+	if (FS.exist(fn, "$level$", "level.snd_static.ltx")) {
+		CInifile ltXfile = CInifile(fn);
+
+		for (const auto &it : ltXfile.sections())
+		{
+			m_StaticSounds.push_back(SStaticSound());
+			m_StaticSounds.back().LoadIni(*it.second);
+		}
 	}
 
 	// music
