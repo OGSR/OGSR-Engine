@@ -159,8 +159,11 @@ BOOL CObject::net_Spawn			(CSE_Abstract* data)
 
 	VERIFY						(_valid(renderable.xform));
 
-	if (0==Visual() && pSettings->line_exist( cNameSect(), "visual" ) )
-		cNameVisual_set	(pSettings->r_string( cNameSect(), "visual" ) );
+        if ( 0 == Visual() && pSettings->line_exist( cNameSect(), "visual" ) ) {
+          shared_str visual_name = pSettings->r_string( cNameSect(), "visual" );
+          Msg( "! [%s]: zero Visual() in %s found, use %s instead", __FUNCTION__, cName().c_str(), visual_name.c_str() );
+          cNameVisual_set( visual_name );
+        }
 
 	if (0==collidable.model) 	{
 		if (pSettings->line_exist(cNameSect(),"cform")) {
