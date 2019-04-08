@@ -9,16 +9,15 @@
 #include	"shader.h"
 #include	"tss_def.h"
 #include	"TextureDescrManager.h"
-// refs
-struct		lua_State;
 
+// refs
 class dx10ConstantBuffer;
 
 // defs
 class ECORE_API CResourceManager
 {
 private:
-	struct str_pred : public std::binary_function<char*, char*, bool>	{
+	struct str_pred {
 		IC bool operator()(LPCSTR x, LPCSTR y) const
 		{	return xr_strcmp(x,y)<0;	}
 	};
@@ -86,7 +85,6 @@ public:
 	CTextureDescrMngr									m_textures_description;
 //.	CInifile*											m_textures_description;
 	xr_vector<std::pair<shared_str,R_constant_setup*> >	v_constant_setup;
-	lua_State*											LSVM;
 	BOOL												bDeferredLoad;
 private:
 	void							LS_Load				();
