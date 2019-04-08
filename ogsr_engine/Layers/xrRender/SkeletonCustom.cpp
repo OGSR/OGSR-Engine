@@ -230,7 +230,7 @@ void	CKinematics::Load(const char* N, IReader *data, u32 dwFlags)
 		L_parents.push_back			(buf);
 
 		data->r						(&pBone->obb,sizeof(Fobb));
-        visimask.set				(u64(1)<<ID,TRUE);
+		visimask.set(ID, true);
 	}
 	std::sort	(bone_map_N->begin(),bone_map_N->end(),pred_sort_N);
 	std::sort	(bone_map_P->begin(),bone_map_P->end(),pred_sort_P);
@@ -412,15 +412,11 @@ void CKinematics::Depart		()
 
 	// unmask all bones
 	visimask.zero				();
-	if(bones)
+	if (bones)
 	{
-		u32 count = bones->size();
-#ifdef DEBUG
-    	if (count > 64)
-        	Msg("ahtung !!! %d", count);
-#endif // #ifdef DEBUG
-		for (u32 b=0; b<count; b++) visimask.set((u64(1)<<b),TRUE);
+		for (u16 b = 0; b < bones->size(); b++) visimask.set(b, true);
 	}
+
 	// visibility
 	children.insert				(children.end(),children_invisible.begin(),children_invisible.end());
 	children_invisible.clear	();
@@ -447,10 +443,9 @@ void CKinematics::Release		()
 void CKinematics::LL_SetBoneVisible(u16 bone_id, BOOL val, BOOL bRecursive)
 {
 	VERIFY				(bone_id<LL_BoneCount());      
-    u64 mask 			= u64(1)<<bone_id;
-    visimask.set		(mask,val);
-	if (!visimask.is(mask)){
-        bone_instances[bone_id].mTransform.scale(0.f,0.f,0.f);
+	visimask.set(bone_id, !!val);
+	if (!visimask.is(bone_id)) {
+		bone_instances[bone_id].mTransform.scale(0.f,0.f,0.f);
 	}else{
 		CalculateBones_Invalidate	();
 	}
@@ -462,22 +457,22 @@ void CKinematics::LL_SetBoneVisible(u16 bone_id, BOOL val, BOOL bRecursive)
 	Visibility_Invalidate			();
 }
 
-void CKinematics::LL_SetBonesVisible(u64 mask)
+void CKinematics::LL_SetBonesVisible(VisMask mask)
 {
-	visimask.assign			(0);	
-	for (u32 b=0; b<bones->size(); b++){
-    	u64 bm				= u64(1)<<b;
-    	if (mask&bm){
-        	visimask.set	(bm,TRUE);
-        }else{
-	    	Fmatrix& A		= bone_instances[b].mTransform;
-	    	Fmatrix& B		= bone_instances[b].mRenderTransform;
-        	A.scale			(0.f,0.f,0.f);
-	        B.mul_43		(A,(*bones)[b]->m2b_transform);
-        }
+	visimask.zero();
+	for (u16 b = 0; b < bones->size(); b++) {
+		if (mask.is(b)) {
+			visimask.set(b, true);
+		}
+		else {
+			Fmatrix& A = bone_instances[b].mTransform;
+			Fmatrix& B = bone_instances[b].mRenderTransform;
+			A.scale(0.f, 0.f, 0.f);
+			B.mul_43(A, (*bones)[b]->m2b_transform);
+		}
 	}
-	CalculateBones_Invalidate		();
-	Visibility_Invalidate			();
+	CalculateBones_Invalidate();
+	Visibility_Invalidate();
 }
 
 void CKinematics::Visibility_Update	()
@@ -491,6 +486,7 @@ void CKinematics::Visibility_Update	()
 			children_invisible.push_back	(children[c_it]);	
 			swap(children[c_it],children.back());
 			children.pop_back				();
+			Update_Visibility = TRUE;
 		}
 	}
 
@@ -502,6 +498,7 @@ void CKinematics::Visibility_Update	()
 			children.push_back				(children_invisible[_it]);	
 			swap(children_invisible[_it],children_invisible.back());
 			children_invisible.pop_back		();
+			Update_Visibility = TRUE;
 		}
 	}
 }

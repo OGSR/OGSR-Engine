@@ -3,6 +3,7 @@
 
 //KRodin: TODO: заменить инклуд если перенесу код в CDB
 #include "xr_collide_defs.h" //#include "../xrcdb/xr_collide_defs.h"
+#include "vismask.h"
 
 // refs
 class ENGINE_API	CObject;
@@ -132,7 +133,7 @@ public:
 	};
 	DEFINE_VECTOR		(SElement,ElementVec,ElementVecIt);
 private:
-	u64					vis_mask;
+	VisMask				vis_mask;
 	ElementVec			elements;
 
 	u32					dwFrame;		// The model itself

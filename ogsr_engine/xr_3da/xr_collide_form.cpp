@@ -113,7 +113,7 @@ CCF_Skeleton::CCF_Skeleton(CObject* O) : ICollisionForm(O,cftObject)
 	//bv_box.set		(K->vis.box);
 	bv_box.set		(pVisual->getVisData().box);
 	bv_box.getsphere(bv_sphere.P,bv_sphere.R);
-	vis_mask		= 0;
+	vis_mask.zero();
 }
 
 void CCF_Skeleton::BuildState()
