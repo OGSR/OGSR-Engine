@@ -14,7 +14,7 @@
 #include "script_zone.h"
 #include "object_handler.h"
 #include "script_hit.h"
-#include "../xr_3da/skeletoncustom.h"
+#include "../Include/xrRender/Kinematics.h"
 #include "pda.h"
 #include "InfoPortion.h"
 #include "memory_manager.h"

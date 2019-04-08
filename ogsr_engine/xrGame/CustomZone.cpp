@@ -13,7 +13,7 @@
 #include "..\xr_3da\IGame_Persistent.h"
 #include "artifact.h"
 #include "ai_object_location.h"
-#include "../xr_3da/skeletoncustom.h"
+#include "../Include/xrRender/Kinematics.h"
 #include "zone_effector.h"
 #include "breakableobject.h"
 #include "script_callback_ex.h"

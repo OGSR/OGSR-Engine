@@ -20,7 +20,7 @@
 
 #include "xr_level_controller.h"
 #include "game_cl_base.h"
-#include "../xr_3da/skeletoncustom.h"
+#include "../Include/xrRender/Kinematics.h"
 #include "ai_object_location.h"
 #include "clsid_game.h"
 #include "mathutils.h"

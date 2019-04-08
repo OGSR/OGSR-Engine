@@ -17,7 +17,7 @@
 #include "../../../group_hierarchy_holder.h"
 #include "../../../phdestroyable.h"
 #include "../../../../xr_3da/skeletonanimated.h"
-#include "../../../../xr_3da/skeletoncustom.h"
+#include "../../../../Include/xrRender/Kinematics.h"
 #include "../../../detail_path_manager.h"
 #include "../../../hudmanager.h"
 #include "../../../memory_manager.h"

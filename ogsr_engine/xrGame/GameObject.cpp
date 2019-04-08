@@ -15,7 +15,7 @@
 #include "xrServer_Objects_ALife_Items.h"
 #include "game_cl_base.h"
 #include "object_factory.h"
-#include "../xr_3da/skeletoncustom.h"
+#include "../Include/xrRender/Kinematics.h"
 #include "game_graph.h"
 #include "ai_debug.h"
 #include "..\xr_3da\igame_level.h"

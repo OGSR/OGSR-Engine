@@ -6,7 +6,7 @@
 #include "PHCapture.h"
 #include "entity_alive.h"
 #include "phmovementcontrol.h"
-#include "../xr_3da/skeletoncustom.h"
+#include "../Include/xrRender/Kinematics.h"
 #include "characterphysicssupport.h"
 #include "Actor.h"
 ///////////////////////////////////////////////////////////////////////////////////

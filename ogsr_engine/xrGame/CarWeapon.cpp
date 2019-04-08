@@ -2,7 +2,7 @@
 #include "CarWeapon.h"
 #include "PhysicsShell.h"
 #include "PhysicsShellHolder.h"
-#include "../xr_3da/skeletoncustom.h"
+#include "../Include/xrRender/Kinematics.h"
 #include "object_broker.h"
 #include "ai_sounds.h"
 #include "weaponAmmo.h"

@@ -8,7 +8,7 @@
 #include "SpaceUtils.h"
 #include "MathUtils.h"
 #include "PhysicsShellHolder.h"
-#include "../xr_3da/skeletoncustom.h"
+#include "../Include/xrRender/Kinematics.h"
 #include "PHCollideValidator.h"
 #include "game_object_space.h"
 

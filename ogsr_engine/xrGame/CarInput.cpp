@@ -14,7 +14,7 @@
 #include "camerafirsteye.h"
 #include "script_entity_action.h"
 #include "xr_level_controller.h"
-#include "../xr_3da/skeletoncustom.h"
+#include "../Include/xrRender/Kinematics.h"
 #include "level.h"
 #include "CarWeapon.h"
 

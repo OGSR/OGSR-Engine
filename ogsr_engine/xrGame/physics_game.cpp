@@ -1,6 +1,6 @@
 #include "stdafx.h"
 #include "ParticlesObject.h"
-#include "gamemtllib.h"
+#include "../xr_3da/gamemtllib.h"
 #include "level.h"
 #include "gamepersistent.h"
 #include "Extendedgeom.h"

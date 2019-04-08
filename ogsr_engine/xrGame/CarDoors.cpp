@@ -9,7 +9,7 @@
 #include "PHDestroyable.h"
 #include "car.h"
 #include "../xr_3da/NET_Server_Trash/net_utils.h"
-#include "../xr_3da/skeletoncustom.h"
+#include "../Include/xrRender/Kinematics.h"
 #include "MathUtils.h"
 #include "game_object_space.h"
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

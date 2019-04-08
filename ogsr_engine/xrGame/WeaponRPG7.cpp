@@ -5,7 +5,7 @@
 #include "explosiverocket.h"
 #include "entity.h"
 #include "level.h"
-#include "../xr_3da/skeletoncustom.h"
+#include "../Include/xrRender/Kinematics.h"
 #include "game_object_space.h"
 
 CWeaponRPG7::CWeaponRPG7(void) : CWeaponCustomPistol("RPG7") 

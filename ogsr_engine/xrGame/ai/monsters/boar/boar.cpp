@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "boar.h"
 #include "boar_state_manager.h"
-#include "../../../../xr_3da/skeletoncustom.h"
+#include "../../../../Include/xrRender/Kinematics.h"
 #include "../monster_velocity_space.h"
 #include "../../../game_object_space.h"
 #include "../control_animation_base.h"

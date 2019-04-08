@@ -6,7 +6,7 @@
 #include "PHCapture.h"
 #include "Entity.h"
 #include "inventory_item.h"
-#include "../xr_3da/skeletoncustom.h"
+#include "../Include/xrRender/Kinematics.h"
 #include "Actor.h"
 #include "Inventory.h"
 #include "ai/stalker/ai_stalker.h"
