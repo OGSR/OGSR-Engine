@@ -447,21 +447,6 @@
     <ClInclude Include="r2_shader_exports.h">
       <Filter>Interfaces\Render\Execution &amp; 3D\Shaders\Blender</Filter>
     </ClInclude>
-    <ClInclude Include="..\COMMON\cl_intersect.h">
-      <Filter>Engine\Collision Core</Filter>
-    </ClInclude>
-    <ClInclude Include="..\COMMON\DrawUtils.h">
-      <Filter>Interfaces\Render\Execution &amp; 3D\DebugDraw</Filter>
-    </ClInclude>
-    <ClInclude Include="..\COMMON\ETextureParams.h">
-      <Filter>Interfaces\Render\Execution &amp; 3D\Shaders\ShaderManager</Filter>
-    </ClInclude>
-    <ClInclude Include="..\COMMON\bone.h">
-      <Filter>Game API\Animator</Filter>
-    </ClInclude>
-    <ClInclude Include="..\COMMON\std_classes.h">
-      <Filter>Engine</Filter>
-    </ClInclude>
     <ClInclude Include="..\xrParticles\psystem.h">
       <Filter>Interfaces</Filter>
     </ClInclude>
@@ -488,6 +473,12 @@
     <ClInclude Include="Animation.h">
       <Filter>Interfaces\Render\Visuals\Skeleton</Filter>
     </ClInclude>
+    <ClInclude Include="bone.h" />
+    <ClInclude Include="cl_intersect.h" />
+    <ClInclude Include="DrawUtils.h" />
+    <ClInclude Include="ETextureParams.h" />
+    <ClInclude Include="std_classes.h" />
+    <ClInclude Include="xrSkinXW.hpp" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="defines.cpp">
@@ -835,9 +826,6 @@
     <ClCompile Include="perlin.cpp">
       <Filter>Engine\Noise</Filter>
     </ClCompile>
-    <ClCompile Include="..\COMMON\ETextureParams.cpp">
-      <Filter>Interfaces\Render\Execution &amp; 3D\Shaders\ShaderManager</Filter>
-    </ClCompile>
     <ClCompile Include="NET_Server_Trash\NET_Client.cpp">
       <Filter>NET_Server_Trash</Filter>
     </ClCompile>
@@ -847,6 +835,8 @@
     <ClCompile Include="Animation.cpp">
       <Filter>Interfaces\Render\Visuals\Skeleton</Filter>
     </ClCompile>
+    <ClCompile Include="ETextureParams.cpp" />
+    <ClCompile Include="xrSkinXW.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="resource.rc">

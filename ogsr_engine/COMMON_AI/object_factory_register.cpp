@@ -16,7 +16,7 @@
 #include "clsid_game.h"
 
 // client entities includes
-#	include "../COMMON/std_classes.h"
+#	include "../xr_3da/std_classes.h"
 #	include "level.h"
 #	include "gamepersistent.h"
 #	include "hudmanager.h"

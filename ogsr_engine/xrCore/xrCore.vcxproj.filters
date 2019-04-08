@@ -132,9 +132,6 @@
     <ClCompile Include="stacktrace_collector.cpp">
       <Filter>Debug core</Filter>
     </ClCompile>
-    <ClCompile Include="xrSkinXW.cpp">
-      <Filter>Math</Filter>
-    </ClCompile>
     <ClCompile Include="xrMemoryDebug.cpp">
       <Filter>Memory manager</Filter>
     </ClCompile>
@@ -320,9 +317,6 @@
     <ClInclude Include="xrSyncronize.h" />
     <ClInclude Include="stacktrace_collector.h">
       <Filter>Debug core</Filter>
-    </ClInclude>
-    <ClInclude Include="xrSkinXW.hpp">
-      <Filter>Math</Filter>
     </ClInclude>
     <ClInclude Include="xrMemoryDebug.h">
       <Filter>Memory manager</Filter>

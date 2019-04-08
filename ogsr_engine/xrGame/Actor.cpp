@@ -45,7 +45,6 @@
 #include "xrmessages.h"
 #include "string_table.h"
 #include "usablescriptobject.h"
-#include "cl_intersect.h"
 #include "ExtendedGeom.h"
 #include "alife_registry_wrappers.h"
 #include "..\xr_3da\skeletonanimated.h"

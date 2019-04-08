@@ -4974,7 +4974,7 @@
     <ClInclude Include="..\COMMON_AI\xrServer_Space.h">
       <Filter>Core\Server</Filter>
     </ClInclude>
-    <ClInclude Include="..\COMMON\DrawUtils.h">
+    <ClInclude Include="..\xr_3da\DrawUtils.h">
       <Filter>Core\Server\Editor</Filter>
     </ClInclude>
     <ClInclude Include="..\COMMON_AI\ItemListTypes.h">

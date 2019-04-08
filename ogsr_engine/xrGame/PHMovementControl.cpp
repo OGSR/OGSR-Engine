@@ -1,5 +1,4 @@
 #include "stdafx.h"
-#include "cl_intersect.h"
 #include "alife_space.h"
 #include "phmovementcontrol.h"
 #include "entity.h"

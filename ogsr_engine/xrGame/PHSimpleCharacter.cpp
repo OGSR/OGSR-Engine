@@ -2,7 +2,6 @@
 
 #include "PHDynamicData.h"
 #include "ExtendedGeom.h"
-#include "cl_intersect.h"
 #include "tri-colliderKNoOPC\__aabb_tri.h"
 #include "PHSimpleCharacter.h"
 #include "PHContactBodyEffector.h"

@@ -14,7 +14,7 @@
 #include "SleepEffector.h"
 #include "ActorEffector.h"
 #include "level.h"
-#include "cl_intersect.h"
+#include "../xr_3da/cl_intersect.h"
 #include "gamemtllib.h"
 #include "elevatorstate.h"
 #include "CharacterPhysicsSupport.h"
