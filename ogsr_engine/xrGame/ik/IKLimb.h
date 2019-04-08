@@ -4,7 +4,7 @@
 #include "limb.h"
 #include "../../xr_3da/SkeletonAnimated.h"
 #include "../ik_anim_state.h"
-class	CKinematics	;
+class	IKinematics	;
 class	CDB::TRI	;
 struct SCalculateData;
 struct SIKCollideData;
@@ -50,7 +50,7 @@ struct calculate_state
 class CIKLimb {
 public:
 							CIKLimb				();
-				void		Create				( u16 id, CKinematics* K, const u16 bones[3], const Fvector& toe_pos, bool collide_ );	
+				void		Create				( u16 id, IKinematics* K, const u16 bones[3], const Fvector& toe_pos, bool collide_ );	
 				void		Destroy				( );
 				void		Calculate			( SCalculateData& cd );
 				void		Update				( CGameObject *O, const	CBlend *b, u16 interval );

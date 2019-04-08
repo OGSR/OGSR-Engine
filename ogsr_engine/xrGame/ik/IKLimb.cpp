@@ -226,7 +226,7 @@ IC void free_limits( float &min, float &max)
 	min = 0  ;max = 2 * M_PI  ;
 }
 
-void CIKLimb::Create( u16 id, CKinematics* K, const u16 bones[4], const Fvector& toe_pos, bool collide_ )
+void CIKLimb::Create( u16 id, IKinematics* K, const u16 bones[4], const Fvector& toe_pos, bool collide_ )
 {
 	m_id	 = id;
 	m_collide= collide_;
@@ -650,11 +650,11 @@ void CIKLimb::Collide( SIKCollideData &cld, CGameObject *O, const Fmatrix &foot,
 			IRenderVisual* V =R.O->Visual();
 			if( V )
 			{
-				CKinematics *K = V->dcast_PKinematics( );
+				IKinematics *K = V->dcast_PKinematics( );
 				if( K )
 				{
 					float dist = l_pick_dist;
-					CKinematics::pick_result r;
+					IKinematics::pick_result r;
 					if( K->PickBone(R.O->XFORM(), r, dist,  pos, pick_v,(u16) R.element))
 					{
 						cld.collided = true;
@@ -686,7 +686,7 @@ void CIKLimb::Collide( SIKCollideData &cld, CGameObject *O, const Fmatrix &foot,
 
 Fmatrix&	CIKLimb::GetHipInvert( Fmatrix &ihip, const SCalculateData& cd  )
 {
-	CKinematics *K=cd.m_K;
+	IKinematics *K=cd.m_K;
 	Fmatrix H;
 	CBoneData& bd=K->LL_GetData(m_bones[0]);
 	H.set(bd.bind_transform);
@@ -735,7 +735,7 @@ Matrix &CIKLimb::Goal			( Matrix &gl, const Fmatrix &xm, SCalculateData& cd )
 void CIKLimb::CalculateBones(SCalculateData &cd)
 {
 	VERIFY(cd.m_angles);
-	CKinematics *K=cd.m_K;
+	IKinematics *K=cd.m_K;
 	K->LL_GetBoneInstance(m_bones[0]).set_callback(bctCustom,BonesCallback0,&cd);
 	K->LL_GetBoneInstance(m_bones[1]).set_callback(bctCustom,BonesCallback1,&cd);
 	K->LL_GetBoneInstance(m_bones[2]).set_callback(bctCustom,BonesCallback2,&cd);
@@ -796,7 +796,7 @@ IC void ang_evaluate(Fmatrix& M, const float ang[3] )
 
 IC void CIKLimb:: get_start( Fmatrix &start, SCalculateData &D, u16 bone )
 {
-	CKinematics		*K	=D.m_K;
+	IKinematics		*K	=D.m_K;
 	VERIFY( K );
 	CIKLimb&		L	=D.m_limb;
 	CBoneData		&BD	=K->LL_GetData( L.m_bones[bone] );

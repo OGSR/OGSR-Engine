@@ -66,9 +66,9 @@ BOOL CProjector::net_Spawn(CSE_Abstract* DC)
 	if (!inherited::net_Spawn(DC))
 		return			(FALSE);
 	
-	R_ASSERT				(Visual() && smart_cast<CKinematics*>(Visual()));
+	R_ASSERT				(Visual() && smart_cast<IKinematics*>(Visual()));
 
-	CKinematics* K			= smart_cast<CKinematics*>(Visual());
+	IKinematics* K			= smart_cast<IKinematics*>(Visual());
 	CInifile* pUserData		= K->LL_UserData(); 
 	R_ASSERT3				(pUserData,"Empty Projector user data!",slight->get_visual());
 	lanim					= LALib.FindItem(pUserData->r_string("projector_definition","color_animator"));
@@ -92,10 +92,10 @@ BOOL CProjector::net_Spawn(CSE_Abstract* DC)
 	TurnOn		();
 	
 	//////////////////////////////////////////////////////////////////////////
-	CBoneInstance& b_x = smart_cast<CKinematics*>(Visual())->LL_GetBoneInstance(bone_x.id);	
+	CBoneInstance& b_x = smart_cast<IKinematics*>(Visual())->LL_GetBoneInstance(bone_x.id);	
 	b_x.set_callback(bctCustom,BoneCallbackX,this);
 
-	CBoneInstance& b_y = smart_cast<CKinematics*>(Visual())->LL_GetBoneInstance(bone_y.id);	
+	CBoneInstance& b_y = smart_cast<IKinematics*>(Visual())->LL_GetBoneInstance(bone_y.id);	
 	b_y.set_callback(bctCustom,BoneCallbackY,this);
 	
 	Direction().getHP(_current.yaw,_current.pitch);
@@ -119,7 +119,7 @@ void CProjector::TurnOn()
 	light_render->set_active(true);
 	glow_render->set_active (true);
 
-	CKinematics *visual = smart_cast<CKinematics*>(Visual());
+	IKinematics *visual = smart_cast<IKinematics*>(Visual());
 
 	visual->LL_SetBoneVisible			(guid_bone, TRUE, TRUE);
 	visual->CalculateBones_Invalidate	();
@@ -133,7 +133,7 @@ void CProjector::TurnOff()
 	light_render->set_active(false);
 	glow_render->set_active (false);
 	
-	smart_cast<CKinematics*>(Visual())->LL_SetBoneVisible(guid_bone, FALSE, TRUE);
+	smart_cast<IKinematics*>(Visual())->LL_SetBoneVisible(guid_bone, FALSE, TRUE);
 }
 
 void CProjector::UpdateCL	()
@@ -155,7 +155,7 @@ void CProjector::UpdateCL	()
 			glow_render->set_color(fclr);
 		}
 
-		CBoneInstance& BI = smart_cast<CKinematics*>(Visual())->LL_GetBoneInstance(guid_bone);
+		CBoneInstance& BI = smart_cast<IKinematics*>(Visual())->LL_GetBoneInstance(guid_bone);
 		Fmatrix M;
 
 		M.mul(XFORM(),BI.mTransform);

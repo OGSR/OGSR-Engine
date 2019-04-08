@@ -257,7 +257,7 @@ void CStateBloodsuckerVampireExecuteAbstract::execute_vampire_hit()
 
 	if (smart_cast<CActor const*>(enemy) && !fis_zero(object->m_vampire_wound))
 	{
-		CKinematics *pK = smart_cast<CKinematics*>(const_cast<CEntityAlive*>(enemy)->Visual());
+		IKinematics *pK = smart_cast<IKinematics*>(const_cast<CEntityAlive*>(enemy)->Visual());
 		enemy->conditions().AddWound(object->m_vampire_wound, ALife::eHitTypeWound, pK->LL_BoneID("bip01_head"));
 	}
 }
@@ -267,7 +267,7 @@ void CStateBloodsuckerVampireExecuteAbstract::execute_vampire_hit()
 TEMPLATE_SPECIALIZATION
 void CStateBloodsuckerVampireExecuteAbstract::look_head()
 {
-	CKinematics *pK = smart_cast<CKinematics*>(object->Visual());
+	IKinematics *pK = smart_cast<IKinematics*>(object->Visual());
 	Fmatrix bone_transform;
 	bone_transform = pK->LL_GetTransform(pK->LL_BoneID("bip01_head"));	
 

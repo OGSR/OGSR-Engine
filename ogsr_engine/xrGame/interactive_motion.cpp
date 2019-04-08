@@ -77,7 +77,7 @@ void	interactive_motion::state_end(CPhysicsShell *s)
 
 void interactive_motion::update(CPhysicsShell *s)
 {
-	CKinematics *K  = s->PKinematics();
+	IKinematics *K  = s->PKinematics();
 	VERIFY(K);
 	K -> CalculateBones();
 	collide(s);
@@ -96,7 +96,7 @@ void	interactive_motion::switch_to_free(CPhysicsShell *s)
 	CPhysicsShellHolder *obj = s->get_ElementByStoreOrder(0)->PhysicsRefObject();
 	VERIFY(obj);
 	s->InterpolateGlobalTransform(&obj->XFORM());
-	CKinematics *K  = s->PKinematics();
+	IKinematics *K  = s->PKinematics();
 	VERIFY(K);
 	K->CalculateBones_Invalidate();
 	K->CalculateBones(TRUE);

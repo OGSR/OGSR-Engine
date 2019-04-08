@@ -131,7 +131,7 @@ void CWeapon::UpdateXForm	()
 			return;
 
 		R_ASSERT		(E);
-		CKinematics*	V		= smart_cast<CKinematics*>	(E->Visual());
+		IKinematics*	V		= smart_cast<IKinematics*>	(E->Visual());
 		VERIFY			(V);
 
 		// Get matrices
@@ -180,7 +180,7 @@ void CWeapon::UpdateFireDependencies_internal()
 		if (GetHUDmode() && (0!=H_Parent()) )
 		{
 			// 1st person view - skeletoned
-			CKinematics* V			= smart_cast<CKinematics*>(m_pHUD->Visual());
+			IKinematics* V			= smart_cast<IKinematics*>(m_pHUD->Visual());
 			VERIFY					(V);
 			V->CalculateBones		();
 
@@ -909,7 +909,7 @@ void CWeapon::UpdateCL		()
 	UpdateFlameParticles	();
 	UpdateFlameParticles2	();
 	
-	VERIFY(smart_cast<CKinematics*>(Visual()));
+	VERIFY(smart_cast<IKinematics*>(Visual()));
 
         if ( GetState() == eIdle ) {
           auto state = idle_state();
@@ -1323,7 +1323,7 @@ void CWeapon::UpdateHUDAddonsVisibility()
 //	if(IsZoomed() && )
 
 
-	CKinematics* pHudVisual									= smart_cast<CKinematics*>(m_pHUD->Visual());
+	IKinematics* pHudVisual									= smart_cast<IKinematics*>(m_pHUD->Visual());
 	VERIFY(pHudVisual);
 	if (H_Parent() != Level().CurrentEntity()) pHudVisual	= NULL;
 
@@ -1406,7 +1406,7 @@ void CWeapon::UpdateHUDAddonsVisibility()
 
 void CWeapon::UpdateAddonsVisibility()
 {
-	CKinematics* pWeaponVisual = smart_cast<CKinematics*>(Visual()); R_ASSERT(pWeaponVisual);
+	IKinematics* pWeaponVisual = smart_cast<IKinematics*>(Visual()); R_ASSERT(pWeaponVisual);
 
 	u16  bone_id;
 	UpdateHUDAddonsVisibility								();	

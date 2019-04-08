@@ -1263,9 +1263,9 @@ void CActor::RenderIndicator			(Fvector dpos, float r1, float r2, ref_shader Ind
 	FVF::LIT* pv					= pv_start;
 	// base rect
 
-	CBoneInstance& BI = smart_cast<CKinematics*>(Visual())->LL_GetBoneInstance(u16(m_head));
+	CBoneInstance& BI = smart_cast<IKinematics*>(Visual())->LL_GetBoneInstance(u16(m_head));
 	Fmatrix M;
-	smart_cast<CKinematics*>(Visual())->CalculateBones	();
+	smart_cast<IKinematics*>(Visual())->CalculateBones	();
 	M.mul						(XFORM(),BI.mTransform);
 
 	Fvector pos = M.c; pos.add(dpos);
@@ -1305,9 +1305,9 @@ void CActor::RenderText				(LPCSTR Text, Fvector dpos, float* pdup, u32 color)
 {
 	if (!g_Alive()) return;
 	
-	CBoneInstance& BI = smart_cast<CKinematics*>(Visual())->LL_GetBoneInstance(u16(m_head));
+	CBoneInstance& BI = smart_cast<IKinematics*>(Visual())->LL_GetBoneInstance(u16(m_head));
 	Fmatrix M;
-	smart_cast<CKinematics*>(Visual())->CalculateBones	();
+	smart_cast<IKinematics*>(Visual())->CalculateBones	();
 	M.mul						(XFORM(),BI.mTransform);
 	//------------------------------------------------
 	Fvector v0, v1;

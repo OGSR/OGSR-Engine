@@ -65,7 +65,7 @@ bool CCar::bfAssignObject(CScriptEntityAction *tpEntityAction)
 		return false;
 	}
 
-	s16	l_sBoneID = smart_cast<CKinematics*>(Visual())->LL_BoneID(l_tObjectAction.m_caBoneName);
+	s16	l_sBoneID = smart_cast<IKinematics*>(Visual())->LL_BoneID(l_tObjectAction.m_caBoneName);
 	if (is_Door(l_sBoneID)) {
 		switch(l_tObjectAction.m_tGoalType) {
 			case MonsterSpace::eObjectActionActivate : {

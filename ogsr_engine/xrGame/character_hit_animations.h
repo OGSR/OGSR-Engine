@@ -9,7 +9,7 @@ public:
 	void								PlayHitMotion					( const Fvector &dir, const Fvector &bone_pos, u16 bi, CEntityAlive &ea )const;
 	void								GetBaseMatrix					( Fmatrix &m, CEntityAlive &ea)const;
 private:
-	bool								IsEffected						( u16	bi, CKinematics &ca  )const;
+	bool								IsEffected						( u16	bi, IKinematics &ca  )const;
 
 protected:
 private:

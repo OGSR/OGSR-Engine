@@ -137,7 +137,7 @@ void	CCustomOutfit::OnMoveToSlot		()
 				pActor->ChangeVisual(m_ActorVisual);
 			}
 			if(pSettings->line_exist(cNameSect(),"bones_koeff_protection")){
-				m_boneProtection->reload( pSettings->r_string(cNameSect(),"bones_koeff_protection"), smart_cast<CKinematics*>(pActor->Visual()) );
+				m_boneProtection->reload( pSettings->r_string(cNameSect(),"bones_koeff_protection"), smart_cast<IKinematics*>(pActor->Visual()) );
 			};
 		}
 	}

@@ -29,7 +29,7 @@
 #include "script_callback_ex.h"
 #include "game_object_space.h"
 
-void __stdcall ActionCallback(CKinematics *tpKinematics);
+void __stdcall ActionCallback(IKinematics *tpKinematics);
 
 CScriptEntity::CScriptEntity()
 {
@@ -193,7 +193,7 @@ CScriptEntityAction *CScriptEntity::GetCurrentAction()
 		return(m_tpActionQueue.front());
 }
 
-void __stdcall ActionCallback(CKinematics *tpKinematics)
+void __stdcall ActionCallback(IKinematics *tpKinematics)
 {
 	// sounds
 	CScriptEntity	*l_tpScriptMonster = smart_cast<CScriptEntity*>((CGameObject*)(tpKinematics->Update_Callback_Param));
@@ -356,7 +356,7 @@ const Fmatrix CScriptEntity::GetUpdatedMatrix(shared_str caBoneName, const Fvect
 	l_tMatrix.c		= tPositionOffset;
 
 	if (xr_strlen(caBoneName)) {
-		CBoneInstance	&	l_tBoneInstance = smart_cast<CKinematics*>(object().Visual())->LL_GetBoneInstance(smart_cast<CKinematics*>(object().Visual())->LL_BoneID(caBoneName));
+		CBoneInstance	&	l_tBoneInstance = smart_cast<IKinematics*>(object().Visual())->LL_GetBoneInstance(smart_cast<IKinematics*>(object().Visual())->LL_BoneID(caBoneName));
 		l_tMatrix.mulA_43	(l_tBoneInstance.mTransform);
 		l_tMatrix.mulA_43	(object().XFORM());
 	}

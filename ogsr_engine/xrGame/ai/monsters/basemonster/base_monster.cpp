@@ -840,7 +840,7 @@ bool   CBaseMonster::check_eated_corpse_draggable()
 		return false;
 	}
 	
-	if ( CKinematics* K = p_corpse->Visual()->dcast_PKinematics() )
+	if ( IKinematics* K = p_corpse->Visual()->dcast_PKinematics() )
 	{
 /*
 		if ( CInifile* ini = K->LL_UserData() )
@@ -940,7 +940,7 @@ void CBaseMonster::update_eyes_visibility ()
 		return;
 	}
 
-	CKinematics* const skeleton	=	smart_cast<CKinematics*>(Visual());
+	IKinematics* const skeleton	=	smart_cast<IKinematics*>(Visual());
 	if ( !skeleton )
 	{
 		return;

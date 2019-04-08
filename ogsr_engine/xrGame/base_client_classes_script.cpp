@@ -276,7 +276,7 @@ void CObjectScript::script_register		(lua_State *L)
 IRenderVisual* visual_get_child(IRenderVisual	*v, u32 n_child)
 {
 	if (!v) return NULL; // not have visual
-	CKinematics *k = smart_cast<CKinematics*> (v);
+	IKinematics *k = smart_cast<IKinematics*> (v);
 	if (!k) return NULL;
 	if (n_child >= k->children.size()) return NULL;
 	return k->children.at(n_child);
@@ -396,7 +396,7 @@ void CKinematicsScript::script_register		(lua_State *L)
 {
 	module(L)
 		[
-			class_<CKinematics, FHierrarhyVisual>("CKinematics")
+			class_<IKinematics, FHierrarhyVisual>("IKinematics")
 			//			.def(constructor<>())
 		];
 }

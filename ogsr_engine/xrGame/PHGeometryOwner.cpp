@@ -92,7 +92,7 @@ Fvector CPHGeometryOwner::			get_mc_geoms	(){
 	mc.set(0.f,0.f,0.f);
 	return mc;
 }
-void CPHGeometryOwner::get_mc_kinematics(CKinematics* K,Fvector& mc,float& mass)
+void CPHGeometryOwner::get_mc_kinematics(IKinematics* K,Fvector& mc,float& mass)
 {
 
 	mc.set(0.f,0.f,0.f);

@@ -141,7 +141,7 @@ void character_hit_animation_controller::PlayHitMotion(const Fvector &dir,const 
 	//smart_cast<CKinematicsAnimated*>(m_EntityAlife.Visual())->LL_MotionID("actor_hit_ani_180_2");
 }
 
-bool character_hit_animation_controller::IsEffected( u16	bi, CKinematics &ca )const
+bool character_hit_animation_controller::IsEffected( u16	bi, IKinematics &ca )const
 {
 	u16 root = ca.LL_GetBoneRoot();
 	for(;bi != root;)
@@ -156,6 +156,6 @@ bool character_hit_animation_controller::IsEffected( u16	bi, CKinematics &ca )co
 
 void character_hit_animation_controller::GetBaseMatrix( Fmatrix &m,CEntityAlive &ea)const
 {
-	CKinematics* CA = smart_cast<CKinematics*>(ea.Visual());
+	IKinematics* CA = smart_cast<IKinematics*>(ea.Visual());
 	m.mul_43(ea.XFORM(),CA->LL_GetTransform(base_bone));
 }

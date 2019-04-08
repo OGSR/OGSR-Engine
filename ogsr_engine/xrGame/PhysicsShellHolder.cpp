@@ -155,15 +155,15 @@ void CPhysicsShellHolder::activate_physic_shell()
 	m_pPhysicsShell->Activate	(l_p1, 0, l_p2);
 	if(H_Parent()&&H_Parent()->Visual())
 	{
-		smart_cast<CKinematics*>(H_Parent()->Visual())->CalculateBones_Invalidate	();
-		smart_cast<CKinematics*>(H_Parent()->Visual())->CalculateBones	();
+		smart_cast<IKinematics*>(H_Parent()->Visual())->CalculateBones_Invalidate	();
+		smart_cast<IKinematics*>(H_Parent()->Visual())->CalculateBones	();
 		Fvector dir = H_Parent()->Direction();
 		if ( dir.y < 0.f )
 		   dir.y = -dir.y;
 		l_fw.set( normalize( dir ) * 2.f );
 	}
-	smart_cast<CKinematics*>(Visual())->CalculateBones_Invalidate	();
-	smart_cast<CKinematics*>(Visual())->CalculateBones();
+	smart_cast<IKinematics*>(Visual())->CalculateBones_Invalidate	();
+	smart_cast<IKinematics*>(Visual())->CalculateBones();
 //	XFORM().set					(l_p1);
 	correct_spawn_pos();
 
@@ -184,8 +184,8 @@ void CPhysicsShellHolder::setup_physic_shell	()
 	VERIFY						(!m_pPhysicsShell);
 	create_physic_shell			();
 	m_pPhysicsShell->Activate	(XFORM(),0,XFORM());
-	smart_cast<CKinematics*>(Visual())->CalculateBones_Invalidate	();
-	smart_cast<CKinematics*>(Visual())->CalculateBones();
+	smart_cast<IKinematics*>(Visual())->CalculateBones_Invalidate	();
+	smart_cast<IKinematics*>(Visual())->CalculateBones();
 	m_pPhysicsShell->GetGlobalTransformDynamic(&XFORM());
 }
 
@@ -299,7 +299,7 @@ void CPhysicsShellHolder::PHSaveState(NET_Packet &P)
 {
 	//Msg("!!Called [CPhysicsShellHolder::PHSaveState]");
 	//CPhysicsShell* pPhysicsShell=PPhysicsShell();
-	CKinematics* K	=smart_cast<CKinematics*>(Visual());
+	IKinematics* K	=smart_cast<IKinematics*>(Visual());
 	//Flags8 lflags;
 	//if(pPhysicsShell&&pPhysicsShell->isActive())			lflags.set(CSE_PHSkeleton::flActive,pPhysicsShell->isEnabled());
 
@@ -365,7 +365,7 @@ void CPhysicsShellHolder::PHLoadState(IReader &P)
 	//Msg("!!Called [CPhysicsShellHolder::PHLoadState]");
 
 //	Flags8 lflags;
-	CKinematics* K=smart_cast<CKinematics*>(Visual());
+	IKinematics* K=smart_cast<IKinematics*>(Visual());
 //	P.r_u8 (lflags.flags);
 	u64 _low = 0;
 	u64 _high = 0;

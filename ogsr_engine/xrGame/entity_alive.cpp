@@ -367,7 +367,7 @@ void CEntityAlive::BloodyWallmarks (float P, const Fvector &dir, s16 element,
 		return;
 
 	//вычислить координаты попадания
-	CKinematics* V = smart_cast<CKinematics*>(Visual());
+	IKinematics* V = smart_cast<IKinematics*>(Visual());
 		
 	Fvector start_pos = position_in_object_space;
 	if(V)
@@ -408,7 +408,7 @@ void CEntityAlive::PlaceBloodWallmark(const Fvector& dir, const Fvector& start_p
 	ref_shader wallmarkShader = wallmarks_vector[::Random.randI(wallmarks_vector.size())];
 
 	if(result.O) { // Dynamic object
-		const auto pK = smart_cast<CKinematics*>(result.O->Visual());
+		const auto pK = smart_cast<IKinematics*>(result.O->Visual());
 		if (!pK)
 			return;
 
@@ -454,7 +454,7 @@ void CEntityAlive::StartFireParticles(CWound* pWound)
 			m_ParticleWounds.push_back(pWound);
 		}
 
-		CKinematics* V = smart_cast<CKinematics*>(Visual());
+		IKinematics* V = smart_cast<IKinematics*>(Visual());
 
 		u16 particle_bone = CParticlesPlayer::GetNearestBone(V, pWound->GetBoneNum());
 		VERIFY(particle_bone  < 64 || BI_NONE == particle_bone);

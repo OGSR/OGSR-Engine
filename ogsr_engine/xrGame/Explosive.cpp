@@ -180,8 +180,8 @@ ICF static BOOL grenade_hit_callback(collide::rq_result& result, LPVOID params)
 	SExpQParams& ep	= *(SExpQParams*)params;
 	u16 mtl_idx			= GAMEMTL_NONE_IDX;
 	if(result.O){
-		CKinematics* V  = 0;
-		if (0!=(V=smart_cast<CKinematics*>(result.O->Visual()))){
+		IKinematics* V  = 0;
+		if (0!=(V=smart_cast<IKinematics*>(result.O->Visual()))){
 			CBoneData& B= V->LL_GetData((u16)result.element);
 			mtl_idx		= B.game_mtl_idx;
 		}

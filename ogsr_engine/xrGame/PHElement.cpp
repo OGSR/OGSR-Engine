@@ -213,7 +213,7 @@ void		CPHElement::Deactivate()
 	m_flags.set(flActivating,FALSE);
 	//bActive=false;
 	//bActivating=false;
-	CKinematics* K=m_shell->PKinematics();
+	IKinematics* K=m_shell->PKinematics();
 	if(K)
 	{
 		K->LL_GetBoneInstance(m_SelfID).reset_callback();
@@ -319,7 +319,7 @@ void CPHElement::Activate(const Fmatrix &transform,const Fvector& lin_vel,const 
 	if(disable) dBodyDisable(m_body);
 	m_flags.set(flActive,TRUE);
 	m_flags.set(flActivating,TRUE);
-	CKinematics* K=m_shell->PKinematics();
+	IKinematics* K=m_shell->PKinematics();
 	if(K)
 	{
 		K->LL_GetBoneInstance(m_SelfID).set_callback(bctPhysics,m_shell->GetBonesCallback(),static_cast<CPhysicsElement*>(this));
@@ -604,7 +604,7 @@ void	CPHElement::	applyImpulseTrace		(const Fvector& pos, const Fvector& dir, fl
 		}
 		else
 		{ 
-			CKinematics* K=m_shell->PKinematics();
+			IKinematics* K=m_shell->PKinematics();
 			if(K)
 			{
 				Fmatrix m;m.set(K->LL_GetTransform(m_SelfID));

@@ -46,7 +46,7 @@ element_fracture CPHFracturesHolder::SplitFromEnd(CPHElement* element,u16 fractu
 	new_element->mXFORM.set(element->mXFORM);
 	element->PassEndGeoms(geom_num,end_geom_num,new_element);
 	/////////////////////////////////////////////
-	CKinematics* pKinematics= element->m_shell->PKinematics();
+	IKinematics* pKinematics= element->m_shell->PKinematics();
 	const CBoneInstance& new_bi=pKinematics->LL_GetBoneInstance(new_element->m_SelfID);
 	const CBoneInstance& old_bi=pKinematics->LL_GetBoneInstance(element->m_SelfID);
 

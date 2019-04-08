@@ -628,7 +628,7 @@ BOOL CActor::net_Spawn		(CSE_Abstract* DC)
 */	
 	SetDefaultVisualOutfit(cNameVisual());
 
-	smart_cast<CKinematics*>(Visual())->CalculateBones();
+	smart_cast<IKinematics*>(Visual())->CalculateBones();
 
 	//--------------------------------------------------------------
 	inventory().SetPrevActiveSlot(NO_ACTIVE_SLOT);
@@ -764,7 +764,7 @@ BOOL	CActor::net_Relevant		()				// relevant for export to server
 
 void	CActor::SetCallbacks()
 {
-	CKinematics* V		= smart_cast<CKinematics*>(Visual());
+	IKinematics* V		= smart_cast<IKinematics*>(Visual());
 	VERIFY				(V);
 	u16 spine0_bone		= V->LL_BoneID("bip01_spine");
 	u16 spine1_bone		= V->LL_BoneID("bip01_spine1");
@@ -777,7 +777,7 @@ void	CActor::SetCallbacks()
 }
 void	CActor::ResetCallbacks()
 {
-	CKinematics* V		= smart_cast<CKinematics*>(Visual());
+	IKinematics* V		= smart_cast<IKinematics*>(Visual());
 	VERIFY				(V);
 	u16 spine0_bone		= V->LL_BoneID("bip01_spine");
 	u16 spine1_bone		= V->LL_BoneID("bip01_spine1");
@@ -807,17 +807,17 @@ void	CActor::OnChangeVisual()
 		m_vehicle_anims->Create			(V);
 		CDamageManager::reload(*cNameSect(),"damage",pSettings);
 		//-------------------------------------------------------------------------------
-		m_head				= smart_cast<CKinematics*>(Visual())->LL_BoneID("bip01_head");
-		m_r_hand			= smart_cast<CKinematics*>(Visual())->LL_BoneID(pSettings->r_string(*cNameSect(),"weapon_bone0"));
-		m_l_finger1			= smart_cast<CKinematics*>(Visual())->LL_BoneID(pSettings->r_string(*cNameSect(),"weapon_bone1"));
-		m_r_finger2			= smart_cast<CKinematics*>(Visual())->LL_BoneID(pSettings->r_string(*cNameSect(),"weapon_bone2"));
+		m_head				= smart_cast<IKinematics*>(Visual())->LL_BoneID("bip01_head");
+		m_r_hand			= smart_cast<IKinematics*>(Visual())->LL_BoneID(pSettings->r_string(*cNameSect(),"weapon_bone0"));
+		m_l_finger1			= smart_cast<IKinematics*>(Visual())->LL_BoneID(pSettings->r_string(*cNameSect(),"weapon_bone1"));
+		m_r_finger2			= smart_cast<IKinematics*>(Visual())->LL_BoneID(pSettings->r_string(*cNameSect(),"weapon_bone2"));
 		//-------------------------------------------------------------------------------
-		m_neck				= smart_cast<CKinematics*>(Visual())->LL_BoneID("bip01_neck");
-		m_l_clavicle		= smart_cast<CKinematics*>(Visual())->LL_BoneID("bip01_l_clavicle");
-		m_r_clavicle		= smart_cast<CKinematics*>(Visual())->LL_BoneID("bip01_r_clavicle");
-		m_spine2			= smart_cast<CKinematics*>(Visual())->LL_BoneID("bip01_spine2");
-		m_spine1			= smart_cast<CKinematics*>(Visual())->LL_BoneID("bip01_spine1");
-		m_spine				= smart_cast<CKinematics*>(Visual())->LL_BoneID("bip01_spine");
+		m_neck				= smart_cast<IKinematics*>(Visual())->LL_BoneID("bip01_neck");
+		m_l_clavicle		= smart_cast<IKinematics*>(Visual())->LL_BoneID("bip01_l_clavicle");
+		m_r_clavicle		= smart_cast<IKinematics*>(Visual())->LL_BoneID("bip01_r_clavicle");
+		m_spine2			= smart_cast<IKinematics*>(Visual())->LL_BoneID("bip01_spine2");
+		m_spine1			= smart_cast<IKinematics*>(Visual())->LL_BoneID("bip01_spine1");
+		m_spine				= smart_cast<IKinematics*>(Visual())->LL_BoneID("bip01_spine");
 		//-------------------------------------------------------------------------------
 		reattach_items();
 		//-------------------------------------------------------------------------------
@@ -1403,7 +1403,7 @@ void	CActor::OnRender_Network()
 			Level().debug_renderer().draw_aabb			(bc, bd.x, bd.y, bd.z, color_rgba(0, 255, 0, 255));
 		};
 		
-		CKinematics* V		= smart_cast<CKinematics*>(Visual());
+		IKinematics* V		= smart_cast<IKinematics*>(Visual());
 		if (dbg_net_Draw_Flags.test(1<<0) && V)
 		{
 			if (this != Level().CurrentViewEntity() || cam_active != eacFirstEye)
@@ -1552,7 +1552,7 @@ void	CActor::OnRender_Network()
 	{
 		if (!(dbg_net_Draw_Flags.is_any((1<<1)))) return;
 
-		CKinematics* V		= smart_cast<CKinematics*>(Visual());
+		IKinematics* V		= smart_cast<IKinematics*>(Visual());
 		if (dbg_net_Draw_Flags.test(1<<0) && V)
 		{
 			u16 BoneCount = V->LL_BoneCount();

@@ -65,7 +65,7 @@ public SEnumVerticesCallback
 	}
 };
 
-void get_toe(CKinematics *skeleton, Fvector & toe, const u16 bones[4])
+void get_toe(IKinematics *skeleton, Fvector & toe, const u16 bones[4])
 {
 	VERIFY( skeleton );
 	xr_vector<Fmatrix> binds;
@@ -165,7 +165,7 @@ void CIKLimbsController::Destroy(CGameObject* O)
 	_bone_chains.clear();
 }
 
-void _stdcall CIKLimbsController:: IKVisualCallback( CKinematics* K )
+void _stdcall CIKLimbsController:: IKVisualCallback( IKinematics* K )
 {
 #ifdef DEBUG
 	if( ph_dbg_draw_mask1.test( phDbgIKOff ) )

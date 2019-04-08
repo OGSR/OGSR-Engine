@@ -43,17 +43,17 @@ void CWeaponStatMgun::SetBoneCallbacks()
 {
 	m_pPhysicsShell->EnabledCallbacks(FALSE);
 	
-	CBoneInstance& biX		= smart_cast<CKinematics*>(Visual())->LL_GetBoneInstance(m_rotate_x_bone);	
+	CBoneInstance& biX		= smart_cast<IKinematics*>(Visual())->LL_GetBoneInstance(m_rotate_x_bone);	
 	biX.set_callback		(bctCustom,BoneCallbackX,this);
-	CBoneInstance& biY		= smart_cast<CKinematics*>(Visual())->LL_GetBoneInstance(m_rotate_y_bone);	
+	CBoneInstance& biY		= smart_cast<IKinematics*>(Visual())->LL_GetBoneInstance(m_rotate_y_bone);	
 	biY.set_callback		(bctCustom,BoneCallbackY,this);
 }
 
 void CWeaponStatMgun::ResetBoneCallbacks()
 {
-	CBoneInstance& biX		= smart_cast<CKinematics*>(Visual())->LL_GetBoneInstance(m_rotate_x_bone);	
+	CBoneInstance& biX		= smart_cast<IKinematics*>(Visual())->LL_GetBoneInstance(m_rotate_x_bone);	
 	biX.reset_callback		();
-	CBoneInstance& biY		= smart_cast<CKinematics*>(Visual())->LL_GetBoneInstance(m_rotate_y_bone);	
+	CBoneInstance& biY		= smart_cast<IKinematics*>(Visual())->LL_GetBoneInstance(m_rotate_y_bone);	
 	biY.reset_callback		();
 
 	m_pPhysicsShell->EnabledCallbacks(TRUE);
@@ -79,7 +79,7 @@ BOOL CWeaponStatMgun::net_Spawn(CSE_Abstract* DC)
 
 
 
-	CKinematics* K			= smart_cast<CKinematics*>(Visual());
+	IKinematics* K			= smart_cast<IKinematics*>(Visual());
 	CInifile* pUserData		= K->LL_UserData(); 
 
 	R_ASSERT2				(pUserData,"Empty WeaponStatMgun user data!");
@@ -172,7 +172,7 @@ void	CWeaponStatMgun::Hit(SHit* pHDS)
 
 void CWeaponStatMgun::UpdateBarrelDir()
 {
-	CKinematics* K		= smart_cast<CKinematics*>(Visual());
+	IKinematics* K		= smart_cast<IKinematics*>(Visual());
 	m_fire_bone_xform	= K->LL_GetTransform(m_fire_bone);
 
 	m_fire_bone_xform.mulA_43		(XFORM());
@@ -211,7 +211,7 @@ void CWeaponStatMgun::cam_Update			(float dt, float fov)
 	Fvector							P,Da;
 	Da.set							(0,0,0);
 
-	CKinematics* K					= smart_cast<CKinematics*>(Visual());
+	IKinematics* K					= smart_cast<IKinematics*>(Visual());
 	K->CalculateBones_Invalidate	();
 	K->CalculateBones				();
 	const Fmatrix& C				= K->LL_GetTransform(m_camera_bone);

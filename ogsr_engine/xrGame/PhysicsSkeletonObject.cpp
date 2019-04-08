@@ -35,7 +35,7 @@ BOOL CPhysicsSkeletonObject::net_Spawn(CSE_Abstract* DC)
 void	CPhysicsSkeletonObject::SpawnInitPhysics	(CSE_Abstract	*D)
 {
 	CreatePhysicsShell(D);
-	CKinematics* K=smart_cast<CKinematics*>	(Visual());
+	IKinematics* K=smart_cast<IKinematics*>	(Visual());
 	if(K)	
 	{	
 		K->CalculateBones_Invalidate();

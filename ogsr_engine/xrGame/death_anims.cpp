@@ -175,7 +175,7 @@ MotionID death_anims::motion(CEntityAlive& ea, const SHit& H, float &angle) cons
 Fvector& global_hit_position(Fvector &gp, CEntityAlive& ea, const SHit& H)
 {
 	VERIFY(ea.Visual());
-	CKinematics	*K = ea.Visual()->dcast_PKinematics();
+	IKinematics	*K = ea.Visual()->dcast_PKinematics();
 	VERIFY(K);
 	K->LL_GetTransform(H.bone()).transform_tiny(gp, H.bone_space_position());
 	ea.XFORM().transform_tiny(gp);
@@ -185,7 +185,7 @@ Fvector& global_hit_position(Fvector &gp, CEntityAlive& ea, const SHit& H)
 #pragma warning(push)
 #pragma warning(disable: 4273)
 
-bool find_in_parents(const u16 bone_to_find, const u16 from_bone, CKinematics &ca)
+bool find_in_parents(const u16 bone_to_find, const u16 from_bone, IKinematics &ca)
 {
 	const u16 root = ca.LL_GetBoneRoot();
 
@@ -200,7 +200,7 @@ bool find_in_parents(const u16 bone_to_find, const u16 from_bone, CKinematics &c
 	return false;
 }
 
-inline bool is_bone_head(CKinematics &K, u16 bone)
+inline bool is_bone_head(IKinematics &K, u16 bone)
 {
 	const u16 head_bone = K.LL_BoneID("bip01_head");
 	const u16 neck_bone = K.LL_BoneID("bip01_neck");
@@ -217,7 +217,7 @@ class type_motion0 : public type_motion
 			return false;
 
 		VERIFY(pEntity.Visual());
-		CKinematics *K = pEntity.Visual()->dcast_PKinematics();
+		IKinematics *K = pEntity.Visual()->dcast_PKinematics();
 		VERIFY(K);
 		if (!is_bone_head(*K, H.bone()))
 			return false;
@@ -302,7 +302,7 @@ class type_motion3 : public type_motion
 			return false;
 
 		VERIFY(pEntity.Visual());
-		CKinematics *K = pEntity.Visual()->dcast_PKinematics();
+		IKinematics *K = pEntity.Visual()->dcast_PKinematics();
 		VERIFY(K);
 
 		if (is_bone_head(*K, H.bone()))
@@ -336,7 +336,7 @@ class type_motion4 : public type_motion
 
 		m = MotionID();
 		VERIFY(pEntity.Visual());
-		CKinematics *K = pEntity.Visual()->dcast_PKinematics();
+		IKinematics *K = pEntity.Visual()->dcast_PKinematics();
 		VERIFY(K);
 
 		if (!is_bone_head(*K, H.bone()))
@@ -363,7 +363,7 @@ class type_motion5 : public type_motion
 
 		m = MotionID();
 		VERIFY(pEntity.Visual());
-		CKinematics *K = pEntity.Visual()->dcast_PKinematics();
+		IKinematics *K = pEntity.Visual()->dcast_PKinematics();
 		VERIFY(K);
 
 		if (is_snipper(H.weaponID) && !is_bone_head(*K, H.bone()))

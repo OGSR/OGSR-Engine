@@ -341,7 +341,7 @@ void CArtefact::UpdateXForm()
 			return;
 
 		VERIFY				(E);
-		CKinematics*		V		= smart_cast<CKinematics*>	(E->Visual());
+		IKinematics*		V		= smart_cast<IKinematics*>	(E->Visual());
 		VERIFY				(V);
 
 		// Get matrices

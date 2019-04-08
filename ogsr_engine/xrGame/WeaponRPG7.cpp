@@ -36,10 +36,10 @@ void CWeaponRPG7::UpdateMissileVisibility()
 	vis_hud		= (!!iAmmoElapsed || GetState() == eReload);
 	vis_weap	= !!iAmmoElapsed;
 
-	CKinematics* pHudVisual = smart_cast<CKinematics*>(m_pHUD->Visual());
+	IKinematics* pHudVisual = smart_cast<IKinematics*>(m_pHUD->Visual());
 	VERIFY(pHudVisual);
 	if (H_Parent() != Level().CurrentEntity()) pHudVisual = NULL;
-	CKinematics* pWeaponVisual = smart_cast<CKinematics*>(Visual()); 
+	IKinematics* pWeaponVisual = smart_cast<IKinematics*>(Visual()); 
 	VERIFY(pWeaponVisual);
 
 	if (pHudVisual) pHudVisual->LL_SetBoneVisible(pHudVisual->LL_BoneID(*m_sHudGrenadeBoneName),vis_hud,TRUE);

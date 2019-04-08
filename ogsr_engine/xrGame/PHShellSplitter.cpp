@@ -289,7 +289,7 @@ shell_root CPHShellSplitterHolder::ElementSingleSplit(const element_fracture &sp
 			CPHJoint* joint=(*i);
 			if(joint->PFirst_element()==source_element)
 			{
-				CKinematics* K = m_pShell->PKinematics();
+				IKinematics* K = m_pShell->PKinematics();
 				dVector3 safe_pos1, safe_pos2;
 				dQuaternion safe_q1, safe_q2;
 				CPhysicsElement* el1=cast_PhysicsElement(split_elem.first),*el2=joint->PSecond_element();
