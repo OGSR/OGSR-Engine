@@ -378,7 +378,7 @@ void CModelPool::Prefetch()
 	string256 section;
 	strconcat				(sizeof(section),section,"prefetch_visuals_",g_pGamePersistent->m_game_params.m_game_type);
 	CInifile::Sect& sect	= pSettings->r_section(section);
-	for (CInifile::SectCIt I=sect.Data.begin(); I!=sect.Data.end(); I++)	{
+	for (auto I=sect.Data.begin(); I!=sect.Data.end(); I++)	{
 		const CInifile::Item& item= *I;
 		dxRender_Visual* V	= Create(item.first.c_str());
 		Delete				(V,FALSE);

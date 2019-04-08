@@ -22,7 +22,6 @@ class ENGINE_API CApplication	:
 private:
 	FactoryPtr<IApplicationRender>	m_pRender;
 
-	int						load_stage;
 
 	u32						ll_dwReference;
 private:
@@ -32,6 +31,14 @@ private:
 	EVENT					eDisconnect;
 
 	void					Level_Append		(LPCSTR lname);
+
+public: //Используются в рендерах
+	int						load_stage;
+	int		max_load_stage;
+	string2048				ls_header;
+	string2048				ls_tip_number;
+	string2048				ls_tip;
+
 public:
 	CGameFont*				pFontSystem;
 

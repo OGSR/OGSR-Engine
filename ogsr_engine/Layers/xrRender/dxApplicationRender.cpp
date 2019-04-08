@@ -123,7 +123,9 @@ void dxApplicationRender::load_draw_internal(CApplication &owner)
 	FVF::TL* pv					= NULL;
 	u32 v_cnt					= 40;
 	pv							= (FVF::TL*)RCache.Vertex.Lock	(2*(v_cnt+1),ll_hGeom2.stride(),Offset);
+#ifdef DEBUG
 	FVF::TL* _pv				= pv;
+#endif
 	float pos_delta				= back_coords.width()/v_cnt;
 	float tc_delta				= back_tex_coords.width()/v_cnt;
 	u32 clr = C;

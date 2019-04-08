@@ -4,15 +4,19 @@
 #include "hwcaps.h"
 #include "hw.h"
 
+/*
 #ifndef _EDITOR
 	#include "NVAPI/nvapi.h"
 	#include "ATI/atimgpud.h"
 #endif
+*/
 
 namespace
 {
 
-#ifndef _EDITOR
+#pragma todo("KRodin: Подумать, надо ли нам это или нет.")
+#if 0
+
 u32 GetNVGpuNum()
 {
 	NvLogicalGpuHandle  logicalGPUs[NVAPI_MAX_LOGICAL_GPUS];

@@ -262,3 +262,5 @@ extern XRCORE_API bool gModulesLoaded;
 #	define	BENCH_SEC_SIGN
 #	define	BENCH_SEC_SCRAMBLEMEMBER1
 #	define	BENCH_SEC_SCRAMBLEMEMBER2
+
+#define g_dedicated_server false

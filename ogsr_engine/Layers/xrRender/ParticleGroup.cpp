@@ -1,10 +1,10 @@
 #include "stdafx.h"
 #pragma hdrstop
 
-#include "../../xr_3da/psystem.h"
+#include "../../xrParticles/psystem.h"
 
 #ifndef _EDITOR
-#include "../../xrServerEntities/smart_cast.h"
+#include "../../COMMON_AI/smart_cast.h"
 #endif
 
 #include "ParticleGroup.h"
@@ -326,7 +326,7 @@ void OnGroupParticleDead(void* owner, u32 param, PAPI::Particle& m, u32 idx)
     	PG->items[param].StartFreeChild			(PE,*eff->m_OnDeadChildName,m);
 }
 //------------------------------------------------------------------------------
-struct zero_vis_pred : public std::unary_function<dxRender_Visual*, bool>
+struct zero_vis_pred
 {
 	bool operator()(const dxRender_Visual* x){ return x==0; }
 };

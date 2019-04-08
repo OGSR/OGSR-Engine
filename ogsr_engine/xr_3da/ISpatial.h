@@ -35,6 +35,7 @@ enum
 	STYPE_PHYSIC				= (1<<5),
 	STYPE_OBSTACLE				= (1<<6),
 	STYPE_SHAPE					= (1<<7),
+	STYPE_LIGHTSOURCEHEMI		= (1<<8),
 
 	STYPEFLAG_INVALIDSECTOR		= (1<<16)
 };

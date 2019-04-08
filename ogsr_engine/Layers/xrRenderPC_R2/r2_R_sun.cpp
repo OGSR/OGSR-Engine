@@ -1341,8 +1341,7 @@ void CRender::render_sun_near	()
 
 	// Begin SMAP-render
 	{
-		bool	bSpecialFull					= mapNormalPasses[1][0].size() || mapMatrixPasses[1][0].size() || mapSorted.size();
-		VERIFY									(!bSpecialFull);
+		VERIFY(!(mapNormalPasses[1][0].size() || mapMatrixPasses[1][0].size() || mapSorted.size()));
 		HOM.Disable								();
 		phase									= PHASE_SMAP;
 		if (RImplementation.o.Tshadows)	r_pmask	(true,true	);
@@ -1655,8 +1654,7 @@ void CRender::render_sun_cascade ( u32 cascade_ind )
 
 	// Begin SMAP-render
 	{
-		bool	bSpecialFull					= mapNormalPasses[1][0].size() || mapMatrixPasses[1][0].size() || mapSorted.size();
-		VERIFY									(!bSpecialFull);
+		VERIFY(!(mapNormalPasses[1][0].size() || mapMatrixPasses[1][0].size() || mapSorted.size()));
 		HOM.Disable								();
 		phase									= PHASE_SMAP;
 		if (RImplementation.o.Tshadows)	r_pmask	(true,true	);
