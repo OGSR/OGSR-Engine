@@ -224,6 +224,7 @@ public:
 			void				SetActorDirection	(float dir);
 	// CCustomMonster
 			bool				CheckObjectVisibility(const CScriptGameObject *tpLuaGameObject);
+			bool				CheckObjectVisibilityNow(const CScriptGameObject *tpLuaGameObject);
 			bool				CheckTypeVisibility	(const char *section_name);
 			LPCSTR				WhoHitName			();
 			LPCSTR				WhoHitSectionName	();
