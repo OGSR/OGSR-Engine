@@ -134,14 +134,7 @@ void CConsole::OnRender	()
 		 ( g_pGamePersistent && g_pGamePersistent->m_pMainMenu && g_pGamePersistent->m_pMainMenu->IsActive() ) )	
 		 bGame = true;
 
-	VERIFY	(HW.pDevice);
-
-	//*** Shadow
-	D3DRECT R = { 0, 0, LONG( Device.dwWidth ), LONG( Device.dwHeight ) };
-	if		(bGame) R.y2 /= 2;
-
-#pragma todo("KRodin: закостылить как-нибудь эту строку, а то перенос всей консоли из ЗП - это пиздец.")
-	//CHK_DX	(HW.pDevice->Clear(1,&R,D3DCLEAR_TARGET,D3DCOLOR_XRGB(32,32,32),1,0));
+	m_pRender->OnRender(bGame);
 
 	// float dwMaxX=float(Device.dwWidth/2);
 	if (bGame) { fMaxY=0.f; } else fMaxY=1.f;
