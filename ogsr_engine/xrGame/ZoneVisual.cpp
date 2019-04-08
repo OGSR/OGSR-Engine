@@ -17,7 +17,7 @@ BOOL CVisualZone::	net_Spawn						(CSE_Abstract* DC)
 	BOOL ret					=	inherited::net_Spawn(DC);
 	CSE_Abstract				*e = (CSE_Abstract*)(DC);
 	CSE_ALifeZoneVisual		*Z = smart_cast<CSE_ALifeZoneVisual*>(e);
-	CKinematicsAnimated		*SA= smart_cast<CKinematicsAnimated*>(Visual());
+	IKinematicsAnimated		*SA= smart_cast<IKinematicsAnimated*>(Visual());
 	m_attack_animation		=SA->ID_Cycle(Z->attack_animation);
 	m_idle_animation		=SA->ID_Cycle(Z->startup_animation);
 	SA->PlayCycle(m_idle_animation);
@@ -32,14 +32,14 @@ void CVisualZone::net_Destroy()
 void CVisualZone:: AffectObjects					()		
 {
 	inherited::AffectObjects					();
-//	smart_cast<CKinematicsAnimated*>(Visual())->PlayCycle(*m_attack_animation);
+//	smart_cast<IKinematicsAnimated*>(Visual())->PlayCycle(*m_attack_animation);
 }
 void CVisualZone::SwitchZoneState(EZoneState new_state)
 {
 	if(m_eZoneState==eZoneStateBlowout && new_state != eZoneStateBlowout)
 	{
-	//	CKinematicsAnimated*	SA=smart_cast<CKinematicsAnimated*>(Visual());
-		smart_cast<CKinematicsAnimated*>(Visual())->PlayCycle(m_idle_animation);
+	//	IKinematicsAnimated*	SA=smart_cast<IKinematicsAnimated*>(Visual());
+		smart_cast<IKinematicsAnimated*>(Visual())->PlayCycle(m_idle_animation);
 	}
 
 	inherited::SwitchZoneState(new_state);
@@ -58,9 +58,9 @@ void CVisualZone::UpdateBlowout()
 	inherited::UpdateBlowout();
 	if(m_dwAttackAnimaionStart >=(u32)m_iPreviousStateTime && 
 		m_dwAttackAnimaionStart	<(u32)m_iStateTime)
-				smart_cast<CKinematicsAnimated*>(Visual())->PlayCycle(m_attack_animation);
+				smart_cast<IKinematicsAnimated*>(Visual())->PlayCycle(m_attack_animation);
 		
 	if(m_dwAttackAnimaionEnd >=(u32)m_iPreviousStateTime && 
 		m_dwAttackAnimaionEnd	<(u32)m_iStateTime)
-				smart_cast<CKinematicsAnimated*>(Visual())->PlayCycle(m_idle_animation);
+				smart_cast<IKinematicsAnimated*>(Visual())->PlayCycle(m_idle_animation);
 }

@@ -19,7 +19,7 @@ void CIKLimbsController::Create( CGameObject* O )
 {
 	m_legs_blend	 = 0;
 	
-	CKinematicsAnimated* K=smart_cast<CKinematicsAnimated*>(O->Visual());
+	IKinematicsAnimated* K=smart_cast<IKinematicsAnimated*>(O->Visual());
 	m_object = O;
 	VERIFY( K );
 	{
@@ -91,7 +91,7 @@ void get_toe(IKinematics *skeleton, Fvector & toe, const u16 bones[4])
 void	CIKLimbsController::LimbSetup(  const u16 bones[4] )
 {
 	_bone_chains.push_back( CIKLimb( ) );
-	CKinematicsAnimated *skeleton_animated = m_object->Visual( )->dcast_PKinematicsAnimated( );
+	IKinematicsAnimated *skeleton_animated = m_object->Visual( )->dcast_PKinematicsAnimated( );
 	VERIFY( skeleton_animated );
 	Fvector toe;
 	get_toe( skeleton_animated, toe, bones );
@@ -121,7 +121,7 @@ void CIKLimbsController::Calculate( )
 {
 	
 	update_blend( m_legs_blend );
-	CKinematicsAnimated *skeleton_animated = m_object->Visual()->dcast_PKinematicsAnimated( );
+	IKinematicsAnimated *skeleton_animated = m_object->Visual()->dcast_PKinematicsAnimated( );
 	const Fmatrix &obj = m_object->XFORM( );
 	VERIFY( skeleton_animated );
 
@@ -183,7 +183,7 @@ void CIKLimbsController::PlayLegs( CBlend *b )
 {
 	m_legs_blend	= b;
 #ifdef DEBUG
-	CKinematicsAnimated *skeleton_animated = m_object->Visual( )->dcast_PKinematicsAnimated( );
+	IKinematicsAnimated *skeleton_animated = m_object->Visual( )->dcast_PKinematicsAnimated( );
 	VERIFY( skeleton_animated );
 	anim_name = skeleton_animated->LL_MotionDefName_dbg( b->motionID ).first;
 	anim_set_name = skeleton_animated->LL_MotionDefName_dbg( b->motionID ).second;
@@ -191,7 +191,7 @@ void CIKLimbsController::PlayLegs( CBlend *b )
 }
 void	CIKLimbsController:: Update						( )
 {
-	CKinematicsAnimated *skeleton_animated = m_object->Visual()->dcast_PKinematicsAnimated( );
+	IKinematicsAnimated *skeleton_animated = m_object->Visual()->dcast_PKinematicsAnimated( );
 	VERIFY( skeleton_animated );
 
 	skeleton_animated->UpdateTracks();

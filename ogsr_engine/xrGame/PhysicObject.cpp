@@ -70,9 +70,9 @@ void CPhysicObject::RunStartupAnim(CSE_Abstract *D)
 	if(Visual()&&smart_cast<IKinematics*>(Visual()))
 	{
 		//		CSE_PHSkeleton	*po	= smart_cast<CSE_PHSkeleton*>(D);
-		CKinematicsAnimated*	PKinematicsAnimated=NULL;
+		IKinematicsAnimated*	PKinematicsAnimated=NULL;
 		R_ASSERT			(Visual()&&smart_cast<IKinematics*>(Visual()));
-		PKinematicsAnimated	=smart_cast<CKinematicsAnimated*>(Visual());
+		PKinematicsAnimated	=smart_cast<IKinematicsAnimated*>(Visual());
 		if(PKinematicsAnimated)
 		{
 			CSE_Visual					*visual = smart_cast<CSE_Visual*>(D);

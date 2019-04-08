@@ -24,7 +24,7 @@ bool blend_in( const CBlend &b, const motion_marks& marks )
 //.	return	is_in( interval , blend_time );
 }
 
-void	ik_anim_state::update		( CKinematicsAnimated *K, const	CBlend *b, u16 i )
+void	ik_anim_state::update		( IKinematicsAnimated *K, const	CBlend *b, u16 i )
 {
  //Andy	is_step = m && b && blend_in( *b, m->get_interval( i ) );
 	VERIFY( K );

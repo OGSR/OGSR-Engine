@@ -187,7 +187,7 @@ void CCharacterPhysicsSupport::in_NetSpawn(CSE_Abstract* e)
 	}
 
 	CPHDestroyable::Init();//this zerows colbacks !!;
-	CKinematicsAnimated*ka= smart_cast<CKinematicsAnimated*>(m_EntityAlife.Visual());
+	IKinematicsAnimated*ka= smart_cast<IKinematicsAnimated*>(m_EntityAlife.Visual());
 	m_death_anims.setup(ka, m_EntityAlife.cNameSect().c_str(), pSettings);
 	if(!m_EntityAlife.g_Alive())
 	{
@@ -218,7 +218,7 @@ void CCharacterPhysicsSupport::in_NetSpawn(CSE_Abstract* e)
 	}
 	if(Type() == etStalker)
 	{
-		m_hit_animations.SetupHitMotions(*smart_cast<CKinematicsAnimated*>(m_EntityAlife.Visual()));
+		m_hit_animations.SetupHitMotions(*smart_cast<IKinematicsAnimated*>(m_EntityAlife.Visual()));
 	}
 	anim_mov_state.init();
 
@@ -474,7 +474,7 @@ IC		void	CCharacterPhysicsSupport::						UpdateDeathAnims				()
 
 	if(!m_flags.test(fl_death_anim_on) && !is_imotion(m_interactive_motion))//!m_flags.test(fl_use_death_motion)//!b_death_anim_on&&m_pPhysicsShell->isFullActive()
 	{
-		smart_cast<CKinematicsAnimated*>(m_EntityAlife.Visual())->PlayCycle("death_init");
+		smart_cast<IKinematicsAnimated*>(m_EntityAlife.Visual())->PlayCycle("death_init");
 		m_flags.set(fl_death_anim_on,TRUE);
 	}
 }
@@ -514,7 +514,7 @@ void CCharacterPhysicsSupport::in_UpdateCL( )
 		m_hit_animations.GetBaseMatrix(m,m_EntityAlife);
 		DBG_DrawMatrix(m,1.5f);
 /*
-		CKinematicsAnimated	*K = smart_cast<CKinematicsAnimated*>(m_EntityAlife.Visual());
+		IKinematicsAnimated	*K = smart_cast<IKinematicsAnimated*>(m_EntityAlife.Visual());
 		u16 hb = K->LL_BoneID("bip01_head");
 		u16 pb = K->LL_GetBoneRoot();
 		u16 nb = K->LL_BoneID("bip01_neck");
@@ -775,7 +775,7 @@ void CCharacterPhysicsSupport::in_ChangeVisual()
 		ActivateShell(NULL);
 	}
 
-	CKinematicsAnimated* ka = smart_cast<CKinematicsAnimated*>(m_EntityAlife.Visual());
+	IKinematicsAnimated* ka = smart_cast<IKinematicsAnimated*>(m_EntityAlife.Visual());
 	if (ka)
 	{
 		m_death_anims.setup(ka, m_EntityAlife.cNameSect().c_str(), pSettings);

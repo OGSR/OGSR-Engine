@@ -7,9 +7,9 @@
 #include "phdebug.h"
 #endif
 
-void character_hit_animation_controller::SetupHitMotions(CKinematicsAnimated &ca)
+void character_hit_animation_controller::SetupHitMotions(IKinematicsAnimated &ca)
 {
-	//CKinematicsAnimated* ca = smart_cast<CKinematicsAnimated*>(m_EntityAlife.Visual());
+	//IKinematicsAnimated* ca = smart_cast<IKinematicsAnimated*>(m_EntityAlife.Visual());
 	/*
 	bkhit_motion= ca.LL_MotionID("hitback");	//hitback2.skl
 	fvhit_motion= ca.LL_MotionID("hitfront");
@@ -47,7 +47,7 @@ IC void set_blend_params(CBlend *B)
 	B->blendAmount = 1.0;
 }
 
-IC void	play_cycle(CKinematicsAnimated* CA,const MotionID &m,u8 channel,u32 &time_block,float base_power)
+IC void	play_cycle(IKinematicsAnimated* CA,const MotionID &m,u8 channel,u32 &time_block,float base_power)
 {
 	const BOOL mixin = TRUE;
 	const u32  dellay = 1;
@@ -67,7 +67,7 @@ IC void	play_cycle(CKinematicsAnimated* CA,const MotionID &m,u8 channel,u32 &tim
 
 void character_hit_animation_controller::PlayHitMotion(const Fvector &dir,const Fvector &bone_pos, u16 bi, CEntityAlive &ea)const
 {
-	CKinematicsAnimated* CA = smart_cast<CKinematicsAnimated*>(ea.Visual());
+	IKinematicsAnimated* CA = smart_cast<IKinematicsAnimated*>(ea.Visual());
 	
 	//play_cycle(CA,all_shift_down,1,block_times[6],1) ;
 	if( !(CA->LL_BoneCount() > bi) )
@@ -138,7 +138,7 @@ void character_hit_animation_controller::PlayHitMotion(const Fvector &dir,const 
 	//const float fade = 0.1f;
 	//for(u16 ii=0;MAX_PARTS>ii;++ii)
 	//CA->LL_FadeCycle(ii,fade,1<<1);
-	//smart_cast<CKinematicsAnimated*>(m_EntityAlife.Visual())->LL_MotionID("actor_hit_ani_180_2");
+	//smart_cast<IKinematicsAnimated*>(m_EntityAlife.Visual())->LL_MotionID("actor_hit_ani_180_2");
 }
 
 bool character_hit_animation_controller::IsEffected( u16	bi, IKinematics &ca )const

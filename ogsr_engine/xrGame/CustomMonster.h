@@ -18,7 +18,7 @@ namespace MonsterSpace {
 };
 
 class CMotionDef;
-class CKinematicsAnimated;
+class IKinematicsAnimated;
 class CMemoryManager;
 class CItemManager;
 class CEnemyManager;
@@ -58,7 +58,7 @@ protected:
 		MotionID		ls;
 		MotionID		rs;
 
-		void			Create(CKinematicsAnimated* K, LPCSTR base);
+		void			Create(IKinematicsAnimated* K, LPCSTR base);
 	};
 
 private:

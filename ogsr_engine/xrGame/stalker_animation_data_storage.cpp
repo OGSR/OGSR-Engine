@@ -16,10 +16,10 @@ CStalkerAnimationDataStorage	*g_stalker_animation_data_storage = 0;
 
 class data_predicate {
 private:
-	CKinematicsAnimated			*m_object;
+	IKinematicsAnimated			*m_object;
 
 public:
-	IC			data_predicate	(CKinematicsAnimated *skeleton_animated)
+	IC			data_predicate	(IKinematicsAnimated *skeleton_animated)
 	{
 		VERIFY				(skeleton_animated);
 		m_object			= skeleton_animated;
@@ -51,7 +51,7 @@ void CStalkerAnimationDataStorage::clear					()
 	}
 }
 
-const CStalkerAnimationData *CStalkerAnimationDataStorage::object	(CKinematicsAnimated *skeleton_animated)
+const CStalkerAnimationData *CStalkerAnimationDataStorage::object	(IKinematicsAnimated *skeleton_animated)
 {
 	OBJECTS::const_iterator	I = std::find_if(m_objects.begin(),m_objects.end(),data_predicate(skeleton_animated));
 	if (I != m_objects.end())

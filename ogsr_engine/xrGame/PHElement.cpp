@@ -804,7 +804,7 @@ void CPHElement::BoneGlPos(Fmatrix &m,CBoneInstance* B)
 void CPHElement::GetAnimBonePos(Fmatrix &bp)
 {
 	VERIFY(m_shell->PKinematics());
-	CKinematicsAnimated *ak = m_shell->PKinematics()->dcast_PKinematicsAnimated();
+	IKinematicsAnimated *ak = m_shell->PKinematics()->dcast_PKinematicsAnimated();
 	VERIFY(ak);
 	CBoneInstance *BI = &ak->LL_GetBoneInstance(m_SelfID);
 	if(!BI->Callback)//.

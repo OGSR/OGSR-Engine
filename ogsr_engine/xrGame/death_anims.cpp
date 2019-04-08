@@ -12,7 +12,7 @@ rnd_motion::rnd_motion()
 {
 }
 
-rnd_motion*	rnd_motion::setup(CKinematicsAnimated* k, const char* s)
+rnd_motion*	rnd_motion::setup(IKinematicsAnimated* k, const char* s)
 {
 	VERIFY(k);
 	VERIFY(s);
@@ -48,12 +48,12 @@ void type_motion::clear()
 	anims.clear();
 }
 
-void type_motion::set_motion(CKinematicsAnimated* k, u16 id_motion, const char* dir_anim)
+void type_motion::set_motion(IKinematicsAnimated* k, u16 id_motion, const char* dir_anim)
 {
 	anims[id_motion] = xr_new<rnd_motion>()->setup(k, dir_anim);
 }
 
-type_motion* type_motion::setup(CKinematicsAnimated* k, CInifile * ini, const char* section, const char* type)
+type_motion* type_motion::setup(IKinematicsAnimated* k, CInifile * ini, const char* section, const char* type)
 {
 	anims.resize(dirs_number, 0);
 	if (ini->line_exist(section, type))
@@ -412,7 +412,7 @@ class type_motion6 : public type_motion
 	}
 };
 
-void death_anims::setup(CKinematicsAnimated* k, LPCSTR section, CInifile* ini)
+void death_anims::setup(IKinematicsAnimated* k, LPCSTR section, CInifile* ini)
 {
 	clear();
 

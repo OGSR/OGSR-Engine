@@ -645,7 +645,7 @@ void CActor::HitSignal(float perc, Fvector& vLocalDir, CObject* who, s16 element
 
 		float	yaw, pitch;
 		D.getHP(yaw,pitch);
-		CKinematicsAnimated *tpKinematics = smart_cast<CKinematicsAnimated*>(Visual());
+		IKinematicsAnimated *tpKinematics = smart_cast<IKinematicsAnimated*>(Visual());
 		VERIFY(tpKinematics);
 #pragma todo("Dima to Dima : forward-back bone impulse direction has been determined incorrectly!")
 		MotionID motion_ID = m_anims->m_normal.m_damage[iFloor(tpKinematics->LL_GetBoneInstance(element).get_param(1) + (angle_difference(r_model_yaw + r_model_yaw_delta,yaw) <= PI_DIV_2 ? 0 : 1))];

@@ -595,7 +595,7 @@ void CIKLimb::ApplyContext( SCalculateData &cd )
 	SetNewGoal(cld,cd);
 }
 
-void	CIKLimb::	AnimGoal			( Fmatrix &gl, CKinematicsAnimated	&K )
+void	CIKLimb::	AnimGoal			( Fmatrix &gl, IKinematicsAnimated	&K )
 {
 	K.Bone_GetAnimPos( gl, m_bones[2], 1<<0, false );
 }
@@ -611,7 +611,7 @@ void	CIKLimb::Update( CGameObject *O, const	CBlend *b, u16 interval )
 	if(!m_collide)
 				return;
 	Fmatrix foot;
-	CKinematicsAnimated *K = O->Visual( )->dcast_PKinematicsAnimated( );
+	IKinematicsAnimated *K = O->Visual( )->dcast_PKinematicsAnimated( );
 	AnimGoal( foot,  *K );
 	anim_state.update( K, b, interval );
 	Collide( collide_data, O, foot, anim_state.step() );

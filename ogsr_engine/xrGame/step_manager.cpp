@@ -40,7 +40,7 @@ void CStepManager::reload(LPCSTR section)
 
 	m_steps_map.clear();
 
-	CKinematicsAnimated	*skeleton_animated = smart_cast<CKinematicsAnimated*>(m_object->Visual());
+	IKinematicsAnimated	*skeleton_animated = smart_cast<IKinematicsAnimated*>(m_object->Visual());
 
 	for (u32 i=0; pSettings->r_line(anim_section,i,&anim_name,&val); ++i) {
 		_GetItem (val,0,cur_elem);

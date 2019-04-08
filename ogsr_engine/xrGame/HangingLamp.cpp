@@ -134,7 +134,7 @@ BOOL CHangingLamp::net_Spawn(CSE_Abstract* DC)
 	lanim					= LALib.FindItem(*lamp->color_animator);
 
 	CPHSkeleton::Spawn(e);
-	if (smart_cast<CKinematicsAnimated*>(Visual()))	smart_cast<CKinematicsAnimated*>	(Visual())->PlayCycle("idle");
+	if (smart_cast<IKinematicsAnimated*>(Visual()))	smart_cast<IKinematicsAnimated*>	(Visual())->PlayCycle("idle");
 	if (smart_cast<IKinematics*>(Visual())){
 		smart_cast<IKinematics*>			(Visual())->CalculateBones_Invalidate	();
 		smart_cast<IKinematics*>			(Visual())->CalculateBones();

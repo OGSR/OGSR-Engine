@@ -6,7 +6,7 @@
 #include "bone.h"
 #include "skeletonmotiondefs.h"	
 // refs
-class CKinematicsAnimated;
+class IKinematicsAnimated;
 class CBlend;
 class IKinematics;
 

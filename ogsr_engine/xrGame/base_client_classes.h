@@ -26,7 +26,7 @@ class IRenderVisual;
 class FHierrarhyVisual;
 class CBlend;
 class IKinematics;
-class CKinematicsAnimated;
+class IKinematicsAnimated;
 class CAnomalyDetector;
 class CPatrolPoint;
 class CPatrolPath;
@@ -88,7 +88,7 @@ add_to_type_list(CKinematicsScript)
 #define script_type_list save_type_list(CKinematicsScript)
 */
 
-typedef class_exporter<CKinematicsAnimated>	CKinematicsAnimatedScript;
+typedef class_exporter<IKinematicsAnimated>	CKinematicsAnimatedScript;
 add_to_type_list(CKinematicsAnimatedScript)
 #undef script_type_list
 #define script_type_list save_type_list(CKinematicsAnimatedScript)

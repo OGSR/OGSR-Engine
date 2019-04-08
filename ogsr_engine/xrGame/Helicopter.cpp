@@ -209,7 +209,7 @@ BOOL CHelicopter::net_Spawn(CSE_Abstract*	DC)
 	m_bind_x.set			(matrices[m_rotate_x_bone].c);
 	m_bind_y.set			(matrices[m_rotate_y_bone].c);
 	
-	CKinematicsAnimated	*A	= smart_cast<CKinematicsAnimated*>(Visual());
+	IKinematicsAnimated	*A	= smart_cast<IKinematicsAnimated*>(Visual());
 	if (A) {
 		A->PlayCycle		(*heli->startup_animation);
 		A->CalculateBones	();

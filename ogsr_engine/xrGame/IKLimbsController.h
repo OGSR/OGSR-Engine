@@ -3,7 +3,7 @@
 
 #include "IK/IKLimb.h"
 
-class CKinematicsAnimated;
+class IKinematicsAnimated;
 class CGameObject	;
 class CBlend		;
 struct SIKCrlCalcData;

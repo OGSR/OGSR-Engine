@@ -713,7 +713,7 @@ void CScriptGameObject::play_hud_animation( LPCSTR anim, bool mix_in ) {
 		ai().script_engine().script_log( ScriptStorage::eLuaMessageTypeError, "CHudItem : cannot access class member play_hud_animation!" );
 		return;
 	}
-	CKinematicsAnimated* sa = smart_cast<CKinematicsAnimated*>( k->GetHUD()->Visual() );
+	IKinematicsAnimated* sa = smart_cast<IKinematicsAnimated*>( k->GetHUD()->Visual() );
 	if( sa ) {
 		MotionID m = sa->ID_Cycle( anim );
 		if ( m )

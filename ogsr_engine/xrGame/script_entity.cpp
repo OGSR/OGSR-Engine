@@ -342,7 +342,7 @@ bool CScriptEntity::bfAssignAnimation(CScriptEntityAction *tpEntityAction)
 	if (!xr_strlen(GetCurrentAction()->m_tAnimationAction.m_caAnimationToPlay))
 		return						(true);
 
-	CKinematicsAnimated				&tVisualObject = *(smart_cast<CKinematicsAnimated*>(object().Visual()));
+	IKinematicsAnimated				&tVisualObject = *(smart_cast<IKinematicsAnimated*>(object().Visual()));
 	m_tpNextAnimation				= tVisualObject.ID_Cycle_Safe(*GetCurrentAction()->m_tAnimationAction.m_caAnimationToPlay);
 	m_use_animation_movement_controller	= GetCurrentAction()->m_tAnimationAction.m_use_animation_movement_controller;
 	return							(true);
@@ -588,7 +588,7 @@ bool CScriptEntity::bfScriptAnimation()
 			//	Msg				("%6d Playing animation : %s , Object %s",Device.dwTimeGlobal,*GetCurrentAction()->m_tAnimationAction.m_caAnimationToPlay, *object().cName());
 #endif
 			m_tpScriptAnimation = m_tpNextAnimation;
-			CKinematicsAnimated	*skeleton_animated = smart_cast<CKinematicsAnimated*>(object().Visual());
+			IKinematicsAnimated	*skeleton_animated = smart_cast<IKinematicsAnimated*>(object().Visual());
 			LPCSTR				animation_id = *GetCurrentAction()->m_tAnimationAction.m_caAnimationToPlay;
 			MotionID			animation = skeleton_animated->ID_Cycle(animation_id);
 			CBlend				*result = 0;

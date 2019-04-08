@@ -86,7 +86,7 @@ void _detail::callback		(CBoneInstance *B)
 
 void CStalkerAnimationManager::assign_bone_callbacks	()
 {
-	IKinematics						*kinematics = smart_cast<CKinematicsAnimated*>(m_visual);
+	IKinematics						*kinematics = smart_cast<IKinematicsAnimated*>(m_visual);
 	VERIFY							(kinematics);
 
 	LPCSTR							section = *object().cNameSect();

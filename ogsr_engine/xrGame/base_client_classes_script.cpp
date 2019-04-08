@@ -335,7 +335,7 @@ void IRender_VisualScript::script_register(lua_State *L)
 	];
 }
 
-void CKinematicsAnimated_PlayCycle(CKinematicsAnimated* sa, LPCSTR anim)
+void CKinematicsAnimated_PlayCycle(IKinematicsAnimated* sa, LPCSTR anim)
 {
 	sa->PlayCycle(anim);
 }
@@ -344,7 +344,7 @@ void CKinematicsAnimatedScript::script_register		(lua_State *L)
 {
 	module(L)
 	[
-		class_<CKinematicsAnimated>("CKinematicsAnimated")
+		class_<IKinematicsAnimated>("IKinematicsAnimated")
 			.def("PlayCycle",		&CKinematicsAnimated_PlayCycle)
 	];
 }
