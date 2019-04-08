@@ -31,7 +31,7 @@
 #include "danger_manager.h"
 #include "memory_space.h"
 #include "actor.h"
-#include "..\xr_3da\skeletonanimated.h"
+#include "..\Include/xrRender/KinematicsAnimated.h"
 #include "../xr_3da/camerabase.h"
 #include "ai/stalker/ai_stalker.h"
 #include "car.h"

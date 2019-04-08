@@ -47,7 +47,7 @@
 #include "usablescriptobject.h"
 #include "ExtendedGeom.h"
 #include "alife_registry_wrappers.h"
-#include "..\xr_3da\skeletonanimated.h"
+#include "..\Include/xrRender/KinematicsAnimated.h"
 #include "artifact.h"
 #include "CharacterPhysicsSupport.h"
 #include "material_manager.h"

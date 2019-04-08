@@ -16,7 +16,7 @@
 #include "../../../squad_hierarchy_holder.h"
 #include "../../../group_hierarchy_holder.h"
 #include "../../../phdestroyable.h"
-#include "../../../../xr_3da/skeletonanimated.h"
+#include "../../../../Include/xrRender/KinematicsAnimated.h"
 #include "../../../../Include/xrRender/Kinematics.h"
 #include "../../../detail_path_manager.h"
 #include "../../../hudmanager.h"

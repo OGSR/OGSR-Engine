@@ -1,6 +1,6 @@
 #pragma once
 
-#include "..\xr_3da\skeletonanimated.h"
+#include "../Include/xrRender/KinematicsAnimated.h"
 class CHudItem;
 
 #define BOBBING_SECT "wpn_bobbing_effector"
@@ -114,7 +114,7 @@ public:
 	void				net_DestroyHud	();
 	void				Init			();
 
-	IC IRenderVisual*	Visual			()	{ return m_shared_data.animations();			}
+	IC IRenderVisual*	Visual			()	{ return m_shared_data.animations()->dcast_RenderVisual();			}
 	IC Fmatrix&			Transform		()	{ return m_Transform;							}
 
 	int					FireBone		()	{return m_shared_data.get_value()->m_fire_bone;	}

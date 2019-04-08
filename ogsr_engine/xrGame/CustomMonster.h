@@ -9,7 +9,7 @@
 #include "..\xr_3da\feel_vision.h"
 #include "..\xr_3da\feel_sound.h"
 #include "..\xr_3da\feel_touch.h"
-#include "..\xr_3da\skeletonanimated.h"
+#include "..\Include/xrRender/KinematicsAnimated.h"
 #include "associative_vector.h"
 #include "ai\monsters\anomaly_detector.h"
 

@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "cat.h"
 #include "cat_state_manager.h"
-#include "../../../../xr_3da/skeletonanimated.h"
+#include "../../../../Include/xrRender/KinematicsAnimated.h"
 #include "../monster_velocity_space.h"
 #include "../control_animation_base.h"
 #include "../control_movement_base.h"
