@@ -80,6 +80,11 @@ public:
 
 	virtual void					UpdateGameType		() {};
 
+	//KRodin: TODO: Доделать перегрузки если оно надо.
+	virtual void					GetCurrentDof(Fvector3& dof) { dof.set(-1.4f, 0.0f, 250.f); };
+	virtual void					SetBaseDof(const Fvector3& dof) {};
+	virtual void					OnSectorChanged(int sector) {};
+
 	virtual void					RegisterModel		(IRenderVisual* V) = 0;
 	virtual	float					MtlTransparent		(u32 mtl_idx) = 0;
 
@@ -88,7 +93,7 @@ public:
 
 			u32						GameType			() {return m_game_params.m_e_game_type;};
 	virtual void					Statistics			(CGameFont* F)  = 0;
-	virtual	void					LoadTitle			(LPCSTR str){}
+	virtual	void					LoadTitle(bool change_tip = false, shared_str map_name = "") {}
 
 	virtual bool					CanBePaused() { return true; }
 };
@@ -99,6 +104,7 @@ public:
 	virtual			~IMainMenu						()													{};
 	virtual void	Activate						(bool bActive)										=0; 
 	virtual	bool	IsActive						()													=0; 
+	virtual	bool	CanSkipSceneRendering() = 0;
 	virtual void	DestroyInternal					(bool bForce)										=0;
 };
 

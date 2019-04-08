@@ -313,3 +313,30 @@ void CHUDManager::net_Relcase	(CObject *object)
 	VERIFY						(m_pHUDTarget);
 	m_pHUDTarget->net_Relcase	(object);
 }
+
+#pragma todo("KRodin: Доделать эти два метода, если они нужны!")
+//#include "player_hud.h"
+bool   CHUDManager::RenderActiveItemUIQuery()
+{
+	/*
+	if (!psHUD_Flags.is(HUD_DRAW_RT2))
+		return false;
+
+	if (!psHUD_Flags.is(HUD_WEAPON | HUD_WEAPON_RT | HUD_WEAPON_RT2))return false;
+
+	if (!need_render_hud())			return false;
+
+	return (g_player_hud && g_player_hud->render_item_ui_query());
+	*/
+	return true; //? Подумать
+}
+
+void   CHUDManager::RenderActiveItemUI()
+{
+	/*
+	if (!psHUD_Flags.is(HUD_DRAW_RT2))
+		return;
+
+	g_player_hud->render_item_ui();
+	*/
+}

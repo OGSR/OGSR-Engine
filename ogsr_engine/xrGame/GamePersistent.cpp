@@ -467,7 +467,7 @@ void CGamePersistent::OnRenderPPUI_PP()
 }
 #include "string_table.h"
 #include "../xr_3da/x_ray.h"
-void CGamePersistent::LoadTitle(LPCSTR str)
+void CGamePersistent::LoadTitle(bool change_tip, shared_str map_name)
 {
 	/*string512			buff;
 	sprintf_s				(buff, "%s", CStringTable().translate(str).c_str());
