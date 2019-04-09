@@ -29,7 +29,7 @@ public:
 	static float	GetTextureWidth		(LPCSTR texture_name);
 	static Frect	GetTextureRect		(LPCSTR texture_name);
 	static LPCSTR	GetTextureFileName	(LPCSTR texture_name);
-	static void		GetTextureShader	(LPCSTR texture_name, ref_shader& sh);
+	static void		GetTextureShader	(LPCSTR texture_name, ui_shader& sh);
 	static TEX_INFO	FindItem			(LPCSTR texture_name, LPCSTR def_texture_name);
 	static void WriteLog();
 

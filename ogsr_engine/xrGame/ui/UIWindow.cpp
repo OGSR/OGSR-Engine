@@ -6,6 +6,8 @@
 #include "../UICursor.h"
 #include "../MainMenu.h"
 
+#include "../Include/xrRender/DebugRender.h"
+
 #pragma optimize("", off) //KRodin: добавлено специально, не убирать!
 
 //#define LOG_ALL_WNDS
