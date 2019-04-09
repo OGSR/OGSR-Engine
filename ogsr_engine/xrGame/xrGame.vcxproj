@@ -462,6 +462,7 @@
     <ClInclude Include="trajectories.h" />
     <ClInclude Include="ui\UIIconParams.h" />
     <ClInclude Include="ui\UIPdaSpot.h" />
+    <ClInclude Include="ui_defs.h" />
     <ClInclude Include="wrapper_abstract.h" />
     <ClInclude Include="wrapper_abstract_inline.h" />
     <ClInclude Include="action_management_config.h" />
@@ -1152,7 +1153,6 @@
     <ClInclude Include="EffectorShot.h" />
     <ClInclude Include="EffectorShotX.h" />
     <ClInclude Include="EffectorZoomInertion.h" />
-    <ClInclude Include="..\COMMON_AI\GameMtlLib.h" />
     <ClInclude Include="GamePersistent.h" />
     <ClInclude Include="Level.h" />
     <ClInclude Include="Level_network_Demo.h" />
@@ -2090,8 +2090,6 @@
     <ClCompile Include="EffectorShot.cpp" />
     <ClCompile Include="EffectorShotX.cpp" />
     <ClCompile Include="EffectorZoomInertion.cpp" />
-    <ClCompile Include="..\COMMON_AI\GameMtlLib.cpp" />
-    <ClCompile Include="GameMtlLib_Engine.cpp" />
     <ClCompile Include="GamePersistent.cpp" />
     <ClCompile Include="Level.cpp" />
     <ClCompile Include="Level_input.cpp" />

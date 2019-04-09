@@ -19,8 +19,7 @@ private:
 	float			target_radius;
 	float			radius_speed_perc; 
 
-	ref_geom 		hGeomLine;
-	ref_shader		hShader;
+	ui_shader		hShader;
 public:
 	u32				cross_color;
 

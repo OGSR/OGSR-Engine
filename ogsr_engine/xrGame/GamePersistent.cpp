@@ -86,7 +86,7 @@ CGamePersistent::~CGamePersistent(void)
 void CGamePersistent::RegisterModel(IRenderVisual* V)
 {
 	// Check types
-	switch (V->Type){
+	switch (V->getType()){
 	case MT_SKELETON_ANIM:
 	case MT_SKELETON_RIGID:{
 		u16 def_idx		= GMLib.GetMaterialIdx("default_object");

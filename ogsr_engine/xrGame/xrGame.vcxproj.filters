@@ -4209,9 +4209,6 @@
     <ClInclude Include="EffectorZoomInertion.h">
       <Filter>Core\Client\Effectors\Weapon</Filter>
     </ClInclude>
-    <ClInclude Include="..\COMMON_AI\GameMtlLib.h">
-      <Filter>Core\Client\Game Materials</Filter>
-    </ClInclude>
     <ClInclude Include="GamePersistent.h">
       <Filter>Core\Client\Game Persistent</Filter>
     </ClInclude>
@@ -6088,6 +6085,7 @@
     <ClInclude Include="ai\monsters\controller\controller_psy_hit_effector.h">
       <Filter>AI\AMonsters\monsters\Controller\Psy hit</Filter>
     </ClInclude>
+    <ClInclude Include="ui_defs.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="damage_manager.cpp">
@@ -7307,12 +7305,6 @@
     </ClCompile>
     <ClCompile Include="EffectorZoomInertion.cpp">
       <Filter>Core\Client\Effectors\Weapon</Filter>
-    </ClCompile>
-    <ClCompile Include="..\COMMON_AI\GameMtlLib.cpp">
-      <Filter>Core\Client\Game Materials</Filter>
-    </ClCompile>
-    <ClCompile Include="GameMtlLib_Engine.cpp">
-      <Filter>Core\Client\Game Materials</Filter>
     </ClCompile>
     <ClCompile Include="GamePersistent.cpp">
       <Filter>Core\Client\Game Persistent</Filter>
