@@ -7,11 +7,10 @@
 #define __XRAY_AI_CROW__
 
 #include "../../entity_alive.h"
-#include "../../../xr_3da/SkeletonAnimated.h"
+#include "../../../Include/xrRender/KinematicsAnimated.h"
 
 class CMotionDef;
 class CBlend;
-class IKinematicsAnimated;
 
 class CAI_Crow : public CEntity
 {

@@ -24,12 +24,6 @@ struct SHitMark{
 class CHitMarker
 {
 public:
-/*
-	float					fHitMarks[4];
-	ref_shader				hShader;
-	ref_geom				hGeom;
-*/	
-
 	FactoryPtr<IUIShader>	hShader2;
 
 	typedef xr_deque<SHitMark*> HITMARKS;

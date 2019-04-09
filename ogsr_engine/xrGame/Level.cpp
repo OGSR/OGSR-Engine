@@ -457,7 +457,8 @@ extern void draw_wnds_rects();
 
 void CLevel::OnRender()
 {
-	Render->BeforeWorldRender();	//--#SM+#-- +SecondVP+
+#pragma todo("KRodin: вернуть!")
+	//Render->BeforeWorldRender();	//--#SM+#-- +SecondVP+
 
 	inherited::OnRender	();
 	
@@ -468,7 +469,8 @@ void CLevel::OnRender()
 	BulletManager().Render();
 	//Device.Statistic->TEST1.End();
 
-	Render->AfterWorldRender(); //--#SM+#-- +SecondVP+
+#pragma todo("KRodin: вернуть!")
+	//Render->AfterWorldRender(); //--#SM+#-- +SecondVP+
 
 	//отрисовать интерфейc пользователя
 	HUD().RenderUI();

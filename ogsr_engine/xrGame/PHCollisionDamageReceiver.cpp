@@ -5,11 +5,12 @@
 #include "../Include/xrRender/Kinematics.h"
 #include "geometry.h"
 #include "PhysicsShell.h"
-#include "GameMtlLib.h"
+#include "../xr_3da/GameMtlLib.h"
 #include "Physics.h"
 #include "../xr_3da/NET_Server_Trash/net_utils.h"
 #include "xrMessages.h"
 #include "CharacterPhysicsSupport.h"
+
 void CPHCollisionDamageReceiver::BoneInsert(u16 id,float k)
 {
 	R_ASSERT2(FindBone(id)==m_controled_bones.end(),"duplicate bone!");

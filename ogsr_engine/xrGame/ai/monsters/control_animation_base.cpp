@@ -5,7 +5,7 @@
 #include "BaseMonster/base_monster.h"
 #include "../../PHMovementControl.h"
 #include "anim_triple.h"
-#include "../../../xr_3da/SkeletonAnimated.h"
+#include "../../../Include\xrRender\Kinematics.h"
 #include "../../detail_path_manager.h"
 #include "monster_velocity_space.h"
 #include "monster_event_manager.h"

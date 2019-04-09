@@ -47,6 +47,7 @@
 #include "usablescriptobject.h"
 #include "ExtendedGeom.h"
 #include "alife_registry_wrappers.h"
+#include "../Include/xrRender/Kinematics.h"
 #include "..\Include/xrRender/KinematicsAnimated.h"
 #include "artifact.h"
 #include "CharacterPhysicsSupport.h"
@@ -641,10 +642,12 @@ void CActor::HitSignal(float perc, Fvector& vLocalDir, CObject* who, s16 element
 
 		float	yaw, pitch;
 		D.getHP(yaw,pitch);
-		IKinematicsAnimated *tpKinematics = smart_cast<IKinematicsAnimated*>(Visual());
+		IRenderVisual* pV = Visual();
+		IKinematicsAnimated* tpKinematics = smart_cast<IKinematicsAnimated*>(pV);
+		IKinematics* pK = smart_cast<IKinematics*>(pV);
 		VERIFY(tpKinematics);
 #pragma todo("Dima to Dima : forward-back bone impulse direction has been determined incorrectly!")
-		MotionID motion_ID = m_anims->m_normal.m_damage[iFloor(tpKinematics->LL_GetBoneInstance(element).get_param(1) + (angle_difference(r_model_yaw + r_model_yaw_delta,yaw) <= PI_DIV_2 ? 0 : 1))];
+		MotionID motion_ID = m_anims->m_normal.m_damage[iFloor(pK->LL_GetBoneInstance(element).get_param(1) + (angle_difference(r_model_yaw + r_model_yaw_delta,yaw) <= PI_DIV_2 ? 0 : 1))];
 		float power_factor = perc/100.f; clamp(power_factor,0.f,1.f);
 		VERIFY(motion_ID.valid());
 		tpKinematics->PlayFX(motion_ID,power_factor);
@@ -1168,6 +1171,13 @@ void CActor::shedule_Update	(u32 DT)
 #include "debug_renderer.h"
 void CActor::renderable_Render	()
 {
+	inherited::renderable_Render();
+	if (!HUDview()) {
+		CInventoryOwner::renderable_Render();
+	}
+
+#pragma todo("KRodin: это тень от ГГ? Надо подумать как вернуть в новом варианте.")
+	/*
 	inherited::renderable_Render			();
 	if ((cam_active==eacFirstEye &&									// first eye cam
 		::Render->get_generation() == ::Render->GENERATION_R2 &&	// R2
@@ -1180,6 +1190,7 @@ void CActor::renderable_Render	()
 		((!m_holder) || (m_holder && m_holder->allowWeapon() && m_holder->HUDView())))
 		)
 		CInventoryOwner::renderable_Render	();
+	*/
 }
 
 BOOL CActor::renderable_ShadowGenerate	() 

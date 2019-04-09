@@ -24,7 +24,7 @@
 #include "ui/UIMainIngameWnd.h"
 #include "CarWeapon.h"
 #include "game_object_space.h"
-#include "GameMtlLib.h"
+#include "../xr_3da/GameMtlLib.h"
 #include "PHActivationShape.h"
 #include "CharacterPhysicsSupport.h"
 #include "car_memory.h"

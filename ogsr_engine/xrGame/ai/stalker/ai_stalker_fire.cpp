@@ -15,7 +15,7 @@
 #include "../../stalker_decision_space.h"
 #include "../../script_game_object.h"
 #include "../../customzone.h"
-#include "../../../xr_3da/SkeletonAnimated.h"
+#include "../../../Include\xrRender\Kinematics.h"
 #include "../../agent_manager.h"
 #include "../../stalker_animation_manager.h"
 #include "../../stalker_planner.h"

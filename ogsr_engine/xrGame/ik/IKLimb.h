@@ -2,7 +2,7 @@
 
 
 #include "limb.h"
-#include "../../xr_3da/SkeletonAnimated.h"
+#include "../../Include\xrRender\Kinematics.h"
 #include "../ik_anim_state.h"
 class	IKinematics	;
 class	CDB::TRI	;

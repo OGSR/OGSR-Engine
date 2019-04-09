@@ -176,6 +176,8 @@ void CBulletManager::FireShotmark (SBullet* bullet, const Fvector& vDir, const F
 	SGameMtlPair* mtl_pair	= GMLib.GetMaterialPair(bullet->bullet_material_idx, target_material);
 	Fvector particle_dir;
 
+#pragma todo("KRodin: проверить, всё ли здесь правильно!")
+
 	if (R.O)
 	{
 		particle_dir		 = vDir;
@@ -184,33 +186,29 @@ void CBulletManager::FireShotmark (SBullet* bullet, const Fvector& vDir, const F
 		//на текущем актере отметок не ставим // KRodin: А ПОЧЕМУ БЫ И НЕТ?
 		if ( Level().CurrentEntity() && Level().CurrentEntity()->ID() == R.O->ID() && Core.Features.test( xrCore::Feature::wallmarks_on_static_only ) ) return;
 
-		ref_shader* pWallmarkShader = (!mtl_pair || mtl_pair->CollideMarks.empty())?
-						NULL:&mtl_pair->CollideMarks[::Random.randI(0,mtl_pair->CollideMarks.size())];;
-
-		if (pWallmarkShader && ShowMark)
+		if (mtl_pair && !mtl_pair->m_pCollideMarks->empty() && ShowMark)
 		{
 			//добавить отметку на материале
 			Fvector p;
-			p.mad(bullet->pos,bullet->dir,R.range-0.01f);
-			::Render->add_SkeletonWallmark	(&R.O->renderable.xform, 
-							PKinematics(R.O->Visual()), *pWallmarkShader,
-							p, bullet->dir, bullet->wallmark_size);
-		}		
-	} 
+			p.mad(bullet->pos, bullet->dir, R.range - 0.01f);
+			::Render->add_SkeletonWallmark(&R.O->renderable.xform,
+				PKinematics(R.O->Visual()),
+				&*mtl_pair->m_pCollideMarks,
+				p,
+				bullet->dir,
+				bullet->wallmark_size);
+		}
+	}
 	else 
 	{
 		//вычислить нормаль к пораженной поверхности
-		particle_dir		= vNormal;
-		Fvector*	pVerts	= Level().ObjectSpace.GetStaticVerts();
-		CDB::TRI*	pTri	= Level().ObjectSpace.GetStaticTris()+R.element;
+		Fvector*	pVerts = Level().ObjectSpace.GetStaticVerts();
+		CDB::TRI*	pTri = Level().ObjectSpace.GetStaticTris() + R.element;
 
-		ref_shader* pWallmarkShader =	(!mtl_pair || mtl_pair->CollideMarks.empty())?
-										NULL:&mtl_pair->CollideMarks[::Random.randI(0,mtl_pair->CollideMarks.size())];;
-
-		if (pWallmarkShader && ShowMark)
+		if (mtl_pair && !mtl_pair->m_pCollideMarks->empty() && ShowMark)
 		{
 			//добавить отметку на материале
-			::Render->add_StaticWallmark	(*pWallmarkShader, vEnd, bullet->wallmark_size, pTri, pVerts);
+			::Render->add_StaticWallmark(&*mtl_pair->m_pCollideMarks, vEnd, bullet->wallmark_size, pTri, pVerts);
 		}
 	}
 
