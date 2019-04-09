@@ -1,6 +1,6 @@
 #include "stdafx.h"
 
-#ifdef DEBUG
+//#ifdef DEBUG
 
 #include "dxDebugRender.h"
 #include "dxUIShader.h"
@@ -181,4 +181,4 @@ virtual void	add_lines			(Fvector const *vertices, u32 const &vertex_count, u16 
 } rdebug_render_impl;
 dxDebugRender *rdebug_render = &rdebug_render_impl; 
 
-#endif	//	DEBUG
+//#endif	//	DEBUG

@@ -2,7 +2,7 @@
 #define	DebugRender_included
 #pragma once
 
-#ifdef DEBUG
+//#ifdef DEBUG
 
 #include "DebugShader.h"
 
@@ -40,11 +40,9 @@ public:
 	virtual void	SetDebugShader		(dbgShaderHandle shdHandle) = 0;
 	virtual void	DestroyDebugShader	(dbgShaderHandle shdHandle) = 0;
 
-#ifdef DEBUG
 	virtual void	dbg_DrawTRI			(Fmatrix& T, Fvector& p1, Fvector& p2, Fvector& p3, u32 C) = 0;
-#endif	//	DEBUG
 };
 
-#endif // DEBUG
+//#endif // DEBUG
 
 #endif	//	DebugRender_included
