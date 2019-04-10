@@ -10,6 +10,7 @@
 #include "script_entity.h"
 #include "CustomMonster.h"
 #include "..\xr_3da\feel_vision.h"
+#include "..\Include/xrRender/Kinematics.h"
 #include "..\Include/xrRender/KinematicsAnimated.h"
 #include "script_entity_action.h"
 #include "weapon.h"
@@ -196,7 +197,7 @@ CScriptEntityAction *CScriptEntity::GetCurrentAction()
 void __stdcall ActionCallback(IKinematics *tpKinematics)
 {
 	// sounds
-	CScriptEntity	*l_tpScriptMonster = smart_cast<CScriptEntity*>((CGameObject*)(tpKinematics->Update_Callback_Param));
+	CScriptEntity	*l_tpScriptMonster = smart_cast<CScriptEntity*>((CGameObject*)(tpKinematics->GetUpdateCallbackParam()));
 	VERIFY			(l_tpScriptMonster);
 	if (!l_tpScriptMonster->GetCurrentAction())
 		return;

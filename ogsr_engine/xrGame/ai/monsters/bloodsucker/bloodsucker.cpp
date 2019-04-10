@@ -280,7 +280,7 @@ void CAI_Bloodsucker::LoadVampirePPEffector(LPCSTR section)
 
 void  CAI_Bloodsucker::BoneCallback(CBoneInstance *B)
 {
-	CAI_Bloodsucker*	this_class = static_cast<CAI_Bloodsucker*> (B->Callback_Param);
+	CAI_Bloodsucker*	this_class = static_cast<CAI_Bloodsucker*> (B->callback_param());
 
 	this_class->Bones.Update(B, Device.dwTimeGlobal);
 }

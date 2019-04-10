@@ -4,6 +4,7 @@
 #include "PHElement.h"
 #include "PHShell.h"
 #include "../Include/xrRender/Kinematics.h"
+#include "../xr_3da/bone.h"
 
 #pragma warning(disable:4995)
 #include "ode/src/joint.h"

@@ -48,7 +48,12 @@ void CPHSkeleton::RespawnInit()
 	if(K)
 	{
 		K->LL_SetBoneRoot(0);
-		K->LL_SetBonesVisibleAll();
+
+		//K->LL_SetBonesVisibleAll();
+		VisMask new_mask;
+		new_mask.set_all();
+		K->LL_SetBonesVisible(new_mask);
+
 		K->CalculateBones_Invalidate();
 		K->CalculateBones();
 	}

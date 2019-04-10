@@ -19,6 +19,7 @@
 #include "script_entity_action.h"
 #include "inventory.h"
 #include "xrserver_objects_alife_items.h"
+#include "..\Include/xrRender/Kinematics.h"
 #include "..\Include/xrRender/KinematicsAnimated.h"
 #include "level.h"
 #include "ui/UIMainIngameWnd.h"
@@ -124,7 +125,7 @@ void CCar::reload		(LPCSTR section)
 void CCar::cb_Steer			(CBoneInstance* B)
 {
 	VERIFY2(fsimilar(DET(B->mTransform),1.f,DET_CHECK_EPS),"Bones receive returns 0 matrix");
-	CCar*	C			= static_cast<CCar*>(B->Callback_Param);
+	CCar*	C			= static_cast<CCar*>(B->callback_param());
 	Fmatrix m;
 
 
@@ -869,7 +870,7 @@ void CCar::CreateSkeleton(CSE_Abstract	*po)
 	if(K)
 	{
 		K->PlayCycle		("idle");
-		K->CalculateBones	();
+		K->dcast_PKinematics()->CalculateBones();
 	}
 
 #pragma todo(" replace below by P_build_Shell or call inherited")

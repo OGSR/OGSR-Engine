@@ -3,6 +3,7 @@
 #include "../../entity.h"
 #include "fastdelegate.h"
 #include "../../../Include\xrRender\Kinematics.h"
+#include "../../../Include\xrRender\animation_motion.h"
 
 class CParticlesObject;
 

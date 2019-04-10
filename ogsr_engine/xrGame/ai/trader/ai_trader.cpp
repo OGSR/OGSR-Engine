@@ -86,7 +86,7 @@ bool CAI_Trader::bfAssignSound(CScriptEntityAction *tpEntityAction)
 //////////////////////////////////////////////////////////////////////////
 void CAI_Trader::BoneCallback(CBoneInstance *B)
 {
-	CAI_Trader*	this_class = static_cast<CAI_Trader*>(B->Callback_Param);
+	CAI_Trader*	this_class = static_cast<CAI_Trader*>(B->callback_param());
 
 	this_class->LookAtActor(B);
 }

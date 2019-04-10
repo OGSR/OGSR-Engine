@@ -6,6 +6,7 @@
 #include "Physics.h"
 #include "xrserver_objects_alife.h"
 #include "PHElement.h"
+#include "..\Include/xrRender/Kinematics.h"
 #include "..\Include/xrRender/KinematicsAnimated.h"
 #include "game_object_space.h"
 #include "script_callback_ex.h"
@@ -40,7 +41,12 @@ void CHangingLamp::RespawnInit()
 	Init();
 	if(Visual()){
 		IKinematics* K = smart_cast<IKinematics*>(Visual());
-		K->LL_SetBonesVisibleAll();
+
+		//K->LL_SetBonesVisibleAll();
+		VisMask new_mask;
+		new_mask.set_all();
+		K->LL_SetBonesVisible(new_mask);
+
 		K->CalculateBones_Invalidate();
 		K->CalculateBones	();
 	}
@@ -49,7 +55,7 @@ void CHangingLamp::RespawnInit()
 void CHangingLamp::Center	(Fvector& C) const 
 { 
 	if (renderable.visual){
-		renderable.xform.transform_tiny(C,renderable.visual->vis.sphere.P);	
+		renderable.xform.transform_tiny(C,renderable.visual->getVisData().sphere.P);
 	}else{
 		C.set	(XFORM().c);
 	}
@@ -57,7 +63,7 @@ void CHangingLamp::Center	(Fvector& C) const
 
 float CHangingLamp::Radius	() const 
 { 
-	return (renderable.visual)?renderable.visual->vis.sphere.R:EPS;
+	return (renderable.visual)?renderable.visual->getVisData().sphere.R:EPS;
 }
 
 void CHangingLamp::Load		(LPCSTR section)
@@ -106,9 +112,11 @@ BOOL CHangingLamp::net_Spawn(CSE_Abstract* DC)
 	light_render->set_cone	(lamp->spot_cone_angle);
 	light_render->set_texture(*lamp->light_texture);
 	light_render->set_virtual_size(lamp->m_virtual_size);
-	light_render->set_flare(!!lamp->flags.is(CSE_ALifeObjectHangingLamp::flUseFlare));
+#pragma todo("KRodin: адаптировать под новый рендер!")
+	//light_render->set_flare(!!lamp->flags.is(CSE_ALifeObjectHangingLamp::flUseFlare));
 	light_render->set_volumetric(!!lamp->flags.is(CSE_ALifeObjectHangingLamp::flVolumetricLight));
-	light_render->set_lsf_params(lamp->m_speed, lamp->m_amount, lamp->m_smap_jitter);
+#pragma todo("KRodin: адаптировать под новый рендер!")
+	//light_render->set_lsf_params(lamp->m_speed, lamp->m_amount, lamp->m_smap_jitter);
 
 	if (lamp->glow_texture.size())	{
 		glow_render				= ::Render->glow_create();
@@ -359,7 +367,8 @@ BOOL CHangingLamp::UsedAI_Locations()
 }
 
 void CHangingLamp::SetLSFParams(float _speed, float _amount, float _jit) {
-	light_render->set_lsf_params(_speed, _amount, _jit);
+#pragma todo("KRodin: адаптировать под новый рендер!")
+	//light_render->set_lsf_params(_speed, _amount, _jit);
 }
 
 #pragma optimize("s",on)

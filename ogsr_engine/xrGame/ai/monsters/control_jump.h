@@ -1,6 +1,7 @@
 #pragma once
 #include "control_combase.h"
 #include "../../../Include\xrRender\Kinematics.h"
+#include "../../../Include\xrRender\animation_motion.h"
 
 struct SControlJumpData : public ControlCom::IComData {
 	CObject					*target_object;

@@ -4,6 +4,7 @@
 #include "script_game_object.h"
 #include "game_object_space.h"
 #include "..\Include/xrRender/KinematicsAnimated.h"
+#include "..\Include/xrRender/Kinematics.h"
 #include "../xr_3da/LightAnimLibrary.h"
 #include "PhysicsShell.h"
 #include "clsid_game.h"

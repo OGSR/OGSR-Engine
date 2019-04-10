@@ -120,7 +120,7 @@ void CAI_Boar::reinit()
 
 void  CAI_Boar::BoneCallback(CBoneInstance *B)
 {
-	CAI_Boar	*P = static_cast<CAI_Boar*>(B->Callback_Param);
+	CAI_Boar	*P = static_cast<CAI_Boar*>(B->callback_param());
 
 	if (!P->look_at_enemy) return;
 	

@@ -4,6 +4,7 @@
 #include "level.h"
 #include "xrServer_Objects_ALife_Monsters.h"
 #include "../../../xr_3da/motion.h"
+#include "../../../Include\xrRender\KinematicsAnimated.h"
 
 CPhantom::CPhantom()
 {

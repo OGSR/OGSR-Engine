@@ -31,6 +31,8 @@
 #include "PHActivationShape.h"
 #include "game_base_space.h"
 #include "profiler.h"
+#include "..\Include/xrRender/Kinematics.h"
+
 #define EFFECTOR_RADIUS 30.f
 const u16	TEST_RAYS_PER_OBJECT=5;
 const u16	BLASTED_OBJ_PROCESSED_PER_FRAME=3;

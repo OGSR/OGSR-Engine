@@ -68,7 +68,7 @@ void SBinocVisibleObj::Update()
 	m_flags.set		(	flVisObjNotValid,TRUE);
         if ( m_visible_time > Device.dwTimeGlobal ) return;
 
-	Fbox		b		= m_object->Visual()->vis.box;
+	Fbox		b		= m_object->Visual()->getVisData().box;
 
 	Fmatrix				xform;
 	xform.mul			(Device.mFullTransform,m_object->XFORM());

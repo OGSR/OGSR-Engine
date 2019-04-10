@@ -10,6 +10,10 @@
 #ifdef DEBUG
 #include "PHDebug.h"
 #endif
+#include "../Include/xrRender/RenderVisual.h"
+#include "../Include/xrRender/Kinematics.h"
+#include "../Include/xrRender/KinematicsAnimated.h"
+
 CIKLimbsController::CIKLimbsController(): m_object(0), m_legs_blend(0)
 {
 	
@@ -19,7 +23,7 @@ void CIKLimbsController::Create( CGameObject* O )
 {
 	m_legs_blend	 = 0;
 	
-	IKinematicsAnimated* K=smart_cast<IKinematicsAnimated*>(O->Visual());
+	IKinematics* K = smart_cast<IKinematics*>(O->Visual());
 	m_object = O;
 	VERIFY( K );
 	{
@@ -91,7 +95,7 @@ void get_toe(IKinematics *skeleton, Fvector & toe, const u16 bones[4])
 void	CIKLimbsController::LimbSetup(  const u16 bones[4] )
 {
 	_bone_chains.push_back( CIKLimb( ) );
-	IKinematicsAnimated *skeleton_animated = m_object->Visual( )->dcast_PKinematicsAnimated( );
+	IKinematics* skeleton_animated = m_object->Visual( )->dcast_PKinematics();
 	VERIFY( skeleton_animated );
 	Fvector toe;
 	get_toe( skeleton_animated, toe, bones );
@@ -114,7 +118,7 @@ void	CIKLimbsController::LimbUpdate( CIKLimb &L, u16 i )
 
 IC void	update_blend (CBlend* &b)
 {
-	if(b && CBlend::eFREE_SLOT == b->blend)
+	if(b && CBlend::eFREE_SLOT == b->blend_state())
 		b = 0;
 }
 void CIKLimbsController::Calculate( )
@@ -172,7 +176,7 @@ void _stdcall CIKLimbsController:: IKVisualCallback( IKinematics* K )
 		return;
 #endif
 	
-	CGameObject* O=( ( CGameObject* )K->Update_Callback_Param );
+	CGameObject* O=( ( CGameObject* )K->GetUpdateCallbackParam());
 	CPhysicsShellHolder*	Sh = smart_cast<CPhysicsShellHolder*>( O );
 	VERIFY( Sh );
 	CIKLimbsController* ik = Sh->character_ik_controller( );

@@ -997,7 +997,7 @@ void CInventoryItem::OnRender()
 		if (!(dbg_net_Draw_Flags.is_any((1<<4)))) return;
 
 		Fvector bc,bd; 
-		object().Visual()->vis.box.get_CD	(bc,bd);
+		object().Visual()->getVisData().box.get_CD	(bc,bd);
 		Fmatrix	M = object().XFORM();
 		M.c.add (bc);
 		Level().debug_renderer().draw_obb			(M,bd,color_rgba(0,0,255,255));

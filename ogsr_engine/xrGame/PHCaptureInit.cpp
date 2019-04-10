@@ -221,14 +221,14 @@ CPHCapture::CPHCapture( CPHCharacter* a_character, CPhysicsShellHolder* a_taget_
 
 	CBoneInstance& tag_bone=K->LL_GetBoneInstance(a_taget_element);
 
-	if(!tag_bone.Callback_Param)
+	if(!tag_bone.callback_param())
 	{
 		m_taget_object=NULL;
 		b_failed=true;
 		return;
 	}
 
-	m_taget_element					=(CPhysicsElement*)tag_bone.Callback_Param;
+	m_taget_element					=(CPhysicsElement*)tag_bone.callback_param();
 
 	if(!m_taget_element)
 	{

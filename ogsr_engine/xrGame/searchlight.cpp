@@ -3,7 +3,7 @@
 #include "..\xr_3da\LightAnimLibrary.h"
 #include "script_entity_action.h"
 #include "xrServer_Objects_ALife.h"
-#include "..\xr_3da\skeletoncustom.h"
+#include "../Include/xrRender/Kinematics.h"
 #include "..\xr_3da\CameraBase.h"
 #include "game_object_space.h"
 #include "script_callback_ex.h"
@@ -38,7 +38,7 @@ void CProjector::Load(LPCSTR section)
 
 void  CProjector::BoneCallbackX(CBoneInstance *B)
 {
-	CProjector	*P = static_cast<CProjector*>(B->Callback_Param);
+	CProjector	*P = static_cast<CProjector*>(B->callback_param());
 
 	Fmatrix M;
 	M.setHPB (0.0f, P->_current.pitch,0.0f);
@@ -47,7 +47,7 @@ void  CProjector::BoneCallbackX(CBoneInstance *B)
 
 void  CProjector::BoneCallbackY(CBoneInstance *B)
 {
-	CProjector	*P = static_cast<CProjector*>(B->Callback_Param);
+	CProjector	*P = static_cast<CProjector*>(B->callback_param());
 
 	float delta_yaw = angle_difference(P->_start.yaw,P->_current.yaw);
 	if (angle_normalize_signed(P->_start.yaw - P->_current.yaw) > 0) delta_yaw = -delta_yaw;

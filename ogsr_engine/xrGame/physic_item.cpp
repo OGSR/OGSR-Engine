@@ -10,8 +10,8 @@
 #include "physic_item.h"
 #include "physicsshell.h"
 #include "xrserver_objects.h"
-#include "../xr_3da/fbasicvisual.h"
-#include "../xr_3da/SkeletonCustom.h"
+#include "../Include/xrRender/Kinematics.h"
+
 #define CHOOSE_MAX(x,inst_x,y,inst_y,z,inst_z)\
 	if(x>y)\
 	if(x>z){inst_x;}\
@@ -144,7 +144,7 @@ void CPhysicItem::create_box_physic_shell	()
 {
 	// Physics (Box)
 	Fobb obb; 
-	Visual()->vis.box.get_CD(obb.m_translate,obb.m_halfsize); 
+	Visual()->getVisData().box.get_CD(obb.m_translate,obb.m_halfsize); 
 	obb.m_rotate.identity();
 	
 	// Physics (Elements)
@@ -164,7 +164,7 @@ void CPhysicItem::create_box2sphere_physic_shell()
 {
 	// Physics (Box)
 	Fobb								obb;
-	Visual()->vis.box.get_CD			(obb.m_translate,obb.m_halfsize);
+	Visual()->getVisData().box.get_CD			(obb.m_translate,obb.m_halfsize);
 	obb.m_rotate.identity				();
 
 	// Physics (Elements)

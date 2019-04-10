@@ -1,6 +1,5 @@
 #include "stdafx.h"
 #include "GameObject.h"
-#include "../xr_3da/fbasicvisual.h"
 #include "PhysicsShell.h"
 #include "ai_space.h"
 #include "CustomMonster.h" 
@@ -758,7 +757,7 @@ void CGameObject::SetKinematicsCallback		(bool set)
 
 void VisualCallback	(IKinematics *tpKinematics)
 {
-	CGameObject						*game_object = static_cast<CGameObject*>(static_cast<CObject*>(tpKinematics->Update_Callback_Param));
+	CGameObject						*game_object = static_cast<CGameObject*>(static_cast<CObject*>(tpKinematics->GetUpdateCallbackParam()));
 	VERIFY							(game_object);
 	
 	CGameObject::CALLBACK_VECTOR_IT	I = game_object->visual_callbacks().begin();
@@ -908,7 +907,7 @@ void	CGameObject::UpdateXFORM(const Fmatrix &upd)
 	IKinematics *pK = PKinematics(Visual());
 	if (pK)
 	{
-		pK->vis.sphere.P = upd.c;		
+		Visual()->getVisData().sphere.P = upd.c;
 		pK->CalculateBones_Invalidate();	 // позволит объекту быстрее объявиться в новой точке			
 	}
 

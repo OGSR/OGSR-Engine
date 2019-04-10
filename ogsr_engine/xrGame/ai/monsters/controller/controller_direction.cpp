@@ -21,7 +21,7 @@ void CControllerDirection::reinit()
 
 void CControllerDirection::bone_callback(CBoneInstance *B)
 {
-	CControllerDirection *this_class = static_cast<CControllerDirection*> (B->Callback_Param);
+	CControllerDirection *this_class = static_cast<CControllerDirection*> (B->callback_param());
 	this_class->m_bones.Update(B, time());
 }
 

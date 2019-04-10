@@ -10,7 +10,6 @@
 #include "base_client_classes.h"
 #include "base_client_classes_wrappers.h"
 #include "../xr_3da/feel_sound.h"
-#include "../xr_3da/fbasicvisual.h"
 #include "../Include/xrRender/KinematicsAnimated.h"
 #include "ai/stalker/ai_stalker.h"
 #include "../xr_3da/NET_Server_Trash/net_utils.h"
@@ -24,7 +23,6 @@
 #include "space_restriction.h"
 #include "../COMMON_AI/PATH/patrol_path.h"
 #include "../COMMON_AI/PATH/patrol_point.h"
-#include "../xr_3da/ResourceManager.h"
 #include "../xr_3da/device.h"
 #include "../xr_3da/Render.h"
 
@@ -273,6 +271,8 @@ void CObjectScript::script_register		(lua_State *L)
 
 // alpet ======================== SCRIPT_TEXTURE_CONTROL BEGIN =========== 
 
+#pragma todo("KRodin: переделать под новые рендеры!")
+/*
 IRenderVisual* visual_get_child(IRenderVisual	*v, u32 n_child)
 {
 	if (!v) return NULL; // not have visual
@@ -357,6 +357,7 @@ void CBlendScript::script_register		(lua_State *L)
 			//			.def(constructor<>())
 		];
 }
+*/
 
 // alpet ======================== CAMERA SCRIPT OBJECT =================
 
@@ -459,7 +460,9 @@ void CPatrolPathScript::script_register( lua_State *L ) {
 }
 
 // alpet ======================== SCRIPT_TEXTURE_CONTROL EXPORTS 2 =========== 
+#pragma todo("KRodin: переделать под новые рендеры!")
 
+/*
 CTexture* script_object_get_texture(CScriptGameObject *script_obj, u32 n_child, u32 n_texture)
 {
 	IRenderVisual* v = script_obj->object().Visual();
@@ -516,6 +519,7 @@ void CResourceManagerScript::script_register(lua_State *L)
 		def("texture_get_name", &script_texture_getname)
 	];
 }
+*/
 // alpet ======================== SCRIPT_TEXTURE_CONTROL END =========== 
 
 

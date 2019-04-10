@@ -105,7 +105,7 @@ void  TContactShotMark(CDB::TRI* T,dContactGeom* c)
 		SGameMtlPair* mtl_pair		= GMLib.GetMaterialPair(T->material,data->material);
 		if(mtl_pair)
 		{
-			if(vel_cret>Pars::vel_cret_wallmark && !mtl_pair->CollideMarks.empty())
+			if(vel_cret>Pars::vel_cret_wallmark && !mtl_pair->m_pCollideMarks->empty())
 			{
 				wm_shader WallmarkShader = mtl_pair->m_pCollideMarks->GenerateWallmark();
 				Level().ph_commander().add_call(xr_new<CPHOnesCondition>(),xr_new<CPHWallMarksCall>( *((Fvector*)c->pos),T, WallmarkShader));

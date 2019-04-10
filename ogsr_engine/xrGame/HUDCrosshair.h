@@ -4,8 +4,9 @@
 
 #pragma once
 
-#define HUD_CURSOR_SECTION "hud_cursor"
+#include "ui_defs.h"
 
+#define HUD_CURSOR_SECTION "hud_cursor"
 
 class CHUDCrosshair	
 {

@@ -167,7 +167,7 @@ void CBreakableObject::CreateBroken()
 	m_Shell->addEquelInertiaToEls(m);
 	m_Shell->SmoothElementsInertia(0.3f);
 	Fobb b;
-	Visual()->vis.box.getradius(b.m_halfsize);
+	Visual()->getVisData().box.getradius(b.m_halfsize);
 	m_Shell->SetMaxAABBRadius(_max(_max(b.m_halfsize.x,b.m_halfsize.y),b.m_halfsize.z)*2.f);//+2.f
 
 }
@@ -198,7 +198,7 @@ void CBreakableObject::net_Destroy()
 	inherited::net_Destroy();
 	xr_delete(collidable.model);
 	Init();
-	//Visual()->vis.box.set(m_saved_box);
+	//Visual()->getVisData().box.set(m_saved_box);
 	Render->model_Delete(renderable.visual,TRUE);
 	cNameVisual_set("");
 

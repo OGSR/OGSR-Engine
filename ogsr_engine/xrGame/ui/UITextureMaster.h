@@ -9,6 +9,8 @@
 
 #pragma once
 
+#include "ui_defs.h"
+
 class IUISimpleTextureControl;
 
 struct TEX_INFO{

@@ -68,7 +68,7 @@ void CCustomMonster::SAnimState::Create(IKinematicsAnimated* K, LPCSTR base)
 
 //void __stdcall CCustomMonster::TorsoSpinCallback(CBoneInstance* B)
 //{
-//	CCustomMonster*		M = static_cast<CCustomMonster*> (B->Callback_Param);
+//	CCustomMonster*		M = static_cast<CCustomMonster*> (B->callback_param());
 //
 //	Fmatrix					spin;
 //	spin.setXYZ				(0, M->NET_Last.o_torso.pitch, 0);

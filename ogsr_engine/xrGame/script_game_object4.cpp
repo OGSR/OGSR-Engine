@@ -385,6 +385,7 @@ void CScriptGameObject::OpenInvBox(CScriptGameObject *obj)
 	CUIGameSP* pGameSP = smart_cast<CUIGameSP*>(HUD().GetUI()->UIGame());
 	if (pGameSP) pGameSP->StartCarBody(e, trunk);
 }
+
 #include "script_ini_file.h"
 CScriptIniFile *CScriptGameObject::GetVisIni()
 {
@@ -393,9 +394,9 @@ CScriptIniFile *CScriptGameObject::GetVisIni()
 		ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "IKinematics : cannot access class member GetVisIni!");
 		return nullptr;
 	}
-	return (CScriptIniFile*)(k->GetIniFile());
-
+	return reinterpret_cast<CScriptIniFile*>(k->LL_UserData());
 }
+
 CScriptGameObject *CScriptGameObject::ObjectFromInvBox(int _i)
 {
 	IInventoryBox						*e = smart_cast<IInventoryBox*>(&object());

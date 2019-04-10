@@ -311,7 +311,8 @@ void CTorch::UpdateCL()
 		if (actor)
 		{
 			smart_cast<IKinematics*>(H_Parent()->Visual())->CalculateBones_Invalidate();
-			light_render->set_actor_torch(true);
+#pragma todo("KRodin: переделать под новый рендер!")
+			//light_render->set_actor_torch(true);
 		}
 
 		if (H_Parent()->XFORM().c.distance_to_sqr(Device.vCameraPosition)<_sqr(OPTIMIZATION_DISTANCE)) {
@@ -387,7 +388,8 @@ void CTorch::UpdateCL()
 	}//if(HParent())
 	else 
 	{
-		light_render->set_actor_torch(false);
+#pragma todo("KRodin: переделать под новый рендер!")
+		//light_render->set_actor_torch(false);
 		if (getVisible() && m_pPhysicsShell) 
 		{
 			M.mul						(XFORM(),BI.mTransform);

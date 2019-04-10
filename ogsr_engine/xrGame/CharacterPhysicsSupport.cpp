@@ -204,8 +204,8 @@ void CCharacterPhysicsSupport::in_NetSpawn(CSE_Abstract* e)
 									  ///этот хак нужен, потому что некоторым монстрам 
 									  ///анимация после спона, может быть вообще не назначена
 	}
-	ka->CalculateBones_Invalidate();
-	ka->CalculateBones();
+	ka->dcast_PKinematics()->CalculateBones_Invalidate();
+	ka->dcast_PKinematics()->CalculateBones();
 	
 	CPHSkeleton::Spawn(e);
 	movement()->EnableCharacter();
@@ -643,7 +643,7 @@ void CCharacterPhysicsSupport::ActivateShell			( CObject* who )
 		m_EntityAlife.animation_movement( )->ObjStartXform( start_xform );
 		anim_mov_blend = m_EntityAlife.animation_movement( )->ControlBlend( );
 		/*
-		VERIFY( anim_mov_blend->blend != CBlend::eFREE_SLOT );
+		VERIFY( anim_mov_blend->blend_state() != CBlend::eFREE_SLOT );
 		anim_mov_blend->timeCurrent -= 2 * Device.fTimeDelta * anim_mov_blend->speed;
 		blend_time = anim_mov_blend->timeCurrent;
 		anim_mov_blend->playing = true;
@@ -653,7 +653,7 @@ void CCharacterPhysicsSupport::ActivateShell			( CObject* who )
 		anim_mov_blend->playing = false;
 		*/
 		m_EntityAlife.destroy_anim_mov_ctrl( );
-		BR.Callback_overwrite = TRUE;
+		BR.set_callback_overwrite(TRUE);
 	}
 	//
 
@@ -674,7 +674,7 @@ void CCharacterPhysicsSupport::ActivateShell			( CObject* who )
 				K->LL_GetBoneInstance( I ).reset_callback( );
 
 	if( anim_mov_ctrl )	//we do not whant to move by long animation in root 
-			BR.Callback_overwrite = TRUE;
+			BR.set_callback_overwrite(TRUE);
 
 	K->CalculateBones_Invalidate();
 	K->CalculateBones	();
@@ -702,7 +702,7 @@ void CCharacterPhysicsSupport::ActivateShell			( CObject* who )
 	//
 
 	if(anim_mov_ctrl) //we do not whant to move by long animation in root 
-			BR.Callback_overwrite = TRUE;
+			BR.set_callback_overwrite(TRUE);
 
 	//set shell params
 	if(!smart_cast<CCustomZone*>(who))
@@ -743,7 +743,7 @@ void CCharacterPhysicsSupport::ActivateShell			( CObject* who )
 	m_pPhysicsShell->set_CallbackData((void*)this);
 //
 
-	if(anim_mov_ctrl && anim_mov_blend && anim_mov_blend->blend != CBlend::eFREE_SLOT &&  anim_mov_blend->timeCurrent + Device.fTimeDelta*anim_mov_blend->speed < anim_mov_blend->timeTotal-SAMPLE_SPF-EPS)//.
+	if(anim_mov_ctrl && anim_mov_blend && anim_mov_blend->blend_state() != CBlend::eFREE_SLOT &&  anim_mov_blend->timeCurrent + Device.fTimeDelta*anim_mov_blend->speed < anim_mov_blend->timeTotal-SAMPLE_SPF-EPS)//.
 	{
 		const Fmatrix sv_xform = mXFORM;
 		mXFORM.set( start_xform );

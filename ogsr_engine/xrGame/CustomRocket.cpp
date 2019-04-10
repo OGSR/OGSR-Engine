@@ -12,7 +12,7 @@
 #include "xrMessages.h"
 #include "../xr_3da/gamemtllib.h"
 #include "tri-colliderknoopc/dTriList.h"
-#include "../xr_3da/fbasicvisual.h"
+#include "..\Include/xrRender/Kinematics.h"
 #include "CalculateTriangle.h"
 #include "actor.h"
 #ifdef DEBUG
@@ -136,7 +136,7 @@ void CCustomRocket::create_physic_shell	()
 {
 	VERIFY(!m_pPhysicsShell);
 	Fobb								obb;
-	Visual()->vis.box.get_CD			(obb.m_translate,obb.m_halfsize);
+	Visual()->getVisData().box.get_CD			(obb.m_translate,obb.m_halfsize);
 	obb.m_rotate.identity				();
 
 	// Physics (Elements)

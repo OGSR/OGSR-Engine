@@ -104,7 +104,7 @@ void CZombie::reload(LPCSTR section)
 
 void CZombie::BoneCallback(CBoneInstance *B)
 {
-	CZombie*	this_class = static_cast<CZombie*>(B->Callback_Param);
+	CZombie*	this_class = static_cast<CZombie*>(B->callback_param());
 
 	START_PROFILE("Zombie/Bones Update");
 	this_class->Bones.Update(B, Device.dwTimeGlobal);

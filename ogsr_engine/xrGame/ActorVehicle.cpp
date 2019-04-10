@@ -13,6 +13,7 @@
 #include "hit.h"
 #include "PHDestroyable.h"
 #include "Car.h"
+#include "..\Include/xrRender/Kinematics.h"
 #include "..\Include/xrRender/KinematicsAnimated.h"
 #include "PHShellSplitter.h"
 
@@ -45,8 +46,8 @@ void CActor::attach_Vehicle(CHolderCustom* vehicle)
 	V->PlayCycle					(anims.idles[0],FALSE);
 
 	ResetCallbacks					();
-	u16 head_bone					= V->LL_BoneID("bip01_head");
-	V->LL_GetBoneInstance			(u16(head_bone)).set_callback		(bctPhysics, VehicleHeadCallback,this);
+	u16 head_bone					= V->dcast_PKinematics()->LL_BoneID("bip01_head");
+	V->dcast_PKinematics()->LL_GetBoneInstance(u16(head_bone)).set_callback(bctPhysics, VehicleHeadCallback, this);
 
 	character_physics_support		()->movement()->DestroyCharacter();
 	mstate_wishful					= 0;

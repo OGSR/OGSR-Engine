@@ -966,7 +966,7 @@ void CBaseMonster::update_eyes_visibility ()
 
 float CBaseMonster::get_screen_space_coverage_diagonal()
 {
-	Fbox		b		= Visual()->vis.box;
+	Fbox		b		= Visual()->getVisData().box;
 
 	Fmatrix				xform;
 	xform.mul			(Device.mFullTransform,XFORM());

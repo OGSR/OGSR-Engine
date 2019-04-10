@@ -7,6 +7,7 @@
 #include "Weapon.h"
 #include "WeaponShotgun.h"
 #include "Explosive.h"
+#include "..\Include/xrRender/Kinematics.h"
 
 rnd_motion::rnd_motion()
 {

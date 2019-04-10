@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "CustomZone.h"
 #include "..\Include/xrRender/KinematicsAnimated.h"
+#include "../Include/xrRender/RenderVisual.h"
 #include "ZoneVisual.h"
 #include "xrServer_Objects_ALife_Monsters.h"
 

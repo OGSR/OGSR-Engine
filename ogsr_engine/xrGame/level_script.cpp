@@ -29,7 +29,6 @@
 #include "map_manager.h"
 #include "map_location.h"
 #include "phworld.h"
-#include "../xr_3da/r2_shader_exports.h"
 #include "../xr_3da/xr_collide_defs.h"
 #include "script_rq_result.h"
 #include "monster_community.h"
@@ -165,7 +164,7 @@ float cover_in_direction(u32 level_vertex_id, const Fvector &direction)
 
 float rain_factor()
 {
-	return			(g_pGamePersistent->Environment().CurrentEnv.rain_density);
+	return g_pGamePersistent->Environment().CurrentEnv->rain_density;
 }
 
 u32	vertex_in_direction(u32 level_vertex_id, Fvector direction, float max_distance)
@@ -470,10 +469,14 @@ CEnvironment *environment()
 	return		(g_pGamePersistent->pEnvironment);
 }
 
+#pragma todo("KRodin: поправить под новые реалии!")
+/*
 CEnvDescriptor *current_environment(CEnvironment *self)
 {
 	return		(&self->CurrentEnv);
 }
+*/
+
 extern bool g_bDisableAllInput;
 void disable_input()
 {
@@ -675,6 +678,8 @@ void set_ignore_game_state_update()
 	Game().m_need_to_update = false;
 }
 
+#pragma todo("KRodin: поправить под новые реалии!")
+/*
 void SetEnvDescData(LPCSTR section_1, LPCSTR section_2, float exec_time_1, float exec_time_2)
 {
 	// в общем, какой тут смысл. Скрипт берет на себя все, кроме установки текущей погоды.
@@ -710,6 +715,7 @@ void g_set_artefact_position(const u32 i, const float x, const float y, const fl
 	}
 
 }
+
 void g_set_anomaly_position(const u32 i, const float x, const float y, const float z)
 {
 	Fvector pos;
@@ -731,6 +737,7 @@ void g_set_detector_params(int _one, int _two)
 {
 	shader_exports->set_detector_params(Ivector2().set(_one, _two));
 }
+*/
 
 #include "game_sv_single.h"
 void AdvanceGameTime(u32 _ms)
@@ -740,6 +747,7 @@ void AdvanceGameTime(u32 _ms)
 	game->alife().time_manager().advance_game_time(_ms);
 
 	Level().game->SetGameTimeFactor(ai().get_alife() ? ai().alife().time().game_time() : Level().GetGameTime(), Level().game->GetGameTimeFactor());
+#pragma todo("KRodin: по-моему, в ЗП таймфактор погоды отдельный, возможно надо его здесь учитывать, надо подумать.")
 }
 
 //
@@ -936,6 +944,8 @@ void CLevel::script_register(lua_State *L)
 {
 	module(L)
 	[
+#pragma todo("KRodin: поправить под новые реалии!")
+/*
 	class_<CEnvDescriptor>( "CEnvDescriptor" )
           .def_readwrite( "fog_density", &CEnvDescriptor::fog_density)
           .def_readwrite( "fog_distance", &CEnvDescriptor::fog_distance )
@@ -948,7 +958,7 @@ void CLevel::script_register(lua_State *L)
           .def( "current",           current_environment )
           .def( "ForceReselectEnvs", &CEnvironment::ForceReselectEnvs )
           .def( "getCurrentWeather", &CEnvironment::getCurrentWeather ),
-
+*/
 	class_<CPHCall>( "CPHCall" )
           .def( "set_pause", &CPHCall::setPause )
 	],
@@ -1113,10 +1123,11 @@ void CLevel::script_register(lua_State *L)
 	//установка параметров для шейдеров из скриптов
 	module(L)
 		[
-			def("set_artefact_slot", &g_set_artefact_position),
-			def("set_anomaly_slot", &g_set_anomaly_position),
-			def("set_detector_mode", &g_set_detector_params),
-			def("SetEnvDescData", &SetEnvDescData),
+#pragma todo("KRodin: поправить под новые реалии!")
+			//def("set_artefact_slot", &g_set_artefact_position),
+			//def("set_anomaly_slot", &g_set_anomaly_position),
+			//def("set_detector_mode", &g_set_detector_params),
+			//def("SetEnvDescData", &SetEnvDescData),
 			def("update_inventory_window", &update_inventory_window),
 			def("update_inventory_weight", &update_inventory_weight),
 

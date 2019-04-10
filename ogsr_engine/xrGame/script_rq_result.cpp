@@ -2,7 +2,8 @@
 #include "script_game_object.h"
 #include "GameObject.h"
 #include "..\xr_3da\xr_collide_defs.h"
-#include "GameMtlLib.h"
+#include "..\xr_3da\GameMtlLib.h"
+#include "..\Include/xrRender/Kinematics.h"
 #include "Level.h"
 #include "script_rq_result.h"
 

@@ -5,7 +5,7 @@
 #include "physicsshell.h"
 #include "PhysicsShellHolder.h"
 #include "MathUtils.h"
-
+#include "../Include/xrRender/Kinematics.h"
 
 interactive_motion::interactive_motion()
 {

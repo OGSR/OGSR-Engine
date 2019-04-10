@@ -186,13 +186,14 @@ void CGamePersistent::OnGameEnd	()
 
 void CGamePersistent::WeathersUpdate()
 {
+#pragma todo("Доперенести в xrGame поддержку ЗП-погоды, там не много, насколько я вижу.")
 	if (g_pGameLevel)
 	{
 		CActor* actor				= smart_cast<CActor*>(Level().CurrentViewEntity());
 		BOOL bIndoor				= TRUE;
 		if (actor) bIndoor			= actor->renderable_ROS()->get_luminocity_hemi()<0.05f;
 
-		int data_set				= (Random.randF()<(1.f-Environment().CurrentEnv.weight))?0:1; 
+		int data_set				= (Random.randF()<(1.f-Environment().CurrentEnv->weight))?0:1; 
 		CEnvDescriptor* _env		= Environment().Current[data_set]; VERIFY(_env);
 		CEnvAmbient* env_amb		= _env->env_ambient;
 		if (env_amb){
