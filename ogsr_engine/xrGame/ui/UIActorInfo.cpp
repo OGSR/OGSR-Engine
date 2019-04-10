@@ -96,7 +96,6 @@ void CUIActorInfoWnd::FillPointsInfo			()
 
 	UIMasterList->Clear						();
 
-#ifndef PRIQUEL
 	int items_num = uiXml.GetNodesNum		("actor_stats_wnd", 0, "master_part");
 	uiXml.SetLocalRoot						(uiXml.NavigateToNode("actor_stats_wnd",0));
 	string64								buff;
@@ -129,19 +128,7 @@ void CUIActorInfoWnd::FillPointsInfo			()
 		}
 		UIMasterList->AddWindow				(itm, true);
 	}
-#else
-	const vStatSectionData& _storage	= Actor()->StatisticMgr().GetCStorage();
-	vStatSectionData::const_iterator	it		= _storage.begin();
-	vStatSectionData::const_iterator	it_e	= _storage.end();
-	
-	FillMasterPart						(&uiXml, "foo");
-	
-	for(; it!=it_e; ++it)
-	{
-		FillMasterPart					(&uiXml, (*it).key);
-	}
-	FillMasterPart						(&uiXml, "total");
-#endif
+
 	UIMasterList->SetSelected(UIMasterList->GetItem(1) );
 }
 
@@ -317,12 +304,7 @@ void CUIActorStaticticHeader::Init	(CUIXml* xml, LPCSTR path, int idx_in_xml)
 
 	xml_init.InitAutoStaticGroup		(*xml, "auto", 0, this);
 
-#ifndef PRIQUEL
 	m_id								= xml->ReadAttrib(xml->GetLocalRoot(),"id",NULL);
-#else
-	LPCSTR _id							= strstr(path,"master_part_")+xr_strlen("master_part_");
-	m_id								= _id;
-#endif
 
 	m_stored_alpha						= color_get_A(m_text1->GetTextColor());
 	xml->SetLocalRoot					(_stored_root);

@@ -22,21 +22,10 @@ CALifeSpawnRegistry::CALifeSpawnRegistry	(LPCSTR section)
 {
 	m_spawn_name				= "";
 	seed						(u32(CPU::QPC() & 0xffffffff));
-
-#ifdef PRIQUEL
-	m_game_graph				= 0;
-	m_chunk						= 0;
-	m_file						= 0;
-#endif // PRIQUEL
 }
 
 CALifeSpawnRegistry::~CALifeSpawnRegistry	()
 {
-#ifdef PRIQUEL
-	xr_delete					(m_game_graph);
-	m_chunk->close				();
-	FS.r_close					(m_file);
-#endif // PRIQUEL
 }
 
 void CALifeSpawnRegistry::save				(IWriter &memory_stream)
@@ -76,15 +65,11 @@ void CALifeSpawnRegistry::load				(IReader &file_stream, LPCSTR game_name)
 	bool						file_exists = !!FS.exist(file_name, "$game_spawn$", *m_spawn_name, ".spawn");
 	R_ASSERT3					(file_exists,"Can't find spawn file:",*m_spawn_name);
 	
-#ifndef PRIQUEL
 	IReader						*m_file = 0;
-#endif // PRIQUEL
 	VERIFY						(!m_file);
 	m_file						= FS.r_open(file_name);
 	load						(*m_file,&guid);
-#ifndef PRIQUEL
 	FS.r_close					(m_file);
-#endif // PRIQUEL
 
 	chunk0->close				();
 }
@@ -96,15 +81,11 @@ void CALifeSpawnRegistry::load				(LPCSTR spawn_name)
 	string_path					file_name;
 	R_ASSERT3					(FS.exist(file_name, "$game_spawn$", *m_spawn_name, ".spawn"),"Can't find spawn file:",*m_spawn_name);
 	
-#ifndef PRIQUEL
 	IReader						*m_file = 0;
-#endif // PRIQUEL
 	VERIFY						(!m_file);
 	m_file						= FS.r_open(file_name);
 	load						(*m_file);
-#ifndef PRIQUEL
 	FS.r_close					(m_file);
-#endif // PRIQUEL
 }
 
 struct dummy {
@@ -167,16 +148,6 @@ void CALifeSpawnRegistry::load				(IReader &file_stream, xrGUID *save_guid)
 			Msg("End load of custom waypoints...");
 		}
 	}
-
-#ifdef PRIQUEL
-	VERIFY						(!m_chunk);
-	m_chunk						= file_stream.open_chunk(4);
-	R_ASSERT2					(m_chunk,"Spawn version mismatch - REBUILD SPAWN!");
-
-	VERIFY						(!m_game_graph);
-	m_game_graph				= xr_new<CGameGraph>(*m_chunk);
-	ai().game_graph				(m_game_graph);
-#endif // PRIQUEL
 
 	R_ASSERT2					(header().graph_guid() == ai().game_graph().header().guid(),"Spawn doesn't correspond to the graph : REBUILD SPAWN!");
 

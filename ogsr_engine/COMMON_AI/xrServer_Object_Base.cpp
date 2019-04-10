@@ -13,19 +13,17 @@
 #include "script_value_container_impl.h"
 #include "clsid_game.h"
 
-#ifndef AI_COMPILER
-#	include "object_factory.h"
-#endif
+#include "object_factory.h"
 
-#	include "..\..\editors\xrEProps\xrEProps.h"
+#include "..\..\editors\xrEProps\xrEProps.h"
 	
-	IPropHelper &PHelper()
-	{
-		NODEFAULT;
+IPropHelper &PHelper()
+{
+	NODEFAULT;
 #	ifdef DEBUG
-		return(*(IPropHelper*)0);
+	return(*(IPropHelper*)0);
 #	endif
-	}
+}
 
 LPCSTR script_section = "script";
 LPCSTR current_version = "current_server_entity_version";
@@ -122,9 +120,7 @@ CSE_Abstract::CSE_Abstract					(LPCSTR caSection)
 		}
 	}
 
-#ifndef AI_COMPILER
 	m_script_clsid				= object_factory().script_clsid(m_tClassID);
-#endif
 }
 
 CSE_Abstract::~CSE_Abstract					()

@@ -30,7 +30,6 @@ IC	const CLevelGraph	*CAI_Space::get_level_graph					() const
 	return					(m_level_graph);
 }
 
-#ifndef PRIQUEL
 IC	const CGameLevelCrossTable	&CAI_Space::cross_table				() const
 {
 	VERIFY					(m_cross_table);
@@ -41,7 +40,6 @@ IC	const CGameLevelCrossTable	*CAI_Space::get_cross_table			() const
 {
 	return					(m_cross_table);
 }
-#endif // PRIQUEL
 
 IC	CEF_Storage					&CAI_Space::ef_storage				() const
 {

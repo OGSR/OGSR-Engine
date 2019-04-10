@@ -14,9 +14,7 @@
 #include "object_broker.h"
 #include "restriction_space.h"
 
-#ifndef AI_COMPILER
-#	include "character_info.h"
-#endif
+#include "character_info.h"
 
 #ifndef XRGAME_EXPORTS
 #	include "..\xr_3da\bone.h"
