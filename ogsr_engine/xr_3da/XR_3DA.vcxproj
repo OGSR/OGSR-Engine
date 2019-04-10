@@ -370,6 +370,7 @@
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="..\Include\xrAPI\xrAPI.h" />
     <ClInclude Include="bone.h" />
     <ClInclude Include="cl_intersect.h" />
     <ClInclude Include="..\xrParticles\psystem.h" />
@@ -453,6 +454,7 @@
     <ClInclude Include="perlin.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\Layers\xrAPI\xrAPI.cpp" />
     <ClCompile Include="bone.cpp" />
     <ClCompile Include="defines.cpp" />
     <ClCompile Include="GameMtlLib.cpp" />

@@ -61,6 +61,7 @@ add_to_type_list(CObjectScript)
 #undef script_type_list
 #define script_type_list save_type_list(CObjectScript)
 
+/*
 typedef class_exporter<CBlend>	CBlendScript;
 add_to_type_list(CBlendScript)
 #undef script_type_list
@@ -70,6 +71,7 @@ typedef class_exporter<IRenderVisual>	IRender_VisualScript;
 add_to_type_list(IRender_VisualScript)
 #undef script_type_list
 #define script_type_list save_type_list(IRender_VisualScript)
+*/
 
 typedef class_exporter<SRotation>   CRotationScript;
 add_to_type_list(CRotationScript)
@@ -86,12 +88,12 @@ typedef class_exporter<IKinematics>	CKinematicsScript;
 add_to_type_list(CKinematicsScript)
 #undef script_type_list
 #define script_type_list save_type_list(CKinematicsScript)
-*/
 
 typedef class_exporter<IKinematicsAnimated>	CKinematicsAnimatedScript;
 add_to_type_list(CKinematicsAnimatedScript)
 #undef script_type_list
 #define script_type_list save_type_list(CKinematicsAnimatedScript)
+*/
 
 typedef class_exporter<CAnomalyDetector> CAnomalyDetectorScript;
 add_to_type_list(CAnomalyDetectorScript)

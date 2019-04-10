@@ -27,7 +27,7 @@ IGame_Level::IGame_Level	()
 
 IGame_Level::~IGame_Level	()
 {
-#pragma todo("KRodin: а нафиг оно надо вообще?")
+#pragma todo("KRodin: Р° РЅР°С„РёРі РѕРЅРѕ РЅР°РґРѕ РІРѕРѕР±С‰Рµ?")
 	/*
 	if(strstr(Core.Params,"-nes_texture_storing") )
 		Device.Resources->StoreNecessaryTextures();
@@ -57,7 +57,7 @@ void IGame_Level::net_Stop			()
 }
 
 //-------------------------------------------------------------------------------------------
-extern CStatTimer				tscreate;
+//extern CStatTimer				tscreate;
 
 BOOL IGame_Level::Load			(u32 dwNum) 
 {
@@ -93,7 +93,7 @@ BOOL IGame_Level::Load			(u32 dwNum)
 
 	// Render-level Load
 	Render->level_Load			(LL_Stream);
-	tscreate.FrameEnd			();
+	//tscreate.FrameEnd			();
 	// Msg						("* S-CREATE: %f ms, %d times",tscreate.result,tscreate.count);
 
 	// Objects

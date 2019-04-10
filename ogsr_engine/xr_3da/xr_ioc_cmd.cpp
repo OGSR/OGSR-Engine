@@ -664,19 +664,13 @@ public		:
 	}
 };
 
-
-ENGINE_API float	psHUD_FOV=0.45f;
+#pragma todo("KRodin: А зачем вообще psHUD_FOV_def ? В большом кол-ве мест используется именно он, а в ЗП я такого не вижу вообще. Странно.")
+ENGINE_API float psHUD_FOV_def = 0.45f;
+ENGINE_API float psHUD_FOV = psHUD_FOV_def;
 
 //extern int			psSkeletonUpdate;
 extern int			rsDVB_Size;
 extern int			rsDIB_Size;
-extern int			psNET_ClientUpdate;
-extern int			psNET_ClientPending;
-extern int			psNET_ServerUpdate;
-extern int			psNET_ServerPending;
-extern int			psNET_DedicatedSleep;
-extern char			psNET_Name[32];
-extern Flags32		psEnvFlags;
 //extern float		r__dtex_range;
 
 extern int			g_ErrorLineCount;
@@ -754,7 +748,6 @@ void CCC_Register()
 
 	// Texture manager	
 	CMD4(CCC_Integer,	"texture_lod",			&psTextureLOD,				0,	4	);
-	CMD4(CCC_Integer,	"net_dedicated_sleep",	&psNET_DedicatedSleep,		0,	64	);
 
 	// General video control
 	CMD1(CCC_VidMode,	"vid_mode"				);
@@ -814,8 +807,8 @@ void CCC_Register()
 	//KRodin: у нас для этого ключ запуска
 	//CMD1(CCC_ExclusiveMode,		"input_exclusive_mode");
 
-	extern int g_svTextConsoleUpdateRate;
-	CMD4(CCC_Integer, "sv_console_update_rate", &g_svTextConsoleUpdateRate, 1, 100);
+	//extern int g_svTextConsoleUpdateRate;
+	//CMD4(CCC_Integer, "sv_console_update_rate", &g_svTextConsoleUpdateRate, 1, 100);
 
 	extern int g_svDedicateServerUpdateReate;
 	CMD4(CCC_Integer, "sv_dedicated_server_update_rate", &g_svDedicateServerUpdateReate, 1, 1000);

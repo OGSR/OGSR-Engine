@@ -474,7 +474,9 @@ void CCameraManager::ApplyDevice (float _viewport_near)
 		T->set_noise_fps			(pp_affected.noise.fps);
 		T->set_color_base			(pp_affected.color_base);
 		T->set_color_gray			(pp_affected.color_gray);
-		T->set_color_add			(pp_affected.color_add);
+		//KRodin: по уму надо переносить весь SPPInfo - а вдруг он что нибудь где-нибудь сломает? Да ну нафиг возиться.
+		static_assert(sizeof(Fvector) == sizeof(SPPInfo::SColor));
+		T->set_color_add(reinterpret_cast<const Fvector&>(pp_affected.color_add));
 
 		T->set_cm_imfluence(pp_affected.cm_influence);
 		T->set_cm_interpolate(pp_affected.cm_interpolate);
@@ -494,7 +496,7 @@ void CCameraManager::ResetPP()
 	T->set_noise_fps		(pp_identity.noise.fps);
 	T->set_color_base		(pp_identity.color_base);
 	T->set_color_gray		(pp_identity.color_gray);
-	T->set_color_add		(pp_identity.color_add);
+	T->set_color_add(reinterpret_cast<const Fvector&>(pp_identity.color_add));
 	T->set_cm_imfluence(0.0f);
 	T->set_cm_interpolate(1.0f);
 	T->set_cm_textures("", "");

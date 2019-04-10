@@ -5,6 +5,7 @@
 
 #include "ShadersExternalData.h" //--#SM+#--
 
+class IRenderVisual;
 class IMainMenu;
 class ENGINE_API CPS_Instance;
 //-----------------------------------------------------------------------------------------------------------

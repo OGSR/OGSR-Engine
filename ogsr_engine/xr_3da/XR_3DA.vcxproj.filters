@@ -337,6 +337,7 @@
     <ClInclude Include="xrSkinXW.hpp" />
     <ClInclude Include="GameMtlLib.h" />
     <ClInclude Include="SkeletonMotionDefs.h" />
+    <ClInclude Include="..\Include\xrAPI\xrAPI.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="defines.cpp">
@@ -571,6 +572,7 @@
     <ClCompile Include="bone.cpp" />
     <ClCompile Include="GameMtlLib_Engine.cpp" />
     <ClCompile Include="GameMtlLib.cpp" />
+    <ClCompile Include="..\Layers\xrAPI\xrAPI.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="resource.rc">

@@ -104,7 +104,7 @@ void CRenderDevice::Clear	()
 	m_pRender->Clear();
 }
 
-extern void CheckPrivilegySlowdown();
+//extern void CheckPrivilegySlowdown();
 
 
 void CRenderDevice::End		(void)
@@ -143,7 +143,7 @@ void CRenderDevice::End		(void)
 			g_find_chunk_counter.flush();
 #endif // FIND_CHUNK_BENCHMARK_ENABLE
 
-			CheckPrivilegySlowdown							();
+			//CheckPrivilegySlowdown							();
 			
 			if(g_pGamePersistent->GameType()==1)//haCk
 			{
@@ -178,7 +178,10 @@ void CRenderDevice::End		(void)
 
 
 volatile u32	mt_Thread_marker		= 0x12345678;
-void 			mt_Thread	(void *ptr)	{
+void mt_Thread()
+{
+	set_current_thread_name("X-RAY Secondary thread");
+
 	while (true) {
 		// waiting for Device permission to execute
 		Device.mt_csEnter.Enter	();
@@ -429,9 +432,7 @@ void CRenderDevice::Run			()
 	// Stop Balance-Thread
 	mt_bMustExit			= TRUE;
 	mt_csEnter.Leave		();
-	while (mt_bMustExit)	Sleep(0);
-//	DeleteCriticalSection	(&mt_csEnter);
-//	DeleteCriticalSection	(&mt_csLeave);
+	second_thread.join();
 }
 
 u32 app_inactive_time		= 0;

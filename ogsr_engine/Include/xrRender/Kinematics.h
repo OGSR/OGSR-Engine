@@ -11,7 +11,8 @@ class IBoneData;
 class IKinematicsAnimated;
 class IRenderVisual;
 class CBoneInstance;
-struct	SEnumVerticesCallback;
+struct VisMask;
+struct SEnumVerticesCallback;
 
 // 10 fps
 #define UCalc_Interval		(u32(100))
