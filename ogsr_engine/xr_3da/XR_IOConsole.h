@@ -19,7 +19,7 @@ class ENGINE_API CConsole  :
 	public pureFrame
 {
 private:
-	FactoryPtr<IConsoleRender> m_pRender;
+	FactoryPtr<IConsoleRender>* m_pRender = nullptr;
 
 public:
 	//t-defs
@@ -51,7 +51,8 @@ protected:
 
 	CGameFont		*pFont;
 public:
-	virtual ~CConsole(){};
+	virtual ~CConsole() { if (m_pRender) xr_delete(m_pRender); }
+
 	string64		ConfigFile;
 	BOOL			bVisible;
 	vecCMD			Commands;

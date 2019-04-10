@@ -632,5 +632,5 @@ void CGamePersistent::LoadTitle(bool change_tip, shared_str map_name)
 bool CGamePersistent::CanBePaused()
 {
 #pragma todo("KRodin: не уверен, что проверка правильная. Пока пусть так будет.")
-	return GameID() == GAME_SINGLE;
+	return (g_pGamePersistent->GameType() == GAME_SINGLE) || (g_pGameLevel && Level().IsDemoPlay());
 }

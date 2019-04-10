@@ -200,11 +200,3 @@ void CEventAPI::_destroy()
 	if (Events.empty())				Events.clear();
 	if (Events_Deferred.empty())	Events_Deferred.clear();
 }
-
-ENGINE_API bool is_enough_address_space_available()
-{
-	SYSTEM_INFO system_info;
-	GetSystemInfo(&system_info);
-
-	return (*(u32*)&system_info.lpMaximumApplicationAddress) > 0x90000000;
-}

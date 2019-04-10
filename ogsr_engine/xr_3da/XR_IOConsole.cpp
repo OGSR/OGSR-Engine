@@ -134,7 +134,10 @@ void CConsole::OnRender	()
 		 ( g_pGamePersistent && g_pGamePersistent->m_pMainMenu && g_pGamePersistent->m_pMainMenu->IsActive() ) )	
 		 bGame = true;
 
-	m_pRender->OnRender(bGame);
+	if (!m_pRender)
+		m_pRender = xr_new<FactoryPtr<IConsoleRender>>();
+
+	(*m_pRender)->OnRender(bGame);
 
 	// float dwMaxX=float(Device.dwWidth/2);
 	if (bGame) { fMaxY=0.f; } else fMaxY=1.f;

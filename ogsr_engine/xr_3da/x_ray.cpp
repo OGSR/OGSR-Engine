@@ -628,7 +628,7 @@ void CApplication::LoadBegin()
 
 		_InitializeFont(pFontSystem, "ui_font_letterica18_russian", 0);
 
-		m_pRender->LoadBegin();
+		//m_pRender->LoadBegin();
 
 		phase_timer.Start();
 		load_stage = 0;
@@ -648,7 +648,7 @@ void CApplication::LoadEnd		()
 
 void CApplication::destroy_loading_shaders()
 {
-	m_pRender->destroy_loading_shaders();
+	//m_pRender->destroy_loading_shaders();
 	
 	//.	::Sound->mute			(false);
 }
@@ -792,8 +792,8 @@ void CApplication::Level_Set(u32 L)
 		}
 	}
 
-	if (path[0])
-		m_pRender->setLevelLogo(path);
+	//if (path[0])
+		//m_pRender->setLevelLogo(path);
 }
 
 int CApplication::Level_ID(LPCSTR name)
@@ -809,5 +809,5 @@ int CApplication::Level_ID(LPCSTR name)
 
 void CApplication::load_draw_internal()
 {
-	m_pRender->load_draw_internal(*this);
+	//m_pRender->load_draw_internal(*this);
 }
