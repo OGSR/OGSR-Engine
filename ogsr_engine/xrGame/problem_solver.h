@@ -144,9 +144,7 @@ public:
 	virtual	void						clear					();
 };
 
-#ifndef AI_COMPILER
-#	include "ai_space.h"
-#endif
+#include "ai_space.h"
 
 #include "graph_engine.h"
 #include "object_broker.h"
