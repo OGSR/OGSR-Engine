@@ -36,6 +36,7 @@ void fix_texture_name(LPSTR fn)
 
 int get_texture_load_lod(LPCSTR fn)
 {
+#ifdef USE_REDUCE_LOD_TEXTURE_LIST
 	auto& sect	= pSettings->r_section("reduce_lod_texture_list");
 	auto it_	= sect.Data.begin();
 	auto it_e_	= sect.Data.end();
@@ -62,6 +63,7 @@ int get_texture_load_lod(LPCSTR fn)
 				return 2;
 		}
 	}
+#endif
 
 	if(psTextureLOD<2) {
 //		if ( enough_address_space_available || (g_current_renderer < 2) )

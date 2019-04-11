@@ -28,6 +28,74 @@ void fix_texture_thm_name(LPSTR fn)
 		*_ext = 0;
 }
 
+void CTextureDescrMngr::LoadLTX()
+{
+	FS_FileSet flist;
+	FS.file_list(flist, "$game_textures$", FS_ListFiles | FS_RootOnly, "*textures*.ltx");
+	Msg("[%s] count of *textures*.ltx files: [%u]", __FUNCTION__, flist.size());
+
+	for (const auto& file : flist)
+	{
+		string_path fn;
+		FS.update_path(fn, "$game_textures$", file.name.c_str());
+		CInifile ini(fn);
+
+		if (ini.section_exist("association"))
+		{
+			for (const auto& [key, value] : ini.r_section("association").Data)
+			{
+				texture_desc&  desc = m_texture_details[key];
+				if (desc.m_assoc)
+					xr_delete(desc.m_assoc);
+				desc.m_assoc = xr_new<texture_assoc>();
+
+				string_path T;
+				float s;
+				int res = sscanf(value.c_str(), "%[^,],%f", T, &s);
+				R_ASSERT(res == 2);
+				desc.m_assoc->detail_name = T;
+
+				cl_dt_scaler*& dts = m_detail_scalers[key];
+				if (dts)
+					dts->scale = s;
+				else
+					dts = xr_new<cl_dt_scaler>(s);
+
+				desc.m_assoc->usage = 0;
+				if (strstr(value.c_str(), "usage[diffuse_or_bump]"))
+					desc.m_assoc->usage = (1 << 0) | (1 << 1);
+				else if (strstr(value.c_str(), "usage[bump]"))
+					desc.m_assoc->usage = (1 << 1);
+				else if (strstr(value.c_str(), "usage[diffuse]"))
+					desc.m_assoc->usage = (1 << 0);
+			}
+		}
+
+		if (ini.section_exist("specification"))
+		{
+			for (const auto& [key, value] : ini.r_section("specification").Data)
+			{
+				texture_desc& desc = m_texture_details[key];
+				if (desc.m_spec)
+					xr_delete(desc.m_spec);
+				desc.m_spec = xr_new<texture_spec>();
+
+				string_path bmode, bparallax;
+				int res = sscanf(value.c_str(), "bump_mode[%[^]]], material[%f], parallax[%[^]]", bmode, &desc.m_spec->m_material, bparallax);
+				R_ASSERT(res >= 2);
+
+				if ((bmode[0] == 'u') && (bmode[1] == 's') && (bmode[2] == 'e') && (bmode[3] == ':')) // bump-map specified
+					desc.m_spec->m_bump_name = bmode + 4;
+	
+				if (res == 3) // parallax
+					desc.m_spec->m_use_steep_parallax = (bparallax[0] == 'y') && (bparallax[1] == 'e') && (bparallax[2] == 's');
+				else
+					desc.m_spec->m_use_steep_parallax = false;
+			}
+		}
+	}
+}
+
 void CTextureDescrMngr::LoadTHM(LPCSTR initial)
 {
 	FS_FileSet				flist;
@@ -52,9 +120,17 @@ void CTextureDescrMngr::LoadTHM(LPCSTR initial)
 		tp.Clear			();
 		tp.Load				(*F);
 		FS.r_close			(F);
-		if (STextureParams::ttImage		== tp.type ||
-			STextureParams::ttTerrain	== tp.type ||
-			STextureParams::ttNormalMap	== tp.type	)
+		if (
+#ifdef USE_SHOC_THM_FORMAT
+			STextureParams::ttImage == tp.fmt
+			|| STextureParams::ttTerrain == tp.fmt
+			|| STextureParams::ttNormalMap == tp.fmt
+#else
+			STextureParams::ttImage == tp.type
+			|| STextureParams::ttTerrain == tp.type
+			|| STextureParams::ttNormalMap == tp.type
+#endif
+		)
 		{
 			texture_desc&	desc	= m_texture_details[fn];
 			cl_dt_scaler*&	dts		= m_detail_scalers[fn];
@@ -109,6 +185,9 @@ void CTextureDescrMngr::Load()
 	TT.Start				();
 #endif // #ifdef DEBUG
 
+#ifdef USE_TEXTURES_LTX
+	LoadLTX();
+#endif
 	LoadTHM					("$game_textures$");
 	LoadTHM					("$level$");
 
@@ -209,4 +288,3 @@ BOOL CTextureDescrMngr::GetDetailTexture(const shared_str& tex_name, LPCSTR& res
 	}
 	return FALSE;
 }
-
