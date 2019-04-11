@@ -15,7 +15,7 @@
 
 #include "xr_object.h"
 
-xr_token*							vid_quality_token = NULL;
+xr_token* vid_quality_token = nullptr;
 
 xr_token							vid_bpp_token							[ ]={
 	{ "16",							16											},

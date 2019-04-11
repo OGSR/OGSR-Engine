@@ -22,11 +22,13 @@ static const float		TIME_2_HIDE					= 5.f;
 static const float		TORCH_INERTION_CLAMP		= PI_DIV_6;
 static const float		TORCH_INERTION_SPEED_MAX	= 7.5f;
 static const float		TORCH_INERTION_SPEED_MIN	= 0.5f;
-static const Fvector	TORCH_OFFSET				= {-0.2f,+0.1f,-0.3f};
+static		 Fvector	TORCH_OFFSET				= {-0.2f,+0.1f,-0.3f};
 static const Fvector	OMNI_OFFSET					= {-0.2f,+0.1f,-0.1f};
 static const float		OPTIMIZATION_DISTANCE		= 100.f;
 
 static bool stalker_use_dynamic_lights	= false;
+
+ENGINE_API int g_current_renderer;
 
 CTorch::CTorch(void) 
 {
@@ -50,6 +52,14 @@ CTorch::CTorch(void)
 
 	m_prev_hp.set				(0,0);
 	m_delta_h					= 0;
+
+	// Disabling shift by x and z axes for 1st render, 
+	// because we don't have dynamic lighting in it. 
+	if (g_current_renderer == 1)
+	{
+		TORCH_OFFSET.x = 0;
+		TORCH_OFFSET.z = 0;
+	}
 }
 
 CTorch::~CTorch(void) 
@@ -228,7 +238,9 @@ BOOL CTorch::net_Spawn(CSE_Abstract* DC)
 	if (!inherited::net_Spawn(DC))
 		return				(FALSE);
 	
-	bool b_r2				= !!psDeviceFlags.test(rsR2);
+	bool b_r2 = !!psDeviceFlags.test(rsR2);
+	b_r2 |= !!psDeviceFlags.test(rsR3);
+	b_r2 |= !!psDeviceFlags.test(rsR4);
 
 	IKinematics* K			= smart_cast<IKinematics*>(Visual());
 	CInifile* pUserData		= K->LL_UserData(); 

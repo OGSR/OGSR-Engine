@@ -4,6 +4,7 @@
 #include "render.h"
 #include "IGame_Persistent.h"
 #include "xr_IOConsole.h"
+#include "xr_input.h"
 
 void CRenderDevice::_Destroy	(BOOL bKeepTextures)
 {
@@ -25,7 +26,8 @@ void CRenderDevice::Destroy	(void) {
 
 	Log("Destroying Direct3D...");
 
-	ShowCursor	(TRUE);
+	pInput->clip_cursor(false);
+
 	m_pRender->ValidateHW();
 
 	_Destroy					(FALSE);
@@ -59,7 +61,8 @@ void CRenderDevice::Reset		(bool precache)
 	u32 dwWidth_before		= dwWidth;
 	u32 dwHeight_before		= dwHeight;
 
-	ShowCursor				(TRUE);
+	pInput->clip_cursor(false);
+
 	u32 tm_start			= TimerAsync();
 	if (g_pGamePersistent){
 
@@ -83,9 +86,7 @@ void CRenderDevice::Reset		(bool precache)
 	//	TODO: Remove this! It may hide crash
 	Memory.mem_compact();
 
-#ifndef DEDICATED_SERVER
-	ShowCursor	(FALSE);
-#endif
+	pInput->clip_cursor(true);
 		
 	seqDeviceReset.Process(rp_DeviceReset);
 

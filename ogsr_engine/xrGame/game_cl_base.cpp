@@ -63,9 +63,9 @@ void	game_cl_GameState::net_import_GameTime		(NET_Packet& P)
 
 	u64 OldTime = Level().GetEnvironmentGameTime();
 	Level().SetEnvironmentGameTimeFactor	(GameEnvironmentTime,EnvironmentTimeFactor);
+#pragma todo("KRodin: закомментировать этот кусок или снова сделать фикс такой же, как я делал для ТЧ-погоды. Иначе может быть резкая смена погоды или проблемы с солнышком.")
 	if (OldTime > GameEnvironmentTime)
 		GamePersistent().Environment().Invalidate(/*false*/);
-#pragma todo("Доперенести в xrGame поддержку ЗП-погоды, там не много, насколько я вижу.")
 }
 
 void	game_cl_GameState::net_import_state	(NET_Packet& P)

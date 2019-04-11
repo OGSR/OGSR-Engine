@@ -267,10 +267,11 @@ void CCustomZone::Load(LPCSTR section)
 		LPCSTR light_anim = pSettings->r_string(section,"idle_light_anim");
 		m_pIdleLAnim	 = LALib.FindItem(light_anim);
 		m_fIdleLightHeight = pSettings->r_float(section,"idle_light_height");
-		bIdleLightShadow = READ_IF_EXISTS(pSettings, r_bool, section, "idle_light_shadow", true);
-		bIdleLightVolumetric = READ_IF_EXISTS(pSettings, r_bool, section, "idle_light_volumetric", true);
+#pragma todo("KRodin: подумать над значениями по умолчанию. Сейчас по дефолту всё выключено.")
+		m_zone_flags.set(eIdleLightVolumetric, READ_IF_EXISTS(pSettings, r_bool, section, "idle_light_volumetric", false));
+		m_zone_flags.set(eIdleLightShadow,     READ_IF_EXISTS(pSettings, r_bool, section, "idle_light_shadow", false));
+		m_zone_flags.set(eIdleLightR1,         READ_IF_EXISTS(pSettings, r_bool, section, "idle_light_r1", false));
 	}
-
 
 	//загрузить параметры для разбрасывания артефактов
 	m_zone_flags.set(eSpawnBlowoutArtefacts,	pSettings->r_bool(section,"spawn_blowout_artefacts"));
@@ -348,11 +349,18 @@ BOOL CCustomZone::net_Spawn(CSE_Abstract* DC)
 	m_zone_flags.set			(eUseOnOffTime,	(m_TimeToDisable!=0)&&(m_TimeToEnable!=0) );
 
 	//добавить источники света
-	if ( m_zone_flags.test(eIdleLight) )
+	bool br1 = (0 == psDeviceFlags.test(rsR2 | rsR3 | rsR4));
+	bool render_ver_allowed = !br1 || (br1&&m_zone_flags.test(eIdleLightR1));
+	if (m_zone_flags.test(eIdleLight) && render_ver_allowed)
 	{
 		m_pIdleLight = ::Render->light_create();
-		m_pIdleLight->set_shadow(bIdleLightShadow);
-		m_pIdleLight->set_volumetric(bIdleLightVolumetric);
+		m_pIdleLight->set_shadow(!!m_zone_flags.test(eIdleLightShadow));
+
+		if (m_zone_flags.test(eIdleLightVolumetric))
+		{
+			//m_pIdleLight->set_type				(IRender_Light::SPOT);
+			m_pIdleLight->set_volumetric(true);
+		}
 	}
 	else
 		m_pIdleLight = NULL;

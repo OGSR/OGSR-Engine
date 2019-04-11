@@ -18,6 +18,8 @@
 #include "LightAnimLibrary.h"
 #include "ispatial.h"
 
+#pragma todo("Включить лоадскрин, переделав его под ТЧ стайл")
+
 #define CORE_FEATURE_SET( feature, section )\
   Core.Features.set( xrCore::Feature::feature, READ_IF_EXISTS( pSettings, r_bool, section, #feature, false ) )
 
@@ -260,9 +262,9 @@ static INT_PTR CALLBACK logDlgProc( HWND hw, UINT msg, WPARAM wp, LPARAM lp )
 	return TRUE;
 }
 
-static constexpr auto dwStickyKeysStructSize = sizeof(STICKYKEYS);
-static constexpr auto dwFilterKeysStructSize = sizeof(FILTERKEYS);
-static constexpr auto dwToggleKeysStructSize = sizeof(TOGGLEKEYS);
+constexpr auto dwStickyKeysStructSize = sizeof(STICKYKEYS);
+constexpr auto dwFilterKeysStructSize = sizeof(FILTERKEYS);
+constexpr auto dwToggleKeysStructSize = sizeof(TOGGLEKEYS);
 
 struct damn_keys_filter {
 	BOOL bScreenSaverState;
@@ -406,12 +408,14 @@ int APIENTRY WinMain_impl(HINSTANCE hInstance, HINSTANCE hPrevInstance, char* lp
 
 		FPU::m24r				();
 		InitEngine				();
+		InitInput();
 		InitConsole				();
 
-		if(strstr(Core.Params,"-r2a"))	
+		Engine.External.CreateRendererList();
+
+		if (strstr(Core.Params,"-r2a"))	
 			Console->Execute			("renderer renderer_r2a");
-		else
-		if(strstr(Core.Params,"-r2"))	
+		else if (strstr(Core.Params,"-r2"))	
 			Console->Execute			("renderer renderer_r2");
 		else
 		{
@@ -420,7 +424,6 @@ int APIENTRY WinMain_impl(HINSTANCE hInstance, HINSTANCE hPrevInstance, char* lp
 			xr_delete					(pTmp);
 		}
 
-		InitInput					( );
 		Engine.External.Initialize	( );
 		Console->Execute			("stat_memory");
 		Startup	 					( );

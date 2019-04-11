@@ -9,6 +9,7 @@
 #pragma warning(default:4995)
 #include "HW.h"
 #include "../../xr_3da/XR_IOConsole.h"
+#include "../../xr_3da/xr_input.h"
 
 #ifndef _EDITOR
 	void	fill_vid_mode_list			(CHW* _hw);
@@ -594,13 +595,8 @@ void	CHW::updateWindowProps	(HWND m_hWnd)
 		SetWindowLong			( m_hWnd, GWL_EXSTYLE, WS_EX_TOPMOST);
 	}
 
-#ifndef _EDITOR
-	if (!g_dedicated_server)
-	{
-		ShowCursor	(FALSE);
-		SetForegroundWindow( m_hWnd );
-	}
-#endif
+	SetForegroundWindow( m_hWnd );
+	pInput->clip_cursor(true);
 }
 
 
