@@ -34,83 +34,84 @@ BOOL CLevel::Load_GameSpecific_After()
 {
 	// loading static particles
 	string_path		fn_game;
-	if (FS.exist(fn_game, "$level$", "level.ps_static")) {
-		IReader *F = FS.r_open	(fn_game);
+
+
+	if (FS.exist(fn_game, "$level$", "level.ps_static.ltx")) {
+		CInifile ltXfile = CInifile(fn_game);
+
+		CParticlesObject* pStaticParticles;
+		LPCSTR			ref_name;
+		Fmatrix			transform;
+		Fvector			zero_vel = { 0.f,0.f,0.f };
+		for (const auto &it : ltXfile.sections())
+		{
+			ref_name = it.second->r_string("particle_name");
+			transform.i = it.second->r_fvector3("matrix_1");
+			transform.j = it.second->r_fvector3("matrix_2");
+			transform.k = it.second->r_fvector3("matrix_3");
+			transform.c = it.second->r_fvector3("matrix_4");
+
+			pStaticParticles = CParticlesObject::Create(ref_name, FALSE, false);
+			pStaticParticles->UpdateParent(transform, zero_vel);
+			pStaticParticles->Play();
+			m_StaticParticles.push_back(pStaticParticles);
+		}
+	}
+	else if (FS.exist(fn_game, "$level$", "level.ps_static")) {
+		IReader *F = FS.r_open(fn_game);
 		CParticlesObject* pStaticParticles;
 		u32				chunk = 0;
 		string256		ref_name;
 		Fmatrix			transform;
-		Fvector			zero_vel={0.f,0.f,0.f};
-		for (IReader *OBJ = F->open_chunk_iterator(chunk); OBJ; OBJ = F->open_chunk_iterator(chunk,OBJ)) {
-			OBJ->r_stringZ				(ref_name,sizeof(ref_name));
-			OBJ->r						(&transform,sizeof(Fmatrix));transform.c.y+=0.01f;
-			pStaticParticles			= CParticlesObject::Create(ref_name,FALSE,false);
-			pStaticParticles->UpdateParent	(transform,zero_vel);
-			pStaticParticles->Play			();
-			m_StaticParticles.push_back		(pStaticParticles);
+		Fvector			zero_vel = { 0.f,0.f,0.f };
+		for (IReader *OBJ = F->open_chunk_iterator(chunk); OBJ; OBJ = F->open_chunk_iterator(chunk, OBJ)) {
+			OBJ->r_stringZ(ref_name, sizeof(ref_name));
+			OBJ->r(&transform, sizeof(Fmatrix)); 
+			transform.c.y += 0.01f;
+
+			pStaticParticles = CParticlesObject::Create(ref_name, FALSE, false);
+			pStaticParticles->UpdateParent(transform, zero_vel);
+			pStaticParticles->Play();
+			m_StaticParticles.push_back(pStaticParticles);
 		}
-		FS.r_close		(F);
+		FS.r_close(F);
 	}
 	
-		// loading static sounds
-		VERIFY								(m_level_sound_manager);
-		m_level_sound_manager->Load			();
+	// loading static sounds
+	VERIFY								(m_level_sound_manager);
+	m_level_sound_manager->Load			();
 
-		// loading sound environment
-		if ( FS.exist(fn_game, "$level$", "level.snd_env")) {
-			IReader *F				= FS.r_open	(fn_game);
-			::Sound->set_geometry_env(F);
-			FS.r_close				(F);
+	// loading sound environment
+	if ( FS.exist(fn_game, "$level$", "level.snd_env")) {
+		IReader *F				= FS.r_open	(fn_game);
+		::Sound->set_geometry_env(F);
+		FS.r_close				(F);
+	}
+
+	// loading SOM
+	if (FS.exist(fn_game, "$level$", "level.som")) {
+		IReader *F				= FS.r_open	(fn_game);
+		::Sound->set_geometry_som(F);
+		FS.r_close				(F);
+	}
+
+	// loading random (around player) sounds
+	if (pSettings->section_exist("sounds_random")){ 
+		CInifile::Sect& S		= pSettings->r_section("sounds_random");
+		Sounds_Random.reserve	(S.Data.size());
+		for ( const auto &I : S.Data ) 
+		{
+			Sounds_Random.push_back	(ref_sound());
+			Sound->create			(Sounds_Random.back(),I.first.c_str(),st_Effect,sg_SourceType);
 		}
-		else
-			::Sound->unset_geometry_env();
+		Sounds_Random_dwNextTime= Device.TimerAsync	()	+ 50000;
+		Sounds_Random_Enabled	= FALSE;
+	}
 
-		CInifile& gameLtx = *pGameIni;
-		::Sound->unsetEFXPreset();
-		::Sound->unsetEFXEAXPreset();
-		if ( gameLtx.section_exist( Level().name() ) ) {
-		  if ( gameLtx.line_exist( Level().name(), "efx_reverb_preset" ) ) {
-		    LPCSTR preset = gameLtx.r_string( Level().name(), "efx_reverb_preset" );
-		    if ( preset && preset[ 0 ] ) {
-		      Msg("- Set EFX preset to '%s'", preset );
-		      ::Sound->setEFXPreset( preset );
-		    }
-		  }
-		  else if ( gameLtx.line_exist( Level().name(), "efx_eax_preset" ) ) {
-		    LPCSTR preset = gameLtx.r_string( Level().name(), "efx_eax_preset" );
-		    if ( preset && preset[ 0 ] ) {
-		      Msg("- Set EFX EAX preset to '%s'", preset );
-		      ::Sound->setEFXEAXPreset( preset );
-		    }
-		  }
-		}
-
-		// loading SOM
-		if (FS.exist(fn_game, "$level$", "level.som")) {
-			IReader *F				= FS.r_open	(fn_game);
-			::Sound->set_geometry_som(F);
-			FS.r_close				(F);
-		}
-		else
-			::Sound->unset_geometry_som();
-
-		// loading random (around player) sounds
-		if (pSettings->section_exist("sounds_random")){ 
-			CInifile::Sect& S		= pSettings->r_section("sounds_random");
-			Sounds_Random.reserve	(S.Data.size());
-			for ( const auto &I : S.Data ) 
-			{
-				Sounds_Random.push_back	(ref_sound());
-				Sound->create			(Sounds_Random.back(),I.first.c_str(),st_Effect,sg_SourceType);
-			}
-			Sounds_Random_dwNextTime= Device.TimerAsync	()	+ 50000;
-			Sounds_Random_Enabled	= FALSE;
-		}
-
-		// Сбрасываем состояния дождя при загрузке уровня во избежание пропажи звука. Real Wolf.
-		if (g_pGamePersistent->pEnvironment)
-			g_pGamePersistent->pEnvironment->Invalidate();
-		
+	// Сбрасываем состояния дождя при загрузке уровня во избежание пропажи звука. Real Wolf.
+	if (g_pGamePersistent->pEnvironment)
+		g_pGamePersistent->pEnvironment->Invalidate();
+	
 	return TRUE;
 }
 

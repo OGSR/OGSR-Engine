@@ -39,6 +39,9 @@ CActorCondition::CActorCondition(CActor *object) :
 	m_fSprintK					= 0.f;
 	m_fAlcohol					= 0.f;
 	m_fSatiety					= 1.0f;
+	m_fThirst					= 1.0f;
+
+	m_bJumpRequirePower			= false;
 
 	VERIFY						(object);
 	m_object					= object;
@@ -46,7 +49,7 @@ CActorCondition::CActorCondition(CActor *object) :
 
 	m_f_time_affected = Device.fTimeGlobal;
 
-        monsters_feel_touch  = xr_new<Feel::Touch>();
+	monsters_feel_touch  = xr_new<Feel::Touch>();
 	monsters_aura_radius = 0.f;
 }
 
@@ -70,6 +73,8 @@ void CActorCondition::LoadCondition(LPCSTR entity_section)
 	m_fOverweightJumpK			= pSettings->r_float(section,"overweight_jump_k");
 	m_fAccelK					= pSettings->r_float(section,"accel_k");
 	m_fSprintK					= pSettings->r_float(section,"sprint_k");
+
+	m_bJumpRequirePower			= READ_IF_EXISTS(pSettings, r_bool, section, "jump_require_power", false);
 
 	//порог силы и здоровья меньше которого актер начинает хромать
 	m_fLimpingHealthBegin		= pSettings->r_float(section,	"limping_health_begin");
@@ -106,6 +111,24 @@ void CActorCondition::LoadCondition(LPCSTR entity_section)
 	if (m_fSatietyCriticalLimit > m_fSatietyLightLimit)
 	{
 		m_fSatietyCriticalLimit = m_fSatietyLightLimit;
+	}
+
+	if (Core.Features.test(xrCore::Feature::actor_thirst))
+	{
+		m_fThirstLightLimit = READ_IF_EXISTS(pSettings, r_float, section, "thirst_light_limit", 0.0f);
+		clamp(m_fThirstLightLimit, 0.0f, 1.0f);
+
+		m_fThirstCriticalLimit = READ_IF_EXISTS(pSettings, r_float, section, "thirst_critical_limit", 0.0f);
+		clamp(m_fThirstCriticalLimit, 0.0f, 1.0f);
+
+		if (m_fThirstCriticalLimit > m_fThirstLightLimit)
+		{
+			m_fThirstCriticalLimit = m_fThirstLightLimit;
+		}
+
+		m_fV_Thirst = pSettings->r_float(section, "thirst_v");
+		m_fV_ThirstPower = pSettings->r_float(section, "thirst_power_v");
+		m_fV_ThirstHealth = pSettings->r_float(section, "thirst_health_v");
 	}
 	
 	m_MaxWalkWeight					= pSettings->r_float(section,"max_walk_weight");
@@ -192,6 +215,9 @@ void CActorCondition::UpdateCondition()
 		health() =0.0f;
 
 	UpdateSatiety				();
+
+	if (Core.Features.test(xrCore::Feature::actor_thirst))
+		UpdateThirst();
 
 	inherited::UpdateCondition	();
 
@@ -312,12 +338,9 @@ float CActorCondition::GetInjuriousMaterialDamage()
 
 void CActorCondition::UpdateSatiety()
 {
-	float k = 1.0f;
 	if (m_fSatiety > 0)
 	{
-		m_fSatiety -= m_fV_Satiety *
-			k *
-			m_fDeltaTime;
+		m_fSatiety -= m_fV_Satiety * m_fDeltaTime;
 		clamp(m_fSatiety, 0.0f, 1.0f);
 	}
 
@@ -347,6 +370,42 @@ void CActorCondition::UpdateSatiety()
 	m_fDeltaHealth += m_fV_SatietyHealth * satiety_health_koef * m_fDeltaTime;
 	m_fDeltaPower += m_fV_SatietyPower * satiety_power_koef * m_fDeltaTime;
 }
+
+void CActorCondition::UpdateThirst()
+{
+	if (m_fThirst > 0)
+	{
+		m_fThirst -= m_fV_Thirst * m_fDeltaTime;
+		clamp(m_fThirst, 0.0f, 1.0f);
+	}
+
+	float thirst_health_koef = 1;
+	float thirst_power_koef = 0;
+
+	if (m_fThirstLightLimit > 0) {
+		if (m_fThirst < m_fThirstLightLimit) {
+			thirst_power_koef = (1 - m_fThirst / m_fThirstLightLimit) * -1;
+
+			const float critical_k = m_fThirstCriticalLimit / m_fThirstLightLimit;
+			thirst_health_koef = (m_fThirst / m_fThirstLightLimit - critical_k) / (m_fThirst >= m_fThirstCriticalLimit ? 1 - critical_k : critical_k);
+		}
+	}
+	else {
+		if (fis_zero(m_fThirst))
+		{
+			thirst_health_koef = -1;
+		}
+	}
+
+	if (m_bIsBleeding && thirst_health_koef > 0)
+	{
+		thirst_health_koef = 0;
+	}
+
+	m_fDeltaHealth += m_fV_ThirstHealth * thirst_health_koef * m_fDeltaTime;
+	m_fDeltaPower += m_fV_ThirstPower * thirst_power_koef * m_fDeltaTime;
+}
+
 
 void CActorCondition::UpdatePower()
 {
@@ -429,6 +488,18 @@ bool CActorCondition::IsCantSprint()
 	return m_condition_flags.test(eCantSprint);
 }
 
+bool CActorCondition::IsCantJump(float weight)
+{
+	if (!m_bJumpRequirePower)
+	{
+		return false;
+	}
+
+	float power = m_fJumpPower;
+	power += m_fJumpWeightPower * weight*(weight > 1.f ? m_fOverweightJumpK : 1.f);
+	return m_fPower < HitPowerEffect(power);
+}
+
 bool CActorCondition::IsLimping()
 {
 	if (m_fPower < m_fLimpingPowerBegin || GetHealth() < m_fLimpingHealthBegin)
@@ -445,7 +516,11 @@ void CActorCondition::save(NET_Packet &output_packet)
 	save_data			(m_fAlcohol, output_packet);
 	save_data			(m_condition_flags, output_packet);
 	save_data			(m_fSatiety, output_packet);
+	save_data			(m_fThirst, output_packet);
 }
+
+#include "alife_registry_wrappers.h"
+#include "alife_simulator_header.h"
 
 void CActorCondition::load(IReader &input_packet)
 {
@@ -453,6 +528,10 @@ void CActorCondition::load(IReader &input_packet)
 	load_data			(m_fAlcohol, input_packet);
 	load_data			(m_condition_flags, input_packet);
 	load_data			(m_fSatiety, input_packet);
+	if (ai().get_alife()->header().version() > 8)
+	{
+		load_data(m_fThirst, input_packet);
+	}
 }
 
 void CActorCondition::reinit	()
@@ -463,6 +542,7 @@ void CActorCondition::reinit	()
 	m_condition_flags.set(eCantSprint, FALSE);
 	m_fSatiety = 1.f;
 	m_fAlcohol = 0.f;
+	m_fThirst = 1.f;
 }
 
 void CActorCondition::ChangeAlcohol	(float value)
@@ -476,74 +556,94 @@ void CActorCondition::ChangeSatiety(float value)
 	clamp		(m_fSatiety, 0.0f, 1.0f);
 }
 
+void CActorCondition::ChangeThirst(float value)
+{
+	m_fThirst += value;
+	clamp(m_fThirst, 0.0f, 1.0f);
+}
+
+
 void CActorCondition::UpdateTutorialThresholds()
 {
 	string256						cb_name;
-	static float _cPowerThr			= pSettings->r_float("tutorial_conditions_thresholds","power");
-	static float _cPowerMaxThr		= pSettings->r_float("tutorial_conditions_thresholds","max_power");
-	static float _cBleeding			= pSettings->r_float("tutorial_conditions_thresholds","bleeding");
-	static float _cSatiety			= pSettings->r_float("tutorial_conditions_thresholds","satiety");
-	static float _cRadiation		= pSettings->r_float("tutorial_conditions_thresholds","radiation");
-	static float _cWpnCondition		= pSettings->r_float("tutorial_conditions_thresholds","weapon_jammed");
-	static float _cPsyHealthThr		= pSettings->r_float("tutorial_conditions_thresholds","psy_health");
+	static float _cPowerThr = pSettings->r_float("tutorial_conditions_thresholds", "power");
+	static float _cPowerMaxThr = pSettings->r_float("tutorial_conditions_thresholds", "max_power");
+	static float _cBleeding = pSettings->r_float("tutorial_conditions_thresholds", "bleeding");
+	static float _cSatiety = pSettings->r_float("tutorial_conditions_thresholds", "satiety");
+	static float _cRadiation = pSettings->r_float("tutorial_conditions_thresholds", "radiation");
+	static float _cWpnCondition = pSettings->r_float("tutorial_conditions_thresholds", "weapon_jammed");
+	static float _cPsyHealthThr = pSettings->r_float("tutorial_conditions_thresholds", "psy_health");
+	static float _cThirst = 0.0f;
 
-
+	if (Core.Features.test(xrCore::Feature::actor_thirst))
+	{
+		_cThirst = pSettings->r_float("tutorial_conditions_thresholds", "thirst");
+	}
 
 	bool b = true;
-	if(b && !m_condition_flags.test(eCriticalPowerReached) && GetPower()<_cPowerThr){
-		m_condition_flags.set			(eCriticalPowerReached, TRUE);
-		b=false;
-		strcpy_s(cb_name,"_G.on_actor_critical_power");
+	if (b && !m_condition_flags.test(eCriticalPowerReached) && GetPower() < _cPowerThr) {
+		m_condition_flags.set(eCriticalPowerReached, TRUE);
+		b = false;
+		strcpy_s(cb_name, "_G.on_actor_critical_power");
 	}
 
-	if(b && !m_condition_flags.test(eCriticalMaxPowerReached) && GetMaxPower()<_cPowerMaxThr){
-		m_condition_flags.set			(eCriticalMaxPowerReached, TRUE);
-		b=false;
-		strcpy_s(cb_name,"_G.on_actor_critical_max_power");
+	if (b && !m_condition_flags.test(eCriticalMaxPowerReached) && GetMaxPower() < _cPowerMaxThr) {
+		m_condition_flags.set(eCriticalMaxPowerReached, TRUE);
+		b = false;
+		strcpy_s(cb_name, "_G.on_actor_critical_max_power");
 	}
 
-	if(b && !m_condition_flags.test(eCriticalBleedingSpeed) && BleedingSpeed()>_cBleeding){
-		m_condition_flags.set			(eCriticalBleedingSpeed, TRUE);
-		b=false;
-		strcpy_s(cb_name,"_G.on_actor_bleeding");
+	if (b && !m_condition_flags.test(eCriticalBleedingSpeed) && BleedingSpeed() > _cBleeding) {
+		m_condition_flags.set(eCriticalBleedingSpeed, TRUE);
+		b = false;
+		strcpy_s(cb_name, "_G.on_actor_bleeding");
 	}
 
-	if(b && !m_condition_flags.test(eCriticalSatietyReached) && GetSatiety()<_cSatiety){
-		m_condition_flags.set			(eCriticalSatietyReached, TRUE);
-		b=false;
-		strcpy_s(cb_name,"_G.on_actor_satiety");
+	if (b && !m_condition_flags.test(eCriticalSatietyReached) && GetSatiety() < _cSatiety) {
+		m_condition_flags.set(eCriticalSatietyReached, TRUE);
+		b = false;
+		strcpy_s(cb_name, "_G.on_actor_satiety");
 	}
 
-	if(b && !m_condition_flags.test(eCriticalRadiationReached) && GetRadiation()>_cRadiation){
-		m_condition_flags.set			(eCriticalRadiationReached, TRUE);
-		b=false;
-		strcpy_s(cb_name,"_G.on_actor_radiation");
-	}
-
-	if(b && !m_condition_flags.test(ePhyHealthMinReached) && GetPsyHealth()<_cPsyHealthThr){
-		m_condition_flags.set			(ePhyHealthMinReached, TRUE);
-		b=false;
-		strcpy_s(cb_name,"_G.on_actor_psy");
-	}
-
-	if(b && m_condition_flags.test(eCantWalkWeight)){
-		b=false;
-		strcpy_s(cb_name,"_G.on_actor_cant_walk_weight");
-	}
-
-	if(b && !m_condition_flags.test(eWeaponJammedReached)&&m_object->inventory().GetActiveSlot()!=NO_ACTIVE_SLOT){
-		PIItem item							= m_object->inventory().ItemFromSlot(m_object->inventory().GetActiveSlot());
-		CWeapon* pWeapon					= smart_cast<CWeapon*>(item); 
-		if(pWeapon&&pWeapon->GetCondition()<_cWpnCondition){
-			m_condition_flags.set			(eWeaponJammedReached, TRUE);b=false;
-			strcpy_s(cb_name,"_G.on_actor_weapon_jammed");
+	if (Core.Features.test(xrCore::Feature::actor_thirst))
+	{
+		if (b && !m_condition_flags.test(eCriticalThirstReached) && GetThirst() < _cThirst) {
+			m_condition_flags.set(eCriticalThirstReached, true);
+			b = false;
+			xr_strcpy(cb_name, "_G.on_actor_thirst");
 		}
 	}
-	
-	if(!b){
+
+	if (b && !m_condition_flags.test(eCriticalRadiationReached) && GetRadiation() > _cRadiation) {
+		m_condition_flags.set(eCriticalRadiationReached, TRUE);
+		b = false;
+		strcpy_s(cb_name, "_G.on_actor_radiation");
+	}
+
+	if (b && !m_condition_flags.test(ePhyHealthMinReached) && GetPsyHealth() < _cPsyHealthThr) {
+		m_condition_flags.set(ePhyHealthMinReached, TRUE);
+		b = false;
+		strcpy_s(cb_name, "_G.on_actor_psy");
+	}
+
+	if (b && !m_condition_flags.test(eCantWalkWeight)) {
+		b = false;
+		strcpy_s(cb_name, "_G.on_actor_cant_walk_weight");
+	}
+
+	if (b && !m_condition_flags.test(eWeaponJammedReached) && m_object->inventory().GetActiveSlot() != NO_ACTIVE_SLOT) {
+		PIItem item = m_object->inventory().ItemFromSlot(m_object->inventory().GetActiveSlot());
+		CWeapon* pWeapon = smart_cast<CWeapon*>(item);
+		if (pWeapon&&pWeapon->GetCondition() < _cWpnCondition) {
+			m_condition_flags.set(eWeaponJammedReached, TRUE); b = false;
+			strcpy_s(cb_name, "_G.on_actor_weapon_jammed");
+		}
+	}
+
+	if (!b) {
 		luabind::functor<LPCSTR>			fl;
-		R_ASSERT							(ai().script_engine().functor<LPCSTR>(cb_name,fl));
-		fl									();
+		R_ASSERT(ai().script_engine().functor<LPCSTR>(cb_name, fl));
+		fl();
 	}
 }
 

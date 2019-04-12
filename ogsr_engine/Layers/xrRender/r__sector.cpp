@@ -4,7 +4,7 @@
 
 #include "stdafx.h"
 #include "r__sector.h"
-#include "xrLevel.h"
+#include "..\..\xr_3da\xrLevel.h"
 #include "..\..\xr_3da\xr_object.h"
 #include "..\..\xr_3da\fbasicvisual.h"
 

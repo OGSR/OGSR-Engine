@@ -20,6 +20,7 @@
 #include "../../xr_3da/cameraBase.h"
 #include "UIXmlInit.h"
 #include "UIInventoryUtilities.h"
+#include "../inventory.h"
 
 CUITalkWnd::CUITalkWnd()
 {
@@ -217,12 +218,13 @@ void CUITalkWnd::Update()
 	if (g_actor && m_pActor && !m_pActor->IsTalking() )
 	{
 		Game().StartStopMenu(this,true);
-	}else{
+	}
+	else {
 		CGameObject* pOurGO = smart_cast<CGameObject*>(m_pOurInvOwner);
 		CGameObject* pOtherGO = smart_cast<CGameObject*>(m_pOthersInvOwner);
-	
-		if(NULL==pOurGO || NULL==pOtherGO || ((pOurGO->Position().distance_to(pOtherGO->Position())>3.0f)&&!m_pOthersInvOwner->NeedOsoznanieMode()) )
-			Game().StartStopMenu(this,true);
+
+		if (NULL == pOurGO || NULL == pOtherGO || ((pOurGO->Position().distance_to(pOtherGO->Position()) - pOtherGO->Radius() - pOurGO->Radius() > m_pOurInvOwner->inventory().GetTakeDist() + 0.5f) && !m_pOthersInvOwner->NeedOsoznanieMode()))
+			Game().StartStopMenu(this, true);
 	}
 
 	if(m_bNeedToUpdateQuestions)

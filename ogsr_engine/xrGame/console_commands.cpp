@@ -49,7 +49,7 @@ extern	u64		g_qwStartGameTime;
 extern	u64		g_qwEStartGameTime;
 
 ENGINE_API
-extern	float	psHUD_FOV;
+extern	float	psHUD_FOV_def;
 extern	float	psSqueezeVelocity;
 
 extern	int		x_m_x;
@@ -67,20 +67,21 @@ extern	BOOL	g_show_wnd_rect			;
 extern	BOOL	g_show_wnd_rect2			;
 //-----------------------------------------------------------
 extern	float	g_fTimeFactor;
+extern	BOOL	g_bCopDeathAnim;
 
 //-----------------------------------------------------------
 
-		BOOL	g_bCheckTime			= FALSE;
-		int		net_cl_inputupdaterate	= 50;
-		Flags32	g_mt_config				= {mtLevelPath | mtDetailPath | mtObjectHandler | mtSoundPlayer | mtAiVision | mtBullets | mtLUA_GC | mtLevelSounds | mtALife};
+BOOL	g_bCheckTime			= FALSE;
+int		net_cl_inputupdaterate	= 50;
+Flags32	g_mt_config				= {mtLevelPath | mtDetailPath | mtObjectHandler | mtSoundPlayer | mtAiVision | mtBullets | mtLUA_GC | mtLevelSounds | mtALife};
 #ifdef DEBUG
-		Flags32	dbg_net_Draw_Flags		= {0};
+Flags32	dbg_net_Draw_Flags		= {0};
 #endif
 
 #ifdef DEBUG
-		BOOL	g_bDebugNode			= FALSE;
-		u32		g_dwDebugNodeSource		= 0;
-		u32		g_dwDebugNodeDest		= 0;
+BOOL	g_bDebugNode			= FALSE;
+u32		g_dwDebugNodeSource		= 0;
+u32		g_dwDebugNodeDest		= 0;
 extern	BOOL	g_bDrawBulletHit;
 #endif
 #ifdef DEBUG 
@@ -89,6 +90,7 @@ extern BOOL		b_death_anim_velocity;
 #endif
 int g_AI_inactive_time = 0;
 Flags32 g_uCommonFlags;
+
 enum E_COMMON_FLAGS{
 	flAiUseTorchDynamicLights = 1
 };
@@ -759,7 +761,6 @@ public:
 	  }
 };
 
-#ifdef DEBUG
 class CCC_PHGravity : public IConsole_Command {
 public:
 		CCC_PHGravity(LPCSTR N) :
@@ -780,7 +781,6 @@ public:
 	}
 	
 };
-#endif // DEBUG
 
 class CCC_PHFps : public IConsole_Command {
 public:
@@ -1147,7 +1147,7 @@ void CCC_RegisterCommands()
 	CMD3(CCC_Mask,				"hud_crosshair_dist",	&psHUD_Flags,	HUD_CROSSHAIR_DIST);
 
 //#ifdef DEBUG
-	CMD4(CCC_Float,				"hud_fov",				&psHUD_FOV,		0.1f,	1.0f);
+	CMD4(CCC_Float,				"hud_fov",				&psHUD_FOV_def,		0.1f,	1.0f);
 	CMD4(CCC_Float,				"fov",					&g_fov,			5.0f,	140.0f);
 //#endif // DEBUG
 
@@ -1227,9 +1227,10 @@ void CCC_RegisterCommands()
 	CMD1(CCC_PHFps,				"ph_frequency"																					);
 	CMD1(CCC_PHIterations,		"ph_iterations"																					);
 
+	CMD1(CCC_PHGravity, "ph_gravity");
+	CMD4(CCC_FloatBlock, "ph_timefactor", &phTimefactor, 0.0001f, 1000.f);
+
 #ifdef DEBUG
-	CMD1(CCC_PHGravity,			"ph_gravity"																					);
-	CMD4(CCC_FloatBlock,		"ph_timefactor",				&phTimefactor				,			0.0001f	,1000.f			);
 	CMD4(CCC_FloatBlock,		"ph_break_common_factor",		&phBreakCommonFactor		,			0.f		,1000000000.f	);
 	CMD4(CCC_FloatBlock,		"ph_rigid_break_weapon_factor",	&phRigidBreakWeaponFactor	,			0.f		,1000000000.f	);
 	CMD4(CCC_Integer,			"ph_tri_clear_disable_count",	&ph_tri_clear_disable_count	,			0,		255				);
@@ -1253,6 +1254,8 @@ void CCC_RegisterCommands()
 
 	CMD3(CCC_Mask, "g_zones_dbg", &psActorFlags, AF_ZONES_DBG);
 	CMD3(CCC_Mask, "g_vertex_dbg", &psActorFlags, AF_VERTEX_DBG);
+
+	CMD4(CCC_Integer, "g_cop_death_anim", &g_bCopDeathAnim, 0, 1);
 
 #ifdef DEBUG
 	CMD3(CCC_Mask,		"dbg_draw_actor_alive",		&dbg_net_Draw_Flags,	(1<<0));

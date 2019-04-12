@@ -1303,9 +1303,15 @@ bool CUIXmlInit::InitTrackBar(CUIXml& xml_doc, const char* path, int index, CUIT
 
 	int invert			= xml_doc.ReadAttribInt(path, index, "invert", 0);
 	pWnd->SetInvert		(!!invert);
+
 	float step			= xml_doc.ReadAttribFlt(path, index, "step", 0.1f);
 	pWnd->SetStep		(step);
-	
+
+	float min_xml		= xml_doc.ReadAttribFlt(path, index, "min", 0.0f);
+	pWnd->SetMin		(min_xml);
+
+	float max_xml		= xml_doc.ReadAttribFlt(path, index, "max", 0.0f);
+	pWnd->SetMax		(max_xml);
 
 	return				true;
 }

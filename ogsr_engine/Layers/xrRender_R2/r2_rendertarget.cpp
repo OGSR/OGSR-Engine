@@ -20,7 +20,7 @@
 #include "blender_reflections.h"
 #include "blender_volumetric.h"
 #include "blender_rmap.h"
-
+#include "blender_lut.h"
 void	CRenderTarget::u_setrt			(const ref_rt& _1, const ref_rt& _2, const ref_rt& _3, IDirect3DSurface9* zb)
 {
 	VERIFY									(_1);
@@ -262,6 +262,10 @@ CRenderTarget::CRenderTarget		()
 	b_volumetric = xr_new<CBlender_volumetric>();
 	b_rmap = xr_new<CBlender_rmap>();
 	// KD blenders end
+	
+	// LV blenders start
+	b_lut = xr_new<CBlender_lut>();
+	// LV blenders end
 
 	// KD shaders
 	s_sunshafts.create(b_sunshafts, "r2\\sunshafts");
@@ -276,7 +280,7 @@ CRenderTarget::CRenderTarget		()
 	s_reflections.create(b_reflections, "r2\\ogse_wet_reflections");
 	s_water.create("effects\\puddles", "water\\water_water");
 	s_rmap.create(b_rmap, "r2\\rmap");
-
+	s_lut.create (b_lut,  "r2\\lut");
 	u32		w = Device.dwWidth, h = Device.dwHeight;
 	//	NORMAL
 	{
@@ -745,4 +749,5 @@ CRenderTarget::~CRenderTarget	()
 	xr_delete(b_ssao);
 	xr_delete(b_aa);
 	xr_delete(b_volumetric);
+	xr_delete(b_lut);
 }

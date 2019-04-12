@@ -225,15 +225,6 @@ BOOL CGameObject::net_Spawn		(CSE_Abstract*	DC)
 	CSE_Abstract					*E = (CSE_Abstract*)DC;
 	VERIFY							(E);
 
-	const CSE_Visual				*visual	= smart_cast<const CSE_Visual*>(E);
-	if (visual) {
-		cNameVisual_set				(visual_name(E));
-		if (visual->flags.test(CSE_Visual::flObstacle)) {
-			ISpatial				*self = smart_cast<ISpatial*>(this);
-			self->spatial.type		|=	STYPE_OBSTACLE;
-		}
-	}
-
 	// Naming
 	cName_set						(E->s_name);
 	cNameSect_set					(E->s_name);
@@ -242,6 +233,49 @@ BOOL CGameObject::net_Spawn		(CSE_Abstract*	DC)
 
 	setID							(E->ID);
 //	R_ASSERT(Level().Objects.net_Find(E->ID) == NULL);
+
+	const CSE_Visual				*visual = smart_cast<const CSE_Visual*>(E);
+	if (visual) {
+
+		LPCSTR saved_visual = visual_name(E);
+
+		if (pSettings->line_exist(cNameSect(), "visual")) {
+			shared_str config_visual = pSettings->r_string(cNameSect(), "visual");
+
+			string_path config_visual_file;
+			if (0 == strext(*config_visual))
+				strconcat(sizeof(config_visual_file), config_visual_file, *config_visual, ".ogf");
+			else
+				strcpy_s(config_visual_file, sizeof(config_visual_file), *config_visual);
+			xr_strlwr(config_visual_file);
+
+			string_path saved_visual_file;
+			if (0 == strext(saved_visual))
+				strconcat(sizeof(saved_visual_file), saved_visual_file, saved_visual, ".ogf");
+			else
+				strcpy_s(saved_visual_file, sizeof(saved_visual_file), saved_visual);
+			xr_strlwr(saved_visual_file);
+
+			bool keep_visual = READ_IF_EXISTS(pSettings, r_bool, cNameSect().c_str(), "keep_visual", false);
+			if (keep_visual) {
+				if (xr_strcmp(config_visual_file, saved_visual_file)) {
+					Msg("! [%s]: changed visual_name[%s] found in %s, keep original %s instead", __FUNCTION__, saved_visual, cName().c_str(), config_visual.c_str());
+				}
+			}
+			else if (!FS.exist(saved_visual) && !FS.exist("$level$", saved_visual_file) && !FS.exist("$game_meshes$", saved_visual_file)) {
+				Msg("! [%s]: visual_name[%s] not found in %s, keep original %s instead", __FUNCTION__, saved_visual, cName().c_str(), config_visual.c_str());
+			}
+			else
+				cNameVisual_set(saved_visual);
+		}
+		else
+			cNameVisual_set(saved_visual);
+
+		if (visual->flags.test(CSE_Visual::flObstacle)) {
+			ISpatial				*self = smart_cast<ISpatial*>(this);
+			self->spatial.type |= STYPE_OBSTACLE;
+		}
+	}
 	
 	// XForm
 	XFORM().setXYZ					(E->o_Angle);

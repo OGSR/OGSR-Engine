@@ -11,9 +11,7 @@
 
 class NET_Packet;
 
-#ifndef AI_COMPILER
-	#include "specific_character.h"
-#endif
+#include "specific_character.h"
 
 #ifdef XRGAME_EXPORTS
 	#include "PhraseDialogDefs.h"

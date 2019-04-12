@@ -13,11 +13,9 @@
 #include "object_broker.h"
 #include "alife_human_brain.h"
 
-#ifndef AI_COMPILER
-#	include "ai_space.h"
-#	include "character_info.h"
-#	include "specific_character.h"
-#endif
+#include "ai_space.h"
+#include "character_info.h"
+#include "specific_character.h"
 
 #ifdef XRGAME_EXPORTS
 #	include "ef_storage.h"
@@ -191,15 +189,11 @@ void CSE_ALifeTraderAbstract::STATE_Read	(NET_Packet &tNetPacket, u16 size)
 		if ((m_wVersion > 75) && (m_wVersion < 98)){
 			int tmp;
 			tNetPacket.r_s32	(tmp);
-#ifndef AI_COMPILER
 			if(tmp!=-1)
 				m_SpecificCharacter = CSpecificCharacter::IndexToId(tmp);
 			else
 				m_SpecificCharacter = NULL;
 
-#else
-			m_SpecificCharacter = NULL;
-#endif
 		}else if (m_wVersion>=98){
 			tNetPacket.r_stringZ(m_SpecificCharacter);
 		}
@@ -210,11 +204,7 @@ void CSE_ALifeTraderAbstract::STATE_Read	(NET_Packet &tNetPacket, u16 size)
 		if ((m_wVersion > 81) && (m_wVersion < 96)) {
 			int tmp;		
 			tNetPacket.r_s32	(tmp);
-#ifndef AI_COMPILER
 			m_sCharacterProfile	= CCharacterInfo::IndexToId(tmp);
-#else
-			m_sCharacterProfile	= "default";
-#endif
 			VERIFY				(xr_strlen(m_sCharacterProfile));
 		}
 		else
@@ -242,14 +232,9 @@ void CSE_ALifeTraderAbstract::STATE_Read	(NET_Packet &tNetPacket, u16 size)
 void CSE_ALifeTraderAbstract::OnChangeProfile(PropValue* sender)
 {
 	m_SpecificCharacter = NULL;
-#ifndef AI_COMPILER
 	specific_character();
-#endif
 	base()->set_editor_flag		(ISE_Abstract::flVisualChange);
 }
-
-#ifndef AI_COMPILER
-
 
 #ifdef XRGAME_EXPORTS
 
@@ -446,9 +431,6 @@ shared_str CSE_ALifeTraderAbstract::character_profile()
 {
 	return	m_sCharacterProfile;
 }
-
-#endif
-
 
 #ifdef XRGAME_EXPORTS
 

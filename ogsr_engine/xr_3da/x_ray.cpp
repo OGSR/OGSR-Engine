@@ -116,6 +116,7 @@ void InitConsole	()
 	CORE_FEATURE_SET( show_objectives_ondemand,   "features" );
 	CORE_FEATURE_SET( pickup_check_overlaped,     "features" );
 	CORE_FEATURE_SET( wallmarks_on_static_only,   "features" );
+	CORE_FEATURE_SET( actor_thirst,               "features" );
 	CORE_FEATURE_SET( autoreload_wpn,             "features" );
 }
 
@@ -131,14 +132,21 @@ void destroyInput	()
 {
 	xr_delete					( pInput		);
 }
-void InitSound		()
+
+void InitSound1()
 {
-	CSound_manager_interface::_create					(u64(Device.m_hWnd));
+	CSound_manager_interface::_create(0);
+}
+
+void InitSound2()
+{
+	CSound_manager_interface::_create(1);
 }
 void destroySound	()
 {
-	CSound_manager_interface::_destroy				( );
+	CSound_manager_interface::_destroy();
 }
+
 void destroySettings()
 {
 	xr_delete					( pSettings		);
@@ -175,9 +183,9 @@ void execUserScript				( )
 
 void Startup					( )
 {
-	execUserScript	();
-//.	InitInput		();
-	InitSound		();
+	InitSound1();
+	execUserScript();
+	InitSound2();
 
 	// ...command line for auto start
 	{
@@ -214,7 +222,6 @@ void Startup					( )
 	Engine.Event.Dump			( );
 
 	// Destroying
-	destroySound();
 	destroyInput();
 
 	if(!g_bBenchmark)
@@ -226,6 +233,8 @@ void Startup					( )
 		destroyConsole();
 	else
 		Console->Reset();
+
+	destroySound();
 
 	destroyEngine();
 }

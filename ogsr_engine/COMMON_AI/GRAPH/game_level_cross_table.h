@@ -8,7 +8,7 @@
 
 #pragma once
 
-#include "xrLevel.h"
+#include "..\xr_3da\xrLevel.h"
 
 #include "alife_space.h"
 #include "game_graph_space.h"
@@ -19,12 +19,6 @@
 #define CROSS_TABLE_CHUNK_DATA				1
 
 class CGameLevelCrossTable {
-#ifdef AI_COMPILER		
-	friend class CLevelGameGraph;
-	friend class CCrossTableBuilder;
-	friend class CRenumbererConverter;
-	friend class CGameGraphBuilder;
-#endif // AI_COMPILER
 
 public:
 	#pragma pack(push,2)
@@ -42,12 +36,6 @@ public:
 		IC	const xrGUID	&level_guid				() const;
 		IC	const xrGUID	&game_guid				() const;
 
-#ifdef AI_COMPILER		
-		friend class CLevelGameGraph;
-		friend class CCrossTableBuilder;
-		friend class CRenumbererConverter;
-		friend class CGameGraphBuilder;
-#endif // AI_COMPILER
 	};
 	
 	class  CCell {
@@ -56,12 +44,6 @@ public:
 	public:
 		IC	GameGraph::_GRAPH_ID game_vertex_id			() const;
 		IC	float			distance				() const;
-#ifdef AI_COMPILER		
-		friend class CLevelGameGraph;
-		friend class CCrossTableBuilder;
-		friend class CRenumbererConverter;
-		friend class CGameGraphBuilder;
-#endif // AI_COMPILER
 	};
 	#pragma pack(pop)
 
@@ -69,25 +51,11 @@ private:
 	CHeader					m_tCrossTableHeader;
 	CCell					*m_tpaCrossTable;
 
-#if defined(AI_COMPILER) || !defined(PRIQUEL)
 private:
 	IReader					*m_tpCrossTableVFS;
 	IReader					*m_chunk;
-#endif // defined(AI_COMPILER) || !defined(PRIQUEL)
-
 public:
-#ifdef PRIQUEL
-	IC						CGameLevelCrossTable	(const void *buffer, const u32 &buffer_size);
-#	ifdef AI_COMPILER
-		IC					CGameLevelCrossTable	(LPCSTR fName);
-#	endif // AI_COMPILER
-#else // PRIQUEL
-#	ifdef AI_COMPILER
-		IC					CGameLevelCrossTable	(LPCSTR fName);
-#	else // AI_COMPILER
 		IC					CGameLevelCrossTable	();
-#	endif // AI_COMPILER
-#endif // PRIQUEL
 
 public:
 	IC virtual				~CGameLevelCrossTable	();

@@ -22,21 +22,10 @@ CALifeSpawnRegistry::CALifeSpawnRegistry	(LPCSTR section)
 {
 	m_spawn_name				= "";
 	seed						(u32(CPU::QPC() & 0xffffffff));
-
-#ifdef PRIQUEL
-	m_game_graph				= 0;
-	m_chunk						= 0;
-	m_file						= 0;
-#endif // PRIQUEL
 }
 
 CALifeSpawnRegistry::~CALifeSpawnRegistry	()
 {
-#ifdef PRIQUEL
-	xr_delete					(m_game_graph);
-	m_chunk->close				();
-	FS.r_close					(m_file);
-#endif // PRIQUEL
 }
 
 void CALifeSpawnRegistry::save				(IWriter &memory_stream)
@@ -50,7 +39,7 @@ void CALifeSpawnRegistry::save				(IWriter &memory_stream)
 	memory_stream.close_chunk	();
 	
 	memory_stream.open_chunk	(1);
-	save_updates				(memory_stream);
+	// save_updates				(memory_stream); ???
 	memory_stream.close_chunk	();
 
 	memory_stream.close_chunk	();
@@ -76,15 +65,11 @@ void CALifeSpawnRegistry::load				(IReader &file_stream, LPCSTR game_name)
 	bool						file_exists = !!FS.exist(file_name, "$game_spawn$", *m_spawn_name, ".spawn");
 	R_ASSERT3					(file_exists,"Can't find spawn file:",*m_spawn_name);
 	
-#ifndef PRIQUEL
 	IReader						*m_file = 0;
-#endif // PRIQUEL
 	VERIFY						(!m_file);
 	m_file						= FS.r_open(file_name);
 	load						(*m_file,&guid);
-#ifndef PRIQUEL
 	FS.r_close					(m_file);
-#endif // PRIQUEL
 
 	chunk0->close				();
 }
@@ -96,15 +81,11 @@ void CALifeSpawnRegistry::load				(LPCSTR spawn_name)
 	string_path					file_name;
 	R_ASSERT3					(FS.exist(file_name, "$game_spawn$", *m_spawn_name, ".spawn"),"Can't find spawn file:",*m_spawn_name);
 	
-#ifndef PRIQUEL
 	IReader						*m_file = 0;
-#endif // PRIQUEL
 	VERIFY						(!m_file);
 	m_file						= FS.r_open(file_name);
 	load						(*m_file);
-#ifndef PRIQUEL
 	FS.r_close					(m_file);
-#endif // PRIQUEL
 }
 
 struct dummy {
@@ -143,24 +124,30 @@ void CALifeSpawnRegistry::load				(IReader &file_stream, xrGUID *save_guid)
 	}
 #endif
 
-	chunk						= file_stream.open_chunk(2);
+	/*chunk						= file_stream.open_chunk(2);
 	load_data					(m_artefact_spawn_positions,*chunk);
-	chunk->close				();
+	chunk->close				();*/
 
 	chunk						= file_stream.open_chunk(3);
 	R_ASSERT2					(chunk,"Spawn version mismatch - REBUILD SPAWN!");
 	ai().patrol_path_storage	(*chunk);
 	chunk->close				();
 
-#ifdef PRIQUEL
-	VERIFY						(!m_chunk);
-	m_chunk						= file_stream.open_chunk(4);
-	R_ASSERT2					(m_chunk,"Spawn version mismatch - REBUILD SPAWN!");
+	if (pSettings->line_exist("engine_custom_spawn", "waypoints_file"))
+	{	
+		string_path fname;
+		FS.update_path(fname, "$game_config$", pSettings->r_string("engine_custom_spawn", "waypoints_file"));
 
-	VERIFY						(!m_game_graph);
-	m_game_graph				= xr_new<CGameGraph>(*m_chunk);
-	ai().game_graph				(m_game_graph);
-#endif // PRIQUEL
+		if (FS.exist(fname))
+		{
+			Msg("Start load of custom waypoints...");
+
+			CInifile way_inifile = CInifile(fname);
+			ai().patrol_path_storage_ini(way_inifile);
+
+			Msg("End load of custom waypoints...");
+		}
+	}
 
 	R_ASSERT2					(header().graph_guid() == ai().game_graph().header().guid(),"Spawn doesn't correspond to the graph : REBUILD SPAWN!");
 
@@ -171,27 +158,27 @@ void CALifeSpawnRegistry::load				(IReader &file_stream, xrGUID *save_guid)
 	Msg							("* %d spawn points are successfully loaded",m_spawns.vertex_count());
 }
 
-void CALifeSpawnRegistry::save_updates		(IWriter &stream)
-{
-	SPAWN_GRAPH::vertex_iterator			I = m_spawns.vertices().begin();
-	SPAWN_GRAPH::vertex_iterator			E = m_spawns.vertices().end();
-	for ( ; I != E; ++I) {
-		stream.open_chunk					((*I).second->vertex_id());
-		(*I).second->data()->save_update	(stream);
-		stream.close_chunk					();
-	}
-}
-
-void CALifeSpawnRegistry::load_updates		(IReader &stream)
-{
-	u32								vertex_id;
-	for (IReader *chunk = stream.open_chunk_iterator(vertex_id); chunk; chunk = stream.open_chunk_iterator(vertex_id,chunk)) {
-		VERIFY						(u32(ALife::_SPAWN_ID(-1)) > vertex_id);
-		const SPAWN_GRAPH::CVertex	*vertex = m_spawns.vertex(ALife::_SPAWN_ID(vertex_id));
-		VERIFY						(vertex);
-		vertex->data()->load_update	(*chunk);
-	}
-}
+//void CALifeSpawnRegistry::save_updates		(IWriter &stream)
+//{
+//	SPAWN_GRAPH::vertex_iterator			I = m_spawns.vertices().begin();
+//	SPAWN_GRAPH::vertex_iterator			E = m_spawns.vertices().end();
+//	for ( ; I != E; ++I) {
+//		stream.open_chunk					((*I).second->vertex_id());
+//		(*I).second->data()->save_update	(stream);
+//		stream.close_chunk					();
+//	}
+//}
+//
+//void CALifeSpawnRegistry::load_updates		(IReader &stream)
+//{
+//	u32								vertex_id;
+//	for (IReader *chunk = stream.open_chunk_iterator(vertex_id); chunk; chunk = stream.open_chunk_iterator(vertex_id,chunk)) {
+//		VERIFY						(u32(ALife::_SPAWN_ID(-1)) > vertex_id);
+//		const SPAWN_GRAPH::CVertex	*vertex = m_spawns.vertex(ALife::_SPAWN_ID(vertex_id));
+//		VERIFY						(vertex);
+//		vertex->data()->load_update	(*chunk);
+//	}
+//}
 
 void CALifeSpawnRegistry::build_root_spawns	()
 {

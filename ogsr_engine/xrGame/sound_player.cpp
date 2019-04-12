@@ -172,9 +172,7 @@ void CSoundPlayer::play				(u32 internal_type, u32 max_start_time, u32 min_start
 	VERIFY						(m_sounds.end() != I);
 	CSoundCollectionParamsFull	&sound = (*I).second.first;
 	if ((*I).second.second->m_sounds.empty()) {
-#ifdef DEBUG
-		Msg						("- There are no sounds in sound collection \"%s\" with internal type %d (sound_script = %d)",*sound.m_sound_prefix,internal_type,StalkerSpace::eStalkerSoundScript);
-#endif
+		MsgDbg						("- There are no sounds in sound collection \"%s%s\" with internal type %d (sound_script = %d)", *sound.m_sound_player_prefix, *sound.m_sound_prefix,internal_type,StalkerSpace::eStalkerSoundScript);
 		return;
 	}
 
@@ -223,7 +221,7 @@ void CSoundPlayer::play				(u32 internal_type, u32 max_start_time, u32 min_start
 	if (max_stop_time)
 		random_time				= (max_stop_time > min_stop_time) ? random(max_stop_time - min_stop_time) + min_stop_time : max_stop_time;
 
-	sound_single.m_stop_time	= sound_single.m_start_time + sound_single.m_sound->_handle()->length_ms() + random_time;
+	sound_single.m_stop_time	= sound_single.m_start_time + iFloor(sound_single.m_sound->get_length_sec()*1000.0f) + random_time;
 	m_playing_sounds.push_back	(sound_single);
 	
 	if (Device.dwTimeGlobal >= m_playing_sounds.back().m_start_time)
@@ -262,10 +260,10 @@ CSoundPlayer::CSoundCollection::CSoundCollection	(const CSoundCollectionParams &
 			}
 		}
 	}
-#ifdef DEBUG
+
 	if (m_sounds.empty())
-		Msg							("- There are no sounds with prefix %s",*params.m_sound_prefix);
-#endif
+		MsgDbg("- There are no sounds with prefix %s%s", *params.m_sound_player_prefix, *params.m_sound_prefix);
+
 }
 
 CSoundPlayer::CSoundCollection::~CSoundCollection	()

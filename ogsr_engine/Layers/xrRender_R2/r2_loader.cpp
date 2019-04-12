@@ -3,16 +3,11 @@
 #include "..\..\xr_3da\resourcemanager.h"
 #include "..\..\xr_3da\fbasicvisual.h"
 #include "..\..\xr_3da\fmesh.h"
-#include "xrLevel.h"
+#include "..\..\xr_3da\xrLevel.h"
 #include "..\..\xr_3da\x_ray.h"
 #include "../../xrCore/stream_reader.h"
 #include "r2_fog_volumes.h"
 #include "r2_puddles.h"
-
-#pragma warning(push)
-#pragma warning(disable:4995)
-#include <malloc.h>
-#pragma warning(pop)
 
 CLevelFog *FV;
 CPuddles *Puddles;
