@@ -350,7 +350,18 @@ void	CEnvironment::mods_load()
 	Modifiers.clear_and_free();
 	string_path							path;
 
-	if (FS.exist(path, "$level$", "level.env_mod"))
+	if (FS.exist(path, "$level$", "level.env_mod.ltx"))
+	{
+		CInifile ltXfile = CInifile(path);
+
+		for (const auto &it : ltXfile.sections())
+		{
+			CEnvModifier		E;
+			E.load_ini(*it.second);
+			Modifiers.push_back(E);
+		}
+	}
+	else if (FS.exist(path, "$level$", "level.env_mod"))
 	{
 		IReader*	fs = FS.r_open(path);
 		u32			id = 0;
@@ -362,18 +373,6 @@ void	CEnvironment::mods_load()
 			id++;
 		}
 		FS.r_close(fs);
-	}
-
-	if (FS.exist(path, "$level$", "level.env_mod.ltx"))
-	{
-		CInifile ltXfile = CInifile(path);
-
-		for (const auto &it : ltXfile.sections())
-		{
-			CEnvModifier		E;
-			E.load_ini(*it.second);
-			Modifiers.push_back(E);
-		}
 	}
 }
 
