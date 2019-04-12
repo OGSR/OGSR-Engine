@@ -1,4 +1,7 @@
 #include "stdafx.h"
+
+#ifdef DX10_FLUID_ENABLE
+
 #include "dx103DFluidData.h"
 
 #include "dx103DFluidManager.h"
@@ -231,3 +234,5 @@ void dx103DFluidData::ReparseProfile(const xr_string &Profile)
 	ParseProfile(Profile);
 }
 #endif	//	DEBUG
+
+#endif

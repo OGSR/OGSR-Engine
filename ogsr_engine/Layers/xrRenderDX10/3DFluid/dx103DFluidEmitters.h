@@ -2,6 +2,8 @@
 #define	dx103DFluidEmitters_included
 #pragma once
 
+#ifdef DX10_FLUID_ENABLE
+
 class dx103DFluidGrid;
 class dx103DFluidData;
 
@@ -71,3 +73,5 @@ private:
 };
 
 #endif	//	dx103DFluidEmitters_included
+
+#endif

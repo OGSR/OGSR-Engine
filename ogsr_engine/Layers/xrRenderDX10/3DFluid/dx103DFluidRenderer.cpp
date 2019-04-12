@@ -1,4 +1,7 @@
 #include "stdafx.h"
+
+#ifdef DX10_FLUID_ENABLE
+
 #include "dx103DFluidRenderer.h"
 
 #include "dx103DFluidBlenders.h"
@@ -943,3 +946,5 @@ void dx103DFluidRenderer::CalculateLighting(const dx103DFluidData &FluidData, Fo
 	//LightData.m_vLightIntencity.set( 1.0f, 0.5f, 0.0f);
 	//LightData.m_vLightIntencity.set( 1.0f, 1.0f, 1.0f);
 }
+
+#endif

@@ -1,4 +1,7 @@
 #include "stdafx.h"
+
+#ifdef DX10_FLUID_ENABLE
+
 #include "dx103DFluidBlenders.h"
 
 #include "dx103DFluidManager.h"
@@ -452,3 +455,5 @@ void CBlender_fluid_raycast::Compile(CBlender_Compile& C)
 	//	Constants must be bound before r_End()
 	C.r_End		();
 }
+
+#endif

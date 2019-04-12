@@ -1,4 +1,7 @@
 #include "stdafx.h"
+
+#ifdef DX10_FLUID_ENABLE
+
 #include "dx103DFluidGrid.h"
 
 #include "../dx10BufferUtils.h"
@@ -304,3 +307,5 @@ void dx103DFluidGrid::DrawBoundaryLines( void )
 	RCache.set_Geometry(m_GeomBoundaryLines);
 	RCache.Render( D3DPT_TRIANGLELIST, 0, m_iNumVerticesBoundaryLines/3);
 }
+
+#endif

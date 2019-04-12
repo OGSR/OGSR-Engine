@@ -1,4 +1,7 @@
 #include "stdafx.h"
+
+#ifdef DX10_FLUID_ENABLE
+
 #include "dx103DFluidEmitters.h"
 
 #include "dx103DFluidBlenders.h"
@@ -173,3 +176,5 @@ void dx103DFluidEmitters::ApplyVelocity( const CEmitter &Emitter)
 
 	m_pGrid->DrawSlices();
 }
+
+#endif

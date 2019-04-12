@@ -426,6 +426,7 @@ void CRender::Load3DFluid()
 	if (!RImplementation.o.volumetricfog)
 		return;
 
+#ifdef DX10_FLUID_ENABLE
 	string_path fn_game;
 	if ( FS.exist( fn_game, "$level$", "level.fog_vol" ) )
 	{
@@ -456,4 +457,5 @@ void CRender::Load3DFluid()
 
 		FS.r_close(F);
 	}
+#endif
 }

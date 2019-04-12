@@ -1,4 +1,7 @@
 #include "stdafx.h"
+
+#ifdef DX10_FLUID_ENABLE
+
 #include "dx103DFluidVolume.h"
 
 #include "dx103DFluidManager.h"
@@ -188,3 +191,5 @@ void dx103DFluidVolume::Release()
 {
 	dxRender_Visual::Release();
 }
+
+#endif

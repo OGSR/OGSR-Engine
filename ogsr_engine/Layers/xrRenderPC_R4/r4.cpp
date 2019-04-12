@@ -413,15 +413,19 @@ void					CRender::create					()
 
 	xrRender_apply_tf			();
 	::PortalTraverser.initialize();
+#ifdef DX10_FLUID_ENABLE
 	FluidManager.Initialize( 70, 70, 70 );
 //	FluidManager.Initialize( 100, 100, 100 );
 	FluidManager.SetScreenSize(Device.dwWidth, Device.dwHeight);
+#endif
 }
 
 void					CRender::destroy				()
 {
 	m_bMakeAsyncSS				= false;
+#ifdef DX10_FLUID_ENABLE
 	FluidManager.Destroy();
+#endif
 	::PortalTraverser.destroy	();
 	//_RELEASE					(q_sync_point[1]);
 	//_RELEASE					(q_sync_point[0]);
@@ -481,7 +485,9 @@ void CRender::reset_end()
 	Target						=	xr_new<CRenderTarget>	();
 
 	xrRender_apply_tf			();
+#ifdef DX10_FLUID_ENABLE
 	FluidManager.SetScreenSize(Device.dwWidth, Device.dwHeight);
+#endif
 
 	// Set this flag true to skip the first render frame,
 	// that some data is not ready in the first frame (for example device camera position)
