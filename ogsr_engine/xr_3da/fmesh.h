@@ -19,6 +19,8 @@ enum MT {
 	MT_PARTICLE_GROUP		=9,
 	MT_SKELETON_RIGID		=10,
 	MT_TREE_PM				=11,
+
+	MT_3DFLUIDVOLUME = 12,
 };
 
 enum OGF_Chuncks {

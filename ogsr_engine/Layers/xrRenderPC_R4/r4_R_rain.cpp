@@ -213,8 +213,7 @@ void CRender::render_rain()
 
 	// Begin SMAP-render
 	{
-		bool	bSpecialFull					= mapNormalPasses[1][0].size() || mapMatrixPasses[1][0].size() || mapSorted.size();
-		VERIFY									(!bSpecialFull);
+		VERIFY(!(mapNormalPasses[1][0].size() || mapMatrixPasses[1][0].size() || mapSorted.size()));
 		HOM.Disable								();
 		phase									= PHASE_SMAP;
 		r_pmask	(true,false	);
