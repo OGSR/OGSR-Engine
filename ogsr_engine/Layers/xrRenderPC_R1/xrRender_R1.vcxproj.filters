@@ -881,12 +881,6 @@
     <ClCompile Include="..\xrRenderDX9\dx9r_constants_cache.cpp">
       <Filter>Refactored\Execution &amp; 3D\Shaders\Resources\dx9_R_shader</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\xrEngine\ai_script_lua_debug.cpp">
-      <Filter>Refactored\Execution &amp; 3D\Shaders\ShaderManager</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\xrEngine\ai_script_lua_extension.cpp">
-      <Filter>Refactored\Execution &amp; 3D\Shaders\ShaderManager</Filter>
-    </ClCompile>
     <ClCompile Include="..\xrRender\ETextureParams.cpp">
       <Filter>Refactored\Execution &amp; 3D\Shaders\ShaderManager</Filter>
     </ClCompile>
