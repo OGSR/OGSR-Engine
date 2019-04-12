@@ -7,7 +7,7 @@
 #include "PhysicsShell.h"
 #include "PHSynchronize.h"
 #include "MathUtils.h"
-#include "../xr_3da/skeletoncustom.h"
+#include "../Include/xrRender/Kinematics.h"
 #include "PHObject.h"
 #include "PHCollideValidator.h"
 #include "ai_object_location.h"
@@ -18,7 +18,7 @@
 
 u32 CPHSkeleton::existence_time=5000;
 
-bool IC CheckObjectSize(CKinematics* K)
+bool IC CheckObjectSize(IKinematics* K)
 {
 	u16 bcount=K->LL_BoneCount();
 	for(u16 i=0;i<bcount;++i)
@@ -44,11 +44,16 @@ CPHSkeleton::~CPHSkeleton()
 
 void CPHSkeleton::RespawnInit()
 {
-	CKinematics*	K	=	smart_cast<CKinematics*>(PPhysicsShellHolder()->Visual());
+	IKinematics*	K	=	smart_cast<IKinematics*>(PPhysicsShellHolder()->Visual());
 	if(K)
 	{
 		K->LL_SetBoneRoot(0);
-		K->LL_SetBonesVisibleAll();
+
+		//K->LL_SetBonesVisibleAll();
+		VisMask new_mask;
+		new_mask.set_all();
+		K->LL_SetBonesVisible(new_mask);
+
 		K->CalculateBones_Invalidate();
 		K->CalculateBones();
 	}
@@ -87,10 +92,10 @@ bool CPHSkeleton::Spawn(CSE_Abstract *D)
 	else 
 	{
 		CPhysicsShellHolder	*obj	=	PPhysicsShellHolder();
-		CKinematics			*K		=	NULL;
+		IKinematics			*K		=	NULL;
 		if (obj->Visual())
 		{
-			K= smart_cast<CKinematics*>(obj->Visual());
+			K= smart_cast<IKinematics*>(obj->Visual());
 			if(K)
 			{
 				K->LL_SetBoneRoot(po->saved_bones.root_bone);
@@ -189,7 +194,7 @@ void CPHSkeleton::SaveNetState(NET_Packet& P)
 
 	CPhysicsShellHolder* obj=PPhysicsShellHolder();
 	CPhysicsShell* pPhysicsShell=obj->PPhysicsShell();
-	CKinematics* K	=smart_cast<CKinematics*>(obj->Visual());
+	IKinematics* K	=smart_cast<IKinematics*>(obj->Visual());
 	if(pPhysicsShell&&pPhysicsShell->isActive())			m_flags.set(CSE_PHSkeleton::flActive,pPhysicsShell->isEnabled());
 
 	P.w_u8 (m_flags.get());
@@ -341,8 +346,8 @@ void CPHSkeleton::UnsplitSingle(CPHSkeleton* SO)
 	CPhysicsShell* newPhysicsShell=m_unsplited_shels.front().first;
 	O->m_pPhysicsShell=newPhysicsShell;
 	VERIFY(_valid(newPhysicsShell->mXFORM));
-	CKinematics *newKinematics=smart_cast<CKinematics*>(O->Visual());
-	CKinematics *pKinematics  =smart_cast<CKinematics*>(obj->Visual());
+	IKinematics *newKinematics=smart_cast<IKinematics*>(O->Visual());
+	IKinematics *pKinematics  =smart_cast<IKinematics*>(obj->Visual());
 
 	VisMask mask0,mask1;
 	u16 split_bone=m_unsplited_shels.front().second;
@@ -409,7 +414,7 @@ void CPHSkeleton::RecursiveBonesCheck(u16 id)
 {
 	if(!removable) return;
 	CPhysicsShellHolder* obj=PPhysicsShellHolder();
-	CKinematics* K		= smart_cast<CKinematics*>(obj->Visual());
+	IKinematics* K		= smart_cast<IKinematics*>(obj->Visual());
 	CBoneData& BD		= K->LL_GetData(u16(id));
 	//////////////////////////////////////////
 	VisMask mask;
@@ -431,7 +436,7 @@ bool CPHSkeleton::ReadyForRemove()
 {
 	removable=true;
 	CPhysicsShellHolder* obj=PPhysicsShellHolder();
-	RecursiveBonesCheck(smart_cast<CKinematics*>(obj->Visual())->LL_GetBoneRoot());
+	RecursiveBonesCheck(smart_cast<IKinematics*>(obj->Visual())->LL_GetBoneRoot());
 	return removable;
 }
 void CPHSkeleton::InitServerObject(CSE_Abstract * D)
@@ -488,7 +493,7 @@ void CPHSkeleton::SyncNetState() {
 
   auto& saved_bones = po->saved_bones;
   u16 bones_number  = obj->PHGetSyncItemsNumber();
-  auto K = smart_cast<CKinematics*>( obj->Visual() );
+  auto K = smart_cast<IKinematics*>( obj->Visual() );
   if ( K ) {
     saved_bones.bones_mask = K->LL_GetBonesVisible();
     saved_bones.root_bone  = K->LL_GetBoneRoot();

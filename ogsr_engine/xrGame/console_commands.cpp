@@ -32,7 +32,6 @@
 #include "MainMenu.h"
 #include "saved_game_wrapper.h"
 #include "level_graph.h"
-#include "../xr_3da/resourcemanager.h"
 #include "cameralook.h"
 
 #ifdef DEBUG
@@ -49,7 +48,7 @@ extern	u64		g_qwStartGameTime;
 extern	u64		g_qwEStartGameTime;
 
 ENGINE_API
-extern	float	psHUD_FOV;
+extern	float	psHUD_FOV_def;
 extern	float	psSqueezeVelocity;
 
 extern	int		x_m_x;
@@ -106,8 +105,9 @@ public:
 		u32		_eco_smem		= g_pSharedMemoryContainer->stat_economy	();
 		u32		m_base=0,c_base=0,m_lmaps=0,c_lmaps=0;
 		
-		if (Device.Resources)	Device.Resources->_GetMemoryUsage	(m_base,c_base,m_lmaps,c_lmaps);
-		
+		//	Resource check moved to m_pRender
+		if (Device.m_pRender) Device.m_pRender->ResourcesGetMemoryUsage(m_base, c_base, m_lmaps, c_lmaps);
+
 		Log("--------------------------------------------------------------------------------");
 
 		SProcessMemInfo memCounters;
@@ -1050,11 +1050,11 @@ public:
 			return;
 		}
 
-		IRender_Visual			*visual = Render->model_Create(arguments);
-		CKinematics				*kinematics = smart_cast<CKinematics*>(visual);
+		IRenderVisual			*visual = Render->model_Create(arguments);
+		IKinematics				*kinematics = smart_cast<IKinematics*>(visual);
 		if (!kinematics) {
 			Render->model_Delete(visual);
-			Msg					("! Invalid visual type \"%s\" (not a CKinematics)",arguments);
+			Msg					("! Invalid visual type \"%s\" (not a IKinematics)",arguments);
 			return;
 		}
 
@@ -1147,7 +1147,7 @@ void CCC_RegisterCommands()
 	CMD3(CCC_Mask,				"hud_crosshair_dist",	&psHUD_Flags,	HUD_CROSSHAIR_DIST);
 
 //#ifdef DEBUG
-	CMD4(CCC_Float,				"hud_fov",				&psHUD_FOV,		0.1f,	1.0f);
+	CMD4(CCC_Float,				"hud_fov",				&psHUD_FOV_def,		0.1f,	1.0f);
 	CMD4(CCC_Float,				"fov",					&g_fov,			5.0f,	140.0f);
 //#endif // DEBUG
 

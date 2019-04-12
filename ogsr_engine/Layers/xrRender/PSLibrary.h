@@ -1,18 +1,35 @@
 //----------------------------------------------------
 // file: PSLibrary.h
 //----------------------------------------------------
-#pragma once
+#ifndef PSLibraryH
+#define PSLibraryH
 
-#include "ParticleEffect.h"
-#include "ParticleGroup.h"
+#include "../../include/xrRender/particles_systems_library_interface.hpp"
 
-class ECORE_API CPSLibrary	{
-    PS::PEDVec			m_PEDs;
+namespace PS {
+	class CPEDef;
+	DEFINE_VECTOR(CPEDef*,PEDVec,PEDIt);
+
+	class CPGDef;
+	DEFINE_VECTOR(CPGDef*,PGDVec,PGDIt);
+} // namespace PS
+
+class ECORE_API CPSLibrary : public particles_systems::library_interface {
+	PS::PEDVec			m_PEDs;
     PS::PGDVec			m_PGDs;
+
+#ifdef _EDITOR    
+    AnsiString			m_CurrentParticles;
+public:
+	void __stdcall	 	FindByName		(LPCSTR new_name, bool& res);
+#endif
 
 public:
     bool 				Load			(LPCSTR nm);
     bool				Save			(LPCSTR nm);
+    
+	bool				Load2			();
+	bool				Save2			();
 public:
 						CPSLibrary		(){;}
     		 			~CPSLibrary		(){;}
@@ -39,9 +56,12 @@ public:
 
     void				Reload			();
     bool				Save			();
-};
 
-#define PSLIB_FILENAME 			"particles.xr"
+	virtual	PS::CPGDef const* const*	particles_group_begin	() const;
+	virtual	PS::CPGDef const* const*	particles_group_end		() const;
+	virtual	void						particles_group_next	(PS::CPGDef const* const*& iterator) const;
+	virtual	shared_str const&			particles_group_id		(PS::CPGDef const& particles_group) const;
+};
 
 #define PS_LIB_SIGN 			"PS_LIB"
 
@@ -51,3 +71,6 @@ public:
 #define PS_CHUNK_FIRSTGEN		0x0002
 #define PS_CHUNK_SECONDGEN		0x0003
 #define PS_CHUNK_THIRDGEN		0x0004
+
+#endif /*_INCDEF_PSLibrary_H_*/
+

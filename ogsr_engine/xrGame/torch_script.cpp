@@ -23,12 +23,15 @@ void CTorch::SetAnimation(LPCSTR name)
 
 void CTorch::SetBrightness(float brightness)
 {
+#pragma todo("KRodin: адаптировать под новые рендеры!")
+	/*
 	auto c = light_render->get_color();
 	if (fBrightness > 0)
 		c.mul_rgb(255.f / fBrightness);
 
 	fBrightness = brightness;
 	SetColor(c); // immediate update
+	*/
 }
 
 void CTorch::SetColor(const Fcolor &color, int target)

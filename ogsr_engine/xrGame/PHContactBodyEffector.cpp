@@ -3,7 +3,7 @@
 #include "ExtendedGeom.h"
 #include "tri-colliderknoopc/dTriList.h"
 #include "PhysicsCommon.h"
-#include "gamemtllib.h"
+#include "../xr_3da/gamemtllib.h"
 #include "MathUtils.h"
 void CPHContactBodyEffector::Init(dBodyID body,const dContact& contact,SGameMtl* material)
 {

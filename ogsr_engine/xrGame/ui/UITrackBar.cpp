@@ -13,10 +13,10 @@
 
 CUITrackBar::CUITrackBar()
 	: m_f_min(0),
-	  m_f_max(1),
-	  m_f_val(0),
-	  m_f_back_up(0),
-	 m_f_step(0.01f),
+	m_f_max(1),
+	m_f_val(0),
+	m_f_back_up(0),
+	m_f_step(0.01f),
 	m_b_is_float(true),
 	m_b_invert(false)
 {	
@@ -54,7 +54,6 @@ void CUITrackBar::Init(float x, float y, float width, float height){
 	float				item_width;
 	CUIWindow::Init		(x, y, width, DEF_CONTROL_HEIGHT);
 
-
 	item_height			= CUITextureMaster::GetTextureHeight(strconcat(sizeof(buf),buf,FRAME_LINE_TEXTURE,"_b"));
 	m_pFrameLine->Init	(0, (height - item_height)/2, width, item_height);
 	m_pFrameLine->InitTexture(FRAME_LINE_TEXTURE);
@@ -63,7 +62,7 @@ void CUITrackBar::Init(float x, float y, float width, float height){
 
 	strconcat			(sizeof(buf),buf,SLIDER_TEXTURE,"_e");
 	item_width			= CUITextureMaster::GetTextureWidth(buf);
-    item_height			= CUITextureMaster::GetTextureHeight(buf);
+	item_height			= CUITextureMaster::GetTextureHeight(buf);
 
 	item_width *= UI()->get_current_kx();
 
@@ -73,10 +72,26 @@ void CUITrackBar::Init(float x, float y, float width, float height){
 
 void CUITrackBar::SetCurrentValue()
 {
-	if(m_b_is_float)
-		GetOptFloatValue	(m_f_val, m_f_min, m_f_max);
+	if (m_b_is_float)
+	{
+		GetOptFloatValue(m_f_val, m_f_min, m_f_max);
+
+		if (!fis_zero(m_f_min_xml) && m_f_min_xml > m_f_min)
+			m_f_min = m_f_min_xml;
+
+		if (!fis_zero(m_f_max_xml) && m_f_max_xml < m_f_max)
+			m_f_max = m_f_max_xml;
+	}
 	else
-		GetOptIntegerValue		(m_i_val, m_i_min, m_i_max);
+	{
+		GetOptIntegerValue(m_i_val, m_i_min, m_i_max);
+
+		if (!fis_zero(m_f_min_xml) && m_f_min_xml > m_i_min)
+			m_i_min = iFloor(m_f_min_xml);
+
+		if (!fis_zero(m_f_max_xml) && m_f_max_xml < m_i_max)
+			m_i_max = iFloor(m_f_max_xml);
+	}
 
 	UpdatePos			();
 }
@@ -90,10 +105,25 @@ void CUITrackBar::Draw()
 void CUITrackBar::SaveValue()
 {
 	CUIOptionsItem::SaveValue	();
-	if(m_b_is_float)
-		SaveOptFloatValue			(m_f_val);
+
+	string128 buf;
+	if (m_b_is_float)
+	{
+		SaveOptFloatValue(m_f_val);
+		if (m_f_step >= 1)
+			sprintf_s(buf, "%2.0f", m_f_val);
+		else if (m_f_step >= 0.1)
+			sprintf_s(buf, "%3.1f", m_f_val);
+		else
+			sprintf_s(buf, "%4.2f", m_f_val);
+	}
 	else
-		SaveOptIntegerValue			(m_i_val);
+	{
+		SaveOptIntegerValue(m_i_val);
+		sprintf_s(buf, "%d", m_i_val);
+	}
+
+	m_pSlider->SetText(buf);
 }
 
 bool CUITrackBar::IsChanged()

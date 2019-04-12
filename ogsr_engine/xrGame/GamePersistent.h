@@ -15,9 +15,15 @@ class CGamePersistent:
 {
 	// ambient particles
 	CParticlesObject*	ambient_particles; 
-	u32					ambient_sound_next_time;
+	u32					ambient_sound_next_time[20]; //max snd channels
 	u32					ambient_effect_next_time;
 	u32					ambient_effect_stop_time;
+
+	float				ambient_effect_wind_start;
+	float				ambient_effect_wind_in_time;
+	float				ambient_effect_wind_end;
+	float				ambient_effect_wind_out_time;
+	bool				ambient_effect_wind_on;
 
 	CUISequencer*		m_intro;
 	EVENT				eQuickLoad;
@@ -60,14 +66,17 @@ public:
 
 	virtual void		UpdateGameType			();
 
-	virtual void		RegisterModel			(IRender_Visual* V);
+	virtual void		RegisterModel			(IRenderVisual* V);
 	virtual	float		MtlTransparent			(u32 mtl_idx);
 	virtual	void		Statistics				(CGameFont* F);
 
 	virtual bool		OnRenderPPUI_query		();
 	virtual void		OnRenderPPUI_main		();
 	virtual void		OnRenderPPUI_PP			();
-	virtual	void		LoadTitle				(LPCSTR str);
+	virtual	void		LoadTitle(bool change_tip = false, shared_str map_name = "");
+
+	virtual bool		CanBePaused();
+
 };
 
 IC CGamePersistent&		GamePersistent()		{ return *((CGamePersistent*) g_pGamePersistent);			}

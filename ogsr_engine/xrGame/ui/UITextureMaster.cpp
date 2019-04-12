@@ -166,7 +166,7 @@ TEX_INFO CUITextureMaster::FindItem(LPCSTR texture_name, LPCSTR def_texture_name
 	}
 }
 
-void CUITextureMaster::GetTextureShader(LPCSTR texture_name, ref_shader& sh){
+void CUITextureMaster::GetTextureShader(LPCSTR texture_name, ui_shader& sh){
 	xr_map<shared_str, TEX_INFO>::iterator	it;
 	it = m_textures.find(texture_name);
 
@@ -174,5 +174,5 @@ void CUITextureMaster::GetTextureShader(LPCSTR texture_name, ref_shader& sh){
 	if (it == m_textures.end())
 		Msg("! CUITextureMaster::GetTextureShader Can't find texture", texture_name);
 
-	sh.create("hud\\default", *((*it).second.file));	
+	sh->create("hud\\default", *((*it).second.file));	
 }

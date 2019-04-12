@@ -7,7 +7,7 @@
 #include "ShootingObject.h"
 #include "hud_item_object.h"
 #include "Actor_Flags.h"
-#include "..\xr_3da\skeletonanimated.h"
+#include "..\Include/xrRender/KinematicsAnimated.h"
 #include "game_cl_single.h"
 #include "xrServer_Objects_ALife.h"
 #include "xrServer_Objects_ALife_Items.h"
@@ -20,6 +20,12 @@ class CSE_ALifeItemWeaponAmmo;
 class CWeaponMagazined;
 class CParticlesObject;
 class CUIStaticItem;
+
+ENGINE_API extern float psHUD_FOV;
+ENGINE_API extern float psHUD_FOV_def;
+
+constexpr float def_min_zoom_k = 0.3f;
+constexpr float def_zoom_step_count = 4.0f;
 
 class CWeapon : public CHudItemObject,
 				public CShootingObject
@@ -229,9 +235,10 @@ protected:
 //	для режима приближения и снайперского прицела
 ///////////////////////////////////////////////////
 protected:
-	// разрешение регулирования приближения. Real Wolf.
+	//разрешение регулирования приближения. Real Wolf.
 	bool			m_bScopeDynamicZoom;
-	float			m_fRTZoomFactor; //run-time zoom factor
+	//run-time zoom factor
+	float			m_fRTZoomFactor;
 	//разрешение режима приближения
 	bool			m_bZoomEnabled;
 	//текущий фактор приближения
@@ -251,18 +258,29 @@ protected:
 	//от 0 до 1, показывает насколько процентов
 	//мы перемещаем HUD  
 	float			m_fZoomRotationFactor;
-	//модификатор изменения FOV во втором вьюпорте при зуме
-	float m_fSecondVP_FovFactor; 
+	//коэффициент увеличения во втором вьюпорте при зуме
+	float			m_fSecondVPZoomFactor;
+	//прятать перекрестие в режиме прицеливания
 	bool			m_bHideCrosshairInZoom;
+	//разрешить инерцию оружия в режиме прицеливания
 	bool			m_bZoomInertionAllow;
+	//Целевой HUD FOV при зуме
+	float			m_fZoomHudFov;
+	//Целевой HUD FOV для линзы
+	float			m_fSecondVPHudFov;
+
+	bool m_bUseScopeZoom			= false;
+	bool m_bUseScopeGrenadeZoom		= false;
+
+	float m_fMinZoomK			= def_min_zoom_k;
+	float m_fZoomStepCount		= def_zoom_step_count;
 
 	float			m_fScopeInertionFactor;
 public:
 
 	IC bool					IsZoomEnabled		()	const	{return m_bZoomEnabled;}
 	void					GetZoomData			(float scope_factor, float& delta, float& min_zoom_factor);
-	virtual	void			ZoomInc				();
-	virtual	void			ZoomDec				();
+	virtual	void			ZoomChange			(bool inc);
 	virtual void			OnZoomIn			();
 	virtual void			OnZoomOut			();
 			bool			IsZoomed			()	const	{return m_bZoomMode;};
@@ -369,6 +387,8 @@ protected:
 	virtual void			AddShotEffector		();
 	virtual void			RemoveShotEffector	();
 	virtual	void			ClearShotEffector	();
+
+	bool			IsGrenadeMode() const;
 
 public:
 	//текущая дисперсия (в радианах) оружия с учетом используемого патрона
@@ -504,6 +524,16 @@ protected:
 	// therefore we should hold them by ourself :-((
 	float					m_addon_holder_range_modifier;
 	float					m_addon_holder_fov_modifier;
+
+	float m_nearwall_last_hud_fov;
+
+	float m_nearwall_target_hud_fov = 0.f;
+	float m_nearwall_dist_max = 0.f;
+	float m_nearwall_dist_min = 0.f;
+	float m_nearwall_speed_mod = 0.f;
+
+	bool m_nearwall_on = false;
+
 public:
 	virtual	void			modify_holder_params		(float &range, float &fov) const;
 	virtual bool			use_crosshair				()	const {return true;}
@@ -523,11 +553,10 @@ public:
 	void UpdateZoomOffset();
 	//
 	void UpdateSecondVP(); //
-	float GetZRotatingFactor() const { return m_fZoomRotationFactor; }    //--#SM+#--
-	float GetSecondVP_FovFactor() const { return m_fSecondVP_FovFactor; } //--#SM+#--
+	float GetZRotatingFactor() const { return m_fZoomRotationFactor; } //--#SM+#--
+	float GetSecondVPFov() const; //--#SM+#--
 	bool SecondVPEnabled() const;
+	float GetHudFov();
 
 	void SwitchScope();
 };
-
-extern float default_fov;// = 67.5f;

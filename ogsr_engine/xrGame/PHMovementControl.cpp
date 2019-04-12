@@ -1,5 +1,4 @@
 #include "stdafx.h"
-#include "cl_intersect.h"
 #include "alife_space.h"
 #include "phmovementcontrol.h"
 #include "entity.h"
@@ -10,11 +9,12 @@
 #include "PHCapture.h"
 #include "ai_space.h"
 #include "detail_path_manager.h"
-#include "GameMtlLib.h"
+#include "../xr_3da/GameMtlLib.h"
 #include "Level.h"
 #include "ElevatorState.h"
 #include "CalculateTriangle.h"
-#include "../xr_3da/skeletoncustom.h"
+#include "../Include/xrRender/Kinematics.h"
+
 #define GROUND_FRICTION	10.0f
 #define AIR_FRICTION	0.01f
 #define WALL_FRICTION	3.0f

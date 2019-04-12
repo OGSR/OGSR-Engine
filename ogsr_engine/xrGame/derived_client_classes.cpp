@@ -106,6 +106,7 @@ void CEatableItemScript::script_register(lua_State *L)
 			.def_readwrite("eat_radiation"				,			&CEatableItem::m_fRadiationInfluence)
 			.def_readwrite("eat_max_power"				,			&CEatableItem::m_fMaxPowerUpInfluence)
 			.def_readwrite("eat_psy_health"				,			&CEatableItem::m_fPsyHealthInfluence)
+			.def_readwrite("eat_thirst"					,			&CEatableItem::m_fThirstInfluence)
 			.def_readwrite("wounds_heal_perc"			,			&CEatableItem::m_fWoundsHealPerc)
 			.def_readwrite("eat_portions_num"			,			&CEatableItem::m_iPortionsNum)
 			.def_readwrite("eat_start_portions_num"		,			&CEatableItem::m_iStartPortionsNum)			
@@ -340,7 +341,7 @@ void COutfitScript::script_register(lua_State *L)
 int			get_fire_bone(CWeaponHUD *hud)  { return hud->FireBone();  }
 const Fvector&	get_fire_point1 (CWeaponHUD *hud) { return hud->FirePoint(); }
 const Fvector&	get_fire_point2 (CWeaponHUD *hud) { return hud->FirePoint2(); }
-IRender_Visual* get_hud_visual(CWeaponHUD *hud)   { return hud->Visual(); }
+IRenderVisual* get_hud_visual(CWeaponHUD *hud)   { return hud->Visual(); }
 
 #ifdef NLC_EXTENSIONS
 extern void attach_upgrades(lua_State *L);
@@ -517,7 +518,7 @@ void CWeaponScript::script_register(lua_State *L)
 			.def("switch_scope"							,			&CWeapon::SwitchScope)
 			.def_readwrite("scope_inertion_factor"		,			&CWeapon::m_fScopeInertionFactor)
 
-			.def_readwrite("scope_lense_fov_factor",				&CWeapon::m_fSecondVP_FovFactor)
+			.def_readwrite("scope_lense_fov_factor",				&CWeapon::m_fSecondVPZoomFactor)
 			.def("second_vp_enabled",								&CWeapon::SecondVPEnabled)
 
 			.property("ammo_elapsed"					,			&CWeapon::GetAmmoElapsed, &CWeapon::SetAmmoElapsed)

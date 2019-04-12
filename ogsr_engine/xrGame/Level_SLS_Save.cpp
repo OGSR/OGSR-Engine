@@ -1,6 +1,6 @@
 #include "stdafx.h"
 #include "HUDmanager.h"
-#include "xrLevel.h"
+#include "..\xr_3da\xrLevel.h"
 #include "Level.h"
 #include "xrserver.h"
 

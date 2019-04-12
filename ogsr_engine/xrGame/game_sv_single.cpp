@@ -188,20 +188,25 @@ void game_sv_Single::SetGameTimeFactor		(const float fTimeFactor)
 		return(inherited::SetGameTimeFactor(fTimeFactor));
 }
 
-ALife::_TIME_ID game_sv_Single::GetEnvironmentGameTime		()
+
+ALife::_TIME_ID game_sv_Single::GetEnvironmentGameTime()
 {
-	return(inherited::GetGameTime());
+	if (ai().get_alife() && ai().alife().initialized())
+		return(alife().time_manager().game_time());
+	else
+		return(inherited::GetGameTime());
 }
 
-float game_sv_Single::GetEnvironmentGameTimeFactor		()
+float game_sv_Single::GetEnvironmentGameTimeFactor()
 {
 	return(inherited::GetGameTimeFactor());
 }
 
-void game_sv_Single::SetEnvironmentGameTimeFactor		(const float fTimeFactor)
+void game_sv_Single::SetEnvironmentGameTimeFactor(const float fTimeFactor)
 {
-//	return(inherited::SetGameTimeFactor(fTimeFactor));
+	return(inherited::SetGameTimeFactor(fTimeFactor));
 }
+
 
 bool game_sv_Single::change_level					(NET_Packet &net_packet, ClientID sender)
 {
@@ -330,6 +335,6 @@ void game_sv_Single::restart_simulator			(LPCSTR saved_game_name)
 	pApp->LoadBegin			();
 	m_alife_simulator		= xr_new<CALifeSimulator>(&server(),&options);
 	g_pGamePersistent->LoadTitle		("st_client_synchronising");
-	Device.PreCache			(30);
+	Device.PreCache(60, true, true);
 	pApp->LoadEnd			();
 }

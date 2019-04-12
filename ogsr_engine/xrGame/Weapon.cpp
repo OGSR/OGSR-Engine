@@ -20,7 +20,7 @@
 
 #include "xr_level_controller.h"
 #include "game_cl_base.h"
-#include "../xr_3da/skeletoncustom.h"
+#include "../Include/xrRender/Kinematics.h"
 #include "ai_object_location.h"
 #include "clsid_game.h"
 #include "mathutils.h"
@@ -87,6 +87,8 @@ CWeapon::CWeapon(LPCSTR name)
 	m_ef_weapon_type		= u32(-1);
 	m_UIScope				= NULL;
 	m_set_next_ammoType_on_reload = u32(-1);
+
+	m_nearwall_last_hud_fov = psHUD_FOV_def;
 }
 
 CWeapon::~CWeapon		()
@@ -129,7 +131,7 @@ void CWeapon::UpdateXForm	()
 			return;
 
 		R_ASSERT		(E);
-		CKinematics*	V		= smart_cast<CKinematics*>	(E->Visual());
+		IKinematics*	V		= smart_cast<IKinematics*>	(E->Visual());
 		VERIFY			(V);
 
 		// Get matrices
@@ -178,7 +180,7 @@ void CWeapon::UpdateFireDependencies_internal()
 		if (GetHUDmode() && (0!=H_Parent()) )
 		{
 			// 1st person view - skeletoned
-			CKinematics* V			= smart_cast<CKinematics*>(m_pHUD->Visual());
+			IKinematics* V			= smart_cast<IKinematics*>(m_pHUD->Visual());
 			VERIFY					(V);
 			V->CalculateBones		();
 
@@ -372,6 +374,9 @@ void CWeapon::Load		(LPCSTR section)
 	m_eGrenadeLauncherStatus = (ALife::EWeaponAddonStatus)pSettings->r_s32(section,"grenade_launcher_status");
 
 	m_bZoomEnabled = !!pSettings->r_bool(section,"zoom_enabled");
+	m_bUseScopeZoom = !!READ_IF_EXISTS(pSettings, r_bool, section, "use_scope_zoom", false);
+	m_bUseScopeGrenadeZoom = !!READ_IF_EXISTS(pSettings, r_bool, section, "use_scope_grenade_zoom", false);
+
 	m_fZoomRotateTime = ROTATION_TIME;
 	m_bScopeDynamicZoom = false;
 	m_fScopeZoomFactor = 0;
@@ -386,7 +391,6 @@ void CWeapon::Load		(LPCSTR section)
 		m_iScopeY = pSettings->r_s32(section,"scope_y");
 	}
 
-    
 	if(m_eSilencerStatus == ALife::eAddonAttachable)
 	{
 		m_sSilencerName = pSettings->r_string(section,"silencer_name");
@@ -394,7 +398,6 @@ void CWeapon::Load		(LPCSTR section)
 		m_iSilencerY = pSettings->r_s32(section,"silencer_y");
 	}
 
-    
 	if(m_eGrenadeLauncherStatus == ALife::eAddonAttachable)
 	{
 		m_sGrenadeLauncherName = pSettings->r_string(section,"grenade_launcher_name");
@@ -417,7 +420,10 @@ void CWeapon::Load		(LPCSTR section)
 	else
 		m_sWpn_launcher_bone = wpn_launcher_def_bone;
 
-    m_fSecondVP_FovFactor = 0.0f; //Можно и из конфига прицела читать и наоборот! Пока так.
+	//Можно и из конфига прицела читать и наоборот! Пока так.
+	m_fSecondVPZoomFactor = 0.0f;
+	m_fZoomHudFov = 0.0f;
+	m_fSecondVPHudFov = 0.0f;
 	m_fScopeInertionFactor = m_fControlInertionFactor;
 
 	InitAddons();
@@ -456,16 +462,26 @@ void CWeapon::Load		(LPCSTR section)
 	}
 	
 	m_highlightAddons.clear();
-	if ( pSettings->line_exist( section, "highlight_addons" ) ) {
-	  LPCSTR S = pSettings->r_string( section, "highlight_addons" );
-	  if ( S && S[ 0 ] ) {
-	    string128 _addonItem;
-	    int count = _GetItemCount( S );
-	    for ( int it = 0; it < count; ++it ) {
-	      _GetItem( S, it, _addonItem );
-	      m_highlightAddons.push_back( _addonItem );
-	    }
-	  }
+	if (pSettings->line_exist(section, "highlight_addons")) {
+		LPCSTR S = pSettings->r_string(section, "highlight_addons");
+		if (S && S[0]) {
+			string128 _addonItem;
+			int count = _GetItemCount(S);
+			for (int it = 0; it < count; ++it) {
+				_GetItem(S, it, _addonItem);
+				m_highlightAddons.push_back(_addonItem);
+			}
+		}
+	}
+
+	m_nearwall_on = READ_IF_EXISTS(pSettings, r_bool, section, "nearwall_on", false);
+	if (m_nearwall_on)
+	{
+		// Параметры изменения HUD FOV когда игрок стоит вплотную к стене
+		m_nearwall_target_hud_fov = READ_IF_EXISTS(pSettings, r_float, section, "nearwall_target_hud_fov", 0.27f);
+		m_nearwall_dist_min = READ_IF_EXISTS(pSettings, r_float, section, "nearwall_dist_min", 0.5f);
+		m_nearwall_dist_max = READ_IF_EXISTS(pSettings, r_float, section, "nearwall_dist_max", 1.f);
+		m_nearwall_speed_mod = READ_IF_EXISTS(pSettings, r_float, section, "nearwall_speed_mod", 10.f);
 	}
 }
 
@@ -511,13 +527,11 @@ void CWeapon::LoadZoomOffset(LPCSTR section, LPCSTR prefix)
 		is_second_zoom_offset_enabled = false;
 		//Msg("~~Second scope disabled!");
 	}
+
 	//Зум фактор обновлять здесь необходимо. second_soom_factor поддерживается.
-	auto wpn_w_gl = smart_cast<CWeaponMagazinedWGrenade*>(this);
-	if (wpn_w_gl)
-		m_fZoomFactor = wpn_w_gl->CurrentZoomFactor();
-	else
-		m_fZoomFactor = this->CurrentZoomFactor();
+	m_fZoomFactor = this->CurrentZoomFactor();
 	//
+
 	if(pSettings->line_exist(hud_sect, "zoom_rotate_time"))
 		m_fZoomRotateTime = pSettings->r_float(hud_sect,"zoom_rotate_time");
 
@@ -526,21 +540,31 @@ void CWeapon::LoadZoomOffset(LPCSTR section, LPCSTR prefix)
 
 void CWeapon::UpdateZoomOffset() //Собрал все манипуляции с зум оффсетом сюда, чтоб были в одном месте.
 {
-	if (m_bZoomEnabled && m_pHUD) {
-		auto wpn_w_gl = smart_cast<CWeaponMagazinedWGrenade*>(this);
-		if (wpn_w_gl) {
-			if (wpn_w_gl->m_bGrenadeMode)
-				LoadZoomOffset(*hud_sect, "grenade_");
+	if (m_bZoomEnabled && m_pHUD)
+	{
+		const bool has_gl = GrenadeLauncherAttachable() && IsGrenadeLauncherAttached();
+		const bool has_scope = ScopeAttachable() && IsScopeAttached();
+
+		if (IsGrenadeMode())
+		{
+			if (m_bUseScopeGrenadeZoom && has_scope)
+				LoadZoomOffset(*hud_sect, "scope_grenade_");
 			else
-			{
-				if ( GrenadeLauncherAttachable() && IsGrenadeLauncherAttached() )
-					LoadZoomOffset(*hud_sect, "grenade_normal_");
-				else
-					LoadZoomOffset(*hud_sect, "");
-			}
+				LoadZoomOffset(*hud_sect, "grenade_");
 		}
-		else {
-			LoadZoomOffset(*hud_sect, "");
+		else if (has_gl)
+		{
+			if (m_bUseScopeZoom && has_scope)
+				LoadZoomOffset(*hud_sect, "scope_grenade_normal_");
+			else
+				LoadZoomOffset(*hud_sect, "grenade_normal_");
+		}
+		else
+		{
+			if (m_bUseScopeZoom && has_scope)
+				LoadZoomOffset(*hud_sect, "scope_");
+			else
+				LoadZoomOffset(*hud_sect, "");
 		}
 	}
 }
@@ -764,6 +788,7 @@ void CWeapon::OnH_B_Independent	(bool just_before_destroy)
 	m_fZoomRotationFactor	= 0.f;
 	UpdateXForm					();
 
+	m_nearwall_last_hud_fov = psHUD_FOV_def;
 }
 
 void CWeapon::OnH_A_Independent	()
@@ -806,6 +831,8 @@ void CWeapon::OnH_B_Chield		()
 
 	OnZoomOut					();
 	m_set_next_ammoType_on_reload	= u32(-1);
+
+	m_nearwall_last_hud_fov = psHUD_FOV_def;
 }
 
 static float state_time = 0;				// таймер нахождения оружия в текущем состоянии
@@ -882,7 +909,7 @@ void CWeapon::UpdateCL		()
 	UpdateFlameParticles	();
 	UpdateFlameParticles2	();
 	
-	VERIFY(smart_cast<CKinematics*>(Visual()));
+	VERIFY(smart_cast<IKinematics*>(Visual()));
 
         if ( GetState() == eIdle ) {
           auto state = idle_state();
@@ -1019,17 +1046,10 @@ bool CWeapon::Action(s32 cmd, u32 flags)
 			if (IsZoomEnabled() && IsZoomed() && m_bScopeDynamicZoom && IsScopeAttached() && !is_second_zoom_offset_enabled && (flags&CMD_START))
 			{
 				// если в режиме ПГ - не будем давать использовать динамический зум
-				auto wpn_w_gl = smart_cast<CWeaponMagazinedWGrenade*>(this);
-				if (wpn_w_gl && wpn_w_gl->m_bGrenadeMode)
+				if (IsGrenadeMode())
 					return false;
 
-				if (cmd == kWPN_ZOOM_INC)  
-					ZoomInc();
-				else
-					ZoomDec();
-
-				if (H_Parent() && !IsRotatingToZoom())
-					m_fRTZoomFactor = m_fZoomFactor; //store current
+				ZoomChange(cmd == kWPN_ZOOM_INC);
 
 				return true;
 			}
@@ -1049,55 +1069,52 @@ bool CWeapon::Action(s32 cmd, u32 flags)
 
 void CWeapon::GetZoomData(const float scope_factor, float& delta, float& min_zoom_factor)
 {
-	float min_zoom_k = 0.3f;
-	float zoom_step_count = 4.0f;
-
 	float def_fov = Core.Features.test(xrCore::Feature::ogse_wpn_zoom_system) ? 1.f : g_fov;
 	float delta_factor_total = def_fov-scope_factor;
 	VERIFY(delta_factor_total>0);
-	min_zoom_factor = def_fov-delta_factor_total*min_zoom_k;
-	delta = (delta_factor_total*(1-min_zoom_k) )/zoom_step_count;
+	min_zoom_factor = def_fov-delta_factor_total*m_fMinZoomK;
+	delta = (delta_factor_total*(1-m_fMinZoomK) )/m_fZoomStepCount;
 }
 
-void CWeapon::ZoomInc()
+void CWeapon::ZoomChange(bool inc)
 {
-	float delta, min_zoom_factor;
-	GetZoomData(m_fScopeZoomFactor, delta, min_zoom_factor);
+	bool wasChanged = false;
 
-	float currentZoomFactor = m_fZoomFactor;
-
-	if (Core.Features.test(xrCore::Feature::ogse_wpn_zoom_system)) {
-		m_fZoomFactor += delta;
-		clamp(m_fZoomFactor, min_zoom_factor, m_fScopeZoomFactor);
-	}
-	else {
-		m_fZoomFactor -= delta;
-		clamp(m_fZoomFactor, m_fScopeZoomFactor, min_zoom_factor);
-	}
-
-	if (!fsimilar(currentZoomFactor, m_fZoomFactor))
+	if (SecondVPEnabled())
 	{
-		OnZoomChanged();
+		float delta, min_zoom_factor;
+		GetZoomData(m_fSecondVPZoomFactor, delta, min_zoom_factor);
+
+		const float currentZoomFactor = m_fRTZoomFactor;
+
+		m_fRTZoomFactor += delta * (inc ? 1 : -1);
+		clamp(m_fRTZoomFactor, min_zoom_factor, m_fSecondVPZoomFactor);
+
+		wasChanged = !fsimilar(currentZoomFactor, m_fRTZoomFactor);
 	}
-}
+	else
+	{
+		float delta, min_zoom_factor;
+		GetZoomData(m_fScopeZoomFactor, delta, min_zoom_factor);
 
-void CWeapon::ZoomDec()
-{
-	float delta, min_zoom_factor;
-	GetZoomData(m_fScopeZoomFactor, delta, min_zoom_factor);
+		const float currentZoomFactor = m_fZoomFactor;
 
-	float currentZoomFactor = m_fZoomFactor;
+		if (Core.Features.test(xrCore::Feature::ogse_wpn_zoom_system)) {
+			m_fZoomFactor += delta * (inc ? 1 : -1);
+			clamp(m_fZoomFactor, min_zoom_factor, m_fScopeZoomFactor);
+		}
+		else {
+			m_fZoomFactor -= delta * (inc ? 1 : -1);
+			clamp(m_fZoomFactor, m_fScopeZoomFactor, min_zoom_factor);
+		}
 
-	if (Core.Features.test(xrCore::Feature::ogse_wpn_zoom_system)) {
-		m_fZoomFactor -= delta;
-		clamp(m_fZoomFactor, min_zoom_factor, m_fScopeZoomFactor);
+		wasChanged = !fsimilar(currentZoomFactor, m_fZoomFactor);
+
+		if (H_Parent() && !IsRotatingToZoom() && !SecondVPEnabled())
+			m_fRTZoomFactor = m_fZoomFactor; //store current
 	}
-	else {
-		m_fZoomFactor += delta;
-		clamp(m_fZoomFactor, m_fScopeZoomFactor, min_zoom_factor);
-	}
 
-	if (!fsimilar(currentZoomFactor, m_fZoomFactor))
+	if (wasChanged)
 	{
 		OnZoomChanged();
 	}
@@ -1306,7 +1323,7 @@ void CWeapon::UpdateHUDAddonsVisibility()
 //	if(IsZoomed() && )
 
 
-	CKinematics* pHudVisual									= smart_cast<CKinematics*>(m_pHUD->Visual());
+	IKinematics* pHudVisual									= smart_cast<IKinematics*>(m_pHUD->Visual());
 	VERIFY(pHudVisual);
 	if (H_Parent() != Level().CurrentEntity()) pHudVisual	= NULL;
 
@@ -1389,7 +1406,7 @@ void CWeapon::UpdateHUDAddonsVisibility()
 
 void CWeapon::UpdateAddonsVisibility()
 {
-	CKinematics* pWeaponVisual = smart_cast<CKinematics*>(Visual()); R_ASSERT(pWeaponVisual);
+	IKinematics* pWeaponVisual = smart_cast<IKinematics*>(Visual()); R_ASSERT(pWeaponVisual);
 
 	u16  bone_id;
 	UpdateHUDAddonsVisibility								();	
@@ -1466,7 +1483,7 @@ float CWeapon::CurrentZoomFactor()
 		if (is_second_zoom_offset_enabled)
 			return m_fSecondScopeZoomFactor;
 		else if (SecondVPEnabled())
-			return 1; // no fov zoom when use second vp
+			return 1; // no change to main fov zoom when use second vp
 		else if (IsScopeAttached())
 			return m_fScopeZoomFactor;
 		else
@@ -1482,9 +1499,7 @@ void CWeapon::OnZoomIn()
 	m_bZoomMode = true;
 
 	// если в режиме ПГ - не будем давать включать динамический зум
-	auto wpn_w_gl = smart_cast<CWeaponMagazinedWGrenade*>(this);
-
-	if ( m_bScopeDynamicZoom && (!wpn_w_gl || !wpn_w_gl->m_bGrenadeMode))
+	if ( m_bScopeDynamicZoom && !IsGrenadeMode() && !SecondVPEnabled())
 		m_fZoomFactor = m_fRTZoomFactor;
 	else
 		m_fZoomFactor = CurrentZoomFactor();
@@ -1961,14 +1976,9 @@ void CWeapon::UpdateSecondVP()
 }
 
 bool CWeapon::SecondVPEnabled() const
-{
-	const CActor* pActor = smart_cast<const CActor*>(H_Parent());
-	if (!pActor)
-		return false;
-	
-	bool bCond_2 = m_fSecondVP_FovFactor > 0.0f;     // В конфиге должен быть прописан фактор зума (scope_lense_fov_factor) больше чем 0
-	auto wpn_w_gl = smart_cast<const CWeaponMagazinedWGrenade*>(this);
-	bool bCond_4 = (!wpn_w_gl || !wpn_w_gl->m_bGrenadeMode);     // Мы не должны быть в режиме подствольника
+{	
+	bool bCond_2 = m_fSecondVPZoomFactor > 0.0f;     // В конфиге должен быть прописан фактор зума (scope_lense_fov_factor) больше чем 0
+	bool bCond_4 = !IsGrenadeMode();     // Мы не должны быть в режиме подствольника
 	bool bCond_5 = !is_second_zoom_offset_enabled; // Мы не должны быть в режиме второго прицеливания.
 	bool bcond_6 = psActorFlags.test(AF_3D_SCOPES);
 
@@ -1978,9 +1988,82 @@ bool CWeapon::SecondVPEnabled() const
 // Чувствительность мышкии с оружием в руках во время прицеливания
 float CWeapon::GetControlInertionFactor() const
 {
-	if (IsZoomed() && SecondVPEnabled() && !IsRotatingToZoom())
-		return m_fScopeInertionFactor;
-
 	float fInertionFactor = inherited::GetControlInertionFactor();
+
+	if (IsZoomed() && SecondVPEnabled() && !IsRotatingToZoom())
+	{
+		if (m_bScopeDynamicZoom)
+		{
+			const float delta_factor_total = 1 - m_fSecondVPZoomFactor;
+			float min_zoom_factor = 1 + delta_factor_total * m_fMinZoomK;
+			float k = (m_fRTZoomFactor - min_zoom_factor) / (m_fSecondVPZoomFactor - min_zoom_factor);
+			return (m_fScopeInertionFactor - fInertionFactor) * k + fInertionFactor;
+		}
+		else
+			return m_fScopeInertionFactor;
+	}
+
 	return fInertionFactor;
+}
+
+float CWeapon::GetSecondVPFov() const
+{
+	float fov_factor = m_fSecondVPZoomFactor;
+	if (m_bScopeDynamicZoom)
+	{
+		fov_factor = m_fRTZoomFactor;
+	}
+	return float(atan(tan(g_fov * (0.5 * PI / 180)) / fov_factor) / (0.5 * PI / 180)); //-V595
+}
+
+bool CWeapon::IsGrenadeMode() const
+{
+	const auto wpn_w_gl = smart_cast<const CWeaponMagazinedWGrenade*>(this);
+	return wpn_w_gl && wpn_w_gl->m_bGrenadeMode;
+}
+
+// Получить HUD FOV от текущего оружия игрока
+float CWeapon::GetHudFov()
+{
+	// Рассчитываем HUD FOV от бедра (с учётом упирания в стены)
+	if (m_nearwall_on && ParentIsActor() && Level().CurrentViewEntity() == H_Parent())
+	{
+		// Получаем расстояние от камеры до точки в прицеле
+		collide::rq_result& RQ = HUD().GetCurrentRayQuery();
+		float dist = RQ.range;
+
+		// Интерполируем расстояние в диапазон от 0 (min) до 1 (max)
+		clamp(dist, m_nearwall_dist_min, m_nearwall_dist_max);
+		float fDistanceMod = ((dist - m_nearwall_dist_min) / (m_nearwall_dist_max - m_nearwall_dist_min)); // 0.f ... 1.f
+
+		 // Рассчитываем базовый HUD FOV от бедра
+		float fBaseFov = psHUD_FOV_def;
+		clamp(fBaseFov, 0.0f, FLT_MAX);
+
+		// Плавно высчитываем итоговый FOV от бедра
+		float src = m_nearwall_speed_mod * Device.fTimeDelta;
+		clamp(src, 0.f, 1.f);
+
+		float fTrgFov = m_nearwall_target_hud_fov + fDistanceMod * (fBaseFov - m_nearwall_target_hud_fov);
+		m_nearwall_last_hud_fov = m_nearwall_last_hud_fov * (1 - src) + fTrgFov * src;
+	}
+
+	if (m_fZoomRotationFactor > 0.0f)
+	{
+		if (SecondVPEnabled() && m_fSecondVPHudFov > 0.0f)
+		{
+			// В линзе зума
+			float fDiff = m_nearwall_last_hud_fov - m_fSecondVPHudFov;
+			return m_fSecondVPHudFov + (fDiff * (1 - m_fZoomRotationFactor));
+		}
+		if (!UseScopeTexture() && m_fZoomHudFov > 0.0f)
+		{
+			// В процессе зума
+			float fDiff = m_nearwall_last_hud_fov - m_fZoomHudFov;
+			return m_fZoomHudFov + (fDiff * (1 - m_fZoomRotationFactor));
+		}
+	}
+
+	// От бедра	 
+	return m_nearwall_last_hud_fov;
 }

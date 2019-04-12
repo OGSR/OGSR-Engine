@@ -1,7 +1,9 @@
 #ifndef __XR_COLLIDE_FORM_H__
 #define __XR_COLLIDE_FORM_H__
 
-#include "xr_collide_defs.h"
+//KRodin: TODO: заменить инклуд если перенесу код в CDB
+#include "xr_collide_defs.h" //#include "../xrcdb/xr_collide_defs.h"
+#include "vismask.h"
 
 // refs
 class ENGINE_API	CObject;
@@ -75,7 +77,7 @@ struct clQueryCollision
 	}
 };
 
-enum ENGINE_API	ECollisionFormType{
+enum /*ENGINE_API*/	ECollisionFormType{
 	cftObject,
 	cftShape
 };
@@ -105,11 +107,10 @@ public:
 	const ECollisionFormType Type	( ) const				{ return m_type;		}
 };
 
-#include "skeletoncustom.h"
 class ENGINE_API	CCF_Skeleton : public ICollisionForm
 {
 public:
-	struct SElement{
+	struct ENGINE_API SElement {
 		union{
 			struct{
 				Fmatrix	b_IM;		// world 2 bone xform

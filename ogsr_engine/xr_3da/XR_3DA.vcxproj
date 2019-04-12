@@ -109,8 +109,8 @@
       <OmitFramePointers>false</OmitFramePointers>
       <EnableFiberSafeOptimizations>true</EnableFiberSafeOptimizations>
       <WholeProgramOptimization>false</WholeProgramOptimization>
-      <AdditionalIncludeDirectories>..\COMMON;..\xrCore\;$(SolutionDir)\3rd_party\Src\d3dx\include;..\Luabind;..\LuaJIT\src;$(SolutionDir)\3rd_party\Src\Xiph\libogg\include;$(SolutionDir)\3rd_party\Src\Xiph\libtheora\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>WIN32;XRGAME_STATIC;XRRENDER_R2_STATIC;XRCORE_STATIC;XRCDB_STATIC;XRSOUND_STATIC;XR_PARTICLES_STATIC;LUABIND_STATIC;NDEBUG;_WINDOWS;XRENGINE_STATIC;_SECURE_SCL=0;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>..\xrCore\;$(SolutionDir)\3rd_party\Src\d3dx;$(SolutionDir)\3rd_party\Src\Xiph\libogg\include;$(SolutionDir)\3rd_party\Src\Xiph\libtheora\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;ENGINE_BUILD;NDEBUG;_WINDOWS;_SECURE_SCL=0;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <StringPooling>true</StringPooling>
       <ExceptionHandling>
       </ExceptionHandling>
@@ -140,7 +140,7 @@
     </ResourceCompile>
     <Link>
       <AdditionalOptions>/MACHINE:I386  %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>ode.lib;xrGame.lib;d3dcompiler.lib;xrRender.lib;libvorbis_static.lib;libvorbisfile_static.lib;OpenAL32.lib;lzo.lib;libogg_static.lib;libtheora_static.lib;vfw32.lib;d3dx9.lib;winmm.lib;dinput8.lib;dxguid.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>libogg_static.lib;libtheora_static.lib;vfw32.lib;d3dx9.lib;winmm.lib;dinput8.lib;dxguid.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <IgnoreSpecificDefaultLibraries>libcmt;</IgnoreSpecificDefaultLibraries>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -156,7 +156,10 @@
       <FixedBaseAddress>false</FixedBaseAddress>
     </Link>
     <PostBuildEvent>
-      <Command>copy /Y "$(SolutionDir)\Game\dlls\dbghelp_$(PlatformShortName).dll" "$(OutDir)dbghelp.dll"</Command>
+      <Command>
+        copy /Y "$(SolutionDir)\3rd_party\Src\OpenAL_Soft\bin\$(PlatformShortName)\soft_oal.dll" "$(OutDir)soft_oal.dll"
+        copy /Y "$(SolutionDir)\Game\dlls\dbghelp_$(PlatformShortName).dll" "$(OutDir)dbghelp.dll"
+      </Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -175,8 +178,8 @@
       <OmitFramePointers>false</OmitFramePointers>
       <EnableFiberSafeOptimizations>false</EnableFiberSafeOptimizations>
       <WholeProgramOptimization>false</WholeProgramOptimization>
-      <AdditionalIncludeDirectories>..\COMMON;..\xrCore\;$(SolutionDir)\3rd_party\Src\d3dx\include;..\Luabind;..\LuaJIT\src;$(SolutionDir)\3rd_party\Src\Xiph\libogg\include;$(SolutionDir)\3rd_party\Src\Xiph\libtheora\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>WIN32;XRGAME_STATIC;XRRENDER_R2_STATIC;XRCORE_STATIC;XRCDB_STATIC;XRSOUND_STATIC;XR_PARTICLES_STATIC;LUABIND_STATIC;_WINDOWS;XRENGINE_STATIC;_SECURE_SCL=0;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>..\xrCore\;$(SolutionDir)\3rd_party\Src\d3dx;$(SolutionDir)\3rd_party\Src\Xiph\libogg\include;$(SolutionDir)\3rd_party\Src\Xiph\libtheora\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;ENGINE_BUILD;_WINDOWS;_SECURE_SCL=0;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <StringPooling>false</StringPooling>
       <ExceptionHandling>
       </ExceptionHandling>
@@ -207,9 +210,9 @@
     </ResourceCompile>
     <Link>
       <AdditionalOptions>/MACHINE:I386  %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>ode.lib;xrGame.lib;d3dcompiler.lib;xrRender.lib;libvorbis_static.lib;libvorbisfile_static.lib;OpenAL32.lib;lzo.lib;libogg_static.lib;libtheora_static.lib;vfw32.lib;d3dx9.lib;winmm.lib;dinput8.lib;dxguid.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>libogg_static.lib;libtheora_static.lib;vfw32.lib;d3dx9.lib;winmm.lib;dinput8.lib;dxguid.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SuppressStartupBanner>true</SuppressStartupBanner>
-      <IgnoreSpecificDefaultLibraries>libcmt;msvcrt;</IgnoreSpecificDefaultLibraries>
+      <IgnoreSpecificDefaultLibraries>libcmt;</IgnoreSpecificDefaultLibraries>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <ProgramDatabaseFile>$(OutDir)xrEngine.pdb</ProgramDatabaseFile>
       <GenerateMapFile>false</GenerateMapFile>
@@ -225,7 +228,10 @@
       <FixedBaseAddress>false</FixedBaseAddress>
     </Link>
     <PostBuildEvent>
-      <Command>copy /Y "$(SolutionDir)\Game\dlls\dbghelp_$(PlatformShortName).dll" "$(OutDir)dbghelp.dll"</Command>
+      <Command>
+        copy /Y "$(SolutionDir)\3rd_party\Src\OpenAL_Soft\bin\$(PlatformShortName)\soft_oal.dll" "$(OutDir)soft_oal.dll"
+        copy /Y "$(SolutionDir)\Game\dlls\dbghelp_$(PlatformShortName).dll" "$(OutDir)dbghelp.dll"
+      </Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -243,8 +249,8 @@
       <OmitFramePointers>false</OmitFramePointers>
       <EnableFiberSafeOptimizations>true</EnableFiberSafeOptimizations>
       <WholeProgramOptimization>false</WholeProgramOptimization>
-      <AdditionalIncludeDirectories>..\COMMON;..\xrCore\;$(SolutionDir)\3rd_party\Src\d3dx\include;..\Luabind;..\LuaJIT\src;$(SolutionDir)\3rd_party\Src\Xiph\libogg\include;$(SolutionDir)\3rd_party\Src\Xiph\libtheora\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>XRGAME_STATIC;XRRENDER_R2_STATIC;XRCORE_STATIC;XRCDB_STATIC;XRSOUND_STATIC;XR_PARTICLES_STATIC;LUABIND_STATIC;NDEBUG;_WINDOWS;XRENGINE_STATIC;_SECURE_SCL=0;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>..\xrCore\;$(SolutionDir)\3rd_party\Src\d3dx;$(SolutionDir)\3rd_party\Src\Xiph\libogg\include;$(SolutionDir)\3rd_party\Src\Xiph\libtheora\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>ENGINE_BUILD;NDEBUG;_WINDOWS;_SECURE_SCL=0;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <StringPooling>true</StringPooling>
       <ExceptionHandling>
       </ExceptionHandling>
@@ -272,7 +278,7 @@
       <Culture>0x0422</Culture>
     </ResourceCompile>
     <Link>
-      <AdditionalDependencies>ode.lib;xrGame.lib;d3dcompiler.lib;xrRender.lib;libvorbis_static.lib;libvorbisfile_static.lib;OpenAL32.lib;lzo.lib;libogg_static.lib;libtheora_static.lib;vfw32.lib;d3dx9.lib;winmm.lib;dinput8.lib;dxguid.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>libogg_static.lib;libtheora_static.lib;vfw32.lib;winmm.lib;d3dx9.lib;dinput8.lib;dxguid.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <IgnoreSpecificDefaultLibraries>libcmt;</IgnoreSpecificDefaultLibraries>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -288,7 +294,10 @@
       <FixedBaseAddress>false</FixedBaseAddress>
     </Link>
     <PostBuildEvent>
-      <Command>copy /Y "$(SolutionDir)\Game\dlls\dbghelp_$(PlatformShortName).dll" "$(OutDir)dbghelp.dll"</Command>
+      <Command>
+        copy /Y "$(SolutionDir)\3rd_party\Src\OpenAL_Soft\bin\$(PlatformShortName)\soft_oal.dll" "$(OutDir)soft_oal.dll"
+        copy /Y "$(SolutionDir)\Game\dlls\dbghelp_$(PlatformShortName).dll" "$(OutDir)dbghelp.dll"
+      </Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -306,8 +315,8 @@
       <OmitFramePointers>false</OmitFramePointers>
       <EnableFiberSafeOptimizations>false</EnableFiberSafeOptimizations>
       <WholeProgramOptimization>false</WholeProgramOptimization>
-      <AdditionalIncludeDirectories>..\COMMON;..\xrCore\;$(SolutionDir)\3rd_party\Src\d3dx\include;..\Luabind;..\LuaJIT\src;$(SolutionDir)\3rd_party\Src\Xiph\libogg\include;$(SolutionDir)\3rd_party\Src\Xiph\libtheora\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>XRGAME_STATIC;XRRENDER_R2_STATIC;XRCORE_STATIC;XRCDB_STATIC;XRSOUND_STATIC;XR_PARTICLES_STATIC;LUABIND_STATIC;_WINDOWS;XRENGINE_STATIC;_SECURE_SCL=0;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>..\xrCore\;$(SolutionDir)\3rd_party\Src\d3dx;$(SolutionDir)\3rd_party\Src\Xiph\libogg\include;$(SolutionDir)\3rd_party\Src\Xiph\libtheora\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>ENGINE_BUILD;_WINDOWS;_SECURE_SCL=0;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <StringPooling>false</StringPooling>
       <ExceptionHandling>
       </ExceptionHandling>
@@ -336,9 +345,9 @@
       <Culture>0x0422</Culture>
     </ResourceCompile>
     <Link>
-      <AdditionalDependencies>ode.lib;xrGame.lib;d3dcompiler.lib;xrRender.lib;libvorbis_static.lib;libvorbisfile_static.lib;OpenAL32.lib;lzo.lib;libogg_static.lib;libtheora_static.lib;vfw32.lib;d3dx9.lib;winmm.lib;dinput8.lib;dxguid.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>libogg_static.lib;libtheora_static.lib;vfw32.lib;d3dx9.lib;winmm.lib;dinput8.lib;dxguid.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SuppressStartupBanner>true</SuppressStartupBanner>
-      <IgnoreSpecificDefaultLibraries>libcmt;msvcrt;</IgnoreSpecificDefaultLibraries>
+      <IgnoreSpecificDefaultLibraries>libcmt;</IgnoreSpecificDefaultLibraries>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <ProgramDatabaseFile>$(OutDir)xrEngine.pdb</ProgramDatabaseFile>
       <GenerateMapFile>false</GenerateMapFile>
@@ -354,27 +363,30 @@
       <FixedBaseAddress>false</FixedBaseAddress>
     </Link>
     <PostBuildEvent>
-      <Command>copy /Y "$(SolutionDir)\Game\dlls\dbghelp_$(PlatformShortName).dll" "$(OutDir)dbghelp.dll"</Command>
+      <Command>
+        copy /Y "$(SolutionDir)\3rd_party\Src\OpenAL_Soft\bin\$(PlatformShortName)\soft_oal.dll" "$(OutDir)soft_oal.dll"
+        copy /Y "$(SolutionDir)\Game\dlls\dbghelp_$(PlatformShortName).dll" "$(OutDir)dbghelp.dll"
+      </Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="..\COMMON\bone.h" />
-    <ClInclude Include="..\COMMON\cl_intersect.h" />
-    <ClInclude Include="..\COMMON\DrawUtils.h" />
-    <ClInclude Include="..\COMMON\ETextureParams.h" />
-    <ClInclude Include="..\COMMON\std_classes.h" />
+    <ClInclude Include="..\Include\xrAPI\xrAPI.h" />
+    <ClInclude Include="bone.h" />
+    <ClInclude Include="cl_intersect.h" />
     <ClInclude Include="..\xrParticles\psystem.h" />
+    <ClInclude Include="GameMtlLib.h" />
     <ClInclude Include="NET_Server_Trash\client_id.h" />
     <ClInclude Include="NET_Server_Trash\NET_Client.h" />
     <ClInclude Include="NET_Server_Trash\NET_Messages.h" />
     <ClInclude Include="NET_Server_Trash\NET_Server.h" />
     <ClInclude Include="NET_Server_Trash\NET_Shared.h" />
     <ClInclude Include="NET_Server_Trash\NET_utils.h" />
-    <ClInclude Include="r2_shader_exports.h" />
     <ClInclude Include="ShadersExternalData.h" />
+    <ClInclude Include="SkeletonMotionDefs.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="trivial_encryptor.h" />
     <ClInclude Include="vismask.h" />
+    <ClInclude Include="xrSkinXW.hpp" />
     <ClInclude Include="x_ray.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="IInputReceiver.h" />
@@ -382,7 +394,6 @@
     <ClInclude Include="ISheduled.h" />
     <ClInclude Include="xrSheduler.h" />
     <ClInclude Include="IRenderable.h" />
-    <ClInclude Include="IRenderDetailModel.h" />
     <ClInclude Include="Render.h" />
     <ClInclude Include="ISpatial.h" />
     <ClInclude Include="ICollidable.h" />
@@ -414,15 +425,9 @@
     <ClInclude Include="Feel_Vision.h" />
     <ClInclude Include="FDemoPlay.h" />
     <ClInclude Include="FDemoRecord.h" />
-    <ClInclude Include="FBasicVisual.h" />
-    <ClInclude Include="FHierrarhyVisual.h" />
     <ClInclude Include="Fmesh.h" />
-    <ClInclude Include="ParticleCustom.h" />
     <ClInclude Include="EnnumerateVertices.h" />
-    <ClInclude Include="SkeletonAnimated.h" />
-    <ClInclude Include="SkeletonCustom.h" />
     <ClInclude Include="SkeletonMotions.h" />
-    <ClInclude Include="SkeletonX.h" />
     <ClInclude Include="vis_common.h" />
     <ClInclude Include="Frustum.h" />
     <ClInclude Include="PS_instance.h" />
@@ -432,41 +437,11 @@
     <ClInclude Include="device.h" />
     <ClInclude Include="StatGraph.h" />
     <ClInclude Include="Stats.h" />
-    <ClInclude Include="HW.h" />
-    <ClInclude Include="HWCaps.h" />
-    <ClInclude Include="xr_effgamma.h" />
-    <ClInclude Include="Shader_xrLC.h" />
     <ClInclude Include="WaveForm.h" />
-    <ClInclude Include="Blenders\Blender.h" />
-    <ClInclude Include="Blenders\Blender_CLSID.h" />
-    <ClInclude Include="Blenders\Blender_Recorder.h" />
-    <ClInclude Include="tss.h" />
-    <ClInclude Include="tss_def.h" />
     <ClInclude Include="tntQAVI.h" />
     <ClInclude Include="xrImage_Resampler.h" />
     <ClInclude Include="xrTheora_Stream.h" />
     <ClInclude Include="xrTheora_Surface.h" />
-    <ClInclude Include="ResourceManager.h" />
-    <ClInclude Include="TextureDescrManager.h" />
-    <ClInclude Include="r_constants.h" />
-    <ClInclude Include="SH_Atomic.h" />
-    <ClInclude Include="SH_Constant.h" />
-    <ClInclude Include="SH_Matrix.h" />
-    <ClInclude Include="SH_RT.h" />
-    <ClInclude Include="SH_Texture.h" />
-    <ClInclude Include="Shader.h" />
-    <ClInclude Include="r_constants_cache.h" />
-    <ClInclude Include="D3DUtils.h" />
-    <ClInclude Include="du_box.h" />
-    <ClInclude Include="du_cone.h" />
-    <ClInclude Include="du_cylinder.h" />
-    <ClInclude Include="du_sphere.h" />
-    <ClInclude Include="du_sphere_part.h" />
-    <ClInclude Include="FVF.h" />
-    <ClInclude Include="R_Backend.h" />
-    <ClInclude Include="R_Backend_Runtime.h" />
-    <ClInclude Include="R_Backend_xform.h" />
-    <ClInclude Include="R_DStreams.h" />
     <ClInclude Include="Properties.h" />
     <ClInclude Include="pure.h" />
     <ClInclude Include="xrXRC.h" />
@@ -479,8 +454,11 @@
     <ClInclude Include="perlin.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\COMMON\ETextureParams.cpp" />
+    <ClCompile Include="..\Layers\xrAPI\xrAPI.cpp" />
+    <ClCompile Include="bone.cpp" />
     <ClCompile Include="defines.cpp" />
+    <ClCompile Include="GameMtlLib.cpp" />
+    <ClCompile Include="GameMtlLib_Engine.cpp" />
     <ClCompile Include="NET_Server_Trash\NET_Client.cpp" />
     <ClCompile Include="NET_Server_Trash\NET_Server.cpp" />
     <ClCompile Include="stdafx.cpp">
@@ -489,6 +467,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="xrSkinXW.cpp" />
     <ClCompile Include="x_ray.cpp" />
     <ClCompile Include="IInputReceiver.cpp" />
     <ClCompile Include="Xr_input.cpp" />
@@ -532,20 +511,8 @@
     <ClCompile Include="Feel_Vision.cpp" />
     <ClCompile Include="FDemoPlay.cpp" />
     <ClCompile Include="FDemoRecord.cpp" />
-    <ClCompile Include="FBasicVisual.cpp" />
-    <ClCompile Include="FHierrarhyVisual.cpp" />
     <ClCompile Include="fmesh.cpp" />
-    <ClCompile Include="ParticleCustom.cpp" />
-    <ClCompile Include="SkeletonAnimated.cpp" />
-    <ClCompile Include="SkeletonCustom.cpp" />
     <ClCompile Include="SkeletonMotions.cpp" />
-    <ClCompile Include="SkeletonRigid.cpp" />
-    <ClCompile Include="SkeletonX.cpp">
-      <AssemblerOutput Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">All</AssemblerOutput>
-      <AssemblerOutput Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">All</AssemblerOutput>
-      <AssemblerOutput Condition="'$(Configuration)|$(Platform)'=='Release|x64'">All</AssemblerOutput>
-      <AssemblerOutput Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">All</AssemblerOutput>
-    </ClCompile>
     <ClCompile Include="Frustum.cpp" />
     <ClCompile Include="PS_instance.cpp" />
     <ClCompile Include="LightAnimLibrary.cpp" />
@@ -560,44 +527,10 @@
     <ClCompile Include="Device_wndproc.cpp" />
     <ClCompile Include="StatGraph.cpp" />
     <ClCompile Include="Stats.cpp" />
-    <ClCompile Include="HW.cpp" />
-    <ClCompile Include="HWCaps.cpp" />
-    <ClCompile Include="xr_effgamma.cpp" />
-    <ClCompile Include="Blenders\Blender.cpp" />
-    <ClCompile Include="Blenders\Blender_Palette.cpp" />
-    <ClCompile Include="Blenders\Blender_Recorder.cpp" />
-    <ClCompile Include="Blender_Recorder_R2.cpp" />
-    <ClCompile Include="Blender_Recorder_StandartBinding.cpp" />
-    <ClCompile Include="tss_def.cpp" />
     <ClCompile Include="tntQAVI.cpp" />
     <ClCompile Include="xrImage_Resampler.cpp" />
     <ClCompile Include="xrTheora_Stream.cpp" />
     <ClCompile Include="xrTheora_Surface.cpp" />
-    <ClCompile Include="ResourceManager.cpp" />
-    <ClCompile Include="ResourceManager_Loader.cpp" />
-    <ClCompile Include="ResourceManager_Reset.cpp" />
-    <ClCompile Include="ResourceManager_Resources.cpp" />
-    <ClCompile Include="ResourceManager_Scripting.cpp" />
-    <ClCompile Include="TextureDescrManager.cpp" />
-    <ClCompile Include="r_constants.cpp" />
-    <ClCompile Include="SH_Atomic.cpp" />
-    <ClCompile Include="SH_Constant.cpp" />
-    <ClCompile Include="SH_Matrix.cpp" />
-    <ClCompile Include="SH_RT.cpp" />
-    <ClCompile Include="SH_Texture.cpp" />
-    <ClCompile Include="Shader.cpp" />
-    <ClCompile Include="r_constants_cache.cpp" />
-    <ClCompile Include="D3DUtils.cpp" />
-    <ClCompile Include="du_box.cpp" />
-    <ClCompile Include="du_cone.cpp" />
-    <ClCompile Include="du_cylinder.cpp" />
-    <ClCompile Include="du_sphere.cpp" />
-    <ClCompile Include="du_sphere_part.cpp" />
-    <ClCompile Include="R_Backend.cpp" />
-    <ClCompile Include="R_Backend_DBG.cpp" />
-    <ClCompile Include="R_Backend_Runtime.cpp" />
-    <ClCompile Include="R_Backend_xform.cpp" />
-    <ClCompile Include="R_DStreams.cpp" />
     <ClCompile Include="pure.cpp" />
     <ClCompile Include="xrXRC.cpp" />
     <ClCompile Include="xr_ioc_cmd.cpp" />

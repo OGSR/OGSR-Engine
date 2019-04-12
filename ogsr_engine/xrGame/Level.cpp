@@ -40,6 +40,7 @@
 #include "../xr_3da/XR_IOConsole.h"
 #include "Debug_Renderer.h"
 #include "Actor_Flags.h"
+#include "level_changer.h"
 
 #ifdef DEBUG
 #	include "level_debug.h"
@@ -417,8 +418,7 @@ void CLevel::OnFrame	()
 	// Inherited update
 	inherited::OnFrame		();
 	
-//	g_pGamePersistent->Environment().SetGameTime	(GetGameDayTimeSec(),GetGameTimeFactor());
-	g_pGamePersistent->Environment().SetGameTime	(GetEnvironmentGameDayTimeSec(),GetGameTimeFactor());
+	g_pGamePersistent->Environment().SetGameTime(GetEnvironmentGameDayTimeSec(), game->GetEnvironmentGameTimeFactor());
 
 	m_ph_commander->update				();
 	m_ph_commander_scripts->update		();
@@ -456,7 +456,8 @@ extern void draw_wnds_rects();
 
 void CLevel::OnRender()
 {
-	Render->BeforeWorldRender();	//--#SM+#-- +SecondVP+
+#pragma todo("KRodin: вернуть!")
+	//Render->BeforeWorldRender();	//--#SM+#-- +SecondVP+
 
 	inherited::OnRender	();
 	
@@ -467,7 +468,8 @@ void CLevel::OnRender()
 	BulletManager().Render();
 	//Device.Statistic->TEST1.End();
 
-	Render->AfterWorldRender(); //--#SM+#-- +SecondVP+
+#pragma todo("KRodin: вернуть!")
+	//Render->AfterWorldRender(); //--#SM+#-- +SecondVP+
 
 	//отрисовать интерфейc пользователя
 	HUD().RenderUI();
@@ -483,6 +485,10 @@ void CLevel::OnRender()
 			auto space_restrictor = smart_cast<CSpaceRestrictor*>(_O);
 			if (space_restrictor)
 				space_restrictor->OnRender();
+
+			auto level_changer = smart_cast<CLevelChanger*>(_O);
+			if (level_changer)
+				level_changer->OnRender();
 
 			auto climable = smart_cast<CClimableObject*>(_O);
 			if (climable)
@@ -839,11 +845,16 @@ void CLevel::SetGameTimeFactor(ALife::_TIME_ID GameTime, const float fTimeFactor
 	game->SetGameTimeFactor(GameTime, fTimeFactor);
 //	Server->game->SetGameTimeFactor(fTimeFactor);
 }
-void CLevel::SetEnvironmentGameTimeFactor(ALife::_TIME_ID GameTime, const float fTimeFactor)
+
+void CLevel::SetEnvironmentGameTimeFactor(u64 const& GameTime, float const& fTimeFactor)
 {
+	if (!game)
+		return;
+
 	game->SetEnvironmentGameTimeFactor(GameTime, fTimeFactor);
-//	Server->game->SetGameTimeFactor(fTimeFactor);
-}/*
+}
+
+/*
 void CLevel::SetGameTime(ALife::_TIME_ID GameTime)
 {
 	game->SetGameTime(GameTime);

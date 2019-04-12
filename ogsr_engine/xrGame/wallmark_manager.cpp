@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "wallmark_manager.h"
 #include "Level.h"
-#include "GameMtlLib.h"
+#include "..\xr_3da\GameMtlLib.h"
 #include "CalculateTriangle.h"
 #include "profiler.h"
 #ifdef DEBUG
@@ -17,64 +17,8 @@ CWalmarkManager::~CWalmarkManager()
 }
 void CWalmarkManager::Clear()
 {
-	m_wallmarks.clear();
+	m_wallmarks->clear();
 }
-
-/*
-void CWalmarkManager::AddWallmark(const Fvector& dir, const Fvector& start_pos, 
-								  float range, float wallmark_size,
-								  SHADER_VECTOR& wallmarks_vector,int t)
-{
-	CDB::TRI*	pTri	= Level().ObjectSpace.GetStaticTris()+t;//result.element;
-	SGameMtl*	pMaterial = GMLib.GetMaterialByIdx(pTri->material);
-
-	if(pMaterial->Flags.is(SGameMtl::flBloodmark))
-	{
-		//вычислить нормаль к пораженной поверхности
-		Fvector*	pVerts	= Level().ObjectSpace.GetStaticVerts();
-
-		//вычислить точку попадания
-		Fvector end_point;
-		end_point.set(0,0,0);
-		end_point.mad(start_pos, dir, range);
-
-		ref_shader* pWallmarkShader = wallmarks_vector.empty()?NULL:
-		&wallmarks_vector[::Random.randI(0,wallmarks_vector.size())];
-
-		if (pWallmarkShader)
-		{
-			//добавить отметку на материале
-			::Render->add_StaticWallmark(*pWallmarkShader, end_point, wallmark_size, pTri, pVerts);
-		}
-	}
-}
-*/
-
-/*
-void CWalmarkManager::PlaceWallmark(const Fvector& dir, const Fvector& start_pos, 
-									  float trace_dist, float wallmark_size,
-									  SHADER_VECTOR& wallmarks_vector,CObject* ignore_obj)
-{
-	collide::rq_result	result;
-	BOOL				reach_wall = 
-		Level().ObjectSpace.RayPick(
-		start_pos,
-		dir,
-		trace_dist, 
-		collide::rqtBoth,
-		result,
-		ignore_obj
-		)
-		&&
-		!result.O;
-
-	//если кровь долетела до статического объекта
-	if(reach_wall)
-	{
-		AddWallmark(dir,start_pos,result.range,wallmark_size,wallmarks_vector,result.element);
-	}
-}
-*/
 
 void CWalmarkManager::PlaceWallmarks( const Fvector& start_pos)
 {
@@ -172,33 +116,13 @@ void CWalmarkManager::StartWorkflow()
 
 		if(dist <= m_trace_dist )
 		{
-			ref_shader wallmarkShader = m_wallmarks[::Random.randI( m_wallmarks.size())];
-			::Render->add_StaticWallmark(wallmarkShader, end_point, m_wallmark_size, _t, V_array);
+			::Render->add_StaticWallmark(&*m_wallmarks, end_point, m_wallmark_size, _t, V_array);
 			++wm_count;
 		}else
 			++_not_dist;
 
 	}
-/*
-	Msg("----------------------------------");
-	Msg("tri count=%d",						XRC.r_count());
-	Msg("far_dist=%d",						_not_dist);
-	Msg("RayTest = %d",						_ray_test);
-	Msg("c==tdBehind = %d",					_tri_behind);
-	Msg	("c!=tdPlane && dist>ndist = %d",	_tri_not_plane);
-	Msg("Wallmarks added = %d",				wm_count);
-	Msg("Time: %d",							T.GetElapsed_ms());
-
-	DBG_ClosedCashedDraw	(10000);
-*/
 }
-/*
-void CWalmarkManager::PlaceWallmarks(const Fvector& start_pos,CObject* ignore_obj)
-{
-	if(m_wallmarks)
-			PlaceWallmarks(start_pos,m_trace_dist,m_wallmark_size,*m_wallmarks,ignore_obj);
-}
-*/
 
 void CWalmarkManager::Load (LPCSTR section)
 {
@@ -211,16 +135,10 @@ void CWalmarkManager::Load (LPCSTR section)
 
 	int cnt		=_GetItemCount(wallmarks_name);
 	VERIFY		(cnt);
-	ref_shader	s;
-	for (int k=0; k<cnt; ++k)
-	{
-		s.create ("effects\\wallmark",_GetItem(wallmarks_name,k,tmp));
-		m_wallmarks.push_back	(s);
-	}
+
+	for (int k = 0; k < cnt; ++k)
+		m_wallmarks->AppendMark(_GetItem(wallmarks_name, k, tmp));
 }
-
-
-
 
 float Distance (const Fvector& rkPoint, const Fvector rkTri[3], float& pfSParam, float& pfTParam, Fvector& closest, Fvector& dir)
 {

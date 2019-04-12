@@ -2,7 +2,6 @@
 
 #include "PHDynamicData.h"
 #include "ExtendedGeom.h"
-#include "cl_intersect.h"
 #include "tri-colliderKNoOPC\__aabb_tri.h"
 #include "PHSimpleCharacter.h"
 #include "PHContactBodyEffector.h"
@@ -11,10 +10,10 @@
 #include "PhysicsGamePars.h"
 #include "MathUtils.h" 
 #include "level.h"
-#include "gamemtllib.h"
+#include "../xr_3da/gamemtllib.h"
 #include "gameobject.h"
 #include "physicsshellholder.h"
-#include "../xr_3da/skeletoncustom.h"
+#include "../Include/xrRender/Kinematics.h"
 #include "PHSimpleCharacterInline.h"
 #include "DamageSource.h"
 #include "PHCollideValidator.h"
@@ -1374,7 +1373,7 @@ u16 CPHSimpleCharacter::RetriveContactBone()
 	}
 	else 
 	{
-		CKinematics* K=smart_cast<CKinematics*>(object->Visual());
+		IKinematics* K=smart_cast<IKinematics*>(object->Visual());
 		u16 count=K->LL_BoneCount();
 		CBoneInstance* bone_instances=&K->LL_GetBoneInstance(0);
 		Fvector pos_in_object;

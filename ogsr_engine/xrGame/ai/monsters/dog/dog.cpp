@@ -5,7 +5,7 @@
 #include "../control_animation_base.h"
 #include "../control_movement_base.h"
 #include "../../../date_time.h"
-#include "../../../../xr_3da/skeletonanimated.h"
+#include "../../../../Include/xrRender/KinematicsAnimated.h"
 #include "../monster_home.h"
 #include "../ai_monster_squad.h"
 #include "../ai_monster_squad_manager.h"
@@ -289,7 +289,7 @@ void CAI_Dog::start_animation()
 
 	b_state_anim = true;
 	com_man().script_capture(ControlCom::eControlAnimation);
-	smart_cast<CKinematicsAnimated*>(Visual())->PlayCycle(get_current_animation(),TRUE,animation_end,this);
+	smart_cast<IKinematicsAnimated*>(Visual())->PlayCycle(get_current_animation(),TRUE,animation_end,this);
 	b_state_end = true;
 }
 
@@ -381,7 +381,7 @@ bool  CAI_Dog::can_use_agressive_jump(const CObject* enemy)
 #ifdef DEBUG
 void CAI_Dog::debug_on_key(int key)
 {
-	CKinematicsAnimated *skel = smart_cast<CKinematicsAnimated *>(Visual());
+	IKinematicsAnimated *skel = smart_cast<IKinematicsAnimated *>(Visual());
 
 	switch (key){
 	case DIK_1:

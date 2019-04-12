@@ -17,13 +17,21 @@ class R_occlusion
 private:
 	struct	_Q	{
 		u32					order;
-		IDirect3DQuery9*	Q;
+		ID3DQuery*	Q;
 	};
+
+	static const u32		iInvalidHandle = 0xFFFFFFFF;
 
 	BOOL					enabled;	// 
 	xr_vector<_Q>			pool;		// sorted (max ... min), insertions are usually at the end
 	xr_vector<_Q>			used;		// id's are generated from this and it is cleared from back only
 	xr_vector<u32>			fids;		// free id's
+public:
+#if defined(USE_DX10) || defined(USE_DX11)
+	typedef	u64		occq_result;
+#else	//	USE_DX10
+	typedef	u32		occq_result;
+#endif	//	USE_DX10
 public:
 	R_occlusion		();
 	~R_occlusion	();
@@ -32,5 +40,5 @@ public:
 	void			occq_destroy	(				);
 	u32				occq_begin		(u32&	ID		);	// returns 'order'
 	void			occq_end		(u32&	ID		);
-	u32				occq_get		(u32&	ID		);
+	occq_result		occq_get		(u32&	ID		);
 };

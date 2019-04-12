@@ -110,24 +110,34 @@ void ui_core::OnDeviceReset()
 
 void ui_core::ClientToScreenScaled(Fvector2& dest, float left, float top)
 {
-	dest.set(ClientToScreenScaledX(left),	ClientToScreenScaledY(top));
+	if (m_currentPointType != IUIRender::pttLIT)
+		dest.set(ClientToScreenScaledX(left),	ClientToScreenScaledY(top));
+	else
+		dest.set(left, top);
 }
 
 void ui_core::ClientToScreenScaled(Fvector2& src_and_dest)
 {
-	src_and_dest.set(ClientToScreenScaledX(src_and_dest.x),	ClientToScreenScaledY(src_and_dest.y));
+	if (m_currentPointType != IUIRender::pttLIT)
+		src_and_dest.set(ClientToScreenScaledX(src_and_dest.x),	ClientToScreenScaledY(src_and_dest.y));
 }
 
 void ui_core::ClientToScreenScaledWidth(float& src_and_dest)
 {
-//.	src_and_dest		= ClientToScreenScaledX(src_and_dest);
-	src_and_dest		/= m_current_scale->x;
+	if (m_currentPointType != IUIRender::pttLIT)
+		src_and_dest		/= m_current_scale->x;
 }
 
 void ui_core::ClientToScreenScaledHeight(float& src_and_dest)
 {
-//.	src_and_dest		= ClientToScreenScaledY(src_and_dest);
-	src_and_dest		/= m_current_scale->y;
+	if (m_currentPointType != IUIRender::pttLIT)
+		src_and_dest		/= m_current_scale->y;
+}
+
+void ui_core::AlignPixel(float& src_and_dest)
+{
+	if (m_currentPointType != IUIRender::pttLIT)
+		src_and_dest = (float)iFloor(src_and_dest);
 }
 
 Frect ui_core::ScreenRect()
@@ -138,7 +148,9 @@ Frect ui_core::ScreenRect()
 
 void ui_core::PushScissor(const Frect& r_tgt, bool overlapped)
 {
-//.	return;
+	if (UI()->m_currentPointType == IUIRender::pttLIT)
+		return;
+
 	Frect r_top			= ScreenRect();
 	Frect result		= r_tgt;
 	if (!m_Scissors.empty()&&!overlapped){
@@ -165,17 +177,19 @@ void ui_core::PushScissor(const Frect& r_tgt, bool overlapped)
 	r.x2 				= iFloor(result.x2+0.5f);
 	r.y1 				= iFloor(result.y1);
 	r.y2 				= iFloor(result.y2+0.5f);
-	RCache.set_Scissor	(&r);
+	UIRender->SetScissor(&r);
 }
 
 void ui_core::PopScissor()
 {
-//.	return;
+	if (UI()->m_currentPointType == IUIRender::pttLIT)
+		return;
+
 	VERIFY(!m_Scissors.empty());
 	m_Scissors.pop		();
 	
 	if(m_Scissors.empty())
-		RCache.set_Scissor(NULL);
+		UIRender->SetScissor(NULL);
 	else{
 		const Frect& top= m_Scissors.top();
 		Irect tgt;
@@ -184,7 +198,7 @@ void ui_core::PopScissor()
 		tgt.rb.x 		= iFloor(ClientToScreenScaledX(top.rb.x));
 		tgt.rb.y 		= iFloor(ClientToScreenScaledY(top.rb.y));
 
-		RCache.set_Scissor(&tgt);
+		UIRender->SetScissor(&tgt);
 	}
 }
 
@@ -199,6 +213,8 @@ ui_core::ui_core()
 	m_current_scale				= &m_scale_;
 //.	g_current_font_scale		= m_scale_;
 	g_current_font_scale.set	(1.0f,1.0f);
+	m_currentPointType = IUIRender::pttTL;
+
 }
 
 ui_core::~ui_core()

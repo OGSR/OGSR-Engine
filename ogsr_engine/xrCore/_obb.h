@@ -53,6 +53,11 @@ public:
 		m_halfsize.set		(0,0,0);
 		return *this;
 	}
+	IC SelfRef		identity() {
+		invalidate();
+		m_halfsize.set( T(0.5), T(0.5), T(0.5) );
+		return *this;
+	}
 	IC void			xform_get(Tmatrix& D) const
 	{
 		D.i.set(m_rotate.i); D._14_ = 0;

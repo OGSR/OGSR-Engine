@@ -10,6 +10,10 @@
 #ifdef DEBUG
 #include "PHDebug.h"
 #endif
+#include "../Include/xrRender/RenderVisual.h"
+#include "../Include/xrRender/Kinematics.h"
+#include "../Include/xrRender/KinematicsAnimated.h"
+
 CIKLimbsController::CIKLimbsController(): m_object(0), m_legs_blend(0)
 {
 	
@@ -19,7 +23,7 @@ void CIKLimbsController::Create( CGameObject* O )
 {
 	m_legs_blend	 = 0;
 	
-	CKinematicsAnimated* K=smart_cast<CKinematicsAnimated*>(O->Visual());
+	IKinematics* K = smart_cast<IKinematics*>(O->Visual());
 	m_object = O;
 	VERIFY( K );
 	{
@@ -65,7 +69,7 @@ public SEnumVerticesCallback
 	}
 };
 
-void get_toe(CKinematics *skeleton, Fvector & toe, const u16 bones[4])
+void get_toe(IKinematics *skeleton, Fvector & toe, const u16 bones[4])
 {
 	VERIFY( skeleton );
 	xr_vector<Fmatrix> binds;
@@ -91,7 +95,7 @@ void get_toe(CKinematics *skeleton, Fvector & toe, const u16 bones[4])
 void	CIKLimbsController::LimbSetup(  const u16 bones[4] )
 {
 	_bone_chains.push_back( CIKLimb( ) );
-	CKinematicsAnimated *skeleton_animated = m_object->Visual( )->dcast_PKinematicsAnimated( );
+	IKinematics* skeleton_animated = m_object->Visual( )->dcast_PKinematics();
 	VERIFY( skeleton_animated );
 	Fvector toe;
 	get_toe( skeleton_animated, toe, bones );
@@ -114,14 +118,14 @@ void	CIKLimbsController::LimbUpdate( CIKLimb &L, u16 i )
 
 IC void	update_blend (CBlend* &b)
 {
-	if(b && CBlend::eFREE_SLOT == b->blend)
+	if(b && CBlend::eFREE_SLOT == b->blend_state())
 		b = 0;
 }
 void CIKLimbsController::Calculate( )
 {
 	
 	update_blend( m_legs_blend );
-	CKinematicsAnimated *skeleton_animated = m_object->Visual()->dcast_PKinematicsAnimated( );
+	IKinematicsAnimated *skeleton_animated = m_object->Visual()->dcast_PKinematicsAnimated( );
 	const Fmatrix &obj = m_object->XFORM( );
 	VERIFY( skeleton_animated );
 
@@ -165,14 +169,14 @@ void CIKLimbsController::Destroy(CGameObject* O)
 	_bone_chains.clear();
 }
 
-void _stdcall CIKLimbsController:: IKVisualCallback( CKinematics* K )
+void _stdcall CIKLimbsController:: IKVisualCallback( IKinematics* K )
 {
 #ifdef DEBUG
 	if( ph_dbg_draw_mask1.test( phDbgIKOff ) )
 		return;
 #endif
 	
-	CGameObject* O=( ( CGameObject* )K->Update_Callback_Param );
+	CGameObject* O=( ( CGameObject* )K->GetUpdateCallbackParam());
 	CPhysicsShellHolder*	Sh = smart_cast<CPhysicsShellHolder*>( O );
 	VERIFY( Sh );
 	CIKLimbsController* ik = Sh->character_ik_controller( );
@@ -183,7 +187,7 @@ void CIKLimbsController::PlayLegs( CBlend *b )
 {
 	m_legs_blend	= b;
 #ifdef DEBUG
-	CKinematicsAnimated *skeleton_animated = m_object->Visual( )->dcast_PKinematicsAnimated( );
+	IKinematicsAnimated *skeleton_animated = m_object->Visual( )->dcast_PKinematicsAnimated( );
 	VERIFY( skeleton_animated );
 	anim_name = skeleton_animated->LL_MotionDefName_dbg( b->motionID ).first;
 	anim_set_name = skeleton_animated->LL_MotionDefName_dbg( b->motionID ).second;
@@ -191,7 +195,7 @@ void CIKLimbsController::PlayLegs( CBlend *b )
 }
 void	CIKLimbsController:: Update						( )
 {
-	CKinematicsAnimated *skeleton_animated = m_object->Visual()->dcast_PKinematicsAnimated( );
+	IKinematicsAnimated *skeleton_animated = m_object->Visual()->dcast_PKinematicsAnimated( );
 	VERIFY( skeleton_animated );
 
 	skeleton_animated->UpdateTracks();

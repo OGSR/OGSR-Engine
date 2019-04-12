@@ -5,7 +5,7 @@
 #include <new.h> // for _set_new_mode
 #include <signal.h> // for signals
 
-#include <dxerr.h>
+#include <d3dx/dxerr.h>
 #pragma comment( lib, "dxerr.lib" )
 int( WINAPIV* __vsnprintf )( char*, size_t, const char*, va_list ) = _vsnprintf;
 

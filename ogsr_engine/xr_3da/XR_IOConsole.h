@@ -2,11 +2,12 @@
 //
 //////////////////////////////////////////////////////////////////////
 
-#if !defined(AFX_XR_IOCONSOLE_H__ADEEFD61_7731_11D3_83D8_00C02610C34E__INCLUDED_)
-#define AFX_XR_IOCONSOLE_H__ADEEFD61_7731_11D3_83D8_00C02610C34E__INCLUDED_
 #pragma once
 
 #include "iinputreceiver.h"
+
+#include "../Include/xrRender/FactoryPtr.h"
+#include "../Include/xrRender/ConsoleRender.h"
 
 //refs
 class ENGINE_API CGameFont;
@@ -17,6 +18,9 @@ class ENGINE_API CConsole  :
 	public pureRender,
 	public pureFrame
 {
+private:
+	FactoryPtr<IConsoleRender>* m_pRender = nullptr;
+
 public:
 	//t-defs
 	struct str_pred {	
@@ -47,7 +51,8 @@ protected:
 
 	CGameFont		*pFont;
 public:
-	virtual ~CConsole(){};
+	virtual ~CConsole() { if (m_pRender) xr_delete(m_pRender); }
+
 	string64		ConfigFile;
 	BOOL			bVisible;
 	vecCMD			Commands;
@@ -91,5 +96,3 @@ public:
 };
 
 ENGINE_API extern CConsole* Console;
-
-#endif // !defined(AFX_XR_IOCONSOLE_H__ADEEFD61_7731_11D3_83D8_00C02610C34E__INCLUDED_)

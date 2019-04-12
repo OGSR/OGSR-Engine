@@ -230,7 +230,8 @@ public:
 	  use_trade_deficit_factor   = 1ull << 38,
 	  show_objectives_ondemand   = 1ull << 39,
 	  pickup_check_overlaped     = 1ull << 40,
-	  wallmarks_on_static_only   = 1ull << 41;
+	  wallmarks_on_static_only   = 1ull << 41,
+	  actor_thirst               = 1ull << 42;
 	};
 
 	void		_initialize	(LPCSTR ApplicationName, LogCallback cb=0, BOOL init_fs=TRUE, LPCSTR fs_fname=0);
@@ -252,3 +253,14 @@ extern XRCORE_API xrCore Core;
 extern XRCORE_API ThreadPool* TTAPI;
 
 extern XRCORE_API bool gModulesLoaded;
+
+// Трэш
+#	define	BENCH_SEC_CALLCONV
+#	define	BENCH_SEC_SCRAMBLEVTBL1
+#	define	BENCH_SEC_SCRAMBLEVTBL2
+#	define	BENCH_SEC_SCRAMBLEVTBL3
+#	define	BENCH_SEC_SIGN
+#	define	BENCH_SEC_SCRAMBLEMEMBER1
+#	define	BENCH_SEC_SCRAMBLEMEMBER2
+
+#define g_dedicated_server false

@@ -8,7 +8,7 @@
 #include "hit.h"
 #include "PHDestroyable.h"
 #include "car.h"
-#include "../xr_3da/skeletoncustom.h"
+#include "../Include/xrRender/Kinematics.h"
 #include "PHWorld.h"
 extern CPHWorld*	ph_world;
 CCar::SCarSound::SCarSound(CCar* car)
@@ -24,7 +24,7 @@ CCar::SCarSound::~SCarSound()
 }
 void CCar::SCarSound::Init()
 {
-	CInifile* ini=smart_cast<CKinematics*>(pcar->Visual())->LL_UserData();
+	CInifile* ini=smart_cast<IKinematics*>(pcar->Visual())->LL_UserData();
 	if (ini->section_exist("car_sound") && ini->line_exist("car_sound","snd_volume"))
 	{
 		volume  			= ini->r_float("car_sound","snd_volume");
@@ -33,7 +33,7 @@ void CCar::SCarSound::Init()
 		snd_engine_start.create	(READ_IF_EXISTS(ini,r_string,"car_sound","engine_start","car\\test_car_start"),st_Effect,sg_SourceType);
 		snd_engine_stop.create	(READ_IF_EXISTS(ini,r_string,"car_sound","engine_stop","car\\test_car_stop"),st_Effect,sg_SourceType);
 		float fengine_start_delay=READ_IF_EXISTS(ini,r_float,"car_sound","engine_sound_start_dellay",0.25f);
-		engine_start_delay=iFloor((snd_engine_start._handle() ? snd_engine_start._handle()->length_ms() : 1.f)*fengine_start_delay);
+		engine_start_delay=iFloor((snd_engine_start._handle() ? iFloor(snd_engine_start.get_length_sec()*1000.0f) : 1.f)*fengine_start_delay);
 		if(ini->line_exist("car_sound","relative_pos"))
 		{
 			relative_pos.set(ini->r_fvector3("car_sound","relative_pos"));

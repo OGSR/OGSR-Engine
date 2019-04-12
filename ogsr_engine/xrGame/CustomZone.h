@@ -106,6 +106,9 @@ protected:
 		eBirthOnNonAlive		=(1<<9),
 		eBirthOnAlive			=(1<<10),
 		eBirthOnDead			=(1<<11),
+		eIdleLightR1 = 1 << 12,
+		eIdleLightShadow = 1 << 13,
+		eIdleLightVolumetric = 1 << 14,
 	};
 	u32					m_owner_id;		//if created from artefact
 	u32					m_ttl;

@@ -1,14 +1,27 @@
 #include "stdafx.h"
 #include "igame_level.h"
-
 #include "xr_collide_form.h"
 #include "xr_object.h"
-#include "xr_area.h"
+//KRodin: TODO: заменить инклуд если перенесу код в CDB
+#include "xr_area.h" //#include "../xrcdb/xr_area.h"
 #include "x_ray.h"
 #include "xrLevel.h"
 #include "fmesh.h"
-#include "frustum.h"
+//KRodin: TODO: заменить инклуд если перенесу код в CDB
+#include "frustum.h" //#include "../xrCDB/frustum.h"
 
+//#include "skeletoncustom.h"
+#include "../Include/xrRender/Kinematics.h"
+#include "bone.h"
+#ifdef	DEBUG
+IC float DET(const Fmatrix &a){
+	return
+		(( a._11 * ( a._22 * a._33 - a._23 * a._32 ) -
+		a._12 * ( a._21 * a._33 - a._23 * a._31 ) +
+		a._13 * ( a._21 * a._32 - a._22 * a._31 ) ));
+}
+#include "objectdump.h"
+#endif
 using namespace	collide;
 //----------------------------------------------------------------------
 // Class	: CXR_CFObject
@@ -93,8 +106,12 @@ IC bool RAYvsCYLINDER(const Fcylinder& c_cylinder, const Fvector &S, const Fvect
 
 CCF_Skeleton::CCF_Skeleton(CObject* O) : ICollisionForm(O,cftObject)
 {
-	CKinematics* K	= PKinematics(O->Visual()); VERIFY3(K,"Can't create skeleton without Kinematics.",*O->cNameVisual());
-	bv_box.set		(K->vis.box);
+	//getVisData
+	IRenderVisual	*pVisual = O->Visual();
+	//IKinematics* K	= PKinematics(pVisual); VERIFY3(K,"Can't create skeleton without Kinematics.",*O->cNameVisual());
+	//IKinematics* K	= PKinematics(pVisual); VERIFY3(K,"Can't create skeleton without Kinematics.",*O->cNameVisual());
+	//bv_box.set		(K->vis.box);
+	bv_box.set		(pVisual->getVisData().box);
 	bv_box.getsphere(bv_sphere.P,bv_sphere.R);
 	vis_mask.zero();
 }
@@ -102,14 +119,15 @@ CCF_Skeleton::CCF_Skeleton(CObject* O) : ICollisionForm(O,cftObject)
 void CCF_Skeleton::BuildState()
 {
 	dwFrame				= Device.dwFrame;
-	CKinematics* K		= PKinematics(owner->Visual());
-	K->CalculateBones	();
+	IRenderVisual* pVisual = owner->Visual();
+	IKinematics* K		= PKinematics(pVisual);
+	K->CalculateBones();
 	const Fmatrix& L2W	= owner->XFORM();
 	
 	if (vis_mask!=K->LL_GetBonesVisible()){
 		vis_mask		= K->LL_GetBonesVisible();
 		elements.clear_not_free();
-		bv_box.set		(K->vis.box);
+		bv_box.set		(pVisual->getVisData().box);
 		bv_box.getsphere(bv_sphere.P,bv_sphere.R);
 		for (u16 i=0; i<K->LL_BoneCount(); i++){
 			if (!K->LL_GetBoneVisible(i))					continue;
@@ -125,10 +143,16 @@ void CCF_Skeleton::BuildState()
 		SBoneShape&	shape		= K->LL_GetData(I->elem_id).shape;
 		Fmatrix					ME,T,TW;
 		const Fmatrix& Mbone	= K->LL_GetTransform(I->elem_id);
+
+		VERIFY2( DET(Mbone)>EPS, ( make_string("0 scale bone matrix, %d \n", I->elem_id ) + dbg_object_full_dump_string( owner ) ).c_str()  );
+
 		switch (I->type){
 			case SBoneShape::stBox:{
 				const Fobb& B		= shape.box;
 				B.xform_get			(ME			);
+
+				//VERIFY2( DET(ME)>EPS, ( make_string("0 scale bone matrix, %d \n", I->elem_id ) + dbg_object_full_dump_string( owner ) ).c_str()  );
+
 				I->b_hsize.set		(B.m_halfsize);
 				// prepare matrix World to Element
 				T.mul_43					(Mbone,ME	);		// model space
@@ -136,10 +160,13 @@ void CCF_Skeleton::BuildState()
 				bool b						= I->b_IM.invert_b	(TW);
 				// check matrix validity
 				if (!b)	{
-					Msg						("! ERROR: invalid bone xform (Slipch?). Bone disabled.");
+					Msg						("! ERROR: invalid bone xform . Bone disabled.");
 					Msg						("! ERROR: bone_id=[%d], world_pos[%f,%f,%f]",I->elem_id,VPUSH(TW.c));
-					Msg						("visual name %s",*(owner->cNameVisual()));
-					Msg						("object name %s",*(owner->cName()));
+					Msg						("visual name %s",owner->cNameVisual().c_str());
+					Msg						("object name %s",owner->cName().c_str());
+#ifdef DEBUG
+					Msg						( dbg_object_full_dump_string( owner ).c_str() );
+#endif //#ifdef DEBUG
 					I->elem_id				= u16(-1);				//. hack - disable invalid bone
 				}
 								   }break;
@@ -165,13 +192,14 @@ void CCF_Skeleton::BuildState()
 void CCF_Skeleton::BuildTopLevel()
 {
 	dwFrameTL			= Device.dwFrame;
-	IRender_Visual* K	= owner->Visual();
-	Fbox& B				= K->vis.box;
+	IRenderVisual* K	= owner->Visual();
+	vis_data &vis = K->getVisData();
+	Fbox& B				= vis.box;
 	bv_box.min.average	(B.min);
 	bv_box.max.average	(B.max);
 	bv_box.grow			(0.05f);
-	bv_sphere.P.average	(K->vis.sphere.P);
-	bv_sphere.R			+= K->vis.sphere.R;
+	bv_sphere.P.average	(vis.sphere.P);
+	bv_sphere.R			+= vis.sphere.R;
 	bv_sphere.R			*= 0.5f;
 	VERIFY(_valid(bv_sphere));
 }
@@ -194,7 +222,7 @@ BOOL CCF_Skeleton::_RayQuery( const collide::ray_defs& Q, collide::rq_results& R
 
 	if (dwFrame != Device.dwFrame)		BuildState	();
 	else{
-		CKinematics* K	= PKinematics	(owner->Visual());
+		IKinematics* K	= PKinematics	(owner->Visual());
 		if (K->LL_GetBonesVisible()!=vis_mask)	{
 			// Model changed between ray-picks
 			dwFrame		= Device.dwFrame-1	;
@@ -261,9 +289,10 @@ CCF_EventBox::CCF_EventBox( CObject* O ) : ICollisionForm(O,cftShape)
 
 BOOL CCF_EventBox::Contact(CObject* O)
 {
-	IRender_Visual*	V		= O->Visual();
-	Fvector&		P	= V->vis.sphere.P;
-	float			R	= V->vis.sphere.R;
+	IRenderVisual*	V		= O->Visual();
+	vis_data & vis = V->getVisData();
+	Fvector&		P	= vis.sphere.P;
+	float			R	= vis.sphere.R;
 	
 	Fvector			PT;
 	O->XFORM().transform_tiny(PT,P);

@@ -47,7 +47,7 @@ public:
 
 	// IUISingleTextureOwner--------------------------------------------------------------------------------
 	virtual void		CreateShader				(const char* tex, const char* sh = "hud\\default");
-	virtual ref_shader& GetShader					();
+	virtual ui_shader& GetShader					();
 	virtual void		SetTextureColor				(u32 color);
 	virtual u32			GetTextureColor				() const;
 	virtual void		SetOriginalRect				(const Frect& r)			{m_UIStaticItem.SetOriginalRect(r);}
@@ -128,7 +128,7 @@ public:
 	void TextureClipper						(float offset_x, float offset_y, Frect* pClipRect, CUIStaticItem& UIStaticItem);
 
 	
-	void			SetShader				(const ref_shader& sh);
+	void			SetShader				(const ui_shader& sh);
 	CUIStaticItem&	GetUIStaticItem			()						{return m_UIStaticItem;}
 
 	virtual	void SetTextX					(float text_x)			{m_TextOffset.x = text_x;}

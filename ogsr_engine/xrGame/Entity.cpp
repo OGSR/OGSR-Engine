@@ -14,7 +14,7 @@
 #include "squad_hierarchy_holder.h"
 #include "group_hierarchy_holder.h"
 #include "clsid_game.h"
-#include "../xr_3da/skeletoncustom.h"
+#include "../Include/xrRender/Kinematics.h"
 #include "monster_community.h"
 #include "ai_space.h"
 #include "memory_space.h"
@@ -224,7 +224,7 @@ BOOL CEntity::net_Spawn		(CSE_Abstract* DC)
 		return				(FALSE);
 
 //	SetfHealth			(E->fHealth);
-	CKinematics* pKinematics=smart_cast<CKinematics*>(Visual());
+	IKinematics* pKinematics=smart_cast<IKinematics*>(Visual());
 	CInifile* ini = NULL;
 
 	if(pKinematics) ini = pKinematics->LL_UserData();

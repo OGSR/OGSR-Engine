@@ -161,6 +161,7 @@ CCameraManager::CCameraManager(bool bApplyOnUpdate)
 	vNormal.set						(0,1,0);
 
 	fFov							= 90;
+	fFovSecond						= 0;
 	fFar							= 100;
 	fAspect							= 1.f;
 
@@ -281,7 +282,7 @@ void CCameraManager::RemovePPEffector(EEffectorPPType type)
 
 void CCameraManager::Update(const CCameraBase* C)
 {	
-	Update(C->vPosition,C->vDirection,C->vNormal, C->f_fov, C->f_aspect, g_pGamePersistent->Environment().CurrentEnv.far_plane, C->m_Flags.flags); 
+	Update(C->vPosition,C->vDirection,C->vNormal, C->f_fov, C->f_aspect, g_pGamePersistent->Environment().CurrentEnv->far_plane, C->m_Flags.flags); 
 }
 void CCameraManager::Update(const Fvector& P, const Fvector& D, const Fvector& N, float fFOV_Dest, float fASPECT_Dest, float fFAR_Dest, u32 flags)
 {
@@ -314,6 +315,25 @@ void CCameraManager::Update(const Fvector& P, const Fvector& D, const Fvector& N
 	fFov						= fFov*dst		+ fFOV_Dest*src;
 	fFar						= fFar*dst		+ fFAR_Dest*src;
 	fAspect						= fAspect*dst	+ (fASPECT_Dest*aspect)*src;
+
+	if (Device.m_SecondViewport.IsSVPActive())
+	{
+		float fov = g_pGamePersistent->m_pGShaderConstants.hud_params.y;  //-V595
+
+		// что бы изначально прицел включался быстро, а при изменении приближения был эффект наезда камеры
+		if (fis_zero(fFovSecond))
+		{
+			fFovSecond = fov;
+		}
+		else
+		{
+			fFovSecond = fFovSecond * dst + fov * src;
+		}
+	}
+	else
+	{
+		fFovSecond = 0;
+	}
 
 	// Effector
 	BOOL bOverlapped			= FALSE;
@@ -421,7 +441,7 @@ void CCameraManager::ApplyDevice (float _viewport_near)
 	if (Device.m_SecondViewport.IsSVPFrame())
 	{
 		// Для второго вьюпорта FOV выставляем здесь
-		Device.fFOV = float(atan(tan(Device.fFOV * (0.5 * PI / 180)) / g_pGamePersistent->m_pGShaderConstants.hud_params.y) / (0.5 * PI / 180)); //-V595
+		Device.fFOV = fFovSecond;
 
 		// Предупреждаем что мы изменили настройки камеры
 		Device.m_SecondViewport.m_bCamReady = true;
@@ -430,8 +450,9 @@ void CCameraManager::ApplyDevice (float _viewport_near)
 	{
 		Device.m_SecondViewport.m_bCamReady = false;
 	}
-	Device.mProject.build_projection(deg2rad(Device.fFOV), fAspect, _viewport_near, fFar);
 	//--#SM+# End--
+
+	Device.mProject.build_projection(deg2rad(Device.fFOV), fAspect, _viewport_near, fFar);
 
 	if( g_pGamePersistent && g_pGamePersistent->m_pMainMenu->IsActive() )
 		ResetPP					();
@@ -453,7 +474,9 @@ void CCameraManager::ApplyDevice (float _viewport_near)
 		T->set_noise_fps			(pp_affected.noise.fps);
 		T->set_color_base			(pp_affected.color_base);
 		T->set_color_gray			(pp_affected.color_gray);
-		T->set_color_add			(pp_affected.color_add);
+		//KRodin: по уму надо переносить весь SPPInfo - а вдруг он что нибудь где-нибудь сломает? Да ну нафиг возиться.
+		static_assert(sizeof(Fvector) == sizeof(SPPInfo::SColor));
+		T->set_color_add(reinterpret_cast<const Fvector&>(pp_affected.color_add));
 
 		T->set_cm_imfluence(pp_affected.cm_influence);
 		T->set_cm_interpolate(pp_affected.cm_interpolate);
@@ -473,7 +496,7 @@ void CCameraManager::ResetPP()
 	T->set_noise_fps		(pp_identity.noise.fps);
 	T->set_color_base		(pp_identity.color_base);
 	T->set_color_gray		(pp_identity.color_gray);
-	T->set_color_add		(pp_identity.color_add);
+	T->set_color_add(reinterpret_cast<const Fvector&>(pp_identity.color_add));
 	T->set_cm_imfluence(0.0f);
 	T->set_cm_interpolate(1.0f);
 	T->set_cm_textures("", "");

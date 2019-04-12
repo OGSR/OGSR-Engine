@@ -9,25 +9,19 @@ float4 	plight_infinity		(float m, float3 _point, float3 normal, float3 light_di
   float3 N		= normal;							// normal 
   float3 V 		= -normalize	(_point);					// vector2eye
   float3 L 		= -light_direction;						// vector2light
-  float3 H		= normalize	(L+V);						// float-angle-vector  
-  float4 light = 		tex3D(s_material,	float3( dot(L,N), dot(H,N), m ) );		// sample material
-  return light;
-/*  float sum_light = saturate(0.6*light.x + light.w*1.4);
-  return float4(sum_light,sum_light,sum_light,sum_light);*/
+  float3 H		= normalize	(L+V);						// half-angle-vector 
+  return tex3D 		(s_material,	half3( dot(L,N), dot(H,N), m ) );		// sample material
 }
-float4 	plight_infinity2	(float m, float3 _point, float3 normal, float3 light_direction)       				{
-  	float3 N		= normal;							// normal 
-  	float3 V 	= -normalize		(_point);		// vector2eye
-  	float3 L 	= -light_direction;					// vector2light
- 	float3 H		= normalize			(L+V);			// float-angle-vector 
-	float3 R     = reflect         	(-V,N);
-	float 	s	= saturate(dot(L,R));
-			s	= saturate(dot(H,N));
-	float 	f 	= saturate(dot(-V,R));
-			s  *= f;
-	float4	r	= tex3D 			(s_material,	float3( dot(L,N), s, m ) );	// sample material
-			r.w	= pow(saturate(s),4);
-  	return	r	;
+float4 	plight_infinity2 (half m, half3 _point, half3 normal, half3 light_direction)       				{
+  float3 N		= normal;							// normal 
+  float3 V 		= -normalize	(_point);					// vector2eye
+  float3 L 		= -light_direction;						// vector2light
+  float3 H		= normalize	(L+V);						// half-angle-vector 
+ // return tex3D 		(s_material,	half3( dot(L,N), dot(H,N), m ) );		// sample material
+	float4 ret;
+	float4 light = tex3D ( s_material, float3( dot(L,N), dot(H,N), m ) );		// sample material
+	ret = light+float4(light.www*(Ldynamic_color.xyz),light.w)*Ldynamic_color.w;
+	return ret;
 }
 float4 	plight_local		(float m, float3 _point, float3 normal, float3 light_position, float light_range_rsq, out float rsqr)  {
   float3 N		= normal;							// normal 
@@ -36,11 +30,11 @@ float4 	plight_local		(float m, float3 _point, float3 normal, float3 light_posit
   float3 L 		= -normalize	((float3)L2P);					// vector2light
   float3 H		= normalize	(L+V);						// float-angle-vector
 		rsqr	= dot		(L2P,L2P);					// distance 2 light (squared)
-  float  att 	= saturate	(1 - rsqr*light_range_rsq);			// q-linear attenuate
-  float4 light	= tex3D		(s_material, float3( dot(L,N), dot(H,N), m ) ); 	// sample material
-  return att*light;
-/*  float sum_light = saturate(0.6*light.x + light.w*1.4);
-  return att*float4(sum_light,sum_light,sum_light,sum_light);*/
+  float  att 	= saturate	(1 - rsqr*light_range_rsq*ECB_LL_DIST)*ECB_LL_BRIGHTNESS;			// q-linear attenuate
+  float4 light	= tex3D		(s_material, half3( dot(L,N), dot(H,N), m ) ); 	// sample material
+  //new light model start;
+  return float4(att*light.xxx,0)+att*float4(light.www*(Ldynamic_color.xyz*Ldynamic_color.xyz),light.w);
+  //new light model end;
 }
 float4 	plight_local_torch		(float m, float3 _point, float3 normal, float3 light_position, float light_range_rsq, float angle_cos)  {
   float3 N		= normal;							// normal 
@@ -49,9 +43,11 @@ float4 	plight_local_torch		(float m, float3 _point, float3 normal, float3 light
   float3 L 		= -normalize	((float3)L2P);					// vector2light
   float3 H		= normalize	(L+V);						// float-angle-vector
   float rsqr	= dot		(L2P,L2P);					// distance 2 light (squared)
-  float  att 	= saturate	(1 - rsqr*light_range_rsq)*smoothstep(angle_cos, angle_cos*1.2, abs(dot(L,float3(0,0,1))));			// q-linear attenuate
-  float4 light	= tex3D		(s_material, float3( dot(L,N), dot(H,N), m ) ); 	// sample material
-  return att*light;
+  float  att 	= saturate	(1 - rsqr*light_range_rsq*ECB_LL_DIST)*ECB_LL_BRIGHTNESS;			// q-linear attenuate
+  float4 light	= tex3D		(s_material, half3( dot(L,N), dot(H,N), m ) ); 	// sample material
+  //new light model start;
+  return float4(att*light.xxx,0)+att*float4(light.www*(Ldynamic_color.xyz*Ldynamic_color.xyz),light.w);
+  //new light model end;
 }
 float4	blendp	(float4	value, float4 	tcp)    		{
 	#ifndef FP16_BLEND  

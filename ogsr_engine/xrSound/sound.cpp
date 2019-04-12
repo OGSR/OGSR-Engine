@@ -1,25 +1,34 @@
 #include "stdafx.h"
 
-
 #include "SoundRender_CoreA.h"
 
-void CSound_manager_interface::_create		(u64 window)
+XRSOUND_API xr_token*		snd_devices_token = NULL;
+XRSOUND_API u32				snd_device_id = u32(-1);
+void CSound_manager_interface::_create(int stage)
 {
-	SoundRenderA	= xr_new<CSoundRender_CoreA>();
-	SoundRender		= SoundRenderA;
-	Sound			= SoundRender;
+	if (stage == 0)
+	{
+		SoundRenderA = xr_new<CSoundRender_CoreA>();
+		SoundRender = SoundRenderA;
+		Sound = SoundRender;
 
-	if (strstr			( Core.Params,"-nosound")){
-		SoundRender->bPresent = FALSE;
-		return;
+		if (strstr(Core.Params, "-nosound"))
+		{
+			SoundRender->bPresent = FALSE;
+			return;
+		}
+		else
+			SoundRender->bPresent = TRUE;
+
 	}
-	Sound->_initialize	(window);
+
+	if (!SoundRender->bPresent) return;
+	Sound->_initialize(stage);
 }
 
-void CSound_manager_interface::_destroy	()
+void CSound_manager_interface::_destroy()
 {
-	Sound->_clear		();
-    xr_delete			(SoundRender);
-    Sound				= 0;
+	Sound->_clear();
+	xr_delete(SoundRender);
+	Sound = 0;
 }
-

@@ -8,6 +8,7 @@
 #include "xrServer.h"
 #include "hudmanager.h"
 #include "game_cl_base_weapon_usage_statistic.h"
+#include "..\Include/xrRender/Kinematics.h"
 //#include "GameFont.h"
 
 BulletData::BulletData(shared_str FName, shared_str WName, SBullet* pBullet) 
@@ -315,7 +316,7 @@ void WeaponUsageStatistic::OnBullet_Hit(SBullet* pBullet, u16 TargetID, s16 elem
 		NewHit.Pos0 = BD.Bullet.pos;
 		NewHit.Pos1 = HitLocation;
 		NewHit.TargetName = pTarget->cName();
-		NewHit.BoneName = smart_cast<CKinematics*>(pTarget->Visual())->LL_BoneName_dbg(element);
+		NewHit.BoneName = smart_cast<IKinematics*>(pTarget->Visual())->LL_BoneName_dbg(element);
 		//---------------------------
 		WeaponIt->m_Hits.push_back(NewHit);
 	};
@@ -479,7 +480,7 @@ void WeaponUsageStatistic::On_Check_Respond(NET_Packet* P)
 			CObject* pObj				= Level().Objects.net_Find(HData.TargetID);
 			
 			if (pObj)
-				HData.BoneName			= smart_cast<CKinematics*>(pObj->Visual())->LL_BoneName_dbg(BoneID);
+				HData.BoneName			= smart_cast<IKinematics*>(pObj->Visual())->LL_BoneName_dbg(BoneID);
 		}
 		//---------------------------------------------------------------
 		RemoveBullet(BulletIt);

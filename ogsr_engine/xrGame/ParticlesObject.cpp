@@ -3,11 +3,9 @@
 //----------------------------------------------------
 #include "stdafx.h"
 
-
 #include "ParticlesObject.h"
-#include "defines.h"
-#include "../xr_3da/fbasicvisual.h"
-#include "../xr_3da/ParticleCustom.h"
+#include "../Include/xrRender/RenderVisual.h"
+#include "../Include/xrRender/ParticleCustom.h"
 #include "..\xr_3da\render.h"
 #include "..\xr_3da\IGame_Persistent.h"
 
@@ -75,11 +73,11 @@ CParticlesObject::~CParticlesObject()
 void CParticlesObject::UpdateSpatial()
 {
 	// spatial	(+ workaround occasional bug inside particle-system)
-	if (_valid(renderable.visual->vis.sphere))
+	if (_valid(renderable.visual->getVisData().sphere))
 	{
 		Fvector	P;	float	R;
-		renderable.xform.transform_tiny	(P,renderable.visual->vis.sphere.P);
-		R								= renderable.visual->vis.sphere.R;
+		renderable.xform.transform_tiny	(P,renderable.visual->getVisData().sphere.P);
+		R								= renderable.visual->getVisData().sphere.R;
 		if (0==spatial.type)	{
 			// First 'valid' update - register
 			spatial.type			= STYPE_RENDERABLE;
@@ -192,7 +190,7 @@ void CParticlesObject::UpdateParent		(const Fmatrix& m, const Fvector& vel)
 
 Fvector& CParticlesObject::Position		()
 {
-	return renderable.visual->vis.sphere.P;
+	return renderable.visual->getVisData().sphere.P;
 }
 
 float CParticlesObject::shedule_Scale		()	

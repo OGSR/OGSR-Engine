@@ -5,7 +5,9 @@
 #include "stdafx.h"
 #include "HOM.h"
 #include "occRasterizer.h"
-#include "..\..\xr_3da\GameFont.h"
+#include "../../xr_3da/GameFont.h"
+
+#include "dxRenderDeviceRender.h"
  
 float	psOSSR		= .001f;
 
@@ -102,7 +104,7 @@ void CHOM::Load			()
 		rT.adjacent[0]	= (0xffffffff==adjacency[3*it+0])?((occTri*) (-1)):(m_pTris+adjacency[3*it+0]);
 		rT.adjacent[1]	= (0xffffffff==adjacency[3*it+1])?((occTri*) (-1)):(m_pTris+adjacency[3*it+1]);
 		rT.adjacent[2]	= (0xffffffff==adjacency[3*it+2])?((occTri*) (-1)):(m_pTris+adjacency[3*it+2]);
-		rT.flags		= u32(clT.dummy);
+		rT.flags		= clT.dummy;
 		rT.area			= Area	(v0,v1,v2);
 		if (rT.area<EPS_L)	{
 			Msg	("! Invalid HOM triangle (%f,%f,%f)-(%f,%f,%f)-(%f,%f,%f)",VPUSH(v0),VPUSH(v1),VPUSH(v2));
@@ -114,7 +116,7 @@ void CHOM::Load			()
 
 	// Create AABB-tree
 	m_pModel			= xr_new<CDB::MODEL> ();
-	m_pModel->build(CL.getV(), int(CL.getVS()), CL.getT(), int(CL.getTS()), nullptr, nullptr, false);
+	m_pModel->build(CL.getV(),int(CL.getVS()),CL.getT(),int(CL.getTS()), nullptr, nullptr, false);
 	bEnabled			= TRUE;
 	S->close			();
 	FS.r_close			(fs);
@@ -147,19 +149,7 @@ public:
 
 void CHOM::Render_DB			(CFrustum& base)
 {
-	// Query DB
-	xrc.frustum_options			(0);
-	xrc.frustum_query			(m_pModel,base);
-	if (0==xrc.r_count())		return;
-
-	// Prepare
-	CDB::RESULT*	it			= xrc.r_begin	();
-	CDB::RESULT*	end			= xrc.r_end		();
-	
-	Fvector			COP			= Device.vCameraPosition;
-	end				= std::remove_if	(it,end,pred_fb(m_pTris));
-	std::sort		(it,end,pred_fb(m_pTris,COP));
-
+	//Update projection matrices on every frame to ensure valid HOM culling
 	float			view_dim	= occ_dim_0;
 	Fmatrix			m_viewport		= {
 		view_dim/2.f,			0.0f,					0.0f,		0.0f,
@@ -175,6 +165,19 @@ void CHOM::Render_DB			(CFrustum& base)
 	};
 	m_xform.mul					(m_viewport,	Device.mFullTransform);
 	m_xform_01.mul				(m_viewport_01,	Device.mFullTransform);
+
+	// Query DB
+	xrc.frustum_options			(0);
+	xrc.frustum_query			(m_pModel,base);
+	if (0==xrc.r_count())		return;
+
+	// Prepare
+	CDB::RESULT*	it			= xrc.r_begin	();
+	CDB::RESULT*	end			= xrc.r_end		();
+	
+	Fvector			COP			= Device.vCameraPosition;
+	end				= std::remove_if	(it,end,pred_fb(m_pTris));
+	std::sort		(it,end,pred_fb(m_pTris,COP));
 
 	// Build frustum with near plane only
 	CFrustum					clip;
@@ -225,7 +228,7 @@ void CHOM::Render_DB			(CFrustum& base)
 
 void CHOM::Render		(CFrustum& base)
 {
-	if (!bEnabled || ps_r2_test_flags.test(R2FLAG_DISABLE_HOM))		return;
+	if (!bEnabled)		return;
 	
 	Device.Statistic->RenderCALC_HOM.Begin	();
 	Raster.clear		();
@@ -272,21 +275,21 @@ IC	BOOL	_visible	(Fbox& B, Fmatrix& m_xform_01)
 
 BOOL CHOM::visible		(Fbox3& B)
 {
-	if (!bEnabled || ps_r2_test_flags.test(R2FLAG_DISABLE_HOM))							return TRUE;
+	if (!bEnabled)							return TRUE;
 	if (B.contains(Device.vCameraPosition))	return TRUE;
 	return _visible		(B,m_xform_01)		;
 }
 
 BOOL CHOM::visible		(Fbox2& B, float depth)
 {
-	if (!bEnabled || ps_r2_test_flags.test(R2FLAG_DISABLE_HOM))		return TRUE;
+	if (!bEnabled)		return TRUE;
 	return Raster.test	(B.min.x,B.min.y,B.max.x,B.max.y,depth);
 }
 
 BOOL CHOM::visible		(vis_data& vis)
 {
 	if (Device.dwFrame<vis.hom_frame)	return TRUE;				// not at this time :)
-	if (!bEnabled || ps_r2_test_flags.test(R2FLAG_DISABLE_HOM))						return TRUE;				// return - everything visible
+	if (!bEnabled)						return TRUE;				// return - everything visible
 	
 	// Now, the test time comes
 	// 0. The object was hidden, and we must prove that each frame	- test		| frame-old, tested-new, hom_res = false;
@@ -318,7 +321,7 @@ BOOL CHOM::visible		(vis_data& vis)
 
 BOOL CHOM::visible		(sPoly& P)
 {
-	if (!bEnabled || ps_r2_test_flags.test(R2FLAG_DISABLE_HOM))		return TRUE;
+	if (!bEnabled)		return TRUE;
 
 	// Find min/max points of xformed-box
 	Fvector2	min,max;
@@ -343,6 +346,8 @@ void CHOM::Enable		()
 #ifdef DEBUG
 void CHOM::OnRender	()
 {
+	Raster.on_dbg_render();
+
 	if (psDeviceFlags.is(rsOcclusionDraw)){
 		if (m_pModel){
 			DEFINE_VECTOR		(FVF::L,LVec,LVecIt);
@@ -364,7 +369,7 @@ void CHOM::OnRender	()
 			RCache.set_xform_world(Fidentity);
 			// draw solid
 			Device.SetNearer(TRUE);
-			RCache.set_Shader	(Device.m_SelectionShader);
+			RCache.set_Shader	(dxRenderDeviceRender::Instance().m_SelectionShader);
 			RCache.dbg_Draw		(D3DPT_TRIANGLELIST,&*poly.begin(),poly.size()/3);
 			Device.SetNearer(FALSE);
 			// draw wire
@@ -373,7 +378,7 @@ void CHOM::OnRender	()
 			}else{
 				Device.SetNearer(TRUE);
 			}
-			RCache.set_Shader	(Device.m_SelectionShader);
+			RCache.set_Shader	(dxRenderDeviceRender::Instance().m_SelectionShader);
 			RCache.dbg_Draw		(D3DPT_LINELIST,&*line.begin(),line.size()/2);
 			if (bDebug){
 				RImplementation.rmNormal();

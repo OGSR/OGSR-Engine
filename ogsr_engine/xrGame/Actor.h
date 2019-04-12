@@ -3,7 +3,7 @@
 #include "..\xr_3da\feel_touch.h"
 #include "..\xr_3da\feel_sound.h"
 #include "..\xr_3da\iinputreceiver.h"
-#include "..\xr_3da\skeletonanimated.h"
+#include "..\Include/xrRender/KinematicsAnimated.h"
 #include "actor_flags.h"
 #include "actor_defs.h"
 #include "entity_alive.h"
@@ -68,6 +68,7 @@ struct ActorRestoreParams
 	float	SatietyRestoreSpeed;
 	float	RadiationRestoreSpeed;
 	float	PsyHealthRestoreSpeed;
+	float	ThirstRestoreSpeed;
 };
 
 class	CActor: 
@@ -448,7 +449,7 @@ public:
 	void					UpdateMotionIcon		(u32 mstate_rl);
 
 	bool					CanAccelerate			();
-	bool					CanJump					();
+	bool					CanJump					(float weight);
 	bool					CanMove					();
 	float					CameraHeight			();
 	float					CurrentHeight;
@@ -634,7 +635,6 @@ virtual	bool				can_validate_position_on_spawn	(){return false;}
 	//---------------------------------------------
 #endif
 
-	ref_geom 				hFriendlyIndicator;
 	//////////////////////////////////////////////////////////////////////////
 	// Actor physics
 	//////////////////////////////////////////////////////////////////////////
@@ -663,7 +663,6 @@ public:
 	virtual void			ChangeVisual			( shared_str NewVisual );
 	virtual void			OnChangeVisual			();
 
-	virtual void			RenderIndicator			(Fvector dpos, float r1, float r2, ref_shader IndShader);
 	virtual void			RenderText				(LPCSTR Text, Fvector dpos, float* pdup, u32 color);
 
 	//////////////////////////////////////////////////////////////////////////

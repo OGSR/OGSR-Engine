@@ -6,6 +6,8 @@
 #include "../UICursor.h"
 #include "../MainMenu.h"
 
+#include "../Include/xrRender/DebugRender.h"
+
 #pragma optimize("", off) //KRodin: добавлено специально, не убирать!
 
 //#define LOG_ALL_WNDS
@@ -27,17 +29,15 @@
 	void dump_list_wnd(){}
 #endif
 
+
 xr_vector<Frect> g_wnds_rects;
-ref_shader  dbg_draw_sh =0;
-ref_geom	dbg_draw_gm =0;
 
 BOOL g_show_wnd_rect = FALSE;
 BOOL g_show_wnd_rect2 = FALSE;
-
+#pragma todo("KRodin: проверить, работает ли дебаг-рендер!")
 void clean_wnd_rects()
 {
-	dbg_draw_sh.destroy();
-	dbg_draw_gm.destroy();
+	DRender->DestroyDebugShader(IDebugRender::dbgShaderWindow);
 }
 
 void add_rect_to_draw(Frect r)
@@ -46,26 +46,21 @@ void add_rect_to_draw(Frect r)
 }
 void draw_rect(Frect& r, u32 color)
 {
+	DRender->SetDebugShader(IDebugRender::dbgShaderWindow);
 
-	if(!dbg_draw_sh){
-		dbg_draw_sh.create("hud\\default","ui\\ui_pop_up_active_back");
-		dbg_draw_gm.create(FVF::F_TL, RCache.Vertex.Buffer(), 0);
-	}
-	RCache.set_Shader			(dbg_draw_sh);
-	u32							vOffset;
-	FVF::TL* pv					= (FVF::TL*)RCache.Vertex.Lock	(5,dbg_draw_gm.stride(),vOffset);
+	//.	UIRender->StartLineStrip	(5);
+	UIRender->StartPrimitive(5, IUIRender::ptLineStrip, UI()->m_currentPointType);
 
-	pv->set(r.lt.x, r.lt.y, color, 0,0); ++pv;
-	pv->set(r.rb.x, r.lt.y, color, 0,0); ++pv;
-	pv->set(r.rb.x, r.rb.y, color, 0,0); ++pv;
-	pv->set(r.lt.x, r.rb.y, color, 0,0); ++pv;
-	pv->set(r.lt.x, r.lt.y, color, 0,0); ++pv;
+	UIRender->PushPoint(r.lt.x, r.lt.y, 0, color, 0, 0);
+	UIRender->PushPoint(r.rb.x, r.lt.y, 0, color, 0, 0);
+	UIRender->PushPoint(r.rb.x, r.rb.y, 0, color, 0, 0);
+	UIRender->PushPoint(r.lt.x, r.rb.y, 0, color, 0, 0);
+	UIRender->PushPoint(r.lt.x, r.lt.y, 0, color, 0, 0);
 
-	RCache.Vertex.Unlock		(5,dbg_draw_gm.stride());
-	RCache.set_Geometry			(dbg_draw_gm);
-	RCache.Render				(D3DPT_LINESTRIP,vOffset,4);
-
+	//.	UIRender->FlushLineStrip();
+	UIRender->FlushPrimitive();
 }
+
 void draw_wnds_rects()
 {
 	if(0==g_wnds_rects.size())	return;
@@ -83,6 +78,7 @@ void draw_wnds_rects()
 
 	g_wnds_rects.clear();
 }
+
 
 void CUIWindow::SetPPMode()
 {

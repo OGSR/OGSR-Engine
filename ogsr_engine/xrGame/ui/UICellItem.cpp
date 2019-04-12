@@ -263,7 +263,7 @@ CUIDragItem::~CUIDragItem()
 	Device.seqFrame.Remove			(this);
 }
 
-void CUIDragItem::Init(const ref_shader& sh, const Frect& rect, const Frect& text_rect)
+void CUIDragItem::Init(const ui_shader& sh, const Frect& rect, const Frect& text_rect)
 {
 	SetWndRect						(rect);
 	m_static.SetShader				(sh);

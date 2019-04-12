@@ -10,8 +10,7 @@
 #include "base_client_classes.h"
 #include "base_client_classes_wrappers.h"
 #include "../xr_3da/feel_sound.h"
-#include "../xr_3da/fbasicvisual.h"
-#include "../xr_3da/skeletonanimated.h"
+#include "../Include/xrRender/KinematicsAnimated.h"
 #include "ai/stalker/ai_stalker.h"
 #include "../xr_3da/NET_Server_Trash/net_utils.h"
 #include "Actor.h"
@@ -24,7 +23,6 @@
 #include "space_restriction.h"
 #include "../COMMON_AI/PATH/patrol_path.h"
 #include "../COMMON_AI/PATH/patrol_point.h"
-#include "../xr_3da/ResourceManager.h"
 #include "../xr_3da/device.h"
 #include "../xr_3da/Render.h"
 
@@ -273,16 +271,18 @@ void CObjectScript::script_register		(lua_State *L)
 
 // alpet ======================== SCRIPT_TEXTURE_CONTROL BEGIN =========== 
 
-IRender_Visual* visual_get_child(IRender_Visual	*v, u32 n_child)
+#pragma todo("KRodin: переделать под новые рендеры!")
+/*
+IRenderVisual* visual_get_child(IRenderVisual	*v, u32 n_child)
 {
 	if (!v) return NULL; // not have visual
-	CKinematics *k = smart_cast<CKinematics*> (v);
+	IKinematics *k = smart_cast<IKinematics*> (v);
 	if (!k) return NULL;
 	if (n_child >= k->children.size()) return NULL;
 	return k->children.at(n_child);
 }
 
-CTexture* visual_get_texture(IRender_Visual *child_v, int n_texture)
+CTexture* visual_get_texture(IRenderVisual *child_v, int n_texture)
 {
 	if (!child_v) return NULL; // not have visual
 
@@ -326,16 +326,16 @@ void IRender_VisualScript::script_register(lua_State *L)
 {
 	module(L)
 	[
-		class_<IRender_Visual>("IRender_Visual")
+		class_<IRenderVisual>("IRenderVisual")
 			.def(constructor<>())
-			.def("dcast_PKinematicsAnimated",&IRender_Visual::dcast_PKinematicsAnimated)
+			.def("dcast_PKinematicsAnimated",&IRenderVisual::dcast_PKinematicsAnimated)
 			.def("child", &visual_get_child)
 
 			.def("get_texture", &visual_get_texture)
 	];
 }
 
-void CKinematicsAnimated_PlayCycle(CKinematicsAnimated* sa, LPCSTR anim)
+void CKinematicsAnimated_PlayCycle(IKinematicsAnimated* sa, LPCSTR anim)
 {
 	sa->PlayCycle(anim);
 }
@@ -344,7 +344,7 @@ void CKinematicsAnimatedScript::script_register		(lua_State *L)
 {
 	module(L)
 	[
-		class_<CKinematicsAnimated>("CKinematicsAnimated")
+		class_<IKinematicsAnimated>("IKinematicsAnimated")
 			.def("PlayCycle",		&CKinematicsAnimated_PlayCycle)
 	];
 }
@@ -357,6 +357,7 @@ void CBlendScript::script_register		(lua_State *L)
 			//			.def(constructor<>())
 		];
 }
+*/
 
 // alpet ======================== CAMERA SCRIPT OBJECT =================
 
@@ -396,7 +397,7 @@ void CKinematicsScript::script_register		(lua_State *L)
 {
 	module(L)
 		[
-			class_<CKinematics, FHierrarhyVisual>("CKinematics")
+			class_<IKinematics, FHierrarhyVisual>("IKinematics")
 			//			.def(constructor<>())
 		];
 }
@@ -405,7 +406,7 @@ void FHierrarhyVisualScript::script_register		(lua_State *L)
 {
 	module(L)
 		[
-			class_<FHierrarhyVisual, IRender_Visual>("FHierrarhyVisual")
+			class_<FHierrarhyVisual, IRenderVisual>("FHierrarhyVisual")
 			//			.def(constructor<>())
 		];
 }
@@ -459,11 +460,13 @@ void CPatrolPathScript::script_register( lua_State *L ) {
 }
 
 // alpet ======================== SCRIPT_TEXTURE_CONTROL EXPORTS 2 =========== 
+#pragma todo("KRodin: переделать под новые рендеры!")
 
+/*
 CTexture* script_object_get_texture(CScriptGameObject *script_obj, u32 n_child, u32 n_texture)
 {
-	IRender_Visual* v = script_obj->object().Visual();
-	IRender_Visual* child_v = visual_get_child(v, n_child);
+	IRenderVisual* v = script_obj->object().Visual();
+	IRenderVisual* child_v = visual_get_child(v, n_child);
 	return visual_get_texture(child_v, n_texture);
 }
 
@@ -516,6 +519,7 @@ void CResourceManagerScript::script_register(lua_State *L)
 		def("texture_get_name", &script_texture_getname)
 	];
 }
+*/
 // alpet ======================== SCRIPT_TEXTURE_CONTROL END =========== 
 
 

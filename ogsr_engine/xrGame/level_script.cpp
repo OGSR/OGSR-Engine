@@ -29,7 +29,6 @@
 #include "map_manager.h"
 #include "map_location.h"
 #include "phworld.h"
-#include "../xr_3da/r2_shader_exports.h"
 #include "../xr_3da/xr_collide_defs.h"
 #include "script_rq_result.h"
 #include "monster_community.h"
@@ -95,10 +94,11 @@ LPCSTR get_weather	()
 	return			(*g_pGamePersistent->Environment().GetWeather());
 }
 
-void set_weather	(LPCSTR weather_name, bool /*forced*/)
+void set_weather	(LPCSTR weather_name, bool forced)
 {
 	//KRodin: погоду теперь всегда надо обновлять форсировано, иначе она почему-то не обновляется.
-	return			(g_pGamePersistent->Environment().SetWeather(weather_name, true /*forced*/));
+#pragma todo("KRodin: В связи с переносом ЗП-погоды вернул как было изначально.")
+	return			(g_pGamePersistent->Environment().SetWeather(weather_name, forced));
 }
 
 bool set_weather_fx	(LPCSTR weather_name)
@@ -106,9 +106,24 @@ bool set_weather_fx	(LPCSTR weather_name)
 	return			(g_pGamePersistent->Environment().SetWeatherFX(weather_name));
 }
 
+bool start_weather_fx_from_time(LPCSTR weather_name, float time)
+{
+	return			(g_pGamePersistent->Environment().StartWeatherFXFromTime(weather_name, time));
+}
+
 bool is_wfx_playing	()
 {
 	return			(g_pGamePersistent->Environment().IsWFXPlaying());
+}
+
+float get_wfx_time()
+{
+	return			(g_pGamePersistent->Environment().wfx_time);
+}
+
+void stop_weather_fx()
+{
+	g_pGamePersistent->Environment().StopWFX();
 }
 
 void set_time_factor(float time_factor)
@@ -138,21 +153,21 @@ ESingleGameDifficulty get_game_difficulty()
 u32 get_time_days()
 {
 	u32 year = 0, month = 0, day = 0, hours = 0, mins = 0, secs = 0, milisecs = 0;
-	split_time(Level().GetGameTime(), year, month, day, hours, mins, secs, milisecs);
+	split_time((g_pGameLevel && Level().game) ? Level().GetGameTime() : ai().alife().time_manager().game_time(), year, month, day, hours, mins, secs, milisecs);
 	return			day;
 }
 
 u32 get_time_hours()
 {
 	u32 year = 0, month = 0, day = 0, hours = 0, mins = 0, secs = 0, milisecs = 0;
-	split_time(Level().GetGameTime(), year, month, day, hours, mins, secs, milisecs);
+	split_time((g_pGameLevel && Level().game) ? Level().GetGameTime() : ai().alife().time_manager().game_time(), year, month, day, hours, mins, secs, milisecs);
 	return			hours;
 }
 
 u32 get_time_minutes()
 {
 	u32 year = 0, month = 0, day = 0, hours = 0, mins = 0, secs = 0, milisecs = 0;
-	split_time(Level().GetGameTime(), year, month, day, hours, mins, secs, milisecs);
+	split_time((g_pGameLevel && Level().game) ? Level().GetGameTime() : ai().alife().time_manager().game_time(), year, month, day, hours, mins, secs, milisecs);
 	return			mins;
 }
 
@@ -165,7 +180,7 @@ float cover_in_direction(u32 level_vertex_id, const Fvector &direction)
 
 float rain_factor()
 {
-	return			(g_pGamePersistent->Environment().CurrentEnv.rain_density);
+	return g_pGamePersistent->Environment().CurrentEnv->rain_density;
 }
 
 u32	vertex_in_direction(u32 level_vertex_id, Fvector direction, float max_distance)
@@ -380,10 +395,24 @@ void show_indicators()
 	HUD().GetUI()->ShowCrosshair();
 }
 
+bool game_indicators_shown()
+{
+	return HUD().GetUI()->GameIndicatorsShown();
+}
+
+Flags32 get_hud_flags()
+{
+	return psHUD_Flags;
+}
 
 bool is_level_present()
 {
 	return (!!g_pGameLevel);
+}
+
+bool is_removing_objects_script()
+{
+	return Level().is_removing_objects();
 }
 
 CPHCall* add_call(const luabind::functor<bool> &condition,const luabind::functor<void> &action)
@@ -451,15 +480,17 @@ CPHWorld* physics_world()
 {
 	return	ph_world;
 }
-CEnvironment *environment()
+CEnvironment* environment()
 {
-	return		(g_pGamePersistent->pEnvironment);
+	return g_pGamePersistent->pEnvironment;
 }
 
-CEnvDescriptor *current_environment(CEnvironment *self)
+CEnvDescriptor* current_environment(CEnvironment* self)
 {
-	return		(&self->CurrentEnv);
+	return self->CurrentEnv;
 }
+
+
 extern bool g_bDisableAllInput;
 void disable_input()
 {
@@ -661,6 +692,8 @@ void set_ignore_game_state_update()
 	Game().m_need_to_update = false;
 }
 
+#pragma todo("KRodin: поправить под новые реалии!")
+/*
 void SetEnvDescData(LPCSTR section_1, LPCSTR section_2, float exec_time_1, float exec_time_2)
 {
 	// в общем, какой тут смысл. Скрипт берет на себя все, кроме установки текущей погоды.
@@ -696,6 +729,7 @@ void g_set_artefact_position(const u32 i, const float x, const float y, const fl
 	}
 
 }
+
 void g_set_anomaly_position(const u32 i, const float x, const float y, const float z)
 {
 	Fvector pos;
@@ -717,6 +751,7 @@ void g_set_detector_params(int _one, int _two)
 {
 	shader_exports->set_detector_params(Ivector2().set(_one, _two));
 }
+*/
 
 #include "game_sv_single.h"
 void AdvanceGameTime(u32 _ms)
@@ -726,6 +761,7 @@ void AdvanceGameTime(u32 _ms)
 	game->alife().time_manager().advance_game_time(_ms);
 
 	Level().game->SetGameTimeFactor(ai().get_alife() ? ai().alife().time().game_time() : Level().GetGameTime(), Level().game->GetGameTimeFactor());
+#pragma todo("KRodin: по-моему, в ЗП таймфактор погоды отдельный, возможно надо его здесь учитывать, надо подумать.")
 }
 
 //
@@ -776,24 +812,6 @@ void change_level( GameGraph::_GRAPH_ID game_vertex_id, u32 level_vertex_id, Fve
   p.w_vec3( pos );
   p.w_vec3( dir );
   Level().Send( p, net_flags( TRUE ) );
-}
-
-
-void setEFXPreset( LPCSTR preset ) {
-  ::Sound->setEFXPreset( preset );
-}
-
-void unsetEFXPreset() {
-  ::Sound->unsetEFXPreset();
-}
-
-
-void setEFXEAXPreset( LPCSTR preset ) {
-  ::Sound->setEFXEAXPreset( preset );
-}
-
-void unsetEFXEAXPreset() {
-  ::Sound->unsetEFXEAXPreset();
 }
 
 
@@ -940,6 +958,8 @@ void CLevel::script_register(lua_State *L)
 {
 	module(L)
 	[
+#pragma todo("KRodin: поправить под новые реалии!")
+/*
 	class_<CEnvDescriptor>( "CEnvDescriptor" )
           .def_readwrite( "fog_density", &CEnvDescriptor::fog_density)
           .def_readwrite( "fog_distance", &CEnvDescriptor::fog_distance )
@@ -947,11 +967,12 @@ void CLevel::script_register(lua_State *L)
           .def_readwrite( "sun_dir",     &CEnvDescriptor::sun_dir )
           .def( "load",	           ( void( CEnvDescriptor::* ) ( float, LPCSTR, CEnvironment* ) ) &CEnvDescriptor::load )
           .def( "set_env_ambient", &CEnvDescriptor::setEnvAmbient ),
-
+*/
 	class_<CEnvironment>( "CEnvironment" )
           .def( "current",           current_environment )
-          .def( "ForceReselectEnvs", &CEnvironment::ForceReselectEnvs )
-          .def( "getCurrentWeather", &CEnvironment::getCurrentWeather ),
+          //.def( "ForceReselectEnvs", &CEnvironment::ForceReselectEnvs )
+          //.def( "getCurrentWeather", &CEnvironment::getCurrentWeather ),
+	,
 
 	class_<CPHCall>( "CPHCall" )
           .def( "set_pause", &CPHCall::setPause )
@@ -961,6 +982,7 @@ void CLevel::script_register(lua_State *L)
 	[
 		// obsolete\deprecated
 		def("object_by_id",						get_object_by_id),
+		def("is_removing_objects",				is_removing_objects_script),
 #ifdef DEBUG
 		def("debug_object",						get_object_by_name),
 		def("debug_actor",						tpfGetActor),
@@ -970,8 +992,10 @@ void CLevel::script_register(lua_State *L)
 		def("get_weather",						get_weather),
 		def("set_weather",						set_weather),
 		def("set_weather_fx",					set_weather_fx),
-		def("is_wfx_playing",					is_wfx_playing),
-
+		def("start_weather_fx_from_time", start_weather_fx_from_time),
+		def("is_wfx_playing", is_wfx_playing),
+		def("get_wfx_time", get_wfx_time),
+		def("stop_weather_fx", stop_weather_fx),
 		def("environment",						environment),
 		
 		def("set_time_factor",					set_time_factor),
@@ -1006,6 +1030,8 @@ void CLevel::script_register(lua_State *L)
 		def("main_input_receiver",				main_input_receiver),
 		def("hide_indicators",					hide_indicators),
 		def("show_indicators",					show_indicators),
+		def("game_indicators_shown",			game_indicators_shown),
+		def("get_hud_flags",					get_hud_flags),
 		def("add_call",							((CPHCall* (*) (const luabind::functor<bool> &,const luabind::functor<void> &)) &add_call)),
 		def("add_call",							((CPHCall* (*) (const luabind::object &,const luabind::functor<bool> &,const luabind::functor<void> &)) &add_call)),
 		def("add_call",							((CPHCall* (*) (const luabind::object &, LPCSTR, LPCSTR)) &add_call)),
@@ -1066,10 +1092,6 @@ void CLevel::script_register(lua_State *L)
 		def("send_event_mouse_wheel", &send_event_mouse_wheel),
 
 		def( "change_level", &change_level ),
-		def( "set_efx_preset", &setEFXPreset ),
-		def( "unset_efx_preset", &unsetEFXPreset ),
-		def( "set_efx_eax_preset", &setEFXEAXPreset ),
-		def( "unset_efx_eax_preset", &unsetEFXEAXPreset ),
 		def( "set_cam_inert", &set_cam_inert ),
 		def( "set_monster_relation", &set_monster_relation ),
 		def( "patrol_path_add", &patrol_path_add ),
@@ -1118,10 +1140,11 @@ void CLevel::script_register(lua_State *L)
 	//установка параметров для шейдеров из скриптов
 	module(L)
 		[
-			def("set_artefact_slot", &g_set_artefact_position),
-			def("set_anomaly_slot", &g_set_anomaly_position),
-			def("set_detector_mode", &g_set_detector_params),
-			def("SetEnvDescData", &SetEnvDescData),
+#pragma todo("KRodin: поправить под новые реалии!")
+			//def("set_artefact_slot", &g_set_artefact_position),
+			//def("set_anomaly_slot", &g_set_anomaly_position),
+			//def("set_detector_mode", &g_set_detector_params),
+			//def("SetEnvDescData", &SetEnvDescData),
 			def("update_inventory_window", &update_inventory_window),
 			def("update_inventory_weight", &update_inventory_weight),
 

@@ -334,12 +334,14 @@ void CHudItem::animGetEx( MotionSVec& lst, LPCSTR prefix, LPCSTR suffix ) {
   std::string speed_k = prefix;
   speed_k += "_speed_k";
   if ( pSettings->line_exist( hud_sect.c_str(), speed_k.c_str() ) ) {
-    float k = pSettings->r_float( hud_sect.c_str(), speed_k.c_str() );
-    if ( !fsimilar( k, 1.f ) )
+#pragma todo("KRodin: адаптировать под новые рендеры!")
+    /*float k = pSettings->r_float( hud_sect.c_str(), speed_k.c_str() );
+    if ( !fsimilar( k, 1.f ) ) {
       for ( const auto& M : lst ) {
-        auto *animated   = smart_cast<CKinematicsAnimated*>( m_pHUD->Visual() );
+        auto *animated   = smart_cast<IKinematicsAnimated*>( m_pHUD->Visual() );
         auto *motion_def = animated->LL_GetMotionDef( M );
         motion_def->SpeedKoeff( k );
       }
+    }*/
   }
 }

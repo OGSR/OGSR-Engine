@@ -410,6 +410,11 @@ LPCSTR get_loaded_save(CALifeSimulator *sim)
 	return result ? result : "NULL";
 }
 
+bool is_unloading(CALifeSimulator *sim)
+{
+	return sim->is_unloading();
+}
+
 #pragma optimize("s",on)
 void CALifeSimulator::script_register			(lua_State *L)
 {
@@ -423,6 +428,7 @@ void CALifeSimulator::script_register			(lua_State *L)
 			.def("object",					(CSE_ALifeDynamicObject *(*) (const CALifeSimulator *,ALife::_OBJECT_ID))(alife_object))
 			.def("object",					(CSE_ALifeDynamicObject *(*) (const CALifeSimulator *,LPCSTR))(alife_object))
 			.def("object",					(CSE_ALifeDynamicObject *(*) (const CALifeSimulator *,ALife::_OBJECT_ID, bool))(alife_object))
+			.def("is_unloading",			&is_unloading)
 			.def("story_object",			(CSE_ALifeDynamicObject *(*) (const CALifeSimulator *,ALife::_STORY_ID))(alife_story_object))
 			.def("set_switch_online",		(void (CALifeSimulator::*) (ALife::_OBJECT_ID,bool))(&CALifeSimulator::set_switch_online))
 			.def("set_switch_offline",		(void (CALifeSimulator::*) (ALife::_OBJECT_ID,bool))(&CALifeSimulator::set_switch_offline))

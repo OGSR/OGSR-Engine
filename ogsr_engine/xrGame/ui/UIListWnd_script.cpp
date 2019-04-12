@@ -10,12 +10,6 @@ bool CUIListWnd::AddItem_script(CUIListItem* item){
 	return AddItem(item, -1);
 }
 
-BOOL	xrRender_test_hw();
-bool xrRender_test_hw_script()
-{
-	return !!xrRender_test_hw();
-}
-
 struct CUIListItemWrapper : public CUIListItem, public luabind::wrap_base {};
 
 struct CUIListItemExWrapper : public CUIListItemEx, public luabind::wrap_base {};
@@ -68,8 +62,6 @@ void CUIListWnd::script_register(lua_State *L)
 
 		class_<CUIListItemEx, CUIListItem/**/, CUIListItemExWrapper/**/>("CUIListItemEx")
 		.def(							constructor<>())
-		.def("SetSelectionColor",		&CUIListItemEx::SetSelectionColor),
-
-		def("xrRender_test_r2_hw",			&xrRender_test_hw_script)
+		.def("SetSelectionColor",		&CUIListItemEx::SetSelectionColor)
 	];
 }

@@ -8,11 +8,12 @@
 
 #pragma once
 
-#include "xrLevel.h"
+#include "..\xr_3da\xrLevel.h"
 
 #include "alife_space.h"
 #include "level_graph_space.h"
 #include "game_graph_space.h"
+#include "../Include/xrRender/DebugShader.h"
 
 namespace LevelGraph {
 	class	CHeader;
@@ -204,7 +205,7 @@ public:
 
 #ifndef AI_COMPILER
 private:
-	ref_shader			sh_debug;
+	debug_shader sh_debug;
 
 public:
 		void		render();

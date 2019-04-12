@@ -1,7 +1,8 @@
-#pragma once
+//---------------------------------------------------------------------------
+#ifndef ParticleEffectDefH
+#define ParticleEffectDefH
 
-#include "..\..\xr_3da\FBasicVisual.h"
-#include "..\..\xr_3da\ParticleCustom.h"
+#include "Shader.h"
 
 namespace PAPI
 {
@@ -104,11 +105,43 @@ namespace PS
 
 		void 				Save				(IWriter& F);
 		BOOL 				Load				(IReader& F);
+
+		void 				Save2				(CInifile& ini);
+		BOOL 				Load2				(CInifile& ini);
+
+#ifdef _EDITOR         
+// change Copy&Equal if variables changed
+	public:
+	    DEFINE_VECTOR		(EParticleAction*,EPAVec,EPAVecIt);
+		EPAVec 				m_EActionList;
+	public:             
+		void __stdcall  	FindActionByName	(LPCSTR new_name, bool& res);
+		bool __stdcall  	NameOnAfterEdit					(PropValue* sender, shared_str& edit_val);
+		bool __stdcall  	CollisionFrictionOnAfterEdit	(PropValue* sender, float& edit_val);
+		void __stdcall  	CollisionFrictionOnBeforeEdit	(PropValue* sender, float& edit_val);
+		void __stdcall  	CollisionFrictionOnDraw			(PropValue* sender, xr_string& draw_val);
+		bool __stdcall  	CollisionCutoffOnAfterEdit		(PropValue* sender, float& edit_val);
+		void __stdcall  	CollisionCutoffOnBeforeEdit		(PropValue* sender, float& edit_val);
+		void __stdcall  	CollisionCutoffOnDraw			(PropValue* sender, xr_string& draw_val);
+		void __stdcall  	OnActionEditClick	(ButtonValue* sender, bool& bDataModified, bool& bSafe);
+	    void __stdcall  	OnFrameResize		(PropValue* sender);
+	    void __stdcall  	OnShaderChange		(PropValue* sender);
+	    void __stdcall  	OnFlagChange		(PropValue* sender);
+		void __stdcall  	OnControlClick		(ButtonValue* sender, bool& bDataModified, bool& bSafe);
+		void __stdcall  	OnActionsClick		(ButtonValue* sender, bool& bDataModified, bool& bSafe);
+        bool __stdcall  	OnAfterActionNameEdit(PropValue* sender, shared_str& edit_val);
+		void				FillProp		   	(LPCSTR pref, ::PropItemVec& items, ::ListItem* owner);
+		void				Copy				(const CPEDef& src);
+		BOOL				Equal				(const CPEDef* pe);
+		void 				Render				(const Fmatrix& parent);
+		static PFunction*	FindCommandPrototype(LPCSTR src, LPCSTR& dest);
+		void __stdcall  	FillActionList		(ChooseItemVec& items, void* param);
+        bool 				Validate 			(bool bMsg);
+		void 				Compile				(EPAVec& v);
+#endif
 	};
 };
-//----------------------------------------------------
 #define PED_VERSION				0x0001
-//----------------------------------------------------
 #define PED_CHUNK_VERSION		0x0001
 #define PED_CHUNK_NAME			0x0002
 #define PED_CHUNK_EFFECTDATA	0x0003
@@ -118,9 +151,10 @@ namespace PS
 #define PED_CHUNK_SPRITE	   	0x0007
 #define PED_CHUNK_TIMELIMIT		0x0008
 #define PED_CHUNK_TIMELIMIT2	0x0009
-#define PED_CHUNK_SOURCETEXT_  	0x0020 // obsolette
+#define PED_CHUNK_SOURCETEXT_  	0x0020 // obsolete
 #define PED_CHUNK_COLLISION	   	0x0021
 #define PED_CHUNK_VEL_SCALE		0x0022
-#define PED_CHUNK_OWNER			0x0023
 #define PED_CHUNK_EDATA			0x0024
 #define PED_CHUNK_ALIGN_TO_PATH	0x0025
+//---------------------------------------------------------------------------
+#endif

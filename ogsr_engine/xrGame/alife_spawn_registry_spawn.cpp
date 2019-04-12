@@ -37,50 +37,32 @@ IC	bool CALifeSpawnRegistry::time_limit		(CSE_Abstract &abstract, ALife::_TIME_I
 	return		(true);
 }
 
-IC	bool CALifeSpawnRegistry::spawned_item				(CSE_Abstract &abstract, SPAWN_IDS &objects) const
+IC	bool CALifeSpawnRegistry::spawned_item				(SPAWN_GRAPH::CVertex *vertex)
 {
-	SPAWN_IDS::iterator			I = std::lower_bound(objects.begin(),objects.end(),abstract.m_tSpawnID);
-	return						((I != objects.end()) && (*I == abstract.m_tSpawnID));
+	return						(false);
 }
 
-IC	bool CALifeSpawnRegistry::spawned_item				(SPAWN_GRAPH::CVertex *vertex, SPAWN_IDS &objects)
+IC	bool CALifeSpawnRegistry::object_existance_limit	(CSE_Abstract &abstract) const
 {
-	if (vertex->edges().empty())
-		return					(spawned_item(vertex->data()->object(),objects));
-
-	SPAWN_GRAPH::const_iterator	I = vertex->edges().begin();
-	SPAWN_GRAPH::const_iterator	E = vertex->edges().end();
-	for ( ; I != E; ++I)
-		if (spawned_item(m_spawns.vertex((*I).vertex_id()),objects))
-			return				(true);
+	//if (!abstract.m_spawn_flags.is(CSE_Abstract::flSpawnIfDestroyedOnly))
+	//	return					(false);
 
 	return						(false);
 }
 
-IC	bool CALifeSpawnRegistry::object_existance_limit	(CSE_Abstract &abstract, SPAWN_IDS &objects) const
-{
-	if (!abstract.m_spawn_flags.is(CSE_Abstract::flSpawnIfDestroyedOnly))
-		return					(false);
-
-	if (spawned_item(abstract,objects))
-		return					(true);
-
-	return						(false);
-}
-
-IC	bool CALifeSpawnRegistry::can_spawn					(CSE_Abstract &abstract, ALife::_TIME_ID game_time, SPAWN_IDS &objects) const
+IC	bool CALifeSpawnRegistry::can_spawn					(CSE_Abstract &abstract, ALife::_TIME_ID game_time) const
 {
 	return						(
 		enabled_spawn(abstract) &&
 		!count_limit(abstract) &&
 		!time_limit(abstract,game_time) &&
-		!object_existance_limit(abstract,objects)
+		!object_existance_limit(abstract)
 	);
 }
 
-void CALifeSpawnRegistry::fill_new_spawns_single		(SPAWN_GRAPH::CVertex *vertex, SPAWN_IDS &spawns, ALife::_TIME_ID game_time, SPAWN_IDS &objects)
+void CALifeSpawnRegistry::fill_new_spawns_single		(SPAWN_GRAPH::CVertex *vertex, SPAWN_IDS &spawns, ALife::_TIME_ID game_time)
 {
-	if (!!vertex->data()->object().m_spawn_flags.is(CSE_Abstract::flSpawnIfDestroyedOnly) && spawned_item(vertex,objects))
+	if (!!vertex->data()->object().m_spawn_flags.is(CSE_Abstract::flSpawnIfDestroyedOnly) && spawned_item(vertex))
 		return;
 
 	float						accumulator = 0.f;
@@ -102,16 +84,16 @@ void CALifeSpawnRegistry::fill_new_spawns_single		(SPAWN_GRAPH::CVertex *vertex,
 		accumulator				+= (*I).weight()*group_probability;
 		if (accumulator > probability) {
 //			vertex->data()->object().m_spawn_count++;
-			fill_new_spawns		(m_spawns.vertex((*I).vertex_id()),spawns,game_time,objects);
+			fill_new_spawns		(m_spawns.vertex((*I).vertex_id()),spawns,game_time);
 			return;
 		}
 	}
 }
 
-void CALifeSpawnRegistry::fill_new_spawns				(SPAWN_GRAPH::CVertex *vertex, SPAWN_IDS &spawns, ALife::_TIME_ID game_time, SPAWN_IDS &objects)
+void CALifeSpawnRegistry::fill_new_spawns				(SPAWN_GRAPH::CVertex *vertex, SPAWN_IDS &spawns, ALife::_TIME_ID game_time)
 {
 	VERIFY									(vertex);
-	if (!can_spawn(vertex->data()->object(),game_time,objects))
+	if (!can_spawn(vertex->data()->object(),game_time))
 		return;
 
 	if (vertex->edges().empty()) {
@@ -121,7 +103,7 @@ void CALifeSpawnRegistry::fill_new_spawns				(SPAWN_GRAPH::CVertex *vertex, SPAW
 	}
 	
 	if (!!vertex->data()->object().m_spawn_flags.is(CSE_Abstract::flSpawnSingleItemOnly)) {
-		fill_new_spawns_single				(vertex,spawns,game_time,objects);
+		fill_new_spawns_single				(vertex,spawns,game_time);
 		return;
 	}
 
@@ -131,17 +113,15 @@ void CALifeSpawnRegistry::fill_new_spawns				(SPAWN_GRAPH::CVertex *vertex, SPAW
 	SPAWN_GRAPH::const_iterator				E = vertex->edges().end();
 	for ( ; I != E; ++I)
 		if (randF(1.f) < (*I).weight())
-			fill_new_spawns					(m_spawns.vertex((*I).vertex_id()),spawns,game_time,objects);
+			fill_new_spawns					(m_spawns.vertex((*I).vertex_id()),spawns,game_time);
 }
 
-void CALifeSpawnRegistry::fill_new_spawns				(SPAWN_IDS &spawns, ALife::_TIME_ID game_time, SPAWN_IDS &objects)
+void CALifeSpawnRegistry::fill_new_spawns				(SPAWN_IDS &spawns, ALife::_TIME_ID game_time)
 {
-	process_spawns							(objects);
-
 	SPAWN_IDS::iterator						I = m_spawn_roots.begin();
 	SPAWN_IDS::iterator						E = m_spawn_roots.end();
 	for ( ; I != E; ++I)
-		fill_new_spawns						(m_spawns.vertex(*I),spawns,game_time,objects);
+		fill_new_spawns						(m_spawns.vertex(*I),spawns,game_time);
 
 	process_spawns							(spawns);
 }

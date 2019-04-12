@@ -5,7 +5,7 @@
 #include "stdafx.h"
 #include "wound.h"
 #include "../xr_3da/NET_Server_Trash/net_utils.h"
-#include "bone.h"
+#include "../xr_3da/bone.h"
 
 CWound::CWound(u16 bone_num)
 {

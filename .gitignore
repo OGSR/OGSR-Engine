@@ -26,3 +26,9 @@ Desktop.ini
 
 # Recycle Bin used on file shares
 $RECYCLE.BIN/
+
+/gamedata
+gamedata*
+/_appdata_
+fsgame*
+/mods

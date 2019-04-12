@@ -20,7 +20,7 @@ CLevelGraph::CLevelGraph		()
 {
 #ifndef AI_COMPILER
 
-	sh_debug.create				("debug\\ai_nodes","$null");
+	sh_debug->create("debug\\ai_nodes", "$null");
 
 	string_path					file_name;
 	FS.update_path				(file_name,"$level$",LEVEL_GRAPH_NAME);

@@ -8,7 +8,8 @@
 #include "game_cl_base.h"
 #include "Level.h"
 #include "BoneProtections.h"
-
+#include "..\Include/xrRender/Kinematics.h"
+#include "../Include/xrRender/RenderVisual.h"
 
 CCustomOutfit::CCustomOutfit()
 {
@@ -26,6 +27,7 @@ CCustomOutfit::CCustomOutfit()
 	m_fHealthRestoreSpeed    = 0.f;
 	m_fPowerRestoreSpeed     = 0.f;
 	m_fSatietyRestoreSpeed   = 0.f;
+	m_fThirstRestoreSpeed    = 0.f;
 }
 
 CCustomOutfit::~CCustomOutfit() 
@@ -85,6 +87,7 @@ void CCustomOutfit::Load(LPCSTR section)
 	m_fHealthRestoreSpeed    = READ_IF_EXISTS( pSettings, r_float, section, "health_restore_speed", 0.f );
 	m_fPowerRestoreSpeed     = READ_IF_EXISTS( pSettings, r_float, section, "power_restore_speed", 0.f );
 	m_fSatietyRestoreSpeed   = READ_IF_EXISTS( pSettings, r_float, section, "satiety_restore_speed", 0.f );
+	m_fThirstRestoreSpeed    = READ_IF_EXISTS( pSettings, r_float, section, "thirst_restore_speed", 0.f );
 }
 
 void CCustomOutfit::Hit(float hit_power, ALife::EHitType hit_type)
@@ -135,7 +138,7 @@ void	CCustomOutfit::OnMoveToSlot		()
 				pActor->ChangeVisual(m_ActorVisual);
 			}
 			if(pSettings->line_exist(cNameSect(),"bones_koeff_protection")){
-				m_boneProtection->reload( pSettings->r_string(cNameSect(),"bones_koeff_protection"), smart_cast<CKinematics*>(pActor->Visual()) );
+				m_boneProtection->reload( pSettings->r_string(cNameSect(),"bones_koeff_protection"), smart_cast<IKinematics*>(pActor->Visual()) );
 			};
 		}
 	}

@@ -1,5 +1,4 @@
 #include "stdafx.h"
-#include "..\xr_3da\resourcemanager.h"
 #include "HUDmanager.h"
 #include "PHdynamicdata.h"
 #include "Physics.h"
@@ -108,8 +107,8 @@ bool	CLevel::net_start_client5				()
 		// Textures
 			pHUD->Load							();
 			g_pGamePersistent->LoadTitle				("st_loading_textures");
-			Device.Resources->DeferredLoad		(FALSE);
-			Device.Resources->DeferredUpload	();
+			Device.m_pRender->DeferredLoad(FALSE);
+			Device.m_pRender->ResourcesDeferredUpload();
 			LL_CheckTextures					();
 	}
 	return true;
@@ -124,7 +123,7 @@ bool	CLevel::net_start_client6				()
 
 
 		g_pGamePersistent->LoadTitle		("st_client_synchronising");
-		Device.PreCache						(30);
+		Device.PreCache(60, true, true);
 		net_start_result_total				= TRUE;
 	}else{
 		net_start_result_total				= FALSE;
