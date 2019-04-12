@@ -1,9 +1,9 @@
 #include "stdafx.h"
 #include "../xrRender/fbasicvisual.h"
-#include "../../xrEngine/fmesh.h"
-#include "../../xrEngine/xrLevel.h"
-#include "../../xrEngine/x_ray.h"
-#include "../../xrEngine/IGame_Persistent.h"
+#include "../../xr_3da/fmesh.h"
+#include "../../xr_3da/xrLevel.h"
+#include "../../xr_3da/x_ray.h"
+#include "../../xr_3da/IGame_Persistent.h"
 #include "../../xrCore/stream_reader.h"
 
 #include "../xrRender/dxRenderDeviceRender.h"

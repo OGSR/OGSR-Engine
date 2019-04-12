@@ -3,12 +3,12 @@
 //////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
-#include "../../xrEngine/igame_persistent.h"
-#include "../../xrEngine/environment.h"
+#include "../../xr_3da/igame_persistent.h"
+#include "../../xr_3da/environment.h"
 #include "../xrRender/fbasicvisual.h"
-#include "../../xrEngine/CustomHUD.h"
-#include "../../xrEngine/xr_object.h"
-#include "../../xrEngine/fmesh.h"
+#include "../../xr_3da/CustomHUD.h"
+#include "../../xr_3da/xr_object.h"
+#include "../../xr_3da/fmesh.h"
 #include "../xrRender/SkeletonCustom.h"
 #include "../xrRender/lighttrack.h"
 #include "../xrRender/dxRenderDeviceRender.h"
@@ -257,7 +257,7 @@ void					CRender::add_Occluder			(Fbox2&	bb_screenspace	)
 	HOM.occlude				(bb_screenspace);
 }
 
-#include "../../xrEngine/PS_instance.h"
+#include "../../xr_3da/PS_instance.h"
 void					CRender::set_Object				(IRenderable*		O )	
 {
 	VERIFY					(g_bRendering);
@@ -632,7 +632,7 @@ void	CRender::ApplyBlur4		(FVF::TL4uv* pv, u32 w, u32 h, float k)
 	pv->p.set(float(_w+EPS),EPS,			EPS,1.f); pv->color=_c; pv->uv[0].set(p1.x-kw,p0.y-kh);pv->uv[1].set(p1.x+kw,p0.y+kh);pv->uv[2].set(p1.x+kw,p0.y-kh);pv->uv[3].set(p1.x-kw,p0.y+kh);pv++;
 }
 
-#include "../../xrEngine/GameFont.h"
+#include "../../xr_3da/GameFont.h"
 void	CRender::Statistics	(CGameFont* _F)
 {
 	CGameFont&	F	= *_F;

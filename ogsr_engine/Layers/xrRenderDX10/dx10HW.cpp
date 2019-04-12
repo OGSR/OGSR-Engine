@@ -8,7 +8,7 @@
 #include <d3dx/d3dx9.h>
 #pragma warning(default:4995)
 #include "../xrRender/HW.h"
-#include "../../xrEngine/XR_IOConsole.h"
+#include "../../xr_3da/XR_IOConsole.h"
 #include "../../Include/xrAPI/xrAPI.h"
 
 #include "StateManager\dx10SamplerStateCache.h"

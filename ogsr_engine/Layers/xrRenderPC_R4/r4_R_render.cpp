@@ -1,8 +1,8 @@
 #include "stdafx.h"
-#include "../../xrEngine/igame_persistent.h"
+#include "../../xr_3da/igame_persistent.h"
 #include "../xrRender/FBasicVisual.h"
-#include "../../xrEngine/customhud.h"
-#include "../../xrEngine/xr_object.h"
+#include "../../xr_3da/customhud.h"
+#include "../../xr_3da/xr_object.h"
 
 #include "../xrRender/QueryHelper.h"
 

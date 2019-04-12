@@ -4,10 +4,10 @@
 
 #include "stdafx.h"
 #include "LightPPA.h"
-#include "../../xrEngine/igame_persistent.h"
-#include "../../xrEngine/environment.h"
+#include "../../xr_3da/igame_persistent.h"
+#include "../../xr_3da/environment.h"
 #include "../xrRender/fbasicvisual.h"
-#include "../../xrEngine/CustomHUD.h"
+#include "../../xr_3da/CustomHUD.h"
 
 const u32	MAX_POLYGONS			=	1024*8;
 const float MAX_DISTANCE			=	50.f;
