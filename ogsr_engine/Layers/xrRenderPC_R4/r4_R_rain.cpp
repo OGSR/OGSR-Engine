@@ -82,7 +82,7 @@ void CRender::render_rain()
 		FPU::m64r					();
 		// Lets begin from base frustum
 		Fmatrix		fullxform_inv	= ex_full_inverse;
-#ifdef	_DEBUG
+#ifdef	DEBUG
 		typedef		DumbConvexVolume<true>	t_volume;
 #else
 		typedef		DumbConvexVolume<false>	t_volume;
@@ -102,7 +102,7 @@ void CRender::render_rain()
 		}
 		//hull.compute_caster_model	(cull_planes,fuckingsun->direction);
 		hull.compute_caster_model	(cull_planes,RainLight.direction);
-#ifdef	_DEBUG
+#ifdef	DEBUG
 		for (u32 it=0; it<cull_planes.size(); it++)
 			RImplementation.Target->dbg_addplane(cull_planes[it],0xffffffff);
 #endif

@@ -173,7 +173,7 @@ void CModelPool::Destroy()
 	while(!Registry.empty()){
 		REGISTRY_IT it	= Registry.begin();
 		dxRender_Visual* V=(dxRender_Visual*)it->first;
-#ifdef _DEBUG
+#ifdef DEBUG
 		Msg				("ModelPool: Destroy object: '%s'",*V->dbg_name);
 #endif
 		DeleteInternal	(V,TRUE);

@@ -179,7 +179,7 @@ BOOL motions_value::load		(LPCSTR N, IReader *data, vecBones* bones)
 		string128			mname;
 		R_ASSERT			(MS->find_chunk(m_idx+1));             
 		MS->r_stringZ		(mname,sizeof(mname));
-#ifdef _DEBUG        
+#ifdef DEBUG        
 		// sanity check
 		xr_strlwr			(mname);
         accel_map::iterator I= m_motion_map.find(mname); 

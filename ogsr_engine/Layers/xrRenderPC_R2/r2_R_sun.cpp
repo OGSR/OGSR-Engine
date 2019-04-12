@@ -1198,7 +1198,7 @@ void CRender::render_sun_near	()
 		FPU::m64r					();
 		// Lets begin from base frustum
 		Fmatrix		fullxform_inv	= ex_full_inverse;
-#ifdef	_DEBUG
+#ifdef	DEBUG
 		typedef		DumbConvexVolume<true>	t_volume;
 #else
 		typedef		DumbConvexVolume<false>	t_volume;
@@ -1217,7 +1217,7 @@ void CRender::render_sun_near	()
 			}
 		}
 		hull.compute_caster_model	(cull_planes,fuckingsun->direction);
-#ifdef	_DEBUG
+#ifdef	DEBUG
 		for (u32 it=0; it<cull_planes.size(); it++)
 			RImplementation.Target->dbg_addplane(cull_planes[it],0xffffffff);
 #endif
@@ -1463,7 +1463,7 @@ void CRender::render_sun_cascade ( u32 cascade_ind )
 		FPU::m64r					();
 		// Lets begin from base frustum
 		Fmatrix		fullxform_inv	= ex_full_inverse;
-#ifdef	_DEBUG
+#ifdef	DEBUG
 		typedef		DumbConvexVolume<true>	t_volume;
 #else
 		typedef		DumbConvexVolume<false>	t_volume;
@@ -1503,7 +1503,7 @@ void CRender::render_sun_cascade ( u32 cascade_ind )
 
 
 		//////////////////////////////////////////////////////////////////////////
-#ifdef	_DEBUG
+#ifdef	DEBUG
 		typedef		FixedConvexVolume<true>		t_cuboid;
 #else
 		typedef		FixedConvexVolume<false>	t_cuboid;
@@ -1583,7 +1583,7 @@ void CRender::render_sun_cascade ( u32 cascade_ind )
 			if( cascade_ind < m_sun_cascades.size()-1 )
 				m_sun_cascades[cascade_ind+1].rays =  light_cuboid.view_frustum_rays;
 
-#ifdef	_DEBUG
+#ifdef	DEBUG
 
 			static bool draw_debug = false;
 			if( draw_debug && cascade_ind == 0 )
