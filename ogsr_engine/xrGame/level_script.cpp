@@ -94,10 +94,11 @@ LPCSTR get_weather	()
 	return			(*g_pGamePersistent->Environment().GetWeather());
 }
 
-void set_weather	(LPCSTR weather_name, bool /*forced*/)
+void set_weather	(LPCSTR weather_name, bool forced)
 {
 	//KRodin: погоду теперь всегда надо обновлять форсировано, иначе она почему-то не обновляется.
-	return			(g_pGamePersistent->Environment().SetWeather(weather_name, true /*forced*/));
+#pragma todo("KRodin: В связи с переносом ЗП-погоды вернул как было изначально.")
+	return			(g_pGamePersistent->Environment().SetWeather(weather_name, forced));
 }
 
 bool set_weather_fx	(LPCSTR weather_name)
