@@ -83,10 +83,14 @@ BOOL CLevel::Load_GameSpecific_After()
 			Sounds_Random_Enabled	= FALSE;
 		}
 
+		//Странно, у нас на момент вызова game ещё нет. Ну да ладно, оно в CLevel::OnFrame апдейтится, этого достаточно я думаю.
+		//g_pGamePersistent->Environment().SetGameTime(GetEnvironmentGameDayTimeSec(), game->GetEnvironmentGameTimeFactor());
+
+#pragma todo("KRodin: Выключено в связи с переносом ЗП-погоды. Надо пересмотреть это.")
 		// Сбрасываем состояния дождя при загрузке уровня во избежание пропажи звука. Real Wolf.
-		if (g_pGamePersistent->pEnvironment)
-			g_pGamePersistent->pEnvironment->Invalidate();
-		
+		//if (g_pGamePersistent->pEnvironment)
+		//	g_pGamePersistent->pEnvironment->Invalidate();
+
 	return TRUE;
 }
 

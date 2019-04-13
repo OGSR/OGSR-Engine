@@ -131,12 +131,8 @@ void CUIStatic::InitTextureEx(LPCSTR tex_name, LPCSTR sh_name)
 	LPCSTR res_shname = UIRender->UpdateShaderName(tex_name, sh_name);
 	CUITextureMaster::InitTexture(tex_name, res_shname, &m_UIStaticItem);
 
-#pragma todo("KRodin: WTF??? Тут всё правильно?")
-	//CUIStaticItem(m_UIStaticItem); //
-
 	Fvector2 p						= GetWndPos();
 	m_UIStaticItem.SetPos			(p.x, p.y);
-	m_bAvailableTexture				= true;
 }
 
 void  CUIStatic::Draw()
@@ -182,7 +178,8 @@ void CUIStatic::DrawText(){
 
 void CUIStatic::DrawTexture(){
 
-	if(m_bAvailableTexture && m_bTextureEnable){
+	if (m_bTextureEnable && GetShader() && GetShader()->inited())
+	{
 		Frect			rect;
 		GetAbsoluteRect	(rect);
 		m_UIStaticItem.SetPos	(rect.left + m_TextureOffset.x, rect.top + m_TextureOffset.y);

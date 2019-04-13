@@ -692,7 +692,7 @@ void set_ignore_game_state_update()
 	Game().m_need_to_update = false;
 }
 
-#pragma todo("KRodin: поправить под новые реалии!")
+#pragma todo("KRodin: поправить под новые реалии! Если это вообще будет надо, конечно. Если переедем на ЗП-погоду, то этот метод установки погоды будет банально не нужен.")
 /*
 void SetEnvDescData(LPCSTR section_1, LPCSTR section_2, float exec_time_1, float exec_time_2)
 {
@@ -756,12 +756,13 @@ void g_set_detector_params(int _one, int _two)
 #include "game_sv_single.h"
 void AdvanceGameTime(u32 _ms)
 {
-	game_sv_Single			*game = smart_cast<game_sv_Single*>(Level().Server->game);
-	R_ASSERT(game);
+#pragma todo("KRodin: Проверить, работает ли оно!")
+	g_pGamePersistent->Environment().ChangeGameTime(_ms);
+
+	auto game = smart_cast<game_sv_Single*>(Level().Server->game);
 	game->alife().time_manager().advance_game_time(_ms);
 
 	Level().game->SetGameTimeFactor(ai().get_alife() ? ai().alife().time().game_time() : Level().GetGameTime(), Level().game->GetGameTimeFactor());
-#pragma todo("KRodin: по-моему, в ЗП таймфактор погоды отдельный, возможно надо его здесь учитывать, надо подумать.")
 }
 
 //

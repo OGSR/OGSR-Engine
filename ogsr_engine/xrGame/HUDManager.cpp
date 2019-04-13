@@ -314,7 +314,7 @@ void CHUDManager::net_Relcase	(CObject *object)
 	m_pHUDTarget->net_Relcase	(object);
 }
 
-#pragma todo("KRodin: Доделать эти два метода, если они нужны!")
+#pragma todo("KRodin: Доделать эти два метода, если они нужны! Мне кажется, или в ТЧ они не нужны. По крайней мере я проблем не вижу с рендером UI, худа и тп.")
 //#include "player_hud.h"
 bool   CHUDManager::RenderActiveItemUIQuery()
 {

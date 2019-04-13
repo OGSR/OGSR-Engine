@@ -34,7 +34,6 @@ xr_vector<Frect> g_wnds_rects;
 
 BOOL g_show_wnd_rect = FALSE;
 BOOL g_show_wnd_rect2 = FALSE;
-#pragma todo("KRodin: проверить, работает ли дебаг-рендер!")
 void clean_wnd_rects()
 {
 	DRender->DestroyDebugShader(IDebugRender::dbgShaderWindow);

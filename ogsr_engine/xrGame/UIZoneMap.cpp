@@ -62,12 +62,9 @@ void CUIZoneMap::Init()
 
 void CUIZoneMap::Render()
 {
-#pragma todo("KRodin: рендер миникарты временно выключен, т.к. она вылетает по невыясненным пока причинам.")
-	/*
 	m_clipFrame.Draw();
 	m_background.Draw();
 	m_compass.Draw();
-	*/
 }
 
 void CUIZoneMap::SetHeading		(float angle)

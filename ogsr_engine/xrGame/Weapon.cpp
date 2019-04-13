@@ -843,7 +843,7 @@ static float previous_heating = 0;		// "нагретость" оружия в п
 
 void CWeapon::UpdateWeaponParams()
 {
-#pragma todo("KD: переделать к чертовой матери этот тихий ужас")
+#pragma todo("KRodin: адаптировать тепловизор и тп. под новый рендер, если это возможно.")
 
 	if (!IsHidden()) {
 		w_states.x = m_fZoomRotationFactor;			//x = zoom mode, y - текущее состояние, z - старое состояние
