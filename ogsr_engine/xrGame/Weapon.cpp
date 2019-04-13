@@ -376,7 +376,8 @@ void CWeapon::Load		(LPCSTR section)
 	m_bZoomEnabled = !!pSettings->r_bool(section,"zoom_enabled");
 	m_bUseScopeZoom = !!READ_IF_EXISTS(pSettings, r_bool, section, "use_scope_zoom", false);
 	m_bUseScopeGrenadeZoom = !!READ_IF_EXISTS(pSettings, r_bool, section, "use_scope_grenade_zoom", false);
-	m_bUseScopeDOF = !!READ_IF_EXISTS( pSettings, r_bool, section, "use_scope_dof", true );
+	m_bUseScopeDOF   = !!READ_IF_EXISTS( pSettings, r_bool, section, "use_scope_dof", true );
+	m_bForceScopeDOF = !!READ_IF_EXISTS( pSettings, r_bool, section, "force_scope_dof", false );
 	m_bScopeShowIndicators = !!READ_IF_EXISTS( pSettings, r_bool, section, "scope_show_indicators", true );
 	m_bIgnoreScopeTexture = !!READ_IF_EXISTS( pSettings, r_bool, section, "ignore_scope_texture", false );
 
@@ -851,7 +852,7 @@ void CWeapon::UpdateWeaponParams()
 
 	if (!IsHidden()) {
 		w_states.x = m_fZoomRotationFactor;			//x = zoom mode, y - текущее состояние, z - старое состояние
-		if ( psActorFlags.test( AF_DOF_SCOPE ) && !( IsZoomed() && !IsRotatingToZoom() && ( IsScopeAttached() || m_eScopeStatus == CSE_ALifeItemWeapon::eAddonDisabled ) && !IsGrenadeMode() && m_bUseScopeDOF ) )
+		if ( psActorFlags.test( AF_DOF_SCOPE ) && !( IsZoomed() && !IsRotatingToZoom() && ( IsScopeAttached() || m_bForceScopeDOF ) && !IsGrenadeMode() && m_bUseScopeDOF ) )
 		  w_states.x = 0.f;
 		if (w_states.y != GetState())	// первый апдейт или стейт изменился
 		{
