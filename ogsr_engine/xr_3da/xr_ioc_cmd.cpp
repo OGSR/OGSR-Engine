@@ -250,8 +250,8 @@ void CCC_LoadCFG::Execute(LPCSTR args)
 
 		FS.update_path					(cfg_full_name, "$app_data_root$", cfg_name);
 		
-		if( NULL == FS.exist(cfg_full_name) )
-			FS.update_path					(cfg_full_name, "$fs_root$", cfg_name);
+		//if( NULL == FS.exist(cfg_full_name) )
+		//	FS.update_path					(cfg_full_name, "$fs_root$", cfg_name);
 			
 		if( NULL == FS.exist(cfg_full_name) )
 			xr_strcpy						(cfg_full_name, cfg_name);
@@ -556,15 +556,18 @@ public:
 	{
 		//fill_render_mode_list	();
 		tokens					= vid_quality_token;
-		if( !strstr(Core.Params, "-r2") )
-		{
-			inherited::Save(F);
-		}
+		inherited::Save(F);
 	}
 	virtual xr_token* GetToken()
 	{
 		tokens					= vid_quality_token;
 		return					inherited::GetToken();
+	}
+
+	virtual void Status(TStatus& S)
+	{
+		tokens = vid_quality_token;
+		inherited::Status(S);
 	}
 
 };

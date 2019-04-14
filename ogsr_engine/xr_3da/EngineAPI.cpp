@@ -4,7 +4,8 @@
 
 #include "stdafx.h"
 #include "EngineAPI.h"
-#include "xrXRC.h"
+#include "xr_ioconsole.h"
+#include "xr_ioc_cmd.h"
 
 extern xr_token* vid_quality_token;
 
@@ -61,6 +62,9 @@ extern "C" {
 
 void CEngineAPI::Initialize()
 {
+	CCC_LoadCFG_custom pTmp("renderer ");
+	pTmp.Execute(Console->ConfigFile);
+
 #ifdef XRRENDER_R2_STATIC
 	void AttachR2();
 	AttachR2();
@@ -73,12 +77,12 @@ void CEngineAPI::Initialize()
 	if (psDeviceFlags.test(rsR4))
 	{
 		// try to initialize R4
-		Log("[" __FUNCTION__ "] Loading DLL:", r4_name);
+		Msg("--Loading DLL: [%s]", r4_name);
 		hRender = LoadLibrary(r4_name);
 		if (!hRender)
 		{
 			// try to load R1
-			Msg("! ...Failed - incompatible hardware/pre-Vista OS.");
+			Msg("!![%s] Can't load module: [%s]! Error: %s", __FUNCTION__, r4_name, Debug.error2string(GetLastError()));
 			psDeviceFlags.set(rsR2, TRUE);
 		}
 }
@@ -86,12 +90,12 @@ void CEngineAPI::Initialize()
 	if (psDeviceFlags.test(rsR3))
 	{
 		// try to initialize R3
-		Log("[" __FUNCTION__ "] Loading DLL:", r3_name);
+		Msg("--Loading DLL: [%s]", r3_name);
 		hRender = LoadLibrary(r3_name);
 		if (!hRender)
 		{
 			// try to load R1
-			Msg("! ...Failed - incompatible hardware/pre-Vista OS.");
+			Msg("!![%s] Can't load module: [%s]! Error: %s", __FUNCTION__, r3_name, Debug.error2string(GetLastError()));
 			psDeviceFlags.set(rsR2, TRUE);
 		}
 		else
@@ -103,12 +107,12 @@ void CEngineAPI::Initialize()
 		// try to initialize R2
 		psDeviceFlags.set(rsR4, FALSE);
 		psDeviceFlags.set(rsR3, FALSE);
-		Log("[" __FUNCTION__ "] Loading DLL:", r2_name);
+		Msg("--Loading DLL: [%s]", r2_name);
 		hRender = LoadLibrary(r2_name);
 		if (!hRender)
 		{
 			// try to load R1
-			Msg("! ...Failed - incompatible hardware.");
+			Msg("!![%s] Can't load module: [%s]! Error: %s", __FUNCTION__, r2_name, Debug.error2string(GetLastError()));
 		}
 		else
 			g_current_renderer = 2;
@@ -122,10 +126,9 @@ void CEngineAPI::Initialize()
 		psDeviceFlags.set(rsR2, FALSE);
 		renderer_value = 0; //con cmd
 
-		Log("[" __FUNCTION__ "] Loading DLL:", r1_name);
+		Msg("--Loading DLL: [%s]", r1_name);
 		hRender = LoadLibrary(r1_name);
-		if (0 == hRender)	R_CHK(GetLastError());
-		R_ASSERT(hRender);
+		ASSERT_FMT(hRender, "!![%s] Can't load module: [%s]! Error: %s", __FUNCTION__, r1_name, Debug.error2string(GetLastError()));
 		g_current_renderer = 1;
 	}
 
@@ -160,138 +163,102 @@ void CEngineAPI::Destroy()
 	XRC.r_clear_compact		();
 }
 
+////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 extern "C" {
-	typedef bool __cdecl SupportsAdvancedRendering(void);
-	typedef bool _declspec(dllexport) SupportsDX10Rendering();
-	typedef bool _declspec(dllexport) SupportsDX11Rendering();
+	typedef bool SupportsAdvancedRendering();
+	typedef bool SupportsDX10Rendering();
+	typedef bool SupportsDX11Rendering();
+};
+
+class ModuleHandler {
+	HMODULE Module = nullptr;
+
+public:
+	ModuleHandler(const std::string& ModuleName) {
+		Module = LoadLibrary(ModuleName.c_str());
+		//if (Module)
+		//	Msg("--[%s] Loaded module: [%s]", __FUNCTION__, ModuleName.c_str());
+	}
+
+	~ModuleHandler() {
+		if (Module) {
+			FreeLibrary(Module);
+			//Msg("~~[%s] Unloaded module!", __FUNCTION__);
+		}
+	}
+
+	bool operator!() const { return !Module; }
+
+	void* GetProcAddress(const char* FuncName) const {
+		return ::GetProcAddress(Module, FuncName);
+	}
 };
 
 void CEngineAPI::CreateRendererList()
 {
-	//	TODO: ask renderers if they are supported!
-	if (vid_quality_token)
-		return;
+	std::vector<std::string> RendererTokens;
 
-	bool bSupports_r2 = false;
-	bool bSupports_r2_5 = false;
-	bool bSupports_r3 = false;
-	bool bSupports_r4 = false;
-
-	constexpr LPCSTR r2_name = "xrRender_R2.dll";
-	constexpr LPCSTR r3_name = "xrRender_R3.dll";
-	constexpr LPCSTR r4_name = "xrRender_R4.dll";
-
-	if (strstr(Core.Params, "-perfhud_hack"))
+	for (size_t i = 1; i <= 4; i++)
 	{
-		bSupports_r2 = true;
-		bSupports_r2_5 = true;
-		bSupports_r3 = true;
-		bSupports_r4 = true;
-	}
-	else
-	{
-		// try to initialize R2
-		Log("[" __FUNCTION__ "] Loading DLL:", r2_name);
-		hRender = LoadLibrary(r2_name);
-		if (hRender)
-		{
-			bSupports_r2 = true;
-			SupportsAdvancedRendering *test_rendering = (SupportsAdvancedRendering*)GetProcAddress(hRender, "SupportsAdvancedRendering");
+		std::string ModuleName("xrRender_R");
+		ModuleName += std::to_string(i) + ".dll";
+
+		ModuleHandler RenderModule(ModuleName);
+		if (!RenderModule) {
+			Msg("!![%s] Can't load module: [%s]! Error: %s", __FUNCTION__, ModuleName.c_str(), Debug.error2string(GetLastError()));
+			break;
+		}
+
+		if (i == 1) {
+			RendererTokens.emplace_back("renderer_r1");
+		}
+		else if (i == 2) {
+			RendererTokens.emplace_back("renderer_r2a");
+			RendererTokens.emplace_back("renderer_r2");
+
+			auto test_rendering = (SupportsAdvancedRendering*)RenderModule.GetProcAddress("SupportsAdvancedRendering");
 			R_ASSERT(test_rendering);
-			bSupports_r2_5 = test_rendering();
-			FreeLibrary(hRender);
+			if (test_rendering())
+				RendererTokens.emplace_back("renderer_r2.5");
+			else {
+				Msg("!![%s] test [SupportsAdvancedRendering] failed!", __FUNCTION__);
+				break;
+			}
 		}
-
-		// try to initialize R3
-		Log("[" __FUNCTION__ "] Loading DLL:", r3_name);
-		//	Hide "d3d10.dll not found" message box for XP
-		SetErrorMode(SEM_FAILCRITICALERRORS);
-		hRender = LoadLibrary(r3_name);
-		//	Restore error handling
-		SetErrorMode(0);
-		if (hRender)
-		{
-			SupportsDX10Rendering *test_dx10_rendering = (SupportsDX10Rendering*)GetProcAddress(hRender, "SupportsDX10Rendering");
+		else if (i == 3) {
+			auto test_dx10_rendering = (SupportsDX10Rendering*)RenderModule.GetProcAddress("SupportsDX10Rendering");
 			R_ASSERT(test_dx10_rendering);
-			bSupports_r3 = test_dx10_rendering();
-			FreeLibrary(hRender);
+			if (test_dx10_rendering())
+				RendererTokens.emplace_back("renderer_r3");
+			else {
+				Msg("!![%s] test [SupportsDX10Rendering] failed!", __FUNCTION__);
+				break;
+			}
 		}
-
-		// try to initialize R4
-		Log("[" __FUNCTION__ "] Loading DLL:", r4_name);
-		//	Hide "d3d10.dll not found" message box for XP
-		SetErrorMode(SEM_FAILCRITICALERRORS);
-		hRender = LoadLibrary(r4_name);
-		//	Restore error handling
-		SetErrorMode(0);
-		if (hRender)
-		{
-			SupportsDX11Rendering *test_dx11_rendering = (SupportsDX11Rendering*)GetProcAddress(hRender, "SupportsDX11Rendering");
+		else if (i == 4) {
+			auto test_dx11_rendering = (SupportsDX11Rendering*)RenderModule.GetProcAddress("SupportsDX11Rendering");
 			R_ASSERT(test_dx11_rendering);
-			bSupports_r4 = test_dx11_rendering();
-			FreeLibrary(hRender);
+			if (test_dx11_rendering())
+				RendererTokens.emplace_back("renderer_r4");
+			else {
+				Msg("!![%s] test [SupportsDX11Rendering] failed!", __FUNCTION__);
+				break;
+			}
 		}
 	}
 
-	hRender = 0;
+	size_t cnt = RendererTokens.size() + 1;
+	vid_quality_token = xr_alloc<xr_token>(cnt);
 
-	xr_vector<LPCSTR>			_tmp;
-	u32 i = 0;
-	bool bBreakLoop = false;
-	for (; i < 6; ++i)
-	{
-		switch (i)
-		{
-		case 1:
-			if (!bSupports_r2)
-				bBreakLoop = true;
-			break;
-		case 3:		//"renderer_r2.5"
-			if (!bSupports_r2_5)
-				bBreakLoop = true;
-			break;
-		case 4:		//"renderer_r_dx10"
-			if (!bSupports_r3)
-				bBreakLoop = true;
-			break;
-		case 5:		//"renderer_r_dx11"
-			if (!bSupports_r4)
-				bBreakLoop = true;
-			break;
-		default:;
-		}
+	vid_quality_token[cnt - 1].id = -1;
+	vid_quality_token[cnt - 1].name = nullptr;
 
-		if (bBreakLoop) break;
-
-		_tmp.push_back(NULL);
-		LPCSTR val = NULL;
-		switch (i)
-		{
-		case 0: val = "renderer_r1";			break;
-		case 1: val = "renderer_r2a";		break;
-		case 2: val = "renderer_r2";			break;
-		case 3: val = "renderer_r2.5";		break;
-		case 4: val = "renderer_r3";			break; //  -)
-		case 5: val = "renderer_r4";			break; //  -)
-		}
-		if (bBreakLoop) break;
-		_tmp.back() = xr_strdup(val);
-	}
-	u32 _cnt = _tmp.size() + 1;
-	vid_quality_token = xr_alloc<xr_token>(_cnt);
-
-	vid_quality_token[_cnt - 1].id = -1;
-	vid_quality_token[_cnt - 1].name = NULL;
-
-#ifdef DEBUG
-	Msg("Available render modes[%d]:", _tmp.size());
-#endif // DEBUG
-	for (u32 i = 0; i < _tmp.size(); ++i)
+	Msg("--[%s] Available render modes [%u]:", __FUNCTION__, RendererTokens.size());
+	for (size_t i = 0; i < RendererTokens.size(); ++i)
 	{
 		vid_quality_token[i].id = i;
-		vid_quality_token[i].name = _tmp[i];
-#ifdef DEBUG
-		Msg("[%s]", _tmp[i]);
-#endif // DEBUG
+		vid_quality_token[i].name = xr_strdup(RendererTokens[i].c_str());
+		Msg("--  [%s]", RendererTokens[i].c_str());
 	}
 }

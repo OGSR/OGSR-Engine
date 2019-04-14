@@ -53,7 +53,6 @@ public		:
 		Msg("~ Invalid syntax in call to '%s'",cName);
 		Msg("~ Valid arguments: %s", I);
 
-#pragma todo("Нафиг он нужен? g_SASH")
 		/*
 		g_SASH.OnConsoleInvalidSyntax("~ Invalid syntax in call to '%s'",cName, false);
 		g_SASH.OnConsoleInvalidSyntax("~ Valid arguments: %s", I, true);

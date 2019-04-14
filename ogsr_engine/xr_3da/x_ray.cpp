@@ -413,17 +413,6 @@ int APIENTRY WinMain_impl(HINSTANCE hInstance, HINSTANCE hPrevInstance, char* lp
 
 		Engine.External.CreateRendererList();
 
-		if (strstr(Core.Params,"-r2a"))	
-			Console->Execute			("renderer renderer_r2a");
-		else if (strstr(Core.Params,"-r2"))	
-			Console->Execute			("renderer renderer_r2");
-		else
-		{
-			CCC_LoadCFG_custom*	pTmp = xr_new<CCC_LoadCFG_custom>("renderer ");
-			pTmp->Execute				(Console->ConfigFile);
-			xr_delete					(pTmp);
-		}
-
 		Engine.External.Initialize	( );
 		Console->Execute			("stat_memory");
 		Startup	 					( );
