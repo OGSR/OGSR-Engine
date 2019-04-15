@@ -64,7 +64,9 @@ BOOL weapon_hud_value::load(const shared_str& section, CHudItem* owner)
 
 weapon_hud_value::~weapon_hud_value()
 {
-	::Render->model_Delete		((IRenderVisual*&)m_animations);
+	IRenderVisual* v = m_animations->dcast_RenderVisual();
+	::Render->model_Delete(v);
+	m_animations = nullptr;
 }
 
 u32 shared_weapon_hud::motion_length(MotionID M)

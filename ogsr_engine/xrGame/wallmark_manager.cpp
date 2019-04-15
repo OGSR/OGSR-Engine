@@ -37,7 +37,7 @@ void CWalmarkManager::StartWorkflow()
 {
 	LPCSTR				sect				= "explosion_marks";
 	float				m_trace_dist		= pSettings->r_float(sect,"dist");
-	float				m_wallmark_size		= pSettings->r_float(sect,"size");
+//	float				m_wallmark_size		= pSettings->r_float(sect,"size");
 	u32					max_wallmarks_count = pSettings->r_u32(sect,"max_count");
 
 
@@ -57,7 +57,7 @@ void CWalmarkManager::StartWorkflow()
 	u32 _ray_test		= 0;
 //	u32 _tri_behind		= 0;
 	u32 _tri_not_plane	= 0;
-	u32 _not_dist		= 0;
+	//u32 _not_dist		= 0;
 /*
 	DBG_OpenCashedDraw		();
 	DBG_DrawAABB			(m_pos,Fvector().set(m_trace_dist,m_trace_dist,m_trace_dist),D3DCOLOR_XRGB(255,0,0));
@@ -114,13 +114,15 @@ void CWalmarkManager::StartWorkflow()
 			continue;
 		}
 
+#pragma todo("KRodin: починить и включить!")
+		/*
 		if(dist <= m_trace_dist )
 		{
 			::Render->add_StaticWallmark(&*m_wallmarks, end_point, m_wallmark_size, _t, V_array);
 			++wm_count;
 		}else
 			++_not_dist;
-
+			*/
 	}
 }
 

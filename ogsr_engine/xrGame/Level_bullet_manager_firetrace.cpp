@@ -176,10 +176,11 @@ void CBulletManager::FireShotmark (SBullet* bullet, const Fvector& vDir, const F
 	SGameMtlPair* mtl_pair	= GMLib.GetMaterialPair(bullet->bullet_material_idx, target_material);
 	Fvector particle_dir;
 
-#pragma todo("KRodin: проверить, всё ли здесь правильно!")
+#pragma todo("KRodin: починить и включить!")
 
 	if (R.O)
 	{
+/*  add_SkeletonWallmark not implemented now...
 		particle_dir		 = vDir;
 		particle_dir.invert	();
 
@@ -198,17 +199,18 @@ void CBulletManager::FireShotmark (SBullet* bullet, const Fvector& vDir, const F
 				bullet->dir,
 				bullet->wallmark_size);
 		}
+*/
 	}
 	else 
 	{
 		//вычислить нормаль к пораженной поверхности
-		Fvector*	pVerts = Level().ObjectSpace.GetStaticVerts();
-		CDB::TRI*	pTri = Level().ObjectSpace.GetStaticTris() + R.element;
+//		Fvector*	pVerts = Level().ObjectSpace.GetStaticVerts();
+//		CDB::TRI*	pTri = Level().ObjectSpace.GetStaticTris() + R.element;
 
 		if (mtl_pair && !mtl_pair->m_pCollideMarks->empty() && ShowMark)
 		{
 			//добавить отметку на материале
-			::Render->add_StaticWallmark(&*mtl_pair->m_pCollideMarks, vEnd, bullet->wallmark_size, pTri, pVerts);
+			//::Render->add_StaticWallmark(&*mtl_pair->m_pCollideMarks, vEnd, bullet->wallmark_size, pTri, pVerts);
 		}
 	}
 
