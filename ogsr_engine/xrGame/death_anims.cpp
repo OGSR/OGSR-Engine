@@ -9,6 +9,8 @@
 #include "WeaponShotgun.h"
 #include "Explosive.h"
 
+BOOL g_bCopDeathAnim = TRUE;
+
 rnd_motion::rnd_motion()
 {
 }
@@ -57,7 +59,7 @@ void type_motion::set_motion(CKinematicsAnimated* k, u16 id_motion, const char* 
 type_motion* type_motion::setup(CKinematicsAnimated* k, CInifile * ini, const char* section, const char* type)
 {
 	anims.resize(dirs_number, 0);
-	if (ini->line_exist(section, type))
+	if (ini->line_exist(section, type) && g_bCopDeathAnim)
 	{
 		const char* line = ini->r_string(section, type);
 		if (!line)
