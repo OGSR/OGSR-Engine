@@ -234,39 +234,46 @@ BOOL CGameObject::net_Spawn		(CSE_Abstract*	DC)
 	setID							(E->ID);
 //	R_ASSERT(Level().Objects.net_Find(E->ID) == NULL);
 
-	const CSE_Visual				*visual	= smart_cast<const CSE_Visual*>(E);
+	const CSE_Visual				*visual = smart_cast<const CSE_Visual*>(E);
 	if (visual) {
-		string_path fn;
-        	if ( 0 == strext( visual_name( E ) ) )
-			strconcat( sizeof( fn ), fn, visual_name( E ), ".ogf" );
-		else
-			strcpy_s( fn, sizeof( fn ), visual_name( E ) );
-		xr_strlwr( fn );
-		if ( pSettings->line_exist( cNameSect(), "visual" ) ) {
-			shared_str vis_name = pSettings->r_string( cNameSect(), "visual" );
-			string_path visual_name_ext;
-        		if ( 0 == strext( *vis_name ) )
-				strconcat( sizeof( visual_name_ext ), visual_name_ext, *vis_name, ".ogf" );
+
+		LPCSTR saved_visual = visual_name(E);
+
+		if (pSettings->line_exist(cNameSect(), "visual")) {
+			shared_str config_visual = pSettings->r_string(cNameSect(), "visual");
+
+			string_path config_visual_file;
+			if (0 == strext(*config_visual))
+				strconcat(sizeof(config_visual_file), config_visual_file, *config_visual, ".ogf");
 			else
-				strcpy_s( visual_name_ext, sizeof( visual_name_ext ), *vis_name );
-			xr_strlwr( visual_name_ext );
-			bool keep_visual = READ_IF_EXISTS( pSettings, r_bool, cNameSect().c_str(), "keep_visual", false );
-			if ( keep_visual ) {
-				if ( xr_strcmp( visual_name_ext, fn ) ) {
-					Msg( "! [%s]: changed visual_name[%s] found in %s, keep original %s instead", __FUNCTION__, visual_name( E ), cName().c_str(), vis_name.c_str() );
+				strcpy_s(config_visual_file, sizeof(config_visual_file), *config_visual);
+			xr_strlwr(config_visual_file);
+
+			string_path saved_visual_file;
+			if (0 == strext(saved_visual))
+				strconcat(sizeof(saved_visual_file), saved_visual_file, saved_visual, ".ogf");
+			else
+				strcpy_s(saved_visual_file, sizeof(saved_visual_file), saved_visual);
+			xr_strlwr(saved_visual_file);
+
+			bool keep_visual = READ_IF_EXISTS(pSettings, r_bool, cNameSect().c_str(), "keep_visual", false);
+			if (keep_visual) {
+				if (xr_strcmp(config_visual_file, saved_visual_file)) {
+					Msg("! [%s]: changed visual_name[%s] found in %s, keep original %s instead", __FUNCTION__, saved_visual, cName().c_str(), config_visual.c_str());
 				}
 			}
-			else if ( !FS.exist( visual_name( E ) ) && !FS.exist( "$level$", fn ) && !FS.exist( "$game_meshes$", fn ) ) {
-				Msg( "! [%s]: visual_name[%s] not found in %s, keep original %s instead", __FUNCTION__, visual_name( E ), cName().c_str(), vis_name.c_str() );
+			else if (!FS.exist(saved_visual) && !FS.exist("$level$", saved_visual_file) && !FS.exist("$game_meshes$", saved_visual_file)) {
+				Msg("! [%s]: visual_name[%s] not found in %s, keep original %s instead", __FUNCTION__, saved_visual, cName().c_str(), config_visual.c_str());
 			}
 			else
-				cNameVisual_set( visual_name( E ) );
+				cNameVisual_set(saved_visual);
 		}
 		else
-			cNameVisual_set( visual_name( E ) );
+			cNameVisual_set(saved_visual);
+
 		if (visual->flags.test(CSE_Visual::flObstacle)) {
 			ISpatial				*self = smart_cast<ISpatial*>(this);
-			self->spatial.type		|=	STYPE_OBSTACLE;
+			self->spatial.type |= STYPE_OBSTACLE;
 		}
 	}
 	

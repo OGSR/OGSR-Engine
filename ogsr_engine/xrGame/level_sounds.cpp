@@ -143,15 +143,6 @@ void CLevelSoundManager::Load()
  	VERIFY(m_StaticSounds.empty());
 	string_path fn;
 
-	if (FS.exist(fn, "$level$", "level.snd_static")) {
-		IReader *F = FS.r_open(fn);
-		u32				chunk = 0;
-		for (IReader *OBJ = F->open_chunk_iterator(chunk); OBJ; OBJ = F->open_chunk_iterator(chunk, OBJ)) {
-			m_StaticSounds.push_back(SStaticSound());
-			m_StaticSounds.back().Load(*OBJ);
-		}
-		FS.r_close(F);
-	}
 
 	if (FS.exist(fn, "$level$", "level.snd_static.ltx")) {
 		CInifile ltXfile = CInifile(fn);
@@ -161,6 +152,15 @@ void CLevelSoundManager::Load()
 			m_StaticSounds.push_back(SStaticSound());
 			m_StaticSounds.back().LoadIni(*it.second);
 		}
+	}
+	else if (FS.exist(fn, "$level$", "level.snd_static")) {
+		IReader *F = FS.r_open(fn);
+		u32				chunk = 0;
+		for (IReader *OBJ = F->open_chunk_iterator(chunk); OBJ; OBJ = F->open_chunk_iterator(chunk, OBJ)) {
+			m_StaticSounds.push_back(SStaticSound());
+			m_StaticSounds.back().Load(*OBJ);
+		}
+		FS.r_close(F);
 	}
 
 	// music

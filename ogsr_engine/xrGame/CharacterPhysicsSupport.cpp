@@ -33,10 +33,8 @@
 
 #include "../xr_3da/device.h"
 
-#ifdef PRIQUEL
-#	define USE_SMART_HITS
-#	define USE_IK
-#endif // PRIQUEL
+//#define USE_SMART_HITS
+//#define USE_IK
 
 IC bool is_imotion(interactive_motion *im)
 {
