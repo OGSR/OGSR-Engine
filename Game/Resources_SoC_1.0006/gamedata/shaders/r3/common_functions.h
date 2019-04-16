@@ -80,9 +80,11 @@ float3   p_hemi( float2 tc )
 	return	t_lmh.a;
 }
 
-float   get_hemi( float4 lmh)
+float get_hemi(float4 lmh)
 {
-	return lmh.a;
+	// return lmh.a;
+	// KRodin: попытка пофиксить кривое отображение ТЧ-лайтмапов
+	return dot(lmh.rgb, 1.h/3.h);
 }
 
 float   get_sun( float4 lmh)

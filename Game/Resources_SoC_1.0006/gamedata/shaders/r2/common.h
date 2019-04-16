@@ -282,9 +282,11 @@ half3   p_hemi          (float2 tc)                         {
         return t_lmh.a;
 }
 
-half   get_hemi( half4 lmh)
+half get_hemi(half4 lmh)
 {
-	return lmh.a;
+	// return lmh.a;
+	// KRodin: попытка пофиксить кривое отображение ТЧ-лайтмапов
+	return dot(lmh.rgb, 1.h/3.h);
 }
 
 half   get_sun( half4 lmh)
