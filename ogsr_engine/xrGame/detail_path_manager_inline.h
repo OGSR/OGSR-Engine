@@ -8,6 +8,16 @@
 
 #pragma once
 
+IC	bool CDetailPathManager::actual			() const
+{
+	return					(m_actuality);
+}
+
+IC	void CDetailPathManager::make_inactual	()
+{
+	m_actuality				= false;
+}
+
 IC	bool CDetailPathManager::failed() const
 {
 	return					(m_failed);
