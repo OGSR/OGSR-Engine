@@ -27,7 +27,6 @@ IGame_Level::IGame_Level	()
 
 IGame_Level::~IGame_Level	()
 {
-#pragma todo("KRodin: а нафиг оно надо вообще?")
 	/*
 	if(strstr(Core.Params,"-nes_texture_storing") )
 		Device.Resources->StoreNecessaryTextures();

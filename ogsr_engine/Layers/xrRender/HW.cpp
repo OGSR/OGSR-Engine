@@ -76,7 +76,7 @@ void CHW::Reset		(HWND hwnd)
 	while	(TRUE)	{
 		HRESULT _hr							= HW.pDevice->Reset	(&DevPP);
 		if (SUCCEEDED(_hr))					break;
-		Msg		("! ERROR: [%dx%d]: %s",DevPP.BackBufferWidth,DevPP.BackBufferHeight,Debug.error2string(_hr));
+		Msg		("! ERROR: [%dx%d]: %s",DevPP.BackBufferWidth,DevPP.BackBufferHeight,Debug.DXerror2string(_hr));
 		Sleep	(100);
 	}
 	R_CHK				(pDevice->GetRenderTarget			(0,&pBaseRT));
@@ -313,15 +313,7 @@ void		CHW::CreateDevice		(HWND m_hWnd, bool move_window)
 		fDepth  = selectDepthStencil(fTarget);
 	}
 
-	if ((D3DFMT_UNKNOWN==fTarget) || (D3DFMT_UNKNOWN==fTarget))	{
-		Msg					("Failed to initialize graphics hardware.\n"
-							 "Please try to restart the game.\n"
-							 "Can not find matching format for back buffer."
-							 );
-		MessageBox			(NULL,"Failed to initialize graphics hardware.\nPlease try to restart the game.","Error!",MB_OK|MB_ICONERROR);
-		TerminateProcess	(GetCurrentProcess(),0);
-	}
-
+	CHECK_OR_EXIT(D3DFMT_UNKNOWN != fTarget && D3DFMT_UNKNOWN != fDepth, "Failed to initialize graphics hardware.\nPlease try to restart the game.\nCan not find matching format for back buffer.");
 
     // Set up the presentation parameters
 	D3DPRESENT_PARAMETERS&	P	= DevPP;
@@ -372,14 +364,9 @@ void		CHW::CreateDevice		(HWND m_hWnd, bool move_window)
 										&P,
 										&pDevice );
 	}
-	if (D3DERR_DEVICELOST==R)	{
-		// Fatal error! Cannot create rendering device AT STARTUP !!!
-		Msg					("Failed to initialize graphics hardware.\n"
-							 "Please try to restart the game.\n"
-							 "CreateDevice returned 0x%08x(D3DERR_DEVICELOST)", R);
-		MessageBox			(NULL,"Failed to initialize graphics hardware.\nPlease try to restart the game.","Error!",MB_OK|MB_ICONERROR);
-		TerminateProcess	(GetCurrentProcess(),0);
-	};
+
+	CHECK_OR_EXIT(D3DERR_DEVICELOST != R, "Failed to initialize graphics hardware.\nPlease try to restart the game.\nCreateDevice returned D3DERR_DEVICELOST");
+
 	R_CHK		(R);
 
 	_SHOW_REF	("* CREATE: DeviceREF:",HW.pDevice);
@@ -539,9 +526,9 @@ void	CHW::updateWindowProps	(HWND m_hWnd)
 	if (bWindowed)		{
 		if (m_move_window) {
 			if (strstr(Core.Params,"-no_dialog_header"))
-				SetWindowLong	( m_hWnd, GWL_STYLE, dwWindowStyle=(WS_BORDER|WS_VISIBLE) );
+				SetWindowLongPtr( m_hWnd, GWL_STYLE, dwWindowStyle=(WS_BORDER|WS_VISIBLE) );
 			else
-				SetWindowLong	( m_hWnd, GWL_STYLE, dwWindowStyle=(WS_BORDER|WS_DLGFRAME|WS_VISIBLE|WS_SYSMENU|WS_MINIMIZEBOX ) );
+				SetWindowLongPtr( m_hWnd, GWL_STYLE, dwWindowStyle=(WS_BORDER|WS_DLGFRAME|WS_VISIBLE|WS_SYSMENU|WS_MINIMIZEBOX ) );
 			// When moving from fullscreen to windowed mode, it is important to
 			// adjust the window size after recreating the device rather than
 			// beforehand to ensure that you get the window size you want.  For
@@ -552,13 +539,7 @@ void	CHW::updateWindowProps	(HWND m_hWnd)
 			// desktop.
 
 			RECT			m_rcWindowBounds;
-			BOOL			bCenter = FALSE;
-			if (strstr(Core.Params, "-center_screen"))	bCenter = TRUE;
-
-#ifndef _EDITOR
-			if (g_dedicated_server)
-				bCenter		= TRUE;
-#endif
+			static bool bCenter = !strstr(Core.Params, "-no_center_screen");
 
 			if(bCenter){
 				RECT				DesktopRect;
@@ -591,8 +572,8 @@ void	CHW::updateWindowProps	(HWND m_hWnd)
 	}
 	else
 	{
-		SetWindowLong			( m_hWnd, GWL_STYLE, dwWindowStyle=(WS_POPUP|WS_VISIBLE) );
-		SetWindowLong			( m_hWnd, GWL_EXSTYLE, WS_EX_TOPMOST);
+		SetWindowLongPtr( m_hWnd, GWL_STYLE, dwWindowStyle=(WS_POPUP|WS_VISIBLE) );
+		//SetWindowLongPtr( m_hWnd, GWL_EXSTYLE, WS_EX_TOPMOST);
 	}
 
 	SetForegroundWindow( m_hWnd );

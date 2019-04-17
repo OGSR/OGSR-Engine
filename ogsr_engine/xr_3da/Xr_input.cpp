@@ -491,8 +491,7 @@ void CInput::clip_cursor(bool clip)
 			rect.right = lr.x;
 			rect.bottom = lr.y;
 
-#pragma todo("KRodin: теперь почему-то после запуска захватывает слишком маленькую область экрана, пока не альт-табнешься. Надо подумать, как пофиксить, а пока выключаю.")
-			//ClipCursor(&rect);
+			ClipCursor(&rect);
 		}
 	}
 	else {

@@ -16,7 +16,9 @@
 //#include "shader.h"
 //#include "R_Backend.h"
 
-#define VIEWPORT_NEAR  0.2f
+extern u32 g_dwFPSlimit;
+
+#define VIEWPORT_NEAR 0.05f //0.2f
 
 #define DEVICE_RESET_PRECACHE_FRAME_COUNT 10
 
@@ -278,13 +280,13 @@ public:
 		Timer.time_factor		(time_factor);
 		TimerGlobal.time_factor	(time_factor);
 	}
-	
+	/*
 	IC	const float &time_factor			() const
 	{
 		VERIFY					(Timer.time_factor() == TimerGlobal.time_factor());
 		return					(Timer.time_factor());
 	}
-
+	*/
 	// Multi-threading
 	xrCriticalSection	mt_csEnter;
 	xrCriticalSection	mt_csLeave;

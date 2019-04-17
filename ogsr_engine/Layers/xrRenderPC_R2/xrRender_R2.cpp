@@ -15,7 +15,6 @@ void AttachR2()
 	::DU = &DUImpl;
 	//::vid_mode_token			= inited by HW;
 	UIRender = &UIRenderImpl;
-//#pragma todo("KRodin: включить в релизе?")
 //#ifdef DEBUG
 	DRender = &DebugRenderImpl;
 //#endif // DEBUG

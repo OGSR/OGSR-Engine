@@ -113,24 +113,27 @@ class 	ENGINE_API	CMotionDef
 public:
     u16						bone_or_part;
 	u16						motion;
-	u16						speed;				// quantized: 0..10
+	//u16						speed;				// quantized: 0..10
+	float					speed;
+	float					speed_k;
 	u16						power;				// quantized: 0..10
 	u16						accrue;				// quantized: 0..10
 	u16						falloff;			// quantized: 0..10
     u16						flags;
 	xr_vector<motion_marks>	marks;
-
+private:
 	IC float				Dequantize			(u16 V)	const	{	return  float(V)/655.35f; }
 	IC u16					Quantize			(float V) const		{	s32		t = iFloor(V*655.35f); clamp(t,0,65535); return u16(t); }
-
+public:
 	void					Load				(IReader* MP, u32 fl, u16 vers);
 	u32						mem_usage			(){ return sizeof(*this);}
 
     ICF float				Accrue				(){return fQuantizerRangeExt*Dequantize(accrue);}
     ICF float				Falloff				(){return fQuantizerRangeExt*Dequantize(falloff);}
-    ICF float				Speed				(){return Dequantize(speed);}
+    ICF float				Speed				() const { return speed * speed_k; } //{return Dequantize(speed);}
     ICF float				Power				(){return Dequantize(power);}
     bool					StopAtEnd			();
+    void SetSpeedKoeff(const float new_speed_k) { speed_k = new_speed_k; }
 };
 struct accel_str_pred {	
 	IC bool operator()(const shared_str& x, const shared_str& y) const	{	return xr_strcmp(x,y)<0;	}

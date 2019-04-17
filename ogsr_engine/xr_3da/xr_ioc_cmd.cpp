@@ -10,19 +10,30 @@
 #include "environment.h"
 #include "xr_input.h"
 #include "CustomHUD.h"
-
+#include <regex>
 #include "../Include/xrRender/RenderDeviceRender.h"
-
 #include "xr_object.h"
+
 
 xr_token* vid_quality_token = nullptr;
 
+xr_token FpsLockToken[] = {
+  { "nofpslock",  0 },
+  { "fpslock60",  60 },
+  { "fpslock120", 120 },
+  { "fpslock144", 144 },
+  { "fpslock240", 240 },
+  { nullptr, 0 }
+};
+
+#ifdef DEBUG
 xr_token							vid_bpp_token							[ ]={
 	{ "16",							16											},
 	{ "32",							32											},
 	{ 0,							0											}
 };
-//-----------------------------------------------------------------------
+#endif
+
 
 void IConsole_Command::add_to_LRU( shared_str const& arg )
 {
@@ -59,7 +70,6 @@ class CCC_Quit : public IConsole_Command
 public:
 	CCC_Quit(LPCSTR N) : IConsole_Command(N)  { bEmptyArgsHandled = TRUE; };
 	virtual void Execute(LPCSTR args) {
-//		TerminateProcess(GetCurrentProcess(),0);
 		Console->Hide();
 		Engine.Event.Defer("KERNEL:disconnect");
 		Engine.Event.Defer("KERNEL:quit");
@@ -285,80 +295,19 @@ bool CCC_LoadCFG_custom::allow(LPCSTR cmd)
 //-----------------------------------------------------------------------
 class CCC_Start : public IConsole_Command
 {
-	void	parse		(LPSTR dest, LPCSTR args, LPCSTR name)
+private:
+	std::string parse(const std::string& str)
 	{
-		dest[0]	= 0;
-		if (strstr(args,name))
-			sscanf(strstr(args,name)+xr_strlen(name),"(%[^)])",dest);
-	}
-
-	void	protect_Name_strlwr( LPSTR str )
-	{
- 		string4096	out;
-		xr_strcpy( out, sizeof(out), str );
-		strlwr( str );
-
-		LPCSTR name_str = "name=";
-		LPCSTR name1 = strstr( str, name_str );
-		if ( !name1 || !xr_strlen( name1 ) )
-		{
-			return;
-		}
-		int begin_p = xr_strlen( str ) - xr_strlen( name1 ) + xr_strlen( name_str );
-		if ( begin_p < 1 )
-		{
-			return;
-		}
-
-		LPCSTR name2 = strchr( name1, '/' );
-		int end_p = xr_strlen( str ) - ((name2)? xr_strlen(name2) : 0);
-		if ( begin_p >= end_p )
-		{
-			return;
-		}
-		for ( int i = begin_p; i < end_p;++i )
-		{
-			str[i] = out[i];
-		}
+		std::regex Reg("\\(([^)]+)\\)");
+		std::smatch results;
+		ASSERT_FMT(std::regex_search(str, results, Reg), "Failed parsing string: [%s]", str.c_str());
+		return results[1].str();
 	}
 public:
-	CCC_Start(LPCSTR N) : IConsole_Command(N)	{ 	  bLowerCaseArgs = false; };
-	virtual void Execute(LPCSTR args)
-	{
-/*		if (g_pGameLevel)	{
-			Log		("! Please disconnect/unload first");
-			return;
-		}
-*/
-		string4096	op_server,op_client,op_demo;
-		op_server[0] = 0;
-		op_client[0] = 0;
-		
-		parse		(op_server,args,"server");	// 1. server
-		parse		(op_client,args,"client");	// 2. client
-		parse		(op_demo, args,	"demo");	// 3. demo
-		
-		strlwr( op_server );
-		protect_Name_strlwr( op_client );
-
-		if(!op_client[0] && strstr(op_server,"single"))
-			xr_strcpy(op_client, "localhost");
-
-		if ((0==xr_strlen(op_client)) && (0 == xr_strlen(op_demo)))
-		{
-			Log("! Can't start game without client. Arguments: '%s'.",args);
-			return;
-		}
-		if (g_pGameLevel)
-			Engine.Event.Defer("KERNEL:disconnect");
-		
-		if (xr_strlen(op_demo))
-		{
-			Engine.Event.Defer	("KERNEL:start_mp_demo",u64(xr_strdup(op_demo)),0);
-		} else
-		{
-			Engine.Event.Defer	("KERNEL:start",u64(xr_strlen(op_server)?xr_strdup(op_server):0),u64(xr_strdup(op_client)));
-		}
+	CCC_Start(const char* N) : IConsole_Command(N) {};
+	void Execute(const char* args) override {
+		auto str = parse(args);
+		Engine.Event.Defer("KERNEL:start", u64(xr_strdup(str.c_str())), u64(xr_strdup("localhost")));
 	}
 };
 
@@ -667,7 +616,6 @@ public		:
 	}
 };
 
-#pragma todo("KRodin: А зачем вообще psHUD_FOV_def ? В большом кол-ве мест используется именно он, а в ЗП я такого не вижу вообще. Странно.")
 ENGINE_API float psHUD_FOV_def = 0.45f;
 ENGINE_API float psHUD_FOV = psHUD_FOV_def;
 
@@ -728,6 +676,8 @@ void CCC_Register()
 	// Render device states
 	CMD4(CCC_Integer,	"r__supersample",		&ps_r__Supersample,			1,		4		);
 
+	CMD3(CCC_Mask, "rs_always_active", &psDeviceFlags, rsAlwaysActive);
+	CMD3(CCC_Token, "r_fps_lock", &g_dwFPSlimit, FpsLockToken);
 
 	CMD3(CCC_Mask,		"rs_v_sync",			&psDeviceFlags,		rsVSync				);
 //	CMD3(CCC_Mask,		"rs_disable_objects_as_crows",&psDeviceFlags,	rsDisableObjectsAsCrows	);

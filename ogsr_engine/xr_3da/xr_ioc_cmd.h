@@ -59,6 +59,7 @@ public		:
 		*/
 	}
 	virtual void	Execute	(LPCSTR args)	= 0;
+	void		    SetEnabled(bool v) { bEnabled = v; }
 	virtual void	Status	(TStatus& S)	{ S[0]=0; }
 	virtual void	Info	(TInfo& I)		{ xr_strcpy(I,"(no arguments)"); }
 	virtual void	Save	(IWriter *F)	{
@@ -283,7 +284,12 @@ public
 	virtual void	Execute	(LPCSTR args)
 	{
 		Fvector v;
-		if (3!=sscanf(args,"%f,%f,%f",&v.x,&v.y,&v.z))	{ InvalidSyntax(); return; }
+		// Fixed parsing FVector for user.ltx
+		if ((3 != sscanf(args, "%f,%f,%f", &v.x, &v.y, &v.z)) && (3 != sscanf(args, "(%f, %f, %f)", &v.x, &v.y, &v.z)))
+		{
+			InvalidSyntax();
+			return;
+		}
 		if (v.x<min.x || v.y<min.y || v.z<min.z)		{ InvalidSyntax(); return; }
 		if (v.x>max.x || v.y>max.y || v.z>max.z)		{ InvalidSyntax(); return; }
 		value->set(v);

@@ -8014,9 +8014,6 @@
     <ClCompile Include="Spectator.cpp">
       <Filter>Core\Client\Spectator</Filter>
     </ClCompile>
-    <ClCompile Include="r2_test_hw.cpp">
-      <Filter>Core\Common</Filter>
-    </ClCompile>
     <ClCompile Include="xrGame.cpp">
       <Filter>Core\Common</Filter>
     </ClCompile>

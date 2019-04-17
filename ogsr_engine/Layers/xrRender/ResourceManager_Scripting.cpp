@@ -345,7 +345,6 @@ int lua_panic(lua_State *L)
 }
 
 #ifndef LUABIND_09
-#pragma todo("KRodin: не будет ли проблем от того, что аллокатор для луабинда инитится в рендере?")
 static void *__cdecl luabind_allocator(luabind::memory_allocation_function_parameter, const void *pointer, size_t const size) //Раньше всего инитится здесь, поэтому пусть здесь и будет
 {
 	if (!size)

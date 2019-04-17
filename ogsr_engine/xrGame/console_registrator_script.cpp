@@ -44,22 +44,16 @@ IConsole_Command* find_cmd(CConsole *c, LPCSTR cmd)
 
 void disable_cmd(CConsole *c, LPCSTR cmd)
 {
-#pragma todo("KRodin: поправить под новые реалии!")
-/*
 	IConsole_Command *icmd = find_cmd(c, cmd);
 	if (icmd)
-		icmd->SetEnabled (false);
-*/
+		icmd->SetEnabled(false);
 }
 
 void enable_cmd(CConsole *c, LPCSTR cmd)
 {
-#pragma todo("KRodin: поправить под новые реалии!")
-/*
 	IConsole_Command *icmd = find_cmd(c, cmd);
 	if (icmd)
 		icmd->SetEnabled(true);
-*/
 }
 
 #pragma optimize("s",on)

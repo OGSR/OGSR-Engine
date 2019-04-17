@@ -141,11 +141,9 @@ void CSoundRender_Source::load(LPCSTR name)
 	strconcat(sizeof(fn), fn, N, ".ogg");
 	if (!FS.exist("$level$", fn))	FS.update_path(fn, "$game_sounds$", fn);
 
+	ASSERT_FMT_DBG(FS.exist(fn), "! Can't find sound [%s.ogg]", N);
 	if (!FS.exist(fn))
-	{
-		Msg("! Can't find sound [%s.ogg]", N);
 		FS.update_path(fn, "$game_sounds$", "$no_sound.ogg");
-	}
 
 	LoadWave(fn);
 	SoundRender->cache.cat_create(CAT, dwBytesTotal);

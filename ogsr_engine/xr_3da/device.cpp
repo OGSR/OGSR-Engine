@@ -35,8 +35,8 @@
 ENGINE_API CRenderDevice Device;
 ENGINE_API CLoadScreenRenderer load_screen_renderer;
 
-
 ENGINE_API BOOL g_bRendering = FALSE; 
+u32 g_dwFPSlimit = 60;
 
 BOOL		g_bLoaded = FALSE;
 ref_light	precache_light = 0;
@@ -243,6 +243,18 @@ void CRenderDevice::on_idle		()
 	if (!b_is_Ready) {
 		Sleep	(100);
 		return;
+	}
+
+	// FPS Lock
+	constexpr u32 menuFPSlimit = 60, pauseFPSlimit = 60;
+	u32 curFPSLimit = IsMainMenuActive() ? menuFPSlimit : Device.Paused() ? pauseFPSlimit : g_dwFPSlimit;
+	if (curFPSLimit > 0)
+	{
+		static DWORD dwLastFrameTime = 0;
+		DWORD dwCurrentTime = timeGetTime();
+		if (dwCurrentTime - dwLastFrameTime < 1000 / (curFPSLimit + 1))
+			return;
+		dwLastFrameTime = dwCurrentTime;
 	}
 
 #ifdef DEDICATED_SERVER
@@ -573,15 +585,16 @@ BOOL CRenderDevice::Paused()
 
 void CRenderDevice::OnWM_Activate(WPARAM wParam, LPARAM lParam)
 {
-	u16 fActive						= LOWORD(wParam);
-	BOOL fMinimized					= (BOOL) HIWORD(wParam);
-	BOOL bActive					= ((fActive!=WA_INACTIVE) && (!fMinimized))?TRUE:FALSE;
-	
+	const u16 fActive = LOWORD(wParam);
+	const BOOL fMinimized = (BOOL)HIWORD(wParam);
+	const BOOL bActive = ((fActive != WA_INACTIVE) && (!fMinimized)) ? TRUE : FALSE;
+	const BOOL isGameActive = (psDeviceFlags.is(rsAlwaysActive) || bActive) ? TRUE : FALSE;
+
 	pInput->clip_cursor(fActive != WA_INACTIVE);
 
-	if (bActive!=Device.b_is_Active)
+	if (isGameActive != Device.b_is_Active)
 	{
-		Device.b_is_Active			= bActive;
+		Device.b_is_Active = isGameActive;
 
 		if (Device.b_is_Active)	
 		{

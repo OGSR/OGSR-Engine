@@ -151,7 +151,6 @@ void CGamePersistent::Start		(LPCSTR op)
 
 void CGamePersistent::Disconnect()
 {
-#pragma todo("KRodin: падает в глубинах этого вызова при дисконнекте")
 	CWeaponHUD::CleanSharedContainer();
 
 	// destroy ambient particles

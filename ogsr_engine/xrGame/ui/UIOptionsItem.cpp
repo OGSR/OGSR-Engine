@@ -93,6 +93,7 @@ void CUIOptionsItem::SaveOptTokenValue(const char* val){
 	SaveOptStringValue(val);
 }
 
+#pragma todo("KRodin: пересмотреть это!")
 void CUIOptionsItem::SaveValue(){
 	if (
 		m_entry == "vid_mode" || 

@@ -2326,7 +2326,6 @@
     <ClCompile Include="InventoryBox.cpp" />
     <ClCompile Include="ParticlesObject.cpp" />
     <ClCompile Include="Spectator.cpp" />
-    <ClCompile Include="r2_test_hw.cpp" />
     <ClCompile Include="xrGame.cpp" />
     <ClCompile Include="console_commands.cpp" />
     <ClCompile Include="date_time.cpp" />

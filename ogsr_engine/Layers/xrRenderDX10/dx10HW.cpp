@@ -9,6 +9,7 @@
 #pragma warning(default:4995)
 #include "../xrRender/HW.h"
 #include "../../xr_3da/XR_IOConsole.h"
+#include "../../xr_3da/xr_input.h"
 #include "../../Include/xrAPI/xrAPI.h"
 
 #include "StateManager\dx10SamplerStateCache.h"
@@ -381,12 +382,8 @@ void CHW::CreateDevice( HWND m_hWnd, bool move_window )
 	if (FAILED(R))
 	{
 		// Fatal error! Cannot create rendering device AT STARTUP !!!
-		Msg					("Failed to initialize graphics hardware.\n"
-							 "Please try to restart the game.\n"
-							 "CreateDevice returned 0x%08x", R
-							 );
-		MessageBox			(NULL,"Failed to initialize graphics hardware.\nPlease try to restart the game.","Error!",MB_OK|MB_ICONERROR);
-		TerminateProcess	(GetCurrentProcess(),0);
+		Msg("Failed to initialize graphics hardware.\nPlease try to restart the game.\nCreateDevice returned 0x%08x", R);
+		CHECK_OR_EXIT(!FAILED(R), "Failed to initialize graphics hardware.\nPlease try to restart the game.");
 	};
 	R_CHK(R);
 
@@ -744,9 +741,9 @@ void CHW::updateWindowProps(HWND m_hWnd)
 	if (bWindowed)		{
 		if (m_move_window) {
 			if (strstr(Core.Params,"-no_dialog_header"))
-				SetWindowLong	( m_hWnd, GWL_STYLE, dwWindowStyle=(WS_BORDER|WS_VISIBLE) );
+				SetWindowLongPtr( m_hWnd, GWL_STYLE, dwWindowStyle=(WS_BORDER|WS_VISIBLE) );
 			else
-				SetWindowLong	( m_hWnd, GWL_STYLE, dwWindowStyle=(WS_BORDER|WS_DLGFRAME|WS_VISIBLE|WS_SYSMENU|WS_MINIMIZEBOX ) );
+				SetWindowLongPtr( m_hWnd, GWL_STYLE, dwWindowStyle=(WS_BORDER|WS_DLGFRAME|WS_VISIBLE|WS_SYSMENU|WS_MINIMIZEBOX ) );
 			// When moving from fullscreen to windowed mode, it is important to
 			// adjust the window size after recreating the device rather than
 			// beforehand to ensure that you get the window size you want.  For
@@ -757,8 +754,7 @@ void CHW::updateWindowProps(HWND m_hWnd)
 			// desktop.
 
 			RECT			m_rcWindowBounds;
-			BOOL			bCenter = FALSE;
-			if (strstr(Core.Params, "-center_screen"))	bCenter = TRUE;
+			static bool bCenter = !strstr(Core.Params, "-no_center_screen");
 
 			if (bCenter) {
 				RECT				DesktopRect;
@@ -791,11 +787,11 @@ void CHW::updateWindowProps(HWND m_hWnd)
 	}
 	else
 	{
-		SetWindowLong			( m_hWnd, GWL_STYLE, dwWindowStyle=(WS_POPUP|WS_VISIBLE) );
+		SetWindowLongPtr( m_hWnd, GWL_STYLE, dwWindowStyle=(WS_POPUP|WS_VISIBLE) );
 	}
 
-	ShowCursor	(FALSE);
 	SetForegroundWindow( m_hWnd );
+	pInput->clip_cursor(true);
 }
 
 
