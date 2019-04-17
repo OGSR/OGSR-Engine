@@ -284,6 +284,10 @@ void CBaseMonster::reinit()
 	m_show_debug_info				= 0;
 #endif 
 	
+	m_offset_from_leader_chosen_tick	= 0;
+	m_offset_from_leader				= Fvector().set(0.f, 0.f, 0.f);	
+
+	m_action_target_node			= u32(-1);
 
 	m_first_tick_enemy_inaccessible		= 0;
 	m_last_tick_enemy_inaccessible		= 0;
@@ -310,6 +314,14 @@ BOOL CBaseMonster::net_Spawn (CSE_Abstract* DC)
 	monster_squad().register_member			((u8)g_Team(),(u8)g_Squad(),(u8)g_Group(), this);
 
 	settings_overrides						();
+
+	if (GetScriptControl()) {
+		m_control_manager->animation().reset_data	();
+		ProcessScripts						();
+	}
+
+	control().update_frame();
+	control().update_schedule();
 
 	// spawn inventory item
 //	if (ai().get_alife()) {

@@ -424,16 +424,42 @@ CPHDestroyable*	CBaseMonster::	ph_destroyable	()
 
 bool CBaseMonster::useful(const CItemManager *manager, const CGameObject *object) const
 {
-	if (!movement().restrictions().accessible(object->Position()))
-		return				(false);
+	const Fvector& object_pos = object->Position();
+	if (!movement().restrictions().accessible(object_pos))
+	{
+		return false;
+	}
 
-	if (!movement().restrictions().accessible(object->ai_location().level_vertex_id()))
-		return				(false);
+	// Lain: added (temp?) guard due to bug http://tiger/bugz/view.php?id=15983
+	// sometimes accessible(object->Position())) returns true
+	// but accessible(ai_location().level_vertex_id()) crashes 
+	// because level_vertex_id is not valid, so this code syncs vertex_id with position
+	if ( !ai().level_graph().valid_vertex_id(object->ai_location().level_vertex_id()) )
+	{
+		u32 vertex_id = ai().level_graph().vertex_id(object_pos);
+		if ( !ai().level_graph().valid_vertex_id(vertex_id) )
+		{
+			return false;
+		}
+		object->ai_location().level_vertex(vertex_id);
+	}
+
+	if ( !movement().restrictions().accessible(object->ai_location().level_vertex_id()) )
+	{
+		return false;
+	}
 
 	const CEntityAlive *pCorpse = smart_cast<const CEntityAlive *>(object); 
-	if (!pCorpse) return false;
+	if ( !pCorpse ) 
+	{
+		return false;
+	}
 	
-	if (!pCorpse->g_Alive()) return true;
+	if ( !pCorpse->g_Alive() )
+	{
+		return true;
+	}
+
 	return false;
 }
 
@@ -539,18 +565,22 @@ void CBaseMonster::TranslateActionToPathParams()
 	u32 vel_mask = 0;
 	u32 des_mask = 0;
 
-	switch (anim().m_tAction) {
+	EAction action	=	anim().m_tAction;
+	switch (action) 
+	{
 	case ACT_STAND_IDLE: 
 	case ACT_SIT_IDLE:	 
 	case ACT_LIE_IDLE:
 	case ACT_EAT:
 	case ACT_SLEEP:
 	case ACT_REST:
+		//jump
+	//case ACT_JUMP:
 	case ACT_LOOK_AROUND:
 		bEnablePath = false;
 		break;
 	case ACT_ATTACK:
-		if ( !can_attack_on_move() )
+		if ( !m_attack_on_move_params.enabled )
 		{
 			bEnablePath = false;
 		}
@@ -575,7 +605,6 @@ void CBaseMonster::TranslateActionToPathParams()
 		vel_mask = MonsterMovement::eVelocityParamsWalkSmelling;
 		des_mask = MonsterMovement::eVelocityParameterWalkSmelling;
 		break;
-
 	case ACT_WALK_FWD:
 		if (m_bDamaged) {
 			vel_mask = MonsterMovement::eVelocityParamsWalkDamaged;
@@ -628,7 +657,7 @@ void CBaseMonster::TranslateActionToPathParams()
 u32 CBaseMonster::get_attack_rebuild_time()
 {
 	float dist = EnemyMan.get_enemy()->Position().distance_to(Position());
-	return (100 + u32(50.f * dist));
+	return (100 + u32(20.f * dist));
 }
 
 void CBaseMonster::on_kill_enemy(const CEntity *obj)
@@ -681,11 +710,12 @@ void CBaseMonster::net_Relcase(CObject *O)
 
 	StateMan->remove_links			(O);
 
+	com_man().remove_links			(O);
+
 	// TODO: do not clear, remove only object O
 	if (g_Alive()) {
 		EnemyMemory.remove_links	(O);
 		SoundMemory.remove_links	(O);
-		CorpseMemory.remove_links	(O);
 		HitMemory.remove_hit_info	(O);
 
 		EnemyMan.remove_links		(O);
@@ -695,6 +725,7 @@ void CBaseMonster::net_Relcase(CObject *O)
 		
 		monster_squad().remove_links(O);
 	}
+	CorpseMemory.remove_links		(O);
 	m_pPhysics_support->in_NetRelcase(O);
 }
 	
@@ -764,14 +795,34 @@ void CBaseMonster::load_effector(LPCSTR section, LPCSTR line, SAttackEffector &e
 
 bool CBaseMonster::check_start_conditions(ControlCom::EControlType type)
 {
-	if (type == ControlCom::eControlRotationJump) {
-		EMonsterState state = StateMan->get_state_type();
-		if (state != eStateAttack_Run) return false;
-	} else if (type == ControlCom::eControlMeleeJump) {
-		EMonsterState state = StateMan->get_state_type();
-		if (!is_state(state, eStateAttack_Run) && !is_state(state, eStateAttack_Melee)) return false;
+	if ( !StateMan->check_control_start_conditions(type) )
+	{
+		return					false;
 	}
-	return true;
+
+	if ( type == ControlCom::eControlRotationJump )
+	{
+		EMonsterState state	=	StateMan->get_state_type();
+		
+		if ( !is_state(state, eStateAttack_Run) && 
+			 !is_state(state, eStateAttack_RunAttack) ) 
+		{
+			return false;
+		}
+	} 
+	if ( type == ControlCom::eControlMeleeJump ) 
+	{
+		EMonsterState state	=	StateMan->get_state_type();
+
+		if (!is_state(state, eStateAttack_Run) && 
+			!is_state(state, eStateAttack_Melee) &&
+			!is_state(state, eStateAttack_RunAttack) ) 
+		{
+			return				false;
+		}
+	}
+
+	return						true;
 }
 
 void CBaseMonster::OnEvent(NET_Packet& P, u16 type)

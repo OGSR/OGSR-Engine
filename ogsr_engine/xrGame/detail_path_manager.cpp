@@ -78,6 +78,21 @@ Fvector CDetailPathManager::direction() const
 	return					(direction);
 }
 
+bool CDetailPathManager::try_get_direction(Fvector& direction) const
+{
+	if ((m_path.size() < 2) || (m_path.size() <= m_current_travel_point + 1))
+		return				false;
+	
+	direction.sub			(m_path[m_current_travel_point + 1].position, m_path[m_current_travel_point].position);
+
+	if (direction.square_magnitude() < EPS_L)
+		return				false;
+	else
+		direction.normalize	();
+
+	return					true;
+}
+
 void CDetailPathManager::build_path(const xr_vector<u32> &level_path, u32 intermediate_index)
 {
 	if ( valid( m_start_position ) && valid( m_start_direction ) && valid( m_dest_position ) ) {
@@ -117,11 +132,6 @@ void CDetailPathManager::build_path(const xr_vector<u32> &level_path, u32 interm
 			m_time_path_built		= Device.dwTimeGlobal;
 		}
 	}
-}
-
-bool CDetailPathManager::actual() const
-{
-	return					(m_actuality);
 }
 
 void CDetailPathManager::update_distance_to_target	()

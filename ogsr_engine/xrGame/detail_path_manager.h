@@ -167,7 +167,9 @@ public:
 	virtual	void	reinit						();
 			bool	valid						() const;
 			Fvector direction					() const;
+			bool	try_get_direction			(Fvector& direction) const;
 			bool	actual						() const;
+	IC		void	make_inactual				();
 	IC		bool	failed						() const;
 	IC		bool	completed					(const Fvector &position, bool bRealCompleted = true) const;
 			bool	valid						(const Fvector &position) const;

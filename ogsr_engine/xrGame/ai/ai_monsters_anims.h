@@ -11,7 +11,7 @@
 #include "../../xr_3da/SkeletonAnimated.h"
 #include "../ai_debug.h"
 
-DEFINE_VECTOR	(MotionID,ANIM_VECTOR, ANIM_IT);
+using ANIM_VECTOR = xr_vector<MotionID>;
 
 class CAniVector {
 public:
@@ -28,11 +28,12 @@ public:
 	{
 		A.clear			();
 		string256		S;
-		for (int j=0; caBaseNames[j]; ++j);
+        int j = 0;
+		for (; caBaseNames[j]; ++j);
 		A.resize		(j);
 		for (int i=0; i<j; ++i) 
 		{
-			strconcat	(sizeof(S),S,caBaseName,caBaseNames[i]);
+			xr_strconcat(S,caBaseName,caBaseNames[i]);
 			A[i]		= tpKinematics->ID_Cycle_Safe(S);
 #ifdef DEBUG
 			if (A[i] && psAI_Flags.test(aiAnimation))
@@ -50,9 +51,10 @@ public:
 	{
 		A.clear		();
 		string256	S;
-		for (int j=0; caBaseNames[j]; ++j);
+        int j = 0;
+		for (; caBaseNames[j]; ++j);
 		A.resize	(j);
 		for (int i=0; i<j; ++i)
-			A[i].Load	(tpKinematics,strconcat(sizeof(S),S,caBaseName,caBaseNames[i]));
+			A[i].Load	(tpKinematics, xr_strconcat(S,caBaseName,caBaseNames[i]));
 	}
 };

@@ -66,16 +66,23 @@ void CBaseMonster::post_fsm_update()
 	m_bRunTurnLeft = m_bRunTurnRight = false;
 	
 
-	if (is_state(state, eStateAttack) && control().path_builder().is_moving_on_path()) {
+	Fvector direction;
+	if ( is_state(state, eStateAttack) && 
+		 control().path_builder().is_moving_on_path() &&
+		 control().path_builder().detail().try_get_direction(direction) ) {
 
-		float	dir_yaw = control().path_builder().detail().direction().getH();
-		float	yaw_target = Fvector().sub(EnemyMan.get_enemy()->Position(), Position()).getH();
+		Fvector const self_to_enemy	=	Fvector().sub(EnemyMan.get_enemy()->Position(), Position());
+		if ( magnitude(self_to_enemy) > 3.f ) {
 
-		float angle_diff	= angle_difference(yaw_target, dir_yaw);
+			float	dir_yaw = direction.getH();
+			float	yaw_target = self_to_enemy.getH();
 
-		if ((angle_diff > PI_DIV_3) && (angle_diff < 5 * PI_DIV_6)) {
-			if (from_right(dir_yaw, yaw_target))	m_bRunTurnRight = true;
-			else									m_bRunTurnLeft	= true;
+			float angle_diff	= angle_difference(yaw_target, dir_yaw);
+
+			if ((angle_diff > PI_DIV_3) && (angle_diff < 5 * PI_DIV_6)) {
+				if (from_right(dir_yaw, yaw_target))	m_bRunTurnRight = true;
+				else									m_bRunTurnLeft	= true;
+			}
 		}
 	}
 }
