@@ -256,6 +256,32 @@ bool CScriptGameObject::CheckObjectVisibility(const CScriptGameObject *tpLuaGame
 	return				(script_entity->CheckObjectVisibility(&tpLuaGameObject->object()));
 }
 
+bool CScriptGameObject::CheckObjectVisibilityNow(const CScriptGameObject *tpLuaGameObject)
+{
+	if (!tpLuaGameObject) {
+		Log("!!CScriptGameObject : cannot check visibility null object!");
+		return false;
+	}
+
+	CEntityAlive		*entity_alive = smart_cast<CEntityAlive*>(&object());
+	if (entity_alive && !entity_alive->g_Alive()) {
+		ai().script_engine().script_log	(ScriptStorage::eLuaMessageTypeError,"CScriptGameObject : cannot check visibility of dead object!");
+		return			(false);
+	}
+
+	CScriptEntity		*script_entity = smart_cast<CScriptEntity*>(&object());
+	if (!script_entity) {
+		CActor			*actor = smart_cast<CActor*>(&object());
+		if (!actor) {
+			ai().script_engine().script_log	(ScriptStorage::eLuaMessageTypeError,"CScriptGameObject : cannot access class member CheckObjectVisibility!");
+			return		(false);
+		}
+		return			(actor->memory().visual().visible_right_now(&tpLuaGameObject->object()));
+	}
+
+	return				(script_entity->CheckObjectVisibilityNow(&tpLuaGameObject->object()));
+}
+
 //////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////
