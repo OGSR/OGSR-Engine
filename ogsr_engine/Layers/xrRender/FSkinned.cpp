@@ -22,67 +22,42 @@
 static	shared_str	sbones_array;
 
 #pragma pack(push,1)
-float u_P	(s16 v)
-{
-	return	float(v)/(32767.f/12.f);
-}
-s16	q_P		(float v)
-{
-	int		_v	= clampr(iFloor(v*(32767.f/12.f)), -32768, 32767);
-	return	s16	(_v);
-}
 u8	q_N		(float v)
 {
 	int		_v	= clampr(iFloor((v+1.f)*127.5f), 0, 255);
 	return	u8	(_v);
 }
-s16	q_tc	(float v)
-{
-	int		_v	= clampr(iFloor(v*(32767.f/16.f)), -32768, 32767);
-	return	s16	(_v);
-}
-#ifdef DEBUG
-float errN	(Fvector3 v, u8* qv)
-{
-	Fvector3	uv;	
-	uv.set		(float(qv[0]),float(qv[1]),float(qv[2])).div(255.f).mul(2.f).sub(1.f);
-	uv.normalize();
-	return		v.dotproduct(uv);
-}
-#else
-float errN	(Fvector3 v, u8* qv)	{ return 0; }
-#endif
 
-static	D3DVERTEXELEMENT9 dwDecl_01W	[] =	// 24bytes
+static	D3DVERTEXELEMENT9 dwDecl_01W	[] =	// 36bytes
 {
-	{ 0, 0,		D3DDECLTYPE_SHORT4,		D3DDECLMETHOD_DEFAULT, 	D3DDECLUSAGE_POSITION,		0 },	// : P						: 2	: -12..+12
-	{ 0, 8,		D3DDECLTYPE_D3DCOLOR,	D3DDECLMETHOD_DEFAULT, 	D3DDECLUSAGE_NORMAL,		0 },	// : N, w=index(RC, 0..1)	: 1	:  -1..+1
-	{ 0, 12,	D3DDECLTYPE_D3DCOLOR,	D3DDECLMETHOD_DEFAULT, 	D3DDECLUSAGE_TANGENT,		0 },	// : T						: 1	:  -1..+1
-	{ 0, 16,	D3DDECLTYPE_D3DCOLOR,	D3DDECLMETHOD_DEFAULT, 	D3DDECLUSAGE_BINORMAL,		0 },	// : B						: 1	:  -1..+1
-	{ 0, 20,	D3DDECLTYPE_SHORT2,		D3DDECLMETHOD_DEFAULT, 	D3DDECLUSAGE_TEXCOORD,		0 },	// : tc						: 1	: -16..+16
+	{ 0, 0,		D3DDECLTYPE_FLOAT4,		D3DDECLMETHOD_DEFAULT, 	D3DDECLUSAGE_POSITION,		0 },	// : P						: 2	: -12..+12
+	{ 0, 16,	D3DDECLTYPE_D3DCOLOR,	D3DDECLMETHOD_DEFAULT, 	D3DDECLUSAGE_NORMAL,		0 },	// : N, w=index(RC, 0..1)	: 1	:  -1..+1
+	{ 0, 20,	D3DDECLTYPE_D3DCOLOR,	D3DDECLMETHOD_DEFAULT, 	D3DDECLUSAGE_TANGENT,		0 },	// : T						: 1	:  -1..+1
+	{ 0, 24,	D3DDECLTYPE_D3DCOLOR,	D3DDECLMETHOD_DEFAULT, 	D3DDECLUSAGE_BINORMAL,		0 },	// : B						: 1	:  -1..+1
+	{ 0, 28,	D3DDECLTYPE_FLOAT2,		D3DDECLMETHOD_DEFAULT, 	D3DDECLUSAGE_TEXCOORD,		0 },	// : tc						: 1	: -16..+16
 	D3DDECL_END()
 };
 struct	vertHW_1W
 {
-	s16			_P		[4];
+	float		_P		[4];
 	u32			_N_I	;
 	u32			_T		;
 	u32			_B		;
-	s16			_tc		[2];
+	float		_tc		[2];
 	void set	(Fvector3& P, Fvector3 N, Fvector3 T, Fvector3 B, Fvector2& tc, int index)
 	{
 		N.normalize_safe();
 		T.normalize_safe();
 		B.normalize_safe();
-		_P[0]		= q_P(P.x);
-		_P[1]		= q_P(P.y);
-		_P[2]		= q_P(P.z);
-		_P[3]		= q_P(1);
+		_P[0]		= P.x;
+		_P[1]		= P.y;
+		_P[2]		= P.z;
+		_P[3]		= 1.0f;
 		_N_I		= color_rgba(q_N(N.x), q_N(N.y), q_N(N.z), u8(index));
 		_T			= color_rgba(q_N(T.x), q_N(T.y), q_N(T.z), 0);
 		_B			= color_rgba(q_N(B.x), q_N(B.y), q_N(B.z), 0);
-		_tc[0]		= q_tc(tc.x);
-		_tc[1]		= q_tc(tc.y);
+		_tc[0]		= tc.x;
+		_tc[1]		= tc.y;
 	}
 	u16 get_bone() const
 	{
@@ -95,42 +70,42 @@ struct	vertHW_1W
 	}
 	void get_pos(Fvector& p) const
 	{
-		p.x			= u_P(_P[0]);
-		p.y			= u_P(_P[1]);
-		p.z			= u_P(_P[2]);
+		p.x			= _P[0];
+		p.y			= _P[1];
+		p.z			= _P[2];
 	}
 };
 
-static	D3DVERTEXELEMENT9 dwDecl_2W	[] =	// 28bytes
+static	D3DVERTEXELEMENT9 dwDecl_2W	[] =	// 44bytes
 {
-	{ 0, 0,		D3DDECLTYPE_SHORT4,		D3DDECLMETHOD_DEFAULT, 	D3DDECLUSAGE_POSITION,		0 },	// : p					: 2	: -12..+12
-	{ 0, 8,		D3DDECLTYPE_D3DCOLOR,	D3DDECLMETHOD_DEFAULT, 	D3DDECLUSAGE_NORMAL,		0 },	// : n.xyz, w = weight	: 1	:  -1..+1, w=0..1
-	{ 0, 12,	D3DDECLTYPE_D3DCOLOR,	D3DDECLMETHOD_DEFAULT, 	D3DDECLUSAGE_TANGENT,		0 },	// : T						: 1	:  -1..+1
-	{ 0, 16,	D3DDECLTYPE_D3DCOLOR,	D3DDECLMETHOD_DEFAULT, 	D3DDECLUSAGE_BINORMAL,		0 },	// : B						: 1	:  -1..+1
-	{ 0, 20,	D3DDECLTYPE_SHORT4,		D3DDECLMETHOD_DEFAULT, 	D3DDECLUSAGE_TEXCOORD,		0 },	// : xy(tc), zw(indices): 2	: -16..+16, zw[0..32767]
+	{ 0, 0,		D3DDECLTYPE_FLOAT4,		D3DDECLMETHOD_DEFAULT, 	D3DDECLUSAGE_POSITION,		0 },	// : p					: 2	: -12..+12
+	{ 0, 16,	D3DDECLTYPE_D3DCOLOR,	D3DDECLMETHOD_DEFAULT, 	D3DDECLUSAGE_NORMAL,		0 },	// : n.xyz, w = weight	: 1	:  -1..+1, w=0..1
+	{ 0, 20,	D3DDECLTYPE_D3DCOLOR,	D3DDECLMETHOD_DEFAULT, 	D3DDECLUSAGE_TANGENT,		0 },	// : T						: 1	:  -1..+1
+	{ 0, 24,	D3DDECLTYPE_D3DCOLOR,	D3DDECLMETHOD_DEFAULT, 	D3DDECLUSAGE_BINORMAL,		0 },	// : B						: 1	:  -1..+1
+	{ 0, 28,	D3DDECLTYPE_FLOAT4,		D3DDECLMETHOD_DEFAULT, 	D3DDECLUSAGE_TEXCOORD,		0 },	// : xy(tc), zw(indices): 2	: -16..+16, zw[0..32767]
 	D3DDECL_END()
 };
 struct	vertHW_2W
 {
-	s16			_P		[4];
+	float		_P		[4];
 	u32			_N_w	;
 	u32			_T		;
 	u32			_B		;
-	s16			_tc_i	[4];
+	float		_tc_i	[4];
 	void set	(Fvector3& P, Fvector3 N, Fvector3 T, Fvector3 B, Fvector2& tc, int index0, int index1, float w)
 	{
 		N.normalize_safe	();
 		T.normalize_safe	();
 		B.normalize_safe	();
-		_P[0]		= q_P	(P.x);
-		_P[1]		= q_P	(P.y);
-		_P[2]		= q_P	(P.z);
-		_P[3]		= 1;
+		_P[0]		= P.x;
+		_P[1]		= P.y;
+		_P[2]		= P.z;
+		_P[3]		= 1.0f;
 		_N_w		= color_rgba(q_N(N.x), q_N(N.y), q_N(N.z), u8(clampr(iFloor(w*255.f+.5f),0,255)));
 		_T			= color_rgba(q_N(T.x), q_N(T.y), q_N(T.z), 0);
 		_B			= color_rgba(q_N(B.x), q_N(B.y), q_N(B.z), 0);
-		_tc_i[0]	= q_tc	(tc.x);
-		_tc_i[1]	= q_tc	(tc.y);
+		_tc_i[0]	= tc.x;
+		_tc_i[1]	= tc.y;
 		_tc_i[2]	= s16	(index0);
 		_tc_i[3]	= s16	(index1);
 	}
@@ -144,9 +119,9 @@ struct	vertHW_2W
 	}
 	void get_pos(Fvector& p) const
 	{
-		p.x			= u_P(_P[0]);
-		p.y			= u_P(_P[1]);
-		p.z			= u_P(_P[2]);
+		p.x			= _P[0];
+		p.y			= _P[1];
+		p.z			= _P[2];
 	}
 	void get_pos_bones( Fvector& p, CKinematics* Parent ) const
 	{
@@ -158,36 +133,36 @@ struct	vertHW_2W
 			p.lerp			(P0,P1,get_weight());
 	}
 };
-static	D3DVERTEXELEMENT9 dwDecl_3W	[] =	// 28bytes
+static	D3DVERTEXELEMENT9 dwDecl_3W	[] =	// 44bytes
 {
-	{ 0, 0,		D3DDECLTYPE_SHORT4,		D3DDECLMETHOD_DEFAULT, 	D3DDECLUSAGE_POSITION,		0 },	// : p					: 2	: -12..+12
-	{ 0, 8,		D3DDECLTYPE_D3DCOLOR,	D3DDECLMETHOD_DEFAULT, 	D3DDECLUSAGE_NORMAL,		0 },	// : n.xyz, w = weight0	: 1	:  -1..+1, w=0..1
-	{ 0, 12,	D3DDECLTYPE_D3DCOLOR,	D3DDECLMETHOD_DEFAULT, 	D3DDECLUSAGE_TANGENT,		0 },	// : T.xyz, w = weight1	: 1	:  -1..+1, w=0..1
-	{ 0, 16,	D3DDECLTYPE_D3DCOLOR,	D3DDECLMETHOD_DEFAULT, 	D3DDECLUSAGE_BINORMAL,		0 },	// : B.xyz,	w = index2	: 1	:  -1..+1, w=0..255
-	{ 0, 20,	D3DDECLTYPE_SHORT4,		D3DDECLMETHOD_DEFAULT, 	D3DDECLUSAGE_TEXCOORD,		0 },	// : xy(tc), zw(indices): 2	: -16..+16, zw[0..32767]
+	{ 0, 0,		D3DDECLTYPE_FLOAT4,		D3DDECLMETHOD_DEFAULT, 	D3DDECLUSAGE_POSITION,		0 },	// : p					: 2	: -12..+12
+	{ 0, 16,	D3DDECLTYPE_D3DCOLOR,	D3DDECLMETHOD_DEFAULT, 	D3DDECLUSAGE_NORMAL,		0 },	// : n.xyz, w = weight0	: 1	:  -1..+1, w=0..1
+	{ 0, 20,	D3DDECLTYPE_D3DCOLOR,	D3DDECLMETHOD_DEFAULT, 	D3DDECLUSAGE_TANGENT,		0 },	// : T.xyz, w = weight1	: 1	:  -1..+1, w=0..1
+	{ 0, 24,	D3DDECLTYPE_D3DCOLOR,	D3DDECLMETHOD_DEFAULT, 	D3DDECLUSAGE_BINORMAL,		0 },	// : B.xyz,	w = index2	: 1	:  -1..+1, w=0..255
+	{ 0, 28,	D3DDECLTYPE_FLOAT4,		D3DDECLMETHOD_DEFAULT, 	D3DDECLUSAGE_TEXCOORD,		0 },	// : xy(tc), zw(indices): 2	: -16..+16, zw[0..32767]
 	D3DDECL_END()
 };
 struct	vertHW_3W
 {
-	s16			_P		[4];
+	float		_P		[4];
 	u32			_N_w	;
 	u32			_T_w	;
 	u32			_B_i	;
-	s16			_tc_i	[4];
+	float		_tc_i	[4];
 	void set	(Fvector3& P, Fvector3 N, Fvector3 T, Fvector3 B, Fvector2& tc, int index0, int index1, int index2, float w0, float w1)
 	{
 		N.normalize_safe	();
 		T.normalize_safe	();
 		B.normalize_safe	();
-		_P[0]		= q_P	(P.x);
-		_P[1]		= q_P	(P.y);
-		_P[2]		= q_P	(P.z);
-		_P[3]		= 1;
+		_P[0]		= P.x;
+		_P[1]		= P.y;
+		_P[2]		= P.z;
+		_P[3]		= 1.0f;
 		_N_w		= color_rgba(q_N(N.x), q_N(N.y), q_N(N.z), u8(clampr(iFloor(w0*255.f+.5f),0,255)));
 		_T_w		= color_rgba(q_N(T.x), q_N(T.y), q_N(T.z), u8(clampr(iFloor(w1*255.f+.5f),0,255)));
 		_B_i		= color_rgba(q_N(B.x), q_N(B.y), q_N(B.z), u8(index2));
-		_tc_i[0]	= q_tc	(tc.x);
-		_tc_i[1]	= q_tc	(tc.y);
+		_tc_i[0]	= tc.x;
+		_tc_i[1]	= tc.y;
 		_tc_i[2]	= s16	(index0);
 		_tc_i[3]	= s16	(index1);
 	}
@@ -214,9 +189,9 @@ struct	vertHW_3W
 	}
 	void get_pos(Fvector& p) const
 	{
-		p.x			= u_P(_P[0]);
-		p.y			= u_P(_P[1]);
-		p.z			= u_P(_P[2]);
+		p.x			= _P[0];
+		p.y			= _P[1];
+		p.z			= _P[2];
 	}
 	void get_pos_bones( Fvector& p, CKinematics* Parent ) const
 	{
@@ -238,38 +213,38 @@ struct	vertHW_3W
 	}
 };
 
-static	D3DVERTEXELEMENT9 dwDecl_4W	[] =	// 28bytes
+static	D3DVERTEXELEMENT9 dwDecl_4W	[] =	// 40bytes
 {
-	{ 0, 0,		D3DDECLTYPE_SHORT4,		D3DDECLMETHOD_DEFAULT, 	D3DDECLUSAGE_POSITION,		0 },	// : p					: 2	: -12..+12
-	{ 0, 8,		D3DDECLTYPE_D3DCOLOR,	D3DDECLMETHOD_DEFAULT, 	D3DDECLUSAGE_NORMAL,		0 },	// : n.xyz, w = weight0	: 1	:  -1..+1, w=0..1
-	{ 0, 12,	D3DDECLTYPE_D3DCOLOR,	D3DDECLMETHOD_DEFAULT, 	D3DDECLUSAGE_TANGENT,		0 },	// : T.xyz, w = weight1	: 1	:  -1..+1, w=0..1
-	{ 0, 16,	D3DDECLTYPE_D3DCOLOR,	D3DDECLMETHOD_DEFAULT, 	D3DDECLUSAGE_BINORMAL,		0 },	// : B.xyz,	w = weight2	: 1	:  -1..+1, w=0..1
-	{ 0, 20,	D3DDECLTYPE_SHORT2,		D3DDECLMETHOD_DEFAULT, 	D3DDECLUSAGE_TEXCOORD,		0 },	// : xy(tc)				: 2	: -16..+16
-	{ 0, 24,	D3DDECLTYPE_D3DCOLOR,	D3DDECLMETHOD_DEFAULT, 	D3DDECLUSAGE_TEXCOORD,		1 },	// : indices			: 1	:  0..255
+	{ 0, 0,		D3DDECLTYPE_FLOAT4,		D3DDECLMETHOD_DEFAULT, 	D3DDECLUSAGE_POSITION,		0 },	// : p					: 2	: -12..+12
+	{ 0, 16,	D3DDECLTYPE_D3DCOLOR,	D3DDECLMETHOD_DEFAULT, 	D3DDECLUSAGE_NORMAL,		0 },	// : n.xyz, w = weight0	: 1	:  -1..+1, w=0..1
+	{ 0, 20,	D3DDECLTYPE_D3DCOLOR,	D3DDECLMETHOD_DEFAULT, 	D3DDECLUSAGE_TANGENT,		0 },	// : T.xyz, w = weight1	: 1	:  -1..+1, w=0..1
+	{ 0, 24,	D3DDECLTYPE_D3DCOLOR,	D3DDECLMETHOD_DEFAULT, 	D3DDECLUSAGE_BINORMAL,		0 },	// : B.xyz,	w = weight2	: 1	:  -1..+1, w=0..1
+	{ 0, 28,	D3DDECLTYPE_FLOAT2,		D3DDECLMETHOD_DEFAULT, 	D3DDECLUSAGE_TEXCOORD,		0 },	// : xy(tc)				: 2	: -16..+16
+	{ 0, 36,	D3DDECLTYPE_D3DCOLOR,	D3DDECLMETHOD_DEFAULT, 	D3DDECLUSAGE_TEXCOORD,		1 },	// : indices			: 1	:  0..255
 	D3DDECL_END()
 };
 struct	vertHW_4W
 {
-	s16			_P		[4];
+	float		_P		[4];
 	u32			_N_w	;
 	u32			_T_w	;
 	u32			_B_w	;
-	s16			_tc		[2];
+	float		_tc		[2];
 	u32			_i		;
 	void set	(Fvector3& P, Fvector3 N, Fvector3 T, Fvector3 B, Fvector2& tc, int index0, int index1, int index2, int index3, float w0, float w1, float w2)
 	{
 		N.normalize_safe	();
 		T.normalize_safe	();
 		B.normalize_safe	();
-		_P[0]		= q_P	(P.x);
-		_P[1]		= q_P	(P.y);
-		_P[2]		= q_P	(P.z);
-		_P[3]		= 1;
+		_P[0]		= P.x;
+		_P[1]		= P.y;
+		_P[2]		= P.z;
+		_P[3]		= 1.0f;
 		_N_w		= color_rgba(q_N(N.x), q_N(N.y), q_N(N.z), u8(clampr(iFloor(w0*255.f+.5f),0,255)));
 		_T_w		= color_rgba(q_N(T.x), q_N(T.y), q_N(T.z), u8(clampr(iFloor(w1*255.f+.5f),0,255)));
 		_B_w		= color_rgba(q_N(B.x), q_N(B.y), q_N(B.z), u8(clampr(iFloor(w2*255.f+.5f),0,255)));
-		_tc[0]		= q_tc	(tc.x);
-		_tc[1]		= q_tc	(tc.y);
+		_tc[0]		= tc.x;
+		_tc[1]		= tc.y;
 		_i		= color_rgba( u8(index0), u8(index1), u8(index2), u8(index3));
 	}
 	float get_weight0() const
@@ -302,9 +277,9 @@ struct	vertHW_4W
 	}
 	void get_pos(Fvector& p) const
 	{
-		p.x			= u_P(_P[0]);
-		p.y			= u_P(_P[1]);
-		p.z			= u_P(_P[2]);
+		p.x			= _P[0];
+		p.y			= _P[1];
+		p.z			= _P[2];
 	}
 	void get_pos_bones( Fvector& p, CKinematics* Parent ) const
 	{

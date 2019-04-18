@@ -3,6 +3,8 @@
 #pragma once
 
 // Common
+extern ECORE_API u32 r2_SmapSize;
+
 extern ECORE_API	u32			ps_r_sun_shafts;	//=	0;
 extern ECORE_API	xr_token	qsun_shafts_token[];
 
@@ -193,6 +195,8 @@ enum
 	R_FLAGEXT_HOM_DEPTH_DRAW		= (1<<7),
 	R2FLAGEXT_SUN_ZCULLING			= (1<<8),
 	R2FLAGEXT_SUN_OLD				= (1<<9),
+	R2FLAGEXT_SHADER_CACHE = 1 << 10,
+	R2FLAGEXT_DISABLE_HOM = 1 << 11,
 };
 
 extern void						xrRender_initconsole	();

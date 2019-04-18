@@ -9,7 +9,7 @@
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
 
-int		rsDVB_Size			= 512+1024;
+int		rsDVB_Size = 16384; // 8192; //4096; //512+1024;
 int		rsDIB_Size			= 512;
 
 void _VertexStream::Create	()
@@ -60,9 +60,11 @@ void* _VertexStream::Lock	( u32 vl_Count, u32 Stride, u32& vOffset )
 	dbg_lock			++;
 #endif
 
+	R_ASSERT(vl_Count, "Missing or invalid texture! vl_Count=0.");
+
 	// Ensure there is enough space in the VB for this data
 	u32	bytes_need		= vl_Count*Stride;
-	R_ASSERT2			((bytes_need<=mSize) && vl_Count, make_string("bytes_need = %d, mSize = %d, vl_Count = %d", bytes_need, mSize, vl_Count));
+	ASSERT_FMT(bytes_need <= mSize, "bytes_need = [%u], mSize = [%u]", bytes_need, mSize);
 
 	// Vertex-local info
 	u32 vl_mSize		= mSize/Stride;

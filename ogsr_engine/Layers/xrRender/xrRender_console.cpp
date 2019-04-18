@@ -4,6 +4,19 @@
 #include	"xrRender_console.h"
 #include	"dxRenderDeviceRender.h"
 
+u32 r2_SmapSize = 2048;
+xr_token SmapSizeToken[] = {
+  { "1536x1536",   1536 },
+  { "2048x2048",   2048 },
+  { "2560x2560",   2560 },
+  { "3072x3072",   3072 },
+  { "4096x4096",   4096 },
+  { "6144x6144",   6144 },
+  { "8192x8192",   8192 },
+  { "16384x16384", 16384 },
+  { nullptr, 0 }
+};
+
 u32			ps_Preset				=	2	;
 xr_token							qpreset_token							[ ]={
 	{ "Minimum",					0											},
@@ -161,7 +174,7 @@ Flags32		ps_r2_ls_flags				= { R2FLAG_SUN
 
 Flags32		ps_r2_ls_flags_ext			= {
 		/*R2FLAGEXT_SSAO_OPT_DATA |*/ R2FLAGEXT_SSAO_HALF_DATA
-		|R2FLAGEXT_ENABLE_TESSELLATION
+		|R2FLAGEXT_ENABLE_TESSELLATION | R2FLAGEXT_SHADER_CACHE
 	};
 
 float		ps_r2_df_parallax_h			= 0.02f;
@@ -761,6 +774,9 @@ void		xrRender_initconsole	()
 	CMD3(CCC_Mask,		"r2_mt",				&ps_r2_ls_flags,			R2FLAG_EXP_MT_CALC);
 #endif // DEBUG
 
+	CMD3(CCC_Mask, "r2_shader_cache", &ps_r2_ls_flags_ext, R2FLAGEXT_SHADER_CACHE);
+	CMD3(CCC_Mask, "r2_disable_hom", &ps_r2_ls_flags_ext, R2FLAGEXT_DISABLE_HOM);
+
 	CMD3(CCC_Mask,		"r2_sun",				&ps_r2_ls_flags,			R2FLAG_SUN		);
 	CMD3(CCC_Mask,		"r2_sun_details",		&ps_r2_ls_flags,			R2FLAG_SUN_DETAILS);
 	CMD3(CCC_Mask,		"r2_sun_focus",			&ps_r2_ls_flags,			R2FLAG_SUN_FOCUS);
@@ -772,7 +788,10 @@ void		xrRender_initconsole	()
 	CMD3(CCC_Mask,		"r2_sun_tsm",			&ps_r2_ls_flags,			R2FLAG_SUN_TSM	);
 	CMD4(CCC_Float,		"r2_sun_tsm_proj",		&ps_r2_sun_tsm_projection,	.001f,	0.8f	);
 	CMD4(CCC_Float,		"r2_sun_tsm_bias",		&ps_r2_sun_tsm_bias,		-0.5,	+0.5	);
-	CMD4(CCC_Float,		"r2_sun_near",			&ps_r2_sun_near,			1.f,	50.f	);
+
+	CMD3(CCC_Token, "r__smap_size", &r2_SmapSize, SmapSizeToken);
+	CMD4(CCC_Float, "r2_sun_near", &ps_r2_sun_near, 1.f, 100.f /*50.f*/);
+
 #if RENDER!=R_R1
 	CMD4(CCC_Float,		"r2_sun_far",			&OLES_SUN_LIMIT_27_01_07,	51.f,	180.f	);
 #endif

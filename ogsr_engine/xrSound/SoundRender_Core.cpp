@@ -10,7 +10,7 @@
 #include <eax.h>
 #pragma warning(pop)
 
-int		psSoundTargets = 512; //--#SM+#-- //32;
+int		psSoundTargets = 256; //512; //--#SM+#-- //32;
 Flags32	psSoundFlags = { ss_Hardware | ss_EAX };
 float	psSoundOcclusionScale = 0.5f;
 float	psSoundCull = 0.01f;

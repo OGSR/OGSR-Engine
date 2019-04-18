@@ -859,7 +859,7 @@ HRESULT	CRender::shader_compile			(
 		xr_strcat		( file_name, temp_file_name );
 	}
 
-	if (FS.exist(file_name))
+	if (ps_r2_ls_flags_ext.test(R2FLAGEXT_SHADER_CACHE) && FS.exist(file_name))
 	{
 		IReader* file = FS.r_open(file_name);
 		if (file->length()>4)

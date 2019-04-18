@@ -243,6 +243,11 @@ public:
 		b_is_Ready			= FALSE;
 		Timer.Start			();
 		m_bNearer			= FALSE;
+
+		//--#SM+#-- +SecondVP+
+		m_SecondViewport.SetSVPActive(false);
+		m_SecondViewport.SetSVPFrameDelay(2);
+		m_SecondViewport.m_bCamReady = false;
 	};
 
 	void	Pause							(BOOL bOn, BOOL bTimer, BOOL bSound, LPCSTR reason);
