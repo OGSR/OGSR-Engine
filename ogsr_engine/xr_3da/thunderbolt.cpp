@@ -36,6 +36,7 @@ SThunderboltDesc::~SThunderboltDesc()
 	xr_delete					(m_GradientCenter);
 }
 
+#ifdef USE_COP_WEATHER_CONFIGS
 void SThunderboltDesc::create_top_gradient		(CInifile& pIni, shared_str const& sect)
 {
 	m_GradientTop				= xr_new<SFlare>();
@@ -82,6 +83,54 @@ void SThunderboltDesc::load						(CInifile& pIni, shared_str const& sect)
 	m_name				= pIni.r_string(sect,"sound");
     if (m_name&&m_name[0]) snd.create(m_name,st_Effect,sg_Undefined);
 }
+#else
+void SThunderboltDesc::create_top_gradient(CInifile* pIni, shared_str const& sect)
+{
+	m_GradientTop = xr_new<SFlare>();
+	m_GradientTop->shader = pIni->r_string(sect, "gradient_top_shader");
+	m_GradientTop->texture = pIni->r_string(sect, "gradient_top_texture");
+	m_GradientTop->fRadius = pIni->r_fvector2(sect, "gradient_top_radius");
+	m_GradientTop->fOpacity = pIni->r_float(sect, "gradient_top_opacity");
+	m_GradientTop->m_pFlare->CreateShader(*m_GradientTop->shader, *m_GradientTop->texture);
+}
+
+void SThunderboltDesc::create_center_gradient(CInifile* pIni, shared_str const& sect)
+{
+	m_GradientCenter = xr_new<SFlare>();
+	m_GradientCenter->shader = pIni->r_string(sect, "gradient_center_shader");
+	m_GradientCenter->texture = pIni->r_string(sect, "gradient_center_texture");
+	m_GradientCenter->fRadius = pIni->r_fvector2(sect, "gradient_center_radius");
+	m_GradientCenter->fOpacity = pIni->r_float(sect, "gradient_center_opacity");
+	m_GradientCenter->m_pFlare->CreateShader(*m_GradientCenter->shader, *m_GradientCenter->texture);
+}
+
+void SThunderboltDesc::load(CInifile* pIni, shared_str const& sect)
+{
+	create_top_gradient(pIni, sect);
+	create_center_gradient(pIni, sect);
+
+	name = sect;
+	color_anim = LALib.FindItem(pIni->r_string(sect, "color_anim"));
+	VERIFY(color_anim);
+	color_anim->fFPS = (float)color_anim->iFrameCount;
+
+	// models
+	LPCSTR m_name;
+	m_name = pIni->r_string(sect, "lightning_model");
+	m_pRender->CreateModel(m_name);
+
+	/*
+	IReader* F			= 0;
+	F					= FS.r_open("$game_meshes$",m_name); R_ASSERT2(F,"Empty 'lightning_model'.");
+	l_model				= ::Render->model_CreateDM(F);
+	FS.r_close			(F);
+	*/
+
+	// sound
+	m_name = pIni->r_string(sect, "sound");
+	if (m_name&&m_name[0]) snd.create(m_name, st_Effect, sg_Undefined);
+}
+#endif
 
 //----------------------------------------------------------------------------------------------
 // collection
@@ -90,14 +139,22 @@ SThunderboltCollection::SThunderboltCollection	()
 {
 }
 
+#ifdef USE_COP_WEATHER_CONFIGS
 void SThunderboltCollection::load				(CInifile* pIni, CInifile* thunderbolts, LPCSTR sect)
+#else
+void SThunderboltCollection::load(CInifile* pIni, LPCSTR sect)
+#endif
 {
 	section			= sect;
 	int tb_count	= pIni->line_count(sect);
 	for (int tb_idx=0; tb_idx<tb_count; tb_idx++){
 		LPCSTR		N, V;
 		if (pIni->r_line(sect,tb_idx,&N,&V))
+#ifdef USE_COP_WEATHER_CONFIGS
 			palette.push_back	(g_pGamePersistent->Environment().thunderbolt_description(*thunderbolts, N));
+#else
+			palette.push_back(g_pGamePersistent->Environment().thunderbolt_description(pIni, N));
+#endif
 	}
 }
 SThunderboltCollection::~SThunderboltCollection	()
@@ -145,12 +202,20 @@ CEffect_Thunderbolt::~CEffect_Thunderbolt()
 	//hGeom_gradient.destroy		();
 }
 
+#ifdef USE_COP_WEATHER_CONFIGS
 shared_str CEffect_Thunderbolt::AppendDef(CEnvironment& environment, CInifile* pIni, CInifile* thunderbolts, LPCSTR sect)
+#else
+shared_str CEffect_Thunderbolt::AppendDef(CEnvironment& environment, CInifile* pIni, LPCSTR sect)
+#endif
 {
 	if (!sect||(0==sect[0])) return "";
 	for (CollectionVecIt it=collection.begin(); it!=collection.end(); it++)
 		if ((*it)->section==sect)	return (*it)->section;
+#ifdef USE_COP_WEATHER_CONFIGS
 	collection.push_back		(environment.thunderbolt_collection(pIni, thunderbolts, sect));
+#else
+	collection.push_back(environment.thunderbolt_collection(pIni, sect));
+#endif
 	return collection.back()->section;
 }
 

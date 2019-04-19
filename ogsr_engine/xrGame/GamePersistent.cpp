@@ -42,7 +42,11 @@ CGamePersistent::CGamePersistent(void)
 	ambient_effect_wind_out_time = 0.f;
 	ambient_effect_wind_on = false;
 
+#ifdef USE_COP_WEATHER_CONFIGS
 	ZeroMemory(ambient_sound_next_time, sizeof(ambient_sound_next_time));
+#else
+	ambient_sound_next_time = 0;
+#endif
 
 	m_pUI_core					= NULL;
 	m_pMainMenu					= NULL;
@@ -192,6 +196,7 @@ void CGamePersistent::OnGameEnd	()
 }
 
 
+#ifdef USE_COP_WEATHER_CONFIGS
 void CGamePersistent::WeathersUpdate()
 {
 	if (g_pGameLevel && !g_dedicated_server)
@@ -358,7 +363,67 @@ void CGamePersistent::WeathersUpdate()
 			CParticlesObject::Destroy(ambient_particles);
 	}
 }
+#else
+void CGamePersistent::WeathersUpdate()
+{
+	if (g_pGameLevel && !g_dedicated_server)
+	{
+		CActor* actor = smart_cast<CActor*>(Level().CurrentViewEntity());
+		BOOL bIndoor = TRUE;
+		if (actor) bIndoor = actor->renderable_ROS()->get_luminocity_hemi() < 0.05f;
 
+		int data_set = (Random.randF() < (1.f - Environment().CurrentEnv->weight)) ? 0 : 1;
+
+		CEnvDescriptor* const _env = Environment().Current[data_set];
+		VERIFY(_env);
+
+		CEnvAmbient* env_amb = _env->env_ambient;
+
+		// start sound
+		if (env_amb)
+		{
+			if (Device.dwTimeGlobal > ambient_sound_next_time)
+			{
+				ref_sound* snd = env_amb->get_rnd_sound();
+				ambient_sound_next_time = Device.dwTimeGlobal + env_amb->get_rnd_sound_time();
+				if (snd)
+				{
+					Fvector	pos;
+					float	angle = ::Random.randF(PI_MUL_2);
+					pos.x = _cos(angle);
+					pos.y = 0;
+					pos.z = _sin(angle);
+					pos.normalize().mul(env_amb->get_rnd_sound_dist()).add(Device.vCameraPosition);
+					pos.y += 10.f;
+					snd->play_at_pos(0, pos);
+				}
+			}
+
+			// start effect
+			if ((FALSE == bIndoor) && (0 == ambient_particles) && Device.dwTimeGlobal > ambient_effect_next_time) {
+				CEnvAmbient::SEffect* eff = env_amb->get_rnd_effect();
+				if (eff) {
+					Environment().wind_gust_factor = eff->wind_gust_factor;
+					ambient_effect_next_time = Device.dwTimeGlobal + env_amb->get_rnd_effect_time();
+					ambient_effect_stop_time = Device.dwTimeGlobal + eff->life_time;
+					ambient_particles = CParticlesObject::Create(eff->particles.c_str(), FALSE, false);
+					Fvector pos; pos.add(Device.vCameraPosition, eff->offset);
+					ambient_particles->play_at_pos(pos);
+					if (eff->sound._handle())		eff->sound.play_at_pos(0, pos);
+				}
+			}
+		}
+		// stop if time exceed or indoor
+		if (bIndoor || Device.dwTimeGlobal >= ambient_effect_stop_time) {
+			if (ambient_particles)					ambient_particles->Stop();
+			Environment().wind_gust_factor = 0.f;
+		}
+		// if particles not playing - destroy
+		if (ambient_particles && !ambient_particles->IsPlaying())
+			CParticlesObject::Destroy(ambient_particles);
+	}
+}
+#endif
 
 #include "UI/UIGameTutorial.h"
 

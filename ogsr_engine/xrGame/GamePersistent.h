@@ -15,7 +15,11 @@ class CGamePersistent:
 {
 	// ambient particles
 	CParticlesObject*	ambient_particles; 
+#ifdef USE_COP_WEATHER_CONFIGS
 	u32					ambient_sound_next_time[20]; //max snd channels
+#else
+	u32					ambient_sound_next_time;
+#endif
 	u32					ambient_effect_next_time;
 	u32					ambient_effect_stop_time;
 

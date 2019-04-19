@@ -2,8 +2,6 @@
 //
 //////////////////////////////////////////////////////////////////////
 
-#ifndef ThunderboltH
-#define ThunderboltH
 #pragma once
 
 //refs
@@ -15,11 +13,7 @@ class ENGINE_API CLAItem;
 #include "../Include/xrRender/ThunderboltDescRender.h"
 #include "../Include/xrRender/ThunderboltRender.h"
 
-#ifdef INGAME_EDITOR
-#	define	INGAME_EDITOR_VIRTUAL	virtual
-#else // #ifdef INGAME_EDITOR
-#	define	INGAME_EDITOR_VIRTUAL
-#endif // #ifdef INGAME_EDITOR
+#define INGAME_EDITOR_VIRTUAL
 
 class CEnvironment;
 
@@ -48,9 +42,15 @@ struct SThunderboltDesc
 public:
 								SThunderboltDesc		();
 	INGAME_EDITOR_VIRTUAL	    ~SThunderboltDesc		();
+#ifdef USE_COP_WEATHER_CONFIGS
 						  void	load					(CInifile& pIni, shared_str const& sect);
 	INGAME_EDITOR_VIRTUAL void	create_top_gradient		(CInifile& pIni, shared_str const& sect);
 	INGAME_EDITOR_VIRTUAL void	create_center_gradient	(CInifile& pIni, shared_str const& sect);
+#else
+	void	load(CInifile* pIni, shared_str const& sect);
+	INGAME_EDITOR_VIRTUAL void	create_top_gradient(CInifile* pIni, shared_str const& sect);
+	INGAME_EDITOR_VIRTUAL void	create_center_gradient(CInifile* pIni, shared_str const& sect);
+#endif
 };
 
 #undef INGAME_EDITOR_VIRTUAL
@@ -63,7 +63,11 @@ struct SThunderboltCollection
 public:
 								SThunderboltCollection	();
 								~SThunderboltCollection	();
+#ifdef USE_COP_WEATHER_CONFIGS
 						void	load					(CInifile* pIni, CInifile* thunderbolts, LPCSTR sect);
+#else
+								void	load(CInifile* pIni, LPCSTR sect);
+#endif
 	SThunderboltDesc*			GetRandomDesc			(){VERIFY(palette.size()>0); return palette[Random.randI(palette.size())];}
 };
 
@@ -120,7 +124,9 @@ public:
 	void						OnFrame				(shared_str id,float period, float duration);
 	void						Render				();
 
+#ifdef USE_COP_WEATHER_CONFIGS
 	shared_str 					AppendDef			(CEnvironment& environment, CInifile* pIni, CInifile* thunderbolts, LPCSTR sect);
+#else
+	shared_str 					AppendDef(CEnvironment& environment, CInifile* pIni, LPCSTR sect);
+#endif
 };
-
-#endif //ThunderboltH

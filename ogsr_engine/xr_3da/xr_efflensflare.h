@@ -119,7 +119,7 @@ public:
 	void 				OnDeviceCreate	();         
 	void 				OnDeviceDestroy	();
 
-    shared_str			AppendDef		(CEnvironment& environment, CInifile* pIni, LPCSTR sect);
+    shared_str			AppendDef		(CEnvironment& environment, LPCSTR sect);
 
 	void				Invalidate		(){m_State=lfsNone;}
 };

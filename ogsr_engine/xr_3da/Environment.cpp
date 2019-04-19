@@ -44,8 +44,10 @@ const float MAX_DIST_FACTOR = 0.95f;
 //////////////////////////////////////////////////////////////////////////
 // environment
 CEnvironment::CEnvironment	() :
-	CurrentEnv				(0),
-	m_ambients_config		(0)
+	CurrentEnv				(0)
+#ifdef USE_COP_WEATHER_CONFIGS
+	, m_ambients_config		(0)
+#endif
 {
 	bNeed_re_create_env = FALSE;
 	bWFX					= false;
@@ -91,9 +93,7 @@ CEnvironment::CEnvironment	() :
 	PerlinNoise1D->SetOctaves(2);
 	PerlinNoise1D->SetAmplitude(0.66666f);
 
-//	tsky0					= Device.Resources->_CreateTexture("$user$sky0");
-//	tsky1					= Device.Resources->_CreateTexture("$user$sky1");
-
+#ifdef USE_COP_WEATHER_CONFIGS
 	string_path				file_name;
 	m_ambients_config		=
 		xr_new<CInifile>(
@@ -185,6 +185,18 @@ CEnvironment::CEnvironment	() :
 	p_fog_color		= config->r_float							( "environment","fog_color" );
 
 	xr_delete		(config);
+#else
+	// params
+	p_var_alt = deg2rad(pSettings->r_float("thunderbolt_common", "altitude"));
+	p_var_long = deg2rad(pSettings->r_float("thunderbolt_common", "delta_longitude"));
+	p_min_dist = _min(.95f, pSettings->r_float("thunderbolt_common", "min_dist_factor"));
+	p_tilt = deg2rad(pSettings->r_float("thunderbolt_common", "tilt"));
+	p_second_prop = pSettings->r_float("thunderbolt_common", "second_propability");
+	clamp(p_second_prop, 0.f, 1.f);
+	p_sky_color = pSettings->r_float("thunderbolt_common", "sky_color");
+	p_sun_color = pSettings->r_float("thunderbolt_common", "sun_color");
+	p_fog_color = pSettings->r_float("thunderbolt_common", "fog_color");
+#endif
 }
 
 CEnvironment::~CEnvironment	()
@@ -192,6 +204,7 @@ CEnvironment::~CEnvironment	()
 	xr_delete				(PerlinNoise1D);
 	OnDeviceDestroy			();
 
+#ifdef USE_COP_WEATHER_CONFIGS
 	VERIFY					(m_ambients_config);
 	CInifile::Destroy		(m_ambients_config);
 	m_ambients_config		= 0;
@@ -215,6 +228,7 @@ CEnvironment::~CEnvironment	()
 	VERIFY					(m_thunderbolts_config);
 	CInifile::Destroy		(m_thunderbolts_config);
 	m_thunderbolts_config	= 0;
+#endif
 
 	destroy_mixer			();
 }
@@ -225,6 +239,7 @@ void CEnvironment::Invalidate()
 	Current[0]				= 0;
 	Current[1]				= 0;
 	if (eff_LensFlare)		eff_LensFlare->Invalidate();
+	if (eff_Rain) eff_Rain->InvalidateState();
 }
 
 float CEnvironment::TimeDiff(float prev, float cur)
@@ -497,18 +512,23 @@ void CEnvironment::OnFrame()
 	lerp					(current_weight);
 
 	//	Igor. Dynamic sun position. 
+#ifdef USE_COP_WEATHER_CONFIGS
 	if ( !::Render->is_sun_static())
 		calculate_dynamic_sun_dir();
+#else
+	if (Core.Features.test(xrCore::Feature::dynamic_sun_movement))
+		calculate_dynamic_sun_dir();
+#endif
 
 #ifndef MASTER_GOLD
 	if(CurrentEnv->sun_dir.y>0)
 	{
-		Log("CurrentEnv->sun_dir", CurrentEnv->sun_dir);
+		//Log("CurrentEnv->sun_dir", CurrentEnv->sun_dir);
 //		Log("current_weight", current_weight);
 //		Log("mpower", mpower);
 
-		Log("Current[0]->sun_dir", Current[0]->sun_dir);
-		Log("Current[1]->sun_dir", Current[1]->sun_dir);
+		//Log("Current[0]->sun_dir", Current[0]->sun_dir);
+		//Log("Current[1]->sun_dir", Current[1]->sun_dir);
 
 	}
 	VERIFY2						(CurrentEnv->sun_dir.y<0,"Invalid sun direction settings in lerp");
@@ -606,6 +626,7 @@ void CEnvironment::destroy_mixer()
 	xr_delete				(CurrentEnv);
 }
 
+#ifdef USE_COP_WEATHER_CONFIGS
 SThunderboltDesc* CEnvironment::thunderbolt_description			(CInifile& config, shared_str const& section)
 {
 	SThunderboltDesc*		result = xr_new<SThunderboltDesc>();
@@ -619,6 +640,20 @@ SThunderboltCollection* CEnvironment::thunderbolt_collection	(CInifile* pIni, CI
 	result->load			(pIni, thunderbolts, section);
 	return					(result);
 }
+#else
+SThunderboltDesc* CEnvironment::thunderbolt_description(CInifile* config, shared_str const& section)
+{
+	SThunderboltDesc*		result = xr_new<SThunderboltDesc>();
+	result->load(config, section);
+	return					(result);
+}
+SThunderboltCollection* CEnvironment::thunderbolt_collection(CInifile* pIni, LPCSTR section)
+{
+	SThunderboltCollection*	result = xr_new<SThunderboltCollection>();
+	result->load(pIni, section);
+	return					(result);
+}
+#endif
 
 SThunderboltCollection* CEnvironment::thunderbolt_collection	(xr_vector<SThunderboltCollection*>& collection,  shared_str const& id)
 {
@@ -647,7 +682,23 @@ CLensFlareDescriptor* CEnvironment::add_flare					(xr_vector<CLensFlareDescripto
 	}
 
 	CLensFlareDescriptor*	result = xr_new<CLensFlareDescriptor>();
+#ifdef USE_COP_WEATHER_CONFIGS
 	result->load			(m_suns_config, id.c_str());
+#else
+	result->load(pSettings, id.c_str());
+#endif
 	collection.push_back	(result);	
 	return					(result);
+}
+
+void CEnvironment::ForceReselectEnvs() {
+	CEnvDescriptor** current_env_desc0 = &(*CurrentWeather)[0];
+	CEnvDescriptor** current_env_desc1 = &(*CurrentWeather)[1];
+	if ((*current_env_desc0)->exec_time > (*current_env_desc1)->exec_time) {
+		CEnvDescriptor *tmp_desc = *current_env_desc0;
+		*current_env_desc0 = *current_env_desc1;
+		*current_env_desc1 = tmp_desc;
+	}
+	SelectEnvs(CurrentWeather, Current[0], Current[1], fGameTime);
+	//eff_Rain->InvalidateState(); //Тоже самое делается в CEnvironment::Invalidate, здесь не нужно.
 }

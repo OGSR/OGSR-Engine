@@ -96,9 +96,11 @@ LPCSTR get_weather	()
 
 void set_weather	(LPCSTR weather_name, bool forced)
 {
-	//KRodin: погоду теперь всегда надо обновлять форсировано, иначе она почему-то не обновляется.
-#pragma todo("KRodin: В связи с переносом ЗП-погоды вернул как было изначально.")
-	return			(g_pGamePersistent->Environment().SetWeather(weather_name, forced));
+	//KRodin: ТЧ погоду всегда надо обновлять форсировано, иначе она почему-то не всегда корректно обновляется. А для ЗП погоды так делать нельзя - будут очень резкие переходы!
+#ifndef USE_COP_WEATHER_CONFIGS
+	forced = true;
+#endif
+	g_pGamePersistent->Environment().SetWeather(weather_name, forced);
 }
 
 bool set_weather_fx	(LPCSTR weather_name)
@@ -959,20 +961,21 @@ void CLevel::script_register(lua_State *L)
 {
 	module(L)
 	[
-#pragma todo("KRodin: поправить под новые реалии!")
-/*
 	class_<CEnvDescriptor>( "CEnvDescriptor" )
           .def_readwrite( "fog_density", &CEnvDescriptor::fog_density)
           .def_readwrite( "fog_distance", &CEnvDescriptor::fog_distance )
           .def_readwrite( "far_plane",   &CEnvDescriptor::far_plane)
           .def_readwrite( "sun_dir",     &CEnvDescriptor::sun_dir )
-          .def( "load",	           ( void( CEnvDescriptor::* ) ( float, LPCSTR, CEnvironment* ) ) &CEnvDescriptor::load )
+#ifndef USE_COP_WEATHER_CONFIGS
+          .def("load", (void(CEnvDescriptor::*) (float, LPCSTR, CEnvironment&)) &CEnvDescriptor::load)
+#endif
           .def( "set_env_ambient", &CEnvDescriptor::setEnvAmbient ),
-*/
 	class_<CEnvironment>( "CEnvironment" )
           .def( "current",           current_environment )
-          //.def( "ForceReselectEnvs", &CEnvironment::ForceReselectEnvs )
-          //.def( "getCurrentWeather", &CEnvironment::getCurrentWeather ),
+#ifndef USE_COP_WEATHER_CONFIGS
+          .def( "ForceReselectEnvs", &CEnvironment::ForceReselectEnvs )
+          .def( "getCurrentWeather", &CEnvironment::getCurrentWeather )
+#endif
 	,
 
 	class_<CPHCall>( "CPHCall" )

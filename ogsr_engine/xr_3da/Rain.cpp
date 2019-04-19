@@ -154,17 +154,25 @@ void	CEffect_Rain::OnFrame	()
 
 	switch (state)
 	{
-	case stIdle:		
-		if (factor<EPS_L)		return;
-		state					= stWorking;
-		snd_Ambient.play		(0,sm_Looped);
-		snd_Ambient.set_position(Fvector().set(0,0,0));
-		snd_Ambient.set_range	(source_offset,source_offset*2.f);
-	break;
+	case stIdle:
+		if (factor < EPS_L) {
+			if (snd_Ambient._feedback())
+				snd_Ambient.stop();
+			return;
+		}
+		if (snd_Ambient._feedback()) {
+			snd_Ambient.stop();
+			return;
+		}
+		snd_Ambient.play(0, sm_Looped);
+		snd_Ambient.set_position(Fvector().set(0, 0, 0));
+		snd_Ambient.set_range(source_offset, source_offset*2.f);
+		state = stWorking;
+		break;
 	case stWorking:
-		if (factor<EPS_L){
-			state				= stIdle;
-			snd_Ambient.stop	();
+		if (factor < EPS_L) {
+			snd_Ambient.stop();
+			state = stIdle;
 			return;
 		}
 		break;
