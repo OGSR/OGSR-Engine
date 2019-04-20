@@ -301,6 +301,8 @@ public:
 	virtual void					ScreenshotAsyncBegin		();
 	virtual void					ScreenshotAsyncEnd			(CMemoryWriter& memory_writer);
 	virtual void	_BCL			OnFrame						();
+	virtual void BeforeWorldRender(); //--#SM+#-- +SecondVP+ Вызывается перед началом рендера мира и пост-эффектов
+	virtual void AfterWorldRender();  //--#SM+#-- +SecondVP+ Вызывается после рендера мира и перед UI
 
 	// Render mode
 	virtual void					rmNear						();
