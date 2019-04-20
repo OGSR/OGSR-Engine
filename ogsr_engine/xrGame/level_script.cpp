@@ -694,25 +694,8 @@ void set_ignore_game_state_update()
 	Game().m_need_to_update = false;
 }
 
-#pragma todo("KRodin: поправить под новые реалии! Если это вообще будет надо, конечно. Если переедем на ЗП-погоду, то этот метод установки погоды будет банально не нужен.")
+#pragma todo("KRodin: поправить под новые реалии!")
 /*
-void SetEnvDescData(LPCSTR section_1, LPCSTR section_2, float exec_time_1, float exec_time_2)
-{
-	// в общем, какой тут смысл. Скрипт берет на себя все, кроме установки текущей погоды.
-	// устанавливается погода двумя дескрипторами, соответственно, чтоб не тащить за собой кучу всего, 
-	// единомоментно загружен минимум погодных дескрипторов. Остальные подгружаются по необходимости.
-	CEnvironment &env = g_pGamePersistent->Environment(); 
-														  
-	env.SetWeather("ogse_script_weather", true);
-
-	CEnvDescriptor *env_desc0 = (*env.CurrentWeather)[0];
-	env_desc0->load(exec_time_1, section_1, &env);
-	CEnvDescriptor *env_desc1 = (*env.CurrentWeather)[1];
-	env_desc1->load(exec_time_2, section_2, &env);
-
-	env.ForceReselectEnvs();
-}
-
 void g_set_artefact_position(const u32 i, const float x, const float y, const float z)
 {
 	Fvector pos;
@@ -1148,7 +1131,6 @@ void CLevel::script_register(lua_State *L)
 			//def("set_artefact_slot", &g_set_artefact_position),
 			//def("set_anomaly_slot", &g_set_anomaly_position),
 			//def("set_detector_mode", &g_set_detector_params),
-			//def("SetEnvDescData", &SetEnvDescData),
 			def("update_inventory_window", &update_inventory_window),
 			def("update_inventory_weight", &update_inventory_weight),
 
