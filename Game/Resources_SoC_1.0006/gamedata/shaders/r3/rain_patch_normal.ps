@@ -41,7 +41,7 @@ float3	GetWaterNMap( Texture2D s_texture, float2 tc)
 
 //	water.xyz *= 3;
 
-	water.xyz *= 0.3;
+//	water.xyz *= 0.7;//0.3;
 
 	water.y = 0;
 
@@ -94,8 +94,9 @@ float4 main ( float2 tc : TEXCOORD0, float2 tcJ : TEXCOORD1 ) : SV_Target
 
 	// Read rain projection with some jetter. Also adding pixel normal 
 	// factor to jitter to make rain strips more realistic.
-	float s		= shadow_rain( PS, WorldP.xz*1.1 - WorldN.xz*0.035 );	
-	
+//	float s		= shadow_rain( PS, WorldP.xz*1.1 - WorldN.xz*0.035 );
+	float s		= shadow_rain(PS, WorldP.xz - WorldN.xz);
+
 	//	Apply distance falloff
 	//float	fAtten = 1 - smoothstep( 10, 30, length( _P.xyz ));
 	// Using fixed fallof factors according to float16 depth coordinate precision.
@@ -124,7 +125,7 @@ float4 main ( float2 tc : TEXCOORD0, float2 tcJ : TEXCOORD1 ) : SV_Target
 
 	//	Just slow down effect.
 //	fAngleFactor *= 0.25;
-	fAngleFactor *= 0.5;
+	fAngleFactor *= 0.3;//0.5;
 //	fAngleFactor *= 1.3;
 
 	float3 waterFallX = GetWaterNMap( s_waterFall, float2(tc1.z, tc1.y+timers.x*fAngleFactor) );
@@ -156,7 +157,8 @@ float4 main ( float2 tc : TEXCOORD0, float2 tcJ : TEXCOORD1 ) : SV_Target
 
 	_N = normalize(_N);
 
-	s *= dot(D.xyz, float3(0.33, 0.33, 0.33));
+//	s *= dot(D.xyz, float3(0.33, 0.33, 0.33));
+	s *= dot(D.xyz, float3(0.05, 0.05, 0.05));
 //	s *= 0.5*fIsUp+0.5;
 
 	return float4(_N,s);
