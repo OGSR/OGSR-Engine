@@ -75,15 +75,9 @@ void	Surface_Init()
 
 BOOL	Surface_Detect(string_path& F, LPSTR N)
 {
-#ifndef PRIQUEL
 	for (u32 i=0; i<formats.size(); i++)
-#endif // PRIQUEL
 	{
-#ifdef PRIQUEL
-		FS.update_path	(F,"$game_textures$",strconcat(sizeof(F),F,N,".dds"));
-#else // PRIQUEL
 		FS.update_path	(F,"$textures$",strconcat(sizeof(F),F,N,".",formats[i]));
-#endif // PRIQUEL
 		int h = _open(F,O_RDONLY|O_BINARY);
 		if (h>0)	{
 			_close(h);

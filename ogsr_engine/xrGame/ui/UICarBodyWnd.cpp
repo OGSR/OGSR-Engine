@@ -354,7 +354,10 @@ void CUICarBodyWnd::SendMessage(CUIWindow *pWnd, s16 msg, void *pData)
 					void* d = m_pUIPropertiesBox->GetClickedItem()->GetData();
 					bool b_all = (d == (void*)33);
 
-					MoveItems(CurrentItem(), b_all);
+					if (b_all)
+						MoveItems(CurrentItem());
+					else
+						MoveItem(CurrentItem());
 				}break;
 				case INVENTORY_DROP_ACTION:
 				{
@@ -405,10 +408,12 @@ void CUICarBodyWnd::Update()
 			m_pUIOthersBagList->SetScrollPos(other_scroll);
 		}
 	}
-	
-	if(m_pOthersObject && (smart_cast<CGameObject*>(m_pOurObject))->Position().distance_to((smart_cast<CGameObject*>(m_pOthersObject))->Position()) > 3.0f)
+
+	CGameObject* pOurGO = smart_cast<CGameObject*>(m_pOurObject);
+	CGameObject* pOtherGO = smart_cast<CGameObject*>(m_pOthersObject);
+	if (pOtherGO && pOurGO->Position().distance_to(pOtherGO->Position()) - pOtherGO->Radius() - pOurGO->Radius() > m_pOurObject->inventory().GetTakeDist() + 0.5f)
 	{
-		GetHolder()->StartStopMenu(this,true);
+		GetHolder()->StartStopMenu(this, true);
 	}
 	inherited::Update();
 }
@@ -499,7 +504,7 @@ void CUICarBodyWnd::TakeAll()
 	}
 }
 
-void CUICarBodyWnd::MoveItems(CUICellItem* itm, bool b_all)
+void CUICarBodyWnd::MoveItems(CUICellItem* itm)
 {
 	u16 tmp_id = 0;
 	if (m_pInventoryBox) {
@@ -510,18 +515,15 @@ void CUICarBodyWnd::MoveItems(CUICellItem* itm, bool b_all)
 
 	if (owner_list != m_pUIOthersBagList)
 	{ // from actor to box
-		if (b_all)
+		for (u32 j = 0; j < itm->ChildsCount(); ++j)
 		{
-			for (u32 j = 0; j < itm->ChildsCount(); ++j)
+			PIItem _itm = (PIItem)(itm->Child(j)->m_pData);
+			if (m_pOthersObject)
+				TransferItem(_itm, m_pOurObject, m_pOthersObject, true);
+			else
 			{
-				PIItem _itm = (PIItem)(itm->Child(j)->m_pData);
-				if (m_pOthersObject)
-					TransferItem(_itm, m_pOurObject, m_pOthersObject, true);
-				else
-				{
-					move_item(tmp_id, m_pInventoryBox->object().ID(), _itm->object().ID());
-					//. Actor()->callback(GameObject::eInvBoxItemTake)( m_pInventoryBox->lua_game_object(), _itm->object().lua_game_object() );
-				}
+				move_item(tmp_id, m_pInventoryBox->object().ID(), _itm->object().ID());
+				//. Actor()->callback(GameObject::eInvBoxItemTake)( m_pInventoryBox->lua_game_object(), _itm->object().lua_game_object() );
 			}
 		}
 
@@ -536,18 +538,15 @@ void CUICarBodyWnd::MoveItems(CUICellItem* itm, bool b_all)
 	}
 	else
 	{ // from box to actor
-		if (b_all)
+		for (u32 j = 0; j < itm->ChildsCount(); ++j)
 		{
-			for (u32 j = 0; j < itm->ChildsCount(); ++j)
+			PIItem _itm = (PIItem)(itm->Child(j)->m_pData);
+			if (m_pOthersObject)
+				TransferItem(_itm, m_pOthersObject, m_pOurObject, false);
+			else
 			{
-				PIItem _itm = (PIItem)(itm->Child(j)->m_pData);
-				if (m_pOthersObject)
-					TransferItem(_itm, m_pOthersObject, m_pOurObject, false);
-				else
-				{
-					move_item(m_pInventoryBox->object().ID(), tmp_id, _itm->object().ID());
-					//. Actor()->callback(GameObject::eInvBoxItemTake)( m_pInventoryBox->lua_game_object(), _itm->object().lua_game_object() );
-				}
+				move_item(m_pInventoryBox->object().ID(), tmp_id, _itm->object().ID());
+				//. Actor()->callback(GameObject::eInvBoxItemTake)( m_pInventoryBox->lua_game_object(), _itm->object().lua_game_object() );
 			}
 		}
 
@@ -560,6 +559,9 @@ void CUICarBodyWnd::MoveItems(CUICellItem* itm, bool b_all)
 			//. Actor()->callback(GameObject::eInvBoxItemTake)(m_pInventoryBox->lua_game_object(), itm->object().lua_game_object() );
 		}
 	}
+
+	owner_list->RemoveItem(itm, true);
+
 	SetCurrentItem(NULL);
 }
 
@@ -614,7 +616,7 @@ void CUICarBodyWnd::DropItemsfromCell(bool b_all)
 	PIItem	iitm = (PIItem)ci->m_pData;
 	SendEvent_Item_Drop(from_id, iitm);
 
-	old_owner->RemoveItem(ci, false);
+	old_owner->RemoveItem(ci, b_all);
 
 	SetCurrentItem(NULL);
 
@@ -815,7 +817,7 @@ bool CUICarBodyWnd::OnItemDrop(CUICellItem* itm)
 		return false;
 
 	if (Level().IR_GetKeyState(DIK_LSHIFT)) {
-		MoveItems(itm, true);
+		MoveItems(itm);
 	}
 	else {
 		MoveItem(itm);
@@ -827,7 +829,7 @@ bool CUICarBodyWnd::OnItemDrop(CUICellItem* itm)
 bool CUICarBodyWnd::OnItemDbClick(CUICellItem* itm)
 {
 	if (Level().IR_GetKeyState(DIK_LSHIFT)) {
-		MoveItems(itm, true);
+		MoveItems(itm);
 	}
 	else {
 		MoveItem(itm);

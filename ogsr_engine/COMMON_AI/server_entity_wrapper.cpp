@@ -12,10 +12,6 @@
 #include "xrmessages.h"
 #include "../../xr_3da/NET_Server_Trash/net_utils.h"
 
-#ifdef AI_COMPILER
-#	include "factory_api.h"
-#endif
-
 struct ISE_Abstract;
 
 CServerEntityWrapper::~CServerEntityWrapper	()

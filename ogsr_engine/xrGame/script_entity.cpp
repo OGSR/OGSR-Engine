@@ -151,6 +151,14 @@ bool CScriptEntity::CheckObjectVisibility(const CGameObject *tpObject)
 	return				(m_monster->memory().visual().visible_now(tpObject));
 }
 
+bool CScriptEntity::CheckObjectVisibilityNow(const CGameObject *tpObject)
+{
+	if (!m_monster)
+		return			(false);
+
+	return				(m_monster->memory().visual().visible_right_now(tpObject));
+}
+
 //определяет видимость определенного типа объектов, 
 //заданного через section_name
 bool CScriptEntity::CheckTypeVisibility(const char* section_name)

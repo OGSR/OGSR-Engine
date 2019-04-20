@@ -158,6 +158,7 @@ protected:
 	int				m_iCurFireMode;
 	string16		m_sCurFireMode;
 	int				m_iPrefferedFireMode;
+	u32 m_fire_zoomout_time = u32(-1);
 
 	//переменная блокирует использование
 	//только разных типов патронов

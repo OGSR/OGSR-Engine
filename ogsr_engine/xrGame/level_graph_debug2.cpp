@@ -8,9 +8,6 @@
 
 #include "stdafx.h"
 
-
-#ifndef AI_COMPILER
-
 #include "level_graph.h"
 #include "../xr_3da/customhud.h"
 #include "ai_space.h"
@@ -301,7 +298,7 @@ void CLevelGraph::draw_objects	()
 }
 
 #ifdef DEBUG
-#ifndef AI_COMPILER
+
 void CLevelGraph::draw_debug_node()
 {
 	if (g_bDebugNode) {
@@ -327,7 +324,5 @@ void CLevelGraph::draw_debug_node()
 	}
 }
 #endif
-#endif
 
-#endif // AI_COMPILER
 #endif // DEBUG

@@ -20,20 +20,21 @@ struct CFontManager :public pureDeviceReset			{
 	CGameFont*				pFontDI;
 
 	CGameFont*				pFontArial14;
-  CGameFont*        pFontArial21;
+	CGameFont*				pFontArial21;
 	CGameFont*				pFontGraffiti19Russian;
 	CGameFont*				pFontGraffiti22Russian;
 	CGameFont*				pFontLetterica16Russian;
 	CGameFont*				pFontLetterica18Russian;
 	CGameFont*				pFontGraffiti32Russian;
-  CGameFont*				pFontGraffiti40Russian;
+	CGameFont*				pFontGraffiti40Russian;
 	CGameFont*				pFontGraffiti50Russian;
 	CGameFont*				pFontLetterica25;
 	CGameFont*				pFontStat;
 
 	void					InitializeFonts			();
 	void					InitializeFont			(CGameFont*& F, LPCSTR section, u32 flags = 0);
-	LPCSTR					GetFontTexName			(LPCSTR section);				
+	LPCSTR					GetFontTexName			(LPCSTR section);
+	CGameFont*				InitializeCustomFont	(LPCSTR section, u32 flags = 0);
 
 	virtual void			OnDeviceReset			();
 };
@@ -55,7 +56,7 @@ public:
 	virtual		void		Load				();
 	
 	virtual		void		Render_First		();
-	virtual		void		Render_Last			();	   
+	virtual		void		Render_Last			();	
 	virtual		void		Render_Actor_Shadow	();	// added by KD
 	virtual		void		OnFrame				();
 

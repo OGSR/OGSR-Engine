@@ -497,6 +497,8 @@ extern bool g_bDisableAllInput;
 void disable_input()
 {
 	g_bDisableAllInput = true;
+        if ( Actor() )
+		Actor()->PickupModeOff();
 }
 void enable_input()
 {

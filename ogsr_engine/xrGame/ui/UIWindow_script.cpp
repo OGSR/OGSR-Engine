@@ -23,15 +23,8 @@ CGameFont* GetFontMedium()
 {return mngr().pFontMedium;}
 CGameFont* GetFontDI()
 {return mngr().pFontDI;}
-/*
-	//заголовочный шрифт
-CGameFont* GetFontHeaderRussian()
-{return mngr().pFontHeaderRussian;}
 
-CGameFont* GetFontHeaderEurope()
-{return mngr().pFontHeaderEurope;}
-*/
-//шрифты для интерфейса
+// шрифты для интерфейса
 CGameFont* GetFontGraffiti19Russian()
 {return mngr().pFontGraffiti19Russian;}
 CGameFont* GetFontGraffiti22Russian()
@@ -42,11 +35,18 @@ CGameFont* GetFontLetterica18Russian()
 {return mngr().pFontLetterica18Russian;}
 CGameFont* GetFontGraffiti32Russian()
 {return mngr().pFontGraffiti32Russian;}
+CGameFont* GetFontGraffiti40Russian()
+{return mngr().pFontGraffiti40Russian;}
 CGameFont* GetFontGraffiti50Russian()
 {return mngr().pFontGraffiti50Russian;}
 CGameFont* GetFontLetterica25()
 {return mngr().pFontLetterica25;}
-
+CGameFont* GetFontArial14()
+{return mngr().pFontArial14;}
+CGameFont* GetFontArial21()
+{return mngr().pFontArial21;}
+CGameFont* GetFontCustom(LPCSTR section)
+{return mngr().InitializeCustomFont(section);}
 
 int GetARGB(u16 a, u16 r, u16 g, u16 b)
 {return color_argb(a,r,g,b);}
@@ -88,18 +88,21 @@ void CUIWindow::script_register(lua_State *L)
 	module(L)
 	[
 		def("GetARGB",					&GetARGB),
+
 		def("GetFontSmall",				&GetFontSmall),
 		def("GetFontMedium",			&GetFontMedium),
 		def("GetFontDI",				&GetFontDI),
-//.		def("GetFontHeaderRussian",		&GetFontHeaderRussian),
-//.		def("GetFontHeaderEurope",		&GetFontHeaderEurope),
 		def("GetFontGraffiti19Russian",	&GetFontGraffiti19Russian),
 		def("GetFontGraffiti22Russian",	&GetFontGraffiti22Russian),
 		def("GetFontLetterica16Russian",&GetFontLetterica16Russian),
 		def("GetFontLetterica18Russian",&GetFontLetterica18Russian),
 		def("GetFontGraffiti32Russian",	&GetFontGraffiti32Russian),
+		def("GetFontGraffiti40Russian",	&GetFontGraffiti40Russian),
 		def("GetFontGraffiti50Russian",	&GetFontGraffiti50Russian),
+		def("GetFontArial14",			&GetFontArial14),
+		def("GetFontArial21",			&GetFontArial21),
 		def("GetFontLetterica25",		&GetFontLetterica25),
+		def("GetFontCustom",			&GetFontCustom),
 
 		class_<TEX_INFO>("TEX_INFO")
 		.def("get_file_name",	 			&TEX_INFO::get_file_name)

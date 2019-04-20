@@ -101,7 +101,13 @@ void CFontManager::InitializeFont(CGameFont*& F, LPCSTR section, u32 flags)
 	}
 	if (pSettings->line_exist(section,"interval"))
 	F->SetInterval(pSettings->r_fvector2(section,"interval"));
+}
 
+CGameFont* CFontManager::InitializeCustomFont(LPCSTR section, u32 flags)
+{
+	CGameFont* pFontAdd = NULL;
+	InitializeFont(pFontAdd, section, flags);
+	return pFontAdd;
 }
 
 CFontManager::~CFontManager()

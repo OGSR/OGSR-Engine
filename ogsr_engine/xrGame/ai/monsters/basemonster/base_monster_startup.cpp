@@ -299,27 +299,17 @@ BOOL CBaseMonster::net_Spawn (CSE_Abstract* DC)
 		return(FALSE);
 
 	CSE_Abstract							*e	= (CSE_Abstract*)(DC);
-#ifndef PRIQUEL
+
 	m_pPhysics_support->in_NetSpawn			(e);//этот выззов с послудующими не связан, 
 												//но там есть хак - запуск анимации на всякий случай если никто больше ее не запустил 
 												//поэтому в основной версии на всякий случай пусть будет здесь, 
 												//но для animation movement controllr он должен быть в конце чтобы знать что он создался на споне
-#endif
 
 	R_ASSERT2								(ai().get_level_graph() && ai().get_cross_table() && (ai().level_graph().level_id() != u32(-1)),"There is no AI-Map, level graph, cross table, or graph is not compiled into the game graph!");
 
 	monster_squad().register_member			((u8)g_Team(),(u8)g_Squad(),(u8)g_Group(), this);
 
 	settings_overrides						();
-
-#ifdef PRIQUEL
-	if (GetScriptControl()) {
-		m_control_manager->animation().reset_data	();
-		ProcessScripts						();
-	}
-	m_pPhysics_support->in_NetSpawn			(e);
-#endif
-
 
 	// spawn inventory item
 //	if (ai().get_alife()) {
