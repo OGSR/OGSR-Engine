@@ -726,7 +726,7 @@ void CKinematicsAnimated::Load(const char* N, IReader *data, u32 dwFlags)
     R_ASSERT				(m_Motions.size());
 
     m_Partition				= m_Motions[0].motions.partition();
-	//m_Partition->load		(this,N);
+	m_Partition->load		(this,N);
     
 	// initialize motions
 	for (MotionsSlotVecIt m_it=m_Motions.begin(); m_it!=m_Motions.end(); m_it++){

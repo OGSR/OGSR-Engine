@@ -23,24 +23,17 @@ u16 CPartition::part_id(const shared_str& name) const
 
 void CPartition::load(CKinematics* V, LPCSTR model_name)
 {
-	string_path fn, fn_full;
-	xr_strcpy(fn, sizeof(fn), model_name);
-	if(strext(fn))
-		*strext(fn) = 0;
-	xr_strcat(fn, sizeof(fn), ".ltx");
-	
-	FS.update_path(fn_full,"$game_meshes$", fn);
+	CInifile* ini = V->LL_UserData();
+	if ( !ini ) return;
 
-	CInifile ini(fn_full, TRUE, TRUE, FALSE);
-
-	if(ini.sections().size()==0)	return;
+	if ( ini->sections().size() == 0 || !ini->section_exist( "part_0" ) ) return;
 	shared_str part_name = "partition_name";
 	for(u32 i=0; i<MAX_PARTS; ++i)
 	{
 		string64			buff;
 		xr_sprintf			(buff,sizeof(buff), "part_%d", i);
 		
-		CInifile::Sect S = ini.r_section(buff);
+		CInifile::Sect S = ini->r_section(buff);
 		if(S.Data.size())
 		{
 			P[i].bones.clear_not_free();
