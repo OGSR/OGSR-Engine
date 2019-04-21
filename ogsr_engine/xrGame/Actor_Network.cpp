@@ -359,7 +359,7 @@ void		CActor::net_Import_Base				( NET_Packet& P)
 	if (OnClient())
 	//------------------------------------------------
 	{
-		if (ActiveSlot == 0xff) inventory().SetActiveSlot(NO_ACTIVE_SLOT);
+		if (ActiveSlot == u8(-1)) inventory().SetActiveSlot(NO_ACTIVE_SLOT);
 		else 
 		{
 			if (inventory().GetActiveSlot() != u32(ActiveSlot))

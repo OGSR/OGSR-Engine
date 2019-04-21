@@ -167,12 +167,15 @@ void	CInventoryOwner::save	(NET_Packet &output_packet)
 void	CInventoryOwner::load	(IReader &input_packet)
 {
 	u8 active_slot = input_packet.r_u8();
-	if(active_slot == u8(-1))
+	if ( active_slot == u8(-1) ) {
 		inventory().SetActiveSlot(NO_ACTIVE_SLOT);
-	else
+		m_tmp_active_slot_num = NO_ACTIVE_SLOT;
+	}
+	else {
+		inventory().SetActiveSlot( active_slot );
 		inventory().Activate_deffered(active_slot, Device.dwFrame);
-
-	m_tmp_active_slot_num		 = active_slot;
+		m_tmp_active_slot_num = active_slot;
+	}
 
 	CharacterInfo().load(input_packet);
 	load_data		(m_game_name, input_packet);
@@ -288,7 +291,7 @@ void CInventoryOwner::OnItemTake			(CInventoryItem *inventory_item)
 
 	attach		(inventory_item);
 
-	if(m_tmp_active_slot_num!=NO_ACTIVE_SLOT && inventory_item->GetSlot()==m_tmp_active_slot_num)
+	if ( m_tmp_active_slot_num != NO_ACTIVE_SLOT && inventory_item->GetSlot() == m_tmp_active_slot_num )
 	{
 		inventory().Activate(m_tmp_active_slot_num);
 		m_tmp_active_slot_num	= NO_ACTIVE_SLOT;
