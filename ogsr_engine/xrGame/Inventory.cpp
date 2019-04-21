@@ -164,6 +164,8 @@ void CInventory::Take(CGameObject *pObj, bool bNotActivate, bool strict_placemen
 
 		break;
 	case eItemPlaceSlot:
+		if ( smart_cast<CActor*>( m_pOwner ) && Device.dwPrecacheFrame && m_iActiveSlot == NO_ACTIVE_SLOT && m_iNextActiveSlot == NO_ACTIVE_SLOT )
+			bNotActivate = true;
 		result							= Slot(pIItem, bNotActivate); 
 #ifdef DEBUG
 		if(!result) 
@@ -173,11 +175,14 @@ void CInventory::Take(CGameObject *pObj, bool bNotActivate, bool strict_placemen
 		break;
 	default:
 		bool def_to_slot = true;
+		auto pActor      = smart_cast<CActor*>( m_pOwner );
 		if (Core.Features.test(xrCore::Feature::ruck_flag_preferred))
-			def_to_slot = smart_cast<CActor*>(m_pOwner) ? !pIItem->RuckDefault() : true;
+			def_to_slot = pActor ? !pIItem->RuckDefault() : true;
 
 		if(def_to_slot && CanPutInSlot(pIItem))
 		{
+			if ( pActor && Device.dwPrecacheFrame )
+				bNotActivate = true;
 			result						= Slot(pIItem, bNotActivate); VERIFY(result);
 		} 
 		else if (!pIItem->RuckDefault() && CanPutInBelt(pIItem))
@@ -311,7 +316,7 @@ bool CInventory::Slot(PIItem pIItem, bool bNotActivate)
 	it = std::find(m_belt.begin(), m_belt.end(), pIItem);
 	if(m_belt.end() != it) m_belt.erase(it);
 
-	if (( (m_iActiveSlot==pIItem->GetSlot())||(m_iActiveSlot==NO_ACTIVE_SLOT) && m_iNextActiveSlot==NO_ACTIVE_SLOT) && (!bNotActivate))
+	if ( ( m_iActiveSlot == pIItem->GetSlot() || ( m_iActiveSlot == NO_ACTIVE_SLOT && m_iNextActiveSlot == NO_ACTIVE_SLOT ) ) && !bNotActivate )
 		Activate(pIItem->GetSlot());
 
 	auto PrevPlace = pIItem->m_eItemPlace;
