@@ -17,8 +17,7 @@
 #include "resource.h"
 #include "LightAnimLibrary.h"
 #include "ispatial.h"
-
-#pragma todo("Включить лоадскрин, переделав его под ТЧ стайл")
+#include "ILoadingScreen.h"
 
 #define CORE_FEATURE_SET( feature, section )\
   Core.Features.set( xrCore::Feature::feature, READ_IF_EXISTS( pSettings, r_bool, section, #feature, false ) )
@@ -507,6 +506,7 @@ void _InitializeFont(CGameFont*& F, LPCSTR section, u32 flags)
 }
 
 CApplication::CApplication()
+	: loadingScreen(nullptr)
 {
 	ll_dwReference	= 0;
 
@@ -529,9 +529,6 @@ CApplication::CApplication()
 	Device.seqFrameMT.Add(&SoundProcessor);
 
 	Console->Show				( );
-
-	// App Title
-	app_title[ 0 ] = '\0';
 }
 
 CApplication::~CApplication()
@@ -575,7 +572,9 @@ void CApplication::OnEvent(EVENT E, u64 P1, u64 P2)
 		{		
 			Console->Execute("main_menu off");
 			Console->Hide();
-			Device.Reset					(false);
+//!			this line is commented by Dima
+//!			because I don't see any reason to reset device here
+//!			Device.Reset(false);
 			//-----------------------------------------------------------
 			g_pGamePersistent->PreStart		(op_server);
 			//-----------------------------------------------------------
@@ -620,8 +619,6 @@ void CApplication::LoadBegin()
 
 		_InitializeFont(pFontSystem, "ui_font_letterica18_russian", 0);
 
-		//m_pRender->LoadBegin();
-
 		phase_timer.Start();
 		load_stage = 0;
 	}
@@ -638,11 +635,16 @@ void CApplication::LoadEnd		()
 	}
 }
 
-void CApplication::destroy_loading_shaders()
+void CApplication::SetLoadingScreen(ILoadingScreen* newScreen)
 {
-	//m_pRender->destroy_loading_shaders();
-	
-	//.	::Sound->mute			(false);
+	R_ASSERT(!loadingScreen, "! Trying to create new loading screen, but there is already one..");
+
+	loadingScreen = newScreen;
+}
+
+void CApplication::DestroyLoadingScreen()
+{
+	xr_delete(loadingScreen);
 }
 
 void CApplication::LoadDraw		()
@@ -658,32 +660,38 @@ void CApplication::LoadDraw		()
 	Device.End					();
 }
 
+void CApplication::LoadForceFinish()
+{
+	loadingScreen->ForceFinish();
+}
+
+void CApplication::SetLoadStageTitle(pcstr _ls_title)
+{
+	loadingScreen->SetStageTitle(_ls_title);
+}
+
 void CApplication::LoadTitleInt(LPCSTR str1, LPCSTR str2, LPCSTR str3)
 {
-#pragma todo("KRodin: переделать этот весь сраный механизм загрузки, пока можно и черным экраном обойтись, в общем-то.")
-	/*
-	xr_strcpy(ls_header, str1);
-	xr_strcpy(ls_tip_number, str2);
-	xr_strcpy(ls_tip, str3);
-	*/
-
-	//	LoadDraw					();
+	loadingScreen->SetStageTip(str1, str2, str3);
 }
+
 void CApplication::LoadStage()
 {
-	load_stage++;
 	VERIFY(ll_dwReference);
-	Msg("* phase time: %d ms", phase_timer.GetElapsed_ms());	phase_timer.Start();
+
+	Msg("* phase time: %d ms", phase_timer.GetElapsed_ms());
+	phase_timer.Start();
 	Msg("* phase cmem: %d K", Memory.mem_usage() / 1024);
 
-	if (g_pGamePersistent->GameType() == 1 && strstr(Core.Params, "alife"))
-		max_load_stage = 17;
-	else
-		max_load_stage = 14;
+	//if (g_pGamePersistent->GameType() == 1 && strstr(Core.Params, "alife"))
+		max_load_stage = 15; // 17; //KRodin: пересчитал кол-во стадий, у нас их 15 при создании НИ
+	//else
+	//	max_load_stage = 14;
+
 	LoadDraw();
-}
-void CApplication::LoadSwitch()
-{
+
+	++load_stage;
+	//Msg("--LoadStage is [%d]", load_stage);
 }
 
 
@@ -738,54 +746,20 @@ void CApplication::Level_Scan()
 #endif
 }
 
-
-void gen_logo_name(string_path& dest, LPCSTR level_name, int num)
-{
-	strconcat(sizeof(dest), dest, "intro\\intro_", level_name);
-
-	u32 len = xr_strlen(dest);
-	if (dest[len - 1] == '\\')
-		dest[len - 1] = 0;
-
-	string16 buff;
-	xr_strcat(dest, sizeof(dest), "_");
-	xr_strcat(dest, sizeof(dest), itoa(num + 1, buff, 10));
-}
-
-
 void CApplication::Level_Set(u32 L)
 {
 	if (L >= Levels.size())	return;
+
+	Level_Current = L;
 	FS.get_path("$level$")->_set(Levels[L].folder);
 
-	static string_path			path;
-
-	if (Level_Current != L)
-	{
-		path[0] = 0;
-
-		Level_Current = L;
-
-		int count = 0;
-		while (true)
-		{
-			string_path			temp2;
-			gen_logo_name(path, Levels[L].folder, count);
-			if (FS.exist(temp2, "$game_textures$", path, ".dds") || FS.exist(temp2, "$level$", path, ".dds"))
-				count++;
-			else
-				break;
-		}
-
-		if (count)
-		{
-			int num = ::Random.randI(count);
-			gen_logo_name(path, Levels[L].folder, num);
-		}
-	}
-
-	//if (path[0])
-		//m_pRender->setLevelLogo(path);
+	string_path temp, temp2;
+	strconcat(sizeof(temp), temp, "intro\\intro_", Levels[L].folder);
+	temp[xr_strlen(temp) - 1] = 0;
+	if (FS.exist(temp2, "$game_textures$", temp, ".dds"))
+		loadingScreen->SetLevelLogo(temp);
+	else
+		loadingScreen->SetLevelLogo("intro\\intro_no_start_picture");
 }
 
 int CApplication::Level_ID(LPCSTR name)
@@ -801,5 +775,8 @@ int CApplication::Level_ID(LPCSTR name)
 
 void CApplication::load_draw_internal()
 {
-	//m_pRender->load_draw_internal(*this);
+	if (loadingScreen)
+		loadingScreen->Update(load_stage, max_load_stage);
+	else
+		Device.m_pRender->ClearTarget();
 }

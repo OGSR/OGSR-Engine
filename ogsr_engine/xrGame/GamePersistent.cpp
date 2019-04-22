@@ -15,9 +15,11 @@
 #include "weaponhud.h"
 #include "stalker_animation_data_storage.h"
 #include "stalker_velocity_holder.h"
-
 #include "../xr_3da/cameramanager.h"
 #include "actor.h"
+#include "ui/UILoadingScreen.h"
+#include "../xr_3da/x_ray.h"
+#include "string_table.h"
 
 #ifndef MASTER_GOLD
 #	include "custommonster.h"
@@ -145,6 +147,12 @@ void CGamePersistent::OnAppEnd	()
 
 	GMLib.Unload				();
 
+}
+
+void CGamePersistent::PreStart(LPCSTR op)
+{
+	pApp->SetLoadingScreen(new UILoadingScreen());
+	IGame_Persistent::PreStart(op);
 }
 
 void CGamePersistent::Start		(LPCSTR op)
@@ -457,10 +465,8 @@ void CGamePersistent::update_logo_intro			()
 	}
 }
 
-void CGamePersistent::start_game_intro		()
+void CGamePersistent::start_game_intro()
 {
-
-
 	if (g_pGameLevel && g_pGameLevel->bReady && Device.dwPrecacheFrame<=2){
 		m_intro_event.bind		(this,&CGamePersistent::update_game_intro);
 		if (0==stricmp(m_game_params.m_new_or_load,"new")){
@@ -473,17 +479,55 @@ void CGamePersistent::start_game_intro		()
 }
 void CGamePersistent::update_game_intro			()
 {
-	if(m_intro && (false==m_intro->IsActive())){
-		xr_delete				(m_intro);
-		m_intro_event			= 0;
+	if (!m_intro)
+		m_intro_event = 0;
+	else if (!m_intro->IsActive())
+	{
+		xr_delete(m_intro);
+		m_intro_event = 0;
 	}
 }
+
+//int g_keypress_on_start = 1;
+void CGamePersistent::game_loaded()
+{
+	//Хрень для туториала на нажатие клавиши для перехода к игре.
+	/*
+	if (Device.dwPrecacheFrame <= 2)
+	{
+		if (g_pGameLevel							&&
+			g_pGameLevel->bReady &&
+			(g_keypress_on_start) &&
+			load_screen_renderer.b_need_user_input	&&
+			g_pGamePersistent->GameType() == GAME_SINGLE) //m_game_params.m_e_game_type == eGameIDSingle)
+		{
+			R_ASSERT(NULL == m_intro);
+			m_intro = xr_new<CUISequencer>();
+			m_intro->Start("game_loaded"); //Вот из этого туториала выводится предложение нажать любую клавишу.
+			Msg("intro_start game_loaded");
+			m_intro->m_on_destroy_event.bind(this, &CGamePersistent::update_game_loaded);
+		}
+		m_intro_event = 0;
+	}
+*/
+}
+
+
+
 #include "holder_custom.h"
 extern CUISequencer * g_tutorial;
 extern CUISequencer * g_tutorial2;
 
 void CGamePersistent::OnFrame	()
 {
+	//Хрень для туториала на нажатие клавиши для перехода к игре.
+	/*
+	if (Device.dwPrecacheFrame == 5 && m_intro_event.empty())
+	{
+		m_intro_event.bind(this, &CGamePersistent::game_loaded);
+	}
+	*/
+
 	if(g_tutorial2){ 
 		g_tutorial2->Destroy	();
 		xr_delete				(g_tutorial2);
@@ -497,6 +541,12 @@ void CGamePersistent::OnFrame	()
 	++m_frame_counter;
 #endif
 	if (!m_intro_event.empty())	m_intro_event();
+
+	//KRodin: второе и третье условия закомментированы, чтобы лоадскрин убирался перед проигрыванием туториала (интро) в начале игры.
+	// В ЗП это нужно для того, что там через туториал реализована автопауза после загрузки. Она там в виде туториала сделана.
+	// Поэтому при переносе ЗП-стайл автопаузы надо раскомментировать условие обратно!
+	if (Device.dwPrecacheFrame == 0 /*&& !m_intro && m_intro_event.empty()*/)
+		load_screen_renderer.stop();
 
 	if( !m_pMainMenu->IsActive() )
 		m_pMainMenu->DestroyInternal(false);
@@ -653,44 +703,11 @@ void CGamePersistent::OnRenderPPUI_PP()
 {
 	MainMenu()->OnRenderPPUI_PP();
 }
-#include "string_table.h"
-#include "../xr_3da/x_ray.h"
-void CGamePersistent::LoadTitle(bool change_tip, shared_str map_name)
+
+void CGamePersistent::LoadTitle(const char* str)
 {
-	/*string512			buff;
-	sprintf_s				(buff, "%s", CStringTable().translate(str).c_str());
-	pApp->LoadTitleInt	(buff);*/
-#pragma todo("KRodin: придумать тут что нибудь.")
-
+	pApp->SetLoadStageTitle(CStringTable().translate(str).c_str());
 	pApp->LoadStage();
-	/*if (change_tip)
-	{
-		string512				buff;
-		u8						tip_num;
-		luabindex::functor<u8>	m_functor;
-		bool is_single = !xr_strcmp(m_game_params.m_game_type, "single");
-		if (is_single)
-		{
-			R_ASSERT(ai().script_engine().functor("loadscreen.get_tip_number", m_functor));
-			tip_num = m_functor(map_name.c_str());
-		}
-		else
-		{
-			R_ASSERT(ai().script_engine().functor("loadscreen.get_mp_tip_number", m_functor));
-			tip_num = m_functor(map_name.c_str());
-		}
-		//		tip_num = 83;
-		xr_sprintf(buff, "%s%d:", CStringTable().translate("ls_tip_number").c_str(), tip_num);
-		shared_str				tmp = buff;
-
-		if (is_single)
-			xr_sprintf(buff, "ls_tip_%d", tip_num);
-		else
-			xr_sprintf(buff, "ls_mp_tip_%d", tip_num);
-
-		pApp->LoadTitleInt(CStringTable().translate("ls_header").c_str(), tmp.c_str(), CStringTable().translate(buff).c_str());
-	}*/
-
 }
 
 bool CGamePersistent::CanBePaused()

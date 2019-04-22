@@ -106,6 +106,9 @@
     <Filter Include="NET_Server_Trash">
       <UniqueIdentifier>{f8099575-6b7c-4bb8-8acb-2059791c45ca}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Interfaces\LoadScreen">
+      <UniqueIdentifier>{1afaf972-d4ae-4834-8a0e-869d27555c6f}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h">
@@ -338,6 +341,9 @@
     <ClInclude Include="GameMtlLib.h" />
     <ClInclude Include="SkeletonMotionDefs.h" />
     <ClInclude Include="..\Include\xrAPI\xrAPI.h" />
+    <ClInclude Include="ILoadingScreen.h">
+      <Filter>Interfaces\LoadScreen</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="defines.cpp">

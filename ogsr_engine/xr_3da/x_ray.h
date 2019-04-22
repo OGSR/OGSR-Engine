@@ -1,11 +1,8 @@
-#ifndef __X_RAY_H__
-#define __X_RAY_H__
+#pragma once
 
 // refs
 class ENGINE_API CGameFont;
-
-#include "../Include/xrRender/FactoryPtr.h"
-#include "../Include/xrRender/ApplicationRender.h"
+class ILoadingScreen;
 
 // definition
 class ENGINE_API CApplication	:
@@ -18,13 +15,11 @@ class ENGINE_API CApplication	:
 		char*				folder;
 		char*				name;
 	};
-	string256				app_title;
-private:
-	FactoryPtr<IApplicationRender>	m_pRender;
 
+	ILoadingScreen* loadingScreen;
 
 	u32						ll_dwReference;
-private:
+
 	EVENT					eQuit;
 	EVENT					eStart;
 	EVENT					eStartLoad;
@@ -32,12 +27,8 @@ private:
 
 	void					Level_Append		(LPCSTR lname);
 
-public: //Используются в рендерах
-	int						load_stage;
-	int		max_load_stage;
-	string2048				ls_header;
-	string2048				ls_tip_number;
-	string2048				ls_tip;
+	int load_stage;
+	int max_load_stage;
 
 public:
 	CGameFont*				pFontSystem;
@@ -52,10 +43,12 @@ public:
 	// Loading
 	void					LoadBegin();
 	void					LoadEnd();
-	void					LoadTitleInt(LPCSTR str1, LPCSTR str2, LPCSTR str3);
+	void					LoadTitleInt(LPCSTR str1, LPCSTR str2, LPCSTR str3); // 100 советов по выживанию в Зоне
 	void					LoadStage();
-	void					LoadSwitch();
 	void					LoadDraw();
+	void LoadForceFinish();
+
+	void SetLoadStageTitle(pcstr ls_title);
 
 	virtual	void			OnEvent				(EVENT E, u64 P1, u64 P2);
 
@@ -65,9 +58,8 @@ public:
 
 	virtual void			OnFrame				();
 			void			load_draw_internal	();
-			void			destroy_loading_shaders();
+			void SetLoadingScreen(ILoadingScreen* newScreen);
+			void DestroyLoadingScreen();
 };
 
 extern ENGINE_API	CApplication*	pApp;
-
-#endif //__XR_BASE_H__

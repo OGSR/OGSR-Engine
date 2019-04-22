@@ -121,7 +121,7 @@ bool	CLevel::net_start_client6				()
 		if(g_hud)
 			g_hud->OnConnected				();
 
-
+		pApp->LoadForceFinish();
 		g_pGamePersistent->LoadTitle		("st_client_synchronising");
 		Device.PreCache(60, true, true);
 		net_start_result_total				= TRUE;

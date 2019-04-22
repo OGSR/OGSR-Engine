@@ -375,6 +375,7 @@
     <ClInclude Include="cl_intersect.h" />
     <ClInclude Include="..\xrParticles\psystem.h" />
     <ClInclude Include="GameMtlLib.h" />
+    <ClInclude Include="ILoadingScreen.h" />
     <ClInclude Include="NET_Server_Trash\client_id.h" />
     <ClInclude Include="NET_Server_Trash\NET_Client.h" />
     <ClInclude Include="NET_Server_Trash\NET_Messages.h" />

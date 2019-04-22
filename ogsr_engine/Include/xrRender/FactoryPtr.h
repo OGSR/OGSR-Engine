@@ -62,7 +62,6 @@ private:
 #	ifdef DEBUG
 		FACTORY_PTR_INSTANCIATE(ObjectSpaceRender)
 #	endif // DEBUG
-	FACTORY_PTR_INSTANCIATE(ApplicationRender)
 	FACTORY_PTR_INSTANCIATE(WallMarkArray)
 	FACTORY_PTR_INSTANCIATE(StatsRender);
 #endif // _EDITOR

@@ -16,9 +16,6 @@
     <Filter Include="Lights">
       <UniqueIdentifier>{b0a4a437-ca23-4d2e-a5ea-ed1c99f03257}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Glows">
-      <UniqueIdentifier>{73016e0a-ddbf-4b7f-9e41-7d29f90bd5d7}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Wallmarks">
       <UniqueIdentifier>{728fd9d7-6e28-4287-ad9e-c08f12a04589}</UniqueIdentifier>
     </Filter>
@@ -105,9 +102,6 @@
     </Filter>
     <Filter Include="Interfase implementations\FactoryPtr">
       <UniqueIdentifier>{529a0970-b77f-4007-9bc0-2081fd4b2ee5}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Interfase implementations\ApplicationRender">
-      <UniqueIdentifier>{60afba4a-3786-46fe-a9cd-7582c57a6b8e}</UniqueIdentifier>
     </Filter>
     <Filter Include="Interfase implementations\RainRender">
       <UniqueIdentifier>{aad4cbc3-731d-47c7-8298-db5475b13750}</UniqueIdentifier>
@@ -536,12 +530,6 @@
     </ClInclude>
     <ClInclude Include="..\..\Include\xrRender\FactoryPtr.h">
       <Filter>Interfase implementations\FactoryPtr</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Include\xrRender\ApplicationRender.h">
-      <Filter>Interfase implementations\ApplicationRender</Filter>
-    </ClInclude>
-    <ClInclude Include="..\xrRender\dxApplicationRender.h">
-      <Filter>Interfase implementations\ApplicationRender</Filter>
     </ClInclude>
     <ClInclude Include="..\xrRender\dxRainRender.h">
       <Filter>Interfase implementations\RainRender</Filter>
@@ -1081,9 +1069,6 @@
     </ClCompile>
     <ClCompile Include="..\xrRender\dxLensFlareRender.cpp">
       <Filter>Interfase implementations\LensFlare</Filter>
-    </ClCompile>
-    <ClCompile Include="..\xrRender\dxApplicationRender.cpp">
-      <Filter>Interfase implementations\ApplicationRender</Filter>
     </ClCompile>
     <ClCompile Include="..\xrRender\dxRainRender.cpp">
       <Filter>Interfase implementations\RainRender</Filter>

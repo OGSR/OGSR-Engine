@@ -34,6 +34,8 @@ class CGamePersistent:
 
 	fastdelegate::FastDelegate0<> m_intro_event;
 
+	void xr_stdcall		game_loaded();
+
 	void xr_stdcall		start_logo_intro		();
 	void xr_stdcall		update_logo_intro		();
 	void xr_stdcall		start_game_intro		();
@@ -55,6 +57,7 @@ public:
 						CGamePersistent			();
 	virtual				~CGamePersistent		();
 
+	void				PreStart(LPCSTR op) override;
 	virtual void		Start					(LPCSTR op);
 	virtual void		Disconnect				();
 
@@ -77,7 +80,7 @@ public:
 	virtual bool		OnRenderPPUI_query		();
 	virtual void		OnRenderPPUI_main		();
 	virtual void		OnRenderPPUI_PP			();
-	virtual	void		LoadTitle(bool change_tip = false, shared_str map_name = "");
+	virtual	void		LoadTitle(const char* title_name);
 
 	virtual bool		CanBePaused();
 
