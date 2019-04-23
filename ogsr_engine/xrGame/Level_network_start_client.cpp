@@ -7,6 +7,7 @@
 #include "..\xr_3da\igame_persistent.h"
 #include "PhysicsGamePars.h"
 #include "ai_space.h"
+#include "Actor_Flags.h"
 
 extern	pureFrame*				g_pNetProcessor;
 
@@ -121,7 +122,8 @@ bool	CLevel::net_start_client6				()
 		if(g_hud)
 			g_hud->OnConnected				();
 
-		pApp->LoadForceFinish();
+		if (!psActorFlags.test(AF_KEYPRESS_ON_START))
+			pApp->LoadForceFinish();
 		g_pGamePersistent->LoadTitle		("st_client_synchronising");
 		Device.PreCache(60, true, true);
 		net_start_result_total				= TRUE;

@@ -13,6 +13,8 @@ class CGamePersistent:
 	public IGame_Persistent, 
 	public IEventReceiver
 {
+	bool GameAutopaused = false;
+
 	// ambient particles
 	CParticlesObject*	ambient_particles; 
 #ifdef USE_COP_WEATHER_CONFIGS
@@ -33,8 +35,6 @@ class CGamePersistent:
 	EVENT				eQuickLoad;
 
 	fastdelegate::FastDelegate0<> m_intro_event;
-
-	void xr_stdcall		game_loaded();
 
 	void xr_stdcall		start_logo_intro		();
 	void xr_stdcall		update_logo_intro		();
@@ -83,7 +83,7 @@ public:
 	virtual	void		LoadTitle(const char* title_name);
 
 	virtual bool		CanBePaused();
-
+	void OnKeyboardPress(int dik);
 };
 
 IC CGamePersistent&		GamePersistent()		{ return *((CGamePersistent*) g_pGamePersistent);			}

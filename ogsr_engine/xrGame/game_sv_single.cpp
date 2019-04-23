@@ -11,6 +11,7 @@
 #include "xrServer.h"
 #include "..\xr_3da\x_ray.h"
 #include "ui/UILoadingScreen.h"
+#include "Actor_Flags.h"
 
 game_sv_Single::game_sv_Single			()
 {
@@ -336,7 +337,8 @@ void game_sv_Single::restart_simulator			(LPCSTR saved_game_name)
 	pApp->SetLoadingScreen(new UILoadingScreen());
 	pApp->LoadBegin			();
 	m_alife_simulator		= xr_new<CALifeSimulator>(&server(),&options);
-	pApp->LoadForceFinish();
+	if(!psActorFlags.test(AF_KEYPRESS_ON_START))
+		pApp->LoadForceFinish();
 	g_pGamePersistent->LoadTitle("st_client_synchronising");
 	Device.PreCache(60, true, true);
 	pApp->LoadEnd			();

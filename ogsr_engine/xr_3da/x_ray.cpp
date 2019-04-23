@@ -684,7 +684,7 @@ void CApplication::LoadStage()
 	Msg("* phase cmem: %d K", Memory.mem_usage() / 1024);
 
 	//if (g_pGamePersistent->GameType() == 1 && strstr(Core.Params, "alife"))
-		max_load_stage = 15; // 17; //KRodin: пересчитал кол-во стадий, у нас их 15 при создании НИ
+		max_load_stage = 16; // 17; //KRodin: пересчитал кол-во стадий, у нас их 15 при создании НИ + 1 на автопаузу
 	//else
 	//	max_load_stage = 14;
 

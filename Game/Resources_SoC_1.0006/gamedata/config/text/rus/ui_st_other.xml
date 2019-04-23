@@ -236,4 +236,8 @@
 		<text>Перетащить предмет (SHIFT+$$ACTION_USE$$)</text>
 	</string>
 
+	<string id="st_press_any_key">
+		<text>Нажмите любую клавишу для перехода к игре</text>
+	</string>
+
 </string_table>

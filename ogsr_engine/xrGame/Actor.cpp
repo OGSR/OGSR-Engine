@@ -88,7 +88,7 @@ static Fbox		bbCrouchBox;
 static Fvector	vFootCenter;
 static Fvector	vFootExt;
 
-Flags32			psActorFlags={ AF_3D_SCOPES };
+Flags32 psActorFlags = { AF_3D_SCOPES | AF_KEYPRESS_ON_START };
 
 static bool updated;
 
