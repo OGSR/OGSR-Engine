@@ -17,6 +17,7 @@
 #include "PHShell.h"
 #include "PHCollideValidator.h"
 #include "PHElementInline.h"
+#include "phshellbuildjoint.h"
 
 #ifdef ANIMATED_PHYSICS_OBJECT_SUPPORT
 	#include "PhysicsShellAnimator.h"
@@ -589,6 +590,8 @@ void CPHShell::addEquelInertiaToEls(const dMass& M)
 static BONE_P_MAP* spGetingMap=NULL;
 void CPHShell::build_FromKinematics(CKinematics* K,BONE_P_MAP* p_geting_map)
 {
+	VERIFY( K );
+	//phys_shell_verify_model ( *K );
 	m_pKinematics			=K;
 	spGetingMap				=p_geting_map;
 	//CBoneData& bone_data	= m_pKinematics->LL_GetData(0);
@@ -602,13 +605,15 @@ void CPHShell::build_FromKinematics(CKinematics* K,BONE_P_MAP* p_geting_map)
 
 void CPHShell::preBuild_FromKinematics(CKinematics* K,BONE_P_MAP* p_geting_map)
 {
+	VERIFY( K );
+	//phys_shell_verify_model ( *K );
 	m_pKinematics			=K;
 	spGetingMap				=p_geting_map;
 	//CBoneData& bone_data	= m_pKinematics->LL_GetData(0);
 	if(!m_spliter_holder) m_spliter_holder=xr_new<CPHShellSplitterHolder>(this);
 	bool vis_check=false;
 	AddElementRecursive(0,m_pKinematics->LL_GetBoneRoot(),Fidentity,0,&vis_check);
-	R_ASSERT2((*elements.begin())->numberOfGeoms(),"No physics shapes was assigned for model or no shapes in main root bone!!!");
+	//R_ASSERT2((*elements.begin())->numberOfGeoms(),"No physics shapes was assigned for model or no shapes in main root bone!!!");
 	if(m_spliter_holder->isEmpty())ClearBreakInfo();
 	m_pKinematics=0;
 }
@@ -657,8 +662,13 @@ void CPHShell::AddElementRecursive(CPhysicsElement* root_e, u16 id,Fmatrix globa
 	if(no_visible)
 	{
 	
-		for (vecBonesIt it=bone_data.children.begin(); bone_data.children.end() != it; ++it)
-			AddElementRecursive		(root_e,(*it)->GetSelfID(),fm_position,element_number,&lvis_check);
+		//for (vecBonesIt it=bone_data.children.begin(); bone_data.children.end() != it; ++it)
+					//AddElementRecursive		(root_e,(*it)->GetSelfID(),fm_position,element_number,&lvis_check);
+		//CBoneData	&ibone_data = bone_data;
+		u16	num_children =bone_data.GetNumChildren();
+		for(u16 i = 0;i<num_children;++i)
+			AddElementRecursive		(root_e,bone_data.GetChild(i).GetSelfID(),fm_position,element_number,&lvis_check);
+
 		return;
 	}
 	
@@ -676,7 +686,7 @@ void CPHShell::AddElementRecursive(CPhysicsElement* root_e, u16 id,Fmatrix globa
 	lvis_check=(check_obb_sise(bone_data.obb));
 	
 	bool *arg_check=vis_check;
-	if(breakable||!root_e)
+	if(breakable||!root_e)//.
 	{
 		arg_check=&lvis_check;
 	}
@@ -690,7 +700,7 @@ void CPHShell::AddElementRecursive(CPhysicsElement* root_e, u16 id,Fmatrix globa
 	u16	 splitter_position=0;
 	u16 fracture_num=u16(-1);
 
-	if(!no_physics_shape(bone_data.shape)|| !root_e)	//
+	if(!no_physics_shape(bone_data.shape) || !root_e)	//
 	{	
 
 		if(joint_data.type==jtRigid && root_e ) //
@@ -753,206 +763,12 @@ void CPHShell::AddElementRecursive(CPhysicsElement* root_e, u16 id,Fmatrix globa
 
 			if(root_e)
 			{
-				switch(joint_data.type) 
-				{
-				case jtSlider: 
-					{
-						J= P_create_Joint(CPhysicsJoint::slider,root_e,E);
-						J->SetAnchorVsSecondElement	(0,0,0);
-						J->SetJointSDfactors(joint_data.spring_factor,joint_data.damping_factor);
-						J->SetLimits(joint_data.limits[0].limit.x,joint_data.limits[0].limit.y,0);
-						J->SetAxisSDfactors(joint_data.limits[0].spring_factor,joint_data.limits[0].damping_factor,0);
-						if(joint_data.limits[1].limit.y-joint_data.limits[1].limit.x<M_PI*2.f)
-						{
-							J->SetLimits(joint_data.limits[1].limit.x,joint_data.limits[1].limit.y,1);
-							J->SetAxisSDfactors(joint_data.limits[1].spring_factor,joint_data.limits[1].damping_factor,1);
-						}
-						break;
-					}
-				case jtCloth: 
-					{
-						J= P_create_Joint(CPhysicsJoint::ball,root_e,E);
-						J->SetAnchorVsSecondElement	(0,0,0);
-						J->SetJointSDfactors(joint_data.spring_factor,joint_data.damping_factor);
-						break;
-					}
-				case jtJoint:
-					{
-						bool	eqx=!!fsimilar(joint_data.limits[0].limit.x,joint_data.limits[0].limit.y),
-							eqy=!!fsimilar(joint_data.limits[1].limit.x,joint_data.limits[1].limit.y),
-							eqz=!!fsimilar(joint_data.limits[2].limit.x,joint_data.limits[2].limit.y);
 
-						if(eqx)
-						{
-							if(eqy)
-							{
-								J= P_create_Joint(CPhysicsJoint::hinge,root_e,E);
-								J->SetAnchorVsSecondElement	(0,0,0);
-								J->SetJointSDfactors(joint_data.spring_factor,joint_data.damping_factor);
-								J->SetAxisDirVsSecondElement (0.f,0.f,1.f,0);
-								if(joint_data.limits[2].limit.y-joint_data.limits[2].limit.x<M_PI*2.f)
-								{
-									J->SetLimits(joint_data.limits[2].limit.x,joint_data.limits[2].limit.y,0);
-									J->SetAxisSDfactors(joint_data.limits[2].spring_factor,joint_data.limits[2].damping_factor,0);
-								}
-								break;
-							}
-							if(eqz)
-							{
-								J= P_create_Joint(CPhysicsJoint::hinge,root_e,E);
-								J->SetAnchorVsSecondElement	(0,0,0);
-								J->SetJointSDfactors(joint_data.spring_factor,joint_data.damping_factor);
-								J->SetAxisDirVsSecondElement(0,1,0,0);
-								if(joint_data.limits[1].limit.y-joint_data.limits[1].limit.x<M_PI*2.f)
-								{
-									J->SetLimits(joint_data.limits[1].limit.x,joint_data.limits[1].limit.y,0);
-									J->SetAxisSDfactors(joint_data.limits[1].spring_factor,joint_data.limits[1].damping_factor,0);
-								}
-								break;
-							}
-							J= P_create_Joint(CPhysicsJoint::full_control,root_e,E);
-							J->SetAnchorVsSecondElement	(0,0,0);
-							J->SetJointSDfactors(joint_data.spring_factor,joint_data.damping_factor);
-							J->SetAxisDirVsSecondElement(0.f,0.f,1.f,0);//2-0
-							//0-1
-							J->SetAxisDirVsSecondElement(0.f,1.f,0.f,2);//1-2
-
-							if(joint_data.limits[2].limit.y-joint_data.limits[2].limit.x<M_PI*2.f)
-							{
-								J->SetLimits(joint_data.limits[2].limit.x,joint_data.limits[2].limit.y,0);
-								J->SetAxisSDfactors(joint_data.limits[2].spring_factor,joint_data.limits[2].damping_factor,0);
-							}
-							if(joint_data.limits[0].limit.y-joint_data.limits[0].limit.x<M_PI*2.f)
-							{
-								J->SetLimits(joint_data.limits[0].limit.x,joint_data.limits[0].limit.y,1);
-								J->SetAxisSDfactors(joint_data.limits[0].spring_factor,joint_data.limits[0].damping_factor,1);
-							}
-
-							if(joint_data.limits[1].limit.y-joint_data.limits[1].limit.x<M_PI*2.f)
-							{
-								J->SetLimits(joint_data.limits[1].limit.x,joint_data.limits[1].limit.y,2);
-								J->SetAxisSDfactors(joint_data.limits[1].spring_factor,joint_data.limits[1].damping_factor,2);
-							}
-
-							break;
-
-						}
-
-						if(eqy)
-						{
-							if(eqz)
-							{
-								J= P_create_Joint(CPhysicsJoint::hinge,root_e,E);
-								J->SetAnchorVsSecondElement	(0,0,0);
-								J->SetJointSDfactors(joint_data.spring_factor,joint_data.damping_factor);
-								J->SetAxisDirVsSecondElement(1,0,0,0);
-								if(joint_data.limits[0].limit.y-joint_data.limits[0].limit.x<M_PI*2.f)
-								{
-									J->SetLimits(joint_data.limits[0].limit.x,joint_data.limits[0].limit.y,0);
-									J->SetAxisSDfactors(joint_data.limits[0].spring_factor,joint_data.limits[0].damping_factor,0);
-								}
-								break;
-							}
-
-							J= P_create_Joint(CPhysicsJoint::full_control,root_e,E);
-							J->SetAnchorVsSecondElement	(0,0,0);
-							J->SetJointSDfactors(joint_data.spring_factor,joint_data.damping_factor);
-							J->SetAxisDirVsSecondElement(0.f,0.f,1.f,0);//2-0
-							//1-1
-							J->SetAxisDirVsSecondElement(1.f,0.f,0.f,2);//0-2
-							if(joint_data.limits[2].limit.y-joint_data.limits[2].limit.x<M_PI*2.f)
-							{
-								J->SetLimits(joint_data.limits[2].limit.x,joint_data.limits[2].limit.y,0);
-								J->SetAxisSDfactors(joint_data.limits[2].spring_factor,joint_data.limits[2].damping_factor,0);
-							}
-							if(joint_data.limits[0].limit.y-joint_data.limits[0].limit.x<M_PI*2.f)
-							{
-								J->SetLimits(joint_data.limits[0].limit.x,joint_data.limits[0].limit.y,2);
-								J->SetAxisSDfactors(joint_data.limits[0].spring_factor,joint_data.limits[0].damping_factor,2);
-							}
-
-							if(joint_data.limits[1].limit.y-joint_data.limits[1].limit.x<M_PI*2.f)
-							{
-								J->SetLimits(joint_data.limits[1].limit.x,joint_data.limits[1].limit.y,1);
-								J->SetAxisSDfactors(joint_data.limits[1].spring_factor,joint_data.limits[1].damping_factor,1);
-							}
-							break;
-						}
-
-						if(eqz)
-						{
-							J= P_create_Joint(CPhysicsJoint::full_control,root_e,E);
-							J->SetAnchorVsSecondElement	(0,0,0);
-							J->SetJointSDfactors(joint_data.spring_factor,joint_data.damping_factor);
-							J->SetAxisDirVsSecondElement(1.f,0.f,0.f,0);//0-0
-							//2-1
-							J->SetAxisDirVsSecondElement(0.f,1.f,0.f,2);//1-2
-							if(joint_data.limits[2].limit.y-joint_data.limits[2].limit.x<M_PI*2.f)
-							{
-								J->SetLimits(joint_data.limits[2].limit.x,joint_data.limits[2].limit.y,1);
-								J->SetAxisSDfactors(joint_data.limits[2].spring_factor,joint_data.limits[2].damping_factor,1);
-							}
-							if(joint_data.limits[0].limit.y-joint_data.limits[0].limit.x<M_PI*2.f)
-							{
-								J->SetLimits(joint_data.limits[0].limit.x,joint_data.limits[0].limit.y,0);
-								J->SetAxisSDfactors(joint_data.limits[0].spring_factor,joint_data.limits[0].damping_factor,0);
-							}
-
-							if(joint_data.limits[1].limit.y-joint_data.limits[1].limit.x<M_PI*2.f)
-							{
-								J->SetLimits(joint_data.limits[1].limit.x,joint_data.limits[1].limit.y,2);
-								J->SetAxisSDfactors(joint_data.limits[1].spring_factor,joint_data.limits[1].damping_factor,2);
-							}
-							break;
-						}
-						J= P_create_Joint(CPhysicsJoint::full_control,root_e,E);
-						J->SetAnchorVsSecondElement	(0,0,0);
-						J->SetJointSDfactors(joint_data.spring_factor,joint_data.damping_factor);
-						J->SetAxisDirVsSecondElement(0.f,0.f,1.f,0);//2-0
-						//0-1
-						J->SetAxisDirVsSecondElement(0.f,1.f,0.f,2);//1-2
-						if(joint_data.limits[2].limit.y-joint_data.limits[2].limit.x<M_PI*2.f)
-						{
-							J->SetLimits(joint_data.limits[2].limit.x,joint_data.limits[2].limit.y,0);
-							J->SetAxisSDfactors(joint_data.limits[2].spring_factor,joint_data.limits[2].damping_factor,0);
-						}
-						if(joint_data.limits[0].limit.y-joint_data.limits[0].limit.x<M_PI*2.f)
-						{
-							J->SetLimits(joint_data.limits[0].limit.x,joint_data.limits[0].limit.y,1);
-							J->SetAxisSDfactors(joint_data.limits[0].spring_factor,joint_data.limits[0].damping_factor,1);
-						}
-
-						if(joint_data.limits[1].limit.y-joint_data.limits[1].limit.x<M_PI*2.f)
-						{
-							J->SetLimits(joint_data.limits[1].limit.x,joint_data.limits[1].limit.y,2);
-							J->SetAxisSDfactors(joint_data.limits[1].spring_factor,joint_data.limits[1].damping_factor,2);
-						}
-
-						break;
-					}
-				case jtWheel:
-					{
-						J= P_create_Joint(CPhysicsJoint::hinge2,root_e,E);
-						J->SetAnchorVsSecondElement	(0,0,0);
-						J->SetJointSDfactors(joint_data.spring_factor,joint_data.damping_factor);
-						J->SetAxisDirVsSecondElement(1,0,0,0);
-						J->SetAxisDirVsSecondElement(0,0,1,1);
-						if(joint_data.limits[0].limit.y-joint_data.limits[0].limit.x<M_PI*2.f)
-						{
-							J->SetLimits(joint_data.limits[0].limit.x,joint_data.limits[0].limit.y,0);	
-							J->SetAxisSDfactors(joint_data.limits[0].spring_factor,joint_data.limits[0].damping_factor,0);
-						}
-						break;
-					}
-
-				case jtNone: break;
-
-				default: NODEFAULT;
-				}
+				J = BuildJoint( bone_data, root_e, E );
 				if(J)
 				{
 					
-					J->SetForceAndVelocity(0.f);//joint_data.friction
+					//J->SetForceAndVelocity(joint_data.friction);//joint_data.friction
 					SetJointRootGeom(root_e,J);
 					J->SetBoneID(id);
 					add_Joint	(J);
@@ -978,7 +794,11 @@ void CPHShell::AddElementRecursive(CPhysicsElement* root_e, u16 id,Fmatrix globa
 	if(!no_physics_shape(bone_data.shape))
 	{
 		CODEGeom* added_geom	=	E->last_geom();
-		if(added_geom)	added_geom->set_bone_id(id);
+		if(added_geom)
+		{
+			added_geom->set_bone_id(id);
+			//added_geom->set_shape_flags( bone_data.shape.flags );
+		}
 	}
 #ifdef DEBUG
 	if(E->last_geom())
@@ -1001,8 +821,12 @@ void CPHShell::AddElementRecursive(CPhysicsElement* root_e, u16 id,Fmatrix globa
 
 
 	/////////////////////////////////////////////////////////////////////////////////////
-	for (vecBonesIt it=bone_data.children.begin(); bone_data.children.end() != it; ++it)
-		AddElementRecursive		(E,(*it)->GetSelfID(),fm_position,element_number,arg_check);
+	//for (vecBonesIt it=bone_data.children.begin(); bone_data.children.end() != it; ++it)
+	//	AddElementRecursive		(E,(*it)->GetSelfID(),fm_position,element_number,arg_check);
+	//CBoneData	&ibone_data = bone_data;
+	u16	num_children = bone_data.GetNumChildren();
+	for(u16 i = 0;i<num_children;++i)
+		AddElementRecursive		(E,bone_data.GetChild(i).GetSelfID(),fm_position,element_number,arg_check);
 	/////////////////////////////////////////////////////////////////////////////////////
 	if(breakable)
 	{
@@ -1077,23 +901,29 @@ void CPHShell::ResetCallbacksRecursive(u16 id,u16 element, VisMask &mask)
 			R_ASSERT2(element<elements.size(),"Out of elements!!");
 			//if(elements.size()==element)	return;
 			B.set_callback(bctPhysics,BonesCallback,cast_PhysicsElement(elements[element]));
-			B.Callback_overwrite=TRUE;
+			B.set_callback_overwrite(TRUE);
 		}
 	}
-	for (vecBonesIt it=bone_data.children.begin(); it!=bone_data.children.end(); ++it)
-		ResetCallbacksRecursive((*it)->GetSelfID(),element,mask);
+
+	//for (vecBonesIt it=bone_data.children.begin(); it!=bone_data.children.end(); ++it)
+	//	ResetCallbacksRecursive((*it)->GetSelfID(),element,mask);
+	//CBoneData	&ibone_data = bone_data;
+	u16	num_children = bone_data.GetNumChildren();
+	for(u16 i = 0;i<num_children;++i)
+		ResetCallbacksRecursive(bone_data.GetChild(i).GetSelfID(),element,mask);
+		
 }
 
 void CPHShell::EnabledCallbacks(BOOL val)
 {
 	if (val){	
-		SetCallbacks();
+		SetCallbacks( );
 		// set callback owervrite in used bones
 		ELEMENT_I i,e;
 		i=elements.begin(); e=elements.end();
 		for( ;i!=e;++i){
 			CBoneInstance& B	= m_pKinematics->LL_GetBoneInstance((*i)->m_SelfID);
-			B.Callback_overwrite= TRUE;
+			B.set_callback_overwrite(TRUE);
 		}
 	}else		ZeroCallbacks();
 }
@@ -1165,7 +995,7 @@ void CPHShell::SetCallbacksRecursive(u16 id, u16 element)
 
 	if (mask.is(id))
 	{
-		if ((no_physics_shape(bone_data.get_shape()) || joint_data.type == jtRigid) && element != u16(-1)) 
+		if ((no_physics_shape(bone_data.shape) || joint_data.type == jtRigid) && element != u16(-1)) 
 		{
 			B.set_callback(bctPhysics, 0, cast_PhysicsElement(elements[element]));
 		}

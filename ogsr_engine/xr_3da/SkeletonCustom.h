@@ -106,13 +106,18 @@ public:
 	}
 	// Calculation
 	void				CalculateM2B	(const Fmatrix& Parent);
+
 				CBoneData&		GetChild			( u16 id )			;
 		const	CBoneData&		GetChild			( u16 id )	const	;
 				u16				GetNumChildren		( )			const	;
 		const	SJointIKData&	get_IK_data			( )			const	{return	IK_data;}
+		const	Fmatrix&		_BCL	get_bind_transform	( )			const	{return	bind_transform;}
 		const	SBoneShape&		get_shape			( )			const	{return shape;}
 		const	Fvector&		get_center_of_mass	( )			const	{return center_of_mass;}
 		float				get_mass			( )			const	{return mass;}
+				u16				_BCL	get_game_mtl_idx	( )			const	{return game_mtl_idx;}
+				float			_BCL	lo_limit			( u8 k )	const	{return IK_data.limits[k].limit.x;}
+				float			_BCL	hi_limit			( u8 k )	const	{return IK_data.limits[k].limit.y;}
 	virtual u32			mem_usage		()
 	{
 		u32 sz			= sizeof(*this)+sizeof(vecBones::value_type)*children.size();

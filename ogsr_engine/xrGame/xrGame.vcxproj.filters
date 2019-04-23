@@ -6112,6 +6112,9 @@
     <ClInclude Include="physics_shell_animated.h">
       <Filter>Core\Client\Objects\physics\CharacterSupport</Filter>
     </ClInclude>
+    <ClInclude Include="PHShellBuildJoint.h">
+      <Filter>Core\Client\Objects\physics\Base\Objects\Shell</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="damage_manager.cpp">

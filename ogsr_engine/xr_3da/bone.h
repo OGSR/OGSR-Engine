@@ -227,8 +227,26 @@ public:
 	void			    ParseBone		(LWItemID bone);
 #endif
 
+IC	float			engine_lo_limit ( u8 k ) const	{ return -IK_data.limits[k].limit.y; }
+IC	float			engine_hi_limit ( u8 k ) const	{ return -IK_data.limits[k].limit.x; }
+
 	void			    SaveData		(IWriter& F);
 	void			    LoadData		(IReader& F);
     void			    ResetData		();
     void			    CopyData		(CBone* bone);
+
+				CBone&		_BCL	GetChild			( u16 id )			{return *children[id];}
+		const	CBone&		_BCL	GetChild			( u16 id )	const	{return *children[id];}
+        		u16				_BCL	GetSelfID			( )			const	{return (u16)SelfID;}
+				u16				_BCL	GetNumChildren		( )			const	{return u16( children.size() );}
+		const	SJointIKData&	_BCL	get_IK_data			( )			const	{return	IK_data;}
+		const	SBoneShape&		_BCL	get_shape			( )			const	{return shape;}
+
+		const	Fobb&			_BCL	get_obb				( )			const	;
+		const	Fvector&		_BCL	get_center_of_mass	( )			const	{return center_of_mass;}
+				float			_BCL	get_mass			( )			const	{return mass;}
+				u16				_BCL	get_game_mtl_idx	( )			const	;
+				u16				_BCL	GetParentID			( )			const	{if(parent) return u16(parent->SelfID); else return u16(-1);};
+				float			_BCL	lo_limit			( u8 k )	const	{ return engine_lo_limit(k); }
+				float			_BCL	hi_limit			( u8 k )	const	{ return engine_hi_limit(k); }
 };

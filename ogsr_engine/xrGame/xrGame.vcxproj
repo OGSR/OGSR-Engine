@@ -455,6 +455,7 @@
     <ClInclude Include="mt_config.h" />
     <ClInclude Include="damage_manager.h" />
     <ClInclude Include="DamageSource.h" />
+    <ClInclude Include="PHShellBuildJoint.h" />
     <ClInclude Include="physics_shell_animated.h" />
     <ClInclude Include="script_actor.h" />
     <ClInclude Include="script_game_object_impl.h" />
