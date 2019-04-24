@@ -181,7 +181,7 @@ public:
 	virtual     void		SetCamDir							(const Fvector& cam_dir);
 	virtual	const Fvector&	CamDir								()const				{return m_cam_dir;}
 	virtual		void		SetMaterial							(u16 material)		;
-	virtual		void		SetPosition							(Fvector pos)		;
+	virtual		void		SetPosition							(const Fvector &pos)		;
 	virtual		void GetVelocity(Fvector& vvel)const;
 	virtual		void		GetSmothedVelocity					(Fvector& vvel)		;
 	virtual		void		SetVelocity							(Fvector vel)		;

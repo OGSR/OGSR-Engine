@@ -127,7 +127,7 @@ virtual		bool		ForcedPhysicsControl				()															{return false;}
 virtual     void		SetCamDir							(const Fvector& cam_dir)									=0 ;
 virtual	const Fvector&	CamDir								()const														=0 ;
 virtual		Fvector		GetAcceleration						()															=0 ;
-virtual		void		SetPosition							(Fvector pos)												=0 ;
+virtual		void		SetPosition							(const Fvector &pos)												=0 ;
 virtual		void		SetApplyGravity						(BOOL flag)						{ dBodySetGravityMode(m_body,flag); }
 	virtual void SetObjectContactCallbackData(void* callback) = 0;
 virtual		void		SetObjectContactCallback			(ObjectContactCallbackFun* callback)						=0 ;
