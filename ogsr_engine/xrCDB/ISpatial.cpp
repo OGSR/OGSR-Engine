@@ -1,11 +1,18 @@
-#include "stdafx.h"
-#include "ispatial.h"
-#include "render.h"
-#include "xr_object.h"
-#include "PS_Instance.h"
 
-ENGINE_API ISpatial_DB*		g_SpatialSpace			= NULL;
-ENGINE_API ISpatial_DB*		g_SpatialSpacePhysic	= NULL;
+#include "stdafx.h"
+
+#include "ispatial.h"
+#include "../xr_3da/Engine.h"
+#include "../xr_3da/render.h"
+
+#ifdef DEBUG
+#include "../xrengine/xr_object.h"
+#include "../xrengine/PS_Instance.h"
+#endif
+
+
+ISpatial_DB*		g_SpatialSpace			= NULL;
+ISpatial_DB*		g_SpatialSpacePhysic	= NULL;
 
 Fvector	c_spatial_offset	[8]	= 
 {
@@ -147,6 +154,11 @@ ISpatial_DB::ISpatial_DB()
 
 ISpatial_DB::~ISpatial_DB()
 {
+	if ( m_root )
+	{
+		_node_destroy(m_root);
+	}
+
 	while (!allocator_pool.empty()){
 		allocator.destroy		(allocator_pool.back());
 		allocator_pool.pop_back	();
@@ -268,11 +280,15 @@ void			ISpatial_DB::insert		(ISpatial* S)
 	} else {
 		// Object outside our DB, put it into root node and hack bounds
 		// Object will reinsert itself until fits into "real", "controlled" space
+
+		/*
 		if (0 == m_root)	// KD: временная затычка - непонятно, почему может не быть кости
 		{
 			m_root = _node_create();		
 			m_root->_init(NULL);
 		}
+		*/
+
 		m_root->_insert				(S);
 		S->spatial.node_center.set	(m_center);
 		S->spatial.node_radius		=	m_bounds;
@@ -311,17 +327,12 @@ void			ISpatial_DB::remove		(ISpatial* S)
 #ifdef DEBUG
 	stat_remove.Begin	();
 #endif
-	try {
-		ISpatial_NODE* N = S->spatial.node_ptr;
-		N->_remove(S);
+	ISpatial_NODE* N	= S->spatial.node_ptr;
+	N->_remove			(S);
 
-		// Recurse
-		if (N->_empty())
-			_remove(N->parent, N);
-	}
-	catch (...) {
-		Log("!!Error in ISpatial_DB::remove");
-	}
+	// Recurse
+	if (N->_empty())	_remove(N->parent,N);
+
 #ifdef DEBUG
 	stat_remove.End		();
 #endif

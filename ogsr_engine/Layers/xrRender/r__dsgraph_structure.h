@@ -1,8 +1,7 @@
 #pragma once
 
 #include "../../xr_3da/render.h"
-//KRodin: заменить инклуд при выносе ispatial в CDB
-#include "../../xr_3da/ispatial.h" //#include "../../xrcdb/ispatial.h"
+#include "../../xrcdb/ispatial.h"
 #include "r__dsgraph_types.h"
 #include "r__sector.h"
 

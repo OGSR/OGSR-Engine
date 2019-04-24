@@ -2,17 +2,14 @@
 #include "igame_level.h"
 #include "xr_collide_form.h"
 #include "xr_object.h"
-//KRodin: TODO: заменить инклуд если перенесу код в CDB
-#include "xr_area.h" //#include "../xrcdb/xr_area.h"
+#include "xr_area.h"
 #include "x_ray.h"
 #include "xrLevel.h"
 #include "fmesh.h"
-//KRodin: TODO: заменить инклуд если перенесу код в CDB
-#include "frustum.h" //#include "../xrCDB/frustum.h"
-
-//#include "skeletoncustom.h"
+#include "../xrCDB/frustum.h"
 #include "../Include/xrRender/Kinematics.h"
 #include "bone.h"
+
 #ifdef	DEBUG
 IC float DET(const Fmatrix &a){
 	return

@@ -1,8 +1,7 @@
 #ifndef __XR_COLLIDE_FORM_H__
 #define __XR_COLLIDE_FORM_H__
 
-//KRodin: TODO: заменить инклуд если перенесу код в CDB
-#include "xr_collide_defs.h" //#include "../xrcdb/xr_collide_defs.h"
+#include "../xrcdb/xr_collide_defs.h"
 #include "vismask.h"
 
 // refs

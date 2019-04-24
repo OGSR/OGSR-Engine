@@ -18,7 +18,7 @@
 #include "device.h"
 #include "fs.h"
 
-#include "xrXRC.h"
+#include "../xrcdb/xrxrc.h"
 
 #include "../xrSound/sound.h"
 

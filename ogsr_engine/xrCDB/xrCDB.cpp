@@ -6,6 +6,9 @@
 
 #include "xrCDB.h"
 
+namespace Opcode {
+#	include "OPC_TreeBuilders.h"
+} // namespace Opcode
 using namespace CDB;
 using namespace Opcode;
 

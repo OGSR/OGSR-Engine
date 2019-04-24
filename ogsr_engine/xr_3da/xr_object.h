@@ -1,7 +1,7 @@
 #ifndef __XR_OBJECT_H__
 #define __XR_OBJECT_H__
 
-#include "ispatial.h"
+#include "../xrCDB/ISpatial.h"
 #include "isheduled.h"
 //#include "iinputreceiver.h"
 #include "irenderable.h"

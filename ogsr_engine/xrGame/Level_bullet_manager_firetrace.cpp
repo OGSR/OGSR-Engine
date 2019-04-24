@@ -17,7 +17,7 @@
 #include "AI/Stalker/ai_stalker.h"
 #include "character_info.h"
 #include "game_cl_base_weapon_usage_statistic.h"
-#include "../xr_3da/xr_collide_defs.h"
+#include "../xrcdb/xr_collide_defs.h"
 #include "weapon.h"
 
 //константы shoot_factor, определяющие 

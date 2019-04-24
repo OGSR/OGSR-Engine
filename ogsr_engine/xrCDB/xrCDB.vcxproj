@@ -333,6 +333,13 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Frustum.cpp" />
+    <ClCompile Include="ISpatial.cpp" />
+    <ClCompile Include="ISpatial_q_box.cpp" />
+    <ClCompile Include="ISpatial_q_frustum.cpp" />
+    <ClCompile Include="ISpatial_q_ray.cpp" />
+    <ClCompile Include="ISpatial_verify.cpp" />
+    <ClCompile Include="OPC_Common.cpp" />
+    <ClCompile Include="OPC_Ray.cpp" />
     <ClCompile Include="StdAfx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
@@ -380,9 +387,11 @@
     <ClCompile Include="OPC_Triangle.cpp" />
     <ClCompile Include="OPC_VolumeCollider.cpp" />
     <ClCompile Include="Opcode.cpp" />
+    <ClCompile Include="xrXRC.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Frustum.h" />
+    <ClInclude Include="ISpatial.h" />
     <ClInclude Include="StdAfx.h" />
     <ClInclude Include="xrCDB.h" />
     <ClInclude Include="OPC_AABB.h" />
@@ -424,6 +433,8 @@
     <ClInclude Include="OPC_Types.h" />
     <ClInclude Include="OPC_VolumeCollider.h" />
     <ClInclude Include="Opcode.h" />
+    <ClInclude Include="xrXRC.h" />
+    <ClInclude Include="xr_collide_defs.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ReadMe.txt" />

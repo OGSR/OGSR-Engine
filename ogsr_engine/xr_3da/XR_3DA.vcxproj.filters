@@ -19,9 +19,6 @@
     <Filter Include="Interfaces\Render">
       <UniqueIdentifier>{ef1185c8-d7bc-4af1-b816-f7b4b1b6e9f1}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Interfaces\SPATIAL">
-      <UniqueIdentifier>{2988d2cc-c90c-4a36-bfca-80c9e222c8ec}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Interfaces\Collidable">
       <UniqueIdentifier>{66756c5f-6a59-4e04-ac2f-e07c136525f7}</UniqueIdentifier>
     </Filter>
@@ -64,9 +61,6 @@
     <Filter Include="Interfaces\Render\Visibility">
       <UniqueIdentifier>{09f142a7-3f1d-460d-86c0-52c13cc7e7f9}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Interfaces\Render\Visibility\Frustum">
-      <UniqueIdentifier>{690a1019-1755-4acc-9fd2-86287280b956}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Interfaces\Render\Particle system">
       <UniqueIdentifier>{bee3fd32-959d-4c8e-899d-7a25f6458187}</UniqueIdentifier>
     </Filter>
@@ -87,9 +81,6 @@
     </Filter>
     <Filter Include="Engine">
       <UniqueIdentifier>{3e060856-76c2-4f67-9388-a81e4d2b4139}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Engine\Collision Core">
-      <UniqueIdentifier>{2d4e280a-3b73-4ff6-8292-34656d7eb766}</UniqueIdentifier>
     </Filter>
     <Filter Include="Engine\Console">
       <UniqueIdentifier>{1b6c2847-caf7-49ec-be37-f63eaaa9d4f3}</UniqueIdentifier>
@@ -140,9 +131,6 @@
     </ClInclude>
     <ClInclude Include="Render.h">
       <Filter>Interfaces\Render</Filter>
-    </ClInclude>
-    <ClInclude Include="ISpatial.h">
-      <Filter>Interfaces\SPATIAL</Filter>
     </ClInclude>
     <ClInclude Include="ICollidable.h">
       <Filter>Interfaces\Collidable</Filter>
@@ -201,9 +189,6 @@
     <ClInclude Include="xr_area.h">
       <Filter>Game API\Collision</Filter>
     </ClInclude>
-    <ClInclude Include="xr_collide_defs.h">
-      <Filter>Game API\Collision</Filter>
-    </ClInclude>
     <ClInclude Include="xr_collide_form.h">
       <Filter>Game API\Collision</Filter>
     </ClInclude>
@@ -242,9 +227,6 @@
     </ClInclude>
     <ClInclude Include="vis_common.h">
       <Filter>Interfaces\Render\Visibility</Filter>
-    </ClInclude>
-    <ClInclude Include="Frustum.h">
-      <Filter>Interfaces\Render\Visibility\Frustum</Filter>
     </ClInclude>
     <ClInclude Include="PS_instance.h">
       <Filter>Interfaces\Render\Particle system</Filter>
@@ -287,9 +269,6 @@
     </ClInclude>
     <ClInclude Include="pure.h">
       <Filter>Engine</Filter>
-    </ClInclude>
-    <ClInclude Include="xrXRC.h">
-      <Filter>Engine\Collision Core</Filter>
     </ClInclude>
     <ClInclude Include="xr_ioc_cmd.h">
       <Filter>Engine\Console</Filter>
@@ -340,7 +319,6 @@
     <ClInclude Include="xrSkinXW.hpp" />
     <ClInclude Include="GameMtlLib.h" />
     <ClInclude Include="SkeletonMotionDefs.h" />
-    <ClInclude Include="..\Include\xrAPI\xrAPI.h" />
     <ClInclude Include="ILoadingScreen.h">
       <Filter>Interfaces\LoadScreen</Filter>
     </ClInclude>
@@ -372,21 +350,6 @@
     </ClCompile>
     <ClCompile Include="Render.cpp">
       <Filter>Interfaces\Render</Filter>
-    </ClCompile>
-    <ClCompile Include="ISpatial.cpp">
-      <Filter>Interfaces\SPATIAL</Filter>
-    </ClCompile>
-    <ClCompile Include="ISpatial_q_box.cpp">
-      <Filter>Interfaces\SPATIAL</Filter>
-    </ClCompile>
-    <ClCompile Include="ISpatial_q_frustum.cpp">
-      <Filter>Interfaces\SPATIAL</Filter>
-    </ClCompile>
-    <ClCompile Include="ISpatial_q_ray.cpp">
-      <Filter>Interfaces\SPATIAL</Filter>
-    </ClCompile>
-    <ClCompile Include="ISpatial_verify.cpp">
-      <Filter>Interfaces\SPATIAL</Filter>
     </ClCompile>
     <ClCompile Include="ICollidable.cpp">
       <Filter>Interfaces\Collidable</Filter>
@@ -487,9 +450,6 @@
     <ClCompile Include="SkeletonMotions.cpp">
       <Filter>Interfaces\Render\Visuals\Skeleton</Filter>
     </ClCompile>
-    <ClCompile Include="Frustum.cpp">
-      <Filter>Interfaces\Render\Visibility\Frustum</Filter>
-    </ClCompile>
     <ClCompile Include="PS_instance.cpp">
       <Filter>Interfaces\Render\Particle system</Filter>
     </ClCompile>
@@ -544,9 +504,6 @@
     <ClCompile Include="pure.cpp">
       <Filter>Engine</Filter>
     </ClCompile>
-    <ClCompile Include="xrXRC.cpp">
-      <Filter>Engine\Collision Core</Filter>
-    </ClCompile>
     <ClCompile Include="xr_ioc_cmd.cpp">
       <Filter>Engine\Console</Filter>
     </ClCompile>
@@ -578,7 +535,6 @@
     <ClCompile Include="bone.cpp" />
     <ClCompile Include="GameMtlLib_Engine.cpp" />
     <ClCompile Include="GameMtlLib.cpp" />
-    <ClCompile Include="..\Layers\xrAPI\xrAPI.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="resource.rc">

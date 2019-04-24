@@ -1,8 +1,7 @@
 #ifndef xr_efflensflareH
 #define xr_efflensflareH
 
-//KRodin: заменил инклуд, если буду переносить файлы в CDB - вернуть обратно.
-#include "xr_collide_defs.h" //#include "../xrcdb/xr_collide_defs.h"
+#include "../xrcdb/xr_collide_defs.h"
 
 #include "../Include/xrRender/FactoryPtr.h"
 #include "../Include/xrRender/LensFlareRender.h"

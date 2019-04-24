@@ -1,7 +1,6 @@
 #include "stdafx.h"
 
-// KRodin: если надумаю выносить файлы - заменить и инклуд.
-#include "frustum.h" //#include "../xrCDB/frustum.h"
+#include "../xrCDB/frustum.h"
 
 #pragma warning(disable:4995)
 // mmsystem.h

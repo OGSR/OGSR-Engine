@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "script_game_object.h"
 #include "GameObject.h"
-#include "..\xr_3da\xr_collide_defs.h"
+#include "..\xrcdb\xr_collide_defs.h"
 #include "..\xr_3da\GameMtlLib.h"
 #include "..\Include/xrRender/Kinematics.h"
 #include "Level.h"

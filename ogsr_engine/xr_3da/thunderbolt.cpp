@@ -12,7 +12,6 @@
     #include "ui_toolscustom.h"
 #else
 	#include "igame_level.h"
-	//#include "../xrcdb/xr_area.h" //KRodin: по-моему, это не нужно.
 	#include "xr_object.h"
 #endif
 

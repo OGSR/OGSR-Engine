@@ -6,8 +6,7 @@
 #define RainH
 #pragma once
 
-//KRodin: заменил инклуд, если буду переносить файлы в CDB - вернуть обратно.
-#include "xr_collide_defs.h" //#include "../xrcdb/xr_collide_defs.h"
+#include "../xrcdb/xr_collide_defs.h"
 
 //refs
 class ENGINE_API IRender_DetailModel;

@@ -29,7 +29,7 @@
 #include "map_manager.h"
 #include "map_location.h"
 #include "phworld.h"
-#include "../xr_3da/xr_collide_defs.h"
+#include "../xrcdb/xr_collide_defs.h"
 #include "script_rq_result.h"
 #include "monster_community.h"
 

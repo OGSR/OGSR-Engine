@@ -370,7 +370,6 @@
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="..\Include\xrAPI\xrAPI.h" />
     <ClInclude Include="bone.h" />
     <ClInclude Include="cl_intersect.h" />
     <ClInclude Include="..\xrParticles\psystem.h" />
@@ -396,7 +395,6 @@
     <ClInclude Include="xrSheduler.h" />
     <ClInclude Include="IRenderable.h" />
     <ClInclude Include="Render.h" />
-    <ClInclude Include="ISpatial.h" />
     <ClInclude Include="ICollidable.h" />
     <ClInclude Include="IGame_Level.h" />
     <ClInclude Include="IGame_Persistent.h" />
@@ -416,7 +414,6 @@
     <ClInclude Include="Effector.h" />
     <ClInclude Include="EffectorPP.h" />
     <ClInclude Include="xr_area.h" />
-    <ClInclude Include="xr_collide_defs.h" />
     <ClInclude Include="xr_collide_form.h" />
     <ClInclude Include="envelope.h" />
     <ClInclude Include="motion.h" />
@@ -430,7 +427,6 @@
     <ClInclude Include="EnnumerateVertices.h" />
     <ClInclude Include="SkeletonMotions.h" />
     <ClInclude Include="vis_common.h" />
-    <ClInclude Include="Frustum.h" />
     <ClInclude Include="PS_instance.h" />
     <ClInclude Include="LightAnimLibrary.h" />
     <ClInclude Include="GameFont.h" />
@@ -445,7 +441,6 @@
     <ClInclude Include="xrTheora_Surface.h" />
     <ClInclude Include="Properties.h" />
     <ClInclude Include="pure.h" />
-    <ClInclude Include="xrXRC.h" />
     <ClInclude Include="xr_ioc_cmd.h" />
     <ClInclude Include="XR_IOConsole.h" />
     <ClInclude Include="Engine.h" />
@@ -455,7 +450,6 @@
     <ClInclude Include="perlin.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\Layers\xrAPI\xrAPI.cpp" />
     <ClCompile Include="bone.cpp" />
     <ClCompile Include="defines.cpp" />
     <ClCompile Include="GameMtlLib.cpp" />
@@ -476,11 +470,6 @@
     <ClCompile Include="xrSheduler.cpp" />
     <ClCompile Include="IRenderable.cpp" />
     <ClCompile Include="Render.cpp" />
-    <ClCompile Include="ISpatial.cpp" />
-    <ClCompile Include="ISpatial_q_box.cpp" />
-    <ClCompile Include="ISpatial_q_frustum.cpp" />
-    <ClCompile Include="ISpatial_q_ray.cpp" />
-    <ClCompile Include="ISpatial_verify.cpp" />
     <ClCompile Include="ICollidable.cpp" />
     <ClCompile Include="IGame_Level.cpp" />
     <ClCompile Include="IGame_Level_check_textures.cpp" />
@@ -514,7 +503,6 @@
     <ClCompile Include="FDemoRecord.cpp" />
     <ClCompile Include="fmesh.cpp" />
     <ClCompile Include="SkeletonMotions.cpp" />
-    <ClCompile Include="Frustum.cpp" />
     <ClCompile Include="PS_instance.cpp" />
     <ClCompile Include="LightAnimLibrary.cpp" />
     <ClCompile Include="GameFont.cpp" />
@@ -533,7 +521,6 @@
     <ClCompile Include="xrTheora_Stream.cpp" />
     <ClCompile Include="xrTheora_Surface.cpp" />
     <ClCompile Include="pure.cpp" />
-    <ClCompile Include="xrXRC.cpp" />
     <ClCompile Include="xr_ioc_cmd.cpp" />
     <ClCompile Include="XR_IOConsole.cpp" />
     <ClCompile Include="Engine.cpp" />

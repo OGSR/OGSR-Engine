@@ -16,7 +16,7 @@
 #include "GameFont.h"
 #include "resource.h"
 #include "LightAnimLibrary.h"
-#include "ispatial.h"
+#include "../xrcdb/ispatial.h"
 #include "ILoadingScreen.h"
 
 #define CORE_FEATURE_SET( feature, section )\

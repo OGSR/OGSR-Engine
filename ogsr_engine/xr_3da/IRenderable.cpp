@@ -1,7 +1,6 @@
 #include "stdafx.h"
 
-// KRodin: если надумаю выносить файлы - заменить и инклуд.
-#include "ispatial.h" //#include "../xrcdb/ispatial.h"
+#include "../xrcdb/ispatial.h"
 
 #include "irenderable.h"
 

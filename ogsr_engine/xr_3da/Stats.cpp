@@ -2,8 +2,7 @@
 #include "GameFont.h"
 #pragma hdrstop
 
-// KRodin: если надумаю выносить файлы - заменить и инклуд.
-#include "ISpatial.h" //#include "../xrcdb/ISpatial.h"
+#include "../xrcdb/ISpatial.h"
 
 #include "IGame_Persistent.h"
 #include "render.h"
