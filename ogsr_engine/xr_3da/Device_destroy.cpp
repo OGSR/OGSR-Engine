@@ -79,11 +79,12 @@ void CRenderDevice::Reset		(bool precache)
 	}
 	_SetupStates			();
 	if (precache)
-		PreCache			(20, true, false);
+		PreCache(20, false, false);
 	u32 tm_end				= TimerAsync();
 	Msg						("*** RESET [%d ms]",tm_end-tm_start);
 
 	//	TODO: Remove this! It may hide crash
+#pragma todo("KRodin: ??? Remove this! It may hide crash ???")
 	Memory.mem_compact();
 
 	pInput->clip_cursor(true);
