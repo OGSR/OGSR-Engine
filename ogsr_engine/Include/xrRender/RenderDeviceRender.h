@@ -1,6 +1,6 @@
-#ifndef RenderDeviceRender_included
-#define RenderDeviceRender_included
 #pragma once
+
+class IResourceManager;
 
 class IRenderDeviceRender
 {
@@ -57,6 +57,5 @@ public:
 	virtual void	ClearTarget() = 0;
 	virtual void	SetCacheXform(Fmatrix &mView, Fmatrix &mProject) = 0;
 	virtual void	OnAssetsChanged() = 0;
+	virtual IResourceManager* GetResourceManager() = 0;
 };
-
-#endif	//	RenderDeviceRender_included

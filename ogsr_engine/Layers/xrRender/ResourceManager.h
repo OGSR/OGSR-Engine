@@ -2,8 +2,6 @@
 //
 //////////////////////////////////////////////////////////////////////
 
-#ifndef ResourceManagerH
-#define ResourceManagerH
 #pragma once
 
 #include	"shader.h"
@@ -14,7 +12,7 @@
 class dx10ConstantBuffer;
 
 // defs
-class ECORE_API CResourceManager
+class ECORE_API CResourceManager : public IResourceManager
 {
 private:
 	struct str_pred {
@@ -218,6 +216,8 @@ public:
 	void			DestroyNecessaryTextures();
 	void			Dump					(bool bBrief);
 
+	std::vector<ITexture*> FindTexture(const char* Name) override;
+
 private:
 #ifdef USE_DX11
 	map_DS	m_ds;
@@ -235,5 +235,3 @@ private:
 
 #endif	//	USE_DX10
 };
-
-#endif //ResourceManagerH

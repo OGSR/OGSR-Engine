@@ -1,13 +1,12 @@
-#ifndef SH_TEXTURE_H
-#define SH_TEXTURE_H
 #pragma once
 
 #include "../../xrCore/xr_resource.h"
+#include "../../xr_3da/Render.h"
 
 class  ENGINE_API CAviPlayerCustom;
 class  CTheoraSurface;
 
-class  ECORE_API CTexture : public xr_resource_named
+class ECORE_API CTexture : public ITexture, public xr_resource_named
 {
 public:
 	//	Since DX10 allows up to 128 unique textures, 
@@ -30,10 +29,15 @@ public:
 	void	__stdcall					apply_seq		(u32	stage);
 	void	__stdcall					apply_normal	(u32	stage);
 
-	void								Preload			();
-	void								Load			();
-	void								PostLoad		();
-	void								Unload			(void);
+	const char* GetName() const override { return cName.c_str(); }
+
+	void Preload();
+	void Preload(const char* Name);
+	void Load();
+	void Load(const char* Name) override;
+	void PostLoad();
+	void Unload() override;
+
 //	void								Apply			(u32 dwStage);
 
 	void								surface_set		(ID3DBaseTexture* surf );
@@ -115,5 +119,3 @@ struct 		resptrcode_texture	: public resptr_base<CTexture>
 };
 typedef	resptr_core<CTexture,resptrcode_texture >	
 	ref_texture;
-
-#endif

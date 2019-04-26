@@ -140,13 +140,23 @@ void CTexture::apply_normal	(u32 dwStage)	{
 	CHK_DX(HW.pDevice->SetTexture(dwStage,pSurface));
 };
 
-void CTexture::Preload	()
-{
-	m_bumpmap = DEV->m_textures_description.GetBumpName(cName);
-	m_material = DEV->m_textures_description.GetMaterial(cName);
+
+void CTexture::Preload() {
+	Preload(cName.c_str());
 }
 
-void CTexture::Load		()
+void CTexture::Preload(const char* Name)
+{
+	m_bumpmap = DEV->m_textures_description.GetBumpName(Name);
+	m_material = DEV->m_textures_description.GetMaterial(Name);
+}
+
+
+void CTexture::Load() {
+	Load(cName.c_str());
+}
+
+void CTexture::Load(const char* Name)
 {
 	flags.bLoaded					= true;
 	desc_cache						= 0;
@@ -154,14 +164,14 @@ void CTexture::Load		()
 
 	flags.bUser						= false;
 	flags.MemoryUsage				= 0;
-	if (0==stricmp(*cName,"$null"))	return;
-	if (0!=strstr(*cName,"$user$"))	
+	if (0==stricmp(Name,"$null"))	return;
+	if (0!=strstr(Name,"$user$"))	
 	{
 		flags.bUser	= true;
 		return;
 	}
 
-	Preload							();
+	Preload(Name);
 //#ifndef		DEDICATED_SERVER
 #ifndef _EDITOR
 	if (!g_dedicated_server)
@@ -169,7 +179,7 @@ void CTexture::Load		()
 	{
 		// Check for OGM
 		string_path			fn;
-		if (FS.exist(fn,"$game_textures$",*cName,".ogm"))
+		if (FS.exist(fn,"$game_textures$",Name,".ogm"))
 		{
 			// AVI
 			pTheora		= xr_new<CTheoraSurface>();
@@ -183,7 +193,7 @@ void CTexture::Load		()
 			else 
 			{
 				flags.MemoryUsage	= pTheora->Width(true)*pTheora->Height(true)*4;
-				BOOL bstop_at_end	= (0!=strstr(cName.c_str(), "intro\\")) || (0!=strstr(cName.c_str(), "outro\\"));
+				BOOL bstop_at_end	= (0!=strstr(Name, "intro\\")) || (0!=strstr(Name, "outro\\"));
 				pTheora->Play		(!bstop_at_end, RDEVICE.dwTimeContinual);
 
 				// Now create texture
@@ -205,7 +215,7 @@ void CTexture::Load		()
 
 			}
 		} 
-		else if (FS.exist(fn,"$game_textures$",*cName,".avi"))
+		else if (FS.exist(fn,"$game_textures$",Name,".avi"))
 		{
 			// AVI
 			pAVI = xr_new<CAviPlayerCustom>();
@@ -236,7 +246,7 @@ void CTexture::Load		()
 
 			}
 		} 
-		else if (FS.exist(fn,"$game_textures$",*cName,".seq"))
+		else if (FS.exist(fn,"$game_textures$",Name,".seq"))
 		{
 			// Sequence
 			string256 buffer;
@@ -276,7 +286,7 @@ void CTexture::Load		()
 		{
 			// Normal texture
 			u32	mem  = 0;
-			pSurface = ::RImplementation.texture_load	(*cName,mem);
+			pSurface = ::RImplementation.texture_load(Name,mem);
 
 			// Calc memory usage and preload into vid-mem
 			if (pSurface) {
@@ -288,6 +298,7 @@ void CTexture::Load		()
 	}
 	PostLoad	()		;
 }
+
 
 void CTexture::Unload	()
 {

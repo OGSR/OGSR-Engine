@@ -435,3 +435,34 @@ BOOL	CResourceManager::_GetDetailTexture(LPCSTR Name,LPCSTR& T, R_constant_setup
 		return FALSE;
 	}
 }*/
+
+std::vector<ITexture*> CResourceManager::FindTexture(const char* Name)
+{
+	R_ASSERT(Name && strlen(Name));
+
+	string_path	filename;
+	strcpy_s(filename, Name);
+	fix_texture_name(filename);
+
+	char* ch = strstr(filename, "*");
+
+	std::vector<ITexture*> res;
+
+	if (!ch) // no wildcard?
+	{
+		auto I = m_textures.find(filename);
+		if (I != m_textures.end())
+			res.emplace_back(dynamic_cast<ITexture*>(I->second));
+	}
+	else
+	{
+		// alpet: test for wildcard matching
+		ch[0] = 0; // remove *
+
+		for (const auto&[name, tex] : m_textures)
+			if (strstr(name, filename))
+				res.emplace_back(dynamic_cast<ITexture*>(tex));
+	}
+
+	return res;
+}
