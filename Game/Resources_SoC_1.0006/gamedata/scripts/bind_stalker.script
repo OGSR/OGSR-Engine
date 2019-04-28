@@ -65,22 +65,6 @@ local function del_buggy_objects() --Удаление из игры глючных объектов
 end
 
 function actor_binder:net_spawn(data)
-------------KD: установка настроек графики------------
-	-- шмапы
-	cmd("r2_ls_depth_bias -0.00005")
-	cmd("r2_ls_depth_scale 1.00001")
-	cmd("r2_sun_depth_far_bias -0.00001")
-	cmd("r2_sun_depth_far_scale 1.0")
-	cmd("r2_sun_depth_near_bias -0.0001")
-	cmd("r2_sun_depth_near_scale 1.00004")
-	cmd("r2_sun_focus on")
-	-- избавляемся от пересвета поверхностей
-	cmd("r2_ls_bloom_threshold 1.") --блум
-	cmd("r2_sun_lumscale 1.") --мультипликатор цвета солнца (идиотская настройка)
-	cmd("r2_rain_drops_control on") --капли на стекле
-	cmd("r2_lens_dirt_control on") --грязь на линзе
-----------------------KD: end-------------------------
-
 	level.show_indicators()
 
 	self.bCheckStart = true
