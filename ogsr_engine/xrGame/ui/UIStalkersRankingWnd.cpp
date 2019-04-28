@@ -144,7 +144,7 @@ void CUIStalkersRankingWnd::ShowHumanInfo(u16 id)
 
 void CUIStalkersRankingWnd::AddStalkerItem(CUIXml* xml, int num, CSE_ALifeTraderAbstract* t)
 {
-	string64								buff;
+	string128								buff;
 	CUIStalkerRankingInfoItem* itm		= xr_new<CUIStalkerRankingInfoItem>(this);
 	itm->Init							(xml, "item_human", 0);
 
@@ -163,7 +163,7 @@ void CUIStalkersRankingWnd::AddStalkerItem(CUIXml* xml, int num, CSE_ALifeTrader
 
 void CUIStalkersRankingWnd::AddActorItem(CUIXml* xml, int num, CSE_ALifeTraderAbstract* t)
 {
-	string64							buff;
+	string128							buff;
 	CUIStalkerRankingInfoItem*			itm;
 	if(num>19){
 		itm								= xr_new<CUIStalkerRankingElipsisItem>(this);
