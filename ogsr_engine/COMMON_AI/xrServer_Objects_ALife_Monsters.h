@@ -34,12 +34,10 @@ SERVER_ENTITY_DECLARE_BEGIN0(CSE_ALifeTraderAbstract)
 
 	////////////////////////////////////////////////////
 	//character profile info
-#ifndef  AI_COMPILER
 	shared_str						character_profile		();
 	void							set_character_profile	(shared_str);
 	shared_str			specific_character		();
 	void							set_specific_character	(shared_str);
-#endif
 
 	CHARACTER_COMMUNITY_INDEX		m_community_index;
 	CHARACTER_REPUTATION_VALUE		m_reputation;

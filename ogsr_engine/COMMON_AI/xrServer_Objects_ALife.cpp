@@ -14,16 +14,13 @@
 #include "object_broker.h"
 #include "restriction_space.h"
 
-#ifndef AI_COMPILER
-#	include "character_info.h"
-#endif
+#include "character_info.h"
 
 #ifndef XRGAME_EXPORTS
-#	include "bone.h"
-#	include "defines.h"
+#	include "..\xr_3da\bone.h"
+#	include "..\xr_3da\defines.h"
 	LPCSTR GAME_CONFIG = "game.ltx";
 #else
-#	include "bone.h"
 #	include "../xr_3da/Render.h"
 #endif
 

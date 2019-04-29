@@ -101,7 +101,13 @@ void CFontManager::InitializeFont(CGameFont*& F, LPCSTR section, u32 flags)
 	}
 	if (pSettings->line_exist(section,"interval"))
 	F->SetInterval(pSettings->r_fvector2(section,"interval"));
+}
 
+CGameFont* CFontManager::InitializeCustomFont(LPCSTR section, u32 flags)
+{
+	CGameFont* pFontAdd = NULL;
+	InitializeFont(pFontAdd, section, flags);
+	return pFontAdd;
 }
 
 CFontManager::~CFontManager()
@@ -231,7 +237,7 @@ void  CHUDManager::RenderUI()
 	if (psHUD_Flags.is(HUD_CROSSHAIR|HUD_CROSSHAIR_RT|HUD_CROSSHAIR_RT2) && !bAlready)	
 		m_pHUDTarget->Render();
 
-	draw_wnds_rects		();
+	// draw_wnds_rects		(); -- вызываеться так же после RenderUI
 
 	if( Device.Paused() && bShowPauseString){
 		CGameFont* pFont	= Font().pFontGraffiti50Russian;

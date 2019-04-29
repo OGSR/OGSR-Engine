@@ -16,6 +16,7 @@ struct SStaticSound
 	float			m_Freq;
 public:
 	void 			Load			(IReader& F);
+	void 			LoadIni			(CInifile::Sect& section);
 	void 			Update			(u32 gt, u32 rt);
 };
 

@@ -115,6 +115,7 @@ public:
 	virtual bool	CanDetach(const char* item_section_name);
 
 	virtual void	InitAddons();
+	virtual void	InitZoomParams(LPCSTR section, bool useTexture);
 
 	virtual bool	Action			(s32 cmd, u32 flags);
 	virtual void	onMovementChanged	(ACTOR_DEFS::EMoveCommand cmd);
@@ -157,6 +158,7 @@ protected:
 	int				m_iCurFireMode;
 	string16		m_sCurFireMode;
 	int				m_iPrefferedFireMode;
+	u32 m_fire_zoomout_time = u32(-1);
 
 	//переменная блокирует использование
 	//только разных типов патронов

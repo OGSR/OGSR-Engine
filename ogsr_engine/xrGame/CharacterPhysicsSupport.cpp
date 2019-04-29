@@ -27,10 +27,8 @@
 
 #include "../xr_3da/device.h"
 
-#ifdef PRIQUEL
-#	define USE_SMART_HITS
-#	define USE_IK
-#endif // PRIQUEL
+//#define USE_SMART_HITS
+//#define USE_IK
 
 void  NodynamicsCollide(bool& do_colide,bool bo1,dContact& c,SGameMtl * /*material_1*/,SGameMtl * /*material_2*/)
 {
@@ -331,6 +329,9 @@ void CCharacterPhysicsSupport::in_shedule_Update( u32 DT )
 	LPSTR dbg_stalker_death_anim = sdbg_stalker_death_anim;
 	BOOL  b_death_anim_velocity = TRUE;
 #endif
+
+BOOL g_bCopDeathAnim = TRUE;
+
 const float cmp_angle = M_PI/10.f;
 const float cmp_ldisp = 0.1f;
 IC bool cmp(const Fmatrix &f0, const Fmatrix &f1 )
@@ -399,18 +400,28 @@ void CCharacterPhysicsSupport::KillHit(SHit& H)
 	}
 #endif
 
-	float hit_angle = 0;
-	MotionID m = m_death_anims.motion(m_EntityAlife, H, hit_angle);
-
-	CAI_Stalker* const	holder = m_EntityAlife.cast_stalker();
-	if (holder && (holder->wounded())) //  || holder->movement().current_params().cover()
-		m = MotionID();
-
-	if (m.valid())
+	if (g_bCopDeathAnim)
 	{
-		xr_delete(m_interactive_motion);
-		m_interactive_motion = xr_new<imotion_position>();
-		m_interactive_motion->setup(m, m_pPhysicsShell);
+		float hit_angle = 0;
+		MotionID m = m_death_anims.motion(m_EntityAlife, H, hit_angle);
+
+		CAI_Stalker* const	holder = m_EntityAlife.cast_stalker();
+		if (holder && (holder->wounded())) //  || holder->movement().current_params().cover()
+			m = MotionID();
+
+		if (m.valid())
+		{
+			xr_delete(m_interactive_motion);
+			m_interactive_motion = xr_new<imotion_position>();
+			m_interactive_motion->setup(m, m_pPhysicsShell);
+
+			H.impulse *= 0.1f;
+		}
+	}
+
+	if (!m_was_wounded)
+	{
+		H.impulse *= (H.type() == ALife::eHitTypeExplosion ? 1.f : skel_fatal_impulse_factor);
 	}
 
 	if(is_imotion(m_interactive_motion))
@@ -444,11 +455,6 @@ void CCharacterPhysicsSupport::in_Hit(SHit& H, bool is_killing)
 	if(!m_pPhysicsShell&&is_killing)
 	{
 		KillHit(H);
-
-		if (!m_was_wounded)
-		{
-			H.impulse *= (H.type() == ALife::eHitTypeExplosion ? 1.f : skel_fatal_impulse_factor);
-		}
 	}
 
 	if(!(m_pPhysicsShell&&m_pPhysicsShell->isActive()))

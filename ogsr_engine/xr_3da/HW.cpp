@@ -358,7 +358,7 @@ void CHW::updateWindowProps(HWND m_hWnd)
 	u32 dwWindowStyle = WS_VISIBLE;
 	// Set window properties depending on what mode were in.
 	if (bWindowed)		{
-		bool bBordersMode = strstr(Core.Params, "-draw_borders");
+		static bool bBordersMode = !!strstr(Core.Params, "-draw_borders");
 		if (bBordersMode)
 			dwWindowStyle |= WS_BORDER | WS_DLGFRAME | WS_SYSMENU | WS_MINIMIZEBOX;
 		SetWindowLongPtr( m_hWnd, GWL_STYLE, dwWindowStyle );
@@ -373,9 +373,7 @@ void CHW::updateWindowProps(HWND m_hWnd)
 
 		RECT m_rcWindowBounds;
 		int fYOffset = 0;
-		bool bCenter = true;
-		if (strstr(Core.Params, "-no_center_screen"))
-			bCenter = false;
+		static bool bCenter = !strstr(Core.Params, "-no_center_screen");
 
 		if(bCenter){
 			RECT DesktopRect;

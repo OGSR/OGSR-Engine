@@ -120,8 +120,8 @@ void CRender::Screenshot		(IRender_interface::ScreenshotMode mode, LPCSTR name)
 			break;
 		case IRender_interface::SM_NORMAL:
 			{
-				bool UsePNG = !!strstr(Core.Params, "-ss_png");
-				bool UseTGA = !!strstr(Core.Params, "-ss_tga");
+				static bool UsePNG = !!strstr(Core.Params, "-ss_png");
+				static bool UseTGA = !!strstr(Core.Params, "-ss_tga");
 				string64 t_stemp;
 				string_path buf;
 				sprintf_s(buf, sizeof(buf), "ss_%s_%s_(%s).%s", Core.UserName, timestamp(t_stemp), g_pGameLevel ? g_pGameLevel->name().c_str() : "mainmenu", UsePNG ? "png" : UseTGA ? "tga" : "jpg");

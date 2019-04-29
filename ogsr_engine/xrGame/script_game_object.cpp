@@ -75,6 +75,7 @@ BIND_FUNCTION10 (&object(), CScriptGameObject::GetMaxPower,			CEntityAlive,	cond
 BIND_FUNCTION10	(&object(),	CScriptGameObject::GetRadiation,		CEntityAlive,	conditions().GetRadiation,		float,							-1);
 BIND_FUNCTION10	(&object(),	CScriptGameObject::GetBleeding,			CEntityAlive,	conditions().BleedingSpeed,		float,							-1);
 BIND_FUNCTION10	(&object(),	CScriptGameObject::GetMorale,			CEntityAlive,	conditions().GetEntityMorale,	float,							-1);
+BIND_FUNCTION10 (&object(), CScriptGameObject::GetThirst,			CEntityAlive,	conditions().GetThirst,			float,							-1);
 BIND_FUNCTION01	(&object(),	CScriptGameObject::SetHealth,			CEntityAlive,	conditions().ChangeHealth,		float,							float);
 BIND_FUNCTION01	(&object(),	CScriptGameObject::SetPsyHealth,		CEntityAlive,	conditions().ChangePsyHealth,	float,							float);
 BIND_FUNCTION01	(&object(),	CScriptGameObject::SetPower,			CEntityAlive,	conditions().ChangePower,		float,							float);
@@ -82,7 +83,8 @@ BIND_FUNCTION01 (&object(), CScriptGameObject::SetMaxPower,			CEntityAlive,	cond
 BIND_FUNCTION01 (&object(), CScriptGameObject::SetRadiation,		CEntityAlive,	conditions().ChangeRadiation,	float,							float);
 BIND_FUNCTION01 (&object(), CScriptGameObject::SetSatiety,			CEntityAlive,	conditions().ChangeSatiety,		float,							float);
 BIND_FUNCTION01 (&object(), CScriptGameObject::SetAlcohol,			CEntityAlive,	conditions().ChangeAlcohol,		float,							float);
-BIND_FUNCTION01	(&object(),	CScriptGameObject::SetMorale,			CEntityAlive,	conditions().ChangeEntityMorale,	float,							float);
+BIND_FUNCTION01	(&object(),	CScriptGameObject::SetMorale,			CEntityAlive,	conditions().ChangeEntityMorale,float,							float);
+BIND_FUNCTION01 (&object(), CScriptGameObject::SetThirst,			CEntityAlive,	conditions().ChangeThirst,		float,							float);
 BIND_FUNCTION02	(&object(),	CScriptGameObject::SetScriptControl,	CScriptEntity,	SetScriptControl,	bool,								LPCSTR,					bool,					shared_str);
 BIND_FUNCTION10	(&object(),	CScriptGameObject::GetScriptControl,	CScriptEntity,	GetScriptControl,	bool,								false);
 BIND_FUNCTION10	(&object(),	CScriptGameObject::GetScriptControlName,CScriptEntity,GetScriptControlName,LPCSTR,					"");
@@ -252,6 +254,32 @@ bool CScriptGameObject::CheckObjectVisibility(const CScriptGameObject *tpLuaGame
 	}
 
 	return				(script_entity->CheckObjectVisibility(&tpLuaGameObject->object()));
+}
+
+bool CScriptGameObject::CheckObjectVisibilityNow(const CScriptGameObject *tpLuaGameObject)
+{
+	if (!tpLuaGameObject) {
+		Log("!!CScriptGameObject : cannot check visibility null object!");
+		return false;
+	}
+
+	CEntityAlive		*entity_alive = smart_cast<CEntityAlive*>(&object());
+	if (entity_alive && !entity_alive->g_Alive()) {
+		ai().script_engine().script_log	(ScriptStorage::eLuaMessageTypeError,"CScriptGameObject : cannot check visibility of dead object!");
+		return			(false);
+	}
+
+	CScriptEntity		*script_entity = smart_cast<CScriptEntity*>(&object());
+	if (!script_entity) {
+		CActor			*actor = smart_cast<CActor*>(&object());
+		if (!actor) {
+			ai().script_engine().script_log	(ScriptStorage::eLuaMessageTypeError,"CScriptGameObject : cannot access class member CheckObjectVisibility!");
+			return		(false);
+		}
+		return			(actor->memory().visual().visible_right_now(&tpLuaGameObject->object()));
+	}
+
+	return				(script_entity->CheckObjectVisibilityNow(&tpLuaGameObject->object()));
 }
 
 //////////////////////////////////////////////////////////////////////////

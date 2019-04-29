@@ -99,6 +99,7 @@ extern ECORE_API float			ps_r2_slight_fade;			// 1.f
 extern ECORE_API int			ps_r2_wait_sleep;
 extern ECORE_API int ps_GlowsPerFrame;
 
+extern ECORE_API float			ps_r2_lut_control;			// r2-only
 extern void						xrRender_initconsole	();
 extern BOOL						xrRender_test_hw		();
 
@@ -232,6 +233,7 @@ enum
 	R2PP_FLAG_LIGHT_SHADOW_FADE = (1 << 11),
 	R_FLAG_GLOW_USE = (1 << 12),
 	R2PP_FLAG_SHADER_CACHE = (1 << 13),
+	R2PP_FLAG_LUT = (1 << 14),
 };
 
 enum

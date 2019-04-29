@@ -18,12 +18,13 @@
 extern int				g_bHudAdjustMode;
 extern float			g_fHudAdjustValue;
 
+struct					GAME_NEWS_DATA;
+
 class					CUIPdaMsgListItem;
 class					CLAItem;
 class					CUIZoneMap;
 class					CUIArtefactPanel;
 class					CUIScrollView;
-struct					GAME_NEWS_DATA;
 class					CActor;
 class					CWeapon;
 class					CMissile;
@@ -79,12 +80,11 @@ protected:
 	CUIStatic			UIStarvationIcon;
 	CUIStatic			UIPsyHealthIcon;
 	CUIStatic			UIInvincibleIcon;
+	CUIStatic			UIThirstIcon;
 //	CUIStatic			UISleepIcon;
-	CUIStatic			UIArtefactIcon;
+//	CUIStatic			UIArtefactIcon;
 
 	CUIScrollView*		m_UIIcons;
-	CUIWindow*			m_pMPChatWnd;
-	CUIWindow*			m_pMPLogWnd;
 public:	
 	CUIArtefactPanel*    m_artefactPanel;
 	
@@ -100,11 +100,10 @@ public:
 		ewiStarvation,
 		ewiPsyHealth,
 		ewiInvincible,
+		ewiThirst,
 //		ewiSleep,
-		ewiArtefact,
+//		ewiArtefact,
 	};
-
-	void				SetMPChatLog					(CUIWindow* pChat, CUIWindow* pLog);
 
 	// Задаем цвет соответствующей иконке
 	void				SetWarningIconColor				(EWarningIcons icon, const u32 cl);

@@ -10,13 +10,15 @@
 #include "patrol_path.h"
 #include "levelgamedef.h"
 
-LPCSTR TEST_PATROL_PATH_NAME		= "val_dogs_nest4_centre";
-
 CPatrolPath::CPatrolPath			(shared_str name)
 {
 #ifdef DEBUG
 	m_name			= name;
 #endif
+}
+
+CPatrolPath::~CPatrolPath()
+{
 }
 
 CPatrolPath	&CPatrolPath::load_raw	(const CLevelGraph *level_graph, const CGameLevelCrossTable *cross, const CGameGraph *game_graph, IReader &stream)
@@ -38,8 +40,47 @@ CPatrolPath	&CPatrolPath::load_raw	(const CLevelGraph *level_graph, const CGameL
 	return			(*this);
 }
 
-CPatrolPath::~CPatrolPath	()
+CPatrolPath	&CPatrolPath::load_ini(CInifile::Sect& section)
 {
+	const char* points = section.r_string("points");
+	const int vertex_count = _GetItemCount(points);
+
+	string16 prefix;
+	for (int i = 0; i < vertex_count; ++i)
+	{
+		_GetItem(points, i, prefix);
+
+		add_vertex(CPatrolPoint(this).load_ini(section, prefix), i);
+	}
+
+	for (int i = 0; i < vertex_count; ++i)
+	{
+		_GetItem(points, i, prefix);
+
+		string256 full_name;
+		strconcat(sizeof(full_name), full_name, prefix, ":", "links");
+
+		if (section.line_exist(full_name))
+		{
+			const char* links = section.r_string(full_name);
+			const int links_count = _GetItemCount(links);
+
+			string32 link;
+			for (int k = 0; k < links_count; ++k)
+			{
+				_GetItem(links, k, link);
+
+				u32 vertex_idx;
+				float probability;
+
+				sscanf(link, "p%d(%f)", &vertex_idx, &probability);
+
+				add_edge(i, vertex_idx, probability);
+			}
+		}
+	}
+
+	return			(*this);
 }
 
 #ifdef DEBUG

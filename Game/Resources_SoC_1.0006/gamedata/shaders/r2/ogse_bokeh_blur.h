@@ -119,12 +119,7 @@ float3 debugFocus(float3 col, float blur, float depth) {
 
 	return col;
 }
-/*float vignette(float2 center) {
-	float dist = distance(center, float2(0.5,0.5));
-	float gain = DDOF_FSTOP;
-	dist = smoothstep(1 + gain, DDOF_VIGNOUT+gain, dist);
-	return saturate(dist);
-}*/
+
 
 float3 bokeh_dof(float2 center, float d, float blur) {
 	

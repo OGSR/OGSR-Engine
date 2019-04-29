@@ -19,37 +19,27 @@
 #include "graph_engine_space.h"
 #include "profiler.h"
 
-#ifndef AI_COMPILER
-#	include "operator_condition.h"
-#	include "condition_state.h"
-#	include "operator_abstract.h"
-#endif // AI_COMPILER
+#include "operator_condition.h"
+#include "condition_state.h"
+#include "operator_abstract.h"
 
 using namespace GraphEngineSpace;
 
 class CGraphEngine {
 public:
-#ifndef AI_COMPILER
 	typedef CDataStorageBinaryHeap							CSolverPriorityQueue;
-#endif // AI_COMPILER
 	typedef CDataStorageBucketList<u32,u32,8*1024,false>	CPriorityQueue;
 	
 	typedef CVertexManagerFixed<u32,u32,8>					CVertexManager;
 
-#ifndef AI_COMPILER
 	typedef CVertexManagerHashFixed<
 				u32,
 				_solver_index_type,
 				256,
 				8*1024
 			>												CSolverVertexManager;
-#endif // AI_COMPILER
-#ifdef AI_COMPILER
-	typedef CVertexAllocatorFixed<2*1024*1024>				CVertexAllocator;
-#else
 	typedef CVertexAllocatorFixed<64*1024>					CVertexAllocator;
 	typedef CVertexAllocatorFixed<8*1024>					CSolverVertexAllocator;
-#endif // AI_COMPILER
 
 	typedef CAStar<
 		_dist_type,
@@ -58,7 +48,6 @@ public:
 		CVertexAllocator
 	>														CAlgorithm;
 	
-#ifndef AI_COMPILER
 	typedef CAStar<
 		_solver_dist_type,
 		CSolverPriorityQueue,
@@ -70,20 +59,15 @@ public:
 			true
 		>
 	>														CSolverAlgorithm;
-#endif // AI_COMPILER
 
 	CAlgorithm				*m_algorithm;
-#ifndef AI_COMPILER
 	CSolverAlgorithm		*m_solver_algorithm;
-#endif // AI_COMPILER
 
 public:
 
 	IC				CGraphEngine			(u32 max_vertex_count);
 	virtual			~CGraphEngine			();
-#ifndef AI_COMPILER
 	IC		const CSolverAlgorithm &solver_algorithm() const;
-#endif // AI_COMPILER
 
 	template <
 		typename _Graph,
@@ -123,7 +107,6 @@ public:
 				_PathManager			&path_manager
 			);
 
-#ifndef AI_COMPILER
 	template <
 		typename T1,
 		typename T2,
@@ -151,7 +134,7 @@ public:
 		xr_vector<_solver_edge_type>	*node_path,
 		const _Parameters				&parameters
 	);
-#endif // AI_COMPILER
 };
+
 
 #include "graph_engine_inline.h"

@@ -1,5 +1,4 @@
 #include "stdafx.h"
-#include "cl_intersect.h"
 #include "alife_space.h"
 #include "phmovementcontrol.h"
 #include "entity.h"
@@ -1019,11 +1018,12 @@ void CPHMovementControl::CreateCharacter()
 #endif
 	m_character->SetPosition(vPosition);
 	m_character->SetCollisionDamageFactor(fCollisionDamageFactor*fCollisionDamageFactor);
-	trying_times[0]=trying_times[1]=trying_times[2]=trying_times[3]=u32(-1);
+	trying_times[0]=trying_times[1]=trying_times[2]=trying_times[3]=trying_times[4]=u32(-1);
 	trying_poses[0].set(vPosition);
 	trying_poses[1].set(vPosition);
 	trying_poses[2].set(vPosition);
 	trying_poses[3].set(vPosition);
+	trying_poses[4].set(vPosition);
 }
 CPHSynchronize*	CPHMovementControl::GetSyncItem()
 {

@@ -159,6 +159,7 @@ void CWeaponMagazined::Load	(LPCSTR section)
 		m_bHasDifferentFireModes = false;
 
 	m_bVision = !!READ_IF_EXISTS(pSettings, r_bool, section, "vision_present", false);
+	m_fire_zoomout_time = READ_IF_EXISTS( pSettings, r_u32, section, "fire_zoomout_time", u32(-1) );
 }
 
 void CWeaponMagazined::FireStart		()
@@ -501,6 +502,9 @@ void CWeaponMagazined::UpdateCL			()
 				fTime			-=	dt;
 			}
 
+			if ( m_fire_zoomout_time != u32(-1) && IsZoomed() && m_dwStateTime > m_fire_zoomout_time )
+			  OnZoomOut();
+
 			break;
 		case eMisfire:		state_Misfire	(dt);	break;
 		case eMagEmpty:		state_MagEmpty	(dt);	break;
@@ -767,6 +771,8 @@ void CWeaponMagazined::switch2_Hidden()
 
 	signal_HideComplete		();
 	RemoveShotEffector		();
+
+	m_nearwall_last_hud_fov = psHUD_FOV_def;
 }
 void CWeaponMagazined::switch2_Showing()
 {
@@ -945,91 +951,124 @@ bool CWeaponMagazined::Detach(const char* item_section_name, bool b_spawn_item)
 		return inherited::Detach(item_section_name, b_spawn_item);;
 }
 
+void CWeaponMagazined::InitZoomParams(LPCSTR section, bool useTexture)
+{
+	m_fMinZoomK = def_min_zoom_k;
+	m_fZoomStepCount = def_zoom_step_count;
+
+	LPCSTR dynamicZoomParams = READ_IF_EXISTS(pSettings, r_string, section, "scope_dynamic_zoom", NULL);
+	if (dynamicZoomParams)
+	{
+		int num_zoom_param = _GetItemCount(dynamicZoomParams);
+
+		ASSERT_FMT(num_zoom_param >= 1, "!![%s] : Invalid scope_dynamic_zoom parameter in section [%s]", __FUNCTION__, section);
+
+		string128 tmp;
+		m_bScopeDynamicZoom = CInifile::IsBOOL(_GetItem(dynamicZoomParams, 0, tmp));
+
+		if (num_zoom_param > 1)
+			m_fZoomStepCount = atof(_GetItem(dynamicZoomParams, 1, tmp));
+
+		if (num_zoom_param > 2)
+			m_fMinZoomK = atof(_GetItem(dynamicZoomParams, 2, tmp));
+	}
+	else
+		m_bScopeDynamicZoom = false;
+
+	m_fScopeInertionFactor = READ_IF_EXISTS(pSettings, r_float, section, "scope_inertion_factor", m_fControlInertionFactor);
+	clamp(m_fScopeInertionFactor, m_fControlInertionFactor, m_fScopeInertionFactor);
+
+	m_fScopeZoomFactor = pSettings->r_float(section, "scope_zoom_factor");
+	m_fSecondVPZoomFactor = READ_IF_EXISTS(pSettings, r_float, section, "scope_lense_fov_factor", 0.0f);
+
+	m_fZoomHudFov = READ_IF_EXISTS(pSettings, r_float, section, "scope_zoom_hud_fov", 0.0f);
+	m_fSecondVPHudFov = READ_IF_EXISTS(pSettings, r_float, section, "scope_lense_hud_fov", 0.0f);
+
+	if (m_UIScope)
+		xr_delete(m_UIScope);
+
+	if (useTexture)
+	{
+		shared_str scope_tex_name = READ_IF_EXISTS(pSettings, r_string, section, "scope_texture", "");
+
+		if (scope_tex_name.size() > 0)
+		{
+			m_UIScope = xr_new<CUIStaticItem>();
+			m_UIScope->Init(*scope_tex_name, "hud\\scope", 0, 0, alNone);
+		}
+	}
+}
+
 void CWeaponMagazined::InitAddons()
 {
 	//////////////////////////////////////////////////////////////////////////
 	// Прицел
 	m_fIronSightZoomFactor = READ_IF_EXISTS(pSettings, r_float, cNameSect(), "ironsight_zoom_factor", 50.0f);
 	m_fSecondScopeZoomFactor = READ_IF_EXISTS(pSettings, r_float, cNameSect(), "second_scope_zoom_factor", m_fIronSightZoomFactor);
-	//
+
 	if(IsScopeAttached())
 	{
 		if(m_eScopeStatus == ALife::eAddonAttachable)
 		{
 			m_sScopeName = pSettings->r_string(cNameSect(), "scope_name");
-			m_iScopeX	 = pSettings->r_s32(cNameSect(),"scope_x");
-			m_iScopeY	 = pSettings->r_s32(cNameSect(),"scope_y");
+			m_iScopeX = pSettings->r_s32(cNameSect(), "scope_x");
+			m_iScopeY = pSettings->r_s32(cNameSect(), "scope_y");
 
-			m_fScopeZoomFactor = pSettings->r_float	(*m_sScopeName, "scope_zoom_factor");
-			m_bScopeDynamicZoom = !!READ_IF_EXISTS(pSettings, r_bool, *m_sScopeName, "scope_dynamic_zoom", false);
+			InitZoomParams(*m_sScopeName, true);
 
-			shared_str scope_tex_name = READ_IF_EXISTS(pSettings, r_string, *m_sScopeName, "scope_texture", "");
-
-			if(m_UIScope) xr_delete(m_UIScope);
-
-			if (scope_tex_name.size() > 0)
-			{
-				m_UIScope = xr_new<CUIStaticItem>();
-				m_UIScope->Init(*scope_tex_name, "hud\\scope", 0, 0, alNone);
-			}
-
-			m_fSecondVP_FovFactor = READ_IF_EXISTS(pSettings, r_float, *m_sScopeName, "scope_lense_fov_factor", 0.0f);
-			m_fScopeInertionFactor = READ_IF_EXISTS(pSettings, r_float, *m_sScopeName, "scope_inertion_factor", m_fControlInertionFactor);
+			m_fZoomHudFov = READ_IF_EXISTS(pSettings, r_float, cNameSect(), "scope_zoom_hud_fov", m_fZoomHudFov);
+			m_fSecondVPHudFov = READ_IF_EXISTS(pSettings, r_float, cNameSect(), "scope_lense_hud_fov", m_fSecondVPHudFov);
 		}
 		else if(m_eScopeStatus == ALife::eAddonPermanent)
 		{
-			m_fScopeZoomFactor = pSettings->r_float(cNameSect(), "scope_zoom_factor");
-			m_bScopeDynamicZoom = smart_cast<CWeaponBinoculars*>(this) != nullptr || !!READ_IF_EXISTS(pSettings, r_bool, cNameSect(), "scope_dynamic_zoom", false);
+			InitZoomParams(cNameSect().c_str(), true);
 
-			shared_str scope_tex_name = READ_IF_EXISTS(pSettings, r_string, cNameSect(), "scope_texture", "");
-
-			if(m_UIScope) xr_delete(m_UIScope);
-
-			if (scope_tex_name.size() > 0)
-			{
-				m_UIScope = xr_new<CUIStaticItem>();
-				m_UIScope->Init(*scope_tex_name, "hud\\scope", 0, 0, alNone);
-			}
-
-			m_fSecondVP_FovFactor = READ_IF_EXISTS(pSettings, r_float, cNameSect(), "scope_lense_fov_factor", 0.0f);
-			m_fScopeInertionFactor = READ_IF_EXISTS(pSettings, r_float, cNameSect(), "scope_inertion_factor", m_fControlInertionFactor);
+			// CWeaponBinoculars always use dynamic zoom
+			m_bScopeDynamicZoom = m_bScopeDynamicZoom || !!smart_cast<CWeaponBinoculars*>(this);
 		}
 	}
 	else
 	{
-		if(m_UIScope) xr_delete(m_UIScope);
-
 		m_bScopeDynamicZoom = false;
 
 		if (IsZoomEnabled())
 		{
-			m_fScopeZoomFactor = pSettings->r_float(cNameSect(), "scope_zoom_factor");
+			InitZoomParams(cNameSect().c_str(), !!READ_IF_EXISTS(pSettings, r_bool, cNameSect(), "force_scope_texture", false));
 
 			// for weapon without any scope - scope_zoom_factor will overrider ironsight_zoom_factor
-			m_fIronSightZoomFactor = m_fScopeZoomFactor; 
-
-			m_fSecondVP_FovFactor = READ_IF_EXISTS(pSettings, r_float, cNameSect(), "scope_lense_fov_factor", 0.0f);
-			m_fScopeInertionFactor = READ_IF_EXISTS(pSettings, r_float, cNameSect(), "scope_inertion_factor", m_fControlInertionFactor);
+			m_fIronSightZoomFactor = m_fScopeZoomFactor;
 		}
 		else 
 		{
-			m_fSecondVP_FovFactor = 0.0f;
+			m_fSecondVPZoomFactor = 0.0f;
+			m_fZoomHudFov = 0.0f;
+			m_fSecondVPHudFov = 0.0f;
 			m_fScopeInertionFactor = m_fControlInertionFactor;
 		}
 	}
 
 	if (m_bScopeDynamicZoom)
 	{
-		if (Core.Features.test(xrCore::Feature::ogse_wpn_zoom_system)) 
+		if (SecondVPEnabled())
 		{
 			float delta, min_zoom_factor;
-			GetZoomData(m_fScopeZoomFactor, delta, min_zoom_factor);
+			GetZoomData(m_fSecondVPZoomFactor, delta, min_zoom_factor);
 
-			m_fRTZoomFactor = min_zoom_factor; // set minimal zoom by default for ogse mode
+			m_fRTZoomFactor = min_zoom_factor;
 		}
 		else
 		{
-			m_fRTZoomFactor = m_fScopeZoomFactor;
+			if (Core.Features.test(xrCore::Feature::ogse_wpn_zoom_system))
+			{
+				float delta, min_zoom_factor;
+				GetZoomData(m_fScopeZoomFactor, delta, min_zoom_factor);
+
+				m_fRTZoomFactor = min_zoom_factor; // set minimal zoom by default for ogse mode
+			}
+			else
+			{
+				m_fRTZoomFactor = m_fScopeZoomFactor;
+			}
 		}
 	}
 
@@ -1039,12 +1078,12 @@ void CWeaponMagazined::InitAddons()
 		m_sSmokeParticlesCurrent = m_sSilencerSmokeParticles;
 		m_pSndShotCurrent = &sndSilencerShot;
 
-
 		//сила выстрела
 		LoadFireParams	(*cNameSect(), "");
 
 		//подсветка от выстрела
 		LoadLights		(*cNameSect(), "silencer_");
+
 		ApplySilencerKoeffs();
 	}
 	else
@@ -1055,12 +1094,15 @@ void CWeaponMagazined::InitAddons()
 
 		//сила выстрела
 		LoadFireParams	(*cNameSect(), "");
+
 		//подсветка от выстрела
 		LoadLights		(*cNameSect(), "");
 	}
 
 	inherited::InitAddons();
 	callback(GameObject::eOnAddonInit)(1);
+
+	UpdateZoomOffset();
 }
 
 void CWeaponMagazined::ApplySilencerKoeffs	()

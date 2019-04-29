@@ -644,72 +644,78 @@ CUIXmlInit::StaticsVec CUIXmlInit::InitAutoStatic(CUIXml& xml_doc, LPCSTR tag_na
 
 bool CUIXmlInit::InitFont(CUIXml &xml_doc, LPCSTR path, int index, u32 &color, CGameFont *&pFnt)
 {
-	color = GetColor	(xml_doc, path, index, 0xff);
+	color = GetColor(xml_doc, path, index, 0xff);
 
 	shared_str font_name = xml_doc.ReadAttrib(path, index, "font", NULL);
-	if(*font_name == NULL || xr_strlen(*font_name)<1)
+	if (*font_name == NULL || xr_strlen(*font_name) < 1)
 	{
 		pFnt = NULL;
 		return false;
 	}
 
-	if(*font_name)
+	if (*font_name)
 	{
-		if(!xr_strcmp(*font_name, GRAFFITI19_FONT_NAME))
+		if (!xr_strcmp(*font_name, GRAFFITI19_FONT_NAME))
 		{
 			pFnt = UI()->Font()->pFontGraffiti19Russian;
 		}
-		else if(!xr_strcmp(*font_name, GRAFFITI22_FONT_NAME))
+		else if (!xr_strcmp(*font_name, GRAFFITI22_FONT_NAME))
 		{
 			pFnt = UI()->Font()->pFontGraffiti22Russian;
 		}
-		else if(!xr_strcmp(*font_name, GRAFFITI32_FONT_NAME))
+		else if (!xr_strcmp(*font_name, GRAFFITI32_FONT_NAME))
 		{
 			pFnt = UI()->Font()->pFontGraffiti32Russian;
 		}
-    else if (!xr_strcmp(*font_name, GRAFFITI40_FONT_NAME))
-    {
-      pFnt = UI()->Font()->pFontGraffiti40Russian;
-    }
-    else if(!xr_strcmp(*font_name, GRAFFITI50_FONT_NAME))
+		else if (!xr_strcmp(*font_name, GRAFFITI40_FONT_NAME))
+		{
+			pFnt = UI()->Font()->pFontGraffiti40Russian;
+		}
+		else if (!xr_strcmp(*font_name, GRAFFITI50_FONT_NAME))
 		{
 			pFnt = UI()->Font()->pFontGraffiti50Russian;
 		}
-		else if(!xr_strcmp(*font_name, ARIAL14_FONT_NAME))
+		else if (!xr_strcmp(*font_name, ARIAL14_FONT_NAME))
 		{
 			pFnt = UI()->Font()->pFontArial14;
 		}
-    else if (!xr_strcmp(*font_name, ARIAL21_FONT_NAME))
-    {
-      pFnt = UI()->Font()->pFontArial21;
-    }
-		else if(!xr_strcmp(*font_name, MEDIUM_FONT_NAME))
+		else if (!xr_strcmp(*font_name, ARIAL21_FONT_NAME))
+		{
+			pFnt = UI()->Font()->pFontArial21;
+		}
+		else if (!xr_strcmp(*font_name, MEDIUM_FONT_NAME))
 		{
 			pFnt = UI()->Font()->pFontMedium;
 		}
-		else if(!xr_strcmp(*font_name, SMALL_FONT_NAME))
+		else if (!xr_strcmp(*font_name, SMALL_FONT_NAME))
 		{
 			pFnt = UI()->Font()->pFontStat;
 		}
-		else if(!xr_strcmp(*font_name, LETTERICA16_FONT_NAME))
+		else if (!xr_strcmp(*font_name, LETTERICA16_FONT_NAME))
 		{
 			pFnt = UI()->Font()->pFontLetterica16Russian;
 		}
-		else if(!xr_strcmp(*font_name, LETTERICA18_FONT_NAME))
+		else if (!xr_strcmp(*font_name, LETTERICA18_FONT_NAME))
 		{
 			pFnt = UI()->Font()->pFontLetterica18Russian;
 		}
-		else if(!xr_strcmp(*font_name, LETTERICA25_FONT_NAME))
+		else if (!xr_strcmp(*font_name, LETTERICA25_FONT_NAME))
 		{
 			pFnt = UI()->Font()->pFontLetterica25;
 		}
-		else if(!xr_strcmp(*font_name, DI_FONT_NAME))
+		else if (!xr_strcmp(*font_name, DI_FONT_NAME))
 		{
 			pFnt = UI()->Font()->pFontDI;
 		}
-		else{
-			R_ASSERT3(0,"unknown font",*font_name);
-			pFnt = NULL;
+		else
+		{
+			pFnt = UI()->Font()->InitializeCustomFont(*font_name);
+
+			if (!pFnt)
+			{
+				R_ASSERT3(0, "unknown font", *font_name);
+				pFnt = NULL;
+			}
 		}
 	}
 	return true;
@@ -1303,9 +1309,15 @@ bool CUIXmlInit::InitTrackBar(CUIXml& xml_doc, const char* path, int index, CUIT
 
 	int invert			= xml_doc.ReadAttribInt(path, index, "invert", 0);
 	pWnd->SetInvert		(!!invert);
+
 	float step			= xml_doc.ReadAttribFlt(path, index, "step", 0.1f);
 	pWnd->SetStep		(step);
-	
+
+	float min_xml		= xml_doc.ReadAttribFlt(path, index, "min", 0.0f);
+	pWnd->SetMin		(min_xml);
+
+	float max_xml		= xml_doc.ReadAttribFlt(path, index, "max", 0.0f);
+	pWnd->SetMax		(max_xml);
 
 	return				true;
 }

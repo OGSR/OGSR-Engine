@@ -370,7 +370,6 @@ IC	typename CProblemSolverAbstract::_operator_ptr CProblemSolverAbstract::get_op
 TEMPLATE_SPECIALIZATION
 IC	void CProblemSolverAbstract::solve			()
 {
-#ifndef AI_COMPILER
 	m_solution_changed			= false;
 
 	if (actual())
@@ -392,7 +391,6 @@ IC	void CProblemSolverAbstract::solve			()
 				8000
 			)
 		);
-#endif
 }
 
 TEMPLATE_SPECIALIZATION

@@ -380,10 +380,24 @@ void show_indicators()
 	HUD().GetUI()->ShowCrosshair();
 }
 
+bool game_indicators_shown()
+{
+	return HUD().GetUI()->GameIndicatorsShown();
+}
+
+Flags32 get_hud_flags()
+{
+	return psHUD_Flags;
+}
 
 bool is_level_present()
 {
 	return (!!g_pGameLevel);
+}
+
+bool is_removing_objects_script()
+{
+	return Level().is_removing_objects();
 }
 
 CPHCall* add_call(const luabind::functor<bool> &condition,const luabind::functor<void> &action)
@@ -464,6 +478,8 @@ extern bool g_bDisableAllInput;
 void disable_input()
 {
 	g_bDisableAllInput = true;
+        if ( Actor() )
+		Actor()->PickupModeOff();
 }
 void enable_input()
 {
@@ -779,24 +795,6 @@ void change_level( GameGraph::_GRAPH_ID game_vertex_id, u32 level_vertex_id, Fve
 }
 
 
-void setEFXPreset( LPCSTR preset ) {
-  ::Sound->setEFXPreset( preset );
-}
-
-void unsetEFXPreset() {
-  ::Sound->unsetEFXPreset();
-}
-
-
-void setEFXEAXPreset( LPCSTR preset ) {
-  ::Sound->setEFXEAXPreset( preset );
-}
-
-void unsetEFXEAXPreset() {
-  ::Sound->unsetEFXEAXPreset();
-}
-
-
 void set_cam_inert( float v ) {
   psCamInert = v;
   clamp( psCamInert, 0.0f, 1.0f );
@@ -961,6 +959,7 @@ void CLevel::script_register(lua_State *L)
 	[
 		// obsolete\deprecated
 		def("object_by_id",						get_object_by_id),
+		def("is_removing_objects",				is_removing_objects_script),
 #ifdef DEBUG
 		def("debug_object",						get_object_by_name),
 		def("debug_actor",						tpfGetActor),
@@ -1006,6 +1005,8 @@ void CLevel::script_register(lua_State *L)
 		def("main_input_receiver",				main_input_receiver),
 		def("hide_indicators",					hide_indicators),
 		def("show_indicators",					show_indicators),
+		def("game_indicators_shown",			game_indicators_shown),
+		def("get_hud_flags",					get_hud_flags),
 		def("add_call",							((CPHCall* (*) (const luabind::functor<bool> &,const luabind::functor<void> &)) &add_call)),
 		def("add_call",							((CPHCall* (*) (const luabind::object &,const luabind::functor<bool> &,const luabind::functor<void> &)) &add_call)),
 		def("add_call",							((CPHCall* (*) (const luabind::object &, LPCSTR, LPCSTR)) &add_call)),
@@ -1066,10 +1067,6 @@ void CLevel::script_register(lua_State *L)
 		def("send_event_mouse_wheel", &send_event_mouse_wheel),
 
 		def( "change_level", &change_level ),
-		def( "set_efx_preset", &setEFXPreset ),
-		def( "unset_efx_preset", &unsetEFXPreset ),
-		def( "set_efx_eax_preset", &setEFXEAXPreset ),
-		def( "unset_efx_eax_preset", &unsetEFXEAXPreset ),
 		def( "set_cam_inert", &set_cam_inert ),
 		def( "set_monster_relation", &set_monster_relation ),
 		def( "patrol_path_add", &patrol_path_add ),

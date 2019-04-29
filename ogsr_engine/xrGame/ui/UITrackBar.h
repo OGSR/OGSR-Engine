@@ -30,6 +30,9 @@ public:
 			void	SetType					(bool b_float){m_b_is_float=b_float;};
 			bool	GetCheck				();
 			void	SetCheck				(bool b);
+
+			void	SetMin					(float v) { m_f_min_xml = v; }
+			void	SetMax					(float v) { m_f_max_xml = v; }
 protected:
 			void 	UpdatePos				();
 			void 	UpdatePosRelativeToMouse();
@@ -39,6 +42,9 @@ protected:
 	CUIFrameLineWnd*	m_pFrameLine_d;
 	bool				m_b_invert;
 	bool				m_b_is_float;
+
+	float				m_f_max_xml = 0.f;
+	float				m_f_min_xml = 0.f;
 
 	union{
 		struct{

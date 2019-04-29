@@ -51,7 +51,7 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\COMMON\cl_intersect.h">
+    <ClInclude Include="..\..\xr_3da\cl_intersect.h">
       <Filter>Kernel</Filter>
     </ClInclude>
     <ClInclude Include="stdafx.h">
@@ -290,6 +290,9 @@
     </ClInclude>
     <ClInclude Include="..\xrRender\ColorMapManager.h">
       <Filter>Core_Target\ColorMap</Filter>
+    </ClInclude>
+    <ClInclude Include="blender_lut.h">
+      <Filter>Shading templates</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -668,7 +671,7 @@
     <ClCompile Include="r2_puddles.cpp">
       <Filter>Core</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\COMMON\tga.cpp">
+    <ClCompile Include="..\xrRender\tga.cpp">
       <Filter>Core</Filter>
     </ClCompile>
     <ClCompile Include="..\xrRender\dxGlowManager.cpp">
@@ -676,6 +679,12 @@
     </ClCompile>
     <ClCompile Include="..\xrRender\ColorMapManager.cpp">
       <Filter>Core_Target\ColorMap</Filter>
+    </ClCompile>
+    <ClCompile Include="blender_lut.cpp">
+      <Filter>Shading templates</Filter>
+    </ClCompile>
+    <ClCompile Include="r2_rendertarget_phase_lut.cpp">
+      <Filter>Core_Target</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

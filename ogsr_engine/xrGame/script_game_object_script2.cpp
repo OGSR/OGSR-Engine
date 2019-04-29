@@ -77,6 +77,7 @@ class_<CScriptGameObject> script_register_game_object1(class_<CScriptGameObject>
 		.property("morale",					&CScriptGameObject::GetMorale,			&CScriptGameObject::SetMorale)
 // KD
 		.property("alcohol",				&CScriptGameObject::GetAlcohol,			&CScriptGameObject::SetAlcohol)
+		.property("thirst",					&CScriptGameObject::GetThirst,			&CScriptGameObject::SetThirst)
 		.property("max_power",				&CScriptGameObject::GetMaxPower,		&CScriptGameObject::SetMaxPower)
 
 			// Actor State
@@ -121,6 +122,7 @@ class_<CScriptGameObject> script_register_game_object1(class_<CScriptGameObject>
 		.def("get_script_name",				&CScriptGameObject::GetScriptControlName)
 		.def("reset_action_queue",			&CScriptGameObject::ResetActionQueue)
 		.def("see",							&CScriptGameObject::CheckObjectVisibility)
+		.def("see_right_now",							&CScriptGameObject::CheckObjectVisibilityNow)
 		.def("see",							&CScriptGameObject::CheckTypeVisibility)
 
 		.def("who_hit_name",				&CScriptGameObject::WhoHitName)

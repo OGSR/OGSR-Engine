@@ -2,7 +2,6 @@
 #include "alife_space.h"
 #include "hit.h"
 #include "ode_include.h"
-#include "bone.h"
 #include "../xr_3da/NET_Server_Trash/net_utils.h"
 #include "xrMessages.h"
 #include "Level.h"

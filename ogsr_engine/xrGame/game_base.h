@@ -82,10 +82,9 @@ public:
 			
 			s16		frags					() const {return m_iRivalKills - m_iSelfKills - m_iTeamKills;} 
 
-#ifndef AI_COMPILER
 	virtual void	net_Export				(NET_Packet& P, BOOL Full = FALSE);
 	virtual void	net_Import				(NET_Packet& P);
-#endif
+
 	//---------------------------------------
 	
 	DEF_VECTOR(PLAYER_ITEMS_LIST, u16);

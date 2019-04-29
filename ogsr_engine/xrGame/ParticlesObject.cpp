@@ -5,7 +5,6 @@
 
 
 #include "ParticlesObject.h"
-#include "defines.h"
 #include "../xr_3da/fbasicvisual.h"
 #include "../xr_3da/ParticleCustom.h"
 #include "..\xr_3da\render.h"

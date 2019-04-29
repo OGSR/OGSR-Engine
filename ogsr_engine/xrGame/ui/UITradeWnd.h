@@ -60,7 +60,7 @@ protected:
 	void				UpdatePrices				();
 	void				ColorizeItem				(CUICellItem* itm, bool canTrade, bool highlighted);
 	bool				MoveItem					(CUICellItem* itm);
-	void				MoveItems					(CUICellItem* itm, bool b_all);
+	void				MoveItems					(CUICellItem* itm);
 
 	enum EListType{eNone,e1st,e2nd,eBoth};
 
@@ -99,6 +99,6 @@ protected:
 	bool		xr_stdcall		OnItemSelected		(CUICellItem* itm);
 	bool		xr_stdcall		OnItemRButtonClick	(CUICellItem* itm);
 
-	void				BindDragDropListEnents		(CUIDragDropListEx* lst);
+	void				BindDragDropListEvents		(CUIDragDropListEx* lst);
 
 };

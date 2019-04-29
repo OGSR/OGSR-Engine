@@ -99,8 +99,8 @@ private:
 	Fbox				aabb;
 	Fbox				boxes[ 5 ];
 
-	u32					trying_times[4];
-	Fvector				trying_poses[4];
+	u32					trying_times[ 5 ];
+	Fvector				trying_poses[ 5 ];
 	u64					block_damage_step_end;
 	DWORD				m_dwCurBox;
 

@@ -26,6 +26,7 @@ CCustomOutfit::CCustomOutfit()
 	m_fHealthRestoreSpeed    = 0.f;
 	m_fPowerRestoreSpeed     = 0.f;
 	m_fSatietyRestoreSpeed   = 0.f;
+	m_fThirstRestoreSpeed    = 0.f;
 }
 
 CCustomOutfit::~CCustomOutfit() 
@@ -85,6 +86,7 @@ void CCustomOutfit::Load(LPCSTR section)
 	m_fHealthRestoreSpeed    = READ_IF_EXISTS( pSettings, r_float, section, "health_restore_speed", 0.f );
 	m_fPowerRestoreSpeed     = READ_IF_EXISTS( pSettings, r_float, section, "power_restore_speed", 0.f );
 	m_fSatietyRestoreSpeed   = READ_IF_EXISTS( pSettings, r_float, section, "satiety_restore_speed", 0.f );
+	m_fThirstRestoreSpeed    = READ_IF_EXISTS( pSettings, r_float, section, "thirst_restore_speed", 0.f );
 }
 
 void CCustomOutfit::Hit(float hit_power, ALife::EHitType hit_type)

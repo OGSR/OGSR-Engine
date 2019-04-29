@@ -28,9 +28,7 @@ CAI_Space::CAI_Space				()
 	m_graph_engine			= 0;
 	m_cover_manager			= 0;
 	m_level_graph			= 0;
-#ifndef PRIQUEL
 	m_cross_table			= 0;
-#endif // PRIQUEL
 	m_alife_simulator		= 0;
 	m_patrol_path_storage	= 0;
 	m_script_engine			= 0;
@@ -41,16 +39,11 @@ void CAI_Space::init				()
 	VERIFY					(!m_ef_storage);
 	m_ef_storage			= xr_new<CEF_Storage>();
 
-#ifndef PRIQUEL
 	VERIFY					(!m_game_graph);
 	m_game_graph			= xr_new<CGameGraph>();
 
 	VERIFY					(!m_graph_engine);
 	m_graph_engine			= xr_new<CGraphEngine>(game_graph().header().vertex_count());
-#else // PRIQUEL
-	VERIFY					(!m_graph_engine);
-	m_graph_engine			= xr_new<CGraphEngine>(1024);
-#endif // PRIQUEL
 
 	VERIFY					(!m_cover_manager);
 	m_cover_manager			= xr_new<CCoverManager>();
@@ -70,11 +63,7 @@ CAI_Space::~CAI_Space				()
 	xr_delete				(m_patrol_path_storage);
 	xr_delete				(m_ef_storage);
 
-#ifdef PRIQUEL
-	VERIFY					(!m_game_graph);
-#else // PRIQUEL
 	xr_delete				(m_game_graph);
-#endif // PRIQUEL
 	
 	try {
 		xr_delete			(m_script_engine);
@@ -88,10 +77,6 @@ CAI_Space::~CAI_Space				()
 
 void CAI_Space::load				(LPCSTR level_name)
 {
-#ifdef PRIQUEL
-	VERIFY					(m_game_graph);
-#endif // PRIQUEL
-
 	unload					(true);
 
 #ifdef DEBUG
@@ -104,11 +89,7 @@ void CAI_Space::load				(LPCSTR level_name)
 	const CGameGraph::SLevel &current_level = game_graph().header().level(level_name);
 
 	m_level_graph			= xr_new<CLevelGraph>();
-#ifndef PRIQUEL
 	m_cross_table			= xr_new<CGameLevelCrossTable>();
-#else // PRIQUEL
-	game_graph().set_current_level(current_level.id());
-#endif // PRIQUEL
 	R_ASSERT2				(cross_table().header().level_guid() == level_graph().header().guid(), "cross_table doesn't correspond to the AI-map");
 	R_ASSERT2				(cross_table().header().game_guid() == game_graph().header().guid(), "graph doesn't correspond to the cross table");
 	m_graph_engine			= xr_new<CGraphEngine>(
@@ -126,9 +107,7 @@ void CAI_Space::load				(LPCSTR level_name)
 #endif
 
 	level_graph().level_id	(current_level.id());
-#ifndef PRIQUEL
 	game_graph().set_current_level(current_level.id());
-#endif // PRIQUEL
 
 	m_cover_manager->compute_static_cover	();
 
@@ -142,14 +121,9 @@ void CAI_Space::unload				(bool reload)
 	script_engine().unload	();
 	xr_delete				(m_graph_engine);
 	xr_delete				(m_level_graph);
-#ifndef PRIQUEL
 	xr_delete				(m_cross_table);
-#endif // PRIQUEL
 	if (
 		!reload
-#ifdef PRIQUEL
-		&& m_game_graph
-#endif // PRIQUEL
 		)
 		m_graph_engine		= xr_new<CGraphEngine>(game_graph().header().vertex_count());
 }
@@ -200,42 +174,13 @@ void CAI_Space::patrol_path_storage		(IReader &stream)
 	m_patrol_path_storage->load		(stream);
 }
 
+void CAI_Space::patrol_path_storage_ini(CInifile &way_inifile)
+{
+	m_patrol_path_storage->append_from_ini(way_inifile);
+}
+
 void CAI_Space::set_alife				(CALifeSimulator *alife_simulator)
 {
 	VERIFY					((!m_alife_simulator && alife_simulator) || (m_alife_simulator && !alife_simulator));
 	m_alife_simulator		= alife_simulator;
-
-#ifdef PRIQUEL
-	if (!alife_simulator) {
-		VERIFY				(m_game_graph);
-		m_game_graph		= 0;
-		xr_delete			(m_graph_engine);
-	}
-	else
-		VERIFY				(!m_game_graph);
-#endif // PRIQUEL
 }
-
-#ifdef PRIQUEL
-void CAI_Space::game_graph				(CGameGraph *game_graph)
-{
-	VERIFY					(m_alife_simulator);
-	VERIFY					(game_graph);
-	VERIFY					(!m_game_graph);
-	m_game_graph			= game_graph;
-
-//	VERIFY					(!m_graph_engine);
-	xr_delete				(m_graph_engine);
-	m_graph_engine			= xr_new<CGraphEngine>(this->game_graph().header().vertex_count());
-}
-
-const CGameLevelCrossTable &CAI_Space::cross_table		() const
-{
-	return					(game_graph().cross_table());
-}
-
-const CGameLevelCrossTable *CAI_Space::get_cross_table	() const
-{
-	return					(&game_graph().cross_table());
-}
-#endif // PRIQUEL
