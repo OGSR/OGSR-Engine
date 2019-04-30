@@ -35,6 +35,9 @@ class CWeaponBobbing
 		float	m_fSpeedRun;
 		float	m_fSpeedWalk;
 		float	m_fSpeedLimp;
+
+		float m_fCrouchFactor;
+		float m_fZoomFactor;
 };
 
 

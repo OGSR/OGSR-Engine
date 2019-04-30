@@ -236,6 +236,9 @@ void CWeaponBobbing::Load()
 	m_fSpeedRun			= pSettings->r_float(BOBBING_SECT, "run_speed");
 	m_fSpeedWalk		= pSettings->r_float(BOBBING_SECT, "walk_speed");
 	m_fSpeedLimp		= pSettings->r_float(BOBBING_SECT, "limp_speed");
+
+	m_fCrouchFactor = READ_IF_EXISTS( pSettings, r_float, BOBBING_SECT, "crouch_k", CROUCH_FACTOR );
+	m_fZoomFactor   = READ_IF_EXISTS( pSettings, r_float, BOBBING_SECT, "zoom_k",   1.f );
 }
 
 void CWeaponBobbing::CheckState()
@@ -267,23 +270,24 @@ void CWeaponBobbing::Update(Fmatrix &m)
 	{
 		Fvector dangle;
 		Fmatrix		R, mR;
-		float k		= ((dwMState & ACTOR_DEFS::mcCrouch) ? CROUCH_FACTOR : 1.f);
+		float k  = ( dwMState & ACTOR_DEFS::mcCrouch ) ? m_fCrouchFactor : 1.f;
+		float k2 = m_bZoomMode ? k * m_fZoomFactor : k;
 
 		float A, ST;
 
 		if (isActorAccelerated(dwMState, m_bZoomMode))
 		{
-			A	= m_fAmplitudeRun * k;
+			A	= m_fAmplitudeRun * k2;
 			ST	= m_fSpeedRun * fTime * k;
 		}
 		else if (is_limping)
 		{
-			A	= m_fAmplitudeLimp * k;
+			A	= m_fAmplitudeLimp * k2;
 			ST	= m_fSpeedLimp * fTime * k;
 		}
 		else
 		{
-			A	= m_fAmplitudeWalk * k;
+			A	= m_fAmplitudeWalk * k2;
 			ST	= m_fSpeedWalk * fTime * k;
 		}
 	
