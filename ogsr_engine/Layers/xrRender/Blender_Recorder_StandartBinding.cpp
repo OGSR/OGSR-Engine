@@ -304,6 +304,82 @@ static class cl_screen_res : public R_constant_setup
 	}
 }	binder_screen_res;
 
+static class cl_screen_params : public R_constant_setup
+{
+	u32 marker;
+	Fvector4 result;
+	void setup(R_constant* C) override
+	{
+		if (marker != Device.dwFrame) {
+			result.set(Device.fFOV, Device.fASPECT, tan(deg2rad(Device.fFOV) / 2), g_pGamePersistent->Environment().CurrentEnv->far_plane * 0.75f);
+		}
+		RCache.set_c(C, result);
+	}
+} binder_screen_params;
+
+static class cl_artifacts : public R_constant_setup {
+	u32 marker;
+	Fmatrix result;
+	void setup(R_constant* C) override {
+		if (marker != Device.dwFrame) {
+			result._11 = shader_exports.get_artefact_position(0).x;
+			result._12 = shader_exports.get_artefact_position(0).y;
+			result._13 = shader_exports.get_artefact_position(1).x;
+			result._14 = shader_exports.get_artefact_position(1).y;
+			result._21 = shader_exports.get_artefact_position(2).x;
+			result._22 = shader_exports.get_artefact_position(2).y;
+			result._23 = shader_exports.get_artefact_position(3).x;
+			result._24 = shader_exports.get_artefact_position(3).y;
+			result._31 = shader_exports.get_artefact_position(4).x;
+			result._32 = shader_exports.get_artefact_position(4).y;
+			result._33 = shader_exports.get_artefact_position(5).x;
+			result._34 = shader_exports.get_artefact_position(5).y;
+			result._41 = shader_exports.get_artefact_position(6).x;
+			result._42 = shader_exports.get_artefact_position(6).y;
+			result._43 = shader_exports.get_artefact_position(7).x;
+			result._44 = shader_exports.get_artefact_position(7).y;
+		}
+		RCache.set_c(C, result);
+	}
+} binder_artifacts;
+
+static class cl_anomalys : public R_constant_setup {
+	u32 marker;
+	Fmatrix result;
+	void setup(R_constant* C) override {
+		if (marker != Device.dwFrame) {
+			result._11 = shader_exports.get_anomaly_position(0).x;
+			result._12 = shader_exports.get_anomaly_position(0).y;
+			result._13 = shader_exports.get_anomaly_position(1).x;
+			result._14 = shader_exports.get_anomaly_position(1).y;
+			result._21 = shader_exports.get_anomaly_position(2).x;
+			result._22 = shader_exports.get_anomaly_position(2).y;
+			result._23 = shader_exports.get_anomaly_position(3).x;
+			result._24 = shader_exports.get_anomaly_position(3).y;
+			result._31 = shader_exports.get_anomaly_position(4).x;
+			result._32 = shader_exports.get_anomaly_position(4).y;
+			result._33 = shader_exports.get_anomaly_position(5).x;
+			result._34 = shader_exports.get_anomaly_position(5).y;
+			result._41 = shader_exports.get_anomaly_position(6).x;
+			result._42 = shader_exports.get_anomaly_position(6).y;
+			result._43 = shader_exports.get_anomaly_position(7).x;
+			result._44 = shader_exports.get_anomaly_position(7).y;
+		}
+		RCache.set_c(C, result);
+	}
+} binder_anomalys;
+
+static class cl_detector : public R_constant_setup {
+	u32 marker;
+	Fvector4 result;
+	void setup(R_constant* C) override {
+		if (marker != Device.dwFrame) {
+			result.set((float)(shader_exports.get_detector_params().x), (float)(shader_exports.get_detector_params().y), 0.f, 0.f);
+		}
+		RCache.set_c(C, result);
+	}
+} binder_detector;
+
 static class cl_hud_params : public R_constant_setup //--#SM+#--
 {
 	virtual void setup(R_constant* C) { RCache.set_c(C, g_pGamePersistent->m_pGShaderConstants.hud_params); }
@@ -350,12 +426,11 @@ void	CBlender_Compile::SetMapping	()
 	r_Constant				("m_texgen",			&binder_texgen);
 	r_Constant				("mVPTexgen",			&binder_VPtexgen);
 
-#ifndef _EDITOR
 	// fog-params
 	r_Constant				("fog_plane",		&binder_fog_plane);
 	r_Constant				("fog_params",		&binder_fog_params);
 	r_Constant				("fog_color",		&binder_fog_color);
-#endif
+
 	// time
 	r_Constant				("timers",			&binder_times);
 
@@ -364,7 +439,6 @@ void	CBlender_Compile::SetMapping	()
 	r_Constant				("eye_direction",	&binder_eye_D);
 	r_Constant				("eye_normal",		&binder_eye_N);
 
-#ifndef _EDITOR
 	// global-lighting (env params)
 	r_Constant				("L_sun_color",		&binder_sun0_color);
 	r_Constant				("L_sun_dir_w",		&binder_sun0_dir_w);
@@ -372,8 +446,13 @@ void	CBlender_Compile::SetMapping	()
 //	r_Constant				("L_lmap_color",	&binder_lm_color);
 	r_Constant				("L_hemi_color",	&binder_hemi_color);
 	r_Constant				("L_ambient",		&binder_amb_color);
-#endif
+
 	r_Constant				("screen_res",		&binder_screen_res);
+	r_Constant("ogse_c_screen", &binder_screen_params);
+
+	r_Constant("ogse_c_artefacts", &binder_artifacts);
+	r_Constant("ogse_c_anomalys", &binder_anomalys);
+	r_Constant("ogse_c_detector", &binder_detector);
 
 	// detail
 	//if (bDetail	&& detail_scaler)

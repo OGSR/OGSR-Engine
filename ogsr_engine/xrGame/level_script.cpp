@@ -696,8 +696,7 @@ void set_ignore_game_state_update()
 	Game().m_need_to_update = false;
 }
 
-#pragma todo("KRodin: поправить под новые реалии!")
-/*
+
 void g_set_artefact_position(const u32 i, const float x, const float y, const float z)
 {
 	Fvector pos;
@@ -706,13 +705,13 @@ void g_set_artefact_position(const u32 i, const float x, const float y, const fl
 	if (fis_zero(pos.x) && fis_zero(pos.y) && fis_zero(pos.z))
 	{
 		Fvector2 res;
-		shader_exports->set_artefact_position(i, res.set(0.f, 0.f));
+		shader_exports.set_artefact_position(i, res.set(0.f, 0.f));
 	}
 	else
 	{
 		Device.mView.transform_tiny(pos);
 		Fvector2 res;
-		shader_exports->set_artefact_position(i, res.set(pos.x, pos.z));
+		shader_exports.set_artefact_position(i, res.set(pos.x, pos.z));
 	}
 
 }
@@ -725,25 +724,25 @@ void g_set_anomaly_position(const u32 i, const float x, const float y, const flo
 	if (fis_zero(pos.x) && fis_zero(pos.y) && fis_zero(pos.z))
 	{
 		Fvector2 res;
-		shader_exports->set_anomaly_position(i, res.set(0.f, 0.f));
+		shader_exports.set_anomaly_position(i, res.set(0.f, 0.f));
 	}
 	else
 	{
 		Device.mView.transform_tiny(pos);
 		Fvector2 res;
-		shader_exports->set_anomaly_position(i, res.set(pos.x, pos.z));
+		shader_exports.set_anomaly_position(i, res.set(pos.x, pos.z));
 	}
 }
+
 void g_set_detector_params(int _one, int _two)
 {
-	shader_exports->set_detector_params(Ivector2().set(_one, _two));
+	shader_exports.set_detector_params(Ivector2().set(_one, _two));
 }
-*/
+
 
 #include "game_sv_single.h"
 void AdvanceGameTime(u32 _ms)
 {
-#pragma todo("KRodin: Проверить, работает ли оно!")
 	g_pGamePersistent->Environment().ChangeGameTime(_ms);
 
 	auto game = smart_cast<game_sv_Single*>(Level().Server->game);
@@ -1129,10 +1128,9 @@ void CLevel::script_register(lua_State *L)
 	//установка параметров для шейдеров из скриптов
 	module(L)
 		[
-#pragma todo("KRodin: поправить под новые реалии!")
-			//def("set_artefact_slot", &g_set_artefact_position),
-			//def("set_anomaly_slot", &g_set_anomaly_position),
-			//def("set_detector_mode", &g_set_detector_params),
+			def("set_artefact_slot", &g_set_artefact_position),
+			def("set_anomaly_slot", &g_set_anomaly_position),
+			def("set_detector_mode", &g_set_detector_params),
 			def("update_inventory_window", &update_inventory_window),
 			def("update_inventory_weight", &update_inventory_weight),
 
