@@ -116,7 +116,7 @@ public://IPhysicsShellHolder
 	virtual	u16					ObjectID							()		const			;
 	virtual	ICollisionForm*				ObjectCollisionModel				()						;
 	//virtual	IRenderVisual*			ObjectVisual						()						;
-	virtual	CKinematics*				ObjectKinematics					()						;
+	virtual	IKinematics*				ObjectKinematics					()						;
 	CPhysicsShell*&					ObjectPPhysicsShell					()						;
 	virtual bool					has_parent_object					()						;
 	CPHCapture*					PHCapture							()						;

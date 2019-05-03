@@ -929,14 +929,14 @@ void CPHShell::EnabledCallbacks(BOOL val)
 }
 
 template< typename T>
-void for_each_bone_id(CKinematics &K, T op)
+void for_each_bone_id(IKinematics &K, T op)
 {
 	u16 bn = K.LL_BoneCount();
 	for (u16 i = 0; i < bn; ++i)
 		op(i);
 }
 
-CPHElement* get_physics_parent(CKinematics &k, u16 id)
+CPHElement* get_physics_parent(IKinematics &k, u16 id)
 {
 	VERIFY(BI_NONE != id);
 
@@ -965,8 +965,8 @@ void CPHShell::SetCallbacks()
 
 	struct set_bone_reference
 	{
-		CKinematics &K;
-		set_bone_reference(CKinematics &K_) : K(K_) {}
+		IKinematics &K;
+		set_bone_reference(IKinematics &K_) : K(K_) {}
 		set_bone_reference(set_bone_reference&& other) noexcept : K(other.K) {}
 		set_bone_reference(const set_bone_reference& other1) = delete;
 		set_bone_reference& operator=(const set_bone_reference& other1) = delete;

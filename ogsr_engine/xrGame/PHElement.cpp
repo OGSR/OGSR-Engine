@@ -298,13 +298,13 @@ CPHElement::~CPHElement	()
 
 void		CPHElement::SetBoneCallback()
 {
-	CKinematics* K = m_shell->PKinematics();
+	IKinematics* K = m_shell->PKinematics();
 	VERIFY(K);
 	K->LL_GetBoneInstance(m_SelfID).set_callback(bctPhysics, m_shell->GetBonesCallback(), cast_PhysicsElement(this));
 }
 void		CPHElement::ClearBoneCallback()
 {
-	CKinematics* K = m_shell->PKinematics();
+	IKinematics* K = m_shell->PKinematics();
 	K->LL_GetBoneInstance(m_SelfID).reset_callback();
 }
 

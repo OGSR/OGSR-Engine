@@ -173,7 +173,7 @@ private:
 		void							CreateShell						( CObject* who, Fvector& dp, Fvector & velocity  )																	;
 		void							AddActiveWeaponCollision		();
 		void							RemoveActiveWeaponCollision		();
-		void							bone_chain_disable				(u16 bone, u16 r_bone, CKinematics &K);
+		void							bone_chain_disable				(u16 bone, u16 r_bone, IKinematics &K);
 		void							bone_fix_clear					();
 		void							EndActivateFreeShell			( CObject* who, const Fvector& inital_entity_position, const Fvector& dp, const Fvector & velocity )				;
 		void							KillHit							(SHit& H)																										;

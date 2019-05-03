@@ -337,7 +337,7 @@ IC					IKinematics					*PKinematics								()																{return m_pKinemati
 	virtual			void						build_FromKinematics						(IKinematics* K,BONE_P_MAP* p_geting_map=NULL)												= 0;
 	virtual			void						preBuild_FromKinematics						(IKinematics* K,BONE_P_MAP* p_geting_map=NULL)												= 0;
 	virtual			void						Build										(bool disable=false)																		= 0;
-	virtual			void		__stdcall			ActivatingBonePoses(CKinematics &K) = 0;
+	virtual			void		__stdcall			ActivatingBonePoses(IKinematics &K) = 0;
 	virtual			void						SetMaxAABBRadius							(float size)																				 {};
 	virtual			void						AddTracedGeom								(u16 element=0,u16 geom=0)																	= 0;
 	virtual			void						SetAllGeomTraced							()																							= 0;
@@ -387,6 +387,6 @@ void	__stdcall			destroy_physics_shell		(CPhysicsShell* &p)																					
 bool	__stdcall			can_create_phys_shell( string1024 &reason, CPhysicsShellHolder& O );				
 
 					bool				shape_is_physic					( const SBoneShape& shape );
-					bool				has_physics_collision_shapes	( CKinematics& K );
-					void				phys_shell_verify_model			( CKinematics& K );
+					bool				has_physics_collision_shapes	( IKinematics& K );
+					void				phys_shell_verify_model			( IKinematics& K );
 #endif // PhysicsShellH

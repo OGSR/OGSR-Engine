@@ -48,7 +48,7 @@ static void interactive_motion_diag( LPCSTR message, const CBlend &b, CPhysicsSh
 	const MotionID & m = b.motionID;
 	VERIFY( m.valid() );
 	VERIFY( s );
-	CKinematicsAnimated* KA = smart_cast<CKinematicsAnimated*>( s->PKinematics( ) );
+	IKinematicsAnimated* KA = smart_cast<IKinematicsAnimated*>( s->PKinematics( ) );
 	VERIFY( KA );
 	CPhysicsShellHolder* O = smart_cast<CPhysicsShellHolder*>(s->get_ElementByStoreOrder( 0 )->PhysicsRefObject());
 	VERIFY( O );
@@ -99,7 +99,7 @@ static xr_string collide_diag()
 #endif
 }
 
-void disable_bone_calculation(CKinematics &K, bool v )
+void disable_bone_calculation(IKinematics &K, bool v )
 {
 	u16 bn = K.LL_BoneCount();
 	for(u16 i = 1; i< bn; ++i )//ommit real root
@@ -119,10 +119,10 @@ void imotion_position::state_start( )
 	VERIFY( shell );
 	inherited::state_start( );
 	
-	CKinematics			*K	= shell->PKinematics();
+	IKinematics			*K	= shell->PKinematics();
 	saved_visual_callback = K->GetUpdateCallback();
 	K->SetUpdateCallback( nullptr );
-	CKinematicsAnimated	*KA = smart_cast<CKinematicsAnimated*>( shell->PKinematics() );
+	IKinematicsAnimated	*KA = smart_cast<IKinematicsAnimated*>( shell->PKinematics() );
 	VERIFY( KA );
 	KA->SetUpdateTracksCalback( &update_callback );
 	update_callback.motion = this;
@@ -224,7 +224,7 @@ static void dbg_draw_state_end( CPhysicsShell *shell )
 #endif
 
 static xr_vector<anim_bone_fix*> saved_fixes;
-static void save_fixes( CKinematics *K  )
+static void save_fixes( IKinematics *K  )
 {
 	VERIFY( K );
 	saved_fixes.clear();
@@ -270,7 +270,7 @@ void	imotion_position::state_end( )
 	dbg_draw_state_end( shell );
 #endif
 	shell->remove_ObjectContactCallback( get_depth );
-	CKinematics *K = shell->PKinematics();
+	IKinematics *K = shell->PKinematics();
 	disable_update( false );
 	disable_bone_calculation( *K, false );
 	K->SetUpdateCallback( saved_visual_callback );
@@ -284,7 +284,7 @@ void	imotion_position::state_end( )
 
 	VERIFY( K );
 
-	CKinematicsAnimated	*KA = smart_cast<CKinematicsAnimated*>( shell->PKinematics() );
+	IKinematicsAnimated	*KA = smart_cast<IKinematicsAnimated*>( shell->PKinematics() );
 	VERIFY( KA );
 	update_callback.motion = nullptr;
 	KA->SetUpdateTracksCalback( nullptr );
@@ -336,7 +336,7 @@ void	imotion_position::disable_update( bool v )
 void imotion_position::move_update( )
 {
 	VERIFY( shell );
-	CKinematics *K = shell->PKinematics();
+	IKinematics *K = shell->PKinematics();
 	VERIFY( K );
 
 	disable_update( false );
@@ -346,11 +346,11 @@ void imotion_position::move_update( )
 	VERIFY( shell );
 	
 }
- void imotion_position::force_calculate_bones( CKinematicsAnimated& KA )
+ void imotion_position::force_calculate_bones( IKinematicsAnimated& KA )
 {
-	CKinematics *K = shell->PKinematics();
+	IKinematics *K = shell->PKinematics();
 	VERIFY( K );
-	VERIFY( K == smart_cast<CKinematics *>( &KA ) );
+	VERIFY( K == smart_cast<IKinematics *>( &KA ) );
 	disable_bone_calculation( *K, false );
 
 	K->Bone_Calculate( &K->LL_GetData(0), &Fidentity );
@@ -364,7 +364,7 @@ void imotion_position::move_update( )
 	}
 	disable_bone_calculation( *K, true );
 }
-float imotion_position::advance_animation( float dt, CKinematicsAnimated& KA )
+float imotion_position::advance_animation( float dt, IKinematicsAnimated& KA )
 {
 	time_to_end -=dt;
 	KA.LL_UpdateTracks( dt, true, true );
@@ -399,7 +399,7 @@ void collide_anim_dbg_draw( CPhysicsShell	*shell, float dt )
 #endif
 
 
-float imotion_position::collide_animation	( float dt, CKinematicsAnimated& k )
+float imotion_position::collide_animation	( float dt, IKinematicsAnimated& k )
 {
 	advance_animation( dt, k );
 #ifdef	DEBUG
@@ -423,7 +423,7 @@ float imotion_position::collide_animation	( float dt, CKinematicsAnimated& k )
 	return dt;
 }
 
-static u32	blends_num( CKinematicsAnimated& KA )
+static u32	blends_num( IKinematicsAnimated& KA )
 {
 	//u32 res = 0;
 	//for( u32 i = 0; i < MAX_PARTS; ++i  )
@@ -464,7 +464,7 @@ public:
 	}
 };
 
-static void save_blends( buffer_vector<sblend_save>& buffer, CKinematicsAnimated& KA )
+static void save_blends( buffer_vector<sblend_save>& buffer, IKinematicsAnimated& KA )
 {
 	buffer.clear();
 	struct scbl: public IterateBlendsCallback
@@ -491,7 +491,7 @@ static void restore_blends( buffer_vector<sblend_save>& buffer )
 	buffer.clear();
 }
 
-void  imotion_position::collide_not_move( CKinematicsAnimated& KA )
+void  imotion_position::collide_not_move( IKinematicsAnimated& KA )
 {
 		u32	sv_blends_num = blends_num( KA );
 		buffer_vector<sblend_save> saved_blends( _alloca( sv_blends_num*sizeof( sblend_save ) ), sv_blends_num );
@@ -499,7 +499,7 @@ void  imotion_position::collide_not_move( CKinematicsAnimated& KA )
 		motion_collide( 0.5f * max_collide_timedelta,  KA );
 		restore_blends( saved_blends );
 }
-float imotion_position::move( float dt, CKinematicsAnimated& KA )
+float imotion_position::move( float dt, IKinematicsAnimated& KA )
 {
 	VERIFY( shell );
 	//float ret = 0;
@@ -555,7 +555,7 @@ float imotion_position::move( float dt, CKinematicsAnimated& KA )
 }
 
 
-float imotion_position::motion_collide( float dt, CKinematicsAnimated& KA )
+float imotion_position::motion_collide( float dt, IKinematicsAnimated& KA )
 {
 	VERIFY( shell );
 
@@ -644,7 +644,7 @@ float imotion_position::motion_collide( float dt, CKinematicsAnimated& KA )
 }
 
 ////////////////////////////////////////////////////////////////////////////////////
-bool	imotion_position::tracks_update::operator () ( float dt, CKinematicsAnimated& k )
+bool	imotion_position::tracks_update::operator () ( float dt, IKinematicsAnimated& k )
 { 
 	if( !update )
 		return false;
@@ -657,7 +657,7 @@ void imotion_position::	init_bones()
 {
 	set_root_callback	();
 /*
-	CKinematics &K  = *shell->PKinematics( );
+	IKinematics &K  = *shell->PKinematics( );
 	u16 bn = K.LL_BoneCount();
 	for(u16 i = 1; i< bn; ++i )//ommit real root
 	{
@@ -673,7 +673,7 @@ void imotion_position::	init_bones()
 void imotion_position::	deinit_bones()
 {
 /*
-	CKinematics &K  = *shell->PKinematics( );
+	IKinematics &K  = *shell->PKinematics( );
 	u16 bn = K.LL_BoneCount();
 	for(u16 i = 1; i< bn; ++i )//ommit real root
 	{
@@ -689,7 +689,7 @@ void imotion_position::	deinit_bones()
 void	imotion_position::set_root_callback	()
 {
 	VERIFY( shell );
-	CKinematics *K  = shell->PKinematics( );
+	IKinematics *K  = shell->PKinematics( );
 	VERIFY( K );
 	CBoneInstance &bi = K->LL_GetBoneInstance( 0 );
 	VERIFY(!bi.callback());
@@ -700,7 +700,7 @@ void	imotion_position::set_root_callback	()
 void	imotion_position::remove_root_callback()
 {
 	VERIFY( shell );
-	CKinematics *K  = shell->PKinematics( );
+	IKinematics *K  = shell->PKinematics( );
 	VERIFY( K );
 	CBoneInstance &bi = K->LL_GetBoneInstance( 0 );
 	VERIFY( bi.callback() == rootbone_callback );
@@ -715,9 +715,9 @@ void	imotion_position::rootbone_callback	( CBoneInstance *BI )
 	if( !im->update_callback.update )
 		return;
 	VERIFY( im->shell );
-	CKinematics *K  = im->shell->PKinematics( );
+	IKinematics *K  = im->shell->PKinematics( );
 	VERIFY( K );
-	CKinematicsAnimated *KA = smart_cast<CKinematicsAnimated *>( K );
+	IKinematicsAnimated *KA = smart_cast<IKinematicsAnimated *>( K );
 	VERIFY( KA );
 	SKeyTable	keys;
 	KA->LL_BuldBoneMatrixDequatize( &K->LL_GetData( 0 ), u8(-1), keys );

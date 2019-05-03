@@ -48,8 +48,8 @@ CPhysicsShell*	__stdcall P_build_Shell			( CPhysicsShellHolder* obj, bool not_ac
 	VERIFY( obj );
 	//phys_shell_verify_object_model( *obj );
 	//IRenderVisual*	V = obj->ObjectVisual();
-	//CKinematics* pKinematics=smart_cast<CKinematics*>(V);
-	//CKinematics* pKinematics	=  V->dcast_PKinematics			();
+	//IKinematics* pKinematics=smart_cast<IKinematics*>(V);
+	//IKinematics* pKinematics	=  V->dcast_PKinematics			();
 	IKinematics* pKinematics	= obj->ObjectKinematics();
 
 	CPhysicsShell* pPhysicsShell		= P_create_Shell();
@@ -88,7 +88,7 @@ void	fix_bones(LPCSTR	fixed_bones,CPhysicsShell* shell )
 CPhysicsShell*	P_build_Shell( CPhysicsShellHolder* obj, bool not_active_state,BONE_P_MAP* p_bone_map, LPCSTR	fixed_bones )
 {
 	CPhysicsShell* pPhysicsShell = 0;
-	//CKinematics* pKinematics=smart_cast<CKinematics*>(obj->ObjectVisual());
+	//IKinematics* pKinematics=smart_cast<IKinematics*>(obj->ObjectVisual());
 	IKinematics* pKinematics=obj->ObjectKinematics();
 	if(fixed_bones)
 	{
@@ -264,7 +264,7 @@ void __stdcall	destroy_physics_shell( CPhysicsShell* &p )
 	xr_delete(p);
 }
 
-bool bone_has_pysics( CKinematics& K, u16 bone_id )
+bool bone_has_pysics( IKinematics& K, u16 bone_id )
 {
 	
 	//CBoneData	* pBonedata1 = &K.LL_GetData( bone_id );
@@ -277,7 +277,7 @@ bool bone_has_pysics( CKinematics& K, u16 bone_id )
 	return K.LL_GetBoneVisible( bone_id ) && shape_is_physic( K.GetBoneData( bone_id ).get_shape() );
 }
 
-bool has_physics_collision_shapes( CKinematics& K )
+bool has_physics_collision_shapes( IKinematics& K )
 {
 	u16 nbb = K.LL_BoneCount();
 	for(u16 i = 0; i < nbb; ++i )
@@ -286,7 +286,7 @@ bool has_physics_collision_shapes( CKinematics& K )
 	return false;
 }
 
-void	phys_shell_verify_model( CKinematics& K )
+void	phys_shell_verify_model( IKinematics& K )
 {
 	//IRenderVisual* V = K.dcast_RenderVisual();
 	//VERIFY( V );
@@ -297,7 +297,7 @@ bool __stdcall	can_create_phys_shell( string1024 &reason, CPhysicsShellHolder& O
 {
 	xr_strcpy(reason, "ok" );
 	bool result = true;
-	CKinematics* K		=O.ObjectKinematics();
+	IKinematics* K		=O.ObjectKinematics();
 	if(!K)
 	{
 		xr_strcpy( reason,	make_string( "Can not create physics shell for object %s, model %s is not skeleton", O.ObjectName(), O.ObjectNameVisual() ).c_str() );

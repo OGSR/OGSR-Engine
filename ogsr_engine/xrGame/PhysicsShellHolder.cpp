@@ -221,8 +221,8 @@ void CPhysicsShellHolder::activate_physic_shell()
 
 	if(H_Parent()&&H_Parent()->Visual())
 	{
-		smart_cast<CKinematics*>(H_Parent()->Visual())->CalculateBones_Invalidate	();
-		smart_cast<CKinematics*>(H_Parent()->Visual())->CalculateBones	(TRUE);
+		smart_cast<IKinematics*>(H_Parent()->Visual())->CalculateBones_Invalidate	();
+		smart_cast<IKinematics*>(H_Parent()->Visual())->CalculateBones	(TRUE);
 	}
 	CPhysicsShellHolder* P = smart_cast<CPhysicsShellHolder*>( H_Parent() );
 	if( P )
@@ -512,7 +512,7 @@ ICollisionForm* CPhysicsShellHolder::ObjectCollisionModel()
 }
 
 
-CKinematics	*CPhysicsShellHolder::ObjectKinematics()
+IKinematics	*CPhysicsShellHolder::ObjectKinematics()
 {
 	VERIFY(Visual());
 	return Visual()->dcast_PKinematics();
