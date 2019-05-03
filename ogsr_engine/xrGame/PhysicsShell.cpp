@@ -10,7 +10,7 @@
 #include "PHSplitedShell.h"
 #include "gameobject.h"
 #include "physicsshellholder.h"
-#include "../xr_3da/skeletoncustom.h"
+#include "../Include/xrRender/Kinematics.h"
 
 extern CPHWorld			*ph_world;
 CPhysicsShell::~CPhysicsShell()
@@ -50,7 +50,7 @@ CPhysicsShell*	__stdcall P_build_Shell			( CPhysicsShellHolder* obj, bool not_ac
 	//IRenderVisual*	V = obj->ObjectVisual();
 	//CKinematics* pKinematics=smart_cast<CKinematics*>(V);
 	//CKinematics* pKinematics	=  V->dcast_PKinematics			();
-	CKinematics* pKinematics	= obj->ObjectKinematics();
+	IKinematics* pKinematics	= obj->ObjectKinematics();
 
 	CPhysicsShell* pPhysicsShell		= P_create_Shell();
 #ifdef DEBUG
@@ -71,7 +71,7 @@ void	fix_bones(LPCSTR	fixed_bones,CPhysicsShell* shell )
 {
 		VERIFY(fixed_bones);
 		VERIFY(shell);
-		CKinematics	*pKinematics = shell->PKinematics();
+		IKinematics	*pKinematics = shell->PKinematics();
 		VERIFY(pKinematics);
 		int count =					_GetItemCount(fixed_bones);
 		for (int i=0 ;i<count; ++i) 
@@ -89,7 +89,7 @@ CPhysicsShell*	P_build_Shell( CPhysicsShellHolder* obj, bool not_active_state,BO
 {
 	CPhysicsShell* pPhysicsShell = 0;
 	//CKinematics* pKinematics=smart_cast<CKinematics*>(obj->ObjectVisual());
-	CKinematics* pKinematics=obj->ObjectKinematics();
+	IKinematics* pKinematics=obj->ObjectKinematics();
 	if(fixed_bones)
 	{
 
@@ -128,8 +128,8 @@ CPhysicsShell*	P_build_Shell( CPhysicsShellHolder* obj, bool not_active_state, L
 {
 	U16Vec f_bones;
 	if(fixed_bones){
-		//CKinematics* K		= smart_cast<CKinematics*>(obj->ObjectVisual());
-		CKinematics* K		=obj->ObjectKinematics();
+		//IKinematics* K		= smart_cast<IKinematics*>(obj->ObjectVisual());
+		IKinematics* K		=obj->ObjectKinematics();
 		VERIFY( K );
 		int count =			_GetItemCount(fixed_bones);
 		for (int i=0 ;i<count; ++i){

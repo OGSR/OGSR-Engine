@@ -1,8 +1,9 @@
 #include "stdafx.h"
 #include "script_game_object.h"
 #include "GameObject.h"
-#include "..\xr_3da\xr_collide_defs.h"
-#include "GameMtlLib.h"
+#include "..\xrcdb\xr_collide_defs.h"
+#include "..\xr_3da\GameMtlLib.h"
+#include "..\Include/xrRender/Kinematics.h"
 #include "Level.h"
 #include "script_rq_result.h"
 
@@ -17,7 +18,7 @@ void script_rq_result::set_result(collide::rq_result _res)
 		if (obj)
 			object = obj->lua_game_object();
 
-		const auto pK = smart_cast<CKinematics*>(_res.O->Visual());
+		const auto pK = smart_cast<IKinematics*>(_res.O->Visual());
 		if (pK)
 		{
 			const auto& bone_data = pK->LL_GetData((u16)_res.element);

@@ -3,7 +3,8 @@
 #include "Physics.h"
 #include "PHElement.h"
 #include "PHShell.h"
-#include "../xr_3da/skeletoncustom.h"
+#include "../Include/xrRender/Kinematics.h"
+#include "../xr_3da/bone.h"
 
 #pragma warning(disable:4995)
 #include "ode/src/joint.h"
@@ -46,7 +47,7 @@ element_fracture CPHFracturesHolder::SplitFromEnd(CPHElement* element,u16 fractu
 	new_element->mXFORM.set(element->mXFORM);
 	element->PassEndGeoms(geom_num,end_geom_num,new_element);
 	/////////////////////////////////////////////
-	CKinematics* pKinematics= element->m_shell->PKinematics();
+	IKinematics* pKinematics= element->m_shell->PKinematics();
 	const CBoneInstance& new_bi=pKinematics->LL_GetBoneInstance(new_element->m_SelfID);
 	const CBoneInstance& old_bi=pKinematics->LL_GetBoneInstance(element->m_SelfID);
 

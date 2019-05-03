@@ -3,7 +3,7 @@
 //////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
-
+#pragma hdrstop
 
 #include "blender_Model_EbB.h"
 
@@ -15,8 +15,8 @@ CBlender_Model_EbB::CBlender_Model_EbB	()
 {
 	description.CLS		= B_MODEL_EbB;
 	description.version	= 0x1;
-	strcpy				(oT2_Name,	"$null");
-	strcpy				(oT2_xform,	"$null");
+	xr_strcpy				(oT2_Name,	"$null");
+	xr_strcpy				(oT2_xform,	"$null");
 	oBlend.value		= FALSE;
 }
 
@@ -131,65 +131,101 @@ void	CBlender_Model_EbB::Compile(CBlender_Compile& C)
 		}
 	}
 }
-#else
+#elif RENDER==R_R2
 #include "uber_deffer.h"
 void	CBlender_Model_EbB::Compile(CBlender_Compile& C)
 {
-	IBlender::Compile(C);
+	IBlender::Compile		(C);
 
-	if (oBlend.value) {
-		switch (C.iElement)
+	if (oBlend.value)	{
+		// forward
+		LPCSTR	vsname			= 0;
+		LPCSTR	psname			= 0;
+		switch(C.iElement) 
 		{
-		case SE_R2_NORMAL_HQ:
-			C.SetParams(3, true);
-			uber_forward(C, true, "model", "base", 0, true, 0, true);
-			C.r_Sampler("s_lmap", r2_sunmask);
-			C.r_Sampler_clf("s_smap_near", r2_RT_smap_depth_near);
-			C.r_Sampler_clf("s_smap_far", r2_RT_smap_depth_far);
-			C.r_Sampler_clf("env_s0", r2_T_envs0);
-			C.r_Sampler_clf("env_s1", r2_T_envs1);
-			C.r_Sampler_clf("s_sky", r2_RT_rain);
-			C.r_Sampler_clw("s_material", r2_material);
-			C.r_End();
+		case 0:
+		case 1:
+			vsname = psname =	"model_env_lq"; 
+			C.r_Pass			(vsname,psname,TRUE,TRUE,FALSE,TRUE,D3DBLEND_SRCALPHA,	D3DBLEND_INVSRCALPHA,	TRUE,0);
+			C.r_Sampler			("s_base",	C.L_textures[0]);
+			C.r_Sampler			("s_env",	oT2_Name,false,D3DTADDRESS_CLAMP);
+			C.r_End				();
 			break;
-		case SE_R2_NORMAL_LQ:
-			C.SetParams(3, true);
-			uber_forward(C, false, "model", "base", 0, true, 0, true);
-			C.r_Sampler("s_lmap", r2_sunmask);
-			C.r_Sampler_clf("s_smap_near", r2_RT_smap_depth_near);
-			C.r_Sampler_clf("s_smap_far", r2_RT_smap_depth_far);
-			C.r_Sampler_clf("env_s0", r2_T_envs0);
-			C.r_Sampler_clf("env_s1", r2_T_envs1);
-			C.r_Sampler_clf("s_sky", r2_RT_rain);
-			C.r_Sampler_clw("s_material", r2_material);
-			C.r_End();
+		}
+	} else {
+		// deferred
+		switch(C.iElement) 
+		{
+		case SE_R2_NORMAL_HQ: 	// deffer
+			uber_deffer		(C,true,	"model","base",false);
+			break;
+		case SE_R2_NORMAL_LQ: 	// deffer
+			uber_deffer		(C,false,	"model","base",false);
 			break;
 		case SE_R2_SHADOW:		// smap
-			C.SetParams(1, false);
-			if (RImplementation.o.HW_smap)	C.r_Pass("shadow_direct_base_aref", "shadow_direct_base_aref", FALSE, TRUE, TRUE, FALSE, D3DBLEND_ZERO, D3DBLEND_ONE, TRUE, 220);
-			else							C.r_Pass("shadow_direct_base_aref", "shadow_direct_base_aref", FALSE);
-			C.r_Sampler("s_base", C.L_textures[0]);
-			C.r_End();
-			break;
-		default:
+			if (RImplementation.o.HW_smap)	C.r_Pass	("shadow_direct_model","dumb",					FALSE,TRUE,TRUE,FALSE);
+			else							C.r_Pass	("shadow_direct_model","shadow_direct_base",	FALSE);
+			C.r_Sampler		("s_base",		C.L_textures[0]);
+			C.r_End			();
 			break;
 		}
 	}
-	else {
+}
+#else
+#include "uber_deffer.h"
+void CBlender_Model_EbB::Compile( CBlender_Compile& C )
+{
+	IBlender::Compile(C);
+
+	if (oBlend.value)	
+	{
+		// forward
+		LPCSTR	vsname			= 0;
+		LPCSTR	psname			= 0;
+		switch(C.iElement) 
+		{
+		case 0:
+		case 1:
+			vsname = psname =	"model_env_lq"; 
+			C.r_Pass			(vsname,psname,TRUE,TRUE,FALSE,TRUE,D3DBLEND_SRCALPHA,	D3DBLEND_INVSRCALPHA,	TRUE,0);
+			//C.r_Sampler			("s_base",	C.L_textures[0]);
+			//C.r_Sampler			("s_env",	oT2_Name,false,D3DTADDRESS_CLAMP);
+			C.r_dx10Texture		("s_base",	C.L_textures[0]);
+			C.r_dx10Texture		("s_env",	oT2_Name);
+
+			C.r_dx10Sampler			("smp_base");
+			C.r_dx10Sampler			("smp_rtlinear");
+			C.r_End				();
+			break;
+		}
+	} 
+	else 
+	{
 		// deferred
-		switch (C.iElement)
+		switch(C.iElement) 
 		{
 		case SE_R2_NORMAL_HQ: 	// deffer
-			uber_deffer(C, true, "model", "base", false);
+			uber_deffer		(C,true,	"model","base",false,0,true);
+			C.r_Stencil		( TRUE,D3DCMP_ALWAYS,0xff,0x7f,D3DSTENCILOP_KEEP,D3DSTENCILOP_REPLACE,D3DSTENCILOP_KEEP);
+			C.r_StencilRef	(0x01);
+			C.r_End			();
 			break;
 		case SE_R2_NORMAL_LQ: 	// deffer
-			uber_deffer(C, false, "model", "base", false);
+			uber_deffer		(C,false,	"model","base",false,0,true);
+			C.r_Stencil		( TRUE,D3DCMP_ALWAYS,0xff,0x7f,D3DSTENCILOP_KEEP,D3DSTENCILOP_REPLACE,D3DSTENCILOP_KEEP);
+			C.r_StencilRef	(0x01);
+			C.r_End			();
 			break;
 		case SE_R2_SHADOW:		// smap
-			if (RImplementation.o.HW_smap)	C.r_Pass("shadow_direct_model", "shadow_direct_base", FALSE, TRUE, TRUE, FALSE);
-			else							C.r_Pass("shadow_direct_model", "shadow_direct_base", FALSE);
-			C.r_Sampler("s_base", C.L_textures[0]);
-			C.r_End();
+			//if (RImplementation.o.HW_smap)	C.r_Pass	("shadow_direct_model","dumb",	FALSE,TRUE,TRUE,FALSE);
+			//else							C.r_Pass	("shadow_direct_model","shadow_direct_base",FALSE);
+			C.r_Pass	("shadow_direct_model","dumb",	FALSE,TRUE,TRUE,FALSE);
+			//C.r_Sampler		("s_base",C.L_textures[0]);
+			C.r_dx10Texture		("s_base",C.L_textures[0]);
+			C.r_dx10Sampler		("smp_base");
+			C.r_dx10Sampler		("smp_linear");
+			C.r_ColorWriteEnable(false, false, false, false);
+			C.r_End			();
 			break;
 		}
 	}

@@ -15,7 +15,7 @@
 #include "ActorEffector.h"
 #include "level.h"
 #include "../xr_3da/cl_intersect.h"
-#include "gamemtllib.h"
+#include "../xr_3da/gamemtllib.h"
 #include "elevatorstate.h"
 #include "CharacterPhysicsSupport.h"
 #include "EffectorShot.h"

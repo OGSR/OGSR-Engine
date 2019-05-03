@@ -2,62 +2,51 @@
 #define LMODEL_H
 
 #include "common.h"
-#include "ogse_config.h"
+
 //////////////////////////////////////////////////////////////////////////////////////////
 // Lighting formulas			// 
-float4 	plight_infinity		(float m, float3 _point, float3 normal, float3 light_direction)       				{
-  float3 N		= normal;							// normal 
-  float3 V 		= -normalize	(_point);					// vector2eye
-  float3 L 		= -light_direction;						// vector2light
-  float3 H		= normalize	(L+V);						// half-angle-vector 
+half4 	plight_infinity		(half m, half3 point, half3 normal, half3 light_direction)       				{
+  half3 N		= normal;							// normal 
+  half3 V 		= -normalize	(point);					// vector2eye
+  half3 L 		= -light_direction;						// vector2light
+  half3 H		= normalize	(L+V);						// half-angle-vector 
   return tex3D 		(s_material,	half3( dot(L,N), dot(H,N), m ) );		// sample material
 }
-float4 	plight_infinity2 (half m, half3 _point, half3 normal, half3 light_direction)       				{
-  float3 N		= normal;							// normal 
-  float3 V 		= -normalize	(_point);					// vector2eye
-  float3 L 		= -light_direction;						// vector2light
-  float3 H		= normalize	(L+V);						// half-angle-vector 
- // return tex3D 		(s_material,	half3( dot(L,N), dot(H,N), m ) );		// sample material
-	float4 ret;
-	float4 light = tex3D ( s_material, float3( dot(L,N), dot(H,N), m ) );		// sample material
-	ret = light+float4(light.www*(Ldynamic_color.xyz),light.w)*Ldynamic_color.w;
-	return ret;
+half4 	plight_infinity2	(half m, half3 point, half3 normal, half3 light_direction)       				{
+  	half3 N		= normal;							// normal 
+  	half3 V 	= -normalize		(point);		// vector2eye
+  	half3 L 	= -light_direction;					// vector2light
+ 	half3 H		= normalize			(L+V);			// half-angle-vector 
+	half3 R     = reflect         	(-V,N);
+	half 	s	= saturate(dot(L,R));
+			s	= saturate(dot(H,N));
+	half 	f 	= saturate(dot(-V,R));
+			s  *= f;
+	half4	r	= tex3D 			(s_material,	half3( dot(L,N), s, m ) );	// sample material
+			r.w	= pow(saturate(s),4);
+  	return	r	;
 }
-float4 	plight_local		(float m, float3 _point, float3 normal, float3 light_position, float light_range_rsq, out float rsqr)  {
-  float3 N		= normal;							// normal 
-  float3 L2P 	= _point-light_position;                         		// light2point 
-  float3 V 		= -normalize	(_point);					// vector2eye
-  float3 L 		= -normalize	((float3)L2P);					// vector2light
-  float3 H		= normalize	(L+V);						// float-angle-vector
+half4 	plight_local		(half m, half3 point, half3 normal, half3 light_position, half light_range_rsq, out float rsqr)  {
+  half3 N		= normal;							// normal 
+  half3 L2P 	= point-light_position;                         		// light2point 
+  half3 V 		= -normalize	(point);					// vector2eye
+  half3 L 		= -normalize	((half3)L2P);					// vector2light
+  half3 H		= normalize	(L+V);						// half-angle-vector
 		rsqr	= dot		(L2P,L2P);					// distance 2 light (squared)
-  float  att 	= saturate	(1 - rsqr*light_range_rsq*ECB_LL_DIST)*ECB_LL_BRIGHTNESS;			// q-linear attenuate
-  float4 light	= tex3D		(s_material, half3( dot(L,N), dot(H,N), m ) ); 	// sample material
-  //new light model start;
-  return float4(att*light.xxx,0)+att*float4(light.www*(Ldynamic_color.xyz*Ldynamic_color.xyz),light.w);
-  //new light model end;
+  half  att 	= saturate	(1 - rsqr*light_range_rsq);			// q-linear attenuate
+  half4 light	= tex3D		(s_material, half3( dot(L,N), dot(H,N), m ) ); 	// sample material
+  return att*light;
 }
-float4 	plight_local_torch		(float m, float3 _point, float3 normal, float3 light_position, float light_range_rsq, float angle_cos)  {
-  float3 N		= normal;							// normal 
-  float3 L2P 	= _point-light_position;                         		// light2point 
-  float3 V 		= -normalize	(_point);					// vector2eye
-  float3 L 		= -normalize	((float3)L2P);					// vector2light
-  float3 H		= normalize	(L+V);						// float-angle-vector
-  float rsqr	= dot		(L2P,L2P);					// distance 2 light (squared)
-  float  att 	= saturate	(1 - rsqr*light_range_rsq*ECB_LL_DIST)*ECB_LL_BRIGHTNESS;			// q-linear attenuate
-  float4 light	= tex3D		(s_material, half3( dot(L,N), dot(H,N), m ) ); 	// sample material
-  //new light model start;
-  return float4(att*light.xxx,0)+att*float4(light.www*(Ldynamic_color.xyz*Ldynamic_color.xyz),light.w);
-  //new light model end;
-}
-float4	blendp	(float4	value, float4 	tcp)    		{
+
+half4	blendp	(half4	value, float4 	tcp)    		{
 	#ifndef FP16_BLEND  
-		value 	+= (float4)tex2Dproj 	(s_accumulator, tcp); 	// emulate blend
+		value 	+= (half4)tex2Dproj 	(s_accumulator, tcp); 	// emulate blend
 	#endif
 	return 	value	;
 }
-float4	blend	(float4	value, float2 	tc)			{
+half4	blend	(half4	value, float2 	tc)			{
 	#ifndef FP16_BLEND  
-		value 	+= (float4)tex2D 	(s_accumulator, tc); 	// emulate blend
+		value 	+= (half4)tex2D 	(s_accumulator, tc); 	// emulate blend
 	#endif
 	return 	value	;
 }

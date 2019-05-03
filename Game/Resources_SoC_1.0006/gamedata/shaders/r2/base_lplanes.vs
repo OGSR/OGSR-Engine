@@ -12,7 +12,7 @@ vf main (v_static v)
 	vf 		o;
 
 	o.hpos 		= mul			(m_WVP, v.P);		// xform, input in world coords
-	o.tc0		= unpack_tc_base	(v.tc,v.T.w,v.B.w);// + ogse_c_jitter.xy;	// copy tc
+	o.tc0		= unpack_tc_base	(v.tc,v.T.w,v.B.w);	// copy tc
 
 	// calculate fade
 	float3  dir_v 	= normalize		(mul(m_WV,v.P));

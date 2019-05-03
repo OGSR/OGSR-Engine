@@ -4,7 +4,7 @@ struct vf
 {
 	float4 hpos	: POSITION;
 	float2 tc0	: TEXCOORD0;
-	float3 c0	: COLOR0;		// c0=all lighting
+	float4 c0	: COLOR0;		// c0=all lighting
 	float  fog	: FOG;
 };
 
@@ -31,7 +31,7 @@ struct         v_static                {
 };
 */
 
-vf main (v_static v)
+vf main_vs_2_0 (v_static v)
 {
 	vf 		o;
 
@@ -45,8 +45,8 @@ vf main (v_static v)
 	float3 	L_sun 	= v_sun(N)*v.color.w;					// sun
 	float3 	L_final	= L_rgb + L_hemi + L_sun + L_ambient;
 
-	o.c0		= L_final;
-	o.fog 		= calc_fogging 		(v.P);			// fog, input in world coords
+	o.fog 		= saturate(calc_fogging 		(v.P));			// fog, input in world coords
+	o.c0		= half4(L_final, o.fog);
 
 	return o;
 }

@@ -1,11 +1,11 @@
 //---------------------------------------------------------------------------
 #include 	"stdafx.h"
 
-
 #include 	"SkeletonMotions.h"
-#include 	"SkeletonAnimated.h"
-#include	"fmesh.h"
+//#include 	"SkeletonAnimated.h"
+#include	"Fmesh.h"
 #include	"motion.h"
+#include	"..\Include\xrRender\Kinematics.h"
 
 motions_container*	g_pMotionsContainer	= 0;
 
@@ -21,25 +21,29 @@ u16 CPartition::part_id(const shared_str& name) const
 	return u16(-1);
 }
 
-void CPartition::load(CKinematics* V, LPCSTR model_name)
+void CPartition::load(IKinematics* V, LPCSTR model_name)
 {
 	CInifile* ini = V->LL_UserData();
-	if ( !ini ) return;
+	if (!ini) return;
 
-	if ( ini->sections().size() == 0 || !ini->section_exist( "part_0" ) ) return;
-	shared_str part_name = "partition_name";
+	if (ini->sections().empty() || !ini->section_exist("part_0")) return;
+
+	static const shared_str part_name = "partition_name";
 	for(u32 i=0; i<MAX_PARTS; ++i)
 	{
 		string64			buff;
 		xr_sprintf			(buff,sizeof(buff), "part_%d", i);
 		
-		CInifile::Sect S = ini->r_section(buff);
+		auto& S = ini->r_section(buff);
+		auto it	= S.Data.begin();
+		auto it_e = S.Data.end();
 		if(S.Data.size())
 		{
 			P[i].bones.clear_not_free();
 		}
-		for(const auto& I : S.Data)
+		for(;it!=it_e; ++it)
 		{
+			const CInifile::Item& I = *it;
 			if(I.first==part_name)
 			{
 				P[i].Name = I.second;
@@ -169,7 +173,7 @@ BOOL motions_value::load		(LPCSTR N, IReader *data, vecBones* bones)
 		string128			mname;
 		R_ASSERT			(MS->find_chunk(m_idx+1));             
 		MS->r_stringZ		(mname,sizeof(mname));
-#ifdef _DEBUG        
+#ifdef DEBUG        
 		// sanity check
 		xr_strlwr			(mname);
         accel_map::iterator I= m_motion_map.find(mname); 
@@ -315,8 +319,8 @@ void CMotionDef::Load(IReader* MP, u32 fl, u16 version)
 	// params
 	bone_or_part= MP->r_u16(); // bCycle?part_id:bone_id;
 	motion		= MP->r_u16(); // motion_id
-	speed		= Quantize(MP->r_float());
-	speed_k		= 1.0f;
+	speed = MP->r_float(); //Quantize(MP->r_float());
+	speed_k = 1.0f;
 	power		= Quantize(MP->r_float());
 	accrue		= Quantize(MP->r_float());
 	falloff		= Quantize(MP->r_float());
@@ -439,3 +443,17 @@ void ENGINE_API motion_marks::Load(IReader* R)
 		item.second			= R->r_float();
 	}
 }
+#ifdef _EDITOR
+void motion_marks::Save(IWriter* W)
+{
+	W->w_string			(name.c_str());
+	u32 cnt				= intervals.size();
+    W->w_u32			(cnt);
+	for(u32 i=0; i<cnt; ++i)
+	{
+		interval& item		= intervals[i];
+		W->w_float			(item.first);
+		W->w_float			(item.second);
+	}
+}
+#endif

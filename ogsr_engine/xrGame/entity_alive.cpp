@@ -3,12 +3,12 @@
 #include "inventoryowner.h"
 #include "inventory.h"
 #include "physicsshell.h"
-#include "gamemtllib.h"
+#include "../xr_3da/gamemtllib.h"
 #include "phmovementcontrol.h"
 #include "wound.h"
 #include "xrmessages.h"
 #include "level.h"
-#include "../xr_3da/skeletoncustom.h"
+#include "../Include/xrRender/Kinematics.h"
 #include "relation_registry.h"
 #include "monster_community.h"
 #include "entitycondition.h"
@@ -25,14 +25,14 @@
 #define BLOOD_MARKS_SECT		"bloody_marks"
 
 //отметки крови на стенах 
-SHADER_VECTOR* CEntityAlive::m_pBloodMarksVector = NULL;
+FactoryPtr<IWallMarkArray>* CEntityAlive::m_pBloodMarksVector = nullptr;
 float CEntityAlive::m_fBloodMarkSizeMin = 0.f;
 float CEntityAlive::m_fBloodMarkSizeMax = 0.f;
 float CEntityAlive::m_fBloodMarkDistance = 0.f;
 float CEntityAlive::m_fNominalHit = 0.f;
 
 //капание крови
-SHADER_VECTOR* CEntityAlive::m_pBloodDropsVector = NULL;
+FactoryPtr<IWallMarkArray>* CEntityAlive::m_pBloodDropsVector = nullptr;
 float CEntityAlive::m_fStartBloodWoundSize = 0.3f;
 float CEntityAlive::m_fStopBloodWoundSize = 0.1f;
 float CEntityAlive::m_fBloodDropSize = 0.03f;
@@ -96,8 +96,8 @@ void CEntityAlive::LoadBloodyWallmarks (LPCSTR section)
 {
 	VERIFY					(0==m_pBloodMarksVector);
 	VERIFY					(0==m_pBloodDropsVector);
-	m_pBloodMarksVector		= xr_new<SHADER_VECTOR>();
-	m_pBloodDropsVector		= xr_new<SHADER_VECTOR>();
+	m_pBloodMarksVector		= xr_new<FactoryPtr<IWallMarkArray>>();
+	m_pBloodDropsVector		= xr_new<FactoryPtr<IWallMarkArray>>();
 	
 	//кровавые отметки на стенах
 	string256	tmp;
@@ -105,14 +105,9 @@ void CEntityAlive::LoadBloodyWallmarks (LPCSTR section)
 	
 	int cnt		=_GetItemCount(wallmarks_name);
 	
-	ref_shader	s;
-	for (int k=0; k<cnt; ++k)
-	{
-		s.create ("effects\\wallmark",_GetItem(wallmarks_name,k,tmp));
-		m_pBloodMarksVector->push_back	(s);
-	}
+	for (int k = 0; k < cnt; ++k)
+		(*m_pBloodMarksVector)->AppendMark(_GetItem(wallmarks_name, k, tmp));
 
-	
 	m_fBloodMarkSizeMin = pSettings->r_float(section, "min_size"); 
 	m_fBloodMarkSizeMax = pSettings->r_float(section, "max_size"); 
 	m_fBloodMarkDistance = pSettings->r_float(section, "dist"); 
@@ -124,12 +119,8 @@ void CEntityAlive::LoadBloodyWallmarks (LPCSTR section)
 	wallmarks_name = pSettings->r_string(section, "blood_drops");
 	cnt		=_GetItemCount(wallmarks_name);
 
-	for (int k=0; k<cnt; ++k)
-	{
-		s.create ("effects\\wallmark",_GetItem(wallmarks_name,k,tmp));
-		m_pBloodDropsVector->push_back	(s);
-	}
-
+	for (int k = 0; k < cnt; ++k)
+		(*m_pBloodDropsVector)->AppendMark(_GetItem(wallmarks_name, k, tmp));
 
 	m_fStartBloodWoundSize  = pSettings->r_float(section, "start_blood_size");
 	m_fStopBloodWoundSize   = pSettings->r_float(section, "stop_blood_size");
@@ -139,11 +130,11 @@ void CEntityAlive::LoadBloodyWallmarks (LPCSTR section)
 void CEntityAlive::UnloadBloodyWallmarks	()
 {
 	if (m_pBloodMarksVector){ 
-		m_pBloodMarksVector->clear	();
+		//m_pBloodMarksVector->clear	();
 		xr_delete					(m_pBloodMarksVector);
 	}
 	if (m_pBloodDropsVector){
-		m_pBloodDropsVector->clear	();
+		//m_pBloodDropsVector->clear	();
 		xr_delete					(m_pBloodDropsVector);
 	}
 }
@@ -370,7 +361,7 @@ void CEntityAlive::BloodyWallmarks (float P, const Fvector &dir, s16 element,
 		return;
 
 	//вычислить координаты попадания
-	CKinematics* V = smart_cast<CKinematics*>(Visual());
+	IKinematics* V = smart_cast<IKinematics*>(Visual());
 		
 	Fvector start_pos = position_in_object_space;
 	if(V)
@@ -390,12 +381,11 @@ void CEntityAlive::BloodyWallmarks (float P, const Fvector &dir, s16 element,
 	clamp(wallmark_size, m_fBloodMarkSizeMin, m_fBloodMarkSizeMax);
 
 	VERIFY(m_pBloodMarksVector);
-	PlaceBloodWallmark(dir, start_pos, m_fBloodMarkDistance, 
-						wallmark_size, *m_pBloodMarksVector);
-
+	PlaceBloodWallmark(dir, start_pos, m_fBloodMarkDistance,
+		wallmark_size, &**m_pBloodMarksVector);
 }
 
-void CEntityAlive::PlaceBloodWallmark(const Fvector& dir, const Fvector& start_pos, float trace_dist, float wallmark_size, SHADER_VECTOR& wallmarks_vector)
+void CEntityAlive::PlaceBloodWallmark(const Fvector& dir, const Fvector& start_pos, float trace_dist, float wallmark_size, IWallMarkArray* pwallmarks_vector)
 {
 	collide::rq_result result;
 
@@ -408,10 +398,10 @@ void CEntityAlive::PlaceBloodWallmark(const Fvector& dir, const Fvector& start_p
 	end_point.set(0,0,0);
 	end_point.mad(start_pos, dir, result.range);
 
-	ref_shader wallmarkShader = wallmarks_vector[::Random.randI(wallmarks_vector.size())];
-
+#pragma todo("KRodin: починить и включить!")
 	if(result.O) { // Dynamic object
-		const auto pK = smart_cast<CKinematics*>(result.O->Visual());
+/*  add_SkeletonWallmark not implemented now...
+		const auto pK = smart_cast<IKinematics*>(result.O->Visual());
 		if (!pK)
 			return;
 
@@ -419,8 +409,8 @@ void CEntityAlive::PlaceBloodWallmark(const Fvector& dir, const Fvector& start_p
 		auto pMaterial = GMLib.GetMaterialByIdx(bone_data.game_mtl_idx);
 
 		if (pMaterial->Flags.is(SGameMtl::flBloodmark))
-			::Render->add_SkeletonWallmark(&result.O->renderable.xform, pK, wallmarkShader, end_point, dir, wallmark_size);
-
+			::Render->add_SkeletonWallmark(&result.O->renderable.xform, pK, pwallmarks_vector, end_point, dir, wallmark_size);
+*/
 	}
 	else { //если кровь долетела до статического объекта
 		auto pTri = Level().ObjectSpace.GetStaticTris()+result.element;
@@ -429,10 +419,10 @@ void CEntityAlive::PlaceBloodWallmark(const Fvector& dir, const Fvector& start_p
 		if(pMaterial->Flags.is(SGameMtl::flBloodmark))
 		{
 			//вычислить нормаль к пораженной поверхности
-			auto pVerts	= Level().ObjectSpace.GetStaticVerts();
+//			auto pVerts	= Level().ObjectSpace.GetStaticVerts();
 
 			//добавить отметку на материале
-			::Render->add_StaticWallmark( wallmarkShader, end_point, wallmark_size, pTri, pVerts );
+			//::Render->add_StaticWallmark(pwallmarks_vector, end_point, wallmark_size, pTri, pVerts);
 		}
 	}
 }
@@ -457,7 +447,7 @@ void CEntityAlive::StartFireParticles(CWound* pWound)
 			m_ParticleWounds.push_back(pWound);
 		}
 
-		CKinematics* V = smart_cast<CKinematics*>(Visual());
+		IKinematics* V = smart_cast<IKinematics*>(Visual());
 
 		u16 particle_bone = CParticlesPlayer::GetNearestBone(V, pWound->GetBoneNum());
 		VERIFY(particle_bone  < 64 || BI_NONE == particle_bone);
@@ -585,7 +575,7 @@ void CEntityAlive::UpdateBloodDrops()
 				pos.add(pos_distort);
 				PlaceBloodWallmark(Fvector().set(0.f, -1.f, 0.f),
 								pos, m_fBloodMarkDistance, 
-								m_fBloodDropSize, *m_pBloodDropsVector);
+								m_fBloodDropSize, &**m_pBloodDropsVector);
 			}
 		}
 		it++;

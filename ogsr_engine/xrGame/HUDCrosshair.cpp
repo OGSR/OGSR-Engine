@@ -9,10 +9,7 @@
 
 CHUDCrosshair::CHUDCrosshair	()
 {
-//.	hGeomLine.create			(FVF::F_TL0uv,RCache.Vertex.Buffer(),0);
-//.	hShader.create				("editor\\wire");
-	hGeomLine.create			(FVF::F_TL0uv,RCache.Vertex.Buffer(),0);
-	hShader.create				("hud\\crosshair");
+	hShader->create("hud\\crosshair");
 
 	//вычислить и запомнить центр экрана
 //	center.set(int(Device.dwWidth)/2,int(Device.dwHeight)/2);
@@ -22,8 +19,6 @@ CHUDCrosshair::CHUDCrosshair	()
 
 CHUDCrosshair::~CHUDCrosshair	()
 {
-	hGeomLine.destroy			();
-	hShader.destroy				();
 }
 
 void CHUDCrosshair::Load		()
@@ -68,12 +63,7 @@ void CHUDCrosshair::OnRender ()
 	scr_size.set	(float(::Render->getTarget()->get_width()), float(::Render->getTarget()->get_height()));
 	center.set		(scr_size.x/2.0f, scr_size.y/2.0f);
 
-	// draw back
-	u32			dwOffset, dwCount;
-	dwCount								= 10;
-	FVF::TL0uv* pv_start				= (FVF::TL0uv*)RCache.Vertex.Lock(dwCount,hGeomLine->vb_stride,dwOffset);
-	FVF::TL0uv* pv						= pv_start;
-	
+	UIRender->StartPrimitive(10, IUIRender::ptLineList, UI()->m_currentPointType);
 
 	float cross_length					= cross_length_perc*scr_size.x;
 	float min_radius					= min_radius_perc*scr_size.x;
@@ -88,28 +78,25 @@ void CHUDCrosshair::OnRender ()
 	float y_max							= x_max;
 
 	// 0
-	pv->set					(center.x+1,		center.y + y_min,	cross_color); pv++;
-	pv->set					(center.x+1,		center.y + y_max,	cross_color); pv++;
+	UIRender->PushPoint(center.x, center.y + y_min, 0, cross_color, 0, 0);
+	UIRender->PushPoint(center.x, center.y + y_max, 0, cross_color, 0, 0);
 	// 1
-	pv->set					(center.x+1,		center.y - y_min,	cross_color); pv++;
-	pv->set					(center.x+1,		center.y - y_max,	cross_color); pv++;
+	UIRender->PushPoint(center.x, center.y - y_min, 0, cross_color, 0, 0);
+	UIRender->PushPoint(center.x, center.y - y_max, 0, cross_color, 0, 0);
 	// 2
-	pv->set					(center.x + x_min+1, center.y,			cross_color); pv++;
-	pv->set					(center.x + x_max+1, center.y,			cross_color); pv++;
+	UIRender->PushPoint(center.x + x_min, center.y, 0, cross_color, 0, 0);
+	UIRender->PushPoint(center.x + x_max, center.y, 0, cross_color, 0, 0);
 	// 3
-	pv->set					(center.x - x_min,	center.y,			cross_color); pv++;
-	pv->set					(center.x - x_max,	center.y,			cross_color); pv++;
-	// 4
-	pv->set					(center.x,			center.y,			cross_color); pv++;
-	pv->set					(center.x+1,		center.y,			cross_color); pv++;
-//*/
+	UIRender->PushPoint(center.x - x_min, center.y, 0, cross_color, 0, 0);
+	UIRender->PushPoint(center.x - x_max, center.y, 0, cross_color, 0, 0);
+
+	// point
+	UIRender->PushPoint(center.x - 0.5f, center.y, 0, cross_color, 0, 0);
+	UIRender->PushPoint(center.x + 0.5f, center.y, 0, cross_color, 0, 0);
+
 	// render	
-	RCache.Vertex.Unlock	(dwCount,hGeomLine->vb_stride);
-
-	RCache.set_Shader		(hShader);
-	RCache.set_Geometry		(hGeomLine);
-	RCache.Render	   		(D3DPT_LINELIST,dwOffset,dwCount/2);
-
+	UIRender->SetShader(*hShader);
+	UIRender->FlushPrimitive();
 
 	if(!fsimilar(target_radius,radius))
 	{

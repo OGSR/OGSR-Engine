@@ -10,7 +10,7 @@ struct 	v2p
 };
 
 //////////////////////////////////////////////////////////////////////////////////////////
-uniform float4x4	m_texgen;
+//uniform float4x4	m_texgen;
 uniform float4x4	m_texgen_J;
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -21,7 +21,7 @@ v2p 	main	( float4 P:	POSITION )
 	O.hpos 		= mul	(m_WVP,	  	P	);
 	O.tc 		= mul	(m_texgen,	P	);
 #ifdef	USE_SJITTER
-	O.tcJ 		= mul	(m_texgen_J,	P	);
+ 	O.tcJ 		= mul	(m_texgen_J,	P	);
 #endif
  	return	O;
 }

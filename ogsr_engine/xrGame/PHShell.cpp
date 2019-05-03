@@ -8,7 +8,7 @@
 #include "SpaceUtils.h"
 #include "MathUtils.h"
 #include "PhysicsShellHolder.h"
-#include "../xr_3da/skeletoncustom.h"
+#include "../Include/xrRender/Kinematics.h"
 #include "PHCollideValidator.h"
 #include "game_object_space.h"
 
@@ -297,9 +297,9 @@ void	CPHShell::	applyImpulseTrace		(const Fvector& pos, const Fvector& dir, floa
 	if(!isActive()) return;
 	VERIFY(m_pKinematics);
 	CBoneInstance& instance=m_pKinematics->LL_GetBoneInstance				(id);
-	if(instance.Callback_type!=bctPhysics || !instance.Callback_Param) return;
+	if(instance.callback_type() != bctPhysics || !instance.callback_param()) return;
 
-	((CPhysicsElement*)instance.Callback_Param)->applyImpulseTrace		( pos,  dir,  val, id);
+	((CPhysicsElement*)instance.callback_param())->applyImpulseTrace		( pos,  dir,  val, id);
 	EnableObject(0);
 }
 
@@ -342,9 +342,9 @@ CPhysicsElement* CPHShell::get_Element(u16 bone_id)
 	if(m_pKinematics&& isActive())
 	{
 		CBoneInstance& instance=m_pKinematics->LL_GetBoneInstance				(bone_id);
-		if(instance.Callback==BonesCallback||instance.Callback==StataticRootBonesCallBack)
+		if(instance.callback() ==BonesCallback||instance.callback() ==StataticRootBonesCallBack)
 		{
-			return (instance.Callback_type==bctPhysics)?(CPhysicsElement*)instance.Callback_Param:NULL;
+			return (instance.callback_type() == bctPhysics)?(CPhysicsElement*)instance.callback_param():NULL;
 		}
 	}
 
@@ -384,17 +384,17 @@ u16			CPHShell::get_JointsNumber				()
 	return u16(joints.size());
 }
 void  CPHShell:: BonesCallback				(CBoneInstance* B){
-	///CPHElement*	E			= smart_cast<CPHElement*>	(static_cast<CPhysicsBase*>(B->Callback_Param));
+	///CPHElement*	E			= smart_cast<CPHElement*>	(static_cast<CPhysicsBase*>(B->callback_param()));
 
-	CPHElement*	E			= cast_PHElement(B->Callback_Param);
+	CPHElement*	E			= cast_PHElement(B->callback_param());
 	E->BonesCallBack(B);
 }
 
 
 void  CPHShell::StataticRootBonesCallBack			(CBoneInstance* B){
-	///CPHElement*	E			= smart_cast<CPHElement*>	(static_cast<CPhysicsBase*>(B->Callback_Param));
+	///CPHElement*	E			= smart_cast<CPHElement*>	(static_cast<CPhysicsBase*>(B->callback_param()));
 
-	CPHElement*	E			= cast_PHElement(B->Callback_Param);
+	CPHElement*	E			= cast_PHElement(B->callback_param());
 	E->StataticRootBonesCallBack(B);
 }
 
@@ -588,7 +588,7 @@ void CPHShell::addEquelInertiaToEls(const dMass& M)
 	}
 }
 static BONE_P_MAP* spGetingMap=NULL;
-void CPHShell::build_FromKinematics(CKinematics* K,BONE_P_MAP* p_geting_map)
+void CPHShell::build_FromKinematics(IKinematics* K,BONE_P_MAP* p_geting_map)
 {
 	VERIFY( K );
 	//phys_shell_verify_model ( *K );
@@ -603,7 +603,7 @@ void CPHShell::build_FromKinematics(CKinematics* K,BONE_P_MAP* p_geting_map)
 	if(m_spliter_holder->isEmpty())ClearBreakInfo();
 }
 
-void CPHShell::preBuild_FromKinematics(CKinematics* K,BONE_P_MAP* p_geting_map)
+void CPHShell::preBuild_FromKinematics(IKinematics* K,BONE_P_MAP* p_geting_map)
 {
 	VERIFY( K );
 	//phys_shell_verify_model ( *K );
@@ -738,7 +738,7 @@ void CPHShell::AddElementRecursive(CPhysicsElement* root_e, u16 id,Fmatrix globa
 			}
 
 
-			//B.Callback_Param=root_e;
+			//B.callback_param()=root_e;
 			//B.Callback=NULL;
 
 		}
@@ -854,7 +854,7 @@ void CPHShell::AddElementRecursive(CPhysicsElement* root_e, u16 id,Fmatrix globa
 	bool bbb = lvis_check||(!breakable && root_e);
 	if(!bbb)
 	{	
-		CKinematics* K = m_pKinematics;
+		IKinematics* K = m_pKinematics;
 
 		Msg("all bones transform:--------");
 		
@@ -1022,7 +1022,7 @@ void CPHShell::ZeroCallbacksRecursive(u16 id)
 	CBoneInstance& B	= m_pKinematics->LL_GetBoneInstance(u16(id));
 	CBoneData& bone_data= m_pKinematics->LL_GetData(u16(id));
 	B.reset_callback	();
-	B.Callback_overwrite=FALSE;
+	B.set_callback_overwrite(FALSE);
 	for (vecBonesIt it=bone_data.children.begin(); bone_data.children.end() != it; ++it)
 		ZeroCallbacksRecursive		((*it)->GetSelfID());
 

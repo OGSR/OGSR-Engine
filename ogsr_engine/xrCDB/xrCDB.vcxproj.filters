@@ -93,6 +93,30 @@
     <ClCompile Include="Opcode.cpp">
       <Filter>Opcode</Filter>
     </ClCompile>
+    <ClCompile Include="ISpatial.cpp">
+      <Filter>Kernel</Filter>
+    </ClCompile>
+    <ClCompile Include="ISpatial_q_box.cpp">
+      <Filter>Kernel</Filter>
+    </ClCompile>
+    <ClCompile Include="ISpatial_q_frustum.cpp">
+      <Filter>Kernel</Filter>
+    </ClCompile>
+    <ClCompile Include="ISpatial_q_ray.cpp">
+      <Filter>Kernel</Filter>
+    </ClCompile>
+    <ClCompile Include="ISpatial_verify.cpp">
+      <Filter>Kernel</Filter>
+    </ClCompile>
+    <ClCompile Include="OPC_Common.cpp">
+      <Filter>Opcode</Filter>
+    </ClCompile>
+    <ClCompile Include="OPC_Ray.cpp">
+      <Filter>Opcode</Filter>
+    </ClCompile>
+    <ClCompile Include="xrXRC.cpp">
+      <Filter>Kernel</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Frustum.h">
@@ -220,6 +244,15 @@
     </ClInclude>
     <ClInclude Include="Opcode.h">
       <Filter>Opcode</Filter>
+    </ClInclude>
+    <ClInclude Include="ISpatial.h">
+      <Filter>Kernel</Filter>
+    </ClInclude>
+    <ClInclude Include="xr_collide_defs.h">
+      <Filter>Kernel</Filter>
+    </ClInclude>
+    <ClInclude Include="xrXRC.h">
+      <Filter>Kernel</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

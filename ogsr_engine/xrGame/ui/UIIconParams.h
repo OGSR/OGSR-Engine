@@ -27,7 +27,7 @@ public:
   CIconParams( const shared_str section ) { Load( section ); }
 
   void        Load( const shared_str item_section );
-  ref_shader& get_shader() const;
+  ui_shader& get_shader() const;
   Frect&      original_rect() const;
   void        set_shader( CUIStatic* );
   void        set_shader( CUIStaticItem* );

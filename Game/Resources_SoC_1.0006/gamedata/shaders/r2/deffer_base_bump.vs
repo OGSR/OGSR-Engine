@@ -1,10 +1,9 @@
 #include	"common.h"
-#include "ogse_config.h"
 
 p_bumped	main	( v_static I )
 {
 	float4	w_pos	= I.P				;
-	float2 	tc		= unpack_tc_base	(I.tc,I.T.w,I.B.w);// + ogse_c_jitter.xy;	// copy tc
+	float2 	tc		= unpack_tc_base	(I.tc,I.T.w,I.B.w);	// copy tc
 	float 	hemi 	= I.Nh.w			;
 
 	// Eye-space pos/normal
@@ -13,6 +12,10 @@ p_bumped	main	( v_static I )
 	O.hpos 		= mul		(m_WVP,	w_pos		);
 	O.tcdh 		= float4	(tc.xyyy			);
 	O.position	= float4	(Pe, hemi			);
+
+#if defined(USE_R2_STATIC_SUN) && !defined(USE_LM_HEMI)
+	O.tcdh.w	= I.color.w;					// (r,g,b,dir-occlusion)
+#endif
 
 	// Calculate the 3x3 transform from tangent space to eye-space
 	// TangentToEyeSpace = object2eye * tangent2object
@@ -38,7 +41,7 @@ p_bumped	main	( v_static I )
 	O.M1 			= xform[0]; 
 	O.M2 			= xform[1]; 
 	O.M3 			= xform[2]; 
-	
+
 #ifdef 	USE_TDETAIL
 	O.tcdbump		= O.tcdh * dt_params;		// dt tc
 #endif

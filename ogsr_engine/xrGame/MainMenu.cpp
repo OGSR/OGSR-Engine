@@ -177,8 +177,7 @@ void CMainMenu::Activate(bool bActivate)
 		if (m_Flags.test(flNeedVidRestart))
 		{
 			m_Flags.set(flNeedVidRestart, FALSE);
-			//Console->Execute("vid_restart");
-			Device.PreCache(20);
+			Console->Execute("vid_restart"); //Device.PreCache(20);
 		}
 	}
 }
@@ -186,6 +185,11 @@ void CMainMenu::Activate(bool bActivate)
 bool CMainMenu::IsActive()
 {
 	return !!m_Flags.test(flActive);
+}
+
+bool CMainMenu::CanSkipSceneRendering()
+{
+	return IsActive() && !m_Flags.test(flGameSaveScreenshot);
 }
 
 

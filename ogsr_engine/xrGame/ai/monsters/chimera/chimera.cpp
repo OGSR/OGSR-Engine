@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "chimera.h"
 #include "chimera_state_manager.h"
-#include "../../../../xr_3da/skeletonanimated.h"
+#include "../../../../Include/xrRender/KinematicsAnimated.h"
 #include "../../../detail_path_manager.h"
 #include "../monster_velocity_space.h"
 #include "../../../level.h"
@@ -61,7 +61,7 @@ void   CChimera::Load (LPCSTR section)
 
 	//@
 
-	CKinematicsAnimated*	KA			=	smart_cast<CKinematicsAnimated*>(Visual());
+	IKinematicsAnimated*	KA			=	smart_cast<IKinematicsAnimated*>(Visual());
 	MotionID idle_motion_id1			=	KA->LL_MotionID("stand_idle_0");
 	MotionID idle_motion_id2			=	KA->LL_MotionID("stand_idle_1");
 	

@@ -1,3 +1,5 @@
+#ifndef	ColorMapManager_included
+#define	ColorMapManager_included
 #pragma once
 
 //	Reduces amount of work if the texture was not changed.
@@ -23,7 +25,7 @@ private:
 		{	return x<y;	}
 	};
 
-	using map_Tex = xr_map<shared_str, ref_texture, str_pred>;
+	DEFINE_MAP_PRED(shared_str, ref_texture, map_Tex, map_TexIt, str_pred);
 
 private:
 
@@ -32,3 +34,5 @@ private:
 
 	map_Tex			m_TexCache;
 };
+
+#endif	//	ColorMapManager_included

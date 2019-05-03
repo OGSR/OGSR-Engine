@@ -9,16 +9,19 @@
 #define REG_PRIORITY_INVALID	0xfffffffful
 
 typedef void __fastcall RP_FUNC		(void *obj);
-#define DECLARE_MESSAGE(name)		extern ENGINE_API RP_FUNC rp_##name; class ENGINE_API pure##name { public: virtual void  On##name(void)=0;	}
+#define DECLARE_MESSAGE_CL(name,calling)		extern ENGINE_API RP_FUNC rp_##name; class ENGINE_API pure##name { public: virtual void calling On##name(void)=0;	}
+	
+#define DECLARE_MESSAGE( name )	DECLARE_MESSAGE_CL(name, )
 #define DECLARE_RP(name) void __fastcall rp_##name(void *p) { ((pure##name *)p)->On##name(); }
 
-DECLARE_MESSAGE(Frame);
+DECLARE_MESSAGE_CL(Frame,_BCL);
 DECLARE_MESSAGE(Render);
 DECLARE_MESSAGE(AppActivate);
 DECLARE_MESSAGE(AppDeactivate);
 DECLARE_MESSAGE(AppStart);
 DECLARE_MESSAGE(AppEnd);
 DECLARE_MESSAGE(DeviceReset);
+DECLARE_MESSAGE(ScreenResolutionChanged);
 
 
 
@@ -29,11 +32,17 @@ struct _REG_INFO {
 	u32		Flags;
 };
 
-ENGINE_API extern int	__cdecl	_REG_Compare(const void *, const void *);
+//ENGINE_API extern int	__cdecl	_REG_Compare(const void *, const void *);
 
 template <class T> class CRegistrator		// the registrator itself
 {
-	friend ENGINE_API int	__cdecl	_REG_Compare(const void *, const void *);
+//	friend ENGINE_API int	__cdecl	_REG_Compare(const void *, const void *);
+static int	__cdecl	_REG_Compare(const void *e1, const void *e2)
+{
+	_REG_INFO *p1 = (_REG_INFO *)e1;
+	_REG_INFO *p2 = (_REG_INFO *)e2;
+	return (p2->Prio - p1->Prio);
+}
 public:
 	xr_vector<_REG_INFO>	R;
 	// constructor

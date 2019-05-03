@@ -15,7 +15,7 @@
 #include "../team_hierarchy_holder.h"
 #include "../squad_hierarchy_holder.h"
 #include "../group_hierarchy_holder.h"
-#include "../../xr_3da/skeletonanimated.h"
+#include "../../Include/xrRender/KinematicsAnimated.h"
 #include "ai_monsters_anims.h"
 #include "../ef_pattern.h"
 #include "../memory_manager.h"
@@ -174,7 +174,7 @@ u32 dwfChooseAction(u32 dwActionRefreshRate, float fMinProbability0, float fMinP
 				}
 }
 
-void CAniVector::Load(CKinematicsAnimated *tpKinematics, LPCSTR caBaseName)
+void CAniVector::Load(IKinematicsAnimated *tpKinematics, LPCSTR caBaseName)
 {
 	A.clear		();
 	string256	S1, S2;

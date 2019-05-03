@@ -1,11 +1,14 @@
 #include "stdafx.h"
 #include "GameFont.h"
+#pragma hdrstop
 
+#include "../xrcdb/ISpatial.h"
 
-#include "ISpatial.h"
 #include "IGame_Persistent.h"
 #include "render.h"
 #include "xr_object.h"
+
+#include "../Include/xrRender/DrawUtils.h"
 
 int		g_ErrorLineCount	= 15;
 Flags32 g_stats_flags		= {0};
@@ -66,7 +69,7 @@ void _draw_cam_pos(CGameFont* pFont)
 	float sz		= pFont->GetHeight();
 	pFont->SetHeightI(0.02f);
 	pFont->SetColor	(0xffffffff);
-	pFont->Out		(10, (float)Device.dwHeight - 30, "CAMERA POSITION:  [%3.2f,%3.2f,%3.2f]",VPUSH(Device.vCameraPosition));
+	pFont->Out		(10, 600, "CAMERA POSITION:  [%3.2f,%3.2f,%3.2f]",VPUSH(Device.vCameraPosition));
 	pFont->SetHeight(sz);
 	pFont->OnRender	();
 }
@@ -118,6 +121,9 @@ void CStats::Show()
 		netClient1.FrameEnd			();
 		netClient2.FrameEnd			();
 		netServer.FrameEnd			();
+
+		netClientCompressor.FrameEnd();
+		netServerCompressor.FrameEnd();
 		
 		TEST0.FrameEnd				();
 		TEST1.FrameEnd				();
@@ -139,7 +145,9 @@ void CStats::Show()
 		fFPS = fInv*fFPS + fOne*fps;
 
 		if (RenderTOTAL.result>EPS_S) {
-			fTPS = fInv*fTPS + fOne*float(RCache.stat.polys)/(RenderTOTAL.result*1000.f);
+			u32	rendered_polies = Device.m_pRender->GetCacheStatPolys();
+			fTPS = fInv*fTPS + fOne*float(rendered_polies)/(RenderTOTAL.result*1000.f);
+			//fTPS = fInv*fTPS + fOne*float(RCache.stat.polys)/(RenderTOTAL.result*1000.f);
 			fRFPS= fInv*fRFPS+ fOne*1000.f/RenderTOTAL.result;
 		}
 	}
@@ -149,6 +157,10 @@ void CStats::Show()
 		else						fMem_calls	=	.9f*fMem_calls + .1f*mem_count;
 		Memory.stat_calls	= 0		;
 	}
+
+	////////////////////////////////////////////////
+	//if (g_dedicated_server) return;
+	////////////////////////////////////////////////
 
 	CGameFont& F = *pFont;
 	float		f_base_size	= 0.01f;
@@ -179,18 +191,21 @@ void CStats::Show()
 		F.OutSet	(0,0);
 		F.OutNext	("FPS/RFPS:    %3.1f/%3.1f",fFPS,fRFPS);
 		F.OutNext	("TPS:         %2.2f M",	fTPS);
-		F.OutNext	("VERT:        %d/%d",		RCache.stat.verts,RCache.stat.calls?RCache.stat.verts/RCache.stat.calls:0);
-		F.OutNext	("POLY:        %d/%d",		RCache.stat.polys,RCache.stat.calls?RCache.stat.polys/RCache.stat.calls:0);
-		F.OutNext	("DIP/DP:      %d",			RCache.stat.calls);
+		m_pRender->OutData1(F);
+		//F.OutNext	("VERT:        %d/%d",		RCache.stat.verts,RCache.stat.calls?RCache.stat.verts/RCache.stat.calls:0);
+		//F.OutNext	("POLY:        %d/%d",		RCache.stat.polys,RCache.stat.calls?RCache.stat.polys/RCache.stat.calls:0);
+		//F.OutNext	("DIP/DP:      %d",			RCache.stat.calls);
 #ifdef DEBUG
 		F.OutSkip	();
 		F.OutNext	("mapped:      %d",			g_file_mapped_memory);
 		F.OutSkip	();
-		F.OutNext	("SH/T/M/C:    %d/%d/%d/%d",RCache.stat.states,RCache.stat.textures,RCache.stat.matrices,RCache.stat.constants);
-		F.OutNext	("RT/PS/VS:    %d/%d/%d",	RCache.stat.target_rt,RCache.stat.ps,RCache.stat.vs);
-		F.OutNext	("DCL/VB/IB:   %d/%d/%d",   RCache.stat.decl,RCache.stat.vb,RCache.stat.ib);
+		m_pRender->OutData2(F);
+		//F.OutNext	("SH/T/M/C:    %d/%d/%d/%d",RCache.stat.states,RCache.stat.textures,RCache.stat.matrices,RCache.stat.constants);
+		//F.OutNext	("RT/PS/VS:    %d/%d/%d",	RCache.stat.target_rt,RCache.stat.ps,RCache.stat.vs);
+		//F.OutNext	("DCL/VB/IB:   %d/%d/%d",   RCache.stat.decl,RCache.stat.vb,RCache.stat.ib);
 #endif
-		F.OutNext	("xforms:      %d",			RCache.stat.xforms);
+		m_pRender->OutData3(F);
+		//F.OutNext	("xforms:      %d",			RCache.stat.xforms);
 		F.OutSkip	();
 
 #define PPP(a) (100.f*float(a)/float(EngineTOTAL.result))
@@ -224,7 +239,7 @@ void CStats::Show()
 		F.OutNext	("  Wait-L:    %2.2fms",RenderDUMP_Wait.result);	
 		F.OutNext	("  Wait-S:    %2.2fms",RenderDUMP_Wait_S.result);	
 		F.OutNext	("  Skinning:  %2.2fms",RenderDUMP_SKIN.result);	
-		F.OutNext	("  DT_Vis/Cnt:%2.2fms",RenderDUMP_DT_VIS.result,RenderDUMP_DT_Count);	
+		F.OutNext	("  DT_Vis/Cnt:%2.2fms/%d",RenderDUMP_DT_VIS.result,RenderDUMP_DT_Count);	
 		F.OutNext	("  DT_Render: %2.2fms",RenderDUMP_DT_Render.result);	
 		F.OutNext	("  DT_Cache:  %2.2fms",RenderDUMP_DT_Cache.result);	
 		F.OutNext	("  Wallmarks: %2.2fms, %d/%d - %d",RenderDUMP_WM.result,RenderDUMP_WMS_Count,RenderDUMP_WMD_Count,RenderDUMP_WMT_Count);
@@ -248,6 +263,9 @@ void CStats::Show()
 		F.OutNext	("netClientRecv:   %2.2fms, %d",	netClient1.result,netClient1.count);
 		F.OutNext	("netClientSend:   %2.2fms, %d",	netClient2.result,netClient2.count);
 		F.OutNext	("netServer:   %2.2fms, %d",		netServer.result,netServer.count);
+		F.OutNext	("netClientCompressor:   %2.2fms",	netClientCompressor.result);
+		F.OutNext	("netServerCompressor:   %2.2fms",	netServerCompressor.result);
+		
 		F.OutSkip	();
 
 		F.OutSkip	();
@@ -255,11 +273,21 @@ void CStats::Show()
 		F.OutNext	("TEST 1:      %2.2fms, %d",TEST1.result,TEST1.count);
 		F.OutNext	("TEST 2:      %2.2fms, %d",TEST2.result,TEST2.count);
 		F.OutNext	("TEST 3:      %2.2fms, %d",TEST3.result,TEST3.count);
+#ifdef DEBUG_MEMORY_MANAGER
+		F.OutSkip	();
+		F.OutNext	("str: cmp[%3d], dock[%3d], qpc[%3d]",Memory.stat_strcmp,Memory.stat_strdock,CPU::qpc_counter);
+		Memory.stat_strcmp	=	0		;
+		Memory.stat_strdock	=	0		;
+		CPU::qpc_counter	=	0		;
+#else // DEBUG_MEMORY_MANAGER
 		F.OutSkip	();
 		F.OutNext	("qpc[%3d]",CPU::qpc_counter);
 		CPU::qpc_counter	=	0		;
+#endif // DEBUG_MEMORY_MANAGER
 //		F.OutSet	(640,0);
 		F.OutSkip	();
+		m_pRender->OutData4(F);
+		/*
 		F.OutNext	("static:        %3.1f/%d",	RCache.stat.r.s_static.verts/1024.f,		RCache.stat.r.s_static.dips );
 		F.OutNext	("flora:         %3.1f/%d",	RCache.stat.r.s_flora.verts/1024.f,			RCache.stat.r.s_flora.dips );
 		F.OutNext	("  flora_lods:  %3.1f/%d",	RCache.stat.r.s_flora_lods.verts/1024.f,	RCache.stat.r.s_flora_lods.dips );
@@ -269,17 +297,17 @@ void CStats::Show()
 		F.OutNext	("  dynamic_1B:  %3.1f/%d",	RCache.stat.r.s_dynamic_1B.verts/1024.f,	RCache.stat.r.s_dynamic_1B.dips );
 		F.OutNext	("  dynamic_2B:  %3.1f/%d",	RCache.stat.r.s_dynamic_2B.verts/1024.f,	RCache.stat.r.s_dynamic_2B.dips );
 		F.OutNext	("details:       %3.1f/%d",	RCache.stat.r.s_details.verts/1024.f,		RCache.stat.r.s_details.dips );
-
+*/
 		//////////////////////////////////////////////////////////////////////////
 		// Renderer specific
 		F.SetHeightI						(f_base_size);
-		F.OutSet						((float)Device.dwWidth / 2.f,0);
+		F.OutSet						(200,0);
 		Render->Statistics				(&F);
 
 		//////////////////////////////////////////////////////////////////////////
 		// Game specific
 		F.SetHeightI						(f_base_size);
-		F.OutSet						((float)Device.dwWidth - 200,0);
+		F.OutSet						(400,0);
 		g_pGamePersistent->Statistics	(&F);
 
 		//////////////////////////////////////////////////////////////////////////
@@ -289,7 +317,7 @@ void CStats::Show()
 		pFont->OnRender					();
 	};
 
-	if( psDeviceFlags.test(rsStatistic) || psDeviceFlags.test(rsCameraPos) ){
+	if( /*psDeviceFlags.test(rsStatistic) ||*/ psDeviceFlags.test(rsCameraPos) ){
 		_draw_cam_pos					(pFont);
 		pFont->OnRender					();
 	};
@@ -303,12 +331,14 @@ void CStats::Show()
 		F.OutSet						(300,300);
 		F.SetHeightI						(f_base_size*2);
 		if (fFPS<30)					F.OutNext	("FPS       < 30:   %3.1f",	fFPS);
-		if (RCache.stat.verts>500000)	F.OutNext	("Verts     > 500k: %d",	RCache.stat.verts);
-		//if (RCache.stat.polys>500000)	F.OutNext	("Polys     > 500k: %d",	RCache.stat.polys);
+		//if (RCache.stat.verts>500000)	F.OutNext	("Verts     > 500k: %d",	RCache.stat.verts);
+		m_pRender->GuardVerts(F);
+		////if (RCache.stat.polys>500000)	F.OutNext	("Polys     > 500k: %d",	RCache.stat.polys);
 		if (psDeviceFlags.test(rsStatistic))
 		{
-			if (RCache.stat.calls>1000)		F.OutNext	("DIP/DP    > 1k:   %d",	RCache.stat.calls);
-			//if (RCache.stat.textures>1000)F.OutNext	("T_change  > 500:  %d",	RCache.stat.textures);
+			m_pRender->GuardDrawCalls(F);
+			//if (RCache.stat.calls>1000)		F.OutNext	("DIP/DP    > 1k:   %d",	RCache.stat.calls);
+			////if (RCache.stat.textures>1000)F.OutNext	("T_change  > 500:  %d",	RCache.stat.textures);
 			if (RenderDUMP_DT_Count>1000)	F.OutNext	("DT_count  > 1000: %u",	RenderDUMP_DT_Count);
 			F.OutSkip						();
 			//if (fMem_calls>1500)			F.OutNext	("MMGR calls > 1500:%3.1f",	fMem_calls);
@@ -381,6 +411,8 @@ void CStats::Show()
 		netClient1.FrameStart		();
 		netClient2.FrameStart		();
 		netServer.FrameStart		();
+		netClientCompressor.FrameStart();
+		netServerCompressor.FrameStart();
 
 		TEST0.FrameStart			();
 		TEST1.FrameStart			();
@@ -407,7 +439,10 @@ void CStats::OnDeviceCreate			()
 {
 	g_bDisableRedText				= strstr(Core.Params,"-xclsx")?TRUE:FALSE;
 
+//	if (!strstr(Core.Params, "-dedicated"))
+#ifndef DEDICATED_SERVER
 	pFont	= xr_new<CGameFont>		("stat_font", CGameFont::fsDeviceIndependent);
+#endif
 
 #ifdef DEBUG
 	if (!g_bDisableRedText)			SetLogCB	(_LogCallback);
@@ -416,6 +451,7 @@ void CStats::OnDeviceCreate			()
 
 void CStats::OnDeviceDestroy		()
 {
+	SetLogCB(0);
 	xr_delete	(pFont);
 }
 
@@ -429,27 +465,32 @@ void CStats::OnRender				()
 		CSound_stats_ext::item_vec_it	_E = snd_stat_ext.items.end();
 		for (;_I!=_E;_I++){
 			const CSound_stats_ext::SItem& item = *_I;
-			if (item._3D){
-				RCache.set_xform_world(Fidentity);
-				RCache.set_Shader		(Device.m_SelectionShader);
-				RCache.set_c			("tfactor",1,1,1,1);
-				DU.DrawCross			(item.params.position, 0.5f, 0xFF0000FF, true );
+			if (item._3D)
+			{
+				m_pRender->SetDrawParams(&*Device.m_pRender);
+				//RCache.set_xform_world(Fidentity);
+				//RCache.set_Shader		(Device.m_SelectionShader);
+				//RCache.set_c			("tfactor",1,1,1,1);
+				DU->DrawCross			(item.params.position, 0.5f, 0xFF0000FF, true );
 				if (g_stats_flags.is(st_sound_min_dist))
-					DU.DrawSphere		(Fidentity, item.params.position, item.params.min_distance, 0x400000FF,	0xFF0000FF, true, true);
+					DU->DrawSphere		(Fidentity, item.params.position, item.params.min_distance, 0x400000FF,	0xFF0000FF, true, true);
 				if (g_stats_flags.is(st_sound_max_dist))
-					DU.DrawSphere		(Fidentity, item.params.position, item.params.max_distance, 0x4000FF00,	0xFF008000, true, true);
-				xr_string out_txt		= (g_stats_flags.is(st_sound_info_name))?item.name.c_str():"";
-				if (item.game_object){
+					DU->DrawSphere		(Fidentity, item.params.position, item.params.max_distance, 0x4000FF00,	0xFF008000, true, true);
+				
+				xr_string out_txt		= (out_txt.size() && g_stats_flags.is(st_sound_info_name)) ? item.name.c_str():"";
+
+				if (item.game_object)
+				{
 					if (g_stats_flags.is(st_sound_ai_dist))
-						DU.DrawSphere	(Fidentity, item.params.position, item.params.max_ai_distance, 0x80FF0000,0xFF800000,true,true);
+						DU->DrawSphere	(Fidentity, item.params.position, item.params.max_ai_distance, 0x80FF0000,0xFF800000,true,true);
 					if (g_stats_flags.is(st_sound_info_object)){
 						out_txt			+= "  (";
 						out_txt			+= item.game_object->cNameSect().c_str();
 						out_txt			+= ")";
 					}
 				}
-				if (g_stats_flags.is_any(st_sound_info_name|st_sound_info_object))
-					DU.OutText			(item.params.position, out_txt.c_str(),0xFFFFFFFF,0xFF000000);
+				if (g_stats_flags.is_any(st_sound_info_name|st_sound_info_object) && item.name.size())
+					DU->OutText			(item.params.position, out_txt.c_str(),0xFFFFFFFF,0xFF000000);
 			}
 		}
 	}

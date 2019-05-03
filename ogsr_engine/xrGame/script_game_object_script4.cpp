@@ -111,7 +111,7 @@ CWeaponHUD*  CScriptGameObject::GetWeaponHUD() const
 	return wpn->GetHUD();
 }
 
-IRender_Visual* CScriptGameObject::GetWeaponHUD_Visual() const
+IRenderVisual* CScriptGameObject::GetWeaponHUD_Visual() const
 {
 	CWeaponHUD *hud = GetWeaponHUD();
 	if (!hud) return NULL;

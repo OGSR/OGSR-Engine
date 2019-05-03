@@ -341,7 +341,7 @@ void COutfitScript::script_register(lua_State *L)
 int			get_fire_bone(CWeaponHUD *hud)  { return hud->FireBone();  }
 const Fvector&	get_fire_point1 (CWeaponHUD *hud) { return hud->FirePoint(); }
 const Fvector&	get_fire_point2 (CWeaponHUD *hud) { return hud->FirePoint2(); }
-IRender_Visual* get_hud_visual(CWeaponHUD *hud)   { return hud->Visual(); }
+IRenderVisual* get_hud_visual(CWeaponHUD *hud)   { return hud->Visual(); }
 
 #ifdef NLC_EXTENSIONS
 extern void attach_upgrades(lua_State *L);

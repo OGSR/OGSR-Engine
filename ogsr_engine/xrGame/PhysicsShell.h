@@ -20,7 +20,7 @@ class CGameObject;
 class NET_Packet;
 struct SBoneShape;
 class  CPHShellSplitterHolder;
-class CKinematics;
+class IKinematics;
 typedef u32	CLClassBits;
 typedef u32	CLBits;
 typedef u32	CGID;
@@ -255,18 +255,18 @@ class CPHIsland;
 class CPhysicsShell			: public CPhysicsBase
 {
 protected:
-					CKinematics					*m_pKinematics																															;
+					IKinematics					*m_pKinematics																															;
 public:
 #ifdef DEBUG
 					CPhysicsShellHolder			*dbg_obj																																;
 #endif
 public:
-IC					CKinematics					*PKinematics								()																{return m_pKinematics		;}
+IC					IKinematics					*PKinematics								()																{return m_pKinematics		;}
 
 #ifdef ANIMATED_PHYSICS_OBJECT_SUPPORT
 	virtual			CPhysicsShellAnimator*		PPhysicsShellAnimator						()																							= 0;
 #endif
-					void						set_Kinematics								(CKinematics* p)														{m_pKinematics=p	;}
+					void						set_Kinematics								(IKinematics* p)														{m_pKinematics=p	;}
 	virtual			void						set_JointResistance							(float force)																				= 0;
 	virtual			void						add_Element									(CPhysicsElement* E)																		= 0;
 	virtual			void						add_Joint									(CPhysicsJoint* E)																			= 0;
@@ -334,8 +334,8 @@ IC					CKinematics					*PKinematics								()																{return m_pKinemati
 	virtual			void						SetGlTransformDynamic						(const Fmatrix &form)																		= 0;
 	virtual			void						CollideAll									()																							= 0;
 	virtual			CPhysicsElement				*NearestToPoint								(const Fvector& point)																		= 0;
-	virtual			void						build_FromKinematics						(CKinematics* K,BONE_P_MAP* p_geting_map=NULL)												= 0;
-	virtual			void						preBuild_FromKinematics						(CKinematics* K,BONE_P_MAP* p_geting_map=NULL)												= 0;
+	virtual			void						build_FromKinematics						(IKinematics* K,BONE_P_MAP* p_geting_map=NULL)												= 0;
+	virtual			void						preBuild_FromKinematics						(IKinematics* K,BONE_P_MAP* p_geting_map=NULL)												= 0;
 	virtual			void						Build										(bool disable=false)																		= 0;
 	virtual			void		__stdcall			ActivatingBonePoses(CKinematics &K) = 0;
 	virtual			void						SetMaxAABBRadius							(float size)																				 {};

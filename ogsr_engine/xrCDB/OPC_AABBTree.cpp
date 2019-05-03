@@ -46,6 +46,9 @@
 // Precompiled Header
 #include "stdafx.h"
 
+namespace Opcode {
+#	include "OPC_TreeBuilders.h"
+} // namespace Opcode
 
 using namespace Opcode;
 

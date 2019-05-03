@@ -470,8 +470,7 @@ void CUIDragDropListEx::clear_select_armament()
 CUICellContainer::CUICellContainer(CUIDragDropListEx* parent)
 {
 	m_pParentDragDropList		= parent;
-	hShader.create				("hud\\fog_of_war","ui\\ui_grid");
-	hGeom.create				(FVF::F_TL, RCache.Vertex.Buffer(), 0);
+	hShader->create("hud\\fog_of_war", "ui\\ui_grid");
 }
 
 CUICellContainer::~CUICellContainer()
@@ -811,9 +810,9 @@ void CUICellContainer::Draw()
 	UI()->ClientToScreenScaled(f_len, float(cell_sz.x), float(cell_sz.y) );
 
 	// fill cell buffer
-	u32 vOffset					= 0;
-	FVF::TL* start_pv			= (FVF::TL*)RCache.Vertex.Lock	((tgt_cells.width()+1)*(tgt_cells.height()+1)*6,hGeom.stride(),vOffset);
-	FVF::TL* pv					= start_pv;
+	u32 max_prim_cnt = ((tgt_cells.width() + 1)*(tgt_cells.height() + 1) * 6);
+	UIRender->StartPrimitive(max_prim_cnt, IUIRender::ptTriList, UI()->m_currentPointType);
+
 	for (int x=0; x<=tgt_cells.width(); ++x){
 		for (int y=0; y<=tgt_cells.height(); ++y){
 
@@ -852,26 +851,22 @@ void CUICellContainer::Draw()
 
 			Fvector2			tp;
 			GetTexUVLT( tp, tgt_cells.x1 + x, tgt_cells.y1 + y, select_mode );
-			for (u32 k=0; k<6; ++k,++pv){
+			for (u32 k=0; k<6; ++k){
 				const Fvector2& p	= pts[k];
 				const Fvector2& uv	= uvs[k];
-				pv->set			(iFloor(drawLT.x + p.x*(f_len.x) + f_len.x*x)-0.5f, 
-								 iFloor(drawLT.y + p.y*(f_len.y) + f_len.y*y)-0.5f, 
-								 0xFFFFFFFF,tp.x+uv.x,tp.y+uv.y);
+				UIRender->PushPoint(iFloor(drawLT.x + p.x*(f_len.x) + f_len.x*x) - 0.5f,
+					iFloor(drawLT.y + p.y*(f_len.y) + f_len.y*y) - 0.5f,
+					0,
+					0xFFFFFFFF,
+					tp.x + uv.x, tp.y + uv.y);
 			}
 		}
 	}
-	std::ptrdiff_t p_cnt		= (pv-start_pv)/3;
-	RCache.Vertex.Unlock		(u32(pv-start_pv),hGeom.stride());
 
-	UI()->PushScissor					(clientArea);
+	UI()->PushScissor(clientArea);
 
-	if (p_cnt!=0 && m_pParentDragDropList->GetDrawGrid()){
-		// draw grid
-		RCache.set_Shader		(hShader);
-		RCache.set_Geometry		(hGeom);
-		RCache.Render			(D3DPT_TRIANGLELIST,vOffset,u32(p_cnt));
-	}
+	UIRender->SetShader(*hShader);
+	UIRender->FlushPrimitive();
 
 	//draw shown items in range
 	if( GetCellsInRange(tgt_cells,m_cells_to_draw) ){

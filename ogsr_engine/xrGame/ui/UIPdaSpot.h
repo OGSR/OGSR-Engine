@@ -7,7 +7,6 @@ class CUIXml;
 class CUI3tButton;
 class CUIStatic;
 class CUIEditBoxEx;
-class UIHint;
 
 class CUIPdaSpot : public CUIDialogWnd, public CUIWndCallback
 {

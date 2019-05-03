@@ -47,7 +47,8 @@
 #include "usablescriptobject.h"
 #include "ExtendedGeom.h"
 #include "alife_registry_wrappers.h"
-#include "..\xr_3da\skeletonanimated.h"
+#include "../Include/xrRender/Kinematics.h"
+#include "..\Include/xrRender/KinematicsAnimated.h"
 #include "artifact.h"
 #include "CharacterPhysicsSupport.h"
 #include "material_manager.h"
@@ -87,7 +88,7 @@ static Fbox		bbCrouchBox;
 static Fvector	vFootCenter;
 static Fvector	vFootExt;
 
-Flags32			psActorFlags={ AF_3D_SCOPES };
+Flags32 psActorFlags = { AF_3D_SCOPES | AF_KEYPRESS_ON_START };
 
 static bool updated;
 
@@ -175,8 +176,6 @@ CActor::CActor() : CEntityAlive(),current_ik_cam_shift(0)
 
 	m_fSprintFactor			= 4.f;
 
-	hFriendlyIndicator.create(FVF::F_LIT,RCache.Vertex.Buffer(),RCache.QuadIB);
-
 	m_pUsableObject			= NULL;
 
 
@@ -230,8 +229,6 @@ CActor::~CActor()
 	xr_delete				(m_pActorEffector);
 
 	xr_delete				(m_pSleepEffector);
-
-	hFriendlyIndicator.destroy();
 
 	xr_delete				(m_pPhysics_support);
 
@@ -645,10 +642,12 @@ void CActor::HitSignal(float perc, Fvector& vLocalDir, CObject* who, s16 element
 
 		float	yaw, pitch;
 		D.getHP(yaw,pitch);
-		CKinematicsAnimated *tpKinematics = smart_cast<CKinematicsAnimated*>(Visual());
+		IRenderVisual* pV = Visual();
+		IKinematicsAnimated* tpKinematics = smart_cast<IKinematicsAnimated*>(pV);
+		IKinematics* pK = smart_cast<IKinematics*>(pV);
 		VERIFY(tpKinematics);
 #pragma todo("Dima to Dima : forward-back bone impulse direction has been determined incorrectly!")
-		MotionID motion_ID = m_anims->m_normal.m_damage[iFloor(tpKinematics->LL_GetBoneInstance(element).get_param(1) + (angle_difference(r_model_yaw + r_model_yaw_delta,yaw) <= PI_DIV_2 ? 0 : 1))];
+		MotionID motion_ID = m_anims->m_normal.m_damage[iFloor(pK->LL_GetBoneInstance(element).get_param(1) + (angle_difference(r_model_yaw + r_model_yaw_delta,yaw) <= PI_DIV_2 ? 0 : 1))];
 		float power_factor = perc/100.f; clamp(power_factor,0.f,1.f);
 		VERIFY(motion_ID.valid());
 		tpKinematics->PlayFX(motion_ID,power_factor);
@@ -1172,6 +1171,13 @@ void CActor::shedule_Update	(u32 DT)
 #include "debug_renderer.h"
 void CActor::renderable_Render	()
 {
+	inherited::renderable_Render();
+	if (!HUDview()) {
+		CInventoryOwner::renderable_Render();
+	}
+
+#pragma todo("KRodin: это тень от ГГ? Надо подумать как вернуть в новом варианте.")
+	/*
 	inherited::renderable_Render			();
 	if ((cam_active==eacFirstEye &&									// first eye cam
 		::Render->get_generation() == ::Render->GENERATION_R2 &&	// R2
@@ -1184,6 +1190,7 @@ void CActor::renderable_Render	()
 		((!m_holder) || (m_holder && m_holder->allowWeapon() && m_holder->HUDView())))
 		)
 		CInventoryOwner::renderable_Render	();
+	*/
 }
 
 BOOL CActor::renderable_ShadowGenerate	() 
@@ -1254,50 +1261,6 @@ void CActor::OnHUDDraw	(CCustomHUD* /**hud/**/)
 #endif
 }
 
-void CActor::RenderIndicator			(Fvector dpos, float r1, float r2, ref_shader IndShader)
-{
-	if (!g_Alive()) return;
-
-	u32			dwOffset = 0,dwCount = 0;
-	FVF::LIT* pv_start				= (FVF::LIT*)RCache.Vertex.Lock(4,hFriendlyIndicator->vb_stride,dwOffset);
-	FVF::LIT* pv					= pv_start;
-	// base rect
-
-	CBoneInstance& BI = smart_cast<CKinematics*>(Visual())->LL_GetBoneInstance(u16(m_head));
-	Fmatrix M;
-	smart_cast<CKinematics*>(Visual())->CalculateBones	();
-	M.mul						(XFORM(),BI.mTransform);
-
-	Fvector pos = M.c; pos.add(dpos);
-	const Fvector& T        = Device.vCameraTop;
-	const Fvector& R        = Device.vCameraRight;
-	Fvector Vr, Vt;
-	Vr.x            = R.x*r1;
-	Vr.y            = R.y*r1;
-	Vr.z            = R.z*r1;
-	Vt.x            = T.x*r2;
-	Vt.y            = T.y*r2;
-	Vt.z            = T.z*r2;
-
-	Fvector         a,b,c,d;
-	a.sub           (Vt,Vr);
-	b.add           (Vt,Vr);
-	c.invert        (a);
-	d.invert        (b);
-	pv->set         (d.x+pos.x,d.y+pos.y,d.z+pos.z, 0xffffffff, 0.f,1.f);        pv++;
-	pv->set         (a.x+pos.x,a.y+pos.y,a.z+pos.z, 0xffffffff, 0.f,0.f);        pv++;
-	pv->set         (c.x+pos.x,c.y+pos.y,c.z+pos.z, 0xffffffff, 1.f,1.f);        pv++;
-	pv->set         (b.x+pos.x,b.y+pos.y,b.z+pos.z, 0xffffffff, 1.f,0.f);        pv++;
-	// render	
-	dwCount 				= u32(pv-pv_start);
-	RCache.Vertex.Unlock	(dwCount,hFriendlyIndicator->vb_stride);
-
-	RCache.set_xform_world		(Fidentity);
-	RCache.set_Shader			(IndShader);
-	RCache.set_Geometry			(hFriendlyIndicator);
-	RCache.Render	   			(D3DPT_TRIANGLESTRIP,dwOffset,0, dwCount, 0, 2);
-};
-
 static float mid_size = 0.097f;
 static float fontsize = 15.0f;
 static float upsize	= 0.33f;
@@ -1305,9 +1268,9 @@ void CActor::RenderText				(LPCSTR Text, Fvector dpos, float* pdup, u32 color)
 {
 	if (!g_Alive()) return;
 	
-	CBoneInstance& BI = smart_cast<CKinematics*>(Visual())->LL_GetBoneInstance(u16(m_head));
+	CBoneInstance& BI = smart_cast<IKinematics*>(Visual())->LL_GetBoneInstance(u16(m_head));
 	Fmatrix M;
-	smart_cast<CKinematics*>(Visual())->CalculateBones	();
+	smart_cast<IKinematics*>(Visual())->CalculateBones	();
 	M.mul						(XFORM(),BI.mTransform);
 	//------------------------------------------------
 	Fvector v0, v1;

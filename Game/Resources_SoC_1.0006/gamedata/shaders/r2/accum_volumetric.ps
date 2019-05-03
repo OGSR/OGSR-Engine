@@ -18,30 +18,33 @@ uniform sampler2D 	s_noise;
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Pixel
-float4 	main	( v2p I )	: COLOR
+half4 	main	( v2p I )	: COLOR
 {
-//	return float4(Ldynamic_color.xyz, 1.0);
         // ----- shadow
 	float4	P4	= half4(I.vPos, 1);
         float4	PS	= mul( m_shadow, P4);
-        float	s	= 1.f;
+        half	s	= 1.h;
         #ifdef	USE_SHADOW
-              s	= shadow(PS, P4, 1.0);
+//                #ifdef	USE_SJITTER
+//                  s         = shadowtest        (PS,tcJ);
+//                #else
+                  	s	= shadow(PS);
+//                #endif
         #endif
 
         // ----- lightmap
-        float4	lightmap = 1.f;
+        half4	lightmap = 1.h;
         #ifdef	USE_LMAP
                 #ifdef	USE_LMAPXFORM
               		PS.x	= dot( P4, m_lmap[0]);
-                    PS.y	= dot( P4, m_lmap[1]);
+                        PS.y	= dot( P4, m_lmap[1]);
                 #endif
                 lightmap = tex2Dproj(s_lmap, PS);        //
         #endif
 
 	// ----- attenuate
-	float rsqr	= dot( I.lightToPos, I.lightToPos); // distance 2 light (squared)
-  	float  att 	= saturate( 1 - saturate(rsqr * Ldynamic_pos.w) ); // q-linear attenuate
+	half rsqr	= dot( I.lightToPos, I.lightToPos); // distance 2 light (squared)
+  	half  att 	= saturate( 1 - rsqr * Ldynamic_pos.w ); // q-linear attenuate
 	//half  att 	= saturate( 1 - (rsqr * Ldynamic_pos.w)*(rsqr * Ldynamic_pos.w) ); // q-linear attenuate
   	//half  att 	= 10*(1/(1+0.1*rsqr));
 	//half  att 	= 1.0h/rsqr;
@@ -50,13 +53,10 @@ float4 	main	( v2p I )	: COLOR
 
 	// ----- noise
 	PS.xy /= PS.w;
-	float time = 0.1;
-#ifdef USE_VOLUMETRIC_DUST
-	time *= timers.z;	
-#endif
+	half time = timers.z*0.1;	
 	PS.xy /= 3;
 	PS.x += time;
-	float t_noise	= tex2D(s_noise,PS);
+	half4	t_noise	= tex2D(s_noise,PS);
 	PS.x -= time;
 	PS.y -= time*0.70091;
 	t_noise *= tex2D(s_noise,PS);
@@ -67,8 +67,8 @@ float4 	main	( v2p I )	: COLOR
 	//half maxIntens = 1.0h/100.0h;
 	//half maxIntens = 1.0h/40.0h;	
 	//half maxIntens = 1.0h/10.0h;
-	float maxIntens = I.fDensity;
-	float3	result = maxIntens * s * att;
+	half maxIntens = I.fDensity;
+	half3	result = maxIntens * s * att;
 	result *= lightmap;
 	result *= Ldynamic_color * t_noise;
 
@@ -77,6 +77,5 @@ float4 	main	( v2p I )	: COLOR
 
 //	result = 0.1h;
 //	result = 0.0h;
-	return  float4( result, 0);
-//	return float4(1,1,1,1);
+	return  half4( result, 0);
 }

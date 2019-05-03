@@ -8,7 +8,8 @@
 #include "game_cl_base.h"
 #include "Level.h"
 #include "BoneProtections.h"
-
+#include "..\Include/xrRender/Kinematics.h"
+#include "../Include/xrRender/RenderVisual.h"
 
 CCustomOutfit::CCustomOutfit()
 {
@@ -137,7 +138,7 @@ void	CCustomOutfit::OnMoveToSlot		()
 				pActor->ChangeVisual(m_ActorVisual);
 			}
 			if(pSettings->line_exist(cNameSect(),"bones_koeff_protection")){
-				m_boneProtection->reload( pSettings->r_string(cNameSect(),"bones_koeff_protection"), smart_cast<CKinematics*>(pActor->Visual()) );
+				m_boneProtection->reload( pSettings->r_string(cNameSect(),"bones_koeff_protection"), smart_cast<IKinematics*>(pActor->Visual()) );
 			};
 		}
 	}

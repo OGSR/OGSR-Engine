@@ -3,7 +3,7 @@
 //////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
-
+#pragma hdrstop
 
 #include "blender_Lm(EbB).h"
 
@@ -15,8 +15,8 @@ CBlender_LmEbB::CBlender_LmEbB	()
 {
 	description.CLS		= B_LmEbB;
 	description.version	= 0x1;
-	strcpy				(oT2_Name,	"$null");
-	strcpy				(oT2_xform,	"$null");
+	xr_strcpy				(oT2_Name,	"$null");
+	xr_strcpy				(oT2_xform,	"$null");
 	oBlend.value		= FALSE;
 }
 
@@ -138,82 +138,40 @@ void	CBlender_LmEbB::Compile(CBlender_Compile& C)
 		}
 	}
 }
-#else 
+#elif RENDER==R_R2
 //////////////////////////////////////////////////////////////////////////
 // R2
 //////////////////////////////////////////////////////////////////////////
-#include "uber_deffer.h"
 void	CBlender_LmEbB::Compile(CBlender_Compile& C)
 {
-	/*	if (oBlend.value)	C.r_Pass	("lmapE","lmapE",TRUE,TRUE,TRUE*//*FALSE*//*,TRUE,D3DBLEND_SRCALPHA,	D3DBLEND_INVSRCALPHA,	TRUE,0);
-																				  else				C.r_Pass	("lmapE","lmapE",TRUE);
-																				  C.r_Sampler			("s_base",	C.L_textures[0]	);
-																				  //	C.r_Sampler			("s_lmap",	C.L_textures[1]	);
-																				  C.r_Sampler			("s_lmap",	r2_sunmask		);
-																				  //	C.r_Sampler_clf		("s_hemi",	*C.L_textures[2]);
-																				  C.r_Sampler_clf		("s_smap",	r2_RT_smap_depth);
-																				  C.r_Sampler			("s_env",	oT2_Name,		false,D3DTADDRESS_CLAMP);
-																				  C.r_End				();*/
-
-	if (oBlend.value)
-	{
-		switch (C.iElement)
-		{
-		case SE_R2_NORMAL_HQ:
-			C.SetParams(3, true);
-			uber_forward(C, true, "base", "base", 0, true, 0, true);
-			C.r_Sampler("s_lmap", r2_sunmask);
-			C.r_Sampler_clf("s_smap_near", r2_RT_smap_depth_near);
-			C.r_Sampler_clf("s_smap_far", r2_RT_smap_depth_far);
-			C.r_Sampler_clf("env_s0", r2_T_envs0);
-			C.r_Sampler_clf("env_s1", r2_T_envs1);
-			C.r_Sampler_clf("s_sky", r2_RT_rain);
-			C.r_Sampler_clw("s_material", r2_material);
-			C.r_End();
-			break;
-		case SE_R2_NORMAL_LQ:
-			C.SetParams(3, true);
-			uber_forward(C, false, "base", "base", 0, true, 0, true);
-			C.r_Sampler("s_lmap", r2_sunmask);
-			C.r_Sampler_clf("s_smap_near", r2_RT_smap_depth_near);
-			C.r_Sampler_clf("s_smap_far", r2_RT_smap_depth_far);
-			C.r_Sampler_clf("env_s0", r2_T_envs0);
-			C.r_Sampler_clf("env_s1", r2_T_envs1);
-			C.r_Sampler_clf("s_sky", r2_RT_rain);
-			C.r_Sampler_clw("s_material", r2_material);
-			C.r_End();
-			break;
-		case SE_R2_SHADOW:		// smap
-			C.SetParams(1, false);
-			if (RImplementation.o.HW_smap)	C.r_Pass("shadow_direct_base_aref", "shadow_direct_base_aref", FALSE, TRUE, TRUE, FALSE, D3DBLEND_ZERO, D3DBLEND_ONE, FALSE, 220);
-			else							C.r_Pass("shadow_direct_base_aref", "shadow_direct_base_aref", FALSE);
-			C.r_Sampler("s_base", C.L_textures[0]);
-			C.r_End();
-			break;
-		default:
-			break;
-		}
-	}
-	else {
-		C.SetParams(1, false);	//.
-
-								// codepath is the same, only the shaders differ
-								// ***only pixel shaders differ***
-		switch (C.iElement)
-		{
-		case SE_R2_NORMAL_HQ: 	// deffer
-			uber_deffer(C, true, "base", "base", false);
-			break;
-		case SE_R2_NORMAL_LQ: 	// deffer
-			uber_deffer(C, false, "base", "base", false);
-			break;
-		case SE_R2_SHADOW:		// smap
-			if (RImplementation.o.HW_smap)	C.r_Pass("shadow_direct_base_aref", "shadow_direct_base_aref", FALSE, TRUE, TRUE, FALSE, D3DBLEND_ZERO, D3DBLEND_ONE, FALSE, 220);
-			else							C.r_Pass("shadow_direct_base_aref", "shadow_direct_base_aref", FALSE);
-			C.r_Sampler("s_base", C.L_textures[0]);
-			C.r_End();
-			break;
-		}
-	}
+	if (oBlend.value)	C.r_Pass	("lmapE","lmapE",TRUE,TRUE,FALSE,TRUE,D3DBLEND_SRCALPHA,	D3DBLEND_INVSRCALPHA,	TRUE,0);
+	else				C.r_Pass	("lmapE","lmapE",TRUE);
+	C.r_Sampler			("s_base",	C.L_textures[0]	);
+	C.r_Sampler			("s_lmap",	C.L_textures[1]	);
+	C.r_Sampler_clf		("s_hemi",	*C.L_textures[2]);
+	C.r_Sampler			("s_env",	oT2_Name,false,D3DTADDRESS_CLAMP);
+	C.r_End				();
+}
+#else
+//////////////////////////////////////////////////////////////////////////
+// R3
+//////////////////////////////////////////////////////////////////////////
+void	CBlender_LmEbB::Compile(CBlender_Compile& C)
+{
+	if (oBlend.value)	C.r_Pass	("lmapE","lmapE",TRUE,TRUE,FALSE,TRUE,D3DBLEND_SRCALPHA,	D3DBLEND_INVSRCALPHA,	TRUE,0);
+	else				C.r_Pass	("lmapE","lmapE",TRUE);
+	//C.r_Sampler			("s_base",	C.L_textures[0]	);
+	C.r_dx10Texture			("s_base",	C.L_textures[0]	);
+	C.r_dx10Sampler			("smp_base");
+	//C.r_Sampler			("s_lmap",	C.L_textures[1]	);
+	C.r_dx10Texture			("s_lmap",	C.L_textures[1]	);
+	C.r_dx10Sampler			("smp_linear");
+	//C.r_Sampler_clf		("s_hemi",	*C.L_textures[2]);
+	C.r_dx10Texture			("s_hemi",	*C.L_textures[2]);
+	C.r_dx10Sampler			("smp_rtlinear");
+	//C.r_Sampler			("s_env",	oT2_Name,false,D3DTADDRESS_CLAMP);
+	C.r_dx10Texture			("s_env",	oT2_Name);
+	//C.r_dx10Sampler			("smp_rtlinear");
+	C.r_End				();
 }
 #endif

@@ -1,13 +1,6 @@
 #include "common.h"
 #include "lmodel.h"
-#ifdef			LAMP_SHADOW_FADE_QUALITY
-	#define		USE_LAMP_SHADOW_FADE
-	#ifndef		SOFT_SHADOWS
-		#define SOFT_SHADOWS LAMP_SHADOW_FADE_QUALITY
-	#endif
-#endif
 #include "shadow.h"
-#include "ogse_config.h"
 //////////////////////////////////////////////////////////////////////////////////////////
 // This is the basic primitive used by convex, volumetric lights
 // for example spot-lights, one face of the omni lights, etc.
@@ -18,51 +11,40 @@
 // USE_SHADOW
 //////////////////////////////////////////////////////////////////////////////////////////
 uniform float4              m_lmap        [2]        ;
-uniform float4				lsf_params;// = {0.20,1.0,15.0,0.0};
-float4         main         ( float4 tc : TEXCOORD0, float4 tcJ : TEXCOORD1, float4 C0 : COLOR0 ) : COLOR0
+float4         main         ( float4 tc : TEXCOORD0, float4 tcJ : TEXCOORD1 ) : COLOR
 {
-	float4 _P               = get_full_position_proj(tc);//tex2Dproj         (s_position,         tc);
-	float4  _N              = get_full_normal_proj(tc);//tex2Dproj         (s_normal,           tc);
-	float _G				= get_gloss(tc);
+	float4 _P               = tex2Dproj         (s_position,         tc);
+	half4  _N               = tex2Dproj         (s_normal,           tc);
 
-    // ----- light-model
-   	float        		rsqr;
-        float4        		_light   = plight_local         	(_P.w, _P, _N, Ldynamic_pos, Ldynamic_pos.w, rsqr);
-		float				ds = (_light.x + lerp(_light.x, _light.w, _G))*1.3;
-		float4				light = float4(ds,ds,ds,ds);
+	half 	m	= xmaterial	;
+# ifndef USE_R2_STATIC_SUN
+			m 	= _P.w		;
+# endif
+        // ----- light-model
+      	half        		rsqr;
+        half4        		light   = plight_local         	(m, _P, _N, Ldynamic_pos, Ldynamic_pos.w, rsqr);
+
         // ----- shadow
-		float4          		P4      = float4                	(_P.x,_P.y,_P.z,1.f);
+		half4          		P4      = half4                	(_P.x,_P.y,_P.z,1);
         float4         		PS      = mul                	(m_shadow,         P4);
-        float         		s		= 1.h;
-		float				s_dir	= 1.h;
+        half         		s		= 1.h;
         #ifdef  USE_SHADOW
-			float mult = 1.f;
-			float fade = 0.f;
-			#ifdef			USE_LAMP_SHADOW_FADE
-				float3 vec = _P.xyz-Ldynamic_pos.xyz;
-				mult = saturate(dot(vec, vec)*lsf_params.x);
-				fade = mult*lsf_params.y;
-				mult *= lsf_params.z*0.75;
-				mult = (mult < 1.f)?1.f:mult;
-			#endif
-
-			#ifdef         USE_SJITTER
-				s         = shadowtest        (PS,tcJ);
-            #else
-				s         = shadow      	(PS, P4, mult);
-            #endif
-			s = saturate(s);
+                #ifdef         USE_SJITTER
+                  s         = shadowtest        (PS,tcJ);
+                #else
+                  s         = shadow        	(PS);
+                #endif
         #endif
 
         // ----- lightmap
-        float4         lightmap= 1.h;
+        half4         lightmap= 1.h;
         #ifdef        USE_LMAP
                 #ifdef         USE_LMAPXFORM
               			PS.x         		= dot         	(P4, m_lmap[0]);
                         PS.y                = dot           (P4, m_lmap[1]);
                 #endif
-            lightmap= tex2Dproj         (s_lmap,        PS);        //
-	#endif
+                lightmap= tex2Dproj         (s_lmap,        PS);        //
+        #endif
 
-	return         blendp        (Ldynamic_color * light * s * lightmap, tc);
+        return         blendp        (Ldynamic_color * light * s * lightmap, tc);
 }

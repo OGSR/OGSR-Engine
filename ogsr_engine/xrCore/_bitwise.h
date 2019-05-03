@@ -43,3 +43,27 @@ IC u32 btwPow2_Ceil(u32 v)
 
 #define iFloor(x) int(std::floor(x))
 #define iCeil(x)  int(std::ceil(x))
+
+// Couple more tricks 
+// Counting number of nonzero bits for 8bit number: 
+IC	u8		btwCount1(u8 v)
+{
+	v = (v & 0x55) + ((v >> 1) & 0x55);
+	v = (v & 0x33) + ((v >> 2) & 0x33);
+	return (v & 0x0f) + ((v >> 4) & 0x0f);
+}
+
+//same for 32bit 
+IC	u32	btwCount1(u32 v)
+{
+	const u32 g31 = 0x49249249ul;	// = 0100_1001_0010_0100_1001_0010_0100_1001
+	const u32 g32 = 0x381c0e07ul;	// = 0011_1000_0001_1100_0000_1110_0000_0111
+	v = (v & g31) + ((v >> 1) & g31) + ((v >> 2) & g31);
+	v = ((v + (v >> 3)) & g32) + ((v >> 6) & g32);
+	return (v + (v >> 9) + (v >> 18) + (v >> 27)) & 0x3f;
+}
+
+IC	u64	btwCount1(u64 v)
+{
+	return btwCount1(u32(v&u32(-1))) + btwCount1(u32(v >> u64(32)));
+}

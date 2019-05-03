@@ -1,7 +1,7 @@
 #pragma once
 
-#include "..\..\xr_3da\render.h"
-#include "..\..\xr_3da\ispatial.h"
+#include "../../xr_3da/render.h"
+#include "../../xrcdb/ispatial.h"
 #include "r__dsgraph_types.h"
 #include "r__sector.h"
 
@@ -11,7 +11,7 @@
 class	R_feedback
 {
 public:
-	virtual		void	rfeedback_static	(IRender_Visual*	V)		= 0;
+	virtual		void	rfeedback_static	(dxRender_Visual*	V)		= 0;
 };
 
 //////////////////////////////////////////////////////////////////////////
@@ -34,23 +34,26 @@ public:
 	bool														pmask_wmark			;
 public:
 	// Dynamic scene graph
-	R_dsgraph::mapNormal_T										mapNormal	[2]		;	// 2==(priority/2)
-	R_dsgraph::mapMatrix_T										mapMatrix	[2]		;
+	//R_dsgraph::mapNormal_T										mapNormal	[2]		;	// 2==(priority/2)
+	R_dsgraph::mapNormalPasses_T								mapNormalPasses	[2]	;	// 2==(priority/2)
+	//R_dsgraph::mapMatrix_T										mapMatrix	[2]		;
+	R_dsgraph::mapMatrixPasses_T								mapMatrixPasses	[2]	;
 	R_dsgraph::mapSorted_T										mapSorted;
 	R_dsgraph::mapHUD_T											mapHUD;
 	R_dsgraph::mapLOD_T											mapLOD;
 	R_dsgraph::mapSorted_T										mapDistort;
-
-#if RENDER==R_R2
+	R_dsgraph::mapHUD_T											mapHUDSorted;
+#if RENDER!=R_R1
 	R_dsgraph::mapSorted_T										mapWmark;			// sorted
 	R_dsgraph::mapSorted_T										mapEmissive;
-	R_dsgraph::mapHUD_T											mapHUDEmissive;
-	
-	R_dsgraph::mapHUD_T											mapHUDSorted;
+	R_dsgraph::mapSorted_T										mapHUDEmissive;
 #endif
 
 	// Runtime structures 
 	xr_vector<R_dsgraph::mapNormalVS::TNode*,render_alloc<R_dsgraph::mapNormalVS::TNode*> >				nrmVS;
+#if defined(USE_DX10) || defined(USE_DX11)
+	xr_vector<R_dsgraph::mapNormalGS::TNode*,render_alloc<R_dsgraph::mapNormalGS::TNode*> >				nrmGS;
+#endif	//	USE_DX10
 	xr_vector<R_dsgraph::mapNormalPS::TNode*,render_alloc<R_dsgraph::mapNormalPS::TNode*> >				nrmPS;
 	xr_vector<R_dsgraph::mapNormalCS::TNode*,render_alloc<R_dsgraph::mapNormalCS::TNode*> >				nrmCS;
 	xr_vector<R_dsgraph::mapNormalStates::TNode*,render_alloc<R_dsgraph::mapNormalStates::TNode*> >		nrmStates;
@@ -58,6 +61,9 @@ public:
 	xr_vector<R_dsgraph::mapNormalTextures::TNode*,render_alloc<R_dsgraph::mapNormalTextures::TNode*> >	nrmTexturesTemp;
 
 	xr_vector<R_dsgraph::mapMatrixVS::TNode*,render_alloc<R_dsgraph::mapMatrixVS::TNode*> >				matVS;
+#if defined(USE_DX10) || defined(USE_DX11)
+	xr_vector<R_dsgraph::mapMatrixGS::TNode*,render_alloc<R_dsgraph::mapMatrixGS::TNode*> >				matGS;
+#endif	//	USE_DX10
 	xr_vector<R_dsgraph::mapMatrixPS::TNode*,render_alloc<R_dsgraph::mapMatrixPS::TNode*> >				matPS;
 	xr_vector<R_dsgraph::mapMatrixCS::TNode*,render_alloc<R_dsgraph::mapMatrixCS::TNode*> >				matCS;
 	xr_vector<R_dsgraph::mapMatrixStates::TNode*,render_alloc<R_dsgraph::mapMatrixStates::TNode*> >		matStates;
@@ -68,9 +74,9 @@ public:
 	xr_vector<int,render_alloc<int> >									lstLODgroups;
 	xr_vector<ISpatial* /**,render_alloc<ISpatial*>/**/>				lstRenderables;
 	xr_vector<ISpatial* /**,render_alloc<ISpatial*>/**/>				lstSpatial	;
-	xr_vector<IRender_Visual*,render_alloc<IRender_Visual*> >			lstVisuals	;
+	xr_vector<dxRender_Visual*,render_alloc<dxRender_Visual*> >			lstVisuals	;
 
-	xr_vector<IRender_Visual*,render_alloc<IRender_Visual*> >			lstRecorded	;
+	xr_vector<dxRender_Visual*,render_alloc<dxRender_Visual*> >			lstRecorded	;
 
 	u32															counter_S	;
 	u32															counter_D	;
@@ -124,34 +130,39 @@ public:
 
 		lstRecorded.clear		();
 
-		mapNormal[0].destroy	();
-		mapNormal[1].destroy	();
-		mapMatrix[0].destroy	();
-		mapMatrix[1].destroy	();
+		//mapNormal[0].destroy	();
+		//mapNormal[1].destroy	();
+		//mapMatrix[0].destroy	();
+		//mapMatrix[1].destroy	();
+		for (int i=0; i<SHADER_PASSES_MAX; ++i)
+		{
+			mapNormalPasses[0][i].destroy	();
+			mapNormalPasses[1][i].destroy	();
+			mapMatrixPasses[0][i].destroy	();
+			mapMatrixPasses[1][i].destroy	();
+		}
 		mapSorted.destroy		();
 		mapHUD.destroy			();
 		mapLOD.destroy			();
 		mapDistort.destroy		();
-
-#if RENDER==R_R2
+		mapHUDSorted.destroy();
+#if RENDER!=R_R1
 		mapWmark.destroy		();
 		mapEmissive.destroy		();
-		mapHUDEmissive.destroy	();
-		mapHUDSorted.destroy	();
+		mapHUDEmissive.destroy();
 #endif
 	}
 
 	void		r_pmask											(bool _1, bool _2, bool _wm=false)				{ pmask[0]=_1; pmask[1]=_2;	pmask_wmark = _wm; }
 
-	void		r_dsgraph_insert_dynamic						(IRender_Visual	*pVisual, Fvector& Center);
-	void		r_dsgraph_insert_static							(IRender_Visual	*pVisual);
+	void		r_dsgraph_insert_dynamic						(dxRender_Visual	*pVisual, Fvector& Center);
+	void		r_dsgraph_insert_static							(dxRender_Visual	*pVisual);
 
 	void		r_dsgraph_render_graph							(u32	_priority,	bool _clear=true);
 	void		r_dsgraph_render_hud							();
-	void		r_dsgraph_render_hud_emissive					();
+	void		r_dsgraph_render_hud_ui							();
 	void		r_dsgraph_render_lods							(bool	_setup_zb,	bool _clear);
 	void		r_dsgraph_render_sorted							();
-	void		r_dsgraph_render_hud_sorted						();
 	void		r_dsgraph_render_emissive						();
 	void		r_dsgraph_render_wmarks							();
 	void		r_dsgraph_render_distort						();
@@ -159,6 +170,14 @@ public:
 	void		r_dsgraph_render_subspace						(IRender_Sector* _sector, Fmatrix& mCombined, Fvector& _cop, BOOL _dynamic, BOOL _precise_portals=FALSE	);
 	void		r_dsgraph_render_R1_box							(IRender_Sector* _sector, Fbox& _bb, int _element);
 
+
 public:
-	virtual u32 memory_usage() { return 0; }
+	virtual		u32						memory_usage			()
+	{
+#ifdef USE_DOUG_LEA_ALLOCATOR_FOR_RENDER
+		return	(g_render_lua_allocator.get_allocated_size());
+#else // USE_DOUG_LEA_ALLOCATOR_FOR_RENDER
+		return	(0);
+#endif // USE_DOUG_LEA_ALLOCATOR_FOR_RENDER
+	}
 };

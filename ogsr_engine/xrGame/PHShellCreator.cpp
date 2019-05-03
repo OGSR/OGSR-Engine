@@ -3,14 +3,14 @@
 #include "PhysicsShell.h"
 #include "gameobject.h"
 #include "physicsshellholder.h"
-#include "../xr_3da/skeletoncustom.h"
+#include "../Include/xrRender/Kinematics.h"
 
 void CPHShellSimpleCreator::CreatePhysicsShell()
 {
 	CPhysicsShellHolder* owner = smart_cast<CPhysicsShellHolder*>(this); VERIFY(owner);
 	if (!owner->Visual()) return;
 	
-	CKinematics* pKinematics		= smart_cast<CKinematics*>(owner->Visual());
+	IKinematics* pKinematics		= smart_cast<IKinematics*>(owner->Visual());
 	VERIFY							(pKinematics);
 
 	if(owner->PPhysicsShell())		return;

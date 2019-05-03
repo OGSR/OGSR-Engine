@@ -23,12 +23,15 @@ IGame_Level::IGame_Level	()
 	pHUD						= NULL;
 }
 
-#include "resourcemanager.h"
+//#include "resourcemanager.h"
 
 IGame_Level::~IGame_Level	()
 {
+	/*
 	if(strstr(Core.Params,"-nes_texture_storing") )
 		Device.Resources->StoreNecessaryTextures();
+	*/
+
 //.	DEL_INSTANCE				( pHUD			);
 	xr_delete					( pLevel		);
 
@@ -53,7 +56,7 @@ void IGame_Level::net_Stop			()
 }
 
 //-------------------------------------------------------------------------------------------
-extern CStatTimer				tscreate;
+//extern CStatTimer				tscreate;
 
 BOOL IGame_Level::Load			(u32 dwNum) 
 {
@@ -77,8 +80,6 @@ BOOL IGame_Level::Load			(u32 dwNum)
 	// CForms
 	g_pGamePersistent->LoadTitle	("st_loading_cform");
 	ObjectSpace.Load			();
-	pApp->LoadSwitch			();
-
 
 	// HUD + Environment
 //.	pHUD						= (CCustomHUD*)NEW_INSTANCE	(CLSID_HUDMANAGER);
@@ -89,7 +90,7 @@ BOOL IGame_Level::Load			(u32 dwNum)
 
 	// Render-level Load
 	Render->level_Load			(LL_Stream);
-	tscreate.FrameEnd			();
+	//tscreate.FrameEnd			();
 	// Msg						("* S-CREATE: %f ms, %d times",tscreate.result,tscreate.count);
 
 	// Objects

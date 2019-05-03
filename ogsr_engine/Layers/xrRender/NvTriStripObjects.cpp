@@ -656,7 +656,7 @@ bool NvStripifier::FindTraversal(NvFaceInfoVec &faceInfos,
 	startInfo.m_startEdge = edgeIter;
 	if (edgeIter != NULL)
 	{
-		if(strip->SharesEdge(startInfo.m_startFace, edgeInfos)) //-V595
+		if(strip->SharesEdge(startInfo.m_startFace, edgeInfos))
 			startInfo.m_toV1 = (edgeIter->m_v0 == v);  //note! used to be m_v1
 		else
 			startInfo.m_toV1 = (edgeIter->m_v1 == v);
@@ -872,7 +872,7 @@ void NvStripifier::CreateStrips(const NvStripInfoVec& allStrips, IntVec& stripIn
 		// Update last face info
 		tLastFace.m_v0 = tLastFace.m_v1;
 		tLastFace.m_v1 = tLastFace.m_v2;
-		//tLastFace.m_v2 = tLastFace.m_v2; //???
+		tLastFace.m_v2 = tLastFace.m_v2;
 	}
 	
 	if(bStitchStrips)

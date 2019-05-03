@@ -20,4 +20,6 @@
 * [ForserX](https://github.com/ForserX)
 * [Xottab-DUTY](https://github.com/Xottab-DUTY)
 * [Shoker](https://github.com/ShokerStlk)
+* [morrey](https://github.com/morrey)
+* [SkyLoader](https://github.com/SkyLoaderr)
 * И многих других, чьи работы я использовал. Пишите, если забыл кого-то, добавлю в список.

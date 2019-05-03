@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "PHGeometryOwner.h"
-#include "..\xr_3da\skeletonanimated.h"
+#include "..\Include/xrRender/Kinematics.h"
+#include "..\Include/xrRender/KinematicsAnimated.h"
 #include "phworld.h"
 #include "level.h"
 
@@ -125,7 +126,7 @@ Fvector CPHGeometryOwner::get_mc_geoms()
 	return mc;
 }
 
-void CPHGeometryOwner::get_mc_kinematics(CKinematics* K, Fvector& mc, float& mass)
+void CPHGeometryOwner::get_mc_kinematics(IKinematics* K, Fvector& mc, float& mass)
 {
 	mc.set(0.f, 0.f, 0.f);
 	mass = 0.f;

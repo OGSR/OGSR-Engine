@@ -15,6 +15,7 @@ function opt_gameplay:InitControls(x, y, xml)
 
 	xml:InitStatic("tab_gameplay:cap_difficulty", self)
 
+	xml:InitCheck("tab_gameplay:check_autopause", self)
 	xml:InitCheck("tab_gameplay:check_tips", self)
 	xml:InitCheck("tab_gameplay:check_crosshair", self)
 	xml:InitCheck("tab_gameplay:check_dyn_crosshair", self)

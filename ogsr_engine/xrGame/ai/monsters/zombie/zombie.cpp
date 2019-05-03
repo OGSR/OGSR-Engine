@@ -2,7 +2,7 @@
 #include "zombie.h"
 #include "zombie_state_manager.h"
 #include "profiler.h"
-#include "../../../../xr_3da/skeletonanimated.h"
+#include "../../../../Include/xrRender/KinematicsAnimated.h"
 #include "../../../entitycondition.h"
 #include "../monster_velocity_space.h"
 
@@ -104,7 +104,7 @@ void CZombie::reload(LPCSTR section)
 
 void CZombie::BoneCallback(CBoneInstance *B)
 {
-	CZombie*	this_class = static_cast<CZombie*>(B->Callback_Param);
+	CZombie*	this_class = static_cast<CZombie*>(B->callback_param());
 
 	START_PROFILE("Zombie/Bones Update");
 	this_class->Bones.Update(B, Device.dwTimeGlobal);
@@ -115,8 +115,8 @@ void CZombie::BoneCallback(CBoneInstance *B)
 void CZombie::vfAssignBones()
 {
 	// Установка callback на кости
-	bone_spine =	&smart_cast<CKinematics*>(Visual())->LL_GetBoneInstance(smart_cast<CKinematics*>(Visual())->LL_BoneID("bip01_spine"));
-	bone_head =		&smart_cast<CKinematics*>(Visual())->LL_GetBoneInstance(smart_cast<CKinematics*>(Visual())->LL_BoneID("bip01_head"));
+	bone_spine =	&smart_cast<IKinematics*>(Visual())->LL_GetBoneInstance(smart_cast<IKinematics*>(Visual())->LL_BoneID("bip01_spine"));
+	bone_head =		&smart_cast<IKinematics*>(Visual())->LL_GetBoneInstance(smart_cast<IKinematics*>(Visual())->LL_BoneID("bip01_head"));
 	//if(!PPhysicsShell())//нельзя ставить колбеки, если создан физ шел - у него стоят свои колбеки!!!
 	//{
 		//bone_spine->set_callback(BoneCallback,this);

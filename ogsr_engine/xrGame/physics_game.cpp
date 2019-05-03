@@ -1,6 +1,6 @@
 #include "stdafx.h"
 #include "ParticlesObject.h"
-#include "gamemtllib.h"
+#include "../xr_3da/gamemtllib.h"
 #include "level.h"
 #include "gamepersistent.h"
 #include "Extendedgeom.h"
@@ -138,19 +138,20 @@ private:
 
 class CPHWallMarksCall : public CPHAction
 {
-	ref_shader pWallmarkShader;
+	wm_shader pWallmarkShader;
 	Fvector pos;
 	CDB::TRI* T;
 public:
-	CPHWallMarksCall(const Fvector &p, CDB::TRI* Tri, const ref_shader &s) : pWallmarkShader(s), T(Tri)
+	CPHWallMarksCall(const Fvector &p, CDB::TRI* Tri, const wm_shader &s) : pWallmarkShader(s), T(Tri)
 	{
 		pos.set(p);
 	}
 
 	virtual void run() noexcept
 	{
+#pragma todo("KRodin: починить и включить!")
 		//добавить отметку на материале
-		::Render->add_StaticWallmark(pWallmarkShader, pos, 0.09f, T, Level().ObjectSpace.GetStaticVerts());
+		//::Render->add_StaticWallmark(pWallmarkShader, pos, 0.09f, T, Level().ObjectSpace.GetStaticVerts());
 	};
 
 	virtual bool obsolete() const noexcept
@@ -220,10 +221,10 @@ void TContactShotMark(CDB::TRI* T, dContactGeom* c)
 		SGameMtlPair* mtl_pair = GMLib.GetMaterialPair(T->material, data->material);
 		if (mtl_pair)
 		{
-			if (vel_cret > Pars::vel_cret_wallmark && !mtl_pair->CollideMarks.empty())
+			if(vel_cret>Pars::vel_cret_wallmark && !mtl_pair->m_pCollideMarks->empty())
 			{
-				ref_shader WallmarkShader = mtl_pair->CollideMarks[::Random.randI(0,mtl_pair->CollideMarks.size())];
-				Level().ph_commander().add_call(xr_new<CPHOnesCondition>(), xr_new<CPHWallMarksCall>(*((Fvector*)c->pos), T, WallmarkShader));
+				wm_shader WallmarkShader = mtl_pair->m_pCollideMarks->GenerateWallmark();
+				Level().ph_commander().add_call(xr_new<CPHOnesCondition>(),xr_new<CPHWallMarksCall>( *((Fvector*)c->pos),T, WallmarkShader));
 			}
 			
 			if (square_cam_dist < SQUARE_SOUND_EFFECT_DIST)

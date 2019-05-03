@@ -5,6 +5,7 @@
 
 #include "ShadersExternalData.h" //--#SM+#--
 
+class IRenderVisual;
 class IMainMenu;
 class ENGINE_API CPS_Instance;
 //-----------------------------------------------------------------------------------------------------------
@@ -80,7 +81,12 @@ public:
 
 	virtual void					UpdateGameType		() {};
 
-	virtual void					RegisterModel		(IRender_Visual* V) = 0;
+	//KRodin: TODO: Доделать перегрузки если оно надо.
+	virtual void					GetCurrentDof(Fvector3& dof) { dof.set(-1.4f, 0.0f, 250.f); };
+	virtual void					SetBaseDof(const Fvector3& dof) {};
+	virtual void					OnSectorChanged(int sector) {};
+
+	virtual void					RegisterModel		(IRenderVisual* V) = 0;
 	virtual	float					MtlTransparent		(u32 mtl_idx) = 0;
 
 	IGame_Persistent				();
@@ -88,7 +94,9 @@ public:
 
 			u32						GameType			() {return m_game_params.m_e_game_type;};
 	virtual void					Statistics			(CGameFont* F)  = 0;
-	virtual	void					LoadTitle			(LPCSTR str){}
+	virtual	void					LoadTitle(const char* title_name) = 0;
+
+	virtual bool					CanBePaused() { return true; }
 };
 
 class IMainMenu
@@ -97,6 +105,7 @@ public:
 	virtual			~IMainMenu						()													{};
 	virtual void	Activate						(bool bActive)										=0; 
 	virtual	bool	IsActive						()													=0; 
+	virtual	bool	CanSkipSceneRendering() = 0;
 	virtual void	DestroyInternal					(bool bForce)										=0;
 };
 
