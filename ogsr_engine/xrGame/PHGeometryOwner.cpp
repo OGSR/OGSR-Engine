@@ -133,7 +133,7 @@ void CPHGeometryOwner::get_mc_kinematics(IKinematics* K, Fvector& mc, float& mas
 	m_volume = 0.f; 
 	for (CODEGeom* i_geom : m_geoms)
 	{
-		const CBoneData& data = K->GetBoneData(i_geom->bone_id());
+		const IBoneData& data = K->GetBoneData(i_geom->bone_id());
 		Fvector add;
 		mass += data.get_mass();
 		m_volume += i_geom->volume();
