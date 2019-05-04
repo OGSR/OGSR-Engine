@@ -1,0 +1,20 @@
+#include "common.h"
+
+uniform float4 ogse_c_screen; // x - fFOV, y - fAspect, z - Zf/(Zf-Zn), w - Zn*tan(fFov/2)
+
+struct 	v2p
+{
+ 	float2 	tc0		: TEXCOORD0;	// base
+	float4 c0		: COLOR0;
+};
+
+#define TAR float(1280.f/800.f)	//texture aspect ratio
+
+float4 	main	( v2p I )	: COLOR
+{
+	float2 tc = I.tc0;
+	float x = 1/(ogse_c_screen.y*TAR);
+	tc.x = tc.x*x + 0.5*(1 - x);
+	float4 col = tex2D	(s_base,tc);
+	return I.c0*col;
+}
