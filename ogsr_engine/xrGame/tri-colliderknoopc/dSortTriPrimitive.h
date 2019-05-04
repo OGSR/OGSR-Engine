@@ -5,7 +5,7 @@
 #include "dTriColliderMath.h"
 #include "__aabb_tri.h"
 #include "../MathUtils.h"
-#include "../gamemtllib.h"
+#include "../../xr_3da/gamemtllib.h"
 #ifdef DEBUG
 #include "../PHDebug.h"
 #endif

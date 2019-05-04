@@ -8,6 +8,7 @@
 #include "PHCollideValidator.h"
 #include "Level.h"
 #include "physicsshellholder.h"
+#include "../Include/xrRender/Kinematics.h"
 
 #ifdef ANIMATED_PHYSICS_OBJECT_SUPPORT
 	#include "PhysicsShellAnimator.h"

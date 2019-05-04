@@ -7,7 +7,7 @@
 #include "MathUtils.h"
 //#include	"phobject.h"
 
-#include "..\xr_3da\skeletonanimated.h"
+#include "..\Include/xrRender/KinematicsAnimated.h"
 
 
 

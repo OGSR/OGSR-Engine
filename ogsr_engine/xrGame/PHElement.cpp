@@ -739,7 +739,7 @@ void CPHElement::StataticRootBonesCallBack(CBoneInstance* B)
 			m_shell->m_object_in_root.invert();
 			m_shell->SetNotActivating();
 		}
-		B->Callback_overwrite=TRUE;
+		B->set_callback_overwrite(TRUE);
 
 		VERIFY_RMATRIX(B->mTransform);
 		VERIFY(valid_pos(B->mTransform.c, phBoundaries));
@@ -875,7 +875,7 @@ void CPHElement::BonesCallBack(CBoneInstance* B)
 	if (m_flags.test(flActivating))
 	{
 		ActivatingPos(B->mTransform);
-		B->Callback_overwrite=TRUE;
+		B->set_callback_overwrite(TRUE);
 	}
 
 	VERIFY_RMATRIX(B->mTransform);

@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "character_shell_control.h"
-#include "..\xr_3da\skeletonanimated.h"
+#include "..\Include/xrRender/Kinematics.h"
+#include "../xr_3da/bone.h"
 #include "Extendedgeom.h"
 #include "PhysicsShell.h"
 #include "level.h"

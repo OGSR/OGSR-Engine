@@ -6,7 +6,7 @@
 #include "MathUtils.h"
 #include "extendedgeom.h"
 
-#include "..\xr_3da\skeletonanimated.h"
+#include "..\Include/xrRender/KinematicsAnimated.h"
 ///////////////////////////////////////////////////////////////////////////////////////
 #include "PhysicsShellHolder.h"
 

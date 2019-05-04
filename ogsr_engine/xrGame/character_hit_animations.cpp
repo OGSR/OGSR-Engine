@@ -4,7 +4,7 @@
 #include "character_hit_animations_params.h"
 #include "entity_alive.h"
 
-#include "..\xr_3da\skeletonanimated.h"
+#include "..\Include/xrRender/KinematicsAnimated.h"
 #include "animation_utils.h"
 #ifdef DEBUG
 #include "phdebug.h"

@@ -3,7 +3,7 @@
 
 #include "physicsshell.h"
 
-#include "..\xr_3da\skeletonanimated.h"
+#include "..\Include/xrRender/Kinematics.h"
 
 physics_shell_animated::physics_shell_animated( CPhysicsShellHolder* O, bool _update_velocity ): 
 update_velocity( _update_velocity )
