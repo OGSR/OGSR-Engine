@@ -102,6 +102,7 @@ void InitConsole	()
 	CORE_FEATURE_SET( af_psy_health,              "features" );
 	CORE_FEATURE_SET( outfit_af,                  "features" );
 	CORE_FEATURE_SET( gd_master_only,             "features" );
+	CORE_FEATURE_SET( scope_textures_autoresize,  "features" );
 	CORE_FEATURE_SET( ogse_new_slots,             "features" );
 	CORE_FEATURE_SET( ogse_wpn_zoom_system,       "features" );
 	CORE_FEATURE_SET( wpn_cost_include_addons,    "features" );
