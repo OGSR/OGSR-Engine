@@ -483,7 +483,23 @@ BOOL	CResourceManager::_lua_HasShader	(LPCSTR s_shader)
 	for (int i=0, l=xr_strlen(s_shader)+1; i<l; i++)
 		undercorated[i]=('\\'==s_shader[i])?'_':s_shader[i];
 
-	return OBJECT_2(undercorated, "normal", LUA_TFUNCTION) || OBJECT_2(undercorated, "l_special", LUA_TFUNCTION);
+	bool bHasShader = OBJECT_2(undercorated, "normal", LUA_TFUNCTION) || OBJECT_2(undercorated, "l_special", LUA_TFUNCTION);
+
+	// If not found - try to find new ones
+	if (!bHasShader)
+	{
+		for (int i = 0; i < SHADER_ELEMENTS_MAX; ++i)
+		{
+			string16 buff;
+			std::snprintf(buff, sizeof(buff), "element_%d", i);
+			if (OBJECT_2(undercorated, buff, LUA_TFUNCTION))
+			{
+				bHasShader = true;
+				break;
+			}
+		}
+	}
+	return bHasShader;
 }
 
 Shader*	CResourceManager::_lua_Create		(LPCSTR d_shader, LPCSTR s_textures)
@@ -506,6 +522,21 @@ Shader*	CResourceManager::_lua_Create		(LPCSTR d_shader, LPCSTR s_textures)
 	_ParseList			(C.L_textures,	s_textures	);
 	C.detail_texture	= NULL;
 	C.detail_scaler		= NULL;
+
+	// Choose workflow here: old (using named stages) or new (explicitly declaring stage number)
+	for (int i = 0; i < SHADER_ELEMENTS_MAX; ++i)
+	{
+		string16 buff;
+		std::snprintf(buff, sizeof(buff), "element_%d", i);
+		if (OBJECT_2(s_shader, buff, LUA_TFUNCTION))
+		{
+			C.iElement = i;
+			C.bDetail = dxRenderDeviceRender::Instance().Resources->m_textures_description.GetDetailTexture(C.L_textures[0], C.detail_texture, C.detail_scaler);
+			S.E[i] = C._lua_Compile(s_shader, buff);
+
+			goto END_COMPILING;
+		}
+	}
 
 	// Compile element	(LOD0 - HQ)
 	if (OBJECT_2(s_shader, "normal_hq", LUA_TFUNCTION))
@@ -556,6 +587,8 @@ Shader*	CResourceManager::_lua_Create		(LPCSTR d_shader, LPCSTR s_textures)
 		C.bDetail			= FALSE;
 		S.E[4]				= C._lua_Compile(s_shader,"l_special");
 	}
+
+END_COMPILING:
 
 	// Search equal in shaders array
 	for (u32 it=0; it<v_shaders.size(); it++)

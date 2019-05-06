@@ -1325,5 +1325,8 @@
     <ClCompile Include="..\xrRender\Debug\dxPixEventWrapper.cpp">
       <Filter>Debug</Filter>
     </ClCompile>
+    <ClCompile Include="..\xrRender\RenderTargetPhaseRainDrops.cpp">
+      <Filter>Core_Target</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>
