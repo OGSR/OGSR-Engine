@@ -397,6 +397,7 @@ void CEnvDescriptor::load(float exec_tm, LPCSTR S, CEnvironment& environment)
 	wind_direction = deg2rad(pSettings->r_float(m_identifier.c_str(), "wind_direction"));
 	ambient = pSettings->r_fvector3(m_identifier.c_str(), "ambient");
 	hemi_color = pSettings->r_fvector4(m_identifier.c_str(), "hemi_color");
+	hemi_color.w = 1.f;
 	sun_color = pSettings->r_fvector3(m_identifier.c_str(), "sun_color");
 	Fvector2 sund = pSettings->r_fvector2(m_identifier.c_str(), "sun_dir");	sun_dir.setHP(deg2rad(sund.y), deg2rad(sund.x));
 	VERIFY2(sun_dir.y < 0, "Invalid sun direction settings while loading");
