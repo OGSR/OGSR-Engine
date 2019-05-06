@@ -181,6 +181,8 @@ public:
 			bool IsScopeAttached			() const;
 			bool IsSilencerAttached			() const;
 
+	bool			IsGrenadeMode() const;
+
 	virtual bool GrenadeLauncherAttachable() const;
 	virtual bool ScopeAttachable() const;
 	virtual bool SilencerAttachable() const;
@@ -394,8 +396,6 @@ protected:
 	virtual void			AddShotEffector		();
 	virtual void			RemoveShotEffector	();
 	virtual	void			ClearShotEffector	();
-
-	bool			IsGrenadeMode() const;
 
 public:
 	//текущая дисперсия (в радианах) оружия с учетом используемого патрона
