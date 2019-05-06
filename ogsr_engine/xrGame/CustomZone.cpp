@@ -269,7 +269,7 @@ void CCustomZone::Load(LPCSTR section)
 		m_fIdleLightHeight = pSettings->r_float(section,"idle_light_height");
 #pragma todo("KRodin: подумать над значениями по умолчанию. Сейчас по дефолту всё выключено.")
 		m_zone_flags.set(eIdleLightVolumetric, READ_IF_EXISTS(pSettings, r_bool, section, "idle_light_volumetric", false));
-		m_zone_flags.set(eIdleLightShadow,     READ_IF_EXISTS(pSettings, r_bool, section, "idle_light_shadow", false));
+		m_zone_flags.set(eIdleLightShadow,     READ_IF_EXISTS(pSettings, r_bool, section, "idle_light_shadow", true));
 		m_zone_flags.set(eIdleLightR1,         READ_IF_EXISTS(pSettings, r_bool, section, "idle_light_r1", false));
 	}
 
