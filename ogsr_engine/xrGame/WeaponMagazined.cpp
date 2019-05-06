@@ -998,8 +998,7 @@ void CWeaponMagazined::InitZoomParams(LPCSTR section, bool useTexture)
 		if (scope_tex_name.size() > 0)
 		{
 			m_UIScope = xr_new<CUIStaticItem>();
-#pragma todo("KRodin: адаптировать шейдер под новые реалии!")
-			m_UIScope->Init(*scope_tex_name, "hud\\default" /*"hud\\scope"*/, 0, 0, alNone);
+			m_UIScope->Init(scope_tex_name.c_str(), Core.Features.test(xrCore::Feature::scope_textures_autoresize) ? "hud\\scope" : "hud\\default", 0, 0, alNone);
 		}
 	}
 }

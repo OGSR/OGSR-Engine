@@ -216,7 +216,7 @@ public:
 	  af_psy_health              = 1ull << 20,
 	  outfit_af                  = 1ull << 21,
 	  gd_master_only             = 1ull << 22,
-	  // !Место свободно! = 1ull << 23,
+	  scope_textures_autoresize  = 1ull << 23,
 	  ogse_new_slots             = 1ull << 24,
 	  ogse_wpn_zoom_system       = 1ull << 25,
 	  wpn_cost_include_addons    = 1ull << 26,

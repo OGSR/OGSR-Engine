@@ -700,6 +700,9 @@ CRenderTarget::CRenderTarget		()
 
 		t_envmap_0.create			(r2_T_envs0);
 		t_envmap_1.create			(r2_T_envs1);
+
+		s_rain_drops.create("ogsr_rain_drops");
+		g_rain_drops.create(fvf_aa_AA, RCache.Vertex.Buffer(), RCache.QuadIB);
 	}
 
 	// Build textures
