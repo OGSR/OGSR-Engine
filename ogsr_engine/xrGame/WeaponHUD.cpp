@@ -93,7 +93,7 @@ CWeaponHUD::CWeaponHUD			(CHudItem* pHudItem)
 	m_bStopAtEndAnimIsRunning	= false;
 	m_pCallbackItem				= NULL;
 	if (Core.Features.test(xrCore::Feature::wpn_bobbing))
-		m_bobbing = xr_new<CWeaponBobbing>();
+		m_bobbing = xr_new<CWeaponBobbing>( pHudItem );
 	m_Transform.identity		();
 }
 
@@ -211,8 +211,9 @@ MotionID random_anim(MotionSVec& v)
 }
 
 
-CWeaponBobbing::CWeaponBobbing()
+CWeaponBobbing::CWeaponBobbing(CHudItem* pHudItem)
 {
+	m_pParentWeapon				= pHudItem;
 	Load();
 }
 
@@ -235,7 +236,8 @@ void CWeaponBobbing::Load()
 	m_fSpeedLimp		= pSettings->r_float(BOBBING_SECT, "limp_speed");
 
 	m_fCrouchFactor = READ_IF_EXISTS( pSettings, r_float, BOBBING_SECT, "crouch_k", CROUCH_FACTOR );
-	m_fZoomFactor   = READ_IF_EXISTS( pSettings, r_float, BOBBING_SECT, "zoom_k",   1.f );
+	m_fZoomFactor   = READ_IF_EXISTS( pSettings, r_float, BOBBING_SECT, "zoom_k", 1.f );
+	m_fScopeZoomFactor = READ_IF_EXISTS( pSettings, r_float, BOBBING_SECT, "scope_zoom_k", m_fZoomFactor );
 }
 
 void CWeaponBobbing::CheckState()
@@ -268,7 +270,14 @@ void CWeaponBobbing::Update(Fmatrix &m)
 		Fvector dangle;
 		Fmatrix		R, mR;
 		float k  = ( dwMState & ACTOR_DEFS::mcCrouch ) ? m_fCrouchFactor : 1.f;
-		float k2 = m_bZoomMode ? k * m_fZoomFactor : k;
+		float k2 = k;
+
+		if ( m_bZoomMode ) {
+			auto wpn = smart_cast<CWeapon*>( m_pParentWeapon );
+			bool has_scope = wpn->IsScopeAttached() && !wpn->IsGrenadeMode();
+			float zoom_factor = has_scope ? m_fScopeZoomFactor : m_fZoomFactor;
+			k2 *= zoom_factor;
+		}
 
 		float A, ST;
 

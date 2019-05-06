@@ -10,8 +10,10 @@ class CHudItem;
 
 class CWeaponBobbing
 {
+	//родительский объект HUD
+	CHudItem*			m_pParentWeapon;		
 	public:
-		CWeaponBobbing();
+		CWeaponBobbing(CHudItem* pHudItem);
 		virtual ~CWeaponBobbing();
 		void Load();
 		void Update(Fmatrix &m);
@@ -38,6 +40,7 @@ class CWeaponBobbing
 
 		float m_fCrouchFactor;
 		float m_fZoomFactor;
+		float m_fScopeZoomFactor;
 };
 
 
