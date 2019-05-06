@@ -34,6 +34,11 @@ CROS_impl::CROS_impl	()
 	sun_value			= 0.2f;
 	sun_smooth			= 0.2f;
 
+	for (size_t i = 0; i < NUM_FACES; ++i)
+	{
+		hemi_cube[i] = hemi_cube_smooth[i] = 0;
+	}
+
 #if RENDER!=R_R1
 	last_position.set( 0.0f, 0.0f, 0.0f );
 	ticks_to_update		= 0;
