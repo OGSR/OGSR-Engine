@@ -303,6 +303,13 @@
             <options_item entry="r__detail_density" group="mm_opt_video_adv"/>
         </track_detail_density>
 
+		<cap_detail_distance x="5" y="5" width="143" height="21">
+			<text font="letterica16" r="215" g="195" b="170">ui_mm_detail_distance</text>
+		</cap_detail_distance>
+		<track_detail_distance x="249" y="0" width="190" height="21" invert="0" step="4" is_integer="1">
+			<options_item entry="r__detail_radius" group="mm_opt_video_adv"/>
+		</track_detail_distance>
+
         <cap_texture_lod x="5" y="5" width="143" height="21">
             <text font="letterica16" r="215" g="195" b="170">ui_mm_texture_quality</text>
         </cap_texture_lod>

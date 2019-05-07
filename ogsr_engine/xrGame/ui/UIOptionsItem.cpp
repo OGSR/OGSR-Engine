@@ -106,6 +106,10 @@ void CUIOptionsItem::SaveValue() {
 		|| m_entry == "r2_dof_enable"
 		|| m_entry == "r2_volumetric_lights"
 		|| m_entry == "r3_msaa_opt"
+		|| m_entry == "r__detail_radius"
+		|| m_entry == "r__detail_density"
+		|| m_entry == "r__detail_scale"
+		|| m_entry == "r__no_scale_on_fade"
 	) m_optionsManager.DoVidRestart();
 	
 	if (m_entry == "snd_efx")
