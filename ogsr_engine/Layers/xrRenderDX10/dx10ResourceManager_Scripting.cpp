@@ -610,6 +610,9 @@ Shader*	CResourceManager::_lua_Create		(LPCSTR d_shader, LPCSTR s_textures)
 	C.detail_texture	= NULL;
 	C.detail_scaler		= NULL;
 
+	// Choose workflow here: old (using named stages) or new (explicitly declaring stage number)
+	bool bUseNewWorkflow = false;
+
 	for (int i = 0; i < SHADER_ELEMENTS_MAX; ++i)
 	{
 		string16 buff;
@@ -620,67 +623,70 @@ Shader*	CResourceManager::_lua_Create		(LPCSTR d_shader, LPCSTR s_textures)
 			C.bDetail = dxRenderDeviceRender::Instance().Resources->m_textures_description.GetDetailTexture(C.L_textures[0], C.detail_texture, C.detail_scaler);
 			S.E[i] = C._lua_Compile(s_shader, buff);
 
-			goto END_COMPILING;
+			bUseNewWorkflow = true;
 		}
 	}
 
-	// Compile element	(LOD0 - HQ)
-	if (OBJECT_2(s_shader,"normal_hq",LUA_TFUNCTION))
-	{
-		// Analyze possibility to detail this shader
-		C.iElement			= 0;
-//.		C.bDetail			= dxRenderDeviceRender::Instance().Resources->_GetDetailTexture(*C.L_textures[0],C.detail_texture,C.detail_scaler);
-		//C.bDetail			= dxRenderDeviceRender::Instance().Resources->m_textures_description.GetDetailTexture(C.L_textures[0],C.detail_texture,C.detail_scaler);
-		C.bDetail			= dxRenderDeviceRender::Instance().Resources->m_textures_description.GetDetailTexture(C.L_textures[0],C.detail_texture,C.detail_scaler);
+	if (!bUseNewWorkflow) {
 
-		if (C.bDetail)		S.E[0]	= C._lua_Compile(s_shader,"normal_hq");
-		else				S.E[0]	= C._lua_Compile(s_shader,"normal");
-	} else {
-		if (OBJECT_2(s_shader,"normal",LUA_TFUNCTION))
+		// Compile element	(LOD0 - HQ)
+		if (OBJECT_2(s_shader, "normal_hq", LUA_TFUNCTION))
 		{
-			C.iElement			= 0;
-//.			C.bDetail			= dxRenderDeviceRender::Instance().Resources->_GetDetailTexture(*C.L_textures[0],C.detail_texture,C.detail_scaler);
-			//C.bDetail			= dxRenderDeviceRender::Instance().Resources->m_textures_description.GetDetailTexture(C.L_textures[0],C.detail_texture,C.detail_scaler);
-			C.bDetail			= dxRenderDeviceRender::Instance().Resources->m_textures_description.GetDetailTexture(C.L_textures[0],C.detail_texture,C.detail_scaler);
-			S.E[0]				= C._lua_Compile(s_shader,"normal");
+			// Analyze possibility to detail this shader
+			C.iElement = 0;
+			//.		C.bDetail			= dxRenderDeviceRender::Instance().Resources->_GetDetailTexture(*C.L_textures[0],C.detail_texture,C.detail_scaler);
+					//C.bDetail			= dxRenderDeviceRender::Instance().Resources->m_textures_description.GetDetailTexture(C.L_textures[0],C.detail_texture,C.detail_scaler);
+			C.bDetail = dxRenderDeviceRender::Instance().Resources->m_textures_description.GetDetailTexture(C.L_textures[0], C.detail_texture, C.detail_scaler);
+
+			if (C.bDetail)		S.E[0] = C._lua_Compile(s_shader, "normal_hq");
+			else				S.E[0] = C._lua_Compile(s_shader, "normal");
 		}
-	}
+		else {
+			if (OBJECT_2(s_shader, "normal", LUA_TFUNCTION))
+			{
+				C.iElement = 0;
+				//.			C.bDetail			= dxRenderDeviceRender::Instance().Resources->_GetDetailTexture(*C.L_textures[0],C.detail_texture,C.detail_scaler);
+							//C.bDetail			= dxRenderDeviceRender::Instance().Resources->m_textures_description.GetDetailTexture(C.L_textures[0],C.detail_texture,C.detail_scaler);
+				C.bDetail = dxRenderDeviceRender::Instance().Resources->m_textures_description.GetDetailTexture(C.L_textures[0], C.detail_texture, C.detail_scaler);
+				S.E[0] = C._lua_Compile(s_shader, "normal");
+			}
+		}
 
-	// Compile element	(LOD1)
-	if (OBJECT_2(s_shader,"normal",LUA_TFUNCTION))
-	{
-		C.iElement			= 1;
-//.		C.bDetail			= dxRenderDeviceRender::Instance().Resources->_GetDetailTexture(*C.L_textures[0],C.detail_texture,C.detail_scaler);
-		//C.bDetail			= dxRenderDeviceRender::Instance().Resources->m_textures_description.GetDetailTexture(C.L_textures[0],C.detail_texture,C.detail_scaler);
-		C.bDetail			= dxRenderDeviceRender::Instance().Resources->m_textures_description.GetDetailTexture(C.L_textures[0],C.detail_texture,C.detail_scaler);
-		S.E[1]				= C._lua_Compile(s_shader,"normal");
-	}
+		// Compile element	(LOD1)
+		if (OBJECT_2(s_shader, "normal", LUA_TFUNCTION))
+		{
+			C.iElement = 1;
+			//.		C.bDetail			= dxRenderDeviceRender::Instance().Resources->_GetDetailTexture(*C.L_textures[0],C.detail_texture,C.detail_scaler);
+					//C.bDetail			= dxRenderDeviceRender::Instance().Resources->m_textures_description.GetDetailTexture(C.L_textures[0],C.detail_texture,C.detail_scaler);
+			C.bDetail = dxRenderDeviceRender::Instance().Resources->m_textures_description.GetDetailTexture(C.L_textures[0], C.detail_texture, C.detail_scaler);
+			S.E[1] = C._lua_Compile(s_shader, "normal");
+		}
 
-	// Compile element
-	if (OBJECT_2(s_shader,"l_point",LUA_TFUNCTION))
-	{
-		C.iElement			= 2;
-		C.bDetail			= FALSE;
-		S.E[2]				= C._lua_Compile(s_shader,"l_point");;
-	}
+		// Compile element
+		if (OBJECT_2(s_shader, "l_point", LUA_TFUNCTION))
+		{
+			C.iElement = 2;
+			C.bDetail = FALSE;
+			S.E[2] = C._lua_Compile(s_shader, "l_point");;
+		}
 
-	// Compile element
-	if (OBJECT_2(s_shader,"l_spot",LUA_TFUNCTION))
-	{
-		C.iElement			= 3;
-		C.bDetail			= FALSE;
-		S.E[3]				= C._lua_Compile(s_shader,"l_spot");;
-	}
+		// Compile element
+		if (OBJECT_2(s_shader, "l_spot", LUA_TFUNCTION))
+		{
+			C.iElement = 3;
+			C.bDetail = FALSE;
+			S.E[3] = C._lua_Compile(s_shader, "l_spot");;
+		}
 
-	// Compile element
-	if (OBJECT_2(s_shader,"l_special",LUA_TFUNCTION))
-	{
-		C.iElement			= 4;
-		C.bDetail			= FALSE;
-		S.E[4]				= C._lua_Compile(s_shader,"l_special");
-	}
+		// Compile element
+		if (OBJECT_2(s_shader, "l_special", LUA_TFUNCTION))
+		{
+			C.iElement = 4;
+			C.bDetail = FALSE;
+			S.E[4] = C._lua_Compile(s_shader, "l_special");
+		}
 
-END_COMPILING:
+	}
 
 	// Search equal in shaders array
 	for (u32 it=0; it<v_shaders.size(); it++)
