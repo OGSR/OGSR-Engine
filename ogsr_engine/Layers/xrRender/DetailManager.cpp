@@ -232,23 +232,26 @@ extern BOOL ps_no_scale_on_fade;
 
 void CDetailManager::UpdateVisibleM()
 {
-	for (int i = 0; i != 3; i++)
-		for (auto& vis : m_visibles[i])
-		vis.clear();
+	// KRodin: Фикс мерцания и прочих глюков травы при активном двойном рендеринге. Это важно, не убирать!
+	if (Device.m_SecondViewport.IsSVPFrame())
+		return;
 
-	Fvector		EYE				= RDEVICE.vCameraPosition_saved;
+	// Clean up
+	for (auto& vec : m_visibles)
+		for (auto& vis : vec)
+			vis.clear_not_free();
 
-	CFrustum	View;
-	View.CreateFromMatrix		(RDEVICE.mFullTransform_saved, FRUSTUM_P_LRTB + FRUSTUM_P_FAR);
-	
- 	CFrustum	View_old;
- 	Fmatrix		Viewm_old = RDEVICE.mFullTransform;
- 	View_old.CreateFromMatrix		(Viewm_old, FRUSTUM_P_LRTB + FRUSTUM_P_FAR);
-	
-	float fade_limit			= dm_fade;	fade_limit=fade_limit*fade_limit;
-	float fade_start			= 1.f;		fade_start=fade_start*fade_start;
-	float fade_range			= fade_limit-fade_start;
- 	float		r_ssaCHEAP		= 16*r_ssaDISCARD;
+	Fvector EYE = RDEVICE.vCameraPosition_saved;
+
+	CFrustum View;
+	View.CreateFromMatrix(RDEVICE.mFullTransform_saved, FRUSTUM_P_LRTB + FRUSTUM_P_FAR);
+		
+	float fade_limit = dm_fade;
+	fade_limit = fade_limit * fade_limit;
+	float fade_start = 1.f;
+	fade_start = fade_start * fade_start;
+	float fade_range = fade_limit - fade_start;
+	float r_ssaCHEAP = 16 * r_ssaDISCARD;
 
 	// Initialize 'vis' and 'cache'
 	// Collect objects for rendering
@@ -292,12 +295,12 @@ void CDetailManager::UpdateVisibleM()
 						continue;	// invisible-view frustum
 					}
 				}
-#ifndef _EDITOR
+
 				if (!RImplementation.HOM.visible(S.vis))
 				{
 					continue;	// invisible-occlusion
 				}
-#endif
+
 				// Add to visibility structures
 				if (RDEVICE.dwFrame>S.frame){
 					// Calc fade factor	(per slot)
@@ -319,7 +322,7 @@ void CDetailManager::UpdateVisibleM()
 						float				R		= objects	[sp.id]->bv_sphere.R;
 						float				Rq_drcp	= R*R*dist_sq_rcp;	// reordered expression for 'ssa' calc
 
-						for (auto el: sp.items){
+						for (auto* el: sp.items){
 							SlotItem& Item			= *el;
 							float   scale = ps_no_scale_on_fade ? (Item.scale_calculated = Item.scale) : (Item.scale_calculated = Item.scale*alpha_i);
 							float	ssa = ps_no_scale_on_fade ? scale : scale*scale*Rq_drcp;
@@ -386,13 +389,14 @@ void CDetailManager::Render	()
 	m_frame_rendered		= RDEVICE.dwFrame;
 }
 
+u32 reset_frame = 0;
 void __stdcall	CDetailManager::MT_CALC		()
 {
-#ifndef _EDITOR
-	if (0==RImplementation.Details)		return;	// possibly deleted
-	if (0==dtFS)						return;
-	if (!psDeviceFlags.is(rsDetails))	return;
-#endif    
+	if (reset_frame == Device.dwFrame) return;
+	if (!RImplementation.Details) return;	// possibly deleted
+	if (!dtFS) return;
+	if (!psDeviceFlags.is(rsDetails)) return;
+	if (g_pGamePersistent && g_pGamePersistent->m_pMainMenu && g_pGamePersistent->m_pMainMenu->IsActive()) return;
 
 	MT.Enter					();
 	if (m_frame_calc!=RDEVICE.dwFrame)	

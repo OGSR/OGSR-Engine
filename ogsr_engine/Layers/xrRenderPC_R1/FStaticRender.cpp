@@ -115,20 +115,31 @@ void					CRender::destroy				()
 	r_dsgraph_destroy			();
 }
 
-void					CRender::reset_begin			()
+extern u32 reset_frame;
+void CRender::reset_begin()
 {
+	reset_frame = Device.dwFrame;
 	//AVO: let's reload details while changed details options on vid_restart
 	if (b_loaded && ((dm_current_size != dm_size) || (ps_r__Detail_density != ps_current_detail_density)))
 	{
 		Details->Unload();
 		xr_delete(Details);
 	}
+
 	xr_delete					(Target);
 //.	HWOCC.occq_destroy			();
 }
 
 void					CRender::reset_end				()
 {
+	//AVO: let's reload details while changed details options on vid_restart
+	if (b_loaded && ((dm_current_size != dm_size) || (ps_r__Detail_density != ps_current_detail_density)))
+	{
+		Details = xr_new<CDetailManager>();
+		Details->Load();
+	}
+	//-AVO
+
 	xrRender_apply_tf			();
 //.	HWOCC.occq_create			(occq_size);
 	Target						=	xr_new<CRenderTarget>	();

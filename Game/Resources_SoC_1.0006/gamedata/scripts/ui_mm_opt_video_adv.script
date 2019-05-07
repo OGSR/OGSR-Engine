@@ -64,7 +64,8 @@ local adv_vid_opt_params = {
 	{ "r2_sun_near",           "track", 0, hint_colors.red   , "video_settings_name_22", "video_settings_desc_22", only_2_and_more_mode  }, --подумать над цветом
 	{ "r2_sun_far",            "track", 0, hint_colors.yellow, "video_settings_name_58", "video_settings_desc_58", only_2_and_more_mode  },
 	{ "cam_inert",             "track", 0, hint_colors.green , "video_settings_name_1" , "video_settings_desc_1"  },
---	{ "r2_sun_details",        "check", 0, hint_colors.red   , "video_settings_name_12", "video_settings_desc_12" }, --проверить, работает ли сейчас! Cкорее всего надо починить в движке, потом включить.
+	{ "detail_distance",       "track", 0, hint_colors.red   , "video_settings_name_5" , "video_settings_desc_5"  },
+	{ "r2_sun_details",        "check", 0, hint_colors.red   , "video_settings_name_12", "video_settings_desc_12" },
 --	{ "r2_sun_lumscale",       "track", 0, hint_colors.green , "video_settings_name_27", "video_settings_desc_27" }, --В огсе настройка была отключена. Устанавливалась в биндере принудительно в 1
 	{ "r2_sun_lumscale_amb",   "track", 0, hint_colors.green , "video_settings_name_28", "video_settings_desc_28", only_2_and_more_mode  },
 	{ "r2_sun_lumscale_hemi",  "track", 0, hint_colors.green , "video_settings_name_63", "video_settings_desc_63", only_2_and_more_mode  },
@@ -75,7 +76,6 @@ local adv_vid_opt_params = {
 	{ "r2_rain_drops",         "check", 0, hint_colors.green , "video_settings_name_47", "video_settings_desc_47", only_2a_and_more_mode },
 --
 --Эти в будущем точно запилю обратно. И не только эти.
-	--{ "detail_distance",       "track", 0, hint_colors.red   , "video_settings_name_5" , "video_settings_desc_5"  },
 	--{ "r__bloodmarks",         "check", 0, hint_colors.green , "video_settings_name_9" , "video_settings_desc_9"  },
 	--{ "r2_actor_shadow",       "check", 0, hint_colors.green , "video_settings_name_56", "" },
 --
