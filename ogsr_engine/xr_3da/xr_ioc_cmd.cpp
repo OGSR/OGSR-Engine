@@ -469,26 +469,39 @@ public:
 ENGINE_API BOOL r2_sun_static = TRUE;
 ENGINE_API BOOL r2_advanced_pp = FALSE;	//	advanced post process and effects
 
-u32	renderer_value	= 3;
-//void fill_render_mode_list();
-//void free_render_mode_list();
+
+#ifdef EXCLUDE_R1
+u32 renderer_value = 1;
+#else
+u32 renderer_value = 2;
+#endif
 
 class CCC_r2 : public CCC_Token
 {
 	typedef CCC_Token inherited;
 public:
-	CCC_r2(LPCSTR N) :inherited(N, &renderer_value, NULL){renderer_value=3;};
-	virtual			~CCC_r2	()
-	{
-		//free_render_mode_list();
-	}
+	CCC_r2(LPCSTR N) :inherited(N, &renderer_value, nullptr) {};
+	virtual ~CCC_r2() = default;
+
 	virtual void	Execute	(LPCSTR args)
 	{
-		//fill_render_mode_list	();
 		//	vid_quality_token must be already created!
 		tokens					= vid_quality_token;
 
 		inherited::Execute		(args);
+		Msg("--[%s] Executing renderer: [%s], renderer_value: [%u]", __FUNCTION__, args, renderer_value);
+#ifdef EXCLUDE_R1
+		//	0..2 - r2
+		//	3 - r3
+		//	4 - r4
+		psDeviceFlags.set(rsR2, ((renderer_value >= 0) && renderer_value < 3));
+		psDeviceFlags.set(rsR3, (renderer_value == 3));
+		psDeviceFlags.set(rsR4, (renderer_value == 4));
+
+		r2_sun_static = renderer_value == 0;
+
+		r2_advanced_pp = renderer_value >= 2;
+#else
 		//	0 - r1
 		//	1..3 - r2
 		//	4 - r3
@@ -499,11 +512,11 @@ public:
 		r2_sun_static	= (renderer_value<2);
 
 		r2_advanced_pp  = (renderer_value>=3);
+#endif
 	}
 
 	virtual void	Save	(IWriter *F)	
 	{
-		//fill_render_mode_list	();
 		tokens					= vid_quality_token;
 		inherited::Save(F);
 	}
@@ -520,6 +533,8 @@ public:
 	}
 
 };
+
+
 #ifndef DEDICATED_SERVER
 class CCC_soundDevice : public CCC_Token
 {
