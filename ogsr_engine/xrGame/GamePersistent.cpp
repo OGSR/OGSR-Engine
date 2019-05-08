@@ -510,9 +510,9 @@ void CGamePersistent::OnFrame	()
 	if (!m_intro_event.empty() && !load_screen_renderer.b_registered)
 		m_intro_event();
 
-	if (Device.dwPrecacheFrame == 0 && load_screen_renderer.b_registered) {
+	if (Device.dwPrecacheFrame == 0 && load_screen_renderer.b_registered && !GameAutopaused) {
 		if (psActorFlags.test(AF_KEYPRESS_ON_START)) {
-			Device.Pause(TRUE, TRUE, FALSE, "AUTOPAUSE_START");
+			Device.Pause(TRUE, TRUE, TRUE, "AUTOPAUSE_START");
 			pApp->LoadForceFinish();
 			LoadTitle("st_press_any_key");
 			GameAutopaused = true;
@@ -692,7 +692,7 @@ bool CGamePersistent::CanBePaused()
 void CGamePersistent::OnKeyboardPress(int dik)
 {
 	if (psActorFlags.test(AF_KEYPRESS_ON_START) && GameAutopaused) {
-		Device.Pause(FALSE, TRUE, FALSE, "AUTOPAUSE_END");
+		Device.Pause(FALSE, TRUE, TRUE, "AUTOPAUSE_END");
 		load_screen_renderer.stop();
 		GameAutopaused = false;
 	}
