@@ -314,6 +314,9 @@
     <ClInclude Include="NET_Server_Trash\NET_utils.h">
       <Filter>NET_Server_Trash</Filter>
     </ClInclude>
+    <ClInclude Include="Animation.h">
+      <Filter>Interfaces\Render\Visuals\Skeleton</Filter>
+    </ClInclude>
     <ClInclude Include="bone.h" />
     <ClInclude Include="cl_intersect.h" />
     <ClInclude Include="xrSkinXW.hpp" />

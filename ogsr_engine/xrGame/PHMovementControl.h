@@ -27,6 +27,7 @@ class CPHMovementControl
 static const int path_few_point=10;
 
 public:
+CObject					*ParentObject		(){ return pObject; }
 CElevatorState			*ElevatorState  ();
 void 					in_shedule_Update( u32 DT );
 void					PHCaptureObject( CPhysicsShellHolder* object, LPCSTR = nullptr, bool = false );
@@ -133,6 +134,7 @@ public:
 	Fvector				vExternalImpulse;
 	bool				bExernalImpulse;
 	BOOL				bSleep;
+	bool				bNonInteractiveMode;
 
 	BOOL				gcontact_Was;			// Приземление
 	float				gcontact_Power;			// Насколько сильно ударились
@@ -178,6 +180,7 @@ public:
 	void				SetVelocity					(const Fvector& v)	{vVelocity.set(v);SetCharacterVelocity(v);}
 	void				SetCharacterVelocity		(const Fvector& v)	{if(m_character)m_character->SetVelocity(v);}										
 	void				SetPhysicsRefObject			(CPhysicsShellHolder* ref_object){m_character->SetPhysicsRefObject(ref_object);};
+	void				SetNonInteractive			(bool v);
 	
 	void				CalcMaximumVelocity			(Fvector& /**dest/**/, Fvector& /**accel/**/, float /**friction/**/){};
 	void				CalcMaximumVelocity			(float& /**dest/**/, float /**accel/**/, float /**friction/**/){};
@@ -281,7 +284,13 @@ public:
 	}
 	CPHMovementControl(CObject* parent);
 	~CPHMovementControl(void);
+
+	CPHCharacter		*character				()	{		return m_character; };
+	void				NetRelcase				( CObject* O );
 private:
 	void				UpdateCollisionDamage	( );
+	bool				MakeJumpPath			(xr_vector<DetailPathManager::STravelPathPoint> & out_path, 
+												 u32 & travel_point,
+												 Fvector & dist_to_enemy);
 };
 #endif

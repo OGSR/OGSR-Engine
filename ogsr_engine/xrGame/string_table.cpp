@@ -42,6 +42,12 @@ void CStringTable::Init		()
 			Load		(xml_file);
 		}
 	}
+
+	if ( pSettings->section_exist( "string_table_files" ) ) {
+	  CInifile::Sect& files = pSettings->r_section( "string_table_files" );
+	  for ( const auto &i : files.Unordered )
+	    Load( i.first.c_str() );
+	}
 }
 
 void CStringTable::Load	(LPCSTR xml_file)

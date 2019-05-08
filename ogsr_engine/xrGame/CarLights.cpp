@@ -83,7 +83,7 @@ void SCarLight::TurnOn()
 	IKinematics* K=smart_cast<IKinematics*>(m_holder->PCar()->Visual());
 	K->LL_SetBoneVisible(bone_id,TRUE,TRUE);
 	K->CalculateBones_Invalidate	();
-	K->CalculateBones();	
+	K->CalculateBones(TRUE);	
 	glow_render ->set_active(true);
 	light_render->set_active(true);
 	Update();
@@ -202,7 +202,7 @@ bool CCarLights::findLight(u16 bone_id,SCarLight* &light)
 	find_light.bone_id=bone_id;
 	i=std::find_if(m_lights.begin(),e,SFindLightPredicate(&find_light));
 	light=*i;
-	return i!=e; //-V783
+	return i!=e;
 }
 CCarLights::~CCarLights()
 {

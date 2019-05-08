@@ -279,3 +279,10 @@ void CSE_ALifeOnlineOfflineGroup::on_after_game_load	()
 	for (i = temp; i != e; ++i)
 		register_member			(*i);
 }
+
+ALife::_OBJECT_ID CSE_ALifeOnlineOfflineGroup::commander_id ( )
+{
+	if (!m_members.empty()) 
+		return (*m_members.begin()).first;
+	return 0xffff;	
+}

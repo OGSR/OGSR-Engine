@@ -19,11 +19,97 @@
 #include "../../../patrol_path_manager.h"
 #include "../../../patrol_path_manager_space.h"
 
+// #include "ai/monsters/ai_monster_squad.h"
+// #include "ai/monsters/ai_monster_squad_manager.h"
+#include "level_graph.h"
+#include "../../../game_path_manager.h"
+#include "../../../alife_simulator.h"
+#include "../../../alife_group_registry.h"
+#include "../../../alife_object_registry.h"
+#include "xrServer_Objects_Alife_Monsters.h"
 
 using namespace MonsterSpace;
 using namespace MonsterSound;
 
+void CBaseMonster::GenerateNewOffsetFromLeader ()
+{
+	float const min_squad_offset	=	READ_IF_EXISTS(pSettings, r_float, "monsters_common", 
+													   "script_move_min_offset_from_leader", 3.f);
+	float const max_squad_offset	=	READ_IF_EXISTS(pSettings, r_float, "monsters_common", 
+													   "script_move_max_offset_from_leader", 9.f);
+
+	float const offset_magnitude	=	min_squad_offset + (max_squad_offset-min_squad_offset)*Random.randF(1.f);
+	Fvector		offset				=	Fvector().set(offset_magnitude, 0, 0);
+
+	m_offset_from_leader				=	rotate_point(offset, deg2rad(360.f) * Random.randF(1.f));
+	m_offset_from_leader_chosen_tick	=	Device.dwTimeGlobal;
+}
+
 //////////////////////////////////////////////////////////////////////////
+
+bool CBaseMonster::AssignGamePathIfNeeded(Fvector const target_pos, u32 const level_vertex)
+{
+	GameGraph::_GRAPH_ID const self_game_vertex = ai_location().game_vertex_id();
+
+	u32 target_level_vertex = 0;
+
+	if (ai().level_graph().valid_vertex_id(level_vertex))
+	{
+		target_level_vertex = level_vertex;
+	}
+	else if (ai().level_graph().valid_vertex_position(target_pos))
+	{
+		target_level_vertex = ai().level_graph().vertex_id(target_pos);
+	}
+	else
+	{
+		return false;
+	}
+
+	bool level_vertex_is_valid = ai().level_graph().valid_vertex_id(target_level_vertex);
+
+	if (!level_vertex_is_valid)
+	{
+		if (m_action_target_pos == target_pos && m_action_target_node != u32(-1))
+		{
+			target_level_vertex = m_action_target_node;
+			level_vertex_is_valid = true;
+		}
+		else
+		{
+			u32 const path_node = path().get_target_found_node();
+			if (path().is_target_actual() &&
+				path().get_target_set() == target_pos &&
+				path_node != u32(-1))
+			{
+				target_level_vertex = path_node;
+				level_vertex_is_valid = ai().level_graph().valid_vertex_id(target_level_vertex);
+			}
+		}
+	}
+
+	if (level_vertex_is_valid)
+	{
+		m_action_target_pos = target_pos;
+		m_action_target_node = target_level_vertex;
+
+		GameGraph::_GRAPH_ID const target_game_vertex = ai().cross_table().vertex(target_level_vertex).game_vertex_id();
+		bool const game_vertex_is_valid = ai().game_graph().valid_vertex_id(target_game_vertex);
+		VERIFY(game_vertex_is_valid);
+		if (game_vertex_is_valid && self_game_vertex != target_game_vertex)
+		{
+			path().detour_graph_points(target_game_vertex);
+			control().path_builder().set_path_type(MovementManager::ePathTypeGamePath);
+			control().path_builder().set_game_dest_vertex(target_game_vertex);
+			return true;
+		}
+	}
+
+	m_action_target_node = u32(-1); //-V519
+
+	return false;
+}
+
 bool CBaseMonster::bfAssignMovement (CScriptEntityAction *tpEntityAction)
 {
 	CScriptMovementAction	&l_tMovementAction	= tpEntityAction->m_tMovementAction;
@@ -38,10 +124,9 @@ bool CBaseMonster::bfAssignMovement (CScriptEntityAction *tpEntityAction)
 		return				(false);
 	}
 
-	if (control().path_builder().detail().time_path_built() >= tpEntityAction->m_tActionCondition.m_tStartTime) {
+ 	if (control().path_builder().detail().time_path_built() >= tpEntityAction->m_tActionCondition.m_tStartTime) {
 		if ((l_tMovementAction.m_fDistToEnd > 0) && control().path_builder().is_path_end(l_tMovementAction.m_fDistToEnd))  {
-			l_tMovementAction.m_bCompleted = true;
-			
+			l_tMovementAction.m_bCompleted = true;			
 		}
 		if (control().path_builder().actual_all() && control().path_builder().path_completed()) {
 			l_tMovementAction.m_bCompleted = true;
@@ -51,19 +136,31 @@ bool CBaseMonster::bfAssignMovement (CScriptEntityAction *tpEntityAction)
 
 	// translate script.action into anim().action
 	switch (l_tMovementAction.m_tMoveAction) {
-	case eMA_WalkFwd:	anim().m_tAction = ACT_WALK_FWD;		break;
-	case eMA_WalkBkwd:	anim().m_tAction = ACT_WALK_BKWD;	break;
-	case eMA_Run:		anim().m_tAction = ACT_RUN;			break;
-	case eMA_Drag:		anim().m_tAction = ACT_DRAG;			break;
-	case eMA_Steal:		anim().m_tAction = ACT_STEAL;		break;
+		case eMA_WalkBkwd:	anim().m_tAction = ACT_WALK_BKWD;	break;
+		case eMA_Drag:		anim().m_tAction = ACT_DRAG;		break;
+		case eMA_Steal:		anim().m_tAction = ACT_STEAL;		break;
+
+		case eMA_WalkWithLeader:
+		case eMA_WalkFwd:	anim().m_tAction = ACT_WALK_FWD;	break;
+
+		case eMA_RunWithLeader:
+		case eMA_Run:		anim().m_tAction = ACT_RUN;			break;
+//		case eMA_Jump:		anim().m_tAction = ACT_JUMP;		break;
 	}
 
 	m_force_real_speed = (l_tMovementAction.m_tSpeedParam == eSP_ForceSpeed);
+
+	u32 invalid_vertex_id;
+	ai().level_graph().set_invalid_vertex(invalid_vertex_id);
 
 	switch (l_tMovementAction.m_tGoalType) {
 		
 		case CScriptMovementAction::eGoalTypeObject : {
 			CGameObject		*l_tpGameObject = smart_cast<CGameObject*>(l_tMovementAction.m_tpObjectToGo);
+		
+			if ( AssignGamePathIfNeeded(Fvector().set(0.f, 0.f, 0.f), l_tpGameObject->ai_location().level_vertex_id()) )
+				break;
+
 			path().set_target_point	(l_tpGameObject->Position(), l_tpGameObject->ai_location().level_vertex_id());
 			break;
 													  }
@@ -81,11 +178,84 @@ bool CBaseMonster::bfAssignMovement (CScriptEntityAction *tpEntityAction)
 
 		case CScriptMovementAction::eGoalTypePathPosition :
 		case CScriptMovementAction::eGoalTypeNoPathPosition :
-			path().set_target_point	(l_tMovementAction.m_tDestinationPosition);
+
+ 			if ( AssignGamePathIfNeeded(l_tMovementAction.m_tDestinationPosition, invalid_vertex_id) )
+ 				break;
+
+			path().set_target_point			(l_tMovementAction.m_tDestinationPosition);
 			break;
+
+		case CScriptMovementAction::eGoalTypeFollowLeader:
+		{
+			CSE_ALifeMonsterAbstract* const i_am 
+						=	smart_cast<CSE_ALifeMonsterAbstract*>( ai().alife().objects().object(ID()) );
+			VERIFY								(i_am);
+			CSE_ALifeOnlineOfflineGroup& group	
+											=	ai().alife().groups().object(i_am->m_group_id);
+
+			ALife::_OBJECT_ID leader_id		=	group.commander_id();
+			bool const should_follow_leader	=	leader_id != (ALife::_OBJECT_ID)(-1) && leader_id != ID();
+			CCustomMonster* const leader	=	should_follow_leader ? 
+												smart_cast<CCustomMonster*>( Level().Objects.net_Find(leader_id) ) : 
+												NULL;
+
+			if ( !should_follow_leader || !leader || !leader->GetScriptControl())
+			{
+				if ( AssignGamePathIfNeeded(l_tMovementAction.m_tDestinationPosition, invalid_vertex_id) )
+					break;
+
+				path().set_target_point			(l_tMovementAction.m_tDestinationPosition);
+			}
+			else
+			{
+				Fvector	const leader_pos	=	leader->Position();
+
+				if ( Device.dwTimeGlobal > m_offset_from_leader_chosen_tick + 5000 )
+				{
+					GenerateNewOffsetFromLeader();
+				}
+
+				u32	 vertex_id	=	u32(-1);
+				for ( u32 tries=0; tries<3; ++tries )
+				{
+					vertex_id	=	ai().level_graph().check_position_in_direction
+									   (leader->ai_location().level_vertex_id(),
+										leader_pos,
+										leader_pos + m_offset_from_leader);
+
+					if ( ai().level_graph().valid_vertex_id(vertex_id) )
+					{
+						break;
+					}
+					GenerateNewOffsetFromLeader();
+				}
+
+				if ( !ai().level_graph().valid_vertex_id(vertex_id) )
+				{
+					vertex_id	=	leader->ai_location().level_vertex_id();
+					m_offset_from_leader.set(0.f, 0.f, 0.f);
+				}
+
+				path().set_target_point	(leader->Position() + m_offset_from_leader);
+			}
+
+			break;
+		}
+
 		case CScriptMovementAction::eGoalTypePathNodePosition :
+
+			if ( AssignGamePathIfNeeded(l_tMovementAction.m_tDestinationPosition, l_tMovementAction.m_tNodeID) )
+				break;
+
 			path().set_target_point	(l_tMovementAction.m_tDestinationPosition, l_tMovementAction.m_tNodeID);
 			break;
+		case CScriptMovementAction::eGoalTypeJumpToPosition : {
+//			control().deactivate	(ControlCom::eControlRunAttack);
+//			control().deactivate	(ControlCom::eControlRunAttack);
+//			control().deactivate	(ControlCom::eControlRunAttack);
+			com_man().script_jump	(l_tMovementAction.m_tDestinationPosition, l_tMovementAction.m_fDistToEnd);
+			break;
+		}
 	}
 	
 	return	(true);
@@ -160,6 +330,7 @@ bool CBaseMonster::bfAssignAnimation(CScriptEntityAction *tpEntityAction)
 	// translate animation.action into anim().action
 	switch (l_tAnimAction.m_tAnimAction) {
 	case eAA_StandIdle:		anim().m_tAction = ACT_STAND_IDLE;	break;
+	case eAA_CapturePrepare:anim().m_tAction = ACT_CAPTURE_PREPARE;	break;
 	case eAA_SitIdle:		anim().m_tAction = ACT_SIT_IDLE;		break;
 	case eAA_LieIdle:		anim().m_tAction = ACT_LIE_IDLE;		break;
 	case eAA_Eat:			anim().m_tAction = ACT_EAT;			break;
@@ -245,13 +416,14 @@ void CBaseMonster::ProcessScripts()
 	
 	m_script_processing_active = true;
 
+	m_bRunTurnRight								= false;
+	m_bRunTurnLeft								= false;
+
 	//movement().Update_Initialize			();
 	
 	// Выполнить скриптовые actions
 	m_script_state_must_execute					= false;
 	inherited::ProcessScripts					();
-
-	//Device.dwTimeGlobal							= Device.dwTimeGlobal; //????
 
 	// обновить мир (память, враги, объекты)
 	UpdateMemory								();
@@ -297,10 +469,11 @@ void CBaseMonster::ProcessScripts()
 
 CEntity *CBaseMonster::GetCurrentEnemy()
 {
+	VERIFY		(g_Alive());
 	CEntity *enemy = 0;
 	
 	if (EnemyMan.get_enemy()) 
-		enemy = const_cast<CEntity *>(smart_cast<const CEntity*>(EnemyMan.get_enemy()));
+		enemy = const_cast<CEntity*>(static_cast<CEntity const*>(EnemyMan.get_enemy()));
 
 	if (!enemy || enemy->getDestroy() || !enemy->g_Alive()) enemy = 0;
 
@@ -326,6 +499,16 @@ void CBaseMonster::SetEnemy(const CEntityAlive *sent)
 void CBaseMonster::SetScriptControl(const bool bScriptControl, shared_str caScriptName)
 {
 	if (StateMan) StateMan->critical_finalize();
+
+	if ( !m_bScriptControl && bScriptControl )
+	{
+		control().path_builder().patrol().make_inactual();
+
+		if ( control().path_builder().path_type() != MovementManager::ePathTypeGamePath )
+		{
+			control().path_builder().detail().make_inactual();
+		}
+	}	
 
 	CScriptEntity::SetScriptControl(bScriptControl, caScriptName);
 }

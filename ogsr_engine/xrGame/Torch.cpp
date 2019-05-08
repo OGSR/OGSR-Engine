@@ -17,6 +17,7 @@
 #include "UIGameCustom.h"
 #include "actorEffector.h"
 #include "CustomOutfit.h"
+#include "..\Layers\xrRender\xrRender_console.h"
 
 static const float		TIME_2_HIDE					= 5.f;
 static const float		TORCH_INERTION_CLAMP		= PI_DIV_6;
@@ -324,7 +325,8 @@ void CTorch::UpdateCL()
 		{
 			smart_cast<IKinematics*>(H_Parent()->Visual())->CalculateBones_Invalidate();
 #pragma todo("KRodin: переделать под новый рендер!")
-			//light_render->set_actor_torch(true);
+			//if ( !ps_r2_ls_flags_ext.test( R2FLAGEXT_IGNORE_ACTOR_TORCH ) )
+			//	light_render->set_actor_torch(true);
 		}
 
 		if (H_Parent()->XFORM().c.distance_to_sqr(Device.vCameraPosition)<_sqr(OPTIMIZATION_DISTANCE)) {

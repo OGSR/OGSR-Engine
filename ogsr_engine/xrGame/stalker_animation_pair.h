@@ -41,6 +41,7 @@ private:
 	const ANIM_VECTOR		*m_array;
 	MotionID				m_array_animation;
 	CALLBACKS				m_callbacks;
+	bool					m_callback_on_collision;
 
 #ifdef DEBUG
 private:
@@ -93,6 +94,8 @@ public:
 	IC		void			remove_callback			(const CALLBACK_ID &callback);
 			void			on_animation_end		();
 	IC		bool			need_update				() const;
+	IC		void			callback_on_collision	(bool const &value);
+	IC		bool			callback_on_collision	() const;
 };
 
 #include "stalker_animation_pair_inline.h"

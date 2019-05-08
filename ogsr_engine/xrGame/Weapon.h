@@ -181,6 +181,8 @@ public:
 			bool IsScopeAttached			() const;
 			bool IsSilencerAttached			() const;
 
+	bool			IsGrenadeMode() const;
+
 	virtual bool GrenadeLauncherAttachable() const;
 	virtual bool ScopeAttachable() const;
 	virtual bool SilencerAttachable() const;
@@ -209,6 +211,7 @@ public:
 
                                                                                //названия секций подключаемых аддонов
     shared_str		m_sScopeName;
+    std::vector<shared_str> m_allScopeNames;
     shared_str		m_sSilencerName;
     shared_str		m_sGrenadeLauncherName;
 
@@ -264,6 +267,8 @@ protected:
 	bool			m_bHideCrosshairInZoom;
 	//разрешить инерцию оружия в режиме прицеливания
 	bool			m_bZoomInertionAllow;
+	// или в режиме прицеливания через оптику
+	bool			m_bScopeZoomInertionAllow;
 	//Целевой HUD FOV при зуме
 	float			m_fZoomHudFov;
 	//Целевой HUD FOV для линзы
@@ -271,6 +276,10 @@ protected:
 
 	bool m_bUseScopeZoom			= false;
 	bool m_bUseScopeGrenadeZoom		= false;
+	bool m_bUseScopeDOF   = true;
+	bool m_bForceScopeDOF = false;
+	bool m_bScopeShowIndicators = true;
+	bool m_bIgnoreScopeTexture = false;
 
 	float m_fMinZoomK			= def_min_zoom_k;
 	float m_fZoomStepCount		= def_zoom_step_count;
@@ -387,8 +396,6 @@ protected:
 	virtual void			AddShotEffector		();
 	virtual void			RemoveShotEffector	();
 	virtual	void			ClearShotEffector	();
-
-	bool			IsGrenadeMode() const;
 
 public:
 	//текущая дисперсия (в радианах) оружия с учетом используемого патрона

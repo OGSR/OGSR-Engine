@@ -411,6 +411,7 @@
     <ClInclude Include="..\COMMON_AI\random32.h" />
     <ClInclude Include="..\COMMON_AI\server_entity_wrapper.h" />
     <ClInclude Include="..\COMMON_AI\server_entity_wrapper_inline.h" />
+    <ClInclude Include="ActivatingCharCollisionDelay.h" />
     <ClInclude Include="ai\monsters\anti_aim_ability.h" />
     <ClInclude Include="ai\monsters\controller\controller_psy_hit_effector.h" />
     <ClInclude Include="ai\monsters\group_states\group_state_attack.h" />
@@ -443,11 +444,19 @@
     <ClInclude Include="ai\monsters\monster_aura.h" />
     <ClInclude Include="ai\monsters\states\monster_state_attack_on_run.h" />
     <ClInclude Include="ai\monsters\states\monster_state_attack_on_run_inline.h" />
+    <ClInclude Include="animation_utils.h" />
+    <ClInclude Include="character_hit_animations_params.h" />
+    <ClInclude Include="character_shell_control.h" />
     <ClInclude Include="derived_client_classes.h" />
+    <ClInclude Include="IActivationShape.h" />
+    <ClInclude Include="imotion_position.h" />
+    <ClInclude Include="interactive_animation.h" />
     <ClInclude Include="InventoryContainer.h" />
     <ClInclude Include="mt_config.h" />
     <ClInclude Include="damage_manager.h" />
     <ClInclude Include="DamageSource.h" />
+    <ClInclude Include="PHShellBuildJoint.h" />
+    <ClInclude Include="physics_shell_animated.h" />
     <ClInclude Include="script_actor.h" />
     <ClInclude Include="script_game_object_impl.h" />
     <ClInclude Include="script_rq_result.h" />
@@ -1662,13 +1671,20 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\COMMON_AI\random32.cpp" />
+    <ClCompile Include="ActivatingCharCollisionDelay.cpp" />
     <ClCompile Include="ai\monsters\anti_aim_ability.cpp" />
     <ClCompile Include="ai\monsters\controller\controller_psy_hit_effector.cpp" />
     <ClCompile Include="ai\monsters\monster_aura.cpp" />
+    <ClCompile Include="animation_utils.cpp" />
+    <ClCompile Include="character_shell_control.cpp" />
     <ClCompile Include="damage_manager.cpp" />
     <ClCompile Include="action_base_script.cpp" />
     <ClCompile Include="derived_client_classes.cpp" />
+    <ClCompile Include="IActivationShape.cpp" />
+    <ClCompile Include="imotion_position.cpp" />
+    <ClCompile Include="interactive_animation.cpp" />
     <ClCompile Include="InventoryContainer.cpp" />
+    <ClCompile Include="physics_shell_animated.cpp" />
     <ClCompile Include="script_action_wrapper.cpp" />
     <ClCompile Include="action_planner_script.cpp" />
     <ClCompile Include="script_action_planner_wrapper.cpp" />

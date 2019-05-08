@@ -376,6 +376,10 @@ void CWeapon::Load		(LPCSTR section)
 	m_bZoomEnabled = !!pSettings->r_bool(section,"zoom_enabled");
 	m_bUseScopeZoom = !!READ_IF_EXISTS(pSettings, r_bool, section, "use_scope_zoom", false);
 	m_bUseScopeGrenadeZoom = !!READ_IF_EXISTS(pSettings, r_bool, section, "use_scope_grenade_zoom", false);
+	m_bUseScopeDOF   = !!READ_IF_EXISTS( pSettings, r_bool, section, "use_scope_dof", true );
+	m_bForceScopeDOF = !!READ_IF_EXISTS( pSettings, r_bool, section, "force_scope_dof", false );
+	m_bScopeShowIndicators = !!READ_IF_EXISTS( pSettings, r_bool, section, "scope_show_indicators", true );
+	m_bIgnoreScopeTexture = !!READ_IF_EXISTS( pSettings, r_bool, section, "ignore_scope_texture", false );
 
 	m_fZoomRotateTime = ROTATION_TIME;
 	m_bScopeDynamicZoom = false;
@@ -384,11 +388,27 @@ void CWeapon::Load		(LPCSTR section)
 
 	UpdateZoomOffset();
 
+        m_allScopeNames.clear();
+	m_highlightAddons.clear();
 	if(m_eScopeStatus == ALife::eAddonAttachable)
 	{
 		m_sScopeName = pSettings->r_string(section,"scope_name");
 		m_iScopeX = pSettings->r_s32(section,"scope_x");
 		m_iScopeY = pSettings->r_s32(section,"scope_y");
+
+                m_allScopeNames.push_back( m_sScopeName );
+                if ( pSettings->line_exist( section, "scope_names" ) ) {
+                  LPCSTR S = pSettings->r_string( section, "scope_names" );
+                  if ( S && S[ 0 ] ) {
+                    string128 _scopeItem;
+                    int count = _GetItemCount( S );
+                    for ( int it = 0; it < count; ++it ) {
+                      _GetItem( S, it, _scopeItem );
+                      m_allScopeNames.push_back( _scopeItem );
+                      m_highlightAddons.push_back( _scopeItem );
+                    }
+                  }
+                }
 	}
 
 	if(m_eSilencerStatus == ALife::eAddonAttachable)
@@ -449,6 +469,7 @@ void CWeapon::Load		(LPCSTR section)
 	m_bZoomInertionAllow = false;
 	if (pSettings->line_exist(hud_sect, "allow_zoom_inertion"))
 		m_bZoomInertionAllow = !!pSettings->r_bool(hud_sect, "allow_zoom_inertion");
+	m_bScopeZoomInertionAllow = READ_IF_EXISTS( pSettings, r_bool, hud_sect, "allow_scope_zoom_inertion", m_bZoomInertionAllow );
 
 	//////////////////////////////////////////////////////////
 
@@ -461,7 +482,6 @@ void CWeapon::Load		(LPCSTR section)
 		m_hit_probability[i]		= READ_IF_EXISTS(pSettings,r_float,section,temp,1.f);
 	}
 	
-	m_highlightAddons.clear();
 	if (pSettings->line_exist(section, "highlight_addons")) {
 		LPCSTR S = pSettings->r_string(section, "highlight_addons");
 		if (S && S[0]) {
@@ -847,7 +867,7 @@ void CWeapon::UpdateWeaponParams()
 
 	if (!IsHidden()) {
 		w_states.x = m_fZoomRotationFactor;			//x = zoom mode, y - текущее состояние, z - старое состояние
-		if ( psActorFlags.test( AF_DOF_SCOPE ) && !( IsZoomed() && !IsRotatingToZoom() && ZoomTexture() ) )
+		if ( psActorFlags.test( AF_DOF_SCOPE ) && !( IsZoomed() && !IsRotatingToZoom() && ( IsScopeAttached() || m_bForceScopeDOF ) && !IsGrenadeMode() && m_bUseScopeDOF ) )
 		  w_states.x = 0.f;
 		if (w_states.y != GetState())	// первый апдейт или стейт изменился
 		{
@@ -898,7 +918,7 @@ u8 CWeapon::idle_state() {
 void CWeapon::UpdateCL		()
 {
 	inherited::UpdateCL		();
-	UpdateHUDAddonsVisibility();
+	//UpdateHUDAddonsVisibility();
 	//подсветка от выстрела
 	UpdateLight				();
 
@@ -1319,7 +1339,7 @@ LPCSTR wpn_grenade_launcher = "wpn_grenade_launcher";
 void CWeapon::UpdateHUDAddonsVisibility()
 {//actor only
 	if( H_Parent() != Level().CurrentEntity() )				return;
-	if(m_pHUD->IsHidden())									return;
+	//if(m_pHUD->IsHidden())									return;
 //	if(IsZoomed() && )
 
 
@@ -1504,10 +1524,12 @@ void CWeapon::OnZoomIn()
 	else
 		m_fZoomFactor = CurrentZoomFactor();
 
-	if (!m_bZoomInertionAllow)
-	{
-		StopHudInertion();
+	if ( IsScopeAttached() && !IsGrenadeMode() ) {
+		if ( !m_bScopeZoomInertionAllow )
+			StopHudInertion();
 	}
+	else if (!m_bZoomInertionAllow)
+		StopHudInertion();
 
 	CActor* pActor = smart_cast<CActor*>(H_Parent());
 	if ( pActor )
@@ -1903,7 +1925,7 @@ bool CWeapon::show_crosshair()
 
 bool CWeapon::show_indicators()
 {
-	return ! ( IsZoomed() && ZoomTexture() );
+  return ! ( IsZoomed() && ( ZoomTexture() || !m_bScopeShowIndicators ) );
 }
 
 float CWeapon::GetConditionToShow	() const
@@ -2056,7 +2078,7 @@ float CWeapon::GetHudFov()
 			float fDiff = m_nearwall_last_hud_fov - m_fSecondVPHudFov;
 			return m_fSecondVPHudFov + (fDiff * (1 - m_fZoomRotationFactor));
 		}
-		if (!UseScopeTexture() && m_fZoomHudFov > 0.0f)
+		if ( ( m_eScopeStatus == CSE_ALifeItemWeapon::eAddonDisabled || IsScopeAttached() ) && !IsGrenadeMode() && m_fZoomHudFov > 0.0f)
 		{
 			// В процессе зума
 			float fDiff = m_nearwall_last_hud_fov - m_fZoomHudFov;

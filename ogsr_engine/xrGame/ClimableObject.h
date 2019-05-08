@@ -24,6 +24,8 @@ public:
 	virtual void	UpdateCL			( );								// Called each frame, so no need for dt
 	virtual void	Center				(Fvector &C) const;
 	virtual float	Radius				() const;
+////////////////////////////////////////////////////////////////////
+	virtual CPhysicsShellHolder			*cast_CPhysicsShellHolder	(){ return this; }
 
 	virtual void	OnRender			();
 

@@ -1,4 +1,5 @@
 #pragma once
+#include "Geometry.h"
 #include "PHObject.h"
 #include "PHInterpolation.h"
 #include "PHSynchronize.h"
@@ -126,13 +127,13 @@ virtual		bool		ForcedPhysicsControl				()															{return false;}
 virtual     void		SetCamDir							(const Fvector& cam_dir)									=0 ;
 virtual	const Fvector&	CamDir								()const														=0 ;
 virtual		Fvector		GetAcceleration						()															=0 ;
-virtual		void		SetPosition							(Fvector pos)												=0 ;
+virtual		void		SetPosition							(const Fvector &pos)												=0 ;
 virtual		void		SetApplyGravity						(BOOL flag)						{ dBodySetGravityMode(m_body,flag); }
 	virtual void SetObjectContactCallbackData(void* callback) = 0;
 virtual		void		SetObjectContactCallback			(ObjectContactCallbackFun* callback)						=0 ;
 virtual		void		SetWheelContactCallback				(ObjectContactCallbackFun* callback)						=0 ;
 virtual		ObjectContactCallbackFun* ObjectContactCallBack	()															{return NULL;}
-virtual		void		GetVelocity							(Fvector& vvel)												=0 ;
+	virtual void GetVelocity(Fvector& vvel)const = 0;
 virtual		void		GetSavedVelocity					(Fvector& vvel)												;
 virtual		void		GetSmothedVelocity					(Fvector& vvel)												=0 ;
 virtual		void		SetVelocity							(Fvector vel)												=0 ;
@@ -143,6 +144,7 @@ virtual		void		SetMas								(dReal mass)												=0 ;
 virtual		void		SetCollisionDamageFactor			(float f)													=0 ;
 virtual		float		Mass								()															=0 ;
 virtual		void		SetPhysicsRefObject					(CPhysicsShellHolder* ref_object)							=0 ;
+	virtual void SetNonInteractive(bool v) = 0;
 virtual		CPhysicsShellHolder* PhysicsRefObject					()									{return m_phys_ref_object;}
 
 //AICharacter
@@ -165,7 +167,23 @@ virtual		u16				get_elements_number				()															{return 1;};
 virtual		CPHSynchronize	*get_element_sync				(u16 element)												{VERIFY(element==0);return static_cast<CPHSynchronize*>(this);};		
 virtual		CElevatorState	*ElevatorState					()															=0;
 public:
+	virtual void Freeze() = 0;//{ Freeze();		}
+	virtual void UnFreeze() = 0;//{ UnFreeze();	}
 	virtual void step(float dt) = 0;//{ step( dt ); }
+	virtual void collision_disable() = 0;//{ collision_disable(); }
+	virtual void collision_enable() = 0;//{ collision_enable(); }
+protected:
+	virtual	const	Fmatrix			&XFORM() const;
+	virtual void get_LinearVel(Fvector& velocity) const;
+	virtual void get_AngularVel(Fvector& velocity) const;
+	virtual u16 numberOfGeoms() const { return 0; }
+	virtual	const	CODEGeom*geometry(u16 i) const { return 0; }
+	virtual	const	Fvector &mass_Center() const;
+
+	virtual void get_xform(Fmatrix& form) const { form.set(XFORM()); }
+	virtual bool collide_fluids() const { return true; }
+public:
+	virtual void NetRelcase(CPhysicsShellHolder* O) {};
 public:
 			CPHCharacter									(void)														;
 virtual		~CPHCharacter									(void)														;

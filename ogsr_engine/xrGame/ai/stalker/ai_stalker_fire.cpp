@@ -785,7 +785,7 @@ void CAI_Stalker::wounded					(bool value)
 	m_wounded				= value;
 
 	if(!m_wounded && g_Alive())
-		character_physics_support()->CreateCharacter();
+		character_physics_support()->CreateCharacterSafe();
 
 	if (!m_wounded)
 		return;

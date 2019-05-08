@@ -153,7 +153,10 @@ void CLevel::IR_OnKeyboardPress	(int key)
 
 	if ( game && Game().IR_OnKeyboardPress(key) ) return;
 
-	if (Actor()) Actor()->callback(GameObject::eOnKeyPress)(key, get_binded_action(key));
+	if ( Actor() ) {
+		Actor()->callback(GameObject::eOnKeyPress)(key, get_binded_action(key));
+		if ( g_bDisableAllInput ) return;
+	}
 
 	if(_curr == kQUICK_SAVE)
 	{

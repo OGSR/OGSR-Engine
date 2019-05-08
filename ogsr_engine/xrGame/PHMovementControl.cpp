@@ -71,6 +71,7 @@ CPHMovementControl::CPHMovementControl(CObject* parent)
 	m_dwCurBox			=	0xffffffff;
 	fCollisionDamageFactor=1.f;
 	in_dead_area_count	=0;
+	bNonInteractiveMode = false;
 	block_damage_step_end = u64(-1);
 }
 
@@ -195,446 +196,497 @@ void CPHMovementControl::UpdateCollisionDamage()
 	}
 }
 
-void CPHMovementControl::Calculate(const xr_vector<DetailPathManager::STravelPathPoint>& path,float speed,  u32& travel_point,  float& precision  )
+#include <ai/monsters/basemonster/base_monster.h>
+#include <ai_object_location.h>
+
+bool CPHMovementControl::MakeJumpPath(xr_vector<DetailPathManager::STravelPathPoint> &out_path, u32 & travel_point, Fvector & out_deviation)
+{
+	if (!m_character->JumpState())
+		return					false;
+
+	CBaseMonster * monster = smart_cast<CBaseMonster *>(pObject);
+	if (!monster)
+		return					false;
+
+	CControlJump * jump_control = monster->com_man().get_jump_control();
+	if (!jump_control || !jump_control->in_auto_aim())
+		return					false;
+
+	CEntityAlive const * const enemy = monster->EnemyMan.get_enemy();
+	if (!enemy)
+		return					false;
+
+
+	Fvector self_vel = { 0, 0, 0 };
+	m_character->GetVelocity(self_vel);
+
+	if (self_vel.magnitude() < 0.00001f)
+		return					false;
+
+	Fvector const self_pos = monster->Position();
+	Fvector const enemy_pos = enemy->Position();
+
+	Fvector const self_to_enemy = enemy_pos - self_pos;
+
+	if (angle_between_vectors(self_vel, self_to_enemy) > deg2rad(90.f))
+		return					false;
+
+	Fvector const self_vel_normalized = normalize(self_vel);
+	Fvector const self_to_enemy_projection_on_self_vel = self_vel_normalized * dotproduct(self_to_enemy, self_vel_normalized);
+	Fvector const deviation = self_to_enemy - self_to_enemy_projection_on_self_vel;
+
+	float const factor = jump_control->relative_time();
+
+	out_deviation = deviation * 8.f * factor;
+	out_deviation.y = 0;
+
+	DetailPathManager::STravelPathPoint start_point, target_point;
+	start_point.position = self_pos;
+	start_point.vertex_id = monster->ai_location().level_vertex_id();
+	start_point.velocity = 0;
+	out_path.push_back(start_point);
+
+	target_point.position = enemy_pos;
+	target_point.vertex_id = enemy->ai_location().level_vertex_id();
+	target_point.velocity = 0;
+	out_path.push_back(target_point);
+	travel_point = 0;
+
+	return						true;
+}
+
+void CPHMovementControl::Calculate(const xr_vector<DetailPathManager::STravelPathPoint>& in_path, float speed, u32& travel_point, float& precision)
 {
 #ifdef DEBUG
-	if(ph_dbg_draw_mask1.test(ph_m1_DbgTrackObject)&&(!!pObject->cName())&&stricmp(PH_DBG_ObjectTrack(),*pObject->cName())==0)
+	if (debug_output().ph_dbg_draw_mask1().test(ph_m1_DbgTrackObject) &&
+		(!!pObject->cName()) && stricmp(debug_output().PH_DBG_ObjectTrackName(), *pObject->cName()) == 0)
 	{
-		Msg("CPHMovementControl::Calculate in %s (Object Position) %f,%f,%f",PH_DBG_ObjectTrack(),pObject->Position().x,pObject->Position().y,pObject->Position().z);
-		Msg("CPHMovementControl::Calculate in %s (CPHMovementControl::vPosition) %f,%f,%f",PH_DBG_ObjectTrack(),vPosition.x,vPosition.y,vPosition.z);
+		Msg("CPHMovementControl::Calculate in %s (Object Position) %f,%f,%f", debug_output().PH_DBG_ObjectTrackName(), pObject->Position().x, pObject->Position().y, pObject->Position().z);
+		Msg("CPHMovementControl::Calculate in %s (CPHMovementControl::vPosition) %f,%f,%f", debug_output().PH_DBG_ObjectTrackName(), vPosition.x, vPosition.y, vPosition.z);
 	}
 #endif
-	if(!m_character->b_exist)	return;
-	
+
+	xr_vector<DetailPathManager::STravelPathPoint>	replacing_path;
+	Fvector		deviation = { 0, 0, 0 };
+	bool const	add_deviation = MakeJumpPath(replacing_path, travel_point, deviation);
+
+	xr_vector<DetailPathManager::STravelPathPoint> const &	path = add_deviation ? replacing_path : in_path;
+
+	if (bNonInteractiveMode)
+	{
+		vPosition.set(pObject->Position());
+	}
+
+	if (!m_character->b_exist)	return;
+
+	if (bNonInteractiveMode)
+	{
+		VERIFY(pObject);
+		m_character->SetPosition(vPosition);
+		return;
+	}
+
 	Fvector new_position;
 	m_character->IPosition(new_position);
 
-	int index=0;//nearest point
-	//float distance;//distance
+	int index = 0;//nearest poin
 
 	bool  near_line;
-	m_path_size=path.size();
+	m_path_size = (u32)path.size();
 	Fvector dir;
-	dir.set(0,0,0);
-	if(m_path_size==0)
+	dir.set(0, 0, 0);
+	if (m_path_size == 0)
 	{
-		speed=0;
+		speed = 0;
 		vPosition.set(new_position);
 	}
-	else if(b_exect_position)
+	else if (b_exect_position)
 	{
-		m_start_index=travel_point;
-
+		m_start_index = travel_point;
 		//////////////////////////////////////////////////////////////////////////
-		//////////////////////////////////////////////////////////////////////////
-		if((m_path_size-1)>(int)travel_point)
-			dir.sub(path[travel_point+1].position,path[travel_point].position);
+		if ((m_path_size - 1) > (int)travel_point)
+			dir.sub(path[travel_point + 1].position, path[travel_point].position);
 		else
-			dir.sub(path[travel_point].position,new_position);
-		m_start_index=travel_point;
-		dir.y=0.f;
+			dir.sub(path[travel_point].position, new_position);
+		m_start_index = travel_point;
+		dir.y = 0.f;
 		dir.normalize_safe();
 		vPosition.set(new_position);
-		m_path_distance=0;
-		SetPathDir	(dir);
+		m_path_distance = 0;
+		SetPathDir(dir);
 		vPathPoint.set(vPosition);
 
 
 	}
-	else {
+	else 
+	{
 		Fvector dif;
 
-		dif.sub(new_position,vPathPoint);
+		dif.sub(new_position, vPathPoint);
 		float radius = dif.magnitude()*2.f;
-		if(m_path_size==1)
+		if (m_path_size == 1)
 		{
-			speed=0.f;
+			speed = 0.f;
 			vPosition.set(new_position);	//todo - insert it in PathNearestPoint
-			index=0;
+			index = 0;
 			vPathPoint.set(path[0].position);
 			Fvector _d;
-			_d.sub(path[0].position,new_position);
-			SetPathDir	(_d);
-			m_path_distance=GetPathDir().magnitude();
-			if(m_path_distance>EPS)
+			_d.sub(path[0].position, new_position);
+			SetPathDir(_d);
+			m_path_distance = GetPathDir().magnitude();
+			if (m_path_distance > EPS)
 			{
 				Fvector _d = GetPathDir();
-				_d.mul(1.f/m_path_distance);
+				_d.mul(1.f / m_path_distance);
 				SetPathDir(_d);
 			}
-			near_line=false;
+			near_line = false;
 		}
 		else
 		{
-			m_path_distance=dInfinity;
-			near_line=true;
-			if(m_start_index<m_path_size)
+			m_path_distance = dInfinity;
+			near_line = true;
+			if (m_start_index < m_path_size)
 			{
-				PathNearestPointFindUp(path,new_position,index,radius,near_line);
-				PathNearestPointFindDown(path,new_position,index,radius,near_line);
+				PathNearestPointFindUp(path, new_position, index, radius, near_line);
+				PathNearestPointFindDown(path, new_position, index, radius, near_line);
 			}
-			if(m_path_distance>radius)
+			if (m_path_distance > radius)
 			{
-				m_start_index=0;
-				PathNearestPoint(path,new_position,index,near_line);
+				m_start_index = 0;
+				PathNearestPoint(path, new_position, index, near_line);
 			}
 			vPosition.set(new_position);//for PathDirLine && PathDirPoint
-			if(near_line) PathDIrLine(path,index,m_path_distance,precision,dir);
-			else		  PathDIrPoint(path,index,m_path_distance,precision,dir);
-			
-	
-			travel_point=(u32)index;
-			m_start_index=index;
-			if(fis_zero(speed)) dir.set(0,0,0);
+			if (near_line) PathDIrLine(path, index, m_path_distance, precision, dir);
+			else		  PathDIrPoint(path, index, m_path_distance, precision, dir);
+
+
+			travel_point = (u32)index;
+			m_start_index = index;
+			if (fis_zero(speed)) dir.set(0, 0, 0);
 		}
 
 	}
-	
-	dir.y=0.f;
-	//VERIFY(!(fis_zero(dir.magnitude())&&!fis_zero(speed)));
-	dir.normalize_safe();
-	
-	/////////////////////////////////////////////////////////////////
-	if(bExernalImpulse)
-	{
 
-		//vAccel.add(vExternalImpulse);
+	dir.y = 0.f;
+	dir.normalize_safe();
+	/////////////////////////////////////////////////////////////////
+	if (bExernalImpulse)
+	{
 		Fvector V;
 		V.set(dir);
-		//V.mul(speed*fMass/fixed_step);
 		V.mul(speed*10.f);
 		V.add(vExternalImpulse);
 		m_character->ApplyForce(vExternalImpulse);
-		speed=V.magnitude();
+		speed = V.magnitude();
 
-		if(!fis_zero(speed))
+		if (!fis_zero(speed))
 		{
 			dir.set(V);
-			dir.mul(1.f/speed);
+			dir.mul(1.f / speed);
 		}
-		speed/=10.f;
-		vExternalImpulse.set(0.f,0.f,0.f);
-		bExernalImpulse=false;
+		speed /= 10.f;
+		vExternalImpulse.set(0.f, 0.f, 0.f);
+		bExernalImpulse = false;
 	}
-	/////////////////////////
-	//if(!PhyssicsOnlyMode()){
-	//	Fvector	v;//m_character->GetVelocity(v);
-	//	v.mul(dir,speed);
-	//	SetVelocity(v);//hk
-	//	
-	//}
-	/////////////////////////
 	m_character->SetMaximumVelocity(speed);
+
+	if (add_deviation)
+	{
+		dir = deviation;
+	}
+
 	m_character->SetAcceleration(dir);
+
 	//////////////////////////////////////////////////////
 	m_character->GetSmothedVelocity(vVelocity);
-	fActualVelocity=vVelocity.magnitude();
+	fActualVelocity = vVelocity.magnitude();
 
-	gcontact_Was=m_character->ContactWas();
-	const ICollisionDamageInfo* di=m_character->CollisionDamageInfo();
-	fContactSpeed=0.f;
-	{
-		fContactSpeed=di->ContactVelocity();
-		gcontact_Power				= fContactSpeed/fMaxCrashSpeed;
-		gcontact_HealthLost			= 0;
-		if (fContactSpeed>fMinCrashSpeed) 
-		{
-			gcontact_HealthLost = 
-				((fContactSpeed-fMinCrashSpeed))/(fMaxCrashSpeed-fMinCrashSpeed);
-		}
-	}
-
+	gcontact_Was = m_character->ContactWas();
+	UpdateCollisionDamage();
 	CheckEnvironment(vPosition);
-	bSleep=false;
-	b_exect_position=false;
-	//m_character->Reinit();
+	bSleep = false;
+	b_exect_position = false;
 }
 
 void CPHMovementControl::PathNearestPoint(const xr_vector<DetailPathManager::STravelPathPoint>  &path,			//in path
-										  const Fvector					&new_position,  //in position
-										  int							&index,			//in start from; out nearest
-										  bool							&near_line       //out type
-										  )
+	const Fvector					&new_position,  //in position
+	int							&index,			//in start from; out nearest
+	bool 					&near_line       //out type
+)
 {
 
-	Fvector from_first,from_second,dir;
-	bool after_line=true;//to check first point
+	Fvector from_first, from_second, dir;
+	bool after_line = true;//to check first point
 
-	Fvector path_point,vtemp;
+	Fvector path_point, vtemp;
 	float temp;
 
-	for(int i=0;i<m_path_size-1;++i)
+	int i = 0;
+	for (; i < m_path_size - 1; ++i)
 	{
-		const Fvector &first=path[i].position, &second=path[i+1].position;
-		from_first.sub(new_position,first);
-		from_second.sub(new_position,second);
-		dir.sub(second,first);
+		const Fvector &first = path[i].position, &second = path[i + 1].position;
+		from_first.sub(new_position, first);
+		from_second.sub(new_position, second);
+		dir.sub(second, first);
 		dir.normalize_safe();
 
 
-		if(from_first.dotproduct(dir)<0.f)//befor this line
+		if (from_first.dotproduct(dir) < 0.f)//befor this line
 		{
-			if(after_line)//after previous line && befor this line = near first point
+			if (after_line)//after previous line && befor this line = near first point
 			{
-				vtemp.sub(new_position,first);
-				temp=vtemp.magnitude();
-				if(temp<m_path_distance)
+				vtemp.sub(new_position, first);
+				temp = vtemp.magnitude();
+				if (temp < m_path_distance)
 				{
-					m_path_distance=temp;
-					index=i;
+					m_path_distance = temp;
+					index = i;
 					vPathPoint.set(first);
 					SetPathDir(dir);
-					near_line=false;
+					near_line = false;
 				}
 			}
-			after_line=false;
+			after_line = false;
 
 		}
 		else //after first 
 		{
-			if(from_second.dotproduct(dir)<0.f) //befor second && after first = near line
+			if (from_second.dotproduct(dir) < 0.f) //befor second && after first = near line
 			{
 				//temp=dir.dotproduct(new_position); seems to be wrong
-				temp=dir.dotproduct(from_first);
+				temp = dir.dotproduct(from_first);
 				vtemp.set(dir);
 				vtemp.mul(temp);
-				path_point.add(vtemp,first);
-				vtemp.sub(path_point,new_position);
-				temp=vtemp.magnitude();
-				if(temp<m_path_distance)
+				path_point.add(vtemp, first);
+				vtemp.sub(path_point, new_position);
+				temp = vtemp.magnitude();
+				if (temp < m_path_distance)
 				{
-					m_path_distance=temp;
-					index=i;
+					m_path_distance = temp;
+					index = i;
 					vPathPoint.set(path_point);
 					SetPathDir(dir);
-					near_line=true;
+					near_line = true;
 				}
 			}
 			else							//after second = after this line
 			{
-				after_line=true;
+				after_line = true;
 			}
 		}
 	}
 
-	if(m_path_distance==dInfinity)	//after whall path
+	if (m_path_distance == dInfinity)	//after whall path
 	{
 
-		R_ASSERT2(after_line,"Must be after line");
-		vtemp.sub(new_position,path[i].position);
-		m_path_distance=vtemp.magnitude();
+		R_ASSERT2(after_line, "Must be after line");
+		vtemp.sub(new_position, path[i].position);
+		m_path_distance = vtemp.magnitude();
 		SetPathDir(dir);
 		vPathPoint.set(path[i].position);
-		index=i;
-		near_line=false;
+		index = i;
+		near_line = false;
 	}
 #ifdef DEBUG
-	if(ph_dbg_draw_mask1.test(ph_m1_DbgTrackObject)&&(!!pObject->cName())&&stricmp(PH_DBG_ObjectTrack(),*pObject->cName())==0)
+	if (ph_dbg_draw_mask1.test(ph_m1_DbgTrackObject) && (!!pObject->cName()) && stricmp(PH_DBG_ObjectTrackName(), *pObject->cName()) == 0)
 	{
-		Msg("CPHMovementControl::Calculate out %s (Object Position) %f,%f,%f",PH_DBG_ObjectTrack(),pObject->Position().x,pObject->Position().y,pObject->Position().z);
-		Msg("CPHMovementControl::Calculate out %s (CPHMovementControl::vPosition) %f,%f,%f",PH_DBG_ObjectTrack(),vPosition.x,vPosition.y,vPosition.z);
+		Msg("CPHMovementControl::Calculate out %s (Object Position) %f,%f,%f", PH_DBG_ObjectTrackName(), pObject->Position().x, pObject->Position().y, pObject->Position().z);
+		Msg("CPHMovementControl::Calculate out %s (CPHMovementControl::vPosition) %f,%f,%f", PH_DBG_ObjectTrackName(), vPosition.x, vPosition.y, vPosition.z);
 	}
 #endif
-	return;
 }
 
 
 
 void CPHMovementControl::PathNearestPointFindUp(const xr_vector<DetailPathManager::STravelPathPoint>	&path,			//in path
-												const Fvector					&new_position,  //in position
-												int								&index,			//in start from; out nearest
-												float							radius,	//out m_path_distance in exit radius
-												bool							&near_line      //out type
-										  )
+	const Fvector					&new_position,  //in position
+	int								&index,			//in start from; out nearest
+	float							radius,	//out m_path_distance in exit radius
+	bool 					&near_line      //out type
+)
 {
 
-	Fvector from_first,from_second,dir;
-	bool after_line=true;//to check first point
+	Fvector from_first, from_second, dir;
+	bool after_line = true;//to check first point
 
-	Fvector path_point,vtemp;
+	Fvector path_point, vtemp;
 	float temp;
-	dir.set		(0,0,1);
+	dir.set(0, 0, 1);
 
-	for(int i=m_start_index;i<m_path_size-1;++i)
+	int i = m_start_index;
+	for (; i < m_path_size - 1; ++i)
 	{
-		const Fvector &first=path[i].position, &second=path[i+1].position;
-		from_first.sub(new_position,first);
-		from_second.sub(new_position,second);
-		dir.sub(second,first);
+		const Fvector &first = path[i].position, &second = path[i + 1].position;
+		from_first.sub(new_position, first);
+		from_second.sub(new_position, second);
+		dir.sub(second, first);
 		dir.normalize_safe();
-		float from_first_dir=from_first.dotproduct(dir);
-		float from_second_dir=from_second.dotproduct(dir);
+		float from_first_dir = from_first.dotproduct(dir);
+		float from_second_dir = from_second.dotproduct(dir);
 
-		if(from_first_dir<0.f)//before this line
+		if (from_first_dir < 0.f)//before this line
 		{
-			temp=from_first.magnitude();
-			if(after_line)//after previous line && before this line = near first point
+			temp = from_first.magnitude();
+			if (after_line)//after previous line && before this line = near first point
 			{
-				if(temp<m_path_distance)
+				if (temp < m_path_distance)
 				{
-					m_path_distance=temp;
-					index=i;
+					m_path_distance = temp;
+					index = i;
 					vPathPoint.set(first);
 					SetPathDir(dir);
-					near_line=false;
+					near_line = false;
 				}
 			}
-	
-			if(temp>radius) break;//exit test
-			after_line=false;
+
+			if (temp > radius) break;//exit test
+			after_line = false;
 
 		}
 		else //after first 
 		{
-			if(from_second_dir<0.f) //befor second && after first = near line
+			if (from_second_dir < 0.f) //befor second && after first = near line
 			{
 				vtemp.set(dir);
 				vtemp.mul(from_first_dir);
-				path_point.add(vtemp,first);
-				vtemp.sub(path_point,new_position);
-				temp=vtemp.magnitude();
-				if(temp<m_path_distance)
+				path_point.add(vtemp, first);
+				vtemp.sub(path_point, new_position);
+				temp = vtemp.magnitude();
+				if (temp < m_path_distance)
 				{
-					m_path_distance=temp;
-					index=i;
+					m_path_distance = temp;
+					index = i;
 					vPathPoint.set(path_point);
 					SetPathDir(dir);
-					near_line=true;
+					near_line = true;
 				}
-				if(temp>radius) break;//exit test
+				if (temp > radius) break;//exit test
 			}
 			else							//after second = after this line
 			{
-				after_line=true;
-				if(from_second.magnitude()>radius) break;//exit test
+				after_line = true;
+				if (from_second.magnitude() > radius) break;//exit test
 			}
 		}
 	}
 
-	if(m_path_distance==dInfinity && i==m_path_size-1)	
+	if (m_path_distance == dInfinity && i == m_path_size - 1)
 	{
-
-		R_ASSERT2															(after_line,"Must be after line");
-		vtemp										.sub					(new_position,path[i].position)		;
-		m_path_distance								=vtemp.magnitude		()									;
-		SetPathDir									(dir);
-		vPathPoint									.set					(path[i].position)					;
-		index										=i															;
-		near_line									=false														;
+		R_ASSERT2(after_line, "Must be after line");
+		vtemp.sub(new_position, path[i].position);
+		m_path_distance = vtemp.magnitude();
+		SetPathDir(dir);
+		vPathPoint.set(path[i].position);
+		index = i;
+		near_line = false;
 	}
-	
-
-	return;
 }
 
-
-void CPHMovementControl::PathNearestPointFindDown(const xr_vector<DetailPathManager::STravelPathPoint>	&path,			//in path
-												const Fvector					&new_position,  //in position
-												int								&index,			//in start from; out nearest
-												float							radius,	//out m_path_distance in exit radius
-												bool							&near_line      //out type
-										  )
+void CPHMovementControl::PathNearestPointFindDown(const xr_vector<DetailPathManager::STravelPathPoint> &path, //in path
+	const Fvector &new_position,	//in position
+	int &index,						//in start from; out nearest
+	float radius,					//out m_path_distance in exit radius
+	bool &near_line					//out type
+)
 {
+	Fvector from_first, from_second, dir;
+	bool after_line = true;//to check first point
 
-	Fvector from_first,from_second,dir;
-	bool after_line=true;//to check first point
-
-	Fvector path_point,vtemp;
+	Fvector path_point, vtemp;
 	float temp;
 	//(going down)
-	dir.set(0,0,1);
-	for(int i=m_start_index;i>1;--i)
+	dir.set(0, 0, 1);
+	int i = m_start_index;
+	for (; i > 1; --i)
 	{
-		const Fvector &first=path[i-1].position, &second=path[i].position;
-		from_first.sub(new_position,first);
-		from_second.sub(new_position,second);
-		dir.sub(second,first);
+		const Fvector &first = path[i - 1].position, &second = path[i].position;
+		from_first.sub(new_position, first);
+		from_second.sub(new_position, second);
+		dir.sub(second, first);
 		dir.normalize_safe();
-		float from_first_dir=from_first.dotproduct(dir);
-		float from_second_dir=from_second.dotproduct(dir);
+		float from_first_dir = from_first.dotproduct(dir);
+		float from_second_dir = from_second.dotproduct(dir);
 
-		if(from_second_dir>0.f)//befor this line
+		if (from_second_dir > 0.f)//befor this line
 		{
-			temp=from_second.magnitude();
-			if(after_line)//after previous line && befor this line = near second point (going down)
+			temp = from_second.magnitude();
+			if (after_line)//after previous line && befor this line = near second point (going down)
 			{
-				if(temp<m_path_distance)
+				if (temp < m_path_distance)
 				{
-					m_path_distance		=temp		;
-					index				=i			;
-					vPathPoint			.set(second);
-					SetPathDir			(dir)	;
-					near_line			=false		;
+					m_path_distance = temp;
+					index = i;
+					vPathPoint.set(second);
+					SetPathDir(dir);
+					near_line = false;
 				}
 			}
 
-			if(temp>radius) break;//exit test
-			after_line=false;
+			if (temp > radius) break;//exit test
+			after_line = false;
 
 		}
 		else //after second
 		{
 
-			if(from_first_dir>0.f) //after second && before first = near line (going down)
+			if (from_first_dir > 0.f) //after second && before first = near line (going down)
 			{
 				vtemp.set(dir);
 				vtemp.mul(from_second_dir);
-				path_point.add(second,vtemp); //from_second_dir <0.f !!
-				vtemp.sub(path_point,new_position);
-				temp=vtemp.magnitude();
-				if(temp<m_path_distance)
+				path_point.add(second, vtemp); //from_second_dir <0.f !!
+				vtemp.sub(path_point, new_position);
+				temp = vtemp.magnitude();
+				if (temp < m_path_distance)
 				{
-					m_path_distance=temp;
-					index			=i-1;
-					vPathPoint.set	(path_point);
-					SetPathDir		(dir);
-					near_line		=true;
+					m_path_distance = temp;
+					index = i - 1;
+					vPathPoint.set(path_point);
+					SetPathDir(dir);
+					near_line = true;
 				}
-				if(temp>radius) break;//exit test
+				if (temp > radius) break;//exit test
 			}
 			else							//after first = after this line(going down)
 			{
-				after_line=true;
-				if(from_first.magnitude()>radius) break;//exit test
+				after_line = true;
+				if (from_first.magnitude() > radius) break;//exit test
 			}
 		}
 	}
 
-	if(m_path_distance==dInfinity && i==1)	
+	if (m_path_distance == dInfinity && i == 1)
 	{
 
-		R_ASSERT2				(after_line,"Must be after line");
-		vtemp.sub				(new_position,path[i].position);
-		m_path_distance			=vtemp.magnitude();
-		SetPathDir				(dir);
-		vPathPoint.set			(path[i].position);
-		index					=i;
-		near_line				=false;
+		R_ASSERT2(after_line, "Must be after line");
+		vtemp.sub(new_position, path[i].position);
+		m_path_distance = vtemp.magnitude();
+		SetPathDir(dir);
+		vPathPoint.set(path[i].position);
+		index = i;
+		near_line = false;
 	}
-
-
-	return;
 }
 
-void		CPHMovementControl::CorrectPathDir			(const Fvector &real_path_dir,const xr_vector<DetailPathManager::STravelPathPoint> & path,int index,Fvector &corrected_path_dir)
+void CPHMovementControl::CorrectPathDir(const Fvector &real_path_dir, const xr_vector<DetailPathManager::STravelPathPoint> & path, int index, Fvector &corrected_path_dir)
 {
-	const float epsilon=0.1f;
-	float plane_motion=dXZMag(real_path_dir);
-	if(fis_zero(plane_motion,epsilon))
+	const float epsilon = 0.1f;
+	float plane_motion = dXZMag(real_path_dir);
+	if (fis_zero(plane_motion, epsilon))
 	{
-		if(!fis_zero(plane_motion,EPS))
+		if (!fis_zero(plane_motion, EPS))
 		{
 			corrected_path_dir.set(real_path_dir);
-			corrected_path_dir.y=0.f;
-			corrected_path_dir.mul(1.f/plane_motion);
+			corrected_path_dir.y = 0.f;
+			corrected_path_dir.mul(1.f / plane_motion);
 		}
-		else if(index!=m_path_size-1)
+		else if (index != m_path_size - 1)
 		{
-			corrected_path_dir.sub(path[index+1].position,path[index].position);
+			corrected_path_dir.sub(path[index + 1].position, path[index].position);
 			corrected_path_dir.normalize_safe();
-			CorrectPathDir(corrected_path_dir,path,index+1,corrected_path_dir);
+			CorrectPathDir(corrected_path_dir, path, index + 1, corrected_path_dir);
 		}
-		else 
+		else
 		{
 			corrected_path_dir.set(real_path_dir);
 		}
@@ -644,77 +696,78 @@ void		CPHMovementControl::CorrectPathDir			(const Fvector &real_path_dir,const x
 		corrected_path_dir.set(real_path_dir);
 	}
 }
-void CPHMovementControl::PathDIrLine(const xr_vector<DetailPathManager::STravelPathPoint> &path,  int index,  float distance,  float precesition, Fvector &dir  )
-{
 
+void CPHMovementControl::PathDIrLine(const xr_vector<DetailPathManager::STravelPathPoint> &path, int index, float distance, float precesition, Fvector &dir)
+{
 	Fvector to_path_point;
-	Fvector corrected_path_dir;CorrectPathDir(GetPathDir(),path,index,corrected_path_dir);
-	to_path_point.sub(vPathPoint,vPosition);	//_new position
-	float mag=to_path_point.magnitude();
-	if(mag<EPS)
+	Fvector corrected_path_dir; CorrectPathDir(GetPathDir(), path, index, corrected_path_dir);
+	to_path_point.sub(vPathPoint, vPosition);	//_new position
+	float mag = to_path_point.magnitude();
+	if (mag < EPS)
 	{
-	dir.set(corrected_path_dir);
-	return;
+		dir.set(corrected_path_dir);
+		return;
 	}
-	to_path_point.mul(1.f/mag);
-	if(mag>FootRadius())to_path_point.mul(precesition);
+	to_path_point.mul(1.f / mag);
+	if (mag > FootRadius())to_path_point.mul(precesition);
 	else to_path_point.mul(mag*precesition);
-	dir.add(corrected_path_dir,to_path_point);
+	dir.add(corrected_path_dir, to_path_point);
 	dir.normalize_safe();
 }
 
-void CPHMovementControl::PathDIrPoint(const xr_vector<DetailPathManager::STravelPathPoint> &path,  int index,  float distance,  float precesition, Fvector &dir  )
+void CPHMovementControl::PathDIrPoint(const xr_vector<DetailPathManager::STravelPathPoint> &path, int index, float distance, float precesition, Fvector &dir)
 {
 	Fvector to_path_point;
-	Fvector corrected_path_dir;CorrectPathDir(GetPathDir(),path,index,corrected_path_dir);
-	to_path_point.sub(vPathPoint,vPosition);	//_new position
-	float mag=to_path_point.magnitude();
+	Fvector corrected_path_dir; CorrectPathDir(GetPathDir(), path, index, corrected_path_dir);
+	to_path_point.sub(vPathPoint, vPosition);	//_new position
+	float mag = to_path_point.magnitude();
 
-	if(mag<EPS) //near the point
-	{  
-		if(0==index||m_path_size-1==index) //on path eidge
+	if (mag < EPS) //near the point
+	{
+		if (0 == index || m_path_size - 1 == index) //on path eidge
 		{
 			dir.set(corrected_path_dir);//??
 			return;
 		}
-		dir.sub(path[index].position,path[index-1].position);
+		dir.sub(path[index].position, path[index - 1].position);
 		dir.normalize_safe();
 		dir.add(corrected_path_dir);
 		dir.normalize_safe();
 	}
-	to_path_point.mul(1.f/mag);
-	if(m_path_size-1==index)//on_path_edge
+	to_path_point.mul(1.f / mag);
+
+	if (m_path_size - 1 == index)//on_path_edge
 	{
 		dir.set(to_path_point);
 		return;
 	}
 
-
-	if(mag<EPS||fis_zero(dXZMag(to_path_point),EPS))
+	if (mag < EPS || fis_zero(dXZMag(to_path_point), EPS))
 	{
 		dir.set(corrected_path_dir);
 		return;//mean dir
 	}
-	
+
 	Fvector tangent;
-	tangent.crossproduct(Fvector().set(0,1,0),to_path_point);
+	tangent.crossproduct(Fvector().set(0, 1, 0), to_path_point);
 
 	VERIFY(!fis_zero(tangent.magnitude()));
 	tangent.normalize();
-	if(dir.square_magnitude()>EPS)
+	if (dir.square_magnitude() > EPS)
 	{
-		if(tangent.dotproduct(dir)<0.f)tangent.invert();
+		if (tangent.dotproduct(dir) < 0.f)tangent.invert();
 	}
 	else
 	{
-		if(tangent.dotproduct(corrected_path_dir)<0.f)tangent.invert();
+		if (tangent.dotproduct(corrected_path_dir) < 0.f)tangent.invert();
 	}
 
-	if(mag>FootRadius())to_path_point.mul(precesition);
+	if (mag > FootRadius())to_path_point.mul(precesition);
 	else to_path_point.mul(mag*precesition);
-	dir.add(tangent,to_path_point);
+	dir.add(tangent, to_path_point);
 	dir.normalize_safe();
 }
+
 void CPHMovementControl::SetActorRestrictorRadius(CPHCharacter::ERestrictionType rt,float r)
 {
 	if(m_character&&eCharacterType==actor)
@@ -1257,6 +1310,27 @@ void CPHMovementControl::VirtualMoveTo(const Fvector	&in_pos, Fvector &out_pos)
 	VERIFY(_valid(out_pos));
 }
 
+void CPHMovementControl::SetNonInteractive(bool v)
+{
+	VERIFY(m_character);
+	if (!m_character->b_exist)
+		return;
+	if (bNonInteractiveMode == v)
+		return;
+
+	if (v)
+	{
+		m_character->SetNonInteractive(v);
+		m_character->Disable();
+	}
+	else
+	{
+		m_character->SetNonInteractive(v);
+	}
+
+	bNonInteractiveMode = v;
+}
+
 bool CPHMovementControl::PhysicsOnlyMode()
 {
 	return m_character && m_character->b_exist && m_character->IsEnabled() &&
@@ -1267,4 +1341,13 @@ void CPHMovementControl::BlockDamageSet(u64 steps_num)
 {
 	block_damage_step_end = ph_world->StepsNum() + steps_num;
 	UpdateCollisionDamage();//reset all saved values
+}
+
+void CPHMovementControl::NetRelcase(CObject* O)
+{
+	CPhysicsShellHolder *sh = smart_cast<CPhysicsShellHolder *>(O);
+	if (!sh)
+		return;
+	if (m_character)
+		m_character->NetRelcase(sh);
 }

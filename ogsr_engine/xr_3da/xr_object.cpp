@@ -46,8 +46,8 @@ void CObject::cNameVisual_set(shared_str N)
 
 		/*
 		if(old_k && new_k){
-			new_k->Update_Callback			= old_k->Update_Callback;
-			new_k->Update_Callback_Param	= old_k->Update_Callback_Param;
+			new_k->SetUpdateCallback(old_k->GetUpdateCallback());
+			new_k->SetUpdateCallbackParam(old_k->GetUpdateCallbackParam());
 		}
 		*/
 		if (old_k && new_k)

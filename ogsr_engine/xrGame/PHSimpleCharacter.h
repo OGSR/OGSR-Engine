@@ -19,6 +19,7 @@ class CPHSimpleCharacter :
 	ICollisionDamageInfo
 {
 	friend class CScriptActor;
+	typedef CPHCharacter	inherited;
 private:
 	collide::rq_results		RQR;
 
@@ -117,6 +118,7 @@ protected:
 	bool	b_death_pos					;
 	bool	b_foot_mtl_check			;
 	dReal	m_friction_factor;
+	bool	b_non_interactive;
 
 public:
 							CPHSimpleCharacter					()									;
@@ -180,8 +182,8 @@ public:
 	virtual     void		SetCamDir							(const Fvector& cam_dir);
 	virtual	const Fvector&	CamDir								()const				{return m_cam_dir;}
 	virtual		void		SetMaterial							(u16 material)		;
-	virtual		void		SetPosition							(Fvector pos)		;
-	virtual		void		GetVelocity							(Fvector& vvel)		;
+	virtual		void		SetPosition							(const Fvector &pos)		;
+	virtual		void GetVelocity(Fvector& vvel)const;
 	virtual		void		GetSmothedVelocity					(Fvector& vvel)		;
 	virtual		void		SetVelocity							(Fvector vel)		;
 	virtual		void		SetAirControlFactor					(float factor)		{m_air_control_factor=factor;}
@@ -211,6 +213,7 @@ public:
 	virtual		void		SetMas								(dReal mass)		;
 	virtual		float		Mass								()					{return m_mass;};
 	virtual		void		SetPhysicsRefObject					(CPhysicsShellHolder* ref_object);
+	virtual		void		SetNonInteractive(bool v);
 
 	virtual		void		CaptureObject						(dBodyID body,const dReal* anchor);
 	virtual		void		CapturedSetPosition					(const dReal* position);
@@ -233,7 +236,12 @@ IC	void 		FootProcess							(dContact* c,bool &do_collide ,bool bo);
 IC	void		foot_material_update				(u16	tri_material,u16	foot_material_idx);
 	static void	TestPathCallback(bool& do_colide,bool bo1,dContact& c,SGameMtl * /*material_1*/,SGameMtl * /*material_2*/);
 private:
+	virtual	void Freeze() { CPHObject::Freeze(); }
+	virtual	void UnFreeze() { CPHObject::UnFreeze(); }
 	virtual	void step(float dt) { CPHObject::step(dt); }
+	virtual	void collision_disable() { CPHObject::collision_disable(); }
+	virtual	void collision_enable() { CPHObject::collision_enable(); }
+	virtual	void NetRelcase(CPhysicsShellHolder* O);
 public:	
 #ifdef DEBUG
 	virtual		void		OnRender							()					;

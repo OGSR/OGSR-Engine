@@ -94,7 +94,6 @@ public:
 	virtual void			net_Save						(NET_Packet& P);
 	virtual	BOOL			net_SaveRelevant				();
 	virtual void			net_Export						(NET_Packet& P);
-	virtual void			net_Import						(NET_Packet& P);
 	virtual void			net_Relcase						(CObject *O);
 
 	//save/load server serialization
@@ -153,6 +152,7 @@ public:
 	// Process scripts
 	// ---------------------------------------------------------------------------------
 	virtual	bool			bfAssignMovement				(CScriptEntityAction	*tpEntityAction);
+			bool			AssignGamePathIfNeeded			(Fvector target_pos, u32 level_vertex);
 	virtual	bool			bfAssignObject					(CScriptEntityAction	*tpEntityAction);
 	virtual	bool			bfAssignWatch					(CScriptEntityAction	*tpEntityAction);
 	virtual bool			bfAssignAnimation				(CScriptEntityAction  *tpEntityAction);
@@ -562,6 +562,15 @@ public:
 private:
 	void							update_eyes_visibility ();
 	float							get_screen_space_coverage_diagonal ();
+
+	void							GenerateNewOffsetFromLeader ();
+	u32								m_offset_from_leader_chosen_tick;
+	Fvector							m_offset_from_leader;
+
+	// very special copies, used when pos is not on ai-map
+	// in that situation m_action_target_node is close node
+	Fvector							m_action_target_pos;
+	u32								m_action_target_node;
 
 	TTime							m_first_tick_enemy_inaccessible;
 	TTime							m_last_tick_enemy_inaccessible;

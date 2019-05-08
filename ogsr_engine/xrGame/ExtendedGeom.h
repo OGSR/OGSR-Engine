@@ -144,6 +144,7 @@ IC dGeomID retrieveGeom(dGeomID geom)
 		return geom;
 }
 
+dxGeomUserData* PHRetrieveGeomUserData(dGeomID geom);
 IC dxGeomUserData* retrieveGeomUserData(dGeomID geom)
 {
 			return dGeomGetUserData(retrieveGeom(geom));
@@ -152,6 +153,8 @@ IC dxGeomUserData* retrieveGeomUserData(dGeomID geom)
 			//else
 			//	return dGeomGetUserData(geom);
 }
+
+void	get_user_data( dxGeomUserData* &gd1, dxGeomUserData* &gd2, bool bo1, const dContactGeom &geom );
 
 IC CPhysicsShellHolder* retrieveRefObject(dGeomID geom)
 {

@@ -41,11 +41,12 @@ public:
 				void		get_global_center_bt(Fvector& center)													 ;		//for built
 				void		get_local_form_bt	(Fmatrix& form)														 ;	    //for built
 				void		get_global_form_bt	(Fmatrix& form)														 ;		//for built
+	virtual		void		get_xform			( Fmatrix& form ) const												 ;
 				
 				void		set_static_ref_form	(const Fmatrix& form)												 ;		//for built
 	virtual		void		get_max_area_dir_bt	(Fvector& dir)														=0;
 	virtual		float		radius				()																	=0;
-	virtual		void		get_extensions_bt	(const Fvector& axis,float center_prg,float& lo_ext, float& hi_ext) =0;
+	virtual		void		get_Extensions(const Fvector& axis, float center_prg, float& lo_ext, float& hi_ext)const = 0;
 				void		clear_cashed_tries	()																	  ;
 	IC			dGeomID		geom()
 	{
@@ -65,11 +66,33 @@ public:
 								else					return geometry_transform();
 								
 							}
+	IC	const	dGeomID		geom()const
+	{
+								return dGeomTransformGetGeom(m_geom_transform);
+	}
+	IC	const	dGeomID		geometry_transform   ()const
+							{
+								return m_geom_transform;
+							}
+	IC	const	dGeomID		geometry()const
+							{
+								return m_geom_transform ? (geom() ? geom() : m_geom_transform) : NULL;
+							}
+	IC	const	dGeomID		geometry_bt()const
+							{
+								if(is_transformed_bt())	return geom() ;
+								else					return geometry_transform();
+								
+							}
 	ICF	static	bool		is_transform(dGeomID g)
 							{
 								return dGeomGetClass(g)==dGeomTransformClass;
 							}
 	IC			bool		is_transformed_bt()
+							{
+								return is_transform(m_geom_transform);
+							}
+	IC			bool		is_transformed_bt() const
 							{
 								return is_transform(m_geom_transform);
 							}
@@ -100,12 +123,13 @@ virtual			void		set_local_form		(const Fmatrix& form)												=0;
 	//build/destroy
 protected:
 				void		init				()																	;
-				void		get_final_tx_bt		(const dReal*	&p,const dReal*	&R,dReal * bufV, dReal* bufM)		;
+				void		get_final_tx_bt		(const dReal*	&p,const dReal*	&R,dReal * bufV, dReal* bufM) const;
 	virtual		dGeomID		create				()																	=0;
 public:
 	static		void		get_final_tx		(dGeomID g,const dReal*	&p,const dReal*	&R,dReal * bufV, dReal* bufM);
 				void		build				(const Fvector& ref_point)											;
 	virtual		void		set_position		(const Fvector& ref_point)											;//for build geom
+	void		clear_motion_history(bool set_unspecified);
 				void		move_local_basis	(const Fmatrix& inv_new_mul_old)									;
 				void		destroy				()																	;
 							CODEGeom			()																	;
@@ -121,7 +145,7 @@ public:
 //	virtual					~CBoxGeom			(const Fobb& box)													;
 	virtual		float		volume				()																	;
 	virtual		float		radius				()																	;
-	virtual		void		get_extensions_bt	(const Fvector& axis,float center_prg,float& lo_ext, float& hi_ext) ;
+	virtual		void		get_Extensions(const Fvector& axis, float center_prg, float& lo_ext, float& hi_ext)const;
 	virtual		void		get_max_area_dir_bt	(Fvector& dir)														;
 	virtual		void		get_mass			(dMass& m)															;//unit dencity mass;
 virtual const	Fvector&	local_center		()																	;
@@ -139,7 +163,7 @@ public:
 							CSphereGeom			(const Fsphere& sphere)												;
 	virtual		float		volume				()																	;
 	virtual		float		radius				()																	;
-	virtual		void		get_extensions_bt	(const Fvector& axis,float center_prg,float& lo_ext, float& hi_ext) ;
+	virtual		void		get_Extensions(const Fvector& axis, float center_prg, float& lo_ext, float& hi_ext)const;
 	virtual		void		get_max_area_dir_bt	(Fvector& dir)													  {};
 	virtual		void		get_mass			(dMass& m)															;//unit dencity mass;
 virtual const	Fvector&	local_center		()																	;
@@ -156,7 +180,7 @@ public:
 							CCylinderGeom		(const Fcylinder& cyl)												;
 	virtual		float		volume				()																	;
 	virtual		float		radius				()																	;
-	virtual		void		get_extensions_bt	(const Fvector& axis,float center_prg,float& lo_ext, float& hi_ext) ;
+	virtual		void		get_Extensions(const Fvector& axis, float center_prg, float& lo_ext, float& hi_ext)const;
 	virtual		void		get_max_area_dir_bt	(Fvector& dir)													  {};
 virtual const	Fvector&	local_center		()																	;
 	virtual		void		get_mass			(dMass& m)															;//unit dencity mass;

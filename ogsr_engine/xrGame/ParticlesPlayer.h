@@ -71,7 +71,7 @@ public:
 	virtual					~CParticlesPlayer		(void);
 	void					LoadParticles			(IKinematics* K);
 
-	void					net_DestroyParticles	();
+	void					net_DestroyParticles();
 	void					net_SpawnParticles		();
 	
 	void					UpdateParticles			();
@@ -96,4 +96,5 @@ public:
 	
 	bool					IsPlaying				() {return m_bActiveBones;}
 	virtual CParticlesPlayer*	cast_particles_player	()	{return this;}
+	void					DestroyParticles();
 };

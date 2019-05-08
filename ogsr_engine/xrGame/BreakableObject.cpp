@@ -178,7 +178,7 @@ void CBreakableObject::ActivateBroken()
 	IKinematics* K=smart_cast<IKinematics*>(Visual());
 	m_pPhysicsShell->set_Kinematics(K);
 	m_pPhysicsShell->RunSimulation();
-	m_pPhysicsShell->SetCallbacks(m_pPhysicsShell->GetBonesCallback());
+	m_pPhysicsShell->SetCallbacks();
 	K->CalculateBones_Invalidate();
 	K->CalculateBones();
 	m_pPhysicsShell->GetGlobalTransformDynamic(&XFORM());

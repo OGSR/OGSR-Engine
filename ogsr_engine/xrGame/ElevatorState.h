@@ -4,6 +4,7 @@ class CPHCharacter;
 struct dContact;
 struct SGameMtl;
 class CClimableObject;
+class CPhysicsShellHolder;
 class CElevatorState
 {
 public:	
@@ -63,9 +64,8 @@ private:
 			void		UpdateStClimbingDown			();
 			void		UpdateClimbingCommon			(const Fvector	&d_to_ax,float to_ax,const Fvector& control_accel,float ca);
 			void		UpdateDepart					();
-
-			
-
+public:
+	void NetRelcase(CPhysicsShellHolder* O);
 };
 
 #endif

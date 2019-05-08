@@ -228,7 +228,7 @@ public:
 
 	virtual bool				StopSprintOnFire() { return true; }
 
-protected:
+
 	virtual void				UpdateXForm	();
 			
 protected:
