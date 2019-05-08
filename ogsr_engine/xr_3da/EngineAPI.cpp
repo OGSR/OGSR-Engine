@@ -40,7 +40,9 @@ CEngineAPI::~CEngineAPI()
 	}
 }
 
+#ifndef EXCLUDE_R1
 extern u32 renderer_value; //con cmd
+#endif
 
 ENGINE_API int g_current_renderer = 0;
 
@@ -65,11 +67,9 @@ void CEngineAPI::Initialize()
 	CCC_LoadCFG_custom pTmp("renderer ");
 	pTmp.Execute(Console->ConfigFile);
 
-#ifdef XRRENDER_R2_STATIC
-	void AttachR2();
-	AttachR2();
-#else
+#ifndef EXCLUDE_R1
 	constexpr LPCSTR r1_name = "xrRender_R1.dll";
+#endif
 	constexpr LPCSTR r2_name = "xrRender_R2.dll";
 	constexpr LPCSTR r3_name = "xrRender_R3.dll";
 	constexpr LPCSTR r4_name = "xrRender_R4.dll";
@@ -85,7 +85,9 @@ void CEngineAPI::Initialize()
 			Msg("!![%s] Can't load module: [%s]! Error: %s", __FUNCTION__, r4_name, Debug.error2string(GetLastError()));
 			psDeviceFlags.set(rsR2, TRUE);
 		}
-}
+		else
+			g_current_renderer = 4;
+	}
 
 	if (psDeviceFlags.test(rsR3))
 	{
@@ -102,22 +104,36 @@ void CEngineAPI::Initialize()
 			g_current_renderer = 3;
 	}
 
+#ifdef EXCLUDE_R1
+	if (!hRender)
+#else
 	if ( psDeviceFlags.test(rsR2))
+#endif
 	{
 		// try to initialize R2
+#ifdef EXCLUDE_R1
+		if (!psDeviceFlags.test(rsR2))
+			Console->Execute("renderer renderer_r2");
+#else
 		psDeviceFlags.set(rsR4, FALSE);
 		psDeviceFlags.set(rsR3, FALSE);
+#endif
 		Msg("--Loading DLL: [%s]", r2_name);
 		hRender = LoadLibrary(r2_name);
 		if (!hRender)
 		{
+#ifdef EXCLUDE_R1
+			FATAL("!![%s] Can't load module: [%s]! Error: %s", __FUNCTION__, r2_name, Debug.error2string(GetLastError()));
+#else
 			// try to load R1
 			Msg("!![%s] Can't load module: [%s]! Error: %s", __FUNCTION__, r2_name, Debug.error2string(GetLastError()));
+#endif
 		}
 		else
 			g_current_renderer = 2;
 	}
 
+#ifndef EXCLUDE_R1
 	if (!hRender)
 	{
 		// try to load R1
@@ -131,7 +147,6 @@ void CEngineAPI::Initialize()
 		ASSERT_FMT(hRender, "!![%s] Can't load module: [%s]! Error: %s", __FUNCTION__, r1_name, Debug.error2string(GetLastError()));
 		g_current_renderer = 1;
 	}
-
 #endif
 
 	Device.ConnectToRender();
@@ -199,7 +214,12 @@ void CEngineAPI::CreateRendererList()
 {
 	std::vector<std::string> RendererTokens;
 
-	for (size_t i = 1; i <= 4; i++)
+#ifdef EXCLUDE_R1
+	size_t i = 2;
+#else
+	size_t i = 1;
+#endif
+	for (; i <= 4; i++)
 	{
 		std::string ModuleName("xrRender_R");
 		ModuleName += std::to_string(i) + ".dll";

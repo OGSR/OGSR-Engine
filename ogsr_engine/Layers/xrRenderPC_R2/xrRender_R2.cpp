@@ -5,24 +5,6 @@
 #include "../xrRender/dxUIRender.h"
 #include "../xrRender/dxDebugRender.h"
 
-
-#ifdef XRRENDER_R2_STATIC
-
-void AttachR2()
-{
-	::Render = &RImplementation;
-	::RenderFactory = &RenderFactoryImpl;
-	::DU = &DUImpl;
-	//::vid_mode_token			= inited by HW;
-	UIRender = &UIRenderImpl;
-//#ifdef DEBUG
-	DRender = &DebugRenderImpl;
-//#endif // DEBUG
-	xrRender_initconsole();
-}
-
-#else
-
 BOOL APIENTRY DllMain( HANDLE hModule, 
                        DWORD  ul_reason_for_call, 
                        LPVOID lpReserved
@@ -48,8 +30,6 @@ BOOL APIENTRY DllMain( HANDLE hModule,
 	}
 	return TRUE;
 }
-
-#endif
 
 
 extern "C"
