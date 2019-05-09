@@ -104,7 +104,8 @@ extern bool g_block_pause;
 
 void CLevel::IR_OnKeyboardPress	(int key)
 {
-	GamePersistent().OnKeyboardPress(key);
+	if (GamePersistent().OnKeyboardPress(key))
+		return;
 
 	bool b_ui_exist = (pHUD && pHUD->GetUI());
 

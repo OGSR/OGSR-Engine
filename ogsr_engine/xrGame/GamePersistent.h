@@ -83,7 +83,7 @@ public:
 	virtual	void		LoadTitle(const char* title_name);
 
 	virtual bool		CanBePaused();
-	void OnKeyboardPress(int dik);
+	bool OnKeyboardPress(int dik);
 };
 
 IC CGamePersistent&		GamePersistent()		{ return *((CGamePersistent*) g_pGamePersistent);			}

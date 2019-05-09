@@ -689,11 +689,14 @@ bool CGamePersistent::CanBePaused()
 	return (g_pGamePersistent->GameType() == GAME_SINGLE) || (g_pGameLevel && Level().IsDemoPlay());
 }
 
-void CGamePersistent::OnKeyboardPress(int dik)
+bool CGamePersistent::OnKeyboardPress(int dik)
 {
 	if (psActorFlags.test(AF_KEYPRESS_ON_START) && GameAutopaused) {
 		Device.Pause(FALSE, TRUE, TRUE, "AUTOPAUSE_END");
 		load_screen_renderer.stop();
 		GameAutopaused = false;
+		return true;
 	}
+
+	return false;
 }
