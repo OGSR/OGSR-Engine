@@ -82,6 +82,12 @@ void CLevel::g_sv_Spawn		(CSE_Abstract* E)
 	Msg					("* CLIENT: Spawn: %s, ID=%d", *E->s_name, E->ID);
 #endif
 
+	auto obj = Objects.net_Find( E->ID );
+	if ( obj && obj->getDestroy() ) {
+	  Msg( "[%s]: %s[%u] already net_Spawn'ed, ProcessDestroyQueue()", __FUNCTION__, obj->cName().c_str(), obj->ID() );
+	  Objects.ProcessDestroyQueue();
+	}
+
 	// Client spawn
 //	T.Start		();
 	CObject*	O		= Objects.Create	(*E->s_name);
