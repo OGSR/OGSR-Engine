@@ -38,13 +38,11 @@ void CBaseAction::init			(_object_type *object, LPCSTR action_name)
 	m_object			= object;
 	m_weight			= _edge_value_type(1);
 
-#ifdef LOG_ACTION
 	m_use_log			= false;
 	m_action_name		= action_name;
 	m_switched			= false;
-//	if (xr_strlen(m_action_name))
-//		debug_log		(eActionStateConstructed);
-#endif
+	//if (xr_strlen(m_action_name))
+	//	debug_log		(eActionStateConstructed);
 }
 
 TEMPLATE_SPECIALIZATION
@@ -55,22 +53,18 @@ void CBaseAction::setup			(_object_type *object, CPropertyStorage *storage)
 	m_object			= object;
 	m_storage			= storage;
 	m_inertia_time		= 0;
-#ifdef LOG_ACTION
 	m_switched			= false;
 	if (m_use_log && xr_strlen(m_action_name))
 		debug_log		(eActionStateSetup);
-#endif
 }
 
 TEMPLATE_SPECIALIZATION
 void CBaseAction::initialize		()
 {
-#ifdef LOG_ACTION
 	VERIFY3				(!m_switched,m_action_name,"::initialize()");
 	m_switched			= true;
 	if (m_use_log && xr_strlen(m_action_name))
 		debug_log		(eActionStateInitialized);
-#endif
 	m_start_level_time	= Device.dwTimeGlobal;
 	m_first_time		= true;
 }
@@ -79,21 +73,17 @@ TEMPLATE_SPECIALIZATION
 void CBaseAction::execute		()
 {
 	m_first_time		= false;
-#ifdef LOG_ACTION
 	if (m_use_log && xr_strlen(m_action_name) && m_switched)
 		debug_log		(eActionStateExecuted);
 	m_switched			= false;
-#endif
 }
 
 TEMPLATE_SPECIALIZATION
 void CBaseAction::finalize		()
 {
-#ifdef LOG_ACTION
 	VERIFY3				(!m_switched,m_action_name,"::finalize()");
 	if (m_use_log && xr_strlen(m_action_name))
 		debug_log		(eActionStateFinalized);
-#endif
 }
 
 TEMPLATE_SPECIALIZATION
@@ -120,7 +110,6 @@ IC	void CBaseAction::set_inertia_time			(u32 inertia_time)
 	m_inertia_time		= inertia_time;
 }
 
-#ifdef LOG_ACTION
 TEMPLATE_SPECIALIZATION
 IC	void CBaseAction::debug_log			(const EActionStates state_state) const
 {
@@ -154,7 +143,6 @@ IC	void CBaseAction::set_use_log		(bool value)
 {
 	m_use_log	= value;
 }
-#endif
 
 TEMPLATE_SPECIALIZATION
 IC	void CBaseAction::set_property	(const _condition_type &condition_id, const _value_type &value)
@@ -185,12 +173,10 @@ typename CBaseAction::_edge_value_type CBaseAction::weight	(const CSConditionSta
 	return					(m_weight);
 }
 
-#ifdef LOG_ACTION
 TEMPLATE_SPECIALIZATION
 IC	void CBaseAction::show			(LPCSTR offset)
 {
 }
-#endif
 
 TEMPLATE_SPECIALIZATION
 IC	bool CBaseAction::first_time	() const

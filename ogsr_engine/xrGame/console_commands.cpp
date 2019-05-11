@@ -1167,6 +1167,10 @@ void CCC_RegisterCommands()
 	CMD3(CCC_Mask,				"mt_alife",				&g_mt_config,	mtALife);
 #endif // MASTER_GOLD
 
+	CMD3(CCC_Mask,				"ai_dbg_goap",			&psAI_Flags,	aiGOAP);
+	CMD3(CCC_Mask,				"ai_dbg_goap_script",	&psAI_Flags,	aiGOAPScript);
+	CMD3(CCC_Mask,				"ai_dbg_goap_object",	&psAI_Flags,	aiGOAPObject);
+
 #ifdef DEBUG
 	CMD3(CCC_Mask,				"ai_debug",				&psAI_Flags,	aiDebug);
 	CMD3(CCC_Mask,				"ai_dbg_brain",			&psAI_Flags,	aiBrain);
@@ -1175,9 +1179,6 @@ void CCC_RegisterCommands()
 	CMD3(CCC_Mask,				"ai_dbg_funcs",			&psAI_Flags,	aiFuncs);
 	CMD3(CCC_Mask,				"ai_dbg_alife",			&psAI_Flags,	aiALife);
 	CMD3(CCC_Mask,				"ai_dbg_lua",			&psAI_Flags,	aiLua);
-	CMD3(CCC_Mask,				"ai_dbg_goap",			&psAI_Flags,	aiGOAP);
-	CMD3(CCC_Mask,				"ai_dbg_goap_script",	&psAI_Flags,	aiGOAPScript);
-	CMD3(CCC_Mask,				"ai_dbg_goap_object",	&psAI_Flags,	aiGOAPObject);
 	CMD3(CCC_Mask,				"ai_dbg_cover",			&psAI_Flags,	aiCover);
 	CMD3(CCC_Mask,				"ai_dbg_anim",			&psAI_Flags,	aiAnimation);
 	CMD3(CCC_Mask,				"ai_dbg_vision",		&psAI_Flags,	aiVision);

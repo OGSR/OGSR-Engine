@@ -66,21 +66,18 @@ protected:
 	bool						m_initialized;
 	_action_id_type				m_current_action_id;
 
-#ifdef LOG_ACTION
 public:
 	bool						m_use_log;
 	string64					m_temp_string;
 
 public:
 	virtual	void				set_use_log				(bool value);
-#endif
 
 public:
 	_object_type				*m_object;
 	CPropertyStorage			m_storage;
 	bool						m_loaded;
 
-#ifdef LOG_ACTION
 public:
 	virtual LPCSTR				action2string			(const _action_id_type &action_id);
 	virtual LPCSTR				property2string			(const _condition_type &action_id);
@@ -88,7 +85,6 @@ public:
 	virtual void				show					(LPCSTR offset = "");
 	IC		void				show_current_world_state();
 	IC		void				show_target_world_state	();
-#endif
 
 public:
 								CActionPlanner			();

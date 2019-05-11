@@ -25,9 +25,7 @@ void CActionPlannerAction<CScriptGameObject>::script_register(lua_State *L)
 			.def("initialize",					&CScriptActionPlannerAction::initialize,	&CScriptActionPlannerActionWrapper::initialize_static)
 			.def("execute",						&CScriptActionPlannerAction::execute,		&CScriptActionPlannerActionWrapper::execute_static)
 			.def("finalize",					&CScriptActionPlannerAction::finalize,		&CScriptActionPlannerActionWrapper::finalize_static)
-#ifdef LOG_ACTION
 			.def("show",						&CScriptActionPlannerAction::show)
-#endif
 			.def("weight",						&CScriptActionPlannerAction::weight,		&CScriptActionPlannerActionWrapper::weight_static)
 	];
 }

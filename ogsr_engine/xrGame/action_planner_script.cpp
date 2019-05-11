@@ -55,8 +55,7 @@ void CActionPlanner<CScriptGameObject>::script_register(lua_State *L)
 			//KRodin: Выключено до починки. Если этот метод вызвать - повиснет sheduler непися, да ещё и если после этого сохраниться - будут битые сейвы.
 #pragma todo("!!! Починить этот метод !!!")
 			//.def("clear",						&CScriptActionPlanner::clear)
-#ifdef LOG_ACTION
+
 			.def("show",						&CScriptActionPlanner::show)
-#endif
 	];
 }

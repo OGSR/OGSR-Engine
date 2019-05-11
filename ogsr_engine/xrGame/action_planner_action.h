@@ -30,11 +30,9 @@ protected:
 public:
 	typedef typename inherited_action::COperatorCondition	COperatorCondition;
 
-#ifdef LOG_ACTION
 public:
 	virtual	void		set_use_log				(bool value);
 	virtual void		show					(LPCSTR offset = "");
-#endif
 
 public:
 	IC					CActionPlannerAction	(_object_type *object = 0, LPCSTR action_name = "");

@@ -34,7 +34,6 @@ CStalkerPlanner::~CStalkerPlanner	()
 {
 }
 
-#ifdef LOG_ACTION
 LPCSTR CStalkerPlanner::action2string	(const _action_id_type &action_id)
 {
 	return					(inherited::action2string(action_id));
@@ -50,13 +49,10 @@ LPCSTR CStalkerPlanner::object_name		() const
 	VERIFY					(m_object);
 	return					(*m_object->cName());
 }
-#endif
 
 void CStalkerPlanner::setup			(CAI_Stalker *object)
 {
-#ifdef LOG_ACTION
 	set_use_log					(!!psAI_Flags.test(aiGOAP));
-#endif
 	
 	inherited::setup			(object);
 
@@ -75,10 +71,8 @@ void CStalkerPlanner::setup			(CAI_Stalker *object)
 
 void CStalkerPlanner::update			(u32 time_delta)
 {
-#ifdef LOG_ACTION
 	if ((psAI_Flags.test(aiGOAP) && !m_use_log) || (!psAI_Flags.test(aiGOAP) && m_use_log))
 		set_use_log			(!!psAI_Flags.test(aiGOAP));
-#endif
 	
 	if (m_object->g_Alive())
 		set_target_state	(m_alive_goal);
@@ -87,8 +81,7 @@ void CStalkerPlanner::update			(u32 time_delta)
 
 	inherited::update		();
 
-#ifdef GOAP_DEBUG
-	if (m_failed) {
+	if (m_failed && m_use_log) {
 		{
 			Msg			("%d",evaluators().size());
 			EVALUATORS::const_iterator	I = evaluators().begin();
@@ -126,7 +119,6 @@ void CStalkerPlanner::update			(u32 time_delta)
 			}
 		}
 	}
-#endif
 }
 
 void CStalkerPlanner::add_evaluators		()

@@ -32,9 +32,9 @@ TEMPLATE_SPECIALIZATION
 IC	CPlanner::CActionPlanner			()
 {
 	m_initialized			= false;
-#ifdef LOG_ACTION
+
 	m_use_log				= false;
-#endif
+
 }
 
 TEMPLATE_SPECIALIZATION
@@ -68,7 +68,6 @@ void CPlanner::update				()
 
 		solve();
 
-#ifdef LOG_ACTION
 		// printing solution
 		if (m_use_log) {
 			if (m_solution_changed) {
@@ -79,9 +78,7 @@ void CPlanner::update				()
 					Msg("%s", action2string(solution()[i]));
 			}
 		}
-#endif
 
-#ifdef LOG_ACTION
 		if (m_failed) {
 			// printing current world state
 			show();
@@ -94,7 +91,6 @@ void CPlanner::update				()
 			show_target_world_state();
 			//		VERIFY2						(!m_failed,"Problem solver couldn't build a valid path - verify your conditions, effects and goals!");
 		}
-#endif
 
 		THROW(!solution().empty());
 
@@ -124,9 +120,7 @@ void CPlanner::update				()
 	}
 	//KRodin: чтоб не вылетать при вызове апдейта из скрипта, тут ловим ошибку, шедулер в любом случае повиснет - и с зависшим неписем будет разбираться уже специальный скрипт.
 	__except (ExceptStackTrace("[CPlanner::update] stack_trace:\n")) {
-#ifdef LOG_ACTION
 		Msg("!![CPlanner::update] Fatal Error in object: [%s]", object_name());
-#endif
 	}
 }
 
@@ -173,7 +167,6 @@ IC	void CPlanner::add_effect		(_world_operator *action, _condition_type conditio
 	action->add_effect		(CWorldProperty(condition_id,condition_value));
 }
 
-#ifdef LOG_ACTION
 TEMPLATE_SPECIALIZATION
 LPCSTR CPlanner::action2string		(const _action_id_type &action_id)
 {
@@ -191,16 +184,13 @@ LPCSTR CPlanner::object_name		() const
 {
 	return			(*m_object->cName());
 }
-#endif
 
 TEMPLATE_SPECIALIZATION
 IC	void CPlanner::add_operator		(const _edge_type &operator_id,	_operator_ptr _operator)
 {
 	inherited::add_operator	(operator_id,_operator);
 	_operator->setup		(m_object,&m_storage);
-#ifdef LOG_ACTION
 	_operator->set_use_log	(m_use_log);
-#endif
 }
 
 TEMPLATE_SPECIALIZATION
@@ -210,7 +200,6 @@ IC	void CPlanner::add_evaluator	(const _condition_type &condition_id, _condition
 	evaluator->setup		(m_object,&m_storage);
 }
 
-#ifdef LOG_ACTION
 TEMPLATE_SPECIALIZATION
 IC	void CPlanner::set_use_log		(bool value)
 {
@@ -290,7 +279,6 @@ IC	void CPlanner::show				(LPCSTR offset)
 		}
 	}
 }
-#endif
 
 TEMPLATE_SPECIALIZATION
 IC	void CPlanner::save	(NET_Packet &packet)

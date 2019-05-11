@@ -51,11 +51,9 @@ private:
 			void			remove_operators		(CObject		*object);
 			void			init_storage			();
 	IC	EWorldProperties	object_property			(EObjectAction object_action) const;
-#ifdef LOG_ACTION
 public:
 	virtual LPCSTR			action2string			(const _action_id_type &action_id);
 	virtual LPCSTR			property2string			(const _condition_type &property_id);
-#endif
 
 public:
 	/*IC*/		_condition_type	uid						(const u32 id1, const u32 id0) const;

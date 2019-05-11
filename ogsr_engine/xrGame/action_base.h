@@ -45,7 +45,6 @@ protected:
 	mutable _edge_value_type	m_weight;
 	bool						m_first_time;
 
-#ifdef LOG_ACTION
 public:
 	LPCSTR						m_action_name;
 	bool						m_use_log;
@@ -55,7 +54,6 @@ public:
 	virtual void				debug_log			(const EActionStates state_state) const;
 	virtual	void				set_use_log			(bool value);
 	virtual void				show				(LPCSTR offset = "");
-#endif
 
 public:
 	IC							CActionBase			(const xr_vector<COperatorCondition> &conditions, const xr_vector<COperatorCondition> &effects, _object_type *object = 0, LPCSTR action_name = "");
