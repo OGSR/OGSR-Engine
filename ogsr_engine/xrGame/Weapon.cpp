@@ -1027,7 +1027,8 @@ bool CWeapon::Action(s32 cmd, u32 flags)
 			} 
             return true;
 
-		case kWPN_ZOOM:
+		// Warezz.K coded 11.05.2019 - 14:52 - comment code without Toggle ironsight
+		/*case kWPN_ZOOM:
 		{
 			if (IsZoomEnabled())
 			{
@@ -1039,7 +1040,30 @@ bool CWeapon::Action(s32 cmd, u32 flags)
 			}
 			else
 				return false;
-		}
+		}*/
+
+		// Warezz.K coded 11.05.2019 - 14:52 - Toggle ironsight like CoP wpn_aim_toggle 1
+		case kWPN_ZOOM:
+			if (IsZoomEnabled())
+			{
+				if (flags&CMD_START && !IsPending())
+				{
+					if (g_uCommonFlags.is(wpnAimToggle) && IsZoomed())
+					{
+						OnZoomOut();
+					}
+					else
+						OnZoomIn();
+				}
+				else if (IsZoomed() && !g_uCommonFlags.is(wpnAimToggle))
+				{
+					OnZoomOut();
+				}
+				return true;
+			}
+			else
+				return false;
+
 		case kWPN_ZOOM_INC:
 		case kWPN_ZOOM_DEC:
 		{

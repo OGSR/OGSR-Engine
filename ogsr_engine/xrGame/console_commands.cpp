@@ -1114,6 +1114,8 @@ void CCC_RegisterCommands()
 	CMD1(CCC_GameDifficulty,	"g_game_difficulty"		);
 
 	CMD3(CCC_Mask,				"g_dof_scope",			&psActorFlags,	AF_DOF_SCOPE);
+	// Warezz.K coded 11.05.2019 - 14:52 - Toggle ironsight like CoP wpn_aim_toggle 1
+	CMD3(CCC_Mask, "wpn_aim_toggle", &g_uCommonFlags, wpnAimToggle);
 
 	// alife
 #ifdef DEBUG

@@ -30,6 +30,8 @@ enum {
 	rsOcclusionDraw					= (1ul<<12ul),
 	rsRefresh60hz					= (1ul<<13ul),
 	rsMTTexLoad						= (1ul<<14ul),
+	// Warezz.K coded 11.05.2019 - 14:52 - Toggle ironsight like CoP wpn_aim_toggle 1
+	wpnAimToggle					= (1ul<<15ul),
 
 	rsCameraPos						= (1ul<<18ul),
 	rsR2							= (1ul<<19ul),
@@ -42,6 +44,7 @@ enum {
 ENGINE_API extern	u32			psCurrentVidMode[];
 ENGINE_API extern	u32			psCurrentBPP		;
 ENGINE_API extern	Flags32		psDeviceFlags		;
+ENGINE_API extern	Flags32		g_uCommonFlags; // Warezz.K coded - Toggle ironsight like CoP wpn_aim_toggle 1
 
 // game path definition
 #define _game_data_				"$game_data$"
