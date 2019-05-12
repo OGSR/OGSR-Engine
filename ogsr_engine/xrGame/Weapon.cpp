@@ -32,6 +32,7 @@
 #include "script_game_object.h"
 
 #include "WeaponMagazinedWGrenade.h"
+#include "GamePersistent.h"
 
 #define WEAPON_REMOVE_TIME		60000
 #define ROTATION_TIME			0.25f
@@ -1531,6 +1532,9 @@ void CWeapon::OnZoomIn()
 	else if (!m_bZoomInertionAllow)
 		StopHudInertion();
 
+	if(GetHUDmode())
+		GamePersistent().SetPickableEffectorDOF(true);
+
 	CActor* pActor = smart_cast<CActor*>(H_Parent());
 	if ( pActor )
 		pActor->callback(GameObject::eOnActorWeaponZoomIn)(lua_game_object());
@@ -1552,6 +1556,9 @@ void CWeapon::OnZoomOut()
 	}
 
 	StartHudInertion();
+
+	if(GetHUDmode())
+		GamePersistent().SetPickableEffectorDOF(false);
 }
 
 bool CWeapon::UseScopeTexture() {

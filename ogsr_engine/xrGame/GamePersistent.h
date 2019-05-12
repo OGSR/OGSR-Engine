@@ -18,7 +18,7 @@ class CGamePersistent:
 	// ambient particles
 	CParticlesObject*	ambient_particles; 
 #ifdef USE_COP_WEATHER_CONFIGS
-	u32					ambient_sound_next_time[20]; //max snd channels
+	u32					ambient_sound_next_time[40]; //max snd channels
 #else
 	u32					ambient_sound_next_time;
 #endif
@@ -31,8 +31,11 @@ class CGamePersistent:
 	float				ambient_effect_wind_out_time;
 	bool				ambient_effect_wind_on;
 
+	bool				m_bPickableDOF;
+
 	CUISequencer*		m_intro;
 	EVENT				eQuickLoad;
+	Fvector				m_dof		[4];	// 0-dest 1-current 2-from 3-original
 
 	fastdelegate::FastDelegate0<> m_intro_event;
 
@@ -47,6 +50,7 @@ class CGamePersistent:
 #endif
 
 	void				WeathersUpdate			();
+	void				UpdateDof				();
 
 public:
 	ui_core*			m_pUI_core;
@@ -84,6 +88,13 @@ public:
 
 	virtual bool		CanBePaused();
 	void OnKeyboardPress(int dik);
+
+			void		SetPickableEffectorDOF	(bool bSet);
+			void		SetEffectorDOF			(const Fvector& needed_dof);
+			void		RestoreEffectorDOF		();
+
+	virtual void		GetCurrentDof			(Fvector3& dof);
+	virtual void		SetBaseDof				(const Fvector3& dof);
 };
 
 IC CGamePersistent&		GamePersistent()		{ return *((CGamePersistent*) g_pGamePersistent);			}
