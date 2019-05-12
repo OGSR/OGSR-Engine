@@ -33,6 +33,7 @@ static	void	ode_free	(void *ptr, size_t size)					{ return xr_free(ptr);				}
 
 CGamePersistent::CGamePersistent(void)
 {
+	m_bPickableDOF				= false;
 	m_game_params.m_e_game_type	= GAME_ANY;
 	ambient_effect_next_time	= 0;
 	ambient_effect_stop_time	= 0;
@@ -84,7 +85,8 @@ CGamePersistent::CGamePersistent(void)
 	CWeaponHUD::CreateSharedContainer();
 
 	eQuickLoad					= Engine.Event.Handler_Attach("Game:QuickLoad",this);
-
+	Fvector3* DofValue		= Console->GetFVectorPtr("r2_dof");
+	SetBaseDof				(*DofValue);
 }
 
 CGamePersistent::~CGamePersistent(void)
@@ -229,7 +231,7 @@ void CGamePersistent::WeathersUpdate()
 
 			for (u32 idx = 0; I != E; ++I, ++idx) {
 				CEnvAmbient::SSndChannel& ch = **I;
-				R_ASSERT(idx < 20);
+				R_ASSERT(idx < 40);
 				if (ambient_sound_next_time[idx] == 0)//first
 				{
 					ambient_sound_next_time[idx] = Device.dwTimeGlobal + ch.get_rnd_sound_first_time();
@@ -510,9 +512,9 @@ void CGamePersistent::OnFrame	()
 	if (!m_intro_event.empty() && !load_screen_renderer.b_registered)
 		m_intro_event();
 
-	if (Device.dwPrecacheFrame == 0 && load_screen_renderer.b_registered) {
+	if (Device.dwPrecacheFrame == 0 && load_screen_renderer.b_registered && !GameAutopaused) {
 		if (psActorFlags.test(AF_KEYPRESS_ON_START)) {
-			Device.Pause(TRUE, TRUE, FALSE, "AUTOPAUSE_START");
+			Device.Pause(TRUE, TRUE, TRUE, "AUTOPAUSE_START");
 			pApp->LoadForceFinish();
 			LoadTitle("st_press_any_key");
 			GameAutopaused = true;
@@ -597,6 +599,7 @@ void CGamePersistent::OnFrame	()
 	if ((m_last_stats_frame + 1) < m_frame_counter)
 		profiler().clear		();
 #endif
+	//UpdateDof();
 }
 
 #include "game_sv_single.h"
@@ -692,8 +695,66 @@ bool CGamePersistent::CanBePaused()
 void CGamePersistent::OnKeyboardPress(int dik)
 {
 	if (psActorFlags.test(AF_KEYPRESS_ON_START) && GameAutopaused) {
-		Device.Pause(FALSE, TRUE, FALSE, "AUTOPAUSE_END");
+		Device.Pause(FALSE, TRUE, TRUE, "AUTOPAUSE_END");
 		load_screen_renderer.stop();
 		GameAutopaused = false;
 	}
+}
+
+void CGamePersistent::SetPickableEffectorDOF(bool bSet)
+{
+	m_bPickableDOF = bSet;
+	if(!bSet)
+		RestoreEffectorDOF();
+}
+
+void CGamePersistent::GetCurrentDof(Fvector3& dof)
+{
+	dof = m_dof[1];
+}
+
+void CGamePersistent::SetBaseDof(const Fvector3& dof)
+{
+	m_dof[0]=m_dof[1]=m_dof[2]=m_dof[3]	= dof;
+}
+
+void CGamePersistent::SetEffectorDOF(const Fvector& needed_dof)
+{
+	if(m_bPickableDOF)	return;
+	m_dof[0]	= needed_dof;
+	m_dof[2]	= m_dof[1]; //current
+}
+
+void CGamePersistent::RestoreEffectorDOF()
+{
+	SetEffectorDOF			(m_dof[3]);
+}
+#include "hudmanager.h"
+
+//	m_dof		[4];	// 0-dest 1-current 2-from 3-original
+void CGamePersistent::UpdateDof()
+{
+	static float diff_far	= READ_IF_EXISTS( pSettings, r_float, "zone_pick_dof", "far", 10. );
+	static float diff_near	= READ_IF_EXISTS( pSettings, r_float, "zone_pick_dof", "near", -1500. );
+
+	if(m_bPickableDOF)
+	{
+		Fvector pick_dof;
+		pick_dof.y	= HUD().GetCurrentRayQuery().range;
+		pick_dof.x	= pick_dof.y+diff_near;
+		pick_dof.z	= pick_dof.y+diff_far;
+		m_dof[0]	= pick_dof;
+		m_dof[2]	= m_dof[1]; //current
+	}
+	if(m_dof[1].similar(m_dof[0]))
+						return;
+
+	float td			= Device.fTimeDelta;
+	Fvector				diff;
+	diff.sub			(m_dof[0], m_dof[2]);
+	diff.mul			(td/0.2f); //0.2 sec
+	m_dof[1].add		(diff);
+	(m_dof[0].x<m_dof[2].x)?clamp(m_dof[1].x,m_dof[0].x,m_dof[2].x):clamp(m_dof[1].x,m_dof[2].x,m_dof[0].x);
+	(m_dof[0].y<m_dof[2].y)?clamp(m_dof[1].y,m_dof[0].y,m_dof[2].y):clamp(m_dof[1].y,m_dof[2].y,m_dof[0].y);
+	(m_dof[0].z<m_dof[2].z)?clamp(m_dof[1].z,m_dof[0].z,m_dof[2].z):clamp(m_dof[1].z,m_dof[2].z,m_dof[0].z);
 }
