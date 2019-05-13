@@ -15,7 +15,7 @@
 
 #include "smap_allocator.h"
 #include "../xrRender/light_db.h"
-#include "light_render_direct.h"
+#include "../xrRender/light_render_direct.h"
 #include "../xrRender/LightTrack.h"
 #include "../xrRender/r_sun_cascades.h"
 
