@@ -44,7 +44,10 @@ const float MAX_DIST_FACTOR = 0.95f;
 //////////////////////////////////////////////////////////////////////////
 // environment
 CEnvironment::CEnvironment	() :
-	CurrentEnv				(0)
+	CurrentEnv				(0),
+	NextWeather( nullptr ),
+	NextWeatherName( 0 ),
+	NextWeatherTime( 0.f )
 #ifdef USE_COP_WEATHER_CONFIGS
 	, m_ambients_config		(0)
 #endif
@@ -307,6 +310,7 @@ void CEnvironment::SetWeather(shared_str name, bool forced)
 			CurrentWeather		= &it->second;
 			CurrentWeatherName	= it->first;
 		}
+		NextWeather = nullptr;
 		if (forced)			{SelectEnvs(fGameTime);	}
 #ifdef WEATHER_LOGGING
 		Msg					("Starting Cycle: %s [%s]",*name,forced?"forced":"deferred");
@@ -443,6 +447,10 @@ void CEnvironment::SelectEnvs(float gt)
 		if (bSelect){
 			Current[0]	= Current[1];
 			SelectEnv	(CurrentWeather,Current[1],gt);
+			if ( NextWeather && Current[ 1 ]->exec_time >= NextWeatherTime ) {
+				SelectEnv( NextWeather, Current[ 1 ], gt );
+				NextWeather = nullptr;
+			}
 #ifdef WEATHER_LOGGING
 			Msg			("Weather: '%s' Desc: '%s' Time: %3.2f/%3.2f",CurrentWeatherName.c_str(),Current[1]->m_identifier.c_str(),Current[1]->exec_time,fGameTime);
 #endif
@@ -701,4 +709,17 @@ void CEnvironment::ForceReselectEnvs() {
 	}
 	SelectEnvs(CurrentWeather, Current[0], Current[1], fGameTime);
 	//eff_Rain->InvalidateState(); //Тоже самое делается в CEnvironment::Invalidate, здесь не нужно.
+}
+
+
+void CEnvironment::SetWeatherNext( shared_str name, float time ) {
+  ASSERT_FMT( name.size(), "empty weather name" );
+  EnvsMapIt it = WeatherCycles.find( name );
+  if ( it == WeatherCycles.end() ) {
+    Msg("! [%s]: Invalid weather name: %s", __FUNCTION__, name.c_str());
+    return;
+  }
+  NextWeather     = &it->second;
+  NextWeatherName = it->first;
+  NextWeatherTime = time;
 }
