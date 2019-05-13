@@ -302,7 +302,7 @@ IC void		restrict_vector_in_dir(Fvector& V,const Fvector& dir)
 		V.sub(sub);
 	}
 }
-IC bool check_obb_sise(Fobb& obb)
+IC bool check_obb_sise(const Fobb& obb)
 {
 	return (!fis_zero(obb.m_halfsize.x,EPS_L)||
 		!fis_zero(obb.m_halfsize.y,EPS_L)||

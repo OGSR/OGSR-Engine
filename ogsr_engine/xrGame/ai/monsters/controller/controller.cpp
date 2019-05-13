@@ -6,7 +6,7 @@
 #include "../../../ActorEffector.h"
 #include "../../../ActorCondition.h"
 #include "../ai_monster_effector.h"
-#include "../../../../xr_3da/skeletonanimated.h"
+#include "../../../../Include/xrRender/KinematicsAnimated.h"
 #include "../../../level.h"
 #include "../../../sound_player.h"
 #include "../../../ai_monster_space.h"

@@ -23,7 +23,7 @@ end
 
 -- emissive rendering --
 function l_special	(shader, t_base, t_second, t_detail)
-	shader:begin	("deffer_model_flat",	"accum_detector_1")
+	shader:begin	("deffer_model_flat",	"models_detector_1")
 			: zb 		(true,false)
 			: fog		(false)
 			: emissive 	(true)

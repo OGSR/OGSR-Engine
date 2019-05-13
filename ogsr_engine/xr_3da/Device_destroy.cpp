@@ -1,22 +1,22 @@
 #include "stdafx.h"
 
-#include "ResourceManager.h"
+#include "../Include/xrRender/DrawUtils.h"
 #include "render.h"
 #include "IGame_Persistent.h"
+#include "xr_IOConsole.h"
 #include "xr_input.h"
 
 void CRenderDevice::_Destroy	(BOOL bKeepTextures)
 {
-	DU.OnDeviceDestroy	();
-	m_WireShader.destroy		();
-	m_SelectionShader.destroy	();
+	DU->OnDeviceDestroy();
 
 	// before destroy
 	b_is_Ready					= FALSE;
 	Statistic->OnDeviceDestroy	();
 	::Render->destroy			();
-	Resources->OnDeviceDestroy	(bKeepTextures);
-	RCache.OnDeviceDestroy		();
+	m_pRender->OnDeviceDestroy(bKeepTextures);
+	//Resources->OnDeviceDestroy	(bKeepTextures);
+	//RCache.OnDeviceDestroy		();
 
 	Memory.mem_compact			();
 }
@@ -28,14 +28,15 @@ void CRenderDevice::Destroy	(void) {
 
 	pInput->clip_cursor(false);
 
-	HW.Validate					();
+	m_pRender->ValidateHW();
 
 	_Destroy					(FALSE);
 
-	xr_delete					(Resources);
-
 	// real destroy
-	HW.DestroyDevice			();
+	m_pRender->DestroyHW();
+
+	//xr_delete					(Resources);
+	//HW.DestroyDevice			();
 
 	seqRender.R.clear			();
 	seqAppActivate.R.clear		();
@@ -47,6 +48,8 @@ void CRenderDevice::Destroy	(void) {
 	seqDeviceReset.R.clear		();
 	seqParallel.clear			();
 
+	RenderFactory->DestroyRenderDeviceRender(m_pRender);
+	m_pRender = 0;
 	xr_delete					(Statistic);
 }
 
@@ -55,10 +58,8 @@ void CRenderDevice::Destroy	(void) {
 extern BOOL bNeed_re_create_env;
 void CRenderDevice::Reset		(bool precache)
 {
-#ifdef DEBUG
-	_SHOW_REF("*ref -CRenderDevice::ResetTotal: DeviceREF:",HW.pDevice);
-#endif // DEBUG
-	bool b_16_before	= (float)dwWidth/(float)dwHeight > (1024.0f/768.0f+0.01f);
+	u32 dwWidth_before		= dwWidth;
+	u32 dwHeight_before		= dwHeight;
 
 	pInput->clip_cursor(false);
 
@@ -68,35 +69,30 @@ void CRenderDevice::Reset		(bool precache)
 //.		g_pGamePersistent->Environment().OnDeviceDestroy();
 	}
 
-	Resources->reset_begin	();
-	Memory.mem_compact		();
-	HW.Reset				(m_hWnd);
-	dwWidth					= HW.DevPP.BackBufferWidth;
-	dwHeight				= HW.DevPP.BackBufferHeight;
-	fWidth_2				= float(dwWidth/2);
-	fHeight_2				= float(dwHeight/2);
-	Resources->reset_end	();
+	m_pRender->Reset( m_hWnd, dwWidth, dwHeight, fWidth_2, fHeight_2);
 
 	if (g_pGamePersistent)
 	{
 //.		g_pGamePersistent->Environment().OnDeviceCreate();
-		bNeed_re_create_env = TRUE;
+		//bNeed_re_create_env = TRUE;
+		g_pGamePersistent->Environment().bNeed_re_create_env = TRUE;
 	}
 	_SetupStates			();
 	if (precache)
-		PreCache			(20);
+		PreCache(20, false, false);
 	u32 tm_end				= TimerAsync();
 	Msg						("*** RESET [%d ms]",tm_end-tm_start);
 
+	//	TODO: Remove this! It may hide crash
+#pragma todo("KRodin: ??? Remove this! It may hide crash ???")
+	Memory.mem_compact();
+
 	pInput->clip_cursor(true);
-	
+		
 	seqDeviceReset.Process(rp_DeviceReset);
 
-	bool b_16_after	= (float)dwWidth/(float)dwHeight > (1024.0f/768.0f+0.01f);
-	if(b_16_after!=b_16_before && g_pGameLevel && g_pGameLevel->pHUD) 
-		g_pGameLevel->pHUD->OnScreenRatioChanged();
-
-#ifdef DEBUG
-	_SHOW_REF("*ref +CRenderDevice::ResetTotal: DeviceREF:",HW.pDevice);
-#endif // DEBUG
+	if(dwWidth_before!=dwWidth || dwHeight_before!=dwHeight) 
+	{
+		seqResolutionChanged.Process(rp_ScreenResolutionChanged);
+	}
 }

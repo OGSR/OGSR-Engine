@@ -1,5 +1,5 @@
 #include "stdafx.h"
-
+#pragma hdrstop
 
 #include "detailmanager.h"
 
@@ -7,6 +7,9 @@ const u32	vs_size				= 3000;
 
 void CDetailManager::soft_Load		()
 {
+
+	R_ASSERT(RCache.Vertex.Buffer());
+	R_ASSERT(RCache.Index.Buffer());
 	// Vertex Stream
 	soft_Geom.create				(D3DFVF_XYZ | D3DFVF_DIFFUSE | D3DFVF_TEX1, RCache.Vertex.Buffer(), RCache.Index.Buffer());
 }
@@ -20,8 +23,8 @@ void CDetailManager::soft_Render	()
 {
 	// Render itself
 	// float	fPhaseRange	= PI/16;
-	// float	fPhaseX		= _sin(Device.fTimeGlobal*0.1f)	*fPhaseRange;
-	// float	fPhaseZ		= _sin(Device.fTimeGlobal*0.11f)*fPhaseRange;
+	// float	fPhaseX		= _sin(RDEVICE.fTimeGlobal*0.1f)	*fPhaseRange;
+	// float	fPhaseZ		= _sin(RDEVICE.fTimeGlobal*0.11f)*fPhaseRange;
 
 	// Get index-stream
 	_IndexStream&	_IS		= RCache.Index;

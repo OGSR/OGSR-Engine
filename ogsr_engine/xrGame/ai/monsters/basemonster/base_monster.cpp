@@ -16,8 +16,8 @@
 #include "../../../squad_hierarchy_holder.h"
 #include "../../../group_hierarchy_holder.h"
 #include "../../../phdestroyable.h"
-#include "../../../../xr_3da/skeletonanimated.h"
-#include "../../../../xr_3da/skeletoncustom.h"
+#include "../../../../Include/xrRender/KinematicsAnimated.h"
+#include "../../../../Include/xrRender/Kinematics.h"
 #include "../../../detail_path_manager.h"
 #include "../../../hudmanager.h"
 #include "../../../memory_manager.h"
@@ -891,7 +891,7 @@ bool   CBaseMonster::check_eated_corpse_draggable()
 		return false;
 	}
 	
-	if ( CKinematics* K = p_corpse->Visual()->dcast_PKinematics() )
+	if ( IKinematics* K = p_corpse->Visual()->dcast_PKinematics() )
 	{
 /*
 		if ( CInifile* ini = K->LL_UserData() )
@@ -991,7 +991,7 @@ void CBaseMonster::update_eyes_visibility ()
 		return;
 	}
 
-	CKinematics* const skeleton	=	smart_cast<CKinematics*>(Visual());
+	IKinematics* const skeleton	=	smart_cast<IKinematics*>(Visual());
 	if ( !skeleton )
 	{
 		return;
@@ -1017,7 +1017,7 @@ void CBaseMonster::update_eyes_visibility ()
 
 float CBaseMonster::get_screen_space_coverage_diagonal()
 {
-	Fbox		b		= Visual()->vis.box;
+	Fbox		b		= Visual()->getVisData().box;
 
 	Fmatrix				xform;
 	xform.mul			(Device.mFullTransform,XFORM());

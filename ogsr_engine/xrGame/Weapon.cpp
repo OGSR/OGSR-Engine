@@ -20,7 +20,7 @@
 
 #include "xr_level_controller.h"
 #include "game_cl_base.h"
-#include "../xr_3da/skeletoncustom.h"
+#include "../Include/xrRender/Kinematics.h"
 #include "ai_object_location.h"
 #include "clsid_game.h"
 #include "mathutils.h"
@@ -32,6 +32,7 @@
 #include "script_game_object.h"
 
 #include "WeaponMagazinedWGrenade.h"
+#include "GamePersistent.h"
 
 #define WEAPON_REMOVE_TIME		60000
 #define ROTATION_TIME			0.25f
@@ -131,7 +132,7 @@ void CWeapon::UpdateXForm	()
 			return;
 
 		R_ASSERT		(E);
-		CKinematics*	V		= smart_cast<CKinematics*>	(E->Visual());
+		IKinematics*	V		= smart_cast<IKinematics*>	(E->Visual());
 		VERIFY			(V);
 
 		// Get matrices
@@ -180,7 +181,7 @@ void CWeapon::UpdateFireDependencies_internal()
 		if (GetHUDmode() && (0!=H_Parent()) )
 		{
 			// 1st person view - skeletoned
-			CKinematics* V			= smart_cast<CKinematics*>(m_pHUD->Visual());
+			IKinematics* V			= smart_cast<IKinematics*>(m_pHUD->Visual());
 			VERIFY					(V);
 			V->CalculateBones		();
 
@@ -863,7 +864,7 @@ static float previous_heating = 0;		// "нагретость" оружия в п
 
 void CWeapon::UpdateWeaponParams()
 {
-#pragma todo("KD: переделать к чертовой матери этот тихий ужас")
+#pragma todo("KRodin: адаптировать тепловизор и тп. под новый рендер, если это возможно.")
 
 	if (!IsHidden()) {
 		w_states.x = m_fZoomRotationFactor;			//x = zoom mode, y - текущее состояние, z - старое состояние
@@ -929,7 +930,7 @@ void CWeapon::UpdateCL		()
 	UpdateFlameParticles	();
 	UpdateFlameParticles2	();
 	
-	VERIFY(smart_cast<CKinematics*>(Visual()));
+	VERIFY(smart_cast<IKinematics*>(Visual()));
 
         if ( GetState() == eIdle ) {
           auto state = idle_state();
@@ -1343,7 +1344,7 @@ void CWeapon::UpdateHUDAddonsVisibility()
 //	if(IsZoomed() && )
 
 
-	CKinematics* pHudVisual									= smart_cast<CKinematics*>(m_pHUD->Visual());
+	IKinematics* pHudVisual									= smart_cast<IKinematics*>(m_pHUD->Visual());
 	VERIFY(pHudVisual);
 	if (H_Parent() != Level().CurrentEntity()) pHudVisual	= NULL;
 
@@ -1426,7 +1427,7 @@ void CWeapon::UpdateHUDAddonsVisibility()
 
 void CWeapon::UpdateAddonsVisibility()
 {
-	CKinematics* pWeaponVisual = smart_cast<CKinematics*>(Visual()); R_ASSERT(pWeaponVisual);
+	IKinematics* pWeaponVisual = smart_cast<IKinematics*>(Visual()); R_ASSERT(pWeaponVisual);
 
 	u16  bone_id;
 	UpdateHUDAddonsVisibility								();	
@@ -1531,6 +1532,12 @@ void CWeapon::OnZoomIn()
 	else if (!m_bZoomInertionAllow)
 		StopHudInertion();
 
+	if(GetHUDmode())
+		GamePersistent().SetPickableEffectorDOF(true);
+
+	if(GetHUDmode())
+		GamePersistent().SetPickableEffectorDOF(true);
+
 	CActor* pActor = smart_cast<CActor*>(H_Parent());
 	if ( pActor )
 		pActor->callback(GameObject::eOnActorWeaponZoomIn)(lua_game_object());
@@ -1552,6 +1559,9 @@ void CWeapon::OnZoomOut()
 	}
 
 	StartHudInertion();
+
+	if(GetHUDmode())
+		GamePersistent().SetPickableEffectorDOF(false);
 }
 
 bool CWeapon::UseScopeTexture() {

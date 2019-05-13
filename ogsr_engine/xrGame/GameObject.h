@@ -214,7 +214,7 @@ public:
 	}
 
 public:
-	typedef void __stdcall visual_callback(CKinematics *);
+	typedef void __stdcall visual_callback(IKinematics *);
 	typedef svector<visual_callback*,6>			CALLBACK_VECTOR;
 	typedef CALLBACK_VECTOR::iterator			CALLBACK_VECTOR_IT;
 

@@ -8,6 +8,7 @@
 #include "Weapon.h"
 #include "WeaponShotgun.h"
 #include "Explosive.h"
+#include "..\Include/xrRender/Kinematics.h"
 
 BOOL g_bCopDeathAnim = TRUE;
 
@@ -15,7 +16,7 @@ rnd_motion::rnd_motion()
 {
 }
 
-rnd_motion*	rnd_motion::setup(CKinematicsAnimated* k, const char* s)
+rnd_motion*	rnd_motion::setup(IKinematicsAnimated* k, const char* s)
 {
 	VERIFY(k);
 	VERIFY(s);
@@ -51,12 +52,12 @@ void type_motion::clear()
 	anims.clear();
 }
 
-void type_motion::set_motion(CKinematicsAnimated* k, u16 id_motion, const char* dir_anim)
+void type_motion::set_motion(IKinematicsAnimated* k, u16 id_motion, const char* dir_anim)
 {
 	anims[id_motion] = xr_new<rnd_motion>()->setup(k, dir_anim);
 }
 
-type_motion* type_motion::setup(CKinematicsAnimated* k, CInifile * ini, const char* section, const char* type)
+type_motion* type_motion::setup(IKinematicsAnimated* k, CInifile * ini, const char* section, const char* type)
 {
 	anims.resize(dirs_number, 0);
 	if (ini->line_exist(section, type) && g_bCopDeathAnim)
@@ -178,7 +179,7 @@ MotionID death_anims::motion(CEntityAlive& ea, const SHit& H, float &angle) cons
 Fvector& global_hit_position(Fvector &gp, CEntityAlive& ea, const SHit& H)
 {
 	VERIFY(ea.Visual());
-	CKinematics	*K = ea.Visual()->dcast_PKinematics();
+	IKinematics	*K = ea.Visual()->dcast_PKinematics();
 	VERIFY(K);
 	K->LL_GetTransform(H.bone()).transform_tiny(gp, H.bone_space_position());
 	ea.XFORM().transform_tiny(gp);
@@ -188,7 +189,7 @@ Fvector& global_hit_position(Fvector &gp, CEntityAlive& ea, const SHit& H)
 #pragma warning(push)
 #pragma warning(disable: 4273)
 
-inline bool is_bone_head(CKinematics &K, u16 bone)
+inline bool is_bone_head(IKinematics &K, u16 bone)
 {
 	const u16 head_bone = K.LL_BoneID("bip01_head");
 	const u16 neck_bone = K.LL_BoneID("bip01_neck");
@@ -205,7 +206,7 @@ class type_motion0 : public type_motion
 			return false;
 
 		VERIFY(pEntity.Visual());
-		CKinematics *K = pEntity.Visual()->dcast_PKinematics();
+		IKinematics *K = pEntity.Visual()->dcast_PKinematics();
 		VERIFY(K);
 		if (!is_bone_head(*K, H.bone()))
 			return false;
@@ -290,7 +291,7 @@ class type_motion3 : public type_motion
 			return false;
 
 		VERIFY(pEntity.Visual());
-		CKinematics *K = pEntity.Visual()->dcast_PKinematics();
+		IKinematics *K = pEntity.Visual()->dcast_PKinematics();
 		VERIFY(K);
 
 		if (is_bone_head(*K, H.bone()))
@@ -324,7 +325,7 @@ class type_motion4 : public type_motion
 
 		m = MotionID();
 		VERIFY(pEntity.Visual());
-		CKinematics *K = pEntity.Visual()->dcast_PKinematics();
+		IKinematics *K = pEntity.Visual()->dcast_PKinematics();
 		VERIFY(K);
 
 		if (!is_bone_head(*K, H.bone()))
@@ -351,7 +352,7 @@ class type_motion5 : public type_motion
 
 		m = MotionID();
 		VERIFY(pEntity.Visual());
-		CKinematics *K = pEntity.Visual()->dcast_PKinematics();
+		IKinematics *K = pEntity.Visual()->dcast_PKinematics();
 		VERIFY(K);
 
 		if (is_snipper(H.weaponID) && !is_bone_head(*K, H.bone()))
@@ -400,7 +401,7 @@ class type_motion6 : public type_motion
 	}
 };
 
-void death_anims::setup(CKinematicsAnimated* k, LPCSTR section, CInifile* ini)
+void death_anims::setup(IKinematicsAnimated* k, LPCSTR section, CInifile* ini)
 {
 	clear();
 

@@ -8,7 +8,7 @@
 #include "ActorEffector.h"
 #include "level.h"
 #include "xr_level_controller.h"
-#include "../xr_3da/skeletoncustom.h"
+#include "../Include/xrRender/Kinematics.h"
 #include "ai_object_location.h"
 #include "ExtendedGeom.h"
 #include "MathUtils.h"
@@ -398,7 +398,7 @@ void CMissile::UpdateXForm	()
 			return;
 
 		VERIFY				(E);
-		CKinematics*		V		= smart_cast<CKinematics*>	(E->Visual());
+		IKinematics*		V		= smart_cast<IKinematics*>	(E->Visual());
 		VERIFY				(V);
 
 		// Get matrices
@@ -589,7 +589,7 @@ void  CMissile::UpdateFireDependencies_internal	()
 		
 		if (GetHUDmode() && !IsHidden()){
 			// 1st person view - skeletoned
-			CKinematics* V			= smart_cast<CKinematics*>(m_pHUD->Visual());
+			IKinematics* V			= smart_cast<IKinematics*>(m_pHUD->Visual());
 			VERIFY					(V);
 			V->CalculateBones		();
 
@@ -651,7 +651,7 @@ void CMissile::activate_physic_shell()
 	m_pPhysicsShell->SetAirResistance	(0.f,0.f);
 	m_pPhysicsShell->set_DynamicScales	(1.f,1.f);
 
-	CKinematics							*kinematics = smart_cast<CKinematics*>(Visual());
+	IKinematics							*kinematics = smart_cast<IKinematics*>(Visual());
 	VERIFY								(kinematics);
 	kinematics->CalculateBones_Invalidate();
 	kinematics->CalculateBones			();
@@ -680,7 +680,7 @@ void CMissile::setup_physic_shell	()
 	VERIFY(!m_pPhysicsShell);
 	create_physic_shell();
 	m_pPhysicsShell->Activate	(XFORM(),0,XFORM());//,true 
-	CKinematics					*kinematics = smart_cast<CKinematics*>(Visual());
+	IKinematics					*kinematics = smart_cast<IKinematics*>(Visual());
 	VERIFY						(kinematics);
 	kinematics->CalculateBones_Invalidate();
 	kinematics->CalculateBones			();

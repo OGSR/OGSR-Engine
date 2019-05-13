@@ -1,7 +1,7 @@
 #include "stdafx.h"
 
 #include "animation_utils.h"
-#include "..\xr_3da\skeletonanimated.h"
+#include "..\Include/xrRender/Kinematics.h"
 #include "..\xr_3da\bone.h"
 #include "game_object_space.h"
 
@@ -23,7 +23,7 @@ void anim_bone_fix::callback(CBoneInstance *BI)
 	R_ASSERT2(_valid(BI->mTransform), "anim_bone_fix::	callback");
 }
 
-void anim_bone_fix::fix(u16 bone_id, CKinematics &K)
+void anim_bone_fix::fix(u16 bone_id, IKinematics &K)
 {
 	//return;
 	VERIFY(&K);
@@ -59,7 +59,7 @@ void anim_bone_fix::release()
 	bone->reset_callback();
 }
 
-bool find_in_parents(const u16 bone_to_find, const u16 from_bone, CKinematics &ca)
+bool find_in_parents(const u16 bone_to_find, const u16 from_bone, IKinematics &ca)
 {
 	const u16 root = ca.LL_GetBoneRoot();
 	

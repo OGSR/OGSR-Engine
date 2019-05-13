@@ -9,7 +9,7 @@
 #include "..\xr_3da\feel_vision.h"
 #include "..\xr_3da\feel_sound.h"
 #include "..\xr_3da\feel_touch.h"
-#include "..\xr_3da\skeletonanimated.h"
+#include "..\Include/xrRender/KinematicsAnimated.h"
 #include "associative_vector.h"
 #include "ai\monsters\anomaly_detector.h"
 
@@ -18,7 +18,7 @@ namespace MonsterSpace {
 };
 
 class CMotionDef;
-class CKinematicsAnimated;
+class IKinematicsAnimated;
 class CMemoryManager;
 class CItemManager;
 class CEnemyManager;
@@ -58,7 +58,7 @@ protected:
 		MotionID		ls;
 		MotionID		rs;
 
-		void			Create(CKinematicsAnimated* K, LPCSTR base);
+		void			Create(IKinematicsAnimated* K, LPCSTR base);
 	};
 
 private:

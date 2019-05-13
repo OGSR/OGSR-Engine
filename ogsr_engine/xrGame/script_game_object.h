@@ -771,7 +771,7 @@ public:
 
 			// alpet: visual functions for CWeapon descedants 
 			_DECLARE_FUNCTION10 (alife_object			,			CSE_ALifeDynamicObject*);
-			_DECLARE_FUNCTION10 (GetWeaponHUD_Visual	,			IRender_Visual*);
+			_DECLARE_FUNCTION10 (GetWeaponHUD_Visual	,			IRenderVisual*);
 			_DECLARE_FUNCTION10 (GetWeaponHUD			,			CWeaponHUD*);
 			void				LoadWeaponHUD_Visual	(LPCSTR wpn_hud_section);
 

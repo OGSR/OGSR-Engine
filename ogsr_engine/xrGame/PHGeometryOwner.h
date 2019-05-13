@@ -1,12 +1,12 @@
 #ifndef PH_GEOMETRY_OWNER_H
 #define PH_GEOMETRY_OWNER_H
 #include "Geometry.h"
-#include "gamemtllib.h"
+#include "../xr_3da/gamemtllib.h"
 
 DEFINE_VECTOR(CODEGeom*,GEOM_STORAGE,GEOM_I)
 
 struct SBoneShape;
-class CKinematics;
+class IKinematics;
 
 class CPHGeometryOwner
 {
@@ -61,7 +61,7 @@ protected:
 public:
 		Fvector						get_mc_data								();																				//aux
 		Fvector						get_mc_geoms							();																				//aux
-		void						get_mc_kinematics						(CKinematics* K,Fvector& mc,float& mass);
+		void						get_mc_kinematics						(IKinematics* K,Fvector& mc,float& mass);
 		void						calc_volume_data						();																				//aux
 const	Fvector&					local_mass_Center						()		{return m_mass_center;}													//aux
 		float						get_volume								()		{calc_volume_data();return m_volume;};									//aux

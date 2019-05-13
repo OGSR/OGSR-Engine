@@ -216,7 +216,7 @@ public:
 	  af_psy_health              = 1ull << 20,
 	  outfit_af                  = 1ull << 21,
 	  gd_master_only             = 1ull << 22,
-	  use_legacy_load_screens    = 1ull << 23,
+	  scope_textures_autoresize  = 1ull << 23,
 	  ogse_new_slots             = 1ull << 24,
 	  ogse_wpn_zoom_system       = 1ull << 25,
 	  wpn_cost_include_addons    = 1ull << 26,
@@ -257,3 +257,14 @@ extern XRCORE_API xrCore Core;
 extern XRCORE_API ThreadPool* TTAPI;
 
 extern XRCORE_API bool gModulesLoaded;
+
+// Трэш
+#	define	BENCH_SEC_CALLCONV
+#	define	BENCH_SEC_SCRAMBLEVTBL1
+#	define	BENCH_SEC_SCRAMBLEVTBL2
+#	define	BENCH_SEC_SCRAMBLEVTBL3
+#	define	BENCH_SEC_SIGN
+#	define	BENCH_SEC_SCRAMBLEMEMBER1
+#	define	BENCH_SEC_SCRAMBLEMEMBER2
+
+#define g_dedicated_server false

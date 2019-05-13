@@ -2,6 +2,7 @@
 
 struct 	_in        	{
 	float4 	p	: POSITION	;	// xy=pos, zw=tc0
+	float2	tcJ	: TEXCOORD0;	// jitter coords
 };
 
 struct 	_out        	{
@@ -11,6 +12,7 @@ struct 	_out        	{
 #else
   	float2 	tc0	: TEXCOORD0	;	// tc.xy 
 #endif
+	float2	tcJ	: TEXCOORD1;	// jitter coords
 };
 //////////////////////////////////////////////////////////////////////////////////////////
 // Vertex
@@ -24,6 +26,9 @@ _out 	main	( _in   I )
 #else
 	O.tc0		= I.p.zw	;
 #endif
+
+	O.tcJ		= I.tcJ;
+
  	return	O;
 }
 

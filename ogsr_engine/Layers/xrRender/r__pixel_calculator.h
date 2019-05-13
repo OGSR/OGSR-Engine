@@ -10,7 +10,7 @@ class	r_pixel_calculator
 	IDirect3DSurface9*			zb;
 public:
 	void			begin		();
-	r_aabb_ssa		calculate	(IRender_Visual* V);
+	r_aabb_ssa		calculate	(dxRender_Visual* V);
 	void			end			();
 
 	void			run			();

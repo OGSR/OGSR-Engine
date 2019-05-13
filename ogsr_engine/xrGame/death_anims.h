@@ -4,7 +4,7 @@ struct SHit;
 struct MotionID;
 
 class  CInifile;
-class  CKinematicsAnimated;
+class  IKinematicsAnimated;
 class  CEntityAlive;
 
 template<typename T>
@@ -21,7 +21,7 @@ private:
 public:
 	rnd_motion();
 
-	rnd_motion* setup(CKinematicsAnimated* k, LPCSTR s);
+	rnd_motion* setup(IKinematicsAnimated* k, LPCSTR s);
 	MotionID motion() const;
 };
 
@@ -41,11 +41,11 @@ public:
 public:
 	type_motion() {}
 	virtual				~type_motion();
-	type_motion	*setup(CKinematicsAnimated* k, CInifile * ini, LPCSTR section, LPCSTR type);
+	type_motion	*setup(IKinematicsAnimated* k, CInifile * ini, LPCSTR section, LPCSTR type);
 	MotionID	motion(edirection dr)	const;
 	virtual	bool		predicate(CEntityAlive& ea, const SHit& H, MotionID &m, float &angle) const = 0;
 private:
-	void set_motion(CKinematicsAnimated* k, u16 motion_id, LPCSTR dir_anim);
+	void set_motion(IKinematicsAnimated* k, u16 motion_id, LPCSTR dir_anim);
 	void clear();
 public:
 	static	edirection	dir(CEntityAlive& ea, const SHit& H, float &angle);
@@ -58,7 +58,7 @@ class death_anims
 public:
 	death_anims();
 	~death_anims();
-	void setup(CKinematicsAnimated* k, LPCSTR section, CInifile* ini);
+	void setup(IKinematicsAnimated* k, LPCSTR section, CInifile* ini);
 	void clear();
 	MotionID motion(CEntityAlive& ea, const SHit& H, float& angle)	const;
 

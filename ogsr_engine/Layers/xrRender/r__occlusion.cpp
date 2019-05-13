@@ -1,6 +1,8 @@
 #include "StdAfx.h"
 #include ".\r__occlusion.h"
 
+#include "QueryHelper.h"
+
 R_occlusion::R_occlusion(void)
 {
 	enabled			= strstr(Core.Params,"-no_occq")?FALSE:TRUE;
@@ -16,7 +18,7 @@ void	R_occlusion::occq_create	(u32	limit	)
 	fids.reserve	(limit);
 	for (u32 it=0; it<limit; it++)	{
 		_Q	q;	q.order	= it;
-		if	(FAILED(HW.pDevice->CreateQuery(D3DQUERYTYPE_OCCLUSION,&q.Q)))	break;
+		if	(FAILED( CreateQuery(&q.Q, D3DQUERYTYPE_OCCLUSION) ))	break;
 		pool.push_back	(q);
 	}
 	std::reverse	(pool.begin(), pool.end());
@@ -39,6 +41,15 @@ u32		R_occlusion::occq_begin		(u32&	ID		)
 {
 	if (!enabled)		return 0;
 
+	//	Igor: prevent release crash if we issue too many queries
+	if (pool.empty())
+	{
+		if ((Device.dwFrame % 40) == 0)
+			Msg(" RENDER [Warning]: Too many occlusion queries were issued(>1536)!!!");
+		ID = iInvalidHandle;
+		return 0;
+	}
+
 	RImplementation.stats.o_queries	++;
 	if (!fids.empty())	{
 		ID				= fids.back	();	
@@ -51,7 +62,8 @@ u32		R_occlusion::occq_begin		(u32&	ID		)
 		used.push_back		(pool.back());
 	}
 	pool.pop_back			();
-	CHK_DX					(used[ID].Q->Issue	(D3DISSUE_BEGIN));
+	//CHK_DX					(used[ID].Q->Issue	(D3DISSUE_BEGIN));
+	CHK_DX					(BeginQuery(used[ID].Q));
 	
 	// Msg				("begin: [%2d] - %d", used[ID].order, ID);
 
@@ -61,26 +73,37 @@ void	R_occlusion::occq_end		(u32&	ID		)
 {
 	if (!enabled)		return;
 
-	// Msg				("end  : [%2d] - %d", used[ID].order, ID);
-	CHK_DX			(used[ID].Q->Issue	(D3DISSUE_END));
-}
-u32		R_occlusion::occq_get		(u32&	ID		)
-{
-	if (!enabled || !used[ID].Q)
-		return 0xffffffff;
+	//	Igor: prevent release crash if we issue too many queries
+	if (ID == iInvalidHandle) return;
 
-	DWORD	fragments	= 0;
+	// Msg				("end  : [%2d] - %d", used[ID].order, ID);
+	//CHK_DX			(used[ID].Q->Issue	(D3DISSUE_END));
+	CHK_DX			(EndQuery(used[ID].Q));
+}
+R_occlusion::occq_result R_occlusion::occq_get		(u32&	ID		)
+{
+	if (!enabled)		return 0xffffffff;
+
+	//	Igor: prevent release crash if we issue too many queries
+	if (ID == iInvalidHandle) return 0xFFFFFFFF;
+
+	occq_result	fragments	= 0;
 	HRESULT hr;
 	// CHK_DX		(used[ID].Q->GetData(&fragments,sizeof(fragments),D3DGETDATA_FLUSH));
 	// Msg			("get  : [%2d] - %d => %d", used[ID].order, ID, fragments);
 	CTimer	T;
 	T.Start	();
 	Device.Statistic->RenderDUMP_Wait.Begin	();
-#pragma todo("KRodin: в строке со while в редких случаях просиходит исключение 0xC0000005 на движках обоих разрядностей. Попытался зафиксить выше, но не факт, что поможет.")
-	while	((hr=used[ID].Q->GetData(&fragments,sizeof(fragments),D3DGETDATA_FLUSH))==S_FALSE) {
-		if (!SwitchToThread())			Sleep(ps_r2_wait_sleep);
-		if (T.GetElapsed_ms() > 500)	{
-			fragments	= 0xffffffff;
+	//while	((hr=used[ID].Q->GetData(&fragments,sizeof(fragments),D3DGETDATA_FLUSH))==S_FALSE) {
+	VERIFY2( ID<used.size(),make_string("_Pos = %d, size() = %d ", ID, used.size()));
+	while	((hr=GetData(used[ID].Q, &fragments,sizeof(fragments)))==S_FALSE) 
+	{
+		if (!SwitchToThread())			
+			Sleep(ps_r2_wait_sleep);
+
+		if (T.GetElapsed_ms() > 500)	
+		{
+			fragments	= (occq_result)-1;//0xffffffff;
 			break;
 		}
 	}
@@ -98,7 +121,7 @@ u32		R_occlusion::occq_get		(u32&	ID		)
 		pool.insert		(pool.begin()+it+1,Q);
 	}
 
-	// remove from used and shrink as nescessary
+	// remove from used and shrink as nesessary
 	used[ID].Q			= 0;
 	fids.push_back		(ID);
 	ID					= 0;

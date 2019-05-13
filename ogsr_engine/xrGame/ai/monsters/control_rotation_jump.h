@@ -1,6 +1,6 @@
 #pragma once
 #include "control_combase.h"
-#include "../../../xr_3da/SkeletonAnimated.h"
+#include "../../../Include\xrRender\Kinematics.h"
 
 struct SControlRotationJumpData : public ControlCom::IComData {
 	MotionID		anim_stop_ls,anim_run_ls;
@@ -33,7 +33,7 @@ class CControlRotationJump : public CControl_ComCustom<SControlRotationJumpData>
 		eNone
 	} m_stage;
 
-	CKinematicsAnimated	*m_skeleton_animated;
+	IKinematicsAnimated	*m_skeleton_animated;
 
 public:
 	virtual void	reinit					();

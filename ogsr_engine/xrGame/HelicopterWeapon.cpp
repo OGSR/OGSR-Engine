@@ -3,13 +3,13 @@
 #include "ExplosiveRocket.h"
 #include "xrMessages.h"
 #include "../xr_3da/NET_Server_Trash/net_utils.h"
-#include "../xr_3da/skeletoncustom.h"
+#include "../Include/xrRender/Kinematics.h"
 #include "Level.h"
 
 void  
 CHelicopter::BoneMGunCallbackX(CBoneInstance *B)
 {
-	CHelicopter	* P = static_cast<CHelicopter*>(B->Callback_Param);
+	CHelicopter	* P = static_cast<CHelicopter*>(B->callback_param());
 	Fmatrix rX;		rX.rotateX		(P->m_cur_rot.x);
 	B->mTransform.mulB_43			(rX);
 }
@@ -17,7 +17,7 @@ CHelicopter::BoneMGunCallbackX(CBoneInstance *B)
 void  
 CHelicopter::BoneMGunCallbackY(CBoneInstance *B)
 {
-	CHelicopter	* P = static_cast<CHelicopter*>(B->Callback_Param);
+	CHelicopter	* P = static_cast<CHelicopter*>(B->callback_param());
 	Fmatrix rY;		rY.rotateY		(P->m_cur_rot.y);
 	B->mTransform.mulB_43			(rY);
 }
@@ -236,7 +236,7 @@ void CHelicopter::UpdateWeapons		()
 
 void CHelicopter::UpdateMGunDir()
 {
-	CKinematics* K		= smart_cast<CKinematics*>(Visual());
+	IKinematics* K		= smart_cast<IKinematics*>(Visual());
 	m_fire_bone_xform	= K->LL_GetTransform(m_fire_bone);
 
 	m_fire_bone_xform.mulA_43	(XFORM());

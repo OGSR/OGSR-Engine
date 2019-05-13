@@ -2,7 +2,7 @@
 
 enum{
 		AF_GODMODE			=(1<<0),
-		//		=(1<<1),
+		AF_KEYPRESS_ON_START=(1<<1),
 		AF_ALWAYSRUN		=(1<<2),
 		AF_UNLIMITEDAMMO	=(1<<3),
 		//		=(1<<4),

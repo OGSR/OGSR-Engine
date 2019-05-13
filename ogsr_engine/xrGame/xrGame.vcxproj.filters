@@ -2128,6 +2128,9 @@
     <Filter Include="AI\AMonsters\common\trajectories">
       <UniqueIdentifier>{0c00f8de-5e1e-4bbc-9dd6-618042b0b19b}</UniqueIdentifier>
     </Filter>
+    <Filter Include="AI\AScript\ScriptClasses\UI\LoadScreen">
+      <UniqueIdentifier>{a98119e5-515e-4cbe-844d-ef75fbe162e4}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="mt_config.h">
@@ -4209,9 +4212,6 @@
     <ClInclude Include="EffectorZoomInertion.h">
       <Filter>Core\Client\Effectors\Weapon</Filter>
     </ClInclude>
-    <ClInclude Include="..\COMMON_AI\GameMtlLib.h">
-      <Filter>Core\Client\Game Materials</Filter>
-    </ClInclude>
     <ClInclude Include="GamePersistent.h">
       <Filter>Core\Client\Game Persistent</Filter>
     </ClInclude>
@@ -6115,6 +6115,11 @@
     <ClInclude Include="PHShellBuildJoint.h">
       <Filter>Core\Client\Objects\physics\Base\Objects\Shell</Filter>
     </ClInclude>
+    <ClInclude Include="ui_defs.h" />
+    <ClInclude Include="ui\UILoadingScreen.h">
+      <Filter>AI\AScript\ScriptClasses\UI\LoadScreen</Filter>
+    </ClInclude>
+    <ClInclude Include="ui\UIHelper.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="damage_manager.cpp">
@@ -7335,12 +7340,6 @@
     <ClCompile Include="EffectorZoomInertion.cpp">
       <Filter>Core\Client\Effectors\Weapon</Filter>
     </ClCompile>
-    <ClCompile Include="..\COMMON_AI\GameMtlLib.cpp">
-      <Filter>Core\Client\Game Materials</Filter>
-    </ClCompile>
-    <ClCompile Include="GameMtlLib_Engine.cpp">
-      <Filter>Core\Client\Game Materials</Filter>
-    </ClCompile>
     <ClCompile Include="GamePersistent.cpp">
       <Filter>Core\Client\Game Persistent</Filter>
     </ClCompile>
@@ -8048,9 +8047,6 @@
     </ClCompile>
     <ClCompile Include="Spectator.cpp">
       <Filter>Core\Client\Spectator</Filter>
-    </ClCompile>
-    <ClCompile Include="r2_test_hw.cpp">
-      <Filter>Core\Common</Filter>
     </ClCompile>
     <ClCompile Include="xrGame.cpp">
       <Filter>Core\Common</Filter>
@@ -8931,6 +8927,10 @@
     <ClCompile Include="physics_shell_animated.cpp">
       <Filter>Core\Client\Objects\physics\CharacterSupport</Filter>
     </ClCompile>
+    <ClCompile Include="ui\UILoadingScreen.cpp">
+      <Filter>AI\AScript\ScriptClasses\UI\LoadScreen</Filter>
+    </ClCompile>
+    <ClCompile Include="ui\UIHelper.cpp" />
   </ItemGroup>
   <ItemGroup>
     <CustomBuildStep Include="Explosive.h">

@@ -147,6 +147,7 @@
     <ClCompile Include="XML_Parser\xrXMLParser.cpp">
       <Filter>XML_Parser</Filter>
     </ClCompile>
+    <ClCompile Include="..\Layers\xrAPI\xrAPI.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="FTimer.h">
@@ -336,6 +337,7 @@
     <ClInclude Include="buffer_vector_inline.h">
       <Filter>Math\Extensions</Filter>
     </ClInclude>
+    <ClInclude Include="..\Include\xrAPI\xrAPI.h" />
   </ItemGroup>
   <ItemGroup>
     <CustomBuildStep Include="FileSystem.h">

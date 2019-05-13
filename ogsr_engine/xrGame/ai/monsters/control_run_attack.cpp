@@ -40,7 +40,7 @@ void CControlRunAttack::activate()
 	SControlAnimationData		*ctrl_anim = (SControlAnimationData*)m_man->data(this, ControlCom::eControlAnimation); 
 	VERIFY						(ctrl_anim);
 
-	ctrl_anim->global.set_motion ( smart_cast<CKinematicsAnimated*>(m_object->Visual())->ID_Cycle_Safe("stand_attack_run_0") );
+	ctrl_anim->global.set_motion ( smart_cast<IKinematicsAnimated*>(m_object->Visual())->ID_Cycle_Safe("stand_attack_run_0") );
 	ctrl_anim->global.actual	= false;
 }
 

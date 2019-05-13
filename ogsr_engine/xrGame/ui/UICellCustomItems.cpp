@@ -438,7 +438,7 @@ void CUIWeaponCellItem::InitAddon(CUIStatic* s, CIconParams &params, Fvector2 ad
 		s->SetWindowName("wpn_addon");
 }
 
-CUIStatic *MakeAddonStatic(CUIDragItem* i, ref_shader &shader)
+CUIStatic *MakeAddonStatic(CUIDragItem* i, ui_shader& shader)
 {
 	CUIStatic* s = xr_new<CUIStatic>();
 	s->SetShader(shader);

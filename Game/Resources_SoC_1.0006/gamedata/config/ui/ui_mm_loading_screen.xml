@@ -1,0 +1,65 @@
+<w>
+	<!-- Фон экрана загрузки, может состоять из множества элементов-->
+	<background width="1024" height="768">
+        <auto_static width="1024" height="768">
+            <texture x="0" y="0" width="1024" height="768">ui\ui_load</texture>
+        </auto_static>
+	</background>
+
+
+	<!-- Картинка загружаемого уровня -->
+    <loading_logo x="255" y="366" width="462" height="256"/>
+
+
+	<!-- Прогрессбар загрузки -->
+	<!-- Новые режимы: mode="from_center" - от центра к краям, mode="horz" - слева направо, mode="back" - справа налево -->
+	<!-- Так же есть и вертикальные режимы. Для лоадскрина они конечно не пригодятся, но для информации напишу здесь, есть mode="vert", mode="down", mode="vert_from_center" -->
+	<!-- По умолчанию ЗП-стайл прогрессбар рисуется ПОД фоном (background). Чтобы рисовать прогрессбар НАД background - надо сделать under_background="0" -->
+    <loading_progress x="378" y="729" width="506" height="34" min="0" max="100" pos="0" inertion="5.0" mode="horz" under_background="0">
+		<!--Текстура фона прогрессбара-->
+        <!--background>
+            <texture x="400" y="800" width="506" height="4">ui\ui_load_new</texture>
+        </background-->
+		<!--Непосредственно текстура прогрессбара-->
+        <progress>
+            <texture x="0" y="771" width="268" height="34">ui\ui_load</texture>
+        </progress>
+		<!-- С помощью этих опций можно подкрасить текстуру прогрессбара разными цветами, когда прогресс находится в начале, в середине, и соотв. в конце -->
+        <!--min_color r="30" g="88" b="126"/>
+		<middle_color r="60" g="118" b="156"/>
+		<max_color r="90" g="148" b="186"/-->
+		<!--<min_color color="white"/>
+		<middle_color color="blue"/>
+		<max_color color="green"/>-->
+    </loading_progress>
+
+
+	<!-- Проценты загрузки числами-->
+    <loading_progress_percent x="260" y="654" width="506" height="20">
+        <text align="c" r="216" g="186" b="140" font="graffiti32"/>
+    </loading_progress_percent>
+
+
+	<!-- Стадия загрузки текстом-->
+    <loading_stage x="260" y="695" width="506" height="20">
+        <text align="c" r="240" g="217" b="182" font="graffiti22"/>
+    </loading_stage>
+
+
+<!-- Всё что ниже - у нас не используется -->
+
+	<!-- Рубрика 100 советов в Зоне-->
+    <!--loading_header x="260" y="622" width="506" height="20">
+        <text align="c" r="103" g="103" b="103" font="letterica18"/>
+    </loading_header-->
+
+	<!-- Номер Совета-->
+    <!--loading_tip_number x="260" y="658" width="506" height="20">
+        <text align="c" r="103" g="103" b="103" font="letterica18"/>
+    </loading_tip_number-->
+
+	<!-- Текст совета-->
+    <!--loading_tip x="163" y="676" width="700" height="80" complex_mode="1">
+        <text alignment="c" align="c" r="103" g="103" b="103" font="letterica18"/>
+    </loading_tip-->
+</w>

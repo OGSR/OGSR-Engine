@@ -56,7 +56,7 @@ vf main (vv v)
 
 	o.c		= float4	(L_final,v.sun_af.z);
 	o.f 		= factor	;
-	o.fog 		= calc_fogging 	(pos);					// fog, input in world coords
+	o.fog 		= saturate(calc_fogging 	(pos));					// fog, input in world coords
 
 	return o	;
 }

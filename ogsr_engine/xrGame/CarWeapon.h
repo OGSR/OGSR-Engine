@@ -1,6 +1,7 @@
 #pragma once
 #include "ShootingObject.h"
 #include "HudSound.h"
+#include "../xr_3da/bone.h"
 
 class CPhysicsShellHolder;
 

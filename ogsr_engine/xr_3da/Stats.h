@@ -8,9 +8,22 @@
 
 class ENGINE_API CGameFont;
 
+#include "../Include/xrRender/FactoryPtr.h"
+#include "../Include/xrRender/StatsRender.h"
+
 DECLARE_MESSAGE(Stats);
 
-class ENGINE_API CStats: public pureRender
+class ENGINE_API CStatsPhysics
+{
+public:
+	CStatTimer	ph_collision;		// collision
+	CStatTimer	ph_core;			// integrate
+	CStatTimer	Physics;			// movement+collision
+};
+
+class ENGINE_API CStats: 
+	public pureRender,
+	public CStatsPhysics
 {
 public:
 	CGameFont*	pFont;
@@ -31,9 +44,9 @@ public:
 	u32			Particles_starting;	// starting
 	u32			Particles_active;	// active
 	u32			Particles_destroy;	// destroying
-	CStatTimer	Physics;			// movement+collision
-	CStatTimer	ph_collision;		// collision
-	CStatTimer	ph_core;			// collision
+//	CStatTimer	Physics;			// movement+collision
+//	CStatTimer	ph_collision;		// collision
+//	CStatTimer	ph_core;			// collision
 	CStatTimer	AI_Think;			// thinking
 	CStatTimer	AI_Range;			// query: range
 	CStatTimer	AI_Path;			// query: path
@@ -76,6 +89,10 @@ public:
 	CStatTimer	netClient1;
 	CStatTimer	netClient2;
 	CStatTimer	netServer;
+	CStatTimer	netClientCompressor;
+	CStatTimer	netServerCompressor;
+	
+
 	
 	CStatTimer	TEST0;				// debug counter
 	CStatTimer	TEST1;				// debug counter
@@ -94,6 +111,9 @@ public:
 					~CStats			();
 
 	IC CGameFont*	Font			(){return pFont;}
+
+private:
+	FactoryPtr<IStatsRender>	m_pRender;
 };
 
 enum{

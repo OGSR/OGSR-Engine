@@ -1,5 +1,5 @@
 #include "stdafx.h"
-
+#pragma hdrstop
 
 #include "Blender_Editor_Wire.h"
 
@@ -10,7 +10,7 @@
 CBlender_Editor_Wire::CBlender_Editor_Wire()
 {
 	description.CLS		= B_EDITOR_WIRE;
-	strcpy				(oT_Factor,"$null");
+	xr_strcpy				(oT_Factor,"$null");
 }
 
 CBlender_Editor_Wire::~CBlender_Editor_Wire()
@@ -33,7 +33,9 @@ void	CBlender_Editor_Wire::Load	( IReader& fs, u16 version	)
 void CBlender_Editor_Wire::Compile	(CBlender_Compile& C)
 {
 	IBlender::Compile		(C);
-	if (C.bEditor)	{
+#if !defined(USE_DX10) && !defined(USE_DX11)
+	if (C.bEditor)	
+	{
 		C.PassBegin		();
 		{
 			C.PassSET_ZB		(TRUE,TRUE);
@@ -51,7 +53,10 @@ void CBlender_Editor_Wire::Compile	(CBlender_Compile& C)
 			C.StageEnd			();
 		}
 		C.PassEnd			();
-	} else {
+	} 
+	else 
+#endif	//	USE_DX10
+	{
 		C.r_Pass	("editor","simple_color",FALSE,TRUE,TRUE);
 		C.r_End		();
 	}

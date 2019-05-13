@@ -345,13 +345,9 @@ void CBulletManager::Render	()
 
 	if(m_BulletsRendered.empty()) return;
 
-	u32	vOffset			=	0	;
 	u32 bullet_num		=	m_BulletsRendered.size();
 
-	FVF::LIT	*verts		=	(FVF::LIT	*) RCache.Vertex.Lock((u32)bullet_num*8,
-										tracers.sh_Geom->vb_stride,
-										vOffset);
-	FVF::LIT	*start		=	verts;
+	UIRender->StartPrimitive((u32)bullet_num * 12, IUIRender::ptTriList, IUIRender::pttLIT);
 
 	for(auto& bullet : m_BulletsRendered)
 	{
@@ -398,22 +394,15 @@ void CBulletManager::Render	()
 
 
 		Fvector center;
-		center.mad				(bullet.pos, bullet.dir,  -length*.5f);
-		tracers.Render			(verts, bullet.pos, center, bullet.dir, length, width, bullet.m_u8ColorID);
+		center.mad(bullet.pos, bullet.dir,  -length*.5f);
+		tracers.Render(bullet.pos, center, bullet.dir, length, width, bullet.m_u8ColorID);
 	}
 
-	u32 vCount					= (u32)(verts-start);
-	RCache.Vertex.Unlock		(vCount,tracers.sh_Geom->vb_stride);
-
-	if (vCount)
-	{
-		RCache.set_CullMode			(CULL_NONE);
-		RCache.set_xform_world		(Fidentity);
-		RCache.set_Shader			(tracers.sh_Tracer);
-		RCache.set_Geometry			(tracers.sh_Geom);
-		RCache.Render				(D3DPT_TRIANGLELIST,vOffset,0,vCount,0,vCount/2);
-		RCache.set_CullMode			(CULL_CCW);
-	}
+	UIRender->CacheSetCullMode(IUIRender::cmNONE);
+	UIRender->CacheSetXformWorld(Fidentity);
+	UIRender->SetShader(*tracers.sh_Tracer);
+	UIRender->FlushPrimitive();
+	UIRender->CacheSetCullMode(IUIRender::cmCCW);
 }
 
 void CBulletManager::CommitRenderSet		()	// @ the end of frame

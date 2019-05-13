@@ -46,7 +46,7 @@ void disable_cmd(CConsole *c, LPCSTR cmd)
 {
 	IConsole_Command *icmd = find_cmd(c, cmd);
 	if (icmd)
-		icmd->SetEnabled (false);
+		icmd->SetEnabled(false);
 }
 
 void enable_cmd(CConsole *c, LPCSTR cmd)

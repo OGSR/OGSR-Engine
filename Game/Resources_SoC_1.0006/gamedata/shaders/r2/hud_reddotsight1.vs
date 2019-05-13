@@ -1,6 +1,17 @@
 #include "common.h"
 #include "skin.h"
 
+// KRodin: TODO: Вынести в common?
+float4 proj_to_screen(float4 proj)
+{
+	float4 screen = proj;
+	screen.x = (proj.x + proj.w);
+	screen.y = (proj.w - proj.y);
+	screen.xy *= 0.5;
+	return screen;
+}
+
+
 struct vf
 {
 	float4 hpos : POSITION;

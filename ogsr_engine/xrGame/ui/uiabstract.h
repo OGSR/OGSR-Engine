@@ -37,7 +37,7 @@ class IUISimpleTextureControl{
 public:
 	virtual ~IUISimpleTextureControl() {}
 	virtual void		CreateShader(const char* tex, const char* sh = "hud\\default")	= 0;
-	virtual void		SetShader(const ref_shader& sh)									= 0;
+	virtual void		SetShader(const ui_shader& sh)									= 0;
 	virtual void		SetTextureColor(u32 color)										= 0;
 	virtual u32			GetTextureColor()										const	= 0;
 	virtual void		SetOriginalRect(const Frect& r)									= 0;

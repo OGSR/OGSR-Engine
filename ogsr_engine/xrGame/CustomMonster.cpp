@@ -16,7 +16,7 @@
 #include "group_hierarchy_holder.h"
 #include "customzone.h"
 #include "clsid_game.h"
-#include "..\xr_3da\skeletonanimated.h"
+#include "..\Include/xrRender/KinematicsAnimated.h"
 #include "detail_path_manager.h"
 #include "memory_manager.h"
 #include "visual_memory_manager.h"
@@ -57,7 +57,7 @@ extern int g_AI_inactive_time;
 	Flags32		psAI_Flags	= {0};
 #endif // MASTER_GOLD
 
-void CCustomMonster::SAnimState::Create(CKinematicsAnimated* K, LPCSTR base)
+void CCustomMonster::SAnimState::Create(IKinematicsAnimated* K, LPCSTR base)
 {
 	char	buf[128];
 	fwd		= K->ID_Cycle_Safe(strconcat(sizeof(buf),buf,base,"_fwd"));
@@ -68,7 +68,7 @@ void CCustomMonster::SAnimState::Create(CKinematicsAnimated* K, LPCSTR base)
 
 //void __stdcall CCustomMonster::TorsoSpinCallback(CBoneInstance* B)
 //{
-//	CCustomMonster*		M = static_cast<CCustomMonster*> (B->Callback_Param);
+//	CCustomMonster*		M = static_cast<CCustomMonster*> (B->callback_param());
 //
 //	Fmatrix					spin;
 //	spin.setXYZ				(0, M->NET_Last.o_torso.pitch, 0);
@@ -413,7 +413,7 @@ void CCustomMonster::UpdateCL	()
 	/*	//. hack just to skip 'CalculateBones'
 	if (sound().need_bone_data()) {
 		// we do this because we know here would be virtual function call
-		CKinematics					*kinematics = smart_cast<CKinematics*>(Visual());
+		IKinematics					*kinematics = smart_cast<IKinematics*>(Visual());
 		VERIFY						(kinematics);
 		kinematics->CalculateBones	();
 	}
@@ -530,7 +530,7 @@ BOOL CCustomMonster::feel_visible_isRelevant (CObject* O)
 void CCustomMonster::eye_pp_s0			( )
 {
 	// Eye matrix
-	CKinematics* V							= smart_cast<CKinematics*>(Visual());
+	IKinematics* V							= smart_cast<IKinematics*>(Visual());
 	V->CalculateBones						();
 	Fmatrix&	mEye						= V->LL_GetTransform(u16(eye_bone));
 	Fmatrix		X;							X.mul_43	(XFORM(),mEye);
@@ -546,9 +546,9 @@ void CCustomMonster::update_range_fov	(float &new_range, float &new_fov, float s
 {
 	const float	standard_far_plane			= eye_range;
 
-	float	current_fog_density				= GamePersistent().Environment().CurrentEnv.fog_density	;	
+	float	current_fog_density				= GamePersistent().Environment().CurrentEnv->fog_density	;	
 	// 0=no_fog, 1=full_fog, >1 = super-fog
-	float	current_far_plane				= GamePersistent().Environment().CurrentEnv.far_plane	;	
+	float	current_far_plane				= GamePersistent().Environment().CurrentEnv->far_plane	;	
 	// 300=standart, 50=super-fog
 
 	new_fov									= start_fov;
@@ -696,7 +696,7 @@ BOOL CCustomMonster::net_Spawn	(CSE_Abstract* DC)
 	}
 
 	// Eyes
-	eye_bone					= smart_cast<CKinematics*>(Visual())->LL_BoneID(pSettings->r_string(cNameSect(),"bone_head"));
+	eye_bone					= smart_cast<IKinematics*>(Visual())->LL_BoneID(pSettings->r_string(cNameSect(),"bone_head"));
 
 	// weapons
 	if (Local()) {
@@ -1133,7 +1133,7 @@ void CCustomMonster::OnRender()
 		character_physics_support()->movement()->dbg_Draw();
 	
 	if (bDebug)
-		smart_cast<CKinematics*>(Visual())->DebugRender(XFORM());
+		smart_cast<IKinematics*>(Visual())->DebugRender(XFORM());
 }
 #endif // DEBUG
 

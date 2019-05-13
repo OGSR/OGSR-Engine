@@ -3,9 +3,9 @@
 //////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
+#pragma hdrstop
 
-
-#include "..\..\xr_3da\fmesh.h"
+#include "../../xr_3da/fmesh.h"
 #include "FProgressive.h"
 
 //////////////////////////////////////////////////////////////////////
@@ -49,7 +49,7 @@ void FProgressive::Load		(const char* N, IReader *data, u32 dwFlags)
 	lods().r			(nSWI.sw,nSWI.count*sizeof(FSlideWindow));
 
 	// fast
-#if RENDER==R_R2
+#if RENDER!=R_R1
 	if (m_fast)			{
 		destructor<IReader>	geomdef	(data->open_chunk		(OGF_FASTPATH));
 		destructor<IReader>	def		(geomdef().open_chunk	(OGF_SWIDATA));
@@ -69,7 +69,7 @@ void FProgressive::Load		(const char* N, IReader *data, u32 dwFlags)
 
 void FProgressive::Render	(float LOD)
 {
-#if RENDER==R_R2
+#if RENDER!=R_R1
 	if (m_fast && RImplementation.phase==CRender::PHASE_SMAP)
 	{
 		int lod_id			= iFloor((1.f-clampr(LOD,0.f,1.f))*float(xSWI->count-1)+0.5f);
@@ -107,7 +107,7 @@ void FProgressive::Render	(float LOD)
 }
 
 #define PCOPY(a)	a = pFrom->a
-void	FProgressive::Copy	(IRender_Visual *pSrc)
+void	FProgressive::Copy	(dxRender_Visual *pSrc)
 {
 	Fvisual::Copy	(pSrc);
 	FProgressive	*pFrom = (FProgressive *)pSrc;

@@ -17,7 +17,7 @@ IC void SetJoint( CPhysicsJoint	&J, const SJointIKData& joint_data )
 }
 
 
-IC void SetJointLimit( CPhysicsJoint	&J, const CBoneData &bone_data, u8 limit_num, u8 axis_num )
+IC void SetJointLimit( CPhysicsJoint	&J, const IBoneData &bone_data, u8 limit_num, u8 axis_num )
 {
 	const SJointIKData& joint_data	=	bone_data.get_IK_data();
 	const SJointLimit&	limit		=	joint_data.limits[limit_num];
@@ -29,7 +29,7 @@ IC void SetJointLimit( CPhysicsJoint	&J, const CBoneData &bone_data, u8 limit_nu
 	
 }
 
-IC bool IsFreeRLimit( const CBoneData &bone_data, u8 limit_num )
+IC bool IsFreeRLimit( const IBoneData &bone_data, u8 limit_num )
 {
 	//const SJointIKData& joint_data	=	bone_data.get_IK_data();
 	//const SJointLimit&	limit		=	joint_data.limits[limit_num];
@@ -38,7 +38,7 @@ IC bool IsFreeRLimit( const CBoneData &bone_data, u8 limit_num )
 	return !(hi-lo<M_PI*2.f);
 }
 
-IC void SetJointRLimit( CPhysicsJoint	&J, const CBoneData &bone_data, u8 limit_num, u8 axis_num )
+IC void SetJointRLimit( CPhysicsJoint	&J, const IBoneData &bone_data, u8 limit_num, u8 axis_num )
 {
 	if(!IsFreeRLimit(bone_data,limit_num))
 	{
@@ -52,7 +52,7 @@ IC void SetJointRLimit( CPhysicsJoint	&J, const CBoneData &bone_data, u8 limit_n
 
 
 
-IC CPhysicsJoint	*CtreateHinge(const CBoneData &bone_data, u8 limit_num, CPhysicsElement* root_e, CPhysicsElement* E  )
+IC CPhysicsJoint	*CtreateHinge(const IBoneData &bone_data, u8 limit_num, CPhysicsElement* root_e, CPhysicsElement* E  )
 {
 	u8 axis_num =0;
 	const Fvector axis = basis[ limit_num ];
@@ -71,7 +71,7 @@ IC CPhysicsJoint	*CtreateHinge(const CBoneData &bone_data, u8 limit_num, CPhysic
 	return J;
 }
 
-IC CPhysicsJoint	*CtreateFullControl(const CBoneData &bone_data,  u8 limit_num[3], CPhysicsElement* root_e, CPhysicsElement* E  )
+IC CPhysicsJoint	*CtreateFullControl(const IBoneData &bone_data,  u8 limit_num[3], CPhysicsElement* root_e, CPhysicsElement* E  )
 {
 
 
@@ -97,7 +97,7 @@ IC CPhysicsJoint	*CtreateFullControl(const CBoneData &bone_data,  u8 limit_num[3
 
 }
 
-IC CPhysicsJoint	*BuildWheelJoint( const CBoneData &bone_data, CPhysicsElement* root_e, CPhysicsElement* E )				
+IC CPhysicsJoint	*BuildWheelJoint( const IBoneData &bone_data, CPhysicsElement* root_e, CPhysicsElement* E )				
 	{
 		const SJointIKData& joint_data=bone_data.get_IK_data();
 		CPhysicsJoint	*J= P_create_Joint(CPhysicsJoint::hinge2,root_e,E);
@@ -118,7 +118,7 @@ IC CPhysicsJoint	*BuildWheelJoint( const CBoneData &bone_data, CPhysicsElement* 
 		SetJointLimit( *J, bone_data, 0, 0 );
 		return J;
 	}
-IC CPhysicsJoint	*BuildSliderJoint( const CBoneData &bone_data, CPhysicsElement* root_e, CPhysicsElement* E )	
+IC CPhysicsJoint	*BuildSliderJoint( const IBoneData &bone_data, CPhysicsElement* root_e, CPhysicsElement* E )	
 {
 		const SJointIKData& joint_data=bone_data.get_IK_data();
 		CPhysicsJoint	*J= P_create_Joint(CPhysicsJoint::slider,root_e,E);
@@ -139,7 +139,7 @@ IC CPhysicsJoint	*BuildSliderJoint( const CBoneData &bone_data, CPhysicsElement*
 		return J;
 }
 
-IC CPhysicsJoint	*BuildBallJoint( const CBoneData &bone_data, CPhysicsElement* root_e, CPhysicsElement* E )
+IC CPhysicsJoint	*BuildBallJoint( const IBoneData &bone_data, CPhysicsElement* root_e, CPhysicsElement* E )
 {
 	const SJointIKData& joint_data=bone_data.get_IK_data();
 	CPhysicsJoint	*J= P_create_Joint(CPhysicsJoint::ball,root_e,E);
@@ -149,7 +149,7 @@ IC CPhysicsJoint	*BuildBallJoint( const CBoneData &bone_data, CPhysicsElement* r
 	return J;
 }
 
-IC CPhysicsJoint	*BuildGenericJoint( const CBoneData &bone_data, CPhysicsElement* root_e, CPhysicsElement* E )
+IC CPhysicsJoint	*BuildGenericJoint( const IBoneData &bone_data, CPhysicsElement* root_e, CPhysicsElement* E )
 {
 	const SJointIKData& joint_data=bone_data.get_IK_data();
 
@@ -205,7 +205,7 @@ IC CPhysicsJoint	*BuildGenericJoint( const CBoneData &bone_data, CPhysicsElement
 	
 	//return J;
 }
-IC CPhysicsJoint	*BuildJoint( const CBoneData &bone_data, CPhysicsElement* root_e, CPhysicsElement* E )
+IC CPhysicsJoint	*BuildJoint( const IBoneData &bone_data, CPhysicsElement* root_e, CPhysicsElement* E )
 {
 	CPhysicsJoint	*J= 0;
 	const SJointIKData& joint_data=bone_data.get_IK_data();

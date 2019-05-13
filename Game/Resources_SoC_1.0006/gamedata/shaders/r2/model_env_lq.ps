@@ -4,7 +4,7 @@ struct 	v2p
 {
  	float2 	tc0: 		TEXCOORD0;	// base
  	half3 	tc1: 		TEXCOORD1;	// environment
-  	half3	c0:		COLOR0;		// sun
+  	half4	c0:			COLOR0;		// sun.(fog*fog)
 };
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -20,5 +20,5 @@ half4 	main	( v2p I )	: COLOR
 	half3	final 	= light*base*2;
 
 	// out
-	return  half4	(final.r,final.g,final.b,t_base.a);
+	return  half4	(final.r,final.g,final.b,t_base.a*I.c0.a);
 }

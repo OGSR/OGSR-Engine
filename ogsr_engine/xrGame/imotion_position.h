@@ -1,7 +1,7 @@
 #pragma once
 
 #include "interactive_motion.h"
-#include "..\xr_3da\skeletonanimated.h"
+#include "..\Include/xrRender/Kinematics.h"
 class imotion_position;
 enum motion_history_state;
 
@@ -11,7 +11,7 @@ private:
 struct tracks_update: public IUpdateTracksCallback
 	{
 		tracks_update( ): motion( nullptr ), update( false ) {}
-		virtual	bool	operator () ( float dt, CKinematicsAnimated& k );
+		virtual	bool	operator () ( float dt, IKinematicsAnimated& k );
 		imotion_position *motion;
 		bool update;
 	} update_callback;
@@ -24,12 +24,12 @@ public:
 private:
 	using inherited =			interactive_motion;
 	virtual	void	move_update	(  );
-			float	motion_collide		( float dt, CKinematicsAnimated& k );
-			void	collide_not_move	( CKinematicsAnimated& KA );
-			void	force_calculate_bones( CKinematicsAnimated& KA );
-			float	advance_animation	( float dt, CKinematicsAnimated& k );
-			float	collide_animation	( float dt, CKinematicsAnimated& k );
-			float	move				( float dt, CKinematicsAnimated& k );
+			float	motion_collide		( float dt, IKinematicsAnimated& k );
+			void	collide_not_move	( IKinematicsAnimated& KA );
+			void	force_calculate_bones( IKinematicsAnimated& KA );
+			float	advance_animation	( float dt, IKinematicsAnimated& k );
+			float	collide_animation	( float dt, IKinematicsAnimated& k );
+			float	move				( float dt, IKinematicsAnimated& k );
 			void	disable_update		(bool v);
 	virtual	void	collide		(  ){};
 	virtual	void	state_end	(  );

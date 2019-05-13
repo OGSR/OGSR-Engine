@@ -2,22 +2,17 @@
 #ifndef SkeletonMotionsH
 #define SkeletonMotionsH
 
-#include		"skeletoncustom.h"
-
+//#include		"skeletoncustom.h"
+#include "bone.h"
+#include "skeletonmotiondefs.h"	
 // refs
-class CKinematicsAnimated;
-class CInifile;
+class IKinematicsAnimated;
 class CBlend;
+class IKinematics;
 
 // callback
 typedef void	( * PlayCallback)		(CBlend*		P);
 
-const	u32		MAX_PARTS			=	4;
-const	u32		MAX_CHANNELS		=	4;
-const	f32		SAMPLE_FPS			=	30.f;
-const	f32		SAMPLE_SPF			=	(1.f/SAMPLE_FPS);
-const	f32		KEY_Quant			=	32767.f;
-const	f32		KEY_QuantI			=	1.f/KEY_Quant;
 
 //*** Key frame definition ************************************************************************
 enum{
@@ -43,6 +38,13 @@ struct  CKeyQT16
 {
 	s16			x1,y1,z1;
 };
+/*
+struct  CKeyQT
+{
+//	s8			x,y,z;
+	s16			x1,y1,z1;
+};
+*/
 #pragma pack(pop)
 
 //*** Motion Data *********************************************************************************
@@ -106,32 +108,32 @@ public:
 
 
 const float	fQuantizerRangeExt	= 1.5f;
-class ENGINE_API		CMotionDef
+class 	ENGINE_API	CMotionDef
 {
 public:
     u16						bone_or_part;
 	u16						motion;
-	u16						speed;				// quantized: 0..10
-	float						speed_k;
+	//u16						speed;				// quantized: 0..10
+	float					speed;
+	float					speed_k;
 	u16						power;				// quantized: 0..10
 	u16						accrue;				// quantized: 0..10
 	u16						falloff;			// quantized: 0..10
     u16						flags;
 	xr_vector<motion_marks>	marks;
-
-	IC float				Dequantize			(u16 V)		{	return  float(V)/655.35f; }
-	IC u16					Quantize			(float V)	{	s32		t = iFloor(V*655.35f); clamp(t,0,65535); return u16(t); }
-	
+private:
+	IC float				Dequantize			(u16 V)	const	{	return  float(V)/655.35f; }
+	IC u16					Quantize			(float V) const		{	s32		t = iFloor(V*655.35f); clamp(t,0,65535); return u16(t); }
+public:
 	void					Load				(IReader* MP, u32 fl, u16 vers);
 	u32						mem_usage			(){ return sizeof(*this);}
 
     ICF float				Accrue				(){return fQuantizerRangeExt*Dequantize(accrue);}
     ICF float				Falloff				(){return fQuantizerRangeExt*Dequantize(falloff);}
-    ICF float				Speed				(){return Dequantize(speed) * speed_k;}
+    ICF float				Speed				() const { return speed * speed_k; } //{return Dequantize(speed);}
     ICF float				Power				(){return Dequantize(power);}
     bool					StopAtEnd			();
-    ICF float SpeedKoeff() { return speed_k; }
-    void SpeedKoeff( float new_speed_k ) { speed_k = new_speed_k; }
+    void SetSpeedKoeff(const float new_speed_k) { speed_k = new_speed_k; }
 };
 struct accel_str_pred {	
 	IC bool operator()(const shared_str& x, const shared_str& y) const	{	return xr_strcmp(x,y)<0;	}
@@ -161,7 +163,7 @@ public:
 	IC const CPartDef&	part				(u16 id)				const	{ return P[id]; }
 	u16					part_id				(const shared_str& name) const	;
 	u32					mem_usage			()		{ return P[0].mem_usage()*MAX_PARTS;}
-	void				load				(CKinematics* V, LPCSTR model_name);
+	void				load				(IKinematics* V, LPCSTR model_name);
     u8					count				() const {u8 ret=0;for(u8 i=0;i<MAX_PARTS;++i) if(P[i].Name.size())ret++; return ret;};
 };
 
@@ -183,7 +185,7 @@ struct 	ENGINE_API	motions_value
 	MotionVec*			bone_motions		(shared_str bone_name);
 
 	u32					mem_usage			(){ 
-		u32 sz			=	u32(sizeof(*this)+m_motion_map.size()*6+m_partition.mem_usage());
+		u32 sz			=	sizeof(*this)+m_motion_map.size()*6+m_partition.mem_usage();
         for (MotionDefVecIt it=m_mdefs.begin(); it!=m_mdefs.end(); it++)
 			sz			+=	it->mem_usage();
 		for (BoneMotionMapIt bm_it=m_motions.begin(); bm_it!=m_motions.end(); bm_it++)
@@ -206,7 +208,7 @@ public:
 	void				clean				(bool force_destroy);
 };
 
-ENGINE_API extern		motions_container*	g_pMotionsContainer;
+ extern	ENGINE_API	motions_container*	g_pMotionsContainer;
 
 class 	ENGINE_API	shared_motions
 {

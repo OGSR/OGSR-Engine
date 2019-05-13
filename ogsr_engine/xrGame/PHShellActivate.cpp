@@ -8,6 +8,7 @@
 #include "PHCollideValidator.h"
 #include "Level.h"
 #include "physicsshellholder.h"
+#include "../Include/xrRender/Kinematics.h"
 
 #ifdef ANIMATED_PHYSICS_OBJECT_SUPPORT
 	#include "PhysicsShellAnimator.h"
@@ -112,7 +113,7 @@ void CPHShell::Activate(bool disable, bool not_set_bone_callbacks /*= false*/)
 
 	activate(disable);
 	{
-		CKinematics* K = m_pKinematics;
+		IKinematics* K = m_pKinematics;
 
 		if (not_set_bone_callbacks)
 			m_pKinematics = 0;
@@ -277,7 +278,7 @@ void CPHShell::Deactivate()
 	CPHObject::UnsetRayMotions();
 }
 
-void CPHShell::ActivatingBonePoses(CKinematics &K)
+void CPHShell::ActivatingBonePoses(IKinematics &K)
 {
 	auto i = elements.begin();
 	auto e = elements.end();

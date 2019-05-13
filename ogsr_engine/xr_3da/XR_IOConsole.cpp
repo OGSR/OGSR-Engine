@@ -134,13 +134,10 @@ void CConsole::OnRender	()
 		 ( g_pGamePersistent && g_pGamePersistent->m_pMainMenu && g_pGamePersistent->m_pMainMenu->IsActive() ) )	
 		 bGame = true;
 
-	VERIFY	(HW.pDevice);
+	if (!m_pRender)
+		m_pRender = xr_new<FactoryPtr<IConsoleRender>>();
 
-	//*** Shadow
-	D3DRECT R = { 0, 0, LONG( Device.dwWidth ), LONG( Device.dwHeight ) };
-	if		(bGame) R.y2 /= 2;
-
-	CHK_DX	(HW.pDevice->Clear(1,&R,D3DCLEAR_TARGET,D3DCOLOR_XRGB(32,32,32),1,0));
+	(*m_pRender)->OnRender(bGame);
 
 	// float dwMaxX=float(Device.dwWidth/2);
 	if (bGame) { fMaxY=0.f; } else fMaxY=1.f;
@@ -489,8 +486,10 @@ float CConsole::GetFloat(LPCSTR cmd, float& val, float& min, float& max)
 		IConsole_Command* C = I->second;
 		CCC_Float* cf = dynamic_cast<CCC_Float*>(C);
 		val = cf->GetValue();
-		min = cf->GetMin();
-		max = cf->GetMax();
+
+		//min = cf->GetMin();
+		//max = cf->GetMax();
+		cf->GetBounds(min, max);
 		return val;
 	}
 	return val;
@@ -505,8 +504,10 @@ int CConsole::GetInteger(LPCSTR cmd, int& val, int& min, int& max)
 		if(cf)
 		{
 			val = cf->GetValue();
-			min = cf->GetMin();
-			max = cf->GetMax();
+
+			//min = cf->GetMin();
+			//max = cf->GetMax();
+			cf->GetBounds(min, max);
 		}else{
 			CCC_Mask* cm	= dynamic_cast<CCC_Mask*>(C);
 			R_ASSERT		(cm);
@@ -561,6 +562,35 @@ xr_token* CConsole::GetXRToken(LPCSTR cmd)
 	return NULL;
 }
 
+IConsole_Command* CConsole::GetCommand( LPCSTR cmd )
+{
+	vecCMD_IT it = Commands.find( cmd );
+	if ( it == Commands.end() )
+		return NULL;
+	else
+		return it->second;
+}
+
+Fvector* CConsole::GetFVectorPtr( LPCSTR cmd )
+{
+	IConsole_Command* cc	= GetCommand(cmd);
+	CCC_Vector3* cf			= dynamic_cast<CCC_Vector3*>(cc);
+	if ( cf )
+	{
+		return cf->GetValuePtr();
+	}
+	return					NULL;
+}
+
+Fvector CConsole::GetFVector( LPCSTR cmd )
+{
+	Fvector* pV = GetFVectorPtr( cmd );
+	if ( pV )
+	{
+		return *pV;
+	}
+	return Fvector().set( 0.0f, 0.0f, 0.0f );
+}
 /*
 char * CConsole::GetNextValue(LPCSTR cmd)
 {

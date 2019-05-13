@@ -4,11 +4,12 @@
 #include "character_hit_animations_params.h"
 #include "entity_alive.h"
 
-#include "..\xr_3da\skeletonanimated.h"
+#include "..\Include/xrRender/KinematicsAnimated.h"
 #include "animation_utils.h"
 #ifdef DEBUG
 #include "phdebug.h"
 #endif
+#include "../Include\xrRender\Kinematics.h"
 
 hit_animation_global_params					ghit_anims_params;
 
@@ -29,7 +30,7 @@ hit_animation_global_params::hit_animation_global_params()
 
 }
 
-void character_hit_animation_controller::SetupHitMotions(CKinematicsAnimated &ca)
+void character_hit_animation_controller::SetupHitMotions(IKinematicsAnimated &ca)
 {
 	if (tune_hit_anims)
 		g_params = ghit_anims_params;
@@ -47,7 +48,7 @@ void character_hit_animation_controller::SetupHitMotions(CKinematicsAnimated &ca
 	hit_downl = ca.LL_MotionID("hit_downl");
 	hit_downr = ca.LL_MotionID("hit_downr");
 
-	base_bone = smart_cast<CKinematics*>(&ca)->LL_BoneID("bip01_spine1");//bip01_spine1
+	base_bone = smart_cast<IKinematics*>(&ca)->LL_BoneID("bip01_spine1");//bip01_spine1
 	for (auto & block_blend : block_blends)
 		block_blend = nullptr;
 
@@ -64,7 +65,7 @@ IC void set_blend_params(CBlend *B)
 	B->blendAmount = 1.0;
 }
 
-IC void	play_cycle(CKinematicsAnimated* CA, const MotionID &m, u8 channel, CBlend*	&blend_block, float base_power)
+IC void	play_cycle(IKinematicsAnimated* CA, const MotionID &m, u8 channel, CBlend*	&blend_block, float base_power)
 {
 	const BOOL	mixin = TRUE;
 	float	power = base_power;
@@ -84,9 +85,9 @@ IC void	play_cycle(CKinematicsAnimated* CA, const MotionID &m, u8 channel, CBlen
 
 void character_hit_animation_controller::PlayHitMotion(const Fvector &dir, const Fvector &bone_pos, u16 bi, CEntityAlive &ea)const
 {
-	IRender_Visual *pV = ea.Visual();
-	CKinematicsAnimated* CA = smart_cast<CKinematicsAnimated*>(pV);
-	CKinematics* K = smart_cast<CKinematics*>(pV);
+	IRenderVisual *pV = ea.Visual();
+	IKinematicsAnimated* CA = smart_cast<IKinematicsAnimated*>(pV);
+	IKinematics* K = smart_cast<IKinematics*>(pV);
 
 	//play_cycle(CA,all_shift_down,1,block_times[6],1) ;
 	if (!(K->LL_BoneCount() > bi))
@@ -151,13 +152,13 @@ void character_hit_animation_controller::PlayHitMotion(const Fvector &dir, const
 	CA->LL_SetChannelFactor(2, g_params.anim_channel_factor);
 }
 
-bool character_hit_animation_controller::IsEffected(u16 bi, CKinematics &ca)const
+bool character_hit_animation_controller::IsEffected(u16 bi, IKinematics &ca)const
 {
 	return find_in_parents(base_bone, bi, ca);
 }
 
 void character_hit_animation_controller::GetBaseMatrix(Fmatrix &m, CEntityAlive &ea)const
 {
-	CKinematics* CA = smart_cast<CKinematics*>(ea.Visual());
+	IKinematics* CA = smart_cast<IKinematics*>(ea.Visual());
 	m.mul_43(ea.XFORM(), CA->LL_GetTransform(base_bone));
 }

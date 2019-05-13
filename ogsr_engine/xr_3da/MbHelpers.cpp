@@ -64,7 +64,7 @@ unsigned short int mbhMulti2WideDumb
 
 #endif // MB_DUMB_CONVERSION
 
-unsigned short int mbhMulti2Wide
+ENGINE_API unsigned short int mbhMulti2Wide
 	( wide_char *WideStr , wide_char *WidePos , const unsigned short int WideStrSize , const char *MultiStr  )
 {
 	unsigned short int spos = 0;

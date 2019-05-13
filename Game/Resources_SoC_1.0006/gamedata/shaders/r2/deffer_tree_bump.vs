@@ -11,7 +11,7 @@ p_bumped 	main 	(v_tree I)
 	// Transform to world coords
 	float3 	pos		= mul			(m_xform, I.P);
 
-	// 
+	//
 	float 	base 	= m_xform._24	;		// take base height from matrix
 	float 	dp		= calc_cyclic  	(wave.w+dot(pos,(float3)wave));
 	float 	H 		= pos.y - base	;		// height of vertex (scaled, rotated, etc.)
@@ -24,6 +24,7 @@ p_bumped 	main 	(v_tree I)
 	float4 	w_pos 	= float4(pos.x+result.x, pos.y, pos.z+result.y, 1);
 	float2 	tc 		= (I.tc * consts).xy;
 	float 	hemi 	= I.Nh.w * c_scale.w + c_bias.w;
+//	float 	hemi 	= I.Nh.w;
 
 	// Eye-space pos/normal
 	p_bumped 		O;
@@ -32,12 +33,17 @@ p_bumped 	main 	(v_tree I)
 	O.hpos 			= mul		(m_VP,	w_pos		);
 	O.position		= float4	(Pe, 	hemi		);
 
+#if defined(USE_R2_STATIC_SUN) && !defined(USE_LM_HEMI)
+	float 	suno 	= I.Nh.w * c_sun.x + c_sun.y	;
+	O.tcdh.w		= suno;					// (,,,dir-occlusion)
+#endif
+
 	// Calculate the 3x3 transform from tangent space to eye-space
 	// TangentToEyeSpace = object2eye * tangent2object
 	//		     = object2eye * transpose(object2tangent) (since the inverse of a rotation is its transpose)
 	float3 	N 		= unpack_bx4(I.Nh);	// just scale (assume normal in the -.5f, .5f)
-	float3 	T 		= unpack_bx4(I.T);	// 
-	float3 	B 		= unpack_bx4(I.B);	// 
+	float3 	T 		= unpack_bx4(I.T);	//
+	float3 	B 		= unpack_bx4(I.B);	//
 	float3x3 xform	= mul	((float3x3)m_xform_v, float3x3(
 						T.x,B.x,N.x,
 						T.y,B.y,N.y,
@@ -51,12 +57,12 @@ p_bumped 	main 	(v_tree I)
 	// ...... [ 0  0  2  0]
 	// ...... [-1 -1 -1  1]
 	// issue: strange, but it's slower :(
-	// issue: interpolators? dp4? VS limited? black magic? 
+	// issue: interpolators? dp4? VS limited? black magic?
 
 	// Feed this transform to pixel shader
-	O.M1 			= xform[0]; 
-	O.M2 			= xform[1]; 
-	O.M3 			= xform[2]; 
+	O.M1 			= xform[0];
+	O.M2 			= xform[1];
+	O.M3 			= xform[2];
 
 #ifdef 	USE_TDETAIL
 	O.tcdbump		= O.tcdh * dt_params;		// dt tc

@@ -21,14 +21,14 @@ void CControllerDirection::reinit()
 
 void CControllerDirection::bone_callback(CBoneInstance *B)
 {
-	CControllerDirection *this_class = static_cast<CControllerDirection*> (B->Callback_Param);
+	CControllerDirection *this_class = static_cast<CControllerDirection*> (B->callback_param());
 	this_class->m_bones.Update(B, time());
 }
 
 void CControllerDirection::assign_bones()
 {
 	// Установка callback на кости
-	CKinematics		*kinematics = smart_cast<CKinematics*>(m_controller->Visual());
+	IKinematics		*kinematics = smart_cast<IKinematics*>(m_controller->Visual());
 
 	m_bone_spine =	&kinematics->LL_GetBoneInstance(kinematics->LL_BoneID("bip01_spine"));
 	m_bone_head =	&kinematics->LL_GetBoneInstance(kinematics->LL_BoneID("bip01_head"));

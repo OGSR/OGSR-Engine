@@ -6,7 +6,6 @@
 #	include "x_ray.h"
 #	include "IGame_Level.h"
 #	include "XR_IOConsole.h"
-#	include "resourcemanager.h"
 #	include "Render.h"
 #	include "ps_instance.h"
 #	include "CustomHUD.h"

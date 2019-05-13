@@ -2,8 +2,8 @@
 #include "gamepersistent.h"
 #include "../xr_3da/fmesh.h"
 #include "..\xr_3da\XR_IOConsole.h"
-#include "gamemtllib.h"
-#include "../xr_3da/skeletoncustom.h"
+#include "../xr_3da/gamemtllib.h"
+#include "../Include/xrRender/Kinematics.h"
 #include "profiler.h"
 #include "MainMenu.h"
 #include "UICursor.h"
@@ -15,9 +15,11 @@
 #include "weaponhud.h"
 #include "stalker_animation_data_storage.h"
 #include "stalker_velocity_holder.h"
-
 #include "../xr_3da/cameramanager.h"
 #include "actor.h"
+#include "ui/UILoadingScreen.h"
+#include "../xr_3da/x_ray.h"
+#include "string_table.h"
 
 #ifndef MASTER_GOLD
 #	include "custommonster.h"
@@ -31,11 +33,23 @@ static	void	ode_free	(void *ptr, size_t size)					{ return xr_free(ptr);				}
 
 CGamePersistent::CGamePersistent(void)
 {
+	m_bPickableDOF				= false;
 	m_game_params.m_e_game_type	= GAME_ANY;
-	ambient_sound_next_time		= 0;
 	ambient_effect_next_time	= 0;
 	ambient_effect_stop_time	= 0;
 	ambient_particles			= 0;
+
+	ambient_effect_wind_start = 0.f;
+	ambient_effect_wind_in_time = 0.f;
+	ambient_effect_wind_end = 0.f;
+	ambient_effect_wind_out_time = 0.f;
+	ambient_effect_wind_on = false;
+
+#ifdef USE_COP_WEATHER_CONFIGS
+	ZeroMemory(ambient_sound_next_time, sizeof(ambient_sound_next_time));
+#else
+	ambient_sound_next_time = 0;
+#endif
 
 	m_pUI_core					= NULL;
 	m_pMainMenu					= NULL;
@@ -71,7 +85,8 @@ CGamePersistent::CGamePersistent(void)
 	CWeaponHUD::CreateSharedContainer();
 
 	eQuickLoad					= Engine.Event.Handler_Attach("Game:QuickLoad",this);
-
+	Fvector3* DofValue		= Console->GetFVectorPtr("r2_dof");
+	SetBaseDof				(*DofValue);
 }
 
 CGamePersistent::~CGamePersistent(void)
@@ -83,15 +98,15 @@ CGamePersistent::~CGamePersistent(void)
 	Engine.Event.Handler_Detach	(eQuickLoad,this);
 }
 
-void CGamePersistent::RegisterModel(IRender_Visual* V)
+void CGamePersistent::RegisterModel(IRenderVisual* V)
 {
 	// Check types
-	switch (V->Type){
+	switch (V->getType()){
 	case MT_SKELETON_ANIM:
 	case MT_SKELETON_RIGID:{
 		u16 def_idx		= GMLib.GetMaterialIdx("default_object");
 		R_ASSERT2		(GMLib.GetMaterialByIdx(def_idx)->Flags.is(SGameMtl::flDynamic),"'default_object' - must be dynamic");
-		CKinematics* K	= smart_cast<CKinematics*>(V); VERIFY(K);
+		IKinematics* K	= smart_cast<IKinematics*>(V); VERIFY(K);
 		int cnt = K->LL_BoneCount();
 		for (u16 k=0; k<cnt; k++){
 			CBoneData& bd	= K->LL_GetData(k); 
@@ -134,6 +149,12 @@ void CGamePersistent::OnAppEnd	()
 
 	GMLib.Unload				();
 
+}
+
+void CGamePersistent::PreStart(LPCSTR op)
+{
+	pApp->SetLoadingScreen(new UILoadingScreen());
+	IGame_Persistent::PreStart(op);
 }
 
 void CGamePersistent::Start		(LPCSTR op)
@@ -184,58 +205,235 @@ void CGamePersistent::OnGameEnd	()
 	CWeaponHUD::CleanSharedContainer	();
 }
 
+
+#ifdef USE_COP_WEATHER_CONFIGS
 void CGamePersistent::WeathersUpdate()
 {
-	if (g_pGameLevel)
+	if (g_pGameLevel && !g_dedicated_server)
 	{
-		CActor* actor				= smart_cast<CActor*>(Level().CurrentViewEntity());
-		BOOL bIndoor				= TRUE;
-		if (actor) bIndoor			= actor->renderable_ROS()->get_luminocity_hemi()<0.05f;
+		CActor* actor = smart_cast<CActor*>(Level().CurrentViewEntity());
+		BOOL bIndoor = TRUE;
+		if (actor) bIndoor = actor->renderable_ROS()->get_luminocity_hemi() < 0.05f;
 
-		int data_set				= (Random.randF()<(1.f-Environment().CurrentEnv.weight))?0:1; 
-		CEnvDescriptor* _env		= Environment().Current[data_set]; VERIFY(_env);
-		CEnvAmbient* env_amb		= _env->env_ambient;
-		if (env_amb){
-			// start sound
-			if (Device.dwTimeGlobal > ambient_sound_next_time){
-				ref_sound* snd			= env_amb->get_rnd_sound();
-				ambient_sound_next_time	= Device.dwTimeGlobal + env_amb->get_rnd_sound_time();
-				if (snd){
+		int data_set = (Random.randF() < (1.f - Environment().CurrentEnv->weight)) ? 0 : 1;
+
+		CEnvDescriptor* const current_env = Environment().Current[0];
+		VERIFY(current_env);
+
+		CEnvDescriptor* const _env = Environment().Current[data_set];
+		VERIFY(_env);
+
+		CEnvAmbient* env_amb = _env->env_ambient;
+		if (env_amb) {
+			CEnvAmbient::SSndChannelVec& vec = current_env->env_ambient->get_snd_channels();
+			CEnvAmbient::SSndChannelVecIt I = vec.begin();
+			CEnvAmbient::SSndChannelVecIt E = vec.end();
+
+			for (u32 idx = 0; I != E; ++I, ++idx) {
+				CEnvAmbient::SSndChannel& ch = **I;
+				R_ASSERT(idx < 40);
+				if (ambient_sound_next_time[idx] == 0)//first
+				{
+					ambient_sound_next_time[idx] = Device.dwTimeGlobal + ch.get_rnd_sound_first_time();
+				}
+				else
+					if (Device.dwTimeGlobal > ambient_sound_next_time[idx])
+					{
+						ref_sound& snd = ch.get_rnd_sound();
+
+						Fvector	pos;
+						float	angle = ::Random.randF(PI_MUL_2);
+						pos.x = _cos(angle);
+						pos.y = 0;
+						pos.z = _sin(angle);
+						pos.normalize().mul(ch.get_rnd_sound_dist()).add(Device.vCameraPosition);
+						pos.y += 10.f;
+						snd.play_at_pos(0, pos);
+
+#ifdef DEBUG
+						if (!snd._handle() && strstr(Core.Params, "-nosound"))
+							continue;
+#endif // DEBUG
+
+						VERIFY(snd._handle());
+						u32 _length_ms = iFloor(snd.get_length_sec()*1000.0f);
+						ambient_sound_next_time[idx] = Device.dwTimeGlobal + _length_ms + ch.get_rnd_sound_time();
+						//					Msg("- Playing ambient sound channel [%s] file[%s]",ch.m_load_section.c_str(),snd._handle()->file_name());
+					}
+			}
+			/*
+						if (Device.dwTimeGlobal > ambient_sound_next_time)
+						{
+							ref_sound* snd			= env_amb->get_rnd_sound();
+							ambient_sound_next_time	= Device.dwTimeGlobal + env_amb->get_rnd_sound_time();
+							if (snd)
+							{
+								Fvector	pos;
+								float	angle		= ::Random.randF(PI_MUL_2);
+								pos.x				= _cos(angle);
+								pos.y				= 0;
+								pos.z				= _sin(angle);
+								pos.normalize		().mul(env_amb->get_rnd_sound_dist()).add(Device.vCameraPosition);
+								pos.y				+= 10.f;
+								snd->play_at_pos	(0,pos);
+							}
+						}
+			*/
+			// start effect
+			if ((FALSE == bIndoor) && (0 == ambient_particles) && Device.dwTimeGlobal > ambient_effect_next_time) {
+				CEnvAmbient::SEffect* eff = env_amb->get_rnd_effect();
+				if (eff) {
+					Environment().wind_gust_factor = eff->wind_gust_factor;
+					ambient_effect_next_time = Device.dwTimeGlobal + env_amb->get_rnd_effect_time();
+					ambient_effect_stop_time = Device.dwTimeGlobal + eff->life_time;
+					ambient_effect_wind_start = Device.fTimeGlobal;
+					ambient_effect_wind_in_time = Device.fTimeGlobal + eff->wind_blast_in_time;
+					ambient_effect_wind_end = Device.fTimeGlobal + eff->life_time / 1000.f;
+					ambient_effect_wind_out_time = Device.fTimeGlobal + eff->life_time / 1000.f + eff->wind_blast_out_time;
+					ambient_effect_wind_on = true;
+
+					ambient_particles = CParticlesObject::Create(eff->particles.c_str(), FALSE, false);
+					Fvector pos; pos.add(Device.vCameraPosition, eff->offset);
+					ambient_particles->play_at_pos(pos);
+					if (eff->sound._handle())		eff->sound.play_at_pos(0, pos);
+
+
+					Environment().wind_blast_strength_start_value = Environment().wind_strength_factor;
+					Environment().wind_blast_strength_stop_value = eff->wind_blast_strength;
+
+					if (Environment().wind_blast_strength_start_value == 0.f)
+					{
+						Environment().wind_blast_start_time.set(0.f, eff->wind_blast_direction.x, eff->wind_blast_direction.y, eff->wind_blast_direction.z);
+					}
+					else
+					{
+						Environment().wind_blast_start_time.set(0.f, Environment().wind_blast_direction.x, Environment().wind_blast_direction.y, Environment().wind_blast_direction.z);
+					}
+					Environment().wind_blast_stop_time.set(0.f, eff->wind_blast_direction.x, eff->wind_blast_direction.y, eff->wind_blast_direction.z);
+				}
+			}
+		}
+		if (Device.fTimeGlobal >= ambient_effect_wind_start && Device.fTimeGlobal <= ambient_effect_wind_in_time && ambient_effect_wind_on)
+		{
+			float delta = ambient_effect_wind_in_time - ambient_effect_wind_start;
+			float t;
+			if (delta != 0.f)
+			{
+				float cur_in = Device.fTimeGlobal - ambient_effect_wind_start;
+				t = cur_in / delta;
+			}
+			else
+			{
+				t = 0.f;
+			}
+			Environment().wind_blast_current.slerp(Environment().wind_blast_start_time, Environment().wind_blast_stop_time, t);
+
+			Environment().wind_blast_direction.set(Environment().wind_blast_current.x, Environment().wind_blast_current.y, Environment().wind_blast_current.z);
+			Environment().wind_strength_factor = Environment().wind_blast_strength_start_value + t * (Environment().wind_blast_strength_stop_value - Environment().wind_blast_strength_start_value);
+		}
+
+		// stop if time exceed or indoor
+		if (bIndoor || Device.dwTimeGlobal >= ambient_effect_stop_time) {
+			if (ambient_particles)					ambient_particles->Stop();
+
+			Environment().wind_gust_factor = 0.f;
+
+		}
+
+		if (Device.fTimeGlobal >= ambient_effect_wind_end && ambient_effect_wind_on)
+		{
+			Environment().wind_blast_strength_start_value = Environment().wind_strength_factor;
+			Environment().wind_blast_strength_stop_value = 0.f;
+
+			ambient_effect_wind_on = false;
+		}
+
+		if (Device.fTimeGlobal >= ambient_effect_wind_end && Device.fTimeGlobal <= ambient_effect_wind_out_time)
+		{
+			float delta = ambient_effect_wind_out_time - ambient_effect_wind_end;
+			float t;
+			if (delta != 0.f)
+			{
+				float cur_in = Device.fTimeGlobal - ambient_effect_wind_end;
+				t = cur_in / delta;
+			}
+			else
+			{
+				t = 0.f;
+			}
+			Environment().wind_strength_factor = Environment().wind_blast_strength_start_value + t * (Environment().wind_blast_strength_stop_value - Environment().wind_blast_strength_start_value);
+		}
+		if (Device.fTimeGlobal > ambient_effect_wind_out_time && ambient_effect_wind_out_time != 0.f)
+		{
+			Environment().wind_strength_factor = 0.0;
+		}
+
+		// if particles not playing - destroy
+		if (ambient_particles && !ambient_particles->IsPlaying())
+			CParticlesObject::Destroy(ambient_particles);
+	}
+}
+#else
+void CGamePersistent::WeathersUpdate()
+{
+	if (g_pGameLevel && !g_dedicated_server)
+	{
+		CActor* actor = smart_cast<CActor*>(Level().CurrentViewEntity());
+		BOOL bIndoor = TRUE;
+		if (actor) bIndoor = actor->renderable_ROS()->get_luminocity_hemi() < 0.05f;
+
+		int data_set = (Random.randF() < (1.f - Environment().CurrentEnv->weight)) ? 0 : 1;
+
+		CEnvDescriptor* const _env = Environment().Current[data_set];
+		VERIFY(_env);
+
+		CEnvAmbient* env_amb = _env->env_ambient;
+
+		// start sound
+		if (env_amb)
+		{
+			if (Device.dwTimeGlobal > ambient_sound_next_time)
+			{
+				ref_sound* snd = env_amb->get_rnd_sound();
+				ambient_sound_next_time = Device.dwTimeGlobal + env_amb->get_rnd_sound_time();
+				if (snd)
+				{
 					Fvector	pos;
-					float	angle		= ::Random.randF(PI_MUL_2);
-					pos.x				= _cos(angle);
-					pos.y				= 0;
-					pos.z				= _sin(angle);
-					pos.normalize		().mul(env_amb->get_rnd_sound_dist()).add(Device.vCameraPosition);
-					pos.y				+= 10.f;
-					snd->play_at_pos	(0,pos);
+					float	angle = ::Random.randF(PI_MUL_2);
+					pos.x = _cos(angle);
+					pos.y = 0;
+					pos.z = _sin(angle);
+					pos.normalize().mul(env_amb->get_rnd_sound_dist()).add(Device.vCameraPosition);
+					pos.y += 10.f;
+					snd->play_at_pos(0, pos);
 				}
 			}
 
 			// start effect
-			if ((FALSE==bIndoor) && (0==ambient_particles) && Device.dwTimeGlobal>ambient_effect_next_time){
-				CEnvAmbient::SEffect* eff			= env_amb->get_rnd_effect(); 
-				if (eff){
-					Environment().wind_gust_factor	= eff->wind_gust_factor;
-					ambient_effect_next_time		= Device.dwTimeGlobal + env_amb->get_rnd_effect_time();
-					ambient_effect_stop_time		= Device.dwTimeGlobal + eff->life_time;
-					ambient_particles				= CParticlesObject::Create(eff->particles.c_str(),FALSE,false);
-					Fvector pos; pos.add			(Device.vCameraPosition,eff->offset); 
-					ambient_particles->play_at_pos	(pos);
-					if (eff->sound._handle())		eff->sound.play_at_pos(0,pos);
+			if ((FALSE == bIndoor) && (0 == ambient_particles) && Device.dwTimeGlobal > ambient_effect_next_time) {
+				CEnvAmbient::SEffect* eff = env_amb->get_rnd_effect();
+				if (eff) {
+					Environment().wind_gust_factor = eff->wind_gust_factor;
+					ambient_effect_next_time = Device.dwTimeGlobal + env_amb->get_rnd_effect_time();
+					ambient_effect_stop_time = Device.dwTimeGlobal + eff->life_time;
+					ambient_particles = CParticlesObject::Create(eff->particles.c_str(), FALSE, false);
+					Fvector pos; pos.add(Device.vCameraPosition, eff->offset);
+					ambient_particles->play_at_pos(pos);
+					if (eff->sound._handle())		eff->sound.play_at_pos(0, pos);
 				}
 			}
 		}
 		// stop if time exceed or indoor
-		if (bIndoor || Device.dwTimeGlobal>=ambient_effect_stop_time){
+		if (bIndoor || Device.dwTimeGlobal >= ambient_effect_stop_time) {
 			if (ambient_particles)					ambient_particles->Stop();
-			Environment().wind_gust_factor			= 0.f;
+			Environment().wind_gust_factor = 0.f;
 		}
 		// if particles not playing - destroy
-		if (ambient_particles&&!ambient_particles->IsPlaying())
+		if (ambient_particles && !ambient_particles->IsPlaying())
 			CParticlesObject::Destroy(ambient_particles);
 	}
 }
+#endif
 
 #include "UI/UIGameTutorial.h"
 
@@ -269,10 +467,8 @@ void CGamePersistent::update_logo_intro			()
 	}
 }
 
-void CGamePersistent::start_game_intro		()
+void CGamePersistent::start_game_intro()
 {
-
-
 	if (g_pGameLevel && g_pGameLevel->bReady && Device.dwPrecacheFrame<=2){
 		m_intro_event.bind		(this,&CGamePersistent::update_game_intro);
 		if (0==stricmp(m_game_params.m_new_or_load,"new")){
@@ -285,11 +481,16 @@ void CGamePersistent::start_game_intro		()
 }
 void CGamePersistent::update_game_intro			()
 {
-	if(m_intro && (false==m_intro->IsActive())){
-		xr_delete				(m_intro);
-		m_intro_event			= 0;
+	if (!m_intro)
+		m_intro_event = 0;
+	else if (!m_intro->IsActive())
+	{
+		xr_delete(m_intro);
+		m_intro_event = 0;
 	}
 }
+
+
 #include "holder_custom.h"
 extern CUISequencer * g_tutorial;
 extern CUISequencer * g_tutorial2;
@@ -308,7 +509,20 @@ void CGamePersistent::OnFrame	()
 #ifdef DEBUG
 	++m_frame_counter;
 #endif
-	if (!m_intro_event.empty())	m_intro_event();
+	if (!m_intro_event.empty() && !load_screen_renderer.b_registered)
+		m_intro_event();
+
+	if (Device.dwPrecacheFrame == 0 && load_screen_renderer.b_registered && !GameAutopaused) {
+		if (psActorFlags.test(AF_KEYPRESS_ON_START)) {
+			Device.Pause(TRUE, TRUE, TRUE, "AUTOPAUSE_START");
+			pApp->LoadForceFinish();
+			LoadTitle("st_press_any_key");
+			GameAutopaused = true;
+		}
+		else {
+			load_screen_renderer.stop();
+		}
+	}
 
 	if( !m_pMainMenu->IsActive() )
 		m_pMainMenu->DestroyInternal(false);
@@ -385,6 +599,7 @@ void CGamePersistent::OnFrame	()
 	if ((m_last_stats_frame + 1) < m_frame_counter)
 		profiler().clear		();
 #endif
+	//UpdateDof();
 }
 
 #include "game_sv_single.h"
@@ -465,12 +680,142 @@ void CGamePersistent::OnRenderPPUI_PP()
 {
 	MainMenu()->OnRenderPPUI_PP();
 }
-#include "string_table.h"
-#include "../xr_3da/x_ray.h"
-void CGamePersistent::LoadTitle(LPCSTR str)
+
+void CGamePersistent::LoadTitle(const char* str)
 {
-	string512			buff;
-	sprintf_s				(buff, "%s", CStringTable().translate(str).c_str());
-	pApp->LoadTitleInt	(buff);
-//	pApp->LoadTitleInt(str);
+	pApp->SetLoadStageTitle(CStringTable().translate(str).c_str());
+	pApp->LoadStage();
+}
+
+bool CGamePersistent::CanBePaused()
+{
+	return (g_pGamePersistent->GameType() == GAME_SINGLE) || (g_pGameLevel && Level().IsDemoPlay());
+}
+
+bool CGamePersistent::OnKeyboardPress(int dik)
+{
+	if (psActorFlags.test(AF_KEYPRESS_ON_START) && GameAutopaused) {
+		Device.Pause(FALSE, TRUE, TRUE, "AUTOPAUSE_END");
+		load_screen_renderer.stop();
+		GameAutopaused = false;
+		return true;
+	}
+
+	return false;
+}
+
+void CGamePersistent::SetPickableEffectorDOF(bool bSet)
+{
+	m_bPickableDOF = bSet;
+	if(!bSet)
+		RestoreEffectorDOF();
+}
+
+void CGamePersistent::GetCurrentDof(Fvector3& dof)
+{
+	dof = m_dof[1];
+}
+
+void CGamePersistent::SetBaseDof(const Fvector3& dof)
+{
+	m_dof[0]=m_dof[1]=m_dof[2]=m_dof[3]	= dof;
+}
+
+void CGamePersistent::SetEffectorDOF(const Fvector& needed_dof)
+{
+	if(m_bPickableDOF)	return;
+	m_dof[0]	= needed_dof;
+	m_dof[2]	= m_dof[1]; //current
+}
+
+void CGamePersistent::RestoreEffectorDOF()
+{
+	SetEffectorDOF			(m_dof[3]);
+}
+#include "hudmanager.h"
+
+//	m_dof		[4];	// 0-dest 1-current 2-from 3-original
+void CGamePersistent::UpdateDof()
+{
+	static float diff_far	= READ_IF_EXISTS( pSettings, r_float, "zone_pick_dof", "far", 10. );
+	static float diff_near	= READ_IF_EXISTS( pSettings, r_float, "zone_pick_dof", "near", -1500. );
+
+	if(m_bPickableDOF)
+	{
+		Fvector pick_dof;
+		pick_dof.y	= HUD().GetCurrentRayQuery().range;
+		pick_dof.x	= pick_dof.y+diff_near;
+		pick_dof.z	= pick_dof.y+diff_far;
+		m_dof[0]	= pick_dof;
+		m_dof[2]	= m_dof[1]; //current
+	}
+	if(m_dof[1].similar(m_dof[0]))
+						return;
+
+	float td			= Device.fTimeDelta;
+	Fvector				diff;
+	diff.sub			(m_dof[0], m_dof[2]);
+	diff.mul			(td/0.2f); //0.2 sec
+	m_dof[1].add		(diff);
+	(m_dof[0].x<m_dof[2].x)?clamp(m_dof[1].x,m_dof[0].x,m_dof[2].x):clamp(m_dof[1].x,m_dof[2].x,m_dof[0].x);
+	(m_dof[0].y<m_dof[2].y)?clamp(m_dof[1].y,m_dof[0].y,m_dof[2].y):clamp(m_dof[1].y,m_dof[2].y,m_dof[0].y);
+	(m_dof[0].z<m_dof[2].z)?clamp(m_dof[1].z,m_dof[0].z,m_dof[2].z):clamp(m_dof[1].z,m_dof[2].z,m_dof[0].z);
+}
+
+void CGamePersistent::SetPickableEffectorDOF(bool bSet)
+{
+	m_bPickableDOF = bSet;
+	if(!bSet)
+		RestoreEffectorDOF();
+}
+
+void CGamePersistent::GetCurrentDof(Fvector3& dof)
+{
+	dof = m_dof[1];
+}
+
+void CGamePersistent::SetBaseDof(const Fvector3& dof)
+{
+	m_dof[0]=m_dof[1]=m_dof[2]=m_dof[3]	= dof;
+}
+
+void CGamePersistent::SetEffectorDOF(const Fvector& needed_dof)
+{
+	if(m_bPickableDOF)	return;
+	m_dof[0]	= needed_dof;
+	m_dof[2]	= m_dof[1]; //current
+}
+
+void CGamePersistent::RestoreEffectorDOF()
+{
+	SetEffectorDOF			(m_dof[3]);
+}
+#include "hudmanager.h"
+
+//	m_dof		[4];	// 0-dest 1-current 2-from 3-original
+void CGamePersistent::UpdateDof()
+{
+	static float diff_far	= READ_IF_EXISTS( pSettings, r_float, "zone_pick_dof", "far", 10. );
+	static float diff_near	= READ_IF_EXISTS( pSettings, r_float, "zone_pick_dof", "near", -1500. );
+
+	if(m_bPickableDOF)
+	{
+		Fvector pick_dof;
+		pick_dof.y	= HUD().GetCurrentRayQuery().range;
+		pick_dof.x	= pick_dof.y+diff_near;
+		pick_dof.z	= pick_dof.y+diff_far;
+		m_dof[0]	= pick_dof;
+		m_dof[2]	= m_dof[1]; //current
+	}
+	if(m_dof[1].similar(m_dof[0]))
+						return;
+
+	float td			= Device.fTimeDelta;
+	Fvector				diff;
+	diff.sub			(m_dof[0], m_dof[2]);
+	diff.mul			(td/0.2f); //0.2 sec
+	m_dof[1].add		(diff);
+	(m_dof[0].x<m_dof[2].x)?clamp(m_dof[1].x,m_dof[0].x,m_dof[2].x):clamp(m_dof[1].x,m_dof[2].x,m_dof[0].x);
+	(m_dof[0].y<m_dof[2].y)?clamp(m_dof[1].y,m_dof[0].y,m_dof[2].y):clamp(m_dof[1].y,m_dof[2].y,m_dof[0].y);
+	(m_dof[0].z<m_dof[2].z)?clamp(m_dof[1].z,m_dof[0].z,m_dof[2].z):clamp(m_dof[1].z,m_dof[2].z,m_dof[0].z);
 }

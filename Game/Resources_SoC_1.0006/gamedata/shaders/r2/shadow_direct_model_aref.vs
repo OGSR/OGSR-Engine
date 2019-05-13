@@ -9,8 +9,7 @@ v_shadow_direct_aref 	_main	( v_model	I )
 	float4 	hpos 	= mul	(m_WVP,	I.P	);
 	O.hpos 	= hpos;
 	O.tc0 	= I.tc;
-//	O.tc0.xy  += ogse_c_jitter.xy;
-#if defined(USE_PCSS) || !defined(USE_HWSMAP)
+#ifndef USE_HWSMAP
 	O.depth = O.hpos.z;
 #endif
  	return	O;
@@ -34,11 +33,11 @@ v_shadow_direct_aref 	main(v_model_skinned_2 v) 	{ return _main(skinning_2(v)); 
 #endif
 
 #ifdef	SKIN_3
-v_shadow_direct_aref	main(v_model_skinned_3 v) 	{ return _main(skinning_3(v)); }
+v_shadow_direct_aref 	main(v_model_skinned_3 v) 	{ return _main(skinning_3(v)); }
 #endif
 
 #ifdef	SKIN_4
-v_shadow_direct_aref	main(v_model_skinned_4 v) 	{ return _main(skinning_4(v)); }
+v_shadow_direct_aref 	main(v_model_skinned_4 v) 	{ return _main(skinning_4(v)); }
 #endif
 
 FXVS;

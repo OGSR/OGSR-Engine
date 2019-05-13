@@ -234,16 +234,6 @@ IC int xr_strcpy(LPSTR destination, size_t const destination_size, LPCSTR source
 	return strncpy_s(destination, destination_size, source, destination_size);
 }
 
-IC char* xr_strcat(char* strDestination,   size_t sizeInBytes,   const char *strSource)
-{
-	return strncat(strDestination, strSource, sizeInBytes);
-}
-
-IC char* xr_strcat(char* strDestination,  const char *strSource)
-{
-	return strcat(strDestination, strSource);
-}
-
 inline int xr_sprintf	( char* destination, size_t const buffer_size, const char* format_string, ... )
 {
 	va_list args;
@@ -263,3 +253,5 @@ inline int __cdecl xr_sprintf(char(&destination)[count], const char* format_stri
 	va_start(args, format_string);
 	return vsprintf_s(destination, count, format_string, args);
 }
+
+#define xr_strcat strcat_s
