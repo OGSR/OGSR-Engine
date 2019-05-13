@@ -22,7 +22,6 @@
     <ProjectGuid>{3F383D3C-FCD8-4170-990B-EB4833F09248}</ProjectGuid>
     <RootNamespace>xrRender_R3</RootNamespace>
     <Keyword>Win32Proj</Keyword>
-    <WindowsTargetPlatformVersion>8.1</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
@@ -389,7 +388,7 @@
     <ClInclude Include="dx10MinMaxSMBlender.h" />
     <ClInclude Include="light.h" />
     <ClInclude Include="light_gi.h" />
-    <ClInclude Include="Light_Render_Direct.h" />
+    <ClInclude Include="..\xrRender\Light_Render_Direct.h" />
     <ClInclude Include="light_smapvis.h" />
     <ClInclude Include="r2_types.h" />
     <ClInclude Include="r3.h" />
@@ -553,8 +552,8 @@
     <ClCompile Include="blender_ssao.cpp" />
     <ClCompile Include="dx10MinMaxSMBlender.cpp" />
     <ClCompile Include="light_GI.cpp" />
-    <ClCompile Include="Light_Render_Direct.cpp" />
-    <ClCompile Include="Light_Render_Direct_ComputeXFS.cpp" />
+    <ClCompile Include="..\xrRender\Light_Render_Direct.cpp" />
+    <ClCompile Include="..\xrRender\Light_Render_Direct_ComputeXFS.cpp" />
     <ClCompile Include="light_smapvis.cpp" />
     <ClCompile Include="light_vis.cpp" />
     <ClCompile Include="r2_blenders.cpp" />

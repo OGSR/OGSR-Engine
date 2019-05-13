@@ -29,7 +29,7 @@ public:
 	
 	virtual		void		Render_First			(){;}
 	virtual		void		Render_Last				(){;}
-	virtual		void		Render_Actor_Shadow		(){;}	// added by KD
+	virtual		void		Render_Actor_Shadow() = 0;	// added by KD
 	
 	virtual		void		OnFrame					(){;}
 	virtual		void		OnEvent					(EVENT E, u64 P1, u64 P2){;}

@@ -412,7 +412,7 @@
     <ClInclude Include="DetailFormat.h" />
     <ClInclude Include="light.h" />
     <ClInclude Include="light_gi.h" />
-    <ClInclude Include="Light_Render_Direct.h" />
+    <ClInclude Include="..\xrRender\Light_Render_Direct.h" />
     <ClInclude Include="light_smapvis.h" />
     <ClInclude Include="r2.h" />
     <ClInclude Include="r2_rendertarget.h" />
@@ -551,8 +551,8 @@
     <ClCompile Include="blender_luminance.cpp" />
     <ClCompile Include="blender_ssao.cpp" />
     <ClCompile Include="light_GI.cpp" />
-    <ClCompile Include="Light_Render_Direct.cpp" />
-    <ClCompile Include="Light_Render_Direct_ComputeXFS.cpp" />
+    <ClCompile Include="..\xrRender\Light_Render_Direct.cpp" />
+    <ClCompile Include="..\xrRender\Light_Render_Direct_ComputeXFS.cpp" />
     <ClCompile Include="light_smapvis.cpp" />
     <ClCompile Include="light_vis.cpp" />
     <ClCompile Include="r2.cpp" />

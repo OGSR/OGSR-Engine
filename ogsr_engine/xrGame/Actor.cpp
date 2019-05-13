@@ -1171,14 +1171,8 @@ void CActor::shedule_Update	(u32 DT)
 #include "debug_renderer.h"
 void CActor::renderable_Render	()
 {
-	inherited::renderable_Render();
-	if (!HUDview()) {
-		CInventoryOwner::renderable_Render();
-	}
-
-#pragma todo("KRodin: это тень от ГГ? Надо подумать как вернуть в новом варианте.")
-	/*
 	inherited::renderable_Render			();
+
 	if ((cam_active==eacFirstEye &&									// first eye cam
 		::Render->get_generation() == ::Render->GENERATION_R2 &&	// R2
 		::Render->active_phase() ==	1)								// shadow map rendering on R2
@@ -1190,7 +1184,6 @@ void CActor::renderable_Render	()
 		((!m_holder) || (m_holder && m_holder->allowWeapon() && m_holder->HUDView())))
 		)
 		CInventoryOwner::renderable_Render	();
-	*/
 }
 
 BOOL CActor::renderable_ShadowGenerate	() 
