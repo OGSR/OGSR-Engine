@@ -70,6 +70,7 @@ class CPHJoint: public CPhysicsJoint{
 	virtual		void 					SetAxisDir					(const Fvector& orientation,const int axis_num)																											{SetAxisDir(orientation.x,orientation.y,orientation.z,axis_num)	;}	
 	virtual		void 					SetAxisDirVsFirstElement	(const Fvector& orientation,const int axis_num)																							{SetAxisDirVsFirstElement(orientation.x,orientation.y,orientation.z,axis_num)	;}
 	virtual		void 					SetAxisDirVsSecondElement	(const Fvector& orientation,const int axis_num)																							{SetAxisDirVsSecondElement(orientation.x,orientation.y,orientation.z,axis_num)	;}
+    virtual void SetAxisDirDynamic(const Fvector& orientation, const int axis_num);
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	virtual		void 					SetLimits					(const float low,const float high,const int axis_num)																																									;
 	virtual		void 					SetLimitsVsFirstElement		(const float low,const float high,const int axis_num)																																									;
