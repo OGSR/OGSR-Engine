@@ -820,7 +820,6 @@ void		xrRender_initconsole	()
 
 	CMD3(CCC_Mask, "r2_shader_cache", &ps_r2_ls_flags_ext, R2FLAGEXT_SHADER_CACHE);
 	CMD3(CCC_Mask, "r2_disable_hom", &ps_r2_ls_flags_ext, R2FLAGEXT_DISABLE_HOM);
-	CMD3( CCC_Mask, "r2_ignore_actor_torch", &ps_r2_ls_flags_ext, R2FLAGEXT_IGNORE_ACTOR_TORCH );
 
 	CMD3(CCC_Mask,  "r2_rain_drops", &ps_r2_ls_flags_ext, R2FLAGEXT_RAIN_DROPS);
 	CMD3(CCC_Mask,  "r2_rain_drops_control", &ps_r2_ls_flags_ext, R2FLAGEXT_RAIN_DROPS_CONTROL);
