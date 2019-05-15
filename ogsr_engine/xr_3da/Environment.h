@@ -294,6 +294,7 @@ public:
 
 	EnvVec*    NextWeather;
 	shared_str NextWeatherName;
+	shared_str NextWeatherName2;
 	float      NextWeatherTime;
 
 	EnvsMap					WeatherCycles;
@@ -339,7 +340,7 @@ public:
 
 	void					SetWeather			(shared_str name, bool forced=false);
     shared_str				GetWeather			()					{ return CurrentWeatherName;}
-	void					SetWeatherNext( shared_str name, float time );
+    void					SetWeatherNext( shared_str name, float time, bool forced = false );
 	void					ChangeGameTime		(float game_time);
 	void					SetGameTime			(float game_time, float time_factor);
 
