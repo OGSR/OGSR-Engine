@@ -236,6 +236,7 @@ public:
 	  pickup_check_overlaped     = 1ull << 40,
 	  wallmarks_on_static_only   = 1ull << 41,
 	  actor_thirst               = 1ull << 42;
+	  no_progress_bar_animation  = 1ull << 43;
 	};
 
 	void		_initialize	(LPCSTR ApplicationName, LogCallback cb=0, BOOL init_fs=TRUE, LPCSTR fs_fname=0);
