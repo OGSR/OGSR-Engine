@@ -19,6 +19,7 @@ CUIProgressBar::CUIProgressBar()
 	m_inertion = 0.0f;
 	m_last_render_frame = u32(-1);
 	m_orient_mode = om_horz;
+        m_animated = !Core.Features.test( xrCore::Feature::no_progress_bar_animation );
 }
 
 void CUIProgressBar::InitProgressBar(Fvector2 pos, Fvector2 size, EOrientMode mode)
@@ -71,6 +72,8 @@ void CUIProgressBar::SetProgressPos(float _Pos)
 {
 	m_ProgressPos.y = _Pos;
 	clamp(m_ProgressPos.y, m_MinPos, m_MaxPos);
+        if ( !m_animated && m_last_render_frame + 1 != Device.dwFrame )
+          m_ProgressPos.x = m_ProgressPos.y;
 	UpdateProgressBar();
 }
 
