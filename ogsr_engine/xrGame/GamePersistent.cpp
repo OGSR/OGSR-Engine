@@ -599,7 +599,8 @@ void CGamePersistent::OnFrame	()
 	if ((m_last_stats_frame + 1) < m_frame_counter)
 		profiler().clear		();
 #endif
-	//UpdateDof();
+	if ( psActorFlags.test( AF_DOF_ZOOM ) )
+		UpdateDof();
 }
 
 #include "game_sv_single.h"
