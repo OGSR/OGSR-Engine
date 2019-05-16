@@ -2,32 +2,32 @@
 #include "shared\waterconfig.h"
 #include "shared\watermove.h"
 
-struct        v_vert
+struct	v_vert
 {
-        float4         P        : POSITION;        // (float,float,float,1)
-        float4        N        : NORMAL;        // (nx,ny,nz,hemi occlusion)
-        float4         T        : TANGENT;
-        float4         B        : BINORMAL;
-        float4        color        : COLOR0;        // (r,g,b,dir-occlusion)
-        float2         uv        : TEXCOORD0;        // (u0,v0)
+	float4		P		:	POSITION;	// (float,float,float,1)
+	float4		N		:	NORMAL;		// (nx,ny,nz,hemi occlusion)
+	float4		T		:	TANGENT;
+	float4		B		:	BINORMAL;
+	float4		color		:	COLOR0;		// (r,g,b,dir-occlusion)
+	float2		uv		:	TEXCOORD0;	// (u0,v0)
 };
-struct   vf
+struct	vf
 {
-        float4      hpos        :         POSITION        ;
-        float2  	tbase        :           TEXCOORD0        ;  // base
-        float2      tnorm0        :        TEXCOORD1        ;  // nm0
-        float2      tnorm1        :        TEXCOORD2        ;  // nm1
-        half3       M1        :        TEXCOORD3        ;
-        half3       M2        :        TEXCOORD4        ;
-        half3       M3        	:        TEXCOORD5        ;
-        half3       v2point     :        TEXCOORD6        ;
+	float4		hpos		:	POSITION;
+	float2		tbase		:	TEXCOORD0;	// base
+	float2		tnorm0		:	TEXCOORD1;	// nm0
+	float2		tnorm1		:	TEXCOORD2;	// nm1
+	half3		M1		:	TEXCOORD3;
+	half3		M2		:	TEXCOORD4;
+	half3		M3		:	TEXCOORD5;
+	half3		v2point		:	TEXCOORD6;
 #ifdef	USE_SOFT_WATER
 #ifdef	NEED_SOFT_WATER
-	float4      tctexgen    :         TEXCOORD7        ;
+	float4		tctexgen	:	TEXCOORD7;
 #endif	//	USE_SOFT_WATER
 #endif	//	NEED_SOFT_WATER	
-        half4        c0        :          COLOR0                ;
-        float          fog        :         FOG                ;
+	half4		c0		:	COLOR0;
+	float		fog		:	FOG;
 };
 
 vf main(v_vert v)
@@ -78,7 +78,7 @@ vf main(v_vert v)
         o.hpos                 = mul                        (m_VP, P);                        // xform, input in world coords
 		o.fog       = saturate(calc_fogging  (v.P));
 
-		o.c0		= float4		(L_final,o.fog);
+		o.c0		= float4		(L_final,1);
 
 //	Igor: for additional depth dest
 #ifdef	USE_SOFT_WATER
