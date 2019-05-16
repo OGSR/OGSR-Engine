@@ -234,7 +234,7 @@ bool SDrawStaticStruct::IsActual()
 
 void SDrawStaticStruct::Draw()
 {
-	if(m_static)
+	if ( m_static && m_static->IsShown() )
 		m_static->Draw();
 }
 
