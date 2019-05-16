@@ -393,7 +393,6 @@ void					CRender::create					()
 		R_CHK(HW.pDevice->CreateQuery(&qdesc,&q_sync_point[i]));
 	q_sync_point[0]->End();
 
-	xrRender_apply_tf			();
 	::PortalTraverser.initialize();
 #ifdef DX10_FLUID_ENABLE
 	FluidManager.Initialize( 70, 70, 70 );
@@ -484,7 +483,6 @@ void CRender::reset_end()
 	}
 	//-AVO
 
-	xrRender_apply_tf			();
 #ifdef DX10_FLUID_ENABLE
 	FluidManager.SetScreenSize(Device.dwWidth, Device.dwHeight);
 #endif

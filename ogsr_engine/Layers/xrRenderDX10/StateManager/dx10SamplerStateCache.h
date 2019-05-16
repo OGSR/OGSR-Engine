@@ -31,7 +31,8 @@ public:
 	void	CSApplySamplers(HArray &samplers);
 #endif
 
-	void	SetMaxAnisotropy( UINT uiMaxAniso);
+	void SetMaxAnisotropy(u32 uiMaxAniso);
+	void SetMipLODBias(float uiMipLODBias);
 
 	//	Marks all device sample as unused
 	void	ResetDeviceState();
@@ -74,6 +75,7 @@ private:
 #endif
 
 	u32						m_uiMaxAnisotropy;
+	float m_uiMipLODBias;
 };
 
 extern	dx10SamplerStateCache	SSManager;
