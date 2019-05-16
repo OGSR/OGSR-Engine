@@ -231,7 +231,7 @@ public:
 	  show_objectives_ondemand   = 1ull << 39,
 	  pickup_check_overlaped     = 1ull << 40,
 	  wallmarks_on_static_only   = 1ull << 41,
-	  actor_thirst               = 1ull << 42;
+	  actor_thirst               = 1ull << 42,
 	  no_progress_bar_animation  = 1ull << 43;
 	};
 
