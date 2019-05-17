@@ -292,6 +292,10 @@ public:
     shared_str				CurrentWeatherName;
 	shared_str				CurrentCycleName;
 
+	EnvVec*    NextWeather;
+	shared_str NextWeatherName;
+	float      NextWeatherTime;
+
 	EnvsMap					WeatherCycles;
 	EnvsMap					WeatherFXs;
 	xr_vector<CEnvModifier>	Modifiers;
@@ -335,6 +339,7 @@ public:
 
 	void					SetWeather			(shared_str name, bool forced=false);
     shared_str				GetWeather			()					{ return CurrentWeatherName;}
+	void					SetWeatherNext( shared_str name, float time );
 	void					ChangeGameTime		(float game_time);
 	void					SetGameTime			(float game_time, float time_factor);
 

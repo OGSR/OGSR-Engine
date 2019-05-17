@@ -203,6 +203,7 @@ enum
 	R2FLAGEXT_RAIN_DROPS = 1 << 12,
 	R2FLAGEXT_RAIN_DROPS_CONTROL = 1 << 13,
 	R2FLAGEXT_IGNORE_ACTOR_TORCH = 1 << 14,
+	R2FLAGEXT_ACTOR_SHADOW = 1 << 15,
 };
 
 extern void						xrRender_initconsole	();

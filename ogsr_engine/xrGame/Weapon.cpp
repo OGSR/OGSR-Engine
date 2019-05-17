@@ -1535,6 +1535,9 @@ void CWeapon::OnZoomIn()
 	if(GetHUDmode())
 		GamePersistent().SetPickableEffectorDOF(true);
 
+	if(GetHUDmode())
+		GamePersistent().SetPickableEffectorDOF(true);
+
 	CActor* pActor = smart_cast<CActor*>(H_Parent());
 	if ( pActor )
 		pActor->callback(GameObject::eOnActorWeaponZoomIn)(lua_game_object());
