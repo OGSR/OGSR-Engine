@@ -735,18 +735,17 @@ void CGamePersistent::RestoreEffectorDOF()
 }
 #include "hudmanager.h"
 
+int g_dof_zoom_far  = 100;
+int g_dof_zoom_near = 50;
 //	m_dof		[4];	// 0-dest 1-current 2-from 3-original
 void CGamePersistent::UpdateDof()
 {
-	static float diff_far	= READ_IF_EXISTS( pSettings, r_float, "zone_pick_dof", "far", 10. );
-	static float diff_near	= READ_IF_EXISTS( pSettings, r_float, "zone_pick_dof", "near", -1500. );
-
 	if(m_bPickableDOF)
 	{
 		Fvector pick_dof;
 		pick_dof.y	= HUD().GetCurrentRayQuery().range;
-		pick_dof.x	= pick_dof.y+diff_near;
-		pick_dof.z	= pick_dof.y+diff_far;
+		pick_dof.x	= pick_dof.y - g_dof_zoom_near;
+		pick_dof.z	= pick_dof.y + g_dof_zoom_far;
 		m_dof[0]	= pick_dof;
 		m_dof[2]	= m_dof[1]; //current
 	}
