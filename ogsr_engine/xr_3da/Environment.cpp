@@ -44,11 +44,7 @@ const float MAX_DIST_FACTOR = 0.95f;
 //////////////////////////////////////////////////////////////////////////
 // environment
 CEnvironment::CEnvironment	() :
-	CurrentEnv				(0),
-	NextWeather( nullptr ),
-	NextWeatherName( 0 ),
-	NextWeatherName2( 0 ),
-	NextWeatherTime( 0.f )
+	CurrentEnv				(0)
 #ifdef USE_COP_WEATHER_CONFIGS
 	, m_ambients_config		(0)
 #endif
@@ -308,6 +304,7 @@ void CEnvironment::SetWeather(shared_str name, bool forced)
 		CurrentCycleName	= it->first;
 		if (forced)			{Invalidate();			}
 		if (!bWFX){
+			PrevWeatherName = ( forced || CurrentWeatherName.size() == 0 ) ? it->first : CurrentWeatherName;
 			CurrentWeather		= &it->second;
 			CurrentWeatherName	= it->first;
 		}
@@ -446,21 +443,11 @@ void CEnvironment::SelectEnvs(float gt)
 		}
 		if (bSelect){
 			Current[0]	= Current[1];
-			if ( NextWeatherName2.size() ) {
-			  SetWeather( NextWeatherName2 );
-			  NextWeatherName2 = 0;
-			}
 			SelectEnv	(CurrentWeather,Current[1],gt);
 #ifdef WEATHER_LOGGING
 			Msg			("Weather: '%s' Desc: '%s' Time: %3.2f/%3.2f",CurrentWeatherName.c_str(),Current[1]->m_identifier.c_str(),Current[1]->exec_time,fGameTime);
 #endif
 		}
-    }
-
-    if ( NextWeather && Current[ 1 ]->exec_time >= NextWeatherTime ) {
-      SelectEnv( NextWeather, Current[ 1 ], gt );
-      NextWeatherName2 = NextWeatherName;
-      NextWeather = nullptr;
     }
 }
 
@@ -718,16 +705,13 @@ void CEnvironment::ForceReselectEnvs() {
 }
 
 
-void CEnvironment::SetWeatherNext( shared_str name, float time, bool forced ) {
+void CEnvironment::SetWeatherNext( shared_str name ) {
   ASSERT_FMT( name.size(), "empty weather name" );
   EnvsMapIt it = WeatherCycles.find( name );
   if ( it == WeatherCycles.end() ) {
     Msg("! [%s]: Invalid weather name: %s", __FUNCTION__, name.c_str());
     return;
   }
-  NextWeather     = &it->second;
-  NextWeatherName = it->first;
-  NextWeatherTime = time;
-  if ( forced )
-    NextWeatherName2 = 0;
+  EnvVec* NextWeather = &it->second;
+  SelectEnv( NextWeather, Current[ 1 ], fGameTime );
 }

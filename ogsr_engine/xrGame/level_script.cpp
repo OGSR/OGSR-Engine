@@ -94,6 +94,11 @@ LPCSTR get_weather	()
 	return			(*g_pGamePersistent->Environment().GetWeather());
 }
 
+LPCSTR get_weather_prev	()
+{
+	return			(*g_pGamePersistent->Environment().GetPrevWeather());
+}
+
 void set_weather	(LPCSTR weather_name, bool forced)
 {
 	//KRodin: ТЧ погоду всегда надо обновлять форсировано, иначе она почему-то не всегда корректно обновляется. А для ЗП погоды так делать нельзя - будут очень резкие переходы!
@@ -103,8 +108,8 @@ void set_weather	(LPCSTR weather_name, bool forced)
 	g_pGamePersistent->Environment().SetWeather(weather_name, forced);
 }
 
-void set_weather_next( LPCSTR weather_name, float time ) {
-  g_pGamePersistent->Environment().SetWeatherNext( weather_name, time );
+void set_weather_next( LPCSTR weather_name ) {
+  g_pGamePersistent->Environment().SetWeatherNext( weather_name );
 }
 
 bool set_weather_fx	(LPCSTR weather_name)
@@ -982,6 +987,7 @@ void CLevel::script_register(lua_State *L)
 #endif
 		
 		def("get_weather",						get_weather),
+		def("get_weather_prev",						get_weather_prev),
 		def("set_weather",						set_weather),
 		def("set_weather_next",						set_weather_next),
 		def("set_weather_fx",					set_weather_fx),
