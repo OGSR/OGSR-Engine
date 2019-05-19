@@ -292,6 +292,7 @@ public:
     shared_str				CurrentWeatherName;
     shared_str				PrevWeatherName;
 	shared_str				CurrentCycleName;
+	u32 m_last_weather_shift;
 
 	EnvsMap					WeatherCycles;
 	EnvsMap					WeatherFXs;
@@ -340,6 +341,7 @@ public:
 	void					SetWeatherNext( shared_str name );
 	void					ChangeGameTime		(float game_time);
 	void					SetGameTime			(float game_time, float time_factor);
+	u32					GetWeatherLastShift() { return m_last_weather_shift; }
 
 	void					OnDeviceCreate		();
 	void					OnDeviceDestroy		();
