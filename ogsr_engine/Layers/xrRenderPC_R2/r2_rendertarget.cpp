@@ -728,9 +728,9 @@ bool CRenderTarget::need_to_render_sunshafts()
 
 	{
 		CEnvDescriptor&	E = *g_pGamePersistent->Environment().CurrentEnv;
-		float fValue = E.m_fSunShaftsIntensity;
-		//	TODO: add multiplication by sun color here
-		if (fValue<0.0001) return false;
+		Fcolor sun_color= ((light*)RImplementation.Lights.sun_adapted._get())->color; //dsh:
+		float fValue = E.m_fSunShaftsIntensity * u_diffuse2s(sun_color.r,sun_color.g,sun_color.b);
+		if (fValue<EPS) return false;
 	}
 
 	return true;
