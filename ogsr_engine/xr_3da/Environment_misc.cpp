@@ -275,7 +275,7 @@ CEnvDescriptor::CEnvDescriptor() :
 	sun_color.set		(1,1,1);
 	sun_dir.set			(0,-1,0);
 
-	m_fSunShaftsIntensity = 0;
+	m_fSunShaftsIntensity = 1.f;
 	m_fWaterIntensity = 1;
 	m_fTreeAmplitudeIntensity = 0.01;
 
