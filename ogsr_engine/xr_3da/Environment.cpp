@@ -49,6 +49,7 @@ CEnvironment::CEnvironment	() :
 	, m_ambients_config		(0)
 #endif
 {
+	m_last_weather_shift = 0;
 	bNeed_re_create_env = FALSE;
 	bWFX					= false;
 	Current[0]				= 0;
@@ -433,6 +434,7 @@ void CEnvironment::SelectEnvs(float gt)
 		VERIFY			(!bWFX);
 		// first or forced start
 		SelectEnvs		(CurrentWeather,Current[0],Current[1],gt);
+		m_last_weather_shift = Device.dwFrame;
     }else{
 		bool bSelect	= false;
 		if (Current[0]->exec_time>Current[1]->exec_time){
@@ -444,6 +446,7 @@ void CEnvironment::SelectEnvs(float gt)
 		if (bSelect){
 			Current[0]	= Current[1];
 			SelectEnv	(CurrentWeather,Current[1],gt);
+			m_last_weather_shift = Device.dwFrame;
 #ifdef WEATHER_LOGGING
 			Msg			("Weather: '%s' Desc: '%s' Time: %3.2f/%3.2f",CurrentWeatherName.c_str(),Current[1]->m_identifier.c_str(),Current[1]->exec_time,fGameTime);
 #endif
