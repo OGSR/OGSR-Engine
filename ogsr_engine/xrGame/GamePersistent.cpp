@@ -20,6 +20,7 @@
 #include "ui/UILoadingScreen.h"
 #include "../xr_3da/x_ray.h"
 #include "string_table.h"
+#include "HUDManager.h"
 
 #ifndef MASTER_GOLD
 #	include "custommonster.h"
@@ -733,7 +734,47 @@ void CGamePersistent::RestoreEffectorDOF()
 {
 	SetEffectorDOF			(m_dof[3]);
 }
-#include "hudmanager.h"
+
+
+static BOOL pick_trace_callback( collide::rq_result& result, LPVOID params ) {
+  collide::rq_result* RQ = (collide::rq_result*)params;
+  if ( !result.O ) {
+    // получить треугольник и узнать его материал
+    CDB::TRI* T	= Level().ObjectSpace.GetStaticTris() + result.element;
+    if ( T->material < GMLib.CountMaterial() ) {
+      if ( GMLib.GetMaterialByIdx( T->material )->Flags.is( SGameMtl::flPassable ) )
+        return TRUE;
+      float vis = GMLib.GetMaterialByIdx( T->material )->fVisTransparencyFactor;
+      if ( !fis_zero( vis ) )
+        return TRUE;
+    }
+  }
+  *RQ = result;
+  return FALSE;
+}
+
+
+static float GetDofZoomDist() {
+  collide::rq_result& RQ = HUD().GetCurrentRayQuery();
+  if ( !RQ.O ) {
+    CDB::TRI* T = Level().ObjectSpace.GetStaticTris() + RQ.element;
+    if ( T->material < GMLib.CountMaterial() ) {
+      float vis = GMLib.GetMaterialByIdx( T->material )->fVisTransparencyFactor;
+      if ( !fis_zero( vis ) ) {
+        collide::rq_result  RQ2;
+        collide::rq_results RQR;
+        RQ2.range = GamePersistent().Environment().CurrentEnv->far_plane * 0.99f;
+        collide::ray_defs RD( Device.vCameraPosition, Device.vCameraDirection, RQ2.range, CDB::OPT_CULL, collide::rqtBoth );
+        if ( Level().ObjectSpace.RayQuery( RQR, RD, pick_trace_callback, &RQ2, NULL, Level().CurrentEntity() ) ) {
+          clamp( RQ2.range, RQ.range, RQ2.range );
+          return RQ2.range;
+        }
+      }
+    }
+  }
+  return RQ.range;
+}
+
 
 int g_dof_zoom_far  = 100;
 int g_dof_zoom_near = 50;
@@ -743,7 +784,7 @@ void CGamePersistent::UpdateDof()
 	if(m_bPickableDOF)
 	{
 		Fvector pick_dof;
-		pick_dof.y	= HUD().GetCurrentRayQuery().range;
+		pick_dof.y	= GetDofZoomDist();
 		pick_dof.x	= pick_dof.y - g_dof_zoom_near;
 		pick_dof.z	= pick_dof.y + g_dof_zoom_far;
 		m_dof[0]	= pick_dof;
