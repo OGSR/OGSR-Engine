@@ -275,7 +275,11 @@ CEnvDescriptor::CEnvDescriptor() :
 	sun_color.set		(1,1,1);
 	sun_dir.set			(0,-1,0);
 
+#ifdef USE_COP_WEATHER_CONFIGS
+	m_fSunShaftsIntensity = 0;
+#else
 	m_fSunShaftsIntensity = 1.f;
+#endif
 	m_fWaterIntensity = 1;
 	m_fTreeAmplitudeIntensity = 0.01;
 
