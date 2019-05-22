@@ -23,6 +23,7 @@
 #include "hit_memory_manager.h"
 #include "enemy_manager.h"
 #include "memory_space_impl.h"
+#include <bitset>
 
 const float wounded_enemy_reached_distance = 3.f;
 

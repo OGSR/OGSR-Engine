@@ -714,6 +714,8 @@ void CCC_Register()
 //	CMD4(CCC_Integer,	"rs_vb_size",			&rsDVB_Size,		32,		4096);
 //	CMD4(CCC_Integer,	"rs_ib_size",			&rsDIB_Size,		32,		4096);
 
+	CMD3(CCC_Mask, "rs_hw_stats", &psDeviceFlags, rsHWInfo);
+
 	// Texture manager	
 	CMD4(CCC_Integer,	"texture_lod",			&psTextureLOD,				0,	4	);
 

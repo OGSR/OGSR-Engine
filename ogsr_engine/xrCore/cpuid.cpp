@@ -100,4 +100,77 @@ _processor_info::_processor_info()
 	// All logical processors
 	coresCount = processorCoreCount;
 	threadCount = logicalProcessorCount;
+
+	SYSTEM_INFO sysInfo;
+	GetSystemInfo(&sysInfo);
+	m_dwNumberOfProcessors = sysInfo.dwNumberOfProcessors;
+	fUsage = std::make_unique<float[]>(m_dwNumberOfProcessors);
+	m_idleTime = std::make_unique<LARGE_INTEGER[]>(m_dwNumberOfProcessors);
+	perfomanceInfo = std::make_unique<SYSTEM_PROCESSOR_PERFORMANCE_INFORMATION[]>(m_dwNumberOfProcessors);
+}
+
+unsigned long long SubtractTimes(const FILETIME one, const FILETIME two)
+{
+	LARGE_INTEGER a, b;
+	a.LowPart = one.dwLowDateTime;
+	a.HighPart = one.dwHighDateTime;
+
+	b.LowPart = two.dwLowDateTime;
+	b.HighPart = two.dwHighDateTime;
+
+	return a.QuadPart - b.QuadPart;
+}
+
+bool _processor_info::getCPULoad(double &val)
+{
+	FILETIME sysIdle, sysKernel, sysUser;
+	// sysKernel include IdleTime
+	if (GetSystemTimes(&sysIdle, &sysKernel, &sysUser) == 0) // GetSystemTimes func FAILED return value is zero;
+		return false;
+
+	if (prevSysIdle.dwLowDateTime != 0 && prevSysIdle.dwHighDateTime != 0)
+	{
+		DWORDLONG sysIdleDiff, sysKernelDiff, sysUserDiff;
+		sysIdleDiff = SubtractTimes(sysIdle, prevSysIdle);
+		sysKernelDiff = SubtractTimes(sysKernel, prevSysKernel);
+		sysUserDiff = SubtractTimes(sysUser, prevSysUser);
+
+		DWORDLONG sysTotal = sysKernelDiff + sysUserDiff;
+		DWORDLONG kernelTotal = sysKernelDiff - sysIdleDiff; // kernelTime - IdleTime = kernelTime, because sysKernel include IdleTime
+
+		if (sysTotal > 0) // sometimes kernelTime > idleTime
+			val = (double)(((kernelTotal + sysUserDiff) * 100.0) / sysTotal);
+	}
+
+	prevSysIdle = sysIdle;
+	prevSysKernel = sysKernel;
+	prevSysUser = sysUser;
+
+	return true;
+}
+
+void _processor_info::MTCPULoad()
+{
+	using NTQUERYSYSTEMINFORMATION = NTSTATUS(NTAPI*)(SYSTEM_INFORMATION_CLASS, PVOID, ULONG, PULONG);
+	static auto m_pNtQuerySystemInformation = (NTQUERYSYSTEMINFORMATION)GetProcAddress(GetModuleHandle("ntdll.dll"), "NtQuerySystemInformation");
+
+	if (!NT_SUCCESS(m_pNtQuerySystemInformation(SystemProcessorPerformanceInformation, perfomanceInfo.get(), sizeof(SYSTEM_PROCESSOR_PERFORMANCE_INFORMATION) * (ULONG)m_dwNumberOfProcessors, nullptr)))
+		Msg("!![%s] Can't get NtQuerySystemInformation", __FUNCTION__);
+
+	DWORD dwTickCount = GetTickCount();
+	if (!m_dwCount) m_dwCount = dwTickCount;
+
+	for (DWORD i = 0; i < m_dwNumberOfProcessors; i++)
+	{
+		auto* cpuPerfInfo = &perfomanceInfo[i];
+		cpuPerfInfo->KernelTime.QuadPart -= cpuPerfInfo->IdleTime.QuadPart;
+
+		fUsage[i] = 100.0f - 0.01f * (cpuPerfInfo->IdleTime.QuadPart - m_idleTime[i].QuadPart) / ((dwTickCount - m_dwCount));
+		if (fUsage[i] < 0.0f) { fUsage[i] = 0.0f; }
+		if (fUsage[i] > 100.0f) { fUsage[i] = 100.0f; }
+
+		m_idleTime[i] = cpuPerfInfo->IdleTime;
+	}
+
+	m_dwCount = dwTickCount;
 }

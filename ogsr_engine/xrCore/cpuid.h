@@ -1,8 +1,9 @@
 #pragma once
 
 #include <bitset>
+#include <winternl.h>
 
-struct _processor_info final {
+struct XRCORE_API _processor_info final {
 
 	_processor_info();
 
@@ -31,11 +32,21 @@ struct _processor_info final {
 	bool hasAVX() const { return m_f1_ECX[28]; }
 	bool hasAVX2() const { return m_f7_EBX[5]; }
 
-protected:
+	bool getCPULoad(double &val);
+	void MTCPULoad();
+	DWORD m_dwNumberOfProcessors;
+	std::unique_ptr<float[]> fUsage;
+
+private:
 	std::bitset<32> m_f1_ECX;
 	std::bitset<32> m_f1_EDX;
 	std::bitset<32> m_f7_EBX;
 	std::bitset<32> m_f7_ECX;
 	std::bitset<32> m_f81_ECX;
 	std::bitset<32> m_f81_EDX;
+
+	DWORD m_dwCount = 0;
+	FILETIME prevSysIdle, prevSysKernel, prevSysUser;
+	std::unique_ptr<LARGE_INTEGER[]> m_idleTime;
+	std::unique_ptr<SYSTEM_PROCESSOR_PERFORMANCE_INFORMATION[]> perfomanceInfo;
 };
