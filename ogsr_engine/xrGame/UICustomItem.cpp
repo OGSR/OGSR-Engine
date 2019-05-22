@@ -8,7 +8,6 @@ CUICustomItem::CUICustomItem()
 	uFlags.zero();
 	iVisRect.set		(0,0,0,0);
 	iOriginalRect.set	(0,0,0,0);
-	eMirrorMode			= tmNone;
 	iHeadingPivot.set	(0,0); 
 	iHeadingOffset.set(0, 0);
 }
@@ -43,11 +42,6 @@ void CUICustomItem::Render(const Fvector2& pos, u32 color,  float x1, float y1, 
 	//текстурные координаты
 	LTt.set			( iOriginalRect.x1/ts.x, iOriginalRect.y1/ts.y);
 	RBt.set			( iOriginalRect.x2/ts.x, iOriginalRect.y2/ts.y);
-
-#pragma todo("KRodin: это случайно было не для правильного отображений крутящегося UI сейфа в огсе? Проверить, и раскомментировать обратно, если так.")
-	// Check mirror mode
-	//if (tmMirrorHorisontal == eMirrorMode || tmMirrorBoth == eMirrorMode)	std::swap(LTt.x, RBt.x);
-	//if (tmMirrorVertical == eMirrorMode || tmMirrorBoth == eMirrorMode)		std::swap(LTt.y, RBt.y);
 
 	float offset = -0.5f;
 	if (UI()->m_currentPointType == IUIRender::pttLIT)
@@ -122,11 +116,6 @@ void CUICustomItem::Render(const Fvector2& pos_ns, u32 color, float angle)
 	Fvector2							LTt,RBt;
 	LTt.set								(iOriginalRect.x1/ts.x+hp.x, iOriginalRect.y1/ts.y+hp.y);
 	RBt.set								(iOriginalRect.x2/ts.x+hp.x, iOriginalRect.y2/ts.y+hp.y);
-
-#pragma todo("KRodin: это случайно было не для правильного отображений крутящегося UI сейфа в огсе? Проверить, и раскомментировать обратно, если так.")
-	// Check mirror mode
-	//if (tmMirrorHorisontal == eMirrorMode || tmMirrorBoth == eMirrorMode)	std::swap	(LTt.x,RBt.x);
-	//if (tmMirrorVertical == eMirrorMode || tmMirrorBoth == eMirrorMode)		std::swap	(LTt.y,RBt.y);
 
 //	float kx = (UI()->is_16_9_mode())?0.8333f: 1.0f;
 	float kx = UI()->is_16_9_mode() ? UI()->get_current_kx() : 1.0f;

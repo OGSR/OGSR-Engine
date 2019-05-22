@@ -64,7 +64,6 @@ void CUIStaticItem::Render()
 	// convert&set pos
 	Fvector2		bp;
 	UI()->ClientToScreenScaled	(bp,float(iPos.x),float(iPos.y));
-#pragma todo("KRodin: 	UI()->AlignPixel(bp.x); ???")
 	bp.x						= (float)iFloor(bp.x);
 	bp.y						= (float)iFloor(bp.y);
 

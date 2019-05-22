@@ -412,7 +412,6 @@ void CEnvDescriptor::load(float exec_tm, LPCSTR S, CEnvironment& environment)
 	bolt_duration = (tb_id.size()) ? pSettings->r_float(m_identifier.c_str(), "bolt_duration") : 0.f;
 	env_ambient = pSettings->line_exist(m_identifier.c_str(), "env_ambient") ? environment.AppendEnvAmb(pSettings->r_string(m_identifier.c_str(), "env_ambient")) : 0;
 
-#pragma todo("KRodin: подумать над дефолтными значениями, может быть можно сделать чтобы лучи и тп. работали без правки погодных конфигов?")
 	if (pSettings->line_exist(m_identifier.c_str(), "sun_shafts_intensity"))
 		m_fSunShaftsIntensity = pSettings->r_float(m_identifier.c_str(), "sun_shafts_intensity");
 

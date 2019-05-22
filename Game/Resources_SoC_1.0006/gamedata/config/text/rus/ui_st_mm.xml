@@ -247,7 +247,13 @@
 	</string>
 	<string id="ui_mm_r2_zoom_dof">
 		<text>Ёффект глубины сцены при прицеливании</text>
-	</string>	
+	</string>
+	<string id="ui_mm_dof_zoom_far">
+		<text>ƒальн€€ граница эффекта</text>
+	</string>
+	<string id="ui_mm_dof_zoom_near">
+		<text>Ѕлижн€€ граница эффекта</text>
+	</string>
 	<string id="ui_mm_r2_dof_quality">
 		<text> ачество эффекта фокусировки глаз</text>
 	</string>
@@ -722,7 +728,7 @@
 		<text>Ёффект глубины сцены при перезар€дке - r2_dof_reload</text>
 	</string>
 	<string id="video_settings_name_42">
-		<text>Ёффект глубины сцены при прицеливании - r2_dof_zoom</text>
+		<text>Ёффект глубины сцены при прицеливании - g_dof_zoom</text>
 	</string>
 	<string id="video_settings_name_43">
 		<text> ачество эффекта фокусировки глаз - r2_dof_quality</text>

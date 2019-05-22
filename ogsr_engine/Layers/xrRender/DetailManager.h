@@ -95,7 +95,7 @@ public:
 	typedef	xr_vector<xr_vector <SlotItemVec* > >	vis_list;
 	typedef	svector<CDetail*,dm_max_objects>	DetailVec;
 	typedef	DetailVec::iterator					DetailIt;
-	typedef	poolSS<SlotItem,4096>				PSS;
+	typedef	poolSS<SlotItem, /*4096*/ 65536> PSS; // KD: try to avoid blinking
 public:
 	int								dither			[16][16];
 public:
