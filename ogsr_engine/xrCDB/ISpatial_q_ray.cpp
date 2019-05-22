@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#include "cpuid.h"
 #include "ISpatial.h"
 #pragma warning(push)
 #pragma warning(disable:4995)

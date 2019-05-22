@@ -9,14 +9,11 @@
 static BOOL 				no_log	 = TRUE;
 static std::recursive_mutex logCS;
 static LogCallback			LogCB	 = nullptr;
-xr_vector<std::string>*		LogFile  = nullptr;
+std::vector<std::string> LogFile;
 std::ofstream logstream;
 
 void AddOne(std::string &split, bool first_line)
 {
-	if (!LogFile)
-		return;
-
 	std::scoped_lock<decltype(logCS)> lock(logCS);
 
 #ifdef DEBUG
@@ -27,7 +24,7 @@ void AddOne(std::string &split, bool first_line)
 	if (LogCB)
 		LogCB(split.c_str()); //Вывод в логкаллбек
 
-	LogFile->push_back(split); //Вывод в консоль
+	LogFile.push_back(split); //Вывод в консоль
 
 	if (!logstream.is_open()) return;
 
@@ -145,12 +142,6 @@ void SetLogCB(LogCallback cb)
 	LogCB = cb;
 }
 
-void InitLog()
-{
-	R_ASSERT(!LogFile);
-	LogFile = xr_new<xr_vector<std::string>>();
-}
-
 void CreateLog(BOOL nl)
 {
 	no_log = nl;
@@ -189,13 +180,13 @@ void CreateLog(BOOL nl)
 			Debug.do_exit("Can't create log file!");
 		}
 
-		for (const auto& str : *LogFile)
+		for (const auto& str : LogFile)
 			logstream << "\n" << str;
 
 		logstream.flush();
 	}
 
-	LogFile->reserve(1000);
+	LogFile.reserve(1000);
 }
 
 void CloseLog()
@@ -203,6 +194,5 @@ void CloseLog()
 	if (logstream.is_open())
 		logstream.close();
 
- 	LogFile->clear();
-	xr_delete(LogFile);
+ 	LogFile.clear();
 }

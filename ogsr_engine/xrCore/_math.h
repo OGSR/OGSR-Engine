@@ -1,6 +1,6 @@
 #pragma once
 
-#include "cpuid.h"
+struct _processor_info;
 
 namespace FPU {
 	XRCORE_API void m24();

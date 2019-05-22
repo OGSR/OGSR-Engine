@@ -152,12 +152,12 @@ void CConsole::OnRender	()
 	pFont->OutI	( -1.f, fMaxY-LDIST, "%s", buf );
 
 	float ypos=fMaxY-LDIST-LDIST;
-	for (int i=LogFile->size()-1-scroll_delta; i>=0; i--) 
+	for (int i=LogFile.size()-1-scroll_delta; i>=0; i--) 
 	{
 		ypos-=LDIST;
 		if (ypos<-1.f) break;
 
-		auto& ls = (*LogFile)[i];
+		auto& ls = LogFile[i];
 		if (!ls.c_str())
 			continue;
 		switch (ls.front()) {
@@ -217,7 +217,7 @@ void CConsole::OnPressKey(int dik, BOOL bHold)
 		break;
 	case DIK_PRIOR:
 		scroll_delta++;
-		if (scroll_delta>int(LogFile->size())-1) scroll_delta=LogFile->size()-1;
+		if (scroll_delta>int(LogFile.size())-1) scroll_delta=LogFile.size()-1;
 		break;
 	case DIK_NEXT:
 		scroll_delta--;
@@ -421,8 +421,8 @@ void CConsole::SelectCommand()
 {
 	int		p,k;
 	BOOL	found=false;
-	for (p=LogFile->size()-1, k=0; p>=0; p--) {
-		auto& str = (*LogFile)[p];
+	for (p=LogFile.size()-1, k=0; p>=0; p--) {
+		auto& str = LogFile[p];
 		if (!str.c_str())
 			continue;
 
