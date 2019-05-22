@@ -518,7 +518,10 @@ void CEnvDescriptorMixer::lerp	(CEnvironment* , CEnvDescriptor& A, CEnvDescripto
 	wind_velocity			=	fi*A.wind_velocity + f*B.wind_velocity;
 	wind_direction			=	fi*A.wind_direction + f*B.wind_direction;
 
-	m_fSunShaftsIntensity	=	fi*A.m_fSunShaftsIntensity + f*B.m_fSunShaftsIntensity;
+	if ( fis_zero( A.m_fSunShaftsIntensity ) || fis_zero( B.m_fSunShaftsIntensity ) )
+		m_fSunShaftsIntensity = 0.f;
+	else
+		m_fSunShaftsIntensity	=	fi*A.m_fSunShaftsIntensity + f*B.m_fSunShaftsIntensity;
 	m_fWaterIntensity		=	fi*A.m_fWaterIntensity + f*B.m_fWaterIntensity;
 	m_fTreeAmplitudeIntensity = fi * A.m_fTreeAmplitudeIntensity + f * B.m_fTreeAmplitudeIntensity;
 
