@@ -9,13 +9,6 @@ enum EUIItemAlign{
 	alCenter= 0x0010
 };
 
-enum EUIMirroring{
-	tmNone,
-	tmMirrorHorisontal,
-	tmMirrorVertical,
-	tmMirrorBoth
-};
-
 class CUICustomItem
 {
 protected:
@@ -39,7 +32,6 @@ protected:
 
 	Flags32			uFlags;
 	u32				uAlign;
-	EUIMirroring	eMirrorMode;
 
 public:
 					CUICustomItem			();
@@ -67,7 +59,4 @@ public:
 
 	IC void			SetAlign				(u32 align)					{uAlign=align;};
 	IC u32			GetAlign				()							{return uAlign;}
-
-	IC void			SetMirrorMode			(EUIMirroring m)			{ eMirrorMode = m; }
-	IC EUIMirroring GetMirrorMode			()							{ return eMirrorMode; }
 };

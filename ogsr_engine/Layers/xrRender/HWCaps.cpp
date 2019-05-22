@@ -1,116 +1,19 @@
 #include "stdafx.h"
-#pragma hdrstop
 
 #include "hwcaps.h"
 #include "hw.h"
 
-/*
-#ifndef _EDITOR
-	#include "NVAPI/nvapi.h"
-	#include "ATI/atimgpud.h"
-#endif
-*/
-
-namespace
-{
-
-#pragma todo("KRodin: Подумать, надо ли нам это или нет.")
-#if 0
-
-u32 GetNVGpuNum()
-{
-	NvLogicalGpuHandle  logicalGPUs[NVAPI_MAX_LOGICAL_GPUS];
-	NvU32               logicalGPUCount;
-	NvPhysicalGpuHandle physicalGPUs[NVAPI_MAX_PHYSICAL_GPUS];
-	NvU32               physicalGPUCount;
-
-//	int result = NVAPI_OK;
-
-	int iGpuNum = 0;
-
-	NvAPI_Status	status;
-	status = NvAPI_Initialize();
-
-	if (status != NVAPI_OK)
-	{
-		Msg("* NVAPI is missing.");
-		return iGpuNum;
-	}
-
-	// enumerate logical gpus
-	status = NvAPI_EnumLogicalGPUs(logicalGPUs, &logicalGPUCount);
-	if (status != NVAPI_OK)
-	{
-		Msg("* NvAPI_EnumLogicalGPUs failed!");
-		return iGpuNum;
-		// error
-	}
-
-	// enumerate physical gpus
-	status = NvAPI_EnumPhysicalGPUs(physicalGPUs, &physicalGPUCount);
-	if (status != NVAPI_OK)
-	{
-		Msg("* NvAPI_EnumPhysicalGPUs failed!");
-		return iGpuNum;
-		// error
-	}
-
-	Msg	("* NVidia MGPU: Logical(%d), Physical(%d)", physicalGPUCount, logicalGPUCount);
-
-	//	Assume that we are running on logical GPU with most physical GPUs connected.
-	for ( u32 i = 0; i<logicalGPUCount; ++i )
-	{
-		status = NvAPI_GetPhysicalGPUsFromLogicalGPU( logicalGPUs[i], physicalGPUs, &physicalGPUCount);
-		if (status == NVAPI_OK)
-			iGpuNum = _max( iGpuNum, physicalGPUCount);
-	}
-
-	if (iGpuNum>1)
-	{
-		Msg	("* NVidia MGPU: %d-Way SLI detected.", iGpuNum);
-	}
-
-	return iGpuNum;
-}
-
-u32 GetATIGpuNum()
-{
-#pragma todo("подключить ADL")
-	//int iGpuNum = AtiMultiGPUAdapters();
-	int iGpuNum = 1;
-
-	if (iGpuNum>1)
-	{
-		Msg	("* ATI MGPU: %d-Way CrossFire detected.", iGpuNum);
-	}
-
-	return iGpuNum;
-}
+#include "../../xr_3da/AMDGPUTransferee.h"
+#include "../../xr_3da/NvGPUTransferee.h"
 
 u32 GetGpuNum()
 {
-	u32 res = GetNVGpuNum();
-
-	res = _max( res, GetATIGpuNum() );
-
-	res = _max( res, 2 );
-
-	res = _min( res, CHWCaps::MAX_GPUS );
-
-	//	It's vital to have at least one GPU, else
-	//	code will fail.
-	VERIFY(res>0);
-
-	Msg("* Starting rendering as %d-GPU.", res);
-	
-	return res;
-}
-#else
-u32 GetGpuNum()
-{
-	return 1;
-}
-#endif
+	if (CAMDReader::bAMDSupportADL)
+		return AMDData.GetGPUCount();
+	else if (CNvReader::bSupport)
+		return NvData.GetGPUCount();
+	else
+		return 1;
 }
 
 #if !defined(USE_DX10) && !defined(USE_DX11)
@@ -214,6 +117,7 @@ void CHWCaps::Update()
 	// DEV INFO
 
 	iGPUNum = GetGpuNum();
+	Msg("--[%s] Detected GpuNum : [%u]", __FUNCTION__, iGPUNum);
 }
 #else	//	USE_DX10
 void CHWCaps::Update()
@@ -273,5 +177,6 @@ void CHWCaps::Update()
 	// DEV INFO
 
 	iGPUNum = GetGpuNum();
+	Msg("--[%s] Detected GpuNum : [%u]", __FUNCTION__, iGPUNum);
 }
 #endif	//	USE_DX10

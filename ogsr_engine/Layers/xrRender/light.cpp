@@ -67,11 +67,10 @@ void light::set_texture		(LPCSTR name)
 	}
 
 #pragma todo				("Only shadowed spot implements projective texture")
-	string256				temp;
-	
-	strconcat(sizeof(temp),temp,"r2\\accum_spot_",name);
-	//strconcat(sizeof(temp),temp,"_nomsaa",name);
-	s_spot.create			(RImplementation.Target->b_accum_spot,temp,name);
+	string_path temp;
+
+	s_spot.create(RImplementation.Target->b_accum_spot, xr_strconcat(temp, "r2\\accum_spot_", name), name);
+	s_point.create(RImplementation.Target->b_accum_point, xr_strconcat(temp, "r2\\accum_point_", name), name);
 
 #if	(RENDER!=R_R3) && (RENDER!=R_R4)
 	s_volumetric.create		("accum_volumetric", name);
@@ -86,9 +85,9 @@ void light::set_texture		(LPCSTR name)
 
 		for( int i = 0; i < bound; ++i )
 		{
-			s_spot_msaa[i].create				(RImplementation.Target->b_accum_spot_msaa[i],strconcat(sizeof(temp),temp,"r2\\accum_spot_",name),name);
+			s_spot_msaa[i].create(RImplementation.Target->b_accum_spot_msaa[i], xr_strconcat(temp, "r2\\accum_spot_", name), name);
 			s_point_msaa[i].create(RImplementation.Target->b_accum_point_msaa[i], xr_strconcat(temp, "r2\\accum_point_", name), name);
-			s_volumetric_msaa[i].create	(RImplementation.Target->b_accum_volumetric_msaa[i],strconcat(sizeof(temp),temp,"r2\\accum_volumetric_",name),name);
+			s_volumetric_msaa[i].create(RImplementation.Target->b_accum_volumetric_msaa[i], xr_strconcat(temp, "r2\\accum_volumetric_", name), name);
 		}
 	}
 #endif // (RENDER!=R_R3) || (RENDER!=R_R4)
@@ -296,6 +295,7 @@ void	light::export_to	(light_Package& package)
 			case IRender_Light::POINT:
 				{
 					// tough: create/update 6 shadowed lights
+#pragma todo("KRodin: Древний баг: вот именно из-за создания 6 источников света для каждой такой лампы, тени от них периодически мигают на худе. Хз, что с этим можно сделать.")
 					if (0==omnipart[0])	for (int f=0; f<6; f++)	omnipart[f] = xr_new<light> ();
 					for (int f=0; f<6; f++)	{
 						light*	L			= omnipart[f];

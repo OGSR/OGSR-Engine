@@ -490,6 +490,27 @@
             <options_item entry="r2_dof_enable" group="mm_opt_video_adv" depend="vid"/>
         </check_dof>
 
+		<cap_dof_zoom x="5" y="5" width="143" height="21">
+            <text font="letterica16" r="215" g="195" b="170">ui_mm_r2_zoom_dof</text>
+        </cap_dof_zoom>
+        <check_dof_zoom x="249" y="0" width="30" height="21">
+            <options_item entry="g_dof_zoom" group="mm_opt_video_adv" depend="vid"/>
+        </check_dof_zoom>
+
+		<cap_dof_zoom_far x="5" y="5" width="143" height="21">
+            <text font="letterica16" r="215" g="195" b="170">ui_mm_dof_zoom_far</text>
+        </cap_dof_zoom_far>
+        <track_dof_zoom_far x="249" y="0" width="190" height="21" is_integer="1" step="10">
+            <options_item entry="g_dof_zoom_far" group="mm_opt_video_adv"/>
+        </track_dof_zoom_far>
+
+        <cap_dof_zoom_near x="5" y="5" width="143" height="21">
+            <text font="letterica16" r="215" g="195" b="170">ui_mm_dof_zoom_near</text>
+        </cap_dof_zoom_near>
+        <track_dof_zoom_near x="249" y="0" width="190" height="21" is_integer="1" step="10">
+            <options_item entry="g_dof_zoom_near" group="mm_opt_video_adv"/>
+        </track_dof_zoom_near>
+
         <cap_volumetric_light x="5" y="5" width="143" height="21">
             <text font="letterica16" r="215" g="195" b="170">ui_mm_volumetric_light</text>
         </cap_volumetric_light>

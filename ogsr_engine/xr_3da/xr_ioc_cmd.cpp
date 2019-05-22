@@ -714,6 +714,8 @@ void CCC_Register()
 //	CMD4(CCC_Integer,	"rs_vb_size",			&rsDVB_Size,		32,		4096);
 //	CMD4(CCC_Integer,	"rs_ib_size",			&rsDIB_Size,		32,		4096);
 
+	CMD3(CCC_Mask, "rs_hw_stats", &psDeviceFlags, rsHWInfo);
+
 	// Texture manager	
 	CMD4(CCC_Integer,	"texture_lod",			&psTextureLOD,				0,	4	);
 
@@ -752,7 +754,7 @@ void CCC_Register()
 	CMD4(CCC_Float,		"mouse_sens",			&psMouseSens,		0.001f, 0.6f);
 
 	// Camera
-	CMD2(CCC_Float,		"cam_inert",			&psCamInert);
+	CMD4(CCC_Float, "cam_inert", &psCamInert, 0.0f, 0.99f);
 	CMD2(CCC_Float,		"cam_slide_inert",		&psCamSlideInert);
 
 	CMD1(CCC_r2,		"renderer"				);

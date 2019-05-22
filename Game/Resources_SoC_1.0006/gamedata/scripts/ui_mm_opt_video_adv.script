@@ -50,6 +50,9 @@ local adv_vid_opt_params = {
 	{ "soft_water",            "check", 0, hint_colors.green , "video_settings_name_31", "video_settings_desc_31", only_25_and_more_mode },
 	{ "soft_particles",        "check", 0, hint_colors.green , "video_settings_name_32", "video_settings_desc_32", only_25_and_more_mode },
 	{ "dof",                   "check", 0, hint_colors.yellow, "video_settings_name_40", "video_settings_desc_40", only_25_and_more_mode },
+	{ "dof_zoom",              "check", 0, hint_colors.green,  "video_settings_name_42", "video_settings_desc_42", only_25_and_more_mode },
+	{ "dof_zoom_far",          "track", 0, hint_colors.green,  "", "",                                             only_25_and_more_mode },
+	{ "dof_zoom_near",         "track", 0, hint_colors.green,  "", "",                                             only_25_and_more_mode },
 	{ "volumetric_light",      "check", 0, hint_colors.green , "video_settings_name_50", "video_settings_desc_50", only_25_and_more_mode },
 	{ "r3_dynamic_wet_surfaces","check",0, hint_colors.green , "video_settings_name_49", "video_settings_desc_49", only_3_and_more_mode },
 --	{ "r3_volumetric_smoke",   "check", 0, hint_colors.green , "video_settings_name_55", "video_settings_desc_55", only_3_and_more_mode }, --Вообще выключен в движке, до лучших времен.

@@ -1,14 +1,23 @@
 #include "stdafx.h"
+#include "cpuid.h"
 #include "GameFont.h"
-#pragma hdrstop
-
 #include "../xrcdb/ISpatial.h"
-
 #include "IGame_Persistent.h"
 #include "render.h"
 #include "xr_object.h"
+#include "NvGPUTransferee.h"
+#include "AMDGPUTransferee.h"
+#include <psapi.h>
+#include <mmsystem.h>
 
 #include "../Include/xrRender/DrawUtils.h"
+
+enum DebugTextColor : DWORD
+{
+	DTC_RED = 0xFFF0672B,
+	DTC_YELLOW = 0xFFF6D434,
+	DTC_GREEN = 0xFF67F92E,
+};
 
 int		g_ErrorLineCount	= 15;
 Flags32 g_stats_flags		= {0};
@@ -429,6 +438,102 @@ void CStats::Show()
 	Particles_starting = Particles_active = Particles_destroy = 0;
 }
 
+void CStats::Show_HW_Stats()
+{
+	if (psDeviceFlags.test(rsHWInfo))
+	{
+		static DWORD dwLastFrameTime = 0;
+		DWORD dwCurrentTime = timeGetTime();
+		if (dwCurrentTime - dwLastFrameTime > 500) //Апдейт раз в полсекунды
+		{
+			dwLastFrameTime = dwCurrentTime;
+
+			// init all variables
+			MEMORYSTATUSEX mem;
+			PROCESS_MEMORY_COUNTERS_EX pmc;
+			SYSTEM_INFO sysInfo;
+
+			// Getting info about memory
+			mem.dwLength = sizeof(MEMORYSTATUSEX);
+			GlobalMemoryStatusEx((&mem));
+
+			AvailableMem = (float)mem.ullAvailPhys;	// how much phys mem available
+			AvailableMem /= (1024 * 1024);
+			AvailablePageFileMem = (float)mem.ullAvailPageFile;	// how much pagefile mem available
+			AvailablePageFileMem /= (1024 * 1024);
+
+			// Getting info by request
+			GetProcessMemoryInfo(GetCurrentProcess(), (PROCESS_MEMORY_COUNTERS*)&pmc, sizeof(PROCESS_MEMORY_COUNTERS_EX));
+			GetSystemInfo(&sysInfo);
+
+			PhysMemoryUsedPercent = (float)mem.dwMemoryLoad;
+			PageFileMemUsedByApp = (float)pmc.PagefileUsage;
+			PageFileMemUsedByApp /= (1024 * 1024);
+
+			// Counting CPU load
+			CPU::ID.getCPULoad(cpuLoad);
+			cpuBefore = cpuLoad;
+
+			CPU::ID.MTCPULoad();
+
+			GpuLoad = CAMDReader::bAMDSupportADL ? AMDData.GetPercentActive() : CNvReader::bSupport ? NvData.GetPercentActive() : u32(-1);
+		}
+
+		pFontHW->SetHeightI(0.018f);
+
+		if (AvailableMem < 512 || AvailablePageFileMem < 1596)
+			pFontHW->SetColor(DebugTextColor::DTC_RED);
+		else if (AvailableMem < 768 || AvailablePageFileMem < 2048)
+			pFontHW->SetColor(DebugTextColor::DTC_YELLOW);
+		else
+			pFontHW->SetColor(DebugTextColor::DTC_GREEN);
+
+		// Draw all your stuff
+		pFontHW->Out(10, 25, "MEM AVAILABLE: %0.0fMB", AvailableMem); // Physical memory available
+		pFontHW->Out(10, 40, "PAGE AVAILABLE: %0.0fMB", AvailablePageFileMem); // Pagefile memory available
+		pFontHW->Out(10, 55, "PAGE APPUSED: %0.0fMB", PageFileMemUsedByApp); // Physical memory used by app
+
+		if (PhysMemoryUsedPercent > 80.0)
+			pFontHW->SetColor(DebugTextColor::DTC_RED);
+		else if (PhysMemoryUsedPercent > 60.0)
+			pFontHW->SetColor(DebugTextColor::DTC_YELLOW);
+		else
+			pFontHW->SetColor(DebugTextColor::DTC_GREEN);
+
+		pFontHW->Out(10, 70, "MEM USED: %0.0f%%", PhysMemoryUsedPercent); // Total Phys. memory load (%)
+
+		if (cpuLoad > 80.0)
+			pFontHW->SetColor(DebugTextColor::DTC_RED);
+		else if (cpuLoad > 60.0)
+			pFontHW->SetColor(DebugTextColor::DTC_YELLOW);
+		else
+			pFontHW->SetColor(DebugTextColor::DTC_GREEN);
+
+		pFontHW->Out(10, 85, "CPU LOAD: %0.0f%%", cpuLoad); // CPU load
+
+		// get MT Load
+		float dwScale = 100;
+		for (size_t i = 0; i < CPU::ID.m_dwNumberOfProcessors; i++)
+		{
+			pFontHW->Out(10, dwScale, "CPU%u: %0.0f%%", i, CPU::ID.fUsage[i]);
+			dwScale += 15;
+		}
+
+		if (GpuLoad != u32(-1)) {
+			if (GpuLoad > 80)
+				pFontHW->SetColor(DebugTextColor::DTC_RED);
+			else if (GpuLoad > 60)
+				pFontHW->SetColor(DebugTextColor::DTC_YELLOW);
+			else
+				pFontHW->SetColor(DebugTextColor::DTC_GREEN);
+
+			pFontHW->Out(10, dwScale, "GPU LOAD: %u%%", GpuLoad);
+		}
+
+		pFontHW->OnRender();
+	}
+}
+
 void	_LogCallback				(LPCSTR string)
 {
 	if (string && '!'==string[0] && ' '==string[1])
@@ -439,10 +544,8 @@ void CStats::OnDeviceCreate			()
 {
 	g_bDisableRedText				= strstr(Core.Params,"-xclsx")?TRUE:FALSE;
 
-//	if (!strstr(Core.Params, "-dedicated"))
-#ifndef DEDICATED_SERVER
-	pFont	= xr_new<CGameFont>		("stat_font", CGameFont::fsDeviceIndependent);
-#endif
+	pFont   = xr_new<CGameFont>("stat_font", CGameFont::fsDeviceIndependent);
+	pFontHW = xr_new<CGameFont>("hud_font_di", CGameFont::fsDeviceIndependent);
 
 #ifdef DEBUG
 	if (!g_bDisableRedText)			SetLogCB	(_LogCallback);
@@ -452,7 +555,8 @@ void CStats::OnDeviceCreate			()
 void CStats::OnDeviceDestroy		()
 {
 	SetLogCB(0);
-	xr_delete	(pFont);
+	xr_delete(pFont);
+	xr_delete(pFontHW);
 }
 
 void CStats::OnRender				()

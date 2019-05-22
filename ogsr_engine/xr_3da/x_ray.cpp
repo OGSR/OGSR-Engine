@@ -115,7 +115,7 @@ void InitConsole	()
 	CORE_FEATURE_SET( use_trade_deficit_factor,   "features" );
 	CORE_FEATURE_SET( show_objectives_ondemand,   "features" );
 	CORE_FEATURE_SET( pickup_check_overlaped,     "features" );
-	CORE_FEATURE_SET( wallmarks_on_static_only,   "features" );
+	CORE_FEATURE_SET( wallmarks_on_static_only,   "features" ); //TODO: Как починю волл/блудмарки - сделать в опциях.
 	CORE_FEATURE_SET( actor_thirst,               "features" );
 	CORE_FEATURE_SET( autoreload_wpn,             "features" );
 	CORE_FEATURE_SET( no_progress_bar_animation,  "features" );
