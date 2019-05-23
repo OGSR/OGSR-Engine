@@ -58,10 +58,10 @@ CAMDReader::CAMDReader() : activity({ 0 }), AdapterID(-1), AdapterAGSInfo(0), AD
 
 CAMDReader::~CAMDReader()
 {
-	Main_Control_Destroy();
+	if (Main_Control_Destroy) Main_Control_Destroy();
 	MemoryDeallocator();
-	FreeLibrary(hDLL);
-	FreeLibrary(hDLL_AGS);
+	if (hDLL) FreeLibrary(hDLL);
+	if (hDLL_AGS) FreeLibrary(hDLL_AGS);
 }
 
 void CAMDReader::InitDeviceInfo()

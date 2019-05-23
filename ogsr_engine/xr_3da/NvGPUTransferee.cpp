@@ -34,7 +34,7 @@ CNvReader::CNvReader() : AdapterID(0)
 
 CNvReader::~CNvReader()
 {
-	FreeLibrary(hDLL);
+	if (hDLL) FreeLibrary(hDLL);
 }
 
 void CNvReader::InitDeviceInfo()

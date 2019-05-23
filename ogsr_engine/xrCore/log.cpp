@@ -188,11 +188,3 @@ void CreateLog(BOOL nl)
 
 	LogFile.reserve(1000);
 }
-
-void CloseLog()
-{
-	if (logstream.is_open())
-		logstream.close();
-
- 	LogFile.clear();
-}

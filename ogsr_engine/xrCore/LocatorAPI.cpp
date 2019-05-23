@@ -678,8 +678,6 @@ void CLocatorAPI::_initialize	(u32 flags, LPCSTR target_folder, LPCSTR fs_name)
 
 void CLocatorAPI::_destroy		()
 {
-	CloseLog		();
-
 	for				(files_it I=files.begin(); I!=files.end(); I++)
 	{
 		char* str	= LPSTR(I->name);
