@@ -174,6 +174,7 @@ CEnvironment::CEnvironment	() :
 			TRUE,
 			FALSE
 		);
+        m_dynamic_sun_movement = READ_IF_EXISTS( config, r_bool, "environment", "dynamic_sun_movement", true );
     // params
 	p_var_alt		= deg2rad(config->r_float					( "environment","altitude" ));  
 	p_var_long		= deg2rad	(config->r_float				( "environment","delta_longitude" ));
@@ -517,7 +518,7 @@ void CEnvironment::OnFrame()
 
 	//	Igor. Dynamic sun position. 
 #ifdef USE_COP_WEATHER_CONFIGS
-	if ( !::Render->is_sun_static())
+	if ( !::Render->is_sun_static() && m_dynamic_sun_movement )
 		calculate_dynamic_sun_dir();
 #else
 	if (Core.Features.test(xrCore::Feature::dynamic_sun_movement))

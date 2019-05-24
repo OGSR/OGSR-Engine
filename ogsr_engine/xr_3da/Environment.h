@@ -365,6 +365,7 @@ public:
 	CInifile*				m_suns_config;
 	CInifile*				m_thunderbolt_collections_config;
 	CInifile*				m_thunderbolts_config;
+        bool m_dynamic_sun_movement;
 #endif
 
 protected:
