@@ -517,7 +517,7 @@ void CEnvironment::OnFrame()
 
 	//	Igor. Dynamic sun position. 
 #ifdef USE_COP_WEATHER_CONFIGS
-	if ( !::Render->is_sun_static() && Core.Features.test( xrCore::Feature::dynamic_sun_movement ) )
+	if ( !::Render->is_sun_static())
 		calculate_dynamic_sun_dir();
 #else
 	if (Core.Features.test(xrCore::Feature::dynamic_sun_movement))
