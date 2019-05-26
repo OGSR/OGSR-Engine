@@ -8,7 +8,7 @@ using dx10StateUtils::operator==;
 dx10SamplerStateCache	SSManager;
 
 dx10SamplerStateCache::dx10SamplerStateCache():
-	m_uiMaxAnisotropy(1)
+	m_uiMaxAnisotropy(1), m_uiMipLODBias(0.0f)
 {
 	static const int iMaxRSStates = 10;
 	m_StateArray.reserve(iMaxRSStates);
@@ -27,6 +27,8 @@ dx10SamplerStateCache::SHandle dx10SamplerStateCache::GetState( D3D_SAMPLER_DESC
 	//	MaxAnisitropy is reset by ValidateState if not aplicable
 	//	to the filter mode used.
 	desc.MaxAnisotropy = m_uiMaxAnisotropy;
+	// RZ
+	desc.MipLODBias = m_uiMipLODBias;
 
 	dx10StateUtils::ValidateState(desc);
 
@@ -169,7 +171,7 @@ void dx10SamplerStateCache::CSApplySamplers(HArray &samplers)
 #endif
 
 
-void dx10SamplerStateCache::SetMaxAnisotropy( UINT uiMaxAniso)
+void dx10SamplerStateCache::SetMaxAnisotropy( u32 uiMaxAniso)
 {
 	clamp( uiMaxAniso, (u32)1, (u32)16);
 
@@ -196,6 +198,29 @@ void dx10SamplerStateCache::SetMaxAnisotropy( UINT uiMaxAniso)
 		rec.m_pState->Release();
 		CreateState(desc, &rec.m_pState);
 	}
+}
+
+void dx10SamplerStateCache::SetMipLODBias(float uiMipLODBias)
+{
+    if (m_uiMipLODBias == uiMipLODBias)
+        return;
+
+    m_uiMipLODBias = uiMipLODBias;
+
+    for (u32 i = 0; i < m_StateArray.size(); ++i)
+    {
+        StateRecord& rec = m_StateArray[i];
+        StateDecs desc;
+
+        rec.m_pState->GetDesc(&desc);
+
+        desc.MipLODBias = m_uiMipLODBias;
+        dx10StateUtils::ValidateState(desc);
+
+        // This can cause fragmentation if called too often
+        rec.m_pState->Release();
+        CreateState(desc, &rec.m_pState);
+    }
 }
 
 void dx10SamplerStateCache::ResetDeviceState()
