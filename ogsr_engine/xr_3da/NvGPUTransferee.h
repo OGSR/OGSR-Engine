@@ -40,4 +40,4 @@ public:
 	static bool bSupport;
 };
 
-extern ENGINE_API CNvReader NvData;
+extern ENGINE_API CNvReader* NvData;

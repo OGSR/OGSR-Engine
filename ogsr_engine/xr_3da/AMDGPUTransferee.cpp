@@ -9,7 +9,7 @@
 #include "stdafx.h"
 #include "AMDGPUTransferee.h"
 
-CAMDReader AMDData;
+CAMDReader* AMDData = nullptr;
 #define AMDVENDORID 1002
 
 bool CAMDReader::bAMDSupportADL = false;
