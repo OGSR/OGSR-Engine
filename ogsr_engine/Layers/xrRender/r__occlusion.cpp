@@ -44,7 +44,7 @@ u32		R_occlusion::occq_begin		(u32&	ID		)
 	//	Igor: prevent release crash if we issue too many queries
 	if (pool.empty())
 	{
-		if ((Device.dwFrame % 40) == 0)
+		if ((Device.dwFrame % 100) == 0)
 			Msg(" RENDER [Warning]: Too many occlusion queries were issued(>1536)!!!");
 		ID = iInvalidHandle;
 		return 0;
@@ -91,6 +91,9 @@ R_occlusion::occq_result R_occlusion::occq_get		(u32&	ID		)
 	HRESULT hr;
 	// CHK_DX		(used[ID].Q->GetData(&fragments,sizeof(fragments),D3DGETDATA_FLUSH));
 	// Msg			("get  : [%2d] - %d => %d", used[ID].order, ID, fragments);
+	if ( ( hr = GetData( used[ID].Q, &fragments, sizeof( fragments ) ) ) == S_FALSE )
+		fragments = ( occq_result ) - 1; //0xffffffff;
+/* а это хорошая идея, тут ждать?
 	CTimer	T;
 	T.Start	();
 	Device.Statistic->RenderDUMP_Wait.Begin	();
@@ -108,6 +111,7 @@ R_occlusion::occq_result R_occlusion::occq_get		(u32&	ID		)
 		}
 	}
 	Device.Statistic->RenderDUMP_Wait.End	();
+*/
 	if		(hr == D3DERR_DEVICELOST)	fragments = 0xffffffff;
 
 	if (0==fragments)	RImplementation.stats.o_culled	++;
