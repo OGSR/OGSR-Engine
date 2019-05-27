@@ -133,6 +133,7 @@ void CUIStatic::InitTextureEx(LPCSTR tex_name, LPCSTR sh_name)
 
 	Fvector2 p						= GetWndPos();
 	m_UIStaticItem.SetPos			(p.x, p.y);
+	m_bAvailableTexture = true;
 }
 
 void  CUIStatic::Draw()
