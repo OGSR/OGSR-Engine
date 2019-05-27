@@ -8,7 +8,7 @@
 #include "stdafx.h"
 #include "NvGPUTransferee.h"
 
-CNvReader NvData;
+CNvReader* NvData = nullptr;
 bool CNvReader::bSupport = false;
 static HINSTANCE hDLL;
 

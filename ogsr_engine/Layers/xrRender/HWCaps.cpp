@@ -8,10 +8,13 @@
 
 u32 GetGpuNum()
 {
+	if (!AMDData) AMDData = new CAMDReader();
+	if (!NvData) NvData = new CNvReader();
+
 	if (CAMDReader::bAMDSupportADL)
-		return AMDData.GetGPUCount() > 0 ? AMDData.GetGPUCount() : 1;
+		return AMDData->GetGPUCount() > 0 ? AMDData->GetGPUCount() : 1;
 	else if (CNvReader::bSupport)
-		return NvData.GetGPUCount() > 0 ? NvData.GetGPUCount() : 1;
+		return NvData->GetGPUCount() > 0 ? NvData->GetGPUCount() : 1;
 	else
 		return 1;
 }

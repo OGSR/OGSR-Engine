@@ -476,7 +476,7 @@ void CStats::Show_HW_Stats()
 
 			CPU::ID.MTCPULoad();
 
-			GpuLoad = CAMDReader::bAMDSupportADL ? AMDData.GetPercentActive() : CNvReader::bSupport ? NvData.GetPercentActive() : u32(-1);
+			GpuLoad = CAMDReader::bAMDSupportADL ? AMDData->GetPercentActive() : CNvReader::bSupport ? NvData->GetPercentActive() : u32(-1);
 		}
 
 		pFontHW->SetHeightI(0.018f);

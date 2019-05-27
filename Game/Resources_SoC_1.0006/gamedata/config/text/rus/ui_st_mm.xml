@@ -659,7 +659,7 @@
 		<text>Тип сглаживания на динамическом освещении - r2_aa_mode</text>
 	</string>
 	<string id="video_settings_name_20">
-		<text>Отчетливость текстур на расстоянии - r2_tf_mipbias</text>
+		<text>Отчетливость текстур на расстоянии - r__tf_mipbias</text>
 	</string>
 	<string id="video_settings_name_21">
 		<text>Глянцевость поверхностей - r2_gloss_factor</text>
