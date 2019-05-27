@@ -74,4 +74,4 @@ public:
 	static bool bAMDSupportADL;
 };
 
-extern ENGINE_API CAMDReader AMDData;
+extern ENGINE_API CAMDReader* AMDData;
