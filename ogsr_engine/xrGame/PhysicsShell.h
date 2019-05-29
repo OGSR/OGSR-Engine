@@ -341,6 +341,11 @@ IC					IKinematics					*PKinematics								()																{return m_pKinemati
 	virtual			void						SetMaxAABBRadius							(float size)																				 {};
 	virtual			void						AddTracedGeom								(u16 element=0,u16 geom=0)																	= 0;
 	virtual			void						SetAllGeomTraced							()																							= 0;
+    virtual void ClearTracedGeoms() = 0;
+    virtual void DisableGeomTrace() = 0;
+    virtual void EnableGeomTrace() = 0;
+    virtual bool HasTracedGeoms() = 0;
+
 	virtual			void						RunSimulation								(bool place_current_forms=true)																= 0;
 	virtual			void						UpdateRoot									()																							= 0;
 	virtual			void            		    ZeroCallbacks								()																							= 0;

@@ -47,6 +47,7 @@
 
 #include "xrServer_Objects_ALife.h"
 #include "ai_object_location.h"
+#include "PhysicObject.h"
 
 
 template <typename T>
@@ -316,7 +317,6 @@ u32 obj_level_id(CScriptGameObject *O)
 LPCSTR obj_level_name(CScriptGameObject *O) { return get_level_name_by_id ( obj_level_id(O) ); }
 
 
-
 #pragma optimize("s",on)
 using namespace luabind;
 
@@ -340,6 +340,7 @@ class_<CScriptGameObject> script_register_game_object3(class_<CScriptGameObject>
 		.def("get_inventory_owner",			&script_game_object_cast<CInventoryOwner>)
 		.def("get_missile",					&script_game_object_cast<CMissile>)
 		.def("get_outfit",					&script_game_object_cast<CCustomOutfit>)
+		.def("get_physics_object",			&script_game_object_cast<CPhysicObject>)
 		.def("get_space_restrictor",		&script_game_object_cast<CSpaceRestrictor>)
 		.def("get_torch",					&get_torch)
 		.def("get_weapon",					&script_game_object_cast<CWeapon>)

@@ -235,7 +235,12 @@ public:
 	virtual void SetTransform(const Fmatrix& m0, motion_history_state history_state);
 	virtual		void				AddTracedGeom					(u16 element=0,u16 geom=0);
 	virtual		void				SetAllGeomTraced				();
-	virtual		void				SetPrefereExactIntegration		();
+
+    virtual void ClearTracedGeoms();
+    virtual void DisableGeomTrace();
+    virtual void EnableGeomTrace();
+    virtual bool HasTracedGeoms() { return !m_traced_geoms.empty(); }
+ 	virtual		void				SetPrefereExactIntegration		();
 	virtual		void				CutVelocity						(float l_limit,float a_limit);
 ///////////	//////////////////////////////////////////////////////////////////////////////////////////
 				void				CreateSpace						()																				;

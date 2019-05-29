@@ -1385,6 +1385,20 @@ void CPHShell::SetAllGeomTraced()
 	}
 	CPHObject::SetRayMotions();
 }
+
+void CPHShell::ClearTracedGeoms()
+{
+    m_traced_geoms.clear();
+    DisableGeomTrace();
+}
+
+void CPHShell::DisableGeomTrace() { CPHObject::UnsetRayMotions(); }
+void CPHShell::EnableGeomTrace()
+{
+    if (!m_traced_geoms.empty())
+        CPHObject::SetRayMotions();
+}
+
 void CPHShell::SetPrefereExactIntegration()
 {
 	CPHObject::SetPrefereExactIntegration();
