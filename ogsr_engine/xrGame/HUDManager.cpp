@@ -334,7 +334,7 @@ bool   CHUDManager::RenderActiveItemUIQuery()
 
 	return (g_player_hud && g_player_hud->render_item_ui_query());
 	*/
-	return true; //? Подумать
+	return false;
 }
 
 void   CHUDManager::RenderActiveItemUI()

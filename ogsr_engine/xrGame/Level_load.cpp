@@ -108,7 +108,7 @@ BOOL CLevel::Load_GameSpecific_After()
 		Sounds_Random_Enabled	= FALSE;
 	}
 
-#pragma todo("KRodin: разобраться почему у нас нет game на момент этого вызова. Пока закомментировал, но мне кажется, что из-за этого при использовании ЗП-погоды она иногда некорректно обновляется после загрузки сейвов.")
+// KRodin: вроде как в нашем случае это и не нужно. Dsh сказал, что если починить и включить - будут баги с погодой.
 		//g_pGamePersistent->Environment().SetGameTime(GetEnvironmentGameDayTimeSec(), game->GetEnvironmentGameTimeFactor());
 
 		if (g_pGamePersistent->pEnvironment)

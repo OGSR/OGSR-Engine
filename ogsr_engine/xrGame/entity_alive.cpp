@@ -388,16 +388,14 @@ void CEntityAlive::PlaceBloodWallmark(const Fvector& dir, const Fvector& start_p
 
 	if ( !Level().ObjectSpace.RayPick( start_pos, dir, trace_dist, collide::rqtBoth, result, this ) )
 		return;
-	if ( result.O && Core.Features.test( xrCore::Feature::wallmarks_on_static_only ) ) return;
 
 	//вычислить точку попадания
 	Fvector end_point;
 	end_point.set(0,0,0);
 	end_point.mad(start_pos, dir, result.range);
 
-#pragma todo("KRodin: починить и включить!")
 	if(result.O) { // Dynamic object
-/*  add_SkeletonWallmark not implemented now...
+/*
 		const auto pK = smart_cast<IKinematics*>(result.O->Visual());
 		if (!pK)
 			return;
@@ -416,10 +414,10 @@ void CEntityAlive::PlaceBloodWallmark(const Fvector& dir, const Fvector& start_p
 		if(pMaterial->Flags.is(SGameMtl::flBloodmark))
 		{
 			//вычислить нормаль к пораженной поверхности
-//			auto pVerts	= Level().ObjectSpace.GetStaticVerts();
+			auto pVerts	= Level().ObjectSpace.GetStaticVerts();
 
 			//добавить отметку на материале
-			//::Render->add_StaticWallmark(pwallmarks_vector, end_point, wallmark_size, pTri, pVerts);
+			::Render->add_StaticWallmark(pwallmarks_vector, end_point, wallmark_size, pTri, pVerts);
 		}
 	}
 }

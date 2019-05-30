@@ -12,7 +12,7 @@ CNvReader* NvData = nullptr;
 bool CNvReader::bSupport = false;
 static HINSTANCE hDLL;
 
-CNvReader::CNvReader() : AdapterID(0)
+CNvReader::CNvReader() : AdapterID(0), AdapterFinal(0), gpuHandlesPh{}, gpuHandlesLg{}, gpuUsages{}
 {
 	hDLL = LoadLibraryA("nvapi64.dll");
 	if (!bSupport && hDLL)
@@ -26,8 +26,6 @@ CNvReader::CNvReader() : AdapterID(0)
 		NvAPI_GPU_GetUsages = (NvAPI_GPU_GetUsages_t)(*NvAPI_QueryInterface)(0x189A1FDF);
 		NvAPI_GPU_PhysicalFromLogical = (NvAPI_PhysicalFromLogical)(*NvAPI_QueryInterface)(0x0AEA3FA32);
 
-		gpuHandlesPh[NVAPI_MAX_PHYSICAL_GPUS] = { nullptr };
-		gpuUsages[NVAPI_MAX_USAGES_PER_GPU] = { 0 };
 		InitDeviceInfo();
 	}
 }
