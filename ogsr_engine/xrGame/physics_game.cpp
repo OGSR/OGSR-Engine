@@ -149,9 +149,10 @@ public:
 
 	virtual void run() noexcept
 	{
-#pragma todo("KRodin: починить и включить!")
 		//добавить отметку на материале
-		//::Render->add_StaticWallmark(pWallmarkShader, pos, 0.09f, T, Level().ObjectSpace.GetStaticVerts());
+		::Render->add_StaticWallmark(pWallmarkShader,pos, 
+			0.09f, T,
+			Level().ObjectSpace.GetStaticVerts());
 	};
 
 	virtual bool obsolete() const noexcept

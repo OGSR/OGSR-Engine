@@ -17,7 +17,7 @@ void* CAMDReader::lpBuffer = nullptr;
 static HINSTANCE hDLL;
 static HINSTANCE hDLL_AGS;
 
-CAMDReader::CAMDReader() : activity({ 0 }), AdapterID(-1), AdapterAGSInfo(0), ADLGpuCount(0)
+CAMDReader::CAMDReader() : activity{}, AdapterID(-1), AdapterADLInfo(0), AdapterAGSInfo(0), ADLGpuCount(0), Main_Control_Destroy(nullptr)
 {
 	hDLL = LoadLibraryA("atiadlxx.dll");
 	hDLL_AGS = LoadLibraryA("amd_ags_x64.dll");

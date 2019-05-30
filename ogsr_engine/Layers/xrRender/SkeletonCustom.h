@@ -1,26 +1,15 @@
-//---------------------------------------------------------------------------
-#ifndef SkeletonCustomH
-#define SkeletonCustomH
+#pragma once
 
 #include		"fhierrarhyvisual.h"
 #include		"../../xr_3da/bone.h"
 #include		"../../Include/xrRender/Kinematics.h"
 #include "../../xr_3da/vismask.h"
 
-// consts
-extern	xrCriticalSection	UCalc_Mutex			;
-
 // refs
 class	 CKinematics;
 class	 CInifile;
 class	 CBoneData;
 struct	SEnumVerticesCallback;
-
-// MT-locker
-struct	UCalc_mtlock	{
-	UCalc_mtlock()		{ UCalc_Mutex.Enter(); }
-	~UCalc_mtlock()		{ UCalc_Mutex.Leave(); }
-};
 
 #pragma warning(push)
 #pragma warning(disable:4275)
@@ -40,8 +29,8 @@ public:
 	struct WMFace{
 		Fvector3		vert	[3];
 		Fvector2		uv		[3];
-		u16				bone_id	[3][2];
-		float			weight	[3];
+		u16				bone_id[3][4];
+		float			weight[3][3];
 	};
 	DEFINE_VECTOR		(WMFace,WMFacesVec,WMFacesVecIt);
 	WMFacesVec			m_Faces;		// 16 
@@ -257,5 +246,3 @@ private:
 
 };
 IC CKinematics* PCKinematics		(dxRender_Visual* V)		{ return V?(CKinematics*)V->dcast_PKinematics():0; }
-//---------------------------------------------------------------------------
-#endif

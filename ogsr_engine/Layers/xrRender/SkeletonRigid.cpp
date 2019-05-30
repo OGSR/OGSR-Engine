@@ -1,6 +1,4 @@
-//---------------------------------------------------------------------------
 #include 	"stdafx.h"
-#pragma hdrstop
 
 #include 	"SkeletonCustom.h"
 
@@ -16,7 +14,10 @@ void CKinematics::CalculateBones			(BOOL bForceExact)
 	// check if the info is still relevant
 	// skip all the computations - assume nothing changes in a small period of time :)
 	if		(RDEVICE.dwTimeGlobal == UCalc_Time)										return;	// early out for "fast" update
-	UCalc_mtlock	lock	;
+
+	static std::recursive_mutex UCalc_Mutex;
+	std::scoped_lock<decltype(UCalc_Mutex)> UCalc_mtlock(UCalc_Mutex);
+
 	OnCalculateBones		();
 	if		(!bForceExact && (RDEVICE.dwTimeGlobal < (UCalc_Time + UCalc_Interval)))	return;	// early out for "slow" update
 	if		(Update_Visibility)									Visibility_Update	();

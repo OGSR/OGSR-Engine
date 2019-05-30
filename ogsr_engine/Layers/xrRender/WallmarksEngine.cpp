@@ -105,6 +105,7 @@ void		CWallmarksEngine::static_wm_render		(CWallmarksEngine::static_wallmark*	W,
 		V->p.set		(el.p);
 		V->color		= C;
 		V->t.set		(el.t);
+		V++;
 	}
 }
 //--------------------------------------------------------------------------------
@@ -283,7 +284,7 @@ void CWallmarksEngine::AddStaticWallmark	(CDB::TRI* pTri, const Fvector* pVerts,
 
 void CWallmarksEngine::AddSkeletonWallmark	(const Fmatrix* xf, CKinematics* obj, ref_shader& sh, const Fvector& start, const Fvector& dir, float size)
 {	
-	if( 0==g_r || ::RImplementation.phase != CRender::PHASE_NORMAL)				return;
+	if (::RImplementation.phase != CRender::PHASE_NORMAL) return;
 	// optimization cheat: don't allow wallmarks more than 50 m from viewer/actor
 	if (xf->c.distance_to_sqr(Device.vCameraPosition) > _sqr(50.f))				return;
 
@@ -295,7 +296,7 @@ void CWallmarksEngine::AddSkeletonWallmark	(const Fmatrix* xf, CKinematics* obj,
 
 void CWallmarksEngine::AddSkeletonWallmark(intrusive_ptr<CSkeletonWallmark> wm)
 {
-	if(0==g_r || ::RImplementation.phase != CRender::PHASE_NORMAL) return;
+	if (::RImplementation.phase != CRender::PHASE_NORMAL) return;
 
 	if (!::RImplementation.val_bHUD)
 	{
@@ -365,9 +366,7 @@ void CWallmarksEngine::Render()
 		BeginStream	(hGeom,w_offset,w_verts,w_start);
 		wm_slot* slot			= *slot_it;	
 		// static wallmarks
-		static_wallmark** w_it = slot->static_items.data();
-		static_wallmark** w_end = w_it + slot->static_items.size();
-		while ( w_it != w_end ) {
+		for (auto w_it = slot->static_items.begin(); w_it != slot->static_items.end(); ) {
 			static_wallmark* W	= *w_it;
 			if (RImplementation.ViewBase.testSphere_dirty(W->bounds.P,W->bounds.R)){
 				Device.Statistic->RenderDUMP_WMS_Count++;
@@ -388,12 +387,11 @@ void CWallmarksEngine::Render()
 			if (W->ttl<=EPS){	
 				static_wm_destroy	(W);
 				*w_it				= slot->static_items.back();
-				w_end--;
+				slot->static_items.pop_back();
 			}else{
 				w_it++;
 			}
 		}
-		slot->static_items.resize(w_end - slot->static_items.data());
 
 		// Flush stream
 		FlushStream				(hGeom,slot->shader,w_offset,w_verts,w_start,FALSE);	//. remove line if !(suppress cull needed)

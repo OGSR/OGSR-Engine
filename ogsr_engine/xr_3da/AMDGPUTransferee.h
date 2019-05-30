@@ -39,7 +39,7 @@ private:
 
 private:
 	ADL_MAIN_CONTROL_CREATE					Main_Control_Create;
-	ADL_MAIN_CONTROL_DESTROY				Main_Control_Destroy = nullptr;
+	ADL_MAIN_CONTROL_DESTROY				Main_Control_Destroy;
 
 	ADL_ADAPTER_ADAPTERINFO_GET				GetAdapter_AdapterInfo;
 	ADL_ADAPTER_NUMBEROFADAPTERS_GET		GetAdapter_NumberOfAdapters;
