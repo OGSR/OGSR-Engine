@@ -51,9 +51,10 @@ IC void propagade_depth			(LPVOID p_dest, LPVOID p_src, int dim)
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
 
-occRasterizer::occRasterizer	()
+occRasterizer::occRasterizer()
+	: bufFrame{}, bufDepth{}, bufDepth_0{}, bufDepth_1{}, bufDepth_2{}, bufDepth_3{}
 #if DEBUG
-:dbg_HOM_draw_initialized(false)
+, dbg_HOM_draw_initialized(false)
 #endif
 {
 	

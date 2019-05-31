@@ -530,7 +530,7 @@ void	CHW::updateWindowProps	(HWND m_hWnd)
 		bWindowed			= !psDeviceFlags.is(rsFullscreen);
 #endif	
 
-	u32		dwWindowStyle			= 0;
+	LONG_PTR dwWindowStyle = 0;
 	// Set window properties depending on what mode were in.
 	if (bWindowed)		{
 		if (m_move_window) {
