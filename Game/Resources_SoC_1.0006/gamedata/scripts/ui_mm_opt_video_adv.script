@@ -78,10 +78,6 @@ local adv_vid_opt_params = {
 	{ "r2_tonemap_middlegray", "track", 0, hint_colors.green , "video_settings_name_26", "video_settings_desc_26", only_2_and_more_mode  },
 	{ "r2_rain_drops",         "check", 0, hint_colors.green , "video_settings_name_47", "video_settings_desc_47", only_2a_and_more_mode },
 	{ "r2_actor_shadow",       "check", 0, hint_colors.green , "video_settings_name_56", "",                       only_2a_and_more_mode },
---
---Эти в будущем точно запилю обратно. И не только эти.
-	--{ "r__bloodmarks",         "check", 0, hint_colors.green , "video_settings_name_9" , "video_settings_desc_9"  },
---
 }
 
 local control_init_funs = {

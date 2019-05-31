@@ -470,7 +470,7 @@ void CInput::clip_cursor(bool clip)
 {
 	if (clip) {
 		ShowCursor(FALSE);
-		if (Device.m_hWnd) {
+		if (Device.m_hWnd && !psDeviceFlags.is(rsFullscreen)) {
 			RECT rect;
 			GetClientRect(Device.m_hWnd, &rect);
 
