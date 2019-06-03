@@ -19,6 +19,7 @@
 CDetailPathManager::CDetailPathManager	(CRestrictedObject *object)
 {
 	m_restricted_object		= object;
+	m_dest_vertex_id		= u32(-1);
 }
 
 CDetailPathManager::~CDetailPathManager	()
@@ -95,7 +96,7 @@ bool CDetailPathManager::try_get_direction(Fvector& direction) const
 
 void CDetailPathManager::build_path(const xr_vector<u32> &level_path, u32 intermediate_index)
 {
-	if ( valid( m_start_position ) && valid( m_start_direction ) && valid( m_dest_position ) ) {
+	if (valid(m_start_position) && valid( m_start_direction ) && valid(m_dest_position)) {
 		switch (m_path_type) {
 			case eDetailPathTypeSmooth : {
 				build_smooth_path(level_path,intermediate_index);
@@ -112,7 +113,9 @@ void CDetailPathManager::build_path(const xr_vector<u32> &level_path, u32 interm
 			default : NODEFAULT;
 		}
 		if (failed()) {
+#ifndef MASTER_GOLD
 			Msg						("! DetailPathManager has failed : from [%f,%f,%f] to [%f,%f,%f]", VPUSH(ai().level_graph().vertex_position(level_path.front())), VPUSH(ai().level_graph().vertex_position(level_path.back())));
+#endif // #ifndef MASTER_GOLD
 #ifdef DEBUG
 			Msg						("! DetailPathManager has failed for object %s : from [%f,%f,%f] to [%f,%f,%f]", m_restricted_object ? *m_restricted_object->object().cName() : "unknown", VPUSH(ai().level_graph().vertex_position(level_path.front())), VPUSH(ai().level_graph().vertex_position(level_path.back())));
 			Msg						("List of available velocities :");

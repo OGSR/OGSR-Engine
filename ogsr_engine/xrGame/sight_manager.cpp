@@ -12,7 +12,7 @@
 #include "ai/stalker/ai_stalker.h"
 #include "detail_path_manager.h"
 #include "level_graph.h"
-#include "stalker_movement_manager.h"
+#include "stalker_movement_manager_obstacles.h" //"stalker_movement_manager.h"
 #include "ai/stalker/ai_stalker_space.h"
 #include "ai_space.h"
 #include "profiler.h"

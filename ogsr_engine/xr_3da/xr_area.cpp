@@ -114,17 +114,18 @@ CObjectSpace::~CObjectSpace	( )
 #endif
 }
 //----------------------------------------------------------------------
-int	CObjectSpace::GetNearest	( xr_vector<CObject*>&	q_nearest, const Fvector &point, float range, CObject* ignore_object )
+int CObjectSpace::GetNearest		( xr_vector<ISpatial*>& q_spatial, xr_vector<CObject*>&	q_nearest, const Fvector &point, float range, CObject* ignore_object )
 {
+	q_spatial.clear_not_free		( );
 	// Query objects
 	q_nearest.clear_not_free		( );
 	Fsphere				Q;	Q.set	(point,range);
 	Fvector				B;	B.set	(range,range,range);
-	g_SpatialSpace->q_box(r_spatial,0,STYPE_COLLIDEABLE,point,B);
+	g_SpatialSpace->q_box(q_spatial,0,STYPE_COLLIDEABLE,point,B);
 
 	// Iterate
-	xr_vector<ISpatial*>::iterator	it	= r_spatial.begin	();
-	xr_vector<ISpatial*>::iterator	end	= r_spatial.end		();
+	xr_vector<ISpatial*>::iterator	it	= q_spatial.begin	();
+	xr_vector<ISpatial*>::iterator	end	= q_spatial.end		();
 	for (; it!=end; it++)		{
 		CObject* O				= (*it)->dcast_CObject		();
 		if (0==O)				continue;
@@ -135,14 +136,30 @@ int	CObjectSpace::GetNearest	( xr_vector<CObject*>&	q_nearest, const Fvector &po
 
 	return q_nearest.size();
 }
+
 //----------------------------------------------------------------------
-int   CObjectSpace::GetNearest( xr_vector<CObject*>&	q_nearest, ICollisionForm* obj, float range)
+IC int	CObjectSpace::GetNearest	( xr_vector<CObject*>&	q_nearest, const Fvector &point, float range, CObject* ignore_object )
+{
+	return							(
+		GetNearest(
+			r_spatial,
+			q_nearest,
+			point,
+			range,
+			ignore_object
+		)
+	);
+}
+
+//----------------------------------------------------------------------
+IC int   CObjectSpace::GetNearest( xr_vector<CObject*>&	q_nearest, ICollisionForm* obj, float range)
 {
 	CObject*	O		= obj->Owner	();
 	return				GetNearest( q_nearest, O->spatial.sphere.P, range + O->spatial.sphere.R, O );
 }
 
 //----------------------------------------------------------------------
+
 static void __stdcall	build_callback	(Fvector* V, int Vcnt, CDB::TRI* T, int Tcnt, void* params)
 {
 	g_pGameLevel->Load_GameSpecific_CFORM( T, Tcnt );

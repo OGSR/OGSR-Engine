@@ -40,6 +40,7 @@ class CSpaceRestrictor;
 class CAttachableItem;
 class animation_movement_controller;
 class CBlend;
+class ai_obstacle;
 namespace GameObject {
 	enum ECallbackType;
 };
@@ -70,6 +71,7 @@ class CGameObject :
 	CAI_ObjectLocation				*m_ai_location;
 	ALife::_STORY_ID				m_story_id;
 	animation_movement_controller	*m_anim_mov_ctrl;
+
 protected:
 	//время удаления объекта
 	bool					m_bObjectRemoved;
@@ -303,4 +305,20 @@ protected:
 public:
   void addFeelTouch( float, const luabind::object&, const luabind::functor<void>&, const luabind::functor<bool>& );
   void removeFeelTouch( const luabind::object&, const luabind::functor<void>&, const luabind::functor<bool>& );
+
+private:
+	ai_obstacle				*m_ai_obstacle;
+	Fmatrix					m_previous_matrix;
+
+public:
+	virtual	bool			is_ai_obstacle		() const;
+
+public:
+	IC		ai_obstacle		&obstacle			() const
+	{
+		VERIFY				(m_ai_obstacle);
+		return				(*m_ai_obstacle);
+	}
+
+	virtual void			on_matrix_change	(const Fmatrix &previous);
 };

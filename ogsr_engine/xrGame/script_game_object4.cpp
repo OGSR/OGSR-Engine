@@ -12,7 +12,7 @@
 #include "alife_simulator.h"
 
 #include "ai/stalker/ai_stalker.h"
-#include "stalker_movement_manager.h"
+#include "stalker_movement_manager_obstacles.h" //"stalker_movement_manager.h"
 
 #include "sight_manager_space.h"
 #include "sight_control_action.h"

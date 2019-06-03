@@ -32,7 +32,7 @@
 #include "ai/stalker/ai_stalker_space.h"
 #include "stalker_planner.h"
 #include "stalker_kill_wounded_planner.h"
-#include "stalker_movement_manager.h"
+#include "stalker_movement_manager_obstacles.h" //"stalker_movement_manager.h"
 
 using namespace StalkerSpace;
 using namespace StalkerDecisionSpace;

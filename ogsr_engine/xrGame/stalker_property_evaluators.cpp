@@ -26,7 +26,7 @@
 #include "alife_human_brain.h"
 #include "actor.h"
 #include "actor_memory.h"
-#include "stalker_movement_manager.h"
+#include "stalker_movement_manager_obstacles.h" //"stalker_movement_manager.h"
 #include "agent_manager.h"
 #include "agent_enemy_manager.h"
 

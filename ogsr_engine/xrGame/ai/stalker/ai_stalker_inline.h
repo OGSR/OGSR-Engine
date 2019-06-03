@@ -36,7 +36,7 @@ IC	LPCSTR CAI_Stalker::Name									() const
 	return					(CInventoryOwner::Name());
 }
 
-IC	CStalkerMovementManager	&CAI_Stalker::movement				() const
+IC	stalker_movement_manager_obstacles /*CStalkerMovementManager*/	&CAI_Stalker::movement				() const
 {
 	VERIFY					(m_movement_manager);
 	return					(*m_movement_manager);

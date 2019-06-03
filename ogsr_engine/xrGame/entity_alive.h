@@ -180,6 +180,8 @@ public:
 	virtual	void				net_Relcase					(CObject *O);
 
 public:
+    virtual Fvector predict_position(const float& time_to_check) const;
+    virtual Fvector target_position() const;
 	IC		bool const			&is_agresive				() const;
 	IC		void				is_agresive					(bool const &value);
 	IC		bool const			&is_start_attack			() const;

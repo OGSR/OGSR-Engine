@@ -15,7 +15,7 @@
 #include "clsid_game.h"
 #include "object_handler_space.h"
 #include "object_handler_planner.h"
-#include "stalker_movement_manager.h"
+#include "stalker_movement_manager_obstacles.h" //"stalker_movement_manager.h"
 #include "entitycondition.h"
 #include "stalker_animation_data.h"
 #include "stalker_animation_manager_impl.h"
@@ -40,7 +40,7 @@ void CStalkerAnimationManager::torso_play_callback	(CBlend *blend)
 MotionID CStalkerAnimationManager::no_object_animation(const EBodyState &body_state) const
 {
 	const CAI_Stalker				&stalker = object();
-	const CStalkerMovementManager	&movement = stalker.movement();
+	const stalker_movement_manager_obstacles /*CStalkerMovementManager*/	&movement = stalker.movement();
 	const xr_vector<CAniVector>		&animation = m_data_storage->m_part_animations.A[body_state].m_torso.A[0].A;
 
 	if (eMentalStateFree == movement.mental_state()) {
@@ -76,7 +76,7 @@ MotionID CStalkerAnimationManager::unknown_object_animation(u32 slot, const EBod
 	
 	// stalker shortcuts
 	const CAI_Stalker				&stalker = object();
-	const CStalkerMovementManager	&movement = stalker.movement();
+	const stalker_movement_manager_obstacles /*CStalkerMovementManager*/	&movement = stalker.movement();
 	u32								id = stalker.CObjectHandler::planner().current_action_state_id();
 
 	switch (id) {
@@ -171,7 +171,7 @@ MotionID CStalkerAnimationManager::weapon_animation	(u32 slot, const EBodyState 
 		case CWeapon::eFire:
 		case CWeapon::eFire2 : {
 			CAI_Stalker				&stalker = object();
-			CStalkerMovementManager	&movement = stalker.movement();
+			stalker_movement_manager_obstacles /*CStalkerMovementManager*/	&movement = stalker.movement();
 			if (standing())
 				return				(animation[1].A[0]);
 

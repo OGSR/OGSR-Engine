@@ -34,6 +34,7 @@ namespace ScriptEntity {enum EActionType;};
 namespace MovementManager { enum EPathType;};
 namespace DetailPathManager { enum EDetailPathType;};
 namespace SightManager {enum ESightType;};
+namespace doors { class door; }
 
 class NET_Packet;
 class CGameTask;
@@ -800,6 +801,18 @@ public:
 	void  stalker_disp_base( float, float );
 
 	bool controller_psy_hit_active();
+
+			void				register_door							();
+			void				unregister_door							();
+			bool				is_door_registered					() const;
+			void				on_door_is_open							();
+			void				on_door_is_closed						();
+			bool				is_door_locked_for_npc					() const;
+			void				lock_door_for_npc						();
+			void				unlock_door_for_npc						();
+			bool				is_door_blocked_by_npc					() const;
+
+	doors::door*				m_door;
 
 	DECLARE_SCRIPT_REGISTER_FUNCTION
 };

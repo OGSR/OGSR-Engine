@@ -29,6 +29,7 @@
 #include "alife_simulator.h"
 #include "alife_object_registry.h"
 #include "Car.h"
+#include "ai_obstacle.h"
 
 #include "ai_object_location.h"
 
@@ -39,6 +40,8 @@
 
 CGameObject::CGameObject		()
 {
+	m_ai_obstacle				= 0;
+
 	init						();
 	//-----------------------------------------
 	m_bCrPr_Activated			= false;
@@ -61,6 +64,7 @@ CGameObject::~CGameObject		()
 	VERIFY						(!m_spawned);
 	xr_delete					(m_ai_location);
 	m_callbacks.clear();
+	xr_delete					(m_ai_obstacle);
 
         for ( auto& ft : feel_touch_addons ) {
           xr_delete( ft );
@@ -221,6 +225,7 @@ BOOL CGameObject::net_Spawn		(CSE_Abstract*	DC)
 
 	m_spawned						= true;
 	m_spawn_time					= Device.dwFrame;
+	m_ai_obstacle					= xr_new<ai_obstacle>(this);
 	CSE_Abstract					*E = (CSE_Abstract*)DC;
 	VERIFY							(E);
 
@@ -930,9 +935,44 @@ void CGameObject::update_animation_movement_controller	()
 	destroy_anim_mov_ctrl		();
 }
 
+IC bool similar(const Fmatrix& _0, const Fmatrix& _1, const float& epsilon = EPS)
+{
+    if (!_0.i.similar(_1.i, epsilon))
+        return (false);
+
+    if (!_0.j.similar(_1.j, epsilon))
+        return (false);
+
+    if (!_0.k.similar(_1.k, epsilon))
+        return (false);
+
+    if (!_0.c.similar(_1.c, epsilon))
+        return (false);
+
+    // note: we do not compare projection here
+    return (true);
+}
+
 void	CGameObject::		UpdateCL			( )
 {
 	inherited::UpdateCL			();
+	
+//	if (!is_ai_obstacle())
+//		return;
+	
+	if (H_Parent())
+		return;
+
+	if (similar(XFORM(),m_previous_matrix,EPS))
+		return;
+
+	on_matrix_change				(m_previous_matrix);
+	m_previous_matrix				= XFORM();
+}
+
+void CGameObject::on_matrix_change	(const Fmatrix &previous)
+{
+	obstacle().on_move				();
 }
 
 void	CGameObject::UpdateXFORM(const Fmatrix &upd)
@@ -957,6 +997,11 @@ void	CGameObject::UpdateXFORM(const Fmatrix &upd)
 		ai_location().level_vertex(lvid);
 	}
 	*/
+}
+
+bool CGameObject::is_ai_obstacle	() const
+{
+	return							(false);
 }
 
 void	CGameObject::OnChangeVisual	( )

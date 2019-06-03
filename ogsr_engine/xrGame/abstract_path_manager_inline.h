@@ -8,7 +8,6 @@
 
 #pragma once
 
-#include "abstract_path_manager.h"
 #include "ai_space.h"
 #include "graph_engine.h"
 
@@ -176,10 +175,19 @@ IC	CRestrictedObject &CPathManagerTemplate::object			() const
 	VERIFY					(m_object);
 	return					(*m_object);
 }
+
 TEMPLATE_SPECIALIZATION
 IC void	CPathManagerTemplate::reset()
 {
-	m_failed = false;
+	m_failed				= false;
+}
+
+TEMPLATE_SPECIALIZATION
+IC	void CPathManagerTemplate::invalidate_failed_info		()
+{
+	reset					();
+	m_failed_start_vertex_id= u32(-1);
+	m_failed_dest_vertex_id	= u32(-1);
 }
 
 #undef CPathManagerTemplate

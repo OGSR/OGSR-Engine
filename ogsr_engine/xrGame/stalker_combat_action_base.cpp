@@ -14,7 +14,7 @@
 #include "ai/stalker/ai_stalker_space.h"
 #include "memory_manager.h"
 #include "enemy_manager.h"
-#include "stalker_movement_manager.h"
+#include "stalker_movement_manager_obstacles.h" //"stalker_movement_manager.h"
 #include "object_handler.h"
 #include "agent_manager.h"
 #include "agent_member_manager.h"

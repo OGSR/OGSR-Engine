@@ -70,14 +70,14 @@ void CLevelGraph::choose_point(const Fvector &start_point, const Fvector &finish
 			default : NODEFAULT;
 		}
 		dwIntersect				= intersect(start_point.x,start_point.z,finish_point.x,finish_point.z,tCheckPoint1.x,tCheckPoint1.z,tCheckPoint2.x,tCheckPoint2.z,&tIntersectPoint.x,&tIntersectPoint.z);
-		if (dwIntersect == eLineIntersectionIntersect) {
+		if (dwIntersect == LevelGraph::eLineIntersectionIntersect) {
 			if (finish_point.distance_to_xz(tIntersectPoint) < finish_point.distance_to_xz(temp_point) + EPS_L) {
 				temp_point = tIntersectPoint;
 				saved_index = node_id;
 			}
 		}
 		else
-			if (dwIntersect == eLineIntersectionEqual) {
+			if (dwIntersect == LevelGraph::eLineIntersectionEqual) {
 				if (start_point.distance_to_xz(tCheckPoint1) > start_point.distance_to_xz(temp_point))
 					if (start_point.distance_to_xz(tCheckPoint1) > start_point.distance_to_xz(tCheckPoint2)) {
 						temp_point = tCheckPoint1;

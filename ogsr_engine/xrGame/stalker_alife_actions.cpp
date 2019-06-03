@@ -19,7 +19,7 @@
 #include "item_manager.h"
 #include "sight_manager.h"
 #include "ai_object_location.h"
-#include "stalker_movement_manager.h"
+#include "stalker_movement_manager_obstacles.h" //"stalker_movement_manager.h"
 #include "patrol_path_manager.h"
 #include "sound_player.h"
 #include "ai/stalker/ai_stalker_space.h"

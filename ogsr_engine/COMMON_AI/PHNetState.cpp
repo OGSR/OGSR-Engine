@@ -253,7 +253,7 @@ void SPHBonesData::net_Load(NET_Packet &P)
 	bones.clear					();
 
 	u64 _low = P.r_u64();
-	u64 _high = 0;
+	u64 _high = u64(-1);
 
 	root_bone					=P.r_u16();
 	Fvector						_mn, _mx;

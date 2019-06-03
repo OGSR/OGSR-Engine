@@ -12,7 +12,7 @@
 #include "game_object_space.h"
 #include "script_callback_ex.h"
 #include "profiler.h"
-#include "stalker_movement_manager.h"
+#include "stalker_movement_manager_obstacles.h" //"stalker_movement_manager.h"
 
 /*IC*/	void CStalkerAnimationManager::play_delayed_callbacks	()
 {
@@ -144,14 +144,14 @@ void CStalkerAnimationManager::play_legs					()
 	
 	if (!first_time && !result && legs().blend()) {
 		float				amount = legs().blend()->blendAmount;
-		m_previous_speed	= (m_current_speed - m_previous_speed)*amount + m_previous_speed;
+		m_previous_speed	= (m_target_speed - m_previous_speed)*amount + m_previous_speed;
 	}
 
-	legs().play				(m_skeleton_animated,legs_play_callback,&object(),!fis_zero(m_current_speed),false);
+	legs().play				(m_skeleton_animated,legs_play_callback,&object(),!fis_zero(m_target_speed),false);
 	
 	if (result && legs().blend()) {
 		float				amount = legs().blend()->blendAmount;
-		speed				= (m_current_speed - m_previous_speed)*amount + m_previous_speed;
+		speed				= (m_target_speed - m_previous_speed)*amount + m_previous_speed;
 	}
 
 	if (fis_zero(speed))

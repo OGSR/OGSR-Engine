@@ -181,7 +181,7 @@ public:
         return bd;
 	}
 	u16						_BCL	LL_BoneCount		()	const			{	return u16(bones->size());										}
-	u16								LL_VisibleBoneCount	()					{ return visimask.count(); }
+	u16 LL_VisibleBoneCount(); //{ return visimask.count(); }
 	ICF Fmatrix&			_BCL	LL_GetTransform		(u16 bone_id)		{	return LL_GetBoneInstance(bone_id).mTransform;					}
 	ICF const Fmatrix&		_BCL	LL_GetTransform		(u16 bone_id) const	{	return LL_GetBoneInstance(bone_id).mTransform;					}
 	ICF Fmatrix&					LL_GetTransform_R	(u16 bone_id)		{	return LL_GetBoneInstance(bone_id).mRenderTransform;			}	// rendering only

@@ -10,7 +10,7 @@
 #include "stalker_danger_unknown_actions.h"
 #include "ai/stalker/ai_stalker.h"
 #include "script_game_object.h"
-#include "stalker_movement_manager.h"
+#include "stalker_movement_manager_obstacles.h" //"stalker_movement_manager.h"
 #include "sight_manager.h"
 #include "object_handler.h"
 #include "movement_manager_space.h"

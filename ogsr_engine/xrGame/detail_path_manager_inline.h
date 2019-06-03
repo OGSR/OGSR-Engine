@@ -18,17 +18,38 @@ IC	void CDetailPathManager::make_inactual	()
 	m_actuality				= false;
 }
 
-IC	bool CDetailPathManager::failed() const
+IC	bool CDetailPathManager::failed			() const
 {
 	return					(m_failed);
 }
 
-IC	bool CDetailPathManager::completed(const Fvector &position, bool bRealCompleted) const
+IC	bool CDetailPathManager::completed		(const Fvector &position, bool bRealCompleted, const u32 &travel_point_point_index) const
 {
-	return					(m_path.empty() || ((bRealCompleted || !m_state_patrol_path) ? (curr_travel_point_index() == m_path.size() - 1) : curr_travel_point_index() >= m_last_patrol_point));
+	if ( m_path.empty() )
+		return						true;
+		
+	if ( bRealCompleted || !m_state_patrol_path )
+	{
+		u32 const path_size		=	m_path.size();
+		return						travel_point_point_index == (path_size - 1);
+	}
+	else
+	{
+		return						travel_point_point_index >= m_last_patrol_point;
+	}
+}
+
+IC	bool CDetailPathManager::completed		(const Fvector &position, bool bRealCompleted) const
+{
+	return					(completed(position,bRealCompleted,m_current_travel_point));
 }
 
 IC	const xr_vector<DetailPathManager::STravelPathPoint> &CDetailPathManager::path() const
+{
+	return					(m_path);
+}
+
+IC	xr_vector<DetailPathManager::STravelPathPoint> &CDetailPathManager::path()
 {
 	return					(m_path);
 }
@@ -40,7 +61,10 @@ IC	const DetailPathManager::STravelPathPoint &CDetailPathManager::curr_travel_po
 
 IC	u32	 CDetailPathManager::curr_travel_point_index() const
 {
-	VERIFY					(!m_path.empty() && (m_current_travel_point < m_path.size()));
+	VERIFY2					(
+		!m_path.empty() && (m_current_travel_point < m_path.size()),
+		make_string("path[%d], current[%d]",m_path.size(),m_current_travel_point)
+	);
 	return					(m_current_travel_point);
 }
 
@@ -49,7 +73,7 @@ IC	void CDetailPathManager::set_start_position	(const Fvector &start_position)
 	m_start_position		= start_position;
 }
 
-IC	void CDetailPathManager::set_start_direction	(const Fvector &start_direction)
+IC	void CDetailPathManager::set_start_direction(const Fvector &start_direction)
 {
 	m_start_direction		= start_direction;
 }
@@ -144,12 +168,16 @@ IC	void CDetailPathManager::assign_angle(
 	VERIFY				(_valid(angle));
 }
 
-IC	void CDetailPathManager::compute_circles(
+IC	bool CDetailPathManager::compute_circles(
 	STrajectoryPoint	&point, 
 	SCirclePoint		*circles
 )
 {
-	VERIFY				(!fis_zero(point.angular_velocity));
+	if ( fis_zero(point.angular_velocity) ) {
+		VERIFY2			(0, "point.angular_velocity is zero");
+		return			false;
+	}
+
 	point.radius		= _abs(point.linear_velocity)/point.angular_velocity;
 	circles[0].radius	= circles[1].radius = point.radius;
 	VERIFY				(fsimilar(point.direction.square_magnitude(),1.f));
@@ -157,6 +185,7 @@ IC	void CDetailPathManager::compute_circles(
 	circles[0].center.y = -point.direction.x*point.radius + point.position.y;
 	circles[1].center.x = -point.direction.y*point.radius + point.position.x;
 	circles[1].center.y =  point.direction.x*point.radius + point.position.y;
+	return				true;
 }
 
 IC	void CDetailPathManager::set_velocity_mask			(const u32 velocity_mask)
@@ -260,3 +289,25 @@ IC	const float &CDetailPathManager::distance_to_target	()
 	update_distance_to_target	();
 	return						(m_distance_to_target);
 }
+
+IC	const u32 &CDetailPathManager::dest_vertex_id		() const
+{
+	return						(m_dest_vertex_id);
+}
+
+IC	const u32 &CDetailPathManager::last_patrol_point	() const
+{
+	return						(m_last_patrol_point);
+}
+
+IC	void CDetailPathManager::last_patrol_point			(const u32 &last_patrol_point)
+{
+	m_last_patrol_point			= last_patrol_point;
+}
+
+#ifdef DEBUG
+IC	xr_vector<CDetailPathManager::STravelPoint> &CDetailPathManager::key_points	()
+{
+	return						(m_key_points);
+}
+#endif // DEBUG

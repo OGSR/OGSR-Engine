@@ -14,7 +14,7 @@
 #include "stalker_property_evaluators.h"
 #include "script_game_object.h"
 #include "ai/stalker/ai_stalker.h"
-#include "stalker_movement_manager.h"
+#include "stalker_movement_manager_obstacles.h" //"stalker_movement_manager.h"
 #include "memory_manager.h"
 #include "enemy_manager.h"
 

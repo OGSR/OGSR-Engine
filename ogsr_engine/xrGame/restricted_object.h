@@ -21,10 +21,9 @@ namespace RestrictionSpace {
 template <bool add> struct CRestrictionPredicate;
 
 class CRestrictedObject {
+private:
 	friend struct CRestrictionPredicate<true>;
 	friend struct CRestrictionPredicate<false>;
-private:
-	typedef CGameObject inherited;
 
 private:
 	CCustomMonster			*m_object;
@@ -34,7 +33,7 @@ private:
 
 protected:
 	template <typename P, bool value>
-	IC		void			construct_restriction_string	(LPSTR temp_restrictions, const xr_vector<ALife::_OBJECT_ID> &restrictions, shared_str current_restrictions, const P &p);
+	IC		void			construct_restriction_string	(LPSTR temp_restrictions, u32 const temp_restrictions_size, const xr_vector<ALife::_OBJECT_ID> &restrictions, shared_str current_restrictions, const P &p);
 	IC		void			add_object_restriction			(ALife::_OBJECT_ID id, const RestrictionSpace::ERestrictorTypes &restrictor_type);
 	IC		void			remove_object_restriction		(ALife::_OBJECT_ID id, const RestrictionSpace::ERestrictorTypes &restrictor_type);
 
@@ -43,10 +42,14 @@ public:
 	virtual					~CRestrictedObject				();
 	virtual BOOL			net_Spawn						(CSE_Abstract* data);
 	virtual void			net_Destroy						();
-			void			add_border						(u32 start_vertex_id, float radius) const;
-			void			add_border						(const Fvector &start_position, const Fvector &dest_position) const;
-			void			add_border						(u32 start_vertex_id, u32 dest_vertex_id) const;
-			void			remove_border					() const;
+
+public:
+	virtual	void			add_border						(u32 start_vertex_id, float radius) const;
+	virtual	void			add_border						(const Fvector &start_position, const Fvector &dest_position) const;
+	virtual	void			add_border						(u32 start_vertex_id, u32 dest_vertex_id) const;
+	virtual	void			remove_border					() const;
+
+public:
 			u32				accessible_nearest				(const Fvector &position, Fvector &result) const;
 			bool			accessible						(const Fvector &position) const;
 			bool			accessible						(const Fvector &position, float radius) const;
@@ -66,7 +69,6 @@ public:
 	IC		CCustomMonster	&object							() const;
 	IC		bool			actual							() const;
 			void			actual							(bool value);
-
 
 public:
 #ifdef DEBUG

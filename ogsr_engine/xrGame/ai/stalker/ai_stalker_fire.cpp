@@ -24,7 +24,7 @@
 #include "../../hit_memory_manager.h"
 #include "../../enemy_manager.h"
 #include "../../item_manager.h"
-#include "../../stalker_movement_manager.h"
+#include "../../stalker_movement_manager_obstacles.h" //"../../stalker_movement_manager.h"
 #include "../../entitycondition.h"
 #include "../../sound_player.h"
 #include "cover_point.h"

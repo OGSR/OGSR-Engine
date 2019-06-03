@@ -13,7 +13,7 @@
 #include "script_game_object.h"
 #include "movement_manager_space.h"
 #include "detail_path_manager_space.h"
-#include "stalker_movement_manager.h"
+#include "stalker_movement_manager_obstacles.h" //"stalker_movement_manager.h"
 #include "inventory.h"
 #include "weapon.h"
 #include "clsid_game.h"

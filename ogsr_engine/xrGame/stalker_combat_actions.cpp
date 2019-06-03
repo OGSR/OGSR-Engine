@@ -24,7 +24,7 @@
 #include "visual_memory_manager.h"
 #include "sight_manager.h"
 #include "ai_object_location.h"
-#include "stalker_movement_manager.h"
+#include "stalker_movement_manager_obstacles.h" //"stalker_movement_manager.h"
 #include "sound_player.h"
 #include "stalker_planner.h"
 #include "agent_member_manager.h"

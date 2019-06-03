@@ -2131,6 +2131,63 @@
     <Filter Include="AI\AScript\ScriptClasses\UI\LoadScreen">
       <UniqueIdentifier>{a98119e5-515e-4cbe-844d-ef75fbe162e4}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Core\Client\Objects\base\GameObject\ai_obstacle">
+      <UniqueIdentifier>{a0288b6a-3534-4e5b-9949-d41c1c925399}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Core\Client\Objects\base\GameObject\ai_obstacle\min_obb">
+      <UniqueIdentifier>{3ed49adb-3498-41ba-ab29-a54744075149}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Core\Client\Objects\base\GameObject\ai_obstacle\min_obb\magic_box">
+      <UniqueIdentifier>{5404b538-6020-4e9b-8d77-ebeca7ac2fe9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="AI\AComponents\moving_objects">
+      <UniqueIdentifier>{69e849e9-0151-4656-9e93-c8337fce273d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="AI\AComponents\moving_objects\moving_object">
+      <UniqueIdentifier>{4590cbf4-7703-4efb-bb01-8e654cea2967}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="AI\AComponents\moving_objects\obstacles_query">
+      <UniqueIdentifier>{cde15c4f-b2bd-48be-9e33-e7f92577cc8a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Core\Client\Objects\base\GameObject\ai_obstacle\min_obb\magic_minimize_nd">
+      <UniqueIdentifier>{d1347aba-a148-40eb-b0d4-bd66b22f2644}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Core\Client\Objects\base\GameObject\ai_obstacle\min_obb\minimize_1d">
+      <UniqueIdentifier>{fdcc96ed-f471-422e-908d-784a0dda0414}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="AI\AComponents\doors_manager">
+      <UniqueIdentifier>{0b8ef68b-036d-4bab-92e1-bdd050bfe4ac}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="AI\AComponents\doors_manager\door">
+      <UniqueIdentifier>{1351f97c-9546-447c-b48e-9375679953a4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="AI\AComponents\doors_manager\actor">
+      <UniqueIdentifier>{621e2039-47e3-455f-9988-ba04d457ffff}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="AI\AComponents\doors_manager\manager">
+      <UniqueIdentifier>{7037491f-491d-40b5-a2e5-598b5540bce4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="AI\AMonsters\humans\stalker\MovementManager\obstacles">
+      <UniqueIdentifier>{92ad9d1c-eb8f-4821-acb6-4197797a759e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="AI\AMonsters\humans\stalker\MovementManager\base">
+      <UniqueIdentifier>{39124acb-f841-4c22-963d-00e5c5cdf28f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="AI\AMonsters\humans\stalker\MovementManager\obstacles\obstacle_avoiders">
+      <UniqueIdentifier>{1ab83b1c-ab0e-42e2-bdb3-582553947fad}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="AI\AMonsters\humans\stalker\MovementManager\obstacles\obstacle_avoiders\dynamic">
+      <UniqueIdentifier>{4fc425e2-079e-43f9-8e1d-48a88ac3dd58}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="AI\AMonsters\humans\stalker\MovementManager\obstacles\obstacle_avoiders\static">
+      <UniqueIdentifier>{671c65a5-3938-4591-944d-0f65f60556d4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="AI\AMonsters\humans\stalker\MovementManager\obstacles\restricted_object_obstacle">
+      <UniqueIdentifier>{15c62dad-d33c-42f8-909c-8cd1ae372caf}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="AI\AMonsters\humans\stalker\MovementManager\obstacles\refreshable_obstacles_query">
+      <UniqueIdentifier>{d21295e6-0f6d-4539-a194-41a4910a124f}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="mt_config.h">
@@ -6120,6 +6177,105 @@
       <Filter>AI\AScript\ScriptClasses\UI\LoadScreen</Filter>
     </ClInclude>
     <ClInclude Include="ui\UIHelper.h" />
+    <ClInclude Include="magic_box3.h">
+      <Filter>Core\Client\Objects\base\GameObject\ai_obstacle\min_obb\magic_box</Filter>
+    </ClInclude>
+    <ClInclude Include="magic_box3_inline.h">
+      <Filter>Core\Client\Objects\base\GameObject\ai_obstacle\min_obb\magic_box</Filter>
+    </ClInclude>
+    <ClInclude Include="moving_object.h">
+      <Filter>AI\AComponents\moving_objects\moving_object</Filter>
+    </ClInclude>
+    <ClInclude Include="moving_object_inline.h">
+      <Filter>AI\AComponents\moving_objects\moving_object</Filter>
+    </ClInclude>
+    <ClInclude Include="moving_objects.h">
+      <Filter>AI\AComponents\moving_objects</Filter>
+    </ClInclude>
+    <ClInclude Include="moving_objects_impl.h">
+      <Filter>AI\AComponents\moving_objects</Filter>
+    </ClInclude>
+    <ClInclude Include="moving_objects_inline.h">
+      <Filter>AI\AComponents\moving_objects</Filter>
+    </ClInclude>
+    <ClInclude Include="obstacles_query.h">
+      <Filter>AI\AComponents\moving_objects\obstacles_query</Filter>
+    </ClInclude>
+    <ClInclude Include="obstacles_query_inline.h">
+      <Filter>AI\AComponents\moving_objects\obstacles_query</Filter>
+    </ClInclude>
+    <ClInclude Include="ai_obstacle.h">
+      <Filter>Core\Client\Objects\base\GameObject\ai_obstacle</Filter>
+    </ClInclude>
+    <ClInclude Include="ai_obstacle_inline.h">
+      <Filter>Core\Client\Objects\base\GameObject\ai_obstacle</Filter>
+    </ClInclude>
+    <ClInclude Include="magic_minimize_nd.h">
+      <Filter>Core\Client\Objects\base\GameObject\ai_obstacle\min_obb\magic_minimize_nd</Filter>
+    </ClInclude>
+    <ClInclude Include="magic_minimize_nd_inline.h">
+      <Filter>Core\Client\Objects\base\GameObject\ai_obstacle\min_obb\magic_minimize_nd</Filter>
+    </ClInclude>
+    <ClInclude Include="magic_minimize_1d.h">
+      <Filter>Core\Client\Objects\base\GameObject\ai_obstacle\min_obb\minimize_1d</Filter>
+    </ClInclude>
+    <ClInclude Include="magic_minimize_1d_inline.h">
+      <Filter>Core\Client\Objects\base\GameObject\ai_obstacle\min_obb\minimize_1d</Filter>
+    </ClInclude>
+    <ClInclude Include="doors.h">
+      <Filter>AI\AComponents\doors_manager</Filter>
+    </ClInclude>
+    <ClInclude Include="doors_door.h">
+      <Filter>AI\AComponents\doors_manager\door</Filter>
+    </ClInclude>
+    <ClInclude Include="doors_actor.h">
+      <Filter>AI\AComponents\doors_manager\actor</Filter>
+    </ClInclude>
+    <ClInclude Include="doors_manager.h">
+      <Filter>AI\AComponents\doors_manager\manager</Filter>
+    </ClInclude>
+    <ClInclude Include="..\COMMON_AI\Noncopyable.hpp">
+      <Filter>Core\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="stalker_movement_manager_obstacles.h">
+      <Filter>AI\AMonsters\humans\stalker\MovementManager\obstacles</Filter>
+    </ClInclude>
+    <ClInclude Include="stalker_movement_manager_obstacles_inline.h">
+      <Filter>AI\AMonsters\humans\stalker\MovementManager\obstacles</Filter>
+    </ClInclude>
+    <ClInclude Include="stalker_movement_manager_base.h">
+      <Filter>AI\AMonsters\humans\stalker\MovementManager\base</Filter>
+    </ClInclude>
+    <ClInclude Include="stalker_movement_manager_base_inline.h">
+      <Filter>AI\AMonsters\humans\stalker\MovementManager\base</Filter>
+    </ClInclude>
+    <ClInclude Include="dynamic_obstacles_avoider.h">
+      <Filter>AI\AMonsters\humans\stalker\MovementManager\obstacles\obstacle_avoiders\dynamic</Filter>
+    </ClInclude>
+    <ClInclude Include="dynamic_obstacles_avoider_inline.h">
+      <Filter>AI\AMonsters\humans\stalker\MovementManager\obstacles\obstacle_avoiders\dynamic</Filter>
+    </ClInclude>
+    <ClInclude Include="static_obstacles_avoider.h">
+      <Filter>AI\AMonsters\humans\stalker\MovementManager\obstacles\obstacle_avoiders\static</Filter>
+    </ClInclude>
+    <ClInclude Include="static_obstacles_avoider_inline.h">
+      <Filter>AI\AMonsters\humans\stalker\MovementManager\obstacles\obstacle_avoiders\static</Filter>
+    </ClInclude>
+    <ClInclude Include="restricted_object_obstacle.h">
+      <Filter>AI\AMonsters\humans\stalker\MovementManager\obstacles\restricted_object_obstacle</Filter>
+    </ClInclude>
+    <ClInclude Include="stalker_movement_params_new.h">
+      <Filter>AI\AMonsters\humans\stalker\MovementManager\params</Filter>
+    </ClInclude>
+    <ClInclude Include="stalker_movement_params_new_inline.h">
+      <Filter>AI\AMonsters\humans\stalker\MovementManager\params</Filter>
+    </ClInclude>
+    <ClInclude Include="refreshable_obstacles_query.h">
+      <Filter>AI\AMonsters\humans\stalker\MovementManager\obstacles\refreshable_obstacles_query</Filter>
+    </ClInclude>
+    <ClInclude Include="refreshable_obstacles_query_inline.h">
+      <Filter>AI\AMonsters\humans\stalker\MovementManager\obstacles\refreshable_obstacles_query</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="damage_manager.cpp">
@@ -8931,6 +9087,66 @@
       <Filter>AI\AScript\ScriptClasses\UI\LoadScreen</Filter>
     </ClCompile>
     <ClCompile Include="ui\UIHelper.cpp" />
+    <ClCompile Include="magic_box3.cpp">
+      <Filter>Core\Client\Objects\base\GameObject\ai_obstacle\min_obb\magic_box</Filter>
+    </ClCompile>
+    <ClCompile Include="moving_object.cpp">
+      <Filter>AI\AComponents\moving_objects\moving_object</Filter>
+    </ClCompile>
+    <ClCompile Include="moving_objects.cpp">
+      <Filter>AI\AComponents\moving_objects</Filter>
+    </ClCompile>
+    <ClCompile Include="moving_objects_dynamic.cpp">
+      <Filter>AI\AComponents\moving_objects</Filter>
+    </ClCompile>
+    <ClCompile Include="moving_objects_dynamic_collision.cpp">
+      <Filter>AI\AComponents\moving_objects</Filter>
+    </ClCompile>
+    <ClCompile Include="moving_objects_static.cpp">
+      <Filter>AI\AComponents\moving_objects</Filter>
+    </ClCompile>
+    <ClCompile Include="ai_obstacle.cpp">
+      <Filter>Core\Client\Objects\base\GameObject\ai_obstacle</Filter>
+    </ClCompile>
+    <ClCompile Include="magic_minimize_1d.cpp">
+      <Filter>Core\Client\Objects\base\GameObject\ai_obstacle\min_obb\minimize_1d</Filter>
+    </ClCompile>
+    <ClCompile Include="min_obb.cpp">
+      <Filter>Core\Client\Objects\base\GameObject\ai_obstacle\min_obb</Filter>
+    </ClCompile>
+    <ClCompile Include="doors_door.cpp">
+      <Filter>AI\AComponents\doors_manager\door</Filter>
+    </ClCompile>
+    <ClCompile Include="doors_actor.cpp">
+      <Filter>AI\AComponents\doors_manager\actor</Filter>
+    </ClCompile>
+    <ClCompile Include="doors_manager.cpp">
+      <Filter>AI\AComponents\doors_manager\manager</Filter>
+    </ClCompile>
+    <ClCompile Include="stalker_movement_manager_obstacles.cpp">
+      <Filter>AI\AMonsters\humans\stalker\MovementManager\obstacles</Filter>
+    </ClCompile>
+    <ClCompile Include="stalker_movement_manager_obstacles_path.cpp">
+      <Filter>AI\AMonsters\humans\stalker\MovementManager\obstacles</Filter>
+    </ClCompile>
+    <ClCompile Include="stalker_movement_manager_base.cpp">
+      <Filter>AI\AMonsters\humans\stalker\MovementManager\base</Filter>
+    </ClCompile>
+    <ClCompile Include="dynamic_obstacles_avoider.cpp">
+      <Filter>AI\AMonsters\humans\stalker\MovementManager\obstacles\obstacle_avoiders\dynamic</Filter>
+    </ClCompile>
+    <ClCompile Include="static_obstacles_avoider.cpp">
+      <Filter>AI\AMonsters\humans\stalker\MovementManager\obstacles\obstacle_avoiders\static</Filter>
+    </ClCompile>
+    <ClCompile Include="restricted_object_obstacle.cpp">
+      <Filter>AI\AMonsters\humans\stalker\MovementManager\obstacles\restricted_object_obstacle</Filter>
+    </ClCompile>
+    <ClCompile Include="stalker_movement_params_new.cpp">
+      <Filter>AI\AMonsters\humans\stalker\MovementManager\params</Filter>
+    </ClCompile>
+    <ClCompile Include="obstacles_query.cpp">
+      <Filter>AI\AComponents\moving_objects\obstacles_query</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <CustomBuildStep Include="Explosive.h">

@@ -68,7 +68,7 @@ class CMotionDef;
 class CStalkerAnimationManager;
 class CStalkerPlanner;
 class CSightManager;
-class CStalkerMovementManager;
+class stalker_movement_manager_obstacles; //CStalkerMovementManager;
 class CStalkerSoundDataVisitor;
 class CWeaponShotEffector;
 struct SBoneProtections;
@@ -92,7 +92,7 @@ private:
 	CStalkerAnimationManager		*m_animation_manager;
 	CStalkerPlanner					*m_brain;
 	CSightManager					*m_sight_manager;
-	CStalkerMovementManager			*m_movement_manager;
+	stalker_movement_manager_obstacles /*CStalkerMovementManager*/			*m_movement_manager;
 
 #ifdef DEBUG
 	const script_planner			*m_debug_planner;
@@ -371,7 +371,7 @@ protected:
 	virtual CMovementManager			*create_movement_manager		();
 
 public:
-	IC		CStalkerMovementManager		&movement						() const;
+	IC		stalker_movement_manager_obstacles /*CStalkerMovementManager*/		&movement						() const;
 	virtual DLL_Pure					*_construct						();
 
 private:

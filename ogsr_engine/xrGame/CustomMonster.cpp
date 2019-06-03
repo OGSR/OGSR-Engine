@@ -46,6 +46,7 @@
 #include "alife_simulator.h"
 #include "alife_object_registry.h"
 #include "client_spawn_manager.h"
+#include "moving_object.h"
 
 #ifdef DEBUG
 #	include "debug_renderer.h"
@@ -89,6 +90,7 @@ CCustomMonster::CCustomMonster()
 	m_invulnerable				= false;
 	m_visible_for_zones			= true;
 	m_anomaly_detector				= xr_new<CAnomalyDetector>(this);
+	m_moving_object				= 0;
 }
 
 CCustomMonster::~CCustomMonster	()
@@ -719,6 +721,8 @@ BOOL CCustomMonster::net_Spawn	(CSE_Abstract* DC)
 	shedule.t_min				= 100;
 	shedule.t_max				= 250; // This equaltiy is broken by Dima :-( // 30 * NET_Latency / 4;
 
+	m_moving_object				= xr_new<moving_object>(this);
+
 	return TRUE;
 }
 
@@ -769,6 +773,8 @@ void CCustomMonster::net_Destroy()
 #ifdef DEBUG
 	DBG().on_destroy_object(this);
 #endif
+
+	xr_delete				(m_moving_object);
 }
 
 BOOL CCustomMonster::UsedAI_Locations()
@@ -1137,6 +1143,19 @@ void CCustomMonster::OnRender()
 }
 #endif // DEBUG
 
+void CCustomMonster::spatial_move()
+{
+    inherited::spatial_move();
+
+    get_moving_object()->on_object_move();
+}
+
+Fvector CCustomMonster::predict_position(const float& time_to_check) const
+{
+    return (movement().predict_position(time_to_check));
+}
+
+Fvector CCustomMonster::target_position() const { return (movement().target_position()); }
 void CCustomMonster::create_anim_mov_ctrl	(CBlend *b)
 {
 	inherited::create_anim_mov_ctrl	(b);

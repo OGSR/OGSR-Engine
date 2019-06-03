@@ -15,7 +15,7 @@
 #include "../../relation_registry.h"
 #include "../../memory_manager.h"
 #include "../../item_manager.h"
-#include "../../stalker_movement_manager.h"
+#include "../../stalker_movement_manager_obstacles.h" //"../../stalker_movement_manager.h"
 #include "../../explosive.h"
 #include "../../agent_manager.h"
 #include "../../agent_member_manager.h"

@@ -776,6 +776,8 @@ private:
 			xr_map<EGameActions, bool> m_blocked_actions; // Вектор с заблокированными действиями. Real Wolf. 14.10.2014.
 public:
 	virtual bool				register_schedule				() const {return false;}
+    virtual bool is_ai_obstacle() const;
+
 			IC u32 get_state() const
 			{
 				return this->mstate_real;

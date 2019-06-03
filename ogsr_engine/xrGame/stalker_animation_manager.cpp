@@ -11,7 +11,7 @@
 #include "ai/stalker/ai_stalker.h"
 #include "stalker_animation_data_storage.h"
 #include "stalker_animation_data.h"
-#include "stalker_movement_manager.h"
+#include "stalker_movement_manager_obstacles.h" //"stalker_movement_manager.h"
 
 // TODO:
 // stalker animation manager consists of 5 independent managers,
@@ -51,7 +51,8 @@ void CStalkerAnimationManager::reinit				()
 	m_call_script_callback		= false;
 
 	m_previous_speed			= 0.f;
-	m_current_speed				= 0.f;
+	m_target_speed				= 0.f;
+	m_last_non_zero_speed		= m_target_speed;
 }
 
 void CStalkerAnimationManager::reload				(CAI_Stalker *_object)

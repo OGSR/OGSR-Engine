@@ -790,3 +790,10 @@ CSkeletonWallmark::~CSkeletonWallmark()
 		}
 }
 #endif
+
+u16 CKinematics::LL_VisibleBoneCount() {
+  u16 cnt = 0;
+  for ( u16 i = 0; i < LL_BoneCount(); i++ )
+    if ( LL_GetBoneVisible( i ) ) cnt++;
+  return cnt;
+}

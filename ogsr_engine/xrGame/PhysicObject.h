@@ -50,6 +50,7 @@ private:
     EPOType m_type;
     float m_mass;
     ICollisionHitCallback* m_collision_hit_callback;
+    bool m_is_ai_obstacle;
 
 private:
     // Creating
@@ -61,6 +62,9 @@ private:
 public:
     void set_door_ignore_dynamics();
     void unset_door_ignore_dynamics();
+
+public:
+			bool						get_door_vectors				( Fvector& closed, Fvector& open ) const;
 
 public:
     CPhysicObject(void);
@@ -81,6 +85,9 @@ public:
     virtual BOOL UsedAI_Locations();
     virtual ICollisionHitCallback* get_collision_hit_callback();
     virtual void set_collision_hit_callback(ICollisionHitCallback* cc);
+
+    virtual bool is_ai_obstacle() const;
+    void set_ai_obstacle( bool flag ) { m_is_ai_obstacle = flag; }
 
     virtual void net_Export(NET_Packet& P);
     virtual void net_Import(NET_Packet& P);

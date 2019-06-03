@@ -737,6 +737,8 @@ void CEntityAlive::net_Relcase	(CObject *object)
 	conditions().remove_links	(object);
 }
 
+Fvector CEntityAlive::predict_position(const float& time_to_check) const { return (Position()); }
+Fvector CEntityAlive::target_position() const { return (Position()); }
 void	CEntityAlive::		create_anim_mov_ctrl	( CBlend* b )
 {
 	inherited::create_anim_mov_ctrl( b ); 

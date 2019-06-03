@@ -10,7 +10,7 @@
 #include "stalker_animation_manager.h"
 #include "ai/stalker/ai_stalker.h"
 #include "sight_manager.h"
-#include "stalker_movement_manager.h"
+#include "stalker_movement_manager_obstacles.h" //"stalker_movement_manager.h"
 #include "stalker_animation_data.h"
 
 #include "weapon.h"
@@ -111,7 +111,7 @@ void CStalkerAnimationManager::legs_assign_direction		(float switch_factor, cons
 void CStalkerAnimationManager::legs_process_direction		(float yaw)
 {
 	float						switch_factor = legs_switch_factor();
-	CStalkerMovementManager		&movement = object().movement();
+	stalker_movement_manager_obstacles /*CStalkerMovementManager*/		&movement = object().movement();
 	float						head_current = movement.head_orientation().current.yaw;
 	float						left = left_angle(yaw,head_current);
 	float						test_angle_forward = right_forward_angle;
@@ -143,7 +143,7 @@ MotionID CStalkerAnimationManager::legs_move_animation		()
 {
 	m_no_move_actual			= false;
 
-	CStalkerMovementManager		&movement = object().movement();
+	stalker_movement_manager_obstacles /*CStalkerMovementManager*/		&movement = object().movement();
 
 	VERIFY						(
 		(movement.body_state() == eBodyStateStand) ||
@@ -151,7 +151,8 @@ MotionID CStalkerAnimationManager::legs_move_animation		()
 	);
 
 	if (eMentalStateDanger != movement.mental_state()) {
-		m_current_speed			= movement.speed(eMovementDirectionForward);
+		m_target_speed			= movement.speed(eMovementDirectionForward);
+		m_last_non_zero_speed	= m_target_speed;
 
 		return					(
 			m_data_storage->m_part_animations.A[
@@ -204,13 +205,14 @@ MotionID CStalkerAnimationManager::legs_move_animation		()
 
 		if (!legs_switch_factor()) {
 			m_previous_speed		= 0.f;
-			m_current_speed			= 0.f;
+			m_target_speed			= 0.f;
 		}
 
 		m_previous_speed_direction	= speed_direction;
 	}
 
-	m_current_speed				= movement.speed(speed_direction);
+	m_target_speed				= movement.speed(speed_direction);
+	m_last_non_zero_speed		= m_target_speed;
 
 	return						(
 		m_data_storage->m_part_animations.A[
@@ -228,7 +230,7 @@ MotionID CStalkerAnimationManager::legs_move_animation		()
 MotionID CStalkerAnimationManager::legs_no_move_animation	()
 {
 	m_previous_speed			= 0.f;
-	m_current_speed				= 0.f;
+	m_target_speed				= 0.f;
 
 	if (!m_no_move_actual) {
 		m_no_move_actual		= true;
@@ -239,12 +241,11 @@ MotionID CStalkerAnimationManager::legs_no_move_animation	()
 	}
 
 	m_change_direction_time		= Device.dwTimeGlobal;
-	m_current_speed				= 0.f;
 
 	EBodyState					body_state = this->body_state();
 	const xr_vector<MotionID>	&animation = m_data_storage->m_part_animations.A[body_state].m_in_place->A;
 
-	CStalkerMovementManager		&movement = object().movement();
+	stalker_movement_manager_obstacles /*CStalkerMovementManager*/		&movement = object().movement();
 	const SBoneRotation			&body_orientation = movement.body_orientation();
 	float						current = body_orientation.current.yaw;
 	float						target = body_orientation.target.yaw;

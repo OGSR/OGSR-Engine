@@ -17,7 +17,7 @@
 
 
 CPhysicObject::CPhysicObject(void)
-    : m_type(epotBox), m_mass(10.f), m_collision_hit_callback(nullptr), m_just_after_spawn(false), m_activated(false) {}
+    : m_type(epotBox), m_mass(10.f), m_collision_hit_callback(nullptr), m_just_after_spawn(false), m_activated(false), m_is_ai_obstacle(true) {}
 
 CPhysicObject::~CPhysicObject(void) {}
 BOOL CPhysicObject::net_Spawn(CSE_Abstract* DC)
@@ -45,6 +45,15 @@ BOOL CPhysicObject::net_Spawn(CSE_Abstract* DC)
     //	processing_activate();
     //}
 #endif
+
+    if ( Visual() ) {
+      IKinematics *K = Visual()->dcast_PKinematics();
+      VERIFY( K );
+      u16 door_bone = K->LL_BoneID( "door" );
+      if ( door_bone != BI_NONE )
+        m_is_ai_obstacle = false;
+    }
+    m_is_ai_obstacle = READ_IF_EXISTS( pSettings, r_bool, cNameSect(), "is_ai_obstacle", m_is_ai_obstacle );
 
     m_just_after_spawn = true;
     m_activated = false;
@@ -345,6 +354,10 @@ Msg("%s",(*I).first);
 */
 
 //////////////////////////////////////////////////////////////////////////
+bool CPhysicObject::is_ai_obstacle() const
+{
+  return m_is_ai_obstacle; //!!(READ_IF_EXISTS(pSettings, r_bool, cNameSect(), "is_ai_obstacle", true));
+}
 
 // network synchronization ----------------------------
 
@@ -686,4 +699,68 @@ float CPhysicObject::interpolate_states(
     current.quaternion.slerp(first.State.quaternion, last.State.quaternion, factor);
     current.previous_quaternion = current.quaternion;
     return ret_val;
+}
+
+bool	CPhysicObject::get_door_vectors	( Fvector& closed, Fvector& open ) const
+{
+	VERIFY(Visual());
+	IKinematics *K = Visual()->dcast_PKinematics();
+	VERIFY(K);
+	u16 door_bone = K->LL_BoneID("door");
+	if( door_bone==BI_NONE )
+		return false;
+	const CBoneData &bd = K->LL_GetData( door_bone );
+	const SBoneShape &shape = bd.shape;
+	if( shape.type != SBoneShape::stBox )
+		return false;
+
+	if( shape.flags.test( SBoneShape::sfNoPhysics ) )
+		return false;
+	
+	Fmatrix start_bone_pos;
+	K->Bone_GetAnimPos( start_bone_pos, door_bone, u8(-1), true );
+	
+	Fmatrix start_pos = Fmatrix().mul_43( XFORM(), start_bone_pos );
+	
+	const Fobb &box = shape.box;
+
+	Fvector center_pos;
+	start_pos.transform_tiny( center_pos, box.m_translate );
+
+	Fvector door_dir;  start_pos.transform_dir(door_dir, box.m_rotate.i );
+	Fvector door_dir_local =  box.m_rotate.i ;
+	//Fvector door_dir_bone; start_bone_pos.transform_dir(door_dir_bone, box.m_rotate.i );
+
+	
+	const Fvector det_vector = Fvector().sub( center_pos, start_pos.c  );
+	
+	if( door_dir.dotproduct( det_vector ) < 0.f )
+	{
+		door_dir.invert();
+		door_dir_local.invert();
+		//door_dir_bone.invert();
+	}
+
+	const SJointIKData &joint = bd.IK_data;
+
+	if( joint.type != jtJoint )
+		return false;
+	const Fvector2& limits = joint.limits[1].limit;
+
+	//if( limits.y < EPS ) //limits.y - limits.x < EPS
+	//	return false;
+
+	if( M_PI - limits.y < EPS && M_PI + limits.x < EPS )
+		return false;
+
+	Fmatrix to_hi = Fmatrix().rotateY( -limits.x  ); 
+	to_hi.transform_dir( open, door_dir_local );
+
+	Fmatrix to_lo = Fmatrix().rotateY(  -limits.y  );
+	to_lo.transform_dir( closed, door_dir_local );
+
+	start_pos.transform_dir(open);
+	start_pos.transform_dir(closed);
+
+	return true;
 }

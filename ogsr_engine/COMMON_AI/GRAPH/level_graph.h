@@ -20,6 +20,13 @@ namespace LevelGraph {
 	class	CVertex;
 	struct	SSegment;
 	struct	SContour;
+
+	enum ELineIntersections {
+		eLineIntersectionNone		= u32(0),
+		eLineIntersectionCollinear	= u32(0),
+		eLineIntersectionIntersect	= u32(1),
+		eLineIntersectionEqual		= u32(2)
+	};
 };
 
 class CCoverPoint;
@@ -34,14 +41,7 @@ public:
 	typedef LevelGraph::CVertex		CVertex;
 	typedef LevelGraph::SSegment	SSegment;
 	typedef LevelGraph::SContour	SContour;
-
-private:
-	enum ELineIntersections {
-		eLineIntersectionNone		= u32(0),
-		eLineIntersectionCollinear	= u32(0),
-		eLineIntersectionIntersect	= u32(1),
-		eLineIntersectionEqual		= u32(2)
-	};
+	typedef LevelGraph::ELineIntersections	ELineIntersections;
 
 private:
 	IReader					*m_reader;		// level graph virtual storage
@@ -82,9 +82,13 @@ public:
 	IC		const_vertex_iterator begin			() const;
 	IC		const_vertex_iterator end			() const;
 	IC		void	set_mask					(const xr_vector<u32> &mask);
+	IC		void	set_mask_no_check			(const xr_vector<u32> &mask);
 	IC		void	set_mask					(u32 vertex_id);
+	IC		void	set_mask_no_check			(u32 vertex_id);
 	IC		void	clear_mask					(const xr_vector<u32> &mask);
+	IC		void	clear_mask_no_check			(const xr_vector<u32> &mask);
 	IC		void	clear_mask					(u32 vertex_id);
+	IC		void	clear_mask_no_check			(u32 vertex_id);
 	IC		bool	is_accessible				(const u32 vertex_id) const;
 	IC		void	level_id					(const GameGraph::_LEVEL_ID &level_id);
 	IC		u32		max_x						() const;

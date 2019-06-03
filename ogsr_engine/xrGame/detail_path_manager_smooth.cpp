@@ -361,8 +361,11 @@ bool CDetailPathManager::compute_trajectory(
 )
 {
 	SCirclePoint				start_circles[2], dest_circles[2];
-	compute_circles				(start,start_circles);
-	compute_circles				(dest,dest_circles);
+	if ( !compute_circles(start,start_circles) )
+		return					false;
+
+	if ( !compute_circles(dest,dest_circles) )
+		return					false;
 	
 	u32							tangent_count = 0;
 	SCirclePoint				tangent_points[4][2];
@@ -719,10 +722,10 @@ void CDetailPathManager::build_path_via_key_points(
 			ai().level_graph().v2d(m_path[m_path.size() - 2].position)
 		);
 
-		if (fis_zero(s.direction.magnitude())) {
+		while ( fis_zero(s.direction.magnitude()) ) {
 			m_path.pop_back				();
 			VERIFY						(m_path.size() > 1);
-			s.direction.sub					(
+			s.direction.sub				(
 				ai().level_graph().v2d(m_path[m_path.size() - 1].position),
 				ai().level_graph().v2d(m_path[m_path.size() - 2].position)
 			);
@@ -766,7 +769,7 @@ void CDetailPathManager::postprocess_key_points(
 
 	if (m_key_points[m_key_points.size() - 2].position.similar(m_key_points[m_key_points.size() - 1].position,EPS_S))
 		m_key_points.pop_back();
-#pragma todo( "KRodin: цикл смысла не имеет. В будущем или выпилить его, или попытаться исправить." )
+
 	for (int i=1, n=(int)m_key_points.size() - 1; i < n; ++i) {
 		STravelPoint		key_point0 = compute_better_key_point(m_key_points[i-1],m_key_points[i],m_key_points[i+1],false);
 		STravelPoint		key_point1 = compute_better_key_point(m_key_points[i+1],m_key_points[i],m_key_points[i-1],true);
@@ -835,26 +838,34 @@ void CDetailPathManager::build_smooth_path		(
 	u32						intermediate_index
 )
 {
+//	Msg									("[%6d][%s] started to build detail path",Device.dwFrame,*m_restricted_object->object().cName());
 	START_PROFILE("Build Path/Detail Path");
 	
 	m_failed							= true;
+	m_distance_to_target_actual			= false;
 	
 	u32									straight_line_index, straight_line_index_negative;
 	STrajectoryPoint					start,dest;
 
-	if (!init_build(level_path,intermediate_index,start,dest,straight_line_index,straight_line_index_negative)) {
+	if (!init_build(level_path,intermediate_index,start,dest,straight_line_index,straight_line_index_negative))
 		return;
-	}
+
+	VERIFY								(!level_path.empty());
+	m_dest_vertex_id					= level_path.back();
 
 	if (m_restricted_object) {
 #ifdef DEBUG
 		Fvector							start_pos = ai().level_graph().v3d(start.position);
 		start_pos.y						= ai().level_graph().vertex_plane_y(start.vertex_id,start_pos.x,start_pos.z);
+
+		u32 const vertex_id				= ai().level_graph().vertex_id(start_pos);
+		VERIFY							(vertex_id == start.vertex_id);
+
 		bool							alvi = m_restricted_object->accessible(start.vertex_id);
 		bool							asp = m_restricted_object->accessible(start_pos);
 		VERIFY							(ai().level_graph().inside(start.vertex_id,start_pos));
 		if (!((alvi && asp) || (!asp && !alvi))) {
-			Msg							("! vertex [%d], position [%f][%f][%f]",start.vertex_id,VPUSH(start_pos));
+			Msg							("! vertex [%d], position [%f][%f][%f], alvi[%c], asp[%c]",start.vertex_id,VPUSH(start_pos), alvi ? '+' : '-', asp ? '+' : '-');
 		}
 		VERIFY3							((alvi && asp) || (!asp && !alvi) || show_restrictions(m_restricted_object),"Invalid restrictions (see log for details) for object ",*m_restricted_object->object().cName());
 #endif
@@ -877,4 +888,5 @@ void CDetailPathManager::build_smooth_path		(
 		m_restricted_object->remove_border();
 
 	STOP_PROFILE;
+//	Msg									("[%6d][%s] build_detail_path [%d][%d][%d]",Device.dwFrame,*m_restricted_object->object().cName(),path().size(),curr_travel_point_index(),last_patrol_point());
 }

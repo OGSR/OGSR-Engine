@@ -499,7 +499,7 @@ void CPHSkeleton::SyncNetState() {
     saved_bones.root_bone  = K->LL_GetBoneRoot();
   }
   else {
-    saved_bones.bones_mask.set( u64( -1 ), bones_number > 64 ? u64( -1 ) : 0 );
+    saved_bones.bones_mask.set( u64( -1 ), u64( -1 ) );
     saved_bones.root_bone = 0;
   }
 

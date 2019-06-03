@@ -76,7 +76,8 @@ private:
 
 private:
 	float							m_previous_speed;
-	float							m_current_speed;
+	float							m_target_speed;
+	float							m_last_non_zero_speed;
 
 private:
 	IC		bool					strapped				() const;
@@ -161,6 +162,7 @@ public:
 	IC		CStalkerAnimationPair	&legs					();
 	IC		CStalkerAnimationPair	&script					();
 	IC		CAI_Stalker				&object					() const;
+	IC		const float				&target_speed			() const;
 
 #ifdef DEBUG
 private:

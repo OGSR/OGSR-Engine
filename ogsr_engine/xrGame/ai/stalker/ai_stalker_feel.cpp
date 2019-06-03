@@ -12,7 +12,7 @@
 #include "../../memory_manager.h"
 #include "../../visual_memory_manager.h"
 #include "../../sight_manager.h"
-#include "../../stalker_movement_manager.h"
+#include "../../stalker_movement_manager_obstacles.h" //"../../stalker_movement_manager.h"
 #include "../../stalker_animation_manager.h"
 
 #ifdef DEBUG

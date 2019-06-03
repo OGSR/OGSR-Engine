@@ -16,6 +16,8 @@
 #include "PHScriptCall.h"
 #include "PHSimpleCalls.h"
 #include "phworld.h"
+#include "doors_manager.h"
+
 void CScriptGameObject::SetTipText (LPCSTR tip_text)
 {
 	CUsableScriptObject	*l_tpUseableScriptObject = smart_cast<CUsableScriptObject*>(&object());
@@ -74,14 +76,19 @@ void CScriptGameObject::SwitchProjector(bool _on)
 		obj->TurnOff();
 }
 
-CScriptGameObject::CScriptGameObject		(CGameObject *game_object)
+CScriptGameObject::CScriptGameObject		(CGameObject *game_object) :
+	m_game_object	( game_object ),
+	m_door			( 0 )
 {
-	m_game_object	= game_object;
-	R_ASSERT2		(m_game_object,"Null actual object passed!");
+	R_ASSERT2		( m_game_object, "Null actual object passed!" );
 }
 
 CScriptGameObject::~CScriptGameObject		()
 {
+	if ( !m_door )
+		return;
+
+	unregister_door					( );
 }
 
 CScriptGameObject *CScriptGameObject::Parent				() const
