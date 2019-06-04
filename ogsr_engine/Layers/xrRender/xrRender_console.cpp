@@ -235,7 +235,9 @@ float		ps_r2_dof_kernel_size		= 5.0f;						//	7.0f
 int ps_r3_dyn_wet_surf_opt = 1;
 float ps_r3_dyn_wet_surf_near = 5.f; // 10.0f
 float ps_r3_dyn_wet_surf_far = 20.f; // 30.0f
-int			ps_r3_dyn_wet_surf_sm_res	= 256;				// 256
+
+int ps_r3_dyn_wet_surf_sm_res = 256; // 256
+int ps_r3_dyn_wet_surf_enable_streaks = 0;
 
 float ps_r2_rain_drops_intensity = 0.00025f;
 float ps_r2_rain_drops_speed = 1.25f;
@@ -948,11 +950,15 @@ void		xrRender_initconsole	()
 #endif	//	DEBUG
 #endif	//	(RENDER == R_R3) || (RENDER == R_R4)
 
-	CMD3(CCC_Mask,		"r3_dynamic_wet_surfaces",		&ps_r2_ls_flags,			R3FLAG_DYN_WET_SURF);
+	CMD3(CCC_Mask, "r3_dynamic_wet_surfaces", &ps_r2_ls_flags, R3FLAG_DYN_WET_SURF);
+	CMD4(CCC_Integer, "r3_dynamic_wet_surfaces_sm_res", &ps_r3_dyn_wet_surf_sm_res, 64, 2048);
+	CMD4(CCC_Integer, "r3_dynamic_wet_surfaces_enable_streaks", &ps_r3_dyn_wet_surf_enable_streaks, 0, 1);
+
+#if 0 //KRodin: оно странно выглядит, поэтому выключаю. Чтоб нормально выглядело надо уметь настраивать near/far. Но лучше не разрешать это крутить, во избежание. А то накрутят себе...
 	CMD4(CCC_Integer, "r3_dynamic_wet_surfaces_opt", &ps_r3_dyn_wet_surf_opt, 0, 1);
 	CMD4(CCC_Float, "r3_dynamic_wet_surfaces_near", &ps_r3_dyn_wet_surf_near, 5, 70);
 	CMD4(CCC_Float,		"r3_dynamic_wet_surfaces_far",	&ps_r3_dyn_wet_surf_far,	30,	100		);
-	CMD4(CCC_Integer,	"r3_dynamic_wet_surfaces_sm_res",&ps_r3_dyn_wet_surf_sm_res,64,	2048	);
+#endif
 
 	CMD3(CCC_Mask,			"r3_volumetric_smoke",			&ps_r2_ls_flags,			R3FLAG_VOLUMETRIC_SMOKE);
 	CMD1(CCC_memory_stats,	"render_memory_stats" );

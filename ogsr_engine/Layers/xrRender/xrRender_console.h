@@ -135,6 +135,7 @@ extern ECORE_API int ps_r3_dyn_wet_surf_opt;
 extern ECORE_API float			ps_r3_dyn_wet_surf_near;	// 10.0f
 extern ECORE_API float			ps_r3_dyn_wet_surf_far;		// 30.0f
 extern ECORE_API int			ps_r3_dyn_wet_surf_sm_res;	// 256
+extern ECORE_API int			ps_r3_dyn_wet_surf_enable_streaks;
 
 extern ECORE_API float ps_r2_rain_drops_intensity;
 extern ECORE_API float ps_r2_rain_drops_speed;
