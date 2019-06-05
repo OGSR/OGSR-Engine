@@ -429,6 +429,7 @@ protected:
 	float					misfireConditionK;
 	//увеличение изношености при выстреле
 	float					conditionDecreasePerShot;
+	float					conditionDecreasePerShotOnHit;
 
 	//  [8/2/2005]
 	float					m_fPDM_disp_base			;
@@ -566,4 +567,6 @@ public:
 	float GetHudFov();
 
 	void SwitchScope();
+
+	virtual void OnBulletHit();
 };
