@@ -204,22 +204,28 @@ void CCar::SWheel::RestoreNetState(const CSE_ALifeCar::SWheelState& a_state)
 	RestoreEffect();
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+void CCar::SWheelDrive::Load( LPCSTR section ) {
+  IKinematics *K = PKinematics( pwheel->car->Visual() );
+  CInifile  *ini = K->LL_UserData();
+  VERIFY( ini );
+  pos_fvd       = READ_IF_EXISTS( ini, r_float, section, "pos_fvd", 1.f );
+  pos_fvd_debug = READ_IF_EXISTS( ini, r_bool,  section, "pos_fvd_debug", false );
+  if ( pos_fvd_debug )
+    Msg( "[%s]: %s section[%s] pos_fvd[%f]", __FUNCTION__, pwheel->car->cName().c_str(), section, pos_fvd );
+}
 void CCar::SWheelDrive::Init()
 {
-	pwheel->Init();
-	gear_factor=pwheel->radius/pwheel->car->m_ref_radius;
-	CBoneData& bone_data= smart_cast<IKinematics*>(pwheel->car->Visual())->LL_GetData(u16(pwheel->bone_id));
-	switch(bone_data.IK_data.type)
-	{
-	case jtWheel:
-		pos_fvd=bone_map.find(pwheel->bone_id)->second.element->mXFORM.k.x;
-		break;
-
-	default: NODEFAULT;
-	}
-	
-	pos_fvd=pos_fvd>0.f ? -1.f : 1.f;
-
+  pwheel->Init();
+  gear_factor = pwheel->radius / pwheel->car->m_ref_radius;
+  if ( pos_fvd_debug ) {
+    CBoneData& bone_data = smart_cast<IKinematics*>( pwheel->car->Visual() )->LL_GetData( u16( pwheel->bone_id ) );
+    switch( bone_data.IK_data.type ) {
+    case jtWheel:
+      Msg( "[%s]: %s mXFORM.k.x[%f]", __FUNCTION__, pwheel->car->cName().c_str(), bone_map.find( pwheel->bone_id )->second.element->mXFORM.k.x );
+      break;
+    default: NODEFAULT;
+    }
+  }
 }
 void CCar::SWheelDrive::Drive()
 {
@@ -243,22 +249,30 @@ float CCar::SWheelDrive::ASpeed()
 	return (J->GetAxisAngleRate(1))*pos_fvd;//dFabs
 }
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+void CCar::SWheelSteer::Load( LPCSTR section ) {
+  IKinematics *K = PKinematics( pwheel->car->Visual() );
+  CInifile  *ini = K->LL_UserData();
+  VERIFY( ini );
+  pos_right       = READ_IF_EXISTS( ini, r_float, section, "pos_right", -1.f );
+  pos_right_debug = READ_IF_EXISTS( ini, r_bool,  section, "pos_fvd_debug", false );
+  if ( pos_right_debug )
+    Msg( "[%s]: %s section[%s] pos_right[%f]", __FUNCTION__, pwheel->car->cName().c_str(), section, pos_right );
+}
 void CCar::SWheelSteer::Init()
 {
 	IKinematics* pKinematics=smart_cast<IKinematics*>(pwheel->car->Visual());
 	pwheel->Init();
 	(bone_map.find(pwheel->bone_id))->second.joint->GetLimits(lo_limit,hi_limit,0);
-	CBoneData& bone_data= pKinematics->LL_GetData(u16(pwheel->bone_id));
-	switch(bone_data.IK_data.type)
-	{
-	case jtWheel:	
-		pos_right=bone_map.find(pwheel->bone_id)->second.element->mXFORM.i.y;//.dotproduct(pwheel->car->m_root_transform.j);
-		break;
-
-	default: NODEFAULT;
+	if ( pos_right_debug ) {
+	  CBoneData& bone_data = pKinematics->LL_GetData( u16( pwheel->bone_id ) );
+	  switch( bone_data.IK_data.type ) {
+	  case jtWheel:
+	    Msg( "[%s]: %s mXFORM.i.y[%f]", __FUNCTION__, pwheel->car->cName().c_str(), bone_map.find( pwheel->bone_id )->second.element->mXFORM.i.y );
+	    break;
+	  default: NODEFAULT;
+	  }
 	}
-	
-	pos_right=pos_right>0.f ? -1.f : 1.f;
+
 	float steering_torque=pKinematics->LL_UserData()->r_float("car_definition","steering_torque");
 	VERIFY( pwheel );
 	pwheel->ApplySteerAxisTorque(steering_torque);

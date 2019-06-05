@@ -192,18 +192,20 @@ virtual void ApplyDamage			(u16 level);
 	{
 		SWheel* pwheel;
 		float	pos_fvd;
+		bool    pos_fvd_debug;
 		float	gear_factor;
 		void	Init		()						;
 		void	Drive		()						;
 		void	Neutral		()						;
 		void	UpdatePower	()						;
 		float	ASpeed		()						;
-		void	Load		(LPCSTR /*section*/){}	;
+		void	Load		(LPCSTR /*section*/);
 	};
 	struct SWheelSteer 
 	{
 		SWheel* pwheel;
 		float pos_right;
+		bool  pos_right_debug;
 		float lo_limit;
 		float hi_limit;
 		float steering_velocity;
@@ -215,7 +217,7 @@ virtual void ApplyDamage			(u16 level);
 		void	 SteerLeft	()						;
 		void	 SteerIdle	()						;
 		void	 Limit		()						;
-		void	 Load		(LPCSTR /*section*/){}	;
+		void	 Load		(LPCSTR /*section*/);
 	};
 	struct SWheelBreak 
 	{
