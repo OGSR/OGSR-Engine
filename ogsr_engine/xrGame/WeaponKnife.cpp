@@ -11,6 +11,7 @@
 #include "ai_sounds.h"
 #include "game_cl_single.h"
 #include "game_object_space.h"
+#include "Level_Bullet_Manager.h"
 
 #define KNIFE_MATERIAL_NAME "objects\\knife"
 
@@ -145,7 +146,9 @@ void CWeaponKnife::KnifeStrike(u32 state, const Fvector& pos, const Fvector& dir
 
 		PlaySound(m_sndShot, pos);
 
-		Level().BulletManager().AddBullet(pos,
+		if ( ParentIsActor() && !fis_zero( conditionDecreasePerShotOnHit ) && GetCondition() < 0.95f )
+                  cur_fHit = cur_fHit * ( GetCondition() / 0.95f );
+		SBullet& bullet = Level().BulletManager().AddBullet(pos,
 			dir,
 			m_fStartBulletSpeed,
 			cur_fHit,
@@ -156,6 +159,8 @@ void CWeaponKnife::KnifeStrike(u32 state, const Fvector& pos, const Fvector& dir
 			fireDistance,
 			cartridge,
 			send_hit);
+		if ( ParentIsActor() )
+		  bullet.setOnBulletHit( true );
 	}
 }
 

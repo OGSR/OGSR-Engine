@@ -9,6 +9,7 @@
 #include "Actor.h"
 #include "gamepersistent.h"
 #include "game_cl_base_weapon_usage_statistic.h"
+#include "Weapon.h"
 
 #ifdef DEBUG
 #	include "debug_renderer.h"
@@ -20,7 +21,8 @@
 float CBulletManager::m_fMinBulletSpeed = 2.f;
 
 
-SBullet::SBullet()
+SBullet::SBullet() :
+  m_on_bullet_hit( false )
 {
 }
 
@@ -152,7 +154,7 @@ void CBulletManager::Clear() //Вызывается при загрузке и �
 	m_Events.clear();
 }
 
-void CBulletManager::AddBullet(const Fvector& position,
+SBullet& CBulletManager::AddBullet(const Fvector& position,
 							   const Fvector& direction,
 							   float starting_speed,
 							   float power,
@@ -175,6 +177,7 @@ void CBulletManager::AddBullet(const Fvector& position,
 	bullet.Init			(position, direction, starting_speed, power, impulse, sender_id, sendersweapon_id, e_hit_type, maximum_distance, cartridge, SendHit);
 	bullet.frame_num	= Device.dwFrame;
 	bullet.flags.aim_bullet	=	AimBullet;
+	return bullet;
 }
 
 void CBulletManager::UpdateWorkload()
@@ -425,6 +428,13 @@ void CBulletManager::CommitEvents			()	// @ the start of frame
 			{
 				if (E.dynamic)	DynamicObjectHit	(E);
 				else			StaticObjectHit		(E);
+                                if ( E.bullet.isOnBulletHit() ) {
+                                  CObject* O = Level().Objects.net_Find( E.bullet.weapon_id );
+                                  if ( O ) {
+                                    CWeapon* W = smart_cast<CWeapon*>( O );
+                                    if ( W ) W->OnBulletHit();
+                                  }
+                                }
 			}break;
 		case EVENT_REMOVE:
 			{

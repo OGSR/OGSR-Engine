@@ -351,6 +351,7 @@ void CWeapon::Load		(LPCSTR section)
 	misfireProbability			  = pSettings->r_float(section,"misfire_probability"); 
 	misfireConditionK			  = READ_IF_EXISTS(pSettings, r_float, section, "misfire_condition_k",	1.0f);
 	conditionDecreasePerShot	  = pSettings->r_float(section,"condition_shot_dec"); 
+	conditionDecreasePerShotOnHit = READ_IF_EXISTS( pSettings, r_float, section, "condition_shot_dec_on_hit", 0.f );
 		
 	vLoadedFirePoint	= pSettings->r_fvector3		(section,"fire_point"		);
 	
@@ -2217,4 +2218,10 @@ float CWeapon::GetHudFov()
 
 	// От бедра	 
 	return m_nearwall_last_hud_fov;
+}
+
+
+void CWeapon::OnBulletHit() {
+  if ( !fis_zero( conditionDecreasePerShotOnHit ) )
+    ChangeCondition( -conditionDecreasePerShotOnHit );
 }
