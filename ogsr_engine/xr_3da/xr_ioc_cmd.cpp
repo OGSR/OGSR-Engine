@@ -641,7 +641,6 @@ extern int			rsDIB_Size;
 
 extern int			g_ErrorLineCount;
 
-ENGINE_API int			ps_r__Supersample			= 1;
 void CCC_Register()
 {
 	// General
@@ -689,8 +688,6 @@ void CCC_Register()
 #endif
 
 	// Render device states
-	CMD4(CCC_Integer,	"r__supersample",		&ps_r__Supersample,			1,		4		);
-
 	CMD3(CCC_Mask, "rs_always_active", &psDeviceFlags, rsAlwaysActive);
 	CMD3(CCC_Token, "r_fps_lock", &g_dwFPSlimit, FpsLockToken);
 

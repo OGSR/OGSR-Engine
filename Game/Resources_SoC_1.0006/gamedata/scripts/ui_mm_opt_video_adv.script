@@ -1,8 +1,6 @@
 -- Меню расширенных настроек графики для OGSR Engine
 -- Глобальная переделка KRodin (c) 2019
 
---TODO: пересмотреть цвета новых опций и описания настроек, добавить недостающие описания. Ну и доделать всё остальное по комментам ниже...
-
 local hint_colors = {
 	["green"]  = { 255, 0, 128, 0 },
 	["yellow"] = { 255, 186, 149, 0 },
@@ -28,22 +26,29 @@ local function only_3_and_more_mode_invisible() return not only_3_and_more_mode(
 local function only_4_and_more_mode()           return get_current_renderer() >= 5 end
 
 local adv_vid_opt_params = {
---Настройки ЗП--
 	{ "vis_dist",              "track", 0, hint_colors.yellow, "video_settings_name_2" , "video_settings_desc_2"  },
-	{ "geometry_lod",          "track", 0, hint_colors.green , "video_settings_name_3" , "video_settings_desc_3"  },
-	{ "texture_lod",           "track", 1, hint_colors.green , "video_settings_name_7" , "video_settings_desc_7"  },
-	{ "aniso",                 "track", 0, hint_colors.green , "video_settings_name_8" , "video_settings_desc_8"  }, --Посмотреть, по-моему эта настройка сбрасывалась по крайней мере в тч. В OXR вроде был фикс. Не знаю, насколько он нам нужен.
-	{ "ssample",               "track", 0, hint_colors.yellow, "", ""                                            , only_3_and_more_mode_invisible  },  --Подумать над цветом и описанием. И вообще надо заменить на FXAA...
-	{ "ssample",               "list",  1, hint_colors.yellow, "", ""                                            , only_3_and_more_mode  },  --Подумать над цветом и описанием. И вообще надо заменить на FXAA...
+	{ "geometry_lod",          "track", 0, hint_colors.red   , "video_settings_name_3" , "video_settings_desc_3"  },
+	{ "texture_lod",           "track", 1, hint_colors.red   , "video_settings_name_7" , "video_settings_desc_7"  },
+	{ "aniso",                 "track", 0, hint_colors.yellow, "video_settings_name_8" , "video_settings_desc_8"  },
+	--
+	{ "msaa",                  "list",  1, hint_colors.red   , "", ""                                            , only_3_and_more_mode  },
+	{ "fxaa",                  "check", 0, hint_colors.green , "", ""                                            , only_2a_and_more_mode },
+	{ "ssample",               "track", 0, hint_colors.green , "", ""                                            , only_1_mode  },
+	--
 	{ "detail_density",        "track", 0, hint_colors.red   , "video_settings_name_4" , "video_settings_desc_4"  },
+	{ "detail_distance",       "track", 0, hint_colors.red   , "video_settings_name_5" , "video_settings_desc_5"  },
+	{ "r2_sun_details",        "check", 0, hint_colors.red   , "video_settings_name_12", "video_settings_desc_12" },
 	{ "r2_sun",                "check", 0, hint_colors.yellow, "video_settings_name_11", "video_settings_desc_11", only_2_and_more_mode  },
 	{ "light_distance",        "track", 0, hint_colors.red   , "video_settings_name_13", "video_settings_desc_13", only_2a_and_more_mode },
 	{ "particles_distance",    "track", 0, hint_colors.red   , "video_settings_name_15", "video_settings_desc_15", only_2a_and_more_mode },
+	{ "r__smap_size",          "list",  1, hint_colors.red   , "video_settings_name_59", "video_settings_desc_59", only_2_and_more_mode  },
+	{ "r2_sun_near",           "track", 0, hint_colors.red   , "video_settings_name_22", "video_settings_desc_22", only_2_and_more_mode  },
+	{ "r2_sun_far",            "track", 0, hint_colors.yellow, "video_settings_name_58", "video_settings_desc_58", only_2_and_more_mode  },
 	{ "npc_torch",             "check", 0, hint_colors.green , "video_settings_name_14", "video_settings_desc_14" },
 	{ "r1_detail_textures",    "check", 0, hint_colors.green , "", ""                                            , only_1_mode },
 	{ "r2_detail_bump",        "check", 0, hint_colors.yellow, "video_settings_name_44", "video_settings_desc_44", only_2_and_more_mode },
 	{ "r2_steep_parallax",     "check", 0, hint_colors.red   , "video_settings_name_39", "video_settings_desc_39", only_25_and_more_mode },
-	{ "r2_sun_quality",        "list",  0, hint_colors.yellow, "", ""                                            , only_25_and_more_mode }, --Подумать над цветом и описанием.
+	{ "r2_sun_quality",        "list",  0, hint_colors.red   , "", ""                                            , only_25_and_more_mode },
 	{ "sun_shafts",            "list",  0, hint_colors.red   , "video_settings_name_29", "video_settings_desc_29", only_25_and_more_mode },
 	{ "ssao_mode",             "list",  1, hint_colors.yellow, "video_settings_name_38", "video_settings_desc_38", only_25_and_more_mode },
 	{ "ssao",                  "list",  1, hint_colors.yellow, "video_settings_name_37", "video_settings_desc_37", only_25_and_more_mode },
@@ -56,23 +61,16 @@ local adv_vid_opt_params = {
 	{ "volumetric_light",      "check", 0, hint_colors.green , "video_settings_name_50", "video_settings_desc_50", only_25_and_more_mode },
 	{ "r3_dynamic_wet_surfaces","check",0, hint_colors.green , "video_settings_name_49", "video_settings_desc_49", only_3_and_more_mode },
 --	{ "r3_volumetric_smoke",   "check", 0, hint_colors.green , "video_settings_name_55", "video_settings_desc_55", only_3_and_more_mode }, --Вообще выключен в движке, до лучших времен.
-	{ "tessellation",          "check", 0, hint_colors.green , "", ""                                            , only_4_and_more_mode }, --Подумать над цветом и описанием.
+	{ "tessellation",          "check", 0, hint_colors.green , "", ""                                            , only_4_and_more_mode },
 	{ "vsync",                 "check", 0, hint_colors.green , "video_settings_name_16", "video_settings_desc_16" },
 	{ "60hz",                  "check", 0, hint_colors.green , "video_settings_name_17", "video_settings_desc_17" },
---
---Адаптированные настройки OGSR, которые подошли к новым рендерам. Я вот не уверен, что нужны все настройки. Чем больше команд - тем больше запутанность и сложность в настройке. Подумать над этим!
 	{ "fov",                   "track", 0, hint_colors.green , "video_settings_name_61", "video_settings_desc_61" },
 	{ "hud_fov",               "track", 0, hint_colors.green , "video_settings_name_62", "video_settings_desc_62" },
-	{ "r__smap_size",          "list",  1, hint_colors.red   , "video_settings_name_59", "video_settings_desc_59", only_2_and_more_mode  },
-	{ "r2_sun_near",           "track", 0, hint_colors.red   , "video_settings_name_22", "video_settings_desc_22", only_2_and_more_mode  }, --подумать над цветом
-	{ "r2_sun_far",            "track", 0, hint_colors.yellow, "video_settings_name_58", "video_settings_desc_58", only_2_and_more_mode  },
 	{ "cam_inert",             "track", 0, hint_colors.green , "video_settings_name_1" , "video_settings_desc_1"  },
-	{ "detail_distance",       "track", 0, hint_colors.red   , "video_settings_name_5" , "video_settings_desc_5"  },
-	{ "r2_sun_details",        "check", 0, hint_colors.red   , "video_settings_name_12", "video_settings_desc_12" },
 --	{ "r2_sun_lumscale",       "track", 0, hint_colors.green , "video_settings_name_27", "video_settings_desc_27" }, --В огсе настройка была отключена. Устанавливалась в биндере принудительно в 1
 	{ "r2_sun_lumscale_amb",   "track", 0, hint_colors.green , "video_settings_name_28", "video_settings_desc_28", only_2_and_more_mode  },
 	{ "r2_sun_lumscale_hemi",  "track", 0, hint_colors.green , "video_settings_name_63", "video_settings_desc_63", only_2_and_more_mode  },
-	{ "r2_tf_mipbias",         "track", 0, hint_colors.green , "video_settings_name_20", "video_settings_desc_20" }, --Посмотреть, по-моему эта настройка сбрасывалась по крайней мере в тч. В OXR вроде был фикс. Не знаю, насколько он нам нужен.
+	{ "r2_tf_mipbias",         "track", 0, hint_colors.green , "video_settings_name_20", "video_settings_desc_20" },
 	{ "r2_sun_near_border",    "track", 0, hint_colors.green , "video_settings_name_23", "video_settings_desc_23", only_2_and_more_mode  },
 	{ "r2_tonemap",            "check", 0, hint_colors.green , "video_settings_name_25", "video_settings_desc_25", only_2_and_more_mode  },
 	{ "r2_tonemap_middlegray", "track", 0, hint_colors.green , "video_settings_name_26", "video_settings_desc_26", only_2_and_more_mode  },
@@ -109,39 +107,36 @@ function opt_video_adv:InitControls(x, y, xml, handler)
 		local opt, ctr_type, need_restart, color, hint_caption, hint_string, cond = unpack(adv_vid_opt_params[i])
 
 		local enabled = not cond or cond()
+		if not enabled then goto CONTINUE end
 
 		local _st = xml:InitStatic("video_adv:templ_item", self.scroll_v)
 		local _st2 = xml:InitStatic("video_adv:cap_"..opt, _st)
 		local ctl = xml[control_init_funs[ctr_type]](xml, "video_adv:"..ctr_type.."_"..opt, _st)
 
-		if enabled then
-			if color then
-				_st2:SetTextColor(unpack(color))
-			end
-
-			handler:Register(_st, "video_adv_cap_"..opt)
-			handler:AddCallback(
-				"video_adv_cap_"..opt,
-				ui_events.STATIC_FOCUS_RECEIVED,
-				function()
-					handler.hint_name:SetText(hint_caption and game.translate_string(hint_caption) or "")
-					handler.hint_caption:SetText(hint_string and game.translate_string(hint_string) or "")
-				end
-			)
-
-			if need_restart == 1 then
-				handler:Register(ctl, "video_adv:"..ctr_type.."_"..opt)
-				handler:AddCallback(
-					"video_adv:"..ctr_type.."_"..opt,
-					ctr_type == "list" and ui_events.LIST_ITEM_SELECT or ui_events.BUTTON_CLICKED,
-					handler.show_need_restart_wnd, handler
-				)
-			end
+		if color then
+			_st2:SetTextColor(unpack(color))
 		end
 
-		_st:Enable(enabled)
-		_st2:Enable(enabled)
-		ctl:Enable(enabled)
+		handler:Register(_st, "video_adv_cap_"..opt)
+		handler:AddCallback(
+			"video_adv_cap_"..opt,
+			ui_events.STATIC_FOCUS_RECEIVED,
+			function()
+				handler.hint_name:SetText(hint_caption and game.translate_string(hint_caption) or "")
+				handler.hint_caption:SetText(hint_string and game.translate_string(hint_string) or "")
+			end
+		)
+
+		if need_restart == 1 then
+			handler:Register(ctl, "video_adv:"..ctr_type.."_"..opt)
+			handler:AddCallback(
+				"video_adv:"..ctr_type.."_"..opt,
+				ctr_type == "list" and ui_events.LIST_ITEM_SELECT or ui_events.BUTTON_CLICKED,
+				handler.show_need_restart_wnd, handler
+			)
+		end
+
+		::CONTINUE::
 	end
 
 	local btn = xml:Init3tButton("video_adv:btn_to_simply",	self)

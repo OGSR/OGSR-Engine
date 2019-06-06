@@ -201,6 +201,10 @@ private:
 	ref_geom g_rain_drops;
 	ref_shader s_rain_drops;
 
+	//FXAA
+	ref_shader s_fxaa;
+	ref_geom g_fxaa;
+
 public:
 	ref_shader				s_postprocess;
    ref_shader           s_postprocess_msaa;
@@ -307,6 +311,7 @@ public:
 	void						phase_combine_volumetric();
 	void						phase_pp				();
 	void PhaseRainDrops();
+	void phase_fxaa();
 
 	virtual void				set_blur				(float	f)		{ param_blur=f;						}
 	virtual void				set_gray				(float	f)		{ param_gray=f;						}

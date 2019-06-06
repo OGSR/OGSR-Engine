@@ -99,7 +99,7 @@ void CParticlesPlayer::LoadParticles(IKinematics* K)
 void CParticlesPlayer::net_DestroyParticles() {
   VERIFY( m_self_object );
   DestroyParticles();
-  m_self_object = 0;
+  m_self_object = nullptr;
 }
 
 CParticlesPlayer::SBoneInfo* CParticlesPlayer::get_nearest_bone_info(IKinematics* K, u16 bone_index)

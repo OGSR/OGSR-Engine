@@ -346,6 +346,16 @@ void	CRenderTarget::phase_combine	()
    }
    */
 
+	RCache.set_Stencil(FALSE);
+
+	//FXAA
+	if (ps_r2_ls_flags.test(R2FLAG_FXAA))
+	{
+		PIX_EVENT(FXAA);
+		phase_fxaa();
+		RCache.set_Stencil(FALSE);
+	}
+
 	// PP enabled ?
 	//	Render to RT texture to be able to copy RT even in windowed mode.
 	BOOL	PP_Complex		= u_need_PP	() | (BOOL)RImplementation.m_bMakeAsyncSS;
@@ -412,19 +422,11 @@ void	CRenderTarget::phase_combine	()
 		vDofKernel.mul(ps_r2_dof_kernel_size);
 
 		// Draw COLOR
-      if( !RImplementation.o.dx10_msaa )
-      {
-		   if (ps_r2_ls_flags.test(R2FLAG_AA))			RCache.set_Element	(s_combine->E[bDistort?3:1]);	// look at blender_combine.cpp
-		   else										RCache.set_Element	(s_combine->E[bDistort?4:2]);	// look at blender_combine.cpp
-      }
-      else
-      {
-         if (ps_r2_ls_flags.test(R2FLAG_AA))			RCache.set_Element	(s_combine_msaa[0]->E[bDistort?3:1]);	// look at blender_combine.cpp
-         else										RCache.set_Element	(s_combine_msaa[0]->E[bDistort?4:2]);	// look at blender_combine.cpp
-      }
-		RCache.set_c				("e_barrier",	ps_r2_aa_barier.x,	ps_r2_aa_barier.y,	ps_r2_aa_barier.z,	0);
-		RCache.set_c				("e_weights",	ps_r2_aa_weight.x,	ps_r2_aa_weight.y,	ps_r2_aa_weight.z,	0);
-		RCache.set_c				("e_kernel",	ps_r2_aa_kernel,	ps_r2_aa_kernel,	ps_r2_aa_kernel,	0);
+		if (!RImplementation.o.dx10_msaa)
+			RCache.set_Element(s_combine->E[bDistort ? 4 : 2]);	// look at blender_combine.cpp
+		else
+			RCache.set_Element(s_combine_msaa[0]->E[bDistort ? 4 : 2]);	// look at blender_combine.cpp
+      
 		RCache.set_c				("m_current",	m_current);
 		RCache.set_c				("m_previous",	m_previous);
 		RCache.set_c				("m_blur",		m_blur_scale.x,m_blur_scale.y, 0,0);

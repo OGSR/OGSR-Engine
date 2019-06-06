@@ -369,7 +369,7 @@
 		<text>Лужи</text>
 	</string>
 	<string id="ui_mm_r3_dynamic_wet_surfaces">
-		<text>Намокание плоскостей</text>
+		<text>Намокание поверхностей</text>
 	</string>
 	<string id="ui_mm_volumetric_light">
 		<text>Объёмный свет</text>
@@ -410,11 +410,14 @@
 	<string id="ui_mm_r2_gbuffer_opt">
 		<text>Оптимизация шейдеров</text>
 	</string>
-	<string id="ui_mm_supersample_check">
-		<text>Сглаживание движком игры</text>
+	<string id="ui_mm_ssample">
+		<text>Сглаживание на статическом освещении</text>
 	</string>	
-	<string id="ui_mm_supersample">
-		<text>Сглаживание</text>
+	<string id="ui_mm_msaa">
+		<text>MSAA</text>
+	</string>
+	<string id="ui_mm_fxaa">
+		<text>FXAA</text>
 	</string>
 	<string id="ui_mm_switch_torch">
 		<text>Использование фонариков AI</text>
@@ -627,9 +630,6 @@
 	</string>
 	<string id="video_settings_name_9">
 		<text>Следы от пуль на телах - r__bloodmarks</text>
-	</string>
-	<string id="video_settings_name_10">
-		<text>Качество сглаживания на статическом освещении - r__supersample</text>
 	</string>
 	<string id="video_settings_name_11">
 		<text>Тень от солнца - r2_sun</text>
