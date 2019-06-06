@@ -63,8 +63,7 @@ void CAI_Stalker::script_register(lua_State *L)
 				luabind::value("property_inside_anomaly",					StalkerDecisionSpace::eWorldPropertyInsideAnomaly),
 				luabind::value("property_pure_enemy",						StalkerDecisionSpace::eWorldPropertyPureEnemy),
 				luabind::value("property_script",							StalkerDecisionSpace::eWorldPropertyScript),
-				luabind::value( "property_enemy_wounded",  StalkerDecisionSpace::eWorldPropertyEnemyWounded ),
-				luabind::value( "property_danger_grenade", StalkerDecisionSpace::eWorldPropertyDangerGrenade )
+				luabind::value( "property_enemy_wounded",  StalkerDecisionSpace::eWorldPropertyEnemyWounded )
 			]
 			
 			.enum_("action")
