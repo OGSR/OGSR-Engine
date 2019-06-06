@@ -324,13 +324,10 @@
             <options_item entry="r__tf_aniso" group="mm_opt_video_adv"/>
         </track_aniso>
 
-        <cap_ssample x="5" y="5" width="143" height="21">
-            <text font="letterica16" r="215" g="195" b="170">ui_mm_supersample</text>
-        </cap_ssample>
-        <track_ssample x="249" y="0" width="190" height="21" step="1" is_integer="1">
-            <options_item entry="r__supersample" group="mm_opt_video_adv" depend="vid"/>
-        </track_ssample>
-        <list_ssample x="249" y="0" width="190" height="21" list_length="4" always_show_scroll="0">
+        <cap_msaa x="5" y="5" width="143" height="21">
+            <text font="letterica16" r="215" g="195" b="170">ui_mm_msaa</text>
+        </cap_msaa>
+        <list_msaa x="249" y="0" width="190" height="21" list_length="4" always_show_scroll="0">
             <options_item entry="r3_msaa" group="mm_opt_video_adv" depend="vid"/>
 			<text_color>
 				<e r="216" g="186" b="140"/>
@@ -338,7 +335,14 @@
 			</text_color>
 			<list_font_s r="240" g="217" b="182"/>
 			<list_font	 r="216" g="186" b="140" font="letterica16"/>
-        </list_ssample>
+        </list_msaa>
+
+        <cap_ssample x="5" y="5" width="143" height="21">
+            <text font="letterica16" r="215" g="195" b="170">ui_mm_ssample</text>
+        </cap_ssample>
+        <track_ssample x="249" y="0" width="190" height="21" step="1" is_integer="1">
+            <options_item entry="r__supersample" group="mm_opt_video_adv" depend="vid"/>
+        </track_ssample>
 
         <cap_r2_sun x="5" y="5" width="143" height="21">
             <text font="letterica16" r="215" g="195" b="170">ui_mm_r2_sun</text>
