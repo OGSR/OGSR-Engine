@@ -71,6 +71,8 @@ public:
 	virtual					~CParticlesPlayer		(void);
 	void					LoadParticles			(IKinematics* K);
 
+	void					DestroyParticles();
+
 	void					net_DestroyParticles	();
 	void					net_SpawnParticles		();
 	

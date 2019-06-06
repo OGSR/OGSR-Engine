@@ -99,20 +99,8 @@ void CParticlesPlayer::LoadParticles(IKinematics* K)
 void	CParticlesPlayer::net_DestroyParticles	()
 {
 	VERIFY(m_self_object);
-
-	for(BoneInfoVecIt b_it=m_Bones.begin(); b_it!=m_Bones.end(); b_it++)
-	{
-		SBoneInfo& b_info	= *b_it;
-
-		for (ParticlesInfoListIt p_it=b_info.particles.begin(); p_it!=b_info.particles.end(); p_it++)
-		{
-			SParticlesInfo& p_info	= *p_it;
-			CParticlesObject::Destroy(p_info.ps);
-		}
-		b_info.particles.clear();
-	}
-
-	m_self_object	= 0;
+	DestroyParticles();
+	m_self_object = nullptr;
 }
 
 CParticlesPlayer::SBoneInfo* CParticlesPlayer::get_nearest_bone_info(IKinematics* K, u16 bone_index)
@@ -310,4 +298,12 @@ void CParticlesPlayer::net_SpawnParticles	()
 	m_self_object		= smart_cast<CObject*>(this);
 	VERIFY				(m_self_object);
 
+}
+
+void CParticlesPlayer::DestroyParticles() {
+	for (auto& b_info : m_Bones) {
+		for (auto& p_info : b_info.particles)
+			CParticlesObject::Destroy(p_info.ps);
+		b_info.particles.clear_and_free();
+	}
 }

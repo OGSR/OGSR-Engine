@@ -191,6 +191,8 @@ void CPhysicsShellHolder::setup_physic_shell	()
 
 void CPhysicsShellHolder::deactivate_physics_shell()
 {
+	CParticlesPlayer::DestroyParticles(); //удалить партиклы из ParticlePlayer
+
 	if (m_pPhysicsShell)
 		m_pPhysicsShell->Deactivate	();
 	xr_delete(m_pPhysicsShell);
