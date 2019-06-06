@@ -1,8 +1,8 @@
 #include "stdafx.h"
 #include "../../xr_3da/igame_persistent.h"
 #include "../../xr_3da/environment.h"
-
 #include "../xrRender/dxEnvironmentRender.h"
+#include "../xrRender/Debug/dxPixEventWrapper.h"
 
 #define STENCIL_CULL 0
 
@@ -231,6 +231,14 @@ void	CRenderTarget::phase_combine	()
 			RImplementation.r_dsgraph_render_distort	();
 			if (g_pGamePersistent)	g_pGamePersistent->OnRenderPPUI_PP()	;	// PP-UI
 		}
+	}
+
+	//FXAA
+	if (ps_r2_ls_flags.test(R2FLAG_FXAA))
+	{
+		PIX_EVENT(FXAA);
+		phase_fxaa();
+		RCache.set_Stencil(FALSE);
 	}
 
 	// PP enabled ?

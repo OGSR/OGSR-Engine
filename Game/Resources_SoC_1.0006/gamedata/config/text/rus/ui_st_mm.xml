@@ -369,7 +369,7 @@
 		<text>Лужи</text>
 	</string>
 	<string id="ui_mm_r3_dynamic_wet_surfaces">
-		<text>Намокание плоскостей</text>
+		<text>Намокание поверхностей</text>
 	</string>
 	<string id="ui_mm_volumetric_light">
 		<text>Объёмный свет</text>
@@ -415,6 +415,9 @@
 	</string>	
 	<string id="ui_mm_msaa">
 		<text>MSAA</text>
+	</string>
+	<string id="ui_mm_fxaa">
+		<text>FXAA</text>
 	</string>
 	<string id="ui_mm_switch_torch">
 		<text>Использование фонариков AI</text>
