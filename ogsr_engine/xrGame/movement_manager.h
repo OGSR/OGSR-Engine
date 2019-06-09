@@ -183,6 +183,7 @@ public:
     IC const CBoneRotation& body_orientation() const;
     void update_path();
     virtual void move_along_path(CPHMovementControl* movement_control, Fvector& dest_position, float time_delta);
+    virtual void remove_links(CObject *object) {};
 
     IC float speed() const;
     float speed(CPHMovementControl* movement_control) const;
