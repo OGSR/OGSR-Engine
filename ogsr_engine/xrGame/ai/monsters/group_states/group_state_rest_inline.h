@@ -61,6 +61,9 @@ void CStateGroupRestAbstract::critical_finalize()
 TEMPLATE_SPECIALIZATION
 void CStateGroupRestAbstract::execute()
 {
+	if ( prev_substate == eStateCustom && !object->b_state_end )
+		return;
+
 	// check alife control
 
 	bool captured_by_smart_terrain = false;
