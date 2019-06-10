@@ -107,6 +107,14 @@ public:
 			else
 				return		(-atanf(x/y));
 	}
+
+	IC SelfRef random_dir( CRandom& R = ::Random )
+	{
+		float angle = R.randF( 0, PI_MUL_2 );
+		x = _cos( angle );
+		y = _sin( angle );
+		return *this;
+	};
 };
 
 typedef _vector2<float>		Fvector2;
