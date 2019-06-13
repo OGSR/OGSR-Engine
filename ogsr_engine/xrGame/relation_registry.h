@@ -111,7 +111,7 @@ private:
 	static FIGHT_VECTOR*						m_fight_registry;
 	static FIGHT_VECTOR&						fight_registry();
 	
-	FIGHT_DATA*									FindFight(u16 object_id, bool by_attacker/* = true*/);
+	FIGHT_DATA*									FindFight( u16 object_id, bool by_attacker/* = true*/, u16 );
 	static RELATION_MAP_SPOTS*					m_spot_names;
 public:
 	const shared_str&							GetSpotName			(ALife::ERelationType& type);
