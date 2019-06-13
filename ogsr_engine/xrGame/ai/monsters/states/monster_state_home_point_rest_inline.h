@@ -38,6 +38,7 @@ bool CStateMonsterRestMoveToHomePointAbstract::check_start_conditions()
 TEMPLATE_SPECIALIZATION
 bool CStateMonsterRestMoveToHomePointAbstract::check_completion()
 {
+	if ( !object->Home->has_home() ) return true;
 	return ((object->ai_location().level_vertex_id() == m_target_node) && !object->control().path_builder().is_moving_on_path());
 }
 
