@@ -1,5 +1,5 @@
 # OGSR Engine [![Build status](https://ci.appveyor.com/api/projects/status/mpktoskmr2y2s60l/branch/main?svg=true)](https://ci.appveyor.com/project/OGSR/ogsr-engine/branch/main)
-![Logo](https://i.imgur.com/OYK6UOt.png)
+![Logo](https://cdn1.radikalno.ru/uploads/2019/6/13/b1b4c50115286e39d7c118897816d78d-full.png)
 ### [>>Разработчики<<](https://github.com/OGSR/OGSR-Engine/graphs/contributors) ### 
 ### [>>Список изменений<<](https://github.com/OGSR/OGSR-Engine/wiki/Список-изменений) ###
 ### [>>Свежий релиз SHOC-версии движка<<](https://github.com/OGSR/OGSR-Engine/releases) ###
