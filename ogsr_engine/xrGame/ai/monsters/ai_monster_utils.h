@@ -10,12 +10,14 @@ extern bool object_position_valid(const CEntity *entity);
 
 IC Fvector random_position(const Fvector &center, float R) 
 {
-	Fvector v;
-	v = center;
-	v.x += ::Random.randF(-R,R);
-	v.z += ::Random.randF(-R,R);
+	Fvector2 rnd;
+	rnd.random_dir();
+	Fvector  dir;
+	dir.set( rnd.x, 0.f, rnd.y );
+	Fvector new_pos;
+	new_pos.mad( center, dir, ::Random.randF( R ) );
 
-	return v;
+	return new_pos;
 }
 
 IC bool	from_right(float ty, float cy) 

@@ -250,17 +250,21 @@ bool CControlPathBuilder::get_node_in_radius(u32 src_node, float min_radius, flo
 	Fvector vertex_position = ai().level_graph().vertex_position(src_node);
 
 	for (u32 i=0; i<attempts; i++) {
-		Fvector			dir;
-		dir.random_dir	();
-		dir.normalize	();
+		Fvector2 rnd;
+		rnd.random_dir();
+		Fvector  dir;
+		dir.set( rnd.x, 0.f, rnd.y );
 
 		Fvector			new_pos;
 		new_pos.mad		(vertex_position, dir, Random.randF(min_radius, max_radius));
 
 		restrictions().add_border		(vertex_position,new_pos);
-		dest_node		= ai().level_graph().check_position_in_direction(src_node, vertex_position, new_pos);
+		//dest_node		= ai().level_graph().check_position_in_direction(src_node, vertex_position, new_pos);
+		float dist = ai().level_graph().farthest_vertex_in_direction( src_node, vertex_position, new_pos, dest_node, nullptr, true );
 		restrictions().remove_border	();
-		if (dest_node != u32(-1) && accessible(dest_node)) return true;
+		//if (dest_node != u32(-1) && dest_node != src_node && accessible(dest_node)) return true;
+		if ( dest_node != u32(-1) && dest_node != src_node && dist >= min_radius )
+		  return true;
 	}
 	return false;
 }

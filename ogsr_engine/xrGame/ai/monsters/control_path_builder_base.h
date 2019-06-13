@@ -157,6 +157,7 @@ private:
 		bool		target_point_need_update	();
 		void		find_target_point_set		();
 		void		find_target_point_failed	();
+		void		find_random_point();
 
 		void		select_target				();		// выбрать 
 

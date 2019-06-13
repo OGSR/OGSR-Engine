@@ -71,13 +71,9 @@ void CControlPathBuilderBase::find_target_point_set()
 			Fvector new_position = m_target_found.position();
 			m_target_found.set_node( m_man->path_builder().restrictions().accessible_nearest(m_target_found.position(), new_position ) );
 			m_target_found.set_position( new_position );
-			Fvector	pos_random;	
-			Fvector dir;		
-			dir.random_dir			();
-
-			pos_random.mad			(m_object->Position(), dir, pmt_find_point_dist);
-			set_target_accessible	(m_target_found, pos_random);
-
+			if ( m_target_found.node() == u32(-1) ) {
+			  find_random_point();
+			}
 			if (m_target_found.node() != u32(-1)) return;
 		}
 	}
@@ -89,7 +85,6 @@ void CControlPathBuilderBase::find_target_point_set()
 
 	if (m_target_type == eRetreatFromTarget) {
 		Fvector	dir;
-
 		dir.sub						(m_object->Position(), m_target_found.position() );
 		dir.normalize_safe			();
 		m_target_found.set_position( Fvector( m_target_found.position() ).mad	(m_object->Position(), dir, pmt_find_point_dist) );
@@ -103,19 +98,10 @@ void CControlPathBuilderBase::find_target_point_set()
 	}
 	
 	// если новая позиция = позиции монстра - выбрать рандомную валидную позицию
-	for (u32 i = 0; i < pmt_find_random_pos_attempts; i++ ) {
-		if (m_target_found.position().similar(m_object->Position(), 0.5f)) {
-			
-			Fvector	pos_random;	
-			Fvector dir;		
-			dir.random_dir			();
+	if ( m_target_found.position().similar( m_object->Position(), 5.f ) )
+		find_random_point();
 
-			pos_random.mad			(m_object->Position(), dir, pmt_find_point_dist);
-			set_target_accessible	(m_target_found, pos_random);
-		} else break;
-	}
-
-	if (m_target_found.node() != u32(-1)) return;
+	if ( m_target_found.node() != u32(-1) ) return;
 
 	if (!ai().level_graph().valid_vertex_position(m_target_found.position()))
 	{
@@ -133,18 +119,9 @@ void CControlPathBuilderBase::find_target_point_set()
 void CControlPathBuilderBase::find_target_point_failed() 
 {
 	// если новая позиция = позиции монстра - выбрать рандомную валидную позицию
-	for (u32 i = 0; i < pmt_find_random_pos_attempts; i++ ) {
-		Fvector	pos_random;	
-		Fvector dir;		
-		dir.random_dir			();
+	find_random_point();
 
-		pos_random.mad			(m_object->Position(), dir, pmt_find_point_dist);
-		set_target_accessible	(m_target_found, pos_random);
-
-		if (!m_target_found.position().similar(m_object->Position(), 0.5f)) break;
-	}
-
-	if (m_target_found.node() != u32(-1)) return;
+	if ( m_target_found.node() != u32(-1) ) return;
 
 	//---------------------------------------------------
 	// II. Выбрана позиция, ищем ноду
@@ -184,6 +161,8 @@ void CControlPathBuilderBase::find_node()
 	if (m_cover_info.use_covers) {
 		m_cover_approach->setup	(m_target_found.position(), m_cover_info.min_dist, m_cover_info.max_dist, m_cover_info.deviation);
 		const CCoverPoint	*point = ai().cover_manager().best_cover(m_object->Position(),m_cover_info.radius,*m_cover_approach);
+		if ( !point )
+		  point = ai().cover_manager().best_cover( m_object->Position(), m_cover_info.radius * 2, *m_cover_approach );
 		// нашли кавер?	
 		if (point) {
 			m_target_found.set_node(point->m_level_vertex_id);
@@ -197,3 +176,15 @@ void CControlPathBuilderBase::find_node()
 	m_target_found.set_position ( ai().level_graph().vertex_position(m_target_found.node()) );
 }
 
+
+void CControlPathBuilderBase::find_random_point() {
+  for ( u32 i = 0; i < pmt_find_random_pos_attempts; i++ ) {
+    Fvector2 rnd;
+    rnd.random_dir();
+    Fvector dir, pos_random;
+    dir.set( rnd.x, 0.f, rnd.y );
+    pos_random.mad( m_object->Position(), dir, Random.randF( 5.f, pmt_find_point_dist ) );
+    set_target_accessible( m_target_found, pos_random );
+    if ( !m_target_found.position().similar( m_object->Position(), 5.f ) ) return;
+  }
+}
