@@ -139,12 +139,15 @@ virtual		void		GetSmothedVelocity					(Fvector& vvel)												=0 ;
 virtual		void		SetVelocity							(Fvector vel)												=0 ;
 virtual		void		SetAirControlFactor					(float factor)												=0 ;
 virtual		void		GetPosition							(Fvector& vpos)												=0 ;
+virtual		void		GetBodyPosition						(Fvector& vpos)												=0 ;
+virtual	const Fvector	&BodyPosition						()const														=0 ;
 virtual		void		GetFootCenter						(Fvector& vpos)												{vpos.set(*(Fvector*)dBodyGetPosition(m_body));}
 virtual		void		SetMas								(dReal mass)												=0 ;
 virtual		void		SetCollisionDamageFactor			(float f)													=0 ;
 virtual		float		Mass								()															=0 ;
 virtual		void		SetPhysicsRefObject					(CPhysicsShellHolder* ref_object)							=0 ;
 	virtual void SetNonInteractive(bool v) = 0;
+virtual		void		SetRestrictorRadius					(ERestrictionType rtype,float r)							{};
 virtual		CPhysicsShellHolder* PhysicsRefObject					()									{return m_phys_ref_object;}
 
 //AICharacter

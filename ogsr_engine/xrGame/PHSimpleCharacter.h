@@ -214,6 +214,8 @@ public:
 	virtual		float		Mass								()					{return m_mass;};
 	virtual		void		SetPhysicsRefObject					(CPhysicsShellHolder* ref_object);
 	virtual		void		SetNonInteractive(bool v);
+	virtual		void		GetBodyPosition						(Fvector& vpos)		{ VERIFY(b_exist); vpos = cast_fv(dBodyGetPosition(m_body));  }
+		const Fvector		&BodyPosition						()const				{VERIFY(b_exist && m_body); return cast_fv(dBodyGetPosition(m_body)); } 
 
 	virtual		void		CaptureObject						(dBodyID body,const dReal* anchor);
 	virtual		void		CapturedSetPosition					(const dReal* position);

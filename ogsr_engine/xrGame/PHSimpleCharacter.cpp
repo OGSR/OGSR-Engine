@@ -514,6 +514,7 @@ void CPHSimpleCharacter::PhDataUpdate(dReal /**step/**/){
 	m_friction_factor			=	0.f				;
 	b_collision_restrictor_touch=	false			;
 	b_foot_mtl_check			=	true			;
+	b_depart_control			=	false			;
 	dMatrix3 R;
 	dRSetIdentity (R);
 	dBodySetAngularVel(m_body,0.f,0.f,0.f);
@@ -675,6 +676,7 @@ void CPHSimpleCharacter::PhTune(dReal step){
 	if(b_jump)
 	{
 		b_lose_control=true;
+		b_depart_control = true;
 		dBodySetLinearVel(m_body,m_jump_accel.x,m_jump_accel.y,m_jump_accel.z);//vel[1]+
 		//Log("jmp",m_jump_accel);
 		dVectorSet(m_jump_depart_position,dBodyGetPosition(m_body));
