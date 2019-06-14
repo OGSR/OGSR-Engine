@@ -204,6 +204,7 @@ protected:
 	virtual void	OnDrawUI();
 	virtual void	net_Relcase(CObject *object);
 
+  bool ScopeRespawn( PIItem );
 };
 
 #endif //__XR_WEAPON_MAG_H__

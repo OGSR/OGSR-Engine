@@ -385,11 +385,27 @@ void CWeapon::Load		(LPCSTR section)
 
 	UpdateZoomOffset();
 
+        m_allScopeNames.clear();
+	m_highlightAddons.clear();
 	if(m_eScopeStatus == ALife::eAddonAttachable)
 	{
 		m_sScopeName = pSettings->r_string(section,"scope_name");
 		m_iScopeX = pSettings->r_s32(section,"scope_x");
 		m_iScopeY = pSettings->r_s32(section,"scope_y");
+
+                m_allScopeNames.push_back( m_sScopeName );
+                if ( pSettings->line_exist( section, "scope_names" ) ) {
+                  LPCSTR S = pSettings->r_string( section, "scope_names" );
+                  if ( S && S[ 0 ] ) {
+                    string128 _scopeItem;
+                    int count = _GetItemCount( S );
+                    for ( int it = 0; it < count; ++it ) {
+                      _GetItem( S, it, _scopeItem );
+                      m_allScopeNames.push_back( _scopeItem );
+                      m_highlightAddons.push_back( _scopeItem );
+                    }
+                  }
+                }
 	}
 
 	if(m_eSilencerStatus == ALife::eAddonAttachable)
@@ -462,7 +478,6 @@ void CWeapon::Load		(LPCSTR section)
 		m_hit_probability[i]		= READ_IF_EXISTS(pSettings,r_float,section,temp,1.f);
 	}
 	
-	m_highlightAddons.clear();
 	if (pSettings->line_exist(section, "highlight_addons")) {
 		LPCSTR S = pSettings->r_string(section, "highlight_addons");
 		if (S && S[0]) {
