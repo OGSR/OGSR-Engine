@@ -1,5 +1,4 @@
-#ifndef __Q__
-#define __Q__
+#pragma once
 
 /***************************************************************************
 	The quatern module contains basic support for a quaternion object.
@@ -124,44 +123,44 @@
 
 ***************************************************************************/
 
-#define UNIT_TOLERANCE			0.001f
+constexpr float UNIT_TOLERANCE = 0.001f;
 	// Quaternion magnitude must be closer than this tolerance to 1.0 to be
 	// considered a unit quaternion
 
-#define QZERO_TOLERANCE			0.00001f
+constexpr float QZERO_TOLERANCE = 0.00001f;
 	// quaternion magnitude must be farther from this tolerance to 0.0 to be
 	// normalized
 
-#define TRACE_QZERO_TOLERANCE	0.1f
+constexpr float TRACE_QZERO_TOLERANCE = 0.1f;
 	// trace of matrix must be greater than this to be used for converting a matrix
 	// to a quaternion.
 
-#define AA_QZERO_TOLERANCE		0.0001f
-#define QEPSILON				0.00001f
+constexpr float AA_QZERO_TOLERANCE = 0.0001f;
+constexpr float QEPSILON = 0.00001f;
 
 template <class T>
-struct /*XRCORE_API*/ _quaternion {
+struct _quaternion {
 public:
 	typedef T				TYPE;
 	typedef _quaternion<T>	Self;
 	typedef Self&			SelfRef;
 	typedef const Self&		SelfCRef;
 private:
-	IC T _asin_(T _x)
+	IC T _asin_(T x)
 	{
 		const T c1 = 0.892399f;
 		const T c3 = 1.693204f;
 		const T c5 =-3.853735f;
 		const T c7 = 2.838933f;
 		
-		const T x2 = _x * _x;
-		const T d = _x * (c1 + x2 * (c3 + x2 * (c5 + x2 * c7)));
+		const T x2 = x * x;
+		const T d = x * (c1 + x2 * (c3 + x2 * (c5 + x2 * c7)));
 		
 		return d;
 	}
-	IC T _acos_(T _x)
+	IC T _acos_(T x)
 	{
-		return PI_DIV_2 - _asin_(_x);
+		return PI_DIV_2 - _asin_(x);
 	}
 public:
 	T x,y,z,w;
@@ -331,17 +330,16 @@ public:
 	// gets an axis and angle of rotation around the axis from a quaternion
 	// returns TRUE if there is an axis.
 	// returns FALSE if there is no axis (and Axis is set to 0,0,0, and Theta is 0)
+
 	IC	BOOL	get_axis_angle(Fvector &axis, T &angle)
 	{
-		T OneOverSinTheta;
-
-		T HalfTheta  = acosf( w );
-		if (HalfTheta>QZERO_TOLERANCE) 	{
-			OneOverSinTheta = 1.0f / _sin( HalfTheta );
+		T s = _sqrt(x*x + y*y + z*z);
+		if ( s > EPS_S ) 	{
+			T OneOverSinTheta = 1.f/s;
 			axis.x	= OneOverSinTheta * x;
 			axis.y	= OneOverSinTheta * y;
 			axis.z	= OneOverSinTheta * z;
-			angle	= 2.0f * HalfTheta;
+			angle	= 2.0f * atan2(s,w);
 			return	true;
 		} else 	{
 			axis.x	= axis.y = axis.z = 0.0f;
@@ -443,11 +441,3 @@ typedef _quaternion<double>	Dquaternion;
 
 template <class T>
 BOOL	_valid			(const _quaternion<T>& s)	{ return _valid(s.x) && _valid(s.y) && _valid(s.z) && _valid(s.w);	}
-
-#undef UNIT_TOLERANCE
-#undef QZERO_TOLERANCE
-#undef TRACE_QZERO_TOLERANCE
-#undef AA_QZERO_TOLERANCE
-#undef QEPSILON
-
-#endif

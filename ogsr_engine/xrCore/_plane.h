@@ -1,5 +1,4 @@
-#ifndef _PLANE
-#define _PLANE
+#pragma once
 
 template <class T>
 class _plane {
@@ -47,7 +46,12 @@ public:
 		d			= - n.set(_n).dotproduct(_p);
 		return *this;
 	}
-	IC	SelfRef	project(_vector3<T> &pdest, _vector3<T> &psrc)
+	IC	SelfCRef project(_vector3<T> &pdest, _vector3<T> const& psrc) const
+	{
+		pdest.mad	(psrc,n,-classify(psrc));
+		return *this;
+	}
+	IC	SelfRef	project(_vector3<T> &pdest, _vector3<T> const& psrc)
 	{
 		pdest.mad	(psrc,n,-classify(psrc));
 		return *this;
@@ -140,5 +144,3 @@ typedef _plane<double>	Dplane;
 
 template <class T>
 BOOL	_valid			(const _plane<T>& s)		{ return _valid(s.n) && _valid(s.d);	}
-
-#endif
