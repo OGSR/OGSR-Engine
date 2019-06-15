@@ -84,6 +84,11 @@ void CMovementManager::apply_collision_hit(CPHMovementControl* movement_control)
 
 bool CMovementManager::move_along_path() const
 {
+  return move_along_path( object().Position() );
+}
+
+bool CMovementManager::move_along_path( const Fvector& pos ) const
+{
     if (!enabled())
         return (false);
 
@@ -96,7 +101,7 @@ bool CMovementManager::move_along_path() const
     if (detail().path().empty())
         return (false);
 
-    if (detail().completed(object().Position(), true))
+    if (detail().completed(pos, true))
         return (false);
 
     if (detail().curr_travel_point_index() >= detail().path().size() - 1)

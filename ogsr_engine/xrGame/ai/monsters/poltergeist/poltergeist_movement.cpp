@@ -13,14 +13,7 @@ void CPoltergeisMovementManager::move_along_path(CPHMovementControl *movement_co
 	dest_position		= m_monster->m_current_position;
 
 	// Если нет движения по пути
-	if (!enabled() || 
-		path_completed() || 
-		detail().path().empty() ||
-		detail().completed(m_monster->m_current_position,true) || 
-		(detail().curr_travel_point_index() >= detail().path().size() - 1) ||
-		fis_zero(old_desirable_speed())
-		)
-	{
+	if ( !inherited::move_along_path( m_monster->m_current_position ) ) {
 		m_speed	= 0.f;
 		dest_position		= CalculateRealPosition();
 		return;
@@ -34,67 +27,34 @@ void CPoltergeisMovementManager::move_along_path(CPHMovementControl *movement_co
 	// Вычислить пройденную дистанцию, определить целевую позицию на маршруте, 
 	//			 изменить detail().curr_travel_point_index()
 
-	float				desirable_speed		=	old_desirable_speed();				// желаемая скорость объекта
-	float				dist				=	desirable_speed * time_delta;		// пройденное расстояние в соостветствие с желаемой скоростью 
-	float				desirable_dist		=	dist;
+	float desirable_speed = old_desirable_speed(); // желаемая скорость объекта
+	float desirable_dist; // = desirable_speed * time_delta;
+	float dist;
 
-	// определить целевую точку
-	Fvector				target;
+	// position_computation
+	Fvector dir_to_target;
+	float dist_to_target;
+	u32 current_travel_point = detail().m_current_travel_point;
+	dest_position = path_position(old_desirable_speed(), m_monster->m_current_position, time_delta, current_travel_point, dist, dist_to_target, dir_to_target, desirable_dist);
 
-	u32 prev_cur_point_index = detail().curr_travel_point_index();
+	if (detail().m_current_travel_point != current_travel_point)
+		on_travel_point_change(detail().m_current_travel_point);
+	detail().m_current_travel_point = current_travel_point;
 
-	// обновить detail().curr_travel_point_index() в соответствие с текущей позицией
-	while (detail().curr_travel_point_index() < detail().path().size() - 2) {
-
-		float pos_dist_to_cur_point			= dest_position.distance_to(detail().path()[detail().curr_travel_point_index()].position);
-		float pos_dist_to_next_point		= dest_position.distance_to(detail().path()[detail().curr_travel_point_index()+1].position);
-		float cur_point_dist_to_next_point	= detail().path()[detail().curr_travel_point_index()].position.distance_to(detail().path()[detail().curr_travel_point_index()+1].position);
-
-		if ((pos_dist_to_cur_point > cur_point_dist_to_next_point) && (pos_dist_to_cur_point > pos_dist_to_next_point)) {
-			++detail().m_current_travel_point;			
-		} else break;
+	Fvector motion;
+	if ( !fis_zero( dist_to_target ) ) {
+	  motion.mul( dir_to_target, dist / dist_to_target );
+	  dest_position.add( motion );
 	}
-
-	target.set			(detail().path()[detail().curr_travel_point_index() + 1].position);
-	// определить направление к целевой точке
-	Fvector				dir_to_target;
-	dir_to_target.sub	(target, dest_position);
-
-	// дистанция до целевой точки
-	float				dist_to_target = dir_to_target.magnitude();
-
-	while (dist > dist_to_target) {
-		dest_position.set	(target);
-
-		if (detail().curr_travel_point_index() + 1 >= detail().path().size())	break;
-		else {
-			dist			-= dist_to_target;
-			++detail().m_current_travel_point;
-			if ((detail().curr_travel_point_index()+1) >= detail().path().size())
-				break;
-			target.set			(detail().path()[detail().curr_travel_point_index() + 1].position);
-			dir_to_target.sub	(target, dest_position);
-			dist_to_target		= dir_to_target.magnitude();
-		}
-	}
-
-	if (prev_cur_point_index != detail().curr_travel_point_index()) on_travel_point_change(prev_cur_point_index);
-
-	if (dist_to_target < EPS_L) {
-		detail().m_current_travel_point = u32(detail().path().size()) - 1;
+	else {
 		m_speed			= 0.f;
 		dest_position	= CalculateRealPosition();
 		return;
-	}
-
-	// установить позицию
-	Fvector				motion;
-	motion.mul			(dir_to_target, dist / dist_to_target);
-	dest_position.add	(motion);
+        }
 
 	// установить скорость
-	float	real_motion	= motion.magnitude() + desirable_dist - dist;
-	float	real_speed	= real_motion / time_delta;
+	float real_motion = motion.magnitude() + desirable_dist; // - dist;
+	float real_speed = real_motion / time_delta;
 
 	m_speed				= 0.5f * desirable_speed + 0.5f * real_speed;
 
@@ -110,5 +70,3 @@ Fvector CPoltergeisMovementManager::CalculateRealPosition()
 	ret_val.y += m_monster->m_height;
 	return (ret_val);
 }
-
-

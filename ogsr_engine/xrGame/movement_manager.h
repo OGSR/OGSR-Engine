@@ -222,6 +222,7 @@ public:
 
 protected:
     bool move_along_path() const;
+    bool move_along_path( const Fvector& pos ) const;
 
 protected:
     Fvector path_position(const float& time_to_check);
