@@ -50,6 +50,11 @@ float4 main( vf I ) : SV_Target
 			Nw	= normalize (Nw);
 	float3	v2point	= normalize (I.v2point);
 	float3	vreflect= reflect(v2point, Nw);
+
+	half3 vreflectabs    = abs(vreflect);
+	half  vreflectmax    = max(vreflectabs.x, max(vreflectabs.y, vreflectabs.z));
+	vreflect      /= vreflectmax;
+	if (vreflect.y < 0.999)
 			vreflect.y= vreflect.y*2-1;     // fake remapping
 
 //	float3	env0	= texCUBE (s_env0, vreflect);
