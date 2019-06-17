@@ -88,6 +88,7 @@ void CCustomZone::Load(LPCSTR section)
 	m_fEffectiveRadius		= pSettings->r_float(section,			"effective_radius");
 	m_eHitTypeBlowout		= ALife::g_tfString2HitType(pSettings->r_string(section, "hit_type"));
 
+	m_zone_flags.set(eIgnoreAny,		READ_IF_EXISTS( pSettings, r_bool, section, "ignore_any", false ) );
 	m_zone_flags.set(eIgnoreNonAlive,	pSettings->r_bool(section,	"ignore_nonalive"));
 	m_zone_flags.set(eIgnoreSmall,		pSettings->r_bool(section,	"ignore_small"));
 	m_zone_flags.set(eIgnoreArtefact,	pSettings->r_bool(section,	"ignore_artefacts"));
@@ -634,7 +635,7 @@ void CCustomZone::feel_touch_new	(CObject* O)
 	else
 		object_info.small_object = false;
 
-	if((object_info.small_object && m_zone_flags.test(eIgnoreSmall)) ||
+	if ( m_zone_flags.test( eIgnoreAny ) || ( object_info.small_object && m_zone_flags.test( eIgnoreSmall ) ) ||
 		(object_info.nonalive_object && m_zone_flags.test(eIgnoreNonAlive)) || 
 		(pArtefact && m_zone_flags.test(eIgnoreArtefact)))
 		object_info.zone_ignore = true;
