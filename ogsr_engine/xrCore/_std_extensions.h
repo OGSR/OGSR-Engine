@@ -66,7 +66,11 @@ IC float	_cos	(float x)		{ return cosf(x); }
 IC BOOL		_valid	(const float x)
 {
 	// check for: Signaling NaN, Quiet NaN, Negative infinity ( –INF), Positive infinity (+INF), Negative denormalized, Positive denormalized
-	int			cls			= _fpclass		(double(x));
+#ifdef _M_X64
+	const int cls = _fpclassf(x);
+#else
+	const int cls = _fpclass(double(x));
+#endif
 	if (cls&(_FPCLASS_SNAN+_FPCLASS_QNAN+_FPCLASS_NINF+_FPCLASS_PINF+_FPCLASS_ND+_FPCLASS_PD))	
 		return	false;	
 
