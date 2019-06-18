@@ -618,7 +618,7 @@ void CAI_Stalker::UpdateCL()
 			I	= std::find(Device.seqParallel.begin(),Device.seqParallel.end(),f);
 			VERIFY							(I == Device.seqParallel.end());
 #endif
-			Device.seqParallel.push_back	(fastdelegate::FastDelegate0<>(this,&CAI_Stalker::update_object_handler));
+			Device.add_to_seq_parallel	(fastdelegate::FastDelegate0<>(this,&CAI_Stalker::update_object_handler));
 		}
 		else {
 			START_PROFILE("stalker/client_update/object_handler")
@@ -734,7 +734,7 @@ void CAI_Stalker::shedule_Update		( u32 DT )
 		memory().visual().check_visibles();
 #endif
 		if (g_mt_config.test(mtAiVision))
-			Device.seqParallel.push_back(fastdelegate::FastDelegate0<>(this,&CCustomMonster::Exec_Visibility));
+			Device.add_to_seq_parallel(fastdelegate::FastDelegate0<>(this,&CCustomMonster::Exec_Visibility));
 		else {
 			START_PROFILE("stalker/schedule_update/vision")
 			Exec_Visibility				();

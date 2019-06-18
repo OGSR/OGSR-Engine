@@ -297,6 +297,19 @@ public:
 	xrCriticalSection	mt_csLeave;
 	volatile BOOL		mt_bMustExit;
 
+	ICF		bool			add_to_seq_parallel	(const fastdelegate::FastDelegate0<> &delegate)
+	{
+		xr_vector<fastdelegate::FastDelegate0<> >::iterator I = std::find(
+			seqParallel.begin(),
+			seqParallel.end(),
+			delegate
+		);
+		if (I != seqParallel.end())
+			return false;
+		seqParallel.push_back( delegate );
+		return true;
+	}
+
 	ICF		void			remove_from_seq_parallel	(const fastdelegate::FastDelegate0<> &delegate)
 	{
 /*
