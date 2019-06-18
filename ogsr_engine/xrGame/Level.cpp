@@ -414,7 +414,10 @@ void CLevel::OnFrame	()
 
 	if (m_bNeed_CrPr)					make_NetCorrectionPrediction();
 
-	MapManager().Update		();
+	if (g_mt_config.test(mtMap))
+		Device.add_to_seq_parallel(fastdelegate::FastDelegate0<>(m_map_manager,&CMapManager::Update));
+	else								
+		MapManager().Update();
 	// Inherited update
 	inherited::OnFrame		();
 	
