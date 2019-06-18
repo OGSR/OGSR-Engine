@@ -1,5 +1,4 @@
-#ifndef FOBB_H
-#define FOBB_H
+#pragma once
 
 template <class T>
 struct _obb{
@@ -126,5 +125,3 @@ BOOL	_valid			(const _obb<T>& m)
 { 
 	return _valid(m_rotate) && _valid(m_translate) && _valid(m_halfsize);
 }
-
-#endif

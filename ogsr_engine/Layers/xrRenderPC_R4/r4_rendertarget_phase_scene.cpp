@@ -70,6 +70,9 @@ void	CRenderTarget::phase_scene_prepare	()
 // begin
 void	CRenderTarget::phase_scene_begin	()
 {
+	// Enable ANISO
+	SSManager.SetMaxAnisotropy(ps_r__tf_Anisotropic);
+
    ID3DDepthStencilView* pZB = HW.pBaseZB;
 
    if( RImplementation.o.dx10_msaa )
@@ -101,9 +104,7 @@ void	CRenderTarget::phase_scene_begin	()
 void	CRenderTarget::disable_aniso		()
 {
 	// Disable ANISO
-	//	TODO: DX10: disable aniso here
-	//for (u32 i=0; i<HW.Caps.raster.dwStages; i++)
-	//	CHK_DX(HW.pDevice->SetSamplerState( i, D3DSAMP_MAXANISOTROPY, 1	));
+	SSManager.SetMaxAnisotropy(1);
 }
 
 // end

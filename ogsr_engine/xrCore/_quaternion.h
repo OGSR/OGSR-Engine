@@ -1,5 +1,4 @@
-#ifndef __Q__
-#define __Q__
+#pragma once
 
 /***************************************************************************
 	The quatern module contains basic support for a quaternion object.
@@ -124,20 +123,20 @@
 
 ***************************************************************************/
 
-#define UNIT_TOLERANCE			0.001f
+constexpr float UNIT_TOLERANCE = 0.001f;
 	// Quaternion magnitude must be closer than this tolerance to 1.0 to be
 	// considered a unit quaternion
 
-#define QZERO_TOLERANCE			0.00001f
+constexpr float QZERO_TOLERANCE = 0.00001f;
 	// quaternion magnitude must be farther from this tolerance to 0.0 to be
 	// normalized
 
-#define TRACE_QZERO_TOLERANCE	0.1f
+constexpr float TRACE_QZERO_TOLERANCE = 0.1f;
 	// trace of matrix must be greater than this to be used for converting a matrix
 	// to a quaternion.
 
-#define AA_QZERO_TOLERANCE		0.0001f
-#define QEPSILON				0.00001f
+constexpr float AA_QZERO_TOLERANCE = 0.0001f;
+constexpr float QEPSILON = 0.00001f;
 
 template <class T>
 struct _quaternion {
@@ -442,11 +441,3 @@ typedef _quaternion<double>	Dquaternion;
 
 template <class T>
 BOOL	_valid			(const _quaternion<T>& s)	{ return _valid(s.x) && _valid(s.y) && _valid(s.z) && _valid(s.w);	}
-
-#undef UNIT_TOLERANCE
-#undef QZERO_TOLERANCE
-#undef TRACE_QZERO_TOLERANCE
-#undef AA_QZERO_TOLERANCE
-#undef QEPSILON
-
-#endif

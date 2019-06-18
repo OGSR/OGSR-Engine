@@ -1,6 +1,4 @@
 #pragma once
-#ifndef __FBOX
-#define __FBOX
 #include "_vector3d.h"
 
 template <class T>
@@ -550,5 +548,3 @@ bool _valid(const _box3<T>& c)
 {
     return _valid(c.min) && _valid(c.max);
 }
-
-#endif

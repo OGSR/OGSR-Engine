@@ -265,9 +265,14 @@ dxRenderDeviceRender::DeviceState dxRenderDeviceRender::GetDeviceState()
 {
 	HW.Validate		();
 #if defined(USE_DX10) || defined(USE_DX11)
-	//	TODO: DX10: Implement GetDeviceState
-	//	TODO: DX10: Implement DXGI_PRESENT_TEST testing
-	//VERIFY(!"dxRenderDeviceRender::overdrawBegin not implemented.");
+	const auto result = HW.m_pSwapChain->Present(0, DXGI_PRESENT_TEST);
+
+	switch (result)
+	{
+	// Check if the device is ready to be reset
+	case DXGI_ERROR_DEVICE_RESET:
+		return dsNeedReset;
+	}
 #else	//	USE_DX10
 	HRESULT	_hr		= HW.pDevice->TestCooperativeLevel();
 	if (FAILED(_hr))

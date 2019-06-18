@@ -27,23 +27,23 @@ local function only_4_and_more_mode()           return get_current_renderer() >=
 
 local adv_vid_opt_params = {
 	{ "vis_dist",              "track", 0, hint_colors.yellow, "video_settings_name_2" , "video_settings_desc_2"  },
-	{ "geometry_lod",          "track", 0, hint_colors.red   , "video_settings_name_3" , "video_settings_desc_3"  },
-	{ "texture_lod",           "track", 1, hint_colors.red   , "video_settings_name_7" , "video_settings_desc_7"  },
+	{ "geometry_lod",          "track", 0, hint_colors.yellow, "video_settings_name_3" , "video_settings_desc_3"  },
+	{ "texture_lod",           "track", 1, hint_colors.yellow, "video_settings_name_7" , "video_settings_desc_7"  },
 	{ "aniso",                 "track", 0, hint_colors.yellow, "video_settings_name_8" , "video_settings_desc_8"  },
 	--
 	{ "msaa",                  "list",  1, hint_colors.red   , "", ""                                            , only_3_and_more_mode  },
 	{ "fxaa",                  "check", 0, hint_colors.green , "", ""                                            , only_2a_and_more_mode },
 	{ "ssample",               "track", 0, hint_colors.green , "", ""                                            , only_1_mode  },
 	--
-	{ "detail_density",        "track", 0, hint_colors.red   , "video_settings_name_4" , "video_settings_desc_4"  },
-	{ "detail_distance",       "track", 0, hint_colors.red   , "video_settings_name_5" , "video_settings_desc_5"  },
+	{ "detail_density",        "track", 0, hint_colors.yellow, "video_settings_name_4" , "video_settings_desc_4"  },
+	{ "detail_distance",       "track", 0, hint_colors.yellow, "video_settings_name_5" , "video_settings_desc_5"  },
 	{ "r2_sun_details",        "check", 0, hint_colors.red   , "video_settings_name_12", "video_settings_desc_12" },
-	{ "r2_sun",                "check", 0, hint_colors.yellow, "video_settings_name_11", "video_settings_desc_11", only_2_and_more_mode  },
-	{ "light_distance",        "track", 0, hint_colors.red   , "video_settings_name_13", "video_settings_desc_13", only_2a_and_more_mode },
-	{ "particles_distance",    "track", 0, hint_colors.red   , "video_settings_name_15", "video_settings_desc_15", only_2a_and_more_mode },
+	{ "r2_sun",                "check", 0, hint_colors.red   , "video_settings_name_11", "video_settings_desc_11", only_2_and_more_mode  },
+	{ "light_distance",        "track", 0, hint_colors.yellow, "video_settings_name_13", "video_settings_desc_13", only_2a_and_more_mode },
+	{ "particles_distance",    "track", 0, hint_colors.yellow, "video_settings_name_15", ""                      , only_2a_and_more_mode },
 	{ "r__smap_size",          "list",  1, hint_colors.red   , "video_settings_name_59", "video_settings_desc_59", only_2_and_more_mode  },
-	{ "r2_sun_near",           "track", 0, hint_colors.red   , "video_settings_name_22", "video_settings_desc_22", only_2_and_more_mode  },
-	{ "r2_sun_far",            "track", 0, hint_colors.yellow, "video_settings_name_58", "video_settings_desc_58", only_2_and_more_mode  },
+--	{ "r2_sun_near",           "track", 0, hint_colors.red   , "video_settings_name_22", "video_settings_desc_22", only_2_and_more_mode  }, --теперь эта команда ни на что не влияет, т.ч. выключаю.
+--	{ "r2_sun_far",            "track", 0, hint_colors.yellow, "video_settings_name_58", "video_settings_desc_58", only_2_and_more_mode  }, --теперь эта команда ни на что не влияет, т.ч. выключаю.
 	{ "npc_torch",             "check", 0, hint_colors.green , "video_settings_name_14", "video_settings_desc_14" },
 	{ "r1_detail_textures",    "check", 0, hint_colors.green , "", ""                                            , only_1_mode },
 	{ "r2_detail_bump",        "check", 0, hint_colors.yellow, "video_settings_name_44", "video_settings_desc_44", only_2_and_more_mode },

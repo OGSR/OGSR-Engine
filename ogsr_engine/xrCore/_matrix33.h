@@ -1,5 +1,4 @@
-#ifndef _matrix33H_
-#define _matrix33H_
+#pragma once
 
 template <class T>
 struct _matrix33{
@@ -20,7 +19,7 @@ public:
     		Tvector j;
     		Tvector k;
         };
-		float m[3][3];					// Array
+		T m[3][3];					// Array
 	};
 	// Class members
 	IC SelfRef set_rapid(const _matrix<T> &a) 
@@ -399,6 +398,3 @@ BOOL	_valid			(const _matrix33<T>& m)
 		_valid(m.j)&&
 		_valid(m.k);
 }
-
-#endif
-
