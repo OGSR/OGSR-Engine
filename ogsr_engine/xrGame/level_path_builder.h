@@ -61,11 +61,11 @@ public:
 
     void register_to_process()
     {
-        m_object->m_wait_for_distributed_computation = true;
         if (Device.dwTimeGlobal < m_last_fail_time + time_to_wait_after_fail)
             return;
 
-        Device.seqParallel.push_back(fastdelegate::FastDelegate0<>(this, &CLevelPathBuilder::process));
+        m_object->m_wait_for_distributed_computation = true;
+        Device.add_to_seq_parallel(fastdelegate::FastDelegate0<>(this, &CLevelPathBuilder::process));
     }
 
     void process_impl()
