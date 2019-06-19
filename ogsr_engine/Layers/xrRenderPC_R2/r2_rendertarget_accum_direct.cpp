@@ -5,13 +5,13 @@
 //////////////////////////////////////////////////////////////////////////
 // tables to calculate view-frustum bounds in world space
 // note: D3D uses [0..1] range for Z
-static Fvector3		corners [8]			= {
+static constexpr Fvector3 corners[8] = {
 	{ -1, -1,  0.7 },	{ -1, -1, +1},
 	{ -1, +1, +1 },		{ -1, +1,  0.7},
 	{ +1, +1, +1 },		{ +1, +1,  0.7},
 	{ +1, -1, +1 },		{ +1, -1,  0.7}
 };
-static u16			facetable[16][3]		= {
+static constexpr u16 facetable[16][3] = {
 	{ 3, 2, 1 },  
 	{ 3, 1, 0 },		
 	{ 7, 6, 5 }, 
@@ -745,10 +745,6 @@ void CRenderTarget::accum_direct_volumetric	(u32 sub_phase, const u32 Offset, co
 		if (fValue<0.0001) return;
 	}
 	
-	//	Test. draw only for near part
-//	if (sub_phase!=SE_SUN_N/EAR) return;
-//	if (sub_phase!=SE_SUN_FAR) return;
-
 	phase_vol_accumulator();
 
 	RCache.set_ColorWriteEnable();
@@ -766,45 +762,24 @@ void CRenderTarget::accum_direct_volumetric	(u32 sub_phase, const u32 Offset, co
 			else			pszSMapName = r2_RT_smap_depth;
 		}
 		else				pszSMapName = r2_RT_smap_surf;
+
 		//s_smap
-
-		STextureList* _T = &*s_accum_direct_volumetric_cascade->E[0]->passes[0]->T;
-		
-		if( ps_r2_ls_flags_ext.is(R2FLAGEXT_SUN_OLD))
-			_T = &*s_accum_direct_volumetric->E[0]->passes[0]->T;
-
-		STextureList::iterator	_it		= _T->begin	();
-		STextureList::iterator	_end	= _T->end	();
-		for (; _it!=_end; _it++)
+		auto& Element = ps_r2_ls_flags_ext.is(R2FLAGEXT_SUN_OLD) ? s_accum_direct_volumetric : s_accum_direct_volumetric_cascade;
+		for (auto&[load_id, tex] : *Element->E[0]->passes[0]->T)
 		{
-			std::pair<u32,ref_texture>&		loader	=	*_it;
-			u32			load_id	= loader.first;
 			//	Shadowmap texture always uses 0 texture unit
-			if (load_id==0)		
-			{
+			if (load_id == 0)
 				//	Assign correct texture
-				loader.second.create(pszSMapName);
-			}
+				tex.create(pszSMapName);
 		}
 	}
 
 	// Perform lighting
 	{
-
 		// *** assume accumulator setted up ***
 		light*			fuckingsun			= (light*)RImplementation.Lights.sun_adapted._get()	;
 
-		// Common constants (light-related)
-		Fvector		L_clr;
-		L_clr.set					(fuckingsun->color.r,fuckingsun->color.g,fuckingsun->color.b);
-		
-		//	Use g_combine_2UV that was set up by accum_direct
-		//	RCache.set_Geometry			(g_combine_2UV);
-
 		// setup
-
-		
-
 		if( ps_r2_ls_flags_ext.is(R2FLAGEXT_SUN_OLD))
 			RCache.set_Element			(s_accum_direct_volumetric->E[0]);
 		else
@@ -813,18 +788,34 @@ void CRenderTarget::accum_direct_volumetric	(u32 sub_phase, const u32 Offset, co
 			RCache.set_CullMode			(CULL_CCW); 
 		}
 
-//		RCache.set_c				("Ldynamic_dir",		L_dir.x,L_dir.y,L_dir.z,0 );
-		RCache.set_c				("Ldynamic_color",		L_clr.x,L_clr.y,L_clr.z,0);
-		RCache.set_c				("m_shadow",			mShadow);
-		Fmatrix			m_Texgen;
-		m_Texgen.identity();
- 		RCache.xforms.set_W( m_Texgen );
- 		RCache.xforms.set_V( Device.mView );
- 		RCache.xforms.set_P( Device.mProject );
- 		u_compute_texgen_screen	( m_Texgen );
+		//
+		Fvector L_dir;
+		Device.mView.transform_dir(L_dir, fuckingsun->direction);
+		L_dir.normalize();
+		//Msg("~~[%s] Ldynamic_dir is [%f, %f, %f]", __FUNCTION__, L_dir.x, L_dir.y, L_dir.z);
+		RCache.set_c("Ldynamic_dir", L_dir.x, L_dir.y, L_dir.z, 0);
 
-		RCache.set_c				("m_texgen",			m_Texgen);
-//		RCache.set_c				("m_sunmask",			m_clouds_shadow);
+		/* Ещё вариант
+		float intensity = 0.3f*fuckingsun->color.r + 0.48f*fuckingsun->color.g + 0.22f*fuckingsun->color.b;
+		Fvector dir = L_dir;
+		dir.normalize().mul(-_sqrt(intensity + EPS));
+		//Msg("~~[%s] Ldynamic_dir is [%f, %f, %f]", __FUNCTION__, dir.x, dir.y, dir.z);
+		RCache.set_c("Ldynamic_dir", dir.x, dir.y, dir.z, 0);
+		*/
+
+		Fvector L_clr = { fuckingsun->color.r, fuckingsun->color.g, fuckingsun->color.b };
+		//Msg("~~[%s] Ldynamic_color (r,g,b) is [%f, %f, %f]", __FUNCTION__, L_clr.x, L_clr.y, L_clr.z);
+		RCache.set_c("Ldynamic_color", L_clr.x, L_clr.y, L_clr.z, 0);
+
+		RCache.set_c("m_shadow", mShadow);
+
+		Fmatrix m_Texgen;
+		m_Texgen.identity();
+		RCache.xforms.set_W(m_Texgen);
+		RCache.xforms.set_V(Device.mView);
+		RCache.xforms.set_P(Device.mProject);
+		u_compute_texgen_screen(m_Texgen);
+		RCache.set_c("m_texgen", m_Texgen);
 
 		// nv-DBT
 		float zMin,zMax;
@@ -841,7 +832,7 @@ void CRenderTarget::accum_direct_volumetric	(u32 sub_phase, const u32 Offset, co
 			zMax = OLES_SUN_LIMIT_27_01_07;
 		}
 
-		RCache.set_c("volume_range", zMin, zMax, 0, 0);
+		//RCache.set_c("volume_range", zMin, zMax, 0, 0);
 
 		Fvector	center_pt;
 		center_pt.mad(Device.vCameraPosition,Device.vCameraDirection,zMin);	
