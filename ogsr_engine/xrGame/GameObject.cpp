@@ -695,7 +695,6 @@ CObject::SavedPosition CGameObject::ps_Element(u32 ID) const
 {
 	VERIFY(ID<ps_Size());
 	inherited::SavedPosition	SP	=	PositionStack[ID];
-	SP.dwTime					+=	Level().timeServer_Delta();
 	return SP;
 }
 

@@ -34,9 +34,6 @@ protected:
 	ConnectionState			net_Connected;
 
 	INetQueue				net_Queue;
-	
-	s32						net_TimeDelta;
-	s32						net_TimeDelta_User;
 
 public:
 	IPureClient				(CTimer* tm);
@@ -58,10 +55,8 @@ public:
 	virtual void			OnConnectRejected		()	{};
 	
 	// time management
-	IC u32					timeServer				()	{ return TimeGlobal(device_timer) + net_TimeDelta + net_TimeDelta_User; }
-	IC u32					timeServer_Async		()	{ return TimerAsync(device_timer) + net_TimeDelta + net_TimeDelta_User; }
-	IC u32					timeServer_Delta		()	{ return net_TimeDelta; }
-	IC void					timeServer_UserDelta	(s32 d)						{ net_TimeDelta_User=d;	}
+	IC u32					timeServer				()	{ return device_timer->GetElapsed_ms(); }
+	IC u32					timeServer_Async		()	{ return device_timer->GetElapsed_ms(); }
 
 	BOOL					net_Syncronised;
 	virtual	BOOL			net_IsSyncronised() { return net_Syncronised; }
