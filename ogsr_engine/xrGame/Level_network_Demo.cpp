@@ -370,8 +370,6 @@ void						CLevel::Demo_Update				()
 				{
 					Device.dwTimeDelta		= P->FrameTime.dwTimeDelta;
 					Device.dwTimeGlobal		= P->FrameTime.dwTimeGlobal;
-					//					CurFrameTime.dwTimeServer		= Level().timeServer();
-					//					CurFrameTime.dwTimeServer_Delta = Level().timeServer_Delta();
 					Device.fTimeDelta		= P->FrameTime.fTimeDelta;
 					Device.fTimeGlobal		= P->FrameTime.fTimeGlobal;
 
@@ -413,7 +411,7 @@ void						CLevel::Demo_StartFrame			()
 	CurFrameTime.dwTimeDelta = Device.dwTimeDelta;
 	CurFrameTime.dwTimeGlobal = Device.dwTimeGlobal;
 	CurFrameTime.dwTimeServer = Level().timeServer();
-	CurFrameTime.dwTimeServer_Delta = Level().timeServer_Delta();
+	CurFrameTime.dwTimeServer_Delta = 0;
 	CurFrameTime.fTimeDelta = Device.fTimeDelta;
 	CurFrameTime.fTimeGlobal= Device.fTimeGlobal;
 
