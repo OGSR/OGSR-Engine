@@ -534,10 +534,12 @@ void	CHW::updateWindowProps	(HWND m_hWnd)
 	// Set window properties depending on what mode were in.
 	if (bWindowed)		{
 		if (m_move_window) {
-			if (strstr(Core.Params,"-no_dialog_header"))
-				SetWindowLongPtr( m_hWnd, GWL_STYLE, dwWindowStyle=(WS_BORDER|WS_VISIBLE) );
-			else
-				SetWindowLongPtr( m_hWnd, GWL_STYLE, dwWindowStyle=(WS_BORDER|WS_DLGFRAME|WS_VISIBLE|WS_SYSMENU|WS_MINIMIZEBOX ) );
+			static const bool bBordersMode = !!strstr(Core.Params, "-draw_borders");
+			dwWindowStyle = WS_VISIBLE;
+			if (bBordersMode)
+				dwWindowStyle |= WS_BORDER | WS_DLGFRAME | WS_SYSMENU | WS_MINIMIZEBOX;
+			SetWindowLongPtr(m_hWnd, GWL_STYLE, dwWindowStyle);
+
 			// When moving from fullscreen to windowed mode, it is important to
 			// adjust the window size after recreating the device rather than
 			// beforehand to ensure that you get the window size you want.  For
@@ -548,7 +550,8 @@ void	CHW::updateWindowProps	(HWND m_hWnd)
 			// desktop.
 
 			RECT			m_rcWindowBounds;
-			static bool bCenter = !strstr(Core.Params, "-no_center_screen");
+			float fYOffset = 0.f;
+			static const bool bCenter = !strstr(Core.Params, "-no_center_screen");
 
 			if(bCenter){
 				RECT				DesktopRect;
@@ -561,6 +564,8 @@ void	CHW::updateWindowProps	(HWND m_hWnd)
 									(DesktopRect.right+DevPP.BackBufferWidth)/2, 
 									(DesktopRect.bottom+DevPP.BackBufferHeight)/2			);
 			}else{
+				if (bBordersMode)
+					fYOffset = GetSystemMetrics(SM_CYCAPTION); // size of the window title bar
 				SetRect(			&m_rcWindowBounds,
 									0, 
 									0, 
@@ -573,7 +578,7 @@ void	CHW::updateWindowProps	(HWND m_hWnd)
 			SetWindowPos			(	m_hWnd, 
 										HWND_NOTOPMOST,	
 										m_rcWindowBounds.left, 
-										m_rcWindowBounds.top,
+										m_rcWindowBounds.top + fYOffset,
 										( m_rcWindowBounds.right - m_rcWindowBounds.left ),
 										( m_rcWindowBounds.bottom - m_rcWindowBounds.top ),
 										SWP_SHOWWINDOW|SWP_NOCOPYBITS|SWP_DRAWFRAME );
