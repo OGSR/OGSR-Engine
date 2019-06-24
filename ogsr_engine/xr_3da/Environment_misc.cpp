@@ -278,7 +278,7 @@ CEnvDescriptor::CEnvDescriptor() :
 #ifdef USE_COP_WEATHER_CONFIGS
 	m_fSunShaftsIntensity = 0;
 #else
-	m_fSunShaftsIntensity = 1.f;
+	m_fSunShaftsIntensity = 0.3f;
 #endif
 	m_fWaterIntensity = 1;
 	m_fTreeAmplitudeIntensity = 0.01;

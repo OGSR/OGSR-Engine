@@ -175,7 +175,7 @@ Flags32		ps_r2_ls_flags				= { R2FLAG_SUN
 	};	// r2-only
 
 Flags32 ps_r2_ls_flags_ext = {
-	/*R2FLAGEXT_SSAO_OPT_DATA |*/ R2FLAGEXT_SSAO_HALF_DATA | R2FLAGEXT_ENABLE_TESSELLATION | R2FLAGEXT_SHADER_CACHE | R2FLAGEXT_RAIN_DROPS | R2FLAGEXT_RAIN_DROPS_CONTROL
+	/*R2FLAGEXT_SSAO_OPT_DATA |*/ R2FLAGEXT_SSAO_HALF_DATA | R2FLAGEXT_ENABLE_TESSELLATION | R2FLAGEXT_RAIN_DROPS | R2FLAGEXT_RAIN_DROPS_CONTROL
 };
 
 BOOL		ps_no_scale_on_fade			= 0; //Alundaio
@@ -822,7 +822,9 @@ void		xrRender_initconsole	()
 	CMD3(CCC_Mask,		"r2_mt",				&ps_r2_ls_flags,			R2FLAG_EXP_MT_CALC);
 #endif // DEBUG
 
+#if 0 //KRodin: от шейдеркэша больше проблем чем пользы
 	CMD3(CCC_Mask, "r2_shader_cache", &ps_r2_ls_flags_ext, R2FLAGEXT_SHADER_CACHE);
+#endif
 	CMD3(CCC_Mask, "r2_disable_hom", &ps_r2_ls_flags_ext, R2FLAGEXT_DISABLE_HOM);
 
 	CMD3(CCC_Mask,  "r2_rain_drops", &ps_r2_ls_flags_ext, R2FLAGEXT_RAIN_DROPS);
