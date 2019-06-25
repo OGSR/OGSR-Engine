@@ -360,25 +360,25 @@ void CAI_Crow::shedule_Update		(u32 DT)
 // Core events
 void CAI_Crow::net_Export	(NET_Packet& P)					// export to server
 {
-	// export 
 	R_ASSERT			(Local());
 
 	u8					flags = 0;
 	P.w_float			(GetfHealth());
 
-	P.w_float			(0);
-	P.w_u32				(0);
-	P.w_u32				(0);
-
 	P.w_u32				(Level().timeServer());
 	P.w_u8				(flags);
+
+	P.w_vec3			(Position());
 	
 	float				yaw, pitch, bank;
 	XFORM().getHPB		(yaw,pitch,bank);
-	P.w_float /*w_angle8*/			(yaw);
-	P.w_float /*w_angle8*/			(yaw);
-	P.w_float /*w_angle8*/			(pitch);
-	P.w_float /*w_angle8*/			(0);
+	
+	P.w_float 			(yaw);
+	
+	P.w_float 			(yaw);
+	P.w_float 			(pitch);
+	P.w_float 			(0);
+
 	P.w_u8				(u8(g_Team()));
 	P.w_u8				(u8(g_Squad()));
 	P.w_u8				(u8(g_Group()));
@@ -386,36 +386,30 @@ void CAI_Crow::net_Export	(NET_Packet& P)					// export to server
 //---------------------------------------------------------------------
 void CAI_Crow::net_Import	(NET_Packet& P)
 {
-	// import
 	R_ASSERT			(Remote());
 
-	u8					flags;
-	
 	float health;
 	P.r_float			(health);
 	SetfHealth			(health);
 
-	float fDummy;
-	u32 dwDummy;
-	P.r_float			(fDummy);
-	P.r_u32				(dwDummy);
-	P.r_u32				(dwDummy);
+	P.r_u32				();
+	P.r_u8				();
 
-	P.r_u32				(dwDummy);
-	P.r_u8				(flags);
+	P.r_vec3			(Position());
 	
 	float				yaw, pitch, bank = 0, roll = 0;
 	
-	P.r_float /*r_angle8*/			(yaw);
-	P.r_float /*r_angle8*/			(yaw);
-	P.r_float /*r_angle8*/			(pitch);
-	P.r_float /*r_angle8*/			(roll);
+	P.r_float 			(yaw);
+	P.r_float 			(yaw);
+	P.r_float 			(pitch);
+	P.r_float 			(roll);
 
 	id_Team				= P.r_u8();
 	id_Squad			= P.r_u8();
 	id_Group			= P.r_u8();
 
 	XFORM().setHPB		(yaw,pitch,bank);
+	VERIFY2				( valid_pos( Position() ), dbg_valide_pos_string(Position(),this," CAI_Crow::net_Import	(NET_Packet& P)") );
 }
 //---------------------------------------------------------------------
 void CAI_Crow::HitSignal	(float /**HitAmount/**/, Fvector& /**local_dir/**/, CObject* who, s16 /**element/**/)
