@@ -69,7 +69,7 @@ local adv_vid_opt_params = {
 	{ "cam_inert",             "track", 0, hint_colors.green , "video_settings_name_1" , "video_settings_desc_1"  },
 --	{ "r2_sun_lumscale",       "track", 0, hint_colors.green , "video_settings_name_27", "video_settings_desc_27" }, --В огсе настройка была отключена. Устанавливалась в биндере принудительно в 1
 	{ "r2_sun_lumscale_amb",   "track", 0, hint_colors.green , "video_settings_name_28", "video_settings_desc_28", only_2_and_more_mode  },
-	{ "r2_sun_lumscale_hemi",  "track", 0, hint_colors.green , "video_settings_name_63", "video_settings_desc_63", only_2_and_more_mode  },
+--	{ "r2_sun_lumscale_hemi",  "track", 0, hint_colors.green , "video_settings_name_63", "video_settings_desc_63", only_2_and_more_mode  }, --Это более не нужно.
 	{ "r2_tf_mipbias",         "track", 0, hint_colors.green , "video_settings_name_20", "video_settings_desc_20" },
 --	{ "r2_sun_near_border",    "track", 0, hint_colors.green , "video_settings_name_23", "video_settings_desc_23", only_2_and_more_mode  }, --теперь эта команда ни на что не влияет, т.ч. выключаю.
 	{ "r2_tonemap",            "check", 0, hint_colors.green , "video_settings_name_25", "video_settings_desc_25", only_2_and_more_mode  },
