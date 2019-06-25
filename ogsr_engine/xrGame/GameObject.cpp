@@ -263,7 +263,7 @@ BOOL CGameObject::net_Spawn		(CSE_Abstract*	DC)
 			bool keep_visual = READ_IF_EXISTS(pSettings, r_bool, cNameSect().c_str(), "keep_visual", false);
 			if (keep_visual) {
 				if (xr_strcmp(config_visual_file, saved_visual_file)) {
-					Msg("! [%s]: changed visual_name[%s] found in %s, keep original %s instead", __FUNCTION__, saved_visual, cName().c_str(), config_visual.c_str());
+					Msg("* [%s]: changed visual_name[%s] found in %s, keep original %s instead", __FUNCTION__, saved_visual, cName().c_str(), config_visual.c_str());
 				}
 			}
 			else if (!FS.exist(saved_visual) && !FS.exist("$level$", saved_visual_file) && !FS.exist("$game_meshes$", saved_visual_file)) {
