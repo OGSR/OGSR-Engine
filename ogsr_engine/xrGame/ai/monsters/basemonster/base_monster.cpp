@@ -218,8 +218,9 @@ bool   accessible_epsilon (CBaseMonster * const object, Fvector const pos, float
 static
 bool enemy_inaccessible (CBaseMonster * const object)
 {
+	if ( object->getDestroy() ) return false;
 	CEntityAlive const * enemy		=	object->EnemyMan.get_enemy();
-	if ( !enemy )
+	if ( !enemy || enemy->getDestroy() )
 		return							false;
 
 	Fvector const enemy_pos			=	enemy->Position();
