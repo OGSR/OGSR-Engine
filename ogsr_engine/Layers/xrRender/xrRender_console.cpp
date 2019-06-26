@@ -237,11 +237,7 @@ float ps_r3_dyn_wet_surf_near = 5.f; // 10.0f
 float ps_r3_dyn_wet_surf_far = 20.f; // 30.0f
 
 int ps_r3_dyn_wet_surf_sm_res = 256; // 256
-#ifdef DSH_MOD
-int ps_r3_dyn_wet_surf_enable_streaks = 1;
-#else
 int ps_r3_dyn_wet_surf_enable_streaks = 0;
-#endif
 
 float ps_r2_rain_drops_intensity = 0.00025f;
 float ps_r2_rain_drops_speed = 1.25f;
@@ -955,7 +951,7 @@ void		xrRender_initconsole	()
 	CMD4(CCC_Integer, "r3_dynamic_wet_surfaces_sm_res", &ps_r3_dyn_wet_surf_sm_res, 64, 2048);
 	CMD4(CCC_Integer, "r3_dynamic_wet_surfaces_enable_streaks", &ps_r3_dyn_wet_surf_enable_streaks, 0, 1);
 
-#ifdef DSH_MOD //0 //KRodin: оно странно выглядит, поэтому выключаю. Чтоб нормально выглядело надо уметь настраивать near/far. Но лучше не разрешать это крутить, во избежание. А то накрутят себе...
+#if 0 //KRodin: оно странно выглядит, поэтому выключаю. Чтоб нормально выглядело надо уметь настраивать near/far. Но лучше не разрешать это крутить, во избежание. А то накрутят себе...
 	CMD4(CCC_Integer, "r3_dynamic_wet_surfaces_opt", &ps_r3_dyn_wet_surf_opt, 0, 1);
 	CMD4(CCC_Float, "r3_dynamic_wet_surfaces_near", &ps_r3_dyn_wet_surf_near, 5, 70);
 	CMD4(CCC_Float,		"r3_dynamic_wet_surfaces_far",	&ps_r3_dyn_wet_surf_far,	20,	100		);
