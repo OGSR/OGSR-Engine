@@ -108,11 +108,10 @@ BOOL CLevel::Load_GameSpecific_After()
 		Sounds_Random_Enabled	= FALSE;
 	}
 
-// KRodin: вроде как в нашем случае это и не нужно. Dsh сказал, что если починить и включить - будут баги с погодой.
-		//g_pGamePersistent->Environment().SetGameTime(GetEnvironmentGameDayTimeSec(), game->GetEnvironmentGameTimeFactor());
+	g_pGamePersistent->Environment().SetGameTime(GetEnvironmentGameDayTimeSec(), game->GetEnvironmentGameTimeFactor());
 
-		if (g_pGamePersistent->pEnvironment)
-			g_pGamePersistent->pEnvironment->Invalidate();
+	if (g_pGamePersistent->pEnvironment)
+		g_pGamePersistent->pEnvironment->Invalidate();
 
 	return TRUE;
 }
