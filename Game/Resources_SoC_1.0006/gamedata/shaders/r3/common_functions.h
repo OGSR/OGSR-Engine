@@ -73,23 +73,18 @@ float3	unpack_D3DCOLOR( float3 c ) { return c.bgr; }
 
 float3   p_hemi( float2 tc )
 {
-//	float3	t_lmh = tex2D (s_hemi, tc);
-//	float3	t_lmh = s_hemi.Sample( smp_rtlinear, tc);
-//	return	dot(t_lmh,1.h/4.h);
-	float4	t_lmh = s_hemi.Sample( smp_rtlinear, tc);
-	return	t_lmh.a;
+	float4 t_lmh = s_hemi.Sample(smp_rtlinear, tc);
+	return dot(t_lmh.rgb, 1.h/3.h);
 }
 
 float get_hemi(float4 lmh)
 {
-	// return lmh.a;
-	// KRodin: попытка пофиксить кривое отображение ТЧ-лайтмапов
 	return dot(lmh.rgb, 1.h/3.h);
 }
 
 float   get_sun( float4 lmh)
 {
-	return lmh.g;
+	return lmh.a;
 }
 
 float3	v_hemi(float3 n)
