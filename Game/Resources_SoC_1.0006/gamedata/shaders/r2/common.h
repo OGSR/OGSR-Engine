@@ -274,22 +274,18 @@ float3	v_hemi_wrap     (float3 n, float w)                	{        return L_hem
 float3	v_sun           (float3 n)                        	{        return L_sun_color*dot(n,-L_sun_dir_w);                }
 float3	v_sun_wrap      (float3 n, float w)                	{        return L_sun_color*(w+(1-w)*dot(n,-L_sun_dir_w));      }
 half3   p_hemi          (float2 tc)                         {
-//        half3        	t_lmh         = tex2D             	(s_hemi, tc);
-//        return  dot     (t_lmh,1.h/4.h);
-        half4        	t_lmh         = tex2D             	(s_hemi, tc);
-        return t_lmh.a;
+	half4 t_lmh = tex2D(s_hemi, tc);
+	return dot(t_lmh.rgb, 1.h/3.h);
 }
 
 half   get_hemi( half4 lmh)
 {
-	// return lmh.a;
-	// KRodin: попытка пофиксить кривое отображение ТЧ-лайтмапов
 	return dot(lmh.rgb, 1.h/3.h);
 }
 
 half   get_sun( half4 lmh)
 {
-	return lmh.g;
+	return lmh.a;
 }
 
 //	contrast function

@@ -116,10 +116,8 @@ float3	v_hemi_wrap	(float3 n, float w)	{	return L_hemi_color/* *(w + (1-w)*n.y) 
 float3 	v_sun 		(float3 n)		{	return L_sun_color*max(0,dot(n,-L_sun_dir_w));		}
 float3 	v_sun_wrap	(float3 n, float w)	{	return L_sun_color*(w+(1-w)*dot(n,-L_sun_dir_w));	}
 half3	p_hemi		(float2 tc) 	{
-	//half3	t_lmh 	= tex2D		(s_hemi, tc);
-	//return  dot	(t_lmh,1.h/3.h);
 	half4	t_lmh 	= tex2D		(s_hemi, tc);
-	return  t_lmh.a;
+	return dot(t_lmh.rgb, 1.h/3.h);
 }
 
 #endif // COMMON_H
