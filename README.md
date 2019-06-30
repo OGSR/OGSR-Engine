@@ -1,5 +1,11 @@
 # OGSR Engine [![Build status](https://ci.appveyor.com/api/projects/status/mpktoskmr2y2s60l/branch/main?svg=true)](https://ci.appveyor.com/project/OGSR/ogsr-engine/branch/main)
 ![Logo](https://cdn1.radikalno.ru/uploads/2019/6/13/b1b4c50115286e39d7c118897816d78d-full.png)
+### Цели проекта: ### 
+* Исправление ошибок оригинального движка
+* Улучшение графики и оптимизация
+* Обновление компонентов движка
+* Внедрение новых возможностей для разработчиков
+
 ### [>>Разработчики<<](https://github.com/OGSR/OGSR-Engine/graphs/contributors) ### 
 ### [>>Список изменений<<](https://github.com/OGSR/OGSR-Engine/wiki/Список-изменений) ###
 ### [>>Свежий релиз<<](https://github.com/OGSR/OGSR-Engine/releases/latest) ###
@@ -21,4 +27,4 @@
 * [Shoker](https://github.com/ShokerStlk)
 * [morrey](https://github.com/morrey)
 * [SkyLoader](https://github.com/SkyLoaderr)
-* И многих других, чьи работы я использовал. Пишите, если забыл кого-то, добавлю в список.
+* И всех остальных, чьи работы я использовал. Пишите, если забыл кого-то, добавлю в список.
