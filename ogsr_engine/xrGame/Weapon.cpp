@@ -609,7 +609,17 @@ BOOL CWeapon::net_Spawn		(CSE_Abstract* DC)
 	m_ammoType						= E->ammo_type;
 	SetState						(E->wpn_state);
 	SetNextState					(E->wpn_state);
-	
+
+	if ( m_ammoType >= m_ammoTypes.size() ) {
+	  Msg( "! [%s]: %s: wrong m_ammoType[%u/%u]", __FUNCTION__, cName().c_str(), m_ammoType, m_ammoTypes.size() - 1 );
+	  m_ammoType = 0;
+	  auto se_obj = alife_object();
+	  if ( se_obj ) {
+	    auto W = smart_cast<CSE_ALifeItemWeapon*>( se_obj );
+	    W->ammo_type = m_ammoType;
+	  }
+	}
+
 	m_DefaultCartridge.Load(*m_ammoTypes[m_ammoType], u8(m_ammoType));	
 	if(iAmmoElapsed) 
 	{
