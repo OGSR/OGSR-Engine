@@ -179,27 +179,9 @@ Fvector CMovementManager::path_position(const float& velocity, const Fvector& po
         }
 */
 
-        // если это точка, на которой нужно остановиться, то не будем
-        // ее пропускать.
-	if ( detail().path()[ current_travel_point ].velocity == MonsterMovement::eVelocityParameterStand ) {
-          dir_to_target.set( 0.f, 0.f, 0.f );
-          dist = 0.f;
-          dist_to_target = 0.f;
-          return dest_position;
-	}
-
         target.set(detail().path()[current_travel_point + 1].position);
         dir_to_target.sub(target, dest_position);
         dist_to_target = dir_to_target.magnitude();
-    }
-
-    // если мы перескочили через несколько точек и у нас остался еще
-    // кусочек в направлении следующей точки, остановимся тут, на
-    // последней точке, а не между двух точек.
-    if ( !fis_zero( desirable_dist ) ) {
-      dir_to_target.set( 0.f, 0.f, 0.f );
-      dist = 0.f;
-      dist_to_target = 0.f;
     }
 
     VERIFY(dist <= dist_to_target);
