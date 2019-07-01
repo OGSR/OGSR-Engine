@@ -1,10 +1,15 @@
 # OGSR Engine [![Build status](https://ci.appveyor.com/api/projects/status/mpktoskmr2y2s60l/branch/main?svg=true)](https://ci.appveyor.com/project/OGSR/ogsr-engine/branch/main)
-![Logo](https://i.imgur.com/OYK6UOt.png)
+![Logo](https://cdn1.radikalno.ru/uploads/2019/6/13/b1b4c50115286e39d7c118897816d78d-full.png)
+### Цели проекта: ### 
+* Исправление ошибок оригинального движка
+* Улучшение графики и оптимизация
+* Обновление компонентов движка
+* Внедрение новых возможностей для разработчиков
+
 ### [>>Разработчики<<](https://github.com/OGSR/OGSR-Engine/graphs/contributors) ### 
 ### [>>Список изменений<<](https://github.com/OGSR/OGSR-Engine/wiki/Список-изменений) ###
-### [>>Свежий релиз SHOC-версии движка<<](https://github.com/OGSR/OGSR-Engine/releases) ###
+### [>>Свежий релиз<<](https://github.com/OGSR/OGSR-Engine/releases/latest) ###
 #### Для того, чтобы движок работал с WW-версией SHOC - используйте специальный ключ запуска ` -steam` ####
-### [>>OGSR_Resources<< (файлы для запуска движка на OGSE 2.10R, сам движок можно взять уже собранный из релизов по ссылке выше)](https://github.com/OGSR/OGSR-Resources/tree/ogsr_engine) ###
 
 ### Инструкции по сборке: ###
 * Для сборки требуется Visual Studio 15.5 или выше.
@@ -20,4 +25,6 @@
 * [ForserX](https://github.com/ForserX)
 * [Xottab-DUTY](https://github.com/Xottab-DUTY)
 * [Shoker](https://github.com/ShokerStlk)
-* И многих других, чьи работы я использовал. Пишите, если забыл кого-то, добавлю в список.
+* [morrey](https://github.com/morrey)
+* [SkyLoader](https://github.com/SkyLoaderr)
+* И всех остальных, чьи работы я использовал. Пишите, если забыл кого-то, добавлю в список.

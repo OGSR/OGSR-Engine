@@ -6,8 +6,9 @@ struct 	v2p
  	half2 	tc1: 		TEXCOORD1;	// lmap
 	half2	tc2:		TEXCOORD2;	// hemi
 	half3	tc3:		TEXCOORD3;	// env
-  	half3	c0:		COLOR0;
+  	half4	c0:		COLOR0;
 	half3	c1:	        COLOR1;
+//	float  fog	:FOG;
 };
 
 uniform samplerCUBE 	s_env;
@@ -31,5 +32,5 @@ half4 	main_ps_2_0	( v2p I )	: COLOR
 	half3	final 	= light*base*2;
 	
 	// out
-	return  half4	(final.r,final.g,final.b,t_base.a);
+	return  half4	(final.r,final.g,final.b,t_base.a*I.c0.a*I.c0.a);
 }

@@ -6,7 +6,7 @@
 #include "Actor.h"
 #include "level.h"
 #include "xr_level_controller.h"
-#include "gamemtllib.h"
+#include "../xr_3da/gamemtllib.h"
 #include "level_bullet_manager.h"
 #include "ai_sounds.h"
 #include "game_cl_single.h"

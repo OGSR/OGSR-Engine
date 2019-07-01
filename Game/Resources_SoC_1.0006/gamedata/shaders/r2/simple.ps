@@ -8,7 +8,7 @@ struct 	v2p
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Pixel
-float4 	main	( v2p I )	: COLOR
+half4 	main	( v2p I )	: COLOR
 {
 	return	tex2D	(s_base,I.tc0);
 }

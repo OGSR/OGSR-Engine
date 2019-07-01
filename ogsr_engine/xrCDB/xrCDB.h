@@ -8,8 +8,6 @@
 #	define XRCDB_API __declspec(dllimport)
 #endif
 
-#define ALIGN(a) alignas(a)
-
 // forward declarations
 class CFrustum;
 namespace Opcode {

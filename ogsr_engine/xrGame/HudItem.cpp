@@ -14,7 +14,7 @@
 #include "level.h"
 #include "inventory.h"
 #include "../xr_3da/camerabase.h"
-
+#include "../Include/xrRender/Kinematics.h"
 
 CHudItem::CHudItem(void)
 {
@@ -335,11 +335,12 @@ void CHudItem::animGetEx( MotionSVec& lst, LPCSTR prefix, LPCSTR suffix ) {
   speed_k += "_speed_k";
   if ( pSettings->line_exist( hud_sect.c_str(), speed_k.c_str() ) ) {
     float k = pSettings->r_float( hud_sect.c_str(), speed_k.c_str() );
-    if ( !fsimilar( k, 1.f ) )
+    if ( !fsimilar( k, 1.f ) ) {
       for ( const auto& M : lst ) {
-        auto *animated   = smart_cast<CKinematicsAnimated*>( m_pHUD->Visual() );
+        auto *animated   = m_pHUD->Visual()->dcast_PKinematicsAnimated();
         auto *motion_def = animated->LL_GetMotionDef( M );
-        motion_def->SpeedKoeff( k );
+        motion_def->SetSpeedKoeff( k );
       }
+    }
   }
 }

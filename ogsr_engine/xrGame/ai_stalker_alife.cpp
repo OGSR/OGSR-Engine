@@ -124,7 +124,7 @@ void CAI_Stalker::attach_available_ammo			(CWeapon *weapon)
 		)
 			continue;
 
-		buy_item_virtual			(*I);
+		//buy_item_virtual			(*I);
 
 		++count;
 		if (count >= MAX_AMMO_ATTACH_COUNT)
@@ -181,7 +181,7 @@ void CAI_Stalker::choose_weapon					(ALife::EWeaponPriorityType weapon_priority_
 		}
 	}
 	if (best_weapon) {
-		buy_item_virtual			(*best_weapon);
+		//buy_item_virtual			(*best_weapon);
 		attach_available_ammo		(smart_cast<CWeapon*>(best_weapon->m_item));
 	}
 }
@@ -216,8 +216,8 @@ void CAI_Stalker::choose_detector				()
 			best_value			= current_value;
 		}
 	}
-	if (best_detector)
-		buy_item_virtual		(*best_detector);
+	//if (best_detector)
+	//	buy_item_virtual		(*best_detector);
 }
 
 void CAI_Stalker::choose_equipment				()
@@ -344,7 +344,7 @@ bool CAI_Stalker::enough_ammo						(const CWeapon *new_weapon) const
 
 		//++ammo_box_count;
 		//if (ammo_box_count >= enough_ammo_box_count) //Это условие всегда истинно. Какой-то недодел лимитных патронов для неписей, видимо.
-#pragma todo( "KRodin: заметка: видимо эта функция отвечает за то, что чтобы непись начал использовать ствол, ему надо продать пачку патронов." )
+// KRodin: заметка: видимо эта функция отвечает за то, что чтобы непись начал использовать ствол, ему надо продать пачку патронов.
 			return			(true);
 	}
 

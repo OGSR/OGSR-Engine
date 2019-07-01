@@ -16,7 +16,8 @@
 #include "GameFont.h"
 #include "resource.h"
 #include "LightAnimLibrary.h"
-#include "ispatial.h"
+#include "../xrcdb/ispatial.h"
+#include "ILoadingScreen.h"
 
 #define CORE_FEATURE_SET( feature, section )\
   Core.Features.set( xrCore::Feature::feature, READ_IF_EXISTS( pSettings, r_bool, section, #feature, false ) )
@@ -40,7 +41,6 @@ struct _SoundProcessor	: public pureFrame
 ENGINE_API	CApplication*	pApp			= NULL;
 static		HWND			logoWindow		= NULL;
 
-			void			doBenchmark		(LPCSTR name);
 ENGINE_API	bool			g_bBenchmark	= false;
 string512	g_sBenchmarkName;
 
@@ -102,7 +102,7 @@ void InitConsole	()
 	CORE_FEATURE_SET( af_psy_health,              "features" );
 	CORE_FEATURE_SET( outfit_af,                  "features" );
 	CORE_FEATURE_SET( gd_master_only,             "features" );
-	CORE_FEATURE_SET( use_legacy_load_screens,    "features" );
+	CORE_FEATURE_SET( scope_textures_autoresize,  "features" );
 	CORE_FEATURE_SET( ogse_new_slots,             "features" );
 	CORE_FEATURE_SET( ogse_wpn_zoom_system,       "features" );
 	CORE_FEATURE_SET( wpn_cost_include_addons,    "features" );
@@ -115,9 +115,9 @@ void InitConsole	()
 	CORE_FEATURE_SET( use_trade_deficit_factor,   "features" );
 	CORE_FEATURE_SET( show_objectives_ondemand,   "features" );
 	CORE_FEATURE_SET( pickup_check_overlaped,     "features" );
-	CORE_FEATURE_SET( wallmarks_on_static_only,   "features" );
 	CORE_FEATURE_SET( actor_thirst,               "features" );
 	CORE_FEATURE_SET( autoreload_wpn,             "features" );
+	CORE_FEATURE_SET( no_progress_bar_animation,  "features" );
 }
 
 void InitInput()
@@ -261,9 +261,9 @@ static INT_PTR CALLBACK logDlgProc( HWND hw, UINT msg, WPARAM wp, LPARAM lp )
 	return TRUE;
 }
 
-static constexpr auto dwStickyKeysStructSize = sizeof(STICKYKEYS);
-static constexpr auto dwFilterKeysStructSize = sizeof(FILTERKEYS);
-static constexpr auto dwToggleKeysStructSize = sizeof(TOGGLEKEYS);
+constexpr auto dwStickyKeysStructSize = sizeof(STICKYKEYS);
+constexpr auto dwFilterKeysStructSize = sizeof(FILTERKEYS);
+constexpr auto dwToggleKeysStructSize = sizeof(TOGGLEKEYS);
 
 struct damn_keys_filter {
 	BOOL bScreenSaverState;
@@ -407,31 +407,11 @@ int APIENTRY WinMain_impl(HINSTANCE hInstance, HINSTANCE hPrevInstance, char* lp
 
 		FPU::m24r				();
 		InitEngine				();
+		InitInput();
 		InitConsole				();
 
-		LPCSTR benchName = "-batch_benchmark ";
-		if(strstr(lpCmdLine, benchName))
-		{
-			int sz = xr_strlen(benchName);
-			string64				b_name;
-			sscanf					(strstr(Core.Params,benchName)+sz,"%[^ ] ",b_name);
-			doBenchmark				(b_name);
-			return 0;
-		}
+		Engine.External.CreateRendererList();
 
-		if(strstr(Core.Params,"-r2a"))	
-			Console->Execute			("renderer renderer_r2a");
-		else
-		if(strstr(Core.Params,"-r2"))	
-			Console->Execute			("renderer renderer_r2");
-		else
-		{
-			CCC_LoadCFG_custom*	pTmp = xr_new<CCC_LoadCFG_custom>("renderer ");
-			pTmp->Execute				(Console->ConfigFile);
-			xr_delete					(pTmp);
-		}
-
-		InitInput					( );
 		Engine.External.Initialize	( );
 		Console->Execute			("stat_memory");
 		Startup	 					( );
@@ -508,23 +488,25 @@ void _InitializeFont(CGameFont*& F, LPCSTR section, u32 flags)
 	LPCSTR font_tex_name = _GetFontTexName(section);
 	R_ASSERT(font_tex_name);
 
-	if(!F){
-		F = xr_new<CGameFont> ("font", font_tex_name, flags);
-		Device.seqRender.Add( F, REG_PRIORITY_LOW-1000 );
-	}else
-		F->Initialize("font",font_tex_name);
+	LPCSTR sh_name = pSettings->r_string(section, "shader");
+	if (!F) {
+		F = xr_new<CGameFont>(sh_name, font_tex_name, flags);
+	}
+	else
+		F->Initialize(sh_name, font_tex_name);
 
-	if (pSettings->line_exist(section,"size")){
-		float sz = pSettings->r_float(section,"size");
+	if (pSettings->line_exist(section, "size")) {
+		float sz = pSettings->r_float(section, "size");
 		if (flags&CGameFont::fsDeviceIndependent)	F->SetHeightI(sz);
 		else										F->SetHeight(sz);
 	}
-	if (pSettings->line_exist(section,"interval"))
-		F->SetInterval(pSettings->r_fvector2(section,"interval"));
+	if (pSettings->line_exist(section, "interval"))
+		F->SetInterval(pSettings->r_fvector2(section, "interval"));
 
 }
 
 CApplication::CApplication()
+	: loadingScreen(nullptr)
 {
 	ll_dwReference	= 0;
 
@@ -547,9 +529,6 @@ CApplication::CApplication()
 	Device.seqFrameMT.Add(&SoundProcessor);
 
 	Console->Show				( );
-
-	// App Title
-	app_title[ 0 ] = '\0';
 }
 
 CApplication::~CApplication()
@@ -557,7 +536,6 @@ CApplication::~CApplication()
 	Console->Hide				( );
 
 	// font
-	Device.seqRender.Remove		( pFontSystem		);
 	xr_delete					( pFontSystem		);
 
 	Device.seqFrameMT.Remove	(&SoundProcessor);
@@ -594,7 +572,9 @@ void CApplication::OnEvent(EVENT E, u64 P1, u64 P2)
 		{		
 			Console->Execute("main_menu off");
 			Console->Hide();
-			Device.Reset					(false);
+//!			this line is commented by Dima
+//!			because I don't see any reason to reset device here
+//!			Device.Reset(false);
 			//-----------------------------------------------------------
 			g_pGamePersistent->PreStart		(op_server);
 			//-----------------------------------------------------------
@@ -630,20 +610,17 @@ void CApplication::OnEvent(EVENT E, u64 P1, u64 P2)
 static	CTimer	phase_timer		;
 extern	ENGINE_API BOOL			g_appLoaded = FALSE;
 
-void CApplication::LoadBegin	()
+void CApplication::LoadBegin()
 {
 	ll_dwReference++;
-	if (1==ll_dwReference)	{
+	if (1 == ll_dwReference) {
 
-		g_appLoaded			= FALSE;
+		g_appLoaded = FALSE;
 
-		_InitializeFont		(pFontSystem,"ui_font_graffiti19_russian",0);
+		_InitializeFont(pFontSystem, "ui_font_letterica18_russian", 0);
 
-		ll_hGeom.create		(FVF::F_TL, RCache.Vertex.Buffer(), RCache.QuadIB);
-		sh_progress.create	("hud\\default","ui\\ui_load");
-		ll_hGeom2.create		(FVF::F_TL, RCache.Vertex.Buffer(),NULL);
-		phase_timer.Start	();
-		load_stage			= 0;
+		phase_timer.Start();
+		load_stage = 0;
 	}
 }
 
@@ -658,11 +635,16 @@ void CApplication::LoadEnd		()
 	}
 }
 
-void CApplication::destroy_loading_shaders()
+void CApplication::SetLoadingScreen(ILoadingScreen* newScreen)
 {
-	hLevelLogo.destroy		();
-	sh_progress.destroy		();
-//.	::Sound->mute			(false);
+	R_ASSERT(!loadingScreen, "! Trying to create new loading screen, but there is already one..");
+
+	loadingScreen = newScreen;
+}
+
+void CApplication::DestroyLoadingScreen()
+{
+	xr_delete(loadingScreen);
 }
 
 void CApplication::LoadDraw		()
@@ -678,35 +660,40 @@ void CApplication::LoadDraw		()
 	Device.End					();
 }
 
-void CApplication::LoadTitleInt(LPCSTR str)
+void CApplication::LoadForceFinish()
 {
-	load_stage++;
-
-	VERIFY						(ll_dwReference);
-	VERIFY						(str && xr_strlen(str)<256);
-	strcpy_s						(app_title, str);
-	Msg							("* phase time: %d ms",phase_timer.GetElapsed_ms());	phase_timer.Start();
-	Msg							("* phase cmem: %d K", Memory.mem_usage()/1024);
-//.	Console->Execute			("stat_memory");
-	Log							(app_title);
-	
-	if (g_pGamePersistent->GameType()==1 && !xr_strcmp(g_pGamePersistent->m_game_params.m_alife, "alife"))
-		max_load_stage			= 17;
-	else
-		max_load_stage			= 14;
-
-	LoadDraw					();
+	loadingScreen->ForceFinish();
 }
 
-void CApplication::LoadSwitch	()
+void CApplication::SetLoadStageTitle(pcstr _ls_title)
 {
+	loadingScreen->SetStageTitle(_ls_title);
 }
 
-void CApplication::SetLoadLogo			(ref_shader NewLoadLogo)
+void CApplication::LoadTitleInt(LPCSTR str1, LPCSTR str2, LPCSTR str3)
 {
-//	hLevelLogo = NewLoadLogo;
-//	R_ASSERT(0);
-};
+	loadingScreen->SetStageTip(str1, str2, str3);
+}
+
+void CApplication::LoadStage()
+{
+	VERIFY(ll_dwReference);
+
+	Msg("* phase time: %d ms", phase_timer.GetElapsed_ms());
+	phase_timer.Start();
+	Msg("* phase cmem: %d K", Memory.mem_usage() / 1024);
+
+	//if (g_pGamePersistent->GameType() == 1 && strstr(Core.Params, "alife"))
+		max_load_stage = 16; // 17; //KRodin: пересчитал кол-во стадий, у нас их 15 при создании НИ + 1 на автопаузу
+	//else
+	//	max_load_stage = 14;
+
+	LoadDraw();
+
+	++load_stage;
+	//Msg("--LoadStage is [%d]", load_stage);
+}
+
 
 // Sequential
 void CApplication::OnFrame	( )
@@ -761,19 +748,18 @@ void CApplication::Level_Scan()
 
 void CApplication::Level_Set(u32 L)
 {
-	if (L>=Levels.size())	return;
+	if (L >= Levels.size())	return;
+
 	Level_Current = L;
-	FS.get_path	("$level$")->_set	(Levels[L].folder);
+	FS.get_path("$level$")->_set(Levels[L].folder);
 
-
-	string_path					temp;
-	string_path					temp2;
-	strconcat					(sizeof(temp),temp,"intro\\intro_",Levels[L].folder);
-	temp[xr_strlen(temp)-1] = 0;
+	string_path temp, temp2;
+	strconcat(sizeof(temp), temp, "intro\\intro_", Levels[L].folder);
+	temp[xr_strlen(temp) - 1] = 0;
 	if (FS.exist(temp2, "$game_textures$", temp, ".dds"))
-		hLevelLogo.create	("font", temp);
+		loadingScreen->SetLevelLogo(temp);
 	else
-		hLevelLogo.create	("font", "intro\\intro_no_start_picture");
+		loadingScreen->SetLevelLogo("intro\\intro_no_start_picture");
 }
 
 int CApplication::Level_ID(LPCSTR name)
@@ -787,176 +773,7 @@ int CApplication::Level_ID(LPCSTR name)
 	return -1;
 }
 
-
-void doBenchmark(LPCSTR name)
-{
-	g_bBenchmark = true;
-	string_path in_file;
-	FS.update_path(in_file,"$app_data_root$", name);
-	CInifile ini(in_file);
-	int test_count = ini.line_count("benchmark");
-	LPCSTR test_name,t;
-	shared_str test_command;
-	for(int i=0;i<test_count;++i){
-		ini.r_line			( "benchmark", i, &test_name, &t);
-		strcpy_s				(g_sBenchmarkName, test_name);
-		
-		test_command		= ini.r_string_wb("benchmark",test_name);
-		strcpy_s			(Core.Params,*test_command);
-		_strlwr_s				(Core.Params);
-		
-		InitInput					();
-		if(i){
-			ZeroMemory(&HW,sizeof(CHW));
-			InitEngine();
-		}
-
-
-		Engine.External.Initialize	( );
-
-		strcpy_s						(Console->ConfigFile,"user.ltx");
-		if (strstr(Core.Params,"-ltx ")) {
-			string64				c_name;
-			sscanf					(strstr(Core.Params,"-ltx ")+5,"%[^ ] ",c_name);
-			strcpy_s				(Console->ConfigFile,c_name);
-		}
-
-		Startup	 				();
-	}
-}
-
-u32 calc_progress_color(u32, u32, int, int);
-
 void CApplication::load_draw_internal()
 {
-	if (!sh_progress) {
-		CHK_DX(HW.pDevice->Clear(0, 0, D3DCLEAR_TARGET, D3DCOLOR_ARGB(0, 0, 0, 0), 1, 0));
-		return;
-		}
-
-	// Draw logo
-	u32	Offset;
-	u32	C = 0xffffffff;
-	u32	_w = Device.dwWidth;
-	u32	_h = Device.dwHeight;
-	FVF::TL* pv = NULL;
-
-	//progress
-	float bw = 1024.0f;
-	float bh = 768.0f;
-	Fvector2					k; k.set(float(_w) / bw, float(_h) / bh);
-
-	RCache.set_Shader(sh_progress);
-	CTexture*	T = RCache.get_ActiveTexture(0);
-	Fvector2					tsz;
-	tsz.set((float)T->get_Width(), (float)T->get_Height());
-	Frect						back_text_coords;
-	Frect						back_coords;
-	Fvector2					back_size;
-
-	//progress background
-	static float offs = -0.5f;
-
-	if (Core.Features.test(xrCore::Feature::use_legacy_load_screens) || !hLevelLogo)
-	{
-		back_size.set(1024, 768);
-		back_text_coords.lt.set(0, 0); back_text_coords.rb.add(back_text_coords.lt, back_size);
-		back_coords.lt.set(offs, offs); back_coords.rb.add(back_coords.lt, back_size);
-
-		back_coords.lt.mul(k); back_coords.rb.mul(k);
-
-		back_text_coords.lt.x /= tsz.x; back_text_coords.lt.y /= tsz.y; back_text_coords.rb.x /= tsz.x; back_text_coords.rb.y /= tsz.y;
-		pv = (FVF::TL*) RCache.Vertex.Lock(4, ll_hGeom.stride(), Offset);
-		pv->set(back_coords.lt.x, back_coords.rb.y, C, back_text_coords.lt.x, back_text_coords.rb.y);	pv++;
-		pv->set(back_coords.lt.x, back_coords.lt.y, C, back_text_coords.lt.x, back_text_coords.lt.y);	pv++;
-		pv->set(back_coords.rb.x, back_coords.rb.y, C, back_text_coords.rb.x, back_text_coords.rb.y);	pv++;
-		pv->set(back_coords.rb.x, back_coords.lt.y, C, back_text_coords.rb.x, back_text_coords.lt.y);	pv++;
-		RCache.Vertex.Unlock(4, ll_hGeom.stride());
-
-		RCache.set_Geometry(ll_hGeom);
-		RCache.Render(D3DPT_TRIANGLELIST, Offset, 0, 4, 0, 2);
-
-		if (Core.Features.test(xrCore::Feature::use_legacy_load_screens))
-		{
-			//progress bar
-			back_size.set(268, 37);
-			back_text_coords.lt.set(0, 768); back_text_coords.rb.add(back_text_coords.lt, back_size);
-			back_coords.lt.set(379, 726); back_coords.rb.add(back_coords.lt, back_size);
-
-			back_coords.lt.mul(k); back_coords.rb.mul(k);
-
-			back_text_coords.lt.x /= tsz.x; back_text_coords.lt.y /= tsz.y; back_text_coords.rb.x /= tsz.x; back_text_coords.rb.y /= tsz.y;
-
-			u32 v_cnt = 40;
-			pv = (FVF::TL*)RCache.Vertex.Lock(2 * (v_cnt + 1), ll_hGeom2.stride(), Offset);
-			float pos_delta = back_coords.width() / v_cnt;
-			float tc_delta = back_text_coords.width() / v_cnt;
-			u32 clr = C;
-
-			for (u32 idx = 0; idx < v_cnt + 1; ++idx) {
-				clr = calc_progress_color(idx, v_cnt, load_stage, max_load_stage);
-				pv->set(back_coords.lt.x + pos_delta * idx + offs, back_coords.rb.y + offs, 0 + EPS_S, 1, clr, back_text_coords.lt.x + tc_delta * idx, back_text_coords.rb.y);	pv++;
-				pv->set(back_coords.lt.x + pos_delta * idx + offs, back_coords.lt.y + offs, 0 + EPS_S, 1, clr, back_text_coords.lt.x + tc_delta * idx, back_text_coords.lt.y);	pv++;
-			}
-			RCache.Vertex.Unlock(2 * (v_cnt + 1), ll_hGeom2.stride());
-
-			RCache.set_Geometry(ll_hGeom2);
-			RCache.Render(D3DPT_TRIANGLESTRIP, Offset, 2 * v_cnt);
-		}
-	}
-
-	//draw level-specific screenshot
-	if (hLevelLogo)
-	{
-		float bx, by;
-		if (Core.Features.test(xrCore::Feature::use_legacy_load_screens)) {
-			bw = 512.0f;
-			bh = 256.0f;
-
-			bx = 257.0f;
-			by = 369.0f;
-		}
-		else {
-			bx = 0.0f;
-			by = 0.0f;
-		}
-
-		Frect r;
-		r.lt.set(bx, by);
-		r.lt.x += offs;
-		r.lt.y += offs;
-		r.rb.add(r.lt, Fvector2().set(bw, bh));
-		r.lt.mul(k);
-		r.rb.mul(k);
-		pv = (FVF::TL*) RCache.Vertex.Lock(4, ll_hGeom.stride(), Offset);
-		pv->set(r.lt.x, r.rb.y, C, 0, 1);	pv++;
-		pv->set(r.lt.x, r.lt.y, C, 0, 0);	pv++;
-		pv->set(r.rb.x, r.rb.y, C, 1, 1);	pv++;
-		pv->set(r.rb.x, r.lt.y, C, 1, 0);	pv++;
-		RCache.Vertex.Unlock(4, ll_hGeom.stride());
-
-		RCache.set_Shader(hLevelLogo);
-		RCache.set_Geometry(ll_hGeom);
-		RCache.Render(D3DPT_TRIANGLELIST, Offset, 0, 4, 0, 2);
-	}
-
-	// Draw title
-	VERIFY(pFontSystem);
-	pFontSystem->Clear();
-	pFontSystem->SetColor(color_rgba(157, 140, 120, 255));
-	pFontSystem->SetAligment(CGameFont::alCenter);
-	pFontSystem->OutI(0.f, 0.815f, app_title);
-	pFontSystem->OnRender();
-}
-
-u32 calc_progress_color(u32 idx, u32 total, int stage, int max_stage)
-{
-	if(idx>(total/2)) 
-		idx	= total-idx;
-
-
-	float kk			= (float(stage+1)/float(max_stage))*(total/2.0f);
-	float f				= 1/(exp((float(idx)-kk)*0.5f)+1.0f);
-
-	return color_argb_f		(f,1.0f,1.0f,1.0f);
+	loadingScreen->Update(load_stage, max_load_stage);
 }

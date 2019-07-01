@@ -62,7 +62,8 @@ void CAI_Stalker::script_register(lua_State *L)
 				luabind::value("property_anomaly",							StalkerDecisionSpace::eWorldPropertyAnomaly),
 				luabind::value("property_inside_anomaly",					StalkerDecisionSpace::eWorldPropertyInsideAnomaly),
 				luabind::value("property_pure_enemy",						StalkerDecisionSpace::eWorldPropertyPureEnemy),
-				luabind::value("property_script",							StalkerDecisionSpace::eWorldPropertyScript)
+				luabind::value("property_script",							StalkerDecisionSpace::eWorldPropertyScript),
+				luabind::value( "property_enemy_wounded",  StalkerDecisionSpace::eWorldPropertyEnemyWounded )
 			]
 			
 			.enum_("action")
@@ -129,7 +130,8 @@ void CAI_Stalker::script_register(lua_State *L)
 				luabind::value("action_anomaly_planner",					StalkerDecisionSpace::eWorldOperatorAnomalyPlanner),
 				luabind::value("action_danger_planner",						StalkerDecisionSpace::eWorldOperatorDangerPlanner),
 				luabind::value("action_post_combat_wait",					StalkerDecisionSpace::eWorldOperatorPostCombatWait),
-				luabind::value("action_script",								StalkerDecisionSpace::eWorldOperatorScript)
+				luabind::value("action_script",								StalkerDecisionSpace::eWorldOperatorScript),
+				luabind::value( "action_hide_from_grenade", StalkerDecisionSpace::eWorldOperatorHideFromGrenade )
 			]
 
 			.enum_("sounds")

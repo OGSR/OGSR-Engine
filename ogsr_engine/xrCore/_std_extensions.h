@@ -253,3 +253,5 @@ inline int __cdecl xr_sprintf(char(&destination)[count], const char* format_stri
 	va_start(args, format_string);
 	return vsprintf_s(destination, count, format_string, args);
 }
+
+#define xr_strcat strcat_s

@@ -13,6 +13,11 @@ p_flat 	main	( v_static I )
 	O.tcdh		= float4	(tc.xyyy		);
 	O.position	= float4	(Pe, 	I.Nh.w	);
 
+#if defined(USE_R2_STATIC_SUN) && !defined(USE_LM_HEMI)
+	float 	s	= I.color.w	;							// (r,g,b,dir-occlusion)
+	O.tcdh.w	= s;
+#endif
+
 #ifdef	USE_TDETAIL
 	O.tcdbump	= O.tcdh * dt_params;					// dt tc
 #endif

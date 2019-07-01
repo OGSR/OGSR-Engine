@@ -4,7 +4,6 @@
 
 #include "xrSheduler.h"
 #include "xr_object_list.h"
-#include "std_classes.h"
 
 #include "xr_object.h"
 #include "NET_Server_Trash/net_utils.h"
@@ -170,6 +169,11 @@ void CObjectList::Update		(bool bForce)
 	}
 
 	// Destroy
+	ProcessDestroyQueue();
+}
+
+void CObjectList::ProcessDestroyQueue() {
+	// Destroy
 	if (!destroy_queue.empty()) 
 	{
           // Info
@@ -213,6 +217,7 @@ void CObjectList::Update		(bool bForce)
 void CObjectList::net_Register		(CObject* O)
 {
 	R_ASSERT		(O);
+        ASSERT_FMT( map_NETID.find( O->ID() ) == map_NETID.end(), "%s ID[%u] already registered", O->cName().c_str(), O->ID() );
 	map_NETID.insert(mk_pair(O->ID(),O));
 	//Msg			("-------------------------------- Register: %s",O->cName());
 }

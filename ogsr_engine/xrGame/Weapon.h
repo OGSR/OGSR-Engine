@@ -7,7 +7,7 @@
 #include "ShootingObject.h"
 #include "hud_item_object.h"
 #include "Actor_Flags.h"
-#include "..\xr_3da\skeletonanimated.h"
+#include "..\Include/xrRender/KinematicsAnimated.h"
 #include "game_cl_single.h"
 #include "xrServer_Objects_ALife.h"
 #include "xrServer_Objects_ALife_Items.h"
@@ -181,6 +181,8 @@ public:
 			bool IsScopeAttached			() const;
 			bool IsSilencerAttached			() const;
 
+	bool			IsGrenadeMode() const;
+
 	virtual bool GrenadeLauncherAttachable() const;
 	virtual bool ScopeAttachable() const;
 	virtual bool SilencerAttachable() const;
@@ -209,6 +211,7 @@ public:
 
                                                                                //названия секций подключаемых аддонов
     shared_str		m_sScopeName;
+    std::vector<shared_str> m_allScopeNames;
     shared_str		m_sSilencerName;
     shared_str		m_sGrenadeLauncherName;
 
@@ -387,8 +390,6 @@ protected:
 	virtual void			AddShotEffector		();
 	virtual void			RemoveShotEffector	();
 	virtual	void			ClearShotEffector	();
-
-	bool			IsGrenadeMode() const;
 
 public:
 	//текущая дисперсия (в радианах) оружия с учетом используемого патрона

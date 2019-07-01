@@ -19,7 +19,7 @@
 #include "level.h"
 #include "level_bullet_manager.h"
 #include "xrmessages.h"
-#include "gamemtllib.h"
+#include "../xr_3da/gamemtllib.h"
 #include "clsid_game.h"
 #ifdef DEBUG
 #include "../xr_3da/StatGraph.h"
@@ -31,6 +31,8 @@
 #include "PHActivationShape.h"
 #include "game_base_space.h"
 #include "profiler.h"
+#include "..\Include/xrRender/Kinematics.h"
+
 #define EFFECTOR_RADIUS 30.f
 const u16	TEST_RAYS_PER_OBJECT=5;
 const u16	BLASTED_OBJ_PROCESSED_PER_FRAME=3;
@@ -180,8 +182,8 @@ ICF static BOOL grenade_hit_callback(collide::rq_result& result, LPVOID params)
 	SExpQParams& ep	= *(SExpQParams*)params;
 	u16 mtl_idx			= GAMEMTL_NONE_IDX;
 	if(result.O){
-		CKinematics* V  = 0;
-		if (0!=(V=smart_cast<CKinematics*>(result.O->Visual()))){
+		IKinematics* V  = 0;
+		if (0!=(V=smart_cast<IKinematics*>(result.O->Visual()))){
 			CBoneData& B= V->LL_GetData((u16)result.element);
 			mtl_idx		= B.game_mtl_idx;
 		}

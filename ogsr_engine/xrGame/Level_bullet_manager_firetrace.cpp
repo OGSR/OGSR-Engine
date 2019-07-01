@@ -6,18 +6,18 @@
 #include "stdafx.h"
 #include "Level_Bullet_Manager.h"
 #include "entity.h"
-#include "gamemtllib.h"
+#include "../xr_3da/gamemtllib.h"
 #include "level.h"
 #include "gamepersistent.h"
 #include "game_cl_base.h"
 #include "xrmessages.h"
 #include "clsid_game.h"
-#include "../xr_3da/skeletoncustom.h"
+#include "../Include/xrRender/Kinematics.h"
 #include "Actor.h"
 #include "AI/Stalker/ai_stalker.h"
 #include "character_info.h"
 #include "game_cl_base_weapon_usage_statistic.h"
-#include "../xr_3da/xr_collide_defs.h"
+#include "../xrcdb/xr_collide_defs.h"
 #include "weapon.h"
 
 //константы shoot_factor, определяющие 
@@ -138,12 +138,12 @@ BOOL  CBulletManager::firetrace_callback(collide::rq_result& result, LPVOID para
 	//динамический объект
 	if(result.O){
 		//получить косточку и ее материал
-		CKinematics* V = 0;
+		IKinematics* V = 0;
 		//если мы попали по родителю на первых же
 		//кадре, то игнорировать это, так как это он
 		//и стрелял
 		VERIFY( !(result.O->ID() == bullet->parent_id &&  bullet->fly_dist<PARENT_IGNORE_DIST) );
-		if (0!=(V=smart_cast<CKinematics*>(result.O->Visual()))){
+		if (0!=(V=smart_cast<IKinematics*>(result.O->Visual()))){
 			CBoneData& B = V->LL_GetData((u16)result.element);
 			hit_material_idx = B.game_mtl_idx;
 			Level().BulletManager().RegisterEvent(EVENT_HIT, TRUE,bullet, end_point, result, hit_material_idx);
@@ -181,36 +181,32 @@ void CBulletManager::FireShotmark (SBullet* bullet, const Fvector& vDir, const F
 		particle_dir		 = vDir;
 		particle_dir.invert	();
 
-		//на текущем актере отметок не ставим // KRodin: А ПОЧЕМУ БЫ И НЕТ?
-		if ( Level().CurrentEntity() && Level().CurrentEntity()->ID() == R.O->ID() && Core.Features.test( xrCore::Feature::wallmarks_on_static_only ) ) return;
+		//на текущем актере отметок не ставим
+		if ( Level().CurrentEntity() && Level().CurrentEntity()->ID() == R.O->ID() ) return;
 
-		ref_shader* pWallmarkShader = (!mtl_pair || mtl_pair->CollideMarks.empty())?
-						NULL:&mtl_pair->CollideMarks[::Random.randI(0,mtl_pair->CollideMarks.size())];;
-
-		if (pWallmarkShader && ShowMark)
+		if (mtl_pair && !mtl_pair->m_pCollideMarks->empty() && ShowMark)
 		{
 			//добавить отметку на материале
 			Fvector p;
-			p.mad(bullet->pos,bullet->dir,R.range-0.01f);
-			::Render->add_SkeletonWallmark	(&R.O->renderable.xform, 
-							PKinematics(R.O->Visual()), *pWallmarkShader,
-							p, bullet->dir, bullet->wallmark_size);
-		}		
-	} 
+			p.mad(bullet->pos, bullet->dir, R.range - 0.01f);
+			::Render->add_SkeletonWallmark(&R.O->renderable.xform,
+				PKinematics(R.O->Visual()),
+				&*mtl_pair->m_pCollideMarks,
+				p,
+				bullet->dir,
+				bullet->wallmark_size);
+		}
+	}
 	else 
 	{
 		//вычислить нормаль к пораженной поверхности
-		particle_dir		= vNormal;
-		Fvector*	pVerts	= Level().ObjectSpace.GetStaticVerts();
-		CDB::TRI*	pTri	= Level().ObjectSpace.GetStaticTris()+R.element;
+		Fvector*	pVerts = Level().ObjectSpace.GetStaticVerts();
+		CDB::TRI*	pTri = Level().ObjectSpace.GetStaticTris() + R.element;
 
-		ref_shader* pWallmarkShader =	(!mtl_pair || mtl_pair->CollideMarks.empty())?
-										NULL:&mtl_pair->CollideMarks[::Random.randI(0,mtl_pair->CollideMarks.size())];;
-
-		if (pWallmarkShader && ShowMark)
+		if (mtl_pair && !mtl_pair->m_pCollideMarks->empty() && ShowMark)
 		{
 			//добавить отметку на материале
-			::Render->add_StaticWallmark	(*pWallmarkShader, vEnd, bullet->wallmark_size, pTri, pVerts);
+			::Render->add_StaticWallmark(&*mtl_pair->m_pCollideMarks, vEnd, bullet->wallmark_size, pTri, pVerts);
 		}
 	}
 
@@ -293,7 +289,7 @@ void CBulletManager::DynamicObjectHit	(CBulletManager::_event& E)
 	m_inv.transform_tiny(p_in_object_space, E.point);
 
 	// bone-space
-	CKinematics* V = smart_cast<CKinematics*>(E.R.O->Visual());
+	IKinematics* V = smart_cast<IKinematics*>(E.R.O->Visual());
 
 	if(V)
 	{

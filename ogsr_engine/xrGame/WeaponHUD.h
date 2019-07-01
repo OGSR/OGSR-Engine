@@ -1,6 +1,6 @@
 #pragma once
 
-#include "..\xr_3da\skeletonanimated.h"
+#include "../Include/xrRender/KinematicsAnimated.h"
 class CHudItem;
 
 #define BOBBING_SECT "wpn_bobbing_effector"
@@ -10,8 +10,10 @@ class CHudItem;
 
 class CWeaponBobbing
 {
+	//родительский объект HUD
+	CHudItem*			m_pParentWeapon;		
 	public:
-		CWeaponBobbing();
+		CWeaponBobbing(CHudItem* pHudItem);
 		virtual ~CWeaponBobbing();
 		void Load();
 		void Update(Fmatrix &m);
@@ -35,12 +37,16 @@ class CWeaponBobbing
 		float	m_fSpeedRun;
 		float	m_fSpeedWalk;
 		float	m_fSpeedLimp;
+
+		float m_fCrouchFactor;
+		float m_fZoomFactor;
+		float m_fScopeZoomFactor;
 };
 
 
 struct weapon_hud_value: public shared_value
 {
-	CKinematicsAnimated*	m_animations;
+	IKinematicsAnimated*	m_animations;
 public:
 	int					m_fire_bone;
 	Fvector				m_fp_offset;
@@ -70,7 +76,7 @@ public:
 	{	
 		shared_item<weapon_hud_value>::create	(key,g_pWeaponHUDContainer,on_new_pred(owner));	
 	}
-	CKinematicsAnimated*	animations				(){return p_->m_animations;}
+	IKinematicsAnimated*	animations				(){return p_->m_animations;}
 	u32					motion_length			(MotionID M);
 	MotionID			motion_id				(LPCSTR name);
 };
@@ -114,7 +120,7 @@ public:
 	void				net_DestroyHud	();
 	void				Init			();
 
-	IC IRender_Visual*	Visual			()	{ return m_shared_data.animations();			}
+	IC IRenderVisual*	Visual			()	{ return m_shared_data.animations()->dcast_RenderVisual();			}
 	IC Fmatrix&			Transform		()	{ return m_Transform;							}
 
 	int					FireBone		()	{return m_shared_data.get_value()->m_fire_bone;	}

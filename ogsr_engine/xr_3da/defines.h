@@ -29,12 +29,14 @@ enum {
 
 	rsOcclusionDraw					= (1ul<<12ul),
 	rsRefresh60hz					= (1ul<<13ul),
-	rsMTTexLoad						= (1ul<<14ul),
 
-	rsCameraPos						= (1ul<<18ul),
-	rsR2							= (1ul<<19ul),
+	rsHWInfo						= (1ul<<14ul),
 
-	// 20-32 bit - reserved to Editor
+	rsCameraPos						= (1ul<<15ul),
+
+	rsR2							= (1ul<<16ul),
+	rsR3							= (1ul<<17ul),
+	rsR4							= (1ul<<18ul),
 };
 
 

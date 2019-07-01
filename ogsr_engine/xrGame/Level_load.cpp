@@ -7,7 +7,7 @@
 #include "level.h"
 #include "game_cl_base.h"
 #include "../xr_3da/x_ray.h"
-#include "gamemtllib.h"
+#include "../xr_3da/gamemtllib.h"
 #include "PhysicsCommon.h"
 #include "level_sounds.h"
 #include "GamePersistent.h"
@@ -108,10 +108,11 @@ BOOL CLevel::Load_GameSpecific_After()
 		Sounds_Random_Enabled	= FALSE;
 	}
 
-	// Сбрасываем состояния дождя при загрузке уровня во избежание пропажи звука. Real Wolf.
+	g_pGamePersistent->Environment().SetGameTime(GetEnvironmentGameDayTimeSec(), game->GetEnvironmentGameTimeFactor());
+
 	if (g_pGamePersistent->pEnvironment)
 		g_pGamePersistent->pEnvironment->Invalidate();
-	
+
 	return TRUE;
 }
 

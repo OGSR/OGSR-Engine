@@ -22,7 +22,7 @@
 #include "xrmessages.h"
 #include "inventory.h"
 #include "script_ini_file.h"
-#include "../xr_3da/skeletoncustom.h"
+#include "../Include/xrRender/Kinematics.h"
 #include "HangingLamp.h"
 #include "patrol_path_manager.h"
 #include "ai_object_location.h"
@@ -331,9 +331,9 @@ u32 CScriptGameObject::get_current_patrol_point_index()
 
 Fvector	CScriptGameObject::bone_position	(LPCSTR bone_name) const
 {
-	CKinematics* k = smart_cast<CKinematics*>(object().Visual());
+	IKinematics* k = smart_cast<IKinematics*>(object().Visual());
 	if (!k) {
-		ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "CKinematics : cannot call bone_position!");
+		ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "IKinematics : cannot call bone_position!");
 		return			Fvector();
 	}
 
@@ -667,7 +667,7 @@ CUIStatic* CScriptGameObject::GetCellItem() const
 
 LPCSTR CScriptGameObject::GetBoneName(u16 id) const
 {
-	if (auto K = smart_cast<CKinematics*>(object().Visual()) )
+	if (auto K = smart_cast<IKinematics*>(object().Visual()) )
 		return K->LL_BoneName_dbg(id);
 	return 0;
 }

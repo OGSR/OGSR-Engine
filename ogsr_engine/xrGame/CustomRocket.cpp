@@ -10,9 +10,9 @@
 #include "extendedgeom.h"
 #include "level.h"
 #include "xrMessages.h"
-#include "gamemtllib.h"
+#include "../xr_3da/gamemtllib.h"
 #include "tri-colliderknoopc/dTriList.h"
-#include "../xr_3da/fbasicvisual.h"
+#include "..\Include/xrRender/Kinematics.h"
 #include "CalculateTriangle.h"
 #include "actor.h"
 #ifdef DEBUG
@@ -136,7 +136,7 @@ void CCustomRocket::create_physic_shell	()
 {
 	VERIFY(!m_pPhysicsShell);
 	Fobb								obb;
-	Visual()->vis.box.get_CD			(obb.m_translate,obb.m_halfsize);
+	Visual()->getVisData().box.get_CD			(obb.m_translate,obb.m_halfsize);
 	obb.m_rotate.identity				();
 
 	// Physics (Elements)
@@ -210,8 +210,6 @@ void CCustomRocket::ObjectContactCallback(bool& do_colide,bool bo1,dContact& c ,
 	}
 	VERIFY(material);
 	if(material->Flags.is(SGameMtl::flPassable)) return;
-        // Если материал полностью простреливаемый
-	if( fsimilar( material->fShootFactor, 1.0f, EPS ) ) return;
 
 	if(!l_this||l_this->m_contact.contact) return;
 

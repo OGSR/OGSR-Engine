@@ -1,5 +1,4 @@
-#ifndef __FRECT
-#define __FRECT
+#pragma once
 
 template <class T>
 struct _rect {
@@ -30,6 +29,10 @@ public:
 	IC	SelfRef	set(const Self &r)										{ x1=r.x1;	y1=r.y1;	x2=r.x2;	y2=r.y2;	return *this;	};
 	IC	SelfRef	null( )										{ x1=T(0);	y1=T(0);	x2=T(0);	y2=T(0);		return *this;	};
 	
+	IC	SelfRef	invalidate()								{ lt.x=type_max(T); lt.y=type_max(T);	rb.x=type_min(T);	rb.y=type_min(T);	return *this;	};
+	IC	bool	valide	  ()								{ return lt.x1 < rb.x && lt.y < rb.y; }
+	IC 	SelfRef	set_empty ()								{ return invalidate(); }
+	IC	bool	is_empty  ()								{ return !valide(); }
 	IC	SelfRef	add(T x, T y)								{ x1+=x;	y1+=y;		x2+=x;		y2+=y;			return *this;	};
 	IC	SelfRef	sub(T x, T y)								{ x1-=x;	y1-=y;		x2-=x;		y2-=y;			return *this;	};
 	IC	SelfRef	mul(T x, T y)								{ x1*=x;	y1*=y;		x2*=x;		y2*=y;			return *this;	};
@@ -45,8 +48,8 @@ public:
 	IC	BOOL	cmp(_rect<int> &r)							{ return x1==r.x1 && y1==r.y1 && x2==r.x2 && y2==r.y2; };
 	IC	BOOL	cmp(_rect<float> &r)						{ return fsimilar(x1,r.x1) && fsimilar(y1,r.y1) && fsimilar(x2,r.x2) && fsimilar(y2,r.y2); };
 	
-	IC	void	getcenter(Tvector& center)				{ center.add(rb,lt); center.div(2); }
-	IC	void	getsize(Tvector& sz)					{ sz.sub(rb,lt); }
+	IC	void	getcenter(Tvector& center)	const			{ center.add(rb,lt); center.div(2); }
+	IC	void	getsize(Tvector& sz)	const				{ sz.sub(rb,lt); }
 
 	IC	T		width()		const							{return rb.x-lt.x;}
 	IC	T		height()	const							{return rb.y-lt.y;}
@@ -82,5 +85,3 @@ BOOL	_valid			(const _rect<T>& m)
 { 
 	return lt._valid() && rb._valid();
 }
-
-#endif

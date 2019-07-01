@@ -92,8 +92,6 @@ void			INetQueue::Release	()
 IPureClient::IPureClient(CTimer* timer)
 {
 	device_timer			= timer;
-	net_TimeDelta_User		= 0;
-	net_TimeDelta			= 0;
 	net_Syncronised = FALSE; //Добавил инициализацию сюда, тк она хз где была.
 }
 
@@ -103,8 +101,6 @@ IPureClient::~IPureClient	()
 
 BOOL IPureClient::Connect	(LPCSTR)
 {
-	// Sync
-	net_TimeDelta	= 0;	
 	return			TRUE;
 }
 

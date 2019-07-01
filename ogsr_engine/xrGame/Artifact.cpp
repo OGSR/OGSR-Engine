@@ -3,7 +3,8 @@
 #include "PhysicsShell.h"
 #include "PhysicsShellHolder.h"
 #include "game_cl_base.h"
-#include "..\xr_3da\skeletonanimated.h"
+#include "../Include/xrRender/Kinematics.h"
+#include "..\Include/xrRender/KinematicsAnimated.h"
 #include "inventory.h"
 #include "level.h"
 #include "ai_object_location.h"
@@ -130,7 +131,7 @@ BOOL CArtefact::net_Spawn(CSE_Abstract* DC)
 	/////////////////////////////////////////
 	m_CarringBoneID = u16(-1);
 	/////////////////////////////////////////
-	CKinematicsAnimated	*K=smart_cast<CKinematicsAnimated*>(Visual());
+	IKinematicsAnimated	*K=smart_cast<IKinematicsAnimated*>(Visual());
 	if(K)K->PlayCycle("idle");
 	
 	o_fastmode					= FALSE	;		// start initially with fast-mode enabled
@@ -341,7 +342,7 @@ void CArtefact::UpdateXForm()
 			return;
 
 		VERIFY				(E);
-		CKinematics*		V		= smart_cast<CKinematics*>	(E->Visual());
+		IKinematics*		V		= smart_cast<IKinematics*>	(E->Visual());
 		VERIFY				(V);
 
 		// Get matrices
@@ -590,7 +591,7 @@ void SArtefactActivation::ChangeEffects()
 												iFloor(state_def.m_time*1000) );
 	};
 	if(state_def.m_animation.size()){
-		CKinematicsAnimated	*K=smart_cast<CKinematicsAnimated*>(m_af->Visual());
+		IKinematicsAnimated	*K=smart_cast<IKinematicsAnimated*>(m_af->Visual());
 		if(K)K->PlayCycle(*state_def.m_animation);
 	}
 

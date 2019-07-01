@@ -25,6 +25,7 @@
 
 #include "game_object_space.h"
 #include "script_callback_ex.h"
+#include "GamePersistent.h"
 
 #ifdef DEBUG
 #	include "ai/monsters/BaseMonster/base_monster.h"
@@ -103,6 +104,9 @@ extern bool g_block_pause;
 
 void CLevel::IR_OnKeyboardPress	(int key)
 {
+	if (GamePersistent().OnKeyboardPress(key))
+		return;
+
 	bool b_ui_exist = (pHUD && pHUD->GetUI());
 
 //.	if (DIK_F10 == key)		vtune.enable();
@@ -150,7 +154,10 @@ void CLevel::IR_OnKeyboardPress	(int key)
 
 	if ( game && Game().IR_OnKeyboardPress(key) ) return;
 
-	if (Actor()) Actor()->callback(GameObject::eOnKeyPress)(key, get_binded_action(key));
+	if ( Actor() ) {
+		Actor()->callback(GameObject::eOnKeyPress)(key, get_binded_action(key));
+		if ( g_bDisableAllInput ) return;
+	}
 
 	if(_curr == kQUICK_SAVE)
 	{

@@ -6,7 +6,8 @@
 #include "WeaponHUD.h"
 #include "Weapon.h"
 #include "../xr_3da/Motion.h"
-#include "..\xr_3da\skeletonanimated.h"
+#include "..\Include/xrRender/Kinematics.h"
+#include "..\Include/xrRender/KinematicsAnimated.h"
 #include "level.h"
 #include "MathUtils.h"
 #include "actor.h"
@@ -27,7 +28,7 @@ BOOL weapon_hud_value::load(const shared_str& section, CHudItem* owner)
 
 	// Visual
 	LPCSTR visual_name			= pSettings->r_string(section, "visual");
-	m_animations				= smart_cast<CKinematicsAnimated*>(::Render->model_Create(visual_name));
+	m_animations				= smart_cast<IKinematicsAnimated*>(::Render->model_Create(visual_name));
 
 	m_bAllowBobbing = true;
 
@@ -40,8 +41,8 @@ BOOL weapon_hud_value::load(const shared_str& section, CHudItem* owner)
 	// fire bone	
 	if(smart_cast<CWeapon*>(owner)){
 		LPCSTR fire_bone		= pSettings->r_string					(section,"fire_bone");
-		m_fire_bone				= m_animations->LL_BoneID	(fire_bone);
-		if (m_fire_bone>=m_animations->LL_BoneCount())	
+		m_fire_bone				= m_animations->dcast_PKinematics()->LL_BoneID(fire_bone);
+		if (m_fire_bone>=m_animations->dcast_PKinematics()->LL_BoneCount())	
 			Debug.fatal	(DEBUG_INFO,"There is no '%s' bone for weapon '%s'.",fire_bone, *section);
 		m_fp_offset				= pSettings->r_fvector3					(section,"fire_point");
 		if(pSettings->line_exist(section,"fire_point2")) 
@@ -63,12 +64,14 @@ BOOL weapon_hud_value::load(const shared_str& section, CHudItem* owner)
 
 weapon_hud_value::~weapon_hud_value()
 {
-	::Render->model_Delete		((IRender_Visual*&)m_animations);
+	IRenderVisual* v = m_animations->dcast_RenderVisual();
+	::Render->model_Delete(v);
+	m_animations = nullptr;
 }
 
 u32 shared_weapon_hud::motion_length(MotionID M)
 {
-	CKinematicsAnimated	*skeleton_animated = p_->m_animations;
+	IKinematicsAnimated	*skeleton_animated = p_->m_animations;
 	VERIFY				(skeleton_animated);
 	CMotionDef			*motion_def = skeleton_animated->LL_GetMotionDef(M);
 	VERIFY				(motion_def);
@@ -93,7 +96,7 @@ CWeaponHUD::CWeaponHUD			(CHudItem* pHudItem)
 	m_bStopAtEndAnimIsRunning	= false;
 	m_pCallbackItem				= NULL;
 	if (Core.Features.test(xrCore::Feature::wpn_bobbing))
-		m_bobbing = xr_new<CWeaponBobbing>();
+		m_bobbing = xr_new<CWeaponBobbing>( pHudItem );
 	m_Transform.identity		();
 }
 
@@ -141,10 +144,10 @@ MotionID CWeaponHUD::animGet(LPCSTR name)
 void CWeaponHUD::animDisplay(MotionID M, BOOL bMixIn)
 {
 	if(m_bVisible){
-		CKinematicsAnimated* PKinematicsAnimated		= smart_cast<CKinematicsAnimated*>(Visual());
+		IKinematicsAnimated* PKinematicsAnimated		= smart_cast<IKinematicsAnimated*>(Visual());
 		VERIFY											(PKinematicsAnimated);
 		PKinematicsAnimated->PlayCycle					(M,bMixIn);
-		PKinematicsAnimated->CalculateBones_Invalidate	();
+		PKinematicsAnimated->dcast_PKinematics()->CalculateBones_Invalidate	();
 	}
 }
 void CWeaponHUD::animPlay			(MotionID M,	BOOL bMixIn, CHudItem* W, u32 state)
@@ -171,7 +174,7 @@ void CWeaponHUD::Update				()
 	if(m_bStopAtEndAnimIsRunning && Device.dwTimeGlobal > m_dwAnimEndTime)
 		StopCurrentAnim				();
 	if(m_bVisible)
-		smart_cast<CKinematicsAnimated*>(Visual())->UpdateTracks		();
+		smart_cast<IKinematicsAnimated*>(Visual())->UpdateTracks		();
 }
 
 void CWeaponHUD::StopCurrentAnim()
@@ -211,8 +214,9 @@ MotionID random_anim(MotionSVec& v)
 }
 
 
-CWeaponBobbing::CWeaponBobbing()
+CWeaponBobbing::CWeaponBobbing(CHudItem* pHudItem)
 {
+	m_pParentWeapon				= pHudItem;
 	Load();
 }
 
@@ -233,6 +237,10 @@ void CWeaponBobbing::Load()
 	m_fSpeedRun			= pSettings->r_float(BOBBING_SECT, "run_speed");
 	m_fSpeedWalk		= pSettings->r_float(BOBBING_SECT, "walk_speed");
 	m_fSpeedLimp		= pSettings->r_float(BOBBING_SECT, "limp_speed");
+
+	m_fCrouchFactor = READ_IF_EXISTS( pSettings, r_float, BOBBING_SECT, "crouch_k", CROUCH_FACTOR );
+	m_fZoomFactor   = READ_IF_EXISTS( pSettings, r_float, BOBBING_SECT, "zoom_k", 1.f );
+	m_fScopeZoomFactor = READ_IF_EXISTS( pSettings, r_float, BOBBING_SECT, "scope_zoom_k", m_fZoomFactor );
 }
 
 void CWeaponBobbing::CheckState()
@@ -264,23 +272,31 @@ void CWeaponBobbing::Update(Fmatrix &m)
 	{
 		Fvector dangle;
 		Fmatrix		R, mR;
-		float k		= ((dwMState & ACTOR_DEFS::mcCrouch) ? CROUCH_FACTOR : 1.f);
+		float k  = ( dwMState & ACTOR_DEFS::mcCrouch ) ? m_fCrouchFactor : 1.f;
+		float k2 = k;
+
+		if ( m_bZoomMode ) {
+			auto wpn = smart_cast<CWeapon*>( m_pParentWeapon );
+			bool has_scope = wpn->IsScopeAttached() && !wpn->IsGrenadeMode();
+			float zoom_factor = has_scope ? m_fScopeZoomFactor : m_fZoomFactor;
+			k2 *= zoom_factor;
+		}
 
 		float A, ST;
 
 		if (isActorAccelerated(dwMState, m_bZoomMode))
 		{
-			A	= m_fAmplitudeRun * k;
+			A	= m_fAmplitudeRun * k2;
 			ST	= m_fSpeedRun * fTime * k;
 		}
 		else if (is_limping)
 		{
-			A	= m_fAmplitudeLimp * k;
+			A	= m_fAmplitudeLimp * k2;
 			ST	= m_fSpeedLimp * fTime * k;
 		}
 		else
 		{
-			A	= m_fAmplitudeWalk * k;
+			A	= m_fAmplitudeWalk * k2;
 			ST	= m_fSpeedWalk * fTime * k;
 		}
 	

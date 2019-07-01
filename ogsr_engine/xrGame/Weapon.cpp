@@ -20,7 +20,7 @@
 
 #include "xr_level_controller.h"
 #include "game_cl_base.h"
-#include "../xr_3da/skeletoncustom.h"
+#include "../Include/xrRender/Kinematics.h"
 #include "ai_object_location.h"
 #include "clsid_game.h"
 #include "mathutils.h"
@@ -32,6 +32,7 @@
 #include "script_game_object.h"
 
 #include "WeaponMagazinedWGrenade.h"
+#include "GamePersistent.h"
 
 #define WEAPON_REMOVE_TIME		60000
 #define ROTATION_TIME			0.25f
@@ -131,7 +132,7 @@ void CWeapon::UpdateXForm	()
 			return;
 
 		R_ASSERT		(E);
-		CKinematics*	V		= smart_cast<CKinematics*>	(E->Visual());
+		IKinematics*	V		= smart_cast<IKinematics*>	(E->Visual());
 		VERIFY			(V);
 
 		// Get matrices
@@ -180,7 +181,7 @@ void CWeapon::UpdateFireDependencies_internal()
 		if (GetHUDmode() && (0!=H_Parent()) )
 		{
 			// 1st person view - skeletoned
-			CKinematics* V			= smart_cast<CKinematics*>(m_pHUD->Visual());
+			IKinematics* V			= smart_cast<IKinematics*>(m_pHUD->Visual());
 			VERIFY					(V);
 			V->CalculateBones		();
 
@@ -384,11 +385,27 @@ void CWeapon::Load		(LPCSTR section)
 
 	UpdateZoomOffset();
 
+        m_allScopeNames.clear();
+	m_highlightAddons.clear();
 	if(m_eScopeStatus == ALife::eAddonAttachable)
 	{
 		m_sScopeName = pSettings->r_string(section,"scope_name");
 		m_iScopeX = pSettings->r_s32(section,"scope_x");
 		m_iScopeY = pSettings->r_s32(section,"scope_y");
+
+                m_allScopeNames.push_back( m_sScopeName );
+                if ( pSettings->line_exist( section, "scope_names" ) ) {
+                  LPCSTR S = pSettings->r_string( section, "scope_names" );
+                  if ( S && S[ 0 ] ) {
+                    string128 _scopeItem;
+                    int count = _GetItemCount( S );
+                    for ( int it = 0; it < count; ++it ) {
+                      _GetItem( S, it, _scopeItem );
+                      m_allScopeNames.push_back( _scopeItem );
+                      m_highlightAddons.push_back( _scopeItem );
+                    }
+                  }
+                }
 	}
 
 	if(m_eSilencerStatus == ALife::eAddonAttachable)
@@ -461,7 +478,6 @@ void CWeapon::Load		(LPCSTR section)
 		m_hit_probability[i]		= READ_IF_EXISTS(pSettings,r_float,section,temp,1.f);
 	}
 	
-	m_highlightAddons.clear();
 	if (pSettings->line_exist(section, "highlight_addons")) {
 		LPCSTR S = pSettings->r_string(section, "highlight_addons");
 		if (S && S[0]) {
@@ -843,7 +859,7 @@ static float previous_heating = 0;		// "нагретость" оружия в п
 
 void CWeapon::UpdateWeaponParams()
 {
-#pragma todo("KD: переделать к чертовой матери этот тихий ужас")
+#pragma todo("KRodin: адаптировать тепловизор и тп. под новый рендер, если это возможно.")
 
 	if (!IsHidden()) {
 		w_states.x = m_fZoomRotationFactor;			//x = zoom mode, y - текущее состояние, z - старое состояние
@@ -898,7 +914,7 @@ u8 CWeapon::idle_state() {
 void CWeapon::UpdateCL		()
 {
 	inherited::UpdateCL		();
-	UpdateHUDAddonsVisibility();
+	//UpdateHUDAddonsVisibility();
 	//подсветка от выстрела
 	UpdateLight				();
 
@@ -909,7 +925,7 @@ void CWeapon::UpdateCL		()
 	UpdateFlameParticles	();
 	UpdateFlameParticles2	();
 	
-	VERIFY(smart_cast<CKinematics*>(Visual()));
+	VERIFY(smart_cast<IKinematics*>(Visual()));
 
         if ( GetState() == eIdle ) {
           auto state = idle_state();
@@ -1319,11 +1335,11 @@ LPCSTR wpn_grenade_launcher = "wpn_grenade_launcher";
 void CWeapon::UpdateHUDAddonsVisibility()
 {//actor only
 	if( H_Parent() != Level().CurrentEntity() )				return;
-	if(m_pHUD->IsHidden())									return;
+	//if(m_pHUD->IsHidden())									return;
 //	if(IsZoomed() && )
 
 
-	CKinematics* pHudVisual									= smart_cast<CKinematics*>(m_pHUD->Visual());
+	IKinematics* pHudVisual									= smart_cast<IKinematics*>(m_pHUD->Visual());
 	VERIFY(pHudVisual);
 	if (H_Parent() != Level().CurrentEntity()) pHudVisual	= NULL;
 
@@ -1406,7 +1422,7 @@ void CWeapon::UpdateHUDAddonsVisibility()
 
 void CWeapon::UpdateAddonsVisibility()
 {
-	CKinematics* pWeaponVisual = smart_cast<CKinematics*>(Visual()); R_ASSERT(pWeaponVisual);
+	IKinematics* pWeaponVisual = smart_cast<IKinematics*>(Visual()); R_ASSERT(pWeaponVisual);
 
 	u16  bone_id;
 	UpdateHUDAddonsVisibility								();	
@@ -1509,6 +1525,9 @@ void CWeapon::OnZoomIn()
 		StopHudInertion();
 	}
 
+	if(GetHUDmode())
+		GamePersistent().SetPickableEffectorDOF(true);
+
 	CActor* pActor = smart_cast<CActor*>(H_Parent());
 	if ( pActor )
 		pActor->callback(GameObject::eOnActorWeaponZoomIn)(lua_game_object());
@@ -1530,6 +1549,9 @@ void CWeapon::OnZoomOut()
 	}
 
 	StartHudInertion();
+
+	if(GetHUDmode())
+		GamePersistent().SetPickableEffectorDOF(false);
 }
 
 bool CWeapon::UseScopeTexture() {

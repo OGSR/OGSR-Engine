@@ -13,14 +13,29 @@ class CGamePersistent:
 	public IGame_Persistent, 
 	public IEventReceiver
 {
+	bool GameAutopaused = false;
+
 	// ambient particles
 	CParticlesObject*	ambient_particles; 
+#ifdef USE_COP_WEATHER_CONFIGS
+	u32					ambient_sound_next_time[40]; //max snd channels
+#else
 	u32					ambient_sound_next_time;
+#endif
 	u32					ambient_effect_next_time;
 	u32					ambient_effect_stop_time;
 
+	float				ambient_effect_wind_start;
+	float				ambient_effect_wind_in_time;
+	float				ambient_effect_wind_end;
+	float				ambient_effect_wind_out_time;
+	bool				ambient_effect_wind_on;
+
+	bool				m_bPickableDOF;
+
 	CUISequencer*		m_intro;
 	EVENT				eQuickLoad;
+	Fvector				m_dof		[4];	// 0-dest 1-current 2-from 3-original
 
 	fastdelegate::FastDelegate0<> m_intro_event;
 
@@ -35,6 +50,7 @@ class CGamePersistent:
 #endif
 
 	void				WeathersUpdate			();
+	void				UpdateDof				();
 
 public:
 	ui_core*			m_pUI_core;
@@ -45,6 +61,7 @@ public:
 						CGamePersistent			();
 	virtual				~CGamePersistent		();
 
+	void				PreStart(LPCSTR op) override;
 	virtual void		Start					(LPCSTR op);
 	virtual void		Disconnect				();
 
@@ -60,14 +77,25 @@ public:
 
 	virtual void		UpdateGameType			();
 
-	virtual void		RegisterModel			(IRender_Visual* V);
+	virtual void		RegisterModel			(IRenderVisual* V);
 	virtual	float		MtlTransparent			(u32 mtl_idx);
 	virtual	void		Statistics				(CGameFont* F);
 
 	virtual bool		OnRenderPPUI_query		();
 	virtual void		OnRenderPPUI_main		();
 	virtual void		OnRenderPPUI_PP			();
-	virtual	void		LoadTitle				(LPCSTR str);
+	virtual	void		LoadTitle(const char* title_name);
+
+	virtual bool		CanBePaused();
+	bool OnKeyboardPress(int dik);
+	
+
+			void		SetPickableEffectorDOF	(bool bSet);
+			void		SetEffectorDOF			(const Fvector& needed_dof);
+			void		RestoreEffectorDOF		();
+
+	virtual void		GetCurrentDof			(Fvector3& dof);
+	virtual void		SetBaseDof				(const Fvector3& dof);
 };
 
 IC CGamePersistent&		GamePersistent()		{ return *((CGamePersistent*) g_pGamePersistent);			}

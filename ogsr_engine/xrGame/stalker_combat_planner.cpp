@@ -428,6 +428,8 @@ void CStalkerCombatPlanner::add_actions			()
 	add_condition			(planner,eWorldPropertyCriticallyWounded,false);
 	add_condition			(planner,eWorldPropertyDangerGrenade,	false);
 	add_condition			(planner,eWorldPropertyEnemyWounded,	true);
+	add_condition			(planner,eWorldPropertyItemToKill,		true);
+	add_condition			(planner,eWorldPropertyItemCanKill,		true);
 	add_condition			(planner,eWorldPropertyEnemy,			true);
 	add_effect				(planner,eWorldPropertyEnemy,			false);
 	add_operator			(eWorldOperatorKillWoundedEnemy,		planner);

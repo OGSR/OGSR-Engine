@@ -1,6 +1,8 @@
 #pragma once
 #include "control_com_defs.h"
 
+#include "../../../Include\xrRender\animation_motion.h"
+
 class CControl_Manager;
 class CBaseMonster;
 

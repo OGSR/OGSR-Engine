@@ -104,9 +104,8 @@ BOOL CTheoraSurface::Load(const char* fname)
 		xr_delete		(m_alpha);
 	}
 	if(res){
-		u32		v_dev	= CAP_VERSION(HW.Caps.raster_major, HW.Caps.raster_minor);
-		u32		v_need	= CAP_VERSION(2,0);
-		bShaderYUV2RGB = (v_dev>=v_need);
+		R_ASSERT(Device.m_pRender);
+		bShaderYUV2RGB = Device.m_pRender->HWSupportsShaderYUV2RGB();
 	}
 	return				res;
 }

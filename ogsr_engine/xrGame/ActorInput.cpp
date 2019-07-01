@@ -346,7 +346,7 @@ bool CActor::use_Holder				(CHolderCustom* holder)
 
 extern bool g_bDisableAllInput;
 void CActor::ActorUse() {
-  if ( HUD().GetUI()->MainInputReceiver() ) return;
+  if ( g_bDisableAllInput || HUD().GetUI()->MainInputReceiver() ) return;
 
   if ( m_holder ) {
     CGameObject*  GO = smart_cast<CGameObject*>( m_holder );

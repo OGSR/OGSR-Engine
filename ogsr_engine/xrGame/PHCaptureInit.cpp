@@ -6,7 +6,7 @@
 #include "PHCapture.h"
 #include "Entity.h"
 #include "inventory_item.h"
-#include "../xr_3da/skeletoncustom.h"
+#include "../Include/xrRender/Kinematics.h"
 #include "Actor.h"
 #include "Inventory.h"
 #include "ai/stalker/ai_stalker.h"
@@ -58,7 +58,7 @@ CPHCapture::CPHCapture( CPHCharacter* a_character, CPhysicsShellHolder* a_taget_
 		return;
 	}
 
-	CKinematics* p_kinematics=smart_cast<CKinematics*>(capturer_object->Visual());
+	IKinematics* p_kinematics=smart_cast<IKinematics*>(capturer_object->Visual());
 
 	if(!p_kinematics)
 	{
@@ -151,7 +151,7 @@ CPHCapture::CPHCapture( CPHCharacter* a_character, CPhysicsShellHolder* a_taget_
 		return;
 	}
 
-	CKinematics* p_kinematics=smart_cast<CKinematics*>(capturer_object->Visual());
+	IKinematics* p_kinematics=smart_cast<IKinematics*>(capturer_object->Visual());
 
 	if(!p_kinematics)
 	{
@@ -201,7 +201,7 @@ CPHCapture::CPHCapture( CPHCharacter* a_character, CPhysicsShellHolder* a_taget_
 		
 
 
-	IRender_Visual* V=m_taget_object->Visual();
+	IRenderVisual* V=m_taget_object->Visual();
 
 	if(!V)
 	{
@@ -210,7 +210,7 @@ CPHCapture::CPHCapture( CPHCharacter* a_character, CPhysicsShellHolder* a_taget_
 		return;
 	}
 
-	CKinematics* K=	smart_cast<CKinematics*>(V);
+	IKinematics* K=	smart_cast<IKinematics*>(V);
 
 	if(!K)
 	{
@@ -221,14 +221,14 @@ CPHCapture::CPHCapture( CPHCharacter* a_character, CPhysicsShellHolder* a_taget_
 
 	CBoneInstance& tag_bone=K->LL_GetBoneInstance(a_taget_element);
 
-	if(!tag_bone.Callback_Param)
+	if(!tag_bone.callback_param())
 	{
 		m_taget_object=NULL;
 		b_failed=true;
 		return;
 	}
 
-	m_taget_element					=(CPhysicsElement*)tag_bone.Callback_Param;
+	m_taget_element					=(CPhysicsElement*)tag_bone.callback_param();
 
 	if(!m_taget_element)
 	{

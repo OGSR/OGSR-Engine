@@ -13,7 +13,7 @@ v_shadow_direct_aref 	main	( v_static  	I )
 	v_shadow_direct_aref 		O;
 	O.hpos 	= mul				(m_WVP,	I.P		);
 	O.tc0 	= unpack_tc_base	(I.tc,I.T.w,I.B.w	);	// copy tc
-#if defined(USE_PCSS) || !defined(USE_HWSMAP)
+#ifndef USE_HWSMAP
 	O.depth = O.hpos.z;
 #endif
  	return	O;

@@ -22,4 +22,8 @@ protected:
 	CUIStatic*			m_pTexture;
 	CUIStatic*			m_pBackground;
 	bool				m_bText;
+	bool				m_blend;
+
+	float				m_angle_begin;
+	float				m_angle_end;
 };

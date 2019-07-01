@@ -77,7 +77,6 @@ void xrCore::_initialize	(LPCSTR _ApplicationName, LogCallback cb, BOOL init_fs,
 		
 		Memory._initialize();
 
-		InitLog				();
 		_initialize_cpu		();
 
 		rtc_initialize		();

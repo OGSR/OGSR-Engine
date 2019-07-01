@@ -1,5 +1,4 @@
-#ifndef _PLANE2
-#define _PLANE2
+#pragma once
 
 template <class T>
 class _plane2 {
@@ -112,5 +111,3 @@ typedef _plane2<double>	Dplane2;
 
 template <class T>
 BOOL	_valid			(const _plane2<T>& s)		{ return _valid(s.n) && _valid(s.d);	}
-
-#endif

@@ -1,6 +1,9 @@
 #include "StdAfx.h"
 #include "light.h"
 
+static const float	SQRT2		=	1.4142135623730950488016887242097f;
+static const float	RSQRTDIV2	=	0.70710678118654752440084436210485f;
+
 light::light		(void)	: ISpatial(g_SpatialSpace)
 {
 	spatial.type	= STYPE_LIGHTSOURCE;
@@ -8,12 +11,8 @@ light::light		(void)	: ISpatial(g_SpatialSpace)
 	flags.bStatic	= false;
 	flags.bActive	= false;
 	flags.bShadow	= false;
-	flags.bFlare	= false;
 	flags.bVolumetric = false;
-	flags.bActorTorch = false;
-	LSF.speed = 0.f;
-	LSF.amount = 0.f;
-	LSF.smap_jitter = 0.f;
+	flags.bHudMode	= false;
 	position.set	(0,-1000,0);
 	direction.set	(0,-1,0);
 	right.set		(0,0,0);
@@ -21,10 +20,15 @@ light::light		(void)	: ISpatial(g_SpatialSpace)
 	cone			= deg2rad(60.f);
 	color.set		(1,1,1,1);
 
+	m_volumetric_quality	= 1;
+	//m_volumetric_quality	= 0.5;
+	m_volumetric_intensity	= 1;
+	m_volumetric_distance	= 1;
+
 	frame_render	= 0;
 
-#if RENDER==R_R2
-	virtual_size	= MIN_VIRTUAL_SIZE;
+#if (RENDER==R_R2) || (RENDER==R_R3) || (RENDER==R_R4)
+	virtual_size = .1f; // Ray Twitty (aka Shadows): по умолчанию надо 0.1, чтобы не пришлось вызывать для каждого лайта установку виртуального размера
 	ZeroMemory		(omnipart,sizeof(omnipart));
 	s_spot			= NULL;
 	s_point			= NULL;
@@ -33,24 +37,24 @@ light::light		(void)	: ISpatial(g_SpatialSpace)
 	vis.query_order	= 0;
 	vis.visible		= true;
 	vis.pending		= false;
-#endif
+#endif // (RENDER==R_R2) || (RENDER==R_R3) || (RENDER==R_R4)
 }
 
 light::~light	()
 {
-#if RENDER==R_R2 
+#if (RENDER==R_R2) || (RENDER==R_R3) || (RENDER==R_R4)
 	for (int f=0; f<6; f++)	xr_delete(omnipart[f]);
-#endif
+#endif // (RENDER==R_R2) || (RENDER==R_R3) || (RENDER==R_R4)
 	set_active		(false);
 
 	// remove from Lights_LastFrame
-#if RENDER==R_R2 
+#if (RENDER==R_R2) || (RENDER==R_R3) || (RENDER==R_R4)
 	for (u32 it=0; it<RImplementation.Lights_LastFrame.size(); it++)
 		if (this==RImplementation.Lights_LastFrame[it])	RImplementation.Lights_LastFrame[it]=0;
-#endif
+#endif // (RENDER==R_R2) || (RENDER==R_R3) || (RENDER==R_R4)
 }
 
-#if RENDER==R_R2 
+#if (RENDER==R_R2) || (RENDER==R_R3) || (RENDER==R_R4)
 void light::set_texture		(LPCSTR name)
 {
 	if ((0==name) || (0==name[0]))
@@ -58,15 +62,35 @@ void light::set_texture		(LPCSTR name)
 		// default shaders
 		s_spot.destroy		();
 		s_point.destroy		();
-		s_spot = nullptr;
-		s_point = nullptr;
+		s_volumetric.destroy();
 		return;
 	}
 
 #pragma todo				("Only shadowed spot implements projective texture")
-	string256				temp;
-	s_spot.create			(RImplementation.Target->b_accum_spot,strconcat(sizeof(temp),temp,"r2\\accum_spot_",name),name);
-	//s_spot.create			(RImplementation.Target->b_accum_spot,strconcat(sizeof(temp),temp,"r2\\accum_spot_",name),name);
+	string_path temp;
+
+	s_spot.create(RImplementation.Target->b_accum_spot, xr_strconcat(temp, "r2\\accum_spot_", name), name);
+	s_point.create(RImplementation.Target->b_accum_point, xr_strconcat(temp, "r2\\accum_point_", name), name);
+
+#if	(RENDER!=R_R3) && (RENDER!=R_R4)
+	s_volumetric.create		("accum_volumetric", name);
+#else	//	(RENDER!=R_R3) && (RENDER!=R_R4)
+	s_volumetric.create		("accum_volumetric_nomsaa", name);
+	if( RImplementation.o.dx10_msaa )
+	{
+		int bound = 1;
+
+		if( !RImplementation.o.dx10_msaa_opt )
+			bound = RImplementation.o.dx10_msaa_samples;
+
+		for( int i = 0; i < bound; ++i )
+		{
+			s_spot_msaa[i].create(RImplementation.Target->b_accum_spot_msaa[i], xr_strconcat(temp, "r2\\accum_spot_", name), name);
+			s_point_msaa[i].create(RImplementation.Target->b_accum_point_msaa[i], xr_strconcat(temp, "r2\\accum_point_", name), name);
+			s_volumetric_msaa[i].create(RImplementation.Target->b_accum_volumetric_msaa[i], xr_strconcat(temp, "r2\\accum_volumetric_", name), name);
+		}
+	}
+#endif // (RENDER!=R_R3) || (RENDER!=R_R4)
 }
 #endif
 
@@ -112,7 +136,7 @@ void	light::set_position		(const Fvector& P)
 }
 
 void	light::set_range		(float R)			{
-	float eps = std::max( range * 0.1f, EPS_L );
+	float	eps					=	_max	(range*0.1f,EPS_L);
 	if (fsimilar(range,R,eps))	return	;
 	range						= R		;
 	spatial_move				();
@@ -158,8 +182,12 @@ void	light::spatial_move			()
 	case IRender_Light::OMNIPART	:
 		{
 			// is it optimal? seems to be...
-			spatial.sphere.P.mad		(position,direction,range);
-			spatial.sphere.R			= range;
+			//spatial.sphere.P.mad		(position,direction,range);
+			//spatial.sphere.R			= range;
+			// This is optimal.
+			const float fSphereR		= range*RSQRTDIV2;
+			spatial.sphere.P.mad		(position,direction,fSphereR);
+			spatial.sphere.R			= fSphereR;
 		}
 		break;
 	}
@@ -167,10 +195,10 @@ void	light::spatial_move			()
 	// update spatial DB
 	ISpatial::spatial_move			();
 
-#if RENDER==R_R2
+#if (RENDER==R_R2) || (RENDER==R_R3) || (RENDER==R_R4)
 	if (flags.bActive) gi_generate	();
 	svis.invalidate					();
-#endif
+#endif // (RENDER==R_R2) || (RENDER==R_R3) || (RENDER==R_R4)
 }
 
 vis_data&	light::get_homdata		()
@@ -188,7 +216,7 @@ Fvector	light::spatial_sector_point	()
 }
 
 //////////////////////////////////////////////////////////////////////////
-#if RENDER==R_R2
+#if (RENDER==R_R2) || (RENDER==R_R3) || (RENDER==R_R4)
 // Xforms
 void	light::xform_calc			()
 {
@@ -260,33 +288,56 @@ void	light::xform_calc			()
 static	Fvector cmNorm[6]	= {{0.f,1.f,0.f}, {0.f,1.f,0.f}, {0.f,0.f,-1.f},{0.f,0.f,1.f}, {0.f,1.f,0.f}, {0.f,1.f,0.f}};
 static	Fvector cmDir[6]	= {{1.f,0.f,0.f}, {-1.f,0.f,0.f},{0.f,1.f,0.f}, {0.f,-1.f,0.f},{0.f,0.f,1.f}, {0.f,0.f,-1.f}};
 
-void	light::light_export		(light_Package& package)
+void	light::export_to	(light_Package& package)
 {
 	if (flags.bShadow)			{
 		switch (flags.type)	{
 			case IRender_Light::POINT:
 				{
 					// tough: create/update 6 shadowed lights
+#pragma todo("KRodin: Древний баг: вот именно из-за создания 6 источников света для каждой такой лампы, тени от них периодически мигают на худе. Хз, что с этим можно сделать.")
 					if (0==omnipart[0])	for (int f=0; f<6; f++)	omnipart[f] = xr_new<light> ();
 					for (int f=0; f<6; f++)	{
 						light*	L			= omnipart[f];
 						Fvector				R;
 						R.crossproduct		(cmNorm[f],cmDir[f]);
 						L->set_type			(IRender_Light::OMNIPART);
-						L->set_shadow		(!!flags.bShadow);
+						L->set_shadow		(true);
 						L->set_position		(position);
 						L->set_rotation		(cmDir[f],	R);
 						L->set_cone			(PI_DIV_2);
 						L->set_range		(range);
+						// надо еще экспортировать
+						L->set_virtual_size(virtual_size);
 						L->set_color		(color);
-						L->set_virtual_size	(virtual_size);
-						L->set_volumetric	(!!flags.bVolumetric);
-						L->set_lsf_params	(LSF.speed, LSF.amount, LSF.smap_jitter);
-						if (f == 0)
-							L->set_flare		(!!flags.bFlare);
 						L->spatial.sector	= spatial.sector;	//. dangerous?
 						L->s_spot			= s_spot	;
 						L->s_point			= s_point	;
+						
+						// Holger - do we need to export msaa stuff as well ?
+#if	(RENDER==R_R3) || (RENDER==R_R4)
+						if( RImplementation.o.dx10_msaa )
+						{
+							int bound = 1;
+
+							if( !RImplementation.o.dx10_msaa_opt )
+								bound = RImplementation.o.dx10_msaa_samples;
+
+							for( int i = 0; i < bound; ++i )
+							{
+								L->s_point_msaa[i] = s_point_msaa[i];
+								L->s_spot_msaa[i] = s_spot_msaa[i];
+								//L->s_volumetric_msaa[i] = s_volumetric_msaa[i];
+							}
+						}
+#endif	//	(RENDER==R_R3) || (RENDER==R_R4)
+
+						//	Igor: add volumetric support
+						L->set_volumetric(flags.bVolumetric);
+						L->set_volumetric_quality(m_volumetric_quality);
+						L->set_volumetric_intensity(m_volumetric_intensity);
+						L->set_volumetric_distance(m_volumetric_distance);
+
 						package.v_shadowed.push_back	(L);
 					}
 				}
@@ -303,7 +354,15 @@ void	light::light_export		(light_Package& package)
 	}
 }
 
-#endif
+void	light::set_attenuation_params	(float a0, float a1, float a2, float fo)
+{
+	attenuation0 = a0;
+	attenuation1 = a1;
+	attenuation2 = a2;
+	falloff      = fo;
+}
+
+#endif // (RENDER==R_R2) || (RENDER==R_R3) || (RENDER==R_R4)
 
 extern float		r_ssaGLOD_start,	r_ssaGLOD_end;
 extern float		ps_r2_slight_fade;

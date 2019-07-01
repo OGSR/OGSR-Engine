@@ -314,7 +314,7 @@ float CSpaceRestrictor::distance_to( Fvector& P ) {
 
 void CSpaceRestrictor::OnRender()
 {
-	RCache.OnFrameEnd();
+	DRender->OnFrameEnd();
 	Fvector l_half; l_half.set(.5f, .5f, .5f);
 	Fmatrix l_ball, l_box;
 	xr_vector<CCF_Shape::shape_def> &l_shapes = ((CCF_Shape*)CFORM())->Shapes();

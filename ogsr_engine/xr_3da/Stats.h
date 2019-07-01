@@ -2,19 +2,31 @@
 //
 //////////////////////////////////////////////////////////////////////
 
-#if !defined(AFX_STATS_H__4C8D1860_0EE2_11D4_B4E3_4854E82A090D__INCLUDED_)
-#define AFX_STATS_H__4C8D1860_0EE2_11D4_B4E3_4854E82A090D__INCLUDED_
 #pragma once
 
 class ENGINE_API CGameFont;
 
+#include "../Include/xrRender/FactoryPtr.h"
+#include "../Include/xrRender/StatsRender.h"
+
 DECLARE_MESSAGE(Stats);
 
-class ENGINE_API CStats: public pureRender
+class ENGINE_API CStatsPhysics
 {
 public:
-	CGameFont*	pFont;
+	CStatTimer	ph_collision;		// collision
+	CStatTimer	ph_core;			// integrate
+	CStatTimer	Physics;			// movement+collision
+};
 
+class ENGINE_API CStats: 
+	public pureRender,
+	public CStatsPhysics
+{
+	CGameFont*	pFont;
+	CGameFont*	pFontHW;
+
+public:
 	float		fFPS,fRFPS,fTPS		;			// FPS, RenderFPS, TPS
 	float		fMem_calls			;
 	u32			dwMem_calls			;
@@ -31,9 +43,9 @@ public:
 	u32			Particles_starting;	// starting
 	u32			Particles_active;	// active
 	u32			Particles_destroy;	// destroying
-	CStatTimer	Physics;			// movement+collision
-	CStatTimer	ph_collision;		// collision
-	CStatTimer	ph_core;			// collision
+//	CStatTimer	Physics;			// movement+collision
+//	CStatTimer	ph_collision;		// collision
+//	CStatTimer	ph_core;			// collision
 	CStatTimer	AI_Think;			// thinking
 	CStatTimer	AI_Range;			// query: range
 	CStatTimer	AI_Path;			// query: path
@@ -76,13 +88,30 @@ public:
 	CStatTimer	netClient1;
 	CStatTimer	netClient2;
 	CStatTimer	netServer;
+	CStatTimer	netClientCompressor;
+	CStatTimer	netServerCompressor;
+	
+
 	
 	CStatTimer	TEST0;				// debug counter
 	CStatTimer	TEST1;				// debug counter
 	CStatTimer	TEST2;				// debug counter
 	CStatTimer	TEST3;				// debug counter
 
-	void			Show			(void);
+private:
+	u32 GpuLoad;
+	float AvailableMem;
+	float AvailablePageFileMem;
+	float PageFileMemUsedByApp;
+	float PhysMemoryUsedPercent;
+
+	double cpuBefore;
+	double cpuLoad = cpuBefore;
+
+public:
+	void			Show();
+	void			Show_HW_Stats();
+
 	virtual void 	OnRender		();
 	void			OnDeviceCreate	(void);
 	void			OnDeviceDestroy	(void);
@@ -94,6 +123,9 @@ public:
 					~CStats			();
 
 	IC CGameFont*	Font			(){return pFont;}
+
+private:
+	FactoryPtr<IStatsRender>	m_pRender;
 };
 
 enum{
@@ -106,5 +138,3 @@ enum{
 };
 
 extern Flags32 g_stats_flags;
-
-#endif // !defined(AFX_STATS_H__4C8D1860_0EE2_11D4_B4E3_4854E82A090D__INCLUDED_)

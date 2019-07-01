@@ -7,4 +7,5 @@ function l_special	(shader, t_base, t_second, t_detail)
 			: distort 	(true)
 	shader:sampler	("s_base")      :texture	(t_base)
 	shader:sampler	("s_distort")   :texture	(t_base)	-- "pfx\\pfx_distortion"
+	shader:sampler  ("s_position")  :texture  ("$user$position") : f_none ()
 end

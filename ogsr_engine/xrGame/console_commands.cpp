@@ -32,7 +32,6 @@
 #include "MainMenu.h"
 #include "saved_game_wrapper.h"
 #include "level_graph.h"
-#include "../xr_3da/resourcemanager.h"
 #include "cameralook.h"
 
 #ifdef DEBUG
@@ -95,6 +94,9 @@ enum E_COMMON_FLAGS{
 	flAiUseTorchDynamicLights = 1
 };
 
+extern int g_dof_zoom_far;
+extern int g_dof_zoom_near;
+
 
 class CCC_MemStats : public IConsole_Command
 {
@@ -108,8 +110,9 @@ public:
 		u32		_eco_smem		= g_pSharedMemoryContainer->stat_economy	();
 		u32		m_base=0,c_base=0,m_lmaps=0,c_lmaps=0;
 		
-		if (Device.Resources)	Device.Resources->_GetMemoryUsage	(m_base,c_base,m_lmaps,c_lmaps);
-		
+		//	Resource check moved to m_pRender
+		if (Device.m_pRender) Device.m_pRender->ResourcesGetMemoryUsage(m_base, c_base, m_lmaps, c_lmaps);
+
 		Log("--------------------------------------------------------------------------------");
 
 		SProcessMemInfo memCounters;
@@ -1050,11 +1053,11 @@ public:
 			return;
 		}
 
-		IRender_Visual			*visual = Render->model_Create(arguments);
-		CKinematics				*kinematics = smart_cast<CKinematics*>(visual);
+		IRenderVisual			*visual = Render->model_Create(arguments);
+		IKinematics				*kinematics = smart_cast<IKinematics*>(visual);
 		if (!kinematics) {
 			Render->model_Delete(visual);
-			Msg					("! Invalid visual type \"%s\" (not a CKinematics)",arguments);
+			Msg					("! Invalid visual type \"%s\" (not a IKinematics)",arguments);
 			return;
 		}
 
@@ -1114,6 +1117,9 @@ void CCC_RegisterCommands()
 	CMD1(CCC_GameDifficulty,	"g_game_difficulty"		);
 
 	CMD3(CCC_Mask,				"g_dof_scope",			&psActorFlags,	AF_DOF_SCOPE);
+	CMD3(CCC_Mask,				"g_dof_zoom",			&psActorFlags,	AF_DOF_ZOOM);
+	CMD4( CCC_Integer, "g_dof_zoom_far",  &g_dof_zoom_far,  10, 100 );
+	CMD4( CCC_Integer, "g_dof_zoom_near", &g_dof_zoom_near, 10, 100 );
 
 	// alife
 #ifdef DEBUG
@@ -1254,6 +1260,7 @@ void CCC_RegisterCommands()
 
 	CMD3(CCC_Mask, "g_zones_dbg", &psActorFlags, AF_ZONES_DBG);
 	CMD3(CCC_Mask, "g_vertex_dbg", &psActorFlags, AF_VERTEX_DBG);
+	CMD3(CCC_Mask, "keypress_on_start", &psActorFlags, AF_KEYPRESS_ON_START);
 
 	CMD4(CCC_Integer, "g_cop_death_anim", &g_bCopDeathAnim, 0, 1);
 

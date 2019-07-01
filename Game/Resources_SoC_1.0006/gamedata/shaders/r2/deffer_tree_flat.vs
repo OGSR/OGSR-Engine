@@ -13,7 +13,7 @@ p_flat 	main 	(v_tree I)
 	// Transform to world coords
 	float3 	pos		= mul		(m_xform, I.P);
 
-	// 
+	//
 	float 	base 	= m_xform._24;			// take base height from matrix
 	float 	dp		= calc_cyclic  (wave.w+dot(pos,(float3)wave));
 	float 	H 		= pos.y - base;			// height of vertex (scaled, rotated, etc.)
@@ -29,14 +29,20 @@ p_flat 	main 	(v_tree I)
 	// Final xform
 	float3	Pe		= mul		(m_V,  f_pos				);
 	float 	hemi 	= I.Nh.w*c_scale.w + c_bias.w;
+    //float 	hemi 	= I.Nh.w;
 	o.hpos			= mul		(m_VP, f_pos				);
 	o.N 			= mul		((float3x3)m_xform_v, unpack_bx2(I.Nh)	);
 	o.tcdh 			= float4	((I.tc * consts).xyyy		);
 	o.position		= float4	(Pe, hemi					);
 
-#ifdef USE_TDETAIL
-	o.tcdbump	= o.tcdh*dt_params;					// dt tc
+#if defined(USE_R2_STATIC_SUN) && !defined(USE_LM_HEMI)
+	float 	suno 	= I.Nh.w * c_sun.x + c_sun.y	;
+	o.tcdh.w		= suno;					// (,,,dir-occlusion)
 #endif
+
+	#ifdef USE_TDETAIL
+	o.tcdbump	= o.tcdh*dt_params;					// dt tc
+	#endif
 
 	return o;
 }

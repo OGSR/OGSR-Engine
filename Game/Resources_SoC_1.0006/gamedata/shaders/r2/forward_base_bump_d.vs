@@ -1,3 +1,0 @@
-#define USE_TDETAIL	//- shader defined
-
-#include "forward_base_bump.vs"

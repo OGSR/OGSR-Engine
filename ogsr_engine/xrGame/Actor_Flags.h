@@ -2,10 +2,10 @@
 
 enum{
 		AF_GODMODE			=(1<<0),
-		//		=(1<<1),
+		AF_KEYPRESS_ON_START=(1<<1),
 		AF_ALWAYSRUN		=(1<<2),
 		AF_UNLIMITEDAMMO	=(1<<3),
-		//		=(1<<4),
+		AF_DOF_ZOOM		=(1<<4),
 		//		=(1<<5),
 		AF_PSP				=(1<<6),
 		AF_MUSIC_TRACKS		=(1<<7),

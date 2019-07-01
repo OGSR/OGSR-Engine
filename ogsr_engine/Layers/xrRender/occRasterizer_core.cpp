@@ -103,8 +103,12 @@ void i_scan		(int curY, float leftX, float lhx, float rightX, float rhx, float s
 	float Zlen		= endZ - startZ;
 	float Z			= startZ + (minT - startR)/lenR * Zlen;		// interpolate Z to the start
 	float Zend		= startZ + (maxT - startR)/lenR * Zlen;		// interpolate Z to the end
-	float dZ		= (Zend-Z)/(maxT-minT);						// incerement in Z / pixel wrt dX
-	
+	float dZ		= (Zend-Z)/(maxT-minT);						// increment in Z / pixel wrt dX
+
+	// Move to far my dz/5 to place the pixel at the center of face that it covers. 
+	// This will make sure that objects will not be clipped for just standing next to the home from outside.
+	Z				+= 0.5f*_abs(dZ);
+
 	// gain access to buffers
 	occTri** pFrame	= Raster.get_frame();
 	float*	pDepth	= Raster.get_depth();
@@ -117,8 +121,8 @@ void i_scan		(int curY, float leftX, float lhx, float rightX, float rhx, float s
 	{
 		if (shared(currentTri,pFrame[i-1])) 
 		{
-			float ZR = (Z+2*pDepth[i-1])*one_div_3;
-			if (ZR<pDepth[i])	{ pFrame[i]	= currentTri; pDepth[i]	= ZR; dwPixels++; }
+			//float ZR = (Z+2*pDepth[i-1])*one_div_3;
+			if (Z<pDepth[i])	{ pFrame[i]	= currentTri; pDepth[i]	= __max(Z,pDepth[i-1]); dwPixels++; }
 		}
 	}
 
@@ -135,9 +139,10 @@ void i_scan		(int curY, float leftX, float lhx, float rightX, float rhx, float s
 	Z				= Zend-dZ;
 	for (; i>=limit; i--, Z-=dZ)
 	{
-		if (shared(currentTri,pFrame[i+1])) {
-			float ZR = (Z+2*pDepth[i+1])*one_div_3;
-			if (ZR<pDepth[i])	{ pFrame[i]	= currentTri; pDepth[i]	= ZR; dwPixels++; }
+		if (shared(currentTri,pFrame[i+1])) 
+		{
+			//float ZR = (Z+2*pDepth[i+1])*one_div_3;
+			if (Z<pDepth[i])	{ pFrame[i]	= currentTri; pDepth[i]	= __max(Z,pDepth[i+1]); dwPixels++; }
 		}
 	}
 }

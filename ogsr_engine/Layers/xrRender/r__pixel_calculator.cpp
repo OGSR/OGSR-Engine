@@ -1,7 +1,9 @@
 #include	"stdafx.h"
 #include	"r__pixel_calculator.h"
 #define		rt_dimensions 1024
+#include	"../xrRender/FBasicVisual.h"
 
+#if !defined(USE_DX10) && !defined(USE_DX11)
 void	r_pixel_calculator::begin	()
 {
 	rt.create		("$user$test",		rt_dimensions,rt_dimensions,HW.Caps.fTarget);
@@ -28,7 +30,7 @@ void	r_pixel_calculator::end		()
 static Fvector cmNorm[6]	= {{0.f,1.f,0.f}, {0.f,1.f,0.f}, {0.f,0.f,-1.f},{0.f,0.f,1.f}, {0.f,1.f,0.f}, {0.f,1.f,0.f}};
 static Fvector cmDir[6]		= {{1.f,0.f,0.f}, {-1.f,0.f,0.f},{0.f,1.f,0.f}, {0.f,-1.f,0.f},{0.f,0.f,1.f}, {0.f,0.f,-1.f}};
 
-r_aabb_ssa		r_pixel_calculator::calculate	(IRender_Visual* V)	{
+r_aabb_ssa		r_pixel_calculator::calculate	(dxRender_Visual* V)	{
 	r_aabb_ssa	result			= {0};
 	float		area			= float(_sqr(rt_dimensions));
 
@@ -77,7 +79,8 @@ void	r_pixel_calculator	::run	()
 	{
 		if (0==dynamic_cast<IRender_Mesh*>(RImplementation.Visuals[it]))		continue;
 		Msg	("*%d*",it);
-		calculate	(RImplementation.Visuals[it]);
+		calculate	((dxRender_Visual*)RImplementation.Visuals[it]);
 	}
 	end		();
 }
+#endif	//	USE_DX10

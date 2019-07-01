@@ -1,5 +1,5 @@
--- Меню расширенных настроек графики для Теней Чернобыля.
--- Перенесено из OGSE. Cпециально для использования с движком OGSR.
+-- Меню расширенных настроек графики для OGSR Engine
+-- Глобальная переделка KRodin (c) 2019
 
 local hint_colors = {
 	["green"]  = { 255, 0, 128, 0 },
@@ -7,198 +7,75 @@ local hint_colors = {
 	["red"]    = { 255, 255, 0, 0 },
 }
 
-local hint_captions = {
-	["cam_inert"] =             "video_settings_name_1",
-	["vis_dist"] =              "video_settings_name_2",
-	["geometry_lod"] =          "video_settings_name_3",
-	["detail_density"] =        "video_settings_name_4",
-	["detail_distance"] =       "video_settings_name_5",
---	["r2_details_opt"] =        "video_settings_name_6",
-	["texture_lod"] =           "video_settings_name_7",
-	["aniso"] =                 "video_settings_name_8",
-	["r__bloodmarks"] =         "video_settings_name_9",
---	["ssample"] =               "video_settings_name_10",
-	["r2_sun"] =                "video_settings_name_11",
-	["r2_sun_details"] =        "video_settings_name_12",
-	["light_distance"] =        "video_settings_name_13",
-	["npc_torch"] =             "video_settings_name_14",
-	["particles_distance"] =    "video_settings_name_15",
-	["vsync"] =                 "video_settings_name_16",
-	["60hz"] =                  "video_settings_name_17",
-	["r2_aa"] =                 "video_settings_name_18",
-	["r2_aa_mode"] =            "video_settings_name_19",
-	["r2_tf_mipbias"] =         "video_settings_name_20",
-	["r2_gloss_factor"] =       "video_settings_name_21",
-	["r2_sun_near"] =           "video_settings_name_22",
-	["r2_sun_near_border"] =    "video_settings_name_23",
-	["r2_true_sun_shadows"] =   "video_settings_name_24",
-	["r2_tonemap"] =            "video_settings_name_25",
-	["r2_tonemap_middlegray"] = "video_settings_name_26",
---	["r2_sun_lumscale"] =       "video_settings_name_27",
-	["r2_sun_lumscale_amb"] =   "video_settings_name_28",
-	["r2_sunshafts"] =          "video_settings_name_29",
-	["r2_sunshafts_mode"] =     "video_settings_name_30",
-	["r2_soft_water"] =         "video_settings_name_31",
-	["r2_soft_particles"] =     "video_settings_name_32",
-	["r2_soft_shadows"] =       "video_settings_name_33",
-	["r2_lights_shadow_fade"] = "video_settings_name_34",
-	["r2_ao"] =                 "video_settings_name_35",
-	["r2_ao_intensity"] =       "video_settings_name_36",
-	["r2_ssao"] =               "video_settings_name_37",
-	["r2_ssao_mode"] =          "video_settings_name_38",
-	["r2_steep_parallax"] =     "video_settings_name_39",
-	["r2_dof"] =                "video_settings_name_40",
-	["r2_dof_reload"] =         "video_settings_name_41",
-	["r2_dof_zoom"] =           "video_settings_name_42",
-	["r2_dof_quality"] =        "video_settings_name_43",
-	["r2_detail_bump"] =        "video_settings_name_44",
-	["r2_lens_flare"] =         "video_settings_name_45",
-	["r2_lens_dirt"] =          "video_settings_name_46",
-	["r2_rain_drops"] =         "video_settings_name_47",
-	["r2_puddles"] =            "video_settings_name_48",
-	["r2_wet_surfaces"] =       "video_settings_name_49",
-	["r2_volumetric_lights"] =  "video_settings_name_50",
-	["r2_reflections"] =        "video_settings_name_51",
-	["r2_reflections_mode"] =   "video_settings_name_52",
---	["r2_gbuffer_opt"] =        "video_settings_name_53",
-	["r2_image_sharpening"] =   "video_settings_name_54",
-	["r2_volumetric_fog"] =     "video_settings_name_55",
-	["r2_actor_shadow"] =       "video_settings_name_56",
-	["r2_glows_use"] =          "video_settings_name_57",
-	["r2_sun_limit"] =          "video_settings_name_58",
-	["r__smap_size"] =          "video_settings_name_59",
-	["rs_mt_texload"] =         "video_settings_name_60",
-	["fov"] =                   "video_settings_name_61",
-	["hud_fov"] =               "video_settings_name_62",
+local renders_tbl = {
+	["renderer_r1"]   = 0,
+	["renderer_r2a"]  = 1,
+	["renderer_r2"]   = 2,
+	["renderer_r2.5"] = 3,
+	["renderer_r3"]   = 4,
+	["renderer_r4"]   = 5,
 }
+local function get_current_renderer() return renders_tbl[get_console():get_string("renderer")] end
 
-local hint_strings = {
-	["cam_inert"] =             "video_settings_desc_1",
-	["vis_dist"] =              "video_settings_desc_2",
-	["geometry_lod"] =          "video_settings_desc_3",
-	["detail_density"] =        "video_settings_desc_4",
-	["detail_distance"] =       "video_settings_desc_5",
---	["r2_details_opt"] =        "video_settings_desc_6",
-	["texture_lod"] =           "video_settings_desc_7",
-	["aniso"] =                 "video_settings_desc_8",
-	["r__bloodmarks"] =         "video_settings_desc_9",
---	["ssample"] =               "video_settings_desc_10",
-	["r2_sun"] =                "video_settings_desc_11",
-	["r2_sun_details"] =        "video_settings_desc_12",
-	["light_distance"] =        "video_settings_desc_13",
-	["npc_torch"] =             "video_settings_desc_14",
-	["particles_distance"] =    "video_settings_desc_15",
-	["vsync"] =                 "video_settings_desc_16",
-	["60hz"] =                  "video_settings_desc_17",
-	["r2_aa"] =                 "video_settings_desc_18",
-	["r2_aa_mode"] =            "video_settings_desc_19",
-	["r2_tf_mipbias"] =         "video_settings_desc_20",
-	["r2_gloss_factor"] =       "video_settings_desc_21",
-	["r2_sun_near"] =           "video_settings_desc_22",
-	["r2_sun_near_border"] =    "video_settings_desc_23",
-	["r2_true_sun_shadows"] =   "video_settings_desc_24",
-	["r2_tonemap"] =            "video_settings_desc_25",
-	["r2_tonemap_middlegray"] = "video_settings_desc_26",
---	["r2_sun_lumscale"] =       "video_settings_desc_27",
-	["r2_sun_lumscale_amb"] =   "video_settings_desc_28",
-	["r2_sunshafts"] =          "video_settings_desc_29",
-	["r2_sunshafts_mode"] =     "video_settings_desc_30",
-	["r2_soft_water"] =         "video_settings_desc_31",
-	["r2_soft_particles"] =     "video_settings_desc_32",
-	["r2_soft_shadows"] =       "video_settings_desc_33",
-	["r2_lights_shadow_fade"] = "video_settings_desc_34",
-	["r2_ao"] =                 "video_settings_desc_35",
-	["r2_ao_intensity"] =       "video_settings_desc_36",
-	["r2_ssao"] =               "video_settings_desc_37",
-	["r2_ssao_mode"] =          "video_settings_desc_38",
-	["r2_steep_parallax"] =     "video_settings_desc_39",
-	["r2_dof"] =                "video_settings_desc_40",
-	["r2_dof_reload"] =         "video_settings_desc_41",
-	["r2_dof_zoom"] =           "video_settings_desc_42",
-	["r2_dof_quality"] =        "video_settings_desc_43",
-	["r2_detail_bump"] =        "video_settings_desc_44",
-	["r2_lens_flare"] =         "video_settings_desc_45",
-	["r2_lens_dirt"] =          "video_settings_desc_46",
-	["r2_rain_drops"] =         "video_settings_desc_47",
-	["r2_puddles"] =            "video_settings_desc_48",
-	["r2_wet_surfaces"] =       "video_settings_desc_49",
-	["r2_volumetric_lights"] =  "video_settings_desc_50",
-	["r2_reflections"] =        "video_settings_desc_51",
-	["r2_reflections_mode"] =   "video_settings_desc_52",
---	["r2_gbuffer_opt"] =        "video_settings_desc_53",
-	["r2_image_sharpening"] =   "video_settings_desc_54",
-	["r2_volumetric_fog"] =     "video_settings_desc_55",
-	["r2_glows_use"] =          "video_settings_desc_57",
-	["r2_sun_limit"] =          "video_settings_desc_58",
-	["r__smap_size"] =          "video_settings_desc_59",
-	["rs_mt_texload"] =         "video_settings_desc_60",
-	["fov"] =                   "video_settings_desc_61",
-	["hud_fov"] =               "video_settings_desc_62",
-}
+local function only_1_mode()                    return get_current_renderer() == 0 end
+local function only_2a_and_more_mode()          return get_current_renderer() >= 1 end
+local function only_2_and_more_mode()           return get_current_renderer() >= 2 end
+local function only_25_and_more_mode()          return get_current_renderer() >= 3 end
+local function only_3_and_more_mode()           return get_current_renderer() >= 4 end
+local function only_3_and_more_mode_invisible() return not only_3_and_more_mode()  end
+local function only_4_and_more_mode()           return get_current_renderer() >= 5 end
 
 local adv_vid_opt_params = {
-	{ "fov",                   "track", 0, hint_colors.green  },
-	{ "hud_fov",               "track", 0, hint_colors.green  },
-	{ "r__smap_size",          "list",  1, hint_colors.red    },
-	{ "vis_dist",              "track", 0, hint_colors.yellow },
-	{ "r2_ao",                 "check", 0, hint_colors.green  },
-	{ "r2_ao_intensity",       "track", 0, hint_colors.green  },
-	{ "r2_ssao",               "list",  0, hint_colors.yellow },
-	{ "r2_ssao_mode",          "list",  0, hint_colors.yellow },
-	{ "r2_steep_parallax",     "list",  1, hint_colors.red    },
-	{ "r2_dof",                "check", 0, hint_colors.yellow },
-	{ "r2_dof_reload",         "check", 0, hint_colors.yellow },
-	{ "r2_dof_zoom",           "check", 0, hint_colors.yellow },
-	{ "r2_dof_quality",        "list",  0, hint_colors.yellow },
-	{ "geometry_lod",          "track", 0, hint_colors.green  },
-	{ "detail_density",        "track", 0, hint_colors.red    },
-	{ "detail_distance",       "track", 0, hint_colors.red    },
---	{"r2_details_opt",        "check", 1},
-	{ "r2_soft_water",         "check", 1, hint_colors.green  },
-	{ "r2_soft_particles",     "check", 1, hint_colors.green  },
-	{ "r__bloodmarks",         "check", 0, hint_colors.green  },
-	{ "texture_lod",           "track", 0, hint_colors.green  },
-	{ "aniso",                 "track", 0, hint_colors.green  },
-	{ "r2_aa",                 "list",  0, hint_colors.yellow },
-	{ "r2_aa_mode",            "list",  0, hint_colors.yellow },
---	{"ssample",               "track", 0},
-	{ "r2_sun",                "check", 0, hint_colors.yellow },
-	{ "r2_sun_details",        "check", 0, hint_colors.red    },
-	{ "r2_detail_bump",        "check", 1, hint_colors.yellow },
-	{ "r2_sunshafts",          "list",  0, hint_colors.red    },
-	{ "r2_sunshafts_mode",     "list",  0, hint_colors.red    },
-	{ "light_distance",        "track", 0, hint_colors.red    },
-	{ "npc_torch",             "check", 0, hint_colors.green  },
-	{ "particles_distance",    "track", 0, hint_colors.red    },
-	{ "vsync",                 "check", 0, hint_colors.green  },
-	{ "60hz",                  "check", 0, hint_colors.green  },
-	{ "r2_sun_near",           "track", 0, hint_colors.red    },
-	{ "r2_tf_mipbias",         "track", 0, hint_colors.green  },
-	{ "r2_gloss_factor",       "track", 0, hint_colors.green  },
-	{ "r2_sun_near_border",    "track", 0, hint_colors.green  },
-	{ "r2_true_sun_shadows",   "check", 0, hint_colors.yellow },
-	{ "r2_soft_shadows",       "list",  1, hint_colors.red    },
-	{ "r2_lights_shadow_fade", "list",  0, hint_colors.yellow },
-	{ "r2_tonemap",            "check", 0, hint_colors.green  },
-	{ "r2_tonemap_middlegray", "track", 0, hint_colors.green  },
---	{ "r2_sun_lumscale",       "track", 0, hint_colors.green  },
-	{ "r2_sun_lumscale_amb",   "track", 0, hint_colors.green  },
-	{ "cam_inert",             "track", 0, hint_colors.green  },
-	{ "r2_lens_flare",         "check", 0, hint_colors.green  },
-	{ "r2_lens_dirt",          "check", 0, hint_colors.green  },
-	{ "r2_rain_drops",         "check", 0, hint_colors.green  },
-	{ "r2_puddles",            "check", 1, hint_colors.green  },
-	{ "r2_wet_surfaces",       "check", 1, hint_colors.green  },
-	{ "r2_volumetric_lights",  "check", 0, hint_colors.green  },
-	{ "r2_reflections",        "list",  1, hint_colors.red    },
-	{ "r2_reflections_mode",   "list",  1, hint_colors.red    },
---	{ "r2_gbuffer_opt",        "check", 1},
-	{ "r2_image_sharpening",   "track", 0, hint_colors.green  },
-	{ "r2_volumetric_fog",     "check", 0, hint_colors.green  },
-	{ "r2_actor_shadow",       "check", 0, hint_colors.green  },
-	{ "r2_glows_use",          "check", 0, hint_colors.green  },
-	{ "r2_sun_limit",          "track", 0, hint_colors.yellow },
-	{ "rs_mt_texload",         "check", 1, hint_colors.green  },
+	{ "vis_dist",              "track", 0, hint_colors.yellow, "video_settings_name_2" , "video_settings_desc_2"  },
+	{ "geometry_lod",          "track", 0, hint_colors.yellow, "video_settings_name_3" , "video_settings_desc_3"  },
+	{ "texture_lod",           "track", 1, hint_colors.yellow, "video_settings_name_7" , "video_settings_desc_7"  },
+	{ "aniso",                 "track", 0, hint_colors.yellow, "video_settings_name_8" , "video_settings_desc_8"  },
+	--
+	{ "msaa",                  "list",  1, hint_colors.red   , "", ""                                            , only_3_and_more_mode  },
+	{ "fxaa",                  "check", 0, hint_colors.green , "", ""                                            , only_2a_and_more_mode },
+	{ "ssample",               "track", 0, hint_colors.green , "", ""                                            , only_1_mode  },
+	--
+	{ "detail_density",        "track", 0, hint_colors.yellow, "video_settings_name_4" , "video_settings_desc_4"  },
+	{ "detail_distance",       "track", 0, hint_colors.yellow, "video_settings_name_5" , "video_settings_desc_5"  },
+	{ "r2_sun_details",        "check", 0, hint_colors.red   , "video_settings_name_12", "video_settings_desc_12" },
+	{ "r2_sun",                "check", 0, hint_colors.red   , "video_settings_name_11", "video_settings_desc_11", only_2_and_more_mode  },
+	{ "light_distance",        "track", 0, hint_colors.yellow, "video_settings_name_13", "video_settings_desc_13", only_2a_and_more_mode },
+	{ "particles_distance",    "track", 0, hint_colors.yellow, "video_settings_name_15", ""                      , only_2a_and_more_mode },
+	{ "r__smap_size",          "list",  1, hint_colors.red   , "video_settings_name_59", "video_settings_desc_59", only_2_and_more_mode  },
+--	{ "r2_sun_near",           "track", 0, hint_colors.red   , "video_settings_name_22", "video_settings_desc_22", only_2_and_more_mode  }, --теперь эта команда ни на что не влияет, т.ч. выключаю.
+--	{ "r2_sun_far",            "track", 0, hint_colors.yellow, "video_settings_name_58", "video_settings_desc_58", only_2_and_more_mode  }, --теперь эта команда ни на что не влияет, т.ч. выключаю.
+	{ "npc_torch",             "check", 0, hint_colors.green , "video_settings_name_14", "video_settings_desc_14" },
+	{ "r1_detail_textures",    "check", 0, hint_colors.green , "", ""                                            , only_1_mode },
+	{ "r2_detail_bump",        "check", 0, hint_colors.yellow, "video_settings_name_44", "video_settings_desc_44", only_2_and_more_mode },
+	{ "r2_steep_parallax",     "check", 0, hint_colors.red   , "video_settings_name_39", "video_settings_desc_39", only_25_and_more_mode },
+	{ "r2_sun_quality",        "list",  0, hint_colors.red   , "", ""                                            , only_25_and_more_mode },
+	{ "sun_shafts",            "list",  0, hint_colors.red   , "video_settings_name_29", "video_settings_desc_29", only_25_and_more_mode },
+	{ "ssao_mode",             "list",  1, hint_colors.yellow, "video_settings_name_38", "video_settings_desc_38", only_25_and_more_mode },
+	{ "ssao",                  "list",  1, hint_colors.yellow, "video_settings_name_37", "video_settings_desc_37", only_25_and_more_mode },
+	{ "soft_water",            "check", 0, hint_colors.green , "video_settings_name_31", "video_settings_desc_31", only_25_and_more_mode },
+	{ "soft_particles",        "check", 0, hint_colors.green , "video_settings_name_32", "video_settings_desc_32", only_25_and_more_mode },
+	{ "dof",                   "check", 0, hint_colors.yellow, "video_settings_name_40", "video_settings_desc_40", only_25_and_more_mode },
+	{ "dof_zoom",              "check", 0, hint_colors.green,  "video_settings_name_42", "video_settings_desc_42", only_25_and_more_mode },
+	{ "dof_zoom_far",          "track", 0, hint_colors.green,  "", "",                                             only_25_and_more_mode },
+	{ "dof_zoom_near",         "track", 0, hint_colors.green,  "", "",                                             only_25_and_more_mode },
+	{ "volumetric_light",      "check", 0, hint_colors.green , "video_settings_name_50", "video_settings_desc_50", only_25_and_more_mode },
+	{ "r3_dynamic_wet_surfaces","check",0, hint_colors.green , "video_settings_name_49", "video_settings_desc_49", only_3_and_more_mode },
+--	{ "r3_volumetric_smoke",   "check", 0, hint_colors.green , "video_settings_name_55", "video_settings_desc_55", only_3_and_more_mode }, --Вообще выключен в движке, до лучших времен.
+	{ "tessellation",          "check", 0, hint_colors.green , "", ""                                            , only_4_and_more_mode },
+	{ "vsync",                 "check", 0, hint_colors.green , "video_settings_name_16", "video_settings_desc_16" },
+	{ "60hz",                  "check", 0, hint_colors.green , "video_settings_name_17", "video_settings_desc_17" },
+	{ "fov",                   "track", 0, hint_colors.green , "video_settings_name_61", "video_settings_desc_61" },
+	{ "hud_fov",               "track", 0, hint_colors.green , "video_settings_name_62", "video_settings_desc_62" },
+	{ "cam_inert",             "track", 0, hint_colors.green , "video_settings_name_1" , "video_settings_desc_1"  },
+--	{ "r2_sun_lumscale",       "track", 0, hint_colors.green , "video_settings_name_27", "video_settings_desc_27" }, --В огсе настройка была отключена. Устанавливалась в биндере принудительно в 1
+	{ "r2_sun_lumscale_amb",   "track", 0, hint_colors.green , "video_settings_name_28", "video_settings_desc_28", only_2_and_more_mode  },
+--	{ "r2_sun_lumscale_hemi",  "track", 0, hint_colors.green , "video_settings_name_63", "video_settings_desc_63", only_2_and_more_mode  }, --Это более не нужно.
+	{ "r2_tf_mipbias",         "track", 0, hint_colors.green , "video_settings_name_20", "video_settings_desc_20" },
+--	{ "r2_sun_near_border",    "track", 0, hint_colors.green , "video_settings_name_23", "video_settings_desc_23", only_2_and_more_mode  }, --теперь эта команда ни на что не влияет, т.ч. выключаю.
+	{ "r2_tonemap",            "check", 0, hint_colors.green , "video_settings_name_25", "video_settings_desc_25", only_2_and_more_mode  },
+	{ "r2_tonemap_middlegray", "track", 0, hint_colors.green , "video_settings_name_26", "video_settings_desc_26", only_2_and_more_mode  },
+	{ "r2_rain_drops",         "check", 0, hint_colors.green , "video_settings_name_47", "video_settings_desc_47", only_2a_and_more_mode },
+	{ "r2_actor_shadow",       "check", 0, hint_colors.green , "video_settings_name_56", "",                       only_2a_and_more_mode },
 }
 
 local control_init_funs = {
@@ -220,8 +97,6 @@ function opt_video_adv:InitControls(x, y, xml, handler)
 	self:Init(x, y, 738, 416)
 	self:SetAutoDelete(true)
 
-	self.message_box = CUIMessageBoxEx()
-
 	xml:InitFrame("frame_videoadv", self)
 	self.scroll_v = xml:InitScrollView("video_adv:scroll_v", self)
 
@@ -229,21 +104,26 @@ function opt_video_adv:InitControls(x, y, xml, handler)
 	-- который инвертирует порядок элементов, что в свою очередь сделано для того, чтобы визуально первые элементы
 	-- добавлялись последними, что в свою очередь позволяет раскрывающимся спискам перекрывать элементы, расположенные ниже по списку
 	for i = #adv_vid_opt_params, 1, -1 do
-		local opt, ctr_type, need_restart, color = unpack(adv_vid_opt_params[i])
+		local opt, ctr_type, need_restart, color, hint_caption, hint_string, cond = unpack(adv_vid_opt_params[i])
+
+		local enabled = not cond or cond()
+		if not enabled then goto CONTINUE end
 
 		local _st = xml:InitStatic("video_adv:templ_item", self.scroll_v)
 		local _st2 = xml:InitStatic("video_adv:cap_"..opt, _st)
+		local ctl = xml[control_init_funs[ctr_type]](xml, "video_adv:"..ctr_type.."_"..opt, _st)
+
 		if color then
 			_st2:SetTextColor(unpack(color))
 		end
-		local ctl = xml[control_init_funs[ctr_type]](xml, "video_adv:"..ctr_type.."_"..opt, _st)
+
 		handler:Register(_st, "video_adv_cap_"..opt)
 		handler:AddCallback(
 			"video_adv_cap_"..opt,
 			ui_events.STATIC_FOCUS_RECEIVED,
 			function()
-				handler.hint_name:SetText(hint_captions[opt] and game.translate_string(hint_captions[opt]) or "")
-				handler.hint_caption:SetText(hint_strings[opt] and game.translate_string(hint_strings[opt]) or "")
+				handler.hint_name:SetText(hint_caption and game.translate_string(hint_caption) or "")
+				handler.hint_caption:SetText(hint_string and game.translate_string(hint_string) or "")
 			end
 		)
 
@@ -252,14 +132,11 @@ function opt_video_adv:InitControls(x, y, xml, handler)
 			handler:AddCallback(
 				"video_adv:"..ctr_type.."_"..opt,
 				ctr_type == "list" and ui_events.LIST_ITEM_SELECT or ui_events.BUTTON_CLICKED,
-				function()
-					self.message_box:Init("message_box_restart_game")
-					handler:GetHolder():start_stop_menu(self.message_box, true)
-				end
+				handler.show_need_restart_wnd, handler
 			)
 		end
 
-		ctl:Enable(true)
+		::CONTINUE::
 	end
 
 	local btn = xml:Init3tButton("video_adv:btn_to_simply",	self)

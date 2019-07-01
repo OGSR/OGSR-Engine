@@ -5,7 +5,7 @@
 
 typedef unsigned short int wide_char;
 
-unsigned short int mbhMulti2Wide
+ENGINE_API unsigned short int mbhMulti2Wide
 	( wide_char *WideStr , wide_char *WidePos , const unsigned short int WideStrSize , const char *MultiStr  );
 
 __inline BOOL IsNeedSpaceCharacter( wide_char wc )

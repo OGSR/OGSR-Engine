@@ -2,6 +2,8 @@
 #define DetailModelH
 #pragma once
 
+#include "IRenderDetailModel.h"
+
 class ECORE_API CDetail		: public IRender_DetailModel
 {
 public:

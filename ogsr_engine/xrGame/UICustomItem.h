@@ -9,13 +9,6 @@ enum EUIItemAlign{
 	alCenter= 0x0010
 };
 
-enum EUIMirroring{
-	tmNone,
-	tmMirrorHorisontal,
-	tmMirrorVertical,
-	tmMirrorBoth
-};
-
 class CUICustomItem
 {
 protected:
@@ -39,7 +32,6 @@ protected:
 
 	Flags32			uFlags;
 	u32				uAlign;
-	EUIMirroring	eMirrorMode;
 
 public:
 					CUICustomItem			();
@@ -58,16 +50,13 @@ public:
 	   void			ResetHeadingPivot		();
 	   IC bool		GetFixedLTWhileHeading	() const { return !!uFlags.test(flFixedLTWhileHeading); }
 
-	void			Render					(FVF::TL*& Pointer, const Fvector2& pos, u32 color, 
+	void			Render					(const Fvector2& pos, u32 color, 
 														float x1, float y1, 
 														float x2, float y2);
 	
-	void			Render					(FVF::TL*& Pointer, const Fvector2& pos, u32 color);
-	void			Render					(FVF::TL*& Pointer, const Fvector2& pos, u32 color, float angle);
+	void			Render					(const Fvector2& pos, u32 color);
+	void			Render					(const Fvector2& pos, u32 color, float angle);
 
 	IC void			SetAlign				(u32 align)					{uAlign=align;};
 	IC u32			GetAlign				()							{return uAlign;}
-
-	IC void			SetMirrorMode			(EUIMirroring m)			{ eMirrorMode = m; }
-	IC EUIMirroring GetMirrorMode			()							{ return eMirrorMode; }
 };

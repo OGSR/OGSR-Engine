@@ -1,6 +1,9 @@
 #pragma once
 
-#include "../../../xr_3da/SkeletonAnimated.h"
+#include "../../../xr_3da/SkeletonMotions.h"
+#include "../../../Include\xrRender\Kinematics.h"
+#include "../../../Include\xrRender\animation_motion.h"
+#include "../../../Include\xrRender\animation_blend.h"
 
 class CAI_Trader;
 

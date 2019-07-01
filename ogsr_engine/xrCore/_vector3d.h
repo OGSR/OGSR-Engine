@@ -1,10 +1,4 @@
-#ifndef __V3D__
-#define __V3D__
-
-// Inline call
-#ifndef IC
-#define IC __forceinline
-#endif
+#pragma once
 
 template <class T>
 struct _vector3 {
@@ -23,7 +17,6 @@ public:
 	ICF	SelfRef	set(T _x, T _y, T _z)					{ x = _x;		y = _y;		z = _z;		return *this;	};
 	ICF SelfRef	set(const _vector3<float> &v)			{ x = T(v.x);	y = T(v.y);	z = T(v.z);	return *this;	};
 	ICF SelfRef	set(const _vector3<double> &v)			{ x = T(v.x);	y = T(v.y);	z = T(v.z);	return *this;	};
-	ICF SelfRef	set(const _vector3<s32> &v)				{ x = T(v.x);	y = T(v.y);	z = T(v.z);	return *this; };
 	ICF	SelfRef	set(float* p)							{ x = p[0];	y = p[1];	z = p[2];		return *this;	};
 	ICF	SelfRef	set(double* p)							{ x = p[0];	y = p[1];	z = p[2];		return *this;	};
 
@@ -508,5 +501,3 @@ aa2_largest:	// aa2 is largest
 }
 IC BOOL	exact_normalize	(Fvector3& a)	{	return exact_normalize(&a.x);	}
 #pragma warning(pop)
-
-#endif

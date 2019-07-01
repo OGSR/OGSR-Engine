@@ -1,5 +1,4 @@
-#ifndef FOBB_H
-#define FOBB_H
+#pragma once
 
 template <class T>
 struct _obb{
@@ -51,6 +50,11 @@ public:
 		m_rotate.identity	();
 		m_translate.set		(0,0,0);
 		m_halfsize.set		(0,0,0);
+		return *this;
+	}
+	IC SelfRef		identity() {
+		invalidate();
+		m_halfsize.set( T(0.5), T(0.5), T(0.5) );
 		return *this;
 	}
 	IC void			xform_get(Tmatrix& D) const
@@ -121,5 +125,3 @@ BOOL	_valid			(const _obb<T>& m)
 { 
 	return _valid(m_rotate) && _valid(m_translate) && _valid(m_halfsize);
 }
-
-#endif
