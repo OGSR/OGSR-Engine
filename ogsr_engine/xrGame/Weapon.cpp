@@ -2164,7 +2164,7 @@ float CWeapon::GetSecondVPFov() const
 	{
 		fov_factor = m_fRTZoomFactor;
 	}
-	return float(atan(tan(g_fov * (0.5 * PI / 180)) / fov_factor) / (0.5 * PI / 180)); //-V595
+	return atanf(tanf(g_fov * (0.5f * PI / 180)) / fov_factor) / (0.5f * PI / 180); //-V595
 }
 
 bool CWeapon::IsGrenadeMode() const
