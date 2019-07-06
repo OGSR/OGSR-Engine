@@ -461,6 +461,7 @@ public:
 
 	bool					is_jump					();		
 	bool					is_crouch				();
+	u32 MovingState() const { return mstate_real; }
 
 	IC float				GetJumpSpeed			()	const			{return m_fJumpSpeed;}
 	IC float				GetWalkAccel			()	const			{ return m_fWalkAccel; }

@@ -351,7 +351,12 @@ protected:
 	virtual void			UpdateFireDependencies_internal	();
 	virtual void			UpdatePosition			(const Fmatrix& transform);	//.
 	virtual void			UpdateXForm				();
+
+	float m_fLR_MovingFactor; // !!!!
+	Fvector m_strafe_offset[3][2]; //pos,rot,data/ normal,aim-GL --#SM+#--
+	u8 GetCurrentHudOffsetIdx() const;
 	virtual void			UpdateHudAdditonal		(Fmatrix&);
+
 	IC		void			UpdateFireDependencies	()			{ if (dwFP_Frame==Device.dwFrame) return; UpdateFireDependencies_internal(); };
 
 	virtual void			LoadFireParams		(LPCSTR section, LPCSTR prefix);
