@@ -30,9 +30,9 @@ struct ENGINE_API VisMask final
 	IC	 void						set(u16 _digit, bool _set)
 	{
 		if (_digit < 64)
-			_visimask.set(u64(1) << _digit, _set);
+			_visimask.set(1ull << _digit, _set);
 		else
-			_visimask_ex.set(u64(1) << (_digit - 64), _set);
+			_visimask_ex.set(1ull << (_digit - 64), _set);
 	}
 	IC	void						set(u64 _low, u64 _high)
 	{
@@ -42,9 +42,9 @@ struct ENGINE_API VisMask final
 	IC	bool						is(u16 _digit)
 	{
 		if (_digit < 64)
-			return !!_visimask.is(u64(1) << _digit);
+			return !!_visimask.is(1ull << _digit);
 		else
-			return !!_visimask_ex.is(u64(1) << (_digit - 64));
+			return !!_visimask_ex.is(1ull << (_digit - 64));
 	}
 	IC	void						zero()
 	{
@@ -55,10 +55,10 @@ struct ENGINE_API VisMask final
 	{
 		u16 _c = 0;
 		for (u16 i = 0; i < 64; ++i)
-			if (_visimask.is(u64(1) << i))
+			if (_visimask.is(1ull << i))
 				++_c;
 		for (u16 j = 0; j < 64; ++j)
-			if (_visimask_ex.is(u64(1) << j))
+			if (_visimask_ex.is(1ull << j))
 				++_c;
 		return _c;
 	}

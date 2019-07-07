@@ -784,7 +784,7 @@ float CActor::currentFOV()
 		&& (!pWeapon->ZoomTexture() || (!pWeapon->IsRotatingToZoom() && pWeapon->ZoomTexture()))
 		)
 		if (Core.Features.test(xrCore::Feature::ogse_wpn_zoom_system))
-			return float(atan(tan(g_fov * (0.5 * PI / 180)) / pWeapon->GetZoomFactor()) / (0.5 * PI / 180));
+			return atanf(tanf(g_fov * (0.5f * PI / 180)) / pWeapon->GetZoomFactor()) / (0.5f * PI / 180);
 		else
 			return pWeapon->GetZoomFactor() * 0.75f;
 	else

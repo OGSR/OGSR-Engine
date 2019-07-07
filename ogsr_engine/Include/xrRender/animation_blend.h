@@ -163,7 +163,6 @@ IC	bool CBlend::update_time			( float dt )
 	timeCurrent += quant; // stop@end - time is not going
 
 	bool	running_fwrd	=  ( quant > 0 );
-	float	const END_EPS	=	SAMPLE_SPF+EPS;
 	bool	at_end			=	running_fwrd && ( timeCurrent > ( timeTotal-END_EPS ) );
 	bool	at_begin		=	!running_fwrd && ( timeCurrent < 0.f );
 	
