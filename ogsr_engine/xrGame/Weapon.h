@@ -267,6 +267,8 @@ protected:
 	bool			m_bHideCrosshairInZoom;
 	//разрешить инерцию оружия в режиме прицеливания
 	bool			m_bZoomInertionAllow;
+	// или в режиме прицеливания через оптику
+	bool			m_bScopeZoomInertionAllow;
 	//Целевой HUD FOV при зуме
 	float			m_fZoomHudFov;
 	//Целевой HUD FOV для линзы
@@ -274,6 +276,10 @@ protected:
 
 	bool m_bUseScopeZoom			= false;
 	bool m_bUseScopeGrenadeZoom		= false;
+	bool m_bUseScopeDOF = true;
+	bool m_bForceScopeDOF = false;
+	bool m_bScopeShowIndicators = true;
+	bool m_bIgnoreScopeTexture = false;
 
 	float m_fMinZoomK			= def_min_zoom_k;
 	float m_fZoomStepCount		= def_zoom_step_count;

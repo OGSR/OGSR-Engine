@@ -1018,14 +1018,14 @@ void CWeaponMagazined::InitAddons()
 			m_iScopeX = pSettings->r_s32(cNameSect(), "scope_x");
 			m_iScopeY = pSettings->r_s32(cNameSect(), "scope_y");
 
-			InitZoomParams(*m_sScopeName, true);
+			InitZoomParams(*m_sScopeName, !m_bIgnoreScopeTexture);
 
-			m_fZoomHudFov = READ_IF_EXISTS(pSettings, r_float, cNameSect(), "scope_zoom_hud_fov", m_fZoomHudFov);
-			m_fSecondVPHudFov = READ_IF_EXISTS(pSettings, r_float, cNameSect(), "scope_lense_hud_fov", m_fSecondVPHudFov);
+			m_fZoomHudFov = READ_IF_EXISTS(pSettings, r_float, cNameSect().c_str(), "scope_zoom_hud_fov", m_fZoomHudFov);
+			m_fSecondVPHudFov = READ_IF_EXISTS(pSettings, r_float, cNameSect().c_str(), "scope_lense_hud_fov", m_fSecondVPHudFov);
 		}
 		else if(m_eScopeStatus == ALife::eAddonPermanent)
 		{
-			InitZoomParams(cNameSect().c_str(), true);
+			InitZoomParams(cNameSect().c_str(), !m_bIgnoreScopeTexture);
 
 			// CWeaponBinoculars always use dynamic zoom
 			m_bScopeDynamicZoom = m_bScopeDynamicZoom || !!smart_cast<CWeaponBinoculars*>(this);

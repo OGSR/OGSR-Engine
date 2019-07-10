@@ -378,6 +378,10 @@ void CWeapon::Load		(LPCSTR section)
 	m_bZoomEnabled = !!pSettings->r_bool(section,"zoom_enabled");
 	m_bUseScopeZoom = !!READ_IF_EXISTS(pSettings, r_bool, section, "use_scope_zoom", false);
 	m_bUseScopeGrenadeZoom = !!READ_IF_EXISTS(pSettings, r_bool, section, "use_scope_grenade_zoom", false);
+	m_bUseScopeDOF = !!READ_IF_EXISTS(pSettings, r_bool, section, "use_scope_dof", true);
+	m_bForceScopeDOF = !!READ_IF_EXISTS(pSettings, r_bool, section, "force_scope_dof", false);
+	m_bScopeShowIndicators = !!READ_IF_EXISTS(pSettings, r_bool, section, "scope_show_indicators", true);
+	m_bIgnoreScopeTexture = !!READ_IF_EXISTS(pSettings, r_bool, section, "ignore_scope_texture", false);
 
 	m_fZoomRotateTime = ROTATION_TIME;
 	m_bScopeDynamicZoom = false;
@@ -467,6 +471,7 @@ void CWeapon::Load		(LPCSTR section)
 	m_bZoomInertionAllow = false;
 	if (pSettings->line_exist(hud_sect, "allow_zoom_inertion"))
 		m_bZoomInertionAllow = !!pSettings->r_bool(hud_sect, "allow_zoom_inertion");
+	m_bScopeZoomInertionAllow = READ_IF_EXISTS(pSettings, r_bool, hud_sect, "allow_scope_zoom_inertion", m_bZoomInertionAllow);
 
 	//////////////////////////////////////////////////////////
 
@@ -900,8 +905,8 @@ void CWeapon::UpdateWeaponParams()
 
 	if (!IsHidden()) {
 		w_states.x = m_fZoomRotationFactor;			//x = zoom mode, y - текущее состояние, z - старое состояние
-		if ( psActorFlags.test( AF_DOF_SCOPE ) && !( IsZoomed() && !IsRotatingToZoom() && ZoomTexture() ) )
-		  w_states.x = 0.f;
+		if (psActorFlags.test(AF_DOF_SCOPE) && !(IsZoomed() && !IsRotatingToZoom() && (IsScopeAttached() || m_bForceScopeDOF) && !IsGrenadeMode() && m_bUseScopeDOF))
+			w_states.x = 0.f;
 		if (w_states.y != GetState())	// первый апдейт или стейт изменился
 		{
 			w_states.z = w_states.y;						// записываем старое состояние
@@ -1557,10 +1562,12 @@ void CWeapon::OnZoomIn()
 	else
 		m_fZoomFactor = CurrentZoomFactor();
 
-	if (!m_bZoomInertionAllow)
-	{
-		StopHudInertion();
+	if (IsScopeAttached() && !IsGrenadeMode()) {
+		if (!m_bScopeZoomInertionAllow)
+			StopHudInertion();
 	}
+	else if (!m_bZoomInertionAllow)
+		StopHudInertion();
 
 	if(GetHUDmode())
 		GamePersistent().SetPickableEffectorDOF(true);
@@ -2065,7 +2072,7 @@ bool CWeapon::show_crosshair()
 
 bool CWeapon::show_indicators()
 {
-	return ! ( IsZoomed() && ZoomTexture() );
+	return !(IsZoomed() && (ZoomTexture() || !m_bScopeShowIndicators));
 }
 
 float CWeapon::GetConditionToShow	() const
@@ -2218,7 +2225,7 @@ float CWeapon::GetHudFov()
 			float fDiff = m_nearwall_last_hud_fov - m_fSecondVPHudFov;
 			return m_fSecondVPHudFov + (fDiff * (1 - m_fZoomRotationFactor));
 		}
-		if (!UseScopeTexture() && m_fZoomHudFov > 0.0f)
+		if ((m_eScopeStatus == CSE_ALifeItemWeapon::eAddonDisabled || IsScopeAttached()) && !IsGrenadeMode() && m_fZoomHudFov > 0.0f)
 		{
 			// В процессе зума
 			float fDiff = m_nearwall_last_hud_fov - m_fZoomHudFov;
