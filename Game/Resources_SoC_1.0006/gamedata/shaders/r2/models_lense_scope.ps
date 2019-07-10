@@ -9,6 +9,8 @@ uniform	float4 m_hud_params; // zoom_rotate_factor, secondVP_zoom_factor, NULL, 
 // KRodin: TODO: Вынести в common?
 uniform	float4 screen_res;
 
+#include "pnv.h"
+
 uniform	float4 m_blender_mode; // x = [0 - default, 1 - night vision, 2 - thermal vision]; y = [0.0f / 1.0f - происходит ли в данный момент рендеринг картинки для прицела]; z = [0.0f / 1.0f - выключен или включён двойной рендер]; w - зарезервировано на будущее.
 
 // Активен-ли двойной рендер?
@@ -39,11 +41,6 @@ float resize(float input, float factor, float offset)
 	return (input - 0.5f + offset) / factor + 0.5f - offset;
 }
 
-float random(float2 co)
-{
-      return 0.5 + (frac(sin(dot(co.xy, float2(12.9898, 78.233))) * 43758.5453)) * 0.5;
-}
-
 half4 main( v2p I )	: COLOR
 {
 	half4 t_base = tex2D(s_base, I.tc0); // Текстура сетки
@@ -54,19 +51,10 @@ half4 main( v2p I )	: COLOR
 	
 	if (!isSecondVPActive()) {
 		t_vp2.rgb /= 100; //KRodin: чтобы изображение во втором вьюпорте не застывало после его отключения - просто затемним его в 100 раз.
-	} else if (m_blender_mode.x == 1.f) { //Ночной режим
-		// Рассчитываем случайный шум пикселя
-		float noise = random(I.tc0 * timers.z) * 0.3;
-		
-		// Осветляем картинку в 7 раз
-		t_vp2.rgb *= 7; //KRodin: TODO: уменьшить, т.к. слишком светло.
-		
-		// Обесцвечиваем пиксель
-		float gray = ((t_vp2.r + t_vp2.g + t_vp2.b) / 3);
-		t_vp2.rgb = half3(gray, gray, gray);
-		
-		// Добавляем зелёный оттенок
-		t_vp2.g += (0.4 + noise);
+	} else if (m_blender_mode.x == 1.f) { //Зеленый ПНВ
+		t_vp2.rgb = calc_night_vision_effect(I.tc0, t_vp2, float3(0.66, 2.0, 0.5));
+	} else if (m_blender_mode.x == 2.f) { //Фейковый тепловизор, на самом деле ПНВ с красным оттенком
+		t_vp2.rgb = calc_night_vision_effect(I.tc0, t_vp2, float3(0.79, 0.191, 0.247));
 	}
 	
 	// Миксуем с сеткой
