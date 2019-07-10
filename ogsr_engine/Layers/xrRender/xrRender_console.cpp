@@ -13,7 +13,7 @@ xr_token SmapSizeToken[] = {
   { "4096x4096",   4096 },
   { "6144x6144",   6144 },
   { "8192x8192",   8192 },
-  { "16384x16384", 16384 },
+  //{ "16384x16384", 16384 },
   { nullptr, 0 }
 };
 
@@ -334,7 +334,7 @@ public:
 #endif	//	USE_DX10
 	}
 
-	CCC_tf_MipBias(LPCSTR N, float*	v) : CCC_Float(N, v, -0.5f, +0.5f)	{ };
+	CCC_tf_MipBias(LPCSTR N, float*	v) : CCC_Float(N, v, -3.f, +3.f)	{ };
 	virtual void Execute(LPCSTR args)
 	{
 		CCC_Float::Execute	(args);
@@ -743,8 +743,7 @@ void		xrRender_initconsole	()
 	CMD4(CCC_Float,		"r__geometry_lod",		&ps_r__LOD,					0.1f,	/*1.2f*/ 3.f		); //AVO: extended from 1.2f to 3.f
 //.	CMD4(CCC_Float,		"r__geometry_lod_pow",	&ps_r__LOD_Power,			0,		2		);
 
-//.	CMD4(CCC_Float,		"r__detail_density",	&ps_r__Detail_density,		.05f,	0.99f	);
-	CMD4(CCC_Float, "r__detail_density", &ps_current_detail_density/*&ps_r__Detail_density*/, 0.3f, 1.0f);
+	CMD4(CCC_Float, "r__detail_density", &ps_current_detail_density, 0.2f, 1.0f);
 	CMD4(CCC_Float, "r__detail_scale", &ps_current_detail_scale, 0.2f, 3.0f);
 
 #ifdef DEBUG
