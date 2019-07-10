@@ -55,7 +55,7 @@
 
 const		float				SMAP_near_plane		= .1f	;
 
-const		u32					SMAP_adapt_min		= 32	;
+const		u32					SMAP_adapt_min		= 768; //32	;
 const		u32					SMAP_adapt_optimal	= 768	;
 const		u32					SMAP_adapt_max		= 1536	;
 
