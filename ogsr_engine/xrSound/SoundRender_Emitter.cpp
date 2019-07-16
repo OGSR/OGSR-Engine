@@ -10,7 +10,7 @@ extern	float			psSoundVEffects;
 
 void CSoundRender_Emitter::set_position(const Fvector &pos)
 {
-	if (source()->channels_num() == 1)
+	if ( source()->channels_num() == 1 && _valid( pos ) )
 		p_source.position = pos;
 	else
 		p_source.position.set(0, 0, 0);
