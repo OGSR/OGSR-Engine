@@ -88,7 +88,7 @@ BOOL CWeaponMagazined::net_Spawn(CSE_Abstract* DC)
 	BOOL bRes = inherited::net_Spawn(DC);
 	const auto wpn = smart_cast<CSE_ALifeItemWeaponMagazined*>(DC);
 	m_iCurFireMode = wpn->m_u8CurFireMode;
-	if ( m_iCurFireMode >= m_aFireModes.size() ) {
+	if ( HasFireModes() && m_iCurFireMode >= m_aFireModes.size() ) {
 	  Msg( "! [%s]: %s: wrong m_iCurFireMode[%u/%u]", __FUNCTION__, cName().c_str(), m_iCurFireMode, m_aFireModes.size() - 1 );
 	  m_iCurFireMode = m_aFireModes.size() - 1;
 	  auto se_obj = alife_object();
