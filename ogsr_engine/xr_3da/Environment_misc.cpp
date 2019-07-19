@@ -388,6 +388,7 @@ void CEnvDescriptor::load(float exec_tm, LPCSTR S, CEnvironment& environment)
 	clouds_color.w = save;
 
 	sky_color = pSettings->r_fvector3(m_identifier.c_str(), "sky_color");
+	sky_color.mul(0.5f);
 
 	if (pSettings->line_exist(m_identifier.c_str(), "sky_rotation"))	sky_rotation = deg2rad(pSettings->r_float(m_identifier.c_str(), "sky_rotation"));
 	else											sky_rotation = 0;
