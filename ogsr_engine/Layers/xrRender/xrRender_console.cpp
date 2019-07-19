@@ -192,7 +192,11 @@ float		ps_r2_ls_bloom_kernel_scale	= .7f;				// r2-only	// gauss
 float		ps_r2_ls_dsm_kernel			= .7f;				// r2-only
 float		ps_r2_ls_psm_kernel			= .7f;				// r2-only
 float		ps_r2_ls_ssm_kernel			= .7f;				// r2-only
+#ifdef USE_COP_WEATHER_CONFIGS
 float		ps_r2_ls_bloom_threshold	= .00001f;				// r2-only
+#else
+float		ps_r2_ls_bloom_threshold = 1.f;				// r2-only
+#endif
 float		ps_r2_mblur					= .0f;				// .5f
 int			ps_r2_GI_depth				= 1;				// 1..5
 int			ps_r2_GI_photons			= 16;				// 8..64
@@ -257,9 +261,12 @@ float		ps_current_detail_density = 0.6;
 float		ps_current_detail_scale = 1.f;
 
 
-//- Mad Max
-float		ps_r2_gloss_factor			= 4.0f;
-//- Mad Max
+#ifdef USE_COP_WEATHER_CONFIGS
+float ps_r2_gloss_factor = 4.0f;
+#else
+float ps_r2_gloss_factor = 1.0f;
+#endif
+
 #ifndef _EDITOR
 #include	"../../xr_3da/xr_ioconsole.h"
 #include	"../../xr_3da/xr_ioc_cmd.h"

@@ -1234,6 +1234,15 @@ HRESULT	CRender::shader_compile			(
 	}
 	sh_name[len]='0'+char(o.dx10_minmax_sm!=0); ++len;
 
+#ifdef USE_COP_WEATHER_CONFIGS
+	defines[def_it].Name = "USE_COP_WEATHER_CONFIGS";
+	defines[def_it].Definition = "1";
+	def_it++;
+	sh_name[len] = '1'; ++len;
+#else
+	sh_name[len] = '0'; ++len;
+#endif
+
 	// add a #define for DX10_1 MSAA support
    if( o.dx10_msaa )
    {
