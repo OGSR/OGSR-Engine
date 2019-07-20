@@ -52,7 +52,9 @@ public:
 	shared_str				article_id;
 	shared_str				map_hint;
 	shared_str				map_location;
+	shared_str				object_story_id;
 	u16						object_id;
+	u16						get_object_id();
 	CMapLocation*			LinkedMapLocation	();
 	ETaskState				TaskState			()	{return task_state;};
 	ETaskState				UpdateState			();

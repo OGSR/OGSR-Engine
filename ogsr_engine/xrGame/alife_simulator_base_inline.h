@@ -201,7 +201,11 @@ IC	const bool							&CALifeSimulatorBase::can_register_objects	() const
 
 IC	void						CALifeSimulatorBase::add_story_object(CSE_ALifeDynamicObject *object, ALife::_STORY_ID _story_id)
 {
+#ifdef CRASH_ON_INVALID_STORY_ID
+	story_objects().add(_story_id, object, false);
+#else
 	story_objects().add(_story_id, object, true);
+#endif
 }
 
 

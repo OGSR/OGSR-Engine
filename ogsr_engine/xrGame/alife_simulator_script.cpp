@@ -313,7 +313,7 @@ void CALifeSimulator__assign_story_id(CALifeSimulator *self, ALife::_OBJECT_ID _
 		obj->m_story_id = _story_id;
 		self->add_story_object(obj, _story_id);
 	} else
-		Msg("assign_story_id: specified id is already using");
+		Msg( "assign_story_id: specified id[%u] is already using", _story_id );
 }
 
 void CALifeSimulator__use_ai_locations(CALifeSimulator *self, CSE_Abstract *object, bool _use)

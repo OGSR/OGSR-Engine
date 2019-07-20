@@ -103,8 +103,9 @@ CGameTask*	CGameTaskManager::GiveGameTaskToActor(CGameTask* t, u32 timeToComplet
 			}
 		}
 
-		if(obj->object_id!=u16(-1) && obj->map_location.size() && obj->def_location_enabled ){
-			CMapLocation* ml =	Level().MapManager().AddMapLocation(obj->map_location, obj->object_id);
+		u16 object_id = obj->get_object_id();
+		if ( object_id != u16(-1) && obj->map_location.size() && obj->def_location_enabled ) {
+			CMapLocation* ml = Level().MapManager().AddMapLocation( obj->map_location, object_id );
 			if(obj->map_hint.size())
 				ml->SetHint(obj->map_hint);
 			ml->DisablePointer			();
@@ -144,7 +145,7 @@ void CGameTaskManager::SetTaskState(CGameTask* t, u16 objective_num, ETaskState 
 	bool bActive					= ActiveObjective()==o;
 
 	if((state==eTaskStateFail||state==eTaskStateCompleted) && ml){
-		Level().MapManager().RemoveMapLocation(o->map_location, o->object_id);
+		Level().MapManager().RemoveMapLocation( o->map_location, o->get_object_id() );
 		o->map_location				= NULL;
 		o->object_id				= u16(-1);
 	}
@@ -177,9 +178,10 @@ void CGameTaskManager::SetTaskState(CGameTask* t, u16 objective_num, ETaskState 
 		if (!obj.def_location_enabled &&
 			obj.TaskState() == eTaskStateInProgress)
 		{
-			if (obj.object_id != u16(-1) && *obj.map_location)
+			u16 object_id = obj.get_object_id();
+			if ( object_id != u16(-1) && *obj.map_location )
 			{
-				CMapLocation* ml = Level().MapManager().AddMapLocation(obj.map_location, obj.object_id);
+				CMapLocation* ml = Level().MapManager().AddMapLocation( obj.map_location, object_id );
 				if (obj.map_hint.size())
 					ml->SetHint(obj.map_hint);
 				ml->DisablePointer();

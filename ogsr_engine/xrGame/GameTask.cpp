@@ -28,7 +28,11 @@ extern STORY_PAIRS story_ids;
 
 ALife::_STORY_ID story_id( LPCSTR story_id ) {
   auto I = story_ids.find( story_id );
+#ifdef CRASH_ON_INVALID_STORY_ID
+  ASSERT_FMT( I != story_ids.end(), "story_id not found: %s", story_id );
+#else
   ASSERT_FMT_DBG( I != story_ids.end(), "story_id not found: %s", story_id );
+#endif
   return ALife::_STORY_ID( (*I).second );
 }
 
@@ -137,7 +141,7 @@ void CGameTask::Load(const TASK_ID& id)
 //.
 		objective.map_location			= g_gameTaskXml->Read(l_root, "map_location_type", 0, NULL);
 
-		LPCSTR object_story_id			= g_gameTaskXml->Read(l_root, "object_story_id", 0, NULL);
+		objective.object_story_id			= g_gameTaskXml->Read(l_root, "object_story_id", 0, NULL);
 
 //*
 		LPCSTR ddd;
@@ -147,7 +151,7 @@ void CGameTask::Load(const TASK_ID& id)
 
 		bool b1,b2;
 		b1								= (0==objective.map_location.size());
-		b2								= (NULL==object_story_id);
+		b2								= (0==objective.object_story_id.size());
 		VERIFY3							(b1==b2,"check [map_location_type] and [object_story_id] fields in objective definition for: ",*objective.description);
 		
 //.
@@ -156,10 +160,14 @@ void CGameTask::Load(const TASK_ID& id)
 //.
 		objective.map_hint				= g_gameTaskXml->ReadAttrib(l_root, "map_location_type", 0, "hint", NULL);
 
-		if(object_story_id){
-			ALife::_STORY_ID _sid		= story_id(object_story_id);
+/*
+		if ( objective.object_story_id.size() ) {
+			ALife::_STORY_ID _sid		= story_id(objective.object_story_id.c_str());
 			objective.object_id			= storyId2GameId(_sid);
+			if ( objective.object_id == u16(-1) )
+			  Msg( "! [%s]: can't find object_id by object_story_id[%s] objective.description[%s] m_Title[%s]", __FUNCTION__, objective.object_story_id.c_str(), objective.description.c_str(), m_Title.c_str() );
 		}
+*/
 
 
 //------infoportion_complete
@@ -253,6 +261,7 @@ SGameTaskObjective::SGameTaskObjective		(CGameTask* parent, int _idx)
 :description		(NULL),
 article_id			(NULL),
 map_location		(NULL),
+object_story_id( nullptr ),
 object_id			(u16(-1)),
 task_state			(eTaskStateInProgress),
 def_location_enabled(true),
@@ -265,6 +274,7 @@ SGameTaskObjective::SGameTaskObjective()
 :description		(NULL),
 article_id			(NULL),
 map_location		(NULL),
+object_story_id( nullptr ),
 object_id			(u16(-1)),
 task_state			(eTaskStateInProgress),
 def_location_enabled(true),
@@ -273,10 +283,27 @@ idx					(0)
 {
 }
 
+u16 SGameTaskObjective::get_object_id() {
+  if ( object_story_id.size() ) {
+    ALife::_STORY_ID _sid = story_id( object_story_id.c_str() );
+    u16 id = storyId2GameId( _sid );
+#ifdef CRASH_ON_INVALID_STORY_ID
+    ASSERT_FMT( id != u16(-1), "[%s]: can't find object_id by object_story_id[%s] description[%s] m_Title[%s]", __FUNCTION__, object_story_id.c_str(), description.c_str(), parent ? parent->m_Title.c_str() : "" );
+    return id;
+#else
+    if ( id == u16(-1) )
+      Msg( "! [%s]: can't find object_id by object_story_id[%s] description[%s] m_Title[%s]", __FUNCTION__, object_story_id.c_str(), description.c_str(), parent ? parent->m_Title.c_str() : "" );
+    else
+      return id;
+#endif
+  }
+  return object_id;
+}
+
 CMapLocation* SGameTaskObjective::LinkedMapLocation		()
 {
 	if( map_location.size()==0) return NULL;
-	return Level().MapManager().GetMapLocation(map_location, object_id);
+	return Level().MapManager().GetMapLocation( map_location, get_object_id() );
 }
 
 void SGameTaskObjective::SetTaskState		(ETaskState new_state)
