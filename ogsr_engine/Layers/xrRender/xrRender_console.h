@@ -139,6 +139,11 @@ extern ECORE_API int			ps_r3_dyn_wet_surf_enable_streaks;
 extern ECORE_API float ps_r2_rain_drops_intensity;
 extern ECORE_API float ps_r2_rain_drops_speed;
 
+extern ECORE_API Fvector3 ps_pnv_color;
+extern ECORE_API float    ps_pnv_mode;
+extern ECORE_API float    ps_pnv_noise;
+extern ECORE_API float    ps_pnv_scanlines;
+
 enum
 {
 	R2FLAG_SUN					= (1<<0),

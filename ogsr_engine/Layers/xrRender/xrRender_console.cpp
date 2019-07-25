@@ -267,6 +267,11 @@ float ps_r2_gloss_factor = 4.0f;
 float ps_r2_gloss_factor = 1.0f;
 #endif
 
+Fvector3 ps_pnv_color = Fvector3().set( 0.f, 0.f, 0.f );
+float    ps_pnv_mode  = 0.f;
+float    ps_pnv_noise = 0.15;
+float    ps_pnv_scanlines = 0.175;
+
 #ifndef _EDITOR
 #include	"../../xr_3da/xr_ioconsole.h"
 #include	"../../xr_3da/xr_ioc_cmd.h"
@@ -968,6 +973,13 @@ void		xrRender_initconsole	()
 	
 
 //	CMD3(CCC_Mask,		"r2_sun_ignore_portals",		&ps_r2_ls_flags,			R2FLAG_SUN_IGNORE_PORTALS);
+
+        tw_min.set(  0.f,  0.f,  0.f );
+        tw_max.set( 10.f, 10.f, 10.f );
+        CMD4( CCC_Vector3, "r__pnv_color", &ps_pnv_color, tw_min, tw_max );
+        CMD4( CCC_Float,   "r__pnv_mode",  &ps_pnv_mode, 0.f, 20.f );
+        CMD4( CCC_Float,   "r__pnv_noise", &ps_pnv_noise, 0.f, 1.f );
+        CMD4( CCC_Float,   "r__pnv_scanlines", &ps_pnv_scanlines, 0.f, 1.f );
 }
 
 #endif
