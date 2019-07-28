@@ -147,6 +147,11 @@ DEFINE_VECTOR	(xr_rtoken,RTokenVec,RTokenVecIt);
 #	define MsgDbg Msg
 #	define FuncDbg(...) __VA_ARGS__
 #	define ASSERT_FMT_DBG ASSERT_FMT
+#elif defined( OGSR_TOTAL_ASSERT )
+#	define LogDbg __noop
+#	define MsgDbg __noop
+#	define FuncDbg(...) __VA_ARGS__
+#	define ASSERT_FMT_DBG ASSERT_FMT
 #else
 #	define LogDbg __noop
 #	define MsgDbg __noop

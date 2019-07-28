@@ -199,7 +199,11 @@ void CPhraseDialog::Load(shared_str dialog_id)
 
 			luabind::functor<void> lua_function;
 			bool functor_exists = ai().script_engine().functor(data()->m_sInitFunction.c_str(), lua_function);
+#ifdef CRASH_ON_PRECONDITION_NOT_FOUND
+			ASSERT_FMT(functor_exists, "!![%s] Cannot find precondition [%s]", __FUNCTION__, data()->m_sInitFunction.c_str());
+#else
 			ASSERT_FMT_DBG(functor_exists, "!![%s] Cannot find precondition [%s]", __FUNCTION__, data()->m_sInitFunction.c_str());
+#endif
 			if (functor_exists)
 				lua_function(this);
 		}
@@ -241,7 +245,11 @@ void CPhraseDialog::load_shared	(LPCSTR)
 
 		luabind::functor<void> lua_function;
 		bool functor_exists = ai().script_engine().functor(data()->m_sInitFunction.c_str(), lua_function);
+#ifdef CRASH_ON_PRECONDITION_NOT_FOUND
+		ASSERT_FMT(functor_exists, "!![%s] Cannot find precondition [%s]", __FUNCTION__, data()->m_sInitFunction.c_str());
+#else
 		ASSERT_FMT_DBG(functor_exists, "!![%s] Cannot find precondition [%s]", __FUNCTION__, data()->m_sInitFunction.c_str());
+#endif
 		if (functor_exists)
 			lua_function(this);
 
