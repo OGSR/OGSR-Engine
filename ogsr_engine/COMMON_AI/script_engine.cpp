@@ -192,18 +192,33 @@ bool CScriptEngine::process_file_if_exists( const char* file_name, bool warn_if_
 
   script_list_type::iterator it = xray_scripts.find( *file_name ? ( strcmp( file_name, GlobalNamespace ) == 0 ? "_g" : file_name ) : "_g" );
   if ( it != xray_scripts.end() ) {
+#ifdef DSH_MOD
+    Msg( "* loading script %s.script", file_name );
+#else
     MsgDbg( "* loading script %s.script", file_name );
+#endif
     m_reload_modules = false;
     return do_file( it->second.c_str(), *file_name ? file_name : GlobalNamespace );
   }
 
   if ( warn_if_not_exist )
+#ifdef DSH_MOD
+    Msg( "[CScriptEngine::process_file_if_exists] Variable %s not found; No script by this name exists, either.", file_name );
+#else
     MsgDbg( "[CScriptEngine::process_file_if_exists] Variable %s not found; No script by this name exists, either.", file_name );
+#endif
   else {
+#ifdef DSH_MOD
+    Msg( "-------------------------" );
+    Msg( "[CScriptEngine::process_file_if_exists] Variable %s not found; No script by this name exists, either.", file_name );
+    print_stack();
+    Msg( "-------------------------" );
+#else
     LogDbg( "-------------------------" );
     MsgDbg( "[CScriptEngine::process_file_if_exists] Variable %s not found; No script by this name exists, either.", file_name );
     FuncDbg(print_stack());
     LogDbg( "-------------------------" );
+#endif
     add_no_file( file_name, string_length );
   }
 
