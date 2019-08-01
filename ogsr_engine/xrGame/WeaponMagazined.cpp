@@ -23,6 +23,7 @@
 #include "game_object_space.h"
 #include "script_callback_ex.h"
 #include "script_game_object.h"
+#include <regex>
 
 CWeaponMagazined::CWeaponMagazined(LPCSTR name, ESoundTypes eSoundType) : CWeapon(name)
 {
@@ -170,6 +171,8 @@ void CWeaponMagazined::Load	(LPCSTR section)
 
 	m_bVision = !!READ_IF_EXISTS(pSettings, r_bool, section, "vision_present", false);
 	m_fire_zoomout_time = READ_IF_EXISTS( pSettings, r_u32, section, "fire_zoomout_time", u32(-1) );
+
+	m_str_count_tmpl = READ_IF_EXISTS( pSettings, r_string, "features", "wpn_magazined_str_count_tmpl", "{AE}/{AC}" );
 }
 
 void CWeaponMagazined::FireStart		()
@@ -1393,15 +1396,12 @@ void CWeaponMagazined::GetBriefInfo(xr_string& str_name, xr_string& icon_sect_na
 
 	str_name		= sItemName;
 
-
-	{
-		if (!unlimited_ammo())
-			sprintf_s			(sItemName, "%d/%d",AE,AC - AE);
-		else
-			sprintf_s			(sItemName, "%d/--",AE);
-
-		str_count				= sItemName;
-	}
+        std::string s( m_str_count_tmpl.c_str() );
+	static std::regex ae_re( R"(\{AE\})" );
+	static std::regex ac_re( R"(\{AC\})" );
+        s = std::regex_replace( s, ae_re, std::to_string( AE ).c_str() );
+        s = std::regex_replace( s, ac_re, unlimited_ammo() ? "--" : std::to_string( AC - AE ).c_str() );
+        str_count = s.c_str();
 }
 
 void CWeaponMagazined::OnDrawUI()

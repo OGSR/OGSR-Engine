@@ -164,6 +164,8 @@ protected:
 	//только разных типов патронов
 	bool m_bLockType;
 
+	shared_str m_str_count_tmpl;
+
 	// режим выделения рамкой противников
 protected:
 	bool					m_bVision;
