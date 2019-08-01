@@ -15,6 +15,7 @@ struct ZONE_TYPE
 	HUD_SOUND	detect_snds;
 
 	shared_str	zone_map_location;
+	float m_fRadius;
 };
 
 //описание зоны, обнаруженной детектором

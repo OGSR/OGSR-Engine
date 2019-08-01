@@ -83,6 +83,9 @@ void CCustomDetector::Load(LPCSTR section)
 			if( pSettings->line_exist(section,temp) )
 				zone_type.zone_map_location = pSettings->r_string(section,temp);
 
+			sprintf_s( temp, "zone_radius_%d", i );
+			zone_type.m_fRadius = READ_IF_EXISTS( pSettings, r_float, section, temp, m_fRadius );
+
 			++i;
 		}
 		else break;
@@ -147,11 +150,11 @@ void CCustomDetector::UpdateCL()
 
 		CSpaceRestrictor *pSR = smart_cast<CSpaceRestrictor*>( pZone );
 		float dist_to_zone = pSR->distance_to( H_Parent()->Position() ); //H_Parent()->Position().distance_to(pZone->Position()) - 0.8f*pZone->Radius();
-		if ( dist_to_zone > m_fRadius )
+		if ( dist_to_zone > zone_type.m_fRadius )
 		  continue;
 		if(dist_to_zone<0) dist_to_zone = 0;
 		
-		float fRelPow = 1.f - dist_to_zone / m_fRadius;
+		float fRelPow = 1.f - dist_to_zone / zone_type.m_fRadius;
 		clamp(fRelPow, 0.f, 1.f);
 
 		//определить текущую частоту срабатывания сигнала
