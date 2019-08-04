@@ -114,6 +114,11 @@ bool CPhraseScript::Precondition( const CGameObject* pSpeakerGO, LPCSTR dialog_i
 
   for ( const auto& Cond : Preconditions() ) {
     std::string ConditionString( Cond.c_str() ); //-V808
+#ifdef CRASH_ON_PRECONDITION_NOT_FOUND
+    luabind::functor<bool> lua_function;
+    ASSERT_FMT( ai().script_engine().functor( ConditionString.c_str(), lua_function ), "%s not found", ConditionString.c_str() );
+    predicate_result = lua_function( pSpeakerGO->lua_game_object() );
+#else
     if ( luabind::functor<bool> lua_function; ai().script_engine().functor( ConditionString.c_str(), lua_function ) ) // Обычный функтор
       predicate_result = lua_function( pSpeakerGO->lua_game_object() );
     else { // Функтор с аргументами
@@ -122,17 +127,14 @@ bool CPhraseScript::Precondition( const CGameObject* pSpeakerGO, LPCSTR dialog_i
       ConditionString         = "return " + ConditionString;
       luabind::object ret_obj = loadstring_functor( ConditionString.c_str() ); // Создаём функцию из строки через loadstring
       auto ret_func           = luabind::object_cast<luabind::functor<bool>>( ret_obj ); // Первое возвращённое loadstring значение должно быть функцией
-#ifdef CRASH_ON_PRECONDITION_NOT_FOUND
-      ASSERT_FMT( ret_func, "Loadstring returns nil for code: %s", ConditionString.c_str() ); // Если это не функция, значит loadstring вернул nil и что-то пошло не так
-#else
       ASSERT_FMT_DBG( ret_func, "Loadstring returns nil for code: %s", ConditionString.c_str() ); // Если это не функция, значит loadstring вернул nil и что-то пошло не так
-#endif
       // Вызываем созданную функцию и передаём ей дефолтные аргументы. Они прилетят после аргументов, прописанных явно, если например сделать так:
       // <precondition>my_script.test_func(123, true, nil, ...)</precondition>
       // А если не указать '...' - дефолтные аргументы не будут переданы в функцию.
       if ( ret_func )
         predicate_result = ret_func( pSpeakerGO->lua_game_object() );
     }
+#endif
 
     if ( !predicate_result ) {
 #ifdef DEBUG
@@ -148,6 +150,11 @@ bool CPhraseScript::Precondition( const CGameObject* pSpeakerGO, LPCSTR dialog_i
 void CPhraseScript::Action( const CGameObject* pSpeakerGO, LPCSTR dialog_id, LPCSTR /*phrase_id*/ ) const {
   for ( const auto& Act : Actions() ) {
     std::string ActionString( Act.c_str() ); //-V808
+#ifdef CRASH_ON_PRECONDITION_NOT_FOUND
+    luabind::functor<void> lua_function;
+    ASSERT_FMT( ai().script_engine().functor( ActionString.c_str(), lua_function ), "%s not found", ActionString.c_str() );
+    lua_function( pSpeakerGO->lua_game_object(), dialog_id );
+#else
     if ( luabind::functor<void> lua_function; ai().script_engine().functor( ActionString.c_str(), lua_function ) ) // Обычный функтор
       lua_function( pSpeakerGO->lua_game_object(), dialog_id );
     else { // Функтор с аргументами
@@ -156,17 +163,14 @@ void CPhraseScript::Action( const CGameObject* pSpeakerGO, LPCSTR dialog_id, LPC
       ActionString            = "return " + ActionString;
       luabind::object ret_obj = loadstring_functor( ActionString.c_str() ); // Создаём функцию из строки через loadstring
       auto ret_func           = luabind::object_cast<luabind::functor<void>>( ret_obj ); // Первое возвращённое loadstring значение должно быть функцией
-#ifdef CRASH_ON_PRECONDITION_NOT_FOUND
-      ASSERT_FMT( ret_func, "Loadstring returns nil for code: %s", ActionString.c_str() ); // Если это не функция, значит loadstring вернул nil и что-то пошло не так
-#else
       ASSERT_FMT_DBG( ret_func, "Loadstring returns nil for code: %s", ActionString.c_str() ); // Если это не функция, значит loadstring вернул nil и что-то пошло не так
-#endif
       // Вызываем созданную функцию и передаём ей дефолтные аргументы. Они прилетят после аргументов, прописанных явно, если например сделать так:
       // <action>my_script.test_func(123, true, nil, ...)</action>
       // А если не указать '...' - дефолтные аргументы не будут переданы в функцию.
       if ( ret_func )
         ret_func( pSpeakerGO->lua_game_object(), dialog_id );
     }
+#endif
   }
 
   TransferInfo( smart_cast<const CInventoryOwner*>( pSpeakerGO ) );
@@ -186,6 +190,11 @@ bool CPhraseScript::Precondition( const CGameObject* pSpeakerGO1, const CGameObj
 
   for ( const auto& Cond : Preconditions() ) {
     std::string ConditionString( Cond.c_str() ); //-V808
+#ifdef CRASH_ON_PRECONDITION_NOT_FOUND
+    luabind::functor<bool> lua_function;
+    ASSERT_FMT( ai().script_engine().functor( ConditionString.c_str(), lua_function ), "%s not found", ConditionString.c_str() );
+    predicate_result = lua_function( pSpeakerGO1->lua_game_object(), pSpeakerGO2->lua_game_object(), dialog_id, phrase_id, next_phrase_id );
+#else
     if ( luabind::functor<bool> lua_function; ai().script_engine().functor( ConditionString.c_str(), lua_function ) ) // Обычный функтор
       predicate_result = lua_function( pSpeakerGO1->lua_game_object(), pSpeakerGO2->lua_game_object(), dialog_id, phrase_id, next_phrase_id );
     else { // Функтор с аргументами
@@ -194,17 +203,14 @@ bool CPhraseScript::Precondition( const CGameObject* pSpeakerGO1, const CGameObj
       ConditionString         = "return " + ConditionString;
       luabind::object ret_obj = loadstring_functor( ConditionString.c_str() ); // Создаём функцию из строки через loadstring
       auto ret_func           = luabind::object_cast<luabind::functor<bool>>( ret_obj ); // Первое возвращённое loadstring значение должно быть функцией
-#ifdef CRASH_ON_PRECONDITION_NOT_FOUND
-      ASSERT_FMT( ret_func, "Loadstring returns nil for code: %s", ConditionString.c_str() ); // Если это не функция, значит loadstring вернул nil и что-то пошло не так
-#else
       ASSERT_FMT_DBG( ret_func, "Loadstring returns nil for code: %s", ConditionString.c_str() ); // Если это не функция, значит loadstring вернул nil и что-то пошло не так
-#endif
       // Вызываем созданную функцию и передаём ей дефолтные аргументы. Они прилетят после аргументов, прописанных явно, если например сделать так:
       // <precondition>my_script.test_func(123, true, nil, ...)</precondition>
       // А если не указать '...' - дефолтные аргументы не будут переданы в функцию.
       if ( ret_func )
         predicate_result = ret_func( pSpeakerGO1->lua_game_object(), pSpeakerGO2->lua_game_object(), dialog_id, phrase_id, next_phrase_id );
     }
+#endif
 
     if ( !predicate_result ) {
 #ifdef DEBUG
@@ -222,6 +228,11 @@ void CPhraseScript::Action( const CGameObject* pSpeakerGO1, const CGameObject* p
 
   for ( const auto& Act : Actions() ) {
     std::string ActionString( Act.c_str() ); //-V808
+#ifdef CRASH_ON_PRECONDITION_NOT_FOUND
+    luabind::functor<void> lua_function;
+    ASSERT_FMT( ai().script_engine().functor( ActionString.c_str(), lua_function ), "%s not found", ActionString.c_str() );
+    lua_function( pSpeakerGO1->lua_game_object(), pSpeakerGO2->lua_game_object(), dialog_id, phrase_id );
+#else
     if ( luabind::functor<void> lua_function; ai().script_engine().functor( ActionString.c_str(), lua_function ) ) // Обычный функтор
       lua_function( pSpeakerGO1->lua_game_object(), pSpeakerGO2->lua_game_object(), dialog_id, phrase_id );
     else { // Функтор с аргументами
@@ -230,17 +241,14 @@ void CPhraseScript::Action( const CGameObject* pSpeakerGO1, const CGameObject* p
       ActionString            = "return " + ActionString;
       luabind::object ret_obj = loadstring_functor( ActionString.c_str() ); // Создаём функцию из строки через loadstring
       auto ret_func           = luabind::object_cast<luabind::functor<void>>( ret_obj ); // Первое возвращённое loadstring значение должно быть функцией
-#ifdef CRASH_ON_PRECONDITION_NOT_FOUND
-      ASSERT_FMT( ret_func, "Loadstring returns nil for code: %s", ActionString.c_str() ); // Если это не функция, значит loadstring вернул nil и что-то пошло не так
-#else
       ASSERT_FMT_DBG( ret_func, "Loadstring returns nil for code: %s", ActionString.c_str() ); // Если это не функция, значит loadstring вернул nil и что-то пошло не так
-#endif
       // Вызываем созданную функцию и передаём ей дефолтные аргументы. Они прилетят после аргументов, прописанных явно, если например сделать так:
       // <action>my_script.test_func(123, true, nil, ...)</action>
       // А если не указать '...' - дефолтные аргументы не будут переданы в функцию.
       if ( ret_func )
         ret_func( pSpeakerGO1->lua_game_object(), pSpeakerGO2->lua_game_object(), dialog_id, phrase_id );
     }
+#endif
   }
 }
 
@@ -250,6 +258,11 @@ LPCSTR	CPhraseScript::GetScriptText(LPCSTR str_to_translate, const CGameObject* 
 		return str_to_translate;
 
 	std::string ScriptTextString(m_sScriptTextFunc.c_str()); //-V808
+#ifdef CRASH_ON_PRECONDITION_NOT_FOUND
+	luabind::functor<const char*> lua_function;
+	ASSERT_FMT( ai().script_engine().functor( ScriptTextString.c_str(), lua_function ), "%s not found", ScriptTextString.c_str() );
+	return lua_function( pSpeakerGO1->lua_game_object(), pSpeakerGO2->lua_game_object(), dialog_id, phrase_id );
+#else
 	if (luabind::functor<const char*> lua_function; ai().script_engine().functor(ScriptTextString.c_str(), lua_function)) // Обычный функтор
 		return lua_function(pSpeakerGO1->lua_game_object(), pSpeakerGO2->lua_game_object(), dialog_id, phrase_id);
 	else { // Функтор с аргументами
@@ -258,11 +271,7 @@ LPCSTR	CPhraseScript::GetScriptText(LPCSTR str_to_translate, const CGameObject* 
 		ScriptTextString = "return " + ScriptTextString;
 		luabind::object ret_obj = loadstring_functor(ScriptTextString.c_str()); // Создаём функцию из строки через loadstring
 		auto ret_func = luabind::object_cast<luabind::functor<const char*>>(ret_obj); // Первое возвращённое loadstring значение должно быть функцией
-#ifdef CRASH_ON_PRECONDITION_NOT_FOUND
-		ASSERT_FMT(ret_func, "Loadstring returns nil for code: %s", ScriptTextString.c_str()); // Если это не функция, значит loadstring вернул nil и что-то пошло не так
-#else
 		ASSERT_FMT_DBG(ret_func, "Loadstring returns nil for code: %s", ScriptTextString.c_str()); // Если это не функция, значит loadstring вернул nil и что-то пошло не так
-#endif
 		// Вызываем созданную функцию и передаём ей дефолтные аргументы. Они прилетят после аргументов, прописанных явно, если например сделать так:
 		// <script_text>my_script.test_func(123, true, nil, ...)</script_text>
 		// А если не указать '...' - дефолтные аргументы не будут переданы в функцию.
@@ -271,4 +280,5 @@ LPCSTR	CPhraseScript::GetScriptText(LPCSTR str_to_translate, const CGameObject* 
 	}
 
 	return "";
+#endif
 }
