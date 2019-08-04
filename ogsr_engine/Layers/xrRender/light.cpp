@@ -295,7 +295,6 @@ void	light::export_to	(light_Package& package)
 			case IRender_Light::POINT:
 				{
 					// tough: create/update 6 shadowed lights
-#pragma todo("KRodin: Древний баг: вот именно из-за создания 6 источников света для каждой такой лампы, тени от них периодически мигают на худе. Хз, что с этим можно сделать.")
 					if (0==omnipart[0])	for (int f=0; f<6; f++)	omnipart[f] = xr_new<light> ();
 					for (int f=0; f<6; f++)	{
 						light*	L			= omnipart[f];

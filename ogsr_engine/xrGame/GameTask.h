@@ -111,7 +111,7 @@ public:
 	bool					HasLinkedMapLocations	();
 	bool					HasInProgressObjective	();
 
-	SGameTaskObjective&		Objective				(int objectice_id)	{return m_Objectives[objectice_id];};
+	SGameTaskObjective&		Objective				(int objectice_id)	{return m_Objectives.at(objectice_id);}
 
 	TASK_ID					m_ID;
 	shared_str				m_Title;
