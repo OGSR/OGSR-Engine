@@ -23,12 +23,8 @@
 #ifdef DEBUG
 #include "PHDebug.h"
 #endif
-IC BOOL BE	(BOOL A, BOOL B)
-{
-	bool a = !!A;
-	bool b = !!B;
-	return a==b;
-}
+
+#pragma todo("KRodin: заменить на прямые вызовы вместо этих всратых ивентов!")
 
 void CActor::OnEvent		(NET_Packet& P, u16 type)
 {
@@ -182,12 +178,6 @@ void CActor::OnEvent		(NET_Packet& P, u16 type)
 								  
 		}break;
 
-	case GEG_PLAYER_WEAPON_HIDE_STATE:
-		{
-			u32 State		= P.r_u32();
-			BOOL	Set		= !!P.r_u8();
-			inventory().SetSlotsBlocked	((u16)State, !!Set);
-		}break;
 	case GE_MOVE_ACTOR:
 		{
 			Fvector NewPos, NewRot;
