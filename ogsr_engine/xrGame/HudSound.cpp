@@ -20,7 +20,7 @@ void HUD_SOUND::LoadSound(	LPCSTR section, LPCSTR line,
 		hud_snd.sounds.push_back( SSnd() );
 		SSnd& s = hud_snd.sounds.back();
 
-		LoadSound	(section, sound_line, s.snd, type, &s.volume, &s.delay);
+		LoadSound	(section, sound_line, s.snd, type, &s.volume, &s.delay, &s.freq);
 		sprintf_s		(sound_line,"%s%d",line,++k);
 	}//while
 
@@ -31,7 +31,8 @@ void  HUD_SOUND::LoadSound(LPCSTR section, LPCSTR line,
 						   ref_sound& snd, 
 						   int type,
 						   float* volume, 
-						   float* delay)
+						   float* delay,
+						   float* freq)
 {
 
 	LPCSTR str = pSettings->r_string(section, line);
@@ -63,6 +64,17 @@ void  HUD_SOUND::LoadSound(LPCSTR section, LPCSTR line,
 			_GetItem (str, 2, buf_str);
 			if(xr_strlen(buf_str)>0)
 				*delay = (float)atof(buf_str);
+		}
+	}
+
+	if(freq != NULL)
+	{
+		*freq = 1.f;
+		if(count>3)
+		{
+			_GetItem (str, 3, buf_str);
+			if(xr_strlen(buf_str)>0)
+				*freq = (float)atof(buf_str);
 		}
 	}
 }
@@ -100,6 +112,7 @@ void HUD_SOUND::PlaySound	(	HUD_SOUND&		hud_snd,
 									flags,
 									/*0.f*/hud_snd.m_activeSnd->delay);
 	hud_snd.m_activeSnd->snd.set_volume		(hud_snd.m_activeSnd->volume);
+	hud_snd.m_activeSnd->snd.set_frequency		(hud_snd.m_activeSnd->freq);
 }
 
 void HUD_SOUND::StopSound	(HUD_SOUND& hud_snd)

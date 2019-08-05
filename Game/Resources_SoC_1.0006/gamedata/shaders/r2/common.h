@@ -240,6 +240,8 @@ void        tonemap              (out half4 low, out half4 high, half3 rgb, half
 {
         rgb     =      	rgb*scale       ;
 
+#ifdef USE_COP_WEATHER_CONFIGS
+
 		const float fWhiteIntensity = 1.7;
 
 		const float fWhiteIntensitySQR = fWhiteIntensity*fWhiteIntensity;
@@ -254,16 +256,12 @@ void        tonemap              (out half4 low, out half4 high, half3 rgb, half
         high	=       half4       	(rgb/def_hdr,   0 )	;		// 8x dynamic range
 #endif
 
-/*
-	rgb		=	rgb*scale;
+#else
 
 	low		=	rgb.xyzz;
 	high	=	low/def_hdr;	// 8x dynamic range
-*/
 
-//		low		= 	half4	(rgb, 0);
-//		rgb		/=	def_hdr	;
-//		high	= 	half4	(rgb, dot(rgb,0.333f)-def_hdr_clip)		;
+#endif
 }
 half4		combine_bloom        (half3  low, half4 high)	{
         return        half4(low + high*high.a, 1.h);

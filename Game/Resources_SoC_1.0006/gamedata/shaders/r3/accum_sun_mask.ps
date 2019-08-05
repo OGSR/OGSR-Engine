@@ -29,7 +29,9 @@ float4 main ( p_TL I ) : SV_Target
 
 //	L = 1;
 
+#ifdef USE_COP_WEATHER_CONFIGS
 	clip(L-CLIP_THRESHOLD);
+#endif
 
   	return	float4( L, L, L, L );
 }

@@ -197,7 +197,7 @@ void CAI_Dog::reinit()
 
 	b_anim_end =		false;
 	b_state_anim =		false;
-	b_state_end	=		false;
+	b_state_end	=	true;
 	b_state_check =		false;
 	b_end_state_eat =	false;
 	saved_state =		u32(-1);
@@ -259,7 +259,6 @@ u32 CAI_Dog::random_anim()
 void CAI_Dog::set_current_animation(u32 curr_anim)
 {
 	b_state_check = true;
-	b_state_end = false;
 	current_anim = curr_anim;
 }
 
@@ -290,7 +289,7 @@ void CAI_Dog::start_animation()
 	b_state_anim = true;
 	com_man().script_capture(ControlCom::eControlAnimation);
 	smart_cast<IKinematicsAnimated*>(Visual())->PlayCycle(get_current_animation(),TRUE,animation_end,this);
-	b_state_end = true;
+	b_state_end = false;
 }
 
 void CAI_Dog::animation_end(CBlend* B)
@@ -298,7 +297,7 @@ void CAI_Dog::animation_end(CBlend* B)
 	((CAI_Dog*)B->CallbackParam)->b_state_anim = false;
 	((CAI_Dog*)B->CallbackParam)->b_anim_end = true;
 	((CAI_Dog*)B->CallbackParam)->com_man().script_release(ControlCom::eControlAnimation);
-	((CAI_Dog*)B->CallbackParam)->b_state_end = false;
+	((CAI_Dog*)B->CallbackParam)->b_state_end = true;
 }
 
 void CAI_Dog::anim_end_reinit()

@@ -309,6 +309,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="Event.cpp" />
     <ClCompile Include="XML_Parser\tinyxml.cpp" />
     <ClCompile Include="XML_Parser\tinyxmlerror.cpp" />
     <ClCompile Include="XML_Parser\tinyxmlparser.cpp" />
@@ -344,6 +345,7 @@
     <ClInclude Include="FTimer.h" />
     <ClInclude Include="stacktrace_collector.h" />
     <ClInclude Include="stdafx.h" />
+    <ClInclude Include="Event.hpp" />
     <ClInclude Include="XML_Parser\tinyxml.h" />
     <ClInclude Include="XML_Parser\xrXMLParser.h" />
     <ClInclude Include="xrCore.h" />

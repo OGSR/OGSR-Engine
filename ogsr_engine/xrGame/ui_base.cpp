@@ -297,3 +297,8 @@ shared_str	ui_core::get_xml_name(LPCSTR fn)
 	}
 	return str;
 }
+
+bool ui_core::is_widescreen()
+{
+	return (Device.dwWidth) / float(Device.dwHeight) > (UI_BASE_WIDTH / UI_BASE_HEIGHT + 0.01f);
+}

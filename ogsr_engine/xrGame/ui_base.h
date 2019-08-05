@@ -87,6 +87,8 @@ public:
 	float			get_current_kx					();
 
 	IUIRender::ePointType m_currentPointType;
+
+	static bool is_widescreen();
 };
 
 extern CUICursor*	GetUICursor						();

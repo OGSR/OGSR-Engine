@@ -52,7 +52,7 @@ static const float ORIGIN_OFFSET = -0.05f;
 static const float TENDTO_SPEED = 5.f;
 
 static const float ZOOM_ORIGIN_OFFSET = -0.01f;
-static const float ZOOM_TENDTO_SPEED = 5.f;
+static const float ZOOM_TENDTO_SPEED = 10.f;
 
 void CHudItem::Load(LPCSTR section)
 {
