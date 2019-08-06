@@ -489,7 +489,10 @@ void CWeapon::Load		(LPCSTR section)
 			int count = _GetItemCount(S);
 			for (int it = 0; it < count; ++it) {
 				_GetItem(S, it, _addonItem);
-				m_highlightAddons.push_back(_addonItem);
+				ASSERT_FMT(pSettings->section_exist(_addonItem), "Section [%s] not found!", _addonItem);
+				m_highlightAddons.emplace_back(std::move(_addonItem));
+				if (pSettings->line_exist(_addonItem, "real_item_section")) //KRodin: Костыль для огсе-шной системы аддонов, т.к. мне лень по конфигам лазить.
+					m_highlightAddons.emplace_back(pSettings->r_string(_addonItem, "real_item_section"));
 			}
 		}
 	}
