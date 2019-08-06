@@ -181,7 +181,7 @@ bool CHudItem::Activate()
 void CHudItem::Deactivate() 
 {
 	Hide();
-	//OnHiddenItem ();
+	OnHiddenItem ();
 }
 
 
