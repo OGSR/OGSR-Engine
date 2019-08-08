@@ -376,7 +376,7 @@ void CUICellItem::ColorizeItems( std::initializer_list<CUIDragDropListEx*> args 
 	  ColorizeSects.clear();
 
 	  std::copy(Wpn->m_ammoTypes.begin(), Wpn->m_ammoTypes.end(), std::back_inserter(ColorizeSects));
-	  if (auto WpnGl = smart_cast<CWeaponMagazinedWGrenade*>(Wpn))
+	  if (auto WpnGl = smart_cast<CWeaponMagazinedWGrenade*>(Wpn); WpnGl && WpnGl->IsGrenadeLauncherAttached())
 		  std::copy(WpnGl->m_ammoTypes2.begin(), WpnGl->m_ammoTypes2.end(), std::back_inserter(ColorizeSects));
 	  if (Wpn->SilencerAttachable())
 		  ColorizeSects.push_back(Wpn->GetSilencerName());

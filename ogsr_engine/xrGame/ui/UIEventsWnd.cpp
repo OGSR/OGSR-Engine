@@ -144,7 +144,7 @@ void CUIEventsWnd::ReloadList(bool bClearOnly)
 		}else
 */
 		u32 visible_objectives;
-		if ( task->m_show_all_objectives ) {
+		if ( task->m_show_all_objectives || task->Objective(0).TaskState() != eTaskStateInProgress) {
 		  visible_objectives = task->m_Objectives.size();
 		}
 		else {
