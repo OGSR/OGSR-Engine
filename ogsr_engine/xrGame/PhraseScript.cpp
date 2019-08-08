@@ -224,8 +224,6 @@ bool CPhraseScript::Precondition( const CGameObject* pSpeakerGO1, const CGameObj
 }
 
 void CPhraseScript::Action( const CGameObject* pSpeakerGO1, const CGameObject* pSpeakerGO2, LPCSTR dialog_id, LPCSTR phrase_id ) const {
-  TransferInfo( smart_cast<const CInventoryOwner*>( pSpeakerGO1 ) );
-
   for ( const auto& Act : Actions() ) {
     std::string ActionString( Act.c_str() ); //-V808
 #ifdef CRASH_ON_PRECONDITION_NOT_FOUND
@@ -250,6 +248,8 @@ void CPhraseScript::Action( const CGameObject* pSpeakerGO1, const CGameObject* p
     }
 #endif
   }
+
+  TransferInfo( smart_cast<const CInventoryOwner*>( pSpeakerGO1 ) );
 }
 
 LPCSTR	CPhraseScript::GetScriptText(LPCSTR str_to_translate, const CGameObject* pSpeakerGO1, const CGameObject* pSpeakerGO2, LPCSTR dialog_id, LPCSTR phrase_id)
