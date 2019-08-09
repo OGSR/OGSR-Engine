@@ -57,7 +57,8 @@ void 	CDetailManager::cache_Task		(int gx, int gz, Slot* D)
 	for (u32 i=0; i<dm_obj_in_slot; i++)	{
 		D->G[i].id			= DS.r_id	(i);
 		for (u32 clr=0; clr<D->G[i].items.size(); clr++)
-			poolSI.destroy(D->G[i].items[clr]);
+			if (D->G[i].items[clr])	// KD: затычка. Причина появления нулевых указателей неясна
+				poolSI.destroy(D->G[i].items[clr]);
 		D->G[i].items.clear	();
 	}
 
