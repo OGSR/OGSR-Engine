@@ -487,6 +487,32 @@ static void termination_handler(int signal)
   handler_base( "Segment violation error" );
 }*/
 
+// http://qaru.site/questions/441696/what-actions-do-i-need-to-take-to-get-a-crash-dump-in-all-error-scenarios
+static BOOL PreventSetUnhandledExceptionFilter()
+{
+	HMODULE hKernel32 = LoadLibrary("kernel32.dll");
+	if (hKernel32 == NULL) return FALSE;
+	void *pOrgEntry = GetProcAddress(hKernel32, "SetUnhandledExceptionFilter");
+	if (pOrgEntry == NULL) return FALSE;
+
+#ifdef _M_IX86
+	// Code for x86:
+	// 33 C0                xor         eax,eax  
+	// C2 04 00             ret         4 
+	unsigned char szExecute[] = { 0x33, 0xC0, 0xC2, 0x04, 0x00 };
+#elif _M_X64
+	// 33 C0                xor         eax,eax 
+	// C3                   ret  
+	unsigned char szExecute[] = { 0x33, 0xC0, 0xC3 };
+#else
+#error "The following code only works for x86 and x64!"
+#endif
+
+	SIZE_T bytesWritten = 0;
+	BOOL bRet = WriteProcessMemory(GetCurrentProcess(), pOrgEntry, szExecute, sizeof(szExecute), &bytesWritten);
+	return bRet;
+}
+
 void xrDebug::_initialize()
 {
 	std::atexit([] { R_ASSERT(ExitFromWinMain, "Unexpected application exit!"); });
@@ -511,6 +537,8 @@ void xrDebug::_initialize()
 	_set_purecall_handler(&pure_call_handler);
 
 	::SetUnhandledExceptionFilter(UnhandledFilter);
+
+	PreventSetUnhandledExceptionFilter();
 
 #ifdef USE_OWN_ERROR_MESSAGE_WINDOW
 	// Выключаем окно "Прекращена работа программы...". У нас своё окно для сообщений об ошибках есть.
