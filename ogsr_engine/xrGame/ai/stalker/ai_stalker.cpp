@@ -59,6 +59,10 @@
 #include "../../stalker_decision_space.h"
 #include "../../agent_member_manager.h"
 #include "../../location_manager.h"
+#include "../../seniority_hierarchy_holder.h"
+#include "../../team_hierarchy_holder.h"
+#include "../../squad_hierarchy_holder.h"
+#include "../../group_hierarchy_holder.h"
 
 #ifdef DEBUG
 #	include "../../alife_simulator.h"
@@ -657,15 +661,15 @@ void CAI_Stalker::UpdateCL()
 	if (g_Alive()) {
 		START_PROFILE("stalker/client_update/sight_manager")
 		VERIFY						(!m_pPhysicsShell);
-		try {
+		__try {
 			sight().update			();
 		}
-		catch (...) {
-			try {
+		__except (ExceptStackTrace("[" __FUNCTION__ "] stack trace:\n")) {
+			__try {
 				sight().setup(CSightAction(SightManager::eSightTypeCurrentDirection));
 				sight().update();
 			}
-			catch (...) {
+			__except (ExceptStackTrace("[" __FUNCTION__ "] - 2 stack trace:\n")) {
 				Msg("!![%s] error in sight().update() of NPC [%s]", __FUNCTION__, this->Name());
 			}
 		}
@@ -1058,4 +1062,9 @@ void CAI_Stalker::on_after_change_team			()
 bool CAI_Stalker::unlimited_ammo()
 {
 	return infinite_ammo() && CObjectHandler::planner().object().g_Alive();
+}
+
+CAgentManager& CAI_Stalker::agent_manager() const
+{
+	return Level().seniority_holder().team(g_Team()).squad(g_Squad()).group(g_Group()).agent_manager();
 }
