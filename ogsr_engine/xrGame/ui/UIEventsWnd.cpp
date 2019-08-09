@@ -153,7 +153,9 @@ void CUIEventsWnd::ReloadList(bool bClearOnly)
 		    if ( it.TaskState() != eTaskStateInProgress )
 		      visible_objectives = i + 1;
 		  }
-		  if ( visible_objectives < task->m_Objectives.size() )
+		  if ( visible_objectives < 2 )
+		    visible_objectives = 2;
+		  else if ( visible_objectives < task->m_Objectives.size() )
 		    visible_objectives++;
 		}
 
