@@ -352,7 +352,7 @@ void CCharacterPhysicsSupport::UpdateCollisionActivatingDellay()
 void CCharacterPhysicsSupport::in_shedule_Update(u32 DT)
 {
 	if (m_collision_activating_delay)
-		Device.seqParallel.emplace_back(this, &CCharacterPhysicsSupport::UpdateCollisionActivatingDellay);
+		Device.add_to_seq_parallel( fastdelegate::FastDelegate0<>( this, &CCharacterPhysicsSupport::UpdateCollisionActivatingDellay ) );
 
 	if (!m_EntityAlife.use_simplified_visual())
 		CPHDestroyable::SheduleUpdate(DT);
