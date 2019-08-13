@@ -101,9 +101,11 @@ void CPlanner::update				()
 		if ( solution().empty() ) {
 		  if ( initialized() ) {
 		    Msg( "! [CPlanner::update]: %s has solution().empty()", m_object->cName().c_str() );
-		    current_action().finalize();
-		    m_current_action_id = _action_id_type(-1);
-		    m_initialized       = false;
+                    if ( current_action_id() != _action_id_type(-1) ) {
+                      current_action().finalize();
+                      m_current_action_id = _action_id_type(-1);
+                    }
+		    m_initialized = false;
 		  }
 		}
 		else {
