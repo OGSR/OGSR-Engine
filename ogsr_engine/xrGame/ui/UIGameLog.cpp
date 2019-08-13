@@ -94,6 +94,9 @@ void CUIGameLog::Update()
 		RecalcSize			();
 
 	toDelList.clear();
+/* dsh: не могу понять, для чего это нужно. Но из-за этого, в
+   некоторых случаях, не показываются некоторые сообщения.
+
 	Frect visible_rect;
 	GetAbsoluteRect(visible_rect);
 	for(	WINDOW_LIST_it it = m_pad->GetChildWndList().begin(); 
@@ -118,4 +121,5 @@ void CUIGameLog::Update()
 
 	if(m_flags.test	(eNeedRecalc) )
 		RecalcSize			();
+*/
 }
