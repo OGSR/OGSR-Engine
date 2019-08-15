@@ -323,6 +323,9 @@ void CDetailManager::UpdateVisibleM()
 						float				Rq_drcp	= R*R*dist_sq_rcp;	// reordered expression for 'ssa' calc
 
 						for (auto& el: sp.items){
+
+							if (el == nullptr) continue;
+
 							SlotItem& Item			= *el;
 							float   scale = ps_no_scale_on_fade ? (Item.scale_calculated = Item.scale) : (Item.scale_calculated = Item.scale*alpha_i);
 							float	ssa = ps_no_scale_on_fade ? scale : scale*scale*Rq_drcp;
