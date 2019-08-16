@@ -80,6 +80,7 @@ const float		respawn_auto	= 7.f;
 
 static float IReceived = 0;
 static float ICoincidenced = 0;
+extern float cammera_into_collision_shift ;
 
 
 //skeleton
@@ -263,6 +264,21 @@ void CActor::reload	(LPCSTR section)
 	m_location_manager->reload	(section);
 }
 
+Fbox set_box(LPCSTR section, CPHMovementControl &mc, u32 box_num )
+{
+	Fbox	bb;Fvector	vBOX_center,vBOX_size;
+	// m_PhysicMovementControl: BOX
+	string64 buff, buff1;
+	strconcat( sizeof(buff), buff, "ph_box",itoa( box_num, buff1, 10 ),"_center" );
+	vBOX_center= pSettings->r_fvector3	(section, buff	);
+	strconcat( sizeof(buff), buff, "ph_box",itoa( box_num, buff1, 10 ),"_size" );
+	vBOX_size	= pSettings->r_fvector3	(section, buff);
+	vBOX_size.y += cammera_into_collision_shift/2.f;
+	bb.set	(vBOX_center,vBOX_center); bb.grow(vBOX_size);
+	mc.SetBox		(box_num,bb);
+	return bb;
+}
+
 void CActor::Load	(LPCSTR section )
 {
 	// Msg						("Loading actor: %s",section);
@@ -280,51 +296,6 @@ void CActor::Load	(LPCSTR section )
 	}
 	//////////////////////////////////////////////////////////////////////////
 
-	// m_PhysicMovementControl: General
-	//m_PhysicMovementControl->SetParent		(this);
-	Fbox	bb;Fvector	vBOX_center,vBOX_size;
-	// m_PhysicMovementControl: BOX
-	vBOX_center= pSettings->r_fvector3	(section,"ph_box2_center"	);
-	vBOX_size	= pSettings->r_fvector3	(section,"ph_box2_size"		);
-	bb.set	(vBOX_center,vBOX_center); bb.grow(vBOX_size);
-	character_physics_support()->movement()->SetBox		(2,bb);
-
-	if ( pSettings->line_exist( section, "ph_box4_center" ) && pSettings->line_exist( section, "ph_box4_size" ) ) {
-	  vBOX_center = pSettings->r_fvector3( section, "ph_box4_center" );
-	  vBOX_size   = pSettings->r_fvector3( section, "ph_box4_size"   );
-	  bb.set( vBOX_center, vBOX_center ); bb.grow( vBOX_size );
-	  character_physics_support()->movement()->SetBox( 4, bb );
-	}
-	else
-	  character_physics_support()->movement()->SetBox( 4, bb );
-
-	// m_PhysicMovementControl: BOX
-	vBOX_center= pSettings->r_fvector3	(section,"ph_box1_center"	);
-	vBOX_size	= pSettings->r_fvector3	(section,"ph_box1_size"		);
-	bb.set	(vBOX_center,vBOX_center); bb.grow(vBOX_size);
-	character_physics_support()->movement()->SetBox		(1,bb);
-
-	if ( pSettings->line_exist( section, "ph_box3_center" ) && pSettings->line_exist( section, "ph_box3_size" ) ) {
-	  vBOX_center = pSettings->r_fvector3( section, "ph_box3_center" );
-	  vBOX_size   = pSettings->r_fvector3( section, "ph_box3_size"   );
-	  bb.set( vBOX_center, vBOX_center ); bb.grow( vBOX_size );
-	  character_physics_support()->movement()->SetBox( 3, bb );
-	}
-	else
-	  character_physics_support()->movement()->SetBox( 3, bb );
-
-	// m_PhysicMovementControl: BOX
-	vBOX_center= pSettings->r_fvector3	(section,"ph_box0_center"	);
-	vBOX_size	= pSettings->r_fvector3	(section,"ph_box0_size"		);
-	bb.set	(vBOX_center,vBOX_center); bb.grow(vBOX_size);
-	character_physics_support()->movement()->SetBox		(0,bb);
-
-	//// m_PhysicMovementControl: Foots
-	//Fvector	vFOOT_center= pSettings->r_fvector3	(section,"ph_foot_center"	);
-	//Fvector	vFOOT_size	= pSettings->r_fvector3	(section,"ph_foot_size"		);
-	//bb.set	(vFOOT_center,vFOOT_center); bb.grow(vFOOT_size);
-	////m_PhysicMovementControl->SetFoots	(vFOOT_center,vFOOT_size);
-
 	// m_PhysicMovementControl: Crash speed and mass
 	float	cs_min		= pSettings->r_float	(section,"ph_crash_speed_min"	);
 	float	cs_max		= pSettings->r_float	(section,"ph_crash_speed_max"	);
@@ -339,7 +310,18 @@ void CActor::Load	(LPCSTR section )
 		character_physics_support()->movement()->SetActorRestrictorRadius(CPHCharacter::rtMonsterMedium,pSettings->r_float(section,"medium_monster_restrictor_radius"));
 	character_physics_support()->movement()->Load(section);
 
-	
+	Fbox bb;
+	bb = set_box( section, *character_physics_support()->movement(), 2 );
+	if ( pSettings->line_exist( section, "ph_box4_center" ) && pSettings->line_exist( section, "ph_box4_size" ) )
+	  set_box( section, *character_physics_support()->movement(), 4 );
+	else
+	  character_physics_support()->movement()->SetBox( 4, bb );
+	bb = set_box( section, *character_physics_support()->movement(), 1 );
+	if ( pSettings->line_exist( section, "ph_box3_center" ) && pSettings->line_exist( section, "ph_box3_size" ) )
+	  set_box( section, *character_physics_support()->movement(), 3 );
+	else
+	  character_physics_support()->movement()->SetBox( 3, bb );
+	bb = set_box( section, *character_physics_support()->movement(), 0 );
 
 	m_fWalkAccel				= pSettings->r_float(section,"walk_accel");	
 	m_fJumpSpeed				= pSettings->r_float(section,"jump_speed");
