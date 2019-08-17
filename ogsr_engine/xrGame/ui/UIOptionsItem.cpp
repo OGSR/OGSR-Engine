@@ -111,6 +111,7 @@ void CUIOptionsItem::SaveValue() {
 		|| m_entry == "r__detail_density"
 		|| m_entry == "r__detail_scale"
 		|| m_entry == "r__no_scale_on_fade"
+		|| m_entry == "r2_sun_quality"
 	) m_optionsManager.DoVidRestart();
 	
 	if (m_entry == "snd_efx")
