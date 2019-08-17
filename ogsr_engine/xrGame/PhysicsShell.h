@@ -54,8 +54,9 @@ public:
 	virtual		void			Activate(const Fmatrix &transform, const Fvector& lin_vel, const Fvector& ang_vel, bool disable = false) = 0;
 	virtual		void			Activate(bool disable = false, bool not_set_bone_callbacks = false) = 0;
 	virtual		void			Activate(const Fmatrix& form, bool disable = false) = 0;
+	virtual	const	Fmatrix		&XFORM									()const																													{ return mXFORM; }
 	virtual		void			InterpolateGlobalTransform				(Fmatrix* m)																											= 0;
-	virtual		void			GetGlobalTransformDynamic				(Fmatrix* m)																											= 0;
+//	virtual		void			GetGlobalTransformDynamic				(Fmatrix* m)																											= 0;
 	virtual		void			InterpolateGlobalPosition				(Fvector* v)																											= 0;
 	virtual		void			net_Import								(NET_Packet& P)																											= 0;
 	virtual		void			net_Export								(NET_Packet& P)																											= 0;
@@ -139,6 +140,8 @@ public:
 	virtual		void							applyImpulseTrace						(const Fvector& pos, const Fvector& dir, float val,const u16 id)													= 0;
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	virtual		void							setDensityMC							(float M,const Fvector& mass_center)																				= 0;
+	virtual		void							set_local_mass_center					(const Fvector &mc )																								= 0;
+	virtual		void							setQuaternion							(const Fquaternion& quaternion)																						= 0;
 	virtual		u16								setGeomFracturable						(CPHFracture &fracture)																								= 0;
 	virtual		CPHFracture						&Fracture								(u16 num)																											= 0;
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -147,6 +150,7 @@ public:
 	virtual		const	Fvector					&mass_Center							()																													= 0;
 	virtual		const	Fvector					&local_mass_Center						()																													= 0;
 	virtual		float							getRadius								()																													= 0;
+	virtual		void							GetGlobalTransformDynamic				(Fmatrix* m)																									= 0;
 	virtual		dMass							*getMassTensor							()																													= 0;
 	virtual		void							get_MaxAreaDir							(Fvector& dir)																										= 0;
 	virtual		ObjectContactCallbackFun		*get_ObjectContactCallback				()																													= 0;
@@ -262,6 +266,10 @@ public:
 #endif
 public:
 IC					IKinematics					*PKinematics								()																{return m_pKinematics		;}
+////////////////////////////////////////////////////IPhysicsShell///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+virtual	const		Fmatrix						&XFORM										()const															{ return CPhysicsBase::XFORM(); }
+virtual		CPhysicsElement				&Element									( u16 index )												{ return *get_ElementByStoreOrder( index );	};
+virtual				void						GetGlobalTransformDynamic					(Fmatrix* m) 																				= 0;
 
 #ifdef ANIMATED_PHYSICS_OBJECT_SUPPORT
 	virtual			CPhysicsShellAnimator*		PPhysicsShellAnimator						()																							= 0;

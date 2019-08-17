@@ -413,6 +413,7 @@
     <ClInclude Include="..\COMMON_AI\server_entity_wrapper.h" />
     <ClInclude Include="..\COMMON_AI\server_entity_wrapper_inline.h" />
     <ClInclude Include="ActivatingCharCollisionDelay.h" />
+    <ClInclude Include="ActorCameraCollision.h" />
     <ClInclude Include="ai\monsters\anti_aim_ability.h" />
     <ClInclude Include="ai\monsters\controller\controller_psy_hit_effector.h" />
     <ClInclude Include="ai\monsters\group_states\group_state_attack.h" />
@@ -457,6 +458,7 @@
     <ClInclude Include="doors_manager.h" />
     <ClInclude Include="dynamic_obstacles_avoider.h" />
     <ClInclude Include="dynamic_obstacles_avoider_inline.h" />
+    <ClInclude Include="GeometryBits.h" />
     <ClInclude Include="IActivationShape.h" />
     <ClInclude Include="imotion_position.h" />
     <ClInclude Include="interactive_animation.h" />
@@ -467,6 +469,7 @@
     <ClInclude Include="magic_minimize_1d_inline.h" />
     <ClInclude Include="magic_minimize_nd.h" />
     <ClInclude Include="magic_minimize_nd_inline.h" />
+    <ClInclude Include="matrix_utils.h" />
     <ClInclude Include="moving_object.h" />
     <ClInclude Include="moving_objects.h" />
     <ClInclude Include="moving_objects_impl.h" />
@@ -1705,6 +1708,7 @@
   <ItemGroup>
     <ClCompile Include="..\COMMON_AI\random32.cpp" />
     <ClCompile Include="ActivatingCharCollisionDelay.cpp" />
+    <ClCompile Include="ActorCameraCollision.cpp" />
     <ClCompile Include="ai\monsters\anti_aim_ability.cpp" />
     <ClCompile Include="ai\monsters\controller\controller_psy_hit_effector.cpp" />
     <ClCompile Include="ai\monsters\monster_aura.cpp" />
@@ -1718,6 +1722,7 @@
     <ClCompile Include="doors_door.cpp" />
     <ClCompile Include="doors_manager.cpp" />
     <ClCompile Include="dynamic_obstacles_avoider.cpp" />
+    <ClCompile Include="GeometryBits.cpp" />
     <ClCompile Include="IActivationShape.cpp" />
     <ClCompile Include="imotion_position.cpp" />
     <ClCompile Include="interactive_animation.cpp" />

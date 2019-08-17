@@ -367,6 +367,7 @@ public:
 protected:
 	void					cam_Set					(EActorCameras style);
 	void					cam_Update				(float dt, float fFOV);
+	void					cam_Lookout				( const Fmatrix &xform, float camera_height );
 	void					camUpdateLadder		(float dt);
 	void					cam_SetLadder			();
 	void					cam_UnsetLadder			();

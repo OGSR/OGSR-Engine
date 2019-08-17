@@ -147,6 +147,12 @@ void CPHElement::calc_it_fract_data_use_density(const Fvector& mc,float density)
 	recursive_mass_summ(0,m_fratures_holder->m_fractures.begin());
 }
 
+void CPHElement::set_local_mass_center(const Fvector &mc )
+{
+	m_mass_center.set(mc);
+	dVectorSet( m_mass.c, cast_fp( mc ) );
+}
+
 dMass CPHElement::recursive_mass_summ(u16 start_geom,FRACTURE_I cur_fracture)
 {
 	dMass end_mass;

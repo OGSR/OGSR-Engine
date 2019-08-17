@@ -17,6 +17,7 @@
 #include "../xr_3da/cl_intersect.h"
 #include "../xr_3da/gamemtllib.h"
 #include "elevatorstate.h"
+#include "actorcameracollision.h"
 #include "CharacterPhysicsSupport.h"
 #include "EffectorShot.h"
 #include "phcollidevalidator.h"
@@ -114,22 +115,132 @@ ICF void calc_point(Fvector& pt, float radius, float depth, float alpha)
 	pt.y	= radius+radius*_cos(alpha);
 	pt.z	= depth;
 }
-
-ICF BOOL test_point(xrXRC& xrc, const Fmatrix& xform, const Fmatrix33& mat, const Fvector& ext, float radius, float angle)
+ICF void calc_gl_point(Fvector& pt, const Fmatrix& xform, float radius, float angle )
 {
-	Fvector				pt;
 	calc_point			(pt,radius,VIEWPORT_NEAR/2,angle);
 	xform.transform_tiny(pt);
+}
+ICF BOOL test_point( const Fvector	&pt, xrXRC& xrc,  const Fmatrix33& mat, const Fvector& ext )
+{
 
 	CDB::RESULT* it	=xrc.r_begin();
 	CDB::RESULT* end=xrc.r_end	();
 	for (; it!=end; it++)	{
 		CDB::RESULT&	O	= *it;
-		if (GMLib.GetMaterialByIdx(O.material)->Flags.is(SGameMtl::flPassable)) continue;
-		if (CDB::TestBBoxTri(mat,pt,ext,O.verts,FALSE))
+		if ( GMLib.GetMaterialByIdx(O.material)->Flags.is(SGameMtl::flPassable) )
+			continue;
+		if ( CDB::TestBBoxTri(mat,pt,ext,O.verts,FALSE) )
 			return		TRUE;
 	}
 	return FALSE;
+}
+
+IC bool test_point( const Fvector	&pt, const Fmatrix33& mat, const Fvector& ext, CActor* actor  )
+{
+	Fmatrix fmat = Fidentity;
+	fmat.i.set( mat.i );
+	fmat.j.set( mat.j );
+	fmat.k.set( mat.k );
+	fmat.c.set( pt );
+	//IPhysicsShellHolder * ve = smart_cast<IPhysicsShellHolder*> ( Level().CurrentEntity() ) ;
+	VERIFY( actor );
+	return test_camera_box( ext, fmat, actor );
+}
+
+IC void get_box_mat( Fmatrix33	&mat, float alpha, const SRotation	&r_torso  )
+{
+	float dZ			= ((PI_DIV_2-((PI+alpha)/2)));
+	Fmatrix				xformR;
+	xformR.setXYZ		(-r_torso.pitch,r_torso.yaw,-dZ);
+	mat.i				= xformR.i;
+	mat.j				= xformR.j;
+	mat.k				= xformR.k;
+}
+IC void get_q_box( Fbox &xf,  float c, float alpha, float radius )
+{
+	Fvector src_pt,		tgt_pt;
+	calc_point			(tgt_pt,radius,0,alpha);
+	src_pt.set			(0,tgt_pt.y,0);
+	xf.invalidate		();
+	xf.modify			(src_pt);
+	xf.modify			(tgt_pt);
+	xf.grow				(c);
+
+}
+
+IC void get_cam_oob( Fvector	&bc, Fvector &bd, Fmatrix33	&mat, const Fmatrix &xform, const SRotation &r_torso, float alpha, float radius, float c )
+{
+	get_box_mat ( mat, alpha, r_torso );
+	Fbox				xf;
+	get_q_box( xf, c, alpha, radius );
+	xf.xform			( Fbox().set(xf), xform )	;
+	// query
+	xf.get_CD			(bc,bd)		;
+}
+IC void get_cam_oob(  Fvector &bd, Fmatrix	&mat, const Fmatrix &xform, const SRotation &r_torso, float alpha, float radius, float c )
+{
+	
+	Fmatrix33	mat3;
+	Fvector		bc;
+	get_cam_oob( bc, bd, mat3, xform, r_torso, alpha, radius, c );
+	mat.set( Fidentity );
+	mat.i.set( mat3.i );
+	mat.j.set( mat3.j );
+	mat.k.set( mat3.k );
+	mat.c.set( bc );
+
+}
+void	CActor::cam_Lookout	( const Fmatrix &xform, float camera_height )
+{
+		if (!fis_zero(r_torso_tgt_roll))
+		{
+		
+			float w,h;
+			float c				= viewport_near(w,h); w/=2.f;h/=2.f;
+			float alpha			= r_torso_tgt_roll/2.f;
+			float radius		= camera_height*0.5f;
+			// init valid angle
+			float valid_angle	= alpha;
+			Fvector				bc,bd;
+			Fmatrix33			mat;
+			get_cam_oob( bc, bd, mat, xform, r_torso, alpha, radius, c );
+
+			/*
+			xrXRC				xrc			;
+			xrc.box_options		(0)			;
+			xrc.box_query		(Level().ObjectSpace.GetStaticModel(), bc, bd)		;
+			u32 tri_count		= xrc.r_count();
+			*/
+			//if (tri_count)		
+			{
+				float da		= 0.f;
+				BOOL bIntersect	= FALSE;
+				Fvector	ext		= {w,h,VIEWPORT_NEAR/2};
+				Fvector				pt;
+				calc_gl_point	( pt, xform, radius, alpha );
+				if ( test_point( pt, mat, ext, this  ) )
+				{
+					da			= PI/1000.f;
+					if (!fis_zero(r_torso.roll))
+						da		*= r_torso.roll/_abs(r_torso.roll);
+					for (float angle=0.f; _abs(angle)<_abs(alpha); angle+=da)
+					{
+						Fvector				pt;
+						calc_gl_point( pt, xform, radius, angle );
+						if (test_point( pt, mat,ext, this )) 
+							{ bIntersect=TRUE; break; } 
+					}
+					valid_angle	= bIntersect?angle:alpha;
+				} 
+			}
+			r_torso.roll		= valid_angle*2.f;
+			r_torso_tgt_roll	= r_torso.roll;
+		}
+		else
+		{	
+			r_torso_tgt_roll = 0.f;
+			r_torso.roll = 0.f;
+		}
 }
 
 // Alex ADD: smooth crouch fix
@@ -171,70 +282,14 @@ void CActor::cam_Update(float dt, float fFOV)
 	Fvector point = { 0, CurrentHeight + current_ik_cam_shift, 0 }, dangle={0,0,0};
 	
 
-	Fmatrix				xform,xformR;
+	Fmatrix				xform;
 	xform.setXYZ		(0,r_torso.yaw,0);
 	xform.translate_over(XFORM().c);
 
 	// lookout
 	if (this == Level().CurrentControlEntity())
-	{
-		if (!fis_zero(r_torso_tgt_roll)){
-			Fvector src_pt,tgt_pt;
-			float radius		= point.y*0.5f;
-			float alpha			= r_torso_tgt_roll/2.f;
-			float dZ			= ((PI_DIV_2-((PI+alpha)/2)));
-			calc_point			(tgt_pt,radius,0,alpha);
-			src_pt.set			(0,tgt_pt.y,0);
-			// init valid angle
-			float valid_angle	= alpha;
-			// xform with roll
-			xformR.setXYZ		(-r_torso.pitch,r_torso.yaw,-dZ);
-			Fmatrix33			mat; 
-			mat.i				= xformR.i;
-			mat.j				= xformR.j;
-			mat.k				= xformR.k;
-			// get viewport params
-			float w,h;
-			float c				= viewport_near(w,h); w/=2.f;h/=2.f;
-			// find tris
-			Fbox box;
-			box.invalidate		();
-			box.modify			(src_pt);
-			box.modify			(tgt_pt);
-			box.grow			(c);
+		cam_Lookout( xform, point.y  );
 
-			// query
-			Fvector				bc,bd		;
-			Fbox				xf			; 
-			xf.xform			(box,xform)	;
-			xf.get_CD			(bc,bd)		;
-
-			xrXRC				xrc			;
-			xrc.box_options		(0)			;
-			xrc.box_query		(Level().ObjectSpace.GetStaticModel(), bc, bd)		;
-			u32 tri_count		= xrc.r_count();
-			if (tri_count)		{
-				float da		= 0.f;
-				BOOL bIntersect	= FALSE;
-				Fvector	ext		= {w,h,VIEWPORT_NEAR/2};
-				if (test_point(xrc,xform,mat,ext,radius,alpha)){
-					da			= PI/1000.f;
-					if (!fis_zero(r_torso.roll))
-						da		*= r_torso.roll/_abs(r_torso.roll);
-					for (float angle=0.f; _abs(angle)<_abs(alpha); angle+=da)
-						if (test_point(xrc,xform,mat,ext,radius,angle)) { bIntersect=TRUE; break; } 
-						valid_angle	= bIntersect?angle:alpha;
-				} 
-			}
-			r_torso.roll		= valid_angle*2.f;
-			r_torso_tgt_roll	= r_torso.roll;
-		}
-		else
-		{	
-			r_torso_tgt_roll = 0.f;
-			r_torso.roll = 0.f;
-		}
-	}
 	if (!fis_zero(r_torso.roll))
 	{
 		float radius		= point.y*0.5f;
@@ -262,77 +317,18 @@ void CActor::cam_Update(float dt, float fFOV)
 
 	CCameraBase* C					= cam_Active();
 
-	if(eacFirstEye == cam_active)
-	{
-//		CCameraBase* C				= cameras[eacFirstEye];
-	
-		xrXRC						xrc			;
-		xrc.box_options				(0)			;
-		xrc.box_query				(Level().ObjectSpace.GetStaticModel(), point, Fvector().set(VIEWPORT_NEAR,VIEWPORT_NEAR,VIEWPORT_NEAR) );
-		u32 tri_count				= xrc.r_count();
-		if (tri_count)
-		{
-			_viewport_near			= 0.01f;
-		}
-		else
-		{
-			xr_vector<ISpatial*> ISpatialResult;
-			g_SpatialSpacePhysic->q_box(ISpatialResult, 0, STYPE_PHYSIC, point, Fvector().set(VIEWPORT_NEAR,VIEWPORT_NEAR,VIEWPORT_NEAR));
-			for (u32 o_it=0; o_it<ISpatialResult.size(); o_it++)
-			{
-				CPHShell*		pCPHS= smart_cast<CPHShell*>(ISpatialResult[o_it]);
-				if (pCPHS)
-				{
-					_viewport_near			= 0.01f;
-					break;
-				}
-			}
-		}
-	}
-/*
-	{
-		CCameraBase* C				= cameras[eacFirstEye];
-		float oobox_size			= 2*VIEWPORT_NEAR;
-
-
-		Fmatrix						_rot;
-		_rot.k						= C->vDirection;
-		_rot.c						= C->vPosition;
-		_rot.i.crossproduct			(C->vNormal,	_rot.k);
-		_rot.j.crossproduct			(_rot.k,		_rot.i);
-
-		
-		Fvector						vbox; 
-		vbox.set					(oobox_size, oobox_size, oobox_size);
-
-
-		Level().debug_renderer().draw_aabb  (C->vPosition, 0.05f, 0.051f, 0.05f, D3DCOLOR_XRGB(0,255,0));
-		Level().debug_renderer().draw_obb  (_rot, Fvector().div(vbox,2.0f), D3DCOLOR_XRGB(255,0,0));
-
-		dMatrix3					d_rot;
-		PHDynamicData::FMXtoDMX		(_rot, d_rot);
-
-		CPHActivationShape			activation_shape;
-		activation_shape.Create		(point, vbox, this);
-
-		dBodySetRotation			(activation_shape.ODEBody(), d_rot);
-
-		CPHCollideValidator::SetDynamicNotCollide(activation_shape);
-		activation_shape.Activate	(vbox,1,1.f,0.0F);
-
-		point.set					(activation_shape.Position());
-		
-		activation_shape.Destroy	();
-	}
-*/
-	C->Update						(point,dangle);
+	C->Update(point, dangle);
 	C->f_fov						= fFOV;
+
 	if(eacFirstEye != cam_active)
 	{
 		cameras[eacFirstEye]->Update	(point,dangle);
 		cameras[eacFirstEye]->f_fov		= fFOV;
 	}
-	
+	if (Level().CurrentEntity() == this)
+	{
+		collide_camera( *cameras[eacFirstEye], _viewport_near, this );
+	}
 	if( psActorFlags.test(AF_PSP) )
 	{
 		Cameras().Update			(C);

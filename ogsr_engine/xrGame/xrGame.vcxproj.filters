@@ -6276,6 +6276,15 @@
     <ClInclude Include="refreshable_obstacles_query_inline.h">
       <Filter>AI\AMonsters\humans\stalker\MovementManager\obstacles\refreshable_obstacles_query</Filter>
     </ClInclude>
+    <ClInclude Include="ActorCameraCollision.h">
+      <Filter>Core\Client\Cameras</Filter>
+    </ClInclude>
+    <ClInclude Include="matrix_utils.h">
+      <Filter>Core\Client\Objects\physics\Base\Objects\Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="GeometryBits.h">
+      <Filter>Core\Client\Objects\physics\Base</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="damage_manager.cpp">
@@ -9146,6 +9155,12 @@
     </ClCompile>
     <ClCompile Include="obstacles_query.cpp">
       <Filter>AI\AComponents\moving_objects\obstacles_query</Filter>
+    </ClCompile>
+    <ClCompile Include="ActorCameraCollision.cpp">
+      <Filter>Core\Client\Cameras</Filter>
+    </ClCompile>
+    <ClCompile Include="GeometryBits.cpp">
+      <Filter>Core\Client\Objects\physics\Base</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
