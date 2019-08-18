@@ -877,6 +877,10 @@ void CPHMovementControl::Load					(LPCSTR section){
 	float	cs_min		= pSettings->r_float	(section,"ph_crash_speed_min"	);
 	float	cs_max		= pSettings->r_float	(section,"ph_crash_speed_max"	);
 	float	mass		= pSettings->r_float	(section,"ph_mass"				);
+	if ( pSettings->line_exist( section, "ph_mass_rnd" ) ) {
+	  Fvector2 m = pSettings->r_fvector2( section, "ph_mass_rnd" );
+	  mass = Random.randF( m.x, m.y );
+	}
 	xr_token retrictor_types[]={
 		{ "actor",			CPHCharacter::rtActor},
 		{ "medium_monster",	CPHCharacter::rtMonsterMedium},
