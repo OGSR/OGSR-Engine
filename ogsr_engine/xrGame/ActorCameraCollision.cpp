@@ -97,9 +97,11 @@ static void cammera_shell_character_collide_callback( bool& do_collide, bool bo1
 	if(!oposite_data->ph_ref_object || !(oposite_data->ph_ref_object->IsStalker()) )
 		return;
 
+/*
 	do_collide =  true;
 	c.surface.soft_cfm =soft_cfm_for_controllers;
 	cammera_shell_collide_callback_common(do_collide,bo1,c,material_1,material_2);
+*/
 }
 
 
