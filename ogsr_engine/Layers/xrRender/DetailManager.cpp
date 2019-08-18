@@ -322,7 +322,10 @@ void CDetailManager::UpdateVisibleM()
 						float				R		= objects	[sp.id]->bv_sphere.R;
 						float				Rq_drcp	= R*R*dist_sq_rcp;	// reordered expression for 'ssa' calc
 
-						for (auto* el: sp.items){
+						for (auto& el: sp.items){
+
+							if (el == nullptr) continue;
+
 							SlotItem& Item			= *el;
 							float   scale = ps_no_scale_on_fade ? (Item.scale_calculated = Item.scale) : (Item.scale_calculated = Item.scale*alpha_i);
 							float	ssa = ps_no_scale_on_fade ? scale : scale*scale*Rq_drcp;
@@ -363,21 +366,18 @@ void CDetailManager::UpdateVisibleM()
 
 void CDetailManager::Render	()
 {
-#ifndef _EDITOR
-	if (0==dtFS)						return;
-	if (!psDeviceFlags.is(rsDetails))	return;
-#endif
+	if (!RImplementation.Details) return;	// possibly deleted
+	if (!dtFS) return;
+	if (!psDeviceFlags.is(rsDetails)) return;
+	if (g_pGamePersistent && g_pGamePersistent->m_pMainMenu && g_pGamePersistent->m_pMainMenu->IsActive()) return;
 
 	// MT
 	MT_SYNC					();
 
 	RDEVICE.Statistic->RenderDUMP_DT_Render.Begin	();
 
-#ifndef _EDITOR
 	float factor			= g_pGamePersistent->Environment().wind_strength_factor;
-#else
-	float factor			= 0.3f;
-#endif
+
 	swing_current.lerp		(swing_desc[0],swing_desc[1],factor);
 
 	RCache.set_CullMode		(CULL_NONE);

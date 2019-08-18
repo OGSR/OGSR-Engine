@@ -16,7 +16,7 @@ void   CStateBurerAntiAim<Object>::initialize()
 	object->control().activate				(ControlCom::eAntiAim);
 	m_allow_anti_aim					=	false;
 
-	VERIFY									( object->get_anti_aim()->is_active() );
+	VERIFY( object->get_anti_aim() && object->get_anti_aim()->is_active() );
 }
 
 template <class Object>
@@ -41,16 +41,11 @@ void   CStateBurerAntiAim<Object>::critical_finalize()
 template <class Object>
 bool   CStateBurerAntiAim<Object>::check_start_conditions()
 {
-	return									object->get_anti_aim()->check_start_condition();
+	return object->get_anti_aim() && object->get_anti_aim()->check_start_condition();
 }
 
 template <class Object>
 bool   CStateBurerAntiAim<Object>::check_completion()
 {
-	if ( !object->get_anti_aim()->is_active() )
-	{
-		return								true;
-	}
-
-	return									false;
+	return !object->get_anti_aim() || !object->get_anti_aim()->is_active();
 }

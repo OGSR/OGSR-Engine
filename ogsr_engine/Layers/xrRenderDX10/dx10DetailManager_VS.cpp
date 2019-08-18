@@ -168,6 +168,9 @@ void CDetailManager::hw_Render_dump(const Fvector4 &consts, const Fvector4 &wave
 					SlotItemVecIt _iI			= items->begin();
 					SlotItemVecIt _iE			= items->end();
 					for (; _iI!=_iE; _iI++){
+
+						if (*_iI == nullptr) continue;
+
 						SlotItem&	Instance	= **_iI;
 						u32			base		= dwBatch*4;
 

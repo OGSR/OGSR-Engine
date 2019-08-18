@@ -10,6 +10,8 @@
 #include "xrServer_Objects_ALife_Items.h"
 #include "xrServer_Objects_ALife_Monsters.h"
 
+#pragma todo("KRodin: заменить на прямые вызовы вместо этих всратых ивентов!")
+
 void xrServer::Process_event	(NET_Packet& P, ClientID sender)
 {
 #	ifdef SLOW_VERIFY_ENTITIES
@@ -210,14 +212,6 @@ void xrServer::Process_event	(NET_Packet& P, ClientID sender)
 	case GE_CHANGE_POS:
 		{			
 			SendTo(SV_Client->ID, P, net_flags(TRUE, TRUE));
-		}break;
-	case GEG_PLAYER_WEAPON_HIDE_STATE:
-		{
-			SendTo		(SV_Client->ID, P, net_flags(TRUE, TRUE));
-
-#	ifdef SLOW_VERIFY_ENTITIES
-			VERIFY					(verify_entities());
-#	endif
 		}break;
 	case GEG_PLAYER_ACTIVATE_SLOT:
 	case GEG_PLAYER_ITEM_EAT:

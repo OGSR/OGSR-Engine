@@ -2,6 +2,7 @@
 
 #include "../../../../Include/xrRender/Kinematics.h"
 #include "../../../Actor.h"
+#include "../../../inventory.h"
 #include "../../../../xr_3da/CameraBase.h"
 
 #include "../../../HUDManager.h"
@@ -34,11 +35,7 @@ void CStateBloodsuckerVampireExecuteAbstract::initialize()
 
 	HUD().GetUI()->HideGameIndicators();
 
-	NET_Packet			P;
-	Actor()->u_EventGen	(P, GEG_PLAYER_WEAPON_HIDE_STATE, Actor()->ID());
-	P.w_u32				(INV_STATE_BLOCK_ALL);
-	P.w_u8				(u8(true));
-	Actor()->u_EventSend(P);
+	Actor()->inventory().SetSlotsBlocked(INV_STATE_BLOCK_ALL, true);
 
 	//Actor()->set_inventory_disabled	(true);
 
@@ -112,12 +109,8 @@ TEMPLATE_SPECIALIZATION
 void CStateBloodsuckerVampireExecuteAbstract::show_hud()
 {
 	HUD().GetUI()->ShowGameIndicators();
-	NET_Packet			P;
 
-	Actor()->u_EventGen	(P, GEG_PLAYER_WEAPON_HIDE_STATE, Actor()->ID());
-	P.w_u32				(INV_STATE_BLOCK_ALL);
-	P.w_u8				(u8(false));
-	Actor()->u_EventSend(P);
+	Actor()->inventory().SetSlotsBlocked(INV_STATE_BLOCK_ALL, false);
 }
 
 TEMPLATE_SPECIALIZATION

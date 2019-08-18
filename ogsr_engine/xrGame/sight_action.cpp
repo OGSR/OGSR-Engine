@@ -130,6 +130,9 @@ void CSightAction::execute_position				()
 
 void CSightAction::execute_object				()
 {
+	if (!m_object_to_look)
+		return;
+
 	Fvector					look_pos;
 	m_object_to_look->Center(look_pos);
 
