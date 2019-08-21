@@ -122,11 +122,7 @@ void InitConsole	()
 
 void InitInput()
 {
-	bool exclusive_mode = DINPUT_ENABLE_EXCLUSIVE_MODE;
-	if (strstr(Core.Params, "-switch_exclusive_dinput"))
-		exclusive_mode = !exclusive_mode;
-
-	pInput = xr_new<CInput>(exclusive_mode);
+	pInput = xr_new<CInput>();
 }
 void destroyInput	()
 {

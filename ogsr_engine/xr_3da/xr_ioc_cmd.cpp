@@ -300,7 +300,7 @@ class CCC_Start : public IConsole_Command
 private:
 	std::string parse(const std::string& str)
 	{
-		std::regex Reg("\\(([^)]+)\\)");
+		static std::regex Reg("\\(([^)]+)\\)");
 		std::smatch results;
 		ASSERT_FMT(std::regex_search(str, results, Reg), "Failed parsing string: [%s]", str.c_str());
 		return results[1].str();
@@ -575,7 +575,7 @@ public:
 };
 #endif
 //-----------------------------------------------------------------------
-/*class CCC_ExclusiveMode : public IConsole_Command {
+class CCC_ExclusiveMode : public IConsole_Command {
 private:
 	typedef IConsole_Command inherited;
 
@@ -609,7 +609,7 @@ public:
 	{
 	}
 };
-*/
+
 
 class ENGINE_API CCC_HideConsole : public IConsole_Command
 {
@@ -774,8 +774,7 @@ void CCC_Register()
 	CMD1(CCC_DumpOpenFiles,		"dump_open_files");
 #endif
 
-	//KRodin: у нас для этого ключ запуска
-	//CMD1(CCC_ExclusiveMode,		"input_exclusive_mode");
+	CMD1(CCC_ExclusiveMode, "input_exclusive_mode");
 
 	//extern int g_svTextConsoleUpdateRate;
 	//CMD4(CCC_Integer, "sv_console_update_rate", &g_svTextConsoleUpdateRate, 1, 100);
