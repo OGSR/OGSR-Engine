@@ -626,7 +626,7 @@ void CActorCondition::UpdateTutorialThresholds()
 		strcpy_s(cb_name, "_G.on_actor_psy");
 	}
 
-	if (b && !m_condition_flags.test(eCantWalkWeight)) {
+	if (b && m_condition_flags.test(eCantWalkWeight)) {
 		b = false;
 		strcpy_s(cb_name, "_G.on_actor_cant_walk_weight");
 	}
