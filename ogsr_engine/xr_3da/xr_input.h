@@ -76,7 +76,7 @@ public:
 	BOOL						iGetAsyncBtnState			( int btn );
 	void						iGetLastMouseDelta			( Ivector2& p )	{ p.set(offs[0],offs[1]); }
 
-	CInput						(bool bExclusive = DINPUT_ENABLE_EXCLUSIVE_MODE, int deviceForInit = default_key);
+	CInput						(bool bExclusive = true, int deviceForInit = default_key);
 	~CInput						( );
 
 	virtual void				OnFrame						(void);
@@ -84,6 +84,8 @@ public:
 	virtual void				OnAppDeactivate				(void);
 
 	IInputReceiver*				CurrentIR					();
+
+	void exclusive_mode(const bool exclusive);
 
 public:
 	bool get_dik_name(int dik, LPSTR dest, int dest_sz);

@@ -38,11 +38,11 @@ function opt_video:InitControls(x, y, xml, handler)
 	xml:InitStatic("tab_video:cap_resolution", self)
 	xml:InitComboBox("tab_video:list_resolution", self)
 
+	xml:InitStatic("tab_video:cap_always_active", self) --Вот это надо инитить раньше list_fps_lock, чтобы этот статик не перекрывал выпадающий список.
+	xml:InitCheck("tab_video:check_always_active", self)
+
 	xml:InitStatic("tab_video:cap_fps_lock", self)
 	xml:InitComboBox("tab_video:list_fps_lock", self)
-
-	xml:InitStatic("tab_video:cap_always_active", self)
-	xml:InitCheck("tab_video:check_always_active", self)
 
 	xml:InitStatic("tab_video:cap_preset", self)
 	local btn = xml:InitComboBox("tab_video:list_presets", self)

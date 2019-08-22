@@ -12,7 +12,7 @@ CNvReader* NvData = nullptr;
 bool CNvReader::bSupport = false;
 static HINSTANCE hDLL;
 
-CNvReader::CNvReader() : AdapterID(0), AdapterFinal(0), gpuHandlesPh{}, gpuHandlesLg{}, gpuUsages{}
+CNvReader::CNvReader() : AdapterID(0), AdapterFinal(0), gpuHandlesPh{}, gpuHandlesLg{}, gpuUsages{}, NvAPI_GPU_PhysicalFromLogical(nullptr)
 {
 	hDLL = LoadLibraryA("nvapi64.dll");
 	if (!bSupport && hDLL)
@@ -44,7 +44,8 @@ void CNvReader::InitDeviceInfo()
 
 	(*NvAPI_EnumPhysicalGPUs)(gpuHandlesPh, &AdapterID);
 
-	MakeGPUCount();
+	if (NvAPI_GPU_PhysicalFromLogical)
+		MakeGPUCount();
 }
 
 void CNvReader::MakeGPUCount()
