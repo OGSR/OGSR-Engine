@@ -208,6 +208,7 @@ void CStateBurerAttackTele<Object>::FindFreeObjects(xr_vector<CObject*> &tpObjec
 			(obj == object) || 
 			object->CTelekinesis::is_active_object(obj) || 
 			( pSettings->line_exist( obj->cNameSect().c_str(), "ph_heavy" ) && pSettings->r_bool( obj->cNameSect().c_str(), "ph_heavy" ) ) ||
+			( pSettings->line_exist( obj->cNameSect().c_str(), "quest_item" ) && pSettings->r_bool( obj->cNameSect().c_str(), "quest_item" ) ) ||
 			obj->hasFixedBones() ||
 			!obj->m_pPhysicsShell->get_ApplyByGravity()) continue;
 
