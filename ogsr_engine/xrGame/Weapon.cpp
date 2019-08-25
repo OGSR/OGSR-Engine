@@ -957,7 +957,9 @@ u8 CWeapon::idle_state() {
 void CWeapon::UpdateCL		()
 {
 	inherited::UpdateCL		();
-	//UpdateHUDAddonsVisibility();
+#ifdef OGSR_MOD
+	UpdateHUDAddonsVisibility();
+#endif
 	//подсветка от выстрела
 	UpdateLight				();
 
@@ -1378,7 +1380,9 @@ LPCSTR wpn_grenade_launcher = "wpn_grenade_launcher";
 void CWeapon::UpdateHUDAddonsVisibility()
 {//actor only
 	if( H_Parent() != Level().CurrentEntity() )				return;
-	//if(m_pHUD->IsHidden())									return;
+#ifdef OGSR_MOD
+	if(m_pHUD->IsHidden())									return;
+#endif
 //	if(IsZoomed() && )
 
 
