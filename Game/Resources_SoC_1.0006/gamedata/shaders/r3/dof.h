@@ -36,6 +36,9 @@ float DOFFactor( float depth)
 #define EPSDEPTH	0.0001h
 float3	dof(float2 center)
 {
+	if (isSecondVPActive())
+		return s_image.Sample(smp_rtlinear, center);
+
 	// Scale tap offsets based on render target size
 //	float 	depth		= tex2D(s_position,center).z;
 #ifndef USE_MSAA
