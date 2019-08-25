@@ -206,6 +206,13 @@
 		<text>Удалить метку</text>
 	</string>
 
+	<string id="st_move">
+		<text>перенести</text>
+	</string>
+	<string id="st_move_all">
+		<text>перенести все</text>
+	</string>
+
 	<string id="st_move_to_slot_1">
 		<text>переместить в первый слот</text>
 	</string>
