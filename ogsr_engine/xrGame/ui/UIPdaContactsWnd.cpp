@@ -84,28 +84,29 @@ void CUIPdaContactsWnd::Update()
 		CPda*	pPda		= Actor()->GetPDA	();
 		if(!pPda)			return;
 
-		pPda->ActivePDAContacts	(m_pda_list);
+		const auto m_pda_list = pPda->ActivePDAContacts();
 
-		xr_vector<CPda*>::iterator it = m_pda_list.begin();
+		for (const auto&[id, pda] : m_pda_list)
+			AddContact(pda, id);
 
-		for(; it!=m_pda_list.end();++it){
-			AddContact(*it);
-		}
 		m_flags.set(flNeedUpdate, FALSE);
 	}
 	inherited::Update();
 }
 
-void CUIPdaContactsWnd::AddContact(CPda* pda)
+void CUIPdaContactsWnd::AddContact(CPda* pda, u16 owner_id)
 {
 	VERIFY(pda);
 
-
-	CUIPdaContactItem* pItem		= NULL;
-	pItem							= xr_new<CUIPdaContactItem>(this);
+	auto pItem = xr_new<CUIPdaContactItem>(this);
 	UIListWnd->AddWindow			(pItem, true);
 	pItem->Init						(0,0,UIListWnd->GetWidth(),85);
+#ifdef OGSR_MOD
+	CObject* pObject = Level().Objects.net_Find(owner_id);
+	pItem->InitCharacter(smart_cast<CInventoryOwner*>(pObject));
+#else
 	pItem->InitCharacter			(pda->GetOriginalOwner());
+#endif
 	pItem->m_data					= (void*)pda;
 }
 
