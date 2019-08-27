@@ -750,7 +750,7 @@ void		xrRender_initconsole	()
 	CMD4(CCC_Float,		"r__geometry_lod",		&ps_r__LOD,					0.1f,	/*1.2f*/ 3.f		); //AVO: extended from 1.2f to 3.f
 //.	CMD4(CCC_Float,		"r__geometry_lod_pow",	&ps_r__LOD_Power,			0,		2		);
 
-	CMD4(CCC_Float, "r__detail_density", &ps_current_detail_density, 0.2f, 1.0f);
+	CMD4(CCC_Float, "r__detail_density", &ps_current_detail_density, 0.06f /*0.2f*/, 1.0f);
 	CMD4(CCC_Float, "r__detail_scale", &ps_current_detail_scale, 0.2f, 3.0f);
 
 #ifdef DEBUG
