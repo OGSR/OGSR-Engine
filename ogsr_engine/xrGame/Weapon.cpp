@@ -1387,18 +1387,14 @@ bool CWeapon::SilencerAttachable() const
 
 LPCSTR wpn_grenade_launcher = "wpn_grenade_launcher";
 
-void CWeapon::UpdateHUDAddonsVisibility()
+void CWeapon::UpdateHUDAddonsVisibility( bool is_activating )
 {//actor only
 	if( H_Parent() != Level().CurrentEntity() )				return;
-	//if(m_pHUD->IsHidden())									return;
+	if ( m_pHUD->IsHidden() && !is_activating ) return;
 //	if(IsZoomed() && )
 
 
 	IKinematics* pHudVisual									= smart_cast<IKinematics*>(m_pHUD->Visual());
-	VERIFY(pHudVisual);
-	if (H_Parent() != Level().CurrentEntity()) pHudVisual	= NULL;
-
-
 	if (!pHudVisual)return;
 	u16  bone_id;
 
@@ -1475,12 +1471,12 @@ void CWeapon::UpdateHUDAddonsVisibility()
 
 }
 
-void CWeapon::UpdateAddonsVisibility()
+void CWeapon::UpdateAddonsVisibility( bool is_activating )
 {
 	IKinematics* pWeaponVisual = smart_cast<IKinematics*>(Visual()); R_ASSERT(pWeaponVisual);
 
 	u16  bone_id;
-	UpdateHUDAddonsVisibility								();	
+	UpdateHUDAddonsVisibility( is_activating );
 
 	callback(GameObject::eOnUpdateAddonsVisibiility)();
 
@@ -1540,7 +1536,7 @@ void CWeapon::UpdateAddonsVisibility()
 
 bool CWeapon::Activate() 
 {
-	UpdateAddonsVisibility();
+	UpdateAddonsVisibility( true );
 	return inherited::Activate();
 }
 
