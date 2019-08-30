@@ -114,6 +114,7 @@ private:
 	float							m_disp_stand_crouch;
 	float							m_disp_stand_stand_zoom;
 	float							m_disp_stand_crouch_zoom;
+	bool m_fast_can_kill_entity;
 
 private:
 	float							m_power_fx_factor;
