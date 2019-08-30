@@ -261,6 +261,7 @@ void CAI_Stalker::reload			(LPCSTR section)
 	m_max_queue_interval_close		= pSettings->r_u32(*cNameSect(),"weapon_max_queue_interval_close");	// 500;
 
 	m_power_fx_factor				= pSettings->r_float(section,"power_fx_factor");
+	m_fast_can_kill_entity = READ_IF_EXISTS( pSettings, r_bool, section, "fast_can_kill_entity", false );
 }
 
 void CAI_Stalker::Die				(CObject* who)

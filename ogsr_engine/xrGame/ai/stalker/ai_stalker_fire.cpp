@@ -569,6 +569,7 @@ void CAI_Stalker::can_kill_entity_from	(const Fvector &position, Fvector directi
 	m_pick_distance			= 0.f;
 	rq_storage.r_clear		();
 	can_kill_entity			(position,direction,distance,rq_storage);
+	if ( m_fast_can_kill_entity ) return;
 	if (m_can_kill_member && m_can_kill_enemy)
 		return;
 
