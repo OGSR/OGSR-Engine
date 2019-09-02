@@ -250,7 +250,7 @@ void CUIDragDropListEx::ClearAll(bool bDestroy)
 
 void CUIDragDropListEx::Compact()
 {
-	CUIWindow::WINDOW_LIST	wl		= m_container->GetChildWndList();
+	auto& wl = m_container->GetChildWndList();
 	ClearAll						(false);
 
 	CUIWindow::WINDOW_LIST_it it	= wl.begin();
