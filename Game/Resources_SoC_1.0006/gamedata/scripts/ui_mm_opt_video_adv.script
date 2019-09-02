@@ -35,8 +35,8 @@ local adv_vid_opt_params = {
 	{ "fxaa",                  "check", 0, hint_colors.green , "", ""                                            , only_2a_and_more_mode },
 	{ "ssample",               "track", 0, hint_colors.green , "", ""                                            , only_1_mode  },
 	--
-	{ "detail_density",        "track", 0, hint_colors.yellow, "video_settings_name_4" , "video_settings_desc_4"  },
-	{ "detail_distance",       "track", 0, hint_colors.yellow, "video_settings_name_5" , "video_settings_desc_5"  },
+	{ "detail_density",        "track", 0, hint_colors.red   , "video_settings_name_4" , "video_settings_desc_4"  },
+	{ "detail_distance",       "track", 0, hint_colors.red   , "video_settings_name_5" , "video_settings_desc_5"  },
 	{ "r2_sun_details",        "check", 0, hint_colors.red   , "video_settings_name_12", "video_settings_desc_12" },
 	{ "r2_sun",                "check", 0, hint_colors.red   , "video_settings_name_11", "video_settings_desc_11", only_2_and_more_mode  },
 	{ "light_distance",        "track", 0, hint_colors.yellow, "video_settings_name_13", "video_settings_desc_13", only_2a_and_more_mode },
