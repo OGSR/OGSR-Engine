@@ -404,12 +404,15 @@ MotionID CKinematicsAnimated::ID_FX_Safe		(LPCSTR  N)
 }
 MotionID CKinematicsAnimated::ID_FX			(LPCSTR  N)
 {
-	MotionID motion_ID		= ID_FX_Safe(N);R_ASSERT3(motion_ID.valid(),"! MODEL: can't find FX: ", N);
-    return motion_ID;
+	MotionID motion_ID = ID_FX_Safe(N);
+	ASSERT_FMT_DBG(motion_ID.valid(), "!![%s] MODEL: can't find FX: [%s]", __FUNCTION__, N);
+	return motion_ID;
 }
 CBlend*	CKinematicsAnimated::PlayFX			(MotionID motion_ID, float power_scale)
 {
-	VERIFY					(motion_ID.valid()); 
+	if (!motion_ID.valid())
+		return nullptr;
+
     CMotionDef* m_def		= m_Motions[motion_ID.slot].motions.motion_def(motion_ID.idx);
     VERIFY					(m_def);
 	return LL_PlayFX		(m_def->bone_or_part,motion_ID,
