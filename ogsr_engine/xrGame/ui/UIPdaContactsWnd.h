@@ -17,7 +17,6 @@ private:
 	typedef CUIWindow inherited;
 	enum				{flNeedUpdate  =(1<<0),};
 	Flags8				m_flags;
-	xr_vector<CPda*>	m_pda_list;
 public:
 								CUIPdaContactsWnd		();
 	virtual						~CUIPdaContactsWnd		();
@@ -30,7 +29,7 @@ public:
 
 	virtual void				Show					(bool status);
 
-	void 						AddContact				(CPda* pda);
+	void 						AddContact				(CPda* pda, u16 owner_id);
 	void 						RemoveContact			(CPda* pda);
 	void 						RemoveAll				();
 	void 						Reload					();
