@@ -105,6 +105,10 @@ Ivector2 CInifile::Sect::r_ivector2( LPCSTR L ) {
 	return V;
 }
 
+u32 CInifile::Sect::line_count() {
+	return u32( Data.size() );
+}
+
 CInifile::CInifile( IReader* F, LPCSTR path ) {
   fName      = 0;
   bReadOnly  = true;
@@ -325,7 +329,7 @@ BOOL CInifile::line_exist( LPCSTR S, LPCSTR L ) {
 
 u32 CInifile::line_count( LPCSTR Sname ) {
   Sect& S = r_section( Sname );
-  return u32(S.Data.size());
+  return S.line_count();
 }
 
 
