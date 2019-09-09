@@ -209,8 +209,11 @@ void CUIWindow::UpdateFocus( bool focus_lost ) {
   if ( GetMouseCapturer() && GetMouseCapturer()->CapturesFocusToo() )
     GetMouseCapturer()->UpdateFocus( focus_lost );
   else
-    for ( auto& it : m_ChildWndList )
-      if ( it->IsShown() ) it->UpdateFocus( focus_lost );
+  {
+	  for (auto it = m_ChildWndList.begin(); m_ChildWndList.end() != it; ++it)
+		  if ((*it)->IsShown())
+			  (*it)->UpdateFocus(focus_lost);
+  }
 }
 
 
@@ -223,16 +226,16 @@ void CUIWindow::CommitFocus( bool focus_lost ) {
     m_bCursorOverWindowChanged = false;
   }
 
-  for ( auto& it : m_ChildWndList )
-    if ( it->IsShown() )
-      it->CommitFocus( focus_lost );
+  for (auto it = m_ChildWndList.begin(); m_ChildWndList.end() != it; ++it)
+    if ( (*it)->IsShown() )
+      (*it)->CommitFocus( focus_lost );
 }
 
 
 void CUIWindow::Update() {
-  for ( auto& it : m_ChildWndList )
-    if ( it->IsShown() )
-      it->Update();
+  for (auto it = m_ChildWndList.begin(); m_ChildWndList.end() != it; ++it)
+    if ( (*it)->IsShown() )
+      (*it)->Update();
 }
 
 
@@ -452,9 +455,9 @@ void CUIWindow::SetMouseCapture( CUIWindow *pChildWindow, bool capture_status ) 
     m_pMouseCapturer = pChildWindow;
   }
   else {
-    ASSERT_FMT(
+    ASSERT_FMT_DBG(
       ( m_pMouseCapturer && m_pMouseCapturer == pChildWindow ),
-      "[%s]: %s trying to reset m_pMouseCapturer[%s]",
+      "[%s]: [%s] trying to reset m_pMouseCapturer[%s]",
       __FUNCTION__, pChildWindow->WindowName().c_str(),
       m_pMouseCapturer ? m_pMouseCapturer->WindowName().c_str() : ""
     );
@@ -471,28 +474,41 @@ CUIWindow* CUIWindow::GetMouseCapturer() {
 //реакция на клавиатуру
 bool CUIWindow::OnKeyboard(int dik, EUIMessages keyboard_action)
 {
-	bool result;
-
-	//если есть дочернее окно,захватившее клавиатуру, то
-	//сообщение направляем ему сразу
-	if(NULL!=m_pKeyboardCapturer)
+	//если есть дочернее окно,захватившее клавиатуру, то сообщение направляем ему сразу
+	if (m_pKeyboardCapturer)
 	{
-		result = m_pKeyboardCapturer->OnKeyboard(dik, keyboard_action);
-		
-		if(result) return true;
-	}
-
-	WINDOW_LIST::reverse_iterator it = m_ChildWndList.rbegin();
-
-	for(; it!=m_ChildWndList.rend(); ++it)
-	{
-		if((*it)->IsEnabled())
+		if (m_pKeyboardCapturer->OnKeyboard(dik, keyboard_action))
 		{
-			result = (*it)->OnKeyboard(dik, keyboard_action);
-			
-			if(result)	return true;
+			return true;
 		}
 	}
+
+	size_t processed = 0;
+	auto iter = m_ChildWndList.rbegin();
+	while (iter != m_ChildWndList.rend()) {
+		const auto size = m_ChildWndList.size();
+
+		auto* Wnd = *(iter++);
+
+		ASSERT_FMT_DBG(Wnd, "!![%s][%s] Child wnd is nullptr! Something strange!", __FUNCTION__, this->WindowName_script());
+
+		if (Wnd && Wnd->IsEnabled())
+		{
+			if (Wnd->OnKeyboard(dik, keyboard_action))
+			{
+				return true;
+			}
+		}
+
+		if (size != m_ChildWndList.size()) {
+			iter = m_ChildWndList.rbegin();
+			std::advance(iter, processed);
+		}
+		else {
+			processed++;
+		}
+	}
+
 	return false;
 }
 
@@ -502,10 +518,31 @@ bool CUIWindow::OnKeyboardHold(int dik)
 		if (m_pKeyboardCapturer->OnKeyboardHold(dik))
 			return true;
 
-	for (auto it = m_ChildWndList.rbegin(); it != m_ChildWndList.rend(); ++it)
-		if ((*it)->IsEnabled())
-			if ((*it)->OnKeyboardHold(dik))
+	size_t processed = 0;
+	auto iter = m_ChildWndList.rbegin();
+	while (iter != m_ChildWndList.rend()) {
+		const auto size = m_ChildWndList.size();
+
+		auto* Wnd = *(iter++);
+
+		ASSERT_FMT_DBG(Wnd, "!![%s][%s] Child wnd is nullptr! Something strange!", __FUNCTION__, this->WindowName_script());
+
+		if (Wnd && Wnd->IsEnabled())
+		{
+			if (Wnd->OnKeyboardHold(dik))
+			{
 				return true;
+			}
+		}
+
+		if (size != m_ChildWndList.size()) {
+			iter = m_ChildWndList.rbegin();
+			std::advance(iter, processed);
+		}
+		else {
+			processed++;
+		}
+	}
 
 	return false;
 }

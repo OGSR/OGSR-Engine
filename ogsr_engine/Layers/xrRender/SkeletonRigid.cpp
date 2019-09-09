@@ -134,11 +134,15 @@ void CKinematics::CLBone( const CBoneData* bd, CBoneInstance &bi, const Fmatrix 
 		} else {
 
 			BuildBoneMatrix( bd, bi, parent, channel_mask );
-			ASSERT_FMT_DBG(_valid(bi.mTransform), "anim kils bone matrix! bone: [%s]", bd->name.c_str());
+#ifndef MASTER_GOLD
+			R_ASSERT2( _valid( bi.mTransform ), "anim kils bone matrix" ); 
+#endif // #ifndef MASTER_GOLD
 			if (bi.callback())
 			{
 				bi.callback()(&bi);
-				ASSERT_FMT_DBG(_valid(bi.mTransform), "callback kils bone matrix! bone: [%s]", bd->name.c_str());
+#ifndef MASTER_GOLD
+				R_ASSERT2( _valid( bi.mTransform ), make_string( "callback kils bone matrix bone: %s " , bd->name.c_str() ) ); 
+#endif // #ifndef MASTER_GOLD
 			}
 		}
 		bi.mRenderTransform.mul_43(bi.mTransform,bd->m2b_transform);

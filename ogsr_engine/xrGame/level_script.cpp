@@ -32,6 +32,7 @@
 #include "../xrcdb/xr_collide_defs.h"
 #include "script_rq_result.h"
 #include "monster_community.h"
+#include "GamePersistent.h"
 
 using namespace luabind;
 
@@ -757,12 +758,11 @@ void g_set_detector_params(int _one, int _two)
 #include "game_sv_single.h"
 void AdvanceGameTime(u32 _ms)
 {
-	g_pGamePersistent->Environment().ChangeGameTime(_ms);
-
 	auto game = smart_cast<game_sv_Single*>(Level().Server->game);
 	game->alife().time_manager().advance_game_time(_ms);
 
 	Level().game->SetGameTimeFactor(ai().get_alife() ? ai().alife().time().game_time() : Level().GetGameTime(), Level().game->GetGameTimeFactor());
+	GamePersistent().Environment().SetGameTime( Level().GetEnvironmentGameDayTimeSec(), Level().game->GetEnvironmentGameTimeFactor() );
 }
 
 //

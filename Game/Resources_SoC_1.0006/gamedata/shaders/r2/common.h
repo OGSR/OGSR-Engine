@@ -300,4 +300,20 @@ half Contrast(half Input, half ContrastPower)
 #define FXPS technique _render{pass _code{PixelShader=compile ps_3_0 main();}}
 #define FXVS technique _render{pass _code{VertexShader=compile vs_3_0 main();}}
 
+//////////////////////////////////////////[SWM]///////////////////////////////////////////
+uniform float4 m_blender_mode; // x = [0 - default, 1 - night vision, 2 - thermal vision]; y = [0.0f / 1.0f - происходит ли в данный момент рендеринг картинки для прицела]; z = [0.0f / 1.0f - выключен или включён двойной рендер]; w - зарезервировано на будущее.
+
+// Активен-ли двойной рендер?
+inline bool isSecondVPActive()
+{
+	return (m_blender_mode.z == 1.f);
+}
+
+// Рендерится ли в данный момент кадр для прицела?
+inline bool IsSVPFrame()
+{
+	return (m_blender_mode.y == 1.f);
+}
+//////////////////////////////////////////////////////////////////////////////////////////
+
 #endif

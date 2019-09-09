@@ -20,7 +20,3 @@
 #include "../xr_3da/gamefont.h"
 #include "../xr_3da/xr_object.h"
 #include "../xr_3da/igame_level.h"
-
-#ifndef DEBUG
-#	define MASTER_GOLD
-#endif

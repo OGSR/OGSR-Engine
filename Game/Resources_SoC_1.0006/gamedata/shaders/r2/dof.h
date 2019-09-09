@@ -35,6 +35,11 @@ half DOFFactor( half depth)
 #define EPSDEPTH	0.0001h
 half3	dof(float2 center)
 {
+	if (isSecondVPActive()) {
+		return tex2D(s_image, center);
+	}
+	else {
+
 	// Scale tap offsets based on render target size
 	half 	depth		= tex2D(s_position,center).z;
 	if (depth <= EPSDEPTH)	depth = dof_params.w;
@@ -80,6 +85,8 @@ half3	dof(float2 center)
 	}
 
 	return 	half3	(sum/contrib);
+
+	}
 }
 
 /*

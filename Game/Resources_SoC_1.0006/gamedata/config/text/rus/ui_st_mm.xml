@@ -689,7 +689,7 @@
 		<text>Объёмные лучи - r2_sun_shafts</text>
 	</string>
 	<string id="ui_mm_r2_sun_quality">
-		<text>Качество солнца</text>
+		<text>Мягкие тени от солнца</text>
 	</string>
 	<string id="video_settings_name_30">
 		<text>Тип объёмных лучей - r2_sunshafts_mode</text>

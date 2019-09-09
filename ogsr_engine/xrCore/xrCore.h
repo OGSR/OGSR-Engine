@@ -32,6 +32,10 @@
 #undef DEBUG
 #endif
 
+#ifndef DEBUG
+#	define MASTER_GOLD
+#endif
+
 #include "xrCore_platform.h"
 
 #include <stdio.h>
