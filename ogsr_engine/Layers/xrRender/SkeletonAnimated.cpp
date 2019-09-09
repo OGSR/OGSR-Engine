@@ -676,103 +676,103 @@ CBlend*	CKinematicsAnimated::IBlend_Create	()
 }
 void CKinematicsAnimated::Load(const char* N, IReader *data, u32 dwFlags)
 {
-	inherited::Load	(N, data, dwFlags);
+  inherited::Load (N, data, dwFlags);
 
-	// Globals
-	blend_instances		= NULL;
-    m_Partition			= NULL;
-	Update_LastTime 	= 0;
+  // Globals
+  blend_instances         = NULL;
+  m_Partition                 = NULL;
+  Update_LastTime         = 0;
 
-	// Load animation
-	std::vector<std::string> omfs;
-	if ( pUserData && pUserData->section_exist( "omf_override" ) ) {
-	  LPCSTR nm, val;
-	  for ( u32 i = 0; pUserData->r_line( "omf_override", i ,&nm, &val ); ++i ) {
-	    std::string s = nm;
-	    s += ".omf";
-	    omfs.push_back( s );
-	  }
-	}
-	else if ( data->find_chunk( OGF_S_MOTION_REFS ) ) {
-	  string_path items_nm;
-	  data->r_stringZ( items_nm, sizeof( items_nm ) );
-	  u32 set_cnt = _GetItemCount( items_nm );
-	  for ( u32 k = 0; k < set_cnt; ++k ) {
-	    string_path nm;
-	    _GetItem( items_nm, k, nm );
-	    xr_strcat( nm, ".omf" );
-	    omfs.push_back( nm );
-	  }
-	}
-	else if ( data->find_chunk( OGF_S_MOTION_REFS2 ) ) {
-	  u32 set_cnt = data->r_u32();
-	  for ( u32 k =0; k < set_cnt; ++k ) {
-	    string_path nm;
-	    data->r_stringZ( nm, sizeof( nm ) );
-	    xr_strcat( nm, ".omf" );
-	    omfs.push_back( nm );
-	  }
-	}
-
-	if ( omfs.size() ) {
-	  R_ASSERT( omfs.size() < MAX_ANIM_SLOT );
-	  m_Motions.reserve( omfs.size() );
-	  for ( const auto& s : omfs ) {
-	    auto nm = s.c_str();
-	    string_path fn;
-	    if ( !FS.exist( fn, "$level$", nm ) ) {
-	      if ( !FS.exist( fn, "$game_meshes$", nm ) ) {
-#ifdef _EDITOR
-	        Msg( "!Can't find motion file '%s'.", nm );
-	        return;
-#else
-	        Debug.fatal( DEBUG_INFO, "Can't find motion file '%s'.", nm );
-#endif
-	      }
-	    }
-	    // Check compatibility
-	    m_Motions.push_back( SMotionsSlot() );
-	    bool create_res = true;
-	    if ( !g_pMotionsContainer->has( nm ) ) { //optimize fs operations
-	      IReader* MS = FS.r_open( fn );
-	      create_res = m_Motions.back().motions.create( nm, MS, bones );
-	      FS.r_close( MS );
-	    }
-	    if ( create_res )
-	      m_Motions.back().motions.create( nm, NULL, bones );
-	    else {
-	      m_Motions.pop_back();
-	      Msg( "! error in model [%s]. Unable to load motion file '%s'.", N, nm );
-	    }
-	  }
-    }else    
-	{
-		string_path	nm;
-		strconcat			(sizeof(nm),nm,N,".ogf");
-		m_Motions.push_back(SMotionsSlot());
-		m_Motions.back().motions.create(nm,data,bones);
+  // Load animation
+  std::vector<std::string> omfs;
+  if ( pUserData && pUserData->section_exist( "omf_override" ) ) {
+    LPCSTR nm, val;
+    for ( u32 i = 0; pUserData->r_line( "omf_override", i ,&nm, &val ); ++i ) {
+      std::string s = nm;
+      s += ".omf";
+      omfs.push_back( s );
     }
+  }
+  else if ( data->find_chunk( OGF_S_MOTION_REFS ) ) {
+    string_path items_nm;
+    data->r_stringZ( items_nm, sizeof( items_nm ) );
+    u32 set_cnt = _GetItemCount( items_nm );
+    for ( u32 k = 0; k < set_cnt; ++k ) {
+      string_path nm;
+      _GetItem( items_nm, k, nm );
+      xr_strcat( nm, ".omf" );
+      omfs.push_back( nm );
+    }
+  }
+  else if ( data->find_chunk( OGF_S_MOTION_REFS2 ) ) {
+    u32 set_cnt = data->r_u32();
+    for ( u32 k =0; k < set_cnt; ++k ) {
+      string_path nm;
+      data->r_stringZ( nm, sizeof( nm ) );
+      xr_strcat( nm, ".omf" );
+      omfs.push_back( nm );
+    }
+  }
 
-    R_ASSERT				(m_Motions.size());
+  if ( omfs.size() ) {
+    R_ASSERT( omfs.size() < MAX_ANIM_SLOT );
+    m_Motions.reserve( omfs.size() );
+    for ( const auto& s : omfs ) {
+      auto nm = s.c_str();
+      string_path fn;
+      if ( !FS.exist( fn, "$level$", nm ) ) {
+        if ( !FS.exist( fn, "$game_meshes$", nm ) ) {
+#ifdef _EDITOR
+          Msg( "!Can't find motion file '%s'.", nm );
+          return;
+#else
+          Debug.fatal( DEBUG_INFO, "Can't find motion file '%s'.", nm );
+#endif
+        }
+      }
+      // Check compatibility
+      m_Motions.push_back( SMotionsSlot() );
+      bool create_res = true;
+      if ( !g_pMotionsContainer->has( nm ) ) { //optimize fs operations
+        IReader* MS = FS.r_open( fn );
+        create_res = m_Motions.back().motions.create( nm, MS, bones );
+        FS.r_close( MS );
+      }
+      if ( create_res )
+        m_Motions.back().motions.create( nm, NULL, bones );
+      else {
+        m_Motions.pop_back();
+        Msg( "! error in model [%s]. Unable to load motion file '%s'.", N, nm );
+      }
+    }
+  }
+  else {
+    string_path     nm;
+    strconcat                       (sizeof(nm),nm,N,".ogf");
+    m_Motions.push_back(SMotionsSlot());
+    m_Motions.back().motions.create(nm,data,bones);
+  }
 
-    m_Partition				= m_Motions[0].motions.partition();
-	m_Partition->load		(this,N);
-    
-	// initialize motions
-	for (MotionsSlotVecIt m_it=m_Motions.begin(); m_it!=m_Motions.end(); m_it++){
-		SMotionsSlot& MS	= *m_it;
-		MS.bone_motions.resize(bones->size());
-		for (u32 i=0; i<bones->size(); i++){
-			CBoneData* BD		= (*bones)[i];
-			MS.bone_motions[i]	= MS.motions.bone_motions(BD->name);
-		}
-	}
+  R_ASSERT                            (m_Motions.size());
 
-	// Init blend pool
-	IBlend_Startup	();
+  m_Partition                         = m_Motions[0].motions.partition();
+  m_Partition->load               (this,N);
 
-//.	if (motions.cycle()->size()<2)			
-//.		Msg("* WARNING: model '%s' has only one motion. Candidate for SkeletonRigid???",N);
+  // initialize motions
+  for (MotionsSlotVecIt m_it=m_Motions.begin(); m_it!=m_Motions.end(); m_it++){
+    SMotionsSlot& MS        = *m_it;
+    MS.bone_motions.resize(bones->size());
+    for (u32 i=0; i<bones->size(); i++){
+      CBoneData* BD           = (*bones)[i];
+      MS.bone_motions[i]      = MS.motions.bone_motions(BD->name);
+    }
+  }
+
+  // Init blend pool
+  IBlend_Startup  ();
+
+//.     if (motions.cycle()->size()<2)
+//.             Msg("* WARNING: model '%s' has only one motion. Candidate for SkeletonRigid???",N);
 }
 
 
