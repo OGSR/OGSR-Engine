@@ -180,6 +180,11 @@ void CHW::CreateDevice( HWND m_hWnd, bool move_window )
 		R_ASSERT(FeatureLevel == D3D_FEATURE_LEVEL_11_0); //На всякий случай
 		Msg("!![%s] DirectX 11.1 not supported!", __FUNCTION__);
 	}
+
+	// https://habr.com/ru/post/308980/
+	IDXGIDevice1* pDeviceDXGI = nullptr;
+	R_CHK(pDevice->QueryInterface(__uuidof(IDXGIDevice1), reinterpret_cast<void**>(&pDeviceDXGI)));
+	R_CHK(pDeviceDXGI->SetMaximumFrameLatency(1));
 #else
 	HRESULT R = D3DX10CreateDeviceAndSwapChain(m_pAdapter,
                                           m_DriverType,
