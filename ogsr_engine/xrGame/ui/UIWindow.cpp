@@ -518,10 +518,31 @@ bool CUIWindow::OnKeyboardHold(int dik)
 		if (m_pKeyboardCapturer->OnKeyboardHold(dik))
 			return true;
 
-	for (auto it = m_ChildWndList.rbegin(); it != m_ChildWndList.rend(); ++it)
-		if ((*it)->IsEnabled())
-			if ((*it)->OnKeyboardHold(dik))
+	size_t processed = 0;
+	auto iter = m_ChildWndList.rbegin();
+	while (iter != m_ChildWndList.rend()) {
+		const auto size = m_ChildWndList.size();
+
+		auto* Wnd = *(iter++);
+
+		ASSERT_FMT_DBG(Wnd, "!![%s][%s] Child wnd is nullptr! Something strange!", __FUNCTION__, this->WindowName_script());
+
+		if (Wnd && Wnd->IsEnabled())
+		{
+			if (Wnd->OnKeyboardHold(dik))
+			{
 				return true;
+			}
+		}
+
+		if (size != m_ChildWndList.size()) {
+			iter = m_ChildWndList.rbegin();
+			std::advance(iter, processed);
+		}
+		else {
+			processed++;
+		}
+	}
 
 	return false;
 }
