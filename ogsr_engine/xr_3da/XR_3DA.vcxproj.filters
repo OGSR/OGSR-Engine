@@ -459,9 +459,6 @@
     <ClCompile Include="FDemoRecord.cpp">
       <Filter>Game API\Demo</Filter>
     </ClCompile>
-    <ClCompile Include="fmesh.cpp">
-      <Filter>Interfaces\Render\Visuals</Filter>
-    </ClCompile>
     <ClCompile Include="SkeletonMotions.cpp">
       <Filter>Interfaces\Render\Visuals\Skeleton</Filter>
     </ClCompile>

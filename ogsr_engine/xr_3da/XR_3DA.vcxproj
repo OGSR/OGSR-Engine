@@ -505,7 +505,6 @@
     <ClCompile Include="Feel_Vision.cpp" />
     <ClCompile Include="FDemoPlay.cpp" />
     <ClCompile Include="FDemoRecord.cpp" />
-    <ClCompile Include="fmesh.cpp" />
     <ClCompile Include="SkeletonMotions.cpp" />
     <ClCompile Include="PS_instance.cpp" />
     <ClCompile Include="LightAnimLibrary.cpp" />
