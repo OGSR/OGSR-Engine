@@ -90,8 +90,8 @@ void CHelicopter::UpdateHeliParticles	()
 			int frame;
 			u32 clr					= m_lanim->CalculateBGR(Device.fTimeGlobal,frame); // тючтЁр•рхЄ т ЇюЁьрЄх BGR
 			Fcolor					fclr;
-			fclr.set				((float)color_get_B(clr),(float)color_get_G(clr),(float)color_get_R(clr),1.f);
-			fclr.mul_rgb			(m_light_brightness/255.f);
+			fclr.set( (float)color_get_B( clr ) / 255.f, (float)color_get_G( clr ) / 255.f, (float)color_get_R( clr ) / 255.f, 1.f );
+			fclr.mul_rgb( m_light_brightness );
 			m_light_render->set_color	(fclr);
 		}
 
