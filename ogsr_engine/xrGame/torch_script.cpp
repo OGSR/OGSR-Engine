@@ -21,27 +21,26 @@ void CTorch::SetAnimation(LPCSTR name)
 	lanim = LALib.FindItem(name);
 }
 
-void CTorch::SetBrightness(float brightness)
-{
-	auto c = light_render->get_color();
-	if (fBrightness > 0)
-		c.mul_rgb(255.f / fBrightness);
-
-	fBrightness = brightness;
-	SetColor(c); // immediate update
+void CTorch::SetBrightness( float brightness ) {
+  fBrightness = brightness;
+  auto c = m_color;
+  c.mul_rgb( fBrightness );
+  light_render->set_color( c );
 }
 
-void CTorch::SetColor(const Fcolor &color, int target)
-{
-	auto c = color;
-	c.mul_rgb(fBrightness / 255.f);
-	switch (target)
-	{
-	case 0: light_render->set_color(c); break;
-	case 1: if (light_omni) light_omni->set_color(c); break;
-	case 2: if (glow_render) glow_render->set_color(c); break;
-	}
-
+void CTorch::SetColor( const Fcolor &color, int target ) {
+  switch( target ) {
+    case 0:
+      m_color = color;
+      light_render->set_color( m_color );
+      break;
+    case 1:
+      if ( light_omni ) light_omni->set_color( color );
+      break;
+    case 2:
+      if ( glow_render ) glow_render->set_color( color );
+      break;
+  }
 }
 
 void CTorch::SetRGB(float r, float g, float b, int target)
@@ -67,7 +66,11 @@ void CTorch::SetRange(float range, int target)
 {
 	switch (target)
 	{
-	case 0: light_render->set_range(range); break;
+	case 0: {
+		light_render->set_range(range);
+		calc_m_delta_h( range );
+		break;
+	}
 	case 1: if (light_omni) light_omni->set_range(range); break;
 	case 2: if (glow_render) glow_render->set_radius(range); break;
 	}
