@@ -2,17 +2,7 @@
 
 #include "../xrCDB/frustum.h"
 
-#pragma warning(disable:4995)
-// mmsystem.h
-#define MMNOSOUND
-#define MMNOMIDI
-#define MMNOAUX
-#define MMNOMIXER
-#define MMNOJOY
 #include <mmsystem.h>
-// d3dx9.h
-#include <d3dx/d3dx9.h>
-#pragma warning(default:4995)
 
 #include "x_ray.h"
 #include "render.h"
@@ -273,9 +263,7 @@ void CRenderDevice::on_idle		()
 	// Matrices
 	mFullTransform.mul			( mProject,mView	);
 	m_pRender->SetCacheXform(mView, mProject);
-	//RCache.set_xform_view		( mView				);
-	//RCache.set_xform_project	( mProject			);
-	D3DXMatrixInverse			( (D3DXMATRIX*)&mInvFullTransform, 0, (D3DXMATRIX*)&mFullTransform);
+	mInvFullTransform.invert_44(mFullTransform);
 
 	vCameraPosition_saved	= vCameraPosition;
 	mFullTransform_saved	= mFullTransform;

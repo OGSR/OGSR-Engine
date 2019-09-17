@@ -40,9 +40,6 @@ private:
 class		ECORE_API			dxRender_Visual : public IRenderVisual
 {
 public:
-#ifdef _EDITOR
-    ogf_desc					desc		;
-#endif
 #ifdef DEBUG
 	shared_str					dbg_name	;
 	virtual shared_str	_BCL	getDebugName() { return dbg_name; }
