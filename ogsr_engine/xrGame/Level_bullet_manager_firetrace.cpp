@@ -174,7 +174,7 @@ BOOL  CBulletManager::firetrace_callback(collide::rq_result& result, LPVOID para
 void CBulletManager::FireShotmark (SBullet* bullet, const Fvector& vDir, const Fvector &vEnd, collide::rq_result& R, u16 target_material, const Fvector& vNormal, bool ShowMark)
 {
 	SGameMtlPair* mtl_pair	= GMLib.GetMaterialPair(bullet->bullet_material_idx, target_material);
-	Fvector particle_dir;
+	Fvector particle_dir	= vNormal;
 
 	if (R.O)
 	{
