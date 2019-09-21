@@ -816,7 +816,7 @@ bool CUICarBodyWnd::OnItemDrop(CUICellItem* itm)
 	if(old_owner==new_owner || !old_owner || !new_owner)
 		return false;
 
-	if (Level().IR_GetKeyState(DIK_LSHIFT)) {
+	if (Level().IR_GetKeyState(DIK_LSHIFT) || Level().IR_GetKeyState(DIK_RSHIFT)) {
 		MoveItems(itm);
 	}
 	else {
@@ -828,7 +828,7 @@ bool CUICarBodyWnd::OnItemDrop(CUICellItem* itm)
 
 bool CUICarBodyWnd::OnItemDbClick(CUICellItem* itm)
 {
-	if (Level().IR_GetKeyState(DIK_LSHIFT)) {
+	if (Level().IR_GetKeyState(DIK_LSHIFT) || Level().IR_GetKeyState(DIK_RSHIFT)) {
 		MoveItems(itm);
 	}
 	else {
