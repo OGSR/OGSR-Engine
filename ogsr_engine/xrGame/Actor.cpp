@@ -1325,13 +1325,11 @@ void CActor::ForceTransform(const Fmatrix& m)
 	character_physics_support()->movement()->SetVelocity		(0,0,0);
 }
 
-//ENGINE_API extern float		psHUD_FOV;
 float CActor::Radius()const
 { 
 	float R		= inherited::Radius();
 	CWeapon* W	= smart_cast<CWeapon*>(inventory().ActiveItem());
 	if (W) R	+= W->Radius();
-	//	if (HUDview()) R *= 1.f/psHUD_FOV;
 	return R;
 }
 
