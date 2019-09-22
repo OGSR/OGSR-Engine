@@ -474,7 +474,7 @@ int CUIListWnd::FindItemWithValue(int iValue)
 
 bool CUIListWnd::OnMouse(float x, float y, EUIMessages mouse_action)
 {
-	bool with_shift = (Level().IR_GetKeyState(DIK_LSHIFT));
+	bool with_shift = Level().IR_GetKeyState(DIK_LSHIFT) || Level().IR_GetKeyState(DIK_RSHIFT);
 
 	switch (mouse_action) 
 	{

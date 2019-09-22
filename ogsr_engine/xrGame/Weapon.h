@@ -21,7 +21,6 @@ class CWeaponMagazined;
 class CParticlesObject;
 class CUIStaticItem;
 
-ENGINE_API extern float psHUD_FOV;
 ENGINE_API extern float psHUD_FOV_def;
 
 constexpr float def_min_zoom_k = 0.3f;

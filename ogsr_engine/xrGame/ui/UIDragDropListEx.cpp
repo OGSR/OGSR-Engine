@@ -324,7 +324,7 @@ bool CUIDragDropListEx::OnMouse(float x, float y, EUIMessages mouse_action)
 
 	if(m_vScrollBar->IsShown())
 	{
-		bool with_shift = (Level().IR_GetKeyState(DIK_LSHIFT));
+		bool with_shift = Level().IR_GetKeyState(DIK_LSHIFT) || Level().IR_GetKeyState(DIK_RSHIFT);
 
 		switch(mouse_action){
 		case WINDOW_MOUSE_WHEEL_DOWN:
