@@ -354,8 +354,7 @@ void CCameraManager::Update(const Fvector& P, const Fvector& D, const Fvector& N
 					bOverlapped |= eff->Overlapped();
 				}
 
-				auto it = std::find(m_EffectorsCam.begin(), m_EffectorsCam.end(), eff);
-				m_EffectorsCam.erase(it);
+				m_EffectorsCam.erase(std::remove(m_EffectorsCam.begin(), m_EffectorsCam.end(), eff), m_EffectorsCam.end());
 				xr_delete(eff);
 			}
 		};
