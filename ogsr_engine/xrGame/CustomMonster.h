@@ -157,6 +157,8 @@ public:
 
 	virtual void		SelectAnimation			( const Fvector& _view, const Fvector& _move, float speed ) = 0;
 
+	virtual bool		is_base_monster_with_enemy	() { return false; }
+
 	// debug
 #ifdef DEBUG
 	virtual void		OnRender				( );
