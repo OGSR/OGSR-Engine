@@ -57,21 +57,20 @@ void CMonsterEnemyMemory::update()
 		}
 	}
 
-	if (monster->SoundMemory.IsRememberSound())
+	if ( monster->SoundMemory.IsRememberSound()/* && Actor() && Actor()->memory().visual().visible_now( monster )*/ )
 	{
 		SoundElem sound;
 		bool dangerous;
 		monster->SoundMemory.GetSound(sound, dangerous);
-		if (dangerous && Device.dwTimeGlobal < sound.time + 2000 && Actor())
+		if ( dangerous && Device.dwTimeGlobal < sound.time + 2000 )
 		{
 			if (CEntityAlive const* enemy = smart_cast<CEntityAlive const*>(sound.who))
 			{
-				float const xz_dist = monster->Position().distance_to_xz(Actor()->Position());
-				float const y_dist = _abs(monster->Position().y - Actor()->Position().y);
+				float const xz_dist = monster->Position().distance_to_xz( enemy->Position() );
+				float const y_dist = _abs( monster->Position().y - enemy->Position().y );
 
 				if (monster->CCustomMonster::useful(&monster->memory().enemy(), enemy) && y_dist < 10 &&
-					xz_dist < monster->get_feel_enemy_who_made_sound_max_distance() &&
-					Actor()->memory().visual().visible_now(monster))
+					xz_dist < monster->get_feel_enemy_who_made_sound_max_distance())
 				{
 					add_enemy(enemy);
 
