@@ -438,16 +438,43 @@ bool CUIXmlInit::InitDragDropListEx(CUIXml& xml_doc, const char* path, int index
 
 	int tmp					= xml_doc.ReadAttribInt(path, index, "unlimited", 0);
 	pWnd->SetAutoGrow		(tmp!=0);
+
 	tmp						= xml_doc.ReadAttribInt(path, index, "group_similar", 0);
 	pWnd->SetGrouping		(tmp!=0);
+
 	tmp						= xml_doc.ReadAttribInt(path, index, "custom_placement", 1);
 	pWnd->SetCustomPlacement(tmp!=0);
+
 	tmp						= xml_doc.ReadAttribInt(path, index, "vertical_placement", 0);
 	pWnd->SetVerticalPlacement(tmp != 0);
+
 	tmp						= xml_doc.ReadAttribInt(path, index, "show_grid", 1);
 	pWnd->SetDrawGrid		(tmp != 0);
+
+	tmp						= xml_doc.ReadAttribInt(path, index, "always_show_scroll", 0);
+	pWnd->SetAlwaysShowScroll(tmp!=0);
+
 	tmp 					= xml_doc.ReadAttribInt(path, index, "condition_progress_bar", 0);
 	pWnd->SetConditionProgBarVisibility(tmp!=0);	
+
+	tmp						= xml_doc.ReadAttribInt(path, index, "virtual_cells", 0);
+	pWnd->SetVirtualCells(tmp!=0);
+
+	if(tmp!=0)
+	{
+		xr_string vc_vert_align = xml_doc.ReadAttrib(path, index, "vc_vert_align", "");
+		pWnd->SetCellsVertAlignment(vc_vert_align);
+		xr_string vc_horiz_align = xml_doc.ReadAttrib(path, index, "vc_horiz_align", "");
+		pWnd->SetCellsHorizAlignment(vc_horiz_align);
+	}
+
+	tmp = xml_doc.ReadAttribInt( path, index, "highlight_cell_sp", 1 );
+	pWnd->SetHighlightCellSp( tmp != 0 );
+
+	tmp = xml_doc.ReadAttribInt( path, index, "highlight_all_cells", 0 );
+	pWnd->SetHighlightAllCells( tmp != 0 );
+
+	pWnd->back_color		= GetColor( xml_doc, path, index, 0xFFFFFFFF );
 
 	if (xr_strlen(path))
 		pWnd->SetWindowName (path, TRUE);
