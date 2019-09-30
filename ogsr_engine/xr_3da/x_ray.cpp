@@ -773,3 +773,14 @@ void CApplication::load_draw_internal()
 {
 	loadingScreen->Update(load_stage, max_load_stage);
 }
+
+
+// Always request high performance GPU
+extern "C"
+{
+	// https://docs.nvidia.com/gameworks/content/technologies/desktop/optimus.htm
+	ENGINE_API DWORD NvOptimusEnablement = 0x00000001; // NVIDIA Optimus
+
+	// https://gpuopen.com/amdpowerxpressrequesthighperformance/
+	ENGINE_API DWORD AmdPowerXpressRequestHighPerformance = 0x00000001; // PowerXpress or Hybrid Graphics
+}
