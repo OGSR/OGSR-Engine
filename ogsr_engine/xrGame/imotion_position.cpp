@@ -710,8 +710,6 @@ void	imotion_position::remove_root_callback()
 
 void	imotion_position::rootbone_callback	( CBoneInstance *BI )
 {
-#pragma todo( "dsh: комментирую до лучших времен, пока не будет выяснено, почему rotation() кладет анимацию на бок." )
-/*
 	imotion_position *im = ( imotion_position* )BI->callback_param();
 	VERIFY( im );
 	if( !im->update_callback.update )
@@ -737,5 +735,4 @@ void	imotion_position::rootbone_callback	( CBoneInstance *BI )
 	KA->LL_BoneMatrixBuild( *BI, &Fidentity, keys );
 
 	R_ASSERT2( _valid(BI->mTransform), "imotion_position::rootbone_callback" );
-*/
 }
