@@ -145,6 +145,7 @@ void CPseudoGigant::Load(LPCSTR section)
 	read_delay				(section,"HugeKick_MinMaxDelay",	m_threaten_delay_min,	m_threaten_delay_max);
 
 	m_time_kick_actor_slow_down	= pSettings->r_u32(section,"HugeKick_Time_SlowDown");
+        m_kick_hit_jumping_actor = READ_IF_EXISTS( pSettings, r_bool, section, "HugeKick_Hit_Jumping_Actor", false );
 
 	PostLoad				(section);
 }
@@ -260,12 +261,13 @@ void CPseudoGigant::on_threaten_execute()
 	CActor *pA = const_cast<CActor *>(smart_cast<const CActor *>(EnemyMan.get_enemy()));
 	if (!pA) return;
 
-	if (pA->is_jump()) return;
+	if ( pA->is_jump() && !m_kick_hit_jumping_actor ) return;
 
 	float dist_to_enemy = pA->Position().distance_to(Position());
 	float			hit_value;
 	hit_value		= m_kick_damage - m_kick_damage * dist_to_enemy / m_threaten_dist_max;
 	clamp			(hit_value,0.f,1.f);
+	if ( fis_zero( hit_value ) ) return;
 
 	// запустить эффектор
 	Actor()->Cameras().AddCamEffector(xr_new<CMonsterEffectorHit>(m_threaten_effector.ce_time,m_threaten_effector.ce_amplitude * hit_value,m_threaten_effector.ce_period_number,m_threaten_effector.ce_power * hit_value));
