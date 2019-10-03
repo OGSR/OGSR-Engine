@@ -655,6 +655,34 @@ bool CActorCondition::DisableSprint(SHit* pHDS)
 			(pHDS->hit_type != ALife::eHitTypeRadiation)	;
 }
 
+bool CActorCondition::PlayHitSound(SHit* pHDS)
+{
+	switch (pHDS->hit_type)
+	{
+		case ALife::eHitTypeTelepatic:
+			return false;
+			break;
+		case ALife::eHitTypeShock:
+		case ALife::eHitTypeStrike:
+		case ALife::eHitTypeWound:
+		case ALife::eHitTypeExplosion:
+		case ALife::eHitTypeFireWound:
+		case ALife::eHitTypeWound_2:
+//		case ALife::eHitTypePhysicStrike:
+			return true;
+			break;
+
+		case ALife::eHitTypeRadiation:
+		case ALife::eHitTypeBurn:
+//		case ALife::eHitTypeLightBurn:
+		case ALife::eHitTypeChemicalBurn:
+			return (pHDS->damage()>0.017f); //field zone threshold
+			break;
+		default:
+			return true;
+	}
+}
+
 float CActorCondition::HitSlowmo(SHit* pHDS)
 {
 	float ret;
