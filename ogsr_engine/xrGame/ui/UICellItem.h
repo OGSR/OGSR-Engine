@@ -30,6 +30,7 @@ protected:
 	virtual void			UpdateItemText			();
 
 	CUIProgressBar* 		m_pConditionState;
+	bool 				m_condition_auto_width;
 	CUIStatic*				m_text; 
 	void					init					();
 public:
