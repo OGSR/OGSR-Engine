@@ -455,12 +455,14 @@ void CUIWindow::SetMouseCapture( CUIWindow *pChildWindow, bool capture_status ) 
     m_pMouseCapturer = pChildWindow;
   }
   else {
+/*
     ASSERT_FMT_DBG(
       ( m_pMouseCapturer && m_pMouseCapturer == pChildWindow ),
       "[%s]: [%s] trying to reset m_pMouseCapturer[%s]",
       __FUNCTION__, pChildWindow->WindowName().c_str(),
       m_pMouseCapturer ? m_pMouseCapturer->WindowName().c_str() : ""
     );
+*/
     m_pMouseCapturer = nullptr;
   }
 }
