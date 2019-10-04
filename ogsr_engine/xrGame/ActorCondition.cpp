@@ -673,6 +673,9 @@ bool CActorCondition::PlayHitSound(SHit* pHDS)
 			break;
 
 		case ALife::eHitTypeRadiation:
+			return false;
+			break;
+
 		case ALife::eHitTypeBurn:
 //		case ALife::eHitTypeLightBurn:
 		case ALife::eHitTypeChemicalBurn:
