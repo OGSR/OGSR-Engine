@@ -930,7 +930,7 @@ void CUICellContainer::Draw()
 	GetAbsolutePos		(lt_abs_pos);
 
 	Fvector2					drawLT;
-	drawLT.set					(lt_abs_pos.x+tgt_cells.lt.x*(cell_sz.x+CellsSpacing().x), lt_abs_pos.y+tgt_cells.lt.y*(cell_sz.y+CellsSpacing().y));
+	drawLT.set( lt_abs_pos.x + tgt_cells.lt.x * cell_sz.x, lt_abs_pos.y + tgt_cells.lt.y * cell_sz.y );
 	UI()->ClientToScreenScaled	(drawLT, drawLT.x, drawLT.y);
 
 	const Fvector2 pts[6] =		{{0.0f,0.0f},{1.0f,0.0f},{1.0f,1.0f},
