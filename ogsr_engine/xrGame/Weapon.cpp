@@ -978,7 +978,10 @@ void CWeapon::UpdateCL		()
           auto state = idle_state();
           if ( m_idle_state != state ) {
             m_idle_state = state;
-            SwitchState( eIdle );
+			if (GetNextState() != eMagEmpty && GetNextState() != eReload)
+			{
+				SwitchState(eIdle);
+			}
           }
         }
         else
