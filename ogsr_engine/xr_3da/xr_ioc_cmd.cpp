@@ -34,8 +34,6 @@ xr_token							vid_bpp_token							[ ]={
 };
 #endif
 
-ENGINE_API float VIEWPORT_NEAR = 0.2f;
-
 
 void IConsole_Command::add_to_LRU( shared_str const& arg )
 {
@@ -692,7 +690,6 @@ void CCC_Register()
 	// Render device states
 	CMD3(CCC_Mask, "rs_always_active", &psDeviceFlags, rsAlwaysActive);
 	CMD3(CCC_Token, "r_fps_lock", &g_dwFPSlimit, FpsLockToken);
-	CMD4(CCC_Float, "r_viewport_near", &VIEWPORT_NEAR, 0.0f, 1.f);
 
 	CMD3(CCC_Mask,		"rs_v_sync",			&psDeviceFlags,		rsVSync				);
 //	CMD3(CCC_Mask,		"rs_disable_objects_as_crows",&psDeviceFlags,	rsDisableObjectsAsCrows	);

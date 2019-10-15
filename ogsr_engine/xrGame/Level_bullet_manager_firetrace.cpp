@@ -48,9 +48,9 @@ BOOL CBulletManager::test_callback(const collide::ray_defs& rd, CObject* object,
 			ICollisionForm*	cform	= entity->collidable.model;
 			if ((NULL!=cform) && (cftObject==cform->Type())){
 				CActor* actor		= smart_cast<CActor*>(entity);
-				CAI_Stalker* stalker= smart_cast<CAI_Stalker*>(entity);
+				//CAI_Stalker* stalker= smart_cast<CAI_Stalker*>(entity);
 				// в кого попали?
-				if (actor || stalker) {
+				if (actor/* || stalker*/) {
 					// попали в актера или сталкера
 					Fsphere S		= cform->getSphere();
 					entity->XFORM().transform_tiny	(S.P)	;
@@ -174,7 +174,7 @@ BOOL  CBulletManager::firetrace_callback(collide::rq_result& result, LPVOID para
 void CBulletManager::FireShotmark (SBullet* bullet, const Fvector& vDir, const Fvector &vEnd, collide::rq_result& R, u16 target_material, const Fvector& vNormal, bool ShowMark)
 {
 	SGameMtlPair* mtl_pair	= GMLib.GetMaterialPair(bullet->bullet_material_idx, target_material);
-	Fvector particle_dir;
+	Fvector particle_dir	= vNormal;
 
 	if (R.O)
 	{

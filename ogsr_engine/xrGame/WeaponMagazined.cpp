@@ -23,6 +23,7 @@
 #include "game_object_space.h"
 #include "script_callback_ex.h"
 #include "script_game_object.h"
+#include <regex>
 
 CWeaponMagazined::CWeaponMagazined(LPCSTR name, ESoundTypes eSoundType) : CWeapon(name)
 {
@@ -161,6 +162,8 @@ void CWeaponMagazined::Load	(LPCSTR section)
 
 	m_bVision = !!READ_IF_EXISTS(pSettings, r_bool, section, "vision_present", false);
 	m_fire_zoomout_time = READ_IF_EXISTS( pSettings, r_u32, section, "fire_zoomout_time", u32(-1) );
+
+	m_str_count_tmpl = READ_IF_EXISTS( pSettings, r_string, "features", "wpn_magazined_str_count_tmpl", "{AE}/{AC}" );
 }
 
 void CWeaponMagazined::FireStart		()
@@ -1364,35 +1367,28 @@ void CWeaponMagazined::net_Import	(NET_Packet& P)
 	m_iCurFireMode = P.r_u8();
 	SetQueueSize(GetCurrentFireMode());
 }
-#include "string_table.h"
+
 void CWeaponMagazined::GetBriefInfo(xr_string& str_name, xr_string& icon_sect_name, xr_string& str_count)
 {
-	int	AE					= GetAmmoElapsed();
-	int	AC					= GetAmmoCurrent();
+	const int AE = GetAmmoElapsed(), AC = GetAmmoCurrent();
 	
-	if(AE==0 || 0==m_magazine.size() )
-		icon_sect_name	= *m_ammoTypes[m_ammoType];
+	if (AE == 0 || m_magazine.empty())
+		icon_sect_name = m_ammoTypes[m_ammoType].c_str();
 	else
-		icon_sect_name	= *m_ammoTypes[m_magazine.back().m_LocalAmmoType];
+		icon_sect_name = m_ammoTypes[m_magazine.back().m_LocalAmmoType].c_str();
 
-
-	string256		sItemName;
-	strcpy_s			(sItemName, *CStringTable().translate(pSettings->r_string(icon_sect_name.c_str(), "inv_name_short")));
+	string256 sItemName;
+	strcpy_s(sItemName, CStringTable().translate(pSettings->r_string(icon_sect_name.c_str(), "inv_name_short")).c_str());
 
 	if ( HasFireModes() )
 		strcat_s(sItemName, GetCurrentFireModeStr());
 
-	str_name		= sItemName;
+	str_name = sItemName;
 
-
-	{
-		if (!unlimited_ammo())
-			sprintf_s			(sItemName, "%d/%d",AE,AC - AE);
-		else
-			sprintf_s			(sItemName, "%d/--",AE);
-
-		str_count				= sItemName;
-	}
+	static const std::regex ae_re{ R"(\{AE\})" }, ac_re{ R"(\{AC\})" };
+	str_count = m_str_count_tmpl;
+	str_count = std::regex_replace(str_count, ae_re, std::to_string(AE));
+	str_count = std::regex_replace(str_count, ac_re, unlimited_ammo() ? "--" : std::to_string(AC - AE));
 }
 
 void CWeaponMagazined::OnDrawUI()

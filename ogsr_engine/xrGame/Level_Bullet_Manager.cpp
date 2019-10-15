@@ -87,7 +87,7 @@ CBulletManager::CBulletManager()
 {
 	m_Bullets.reserve( 1000 );
 	m_dwTimeRemainder = 0;
-	m_thread.initialize( 1 );
+	m_thread.initialize( 1, "CBulletManager thread" );
 }
 
 CBulletManager::~CBulletManager()

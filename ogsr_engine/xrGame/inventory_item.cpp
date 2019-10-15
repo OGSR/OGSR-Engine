@@ -197,6 +197,8 @@ void CInventoryItem::Load(LPCSTR section)
 	m_fPsyHealthRestoreSpeed = READ_IF_EXISTS( pSettings, r_float, section,	"psy_health_restore_speed", 0.f );
 	m_fRadiationRestoreSpeed = READ_IF_EXISTS( pSettings, r_float, section,	"radiation_restore_speed", 0.f );
 	m_always_ungroupable = READ_IF_EXISTS( pSettings, r_bool, section, "always_ungroupable", false );
+
+	m_need_brief_info = READ_IF_EXISTS( pSettings, r_bool, section, "show_brief_info", true );
 }
 
 
@@ -1177,7 +1179,7 @@ void CInventoryItem::SetLoadedBeltIndex( u8 pos ) {
 
 
 void CInventoryItem::OnMoveToSlot() {
-  if ( smart_cast<CActor*>( object().H_Parent() ) && !smart_cast<CGrenade*>( this )) {
+  if ( smart_cast<CActor*>( object().H_Parent() )/* && !smart_cast<CGrenade*>( this )*/) {
     if ( Core.Features.test( xrCore::Feature::equipped_untradable ) ) {
       m_flags.set( FIAlwaysUntradable, TRUE );
       m_flags.set( FIUngroupable,      TRUE );

@@ -5,8 +5,6 @@
 #include "../UICursor.h"
 #include "..\..\xr_3da\xr_input.h"	
 
-#pragma optimize("", off) //KRodin: добавлено специально, не убирать!
-
 CUIScrollView::CUIScrollView()
 {
 	m_rightIndent		= 0.0f;
@@ -218,7 +216,7 @@ bool CUIScrollView::OnMouse(float x, float y, EUIMessages mouse_action)
 {
 	if(inherited::OnMouse(x,y,mouse_action)) return true;
 
-	bool with_shift = (Level().IR_GetKeyState(DIK_LSHIFT));
+	bool with_shift = Level().IR_GetKeyState(DIK_LSHIFT) || Level().IR_GetKeyState(DIK_RSHIFT);
 
 	switch (mouse_action){
 		case WINDOW_MOUSE_WHEEL_UP:

@@ -3,8 +3,6 @@
 //.#include "uiscrollbar.h"
 #include "UIFrameLineWnd.h"
 
-#pragma optimize("", off) //KRodin: добавлено специально, не убирать!
-
 //. #define				ACTIVE_BACKGROUND			"ui\\ui_pop_up_active_back"
 //. #define				ACTIVE_BACKGROUND_WIDTH		16
 //. #define				ACTIVE_BACKGROUND_HEIGHT	16
@@ -474,7 +472,7 @@ int CUIListWnd::FindItemWithValue(int iValue)
 
 bool CUIListWnd::OnMouse(float x, float y, EUIMessages mouse_action)
 {
-	bool with_shift = (Level().IR_GetKeyState(DIK_LSHIFT));
+	bool with_shift = Level().IR_GetKeyState(DIK_LSHIFT) || Level().IR_GetKeyState(DIK_RSHIFT);
 
 	switch (mouse_action) 
 	{

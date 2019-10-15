@@ -32,6 +32,7 @@ private:
 	float			m_threaten_dist_max;
 
 	float			m_kick_damage;
+	bool m_kick_hit_jumping_actor;
 	
 	u32				m_time_kick_actor_slow_down;
 

@@ -82,6 +82,7 @@ public:
 //.	virtual LPCSTR				NameComplex			();
 	shared_str					ItemDescription		() { return m_Description; }
 	virtual void				GetBriefInfo		(xr_string& str_name, xr_string& icon_sect_name, xr_string& str_count) {};
+	virtual bool				NeedBriefInfo() { return m_need_brief_info; };
 	
 	virtual void				OnEvent				(NET_Packet& P, u16 type);
 	
@@ -201,6 +202,7 @@ protected:
 
 	float						m_fControlInertionFactor;
 	shared_str					m_icon_name;
+	bool m_need_brief_info;
 
 	////////// network //////////////////////////////////////////////////
 public:

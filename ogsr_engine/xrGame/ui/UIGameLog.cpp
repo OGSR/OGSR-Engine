@@ -12,8 +12,6 @@
 #include "UIPdaMsgListItem.h"
 #include "UILines.h"
 
-#pragma optimize("", off) //KRodin: добавлено специально, не убирать!
-
 const char * const	CHAT_LOG_ITEMS_ANIMATION	= "ui_main_msgs_short";
 
 CUIGameLog::CUIGameLog()
