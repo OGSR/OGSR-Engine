@@ -362,6 +362,7 @@ class_<CScriptGameObject> script_register_game_object3(class_<CScriptGameObject>
 		.def( "throw_target", ( bool ( CScriptGameObject::* )( const Fvector&, u32 const, CScriptGameObject* ) )( &CScriptGameObject::throw_target ) )
 
 		.def( "g_fireParams", &CScriptGameObject::g_fireParams )
+		.def( "can_kill_enemy", &CScriptGameObject::can_kill_enemy )
 
 		.def( "stalker_disp_base", ( float ( CScriptGameObject::* )() )( &CScriptGameObject::stalker_disp_base ) )
 		.def( "stalker_disp_base", ( void  ( CScriptGameObject::* )( float ) )( &CScriptGameObject::stalker_disp_base ) )

@@ -872,3 +872,10 @@ bool CScriptGameObject::controller_psy_hit_active() {
   ASSERT_FMT( controller, "[%s]: %s not a CController", __FUNCTION__, object().cName().c_str() );
   return controller->m_psy_hit->is_active();
 }
+
+
+bool CScriptGameObject::can_kill_enemy() {
+  CAI_Stalker *stalker = smart_cast<CAI_Stalker*>( &object() );
+  ASSERT_FMT( stalker, "[%s]: %s not a CAI_Stalker", __FUNCTION__, object().cName().c_str() );
+  return stalker->can_kill_enemy();
+}

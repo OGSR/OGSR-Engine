@@ -814,6 +814,8 @@ public:
 
 	doors::door*				m_door;
 
+	bool can_kill_enemy();
+
 	DECLARE_SCRIPT_REGISTER_FUNCTION
 };
 add_to_type_list(CScriptGameObject)
