@@ -988,7 +988,10 @@ void CWeapon::UpdateCL		()
           auto state = idle_state();
           if ( m_idle_state != state ) {
             m_idle_state = state;
-            SwitchState( eIdle );
+			if (GetNextState() != eMagEmpty && GetNextState() != eReload)
+			{
+				SwitchState(eIdle);
+			}
           }
         }
         else
@@ -1405,7 +1408,7 @@ void CWeapon::UpdateHUDAddonsVisibility( bool is_activating )
 	bone_id = pHudVisual->LL_BoneID(*m_sWpn_scope_bone);
 	if(ScopeAttachable())
 	{
-		VERIFY2(bone_id!=BI_NONE,"there are no scope bone.");
+		ASSERT_FMT_DBG(bone_id != BI_NONE, "[%s] invalid scope bone in section [%s]", __FUNCTION__, this->cNameSect().c_str());
 		if(IsScopeAttached())
 		{
 			if(FALSE==pHudVisual->LL_GetBoneVisible		(bone_id))
@@ -1427,7 +1430,7 @@ void CWeapon::UpdateHUDAddonsVisibility( bool is_activating )
 	bone_id = pHudVisual->LL_BoneID(*m_sWpn_silencer_bone);
 	if(SilencerAttachable())
 	{
-		VERIFY2(bone_id!=BI_NONE,"there are no silencer bone.");
+		ASSERT_FMT_DBG(bone_id != BI_NONE, "[%s] invalid silencer bone in section [%s]", __FUNCTION__, this->cNameSect().c_str());
 		if(IsSilencerAttached())
 		{
 			if(FALSE==pHudVisual->LL_GetBoneVisible		(bone_id))
@@ -1449,10 +1452,10 @@ void CWeapon::UpdateHUDAddonsVisibility( bool is_activating )
 	bone_id = pHudVisual->LL_BoneID(*m_sWpn_launcher_bone);
 	if(GrenadeLauncherAttachable())
 	{
-		if(bone_id==BI_NONE)
+		if(bone_id==BI_NONE) // Чё? Нахер это wpn_grenade_launcher когда уже есть дефолт wpn_launcher_def_bone ??? Небось пысозатычки от кривых конфигов или моделей...
 			bone_id = pHudVisual->LL_BoneID(wpn_grenade_launcher);
 
-		VERIFY2(bone_id!=BI_NONE,"there are no grenade launcher bone.");
+		ASSERT_FMT_DBG(bone_id != BI_NONE, "[%s] invalid grenade launcher bone in section [%s]", __FUNCTION__, this->cNameSect().c_str());
 		if(IsGrenadeLauncherAttached())
 		{
 			if(FALSE==pHudVisual->LL_GetBoneVisible		(bone_id))
@@ -1469,8 +1472,6 @@ void CWeapon::UpdateHUDAddonsVisibility( bool is_activating )
 	if(m_eGrenadeLauncherStatus==CSE_ALifeItemWeapon::eAddonPermanent && bone_id!=BI_NONE && 
 		!pHudVisual->LL_GetBoneVisible(bone_id) )
 		pHudVisual->LL_SetBoneVisible			(bone_id,TRUE,TRUE);
-
-
 }
 
 void CWeapon::UpdateAddonsVisibility( bool is_activating )

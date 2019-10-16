@@ -8,7 +8,6 @@
 #include "UITradeWnd.h"
 #include "UICarBodyWnd.h"
 
-#pragma optimize("", off) //KRodin: добавлено специально, не убирать!
 
 CUIDragItem* CUIDragDropListEx::m_drag_item = NULL;
 

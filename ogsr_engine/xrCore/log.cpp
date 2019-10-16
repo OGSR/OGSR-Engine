@@ -16,10 +16,10 @@ void AddOne(std::string &split, bool first_line)
 {
 	std::scoped_lock<decltype(logCS)> lock(logCS);
 
-#ifdef DEBUG
-	OutputDebugString(split.c_str()); //Вывод в отладчик студии?
-	OutputDebugString("\n");
-#endif
+	if (IsDebuggerPresent()) { //Вывод в отладчик студии
+		OutputDebugString(split.c_str());
+		OutputDebugString("\n");
+	}
 
 	if (LogCB)
 		LogCB(split.c_str()); //Вывод в логкаллбек

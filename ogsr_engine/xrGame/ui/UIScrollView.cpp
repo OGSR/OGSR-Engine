@@ -5,8 +5,6 @@
 #include "../UICursor.h"
 #include "..\..\xr_3da\xr_input.h"	
 
-#pragma optimize("", off) //KRodin: добавлено специально, не убирать!
-
 CUIScrollView::CUIScrollView()
 {
 	m_rightIndent		= 0.0f;

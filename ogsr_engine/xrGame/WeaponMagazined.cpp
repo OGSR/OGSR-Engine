@@ -461,7 +461,10 @@ void CWeaponMagazined::OnStateSwitch	(u32 S)
 		switch2_Empty	();
 		// Callbacks added by Cribbledirge.
 		StateSwitchCallback(GameObject::eOnActorWeaponEmpty, GameObject::eOnNPCWeaponEmpty);
-		SwitchState(eIdle);
+		if (GetNextState() != eReload)
+		{
+			SwitchState(eIdle);
+		}
 		break;
 	case eReload:
 		switch2_Reload	();
@@ -1376,32 +1379,28 @@ void CWeaponMagazined::net_Import	(NET_Packet& P)
 	m_iCurFireMode = P.r_u8();
 	SetQueueSize(GetCurrentFireMode());
 }
-#include "string_table.h"
+
 void CWeaponMagazined::GetBriefInfo(xr_string& str_name, xr_string& icon_sect_name, xr_string& str_count)
 {
-	int	AE					= GetAmmoElapsed();
-	int	AC					= GetAmmoCurrent();
+	const int AE = GetAmmoElapsed(), AC = GetAmmoCurrent();
 	
-	if(AE==0 || 0==m_magazine.size() )
-		icon_sect_name	= *m_ammoTypes[m_ammoType];
+	if (AE == 0 || m_magazine.empty())
+		icon_sect_name = m_ammoTypes[m_ammoType].c_str();
 	else
-		icon_sect_name	= *m_ammoTypes[m_magazine.back().m_LocalAmmoType];
+		icon_sect_name = m_ammoTypes[m_magazine.back().m_LocalAmmoType].c_str();
 
-
-	string256		sItemName;
-	strcpy_s			(sItemName, *CStringTable().translate(pSettings->r_string(icon_sect_name.c_str(), "inv_name_short")));
+	string256 sItemName;
+	strcpy_s(sItemName, CStringTable().translate(pSettings->r_string(icon_sect_name.c_str(), "inv_name_short")).c_str());
 
 	if ( HasFireModes() )
 		strcat_s(sItemName, GetCurrentFireModeStr());
 
-	str_name		= sItemName;
+	str_name = sItemName;
 
-        std::string s( m_str_count_tmpl.c_str() );
-	static std::regex ae_re( R"(\{AE\})" );
-	static std::regex ac_re( R"(\{AC\})" );
-        s = std::regex_replace( s, ae_re, std::to_string( AE ).c_str() );
-        s = std::regex_replace( s, ac_re, unlimited_ammo() ? "--" : std::to_string( AC - AE ).c_str() );
-        str_count = s.c_str();
+	static const std::regex ae_re{ R"(\{AE\})" }, ac_re{ R"(\{AC\})" };
+	str_count = m_str_count_tmpl;
+	str_count = std::regex_replace(str_count, ae_re, std::to_string(AE));
+	str_count = std::regex_replace(str_count, ac_re, unlimited_ammo() ? "--" : std::to_string(AC - AE));
 }
 
 void CWeaponMagazined::OnDrawUI()

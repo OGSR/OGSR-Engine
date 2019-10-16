@@ -3,8 +3,6 @@
 #include "UIListBoxItem.h"
 #include "UIScrollBar.h"
 
-#pragma optimize("", off) //KRodin: добавлено специально, не убирать!
-
 CUIListBox::CUIListBox()
 {
 	m_flags.set				(eItemsSelectabe, TRUE);

@@ -8,8 +8,6 @@
 
 #include "../Include/xrRender/DebugRender.h"
 
-#pragma optimize("", off) //KRodin: добавлено специально, не убирать!
-
 //#define LOG_ALL_WNDS
 #ifdef LOG_ALL_WNDS
 	int ListWndCount = 0;
