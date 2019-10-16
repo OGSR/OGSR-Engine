@@ -66,12 +66,10 @@ LPCSTR CFontManager::GetFontTexName (LPCSTR section)
 
 	u32 h = Device.dwHeight;
 
-  if (h <= 600)		
-    idx = 0;
-  else if (h <= 900)	
-    idx = 1;
-  else 			
-    idx = 2;
+	if(h<=600)		idx = 0;
+	else if(h<1024)	idx = 1;
+	else 			idx = 2;
+	if ( psHUD_Flags.test( HUD_SMALL_FONT ) && idx > 0 ) idx--;
 
   while (idx >= 0) {
     if (pSettings->line_exist(section, tex_names[idx]))
@@ -86,10 +84,11 @@ void CFontManager::InitializeFont(CGameFont*& F, LPCSTR section, u32 flags)
 	LPCSTR font_tex_name = GetFontTexName(section);
 	R_ASSERT(font_tex_name);
 
+	LPCSTR sh_name = pSettings->r_string(section,"shader");
 	if(!F)
-		F = xr_new<CGameFont> ("font", font_tex_name, flags);
+		F = xr_new<CGameFont> (sh_name, font_tex_name, flags);
 	else
-		F->Initialize("font",font_tex_name);
+		F->Initialize(sh_name, font_tex_name);
 
 #ifdef DEBUG
 	F->m_font_name = section;
