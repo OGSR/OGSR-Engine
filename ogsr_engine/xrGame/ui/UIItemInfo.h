@@ -9,6 +9,7 @@ class CUIProgressBar;
 class CUIWpnParams;
 class CUIArtefactParams;
 class CPhysicsShellHolder;
+class CUIOutfitInfo;
 
 //extern const char * const 		fieldsCaptionColor;
 
@@ -34,6 +35,7 @@ public:
 
 	void				TryAddWpnInfo		(CPhysicsShellHolder& obj);
 	void				TryAddArtefactInfo(const shared_str& af_section);
+	void				TryAddOutfitInfo	(CPhysicsShellHolder& obj);
 	void				TryAddCustomInfo(CPhysicsShellHolder& obj);
 
 	virtual void		Draw				();
@@ -46,6 +48,7 @@ public:
 	CUIProgressBar*		UICondProgresBar;
 	CUIWpnParams*		UIWpnParams;
 	CUIArtefactParams*	UIArtefactParams;
+	CUIOutfitInfo*			UIOutfitInfo;
 
 	Fvector2			UIItemImageSize; 
 	CUIStatic*			UIItemImage;

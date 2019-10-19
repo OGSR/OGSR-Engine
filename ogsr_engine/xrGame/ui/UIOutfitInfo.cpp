@@ -2,24 +2,9 @@
 #include "UIOutfitInfo.h"
 #include "UIXmlInit.h"
 #include "UIStatic.h"
-#include "UIScrollView.h"
 #include "../actor.h"
 #include "../CustomOutfit.h"
 #include "../string_table.h"
-
-CUIOutfitInfo::CUIOutfitInfo()
-{
-	Memory.mem_fill			(m_items, 0, sizeof(m_items));
-}
-
-CUIOutfitInfo::~CUIOutfitInfo()
-{
-	for(u32 i=_item_start; i<_max_item_index; ++i)
-	{
-		CUIStatic* _s			= m_items[i];
-		xr_delete				(_s);
-	}
-}
 
 LPCSTR _imm_names []={
 	"health_restore_speed",
@@ -71,6 +56,68 @@ LPCSTR _actor_param_names[] = {
 	"psy_health_v"
 };
 
+
+CUIOutfitImmunity::CUIOutfitImmunity()
+{
+	m_name   = nullptr;
+	m_value1 = nullptr;
+	m_value2 = nullptr;
+}
+
+CUIOutfitImmunity::~CUIOutfitImmunity()
+{
+	xr_delete( m_name   );
+	xr_delete( m_value1 );
+	xr_delete( m_value2 );
+}
+
+void CUIOutfitImmunity::InitFromXml( CUIXml& xml_doc, LPCSTR base_str, u32 hit_type )
+{
+	string256 buf;
+	
+	m_name = xr_new<CUIStatic>();
+	m_name->SetAutoDelete( false );
+	AttachChild( m_name );
+	strconcat( sizeof(buf), buf, base_str, ":static_", _imm_names[hit_type] );
+	CUIXmlInit::InitWindow( xml_doc, buf, 0, this );
+	CUIXmlInit::InitStatic( xml_doc, buf, 0, m_name );
+	
+	strconcat( sizeof(buf), buf, base_str, ":static_", _imm_names[hit_type], ":static_value1" );
+	if ( xml_doc.NavigateToNode( buf, 0 ) ) {
+	  m_value1 = xr_new<CUIStatic>();
+	  m_value1->SetAutoDelete( false );
+	  m_value1->SetTextComplexMode( true );
+	  AttachChild( m_value1 );
+	  CUIXmlInit::InitStatic( xml_doc, buf, 0, m_value1 );
+	  m_value1->SetVisible( false );
+	}
+
+	strconcat( sizeof(buf), buf, base_str, ":static_", _imm_names[hit_type], ":static_value2" );
+	if ( xml_doc.NavigateToNode( buf, 0 ) ) {
+	  m_value2 = xr_new<CUIStatic>();
+	  m_value2->SetAutoDelete( false );
+	  m_value1->SetTextComplexMode( true );
+	  AttachChild( m_value2 );
+	  CUIXmlInit::InitStatic( xml_doc, buf, 0, m_value2 );
+	  m_value2->SetVisible( false );
+	}
+}
+
+CUIOutfitInfo::CUIOutfitInfo()
+{
+	m_listWnd = nullptr;
+	Memory.mem_fill			(m_items, 0, sizeof(m_items));
+}
+
+CUIOutfitInfo::~CUIOutfitInfo()
+{
+	xr_delete( m_listWnd );
+	for(u32 i=_item_start; i<_max_item_index; ++i)
+	{
+		xr_delete( m_items[i] );
+	}
+}
+
 void CUIOutfitInfo::InitFromXml(CUIXml& xml_doc)
 {
 	LPCSTR _base				= "outfit_info";
@@ -78,10 +125,13 @@ void CUIOutfitInfo::InitFromXml(CUIXml& xml_doc)
 	string256					_buff;
 	CUIXmlInit::InitWindow		(xml_doc, _base, 0, this);
 
-	m_listWnd					= xr_new<CUIScrollView>(); m_listWnd->SetAutoDelete(true);
-	AttachChild					(m_listWnd);
+        // для сохранения совместимости с ТЧ, будем scroll_view
+        // использовать для определения позиции первого статика
 	strconcat					(sizeof(_buff),_buff, _base, ":scroll_view");
-	CUIXmlInit::InitScrollView	(xml_doc, _buff, 0, m_listWnd);
+	if ( xml_doc.NavigateToNode( _buff, 0 ) ) {
+	  m_listWnd = xr_new<CUIStatic>();
+	  CUIXmlInit::InitStatic( xml_doc, _buff, 0, m_listWnd );
+	}
 
 	for (u32 i = _item_start; i < _max_item_index; ++i)
 	{
@@ -89,13 +139,10 @@ void CUIOutfitInfo::InitFromXml(CUIXml& xml_doc)
 
 		if (xml_doc.NavigateToNode(_buff, 0))
 		{
-			m_items[i] = xr_new<CUIStatic>();
-			CUIStatic* _s = m_items[i];
-			_s->SetAutoDelete(false);
-			CUIXmlInit::InitStatic(xml_doc, _buff, 0, _s);
+			m_items[i] = xr_new<CUIOutfitImmunity>();
+			m_items[i]->InitFromXml( xml_doc, _base, i );
 		}
 	}
-
 }
 
 float CUIOutfitInfo::GetArtefactParam(ActorRestoreParams params, u32 i)
@@ -123,37 +170,53 @@ float CUIOutfitInfo::GetArtefactParam(ActorRestoreParams params, u32 i)
 
 #include "script_game_object.h"
 
-void CUIOutfitInfo::Update(CCustomOutfit* outfit)
+void CUIOutfitInfo::Update( CCustomOutfit* outfit, bool af )
 {
 	string128 _buff;
 
-	auto artefactEffects = Actor()->ActiveArtefactsOnBelt();
+	auto artefactEffects = Actor()->ActiveArtefactsOnBelt( 1 );
+	auto outfitEffects   = Actor()->ActiveArtefactsOnBelt( 2 );
 
-	m_listWnd->Clear(false); // clear existing items and do not scroll to top
+	for ( auto it : m_items )
+	  if ( it && it->GetParent() )
+	    DetachChild( it );
+
+	float _h = 0.0f;
+	if ( m_listWnd )
+	  _h = m_listWnd->GetWndPos().y;
+	else if ( GetChildWndList().size() ) {
+	  const auto it = GetChildWndList().back();
+	  _h = it->GetWndPos().y + it->GetWndSize().y;
+	}
 
 	for (u32 i = _item_start; i < _max_item_index; ++i)
 	{
-		CUIStatic* _s = m_items[i];
-
-		if (!_s) continue;
+		if ( !m_items[ i ] ) continue;
 
 		float _val_outfit = 0.0f;
 		float _val_af = 0.0f;
 
 		if (i < _max_item_index1)
 		{
-			_val_outfit = GetArtefactParam(artefactEffects, i);
+			_val_outfit = GetArtefactParam( outfitEffects, i );
 
 			float _actor_val = pSettings->r_float("actor_condition", _actor_param_names[i]);
 			_val_outfit = (_val_outfit / _actor_val);
+
+			if ( af ) {
+			  _val_af = GetArtefactParam( artefactEffects, i );
+			  _val_af = _val_af / _actor_val;
+			}
 		}
 		else
 		{
 			_val_outfit = outfit ? outfit->GetDefHitTypeProtection(ALife::EHitType(i - _max_item_index1)) : 1.0f;
 			_val_outfit = 1.0f - _val_outfit;
 
-			_val_af = Actor()->HitArtefactsOnBelt(1.0f, ALife::EHitType(i - _max_item_index1));
-			_val_af = 1.0f - _val_af;
+			if ( af ) {
+			  _val_af = Actor()->HitArtefactsOnBelt(1.0f, ALife::EHitType(i - _max_item_index1));
+			  _val_af = 1.0f - _val_af;
+			}
 		}
 
 		if (fsimilar(_val_outfit, 0.0f) && fsimilar(_val_af, 0.0f))
@@ -170,35 +233,51 @@ void CUIOutfitInfo::Update(CCustomOutfit* outfit)
 			_sn = "%";
 		}
 
-		if (i == _item_bleeding_restore_speed)
+		if ( i == _item_bleeding_restore_speed ) {
 			_val_outfit *= -1.0f;
+			_val_af *= -1.0f;
+		}
 
-		LPCSTR _color = (_val_outfit > 0) ? "%c[green]" : "%c[red]";
+		LPCSTR _color    = ( _val_outfit > 0 ) ? "%c[green]" : "%c[red]";
+		LPCSTR _af_color = ( _val_af     > 0 ) ? "%c[green]" : "%c[red]";
 
-		if (i == _item_bleeding_restore_speed || i == _item_radiation_restore_speed)
-			_color = (_val_outfit > 0) ? "%c[red]" : "%c[green]";
+		if ( i == _item_bleeding_restore_speed || i == _item_radiation_restore_speed ) {
+		  _color    = _val_outfit > 0 ? "%c[red]" : "%c[green]";
+		  _af_color = _val_af     > 0 ? "%c[red]" : "%c[green]";
+		}
 
 		LPCSTR _imm_name = *CStringTable().translate(_imm_st_names[i]);
 
-		int _sz = sprintf_s(_buff, sizeof(_buff), "%s ", _imm_name);
-		_sz += sprintf_s(_buff + _sz, sizeof(_buff) - _sz, "%s %+3.0f%s", _color, _val_outfit, _sn);
-
-		if (!fsimilar(_val_af, 0.0f))
-		{
-			_sz += sprintf_s(_buff + _sz, sizeof(_buff) - _sz, "%s %+3.0f%%", (_val_af > 0.0f) ? "%c[green]" : "%c[red]", _val_af);
+		if ( m_items[ i ]->m_value1 ) {
+		  m_items[ i ]->m_name->SetText( _imm_name );
+		  sprintf_s( _buff, sizeof( _buff ), "%s%+.0f%s", _color, _val_outfit, _sn );
+		  m_items[ i ]->m_value1->SetText( _buff );
+		  m_items[ i ]->m_value1->SetVisible( !fsimilar( _val_outfit, 0.0f )  );
+		  if ( m_items[ i ]->m_value2 ) {
+		    sprintf_s( _buff, sizeof( _buff ), "%s%+.0f%s", _af_color, _val_af, _sn );
+		    m_items[ i ]->m_value2->SetText( _buff );
+		    m_items[ i ]->m_value2->SetVisible( !fsimilar( _val_af, 0.0f ) );
+		  }
 		}
-
-		_s->SetText(_buff);
-
-		m_listWnd->AddWindow(_s, false);
+		else {
+		  int _sz = sprintf_s( _buff, sizeof( _buff ), "%s ", _imm_name );
+		  _sz += sprintf_s( _buff + _sz, sizeof( _buff ) - _sz, "%s %+3.0f%s", _color, _val_outfit, _sn );
+		  if ( !fsimilar( _val_af, 0.0f ) )
+		    _sz += sprintf_s( _buff + _sz, sizeof( _buff ) - _sz, "%s %+3.0f%s", _af_color, _val_af, _sn );
+		  m_items[ i ]->m_name->SetText( _buff );
+		}
+		m_items[ i ]->SetWndPos( m_items[ i ]->GetWndPos().x, _h );
+		_h += m_items[ i ]->GetWndSize().y;
+		AttachChild( m_items[ i ] );
 	}
+	SetHeight( _h );
 
 	if (pSettings->line_exist("engine_callbacks", "ui_actor_info_callback"))
 	{
 		const char* callback = pSettings->r_string("engine_callbacks", "ui_actor_info_callback");
 		if (luabind::functor<void> lua_function; ai().script_engine().functor(callback, lua_function))
 		{
-			lua_function(m_listWnd, outfit ? outfit->lua_game_object() : nullptr);
+                  lua_function( this, outfit ? outfit->lua_game_object() : nullptr, _h );
 		}
 	}
 }

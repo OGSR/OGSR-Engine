@@ -216,7 +216,7 @@ public:
 	//свойства артефактов
 	virtual void		UpdateArtefactsOnBelt();
 
-	virtual ActorRestoreParams		ActiveArtefactsOnBelt();
+	virtual ActorRestoreParams		ActiveArtefactsOnBelt( int outfit_mode = 0 );
 	virtual float					HitArtefactsOnBelt( float, ALife::EHitType, bool = false );
 
 	virtual void		UpdateArtefactPanel();

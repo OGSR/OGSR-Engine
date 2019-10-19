@@ -14,6 +14,8 @@
 #include "../PhysicsShellHolder.h"
 #include "UIWpnParams.h"
 #include "ui_af_params.h"
+#include "UIOutfitInfo.h"
+#include "../CustomOutfit.h"
 
 CUIItemInfo::CUIItemInfo()
 {
@@ -26,6 +28,7 @@ CUIItemInfo::CUIItemInfo()
 	UIDesc						= NULL;
 	UIWpnParams					= NULL;
 	UIArtefactParams			= NULL;
+	UIOutfitInfo				= NULL;
 	UIName						= NULL;
 	m_pInvItem					= NULL;
 	m_b_force_drawing			= false;
@@ -35,6 +38,7 @@ CUIItemInfo::~CUIItemInfo()
 {
 	xr_delete					(UIWpnParams);
 	xr_delete					(UIArtefactParams);
+	xr_delete	(UIOutfitInfo);
 }
 
 void CUIItemInfo::Init(LPCSTR xml_name){
@@ -124,6 +128,12 @@ void CUIItemInfo::Init(LPCSTR xml_name){
 		UIItemImageSize.set				(UIItemImage->GetWidth(),UIItemImage->GetHeight());
 	}
 
+	if ( uiXml.NavigateToNode( "outfit_info", 0 ) )
+	{
+		UIOutfitInfo				= xr_new<CUIOutfitInfo>();
+		UIOutfitInfo->InitFromXml	(uiXml);
+	}
+
 	xml_init.InitAutoStaticGroup	(uiXml, "auto", 0, this);
 }
 
@@ -167,6 +177,7 @@ void CUIItemInfo::InitItem(CInventoryItem* pInvItem)
 		VERIFY(0 == UIDesc->GetSize());
 		TryAddWpnInfo(pInvItem->object());
 		TryAddArtefactInfo(pInvItem->object().cNameSect());
+		TryAddOutfitInfo(pInvItem->object());
 		TryAddCustomInfo(pInvItem->object());
 		if(m_desc_info.bShowDescrText)
 		{
@@ -214,6 +225,16 @@ void CUIItemInfo::TryAddArtefactInfo(const shared_str& af_section)
 	{
 		UIArtefactParams->SetInfo(af_section);
 		UIDesc->AddWindow(UIArtefactParams, false);
+	}
+}
+
+void CUIItemInfo::TryAddOutfitInfo( CPhysicsShellHolder &obj )
+{
+	CCustomOutfit* outfit = smart_cast<CCustomOutfit*>(&obj);
+	if ( outfit && UIOutfitInfo )
+	{
+		UIOutfitInfo->Update( outfit, false );
+		UIDesc->AddWindow( UIOutfitInfo, false );
 	}
 }
 

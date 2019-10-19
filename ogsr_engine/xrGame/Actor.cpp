@@ -1438,11 +1438,62 @@ void CActor::ApplyArtefactEffects(ActorRestoreParams& r, CArtefact*	artefact)
 	}
 }
 
-ActorRestoreParams CActor::ActiveArtefactsOnBelt()
+ActorRestoreParams CActor::ActiveArtefactsOnBelt( int outfit_mode )
 {
 	ActorRestoreParams r;
 
 	Memory.mem_fill(&r, 0, sizeof(r));
+
+	if (Core.Features.test(xrCore::Feature::outfit_af)) {
+
+		PIItem helm = inventory().m_slots[HELMET_SLOT].m_pIItem;
+		if ( helm && outfit_mode < 2 )
+		{
+			CArtefact*	helmet = smart_cast<CArtefact*>(helm);
+			if (helmet)
+			{
+				ApplyArtefactEffects(r, helmet);
+			}
+		}
+
+		PIItem outfit_item = inventory().m_slots[OUTFIT_SLOT].m_pIItem;
+		if ( outfit_item && outfit_mode != 1 ) {
+			CCustomOutfit *outfit = smart_cast<CCustomOutfit*>(outfit_item);
+			if (outfit) {
+				float k = (Core.Features.test(xrCore::Feature::af_zero_condition) && fis_zero(outfit->GetCondition())) ? 0.f : 1.f;
+
+				r.BleedingRestoreSpeed += outfit->m_fBleedingRestoreSpeed * k;
+				r.HealthRestoreSpeed += outfit->m_fHealthRestoreSpeed * k;
+				r.PowerRestoreSpeed += outfit->m_fPowerRestoreSpeed * k;
+
+				if (Core.Features.test(xrCore::Feature::af_satiety))
+					r.SatietyRestoreSpeed += outfit->m_fSatietyRestoreSpeed * k;
+
+				if (Core.Features.test(xrCore::Feature::actor_thirst))
+					r.ThirstRestoreSpeed += outfit->m_fThirstRestoreSpeed * k;
+
+				if (Core.Features.test(xrCore::Feature::af_psy_health)) {
+					if (Core.Features.test(xrCore::Feature::objects_radioactive)) {
+						if (outfit->PsyHealthRestoreSpeed() > 0)
+							r.PsyHealthRestoreSpeed += outfit->PsyHealthRestoreSpeed() * k;
+					}
+					else {
+						r.PsyHealthRestoreSpeed += outfit->PsyHealthRestoreSpeed() * k;
+					}
+				}
+
+				if (Core.Features.test(xrCore::Feature::objects_radioactive)) {
+					if (outfit->RadiationRestoreSpeed() < 0)
+						r.RadiationRestoreSpeed += outfit->RadiationRestoreSpeed() * k;
+				}
+				else {
+					r.RadiationRestoreSpeed += outfit->RadiationRestoreSpeed() * k;
+				}
+			}
+		}
+
+	}
+	if ( outfit_mode == 2 ) return r;
 
 	for (TIItemContainer::iterator it = inventory().m_belt.begin();
 		inventory().m_belt.end() != it; ++it)
@@ -1479,56 +1530,6 @@ ActorRestoreParams CActor::ActiveArtefactsOnBelt()
 				}
 				else
 					r.RadiationRestoreSpeed += obj->RadiationRestoreSpeed() * k;
-			}
-		}
-
-	}
-
-	if (Core.Features.test(xrCore::Feature::outfit_af)) {
-
-		PIItem helm = inventory().m_slots[HELMET_SLOT].m_pIItem;
-		if (helm)
-		{
-			CArtefact*	helmet = smart_cast<CArtefact*>(helm);
-			if (helmet)
-			{
-				ApplyArtefactEffects(r, helmet);
-			}
-		}
-
-		PIItem outfit_item = inventory().m_slots[OUTFIT_SLOT].m_pIItem;
-		if (outfit_item) {
-			CCustomOutfit *outfit = smart_cast<CCustomOutfit*>(outfit_item);
-			if (outfit) {
-				float k = (Core.Features.test(xrCore::Feature::af_zero_condition) && fis_zero(outfit->GetCondition())) ? 0.f : 1.f;
-
-				r.BleedingRestoreSpeed += outfit->m_fBleedingRestoreSpeed * k;
-				r.HealthRestoreSpeed += outfit->m_fHealthRestoreSpeed * k;
-				r.PowerRestoreSpeed += outfit->m_fPowerRestoreSpeed * k;
-
-				if (Core.Features.test(xrCore::Feature::af_satiety))
-					r.SatietyRestoreSpeed += outfit->m_fSatietyRestoreSpeed * k;
-
-				if (Core.Features.test(xrCore::Feature::actor_thirst))
-					r.ThirstRestoreSpeed += outfit->m_fThirstRestoreSpeed * k;
-
-				if (Core.Features.test(xrCore::Feature::af_psy_health)) {
-					if (Core.Features.test(xrCore::Feature::objects_radioactive)) {
-						if (outfit->PsyHealthRestoreSpeed() > 0)
-							r.PsyHealthRestoreSpeed += outfit->PsyHealthRestoreSpeed() * k;
-					}
-					else {
-						r.PsyHealthRestoreSpeed += outfit->PsyHealthRestoreSpeed() * k;
-					}
-				}
-
-				if (Core.Features.test(xrCore::Feature::objects_radioactive)) {
-					if (outfit->RadiationRestoreSpeed() < 0)
-						r.RadiationRestoreSpeed += outfit->RadiationRestoreSpeed() * k;
-				}
-				else {
-					r.RadiationRestoreSpeed += outfit->RadiationRestoreSpeed() * k;
-				}
 			}
 		}
 
