@@ -4,19 +4,6 @@
 #include "../object_broker.h"
 #include "UIXmlInit.h"
 
-CUIArtefactParams::CUIArtefactParams()
-{
-	Memory.mem_fill			(m_info_items, 0, sizeof(m_info_items));
-}
-
-CUIArtefactParams::~CUIArtefactParams()
-{
-	for(u32 i=_item_start; i<_max_item_index; ++i)
-	{
-		CUIStatic* _s			= m_info_items[i];
-		xr_delete				(_s);
-	}
-}
 
 LPCSTR af_item_sect_names[] = {
 	"health_restore_speed",
@@ -72,6 +59,52 @@ LPCSTR af_actor_param_names[]={
 	"psy_health_v"
 };
 
+
+CUIArtefactImmunity::CUIArtefactImmunity()
+{
+	m_name  = nullptr;
+	m_value = nullptr;
+}
+
+CUIArtefactImmunity::~CUIArtefactImmunity()
+{
+	xr_delete( m_name  );
+	xr_delete( m_value );
+}
+
+void CUIArtefactImmunity::InitFromXml( CUIXml& xml_doc, LPCSTR base_str, u32 hit_type )
+{
+	string256 buf;
+	
+	m_name = xr_new<CUIStatic>();
+	m_name->SetAutoDelete( false );
+	AttachChild( m_name );
+	strconcat( sizeof(buf), buf, base_str, ":static_", af_item_sect_names[hit_type] );
+	CUIXmlInit::InitWindow( xml_doc, buf, 0, this );
+	CUIXmlInit::InitStatic( xml_doc, buf, 0, m_name );
+	
+	strconcat( sizeof(buf), buf, base_str, ":static_", af_item_sect_names[hit_type], ":static_value" );
+	if ( xml_doc.NavigateToNode( buf, 0 ) ) {
+	  m_value = xr_new<CUIStatic>();
+	  m_value->SetAutoDelete( false );
+	  m_value->SetTextComplexMode( true );
+	  AttachChild( m_value );
+	  CUIXmlInit::InitStatic( xml_doc, buf, 0, m_value );
+	}
+}
+
+
+CUIArtefactParams::CUIArtefactParams()
+{
+	Memory.mem_fill			(m_info_items, 0, sizeof(m_info_items));
+}
+
+CUIArtefactParams::~CUIArtefactParams()
+{
+	for(u32 i=_item_start; i<_max_item_index; ++i)
+		xr_delete( m_info_items[i] );
+}
+
 void CUIArtefactParams::InitFromXml(CUIXml& xml_doc)
 {
 	LPCSTR _base				= "af_params";
@@ -86,10 +119,8 @@ void CUIArtefactParams::InitFromXml(CUIXml& xml_doc)
 
 		if (xml_doc.NavigateToNode(_buff, 0)) 
 		{
-			m_info_items[i] = xr_new<CUIStatic>();
-			CUIStatic* _s = m_info_items[i];
-			_s->SetAutoDelete(false);
-			CUIXmlInit::InitStatic(xml_doc, _buff, 0, _s);
+			m_info_items[i] = xr_new<CUIArtefactImmunity>();
+			m_info_items[i]->InitFromXml( xml_doc, _base, i );
 		}
 	}
 }
@@ -107,9 +138,7 @@ void CUIArtefactParams::SetInfo(const shared_str& af_section)
 	DetachAll					();
 	for(u32 i=_item_start; i<_max_item_index; ++i)
 	{
-		CUIStatic* _s			= m_info_items[i];
-
-		if (!_s) continue;
+		if (!m_info_items[i]) continue;
 
 		float					_val;
 		if ( i == _item_additional_inventory_weight ) {
@@ -156,16 +185,22 @@ void CUIArtefactParams::SetInfo(const shared_str& af_section)
 		if(i==_item_bleeding_restore_speed || i==_item_radiation_restore_speed)
 			_color = (_val>0)?"%c[red]":"%c[green]";
 
-
-		sprintf_s					(	_buff, "%s %s %+.0f%s", 
+		if ( m_info_items[ i ]->m_value ) {
+		  m_info_items[ i ]->m_name->SetText( CStringTable().translate( af_item_param_names[ i ] ).c_str() );
+		  sprintf_s( _buff, "%s%+.0f%s", _color, _val, _sn );
+		  m_info_items[ i ]->m_value->SetText( _buff );
+		}
+		else {
+		  sprintf_s					(	_buff, "%s %s %+.0f%s", 
 									CStringTable().translate(af_item_param_names[i]).c_str(), 
 									_color, 
 									_val, 
 									_sn);
-		_s->SetText				(_buff);
-		_s->SetWndPos			(_s->GetWndPos().x, _h);
-		_h						+= _s->GetWndSize().y;
-		AttachChild				(_s);
+		  m_info_items[ i ]->m_name->SetText( _buff );
+		}
+		m_info_items[ i ]->SetWndPos( m_info_items[ i ]->GetWndPos().x, _h );
+		_h += m_info_items[ i ]->GetWndSize().y;
+		AttachChild( m_info_items[ i ] );
 	}
 	SetHeight					(_h);
 }

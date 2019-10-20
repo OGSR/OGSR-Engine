@@ -4,6 +4,20 @@
 class CUIXml;
 class CUIStatic;
 
+
+class CUIArtefactImmunity : public CUIWindow
+{
+public:
+				CUIArtefactImmunity	();
+	virtual			~CUIArtefactImmunity	();
+
+	CUIStatic* m_name; // texture + name
+	CUIStatic* m_value; // 100%
+
+	void	InitFromXml			( CUIXml& xml_doc, LPCSTR base_str, u32 hit_type );
+}; // class CUIArtefactImmunity
+
+
 class CUIArtefactParams :public CUIWindow
 {
 public:
@@ -41,5 +55,5 @@ protected:
 		_max_item_index,
 
 	};
-	CUIStatic*					m_info_items[_max_item_index];
+	CUIArtefactImmunity* m_info_items[_max_item_index];
 };
