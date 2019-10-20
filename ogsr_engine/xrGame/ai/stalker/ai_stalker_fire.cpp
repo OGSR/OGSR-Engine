@@ -524,20 +524,29 @@ IC BOOL ray_query_callback	(collide::rq_result& result, LPVOID params)
 //	}
 
 	if (!result.O) {
+		// статический объект
+		// получить треугольник и узнать его материал
+		CDB::TRI* T   = Level().ObjectSpace.GetStaticTris() + result.element;
+		SGameMtl* mtl = GMLib.GetMaterialByIdx( T->material );
+		// Если материал полностью простреливаемый, продолжаем
+		// трассировку.
+		if ( fsimilar( mtl->fShootFactor, 1.0f, EPS ) )
+		  return TRUE;
+
 		if (param->m_power > param->m_power_threshold)
-			return						(true);
+			return TRUE;
 
 		param->m_pick_distance			= result.range;
-		return							(false);
+		return FALSE;
 	}
 
 	CEntityAlive						*entity_alive = smart_cast<CEntityAlive*>(result.O);
 	if (!entity_alive) {
 		if (param->m_power > param->m_power_threshold)
-			return						(true);
+			return TRUE;
 
 		param->m_pick_distance			= result.range;
-		return							(false);
+		return FALSE;
 	}
 
 	if (param->m_holder->is_relation_enemy(entity_alive))
@@ -546,7 +555,7 @@ IC BOOL ray_query_callback	(collide::rq_result& result, LPVOID params)
 		param->m_can_kill_member		= true;
 
 	param->m_pick_distance				= result.range;
-	return								(false);
+	return FALSE;
 }
 
 void CAI_Stalker::can_kill_entity		(const Fvector &position, const Fvector &direction, float distance, collide::rq_results& rq_storage)
