@@ -174,7 +174,7 @@ void CPHMovementControl::Calculate(Fvector& vAccel,const Fvector& camDir,float /
 	//IPhysicsShellHolder * O=di->DamageObject();
 	//SCollisionHitCallback* cc= O ? O->get_collision_hit_callback() : NULL;
 	ICollisionDamageInfo	*cdi=CollisionDamageInfo();
-	if(cdi->HitCallback())
+	if ( cdi && cdi->HitCallback() )
 			cdi->HitCallback()->call((m_character->PhysicsRefObject()),fMinCrashSpeed,fMaxCrashSpeed,fContactSpeed,gcontact_HealthLost,CollisionDamageInfo());
 		
 ////////
