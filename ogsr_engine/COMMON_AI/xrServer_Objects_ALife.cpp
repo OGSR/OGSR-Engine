@@ -614,7 +614,7 @@ CSE_ALifeLevelChanger::CSE_ALifeLevelChanger(LPCSTR caSection) : CSE_ALifeSpaceR
 	m_dwNextNodeID				= u32(-1);
 	m_tNextPosition.set			(0.f,0.f,0.f);
 	m_tAngles.set				(0.f,0.f,0.f);
-	m_bSilentMode				= FALSE;
+	m_SilentMode				= 0;
 }
 
 CSE_ALifeLevelChanger::~CSE_ALifeLevelChanger()
@@ -643,7 +643,7 @@ void CSE_ALifeLevelChanger::STATE_Read		(NET_Packet	&tNetPacket, u16 size)
 	tNetPacket.r_stringZ		(m_caLevelPointToChange);
 
 	if (m_wVersion > 116)
-		m_bSilentMode			= !!tNetPacket.r_u8();
+		m_SilentMode			= tNetPacket.r_u8();
 
 }
 
@@ -658,7 +658,7 @@ void CSE_ALifeLevelChanger::STATE_Write	(NET_Packet	&tNetPacket)
 	tNetPacket.w_vec3			(m_tAngles);
 	tNetPacket.w_stringZ		(m_caLevelToChange);
 	tNetPacket.w_stringZ		(m_caLevelPointToChange);
-	tNetPacket.w_u8				(m_bSilentMode?1:0);
+	tNetPacket.w_u8				(m_SilentMode);
 }
 
 void CSE_ALifeLevelChanger::UPDATE_Read	(NET_Packet	&tNetPacket)
@@ -677,7 +677,7 @@ void CSE_ALifeLevelChanger::FillProps		(LPCSTR pref, PropItemVec& items)
 	
 	PHelper().CreateRText		(items,PrepareKey(pref,*s_name,"Level point to change"),	&m_caLevelPointToChange);
 
-	PHelper().CreateBOOL		(items,PrepareKey(pref,*s_name,"Silent mode"),	&m_bSilentMode);
+	PHelper().CreateU8		(items,PrepareKey(pref,*s_name,"Silent mode"),	&m_SilentMode);
 }
 
 ////////////////////////////////////////////////////////////////////////////

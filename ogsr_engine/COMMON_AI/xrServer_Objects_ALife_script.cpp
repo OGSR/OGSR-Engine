@@ -179,7 +179,7 @@ void CSE_ALifeLevelChanger::script_register(lua_State *L)
 		.def_readwrite( "dest_level_vertex_id", &CSE_ALifeLevelChanger::m_dwNextNodeID )
 		.def_readwrite( "dest_position", &CSE_ALifeLevelChanger::m_tNextPosition )
 		.def_readwrite( "dest_direction", &CSE_ALifeLevelChanger::m_tAngles )
-		.def_readwrite( "silent_mode", &CSE_ALifeLevelChanger::m_bSilentMode )
+		.def_readwrite( "silent_mode", &CSE_ALifeLevelChanger::m_SilentMode )
 	];
 }
 
