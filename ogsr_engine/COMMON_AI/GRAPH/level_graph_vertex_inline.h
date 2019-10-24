@@ -375,7 +375,7 @@ IC void CLevelGraph::contour(CLevelGraph::SContour &_contour, const CLevelGraph:
 	project_point			(plane,_contour.v4);	// minX,maxZ
 }
 
-IC void CLevelGraph::nearest(Fvector &destination, const Fvector &position, const CLevelGraph::SContour &contour) const
+IC float CLevelGraph::nearest(Fvector &destination, const Fvector &position, const CLevelGraph::SContour &contour) const
 {
 	// calculate minimal distance
 	Fvector		T;
@@ -400,6 +400,8 @@ IC void CLevelGraph::nearest(Fvector &destination, const Fvector &position, cons
 		best	= dist;
 		destination.set(T);
 	}
+
+	return		(best);
 }
 
 const float corner_r = 0.05f;

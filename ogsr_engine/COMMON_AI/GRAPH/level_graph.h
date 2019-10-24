@@ -56,6 +56,7 @@ private:
 
 public:
 			u32		vertex						(const Fvector &position) const;
+			u32		guess_vertex_id				(u32 const &current_vertex_id, Fvector const &position) const;
 
 public:
 	typedef u32 const_iterator;
@@ -158,7 +159,7 @@ public:
 	IC		float	nearest						(Fvector &destination, const Fvector &position, const Fvector &point0, const Fvector &point1) const;
 	IC		void	contour						(SContour &contour, u32 vertex_id) const;
 	IC		void	contour						(SContour &contour, const CVertex *vertex) const;
-	IC		void	nearest						(Fvector &destination, const Fvector &position, const SContour &contour) const;
+	IC		float	nearest						(Fvector &destination, const Fvector &position, const SContour &contour) const;
 	IC		bool	intersect					(Fvector &destination, const Fvector &v1, const Fvector& v2, const Fvector& v3, const Fvector& v4) const;
 	IC		float	square						(float a1, float b1, float alpha = PI_DIV_2) const;
 	IC		float	compute_square				(float angle, float AOV, float b0, float b1, float b2, float b3) const;

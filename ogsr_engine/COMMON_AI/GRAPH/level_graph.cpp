@@ -86,6 +86,25 @@ u32 CLevelGraph::vertex		(u32 current_node_id, const Fvector& position) const
 			// so, there is a node which corresponds with x and z to the position
 			bool				ok = true;
 			if (valid_vertex_id(current_node_id)) {
+				{
+					CVertex const 	&vertex = *this->vertex(current_node_id);
+					for (u32 i=0; i<4; ++i) {
+						if (vertex.link(i) == _vertex_id) {
+							Device.Statistic->AI_Node.End();
+							return			(_vertex_id);
+						}
+					}
+				}
+				{
+					CVertex const 	&vertex = *this->vertex(_vertex_id);
+					for (u32 i=0; i<4; ++i) {
+						if (vertex.link(i) == current_node_id) {
+							Device.Statistic->AI_Node.End();
+							return			(_vertex_id);
+						}
+					}
+				}
+
 				float				y0 = vertex_plane_y(current_node_id,position.x,position.z);
 				float				y1 = vertex_plane_y(_vertex_id,position.x,position.z);
 				bool				over0 = position.y > y0;
@@ -100,16 +119,14 @@ u32 CLevelGraph::vertex		(u32 current_node_id, const Fvector& position) const
 							ok		= true;
 					}
 					else {
-						ok			= false;
+						if (y_dist0 - y_dist1 > 1.f)
+							ok		= false;
+						else
+							ok		= true;
 					}
 				}
 				else {
-					if (over1) {
-						ok			= true;
-					}
-					else {
-						ok			= false;
-					}
+					ok			= true;
 				}
 			}
 			if (ok) {
@@ -127,6 +144,10 @@ u32 CLevelGraph::vertex		(u32 current_node_id, const Fvector& position) const
 		Device.Statistic->AI_Node.End();
 		return				(id);
 	}
+
+	u32					new_vertex_id = guess_vertex_id(current_node_id, position);
+	if (new_vertex_id != current_node_id)
+		return			(new_vertex_id);
 
 	// so, our position is outside the level graph bounding box
 	// or
@@ -177,6 +198,11 @@ u32	CLevelGraph::vertex_id				(const Fvector &position) const
 
 		u32				new_vertex_id = u32(I - B);
 		float			_y = vertex_plane_y(new_vertex_id,position.x,position.z);
+		if ( _abs( position.y - _y ) < _abs( position.y - y ) ) {
+		  y = _y;
+		  best_vertex_id = new_vertex_id;
+		}
+/*
 		if (y <= position.y) {
 			// so, current node is under the specified position
 			if (_y <= position.y) {
@@ -202,7 +228,78 @@ u32	CLevelGraph::vertex_id				(const Fvector &position) const
 					y				= _y;
 					best_vertex_id	= new_vertex_id;
 				}
+*/
 	}
 
 	return			(best_vertex_id);
+}
+
+static const int max_guess_vertex_count	= 4;
+
+u32 CLevelGraph::guess_vertex_id	(u32 const &current_vertex_id, Fvector const &position) const
+{
+	VERIFY					(valid_vertex_id(current_vertex_id));
+
+	CPosition				vertex_position;
+	if (valid_vertex_position(position))
+		vertex_position		= this->vertex_position(position);
+	else
+		vertex_position		= vertex(current_vertex_id)->position();
+
+	u32						x, z;
+	unpack_xz				(vertex_position, x, z);
+
+	SContour				vertex_contour;
+	contour					(vertex_contour, current_vertex_id);
+	Fvector					best_point;
+	float					result_distance = nearest(best_point, position, vertex_contour);
+	u32						result_vertex_id = current_vertex_id;
+
+	CVertex const			*B = m_nodes;
+	CVertex const			*E = m_nodes + header().vertex_count();
+	u32						start_x = (u32)_max( 0, int(x) - max_guess_vertex_count);
+	u32						stop_x  = _min( max_x(), x + (u32)max_guess_vertex_count);
+	u32						start_z = (u32)_max( 0, int(z) - max_guess_vertex_count);
+	u32						stop_z  = _min(	max_z(),z + (u32)max_guess_vertex_count);
+	for (u32 i = start_x; i<=stop_x; ++i) {
+		for (u32 j = start_z; j <= stop_z; ++j) {
+			u32				test_xz = i*m_row_length + j;
+			CVertex const	*I = std::lower_bound(B,E,test_xz);
+			if (I == E)
+				continue;
+
+			if ((*I).position().xz() != test_xz)
+				continue;
+
+			u32				best_vertex_id = u32(I - B);
+			contour			(vertex_contour, best_vertex_id);
+			float			best_distance = nearest(best_point, position, vertex_contour);
+			for (++I; I != E; ++I) {
+				if ((*I).position().xz() != test_xz)
+					break;
+			
+				u32				vertex_id = u32(I - B);
+				Fvector			point;
+				contour			(vertex_contour, vertex_id);
+				float			distance = nearest(point, position, vertex_contour);
+				if (distance >= best_distance)
+					continue;
+
+				best_point		= point;
+				best_distance	= distance;
+				best_vertex_id	= vertex_id;
+			}
+
+			if (_abs(best_point.y - position.y) >= 3.f)
+				continue;
+
+			if (result_distance <= best_distance)
+				continue;
+
+			result_distance		= best_distance;
+			result_vertex_id	= best_vertex_id;
+		}
+	}
+
+	return					(result_vertex_id);
 }
