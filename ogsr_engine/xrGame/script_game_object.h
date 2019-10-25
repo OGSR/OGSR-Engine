@@ -322,6 +322,7 @@ public:
 			void				TransferMoney		(int money, CScriptGameObject* pForWho);
 			void				GiveMoney			(int money);
 			u32					Money				();
+			void				SetMoney			(int money);
 			
 			void				SetRelation			(ALife::ERelationType relation, CScriptGameObject* pWhoToSet);
 	
