@@ -706,7 +706,7 @@
 				<text font="letterica16" r="215" g="195" b="170" x="2">ui_mm_alternative</text>
 				<texture>ui_table_button_e</texture>
 			</header_3>
-			<!--frame-->
+
 			<frame x="0" y="20" width="431" height="181">
 				<texture>ui_cb_listbox</texture>
 			</frame>
