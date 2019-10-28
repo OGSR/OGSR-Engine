@@ -306,3 +306,15 @@ void CBaseGraviZone::net_Relcase(CObject* O)
 	
 	Telekinesis().remove_links(O);
 }
+
+
+void CBaseGraviZone::exit_Zone( SZoneObjectInfo& io ) {
+  if ( !io.object->getDestroy() ) {
+    CPhysicsShellHolder* GO = smart_cast<CPhysicsShellHolder*>( io.object );
+    if ( GO && GO->PPhysicsShell() && Telekinesis().is_active_object( GO ) ) {
+      Telekinesis().deactivate( GO );
+      StopTeleParticles( GO );
+    }
+  }
+  inherited::exit_Zone( io );
+}
