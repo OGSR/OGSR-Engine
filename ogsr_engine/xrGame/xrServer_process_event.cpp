@@ -176,6 +176,7 @@ void xrServer::Process_event	(NET_Packet& P, ClientID sender)
 				xrClientData*	C = (xrClientData*)	game->get_client(id_src);
 				if (C) e_src = C->owner;
 			};
+			if ( !e_src ) e_src = e_dest;
 			VERIFY				(e_src);
 //			R_ASSERT2			(e_dest && e_src, "Killer or/and being killed are offline or not exist at all :(");
 
