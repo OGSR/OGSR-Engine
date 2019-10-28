@@ -134,7 +134,7 @@ BOOL CArtefact::net_Spawn(CSE_Abstract* DC)
 	IKinematicsAnimated	*K=smart_cast<IKinematicsAnimated*>(Visual());
 	if(K)K->PlayCycle("idle");
 	
-	o_fastmode					= FALSE	;		// start initially with fast-mode enabled
+	o_fastmode					= TRUE; //FALSE	;		// start initially with fast-mode enabled
 	o_render_frame				= 0		;
 	SetState					(eHidden);
 
@@ -178,6 +178,7 @@ void CArtefact::OnH_B_Independent(bool just_before_destroy)
 		dir.set(0,1,0);
 		CParticlesPlayer::StartParticles(m_sParticlesName,dir,ID(),-1, false);
 	}
+	o_switch_2_fast();
 }
 
 // called only in "fast-mode"
