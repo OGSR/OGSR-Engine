@@ -294,6 +294,7 @@ public:
 			float						pick_distance			();
 	IC		float						start_pick_distance		() const;
 			bool						fire_make_sense			();
+			bool can_fire_to_enemy( const CEntityAlive *enemy );
 			
 	virtual LPCSTR						Name					() const;
 	virtual BOOL						feel_touch_contact		(CObject* O);

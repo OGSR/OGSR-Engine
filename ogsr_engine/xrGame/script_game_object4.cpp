@@ -26,6 +26,7 @@
 #include "CharacterPhysicsSupport.h"
 #include "ai/monsters/controller/controller.h"
 #include "ai/monsters/controller/controller_psy_hit.h"
+#include "visual_memory_manager.h"
 
 //////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////
@@ -878,4 +879,25 @@ bool CScriptGameObject::can_kill_enemy() {
   CAI_Stalker *stalker = smart_cast<CAI_Stalker*>( &object() );
   ASSERT_FMT( stalker, "[%s]: %s not a CAI_Stalker", __FUNCTION__, object().cName().c_str() );
   return stalker->can_kill_enemy();
+}
+
+
+bool CScriptGameObject::can_fire_to_enemy( const CScriptGameObject* obj ) {
+  CAI_Stalker *stalker = smart_cast<CAI_Stalker*>( &object() );
+  ASSERT_FMT( stalker, "[%s]: %s not a CAI_Stalker", __FUNCTION__, object().cName().c_str() );
+  auto enemy = smart_cast<CEntityAlive*>( &(obj->object()) );
+  ASSERT_FMT( enemy, "[%s]: %s not a CEntityAlive", __FUNCTION__, obj->cName().c_str() );
+
+  bool can_kill = stalker->can_kill_enemy();
+  bool vis = stalker->memory().visual().visible_right_now( enemy );
+  if ( ( vis || can_kill ) && stalker->can_fire_to_enemy( enemy ) ) {
+    if ( can_kill ) return true; // на линии огня
+    float pick_dist = stalker->pick_distance();
+    if ( pick_dist < 2.5f ) return false;
+    float enemy_dist = stalker->Position().distance_to( enemy->Position() );
+    if ( pick_dist < enemy_dist - pick_dist ) return false;
+    return true;
+  }
+
+  return false;
 }

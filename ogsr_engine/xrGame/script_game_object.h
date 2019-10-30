@@ -796,6 +796,7 @@ public:
 	bool throw_target( const Fvector&, u32 const, CScriptGameObject* = nullptr );
 
 	void g_fireParams( const CScriptGameObject*, Fvector&, Fvector& );
+	bool can_fire_to_enemy( const CScriptGameObject* );
 
 	float stalker_disp_base();
 	void  stalker_disp_base( float );
