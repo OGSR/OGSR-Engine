@@ -27,6 +27,8 @@
 #include "ai/monsters/controller/controller.h"
 #include "ai/monsters/controller/controller_psy_hit.h"
 #include "visual_memory_manager.h"
+#include "agent_manager.h"
+#include "agent_member_manager.h"
 
 //////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////
@@ -900,4 +902,19 @@ bool CScriptGameObject::can_fire_to_enemy( const CScriptGameObject* obj ) {
   }
 
   return false;
+}
+
+
+void CScriptGameObject::register_in_combat() {
+  CAI_Stalker *stalker = smart_cast<CAI_Stalker*>( &object() );
+  ASSERT_FMT( stalker, "[%s]: %s not a CAI_Stalker", __FUNCTION__, object().cName().c_str() );
+  stalker->agent_manager().member().register_in_combat( stalker );
+}
+
+
+void CScriptGameObject::unregister_in_combat() {
+  CAI_Stalker *stalker = smart_cast<CAI_Stalker*>( &object() );
+  ASSERT_FMT( stalker, "[%s]: %s not a CAI_Stalker", __FUNCTION__, object().cName().c_str() );
+  if ( stalker->agent_manager().member().registered_in_combat( stalker ) )
+    stalker->agent_manager().member().unregister_in_combat( stalker );
 }

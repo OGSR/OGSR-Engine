@@ -365,6 +365,9 @@ class_<CScriptGameObject> script_register_game_object3(class_<CScriptGameObject>
 		.def( "can_kill_enemy", &CScriptGameObject::can_kill_enemy )
 		.def( "can_fire_to_enemy", &CScriptGameObject::can_fire_to_enemy )
 
+		.def( "register_in_combat",   &CScriptGameObject::register_in_combat   )
+		.def( "unregister_in_combat", &CScriptGameObject::unregister_in_combat )
+
 		.def( "stalker_disp_base", ( float ( CScriptGameObject::* )() )( &CScriptGameObject::stalker_disp_base ) )
 		.def( "stalker_disp_base", ( void  ( CScriptGameObject::* )( float ) )( &CScriptGameObject::stalker_disp_base ) )
 		.def( "stalker_disp_base", ( void  ( CScriptGameObject::* )( float, float ) )( &CScriptGameObject::stalker_disp_base ) )

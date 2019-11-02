@@ -798,6 +798,9 @@ public:
 	void g_fireParams( const CScriptGameObject*, Fvector&, Fvector& );
 	bool can_fire_to_enemy( const CScriptGameObject* );
 
+	void register_in_combat();
+	void unregister_in_combat();
+
 	float stalker_disp_base();
 	void  stalker_disp_base( float );
 	void  stalker_disp_base( float, float );
