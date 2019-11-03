@@ -735,24 +735,6 @@
 	<frame x="0" y="0" width="470" height="330">
 		<texture>ui_tablist_textbox</texture>
 	</frame>
-	<download_static x="186" y="717" width="603" height="51">
-		<texture>ui_patch_back</texture>
-	</download_static>
-
-	<download_text x="200" y="730" width="480" height="30">
-		<text align="c" font="letterica16" r="135" g="123" b="116" complex_mode="0">mm_mp_progress</text>
-	</download_text>
-	
-	<progress_download x="222" y="754" width="403" height="10" horz="1" min="0" max="100">
-		<progress>
-			<texture>ui_patch_progress</texture>
-		</progress>
-	</progress_download>
-	
-	<btn_cancel_download x="652" y="732" width="111" height="29">
-		<text align="c" font="letterica16" r="227" g="199" b="178">mm_mp_cancel</text>
-		<texture>ui_button_ordinary</texture>
-	</btn_cancel_download>
 	
 	<frame_hint x="50" y="168" width="300" height="400">
 		<texture>ui_icons_PDA_tooltips</texture>
