@@ -11,7 +11,7 @@ function opt_gameplay:InitControls(x, y, xml)
 	self:Init(x, y, 738, 416)
 	self:SetAutoDelete(true)
 
-	xml:InitFrame("frame_gameplay", self)
+	xml:InitFrame("frame", self)
 
 	xml:InitStatic("tab_gameplay:cap_difficulty", self)
 

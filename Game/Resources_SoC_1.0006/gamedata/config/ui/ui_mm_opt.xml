@@ -735,12 +735,6 @@
 	<frame x="0" y="0" width="470" height="330">
 		<texture>ui_tablist_textbox</texture>
 	</frame>
-	<frame_gameplay x="0" y="0" width="470" height="330">
-		<texture>ui_tablist_textbox</texture>
-	</frame_gameplay>
-	<frame_videoadv x="0" y="0" width="470" height="330">
-		<texture>ui_tablist_textbox</texture>
-	</frame_videoadv>
 	<download_static x="186" y="717" width="603" height="51">
 		<texture>ui_patch_back</texture>
 	</download_static>
