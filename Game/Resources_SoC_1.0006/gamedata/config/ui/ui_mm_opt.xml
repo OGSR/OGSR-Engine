@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<window>	
+<window>
 	<back_video x="0" y="0" width="1024" height="430">
 		<texture x="0" y="0" width="1024" height="430">ui\ui_mm_window_back_crop</texture>
 	</back_video>
@@ -41,7 +41,7 @@
 			<button x="0" y="0" width="116" height="26">
 				<texture_offset x="0" y="-7"/>
 				<texture>ui_button_tablist</texture>
-				<text font="graffiti19" align="c">ui_mm_video</text>				
+				<text font="graffiti19" align="c">ui_mm_video</text>
 				<text_color>
 					<e r="106" g="95" b="91"/> <t r="227" g="199" b="178"/> <h r="180" g="153" b="155"/>
 				</text_color>
@@ -75,29 +75,29 @@
 
 	<tab_video>
 		<cap_renderer x="20" y="20" width="143" height="21">
-			<text font="letterica16" r="215" g="195" b="170">ui_mm_renderer</text>			
+			<text font="letterica16" r="215" g="195" b="170">ui_mm_renderer</text>
 		</cap_renderer>
-		<list_renderer x="194" y="15" width="261" height="21" list_length="3">
+		<list_renderer x="194" y="15" width="261" height="21" list_length="5">
 			<options_item entry="renderer" group="mm_opt_video"/>
 			<text_color>
 				<e r="216" g="186" b="140"/>
 				<d r="227" g="199" b="178"/>
 			</text_color>
 			<list_font_s r="240" g="217" b="182"/>
-			<list_font	 r="216" g="186" b="140" font="letterica16"/>
+			<list_font r="216" g="186" b="140" font="letterica16"/>
 		</list_renderer>
 
 		<cap_preset x="20" y="50" width="143" height="21">
-			<text font="letterica16" r="215" g="195" b="170">ui_mm_quality_presets</text>			
+			<text font="letterica16" r="215" g="195" b="170">ui_mm_quality_presets</text>
 		</cap_preset>
 		<list_presets x="194" y="45" width="261" height="21" list_length="5">
 			<options_item entry="_preset" group="mm_opt_video_preset"/>
 			<text_color>
-				<e r="216" g="186" b="140"/> 
+				<e r="216" g="186" b="140"/>
 				<d r="227" g="199" b="178"/>
 			</text_color>
 			<list_font_s r="240" g="217" b="182"/>
-			<list_font	 r="216" g="186" b="140" font="letterica16"/>
+			<list_font r="216" g="186" b="140" font="letterica16"/>
 		</list_presets>
 
 		<cap_resolution x="20" y="80" width="143" height="21">
@@ -110,7 +110,7 @@
 				<d r="227" g="199" b="178"/>
 			</text_color>
 			<list_font_s r="240" g="217" b="182"/>
-			<list_font	 r="216" g="186" b="140" font="letterica16"/>
+			<list_font r="216" g="186" b="140" font="letterica16"/>
 		</list_resolution>
 
 		<cap_gamma x="20" y="110" width="143" height="21">
@@ -133,43 +133,43 @@
 		<track_brightness x="194" y="165" width="261" height="21">
 			<options_item entry="rs_c_brightness" group="mm_opt_video"/>
 		</track_brightness>
-
-		<cap_fullscreen x="20" y="200" width="143" height="21">
-			<text font="letterica16" r="215" g="195" b="170">ui_mm_fullscreen</text>
-		</cap_fullscreen>
-		<check_fullscreen x="194" y="195" width="30" height="21">
-			<options_item entry="rs_fullscreen" group="mm_opt_video"/>	
-		</check_fullscreen>
-
-		<cap_fps_lock x="20" y="230" width="143" height="21">
+		
+		<cap_fps_lock x="20" y="200" width="143" height="21">
 			<text font="letterica16" r="215" g="195" b="170">ui_mm_fps_lock</text>
 		</cap_fps_lock>
-		<list_fps_lock x="194" y="225" width="261" height="21" always_show_scroll="1">
+		<list_fps_lock x="194" y="195" width="261" height="21" list_length="5" always_show_scroll="1">
 			<options_item entry="r_fps_lock" group="mm_opt_video"/>
 			<text_color>
 				<e r="216" g="186" b="140"/>
 				<d r="227" g="199" b="178"/>
 			</text_color>
 			<list_font_s r="240" g="217" b="182"/>
-			<list_font	 r="216" g="186" b="140" font="letterica16"/>
+			<list_font r="216" g="186" b="140" font="letterica16"/>
 		</list_fps_lock>
+		
+		<cap_fullscreen x="20" y="230" width="143" height="21">
+			<text font="letterica16" r="215" g="195" b="170">ui_mm_fullscreen</text>
+		</cap_fullscreen>
+		<check_fullscreen x="194" y="225" width="30" height="21">
+			<options_item entry="rs_fullscreen" group="mm_opt_video"/>
+		</check_fullscreen>
 
 		<cap_always_active x="55" y="260" width="143" height="21">
 			<text font="letterica16" r="215" g="195" b="170">ui_mm_always_active</text>
 		</cap_always_active>
 		<check_always_active x="20" y="258" width="30" height="21">
-			<options_item entry="rs_always_active" group="mm_opt_video"/>	
+			<options_item entry="rs_always_active" group="mm_opt_video"/>
 		</check_always_active>
 
 		<btn_advanced x="342" y="325" width="111" height="29">
-			<text align="c" font="letterica16" r="227" g="199" b="178">ui_mm_advanced</text>	
-			<texture>ui_button_ordinary</texture>			
+			<text align="c" font="letterica16" r="227" g="199" b="178">ui_mm_advanced</text>
+			<texture>ui_button_ordinary</texture>
 		</btn_advanced>
 		
 	</tab_video>
 
 	<video_adv>
-		<scroll_v	x="0" y="10" width="457" height="313" 
+		<scroll_v x="0" y="10" width="464" height="313" 
 					right_ident="0" left_ident="0" top_indent="0" bottom_indent="0" 
 					vert_interval="0" always_show_scroll="1"
 					flip_vert="1"/>
@@ -200,8 +200,8 @@
 				<d r="227" g="199" b="178"/>
 			</text_color>
 			<list_font_s r="240" g="217" b="182"/>
-			<list_font	 r="216" g="186" b="140" font="letterica16"/>
-		</list_r__smap_size>			
+			<list_font r="216" g="186" b="140" font="letterica16"/>
+		</list_r__smap_size>
 
 		<cap_r2_sun_near x="5" y="5" width="143" height="21">
 			<text font="letterica16" r="215" g="195" b="170">ui_mm_r2_sun_near</text>
@@ -278,7 +278,7 @@
 		</cap_r2_tonemap_middlegray>
 		<track_r2_tonemap_middlegray x="249" y="0" width="190" height="21" invert="0" step="0.1">
 			<options_item entry="r2_tonemap_middlegray" group="mm_opt_video_adv"/>
-		</track_r2_tonemap_middlegray>	
+		</track_r2_tonemap_middlegray>
 
 
 
@@ -334,7 +334,7 @@
 				<d r="227" g="199" b="178"/>
 			</text_color>
 			<list_font_s r="240" g="217" b="182"/>
-			<list_font	 r="216" g="186" b="140" font="letterica16"/>
+			<list_font r="216" g="186" b="140" font="letterica16"/>
         </list_msaa>
 
         <cap_fxaa x="5" y="5" width="143" height="21">
@@ -389,7 +389,7 @@
 				<d r="227" g="199" b="178"/>
 			</text_color>
 			<list_font_s r="240" g="217" b="182"/>
-			<list_font	 r="216" g="186" b="140" font="letterica16"/>
+			<list_font r="216" g="186" b="140" font="letterica16"/>
         </list_r2_sun_quality>
 
         <cap_r3_dynamic_wet_surfaces x="5" y="5" width="143" height="21">
@@ -451,7 +451,7 @@
 				<d r="227" g="199" b="178"/>
 			</text_color>
 			<list_font_s r="240" g="217" b="182"/>
-			<list_font	 r="216" g="186" b="140" font="letterica16"/>
+			<list_font r="216" g="186" b="140" font="letterica16"/>
         </list_sun_shafts>
 
         <cap_ssao_mode x="5" y="5" width="143" height="21">
@@ -464,7 +464,7 @@
 				<d r="227" g="199" b="178"/>
 			</text_color>
 			<list_font_s r="240" g="217" b="182"/>
-			<list_font	 r="216" g="186" b="140" font="letterica16"/>
+			<list_font r="216" g="186" b="140" font="letterica16"/>
         </list_ssao_mode>
 
         <cap_ssao x="5" y="5" width="143" height="21">
@@ -477,7 +477,7 @@
 				<d r="227" g="199" b="178"/>
 			</text_color>
 			<list_font_s r="240" g="217" b="182"/>
-			<list_font	 r="216" g="186" b="140" font="letterica16"/>
+			<list_font r="216" g="186" b="140" font="letterica16"/>
         </list_ssao>
 
         <cap_soft_water x="5" y="5" width="143" height="21">
@@ -546,7 +546,7 @@
 				<d r="227" g="199" b="178"/>
 			</text_color>
 			<list_font_s r="240" g="217" b="182"/>
-			<list_font	 r="216" g="186" b="140" font="letterica16"/>
+			<list_font r="216" g="186" b="140" font="letterica16"/>
         </list_r3_msaa_alphatest>
 
         <cap_r3_msaa_opt x="5" y="5" width="143" height="21">
@@ -561,7 +561,7 @@
 		</cap_r2_rain_drops>
 		<check_r2_rain_drops x="249" y="0" width="30" height="21">
 			<options_item entry="r2_rain_drops" group="mm_opt_video_adv"/>
-		</check_r2_rain_drops>	
+		</check_r2_rain_drops>
 
 		<cap_r2_actor_shadow x="5" y="5" width="143" height="21">
 			<text font="letterica16" r="215" g="195" b="170">ui_mm_r2_actor_shadow</text>
@@ -571,8 +571,8 @@
 		</check_r2_actor_shadow>
 
 		<btn_to_simply x="342" y="325" width="111" height="29">
-			<text align="c" font="letterica16" r="227" g="199" b="178">ui_mm_simply</text>	
-			<texture>ui_button_ordinary</texture>			
+			<text align="c" font="letterica16" r="227" g="199" b="178">ui_mm_simply</text>
+			<texture>ui_button_ordinary</texture>
 		</btn_to_simply>
 		
 	</video_adv>
@@ -595,39 +595,39 @@
 		</track_mastervolume>
 		<track_musicvolume x="194" y="40" width="245" height="21">
 			<options_item entry="snd_volume_music" group="mm_opt_sound"/>
-		</track_musicvolume>		
+		</track_musicvolume>
 
 		<cap_snd_device x="20" y="70" width="143" height="21">
             <text font="letterica16" r="215" g="195" b="170">ui_mm_snd_device</text>
         </cap_snd_device>
-        <list_snd_device x="194" y="65" width="245" height="21" always_show_scroll="1">
+        <list_snd_device x="194" y="65" width="245" height="21" list_length="3" always_show_scroll="1">
             <options_item entry="snd_device" group="mm_opt_sound"/>
 			<text_color>
 				<e r="216" g="186" b="140"/>
 				<d r="227" g="199" b="178"/>
 			</text_color>
 			<list_font_s r="240" g="217" b="182"/>
-			<list_font	 r="216" g="186" b="140" font="letterica16"/>
+			<list_font r="216" g="186" b="140" font="letterica16"/>
         </list_snd_device>
 
 		<btn_default_set x="342" y="325" width="111" height="29">
 			<text align="c" font="letterica16" r="188" g="153" b="123">ui_mm_default</text>	
-			<texture>ui_button_ordinary</texture>			
+			<texture>ui_button_ordinary</texture>
 		</btn_default_set>
 	</tab_sound>
 	<tab_gameplay>
 
 		<cap_difficulty x="20" y="25" width="143" height="21">
-			<text font="letterica16" r="215" g="195" b="170">ui_mm_difficulty</text>			
+			<text font="letterica16" r="215" g="195" b="170">ui_mm_difficulty</text>
 		</cap_difficulty>
 
-		<list_difficulty x="194" y="20" width="261" height="21">	
+		<list_difficulty x="194" y="20" width="261" height="21">
 			<options_item entry="g_game_difficulty" group="mm_opt_gameplay"/>
 			<text_color>
 				<e r="216" g="186" b="140"/>
 			</text_color>
 			<list_font_s r="240" g="217" b="182"/>
-			<list_font	 r="216" g="186" b="140" font="letterica16"/>
+			<list_font r="216" g="186" b="140" font="letterica16"/>
 		</list_difficulty>
 
 		<check_autopause x="20" y="55" width="243" height="21">
@@ -692,59 +692,53 @@
 			<options_item entry="mouse_invert" group="mm_opt_controls"/>
 			<text font="letterica16" r="215" g="195" b="170">ui_mm_invert_mouse</text>
 		</check_mouseinvert>
-		<key_binding x="10" y="120" width="451" height="199">
+		<key_binding x="10" y="115" width="451" height="202">
 			<!-- headers -->
 			<header_1 x="0" y="0" width="229" height="17">
-				<text font="letterica16" r="215" g="195" b="170" x="2">ui_mm_action</text>
+				<text x="2" y="3" font="letterica16" r="215" g="195" b="170">ui_mm_action</text>
 				<texture>ui_table_button_e</texture>
 			</header_1>
 			<header_2 x="229" y="0" width="102" height="17">
-				<text font="letterica16" r="215" g="195" b="170" x="2">ui_mm_key</text>
+				<text x="2" y="3" font="letterica16" r="215" g="195" b="170">ui_mm_key</text>
 				<texture>ui_table_button_e</texture>
 			</header_2>
 			<header_3 x="330" y="0" width="102" height="17">
-				<text font="letterica16" r="215" g="195" b="170" x="2">ui_mm_alternative</text>
+				<text x="2" y="3" font="letterica16" r="215" g="195" b="170">ui_mm_alternative</text>
 				<texture>ui_table_button_e</texture>
 			</header_3>
-			<!--frame-->
-			<frame x="0" y="20" width="431" height="181">
+
+			<frame x="0" y="20" width="431" height="185">
 				<texture>ui_cb_listbox</texture>
 			</frame>
-			<list x="0" y="20" width="451" height="181" item_height="18" always_show_scroll="1">
+			<list x="0" y="20" width="451" height="185" item_height="18" always_show_scroll="1">
 				<group_name font="letterica16" r="215" g="195" b="170"/>
-				<item_text font="letterica16" r="215" g="215" b="215"/>				
+				<item_text font="letterica16" r="215" g="215" b="215"/>
 			</list>
 			
-			<scroll_view x="0" y="20" width="447" height="181" always_show_scroll="1" vert_interval="3">
-				<item_group x="0" y="0" width="160" height="25">
-					<text font="letterica16" r="215" g="195" b="170"/>
+			<scroll_view x="0" y="22" width="447" height="181" always_show_scroll="1" vert_interval="3">
+				<item_group x="0" y="0" width="160" height="22">
+					<text x="10" y="5" font="letterica16" r="215" g="195" b="170"/>
 				</item_group>
 				
 				<item_key x="0" y="0" width="414" height="18">
-					<text font="letterica16" r="215" g="215" b="215"/>
+					<text x="3" y="0" font="letterica16" r="215" g="215" b="215"/>
 				</item_key>
 			</scroll_view>
 		</key_binding>
 
 		<btn_default x="342" y="325" width="111" height="29">
-			<text align="c" font="letterica16" r="227" g="199" b="178">ui_mm_default</text>	
-			<texture>ui_button_ordinary</texture>			
+			<text align="c" font="letterica16" r="227" g="199" b="178">ui_mm_default</text>
+			<texture>ui_button_ordinary</texture>
 		</btn_default>
 	</tab_controls>
 	
 	<frame x="0" y="0" width="470" height="330">
-		<texture>ui_tablist_textbox</texture>		
+		<texture>ui_tablist_textbox</texture>
 	</frame>
-	<frame_gameplay x="0" y="0" width="470" height="330">
-		<texture>ui_tablist_textbox</texture>		
-	</frame_gameplay>
-	<frame_videoadv x="0" y="0" width="470" height="330">
-		<texture>ui_tablist_textbox</texture>		
-	</frame_videoadv>
 	
 	<frame_hint x="50" y="168" width="300" height="400">
 		<texture>ui_icons_PDA_tooltips</texture>
-	</frame_hint>	
+	</frame_hint>
 
 	<hint_name x="55" y="177" width="250" height="35">
 		<text align="l" font="letterica18" r="255" g="255" b="255" complex_mode="1">hint_name_text</text>
@@ -758,5 +752,4 @@
 		<text align="l" font="letterica16" r="255" g="255" b="255" complex_mode="1">hint_caption_adv_text</text>
 	</hint_caption_adv>
 
-	
 </window>
