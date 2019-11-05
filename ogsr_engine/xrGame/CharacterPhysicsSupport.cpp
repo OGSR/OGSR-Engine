@@ -578,8 +578,6 @@ bool CCharacterPhysicsSupport::DoCharacterShellCollide()
 
 bool CCharacterPhysicsSupport::CollisionCorrectObjPos(const Fvector& start_from, bool	character_create/*=false*/)
 {
-	//Fvector shift;shift.sub( start_from, m_EntityAlife.Position() );
-	Fvector shift; shift.set(0, 0, 0);
 	Fbox box;
 	if (character_create)
 		box.set(movement()->Box());
@@ -597,9 +595,8 @@ bool CCharacterPhysicsSupport::CollisionCorrectObjPos(const Fvector& start_from,
 			box.set(m_EntityAlife.BoundingBox());
 	}
 
-	Fvector vbox; Fvector activation_pos;
-	box.get_CD(activation_pos, vbox);
-	shift.add(activation_pos);
+	Fvector vbox, activation_pos, shift;
+	box.get_CD(shift, vbox);
 	vbox.mul(2.f);
 	activation_pos.add(shift, m_EntityAlife.Position());
 	bool not_collide_characters = !DoCharacterShellCollide() && !character_create;
