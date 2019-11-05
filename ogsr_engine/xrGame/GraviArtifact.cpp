@@ -12,8 +12,6 @@
 #include "game_cl_base.h"
 #include "../Include/xrRender/Kinematics.h"
 #include "phworld.h"
-#include "level_graph.h"
-#include "ai_object_location.h"
 
 extern CPHWorld*	ph_world;
 #define CHOOSE_MAX(x,inst_x,y,inst_y,z,inst_z)\
@@ -103,12 +101,14 @@ void CGraviArtefact::OnH_B_Independent( bool just_before_destroy ) {
 
 
 void CGraviArtefact::process_gravity() {
-  Fvector dir = { 0, 0, 0 };
-  Fvector vertex_pos = ai().level_graph().vertex_position( ai_location().level_vertex_id() );
+  Fvector dir = { 0, -1, 0 };
   Fvector P = Position();
   P.y += Radius();
+  collide::rq_result RQ;
+  Fbox level_box = Level().ObjectSpace.GetBoundingVolume();
+  bool res = Level().ObjectSpace.RayPick( P, dir, _abs( P.y - level_box.y1 ) + 1.f, collide::rqtBoth, RQ, this );
   float raise_speed = m_jump_raise_speed;
-  if ( P.y < vertex_pos.y ) {
+  if ( !res ) {
     m_jump_jump = false;
     m_keep  = false;
     m_raise = true;
@@ -116,9 +116,7 @@ void CGraviArtefact::process_gravity() {
   }
   else {
     dir.y = -1.f;
-    collide::rq_result RQ;
     // проверить высоту артефакта
-    bool res    = Level().ObjectSpace.RayPick( P, dir, _max( m_fJumpHeight, m_jump_min_height ) + Radius() + 1.f, collide::rqtBoth, RQ, this );
     float range = RQ.range - Radius();
     if ( m_jump_min_height && res && range < m_jump_min_height ) {
       m_jump_jump = false;
