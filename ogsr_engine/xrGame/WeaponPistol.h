@@ -13,7 +13,7 @@ public:
 	
 	virtual void	switch2_Reload	();
 
-	virtual void	OnShot			();
+	//virtual void	OnShot			();
 	virtual void	OnAnimationEnd	(u32 state);
 	virtual void	net_Destroy		();
 	virtual void	OnH_B_Chield	();

@@ -194,6 +194,7 @@ void CWeaponPistol::OnAnimationEnd(u32 state)
 	inherited::OnAnimationEnd(state);
 }
 
+/*
 void CWeaponPistol::OnShot		()
 {
 	// Sound
@@ -217,6 +218,7 @@ void CWeaponPistol::OnShot		()
 	//дым из ствола
 	StartSmokeParticles	(get_LastFP(), vel);
 }
+*/
 
 void CWeaponPistol::UpdateSounds()
 {
