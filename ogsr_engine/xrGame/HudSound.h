@@ -30,7 +30,8 @@ struct HUD_SOUND
 									const Fvector& position,
 									const CObject* parent,
 									bool hud_mode,
-									bool looped = false);
+									bool looped = false,
+									bool overlap = false);
 
 	static void		StopSound		(	HUD_SOUND& snd);
 

@@ -27,7 +27,7 @@ public:
 	virtual CHudItem*cast_hud_item		()	 { return this; }
 
 
-	virtual void	PlaySound			(HUD_SOUND& snd, const Fvector& position);
+	virtual void	PlaySound( HUD_SOUND& snd, const Fvector& position, bool overlap = false );
 										
 	///////////////////////////////////////////////
 	// общие функции HUD
