@@ -230,6 +230,7 @@ void			CAI_Stalker::Hit					(SHit* pHDS)
 			weapon_type				= best_weapon()->object().ef_weapon_type();
 
 		if	(
+				( HDS.hit_type == ALife::eHitTypeFireWound || HDS.hit_type == ALife::eHitTypeExplosion ) &&
 				!wounded() &&
 				!already_critically_wounded)
 		{
