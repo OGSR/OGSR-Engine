@@ -297,13 +297,13 @@ CRenderTarget::CRenderTarget		()
    if( RImplementation.o.dx10_msaa )
       SampleCount    = RImplementation.o.dx10_msaa_samples;
 
-#ifdef DEBUG
+//#ifdef DEBUG
 	Msg			("MSAA samples = %d", SampleCount );
 	if( RImplementation.o.dx10_msaa_opt )
 		Msg		("dx10_MSAA_opt = on" );
 	if( RImplementation.o.dx10_gbuffer_opt )
 		Msg		("dx10_gbuffer_opt = on" );
-#endif // DEBUG
+//#endif // DEBUG
 	param_blur			= 0.f;
 	param_gray			= 0.f;
 	param_noise			= 0.f;
