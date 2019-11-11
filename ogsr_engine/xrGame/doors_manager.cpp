@@ -77,7 +77,13 @@ bool manager::actualize_doors_state(actor& actor, float const average_speed)
     float const radius = average_speed * g_door_open_time + g_door_length;
     Fvector const& position = actor.get_position();
     // check_bug_door			( );
-    m_doors.nearest(position, radius, m_nearest_doors);
+    doors_type nearest_doors;
+    m_doors.nearest( position, radius, nearest_doors );
+    m_nearest_doors.clear();
+    for ( const auto it : nearest_doors ) {
+      if ( _abs( it->position().y - position.y ) < 2 )
+        m_nearest_doors.push_back( it );
+    }
     // check_bug_door			( );
     if (m_nearest_doors.empty() && !actor.need_update())
         return true;
