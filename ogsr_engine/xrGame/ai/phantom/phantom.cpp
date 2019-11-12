@@ -142,6 +142,8 @@ void CPhantom::SwitchToState_internal(EState new_state)
 		case stContact:{
 			SStateData& sdata	= m_state_data[m_CurState];
 			PlayParticles		(sdata.particles.c_str(),FALSE,xform);
+			PsyHit			(m_enemy,fContactHit);
+/*
 			Fvector vE,vP;
 			m_enemy->Center		(vE);
 			Center				(vP);
@@ -149,6 +151,7 @@ void CPhantom::SwitchToState_internal(EState new_state)
 				// hit enemy
 				PsyHit			(m_enemy,fContactHit);
 			}
+*/
 			}break;
 		case stShoot:{
 			SStateData& sdata	= m_state_data[m_CurState];
