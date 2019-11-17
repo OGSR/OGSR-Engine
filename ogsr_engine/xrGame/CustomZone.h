@@ -110,6 +110,7 @@ protected:
 		eIdleLightShadow = 1 << 13,
 		eIdleLightVolumetric = 1 << 14,
 		eIgnoreAny			=(1<<15),
+		eBlowoutLightShadow		=(1<<16),
 	};
 	u32					m_owner_id;		//if created from artefact
 	u32					m_ttl;
