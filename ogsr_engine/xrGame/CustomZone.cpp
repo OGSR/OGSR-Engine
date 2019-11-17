@@ -249,6 +249,7 @@ void CCustomZone::Load(LPCSTR section)
 
 	//загрузить параметры световой вспышки от взрыва
 	m_zone_flags.set(eBlowoutLight, pSettings->r_bool (section, "blowout_light"));
+	m_zone_flags.set( eBlowoutLightShadow, READ_IF_EXISTS( pSettings, r_bool, section, "blowout_light_shadow", true ) );
 
 	if(m_zone_flags.test(eBlowoutLight) ){
 		sscanf(pSettings->r_string(section,"light_color"), "%f,%f,%f", &m_LightColor.r, &m_LightColor.g, &m_LightColor.b);
@@ -369,7 +370,7 @@ BOOL CCustomZone::net_Spawn(CSE_Abstract* DC)
 	if ( m_zone_flags.test(eBlowoutLight) ) 
 	{
 		m_pLight = ::Render->light_create();
-		m_pLight->set_shadow(true);
+		m_pLight->set_shadow( !!m_zone_flags.test( eBlowoutLightShadow ) );
 	}else
 		m_pLight = NULL;
 
