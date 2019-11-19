@@ -199,7 +199,7 @@
       </AssemblerOutput>
       <WarningLevel>Level4</WarningLevel>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
-      <AdditionalIncludeDirectories>./;$(SolutionDir)\3rd_party\Src\d3dx;..\..\xrCore;..\..\Luabind;..\..\LuaJIT\src;$(SolutionDir)\3rd_party\Src\amd;$(SolutionDir)\3rd_party\Src\NVAPI;</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>./;$(SolutionDir)\3rd_party\Src\d3dx;..\..\xrCore;..\..\Luabind;..\..\LuaJIT\src;</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <DisableSpecificWarnings>4456;4457;4458;4995;4577;</DisableSpecificWarnings>
     </ClCompile>
@@ -242,7 +242,7 @@
       </AssemblerOutput>
       <WarningLevel>Level4</WarningLevel>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
-      <AdditionalIncludeDirectories>./;$(SolutionDir)\3rd_party\Src\d3dx;..\..\xrCore;..\..\Luabind;..\..\LuaJIT\src;$(SolutionDir)\3rd_party\Src\amd;$(SolutionDir)\3rd_party\Src\NVAPI;</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>./;$(SolutionDir)\3rd_party\Src\d3dx;..\..\xrCore;..\..\Luabind;..\..\LuaJIT\src;</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <DisableSpecificWarnings>4456;4457;4458;4995;4577;</DisableSpecificWarnings>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
