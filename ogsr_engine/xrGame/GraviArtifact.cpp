@@ -48,6 +48,7 @@ void CGraviArtefact::Load(LPCSTR section)
 	m_jump_raise_speed = READ_IF_EXISTS( pSettings, r_float, section, "jump_raise_speed", 50.f );
 	m_jump_keep_speed = READ_IF_EXISTS( pSettings, r_float, section, "jump_keep_speed", 25.f );
 	m_jump_time = READ_IF_EXISTS( pSettings, r_u32, section, "jump_time", 0 ) * 1000;
+	m_jump_debug = READ_IF_EXISTS( pSettings, r_bool, section, "jump_debug", false );
 }
 
 
@@ -76,8 +77,9 @@ BOOL CGraviArtefact::net_Spawn( CSE_Abstract* DC ) {
   BOOL result = inherited::net_Spawn( DC );
 
   if ( result ) {
-    m_jump_jump = m_keep = m_raise = false;
+    m_jump_jump = m_keep = false;
     m_jump_time_end = 0;
+    m_raise = true;
   }
 
   return result;
@@ -129,8 +131,11 @@ void CGraviArtefact::process_gravity() {
         if ( m_keep ) {
           if ( res && fsimilar( range, m_keep_height, 0.01f ) )
             dir.y = 0;
-          else
+          else {
+            if ( m_jump_debug )
+              Msg( "[%s]: lowering %s range[%f]", __FUNCTION__, cName().c_str(), range );
             dir.y = -m_jump_keep_speed;
+          }
         }
         else if ( m_raise ) {
           m_keep = true;
@@ -142,13 +147,20 @@ void CGraviArtefact::process_gravity() {
         m_jump_jump = ( range < m_fJumpHeight );
         m_keep = false;
         if ( m_jump_min_height && m_jump_time ) {
-          if ( m_raise )
+          if ( m_raise || m_jump_time_end == 0 )
             m_jump_time_end = Device.dwTimeGlobal + m_jump_time;
           else if ( m_jump_time_end < Device.dwTimeGlobal ) {
-            m_jump_jump = false;
-            m_keep = true;
-            dir.y = -m_jump_keep_speed;
-          }            
+            if ( m_jump_jump && m_jump_time_end + m_jump_time < Device.dwTimeGlobal ) {
+              m_jump_time_end = Device.dwTimeGlobal + m_jump_time;
+            }
+            else {
+              if ( m_jump_debug )
+                Msg( "[%s]: lowering %s range[%f]", __FUNCTION__, cName().c_str(), range );
+              m_jump_jump = false;
+              m_keep = true;
+              dir.y = -m_jump_keep_speed;
+            }
+          }
         }
       }
       m_raise = false;

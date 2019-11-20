@@ -26,7 +26,7 @@ protected:
 	float m_fJumpHeight;
 	float m_fEnergy;
 
-	bool  m_jump_jump, m_keep, m_raise;
+	bool  m_jump_jump, m_keep, m_raise, m_jump_debug;
 	float m_jump_min_height, m_keep_height;
 	float m_jump_raise_speed, m_jump_keep_speed, m_jump_under_speed;
 	u32   m_jump_time, m_jump_time_end;
