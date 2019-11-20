@@ -2,12 +2,11 @@
 
 #define DEBUG_INVOKE __debugbreak()
 
-typedef	void		crashhandler		(void);
-
 class XRCORE_API	xrDebug
 {
 private:
-	crashhandler*	handler = nullptr;
+	using crashhandler = void(bool);
+	crashhandler* handler = nullptr;
 
 public:
 	void			_initialize			();
@@ -48,7 +47,7 @@ extern XRCORE_API HWND gGameWindow;
 extern XRCORE_API bool ExitFromWinMain;
 
 XRCORE_API void LogStackTrace(const char* header);
-XRCORE_API void LogStackTrace(const char* header, _EXCEPTION_POINTERS *pExceptionInfo);
+XRCORE_API void LogStackTrace(const char* header, _EXCEPTION_POINTERS *pExceptionInfo, bool dump_lua_locals = false);
 
 // KRodin: отладочный хак для получения стека вызовов, при вызове проблемного кода внутри __try {...}
 // Использовать примерно так:

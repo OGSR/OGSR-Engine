@@ -99,7 +99,6 @@ public:
 	CStatTimer	TEST3;				// debug counter
 
 private:
-	u32 GpuLoad;
 	float AvailableMem;
 	float AvailablePageFileMem;
 	float PageFileMemUsedByApp;

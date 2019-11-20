@@ -581,6 +581,9 @@
 	<string id="ui_mm_build_crosshair">
 		<text>Круглый курсор, как в билдах</text>
 	</string>
+	<string id="ui_mm_small_font">
+		<text>Уменьшенный шрифт (требуется перезапуск игры)</text>
+	</string>
 	<!-- Окно "Управление" -->
 	<string id="ui_mm_controls">
 		<text>Управление</text>

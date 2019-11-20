@@ -67,11 +67,6 @@ private:
 	void						Demo_DumpData			();
 	void						Demo_Clear				();
 
-	
-
-	crashhandler*				m_pOldCrashHandler;
-	bool						m_we_used_old_crach_handler;
-
 	u32							m_dwCurDemoFrame;
 	void						Demo_StartFrame			();
 	void						Demo_EndFrame			();
@@ -79,7 +74,6 @@ private:
 public:
 	void						Demo_StoreServerData	(void* data, u32 size);
 
-	void						CallOldCrashHandler		();
 	void						WriteStoredDemo			();
 
 	BOOL						IsDemoPlay				()	{return (!m_bDemoSaveMode &&  m_bDemoPlayMode);};

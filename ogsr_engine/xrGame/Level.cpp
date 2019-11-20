@@ -130,8 +130,6 @@ CLevel::CLevel():IPureClient	(Device.GetTimerGlobal())
 	m_bDemoSaveMode = FALSE;
 	m_dwStoredDemoDataSize = 0;
 	m_pStoredDemoData = NULL;
-	m_pOldCrashHandler = NULL;
-	m_we_used_old_crach_handler	= false;
 
 //	if ( !strstr( Core.Params, "-tdemo " ) && !strstr(Core.Params,"-tdemof "))
 //	{
@@ -249,10 +247,6 @@ CLevel::~CLevel()
 	// because they should be new for each saved/loaded game
 	// and I didn't find better place to put this code in
 	CTradeParameters::clean		();
-
-	if (m_we_used_old_crach_handler)
-		Debug.set_crashhandler	(m_pOldCrashHandler);
-
 }
 
 shared_str	CLevel::name		() const

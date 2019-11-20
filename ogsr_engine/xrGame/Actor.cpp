@@ -1295,13 +1295,15 @@ void CActor::SetPhPosition(const Fmatrix &transform)
 	//else m_phSkeleton->S
 }
 
-void CActor::ForceTransform(const Fmatrix& m)
+void CActor::ForceTransform(const Fmatrix& m, const bool from_demo_record)
 {
 	if(!g_Alive())				return;
 	XFORM().set					(m);
-	Fvector xyz;
-	m.getHPB(xyz);
-	cam_Active()->Set(-xyz.x, -xyz.y, -xyz.z);
+	if (from_demo_record) {
+		Fvector xyz;
+		m.getHPB(xyz);
+		cam_Active()->Set(-xyz.x, -xyz.y, -xyz.z);
+	}
 	if(character_physics_support()->movement()->CharacterExist()) character_physics_support()->movement()->EnableCharacter	();
 	character_physics_support()->set_movement_position( m.c );
 	character_physics_support()->movement()->SetVelocity		(0,0,0);

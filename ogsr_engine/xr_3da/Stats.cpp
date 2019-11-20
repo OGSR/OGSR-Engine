@@ -5,8 +5,6 @@
 #include "IGame_Persistent.h"
 #include "render.h"
 #include "xr_object.h"
-#include "NvGPUTransferee.h"
-#include "AMDGPUTransferee.h"
 #include <psapi.h>
 #include <mmsystem.h>
 
@@ -475,8 +473,6 @@ void CStats::Show_HW_Stats()
 			cpuBefore = cpuLoad;
 
 			CPU::ID.MTCPULoad();
-
-			GpuLoad = CAMDReader::bAMDSupportADL ? AMDData->GetPercentActive() : CNvReader::bSupport ? NvData->GetPercentActive() : u32(-1);
 		}
 
 		pFontHW->SetHeightI(0.018f);
@@ -517,17 +513,6 @@ void CStats::Show_HW_Stats()
 		{
 			pFontHW->Out(10, dwScale, "CPU%u: %0.0f%%", i, CPU::ID.fUsage[i]);
 			dwScale += 15;
-		}
-
-		if (GpuLoad != u32(-1)) {
-			if (GpuLoad > 80)
-				pFontHW->SetColor(DebugTextColor::DTC_RED);
-			else if (GpuLoad > 60)
-				pFontHW->SetColor(DebugTextColor::DTC_YELLOW);
-			else
-				pFontHW->SetColor(DebugTextColor::DTC_GREEN);
-
-			pFontHW->Out(10, dwScale, "GPU LOAD: %u%%", GpuLoad);
 		}
 
 		pFontHW->OnRender();

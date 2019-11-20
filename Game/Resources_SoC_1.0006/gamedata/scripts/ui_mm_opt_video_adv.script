@@ -97,7 +97,7 @@ function opt_video_adv:InitControls(x, y, xml, handler)
 	self:Init(x, y, 738, 416)
 	self:SetAutoDelete(true)
 
-	xml:InitFrame("frame_videoadv", self)
+	xml:InitFrame("frame", self)
 	self.scroll_v = xml:InitScrollView("video_adv:scroll_v", self)
 
 	-- перебираем с конца, поскольку в настройках scroll view в xml стоит параметр flip_vert="1",

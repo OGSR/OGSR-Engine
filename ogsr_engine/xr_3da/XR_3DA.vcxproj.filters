@@ -100,15 +100,6 @@
     <Filter Include="Interfaces\LoadScreen">
       <UniqueIdentifier>{1afaf972-d4ae-4834-8a0e-869d27555c6f}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Engine\GPU">
-      <UniqueIdentifier>{434ea266-b392-4ae4-a83a-0feaabca8cf3}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Engine\GPU\AMD">
-      <UniqueIdentifier>{68473e5c-69e9-4b98-80de-c144a2c4ac00}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Engine\GPU\NVIDIA">
-      <UniqueIdentifier>{bfbad179-3e04-4143-8c02-f433f96868b9}</UniqueIdentifier>
-    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h">
@@ -334,12 +325,6 @@
     <ClInclude Include="ILoadingScreen.h">
       <Filter>Interfaces\LoadScreen</Filter>
     </ClInclude>
-    <ClInclude Include="AMDGPUTransferee.h">
-      <Filter>Engine\GPU\AMD</Filter>
-    </ClInclude>
-    <ClInclude Include="NvGPUTransferee.h">
-      <Filter>Engine\GPU\NVIDIA</Filter>
-    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="defines.cpp">
@@ -550,12 +535,6 @@
     <ClCompile Include="bone.cpp" />
     <ClCompile Include="GameMtlLib_Engine.cpp" />
     <ClCompile Include="GameMtlLib.cpp" />
-    <ClCompile Include="AMDGPUTransferee.cpp">
-      <Filter>Engine\GPU\AMD</Filter>
-    </ClCompile>
-    <ClCompile Include="NvGPUTransferee.cpp">
-      <Filter>Engine\GPU\NVIDIA</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="resource.rc">

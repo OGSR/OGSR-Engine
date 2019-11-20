@@ -3,26 +3,7 @@
 #include "hwcaps.h"
 #include "hw.h"
 
-#include "../../xr_3da/AMDGPUTransferee.h"
-#include "../../xr_3da/NvGPUTransferee.h"
-
-u32 GetGpuNum()
-{
-	try {
-		if (!AMDData) AMDData = new CAMDReader();
-		if (!NvData) NvData = new CNvReader();
-
-		if (CAMDReader::bAMDSupportADL)
-			return AMDData->GetGPUCount() > 0 ? AMDData->GetGPUCount() : 1;
-		else if (CNvReader::bSupport)
-			return NvData->GetGPUCount() > 0 ? NvData->GetGPUCount() : 1;
-		else
-			return 1;
-	}
-	catch (...) {
-		return 1;
-	}
-}
+constexpr u32 GetGpuNum() { return 1; }
 
 #if !defined(USE_DX10) && !defined(USE_DX11)
 void CHWCaps::Update()
@@ -125,7 +106,6 @@ void CHWCaps::Update()
 	// DEV INFO
 
 	iGPUNum = GetGpuNum();
-	Msg("--[%s] Detected GpuNum : [%u]", __FUNCTION__, iGPUNum);
 }
 #else	//	USE_DX10
 void CHWCaps::Update()
@@ -185,6 +165,5 @@ void CHWCaps::Update()
 	// DEV INFO
 
 	iGPUNum = GetGpuNum();
-	Msg("--[%s] Detected GpuNum : [%u]", __FUNCTION__, iGPUNum);
 }
 #endif	//	USE_DX10

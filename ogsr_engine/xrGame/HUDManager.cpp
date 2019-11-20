@@ -84,7 +84,7 @@ void CFontManager::InitializeFont(CGameFont*& F, LPCSTR section, u32 flags)
 	LPCSTR font_tex_name = GetFontTexName(section);
 	R_ASSERT(font_tex_name);
 
-	LPCSTR sh_name = pSettings->r_string(section,"shader");
+	const char* sh_name = READ_IF_EXISTS(pSettings, r_string, section, "shader", "font");
 	if(!F)
 		F = xr_new<CGameFont> (sh_name, font_tex_name, flags);
 	else

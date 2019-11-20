@@ -92,13 +92,6 @@ void						CLevel::Demo_DumpData()
 	m_dwStoredDemoDataSize = 0;
 }
 
-void						CLevel_DemoCrash_Handler	()
-{
-	if (!g_pGameLevel) return;
-	Level().WriteStoredDemo();
-	Level().CallOldCrashHandler();
-}
-
 //#define STORE_TDEMO
 
 void						CLevel::Demo_PrepareToStore			()
@@ -107,10 +100,6 @@ void						CLevel::Demo_PrepareToStore			()
 
 	if (!m_bDemoSaveMode) return;
 
-	VERIFY						(!m_we_used_old_crach_handler);
-	m_we_used_old_crach_handler	= true;
-	m_pOldCrashHandler			= Debug.get_crashhandler();
-	Debug.set_crashhandler		(CLevel_DemoCrash_Handler);
 	//---------------------------------------------------------------
 	string1024 CName = "";
 	u32 CNameSize = 1024;
@@ -129,12 +118,6 @@ void						CLevel::Demo_PrepareToStore			()
 //	ZeroMemory(&m_sDemoHeader, sizeof(m_sDemoHeader));
 	m_sDemoHeader.Head[0] = 0;
 	m_sDemoHeader.ServerOptions = "";
-};
-
-void						CLevel::CallOldCrashHandler			()
-{
-	if (!m_pOldCrashHandler) return;
-	m_pOldCrashHandler();
 };
 
 void						CLevel::WriteStoredDemo			()
