@@ -255,9 +255,25 @@ _value_type CStalkerPropertyEvaluatorEnemyWounded::evaluate	()
 	if (!stalker)
 		return					(false);
 
-	ALife::_OBJECT_ID processor_id = object().agent_manager().enemy().wounded_processor( enemy );
-	if ( processor_id != object().ID() )
-	  return false;
+	return stalker->wounded();
+}
 
-	return						(stalker->wounded(&object().movement().restrictions()));
+
+CStalkerPropertyEvaluatorEnemyWoundedAssigned::CStalkerPropertyEvaluatorEnemyWoundedAssigned( CAI_Stalker *object, LPCSTR evaluator_name ) :
+  inherited( object ? object->lua_game_object() : 0, evaluator_name )
+{
+}
+
+_value_type CStalkerPropertyEvaluatorEnemyWoundedAssigned::evaluate()
+{
+  const CEntityAlive *enemy = object().memory().enemy().selected();
+  if ( !enemy )
+    return false;
+
+  const CAI_Stalker *stalker = smart_cast<const CAI_Stalker *>( enemy );
+  if ( !stalker || !stalker->wounded( &object().movement().restrictions() ) )
+    return false;
+
+  ALife::_OBJECT_ID processor_id = object().agent_manager().enemy().wounded_processor( enemy );
+  return processor_id == object().ID();
 }
