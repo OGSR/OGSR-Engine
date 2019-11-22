@@ -374,13 +374,18 @@ bool CEnvironment::SetWeatherFX(shared_str name)
 
 bool CEnvironment::StartWeatherFXFromTime(shared_str name, float time)
 {
-	if(!SetWeatherFX(name))				
+	float _fGameTime = fGameTime;
+	fGameTime = NormalizeTime( fGameTime - time );
+	bool res  = SetWeatherFX( name );
+	fGameTime = _fGameTime;
+	if ( !res )
 		return false;
-
-	for (EnvIt it=CurrentWeather->begin(); it!=CurrentWeather->end(); it++)
-		(*it)->exec_time = NormalizeTime((*it)->exec_time - wfx_time + time);
-
-	wfx_time = time;
+	wfx_time -= time;
+#ifdef WEATHER_LOGGING
+	Msg( "Started WFX from time[%3.2f]: '%s' - %3.2f sec", time, *name, wfx_time );
+	for ( EnvIt l_it = CurrentWeather->begin(); l_it != CurrentWeather->end(); l_it++ )
+		Msg( ". Env: '%s' Tm: %3.2f", (*l_it)->m_identifier.c_str(), (*l_it)->exec_time );
+#endif
 	return true;
 }
 
