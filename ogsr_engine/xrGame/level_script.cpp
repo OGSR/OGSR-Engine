@@ -149,6 +149,7 @@ void set_time_factor(float time_factor)
 		return;
 
 	Level().Server->game->SetGameTimeFactor(time_factor);
+	GamePersistent().Environment().SetGameTime( Level().GetEnvironmentGameDayTimeSec(), Level().game->GetEnvironmentGameTimeFactor() );
 }
 
 float get_time_factor()
