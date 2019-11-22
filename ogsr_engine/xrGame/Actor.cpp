@@ -371,8 +371,10 @@ void CActor::Load	(LPCSTR section )
 			sndHit[hit_type].push_back		(ref_sound());
 			sndHit[hit_type].back().create	(_GetItem(hit_snds,i,tmp),st_Effect,sg_SourceType);
 		}
-		char buf[256];
+		strconcat( sizeof( tmp ), tmp, hit_name, "_min" );
+		sndHitMin[ hit_type ] = READ_IF_EXISTS( pSettings, r_float, hit_snd_sect, tmp, 0.f );
 
+		char buf[256];
 		::Sound->create		(sndDie[0],			strconcat(sizeof(buf),buf,*cName(),"\\die0"), st_Effect,SOUND_TYPE_MONSTER_DYING);
 		::Sound->create		(sndDie[1],			strconcat(sizeof(buf),buf,*cName(),"\\die1"), st_Effect,SOUND_TYPE_MONSTER_DYING);
 		::Sound->create		(sndDie[2],			strconcat(sizeof(buf),buf,*cName(),"\\die2"), st_Effect,SOUND_TYPE_MONSTER_DYING);
@@ -475,8 +477,7 @@ void	CActor::Hit							(SHit* pHDS)
 	if (HDS.hit_type == ALife::eHitTypeTelepatic)
 		HDS.power *= m_fDrugPsyProtectionCoeff;
 
-	if(	!sndHit[HDS.hit_type].empty()			&& 
-		conditions().PlayHitSound(pHDS))
+	if ( !sndHit[ HDS.hit_type ].empty() && PlayHitSound( pHDS ) )
 	{
 		ref_sound& S = sndHit[HDS.hit_type][Random.randI(sndHit[HDS.hit_type].size())];
 		bool b_snd_hit_playing = sndHit[HDS.hit_type].end() != std::find_if(sndHit[HDS.hit_type].begin(), sndHit[HDS.hit_type].end(), playing_pred());
@@ -539,6 +540,19 @@ void	CActor::Hit							(SHit* pHDS)
 				HDS.power = hit_power;
 				inherited::Hit(&HDS);
 			}
+}
+
+bool CActor::PlayHitSound(SHit* pHDS)
+{
+	switch (pHDS->hit_type)
+	{
+		case ALife::eHitTypeTelepatic:
+		case ALife::eHitTypeRadiation:
+			return false;
+			break;
+		default:
+			return ( !fsimilar( sndHitMin[ pHDS->hit_type ], pHDS->damage() ) && pHDS->damage() > sndHitMin[ pHDS->hit_type ] );
+	}
 }
 
 void CActor::HitMark	(float P, 

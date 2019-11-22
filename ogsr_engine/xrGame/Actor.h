@@ -199,6 +199,7 @@ public:
 	virtual void						HitSignal		(float P, Fvector &vLocalDir,	CObject* who, s16 element);
 			void						HitSector		(CObject* who, CObject* weapon);
 			void						HitMark			(float P, Fvector dir,			CObject* who, s16 element, Fvector position_in_bone_space, float impulse,  ALife::EHitType hit_type);
+	bool PlayHitSound( SHit* pHDS );
 
 	virtual float						GetMass				() ;
 	virtual float						GetCarryWeight		() const; 
@@ -245,6 +246,7 @@ protected:
 	// media
 	SndShockEffector*		m_sndShockEffector;
 	xr_vector<ref_sound>	sndHit[ALife::eHitTypeMax];
+	float sndHitMin[ALife::eHitTypeMax];
 	ref_sound				sndDie[SND_DIE_COUNT];
 
 

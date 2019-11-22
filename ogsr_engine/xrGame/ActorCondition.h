@@ -87,7 +87,6 @@ public:
 	float	m_MaxWalkWeight;
 
 	bool	DisableSprint							(SHit* pHDS);
-	bool	PlayHitSound							(SHit* pHDS);
 	float	HitSlowmo								(SHit* pHDS);
 
 protected:
