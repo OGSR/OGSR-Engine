@@ -349,8 +349,7 @@ bool CEnvironment::SetWeatherFX(shared_str name)
 		C1->copy			(*Current[1]);	C1->exec_time = NormalizeTime(start_tm);
 		for (EnvIt t_it=CurrentWeather->begin()+2; t_it!=CurrentWeather->end()-1; t_it++)
 			(*t_it)->exec_time= NormalizeTime(start_tm+(*t_it)->exec_time_loaded);
-		SelectEnv			(PrevWeather,WFX_end_desc[0],CE->exec_time);
-		SelectEnv			(PrevWeather,WFX_end_desc[1],WFX_end_desc[0]->exec_time+0.5f);
+		SelectEnvs( PrevWeather, WFX_end_desc[ 0 ], WFX_end_desc[ 1 ], CE->exec_time );
 		CT->copy			(*WFX_end_desc[0]);CT->exec_time = NormalizeTime(CE->exec_time+rewind_tm);
 		wfx_time			= TimeDiff(fGameTime,CT->exec_time);
 		bWFX				= true;
@@ -361,9 +360,9 @@ bool CEnvironment::SetWeatherFX(shared_str name)
 		Current[0]			= C0;
 		Current[1]			= C1;
 #ifdef WEATHER_LOGGING
-		Msg					("Starting WFX: '%s' - %3.2f sec",*name,wfx_time);
-//		for (EnvIt l_it=CurrentWeather->begin(); l_it!=CurrentWeather->end(); l_it++)
-//			Msg				(". Env: '%s' Tm: %3.2f",*(*l_it)->m_identifier.c_str(),(*l_it)->exec_time);
+		Msg( "Starting WFX: '%s' - %3.2f sec. GameTime: %3.2f", *name, wfx_time, fGameTime );
+		for (EnvIt l_it=CurrentWeather->begin(); l_it!=CurrentWeather->end(); l_it++)
+			Msg( ". Env: '%s' Tm: %3.2f", (*l_it)->m_identifier.c_str(), (*l_it)->exec_time );
 #endif
 	}else{
 #ifndef _EDITOR
