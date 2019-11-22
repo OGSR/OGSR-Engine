@@ -334,16 +334,11 @@ bool CEnvironment::SetWeatherFX(shared_str name)
 		float rewind_tm		= WFX_TRANS_TIME*fTimeFactor;
 		float start_tm		= fGameTime+rewind_tm;
 		float current_length;
-		float current_weight;
 		if (Current[0]->exec_time > Current[1]->exec_time){
-			float x			= fGameTime>Current[0]->exec_time?fGameTime-Current[0]->exec_time:(DAY_LENGTH-Current[0]->exec_time)+fGameTime;
 			current_length	= (DAY_LENGTH-Current[0]->exec_time)+Current[1]->exec_time;
-			current_weight	= x/current_length; 
 		}else{
 			current_length	= Current[1]->exec_time-Current[0]->exec_time;
-			current_weight	= (fGameTime-Current[0]->exec_time)/current_length; 
 		}
-		clamp				(current_weight,0.f,1.f);
 
 		std::sort			(CurrentWeather->begin(),CurrentWeather->end(),sort_env_etl_pred);
 		CEnvDescriptor* C0	= CurrentWeather->at(0);
