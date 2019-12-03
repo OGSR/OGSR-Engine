@@ -96,7 +96,7 @@ void CWeapon::FireTrace		(const Fvector& P, const Fvector& D)
 	--iAmmoElapsed;
 
 	//проверить не произошла ли осечка
-	CheckForMisfire();
+	//CheckForMisfire();
 
 	VERIFY((u32)iAmmoElapsed == m_magazine.size());
 }
@@ -116,7 +116,7 @@ void CWeapon::Fire2End	()
 
 void CWeapon::StopShooting		()
 {
-	m_bPending = true;
+	//m_bPending = true;
 
 	//принудительно останавливать зацикленные партиклы
 	if(m_pFlameParticles && m_pFlameParticles->IsLooped())

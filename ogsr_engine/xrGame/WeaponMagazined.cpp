@@ -193,7 +193,14 @@ void CWeaponMagazined::FireStart		()
 			else
 				SwitchState(eFire);
 		}
-	} 
+	}
+	else if ( IsMisfire() ) {
+	  if ( smart_cast<CActor*>( this->H_Parent() ) && Level().CurrentViewEntity() == H_Parent() )
+	    HUD().GetUI()->AddInfoMessage( "gun_jammed" );
+	  OnEmptyClick();
+	  // Callbacks added by Cribbledirge.
+	  StateSwitchCallback( GameObject::eOnActorWeaponJammed, GameObject::eOnNPCWeaponJammed );
+	}
 	else 
 		if(eReload!=GetState() && eMisfire!=GetState()) 
             OnMagazineEmpty();
@@ -584,6 +591,12 @@ void CWeaponMagazined::state_Fire	(float dt)
 //	Msg("%d && %d && (%d || %d) && (%d || %d)", !m_magazine.empty(), fTime<=0, IsWorking(), m_bFireSingleShot, m_iQueueSize < 0, m_iShotNum < m_iQueueSize);
 	while (!m_magazine.empty() && fTime<=0 && (IsWorking() || m_bFireSingleShot) && (m_iQueueSize < 0 || m_iShotNum < m_iQueueSize))
 	{
+		if ( CheckForMisfire() ) {
+			OnEmptyClick();
+			StopShooting();
+			return;
+		}
+
 		m_bFireSingleShot = false;
 
 		VERIFY(fTimeToFire>0.f);
