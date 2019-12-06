@@ -154,32 +154,26 @@ void CActor::on_weapon_shot_start		(CWeapon *weapon)
 	}
 	R_ASSERT						(effector);
 
-	if (pWM)
-	{
+	if ( pWM && !fis_zero( weapon->camRelaxSpeed ) ) {
 		if (effector->IsSingleShot())
 			update_camera(effector);
-
-		if (pWM->GetCurrentFireMode() == 1)
-		{
-			effector->SetSingleShoot(TRUE);
-		}
-		else
-		{
-			effector->SetSingleShoot(FALSE);
-		}
-	};
+		effector->SetSingleShoot( pWM->GetCurrentFireMode() == 1 ? TRUE : FALSE );
+	}
 
 	effector->SetRndSeed			(GetShotRndSeed());
 	effector->SetActor				(this);
-	effector->Shot					(weapon->camDispersion + weapon->camDispersionInc*float(weapon->ShotsFired()));
+	int shot_n = weapon->ShotsFired() - 1;
+	if ( pWM && pWM->canApplyShootEffectorStart() && weapon->ShotsFired() > pWM->ShootEffectorStart() )
+	  shot_n -= pWM->ShootEffectorStart();
+	if ( shot_n < 0 ) shot_n = 0;
+	effector->Shot( weapon->camDispersion + weapon->camDispersionInc * float(shot_n) );
 
 	if (pWM)
 	{
-		if (pWM->GetCurrentFireMode() != 1)
-		{
+		if ( !effector->IsSingleShot() ) {
 			effector->SetActive(FALSE);
 			update_camera(effector);
-		}		
+		}
 	}
 }
 
