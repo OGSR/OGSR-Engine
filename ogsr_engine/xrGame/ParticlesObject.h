@@ -20,11 +20,9 @@ protected:
 protected:
 	u32					mt_dt;
 
-protected:
-	virtual				~CParticlesObject	();
-
 public:
-						CParticlesObject	(LPCSTR p_name, BOOL bAutoRemove, bool destroy_on_game_load);
+	CParticlesObject(LPCSTR p_name, BOOL bAutoRemove, bool destroy_on_game_load);
+	virtual ~CParticlesObject();
 
 	virtual bool		shedule_Needed		()	{return true;};
 	virtual float		shedule_Scale		()	;

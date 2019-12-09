@@ -19,13 +19,11 @@ protected:
 	int						m_iLifeTime			;
 	BOOL					m_bAutoRemove		;
 	BOOL					m_bDead				;
-
-protected:
-	virtual					~CPS_Instance		();
 	virtual void			PSI_internal_delete	();
 
 public:
-							CPS_Instance		(bool destroy_on_game_load);
+	CPS_Instance(bool destroy_on_game_load);
+	virtual ~CPS_Instance();
 
 	IC		const bool		&destroy_on_game_load() const				{	return m_destroy_on_game_load;	}
 	virtual void			PSI_destroy			();
