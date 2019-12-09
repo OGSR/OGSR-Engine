@@ -27,7 +27,7 @@ void	light::vis_prepare			()
 		float	x0	= VIEWPORT_NEAR/_cos	(a0);
 		float	x1	= VIEWPORT_NEAR/_cos	(a1);
 		float	c	= _sqrt					(x0*x0 + x1*x1);
-		safe_area	= _max(_max(VIEWPORT_NEAR,_max(x0,x1)),c) + 65.f;
+		safe_area	= _max(_max(VIEWPORT_NEAR,_max(x0,x1)),c);
 	}
 
 	//Msg	("sc[%f,%f,%f]/c[%f,%f,%f] - sr[%f]/r[%f]",VPUSH(spatial.center),VPUSH(position),spatial.radius,range);
