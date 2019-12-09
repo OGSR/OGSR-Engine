@@ -164,7 +164,7 @@ bool CSpaceRestrictionManager::accessible					(ALife::_OBJECT_ID id, u32 level_v
 
 CSpaceRestrictionManager::CRestrictionPtr	CSpaceRestrictionManager::restriction	(shared_str out_restrictors, shared_str in_restrictors)
 {
-	string4096					m_temp;
+	string8192					m_temp;
 	if (!xr_strlen(out_restrictors) && !xr_strlen(in_restrictors))
 		return					(0);
 
@@ -192,7 +192,7 @@ u32	CSpaceRestrictionManager::accessible_nearest			(ALife::_OBJECT_ID id, const 
 
 /*IC*/	bool CSpaceRestrictionManager::restriction_presented(shared_str restrictions, shared_str restriction) const
 {
-	string4096 m_temp;
+	string8192 m_temp;
 	for (u32 i = 0, n = _GetItemCount(*restrictions); i < n; ++i)
 		if (!xr_strcmp(restriction, _GetItem(*restrictions, i, m_temp)))
 			return true;
@@ -201,8 +201,8 @@ u32	CSpaceRestrictionManager::accessible_nearest			(ALife::_OBJECT_ID id, const 
 
 IC	void CSpaceRestrictionManager::join_restrictions		(shared_str &restrictions, shared_str update)
 {
-	string4096					m_temp1;
-	string4096					m_temp2;
+	string8192					m_temp1;
+	string8192					m_temp2;
 	strcpy						(m_temp2,*restrictions);
 	for (u32 i=0, n=_GetItemCount(*update), count = xr_strlen(m_temp2); i<n; ++i)
 		if (!restriction_presented(m_temp2,_GetItem(*update,i,m_temp1))) {
@@ -216,8 +216,8 @@ IC	void CSpaceRestrictionManager::join_restrictions		(shared_str &restrictions, 
 
 IC	void CSpaceRestrictionManager::difference_restrictions	(shared_str &restrictions, shared_str update)
 {
-	string4096					m_temp1;
-	string4096					m_temp2;
+	string8192					m_temp1;
+	string8192					m_temp2;
 	strcpy						(m_temp2,"");
 	for (u32 i=0, n=_GetItemCount(*restrictions), count = 0; i<n; ++i)
 		if (!restriction_presented(update,_GetItem(*restrictions,i,m_temp1))) {

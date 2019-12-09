@@ -70,6 +70,7 @@ using string512 = char[512];
 using string1024 = char[1024];
 using string2048 = char[2048];
 using string4096 = char[4096];
+using string8192 = char[8192];
 using string_path = char[2 * max_path];
 
 using wstring16 = wchar_t[16];

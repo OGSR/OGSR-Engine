@@ -181,7 +181,7 @@ void CSpaceRestriction::merge_in_out_restrictions	()
 
 CSpaceRestriction::CBaseRestrictionPtr CSpaceRestriction::merge(CBaseRestrictionPtr bridge, const RESTRICTIONS &temp_restrictions) const
 {
-	string4096 S;
+	string8192 S;
 	shared_str temp = bridge->name();
 
 	for (const auto& I : temp_restrictions)

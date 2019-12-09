@@ -111,7 +111,7 @@ SpaceRestrictionHolder::CBaseRestrictionPtr CSpaceRestrictionHolder::restriction
 
 void CSpaceRestrictionHolder::register_restrictor				(CSpaceRestrictor *space_restrictor, const RestrictionSpace::ERestrictorTypes &restrictor_type)
 {
-	string4096					m_temp_string;
+	string8192					m_temp_string;
 	shared_str					space_restrictors = space_restrictor->cName();
 	if (restrictor_type != RestrictionSpace::eDefaultRestrictorTypeNone) {
 		shared_str				*temp = 0, temp1;
@@ -156,7 +156,7 @@ bool try_remove_string				(shared_str &search_string, const shared_str &string_t
 {
 	bool					found = false;
 	string256				temp;
-	string4096				temp1;
+	string8192				temp1;
 	*temp1					= 0;
 	for (int i=0, j=0, n=_GetItemCount(*search_string); i<n; ++i, ++j) {
 		if (xr_strcmp(string_to_search,_GetItem(*search_string,i,temp))) {
