@@ -279,23 +279,40 @@ IC	void CRestrictedObject::remove_object_restriction(ALife::_OBJECT_ID id, const
 template <typename P, bool value>
 IC	void CRestrictedObject::construct_restriction_string(LPSTR temp_restrictions, u32 const temp_restrictions_size, const xr_vector<ALife::_OBJECT_ID> &restrictions, shared_str current_restrictions, const P &p)
 {
-	u32							count = 0;
+	xr_vector<std::string> cur_restrs;
+	string256 tmp;
+	int cnt = _GetItemCount( current_restrictions.c_str() );
+	for ( int i = 0; i < cnt; ++i ) {
+	  _GetItem( current_restrictions.c_str(), i, tmp );
+	  cur_restrs.emplace_back( tmp );
+	}
+
+	xr_vector<std::string> new_restrs;
 	*temp_restrictions			= 0;
 	xr_vector<ALife::_OBJECT_ID>::const_iterator	I = restrictions.begin();
 	xr_vector<ALife::_OBJECT_ID>::const_iterator	E = restrictions.end();
 	for ( ; I != E; ++I) {
 		CObject					*object = Level().Objects.net_Find(*I);
-		if (!object || !!strstr(*current_restrictions,*object->cName()) == value)
+		if ( !object )
+		  continue;
+		std::string s( object->cName().c_str() );
+		if ( ( std::find( cur_restrs.begin(), cur_restrs.end(), s ) != cur_restrs.end() ) == value )
 			continue;
+		if ( ( std::find( new_restrs.begin(), new_restrs.end(), s ) != cur_restrs.end() ) == value )
+			continue;
+		new_restrs.emplace_back( object->cName().c_str() );
 
 		p						(this,object->ID());
+	}
 
-		if (count)
-			xr_strcat(temp_restrictions,temp_restrictions_size,",");
-
-		xr_strcat(temp_restrictions,temp_restrictions_size,*object->cName());
-
-		count++;
+	if ( !new_restrs.empty() ) {
+	  std::string s;
+	  for ( const auto &it : new_restrs ) {
+	    if ( !s.empty() ) s += ",";
+	    s += it;
+	  }
+	  ASSERT_FMT( s.length() < temp_restrictions_size, "[%s]: resulted string too long: object[%s] temp_restrictions_size[%u] s.length[%u]", __FUNCTION__, object().cName().c_str(), temp_restrictions_size, s.length() );
+	  xr_strcat( temp_restrictions, temp_restrictions_size, s.c_str() );
 	}
 }
 
