@@ -223,16 +223,10 @@ void CGameTaskManager::UpdateTasks						()
 	for (I = tasks; I != E; ++I)
 	{
 		CGameTask		*t = (*I).game_task;
-		for(u16 i=0; i<t->m_Objectives.size() ;++i)
-		{
-			SGameTaskObjective& obj = t->Objective(i);
-			if(obj.TaskState()!=eTaskStateInProgress && i==0) break;
-			if(obj.TaskState()!=eTaskStateInProgress) continue;
-
-			ETaskState state = obj.UpdateState();
-
-			if(state==eTaskStateFail || state==eTaskStateCompleted)
-				SetTaskState(t, i, state);
+		while ( UpdateTask( t ) ) {
+		  SGameTaskObjective& obj = t->Objective( 0 );
+		  if ( obj.TaskState() != eTaskStateInProgress )
+		    break;
 		}
 	}
 	
@@ -250,6 +244,21 @@ void CGameTaskManager::UpdateTasks						()
 
 	if(m_flags.test(eChanged))
 		UpdateActiveTask	();
+}
+
+bool CGameTaskManager::UpdateTask( CGameTask* t ) {
+  bool changed = false;
+  for ( u16 i=0; i < t->m_Objectives.size() ;++i ) {
+    SGameTaskObjective& obj = t->Objective( i );
+    if ( obj.TaskState() != eTaskStateInProgress && i == 0 ) break;
+    if ( obj.TaskState() != eTaskStateInProgress ) continue;
+    ETaskState state = obj.UpdateState();
+    if ( state == eTaskStateFail || state == eTaskStateCompleted ) {
+      SetTaskState( t, i, state );
+      changed = true;
+    }
+  }
+  return changed;
 }
 
 
