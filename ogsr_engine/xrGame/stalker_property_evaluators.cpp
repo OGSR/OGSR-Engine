@@ -96,8 +96,19 @@ CStalkerPropertyEvaluatorEnemies::CStalkerPropertyEvaluatorEnemies	(
 
 _value_type CStalkerPropertyEvaluatorEnemies::evaluate	()
 {
-	if (m_object->memory().enemy().selected())
+	const CEntityAlive* enemy = object().memory().enemy().selected();
+	if ( enemy ) {
+	  const CAI_Stalker* stalker = smart_cast<const CAI_Stalker *>( enemy );
+	  if ( stalker && stalker->wounded() ) {
+	    if ( stalker->wounded( &object().movement().restrictions() ) ) {
+	      ALife::_OBJECT_ID processor_id = object().agent_manager().enemy().wounded_processor( enemy );
+	      return ( processor_id == ALife::_OBJECT_ID(-1) || processor_id == object().ID() );
+	    }
+	    else
+	      return false;
+	  }
 		return			(true);
+	}
 
 	if (m_dont_wait && *m_dont_wait)
 		return			(false);

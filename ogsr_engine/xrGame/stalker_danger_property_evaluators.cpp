@@ -275,5 +275,5 @@ _value_type CStalkerPropertyEvaluatorEnemyWoundedAssigned::evaluate()
     return false;
 
   ALife::_OBJECT_ID processor_id = object().agent_manager().enemy().wounded_processor( enemy );
-  return processor_id == object().ID();
+  return ( processor_id == ALife::_OBJECT_ID(-1) || processor_id == object().ID() );
 }
