@@ -958,6 +958,12 @@ void iterate_vertices_border( Fvector P, float R, const luabind::functor<void>& 
   );
 }
 
+int get_character_community_team( LPCSTR comm ) {
+  CHARACTER_COMMUNITY community;
+  community.set( comm );
+  return community.team();
+}
+
 
 #pragma optimize("s",on)
 void CLevel::script_register(lua_State *L)
@@ -1114,6 +1120,7 @@ void CLevel::script_register(lua_State *L)
 		def( "is_accessible_vertex_id", &is_accessible_vertex_id ),
 		def( "iterate_vertices_inside", &iterate_vertices_inside ),
 		def( "iterate_vertices_border", &iterate_vertices_border ),
+		def( "get_character_community_team", &get_character_community_team ),
 		//--#SM+# Begin --
 		def("set_blender_mode_main", &set_blender_mode_main),
 		def("get_blender_mode_main", &get_blender_mode_main),
