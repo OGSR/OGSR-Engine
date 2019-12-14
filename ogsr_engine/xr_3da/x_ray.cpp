@@ -774,6 +774,7 @@ void CApplication::load_draw_internal()
 	loadingScreen->Update(load_stage, max_load_stage);
 }
 
+/* //KRodin: надо подумать, действительно ли это нужно.
 
 // Always request high performance GPU
 extern "C"
@@ -784,3 +785,5 @@ extern "C"
 	// https://gpuopen.com/amdpowerxpressrequesthighperformance/
 	ENGINE_API DWORD AmdPowerXpressRequestHighPerformance = 0x00000001; // PowerXpress or Hybrid Graphics
 }
+
+*/
