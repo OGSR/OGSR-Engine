@@ -298,9 +298,8 @@ IC	void CRestrictedObject::construct_restriction_string(LPSTR temp_restrictions,
 		std::string s( object->cName().c_str() );
 		if ( ( std::find( cur_restrs.begin(), cur_restrs.end(), s ) != cur_restrs.end() ) == value )
 			continue;
-		if ( ( std::find( new_restrs.begin(), new_restrs.end(), s ) != cur_restrs.end() ) == value )
-			continue;
-		new_restrs.emplace_back( object->cName().c_str() );
+		if ( std::find( new_restrs.begin(), new_restrs.end(), s ) == new_restrs.end() )
+		  new_restrs.emplace_back( object->cName().c_str() );
 
 		p						(this,object->ID());
 	}
