@@ -23,6 +23,7 @@ protected:
 	typedef CActionPlannerActionScript<CAI_Stalker>		CActionPlannerAction;
 
 private:
+	bool					m_active;
 	bool					m_affect_cover;
 	CWorldState				m_alive_goal;
 	CWorldState				m_dead_goal;
@@ -43,6 +44,8 @@ public:
 	virtual	void			update				(u32 time_delta);
 	IC		void			affect_cover		(bool value);
 	IC		bool			affect_cover		() const;
+	IC void active( bool );
+	IC bool active() const;
 
 #ifdef LOG_ACTION
 	virtual	LPCSTR			object_name			() const;

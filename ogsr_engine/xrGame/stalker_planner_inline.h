@@ -17,3 +17,12 @@ IC	bool CStalkerPlanner::affect_cover	() const
 {
 	return			(m_affect_cover);
 }
+
+
+IC void CStalkerPlanner::active( bool value ) {
+  m_active = value;
+}
+
+IC bool CStalkerPlanner::active() const {
+  return m_active;
+}
