@@ -22,7 +22,6 @@
 #include "cover_point.h"
 #include "stalker_movement_restriction.h"
 #include "enemy_manager.h"
-#include "agent_enemy_manager.h"
 
 using namespace StalkerDecisionSpace;
 
@@ -254,10 +253,6 @@ _value_type CStalkerPropertyEvaluatorEnemyWounded::evaluate	()
 	const CAI_Stalker			*stalker = smart_cast<const CAI_Stalker *>(enemy);
 	if (!stalker)
 		return					(false);
-
-	ALife::_OBJECT_ID processor_id = object().agent_manager().enemy().wounded_processor( enemy );
-	if ( processor_id != object().ID() )
-	  return false;
 
 	return						(stalker->wounded(&object().movement().restrictions()));
 }
