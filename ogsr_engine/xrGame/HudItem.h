@@ -67,8 +67,8 @@ public:
 	virtual void	StartIdleAnim		() {};
 
 	
-	virtual bool	Activate			();
-	virtual void	Deactivate			();
+	virtual bool	Activate( bool = false );
+	virtual void	Deactivate( bool = false );
 	
 	virtual void	OnActiveItem		() {};
 	virtual void	OnHiddenItem		() {};
@@ -78,8 +78,8 @@ public:
 	virtual void	UpdateCL			();
 	virtual void	renderable_Render	();
 
-	virtual void	Hide() = 0;
-	virtual void	Show() = 0;
+	virtual void	Hide( bool = false ) = 0;
+	virtual void	Show( bool = false ) = 0;
 
 	virtual void	UpdateHudPosition	();
 	

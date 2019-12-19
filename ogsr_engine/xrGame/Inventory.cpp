@@ -33,6 +33,7 @@ CInventorySlot::CInventorySlot()
 	m_bVisible				= true;
 	m_bPersistent			= false;
 	m_blockCounter			= 0;
+	m_maySwitchFast	= false;
 }
 
 CInventorySlot::~CInventorySlot() 
@@ -47,6 +48,14 @@ bool CInventorySlot::CanBeActivated() const
 bool CInventorySlot::IsBlocked() const 
 {
 	return (m_blockCounter>0);
+}
+
+bool CInventorySlot::maySwitchFast() const {
+  return m_maySwitchFast;
+}
+
+void CInventorySlot::setSwitchFast( bool value ) {
+  m_maySwitchFast = value;
 }
 
 CInventory::CInventory() 
@@ -70,6 +79,8 @@ CInventory::CInventory()
 		sprintf_s(temp, "slot_persistent_%d", i+1);
 		if(pSettings->line_exist("inventory",temp)) 
 			m_slots[i].m_bPersistent = !!pSettings->r_bool("inventory",temp);
+		sprintf_s( temp, "slot_switch_fast_%d", i + 1 );
+                m_slots[ i ].setSwitchFast( READ_IF_EXISTS( pSettings, r_bool, "inventory", temp, false ) );
 	};
 
 	m_slots[PDA_SLOT].m_bVisible				= false;
@@ -456,7 +467,7 @@ void  CInventory::ActivateNextItemInActiveSlot()
 	Msg("CHANGE");
 }
 
-bool CInventory::Activate(u32 slot, EActivationReason reason, bool bForce) 
+bool CInventory::Activate(u32 slot, EActivationReason reason, bool bForce, bool now ) 
 {	
 	if(	m_ActivationSlotReason==eKeyAction	&& reason==eImportUpdate )
 		return false;
@@ -541,8 +552,9 @@ bool CInventory::Activate(u32 slot, EActivationReason reason, bool bForce)
 	//активный слот задействован
 	else if(slot == NO_ACTIVE_SLOT || m_slots[slot].m_pIItem)
 	{
-		if(m_slots[m_iActiveSlot].m_pIItem)
-			m_slots[m_iActiveSlot].m_pIItem->Deactivate();
+		if ( m_slots[ m_iActiveSlot ].m_pIItem ) {
+		  m_slots[ m_iActiveSlot ].m_pIItem->Deactivate( now || ( slot != NO_ACTIVE_SLOT && m_slots[ slot ].maySwitchFast() ) );
+		}
 
 		m_iNextActiveSlot		= slot;
 		m_ActivationSlotReason	= reason;
@@ -1150,7 +1162,7 @@ void CInventory::Items_SetCurrentEntityHud(bool current_entity)
 };
 
 //call this only via Actor()->SetWeaponHideState()
-void CInventory::SetSlotsBlocked(u16 mask, bool bBlock)
+void CInventory::SetSlotsBlocked( u16 mask, bool bBlock, bool now )
 {
 	bool bChanged = false;
 	for(int i =0; i<SLOTS_TOTAL; ++i)
@@ -1173,15 +1185,29 @@ void CInventory::SetSlotsBlocked(u16 mask, bool bBlock)
 	{
 		u32 ActiveSlot		= GetActiveSlot();
 		u32 PrevActiveSlot	= GetPrevActiveSlot();
+
+		if ( PrevActiveSlot == NO_ACTIVE_SLOT ) {
+		  if ( GetNextActiveSlot() != NO_ACTIVE_SLOT && m_slots[ GetNextActiveSlot() ].m_pIItem->IsShowing() ) {
+		    ActiveSlot = GetNextActiveSlot();
+		    SetActiveSlot( GetNextActiveSlot() );
+		    m_slots[ ActiveSlot ].m_pIItem->Activate( true );
+		  }
+		}
+		else if ( m_slots[ PrevActiveSlot ].m_pIItem->IsHiding() ) {
+		  m_slots[ PrevActiveSlot ].m_pIItem->Deactivate( true );
+		  ActiveSlot = NO_ACTIVE_SLOT;
+		  SetActiveSlot( NO_ACTIVE_SLOT );
+		}
+
 		if(ActiveSlot==NO_ACTIVE_SLOT)
 		{//try to restore hidden weapon
 			if(PrevActiveSlot!=NO_ACTIVE_SLOT && m_slots[PrevActiveSlot].CanBeActivated()) 
-				if(Activate(PrevActiveSlot))
+				if ( Activate( PrevActiveSlot, eGeneral, false, now ) )
 					SetPrevActiveSlot(NO_ACTIVE_SLOT);
 		}else
 		{//try to hide active weapon
 			if(!m_slots[ActiveSlot].CanBeActivated() )
-				if(Activate(NO_ACTIVE_SLOT))
+				if ( Activate( NO_ACTIVE_SLOT, eGeneral, false, now ) )
 					SetPrevActiveSlot(ActiveSlot);
 		}
 	}

@@ -336,11 +336,12 @@ void CGrenade::net_Relcase(CObject* O )
 	inherited::net_Relcase(O);
 }
 
-void CGrenade::Deactivate()
+void CGrenade::Deactivate( bool now )
 {
 	//Drop grenade if primed
 	m_pHUD->StopCurrentAnimWithoutCallback();
-	if (!GetTmpPreDestroy() && Local() && (GetState() == MS_THREATEN || GetState() == MS_READY || GetState() == MS_THROW))
+	CEntityAlive* entity = smart_cast<CEntityAlive*>( m_pCurrentInventory->GetOwner() );
+	if ( !entity->g_Alive() && !GetTmpPreDestroy() && Local() && ( GetState() == MS_THREATEN || GetState() == MS_READY || GetState() == MS_THROW ) )
 	{
 		if (m_fake_missile)
 		{
@@ -364,7 +365,7 @@ void CGrenade::Deactivate()
 		};
 	};
 
-	inherited::Deactivate();
+	inherited::Deactivate( now || ( GetState() == MS_THREATEN || GetState() == MS_READY || GetState() == MS_THROW ) );
 }
 
 void CGrenade::GetBriefInfo(xr_string& str_name, xr_string& icon_sect_name, xr_string& str_count)
