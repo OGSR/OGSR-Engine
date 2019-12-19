@@ -424,14 +424,24 @@ void CMissile::UpdateXForm	()
 }
 
 
-void CMissile::Show() 
+void CMissile::Show( bool now )
 {
-	SwitchState(MS_SHOWING);
+  if ( now ) {
+    OnAnimationEnd( MS_SHOWING );
+    StopHUDSounds();
+  }
+  else
+    SwitchState( MS_SHOWING );
 }
 
-void CMissile::Hide() 
+void CMissile::Hide( bool now )
 {
-	SwitchState(MS_HIDING);
+  if ( now ) {
+    OnAnimationEnd( MS_HIDING );
+    StopHUDSounds();
+  }
+  else
+    SwitchState( MS_HIDING );
 }
 
 void CMissile::setup_throw_params()

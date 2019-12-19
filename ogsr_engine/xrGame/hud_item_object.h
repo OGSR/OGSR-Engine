@@ -37,8 +37,8 @@ public:
 	virtual void		OnH_A_Independent	();
 	virtual	BOOL		net_Spawn			(CSE_Abstract* DC);
 	virtual void		net_Destroy			();
-	virtual bool		Activate			();
-	virtual void		Deactivate			();
+	virtual bool		Activate( bool = false );
+	virtual void		Deactivate( bool = false );
 	virtual void		UpdateCL			();
 	virtual void		renderable_Render	();
 	virtual void		on_renderable_Render();

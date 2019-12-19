@@ -104,8 +104,8 @@ public:
 	};
 	virtual	void					PlayAnimIdle		(u8 state);
 public:
-	virtual void					Hide				();
-	virtual void					Show				();
+	virtual void					Hide( bool = false );
+	virtual void					Show( bool = false );
 	virtual	void					UpdateXForm			();
 	virtual bool					Action				(s32 cmd, u32 flags);
 	virtual void					onMovementChanged	(ACTOR_DEFS::EMoveCommand cmd);

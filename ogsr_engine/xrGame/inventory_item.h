@@ -96,8 +96,8 @@ public:
 
 	virtual EHandDependence		HandDependence		()	const	{return hd1Hand;};
 	virtual bool				IsSingleHanded		()	const	{return true;};	
-	virtual bool				Activate			();									// !!! Переопределить. (см. в Inventory.cpp)
-	virtual void				Deactivate			();								// !!! Переопределить. (см. в Inventory.cpp)
+	virtual bool				Activate( bool = false );									// !!! Переопределить. (см. в Inventory.cpp)
+	virtual void				Deactivate( bool = false );								// !!! Переопределить. (см. в Inventory.cpp)
 	virtual bool				Action				(s32 cmd, u32 flags) {return false;}	// true если известная команда, иначе false
 
 	virtual bool				IsHidden			()	const	{return true;}

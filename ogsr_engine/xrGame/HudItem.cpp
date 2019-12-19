@@ -168,19 +168,19 @@ void CHudItem::OnStateSwitch	(u32 S)
 }
 
 
-bool CHudItem::Activate() 
+bool CHudItem::Activate( bool now )
 {
 	if(m_pHUD) 
 		m_pHUD->Init();
 
-	Show();
+	Show( now );
 	OnActiveItem ();
 	return true;
 }
 
-void CHudItem::Deactivate() 
+void CHudItem::Deactivate( bool now )
 {
-	Hide();
+	Hide( now );
 	OnHiddenItem ();
 }
 

@@ -1537,10 +1537,10 @@ void CWeapon::UpdateAddonsVisibility( bool is_activating )
 	pWeaponVisual->CalculateBones							();
 }
 
-bool CWeapon::Activate() 
+bool CWeapon::Activate( bool now ) 
 {
 	UpdateAddonsVisibility( true );
-	return inherited::Activate();
+	return inherited::Activate( now );
 }
 
 void CWeapon::InitAddons()
@@ -2065,16 +2065,27 @@ u32 CWeapon::Cost() const
 	return res;
 }
 
-void CWeapon::Hide		()
-{
-	SwitchState(eHiding);
+void CWeapon::Hide( bool now ) {
+  if ( now ) {
+    OnStateSwitch( eHidden );
+    SetState( eHidden );
+    StopHUDSounds();
+  }
+  else
+    SwitchState( eHiding );
 
-	OnZoomOut();
+  OnZoomOut();
 }
 
-void CWeapon::Show		()
-{
-	SwitchState(eShowing);
+void CWeapon::Show( bool now ) {
+  if ( now ) {
+    if ( m_pHUD ) m_pHUD->StopCurrentAnimWithoutCallback();
+    OnStateSwitch( eIdle );
+    SetState( eIdle );
+    StopHUDSounds();
+  }
+  else
+    SwitchState( eShowing );
 }
 
 bool CWeapon::show_crosshair()

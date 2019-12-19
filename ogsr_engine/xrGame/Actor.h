@@ -699,7 +699,7 @@ protected:
 		Fvector							m_AutoPickUp_AABB;
 		Fvector							m_AutoPickUp_AABB_Offset;
 public:
-		void							SetWeaponHideState				(u32 State, bool bSet);
+		void SetWeaponHideState( u32 State, bool bSet, bool now = false );
 		virtual CCustomOutfit*			GetOutfit() const;
 private:
 	CActorCondition				*m_entity_condition;
