@@ -10,9 +10,6 @@
 #include "../PHDebug.h"
 #endif
 
-#pragma float_control(push)
-#pragma float_control(precise, on)
-
 inline bool negative_tri_set_ignored_by_positive_tri(const Triangle &neg_tri, const Triangle &pos_tri, const Fvector*	 V_array)
 {
 	bool common0 = neg_tri.T->verts[0] == pos_tri.T->verts[0] || neg_tri.T->verts[0] == pos_tri.T->verts[1] ||
@@ -388,6 +385,4 @@ inline int dcTriListCollider::dSortTriPrimitiveCollide(
 
 	return ret;
 }
-
-#pragma float_control(pop)
 #endif
