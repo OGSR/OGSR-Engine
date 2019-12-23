@@ -202,7 +202,7 @@ inline int dcTriListCollider::dSortTriPrimitiveCollide(
 				debug_output().DBG_DrawTri(T, V_array, D3DCOLOR_XRGB(0, 0, 255));
 #endif
 			float last_pos_dist = dDOT(last_pos, tri.norm) - tri.pos;
-			if ((!(last_pos_dist < 0.f)) || b_pushing)
+			if ( isnan( last_pos_dist ) || !(last_pos_dist < 0.f) || b_pushing )
 				if (__aabb_tri(Point(p), Point((float*)&AABB), vertices))
 				{
 #ifdef DEBUG
@@ -385,4 +385,5 @@ inline int dcTriListCollider::dSortTriPrimitiveCollide(
 
 	return ret;
 }
+
 #endif
