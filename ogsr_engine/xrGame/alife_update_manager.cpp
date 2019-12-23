@@ -329,6 +329,21 @@ void CALifeUpdateManager::jump_to_level			(LPCSTR level_name) const
 {
 	const CGameGraph::SLevel			&level = ai().game_graph().header().level(level_name);
 	GameGraph::_GRAPH_ID				dest = GameGraph::_GRAPH_ID(-1);
+
+#ifdef CRASH_ON_INVALID_VERTEX_ID
+	GameGraph::_GRAPH_ID n = ai().game_graph().header().vertex_count();
+	for ( GameGraph::_GRAPH_ID i = 0; i < n; ++i ) {
+	  if ( ai().game_graph().vertex( i )->level_id() == level.id() ) {
+	    dest = i;
+	    break;
+	  }
+	}
+	if ( !ai().game_graph().valid_vertex_id( dest ) ) {
+	  Msg( "! There is no game vertices on the level %s, cannot jump to the specified level", level_name );
+	  return;
+	}
+
+#else
 	GraphEngineSpace::CGameLevelParams	evaluator(level.id());
 	bool								failed = !ai().graph_engine().search(ai().game_graph(),graph().actor()->m_tGraphID,GameGraph::_GRAPH_ID(-1),0,evaluator);
 	if (failed) {
@@ -351,6 +366,8 @@ void CALifeUpdateManager::jump_to_level			(LPCSTR level_name) const
 	}
 	else
 		dest							= (GameGraph::_GRAPH_ID)evaluator.selected_vertex_id();
+#endif //CRASH_ON_INVALID_VERTEX_ID
+
 	NET_Packet							net_packet;
 	net_packet.w_begin					(M_CHANGE_LEVEL);
 	net_packet.w						(&dest,sizeof(dest));
