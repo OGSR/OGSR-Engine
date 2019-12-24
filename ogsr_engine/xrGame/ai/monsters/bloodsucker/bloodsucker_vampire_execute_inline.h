@@ -224,7 +224,7 @@ void CStateBloodsuckerVampireExecuteAbstract::execute_vampire_continue()
 	
 	object->sound().play(CAI_Bloodsucker::eVampireSucking);
 
-	if (!m_health_loss_activated) {
+	if ( !m_health_loss_activated && !fis_zero( object->m_vampire_loss_health_speed ) ) {
 		enemy->conditions().GetChangeValues().m_fV_HealthRestore -= object->m_vampire_loss_health_speed;
 		m_health_loss_activated = true;
 	}

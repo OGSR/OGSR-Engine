@@ -183,13 +183,14 @@ void CScriptStorage::LogVariable(lua_State * l, const char* name, int level)
 }
 //*********************************************************************************************
 
-void ScriptCrashHandler()
+static void ScriptCrashHandler(bool dump_lua_locals)
 {
 	try
 	{
 		Msg("***************************[ScriptCrashHandler]**********************************");
 		ai().script_engine().print_stack();
-		ai().script_engine().dump_state();
+		if (dump_lua_locals)
+			ai().script_engine().dump_state();
 		Msg("*********************************************************************************");
 	}
 	catch (...)

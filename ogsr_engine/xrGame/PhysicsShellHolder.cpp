@@ -158,8 +158,7 @@ void CPhysicsShellHolder::activate_physic_shell()
 		smart_cast<IKinematics*>(H_Parent()->Visual())->CalculateBones_Invalidate	();
 		smart_cast<IKinematics*>(H_Parent()->Visual())->CalculateBones	();
 		Fvector dir = H_Parent()->Direction();
-		if ( dir.y < 0.f )
-		   dir.y = -dir.y;
+		dir.y = 0;
 		l_fw.set( normalize( dir ) * 2.f );
 	}
 	smart_cast<IKinematics*>(Visual())->CalculateBones_Invalidate	();

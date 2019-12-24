@@ -79,6 +79,9 @@ bool   anti_aim_ability::check_start_condition ()
 		return							false;
 	}
 
+	if ( !check_update_condition() )
+	  return false;
+
 	if ( m_object->GetScriptControl() && !m_object->get_force_anti_aim() )
 	{
 		return							false;

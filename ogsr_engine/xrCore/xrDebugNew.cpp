@@ -15,10 +15,6 @@ XRCORE_API bool ExitFromWinMain = false;
 
 static bool error_after_dialog = false;
 
-#ifdef USE_OWN_MINI_DUMP
-void save_mini_dump( _EXCEPTION_POINTERS* );
-#endif
-
 #include "stacktrace_collector.h"
 #include <sstream>
 
@@ -27,7 +23,7 @@ void LogStackTrace(const char* header)
 	__try
 	{
 		if (auto pCrashHandler = Debug.get_crashhandler())
-			pCrashHandler();
+			pCrashHandler(true);
 		Log("********************************************************************************");
 		Log(BuildStackTrace(header));
 		Log("********************************************************************************");
@@ -35,12 +31,12 @@ void LogStackTrace(const char* header)
 	__finally{}
 }
 
-void LogStackTrace(const char* header, _EXCEPTION_POINTERS *pExceptionInfo)
+void LogStackTrace(const char* header, _EXCEPTION_POINTERS *pExceptionInfo, bool dump_lua_locals)
 {
 	__try
 	{
 		if (auto pCrashHandler = Debug.get_crashhandler())
-			pCrashHandler();
+			pCrashHandler(dump_lua_locals);
 		Log("********************************************************************************");
 		Msg("!![" __FUNCTION__ "] ExceptionCode is [%x]", pExceptionInfo->ExceptionRecord->ExceptionCode);
 		auto save = *pExceptionInfo->ContextRecord;
@@ -54,10 +50,7 @@ void LogStackTrace(const char* header, _EXCEPTION_POINTERS *pExceptionInfo)
 LONG DbgLogExceptionFilter(const char* header, _EXCEPTION_POINTERS *pExceptionInfo)
 {
 	LogStackTrace(header, pExceptionInfo);
-#ifdef USE_OWN_MINI_DUMP
-	if ( !IsDebuggerPresent() )
-		save_mini_dump( pExceptionInfo ); //Пусть и тут будет, может пригодится когда-нибудь.
-#endif
+
 	return EXCEPTION_EXECUTE_HANDLER;
 }
 
@@ -353,7 +346,7 @@ LONG WINAPI UnhandledFilter(_EXCEPTION_POINTERS *pExceptionInfo)
 		if (*error_message)
 			Msg("\n%s", error_message);
 
-		LogStackTrace("!!Unhandled exception stack trace:\n", pExceptionInfo);
+		LogStackTrace("!!Unhandled exception stack trace:\n", pExceptionInfo, true);
 
 #ifdef USE_OWN_ERROR_MESSAGE_WINDOW
 		ShowWindow(gGameWindow, SW_HIDE);

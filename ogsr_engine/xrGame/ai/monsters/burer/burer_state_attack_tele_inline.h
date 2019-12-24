@@ -344,7 +344,11 @@ bool CStateBurerAttackTele<Object>::CheckTeleStart()
 {
 	if (IsActiveObjects()) return false;
 
-	float dist = object->Position().distance_to(object->EnemyMan.get_enemy()->Position());
+	CEntityAlive const* enemy = object->EnemyMan.get_enemy();
+	if ( !enemy || enemy != Actor() )
+	  return false;
+
+	float dist = object->Position().distance_to( enemy->Position() );
 	if ( dist < object->m_tele_min_distance ) return false;
 	if ( dist > object->m_tele_max_distance ) return false;
 

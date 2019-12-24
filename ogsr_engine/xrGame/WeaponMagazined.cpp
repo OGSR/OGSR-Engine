@@ -452,7 +452,10 @@ void CWeaponMagazined::OnStateSwitch	(u32 S)
 		switch2_Empty	();
 		// Callbacks added by Cribbledirge.
 		StateSwitchCallback(GameObject::eOnActorWeaponEmpty, GameObject::eOnNPCWeaponEmpty);
-		SwitchState(eIdle);
+		if (GetNextState() != eReload)
+		{
+			SwitchState(eIdle);
+		}
 		break;
 	case eReload:
 		switch2_Reload	();
@@ -627,7 +630,7 @@ void CWeaponMagazined::SetDefaults	()
 void CWeaponMagazined::OnShot		()
 {
 	// Sound
-	PlaySound			(*m_pSndShotCurrent,get_LastFP());
+	PlaySound( *m_pSndShotCurrent, get_LastFP(), true );
 
 	// Camera	
 	AddShotEffector		();

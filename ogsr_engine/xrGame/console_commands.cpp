@@ -1142,6 +1142,7 @@ void CCC_RegisterCommands()
 	CMD3(CCC_Mask,				"hud_info",				&psHUD_Flags,	HUD_INFO);
 	CMD3(CCC_Mask,				"hud_draw",				&psHUD_Flags,	HUD_DRAW);
 	CMD3(CCC_Mask,				"hud_crosshair_build",	&psHUD_Flags,	HUD_CROSSHAIR_BUILD); // билдокурсор
+	CMD3( CCC_Mask, "hud_small_font", &psHUD_Flags, HUD_SMALL_FONT); // использовать уменьшенный размер шрифта
 
 	// hud
 	psHUD_Flags.set(HUD_CROSSHAIR,		true);

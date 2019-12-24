@@ -329,7 +329,7 @@ SERVER_ENTITY_DECLARE_BEGIN(CSE_ALifeLevelChanger,CSE_ALifeSpaceRestrictor)
 	Fvector							m_tAngles;
 	shared_str						m_caLevelToChange;
 	shared_str						m_caLevelPointToChange;
-	BOOL							m_bSilentMode;
+	u8							m_SilentMode;
 
 									CSE_ALifeLevelChanger		(LPCSTR caSection);
 	virtual							~CSE_ALifeLevelChanger		();

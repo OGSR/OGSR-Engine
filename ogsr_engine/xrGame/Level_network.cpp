@@ -189,7 +189,7 @@ u32 CLevel::Objects_net_Save( NET_Packet* _Packet, u32 start, u32 max_object_siz
       // Msg( "save:saving:%d:%s", P->ID(), *P->cName() );
       P->net_Save( Packet );
       u32 size = u32( Packet.w_tell() - position ) - sizeof( u16 );
-      ASSERT_FMT_DBG( size < 65536, "Object [%s][%u] exceed network-data limit: size = [%u], Pend = [%u], Pstart = [%u]", P->cName().c_str(), P->ID(), size, Packet.w_tell(), position );
+      ASSERT_FMT( size < 65536, "Object [%s][%u] exceed network-data limit: size = [%u], Pend = [%u], Pstart = [%u]", P->cName().c_str(), P->ID(), size, Packet.w_tell(), position );
       // Msg( "save:saved:%d bytes:%d:%s", size, P->ID(), *P->cName() );
       Packet.w_chunk_close16( position );
       if ( max_object_size > ( NET_PacketSizeLimit - Packet.w_tell() ) )
