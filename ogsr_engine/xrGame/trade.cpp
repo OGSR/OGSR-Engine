@@ -156,6 +156,7 @@ void CTrade::OnPerformTrade(u32 money_get, u32 money_put)
 {
 	if (pThis.type == TT_TRADER) 
 		smart_cast<CAI_Trader*>(pThis.base)->callback(GameObject::eTradePerformTradeOperation)(money_get, money_put);
+	Actor()->callback( GameObject::eTradePerformTradeOperation )( (smart_cast<CGameObject*>(pThis.base))->lua_game_object(), money_get, money_put );
 }
 
 void CTrade::StopTrade()
