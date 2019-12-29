@@ -571,8 +571,9 @@ void CCustomZone::shedule_Update(u32 dt)
 			}
 			if(m_iDisableIdleTime != -1 && (int)info.time_in_zone > m_iDisableIdleTime)
 			{
-				if(!pEntityAlive || !pEntityAlive->g_Alive())
-					StopObjectIdleParticles(smart_cast<CPhysicsShellHolder*>(pObject));
+				CPhysicsShellHolder* holder = smart_cast<CPhysicsShellHolder*>( pObject );
+				if ( ( !pEntityAlive || !pEntityAlive->g_Alive() ) && holder )
+					StopObjectIdleParticles( holder );
 			}
 
 			//если есть хотя бы один не дисабленый объект, то
