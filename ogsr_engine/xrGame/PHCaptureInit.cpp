@@ -320,14 +320,18 @@ void CPHCapture::Release()
 	}
 
 	b_failed = false;
-	e_state=cstReleased;
 	b_collide=true;
 	CActor* A=smart_cast<CActor*>(m_character->PhysicsRefObject());
 	if(A)
 	{
+		if ( e_state == cstCaptured && !m_taget_object->getDestroy() && m_taget_object->PPhysicsShell() && m_taget_object->PPhysicsShell()->isActive() ) {
+		  Fvector dir = { 0, -1, 0 };
+		  m_taget_object->PPhysicsShell()->applyImpulse( dir, 0.5f * m_taget_object->PPhysicsShell()->getMass() );
+		}
 		A->SetWeaponHideState(INV_STATE_BLOCK_ALL,false);
 //.		A->inventory().setSlotsBlocked(false);
 	}
+	e_state=cstReleased;
 }
 
 void CPHCapture::Deactivate()
