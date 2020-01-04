@@ -415,7 +415,6 @@
     <ClInclude Include="ActivatingCharCollisionDelay.h" />
     <ClInclude Include="ActorCameraCollision.h" />
     <ClInclude Include="ai\monsters\anti_aim_ability.h" />
-    <ClInclude Include="ai\monsters\controller\controller_psy_hit_effector.h" />
     <ClInclude Include="ai\monsters\group_states\group_state_attack.h" />
     <ClInclude Include="ai\monsters\group_states\group_state_attack_inline.h" />
     <ClInclude Include="ai\monsters\group_states\group_state_attack_run.h" />
@@ -1226,7 +1225,6 @@
     <ClInclude Include="actor_defs.h" />
     <ClInclude Include="Actor_Flags.h" />
     <ClInclude Include="actor_input_handler.h" />
-    <ClInclude Include="ActorAnimation.h" />
     <ClInclude Include="ActorCondition.h" />
     <ClInclude Include="actor_memory.h" />
     <ClInclude Include="Entity.h" />
@@ -1710,7 +1708,6 @@
     <ClCompile Include="ActivatingCharCollisionDelay.cpp" />
     <ClCompile Include="ActorCameraCollision.cpp" />
     <ClCompile Include="ai\monsters\anti_aim_ability.cpp" />
-    <ClCompile Include="ai\monsters\controller\controller_psy_hit_effector.cpp" />
     <ClCompile Include="ai\monsters\monster_aura.cpp" />
     <ClCompile Include="ai_obstacle.cpp" />
     <ClCompile Include="animation_utils.cpp" />

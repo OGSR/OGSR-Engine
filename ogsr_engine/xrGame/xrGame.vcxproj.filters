@@ -4347,9 +4347,6 @@
     <ClInclude Include="actor_input_handler.h">
       <Filter>Core\Client\Objects\actor\base</Filter>
     </ClInclude>
-    <ClInclude Include="ActorAnimation.h">
-      <Filter>Core\Client\Objects\actor\base</Filter>
-    </ClInclude>
     <ClInclude Include="ActorCondition.h">
       <Filter>Core\Client\Objects\actor\base</Filter>
     </ClInclude>
@@ -6141,9 +6138,6 @@
     </ClInclude>
     <ClInclude Include="ai\monsters\monster_aura.h">
       <Filter>AI\AMonsters\common\components</Filter>
-    </ClInclude>
-    <ClInclude Include="ai\monsters\controller\controller_psy_hit_effector.h">
-      <Filter>AI\AMonsters\monsters\Controller\Psy hit</Filter>
     </ClInclude>
     <ClInclude Include="character_shell_control.h">
       <Filter>Core\Client\Objects\physics\CharacterSupport</Filter>
@@ -9067,9 +9061,6 @@
     </ClCompile>
     <ClCompile Include="ai\monsters\monster_aura.cpp">
       <Filter>AI\AMonsters\common\components</Filter>
-    </ClCompile>
-    <ClCompile Include="ai\monsters\controller\controller_psy_hit_effector.cpp">
-      <Filter>AI\AMonsters\monsters\Controller\Psy hit</Filter>
     </ClCompile>
     <ClCompile Include="character_shell_control.cpp">
       <Filter>Core\Client\Objects\physics\CharacterSupport</Filter>
