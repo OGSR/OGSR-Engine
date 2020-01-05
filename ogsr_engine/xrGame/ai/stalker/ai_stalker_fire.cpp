@@ -61,7 +61,7 @@ const float FLOOR_DISTANCE				= 2.f;
 const float NEAR_DISTANCE				= 2.5f;
 const u32	FIRE_MAKE_SENSE_INTERVAL	= 10000;
 
-const float start_fire_angle_difference	= PI_DIV_8;
+constexpr float start_fire_angle_difference	= PI_DIV_8;
 
 float CAI_Stalker::GetWeaponAccuracy	() const
 {

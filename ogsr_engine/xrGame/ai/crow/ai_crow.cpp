@@ -123,7 +123,6 @@ void CAI_Crow::Load( LPCSTR section )
 
 }
 
-#include "../../Actor.h"
 BOOL CAI_Crow::net_Spawn		(CSE_Abstract* DC)
 {
 	BOOL R		= inherited::net_Spawn	(DC);
@@ -150,15 +149,6 @@ BOOL CAI_Crow::net_Spawn		(CSE_Abstract* DC)
 
 		// disable UpdateCL, enable only on HIT
 		processing_deactivate();
-
-#ifndef DSH_MOD
-		//Вороны подняты в воздух, и теперь не вылетают из земли после загрузки сейвов в некоторых случаях.
-		auto tmp = Actor()->Position();
-		tmp.x = tmp.x + ::Random.randF(-50.0f, 50.0f);
-		tmp.y = tmp.y + ::Random.randF(20.0f, 50.0f);
-		tmp.z = tmp.z + ::Random.randF(-50.0f, 50.0f);
-		Position().set(tmp);
-#endif // DSH_MOD
 	}
 	else
 	{
