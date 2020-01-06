@@ -168,7 +168,7 @@ TODO: при необходимости, доэкспортировать ост
 #include <iomanip>
 #include <sstream>
 #include <filesystem>
-namespace stdfs = std::experimental::filesystem;
+namespace stdfs = std::filesystem;
 
 //Путь до папки с движком
 decltype(auto) get_engine_dir()
@@ -179,7 +179,7 @@ decltype(auto) get_engine_dir()
 //Перебор файлов в папке, подкаталоги не учитываются.
 void directory_iterator(const char* dir, const luabind::functor<void> &iterator_func)
 {
-	for (const stdfs::path& file : stdfs::directory_iterator(dir))
+	for (const auto& file : stdfs::directory_iterator(dir))
 		if (stdfs::is_regular_file(file)) //Папки не учитываем
 			iterator_func(file);
 }
@@ -187,7 +187,7 @@ void directory_iterator(const char* dir, const luabind::functor<void> &iterator_
 //Перебор файлов в папке включая подкаталоги.
 void recursive_directory_iterator(const char* dir, const luabind::functor<void> &iterator_func)
 {
-	for (const stdfs::path& file : stdfs::recursive_directory_iterator(dir))
+	for (const auto& file : stdfs::recursive_directory_iterator(dir))
 		if (stdfs::is_regular_file(file)) //Папки не учитываем
 			iterator_func(file);
 }
@@ -219,30 +219,35 @@ inline decltype(auto) get_extension(const stdfs::path& file)
 //Время последнего изменения файла ( наверное в секундах, но я не уверен )
 inline decltype(auto) get_last_write_time(const stdfs::path& file)
 {
-	const auto ftime = stdfs::last_write_time(file);
-	const auto cftime = decltype(ftime)::clock::to_time_t(ftime);
-	return cftime;
+	using namespace std::chrono;
+	
+	const auto time_file	= last_write_time(file);
+	auto time_file_ms	= time_point_cast<milliseconds>(time_file).time_since_epoch().count(); // количество милисекунд (чтобы не запутывать: результат - не в милисекундах)
+	auto time_file_sys = system_clock::time_point(milliseconds(time_file_ms));	
+	
+	
+	return system_clock::to_time_t(time_file_sys);
 }
 
 //Время последнего изменения файла в формате [вторник 02 янв 2018 14:03:32]
 inline decltype(auto) get_last_write_time_string(const stdfs::path& file)
 {
-	const auto ftime = stdfs::last_write_time(file);
-	const auto cftime = decltype(ftime)::clock::to_time_t(ftime);
+	const auto write_time_c = get_last_write_time(file);
+	
 	std::stringstream ss;
 	ss.imbue(std::locale("")); //Устанавливаем системную локаль потоку, чтоб месяц/день недели были на системном языке.
-	ss << std::put_time(std::localtime(&cftime), "[%A %d %b %Y %T]");
+	ss << std::put_time(std::localtime(&write_time_c), "[%A %d %b %Y %T]");
 	return ss.str();
 }
 
 //Время последнего изменения файла в формате [02:01:2018 14:03:32]
 inline decltype(auto) get_last_write_time_string_short(const stdfs::path& file)
 {
-	const auto ftime = stdfs::last_write_time(file);
-	const auto cftime = decltype(ftime)::clock::to_time_t(ftime);
+	const auto write_time_c = get_last_write_time(file);
+
 	std::stringstream ss;
 	ss.imbue(std::locale("")); //Устанавливаем системную локаль потоку, чтоб месяц/день недели были на системном языке.
-	ss << std::put_time(std::localtime(&cftime), "[%d:%m:%Y %T]");
+	ss << std::put_time(std::localtime(&write_time_c), "[%d:%m:%Y %T]");
 	return ss.str();
 }
 
