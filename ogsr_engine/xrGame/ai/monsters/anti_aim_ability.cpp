@@ -178,12 +178,10 @@ void   anti_aim_ability::start_camera_effector ()
 	cam_eff->SetType					((ECamEffectorType)m_effector_id);
 	cam_eff->SetCyclic					(false);
 
-/*
 	if ( pSettings->line_exist(effector_name, "cam_eff_hud_affect") )
 	{
 		cam_eff->SetHudAffect			( !!pSettings->r_bool(effector_name, "cam_eff_hud_affect") );
 	}
-*/
 
 	LPCSTR fn = pSettings->r_string		(effector_name,"cam_eff_name");
 	cam_eff->Start						(fn);

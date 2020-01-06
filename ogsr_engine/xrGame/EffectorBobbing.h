@@ -1,5 +1,3 @@
-#ifndef _EFFECTOR_BOBBING_H
-#define _EFFECTOR_BOBBING_H
 #pragma once
 
 #include "CameraEffector.h"
@@ -28,8 +26,6 @@ class CEffectorBobbing : public CEffectorCam
 public:
 			CEffectorBobbing	();
 	virtual ~CEffectorBobbing	();
-	virtual	BOOL	Process		(Fvector &delta_p, Fvector &delta_d, Fvector &delta_n, float& fFov, float& fFar, float& fAspect);
+	virtual BOOL ProcessCam(SCamEffectorInfo& info);
 	void	SetState			(u32 st, bool limping, bool ZoomMode);
 };
-
-#endif //_EFFECTOR_BOBBING_H

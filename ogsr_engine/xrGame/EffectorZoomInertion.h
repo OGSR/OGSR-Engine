@@ -46,9 +46,7 @@ public:
 			void	Load				();
 			void	SetParams			(float disp);
 
-	virtual	BOOL	Process				(Fvector &delta_p, Fvector &delta_d,
-											Fvector &delta_n, float& fFov,
-											float& fFar, float& fAspect);
+    virtual BOOL ProcessCam(SCamEffectorInfo& info);
 	virtual	void	SetRndSeed				(s32 Seed) { m_Random.seed(Seed); };
 	virtual	void	Init				(CWeaponMagazined*	pWeapon);
 

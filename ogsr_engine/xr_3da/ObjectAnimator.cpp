@@ -25,7 +25,7 @@ CObjectAnimator::~CObjectAnimator()
 
 void CObjectAnimator::Clear()
 {
-	for(MotionIt m_it=m_Motions.begin(); m_it!=m_Motions.end(); m_it++)
+	for(auto m_it=m_Motions.begin(); m_it!=m_Motions.end(); m_it++)
 		xr_delete		(*m_it);
 	m_Motions.clear		();
     SetActiveMotion		(0);
@@ -88,7 +88,7 @@ void CObjectAnimator::Update(float dt)
 COMotion* CObjectAnimator::Play(bool loop, LPCSTR name)
 {
 	if (name&&name[0]){
-		MotionIt it = std::lower_bound(m_Motions.begin(),m_Motions.end(),name,motion_find_pred);
+		auto it = std::lower_bound(m_Motions.begin(),m_Motions.end(),name,motion_find_pred);
         if ((it!=m_Motions.end())&&(0==xr_strcmp((*it)->Name(),name))){
             bLoop 		= loop;
             SetActiveMotion(*it);

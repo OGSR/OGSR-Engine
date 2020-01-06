@@ -59,39 +59,40 @@ CMonsterEffectorHit::CMonsterEffectorHit(float time, float amp, float periods, f
 	offset.set		(Random.randF(1,2),Random.randF(1,6),Random.randF(1,6));
 }
 
-BOOL CMonsterEffectorHit::Process(Fvector &p, Fvector &d, Fvector &n, float& fFov, float& fFar, float& fAspect)
+BOOL CMonsterEffectorHit::ProcessCam(SCamEffectorInfo& info)
 {
-	fLifeTime -= Device.fTimeDelta; if(fLifeTime<0) return FALSE;
+	fLifeTime -= Device.fTimeDelta;
+	if (fLifeTime < 0)
+		return FALSE;
 
 	// процент оставшегося времени
 	float time_left_perc = fLifeTime / total;
 
 	// Инициализация
-	Fmatrix	Mdef;
-	Mdef.identity		();
-	Mdef.j.set			(n);
-	Mdef.k.set			(d);
-	Mdef.i.crossproduct	(n,d);
-	Mdef.c.set			(p);
+	Fmatrix Mdef;
+	Mdef.identity();
+	Mdef.j.set(info.n);
+	Mdef.k.set(info.d);
+	Mdef.i.crossproduct(info.n, info.d);
+	Mdef.c.set(info.p);
 
-	float period_all	= period_number * PI_MUL_2;		// макс. значение цикла
-	float cur_amp		= max_amp * (PI / 180) * time_left_perc;
+	float period_all = period_number * PI_MUL_2; // макс. значение цикла
+	float cur_amp = max_amp * (PI / 180) * time_left_perc;
 
-	
 	Fvector dangle;
-	dangle.x = cur_amp/offset.x	* _sin(period_all/offset.x	* (1.0f - time_left_perc));
-	dangle.y = cur_amp/offset.y	* _cos(period_all/offset.y	* (1.0f - time_left_perc));
-	dangle.z = cur_amp/offset.z	* _sin(period_all/offset.z	* (1.0f - time_left_perc));
+	dangle.x = cur_amp / offset.x * _sin(period_all / offset.x * (1.0f - time_left_perc));
+	dangle.y = cur_amp / offset.y * _cos(period_all / offset.y * (1.0f - time_left_perc));
+	dangle.z = cur_amp / offset.z * _sin(period_all / offset.z * (1.0f - time_left_perc));
 
 	// Установить углы смещения
-	Fmatrix		R;
-	R.setHPB	(dangle.x,dangle.y,dangle.z);
+	Fmatrix R;
+	R.setHPB(dangle.x, dangle.y, dangle.z);
 
-	Fmatrix		mR;
-	mR.mul		(Mdef,R);
+	Fmatrix mR;
+	mR.mul(Mdef, R);
 
-	d.set		(mR.k);
-	n.set		(mR.j);
+	info.d.set(mR.k);
+	info.n.set(mR.j);
 
 	return TRUE;
 }
