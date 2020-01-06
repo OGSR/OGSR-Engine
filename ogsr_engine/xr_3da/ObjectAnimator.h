@@ -1,5 +1,3 @@
-#ifndef ObjectAnimatorH
-#define ObjectAnimatorH
 #pragma once
 
 #include "motion.h"
@@ -8,7 +6,7 @@
 class ENGINE_API CObjectAnimator
 {
 private:
-	DEFINE_VECTOR		(COMotion*,MotionVec,MotionIt);
+	using MotionVec = xr_vector<COMotion*>;
 protected:
 	bool				bLoop;
 
@@ -32,7 +30,7 @@ public:
     IC LPCSTR			Name			(){return *m_Name;}
     float&				Speed			(){return m_Speed;}
 
-	COMotion*			Play			(bool bLoop, LPCSTR name=0);
+	COMotion*			Play			(bool bLoop, LPCSTR name = nullptr);
 	void				Pause			(bool val){return m_MParam.Pause(val);}
 	void				Stop			();
 	IC BOOL				IsPlaying		(){return m_MParam.bPlay;}
@@ -43,5 +41,3 @@ public:
 	void				Update			(float dt);
     void				DrawPath		();
 };
-
-#endif //ObjectAnimatorH

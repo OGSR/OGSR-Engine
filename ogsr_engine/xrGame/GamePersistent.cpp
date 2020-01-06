@@ -15,7 +15,7 @@
 #include "weaponhud.h"
 #include "stalker_animation_data_storage.h"
 #include "stalker_velocity_holder.h"
-#include "../xr_3da/cameramanager.h"
+#include "ActorEffector.h"
 #include "actor.h"
 #include "ui/UILoadingScreen.h"
 #include "../xr_3da/x_ray.h"
@@ -549,8 +549,8 @@ void CGamePersistent::OnFrame	()
 					else
 						C = Actor()->Holder()->Camera();
 
-				Actor()->Cameras().Update		(C);
-				Actor()->Cameras().ApplyDevice	(VIEWPORT_NEAR);
+				Actor()->Cameras().UpdateFromCamera(C);
+				Actor()->Cameras().ApplyDevice();
 				}
 			}
 		}
@@ -563,8 +563,8 @@ void CGamePersistent::OnFrame	()
 			else
 				C = Actor()->Holder()->Camera();
 
-			Actor()->Cameras().Update		(C);
-			Actor()->Cameras().ApplyDevice	(VIEWPORT_NEAR);
+			Actor()->Cameras().UpdateFromCamera(C);
+			Actor()->Cameras().ApplyDevice();
 		}
 #endif // MASTER_GOLD
 	}

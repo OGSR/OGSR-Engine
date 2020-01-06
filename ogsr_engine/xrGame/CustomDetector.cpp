@@ -10,6 +10,7 @@
 #include "actor.h"
 #include "ai_sounds.h"
 #include "actorcondition.h"
+#include "ActorEffector.h"
 
 ZONE_INFO::ZONE_INFO	()
 {

@@ -311,12 +311,11 @@ void CActor::cam_Update(float dt, float fFOV)
 	}else{
 		fPrevCamPos			= flCurrentPlayerY;
 	}
-	float _viewport_near			= VIEWPORT_NEAR;
+
 	// calc point
 	xform.transform_tiny			(point);
 
 	CCameraBase* C					= cam_Active();
-
 	C->Update(point, dangle);
 	C->f_fov						= fFOV;
 
@@ -331,10 +330,10 @@ void CActor::cam_Update(float dt, float fFOV)
 	}
 	if( psActorFlags.test(AF_PSP) )
 	{
-		Cameras().Update			(C);
+		Cameras().UpdateFromCamera(C);
 	}else
 	{
-		Cameras().Update			(cameras[eacFirstEye]);
+		Cameras().UpdateFromCamera(cameras[eacFirstEye]);
 	}
 
 	fCurAVelocity			= vPrevCamDir.sub(cameras[eacFirstEye]->vDirection).magnitude()/Device.fTimeDelta;
@@ -342,9 +341,9 @@ void CActor::cam_Update(float dt, float fFOV)
 
 	if (Level().CurrentEntity() == this)
 	{
-		Level().Cameras().Update	(C);
+		Level().Cameras().UpdateFromCamera(C);
 		if(eacFirstEye == cam_active && !Level().Cameras().GetCamEffector(cefDemo)){
-			Cameras().ApplyDevice	(_viewport_near);
+			Cameras().ApplyDevice();
 		}
 	}
 }
@@ -389,32 +388,6 @@ void CActor::OnRender	()
 	inherited::OnRender();
 }
 #endif
-/*
-void CActor::LoadShootingEffector (LPCSTR section)
-{
-
-	if(!m_pShootingEffector) 
-		m_pShootingEffector = xr_new<SShootingEffector>();
-
-
-	m_pShootingEffector->ppi.duality.h		= pSettings->r_float(section,"duality_h");
-	m_pShootingEffector->ppi.duality.v		= pSettings->r_float(section,"duality_v");
-	m_pShootingEffector->ppi.gray				= pSettings->r_float(section,"gray");
-	m_pShootingEffector->ppi.blur				= pSettings->r_float(section,"blur");
-	m_pShootingEffector->ppi.noise.intensity	= pSettings->r_float(section,"noise_intensity");
-	m_pShootingEffector->ppi.noise.grain		= pSettings->r_float(section,"noise_grain");
-	m_pShootingEffector->ppi.noise.fps		= pSettings->r_float(section,"noise_fps");
-	VERIFY(!fis_zero(m_pShootingEffector->ppi.noise.fps));
-
-	sscanf(pSettings->r_string(section,"color_base"),	"%f,%f,%f", &m_pShootingEffector->ppi.color_base.r, &m_pShootingEffector->ppi.color_base.g, &m_pShootingEffector->ppi.color_base.b);
-	sscanf(pSettings->r_string(section,"color_gray"),	"%f,%f,%f", &m_pShootingEffector->ppi.color_gray.r, &m_pShootingEffector->ppi.color_gray.g, &m_pShootingEffector->ppi.color_gray.b);
-	sscanf(pSettings->r_string(section,"color_add"),	"%f,%f,%f", &m_pShootingEffector->ppi.color_add.r,  &m_pShootingEffector->ppi.color_add.g,	&m_pShootingEffector->ppi.color_add.b);
-
-	m_pShootingEffector->time				= pSettings->r_float(section,"time");
-	m_pShootingEffector->time_attack		= pSettings->r_float(section,"time_attack");
-	m_pShootingEffector->time_release		= pSettings->r_float(section,"time_release");
-
-}*/
 
 void CActor::LoadSleepEffector	(LPCSTR section)
 {

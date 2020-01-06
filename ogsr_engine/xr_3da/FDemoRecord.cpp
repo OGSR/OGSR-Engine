@@ -237,22 +237,25 @@ void CDemoRecord::MakeCubeMapFace(Fvector &D, Fvector &N)
 	m_Stage++;
 }
 
-BOOL CDemoRecord::Process(Fvector &P, Fvector &D, Fvector &N, float& fFov, float& fFar, float& fAspect)
+BOOL CDemoRecord::ProcessCam(SCamEffectorInfo& info)
 {
+	info.dont_apply = false;
+
 	if (0==file)	return TRUE;
 
 	if (m_bMakeScreenshot){
 		MakeScreenshotFace();
 		// update camera
-		N.set(m_Camera.j);
-		D.set(m_Camera.k);
-		P.set(m_Camera.c);
+		info.n.set(m_Camera.j);
+		info.d.set(m_Camera.k);
+		info.p.set(m_Camera.c);
 	}else if (m_bMakeLevelMap){
 			MakeLevelMapProcess();
+			info.dont_apply = true;
 	}else if (m_bMakeCubeMap){
-		MakeCubeMapFace(D,N);
-		P.set(m_Camera.c);
-		fAspect = 1.f;
+		MakeCubeMapFace(info.d, info.n);
+		info.p.set(m_Camera.c);
+		info.fAspect = 1.f;
 	}else{
 		if (psHUD_Flags.test(HUD_DRAW) && m_bShowInfo){
 			if ((Device.dwTimeGlobal/750)%3!=0) {
@@ -317,9 +320,9 @@ BOOL CDemoRecord::Process(Fvector &P, Fvector &D, Fvector &N, float& fFov, float
 		m_Camera.translate_over	(m_Position);
 
 		// update camera
-		N.set(m_Camera.j);
-		D.set(m_Camera.k);
-		P.set(m_Camera.c);
+		info.n.set(m_Camera.j);
+		info.d.set(m_Camera.k);
+		info.p.set(m_Camera.c);
 
 		fLifeTime-=Device.fTimeDelta;
 

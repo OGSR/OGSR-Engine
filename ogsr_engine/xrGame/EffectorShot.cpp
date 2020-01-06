@@ -182,21 +182,21 @@ CCameraShotEffector::~CCameraShotEffector()
 {
 }
 
-BOOL CCameraShotEffector::Process	(Fvector &p, Fvector &d, Fvector &n, float& fFov, float& fFar, float& fAspect)
+//В ЗП здесь сделано по-другому
+BOOL CCameraShotEffector::ProcessCam(SCamEffectorInfo& info)
 {
-	if (bActive){
-		float		h,p;
-		d.getHP		(h,p);
+	if (bActive) {
+		float h, p;
+		info.d.getHP(h, p);
 		if (bSingleShoot)
 		{
 			if (bSSActive)
-				d.setHP		(h+fLastDeltaHorz,p+fLastDeltaVert);
+				info.d.setHP(h + fLastDeltaHorz, p + fLastDeltaVert);
 		}
 		else
-			d.setHP		(h+fAngleHorz,p+fAngleVert);
+			info.d.setHP(h + fAngleHorz, p + fAngleVert);
 
-		Update		();
+		Update();
 	}
 	return TRUE;
 }
-

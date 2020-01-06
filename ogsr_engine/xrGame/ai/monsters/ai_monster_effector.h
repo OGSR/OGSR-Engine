@@ -25,17 +25,16 @@ public:
 //////////////////////////////////////////////////////////////////////////
 // CMonsterEffectorHit
 //////////////////////////////////////////////////////////////////////////
-class CMonsterEffectorHit : public CEffectorCam {
-
+class CMonsterEffectorHit : public CEffectorCam
+{
 	float total;
 	float max_amp;
 	float period_number;
 	float power;
 
 	Fvector offset;
+
 public:
-					CMonsterEffectorHit		(float time, float amp, float periods, float power);
-	virtual	BOOL	Process					(Fvector &p, Fvector &d, Fvector &n, float& fFov, float& fFar, float& fAspect);
+	CMonsterEffectorHit(float time, float amp, float periods, float power);
+	virtual BOOL ProcessCam(SCamEffectorInfo& info);
 };
-
-

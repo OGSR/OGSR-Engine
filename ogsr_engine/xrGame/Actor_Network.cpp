@@ -515,7 +515,7 @@ BOOL CActor::net_Spawn		(CSE_Abstract* DC)
 		g_actor = this;
 
 	VERIFY(m_pActorEffector == NULL);
-	m_pActorEffector = xr_new<CCameraManager>(false);
+	m_pActorEffector = xr_new<CActorCameraManager>();
 
 	// motions
 	m_bAnimTorsoPlayed			= false;

@@ -11,7 +11,7 @@ CCameraShotEffectorX::~CCameraShotEffectorX	()
 {
 }
 
-BOOL CCameraShotEffectorX::Process		(Fvector &p, Fvector &d, Fvector &n, float& fFov, float& fFar, float& fAspect)
+BOOL CCameraShotEffectorX::ProcessCam(SCamEffectorInfo& info)
 {
 	return TRUE;
 };

@@ -991,7 +991,7 @@ void CAI_Stalker::UpdateCamera			()
 			temp						= weapon_shot_effector_direction(temp);
 	}
 
-	g_pGameLevel->Cameras().Update		(eye_matrix.c,temp,eye_matrix.j,new_fov,.75f,new_range);
+	g_pGameLevel->Cameras().Update		(eye_matrix.c,temp,eye_matrix.j,new_fov,.75f,new_range, 0);
 }
 
 bool CAI_Stalker::can_attach			(const CInventoryItem *inventory_item) const
