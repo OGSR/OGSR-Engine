@@ -312,6 +312,7 @@ void CActor::cam_Update(float dt, float fFOV)
 		fPrevCamPos			= flCurrentPlayerY;
 	}
 
+	float _viewport_near = VIEWPORT_NEAR;
 	// calc point
 	xform.transform_tiny			(point);
 
