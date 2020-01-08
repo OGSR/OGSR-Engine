@@ -467,6 +467,10 @@ void	CActor::Hit							(SHit* pHDS)
 	}
 #endif // DEBUG
 
+	callback( GameObject::entity_alive_before_hit )( &HDS );
+	if ( HDS.ignore_flag )
+	  return;
+
 	bool bPlaySound = true;
 	if (!g_Alive()) bPlaySound = false;
 

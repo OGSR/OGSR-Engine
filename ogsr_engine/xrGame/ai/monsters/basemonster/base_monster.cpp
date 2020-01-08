@@ -43,6 +43,7 @@
 #include "../../../ai_space.h"
 #include "script_engine.h"
 #include "../anti_aim_ability.h"
+#include "../../../game_object_space.h"
 
 CBaseMonster::CBaseMonster() :	m_psy_aura(this, "psy"), 
 								m_fire_aura(this, "fire"), 
@@ -403,14 +404,19 @@ void	CBaseMonster::Hit							(SHit* pHDS)
 	if (invulnerable())
 		return;
 
+	SHit HDS = *pHDS;
+	callback( GameObject::entity_alive_before_hit )( &HDS );
+	if ( HDS.ignore_flag )
+	  return;
+
 	if (g_Alive())
 		if (!critically_wounded()) 
-			update_critical_wounded(pHDS->boneID,pHDS->power);
+			update_critical_wounded( HDS.boneID, HDS.power );
 	
 
 
 //	inherited::Hit(P,dir,who,element,p_in_object_space,impulse,hit_type);
-	inherited::Hit(pHDS);
+	inherited::Hit( &HDS );
 }
 
 void CBaseMonster::PHHit(SHit& H)

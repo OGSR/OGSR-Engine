@@ -23,6 +23,7 @@
 #include "../../game_object_space.h"
 #include "clsid_game.h"
 #include "trader_animation.h"
+#include "../../game_object_space.h"
 
 CAI_Trader::CAI_Trader()
 {
@@ -267,6 +268,14 @@ void CAI_Trader::Think()
 void CAI_Trader::Die (CObject* who)
 {
 	inherited::Die (who);
+}
+
+void CAI_Trader::Hit( SHit* pHDS )
+{
+	SHit HDS = *pHDS;
+	callback( GameObject::entity_alive_before_hit )( &HDS );
+	if ( !HDS.ignore_flag )
+	  inherited::Hit( &HDS );
 }
 
 void CAI_Trader::net_Destroy()
