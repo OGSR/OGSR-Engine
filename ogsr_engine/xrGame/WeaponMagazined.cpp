@@ -1244,6 +1244,10 @@ void CWeaponMagazined::OnZoomIn			()
 	CActor* pActor = smart_cast<CActor*>(H_Parent());
 	if(pActor)
 	{
+		CEffectorCam* ec = pActor->Cameras().GetCamEffector( eCEActorMoving );
+		if ( ec )
+		  pActor->Cameras().RemoveCamEffector( eCEActorMoving );
+
 		CEffectorZoomInertion* S = smart_cast<CEffectorZoomInertion*>	(pActor->Cameras().GetCamEffector(eCEZoom));
 		if (!S)	
 		{
