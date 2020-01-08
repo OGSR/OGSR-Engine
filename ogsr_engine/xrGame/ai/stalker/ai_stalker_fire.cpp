@@ -50,6 +50,7 @@
 #include "../../stalker_decision_space.h"
 #include "../../script_game_object.h"
 #include "../../inventory.h"
+#include "../../game_object_space.h"
 
 using namespace StalkerSpace;
 
@@ -192,8 +193,11 @@ void			CAI_Stalker::Hit					(SHit* pHDS)
 
 //	pHDS->power						*= .1f;
 
-	//хит может меняться в зависимости от ранга (новички получают больше хита, чем ветераны)
 	SHit							HDS = *pHDS;
+	callback( GameObject::entity_alive_before_hit )( &HDS );
+	if ( HDS.ignore_flag )
+	  return;
+	//хит может меняться в зависимости от ранга (новички получают больше хита, чем ветераны)
 	HDS.power						*= m_fRankImmunity;
 	if (m_boneHitProtection && HDS.hit_type == ALife::eHitTypeFireWound){
 #ifdef APPLY_ARMOR_PIERCING_TO_NPC
