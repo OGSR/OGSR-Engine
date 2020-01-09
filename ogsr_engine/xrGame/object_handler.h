@@ -45,6 +45,7 @@ protected:
 
 public:
 	bool							m_clutched_hammer_enabled;
+	bool							m_clutched_hammer_unload;
 
 private:
 			void					actualize_strap_mode(CWeapon *weapon) const;

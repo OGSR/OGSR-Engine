@@ -262,6 +262,7 @@ void CAI_Stalker::reload			(LPCSTR section)
 
 	m_power_fx_factor				= pSettings->r_float(section,"power_fx_factor");
 	m_fast_can_kill_entity = READ_IF_EXISTS( pSettings, r_bool, section, "fast_can_kill_entity", false );
+	m_clutched_hammer_unload = READ_IF_EXISTS( pSettings, r_bool, section, "clutched_hammer_unload", false );
 }
 
 void CAI_Stalker::Die				(CObject* who)

@@ -20,6 +20,7 @@
 #include "characterphysicssupport.h"
 #include "xr_level_controller.h"
 #include "weaponmagazined.h"
+#include "weaponmagazinedwgrenade.h"
 
 using namespace StalkerDecisionSpace;
 
@@ -110,6 +111,20 @@ void CStalkerActionDead::execute		()
 
 	if (!object().character_physics_support()->can_drop_active_weapon())
 		return;
+
+	if ( object().m_clutched_hammer_unload ) {
+	  auto weapon_magazined = smart_cast<CWeaponMagazined*>( object().inventory().ActiveItem() );
+	  if ( weapon_magazined ) {
+	    weapon_magazined->UnloadMagazine( false );
+	    auto WpnMagazWgl = smart_cast<CWeaponMagazinedWGrenade*>( weapon_magazined );
+	    if ( WpnMagazWgl && WpnMagazWgl->IsGrenadeLauncherAttached() ) {
+	      WpnMagazWgl->PerformSwitchGL();
+	      WpnMagazWgl->UnloadMagazine( false );
+	      WpnMagazWgl->PerformSwitchGL();
+	    }
+	  }
+	  object().m_clutched_hammer_unload = false;
+	}
 
 	typedef xr_vector<CInventorySlot>	SLOTS;
 
