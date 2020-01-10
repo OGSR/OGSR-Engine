@@ -1193,7 +1193,7 @@ void CInventory::SetSlotsBlocked( u16 mask, bool bBlock, bool now )
 		    m_slots[ ActiveSlot ].m_pIItem->Activate( true );
 		  }
 		}
-		else if ( m_slots[ PrevActiveSlot ].m_pIItem->IsHiding() ) {
+		else if ( m_slots[ PrevActiveSlot ].m_pIItem && m_slots[ PrevActiveSlot ].m_pIItem->IsHiding() ) {
 		  m_slots[ PrevActiveSlot ].m_pIItem->Deactivate( true );
 		  ActiveSlot = NO_ACTIVE_SLOT;
 		  SetActiveSlot( NO_ACTIVE_SLOT );
