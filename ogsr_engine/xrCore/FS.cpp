@@ -64,7 +64,7 @@ void VerifyPath(const std::string_view path) //Проверяет путь до 
 	const auto lastSepPos = path.find_last_of('\\');
 	const auto foldersPath = (lastSepPos != std::string_view::npos) ? path.substr(0, lastSepPos) : path;
 	std::error_code e;
-	namespace stdfs = std::experimental::filesystem;
+	namespace stdfs = std::filesystem;
 	stdfs::create_directories(stdfs::path(foldersPath.begin(), foldersPath.end()), e);
 	(void)e;
 }
