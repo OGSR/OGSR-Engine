@@ -64,11 +64,11 @@ void CUIScrollView::SetScrollBarProfile(LPCSTR profile){
 	m_scrollbar_profile = profile;
 }
 
-void CUIScrollView::AddWindow			(CUIWindow* pWnd, bool auto_delete)
+void CUIScrollView::AddWindow( CUIWindow* pWnd, bool auto_delete, bool top )
 {
 	if(auto_delete)		pWnd->SetAutoDelete	(true);
 
-	m_pad->AttachChild	(pWnd);
+	m_pad->AttachChild( pWnd, top );
 	m_flags.set			(eNeedRecalc,TRUE);
 }
 

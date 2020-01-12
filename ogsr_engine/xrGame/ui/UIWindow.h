@@ -21,7 +21,7 @@ public:
 
 	////////////////////////////////////
 	//работа с дочерними и родительскими окнами
-	virtual void			AttachChild			(CUIWindow* pChild);
+	virtual void AttachChild( CUIWindow* pChild, bool bottom = false );
 	virtual void			DetachChild			(CUIWindow* pChild, bool from_destructor = false);
 	virtual void			DoDetachChild			(CUIWindow* pChild, bool from_destructor = false);
 	virtual bool			IsChild				(CUIWindow* pChild) const;
@@ -42,6 +42,7 @@ public:
 
 	//поднять на вершину списка выбранное дочернее окно
 	bool					BringToTop			(CUIWindow* pChild);
+	bool BringToBottom( CUIWindow* pChild );
 
 	//поднять на вершину списка всех родителей окна и его самого
 	void					BringAllToTop		();
