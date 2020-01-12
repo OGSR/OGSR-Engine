@@ -42,6 +42,11 @@ public:
 
 	void				ReloadArticles				();
 	virtual void		Reset						();
+
+	void FillEncyclopedia();
+	void UpdateArticles();
+	void ResetArticles();
+
 protected:
 	u32					prevArticlesCount;
 	// Элементы графического оформления

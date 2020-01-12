@@ -271,6 +271,9 @@ void CUIPdaWnd::PdaContentsChanged( pda_section::part type, bool flash )
 		flash = false;
 	}
 
+	else if ( type == pda_section::journal || type == pda_section::info )
+	  UIDiaryWnd->ReloadJournal();
+
 	if ( flash ) {
 		g_pda_info_state |= type;
 		HUD().GetUI()->UIMainIngameWnd->SetFlashIconState_(CUIMainIngameWnd::efiPdaTask, true);
