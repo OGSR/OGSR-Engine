@@ -19,13 +19,13 @@ class CUIDiaryWnd: public CUIWindow, public CUIWndCallback
 {
 	typedef CUIWindow inherited;
 	enum EDiaryFilter{
-//			eInfo,
 			eJournal=0,
 			eNews,
 			eNone
 	};
 protected:
 	EDiaryFilter		m_currFilter;
+	u32 prevArticlesCount;
 
 	CUINewsWnd*			m_UINewsWnd;
 
@@ -55,9 +55,7 @@ protected:
 			void __stdcall	OnFilterChanged			(CUIWindow*,void*);
 			void __stdcall	OnSrcListItemClicked	(CUIWindow*,void*);
 			void		UnloadJournalTab		();
-			void		LoadJournalTab			(ARTICLE_DATA::EArticleType _type);
-			void		UnloadInfoTab			();
-			void		LoadInfoTab				();
+			void		LoadJournalTab();
 			void		UnloadNewsTab			();
 			void		LoadNewsTab				();
 			void		Reload					(EDiaryFilter new_filter);
@@ -74,5 +72,9 @@ public:
 			void		MarkNewsAsRead			(bool status);
 	virtual void		Show					(bool status);
 
+	void FillNews();
+	void ReloadJournal();
+	void ResetJournal();
+	void UpdateJournal();
 };
 

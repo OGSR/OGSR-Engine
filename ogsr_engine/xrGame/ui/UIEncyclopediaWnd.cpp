@@ -131,35 +131,16 @@ void CUIEncyclopediaWnd::SendMessage(CUIWindow *pWnd, s16 msg, void* pData)
 
 void CUIEncyclopediaWnd::Draw()
 {
-	
-if(	m_flags.test(eNeedReload )){
-	if(Actor()->encyclopedia_registry->registry().objects_ptr() && Actor()->encyclopedia_registry->registry().objects_ptr()->size() > prevArticlesCount)
-	{
-		ARTICLE_VECTOR::const_iterator it = Actor()->encyclopedia_registry->registry().objects_ptr()->begin();
-		std::advance(it, prevArticlesCount);
-		for(; it != Actor()->encyclopedia_registry->registry().objects_ptr()->end(); it++)
-		{
-			if (ARTICLE_DATA::eEncyclopediaArticle == it->article_type)
-			{
-				AddArticle(it->article_id, it->readed);
-			}
-		}
-		prevArticlesCount = Actor()->encyclopedia_registry->registry().objects_ptr()->size();
-	}
-	
-	m_flags.set(eNeedReload, FALSE);
-	}
-
+	UpdateArticles();
 	inherited::Draw();
 }
 
-void CUIEncyclopediaWnd::ReloadArticles()
-{
-	m_flags.set(eNeedReload, TRUE);
-	if (Actor() && Actor()->encyclopedia_registry->registry().objects_ptr()->size() < prevArticlesCount ) {
-	  DeleteArticles();
-	  prevArticlesCount = 0;
-	}
+
+void CUIEncyclopediaWnd::ReloadArticles() {
+  if ( Actor() && Actor()->encyclopedia_registry->registry().objects_ptr()->size() < prevArticlesCount )
+    ResetArticles();
+  else
+    m_flags.set( eNeedReload, TRUE );
 }
 
 
@@ -248,5 +229,34 @@ void CUIEncyclopediaWnd::AddArticle(shared_str article_id, bool bReaded)
 void CUIEncyclopediaWnd::Reset()
 {
 	inherited::Reset	();
-	ReloadArticles		();
+	ResetArticles();
+}
+
+
+void CUIEncyclopediaWnd::ResetArticles() {
+  m_flags.set( eNeedReload, TRUE );
+  DeleteArticles();
+  prevArticlesCount = 0;
+}
+
+
+void CUIEncyclopediaWnd::FillEncyclopedia() {
+  ResetArticles();
+  UpdateArticles();
+}
+
+
+void CUIEncyclopediaWnd::UpdateArticles() {
+  if ( m_flags.test( eNeedReload ) && Actor()->encyclopedia_registry->registry().objects_ptr() ) {
+    if ( Actor()->encyclopedia_registry->registry().objects_ptr()->size() > prevArticlesCount ) {
+      ARTICLE_VECTOR::const_iterator it = Actor()->encyclopedia_registry->registry().objects_ptr()->begin();
+      std::advance( it, prevArticlesCount );
+      for ( ; it != Actor()->encyclopedia_registry->registry().objects_ptr()->end(); it++ ) {
+        if ( ARTICLE_DATA::eEncyclopediaArticle == it->article_type )
+          AddArticle( it->article_id, it->readed );
+      }
+      prevArticlesCount = Actor()->encyclopedia_registry->registry().objects_ptr()->size();
+    }
+    m_flags.set( eNeedReload, FALSE );
+  }
 }

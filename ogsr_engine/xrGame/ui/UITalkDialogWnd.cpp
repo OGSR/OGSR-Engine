@@ -8,6 +8,10 @@
 #include "UI3tButton.h"
 #include "../UI.h"
 #include "../actor.h"
+#include "../HUDManager.h"
+#include "../UIGameSP.h"
+#include "UIPdaWnd.h"
+#include "UIDiaryWnd.h"
 
 
 #define				TALK_XML				"talk.xml"
@@ -191,6 +195,9 @@ void CUITalkDialogWnd::AddAnswer(LPCSTR SpeakerName, LPCSTR str, bool bActor)
 	news_data.receive_time			= Level().GetGameTime();
 
 	Actor()->game_news_registry->registry().objects().push_back(news_data);
+	CUIGameSP* pGameSP = smart_cast<CUIGameSP*>( HUD().GetUI()->UIGame() );
+	if ( pGameSP )
+	  pGameSP->PdaMenu->UIDiaryWnd->AddNews();
 }
 
 void CUITalkDialogWnd::AddIconedAnswer(LPCSTR text, LPCSTR texture_name, Frect texture_rect, LPCSTR templ_name)
