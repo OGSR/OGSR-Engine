@@ -68,7 +68,13 @@ void CActor::AddEncyclopediaArticle( const CInfoPortion* info_portion, bool reve
   }
   article_vector.erase( last_end, article_vector.end() );
 
-  if ( !revert )
+  if ( revert ) {
+    if ( std::find( updated_pda.begin(), updated_pda.end(), pda_section::encyclopedia ) == updated_pda.end() )
+      updated_pda.push_back( pda_section::encyclopedia );
+    if ( std::find( updated_pda.begin(), updated_pda.end(), pda_section::journal ) == updated_pda.end() )
+      updated_pda.push_back( pda_section::journal );
+  }
+  else
     for ( const auto& id : info_portion->Articles() ) {
       const auto it = std::find_if(
         article_vector.begin(), article_vector.end(), [&id]( const auto& it ) {
