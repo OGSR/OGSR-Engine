@@ -28,8 +28,8 @@ void ARTICLE_DATA::save (IWriter& stream)
 	save_data(article_type, stream);
 }
 
-CEncyclopediaArticle::CEncyclopediaArticle()
-{
+CEncyclopediaArticle::CEncyclopediaArticle() {
+  readed = false;
 }
 
 CEncyclopediaArticle::~CEncyclopediaArticle()
@@ -130,6 +130,7 @@ void CEncyclopediaArticle::load_shared	(LPCSTR)
 	}
 
 	data()->ui_template_name = pXML->ReadAttrib(pNode, "ui_template", "common");
+	data()->sort = !!pXML->ReadAttribInt( pNode, "sort", 0 );
 }
 
 void CEncyclopediaArticle::InitXmlIdToIndex()
