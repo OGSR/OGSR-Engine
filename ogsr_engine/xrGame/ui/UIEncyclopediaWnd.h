@@ -36,7 +36,7 @@ public:
 	virtual void		SendMessage					(CUIWindow *pWnd, s16 msg, void* pData = NULL);
 	virtual void		Draw						();
 
-	void				AddArticle					(shared_str, bool bReaded);
+	CEncyclopediaArticle* AddArticle( shared_str );
 	void				DeleteArticles				();
 	bool				HasArticle					(shared_str);
 

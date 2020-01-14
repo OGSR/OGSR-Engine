@@ -130,6 +130,7 @@ void CEncyclopediaArticle::load_shared	(LPCSTR)
 	}
 
 	data()->ui_template_name = pXML->ReadAttrib(pNode, "ui_template", "common");
+	data()->sort = !!pXML->ReadAttribInt( pNode, "sort", 0 );
 }
 
 void CEncyclopediaArticle::InitXmlIdToIndex()

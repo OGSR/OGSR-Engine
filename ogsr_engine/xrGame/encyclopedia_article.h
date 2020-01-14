@@ -31,6 +31,8 @@ struct SArticleData : CSharedResource
 	// Тип статьи
 	ARTICLE_DATA::EArticleType	articleType;
 	shared_str					ui_template_name;
+
+	bool sort;
 };
 
 class CEncyclopediaArticle;

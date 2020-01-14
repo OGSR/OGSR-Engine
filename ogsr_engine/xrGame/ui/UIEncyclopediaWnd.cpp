@@ -21,6 +21,7 @@
 #include "../alife_registry_wrappers.h"
 #include "../actor.h"
 #include "../object_broker.h"
+#include "../string_table.h"
 
 #define				ENCYCLOPEDIA_DIALOG_XML		"encyclopedia.xml"
 
@@ -206,11 +207,11 @@ void CUIEncyclopediaWnd::SetCurrentArtice(CUITreeViewItem *pTVItem)
 	}
 }
 
-void CUIEncyclopediaWnd::AddArticle(shared_str article_id, bool bReaded)
+CEncyclopediaArticle* CUIEncyclopediaWnd::AddArticle( shared_str article_id )
 {
 	for(std::size_t i = 0; i<m_ArticlesDB.size(); i++)
 	{
-		if(m_ArticlesDB[i]->Id() == article_id) return;
+		if( m_ArticlesDB[i]->Id() == article_id ) return nullptr;
 	}
 
 	// Добавляем элемент
@@ -218,12 +219,7 @@ void CUIEncyclopediaWnd::AddArticle(shared_str article_id, bool bReaded)
 	CEncyclopediaArticle*& a = m_ArticlesDB.back();
 	a = xr_new<CEncyclopediaArticle>();
 	a->Load(article_id);
-
-
-	// Теперь создаем иерархию вещи по заданному пути
-
-	CreateTreeBranch(a->data()->group, a->data()->name, UIIdxList, m_ArticlesDB.size() - 1, 
-		m_pTreeRootFont, m_uTreeRootColor, m_pTreeItemFont, m_uTreeItemColor, bReaded);
+	return a;
 }
 
 void CUIEncyclopediaWnd::Reset()
@@ -251,9 +247,68 @@ void CUIEncyclopediaWnd::UpdateArticles() {
     if ( Actor()->encyclopedia_registry->registry().objects_ptr()->size() > prevArticlesCount ) {
       ARTICLE_VECTOR::const_iterator it = Actor()->encyclopedia_registry->registry().objects_ptr()->begin();
       std::advance( it, prevArticlesCount );
+      bool need_sort = false;
       for ( ; it != Actor()->encyclopedia_registry->registry().objects_ptr()->end(); it++ ) {
-        if ( ARTICLE_DATA::eEncyclopediaArticle == it->article_type )
-          AddArticle( it->article_id, it->readed );
+        if ( ARTICLE_DATA::eEncyclopediaArticle == it->article_type ) {
+          const auto a = AddArticle( it->article_id );
+          if ( prevArticlesCount > 0 && a ) {
+            // Теперь создаем иерархию вещи по заданному пути
+            CreateTreeBranch(
+              a->data()->group, a->data()->name, UIIdxList,
+              m_ArticlesDB.size() - 1, m_pTreeRootFont, m_uTreeRootColor,
+              m_pTreeItemFont, m_uTreeItemColor, it->readed
+            );
+          }
+          else if ( a && a->data()->sort )
+            need_sort = true;
+        }
+      }
+      if ( !prevArticlesCount ) {
+        if ( need_sort ) {
+          std::vector< std::vector<CEncyclopediaArticle*> > groups;
+          for ( const auto& a : m_ArticlesDB ) {
+            bool found = false;
+            for ( auto& g : groups ) {
+              if ( xr_strcmp( g.front()->data()->group, a->data()->group ) == 0 ) {
+                found = true;
+                g.push_back( a );
+                break;
+              }
+            }
+            if ( !found ) {
+              std::vector<CEncyclopediaArticle*> g;
+              groups.push_back( g );
+              groups.back().push_back( a );
+            }
+          }
+          for ( auto& g : groups ) {
+            auto sort_it = std::find_if(
+              g.begin(), g.end(),
+              []( const auto& a ) -> bool {
+                return a->data()->sort;
+              }
+            );
+            if ( sort_it != g.end() )
+              std::stable_sort(
+                g.begin(), g.end(),
+                []( const auto& a, const auto& b ) -> bool {
+                  return xr_strcmp( CStringTable().translate( a->data()->name ), CStringTable().translate( b->data()->name ) ) < 0;
+                }
+              );
+          }
+          m_ArticlesDB.clear();
+          for ( auto& g : groups )
+            for ( const auto& a : g )
+              m_ArticlesDB.push_back( a );
+        }
+        int idx = 0;
+        for ( const auto& a : m_ArticlesDB )
+          // Теперь создаем иерархию вещи по заданному пути
+          CreateTreeBranch(
+            a->data()->group, a->data()->name, UIIdxList, idx++,
+            m_pTreeRootFont, m_uTreeRootColor, m_pTreeItemFont,
+            m_uTreeItemColor, it->readed
+          );
       }
       prevArticlesCount = Actor()->encyclopedia_registry->registry().objects_ptr()->size();
     }
