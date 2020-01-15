@@ -246,6 +246,14 @@ inline decltype(auto) get_last_write_time_string_short(const stdfs::path& file)
 	return ss.str();
 }
 
+inline decltype(auto) set_new_path(CLocatorAPI* fs, LPCSTR initial, string_path newpath)
+{
+  LPCSTR fpath = fs.get_path(initial);
+  fpath->_set(newpath);
+  fs.rescan_path(LPCSTR fpath, TRUE);
+  return fs;
+}
+
 
 #pragma optimize("s",on)
 void script_register_stdfs(lua_State *L)
@@ -361,7 +369,8 @@ void fs_registrator::script_register(lua_State *L)
 
 			.def("file_list_open",						&file_list_open_script)
 			.def("file_list_open",						&file_list_open_script_2)
-			.def("file_list_open_ex",					&file_list_open_ex),
+			.def("file_list_open_ex",					&file_list_open_ex)
+      			.def("set_path", 						&set_new_path),
 
 		def("getFS",									getFS)
 	];
