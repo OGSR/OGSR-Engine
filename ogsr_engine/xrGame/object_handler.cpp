@@ -32,6 +32,7 @@ CObjectHandler::CObjectHandler		()
 	m_planner					= xr_new<CObjectHandlerPlanner>();
 	m_inventory_actual			= false;
 //	m_last_enemy_for_best_weapon= 0;
+	m_clutched_hammer_unload	= false;
 }
 
 CObjectHandler::~CObjectHandler		()
@@ -57,7 +58,6 @@ void CObjectHandler::reinit			(CAI_Stalker *object)
 	m_strap_bone0				= -1;
 	m_strap_bone1				= -1;
 	m_clutched_hammer_enabled	= false;
-	m_clutched_hammer_unload	= false;
 }
 
 void CObjectHandler::reload			(LPCSTR section)
