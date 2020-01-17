@@ -187,6 +187,10 @@ bool CALifeUpdateManager::change_level	(NET_Packet &net_packet)
 	graph().actor()->o_torso.pitch	= graph().actor()->o_Angle.x;
 	graph().actor()->o_torso.roll	= 0.f;
 
+	u16 holder_id = graph().actor()->m_holderID;
+	if ( !graph().actor()->m_holder_change_level )
+	  graph().actor()->m_holderID = u16(-1);
+
 	if (graph().actor()->m_holderID != 0xffff) {
 		holder						= objects().object(graph().actor()->m_holderID);
 
@@ -223,6 +227,9 @@ bool CALifeUpdateManager::change_level	(NET_Packet &net_packet)
 		holder->o_Position			= holder_safe_position;
 		holder->o_Angle				= holder_safe_angles;
 	}
+
+	if ( !graph().actor()->m_holder_change_level )
+	  graph().actor()->m_holderID = holder_id;
 
 	return							(true);
 }

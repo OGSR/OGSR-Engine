@@ -1269,6 +1269,7 @@ CSE_ALifeCreatureActor::CSE_ALifeCreatureActor	(LPCSTR caSection) : CSE_ALifeCre
 	accel.set					(0.f,0.f,0.f);
 	velocity.set				(0.f,0.f,0.f);
 	m_holderID					=u16(-1);
+	m_holder_change_level = READ_IF_EXISTS( pSettings, r_bool, caSection, "holder_change_level", true );
 }
 
 CSE_ALifeCreatureActor::~CSE_ALifeCreatureActor()
