@@ -460,3 +460,10 @@ void CScriptGameObject::explode_initiator( u16 who_id ) {
   explosive->SetInitiator( who_id );
   explosive->GenExplodeEvent( object().Position(), normal );
 }
+
+
+bool CScriptGameObject::is_exploded() {
+  CExplosive* explosive = smart_cast<CExplosive*>( &object() );
+  ASSERT_FMT( explosive, "[%s]: %s not a CExplosive", __FUNCTION__, cName().c_str() );
+  return explosive->IsExploded();
+}
