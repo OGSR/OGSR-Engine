@@ -88,7 +88,7 @@ public:
 	virtual BOOL						Ready				()					{ return Props.net_Ready;	}
 	BOOL								GetTmpPreDestroy		()		const	{ return Props.bPreDestroy;	}
 	void								SetTmpPreDestroy	(BOOL b)			{ Props.bPreDestroy = b;}
-	virtual float						shedule_Scale		()					{ return Device.vCameraPosition.distance_to(Position())/200.f; }
+	virtual float						shedule_Scale();
 	virtual bool						shedule_Needed		()					{return processing_enabled();};
 
 	// Parentness

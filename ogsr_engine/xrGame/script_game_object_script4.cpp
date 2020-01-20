@@ -376,6 +376,9 @@ class_<CScriptGameObject> script_register_game_object3(class_<CScriptGameObject>
 		.def( "drop_item_and_throw", &CScriptGameObject::DropItemAndThrow )
 		.def( "controller_psy_hit_active", &CScriptGameObject::controller_psy_hit_active )
 
+		.def( "set_fastest_scheduler", &CScriptGameObject::set_fastest_scheduler )
+		.def( "set_slowest_scheduler", &CScriptGameObject::set_slowest_scheduler )
+
 		.property("inventory",				&get_obj_inventory)
 		.property("immunities",				&get_obj_immunities)
 		.property("is_alive",				&get_obj_alive)

@@ -925,3 +925,17 @@ void CScriptGameObject::enable_clutched_hammer( bool val ) {
   ASSERT_FMT( stalker, "[%s]: %s not a CAI_Stalker", __FUNCTION__, object().cName().c_str() );
   stalker->m_clutched_hammer_enabled = val;
 }
+
+
+void CScriptGameObject::set_fastest_scheduler( bool val ) {
+  auto* obj = smart_cast<CObject*>( &object() );
+  ASSERT_FMT( obj, "[%s]: %s not a CObject", __FUNCTION__, object().cName().c_str() );
+  obj->shedule.fastest_scale = val;
+}
+
+
+void CScriptGameObject::set_slowest_scheduler( bool val ) {
+  auto* obj = smart_cast<CObject*>( &object() );
+  ASSERT_FMT( obj, "[%s]: %s not a CObject", __FUNCTION__, object().cName().c_str() );
+  obj->shedule.slowest_scale = val;
+}

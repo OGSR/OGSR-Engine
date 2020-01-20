@@ -822,6 +822,8 @@ public:
 	doors::door*				m_door;
 
 	bool can_kill_enemy();
+	void set_fastest_scheduler( bool );
+	void set_slowest_scheduler( bool );
 
 	DECLARE_SCRIPT_REGISTER_FUNCTION
 };

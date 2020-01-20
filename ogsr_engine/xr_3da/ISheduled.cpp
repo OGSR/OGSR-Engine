@@ -11,6 +11,10 @@ ISheduled::ISheduled	()
 	dbg_startframe		= 1;
 	dbg_update_shedule	= 0;
 #endif
+	shedule.d_min = READ_IF_EXISTS( pSettings, r_float, "alife", "schedule_d_min",   0.f );
+	shedule.d_max = READ_IF_EXISTS( pSettings, r_float, "alife", "schedule_d_max", 200.f );
+	shedule.fastest_scale = false;
+	shedule.slowest_scale = false;
 }
 
 extern		BOOL		g_bSheduleInProgress;

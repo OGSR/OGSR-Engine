@@ -394,3 +394,17 @@ void CObject::setDestroy			(BOOL _destroy)
 	}else
 		VERIFY		(!g_pGameLevel->Objects.registered_object_to_destroy(this));
 }
+
+
+float CObject::shedule_Scale() {
+  if ( H_Parent() ) return H_Parent()->shedule_Scale();
+
+  if ( shedule.fastest_scale ) return 0.f;
+  if ( shedule.slowest_scale ) return 1.f;
+
+  float dist = Device.vCameraPosition.distance_to( Position() );
+  if ( dist < shedule.d_min ) return 0.f;
+  else if ( dist > shedule.d_max ) return 1.f;
+
+  return ( dist - shedule.d_min ) / ( shedule.d_max - shedule.d_min );
+}
