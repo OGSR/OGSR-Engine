@@ -175,6 +175,7 @@ class_<CScriptGameObject> script_register_game_object1(class_<CScriptGameObject>
 		.def("best_weapon",					&CScriptGameObject::best_weapon)
 		.def("explode",						&CScriptGameObject::explode)
 		.def( "explode_initiator", &CScriptGameObject::explode_initiator )
+		.def( "is_exploded", &CScriptGameObject::is_exploded )
 		.def("get_enemy",					&CScriptGameObject::GetEnemy)
 		.def("get_corpse",					&CScriptGameObject::GetCorpse)
 		.def("get_enemy_strength",			&CScriptGameObject::GetEnemyStrength)
