@@ -250,7 +250,7 @@ inline decltype(auto) set_new_path(CLocatorAPI* fs, LPCSTR initial, string_path 
 {
   LPCSTR fpath = fs.get_path(initial);
   fpath->_set(newpath);
-  fs.rescan_path(fpath, TRUE);
+  fs->rescan_path(fpath, TRUE);
   return fs;
 }
 
