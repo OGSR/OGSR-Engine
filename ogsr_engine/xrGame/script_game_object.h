@@ -824,6 +824,7 @@ public:
 	bool can_kill_enemy();
 	void set_fastest_scheduler( bool );
 	void set_slowest_scheduler( bool );
+	void configure_scheduler( u32, u32 );
 
 	DECLARE_SCRIPT_REGISTER_FUNCTION
 };

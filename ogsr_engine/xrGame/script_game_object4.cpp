@@ -939,3 +939,11 @@ void CScriptGameObject::set_slowest_scheduler( bool val ) {
   ASSERT_FMT( obj, "[%s]: %s not a CObject", __FUNCTION__, object().cName().c_str() );
   obj->shedule.slowest_scale = val;
 }
+
+
+void CScriptGameObject::configure_scheduler( u32 t_min, u32 t_max ) {
+  auto* obj = smart_cast<CObject*>( &object() );
+  ASSERT_FMT( obj, "[%s]: %s not a CObject", __FUNCTION__, object().cName().c_str() );
+  obj->shedule.t_min = t_min;
+  obj->shedule.t_max = t_max;
+}
