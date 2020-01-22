@@ -248,9 +248,9 @@ inline decltype(auto) get_last_write_time_string_short(const stdfs::path& file)
 
 inline decltype(auto) set_new_path(CLocatorAPI* fs, LPCSTR initial, string_path newpath)
 {
-  LPCSTR fpath = fs.get_path(initial);
+  FS_Path* fpath = fs.get_path(initial);
   fpath->_set(newpath);
-  fs->rescan_path(fpath, TRUE);
+  fs->rescan_path(fpath->m_Path, TRUE);
   return fs;
 }
 
