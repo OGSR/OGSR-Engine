@@ -152,12 +152,11 @@ LPCSTR get_file_age_str(CLocatorAPI* fs, LPCSTR nm)
 	return asctime( newtime );
 }
 
-CLocatorAPI* set_new_path(CLocatorAPI* fs, LPCSTR initial, string_path newpath)
+void set_new_path(CLocatorAPI* fs, LPCSTR initial, LPSTR newpath)
 {
-	FS_Path* fpath = FS.get_path(initial);
+	FS_Path* fpath = fs->get_path(initial);
 	fpath->_set(newpath);
-	FS.rescan_path(fpath->m_Path, TRUE);
-	return fs;
+	fs->rescan_path(fpath->m_Path, TRUE);
 }
 
 
@@ -347,6 +346,7 @@ void fs_registrator::script_register(lua_State *L)
 			.def("dir_delete",							&dir_delete_script_2)
 
 			.def("application_dir",						&get_engine_dir)
+			.def("reset_path",							&set_new_path)
 
 			.def("file_rename",							&CLocatorAPI::file_rename)
 			.def("file_length",							&CLocatorAPI::file_length)
@@ -367,8 +367,7 @@ void fs_registrator::script_register(lua_State *L)
 
 			.def("file_list_open",						&file_list_open_script)
 			.def("file_list_open",						&file_list_open_script_2)
-			.def("file_list_open_ex",					&file_list_open_ex)
-			.def("set_path",							&set_new_path),
+			.def("file_list_open_ex",					&file_list_open_ex),
 
 		def("getFS",									getFS)
 	];
