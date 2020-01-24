@@ -170,6 +170,8 @@ static std::string get_engine_dir()
 //Перебор файлов в папке, подкаталоги не учитываются.
 static void directory_iterator(const char* dir, const luabind::functor<void> &iterator_func)
 {
+	if (!stdfs::exists(dir)) return;
+
 	for (const auto& file : stdfs::directory_iterator(dir))
 		if (stdfs::is_regular_file(file)) //Папки не учитываем
 			iterator_func(file);
@@ -178,6 +180,8 @@ static void directory_iterator(const char* dir, const luabind::functor<void> &it
 //Перебор файлов в папке включая подкаталоги.
 static void recursive_directory_iterator(const char* dir, const luabind::functor<void> &iterator_func)
 {
+	if (!stdfs::exists(dir)) return;
+
 	for (const auto& file : stdfs::recursive_directory_iterator(dir))
 		if (stdfs::is_regular_file(file)) //Папки не учитываем
 			iterator_func(file);
