@@ -98,6 +98,7 @@ protected:
 	float 						m_fFragHit;
 	float 						m_fFragHitImpulse;
 	int	  						m_iFragsNum;
+	bool m_frags_half_sphere;
 
 	//типы наносимых хитов
 	ALife::EHitType 			m_eHitTypeBlast;

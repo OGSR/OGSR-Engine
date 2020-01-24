@@ -68,6 +68,8 @@ CExplosive::CExplosive(void)
 	m_fExplodeHideDurationMax = 0;
 	m_bDynamicParticles		= FALSE;
 	m_pExpParticle			= NULL;
+
+	m_frags_half_sphere = true;
 }
 
 void CExplosive::LightCreate()
@@ -146,6 +148,8 @@ void CExplosive::Load(CInifile *ini,LPCSTR section)
 	m_bDynamicParticles	 = FALSE;
 	if (ini->line_exist(section, "dynamic_explosion_particles"))
 		m_bDynamicParticles = ini->r_bool(section, "dynamic_explosion_particles");
+
+	m_frags_half_sphere = READ_IF_EXISTS( pSettings, r_bool, section, "frags_half_sphere", true );
 }
 
 void CExplosive::net_Destroy	()
@@ -366,10 +370,11 @@ void CExplosive::Explode()
 	else SendHits = false;
 
 
-	Fvector frag_coneaxis;
-	frag_coneaxis.set( 0, 1.f, 0 );
 	for(int i = 0; i < m_iFragsNum; ++i){
-		frag_dir.random_dir( frag_coneaxis, PI_DIV_2 );
+		if ( m_frags_half_sphere )
+		  frag_dir.random_dir( dir, PI_DIV_2 );
+		else
+		  frag_dir.random_dir();
 		frag_dir.normalize	();
 		
 		CCartridge cartridge;
