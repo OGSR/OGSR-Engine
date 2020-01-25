@@ -109,6 +109,7 @@ public:
 	int						iMagazineSize2;
 	xr_vector<CCartridge>	m_magazine2;
 	bool					m_bGrenadeMode;
+	bool m_gl_zoom_auto_dir;
 
 	CCartridge				m_DefaultCartridge2;
 

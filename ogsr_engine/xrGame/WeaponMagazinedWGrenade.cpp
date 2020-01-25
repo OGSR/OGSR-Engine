@@ -31,6 +31,7 @@ CWeaponMagazinedWGrenade::CWeaponMagazinedWGrenade(LPCSTR name,ESoundTypes eSoun
 	m_ammoType2 = 0;
 	iAmmoElapsed2  = 0;
 	m_bGrenadeMode = false;
+	m_gl_zoom_auto_dir = true;
 }
 
 CWeaponMagazinedWGrenade::~CWeaponMagazinedWGrenade(void)
@@ -96,6 +97,7 @@ void CWeaponMagazinedWGrenade::Load	(LPCSTR section)
 	if(m_eGrenadeLauncherStatus == ALife::eAddonPermanent)
 	{
 		CRocketLauncher::m_fLaunchSpeed = pSettings->r_float(section, "grenade_vel");
+		m_gl_zoom_auto_dir = READ_IF_EXISTS( pSettings, r_bool, section, "gl_zoom_auto_dir", true );
 	}
 
 	grenade_bone_name = pSettings->r_string(*hud_sect, "grenade_bone");
@@ -394,8 +396,9 @@ void CWeaponMagazinedWGrenade::SwitchState(u32 S)
 			E->g_fireParams		(this, p1,d);
 		}
 
-		p1.set(get_LastFP2());
-		
+		if ( !IsZoomed() )
+		  p1.set( get_LastFP2() );
+
 		Fmatrix launch_matrix;
 		launch_matrix.identity();
 		launch_matrix.k.set(d);
@@ -403,13 +406,13 @@ void CWeaponMagazinedWGrenade::SwitchState(u32 S)
 											launch_matrix.j, launch_matrix.i);
 		launch_matrix.c.set(p1);
 
-		if (IsZoomed() && H_Parent()->CLS_ID == CLSID_OBJECT_ACTOR)
+		if ( ParentIsActor() && IsZoomed() && m_gl_zoom_auto_dir )
 		{
 			H_Parent()->setEnabled(FALSE);
 			setEnabled(FALSE);
 
 			collide::rq_result RQ;
-			BOOL HasPick = Level().ObjectSpace.RayPick(p1, d, 300.0f, collide::rqtStatic, RQ, this);
+			BOOL HasPick = Level().ObjectSpace.RayPick( p1, d, 300.0f, collide::rqtBoth, RQ, this );
 
 			setEnabled(TRUE);
 			H_Parent()->setEnabled(TRUE);
@@ -579,6 +582,7 @@ bool CWeaponMagazinedWGrenade::Attach(PIItem pIItem, bool b_send_event)
 		m_flagsAddOnState |= CSE_ALifeItemWeapon::eWeaponAddonGrenadeLauncher;
 
 		CRocketLauncher::m_fLaunchSpeed = pGrenadeLauncher->GetGrenadeVel();
+		m_gl_zoom_auto_dir = READ_IF_EXISTS( pSettings, r_bool, m_sGrenadeLauncherName.c_str(), "gl_zoom_auto_dir", true );
 
  		//уничтожить подствольник из инвентаря
 		if(b_send_event)
@@ -611,6 +615,7 @@ bool CWeaponMagazinedWGrenade::Detach(const char* item_section_name, bool b_spaw
 		PerformSwitchGL();
 
 		m_flagsAddOnState &= ~CSE_ALifeItemWeapon::eWeaponAddonGrenadeLauncher;
+		m_gl_zoom_auto_dir = true;
 
 		UpdateAddonsVisibility();
 		return CInventoryItemObject::Detach(item_section_name, b_spawn_item);
@@ -628,6 +633,7 @@ void CWeaponMagazinedWGrenade::InitAddons()
 		if(IsGrenadeLauncherAttached())
 		{
 			CRocketLauncher::m_fLaunchSpeed = pSettings->r_float(*m_sGrenadeLauncherName,"grenade_vel");
+			m_gl_zoom_auto_dir = READ_IF_EXISTS( pSettings, r_bool, m_sGrenadeLauncherName.c_str(), "gl_zoom_auto_dir", true );
 		}
 	}
 
