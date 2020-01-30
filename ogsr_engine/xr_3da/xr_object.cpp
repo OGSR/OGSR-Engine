@@ -397,8 +397,6 @@ void CObject::setDestroy			(BOOL _destroy)
 
 
 float CObject::shedule_Scale() {
-  if ( H_Parent() ) return H_Parent()->shedule_Scale();
-
   if ( shedule.fastest_scale ) return 0.f;
   if ( shedule.slowest_scale ) return 1.f;
 
