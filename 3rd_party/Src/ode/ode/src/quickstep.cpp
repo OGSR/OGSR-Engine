@@ -488,7 +488,7 @@ static void SOR_LCP (int m, int nb, dRealMutablePtr J, int *jb, dxBody * const *
 			// @@@ potential optimization: does SSE have clamping instructions
 			//     to save test+jump penalties here?
 			dReal new_lambda = lambda[index] + delta;
-			if (new_lambda < lo[index]) {
+			if (new_lambda < lo[index] && !isnan(lo[index])) {
 				delta = lo[index]-lambda[index];
 				lambda[index] = lo[index];
 			}

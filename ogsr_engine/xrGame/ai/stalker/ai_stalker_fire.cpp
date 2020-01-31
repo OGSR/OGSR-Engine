@@ -61,6 +61,8 @@ const float FLOOR_DISTANCE				= 2.f;
 const float NEAR_DISTANCE				= 2.5f;
 const u32	FIRE_MAKE_SENSE_INTERVAL	= 10000;
 
+constexpr float start_fire_angle_difference	= PI_DIV_8;
+
 float CAI_Stalker::GetWeaponAccuracy	() const
 {
 	float				base = PI/180.f;
@@ -230,6 +232,7 @@ void			CAI_Stalker::Hit					(SHit* pHDS)
 			weapon_type				= best_weapon()->object().ef_weapon_type();
 
 		if	(
+				( HDS.hit_type == ALife::eHitTypeFireWound || HDS.hit_type == ALife::eHitTypeExplosion ) &&
 				!wounded() &&
 				!already_critically_wounded)
 		{
@@ -1252,4 +1255,18 @@ bool CAI_Stalker::can_kill_enemy							()
 	VERIFY					(inventory().ActiveItem());
 	update_can_kill_info	();
 	return					(m_can_kill_enemy);
+}
+
+
+bool CAI_Stalker::can_fire_to_enemy( const CEntityAlive *enemy ) {
+  Fvector enemy_position  = enemy->Position();
+  Fvector object_position = Position();
+  Fvector direction       = Fvector().sub( enemy_position, object_position );
+  float yaw, pitch;
+  direction.getHP( yaw, pitch );
+  const MonsterSpace::SBoneRotation &current_angles = movement().head_orientation();
+  if ( angle_difference( -yaw, current_angles.current.yaw ) > start_fire_angle_difference ) {
+    return false;
+  }
+  return true;
 }

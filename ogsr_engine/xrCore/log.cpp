@@ -6,14 +6,13 @@
 #include <fstream> //для std::ofstream
 #include <iomanip> //для std::strftime
 
-static BOOL 				no_log	 = TRUE;
-static std::recursive_mutex logCS;
-static LogCallback			LogCB	 = nullptr;
+static LogCallback LogCB = nullptr;
 std::vector<std::string> LogFile;
-std::ofstream logstream;
+static std::ofstream logstream;
 
-void AddOne(std::string &split, bool first_line)
+static void AddOne(std::string& split, bool first_line)
 {
+	static std::recursive_mutex logCS;
 	std::scoped_lock<decltype(logCS)> lock(logCS);
 
 	if (IsDebuggerPresent()) { //Вывод в отладчик студии
@@ -24,29 +23,36 @@ void AddOne(std::string &split, bool first_line)
 	if (LogCB)
 		LogCB(split.c_str()); //Вывод в логкаллбек
 
+	auto insert_time = [&] {
+		if (first_line)
+		{
+			string64 buf, curTime;
+			using namespace std::chrono;
+			const auto now = system_clock::now();
+			const auto time = system_clock::to_time_t(now);
+			const auto ms = duration_cast<milliseconds>(now.time_since_epoch()) - duration_cast<seconds>(now.time_since_epoch());
+			std::strftime(buf, sizeof(buf), "%d.%m.%y %H:%M:%S", std::localtime(&time));
+			sprintf_s(curTime, "\n[%s.%03lld] ", buf, ms.count());
+			split = curTime + split;
+		}
+		else
+		{
+			split = "\n" + split;
+		}
+	};
+
+	if (!logstream.is_open())
+		insert_time();
+
 	LogFile.push_back(split); //Вывод в консоль
 
-	if (!logstream.is_open()) return;
+	if (logstream.is_open()) {
+		insert_time();
 
-	if (first_line)
-	{
-		string64 buf, curTime;
-		using namespace std::chrono;
-		const auto now = system_clock::now();
-		const auto time = system_clock::to_time_t(now);
-		const auto ms = duration_cast<milliseconds>(now.time_since_epoch()) - duration_cast<seconds>(now.time_since_epoch());
-		std::strftime(buf, sizeof(buf), "%d.%m.%y %H:%M:%S", std::localtime(&time));
-		sprintf_s(curTime, sizeof(curTime), "\n[%s.%03lld] ", buf, ms.count());
-		split = curTime + split;
+		//Вывод в лог-файл
+		logstream << split;
+		logstream.flush();
 	}
-	else
-	{
-		split = "\n" + split;
-	}
-
-	//Вывод в лог-файл
-	logstream << split;
-	logstream.flush();
 }
 
 void Log(std::stringstream&& ss)
@@ -56,15 +62,10 @@ void Log(std::stringstream&& ss)
 	if (str.empty()) return; //Строка пуста - выходим
 
 	bool not_first_line = false;
-	bool have_color = false;
-	auto color_s = str.front();
-	if ( //Ищем в начале строки цветовой код
-		color_s == '-' //Зелёный
-		|| color_s == '~' //Жёлтый
-		|| color_s == '!' //Красный
-		|| color_s == '*' //Серый
-		|| color_s == '#' //Бирюзовый
-	) have_color = true;
+
+	static const std::vector<char> color_codes{ '-', '~', '!', '*', '#' }; //Зелёный, Жёлтый, Красный, Серый, Бирюзовый
+	const char& color_s = str.front();
+	const bool have_color = std::find(color_codes.begin(), color_codes.end(), color_s) != color_codes.end(); //Ищем в начале строки цветовой код
 
 	for (std::string item; std::getline(ss, item);) //Разбиваем текст по "\n"
 	{
@@ -95,6 +96,9 @@ void __cdecl Msg(const char *format, ...)
 		Log(strBuf);
 }
 
+
+// Это всё не нужно на самом деле, от них бы избавиться...
+/////////////////////////////////////////////////////////////////////////////////////////////
 void Log(const char *msg, const char *dop) { //Надо убрать
 	char buf[1024];
 	if (dop)
@@ -136,6 +140,8 @@ void Log(const char *msg, const Fmatrix &dop)	{
 																				,dop.c.x,dop.c.y,dop.c.z,dop._44_);
 	Log(buf);
 }
+/////////////////////////////////////////////////////////////////////////////////////////////
+
 
 void SetLogCB(LogCallback cb)
 {
@@ -144,9 +150,7 @@ void SetLogCB(LogCallback cb)
 
 void CreateLog(BOOL nl)
 {
-	no_log = nl;
-
-	if (!no_log)
+	if (!nl)
 	{
 		string_path logFName;
 		if (strstr(Core.Params, "-unique_logs")) {
@@ -156,35 +160,35 @@ void CreateLog(BOOL nl)
 			const auto time = system_clock::to_time_t(now);
 			std::strftime(TimeBuf, sizeof(TimeBuf), "%d-%m-%y_%H-%M-%S", std::localtime(&time));
 
-			strconcat(sizeof(logFName), logFName, Core.ApplicationName, "_", Core.UserName, "_", TimeBuf, ".log");
+			xr_strconcat(logFName, Core.ApplicationName, "_", Core.UserName, "_", TimeBuf, ".log");
 		}
 		else {
-			strconcat(sizeof(logFName), logFName, Core.ApplicationName, "_", Core.UserName, ".log");
+			xr_strconcat(logFName, Core.ApplicationName, "_", Core.UserName, ".log");
 		}
 
-		__try {
+		try {
 			if (FS.path_exist("$logs$")) {
 				FS.update_path(logFName, "$logs$", logFName);
 			}
 			else { //Для компрессора
 				string_path temp;
-				strcpy_s(temp, sizeof(temp), logFName);
-				strconcat(sizeof(logFName), logFName, "logs\\", temp);
+				strcpy_s(temp, logFName);
+				xr_strconcat(logFName, "logs\\", temp);
 			}
 
 			logstream.imbue(std::locale(""));
 			VerifyPath(logFName);
 			logstream.open(logFName);
 		}
-		__except (EXCEPTION_EXECUTE_HANDLER) {
+		catch(...) {
 			Debug.do_exit("Can't create log file!");
 		}
 
 		for (const auto& str : LogFile)
-			logstream << "\n" << str;
+			logstream << str;
 
 		logstream.flush();
 	}
 
-	LogFile.reserve(1000);
+	LogFile.reserve(500);
 }

@@ -267,6 +267,7 @@ public:
 	virtual bool						unlimited_ammo			();
 	virtual	void						spawn_supplies			();
 	CAgentManager& agent_manager() const;
+	CAgentManager* get_agent_manager() const;
 	
 	virtual bool						human_being				() const
 	{
@@ -294,6 +295,7 @@ public:
 			float						pick_distance			();
 	IC		float						start_pick_distance		() const;
 			bool						fire_make_sense			();
+			bool can_fire_to_enemy( const CEntityAlive *enemy );
 			
 	virtual LPCSTR						Name					() const;
 	virtual BOOL						feel_touch_contact		(CObject* O);

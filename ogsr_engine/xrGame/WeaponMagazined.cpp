@@ -89,6 +89,15 @@ BOOL CWeaponMagazined::net_Spawn(CSE_Abstract* DC)
 	BOOL bRes = inherited::net_Spawn(DC);
 	const auto wpn = smart_cast<CSE_ALifeItemWeaponMagazined*>(DC);
 	m_iCurFireMode = wpn->m_u8CurFireMode;
+	if ( HasFireModes() && m_iCurFireMode >= m_aFireModes.size() ) {
+	  Msg( "! [%s]: %s: wrong m_iCurFireMode[%u/%u]", __FUNCTION__, cName().c_str(), m_iCurFireMode, m_aFireModes.size() - 1 );
+	  m_iCurFireMode = m_aFireModes.size() - 1;
+	  auto se_obj = alife_object();
+	  if ( se_obj ) {
+	    auto W = smart_cast<CSE_ALifeItemWeaponMagazined*>( se_obj );
+	    W->m_u8CurFireMode = m_iCurFireMode;
+	  }
+	}
 	SetQueueSize(GetCurrentFireMode());
 	return bRes;
 }
@@ -1222,6 +1231,10 @@ void CWeaponMagazined::OnZoomIn			()
 	CActor* pActor = smart_cast<CActor*>(H_Parent());
 	if(pActor)
 	{
+		CEffectorCam* ec = pActor->Cameras().GetCamEffector( eCEActorMoving );
+		if ( ec )
+		  pActor->Cameras().RemoveCamEffector( eCEActorMoving );
+
 		CEffectorZoomInertion* S = smart_cast<CEffectorZoomInertion*>	(pActor->Cameras().GetCamEffector(eCEZoom));
 		if (!S)	
 		{

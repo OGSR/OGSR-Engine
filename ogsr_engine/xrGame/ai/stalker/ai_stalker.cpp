@@ -991,7 +991,7 @@ void CAI_Stalker::UpdateCamera			()
 			temp						= weapon_shot_effector_direction(temp);
 	}
 
-	g_pGameLevel->Cameras().Update		(eye_matrix.c,temp,eye_matrix.j,new_fov,.75f,new_range);
+	g_pGameLevel->Cameras().Update		(eye_matrix.c,temp,eye_matrix.j,new_fov,.75f,new_range, 0);
 }
 
 bool CAI_Stalker::can_attach			(const CInventoryItem *inventory_item) const
@@ -1068,4 +1068,9 @@ bool CAI_Stalker::unlimited_ammo()
 CAgentManager& CAI_Stalker::agent_manager() const
 {
 	return Level().seniority_holder().team(g_Team()).squad(g_Squad()).group(g_Group()).agent_manager();
+}
+
+CAgentManager* CAI_Stalker::get_agent_manager() const
+{
+	return Level().seniority_holder().team(g_Team()).squad(g_Squad()).group(g_Group()).get_agent_manager();
 }

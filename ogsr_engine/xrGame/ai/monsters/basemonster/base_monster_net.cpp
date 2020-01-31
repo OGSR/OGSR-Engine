@@ -47,7 +47,6 @@ void CBaseMonster::net_Export(NET_Packet& P)
 	if (ai().game_graph().valid_vertex_id(l_game_vertex_id)) {
 		f1					= Position().distance_to	(ai().game_graph().vertex(l_game_vertex_id)->level_point());
 		P.w					(&f1,						sizeof(f1));
-		f1					= Position().distance_to	(ai().game_graph().vertex(l_game_vertex_id)->level_point());
 		P.w					(&f1,						sizeof(f1));
 	}
 	else {
@@ -55,54 +54,4 @@ void CBaseMonster::net_Export(NET_Packet& P)
 		P.w					(&f1,						sizeof(f1));
 	}
 
-}
-
-void CBaseMonster::net_Import(NET_Packet& P)
-{
-	R_ASSERT				(Remote());
-	net_update				N;
-
-	u8 flags;
-
-	float health;
-	P.r_float			(health);
-	SetfHealth			(health);
-
-	P.r_u32					(N.dwTimeStamp);
-	P.r_u8					(flags);
-	P.r_vec3				(N.p_pos);
-	P.r_float /*r_angle8*/				(N.o_model);
-	P.r_float /*r_angle8*/				(N.o_torso.yaw);
-	P.r_float /*r_angle8*/				(N.o_torso.pitch);
-	P.r_float /*r_angle8*/				(N.o_torso.roll	);
-	id_Team					= P.r_u8();
-	id_Squad				= P.r_u8();
-	id_Group				= P.r_u8();
-
-	GameGraph::_GRAPH_ID		l_game_vertex_id = ai_location().game_vertex_id();
-	P.r						(&l_game_vertex_id,			sizeof(l_game_vertex_id));
-	P.r						(&l_game_vertex_id,			sizeof(l_game_vertex_id));
-
-	if (NET.empty() || (NET.back().dwTimeStamp<N.dwTimeStamp))	{
-		NET.push_back			(N);
-		NET_WasInterpolating	= TRUE;
-	}
-
-//	P.r						(&m_fGoingSpeed,			sizeof(m_fGoingSpeed));
-//	P.r						(&m_fGoingSpeed,			sizeof(m_fGoingSpeed));
-	float					f1 = 0;
-	if (ai().game_graph().valid_vertex_id(l_game_vertex_id)) {
-		f1					= Position().distance_to	(ai().game_graph().vertex(l_game_vertex_id)->level_point());
-		P.r					(&f1,						sizeof(f1));
-		f1					= Position().distance_to	(ai().game_graph().vertex(l_game_vertex_id)->level_point());
-		P.r					(&f1,						sizeof(f1));
-	}
-	else {
-		P.r					(&f1,						sizeof(f1));
-		P.r					(&f1,						sizeof(f1));
-	}
-
-
-	setVisible				(TRUE);
-	setEnabled				(TRUE);
 }

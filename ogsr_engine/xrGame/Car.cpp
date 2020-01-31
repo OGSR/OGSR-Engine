@@ -448,8 +448,8 @@ void CCar::UpdateEx			(float fov)
 	if(OwnerActor() && OwnerActor()->IsMyCamera()) 
 	{
 		cam_Update(Device.fTimeDelta, fov);
-		OwnerActor()->Cameras().Update(Camera());
-		OwnerActor()->Cameras().ApplyDevice(VIEWPORT_NEAR);
+		OwnerActor()->Cameras().UpdateFromCamera(Camera());
+		OwnerActor()->Cameras().ApplyDevice();
 	}
 
 	
@@ -498,14 +498,7 @@ void CCar::UpdateCL				( )
 		{
 			Owner()->XFORM().mul_43	(XFORM(),m_sits_transforms[0]);
 		}
-/*
-		if(OwnerActor() && OwnerActor()->IsMyCamera()) 
-		{
-			cam_Update(Device.fTimeDelta, fov);
-			OwnerActor()->Cameras().Update(Camera());
-			OwnerActor()->Cameras().ApplyDevice();
-		}
-*/
+
 		if(HUD().GetUI())//
 		{
 			HUD().GetUI()->UIMainIngameWnd->CarPanel().Show(true);

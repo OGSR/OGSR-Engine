@@ -84,7 +84,9 @@ bool bfGetActionSuccessProbability(GroupHierarchyHolder::MEMBER_REGISTRY &Member
 
 u32 dwfChooseAction(u32 dwActionRefreshRate, float fMinProbability0, float fMinProbability1, float fMinProbability2, float fMinProbability3, u32 dwTeam, u32 dwSquad, u32 dwGroup, u32 a0, u32 a1, u32 a2, u32 a3, u32 a4, CEntity *tpEntity, float fGroupDistance)
 {
-//	return(a0);
+	if ( fis_zero(fMinProbability0) )
+		return								( 0 );
+
 	CGroupHierarchyHolder					&Group = Level().seniority_holder().team(dwTeam).squad(dwSquad).group(dwGroup);
 	
 	if (Device.dwTimeGlobal - Group.m_dwLastActionTime < dwActionRefreshRate) {
@@ -178,7 +180,7 @@ void CAniVector::Load(IKinematicsAnimated *tpKinematics, LPCSTR caBaseName)
 	string256	S1, S2;
 	MotionID	tpMotionDef;
 	for (int i=0; ; ++i)
-		if (!!(tpMotionDef = tpKinematics->ID_Cycle_Safe(strconcat(sizeof(S1),S1,caBaseName,itoa(i,S2,10))))) {
+		if (!!(tpMotionDef = tpKinematics->ID_Cycle_Safe(xr_strconcat(S1,caBaseName,itoa(i,S2,10))))) {
 			A.push_back(tpMotionDef);
 #ifdef DEBUG
 			if (psAI_Flags.test(aiAnimation))
@@ -186,7 +188,7 @@ void CAniVector::Load(IKinematicsAnimated *tpKinematics, LPCSTR caBaseName)
 #endif
 		}
 		else
-			if (!!(tpMotionDef = tpKinematics->ID_FX_Safe(strconcat(sizeof(S1),S1,caBaseName,itoa(i,S2,10))))) {
+			if (!!(tpMotionDef = tpKinematics->ID_FX_Safe(xr_strconcat(S1,caBaseName,itoa(i,S2,10))))) {
 				A.push_back(tpMotionDef);
 #ifdef DEBUG
 			if (psAI_Flags.test(aiAnimation))

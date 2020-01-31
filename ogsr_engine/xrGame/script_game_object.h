@@ -321,7 +321,8 @@ public:
 			void				TransferMoney		(int money, CScriptGameObject* pForWho);
 			void				GiveMoney			(int money);
 			u32					Money				();
-			
+			void				SetMoney(u32 money);
+
 			void				SetRelation			(ALife::ERelationType relation, CScriptGameObject* pWhoToSet);
 	
 			int					GetAttitude			(CScriptGameObject* pToWho);
@@ -794,12 +795,18 @@ public:
 	bool throw_target( const Fvector&, u32 const, CScriptGameObject* = nullptr );
 
 	void g_fireParams( const CScriptGameObject*, Fvector&, Fvector& );
+	bool can_fire_to_enemy( const CScriptGameObject* );
+
+	void register_in_combat();
+	void unregister_in_combat();
 
 	float stalker_disp_base();
 	void  stalker_disp_base( float );
 	void  stalker_disp_base( float, float );
 
 	bool controller_psy_hit_active();
+
+	bool can_kill_enemy();
 
 	DECLARE_SCRIPT_REGISTER_FUNCTION
 };

@@ -61,6 +61,8 @@ namespace StalkerDecisionSpace {
 		eWorldPropertyAnomaly,
 		eWorldPropertyInsideAnomaly,
 
+		eWorldPropertyEnemyWoundedAssigned,
+
 		eWorldPropertyScript,
 		eWorldPropertyDummy			= u32(-1),
 	};

@@ -33,3 +33,14 @@ public:
 		return			(*m_object);
 	}
 };
+
+
+class CStalkerActionAlreadyDead : public CStalkerActionBase {
+protected:
+	typedef CStalkerActionBase inherited;
+
+public:
+	CStalkerActionAlreadyDead( CAI_Stalker *object, LPCSTR action_name = "" );
+
+	virtual void execute();
+};

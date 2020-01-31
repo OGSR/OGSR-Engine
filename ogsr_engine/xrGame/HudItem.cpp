@@ -192,11 +192,15 @@ void CHudItem::UpdateHudPosition	()
 		if(item().IsHidden()) 
 			SetHUDmode(FALSE);
 
-		Fmatrix							trans;
-
 		CActor* pActor = smart_cast<CActor*>(object().H_Parent());
-		if(pActor){
-			pActor->Cameras().camera_Matrix				(trans);
+		if(pActor) {
+			Fmatrix trans;
+
+			if (pActor->cam_Active() == pActor->cam_FirstEye())
+				pActor->Cameras().hud_camera_Matrix(trans);
+			else
+				pActor->Cameras().camera_Matrix(trans);
+
 			UpdateHudInertion							(trans);
 			UpdateHudAdditonal							(trans);
 			m_pHUD->UpdatePosition						(trans);

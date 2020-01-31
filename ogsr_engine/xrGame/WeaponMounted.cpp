@@ -152,8 +152,8 @@ void	CWeaponMounted::UpdateCL()
 		if(OwnerActor() && OwnerActor()->IsMyCamera()) 
 		{
 			cam_Update(Device.fTimeDelta, g_fov);
-			OwnerActor()->Cameras().Update(Camera());
-			OwnerActor()->Cameras().ApplyDevice(VIEWPORT_NEAR);
+			OwnerActor()->Cameras().UpdateFromCamera(Camera());
+			OwnerActor()->Cameras().ApplyDevice();
 		}
 	}
 }
@@ -249,7 +249,7 @@ void	CWeaponMounted::cam_Update			(float dt, float fov)
 		}
 	}
 	Camera()->Update							(P,Da);
-	Level().Cameras().Update					(Camera());
+	Level().Cameras().UpdateFromCamera(Camera());
 }
 
 bool	CWeaponMounted::Use					(const Fvector& pos,const Fvector& dir,const Fvector& foot_pos)

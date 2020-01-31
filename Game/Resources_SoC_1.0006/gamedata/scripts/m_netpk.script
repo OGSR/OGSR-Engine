@@ -2448,7 +2448,7 @@ end
 --/ -----------------------------------------------------------------
 class "net_se_actor" (net_base) --/[+] CS/CoP
 --/ -----------------------------------------------------------------
-function net_cse_alife_creature_actor:__init(obj,mode)
+function net_se_actor:__init(obj,mode)
 	super(obj, mode, only_st(mode), "se_actor")
 	self.bases = {
 		net_cse_alife_creature_actor(nil, mode)

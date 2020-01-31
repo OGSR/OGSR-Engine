@@ -652,6 +652,18 @@ BOOL CWeapon::net_Spawn		(CSE_Abstract* DC)
 	m_DefaultCartridge.Load(*m_ammoTypes[m_ammoType], u8(m_ammoType));	
 	if(iAmmoElapsed) 
 	{
+		// нож автоматически заряжается двумя патронами, хотя
+		// размер магазина у него 0. Что бы зря не ругаться, проверим
+		// что в конфиге размер магазина не нулевой.
+		if ( iMagazineSize && iAmmoElapsed > iMagazineSize ) {
+		  Msg( "! [%s]: %s: wrong iAmmoElapsed[%u/%u]", __FUNCTION__, cName().c_str(), iAmmoElapsed, iMagazineSize );
+		  iAmmoElapsed = iMagazineSize;
+		  auto se_obj = alife_object();
+		  if ( se_obj ) {
+		    auto W = smart_cast<CSE_ALifeItemWeapon*>( se_obj );
+		    W->a_elapsed = iAmmoElapsed;
+		  }
+		}
 		m_fCurrentCartirdgeDisp = m_DefaultCartridge.m_kDisp;
 		for(int i = 0; i < iAmmoElapsed; ++i) 
 			m_magazine.push_back(m_DefaultCartridge);
