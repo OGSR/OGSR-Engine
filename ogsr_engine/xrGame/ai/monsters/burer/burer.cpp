@@ -34,6 +34,7 @@ CBurer::CBurer()
  	m_fast_gravi			=	xr_new<CBurerFastGravi>();
 
  	control().add				(m_fast_gravi,  ControlCom::eComCustom1);
+	particle_fire_shield_ps = nullptr;
 }
 
 CBurer::~CBurer()
@@ -55,6 +56,7 @@ void CBurer::reinit()
 void CBurer::net_Destroy()
 {
 	inherited::net_Destroy();
+	StopFireShieldParticles();
 }
 
 void CBurer::reload(LPCSTR section)
@@ -79,6 +81,7 @@ void CBurer::ActivateShield ()
 void CBurer::DeactivateShield () 
 {
 	m_shield_active						=	false;
+	StopFireShieldParticles();
 }
 
 void CBurer::Load(LPCSTR section)
@@ -427,21 +430,33 @@ void CBurer::StopTeleObjectParticle(CGameObject *pO)
 	PP->StopParticles								(particle_tele_object, BI_NONE, true);
 }
 
+
+void CBurer::StopFireShieldParticles() {
+  if ( particle_fire_shield_ps ) {
+    particle_fire_shield_ps->Stop();
+    CParticlesObject::Destroy( particle_fire_shield_ps );
+  }
+}
+
+void CBurer::StartFireShieldParticles( SHit* pHDS ) {
+  Fmatrix pos;
+  CParticlesPlayer::MakeXFORM( this, pHDS->bone(), pHDS->dir, pHDS->p_in_bone_space,pos );
+  particle_fire_shield_ps = CParticlesObject::Create( particle_fire_shield, FALSE );
+  particle_fire_shield_ps->UpdateParent( pos,Fvector().set( 0.f, 0.f, 0.f ) );
+  particle_fire_shield_ps->Play();
+}
+
+
 void	CBurer::Hit								(SHit* pHDS)
 {
 	if ( m_shield_active							&& 
 		 pHDS->hit_type == ALife::eHitTypeFireWound	&& 
 		 Device.dwFrame != last_hit_frame				) 
 	{
-		Fmatrix pos; 
-		//CParticlesPlayer::MakeXFORM(this,element,Fvector().set(0.f,0.f,1.f),p_in_object_space,pos);
-		CParticlesPlayer::MakeXFORM					(this,pHDS->bone(),pHDS->dir,pHDS->p_in_bone_space,pos);
-
-		CParticlesObject* ps					=	CParticlesObject::Create(particle_fire_shield,TRUE);
-		
-		ps->UpdateParent							(pos,Fvector().set(0.f,0.f,0.f));
-		GamePersistent().ps_needtoplay.push_back	(ps);
-
+	  if ( !particle_fire_shield_ps || !particle_fire_shield_ps->IsPlaying() ) {
+	    StopFireShieldParticles();
+	    StartFireShieldParticles( pHDS );
+	  }
 	} 
 	else if ( !m_shield_active )
 	{
@@ -461,6 +476,7 @@ void CBurer::Die(CObject* who)
 	}
 
 	CTelekinesis::Deactivate();
+	StopFireShieldParticles();
 }
 
 void CBurer::net_Relcase(CObject *O)

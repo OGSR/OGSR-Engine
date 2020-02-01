@@ -118,6 +118,7 @@ public:
 	LPCSTR	m_shield_keep_particle;
 	TTime	m_shield_keep_particle_period;
 	LPCSTR	particle_fire_shield;
+	CParticlesObject* particle_fire_shield_ps;
 
 	CBurerFastGravi	*m_fast_gravi;
 
@@ -151,6 +152,8 @@ public:
 
 			void	ActivateShield		();
 			void	DeactivateShield	();
+			void	StartFireShieldParticles( SHit* pHDS );
+			void	StopFireShieldParticles();
 
 			bool	need_shotmark () const { return !m_shield_active; }
 
