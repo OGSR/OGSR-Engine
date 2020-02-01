@@ -19,6 +19,7 @@
 #include "game_cl_base_weapon_usage_statistic.h"
 #include "../xrcdb/xr_collide_defs.h"
 #include "weapon.h"
+#include "ai/monsters/BaseMonster/base_monster.h"
 
 //константы shoot_factor, определяющие 
 //поведение пули при столкновении с объектом
@@ -269,6 +270,10 @@ void CBulletManager::DynamicObjectHit	(CBulletManager::_event& E)
 		{
 			NeedShootmark = false;
 		};
+	}
+	else if ( CBaseMonster* monster = smart_cast<CBaseMonster*>( E.R.O ) )
+	{
+		NeedShootmark = ( NeedShootmark && monster->need_shotmark() );
 	}
 	
 	//визуальное обозначение попадание на объекте

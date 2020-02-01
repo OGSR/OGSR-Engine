@@ -578,6 +578,6 @@ private:
 
 public:
 	virtual bool					run_home_point_when_enemy_inaccessible () const { return true; }
-};
+	virtual bool					need_shotmark () const { return true; }};
 
 #include "base_monster_inline.h"
