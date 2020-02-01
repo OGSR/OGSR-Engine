@@ -14,9 +14,11 @@ class CHolderCustom
 private:
 	CGameObject*			m_owner;
 	CActor*					m_ownerActor;
-protected:
+public:
 	CGameObject*			Owner				(){return m_owner;}
+	CGameObject*			Owner() const { return m_owner; }
 	CActor*					OwnerActor			(){return m_ownerActor;}
+	CActor*				OwnerActor() const { return m_ownerActor; }
 public:
 							CHolderCustom		()				{m_owner=NULL;m_ownerActor=NULL;}
 	virtual					~CHolderCustom		()				{;}
