@@ -51,6 +51,7 @@
 #include "../../script_game_object.h"
 #include "../../inventory.h"
 #include "../../game_object_space.h"
+#include "../../holder_custom.h"
 
 using namespace StalkerSpace;
 
@@ -548,6 +549,12 @@ IC BOOL ray_query_callback	(collide::rq_result& result, LPVOID params)
 	}
 
 	CEntityAlive						*entity_alive = smart_cast<CEntityAlive*>(result.O);
+	if ( !entity_alive ) {
+	  CHolderCustom* holder = smart_cast<CHolderCustom*>( result.O );
+	  if ( holder && holder->Owner() )
+	    entity_alive = smart_cast<CEntityAlive*>( holder->Owner() );
+	}
+
 	if (!entity_alive) {
 		if (param->m_power > param->m_power_threshold)
 			return TRUE;

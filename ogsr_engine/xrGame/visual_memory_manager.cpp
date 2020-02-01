@@ -29,6 +29,7 @@
 #include "memory_manager.h"
 #include "alife_registry_wrappers.h"
 #include "alife_simulator_header.h"
+#include "holder_custom.h"
 
 #ifndef MASTER_GOLD
 #	include "clsid_game.h"
@@ -172,6 +173,9 @@ void CVisualMemoryManager::reload				(LPCSTR section)
 
 u32	CVisualMemoryManager::visible_object_time_last_seen	(const CObject *object) const
 {
+	if ( Actor()->Holder() && smart_cast<const CActor*>( object ) )
+	  object = smart_cast<const CObject*>( Actor()->Holder() );
+
 	VISIBLES::iterator	I = std::find(m_objects->begin(),m_objects->end(),object_id(object));
 	if (I != m_objects->end()) 
 		return (I->m_level_time);	
@@ -181,6 +185,9 @@ u32	CVisualMemoryManager::visible_object_time_last_seen	(const CObject *object) 
 
 bool CVisualMemoryManager::visible_right_now	(const CGameObject *game_object) const
 {
+	if ( Actor()->Holder() && smart_cast<const CActor*>( game_object ) )
+	  game_object = smart_cast<const CGameObject*>( Actor()->Holder() );
+
 	VISIBLES::const_iterator		I = std::find(objects().begin(),objects().end(),object_id(game_object));
 	if ((objects().end() == I))
 		return						(false);
@@ -196,6 +203,9 @@ bool CVisualMemoryManager::visible_right_now	(const CGameObject *game_object) co
 
 bool CVisualMemoryManager::visible_now	(const CGameObject *game_object) const
 {
+	if ( Actor()->Holder() && smart_cast<const CActor*>( game_object ) )
+	  game_object = smart_cast<const CGameObject*>( Actor()->Holder() );
+
 	VISIBLES::const_iterator		I = std::find(objects().begin(),objects().end(),object_id(game_object));
 	return							((objects().end() != I) && (*I).visible(mask()));
 }
