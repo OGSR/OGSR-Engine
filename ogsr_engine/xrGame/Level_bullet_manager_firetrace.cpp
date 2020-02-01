@@ -183,9 +183,7 @@ void CBulletManager::FireShotmark (SBullet* bullet, const Fvector& vDir, const F
 		particle_dir.invert	();
 
 		//на текущем актере отметок не ставим
-		if ( Level().CurrentEntity() && Level().CurrentEntity()->ID() == R.O->ID() ) return;
-
-		if (mtl_pair && !mtl_pair->m_pCollideMarks->empty() && ShowMark)
+		if ( !smart_cast<CActor*>( R.O ) && mtl_pair && !mtl_pair->m_pCollideMarks->empty() && ShowMark )
 		{
 			//добавить отметку на материале
 			Fvector p;
@@ -263,7 +261,7 @@ void CBulletManager::DynamicObjectHit	(CBulletManager::_event& E)
 	E.Repeated = false;
 	bool NeedShootmark = ( E.bullet.hit_type == ALife::eHitTypeFireWound || E.bullet.hit_type == ALife::eHitTypeWound  || E.bullet.hit_type == ALife::eHitTypeWound_2 ); //true;//!E.Repeated;
 	
-	if (E.R.O->CLS_ID == CLSID_OBJECT_ACTOR)
+	if ( smart_cast<CActor*>( E.R.O ) )
 	{
 		game_PlayerState* ps = Game().GetPlayerByGameID(E.R.O->ID());
 		if (ps && ps->testFlag(GAME_PLAYER_FLAG_INVINCIBLE))
