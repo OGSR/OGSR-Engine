@@ -101,6 +101,7 @@ TEMPLATE_SPECIALIZATION
 void CAbstractObjectManager::reset					()
 {
 	m_objects.clear			();
+	m_selected				= 0;
 }
 
 TEMPLATE_SPECIALIZATION
