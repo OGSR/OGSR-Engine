@@ -491,6 +491,7 @@ public:
 			void				extrapolate_length		(float extrapolate_length);
 			float				extrapolate_length		() const;
 			void				enable_memory_object	(CScriptGameObject *object, bool enable);
+			void remove_memory_object( CScriptGameObject* );
 			int					active_sound_count		();
 			int					active_sound_count		(bool only_playing);
 			const CCoverPoint	*best_cover				(const Fvector &position, const Fvector &enemy_position, float radius, float min_enemy_distance, float max_enemy_distance);
