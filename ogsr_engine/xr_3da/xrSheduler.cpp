@@ -457,9 +457,9 @@ void CSheduler::Update				()
 #endif // DEBUG_SCHEDULER
 
 	// занимать до 50 мс в кадре (клинч неписей вероятен, если много в онлайне объектов).
-#pragma todo("KRodin: раскомментировал обратно, посмотрим, возможно это поможет от виснущих неписей в ОГСЕ.")
-	clamp(psShedulerTarget,3.f,50.f);
-	//clamp(psShedulerTarget,3.f,66.f);
+//#pragma todo("KRodin: раскомментировал обратно, посмотрим, возможно это поможет от виснущих неписей в ОГСЕ.")
+	//clamp(psShedulerTarget,3.f,50.f);
+	clamp(psShedulerTarget,3.f,66.f);
 
 	psShedulerCurrent				= 0.9f*psShedulerCurrent + 0.1f*psShedulerTarget;
 	Device.Statistic->fShedulerLoad	= psShedulerCurrent;
