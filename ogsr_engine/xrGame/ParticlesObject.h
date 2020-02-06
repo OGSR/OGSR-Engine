@@ -45,6 +45,7 @@ public:
 	bool				IsAutoRemove		();
 	bool				IsPlaying			();
 	void				SetAutoRemove		(bool auto_remove);
+	int LifeTime() { return m_iLifeTime; }
 
 	const shared_str			Name		();
 public:

@@ -62,6 +62,9 @@ CCustomZone::CCustomZone(void)
 	
 	m_bBornOnBlowoutFlag		= false;
 	m_keep_update = false;
+	m_pBlowoutParticles = nullptr;
+	m_pAccumParticles   = nullptr;
+	m_pAwakingParticles = nullptr;
 }
 
 CCustomZone::~CCustomZone(void) 
@@ -173,9 +176,9 @@ void CCustomZone::Load(LPCSTR section)
 		m_sHitParticlesBig = pSettings->r_string(section,"hit_big_particles");
 
 	if(pSettings->line_exist(section,"idle_small_particles")) 
-		m_sIdleObjectParticlesBig = pSettings->r_string(section,"idle_big_particles");
-	if(pSettings->line_exist(section,"idle_big_particles")) 
 		m_sIdleObjectParticlesSmall = pSettings->r_string(section,"idle_small_particles");
+	if(pSettings->line_exist(section,"idle_big_particles"))
+		m_sIdleObjectParticlesBig = pSettings->r_string(section,"idle_big_particles");
 	if(pSettings->line_exist(section,"idle_particles_dont_stop"))
 		m_bIdleObjectParticlesDontStop=pSettings->r_bool(section,"idle_particles_dont_stop");
 
@@ -401,6 +404,9 @@ BOOL CCustomZone::net_Spawn(CSE_Abstract* DC)
 void CCustomZone::net_Destroy() 
 {
 	StopIdleParticles		();
+	StopAwakingParticles		();
+	StopBlowoutParticles		();
+	StopAccumParticles		();
 
 	inherited::net_Destroy	();
 
@@ -432,6 +438,9 @@ void CCustomZone::net_Export(NET_Packet& P)
 
 bool CCustomZone::IdleState()
 {
+	if ( m_pIdleParticles && !m_pIdleParticles->IsLooped() && !m_pIdleParticles->IsPlaying() )
+	  m_pIdleParticles->Play();
+
 	UpdateOnOffState	();
 
 	return false;
@@ -718,6 +727,10 @@ float CCustomZone::Power(float dist)
 
 void CCustomZone::PlayIdleParticles()
 {
+	StopAwakingParticles();
+	StopBlowoutParticles();
+	StopAccumParticles();
+
 	m_idle_sound.play_at_pos(0, Position(), true);
 
 	if(*m_sIdleParticles)
@@ -788,11 +801,24 @@ void CCustomZone::PlayBlowoutParticles()
 {
 	if(!m_sBlowoutParticles) return;
 
-	CParticlesObject* pParticles;
-	pParticles	= CParticlesObject::Create(*m_sBlowoutParticles,TRUE);
-	pParticles->UpdateParent(XFORM(),zero_vel);
-	pParticles->Play();
+	if ( !m_pBlowoutParticles ) {
+	  m_pBlowoutParticles = CParticlesObject::Create(*m_sBlowoutParticles,FALSE);
+	  m_pBlowoutParticles->UpdateParent( XFORM(), zero_vel );
+	  if ( m_pBlowoutParticles->IsLooped() )
+	    Msg( "! [%s]: %s: detected looped particle in blowout_particles = %s", __FUNCTION__, cName().c_str(), m_sBlowoutParticles.c_str() );
+	}
+	m_pBlowoutParticles->UpdateParent( XFORM(), zero_vel );
+	if ( !m_pBlowoutParticles->IsPlaying() )
+	  m_pBlowoutParticles->Play();
 }
+
+void CCustomZone::StopBlowoutParticles() {
+  if ( m_pBlowoutParticles ) {
+    m_pBlowoutParticles->Stop( FALSE );
+    CParticlesObject::Destroy( m_pBlowoutParticles );
+  }
+}
+
 
 void CCustomZone::PlayHitParticles(CGameObject* pObject)
 {
@@ -816,8 +842,10 @@ void CCustomZone::PlayHitParticles(CGameObject* pObject)
 		CParticlesPlayer* PP = smart_cast<CParticlesPlayer*>(pObject);
 		if (PP){
 			u16 play_bone = PP->GetRandomBone(); 
-			if (play_bone!=BI_NONE)
+			if ( play_bone!=BI_NONE ) {
+				PP->StopParticles( particle_str, BI_NONE, true );
 				PP->StartParticles	(particle_str,play_bone,Fvector().set(0,1,0), ID());
+			}
 		}
 	}
 }
@@ -1199,6 +1227,9 @@ bool CCustomZone::Enable()
 bool CCustomZone::Disable()
 {
 	if (!IsEnabled()) return false;
+	StopAwakingParticles();
+	StopBlowoutParticles();
+	StopAccumParticles();
 
 	for(OBJECT_INFO_VEC_IT it = m_ObjectInfoMap.begin(); 
 		m_ObjectInfoMap.end() != it; ++it) 
@@ -1443,29 +1474,55 @@ void CCustomZone::exit_Zone( SZoneObjectInfo& io ) {
 
 void CCustomZone::PlayAccumParticles()
 {
-	if(m_sAccumParticles.size()){
-		CParticlesObject* pParticles;
-		pParticles	= CParticlesObject::Create(*m_sAccumParticles,TRUE);
-		pParticles->UpdateParent(XFORM(),zero_vel);
-		pParticles->Play();
+	if ( m_sAccumParticles.size() ) {
+	  if ( !m_pAccumParticles ) {
+	    m_pAccumParticles = CParticlesObject::Create( *m_sAccumParticles, FALSE );
+	    m_pAccumParticles->UpdateParent( XFORM(), zero_vel );
+	    if ( m_pAccumParticles->IsLooped() )
+	      Msg( "! [%s]: %s: detected looped particle in accum_particles = %s", __FUNCTION__, cName().c_str(), m_sAccumParticles.c_str() );
+	  }
+	  m_pAccumParticles->UpdateParent( XFORM(), zero_vel );
+	  if ( !m_pAccumParticles->IsPlaying() )
+	    m_pAccumParticles->Play();
 	}
 
 	if(m_accum_sound._handle())
 		m_accum_sound.play_at_pos	(0, Position());
 }
 
+void CCustomZone::StopAccumParticles() {
+  if ( m_pAccumParticles ) {
+    m_pAccumParticles->Stop( FALSE );
+    CParticlesObject::Destroy( m_pAccumParticles );
+  }
+}
+
+
 void CCustomZone::PlayAwakingParticles()
 {
-	if(m_sAwakingParticles.size()){
-		CParticlesObject* pParticles;
-		pParticles	= CParticlesObject::Create(*m_sAwakingParticles,TRUE);
-		pParticles->UpdateParent(XFORM(),zero_vel);
-		pParticles->Play();
+	if ( m_sAwakingParticles.size() ) {
+	  if ( !m_pAwakingParticles ) {
+	    m_pAwakingParticles = CParticlesObject::Create( *m_sAwakingParticles, FALSE );
+	    m_pAwakingParticles->UpdateParent( XFORM(), zero_vel );
+	    if ( m_pAwakingParticles->IsLooped() )
+	      Msg( "! [%s]: %s: detected looped particle in awake_particles = %s", __FUNCTION__, cName().c_str(), m_sAwakingParticles.c_str() );
+	  }
+	  m_pAwakingParticles->UpdateParent( XFORM(), zero_vel );
+	  if ( !m_pAwakingParticles->IsPlaying() )
+	    m_pAwakingParticles->Play();
 	}
 
 	if(m_awaking_sound._handle())
 		m_awaking_sound.play_at_pos	(0, Position());
 }
+
+void CCustomZone::StopAwakingParticles() {
+  if ( m_pAwakingParticles ) {
+    m_pAwakingParticles->Stop( FALSE );
+    CParticlesObject::Destroy( m_pAwakingParticles );
+  }
+}
+
 
 void CCustomZone::UpdateOnOffState	()
 {
