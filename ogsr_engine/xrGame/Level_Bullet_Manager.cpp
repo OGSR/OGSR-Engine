@@ -268,12 +268,12 @@ bool CBulletManager::CalcBullet (collide::rq_results & rq_storage, xr_vector<ISp
 /*		if(!level_box.contains(bullet->pos))
 			return false;
 */
-		if(!((bullet->pos.x>=level_box.x1) && 
-			 (bullet->pos.x<=level_box.x2) && 
+		if ( ! ( bullet->pos.x >= level_box.x1 * 1.1f && 
+			 bullet->pos.x <= level_box.x2 * 1.1f && 
 			 (bullet->pos.y>=level_box.y1) && 
 //			 (bullet->pos.y<=level_box.y2) && 
-			 (bullet->pos.z>=level_box.z1) && 
-			 (bullet->pos.z<=level_box.z2))	)
+			 bullet->pos.z >= level_box.z1 * 1.1f && 
+			 bullet->pos.z <= level_box.z2 * 1.1f ) )
 			 return false;
 
 		//изменить скорость и направление ее полета
