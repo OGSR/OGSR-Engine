@@ -841,3 +841,4 @@ CActor*				Actor		();
 extern const float	s_fFallTime;
 extern float cam_HeightInterpolationSpeed;
 extern float cam_LookoutSpeed;
+extern float g_shotmarks_dist;

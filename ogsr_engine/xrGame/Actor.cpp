@@ -89,6 +89,7 @@ static Fvector	vFootCenter;
 static Fvector	vFootExt;
 
 Flags32 psActorFlags = { AF_3D_SCOPES | AF_KEYPRESS_ON_START };
+float g_shotmarks_dist = 25.f;
 
 static bool updated;
 

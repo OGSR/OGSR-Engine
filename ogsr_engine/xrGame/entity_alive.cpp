@@ -20,6 +20,7 @@
 #include "game_object_space.h"
 #include "material_manager.h"
 #include "game_base_space.h"
+#include "Actor.h"
 
 #define SMALL_ENTITY_RADIUS		0.6f
 #define BLOOD_MARKS_SECT		"bloody_marks"
@@ -272,9 +273,9 @@ void CEntityAlive::Hit(SHit* pHDS)
 			StartBloodDrops(pWound);
 	}
 
-	if (HDS.hit_type != ALife::eHitTypeTelepatic){
+	if ( HDS.hit_type == ALife::eHitTypeFireWound || HDS.hit_type == ALife::eHitTypeWound ) {
 		//добавить кровь на стены
-		if (!use_simplified_visual())
+		if ( !use_simplified_visual() && ( smart_cast<CActor*>( HDS.who ) || ( Core.Features.test( xrCore::Feature::npc_simplified_shooting ) && Device.vCameraPosition.distance_to( Position() ) < g_shotmarks_dist ) ) )
 			BloodyWallmarks (HDS.damage(), HDS.dir, HDS.bone(), HDS.p_in_bone_space);
 	}
 

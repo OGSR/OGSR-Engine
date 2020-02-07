@@ -174,6 +174,9 @@ BOOL  CBulletManager::firetrace_callback(collide::rq_result& result, LPVOID para
 
 void CBulletManager::FireShotmark (SBullet* bullet, const Fvector& vDir, const Fvector &vEnd, collide::rq_result& R, u16 target_material, const Fvector& vNormal, bool ShowMark)
 {
+	if ( bullet->parent_id != Actor()->ID() && Core.Features.test( xrCore::Feature::npc_simplified_shooting ) && Device.vCameraPosition.distance_to( vEnd ) > g_shotmarks_dist )
+	  return;
+
 	SGameMtlPair* mtl_pair	= GMLib.GetMaterialPair(bullet->bullet_material_idx, target_material);
 	Fvector particle_dir	= vNormal;
 

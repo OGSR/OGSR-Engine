@@ -250,7 +250,8 @@ void CWallmarksEngine::AddWallmark_internal	(CDB::TRI* pTri, const Fvector* pVer
 			for (; it!=end; it++)	
 			{
 				static_wallmark* wm		=	*it;
-				if (wm->bounds.P.similar(W->bounds.P,0.02f))
+				//if (wm->bounds.P.similar(W->bounds.P,0.02f))
+				if ( wm->bounds.intersect( W->bounds ) )
 				{ // replace
 					static_wm_destroy	(wm);
 					*it					=	W;
