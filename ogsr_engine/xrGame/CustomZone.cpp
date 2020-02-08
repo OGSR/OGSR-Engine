@@ -19,6 +19,7 @@
 #include "script_callback_ex.h"
 #include "game_object_space.h"
 #include "script_game_object.h"
+#include "bolt.h"
 
 //////////////////////////////////////////////////////////////////////////
 #define PREFETCHED_ARTEFACTS_NUM 1	//количество предварительно проспавненых артефактов
@@ -96,7 +97,9 @@ void CCustomZone::Load(LPCSTR section)
 	m_zone_flags.set(eIgnoreSmall,		pSettings->r_bool(section,	"ignore_small"));
 	m_zone_flags.set(eIgnoreArtefact,	pSettings->r_bool(section,	"ignore_artefacts"));
 	m_zone_flags.set(eVisibleByDetector,pSettings->r_bool(section,	"visible_by_detector"));
-	
+
+	m_zone_flags.set( eIgnoreBolt, READ_IF_EXISTS( pSettings, r_bool, section, "ignore_bolt", m_zone_flags.test( eIgnoreAny | eIgnoreSmall ) ) );
+
 	// bak
 	m_zone_flags.set(eBirthOnNonAlive,READ_IF_EXISTS(pSettings, r_bool, section, "birth_on_nonalive", false));
 	m_zone_flags.set(eBirthOnAlive,READ_IF_EXISTS(pSettings, r_bool, section, "birth_on_alive", false));
@@ -646,12 +649,19 @@ void CCustomZone::feel_touch_new	(CObject* O)
 	else
 		object_info.small_object = false;
 
-	if ( m_zone_flags.test( eIgnoreAny ) || ( object_info.small_object && m_zone_flags.test( eIgnoreSmall ) ) ||
-		(object_info.nonalive_object && m_zone_flags.test(eIgnoreNonAlive)) || 
-		(pArtefact && m_zone_flags.test(eIgnoreArtefact)))
+	if (
+	  m_zone_flags.test( eIgnoreAny ) ||
+	  ( object_info.small_object && m_zone_flags.test( eIgnoreSmall ) ) ||
+	  ( object_info.nonalive_object && m_zone_flags.test( eIgnoreNonAlive ) ) ||
+	  ( pArtefact && m_zone_flags.test( eIgnoreArtefact ) )
+        )
 		object_info.zone_ignore = true;
 	else
 		object_info.zone_ignore = false;
+
+	if ( smart_cast<CBolt*>( pGameObject ) )
+	  object_info.zone_ignore = m_zone_flags.test( eIgnoreBolt );
+
 	enter_Zone(object_info);
 	m_ObjectInfoMap.push_back(object_info);
 	

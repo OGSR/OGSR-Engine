@@ -111,6 +111,7 @@ protected:
 		eIdleLightVolumetric = 1 << 14,
 		eIgnoreAny			=(1<<15),
 		eBlowoutLightShadow		=(1<<16),
+		eIgnoreBolt			=(1<<17),
 	};
 	u32					m_owner_id;		//if created from artefact
 	u32					m_ttl;
