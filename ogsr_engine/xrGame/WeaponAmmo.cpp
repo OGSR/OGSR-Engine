@@ -51,7 +51,11 @@ void CCartridge::Load(LPCSTR section, u8 LocalAmmoType)
 	m_impair				= pSettings->r_float(section, "impair");
 	fWallmarkSize			= pSettings->r_float(section, "wm_size");
 
-	m_flags.set				(cfCanBeUnlimited | cfRicochet, TRUE);
+	m_flags.set( cfCanBeUnlimited, TRUE );
+
+	bool allow_ricochet = READ_IF_EXISTS( pSettings, r_bool, BULLET_MANAGER_SECTION, "allow_ricochet", true );
+	m_flags.set( cfRicochet, READ_IF_EXISTS( pSettings, r_bool, section, "allow_ricochet", allow_ricochet ) );
+
 	if(pSettings->line_exist(section,"can_be_unlimited"))
 		m_flags.set(cfCanBeUnlimited, pSettings->r_bool(section, "can_be_unlimited"));
 
