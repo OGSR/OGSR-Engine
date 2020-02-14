@@ -175,6 +175,7 @@ void	uber_deffer	(CBlender_Compile& C, bool hq, LPCSTR _vspec, LPCSTR _pspec, BO
 		C.r_dx10Texture	("s_detailBumpX",	texDetailBumpX);
 	}
 	C.r_dx10Sampler		("smp_base");
+	C.r_dx10Sampler( "smp_linear" );
 	if (lmap)
 	{
 		//C.r_Sampler("s_hemi",	C.L_textures[2],	false,	D3DTADDRESS_CLAMP,	D3DTEXF_LINEAR,		D3DTEXF_NONE,	D3DTEXF_LINEAR);
