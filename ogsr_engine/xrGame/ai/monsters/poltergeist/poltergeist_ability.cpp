@@ -46,8 +46,10 @@ void CPolterSpecialAbility::on_hide()
 	if (!m_object->g_Alive())
 		return;
 
- 	m_particles_object			= m_object->PlayParticles	(m_particles_hidden, m_object->Position(),Fvector().set(0.0f,0.1f,0.0f), false);
- 	m_particles_object_electro	= m_object->PlayParticles	(m_particles_idle, m_object->Position(),Fvector().set(0.0f,0.1f,0.0f), false);
+	Fvector center;
+	m_object->Center( center );
+	m_particles_object = m_object->PlayParticles( m_particles_hidden, center, Fvector().set( 0.f, 0.1f, 0.f ), false );
+	m_particles_object_electro = m_object->PlayParticles( m_particles_idle, center, Fvector().set( 0.f, 0.1f, 0.f ), false );
 }
 
 void CPolterSpecialAbility::on_show()
@@ -59,8 +61,12 @@ void CPolterSpecialAbility::on_show()
 
 void CPolterSpecialAbility::update_frame()
 {
-	if (m_particles_object)			m_particles_object->SetXFORM		(m_object->XFORM());
-	if (m_particles_object_electro)	m_particles_object_electro->SetXFORM(m_object->XFORM());
+	Fvector center;
+	m_object->Center( center );
+	Fmatrix	xform = m_object->XFORM();
+	xform.translate_over( center );
+	if ( m_particles_object ) m_particles_object->SetXFORM( xform );
+	if ( m_particles_object_electro ) m_particles_object_electro->SetXFORM( xform );
 }
 
 void CPolterSpecialAbility::on_die()
