@@ -8,5 +8,5 @@
 			.def_readwrite("morale_max",				&CONDITION_CLASS::m_fEntityMoraleMax)			
 			.def_readwrite("min_wound_size",			&CONDITION_CLASS::m_fMinWoundSize)
 			.def_readonly("is_bleeding",				&CONDITION_CLASS::m_bIsBleeding)
-			.def_readwrite("health_hit_part",			&CONDITION_CLASS::m_fHealthHitPart)
+			//.def_readwrite("health_hit_part",			&CONDITION_CLASS::m_fHealthHitPart)
 			.def_readwrite("power_hit_part",			&CONDITION_CLASS::m_fPowerHitPart)				
