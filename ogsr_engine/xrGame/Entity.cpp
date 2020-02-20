@@ -20,6 +20,8 @@
 #include "memory_space.h"
 
 #define BODY_REMOVE_TIME		600000
+#define FORGET_KILLER_TIME 180
+
 
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
@@ -156,6 +158,8 @@ void CEntity::Load		(LPCSTR section)
 	//время убирания тела с уровня
 	m_dwBodyRemoveTime	= READ_IF_EXISTS(pSettings,r_u32,section,"body_remove_time",BODY_REMOVE_TIME);
 	//////////////////////////////////////
+
+	m_forget_killer_time = READ_IF_EXISTS( pSettings, r_u32, section, "forget_killer_time", FORGET_KILLER_TIME ) * 1000;
 }
 
 BOOL CEntity::net_Spawn		(CSE_Abstract* DC)
@@ -319,13 +323,11 @@ DLL_Pure *CEntity::_construct	()
 	return						(this);
 }
 
-const u32 FORGET_KILLER_TIME = 180000;
-
 void CEntity::shedule_Update	(u32 dt)
 {
 	inherited::shedule_Update	(dt);
 	if (!getDestroy() && !g_Alive() && (m_killer_id != u16(-1))) {
-		if (Device.dwTimeGlobal > m_level_death_time + FORGET_KILLER_TIME) {
+		if ( Device.dwTimeGlobal > m_level_death_time + m_forget_killer_time ) {
 			m_killer_id			= u16(-1);
 			NET_Packet			P;
 			u_EventGen			(P,GE_ASSIGN_KILLER,ID());
