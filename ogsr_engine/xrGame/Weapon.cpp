@@ -1268,36 +1268,7 @@ int CWeapon::GetAmmoCurrent(bool use_item_to_spawn) const
 
 	for(int i = 0; i < (int)m_ammoTypes.size(); ++i) 
 	{
-		LPCSTR l_ammoType = *m_ammoTypes[i];
-
-		for(TIItemContainer::iterator l_it = m_pCurrentInventory->m_belt.begin(); m_pCurrentInventory->m_belt.end() != l_it; ++l_it) 
-		{
-			CWeaponAmmo *l_pAmmo = smart_cast<CWeaponAmmo*>(*l_it);
-
-			if(l_pAmmo && !xr_strcmp(l_pAmmo->cNameSect(), l_ammoType)) 
-			{
-				iAmmoCurrent = iAmmoCurrent + l_pAmmo->m_boxCurr;
-			}
-		}
-
-		bool include_ruck = true;
-
-		auto parent = const_cast<CObject*>(H_Parent());
-		auto pActor = smart_cast<CActor*>(parent);
-		include_ruck = !psActorFlags.test(AF_AMMO_ON_BELT) || !pActor;
-
-		if (include_ruck)
-		{
-			for (TIItemContainer::iterator l_it = m_pCurrentInventory->m_ruck.begin(); m_pCurrentInventory->m_ruck.end() != l_it; ++l_it)
-			{
-				CWeaponAmmo *l_pAmmo = smart_cast<CWeaponAmmo*>(*l_it);
-
-				if (l_pAmmo && !xr_strcmp(l_pAmmo->cNameSect(), l_ammoType))
-				{
-					iAmmoCurrent = iAmmoCurrent + l_pAmmo->m_boxCurr;
-				}
-			}
-		}
+		iAmmoCurrent += GetAmmoCount_forType( m_ammoTypes[i] );
 
 		if (!use_item_to_spawn)
 			continue;
@@ -1308,6 +1279,30 @@ int CWeapon::GetAmmoCurrent(bool use_item_to_spawn) const
 		iAmmoCurrent += inventory_owner().ammo_in_box_to_spawn();
 	}
 	return l_count + iAmmoCurrent;
+}
+
+int CWeapon::GetAmmoCount( u8 ammo_type, u32 max ) const {
+  VERIFY( m_pInventory );
+  R_ASSERT( ammo_type < m_ammoTypes.size() );
+
+  return GetAmmoCount_forType( m_ammoTypes[ ammo_type ], max );
+}
+
+int CWeapon::GetAmmoCount_forType( shared_str const& ammo_type, u32 max ) const {
+  u32 res = 0;
+  auto callback = [&]( const auto pIItem ) -> bool {
+    auto* ammo = smart_cast<CWeaponAmmo*>( pIItem );
+    if ( ammo->cNameSect() == ammo_type )
+      res += ammo->m_boxCurr;
+    return ( max > 0 && res >= max );
+  };
+
+  m_pCurrentInventory->IterateAmmo( false, callback );
+  if ( max == 0 || res < max )
+    if ( !smart_cast<const CActor*>( H_Parent() ) || !psActorFlags.test( AF_AMMO_ON_BELT ) )
+      m_pCurrentInventory->IterateAmmo( true, callback );
+
+  return res;
 }
 
 float CWeapon::GetConditionMisfireProbability() const

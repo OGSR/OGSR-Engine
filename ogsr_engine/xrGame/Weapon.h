@@ -469,6 +469,10 @@ protected:
 //////////////////////////////////////////////////////////////////////////
 // Weapon and ammo
 //////////////////////////////////////////////////////////////////////////
+protected:
+	int GetAmmoCount_forType( shared_str const& ammo_type, u32 = 0 ) const;
+	int GetAmmoCount( u8 ammo_type, u32 = 0 ) const;
+
 public:
 	IC int					GetAmmoElapsed		()	const		{	return /*int(m_magazine.size())*/iAmmoElapsed;}
 	IC int					GetAmmoMagSize		()	const		{	return iMagazineSize;						}
