@@ -947,3 +947,10 @@ void CScriptGameObject::configure_scheduler( u32 t_min, u32 t_max ) {
   obj->shedule.t_min = t_min;
   obj->shedule.t_max = t_max;
 }
+
+
+u16 CScriptGameObject::killer_id() {
+  auto* obj = smart_cast<CEntityAlive*>( &object() );
+  ASSERT_FMT( obj, "[%s]: %s not a CEntityAlive", __FUNCTION__, obj->cName().c_str() );
+  return obj->killer_id();
+}

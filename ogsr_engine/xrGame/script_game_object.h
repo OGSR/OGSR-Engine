@@ -826,6 +826,7 @@ public:
 	void set_fastest_scheduler( bool );
 	void set_slowest_scheduler( bool );
 	void configure_scheduler( u32, u32 );
+	u16  killer_id();
 
 	DECLARE_SCRIPT_REGISTER_FUNCTION
 };

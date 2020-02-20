@@ -380,6 +380,8 @@ class_<CScriptGameObject> script_register_game_object3(class_<CScriptGameObject>
 		.def( "set_slowest_scheduler", &CScriptGameObject::set_slowest_scheduler )
 		.def( "configure_scheduler",   &CScriptGameObject::configure_scheduler   )
 
+		.def( "killer_id", &CScriptGameObject::killer_id )
+
 		.property("inventory",				&get_obj_inventory)
 		.property("immunities",				&get_obj_immunities)
 		.property("is_alive",				&get_obj_alive)
