@@ -132,7 +132,6 @@ void CScriptGameObject::script_register(lua_State *L)
 				value("on_actor_weapon_empty", int(GameObject::eOnActorWeaponEmpty)),
 				value("on_actor_weapon_zoom_in", int(GameObject::eOnActorWeaponZoomIn)),
 				value("on_actor_weapon_zoom_out", int(GameObject::eOnActorWeaponZoomOut)),
-				
 				value("on_actor_weapon_switch_gl", int(GameObject::eOnActorWeaponSwitchGL)),
 				
 				// NPC Callbacks.
@@ -141,6 +140,7 @@ void CScriptGameObject::script_register(lua_State *L)
 				value("on_npc_weapon_jammed", int(GameObject::eOnNPCWeaponJammed)),
 				value("on_npc_weapon_reload", int(GameObject::eOnNPCWeaponReload)),
 				value("on_npc_weapon_empty", int(GameObject::eOnNPCWeaponEmpty)),
+				value("on_npc_weapon_switch_gl", int(GameObject::eOnNPCWeaponSwitchGL)),
 				// Cribbledirge End
 
 				value("on_cell_item_focus", int(GameObject::eCellItemFocus)),
