@@ -22,7 +22,6 @@
 #include "game_object_space.h"
 #include "script_callback_ex.h"
 #include "script_game_object.h"
-#include "actor.h"
 #include "alife_registry_wrappers.h"
 #include "alife_simulator_header.h"
 
@@ -161,7 +160,7 @@ BOOL CWeaponMagazinedWGrenade::net_Spawn(CSE_Abstract* DC)
 
 		UpdateZoomOffset();
 
-		Actor()->callback(GameObject::eOnActorWeaponSwitchGL)(lua_game_object());
+		StateSwitchCallback( GameObject::eOnActorWeaponSwitchGL, GameObject::eOnNPCWeaponSwitchGL );
 
 		// reloading
 		m_DefaultCartridge.Load(*m_ammoTypes[m_ammoType], u8(m_ammoType));
@@ -250,6 +249,7 @@ bool CWeaponMagazinedWGrenade::SwitchMode()
 	m_bPending				= true;
 
 	PerformSwitchGL			();
+	StateSwitchCallback( GameObject::eOnActorWeaponSwitchGL, GameObject::eOnNPCWeaponSwitchGL );
 	
 	PlaySound				(sndSwitch,get_LastFP());
 
@@ -280,8 +280,6 @@ void  CWeaponMagazinedWGrenade::PerformSwitchGL()
 	iAmmoElapsed2 = (int)m_magazine2.size();
 
 	UpdateZoomOffset();
-
-	Actor()->callback( GameObject::eOnActorWeaponSwitchGL )( lua_game_object() );
 }
 
 bool CWeaponMagazinedWGrenade::Action(s32 cmd, u32 flags) 
