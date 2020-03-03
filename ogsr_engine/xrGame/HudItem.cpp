@@ -347,4 +347,17 @@ void CHudItem::animGetEx( MotionSVec& lst, LPCSTR prefix, LPCSTR suffix ) {
       }
     }
   }
+
+  std::string stop_k = prefix;
+  stop_k += "_stop_k";
+  if ( pSettings->line_exist( hud_sect.c_str(), stop_k.c_str() ) ) {
+    float k = pSettings->r_float( hud_sect.c_str(), stop_k.c_str() );
+    if ( !fsimilar( k, 1.f ) ) {
+      for ( const auto& M : lst ) {
+        auto *animated   = m_pHUD->Visual()->dcast_PKinematicsAnimated();
+        auto *motion_def = animated->LL_GetMotionDef( M );
+        motion_def->SetStopKoeff( k );
+      }
+    }
+  }
 }

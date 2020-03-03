@@ -78,7 +78,7 @@ u32 shared_weapon_hud::motion_length(MotionID M)
 
 	if (motion_def->flags & esmStopAtEnd) {
 		CMotion*			motion		= skeleton_animated->LL_GetRootMotion(M);
-		return				iFloor(0.5f + 1000.f*motion->GetLength()/ motion_def->Speed());
+		return iFloor( 0.5f + 1000.f * motion->GetLength() / motion_def->Speed() * motion_def->StopKoeff() );
 	}
 	return				0;
 }
