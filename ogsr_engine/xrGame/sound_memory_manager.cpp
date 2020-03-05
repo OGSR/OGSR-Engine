@@ -71,6 +71,7 @@ void CSoundMemoryManager::reload				(LPCSTR section)
 	m_self_sound_factor		= READ_IF_EXISTS(pSettings,r_float,section,"self_sound_factor",0.f);
 	m_sound_decrease_quant	= READ_IF_EXISTS(pSettings,r_u32,section,"self_decrease_quant",250);
 	m_decrease_factor		= READ_IF_EXISTS(pSettings,r_float,section,"self_decrease_factor",.95f);
+	m_max_hear_dist = READ_IF_EXISTS( pSettings, r_float, section, "max_hear_dist", -1.f );
 
 	LPCSTR					sound_perceive_section = READ_IF_EXISTS(pSettings,r_string,section,"sound_perceive_section",section);
 	m_weapon_factor			= READ_IF_EXISTS(pSettings,r_float,sound_perceive_section,"weapon",10.f);
@@ -145,15 +146,26 @@ void CSoundMemoryManager::feel_sound_new(CObject *object, int sound_type, CSound
 	Msg						("%s (%d) - sound type %x from %s at %d in (%.2f,%.2f,%.2f) with power %.2f",*self->cName(),Device.dwTimeGlobal,sound_type,object ? *object->cName() : "world",Device.dwTimeGlobal,position.x,position.y,position.z,sound_power);
 #endif
 
+	// ignore unknown sounds
+	if ( sound_type == 0xffffffff ) return;
+
+	CEntityAlive			*entity_alive = m_object;
+	if (!entity_alive->g_Alive())
+		return;
+
+	// ignore distant sounds
+	if ( m_max_hear_dist >= 0.f ) {
+	  Fvector center;
+	  m_object->Center( center );
+	  float dist = center.distance_to( position );
+	  if ( dist > m_max_hear_dist ) return;
+	}
+
 	VERIFY					(_valid(m_sound_threshold));
 	m_object->sound_callback(object,sound_type,position,sound_power);
 	VERIFY					(_valid(m_sound_threshold));
 		
 	update_sound_threshold	();
-
-	CEntityAlive			*entity_alive = m_object;
-	if (!entity_alive->g_Alive())
-		return;
 	
 	VERIFY					(_valid(sound_power));
 	if (is_sound_type(sound_type,SOUND_TYPE_WEAPON))
