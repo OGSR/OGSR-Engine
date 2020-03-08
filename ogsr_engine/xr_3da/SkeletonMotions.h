@@ -116,7 +116,6 @@ public:
 	//u16						speed;				// quantized: 0..10
 	float					speed;
 	float					speed_k;
-	float					stop_k;
 	u16						power;				// quantized: 0..10
 	u16						accrue;				// quantized: 0..10
 	u16						falloff;			// quantized: 0..10
@@ -135,8 +134,6 @@ public:
     ICF float				Power				(){return Dequantize(power);}
     bool					StopAtEnd			();
     void SetSpeedKoeff(const float new_speed_k) { speed_k = new_speed_k; }
-    float StopKoeff() { return stop_k; }
-    void  SetStopKoeff( float v ) { stop_k = v; }
 };
 struct accel_str_pred {	
 	IC bool operator()(const shared_str& x, const shared_str& y) const	{	return xr_strcmp(x,y)<0;	}

@@ -321,7 +321,6 @@ void CMotionDef::Load(IReader* MP, u32 fl, u16 version)
 	motion		= MP->r_u16(); // motion_id
 	speed = MP->r_float(); //Quantize(MP->r_float());
 	speed_k = 1.0f;
-	stop_k  = 1.f;
 	power		= Quantize(MP->r_float());
 	accrue		= Quantize(MP->r_float());
 	falloff		= Quantize(MP->r_float());

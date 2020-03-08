@@ -92,6 +92,8 @@ void CWeaponMagazinedWGrenade::Load	(LPCSTR section)
 		animGetEx( mhud_idle_w_gl_aim, "anim_idle_gl_aim" );
 	}
 
+	animGetEx( mhud_reload_w_gl_partly, "anim_reload_gl_partly", nullptr, "anim_reload_gl" );
+
 
 	if(m_eGrenadeLauncherStatus == ALife::eAddonPermanent)
 	{
@@ -678,14 +680,17 @@ void CWeaponMagazinedWGrenade::PlayAnimHide()
 		m_pHUD->animPlay (random_anim(mhud.mhud_hide),TRUE,this, GetState());
 }
 
-void CWeaponMagazinedWGrenade::PlayAnimReload()
-{
-	VERIFY(GetState()==eReload);
+void CWeaponMagazinedWGrenade::PlayAnimReload() {
+  VERIFY( GetState() == eReload );
 
-	if(IsGrenadeLauncherAttached())
-		m_pHUD->animPlay(random_anim(mhud_reload_w_gl),TRUE,this, GetState());
-	else
-		inherited::PlayAnimReload();
+  if ( IsGrenadeLauncherAttached() ) {
+    if ( IsPartlyReloading() )
+      m_pHUD->animPlay( random_anim( mhud_reload_w_gl_partly ),TRUE, this, GetState() );
+    else
+      m_pHUD->animPlay( random_anim( mhud_reload_w_gl ),TRUE, this, GetState() );
+  }
+  else
+    inherited::PlayAnimReload();
 }
 
 

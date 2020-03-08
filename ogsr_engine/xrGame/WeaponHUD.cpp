@@ -69,16 +69,16 @@ weapon_hud_value::~weapon_hud_value()
 	m_animations = nullptr;
 }
 
-u32 shared_weapon_hud::motion_length(MotionID M)
+u32 shared_weapon_hud::motion_length( MotionIDEx& M )
 {
 	IKinematicsAnimated	*skeleton_animated = p_->m_animations;
 	VERIFY				(skeleton_animated);
-	CMotionDef			*motion_def = skeleton_animated->LL_GetMotionDef(M);
+	CMotionDef *motion_def = skeleton_animated->LL_GetMotionDef( M.m_MotionID );
 	VERIFY				(motion_def);
 
 	if (motion_def->flags & esmStopAtEnd) {
-		CMotion*			motion		= skeleton_animated->LL_GetRootMotion(M);
-		return iFloor( 0.5f + 1000.f * motion->GetLength() / motion_def->Speed() * motion_def->StopKoeff() );
+		CMotion* motion	= skeleton_animated->LL_GetRootMotion( M.m_MotionID );
+		return iFloor( 0.5f + 1000.f * motion->GetLength() / motion_def->Speed() * M.stop_k );
 	}
 	return				0;
 }
@@ -150,15 +150,16 @@ void CWeaponHUD::animDisplay(MotionID M, BOOL bMixIn)
 		PKinematicsAnimated->dcast_PKinematics()->CalculateBones_Invalidate	();
 	}
 }
-void CWeaponHUD::animPlay			(MotionID M,	BOOL bMixIn, CHudItem* W, u32 state)
+
+void CWeaponHUD::animDisplay( MotionIDEx M, BOOL bMixIn ) {
+  animDisplay( M.m_MotionID, bMixIn );
+}
+
+void CWeaponHUD::animPlay( MotionIDEx& M, BOOL bMixIn, CHudItem* W, u32 state )
 {
-//.	if(m_bStopAtEndAnimIsRunning)	
-//.		StopCurrentAnim				();
-
-
 	m_startedAnimState				= state;
 	Show							();
-	animDisplay						(M, bMixIn);
+	animDisplay( M.m_MotionID, bMixIn );
 	u32 anim_time					= m_shared_data.motion_length(M);
 	if (anim_time>0){
 		m_bStopAtEndAnimIsRunning	= true;
@@ -208,9 +209,8 @@ void CWeaponHUD::CleanSharedContainer	()
 	g_pWeaponHUDContainer->clean(false);
 }
 
-MotionID random_anim(MotionSVec& v)
-{
-	return v[Random.randI(v.size())];
+MotionIDEx& random_anim( MotionSVec& v ) {
+  return v[ Random.randI( v.size() ) ];
 }
 
 
@@ -316,4 +316,14 @@ void CWeaponBobbing::Update(Fmatrix &m)
 		m.k.set(mR.k);
 		m.j.set(mR.j);
 	}
+}
+
+
+MotionIDEx::MotionIDEx() {
+  stop_k     = 1.f;
+}
+
+MotionIDEx::MotionIDEx( MotionID id ) {
+  m_MotionID = id;
+  stop_k     = 1.f;
 }
