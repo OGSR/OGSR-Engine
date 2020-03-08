@@ -262,8 +262,11 @@ void CScriptGameObject::UnloadMagazine(bool spawn_ammo, bool unload_gl)
 	}
 
 	auto stalker = smart_cast<CAI_Stalker*>(weapon_magazined->H_Parent());
-	if (stalker && stalker->hammer_is_clutched())
-		return;
+	if ( stalker && stalker->hammer_is_clutched() ) {
+	  auto active_item = smart_cast<CWeaponMagazined*>( stalker->inventory().ActiveItem() );
+	  if ( active_item && weapon_magazined == active_item )
+	    return;
+	}
 
 	weapon_magazined->UnloadMagazine(spawn_ammo);
 	if (unload_gl)
