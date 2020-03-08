@@ -112,7 +112,7 @@ void CStalkerActionDead::execute		()
 	if (!object().character_physics_support()->can_drop_active_weapon())
 		return;
 
-	if ( object().m_clutched_hammer_unload ) {
+	if ( object().m_clutched_hammer_unload && object().hammer_is_clutched() ) {
 	  auto weapon_magazined = smart_cast<CWeaponMagazined*>( object().inventory().ActiveItem() );
 	  if ( weapon_magazined ) {
 	    weapon_magazined->UnloadMagazine( false );
