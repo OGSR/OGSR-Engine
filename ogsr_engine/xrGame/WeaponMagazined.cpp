@@ -132,7 +132,8 @@ void CWeaponMagazined::Load	(LPCSTR section)
 
 	if(IsZoomEnabled())
 		animGetEx( mhud.mhud_idle_aim, "anim_idle_aim" );
-	
+
+	animGetEx( mhud.mhud_reload_partly, "anim_reload_partly", nullptr, "anim_reload" );
 
 	//звуки и партиклы глушителя, еслит такой есть
 	if(m_eSilencerStatus == ALife::eAddonAttachable)
@@ -1190,10 +1191,12 @@ void CWeaponMagazined::PlayAnimHide()
 }
 
 
-void CWeaponMagazined::PlayAnimReload()
-{
-	VERIFY(GetState()==eReload);
-	m_pHUD->animPlay(random_anim(mhud.mhud_reload),TRUE,this,GetState());
+void CWeaponMagazined::PlayAnimReload() {
+  VERIFY( GetState() == eReload );
+  if ( IsPartlyReloading() )
+    m_pHUD->animPlay( random_anim( mhud.mhud_reload_partly ), TRUE, this, GetState() );
+  else
+    m_pHUD->animPlay( random_anim( mhud.mhud_reload ), TRUE, this, GetState() );
 }
 
 

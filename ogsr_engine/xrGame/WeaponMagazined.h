@@ -52,6 +52,7 @@ protected:
 		MotionSVec		mhud_shots;		//
 		MotionSVec		mhud_idle_sprint;
 		MotionSVec		mhud_idle_moving;
+		MotionSVec		mhud_reload_partly;
 	};
 	SWMmotions			mhud;	
 	

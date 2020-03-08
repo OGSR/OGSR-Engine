@@ -585,4 +585,5 @@ public:
 	void SwitchScope();
 
 	virtual void OnBulletHit();
+	bool IsPartlyReloading();
 };
