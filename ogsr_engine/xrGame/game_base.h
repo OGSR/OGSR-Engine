@@ -75,7 +75,7 @@ public:
 			void	setFlag					(u16 f);
 			void	resetFlag				(u16 f);
 			LPCSTR	getName					(){return name;}
-			void	setName					(LPCSTR s){strcpy(name,s);}
+			void	setName					(LPCSTR s){strcpy_s(name,s);}
 			void	SetGameID				(u16 NewID);
 			bool	HasOldID				(u16 ID);
 			bool	IsSkip					() const {return testFlag(GAME_PLAYER_FLAG_SKIP);}

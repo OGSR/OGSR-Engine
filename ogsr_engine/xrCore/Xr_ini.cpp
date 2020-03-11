@@ -124,7 +124,7 @@ CInifile::CInifile( LPCSTR szFileName, BOOL ReadOnly, BOOL bLoad, BOOL SaveAtEnd
   if ( bLoad ) {
     string_path path, folder;
     _splitpath( fName, path, folder, 0, 0 );
-    strcat( path, folder );
+    strcat_s( path, folder );
     IReader* R = FS.r_open( szFileName );
     if ( R ) {
       Load( R, path );
@@ -190,7 +190,7 @@ void CInifile::Load ( IReader* F, LPCSTR path ) {
         string_path fn, inc_path, folder;
         strconcat( sizeof( fn ), fn, path, inc_name );
         _splitpath( fn, inc_path, folder, 0, 0 );
-        strcat( inc_path, folder );
+        strcat_s( inc_path, folder );
         IReader* I = FS.r_open( fn );
         R_ASSERT3( I, "Can't find include file:", inc_name );
         Load( I, inc_path );
@@ -502,7 +502,7 @@ Fvector4 CInifile::r_fvector4 ( LPCSTR S, LPCSTR L ) {
 BOOL CInifile::r_bool ( LPCSTR S, LPCSTR L ) {
   LPCSTR C = r_string( S, L );
   char   B[ 8 ];
-  strncpy( B, C, 7 );
+  strncpy_s( B, C, 7 );
   strlwr( B );
   return IsBOOL( B );
 }

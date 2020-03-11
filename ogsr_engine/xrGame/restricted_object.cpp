@@ -84,8 +84,8 @@ BOOL CRestrictedObject::net_Spawn			(CSE_Abstract* data)
 	string4096					temp0;
 	string4096					temp1;
 	
-	strcpy						(temp0,*monster->m_out_space_restrictors);
-	strcpy						(temp1,*monster->m_in_space_restrictors);
+	strcpy_s(temp0,*monster->m_out_space_restrictors);
+	strcpy_s(temp1,*monster->m_in_space_restrictors);
 
 	if (ai().get_alife()) {
 		construct_string		(temp0,monster->m_dynamic_out_restrictions);

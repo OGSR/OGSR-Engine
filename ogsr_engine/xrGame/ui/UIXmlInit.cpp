@@ -1089,7 +1089,7 @@ bool CUIXmlInit::InitTexture(CUIXml& xml_doc, const char* path, int index, IUISi
 bool CUIXmlInit::InitTextureOffset(CUIXml &xml_doc, LPCSTR path, int index, CUIStatic* pWnd){
     string256 textureOffset;
 	if (0 == xr_strcmp(path, ""))
-		strcpy(textureOffset, "texture_offset");
+		strcpy_s(textureOffset, "texture_offset");
 	else
 		strconcat(sizeof(textureOffset),textureOffset, path, ":texture_offset");
 

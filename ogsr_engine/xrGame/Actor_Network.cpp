@@ -67,20 +67,20 @@ CActor* Actor()
 //--------------------------------------------------------------------
 void	CActor::ConvState(u32 mstate_rl, string128 *buf)
 {
-	strcpy(*buf,"");
-	if (isActorAccelerated(mstate_rl, IsZoomAimingMode()))		strcat(*buf,"Accel ");
-	if (mstate_rl&mcCrouch)		strcat(*buf,"Crouch ");
-	if (mstate_rl&mcFwd)		strcat(*buf,"Fwd ");
-	if (mstate_rl&mcBack)		strcat(*buf,"Back ");
-	if (mstate_rl&mcLStrafe)	strcat(*buf,"LStrafe ");
-	if (mstate_rl&mcRStrafe)	strcat(*buf,"RStrafe ");
-	if (mstate_rl&mcJump)		strcat(*buf,"Jump ");
-	if (mstate_rl&mcFall)		strcat(*buf,"Fall ");
-	if (mstate_rl&mcTurn)		strcat(*buf,"Turn ");
-	if (mstate_rl&mcLanding)	strcat(*buf,"Landing ");
-	if (mstate_rl&mcLLookout)	strcat(*buf,"LLookout ");
-	if (mstate_rl&mcRLookout)	strcat(*buf,"RLookout ");
-	if (m_bJumpKeyPressed)		strcat(*buf,"+Jumping ");
+	strcpy_s(*buf,"");
+	if (isActorAccelerated(mstate_rl, IsZoomAimingMode())) strcat_s(*buf,"Accel ");
+	if (mstate_rl&mcCrouch)		strcat_s(*buf,"Crouch ");
+	if (mstate_rl&mcFwd)		strcat_s(*buf,"Fwd ");
+	if (mstate_rl&mcBack)		strcat_s(*buf,"Back ");
+	if (mstate_rl&mcLStrafe)	strcat_s(*buf,"LStrafe ");
+	if (mstate_rl&mcRStrafe)	strcat_s(*buf,"RStrafe ");
+	if (mstate_rl&mcJump)		strcat_s(*buf,"Jump ");
+	if (mstate_rl&mcFall)		strcat_s(*buf,"Fall ");
+	if (mstate_rl&mcTurn)		strcat_s(*buf,"Turn ");
+	if (mstate_rl&mcLanding)	strcat_s(*buf,"Landing ");
+	if (mstate_rl&mcLLookout)	strcat_s(*buf,"LLookout ");
+	if (mstate_rl&mcRLookout)	strcat_s(*buf,"RLookout ");
+	if (m_bJumpKeyPressed)		strcat_s(*buf,"+Jumping ");
 };
 //--------------------------------------------------------------------
 void CActor::net_Export	(NET_Packet& P)					// export to server

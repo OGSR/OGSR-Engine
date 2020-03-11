@@ -77,7 +77,7 @@ void CMainMenu::ReadTextureInfo()
 		for (int i = 0; i < itemsCount; i++)
 		{
 			_GetItem(itemsList.c_str(), i, single_item);
-			strcat(single_item, ".xml");
+			strcat_s(single_item, ".xml");
 			CUITextureMaster::ParseShTexInfo(single_item);
 		}
 	}
@@ -384,7 +384,7 @@ void CMainMenu::Screenshot(IRender_interface::ScreenshotMode mode, LPCSTR name)
 	}
 	else {
 		m_Flags.set(flGameSaveScreenshot, TRUE);
-		strcpy(m_screenshot_name, name);
+		strcpy_s(m_screenshot_name, name);
 		if (g_pGameLevel && m_Flags.test(flActive)) {
 			Device.seqFrame.Add(g_pGameLevel);
 			Device.seqRender.Add(g_pGameLevel);

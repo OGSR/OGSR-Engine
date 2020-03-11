@@ -157,7 +157,7 @@ SVS*	CResourceManager::_CreateVS		(LPCSTR _name)
 		{
 			const char*	pchr = strchr(_name, '(');
 			ptrdiff_t	size = pchr?pchr-_name:xr_strlen(_name);
-			strncpy(shName, _name, size);
+			strncpy_s(shName, _name, size);
 			shName[size] = 0;
 		}
 
@@ -260,7 +260,7 @@ SPS*	CResourceManager::_CreatePS			(LPCSTR _name)
 		string_path					shName;
 		const char*	pchr = strchr(_name, '(');
 		ptrdiff_t	strSize = pchr?pchr-_name:xr_strlen(_name);
-		strncpy(shName, _name, strSize );
+		strncpy_s(shName, _name, strSize );
 		shName[strSize] = 0;
 
 		// Open file

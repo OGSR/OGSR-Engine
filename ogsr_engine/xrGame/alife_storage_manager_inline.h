@@ -12,8 +12,8 @@ IC	CALifeStorageManager::CALifeStorageManager			(xrServer *server, LPCSTR sectio
 	inherited	(server,section)
 {
 	m_section				= section;
-	strcpy					(m_save_name,"");
-	strcpy					(m_loaded_save,"");
+	strcpy_s(m_save_name,"");
+	strcpy_s(m_loaded_save,"");
 }
 
 

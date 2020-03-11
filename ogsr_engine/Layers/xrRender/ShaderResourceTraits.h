@@ -94,7 +94,7 @@
 			string_path					shName;
 			const char*	pchr = strchr(name, '(');
 			ptrdiff_t	strSize = pchr?pchr-name:xr_strlen(name);
-			strncpy(shName, name, strSize);
+			strncpy_s(shName, name, strSize);
 			shName[strSize] = 0;
 
 			// Open file

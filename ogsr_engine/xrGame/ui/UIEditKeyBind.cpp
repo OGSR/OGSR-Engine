@@ -92,9 +92,9 @@ bool CUIEditKeyBind::OnMouseDown(int mouse_btn)
 		OnFocusLost				();
 		m_bChanged				= true;
 
-		strcpy				(message, m_action->action_name);
-		strcat				(message, "=");
-		strcat				(message, m_keyboard->key_name);		
+		strcpy_s(message, m_action->action_name);
+		strcat_s(message, "=");
+		strcat_s(message, m_keyboard->key_name);
 		SendMessage2Group	("key_binding",message);
 
 		return					true;
@@ -118,9 +118,9 @@ bool CUIEditKeyBind::OnKeyboard(int dik, EUIMessages keyboard_action){
 		m_keyboard			= dik_to_ptr(dik, true);
 		if(!m_keyboard)			return true;
 
-		strcpy				(message, m_action->action_name);
-		strcat				(message, "=");
-		strcat				(message, m_keyboard->key_name);		
+		strcpy_s(message, m_action->action_name);
+		strcat_s(message, "=");
+		strcat_s(message, m_keyboard->key_name);
 		SetText				(m_keyboard->key_local_name.c_str());
 		OnFocusLost			();
 		m_bChanged			= true;
@@ -203,7 +203,7 @@ void CUIEditKeyBind::OnMessage(const char* message){
 		return;
 
 	string64			command;
-	strcpy				(command, message);
+	strcpy_s(command, message);
 	command[eq]			= 0;
 
     if (0 == xr_strcmp(m_action->action_name, command))

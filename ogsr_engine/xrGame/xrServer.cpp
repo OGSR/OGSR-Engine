@@ -587,7 +587,7 @@ u32 xrServer::OnMessage	(NET_Packet& P, ClientID sender)			// Non-Zero means bro
 			if(0==stricmp(user.c_str(),"logoff"))
 			{
 				CL->m_admin_rights.m_has_admin_rights	= FALSE;
-				strcpy				(reason,"logged off");
+				strcpy_s(reason,"logged off");
 				Msg("# Remote administrator logged off.");
 			}else
 			{

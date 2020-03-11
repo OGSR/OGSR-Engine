@@ -69,7 +69,7 @@ void CUIMessageBox::Init	(LPCSTR box_template)
         xml_init.InitStatic						(uiXml, str, 0, m_UIStaticText);
 	}
 
-	strcpy		(str,box_template);
+	strcpy_s(str,box_template);
 	xml_init.InitStatic						(uiXml, str, 0, this);
 
 	LPCSTR _type							= uiXml.ReadAttrib(str,0,"type",NULL);
