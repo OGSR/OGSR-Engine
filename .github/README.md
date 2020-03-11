@@ -1,4 +1,4 @@
-# OGSR Engine ![Build Status](https://github.com/OGSR/OGSR-Engine/workflows/Main%20Workflow/badge.svg)
+# OGSR Engine [![Build Status](https://github.com/OGSR/OGSR-Engine/workflows/Main%20Workflow/badge.svg)](https://github.com/OGSR/OGSR-Engine/actions)
 ![Logo](https://cdn1.radikalno.ru/uploads/2019/6/13/b1b4c50115286e39d7c118897816d78d-full.png)
 ### Цели проекта: ### 
 * Исправление ошибок оригинального движка
