@@ -153,6 +153,12 @@ void ISpatial_DB::initialize(Fbox& BB)
 		Fvector bbc, bbd;
 		BB.get_CD(bbc, bbd);
 
+		Msg("--[%s] bbc is [%.1f, %.1f, %.1f], bbd is [%.1f, %.1f, %.1f]", __FUNCTION__, bbc.x, bbc.y, bbc.z, bbd.x, bbd.y, bbd.z);
+		//Костыли для всяких кривых локаций, хотя бывают ли такие, я не уверен.
+		bbd.x = std::max(bbd.x, 1024.f);
+		bbd.y = std::max(bbd.y, 1024.f);
+		bbd.z = std::max(bbd.z, 1024.f);
+
 		allocator_pool.reserve(128);
 		m_center.set(bbc);
 		m_bounds = std::max(std::max(bbd.x, bbd.y), bbd.z);
