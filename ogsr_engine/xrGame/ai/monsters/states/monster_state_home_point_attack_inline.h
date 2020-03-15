@@ -168,7 +168,6 @@ bool CStateMonsterAttackMoveToHomePointAbstract::check_start_conditions()
 TEMPLATE_SPECIALIZATION
 bool CStateMonsterAttackMoveToHomePointAbstract::check_completion()
 {
-	if ( !object->Home->has_home() ) return true;
 	if ( !object->at_home() ) 
 		return									false;
 

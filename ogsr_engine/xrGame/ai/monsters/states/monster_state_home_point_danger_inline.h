@@ -80,7 +80,6 @@ bool CStateMonsterDangerMoveToHomePointAbstract::check_start_conditions()
 TEMPLATE_SPECIALIZATION
 bool CStateMonsterDangerMoveToHomePointAbstract::check_completion()
 {
-	if ( !object->Home->has_home() ) return true;
 	if (object->HitMemory.get_last_hit_time() > time_state_started) return true;
 	if (m_skip_camp && (prev_substate != u32(-1)) && (prev_substate != eStatePanic_HomePoint_Hide) ) return true;
 

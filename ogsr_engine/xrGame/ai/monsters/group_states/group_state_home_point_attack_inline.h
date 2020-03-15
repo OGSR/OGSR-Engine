@@ -140,8 +140,6 @@ bool CStateGroupAttackMoveToHomePointAbstract::check_start_conditions()
 TEMPLATE_SPECIALIZATION
 bool CStateGroupAttackMoveToHomePointAbstract::check_completion()
 {
-	if ( !object->Home->has_home() ) return true;
-
 	bool const in_camp_state				=	prev_substate != u32(-1) && 
 												prev_substate != eStateAttack_HomePoint_Hide;
 
