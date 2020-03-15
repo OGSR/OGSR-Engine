@@ -1,6 +1,8 @@
 #include "stdafx.h"
 #include "ISpatial.h"
 
+extern Fvector	c_spatial_offset[8];
+
 class	walker
 {
 public:

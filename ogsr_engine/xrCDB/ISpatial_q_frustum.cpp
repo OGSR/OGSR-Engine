@@ -2,6 +2,8 @@
 #include "ISpatial.h"
 #include "frustum.h"
 
+extern Fvector	c_spatial_offset[8];
+
 class	walker
 {
 public:

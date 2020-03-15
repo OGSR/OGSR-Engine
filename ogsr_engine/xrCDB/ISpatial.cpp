@@ -10,8 +10,21 @@
 #include "../xrengine/PS_Instance.h"
 #endif
 
-ISpatial_DB* g_SpatialSpace = nullptr;
-ISpatial_DB* g_SpatialSpacePhysic = nullptr;
+
+ISpatial_DB*		g_SpatialSpace			= NULL;
+ISpatial_DB*		g_SpatialSpacePhysic	= NULL;
+
+Fvector	c_spatial_offset	[8]	= 
+{
+	{ -1, -1, -1	},
+	{  1, -1, -1	},
+	{ -1,  1, -1	},
+	{  1,  1, -1	},
+	{ -1, -1,  1	},
+	{  1, -1,  1	},
+	{ -1,  1,  1	},
+	{  1,  1,  1	}
+};
 
 //////////////////////////////////////////////////////////////////////////
 ISpatial::ISpatial			(ISpatial_DB* space)
@@ -24,7 +37,7 @@ ISpatial::ISpatial			(ISpatial_DB* space)
 	spatial.sector			= NULL;
 	spatial.space			= space;
 }
-ISpatial::~ISpatial()
+ISpatial::~ISpatial			(void)
 {
 	spatial_unregister		();
 }
@@ -129,7 +142,15 @@ void			ISpatial_NODE::_remove			(ISpatial* S)
 
 //////////////////////////////////////////////////////////////////////////
 
-ISpatial_DB::ISpatial_DB() : m_root(nullptr), stat_nodes(0), stat_objects(0) {}
+ISpatial_DB::ISpatial_DB()
+#ifdef PROFILE_CRITICAL_SECTIONS
+	:cs(MUTEX_PROFILE_ID(ISpatial_DB))
+#endif // PROFILE_CRITICAL_SECTIONS
+{
+	m_root					= NULL;
+	stat_nodes				= 0;
+	stat_objects			= 0;
+}
 
 ISpatial_DB::~ISpatial_DB()
 {
@@ -145,23 +166,25 @@ ISpatial_DB::~ISpatial_DB()
 }
 
 
-void ISpatial_DB::initialize(Fbox& BB)
+void			ISpatial_DB::initialize(Fbox& BB)
 {
-	if (!m_root)
+	if (0==m_root)			
 	{
 		// initialize
-		Fvector bbc, bbd;
-		BB.get_CD(bbc, bbd);
+		Fvector bbc,bbd;
+		BB.get_CD				(bbc,bbd);
 
-		allocator_pool.reserve(128);
-		m_center.set(bbc);
-		m_bounds = std::max(std::max(bbd.x, bbd.y), bbd.z);
-		rt_insert_object = nullptr;
-		m_root = _node_create();
-		m_root->_init(nullptr);
+		bbc.set					(0,0,0);			// generic
+		bbd.set					(1024,1024,1024);	// generic
+
+		allocator_pool.reserve	(128);
+		m_center.set			(bbc);
+		m_bounds				= _max(_max(bbd.x,bbd.y),bbd.z);
+		rt_insert_object		= NULL;
+		if (0==m_root)	m_root	= _node_create();
+		m_root->_init			(NULL);
 	}
 }
-
 ISpatial_NODE*	ISpatial_DB::_node_create		()
 {
 	stat_nodes	++;

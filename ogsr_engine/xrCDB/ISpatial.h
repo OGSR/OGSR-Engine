@@ -4,20 +4,6 @@
 
 #include "xr_collide_defs.h"
 
-
-constexpr Fvector c_spatial_offset[8] =
-{
-	{ -1, -1, -1 },
-	{  1, -1, -1 },
-	{ -1,  1, -1 },
-	{  1,  1, -1 },
-	{ -1, -1,  1 },
-	{  1, -1,  1 },
-	{ -1,  1,  1 },
-	{  1,  1,  1 }
-};
-
-
 #pragma pack(push,4)
 
 /*
