@@ -92,6 +92,7 @@ public:
 		flSuppressWallmarks	= (1ul<<11ul),
 		flActorObstacle	= (1ul<<12ul),
 		flNoRicoshet	= (1ul<<13ul),
+	flPickable		= (1ul<<14ul),
 
 
 		
