@@ -412,7 +412,7 @@ bool ignore_path(const char* _path){
 		return true;
 }
 
-bool CLocatorAPI::Recurse		(const char* path)
+bool CLocatorAPI::Recurse( const char* path, bool log_if_found )
 {
     _finddata_t		sFile;
     intptr_t		hFile;
@@ -431,6 +431,9 @@ bool CLocatorAPI::Recurse		(const char* path)
     	// Log		("! Wrong path: ",path);
     	return		false;
     }
+
+	if ( log_if_found )
+	  Msg( "--Found FS dir: [%s]", path );
 
 	string1024 full_path;
 #ifdef LOAD_SCRIPTS_SUBDIRS
@@ -469,6 +472,8 @@ bool CLocatorAPI::Recurse		(const char* path)
 	}
 
 	_findclose		( hFile );
+	if ( log_if_found )
+	  Msg( "  items: %u", rec_files.size() );
 
 	std::sort(rec_files.begin(), rec_files.end(), pred_str_ff);
 	for (const auto& el : rec_files)
@@ -627,7 +632,7 @@ void CLocatorAPI::_initialize	(u32 flags, LPCSTR target_folder, LPCSTR fs_name)
 			if ( ( xr_strcmp( id, "$game_config$" ) == 0 || xr_strcmp( id, "$game_scripts$" ) == 0 ) )
 				restricted = !Core.ParamFlags.test( xrCore::ParamFlag::dbg );
 			if ( !restricted )
-				Recurse(P->m_Path);
+				Recurse( P->m_Path, true );
 #elif __has_include("..\build_config_overrides\trivial_encryptor_ovr.h")
 			if (!strcmp(id, "$app_data_root$") || !strcmp(id, "$game_saves$") || !strcmp(id, "$logs$") || !strcmp(id, "$screenshots$"))
 				Recurse(P->m_Path);
