@@ -460,7 +460,7 @@ void CHW::updateWindowProps(HWND m_hWnd)
 
 			RECT			m_rcWindowBounds;
 			float fYOffset = 0.f;
-			static const bool bCenter = !strstr(Core.Params, "-no_center_screen");
+			static const bool bCenter = !!strstr(Core.Params, "-center_screen");
 
 			if (bCenter) {
 				RECT				DesktopRect;
