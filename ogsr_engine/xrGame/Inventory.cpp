@@ -104,6 +104,7 @@ CInventory::CInventory()
 	m_dwModifyFrame								= 0;
 	m_drop_last_frame							= false;
 	m_iLoadActiveSlotFrame						= u32(-1);
+	m_slots_block_cnt = 0;
 }
 
 
@@ -1211,6 +1212,11 @@ void CInventory::SetSlotsBlocked( u16 mask, bool bBlock, bool now )
 					SetPrevActiveSlot(ActiveSlot);
 		}
 	}
+
+	if ( bBlock )
+	  m_slots_block_cnt++;
+	else if ( m_slots_block_cnt > 0 )
+	  m_slots_block_cnt--;
 }
 
 

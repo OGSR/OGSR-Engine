@@ -15,6 +15,8 @@ ENGINE_API extern Flags32		psHUD_Flags;
 #define HUD_DRAW_RT				(1<<10)
 #define HUD_CROSSHAIR_BUILD		(1<<11) // старый стиль курсора
 #define HUD_SMALL_FONT		(1<<12) // использовать уменьшенный шрифт
+#define HUD_CROSSHAIR_ZOOM	(1<<13)
+#define HUD_CROSSHAIR_ZOOM_RT	(1<<14)
 
 class CUI;
 

@@ -2083,9 +2083,10 @@ void CWeapon::Show( bool now ) {
     SwitchState( eShowing );
 }
 
-bool CWeapon::show_crosshair()
-{
-	return ! ( IsZoomed() && ZoomHideCrosshair() );
+bool CWeapon::show_crosshair() {
+  if ( psHUD_Flags.test( HUD_CROSSHAIR_ZOOM ) )
+    return !IsZoomEnabled();
+  return !( IsZoomed() && ZoomHideCrosshair() );
 }
 
 bool CWeapon::show_indicators()
@@ -2264,4 +2265,9 @@ void CWeapon::OnBulletHit() {
 
 bool CWeapon::IsPartlyReloading() {
   return ( m_set_next_ammoType_on_reload == u32(-1) && GetAmmoElapsed() > 0 && !IsMisfire() );
+}
+
+
+bool CWeapon::use_crosshair() const {
+  return !psHUD_Flags.test( HUD_CROSSHAIR_ZOOM );
 }

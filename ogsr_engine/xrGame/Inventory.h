@@ -124,6 +124,9 @@ public:
 	TIItemContainer			m_ruck, m_belt;
 	TISlotArr				m_slots;
 
+	u32 m_slots_block_cnt;
+	bool IsSlotsBlocked() { return m_slots_block_cnt > 0; };
+
 	//возвращает все кроме PDA в слоте и болта
 	void				AddAvailableItems			(TIItemContainer& items_container, bool for_trade) const;
 

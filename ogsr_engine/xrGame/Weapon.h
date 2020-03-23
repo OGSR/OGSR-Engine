@@ -552,7 +552,7 @@ protected:
 
 public:
 	virtual	void			modify_holder_params		(float &range, float &fov) const;
-	virtual bool			use_crosshair				()	const {return true;}
+	virtual bool			use_crosshair()	const;
 			bool			show_crosshair				();
 			bool			show_indicators				();
 	virtual BOOL			ParentMayHaveAimBullet		();

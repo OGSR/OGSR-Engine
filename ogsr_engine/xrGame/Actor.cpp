@@ -63,6 +63,7 @@
 #include "InventoryBox.h"
 #include "location_manager.h"
 #include "PHCapture.h"
+#include "Grenade.h"
 
 // Tip for action for object we're looking at
 constexpr const char* m_sCarCharacterUseAction        = "car_character_use";
@@ -831,6 +832,7 @@ void CActor::UpdateCL	()
 	{
 		psHUD_Flags.set( HUD_CROSSHAIR_RT2, true );
 		psHUD_Flags.set( HUD_DRAW_RT, true );
+		psHUD_Flags.set( HUD_CROSSHAIR_ZOOM_RT, false );
 	}
 	if(pWeapon )
 	{
@@ -855,6 +857,7 @@ void CActor::UpdateCL	()
 
 			psHUD_Flags.set( HUD_CROSSHAIR_RT2, pWeapon->show_crosshair() );
 			psHUD_Flags.set( HUD_DRAW_RT,		pWeapon->show_indicators() );
+			psHUD_Flags.set( HUD_CROSSHAIR_ZOOM_RT, true );
 
 			// Обновляем двойной рендер от оружия [Update SecondVP with weapon data]
 			pWeapon->UpdateSecondVP();	//--#SM+#-- +SecondVP+
@@ -870,6 +873,12 @@ void CActor::UpdateCL	()
 		{
 			HUD().SetCrosshairDisp(0.f);
 			HUD().ShowCrosshair(false);
+
+			if ( psHUD_Flags.test( HUD_CROSSHAIR_ZOOM ) )
+			  if ( mstate_real & mcClimb || inventory().IsSlotsBlocked() || Holder() || character_physics_support()->movement()->PHCapture() )
+			      psHUD_Flags.set( HUD_CROSSHAIR_RT2, false );
+			  else if ( smart_cast<CGrenade*>( inventory().ActiveItem() ) )
+			    psHUD_Flags.set( HUD_CROSSHAIR_ZOOM_RT, true );
 
 			// Очищаем информацию об оружии в шейдерах
 			g_pGamePersistent->m_pGShaderConstants.hud_params.set(0.f, 0.f, 0.f, 0.f); //--#SM+#--

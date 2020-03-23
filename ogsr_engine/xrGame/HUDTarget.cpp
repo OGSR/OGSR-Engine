@@ -154,7 +154,11 @@ void CHUDTarget::Render()
 	Fvector4			pt;
 	Device.mFullTransform.transform(pt, p2);
 	pt.y = -pt.y;
-	float				di_size = C_SIZE / powf(pt.w, .2f);
+	float di_size;
+	if ( psHUD_Flags.test( HUD_CROSSHAIR_ZOOM ) )
+	  di_size = psHUD_Flags.test( HUD_CROSSHAIR_ZOOM_RT ) ? C_SIZE : C_SIZE / _max( powf( pt.w, .9f ), 1.f );
+	else
+	  di_size = C_SIZE / powf( pt.w, .2f );
 
 	CGameFont* F		= HUD().Font().pFontGraffiti19Russian;
 	F->SetAligment		(CGameFont::alCenter);
