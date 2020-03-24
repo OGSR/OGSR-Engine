@@ -223,7 +223,8 @@ void CActor::cam_Update(float dt, float fFOV)
 					da			= PI/1000.f;
 					if (!fis_zero(r_torso.roll))
 						da		*= r_torso.roll/_abs(r_torso.roll);
-					for (float angle=0.f; _abs(angle)<_abs(alpha); angle+=da)
+					float angle = 0.f;
+					for (; _abs(angle)<_abs(alpha); angle+=da)
 						if (test_point(xrc,xform,mat,ext,radius,angle)) { bIntersect=TRUE; break; } 
 						valid_angle	= bIntersect?angle:alpha;
 				} 

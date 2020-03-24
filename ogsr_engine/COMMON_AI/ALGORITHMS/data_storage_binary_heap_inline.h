@@ -68,7 +68,8 @@ TEMPLATE_SPECIALIZATION
 IC	void CBinaryHeap::decrease_opened		(CGraphVertex &vertex, const _dist_type value)
 {
 	VERIFY					(!is_opened_empty());
-	for (CGraphVertex **i = m_heap_head; *i != &vertex; ++i);
+	CGraphVertex **i = m_heap_head;
+	for (; *i != &vertex; ++i);
 	std::push_heap			(m_heap_head,i + 1,CGraphNodePredicate());
 }
 

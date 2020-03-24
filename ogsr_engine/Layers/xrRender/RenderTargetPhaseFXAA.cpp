@@ -26,13 +26,13 @@ void CRenderTarget::phase_fxaa()
 	RCache.set_Stencil(FALSE);
 
 	FVF::V* pv = (FVF::V*)RCache.Vertex.Lock(4, g_fxaa->vb_stride, Offset);
-	pv->set(du - 0.5, dv + float(_h) - 0.5, 0, 0, 1);
+	pv->set(du - 0.5f, dv + _h - 0.5f, 0.f, 0.f, 1.f);
 	pv++;
-	pv->set(du - 0.5, dv - 0.5, 0, 0, 0);
+	pv->set(du - 0.5f, dv - 0.5f, 0.f, 0.f, 0.f);
 	pv++;
-	pv->set(du + float(_w) - 0.5, dv + float(_h) - 0.5, 0, 1, 1);
+	pv->set(du + _w - 0.5f, dv + _h - 0.5f, 0.f, 1.f, 1.f);
 	pv++;
-	pv->set(du + float(_w) - 0.5, dv - 0.5, 0, 1, 0);
+	pv->set(du + _w - 0.5f, dv - 0.5f, 0.f, 1.f, 0.f);
 	pv++;
 #endif
 	RCache.Vertex.Unlock(4, g_fxaa->vb_stride);

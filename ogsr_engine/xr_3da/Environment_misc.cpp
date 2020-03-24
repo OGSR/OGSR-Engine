@@ -581,7 +581,6 @@ void	CEnvironment::mods_load			()
 {
 	Modifiers.clear_and_free			();
 	string_path							path;
-#pragma todo("KRodin: В ЗП ЗДЕСЬ ТОЖЕ ДРУГОЙ ФОРМАТ? Надо тоже под дефайнами сделать тогда. Хотя, проверка версии есть, фиг знает, может и ТЧ формат тут поддерживается, тестить надо.")
 	if (FS.exist(path,"$level$","level.env_mod"))	
 	{
 		IReader*	fs	= FS.r_open		(path);

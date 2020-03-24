@@ -422,7 +422,7 @@ BOOL CActor::HUDview				( )const
 }
 
 //void CActor::IR_OnMousePress(int btn)
-static	u32 SlotsToCheck [] = {
+constexpr u32 SlotsToCheck[] = {
 		KNIFE_SLOT		,		// 0
 		FIRST_WEAPON_SLOT		,		// 1
 		SECOND_WEAPON_SLOT		,		// 2
@@ -440,11 +440,12 @@ void	CActor::OnNextWeaponSlot()
 	if (ActiveSlot == NO_ACTIVE_SLOT) 
 		ActiveSlot = KNIFE_SLOT;
 	
-	u32 NumSlotsToCheck = sizeof(SlotsToCheck)/sizeof(u32);	
-	for (u32 CurSlot=0; CurSlot<NumSlotsToCheck; CurSlot++)
+	constexpr u32 NumSlotsToCheck = sizeof(SlotsToCheck)/sizeof(u32);
+	u32 CurSlot = 0;
+	for (; CurSlot<NumSlotsToCheck; CurSlot++)
 	{
 		if (SlotsToCheck[CurSlot] == ActiveSlot) break;
-	};
+	}
 	if (CurSlot >= NumSlotsToCheck) return;
 	for (u32 i=CurSlot+1; i<NumSlotsToCheck; i++)
 	{
@@ -454,7 +455,7 @@ void	CActor::OnNextWeaponSlot()
 			return;
 		}
 	}
-};
+}
 
 void	CActor::OnPrevWeaponSlot()
 {
@@ -465,11 +466,12 @@ void	CActor::OnPrevWeaponSlot()
 	if (ActiveSlot == NO_ACTIVE_SLOT) 
 		ActiveSlot = KNIFE_SLOT;
 
-	u32 NumSlotsToCheck = sizeof(SlotsToCheck)/sizeof(u32);	
-	for (u32 CurSlot=0; CurSlot<NumSlotsToCheck; CurSlot++)
+	constexpr u32 NumSlotsToCheck = sizeof(SlotsToCheck)/sizeof(u32);
+	u32 CurSlot = 0;
+	for (; CurSlot<NumSlotsToCheck; CurSlot++)
 	{
 		if (SlotsToCheck[CurSlot] == ActiveSlot) break;
-	};
+	}
 	if (CurSlot >= NumSlotsToCheck) return;
 	for (s32 i=s32(CurSlot-1); i>=0; i--)
 	{
@@ -479,7 +481,7 @@ void	CActor::OnPrevWeaponSlot()
 			return;
 		}
 	}
-};
+}
 
 float	CActor::GetLookFactor()
 {

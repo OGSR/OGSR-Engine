@@ -715,7 +715,7 @@ void CInventory::UpdateDropTasks()
 			UpdateDropItem		(m_slots[i].m_pIItem);
 	}
 
-	for(i = 0; i < 2; ++i)	
+	for(u32 i = 0; i < 2; ++i)	
 	{
 		TIItemContainer &list			= i?m_ruck:m_belt;
 		TIItemContainer::iterator it	= list.begin();

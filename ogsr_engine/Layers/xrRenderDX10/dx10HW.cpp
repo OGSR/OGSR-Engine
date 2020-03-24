@@ -459,7 +459,7 @@ void CHW::updateWindowProps(HWND m_hWnd)
 			// desktop.
 
 			RECT			m_rcWindowBounds;
-			float fYOffset = 0.f;
+			int fYOffset = 0;
 			static const bool bCenter = !!strstr(Core.Params, "-center_screen");
 
 			if (bCenter) {
@@ -482,7 +482,7 @@ void CHW::updateWindowProps(HWND m_hWnd)
 					m_ChainDesc.BufferDesc.Height);
 			};
 
-			AdjustWindowRect		(	&m_rcWindowBounds, dwWindowStyle, FALSE );
+			AdjustWindowRect		(	&m_rcWindowBounds, DWORD(dwWindowStyle), FALSE );
 
 			SetWindowPos			(	m_hWnd, 
 				HWND_NOTOPMOST,	
