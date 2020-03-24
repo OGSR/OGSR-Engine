@@ -350,7 +350,9 @@ void CEnvDescriptor::load	(CEnvironment& environment, CInifile& config)
 	if (config.line_exist(m_identifier.c_str(),"water_intensity"))
 		m_fWaterIntensity = config.r_float(m_identifier.c_str(),"water_intensity");
 
-	m_fTreeAmplitudeIntensity = READ_IF_EXISTS(reinterpret_cast<CInifile*>(&config), r_float, m_identifier.c_str(), "tree_amplitude_intensity", 0.01f);
+	constexpr float def_min_TAI = 0.01f, def_max_TAI = 0.07f;
+	const float def_TAI = def_min_TAI + (rain_density * (def_max_TAI - def_min_TAI)); //Если не прописано, дефолт будет рассчитываться от силы дождя.
+	m_fTreeAmplitudeIntensity = READ_IF_EXISTS(reinterpret_cast<CInifile*>(&config), r_float, m_identifier.c_str(), "tree_amplitude_intensity", def_TAI);
 
 	C_CHECK					(clouds_color);
 	C_CHECK					(sky_color	);
@@ -419,7 +421,9 @@ void CEnvDescriptor::load(float exec_tm, LPCSTR S, CEnvironment& environment)
 	if (pSettings->line_exist(m_identifier.c_str(), "water_intensity"))
 		m_fWaterIntensity = pSettings->r_float(m_identifier.c_str(), "water_intensity");
 
-	m_fTreeAmplitudeIntensity = READ_IF_EXISTS(pSettings, r_float, m_identifier.c_str(), "tree_amplitude_intensity", 0.01f);
+	constexpr float def_min_TAI = 0.01f, def_max_TAI = 0.07f;
+	const float def_TAI = def_min_TAI + (rain_density * (def_max_TAI - def_min_TAI)); //Если не прописано, дефолт будет рассчитываться от силы дождя.
+	m_fTreeAmplitudeIntensity = READ_IF_EXISTS(pSettings, r_float, m_identifier.c_str(), "tree_amplitude_intensity", def_TAI);
 
 	C_CHECK(clouds_color);
 	C_CHECK(sky_color);
