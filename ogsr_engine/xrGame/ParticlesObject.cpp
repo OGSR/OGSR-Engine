@@ -54,7 +54,7 @@ void CParticlesObject::Init	(LPCSTR p_name, IRender_Sector* S, BOOL bAutoRemove)
 	
 	// sheduled
 	shedule.t_min			= 20;
-	shedule.t_max			= 50;
+	shedule.t_max			= 100;// 50;
 	shedule_register		();
 
 	dwLastTime				= Device.dwTimeGlobal;
@@ -195,7 +195,7 @@ Fvector& CParticlesObject::Position		()
 
 float CParticlesObject::shedule_Scale		()	
 { 
-	return Device.vCameraPosition.distance_to(Position())/200.f; 
+	return Device.vCameraPosition.distance_to(Position()) / 100.f; //200.f; 
 }
 
 void CParticlesObject::renderable_Render	()
