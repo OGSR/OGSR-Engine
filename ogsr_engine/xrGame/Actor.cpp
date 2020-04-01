@@ -904,7 +904,12 @@ void CActor::UpdateCL	()
 	}
 }
 
-#define TASKS_UPDATE_TIME 500u
+#if defined(OGSR_MOD) || defined(DSH_MOD)
+constexpr u32 TASKS_UPDATE_TIME = 500u;
+#else
+constexpr u32 TASKS_UPDATE_TIME = 1u;
+#endif
+
 float	NET_Jump = 0;
 void CActor::shedule_Update	(u32 DT)
 {
