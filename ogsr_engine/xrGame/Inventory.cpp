@@ -1056,18 +1056,13 @@ CInventoryItem	*CInventory::tpfGetObjectByIndex(int iIndex)
 	return		(0);
 }
 
-CInventoryItem	*CInventory::GetItemFromInventory(LPCSTR caItemName)
+CInventoryItem* CInventory::GetItemFromInventory(LPCSTR SectName)
 {
-	TIItemContainer	&l_list = m_all;
+	auto It = std::find_if(m_all.begin(), m_all.end(), [SectName](const auto* pInvItm) { return pInvItm->object().cNameSect() == SectName; });
+	if (It != m_all.end())
+		return *It;
 
-	u32 crc = crc32(caItemName, xr_strlen(caItemName));
-
-	for(TIItemContainer::iterator l_it = l_list.begin(); l_list.end() != l_it; ++l_it)
-		if ((*l_it)->object().cNameSect()._get()->dwCRC == crc){
-			VERIFY(	0 == xr_strcmp( (*l_it)->object().cNameSect().c_str(), caItemName)  );
-			return	(*l_it);
-		}
-	return	(0);
+	return nullptr;
 }
 
 

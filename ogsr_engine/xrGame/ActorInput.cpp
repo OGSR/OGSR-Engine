@@ -101,31 +101,18 @@ void CActor::IR_OnKeyboardPress(int cmd)
 	case kCAM_1:	cam_Set			(eacFirstEye);				break;
 	case kCAM_2:	cam_Set			(eacLookAt);				break;
 	case kCAM_3:	cam_Set			(eacFreeLook);				break;
-	case kNIGHT_VISION:
-		{
-			const xr_vector<CAttachableItem*>& all = CAttachmentOwner::attached_objects();
-			xr_vector<CAttachableItem*>::const_iterator it = all.begin();
-			xr_vector<CAttachableItem*>::const_iterator it_e = all.end();
-			for(;it!=it_e;++it){
-				CTorch* torch = smart_cast<CTorch*>(*it);
-				if (torch){		
-					torch->SwitchNightVision();
-					break;
-				}
+	case kNIGHT_VISION: {
+			CTorch* pTorch = smart_cast<CTorch*>(inventory().ItemFromSlot(TORCH_SLOT));
+			if (pTorch) {
+				pTorch->SwitchNightVision();
 			}
-		}break;
-	case kTORCH:{ 
-		const xr_vector<CAttachableItem*>& all = CAttachmentOwner::attached_objects();
-		xr_vector<CAttachableItem*>::const_iterator it = all.begin();
-		xr_vector<CAttachableItem*>::const_iterator it_e = all.end();
-		for(;it!=it_e;++it){
-				CTorch* torch = smart_cast<CTorch*>(*it);
-				if (torch){		
-					torch->Switch();
-					break;
-				}
-		}
-		}break;
+		} break;
+	case kTORCH: { 
+			CTorch* pTorch = smart_cast<CTorch*>(inventory().ItemFromSlot(TORCH_SLOT));
+			if (pTorch) {
+				pTorch->Switch();
+			}
+		} break;
 	case kWPN_1:	
 	case kWPN_2:	
 	case kWPN_3:	
