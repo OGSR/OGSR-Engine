@@ -370,21 +370,14 @@ function save_load_dialog:OnButton_load_clicked()
 	local item = list:GetItem(index)
 	local fname = item.fn:GetText()
 
-	if not alife() then
-		if valid_saved_game(fname) then
-			self:load_game_internal()
-		else
-			self.msgbox_id = 0
-			self.message_box:Init("message_box_invalid_saved_game")
-			self:GetHolder():start_stop_menu(self.message_box, true)
-		end
-		return
-	end
-
 	if valid_saved_game(fname) then
-		self.msgbox_id = 2
-		self.message_box:Init("message_box_confirm_load_save")
-		self:GetHolder():start_stop_menu(self.message_box, true)
+		if level.present() and db.actor_proxy.online and db.actor:alive() then
+			self.msgbox_id = 2
+			self.message_box:Init("message_box_confirm_load_save")
+			self:GetHolder():start_stop_menu(self.message_box, true)
+		else
+			self:load_game_internal()
+		end
 	else
 		self.msgbox_id = 0
 		self.message_box:Init("message_box_invalid_saved_game")
