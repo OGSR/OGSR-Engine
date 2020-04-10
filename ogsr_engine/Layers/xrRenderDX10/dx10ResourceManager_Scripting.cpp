@@ -443,7 +443,7 @@ void	CResourceManager::LS_Load			()
 
 	module(LSVM)
 	[
-		def("log", LuaLog),
+		def("log", &LuaLog),
 
 		class_<adopt_dx10options>("_dx10options")
 		.def("dx10_msaa_alphatest_atoc",	&adopt_dx10options::_dx10_msaa_alphatest_atoc		)

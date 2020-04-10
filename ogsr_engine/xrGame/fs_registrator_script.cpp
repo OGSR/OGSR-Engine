@@ -5,10 +5,6 @@
 using namespace luabind;
 
 LPCSTR get_file_age_str(CLocatorAPI* fs, LPCSTR nm);
-CLocatorAPI* getFS()
-{
-	return &FS;
-}
 
 
 LPCSTR update_path_script(CLocatorAPI* fs, LPCSTR initial, LPCSTR src)
@@ -254,6 +250,7 @@ void script_register_stdfs(lua_State *L)
 {
 	module(L, "stdfs")
 	[
+		def("VerifyPath", [](const char* path) { VerifyPath(path); }),
 		def("directory_iterator", &directory_iterator),
 		def("recursive_directory_iterator", &recursive_directory_iterator),
 		class_<stdfs::directory_entry>("path")
@@ -365,6 +362,6 @@ void fs_registrator::script_register(lua_State *L)
 			.def("file_list_open",						&file_list_open_script_2)
 			.def("file_list_open_ex",					&file_list_open_ex),
 
-		def("getFS",									getFS)
+		def("getFS", [] { return &FS; })
 	];
 }
