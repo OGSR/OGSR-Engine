@@ -468,6 +468,13 @@ bool CScriptGameObject::is_exploded() {
 }
 
 
+bool CScriptGameObject::is_ready_to_explode() {
+  CExplosive* explosive = smart_cast<CExplosive*>( &object() );
+  ASSERT_FMT( explosive, "[%s]: %s not a CExplosive", __FUNCTION__, cName().c_str() );
+  return explosive->IsReadyToExplode();
+}
+
+
 void CScriptGameObject::remove_memory_object( CScriptGameObject *game_object ) {
   CCustomMonster* monster = smart_cast<CCustomMonster*>( &object() );
   ASSERT_FMT( monster, "[%s]: %s not a CCustomMonster", __FUNCTION__, cName().c_str() );
