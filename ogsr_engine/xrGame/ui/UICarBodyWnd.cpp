@@ -460,7 +460,11 @@ PIItem CUICarBodyWnd::CurrentIItem()
 
 void CUICarBodyWnd::SetCurrentItem(CUICellItem* itm)
 {
-	if(m_pCurrentCellItem == itm) return;
+	if (m_pUIPropertiesBox->IsShown())
+		return;
+	if (m_pCurrentCellItem == itm)
+		return;
+
 	m_pCurrentCellItem		= itm;
 	m_pUIItemInfo->InitItem(CurrentIItem());
 
