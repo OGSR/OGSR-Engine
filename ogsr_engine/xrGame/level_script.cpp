@@ -33,6 +33,8 @@
 #include "script_rq_result.h"
 #include "monster_community.h"
 #include "GamePersistent.h"
+#include "..\xr_3da\fdemoplay.h"
+#include "..\xr_3da\XR_IOConsole.h"
 
 using namespace luabind;
 
@@ -964,6 +966,26 @@ int get_character_community_team( LPCSTR comm ) {
   return community.team();
 }
 
+BOOL runDemoPlay(LPCSTR anmFileName) {
+	string_path fn;
+	u32 loops = 0;
+	LPSTR comma = strchr(const_cast<LPSTR>(anmFileName), ',');
+	if (comma) {
+		loops = atoi(comma + 1);
+		*comma = 0;	
+	}
+	strconcat(sizeof(fn), fn, args, ".xrdemo");
+	FS.update_path(fn, "$game_anims$", fn);
+	if (!FS.exist(fn)) {
+		Console->Show();
+		Msg("The camera animation file (*.xrdemo) that is being called does not exist");
+		return FALSE;
+	}	
+
+	g_pGameLevel->Cameras().AddCamEffector(xr_new<CDemoPlay>(fn, 1.0f, loops));
+	return TRUE;
+}
+
 
 #pragma optimize("s",on)
 void CLevel::script_register(lua_State *L)
@@ -1074,6 +1096,9 @@ void CLevel::script_register(lua_State *L)
 		def("set_pp_effector_factor",			&set_pp_effector_factor),
 		def("set_pp_effector_factor",			&set_pp_effector_factor2),
 		def("remove_pp_effector",				&remove_pp_effector),
+
+		//Graff46 15.04.2020
+		def("run_demo_play",					&runDemoPlay), 
 
 		def("add_complex_effector",				&add_complex_effector),
 		def("remove_complex_effector",			&remove_complex_effector),
