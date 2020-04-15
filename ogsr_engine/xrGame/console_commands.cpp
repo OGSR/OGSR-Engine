@@ -341,9 +341,12 @@ public:
 			  }
 			  strconcat			(sizeof(fn),fn, args, ".xrdemo");
 			  FS.update_path	(fn, "$game_saves$", fn);
-			  if (!FS.exist(fn))
-				  return Msg("The camera animation file that is being called does not exist");
-
+			  if (!FS.exist(fn)) {
+			  	Console->Show			();
+			  	Msg("The camera animation file that is being called does not exist");
+				return;
+			  }
+				  
 			  g_pGameLevel->Cameras().AddCamEffector(xr_new<CDemoPlay> (fn, 1.0f, loops));
 		  }
 	  }
