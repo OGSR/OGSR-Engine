@@ -10,21 +10,8 @@
 #include "../xrengine/PS_Instance.h"
 #endif
 
-
-ISpatial_DB*		g_SpatialSpace			= NULL;
-ISpatial_DB*		g_SpatialSpacePhysic	= NULL;
-
-Fvector	c_spatial_offset	[8]	= 
-{
-	{ -1, -1, -1	},
-	{  1, -1, -1	},
-	{ -1,  1, -1	},
-	{  1,  1, -1	},
-	{ -1, -1,  1	},
-	{  1, -1,  1	},
-	{ -1,  1,  1	},
-	{  1,  1,  1	}
-};
+ISpatial_DB* g_SpatialSpace = nullptr;
+ISpatial_DB* g_SpatialSpacePhysic = nullptr;
 
 //////////////////////////////////////////////////////////////////////////
 ISpatial::ISpatial			(ISpatial_DB* space)
@@ -37,7 +24,7 @@ ISpatial::ISpatial			(ISpatial_DB* space)
 	spatial.sector			= NULL;
 	spatial.space			= space;
 }
-ISpatial::~ISpatial			(void)
+ISpatial::~ISpatial()
 {
 	spatial_unregister		();
 }
@@ -142,15 +129,7 @@ void			ISpatial_NODE::_remove			(ISpatial* S)
 
 //////////////////////////////////////////////////////////////////////////
 
-ISpatial_DB::ISpatial_DB()
-#ifdef PROFILE_CRITICAL_SECTIONS
-	:cs(MUTEX_PROFILE_ID(ISpatial_DB))
-#endif // PROFILE_CRITICAL_SECTIONS
-{
-	m_root					= NULL;
-	stat_nodes				= 0;
-	stat_objects			= 0;
-}
+ISpatial_DB::ISpatial_DB() : m_root(nullptr), stat_nodes(0), stat_objects(0) {}
 
 ISpatial_DB::~ISpatial_DB()
 {
@@ -166,25 +145,29 @@ ISpatial_DB::~ISpatial_DB()
 }
 
 
-void			ISpatial_DB::initialize(Fbox& BB)
+void ISpatial_DB::initialize(Fbox& BB)
 {
-	if (0==m_root)			
+	if (!m_root)
 	{
 		// initialize
-		Fvector bbc,bbd;
-		BB.get_CD				(bbc,bbd);
+		Fvector bbc, bbd;
+		BB.get_CD(bbc, bbd);
 
-		bbc.set					(0,0,0);			// generic
-		bbd.set					(1024,1024,1024);	// generic
+		Msg("--[%s] bbc is [%.1f, %.1f, %.1f], bbd is [%.1f, %.1f, %.1f]", __FUNCTION__, bbc.x, bbc.y, bbc.z, bbd.x, bbd.y, bbd.z);
+		//Костыли для всяких кривых локаций, хотя бывают ли такие, я не уверен.
+		bbd.x = std::max(bbd.x, 1024.f);
+		bbd.y = std::max(bbd.y, 1024.f);
+		bbd.z = std::max(bbd.z, 1024.f);
 
-		allocator_pool.reserve	(128);
-		m_center.set			(bbc);
-		m_bounds				= _max(_max(bbd.x,bbd.y),bbd.z);
-		rt_insert_object		= NULL;
-		if (0==m_root)	m_root	= _node_create();
-		m_root->_init			(NULL);
+		allocator_pool.reserve(128);
+		m_center.set(bbc);
+		m_bounds = std::max(std::max(bbd.x, bbd.y), bbd.z);
+		rt_insert_object = nullptr;
+		m_root = _node_create();
+		m_root->_init(nullptr);
 	}
 }
+
 ISpatial_NODE*	ISpatial_DB::_node_create		()
 {
 	stat_nodes	++;

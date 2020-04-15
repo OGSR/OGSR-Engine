@@ -771,7 +771,11 @@ PIItem CUITradeWnd::CurrentIItem()
 
 void CUITradeWnd::SetCurrentItem(CUICellItem* itm)
 {
-	if(m_pCurrentCellItem == itm) return;
+	if (m_pUIPropertiesBox->IsShown())
+		return;
+	if (m_pCurrentCellItem == itm)
+		return;
+
 	m_pCurrentCellItem				= itm;
 	m_uidata->UIItemInfo.InitItem	(CurrentIItem());
 	

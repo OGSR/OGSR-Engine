@@ -264,7 +264,7 @@ void CALifeUpdateManager::load			(LPCSTR game_name, bool no_assert, bool new_onl
 	u32									memory_usage = Memory.mem_usage();
 #endif
 
-	strcpy								(g_last_saved_game,game_name);
+	strcpy_s(g_last_saved_game,game_name);
 
 	if (new_only || !CALifeStorageManager::load(game_name)) {
 		R_ASSERT3						(new_only || no_assert && xr_strlen(game_name),"Cannot find the specified saved game ",game_name);
@@ -296,7 +296,7 @@ bool CALifeUpdateManager::load_game		(LPCSTR game_name, bool no_assert)
 		}
 	}
 	string512					S,S1;
-	strcpy						(S,**m_server_command_line);
+	strcpy_s(S,**m_server_command_line);
 	LPSTR						temp = strchr(S,'/');
 	R_ASSERT2					(temp,"Invalid server options!");
 	strconcat					(sizeof(S1),S1,game_name,temp);

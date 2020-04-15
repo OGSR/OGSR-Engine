@@ -310,7 +310,7 @@ void CLightShadows::calculate	()
 			// Select slot and set viewport
 			int		s_x			=	slot_id%slot_line;
 			int		s_y			=	slot_id/slot_line;
-			D3DVIEWPORT9 VP		=	{s_x*S_size,s_y*S_size,S_size,S_size,0,1 };
+			D3DVIEWPORT9 VP{ DWORD(s_x * S_size), DWORD(s_y * S_size), DWORD(S_size), DWORD(S_size), 0.f, 1.f };
 			CHK_DX					(HW.pDevice->SetViewport(&VP));
 			
 			// Render object-parts

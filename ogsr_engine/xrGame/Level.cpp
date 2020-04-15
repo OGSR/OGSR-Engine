@@ -601,7 +601,7 @@ void CLevel::OnEvent(EVENT E, u64 P1, u64 /**P2/**/)
 		char* name = (char*)P1;
 		string_path RealName;
 		strcpy_s		(RealName,name);
-		strcat			(RealName,".xrdemo");
+		strcat_s(RealName,".xrdemo");
 		Cameras().AddCamEffector(xr_new<CDemoPlay> (RealName,1.3f,0));
 	} else if (E==eChangeTrack && P1) {
 		// int id = atoi((char*)P1);

@@ -460,3 +460,17 @@ void CScriptGameObject::explode_initiator( u16 who_id ) {
   explosive->SetInitiator( who_id );
   explosive->GenExplodeEvent( object().Position(), normal );
 }
+
+
+bool CScriptGameObject::is_exploded() {
+  CExplosive* explosive = smart_cast<CExplosive*>( &object() );
+  ASSERT_FMT( explosive, "[%s]: %s not a CExplosive", __FUNCTION__, cName().c_str() );
+  return explosive->IsExploded();
+}
+
+
+void CScriptGameObject::remove_memory_object( CScriptGameObject *game_object ) {
+  CCustomMonster* monster = smart_cast<CCustomMonster*>( &object() );
+  ASSERT_FMT( monster, "[%s]: %s not a CCustomMonster", __FUNCTION__, cName().c_str() );
+  monster->memory().remove_links( &game_object->object() );
+}

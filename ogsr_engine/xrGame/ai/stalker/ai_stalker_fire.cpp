@@ -50,6 +50,8 @@
 #include "../../stalker_decision_space.h"
 #include "../../script_game_object.h"
 #include "../../inventory.h"
+#include "../../game_object_space.h"
+#include "../../holder_custom.h"
 
 using namespace StalkerSpace;
 
@@ -192,8 +194,11 @@ void			CAI_Stalker::Hit					(SHit* pHDS)
 
 //	pHDS->power						*= .1f;
 
-	//хит может меняться в зависимости от ранга (новички получают больше хита, чем ветераны)
 	SHit							HDS = *pHDS;
+	callback( GameObject::entity_alive_before_hit )( &HDS );
+	if ( HDS.ignore_flag )
+	  return;
+	//хит может меняться в зависимости от ранга (новички получают больше хита, чем ветераны)
 	HDS.power						*= m_fRankImmunity;
 	if (m_boneHitProtection && HDS.hit_type == ALife::eHitTypeFireWound){
 #ifdef APPLY_ARMOR_PIERCING_TO_NPC
@@ -544,6 +549,12 @@ IC BOOL ray_query_callback	(collide::rq_result& result, LPVOID params)
 	}
 
 	CEntityAlive						*entity_alive = smart_cast<CEntityAlive*>(result.O);
+	if ( !entity_alive ) {
+	  CHolderCustom* holder = smart_cast<CHolderCustom*>( result.O );
+	  if ( holder && holder->Owner() )
+	    entity_alive = smart_cast<CEntityAlive*>( holder->Owner() );
+	}
+
 	if (!entity_alive) {
 		if (param->m_power > param->m_power_threshold)
 			return TRUE;

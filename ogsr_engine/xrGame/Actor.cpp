@@ -483,6 +483,10 @@ void	CActor::Hit							(SHit* pHDS)
 	}
 #endif // DEBUG
 
+	callback( GameObject::entity_alive_before_hit )( &HDS );
+	if ( HDS.ignore_flag )
+	  return;
+
 	bool bPlaySound = true;
 	if (!g_Alive()) bPlaySound = false;
 
@@ -900,7 +904,12 @@ void CActor::UpdateCL	()
 	}
 }
 
-#define TASKS_UPDATE_TIME 500u
+#if defined(OGSR_MOD) || defined(DSH_MOD)
+constexpr u32 TASKS_UPDATE_TIME = 500u;
+#else
+constexpr u32 TASKS_UPDATE_TIME = 1u;
+#endif
+
 float	NET_Jump = 0;
 void CActor::shedule_Update	(u32 DT)
 {
@@ -925,7 +934,7 @@ void CActor::shedule_Update	(u32 DT)
 	  tasks_update_time += DT;
 	}
 
-	if(m_holder || !getEnabled() || !Ready())
+	if( /* m_holder || */ !getEnabled() || !Ready() )
 	{
 		m_sDefaultObjAction = nullptr;
 		inherited::shedule_Update		(DT);
@@ -946,7 +955,7 @@ void CActor::shedule_Update	(u32 DT)
 	
 	//----------- for E3 -----------------------------
 //	if (Local() && (OnClient() || Level().CurrentEntity()==this))
-	if (Level().CurrentControlEntity() == this && (!Level().IsDemoPlay() || Level().IsServerDemo()))
+	if ( Level().CurrentControlEntity() == this && !m_holder && ( !Level().IsDemoPlay() || Level().IsServerDemo() ) )
 	//------------------------------------------------
 	{
 		g_cl_CheckControls		(mstate_wishful,NET_SavedAccel,NET_Jump,dt);
@@ -1001,7 +1010,7 @@ void CActor::shedule_Update	(u32 DT)
 		//-----------------------------------------------------
 		}
 	}
-	else 
+	else if ( !m_holder )
 	{
 		make_Interpolation();
 	
@@ -1031,7 +1040,7 @@ void CActor::shedule_Update	(u32 DT)
 		mstate_old = mstate_real;
 	}
 
-	if (this == Level().CurrentViewEntity())
+	if ( this == Level().CurrentViewEntity() && !m_holder )
 	{
 		UpdateMotionIcon		(mstate_real);
 	};
@@ -1042,12 +1051,14 @@ void CActor::shedule_Update	(u32 DT)
 	inherited::shedule_Update	(DT);
 
 	//эффектор включаемый при ходьбе
-	if (!pCamBobbing)
-	{
+	if ( !m_holder ) {
+	  if (!pCamBobbing)
+	  {
 		pCamBobbing = xr_new<CEffectorBobbing>	();
 		Cameras().AddCamEffector			(pCamBobbing);
+	  }
+	  pCamBobbing->SetState( mstate_real, conditions().IsLimping(), IsZoomAimingMode() );
 	}
-	pCamBobbing->SetState						(mstate_real, conditions().IsLimping(), IsZoomAimingMode());
 
 	//звук тяжелого дыхания при уталости и хромании
 	if(this==Level().CurrentControlEntity())
@@ -1087,13 +1098,13 @@ void CActor::shedule_Update	(u32 DT)
 	}
 	
 	//если в режиме HUD, то сама модель актера не рисуется
-	if(!character_physics_support()->IsRemoved())
+	if( !character_physics_support()->IsRemoved() && !m_holder )
 										setVisible				(!HUDview	());
 	//что актер видит перед собой
 	collide::rq_result& RQ = HUD().GetCurrentRayQuery();
 	
 
-	if(!input_external_handler_installed() && RQ.O && RQ.range<inventory().GetTakeDist()) 
+	if( !input_external_handler_installed() && !m_holder && RQ.O && RQ.range<inventory().GetTakeDist() )
 	{
 		m_pObjectWeLookingAt  = smart_cast<CGameObject*>(RQ.O);
 		m_pUsableObject	      = smart_cast<CUsableScriptObject*>(RQ.O);
@@ -1163,7 +1174,8 @@ void CActor::shedule_Update	(u32 DT)
 
 	//для свойст артефактов, находящихся на поясе
 	UpdateArtefactsOnBelt						();
-	m_pPhysics_support->in_shedule_Update		(DT);
+	if ( !m_holder )
+	  m_pPhysics_support->in_shedule_Update( DT );
 
 	updated = true;
 };

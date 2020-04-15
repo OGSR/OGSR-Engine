@@ -67,7 +67,7 @@ void CRenderDevice::Initialize			()
 
         // Create the render window
 		m_hWnd = CreateWindow/*Ex*/( //WS_EX_TOPMOST, 
-								wndclass, "OGSR Engine", m_dwWindowStyle,
+								wndclass, "S.T.A.L.K.E.R.: Call of Pripyat", m_dwWindowStyle,
                                /*rc.left, rc.top, */CW_USEDEFAULT, CW_USEDEFAULT,
                                (rc.right-rc.left), (rc.bottom-rc.top), 0L,
                                0, hInstance, 0L );
@@ -75,7 +75,7 @@ void CRenderDevice::Initialize			()
     }
 
     // Save window properties
-    m_dwWindowStyle = GetWindowLongPtr( m_hWnd, GWL_STYLE );
+    m_dwWindowStyle = u32(GetWindowLongPtr( m_hWnd, GWL_STYLE ));
     GetWindowRect	( m_hWnd, &m_rcWindowBounds );
     GetClientRect	( m_hWnd, &m_rcWindowClient );
 

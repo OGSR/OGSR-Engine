@@ -250,12 +250,12 @@ void save_mini_dump(_EXCEPTION_POINTERS *pExceptionInfo)
 	string64	t_stemp;
 
 	timestamp(t_stemp);
-	strcpy(szDumpPath, Core.ApplicationName);
-	strcat(szDumpPath, "_");
-	strcat(szDumpPath, Core.UserName);
-	strcat(szDumpPath, "_");
-	strcat(szDumpPath, t_stemp);
-	strcat(szDumpPath, ".mdmp");
+	strcpy_s(szDumpPath, Core.ApplicationName);
+	strcat_s(szDumpPath, "_");
+	strcat_s(szDumpPath, Core.UserName);
+	strcat_s(szDumpPath, "_");
+	strcat_s(szDumpPath, t_stemp);
+	strcat_s(szDumpPath, ".mdmp");
 
 	__try {
 		if (FS.path_exist("$logs$"))
@@ -263,9 +263,9 @@ void save_mini_dump(_EXCEPTION_POINTERS *pExceptionInfo)
 	}
 	__except (EXCEPTION_EXECUTE_HANDLER) {
 		string_path	temp;
-		strcpy(temp, szDumpPath);
-		strcpy(szDumpPath, "logs/");
-		strcat(szDumpPath, temp);
+		strcpy_s(temp, szDumpPath);
+		strcpy_s(szDumpPath, "logs/");
+		strcat_s(szDumpPath, temp);
 	}
 
 	// create the file

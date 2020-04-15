@@ -412,7 +412,7 @@ public:
 		strconcat					(sizeof(save_name),save_name,*CStringTable().translate("st_game_saved"),": ", S);
 		_s->wnd()->SetText			(save_name);
 
-		strcat					(S,".dds");
+		strcat_s(S,".dds");
 		FS.update_path			(S1,"$game_saves$",S);
 		
 #ifdef DEBUG

@@ -50,11 +50,11 @@ CALifeSimulator::CALifeSimulator		(xrServer *server, shared_str *command_line) :
 	);
 	
 	string256					temp;
-	strcpy						(temp,p.m_game_or_spawn);
-	strcat						(temp,"/");
-	strcat						(temp,p.m_game_type);
-	strcat						(temp,"/");
-	strcat						(temp,p.m_alife);
+	strcpy_s(temp,p.m_game_or_spawn);
+	strcat_s(temp,"/");
+	strcat_s(temp,p.m_game_type);
+	strcat_s(temp,"/");
+	strcat_s(temp,p.m_alife);
 	*command_line				= temp;
 	
 	LPCSTR						start_game_callback = pSettings->r_string(alife_section,"start_game_callback");

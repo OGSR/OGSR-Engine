@@ -45,8 +45,8 @@ public:
 
 	virtual void 			OnAnimationEnd				(u32 state);
 
-	virtual void 			Show();
-	virtual void 			Hide();
+	virtual void 			Show( bool = false );
+	virtual void 			Hide( bool = false );
 	virtual bool 			IsHidden					() const {return GetState() == MS_HIDDEN;}
 	virtual bool 			IsHiding					() const {return GetState() == MS_HIDING;}
 	virtual bool 			IsShowing					() const {return GetState() == MS_SHOWING;}

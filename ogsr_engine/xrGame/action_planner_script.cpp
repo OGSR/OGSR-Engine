@@ -52,8 +52,7 @@ void CActionPlanner<CScriptGameObject>::script_register(lua_State *L)
 			.def("current_action",				&CScriptActionPlanner::current_action)
 			.def("initialized",					&CScriptActionPlanner::initialized)
 			.def("set_goal_world_state",		&set_goal_world_state)
-			//KRodin: Выключено до починки. Если этот метод вызвать - повиснет sheduler непися, да ещё и если после этого сохраниться - будут битые сейвы.
-#pragma todo("!!! Починить этот метод !!!")
+			//KRodin: Это теперь не нужно, т.к. планировщик НПС теперь принудительно останавливается при их смерти.
 			//.def("clear",						&CScriptActionPlanner::clear)
 #ifdef LOG_ACTION
 			.def("show",						&CScriptActionPlanner::show)

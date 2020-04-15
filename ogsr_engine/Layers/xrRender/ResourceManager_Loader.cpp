@@ -87,7 +87,8 @@ void	CResourceManager::OnDeviceCreate	(IReader* F)
 		IReader*	chunk	= NULL;
 		int			chunk_id= 0;
 
-		while (chunk = fs->open_chunk(chunk_id)) {
+		while ((chunk = fs->open_chunk(chunk_id)) != nullptr)
+		{
 			CBlender_DESC	desc;
 			chunk->r		(&desc,sizeof(desc));
 #if RENDER != R_R1

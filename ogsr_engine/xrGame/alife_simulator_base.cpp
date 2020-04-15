@@ -104,15 +104,15 @@ CSE_Abstract *CALifeSimulatorBase::spawn_item	(LPCSTR section, const Fvector &po
 	abstract->m_wVersion		= SPAWN_VERSION;
 	
 	string256					s_name_replace;
-	strcpy						(s_name_replace,*abstract->s_name);
+	strcpy_s(s_name_replace,*abstract->s_name);
 	if (abstract->ID < 1000)
-		strcat					(s_name_replace,"0");
+		strcat_s(s_name_replace,"0");
 	if (abstract->ID < 100)
-		strcat					(s_name_replace,"0");
+		strcat_s(s_name_replace,"0");
 	if (abstract->ID < 10)
-		strcat					(s_name_replace,"0");
+		strcat_s(s_name_replace,"0");
 	string16					S1;
-	strcat						(s_name_replace,itoa(abstract->ID,S1,10));
+	strcat_s(s_name_replace,itoa(abstract->ID,S1,10));
 	abstract->set_name_replace	(s_name_replace);
 
 	CSE_ALifeDynamicObject		*dynamic_object = smart_cast<CSE_ALifeDynamicObject*>(abstract);
@@ -160,15 +160,15 @@ CSE_Abstract *CALifeSimulatorBase::create(CSE_ALifeGroupAbstract *tpALifeGroupAb
 	k->m_bALifeControl			= true;
 	
 	string256					s_name_replace;
-	strcpy						(s_name_replace,*k->s_name);
+	strcpy_s(s_name_replace,*k->s_name);
 	if (k->ID < 1000)
-		strcat					(s_name_replace,"0");
+		strcat_s(s_name_replace,"0");
 	if (k->ID < 100)
-		strcat					(s_name_replace,"0");
+		strcat_s(s_name_replace,"0");
 	if (k->ID < 10)
-		strcat					(s_name_replace,"0");
+		strcat_s(s_name_replace,"0");
 	string16					S1;
-	strcat						(s_name_replace,itoa(k->ID,S1,10));
+	strcat_s(s_name_replace,itoa(k->ID,S1,10));
 	k->set_name_replace			(s_name_replace);
 
 	register_object				(k,true);

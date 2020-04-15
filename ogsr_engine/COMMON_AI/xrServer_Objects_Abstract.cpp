@@ -22,7 +22,7 @@ CSE_Visual::CSE_Visual		   	(LPCSTR name)
 	if(name)
 	{
 		string_path					tmp;
-		strcpy						(tmp, name);
+		strcpy_s(tmp, name);
 		if(strext(tmp)) 
 			*strext(tmp)			=0;
 		xr_strlwr					(tmp);
@@ -41,7 +41,7 @@ CSE_Visual::~CSE_Visual			()
 void CSE_Visual::set_visual	   	(LPCSTR name, bool load)
 {
 	string_path					tmp;
-    strcpy						(tmp,name);
+    strcpy_s(tmp,name);
     if (strext(tmp))		 	*strext(tmp) = 0;
 	xr_strlwr					(tmp);
 	visual_name					= tmp; 

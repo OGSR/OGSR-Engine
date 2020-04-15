@@ -29,20 +29,6 @@ protected:
 		IC	bool					operator()							(const CObjectItemAbstract *item, const CLASS_ID &clsid) const;
 	};
 
-	struct CObjectItemPredicateCLSID {
-		CLASS_ID					m_clsid;
-
-		IC							CObjectItemPredicateCLSID			(const CLASS_ID &clsid);
-		IC	bool					operator()							(const CObjectItemAbstract *item) const;
-	};
-
-	struct CObjectItemPredicateScript {
-		shared_str					m_script_clsid_name;
-
-		IC							CObjectItemPredicateScript			(const shared_str &script_clsid_name);
-		IC	bool					operator()							(const CObjectItemAbstract *item) const;
-	};
-
 public:
 	typedef xr_vector<CObjectItemAbstract*>		OBJECT_ITEM_STORAGE;
 	typedef OBJECT_ITEM_STORAGE::iterator		iterator;

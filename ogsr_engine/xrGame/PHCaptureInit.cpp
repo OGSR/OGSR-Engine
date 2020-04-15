@@ -280,7 +280,7 @@ void CPHCapture::Init(CInifile* ini)
 	CActor* A=smart_cast<CActor*>(m_character->PhysicsRefObject());
 	if(A)
 	{
-		A->SetWeaponHideState(INV_STATE_BLOCK_ALL,true);
+		A->SetWeaponHideState( INV_STATE_BLOCK_ALL, true, true );
 		m_hard_mode = true;
 	}
 	else if ( !m_hard_mode )

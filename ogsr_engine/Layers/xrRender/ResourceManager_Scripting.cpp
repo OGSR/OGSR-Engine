@@ -399,7 +399,7 @@ void CResourceManager::LS_Load()
 
 	module(LSVM)
 	[
-		def("log", LuaLog),
+		def("log", &LuaLog),
 
 		class_<adopt_sampler>("_sampler")
 			.def(								constructor<const adopt_sampler&>())

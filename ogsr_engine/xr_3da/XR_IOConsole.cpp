@@ -144,8 +144,8 @@ void CConsole::OnRender	()
 
 	char		buf	[MAX_LEN+5];
 	strcpy_s		(buf,ioc_prompt);
-	strcat		(buf,editor);
-	if (bCursor) strcat(buf,"|");
+	strcat_s(buf,editor);
+	if (bCursor) strcat_s(buf,"|");
 
 	pFont->SetColor( color_rgba(128  ,128  ,255, 255) );
 	pFont->SetHeightI(0.025f);
@@ -261,7 +261,7 @@ void CConsole::OnPressKey(int dik, BOOL bHold)
 			HGLOBAL hmem = GetClipboardData(CF_TEXT);
 			if( hmem ){
 				LPCSTR	clipdata = (LPCSTR)GlobalLock(hmem);
-				strncpy (editor,clipdata,MAX_LEN-1); editor[MAX_LEN-1]=0;
+				strncpy_s(editor,clipdata,MAX_LEN-1); editor[MAX_LEN-1]=0;
 //				std::locale loc ("English");
 				for (u32 i=0; i<xr_strlen(editor); i++)
 					if (isprint(editor[i]))	{
@@ -450,7 +450,7 @@ void CConsole::SelectCommand()
 
 void CConsole::Execute		(LPCSTR cmd)
 {
-	strncpy			(editor,cmd,MAX_LEN-1); editor[MAX_LEN-1]=0;
+	strncpy_s(editor,cmd,MAX_LEN-1); editor[MAX_LEN-1]=0;
 	RecordCommands	= false;
 	ExecuteCommand	();
 	RecordCommands	= true;

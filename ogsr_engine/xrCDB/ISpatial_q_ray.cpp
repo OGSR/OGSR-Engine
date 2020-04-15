@@ -163,7 +163,6 @@ ICF BOOL isect_sse			(const aabb_t &box, const ray_t &ray, float &dist)	{
 	return  ret;
 }
 
-extern Fvector	c_spatial_offset[8];
 
 template <bool b_use_sse, bool b_first, bool b_nearest>
 class alignas(16) walker

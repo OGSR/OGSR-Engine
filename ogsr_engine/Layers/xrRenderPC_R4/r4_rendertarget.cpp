@@ -914,7 +914,9 @@ CRenderTarget::CRenderTarget		()
 			//	R_CHK						(t_noise_surf[it]->UnlockRect(0));
 			//}
 
-			for (int it=0; it<TEX_jitter_count-1; it++)
+			int it = 0;
+
+			for (; it<TEX_jitter_count-1; it++)
 			{
 				string_path					name;
 				xr_sprintf						(name,"%s%d",r2_jitter,it);

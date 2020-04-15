@@ -86,7 +86,7 @@ void CDetailManager::hw_Load_Geom()
 #else	//	USE_DX10
 		R_CHK			(hw_VB->Lock(0,0,(void**)&pV,0));
 #endif	//	USE_DX10
-		for (o=0; o<objects.size(); o++)
+		for (u32 o=0; o<objects.size(); o++)
 		{
 			const CDetail& D		=	*objects[o];
 			for (u32 batch=0; batch<hw_BatchSize; batch++)
@@ -125,7 +125,7 @@ void CDetailManager::hw_Load_Geom()
 #else	//	USE_DX10
 		R_CHK			(hw_IB->Lock(0,0,(void**)(&pI),0));
 #endif	//	USE_DX10
-		for (o=0; o<objects.size(); o++)
+		for (u32 o=0; o<objects.size(); o++)
 		{
 			const CDetail& D		=	*objects[o];
 			u16		offset	=	0;
