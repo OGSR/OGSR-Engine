@@ -974,7 +974,7 @@ BOOL runDemoPlay(LPCSTR anmFileName) {
 		loops = atoi(comma + 1);
 		*comma = 0;	
 	}
-	strconcat(sizeof(fn), fn, args, ".xrdemo");
+	strconcat(sizeof(fn), fn, anmFileName, ".xrdemo");
 	FS.update_path(fn, "$game_anims$", fn);
 	if (!FS.exist(fn)) {
 		Console->Show();
