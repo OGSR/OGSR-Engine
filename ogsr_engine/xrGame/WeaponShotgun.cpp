@@ -551,3 +551,11 @@ void CWeaponShotgun::ReloadMagazine() {
     cnt = AddCartridge( 1 );
   }
 }
+
+
+void CWeaponShotgun::StopHUDSounds() {
+  HUD_SOUND::StopSound( m_sndOpen );
+  HUD_SOUND::StopSound( m_sndAddCartridge );
+  HUD_SOUND::StopSound( m_sndClose );
+  inherited::StopHUDSounds();
+}

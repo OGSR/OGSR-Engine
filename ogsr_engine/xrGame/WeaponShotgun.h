@@ -27,6 +27,7 @@ public:
 	void			switch2_StartReload ();
 	void			switch2_AddCartgidge();
 	void			switch2_EndReload	();
+	virtual void StopHUDSounds();
 
 	virtual void	UpdateSounds		();
 	virtual void	PlayAnimOpenWeapon	();
