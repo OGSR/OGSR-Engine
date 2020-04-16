@@ -529,7 +529,7 @@ BOOL CActor::net_Spawn		(CSE_Abstract* DC)
 	game_news_registry->registry().init(ID());
 
 	{
-	  auto news = game_news_registry->registry().objects();
+	  auto& news = game_news_registry->registry().objects();
 	  if ( news.size() > NEWS_TO_SHOW )
 	    news.erase(
 	      news.begin(),
