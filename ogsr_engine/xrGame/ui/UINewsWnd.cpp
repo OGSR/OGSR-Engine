@@ -73,7 +73,7 @@ void CUINewsWnd::AddNews() {
   if ( m_flags.test( eNeedAdd ) )
     return;
 
-  while ( UIScrollWnd->GetSize() >= NEWS_TO_SHOW )
+  while ( UIScrollWnd->GetSize() >= Actor()->NewsToShow() )
     UIScrollWnd->RemoveWindow( UIScrollWnd->GetItem( UIScrollWnd->GetSize() - 1 ) );
 
   if ( Actor() ) {

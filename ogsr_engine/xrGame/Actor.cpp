@@ -446,6 +446,8 @@ void CActor::Load	(LPCSTR section )
 
 	// Alex ADD: for smooth crouch fix
 	CurrentHeight = CameraHeight();	
+
+	m_news_to_show = READ_IF_EXISTS( pSettings, r_u32, section, "news_to_show", NEWS_TO_SHOW );
 }
 
 void CActor::PHHit(SHit& H)

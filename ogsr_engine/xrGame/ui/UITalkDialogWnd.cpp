@@ -192,9 +192,9 @@ void CUITalkDialogWnd::AddAnswer(LPCSTR SpeakerName, LPCSTR str, bool bActor)
 	news_data.tex_rect				= ci.UIIcon().GetUIStaticItem().GetOriginalRect();
 	news_data.tex_rect.x2			= news_data.tex_rect.width();
 	news_data.tex_rect.y2			= news_data.tex_rect.height();
-	news_data.receive_time			= Level().GetGameTime();
+	//news_data.receive_time			= Level().GetGameTime();
 
-	Actor()->game_news_registry->registry().objects().push_back(news_data);
+	Actor()->PushNewsData( news_data );
 	CUIGameSP* pGameSP = smart_cast<CUIGameSP*>( HUD().GetUI()->UIGame() );
 	if ( pGameSP )
 	  pGameSP->PdaMenu->UIDiaryWnd->AddNews();

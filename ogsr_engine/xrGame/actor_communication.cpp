@@ -118,12 +118,18 @@ void CActor::AddGameTask			 (const CInfoPortion* info_portion) const
 }
 
 
+void CActor::PushNewsData( GAME_NEWS_DATA& news_data ) {
+  GAME_NEWS_VECTOR& news_vector = game_news_registry->registry().objects();
+  news_data.receive_time = Level().GetGameTime();
+  news_vector.push_back( news_data );
+  if ( news_vector.size() > NewsToShow() )
+    news_vector.pop_front();
+}
+
+
 void  CActor::AddGameNews			 (GAME_NEWS_DATA& news_data)
 {
-
-	GAME_NEWS_VECTOR& news_vector	= game_news_registry->registry().objects();
-	news_data.receive_time			= Level().GetGameTime();
-	news_vector.push_back			(news_data);
+	PushNewsData( news_data );
 
 	if(HUD().GetUI()){
 		HUD().GetUI()->UIMainIngameWnd->ReceiveNews(&news_data);
