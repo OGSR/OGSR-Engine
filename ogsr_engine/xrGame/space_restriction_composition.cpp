@@ -87,9 +87,20 @@ void CSpaceRestrictionComposition::initialize	()
 
 	string256					element;
 
-	for (u32 i=0; i<n ;++i)
-		if (!m_space_restriction_holder->restriction(_GetItem(*m_space_restrictors,i,element))->initialized())
+	for (u32 i = 0; i < n; ++i)
+	{
+		if (auto Restr = m_space_restriction_holder->restriction(_GetItem(*m_space_restrictors, i, element)))
+		{
+			if (!Restr->initialized())
+			{
+				return;
+			}
+		}
+		else
+		{
 			return;
+		}
+	}
 
 	Fsphere						*spheres = (Fsphere*)_alloca(n*sizeof(Fsphere));
 	for (u32 i=0; i<n ;++i) {
