@@ -168,6 +168,15 @@ SVS*	CResourceManager::_CreateVS		(LPCSTR _name)
 
 		// duplicate and zero-terminate
 		IReader* file = FS.r_open(cname);
+		if (!file)
+		{
+			string1024			tmp;
+			xr_sprintf			(tmp, "!![%s]: %s is missing. Replace with stub_default.vs", __FUNCTION__, cname);
+			Msg					(tmp);
+			strconcat			(sizeof(cname), cname,::Render->getShaderPath(),"stub_default",".vs");
+			FS.update_path		(cname,	"$game_shaders$", cname);
+			file				= FS.r_open(cname);
+		}
 		R_ASSERT2(file, cname);
 
 		u32	const size			= file->length();
@@ -262,6 +271,15 @@ SPS*	CResourceManager::_CreatePS			(LPCSTR _name)
 
 		// duplicate and zero-terminate
 		IReader* file = FS.r_open(cname);
+		if (!file)
+		{
+			string1024			tmp;
+			xr_sprintf				(tmp, "!![%s]: %s is missing. Replace with stub_default.ps", __FUNCTION__, cname);
+			Msg					(tmp);
+			strconcat					(sizeof(cname), cname,::Render->getShaderPath(),"stub_default",".ps");
+			FS.update_path				(cname,	"$game_shaders$", cname);
+			file = FS.r_open(cname);
+		}
 		R_ASSERT2(file, cname);
 
 		u32	const size			= file->length();
@@ -327,6 +345,15 @@ SGS*	CResourceManager::_CreateGS			(LPCSTR name)
 
 		// duplicate and zero-terminate
 		IReader* file = FS.r_open(cname);
+		if (!file)
+		{
+			string1024			tmp;
+			xr_sprintf				(tmp, "!![%s]: %s is missing. Replace with stub_default.gs", __FUNCTION__, cname);
+			Msg					(tmp);
+			strconcat					(sizeof(cname), cname,::Render->getShaderPath(),"stub_default",".gs");
+			FS.update_path				(cname,	"$game_shaders$", cname);
+			file		= FS.r_open(cname);
+		}
 		R_ASSERT2(file, cname);
 
 		// Select target
