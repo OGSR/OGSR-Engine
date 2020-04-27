@@ -54,6 +54,7 @@ private:
 
 private:
 	u32					m_max_object_count;
+	u32 m_adaptive_max_object_count;
 	bool				m_enabled;
 	u32					m_last_update_time;
 

@@ -109,6 +109,7 @@ CVisualMemoryManager::CVisualMemoryManager		(vision_client *client)
 void CVisualMemoryManager::initialize			()
 {
 	m_max_object_count	= 1;
+	m_adaptive_max_object_count = 0;
 	m_enabled			= true;
 	m_objects			= 0;
 }
@@ -147,6 +148,7 @@ void CVisualMemoryManager::reinit					()
 void CVisualMemoryManager::reload				(LPCSTR section)
 {
 	m_max_object_count			= READ_IF_EXISTS(pSettings,r_s32,section,"DynamicObjectsCount",1);
+	m_adaptive_max_object_count = READ_IF_EXISTS( pSettings, r_u32, section, "DynamicObjectsCount_adaptive", 0u );
 
 	if (m_stalker) {
 		m_free.Load		(pSettings->r_string(section,"vision_free_section"),true);
@@ -460,13 +462,18 @@ void CVisualMemoryManager::add_visible_object	(const CObject *object, float time
 		visible_object.m_first_level_time	= Device.dwTimeGlobal;
 #endif
 
-		if (m_max_object_count <= m_objects->size()) {
-			xr_vector<CVisibleObject>::iterator	I = std::min_element(m_objects->begin(),m_objects->end(),SLevelTimePredicate<CGameObject>());
-			VERIFY				(m_objects->end() != I);
-			*I					= visible_object;
+		if ( m_objects->size() >= m_max_object_count ) {
+		  xr_vector<CVisibleObject>::iterator I = std::min_element( m_objects->begin(), m_objects->end(), SLevelTimePredicate<CGameObject>() );
+		  VERIFY( m_objects->end() != I );
+		  if ( !m_adaptive_max_object_count || I->m_level_time + m_adaptive_max_object_count < Device.dwTimeGlobal ) //dsh:
+		    *I = visible_object;
+		  else {
+		    Msg( "[%s]: %s: push_back %s m_objects[%u] I[%s] m_level_time[%u]", __FUNCTION__, m_object->cName().c_str(), game_object->cName().c_str(), m_objects->size(), I->m_object->cName().c_str(), Device.dwTimeGlobal - I->m_level_time );
+		    m_objects->push_back( visible_object );
+		  }
 		}
 		else
-			m_objects->push_back(visible_object);
+		  m_objects->push_back( visible_object );
 	}
 	else {
 		if (!fictitious)
@@ -495,13 +502,18 @@ void CVisualMemoryManager::add_visible_object	(CVisibleObject visible_object)
 	if (m_objects->end() != J)
 		*J				= visible_object;
 	else
-		if (m_max_object_count <= m_objects->size()) {
-			xr_vector<CVisibleObject>::iterator	I = std::min_element(m_objects->begin(),m_objects->end(),SLevelTimePredicate<CGameObject>());
-			VERIFY								(m_objects->end() != I);
-			*I									= visible_object;
+		if ( m_objects->size() >= m_max_object_count ) {
+		  xr_vector<CVisibleObject>::iterator I = std::min_element( m_objects->begin(), m_objects->end(), SLevelTimePredicate<CGameObject>() );
+		  VERIFY( m_objects->end() != I );
+		  if ( !m_adaptive_max_object_count || I->m_level_time + m_adaptive_max_object_count < Device.dwTimeGlobal ) //dsh:
+		    *I = visible_object;
+		  else {
+		    Msg( "[%s]: %s: push_back %s m_objects[%u] I[%s] m_level_time[%u]", __FUNCTION__, m_object->cName().c_str(), visible_object.m_object->cName().c_str(), m_objects->size(), I->m_object->cName().c_str(), Device.dwTimeGlobal - I->m_level_time );
+		    m_objects->push_back( visible_object );
+		  }
 		}
 		else
-			m_objects->push_back(visible_object);
+		  m_objects->push_back( visible_object );
 }
 
 #ifdef DEBUG
@@ -676,6 +688,22 @@ void CVisualMemoryManager::update				(float time_delta)
 			),
 			m_objects->end()
 		);
+	}
+
+	if ( m_adaptive_max_object_count && m_objects->size() > m_max_object_count ) { //dsh:
+	  u32 s = m_objects->size();
+	  m_objects->erase(
+	    std::remove_if(
+	      m_objects->begin() + m_max_object_count,
+	      m_objects->end(),
+	      [&]( const auto& it ) -> bool {
+	        return it.m_level_time + m_adaptive_max_object_count < Device.dwTimeGlobal;
+	      }
+	    ),
+	    m_objects->end()
+	  );
+	  if ( m_objects->size() < s )
+	    Msg( "[%s]: %s: expire m_objects[%u->%u]", __FUNCTION__, m_object->cName().c_str(), s, m_objects->size() );
 	}
 
 	// verifying if object is online
