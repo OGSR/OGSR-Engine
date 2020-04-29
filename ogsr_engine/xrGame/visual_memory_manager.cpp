@@ -465,7 +465,7 @@ void CVisualMemoryManager::add_visible_object	(const CObject *object, float time
 		if ( m_objects->size() >= m_max_object_count ) {
 		  xr_vector<CVisibleObject>::iterator I = std::min_element( m_objects->begin(), m_objects->end(), SLevelTimePredicate<CGameObject>() );
 		  VERIFY( m_objects->end() != I );
-		  if ( !m_adaptive_max_object_count || I->m_level_time + m_adaptive_max_object_count < Device.dwTimeGlobal ) //dsh:
+		  if ( !m_adaptive_max_object_count || I->m_level_time + m_adaptive_max_object_count < Device.dwTimeGlobal )
 		    *I = visible_object;
 		  else {
 		    Msg( "[%s]: %s: push_back %s m_objects[%u] I[%s] m_level_time[%u]", __FUNCTION__, m_object->cName().c_str(), game_object->cName().c_str(), m_objects->size(), I->m_object->cName().c_str(), Device.dwTimeGlobal - I->m_level_time );
@@ -505,7 +505,7 @@ void CVisualMemoryManager::add_visible_object	(CVisibleObject visible_object)
 		if ( m_objects->size() >= m_max_object_count ) {
 		  xr_vector<CVisibleObject>::iterator I = std::min_element( m_objects->begin(), m_objects->end(), SLevelTimePredicate<CGameObject>() );
 		  VERIFY( m_objects->end() != I );
-		  if ( !m_adaptive_max_object_count || I->m_level_time + m_adaptive_max_object_count < Device.dwTimeGlobal ) //dsh:
+		  if ( !m_adaptive_max_object_count || I->m_level_time + m_adaptive_max_object_count < Device.dwTimeGlobal )
 		    *I = visible_object;
 		  else {
 		    Msg( "[%s]: %s: push_back %s m_objects[%u] I[%s] m_level_time[%u]", __FUNCTION__, m_object->cName().c_str(), visible_object.m_object->cName().c_str(), m_objects->size(), I->m_object->cName().c_str(), Device.dwTimeGlobal - I->m_level_time );
@@ -690,7 +690,7 @@ void CVisualMemoryManager::update				(float time_delta)
 		);
 	}
 
-	if ( m_adaptive_max_object_count && m_objects->size() > m_max_object_count ) { //dsh:
+	if ( m_adaptive_max_object_count && m_objects->size() > m_max_object_count ) {
 	  u32 s = m_objects->size();
 	  m_objects->erase(
 	    std::remove_if(
