@@ -587,3 +587,8 @@ float CInventoryOwner::ArtefactsAddWeight( bool first ) const {
 void CInventoryOwner::SetNextItemSlot( u32 slot ) {
   m_tmp_next_item_slot = slot;
 }
+
+
+CInventoryItem* CInventoryOwner::GetCurrentTorch() const {
+  return inventory().ItemFromSlot( TORCH_SLOT );
+}
