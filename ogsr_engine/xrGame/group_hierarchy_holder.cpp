@@ -97,9 +97,11 @@ void CGroupHierarchyHolder::register_in_group_senses	(CEntity *member)
 void CGroupHierarchyHolder::unregister_in_group			(CEntity *member)
 {
 	VERIFY						(member);
-	MEMBER_REGISTRY::iterator	I = std::find(m_members.begin(),m_members.end(),member);
-	VERIFY3						(I != m_members.end(),"Specified group member cannot be found",*member->cName());
-	m_members.erase				(I);
+	auto I = std::find(m_members.begin(), m_members.end(), member);
+	if (I != m_members.end())
+		m_members.erase(I);
+	else
+		Msg("!![%s][%s] Specified group member cannot be found!", __FUNCTION__, member->cName().c_str());
 }
 
 void CGroupHierarchyHolder::unregister_in_squad			(CEntity *member)
