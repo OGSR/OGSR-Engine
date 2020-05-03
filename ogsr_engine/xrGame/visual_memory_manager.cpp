@@ -467,10 +467,8 @@ void CVisualMemoryManager::add_visible_object	(const CObject *object, float time
 		  VERIFY( m_objects->end() != I );
 		  if ( !m_adaptive_max_object_count || I->m_level_time + m_adaptive_max_object_count < Device.dwTimeGlobal )
 		    *I = visible_object;
-		  else {
-		    Msg( "[%s]: %s: push_back %s m_objects[%u] I[%s] m_level_time[%u]", __FUNCTION__, m_object->cName().c_str(), game_object->cName().c_str(), m_objects->size(), I->m_object->cName().c_str(), Device.dwTimeGlobal - I->m_level_time );
+		  else
 		    m_objects->push_back( visible_object );
-		  }
 		}
 		else
 		  m_objects->push_back( visible_object );
@@ -507,10 +505,8 @@ void CVisualMemoryManager::add_visible_object	(CVisibleObject visible_object)
 		  VERIFY( m_objects->end() != I );
 		  if ( !m_adaptive_max_object_count || I->m_level_time + m_adaptive_max_object_count < Device.dwTimeGlobal )
 		    *I = visible_object;
-		  else {
-		    Msg( "[%s]: %s: push_back %s m_objects[%u] I[%s] m_level_time[%u]", __FUNCTION__, m_object->cName().c_str(), visible_object.m_object->cName().c_str(), m_objects->size(), I->m_object->cName().c_str(), Device.dwTimeGlobal - I->m_level_time );
+		  else
 		    m_objects->push_back( visible_object );
-		  }
 		}
 		else
 		  m_objects->push_back( visible_object );
@@ -691,7 +687,6 @@ void CVisualMemoryManager::update				(float time_delta)
 	}
 
 	if ( m_adaptive_max_object_count && m_objects->size() > m_max_object_count ) {
-	  u32 s = m_objects->size();
 	  m_objects->erase(
 	    std::remove_if(
 	      m_objects->begin() + m_max_object_count,
@@ -702,8 +697,6 @@ void CVisualMemoryManager::update				(float time_delta)
 	    ),
 	    m_objects->end()
 	  );
-	  if ( m_objects->size() < s )
-	    Msg( "[%s]: %s: expire m_objects[%u->%u]", __FUNCTION__, m_object->cName().c_str(), s, m_objects->size() );
 	}
 
 	// verifying if object is online
