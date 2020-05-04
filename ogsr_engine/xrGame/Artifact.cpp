@@ -313,12 +313,12 @@ bool CArtefact::CanTake() const
 	return (m_activationObj==NULL);
 }
 
-void CArtefact::Hide()
+void CArtefact::Hide( bool now )
 {
 	SwitchState(eHiding);
 }
 
-void CArtefact::Show()
+void CArtefact::Show( bool now )
 {
 	SwitchState(eShowing);
 }

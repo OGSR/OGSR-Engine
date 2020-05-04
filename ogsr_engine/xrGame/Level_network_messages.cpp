@@ -260,7 +260,7 @@ void CLevel::ClientReceive()
 					string4096 NewServerOptions = "";
 					sprintf_s(NewServerOptions, "%s/%s", LevelName, GameType);
 
-					if (m_SO) strcat(NewServerOptions, m_SO);
+					if (m_SO) strcat_s(NewServerOptions, m_SO);
 					m_caServerOptions = NewServerOptions;
 
 					Engine.Event.Defer	("KERNEL:disconnect");

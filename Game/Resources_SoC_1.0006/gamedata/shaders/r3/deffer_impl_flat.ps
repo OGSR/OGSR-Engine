@@ -46,10 +46,10 @@ f_deffer 	main	( p_flat I 		)
 //	 float4	n_Gt = tex2D	(s_dn_g, I.tcdbump).wzyx;
 //	 float4	n_Bt = tex2D	(s_dn_b, I.tcdbump).wzyx;
 //	 float4	n_At = tex2D	(s_dn_a, I.tcdbump).wzyx;
- 	 float4	n_Rt = s_dn_r.Sample ( smp_linear, I.tcdbump).wzyx;
-	 float4	n_Gt = s_dn_g.Sample ( smp_linear, I.tcdbump).wzyx;
-	 float4	n_Bt = s_dn_b.Sample ( smp_linear, I.tcdbump).wzyx;
-	 float4	n_At = s_dn_a.Sample ( smp_linear, I.tcdbump).wzyx;
+ 	 float4	n_Rt = s_dn_r.Sample ( smp_base, I.tcdbump).wzyx;
+	 float4	n_Gt = s_dn_g.Sample ( smp_base, I.tcdbump).wzyx;
+	 float4	n_Bt = s_dn_b.Sample ( smp_base, I.tcdbump).wzyx;
+	 float4	n_At = s_dn_a.Sample ( smp_base, I.tcdbump).wzyx;
 	 
  	 float3	n_R = (n_Rt-0.5)*mask.r; float g_R=n_Rt.w*mask.r;
 	 float3	n_G = (n_Gt-0.5)*mask.g; float g_G=n_Gt.w*mask.g;

@@ -212,7 +212,7 @@ string64&			game_sv_GameState::get_option_s				(LPCSTR lst, LPCSTR name, LPCSTR 
 	}
 	else			
 	{
-		if (def)	strcpy		(ret,def);
+		if (def)	strcpy_s(ret,def);
 		else		ret[0]=0;
 	}
 	return ret;
@@ -254,10 +254,10 @@ void game_sv_GameState::net_Export_State						(NET_Packet& P, ClientID to)
 		if (!C->net_Ready || (A->IsSkip() && C->ID != to)) continue;
 
 			CSE_Abstract* C_e		= C->owner;
-			if (0==C_e)		strcpy(p_name,"Unknown");
+			if (0==C_e)		strcpy_s(p_name,"Unknown");
 			else 
 			{
-				strcpy	(p_name,C_e->name_replace());
+				strcpy_s(p_name,C_e->name_replace());
 			}
 
 		A->setName(p_name);
@@ -660,7 +660,7 @@ bool game_sv_GameState::NewPlayerName_Exists( void* pClient, LPCSTR NewName )
 		IClient*	pIC	= m_server->client_Get(it);
 		if ( !pIC || pIC == CL ) continue;
 		string64 xName;
-		strcpy( xName, pIC->name.c_str() );
+		strcpy_s( xName, pIC->name.c_str() );
 		if ( !xr_strcmp(NewName, xName) ) return true;
 	};
 	return false;

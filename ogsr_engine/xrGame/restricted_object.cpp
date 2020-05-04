@@ -26,22 +26,22 @@ CRestrictedObject::~CRestrictedObject		()
 {
 }
 
-IC	void construct_string(LPSTR result, xr_vector<ALife::_OBJECT_ID> &restrictions)
+template<typename StrType>
+static void construct_string(StrType& result, xr_vector<ALife::_OBJECT_ID>& restrictions, const CSE_ALifeMonsterAbstract* monster)
 {
-	u32 count = xr_strlen(result) ? _GetItemCount(result) : 0;
+	u32 count = strlen(result) ? _GetItemCount(result) : 0;
 
-	xr_vector<ALife::_OBJECT_ID>::const_iterator iter;
-	for (iter = restrictions.begin(); iter != restrictions.end();) 
+	for (auto iter = restrictions.begin(); iter != restrictions.end();) 
 	{
-		CSE_ALifeDynamicObject	*object = ai().alife().objects().object(*iter);
+		const auto* object = ai().alife().objects().object(*iter);
 		if (object)
 		{
 			if (ai().game_graph().vertex(object->m_tGraphID)->level_id() == ai().level_graph().level_id())
 			{
 				if (count)
-					strcat(result, ",");
+					strcat_s(result, ",");
 
-				strcat(result, object->name_replace());
+				strcat_s(result, object->name_replace());
 				++count;
 			}
 
@@ -49,29 +49,11 @@ IC	void construct_string(LPSTR result, xr_vector<ALife::_OBJECT_ID> &restriction
 		}
 		else
 		{
-			Msg("Removing invalid restriction with ID=%d!", *iter);
+			Msg("~~[%s]: remove invalid restriction with ID[%u] from %s", __FUNCTION__, *iter, monster->name_replace());
 			iter = restrictions.erase(iter);
 		}
 	}
 }
-
-#if 0
-IC	void construct_id_string					(LPSTR result, const xr_vector<ALife::_OBJECT_ID> &restrictions)
-{
-	strcpy			(result,"");
-	string16		temp;
-	u32				count = 0;
-	xr_vector<ALife::_OBJECT_ID>::const_iterator	I = restrictions.begin();
-	xr_vector<ALife::_OBJECT_ID>::const_iterator	E = restrictions.end();
-	for ( ; I != E; ++I) {
-		if (count)
-			strcat	(result,",");
-		sprintf_s		(temp,"%d",*I);
-		strcat		(result,temp);
-		++count;
-	}
-}
-#endif
 
 BOOL CRestrictedObject::net_Spawn			(CSE_Abstract* data)
 {
@@ -81,32 +63,15 @@ BOOL CRestrictedObject::net_Spawn			(CSE_Abstract* data)
 	m_applied					= false;
 	m_removed					= true;
 	
-	string4096					temp0;
-	string4096					temp1;
+	string4096 temp0, temp1;
 	
-	strcpy						(temp0,*monster->m_out_space_restrictors);
-	strcpy						(temp1,*monster->m_in_space_restrictors);
+	strcpy_s(temp0,*monster->m_out_space_restrictors);
+	strcpy_s(temp1,*monster->m_in_space_restrictors);
 
 	if (ai().get_alife()) {
-		construct_string		(temp0,monster->m_dynamic_out_restrictions);
-		construct_string		(temp1,monster->m_dynamic_in_restrictions);
+		construct_string(temp0, monster->m_dynamic_out_restrictions, monster);
+		construct_string(temp1, monster->m_dynamic_in_restrictions, monster);
 	}
-
-#if 0
-	string4096					temp2;
-	string4096					temp3;
-
-	construct_id_string			(temp2,monster->m_dynamic_out_restrictions);
-	construct_id_string			(temp3,monster->m_dynamic_in_restrictions);
-
-	Msg							("Restricting object %s with",monster->name_replace());
-	Msg							("STATIC OUT  : %s",*monster->m_out_space_restrictors);
-	Msg							("STATIC IN   : %s",*monster->m_in_space_restrictors);
-	Msg							("DYNAMIC OUT : %s",temp2);
-	Msg							("DYNAMIC IN  : %s",temp3);
-	Msg							("OUT         : %s",temp0);
-	Msg							("IN          : %s",temp1);
-#endif
 
 	Level().space_restriction_manager().restrict	(monster->ID,temp0,temp1);
 
@@ -269,26 +234,42 @@ IC	void CRestrictedObject::remove_object_restriction(ALife::_OBJECT_ID id, const
 	Level().Send		(net_packet,net_flags(TRUE,TRUE));
 }
 
-template <typename P, bool value>
-IC	void CRestrictedObject::construct_restriction_string(LPSTR temp_restrictions, const xr_vector<ALife::_OBJECT_ID> &restrictions, shared_str current_restrictions, const P &p)
+template<typename P, const bool value, typename StrType>
+static void construct_restriction_string(StrType& temp_restrictions, const xr_vector<ALife::_OBJECT_ID>& restrictions, const shared_str& current_restrictions, const P& p, CRestrictedObject* RObj)
 {
-	u32							count = 0;
-	strcpy						(temp_restrictions,"");
-	xr_vector<ALife::_OBJECT_ID>::const_iterator	I = restrictions.begin();
-	xr_vector<ALife::_OBJECT_ID>::const_iterator	E = restrictions.end();
-	for ( ; I != E; ++I) {
-		CObject					*object = Level().Objects.net_Find(*I);
-		if (!object || !!strstr(*current_restrictions,*object->cName()) == value)
+	std::vector<std::string> cur_restrs;
+	const int cnt = _GetItemCount(current_restrictions.c_str());
+	for (int i = 0; i < cnt; ++i) {
+		string256 tmp;
+		_GetItem(current_restrictions.c_str(), i, tmp);
+		cur_restrs.emplace_back(std::move(tmp));
+	}
+
+	std::vector<std::string> new_restrs;
+
+	for (const auto& id : restrictions) {
+		const auto* object = Level().Objects.net_Find(id);
+		if (!object)
 			continue;
 
-		p						(this,object->ID());
+		std::string s{ object->cName().c_str() };
+		if ((std::find(cur_restrs.begin(), cur_restrs.end(), s) != cur_restrs.end()) == value)
+			continue;
 
-		if (count)
-			strcat(temp_restrictions,",");
+		if (std::find(new_restrs.begin(), new_restrs.end(), s) == new_restrs.end())
+			new_restrs.emplace_back(std::move(s));
 
-		strcat(temp_restrictions,*object->cName());
+		p(RObj, object->ID());
+	}
 
-		count++;
+	if (!new_restrs.empty()) {
+		std::string s;
+		for (const auto& it : new_restrs) {
+			if (!s.empty()) s += ",";
+			s += it;
+		}
+		ASSERT_FMT(s.length() < std::size(temp_restrictions), "!![%s]: resulted string too long: object[%s] temp_restrictions_size[%u] s.length[%u]", __FUNCTION__, RObj->object().cName().c_str(), std::size(temp_restrictions), s.length());
+		strcpy_s(temp_restrictions, s.c_str());
 	}
 }
 
@@ -320,8 +301,8 @@ void CRestrictedObject::add_restrictions	(const xr_vector<ALife::_OBJECT_ID> &ou
 	string4096					temp_out_restrictions;
 	string4096					temp_in_restrictions;
 	
-	construct_restriction_string<CRestrictionPredicate<true>,true>(temp_out_restrictions,out_restrictions,this->out_restrictions(),CRestrictionPredicate<true>(RestrictionSpace::eRestrictorTypeOut));
-	construct_restriction_string<CRestrictionPredicate<true>,true>(temp_in_restrictions,in_restrictions,this->in_restrictions(),CRestrictionPredicate<true>(RestrictionSpace::eRestrictorTypeIn));
+	construct_restriction_string<CRestrictionPredicate<true>,true>(temp_out_restrictions,out_restrictions,this->out_restrictions(),CRestrictionPredicate<true>(RestrictionSpace::eRestrictorTypeOut), this);
+	construct_restriction_string<CRestrictionPredicate<true>,true>(temp_in_restrictions,in_restrictions,this->in_restrictions(),CRestrictionPredicate<true>(RestrictionSpace::eRestrictorTypeIn), this);
 
 	Level().space_restriction_manager().add_restrictions	(object().ID(),temp_out_restrictions,temp_in_restrictions);
 
@@ -340,8 +321,8 @@ void CRestrictedObject::remove_restrictions	(const xr_vector<ALife::_OBJECT_ID> 
 	string4096					temp_out_restrictions;
 	string4096					temp_in_restrictions;
 
-	construct_restriction_string<CRestrictionPredicate<false>,false>(temp_out_restrictions,out_restrictions,this->out_restrictions(),CRestrictionPredicate<false>(RestrictionSpace::eRestrictorTypeOut));
-	construct_restriction_string<CRestrictionPredicate<false>,false>(temp_in_restrictions,in_restrictions,this->in_restrictions(),CRestrictionPredicate<false>(RestrictionSpace::eRestrictorTypeIn));
+	construct_restriction_string<CRestrictionPredicate<false>,false>(temp_out_restrictions,out_restrictions,this->out_restrictions(),CRestrictionPredicate<false>(RestrictionSpace::eRestrictorTypeOut), this);
+	construct_restriction_string<CRestrictionPredicate<false>,false>(temp_in_restrictions,in_restrictions,this->in_restrictions(),CRestrictionPredicate<false>(RestrictionSpace::eRestrictorTypeIn), this);
 
 	Level().space_restriction_manager().remove_restrictions	(object().ID(),temp_out_restrictions,temp_in_restrictions);
 	

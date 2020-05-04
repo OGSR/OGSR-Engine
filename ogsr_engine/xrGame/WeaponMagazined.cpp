@@ -803,7 +803,7 @@ bool CWeaponMagazined::Action(s32 cmd, u32 flags)
 	if(inherited::Action(cmd, flags)) return true;
 	
 	//если оружие чем-то занято, то ничего не делать
-	if(IsPending()) return false;
+	if ( IsPending() && cmd != kWPN_FIREMODE_PREV && cmd != kWPN_FIREMODE_NEXT ) return false;
 	
 	switch(cmd) 
 	{
@@ -1308,7 +1308,6 @@ void CWeaponMagazined::onMovementChanged( ACTOR_DEFS::EMoveCommand cmd ) {
 void	CWeaponMagazined::OnNextFireMode		()
 {
 	if (!m_bHasDifferentFireModes) return;
-	if (GetState() != eIdle) return;
 	m_iCurFireMode = (m_iCurFireMode+1+m_aFireModes.size()) % m_aFireModes.size();
 	SetQueueSize(GetCurrentFireMode());
 	PlaySound( sndFireModes, get_LastFP() );
@@ -1317,7 +1316,6 @@ void	CWeaponMagazined::OnNextFireMode		()
 void	CWeaponMagazined::OnPrevFireMode		()
 {
 	if (!m_bHasDifferentFireModes) return;
-	if (GetState() != eIdle) return;
 	m_iCurFireMode = (m_iCurFireMode-1+m_aFireModes.size()) % m_aFireModes.size();
 	SetQueueSize(GetCurrentFireMode());	
 	PlaySound( sndFireModes, get_LastFP() );

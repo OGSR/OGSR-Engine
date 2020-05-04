@@ -30,26 +30,6 @@ IC	bool CObjectFactory::CObjectItemPredicate::operator()	(const CObjectItemAbstr
 	return				(item->clsid() < clsid);
 }
 
-IC	CObjectFactory::CObjectItemPredicateCLSID::CObjectItemPredicateCLSID	(const CLASS_ID &clsid) :
-	m_clsid				(clsid)
-{
-}
-
-IC	bool CObjectFactory::CObjectItemPredicateCLSID::operator()	(const CObjectItemAbstract *item) const
-{
-	return				(m_clsid == item->clsid());
-}
-
-IC	CObjectFactory::CObjectItemPredicateScript::CObjectItemPredicateScript	(const shared_str &script_clsid_name) :
-	m_script_clsid_name	(script_clsid_name)
-{
-}
-
-IC	bool CObjectFactory::CObjectItemPredicateScript::operator()	(const CObjectItemAbstract *item) const
-{
-	return				(m_script_clsid_name == item->script_clsid());
-}
-
 IC	const CObjectFactory::OBJECT_ITEM_STORAGE &CObjectFactory::clsids	() const
 {
 	return				(m_clsids);
@@ -63,18 +43,13 @@ IC	const CObjectItemAbstract &CObjectFactory::item	(const CLASS_ID &clsid) const
 	return				(**I);
 }
 
-IC	void CObjectFactory::add	(CObjectItemAbstract *item)
+IC	void CObjectFactory::add(CObjectItemAbstract* item)
 {
-	const_iterator		I;
+	ASSERT_FMT_DBG(std::find_if(clsids().cbegin(), clsids().cend(), [item](const CObjectItemAbstract* item_compare) { return item->clsid() == item_compare->clsid(); }) == clsids().end(), "!![%s] Clsid [%u] already exists! Script clsid: [%s]", __FUNCTION__, item->clsid(), item->script_clsid().c_str());
+	ASSERT_FMT_DBG(std::find_if(clsids().cbegin(), clsids().cend(), [item](const CObjectItemAbstract* item_compare) { return item->script_clsid() == item_compare->script_clsid(); }) == clsids().end(), "!![%s] Script clsid [%s] already exists! Clsid: [%u]", __FUNCTION__, item->script_clsid().c_str(), item->clsid());
 
-	I					= std::find_if(clsids().begin(),clsids().end(),CObjectItemPredicateCLSID(item->clsid()));
-	VERIFY				(I == clsids().end());
-	
-	I					= std::find_if(clsids().begin(),clsids().end(),CObjectItemPredicateScript(item->script_clsid()));
-	VERIFY				(I == clsids().end());
-	
-	m_actual			= false;
-	m_clsids.push_back	(item);
+	m_actual = false;
+	m_clsids.push_back(item);
 }
 
 IC	int	CObjectFactory::script_clsid	(const CLASS_ID &clsid) const

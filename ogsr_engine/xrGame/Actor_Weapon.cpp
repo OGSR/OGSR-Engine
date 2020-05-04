@@ -92,10 +92,10 @@ BOOL CActor::g_State (SEntityState& state) const
 	return TRUE;
 }
 
-void CActor::SetWeaponHideState (u32 State, bool bSet)
+void CActor::SetWeaponHideState( u32 State, bool bSet, bool now )
 {
 	if (g_Alive() && this == Level().CurrentControlEntity())
-		this->inventory().SetSlotsBlocked(State, bSet);
+		this->inventory().SetSlotsBlocked( State, bSet, now );
 }
 
 static	u16 BestWeaponSlots [] = {

@@ -47,7 +47,7 @@ public:
 
 			void			PutNextToSlot						();
 
-	virtual void			Deactivate							();
+	virtual void			Deactivate( bool = false );
 	virtual void			GetBriefInfo						(xr_string& str_name, xr_string& icon_sect_name, xr_string& str_count);
 	virtual bool			StopSprintOnFire() { return false; }
 protected:

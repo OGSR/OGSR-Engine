@@ -14,6 +14,7 @@
 #include "../../sight_manager.h"
 #include "../../stalker_movement_manager.h"
 #include "../../stalker_animation_manager.h"
+#include "../../holder_custom.h"
 
 #ifdef DEBUG
 #	include "../../ai_debug.h"
@@ -24,6 +25,11 @@ BOOL CAI_Stalker::feel_vision_isRelevant(CObject* O)
 {
 	if (!g_Alive())
 		return		FALSE;
+
+	CHolderCustom* holder = smart_cast<CHolderCustom*>( O );
+	if ( holder && holder->OwnerActor() )
+	  return TRUE;
+
 	CEntityAlive*	E = smart_cast<CEntityAlive*>		(O);
 	CInventoryItem*	I = smart_cast<CInventoryItem*>	(O);
 	if (!E && !I)	return	(FALSE);

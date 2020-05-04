@@ -101,31 +101,18 @@ void CActor::IR_OnKeyboardPress(int cmd)
 	case kCAM_1:	cam_Set			(eacFirstEye);				break;
 	case kCAM_2:	cam_Set			(eacLookAt);				break;
 	case kCAM_3:	cam_Set			(eacFreeLook);				break;
-	case kNIGHT_VISION:
-		{
-			const xr_vector<CAttachableItem*>& all = CAttachmentOwner::attached_objects();
-			xr_vector<CAttachableItem*>::const_iterator it = all.begin();
-			xr_vector<CAttachableItem*>::const_iterator it_e = all.end();
-			for(;it!=it_e;++it){
-				CTorch* torch = smart_cast<CTorch*>(*it);
-				if (torch){		
-					torch->SwitchNightVision();
-					break;
-				}
+	case kNIGHT_VISION: {
+			CTorch* pTorch = smart_cast<CTorch*>(inventory().ItemFromSlot(TORCH_SLOT));
+			if (pTorch) {
+				pTorch->SwitchNightVision();
 			}
-		}break;
-	case kTORCH:{ 
-		const xr_vector<CAttachableItem*>& all = CAttachmentOwner::attached_objects();
-		xr_vector<CAttachableItem*>::const_iterator it = all.begin();
-		xr_vector<CAttachableItem*>::const_iterator it_e = all.end();
-		for(;it!=it_e;++it){
-				CTorch* torch = smart_cast<CTorch*>(*it);
-				if (torch){		
-					torch->Switch();
-					break;
-				}
-		}
-		}break;
+		} break;
+	case kTORCH: { 
+			CTorch* pTorch = smart_cast<CTorch*>(inventory().ItemFromSlot(TORCH_SLOT));
+			if (pTorch) {
+				pTorch->Switch();
+			}
+		} break;
 	case kWPN_1:	
 	case kWPN_2:	
 	case kWPN_3:	
@@ -422,7 +409,7 @@ BOOL CActor::HUDview				( )const
 }
 
 //void CActor::IR_OnMousePress(int btn)
-static	u32 SlotsToCheck [] = {
+constexpr u32 SlotsToCheck[] = {
 		KNIFE_SLOT		,		// 0
 		FIRST_WEAPON_SLOT		,		// 1
 		SECOND_WEAPON_SLOT		,		// 2
@@ -440,11 +427,12 @@ void	CActor::OnNextWeaponSlot()
 	if (ActiveSlot == NO_ACTIVE_SLOT) 
 		ActiveSlot = KNIFE_SLOT;
 	
-	u32 NumSlotsToCheck = sizeof(SlotsToCheck)/sizeof(u32);	
-	for (u32 CurSlot=0; CurSlot<NumSlotsToCheck; CurSlot++)
+	constexpr u32 NumSlotsToCheck = sizeof(SlotsToCheck)/sizeof(u32);
+	u32 CurSlot = 0;
+	for (; CurSlot<NumSlotsToCheck; CurSlot++)
 	{
 		if (SlotsToCheck[CurSlot] == ActiveSlot) break;
-	};
+	}
 	if (CurSlot >= NumSlotsToCheck) return;
 	for (u32 i=CurSlot+1; i<NumSlotsToCheck; i++)
 	{
@@ -454,7 +442,7 @@ void	CActor::OnNextWeaponSlot()
 			return;
 		}
 	}
-};
+}
 
 void	CActor::OnPrevWeaponSlot()
 {
@@ -465,11 +453,12 @@ void	CActor::OnPrevWeaponSlot()
 	if (ActiveSlot == NO_ACTIVE_SLOT) 
 		ActiveSlot = KNIFE_SLOT;
 
-	u32 NumSlotsToCheck = sizeof(SlotsToCheck)/sizeof(u32);	
-	for (u32 CurSlot=0; CurSlot<NumSlotsToCheck; CurSlot++)
+	constexpr u32 NumSlotsToCheck = sizeof(SlotsToCheck)/sizeof(u32);
+	u32 CurSlot = 0;
+	for (; CurSlot<NumSlotsToCheck; CurSlot++)
 	{
 		if (SlotsToCheck[CurSlot] == ActiveSlot) break;
-	};
+	}
 	if (CurSlot >= NumSlotsToCheck) return;
 	for (s32 i=s32(CurSlot-1); i>=0; i--)
 	{
@@ -479,7 +468,7 @@ void	CActor::OnPrevWeaponSlot()
 			return;
 		}
 	}
-};
+}
 
 float	CActor::GetLookFactor()
 {

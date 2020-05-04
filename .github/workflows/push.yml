@@ -1,0 +1,50 @@
+name: Main Workflow
+
+# Trigger the workflow on push or pull request
+on: [push, pull_request]
+
+jobs:
+  build:
+    runs-on: windows-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        Configuration: [Debug, Release]
+        Platform: [x64]
+    steps:
+    - uses: actions/checkout@v2
+      with:
+        fetch-depth: 0
+    - name: Setup MSBuild
+      uses: microsoft/setup-msbuild@v1
+    - name: MSBuild
+      shell: cmd
+      run: |
+        set APPVEYOR_BUILD_VERSION=2.1.${{ github.run_number }}
+        set APPVEYOR_REPO_NAME=${{ github.repository }}
+        
+        msbuild Engine.sln /t:Rebuild /p:Configuration=${{ matrix.Configuration }} /p:Platform=${{ matrix.Platform }}
+    - name: Prepare artifacts
+      shell: cmd
+      run: |
+        set APPVEYOR_BUILD_VERSION=2.1.${{ github.run_number }}
+        set CONFIGURATION=${{ matrix.Configuration }}
+        set PLATFORM=${{ matrix.Platform }}
+        set OGSR_ARTIFACT_NAME=OGSR_Engine_SHOC_EDITION_%PLATFORM%_%APPVEYOR_BUILD_VERSION%_%CONFIGURATION%.7z
+        
+        echo ::set-env name=Build_type::%OGSR_ARTIFACT_NAME%
+        
+        cd bin_%PLATFORM%
+        
+        md ..\Game\Resources_SoC_1.0006\bin_%PLATFORM%
+        
+        copy *.* ..\Game\Resources_SoC_1.0006\bin_%PLATFORM%
+        
+        cd ..\Game\Resources_SoC_1.0006
+        
+        7z a -t7z -m0=LZMA2:d=96m:fb=273 -mx=9 -mmt=2 ..\..\%OGSR_ARTIFACT_NAME% .\
+    - name: Upload OGSR artifact
+      uses: actions/upload-artifact@v1
+      with:
+        name: ${{ env.Build_type }}
+        path: .\${{ env.Build_type }}

@@ -56,7 +56,9 @@ void dx10SamplerStateCache::CreateState( StateDecs desc, IDeviceState** ppIState
 dx10SamplerStateCache::SHandle dx10SamplerStateCache::FindState( const StateDecs& desc, u32 StateCRC )
 {
     u32 res = 0xffffffff;
-	for (u32 i=0; i<m_StateArray.size(); ++i)
+	u32 i = 0;
+
+	for (; i<m_StateArray.size(); ++i)
 	{
 		if (m_StateArray[i].m_crc==StateCRC)
 		{
@@ -183,7 +185,7 @@ void dx10SamplerStateCache::SetMaxAnisotropy( u32 uiMaxAniso)
 	for ( u32 i=0; i<m_StateArray.size(); ++i)
 	{
 		StateRecord	&rec = m_StateArray[i];
-		StateDecs	desc;
+		StateDecs desc{};
 
 		rec.m_pState->GetDesc(&desc);
 
@@ -210,7 +212,7 @@ void dx10SamplerStateCache::SetMipLODBias(float uiMipLODBias)
     for (u32 i = 0; i < m_StateArray.size(); ++i)
     {
         StateRecord& rec = m_StateArray[i];
-        StateDecs desc;
+		StateDecs desc{};
 
         rec.m_pState->GetDesc(&desc);
 

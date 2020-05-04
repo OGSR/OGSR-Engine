@@ -57,7 +57,7 @@ IC	void CStalkerMovementManager::set_mental_state(EMentalState mental_state)
 {
 	THROW						((m_target.m_body_state != eBodyStateCrouch) || (mental_state != eMentalStateFree));
 	m_target.m_mental_state		= mental_state;
-#pragma todo("Dima to Dima: this is correct, commented just because of the October presentation, no time right now to fix it correctly, should be fixed sometimes later")
+//#pragma todo("Dima to Dima: this is correct, commented just because of the October presentation, no time right now to fix it correctly, should be fixed sometimes later")
 //.	m_path_actuality			= m_path_actuality && (m_target.m_mental_state == m_current.m_mental_state);
 }
 

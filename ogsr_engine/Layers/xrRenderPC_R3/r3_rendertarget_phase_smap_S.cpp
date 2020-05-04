@@ -18,7 +18,7 @@ void	CRenderTarget::phase_smap_spot		(light* L)
 	if (RImplementation.o.HW_smap)		u_setrt	(rt_smap_surf, NULL, NULL, rt_smap_depth->pZRT);
 	//else								u_setrt	(rt_smap_surf, NULL, NULL, rt_smap_ZB);
 	else								VERIFY(!"Use HW SMap only for DX10!");
-	D3D_VIEWPORT VP					=	{L->X.S.posX,L->X.S.posY,L->X.S.size,L->X.S.size,0,1 };
+	D3D_VIEWPORT VP					=	{ INT(L->X.S.posX), INT(L->X.S.posY), L->X.S.size, L->X.S.size, 0, 1 };
 	//CHK_DX								(HW.pDevice->SetViewport(&VP));
 	HW.pDevice->RSSetViewports(1, &VP);
 

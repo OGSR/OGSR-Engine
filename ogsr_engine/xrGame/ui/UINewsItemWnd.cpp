@@ -21,7 +21,7 @@ void CUINewsItemWnd::Init				(LPCSTR xml_name, LPCSTR start_from)
 
 	string512 str;
 
-	strcpy(str,start_from);
+	strcpy_s(str,start_from);
 	xml_init.InitWindow			(uiXml,str,0,this);
 
 	strconcat(sizeof(str),str,start_from,":image");

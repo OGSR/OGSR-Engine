@@ -140,8 +140,10 @@ float cam_HeightInterpolationSpeed = 8.f;
 #include "debug_renderer.h"
 void CActor::cam_Update(float dt, float fFOV)
 {
+/* перенесено ниже
 	if(m_holder)
 		return;
+*/
 
 	// HUD FOV Update --#SM+#--
 	if (this == Level().CurrentControlEntity())
@@ -221,7 +223,8 @@ void CActor::cam_Update(float dt, float fFOV)
 					da			= PI/1000.f;
 					if (!fis_zero(r_torso.roll))
 						da		*= r_torso.roll/_abs(r_torso.roll);
-					for (float angle=0.f; _abs(angle)<_abs(alpha); angle+=da)
+					float angle = 0.f;
+					for (; _abs(angle)<_abs(alpha); angle+=da)
 						if (test_point(xrc,xform,mat,ext,radius,angle)) { bIntersect=TRUE; break; } 
 						valid_angle	= bIntersect?angle:alpha;
 				} 
@@ -253,7 +256,7 @@ void CActor::cam_Update(float dt, float fFOV)
 		if (flCurrentPlayerY-fPrevCamPos>0.2f)
 			fPrevCamPos		= flCurrentPlayerY-0.2f;
 		point.y				+= fPrevCamPos-flCurrentPlayerY;
-	}else{
+	} else if ( !m_holder ) {
 		fPrevCamPos			= flCurrentPlayerY;
 	}
 
@@ -263,6 +266,10 @@ void CActor::cam_Update(float dt, float fFOV)
 	CCameraBase* C					= cam_Active();
 	C->Update						(point,dangle);
 	C->f_fov						= fFOV;
+
+	if ( m_holder )
+	  return;
+
 	if(eacFirstEye != cam_active)
 	{
 		cameras[eacFirstEye]->Update	(point,dangle);

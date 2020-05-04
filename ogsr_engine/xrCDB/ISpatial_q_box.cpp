@@ -1,8 +1,6 @@
 #include "stdafx.h"
 #include "ISpatial.h"
 
-extern Fvector	c_spatial_offset[8];
-
 template <bool b_first>
 class	walker
 {

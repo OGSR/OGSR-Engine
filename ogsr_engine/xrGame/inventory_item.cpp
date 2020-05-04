@@ -279,12 +279,12 @@ bool CInventoryItem::Useful() const
 	return CanTake();
 }
 
-bool CInventoryItem::Activate() 
+bool CInventoryItem::Activate( bool now )
 {
 	return false;
 }
 
-void CInventoryItem::Deactivate() 
+void CInventoryItem::Deactivate( bool now )
 {
 }
 

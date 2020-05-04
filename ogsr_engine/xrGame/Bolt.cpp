@@ -29,15 +29,15 @@ void CBolt::OnEvent(NET_Packet& P, u16 type)
 	inherited::OnEvent(P,type);
 }
 
-bool CBolt::Activate() 
+bool CBolt::Activate( bool now )
 {
-	Show();
+	Show( now );
 	return true;
 }
 
-void CBolt::Deactivate() 
+void CBolt::Deactivate( bool now )
 {
-	Hide();
+	Hide( now || ( GetState() == MS_THREATEN || GetState() == MS_READY || GetState() == MS_THROW ) );
 }
 
 void CBolt::Throw() 

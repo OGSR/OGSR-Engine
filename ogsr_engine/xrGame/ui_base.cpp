@@ -57,7 +57,7 @@ sPoly2D* C2DFrustum::ClipPoly	(sPoly2D& S, sPoly2D& D) const
 		cls[src->size()] = cls[0]	;
 		src->push_back((*src)[0])	;
 		Fvector2 dir_pt,dir_uv;		float denum,t;
-		for (j=0; j<src->size()-1; j++)	{
+		for (u32 j=0; j<src->size()-1; j++)	{
 			if ((*src)[j].pt.similar((*src)[j+1].pt,EPS_S)) continue;
 			if (negative(cls[j]))	{
 				dest->push_back((*src)[j])	;
@@ -274,22 +274,22 @@ shared_str	ui_core::get_xml_name(LPCSTR fn)
 	string_path				str;
 	if(!is_16_9_mode()){
 		sprintf_s(str, "%s", fn);
-		if ( NULL==strext(fn) ) strcat(str, ".xml");
+		if ( NULL==strext(fn) ) strcat_s(str, ".xml");
 	}else{
 
 		string_path			str_;
 		if ( strext(fn) )
 		{
-			strcpy	(str, fn);
+			strcpy_s(str, fn);
 			*strext(str)	= 0;
-			strcat	(str, "_16.xml");
+			strcat_s(str, "_16.xml");
 		}else
 			sprintf_s				(str, "%s_16", fn);
 
 		if(NULL==FS.exist(str_, "$game_config$", "ui\\" , str) )
 		{
 			sprintf_s(str, "%s", fn);
-			if ( NULL==strext(fn) ) strcat(str, ".xml");
+			if ( NULL==strext(fn) ) strcat_s(str, ".xml");
 		}
 #ifdef DEBUG
 		Msg("[16-9] get_xml_name for[%s] returns [%s]", fn, str);

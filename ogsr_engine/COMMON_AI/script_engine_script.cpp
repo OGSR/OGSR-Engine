@@ -11,22 +11,6 @@
 #include "ai_space.h"
 #include "../../xr_3da/xr_input.h"
 
-bool editor() { return false; }
-
-CRenderDevice *get_device() { return &Device; }
-
-inline int bit_and(const int i, const int j) { return i & j; }
-inline int bit_or(const int i, const int j) { return i | j; }
-inline int bit_xor(const int i, const int j) { return i ^ j; }
-inline int bit_not(const int i) { return ~i; }
-
-const char* user_name() { return Core.UserName; }
-
-void prefetch_module(const char* file_name)
-{
-	ai().script_engine().process_file(file_name);
-}
-
 
 struct profile_timer_script {
 	using Clock = std::chrono::high_resolution_clock;
@@ -87,8 +71,6 @@ inline profile_timer_script operator+(const profile_timer_script& portion0,
 }
 
 
-ICF	u32	script_time_global	()	{ return Device.dwTimeGlobal; }
-
 void msg_and_fail(LPCSTR msg)
 {
 	Msg(msg);
@@ -99,6 +81,7 @@ void take_screenshot(IRender_interface::ScreenshotMode mode, LPCSTR name)
 {
 	::Render->Screenshot(mode, name);
 }
+
 
 bool GetShift() 
 {
@@ -117,16 +100,17 @@ bool GetAlt()
 	return !!pInput->iGetAsyncKeyState(DIK_LMENU) || !!pInput->iGetAsyncKeyState(DIK_RMENU);
 }
 
+
 using namespace luabind;
 #pragma optimize("s",on)
 
 void CScriptEngine::script_register(lua_State *L)
 {
 	module(L)[
-		def("log1",			(void(*)(LPCSTR)) &Log),
-		def("fail",			(void(*)(LPCSTR)) &msg_and_fail),
-		def("screenshot",	(void(*)(IRender_interface::ScreenshotMode, LPCSTR)) &take_screenshot),
+		def("log1", (void(*)(LPCSTR)) &Log),
+		def("fail", &msg_and_fail),
 
+		def("screenshot", &take_screenshot),
 		class_<enum_exporter<IRender_interface::ScreenshotMode> >("screenshot_modes")
 			.enum_("modes")
 			[
@@ -145,19 +129,22 @@ void CScriptEngine::script_register(lua_State *L)
 			.def("stop",&profile_timer_script::stop)
 			.def("time",&profile_timer_script::time)
 		,
-		def("prefetch", &prefetch_module),
-		def("editor", &editor),
-		def("bit_and", &bit_and),
-		def("bit_or", &bit_or),
-		def("bit_xor", &bit_xor),
-		def("bit_not", &bit_not),
-		def("user_name", &user_name),
-		def("time_global", &script_time_global),
-		// функции из ogse.dll
+		def("prefetch", [](const char* file_name) { ai().script_engine().process_file(file_name); }),
+		def("editor", [] { return false; }),
+
+		def("bit_and", [](const int i, const int j) { return i & j; }),
+		def("bit_or",  [](const int i, const int j) { return i | j; }),
+		def("bit_xor", [](const int i, const int j) { return i ^ j; }),
+		def("bit_not", [](const int i) { return ~i; }),
+
+		def("user_name",   [] { return Core.UserName; }),
+		def("time_global", [] { return Device.dwTimeGlobal; }),
+
 		def("GetShift", &GetShift),
 		def("GetLAlt", &GetLAlt),
 		def("GetRAlt", &GetRAlt),
 		def("GetAlt", &GetAlt),
-		def("device", &get_device)
+
+		def("device", [] { return &Device; })
 	];
 }

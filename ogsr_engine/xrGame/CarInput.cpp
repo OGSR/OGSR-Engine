@@ -17,6 +17,8 @@
 #include "../Include/xrRender/Kinematics.h"
 #include "level.h"
 #include "CarWeapon.h"
+#include "Torch.h"
+#include "inventory.h"
 
 void	CCar::OnMouseMove(int dx, int dy)
 {
@@ -149,6 +151,15 @@ void CCar::OnKeyboardPress(int cmd)
 	case kJUMP:		PressBreaks();				break;
 	case kENGINE:	SwitchEngine();				break;
 	case kTORCH:	m_lights.SwitchHeadLights();break;
+	case kNIGHT_VISION: {
+		auto* Act = OwnerActor();
+		if (Act) {
+			auto* pTorch = smart_cast<CTorch*>(Act->inventory().ItemFromSlot(TORCH_SLOT));
+			if (pTorch) {
+				pTorch->SwitchNightVision();
+			}
+		}
+	} break;
 	case kUSE:									break;
 	};
 

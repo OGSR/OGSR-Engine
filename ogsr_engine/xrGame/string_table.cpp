@@ -120,7 +120,7 @@ STRING_VALUE CStringTable::ParseLine(LPCSTR str, LPCSTR skey, bool bFirst)
 
 		int len				= (int)(e-b-LEN);
 
-		strncpy				(srcbuff,b+LEN, len);
+		strncpy_s(srcbuff,b+LEN, len);
 		srcbuff[len]		= 0;
 		GetActionAllBinding	(srcbuff, buff, sizeof(buff) );
 		res.append			(buff, xr_strlen(buff) );

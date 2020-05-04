@@ -23,6 +23,7 @@
 #include "level_graph.h"
 #include "profiler.h"
 #include "agent_enemy_manager.h"
+#include "holder_custom.h"
 
 CMemoryManager::CMemoryManager		(CEntityAlive *entity_alive, CSound_UserDataVisitor *visitor)
 {
@@ -172,6 +173,11 @@ void CMemoryManager::update			(const xr_vector<T> &objects, bool add_enemies)
 		
 		if (add_enemies) {
 			const CEntityAlive		*entity_alive = smart_cast<const CEntityAlive*>((*I).m_object);
+			if ( !entity_alive ) { // dsh:
+			  const CHolderCustom* holder = smart_cast<const CHolderCustom*>( (*I).m_object );
+			  if ( holder && holder->Owner() )
+			    entity_alive = smart_cast<const CEntityAlive*>( holder->Owner() );
+			}
 			if (entity_alive && enemy().add(entity_alive))
 				continue;
 		}

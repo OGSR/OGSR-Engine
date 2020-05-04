@@ -44,6 +44,8 @@ private:
 	
 	BOOL			bRepeat;
 	BOOL			RecordCommands;
+
+	void out_font(const char* text, float& pos_y);
 protected:
 	int				scroll_delta;
 	char			editor[MAX_LEN];

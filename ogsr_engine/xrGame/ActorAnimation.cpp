@@ -137,14 +137,14 @@ void SActorState::CreateClimb(IKinematicsAnimated* K)
 	string16		base;
 	
 	//climb anims
-	strcpy(base,"cl");
+	strcpy_s(base,"cl");
 	legs_idle		= K->ID_Cycle(strconcat(sizeof(buf),buf,base,"_idle_1"));
 	m_torso_idle	= K->ID_Cycle(strconcat(sizeof(buf),buf,base,"_torso_0_aim_0"));
 	m_walk.Create	(K,base,"_run");
 	m_run.Create	(K,base,"_run");
 
 	//norm anims
-	strcpy(base,"norm");
+	strcpy_s(base,"norm");
 	legs_turn		= K->ID_Cycle(strconcat(sizeof(buf),buf,base,"_turn"));
 	death			= K->ID_Cycle(strconcat(sizeof(buf),buf,base,"_death_0"));
 	m_torso[0].Create(K,base,"_1");

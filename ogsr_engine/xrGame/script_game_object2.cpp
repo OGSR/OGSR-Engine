@@ -150,8 +150,7 @@ void CScriptGameObject::Hit(CScriptHit *tpLuaHit)
 	HS.dir = tLuaHit.m_tDirection;											//	P.w_dir			(tLuaHit.m_tDirection);
 	HS.power = tLuaHit.m_fPower;											//	P.w_float		(tLuaHit.m_fPower);
 	IKinematics		*V = smart_cast<IKinematics*>(object().Visual());		//	IKinematics		*V = smart_cast<IKinematics*>(object().Visual());
-	VERIFY			(V);													//	VERIFY			(V);
-	if (xr_strlen	(tLuaHit.m_caBoneName))									//	if (xr_strlen	(tLuaHit.m_caBoneName))
+	if (V && xr_strlen(tLuaHit.m_caBoneName))								//	if (xr_strlen	(tLuaHit.m_caBoneName))
 		HS.boneID = 		(V->LL_BoneID(tLuaHit.m_caBoneName));			//		P.w_s16		(V->LL_BoneID(tLuaHit.m_caBoneName));
 	else																	//	else
 		HS.boneID = 		(s16(0));										//		P.w_s16		(s16(0));
@@ -459,4 +458,18 @@ void CScriptGameObject::explode_initiator( u16 who_id ) {
   explosive->FindNormal( normal );
   explosive->SetInitiator( who_id );
   explosive->GenExplodeEvent( object().Position(), normal );
+}
+
+
+bool CScriptGameObject::is_exploded() {
+  CExplosive* explosive = smart_cast<CExplosive*>( &object() );
+  ASSERT_FMT( explosive, "[%s]: %s not a CExplosive", __FUNCTION__, cName().c_str() );
+  return explosive->IsExploded();
+}
+
+
+void CScriptGameObject::remove_memory_object( CScriptGameObject *game_object ) {
+  CCustomMonster* monster = smart_cast<CCustomMonster*>( &object() );
+  ASSERT_FMT( monster, "[%s]: %s not a CCustomMonster", __FUNCTION__, cName().c_str() );
+  monster->memory().remove_links( &game_object->object() );
 }

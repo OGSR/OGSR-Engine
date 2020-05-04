@@ -284,22 +284,28 @@ bool operator==(const D3D_RASTERIZER_DESC &desc1, const D3D_RASTERIZER_DESC &des
 bool operator==(const D3D_DEPTH_STENCIL_DESC &desc1, const D3D_DEPTH_STENCIL_DESC &desc2)
 {
 	if ( desc1.DepthEnable != desc2.DepthEnable) return false;
-	if ( desc1.DepthWriteMask != desc2.DepthWriteMask) return false;
-	if ( desc1.DepthFunc != desc2.DepthFunc) return false;
+	if (desc1.DepthEnable) {
+		// сравниваем эти поля, только если включен DepthEnable
+		// directx любит менять поля, если DepthEnable не включен и проверка не срабатывает
+		if (desc1.DepthWriteMask != desc2.DepthWriteMask) return false;
+		if (desc1.DepthFunc != desc2.DepthFunc) return false;
+	}
 	if ( desc1.StencilEnable != desc2.StencilEnable) return false;
-	if ( desc1.StencilReadMask != desc2.StencilReadMask) return false;
-	if ( desc1.StencilWriteMask != desc2.StencilWriteMask) return false;
+	if (desc1.StencilEnable) {
+		// сравниваем эти поля, только если включен StencilEnable
+		if (desc1.StencilReadMask != desc2.StencilReadMask) return false;
+		if (desc1.StencilWriteMask != desc2.StencilWriteMask) return false;
 
-	if ( desc1.FrontFace.StencilFailOp != desc2.FrontFace.StencilFailOp) return false;
-	if ( desc1.FrontFace.StencilDepthFailOp != desc2.FrontFace.StencilDepthFailOp) return false;
-	if ( desc1.FrontFace.StencilPassOp != desc2.FrontFace.StencilPassOp) return false;
-	if ( desc1.FrontFace.StencilFunc != desc2.FrontFace.StencilFunc) return false;
+		if (desc1.FrontFace.StencilFailOp != desc2.FrontFace.StencilFailOp) return false;
+		if (desc1.FrontFace.StencilDepthFailOp != desc2.FrontFace.StencilDepthFailOp) return false;
+		if (desc1.FrontFace.StencilPassOp != desc2.FrontFace.StencilPassOp) return false;
+		if (desc1.FrontFace.StencilFunc != desc2.FrontFace.StencilFunc) return false;
 
-	if ( desc1.BackFace.StencilFailOp != desc2.BackFace.StencilFailOp) return false;
-	if ( desc1.BackFace.StencilDepthFailOp != desc2.BackFace.StencilDepthFailOp) return false;
-	if ( desc1.BackFace.StencilPassOp != desc2.BackFace.StencilPassOp) return false;
-	if ( desc1.BackFace.StencilFunc != desc2.BackFace.StencilFunc) return false;
-	
+		if (desc1.BackFace.StencilFailOp != desc2.BackFace.StencilFailOp) return false;
+		if (desc1.BackFace.StencilDepthFailOp != desc2.BackFace.StencilDepthFailOp) return false;
+		if (desc1.BackFace.StencilPassOp != desc2.BackFace.StencilPassOp) return false;
+		if (desc1.BackFace.StencilFunc != desc2.BackFace.StencilFunc) return false;
+	}
 	return true;
 }
 

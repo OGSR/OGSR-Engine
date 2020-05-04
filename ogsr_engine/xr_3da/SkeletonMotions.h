@@ -185,13 +185,13 @@ struct 	ENGINE_API	motions_value
 	MotionVec*			bone_motions		(shared_str bone_name);
 
 	u32					mem_usage			(){ 
-		u32 sz			=	sizeof(*this)+m_motion_map.size()*6+m_partition.mem_usage();
+		size_t sz			=	sizeof(*this)+m_motion_map.size()*6+m_partition.mem_usage();
         for (MotionDefVecIt it=m_mdefs.begin(); it!=m_mdefs.end(); it++)
 			sz			+=	it->mem_usage();
 		for (BoneMotionMapIt bm_it=m_motions.begin(); bm_it!=m_motions.end(); bm_it++)
 			for (MotionVecIt m_it=bm_it->second.begin(); m_it!=bm_it->second.end(); m_it++)
 				sz		+=	m_it->mem_usage();
-		return sz;
+		return u32(sz);
 	}
 };
 

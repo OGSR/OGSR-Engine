@@ -87,8 +87,12 @@ ICF static BOOL info_trace_callback(collide::rq_result& result, LPVOID params)
 	}else{
 		//получить треугольник и узнать его материал
 		CDB::TRI* T		= Level().ObjectSpace.GetStaticTris()+result.element;
-		if (GMLib.GetMaterialByIdx(T->material)->Flags.is(SGameMtl::flPassable)) 
+		const auto* mtl = GMLib.GetMaterialByIdx( T->material );
+		if ( mtl->Flags.is( SGameMtl::flPassable ) )
 			return TRUE;
+		// возможно это сетка-рабица и через нее можно брать предметы
+		else if ( fsimilar( mtl->fVisTransparencyFactor, 1.0f, EPS ) && fsimilar( mtl->fShootFactor, 1.0f, EPS ) && mtl->Flags.is( SGameMtl::flSuppressWallmarks ) )
+		  return TRUE;
 	}	
 	bOverlaped			= TRUE;
 	return				FALSE;

@@ -8,7 +8,6 @@
 
 #include "stdafx.h"
 #include "script_ini_file.h"
-#include <Utils\cdecl_cast.hpp>
 
 bool r_line(CScriptIniFile *self, LPCSTR S, int L, std::string &N, std::string &V)
 {
@@ -72,18 +71,12 @@ void CScriptIniFile::script_register(lua_State *L)
 #endif
             .def("iterate_sections", &iterate_sections)
 		,
-#pragma warning(push)
-#pragma warning(disable:4238 4239)
-		def("system_ini", cdecl_cast([] { return reinterpret_cast<CScriptIniFile*>(pSettings); })),
-		def("game_ini",   cdecl_cast([] { return reinterpret_cast<CScriptIniFile*>(pGameIni);  })),
-		def("create_ini_file", cdecl_cast([](const char* ini_string) {
-			return static_cast<CScriptIniFile*>(
-				new CInifile(
-					&IReader((void*)ini_string, strlen(ini_string)),
-					FS.get_path("$game_config$")->m_Path
-				)
-			);
-		}), adopt<result>())
-#pragma warning(pop)
+
+		def("system_ini", [] { return reinterpret_cast<CScriptIniFile*>(pSettings); }),
+		def("game_ini",   [] { return reinterpret_cast<CScriptIniFile*>(pGameIni);  }),
+		def("create_ini_file", [](const char* ini_string) {
+			IReader reader((void*)ini_string, strlen(ini_string));
+			return static_cast<CScriptIniFile*>( new CInifile( &reader, FS.get_path("$game_config$")->m_Path ) );
+		}, adopt<result>())
 	];
 }

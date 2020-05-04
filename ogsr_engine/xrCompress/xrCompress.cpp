@@ -418,12 +418,11 @@ void ProcessLTX(LPCSTR tgt_name, LPCSTR params, BOOL bFast)
 {
 	LPCSTR ltx_nm = strstr(params, ".ltx");
 	VERIFY(ltx_nm != 0);
-	string_path ltx_fn;
-	string_path tmp;
-	strncpy(tmp, params, ltx_nm - params); tmp[ltx_nm - params] = 0;
+	string_path ltx_fn, tmp;
+	strncpy_s(tmp, params, ltx_nm - params); tmp[ltx_nm - params] = 0;
 	_Trim(tmp);
-	strcat(tmp, ".ltx");
-	strcpy(ltx_fn, tmp);
+	strcat_s(tmp, ".ltx");
+	strcpy_s(ltx_fn, tmp);
 	_strlwr_s(ltx_fn, sizeof(ltx_fn));
 
 	// append ltx path (if exist)
@@ -462,9 +461,9 @@ void ProcessLTX(LPCSTR tgt_name, LPCSTR params, BOOL bFast)
 
 			string_path path;
 			LPCSTR _path = 0 == xr_strcmp(key.c_str(), ".\\") ? "" : key.c_str();
-			strcpy(path, _path);
+			strcpy_s(path, _path);
 			u32 path_len = xr_strlen(path);
-			if ((0 != path_len) && (path[path_len - 1] != '\\')) strcat(path, "\\");
+			if ((0 != path_len) && (path[path_len - 1] != '\\')) strcat_s(path, "\\");
 
 			Msg("~~Processing folder: [%s]", path);
 			BOOL efRecurse;

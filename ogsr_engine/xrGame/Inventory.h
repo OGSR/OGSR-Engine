@@ -14,11 +14,14 @@ public:
 
 	bool					CanBeActivated		() const;
 	bool					IsBlocked			() const;
+	bool maySwitchFast() const;
+	void setSwitchFast( bool );
 
 	PIItem					m_pIItem;
 	bool					m_bPersistent;
 	bool					m_bVisible;
 	int						m_blockCounter;
+	bool m_maySwitchFast;
 };
 enum EActivationReason{
 	eGeneral,
@@ -60,7 +63,7 @@ public:
 	bool					CanTakeItem			(CInventoryItem *inventory_item) const;
 
 
-	bool					Activate			(u32 slot, EActivationReason reason=eGeneral, bool bForce=false);
+	bool					Activate( u32 slot, EActivationReason reason=eGeneral, bool bForce = false, bool now = false );
 	void					Activate_deffered	(u32 slot, u32 _frame);
 	PIItem					ActiveItem			()const					{return m_iActiveSlot==NO_ACTIVE_SLOT ? NULL :m_slots[m_iActiveSlot].m_pIItem;}
 	PIItem					ItemFromSlot		(u32 slot) const;
@@ -114,7 +117,7 @@ public:
 	bool 					IsBeltUseful		() const			{return m_bBeltUseful;}
 	void 					SetBeltUseful		(bool belt_useful)	{m_bBeltUseful = belt_useful;}
 
-	void					SetSlotsBlocked		(u16 mask, bool bBlock);
+	void SetSlotsBlocked( u16 mask, bool bBlock, bool now = false );
 	TIItemContainer			m_all;
 	TIItemContainer			m_ruck, m_belt;
 	TISlotArr				m_slots;

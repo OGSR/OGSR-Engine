@@ -157,7 +157,7 @@ SVS*	CResourceManager::_CreateVS		(LPCSTR _name)
 		{
 			const char*	pchr = strchr(_name, '(');
 			ptrdiff_t	size = pchr?pchr-_name:xr_strlen(_name);
-			strncpy(shName, _name, size);
+			strncpy_s(shName, _name, size);
 			shName[size] = 0;
 		}
 
@@ -167,17 +167,9 @@ SVS*	CResourceManager::_CreateVS		(LPCSTR _name)
 		//		LPCSTR						target		= NULL;
 
 		// duplicate and zero-terminate
-		IReader* file			= FS.r_open(cname);
-		//	TODO: DX10: HACK: Implement all shaders. Remove this for PS
-		if (!file)
-		{
-			string1024			tmp;
-			xr_sprintf			(tmp, "DX10: %s is missing. Replace with stub_default.vs", cname);
-			Msg					(tmp);
-			strconcat			(sizeof(cname), cname,::Render->getShaderPath(),"stub_default",".vs");
-			FS.update_path		(cname,	"$game_shaders$", cname);
-			file				= FS.r_open(cname);
-		}
+		IReader* file = FS.r_open(cname);
+		R_ASSERT2(file, cname);
+
 		u32	const size			= file->length();
 		char* const data		= (LPSTR)_alloca(size + 1);
 		CopyMemory				( data, file->pointer(), size );
@@ -260,7 +252,7 @@ SPS*	CResourceManager::_CreatePS			(LPCSTR _name)
 		string_path					shName;
 		const char*	pchr = strchr(_name, '(');
 		ptrdiff_t	strSize = pchr?pchr-_name:xr_strlen(_name);
-		strncpy(shName, _name, strSize );
+		strncpy_s(shName, _name, strSize );
 		shName[strSize] = 0;
 
 		// Open file
@@ -270,20 +262,8 @@ SPS*	CResourceManager::_CreatePS			(LPCSTR _name)
 
 		// duplicate and zero-terminate
 		IReader* file = FS.r_open(cname);
-		//	TODO: DX10: HACK: Implement all shaders. Remove this for PS
-		if (!file)
-		{
-			string1024			tmp;
-			//	TODO: HACK: Test failure
-			//Memory.mem_compact();
-			xr_sprintf				(tmp, "DX10: %s is missing. Replace with stub_default.ps", cname);
-			Msg					(tmp);
-			strconcat					(sizeof(cname), cname,::Render->getShaderPath(),"stub_default",".ps");
-			FS.update_path				(cname,	"$game_shaders$", cname);
-			file = FS.r_open(cname);
-		}
+		R_ASSERT2(file, cname);
 
-		R_ASSERT2				( file, cname );
 		u32	const size			= file->length();
 		char* const data		= (LPSTR)_alloca(size + 1);
 		CopyMemory				( data, file->pointer(), size );
@@ -346,21 +326,8 @@ SGS*	CResourceManager::_CreateGS			(LPCSTR name)
 		FS.update_path				(cname,	"$game_shaders$", cname);
 
 		// duplicate and zero-terminate
-		IReader*		R		= FS.r_open(cname);
-		//	TODO: DX10: HACK: Implement all shaders. Remove this for PS
-		if (!R)
-		{
-			string1024			tmp;
-			//	TODO: HACK: Test failure
-			//Memory.mem_compact();
-			xr_sprintf				(tmp, "DX10: %s is missing. Replace with stub_default.gs", cname);
-			Msg					(tmp);
-			strconcat					(sizeof(cname), cname,::Render->getShaderPath(),"stub_default",".gs");
-			FS.update_path				(cname,	"$game_shaders$", cname);
-			R		= FS.r_open(cname);
-		}
-		IReader* file			= FS.r_open(cname);
-		R_ASSERT2				( file, cname );
+		IReader* file = FS.r_open(cname);
+		R_ASSERT2(file, cname);
 
 		// Select target
 		LPCSTR						c_target	= "gs_4_0";

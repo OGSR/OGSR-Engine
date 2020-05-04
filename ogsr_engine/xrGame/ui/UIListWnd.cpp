@@ -149,7 +149,7 @@ void CUIListWnd::RemoveItem(int index)
 	m_ScrollBar->Refresh();
 
 	//перенумеровать индексы заново
-	i=0;
+	int i=0;
 	for(LIST_ITEM_LIST_it it=m_ItemList.begin();  m_ItemList.end() != it; ++it,i++)
 	{
 		(*it)->SetIndex(i);
@@ -225,7 +225,7 @@ void CUIListWnd::UpdateList()
 	   
 
 	//показать текущий список
-	for(i=m_iFirstShownIndex; 
+	for(int i=m_iFirstShownIndex; 
 			i<_min(m_ItemList.size(),m_iFirstShownIndex + m_iRowNum+1);
 			++i, ++it)
 	{

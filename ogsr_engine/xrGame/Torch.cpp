@@ -127,9 +127,13 @@ void CTorch::SwitchNightVision(bool vision_on)
 		m_bNightVisionOn = false;
 	}
 
-	CActor *pA = smart_cast<CActor *>(H_Parent());
+	CActor *pA = smart_cast<CActor*>(H_Parent());
+	if(!pA) return;
 
-	if(!pA)					return;
+	CTorch* pActorTorch = smart_cast<CTorch*>(pA->inventory().ItemFromSlot(TORCH_SLOT));
+	if (pActorTorch && pActorTorch != this)
+		return;
+
 	bool bPlaySoundFirstPerson = (pA == Level().CurrentViewEntity());
 
 	LPCSTR disabled_names	= pSettings->r_string(cNameSect(),"disabled_maps");
