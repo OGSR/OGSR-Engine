@@ -7,8 +7,9 @@
 * Внедрение новых возможностей для разработчиков
 
 ### [>>Разработчики<<](https://github.com/OGSR/OGSR-Engine/graphs/contributors) ### 
-### [>>Список изменений<<](https://github.com/OGSR/OGSR-Engine/wiki/Список-изменений) ###
+### [>>Wiki, cписок изменений и прочая информация<<](https://github.com/OGSR/OGSR-Engine/wiki) ###
 ### [>>Свежий релиз<<](https://github.com/OGSR/OGSR-Engine/releases/latest) ###
+### С багами и предложениями - [писать сюда](https://github.com/OGSR/OGSR-Engine/issues) ###
 #### Для того, чтобы движок работал с WW-версией SHOC - используйте специальный ключ запуска ` -steam` ####
 
 ### Инструкции по сборке: ###
