@@ -1,7 +1,11 @@
 name: Main Workflow
 
-# Trigger the workflow on push or pull request
-on: [push, pull_request]
+on:
+  push:
+  pull_request:
+  release:
+    types:
+      - created
 
 jobs:
   build:
@@ -48,3 +52,14 @@ jobs:
       with:
         name: ${{ env.Build_type }}
         path: .\${{ env.Build_type }}
+
+    - name: Upload release asset
+      if: github.event_name == 'release'
+      uses: actions/upload-release-asset@v1.0.1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ github.event.release.upload_url }}
+        asset_path: .\${{ env.Build_type }}
+        asset_name: ${{ env.Build_type }}
+        asset_content_type: application/zip
