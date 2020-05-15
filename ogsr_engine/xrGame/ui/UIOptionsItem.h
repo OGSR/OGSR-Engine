@@ -34,7 +34,7 @@ protected:
 			void			SaveOptBoolValue	(bool val);
 			// token
 			char*			GetOptTokenValue	();
-			xr_token*		GetOptToken			();
+			const xr_token*		GetOptToken			();
 			void			SaveOptTokenValue	(const char* val);
 
 	xr_string		m_entry;

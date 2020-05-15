@@ -439,8 +439,19 @@ CRenderTarget::CRenderTarget		()
 		t_envmap_1.create			(r2_T_envs1);
 
 		s_rain_drops.create("ogsr_rain_drops");
-		g_rain_drops.create(fvf_aa_AA, RCache.Vertex.Buffer(), RCache.QuadIB);
 	}
+
+	// SMAA RTs
+	{
+		u32	w = Device.dwWidth;
+		u32 h = Device.dwHeight;
+
+		rt_smaa_edgetex.create(r2_RT_smaa_edgetex, w, h, D3DFMT_A8R8G8B8);
+		rt_smaa_blendtex.create(r2_RT_smaa_blendtex, w, h, D3DFMT_A8R8G8B8);
+
+		s_pp_antialiasing.create("effects_pp_antialiasing");
+	}
+
 
 	// Build textures
 	{

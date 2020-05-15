@@ -82,9 +82,9 @@ char* CUIOptionsItem::GetOptTokenValue()
 	return Console->GetToken(m_entry.c_str());
 }
 
-xr_token* CUIOptionsItem::GetOptToken()
+const xr_token* CUIOptionsItem::GetOptToken()
 {
-	auto* token = Console->GetXRToken(m_entry.c_str());
+	const auto* token = Console->GetXRToken(m_entry.c_str());
 	ASSERT_FMT(token, "Can't find token [%s]", m_entry.c_str());
 	return token;
 }

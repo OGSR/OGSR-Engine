@@ -1063,7 +1063,7 @@ HRESULT	CRender::shader_compile			(
 		LPD3DXCONSTANTTABLE			pConstants	= NULL;
 		LPD3DXINCLUDE               pInclude	= (LPD3DXINCLUDE)&Includer;
 		
-		_result						= D3DXCompileShader((LPCSTR)pSrcData,SrcDataLen,defines,pInclude,pFunctionName,pTarget,Flags|D3DXSHADER_USE_LEGACY_D3DX9_31_DLL,&pShaderBuf,&pErrorBuf,&pConstants);
+		_result = D3DXCompileShader((LPCSTR)pSrcData, SrcDataLen, defines, pInclude, pFunctionName, pTarget, !strcmp(pFunctionName, "main_ps_3_0") ? Flags : Flags | D3DXSHADER_USE_LEGACY_D3DX9_31_DLL, &pShaderBuf, &pErrorBuf, &pConstants);
 		if (SUCCEEDED(_result)) {
 //			Msg						( "shader compilation succeeded" );
 

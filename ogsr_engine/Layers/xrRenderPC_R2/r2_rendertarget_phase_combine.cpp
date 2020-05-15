@@ -239,11 +239,15 @@ void	CRenderTarget::phase_combine	()
 	BOOL	PP_Complex		= u_need_PP	() | (BOOL)RImplementation.m_bMakeAsyncSS;
 	if (_menu_pp)			PP_Complex	= FALSE;
 
-	if (!_menu_pp)
-	{
-		if (ps_r2_ls_flags_ext.test(R2FLAGEXT_RAIN_DROPS))
-			PhaseRainDrops();
-	}
+
+	// Postprocess anti-aliasing
+	if (ps_r_pp_aa_mode)
+		PhaseAA();
+
+	// Rain droplets on screen
+	if (ps_r2_ls_flags_ext.test(R2FLAGEXT_RAIN_DROPS))
+		PhaseRainDrops();
+
 
 	// Combine everything + perform AA
 	if		(PP_Complex)	u_setrt		( rt_Color,0,0,HW.pBaseZB );			// LDR RT

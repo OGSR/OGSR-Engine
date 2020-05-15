@@ -77,7 +77,7 @@ public:
 	char *			GetString			(LPCSTR cmd);
 	int				GetInteger			(LPCSTR cmd, int& val, int& min, int& max);
 	char *			GetToken			(LPCSTR cmd);
-	xr_token*		GetXRToken			(LPCSTR cmd);
+	const xr_token*		GetXRToken			(LPCSTR cmd);
 	Fvector			GetFVector			( LPCSTR cmd );
 	Fvector*		GetFVectorPtr		( LPCSTR cmd );
 	IConsole_Command* GetCommand		( LPCSTR cmd );

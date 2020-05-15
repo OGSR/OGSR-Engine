@@ -35,7 +35,7 @@ LPCSTR CUISpinText::GetTokenText()
 }
 
 void CUISpinText::SetCurrentValue(){
-	xr_token* tok = GetOptToken();
+	const xr_token* tok = GetOptToken();
 
 	while (tok->name){
 		AddItem_(tok->name, tok->id);

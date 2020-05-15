@@ -49,6 +49,10 @@
 #define		r2_jitter_mipped	"$user$jitter_mipped"			// --- dither
 #define		r2_sunmask			"sunmask"
 
+// SMAA
+#define r2_RT_smaa_edgetex  "$user$smaa_edgetex"
+#define r2_RT_smaa_blendtex "$user$smaa_blendtex"
+
 #define r2_RT_secondVP "$user$viewport2" // --#SM+#-- +SecondVP+ Хранит картинку со второго вьюпорта
 
 #define		JITTER(a) r2_jitter #a

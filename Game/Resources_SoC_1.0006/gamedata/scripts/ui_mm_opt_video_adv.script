@@ -31,6 +31,7 @@ local adv_vid_opt_params = {
 	{ "texture_lod",           "track", 1, hint_colors.yellow, "video_settings_name_7" , "video_settings_desc_7"  },
 	{ "aniso",                 "track", 0, hint_colors.yellow, "video_settings_name_8" , "video_settings_desc_8"  },
 	--
+	{ "aa",                    "list",  0, hint_colors.green , "video_settings_name_19", "video_settings_desc_19", only_2a_and_more_mode },
 	{ "msaa",                  "list",  1, hint_colors.red   , "", ""                                            , only_3_and_more_mode  },
 	{ "ssample",               "track", 0, hint_colors.green , "", ""                                            , only_1_mode  },
 	--
