@@ -727,10 +727,6 @@ CRenderTarget::CRenderTarget		()
 
 		s_rain_drops.create("ogsr_rain_drops");
 		g_rain_drops.create(fvf_aa_AA, RCache.Vertex.Buffer(), RCache.QuadIB);
-
-		//FXAA
-		s_fxaa.create("fxaa");
-		g_fxaa.create(FVF::F_V, RCache.Vertex.Buffer(), RCache.QuadIB);
 	}
 
 	// Build textures

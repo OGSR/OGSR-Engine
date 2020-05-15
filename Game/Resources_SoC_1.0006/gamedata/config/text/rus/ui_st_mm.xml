@@ -278,9 +278,6 @@
 	<string id="ui_mm_r2_aa_mode">
 		<text>Режим сглаживания (R2)</text>
 	</string>	
-	<string id="fxaa">
-		<text>FXAA</text>
-	</string>
 	<string id="smaa">
 		<text>SMAA</text>
 	</string>	
@@ -415,9 +412,6 @@
 	</string>	
 	<string id="ui_mm_msaa">
 		<text>MSAA</text>
-	</string>
-	<string id="ui_mm_fxaa">
-		<text>FXAA</text>
 	</string>
 	<string id="ui_mm_switch_torch">
 		<text>Использование фонариков AI</text>
@@ -850,9 +844,6 @@
 	</string>
 	<string id="video_settings_desc_18">
 		<text>Эта настройка включает шейдерное сглаживание на динамическом освещении.</text>
-	</string>
-	<string id="video_settings_desc_19">
-		<text>Эта настройка переключает тип сглаживания на динамическом освещении. Доступны два типа сглаживания - FXAA (Fast Approximate AntiAliasing) и SMAA (Subpixel Morphological AntiAliasing).</text>
 	</string>
 	<string id="video_settings_desc_20">
 		<text>Эта настройка регулирует детализацию мип-уровней текстур на расстоянии. Нормальное значение этого ползунка - среднее, при его уменьшении текстуры на расстоянии будут менее четкими, при увеличении - более четкими, но чрезмерное увеличение может привести к появлению муара и неприятных глазу мельтешащих точек на далеких объектах.</text>

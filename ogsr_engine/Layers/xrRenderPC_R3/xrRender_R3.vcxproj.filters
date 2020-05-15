@@ -1295,8 +1295,5 @@
     <ClCompile Include="..\xrRender\RenderTargetPhaseRainDrops.cpp">
       <Filter>Core_Target</Filter>
     </ClCompile>
-    <ClCompile Include="..\xrRender\RenderTargetPhaseFXAA.cpp">
-      <Filter>Core_Target</Filter>
-    </ClCompile>
   </ItemGroup>
 </Project>
