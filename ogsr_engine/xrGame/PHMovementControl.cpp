@@ -14,6 +14,7 @@
 #include "ElevatorState.h"
 #include "CalculateTriangle.h"
 #include "../Include/xrRender/Kinematics.h"
+#include "actor.h"
 
 #define GROUND_FRICTION	10.0f
 #define AIR_FRICTION	0.01f
@@ -120,8 +121,11 @@ void CPHMovementControl::in_shedule_Update(u32 DT)
 
 void CPHMovementControl::Calculate(Fvector& vAccel,const Fvector& camDir,float /**ang_speed/**/,float jump,float /**dt/**/,bool /**bLight/**/)
 {
-	Fvector previous_position{ vPosition };
-	m_character->GetPosition(vPosition);
+	const Fvector previous_position{ vPosition };
+	if (eCharacterType == actor && Actor() && Actor()->IsZoomAimingMode())
+		m_character->GetPosition(vPosition);
+	else
+		m_character->IPosition(vPosition);
 
 	if (bExernalImpulse)
 	{
@@ -754,7 +758,7 @@ void CPHMovementControl::Load					(LPCSTR section){
 	float	cs_min		= pSettings->r_float	(section,"ph_crash_speed_min"	);
 	float	cs_max		= pSettings->r_float	(section,"ph_crash_speed_max"	);
 	float	mass		= pSettings->r_float	(section,"ph_mass"				);
-	xr_token retrictor_types[]={
+	constexpr xr_token retrictor_types[]={
 		{ "actor",			CPHCharacter::rtActor},
 		{ "medium_monster",	CPHCharacter::rtMonsterMedium},
 		{ "stalker",		CPHCharacter::rtStalker	},
