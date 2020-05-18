@@ -313,6 +313,11 @@ void CGamePersistent::WeathersUpdate()
 					Environment().wind_blast_stop_time.set(0.f, eff->wind_blast_direction.x, eff->wind_blast_direction.y, eff->wind_blast_direction.z);
 				}
 			}
+			else if ( !ambient_particles && Device.dwTimeGlobal > ambient_effect_next_time ) {
+				CEnvAmbient::SEffect* eff = env_amb->get_rnd_effect();
+				if ( eff )
+					ambient_effect_next_time = Device.dwTimeGlobal + env_amb->get_rnd_effect_time();
+			}
 		}
 		if (Device.fTimeGlobal >= ambient_effect_wind_start && Device.fTimeGlobal <= ambient_effect_wind_in_time && ambient_effect_wind_on)
 		{
@@ -422,6 +427,11 @@ void CGamePersistent::WeathersUpdate()
 					ambient_particles->play_at_pos(pos);
 					if (eff->sound._handle())		eff->sound.play_at_pos(0, pos);
 				}
+			}
+			else if ( !ambient_particles && Device.dwTimeGlobal > ambient_effect_next_time ) {
+				CEnvAmbient::SEffect* eff = env_amb->get_rnd_effect();
+				if ( eff )
+					ambient_effect_next_time = Device.dwTimeGlobal + env_amb->get_rnd_effect_time();
 			}
 		}
 		// stop if time exceed or indoor
