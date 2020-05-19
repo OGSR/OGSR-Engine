@@ -97,6 +97,13 @@ bool CBaseGraviZone ::IdleState()
 	{
 		if(m_dwTeleTime> m_dwTimeToTele)
 		{
+			for (u32 i = 0; i < Telekinesis().get_objects_total_count(); ++i) {
+				auto* GO = Telekinesis().get_object_by_index(i).object;
+				if (GO && GO->PPhysicsShell() && GO->PPhysicsShell()->isActive())
+					StopTeleParticles(GO);
+			}
+			Telekinesis().deactivate();
+/*
 			for(OBJECT_INFO_VEC_IT it = m_ObjectInfoMap.begin(); m_ObjectInfoMap.end() != it; ++it) 
 			{
 				CPhysicsShellHolder * GO = smart_cast<CPhysicsShellHolder *>( (*it).object );
@@ -107,6 +114,7 @@ bool CBaseGraviZone ::IdleState()
 					StopTeleParticles(GO);
 				}
 			}
+*/
 		}
 		if(m_dwTeleTime> m_dwTimeToTele + m_dwTelePause)
 		{
