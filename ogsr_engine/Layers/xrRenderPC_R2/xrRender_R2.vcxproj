@@ -485,6 +485,7 @@
     <ClCompile Include="..\xrRender\RenderScreenQuad.cpp" />
     <ClCompile Include="..\xrRender\RenderTargetPhaseRainDrops.cpp" />
     <ClCompile Include="..\xrRender\RenderTargetPhaseAA.cpp" />
+    <ClCompile Include="..\xrRender\RenderTargetPhaseSSSS.cpp" />
     <ClCompile Include="..\xrRender\ResourceManager.cpp" />
     <ClCompile Include="..\xrRender\ResourceManager_Loader.cpp" />
     <ClCompile Include="..\xrRender\ResourceManager_Reset.cpp" />

@@ -292,16 +292,21 @@
 	</string>		
 	<string id="ui_mm_r2_sunshafts">
 		<text>Объёмные лучи</text>
-	</string>	
+	</string>
+
 	<string id="ui_mm_r2_sunshafts_mode">
-		<text>Тип объёмных лучей</text>
+		<text>Тип солнечных лучей</text>
 	</string>
 	<string id="volumetric">
-		<text>S.T.A.L.K.E.R. Чистое Небо</text>
+		<text>Volumetric</text>
 	</string>
-	<string id="screen_space">
-		<text>Crysis</text>
+	<string id="ss_ogse">
+		<text>Screen space (OGSE)</text>
 	</string>
+	<string id="ss_manowar">
+		<text>Screen space (Mrmnwar)</text>
+	</string>
+
 	<string id="ui_mm_light_distance">
 		<text>Дальность освещения</text>
 	</string>
@@ -674,13 +679,10 @@
 		<text>Фоновая освещенность - r2_sun_lumscale_amb</text>
 	</string>
 	<string id="video_settings_name_29">
-		<text>Объёмные лучи - r2_sun_shafts</text>
+		<text>Тип солнечных лучей - r_sunshafts_mode</text>
 	</string>
 	<string id="ui_mm_r2_sun_quality">
 		<text>Мягкие тени от солнца</text>
-	</string>
-	<string id="video_settings_name_30">
-		<text>Тип объёмных лучей - r2_sunshafts_mode</text>
 	</string>
 	<string id="video_settings_name_31">
 		<text>Мягкие края воды - r2_soft_water</text>
@@ -861,10 +863,7 @@
 		<text>Эта настройка регулирует интенсивность рассеяного света, независимого от солнца. Чем она выше, тем светлее будут все затененные участки в игре, и тем бледней буду выглядеть тени от солнца. ВНИМАНИЕ! Это настройка из разряда \"на любителя\", и если вы не знаете точно, что делаете - оставьте её на значении по-умолчанию. Повысьте, если в целом игра вам кажется слишком темной и ползунками настройки яркости/контрастности вы не можете достичь желаемого эффекта. Не рекомендуется задирать слишком сильно - изображение потеряет в объемности, станет выглядеть более плоским.</text>
 	</string>
 	<string id="video_settings_desc_29">
-		<text>Эта настройка регулирует рендеринг объёмных (чаще солнечных) лучей на пыли в воздухе.</text>
-	</string>
-	<string id="video_settings_desc_30">
-		<text>Эта настройка переключает тип объёмных лучей. Можно выбрать вариант из Crysis или же вариант из STALKER: Чистое Небо. ВНИМАНИЕ! Объёмные лучи из Чистого Неба могут существенно понизить производительность.</text>
+		<text>Эта настройка переключает тип солнечных лучей. Выберите тот, который больше понравится.</text>
 	</string>
 	<string id="video_settings_desc_31">
 		<text>Эта настройка включает эффект смягчения края водных поверхностей. При её включении вода у края водоемов будет плавно набирать прозрачность вплоть до полной незаметности, что позволяет устранить эффект резкой и сильно заметной границы между водой и сушей.</text>

@@ -10,6 +10,7 @@
 #ifdef USE_OGSE_REFLECTIONS
 
 #define REFL_RANGE 100
+#define SKY_DEPTH float(10000.f)
 #define SKY_EPS float(0.001)
 uniform float3 eye_direction;
 uniform float4 screen_res;
@@ -32,7 +33,7 @@ float get_depth_fast(float2 tc)
 #endif
 }
 
-float is_sky(float depth) { return step(depth, SKY_EPS); }
+float is_sky(float depth) { return step(abs(depth - SKY_DEPTH), SKY_EPS); }
 
 float4 get_reflection(float3 screen_pixel_pos, float3 next_screen_pixel_pos, float3 reflect)
 {

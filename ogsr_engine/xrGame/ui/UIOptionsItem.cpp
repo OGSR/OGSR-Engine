@@ -100,7 +100,6 @@ void CUIOptionsItem::SaveValue() {
 		|| m_entry == "rs_fullscreen"
 		|| m_entry == "rs_v_sync"
 		|| m_entry == "rs_refresh_60hz"
-		|| m_entry == "r2_sun_shafts"
 		|| m_entry == "r2_soft_water"
 		|| m_entry == "r2_soft_particles"
 		|| m_entry == "r2_dof_enable"

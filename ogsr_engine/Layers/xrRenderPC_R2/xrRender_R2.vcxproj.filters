@@ -1124,6 +1124,9 @@
     <ClCompile Include="..\xrRender\RenderTargetPhaseAA.cpp">
       <Filter>Core_Target</Filter>
     </ClCompile>
+    <ClCompile Include="..\xrRender\RenderTargetPhaseSSSS.cpp">
+      <Filter>Core_Target</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Text Include="todo.txt" />

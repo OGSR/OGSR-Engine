@@ -23,6 +23,25 @@ constexpr xr_token pp_aa_mode_token[] = {
 	{ nullptr, 0 },
 };
 
+u32 ps_r_sunshafts_mode = 0;
+constexpr xr_token sunshafts_mode_token[] =
+{
+	{ "st_opt_off", SS_OFF        },
+	{ "volumetric", SS_VOLUMETRIC },
+	{ "ss_ogse",    SS_SS_OGSE    },
+	{ "ss_manowar", SS_SS_MANOWAR },
+	{ nullptr, 0 }
+};
+// Sunshafts
+u32 ps_r_sun_shafts = 3;
+float ps_r_ss_sunshafts_length = 0.9f; // 1.0f;
+float ps_r_ss_sunshafts_radius = 2.f; // 1.0f;
+float ps_r_prop_ss_radius = 1.56f;
+float ps_r_prop_ss_blend = 0.25f; // 0.066f;
+float ps_r_prop_ss_sample_step_phase0 = 0.09f;
+float ps_r_prop_ss_sample_step_phase1 = 0.07f;
+
+
 u32			ps_Preset				=	2	;
 constexpr xr_token qpreset_token[] = {
 	{ "Minimum",					0											},
@@ -40,15 +59,6 @@ constexpr xr_token qssao_mode_token[] = {
 	{ "hdao",						2											},
 	{ "hbao",						3											},
 	{ 0,							0											}
-};
-
-u32			ps_r_sun_shafts				=	2;
-constexpr xr_token qsun_shafts_token[] = {
-	{ "st_opt_off",					0												},
-	{ "st_opt_low",					1												},
-	{ "st_opt_medium",				2												},
-	{ "st_opt_high",				3												},
-	{ 0,							0												}
 };
 
 u32			ps_r_ssao				=	3;
@@ -700,6 +710,14 @@ public:
 	}
 };
 
+class CCC_SunshaftsIntensity : public CCC_Float
+{
+public:
+	CCC_SunshaftsIntensity(LPCSTR N, float* V, float _min, float _max) : CCC_Float(N, V, _min, _max) {}
+	virtual void Save(IWriter*) {}
+};
+
+
 //	Allow real-time fog config reload
 #if	(RENDER == R_R3) || (RENDER == R_R4)
 #ifdef	DEBUG
@@ -918,8 +936,21 @@ void		xrRender_initconsole	()
 //	float		ps_r2_dof_focus			= 1.4f;					// 1.4f
 	
 	CMD3(CCC_Mask,		"r2_volumetric_lights",			&ps_r2_ls_flags,			R2FLAG_VOLUMETRIC_LIGHTS);
-//	CMD3(CCC_Mask,		"r2_sun_shafts",				&ps_r2_ls_flags,			R2FLAG_SUN_SHAFTS);
-	CMD3(CCC_Token,		"r2_sun_shafts",				&ps_r_sun_shafts,			qsun_shafts_token);
+
+
+	// Sunshafts
+	CMD3(CCC_Token, "r_sunshafts_mode", &ps_r_sunshafts_mode, sunshafts_mode_token);
+	CMD4(CCC_SunshaftsIntensity, "r_sunshafts_intensity", &ps_r_sunshafts_intensity, 0.0f, 5.0f); //Dbg
+
+	CMD4(CCC_Float, "r_ss_sunshafts_length", &ps_r_ss_sunshafts_length, 0.2f, 1.5f);
+	CMD4(CCC_Float, "r_ss_sunshafts_radius", &ps_r_ss_sunshafts_radius, 0.5f, 2.f);
+
+	//CMD4(CCC_Float, "r_SunShafts_SampleStep_Phase1", &ps_r_prop_ss_sample_step_phase0, 0.01f, 0.2f);
+	//CMD4(CCC_Float, "r_SunShafts_SampleStep_Phase2", &ps_r_prop_ss_sample_step_phase1, 0.01f, 0.2f);
+	CMD4(CCC_Float, "r_SunShafts_Radius", &ps_r_prop_ss_radius, 0.5f, 2.0f);
+	CMD4(CCC_Float, "r_SunShafts_Blend",  &ps_r_prop_ss_blend, 0.01f, 1.0f);
+
+
 	CMD3(CCC_SSAO_Mode,	"r2_ssao_mode",					&ps_r_ssao_mode,			qssao_mode_token);
 	CMD3(CCC_Token,		"r2_ssao",						&ps_r_ssao,					qssao_token);
 	CMD3(CCC_Mask,		"r2_ssao_blur",                 &ps_r2_ls_flags_ext,		R2FLAGEXT_SSAO_BLUR);//Need restart

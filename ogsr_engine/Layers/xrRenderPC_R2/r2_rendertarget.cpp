@@ -441,15 +441,30 @@ CRenderTarget::CRenderTarget		()
 		s_rain_drops.create("ogsr_rain_drops");
 	}
 
+	u32	w = Device.dwWidth;
+	u32 h = Device.dwHeight;
+
 	// SMAA RTs
 	{
-		u32	w = Device.dwWidth;
-		u32 h = Device.dwHeight;
-
 		rt_smaa_edgetex.create(r2_RT_smaa_edgetex, w, h, D3DFMT_A8R8G8B8);
 		rt_smaa_blendtex.create(r2_RT_smaa_blendtex, w, h, D3DFMT_A8R8G8B8);
 
 		s_pp_antialiasing.create("effects_pp_antialiasing");
+	}
+
+	// Mrmnwar SunShaft Screen Space
+	{
+		rt_SunShaftsMask.create(r2_RT_SunShaftsMask, w, h, D3DFMT_A8R8G8B8);
+		rt_SunShaftsMaskSmoothed.create(r2_RT_SunShaftsMaskSmoothed, w, h, D3DFMT_A8R8G8B8);
+		rt_SunShaftsPass0.create(r2_RT_SunShaftsPass0, w, h, D3DFMT_A8R8G8B8);
+		s_ssss_mrmnwar.create("effects\\ss_sunshafts_mrmnwar");
+	}
+
+	// RT - KD Screen space sunshafts
+	{
+		rt_sunshafts_0.create(r2_RT_sunshafts0, w, h, D3DFMT_A8R8G8B8);
+		rt_sunshafts_1.create(r2_RT_sunshafts1, w, h, D3DFMT_A8R8G8B8);
+		s_ssss_ogse.create("effects\\ss_sunshafts_ogse");
 	}
 
 

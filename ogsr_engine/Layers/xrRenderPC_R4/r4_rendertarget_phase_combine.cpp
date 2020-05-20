@@ -339,6 +339,10 @@ void	CRenderTarget::phase_combine	()
 		}
 	}
 
+	// Screen space sunshafts
+	PIX_EVENT(phase_ss_ss);
+	PhaseSSSS();
+
 /*
    if( RImplementation.o.dx10_msaa )
    {

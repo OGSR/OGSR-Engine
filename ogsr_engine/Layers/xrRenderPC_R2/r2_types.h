@@ -49,6 +49,13 @@
 #define		r2_jitter_mipped	"$user$jitter_mipped"			// --- dither
 #define		r2_sunmask			"sunmask"
 
+#define		r2_RT_sunshafts0	"$user$sun_shafts0"		// first rt
+#define		r2_RT_sunshafts1	"$user$sun_shafts1"		// second rt
+
+#define		r2_RT_SunShaftsMask				"$user$SunShaftsMask"
+#define		r2_RT_SunShaftsMaskSmoothed		"$user$SunShaftsMaskSmoothed"
+#define		r2_RT_SunShaftsPass0			"$user$SunShaftsPass0"
+
 #define		JITTER(a) r2_jitter #a
 
 const		float				SMAP_near_plane		= .1f	;

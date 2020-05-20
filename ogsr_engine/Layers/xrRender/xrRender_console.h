@@ -5,7 +5,14 @@ extern ECORE_API u32 r2_SmapSize;
 
 extern ECORE_API u32 ps_r_pp_aa_mode;
 
-extern ECORE_API	u32			ps_r_sun_shafts;	//=	0;
+extern ECORE_API u32   ps_r_sun_shafts;
+extern ECORE_API u32   ps_r_sunshafts_mode;
+extern ECORE_API float ps_r_ss_sunshafts_length;
+extern ECORE_API float ps_r_ss_sunshafts_radius;
+extern ECORE_API float ps_r_prop_ss_radius;
+extern ECORE_API float ps_r_prop_ss_blend;
+extern ECORE_API float ps_r_prop_ss_sample_step_phase0;
+extern ECORE_API float ps_r_prop_ss_sample_step_phase1;
 
 extern ECORE_API	u32			ps_r_ssao;			//	=	0;
 
@@ -206,4 +213,13 @@ enum
 {
 	NO_AA,
 	SMAA,
+};
+
+// Sunshafts types
+enum
+{
+	SS_OFF,
+	SS_VOLUMETRIC,
+	SS_SS_OGSE,
+	SS_SS_MANOWAR,
 };

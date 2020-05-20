@@ -9,6 +9,8 @@
 #include "../COMMON_AI/object_broker.h"
 #include "../COMMON_AI/LevelGameDef.h"
 
+ENGINE_API float ps_r_sunshafts_intensity = 0.0f;
+
 void CEnvModifier::load	(IReader* fs, u32 version)
 {
 	use_flags.one					();
@@ -522,7 +524,11 @@ void CEnvDescriptorMixer::lerp	(CEnvironment* , CEnvDescriptor& A, CEnvDescripto
 	wind_velocity			=	fi*A.wind_velocity + f*B.wind_velocity;
 	wind_direction			=	fi*A.wind_direction + f*B.wind_direction;
 
-	m_fSunShaftsIntensity	=	fi*A.m_fSunShaftsIntensity + f*B.m_fSunShaftsIntensity;
+	if (ps_r_sunshafts_intensity > 0.f)
+		m_fSunShaftsIntensity = ps_r_sunshafts_intensity;
+	else
+		m_fSunShaftsIntensity = fi * A.m_fSunShaftsIntensity + f * B.m_fSunShaftsIntensity;
+
 	m_fWaterIntensity		=	fi*A.m_fWaterIntensity + f*B.m_fWaterIntensity;
 	m_fTreeAmplitudeIntensity = fi * A.m_fTreeAmplitudeIntensity + f * B.m_fTreeAmplitudeIntensity;
 

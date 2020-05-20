@@ -340,8 +340,8 @@ public:
 #endif
 
 private:
-	void RenderScreenQuad(const u32 w, const u32 h, ID3DRenderTargetView* rt, ref_selement& sh, const string_unordered_map<const char*, const Fvector4>* consts = nullptr);
-	void RenderScreenQuad(const u32 w, const u32 h, ref_rt& rt, ref_selement& sh, const string_unordered_map<const char*, const Fvector4>* consts = nullptr);
+	void RenderScreenQuad(const u32 w, const u32 h, ID3DRenderTargetView* rt, ref_selement& sh, string_unordered_map<const char*, Fvector4*>* consts = nullptr);
+	void RenderScreenQuad(const u32 w, const u32 h, ref_rt& rt, ref_selement& sh, string_unordered_map<const char*, Fvector4*>* consts = nullptr);
 
 	// Anti Aliasing
 	ref_shader s_pp_antialiasing;
@@ -350,4 +350,13 @@ private:
 
 	void PhaseAA();
 	void ProcessSMAA();
+
+	void PhaseSSSS();
+	ref_rt rt_sunshafts_0;		// ss0
+	ref_rt rt_sunshafts_1;		// ss1
+	ref_rt rt_SunShaftsMask;
+	ref_rt rt_SunShaftsMaskSmoothed;
+	ref_rt rt_SunShaftsPass0;
+	ref_shader s_ssss_mrmnwar;
+	ref_shader s_ssss_ogse;
 };

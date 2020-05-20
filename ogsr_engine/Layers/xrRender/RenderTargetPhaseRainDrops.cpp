@@ -84,7 +84,8 @@ void CRenderTarget::PhaseRainDrops()
 #else
 	ref_rt& dest_rt = rt_Generic_0;
 #endif
-	const string_unordered_map<const char*, const Fvector4> consts{ { "rain_drops_params", { rain_drops_factor, ps_r2_rain_drops_intensity, ps_r2_rain_drops_speed, 0.0f } } };
+	Fvector4 params{ rain_drops_factor, ps_r2_rain_drops_intensity, ps_r2_rain_drops_speed, 0.0f };
+	string_unordered_map<const char*, Fvector4*> consts{ { "rain_drops_params", &params } };
 	RenderScreenQuad(Device.dwWidth, Device.dwHeight, dest_rt, s_rain_drops->E[0], &consts);
 
 #if defined(USE_DX10) || defined(USE_DX11)
