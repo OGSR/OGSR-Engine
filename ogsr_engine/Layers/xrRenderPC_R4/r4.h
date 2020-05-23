@@ -150,7 +150,6 @@ public:
 	xr_vector<light*>											Lights_LastFrame;
 	SMAP_Allocator												LP_smap_pool;
 	light_Package												LP_normal;
-	light_Package												LP_pending;
 
 	xr_vector<Fbox3,render_alloc<Fbox3> >						main_coarse_structure;
 
