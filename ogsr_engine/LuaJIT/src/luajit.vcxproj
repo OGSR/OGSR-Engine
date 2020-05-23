@@ -32,6 +32,7 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup>
     <NMakeOutput>..\bin\$(PlatformShortName)\LuaJIT.dll</NMakeOutput>
+    <NMakeUseOemCodePage>true</NMakeUseOemCodePage>
     <NMakeBuildCommandLine>
 		if not exist "..\bin\$(PlatformShortName)\LuaJIT.dll" (
 			call msvcbuild.bat $(PlatformShortName)
