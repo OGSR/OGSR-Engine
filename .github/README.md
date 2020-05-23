@@ -1,5 +1,10 @@
-# OGSR Engine [![Build Status](https://github.com/OGSR/OGSR-Engine/workflows/Main%20Workflow/badge.svg?branch=dev&event=push)](https://github.com/OGSR/OGSR-Engine/actions?query=branch%3Adev+event%3Apush+workflow%3A%22Main+Workflow%22)
+<p align="center">
+  <a href="https://github.com/OGSR/OGSR-Engine/releases/latest"><img src="https://img.shields.io/github/release/OGSR/OGSR-Engine.svg?style=flat-square" alt="GitHub release"></a>
+  <a href="https://github.com/OGSR/OGSR-Engine/releases/latest"><img src="https://img.shields.io/github/downloads/OGSR/OGSR-Engine/total.svg?style=flat-square" alt="Total downloads"></a>
+  <a href="https://github.com/OGSR/OGSR-Engine/actions?query=branch%3Adev+event%3Apush+workflow%3A%22Main+Workflow%22"><img src="https://img.shields.io/github/workflow/status/OGSR/OGSR-Engine/Main%20Workflow?label=build&logo=github&style=flat-square" alt="Build Status"></a>
+
 ![Logo](https://cdn1.radikalno.ru/uploads/2019/6/13/b1b4c50115286e39d7c118897816d78d-full.png)
+
 ### Цели проекта: ### 
 * Исправление ошибок оригинального движка
 * Улучшение графики и оптимизация
