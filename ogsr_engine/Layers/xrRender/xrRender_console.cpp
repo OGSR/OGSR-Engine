@@ -23,7 +23,7 @@ constexpr xr_token pp_aa_mode_token[] = {
 	{ nullptr, 0 },
 };
 
-u32 ps_r_sunshafts_mode = 0;
+u32 ps_r_sunshafts_mode = SS_SS_MANOWAR;
 constexpr xr_token sunshafts_mode_token[] =
 {
 	{ "st_opt_off", SS_OFF        },

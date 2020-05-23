@@ -1224,7 +1224,7 @@ HRESULT	CRender::shader_compile			(
 		defines[def_it].Definition	=	"1";
 		def_it++;
 	}
-	sh_name[len]='0'+0*char(o.dx10_sm4_1); ++len;
+	sh_name[len]='0'+char(o.dx10_sm4_1); ++len;
 
 	if (o.dx10_minmax_sm)
 	{

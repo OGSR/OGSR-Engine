@@ -24,6 +24,10 @@ extern ENGINE_API Fvector2		g_current_font_scale;
 void dxFontRender::OnRender(CGameFont &owner)
 {
 	VERIFY				(g_bRendering);
+
+	if (owner.strings.empty()) // early exit if there is no text to render
+		return;
+
 	if (pShader)		RCache.set_Shader	(pShader);
 
 	if (!(owner.uFlags&CGameFont::fsValid)){

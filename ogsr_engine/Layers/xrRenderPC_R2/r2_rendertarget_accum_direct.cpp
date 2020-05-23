@@ -736,13 +736,6 @@ void CRenderTarget::accum_direct_volumetric	(u32 sub_phase, const u32 Offset, co
 
 	if ((sub_phase != SE_SUN_NEAR) && (sub_phase != SE_SUN_MIDDLE) && (sub_phase != SE_SUN_FAR))
 		return;
-
-	{
-		CEnvDescriptor&	E = *g_pGamePersistent->Environment().CurrentEnv;
-		float fValue = E.m_fSunShaftsIntensity;
-		//	TODO: add multiplication by sun color here
-		if (fValue<0.0001) return;
-	}
 	
 	phase_vol_accumulator();
 
