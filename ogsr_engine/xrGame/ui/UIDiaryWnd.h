@@ -48,9 +48,7 @@ protected:
 	CUIStatic*			m_updatedSectionImage;
 	CUIStatic*			m_oldSectionImage;
 
-	typedef xr_vector<CEncyclopediaArticle*>			ArticlesDB;
-	typedef xr_vector<CEncyclopediaArticle*>::iterator	ArticlesDB_it;
-	ArticlesDB				m_ArticlesDB;
+	std::vector<CEncyclopediaArticle> m_ArticlesDB;
 
 			void __stdcall	OnFilterChanged			(CUIWindow*,void*);
 			void __stdcall	OnSrcListItemClicked	(CUIWindow*,void*);

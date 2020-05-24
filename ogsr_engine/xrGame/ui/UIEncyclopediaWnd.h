@@ -58,10 +58,8 @@ protected:
 	CUIStatic*			UIArticleHeader;
 
 	// Хранилище статей
-	typedef xr_vector<CEncyclopediaArticle*>			ArticlesDB;
-	typedef ArticlesDB::iterator						ArticlesDB_it;
+	std::vector<CEncyclopediaArticle> m_ArticlesDB;
 
-	ArticlesDB				m_ArticlesDB;
 	CGameFont*				m_pTreeRootFont;
 	u32						m_uTreeRootColor;
 	CGameFont*				m_pTreeItemFont;

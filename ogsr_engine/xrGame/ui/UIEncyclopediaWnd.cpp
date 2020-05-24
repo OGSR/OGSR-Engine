@@ -103,27 +103,27 @@ void CUIEncyclopediaWnd::SendMessage(CUIWindow *pWnd, s16 msg, void* pData)
 		
 		if( pTVItem->vSubItems.size() )
 		{
-			CEncyclopediaArticle* A = m_ArticlesDB[pTVItem->vSubItems[0]->GetValue()];
+			auto& A = m_ArticlesDB[pTVItem->vSubItems[0]->GetValue()];
 
 			xr_string caption		= ALL_PDA_HEADER_PREFIX;
 			caption					+= "/";
-			caption					+= CStringTable().translate(A->data()->group).c_str();
+			caption					+= CStringTable().translate(A.data()->group).c_str();
 
 			UIEncyclopediaInfoHeader->UITitleText.SetText(caption.c_str());
-			UIArticleHeader->SetTextST(*(A->data()->group));
+			UIArticleHeader->SetTextST(*(A.data()->group));
 			SetCurrentArtice		(NULL);
 		}else
 		{
-			CEncyclopediaArticle* A = m_ArticlesDB[pTVItem->GetValue()];
+			auto& A = m_ArticlesDB[pTVItem->GetValue()];
 			xr_string caption		= ALL_PDA_HEADER_PREFIX;
 			caption					+= "/";
-			caption					+= CStringTable().translate(A->data()->group).c_str();
+			caption					+= CStringTable().translate(A.data()->group).c_str();
 			caption					+= "/";
-			caption					+= CStringTable().translate(A->data()->name).c_str();
+			caption					+= CStringTable().translate(A.data()->name).c_str();
 
 			UIEncyclopediaInfoHeader->UITitleText.SetText(caption.c_str());
 			SetCurrentArtice		(pTVItem);
-			UIArticleHeader->SetTextST(*(A->data()->name));
+			UIArticleHeader->SetTextST(*(A.data()->name));
 		}
 	}
 
@@ -157,10 +157,11 @@ void CUIEncyclopediaWnd::Show(bool status)
 bool CUIEncyclopediaWnd::HasArticle(shared_str id)
 {
 	ReloadArticles();
-	for(std::size_t i = 0; i<m_ArticlesDB.size(); ++i)
-	{
-		if(m_ArticlesDB[i]->Id() == id) return true;
-	}
+
+	for (auto& Art : m_ArticlesDB)
+		if (Art.Id() == id)
+			return true;
+
 	return false;
 }
 
@@ -168,7 +169,7 @@ bool CUIEncyclopediaWnd::HasArticle(shared_str id)
 void CUIEncyclopediaWnd::DeleteArticles()
 {
 	UIIdxList->RemoveAll();
-	delete_data			(m_ArticlesDB);
+	m_ArticlesDB.clear();
 }
 
 void CUIEncyclopediaWnd::SetCurrentArtice(CUITreeViewItem *pTVItem)
@@ -184,7 +185,7 @@ void CUIEncyclopediaWnd::SetCurrentArtice(CUITreeViewItem *pTVItem)
 
 		CUIEncyclopediaArticleWnd*	article_info = xr_new<CUIEncyclopediaArticleWnd>();
 		article_info->Init			("encyclopedia_item.xml","encyclopedia_wnd:objective_item");
-		article_info->SetArticle	(m_ArticlesDB[pTVItem->GetValue()]);
+		article_info->SetArticle	(&m_ArticlesDB[pTVItem->GetValue()]);
 		UIInfoList->AddWindow		(article_info, true);
 
 		// Пометим как прочитанную
@@ -196,7 +197,7 @@ void CUIEncyclopediaWnd::SetCurrentArtice(CUITreeViewItem *pTVItem)
 					it != Actor()->encyclopedia_registry->registry().objects().end(); it++)
 				{
 					if (ARTICLE_DATA::eEncyclopediaArticle == it->article_type &&
-						m_ArticlesDB[pTVItem->GetValue()]->Id() == it->article_id)
+						m_ArticlesDB[pTVItem->GetValue()].Id() == it->article_id)
 					{
 						it->readed = true;
 						break;
@@ -209,18 +210,15 @@ void CUIEncyclopediaWnd::SetCurrentArtice(CUITreeViewItem *pTVItem)
 
 CEncyclopediaArticle* CUIEncyclopediaWnd::AddArticle( shared_str article_id, bool bReaded )
 {
-	for(std::size_t i = 0; i<m_ArticlesDB.size(); i++)
-	{
-		if( m_ArticlesDB[i]->Id() == article_id ) return nullptr;
-	}
+	for (auto& Art : m_ArticlesDB)
+		if (Art.Id() == article_id)
+			return nullptr;
 
 	// Добавляем элемент
-	m_ArticlesDB.resize(m_ArticlesDB.size() + 1);
-	CEncyclopediaArticle*& a = m_ArticlesDB.back();
-	a = xr_new<CEncyclopediaArticle>();
-	a->Load(article_id);
-	a->readed = bReaded;
-	return a;
+	auto& a = m_ArticlesDB.emplace_back();
+	a.Load(article_id);
+	a.readed = bReaded;
+	return &a;
 }
 
 void CUIEncyclopediaWnd::Reset()
@@ -246,13 +244,15 @@ void CUIEncyclopediaWnd::FillEncyclopedia() {
 void CUIEncyclopediaWnd::UpdateArticles() {
   if ( m_flags.test( eNeedReload ) && Actor()->encyclopedia_registry->registry().objects_ptr() ) {
     if ( Actor()->encyclopedia_registry->registry().objects_ptr()->size() > prevArticlesCount ) {
-      ARTICLE_VECTOR::const_iterator it = Actor()->encyclopedia_registry->registry().objects_ptr()->begin();
+      auto it = Actor()->encyclopedia_registry->registry().objects_ptr()->begin();
       std::advance( it, prevArticlesCount );
       bool need_sort = false;
       for ( ; it != Actor()->encyclopedia_registry->registry().objects_ptr()->end(); it++ ) {
         if ( ARTICLE_DATA::eEncyclopediaArticle == it->article_type ) {
-          const auto a = AddArticle( it->article_id, it->readed );
-          if ( prevArticlesCount > 0 && a ) {
+          auto* a = AddArticle( it->article_id, it->readed );
+          if (a && a->data()->sort)
+            need_sort = true;
+          if ( prevArticlesCount > 0 && a && !need_sort ) {
             // Теперь создаем иерархию вещи по заданному пути
             CreateTreeBranch(
               a->data()->group, a->data()->name, UIIdxList,
@@ -260,55 +260,55 @@ void CUIEncyclopediaWnd::UpdateArticles() {
               m_pTreeItemFont, m_uTreeItemColor, it->readed
             );
           }
-          else if ( a && a->data()->sort )
-            need_sort = true;
         }
       }
-      if ( !prevArticlesCount ) {
+      if ( prevArticlesCount == 0 || need_sort ) {
         if ( need_sort ) {
+          UIIdxList->RemoveAll();
+
           std::vector< std::vector<CEncyclopediaArticle*> > groups;
-          for ( const auto& a : m_ArticlesDB ) {
+          for ( auto& a : m_ArticlesDB ) {
             bool found = false;
             for ( auto& g : groups ) {
-              if ( xr_strcmp( g.front()->data()->group, a->data()->group ) == 0 ) {
+              if ( xr_strcmp( g.front()->data()->group, a.data()->group ) == 0 ) {
                 found = true;
-                g.push_back( a );
+                g.push_back( &a );
                 break;
               }
             }
             if ( !found ) {
-              std::vector<CEncyclopediaArticle*> g;
-              groups.push_back( g );
-              groups.back().push_back( a );
+              groups.emplace_back().push_back( &a );
             }
           }
           for ( auto& g : groups ) {
             auto sort_it = std::find_if(
               g.begin(), g.end(),
-              []( const auto& a ) -> bool {
+              []( auto* a ) -> bool {
                 return a->data()->sort;
               }
             );
             if ( sort_it != g.end() )
               std::stable_sort(
                 g.begin(), g.end(),
-                []( const auto& a, const auto& b ) -> bool {
+                []( auto* a, auto* b ) -> bool {
                   return xr_strcmp( CStringTable().translate( a->data()->name ), CStringTable().translate( b->data()->name ) ) < 0;
                 }
               );
           }
-          m_ArticlesDB.clear();
+
+          std::vector<CEncyclopediaArticle> m_ArticlesDB_new;
           for ( auto& g : groups )
-            for ( const auto& a : g )
-              m_ArticlesDB.push_back( a );
+            for ( const auto* a : g )
+              m_ArticlesDB_new.push_back( *a );
+		  m_ArticlesDB = std::move(m_ArticlesDB_new);
         }
         int idx = 0;
-        for ( const auto& a : m_ArticlesDB )
+        for ( auto& a : m_ArticlesDB )
           // Теперь создаем иерархию вещи по заданному пути
           CreateTreeBranch(
-            a->data()->group, a->data()->name, UIIdxList, idx++,
+            a.data()->group, a.data()->name, UIIdxList, idx++,
             m_pTreeRootFont, m_uTreeRootColor, m_pTreeItemFont,
-            m_uTreeItemColor, a->readed
+            m_uTreeItemColor, a.readed
           );
       }
       prevArticlesCount = Actor()->encyclopedia_registry->registry().objects_ptr()->size();

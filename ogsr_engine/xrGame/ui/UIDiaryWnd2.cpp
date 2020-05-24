@@ -30,7 +30,7 @@ CUIDiaryWnd::~CUIDiaryWnd()
 	delete_data(m_UINewsWnd);
 	delete_data(m_SrcListWnd);
 	delete_data(m_DescrView);
-	delete_data(m_ArticlesDB);
+	m_ArticlesDB.clear();
 	delete_data(m_updatedSectionImage);
 	delete_data(m_oldSectionImage);
 }
@@ -204,7 +204,7 @@ void CUIDiaryWnd::OnSrcListItemClicked	(CUIWindow* w,void* p)
 	{
 		CUIEncyclopediaArticleWnd*	article_info = xr_new<CUIEncyclopediaArticleWnd>();
 		article_info->Init			("encyclopedia_item.xml","encyclopedia_wnd:objective_item");
-		article_info->SetArticle	(m_ArticlesDB[pSelItem->GetValue()]);
+		article_info->SetArticle(&m_ArticlesDB[pSelItem->GetValue()]);
 		m_DescrView->AddWindow		(article_info, true);
 
 		// Исправление отображения зеленым цветом прочитанных записей в дневнике КПК
@@ -216,7 +216,7 @@ void CUIDiaryWnd::OnSrcListItemClicked	(CUIWindow* w,void* p)
 					it != Actor()->encyclopedia_registry->registry().objects().end(); it++)
 				{
 					if (ARTICLE_DATA::eJournalArticle == it->article_type &&
-						m_ArticlesDB[pSelItem->GetValue()]->Id() == it->article_id)
+						m_ArticlesDB[pSelItem->GetValue()].Id() == it->article_id)
 					{
 						it->readed = true;
 						break;
@@ -278,7 +278,7 @@ void CUIDiaryWnd::ReloadJournal() {
 
 void CUIDiaryWnd::ResetJournal() {
   m_SrcListWnd->RemoveAll();
-  delete_data( m_ArticlesDB );
+  m_ArticlesDB.clear();
   prevArticlesCount = 0;
 }
 
@@ -289,13 +289,11 @@ void CUIDiaryWnd::UpdateJournal() {
     std::advance( it, prevArticlesCount );
     for ( ; it != Actor()->encyclopedia_registry->registry().objects_ptr()->end(); it++ ) {
       if ( it->article_type == ARTICLE_DATA::eJournalArticle ) {
-        m_ArticlesDB.resize( m_ArticlesDB.size() + 1 );
-        CEncyclopediaArticle*& a = m_ArticlesDB.back();
-        a = xr_new<CEncyclopediaArticle>();
-        a->Load( it->article_id );
+        auto& a = m_ArticlesDB.emplace_back();
+        a.Load( it->article_id );
         bool bReaded = it->readed;
         CreateTreeBranch(
-          a->data()->group, a->data()->name, m_SrcListWnd,
+          a.data()->group, a.data()->name, m_SrcListWnd,
           m_ArticlesDB.size() - 1, m_pTreeRootFont, m_uTreeRootColor,
           m_pTreeItemFont, m_uTreeItemColor, bReaded
         );
