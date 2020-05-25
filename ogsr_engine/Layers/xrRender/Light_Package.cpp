@@ -1,11 +1,10 @@
 #include "stdafx.h"
 #include "Light_Package.h"
 
-void	light_Package::clear	()
-{
-	v_point.clear		();
-	v_spot.clear		();
-	v_shadowed.clear	();
+void light_Package::clear() {
+  v_point.clear();
+  v_spot.clear();
+  v_shadowed.clear();
 }
 
 #if (RENDER==R_R2) || (RENDER==R_R3) || (RENDER==R_R4)
@@ -42,24 +41,21 @@ void light_Package::vis_prepare() {
 // Получаем ответы от запросов к окклюдеру в обратном порядке, от
 // самого свежего запроса, к самому старому. См. комментарии выше.
 void light_Package::vis_update() {
-  xr_vector<light*>& source = v_spot;
-  if ( !source.empty() ) {
-    for ( u32 it = source.size() - 1; it <= 0; it-- ) {
-      light* L = source[ it ];
+  if ( !v_spot.empty() ) {
+    for ( int it = v_spot.size() - 1; it >= 0; it-- ) {
+      light* L = v_spot[ it ];
       L->vis_update();
     }
   }
-  source = v_shadowed;
-  if ( !source.empty() ) {
-    for ( u32 it = source.size() - 1; it <= 0; it-- ) {
-      light* L = source[ it ];
+  if ( !v_shadowed.empty() ) {
+    for ( int it = v_shadowed.size() - 1; it >= 0; it-- ) {
+      light* L = v_shadowed[ it ];
       L->vis_update();
     }
   }
-  source = v_point;
-  if ( !source.empty() ) {
-    for ( u32 it = source.size() - 1; it <= 0; it-- ) {
-      light* L = source[ it ];
+  if ( !v_point.empty() ) {
+    for ( int it = v_point.size() - 1; it >= 0; it-- ) {
+      light* L = v_point[ it ];
       L->vis_update();
     }
   }
