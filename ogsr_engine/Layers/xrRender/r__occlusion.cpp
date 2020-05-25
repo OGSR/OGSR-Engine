@@ -5,6 +5,7 @@
 
 R_occlusion::R_occlusion( void ) {
   enabled = strstr( Core.Params, "-no_occq" ) ? FALSE : TRUE;
+  last_frame = Device.dwFrame;
 }
 
 
@@ -18,16 +19,38 @@ void R_occlusion::occq_create( u32 limit ) {
 
 
 void R_occlusion::occq_destroy() {
+  Msg( "* [%s]: fids[%u] used[%u] pool[%u]", __FUNCTION__, fids.size(), used.size(), pool.size() );
+  u32 p_cnt = 0;
+  u32 u_cnt = 0;
   while	( !used.empty() ) {
-    if ( used.back().Q )
+    if ( used.back().Q ) {
       _RELEASE( used.back().Q );
+      u_cnt++;
+    }
     used.pop_back();
   }
   while	( !pool.empty() ) {
     _RELEASE( pool.back().Q );
     pool.pop_back();
+    p_cnt++;
   }
   fids.clear();
+  Msg( "* [%s]: released %u used and %u pool queries", __FUNCTION__, u_cnt, p_cnt );
+}
+
+
+void R_occlusion::cleanup_lost() {
+  u32 cnt = 0;
+  for ( u32 ID = 0; ID < used.size(); ID++ ) {
+    if ( used[ ID ].Q && used[ ID ].ttl && used[ ID ].ttl < Device.dwFrame ) {
+      pool.push_back( used[ ID ] );
+      used[ ID ].Q = nullptr;
+      fids.push_back( ID );
+      cnt++;
+    }
+  }
+  if ( cnt > 0 )
+    Msg( "! [%s]: cleanup %u lost queries", __FUNCTION__, cnt );
 }
 
 
@@ -35,6 +58,11 @@ u32 R_occlusion::occq_begin( u32& ID ) {
   if ( !enabled ) {
     ID = iInvalidHandle;
     return 0;
+  }
+
+  if ( last_frame != Device.dwFrame ) {
+    cleanup_lost();
+    last_frame = Device.dwFrame;
   }
 
   RImplementation.stats.o_queries++;
@@ -57,14 +85,16 @@ u32 R_occlusion::occq_begin( u32& ID ) {
     used[ ID ].Q = pool.back().Q;
     pool.pop_back();
   }
+  used[ ID ].ttl = Device.dwFrame + 1;
   CHK_DX( BeginQuery( used[ ID ].Q ) );
   return used[ ID ].order;
 }
 
 
 void R_occlusion::occq_end( u32& ID ) {
-  if ( !enabled || ID == iInvalidHandle ) return;
+  if ( !enabled || ID == iInvalidHandle || !used[ ID ].Q ) return;
   CHK_DX( EndQuery( used[ ID ].Q ) );
+  used[ ID ].ttl = Device.dwFrame + 1;
 }
 
 
