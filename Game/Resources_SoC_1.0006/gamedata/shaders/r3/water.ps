@@ -1,6 +1,6 @@
 #include "common.h"
 
-#define USE_OGSE_REFLECTIONS
+//#define USE_OGSE_REFLECTIONS
 
 #include "reflections.h"
 
@@ -38,7 +38,8 @@ float4 main( vf I ) : SV_Target
 {
 	float4 base = s_base.Sample(smp_base, I.tbase);
 
-	base += ripples(I.tbase,15.f)*rain_params.x;
+	if (rain_params.x >= 0.05f)
+		base += ripples(I.tbase,15.f)*rain_params.x;
 
 	float3	n0	= s_nmap.Sample(smp_base, I.tnorm0.xy);
 	float3	n1	= s_nmap.Sample(smp_base, I.tnorm0.zw);
