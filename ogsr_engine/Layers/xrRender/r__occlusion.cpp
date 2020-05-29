@@ -43,9 +43,7 @@ void R_occlusion::cleanup_lost() {
   u32 cnt = 0;
   for ( u32 ID = 0; ID < used.size(); ID++ ) {
     if ( used[ ID ].Q && used[ ID ].ttl && used[ ID ].ttl < Device.dwFrame ) {
-      pool.push_back( used[ ID ] );
-      used[ ID ].Q = nullptr;
-      fids.push_back( ID );
+      occq_free( ID );
       cnt++;
     }
   }
@@ -124,10 +122,17 @@ R_occlusion::occq_result R_occlusion::occq_get( u32& ID ) {
   if ( fragments == 0 ) RImplementation.stats.o_culled ++;
 
   // remove from used and shrink as nesessary
-  pool.push_back( used[ ID ] );
-  used[ ID ].Q = nullptr;
-  fids.push_back( ID );
+  occq_free( ID );
   ID = 0;
 
   return fragments;
+}
+
+
+void R_occlusion::occq_free( u32 ID ) {
+  if ( used[ ID ].Q ) {
+    pool.push_back( used[ ID ] );
+    used[ ID ].Q = nullptr;
+    fids.push_back( ID );
+  }
 }
