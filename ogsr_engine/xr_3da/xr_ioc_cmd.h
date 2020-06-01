@@ -150,9 +150,9 @@ class ENGINE_API	CCC_Token : public IConsole_Command
 {
 protected	:
 	u32*			value;
-	xr_token*		tokens;
+	const xr_token* tokens;
 public		:
-	CCC_Token(LPCSTR N, u32* V, xr_token* T) :
+	CCC_Token(LPCSTR N, u32* V, const xr_token* T) :
 	  IConsole_Command(N),
 	  value(V),
 	  tokens(T)
@@ -160,7 +160,7 @@ public		:
 
 	virtual void	Execute	(LPCSTR args)
 	{
-		xr_token* tok = tokens;
+		const xr_token* tok = tokens;
 		while (tok->name) {
 			if (stricmp(tok->name,args)==0) {
 				*value=tok->id;
@@ -172,7 +172,7 @@ public		:
 	}
 	virtual void	Status	(TStatus& S)
 	{
-		xr_token *tok = tokens;
+		const xr_token *tok = tokens;
 		while (tok->name) {
 			if (tok->id==(int)(*value)) {
 				xr_strcpy(S,tok->name);
@@ -186,20 +186,20 @@ public		:
 	virtual void	Info	(TInfo& I)
 	{	
 		I[0]=0;
-		xr_token *tok = tokens;
+		const xr_token *tok = tokens;
 		while (tok->name) {
 			if (I[0]) xr_strcat(I,"/");
 			xr_strcat(I,tok->name);
 			tok++;
 		}
 	}
-	virtual xr_token* GetToken(){return tokens;}
+	virtual const xr_token* GetToken() { return tokens; }
 	
 	virtual void	fill_tips(vecTips& tips, u32 mode)
 	{
 		TStatus  str;
 		bool res = false;
-		xr_token* tok = GetToken();
+		const xr_token* tok = GetToken();
 		while ( tok->name && !res )
 		{
 			if ( tok->id == (int)(*value) )

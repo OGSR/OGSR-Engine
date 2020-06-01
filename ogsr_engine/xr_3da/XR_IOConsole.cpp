@@ -551,7 +551,7 @@ char * CConsole::GetToken(LPCSTR cmd)
 	return GetString(cmd);
 }
 
-xr_token* CConsole::GetXRToken(LPCSTR cmd)
+const xr_token* CConsole::GetXRToken(LPCSTR cmd)
 {
 	vecCMD_IT I = Commands.find(cmd);
 	if (I!=Commands.end()) {

@@ -36,12 +36,17 @@ public:
 	virtual void		SendMessage					(CUIWindow *pWnd, s16 msg, void* pData = NULL);
 	virtual void		Draw						();
 
-	void				AddArticle					(shared_str, bool bReaded);
+	CEncyclopediaArticle* AddArticle( shared_str, bool );
 	void				DeleteArticles				();
 	bool				HasArticle					(shared_str);
 
 	void				ReloadArticles				();
 	virtual void		Reset						();
+
+	void FillEncyclopedia();
+	void UpdateArticles();
+	void ResetArticles();
+
 protected:
 	u32					prevArticlesCount;
 	// Элементы графического оформления
@@ -53,10 +58,8 @@ protected:
 	CUIStatic*			UIArticleHeader;
 
 	// Хранилище статей
-	typedef xr_vector<CEncyclopediaArticle*>			ArticlesDB;
-	typedef ArticlesDB::iterator						ArticlesDB_it;
+	std::vector<CEncyclopediaArticle> m_ArticlesDB;
 
-	ArticlesDB				m_ArticlesDB;
 	CGameFont*				m_pTreeRootFont;
 	u32						m_uTreeRootColor;
 	CGameFont*				m_pTreeItemFont;

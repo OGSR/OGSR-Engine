@@ -68,7 +68,13 @@ void CActor::AddEncyclopediaArticle( const CInfoPortion* info_portion, bool reve
   }
   article_vector.erase( last_end, article_vector.end() );
 
-  if ( !revert )
+  if ( revert ) {
+    if ( std::find( updated_pda.begin(), updated_pda.end(), pda_section::encyclopedia ) == updated_pda.end() )
+      updated_pda.push_back( pda_section::encyclopedia );
+    if ( std::find( updated_pda.begin(), updated_pda.end(), pda_section::journal ) == updated_pda.end() )
+      updated_pda.push_back( pda_section::journal );
+  }
+  else
     for ( const auto& id : info_portion->Articles() ) {
       const auto it = std::find_if(
         article_vector.begin(), article_vector.end(), [&id]( const auto& it ) {
@@ -112,12 +118,18 @@ void CActor::AddGameTask			 (const CInfoPortion* info_portion) const
 }
 
 
+void CActor::PushNewsData( GAME_NEWS_DATA& news_data ) {
+  GAME_NEWS_VECTOR& news_vector = game_news_registry->registry().objects();
+  news_data.receive_time = Level().GetGameTime();
+  news_vector.push_back( news_data );
+  if ( news_vector.size() > NewsToShow() )
+    news_vector.pop_front();
+}
+
+
 void  CActor::AddGameNews			 (GAME_NEWS_DATA& news_data)
 {
-
-	GAME_NEWS_VECTOR& news_vector	= game_news_registry->registry().objects();
-	news_data.receive_time			= Level().GetGameTime();
-	news_vector.push_back			(news_data);
+	PushNewsData( news_data );
 
 	if(HUD().GetUI()){
 		HUD().GetUI()->UIMainIngameWnd->ReceiveNews(&news_data);

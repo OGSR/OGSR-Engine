@@ -98,6 +98,11 @@ ICF void CBackend::set_Indices(ID3DIndexBuffer* _ib)
 	}
 }
 
+inline void CBackend::Clear(u32 Count, const D3DRECT* pRects, u32 Flags, u32 Color, float Z, u32 Stencil)
+{
+	CHK_DX(HW.pDevice->Clear(Count, pRects, Flags, Color, Z, Stencil));
+}
+
 ICF void CBackend::Render(D3DPRIMITIVETYPE T, u32 baseV, u32 startV, u32 countV, u32 startI, u32 PC)
 {
 	//Fix D3D ERROR

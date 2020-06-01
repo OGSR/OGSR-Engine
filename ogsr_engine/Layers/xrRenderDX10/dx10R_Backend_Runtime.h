@@ -278,6 +278,34 @@ IC void CBackend::Compute(UINT ThreadGroupCountX, UINT ThreadGroupCountY, UINT T
 }
 #endif
 
+inline void CBackend::Clear(u32 Count, const D3DRECT* pRects, u32 Flags, u32 Color, float Z, u32 Stencil)
+{
+	if (Flags & D3DCLEAR_TARGET)
+	{
+		// Convert u32 color to float
+		float r = (float)color_get_R(Color);
+		float g = (float)color_get_G(Color);
+		float b = (float)color_get_B(Color);
+		float a = (float)color_get_A(Color);
+		float clearColor[4] = { r / 255.0f, g / 255.0f, b / 255.0f, a / 255.0f };
+
+		// Clear all RTs
+		for (u32 i = 0; i < 3; ++i)
+		{
+			ID3DRenderTargetView* pRT = RCache.get_RT(i);
+			if (pRT)
+				HW.pContext->ClearRenderTargetView(pRT, clearColor);
+		}
+	}
+
+	u32 dsFlags = 0;
+	if (Flags & D3DCLEAR_ZBUFFER) dsFlags |= D3D_CLEAR_DEPTH;
+	if (Flags & D3DCLEAR_STENCIL) dsFlags |= D3D_CLEAR_STENCIL;
+
+	if (dsFlags != 0)
+		HW.pContext->ClearDepthStencilView(RCache.get_ZB(), dsFlags, Z, (u8)Stencil);
+}
+
 IC void CBackend::Render(D3DPRIMITIVETYPE T, u32 baseV, u32 startV, u32 countV, u32 startI, u32 PC)
 {
 	//VERIFY(vs);

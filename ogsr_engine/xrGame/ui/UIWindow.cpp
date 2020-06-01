@@ -237,13 +237,16 @@ void CUIWindow::Update() {
 }
 
 
-void CUIWindow::AttachChild(CUIWindow* pChild)
+void CUIWindow::AttachChild( CUIWindow* pChild, bool bottom )
 {
 	if(!pChild) return;
 	
 	R_ASSERT( !IsChild(pChild) );
 	pChild->SetParent(this);
-	m_ChildWndList.push_back(pChild);
+	if ( bottom )
+	  m_ChildWndList.push_front( pChild );
+	else
+	  m_ChildWndList.push_back( pChild );
 }
 
 void CUIWindow::DoDetachChild(CUIWindow* pChild, bool from_destructor)
@@ -617,6 +620,13 @@ bool CUIWindow::BringToTop(CUIWindow* pChild)
 	m_ChildWndList.push_back(pChild);
 
 	return true;
+}
+
+bool CUIWindow::BringToBottom( CUIWindow* pChild ) {
+  if( !IsChild( pChild ) ) return false;
+  m_ChildWndList.remove( pChild );
+  m_ChildWndList.push_front( pChild );
+  return true;
 }
 
 //поднять на вершину списка всех родителей окна и его самого

@@ -153,9 +153,12 @@ struct SDefNewsMsg{
 	};
 	xr_vector<SDefNewsMsg> m_defferedMessages;
 	void UpdateDefferedMessages();	
+	u32 m_news_to_show;
 public:	
 	void			AddGameNews_deffered	 (GAME_NEWS_DATA& news_data, u32 delay);
 	virtual void	AddGameNews				 (GAME_NEWS_DATA& news_data);
+	void PushNewsData( GAME_NEWS_DATA& news_data );
+	u32  NewsToShow() { return m_news_to_show; };
 protected:
 	CGameTaskManager*				m_game_task_manager;
 	CActorStatisticMgr*				m_statistic_manager;

@@ -44,6 +44,10 @@
 #include "clsid_game.h"
 #include "alife_simulator_header.h"
 #include "actorcondition.h"
+#include "UIGameSP.h"
+#include "ui/UIPDAWnd.h"
+#include "ui/UIEncyclopediaWnd.h"
+#include "ui/UIDiaryWnd.h"
 
 #ifdef DEBUG
 #	include "debug_renderer.h"
@@ -530,11 +534,21 @@ BOOL CActor::net_Spawn		(CSE_Abstract* DC)
 
 	{
 	  auto& news = game_news_registry->registry().objects();
-	  if ( news.size() > NEWS_TO_SHOW )
+	  if ( news.size() > NewsToShow() ) {
+	    u32 s = news.size();
 	    news.erase(
 	      news.begin(),
-	      news.begin() + ( news.size() - NEWS_TO_SHOW )
+	      news.begin() + ( news.size() - NewsToShow() )
             );
+	    Msg( "[%s]: purge %u news items, %u left", __FUNCTION__, s - news.size(), news.size() );
+	  }
+	}
+
+	if ( HUD().GetUI() ) {
+	  CUIGameSP* pGameSP = smart_cast<CUIGameSP*>( HUD().GetUI()->UIGame() );
+	  if ( pGameSP )
+	    pGameSP->PdaMenu->UIEncyclopediaWnd->FillEncyclopedia();
+	    pGameSP->PdaMenu->UIDiaryWnd->FillNews();
 	}
 
 	if (!CInventoryOwner::net_Spawn(DC)) return FALSE;

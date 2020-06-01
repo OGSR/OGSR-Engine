@@ -22,6 +22,7 @@ extern u32			g_pda_info_state;
 CUIDiaryWnd::CUIDiaryWnd()
 {
 	m_currFilter	= eNone;
+	prevArticlesCount = 0;
 }
 
 CUIDiaryWnd::~CUIDiaryWnd()
@@ -29,7 +30,7 @@ CUIDiaryWnd::~CUIDiaryWnd()
 	delete_data(m_UINewsWnd);
 	delete_data(m_SrcListWnd);
 	delete_data(m_DescrView);
-	delete_data(m_ArticlesDB);
+	m_ArticlesDB.clear();
 	delete_data(m_updatedSectionImage);
 	delete_data(m_oldSectionImage);
 }
@@ -132,9 +133,6 @@ void CUIDiaryWnd::Reload	(EDiaryFilter new_filter)
 		case eJournal:
 			UnloadJournalTab	();
 			break;
-//		case eInfo:
-//			UnloadInfoTab	();
-//			break;
 		case eNews:
 			UnloadNewsTab	();
 			break;
@@ -144,11 +142,8 @@ void CUIDiaryWnd::Reload	(EDiaryFilter new_filter)
 
 	switch (m_currFilter){
 		case eJournal:
-			LoadJournalTab	(ARTICLE_DATA::eJournalArticle);
+			LoadJournalTab();
 			break;
-//		case eInfo:
-//			LoadInfoTab		();
-//			break;
 		case eNews:
 			LoadNewsTab	();
 			break;
@@ -168,59 +163,23 @@ void CUIDiaryWnd::MarkNewsAsRead (bool status)
 void CUIDiaryWnd::UnloadJournalTab		()
 {
 	m_UILeftWnd->DetachChild	(m_SrcListWnd);
-	m_SrcListWnd->RemoveAll		();
 	m_SrcListWnd->Show			(false);
 
 	m_UIRightWnd->DetachChild	(m_DescrView);
 	m_DescrView->Show			(false);
-	delete_data					(m_ArticlesDB);
 	m_DescrView->Clear			();
 }
 
-void CUIDiaryWnd::LoadJournalTab			(ARTICLE_DATA::EArticleType _type)
+void CUIDiaryWnd::LoadJournalTab()
 {
-	delete_data					(m_ArticlesDB);
-
 	m_UILeftWnd->AttachChild	(m_SrcListWnd);
 	m_SrcListWnd->Show			(true);
 
 	m_UIRightWnd->AttachChild	(m_DescrView);
 	m_DescrView->Show			(true);
 
-	if(Actor()->encyclopedia_registry->registry().objects_ptr())
-	{
-		ARTICLE_VECTOR::const_iterator it = Actor()->encyclopedia_registry->registry().objects_ptr()->begin();
-		for(; it != Actor()->encyclopedia_registry->registry().objects_ptr()->end(); it++)
-		{
-			if (_type == it->article_type)				
-			{
-				m_ArticlesDB.resize(m_ArticlesDB.size() + 1);
-				CEncyclopediaArticle*& a = m_ArticlesDB.back();
-				a = xr_new<CEncyclopediaArticle>();
-				a->Load(it->article_id);
-
-				bool bReaded = it->readed;
-				CreateTreeBranch(a->data()->group, a->data()->name, m_SrcListWnd, m_ArticlesDB.size()-1, 
-					m_pTreeRootFont, m_uTreeRootColor, m_pTreeItemFont, m_uTreeItemColor, bReaded);
-			}
-		}
-	}
+	UpdateJournal();
 	g_pda_info_state	&=	~pda_section::journal;
-}
-
-void CUIDiaryWnd::UnloadInfoTab	()
-{
-//	m_UIRightWnd->DetachChild	(m_videoWnd);
-//	m_videoWnd->Hide			();
-	UnloadJournalTab	();
-}
-
-void CUIDiaryWnd::LoadInfoTab	()
-{
-//	m_UIRightWnd->AttachChild	(m_videoWnd);
-//	m_videoWnd->Show			();
-	LoadJournalTab				(ARTICLE_DATA::eInfoArticle);
-	g_pda_info_state			&= ~pda_section::info;
 }
 
 
@@ -245,7 +204,7 @@ void CUIDiaryWnd::OnSrcListItemClicked	(CUIWindow* w,void* p)
 	{
 		CUIEncyclopediaArticleWnd*	article_info = xr_new<CUIEncyclopediaArticleWnd>();
 		article_info->Init			("encyclopedia_item.xml","encyclopedia_wnd:objective_item");
-		article_info->SetArticle	(m_ArticlesDB[pSelItem->GetValue()]);
+		article_info->SetArticle(&m_ArticlesDB[pSelItem->GetValue()]);
 		m_DescrView->AddWindow		(article_info, true);
 
 		// Исправление отображения зеленым цветом прочитанных записей в дневнике КПК
@@ -257,7 +216,7 @@ void CUIDiaryWnd::OnSrcListItemClicked	(CUIWindow* w,void* p)
 					it != Actor()->encyclopedia_registry->registry().objects().end(); it++)
 				{
 					if (ARTICLE_DATA::eJournalArticle == it->article_type &&
-						m_ArticlesDB[pSelItem->GetValue()]->Id() == it->article_id)
+						m_ArticlesDB[pSelItem->GetValue()].Id() == it->article_id)
 					{
 						it->readed = true;
 						break;
@@ -300,4 +259,46 @@ void CUIDiaryWnd::Draw()
 void CUIDiaryWnd::Reset()
 {
 	inherited::Reset	();
+	m_UINewsWnd->Reset();
+	ResetJournal();
+}
+
+
+void CUIDiaryWnd::FillNews() {
+  m_UINewsWnd->LoadNews();
+  UpdateJournal();
+}
+
+
+void CUIDiaryWnd::ReloadJournal() {
+  if ( Actor() && Actor()->encyclopedia_registry->registry().objects_ptr()->size() < prevArticlesCount )
+    ResetJournal();
+}
+
+
+void CUIDiaryWnd::ResetJournal() {
+  m_SrcListWnd->RemoveAll();
+  m_ArticlesDB.clear();
+  prevArticlesCount = 0;
+}
+
+
+void CUIDiaryWnd::UpdateJournal() {
+  if ( Actor()->encyclopedia_registry->registry().objects_ptr() && Actor()->encyclopedia_registry->registry().objects_ptr()->size() > prevArticlesCount ) {
+    ARTICLE_VECTOR::const_iterator it = Actor()->encyclopedia_registry->registry().objects_ptr()->begin();
+    std::advance( it, prevArticlesCount );
+    for ( ; it != Actor()->encyclopedia_registry->registry().objects_ptr()->end(); it++ ) {
+      if ( it->article_type == ARTICLE_DATA::eJournalArticle ) {
+        auto& a = m_ArticlesDB.emplace_back();
+        a.Load( it->article_id );
+        bool bReaded = it->readed;
+        CreateTreeBranch(
+          a.data()->group, a.data()->name, m_SrcListWnd,
+          m_ArticlesDB.size() - 1, m_pTreeRootFont, m_uTreeRootColor,
+          m_pTreeItemFont, m_uTreeItemColor, bReaded
+        );
+      }
+    }
+    prevArticlesCount = Actor()->encyclopedia_registry->registry().objects_ptr()->size();
+  }
 }

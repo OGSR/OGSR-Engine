@@ -198,12 +198,7 @@ private:
    ref_shader				s_combine_msaa[8];
 	ref_shader				s_combine_volumetric;
 
-	ref_geom g_rain_drops;
 	ref_shader s_rain_drops;
-
-	//FXAA
-	ref_shader s_fxaa;
-	ref_geom g_fxaa;
 
 public:
 	ref_shader				s_postprocess;
@@ -311,7 +306,6 @@ public:
 	void						phase_combine_volumetric();
 	void						phase_pp				();
 	void PhaseRainDrops();
-	void phase_fxaa();
 
 	virtual void				set_blur				(float	f)		{ param_blur=f;						}
 	virtual void				set_gray				(float	f)		{ param_gray=f;						}
@@ -352,4 +346,25 @@ public:
 	IC void						dbg_addline				(Fvector& P0, Fvector& P1, u32 c)					{}
 	IC void						dbg_addplane			(Fplane& P0,  u32 c)								{}
 #endif
+
+private:
+	void RenderScreenQuad(const u32 w, const u32 h, ID3DRenderTargetView* rt, ref_selement& sh, string_unordered_map<const char*, Fvector4*>* consts = nullptr);
+	void RenderScreenQuad(const u32 w, const u32 h, ref_rt& rt, ref_selement& sh, string_unordered_map<const char*, Fvector4*>* consts = nullptr);
+
+	// Anti Aliasing
+	ref_shader s_pp_antialiasing;
+	ref_rt rt_smaa_edgetex;
+	ref_rt rt_smaa_blendtex;
+
+	void PhaseAA();
+	void ProcessSMAA();
+
+	void PhaseSSSS();
+	ref_rt rt_sunshafts_0;		// ss0
+	ref_rt rt_sunshafts_1;		// ss1
+	ref_rt rt_SunShaftsMask;
+	ref_rt rt_SunShaftsMaskSmoothed;
+	ref_rt rt_SunShaftsPass0;
+	ref_shader s_ssss_mrmnwar;
+	ref_shader s_ssss_ogse;
 };

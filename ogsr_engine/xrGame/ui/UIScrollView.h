@@ -42,7 +42,7 @@ public:
 	virtual bool	OnMouse				(float x, float y, EUIMessages mouse_action);
 	virtual void	Draw				();
 	virtual void	Update				();
-			void	AddWindow			(CUIWindow* pWnd, bool auto_delete);
+	void AddWindow( CUIWindow* pWnd, bool auto_delete, bool top = false );
 			void	RemoveWindow		(CUIWindow* pWnd);
 			void	Clear				(bool scrollToTop = true);
 			void	ScrollToBegin		();

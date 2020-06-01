@@ -1295,7 +1295,13 @@
     <ClCompile Include="..\xrRender\RenderTargetPhaseRainDrops.cpp">
       <Filter>Core_Target</Filter>
     </ClCompile>
-    <ClCompile Include="..\xrRender\RenderTargetPhaseFXAA.cpp">
+    <ClCompile Include="..\xrRender\RenderScreenQuad.cpp">
+      <Filter>Core_Target</Filter>
+    </ClCompile>
+    <ClCompile Include="..\xrRender\RenderTargetPhaseAA.cpp">
+      <Filter>Core_Target</Filter>
+    </ClCompile>
+    <ClCompile Include="..\xrRender\RenderTargetPhaseSSSS.cpp">
       <Filter>Core_Target</Filter>
     </ClCompile>
   </ItemGroup>

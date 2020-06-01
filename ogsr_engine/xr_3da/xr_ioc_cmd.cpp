@@ -350,7 +350,7 @@ public :
 	{ 
 		xr_sprintf(S,sizeof(S),"%dx%d",psCurrentVidMode[0],psCurrentVidMode[1]); 
 	}
-	virtual xr_token* GetToken()				{return vid_mode_token;}
+	virtual const xr_token* GetToken() override { return vid_mode_token; }
 	virtual void	Info	(TInfo& I)
 	{	
 		xr_strcpy(I,sizeof(I),"change screen resolution WxH");
@@ -362,7 +362,7 @@ public :
 		Status( cur );
 
 		bool res = false;
-		xr_token* tok = GetToken();
+		const xr_token* tok = GetToken();
 		while ( tok->name && !res )
 		{
 			if ( !xr_strcmp( tok->name, cur ) )
@@ -520,7 +520,7 @@ public:
 		tokens					= vid_quality_token;
 		inherited::Save(F);
 	}
-	virtual xr_token* GetToken()
+	virtual const xr_token* GetToken() override
 	{
 		tokens					= vid_quality_token;
 		return					inherited::GetToken();
@@ -558,7 +558,7 @@ public:
 		inherited::Status		(S);
 	}
 
-	virtual xr_token* GetToken()
+	virtual const xr_token* GetToken() override
 	{
 		tokens					= snd_devices_token;
 		return inherited::GetToken();

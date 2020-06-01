@@ -339,6 +339,10 @@ void	CRenderTarget::phase_combine	()
 		}
 	}
 
+	// Screen space sunshafts
+	PIX_EVENT(phase_ss_ss);
+	PhaseSSSS();
+
 /*
    if( RImplementation.o.dx10_msaa )
    {
@@ -348,16 +352,6 @@ void	CRenderTarget::phase_combine	()
    }
    */
 
-	RCache.set_Stencil(FALSE);
-
-	//FXAA
-	if (ps_r2_ls_flags.test(R2FLAG_FXAA))
-	{
-		PIX_EVENT(FXAA);
-		phase_fxaa();
-		RCache.set_Stencil(FALSE);
-	}
-
 	// PP enabled ?
 	//	Render to RT texture to be able to copy RT even in windowed mode.
 	BOOL	PP_Complex		= u_need_PP	() | (BOOL)RImplementation.m_bMakeAsyncSS;
@@ -366,11 +360,15 @@ void	CRenderTarget::phase_combine	()
    // HOLGER - HACK
    PP_Complex = TRUE;
 
-   if (!_menu_pp)
-   {
-	   if (ps_r2_ls_flags_ext.test(R2FLAGEXT_RAIN_DROPS))
-		   PhaseRainDrops();
-   }
+
+   // Postprocess anti-aliasing
+   if (ps_r_pp_aa_mode)
+	   PhaseAA();
+
+   // Rain droplets on screen
+   if (ps_r2_ls_flags_ext.test(R2FLAGEXT_RAIN_DROPS))
+	   PhaseRainDrops();
+
 
 	// Combine everything + perform AA
    if( RImplementation.o.dx10_msaa )

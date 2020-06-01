@@ -3,32 +3,10 @@
 // startup
 void	CRenderTarget::phase_scene_prepare	()
 {
-	// Clear depth & stencil
-	//u_setrt	( Device.dwWidth,Device.dwHeight,HW.pBaseRT,NULL,NULL,HW.pBaseZB );
-	//CHK_DX	( HW.pDevice->Clear	( 0L, NULL, D3DCLEAR_ZBUFFER|D3DCLEAR_STENCIL, 0x0, 1.0f, 0L) );
-	//	Igor: soft particles
-
-	CEnvDescriptor&	E = *g_pGamePersistent->Environment().CurrentEnv;
-	float fValue = E.m_fSunShaftsIntensity;
-	//	TODO: add multiplication by sun color here
-	//if (fValue<0.0001) FlagSunShafts = 0;
-
-	if ( RImplementation.o.advancedpp &&
-			(
-				ps_r2_ls_flags.test(R2FLAG_SOFT_PARTICLES|R2FLAG_DOF) ||
-				( (ps_r_sun_shafts>0) && (fValue>=0.0001) ) ||
-				(ps_r_ssao>0)
-			)
-		)
-	{
-		u_setrt	( Device.dwWidth,Device.dwHeight,rt_Position->pRT,NULL,NULL,HW.pBaseZB );
-		CHK_DX	( HW.pDevice->Clear	( 0L, NULL, D3DCLEAR_TARGET|D3DCLEAR_ZBUFFER|D3DCLEAR_STENCIL, 0x0, 1.0f, 0L) );
-	}
-	else
-	{
-		u_setrt	( Device.dwWidth,Device.dwHeight,HW.pBaseRT,NULL,NULL,HW.pBaseZB );
-		CHK_DX	( HW.pDevice->Clear	( 0L, NULL, D3DCLEAR_ZBUFFER|D3DCLEAR_STENCIL, 0x0, 1.0f, 0L) );
-	}
+	// Thx to K.D.
+	// We need to clean up G-buffer every frame to avoid "ghosting" on sky
+	u_setrt(rt_Position, rt_Normal, rt_Color, HW.pBaseZB);
+	RCache.Clear(0L, nullptr, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER | D3DCLEAR_STENCIL, 0x0, 1.0f, 0L);
 
 	//	Igor: for volumetric lights
 	m_bHasActiveVolumetric				= false;

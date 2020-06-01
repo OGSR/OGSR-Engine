@@ -99,12 +99,7 @@ float2 Drops(float2 uv, float t, float l0, float l1, float l2) {
 }
 
 
-struct v2p
-{
-    float2 tc0: TEXCOORD0;
-};
-
-float4 main ( v2p _in ) : COLOR
+float4 main( p_screen _in ) : COLOR
 {
     float rainAmount = rain_drops_params.x;
 

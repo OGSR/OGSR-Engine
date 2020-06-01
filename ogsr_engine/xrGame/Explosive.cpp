@@ -97,6 +97,10 @@ void CExplosive::Load(CInifile *ini,LPCSTR section)
 	m_fBlastHitImpulse	= ini->r_float(section,"blast_impulse");
 
 	m_iFragsNum			= ini->r_s32(section,"frags");
+	// KRodin: в оригинале осколки летели только в верхнюю полусверу после взрыва объекта.
+	// Здесь это поправлено, поэтому число осколков удвоено. Раньше допустим 50 летело только вверх, а теперь будет 50 вверх и 50 вниз, иначе многие гранаты из-за этого могли бы потерять в убойности.
+	m_iFragsNum *= 2;
+
 	m_fFragsRadius		= ini->r_float(section,"frags_r");
 	m_fFragHit			= ini->r_float(section,"frag_hit");
 	m_fFragHitImpulse	= ini->r_float(section,"frag_hit_impulse");
@@ -365,10 +369,8 @@ void CExplosive::Explode()
 	else SendHits = false;
 
 
-	Fvector frag_coneaxis;
-	frag_coneaxis.set( 0, 1.f, 0 );
 	for(int i = 0; i < m_iFragsNum; ++i){
-		frag_dir.random_dir( frag_coneaxis, PI_DIV_2 );
+		frag_dir.random_dir();
 		frag_dir.normalize	();
 		
 		CCartridge cartridge;

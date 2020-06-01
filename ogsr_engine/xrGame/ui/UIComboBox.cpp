@@ -119,7 +119,7 @@ void CUIComboBox::OnListItemSelect()
 void CUIComboBox::SetCurrentValue()
 {
 	m_list.Clear		();
-	xr_token* tok		= GetOptToken();
+	const xr_token* tok		= GetOptToken();
 
 	while (tok->name)
 	{		
@@ -141,7 +141,7 @@ void CUIComboBox::SetCurrentValue()
 void CUIComboBox::SaveValue()
 {
 	CUIOptionsItem::SaveValue	();
-	xr_token* tok				= GetOptToken();
+	const xr_token* tok				= GetOptToken();
 	const char*	cur_val			= tok[m_itoken_id].name;
 	SaveOptTokenValue			(cur_val);
 }

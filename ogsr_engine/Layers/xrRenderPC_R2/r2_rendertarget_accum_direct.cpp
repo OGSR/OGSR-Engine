@@ -219,9 +219,8 @@ void CRenderTarget::accum_direct		(u32 sub_phase)
 		u_DBT_disable	();
 
 		//	Igor: draw volumetric here
-		//if (ps_r2_ls_flags.test(R2FLAG_SUN_SHAFTS))
-		if ( RImplementation.o.advancedpp&&(ps_r_sun_shafts>0))
-			accum_direct_volumetric	(sub_phase, Offset, m_shadow);
+		if (RImplementation.o.advancedpp && ps_r_sunshafts_mode == SS_VOLUMETRIC)
+			accum_direct_volumetric(sub_phase, Offset, m_shadow);
 	}
 }
 
@@ -477,9 +476,8 @@ void CRenderTarget::accum_direct_cascade	( u32 sub_phase, Fmatrix& xform, Fmatri
 		u_DBT_disable	();
 
 		//	Igor: draw volumetric here
-		//if (ps_r2_ls_flags.test(R2FLAG_SUN_SHAFTS))
-		if ( RImplementation.o.advancedpp&&(ps_r_sun_shafts>0) && sub_phase == SE_SUN_FAR)
-			accum_direct_volumetric	(sub_phase, Offset, m_shadow);
+		if (RImplementation.o.advancedpp && ps_r_sunshafts_mode == SS_VOLUMETRIC && sub_phase == SE_SUN_FAR)
+			accum_direct_volumetric(sub_phase, Offset, m_shadow);
 	}
 }
 
@@ -644,9 +642,6 @@ void CRenderTarget::accum_direct_f		(u32 sub_phase)
 		// setup stencil
 		RCache.set_Stencil			(TRUE,D3DCMP_LESSEQUAL,dwLightMarkerID,0xff,0x00);
 		RCache.Render				(D3DPT_TRIANGLELIST,Offset,0,4,0,2);
-
-		//	Igor: draw volumetric here
-		//accum_direct_volumetric	(sub_phase, Offset);
 	}
 }
 
@@ -733,17 +728,14 @@ void CRenderTarget::accum_direct_lum	()
 
 void CRenderTarget::accum_direct_volumetric	(u32 sub_phase, const u32 Offset, const Fmatrix &mShadow)
 {
-	if ( (sub_phase!=SE_SUN_NEAR) && (sub_phase!=SE_SUN_MIDDLE) && (sub_phase!=SE_SUN_FAR) ) return;
-
-	if ( ! (RImplementation.o.advancedpp && ps_r_sun_shafts) )
+	if (!ps_r_sun_shafts)
 		return;
 
-	{
-		CEnvDescriptor&	E = *g_pGamePersistent->Environment().CurrentEnv;
-		float fValue = E.m_fSunShaftsIntensity;
-		//	TODO: add multiplication by sun color here
-		if (fValue<0.0001) return;
-	}
+	if (!need_to_render_sunshafts())
+		return;
+
+	if ((sub_phase != SE_SUN_NEAR) && (sub_phase != SE_SUN_MIDDLE) && (sub_phase != SE_SUN_FAR))
+		return;
 	
 	phase_vol_accumulator();
 

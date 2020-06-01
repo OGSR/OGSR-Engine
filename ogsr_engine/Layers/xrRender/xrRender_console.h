@@ -1,30 +1,30 @@
-#ifndef xrRender_consoleH
-#define xrRender_consoleH
 #pragma once
 
 // Common
 extern ECORE_API u32 r2_SmapSize;
 
-extern ECORE_API	u32			ps_r_sun_shafts;	//=	0;
-extern ECORE_API	xr_token	qsun_shafts_token[];
+extern ECORE_API u32 ps_r_pp_aa_mode;
+
+extern ECORE_API u32   ps_r_sun_shafts;
+extern ECORE_API u32   ps_r_sunshafts_mode;
+extern ECORE_API float ps_r_ss_sunshafts_length;
+extern ECORE_API float ps_r_ss_sunshafts_radius;
+extern ECORE_API float ps_r_prop_ss_radius;
+extern ECORE_API float ps_r_prop_ss_blend;
+extern ECORE_API float ps_r_prop_ss_sample_step_phase0;
+extern ECORE_API float ps_r_prop_ss_sample_step_phase1;
 
 extern ECORE_API	u32			ps_r_ssao;			//	=	0;
-extern ECORE_API	xr_token	qssao_token[];
 
 extern ECORE_API	u32			ps_r_ssao_mode;
-extern ECORE_API	xr_token	qssao_mode_token[];
 
 extern ECORE_API	u32			ps_r_sun_quality;	//	=	0;
-extern ECORE_API	xr_token	qsun_quality_token[];
 
 extern ECORE_API	u32			ps_r3_msaa;	//	=	0;
-extern ECORE_API	xr_token	qmsaa_token[];
 
 extern ECORE_API	u32			ps_r3_msaa_atest; //=	0;
-extern ECORE_API	xr_token	qmsaa__atest_token[];
 
 extern ECORE_API	u32			ps_r3_minmax_sm;//	=	0;
-extern ECORE_API	xr_token	qminmax_sm_token[];
 
 #if RENDER == R_R1
 extern ECORE_API	int			ps_r__Supersample;
@@ -146,7 +146,7 @@ enum
 	R2FLAG_SUN_TSM				= (1<<2),
 	R2FLAG_SUN_DETAILS			= (1<<3),
 	R2FLAG_TONEMAP				= (1<<4),
-	R2FLAG_FXAA					= (1<<5),
+	// = (1<<5),
 	R2FLAG_GI					= (1<<6),
 	R2FLAG_FASTBLOOM			= (1<<7),
 	R2FLAG_GLOBALMATERIAL		= (1<<8),
@@ -154,7 +154,7 @@ enum
 	R2FLAG_R1LIGHTS				= (1<<10),
 	R2FLAG_SUN_IGNORE_PORTALS	= (1<<11),
 
-//	R2FLAG_SUN_STATIC			= (1<<12),
+	// = (1<<12),
 	
 	R2FLAG_EXP_SPLIT_SCENE					= (1<<13),
 	R2FLAG_EXP_DONT_TEST_UNSHADOWED			= (1<<14),
@@ -208,4 +208,18 @@ enum
 extern void						xrRender_initconsole	();
 extern BOOL						xrRender_test_hw		();
 
-#endif
+// Postprocess anti-aliasing types
+enum
+{
+	NO_AA,
+	SMAA,
+};
+
+// Sunshafts types
+enum
+{
+	SS_OFF,
+	SS_VOLUMETRIC,
+	SS_SS_OGSE,
+	SS_SS_MANOWAR,
+};

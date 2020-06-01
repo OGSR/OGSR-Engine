@@ -99,11 +99,11 @@ float2 Drops(float2 uv, float t, float l0, float l1, float l2) {
 }
 
 
-float4 main ( v2p_aa_AA _in ) : SV_Target
+float4 main ( p_screen _in ) : SV_Target
 {
     float rainAmount = rain_drops_params.x;
 
-    float2 uv = _in.Tex0;
+    float2 uv = _in.tc0;
     float2 UV = uv;
 
     float T = timers.x + rainAmount * 2.;    

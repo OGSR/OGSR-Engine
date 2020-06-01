@@ -329,14 +329,56 @@ SGameTaskObjective* CGameTaskManager::ActiveObjective()
 
 
 void CGameTaskManager::cleanup() {
+  std::vector<shared_str> articles;
   GameTasks().erase(
     std::remove_if(
       GameTasks().begin(),
       GameTasks().end(),
-      []( const SGameTaskKey& k ) {
-        return k.game_task->Objective( 0 ).TaskState() != eTaskStateInProgress;
+      [&]( const SGameTaskKey& k ) {
+        if ( k.game_task->Objective( 0 ).TaskState() != eTaskStateInProgress ) {
+          for ( const auto& obj : k.game_task->m_Objectives )
+            if ( obj.article_id.size() )
+              articles.push_back( obj.article_id );
+          return true;
+        }
+        return false;
       }
     ),
     GameTasks().end()
   );
+
+  if ( !articles.empty() )
+    articles.erase(
+      std::remove_if(
+        articles.begin(),
+        articles.end(),
+        [&]( const auto& article_id ) {
+          for ( const auto& it : GameTasks() ) {
+            for ( const auto& obj : it.game_task->m_Objectives )
+              if ( obj.article_id == article_id )
+                return true;
+          }
+          return false;
+        }
+      ),
+      articles.end()
+    );
+
+  if ( !articles.empty() ) {
+    auto& article_vector = Actor()->encyclopedia_registry->registry().objects();
+    for ( const auto& article_id : articles ) {
+      FindArticleByIDPred pred( article_id );
+      article_vector.erase(
+        std::remove_if( article_vector.begin(), article_vector.end(), pred ),
+        article_vector.end()
+      );
+    }
+    if ( HUD().GetUI() ) {
+      auto* pGameSP = smart_cast<CUIGameSP*>( HUD().GetUI()->UIGame() );
+      if ( pGameSP ) {
+        pGameSP->PdaMenu->PdaContentsChanged( pda_section::encyclopedia, false );
+        pGameSP->PdaMenu->PdaContentsChanged( pda_section::journal, false );
+      }
+    }
+  }
 }

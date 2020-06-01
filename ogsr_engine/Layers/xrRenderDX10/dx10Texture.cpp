@@ -310,7 +310,7 @@ ID3DBaseTexture*	CRender::texture_load(LPCSTR fRName, u32& ret_msize, bool bStag
 	ZeroMemory(&IMG, sizeof(IMG));
 
 	//	Staging control
-	static bool bAllowStaging = !strstr(Core.Params,"-no_staging");
+	static const bool bAllowStaging = strstr(Core.Params, "-staging");
 	bStaging &= bAllowStaging;
 
 	ID3DBaseTexture*		pTexture2D		= NULL;
@@ -398,7 +398,7 @@ _DDS_CUBE:
 			}
 			else
 			{
-				LoadInfo.Usage = D3D_USAGE_DEFAULT;
+				LoadInfo.Usage = D3D_USAGE_IMMUTABLE;
 				LoadInfo.BindFlags = D3D_BIND_SHADER_RESOURCE;
 			}
 			
@@ -478,7 +478,7 @@ _DDS_2D:
 			}
 			else
 			{
-				LoadInfo.Usage = D3D_USAGE_DEFAULT;
+				LoadInfo.Usage = D3D_USAGE_IMMUTABLE;
 				LoadInfo.BindFlags = D3D_BIND_SHADER_RESOURCE;
 			}
 			LoadInfo.pSrcInfo = &IMG;
